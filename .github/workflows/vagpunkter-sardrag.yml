@@ -1,0 +1,112 @@
+# VÄGPUNKTERNAS FASTA SÄRDRAG (DECISIONS #553, kort #303, #342). Kandidatens rättelse läser ett 25-tal fasta särdrag per plats, och
+# de finns bara för stationerna. Axels frysta skript (fysik/fetch_elev.py, geofeat.py, geofeat2.py; sha256 i fysik/SHA256SUMS) körs här
+# oförändrade på öppna data: Copernicus DEM, ESA WorldCover, Meta/WRI:s trädhöjd, Open-Meteo och OSM:s broar.
+#   reproduktion: skripten på stationerna i Axels indata-release, jämförda kolumn för kolumn med releasens filer (bara aggregat i loggen),
+#                 med tiden per skript, så att vägpunkternas körning kan delas rätt.
+#   vagpunkter:   skripten på de 12 960 väglagspunkterna (data/vagdata/vaglagspunkter.json) i parallella delar, sammanställda till en fil
+#                 som laddas upp som artefakt och checkas in med källa och licens i data/KALLOR.json.
+# Knapp, inte cron. Inga hemligheter och inga Trafikverkets rader: stationernas och punkternas lägen är öppna data.
+name: vagpunkter-sardrag
+on:
+  workflow_dispatch:
+    inputs:
+      lage:
+        description: "reproduktion (stationerna mot indata-releasen) eller vagpunkter"
+        type: choice
+        options: [reproduktion, vagpunkter]
+        default: reproduktion
+      delar:
+        description: "antal parallella delar för vägpunkterna (1–99)"
+        default: "12"
+permissions:
+  contents: read
+concurrency: vagpunkter-sardrag
+jobs:
+  delar:
+    runs-on: ubuntu-latest
+    outputs:
+      lista: ${{ steps.l.outputs.lista }}
+    steps:
+      - id: l
+        env: { LAGE: "${{ inputs.lage }}", DELAR: "${{ inputs.delar }}" }
+        run: |
+          if [ "$LAGE" = reproduktion ]; then echo 'lista=[0]' >> "$GITHUB_OUTPUT"; exit 0; fi
+          [[ "$DELAR" =~ ^[1-9][0-9]?$ ]] || { echo "::error::delar ska vara 1–99, fick $DELAR"; exit 1; }
+          echo "lista=$(python3 -c "import json; print(json.dumps(list(range($DELAR))))")" >> "$GITHUB_OUTPUT"
+  sardrag:
+    needs: delar
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    strategy:
+      fail-fast: false
+      matrix:
+        del: ${{ fromJSON(needs.delar.outputs.lista) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13" }
+      - name: Axels frysta skript (${{ inputs.lage }}, del ${{ matrix.del }})
+        shell: bash
+        env: { GH_TOKEN: "${{ github.token }}", LAGE: "${{ inputs.lage }}", DEL: "${{ matrix.del }}", DELAR: "${{ inputs.delar }}" }
+        run: |
+          set -euo pipefail
+          (cd fysik && sha256sum -c SHA256SUMS)
+          python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|rasterio)==' fysik/requirements.txt)
+          # De frysta filerna bär Axels sökvägar: /home/claude/fys är fysik/, /home/claude/halkvakt repot (data/bridges.geojson), och
+          # GDAL läser sin CA-fil ur /root/.ccr/ca-bundle.crt.
+          sudo mkdir -p /home/claude /root/.ccr && sudo chown "$(id -u):$(id -g)" /home/claude
+          ln -sfn "$PWD/fysik" /home/claude/fys && ln -sfn "$PWD" /home/claude/halkvakt
+          sudo ln -sf /etc/ssl/certs/ca-certificates.crt /root/.ccr/ca-bundle.crt && sudo chmod 755 /root /root/.ccr
+          W="$PWD"; mkdir -p fysik/data ut
+          if [ "$LAGE" = reproduktion ]; then
+            gh release download kuvos-fysik-indata-2024-25 --dir indata
+            node -e '
+              const m = require("./kuvos/fysik-indata-leverans.json"), c = require("crypto"), fs = require("fs");
+              let fel = 0;
+              for (const f of m.filer) { const h = c.createHash("sha256").update(fs.readFileSync("indata/" + f.fil)).digest("hex");
+                console.log(`${f.fil}: ${h === f.sha256 ? "ok" : "FEL " + h}`); if (h !== f.sha256) fel++; }
+              process.exit(fel ? 1 : 0);'
+            mkdir -p frusen && for f in indata/*.tar.gz; do tar -xzf "$f" -C frusen; done
+            if [ -d frusen/data ]; then mv frusen/data/* frusen/ && rmdir frusen/data; fi
+            cp frusen/stations.csv fysik/data/stations.csv
+          else
+            python3 fysik/vagpunkter/vagpunkter.py stationer --ut fysik/data/stations.csv --del "$DEL" --delar "$DELAR"
+          fi
+          N=$(( $(wc -l < fysik/data/stations.csv) - 1 ))
+          {
+            echo '```'
+            cd /home/claude/fys
+            for s in fetch_elev.py geofeat.py geofeat2.py; do
+              t0=$(date +%s)
+              python3 "$s" > "$W/ut/$s.log" 2>&1 || { echo "$s föll:"; tail -20 "$W/ut/$s.log"; exit 1; }
+              echo "$s: $N punkter på $(( $(date +%s) - t0 )) s"
+            done
+            t0=$(date +%s)
+            python3 vagpunkter/vagpunkter.py elev-ifs --stationer data/stations.csv --ut data/elev_ifs.csv > "$W/ut/elev_ifs.log"
+            echo "elev-ifs: $N punkter på $(( $(date +%s) - t0 )) s"
+            cp data/elev.csv data/geofeat.csv data/geofeat2.csv data/elev_ifs.csv "$W/ut/"
+            if [ "$LAGE" = reproduktion ]; then python3 vagpunkter/vagpunkter.py jamfor --ny data --frusen "$W/frusen"; fi
+            echo '```'
+          } 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Delen sparas till sammanställningen
+        if: ${{ inputs.lage == 'vagpunkter' }}
+        uses: actions/upload-artifact@v4
+        with: { name: "vagpunkter-del-${{ matrix.del }}", path: "ut/*.csv", retention-days: 30, if-no-files-found: error }
+  sammanstall:
+    needs: sardrag
+    if: ${{ inputs.lage == 'vagpunkter' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13" }
+      - uses: actions/download-artifact@v4
+        with: { pattern: "vagpunkter-del-*", path: delar }
+      - name: Delarna sammanställda
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install -q $(grep -E '^(numpy|pandas)==' fysik/requirements.txt)
+          { echo '```'; python3 fysik/vagpunkter/vagpunkter.py sammanstall --delar delar --ut vagpunkter-sardrag.csv; echo '```'; } | tee -a "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with: { name: vagpunkter-sardrag, path: vagpunkter-sardrag.csv, retention-days: 30, if-no-files-found: error }
