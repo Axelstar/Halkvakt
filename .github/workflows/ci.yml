@@ -125,6 +125,7 @@ jobs:
           python3 fysik/blandning/vagb_blandning.py --sjalvtest      # DECISIONS #544
           python3 fysik/vagpunkter/vagpunkter.py --sjalvtest          # DECISIONS #553
           python3 fysik/vagpunkter/hojd.py --sjalvtest                # DECISIONS #553, tillägg 13/10
+          python3 fysik/vagpunkter/vagpunkter.py prova --fil data/vagdata/vaglagspunkter-sardrag.json   # värdevaktens spann
       # Generatorn gled isär från vektorfilerna tre gånger (31/8, 2/9, 13/9) utan att någon vakt såg det (#195).
       # Den skriver bara filer vars innehåll ändrats och fäller själv på en vektorfil utan scenario.
       - name: Vektorgeneratorn återskapar engine/vectors/ (#202)
