@@ -78,7 +78,7 @@ SENAST FÄRSK 14:05* där *Tyst så länge* annars står (N). Ljuset förblir gr
 
 **Varningskortet** — helgult i åtta sekunder medan rösten talar, sedan bort av sig självt. **Ingen knapp på någon
 plattform** (Androids *Uppfattat* är borta). Samma ordning varje gång: *HALKVAKT VARNAR* och klockslaget, för allvarliga
-olyckor en mörk lägesetikett (*ALLVARLIG · TIDIGT*, *PÅMINNELSE*, *ALLVARLIG · SENT*), farans ikon, rubriken, avståndet,
+olyckor en mörk lägesetikett (*ALLVARLIG · TIDIGT*, *PÅMINNELSE*, *ALLVARLIG · SENT*) och *BETA* för frysrisken efter regnet, farans ikon, rubriken, avståndet,
 eventuellt en vägskylt (*E18*, *VÄG 25*) och en hastighetsskylt (*80*), för allvarliga olyckor en mörk rådruta
 (*Överväg annan väg* med *STOR PÅVERKAN · RÖJD CA 19:30*, eller *Sakta ner*), repliken ordagrant och en stapel som fylls.
 **Kortet visar det rösten sa och inget mer:** under en kilometer i hela hundratal (*500 M*, *600 M*), annars hela
@@ -94,9 +94,14 @@ krymper och tonar bort; stapeln börjar om.
 | Allvarlig olycka, sent | *Allvarlig olycka* | *2 KM* | *ALLVARLIG · SENT*, vägskylt, *Sakta ner* |
 | Halka | *Halka* | *FRAMFÖR DIG* | — |
 | Frysrisk vid station | *Frysrisk* — *Vägbanan nära noll grader* | *FRAMÖVER* | — |
+| Frysrisk efter regnet (beta, S3) | *Frysrisk* — *Halkvakt tror — efter regnet* | *FRAMÖVER* | *BETA* |
 | Frysrisk på bro | *Frysrisk* — *Bro* | *600 M* (hundratal, som rösten) | egen ikon |
 | Vilt | *Vilt* | *FRAMÖVER* | — |
 | Fartkamera | *Fartkamera* | *500 M* | hastighetsskylt när gränsen är känd |
+
+![Betakortet](produktbok/shot-8-betakortet.png)
+
+*(Betakortet, frysrisken efter regnet (S3): Android ur fotostudion 11/10, android.yml 38123089310 på grenen `claude/granskning-fotostudio-525`, en påhittad varning 655 m bort, bara i debug-bygget (DECISIONS #525). iOS-kortet har samma rader (`WarningCardTests.testPostRainBetaIsMarked`), men ingen skärmbild.)*
 
 Kortets innehåll räknas i motorpaketen (`WarningCard` i Swift och Kotlin) och prövas av CI med samma fall på båda
 plattformarna; olycksläget kommer ur motorn (`Alert.step`, DECISIONS #443).
@@ -175,9 +180,14 @@ rörelseigenkänning, Bluetooth och plats "Tillåt hela tiden".)*
 | **Allvarlig olycka du kom nära utan att höra det tidiga ropet** | "Allvarlig olycka 2 kilometer framför dig — stor påverkan. Sakta ner." |
 | Rapporterad halka på din väg — kod 2 eller högre, eller kod 1 med is, snö, frost, halka, halt, halkrisk, halkig eller *mycket besvärligt* (det sista sedan 22/9, kort #156; sedan 16/9 även i sammansättningar: *Rimfrost*, *Nysnö*, *Blötsnö*; motåtgärder som *Halkbekämpning* tiger) | "Varning: halka rapporterad på vägen framför dig." |
 | Mätstation visar frysrisk | "Isrisk framöver — vägbanan nära noll grader." |
+| **Efter regnet, märkt beta (S3):** ytan +1…+3 °C, fallit minst 0,8 °C på 30 minuter och regn inom 2 timmar — vägbanan är fortfarande över fryspunkten men på väg ned (DECISIONS #222, #524) | "Halkvakt tror: frysrisk framöver." |
 | Djur på vägen enligt Trafikverket — älg, hjort, vildsvin, men också lösa kor och får (sedan 22/9, DECISIONS #318; polisens länspunkter är borta) | "Viltrisk framöver." |
 | Fartkamera (hastighetsgränsen sägs inte: Trafikverkets kameradata bär ingen) | "Fartkamera om 500 meter." |
 | Väglagsdatat är gammalt (en gång per körning) | "Ingen färsk väglagsdata – kör som om det kan vara halt." |
+
+**Frysrisken efter regnet är en beta.** *"Halkvakt tror"* säger att det är en gissning ur regnet och hur fort vägbanan kyls, inte
+en uppmätt frysning. Värdena är satta före frosten och döms i januari på förarnas svar: håller de fortsätter betan till mars,
+annars tas den bort (TROSKLAR-KOMBINATIONEN §7). Testförarna får veta att värdena är gissade.
 
 **Allvarlig olycka — varför två gånger?** Trafikverket klassar varje olycka efter
 hur mycket den påverkar trafiken. Är påverkan *mycket* stor — riktigt stopp — säger
@@ -576,6 +586,7 @@ du var just då."* (Axels villkor för ja:et, DECISIONS #267.)
 | 0.3.9 (19) | 1/10 | Skärmarna rullar, facitknapparna på ett ställe, statusraden bara vid fel, svenska klockslag, *lämnar inte telefonen av sig själv* (kort #279, DECISIONS #430) — plus allt i (14)–(18). **Uppladdad till Apple 1/10 22:25** ur 4f88513, **godkänd för *Kompisarna* 22:34** (samma versionsnummer som det granskade (14) ⇒ automatiskt); första bygget som bär #258, #259 och #203 lager 2. |
 | 0.3.10 (22) | 2–3/10 | Skinnet v4 ur designöverlämningen v2: varningskortet i helskärm, *Redo.*, körläget, introduktionen och inställningarna (kort #284, DECISIONS #443/#444). Släppt av Axel 3/10. |
 | 0.3.11 (23) | 4/10 | Självstoppet mäts på förflyttning, inte på ett mätvärde: en promenad efter resan håller inte längre vakten vid liv. På Android läser en stillastående telefon GPS glesare. Ett dubbeltryck på *Appen missade* blir en miss, och Siri markerar inga missar när vakten är av (kort #262 Å2/Å3, DECISIONS #461). |
+| 0.3.12 (24) | 11/10 | **Frysrisken efter regnet, märkt beta (S3):** rösten säger *"Halkvakt tror: frysrisk framöver."* och kortet visar *BETA* och *Halkvakt tror — efter regnet* när vägbanan är +1…+3 °C, fallit minst 0,8 °C på 30 minuter och regnet slutat inom 2 timmar (DECISIONS #524, #526). |
 | Android (CI) | 16/9 → | Facitknappen och betatest-brytaren (S4, DECISIONS #202), Efter resan (20/9), viltvarningen på Trafikverkets djur (22/9), omladdningsloopen lagad och reglaget (26/9), missarna (26/9). **0.3.9 (18)**, samma nummer som iOS (DECISIONS #377). |
 
 Android bar versionsnumret 0.3.1 (4) från 31/8 till 26/9, fast CI byggde den ur main med skinnet v3, facitknappen

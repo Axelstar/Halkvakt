@@ -35,6 +35,10 @@ export interface PointHazard {
     /** icing_point */
     surfaceTempC?: number | null;
     moisture?: boolean; // rain/snow/wet surface at the station
+    /** icing_point — S3, efterhalkan som märkt beta (DECISIONS #222, #524): hours since the station's gauge last saw
+     *  rain (`regn_h`) and the surface's fall over 30 min, positive = falling (`lutning30`). null = unknown ⇒ silent. */
+    rainH?: number | null;
+    fall30C?: number | null;
     /** icing_point — this point is a BRIDGE (#38): surfaceTempC/moisture come from the
      *  nearest road weather station; bridges freeze first, so the threshold is +3 °C. */
     bridge?: boolean;
@@ -89,6 +93,9 @@ export interface Alert {
    *  every other alert, so the log shape of all other vectors is unchanged. The warning card
    *  shows it as a stage chip (design handoff 2/10, DECISIONS #443). */
   step?: AccidentStep;
+  /** S3 only: the frost-risk call came from the post-rain beta rule, not from surface + moisture (DECISIONS #524).
+   *  Absent otherwise, so the log shape of every other vector is unchanged. The warning card marks it as beta. */
+  beta?: true;
 }
 
 export interface EngineConfig {
@@ -108,6 +115,12 @@ export interface EngineConfig {
   leadMaxM: number;
   segmentSampleM: number;       // polyline sampling step for corridor tests
   cameraBearingToleranceDeg: number; // co-directionality gate for cameras with known bearing
+  /** S3, efterhalkan som märkt beta (DECISIONS #222): surface within [min, max] °C, fallen at least fall30 °C in 30 min,
+   *  and rain within regnH hours. Start values written before the frost, frozen by the calibration (#468). */
+  efterhalkaYtaMinC: number;
+  efterhalkaYtaMaxC: number;
+  efterhalkaFall30C: number;
+  efterhalkaRegnH: number;
 }
 
 export const DEFAULT_CONFIG: EngineConfig = {
@@ -133,6 +146,11 @@ export const DEFAULT_CONFIG: EngineConfig = {
   // var bara för vid. 60° släpper igenom egen riktning i kurvor och på ramper och stänger
   // ute mötande.
   cameraBearingToleranceDeg: 60,
+  // S3 (DECISIONS #222, #524): betans startvärden — samma tal som sql/028 och uppspelningen (kontraktsgrinden).
+  efterhalkaYtaMinC: 1.0,
+  efterhalkaYtaMaxC: 3.0,
+  efterhalkaFall30C: 0.8,
+  efterhalkaRegnH: 2.0,
 };
 
 
@@ -352,6 +370,10 @@ export function roadPhrase(road?: string | null): string {
   return /^[A-Za-zÅÄÖåäö]/.test(r) ? ` på ${r}` : ` på väg ${r}`;
 }
 
+/** S3, efterhalkan som märkt beta (DECISIONS #222, #524, TROSKLAR-KOMBINATIONEN §7). "Halkvakt tror" säger att det är en
+ *  gissning ur regn och fall, inte en uppmätt frysning; punktkälla ⇒ "framöver". */
+export const EFTERHALKA_TEXT = "Halkvakt tror: frysrisk framöver.";
+
 export function alertText(
   kind: HazardKind,
   distanceM: number,
@@ -435,6 +457,8 @@ interface Candidate {
   hazard: Hazard; kind: HazardKind; distM: number;
   alertKey: string;
   step?: AccidentStep;
+  /** S3: the frost-risk call came from the post-rain beta rule (DECISIONS #524). */
+  beta?: true;
 }
 
 // Swedish word-start boundary: "Isfläckar"/"Svår halka" match; "fläckvis Våt" must NOT
@@ -573,8 +597,9 @@ export class AlertEngine {
       hazardId: win.hazard.id,
       kind: win.kind,
       distanceM: Math.round(win.distM),
-      text: alertText(win.kind, win.distM, pointHazard, win.step),
+      text: win.beta ? EFTERHALKA_TEXT : alertText(win.kind, win.distM, pointHazard, win.step),
       ...(win.step ? { step: win.step } : {}),
+      ...(win.beta ? { beta: true as const } : {}),
     };
   }
 
@@ -626,7 +651,14 @@ export class AlertEngine {
         // Bridges (#38): the deck freezes before the road — nearest station at +3 is enough.
         const threshold = p.meta?.bridge ? 3 : 1;
         const icy = t != null && t <= threshold && p.meta?.moisture === true;
-        return icy && distM <= leadM ? { hazard: p, kind: p.kind, distM, alertKey: p.id } : null;
+        if (icy) return distM <= leadM ? { hazard: p, kind: p.kind, distM, alertKey: p.id } : null;
+        // S3 — efterhalkan som märkt beta (DECISIONS #222, #524): the surface is still above the freezing rule but within
+        // +1…+3 °C, has fallen fast after rain, and the gauge saw rain within 2 h. Stations only — bridges keep their +3 rule.
+        const rainH = p.meta?.rainH, fall30 = p.meta?.fall30C;
+        const beta = !p.meta?.bridge && t != null && rainH != null && fall30 != null &&
+          t >= this.cfg.efterhalkaYtaMinC && t <= this.cfg.efterhalkaYtaMaxC &&
+          fall30 >= this.cfg.efterhalkaFall30C && rainH <= this.cfg.efterhalkaRegnH;
+        return beta && distM <= leadM ? { hazard: p, kind: p.kind, distM, alertKey: p.id, beta: true } : null;
       }
       case "wildlife": {
         const active = p.meta?.active !== false;
@@ -758,7 +790,8 @@ export function rutaKring(line: [number, number][], marginalKm: number): Ruta {
 const iRutan = (x: number, y: number, r: Ruta) => x >= r.x0 && x <= r.x1 && y >= r.y0 && y <= r.y1;
 
 /** Farorna som kan tala på rutten. En punkt ska ligga i rutan; ett segment räcker att dess egen ruta skär rutans — ett långt
- *  segment kan korsa rutten utan att någon av dess brytpunkter ligger nära. */
+ *  segment kan korsa rutten utan att någon av dess brytpunkter ligger nära. Skuggans förfilter till 12/10; sedan dess
+ *  farorVidLinjen nedan (DECISIONS #535). */
 export function farorNaraRutten(hazards: Hazard[], line: [number, number][], marginalKm = FARA_MARGINAL_KM): Hazard[] {
   const r = rutaKring(line, marginalKm);
   return hazards.filter((h) => {
@@ -777,6 +810,86 @@ export function ankareNaraRutten<T extends { lon: number; lat: number }>(ankare:
   return ankare.filter((a) => iRutan(a.lon, a.lat, r));
 }
 
+// LÄNGS RUTTEN (favoriterna, DECISIONS #528). Rektangeln ovan tar allt inom rutans ruta plus marginalen — för en diagonal rutt en stor
+// del av landet. Urvalet nedan tar det som ligger inom `marginalM` från själva linjen, och säger var längs den, så att en rapport kan
+// ordna farorna i körordning. Samma räkning i android/engine/…/RouteFilter.kt och HalkvaktEngine/RouteFilter.swift, prövad mot
+// engine/fixtures/langsrutten.json i alla tre.
+//
+// Avståndet är plant i en lokal projektion kring punkten (x = R·Δλ·cos φ, y = R·Δφ, R som haversineM), punkt mot sträcka utan
+// sampling — billigt och lika i alla tre språk. Ett segment mäts brytpunkt mot linjen, linjens brytpunkter mot segmentet, och två
+// sträckor som korsar varandra ger 0. Platsen längs rutten är längden fram till närmaste sträcka (haversine per sträcka) plus andelen
+// av den.
+
+/** En fara längs rutten: kortaste avståndet till linjen och platsen längs den, båda i meter. */
+export type LangsRutten = { hazard: Hazard; avstandM: number; langsM: number };
+
+const R_M = 6_371_000;
+const RAD = Math.PI / 180;
+
+/** Kortaste plana avståndet från p till sträckan a–b, och andelen t ∈ [0, 1] längs sträckan där det nås. */
+function tillStracka(p: [number, number], a: [number, number], b: [number, number]): { d: number; t: number } {
+  const k = Math.cos(p[1] * RAD) * R_M * RAD, m = R_M * RAD;
+  const ax = (a[0] - p[0]) * k, ay = (a[1] - p[1]) * m, bx = (b[0] - p[0]) * k, by = (b[1] - p[1]) * m;
+  const dx = bx - ax, dy = by - ay, L = dx * dx + dy * dy;
+  const t = L === 0 ? 0 : Math.max(0, Math.min(1, -(ax * dx + ay * dy) / L));
+  return { d: Math.hypot(ax + t * dx, ay + t * dy), t };
+}
+
+/** Var sträckan p1–p2 korsar q1–q2, som andel t ∈ (0, 1) längs p1–p2, eller null. Plant i grader, räcker för att avgöra korsning. */
+function korsning(p1: [number, number], p2: [number, number], q1: [number, number], q2: [number, number]): number | null {
+  const rx = p2[0] - p1[0], ry = p2[1] - p1[1], sx = q2[0] - q1[0], sy = q2[1] - q1[1];
+  const den = rx * sy - ry * sx;
+  if (den === 0) return null;
+  const t = ((q1[0] - p1[0]) * sy - (q1[1] - p1[1]) * sx) / den, u = ((q1[0] - p1[0]) * ry - (q1[1] - p1[1]) * rx) / den;
+  return t > 0 && t < 1 && u > 0 && u < 1 ? t : null;
+}
+
+/** Farorna inom `marginalM` från linjen, i körordning (plats längs rutten, sedan id). En linje med en punkt duger inte. */
+export function farorLangsRutten(hazards: Hazard[], line: [number, number][], marginalM: number): LangsRutten[] {
+  if (line.length < 2) return [];
+  const kum = [0];
+  for (let i = 1; i < line.length; i++) kum.push(kum[i - 1] + haversineM({ lon: line[i - 1][0], lat: line[i - 1][1] }, { lon: line[i][0], lat: line[i][1] }));
+  // Närmast linjen för en punkt: kortaste avståndet och platsen längs rutten där det nås.
+  const narmast = (p: [number, number]) => {
+    let d = Infinity, langs = 0;
+    for (let i = 0; i < line.length - 1; i++) {
+      const s = tillStracka(p, line[i], line[i + 1]);
+      if (s.d < d) { d = s.d; langs = kum[i] + s.t * (kum[i + 1] - kum[i]); }
+    }
+    return { d, langs };
+  };
+  const ut: LangsRutten[] = [];
+  for (const h of hazards) {
+    let d: number, langs: number;
+    if (h.kind === "slippery_segment") {
+      ({ d, langs } = narmast(h.line[0]));
+      for (const p of h.line.slice(1)) { const n = narmast(p); if (n.d < d) ({ d, langs } = n); }
+      // Linjens brytpunkter mot segmentet: ett segment kan gå nära linjen mellan sina egna brytpunkter.
+      for (let i = 0; i < line.length; i++) for (let j = 0; j < h.line.length - 1; j++) {
+        const s = tillStracka(line[i], h.line[j], h.line[j + 1]);
+        if (s.d < d) { d = s.d; langs = kum[i]; }
+      }
+      for (let i = 0; i < line.length - 1 && d > 0; i++) for (let j = 0; j < h.line.length - 1; j++) {
+        const t = korsning(line[i], line[i + 1], h.line[j], h.line[j + 1]);
+        if (t !== null) { d = 0; langs = kum[i] + t * (kum[i + 1] - kum[i]); break; }
+      }
+    } else {
+      ({ d, langs } = narmast([h.lon, h.lat]));
+    }
+    if (d <= marginalM) ut.push({ hazard: h, avstandM: d, langsM: langs });
+  }
+  return ut.sort((a, b) => a.langsM - b.langsM || (a.hazard.id < b.hazard.id ? -1 : a.hazard.id > b.hazard.id ? 1 : 0));
+}
+
+/** Skuggans förfilter sedan 12/10 (Bengt, DECISIONS #535): farorna inom motorns längsta räckvidd från själva linjen, i stället för
+ *  rektangeln runt hela rutten. Motorn räknar på farorna i den ordning de kommer, så snapshotens ordning behålls och urvalets
+ *  körordning kastas. Samma varningar och samma undanträngda som utan filter (test/rutfilter.test.ts); mätt 11/10 och 12/10 på
+ *  skuggans 30 rutter: 54–55 % av rektangelns faror och halva motorns tid (#528). */
+export function farorVidLinjen(hazards: Hazard[], line: [number, number][]): Hazard[] {
+  const valda = new Set(farorLangsRutten(hazards, line, FARA_MARGINAL_KM * 1000).map((x) => x.hazard));
+  return hazards.filter((h) => valda.has(h));
+}
+
 
 // ═══ engine/src/snapshot.ts ═══
 // Snapshot → Hazard adapter. THE reference mapping from the published app files
@@ -792,7 +905,9 @@ export interface LiveDoc {
   schema: number;
   generated_at: string;
   segments: { id: string; line: [number, number][]; code: number | null; info: string[]; road: string | null }[];
-  weather: { id: string; lon: number; lat: number; yta: number | null; fukt: boolean }[];
+  weather: { id: string; lon: number; lat: number; yta: number | null; fukt: boolean;
+             /** S3 (#524): timmar sedan regn och ytans fall på 30 min, positivt = faller (snapshot-core.ts). */
+             regn_h?: number | null; lutning30?: number | null }[];
   deviations: {
     id: string; lon: number; lat: number; typ: string | null; road: string | null;
     /** Trafikverket SeverityCode, present only for real accidents (#28). */
@@ -817,7 +932,8 @@ export function snapshotToHazards(staticDoc: StaticDoc, liveDoc: LiveDoc): Hazar
     out.push({ id: `seg:${s.id}`, kind: "slippery_segment", line: s.line, meta: { code: s.code, info: s.info } });
   }
   for (const w of liveDoc.weather) {
-    out.push({ id: `wx:${w.id}`, kind: "icing_point", lon: w.lon, lat: w.lat, meta: { surfaceTempC: w.yta, moisture: w.fukt } });
+    out.push({ id: `wx:${w.id}`, kind: "icing_point", lon: w.lon, lat: w.lat,
+               meta: { surfaceTempC: w.yta, moisture: w.fukt, rainH: w.regn_h ?? null, fall30C: w.lutning30 ?? null } });
   }
   for (const d of liveDoc.deviations) {
     out.push({
@@ -953,6 +1069,24 @@ const ROUTES: Record<string, [number, number][]> = {
   "E18 Karlstad→Örebro": [[13.50,59.38],[14.11,59.31],[14.52,59.33],[15.21,59.27]],
   "E18 Örebro→Stockholm": [[15.21,59.27],[15.84,59.39],[16.55,59.61],[17.07,59.64],[18.07,59.33]],
   "Rv70 Enköping→Mora": [[17.07,59.64],[16.60,59.92],[16.17,60.15],[15.98,60.28],[15.43,60.48],[15.13,60.55],[14.99,60.73],[15.12,60.89],[14.54,61.00]],
+};
+
+// VÄG C (DECISIONS #527, Bengts "gör denna" 11/10): rutter genom stationerna där efterhalkans fall och de frysnära halvtimmarna
+// låg (läsningen 38128801752: av 236 fall låg 7 % inom 2 km från en rutt i ROUTES, av de kalla halvtimmarna 2 %). Varje rutt är
+// en KEDJA AV STATIONER i körordning, raka sträckor emellan som i ROUTES — inte vägens geometri, och namnen är stationernas.
+// Eget anrop (`?grupp=c`, :22/:52) och egen tabell (shadow_log_c): ROUTES, dess takt och mätningarna som läser den rörs inte
+// (lasRutter i publish/skuggfacit.ts läser bara ROUTES). Bara larmen loggas: ingen prognos, ingen efterhalka, inga facitbilder.
+const ROUTES_C: Record<string, [number, number][]> = {
+  "C Värmland: Eda→Mångsbodarna": [[12.275,59.911],[12.623,60.020],[12.609,60.209],[12.615,60.385],[12.704,60.654],[13.114,61.158],[13.620,61.079]],
+  "C Klarälvdalen: S Berga→Ruskåsen": [[13.134,59.726],[13.403,59.867],[13.253,60.207],[13.172,60.354]],
+  "C Bergslagen: Gumhöjden→Gruvorna": [[13.909,60.022],[14.176,60.113],[14.200,60.327],[13.956,60.501],[14.334,60.860]],
+  "C Ludvika: Basttjärn→Mårtanberg": [[14.979,60.025],[14.523,60.160],[14.674,60.467],[15.253,60.823]],
+  "C Orsa finnmark: Lillhärdal→Gruvberget": [[14.040,61.843],[14.798,61.388],[15.135,61.167],[15.796,61.071],[16.177,61.132]],
+  "C Norrlandskusten: Hammarbacken→Bönhamn": [[17.185,61.900],[17.277,62.078],[17.370,62.195],[17.453,62.517],[17.847,62.686],[18.446,62.876]],
+  "C Fjällen: Blåsjöfjället→Kåtaviken": [[14.040,64.772],[15.379,64.968],[14.815,65.422],[15.095,66.010],[14.805,66.118]],
+  "C Kiruna: Nikkaluokta→Riksgränsen": [[19.027,67.860],[20.294,67.856],[19.782,68.148],[18.575,68.434],[18.269,68.430],[18.116,68.433]],
+  "C Lule lappmark: Porjus→Stora Sjöfallet": [[19.821,66.960],[18.367,67.474]],
+  "C Tornedalen: Limingojärvi→Kätkesuando": [[22.899,66.689],[23.482,67.442],[23.311,68.120]],
 };
 
 function traceAlong(line: [number, number][], kmh = 80, stepS = 5): Fix[] {
@@ -1107,15 +1241,16 @@ function oljaAlerts(olja: Olja[], route: [number, number][], trace: Fix[]) {
   });
 }
 
-/** S1: väderpunkter i ruttens ruta (+5 km, samma ruta som vbAlerts) med N4:s råa fält och motorns utfall. */
-function efterhalkaRader(lv: any, route: [number, number][], alerts: Alert[]) {
+/** S1: väderpunkter i ruttens ruta (+5 km, samma ruta som vbAlerts) med N4:s råa fält och motorns utfall. Utan rutt (null): alla
+ *  väderpunkter i lägesfilen (DECISIONS #523) — larm gäller fortfarande bara den rutt raden hör till. */
+function efterhalkaRader(lv: any, route: [number, number][] | null, alerts: Alert[]) {
   const wx: any[] = Array.isArray(lv?.weather) ? lv.weather : [];
   if (!wx.length) return [];
   const M = 0.05;
-  const lons = route.map((p) => p[0]), lats = route.map((p) => p[1]);
+  const lons = (route ?? []).map((p) => p[0]), lats = (route ?? []).map((p) => p[1]);
   const x0 = Math.min(...lons) - M, x1 = Math.max(...lons) + M, y0 = Math.min(...lats) - M, y1 = Math.max(...lats) + M;
   const larmade = new Set(alerts.map((a) => a.hazardId));
-  return wx.filter((w) => w.lon >= x0 && w.lon <= x1 && w.lat >= y0 && w.lat <= y1).map((w) => ({
+  return wx.filter((w) => !route || (w.lon >= x0 && w.lon <= x1 && w.lat >= y0 && w.lat <= y1)).map((w) => ({
     id: String(w.id), yta: w.yta ?? null, fukt: w.fukt ?? null,
     regn_h: w.regn_h ?? null, lutning15: w.lutning15 ?? null, lutning30: w.lutning30 ?? null, lutning60: w.lutning60 ?? null,
     larm: larmade.has(`wx:${w.id}`),
@@ -1191,7 +1326,7 @@ async function forsprangVarv(prov: boolean): Promise<Response> {
     const niva2 = hazards.filter((h) => nivaer.get(h.id) === 2 && iRutan(h, x0, x1, y0, y1)).length;
     if (!niva2) continue;
     const trace = traceAlong(line);
-    const naraFaror = farorNaraRutten(hazards, line);   // rutfiltret (kort #244, DECISIONS #360) — samma utfall, mindre arbete
+    const naraFaror = farorVidLinjen(hazards, line);   // rutfiltret (kort #244, DECISIONS #360, #535) — samma utfall, mindre arbete
     const bas = kor(naraFaror, trace, nivaer, false), variant = kor(naraFaror, trace, nivaer, true);
     // FS-B4: en varning i varianten om en fara baskörningen aldrig talade om. Avståndet kvar till rutans slut följer med, så att
     // faror där baskörningens spår tog slut före faran kan redovisas för sig.
@@ -1256,7 +1391,11 @@ Deno.serve(async (req) => {
     }
     const land = (new URL(req.url).searchParams.get("land") ?? "se").toLowerCase();
     const CDN = CDN_BY_LAND[land]; if (!CDN) return new Response("okänt land", { status: 400 });
-    const routes = land === "fi" ? ROUTES_FI : land === "no" ? ROUTES_NO : land === "dk" ? ROUTES_DK : ROUTES;
+    // VÄG C (DECISIONS #527): `?grupp=c` kör ROUTES_C i ett eget anrop på :22/:52 och skriver till shadow_log_c — bara larmen.
+    const grupp = new URL(req.url).searchParams.get("grupp");
+    if (grupp !== null && (grupp !== "c" || land !== "se")) return new Response("okänd grupp", { status: 400 });
+    const c = grupp === "c";
+    const routes = c ? ROUTES_C : land === "fi" ? ROUTES_FI : land === "no" ? ROUTES_NO : land === "dk" ? ROUTES_DK : ROUTES;
     const bust = `?t=${Date.now()}`;
     const [st, lv] = await Promise.all([
       fetch(CDN + "static.json" + bust).then((r) => r.json()),
@@ -1264,7 +1403,7 @@ Deno.serve(async (req) => {
     ]);
     const hazards = snapshotToHazards(st, lv);
     // Ankarna hämtas en gång per anrop, inte per rutt. Bara Sverige: funktionen läser det svenska arkivet.
-    const ankare = land === "se" ? await vagpunktAnkare() : { lista: [] as Ankare[], skal: "bara Sverige" };
+    const ankare = land === "se" && !c ? await vagpunktAnkare() : { lista: [] as Ankare[], skal: c ? "grupp C loggar ingen prognos" : "bara Sverige" };
     const oljaLista = land === "se" ? await oljaAktiva() : { lista: [] as Olja[], skal: "bara Sverige" };
     const results: Record<string, unknown> = {};
     let facitTotal = 0;
@@ -1273,7 +1412,7 @@ Deno.serve(async (req) => {
     // Rotation: 3 rutter per varv (CPU-taket, läxa 29/8) — alla 20 täcks varje 3,5 h,
     // i båda länderna.
     const allNames = Object.keys(routes).sort();
-    const slots = 7;
+    const slots = c ? Math.ceil(allNames.length / 3) : 7;   // grupp C: samma tak, högst 3 rutter per anrop
     const slot = Math.floor(Date.now() / 1800e3) % slots;
     // TIDMÄTNING PER STEG (kort #244, DECISIONS #360): funktionsloggen är Axels panel, så svaret bär själv var tiden går.
     const ms = { motor: 0, prognos: 0, facit: 0, t0: performance.now() };
@@ -1287,8 +1426,9 @@ Deno.serve(async (req) => {
       // kastar loggas per körning, med vad som tystade det och med vilken marginal.
       // RUTFILTRET (kort #244, DECISIONS #360): motorn prövar bara faror inom sin längsta räckvidd från rutten — utfallet är
       // detsamma byte för byte (test/rutfilter.test.ts), arbetet en bråkdel. n_hazards nedan är fortsatt hela snapshotens antal.
+      // Sedan 12/10 räknas räckvidden från själva linjen, inte från rektangeln runt rutten (Bengt, DECISIONS #535).
       const t1 = performance.now();
-      const motor = new AlertEngine(farorNaraRutten(hazards, line));
+      const motor = new AlertEngine(farorVidLinjen(hazards, line));
       const suppressed: { kind: string; id: string; distM: number; by: string; sinceS: number }[] = [];
       motor.onSuppressed = (c) => suppressed.push({ kind: c.kind, id: c.hazardId, distM: Math.round(c.distM), by: c.by, sinceS: c.sinceS });
       const alerts = motor.run(trace);
@@ -1299,7 +1439,11 @@ Deno.serve(async (req) => {
       // per station i korridoren + om motorn larmade på stationen. Inget villkor: S2 sätter det, och raden
       // ska kunna spelas upp mot vilket villkor som helst. Axels grind (#196): regn_h döms här innan något
       // mer byggs på det. Tom i september (weather[] saknar stationer ≤ 3 °C) — det är rätt, inte fel.
-      const efterhalka = land === "se" ? efterhalkaRader(lv, line, alerts) : [];
+      // ALLA STATIONER (DECISIONS #523, Bengts ja 11/10): varvets första rutt bär varje väderpunkt i lägesfilen, inte bara sin
+      // korridor. Rutterna kör var 3,5:e timme och gick förbi 95 % av efterhalkans fall 4–11/10 (#521); S1 handlar om stationer,
+      // inte vägar. Inga nya rader: jämförelsen mot arkivet tar bort dubbletterna.
+      // Grupp C loggar ingen efterhalka: huvudvarvets första rutt bär redan varje station varje halvtimme (#523).
+      const efterhalka = land === "se" && !c ? efterhalkaRader(lv, name === batch[0] ? null : line, alerts) : [];
       // SEGMENTPROGNOSEN (kort #38b steg 4, DECISIONS #324/#325, Bengts "bygg nu" 23/9): rå avståndsviktning av de
       // vaktade stationerna per provpunkt längs rutten (engine/src/segment.ts). Loggad, aldrig hörd — grind B och C
       // dömer i mars. Tom utan ankare, och skälet står i svaret (ankareSkal), så en tom kolumn aldrig är tvetydig.
@@ -1323,7 +1467,8 @@ Deno.serve(async (req) => {
       // falsklarm enligt TROSKLAR-VATTENPLANING §2. Motorns punkter först; budgeten är gemensam.
       const vbPunkter = vb.flatMap((v) => (v.lon != null && v.lat != null ? [{ lon: v.lon, lat: v.lat }] : []));
       const t3 = performance.now();
-      const f = land === "se" ? await archiveFacit([...punkter, ...vbPunkter], name) : { saved: 0, skal: [] };
+      const f = land === "se" && !c ? await archiveFacit([...punkter, ...vbPunkter], name)
+        : { saved: 0, skal: c ? ["grupp C arkiverar inga facitbilder (DECISIONS #527)"] : [] };
       ms.facit += performance.now() - t3;
       // En nolla utan skäl är omöjlig att skilja från "inga larm" (#173) — även den här grenen säger varför.
       if (land === "se" && alerts.length && !punkter.length) f.skal.push("bara segment- eller fartkameralarm — inget som behöver väglagsfacit");
@@ -1363,7 +1508,7 @@ Deno.serve(async (req) => {
           };
         }),
       });
-      await fetch(`${SB}/rest/v1/shadow_log`, {
+      await fetch(`${SB}/rest/v1/${c ? "shadow_log_c" : "shadow_log"}`, {
         method: "POST",
         headers: { Authorization: `Bearer ${SRK}`, apikey: SRK, "Content-Type": "application/json" },
         body });

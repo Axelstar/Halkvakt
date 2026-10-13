@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Favoritprovet</title>
+<!-- FAVORITPROVET (DECISIONS #529; synkprovet #533): visningen av testmiljön. Läser hinken favoritprov i Supabase Storage, som funktionen favoritprov
+     skriver var 30:e minut. Ingen app läser något härifrån. Öppnas i en webbläsare: dubbelklicka på filen, eller i appens webbläsarruta. -->
+<style>
+  :root { --bg: #f6f4ef; --kort: #ffffff; --fg: #1d232a; --dampad: #5a6570; --linje: #dcd8cf; --gul: #ffc94a; --gul-fg: #2a2000;
+          --gron: #1f7a4a; --rod: #b23a2e; color-scheme: light; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #11161b; --kort: #1a2129; --fg: #e8ecef; --dampad: #9aa6b1; --linje: #2c3640;
+          --gul: #ffc94a; --gul-fg: #2a2000; --gron: #4fc38a; --rod: #ff7b6e; color-scheme: dark; } }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 760px; margin: 0 auto; padding: 24px 16px 48px; }
+  h1 { font-size: 1.5rem; margin: 0 0 4px; text-wrap: balance; }
+  .ingress { color: var(--dampad); margin: 0 0 20px; }
+  .kort { background: var(--kort); border: 1px solid var(--linje); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+  label { font-size: .8rem; letter-spacing: .04em; text-transform: uppercase; color: var(--dampad); display: block; margin-bottom: 6px; }
+  select { width: 100%; font: inherit; padding: 8px; border-radius: 8px; border: 1px solid var(--linje); background: var(--kort); color: var(--fg); }
+  .steg { display: flex; gap: 10px; align-items: baseline; margin: 18px 0 8px; font-weight: 600; }
+  .steg b { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--fg); color: var(--bg); font-size: .8rem; }
+  .rad { padding: 10px 0; border-top: 1px solid var(--linje); }
+  .rad:first-of-type { border-top: 0; }
+  .rad .r { font-weight: 600; }
+  .rad .t { color: var(--dampad); }
+  .rad .m { font-variant-numeric: tabular-nums; color: var(--dampad); font-size: .85rem; }
+  .nytt { background: var(--gul); color: var(--gul-fg); border-radius: 8px; padding: 2px 10px; }
+  .nytt .t, .nytt .m { color: var(--gul-fg); }
+  .tomt { color: var(--dampad); }
+  table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: .9rem; }
+  th, td { text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--linje); }
+  .skroll { overflow-x: auto; }
+  .fel { color: var(--rod); }
+  .litet { font-size: .85rem; color: var(--dampad); }
+  .notis { background: var(--gul); color: var(--gul-fg); border-radius: 10px; padding: 10px 12px; margin: 8px 0 4px; font-weight: 600; }
+  details.delar { margin-top: 4px; }
+  details.delar summary { cursor: pointer; color: var(--dampad); font-size: .85rem; }
+  details.delar div { padding: 4px 0 4px 12px; border-left: 2px solid var(--linje); margin: 4px 0; font-size: .9rem; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Favoritprovet</h1>
+  <p class="ingress">Testmiljön för favoriterna (DECISIONS #529): rapportfilen och det fliken skulle visa för skuggans 30 rutter, byggt
+    var 30:e minut ur Trafikverkets och SMHI:s öppna data och dagens lägesfil. <b>Ingen app läser något av det här.</b> Rutterna är
+    skuggans, lagda på vägnätet med OSRM på OpenStreetMap (kort #338), och avstånden till vägen (100–500 m) är provets parametrar,
+    inte appens trösklar. Kartdata © OpenStreetMaps bidragsgivare (ODbL).</p>
+  <div class="kort">
+    <label for="rutt">Rutt</label>
+    <select id="rutt"></select>
+    <p class="litet" id="lage">Läser hinken …</p>
+  </div>
+  <div class="kort" id="rapport"></div>
+  <div class="kort" id="synk">
+    <label>Synkprovet — rapporten tio minuter innan mot bilen</label>
+    <p class="litet">Tio minuter efter rapporten (:18/:48) kör bilen — motorn på färsk lägesfil — samma rutt (DECISIONS #533). Bilen kör i
+      GitHub Actions och syns här efter nästa favoritprov (#534). Varje larm
+      bilen får ska ha stått i rapporten: <b>förvarnad</b> om det gjorde det, <b>saknades</b> om inte. Rader i rapporten som motorn kan larma
+      för men inte larmade: <b>borta</b> (faran försvann på tio minuter) eller <b>kvar</b> (riktning, avstånd eller spärr).</p>
+    <p class="litet" id="synklage">Läser synk.json …</p>
+    <div id="synkrutt"></div>
+    <div class="skroll"><table id="synkhist"></table></div>
+  </div>
+  <div class="kort">
+    <label>Filerna</label>
+    <div id="filer" class="litet"></div>
+  </div>
+  <div class="kort">
+    <label>De senaste körningarna</label>
+    <div class="skroll"><table id="historik"></table></div>
+  </div>
+</main>
+<script>
+const HINK = "https://xmpfztykhyvhmrzsnjrc.supabase.co/storage/v1/object/public/favoritprov/";
+const RUBRIK = { halka: "halt väglag på sträckorna", frysrisk: "frysrisk vid stationerna", olycka: "olyckor", hinder: "hinder", vilt: "vilt",
+  ko: "köer", vagarbete: "vägarbeten", hastighet: "hastighet", omledning: "omledningar", farja: "färjor", kamera: "fartkameror", smhi: "SMHI-varningar" };
+const kl = (iso) => iso ? new Date(iso).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Stockholm" }) : "–";
+const km = (m) => (m / 1000).toLocaleString("sv-SE", { maximumFractionDigits: 1 }) + " km";
+const kb = (b) => b == null ? "–" : (b / 1000).toLocaleString("sv-SE", { maximumFractionDigits: 1 }) + " kB";
+const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+const hamta = (namn) => fetch(HINK + namn + "?t=" + Date.now()).then((r) => { if (!r.ok) throw new Error(namn + " " + r.status); return r.json(); });
+
+let fav = null, hist = { korningar: [] };
+function visa(namn) {
+  const r = fav.rutter[namn], ut = document.getElementById("rapport");
+  ut.replaceChildren();
+  const rubrik = el("div", "steg"); rubrik.append(el("b", null, "1"), el("span", null, `Just nu · kollat ${kl(fav.generated_at)} · läget från ${kl(fav.lagesfil)} · ${r.km} km`));
+  ut.append(rubrik);
+  const nytt = new Set(r.nytt);
+  // Notisen (#530, favoritsidan §5): vad den skulle ha gällt, och hur ofta rutten fått en de senaste körningarna.
+  const medNotis = hist.korningar.filter((k) => Array.isArray(k.notis));
+  const ofta = medNotis.length ? `${medNotis.filter((k) => k.notis.includes(namn)).length} av ${medNotis.length} körningar` : "–";
+  if (r.notis?.ja) { const vad = r.rader.filter((x) => r.notis.ids.includes(x.id)).map((x) => x.rubrik);
+    ut.append(el("div", "notis", `Skulle ha fått en notis: ${vad.join(" · ")}`)); }
+  ut.append(el("p", "litet", `Notis: ${r.notis ? (r.notis.ja ? "ja" : "nej") : "–"} den här kollen · ${ofta} med notis`));
+  const s2 = el("div", "steg"); s2.append(el("b", null, "2"), el("span", null, fav.forra ? `Nytt sedan ${kl(fav.forra)}` : "Nytt sedan förra kollen — första kollen"));
+  ut.append(s2);
+  const nya = r.rader.filter((x) => nytt.has(x.id));
+  if (!nya.length) ut.append(el("p", "tomt", "Inget nytt."));
+  for (const x of nya) ut.append(rad(x, true));
+  const s3 = el("div", "steg"); s3.append(el("b", null, "3"), el("span", null, "Längs vägen just nu")); ut.append(s3);
+  if (!r.rader.length) ut.append(el("p", "tomt", "Inget rapporterat längs rutten just nu."));
+  // Grupperna när filen har dem (#530), annars raderna (filer från före sammanslagningen).
+  const perId = new Map(r.rader.map((x) => [x.id, x]));
+  if (r.grupper) { ut.append(el("p", "litet", `${r.grupper.length} rader på skärmen för ${r.rader.length} saker`));
+    for (const g of r.grupper) ut.append(grupp(g, g.ids.some((i) => nytt.has(i)), perId)); }
+  else for (const x of r.rader) ut.append(rad(x, nytt.has(x.id)));
+  const s4 = el("div", "steg"); s4.append(el("b", null, "4"), el("span", null, "Inget rapporterat")); ut.append(s4);
+  const inget = r.tomma.inget.map((s) => RUBRIK[s]).filter(Boolean);
+  ut.append(el("p", "tomt", (inget.length ? inget.join(", ") + "." : "Något i varje slag.") + (r.tomma.koerMatsInte ? " Köer mäts inte längs den här vägen." : "")));
+}
+function grupp(g, ny, perId) {
+  const d = el("div", "rad" + (ny ? " nytt" : ""));
+  d.append(el("div", "r", g.rubrik), el("div", "t", g.text || ""), el("div", "m", `${km(g.langsM)} in på rutten`));
+  if (g.antal > 1) { const det = el("details", "delar"); det.append(el("summary", null, `Visa alla ${g.antal}`));
+    for (const i of g.ids) { const x = perId.get(i); if (x) det.append(el("div", null, `${x.rubrik} — ${x.text || ""} (${km(x.langsM)}, ${x.avstandM} m från linjen)`)); }
+    d.append(det); }
+  return d;
+}
+function rad(x, ny) {
+  const d = el("div", "rad" + (ny ? " nytt" : ""));
+  d.append(el("div", "r", x.rubrik), el("div", "t", x.text || ""), el("div", "m", `${km(x.langsM)} in på rutten · ${x.avstandM} m från linjen`));
+  return d;
+}
+let synk = null;
+const KIND = { slippery_segment: "halka", icing_point: "isrisk", camera: "fartkamera", accident: "avvikelse", wildlife: "vilt" };
+function visaSynk(namn) {
+  const ut = document.getElementById("synkrutt"); ut.replaceChildren();
+  const u = synk?.rutter?.[namn]; if (!u) return;
+  ut.append(el("div", "steg", `${namn}: ${u.larm} larm under färden, ${u.forvarnade} förvarnade i rapporten`));
+  for (const x of u.saknade) ut.append(el("div", "rad nytt", `Saknades i rapporten: ${KIND[x.kind] ?? x.kind} (${x.id}) vid ${km(x.langsM)} — ${x.text}`));
+  for (const x of u.utanLarm) ut.append(el("div", "rad", `I rapporten, inget larm (${x.orsak}): ${x.rubrik} vid ${km(x.langsM)}`));
+  const ej = Object.entries(u.ejJamforbara ?? {}).map(([s, n]) => `${RUBRIK[s] ?? s} ${n}`);
+  if (ej.length) ut.append(el("div", "litet", `Motorn larmar inte för: ${ej.join(" · ")}`));
+}
+async function startSynk() {
+  const lage = document.getElementById("synklage");
+  try {
+    const [s, h] = await Promise.all([hamta("synk.json"), hamta("synk-historik.json").catch(() => ({ korningar: [] }))]);
+    synk = s;
+    const a = s.summa, andel = a.andel == null ? "–" : Math.round(100 * a.andel) + " %";
+    lage.textContent = `Bilen körde ${kl(s.generated_at)} mot rapporten ${kl(s.rapport)} (${s.alder_min ?? "–"} min innan): ${a.larm} larm på ${a.rutter} rutter, ` +
+      `${a.forvarnade} förvarnade (${andel}), ${a.saknade} saknades; utan larm ${a.utanLarm.borta} borta, ${a.utanLarm.kvar} kvar.` +
+      (s.jamforbar ? "" : " Inte jämförbar: " + s.skal.join("; "));
+    if (!s.jamforbar || a.saknade) lage.classList.add("fel");
+    visaSynk(document.getElementById("rutt").value);
+    const t = document.getElementById("synkhist");
+    const hr = el("tr"); for (const k of ["Bilen", "Rapporten", "Larm", "Förvarnade", "Saknades", "Borta", "Kvar"]) hr.append(el("th", null, k)); t.append(hr);
+    for (const k of [...h.korningar].reverse().slice(0, 12)) {
+      const tr = el("tr");
+      for (const v of [kl(k.t), kl(k.rapport) + (k.jamforbar ? "" : " ✗"), k.larm, k.forvarnade, k.larm - k.forvarnade, k.utan_larm.borta, k.utan_larm.kvar]) tr.append(el("td", null, String(v)));
+      t.append(tr);
+    }
+  } catch (e) {
+    lage.textContent = `Ingen synk ännu (${e.message}) — synkprovet kör :18/:48.`;
+  }
+}
+async function start() {
+  const lage = document.getElementById("lage");
+  try {
+    const [f, m, h] = await Promise.all([hamta("favoriter.json"), hamta("manifest.json"), hamta("historik.json").catch(() => ({ korningar: [] }))]);
+    fav = f; hist = h;
+    const sel = document.getElementById("rutt");
+    for (const [namn, r] of Object.entries(f.rutter)) { const o = el("option", null, `${namn} — ${(r.grupper ?? r.rader).length} rader${r.nytt.length ? `, ${r.nytt.length} nya` : ""}${r.notis?.ja ? " · notis" : ""}`); o.value = namn; sel.append(o); }
+    sel.onchange = () => { visa(sel.value); visaSynk(sel.value); };
+    visa(sel.value);
+    const alder = Math.round((Date.now() - Date.parse(f.generated_at)) / 60000);
+    lage.textContent = `Rapporten byggd ${kl(f.generated_at)} (${alder} min sedan) ur lägesfilen ${kl(f.lagesfil)}.` + (alder > 45 ? " Äldre än en körning — har provet stannat?" : "");
+    if (alder > 45) lage.classList.add("fel");
+    document.getElementById("filer").textContent = `Snabba delen ${kb(m.snabb.byte)} rå, ${kb(m.snabb.gz_byte)} packad · långsamma delen ${kb(m.lang.byte)} rå, ` +
+      `${kb(m.lang.gz_byte)} packad, senast skriven ${kl(m.lang.skriven)} · sha256 ${m.snabb.sha256.slice(0, 12)}…`;
+    const t = document.getElementById("historik");
+    const hr = el("tr"); for (const k of ["Körning", "Tid", "Poster", "Packad", "Rader", "På skärmen", "Nya", "Notiser"]) hr.append(el("th", null, k)); t.append(hr);
+    for (const k of [...h.korningar].reverse().slice(0, 12)) {
+      const tr = el("tr");
+      for (const v of [kl(k.t), (k.ms / 1000).toFixed(1) + " s", k.poster, kb(k.snabb_gz), Object.values(k.rader).reduce((s, n) => s + n, 0),
+        k.grupper ?? "–", k.nytt, Array.isArray(k.notis) ? k.notis.length : "–"]) tr.append(el("td", null, String(v)));
+      t.append(tr);
+    }
+  } catch (e) {
+    lage.textContent = `Kunde inte läsa hinken: ${e.message}. Har provet körts?`; lage.classList.add("fel");
+  }
+}
+start().then(startSynk);
+</script>
+</body>
+</html>

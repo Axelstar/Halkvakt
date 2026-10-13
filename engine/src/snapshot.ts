@@ -12,7 +12,9 @@ export interface LiveDoc {
   schema: number;
   generated_at: string;
   segments: { id: string; line: [number, number][]; code: number | null; info: string[]; road: string | null }[];
-  weather: { id: string; lon: number; lat: number; yta: number | null; fukt: boolean }[];
+  weather: { id: string; lon: number; lat: number; yta: number | null; fukt: boolean;
+             /** S3 (#524): timmar sedan regn och ytans fall på 30 min, positivt = faller (snapshot-core.ts). */
+             regn_h?: number | null; lutning30?: number | null }[];
   deviations: {
     id: string; lon: number; lat: number; typ: string | null; road: string | null;
     /** Trafikverket SeverityCode, present only for real accidents (#28). */
@@ -37,7 +39,8 @@ export function snapshotToHazards(staticDoc: StaticDoc, liveDoc: LiveDoc): Hazar
     out.push({ id: `seg:${s.id}`, kind: "slippery_segment", line: s.line, meta: { code: s.code, info: s.info } });
   }
   for (const w of liveDoc.weather) {
-    out.push({ id: `wx:${w.id}`, kind: "icing_point", lon: w.lon, lat: w.lat, meta: { surfaceTempC: w.yta, moisture: w.fukt } });
+    out.push({ id: `wx:${w.id}`, kind: "icing_point", lon: w.lon, lat: w.lat,
+               meta: { surfaceTempC: w.yta, moisture: w.fukt, rainH: w.regn_h ?? null, fall30C: w.lutning30 ?? null } });
   }
   for (const d of liveDoc.deviations) {
     out.push({

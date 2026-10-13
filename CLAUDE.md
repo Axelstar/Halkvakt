@@ -103,8 +103,9 @@ Every session, in order:
    *Verify* line. (BACKLOG.md avvecklad 26/9, kort #221 — kön bor i bedömningen och på tavlan.)
 3. Prove it: tests/CI/logs — never claim done without evidence.
 4. Commit with a message explaining what + why. Update the bedömning (läget överst,
-   §4.2) and TAVLA; a session-log line in STATUS.md. Log decisions in DECISIONS.md. Stäm av mot de sju
-   stomdokumenten och för in rättelserna där i samma varv (STOMREGELN). Run the card review (`scripts/kortkartan.ts
+   §4.2) and TAVLA; a session-log line in STATUS.md. Log decisions in DECISIONS.md, each with its **Stomdokument:** line —
+   the seven stomdokument's hand text is reconciled once a day by the morning dokumentsynk, not in each round (STOMREGELN,
+   DECISIONS #522). Run the card review (`scripts/kortkartan.ts
    --genomgang`) and close every card whose Verify is met, in the same commit (TAVELREGELN 5).
 5. End by telling Axel: what shipped, what's next, and ONLY the questions that
    block progress. Batch questions; never drip them.
@@ -124,6 +125,18 @@ Repot är enda synken mellan sessioner (dator, webb, mobil). Det som bara stod i
 4. **Stryk fortlöpande i bedömningen.** En rad stryks i samma varv som beviset finns, med beviset på raden, och
    läget överst (var vi är, vart vi är på väg) hålls aktuellt. Integrationskartan stryks inte löpande — den är fryst
    och ändras först efter bygge och mätning.
+
+## KONTAKTREGELN (Bengts order 2026-10-12 — externa kontakter är ingen frågetjänst, DECISIONS #538)
+Bengts kontakter hos Trafikverket och andra myndigheter svarar av välvilja, och varje fråga drar på den. Bengt väljer noga innan han
+besvärar dem; en session får aldrig behandla dem som en resurs att fråga när svaret går att ta fram själv.
+1. **Egna vägar först.** Innan en fråga till en extern kontakt föreslås prövas repot, öppna källor och dokumentation, en egen läsning
+   (DB-knappen, kuvösen) och att vänta på data. Förslaget säger vilka vägar som prövats och varför de inte räcker.
+2. **Bara det som blockerar.** En fråga föreslås bara när svaret blockerar något viktigt som inte går att få fram på annat sätt —
+   aldrig för att något vore bra att veta.
+3. **Samlat, aldrig droppat.** Flera frågor till samma kontakt samlas till ett tillfälle; en enstaka liten fråga föreslås inte.
+4. **Bengt väljer.** Vad som skickas, till vem och när är Bengts beslut. Ett nej bokförs och frågan återkommer inte i nästa varv.
+Skälet: 12/10 föreslog Claude att fråga Trafikverket vad is- och snöflaggan betyder (kort #324), fast den egna läsningen av
+frostnätterna redan visade att flaggan inte markerar is (ingen av 718 rader under 0 °C) — den räckte för att lägga flaggan åt sidan.
 
 ## Skills (obligatoriskt före app-kod)
 Före kod i `android/` eller `ios/`: läs relevant `skills/<namn>/SKILL.md` enligt
@@ -156,17 +169,18 @@ Sju dokument är Bengts facit och kontrollpunkter för var vi är, och stommen f
 5. Integrationskartan — `docs/INTEGRATIONSKARTAN.md`
 6. *Halkvaktens kuvös* — https://claude.ai/artifact/1xvv4hydYbfpF5eXFgLcxh, källa `docs/KUVOSEN.html` (tillagd 1/10 på Bengts order, DECISIONS #425)
 7. *Halkvaktens favoriter* — https://claude.ai/artifact/EJYcQFCyKYd9BgGcYkCMyT, källa `docs/FAVORITER.html` (tillagd 3/10 på Bengts order, DECISIONS #445)
-Varje ändring, tillägg och komplettering STÄMS AV mot de sju innan varvet avslutas, och rättelser, ändringar och avbockningar
-redovisas i dem löpande, i samma varv som de görs — aldrig i efterhand. Artefakterna ändras i repokopian (källan) och republiceras
-till samma URL i samma commit; en artefakt som skiljer sig från sin repokopia är ett fel. Kartans frysregel gäller fortfarande
-dess INNEHÅLL (ändras efter bygge och mätning), men dess läge-rader (§2, §6.1, §8, §13.6, §14) hålls aktuella. Det är ett
-arbetsmoment som alltid står fast. Kontroll före sessionens slut: `git log -1 --format=%ad -- <fil>` på de sju är inte äldre än
-det senaste beslut som rör dem.
+**En gång per dygn (Bengts order 11/10, DECISIONS #522).** De sju stäms av EN gång per dygn, av morgonens dokumentsynk (DOKUMENTSYNKEN
+nedan): den läser allt som hänt sedan förra synken och rättar handtexten, och artefakterna republiceras då — når rutinen dem inte,
+gör dagens första session det. I varje varv förs bara in det som maskinerna prövar: beslutet med sin rad `**Stomdokument:**` (som
+säger vad synken ska stämma av), tavlan, projektkartan och kortkartan (skripten skriver lägesraderna och korten i sidorna) och en
+rad i STATUS. Skälet: 107 av 118 commits 4–11/10 rörde dokument, och varje ändring rättade två till tre sidor och republicerade dem
+efter sammanslagningen. En artefakt får ligga högst ett dygn efter sin repokopia. Kartans frysregel gäller fortfarande dess INNEHÅLL
+(ändras efter bygge och mätning), men dess läge-rader (§2, §6.1, §8, §13.6, §14) hålls aktuella av synken. Kontrollen att inget
+beslut glömts är `stomvakten.ts --lage` i synken: varje dokuments senaste handtextändring och besluten sedan dess som namnger det.
 **KORTKARTAN (Bengts order 3/10, DECISIONS #445).** Varje öppet kort på tavlan hör till ett eller flera avsnitt i stomdokumenten,
 och varje stomdokument visar sina öppna kort under rubriken *Öppna kort*. Kopplingen bor på ETT ställe, `docs/kortkartan.json`;
 listorna skrivs av `node --experimental-strip-types scripts/kortkartan.ts` och ändras aldrig för hand. Ett nytt kort, ett stängt kort
-eller en ny rubrik på ett kort ⇒ kortkartan.json, skriptet och republiceringen av de berörda artefakterna i SAMMA commit som
-tavlan. `--check` (i ci.yml, och i md-vakt.yml för commits som bara ändrar .md) fäller på okopplade kort, kopplingar till stängda kort, okända avsnitt och listor som inte är aktuella.
+eller en ny rubrik på ett kort ⇒ kortkartan.json och skriptet i SAMMA commit som tavlan; republiceringen sker i dygnets synk (#522). `--check` (i ci.yml, och i md-vakt.yml för commits som bara ändrar .md) fäller på okopplade kort, kopplingar till stängda kort, okända avsnitt och listor som inte är aktuella.
 
 ## PROJEKTKARTAN (Bengts ja 2026-10-03 — navet över bygget, DECISIONS #446)
 *Halkvaktens projektkarta* — https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8, källa `docs/PROJEKTKARTAN.html`, skriven ur `docs/projektkartan.json` av
@@ -176,8 +190,8 @@ varje del av projektet med block, läge, bevis eller nyckel, vad som saknas, ber
   (commit, grön körning, mätning efter driftsättning, beslut), blått en nyckel, orange och rött en lista över vad som saknas. Säger
   koden eller ett prov något annat är kartan fel, inte koden. Besluten stannar i DECISIONS, ordningen och kalendern i bedömningen,
   arbetet på tavlan och reglerna i tröskeldokumenten.
-- **Samma commit:** byggs, mäts, stängs eller öppnas något ⇒ delens rad i projektkartan.json, skriptet och republiceringen till samma
-  URL i SAMMA commit som ändringen. Ett nytt kort ska hänga på en del. `--check` i ci.yml (och i md-vakt.yml för commits som bara ändrar .md) fäller en del som bär ett öppet kort fast den är grön eller dess Verify-steg är klart (kortvakten, DECISIONS #449), grönt utan bevis, blått utan nyckel,
+- **Samma commit:** byggs, mäts, stängs eller öppnas något ⇒ delens rad i projektkartan.json och skriptet i SAMMA commit som ändringen;
+  republiceringen till samma URL sker i dygnets synk (#522). Ett nytt kort ska hänga på en del. `--check` i ci.yml (och i md-vakt.yml för commits som bara ändrar .md) fäller en del som bär ett öppet kort fast den är grön eller dess Verify-steg är klart (kortvakten, DECISIONS #449), grönt utan bevis, blått utan nyckel,
   orange och rött utan lista, okända beroenden och avsnitt, öppna kort utan del och en sida som inte är aktuell.
 - **Mätt mot koden 3/10** (kort #286): varje del har byggsteg med bevis, och procenten räknas ur stegen, viktad 1–3. En ny del får byggsteg
   från början; ett steg är klart bara med bevis.
@@ -207,10 +221,11 @@ prövade bara det skripten skriver, och regeln *samma varv* hängde på minnet. 
 sessioner på alla enheter:
 - **Stomvakten (CI).** Varje nytt beslut slutar med `**Stomdokument:** MAT, SYS` (koderna ur `docs/kortkartan.json`: MAT APP SYS
   BED KAR KUV FAV; text efter koden är fri, t.ex. `BED §4.2`) eller `**Stomdokument:** inga — skälet`. `scripts/stomvakten.ts --bas
-  <sha>` i md-vakt.yml fäller ett nytt beslut utan raden, ett *inga* utan skäl, en okänd kod och ett namngivet dokument vars
-  handtext — sidan utan lägesrader och kortlistor — är oförändrad i samma push eller PR. Gamla beslut prövas inte. En ändring som rör `kuvos/` eller
+  <sha>` i md-vakt.yml fäller ett nytt beslut utan raden, ett *inga* utan skäl och en okänd kod. Att det namngivna dokumentets
+  handtext ändras prövas inte längre i PR:en (#522): det gör morgonens synk. Gamla beslut prövas inte. En ändring som rör `kuvos/` eller
   `scripts/matningar/kuvos-*` och lägger till beslut måste namnge KUV i minst ett av dem (DECISIONS #489).
-  `stomvakten.ts --lage` visar varje dokuments senaste handtextändring och besluten sedan dess; den ersätter inte läsningen.
+  `stomvakten.ts --lage` visar varje dokuments senaste handtextändring och besluten sedan dess som namnger det (⚠): det är synkens
+  lista över vad som ska stämmas av, men den ersätter inte läsningen.
 - **Morgonrutinen** — claude.ai-rutinen *Halkvakt: dokumentsynken varje morgon* (`trig_015zMNvnicaHT1wFNk4ZWdaH`), kl. 03:30 UTC
   (05:30 sommartid, 04:30 vintertid), i molnet och inte bunden till någon dator. Den gör stegen nedan.
 - **Väntar på Bengt / Väntar på Axel** överst i projektkartan, skrivna av `projektkartan.ts` ur tavlans avsnitt för Bengt och Axel
@@ -223,7 +238,9 @@ sessioner på alla enheter:
 3. Kortgenomgången (TAVELREGELN 5): `kortkartan.ts --genomgang`; stäng varje kort vars Verify är uppfylld, med beviset.
 4. Stomgenomgången: `stomvakten.ts --lage`. Läs allt som hänt sedan förra dokumentsynken — commits på main från alla författare,
    nya beslut, nya STATUS-rader, sammanslagna och öppna PR:er — och rätta handtexten i de sju, `docs/KALENDERN.md` och TAVLA.md
-   där den inte längre stämmer. Integrationskartans innehåll är fryst: bara dess läge-rader; en innehållsrättelse blir en fråga i
+   där den inte längre stämmer. **En rad i ett skriptskrivet block (LÄGESRADER, Öppna kort) räknas inte som att handtexten
+   stämmer** (Bengts ja 13/10, DECISIONS #546). Varje ⚠ i `--lage` blir antingen text i dokumentets handtext, i det avsnitt
+   beslutets rad `**Stomdokument:**` namnger, eller en post i synkens STATUS-rad med skälet: *#NN: ingen handtext, skälet*. Integrationskartans innehåll är fryst: bara dess läge-rader; en innehållsrättelse blir en fråga i
    bedömningens §4.2. Ett tal förs bara in om det står i källan (DECISIONS, STATUS, koden, en körning) — aldrig ur minnet.
    **Kuvösen** (eget block i projektkartan sedan 8/10, DECISIONS #489): en ny läsning är ett byggsteg på sin del i blocket — testbädden,
    systemets delar, prognoslagrets kandidater, före resan eller facit — med körning, beslut och utfall som bevis, och en kandidat för

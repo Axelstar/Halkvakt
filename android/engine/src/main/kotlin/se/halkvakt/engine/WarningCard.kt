@@ -8,7 +8,7 @@ import kotlin.math.roundToLong
 
 data class WarningCard(
     val icon: Icon,
-    val stage: String?,       // dark chip, serious accidents only
+    val stage: String?,       // dark chip: serious accidents, and BETA for the post-rain rule (S3, DECISIONS #524)
     val title: String,
     val sub: String?,
     val distance: Distance,
@@ -54,6 +54,10 @@ data class WarningCard(
                         // The voice says the bridge distance in metres ("bro om 1200 meter"), so the card does too.
                         val m = maxOf(100L, (d / 100).roundToLong() * 100)
                         WarningCard(Icon.BRO, null, "Frysrisk", "Bro", Distance.Number(m.toString(), "M"), null, null, null, null, q)
+                    } else if (alert.beta) {
+                        // S3 (DECISIONS #524): märkt beta — en gissning ur regn och fall, inte en uppmätt frysning.
+                        WarningCard(Icon.FRYS, "BETA", "Frysrisk", "Halkvakt tror — efter regnet", Distance.Words("FRAMÖVER"),
+                            null, null, null, null, q)
                     } else {
                         WarningCard(Icon.FRYS, null, "Frysrisk", "Vägbanan nära noll grader", Distance.Words("FRAMÖVER"),
                             null, null, null, null, q)

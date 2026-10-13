@@ -1010,6 +1010,31 @@ test("#276 olja_aktiva: bara aktiva NonWeatherRelatedRoadConditions med punkt; o
   } finally { await pool.end(); }
 });
 
+// Väg C (sql/046, DECISIONS #527): shadow_log_c har shadow_logs kolumner och RLS på, och omkörning är ofarlig. Samma minimala
+// shadow_log som provet ovan, plus kolumnerna ur 005, 016, 019, 021, 032 och 040 (bara kolumnerna: 032:s och 040:s funktioner
+// kräver väderarkivet och händelsearkivet, som provet inte behöver).
+test("väg C: shadow_log_c har shadow_logs kolumner och RLS; omkörning ofarlig", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const sqlf = (f: string) => pool.query(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+  const kolumner = async (t: string) => (await pool.query(
+    "SELECT column_name FROM information_schema.columns WHERE table_name = $1 ORDER BY column_name", [t])).rows.map((r) => r.column_name);
+  try {
+    await pool.query("CREATE TABLE IF NOT EXISTS shadow_log (id bigserial PRIMARY KEY, run_at timestamptz NOT NULL DEFAULT now(), alerts jsonb NOT NULL DEFAULT '[]'::jsonb)");
+    for (const f of ["005_shadow_log_land.sql", "016_shadow_suppressed.sql", "019_shadow_vb.sql", "021_shadow_efterhalka.sql"]) await sqlf(f);
+    await pool.query("ALTER TABLE shadow_log ADD COLUMN IF NOT EXISTS prognos jsonb NOT NULL DEFAULT '{}'::jsonb");
+    await pool.query("ALTER TABLE shadow_log ADD COLUMN IF NOT EXISTS olja jsonb NOT NULL DEFAULT '[]'::jsonb");
+    await sqlf("046_skugga_c.sql");
+    await sqlf("046_skugga_c.sql");
+    assert.deepEqual(await kolumner("shadow_log_c"), await kolumner("shadow_log"), "samma kolumner som shadow_log");
+    assert.equal((await pool.query("SELECT relrowsecurity FROM pg_class WHERE relname = 'shadow_log_c'")).rows[0].relrowsecurity, true, "RLS på");
+    await pool.query("INSERT INTO shadow_log_c (alerts) VALUES ('[]'::jsonb)");
+    const rad = (await pool.query("SELECT land, efterhalka, prognos FROM shadow_log_c ORDER BY id DESC LIMIT 1")).rows[0];
+    assert.deepEqual([rad.land, rad.efterhalka, rad.prognos], ["SE", [], {}], "standardvärdena följer med");
+  } finally { await pool.end(); }
+});
+
 // KUVÖSENS KLOCKA (kuvos/klocka.sql, kort #232, DECISIONS #424): snapshotbyggaren körd oförändrad mot en gången tidpunkt.
 // FÄLLORNA LIGGER DÄR DE KAN FÄLLA NÅGOT (CLAUDE.md): varje station nedan ger ett annat svar om klockan står fel eller om
 // framtiden läcker. Produktionens frågor har ingen övre tidsgräns, så utan vyerna i kuvos/klocka.sql ser byggaren vid T
@@ -1300,6 +1325,55 @@ test("kuvösens översättning: lokaltid till UTC, platshållare till NULL, kode
   } finally {
     await pool.query("DELETE FROM weather_observations WHERE station_id LIKE 'KUV_%'");
     await pool.query("DROP SCHEMA IF EXISTS kuvos_ra CASCADE");
+    await pool.end();
+  }
+});
+
+// DECISIONS #542, #543 (sql/051): de schemalagda jobbens misslyckade anrop sparas. CI:s PostGIS saknar pg_cron och pg_net, så filen
+// skapar bara tabellen och sopningen; net._http_response och cron.job/job_run_details spelas här av egna tabeller med samma kolumner.
+// Jobbet läses ur processnumret (pid 502 användes först av ett annat jobb för två timmar sedan); lyckat svar bort, fel 500 och
+// tidsgräns sparade med svaret, ett anrop utan svar efter sju timmar sparat som det, ett färskt utan svar orört, äldre än 30 dygn bort.
+test("#543 anropsfelen: jobbet ur processnumret, lyckade bort, misslyckade sparade, omkörningen ändrar inget", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const riktiga = (await pool.query("SELECT 1 FROM pg_extension WHERE extname IN ('pg_net', 'pg_cron')")).rowCount;
+  try {
+    if (riktiga) return;   // en riktig pg_net eller pg_cron rörs inte
+    const sql = readFileSync(new URL("../sql/051_anropsfel.sql", import.meta.url), "utf8");
+    await pool.query(sql);
+    await pool.query(sql);   // idempotent
+    await pool.query(`CREATE SCHEMA net; CREATE TABLE net._http_response (id bigint, status_code integer, content_type text,
+      headers jsonb, content text, timed_out boolean, error_msg text, created timestamptz NOT NULL DEFAULT now());
+      CREATE SCHEMA cron; CREATE TABLE cron.job (jobid bigint, jobname text);
+      CREATE TABLE cron.job_run_details (jobid bigint, job_pid integer, start_time timestamptz)`);
+    await pool.query(`INSERT INTO cron.job VALUES (1, 'halkvakt-favoritprov'), (2, 'halkvakt-ingest-live'), (3, 'halkvakt-publicera')`);
+    await pool.query(`INSERT INTO cron.job_run_details VALUES (1, 501, now() - interval '1 second'), (3, 502, now() - interval '2 hours'),
+      (2, 502, now() - interval '2 seconds'), (2, 503, now() - interval '8 hours 1 second')`);
+    await pool.query(`INSERT INTO net._http_response (id, status_code, content, timed_out, error_msg) VALUES
+      (9001, 200, '{"ok":true}', false, null), (9002, 500, '{"ok":false,"error":"TypeError: x","ms":{"hamtning":812}}', false, null),
+      (9003, null, null, true, 'Timeout of 20000 ms reached.')`);
+    await pool.query(`INSERT INTO public.anrop (id, pid, t) VALUES (9001, 501, now()), (9002, 501, now()), (9003, 502, now()),
+      (9004, 503, now() - interval '8 hours'), (9005, 501, now() - interval '1 hour')`);
+    await pool.query(`INSERT INTO public.anrop (id, pid, t, klar) VALUES (9006, 501, now() - interval '31 days', true)`);
+    const sopa = async () => (await pool.query("SELECT public.anropsfel_sopa() AS n")).rows[0].n;
+    assert.equal(await sopa(), 3, "tre sparade: fel 500, tidsgränsen och anropet utan svar");
+    const rader = async () => (await pool.query(`SELECT id::int, jobb, klar, status_code, timed_out, fel, svar FROM public.anrop WHERE id BETWEEN 9001 AND 9006 ORDER BY id`)).rows;
+    const r = await rader();
+    assert.deepEqual(r.map((x) => x.id), [9002, 9003, 9004, 9005], "det lyckade och det 31 dygn gamla är borta");
+    assert.deepEqual(r.map((x) => x.jobb), ["halkvakt-favoritprov", "halkvakt-ingest-live", "halkvakt-ingest-live", null],
+      "jobbet ur processnumret, den senaste körningen före anropet; 9005 har ingen körning inom en timme före sig");
+    assert.equal(r[0].status_code, 500); assert.match(r[0].svar, /TypeError: x/, "svaret sparat");
+    assert.equal(r[1].timed_out, true); assert.match(r[1].fel, /Timeout of 20000/, "tidsgränsen sparad");
+    assert.equal(r[2].klar, true); assert.match(r[2].fel, /inget svar/, "utan svar efter sju timmar");
+    assert.equal(r[3].klar, false, "ett färskt anrop utan svar väntar");
+    assert.equal(await sopa(), 3, "omkörningen ändrar inget");
+    assert.deepEqual(await rader(), r, "samma rader efter omkörningen");
+  } finally {
+    if (!riktiga) {
+      await pool.query("DROP SCHEMA IF EXISTS net CASCADE"); await pool.query("DROP SCHEMA IF EXISTS cron CASCADE");
+      await pool.query("DELETE FROM public.anrop WHERE id BETWEEN 9001 AND 9006").catch(() => {});
+    }
     await pool.end();
   }
 });

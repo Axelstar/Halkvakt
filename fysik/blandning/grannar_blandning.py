@@ -1,0 +1,108 @@
+"""FYSIK+GRANNAR and FYSIK+BLANDNING as files, computed inside the kuvös job by Axel's frozen kuvos_replica.py (DECISIONS #516,
+kort #308). The files carry the neighbours' measured surface temperatures, computed row by row from Trafikverket's delivery, so they
+never leave the job: no artifact, no release, no row in the log (CLAUDE.md, PUBLIKT REPO; DECISIONS #506). The replica runs
+unchanged (its sha256 is in ../SHA256SUMS); this file only puts FYSIK where the replica reads it and writes what it computed.
+
+FYSIK in is the control run's hourly OOF array (kedja.py kontroll, DECISIONS #509), whose sha256 is printed against the frozen
+9268c6c7…. With --namn/--fil the input is named (DECISIONS #517:
+nivå 2's estimate, oof_niva2.npy). Out: one gzip per candidate — the input as the replica sees it, +GRANNAR, +BLANDNING —
+in the FYSIK file's form (station_id,t_utc,fysik_c, half-hours, two decimals, as
+kedja.utdata writes it) and manifest.json in the form scripts/matningar/kuvos-blandning-2026-10-08.ts reads.
+  cd /home/claude/fys && python3 blandning/grannar_blandning.py --oof <oof_A2_kontroll.npy> --ut <dir> [--namn 'NIVÅ 2' --fil niva2]
+  python3 fysik/blandning/grannar_blandning.py --sjalvtest          synthetic data only; runs in ci.yml
+"""
+import argparse, gzip, hashlib, json, os, runpy, shutil, sys, tempfile
+import numpy as np
+import pandas as pd
+
+D = '/home/claude/fys'
+BUCKET_S = 1800
+
+
+def kandidater(namn='FYSIK', fil='fysik', kod='analys'):
+    """The replica's arrays: PH is the input (FYSIK or nivå 2) on the half-hours, PG with the neighbours' errors, PB blended with RÅ.
+    kod names the weather mode in the file name (analys, or prognos6/prognos24 for the forecast mode, DECISIONS #519)."""
+    return [('PH', namn, f'{fil}-{kod}-2024-25.csv.gz'), ('PG', f'{namn}+GRANNAR', f'{fil}-grannar-{kod}-2024-25.csv.gz'),
+            ('PB', f'{namn}+BLANDNING', f'{fil}-blandning-{kod}-2024-25.csv.gz')]
+
+
+def skriv(P, sids, b0, fil):
+    """The candidate's values (half-hour buckets from b0 × stations) as station_id,t_utc,fysik_c, sorted by station and time."""
+    r, c = np.nonzero(np.isfinite(P))
+    t = pd.to_datetime((b0 + r).astype('int64') * BUCKET_S, unit='s', utc=True).strftime('%Y-%m-%dT%H:%M:%SZ')
+    df = pd.DataFrame({'station_id': np.asarray(sids, dtype=object)[c], 't_utc': t,
+                       'fysik_c': np.round(P[r, c].astype(float), 2)}).sort_values(['station_id', 't_utc'])
+    with gzip.open(fil, 'wt', compresslevel=6, newline='') as fh:      # '\n' on every platform, as kedja.utdata writes
+        df.to_csv(fh, index=False, lineterminator='\n')
+    return len(df), int(df.station_id.nunique()), hashlib.sha256(open(fil, 'rb').read()).hexdigest()
+
+
+def manifest(g, ut, namn='FYSIK', fil='fysik', lage='analys', kod='analys', lagg_till=False):
+    """Writes the three files and manifest.json. With lagg_till the files are added to an existing manifest (the forecast mode runs
+    the replica once per weather mode into the same directory, DECISIONS #519); a file name already there is replaced."""
+    filer = []
+    for var, namn_k, fil_k in kandidater(namn, fil, kod):
+        rader, stationer, sha = skriv(g[var], g['sids'], g['b0'], f'{ut}/{fil_k}')
+        filer.append({'fil': fil_k, 'namn': namn_k, 'lage': lage, 'bytes': os.path.getsize(f'{ut}/{fil_k}'),
+                      'rader': rader, 'stationer': stationer, 'sha256': sha})
+        print(f'{fil_k} ({lage}): {rader} rader, {stationer} stationer, sha256 {sha}', flush=True)
+    tidigare = []
+    if lagg_till and os.path.exists(f'{ut}/manifest.json'):
+        nya = {f['fil'] for f in filer}
+        tidigare = [f for f in json.load(open(f'{ut}/manifest.json'))['filer'] if f['fil'] not in nya]
+    json.dump({'_om': 'Skrivet i kuvösjobbet av fysik/blandning/grannar_blandning.py ur Axels frysta kuvos_replica.py '
+                      '(DECISIONS #516); lämnar aldrig jobbet.', 'filer': tidigare + filer}, open(f'{ut}/manifest.json', 'w'), indent=1)
+    return filer
+
+
+def sjalvtest():
+    fel = []
+    sids = ['1002', '1001', '200']
+    b0 = int(pd.Timestamp('2025-01-10T00:00:00Z').timestamp()) // BUCKET_S
+    P = np.full((3, 3), np.nan, np.float32)
+    P[0, 0], P[1, 1], P[2, 1], P[2, 2] = 1.234, -2.5, 0.1, 3.0
+    g = {'PH': P - 1, 'PG': P, 'PB': P + 1, 'sids': sids, 'b0': b0}
+    with tempfile.TemporaryDirectory() as ut:
+        filer = manifest(g, ut, 'NIVÅ 2', 'niva2')
+        text = gzip.open(f'{ut}/niva2-grannar-analys-2024-25.csv.gz', 'rb').read().decode('utf-8')
+        vantat = ('station_id,t_utc,fysik_c\n1001,2025-01-10T00:30:00Z,-2.5\n1001,2025-01-10T01:00:00Z,0.1\n'
+                  '1002,2025-01-10T00:00:00Z,1.23\n200,2025-01-10T01:00:00Z,3.0\n')
+        if text != vantat: fel.append(f'filen som FYSIK-filen: {text!r}')
+        m = json.load(open(f'{ut}/manifest.json'))
+        if [f['namn'] for f in m['filer']] != ['NIVÅ 2', 'NIVÅ 2+GRANNAR', 'NIVÅ 2+BLANDNING']: fel.append('kandidaterna i manifestet')
+        for f in m['filer']:
+            if not (f['fil'].endswith('.csv.gz') and f['lage'] == 'analys' and len(f['sha256']) == 64
+                    and f['rader'] == 4 and f['stationer'] == 3):
+                fel.append(f'manifestet: {f}')
+        if sorted(os.listdir(ut)) != sorted([k[2] for k in kandidater('NIVÅ 2', 'niva2')] + ['manifest.json']): fel.append('bara filerna och manifestet i --ut')
+        if len({f['sha256'] for f in filer}) != 3: fel.append('kandidater med samma summa')
+        manifest({'PH': P - 2, 'PG': P - 3, 'PB': P - 4, 'sids': sids, 'b0': b0}, ut, 'NIVÅ 2', 'niva2', 'prognos +6 h', 'prognos6', lagg_till=True)
+        m = json.load(open(f'{ut}/manifest.json'))
+        if [(f['namn'], f['lage']) for f in m['filer']] != [(n, 'analys') for n in ('NIVÅ 2', 'NIVÅ 2+GRANNAR', 'NIVÅ 2+BLANDNING')] + \
+                [(n, 'prognos +6 h') for n in ('NIVÅ 2', 'NIVÅ 2+GRANNAR', 'NIVÅ 2+BLANDNING')]:
+            fel.append(f"prognosläget läggs till i manifestet: {[(f['namn'], f['lage']) for f in m['filer']]}")
+        if not os.path.exists(f'{ut}/niva2-blandning-prognos6-2024-25.csv.gz'): fel.append('prognosfilens namn')
+        if [k[1] for k in kandidater()] != ['FYSIK', 'FYSIK+GRANNAR', 'FYSIK+BLANDNING']: fel.append('standardnamnen')
+    for f in fel: print('✗', f)
+    if fel: sys.exit(1)
+    print('✓ självtest: indata, grannarna och blandningen skrivs i FYSIK-filens form (sorterade, halvtimmar, två decimaler, tomma utelämnade) med namnet som ges och ett manifest som mätningen läser')
+
+
+if __name__ == '__main__':
+    if '--sjalvtest' in sys.argv:
+        sjalvtest(); sys.exit(0)
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--oof', required=True)
+    ap.add_argument('--ut', required=True)
+    ap.add_argument('--namn', default='FYSIK')
+    ap.add_argument('--fil', default='fysik')
+    ap.add_argument('--lage', default='analys', help="vädrets läge i manifestet, t.ex. 'prognos +6 h' (DECISIONS #519)")
+    ap.add_argument('--kod', default='analys', help='lägets namn i filnamnet, t.ex. prognos6')
+    ap.add_argument('--lagg-till', action='store_true', help='lägg filerna till ett befintligt manifest i --ut')
+    a = ap.parse_args()
+    os.makedirs(a.ut, exist_ok=True)
+    shutil.copyfile(a.oof, f'{D}/oof_A2.npy')
+    sha = hashlib.sha256(open(f'{D}/oof_A2.npy', 'rb').read()).hexdigest()
+    print(f"{a.namn} in i replikan: {a.oof}, sha256 {sha}" + (f" ({'den frysta' if sha.startswith('9268c6c7') else 'inte byte för byte den frysta 9268c6c7…'})" if a.namn == 'FYSIK' else ''), flush=True)
+    g = runpy.run_path(f'{D}/kuvos_replica.py', run_name='__main__')      # the frozen replica, unchanged; prints its own aggregates
+    manifest(g, a.ut, a.namn, a.fil, a.lage, a.kod, a.lagg_till)

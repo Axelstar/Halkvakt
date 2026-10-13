@@ -7,8 +7,8 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 class WarningCardTest {
-    private fun alert(kind: HazardKind, d: Long, text: String, step: AccidentStep? = null) =
-        Alert(t = 0.0, hazardId = "h", kind = kind, distanceM = d, text = text, step = step)
+    private fun alert(kind: HazardKind, d: Long, text: String, step: AccidentStep? = null, beta: Boolean = false) =
+        Alert(t = 0.0, hazardId = "h", kind = kind, distanceM = d, text = text, step = step, beta = beta)
     private fun num(v: String, u: String) = WarningCard.Distance.Number(v, u)
     private fun words(w: String) = WarningCard.Distance.Words(w)
 
@@ -55,6 +55,13 @@ class WarningCardTest {
         assertEquals(WarningCard.Icon.FRYS, c.icon); assertEquals("Vägbanan nära noll grader", c.sub); assertEquals(words("FRAMÖVER"), c.distance)
         val d = WarningCard.make(alert(HazardKind.WILDLIFE, 650, "Viltrisk framöver."), null)
         assertEquals("Vilt", d.title); assertEquals(words("FRAMÖVER"), d.distance)
+    }
+
+    @Test fun postRainBetaIsMarked() {   // S3, DECISIONS #524
+        val c = WarningCard.make(alert(HazardKind.ICING_POINT, 655, "Halkvakt tror: frysrisk framöver.", beta = true), PointMeta(rainH = 0.5, fall30C = 1.0))
+        assertEquals(WarningCard.Icon.FRYS, c.icon); assertEquals("BETA", c.stage); assertEquals("Frysrisk", c.title)
+        assertEquals("Halkvakt tror — efter regnet", c.sub); assertEquals(words("FRAMÖVER"), c.distance)
+        assertEquals("Halkvakt tror: frysrisk framöver.", c.quote)
     }
 
     @Test fun bridgeInHundredsOfMetresLikeTheVoice() {   // K

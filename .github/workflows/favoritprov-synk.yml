@@ -1,0 +1,27 @@
+# SYNKPROVET (DECISIONS #533, #534, kort #340): rapporten tio minuter innan mot bilen tio minuter efter. Startas av pulsklockan
+# (puls-favoritprov-synk, :18/:48 — tio minuter efter favoritprovet :08/:38), inte av GitHub-cronen, som levererar timmar sent.
+# Bilen är motorn längs de 30 vägrutterna; den flyttade hit från Supabase-funktionen, som föll på resurstaket (546) 17:48 11/10.
+# En rad per körning i favoritprov_synk (sql/050); favoritprovet speglar raderna till hinken, där docs/favoritprov.html läser dem.
+name: favoritprov-synk
+on:
+  workflow_dispatch:
+    inputs:
+      torr:
+        description: "torr: räknar och skriver ut, skriver inget i databasen"
+        type: boolean
+        default: false
+concurrency: { group: favoritprov-synk, cancel-in-progress: false }
+jobs:
+  synk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - shell: bash
+        env:
+          DATABASE_URL: "${{ secrets.DATABASE_URL }}"
+          TORR: "${{ inputs.torr && '--torr' || '' }}"
+        run: node --experimental-strip-types scripts/favoritprov-synk.ts $TORR 2>&1 | grep -v ExperimentalWarning; test "${PIPESTATUS[0]}" = 0

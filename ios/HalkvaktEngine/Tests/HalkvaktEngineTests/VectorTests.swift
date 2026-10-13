@@ -42,7 +42,9 @@ final class VectorTests: XCTestCase {
                 severityCode: (m?["severityCode"] as? NSNumber)?.intValue,
                 endTimeLocal: m?["endTimeLocal"] as? String,
                 bridge: (m?["bridge"] as? Bool) ?? false,
-                road: m?["road"] as? String))
+                road: m?["road"] as? String,
+                rainH: (m?["rainH"] as? NSNumber)?.doubleValue,
+                fall30C: (m?["fall30C"] as? NSNumber)?.doubleValue))
     }
 
     func runFile(_ url: URL) throws -> ([Alert], [[String: Any]]) {
@@ -78,6 +80,7 @@ final class VectorTests: XCTestCase {
             XCTAssertEqual((e["distanceM"] as! NSNumber).intValue, g.distanceM, "\(name)[\(i)].distanceM")
             XCTAssertEqual(e["text"] as! String, g.text, "\(name)[\(i)].text")
             XCTAssertEqual(e["step"] as? String, g.step?.rawValue, "\(name)[\(i)].step")
+            XCTAssertEqual((e["beta"] as? Bool) ?? false, g.beta, "\(name)[\(i)].beta")
         }
     }
 

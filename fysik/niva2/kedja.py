@@ -21,7 +21,8 @@ from scipy.optimize import minimize
 from sklearn.cluster import KMeans
 from sklearn.ensemble import HistGradientBoostingRegressor
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path[:0] = [HERE, os.path.dirname(HERE)]          # niva2/ and fysik/ (the frozen modules), as sjalvtest.py does
 import common
 from common import gates
 from physics import DEFAULT, SIGMA
@@ -239,6 +240,7 @@ def niva2(fil, ut, maxfev):
     names = list(feat)
     logg(f"{len(names)} särdrag")
     oof = fit_oof(feat, names, obs, Ts, fold, **A2_KONFIG)
+    np.save(f'{ut}/oof_niva2.npy', oof)          # the hourly estimate, for the replica's neighbours and blending (DECISIONS #517)
     rapport('nivå 2 fysik ensam', obs, Ts, lat)
     rapport('nivå 2 fysik + rättelse', obs, oof, lat)
     for namn, P in [('niva2-ts', Ts), ('niva2-fysik', oof)]:
