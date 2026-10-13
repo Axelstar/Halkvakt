@@ -198,7 +198,13 @@ jobs:
           UT="$PWD/niva2-ut"; MN="$PWD/metnordic/metnordic_2024-25.csv.gz"; BL="$PWD/blandning"; MNP="$PWD/mnp"
           {
             echo '```'
-            if [[ "$MATNING" == *kuvos-blandning-vagb2-terrang* ]]; then
+            if [[ "$MATNING" == *kuvos-blandning-frysta* ]]; then
+              # Den frysta kandidaten för 2026/27 (#544 punkt 6, kort #342): den valda proceduren på alla stationer (frysta.py), valet ur
+              # kuvos/kandidat-2026-27-val.json. Modellen går till hinken i steget efter; manifestet till repot ur kvittot.
+              VAL="$PWD/kuvos/kandidat-2026-27-val.json"
+              [ -f "$VAL" ] || { echo "::error::kuvos/kandidat-2026-27-val.json saknas — valregeln i #549 är inte bokförd"; exit 1; }
+              (cd /home/claude/fys && python3 prep.py && python3 niva2/frysta.py --val "$VAL" --metnordic "$MN" --ut "$UT" --maxfev 120)
+            elif [[ "$MATNING" == *kuvos-blandning-vagb2-terrang* ]]; then
               # Väg B varv 2, körning 2 (#549, kort #321): terrängen och trafiken i energibalansen (vagb_terrang.py, elva parametrar),
               # blandningens vikt ur varv 2:s 42 par. Före varv 1:s gren, som annars tar namnet.
               (cd /home/claude/fys && python3 prep.py && python3 prep_raw.py && python3 niva2/vagb_terrang.py --metnordic "$MN" --prognos "$MNP/metnordic_prognos_*.csv.gz" --ut "$UT" --maxfev 120 \
@@ -235,6 +241,38 @@ jobs:
         if: ${{ always() && contains(inputs.matning, 'kuvos-fysik-niva2') }}
         uses: actions/upload-artifact@v4
         with: { name: niva2-ut, path: niva2-ut/, retention-days: 90, if-no-files-found: ignore }
+      # Den frysta kandidatens rättelse är tränad på Trafikverkets rader och ligger i den privata hinken, aldrig i repot eller en
+      # artefakt (Bengt 13/10: "i hinken"). Signerad uppladdning skriver inte över en fil som redan finns: det som frysts står kvar.
+      # Beviset är filen hämtad tillbaka ur hinken med manifestets sha256, som kuvos-hinken.yml.
+      - name: Den frysta kandidaten till hinken, hämtad tillbaka och jämförd
+        if: ${{ contains(inputs.matning, 'kuvos-blandning-frysta') }}
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          anrop() { curl -sS --fail-with-body -X POST "$FN?lage=$1" -H "x-halkvakt-key: $KEY" -H "Content-Type: application/json" -d "$2"; }
+          FILER=$(node -e 'console.log(JSON.stringify(require("./niva2-ut/frysta/kandidat.json").filer.map((f) => "kuvos-kandidat-2026-27/" + f.fil)))')
+          anrop kuvos_ladda_upp "{\"filer\":$FILER}" > urls.json
+          node -e '
+            const k = require("./niva2-ut/frysta/kandidat.json"), u = require("./urls.json").urls, { execFileSync } = require("child_process");
+            // execFileSync:s fel bär kommandoraden och därmed den signerade adressen: fångas, bara statusen skrivs ut.
+            const curl = (a) => { try { return execFileSync("curl", a, { stdio: ["ignore", "ignore", "ignore"] }); } catch (e) { console.error(`uppladdningen föll (curl ${e.status}) — finns filen redan i hinken skrivs den inte över`); process.exit(1); } };
+            k.filer.forEach((f, i) => { curl(["-sS", "--fail", "-X", "PUT", "-H", "Content-Type: application/octet-stream", "--data-binary", "@niva2-ut/frysta/" + f.fil, u[i]]);
+              console.log(`uppladdad: ${f.fil}`); });'
+          anrop kuvos_hamta "{\"filer\":$FILER}" > hamta.json
+          rm urls.json
+          node -e '
+            const k = require("./niva2-ut/frysta/kandidat.json"), h = require("./hamta.json").filer, c = require("crypto"), { execFileSync } = require("child_process");
+            let fel = 0;
+            const curl = (a) => { try { return execFileSync("curl", a, { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); } catch (e) { console.error(`hämtningen föll (curl ${e.status})`); process.exit(1); } };
+            h.forEach((d, i) => { const b = curl(["-sS", "--fail", d.url]); const f = k.filer[i];
+              const ok = c.createHash("sha256").update(b).digest("hex") === f.sha256 && b.length === f.bytes; fel += !ok;
+              console.log(`hämtad ur hinken: ${d.fil} (${b.length} byte) — ${ok ? "sha256 lika" : "FEL"}`); });
+            process.exit(fel ? 1 : 0);' | tee -a "$GITHUB_STEP_SUMMARY"
+          rm hamta.json
       # En mätning på samma inlästa vinter (snöflingan 2/10, DECISIONS #440). Bara filer under scripts/matningar/; den förregistreras
       # i DECISIONS innan knappen trycks, och den läser inga utfall.
       - name: Mätningen

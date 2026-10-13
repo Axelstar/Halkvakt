@@ -11554,3 +11554,59 @@ mönstret prövas mot kallkartan (MODIS). Det är ett eget steg efter frysningen
 - **Knapparna**, på Bengts ord, `korflode` ingen; de två kan köras samtidigt:
   - körning 1: `matning` = `scripts/matningar/kuvos-blandning-vagb2-rutnat-2026-10-13.ts`;
   - körning 2: `matning` = `scripts/matningar/kuvos-blandning-vagb2-terrang-2026-10-13.ts`.
+
+## #550 (13/10 2026) Den frysta kandidaten byggs före valet, och rättelsen ligger i hinken (kort #342)
+
+**Beslut.** Bengt 13/10: *"1 ja, i hinken"*. Förslaget kom från Claude medan varv 2 körs (#549): bygg den frysta kandidaten (#544 punkt 6)
+nu, för båda fysikerna, så att den kan köras samma dag som valregeln pekat ut vinnaren. Rättelsemodellen läggs i den privata hinken
+`arkiv`.
+
+**Vad som byggs.**
+- `fysik/niva2/frysta.py` läser valet ur `kuvos/kandidat-2026-27-val.json`: fysiken (`lw` eller `terrang`), blandningsparet valt på
+  alla veck, den ärliga körningen och beslutet. Valfilen skrivs i repot efter valregeln och före knappen. Saknas den fäller jobbet, och
+  ett par utanför varv 1:s eller varv 2:s rutnät fäller också.
+- På alla stationer på en gång:
+  - parametrarna kalibreras med kedjans protokoll från litteraturvärdena;
+  - rättelsen tränas på alla stationer med `A2_KONFIG`;
+  - paret och replikans sha256 skrivs bredvid.
+- `modell.pkl` (rättelsen) går till hinken under `kuvos/kuvos-kandidat-2026-27/`, hämtas tillbaka och jämförs med manifestets sha256.
+  - En signerad uppladdning skriver inte över en fil som redan finns, så det som frysts står kvar.
+  - Felmeddelandena bär bara curls status, aldrig den signerade adressen.
+- `kandidat.json` skrivs ut i kvittot och förs in i repot som `kuvos/kandidat-2026-27.json`. Det är aggregat: parametrarna, paret,
+  särdragens ordning, versionerna och modellens storlek och sha256.
+- Talen på stationerna som proceduren tränade på skrivs ut, men de är inte kandidatens väntade fel. Det väntade felet är det ärliga
+  talet (#544 punkt 6).
+- Knappen: `matning` = `scripts/matningar/kuvos-blandning-frysta-2026-10-13.ts`, på Bengts ord, efter att valfilen är incheckad.
+
+**Varför hinken.** Modellen är tränad på Trafikverkets rader. Den är inte rad för rad men ligger nära gränsen i PUBLIKT REPO, och en
+release är publik med repot. Parametrarna och paret är aggregat och får stå i repot.
+
+**Inte avgjort här.**
+- Hur kandidaten räknas i vinter, som uppspelning efter vintern eller i drift, är fortfarande Axels fråga i §4.2 (#544).
+- Förregistreringen för 2026/27 skrivs när valet är gjort, senast 31/10.
+
+**Alternativ som valdes bort.**
+- (a) Bygga efter valet: det kostar en dag före 31/10.
+- (b) Modellen i en release: den blir publik med repot.
+
+**Stomdokument:** KUV §5, BED §4.2
+
+## #551 (13/10 2026) Fysiken som vittne läses i kategorier med antal, aldrig rad för rad (kort #331)
+
+**Beslut.** Bengt 13/10: *"a på 331"*, på frågan i bedömningen §4.2.
+- Kort #331 läser de rader som vakterna behåller men fysiken flaggar (#520). Raderna beskrivs i kategorier med antal i jobbets logg,
+  till exempel per ytband, månad och avvikelsens storlek och tecken.
+- Ingen rad med station och tid står i loggen. Kategorierna bestäms i förregistreringen, före knappen.
+- Ett aggregat per station är inte rad för rad (PUBLIKT REPO) och får ingå.
+
+**Varför.** Kortets Verify från 11/10 krävde raderna beskrivna med station, tid, yta, luft och avvikelse. Det är Trafikverkets data rad
+för rad, och den får inte stå i en publik Actions-logg. Kortet skrevs två dagar efter att repot blev publikt (9/10, #499–#503).
+Kategorierna räcker för att se vad raderna är, och inget behöver läsas utanför jobbet.
+
+**Alternativ som valdes bort.**
+- (b) Raderna till hinken och läsning där: det kräver en läsning utanför jobbet.
+- (c) Båda: (a) räcker.
+
+**Oförändrat.** Kortet avgör inget före vintern 2026/27 (#520), och nyckeln är uppfylld sedan 13/10.
+
+**Stomdokument:** KUV §5, BED §4.2
