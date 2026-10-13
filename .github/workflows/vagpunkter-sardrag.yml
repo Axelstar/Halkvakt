@@ -116,9 +116,14 @@ jobs:
               python3 "$s" > "$W/ut/$s.log" 2>&1 || { echo "$s föll:"; tail -20 "$W/ut/$s.log"; exit 1; }
               echo "$s: $N punkter på $(( $(date +%s) - t0 )) s"
             done
-            t0=$(date +%s)
-            python3 vagpunkter/vagpunkter.py elev-ifs --stationer data/stations.csv --ut data/elev_ifs.csv > "$W/ut/elev_ifs.log"
-            echo "elev-ifs: $N punkter på $(( $(date +%s) - t0 )) s"
+            if [ "$LAGE" = vagpunkter ]; then
+              # Val (i), DECISIONS #553: elev_ifs = höjden ur Copernicus, så att elev − elev_ifs är 0 som vid 96 % av stationerna.
+              python3 vagpunkter/vagpunkter.py elev-ifs-ur-hojd --elev data/elev.csv --ut data/elev_ifs.csv
+            else
+              t0=$(date +%s)
+              python3 vagpunkter/vagpunkter.py elev-ifs --stationer data/stations.csv --ut data/elev_ifs.csv > "$W/ut/elev_ifs.log"
+              echo "elev-ifs: $N punkter på $(( $(date +%s) - t0 )) s"
+            fi
             cp data/elev.csv data/geofeat.csv data/geofeat2.csv data/elev_ifs.csv "$W/ut/"
             if [ "$LAGE" = reproduktion ]; then python3 vagpunkter/vagpunkter.py jamfor --ny data --frusen "$W/frusen"; fi
             echo '```'

@@ -11825,3 +11825,16 @@ mot `SHA256SUMS`.
   samma punkt. Med höjden ur Copernicus och elev_ifs ur Open-Meteo blir den det vid 0,7 % (median 1,4, p99 13,4 m). Det är ett läge
   rättelsen nästan aldrig har sett.
 - Hur elev_ifs ska räknas vid vägpunkterna är därför en fråga i bedömningen §4.2, och vägpunkternas knapp väntar på svaret.
+
+**Tillägg 13/10: val (i)** (Bengt: *"slå ihop 926 och i"*).
+- Vid vägpunkterna sätts elev_ifs till höjden ur Copernicus (`vagpunkter.py elev-ifs-ur-hojd`). Då blir elev − elev_ifs 0, som vid
+  95,9 % av stationerna. Inga anrop till Open-Meteo görs.
+- I den här kedjan betyder elev_diff nästan alltid 0, eftersom höjden och ECMWF-höjden är samma DEM. Felet som återstår är det
+  uppmätta: höjd och tpi har p99 omkring 13 m mot Open-Meteos värden, med vinnaren glo90-bilinjar.
+- Läget `vagpunkter` i `vagpunkter-sardrag.yml`:
+  - höjden: `hojd.py` med `hojdmetod` = glo90-bilinjar;
+  - terrängen: geofeat.py och geofeat2.py oförändrade;
+  - ECMWF-höjden: elev_ifs ur höjden.
+- Reproduktionen behåller Open-Meteos elev_ifs, som är det den jämför.
+- Knappen: `lage` = vagpunkter, `delar` = 12, `hojdmetod` = glo90-bilinjar, på Bengts ord. Därefter checkas filen in i
+  `data/vagdata/` med källa och licens och med spann i värdevakten.
