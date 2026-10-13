@@ -3,21 +3,30 @@
 # oförändrade på öppna data: Copernicus DEM, ESA WorldCover, Meta/WRI:s trädhöjd, Open-Meteo och OSM:s broar.
 #   reproduktion: skripten på stationerna i Axels indata-release, jämförda kolumn för kolumn med releasens filer (bara aggregat i loggen),
 #                 med tiden per skript, så att vägpunkternas körning kan delas rätt.
-#   vagpunkter:   skripten på de 12 960 väglagspunkterna (data/vagdata/vaglagspunkter.json) i parallella delar, sammanställda till en fil
-#                 som laddas upp som artefakt och checkas in med källa och licens i data/KALLOR.json.
+#   hojdprov:     fetch_elev.py reproducerade inte (78 %, utfallet under #553): höjden och tpi1/tpi3 ur Copernicus DEM direkt på fyra sätt
+#                 (fysik/vagpunkter/hojd.py) vid stationerna, mot releasens friska värden, med vinnaren enligt regeln i hojd.py; och
+#                 releasens höjd mot två friska höjder.
+#   vagpunkter:   höjden med den valda metoden (hojdmetod), geofeat.py och geofeat2.py oförändrade och ECMWF-höjden på de 12 960
+#                 väglagspunkterna (data/vagdata/vaglagspunkter.json) i parallella delar, sammanställda till en fil som laddas upp som
+#                 artefakt och checkas in med källa och licens i data/KALLOR.json.
 # Knapp, inte cron. Inga hemligheter och inga Trafikverkets rader: stationernas och punkternas lägen är öppna data.
 name: vagpunkter-sardrag
 on:
   workflow_dispatch:
     inputs:
       lage:
-        description: "reproduktion (stationerna mot indata-releasen) eller vagpunkter"
+        description: "reproduktion, hojdprov eller vagpunkter"
         type: choice
-        options: [reproduktion, vagpunkter]
-        default: reproduktion
+        options: [reproduktion, hojdprov, vagpunkter]
+        default: hojdprov
       delar:
         description: "antal parallella delar för vägpunkterna (1–99)"
         default: "12"
+      hojdmetod:
+        description: "höjdens metod för vägpunkterna, vinnaren ur hojdprovet (DECISIONS #553)"
+        type: choice
+        options: [ingen, glo90-bilinjar, glo90-narmast, glo30-bilinjar, glo30-3x3]
+        default: ingen
 permissions:
   contents: read
 concurrency: vagpunkter-sardrag
@@ -30,7 +39,7 @@ jobs:
       - id: l
         env: { LAGE: "${{ inputs.lage }}", DELAR: "${{ inputs.delar }}" }
         run: |
-          if [ "$LAGE" = reproduktion ]; then echo 'lista=[0]' >> "$GITHUB_OUTPUT"; exit 0; fi
+          if [ "$LAGE" != vagpunkter ]; then echo 'lista=[0]' >> "$GITHUB_OUTPUT"; exit 0; fi
           [[ "$DELAR" =~ ^[1-9][0-9]?$ ]] || { echo "::error::delar ska vara 1–99, fick $DELAR"; exit 1; }
           echo "lista=$(python3 -c "import json; print(json.dumps(list(range($DELAR))))")" >> "$GITHUB_OUTPUT"
   sardrag:
@@ -47,9 +56,12 @@ jobs:
         with: { python-version: "3.13" }
       - name: Axels frysta skript (${{ inputs.lage }}, del ${{ matrix.del }})
         shell: bash
-        env: { GH_TOKEN: "${{ github.token }}", LAGE: "${{ inputs.lage }}", DEL: "${{ matrix.del }}", DELAR: "${{ inputs.delar }}" }
+        env: { GH_TOKEN: "${{ github.token }}", LAGE: "${{ inputs.lage }}", DEL: "${{ matrix.del }}", DELAR: "${{ inputs.delar }}", HOJDMETOD: "${{ inputs.hojdmetod }}" }
         run: |
           set -euo pipefail
+          if [ "$LAGE" = vagpunkter ] && [ "$HOJDMETOD" = ingen ]; then
+            echo "::error::hojdmetod saknas: välj vinnaren ur hojdprovet, inskriven i DECISIONS #553 före knappen"; exit 1
+          fi
           (cd fysik && sha256sum -c SHA256SUMS)
           python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|rasterio)==' fysik/requirements.txt)
           # De frysta filerna bär Axels sökvägar: /home/claude/fys är fysik/, /home/claude/halkvakt repot (data/bridges.geojson), och
@@ -58,7 +70,7 @@ jobs:
           ln -sfn "$PWD/fysik" /home/claude/fys && ln -sfn "$PWD" /home/claude/halkvakt
           sudo ln -sf /etc/ssl/certs/ca-certificates.crt /root/.ccr/ca-bundle.crt && sudo chmod 755 /root /root/.ccr
           W="$PWD"; mkdir -p fysik/data ut
-          if [ "$LAGE" = reproduktion ]; then
+          if [ "$LAGE" != vagpunkter ]; then
             gh release download kuvos-fysik-indata-2024-25 --dir indata
             node -e '
               const m = require("./kuvos/fysik-indata-leverans.json"), c = require("crypto"), fs = require("fs");
@@ -76,7 +88,30 @@ jobs:
           {
             echo '```'
             cd /home/claude/fys
-            for s in fetch_elev.py geofeat.py geofeat2.py; do
+            if [ "$LAGE" = hojdprov ]; then
+              # Höjden ur Copernicus DEM på fyra sätt vid stationerna mot releasens friska elev.csv, och releasen mot två friska höjder.
+              export CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
+              python3 vagpunkter/hojd.py frisk --frusen "$W/frusen"
+              V=""
+              for m in glo90-bilinjar glo90-narmast glo30-bilinjar glo30-3x3; do
+                t0=$(date +%s)
+                python3 vagpunkter/hojd.py hojd --stationer data/stations.csv --metod "$m" --ut "$W/ut/elev-$m.csv"
+                echo "  $m: $(( $(date +%s) - t0 )) s"; V="$V $m=$W/ut/elev-$m.csv"
+              done
+              python3 vagpunkter/hojd.py jamfor --frusen "$W/frusen" $V
+              echo '```'
+              exit 0
+            fi
+            if [ "$LAGE" = vagpunkter ]; then
+              # fetch_elev.py ersatt av höjden ur Copernicus DEM med hojdprovets vinnare (DECISIONS #553); geofeat.py och geofeat2.py oförändrade.
+              t0=$(date +%s)
+              CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt python3 vagpunkter/hojd.py hojd --stationer data/stations.csv --metod "$HOJDMETOD" --ut data/elev.csv
+              echo "hojd.py ($HOJDMETOD): $N punkter på $(( $(date +%s) - t0 )) s"
+              SKRIPT="geofeat.py geofeat2.py"
+            else
+              SKRIPT="fetch_elev.py geofeat.py geofeat2.py"
+            fi
+            for s in $SKRIPT; do
               t0=$(date +%s)
               python3 "$s" > "$W/ut/$s.log" 2>&1 || { echo "$s föll:"; tail -20 "$W/ut/$s.log"; exit 1; }
               echo "$s: $N punkter på $(( $(date +%s) - t0 )) s"
