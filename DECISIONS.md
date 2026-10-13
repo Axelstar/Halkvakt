@@ -9228,6 +9228,54 @@ sitt spann. Kuvösen har nu själv kört kandidater som slår RÅ i alla band. M
 ECMWF 6,00 % och NIVÅ 2 på MET Nordic, utan grannar och blandning, 6,10 % ligger nästan lika; blandningen är bättre bortom 20 km
 (10,98 mot 11,81), nivå 2 i 7–15 km (4,21 mot 4,35). Ingen dom. Läsning 2, prognosläget, väntar på Axels fil och förväntan (#516).
 
+**Utfall läsning 2 — prognosläget (13/10 05:23–06:28 UTC, körning 38351107743 på 59936e3; tryckt av Claude på Axels godkännande via Bengt; jobbet 65
+min).** Nivå 2 på MET Nordics analys och i prognosläget (omstart vid varje körning, #519), och replikan på de tre skattningarna. Nio
+filer om 5 332 320 rader (+24 h: 5 330 848) från 736 stationer, sha256 lika manifestet. Prognoserna: 608 av 608 körningar (#904).
+4 352 122 gemensamma punkter.
+
+| grova fel > 2 °C på RÅ:s punkter | utfall | förväntan |
+| :-- | --: | :-- |
+| RÅ (kontroll) | 7,51 % | 7,4–7,6 ✓ |
+| NIVÅ 2+BLANDNING, analys (kontroll) | 5,02 % | 4,9–5,15 ✓ (#517: 5,02) |
+| NIVÅ 2+BLANDNING, +6 h | 5,24 % | 5,1–5,6 ✓ |
+| — banden 0–7 · 7–15 · 15–20 · > 20 km | 3,82 · 3,67 · 4,83 · 9,55 | under RÅ:s 5,23 · 5,27 · 7,16 · 13,60 ✓ |
+| — norr · söder · vägt med trafik | 10,31 · 3,19 · 3,6 | under RÅ:s 14,13 · 4,83 · 5,1 ✓ |
+| NIVÅ 2+BLANDNING, +24 h | 5,43 % | 5,3–6,2 ✓ |
+| NIVÅ 2+GRANNAR, +6 h · +24 h | 5,47 · 5,71 % | — |
+| NIVÅ 2 utan grannar, +6 h · +24 h | 9,11 · 12,40 % | — |
+| OFFSET (taket) | 5,52 % | — |
+
+**Tilläggen (#536)**, frysflaggan räknad som farliga fel av frysningarna.
+
+| tillägg | utfall | förväntan |
+| :-- | :-- | :-- |
+| 1. andel av de grova felen i +3…+5 °C | RÅ 8,9 · BLANDNING analys 9,3 · +6 h 9,1 · +24 h 8,8 % | 25–45 % ✗ (under) |
+| — andel i ≤ −3 °C | RÅ 61,5 · BLANDNING 62,5 · 62,7 · 63,6 % | — |
+| 2. frysflaggan K2 = 1 °C, +6 h | 0,8 % farliga fel, 99,0 % rätt klass, 81,7 % täckning | 0,8–1,0 % och ≥ 98,7 % ✓ |
+| 2. frysflaggan K2 = 1 °C, +24 h | 0,8 %, 98,9 %, 81,6 % | 0,9–1,2 % och ≥ 98,5 % (farliga fel under spannet) |
+| 2. kontrollerna RÅ · analys | 1,2 % och 98,5 % · 0,8 % och 99,0 % | lika #517 ✓ |
+| 3. klara stilla nätter (15,44 % av punkterna), RÅ | 9,64 % | 8–11 % ✓ |
+| 3. klara stilla nätter, BLANDNING analys · +6 h · +24 h | 6,33 · 6,67 · 6,94 % | 5,5–8 % ✓; +6 h 1–2 enheter sämre → 0,34 (under spannet) |
+| 3. klara stilla nätter, OFFSET | 6,59 % | — |
+
+**Läsningen.** Ingen dom.
+- Kontrollerna höll (RÅ 7,51 %, analysen 5,02 % som #517), så resten läses.
+- Prognosläget håller fördelen. +6 h ligger under RÅ i varje band, i norr och söder och vägt med trafiken, och under taket OFFSET.
+  +24 h gör det också. Båda ligger inom Axels spann.
+- Det är grannarnas fel som bär. Nivå 2 utan grannar blir sämre än RÅ med prognosväder.
+- Talen gäller läget mellan stationerna nu med en prognos som är 6 eller 24 h gammal (#519). De säger inte hur det blir om 6 eller
+  24 h.
+- Frysflaggan med 1 °C marginal klarar K-A:s måttstock (≤ 1 % farliga fel, ≥ 95 % rätt klass, ≥ 70 % täckning) vid både +6 och
+  +24 h. RÅ gör det inte (1,2 %), och hittills hade bara OFFSET klarat den.
+- Tillägg 1 hamnade utanför spannet. Skälet: de grova felen ligger i kylan, inte i värmen. ≤ −3 °C bär 34 % av punkterna men 61–64 %
+  av de grova felen, och RÅ har 13,7 % grova fel där mot 4,7 % i +3…+5. Förväntan byggde på att dagens fel dominerar (#476), men
+  vinterdagarna ligger också under −3. Fel i ≤ −3 °C rör sällan frysbeslutet; det mäter frysflaggan.
+- Tillägg 3: på klara stilla nätter ligger kandidaten under RÅ också vid +6 h, så fördelen sitter inte bara i de mindre kritiska
+  lägena. Försämringen från analysen var mindre än väntat.
+- Norr är fortfarande svagast: 10,3 % vid +6 h mot 3,2 % i söder.
+
+Kort #308 och #329 är stängda med utfallet som bevis.
+
 ## #491 (8/10 2026) Frostens första läsningar: steg 0 för övergångarna, T-A, R-A, K-A och W-A, bildfacitets omklassningar och efterhalkans uppspelning — K-A passerad, T-A:s domspärr släppt (kort #89, #88, #46, #103, #90, #209)
 
 **Beställningen.** Bengt 8/10: *"kör 89 och allt som hör till det och stäng issuesena sen de är klara"*. Frostlarmet (issue #804)
@@ -10506,6 +10554,8 @@ per uppmätt yta (≤ −3 · −3…+1 · +1…+3 · +3…+5 °C) och hur stor 
 25–45 % av de grova felen ligger i +3…+5 °C**, för RÅ och för NIVÅ 2+BLANDNING. Ingen grind och ingen population ändras av den (regel L,
 kort #282).
 
+**Utfall 13/10:** under DECISIONS #490 (utfall läsning 2). +6 h gav 5,24 % och +24 h 5,43 %, båda inom förväntan. Kontrollerna höll (RÅ 7,51 %, analysen 5,02 %).
+
 ## #520 (11/10 2026) Tre punkter ur en granskning: A2 per ytband i varje läsning, kvantil och fysiken som vittne som låsta kort (kort #329, #330, #331)
 
 **Beslut.** Bengt 11/10: *"2 ja"* — på rekommendationen i bedömningen §4.2 om tre outforskade punkter ur en granskning han klistrade
@@ -11048,6 +11098,8 @@ Självtestet prövar klassningen med rader i databasens form. Motproven fällde 
 bortkopplad nattrad, förväxlat norr och söder, timnyckeln, avståndet och vindens hink.
 
 **Stomdokument:** KUV §5, BED §4.2
+
+**Utfall 13/10:** under DECISIONS #490 (utfall läsning 2). Tillägg 1 hamnade utanför spannet: 8,8–9,3 % av de grova felen i +3…+5 °C, medan 61–64 % ligger i ≤ −3 °C. Tillägg 2 och 3 hamnade inom eller bättre än spannen. Frysflaggan med 1 °C marginal klarar K-A:s måttstock vid +6 och +24 h.
 
 ## #537 (12/10 2026) Ingen fråga till Trafikverket om is- och snöflaggan; flaggorna dömer inget, och friktionen blir frågan (kort #324)
 
