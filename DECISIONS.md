@@ -11122,3 +11122,27 @@ halka vid en friktionsstation.
 Att grip och friktionstal motsvarar varandra prövas vid första riktiga halkan.
 
 **Stomdokument:** MAT §1, BED §4.2
+
+## #541 (13/10 2026) Favoriternas rapportfil byggs i en egen funktion, inte i publiceringen
+
+**Beslut.** Bengt 13/10: *"a, egen funktion"*. Frågan stod i bedömningen §4.2 (PR #904), efter hans fråga om favoritblocket.
+
+Rapportfilen är `byggRapport` i `publish/rapport-core.ts`: en snabb och en lång del, med manifest och sha256 (#529, #530). Den byggs av
+en egen funktion, med eget schema, eget manifest och egen kontrollsumma, när appen ska läsa den. Det gör favoritprovet redan i
+testmiljön var 30:e minut. Publiceringen (`publicera`, lägesfilen till alla telefoner) får inget nytt arbete.
+
+**Följd.**
+- Provet mot 546-resursfelen i publiceringen (#344, #360) stryks.
+- I stället läses den egna funktionens marginal ur favoritprovets körningar. Läst 13/10: 48 körningar 12/10 04:38–13/10 04:38 UTC i `historik.json`: 47 av 48 tillfällen, totaltiden median 4,7 s, 90 % under 5,7 s, en på 46,0 s (12/10 15:38); snabba delen 64–70 kB och långa 111–124 kB packad. 12/10 07:38 saknas: schemaläggaren skickade anropet (`cron.job_run_details`: succeeded, DB-knappen 38348259708) men funktionen skrev ingen historik, och svaret finns inte kvar (pg_net sparar sex timmar).
+- Väggtiden ligger långt under funktionens tak. Processortid och minne mäts inte, och därför går det inte att säga om luckan var ett
+  546.
+- Var appen läser filen, och hur stor den får vara, avgör Axels form.
+
+**Alternativ.**
+- (b) In i publiceringen: ett varv i stället för två. Men publiceringen blir tyngre, och slår den i taket uppdateras inte lägesfilen
+  för någon telefon. Synkprovet föll på samma tak i en funktion 11/10 (#534).
+- (c) Vänta på Axels form: valet påverkar inte formen, och provet mot publiceringen hade annars byggts i onödan.
+
+**Vad det inte gör.** Inget når appen, och inget ändras i publiceringen eller i det appen skickar. Inga trösklar rörs.
+
+**Stomdokument:** FAV, SYS, BED §4.2
