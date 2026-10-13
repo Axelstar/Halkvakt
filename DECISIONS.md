@@ -11555,6 +11555,43 @@ mönstret prövas mot kallkartan (MODIS). Det är ett eget steg efter frysningen
   - körning 1: `matning` = `scripts/matningar/kuvos-blandning-vagb2-rutnat-2026-10-13.ts`;
   - körning 2: `matning` = `scripts/matningar/kuvos-blandning-vagb2-terrang-2026-10-13.ts`.
 
+**Utfall (13/10 11:00–12:30 UTC, körning 1 38387172993 och körning 2 38387177803 på f0235f4; tryckta på Bengts ord; 90 minuter var).**
+- **Kontrollerna höll.** RÅ låg på 7,51 % på 4 352 575 gemensamma punkter, och Axels par gav replikans tal byte för byte i alla fyra
+  blandningarna.
+- **Körning 2:s underlag** (754 stationer):
+  - svf saknades för 0 stationer, horisonten för 0 och ÅDT för 10;
+  - svf hade medianen 0,996 (lägst 0,931), och södra horisonten medianen 4,26° (högst 29,08°);
+  - ÅDT mot kedjans `road_all.csv`: korrelation 0,861 på 743 stationer, median skillnad 0,000 i log10;
+  - tidsprovet: r = 0,848 för timmen före mot 0,794 för timmen efter.
+- **Kalibreringen** gick sina 120 steg i varje veck. q_trafik_ådt blev positiv i alla fem vecken, +2,45 till +6,74 W/m² per tiopotens
+  trafik.
+
+| grova fel > 2 °C på RÅ:s punkter | körning 1, rutnätet | körning 2, terrängen | förväntan (1 · 2) |
+| :-- | --: | --: | :-- |
+| RÅ (kontroll) | 7,51 % | 7,51 % | 7,4–7,6 ✓ |
+| NIVÅ 2 utan grannar, analys | 6,06 % | 6,08 % | — |
+| +BLANDNING, analys | 4,84 % | 4,81 % | 4,75–4,84 ✓ · 4,65–4,90 ✓ |
+| +BLANDNING, +6 h | 5,13 % | 5,09 % | 5,02–5,12 (0,01 över) · 4,90–5,15 ✓ |
+| — banden 0–7 · 7–15 · 15–20 · > 20 km, +6 h | 3,62 · 3,59 · 4,64 · 9,49 | 3,58 · 3,56 · 4,67 · 9,39 | — |
+| — norr · söder · vägt med trafiken, +6 h | 10,27 · 3,04 · 3,5 | 10,15 · 3,04 · 3,5 | — |
+| frysflaggan K2 = 1 °C, +6 h | 0,8 % farliga fel, 99,0 % rätt klass, 81,7 % täckning | samma | — |
+| fysiken ensam, timvis, kedjans population | 14,98 % | 14,70 % | — |
+| paret valt på alla veck: analys · +6 h | W 0,2 · L 480 · W 0,3 · L 240 | W 0,25 · L 160 · W 0,3 · L 120 | — |
+
+**Läsningen.** Ingen dom.
+- Kontrollen höll, så resten läses.
+- **Körning 1 ligger vid +6 h 0,01 över sitt spann, och skälet läses först.**
+  - Rutnätet innehåller varv 1:s par, men att välja bland 42 par per veck är brusigare än bland 15.
+  - Valt på alla veck är det nya paret bättre på replikans population (5,094 mot 5,102 %), men det ärliga talet blev 0,01 sämre.
+- **Kanten.** Vid +6 h ligger optimum inne i rutnätet. I analysläget ligger körning 1:s bästa par fortfarande vid L 480 km.
+- **Terrängen och trafiken förbättrade fysiken ensam** med 0,28 enheter. Rättelsen tog bort vinsten: efter den låg körningarna på 6,46
+  mot 6,45 % i timmarna. Stationerna står öppet, som förväntan sa.
+- **Valregeln, som den står.**
+  - Körning 2 ligger 0,04 under körning 1 vid +6 h, och med avrundningen ligger skillnaden mellan 0,03 och 0,05. Det är under
+    marginalen 0,05, så regeln ger körning 1.
+  - Golvsatsen slår inte till, eftersom bara körning 1 ligger över 5,12 %.
+  - Regeln täckte inte det fallet, och Bengts val står i #552.
+
 ## #550 (13/10 2026) Den frysta kandidaten byggs före valet, och rättelsen ligger i hinken (kort #342)
 
 **Beslut.** Bengt 13/10: *"1 ja, i hinken"*. Förslaget kom från Claude medan varv 2 körs (#549): bygg den frysta kandidaten (#544 punkt 6)
@@ -11608,5 +11645,35 @@ Kategorierna räcker för att se vad raderna är, och inget behöver läsas utan
 - (c) Båda: (a) räcker.
 
 **Oförändrat.** Kortet avgör inget före vintern 2026/27 (#520), och nyckeln är uppfylld sedan 13/10.
+
+**Stomdokument:** KUV §5, BED §4.2
+
+## #552 (13/10 2026) Den frysta kandidaten är varv 1: golvets mening, när valregeln inte täckte utfallet (kort #342)
+
+**Beslut.** Bengt 13/10: *"b"*, efter frågan *"är b det bästa valet"*, som Claude besvarade med ja.
+- Kandidaten som fryses för vintern 2026/27 är varv 1:s procedur (#544): fysiken utan terräng (`lw`) och blandningens par W 0,25 ·
+  L 160 km. Paret valdes på alla veck både i analysläget och vid +6 h (körning 38368369876).
+- Dess väntade fel vid +6 h är det ärliga talet 5,12 %.
+
+**Varför, och att det är en tolkning.**
+- Valregeln i #549 gav ordagrant körning 1 (5,13 %), som är sämre än golvet 5,12 %. Golvsatsen täckte bara fallet att båda låg över.
+- Bengt valde golvets mening: inget som är sämre än varv 1 fryses. Det är en tolkning gjord efter utfallet, och den redovisas som en
+  sådan.
+- Skälen:
+  - Skillnaderna mellan de tre är 0,01–0,04 enheter, och det är brus.
+  - Körning 2 är 0,03 bättre än varv 1. Det är under marginalen 0,05, som sattes före knappen för att mer fysik skulle behöva vinna
+    tydligt. Att välja den nu vore att flytta målet efter utfallet (regel L).
+  - Varv 1 valde samma par i båda lägena. Körning 1 och 2 valde olika par, och för dem hade ett nytt oregistrerat val krävts.
+
+**Vad som följer.**
+- `kuvos/kandidat-2026-27-val.json`: fysiken `lw`, W 0,25, L 160 km, körning 38368369876 och beslut #552.
+- Knappen för den frysta kandidaten (`kuvos-blandning-frysta-2026-10-13.ts`, #550) trycks på Bengts ord. Därefter skrivs
+  förregistreringen för 2026/27, senast 31/10.
+- Terrängen och trafiken är inte bortvalda för alltid. Kort #321 fortsätter med väglagspunkterna och kallkartan. Gör de skillnad
+  mellan stationerna prövas en kandidat med dem för vintern 2027/28.
+
+**Alternativ som valdes bort.**
+- (a) Körning 1 enligt bokstaven: sämre än golvet, och paret skiljer mellan lägena.
+- (c) Körning 2: under marginalen mot båda.
 
 **Stomdokument:** KUV §5, BED §4.2
