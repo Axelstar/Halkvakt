@@ -3,19 +3,15 @@
 # `kuvos-metnordic-prognos-2024-25` (MET Norway, NLOD / CC BY 4.0). Åtta delar om högst 20 dygn, EN åt gången (tjänstens villkor: en
 # förbindelse åt gången). En del som redan ligger i releasen hoppas över, så flödet kan köras om. Piloten 11/10: en körning på 2 min.
 #
-# Utlöses på knapp, och på grenen claude/metnordic-prognos-519 av en push som ändrar kuvos/metnordic-prognos.start (Bengts ja 11/10;
-# Axel 11/10 eftermiddag) — ett flöde som bara finns på en gren kan inte knappas förrän det finns på main. Startfilen, inte flödet,
-# utlöser, så att en rättelse av flödet aldrig startar en andra körning bredvid en som går (en förbindelse åt gången). Den raden tas
-# bort när grenen slås ihop.
+# Utlöses på knapp. Medan flödet bara fanns på grenen claude/metnordic-prognos-519 utlöstes det av en push av startfilen
+# kuvos/metnordic-prognos.start (Bengts ja 11/10); den vägen och filen togs bort 13/10, när hämtningen var klar och förteckningen
+# kuvos/metnordic-prognos-leverans.json skriven.
 # ÅTERUPPTAGNING (11/10 eftermiddag): del 1 nådde jobbets tak efter nio dygn och del 2 föll på arkivets långsamma svar. Varje del
 # hämtar nu sina klara dygn ur den senaste artefakten `mnp-<från>` från en tidigare körning och fortsätter där; hämtningen stannar
-# själv efter 320 min (MNP_MINUTER) så att artefakten hinner sparas. En del som inte blev klar körs om med en ny push av startfilen.
+# själv efter 320 min (MNP_MINUTER) så att artefakten hinner sparas. En del som inte blev klar körs om med knappen.
 name: kuvos-metnordic-prognos
 on:
   workflow_dispatch:
-  push:
-    branches: [claude/metnordic-prognos-519]
-    paths: [kuvos/metnordic-prognos.start]
 concurrency: { group: thredds-metnordic-prognos, cancel-in-progress: false }
 permissions:
   contents: write
