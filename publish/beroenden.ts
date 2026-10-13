@@ -30,9 +30,10 @@ export type Beroende = {
 
 // Trafikverkets objekttyper är INTE gissade: de är lästa ur ingest/sources/*.ts, publish/
 // map-core.ts och skuggmotorn 12/9, och restiderna och färjorna ur favoritprovet 11/10 (DECISIONS #532). scripts/beroendekartan.ts
-// har en driftvakt som läser om dem ur koden och fäller om listan här slutar stämma.
+// har en driftvakt som läser om dem ur koden och fäller om listan här slutar stämma. Vägnummer (NVDB, scripts/vagdata-vagnummer.ts,
+// DECISIONS #553) kom till 13/10; vägdatalagrets sex NVDB-typer byggs ur en variabel i vagdata-hamta.ts och syns inte för vakten.
 export const TRV_OBJEKT = ["weathermeasurepoint", "roadcondition", "situation", "trafficsafetycamera", "camera",
-  "traveltimeroute", "ferryannouncement", "ferryroute"];
+  "traveltimeroute", "ferryannouncement", "ferryroute", "vägnummer"];
 
 export const KARTAN: Beroende[] = [
   // ── PRODUKTION ───────────────────────────────────────────────────────────────────────

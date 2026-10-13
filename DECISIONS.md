@@ -11873,3 +11873,19 @@ mot `SHA256SUMS`.
   (`VIS_DK_O_17_VVIS`). Med ett geopaket behövs ett litet skript med samma koppling, närmaste väg inom 150 m, som först visar att det
   återger Axels värden vid stationerna.
 - Frågan om vägen står i bedömningen §4.2.
+
+**Tillägg 13/10: vinterväghållningsklassen skattad (b) och Europavägsprovet byggt** (Bengt: *"slå ihop 929, 2 ja och 3 b"*).
+- **(b), utfallet.** `fysik/vagpunkter/uh_klass.py` skattar klassen ur vägdatalagrets vägklass, ÅDT, hastighet, bredd och väghållare
+  med ett beslutsträd i femfaldig korsvalidering. Regeln var incheckad och pushad före körningen (9d99b1c).
+  - 744 stationer med Axels klass.
+  - **Exakt rätt 71,5 % mot kravet 90 %. Högst en klass fel 98,8 % mot kravet 99 %.** Den vanligaste klassen ensam ger 44,5 %.
+  - Felen ligger mest mellan klass 1 och 2 och mellan 2 och 3. Av Axels klass 2 skattas 37 som 1 och 41 som 3.
+  - **Det räcker inte, så vinterväghållningsklassen kräver Lastkajen (a).** Det är Bengts inloggning (kort #303).
+- **(2), Europavägsprovet.** `scripts/vagdata-vagnummer.ts` med knappen `vagdata-vagnummer.yml`.
+  - Läget `prov` läser Vägnummers fält med ett anrop och frågar var tolfte station. Fältet för Europaväg är det enda namn som
+    innehåller "europa", annars fäller körningen.
+  - Läget `alla` frågar alla 12 960 väglagspunkter och stationerna på den väg som vägdatalagret valde, alltså samma element och samma
+    radie.
+  - Vid stationerna jämförs med Axels road_all.csv. Överensstämmelsen ska vara minst 95 %, annars används filen inte förrän skälet är
+    läst.
+  - Rotelementet räknas och felkroppen skrivs ut.
