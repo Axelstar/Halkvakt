@@ -259,7 +259,7 @@
 <!-- LÄGESRADER §5: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 <div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
   <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
-  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-kv-prognoslagret">Prognoslagrets kandidater</a> <span style="color: var(--dampad, #4A5763)">delvis, 83 % · kvar: Kriging: prövas eller läggs ned efter kallkartans utfall, Bengts och Axels ord (bedömningen §4.2, DECISIONS #481, #496, #497)</span></summary>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-kv-prognoslagret">Prognoslagrets kandidater</a> <span style="color: var(--dampad, #4A5763)">delvis, 92 % · kvar: Kriging: prövas eller läggs ned efter kallkartans utfall, Bengts och Axels ord (bedömningen §4.2, DECISIONS #481, #496, #497)</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">✓</span> <b>Fyra läsningar 6/10</b> <span style="color: var(--dampad, #4A5763)">klart · 37530898977, DECISIONS #471: ankarspridningen skiljer de grova felen (0,5–2 °C ger 1,8 % på 59 % av punkterna), vårens fel är dagsljuset (natten 4,2 %), regimstyrd offset ger 0,3 procentenheter, grova kovariater inget (R² 0,01)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Spridningen och natten korsade</b> <span style="color: var(--dampad, #4A5763)">klart · 37651865384, DECISIONS #476: grinden vid 2,25 °C talar på 60,6 % med 2,8 % grova fel, natten ensam 6,0 % på 63,0 %; grinden antagen med X = 2,25 °C och natten avstådd (DECISIONS #474, #477, #478)</span></li>
@@ -276,9 +276,9 @@
       <li><span aria-hidden="true">✓</span> <b>Väderkällan nivå 2</b> <span style="color: var(--dampad, #4A5763)">klart · Körning 38106214849 på 0ee247a (förregistrerad i #509, Axels tips bredvid i 84d7721 före knappen), DECISIONS #509: NIVÅ 2 6,10 % grova fel mot FYSIK 9,85 och RÅ 7,51 % på samma 4 352 753 punkter, under RÅ i alla band (4,34 · 4,21 · 5,08 · 11,81), norr 12,3, söder 3,6, vägt med trafiken 4,0 %; kontrollen lika FYSIK på 100 %</span></li>
       <li><span aria-hidden="true">✓</span> <b>FYSIK+BLANDNING i kuvösen</b> <span style="color: var(--dampad, #4A5763)">klart · Körning 38108320301 på 0ee247a (#516 pushad före knappen), DECISIONS #490 utfall läsning 1: FYSIK+GRANNAR 6,67 % och FYSIK+BLANDNING 6,00 % mot RÅ:s 7,51 % på 4 352 575 punkter, varje tal inom förväntan; filerna räknade i jobbet ur Axels frysta replika och aldrig utanför det</span></li>
       <li><span aria-hidden="true">✓</span> <b>Nivå 2 med grannarna och blandningen</b> <span style="color: var(--dampad, #4A5763)">klart · Körning 38112552084 på ca79cc9 (förväntningarna i samma commit, pushad före knappen), DECISIONS #517: NIVÅ 2+BLANDNING 5,02 % och NIVÅ 2+GRANNAR 5,10 % grova fel mot NIVÅ 2 6,10, FYSIK+BLANDNING 6,00 och RÅ 7,51 % på 4 352 575 punkter, under taket OFFSET 5,52 %; bortom 20 km 9,20, norr 9,9, söder 3,0, vägt med trafiken 3,4 %</span></li>
-      <li><span aria-hidden="true">○</span> <b>Operativt läge, prognosväder +6 h</b> <span style="color: var(--dampad, #4A5763)">saknas · Förregistrerad i DECISIONS #490 och #519 (omstart, +6 och +24 h, Axels förväntan 5,1–5,6 och 5,3–6,2 %); ledtiderna och hämtningens kostnad mätt mot MET Norways arkiv 11/10 (1e1fe09, under DECISIONS #518); tilläggen förregistrerade 12/10 med Axels förväntan (DECISIONS #536): felen per yttemperatur, frysflaggan vid +1 °C och klara stilla nätter, alla tre i läsningen (nattdelningen 12/10, 8e2009a); hämtningen startad 11/10 (kort #308)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Operativt läge, prognosväder +6 h</b> <span style="color: var(--dampad, #4A5763)">klart · Kört 13/10 (körning 38351107743 på 59936e3): NIVÅ 2+BLANDNING +6 h 5,24 % och +24 h 5,43 %, inom Axels förväntan (#519); under RÅ i varje band, norr, söder och vägt med trafiken, och under OFFSET 5,52 %; frysflaggan 1 °C klarar K-A:s måttstock; utfallen under DECISIONS #490 (läsning 2)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Trafiken per band</b> <span style="color: var(--dampad, #4A5763)">klart · Körd lokalt på 9b1e93c, DECISIONS #490: 68,1 · 28,4 · 2,3 · 1,3 % av trafiken i banden 0–7 · 7–15 · 15–20 · &gt; 20 km; bortom 15 km 10,8 % av vägen och 3,6 % av trafiken, norr om 62° 17,5 %; trafikviktat har RÅ 5,4 % grova fel</span></li>
-      <li><span aria-hidden="true">○</span> <b>Förregistreringen för 2026/27 på SMHI/MET</b> <span style="color: var(--dampad, #4A5763)">saknas · Bengts beslut i bedömningen §4.2 (DECISIONS #485)</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Förregistreringen för 2026/27 på SMHI/MET</b> <span style="color: var(--dampad, #4A5763)">pågår · Bengts ja till väg B 13/10 (DECISIONS #544): ärliga tal först, frys och förregistrera senast 31/10; ledtiden +6 h</span></li>
     </ul>
   </details>
 </div>
@@ -543,15 +543,14 @@
 
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
   <h2 id="oppna-kort">Öppna kort</h2>
-  <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 9 kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>
+  <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 8 kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>
   <h3><a href="#avsnitt-5">5. Prognoslagrets kandidater</a></h3>
   <ul>
-    <li>#308 🧪 #308 FYSIK+BLANDNING I KUVÖSEN — AXELS FILER, I ANALYSLÄGE OCH MED PROGNOSVÄDER (FÖRREGISTRERAD 8/10 — … <span class="litet">· Axel</span></li>
     <li>#270 PROGNOSLAGRET EFTER PREMISSMÄTNINGARNA — BENGTS VAL a–h <span class="litet">· Bengt</span></li>
-    <li>#329 A2 PER YTBAND I VARJE LÄSNING (BESLUTAT 11/10 — Claude, Bengts ja 11/10, DECISIONS #520) <span class="litet">· Claude</span></li>
+    <li>#321 TERRÄNGEN OCH TRAFIKEN IN I ENERGIBALANSEN — FYSIKEN SOM GÄLLER MELLAN STATIONERNA (Bengts ord 9/10 kväll — … <span class="litet">· Claude</span></li>
+    <li>#331 FYSIKEN SOM VITTNE — DE RADER VAKTERNA BEHÅLLER MEN FYSIKEN FLAGGAR (LÅST 11/10 — Claude, Bengts ja 11/10, … <span class="litet">· Claude</span></li>
+    <li>#342 VÄG B — ÄRLIGA TAL FÖRE FRYSNINGEN (BESLUTAT 13/10 — Claude, Bengts ja och Axels ja via Bengt, DECISIONS #544) <span class="litet">· Claude</span></li>
     <li>#330 KVANTIL I STÄLLET FÖR MEDELVÄRDE — ETT BAND PER RAD (LÅST 11/10 — Claude, Bengts ja 11/10, DECISIONS #520; … <span class="litet">· Claude, låst</span></li>
-    <li>#331 FYSIKEN SOM VITTNE — DE RADER VAKTERNA BEHÅLLER MEN FYSIKEN FLAGGAR (LÅST 11/10 — Claude, Bengts ja 11/10, … <span class="litet">· Claude, låst</span></li>
-    <li>#321 TERRÄNGEN OCH TRAFIKEN IN I ENERGIBALANSEN — FYSIKEN SOM GÄLLER MELLAN STATIONERNA (Bengts ord 9/10 kväll — … <span class="litet">· Claude, låst</span></li>
   </ul>
   <h3><a href="#avsnitt-7">7. Facit från Trafikverket</a></h3>
   <ul>

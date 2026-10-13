@@ -9228,6 +9228,54 @@ sitt spann. Kuvösen har nu själv kört kandidater som slår RÅ i alla band. M
 ECMWF 6,00 % och NIVÅ 2 på MET Nordic, utan grannar och blandning, 6,10 % ligger nästan lika; blandningen är bättre bortom 20 km
 (10,98 mot 11,81), nivå 2 i 7–15 km (4,21 mot 4,35). Ingen dom. Läsning 2, prognosläget, väntar på Axels fil och förväntan (#516).
 
+**Utfall läsning 2 — prognosläget (13/10 05:23–06:28 UTC, körning 38351107743 på 59936e3; tryckt av Claude på Axels godkännande via Bengt; jobbet 65
+min).** Nivå 2 på MET Nordics analys och i prognosläget (omstart vid varje körning, #519), och replikan på de tre skattningarna. Nio
+filer om 5 332 320 rader (+24 h: 5 330 848) från 736 stationer, sha256 lika manifestet. Prognoserna: 608 av 608 körningar (#904).
+4 352 122 gemensamma punkter.
+
+| grova fel > 2 °C på RÅ:s punkter | utfall | förväntan |
+| :-- | --: | :-- |
+| RÅ (kontroll) | 7,51 % | 7,4–7,6 ✓ |
+| NIVÅ 2+BLANDNING, analys (kontroll) | 5,02 % | 4,9–5,15 ✓ (#517: 5,02) |
+| NIVÅ 2+BLANDNING, +6 h | 5,24 % | 5,1–5,6 ✓ |
+| — banden 0–7 · 7–15 · 15–20 · > 20 km | 3,82 · 3,67 · 4,83 · 9,55 | under RÅ:s 5,23 · 5,27 · 7,16 · 13,60 ✓ |
+| — norr · söder · vägt med trafik | 10,31 · 3,19 · 3,6 | under RÅ:s 14,13 · 4,83 · 5,1 ✓ |
+| NIVÅ 2+BLANDNING, +24 h | 5,43 % | 5,3–6,2 ✓ |
+| NIVÅ 2+GRANNAR, +6 h · +24 h | 5,47 · 5,71 % | — |
+| NIVÅ 2 utan grannar, +6 h · +24 h | 9,11 · 12,40 % | — |
+| OFFSET (taket) | 5,52 % | — |
+
+**Tilläggen (#536)**, frysflaggan räknad som farliga fel av frysningarna.
+
+| tillägg | utfall | förväntan |
+| :-- | :-- | :-- |
+| 1. andel av de grova felen i +3…+5 °C | RÅ 8,9 · BLANDNING analys 9,3 · +6 h 9,1 · +24 h 8,8 % | 25–45 % ✗ (under) |
+| — andel i ≤ −3 °C | RÅ 61,5 · BLANDNING 62,5 · 62,7 · 63,6 % | — |
+| 2. frysflaggan K2 = 1 °C, +6 h | 0,8 % farliga fel, 99,0 % rätt klass, 81,7 % täckning | 0,8–1,0 % och ≥ 98,7 % ✓ |
+| 2. frysflaggan K2 = 1 °C, +24 h | 0,8 %, 98,9 %, 81,6 % | 0,9–1,2 % och ≥ 98,5 % (farliga fel under spannet) |
+| 2. kontrollerna RÅ · analys | 1,2 % och 98,5 % · 0,8 % och 99,0 % | lika #517 ✓ |
+| 3. klara stilla nätter (15,44 % av punkterna), RÅ | 9,64 % | 8–11 % ✓ |
+| 3. klara stilla nätter, BLANDNING analys · +6 h · +24 h | 6,33 · 6,67 · 6,94 % | 5,5–8 % ✓; +6 h 1–2 enheter sämre → 0,34 (under spannet) |
+| 3. klara stilla nätter, OFFSET | 6,59 % | — |
+
+**Läsningen.** Ingen dom.
+- Kontrollerna höll (RÅ 7,51 %, analysen 5,02 % som #517), så resten läses.
+- Prognosläget håller fördelen. +6 h ligger under RÅ i varje band, i norr och söder och vägt med trafiken, och under taket OFFSET.
+  +24 h gör det också. Båda ligger inom Axels spann.
+- Det är grannarnas fel som bär. Nivå 2 utan grannar blir sämre än RÅ med prognosväder.
+- Talen gäller läget mellan stationerna nu med en prognos som är 6 eller 24 h gammal (#519). De säger inte hur det blir om 6 eller
+  24 h.
+- Frysflaggan med 1 °C marginal klarar K-A:s måttstock (≤ 1 % farliga fel, ≥ 95 % rätt klass, ≥ 70 % täckning) vid både +6 och
+  +24 h. RÅ gör det inte (1,2 %), och hittills hade bara OFFSET klarat den.
+- Tillägg 1 hamnade utanför spannet. Skälet: de grova felen ligger i kylan, inte i värmen. ≤ −3 °C bär 34 % av punkterna men 61–64 %
+  av de grova felen, och RÅ har 13,7 % grova fel där mot 4,7 % i +3…+5. Förväntan byggde på att dagens fel dominerar (#476), men
+  vinterdagarna ligger också under −3. Fel i ≤ −3 °C rör sällan frysbeslutet; det mäter frysflaggan.
+- Tillägg 3: på klara stilla nätter ligger kandidaten under RÅ också vid +6 h, så fördelen sitter inte bara i de mindre kritiska
+  lägena. Försämringen från analysen var mindre än väntat.
+- Norr är fortfarande svagast: 10,3 % vid +6 h mot 3,2 % i söder.
+
+Kort #308 och #329 är stängda med utfallet som bevis.
+
 ## #491 (8/10 2026) Frostens första läsningar: steg 0 för övergångarna, T-A, R-A, K-A och W-A, bildfacitets omklassningar och efterhalkans uppspelning — K-A passerad, T-A:s domspärr släppt (kort #89, #88, #46, #103, #90, #209)
 
 **Beställningen.** Bengt 8/10: *"kör 89 och allt som hör till det och stäng issuesena sen de är klara"*. Frostlarmet (issue #804)
@@ -10506,6 +10554,8 @@ per uppmätt yta (≤ −3 · −3…+1 · +1…+3 · +3…+5 °C) och hur stor 
 25–45 % av de grova felen ligger i +3…+5 °C**, för RÅ och för NIVÅ 2+BLANDNING. Ingen grind och ingen population ändras av den (regel L,
 kort #282).
 
+**Utfall 13/10:** under DECISIONS #490 (utfall läsning 2). +6 h gav 5,24 % och +24 h 5,43 %, båda inom förväntan. Kontrollerna höll (RÅ 7,51 %, analysen 5,02 %).
+
 ## #520 (11/10 2026) Tre punkter ur en granskning: A2 per ytband i varje läsning, kvantil och fysiken som vittne som låsta kort (kort #329, #330, #331)
 
 **Beslut.** Bengt 11/10: *"2 ja"* — på rekommendationen i bedömningen §4.2 om tre outforskade punkter ur en granskning han klistrade
@@ -11049,6 +11099,8 @@ bortkopplad nattrad, förväxlat norr och söder, timnyckeln, avståndet och vin
 
 **Stomdokument:** KUV §5, BED §4.2
 
+**Utfall 13/10:** under DECISIONS #490 (utfall läsning 2). Tillägg 1 hamnade utanför spannet: 8,8–9,3 % av de grova felen i +3…+5 °C, medan 61–64 % ligger i ≤ −3 °C. Tillägg 2 och 3 hamnade inom eller bättre än spannen. Frysflaggan med 1 °C marginal klarar K-A:s måttstock vid +6 och +24 h.
+
 ## #537 (12/10 2026) Ingen fråga till Trafikverket om is- och snöflaggan; flaggorna dömer inget, och friktionen blir frågan (kort #324)
 
 **Beslut.** Bengt 12/10: *"jag kommer inte att fråga Micke om detta"*, om frågan i bedömningen §4.2 (10/10) om vad `Surface.Ice` och
@@ -11122,3 +11174,176 @@ halka vid en friktionsstation.
 Att grip och friktionstal motsvarar varandra prövas vid första riktiga halkan.
 
 **Stomdokument:** MAT §1, BED §4.2
+
+## #541 (13/10 2026) Favoriternas rapportfil byggs i en egen funktion, inte i publiceringen
+
+**Beslut.** Bengt 13/10: *"a, egen funktion"*. Frågan stod i bedömningen §4.2 (PR #904), efter hans fråga om favoritblocket.
+
+Rapportfilen är `byggRapport` i `publish/rapport-core.ts`: en snabb och en lång del, med manifest och sha256 (#529, #530). Den byggs av
+en egen funktion, med eget schema, eget manifest och egen kontrollsumma, när appen ska läsa den. Det gör favoritprovet redan i
+testmiljön var 30:e minut. Publiceringen (`publicera`, lägesfilen till alla telefoner) får inget nytt arbete.
+
+**Följd.**
+- Provet mot 546-resursfelen i publiceringen (#344, #360) stryks.
+- I stället läses den egna funktionens marginal ur favoritprovets körningar. Läst 13/10: 48 körningar 12/10 04:38–13/10 04:38 UTC i `historik.json`: 47 av 48 tillfällen, totaltiden median 4,7 s, 90 % under 5,7 s, en på 46,0 s (12/10 15:38); snabba delen 64–70 kB och långa 111–124 kB packad. 12/10 07:38 saknas: schemaläggaren skickade anropet (`cron.job_run_details`: succeeded, DB-knappen 38348259708) men funktionen skrev ingen historik, och svaret finns inte kvar (pg_net sparar sex timmar).
+- Väggtiden ligger långt under funktionens tak. Processortid och minne mäts inte, och därför går det inte att säga om luckan var ett
+  546.
+- Var appen läser filen, och hur stor den får vara, avgör Axels form.
+
+**Alternativ.**
+- (b) In i publiceringen: ett varv i stället för två. Men publiceringen blir tyngre, och slår den i taket uppdateras inte lägesfilen
+  för någon telefon. Synkprovet föll på samma tak i en funktion 11/10 (#534).
+- (c) Vänta på Axels form: valet påverkar inte formen, och provet mot publiceringen hade annars byggts i onödan.
+
+**Vad det inte gör.** Inget når appen, och inget ändras i publiceringen eller i det appen skickar. Inga trösklar rörs.
+
+**Stomdokument:** FAV, SYS, BED §4.2
+
+## #542 (13/10 2026) Favoritprovets misslyckade anrop sparas med svaret (sql/051)
+
+**Beslut.** Bengt 13/10: *"spara svaren på misslyckade anrop också"*, efter #541: körningen 12/10 07:38 skrev ingen historik, och svaret
+gick inte att läsa när det upptäcktes.
+
+**Varför det behövs.** pg_net lägger varje svar i `net._http_response`, men bara i sex timmar (`pg_net.ttl`) och utan adress, så ett
+svar går inte att knyta till en funktion. Läst 13/10 med DB-knappen (38349195262): 544 svar på sex timmar; 479 med kod 200, 28 med
+kod 204 (pulsklockans GitHub-anrop), 35 tidsgränser och 2 med kod 500 (00:00 och 00:50 UTC) som inte går att knyta till något jobb.
+
+**Hur.**
+- Favoritprovets jobb skriver anropets id i `public.anrop`, i samma sats som det skickar anropet. Kommandot ändras inne i databasen
+  med `regexp_replace()`, så nyckeln aldrig står i en fil. Formen prövas först, och bara det jobbet ändras.
+- Jobbet `halkvakt-anropsfel` (:27/:57, bara SQL) läser svaren. Ett lyckat svar tas bort. Ett misslyckat sparas med koden, felet
+  och de första 4 000 tecknen: en annan kod än 2xx, en tidsgräns eller ett fel från pg_net. Ett anrop utan svar efter sju timmar
+  sparas också. Allt äldre än 30 dygn tas bort.
+- Tabellen är låst dubbelt (RLS utan policy och REVOKE), och sopningen får inte anropas utifrån.
+- Migrationen provar sig själv på ett riktigt misslyckat och ett riktigt lyckat svar innan jobbet ändras. Faller provet rullas allt
+  tillbaka.
+- Integrationsprovet i CI kör filen två gånger och provar sopningen mot en låtsad `net._http_response`.
+
+**Alternativ som valdes bort.**
+- (a) Spara alla misslyckade svar utan id och gissa jobbet ur klockslaget. Ingest-live körs varje minut och delar minut med alla
+  andra jobb, så gissningen hade varit tvetydig just där det behövs.
+- (b) Logga id:t för alla jobb. Det ändrar 28 jobbkommandon, bland dem det som hämtar läget varje minut. Görs när favoritprovets jobb
+  har gått en tid utan problem, på eget ord.
+- (c) En utlösare på `net.http_request_queue`. Tabellen ägs av tillägget och kan skrivas över vid en uppgradering.
+
+**Vad det inte gör.** Inget når appen, och inget som telefonerna läser ändras. Tidsgränsen hos pg_net (55 s) är inte funktionens:
+funktionen kan köra klart efter den, och då är raden en tidsgräns och inte ett fel i funktionen.
+
+**Ändrad före första körningen (13/10, DECISIONS #543).** Migrationen stoppades av behörighetsgranskningen innan den kördes i drift. Samma dag beslöt Bengt att alla jobb ska loggas. Därför skrevs sql/051 om: alla jobb loggas, och jobbet läses ur processnumret i stället för ett inskrivet namn.
+
+**Stomdokument:** SYS, FAV
+
+## #543 (13/10 2026) Alla schemalagda jobbs misslyckade anrop sparas, och jobbet läses ur processnumret
+
+**Beslut.** Bengt 13/10: *"logga alla jobb på samma sätt"*, efter #542. Det skälet han fick var att de två svaren med kod 500 i natten
+mot 13/10 (00:00 och 00:50 UTC) inte går att knyta till något jobb.
+
+**Hur.** `sql/051_anropsfel.sql` är omskriven innan den körts i drift:
+- Varje jobb som anropar en funktion skriver anropets id och sitt processnummer (`pg_backend_pid()`) i `public.anrop`.
+- Sopningen läser jobbets namn ur `cron.job_run_details`: samma `job_pid`, och den senaste körningen som startade före anropet.
+- Namnet står alltså inte i kommandot. Ett kommando som kopieras till ett nytt jobb (pulsklockan, `replace()` i sql/047) loggar därför
+  under rätt namn.
+- Varje ny form planeras med EXPLAIN innan något jobb ändras. Faller ett enda jobb, eller har något jobb en annan form, rullas allt
+  tillbaka, och felet namnger bara jobben.
+
+**Läst före bygget (DB-knappen, READ ONLY, 13/10).**
+- Alla 26 jobb som anropar en funktion har formen `SELECT net.http_post(...)` med ett anrop. De två andra är rena SQL-jobb.
+- Alla körs som `postgres`.
+- Den senaste timmen hade alla 92 körningar ett `job_pid`, och alla var olika.
+- Omskrivningen provkörd på alla jobb: 26 av 26 med rätt början och slut och resten orört (utom ett inledande blanksteg).
+
+**Vad som ändras i driften.**
+- Schemaläggarens kvitto för de 26 jobben blir `INSERT 0 1` i stället för `1 row`. Ingen kod läser kvittot; vakthunden läser
+  `status` (9d).
+- Faller en inskrivning faller hela satsen, och anropet skickas då inte. Vakthunden larmar om ingest-lives körning har status `failed`,
+  och de andra jobbens effekter vaktas som förut.
+- Tabellen får omkring 2 000 rader per dygn. De lyckade raderna tas bort var 30:e minut.
+
+**Alternativ som valdes bort.** (a) Jobbets namn i kommandot, som #542 först byggdes: ett kopierat kommando hade loggat under fel
+namn. (b) Jobbet gissat ur klockslaget: ingest-live går varje minut. (c) En utlösare på pg_net:s kö: tabellen ägs av tillägget.
+
+**Stomdokument:** SYS
+
+## #544 (13/10 2026) Väg B: ärliga tal före frysningen, och förregistreringen av den ärliga körningen (kort #342)
+
+**Beslut.** Bengt 13/10: *"slå ihop 911 och kör väg B"*. Axel säger ja via Bengt (*"säg till när förregistreringen är klar och axel säger
+ja"*). Det är läst som Axels ja till att blandningens vikter och fysikens kalibrering väljs om i vecken; rättas om det är fel. Väg B
+enligt bedömningen §4.2 (Claudes bedömning 13/10):
+- Kandidaten NIVÅ 2+BLANDNING får ärliga tal före frysningen. Varje stations tal räknas med en kedja som aldrig sett stationens veck.
+- Ledtiden för domen om *läget längs vägen nu* är +6 h. +24 h (kvällen före) är en annan funktion och ingår inte i den domen.
+- Kandidaten fryses och förregistreras för vintern 2026/27 senast 31/10, och domen räknas från förregistreringens dag.
+- Hur kandidaten räknas i vinter (uppspelning efter vintern eller i drift) är fortfarande Axels fråga (§4.2).
+
+**Varför: läckaget** (kartan 13/10).
+- Fysikens tio parametrar kalibreras en gång, på veck 0, 2 och 4, och används på alla stationer (`fysik/niva2/kedja.py:56–78`).
+- Startpunkten `params_v2.json` är kalibrerad på samma veck (`fysik/calib2.py`).
+- Blandningens vikter valdes på dev-vecken 6–7/10 (`docs/FYSIKSPARET-FRYS-2026-10-07.md:47–48`).
+- Rättelsens inställningar valdes på veck 0–2 (`fysik/expA.py`, `fysik/v4.py`).
+- Rättelsen själv är redan räknad ur vecket.
+
+**Förregistreringen av den ärliga körningen** (skriven före bygget, och inget utfall är läst):
+1. Vecken är kedjans egna: KMeans(25) % 5 på [lon·0,55, lat] (`kedja.py:41–44`), oförändrade.
+2. För varje veck f = 0…4, bara med de andra fyra vecken:
+   - (a) Fysikens tio parametrar (`KAL_NAMN`) kalibreras med kedjans protokoll: Nelder–Mead, målet A1 + 5·A2, maxfev 120. De startar
+     från litteraturvärdena i `fysik/physics.py` (`DEFAULT`) i stället för `params_v2.json`.
+   - (b) Rättelsen tränas på de fyra vecken, med fysiken från (a) och de frysta inställningarna (`A2_KONFIG`), och förutsäger veck f.
+   - (c) Grannarnas fel räknas som i replikan, med konstanterna orörda (100 km, K = 8, 300 km, 0,5).
+   - (d) Blandningens vikt väljs på de fyra vecken ur rutnätet W ∈ {0; 0,25; 0,5; 0,75; 1} och L ∈ {40; 80; 160} km. Det är 15 par,
+     och Axels 0,5 och 80 km ingår. Målet är andelen grova fel.
+   - (e) Veck f:s stationer får sina värden ur (a)–(d).
+3. Resultatet är en fil i FYSIK-filens form, i analysläget och vid +6 h, där varje stations värden är räknade utanför dess veck. Summan
+   står i manifestet. Kuvösens läsning (`kuvos-blandning-2026-10-08.ts`) läser den bredvid RÅ, den frysta kandidaten och OFFSET, på
+   samma punkter.
+4. Den byggs som nya filer, och de frysta filerna (`fysik/SHA256SUMS`, #508) rörs inte. Ett självtest visar att den nya
+   blandningskoden ger replikans tal byte för byte med Axels konstanter.
+5. Ryms körningen inte i jobbets tak (360 min) delas den i två jobb: analysläget först och +6 h sedan, under samma förregistrering.
+6. Kandidaten som fryses för 2026/27 är proceduren räknad om på alla stationer: parametrarna kalibreras och vikten väljs på alla veck.
+   Dess väntade fel är det ärliga talet.
+
+**Kvarstående läckage.** Rättelsens inställningar och grannlagrets konstanter väljs inte om. En kapslad sökning kostar för mycket tid
+före 31/10. Det redovisas tillsammans med talet.
+
+**Förväntan.** Claudes utkast, som Axel godkänner eller ändrar före knappen. Måttet är grova fel > 2 °C på RÅ:s punkter.
+
+| | väntat | frusen kandidat |
+| :-- | --: | --: |
+| RÅ (kontroll) | 7,4–7,6 % | 7,51 % |
+| ärlig, analysläget | 5,05–5,45 % | 5,02 % |
+| ärlig, +6 h | 5,25–5,70 % | 5,24 % |
+
+Skälet är att rättelsen redan räknas ur vecket och bär det mesta av förbättringen: FYSIK 9,85 % → NIVÅ 2 6,09 % → BLANDNING 5,02 %.
+Läckaget sitter i tio parametrar för hälften av stationerna och i två vikter, och sådant flyttar oftast tiondelar. Att det ärliga talet
+vid +6 h hamnar under grind A:s 5 % bedöms som osannolikt.
+
+**Hur det läses.** Ingen dom.
+- Under 5,0 % vid +6 h: förregistrera med de ärliga talen.
+- Mellan 5,0 och 5,7 %: Bengt väljer med talen i hand mellan att förregistrera ändå (bättre än RÅ, men troligen underkänd mot grind A)
+  och ett varv till.
+- Över 5,7 %: läckaget var större än väntat, och skälet läses innan något annat.
+- Landar RÅ utanför sitt spann läses inget annat förrän skälet är förstått.
+
+**Alternativ som valdes bort.**
+- (a) Två halvor, alltså en kalibrering till på veck 1 och 3. Billigare, men rättelsen för ett veck tränas då på fysik som är
+  kalibrerad på vecket.
+- (b) En kapslad sökning av rättelsens inställningar. För dyr före 31/10.
+- (c) Frysa i dag som den är (väg A).
+
+**Stomdokument:** KUV §5, BED §4.2
+
+## #545 (13/10 2026) Dokumentsynken för hand 12/10 räknas i serien om sju morgnar (kort #304)
+
+**Beslut.** Bengt 13/10: *"slå ihop 903 och 12/10 räknas"*. Frågan stod i bedömningen §4.2.
+- Morgonrutinen föll 12/10 03:36:58 UTC på kontots användningstak (`USAGE_LIMIT_REACHED`; ingen gren, ingen PR).
+- En session gjorde synken för hand samma dag med samma steg (PR #893).
+- Den räknas som morgon 5 av 7.
+- 13/10 körde rutinen igen (PR #903), och det är morgon 6. Den sjunde är 14/10.
+
+**Varför.** Felet var kontots tak, inte rutinens steg, och dokumenten hölls i fas samma dag.
+
+**Alternativ som valdes bort.** Att serien börjar om 13/10, så som bedömningen rekommenderade 12/10: den prövar strängare att
+rutinen går av sig själv, men då blir serien klar tidigast 19/10. Claudes svar 13/10 rekommenderade i stället att räkna den;
+de två rekommendationerna motsade varandra.
+
+**Vad det inte gör.** Kortets Verify ändras inte, utom att 12/10 räknas. Republiceringen ur rutinen är fortfarande oprövad.
+
+**Stomdokument:** BED §4.2
