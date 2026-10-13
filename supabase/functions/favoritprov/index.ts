@@ -965,6 +965,14 @@ const TRV = Deno.env.get("TRAFIKVERKET_API_KEY")!;
 const CDN = "https://axelstar.github.io/halkvakt-karta/data/app/v1/";
 const HINK = "favoritprov";
 const HISTORIK = 48;   // ett dygn med två körningar i timmen
+// Minnet per körning (Bengt 13/10: "mät minnet", DECISIONS #541): det största värdet vid stegens slut, i MB med en decimal. heap är
+// isolatets V8-hög; rss är processens, som körtiden kan dela med andra funktioner. null när körtiden saknar Deno.memoryUsage.
+const mb = (b: number) => Math.round(b / 1e5) / 10;
+function minnesmatare() {
+  let rss = 0, heap = 0, ok = false;
+  const mat = () => { try { const m = Deno.memoryUsage(); rss = Math.max(rss, m.rss); heap = Math.max(heap, m.heapUsed); ok = true; } catch { /* API:t saknas */ } };
+  return { mat, varde: () => (ok ? { heap: mb(heap), rss: mb(rss) } : null) };
+}
 
 async function trv(objekt: string, version: string, ns: string, filter: string, include: string[] = [], limit = 20000): Promise<{ rader: any[]; byte: number }> {
   const inc = include.map((f) => `<INCLUDE>${f}</INCLUDE>`).join("");
@@ -1017,7 +1025,8 @@ async function speglaSynk(): Promise<string> {
 Deno.serve(async (req) => {
   const k = Deno.env.get("INGEST_KEY");
   if (!k || req.headers.get("x-halkvakt-key") !== k) return new Response("forbidden", { status: 403 });
-  const t0 = performance.now(); const ms: Record<string, number> = {}; const steg = (n: string, t: number) => { ms[n] = Math.round(performance.now() - t); };
+  const minne = minnesmatare(); minne.mat();
+  const t0 = performance.now(); const ms: Record<string, number> = {}; const steg = (n: string, t: number) => { ms[n] = Math.round(performance.now() - t); minne.mat(); };
   try {
     const nu = Date.now(); const fran = new Date(nu).toISOString(), till = new Date(nu + 24 * 3_600_000).toISOString();
     let t = performance.now();
@@ -1074,7 +1083,7 @@ Deno.serve(async (req) => {
     const fav = { schema: 1, generated_at: snabb.generated_at, lagesfil: lv.generated_at, forra: forra?.generated_at ?? null, rutter };
     await skrivHink("favoriter.json", JSON.stringify(fav));
     const hist = (await lasHink("historik.json"))?.korningar ?? [];
-    hist.push({ t: snabb.generated_at, ms: Math.round(performance.now() - t0), poster: snabb.poster.length, snabb_gz: manifest.snabb.gz_byte,
+    hist.push({ t: snabb.generated_at, ms: Math.round(performance.now() - t0), minne_mb: minne.varde(), poster: snabb.poster.length, snabb_gz: manifest.snabb.gz_byte,
       lang_gz: manifest.lang.gz_byte, rader: Object.fromEntries(Object.entries(rutter).map(([n, r]: [string, any]) => [n, r.rader.length])),
       nytt: Object.values(rutter).reduce((s: number, r: any) => s + r.nytt.length, 0),
       grupper: Object.values(rutter).reduce((s: number, r: any) => s + r.grupper.length, 0),
@@ -1085,8 +1094,9 @@ Deno.serve(async (req) => {
     steg("synken", t);
     return new Response(JSON.stringify({ ok: true, generated_at: snabb.generated_at, poster: snabb.poster.length, noter: snabb.noter,
       svar_byte: { situation: sit.byte, restider: tt.byte, farjor: fa.byte, farjeleder: fr.byte }, manifest, ny_lang: nyLang,
-      rutter: Object.keys(rutter).length, synk, ms: { ...ms, totalt: Math.round(performance.now() - t0) } }), { headers: { "Content-Type": "application/json" } });
+      rutter: Object.keys(rutter).length, synk, ms: { ...ms, totalt: Math.round(performance.now() - t0) }, minne_mb: minne.varde() }), { headers: { "Content-Type": "application/json" } });
   } catch (e) {
-    return new Response(JSON.stringify({ ok: false, error: String(e), ms }), { status: 500 });
+    minne.mat();
+    return new Response(JSON.stringify({ ok: false, error: String(e), ms, minne_mb: minne.varde() }), { status: 500 });
   }
 });
