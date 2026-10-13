@@ -11852,3 +11852,24 @@ mot `SHA256SUMS`.
   - Nästan allt är trädhöjden: vägar genom skog har högre träd intill sig (median 1,2 m, högst 21 m) än någon station (högst 10,5 m).
   - En trädmodell sträcker sig inte ut över det den sett. Där håller rättelsen värdet vid kanten, och det redovisas när kandidaten
     räknas på vägpunkterna.
+
+**Tillägg 13/10: Lastkajen undersökt** (Bengt: *"slå ihop och undersök lastkajen"*). Bara läsning, och inget hämtades.
+- **Rättelse: Europaväg finns troligen i det öppna API:et.** Datautbytesportalens datamodell (data.trafikverket.se, läst 13/10) har
+  73 datamängder, varav 45 i Vägdata.NVDB_DK_O 1.2.
+  - Bland dem finns **Vägnummer**, och i NVDB bär Vägnummer Europaväg (`Vagnummer_Europavag` i Axels `roadjoin.py`).
+  - Påståendet ovan om att Europaväg inte finns i det öppna API:et var aldrig prövat; vägdatalagret har bara frågat sex
+    objekttyper (#472, #473).
+  - Fältets namn och värden läses i ett prov mot API:et innan något bygger på dem. Läxan *HTTP 200 är ingen katalog* gäller: provet
+    räknar på svarets innehåll.
+- **Vinterväghållningsklassen finns inte bland de 73.** Axel tog den ur lagret `VIS_DK_O_95_Vagunderhallsklass` i Lastkajens
+  geopaket, och ingen VIS-datamängd finns i det öppna API:et.
+- **Lastkajen kräver inloggning.**
+  - `lastkajen.trafikverket.se` går direkt till inloggningssidan.
+  - Trafikverkets sida säger att färdiga datapaket och egna beställningar kräver registrering med e-postadress och ett godkänt
+    licensavtal.
+  - Kontot är gratis (#472), men Claude skapar inga konton och loggar inte in. Det är Bengts handgrepp, som tidigare (#65).
+  - Licensen för VIS-lagret står bakom inloggningen och är inte läst.
+- **`roadjoin.py` kan inte köras oförändrad på vägpunkterna**, eftersom den läser sina punkter ur geopaketets stationslager
+  (`VIS_DK_O_17_VVIS`). Med ett geopaket behövs ett litet skript med samma koppling, närmaste väg inom 150 m, som först visar att det
+  återger Axels värden vid stationerna.
+- Frågan om vägen står i bedömningen §4.2.
