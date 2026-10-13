@@ -11756,3 +11756,28 @@ borde köras redan nu: rättelsens fasta särdrag för vägpunkterna. De behövs
 ändrad till (b), levande i skuggan; skälen står där.
 
 **Stomdokument:** KUV §5, BED §4.2, KAR §13.6
+
+**Utfall, reproduktionen (13/10 15:12–17:29 UTC, körning 38420010573 på 91493e4; tryckt på Bengts ord).** Releasens summa stämde, och Axels filer stämde
+mot `SHA256SUMS`.
+
+| kolumner rättelsen läser | skript | lika med releasen | tid för 754 stationer |
+| :-- | :-- | --: | --: |
+| svf, horizon_south, tree100, chm30, water1000, built300 (och alla 31 övriga i filen) | geofeat.py | 100,00 %, största skillnad 0 | 137 s |
+| tpi2km, tpi5km, tpi10km, tpi20km, vdepth5km, vdepth10km | geofeat2.py | 100,00 %, största skillnad 0 | 33 s |
+| elev_ifs | vagpunkter.py elev-ifs | 100,00 %, största skillnad 0 | 741 s |
+| **elev, tpi1, tpi3** | **fetch_elev.py** | **78,12 · 77,98 · 77,85 %, största skillnad 548 · 214 · 298 m** | **7 281 s** |
+
+**Läsningen.**
+- 13 av rättelsens 16 terrängkolumner reproducerar byte för byte, och ECMWF-höjden med det förkortade anropet gör det också.
+- De tre ur `fetch_elev.py` gör det inte. Enligt beslutet körs inga vägpunkter förrän skälet är läst.
+- **Skälet, ur koden (`fysik/fetch_elev.py`, raderna 15–18).**
+  - Skriptet försöker 20 gånger per anrop med 100 punkter. Misslyckas alla, används listan `e` från *förra* anropet.
+  - Då får 100 punkter en annan stations höjder, tyst och utan fel.
+  - Körningen tog 7 281 s mot geofeat.py:s 137, alltså med många omförsök när Open-Meteo strypte.
+  - 21,9 % olika motsvarar ungefär 28 av 129 anrop.
+- **Vilken sida som bär de förskjutna höjderna är inte läst.** Det kan vara Axels release, körningen här eller båda.
+  - Provet: jämför `elev` med `elev_ifs` på båda sidor. Båda är Open-Meteos 90 m-höjd i samma punkt, och `elev_ifs` reproducerade
+    exakt.
+  - Bär releasen förskjutna höjder, tränades den frysta kandidaten på dem (`elev`, `elev_diff`, `tpi1`, `tpi3`), och Axel ska få veta det.
+- **För vägpunkterna fungerar inte `fetch_elev.py`.** De kräver 2 204 anrop, och i samma takt blir det omkring 35 timmar med samma tysta
+  fel. Frågan om vägen står i bedömningen §4.2.
