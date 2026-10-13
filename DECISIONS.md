@@ -11263,3 +11263,69 @@ mot 13/10 (00:00 och 00:50 UTC) inte går att knyta till något jobb.
 namn. (b) Jobbet gissat ur klockslaget: ingest-live går varje minut. (c) En utlösare på pg_net:s kö: tabellen ägs av tillägget.
 
 **Stomdokument:** SYS
+
+## #544 (13/10 2026) Väg B: ärliga tal före frysningen, och förregistreringen av den ärliga körningen (kort #342)
+
+**Beslut.** Bengt 13/10: *"slå ihop 911 och kör väg B"*. Axel säger ja via Bengt (*"säg till när förregistreringen är klar och axel säger
+ja"*). Det är läst som Axels ja till att blandningens vikter och fysikens kalibrering väljs om i vecken; rättas om det är fel. Väg B
+enligt bedömningen §4.2 (Claudes bedömning 13/10):
+- Kandidaten NIVÅ 2+BLANDNING får ärliga tal före frysningen. Varje stations tal räknas med en kedja som aldrig sett stationens veck.
+- Ledtiden för domen om *läget längs vägen nu* är +6 h. +24 h (kvällen före) är en annan funktion och ingår inte i den domen.
+- Kandidaten fryses och förregistreras för vintern 2026/27 senast 31/10, och domen räknas från förregistreringens dag.
+- Hur kandidaten räknas i vinter (uppspelning efter vintern eller i drift) är fortfarande Axels fråga (§4.2).
+
+**Varför: läckaget** (kartan 13/10).
+- Fysikens tio parametrar kalibreras en gång, på veck 0, 2 och 4, och används på alla stationer (`fysik/niva2/kedja.py:56–78`).
+- Startpunkten `params_v2.json` är kalibrerad på samma veck (`fysik/calib2.py`).
+- Blandningens vikter valdes på dev-vecken 6–7/10 (`docs/FYSIKSPARET-FRYS-2026-10-07.md:47–48`).
+- Rättelsens inställningar valdes på veck 0–2 (`fysik/expA.py`, `fysik/v4.py`).
+- Rättelsen själv är redan räknad ur vecket.
+
+**Förregistreringen av den ärliga körningen** (skriven före bygget, och inget utfall är läst):
+1. Vecken är kedjans egna: KMeans(25) % 5 på [lon·0,55, lat] (`kedja.py:41–44`), oförändrade.
+2. För varje veck f = 0…4, bara med de andra fyra vecken:
+   - (a) Fysikens tio parametrar (`KAL_NAMN`) kalibreras med kedjans protokoll: Nelder–Mead, målet A1 + 5·A2, maxfev 120. De startar
+     från litteraturvärdena i `fysik/physics.py` (`DEFAULT`) i stället för `params_v2.json`.
+   - (b) Rättelsen tränas på de fyra vecken, med fysiken från (a) och de frysta inställningarna (`A2_KONFIG`), och förutsäger veck f.
+   - (c) Grannarnas fel räknas som i replikan, med konstanterna orörda (100 km, K = 8, 300 km, 0,5).
+   - (d) Blandningens vikt väljs på de fyra vecken ur rutnätet W ∈ {0; 0,25; 0,5; 0,75; 1} och L ∈ {40; 80; 160} km. Det är 15 par,
+     och Axels 0,5 och 80 km ingår. Målet är andelen grova fel.
+   - (e) Veck f:s stationer får sina värden ur (a)–(d).
+3. Resultatet är en fil i FYSIK-filens form, i analysläget och vid +6 h, där varje stations värden är räknade utanför dess veck. Summan
+   står i manifestet. Kuvösens läsning (`kuvos-blandning-2026-10-08.ts`) läser den bredvid RÅ, den frysta kandidaten och OFFSET, på
+   samma punkter.
+4. Den byggs som nya filer, och de frysta filerna (`fysik/SHA256SUMS`, #508) rörs inte. Ett självtest visar att den nya
+   blandningskoden ger replikans tal byte för byte med Axels konstanter.
+5. Ryms körningen inte i jobbets tak (360 min) delas den i två jobb: analysläget först och +6 h sedan, under samma förregistrering.
+6. Kandidaten som fryses för 2026/27 är proceduren räknad om på alla stationer: parametrarna kalibreras och vikten väljs på alla veck.
+   Dess väntade fel är det ärliga talet.
+
+**Kvarstående läckage.** Rättelsens inställningar och grannlagrets konstanter väljs inte om. En kapslad sökning kostar för mycket tid
+före 31/10. Det redovisas tillsammans med talet.
+
+**Förväntan.** Claudes utkast, som Axel godkänner eller ändrar före knappen. Måttet är grova fel > 2 °C på RÅ:s punkter.
+
+| | väntat | frusen kandidat |
+| :-- | --: | --: |
+| RÅ (kontroll) | 7,4–7,6 % | 7,51 % |
+| ärlig, analysläget | 5,05–5,45 % | 5,02 % |
+| ärlig, +6 h | 5,25–5,70 % | 5,24 % |
+
+Skälet är att rättelsen redan räknas ur vecket och bär det mesta av förbättringen: FYSIK 9,85 % → NIVÅ 2 6,09 % → BLANDNING 5,02 %.
+Läckaget sitter i tio parametrar för hälften av stationerna och i två vikter, och sådant flyttar oftast tiondelar. Att det ärliga talet
+vid +6 h hamnar under grind A:s 5 % bedöms som osannolikt.
+
+**Hur det läses.** Ingen dom.
+- Under 5,0 % vid +6 h: förregistrera med de ärliga talen.
+- Mellan 5,0 och 5,7 %: Bengt väljer med talen i hand mellan att förregistrera ändå (bättre än RÅ, men troligen underkänd mot grind A)
+  och ett varv till.
+- Över 5,7 %: läckaget var större än väntat, och skälet läses innan något annat.
+- Landar RÅ utanför sitt spann läses inget annat förrän skälet är förstått.
+
+**Alternativ som valdes bort.**
+- (a) Två halvor, alltså en kalibrering till på veck 1 och 3. Billigare, men rättelsen för ett veck tränas då på fysik som är
+  kalibrerad på vecket.
+- (b) En kapslad sökning av rättelsens inställningar. För dyr före 31/10.
+- (c) Frysa i dag som den är (väg A).
+
+**Stomdokument:** KUV §5, BED §4.2
