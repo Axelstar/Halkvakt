@@ -11781,3 +11781,27 @@ mot `SHA256SUMS`.
   - Bär releasen förskjutna höjder, tränades den frysta kandidaten på dem (`elev`, `elev_diff`, `tpi1`, `tpi3`), och Axel ska få veta det.
 - **För vägpunkterna fungerar inte `fetch_elev.py`.** De kräver 2 204 anrop, och i samma takt blir det omkring 35 timmar med samma tysta
   fel. Frågan om vägen står i bedömningen §4.2.
+
+**Tillägg 13/10: releasen läst, och höjden tas ur Copernicus DEM** (Bengt: *"1 slå ihop 924, läs axels release, 3 a"*).
+- **Releasen är frisk.** Axels `kuvos-fysik-indata-2024-25.tar.gz` (sha256 lika med manifestet) lästes lokalt. Höjden jämfördes med
+  två friska höjder:
+  - `elev − elev_ifs` (Open-Meteos 90 m-höjd i samma punkt): median 0, p99 6, högst 16 m, och 723 av 754 exakt 0;
+  - `elev − z` (geofeat.py:s GLO-30) är lika stor som skillnaden mellan de två friska höjderna: median 1,3 och högst 21,8 m.
+  - Ingen station avviker mer än 20 m.
+  - De förskjutna höjderna uppstod alltså i reproduktionens körning, när Open-Meteo strypte. Den frysta kandidaten tränades på
+    riktiga höjder, och Axel behöver inget besked om releasen.
+- **Väg (a).** `fysik/vagpunkter/hojd.py` räknar elev, tpi1 och tpi3 i fetch_elev.py:s 17 punkter direkt ur Copernicus DEM, med fyra
+  sätt:
+  - GLO-90 bilinjärt (Open-Meteos DEM);
+  - GLO-90 närmaste pixel;
+  - GLO-30 bilinjärt;
+  - GLO-30 med 3 × 3-medlet (geofeat.py:s z).
+- **Regeln, skriven före körningen:** det sätt som har minst 99:e percentil av |elev − releasen| vid stationerna vinner. Ligger två
+  inom 0,1 m skiljer samma tal för tpi3.
+  - Vinnaren och dess fel skrivs in här innan vägpunkterna körs. Knappen tar den som `hojdmetod` och vägrar utan.
+  - `elev − elev_ifs` redovisas för varje sätt, eftersom den är 0 vid 96 % av stationerna i releasen och inte får flyttas av en ny
+    höjdkälla.
+- **Hav och nätfel hålls isär.** En ruta som saknas i hinkens `tileList.txt` är öppet hav och ger 0 m, räknat. En listad ruta som inte
+  går att läsa stoppar körningen, så att ett nätfel aldrig blir en höjd. Läxan är fetch_elev.py:s tysta återanvändning.
+- Läget `hojdprov` i `vagpunkter-sardrag.yml` gör jämförelsen och releasekontrollen i Actions. Läget `vagpunkter` använder `hojd.py`
+  med den valda metoden i stället för fetch_elev.py. geofeat.py och geofeat2.py körs fortfarande oförändrade.
