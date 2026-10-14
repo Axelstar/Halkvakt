@@ -1,0 +1,42 @@
+# A2:s POPULATION (Bengts order 14/10, DECISIONS #554): var på yttemperaturskalan grind A:s grova fel
+# ligger. A1 räknas i beslutsbandet −5…+5 °C, A2 och A3 över ALLA rader — läsningen visar hur mycket av
+# A2:s fall som ligger utanför beslutsbandet och i +3…+5 °C, där ingenting kan fyra.
+#
+# Egen knapp, inte ett läge i hojd-prov.yml: det flödet väljer gren med en NEGATIV villkorslista, och en
+# fjärde flagga där hade krävt tre villkor ändrade — dbknapp-läxan (DECISIONS om en vitlista på två ställen).
+# Här frågas efter DEN ENA grenen, och ett okänt skript avvisas högljutt.
+#
+# INGEN DOM. Läser bara. Självtest (med driftvakt mot grind A:s källa) FÖRE den skarpa körningen.
+name: a2-populationen
+on:
+  workflow_dispatch:
+    inputs:
+      dagar:
+        description: "Dagar bakåt (samma fönster som grind A)"
+        default: "60"
+jobs:
+  matning:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      # Självtestet först, utan databas: banden, andelarna och driftvakten som läser grind A:s källa.
+      - run: node --experimental-strip-types scripts/matningar/a2-populationen-2026-10-14.ts --sjalvtest
+      # Samma fönster som grinden: hinken (de exporterade dygnen) + driften till en tillfällig PostGIS,
+      # så att raderingens golv på 14 dygn (#511) inte krymper underlaget (kort #323, DECISIONS #513).
+      - uses: ./.github/actions/tillfalliga-arkivet
+        with: { dagar: "${{ inputs.dagar || '60' }}", drift-url: "${{ secrets.DATABASE_URL }}" }
+      # shell: bash ger pipefail — annars äter tee exit-koden, och underlagsvakten kan aldrig fälla jobbet
+      # (tee-läxan, DECISIONS #26).
+      - shell: bash
+        run: |
+          [[ "$DAGAR" =~ ^[0-9]+$ ]] || { echo "dagar måste vara ett tal: $DAGAR"; exit 1; }
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/matningar/a2-populationen-2026-10-14.ts "$DAGAR" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+        env:
+          DATABASE_URL: "${{ env.TILLFALLIG_URL || secrets.DATABASE_URL }}"
+          DAGAR: "${{ inputs.dagar || '60' }}"
