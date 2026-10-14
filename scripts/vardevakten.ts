@@ -63,10 +63,10 @@ export const SPANN: Record<string, [number, number, string]> = {
   condition_code: [1, 4, "Trafikverkets väglagsklass"],
   // Vägdatalagret (kort #301, DECISIONS #473): NVDB ur öppna API:et, statiskt per plats i data/vagdata/. Spannen deklareras HÄR
   // innan någon mätning läser fälten; hämtaren importerar dem och fäller vid brott.
-  klass: [0, 9, "funktionell vägklass 0 (riksväg) … 9"],
+  klass: [0, 9, "funktionell vägklass 0 (riksväg) … 9"],   // också Lastkajens Klass_181 i data/vagdata/vaglagspunkter-adt-klass.json (#553)
   bredd_m: [0, 60, "m vägbredd"],
   hastighet_kmh: [5, 130, "km/h högsta tillåtna"],
-  adt_fordon: [0, 200000, "fordon per årsmedeldygn"],
+  adt_fordon: [0, 200000, "fordon per årsmedeldygn"],   // också Lastkajens ADT_f_117 i data/vagdata/vaglagspunkter-adt-klass.json (#553)
   adt_lastbilar: [0, 50000, "tunga fordon per årsmedeldygn"],
   adt_latta_22_06: [0, 50000, "lätta fordon per årsmedeldygn kl. 22–06"],
   adt_matar: [1990, 2030, "mätår för ÅDT (ur Mätårsperiod ÅÅÅÅMM)"],
@@ -87,6 +87,8 @@ export const SPANN: Record<string, [number, number, string]> = {
   built300: [0, 1, "andel bebyggelse inom 300 m (WorldCover)"], chm30: [0, 60, "m, trädens medelhöjd inom 30 m (Meta/WRI)"],
   // Vinterväghållningsklassen (Lastkajens Sverigepaket Drift och underhåll, Vagkl_564; data/vagdata/vaglagspunkter-vinterklass.json).
   uh_klass: [1, 5, "Trafikverkets vägunderhållsklass 1–5 — saknad är en väg utan statlig klass inom 150 m, inte en klass"],
+  // Europaväg (NVDB Vägnummer i det öppna API:et, data/vagdata/vaglagspunkter-europavag.json). Källan skriver −1 för Ja; filen 1.
+  europavag: [0, 1, "1 = vägen är en Europaväg (källans −1), 0 = inte, också onumrerad väg"],
   // MET Nordic Analysis (MET Norway, 1 km, timvis; releasen kuvos-metnordic-2024-25, DECISIONS #480). Läst 7/10 över hela
   // vintern: luft −36,0…+18,1 °C, fukt 0,28–1, vind 0,01–21,5 m/s, moln 0–1, nederbörd 0–13,7 mm/h, långvåg 525 000–1 346 000
   // J/m² per timme, kortvåg −222…2 257 000 J/m² per timme. Kortvågens små negativa värden (30 541 timmar) är beräkningsbrus.

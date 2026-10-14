@@ -11936,3 +11936,135 @@ provet"*; paketet hämtat av Bengt 13/10).
 - Paketet själv ligger kvar utanför repot. Det är 2,0 GB och behövs inte där.
 - **Europavägsprovet igen** (körning 38474910120 på 86586cf): 65 av 65 stationer lika med Axel (100 %), och inga saknade värden.
   Läget `alla` väntar på Bengts ord.
+
+**Tillägg 14/10: Europaväg vid alla väglagspunkter** (Bengt: *"slå ihop 933 och kör alla"*; körning 38476648546 på 216099d, 1 h 57 min).
+- 854 stationer frågades och inga anrop föll. Råvärdena var 0 (536), −1 (309) och ett element utan Vägnummer (9).
+- **Mot Axels road_all.csv: 733 av 745 lika, 98,4 %**, mot kravet 95 %.
+- 12 960 väglagspunkter: **3 718 på Europaväg**, 9 242 inte och 0 utan värde.
+- Filen är `data/vagdata/vaglagspunkter-europavag.json`. Tolkningen och jämförelsen står i huvudet, källan och licensen (CC0) i
+  `data/KALLOR.json`, och spannet `europavag` 0–1 i värdevakten.
+- **De fasta särdragen för vägpunkterna är därmed klara:**
+  - terrängen och skogen med Axels skript;
+  - höjden ur Copernicus;
+  - vinterväghållningsklassen ur Lastkajen;
+  - Europaväg ur API:et;
+  - ÅDT, tunga fordon och vägklass ur vägdatalagret.
+- Vägdatalagrets ÅDT korrelerar 0,861 med Axels vid stationerna (utfallet under #549). Den skillnaden är inte prövad i rättelsen.
+
+**Tillägg 14/10: ÅDT och vägklass ur Lastkajens paket — regeln före körningen** (Bengt: *"slå ihop 934 och 2 ja"*, på frågan i
+bedömningen §4.2).
+- Vid stationerna kommer rättelsens vägdata ur Axels `roadjoin.py` mot NVDB:s geopaket (`road_all.csv`). Vid vägpunkterna kom de ur
+  vägdatalagret, vars ÅDT korrelerar 0,861 med Axels.
+- Sverigepaketet Drift och underhåll bär `ADT_f_117` (ÅDT, alla fordon) och `Klass_181` (funktionell vägklass 0–9), men inga tunga
+  fordon. Varje fält kopplas som `roadjoin.py` kopplar varje lager: närmaste segment som bär fältet, inom 150 m
+  (`fysik/vagpunkter/trafik_klass.py`).
+- **Regeln, skriven och pushad före körningen:**
+  - först stationerna mot `road_all.csv`;
+  - klassen ska vara lika vid minst 95 % av stationerna med klass i båda;
+  - ÅDT ska ligga inom ±10 % av Axels vid minst 90 % av stationerna med ÅDT i båda, och minst lika ofta som vägdatalagret på
+    stationerna med ÅDT i alla tre;
+  - vägpunkterna får ett fält ur paketet bara om det fältet klarar sitt krav, annars läses skälet först.
+- Tunga fordon stannar i vägdatalagret. Andelen tunga vid vägpunkterna räknas ur vägdatalagrets egna två tal, så att kvoten inte
+  blandar källor.
+
+**Tillägg 14/10: utfallet — ÅDT ur paketet, vägklassen stannar i vägdatalagret** (körd lokalt på 65238f1, regeln ovan).
+- **ÅDT klarar regeln.** Vid 726 stationer med ÅDT i båda ligger paketet inom ±10 % av Axels till **95,7 %** (kravet 90 %), och
+  vägdatalagret till 90,8 % på samma stationer. Korrelationen i log10 är 0,893 mot 0,857.
+- **Vägklassen klarar inte regeln:** 744 stationer, **92,2 %** lika (kravet 95 %). Skälet är att närmaste segment ofta är en mindre
+  väg bredvid stationen. 38 av de 58 avvikelserna har paketets klass 7–9 (28 av dem klass 9) där Axel har 0–5. Vägdatalagret väljer
+  lägsta klass inom radien och är lika med Axel vid **95,0 %** av samma 744 stationer. Vägpunkternas klass stannar därför i
+  vägdatalagret, enligt regeln.
+- **Vägpunkterna:** ÅDT ur paketet vid **12 626 av 12 960** (`data/vagdata/vaglagspunkter-adt.json`, CC0, spannet `adt_fordon`).
+  - De 334 utan ÅDT inom 150 m: 213 har ÅDT i vägdatalagret, 121 saknar i båda. Luckorna står tomma i filen.
+  - Mot vägdatalagret vid de 12 621 med ÅDT i båda: 88,0 % inom ±10 % och 77,1 % exakt lika.
+- **Avvikelsen sitter i korsningarna.** Vid de 818 punkterna med km 0 (`…@0`, väglagssegmentets början; 786 med ÅDT i båda) stämmer paketet bara till
+  42,5 % med vägdatalagret, mot 91,0 % vid de övriga 11 835. Där de skiljer sig är paketets ÅDT lägre i 1 408 av 1 520 fall (median
+  hälften). Närmaste segment i en korsning är ofta en annan väg än den väglagssegmentet ligger på.
+  - Att välja största ÅDT bland segmenten inom närmaste + 2 m höjer bara km 0 till 51,7 %. Det är prövat som underlag, inte som regel.
+- Frågan om korsningspunkterna står i bedömningen §4.2.
+
+**Tillägg 14/10: vägvalet — klassen ur ÅDT-segmentet, luckorna ur vägdatalagret, korsningarna som regeln** (Bengt: *"slå ihop 937,
+a och ja till båda"*, på frågorna i bedömningen §4.2).
+- Underlaget: paketets `ROUTE_ID` är vägdatalagrets `element_id`, och på samma element bär källorna samma ÅDT (98,6 % exakt). Skillnaden
+  är alltså vägvalet. Klassen ur närmaste segment som bär ÅDT var lika med Axel vid 97,1 % av 726 stationer (vägdatalagret 94,9 %).
+- **(a) för korsningspunkterna:** de 818 punkterna med km 0 får paketets ÅDT som alla andra. Inget vägval där var mätbart bättre mot
+  segmentets nästa punkt (närmaste 39,3 %, vägdatalagret 32,7 %).
+- **Regeln, skriven och pushad före körningen** (`fysik/vagpunkter/trafik_klass.py`):
+  - ÅDT och klass ur ETT segment, det närmaste som bär ÅDT, inom 150 m;
+  - där paketet lämnar ett fält tomt fylls det ur vägdatalagret, och kolumnen `<fält>_kalla` säger varifrån värdet kom;
+  - vid stationerna ska klassen (med vägdatalagrets där paketet saknar) vara lika med Axels vid minst 95 %, och ÅDT (paketets ensamt)
+    som förut: inom ±10 % vid minst 90 % och minst lika ofta som vägdatalagret;
+  - vägpunkterna får fälten bara om båda klarar; annars läses skälet först.
+- Reservation: klassregeln hittades på samma 726 stationer som den prövas på. Den har ingen parameter att trimma.
+
+**Tillägg 14/10: utfallet med vägvalet** (körd lokalt på 601d952, regeln ovan).
+- **Stationerna klarar båda kraven.** Klassen är lika med Axels vid **97,2 %** av 744 stationer (kravet 95 %); 27 av dem har
+  vägdatalagrets klass. ÅDT är oförändrad: 95,7 % inom ±10 % vid 726 stationer, mot vägdatalagrets 90,8 %.
+- **Vägpunkterna:** filen heter nu `data/vagdata/vaglagspunkter-adt-klass.json` (tidigare `vaglagspunkter-adt.json`).
+  - ÅDT ur paketet vid 12 626 (samma tal som förut vid alla), ur vägdatalagret vid 213, och 121 saknar i båda.
+  - Klassen ur paketet vid 12 626 och ur vägdatalagret vid 334; ingen saknas.
+  - Klass 7–9 finns vid 4 punkter, mot 676 klass 9 med den första regeln. Klassen är lika med vägdatalagrets vid 94,4 %.
+- Källan står per rad i `adt_kalla` och `klass_kalla`.
+
+## #554 (14/10 2026) A2:s population läses: var på yttemperaturskalan de grova felen ligger — förregistrerad läsning, ingen dom
+
+**Beslut.** Bengt 14/10: *"Läs a 2 population"* — på fyndet att grind A:s två mått räknar över olika populationer.
+
+**Fyndet som utlöste det.** En rad i `publish/grind-a.ts`:
+
+```ts
+const dec = rows.filter((r) => r.measured >= -5);   // decision band −5…+5
+```
+
+**A1 räknas i beslutsbandet −5…+5 °C. A2 och A3 räknas över ALLA rader** i populationen (uppmätt yta ≤ +5 °C),
+alltså också under −5 °C — där koden själv säger att vi är utanför beslutsbandet. Vid −15 °C är ett tvågradersfel
+ofarligt: vägen är frusen hur som helst. Och i det varma hörnet, +3…+5 °C, kan ingenting fyra — frysriskbetan kräver
+att ytan ligger mellan +1 och +3 °C och har fallit minst 0,8 °C på 30 minuter (#186, #222).
+
+Frågan är därför inte om modellen är bra. Den är om **A2 — det mått som FALLER för vägpunktsgrinden (6,9 %, #399)
+och för FYSIK (#485) — räknar fel i rader som inte kan skada någon.**
+
+**Genomförandet** (`scripts/matningar/a2-populationen-2026-10-14.ts`, självtest i ci.yml). Underlaget är grind A:s
+fråga rad för rad, med dess fyra vakter **importerade, inte kopierade** (#75, radvakten, karantänen, den långsamma
+vakten ur `publish/snapshot-core.ts`), och modellen är grind A:s `evaluate()` — läsningen kan alltså inte mäta en
+annan modell än grinden. Två kandidater: OFFSET (grind A själv) och RÅ (`utanOffset`). Per band redovisas antal,
+andel av populationen, A2 i bandet och bandets andel av alla grova fel; sedan samma mått över tre populationer.
+
+**Banden är inte valda efter utfall.** Varje gräns fanns före körningen:
+
+| band | varifrån gränsen kommer |
+| :-- | :-- |
+| < −5 °C | utanför A1:s eget beslutsband (`grind-a.ts`, raden ovan) |
+| −5…−1 °C | fruset, inom beslutsbandet |
+| −1…+1 °C | frysklassens avgörande (A3 mäter 2 °C tvärs över gränsen) |
+| +1…+3 °C | där frysriskbetan KAN fyra (#186, #222) |
+| +3…+5 °C | i populationen, men ingenting kan fyra där |
+
+**Förväntningar, skrivna före knappen.**
+
+| | förväntan |
+| :-- | :-- |
+| andel av populationen i +3…+5 °C | 25–50 % |
+| andel av de grova felen i +3…+5 °C | 15–40 % |
+| andel av de grova felen under −5 °C | 0–8 % |
+| A2 i beslutsbandet −5…+5 mot A2 alla | 0,2–2,0 pe lägre |
+| A2 i −5…+3 mot A2 alla | 0,5–3,0 pe lägre |
+
+Faller ett tal utanför sitt spann läses **populationen** först, inte slutsatsen.
+
+**Driftvakten.** Självtestet läser beslutsbandets gräns (−5), grovfelströskeln (> 2 °C), A2:s tak (0,05) och
+populationens tak (+5) ur grind A:s egen källa. **Motprov körts:** `DEC_LO` ändrad till −4 ⇒ självtestet faller på
+raden *"beslutsbandets gräns = grind A:s — fick -4, väntade -5"*, och de funktionella testerna såg ingenting. Det är
+skälet att vakten finns: en ändring i grind A som banden inte märker fångas av att källan läses.
+
+**Vad som INTE görs.** Inga trösklar rörs, ingen kod i driften ändras, ingen dom skrivs om. TROSKLAR-SKUGGAN §3
+gäller oförändrat, och vägpunktsgrindens dom (FALLEN, #399) står. Läsningen fäller ingenting och friar ingenting.
+
+**Vad den är till för.** En fråga till Bengt och Axel, införd i bedömningen §4.2: **vilken population ska A2 ha?**
+Visar läsningen att A2:s fall till stor del ligger utanför beslutsbandet är det ett skäl att ta upp måttet — men
+valet är deras. En population som väljs efter ett utfall är ingen population, och den regeln gäller också här:
+därför står banden, förväntningarna och läsregeln ovan skrivna före körningen.
+
+**Stomdokument:** MAT (måtten), BED §4.2.
+
+**Utfall** skrivs under den här posten när knappen körts.
