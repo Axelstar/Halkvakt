@@ -12160,3 +12160,18 @@ utvärderingen sker då men vi måste ha ut något live nu."* Samma dag: appen �
 - Den har aldrig räknats på en vägpunkt, och mot vägpunktsgrinden är den inte prövad.
 
 **Stomdokument:** BED §4.2, SYS, APP, MAT.
+
+**Tillägg 14/10 (Bengts fråga *"är det här en bra plan"*): tre brister i planen, rättade samma dag.**
+- **Tiden.** Planen sade inget om när. Räknat steg för steg (MET Nordic levande, uppstarten, kedjan på körplatsen, paritetsprovet,
+  publiceringen, motorn i tre språk, bygget och App Review) är kandidaten i appen tidigast i december. *Nu* finns redan: appen varnar
+  för halka ur Trafikverkets väglag och väderstationerna, och efterhalkans beta (S3, 0.3.12) är ett App Review från App Store.
+- **Steg 1 och 2 väntar inte på valen.** Bara körplatsen (val 3) styr steg 3, och formen och regeln (val 1–2) styr motorn. Den
+  levande hämtningen från MET, som är planens största okända (volym och villkor), kan börja i dag.
+- **Tre regler som planen hoppade över:** rösten får en plats i prioriteten A3 > A1 > A2 > A4 > A5 (produktinvariant); takten läses i
+  skuggan per rutt INNAN rösten byggs (DECISIONS #200: taket kommer ur mätningen, inte ur antagandet); och regeln fryses vid
+  förregistreringen — ändras den sedan, bara genom en daterad post, aldrig en lättnad, annars är marsdomen förorenad.
+- **Ett val till (5), i §4.2:** om kandidaten räknas levande först vid de 754 stationerna, där dess fel är känt (5,12 %), och vid
+  vägpunkterna i steg två, när paritetsprovet och vägpunktsläsningen finns. Snabbare och säkrare som första bygge, men det prövar inte
+  räckvidden mellan stationerna, som är kandidatens mening (#547).
+- **En förenkling:** tröskeln bor på ETT ställe, i publiceringen; motorn får bara en ny farotyp med text, prioritet och vektorer.
+  Då kopieras inga tal till tre språk.
