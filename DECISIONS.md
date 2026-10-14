@@ -12364,4 +12364,25 @@ förregistrering före första körningen.
   (`scripts/pulsklocka.ts` och ett pg_cron-jobb som sql/048) läggs när första körningarna är bokförda; skuggans logg (steg 7) och
   publiceringen (steg 6) rör inte tabellerna än.
 
+**Tillägg 14/10: första skarpa körningen av del A** (körning 38599945843 på 048f3c6, 16:39–16:59 UTC; Bengt: *"slå ihop 951 och tryck
+kandidat-fysik"*).
+
+| förväntan | utfall | |
+| :-- | :-- | :-- |
+| indatan 754 stationer + 12 960 vägpunkter | 754 + 12 960 = **13 714 punkter** | inom |
+| de levande dygnen fyllda till senaste katalogtimme | 13/10: 24 timmar, 14/10: 17 (7 fanns inte i katalogen än) | inom |
+| PH vid alla punkter utan luckor | **0 saknas**, och 0 ifyllda punkttimmar i 45-dygnsfönstret | inom |
+| PH inom −30…+20 °C | **−3,2…+14,1 °C** | inom |
+| `kandidat_ph` omkring 83 000 rader | **82 284** (13 714 punkter × 6 timmar) | inom |
+| del A inom 10 min | kedjan **50 s**; hela flödet 19 min 35 s, varav hämtningen 17,6 | se nedan |
+
+- Timmarna är 14/10 12–17 UTC, räknade på körningen 06Z; analysen 30/8 06Z–14/10 05Z (1 080 timmar). `modell.pkl` hämtades ur
+  hinken med sha256 lika `kuvos/kandidat-2026-27.json`.
+- **100 av de 854 stationerna är inte med:** de saknar ECMWF-fil i Axels frysta indata, och kedjan tar bara de 754 den tränades på,
+  som `common.load`. De har mätningar och blir ankare för RÅ i del B, men ger inget grannfel — fallet självtestet täcker.
+- **Hämtningen tog 17,6 av 19,5 minuter** eftersom första körningen hämtade två hela dygns analys plus körningen, omkring 1,5 GB.
+  Nästa körning hämtar bara de nya timmarna. Kedjan själv tog 50 s för 13 714 punkter och 1 080 timmar, långt under förväntan.
+- 132 punkter saknar ÅDT och 137 tunga fordon i vägdatan; kända luckor som modellen tar som NaN, inte något nytt.
+- Ingen dom: talen säger att rörledningen bär, inte att kandidaten är bra. Pariteten (steg 4) är provet.
+
 **Stomdokument:** LIV, BED §4.2, SYS.
