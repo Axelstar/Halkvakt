@@ -12751,3 +12751,49 @@ del B.
 skriver `kandidat_live`.
 
 **Stomdokument:** LIV, BED §4.2.
+
+## #562 (15/10 2026) Kandidaten blir en egen betavarning inom regel T; regeln, skuggloggen, grind A och avstängningen enligt Claudes rekommendation; snötäcket från säsongens början (kort #343)
+
+**Beslut.** Bengt 15/10, efter underlaget *Fyra beslut för kandidaten*: *"ja, (a) direkt och slå ihop 961, de övriga enligt din
+rekommendation och rätta snöfelet enligt din rekommendation"*. Bengt talade för båda (*"vi tror stenhårt på den här"*).
+
+1. **Formen (val 1): en egen betavarning, direkt** — utan webbkartan som villkor. Villkoret som står kvar är Bengts egen regel från
+   16/9 (#200): taket för hur ofta varningen får tala kommer ur uppmätt takt i skuggan, och den läses **innan bygget skickas till App
+   Review**. Skuggan loggar samtidigt som rösten byggs, så villkoret kostar ingen kalendertid.
+2. **Regeln (fråga 1):** kandidatens yta ≤ **0 °C** (Claudes föreslagna tal, antaget) **och** ett mätt fuktbesked — Trafikverkets
+   väglag *Våt* på punktens sträcka, eller radarn visar nederbörd över punkten senaste timmen — **och** ingen station inom ankarbandet
+   mätte yta över +2 °C inom ±45 minuter; märkt *modellerat*, aldrig *uppmätt*. Saknas fuktbesked tiger kandidaten. Radarns tröskel och
+   ankarbandet är Axels tal och står öppna (§4.2); radarns tröskel passerar värdevakten innan den bär något.
+3. **Skuggloggen (fråga 2): (c), sedan (a).** Regeln läggs på ett ställe, en funktion i databasen som både skuggan och publiceringen
+   anropar. Skuggan loggar kandidaten så fort regeln finns som utkast; domen räknar från signeringen; loggen är ett villkor för att
+   signera #560.
+4. **Grind A (fråga 3): (c).** Domen gäller den modell som är live, med samma tak. Förregistreringen säger att grind A vid stationerna är
+   en **övre gräns** för kvaliteten mellan stationerna (samma stationer, nytt år). En kontroll med regionmodeller körs i mars på vinterns
+   data och redovisas bredvid, inte som grind. Frågan om kandidaten fungerar mellan stationerna avgörs av grind B.
+5. **Avstängningen (val 4):** nyckeln tas bort ur publiceringen, inte hela publiceringen; kandidaten tystnar också av sig själv när vädret
+   är gammalt eller ofullständigt; att tysta kräver en av Bengt och Axel, att starta igen kräver båda. Provas i drift före App Review.
+6. **Snöfelet: väg 3** — bara snötäcket ackumuleras från säsongens början; resten av kolumnen stannar på 45 dygn. Byggt i
+   `fysik/live/kandidat_fysik.py` (`snotacke_fore`, `bygg_F(..., swe0=)`), med självtest mot ett oberoende facit och motprov.
+
+**Regel T — ett hinder som Claude hittade i samma varv och som ingen signatur tar bort.** TROSKLAR-KOMBINATIONEN §6 (Axels lydelse,
+fastställd av Bengt 16/9, #220): *"En storhet som inte kan motbevisas av en mätning får inte utlösa en varning. Extrapolation faller."*
+§10: regeln *"får skärpas men aldrig mjukas upp — **oavsett signaturer** … Regeln har inga förbehållna öppningar."* Kandidatens yta långt
+från en station är just det T3 och T5 förbjuder: ett värde där ingen mätt, som ingen mätning på platsen kan fälla. **Claude skrev fel i
+underlaget och i NIVA2-LIVE §5** när ändringen av TROSKLAR-SKUGGAN §4(a) kallades en formalitet med två signaturer — regel T, som §4(a)
+vilar på, lästes inte. Inom regel T finns formen redan: TROSKLAR-SKUGGAN §4(b), *talar nära ankare* — kandidaten talar bara där en
+station inom ett godkänt avstånd kan fälla ytans tillstånd och en mätning på sträckan visar fukten (T1, T2). Enligt #490 går **68,1 % av
+trafiken inom 7 km** från ett ankare och **96,5 % inom 15 km**; bortom 15 km (3,6 %) tiger kandidaten. **Därför skrivs ändringen av
+TROSKLAR-SKUGGAN inte i det här varvet:** den ska säga att den egna betavarningen talar i form (b), inom ett band som Axel väljer, och
+det är en fråga till Bengt och Axel i §4.2 — inte en tolkning Claude gör åt dem.
+
+**Pariteten körd om med snötäcket från säsongens början** (körning 38651194568 på 3921b79; samma tre körningar, samma tolerans):
+
+| körning | `ts_fysik` median / p95 / max | `ph` median / p95 / max | dom |
+| :-- | --: | --: | :-- |
+| 2024-12-15 00Z | 0,065 / 0,099 / 0,140 | 0,067 / 0,132 / 0,716 | inom |
+| 2025-01-15 00Z | 0,018 / 0,035 / 0,068 | 0,018 / 0,053 / 0,379 | inom (förut p95 0,113) |
+| 2025-02-15 00Z | 0,051 / 0,089 / 0,159 | 0,048 / **0,120** / 0,593 | **inom** (förut p95 0,436) |
+
+**alla 3 körningar inom toleransen — det som går live räknar samma sak som kuvösens frysta kandidat; februari ph p95 0,120 (förut 0,436), snötäcket 0 % ifrån i median i alla tre**
+
+**Stomdokument:** LIV, BED §4.2, SYS.
