@@ -111,6 +111,22 @@ async function hamta(url: string): Promise<{ buf: Uint8Array; ms: number }> {
   throw new Error("ohämtat");
 }
 
+/** Avkortade svar: ett svar kan komma med 200 men kapat (kuvösen såg det 6/10; mätningen 14/10 06:22 fick 3,75 MB av 26 MB). Då hämtas
+ *  det om, högst sex gånger, och varje kapat svar räknas — det är ett av mätningens tal, inte ett fel som döljs. */
+export let avkortade = 0;
+export async function hamtaTolkat(url: string, vad: string, h: (u: string) => Promise<{ buf: Uint8Array; ms: number }> = hamta, paus = 5000) {
+  for (let forsok = 0; ; forsok++) {
+    const { buf, ms } = await h(url);
+    try { return { falt: tolkaDods(buf), byte: buf.length, ms }; }
+    catch (e) {
+      avkortade++;
+      if (forsok === 5) throw e;
+      console.log(`  ${vad}: ${(e as Error).message} — hämtar om`);
+      await new Promise((ok) => setTimeout(ok, paus * (forsok + 1)));
+    }
+  }
+}
+
 async function mat(rot: string, ut: string) {
   mkdirSync(ut, { recursive: true });
   const nu = Date.now();
@@ -124,8 +140,8 @@ async function mat(rot: string, ut: string) {
   const anFil = filnamnLive("analysis", an.stamp);
   const grid: { la: Falt; lo: Falt; byte: number; ms: number } = { la: null!, lo: null!, byte: 0, ms: 0 };
   for (const f of ["latitude", "longitude"] as const) {
-    const { buf, ms } = await hamta(`${anFil}?${f}.${f}`);
-    grid.byte += buf.length; grid.ms += ms; (grid as any)[f === "latitude" ? "la" : "lo"] = tolkaDods(buf)[0];
+    const { falt, byte, ms } = await hamtaTolkat(`${anFil}?${f}.${f}`, f);
+    grid.byte += byte; grid.ms += ms; (grid as any)[f === "latitude" ? "la" : "lo"] = falt[0];
   }
   const [ny, nx] = grid.la.dims;
   const punkter = laddaPunkter(rot);
@@ -146,16 +162,16 @@ async function mat(rot: string, ut: string) {
     return fm;
   };
   // Analysen: ett timsteg, sju fält.
-  const a = await hamta(`${anFil}?${urval(0, 0)}`);
-  const anFm = kontroll(tolkaDods(a.buf), 1, "analysen");
-  anrop.push({ vad: `analysen ${an.stamp}, 1 timsteg`, byte: a.buf.length, ms: a.ms });
+  const a = await hamtaTolkat(`${anFil}?${urval(0, 0)}`, "analysen");
+  const anFm = kontroll(a.falt, 1, "analysen");
+  anrop.push({ vad: `analysen ${an.stamp}, 1 timsteg`, byte: a.byte, ms: a.ms });
   // Prognosen: stegen 0–17 i anrop om sex, som kuvösen.
   const fcFil = filnamnLive("forecast", fc.stamp), steg: Map<string, Falt>[] = [];
   let bytePrognos = 0;
   for (let s = 0; s < STEG_LIVE; s += PER_ANROP) {
-    const r = await hamta(`${fcFil}?${urval(s, s + PER_ANROP - 1)}`);
-    const fm = kontroll(tolkaDods(r.buf), PER_ANROP, `prognosen steg ${s}`);
-    anrop.push({ vad: `prognosen ${fc.stamp}, steg ${s}–${s + PER_ANROP - 1}`, byte: r.buf.length, ms: r.ms }); bytePrognos += r.buf.length;
+    const r = await hamtaTolkat(`${fcFil}?${urval(s, s + PER_ANROP - 1)}`, `prognosen steg ${s}`);
+    const fm = kontroll(r.falt, PER_ANROP, `prognosen steg ${s}`);
+    anrop.push({ vad: `prognosen ${fc.stamp}, steg ${s}–${s + PER_ANROP - 1}`, byte: r.byte, ms: r.ms }); bytePrognos += r.byte;
     const n = box.by * box.bx;
     for (let k = 0; k < PER_ANROP; k++)
       steg.push(new Map(FALT.map(([f]) => { const x = fm.get(f)!; return [f, { namn: f, dims: [box.by, box.bx], data: x.data.subarray(k * n, (k + 1) * n) }]; })));
@@ -173,15 +189,28 @@ async function mat(rot: string, ut: string) {
     const [lo, hi, enhet] = SPANN[k];
     console.log(`  ${k.padEnd(13)} ${s.min.toFixed(3).padStart(12)} – ${s.max.toFixed(3).padStart(12)} ${enhet.padEnd(16)} saknas ${s.saknas}, utanför [${lo}, ${hi}]: ${s.utanfor}${s.utanfor ? "  ⚠" : ""}`);
   }
-  console.log(`\nraderna: ${fil} (${rader.length} rader, ${rutor.length} punkter × ${1 + STEG_LIVE} timsteg)`);
+  console.log(`\nraderna: ${fil} (${rader.length} rader, ${rutor.length} punkter × ${1 + STEG_LIVE} timsteg); avkortade svar som hämtades om: ${avkortade}`);
   const sammanfattning = { katalog: { analys: an.iso, analys_min_gammal: lag(an.iso), prognos: fc.iso, prognos_min_gammal: lag(fc.iso), filer: an.antal },
-    rutnat: { ny, nx, ...box }, punkter: { n: punkter.length, max_km: Number(maxKm.toFixed(2)), over_1_5_km: over }, anrop, volym: vol, spann: sp };
+    rutnat: { ny, nx, ...box }, punkter: { n: punkter.length, max_km: Number(maxKm.toFixed(2)), over_1_5_km: over }, anrop, avkortade_svar: avkortade,
+    volym: vol, spann: sp };
   writeFileSync(join(ut, "sammanfattning.json"), JSON.stringify(sammanfattning, null, 1));
   console.log("\nSAMMANFATTNING " + JSON.stringify({ ...sammanfattning, spann: undefined, anrop: undefined }));
 }
 
-function sjalvtest() {
+async function sjalvtest() {
   let fel = 0; const k = (ok: boolean, m: string) => { if (!ok) { fel++; console.error("✗ " + m); } };
+  // Avkortade svar: två kapade svar och sedan ett helt ⇒ det hela tolkas och två räknas; sex kapade i rad ⇒ fel.
+  const rubrik = new TextEncoder().encode("Dataset {\n  Structure {\n    Float32 a[time = 1][y = 1][x = 2];\n  } a;\n} t.nc;\n\nData:\n");
+  const kropp = new DataView(new ArrayBuffer(16)); kropp.setUint32(0, 2); kropp.setUint32(4, 2); kropp.setFloat32(8, 1.5); kropp.setFloat32(12, 2.5);
+  const helt = new Uint8Array(rubrik.length + 16); helt.set(rubrik); helt.set(new Uint8Array(kropp.buffer), rubrik.length);
+  let n = 0;
+  const fejk = async () => ({ buf: ++n < 3 ? helt.slice(0, helt.length - 3) : helt, ms: 1 });
+  const h = await hamtaTolkat("u", "prov", fejk, 0);
+  k(h.falt[0].data[1] === 2.5 && h.byte === helt.length && avkortade === 2 && n === 3, `avkortade svar hämtas om: ${avkortade} räknade, ${n} försök`);
+  let foll = false; n = -100;
+  try { await hamtaTolkat("u", "prov", fejk, 0); } catch { foll = true; }
+  k(foll && avkortade === 8, `sex kapade i rad fäller, och alla räknas: ${avkortade}`);
+  avkortade = 0;
   const html = `x "catalog.html?dataset=metpplatest/met_analysis_1_0km_nordic_20261014T05Z.nc" "…met_analysis_1_0km_nordic_20261014T04Z.nc"
     "…met_forecast_1_0km_nordic_20261014T03Z.nc" "…met_analysis_1_0km_nordic_20261014T05Z.nc"`;
   const an = senasteIKatalog(html, "analysis"), fc = senasteIKatalog(html, "forecast");
@@ -211,7 +240,7 @@ const korsSjalv = !!process.argv[1] && import.meta.url.endsWith(process.argv[1].
 if (korsSjalv) {
   const arg = process.argv.slice(2);
   const v = (n: string, d: string) => { const i = arg.indexOf(n); return i >= 0 && arg[i + 1] ? arg[i + 1] : d; };
-  if (arg.includes("--sjalvtest")) sjalvtest();
+  if (arg.includes("--sjalvtest")) await sjalvtest();
   else if (arg.includes("--mat")) await mat(v("--rot", "."), v("--ut", "mn-live"));
   else { console.error("kör: metnordic-live.ts --mat [--ut <mapp>] [--rot <repo>] | --sjalvtest"); process.exit(2); }
 }
