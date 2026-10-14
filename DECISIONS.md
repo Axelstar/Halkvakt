@@ -12473,3 +12473,68 @@ modeller (stationens egen region utelämnad), medan den levande kedjan kör den 
 är inte jämförbara, och en jämförelse mellan dem hade mätt utelämningen och inte kodvägen.
 
 **Stomdokument:** LIV, MAT, KAR, KUV §9.
+
+## #560 (14/10 2026) Förregistreringen för vintern 2026/27 — utkastet, med allt utom regeln och populationen fastskrivet (kort #343, steg 6)
+
+**Beslut.** Claude 14/10, inför Bengts och Axels signaturer. #544 punkt 6 och #547 säger att kandidaten döms i mars som en **ny
+fråga**, i den form väg B fryste den, och att förregistreringen skrivs **senast 31/10**. Domfönstret börjar på förregistreringens
+dag, så varje dygn utkastet ligger osignerat är ett dygn vinter som faller utanför domen. Därför skrivs allt som går att skriva nu,
+och det som saknas namnges som exakt två frågor.
+
+**1. Vad som döms.** Den frysta kandidaten ur #552, ingenting annat:
+- fysiken `lw` (utan terräng), blandningens par **W 0,25 · L 160 km**, valda på alla veck i både analysläget och +6 h (körning
+  38368369876);
+- rättelsen `modell.pkl`, 9,8 MB, i hinken `arkiv` under `kuvos-kandidat-2026-27/`, identifierad av sin **sha256 i
+  `kuvos/kandidat-2026-27.json`** — samma summa som varje körning av den levande kedjan prövar innan den räknar;
+- de 70 särdragen och de femton parametrarna i samma manifest.
+En annan modell, ett annat par eller en annan fysik är en **annan kandidat** och en annan fråga.
+
+**2. Hur den räknas under vintern.** Den levande kedjan ur #558: del A var sjätte timme (fysiken och rättelsen ⇒ PH för
+R+6…R+11), del B varje timme (grannarnas fel, RÅ och blandningen ⇒ PB), i Actions, startade av pulsklockan. Domen fälls på **det
+kedjan räknade vid timmen**, som det står i `kandidat_live` — inte på en omräkning i efterhand. Att de två räknar samma sak som
+kuvösens frysta procedur är paritetsprovet (#559); faller det är identiteten i punkt 1 inte bevisad, och förregistreringen kan inte
+signeras förrän svaret är skrivet.
+
+**3. Måtten, oförändrade.** Grind A–C med samma trösklar, spridningsgrinden **X = 2,25 °C**, och regeln att **tystnad på ett täckt
+segment är en miss** (#475, #477). Inget krav sänks, och spridningsgrinden gäller kandidaten oförändrad (#547). Grind A:s
+population bärs av samma vakter som i dag: #75, radvakten, karantänen och den långsamma vakten, och mätningar yngre än tre timmar.
+
+**4. Domfönstret.** Börjar den dag förregistreringen är signerad och pushad, och löper till domen i mars. Bara data som ingen sett
+räknas, som förslaget till regel L behandlar ett kandidatbyte (#282, L2 och L3).
+
+**5. RÅ bredvid.** RÅ:s dom fälls som förut och redovisas vid sidan som **kontroll**. Blir kandidaten inte räknad för vintern
+(data saknas, eller en av frågorna nedan ger ingen väg) fälls domslutet (a)–(c) på RÅ i stället. Det är en **reserv**, inte två
+chanser att klara grinden (#547).
+
+**6. Det väntade felet, skrivet före vintern och utan uppmjukning.**
+- Kandidatens väntade andel grova fel vid +6 h är **5,12 %** (#552) mot grind A:s tak **5 %**. Kandidaten väntas alltså **inte**
+  klara A2 på det talet. Det är registrerat som förväntan, inte som ett mål att jämföra bort: slår utfallet in är domen ett nej på
+  A2, och det är ett giltigt utfall av en ärlig fråga.
+- Kandidaten har **aldrig räknats på en vägpunkt** och är inte prövad mot vägpunktsgrinden. Räknas den där (fråga B nedan) är det
+  ett mått utan tidigare mätning.
+- Fysiken är kalibrerad på vintern 24/25. 2026/27 är ett annat år; ingen justering görs under vintern.
+
+**7. Vad som är fryst vid signeringen.** Måtten (punkt 3), domfönstret (punkt 4), kandidatens identitet (punkt 1), regeln som
+utlöser varningen och populationen (frågorna nedan). Ändras något av det efteråt sker det **bara genom en daterad post med båda
+signaturerna** — aldrig som en lättnad efter sett utfall, annars är marsdomen förorenad (#558 tillägg).
+
+**8. Vad som INTE är en del av domen.** Formen i appen (val 1) och avstängningen (val 4). Hur varningen talas, märks eller stängs
+av rör användaren, inte måttet; de kan ändras utan att domen rörs. Därför väntar förregistreringen inte på dem.
+
+**Två frågor måste besvaras före signeringen, båda i bedömningens §4.2 sedan 14/10:**
+- **(A) Regeln** (val 2). Vad utlöser varningen, skrivet i tröskeldokumentet före koden. #558:s tillägg rättade formen: kandidaten
+  ger ett **nuläge** mellan stationerna — ytan vid timmen t räknad på en 6–11 timmar gammal körning, med stationernas mätningar vid
+  t — inte en prognos framåt. Regeln ska därför beskriva ytan och fukten **nu**, som A1 gör för väglaget. Claudes förslag står kvar
+  (kandidatens yta ≤ 0 °C och fukt vid punkten, där ingen station säger annat); talen är Axels. Regeln måste vara skriven för att
+  domen ska kunna räkna missar och falsklarm.
+- **(B) Populationen** (val 5). Döms kandidaten på de **754 stationerna** (där dess fel är känt) eller på **vägpunkterna** (där
+  räckvidden mellan stationerna är hela meningen med #547, men där den aldrig räknats)? Valet avgör vilka rader som går in i grind
+  A–C, och det kan inte ändras efter att fönstret öppnat. Rekommendationen 14/10 står kvar: stationerna först, vägpunkterna i steg
+  två — men då måste förregistreringen säga om vägpunkterna kommer **in i domen** när de börjar räknas, eller **står utanför** till
+  vintern 2027/28. Claudes förslag: **utanför** — ett mått vars population växer mitt i fönstret är inget mått.
+
+**Varför utkastet skrivs nu och inte 31/10.** Varje dygn förskjuter domfönstrets början, och november–mars är allt vi har. Två
+frågor är billigare att svara på än ett helt dokument, och allt annat är redan bestämt i #544, #547, #552 och #558 — utkastet
+samlar det så att signeringen blir ett ja eller ett nej, inte ett skrivarbete.
+
+**Stomdokument:** KUV §5, SYS, BED §4.2, LIV.
