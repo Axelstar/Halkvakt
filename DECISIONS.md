@@ -12426,11 +12426,35 @@ kandidat-fysik"*).
   `kandidat-fysik` nu stänger hålet:** klockan 19:13 är den senaste körningen som är minst sex timmar gammal 12Z, och den skriver
   precis 18–23 UTC. Väntar på Bengts ord.
 
+**Tillägg 14/10 kväll: rättelser till tillägget ovan, och vad deployen och natten visade** (Bengt: *"gör 1,2,3"*, efter sin
+granskning av punkt 4–6).
+
+- **Vakthunden är deployad och golvet 14 är bevisat i drift** (deploy 38622870543 från 75e761a, 19:21 UTC). DB-knappen `las`
+  (38632391098) läste vakthundens egna svar ur `net._http_response`: `pulsjobb: 12 aktiva (golv 12)` 18:07 och 19:07, före
+  deployen; `pulsjobb: 14 aktiva (golv 14)` 19:23 och 20:07, efter den; alla med HTTP 200. Tillägget ovan sade att vakthunden inte
+  var deployad — det var sant när det skrevs och är inte längre det.
+- **Schemat `13 0,6,12,18` gjorde mätvakten blind för del A.** Det första `matvaktprov` efter deployen (38623247150, issue #892)
+  skrev *"kandidat-fysik: cron-uttrycket går inte att tolka — kadensen okänd, vakten blind"*. Vakthundens `kadensTimmar()` läser
+  inga listor i timfältet, och mätvakten läser kadensen även ur puls-jobbets schema i `cron.job`. Med `null` hoppar mätvakten över
+  flödet helt — också kontrollen av misslyckade körningar — så två fallna körningar av del A i kväll syntes inte. **Rättat genom att
+  byta uttrycket, inte vakthunden:** `13 */6 * * *` avfyrar samma tider (00:13, 06:13, 12:13, 18:13), och driftens egen
+  `kadensTimmar()` — utskuren ur main och körd — ger `null` för listan och **6** för `*/6`. PR #956, som skrev om funktionen, är
+  stängd: den var den krångligare vägen och öppnades utan att vara beställd.
+- **Hålet 18–23 UTC stängdes inte.** Tillägget ovan sade att en tryckning på `kandidat-fysik` stänger hålet. Två tryckningar
+  (38622811046 och 38625265567) föll båda på samma sätt: MET:s server gav timeouts (180 s) på
+  `met_forecast_1_0km_nordic_20261014T12Z`, åtta försök totalt. Filen är hel — dess metadata läses på 0,44 s — det är
+  överföringen av 158 MB per anrop som inte hinner, samma långsamma ände som #556 mätte (144,9 s, och analysen slog i taket en
+  gång). Ingen rad skrevs (stegen efter hämtningen hoppades över). Del B:s första schemalagda timme, 19:43 (38626004476), blev
+  röd eftersom PH saknas; det fortsätter till nästa lyckade del A. **Två frågor står i bedömningens §4.2:** ska en saknad PH vara
+  en tyst, räknad överhoppning eller rött, och ska körningens 18 steg hämtas i fler och mindre anrop.
+- **Utanför kortet:** samma utskrift visade att `cell-matning-v3` föll 12/10 06:20 och att issue #892 stått öppen sedan 12/10
+  07:07 — mätvakten har larmat i två dygn utan att någon agerat.
+
 **Stomdokument:** LIV, BED §4.2, SYS.
 
 ## #559 (14/10 2026) Pariteten förregistrerad: den levande kedjan mot kuvösens frysta procedur på samma körning (kort #343, steg 5)
 
-**Beslut.** Claude 14/10, inför Bengts och Axels läsning. Steg 5 i planen för att gå live (#556) är provet som säger om det som
+**Förslag.** Claude 14/10, inför Bengts och Axels läsning. Steg 5 i planen för att gå live (#556) är provet som säger om det som
 *går live* räknar samma sak som det som *mättes* i kuvösen. Regeln och förväntan skrivs här, före knappen.
 
 **Varför ett prov och inte ett resonemang.** Del A (`fysik/live/kandidat_fysik.py`) LÅNAR `run_lw`, `skarv`, `las_prognos`,
@@ -12490,11 +12514,13 @@ DB-knappen `las`. Spannet är fysikens yttergräns för en vägyta, inte ett vä
 modeller (stationens egen region utelämnad), medan den levande kedjan kör den ENA frysta modellen tränad på alla stationer. De två
 är inte jämförbara, och en jämförelse mellan dem hade mätt utelämningen och inte kodvägen.
 
+**Rättat 14/10 kväll (Bengt: *"gör 1,2,3"*):** posten stod som *"Beslut. Claude"*. Claude fattar inga beslut; det här är ett **förslag** som väntar på Bengts och Axels ja, och toleransen 0,10 / 0,30 °C gäller inte förrän det givits.
+
 **Stomdokument:** LIV, MAT, KAR, KUV §9.
 
 ## #560 (14/10 2026) Förregistreringen för vintern 2026/27 — utkastet, med allt utom regeln och populationen fastskrivet (kort #343, steg 6)
 
-**Beslut.** Claude 14/10, inför Bengts och Axels signaturer. #544 punkt 6 och #547 säger att kandidaten döms i mars som en **ny
+**Förslag.** Claude 14/10, inför Bengts och Axels signaturer. #544 punkt 6 och #547 säger att kandidaten döms i mars som en **ny
 fråga**, i den form väg B fryste den, och att förregistreringen skrivs **senast 31/10**. Domfönstret börjar på förregistreringens
 dag, så varje dygn utkastet ligger osignerat är ett dygn vinter som faller utanför domen. Därför skrivs allt som går att skriva nu,
 och det som saknas namnges som exakt två frågor.
@@ -12528,8 +12554,14 @@ chanser att klara grinden (#547).
 - Kandidatens väntade andel grova fel vid +6 h är **5,12 %** (#552) mot grind A:s tak **5 %**. Kandidaten väntas alltså **inte**
   klara A2 på det talet. Det är registrerat som förväntan, inte som ett mål att jämföra bort: slår utfallet in är domen ett nej på
   A2, och det är ett giltigt utfall av en ärlig fråga.
-- Kandidaten har **aldrig räknats på en vägpunkt** och är inte prövad mot vägpunktsgrinden. Räknas den där (fråga B nedan) är det
-  ett mått utan tidigare mätning.
+- Kandidaten har **aldrig räknats på en vägpunkt** och är inte prövad mot vägpunktsgrinden. Vid vägpunkterna kan den bara dömas i
+  grind B, på segment (rättelsen nedan), och där är det ett mått utan tidigare mätning.
+- **Grind A vid stationerna prövar en annan fråga än 5,12 %.** `modell.pkl` är tränad på alla 754 stationer (#550). Grind A
+  vid samma stationer 2026/27 prövar alltså *samma stationer, nytt år*. Talet 5,12 % kommer från fold-vis modeller där stationens
+  egen region hölls utanför: *andra stationer, samma år* (#544, väg B). Grannarnas fel och RÅ räknas utan stationens egen mätning
+  (del B förankrar aldrig en punkt i sig själv), men rättelsen har sett stationen. Förväntningsraden ovan ställer alltså två olika
+  mått mot varandra. Vad det betyder för förväntan — bättre, sämre eller oförändrat — är inte mätt, och ska skrivas av Bengt och
+  Axel före signeringen (tillagt 14/10 kväll efter Bengts granskning).
 - Fysiken är kalibrerad på vintern 24/25. 2026/27 är ett annat år; ingen justering görs under vintern.
 
 **7. Vad som är fryst vid signeringen.** Måtten (punkt 3), domfönstret (punkt 4), kandidatens identitet (punkt 1), regeln som
@@ -12611,5 +12643,7 @@ och bygget 7; den här sessionen har byggt med pariteten som steg 5, sedan histo
 skriver "paritetsprovet (steg 4)" och #558 "publiceringen (steg 6)". Fyra numreringar på fem dokument. Claudes förslag: **namnge
 stegen och sluta numrera dem** — ett nummer som betyder olika saker i olika dokument är samma fälla som en rad döpt efter ett
 klockslag den inte bär.
+
+**Rättat 14/10 kväll (Bengt: *"gör 1,2,3"*):** posten stod som *"Beslut. Claude"*. Claude fattar inga beslut; det här är ett **förslag** som väntar på Bengts och Axels ja, och förregistreringen gäller inte förrän det givits.
 
 **Stomdokument:** KUV §5, SYS, BED §4.2, LIV.

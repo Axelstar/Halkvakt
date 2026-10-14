@@ -58,7 +58,9 @@ const NYA: { namn: string; schema: string; fil: string }[] = [
   // Minuterna :13 och :43 är lediga i databasens klocka (publicera :x0, grannarna :05/:35, skuggmotorn :02/:32, :12/:42,
   // :15/:45, :20/:50, :22/:52, :25/:55, favoritprovet :08/:38 och synken :18/:48, ingesten :11).
   // Uppmätt 14/10: del A 19,5 min första gången (två dygns analys), därefter bara de nya timmarna; del B under en minut.
-  { namn: "puls-kandidat-fysik", schema: "13 0,6,12,18 * * *", fil: "kandidat-fysik.yml" },
+  // `*/6` och inte listan `0,6,12,18` — samma avfyrningar, men vakthundens mätvakt (kadensTimmar) läser inga listor och
+  // var blind för del A i sex timmar 14/10 (DECISIONS #558, tillägg). Ett nytt schema prövas mot den funktionen först.
+  { namn: "puls-kandidat-fysik", schema: "13 */6 * * *", fil: "kandidat-fysik.yml" },
   { namn: "puls-kandidat-timme", schema: "43 * * * *", fil: "kandidat-timme.yml" },
 ];
 
