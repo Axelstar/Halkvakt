@@ -115,9 +115,9 @@
           (<code>modell.pkl</code>, 9,8 MB) ligger i hinken med kontrollsumma.</li>
         <li>Vägpunkternas fasta särdrag är klara för alla 12 960 punkter (DECISIONS #553): terräng, höjd, vinterväghållningsklass,
           Europaväg, ÅDT och vägklass.</li>
-        <li>Steg 1 (MET Nordic levande) är byggt. Mätknappen trycktes 14/10 06:21 och föll på ett avkortat svar från MET; rättelsen
-          är grön och väntar på sammanslagning. Tre tal lästes ändå: katalogen 22 minuter gammal, rutan som kuvösens, punkterna
-          högst 0,70 km från rutmitten.</li>
+        <li>Steg 1 (MET Nordic levande) är byggt och mätt 14/10 (tredje tryckningen; de två första föll på kod): katalogen bär en
+          analys och en körning varje timme, 66 minuter gamla; 500 MB per timme om allt hämtas varje timme, 2,5 GB per dygn med
+          körningarna var sjätte timme som kuvösen; punkterna högst 0,70 km från rutmitten; alla värden inom värdevaktens spann.</li>
       </ul>
     </div>
     <div class="ruta rod">
@@ -171,7 +171,7 @@
       <li><span aria-hidden="true">◐</span> <b>Villkoret i motorn</b> <span style="color: var(--dampad, #4A5763)">pågår · engine/src/segment.ts:56–115 körs bara i skuggmotorn; förstärkarvillkoret finns inte i engine.ts</span></li>
       <li><span aria-hidden="true">○</span> <b>Testfall i tre språk</b> <span style="color: var(--dampad, #4A5763)">saknas · Bara test/segment.test.ts i TypeScript; ingen vektor eller port (segment.ts:7)</span></li>
       <li><span aria-hidden="true">○</span> <b>I appen</b> <span style="color: var(--dampad, #4A5763)">saknas · Aldrig röst ensam (TROSKLAR-SKUGGAN.md:148–151)</span></li>
-      <li><span aria-hidden="true">◐</span> <b>MET Nordic levande vid stationerna och väglagspunkterna (kort #343, steg 1)</b> <span style="color: var(--dampad, #4A5763)">pågår · Byggt 14/10: ingest/metnordic-live.ts --mat och knappen metnordic-live.yml, mätningen förregistrerad under DECISIONS #556; klart när mätningen är körd och bokförd och hämtningen går på körplatsen</span></li>
+      <li><span aria-hidden="true">◐</span> <b>MET Nordic levande vid stationerna och väglagspunkterna (kort #343, steg 1)</b> <span style="color: var(--dampad, #4A5763)">pågår · Byggt 14/10 (ingest/metnordic-live.ts, knappen metnordic-live.yml); mätt 38526162017 på 7e5e049 (DECISIONS #556): 500 MB/timme om allt hämtas varje timme, 2,5 GB/dygn med körningarna var sjätte timme (pariteten), 0 avkortade svar, alla spann inom; klart när hämtningen går på körplatsen</span></li>
     </ul>
   </details>
   <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-kv-prognoslagret">Prognoslagrets kandidater</a> <span style="color: var(--dampad, #4A5763)">delvis, 97 % · kvar: Den frysta kandidaten (varv 1, DECISIONS #552) ligger i hinken; kvar är förregistreringen för vintern 2026/27, senast 31/10, och Axels fråga om uppspelning eller drift (§4.2, kort #342)</span></summary>
@@ -205,9 +205,10 @@
     <tbody>
       <tr class="grupp"><td colspan="5">A. Räkna kandidaten levande</td></tr>
       <tr><td class="nr">1</td><td>MET Nordic levande</td><td>Hämtningen läser MET:s levande katalog i stället för arkivet: analysen
-        varje timme och den senaste körningen, vid stationerna och vägpunkterna. Mätningen först: volym, tider, rutor, spann. Katalogen
-        visade sig bära en körning varje timme med 57 timsteg, mot arkivets fyra per dygn med 30; pariteten kräver kuvösens regler.</td>
-        <td>Claude</td><td><span class="dom vantar">byggt, mäts</span></td></tr>
+        varje timme och den senaste körningen, vid stationerna och vägpunkterna. Mätt 14/10: 158 MB och 9–145 s per anrop om sex
+        timsteg, 2,5 GB per dygn med körningarna var sjätte timme (pariteten med kuvösen kräver samma körningar), alla spann inom.
+        Kvar: hämtningen på schema med tidsbudget, i steg 2–3.</td>
+        <td>Claude</td><td><span class="dom vantar">mätt</span></td></tr>
       <tr><td class="nr">2</td><td>Uppstarten (1)</td><td>Fysiken bär ett tillstånd (djuptemperatur, snötäcke) och behöver 45 dygns
         väderhistorik. Historiken hämtas en gång ur arkivet, tillståndet sparas mellan körningarna. Utformas efter mätningens tal.</td>
         <td>Claude</td><td><span class="dom kvar">kvar</span></td></tr>
@@ -290,7 +291,8 @@
     <li>Kandidatens väntade andel grova fel vid +6 h är 5,12 %, mot grind A:s tak 5 %. Marginalen är noll.</li>
     <li>Vid vägpunkterna är felet okänt. 5,3 % av punkterna ligger utanför stationernas spann i något särdrag.</li>
     <li>MET:s svar kan komma avkortade; den första mätningen föll på det. Hämtningen hämtar om och räknar fallen.</li>
-    <li>Volymen om allt hämtas varje timme kan bli 10–15 GB per dygn enligt kuvösens tal. Mätningen avgör takten.</li>
+    <li>Volymen är mätt: 12 GB per dygn om allt hämtas varje timme, 2,5 GB med körningarna var sjätte timme. Tiden per anrop
+      spretar (9–145 s, en timeout på 180 s), så en timkörning behöver en tidsbudget. MET:s villkor om volym läses innan schemat.</li>
     <li>Faller kandidaten i mars fälls domen på RÅ som förut (reserven i DECISIONS #547). Det blir inte två chanser.</li>
   </ul>
 
