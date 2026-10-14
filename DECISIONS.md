@@ -12124,3 +12124,39 @@ PR:en sedan #522, eftersom avstämningen görs en gång per dygn av synken. Motp
 artefakterna, republicerar dygnets första session dem (DOKUMENTSYNKEN steg 8), som hittills.
 
 **Stomdokument:** BED §4.2.
+
+## #556 (14/10 2026) NIVÅ 2+BLANDNING går live i appen före domen, och alla spår mäts hela vintern
+
+**Beslut.** Bengt 14/10, gemensamt med Axel: *"vi måste gå live i appen med nivå2 + blandning för att ha en halkvarning uppe och
+running samtidigt som vi mäter och utvärderar under hela vintern och att mätningarna sker för alla aktuella spår som finns och att
+utvärderingen sker då men vi måste ha ut något live nu."* Samma dag: appen är live i App Store (Bengt).
+
+**Vad det ändrar.**
+- Den frysta kandidaten (#552) når användarna före domen i mars. Hittills gällde att en godkänd prognos först når kartan och aldrig
+  rösten ensam (TROSKLAR-SKUGGAN §4(a)), och först efter domen (#547). Ändringen i tröskeldokumentet skrivs när formen är vald.
+- Domen i mars står kvar som en ny fråga (#547), med förregistreringen senast 31/10 och samma trösklar. Den avgör om kandidaten får
+  stanna, inte om den får börja.
+- Alla aktuella spår mäts i skuggan hela vintern och utvärderas då: RÅ, kandidaten, efterhalkan och de övriga.
+
+**Inte avgjort** (frågor i bedömningen §4.2, kort #343):
+- formen i appen;
+- regeln som utlöser varningen;
+- körplatsen för Python-kedjan;
+- avstängningen utan nytt bygge.
+
+**Vägen, kartlagd 14/10.** Appen har ingen karta: kartan är webbsidan `karta.html`, och appen talar varningar och visar kortet.
+- Kandidaten är Axels Python: fysiken, en trädmodell (`modell.pkl`, 9,8 MB i hinken) och grannarnas fel med RÅ och blandningen.
+  Fysiken bär ett tillstånd och behöver upp till 45 dygns väderhistorik per punkt.
+- MET Nordic hämtas i dag bara ur arkivet (`kuvos/metnordic-prognos.ts`); ingen levande hämtning finns.
+- Edge-funktionerna kör inte Python och når redan sina resursgränser. Actions är gratis sedan #503, och pulsklockan startar redan
+  Actions-flöden (`ingest.yml`, favoritprovet #534).
+- Data till appen går genom `publicera` (pg_cron var tionde minut) och en ny nyckel i live.json, efter `rain_segments`. Regeln är
+  *lägg till, ersätt aldrig*, eftersom varje rad i `segments` blir en halkvarning.
+- S3 visar resten: fältet, adaptern i tre språk, regeln i tre språk, vektorerna, `beta`, texten, BETA-kortet och ett gemensamt
+  byggnummer (#526).
+
+**Risk, skriven före bygget.**
+- Kandidatens väntade andel grova fel vid +6 h är 5,12 % (#552), mot grind A:s tak 5 %.
+- Den har aldrig räknats på en vägpunkt, och mot vägpunktsgrinden är den inte prövad.
+
+**Stomdokument:** BED §4.2, SYS, APP, MAT.
