@@ -16,10 +16,11 @@
 // Kör:      node --experimental-strip-types ingest/metnordic-live.ts --mat [--ut <mapp>] [--rot <repo>]
 // Självtest: node --experimental-strip-types ingest/metnordic-live.ts --sjalvtest        (i ci.yml)
 // Källa: MET Norway, MET Nordic (NLOD / CC BY 4.0), https://thredds.met.no/thredds/catalog/metpplatest/catalog.html
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, mkdtempSync, existsSync } from "node:fs";
 import { gzipSync } from "node:zlib";
 import { join } from "node:path";
-import { FALT, RUBRIK, PER_ANROP, tolkaDods, raderForKorning, type Falt, type Ruta } from "../kuvos/metnordic-prognos.ts";
+import { tmpdir } from "node:os";
+import { FALT, RUBRIK, PER_ANROP, tolkaDods, raderForKorning, varde, type Falt, type Ruta } from "../kuvos/metnordic-prognos.ts";
 import { SPANN } from "../scripts/vardevakten.ts";
 
 const UA = "Halkvakt-live/0.1 (+https://github.com/Axelstar/Halkvakt)";
@@ -127,10 +128,17 @@ export async function hamtaTolkat(url: string, vad: string, h: (u: string) => Pr
   }
 }
 
-async function mat(rot: string, ut: string) {
+async function hamtaKatalog(): Promise<string> {
+  return (await fetch(KATALOG, { headers: { "User-Agent": UA }, signal: AbortSignal.timeout(60_000) })).text();
+}
+
+type Hamtare = (u: string) => Promise<{ buf: Uint8Array; ms: number }>;
+/** Mätningen. Källan (h, katalog) och pausen är utbytbara så att självtestet kör HELA vägen mot en fejkad källa — den andra
+ *  tryckningen 14/10 06:46 hämtade allt och föll på sammanfattningens sista rad, som inget prov hade kört. */
+export async function mat(rot: string, ut: string, h: Hamtare = hamta, katalog: () => Promise<string> = hamtaKatalog, paus = 5000) {
   mkdirSync(ut, { recursive: true });
   const nu = Date.now();
-  const html = await (await fetch(KATALOG, { headers: { "User-Agent": UA }, signal: AbortSignal.timeout(60_000) })).text();
+  const html = await katalog();
   const an = senasteIKatalog(html, "analysis"), fc = senasteIKatalog(html, "forecast");
   if (!an || !fc) throw new Error("katalogen saknar analys eller prognos");
   const lag = (iso: string) => Math.round((nu - Date.parse(iso)) / 60_000);
@@ -140,7 +148,7 @@ async function mat(rot: string, ut: string) {
   const anFil = filnamnLive("analysis", an.stamp);
   const grid: { la: Falt; lo: Falt; byte: number; ms: number } = { la: null!, lo: null!, byte: 0, ms: 0 };
   for (const f of ["latitude", "longitude"] as const) {
-    const { falt, byte, ms } = await hamtaTolkat(`${anFil}?${f}.${f}`, f);
+    const { falt, byte, ms } = await hamtaTolkat(`${anFil}?${f}.${f}`, f, h, paus);
     grid.byte += byte; grid.ms += ms; (grid as any)[f === "latitude" ? "la" : "lo"] = falt[0];
   }
   const [ny, nx] = grid.la.dims;
@@ -162,26 +170,27 @@ async function mat(rot: string, ut: string) {
     return fm;
   };
   // Analysen: ett timsteg, sju fält.
-  const a = await hamtaTolkat(`${anFil}?${urval(0, 0)}`, "analysen");
+  const a = await hamtaTolkat(`${anFil}?${urval(0, 0)}`, "analysen", h, paus);
   const anFm = kontroll(a.falt, 1, "analysen");
   anrop.push({ vad: `analysen ${an.stamp}, 1 timsteg`, byte: a.byte, ms: a.ms });
   // Prognosen: stegen 0–17 i anrop om sex, som kuvösen.
   const fcFil = filnamnLive("forecast", fc.stamp), steg: Map<string, Falt>[] = [];
   let bytePrognos = 0;
   for (let s = 0; s < STEG_LIVE; s += PER_ANROP) {
-    const r = await hamtaTolkat(`${fcFil}?${urval(s, s + PER_ANROP - 1)}`, `prognosen steg ${s}`);
+    const r = await hamtaTolkat(`${fcFil}?${urval(s, s + PER_ANROP - 1)}`, `prognosen steg ${s}`, h, paus);
     const fm = kontroll(r.falt, PER_ANROP, `prognosen steg ${s}`);
     anrop.push({ vad: `prognosen ${fc.stamp}, steg ${s}–${s + PER_ANROP - 1}`, byte: r.byte, ms: r.ms }); bytePrognos += r.byte;
     const n = box.by * box.bx;
     for (let k = 0; k < PER_ANROP; k++)
       steg.push(new Map(FALT.map(([f]) => { const x = fm.get(f)!; return [f, { namn: f, dims: [box.by, box.bx], data: x.data.subarray(k * n, (k + 1) * n) }]; })));
   }
-  // Raderna i kuvösens form: analysen som "körning" med ett steg, prognosen med STEG_LIVE steg.
-  const anSteg = [new Map(FALT.map(([f]) => { const x = anFm.get(f)!; return [f, { namn: f, dims: [box.by, box.bx], data: x.data }]; }))];
-  const rader = [...raderForKorning(an.iso, anSteg, rutor, box.y0, box.x0, box.bx), ...raderForKorning(fc.iso, steg, rutor, box.y0, box.x0, box.bx)];
+  // Raderna i kuvösens form. Analysens strålning är redan timvärden (kuvos/metnordic.ts skriver dem rakt av), så analysens rad byggs
+  // direkt; prognosens strålning är summerad från körningens start och räknas om till timvärden av raderForKorning (steg 0 blir tomt).
+  const anRader = rutor.map((r) => `${r.id},${an.iso},0,${an.iso},${FALT.map(([f, kol]) => varde(kol, anFm.get(f)!.data[(r.y - box.y0) * box.bx + (r.x - box.x0)])).join(",")}`);
+  const rader = [...anRader, ...raderForKorning(fc.iso, steg, rutor, box.y0, box.x0, box.bx)];
   const fil = join(ut, `metnordic_live_${an.stamp}.csv.gz`);
   writeFileSync(fil, gzipSync(RUBRIK + "\n" + rader.join("\n") + "\n"));
-  const sp = spannUrRader(rader), vol = volym(a.buf.length, bytePrognos);
+  const sp = spannUrRader(rader), vol = volym(a.byte, bytePrognos);
   console.log("\nanrop:"); for (const x of anrop) console.log(`  ${x.vad.padEnd(44)} ${(x.byte / 1e6).toFixed(1).padStart(7)} MB ${(x.ms / 1000).toFixed(1).padStart(6)} s`);
   console.log(`\nvolymen om detta hämtas varje timme: ${vol.per_timme_mb.toFixed(0)} MB/timme, ${vol.per_dygn_gb.toFixed(2)} GB/dygn, ${vol.per_manad_gb.toFixed(1)} GB/månad`);
   console.log(`\nspannen (${rader.length} rader; SPANN deklarerat före mätningen):`);
@@ -195,6 +204,20 @@ async function mat(rot: string, ut: string) {
     volym: vol, spann: sp };
   writeFileSync(join(ut, "sammanfattning.json"), JSON.stringify(sammanfattning, null, 1));
   console.log("\nSAMMANFATTNING " + JSON.stringify({ ...sammanfattning, spann: undefined, anrop: undefined }));
+  return sammanfattning;
+}
+
+/** Ett DAP2-svar ur fält, i samma form som tolkaDods läser (självtestets fejkade källa). */
+export function dapSvar(falt: { namn: string; dims: number[]; data: number[] }[]): Uint8Array {
+  const rubrik = new TextEncoder().encode("Dataset {\n" + falt.map((f) => `  Structure {\n    Float32 ${f.namn}${f.dims.map((d) => `[d = ${d}]`).join("")};\n  } ${f.namn};\n`).join("") + "} t.nc;\n\nData:\n");
+  const n = falt.reduce((s, f) => s + 8 + 4 * f.data.length, 0);
+  const ut = new Uint8Array(rubrik.length + n); ut.set(rubrik);
+  const dv = new DataView(ut.buffer); let p = rubrik.length;
+  for (const f of falt) {
+    dv.setUint32(p, f.data.length); dv.setUint32(p + 4, f.data.length); p += 8;
+    for (const v of f.data) { dv.setFloat32(p, v); p += 4; }
+  }
+  return ut;
 }
 
 async function sjalvtest() {
@@ -232,8 +255,43 @@ async function sjalvtest() {
   k(Math.abs(v.per_timme_mb - 494) < 0.5 && Math.abs(v.per_dygn_gb - 11.856) < 0.01 && Math.abs(v.per_manad_gb - 355.68) < 0.1, `volymen: ${JSON.stringify(v)}`);
   k(FALTEN.length === 7 && FALTEN.every((f) => Array.isArray(SPANN[f]) && SPANN[f].length === 3), "värdevakten deklarerar alla rubrikens sju fält");
   k(STEG_LIVE >= 12, "+6 h-klassen (steg 6–11) ryms i STEG_LIVE");
+  // Hela mätningen mot en fejkad källa: ett rutnät 4×5, en station i ruta (1,2) och en vägpunkt i (3,4) ⇒ rutan 3×3; analysen ett
+  // steg, prognosen sex steg per anrop med summerad strålning. Sammanfattningen och raderna ska komma ut, utan ett enda nätanrop.
+  const gy = 4, gx = 5, gla: number[] = [], glo: number[] = [];
+  for (let y = 0; y < gy; y++) for (let x = 0; x < gx; x++) { gla.push(60 + y * 0.01 + x * 0.001); glo.push(15 + x * 0.02); }
+  const rot = mkdtempSync(join(tmpdir(), "mnl-")), ut = join(rot, "ut");
+  mkdirSync(join(rot, "data/vagdata"), { recursive: true });
+  writeFileSync(join(rot, PUNKTFILER[0]), JSON.stringify({ rader: [{ id: 1001, lat: gla[1 * gx + 2], lon: glo[1 * gx + 2] }] }));
+  writeFileSync(join(rot, PUNKTFILER[1]), JSON.stringify({ rader: [{ lat: gla[3 * gx + 4], lon: glo[3 * gx + 4] }] }));
+  // Prognosens strålning är summerad från körningens start över ALLA anrop (steg s + k + 1 gånger basen); analysens är timvärdet.
+  const varden = (steg: number, summerad: boolean, bas: number, s0: number) => Array.from({ length: steg * 9 }, (_, i) => summerad && steg > 1 ? bas * (s0 + Math.floor(i / 9) + 1) : bas);
+  const basen: Record<string, number> = { air_temperature_2m: 274.15, relative_humidity_2m: 0.5, wind_speed_10m: 3, cloud_area_fraction: 0.4,
+    precipitation_amount: 0.1, integral_of_surface_downwelling_longwave_flux_in_air_wrt_time: 1_000_000, integral_of_surface_downwelling_shortwave_flux_in_air_wrt_time: 500_000 };
+  const storlek: Record<string, number> = {};
+  const fejkH: Hamtare = async (u) => {
+    let buf: Uint8Array;
+    if (u.includes("?latitude.")) buf = dapSvar([{ namn: "latitude", dims: [gy, gx], data: gla }]);
+    else if (u.includes("?longitude.")) buf = dapSvar([{ namn: "longitude", dims: [gy, gx], data: glo }]);
+    else { const steg = u.includes("met_analysis_") ? 1 : PER_ANROP, s0 = Number(/%5B(\d+)%3A/u.exec(u)?.[1] ?? 0);
+      buf = dapSvar(FALT.map(([f, , summerad]) => ({ namn: f, dims: [steg, 3, 3], data: varden(steg, summerad, basen[f], s0) }))); }
+    storlek[u.includes("met_analysis_") ? (u.includes("?l") ? "grid" : "analys") : "prognos"] = buf.length;
+    return { buf, ms: 7 };
+  };
+  const logg = console.log; console.log = () => {};
+  let s: Awaited<ReturnType<typeof mat>> | null = null, fel2 = "";
+  try { s = await mat(rot, ut, fejkH, async () => html, 0); } catch (e) { fel2 = (e as Error).message; } finally { console.log = logg; }
+  k(!!s && !fel2, `mätningen mot den fejkade källan går igenom: ${fel2}`);
+  if (s) {
+    k(s.katalog.analys === "2026-10-14T05:00:00Z" && s.punkter.n === 2 && s.punkter.max_km < 0.01 && s.rutnat.by === 3 && s.rutnat.bx === 3, `katalogen, punkterna och rutan: ${JSON.stringify({ ...s, spann: undefined, anrop: undefined })}`);
+    k(s.anrop.length === 5 && s.anrop[1].byte === storlek.analys && s.anrop[2].byte === storlek.prognos && s.avkortade_svar === 0, `anropen: ${JSON.stringify(s.anrop)}`);
+    k(Math.abs(s.volym.per_timme_mb - (storlek.analys + 3 * storlek.prognos) / 1e6) < 1e-9, `volymen räknas ur analysen och prognosens tre anrop: ${JSON.stringify(s.volym)}`);
+    k(Object.keys(s.spann).length === 7 && s.spann.t2m_c.min === 1 && s.spann.t2m_c.utanfor === 0 && s.spann.langvag_jm2.min === 1_000_000
+      && s.spann.langvag_jm2.max === 1_000_000 && s.spann.langvag_jm2.saknas === 2 && s.spann.langvag_jm2.utanfor === 0,
+      `spannen: temperaturen i °C; analysens strålning rakt av och prognosens som timvärde ur summan över anropen (bara steg 0 saknas, två punkter): ${JSON.stringify(s.spann.langvag_jm2)}`);
+    k(existsSync(join(ut, "metnordic_live_20261014T05Z.csv.gz")) && existsSync(join(ut, "sammanfattning.json")), "raderna och sammanfattningen skrivs");
+  }
   if (fel) process.exit(1);
-  console.log("✓ självtest: katalogens senaste fil, filnamnet, närmaste rutan, rutan, spannen och volymen");
+  console.log("✓ självtest: avkortade svar, katalogens senaste fil, filnamnet, närmaste rutan, rutan, spannen, volymen, och hela mätningen mot en fejkad källa");
 }
 
 const korsSjalv = !!process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, "/").split("/").pop()!);
