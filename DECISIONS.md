@@ -12237,6 +12237,24 @@ och tre av talen lästes ändå:**
   körningar är en ny fråga efter pariteten. (3) Volymen ryms i Actions (gratis i det publika repot, #503); MET:s villkor om en
   förbindelse åt gången följs. Villkoren om volym läses i steg 2 innan något går på schema.
 
+**Steg 2 påbörjat 14/10 — historien för uppstarten, förregistrerad före knappen** (Bengt: *"slå ihop 946 och börja med steg 2"*).
+- **Vad kedjan behöver bakåt, läst i koden:** det längsta fönstret är 45 dygn (`prognos.py` FONSTER = 24 · 45: `tdeep`, fysikens
+  djupgräns, är ett 45-dygns medel av luften); de övriga är högst 168 h. Fysikens tillstånd (`run_lw(…, spara=)`) sparas vid timmen
+  före varje körning och är kedjans sak (steg 3). Steg 2 ger historien och punkterna.
+- **Arkivet täcker fönstret:** metpparchive bar 24 analysfiler för 30/8 (45 dygn bakåt), 11/10, 12/10 och 13/10 (läst 14/10 07:30).
+- **Bygget:** `ingest/metnordic-historik.ts --hamta` hämtar 45 dygns timvis analys (30/8–13/10) för de 13 814 punkterna, i kuvösens
+  analysform (`station_id,tid_utc` + sju fält, strålningen rakt av), ett dygn i taget, återupptagbart, med tidsbudget. Knappen
+  `metnordic-historik.yml`: fem delar om nio dygn, en åt gången, artefakt först och sedan den öppna releasen `metnordic-live-2026-27`
+  (MET Norway, NLOD / CC BY 4.0), efter mallen `kuvos-metnordic-prognos.yml`. Punkternas rutor skrivs till `metnordic_punkter.csv`
+  i releasen. Självtestet kör hela hämtningen mot en fejkad källa (två dygn, en saknad timme, återupptagningen).
+- **Förväntan, skriven före knappen:** 1 080 timmar, 0 saknade; 26,3 MB per anrop (rutan 1478×636 som mätningen) ⇒ 28 GB
+  sammanlagt, 5,7 GB per del; 30–60 s per anrop ⇒ 2–4 h per del, inom tidsbudgeten 320 min (annars återupptagning); 331 536 rader
+  per dygn (13 814 × 24), 14,9 miljoner i allt, omkring 150 MB packat per del; punkterna inom 0,70 km som förut; spannen inom
+  värdevaktens. Faller ett tal utanför läses källan först.
+- **Vad som inte görs:** inget schema, ingen kedja, inget tillstånd, ingen levande hämtning på schema — den kommer med körplatsen
+  (val 3). MET:s förstasida med villkoren svarade inte 14/10; det kända villkoret, en förbindelse åt gången, följs, och sidan läses
+  innan något går på schema.
+
 **Stomdokument:** inga — ett byggsteg på kort #343; beslutet #556 och frågorna i §4.2 är oförändrade.
 
 ## #557 (14/10 2026) Nivå 2+blandning live blir åttonde stomdokumentet, kopplat som kuvösen

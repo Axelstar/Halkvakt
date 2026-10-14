@@ -115,9 +115,11 @@ async function hamta(url: string): Promise<{ buf: Uint8Array; ms: number }> {
 /** Avkortade svar: ett svar kan komma med 200 men kapat (kuvösen såg det 6/10; mätningen 14/10 06:22 fick 3,75 MB av 26 MB). Då hämtas
  *  det om, högst sex gånger, och varje kapat svar räknas — det är ett av mätningens tal, inte ett fel som döljs. */
 export let avkortade = 0;
+/** Ett tomt svar är en fil som saknas (404, arkivets hämtare) och ger null; mätningen kräver sina filer (kravs). */
 export async function hamtaTolkat(url: string, vad: string, h: (u: string) => Promise<{ buf: Uint8Array; ms: number }> = hamta, paus = 5000) {
   for (let forsok = 0; ; forsok++) {
     const { buf, ms } = await h(url);
+    if (!buf.length) return null;
     try { return { falt: tolkaDods(buf), byte: buf.length, ms }; }
     catch (e) {
       avkortade++;
@@ -128,11 +130,13 @@ export async function hamtaTolkat(url: string, vad: string, h: (u: string) => Pr
   }
 }
 
+const kravs = <T,>(x: T | null, vad: string): T => { if (x === null) throw new Error(`${vad}: filen saknas i katalogen (404)`); return x; };
+
 async function hamtaKatalog(): Promise<string> {
   return (await fetch(KATALOG, { headers: { "User-Agent": UA }, signal: AbortSignal.timeout(60_000) })).text();
 }
 
-type Hamtare = (u: string) => Promise<{ buf: Uint8Array; ms: number }>;
+export type Hamtare = (u: string) => Promise<{ buf: Uint8Array; ms: number }>;
 /** Mätningen. Källan (h, katalog) och pausen är utbytbara så att självtestet kör HELA vägen mot en fejkad källa — den andra
  *  tryckningen 14/10 06:46 hämtade allt och föll på sammanfattningens sista rad, som inget prov hade kört. */
 export async function mat(rot: string, ut: string, h: Hamtare = hamta, katalog: () => Promise<string> = hamtaKatalog, paus = 5000) {
@@ -148,7 +152,7 @@ export async function mat(rot: string, ut: string, h: Hamtare = hamta, katalog: 
   const anFil = filnamnLive("analysis", an.stamp);
   const grid: { la: Falt; lo: Falt; byte: number; ms: number } = { la: null!, lo: null!, byte: 0, ms: 0 };
   for (const f of ["latitude", "longitude"] as const) {
-    const { falt, byte, ms } = await hamtaTolkat(`${anFil}?${f}.${f}`, f, h, paus);
+    const { falt, byte, ms } = kravs(await hamtaTolkat(`${anFil}?${f}.${f}`, f, h, paus), f);
     grid.byte += byte; grid.ms += ms; (grid as any)[f === "latitude" ? "la" : "lo"] = falt[0];
   }
   const [ny, nx] = grid.la.dims;
@@ -170,14 +174,14 @@ export async function mat(rot: string, ut: string, h: Hamtare = hamta, katalog: 
     return fm;
   };
   // Analysen: ett timsteg, sju fält.
-  const a = await hamtaTolkat(`${anFil}?${urval(0, 0)}`, "analysen", h, paus);
+  const a = kravs(await hamtaTolkat(`${anFil}?${urval(0, 0)}`, "analysen", h, paus), "analysen");
   const anFm = kontroll(a.falt, 1, "analysen");
   anrop.push({ vad: `analysen ${an.stamp}, 1 timsteg`, byte: a.byte, ms: a.ms });
   // Prognosen: stegen 0–17 i anrop om sex, som kuvösen.
   const fcFil = filnamnLive("forecast", fc.stamp), steg: Map<string, Falt>[] = [];
   let bytePrognos = 0;
   for (let s = 0; s < STEG_LIVE; s += PER_ANROP) {
-    const r = await hamtaTolkat(`${fcFil}?${urval(s, s + PER_ANROP - 1)}`, `prognosen steg ${s}`, h, paus);
+    const r = kravs(await hamtaTolkat(`${fcFil}?${urval(s, s + PER_ANROP - 1)}`, `prognosen steg ${s}`, h, paus), `prognosen steg ${s}`);
     const fm = kontroll(r.falt, PER_ANROP, `prognosen steg ${s}`);
     anrop.push({ vad: `prognosen ${fc.stamp}, steg ${s}–${s + PER_ANROP - 1}`, byte: r.byte, ms: r.ms }); bytePrognos += r.byte;
     const n = box.by * box.bx;
@@ -229,7 +233,8 @@ async function sjalvtest() {
   let n = 0;
   const fejk = async () => ({ buf: ++n < 3 ? helt.slice(0, helt.length - 3) : helt, ms: 1 });
   const h = await hamtaTolkat("u", "prov", fejk, 0);
-  k(h.falt[0].data[1] === 2.5 && h.byte === helt.length && avkortade === 2 && n === 3, `avkortade svar hämtas om: ${avkortade} räknade, ${n} försök`);
+  k(!!h && h.falt[0].data[1] === 2.5 && h.byte === helt.length && avkortade === 2 && n === 3, `avkortade svar hämtas om: ${avkortade} räknade, ${n} försök`);
+  k((await hamtaTolkat("u", "prov", async () => ({ buf: new Uint8Array(0), ms: 1 }), 0)) === null && avkortade === 2, "ett tomt svar (404) är null och räknas inte som avkortat");
   let foll = false; n = -100;
   try { await hamtaTolkat("u", "prov", fejk, 0); } catch { foll = true; }
   k(foll && avkortade === 8, `sex kapade i rad fäller, och alla räknas: ${avkortade}`);
@@ -255,16 +260,19 @@ async function sjalvtest() {
   k(Math.abs(v.per_timme_mb - 494) < 0.5 && Math.abs(v.per_dygn_gb - 11.856) < 0.01 && Math.abs(v.per_manad_gb - 355.68) < 0.1, `volymen: ${JSON.stringify(v)}`);
   k(FALTEN.length === 7 && FALTEN.every((f) => Array.isArray(SPANN[f]) && SPANN[f].length === 3), "värdevakten deklarerar alla rubrikens sju fält");
   k(STEG_LIVE >= 12, "+6 h-klassen (steg 6–11) ryms i STEG_LIVE");
-  // Hela mätningen mot en fejkad källa: ett rutnät 4×5, en station i ruta (1,2) och en vägpunkt i (3,4) ⇒ rutan 3×3; analysen ett
-  // steg, prognosen sex steg per anrop med summerad strålning. Sammanfattningen och raderna ska komma ut, utan ett enda nätanrop.
+  // Hela mätningen mot en fejkad källa: ett rutnät 4×5, en station i ruta (1,1) och en vägpunkt i (3,4) ⇒ rutan 3 hög och 4 bred
+  // (höjd och bredd kan inte förväxlas; analysens luft stiger 0,01 ° per cell); analysen ett steg, prognosen sex steg per anrop med
+  // summerad strålning. Sammanfattningen och raderna ska komma ut, utan ett enda nätanrop.
   const gy = 4, gx = 5, gla: number[] = [], glo: number[] = [];
   for (let y = 0; y < gy; y++) for (let x = 0; x < gx; x++) { gla.push(60 + y * 0.01 + x * 0.001); glo.push(15 + x * 0.02); }
   const rot = mkdtempSync(join(tmpdir(), "mnl-")), ut = join(rot, "ut");
   mkdirSync(join(rot, "data/vagdata"), { recursive: true });
-  writeFileSync(join(rot, PUNKTFILER[0]), JSON.stringify({ rader: [{ id: 1001, lat: gla[1 * gx + 2], lon: glo[1 * gx + 2] }] }));
+  writeFileSync(join(rot, PUNKTFILER[0]), JSON.stringify({ rader: [{ id: 1001, lat: gla[1 * gx + 1], lon: glo[1 * gx + 1] }] }));
   writeFileSync(join(rot, PUNKTFILER[1]), JSON.stringify({ rader: [{ lat: gla[3 * gx + 4], lon: glo[3 * gx + 4] }] }));
-  // Prognosens strålning är summerad från körningens start över ALLA anrop (steg s + k + 1 gånger basen); analysens är timvärdet.
-  const varden = (steg: number, summerad: boolean, bas: number, s0: number) => Array.from({ length: steg * 9 }, (_, i) => summerad && steg > 1 ? bas * (s0 + Math.floor(i / 9) + 1) : bas);
+  // Prognosens strålning är summerad från körningens start över ALLA anrop (steg s + k + 1 gånger basen); analysens är timvärdet,
+  // och analysens luft stiger 0,01 ° per cell i rutan (12 celler).
+  const varden = (steg: number, summerad: boolean, bas: number, s0: number, f = "") => Array.from({ length: steg * 12 }, (_, i) =>
+    summerad && steg > 1 ? bas * (s0 + Math.floor(i / 12) + 1) : steg === 1 && f === "air_temperature_2m" ? bas + i * 0.01 : bas);
   const basen: Record<string, number> = { air_temperature_2m: 274.15, relative_humidity_2m: 0.5, wind_speed_10m: 3, cloud_area_fraction: 0.4,
     precipitation_amount: 0.1, integral_of_surface_downwelling_longwave_flux_in_air_wrt_time: 1_000_000, integral_of_surface_downwelling_shortwave_flux_in_air_wrt_time: 500_000 };
   const storlek: Record<string, number> = {};
@@ -273,7 +281,7 @@ async function sjalvtest() {
     if (u.includes("?latitude.")) buf = dapSvar([{ namn: "latitude", dims: [gy, gx], data: gla }]);
     else if (u.includes("?longitude.")) buf = dapSvar([{ namn: "longitude", dims: [gy, gx], data: glo }]);
     else { const steg = u.includes("met_analysis_") ? 1 : PER_ANROP, s0 = Number(/%5B(\d+)%3A/u.exec(u)?.[1] ?? 0);
-      buf = dapSvar(FALT.map(([f, , summerad]) => ({ namn: f, dims: [steg, 3, 3], data: varden(steg, summerad, basen[f], s0) }))); }
+      buf = dapSvar(FALT.map(([f, , summerad]) => ({ namn: f, dims: [steg, 3, 4], data: varden(steg, summerad, basen[f], s0, f) }))); }
     storlek[u.includes("met_analysis_") ? (u.includes("?l") ? "grid" : "analys") : "prognos"] = buf.length;
     return { buf, ms: 7 };
   };
@@ -282,12 +290,12 @@ async function sjalvtest() {
   try { s = await mat(rot, ut, fejkH, async () => html, 0); } catch (e) { fel2 = (e as Error).message; } finally { console.log = logg; }
   k(!!s && !fel2, `mätningen mot den fejkade källan går igenom: ${fel2}`);
   if (s) {
-    k(s.katalog.analys === "2026-10-14T05:00:00Z" && s.punkter.n === 2 && s.punkter.max_km < 0.01 && s.rutnat.by === 3 && s.rutnat.bx === 3, `katalogen, punkterna och rutan: ${JSON.stringify({ ...s, spann: undefined, anrop: undefined })}`);
+    k(s.katalog.analys === "2026-10-14T05:00:00Z" && s.punkter.n === 2 && s.punkter.max_km < 0.01 && s.rutnat.by === 3 && s.rutnat.bx === 4, `katalogen, punkterna och rutan: ${JSON.stringify({ ...s, spann: undefined, anrop: undefined })}`);
     k(s.anrop.length === 5 && s.anrop[1].byte === storlek.analys && s.anrop[2].byte === storlek.prognos && s.avkortade_svar === 0, `anropen: ${JSON.stringify(s.anrop)}`);
     k(Math.abs(s.volym.per_timme_mb - (storlek.analys + 3 * storlek.prognos) / 1e6) < 1e-9, `volymen räknas ur analysen och prognosens tre anrop: ${JSON.stringify(s.volym)}`);
-    k(Object.keys(s.spann).length === 7 && s.spann.t2m_c.min === 1 && s.spann.t2m_c.utanfor === 0 && s.spann.langvag_jm2.min === 1_000_000
+    k(Object.keys(s.spann).length === 7 && s.spann.t2m_c.min === 1 && s.spann.t2m_c.max === 1.11 && s.spann.t2m_c.utanfor === 0 && s.spann.langvag_jm2.min === 1_000_000
       && s.spann.langvag_jm2.max === 1_000_000 && s.spann.langvag_jm2.saknas === 2 && s.spann.langvag_jm2.utanfor === 0,
-      `spannen: temperaturen i °C; analysens strålning rakt av och prognosens som timvärde ur summan över anropen (bara steg 0 saknas, två punkter): ${JSON.stringify(s.spann.langvag_jm2)}`);
+      `spannen: temperaturen i °C med vägpunkten i rutans sista cell (1,11); analysens strålning rakt av och prognosens som timvärde ur summan över anropen (bara steg 0 saknas, två punkter): ${JSON.stringify(s.spann.t2m_c)} ${JSON.stringify(s.spann.langvag_jm2)}`);
     k(existsSync(join(ut, "metnordic_live_20261014T05Z.csv.gz")) && existsSync(join(ut, "sammanfattning.json")), "raderna och sammanfattningen skrivs");
   }
   if (fel) process.exit(1);
