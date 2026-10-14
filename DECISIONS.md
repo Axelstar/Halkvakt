@@ -12400,7 +12400,7 @@ kandidat-fysik"*).
   fysiken låg alltså i snitt 0,42 °C under det mätarna visade vid ankarna, och rättelsen drar PB uppåt med den vikten.
 - De 9 punkter som inte fick RÅ saknar ankare inom 50 km. De behåller PG (fysik + grannarnas fel), som blandningen ger
   full vikt när ankaravståndet är stort — samma väg som kuvösen.
-- **Pulsklockans rader** (steg 4): `puls-kandidat-fysik` på **:13 efter 00, 06, 12 och 18 UTC** och `puls-kandidat-timme` på
+- **Pulsklockans rader** (del av steg 3): `puls-kandidat-fysik` på **:13 efter 00, 06, 12 och 18 UTC** och `puls-kandidat-timme` på
   **:43 varje timme**. Takten följer +6 h-klassen (#519): vid :13 är körningen just sex timmar gammal, och del A skriver då
   precis de sex timmar som följer (R+6…R+11, dvs. 06–11 för körningen 00Z), så täckningen blir obruten dygnet runt. Del B
   ligger en halvtimme efter del A, när PH för timmen finns. Minuterna är lediga i databasens klocka. `ANTAL_NYA` och
@@ -12450,11 +12450,28 @@ granskning av punkt 4–6).
 - **Utanför kortet:** samma utskrift visade att `cell-matning-v3` föll 12/10 06:20 och att issue #892 stått öppen sedan 12/10
   07:07 — mätvakten har larmat i två dygn utan att någon agerat.
 
+**Tillägg 14/10 kväll: granskningens rättelser** (Bengt, efter granskningen av NIVA2-LIVE och stegen: *"så då gör vi alla steg som
+rättar till det här i tur och ordning"*).
+
+- **Stegnumren:** dokumentets numrering (NIVA2-LIVE §3, steg 1–14, den Axel fått) gäller överallt. Pulsklockan är en del av steg 3,
+  pariteten steg 4, förregistreringen steg 8. Rättat i #559, #560, projektkartan och kort #343. Tidigare STATUS-rader skrivs inte om.
+- **PR #957 sammanslagen** (c5504ee): main bär `13 */6 * * *`, som driften. **Mätvaktens bevis:** körningen 21:07 skrev
+  *"kandidat-fysik: senaste körningen failure (2026-10-14T19:37)"* i stället för *"kadensen okänd, vakten blind"*. Mätvakten ser del A
+  igen och ser rätt: den har fallit.
+- **MET:s villkor lästa** på källsidan (thredds.met.no, *Terms of Service*, 14/10 21:0x UTC): *"Please avoid spawning multiple
+  parallel sessions for OPeNDAP access or file downloads"*; IP-adresser med *"excessive load"* kan blockeras; licensen NLOD och CC BY
+  4.0. Vår hämtning väntar in varje anrop innan nästa, och det enda schemalagda flödet som når MET är del A var sjätte timme. Villkoren
+  följs. Två samtidiga sessioner kan uppstå bara om en kuvös- eller MET-knapp trycks medan del A kör. Villkoret i #556 (*"sidan läses
+  innan något går på schema"*) uppfylldes alltså först efter att schemat startat; det redovisas som en avvikelse.
+- **Värdevakten** (38637169663): kandidatens sju fält inom spann — `kandidat_live` ph, pg, ra, pb −3,18…13,6 °C och ank_km 0…49,6 km
+  (13 714 rader, en timme), `kandidat_ph` ts_fysik och ph −3,18…17,14 °C (82 284 rader).
+- **`cell-matning-v3`** (fallen 12/10 06:20 på *"canceling statement due to statement timeout"*, taket 300 s): omkörd 14/10 21:06 (38637605788) och föll igen på samma tak efter 6,5 minuter, medan självtestet gick igenom. Felet är alltså bestående, inte tillfälligt: sjudygnsfrågan ryms inte längre i 300 s. Det lagas inte i kväll; kort #346 är lagt, och mätvakten larmar med rätta tills det är gjort.
+
 **Stomdokument:** LIV, BED §4.2, SYS.
 
-## #559 (14/10 2026) Pariteten förregistrerad: den levande kedjan mot kuvösens frysta procedur på samma körning (kort #343, steg 5)
+## #559 (14/10 2026) Pariteten, förslaget till förregistrering: den levande kedjan mot kuvösens frysta procedur på samma körning (kort #343, steg 4)
 
-**Förslag.** Claude 14/10, inför Bengts och Axels läsning. Steg 5 i planen för att gå live (#556) är provet som säger om det som
+**Förslag.** Claude 14/10, inför Bengts och Axels läsning. Steg 4 i planen för att gå live (NIVA2-LIVE §3, #556) är provet som säger om det som
 *går live* räknar samma sak som det som *mättes* i kuvösen. Regeln och förväntan skrivs här, före knappen.
 
 **Varför ett prov och inte ett resonemang.** Del A (`fysik/live/kandidat_fysik.py`) LÅNAR `run_lw`, `skarv`, `las_prognos`,
@@ -12518,7 +12535,7 @@ modeller (stationens egen region utelämnad), medan den levande kedjan kör den 
 
 **Stomdokument:** LIV, MAT, KAR, KUV §9.
 
-## #560 (14/10 2026) Förregistreringen för vintern 2026/27 — utkastet, med allt utom regeln och populationen fastskrivet (kort #343, steg 6)
+## #560 (14/10 2026) Förregistreringen för vintern 2026/27 — utkastet, med allt utom regeln och skuggloggen fastskrivet (kort #343, steg 8)
 
 **Förslag.** Claude 14/10, inför Bengts och Axels signaturer. #544 punkt 6 och #547 säger att kandidaten döms i mars som en **ny
 fråga**, i den form väg B fryste den, och att förregistreringen skrivs **senast 31/10**. Domfönstret börjar på förregistreringens
