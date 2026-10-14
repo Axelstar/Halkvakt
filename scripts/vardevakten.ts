@@ -66,7 +66,7 @@ export const SPANN: Record<string, [number, number, string]> = {
   klass: [0, 9, "funktionell vägklass 0 (riksväg) … 9"],
   bredd_m: [0, 60, "m vägbredd"],
   hastighet_kmh: [5, 130, "km/h högsta tillåtna"],
-  adt_fordon: [0, 200000, "fordon per årsmedeldygn"],
+  adt_fordon: [0, 200000, "fordon per årsmedeldygn"],   // också Lastkajens ADT_f_117 i data/vagdata/vaglagspunkter-adt.json (#553)
   adt_lastbilar: [0, 50000, "tunga fordon per årsmedeldygn"],
   adt_latta_22_06: [0, 50000, "lätta fordon per årsmedeldygn kl. 22–06"],
   adt_matar: [1990, 2030, "mätår för ÅDT (ur Mätårsperiod ÅÅÅÅMM)"],

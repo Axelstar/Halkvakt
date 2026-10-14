@@ -11951,6 +11951,38 @@ provet"*; paketet hämtat av Bengt 13/10).
   - ÅDT, tunga fordon och vägklass ur vägdatalagret.
 - Vägdatalagrets ÅDT korrelerar 0,861 med Axels vid stationerna (utfallet under #549). Den skillnaden är inte prövad i rättelsen.
 
+**Tillägg 14/10: ÅDT och vägklass ur Lastkajens paket — regeln före körningen** (Bengt: *"slå ihop 934 och 2 ja"*, på frågan i
+bedömningen §4.2).
+- Vid stationerna kommer rättelsens vägdata ur Axels `roadjoin.py` mot NVDB:s geopaket (`road_all.csv`). Vid vägpunkterna kom de ur
+  vägdatalagret, vars ÅDT korrelerar 0,861 med Axels.
+- Sverigepaketet Drift och underhåll bär `ADT_f_117` (ÅDT, alla fordon) och `Klass_181` (funktionell vägklass 0–9), men inga tunga
+  fordon. Varje fält kopplas som `roadjoin.py` kopplar varje lager: närmaste segment som bär fältet, inom 150 m
+  (`fysik/vagpunkter/trafik_klass.py`).
+- **Regeln, skriven och pushad före körningen:**
+  - först stationerna mot `road_all.csv`;
+  - klassen ska vara lika vid minst 95 % av stationerna med klass i båda;
+  - ÅDT ska ligga inom ±10 % av Axels vid minst 90 % av stationerna med ÅDT i båda, och minst lika ofta som vägdatalagret på
+    stationerna med ÅDT i alla tre;
+  - vägpunkterna får ett fält ur paketet bara om det fältet klarar sitt krav, annars läses skälet först.
+- Tunga fordon stannar i vägdatalagret. Andelen tunga vid vägpunkterna räknas ur vägdatalagrets egna två tal, så att kvoten inte
+  blandar källor.
+
+**Tillägg 14/10: utfallet — ÅDT ur paketet, vägklassen stannar i vägdatalagret** (körd lokalt på 65238f1, regeln ovan).
+- **ÅDT klarar regeln.** Vid 726 stationer med ÅDT i båda ligger paketet inom ±10 % av Axels till **95,7 %** (kravet 90 %), och
+  vägdatalagret till 90,8 % på samma stationer. Korrelationen i log10 är 0,893 mot 0,857.
+- **Vägklassen klarar inte regeln:** 744 stationer, **92,2 %** lika (kravet 95 %). Skälet är att närmaste segment ofta är en mindre
+  väg bredvid stationen. 38 av de 58 avvikelserna har paketets klass 7–9 (28 av dem klass 9) där Axel har 0–5. Vägdatalagret väljer
+  lägsta klass inom radien och är lika med Axel vid **95,0 %** av samma 744 stationer. Vägpunkternas klass stannar därför i
+  vägdatalagret, enligt regeln.
+- **Vägpunkterna:** ÅDT ur paketet vid **12 626 av 12 960** (`data/vagdata/vaglagspunkter-adt.json`, CC0, spannet `adt_fordon`).
+  - De 334 utan ÅDT inom 150 m: 213 har ÅDT i vägdatalagret, 121 saknar i båda. Luckorna står tomma i filen.
+  - Mot vägdatalagret vid de 12 621 med ÅDT i båda: 88,0 % inom ±10 % och 77,1 % exakt lika.
+- **Avvikelsen sitter i korsningarna.** Vid de 818 punkterna med km 0 (`…@0`, väglagssegmentets början; 786 med ÅDT i båda) stämmer paketet bara till
+  42,5 % med vägdatalagret, mot 91,0 % vid de övriga 11 835. Där de skiljer sig är paketets ÅDT lägre i 1 408 av 1 520 fall (median
+  hälften). Närmaste segment i en korsning är ofta en annan väg än den väglagssegmentet ligger på.
+  - Att välja största ÅDT bland segmenten inom närmaste + 2 m höjer bara km 0 till 51,7 %. Det är prövat som underlag, inte som regel.
+- Frågan om korsningspunkterna står i bedömningen §4.2.
+
 ## #554 (14/10 2026) A2:s population läses: var på yttemperaturskalan de grova felen ligger — förregistrerad läsning, ingen dom
 
 **Beslut.** Bengt 14/10: *"Läs a 2 population"* — på fyndet att grind A:s två mått räknar över olika populationer.
