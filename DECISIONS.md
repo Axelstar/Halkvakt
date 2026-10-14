@@ -12196,4 +12196,14 @@ steg 1"*).
 - **Vad talet används till:** volymen avgör körplatsen (val 3 i §4.2) och om varje timme är rätt takt, eller om körningarna var sjätte
   timme räcker som i kuvösen. Ingen kedja körs, inget schema läggs, ingen tabell skrivs.
 
+**Första tryckningen 14/10 06:21 UTC (körning 38521765994 på f7f68dc; Bengt: *"slå ihop 942 och tryck knappen"*) föll efter 25 s,
+och tre av talen lästes ändå:**
+- katalogen: analysen 06Z var 22 min gammal och körningen 05Z 82 min gammal — inom förväntans 2 h;
+- rutnätet 2321×1796; rutan över de 13 814 punkterna y 251–1728, x 678–1313 (1478×636, 940 008 rutor), som kuvösens;
+- längst från rutmitten 0,70 km, ingen punkt över 1,5 km — inom förväntans 0,8 km.
+- **Fallet:** analysens svar (sju fält, ett steg; väntat 26,3 MB) kom med 200 men avkortat, 3 752 935 byte. Kuvösens hämtare såg
+  samma sak 6/10 och hämtar om upp till sex gånger; mätningen saknade den omhämtningen. Rättat samma timme: `hamtaTolkat()` hämtar om,
+  varje kapat svar räknas och redovisas (`avkortade_svar` i sammanfattningen), och självtestet prövar två kapade och sedan ett helt,
+  och sex kapade i rad. Volymen, tiderna och spannen är inte lästa än — knappen trycks om.
+
 **Stomdokument:** inga — ett byggsteg på kort #343; beslutet #556 och frågorna i §4.2 är oförändrade.
