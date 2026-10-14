@@ -1,0 +1,30 @@
+name: metnordic-live
+# MET NORDIC LEVANDE — mätningen, steg 1 på kort #343 (DECISIONS #556). Trycks på Bengts ord, aldrig på schema: läser katalogen
+# metpplatest, hämtar den senaste analysen och den senaste körningens steg 0–17 i rutan över stationerna och väglagspunkterna, och
+# skriver volymen, tiderna, avstånden till rutmitten och värdenas spann i jobbsammanfattningen. Raderna blir en artefakt i ett dygn.
+# Inget lagras i repot eller i en tabell, och ingen kedja körs.
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  mat:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Självtestet
+        run: node --experimental-strip-types ingest/metnordic-live.ts --sjalvtest 2>&1 | grep -v ExperimentalWarning
+      - name: Mätningen (DECISIONS #556, steg 1)
+        run: |
+          set -o pipefail
+          { echo '```'; node --experimental-strip-types ingest/metnordic-live.ts --mat --ut mn-live; echo '```'; } 2>&1 | grep --line-buffered -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: metnordic-live-${{ github.run_id }}
+          path: mn-live/
+          retention-days: 1
+          if-no-files-found: ignore

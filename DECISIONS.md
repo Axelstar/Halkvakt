@@ -12175,3 +12175,25 @@ utvärderingen sker då men vi måste ha ut något live nu."* Samma dag: appen �
   räckvidden mellan stationerna, som är kandidatens mening (#547).
 - **En förenkling:** tröskeln bor på ETT ställe, i publiceringen; motorn får bara en ny farotyp med text, prioritet och vektorer.
   Då kopieras inga tal till tre språk.
+
+**Steg 1 påbörjat 14/10 — MET Nordic levande, mätningen förregistrerad före knappen** (Bengt: *"slå ihop 940 och 941 och börja med
+steg 1"*).
+- **Källan, läst 14/10 06 UTC:** katalogen `metpplatest` på thredds.met.no bär tre rullande dygn med en analys och en prognoskörning
+  VARJE timme (72 av varje), senaste 05Z när klockan var 06Z. Två skillnader mot arkivet som kuvösen läste: körningar varje timme (inte
+  00, 06, 12, 18) med 57 timsteg (inte 30), och prognosfilen har `probability_of_snow_phase`. Pariteten med kuvösen (steg 4) kräver
+  kuvösens regler oförändrade: snö är nederbörd vid luft ≤ +1 °C, och +6 h-klassen är stegen 6–11 (#519).
+- **Bygget:** `ingest/metnordic-live.ts` (`--mat`), knappen `metnordic-live.yml` (bara på Bengts ord, inget schema), självtestet i
+  ci.yml. Samma DAP-tolkning och samma rader som kuvösens arkivfiler (`kuvos/metnordic-prognos.ts`), samma rutsökning som analysens
+  hämtning (`kuvos/metnordic.ts`, ec30eff), en förbindelse åt gången. Spannen för de sju fälten importeras ur värdevakten, aldrig
+  egna kopior.
+- **Vad mätningen läser:** katalogens ålder; rutnätet och rutan över stationerna och väglagspunkterna; punkternas avstånd till
+  rutmitten; varje anrops byte och sekunder (lat och lon en gång, analysen ett steg, körningens steg 0–17 i tre anrop om sex); volymen
+  uppräknad till timme, dygn och månad; värdenas spann mot värdevakten. Raderna blir en artefakt i ett dygn, inget lagras.
+- **Förväntan, skriven före knappen:** analysen och körningen högst 2 h gamla; rutan som stationernas (vägpunkterna spänner
+  11,19–24,14° E, 55,34–68,44° N mot stationernas 11,24–23,99 / 55,34–68,43); ett anrop om sex steg omkring 156 MB och 10–15 s som
+  kuvösen mätte 11/10, alltså 0,4–0,6 GB per timme och 10–15 GB per dygn om allt hämtas varje timme; punkterna inom 0,8 km från
+  rutmitten; inga värden utanför värdevaktens spann utom nederbördens brus strax under 0. Faller ett tal utanför läses källan först.
+- **Vad talet används till:** volymen avgör körplatsen (val 3 i §4.2) och om varje timme är rätt takt, eller om körningarna var sjätte
+  timme räcker som i kuvösen. Ingen kedja körs, inget schema läggs, ingen tabell skrivs.
+
+**Stomdokument:** inga — ett byggsteg på kort #343; beslutet #556 och frågorna i §4.2 är oförändrade.
