@@ -745,8 +745,11 @@ test("#234 drifträkningen: radvakten och karantänen väljer bort samma rader s
         ${fall("KAR_E", 15.5, 1)}
       ON CONFLICT DO NOTHING`);
     // KAR_E: samma vackra fall, men stationen har ett dygn i den långsamma vaktens fel (kort #236) — tabellen räcker.
+    // Ett feldygn per UTC-dygn som fallet rör, som langsam_vakt() skriver: med bara now():s dygn föll provet 14/10 00:14 UTC,
+    // när fallets rader (−50 till −20 min) låg på föregående dygn.
     await pool.query(`INSERT INTO givarfel_dygn (station_id, dag, forst, senast)
-      VALUES ('KAR_E', (now() AT TIME ZONE 'UTC')::date, now() - interval '20 hours', now() - interval '10 minutes')
+      SELECT DISTINCT 'KAR_E', (t AT TIME ZONE 'UTC')::date, now() - interval '20 hours', now() - interval '10 minutes'
+      FROM unnest(ARRAY[now() - interval '50 minutes', now()]) AS t
       ON CONFLICT DO NOTHING`);
     await pool.query("SELECT * FROM berakna_trendkandidater()");
     const valda = (await pool.query("SELECT DISTINCT station_id FROM trend_kandidater WHERE station_id LIKE 'KAR_%' ORDER BY 1")).rows.map((r) => r.station_id);
