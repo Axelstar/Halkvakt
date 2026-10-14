@@ -63,10 +63,10 @@ export const SPANN: Record<string, [number, number, string]> = {
   condition_code: [1, 4, "Trafikverkets väglagsklass"],
   // Vägdatalagret (kort #301, DECISIONS #473): NVDB ur öppna API:et, statiskt per plats i data/vagdata/. Spannen deklareras HÄR
   // innan någon mätning läser fälten; hämtaren importerar dem och fäller vid brott.
-  klass: [0, 9, "funktionell vägklass 0 (riksväg) … 9"],
+  klass: [0, 9, "funktionell vägklass 0 (riksväg) … 9"],   // också Lastkajens Klass_181 i data/vagdata/vaglagspunkter-adt-klass.json (#553)
   bredd_m: [0, 60, "m vägbredd"],
   hastighet_kmh: [5, 130, "km/h högsta tillåtna"],
-  adt_fordon: [0, 200000, "fordon per årsmedeldygn"],   // också Lastkajens ADT_f_117 i data/vagdata/vaglagspunkter-adt.json (#553)
+  adt_fordon: [0, 200000, "fordon per årsmedeldygn"],   // också Lastkajens ADT_f_117 i data/vagdata/vaglagspunkter-adt-klass.json (#553)
   adt_lastbilar: [0, 50000, "tunga fordon per årsmedeldygn"],
   adt_latta_22_06: [0, 50000, "lätta fordon per årsmedeldygn kl. 22–06"],
   adt_matar: [1990, 2030, "mätår för ÅDT (ur Mätårsperiod ÅÅÅÅMM)"],

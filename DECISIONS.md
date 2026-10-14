@@ -11997,6 +11997,15 @@ a och ja till båda"*, på frågorna i bedömningen §4.2).
   - vägpunkterna får fälten bara om båda klarar; annars läses skälet först.
 - Reservation: klassregeln hittades på samma 726 stationer som den prövas på. Den har ingen parameter att trimma.
 
+**Tillägg 14/10: utfallet med vägvalet** (körd lokalt på 601d952, regeln ovan).
+- **Stationerna klarar båda kraven.** Klassen är lika med Axels vid **97,2 %** av 744 stationer (kravet 95 %); 27 av dem har
+  vägdatalagrets klass. ÅDT är oförändrad: 95,7 % inom ±10 % vid 726 stationer, mot vägdatalagrets 90,8 %.
+- **Vägpunkterna:** filen heter nu `data/vagdata/vaglagspunkter-adt-klass.json` (tidigare `vaglagspunkter-adt.json`).
+  - ÅDT ur paketet vid 12 626 (samma tal som förut vid alla), ur vägdatalagret vid 213, och 121 saknar i båda.
+  - Klassen ur paketet vid 12 626 och ur vägdatalagret vid 334; ingen saknas.
+  - Klass 7–9 finns vid 4 punkter, mot 676 klass 9 med den första regeln. Klassen är lika med vägdatalagrets vid 94,4 %.
+- Källan står per rad i `adt_kalla` och `klass_kalla`.
+
 ## #554 (14/10 2026) A2:s population läses: var på yttemperaturskalan de grova felen ligger — förregistrerad läsning, ingen dom
 
 **Beslut.** Bengt 14/10: *"Läs a 2 population"* — på fyndet att grind A:s två mått räknar över olika populationer.
