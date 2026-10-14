@@ -12408,6 +12408,24 @@ kandidat-fysik"*).
   knappen skapat jobben**, annars larmar check 6a på två jobb som inte finns än.
 - Ingen dom. Talen säger att rörledningen bär timme för timme, inte att kandidaten är bra. Pariteten (steg 5) är provet.
 
+**Tillägg 14/10: pulsklockans två jobb skapade** (Bengt: *"tryck pulsklocka"*).
+
+- **Före:** inventeringen (körning 38621359990, 19:10 UTC) läste **12 puls-jobb** i `cron.job` — exakt det gamla golvet — och de två
+  nya fanns inte.
+- **Efter:** skarpa körningen (38621796578, 19:13 UTC) skrev dem och läste tillbaka var och en: `puls-kandidat-fysik`
+  → `kandidat-fysik.yml`, schema **`13 0,6,12,18 * * *`**, aktiv, token finns; `puls-kandidat-timme` → `kandidat-timme.yml`,
+  schema **`43 * * * *`**, aktiv, token finns. Skriptets egen sammanfattning: *"Alla 14 pulsjobben på plats."*
+- **Vakthunden är INTE deployad än.** Den kör fortfarande med `PULS_GOLV = 12` i drift, och 14 ≥ 12, så den larmar inte — men den
+  vaktar heller inte de två nya jobben förrän funktionen deployas. Det är nästa steg, på Bengts ord, och beviset är en mätning efter
+  deployen (vakthundens egen rad *pulsjobb: 14 aktiva (golv 14)*), inte commit-hashen.
+- **Ett hål i natt, 18:00–23:00 UTC, som självläker.** Takten är `13 0,6,12,18`, och körningen 18:13 hade redan passerat när jobben
+  skapades 19:13. Del A:s senaste körning (manuell, 16:59) skrev PH för 12–17 UTC, och nästa schemalagda del A är 00:13, som skriver
+  00–05. Timmarna 18–23 saknar därför PH. Del B stannar då med vilje: `kandidat-db.ts ph` avslutar med kod 3 när timmen inte har
+  någon PH, och steget kör under `pipefail`, så **körningen blir RÖD** — fem röda timkörningar (19:43–23:43) innan den gröna 00:43.
+  Det är en hög­ljudd och korrekt stopp, inte ett fel i data, men en röd körning ser ut som ett verkligt fel. **En tryckning på
+  `kandidat-fysik` nu stänger hålet:** klockan 19:13 är den senaste körningen som är minst sex timmar gammal 12Z, och den skriver
+  precis 18–23 UTC. Väntar på Bengts ord.
+
 **Stomdokument:** LIV, BED §4.2, SYS.
 
 ## #559 (14/10 2026) Pariteten förregistrerad: den levande kedjan mot kuvösens frysta procedur på samma körning (kort #343, steg 5)
