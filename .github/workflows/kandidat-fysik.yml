@@ -1,0 +1,102 @@
+name: kandidat-fysik
+# KANDIDATEN LIVE, DEL A — fysiken och rättelsen vid alla punkter för en körning (kort #343 steg 3, DECISIONS #556, #558).
+# Körs var sjätte timme av pulsklockan när den raden finns (steg 3:s sista del); tills dess på knapp. För körningen R (den senaste av
+# 00/06/12/18 UTC som är minst sex timmar gammal, eller en given stämpel):
+#   1. de levande analystimmarna för i dag och i går ur metpplatest till dagfilerna i releasen metnordic-live-2026-27 (bara timmar
+#      som saknas), och körningens steg 0–17;
+#   2. indatan för alla punkter (fysik/live/indata.py) ur Axels frysta indata-release och data/vagdata/;
+#   3. rättelsen modell.pkl ur den privata hinken, kontrollsumman mot kuvos/kandidat-2026-27.json (som kuvos.yml);
+#   4. fysik/live/kandidat_fysik.py ⇒ PH för R+6…R+11 ⇒ kandidat_ph (sql/050) via ingest/kandidat-db.ts.
+# Ingen Trafikverksdata i någon fil eller logg: MET Nordic (NLOD / CC BY 4.0), öppna särdrag och kandidatens egna tal.
+on:
+  workflow_dispatch:
+    inputs:
+      stamp:
+        description: "körningen, t.ex. 20261015T06Z — tomt = den senaste som är minst sex timmar gammal"
+        required: false
+        default: ""
+concurrency: { group: thredds-metnordic-live, cancel-in-progress: false }
+permissions:
+  contents: write
+jobs:
+  fysik:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      GH_TOKEN: "${{ github.token }}"
+      REL: metnordic-live-2026-27
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13", cache: pip, cache-dependency-path: fysik/requirements.txt }
+      - name: Självtesten
+        run: |
+          node --experimental-strip-types ingest/metnordic-live.ts --sjalvtest 2>&1 | grep -v ExperimentalWarning | tail -1
+          python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
+          python3 fysik/live/indata.py --sjalvtest | tail -1
+          python3 fysik/live/kandidat_fysik.py --sjalvtest | tail -1
+      - name: Historien och punkterna ur releasen
+        shell: bash
+        run: |
+          mkdir -p mn/dagar
+          gh release download "$REL" --dir mn --pattern 'metnordic_punkter.csv' --pattern 'metnordic_analys_*.csv.gz'
+          gh release download "$REL" --dir mn/dagar --pattern 'metnordic_dygn_*.csv.gz' || true
+          for f in mn/dagar/metnordic_dygn_*.csv.gz; do [ -e "$f" ] && mv "$f" "mn/dagar/$(basename "$f" | sed 's/metnordic_dygn_//')"; done
+          echo "delar: $(ls mn/metnordic_analys_*.csv.gz | wc -l), levande dygn: $(ls mn/dagar | wc -l)"
+      - name: De levande timmarna (i går och i dag) och körningen ur metpplatest
+        shell: bash
+        run: |
+          set -o pipefail
+          for dag in $(date -u -d yesterday +%F) $(date -u +%F); do
+            node --experimental-strip-types ingest/metnordic-live.ts --dygn "$dag" --punkter mn/metnordic_punkter.csv --ut mn 2>&1 | grep -v ExperimentalWarning
+            cp "mn/dagar/$dag.csv.gz" "mn/metnordic_dygn_$dag.csv.gz" && gh release upload "$REL" "mn/metnordic_dygn_$dag.csv.gz" --clobber
+          done
+          STAMP="${{ inputs.stamp }}"
+          node --experimental-strip-types ingest/metnordic-live.ts --korning ${STAMP:+--stamp "$STAMP"} --punkter mn/metnordic_punkter.csv --ut mn 2>&1 | grep -v ExperimentalWarning
+          echo "STAMP=$(cat mn/korning.txt)" >> "$GITHUB_ENV"
+      - name: Indatan för alla punkter (Axels frysta indata + data/vagdata)
+        shell: bash
+        run: |
+          gh release download kuvos-fysik-indata-2024-25 --dir indata
+          node -e '
+            const m = require("./kuvos/fysik-indata-leverans.json"), c = require("crypto"), fs = require("fs");
+            let fel = 0;
+            for (const f of m.filer) { const h = c.createHash("sha256").update(fs.readFileSync("indata/" + f.fil)).digest("hex");
+              console.log(`${f.fil}: ${h === f.sha256 ? "ok" : "FEL " + h}`); if (h !== f.sha256) fel++; }
+            process.exit(fel ? 1 : 0);'
+          mkdir -p frusen && for f in indata/*.tar.gz; do tar -xzf "$f" -C frusen; done
+          if [ -d frusen/data ]; then mv frusen/data/* frusen/ && rmdir frusen/data; fi
+          python3 fysik/live/indata.py --frusen frusen --rot . --ut indata-live | tee -a "$GITHUB_STEP_SUMMARY"
+      # Rättelsen ur hinken, som kuvos.yml: adressen och nyckeln ur cron.job, maskade; bara statusen skrivs ut vid fel.
+      - name: Rättelsen modell.pkl ur hinken, kontrollsumman mot kandidatfilen
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          curl -sS --fail-with-body -X POST "$FN?lage=kuvos_hamta" -H "x-halkvakt-key: $KEY" -H "Content-Type: application/json" -d '{"filer":["kuvos-kandidat-2026-27/modell.pkl"]}' > hamta.json
+          node -e '
+            const k = require("./kuvos/kandidat-2026-27.json"), h = require("./hamta.json").filer, c = require("crypto"), { execFileSync } = require("child_process"), fs = require("fs");
+            const curl = (a) => { try { return execFileSync("curl", a, { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); } catch (e) { console.error(`hämtningen föll (curl ${e.status})`); process.exit(1); } };
+            const b = curl(["-sS", "--fail", h[0].url]); const f = k.filer.find((x) => x.fil === "modell.pkl");
+            const ok = c.createHash("sha256").update(b).digest("hex") === f.sha256 && b.length === f.bytes;
+            fs.writeFileSync("modell.pkl", b); console.log(`modell.pkl ur hinken: ${b.length} byte — ${ok ? "sha256 lika kandidatfilen" : "FEL"}`); process.exit(ok ? 0 : 1);'
+          rm hamta.json
+      - name: Del A — fysiken och rättelsen
+        shell: bash
+        run: |
+          set -o pipefail
+          { echo '```'; python3 fysik/live/kandidat_fysik.py --indata indata-live --analys mn/metnordic_analys_*.csv.gz mn/dagar/*.csv.gz \
+              --korning "mn/metnordic_korning_$STAMP.csv.gz" --modell modell.pkl --kandidat kuvos/kandidat-2026-27.json --ut ut; echo '```'; } 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+          rm -f modell.pkl
+      - name: Till tabellen kandidat_ph
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: node --experimental-strip-types ingest/kandidat-db.ts skriv-ph "ut/kandidat_ph_$STAMP.csv.gz" 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: "kandidat-fysik-${{ github.run_id }}", path: ut/, retention-days: 3, if-no-files-found: ignore }

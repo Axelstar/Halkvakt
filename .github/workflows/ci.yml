@@ -100,6 +100,7 @@ jobs:
           node --experimental-strip-types kuvos/metnordic-prognos.ts --sjalvtest   # DECISIONS #519
           node --experimental-strip-types ingest/metnordic-live.ts --sjalvtest     # DECISIONS #556, steg 1
           node --experimental-strip-types ingest/metnordic-historik.ts --sjalvtest # DECISIONS #556, steg 2
+          node --experimental-strip-types ingest/kandidat-db.ts --sjalvtest        # DECISIONS #558, steg 3: databasens in- och utgång
           node --experimental-strip-types scripts/matningar/kuvos-trafik-per-band-2026-10-08.ts --sjalvtest
           node --experimental-strip-types scripts/matningar/kuvos-fysik-givarvakt-2026-10-08.ts --sjalvtest
           node --experimental-strip-types scripts/matningar/kuvos-kallkartan-2026-10-09.ts --sjalvtest
@@ -125,6 +126,7 @@ jobs:
           python3 fysik/blandning/grannar_blandning.py --sjalvtest   # DECISIONS #516
           python3 fysik/live/kandidat_fysik.py --sjalvtest   # kedjan live, del A (DECISIONS #558, kort #343 steg 3)
           python3 fysik/live/kandidat_timme.py --sjalvtest   # kedjan live, del B: grannarna, RÅ och blandningen
+          python3 fysik/live/indata.py --sjalvtest           # kedjan live: indatan för alla punkter
           python3 fysik/niva2/vagb.py --help > /dev/null
           python3 fysik/niva2/vagb_terrang.py --help > /dev/null      # DECISIONS #549
           python3 fysik/niva2/frysta.py --help > /dev/null            # DECISIONS #544 punkt 6

@@ -12319,4 +12319,28 @@ förregistrering före första körningen.
   13 814 punkter inom 10 min på en Actions-runner, PH vid alla punkter utan luckor, PH inom −30…+20 °C, och vid stationerna en
   fördelning som liknar kuvösens analysläge. Inget tal är en dom; pariteten (steg 4) är provet.
 
+**Tillägg 14/10: rörledningen byggd, förregistrerad före första körningen** (Bengt: *"fortsätt med rörledningen"*).
+- **Indatan för alla punkter** (`fysik/live/indata.py`): stationerna ur Axels frysta indata-release (`elev_ifs` ur ECMWF, som
+  modellen såg), väglagspunkterna ur `data/vagdata/` (`elev_ifs` = höjden, #553 val i; Lastkajens ÅDT och klass, tunga ur
+  vägdatalagret, vinterklassen, Europaväg), i kedjans egna filformer. Tomma värden stannar tomma.
+- **Den levande hämtningen** (`ingest/metnordic-live.ts --dygn`, `--korning`): analysens timmar för i går och i dag ur `metpplatest`,
+  bara de som saknas i dagfilen, till releasen `metnordic-live-2026-27` som `metnordic_dygn_<dag>.csv.gz`; körningen R = den senaste
+  av 00/06/12/18 som är minst sex timmar gammal (+6 h-klassen), stegen 0–17, samma rutor som historien ur `metnordic_punkter.csv`.
+- **Tabellerna** (`sql/050_kandidat_live.sql`): `kandidat_ph` (del A: fysikens yta och PH per punkt och timme, två dygn) och
+  `kandidat_live` (del B: PH, PG, RÅ, ankaravståndet och PB, tre dygn), bara service-rollen; `gallra_kandidat()` körs av timjobbet.
+  Gallringen är kort eftersom 13 814 punkter i timmen är 330 000 rader om dygnet och gratisnivån går i skrivskydd vid 500 MB (#511);
+  vinterns facit bor i skuggloggen (steg 7).
+- **Flödena** (`kandidat-fysik.yml` var sjätte timme, `kandidat-timme.yml` varje timme; båda på knapp tills pulsklockans rader finns):
+  del A hämtar de levande timmarna och körningen, bygger indatan, hämtar `modell.pkl` ur hinken med kontrollsumman mot kandidatfilen
+  (som kuvos.yml), räknar och skriver `kandidat_ph`; del B läser PH för timmen och grind A:s ankare just nu (sql/032
+  `vagpunkt_ankare`, samma population som skuggans RÅ), räknar med replikans tal och skriver `kandidat_live`. Ankarna lämnar aldrig
+  jobbet. `ingest/kandidat-db.ts` är databasens in- och utgång, batchad som `ingest/db.ts`.
+- **Förväntan för första körningen av del A (på knapp, efter historiken):** indatan 754 stationer + 12 960 vägpunkter; de levande
+  dygnen fyllda till senaste katalogtimme; del A inom 10 min; PH vid alla punkter utan luckor, inom −30…+20 °C; `kandidat_ph`
+  83 000 rader per körning. **Del B:** 700–850 ankare (grind A:s population just nu), RÅ vid de flesta punkter (inom 50 km), PB inom
+  −30…+20 °C, timmen inom 2 min. Faller ett tal utanför läses källan först. Inget är en dom.
+- **Vad som inte görs än:** migrationen 050 körs med DB-knappen på Bengts ord innan första körningen; pulsklockans rader
+  (`scripts/pulsklocka.ts` och ett pg_cron-jobb som sql/048) läggs när första körningarna är bokförda; skuggans logg (steg 7) och
+  publiceringen (steg 6) rör inte tabellerna än.
+
 **Stomdokument:** LIV, BED §4.2, SYS.
