@@ -144,10 +144,10 @@
         där med båda era signaturer.</td></tr>
       <tr><td class="nr">2</td><td><b>Regeln som utlöser varningen</b>, skriven i tröskeldokumentet före koden: yta, ledtid, fukt.</td>
         <td>Axel skriver den, försiktigt. Förslag: ytan över 0 °C nu, prognosen ≤ 0 °C inom 6 h, och fukt. Talen är Axels.</td></tr>
-      <tr><td class="nr">3</td><td><b>Körplatsen.</b> Python-kedjan i GitHub Actions, startad av pulsklockan; eller kedjan och
-        modellen omskrivna till TypeScript.</td>
-        <td>Actions via pulsklockan: gratis i det publika repot, Axels kod körs oförändrad, samma väg som ingest och favoritprovet.
-        Edge-funktionerna kör inte Python och når redan sina resursgränser.</td></tr>
+      <tr><td class="nr">3</td><td><b>Körplatsen.</b> <span class="dom klar">avgjort 14/10</span> Python-kedjan i GitHub Actions,
+        startad av pulsklockan (Bengt: <i>"val 3 är actions"</i>, DECISIONS #558).</td>
+        <td>Gratis i det publika repot, Axels kod körs oförändrad, samma väg som ingest och favoritprovet. Mätningen: 2,5 GB per dygn
+        och 7 minuter per hämtning ryms där, inte i en edge-funktion.</td></tr>
       <tr><td class="nr">4</td><td><b>Avstängningen.</b> Publiceringen av prognosen stoppas, och appen tystnar utan nytt bygge.</td>
         <td>Ja, och prövad i drift innan första bygget.</td></tr>
       <tr><td class="nr">5</td><td><b>Var kandidaten räknas först.</b> Stationerna (754 punkter, felet känt: 5,12 %) och
@@ -215,10 +215,11 @@
         öppna releasen <code>metnordic-live-2026-27</code>, omkring 28 GB från MET. Byggt 14/10 och förregistrerat; knappen trycks på
         Bengts ord. Tillståndet sparas av kedjan vid varje körning (steg 3).</td>
         <td>Claude</td><td><span class="dom vantar">byggt</span></td></tr>
-      <tr><td class="nr">3</td><td>Kedjan på körplatsen (1, 2, val 3)</td><td>Fysiken med de frysta parametrarna, rättelsen ur hinken med
-        kontrollsumman bekräftad, grannarnas fel ur stationernas mätningar, RÅ, och blandningen med W 0,25 och L 160 km. Utfallet
-        skrivs till en ny tabell per punkt. Med val 5 först vid stationerna.</td>
-        <td>Claude</td><td><span class="dom kvar">kvar</span></td></tr>
+      <tr><td class="nr">3</td><td>Kedjan på körplatsen (1, 2)</td><td>Körplatsen är Actions via pulsklockan (DECISIONS #558). Fysiken
+        med de frysta parametrarna, rättelsen ur hinken med kontrollsumman bekräftad, grannarnas fel ur stationernas mätningar, RÅ, och
+        blandningen med W 0,25 och L 160 km; tillståndet sparas mellan körningarna; utfallet till en ny tabell per punkt. Med val 5
+        först vid stationerna. Byggs med förregistrering före första körningen.</td>
+        <td>Claude</td><td><span class="dom kvar">nästa</span></td></tr>
       <tr><td class="nr">4</td><td>Paritetsprov (3)</td><td>Den levande kedjan körs på arkivet för vintern 24/25 och ska ge samma tal som
         kuvösens frysta kandidat. Annars är det som går live inte det som mättes.</td>
         <td>Claude, Axel läser</td><td><span class="dom kvar">kvar</span></td></tr>

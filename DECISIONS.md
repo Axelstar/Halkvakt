@@ -12273,3 +12273,26 @@ om sidan med stegen till kandidaten i appen, skriven samma dag för att skickas 
 (SESSIONSREGELN); som stomdokument prövas den varje morgon mot besluten och korten, som kuvösen och favoriterna (#425, #445).
 
 **Stomdokument:** LIV — sidan själv. De övriga sju rörs inte av beslutet.
+
+## #558 (14/10 2026) Körplatsen för kandidaten är GitHub Actions, startad av pulsklockan (val 3 på kort #343)
+
+**Beslut.** Bengt 14/10: *"val 3 är actions"*, på frågan i bedömningen §4.2 (DECISIONS #556). Python-kedjan — fysiken med de frysta
+parametrarna, rättelsen ur hinken, grannarna, RÅ och blandningen — körs i ett Actions-flöde som pulsklockan startar (pg_cron →
+`workflow_dispatch`), som `ingest.yml` och favoritprovets synk (#534). Kedjan portas inte till TypeScript.
+
+**Varför.**
+- Mätningen 14/10 (#556): 2,5 GB per dygn från MET med körningarna var sjätte timme, och omkring 7 minuter per hämtning med tider som
+  spretar 15×. Det ryms i Actions, som är gratis i det publika repot (#503), inte i en edge-funktion, som inte kör Python och redan
+  når sina resursgränser (sql/036).
+- Axels kod körs oförändrad. Pariteten med kuvösen (steg 4) är då en jämförelse av samma kod på samma indata, inte av två
+  implementationer.
+- Det är ett undantag från regeln att återkommande körningar bor i Supabase (Bengt 22/9), med samma skäl som #534: det som inte kan
+  köras där körs i Actions, startat av pulsklockan så att klockan är en.
+
+**Vad som följer (steg 3 på kort #343).** Ett flöde `kandidat-live.yml`: hämtar MET Nordic (analysen varje timme, körningen var
+sjätte), läser historien och fysikens sparade tillstånd ur releasen `metnordic-live-2026-27`, kör kedjan med `modell.pkl` ur hinken
+(kontrollsumman bekräftad, nyckeln ur Actions secrets, aldrig i loggen), skriver tillståndet tillbaka och utfallet per punkt till en
+tabell. Pulsklockans rad och pg_cron-jobbet i en migration. Tidsbudget och ett läge där förra timmens rader duger. Byggs med
+förregistrering före första körningen.
+
+**Stomdokument:** LIV, BED §4.2, SYS.
