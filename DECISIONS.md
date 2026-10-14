@@ -12105,3 +12105,22 @@ under −5 °C, och 48 % ligger i +3…+5 °C. Förväntningarna nämnde inte f�
 - Läsningen ger alltså inget stöd för att A2 fäller på rader som inte kan skada någon.
 
 Frågan i bedömningen §4.2 (*vilken population ska A2 ha?*) står kvar för Bengt och Axel. Ingen tröskel och ingen dom är rörd.
+
+## #555 (14/10 2026) Kort #304 stängt: dokumentsynken har gått sju morgnar i rad, och Verify är omskriven efter #522
+
+**Beslut.** Bengt 14/10: *"stäng kort 304"*, på frågan i bedömningen §4.2 från morgonens dokumentsynk.
+
+**Varför Verify skrevs om.** Kortets Verify hade motprovet *ett namngivet dokument utan ändrad handtext*. Det prövas inte längre i
+PR:en sedan #522, eftersom avstämningen görs en gång per dygn av synken. Motprovet ersätts av synkens egen kontroll: varje ⚠ i
+`stomvakten.ts --lage` ska bli text i handtexten eller en STATUS-post (#546). Det var synkens rekommendation, och Bengt följde den.
+
+**Beviset.**
+- Stomvaktens motprov 7/10 (#484): ett beslut utan raden `**Stomdokument:**` fälls.
+- Sju morgnar i rad: 8/10 (PR #805), 9/10, 10/10, 11/10, 12/10 (för hand, räknad enligt #545), 13/10 (PR #903) och 14/10
+  (PR #935, sammanslagen som 2983786). Den 14/10 blev alla ⚠ i `--lage` text (STATUS 14/10).
+- *Väntar på Bengt* och *Väntar på Axel* står överst i projektkartan och skrivs av `projektkartan.ts`.
+
+**Följd.** Delen *Stomdokumenten och kortkartan* i projektkartan blir grön. Rutinen går vidare varje morgon. Når den inte
+artefakterna, republicerar dygnets första session dem (DOKUMENTSYNKEN steg 8), som hittills.
+
+**Stomdokument:** BED §4.2.
