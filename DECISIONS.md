@@ -12215,6 +12215,27 @@ och tre av talen lästes ändå:**
 - **Provet hittade ett andra fel som ingen tryckning visat:** analysens strålning skrevs tom, eftersom analysens rad byggdes som en
   prognos (timvärdet som skillnad mot förra steget) fast analysens värden redan är timvärden (kuvösens analysfil skriver dem rakt av).
   Rättat: analysens rad byggs direkt, prognosens som förut. Knappen trycks en tredje gång.
+- **Tredje tryckningen 07:05 UTC (körning 38526162017 på 7e5e049; Bengt: *"slå ihop 945 och tryck knappen"*) gick igenom. Utfallet mot
+  förväntningarna:**
+
+  | förväntan | utfall | |
+  | :-- | :-- | :-- |
+  | analysen och körningen högst 2 h gamla | 06Z, 66 min gamla kl. 07:06 (07Z fanns inte än) | inom |
+  | rutan som stationernas | y 251–1728, x 678–1313 (1478×636 rutor), 13 814 punkter | inom |
+  | ett anrop om sex steg ~156 MB, 10–15 s | 157,9 MB; **9,6, 9,4 och 144,9 s** — analysen (26,3 MB) 58,3 s efter en timeout (180 s) och omhämtning | storleken inom, tiden spretar 15× |
+  | 0,4–0,6 GB per timme, 10–15 GB per dygn | **500 MB per timme, 12,0 GB per dygn, 360 GB per månad** om allt hämtas varje timme | inom |
+  | punkterna inom 0,8 km från rutmitten | 0,70 km, ingen över 1,5 km | inom |
+  | inga värden utanför värdevaktens spann | luft −3,89…+15,05 °C, fukt 0,52–1, vind 0,06–12,8 m/s, moln 0–1, nederbörd 0–3,3 mm/h, långvåg 0,80–1,31 MJ/m², kortvåg −223…1,49 MJ/m²; **0 utanför**; saknas 13 814 per fält för nederbörd och strålning = prognosens steg 0, som kuvösen beskrev | inom |
+
+  Inga avkortade svar; en timeout. Hela mätsteget tog 7 min 15 s. Raderna (262 466 = 13 814 punkter × 19 timsteg) ligger i körningens
+  artefakt ett dygn.
+- **Vad talen säger.** (1) Tiden per anrop är det som spretar, inte storleken: 9 s eller 145 s för samma 158 MB, och ett anrop
+  som hänger kostar 180 s innan det hämtas om. En timkörning behöver därför en tidsbudget och ett läge där förra timmens rader
+  duger. (2) **Takten följer av pariteten, inte av volymen:** kuvösen prövade kandidaten på körningarna 00, 06, 12 och 18 UTC
+  (prognos.py startar om fysiken vid varje körning, #519), så samma körningar i drift är det som paritetsprovet (steg 4) kan jämföra.
+  Analysen varje timme och körningarna var sjätte ger **24 × 26 MB + 4 × 474 MB ≈ 2,5 GB per dygn**, en femtedel av 12 GB. Tätare
+  körningar är en ny fråga efter pariteten. (3) Volymen ryms i Actions (gratis i det publika repot, #503); MET:s villkor om en
+  förbindelse åt gången följs. Villkoren om volym läses i steg 2 innan något går på schema.
 
 **Stomdokument:** inga — ett byggsteg på kort #343; beslutet #556 och frågorna i §4.2 är oförändrade.
 
