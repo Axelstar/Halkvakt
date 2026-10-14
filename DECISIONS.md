@@ -12251,6 +12251,24 @@ och tre av talen lästes ändå:**
   sammanlagt, 5,7 GB per del; 30–60 s per anrop ⇒ 2–4 h per del, inom tidsbudgeten 320 min (annars återupptagning); 331 536 rader
   per dygn (13 814 × 24), 14,9 miljoner i allt, omkring 150 MB packat per del; punkterna inom 0,70 km som förut; spannen inom
   värdevaktens. Faller ett tal utanför läses källan först.
+- **Historiken klar 14/10 11:11 UTC** (körning 38530312850 på 7a51a59, startad 07:44 på Bengts *"slå ihop 947 och tryck knappen"*). Fem delar,
+  en åt gången, alla i den öppna releasen `metnordic-live-2026-27` med `metnordic_punkter.csv`:
+
+  | del | timmar | saknade | MB | tid | avkortade svar | packad fil |
+  | :-- | --: | --: | --: | --: | --: | --: |
+  | 30/8–7/9 | 216 | 0 | 5 685 | 22 min | 0 | 47,8 MB |
+  | 8/9–16/9 | 216 | 0 | 5 685 | 57 min | 0 | 46,9 MB |
+  | 17/9–25/9 | 216 | 0 | 5 685 | 13 min | 0 | 46,6 MB |
+  | 26/9–4/10 | 216 | 0 | 5 685 | 30 min | 0 | 45,4 MB |
+  | 5/10–13/10 | 216 | 0 | 5 685 | 79 min | 1, hämtat om | 46,1 MB |
+  | **alla** | **1 080** | **0** | **28 424** | **3 h 21 min** | **1** | **233 MB** |
+
+  Mot förväntan: 1 080 timmar och 0 saknade — inom; 26,3 MB per anrop och 28 GB i allt — inom; 2–4 h per del — **snabbare**, 13–79
+  min, och dygnen tog 44–937 s, alltså spretade arkivets svarstid tjugo gånger utan att något föll; 331 536 rader per dygn — inom;
+  packat 150 MB per del — **46 MB**, tre gånger mindre; 0,70 km — inom. Ett avkortat svar (12/10 13Z, nederbörden) hämtades om
+  och räknades, som rättelsen efter mätningen var tänkt. Inga värden utanför värdevaktens spann rapporterade.
+- **Steg 2 är därmed klart.** Kedjans 45 dygn bakåt finns för alla 13 814 punkter fram till 13/10 23Z; de levande dygnen från 14/10
+  fyller `kandidat-fysik.yml` på med `--dygn` vid varje körning.
 - **Vad som inte görs:** inget schema, ingen kedja, inget tillstånd, ingen levande hämtning på schema — den kommer med körplatsen
   (val 3). MET:s förstasida med villkoren svarade inte 14/10; det kända villkoret, en förbindelse åt gången, följs, och sidan läses
   innan något går på schema.
