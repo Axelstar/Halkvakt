@@ -11936,3 +11936,17 @@ provet"*; paketet hämtat av Bengt 13/10).
 - Paketet själv ligger kvar utanför repot. Det är 2,0 GB och behövs inte där.
 - **Europavägsprovet igen** (körning 38474910120 på 86586cf): 65 av 65 stationer lika med Axel (100 %), och inga saknade värden.
   Läget `alla` väntar på Bengts ord.
+
+**Tillägg 14/10: Europaväg vid alla väglagspunkter** (Bengt: *"slå ihop 933 och kör alla"*; körning 38476648546 på 216099d, 1 h 57 min).
+- 854 stationer frågades och inga anrop föll. Råvärdena var 0 (536), −1 (309) och ett element utan Vägnummer (9).
+- **Mot Axels road_all.csv: 733 av 745 lika, 98,4 %**, mot kravet 95 %.
+- 12 960 väglagspunkter: **3 718 på Europaväg**, 9 242 inte och 0 utan värde.
+- Filen är `data/vagdata/vaglagspunkter-europavag.json`. Tolkningen och jämförelsen står i huvudet, källan och licensen (CC0) i
+  `data/KALLOR.json`, och spannet `europavag` 0–1 i värdevakten.
+- **De fasta särdragen för vägpunkterna är därmed klara:**
+  - terrängen och skogen med Axels skript;
+  - höjden ur Copernicus;
+  - vinterväghållningsklassen ur Lastkajen;
+  - Europaväg ur API:et;
+  - ÅDT, tunga fordon och vägklass ur vägdatalagret.
+- Vägdatalagrets ÅDT korrelerar 0,861 med Axels vid stationerna (utfallet under #549). Den skillnaden är inte prövad i rättelsen.
