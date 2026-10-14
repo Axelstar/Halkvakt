@@ -85,7 +85,7 @@ jobs:
       # Läser den: filnamnet innehåller 'metnordic' eller är rutnätsmodellens ('kuvos-rn-') — en ny läsare läggs till här.
       # Blandningen (#516) läser bara static.json härifrån: fysikkedjans prep.py behöver den.
       - name: MET Nordic ur releasen, kontrollsummorna mot manifestet
-        if: ${{ hashFiles('kuvos/metnordic-leverans.json') != '' && (contains(inputs.matning, 'metnordic') || contains(inputs.matning, 'kuvos-rn-') || contains(inputs.matning, 'kuvos-blandning')) }}
+        if: ${{ hashFiles('kuvos/metnordic-leverans.json') != '' && (contains(inputs.matning, 'metnordic') || contains(inputs.matning, 'kuvos-rn-') || contains(inputs.matning, 'kuvos-blandning') || contains(inputs.matning, 'kuvos-paritet')) }}
         shell: bash
         env: { GH_TOKEN: "${{ github.token }}" }
         run: |
@@ -101,7 +101,7 @@ jobs:
       # MET Nordics prognoser (DECISIONS #518, #519, kort #308) bara för prognosläget: åtta delar ur den öppna releasen, summorna mot
       # kuvos/metnordic-prognos-leverans.json (skriven när hämtningen är klar; utan den, eller med en del som saknas, fälls jobbet).
       - name: MET Nordics prognoser ur releasen, kontrollsummorna mot manifestet
-        if: ${{ contains(inputs.matning, 'kuvos-blandning-prognos') || contains(inputs.matning, 'kuvos-blandning-vagb') }}
+        if: ${{ contains(inputs.matning, 'kuvos-blandning-prognos') || contains(inputs.matning, 'kuvos-blandning-vagb') || contains(inputs.matning, 'kuvos-paritet') }}
         shell: bash
         env: { GH_TOKEN: "${{ github.token }}" }
         run: |
@@ -220,8 +220,9 @@ jobs:
               # samma analys och samma modell. Tre förregistrerade körningar i vintern 24/25, en per månad, alla 00Z.
               for KT in 2024-12-15T00 2025-01-15T00 2025-02-15T00; do
                 TS="${KT}:00:00Z"
-                FORST=$(ls "$MNP"/metnordic_prognos_*.csv.gz | head -1)
-                { zcat "$FORST" | head -1; zcat "$MNP"/metnordic_prognos_*.csv.gz | awk -F, -v ts="$TS" '$2==ts'; } | gzip > "korning_$KT.csv.gz"
+                # En enda läsning utan head: rad 1 i den hopslagna strömmen är första filens rubrik, och de andra filernas rubriker
+                # har korning_utc i kolumn 2 och faller bort. (`zcat | head -1` dog på SIGPIPE under pipefail, körning 38645429144.)
+                zcat "$MNP"/metnordic_prognos_*.csv.gz | awk -F, -v ts="$TS" 'NR==1 || $2==ts' | gzip > "korning_$KT.csv.gz"
                 N=$(zcat "korning_$KT.csv.gz" | tail -n +2 | wc -l)
                 echo "körningen $TS: $N prognosrader ur arkivet"
                 [ "$N" -gt 0 ] || { echo "::error::körningen $TS finns inte i prognosarkivet"; exit 1; }

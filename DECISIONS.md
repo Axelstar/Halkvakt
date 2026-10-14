@@ -12541,6 +12541,54 @@ vaglag.geojson 818 sträckor. Ingen tyst skada: kvällens körning är den enda 
 Apparna hämtar sina snapshots från samma gamla adress men följer omdirigeringen (`URLSession.shared` på iOS, `HttpURLConnection` på
 Android, https → https); manifestet ger 200 efter en omdirigering. Pariteten trycks om när rättelsen ligger på main.
 
+**Tillägg 15/10 natt: andra tryckningen föll på mitt eget kopplingsfel** (körning 38643878687 på 15ca49c). Inläsningen gick igenom
+(6 min), modellen hämtades, och kedjesteget föll på `cp: cannot stat 'metnordic/static_2026-10-06.json'`. Stegen som hämtar vinterns
+MET Nordic-analys (`kuvos-metnordic-2024-25`) och prognoser (`kuvos-metnordic-prognos-2024-25`) har egna villkor, och när valet
+`kuvos-paritet` lades till i #954 kom det in i kedjesteget men inte i dem — pariteten fick ingen data. CI:s självtest kan inte se det:
+felet sitter i flödets kopplingar, inte i koden. Rättat: båda villkoren bär nu `kuvos-paritet`, och varje indata pariteten läser är
+spårad till sitt steg (leveransen, indatan, modellen, kandidatfilen, analysen, prognoserna).
+
+**Tillägg 15/10 natt: tredje tryckningen föll på ett andra fel av mig** (körning 38645429144 på 74b67eb). Datan hämtades nu, men
+utplockningen av körningen ur prognosarkivet föll på *"gzip: stdout: Broken pipe"*: raden `zcat "$FORST" | head -1` dör på SIGPIPE
+under `set -euo pipefail`. Jag hade övervägt just den risken när grenen skrevs och avfärdat den med ett resonemang om hur bash hanterar
+`-e` i en rörlednings vänstra led — resonemanget var fel. Rättat: en enda läsning utan `head`
+(`awk 'NR==1 || $2==ts'`). Provat lokalt under `set -euo pipefail` mot två påhittade arkivfiler om 240 000 rader: den gamla raden ger
+kod 141 som i CI, den nya plockar ut alla tre körningarna (120 000 rader var, rubriken en gång, inga rader från fel körning). Mitt
+första lokala prov hade samma fel i sig (`zcat | head -1` för att läsa rubriken) och fick skrivas om. Den största kvarvarande risken,
+att väg B läser analysfilen efter kolumnposition, är kontrollerad: den frysta `las_metnordic` kastar ett fel om kolumnerna inte är
+exakt `station_id, tid_utc` plus de sju fälten, och alla tidigare kuvöskörningar på samma fil har gått igenom.
+
+**Tillägg 15/10 natt: DOMEN — 1 av 3 körningar utanför toleransen** (körning 38647529726 på 38626e8; fjärde tryckningen, efter rättelserna
+ovan). Toleransen är den förregistrerade och godkända (#561), och den mjukas inte upp.
+
+| körning | kolumnen bakåt A / B | `ts_fysik` median / p95 / max | `ph` median / p95 / max | dom |
+| :-- | --: | --: | --: | :-- |
+| 2024-12-15 00Z | 1 584 / 1 080 h | 0,065 / 0,099 / 0,140 | 0,067 / 0,132 / 0,716 | inom |
+| 2025-01-15 00Z | 2 328 / 1 080 h | 0,018 / 0,035 / 0,068 | 0,020 / 0,113 / 0,499 | inom |
+| 2025-02-15 00Z | 3 072 / 1 080 h | 0,051 / 0,089 / 0,159 | 0,063 / **0,436** / 2,177 | **utanför: p95 0,436 > 0,30** |
+
+754 punkter × 6 timmar per körning. **Metan lika** i alla gemensamma kolumner, **0 ifyllda punkttimmar** på väg B — kodvägarna räknar
+samma sak på samma indata. **Orsaken är snön, som förregistrerades:** snötäcket (`swe`, `snowd`, `snowd_x_cold`) skilde i median **0 %**
+av väg A:s nivå i december och januari men **20 %** i februari (median 61,7 mot väg A:s 316 mm; max 3 575). Fysikens yta (`ts_fysik`)
+håller toleransen i alla tre; det är rättelsen, som har snötäcket bland sina särdrag, som glider.
+
+**Varför, läst i koden efter domen:** fysikkolumnen (`fysik_lw.run_lw`) bär inget snötäcke. Snötäcket är en ackumulering av snöfall och
+luft som `bygg_F` (`fysik/live/kandidat_fysik.py:73–75`) startar på **noll** vid fönstrets början, R − 45 dygn. Den frysta proceduren
+ackumulerar från arkivets första timme. I februari ligger snö kvar som föll före fönstret, och den saknas i den levande kedjan.
+
+**Vägarna** — de två som förregistrerades och en smalare som läsningen visade; valet är Bengts och Axels (bedömningen §4.2):
+1. **Hela kolumnen från säsongens början** (30/8, releasens första dag). Exakt som den frysta proceduren. Kostar läsningen av hela
+   säsongens dygnsfiler varje körning (cirka 5 MB per dygn, 0,9 GB i februari) och omkring fyra gånger minnet och tiden i del A, vilket
+   måste mätas mot Actions-maskinens 16 GB.
+2. **Spara tillstånd mellan körningarna.** Billigast per körning, men nya felsätt: ett tappat eller trasigt tillstånd måste kunna läka,
+   och pariteten måste bevisas på nytt.
+3. **Bara snötäcket från säsongens början.** Ackumuleringen av två fält (luft och snöfall) från 30/8 ger snötäcket vid fönstrets början;
+   resten av kolumnen stannar på 45 dygn, där pariteten redan håller. Den smalaste rättelsen, riktad mot exakt det som föll.
+   Rekommendation: **3**, och pariteten körs om på samma tre körningar med samma tolerans. Håller februari inte då blir det väg 1.
+
+Det brådskar inte för vägarna i oktober — det finns ingen snö att tappa — men rättelsen måste vara på plats före snön i norr och före
+signeringen av #560, vars punkt 2 säger att det som går live räknar samma sak som det som mättes.
+
 **Rättat 14/10 kväll (Bengt: *"gör 1,2,3"*):** posten stod som *"Beslut. Claude"*. Claude fattar inga beslut; det här är ett **förslag** som väntar på Bengts och Axels ja, och toleransen 0,10 / 0,30 °C gäller inte förrän det givits.
 
 **Stomdokument:** LIV, MAT, KAR, KUV §9.
