@@ -124,6 +124,7 @@ jobs:
           python3 fysik/niva2/kedja.py --help > /dev/null   # skriptets egen start: självtestet sätter sökvägen själv och såg inte att common saknades 11/10
           python3 fysik/blandning/grannar_blandning.py --sjalvtest   # DECISIONS #516
           python3 fysik/live/kandidat_fysik.py --sjalvtest   # kedjan live, del A (DECISIONS #558, kort #343 steg 3)
+          python3 fysik/live/kandidat_timme.py --sjalvtest   # kedjan live, del B: grannarna, RÅ och blandningen
           python3 fysik/niva2/vagb.py --help > /dev/null
           python3 fysik/niva2/vagb_terrang.py --help > /dev/null      # DECISIONS #549
           python3 fysik/niva2/frysta.py --help > /dev/null            # DECISIONS #544 punkt 6
