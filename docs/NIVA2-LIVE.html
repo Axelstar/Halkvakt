@@ -142,12 +142,16 @@
         förstärkare av varningar som redan finns. (c) Bara webbkartan.</td>
         <td>(a), och samma lager på webbkartan. (a) bryter TROSKLAR-SKUGGAN §4(a), <i>aldrig rösten ensam</i>, och ändringen skrivs
         där med båda era signaturer.</td></tr>
-      <tr><td class="nr">2</td><td><b>Regeln som utlöser varningen</b>, skriven i tröskeldokumentet före koden: yta, ledtid, fukt.</td>
-        <td>Axel skriver den, försiktigt. Förslag: ytan över 0 °C nu, prognosen ≤ 0 °C inom 6 h, och fukt. Talen är Axels.</td></tr>
-      <tr><td class="nr">3</td><td><b>Körplatsen.</b> Python-kedjan i GitHub Actions, startad av pulsklockan; eller kedjan och
-        modellen omskrivna till TypeScript.</td>
-        <td>Actions via pulsklockan: gratis i det publika repot, Axels kod körs oförändrad, samma väg som ingest och favoritprovet.
-        Edge-funktionerna kör inte Python och når redan sina resursgränser.</td></tr>
+      <tr><td class="nr">2</td><td><b>Regeln som utlöser varningen</b>, skriven i tröskeldokumentet före koden. Läst 14/10 i
+        besluten #490 och #519: kandidaten ger ett <b>nuläge</b> mellan stationerna (ytan vid timmen t, räknad på en 6–11 timmar gammal
+        körning och stationernas mätningar vid t), inte en prognos sex timmar framåt. En varning framåt är en annan läsning, som hör till
+        försprånget.</td>
+        <td>Axel skriver den, försiktigt, om nuläget: kandidatens yta ≤ 0 °C och fukt vid punkten, där ingen station säger annat, som A1
+        gör för väglaget. Talen är Axels.</td></tr>
+      <tr><td class="nr">3</td><td><b>Körplatsen.</b> <span class="dom klar">avgjort 14/10</span> Python-kedjan i GitHub Actions,
+        startad av pulsklockan (Bengt: <i>"val 3 är actions"</i>, DECISIONS #558).</td>
+        <td>Gratis i det publika repot, Axels kod körs oförändrad, samma väg som ingest och favoritprovet. Mätningen: 2,5 GB per dygn
+        och 7 minuter per hämtning ryms där, inte i en edge-funktion.</td></tr>
       <tr><td class="nr">4</td><td><b>Avstängningen.</b> Publiceringen av prognosen stoppas, och appen tystnar utan nytt bygge.</td>
         <td>Ja, och prövad i drift innan första bygget.</td></tr>
       <tr><td class="nr">5</td><td><b>Var kandidaten räknas först.</b> Stationerna (754 punkter, felet känt: 5,12 %) och
@@ -173,6 +177,7 @@
       <li><span aria-hidden="true">○</span> <b>I appen</b> <span style="color: var(--dampad, #4A5763)">saknas · Aldrig röst ensam (TROSKLAR-SKUGGAN.md:148–151)</span></li>
       <li><span aria-hidden="true">◐</span> <b>MET Nordic levande vid stationerna och väglagspunkterna (kort #343, steg 1)</b> <span style="color: var(--dampad, #4A5763)">pågår · Byggt 14/10 (ingest/metnordic-live.ts, knappen metnordic-live.yml); mätt 38526162017 på 7e5e049 (DECISIONS #556): 500 MB/timme om allt hämtas varje timme, 2,5 GB/dygn med körningarna var sjätte timme (pariteten), 0 avkortade svar, alla spann inom; klart när hämtningen går på körplatsen</span></li>
       <li><span aria-hidden="true">◐</span> <b>Historien för uppstarten: 45 dygns MET Nordic-analys vid punkterna (kort #343, steg 2)</b> <span style="color: var(--dampad, #4A5763)">pågår · Byggt 14/10: ingest/metnordic-historik.ts och knappen metnordic-historik.yml, förregistrerat under DECISIONS #556; klart när de fem delarna ligger i releasen metnordic-live-2026-27 och summan är bokförd</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Kedjan på körplatsen, del A: fysiken och rättelsen vid alla punkter (kort #343, steg 3)</b> <span style="color: var(--dampad, #4A5763)">pågår · Byggd 14/10: fysik/live/kandidat_fysik.py med självtest i ci, förregistrerad under DECISIONS #558; klart när första skarpa körningen på historiken är bokförd</span></li>
     </ul>
   </details>
   <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-kv-prognoslagret">Prognoslagrets kandidater</a> <span style="color: var(--dampad, #4A5763)">delvis, 97 % · kvar: Den frysta kandidaten (varv 1, DECISIONS #552) ligger i hinken; kvar är förregistreringen för vintern 2026/27, senast 31/10, och Axels fråga om uppspelning eller drift (§4.2, kort #342)</span></summary>
@@ -215,10 +220,13 @@
         öppna releasen <code>metnordic-live-2026-27</code>, omkring 28 GB från MET. Byggt 14/10 och förregistrerat; knappen trycks på
         Bengts ord. Tillståndet sparas av kedjan vid varje körning (steg 3).</td>
         <td>Claude</td><td><span class="dom vantar">byggt</span></td></tr>
-      <tr><td class="nr">3</td><td>Kedjan på körplatsen (1, 2, val 3)</td><td>Fysiken med de frysta parametrarna, rättelsen ur hinken med
-        kontrollsumman bekräftad, grannarnas fel ur stationernas mätningar, RÅ, och blandningen med W 0,25 och L 160 km. Utfallet
-        skrivs till en ny tabell per punkt. Med val 5 först vid stationerna.</td>
-        <td>Claude</td><td><span class="dom kvar">kvar</span></td></tr>
+      <tr><td class="nr">3</td><td>Kedjan på körplatsen (1, 2)</td><td>Körplatsen är Actions via pulsklockan (DECISIONS #558). Två
+        delar, som replikan räknar: <b>A, var sjätte timme</b> (byggd 14/10, <code>fysik/live/kandidat_fysik.py</code>): fysiken över
+        45 dygns analys utan sparat tillstånd, omstarten på körningen, rättelsen ur hinken med kontrollsumman bekräftad ⇒ PH vid alla
+        punkter för timmarna R+6…R+11. <b>B, varje timme</b> (nästa): grannarnas fel ur stationernas mätningar, RÅ och blandningen
+        med W 0,25 och L 160 km ⇒ kandidatens värde till en tabell. Den levande hämtningen och pulsklockans rader byggs med B. Med
+        val 5 först vid stationerna.</td>
+        <td>Claude</td><td><span class="dom vantar">del A byggd</span></td></tr>
       <tr><td class="nr">4</td><td>Paritetsprov (3)</td><td>Den levande kedjan körs på arkivet för vintern 24/25 och ska ge samma tal som
         kuvösens frysta kandidat. Annars är det som går live inte det som mättes.</td>
         <td>Claude, Axel läser</td><td><span class="dom kvar">kvar</span></td></tr>
