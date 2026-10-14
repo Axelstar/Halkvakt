@@ -12295,4 +12295,28 @@ sjätte), läser historien och fysikens sparade tillstånd ur releasen `metnordi
 tabell. Pulsklockans rad och pg_cron-jobbet i en migration. Tidsbudget och ett läge där förra timmens rader duger. Byggs med
 förregistrering före första körningen.
 
+**Tillägg 14/10: steg 3 förregistrerat, del A byggd** (Bengt: *"börja med steg 3"*).
+- **Vad kandidaten ger, läst i #490 och #519 innan något byggdes:** det operativa läget använder grannarnas mätningar *vid
+  giltighetstiden*. Kandidaten "+6 h" är därför ett **nuläge** mellan stationerna — ytan vid timmen t, räknad på den körning som var
+  6–11 timmar gammal (körningarna 00, 06, 12 och 18 UTC) och på stationernas mätningar vid t — inte en varning sex timmar framåt. En
+  varning framåt, med grannarna bara fram till utgivningen, är en annan läsning som hör till försprånget (#519). Det ändrar val 2 i
+  §4.2: regeln ska beskriva ett nuläge (som A1 gör för väglaget), inte en prognos; raden är rättad.
+- **Kedjan live i två delar, som replikan räknar:**
+  - **Del A, var sjätte timme** (`fysik/live/kandidat_fysik.py`, byggd 14/10): för körningen R räknas analysens kolumn om från början
+    över [R − 45 dygn, R) — kedjans eget uppstartsfönster, utan sparat tillstånd som kan glida — och startas om vid R på körningens
+    steg 0–17 (`prognos.skarv`, `fysik_lw.run_lw`, kedjans särdrag, oförändrade). Rättelsen `modell.pkl` (kontrollsumman mot
+    `kuvos/kandidat-2026-27.json`, annars stopp) ger PH för timmarna R+6…R+11 vid alla punkter, stationerna inräknade. Körningar vid
+    andra klockslag avvisas, liksom en analys som slutar före R. Ut: `kandidat_ph_<körning>.csv.gz` (punkt, körning, timme, fysikens
+    yta, PH) och en sammanfattning.
+  - **Del B, varje timme** (nästa bygge): stationernas mätningar vid t (med grind A:s vakter), grannarnas fel mot PH vid stationerna
+    (åtta närmaste inom 300 km, vikt exp(−d/100 km), krympning 0,5), RÅ ur de fem närmaste inom 50 km (vikt 1/max(d, 1)) och
+    blandningen W 0,25 · exp(−ankaravstånd/160 km), replikans tal oförändrade, vid varje punkt ⇒ PB, kandidatens värde, till en
+    tabell som skuggan och publiceringen läser.
+  - Den levande hämtningen (analysen varje timme, körningarna var sjätte) och pulsklockans rader byggs med del B.
+- **Självtestet** kör del A på syntetiska data: 12 punkter, 50 dygns analys i dagfiler, en körning 06Z; prövar klassen R+6…R+11,
+  45-dygnsfönstret, kontrollsumman, körningens klockslag och analysens slut. Kör i ci med fysikens övriga.
+- **Förväntan för första skarpa körningen (på historiken och en arkiverad körning, före schemat):** fysiken över 1 080 timmar ×
+  13 814 punkter inom 10 min på en Actions-runner, PH vid alla punkter utan luckor, PH inom −30…+20 °C, och vid stationerna en
+  fördelning som liknar kuvösens analysläge. Inget tal är en dom; pariteten (steg 4) är provet.
+
 **Stomdokument:** LIV, BED §4.2, SYS.
