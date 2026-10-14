@@ -12067,4 +12067,41 @@ därför står banden, förväntningarna och läsregeln ovan skrivna före körn
 
 **Stomdokument:** MAT (måtten), BED §4.2.
 
-**Utfall** skrivs under den här posten när knappen körts.
+**Utfall 14/10** (körning 38510855935 på 2564f80, 04:20 UTC; Bengt: *"1 ja"* om att skriva in det). Underlaget var 60 dygn
+bakåt med 737 stationer, varav 536 med mätpunkter, och 102 610 mätpunkter.
+
+| uppmätt yta | punkter | av populationen | A2 OFFSET | av de grova, OFFSET | A2 RÅ | av de grova, RÅ |
+| :-- | --: | --: | --: | --: | --: | --: |
+| < −5 °C | 1 297 | 1,3 % | 7,7 % | 2,4 % | 12,2 % | 1,8 % |
+| −5…−1 °C | 7 550 | 7,4 % | 5,5 % | 10,0 % | 8,9 % | 7,9 % |
+| −1…+1 °C | 17 981 | 17,5 % | 4,0 % | 17,1 % | 9,7 % | 20,3 % |
+| +1…+3 °C | 26 221 | 25,6 % | 3,8 % | 24,1 % | 9,4 % | 28,7 % |
+| +3…+5 °C | 49 561 | 48,3 % | 3,9 % | 46,4 % | 7,2 % | 41,3 % |
+
+| A2 räknat över | punkter | OFFSET | RÅ |
+| :-- | --: | --: | --: |
+| alla rader (dagens tal) | 102 610 | 4,1 % | 8,4 % |
+| beslutsbandet −5…+5 (A1:s) | 101 313 | 4,0 % | 8,3 % |
+| −5…+3 (där något kan fyra) | 51 752 | 4,1 % | 9,4 % |
+
+**Mot förväntningarna** — tre av fem utanför spannet:
+
+| förväntan | utfall (OFFSET / RÅ) | |
+| :-- | :-- | :-- |
+| andel av populationen i +3…+5: 25–50 % | 48,3 % | inom |
+| andel av de grova felen i +3…+5: 15–40 % | 46,4 % / 41,3 % | **över** |
+| andel av de grova felen under −5: 0–8 % | 2,4 % / 1,8 % | inom |
+| A2 i −5…+5 mot alla: 0,2–2,0 pe lägre | 0,05 / 0,05 pe lägre | **under** |
+| A2 i −5…+3 mot alla: 0,5–3,0 pe lägre | 0,06 / 1,06 pe **högre** | **åt andra hållet** |
+
+**Läsregeln gäller:** när tal faller utanför sina spann läses populationen först, inte slutsatsen. Det första som syns är
+årstiden. Fönstret 60 dygn bakåt från 14/10 täcker mitten av augusti till mitten av oktober: bara 1,3 % av punkterna ligger
+under −5 °C, och 48 % ligger i +3…+5 °C. Förväntningarna nämnde inte fönstrets årstid. Populationen är inte läst längre än så.
+
+**Vad talen visar i det här fönstret, utan dom:**
+- De grova felen ligger ungefär i proportion till punkterna i varje band.
+- För OFFSET flyttar en smalare population A2 högst 0,06 pe.
+- För RÅ blir A2 högre i −5…+3 (9,4 %) än över alla rader (8,4 %), eftersom RÅ:s fel är störst kring nollan.
+- Läsningen ger alltså inget stöd för att A2 fäller på rader som inte kan skada någon.
+
+Frågan i bedömningen §4.2 (*vilken population ska A2 ha?*) står kvar för Bengt och Axel. Ingen tröskel och ingen dom är rörd.
