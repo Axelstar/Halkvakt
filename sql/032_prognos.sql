@@ -24,6 +24,12 @@ LANGUAGE sql STABLE AS $$
   langsam AS (
     SELECT station_id FROM givarfel_dygn WHERE senast > now() - interval '3 hours'  -- LANGSAM_FRIST_H
   )
+  -- FJÄRRYTORNA (kort #344, fynd 14/10): 93 VViS-stationer har en andra mätpunkt, <nr>100, som i Trafikverkets data heter
+  -- t.ex. "1106 Ö Ljungby Fjärryta" — ytgivaren på den bortre körbanan. Den saknar lufttemperatur helt (0 av 59 723 rader
+  -- på 30 dygn), så de tre givarvakterna nedan släpper den automatiskt, och en plats kan ge TVÅ ankare 16 m isär (51 par
+  -- 14/10). Det ändrar inte om någon talar — fjärrytan saknar också fukt och kan därför aldrig bli en varning — men det
+  -- flyttar RÅ:s vikt mot den närmaste stationen. LÄMNAT ORÖRT på Bengts ord 14/10: att byta population mitt i
+  -- mätperioden skulle byta RÅ, som är kontroll och reserv för domen i mars. Tas upp inför säsongen 2027/28.
   SELECT w.station_id, ST_X(w.geom), ST_Y(w.geom), w.surface_temp_c
   FROM weather_latest w
   WHERE w.surface_temp_c IS NOT NULL

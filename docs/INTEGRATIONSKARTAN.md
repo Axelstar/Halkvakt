@@ -79,7 +79,7 @@ L2 + L3 stänger det hålet. Det är den enskilt största vinsten som finns att 
 <!-- LÄGESRADER §4: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 *Läget i projektkartan:*
 
-- [Trafikverkets väderstationer](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-vader): klar
+- [Trafikverkets väderstationer](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-vader): delvis, 89 % · kvar: Mätpunkter utan lufttemperatur (kort #344, fynd 14/10): 93 VViS-stationer har en andra mätpunkt <nr>100 som saknar luft helt (0 av 25 528 rader på sju dygn) och därför släpps igenom av alla tre givarvakterna; 66 färska ankare, 51 par båda ankare. Bengts och Axels val i bedömningen §4.2
 - [Trafikverkets väglag (RoadCondition)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-vaglag): klar
 - [Trafikverkets olyckor, djur och hinder](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-situation): klar
 - [Publiceringen var tionde minut](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-l-publicera): klar
