@@ -12426,6 +12426,41 @@ kandidat-fysik"*).
   `kandidat-fysik` nu stänger hålet:** klockan 19:13 är den senaste körningen som är minst sex timmar gammal 12Z, och den skriver
   precis 18–23 UTC. Väntar på Bengts ord.
 
+**Tillägg 14/10: vakthunden deployad, och provet hittade att mitt eget schema gjorde mätvakten blind.**
+
+Deployen gick (`deploy-supabase.yml`, körning 38622870543, 19:21 UTC), och enligt husregeln är en deploy inte klar förrän
+funktionens eget prov körts mot det som kör. DB-knappen `matvaktprov` (38623247150) framkallade mätvaktens larmväg, och issue
+**#892** fick raden *"**PROV** — påhittad rad för att bevisa mätvaktens larmväg"*. Larmvägen i drift är därmed bevisad.
+
+**Men samma utskrift bar ett fel jag själv hade infört tjugo minuter tidigare:**
+
+> ❌ KÖRNING · **kandidat-fysik**: cron-uttrycket går inte att tolka — kadensen okänd, vakten blind
+
+- `kadensTimmar()` i vakthunden läste `tim` som ett enda tal: `if (!/^\d+$/.test(tim)) return null;`, med kommentaren
+  *"listor och intervall finns inte i repot i dag"*. Den var sann ända till 19:13, när pulsklockan fick
+  `13 0,6,12,18 * * *`. Mätvakten jämför `ålder > kadens + frist`, så ett `null` betyder att en **missad sexttimmarskörning
+  av del A aldrig hade larmat** — och del A är det som håller PH levande för hela dygnet.
+- Mätvakten läser kadensen ur BÅDE flödets egen `on: schedule` OCH puls-jobbets `schedule` i `cron.job` (index.ts rad 379–385).
+  Ett nytt pulsschema går alltså rakt in i den här funktionen, vilket jag inte visste när jag valde uttrycket.
+- **Rättat:** funktionen flyttad till `supabase/functions/vakthund/kadens.ts` — i `index.ts` gick den inte att prova, eftersom
+  filen anropar `Deno.serve` vid inläsning — och den läser nu en timlista som det **längsta** mellanrummet över dygnet
+  (`0,6,12,18` ⇒ 6 h). Dag- och veckovillkoren går före timluckan, som förut.
+- **Provet `test/kadens.test.ts`** täcker varje schema som faktiskt står i `cron.job`, att kadensen är det längsta och inte det
+  kortaste mellanrummet (`0,1,13` ⇒ 12 h, inte 1), att ett otolkbart uttryck ger `null` och inte en gissning, och att en lista med
+  veckodag faller tillbaka på veckotalet. **Motprov:** med den gamla raden återställd faller 3 av 4 prov. Mitt första utkast till
+  rättelsen hade dessutom gett `null` för en lista med veckodag — det hittades av provfallet, inte av mig.
+- Vakthunden måste deployas om för att rättelsen ska nå driften, och beviset är att raden *"kadensen okänd"* försvinner ur nästa
+  `matvaktprov`.
+
+**Nattens hål, uppmätt.** Del A trycktes 19:20 för att fylla 18–23 UTC och **föll**: MET:s server gav tre timeouts på
+`met_forecast_1_0km_nordic_20261014T12Z` (180 s var). Det är precis risken som förregistrerades i #556 (*"tiden per anrop spretar
+9–145 s, en timeout på 180 s"*) — inte ett kodfel, men den visar följden: utan PH går del B inte, och **pulsklockans första
+schemalagda timkörning 19:43 (38626004476) blev röd**, som förutsagt. En ny tryckning gjordes 19:37.
+
+**Ett fynd som inte är vårt:** samma mätvaktsutskrift visar att **`cell-matning-v3` föll 12/10 06:20** och att issue #892 stått
+öppen sedan 12/10 07:07 med fem kommentarer — mätvakten har larmat varannan timme i två dygn utan att någon agerat. Jobbet är
+veckovis (måndagar 06:20), så loggen bär felet till 19/10. Frågan hör inte till kort #343 men ska inte gå förlorad.
+
 **Stomdokument:** LIV, BED §4.2, SYS.
 
 ## #559 (14/10 2026) Pariteten förregistrerad: den levande kedjan mot kuvösens frysta procedur på samma körning (kort #343, steg 5)

@@ -50,6 +50,7 @@
 import postgres from "https://deno.land/x/postgresjs@v3.4.4/mod.js";
 import { skaTrycka, senasteTryck, FROSTTRYCK_MARK, GALLRING_DYGN, TRYCK_INTERVALL_D } from "./frosttryck.ts";
 import { I_RAD, datavakter, noter, rad as datavaktRad } from "./datavakter.ts";
+import { kadensTimmar } from "./kadens.ts";
 
 const sql = postgres(Deno.env.get("SUPABASE_DB_URL")!, { max: 1, prepare: false });
 const REPO = "Axelstar/Halkvakt";
@@ -113,18 +114,6 @@ async function enOppen(etikett: string, mark: string, rad: string[]): Promise<an
 
 /** Kadens i timmar ur ett 5-fälts cron-uttryck. null = går inte att tolka, och DET är ett larm
  *  i sig — en vakt som inte förstår schemat kan inte se när schemat missas. */
-export function kadensTimmar(cron: string): number | null {
-  const f = cron.trim().split(/\s+/);
-  if (f.length !== 5) return null;
-  const [, tim, dom, , dow] = f;
-  const varje = tim.match(/^\*\/(\d+)$/);
-  if (varje) return Number(varje[1]);   // "23 */2 * * *" ⇒ varannan timme
-  if (tim === "*") return 1;
-  if (!/^\d+$/.test(tim)) return null;  // listor och intervall finns inte i repot i dag
-  if (dow !== "*") return 24 * 7;       // veckovis
-  if (dom !== "*") return 24 * 28;
-  return 24;                            // dagligen
-}
 
 Deno.serve(async (req) => {
   const k = Deno.env.get("INGEST_KEY");
