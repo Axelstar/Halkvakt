@@ -12541,6 +12541,13 @@ vaglag.geojson 818 sträckor. Ingen tyst skada: kvällens körning är den enda 
 Apparna hämtar sina snapshots från samma gamla adress men följer omdirigeringen (`URLSession.shared` på iOS, `HttpURLConnection` på
 Android, https → https); manifestet ger 200 efter en omdirigering. Pariteten trycks om när rättelsen ligger på main.
 
+**Tillägg 15/10 natt: andra tryckningen föll på mitt eget kopplingsfel** (körning 38643878687 på 15ca49c). Inläsningen gick igenom
+(6 min), modellen hämtades, och kedjesteget föll på `cp: cannot stat 'metnordic/static_2026-10-06.json'`. Stegen som hämtar vinterns
+MET Nordic-analys (`kuvos-metnordic-2024-25`) och prognoser (`kuvos-metnordic-prognos-2024-25`) har egna villkor, och när valet
+`kuvos-paritet` lades till i #954 kom det in i kedjesteget men inte i dem — pariteten fick ingen data. CI:s självtest kan inte se det:
+felet sitter i flödets kopplingar, inte i koden. Rättat: båda villkoren bär nu `kuvos-paritet`, och varje indata pariteten läser är
+spårad till sitt steg (leveransen, indatan, modellen, kandidatfilen, analysen, prognoserna).
+
 **Rättat 14/10 kväll (Bengt: *"gör 1,2,3"*):** posten stod som *"Beslut. Claude"*. Claude fattar inga beslut; det här är ett **förslag** som väntar på Bengts och Axels ja, och toleransen 0,10 / 0,30 °C gäller inte förrän det givits.
 
 **Stomdokument:** LIV, MAT, KAR, KUV §9.

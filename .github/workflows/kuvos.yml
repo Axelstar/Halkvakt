@@ -85,7 +85,7 @@ jobs:
       # Läser den: filnamnet innehåller 'metnordic' eller är rutnätsmodellens ('kuvos-rn-') — en ny läsare läggs till här.
       # Blandningen (#516) läser bara static.json härifrån: fysikkedjans prep.py behöver den.
       - name: MET Nordic ur releasen, kontrollsummorna mot manifestet
-        if: ${{ hashFiles('kuvos/metnordic-leverans.json') != '' && (contains(inputs.matning, 'metnordic') || contains(inputs.matning, 'kuvos-rn-') || contains(inputs.matning, 'kuvos-blandning')) }}
+        if: ${{ hashFiles('kuvos/metnordic-leverans.json') != '' && (contains(inputs.matning, 'metnordic') || contains(inputs.matning, 'kuvos-rn-') || contains(inputs.matning, 'kuvos-blandning') || contains(inputs.matning, 'kuvos-paritet')) }}
         shell: bash
         env: { GH_TOKEN: "${{ github.token }}" }
         run: |
@@ -101,7 +101,7 @@ jobs:
       # MET Nordics prognoser (DECISIONS #518, #519, kort #308) bara för prognosläget: åtta delar ur den öppna releasen, summorna mot
       # kuvos/metnordic-prognos-leverans.json (skriven när hämtningen är klar; utan den, eller med en del som saknas, fälls jobbet).
       - name: MET Nordics prognoser ur releasen, kontrollsummorna mot manifestet
-        if: ${{ contains(inputs.matning, 'kuvos-blandning-prognos') || contains(inputs.matning, 'kuvos-blandning-vagb') }}
+        if: ${{ contains(inputs.matning, 'kuvos-blandning-prognos') || contains(inputs.matning, 'kuvos-blandning-vagb') || contains(inputs.matning, 'kuvos-paritet') }}
         shell: bash
         env: { GH_TOKEN: "${{ github.token }}" }
         run: |
