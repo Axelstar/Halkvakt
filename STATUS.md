@@ -42,6 +42,7 @@ fortsätter. *(Fryst 26/9, kort #221.)*
 - Revoke the unused second PAT (public-read-only one from 2026-08-24) — ej verifierad
 
 ## Session log
+- 14/10 (Claude, Bengts *"Läs a 2 population"*): **A2:s population förregistrerad och byggd** — `scripts/matningar/a2-populationen-2026-10-14.ts` + `a2-populationen.yml`, DECISIONS #554, frågan i bedömningen §4.2. Fyndet: grind A räknar A1 i beslutsbandet −5…+5 men A2/A3 över alla rader ≤ +5. Självtest grönt med driftvakt mot grind A:s källa; motprov (`DEC_LO` −4) faller på rätt rad. Egen knapp i stället för ett läge i `hojd-prov.yml`, som väljer gren med en negativ villkorslista (dbknapp-läxan). Ingen dom, inga trösklar. **Rättelse samma varv:** min flagga 14/10 att bedömningens läget glidit var FEL — jag läste det daterade 29/9-avsnittet som dagens läge. Den bär #526, #547, #548 och #553 och ändrades i dag 00:16. Inget rättat där.
 - 2/10 23:16 (Axel): skinnet v4 byggt i Xcode och provat i simulatorn — *"It works as intended"*. Byggnumret 0.3.10 (22) på båda; PR #698 sammanslås. Kort #284.
 - 2/10 18:46–21:00 (Claude, Axels *"Okay, lets start"*): appens nya skinn ur designöverlämningen v2 på båda plattformarna, PR #698
   (utkast) — `Alert.step` i tre motorer (DECISIONS #443), varningskorten A–L, gammal data M–N, Redo efter tur, På vakt, inställningar
