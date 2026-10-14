@@ -12531,6 +12531,16 @@ DB-knappen `las`. Spannet är fysikens yttergräns för en vägyta, inte ett vä
 modeller (stationens egen region utelämnad), medan den levande kedjan kör den ENA frysta modellen tränad på alla stationer. De två
 är inte jämförbara, och en jämförelse mellan dem hade mätt utelämningen och inte kodvägen.
 
+**Tillägg 14/10 kväll: första tryckningen nådde aldrig pariteten** (Bengt: *"slå ihop 959 och tryck kuvos-paritet"*; körning
+38642319392 på dd24703). Den föll efter 50 sekunder i kuvösens eget inläsningssteg: `kuvos/inlasning.ts:92` fick HTML där den väntade
+JSON. Orsaken är inte pariteten. Kartrepots GitHub Pages fick egen domän 13/10 21:15 UTC (commit *"Koppla domänen halkvakt.se till
+GitHub Pages"*, en annan Claude-session, inte bokförd här), så `axelstar.github.io/halkvakt-karta/…` svarar nu **301** till
+`halkvakt.se`. `curl -sSf` utan `-L` följer inte omdirigeringen och sparade omdirigeringssidan som `static.json`. Åtta `curl`-rader i
+fyra flöden (kuvos, kuvos-smhi, vagdata-hamta, vagdata-rekognosering) har fått `-L`; provat lokalt: static.json ger 855 stationer och
+vaglag.geojson 818 sträckor. Ingen tyst skada: kvällens körning är den enda av de fyra flödena sedan bytet, och den föll högljutt.
+Apparna hämtar sina snapshots från samma gamla adress men följer omdirigeringen (`URLSession.shared` på iOS, `HttpURLConnection` på
+Android, https → https); manifestet ger 200 efter en omdirigering. Pariteten trycks om när rättelsen ligger på main.
+
 **Rättat 14/10 kväll (Bengt: *"gör 1,2,3"*):** posten stod som *"Beslut. Claude"*. Claude fattar inga beslut; det här är ett **förslag** som väntar på Bengts och Axels ja, och toleransen 0,10 / 0,30 °C gäller inte förrän det givits.
 
 **Stomdokument:** LIV, MAT, KAR, KUV §9.
