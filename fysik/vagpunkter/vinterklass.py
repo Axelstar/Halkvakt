@@ -24,18 +24,18 @@ ROT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)
 LAGER, FALT, MAX_M, KRAV = 'SverigePaket_DoU', 'Vagkl_564', 150.0, 0.95
 
 
-def vagar(gpkg, falt=FALT):
+def vagar(gpkg):
     import geopandas as gpd
-    return gpd.read_file(gpkg, layer=LAGER, columns=[falt], where=f'{falt} IS NOT NULL', engine='pyogrio')
+    return gpd.read_file(gpkg, layer=LAGER, columns=[FALT], where=f'{FALT} IS NOT NULL', engine='pyogrio')
 
 
-def koppla(punkter, v, falt=FALT, namn='uh_klass'):
-    """punkter: DataFrame sid, lon, lat (WGS84). Returns sid, <namn>, d_m (NaN beyond 150 m)."""
+def koppla(punkter, v):
+    """punkter: DataFrame sid, lon, lat (WGS84). Returns sid, uh_klass, d_m (NaN beyond 150 m)."""
     import geopandas as gpd
     p = gpd.GeoDataFrame(punkter[['sid']].copy(), geometry=gpd.points_from_xy(punkter.lon, punkter.lat), crs='EPSG:4326').to_crs(v.crs)
-    j = gpd.sjoin_nearest(p, v[[falt, 'geometry']], how='left', max_distance=MAX_M, distance_col='d_m')
+    j = gpd.sjoin_nearest(p, v[[FALT, 'geometry']], how='left', max_distance=MAX_M, distance_col='d_m')
     j = j.sort_values('d_m').drop_duplicates('sid')
-    return punkter[['sid']].merge(j[['sid', falt, 'd_m']].rename(columns={falt: namn}), on='sid', how='left')
+    return punkter[['sid']].merge(j[['sid', FALT, 'd_m']].rename(columns={FALT: 'uh_klass'}), on='sid', how='left')
 
 
 def reproducera(ut, road_all):
