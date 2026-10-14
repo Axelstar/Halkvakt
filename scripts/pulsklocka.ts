@@ -51,13 +51,22 @@ const NYA: { namn: string; schema: string; fil: string }[] = [
   // Kort #340 (DECISIONS #534, Bengts plan via Axel 11/10): synkprovets bil tio minuter efter favoritprovet (:08/:38). Motorn längs de
   // 30 vägrutterna tar 5–9 s och föll på Supabases resurstak; i Actions är det gratis för det publika repot. ~1 min per körning.
   { namn: "puls-favoritprov-synk", schema: "18,48 * * * *", fil: "favoritprov-synk.yml" },
+  // Kort #343 (DECISIONS #556, #558): kandidaten NIVÅ 2+BLANDNING räknas levande i Actions, eftersom edge-funktionerna inte kör
+  // Python. TAKTEN FÖLJER +6 h-KLASSEN (#519): del A på :13 efter 00, 06, 12 och 18 UTC, när körningen just blivit sex timmar
+  // gammal, och skriver då precis de sex timmar som följer (R+6…R+11 = 06–11 för körningen 00Z). Täckningen blir därmed
+  // obruten dygnet runt. Del B på :43 varje timme, en halvtimme efter del A, när PH för timmen finns.
+  // Minuterna :13 och :43 är lediga i databasens klocka (publicera :x0, grannarna :05/:35, skuggmotorn :02/:32, :12/:42,
+  // :15/:45, :20/:50, :22/:52, :25/:55, favoritprovet :08/:38 och synken :18/:48, ingesten :11).
+  // Uppmätt 14/10: del A 19,5 min första gången (två dygns analys), därefter bara de nya timmarna; del B under en minut.
+  { namn: "puls-kandidat-fysik", schema: "13 0,6,12,18 * * *", fil: "kandidat-fysik.yml" },
+  { namn: "puls-kandidat-timme", schema: "43 * * * *", fil: "kandidat-timme.yml" },
 ];
 
 // Vakthundens check 6a bär samma tal som golv (kort #222, DECISIONS #255): ett puls-jobb som
 // avaktiveras eller raderas ska larma, inte tyst falla ur bevakningslistan. Vakthunden kör i Deno
 // hos Supabase och kan inte importera den här filen, så talet är en KOPIA — kontraktsgrinden vaktar
 // att kopiorna bär samma värde, och raden under vaktar att värdet stämmer med listan ovan.
-const ANTAL_NYA = 12;
+const ANTAL_NYA = 14;
 if (NYA.length !== ANTAL_NYA) {
   console.error(`NYA har ${NYA.length} jobb men ANTAL_NYA säger ${ANTAL_NYA} — uppdatera båda, och vakthundens PULS_GOLV.`);
   process.exit(1);

@@ -12385,4 +12385,213 @@ kandidat-fysik"*).
 - 132 punkter saknar ÅDT och 137 tunga fordon i vägdatan; kända luckor som modellen tar som NaN, inte något nytt.
 - Ingen dom: talen säger att rörledningen bär, inte att kandidaten är bra. Pariteten (steg 4) är provet.
 
+**Tillägg 14/10: första skarpa körningen av del B, och pulsklockans rader** (körning 38604051356 på 470d791, 17:08 UTC; Bengt:
+*"slå ihop 952 och tryck db-knappen las och tryck kandidat timme"*).
+
+| förväntan (lagd före körningen) | utfall | |
+| :-- | :-- | :-- |
+| 700–850 ankare (grind A:s population just nu) | **765** | inom |
+| RÅ vid de flesta punkter (inom 50 km) | **13 705 av 13 714** (99,93 %) | inom |
+| PB inom −30…+20 °C | **−2,3…+13,5 °C** | inom |
+| timmen inom 2 min | **31 s** totalt, varav aritmetiken 2 s | inom |
+| `kandidat_live` en rad per punkt | **13 714** skrivna; gallringen tog 0 rader (inget är äldre än tre dygn än) | inom |
+
+- Timmen var 2026-10-14T17:00:00Z; PH kom ur `kandidat_ph` som del A skrev 16:59. Grannfelets medel var **+0,42 °C** —
+  fysiken låg alltså i snitt 0,42 °C under det mätarna visade vid ankarna, och rättelsen drar PB uppåt med den vikten.
+- De 9 punkter som inte fick RÅ saknar ankare inom 50 km. De behåller PG (fysik + grannarnas fel), som blandningen ger
+  full vikt när ankaravståndet är stort — samma väg som kuvösen.
+- **Pulsklockans rader** (steg 4): `puls-kandidat-fysik` på **:13 efter 00, 06, 12 och 18 UTC** och `puls-kandidat-timme` på
+  **:43 varje timme**. Takten följer +6 h-klassen (#519): vid :13 är körningen just sex timmar gammal, och del A skriver då
+  precis de sex timmar som följer (R+6…R+11, dvs. 06–11 för körningen 00Z), så täckningen blir obruten dygnet runt. Del B
+  ligger en halvtimme efter del A, när PH för timmen finns. Minuterna är lediga i databasens klocka. `ANTAL_NYA` och
+  vakthundens `PULS_GOLV` går 12 → 14 i samma commit (kontraktsgrinden kräver det); **vakthunden deployas först efter att
+  knappen skapat jobben**, annars larmar check 6a på två jobb som inte finns än.
+- Ingen dom. Talen säger att rörledningen bär timme för timme, inte att kandidaten är bra. Pariteten (steg 5) är provet.
+
 **Stomdokument:** LIV, BED §4.2, SYS.
+
+## #559 (14/10 2026) Pariteten förregistrerad: den levande kedjan mot kuvösens frysta procedur på samma körning (kort #343, steg 5)
+
+**Beslut.** Claude 14/10, inför Bengts och Axels läsning. Steg 5 i planen för att gå live (#556) är provet som säger om det som
+*går live* räknar samma sak som det som *mättes* i kuvösen. Regeln och förväntan skrivs här, före knappen.
+
+**Varför ett prov och inte ett resonemang.** Del A (`fysik/live/kandidat_fysik.py`) LÅNAR `run_lw`, `skarv`, `las_prognos`,
+`vader`, `base_features_mn` och `state_features_mn` ur kuvösens frysta moduler — de kan inte glida isär. Men den bygger SJÄLV två
+saker: (a) kraften ur MET Nordic (`bygg_F`) där kuvösen använder `metnordic.load_mn`, och (b) fönstret och omstarten för EN körning,
+45 dygn bakåt utan sparat tillstånd, där kuvösens `prognoslage` kör kolumnen från vinterns första timme. Två sidor som räknar samma
+sak på två sätt är exakt det som ska mätas.
+
+**Hur det mäts** (`fysik/live/paritet.py`, självtest i ci):
+- **Väg A (fryst):** `metnordic.load_mn(analysen)` → `run_lw` över analysen → kuvösens EGEN `prognoslage()` för den ena körningen,
+  med kandidatens frysta parametrar och kandidatens ENA modell i alla fem folds. Fold-maskineriet blir därmed en nulloperation, och
+  väg A är kuvösens egen funktion — ingen avskrift av den.
+- **Väg B (levande):** `kandidat_fysik.kor()` på samma analys, samma körningsfil och samma modell (sha256 mot
+  `kuvos/kandidat-2026-27.json`).
+- Provet bygger väg B:s indata ur samma frysta filer, med `elev_ifs.csv` skrivet som `indata.py` gör för stationer — `elev_ifs` är
+  ett av de 70 särdragen, och utan det hade provet mätt rörmokeriet i stället för kedjan. Metan jämförs kolumn för kolumn och
+  redovisas.
+- **Tre förregistrerade körningar i vintern 24/25:** 2024-12-15T00Z, 2025-01-15T00Z, 2025-02-15T00Z — en per månad, mitt i
+  säsongen, där snötäcket finns och därmed kan tappas.
+
+**Förväntan, skriven före körningen.** `ts_fysik` (fysikkolumnen före rättelsen) och `ph` (efter den), per punkt och timme:
+**median ≤ 0,10 °C och p95 ≤ 0,30 °C**. Talen är valda mot vad de ska skydda: kandidatens egna mått dömer på grova fel vid ±2,5 °C
+och spridningsgrinden vid X = 2,25 °C, så en skillnad mellan kodvägarna på 0,10 °C är fyra procent av domens egen upplösning.
+Toleransen bor på ETT ställe, `TOLERANS` i `scripts/matningar/kuvos-paritet-2026-10-14.ts`; paritetsskriptet mäter och dömer inte.
+
+**Två skillnader som är KÄNDA och redovisas för sig, inte gömda i ett totaltal:**
+1. Där MET Nordic saknar en timme faller väg A tillbaka på ECMWF (`load_mn`: `G[k] = where(isfinite(mn), mn, ec)`) medan väg B
+   fyller framåt och RÄKNAR cellen (`MAX_IFYLLT`, #558 steg 5). Antalet ifyllda punkttimmar skrivs ut; en parität mätt på ett
+   fönster med luckor mäter den skillnaden och inte kedjan.
+2. **Snön.** Väg A:s kolumn har drivits sedan vinterns första timme; väg B:s sedan R − 45 dygn. Det djupa randvillkoret (`tdeep`) är
+   ett 45-dygnsmedel och nollställer sig, men snötäcket ackumulerar utan gräns — och `swe`, `snowd`, `sn72`, `h_since_snow`,
+   `snowd_x_cold` och `sw_x_snowd` är **sex av kandidatens 70 särdrag**. Snöfälten redovisas som andel av väg A:s egen nivå (ett
+   snötäcke på 200 mm vatten som skiljer 10 mm är en annan sak än ett på 10 mm), och domen larmar över 10 %.
+
+**Faller provet mjukas toleransen INTE upp.** Svaret är ett beslut av Bengt och Axel, och de två vägarna är kända: höj `FONSTER`
+(längre analysfönster per körning, dyrare hämtning och längre kedja), eller låt den levande kedjan spara tillstånd mellan
+körningarna (billigare, men då måste ett tappat dygn kunna läka). Ett tredje svar — att gå live ändå och notera skillnaden — är
+möjligt bara om domen visar att den är liten där det räknas, och det är då ett skrivet beslut, inte en tystnad.
+
+**Knappen.** `kuvos.yml` med `matning` = `scripts/matningar/kuvos-paritet-2026-10-14.ts`, på Bengts ord. Flödet hämtar `modell.pkl`
+ur hinken (sha256 mot kandidatfilen), plockar de tre körningarna ur prognosarkivet och kör provet; mätfilen läser utfallen och
+skriver domen. Radfilen med de två vägarnas skattningar lämnar aldrig jobbet — bara aggregat går till sammanfattningen.
+
+**Självtestet, och varför det inte är en formalitet.** Provet körs i ci på en påhittad källa där ECMWF-fönstret och MET Nordic täcker
+samma timmar, så att vägarna startar i samma timme och bara koden kan skilja dem: max-skillnaden ska då vara ≤ 0,02 °C. Sedan
+muteras **bara den levande sidan**, två gånger, och båda måste fällas: `ta + 0,5 °C` (ts_fysik och ph ska röra sig) och `swe = 0`
+(snöraderna ska röra sig). Den första mutationen jag försökte, `CM_PER_MM × 1,5`, gav INGEN skillnad alls — ett djupt snötäcke
+mättar täckningsgraden, så mer snö per millimeter rör ingen yttemperatur. Ett motprov som inte fälls bevisar ingenting om provet,
+bara om mutationen (samma lärdom som #207 20/9).
+
+**Ett fynd på vägen: kandidatens tabeller var obesiktigade.** `kandidat_ph` och `kandidat_live` (sql/050) stod inte i värdevaktens
+`TIDSKOLUMN`, så deras fält skannades aldrig — inte ens som OBESIKTIGADE. Samma fälla som `trend_kandidater` gick i 15/9. Spannen är
+nu skrivna (`ts_fysik`, `ph`, `pg`, `ra`, `pb` −60…+80 °C, `ank_km` 0…300 km) och tabellerna står i listan; besiktningen körs med
+DB-knappen `las`. Spannet är fysikens yttergräns för en vägyta, inte ett väntat intervall — ett värde utanför är ett räknefel.
+
+**Alternativ som förkastades.** Att jämföra mot kuvösens sparade `oof_prognos6.npy`: den skattningen gjordes med **fold-vis**
+modeller (stationens egen region utelämnad), medan den levande kedjan kör den ENA frysta modellen tränad på alla stationer. De två
+är inte jämförbara, och en jämförelse mellan dem hade mätt utelämningen och inte kodvägen.
+
+**Stomdokument:** LIV, MAT, KAR, KUV §9.
+
+## #560 (14/10 2026) Förregistreringen för vintern 2026/27 — utkastet, med allt utom regeln och populationen fastskrivet (kort #343, steg 6)
+
+**Beslut.** Claude 14/10, inför Bengts och Axels signaturer. #544 punkt 6 och #547 säger att kandidaten döms i mars som en **ny
+fråga**, i den form väg B fryste den, och att förregistreringen skrivs **senast 31/10**. Domfönstret börjar på förregistreringens
+dag, så varje dygn utkastet ligger osignerat är ett dygn vinter som faller utanför domen. Därför skrivs allt som går att skriva nu,
+och det som saknas namnges som exakt två frågor.
+
+**1. Vad som döms.** Den frysta kandidaten ur #552, ingenting annat:
+- fysiken `lw` (utan terräng), blandningens par **W 0,25 · L 160 km**, valda på alla veck i både analysläget och +6 h (körning
+  38368369876);
+- rättelsen `modell.pkl`, 9,8 MB, i hinken `arkiv` under `kuvos-kandidat-2026-27/`, identifierad av sin **sha256 i
+  `kuvos/kandidat-2026-27.json`** — samma summa som varje körning av den levande kedjan prövar innan den räknar;
+- de 70 särdragen och de femton parametrarna i samma manifest.
+En annan modell, ett annat par eller en annan fysik är en **annan kandidat** och en annan fråga.
+
+**2. Hur den räknas under vintern.** Den levande kedjan ur #558: del A var sjätte timme (fysiken och rättelsen ⇒ PH för
+R+6…R+11), del B varje timme (grannarnas fel, RÅ och blandningen ⇒ PB), i Actions, startade av pulsklockan. Domen fälls på **det
+kedjan räknade vid timmen**, som det står i `kandidat_live` — inte på en omräkning i efterhand. Att de två räknar samma sak som
+kuvösens frysta procedur är paritetsprovet (#559); faller det är identiteten i punkt 1 inte bevisad, och förregistreringen kan inte
+signeras förrän svaret är skrivet.
+
+**3. Måtten, oförändrade.** Grind A mäts på de **754 stationer** där kandidaten kan räknas, av populationens ~761 (99,1 %; se rättelsen nedan). Grind A–C med samma trösklar, spridningsgrinden **X = 2,25 °C**, och regeln att **tystnad på ett täckt
+segment är en miss** (#475, #477). Inget krav sänks, och spridningsgrinden gäller kandidaten oförändrad (#547). Grind A:s
+population bärs av samma vakter som i dag: #75, radvakten, karantänen och den långsamma vakten, och mätningar yngre än tre timmar.
+
+**4. Domfönstret.** Börjar den dag förregistreringen är signerad och pushad, och löper till domen i mars. Bara data som ingen sett
+räknas, som förslaget till regel L behandlar ett kandidatbyte (#282, L2 och L3).
+
+**5. RÅ bredvid.** RÅ:s dom fälls som förut och redovisas vid sidan som **kontroll**. Blir kandidaten inte räknad för vintern
+(data saknas, eller en av frågorna nedan ger ingen väg) fälls domslutet (a)–(c) på RÅ i stället. Det är en **reserv**, inte två
+chanser att klara grinden (#547).
+
+**6. Det väntade felet, skrivet före vintern och utan uppmjukning.**
+- Kandidatens väntade andel grova fel vid +6 h är **5,12 %** (#552) mot grind A:s tak **5 %**. Kandidaten väntas alltså **inte**
+  klara A2 på det talet. Det är registrerat som förväntan, inte som ett mål att jämföra bort: slår utfallet in är domen ett nej på
+  A2, och det är ett giltigt utfall av en ärlig fråga.
+- Kandidaten har **aldrig räknats på en vägpunkt** och är inte prövad mot vägpunktsgrinden. Räknas den där (fråga B nedan) är det
+  ett mått utan tidigare mätning.
+- Fysiken är kalibrerad på vintern 24/25. 2026/27 är ett annat år; ingen justering görs under vintern.
+
+**7. Vad som är fryst vid signeringen.** Måtten (punkt 3), domfönstret (punkt 4), kandidatens identitet (punkt 1), regeln som
+utlöser varningen och populationen (frågorna nedan). Ändras något av det efteråt sker det **bara genom en daterad post med båda
+signaturerna** — aldrig som en lättnad efter sett utfall, annars är marsdomen förorenad (#558 tillägg).
+
+**8. Vad som INTE är en del av domen.** Formen i appen (val 1) och avstängningen (val 4). Hur varningen talas, märks eller stängs
+av rör användaren, inte måttet; de kan ändras utan att domen rörs. Därför väntar förregistreringen inte på dem.
+
+**Två frågor måste besvaras före signeringen, båda i bedömningens §4.2 sedan 14/10:**
+- **(A) Regeln** (val 2). Vad utlöser varningen, skrivet i tröskeldokumentet före koden. #558:s tillägg rättade formen: kandidaten
+  ger ett **nuläge** mellan stationerna — ytan vid timmen t räknad på en 6–11 timmar gammal körning, med stationernas mätningar vid
+  t — inte en prognos framåt. Regeln ska därför beskriva ytan och fukten **nu**, som A1 gör för väglaget. Claudes förslag står kvar
+  (kandidatens yta ≤ 0 °C och fukt vid punkten, där ingen station säger annat); talen är Axels. Regeln måste vara skriven för att
+  domen ska kunna räkna missar och falsklarm.
+- **(B) Skuggloggen** — *frågan omformulerad 14/10 på Bengts ord "rätta b"; se rättelsen nedan.* Kommer kandidatens
+  segmentvarningar in i skuggloggen i vinter, bredvid RÅ? Gör de inte det kan grind B och C inte mätas på kandidaten, och #547:s
+  reservklausul fäller marsdomen på **RÅ** i stället — kandidaten vore live i appen utan att vara dömd den vintern. Det är kortets
+  steg *skuggan loggar kandidaten bredvid RÅ*, och det är ett eget krav, inte en följd av val 5.
+
+**Varför utkastet skrivs nu och inte 31/10.** Varje dygn förskjuter domfönstrets början, och november–mars är allt vi har. Två
+frågor är billigare att svara på än ett helt dokument, och allt annat är redan bestämt i #544, #547, #552 och #558 — utkastet
+samlar det så att signeringen blir ett ja eller ett nej, inte ett skrivarbete.
+
+**Rättelse 14/10 (Bengt: *"rätta b"*): domens population är inte ett öppet val, och punkt (B) frågade om något som inte finns.**
+
+Utkastets första lydelse frågade om kandidaten döms på de 754 stationerna eller på vägpunkterna. Den frågan går inte att ställa.
+**Grind A är definierad som leave-one-out per station** (TROSKLAR-SKUGGAN §3: *"prognostisera varje stations yttemp ur grannarnas
+offsetmodell, jämför med **mätt**"*), och en vägpunkt har ingen uppmätt yta att jämföra med. Grind B räknas på **segment**, mot
+facit ur station, kamera, RoadCondition, situationsarkivet eller testarlogg (§2). Populationen är alltså redan låst av
+tröskeldokumentet, och den delen av förregistreringen är därmed skriven utan att någon behöver svara:
+
+| grind | population | kandidaten där |
+| :-- | :-- | :-- |
+| A1–A3 | stationerna, mot mätt yta | **754 av ~761** riktiga stationer (99,1 %) |
+| B1–B3 | segmenten, mot facit | kräver att skuggan loggar kandidaten — annars omätbar |
+| C1–C3 | ≥ 20 facithändelser på täckta segment i ≥ 3 halkperioder, ≥ 30 skuggvarningar | följer av B |
+
+- **Varför 754 av ~761.** De 854 mätpunkterna är 761 stationer + 93 fjärrytor (#344). Fjärrytorna faller ur grind A av sig själva,
+  eftersom grinden kräver `air_temp_c IS NOT NULL` och de saknar luft helt. Kandidaten räknas vid 754; de 7 som fattas saknar
+  ECMWF-fil i Axels frysta indata. **Förregistreringen säger därför att grind A mäts på 99,1 % av populationen, inte på hela** —
+  det är ett tal som ska stå före vintern, inte upptäckas i mars.
+- **En följdfråga, ingen tröskeländring.** Tröskeldokumentet säger *"nationellt över alla 845 stationer"*. 845 ligger nära 854
+  **mätpunkter** och långt från 761 **stationer**, så talet är nästan säkert en mätpunktsräkning från tiden före #344. Ingen tröskel
+  rörs; men en dom som säger "845 stationer" beskriver något annat än den mäter, och raden bör rättas i samma post som §4(a)
+  (frågan i §4.2).
+- **Vad som ersatte punkt (B).** Skuggloggen, ovan. Val 5 (*var först*) står kvar som en byggordningsfråga för appen och styr inte
+  domen: kedjan räknar redan alla 13 714 punkterna, både stationer och vägpunkter.
+
+**Fuktfyndet för (A), som planen i #556 hoppade över.** Kandidaten levererar en **temperatur**, inte en varning: `kandidat_live` bär
+`ph, pg, ra, ank_km, pb` och **ingen fukt alls**. Punktmotorns villkor är `yta ≤ 1 °C (bro 3) OCH moisture === true`
+(`engine/src/engine.ts`), där `moisture` är stationens egna mätning (`publish/rekonstruktion.ts`: `rain OR snow OR precipitation
+NOT IN ('no','dry')`). Kandidaten fyller alltså halva villkoret, och regeln i (A) måste säga varifrån den andra halvan kommer vid en
+punkt mellan stationerna. Fem källor finns redan byggda:
+
+| källa | mätt | täcker punkten | hinder |
+| :-- | :-- | :-- | :-- |
+| radarn (`radar_precip.rate_mean_mmh`, utlösare 2,0 mm/h) | ja | ja, areatäckande | tyst över 70 min (#81 regel 7); mäter fallande nederbörd, inte blöt yta |
+| Trafikverkets RoadCondition på sträckan | operatörsbedömt | ja, segmentkälla | får bekräfta, aldrig fälla (asymmetriregeln §2) |
+| närmaste stations fuktflagga | ja | nej, upp till tiotals km bort | samma glapp som #75 finns för |
+| MET Nordics `nederbord_mm` vid punkten | nej, modellerat | ja | `Boolean(precipitation)` är en falsklarmsmaskin |
+| `regn_h` (timmar sedan nederbörd, 48 h) | ja | per station | används redan av efterhalkans S3 |
+
+**Asymmetrin är det bärande.** Ingen källa kan visa att en punkt är **torr** — radarn ser inte en blöt väg efter regnet, kameran ser
+inte svartis, och RoadConditions tystnad är inget torrt vägbesked. Regeln måste kräva ett **positivt** fuktbesked och får aldrig
+läsa tystnad som torrt (produktinvarianten *Silence is a feature*, och samma skäl som gör kamerabilden oförmögen att fälla ett
+falsklarm). Claudes lydelse till Axel: **pb ≤ 0 °C** (strängare än punktmotorns +1, eftersom pb är en skattning och inte en
+mätning) **och** ett positivt fuktbesked (radarn ≥ 2,0 mm/h inom 70 min **eller** RoadCondition med ett halkord på sträckan) **och**
+att ingen station inom ankaravståndet mätte > +2 °C inom ±45 min (samma gräns som falsklarmsdefinitionen i §2) **och** märkningen
+`modellerat`, aldrig `uppmätt`. Talen är Axels.
+
+**Två hinder före koden, oavsett vilken lydelse som väljs.** (1) TROSKLAR-SKUGGAN §4(a) säger i dag att segmentprognosen *"utlöser
+aldrig röst ensam"*; #556 ändrade beslutet men **texten är inte skriven**, och den kräver båda signaturerna. (2) Trenivåprincipen
+(§1): kandidaten vid en vägpunkt är `modellerat`, vilket får dömas men enligt §4(a):s nuvarande lydelse inte tala. Samma post rättar
+båda, och 845-raden ovan.
+
+**Stegnumreringen har glidit isär (fråga i §4.2).** Kort #343 räknar pariteten som steg 3, publiceringen 4, skuggloggen 5, motorn 6
+och bygget 7; den här sessionen har byggt med pariteten som steg 5, sedan historikhämtningen och pulsklockan blev egna steg; #556
+skriver "paritetsprovet (steg 4)" och #558 "publiceringen (steg 6)". Fyra numreringar på fem dokument. Claudes förslag: **namnge
+stegen och sluta numrera dem** — ett nummer som betyder olika saker i olika dokument är samma fälla som en rad döpt efter ett
+klockslag den inte bär.
+
+**Stomdokument:** KUV §5, SYS, BED §4.2, LIV.

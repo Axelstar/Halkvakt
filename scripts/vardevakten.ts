@@ -126,6 +126,14 @@ export const SPANN: Record<string, [number, number, string]> = {
   // Telefonens egen GPS-fart (DECISIONS #461): bär stillaståendetiern (< 3) och självstoppets bilfart (snitt ≥ 12 över 60 s).
   // Inte en arkivkolumn — deklarerad här för att husregeln gäller trösklar i appen också. Negativ/saknad = OKÄND, aldrig stilla.
   fix_speed_kmh: [0, 300, "km/h — saknad fart är okänd, inte 0"],
+  // Kandidaten NIVÅ 2+BLANDNING live (kort #343, sql/050): fem skattningar av vägytans temperatur i ett led, och
+  // ankaravståndet som väger dem. Fött besiktigade, innan fälten bär en mätning eller en varning — värdevakten
+  // skannar bara tabeller som står i TIDSKOLUMN nedan. Spannet −60…+80 °C är fysikens yttergräns för en vägyta
+  // (asfalt i sommarsol når 60-tal; −50 är Vuoggatjålmes rekord), inte ett väntat intervall: en skattning utanför
+  // det är ett räknefel, inte ett väder. ank_km upp till RMAX_RES (300 km) — längre bort väger ingen granne alls.
+  ts_fysik: [-60, 80, "°C — fysikkolumnens yta"], ph: [-60, 80, "°C — fysiken + rättelsen"],
+  pg: [-60, 80, "°C — PH + grannarnas fel"], ra: [-60, 80, "°C — RÅ, grannarnas uppmätta yta"],
+  pb: [-60, 80, "°C — blandningen, kandidatens värde"], ank_km: [0, 300, "km till närmaste bidragande ankare"],
 };
 
 /** Identifierare är inte mätvärden. De ska inte stå som obesiktigade — men de ska inte heller
@@ -232,6 +240,9 @@ const TID: Record<string, string> = {
   trend_kandidater: "observed_at",
   // Kort #257: den stigande halvan, samma kolumner och spann — fött besiktigad, inte upptäckt i efterhand som trend_kandidater.
   trend_stigande: "observed_at",
+  // Kort #343: kandidatens två tabeller (sql/050). Utan raden här skannas deras fält aldrig, inte ens som OBESIKTIGADE
+  // — samma fälla som trend_kandidater gick i 15/9.
+  kandidat_ph: "tid", kandidat_live: "tid",
 };
 
 console.log(`Värdevakten — besiktning av arkivets numeriska fält (${DAGAR} dygns fönster)\n`);

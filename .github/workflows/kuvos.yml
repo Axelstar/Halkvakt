@@ -166,10 +166,27 @@ jobs:
       # på kontrollens FYSIK. Filerna bär grannarnas uppmätta yta och lämnar aldrig jobbet: de skrivs i blandning/, som ingen artefakt
       # tar med, och loggen bär bara aggregat.
       - uses: actions/setup-python@v5
-        if: ${{ contains(inputs.matning, 'kuvos-fysik-niva2') || contains(inputs.matning, 'kuvos-blandning') }}
+        if: ${{ contains(inputs.matning, 'kuvos-fysik-niva2') || contains(inputs.matning, 'kuvos-blandning') || contains(inputs.matning, 'kuvos-paritet') }}
         with: { python-version: "3.13" }
+      - name: Rättelsen modell.pkl ur hinken, kontrollsumman mot kandidatfilen (pariteten)
+        if: ${{ contains(inputs.matning, 'kuvos-paritet') }}
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          curl -sS --fail-with-body -X POST "$FN?lage=kuvos_hamta" -H "x-halkvakt-key: $KEY" -H "Content-Type: application/json" -d '{"filer":["kuvos-kandidat-2026-27/modell.pkl"]}' > hamta.json
+          node -e '
+            const k = require("./kuvos/kandidat-2026-27.json"), h = require("./hamta.json").filer, c = require("crypto"), { execFileSync } = require("child_process"), fs = require("fs");
+            const curl = (a) => { try { return execFileSync("curl", a, { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); } catch (e) { console.error(`hämtningen föll (curl ${e.status})`); process.exit(1); } };
+            const b = curl(["-sS", "--fail", h[0].url]); const f = k.filer.find((x) => x.fil === "modell.pkl");
+            const ok = c.createHash("sha256").update(b).digest("hex") === f.sha256 && b.length === f.bytes;
+            fs.writeFileSync("modell.pkl", b); console.log(`modell.pkl ur hinken: ${b.length} byte — ${ok ? "sha256 lika kandidatfilen" : "FEL"}`); process.exit(ok ? 0 : 1);'
+          rm hamta.json
       - name: Fysikkedjan — kontrollen på ECMWF, och nivå 2 på MET Nordic eller grannarna och blandningen
-        if: ${{ contains(inputs.matning, 'kuvos-fysik-niva2') || contains(inputs.matning, 'kuvos-blandning') }}
+        if: ${{ contains(inputs.matning, 'kuvos-fysik-niva2') || contains(inputs.matning, 'kuvos-blandning') || contains(inputs.matning, 'kuvos-paritet') }}
         shell: bash
         env: { GH_TOKEN: "${{ github.token }}", MATNING: "${{ inputs.matning }}" }
         run: |
@@ -198,7 +215,20 @@ jobs:
           UT="$PWD/niva2-ut"; MN="$PWD/metnordic/metnordic_2024-25.csv.gz"; BL="$PWD/blandning"; MNP="$PWD/mnp"
           {
             echo '```'
-            if [[ "$MATNING" == *kuvos-blandning-frysta* ]]; then
+            if [[ "$MATNING" == *kuvos-paritet* ]]; then
+              # Pariteten (kort #343, steg 5, DECISIONS #559): den LEVANDE kedjan mot kuvösens FRYSTA procedur på samma körning,
+              # samma analys och samma modell. Tre förregistrerade körningar i vintern 24/25, en per månad, alla 00Z.
+              for KT in 2024-12-15T00 2025-01-15T00 2025-02-15T00; do
+                TS="${KT}:00:00Z"
+                FORST=$(ls "$MNP"/metnordic_prognos_*.csv.gz | head -1)
+                { zcat "$FORST" | head -1; zcat "$MNP"/metnordic_prognos_*.csv.gz | awk -F, -v ts="$TS" '$2==ts'; } | gzip > "korning_$KT.csv.gz"
+                N=$(zcat "korning_$KT.csv.gz" | tail -n +2 | wc -l)
+                echo "körningen $TS: $N prognosrader ur arkivet"
+                [ "$N" -gt 0 ] || { echo "::error::körningen $TS finns inte i prognosarkivet"; exit 1; }
+                (cd /home/claude/fys && python3 prep.py >/dev/null && python3 live/paritet.py --indata /home/claude/fys/data                   --metnordic "$MN" --korning "$OLDPWD/korning_$KT.csv.gz" --modell "$OLDPWD/modell.pkl"                   --kandidat "$OLDPWD/kuvos/kandidat-2026-27.json" --korningstid "$KT" --ut "$OLDPWD/paritet-ut")
+              done
+              rm -f modell.pkl
+            elif [[ "$MATNING" == *kuvos-blandning-frysta* ]]; then
               # Den frysta kandidaten för 2026/27 (#544 punkt 6, kort #342): den valda proceduren på alla stationer (frysta.py), valet ur
               # kuvos/kandidat-2026-27-val.json. Modellen går till hinken i steget efter; manifestet till repot ur kvittot.
               VAL="$PWD/kuvos/kandidat-2026-27-val.json"
