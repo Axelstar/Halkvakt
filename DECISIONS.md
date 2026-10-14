@@ -12205,6 +12205,16 @@ och tre av talen lästes ändå:**
   samma sak 6/10 och hämtar om upp till sex gånger; mätningen saknade den omhämtningen. Rättat samma timme: `hamtaTolkat()` hämtar om,
   varje kapat svar räknas och redovisas (`avkortade_svar` i sammanfattningen), och självtestet prövar två kapade och sedan ett helt,
   och sex kapade i rad. Volymen, tiderna och spannen är inte lästa än — knappen trycks om.
+- **Andra tryckningen 06:46 UTC (körning 38524173138 på fda3ef4; Bengt: *"slå ihop 943 och 944 och tryck knappen"*):** katalogen
+  bar analysen och körningen 06Z, båda 46 min gamla; rutan och avstånden som förut. Alla anrop gick igenom — inga avkortade svar den här
+  gången — men mätningen föll på sammanfattningens sista rad: en kvarglömd `a.buf` efter rättelsens namnbyte, i den enda kodväg som
+  inget prov körde. Raderna skrevs till artefakten innan fallet; byte och sekunder per anrop gick förlorade. Rättat samma timme, och
+  självtestet kör nu HELA mätningen mot en fejkad källa (ett rutnät 4×5, en station och en vägpunkt, analysen och tre prognosanrop)
+  och prövar sammanfattningen, volymen, spannen och filerna; tre motprov på den vägen fångade. Repot har `tsconfig.json` men ingen
+  typkontroll i ci, som hade fångat raden — det står som en avvikelse, inte som ett bygge.
+- **Provet hittade ett andra fel som ingen tryckning visat:** analysens strålning skrevs tom, eftersom analysens rad byggdes som en
+  prognos (timvärdet som skillnad mot förra steget) fast analysens värden redan är timvärden (kuvösens analysfil skriver dem rakt av).
+  Rättat: analysens rad byggs direkt, prognosens som förut. Knappen trycks en tredje gång.
 
 **Stomdokument:** inga — ett byggsteg på kort #343; beslutet #556 och frågorna i §4.2 är oförändrade.
 
