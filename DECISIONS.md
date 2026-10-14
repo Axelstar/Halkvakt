@@ -11951,6 +11951,22 @@ provet"*; paketet hämtat av Bengt 13/10).
   - ÅDT, tunga fordon och vägklass ur vägdatalagret.
 - Vägdatalagrets ÅDT korrelerar 0,861 med Axels vid stationerna (utfallet under #549). Den skillnaden är inte prövad i rättelsen.
 
+**Tillägg 14/10: ÅDT och vägklass ur Lastkajens paket — regeln före körningen** (Bengt: *"slå ihop 934 och 2 ja"*, på frågan i
+bedömningen §4.2).
+- Vid stationerna kommer rättelsens vägdata ur Axels `roadjoin.py` mot NVDB:s geopaket (`road_all.csv`). Vid vägpunkterna kom de ur
+  vägdatalagret, vars ÅDT korrelerar 0,861 med Axels.
+- Sverigepaketet Drift och underhåll bär `ADT_f_117` (ÅDT, alla fordon) och `Klass_181` (funktionell vägklass 0–9), men inga tunga
+  fordon. Varje fält kopplas som `roadjoin.py` kopplar varje lager: närmaste segment som bär fältet, inom 150 m
+  (`fysik/vagpunkter/trafik_klass.py`).
+- **Regeln, skriven och pushad före körningen:**
+  - först stationerna mot `road_all.csv`;
+  - klassen ska vara lika vid minst 95 % av stationerna med klass i båda;
+  - ÅDT ska ligga inom ±10 % av Axels vid minst 90 % av stationerna med ÅDT i båda, och minst lika ofta som vägdatalagret på
+    stationerna med ÅDT i alla tre;
+  - vägpunkterna får ett fält ur paketet bara om det fältet klarar sitt krav, annars läses skälet först.
+- Tunga fordon stannar i vägdatalagret. Andelen tunga vid vägpunkterna räknas ur vägdatalagrets egna två tal, så att kvoten inte
+  blandar källor.
+
 ## #554 (14/10 2026) A2:s population läses: var på yttemperaturskalan de grova felen ligger — förregistrerad läsning, ingen dom
 
 **Beslut.** Bengt 14/10: *"Läs a 2 population"* — på fyndet att grind A:s två mått räknar över olika populationer.
