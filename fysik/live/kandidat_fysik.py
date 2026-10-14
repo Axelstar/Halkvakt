@@ -48,7 +48,28 @@ def las_analys(filer, sids):
     return d.drop_duplicates(['station_id', 'tid_utc'], keep='last')
 
 
-def bygg_F(d, sids, idx, sista):
+def snotacke_fore(d, sids, start):
+    """The snowpack (mm water) at the window's first hour, accumulated from the first analysis hour before it with bygg_F's own
+    degree-day formula. The column runs 45 days back (FONSTER), but the snowpack has no such bound, and the physics column carries
+    none of its own (fysik_lw has no snow state): started at zero it was 20 % low in February against the frozen procedure, which
+    accumulates from the archive's first hour (parity 15/10, DECISIONS #559, #562). Missing hours count as no snowfall and carry the
+    air forward. Returns (snowpack, hours accumulated, missing point-hours)."""
+    fore = d[d.tid_utc < start]
+    if fore.empty:
+        return np.zeros(len(sids)), 0, 0
+    tider = pd.date_range(fore.tid_utc.min(), start - pd.Timedelta(hours=1), freq='h')
+    ta = fore.pivot(index='tid_utc', columns='station_id', values='t2m_c').reindex(index=tider, columns=sids)
+    pr = fore.pivot(index='tid_utc', columns='station_id', values='nederbord_mm').reindex(index=tider, columns=sids)
+    saknade = int(ta.isna().to_numpy().sum())
+    ta = ta.ffill().bfill().to_numpy(float); pr = pr.fillna(0.0).to_numpy(float)
+    snowfall = CM_PER_MM * pr * (ta <= SNO_T_C)
+    s = np.zeros(len(sids))
+    for h in range(len(tider)):
+        s = np.maximum(s + snowfall[h] * 1.0 - 0.125 * np.maximum(ta[h], 0.0), 0.0)
+    return s, len(tider), saknade
+
+
+def bygg_F(d, sids, idx, sista, swe0=None):
     """The chain's forcing dict on idx (hours), as metnordic.load_mn builds it: missing hours filled forward and back, the radiation
     J/m² → W/m², the dew point by Magnus, snowfall from precipitation at air ≤ +1 °C, tdeep, ta72, the degree-day snowpack, and
     elev_diff 0 (DECISIONS #553, choice i: the 1 km grid stands at the point's own height). Returns F and the number of (point, hour)
@@ -70,7 +91,7 @@ def bygg_F(d, sids, idx, sista):
     taf = pd.DataFrame(ta)
     F['tdeep'] = taf.rolling(FONSTER, min_periods=1).mean().to_numpy()
     F['ta72'] = taf.rolling(72, min_periods=1).mean().to_numpy()
-    swe = np.zeros_like(ta); s = np.zeros(ta.shape[1])
+    swe = np.zeros_like(ta); s = np.zeros(ta.shape[1]) if swe0 is None else np.asarray(swe0, float).copy()
     for h in range(ta.shape[0]):
         s = np.maximum(s + snowfall[h] * 1.0 - 0.125 * np.maximum(ta[h], 0.0), 0.0); swe[h] = s
     F['swe'] = swe
@@ -119,7 +140,8 @@ def kor(indata, analysfiler, korningsfil, modellfil, kandidatfil, ut, sha_kravs=
     # skarv() overwrites with the forecast, step 0's radiation and precipitation excepted (they keep the analysis', as the kuvös).
     idx = pd.date_range(start, R + pd.Timedelta(hours=TIMSTEG - 1), freq='h')
     hk = int(np.searchsorted(idx.values, np.datetime64(R)))
-    F, fyllda = bygg_F(d[(d.tid_utc >= start) & (d.tid_utc <= R)], sids, idx, min(sista, R))
+    s0, snotimmar, snosaknade = snotacke_fore(d, sids, start)
+    F, fyllda = bygg_F(d[(d.tid_utc >= start) & (d.tid_utc <= R)], sids, idx, min(sista, R), swe0=s0)
     logg(f'{ns} punkter; analysen {idx[0]}–{idx[hk - 1]} ({hk} timmar; {fyllda} saknade punkttimmar ifyllda), körningen {R}, {brus} nederbördsbrus satt till 0')
     # Vakten (steg 5): saknade timmar fylls framåt, men är mer än en procent av fönstret ifyllt är vädret ofullständigt — då räknas
     # inget, i stället för att fysiken drivs 45 dygn på ett väder som står still. Hellre tyst än fel.
@@ -146,7 +168,8 @@ def kor(indata, analysfiler, korningsfil, modellfil, kandidatfil, ut, sha_kravs=
     with gzip.open(fil, 'wt', newline='\n') as fh:
         ut_df.to_csv(fh, index=False)
     s = {'korning': str(R), 'timmar': [str(t) for t in tider], 'punkter': ns, 'rader': int(len(ut_df)), 'analys_fran': str(idx[0]),
-         'analys_till': str(idx[hk - 1]), 'saknade_punkttimmar_ifyllda': fyllda, 'fyllda_ur_analysen_steg0': f2, 'nederbordsbrus': brus,
+         'analys_till': str(idx[hk - 1]), 'saknade_punkttimmar_ifyllda': fyllda, 'snotacke_fore_timmar': snotimmar, 'snotacke_fore_saknade': snosaknade,
+         'snotacke_vid_start_max_mm': float(s0.max()) if len(s0) else 0.0, 'fyllda_ur_analysen_steg0': f2, 'nederbordsbrus': brus,
          'ph_saknas': int(np.isnan(ph).sum()), 'ts_fysik_min': float(np.nanmin(Tsf[steg])), 'ts_fysik_max': float(np.nanmax(Tsf[steg])),
          'ph_min': float(np.nanmin(ph)), 'ph_max': float(np.nanmax(ph)), 'modell_sha256': sha, 'sekunder': round(time.time() - t0, 1), 'fil': fil}
     json.dump(s, open(f'{ut}/sammanfattning_{R.strftime("%Y%m%dT%HZ")}.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
@@ -205,6 +228,30 @@ def sjalvtest():
         s, ut_df = kor(d, [f'{d}/a1.csv.gz', f'{d}/a2.csv.gz', f'{d}/a3.csv.gz'], f'{d}/k.csv.gz', f'{d}/modell.pkl', f'{d}/kandidat.json', f'{d}/ut')
         if not (s['punkter'] == NS and s['rader'] == 6 * NS and s['ph_saknas'] == 0): fel.append(f'sex timmar × {NS} punkter utan luckor: {s}')
         if s['saknade_punkttimmar_ifyllda'] != 0: fel.append(f'en hel analys har inga ifyllda punkttimmar: {s["saknade_punkttimmar_ifyllda"]}')
+        # Snötäcket vid körningen = ackumuleringen över hela säsongen (DECISIONS #559, #562). Facit räknas här ur källans rader med
+        # formeln och talen utskrivna (snö vid luft ≤ +1 °C, 7 cm per mm, avsmältning 0,125 per grad och timme), inte med modulens
+        # snotacke_fore eller bygg_F. Det måste finnas snö före fönstret, annars prövar provet ingenting.
+        start = R - pd.Timedelta(hours=FONSTER); slut = R - pd.Timedelta(hours=1)
+        sa = an.assign(tid=pd.to_datetime(an.tid_utc, utc=True).dt.tz_convert(None)).sort_values(['station_id', 'tid'])
+        f_start, f_slut = {}, {}
+        for sid_, g in sa.groupby('station_id'):
+            sv = 0.0
+            for tid, t2, nb in zip(g.tid, g.t2m_c, g.nederbord_mm):
+                if tid > slut: break
+                if tid == start: f_start[sid_] = sv
+                sv = max(sv + 7.0 * nb * (t2 <= 1.0) - 0.125 * max(t2, 0.0), 0.0)
+            f_slut[sid_] = sv
+        fs = np.array([f_start[x] for x in sids]); fe = np.array([f_slut[x] for x in sids])
+        if not fs.max() > 0: fel.append('provet saknar snö före fönstret och prövar därför inte snötäcket')
+        dd = las_analys([f'{d}/a1.csv.gz', f'{d}/a2.csv.gz', f'{d}/a3.csv.gz'], set(sids))
+        s0, h0, _ = snotacke_fore(dd, sids, start)
+        if not np.allclose(s0, fs, atol=1e-9): fel.append(f'snötäcket vid fönstrets början: {np.round(s0, 3)} mot facit {np.round(fs, 3)}')
+        iw = pd.date_range(start, slut, freq='h')
+        Fw, _ = bygg_F(dd[(dd.tid_utc >= start) & (dd.tid_utc <= slut)], sids, iw, slut, swe0=s0)
+        if not np.allclose(Fw['swe'][-1], fe, atol=1e-9): fel.append(f'snötäcket vid körningen: {np.round(Fw["swe"][-1], 3)} mot facit {np.round(fe, 3)}')
+        Fn, _ = bygg_F(dd[(dd.tid_utc >= start) & (dd.tid_utc <= slut)], sids, iw, slut)
+        if np.allclose(Fn['swe'][-1], fe, atol=1e-9): fel.append('ett snötäcke som börjar på noll gav samma värde vid körningen — provet fäller inte felet')
+        if not s.get('snotacke_fore_timmar', 0) == h0 > 0: fel.append(f'sammanfattningen redovisar ackumuleringen: {s.get("snotacke_fore_timmar")} mot {h0}')
         # The restart from the saved state must give the same surface as one continuous run over analysis + forecast (fysik_lw's
         # own proof, here on the live path): recomputed with the module's helpers, compared with the written ts_fysik.
         meta = las_meta(d); sids2 = list(meta.sid)
