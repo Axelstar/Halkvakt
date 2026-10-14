@@ -12495,7 +12495,7 @@ kedjan räknade vid timmen**, som det står i `kandidat_live` — inte på en om
 kuvösens frysta procedur är paritetsprovet (#559); faller det är identiteten i punkt 1 inte bevisad, och förregistreringen kan inte
 signeras förrän svaret är skrivet.
 
-**3. Måtten, oförändrade.** Grind A–C med samma trösklar, spridningsgrinden **X = 2,25 °C**, och regeln att **tystnad på ett täckt
+**3. Måtten, oförändrade.** Grind A mäts på de **754 stationer** där kandidaten kan räknas, av populationens ~761 (99,1 %; se rättelsen nedan). Grind A–C med samma trösklar, spridningsgrinden **X = 2,25 °C**, och regeln att **tystnad på ett täckt
 segment är en miss** (#475, #477). Inget krav sänks, och spridningsgrinden gäller kandidaten oförändrad (#547). Grind A:s
 population bärs av samma vakter som i dag: #75, radvakten, karantänen och den långsamma vakten, och mätningar yngre än tre timmar.
 
@@ -12527,14 +12527,71 @@ av rör användaren, inte måttet; de kan ändras utan att domen rörs. Därför
   t — inte en prognos framåt. Regeln ska därför beskriva ytan och fukten **nu**, som A1 gör för väglaget. Claudes förslag står kvar
   (kandidatens yta ≤ 0 °C och fukt vid punkten, där ingen station säger annat); talen är Axels. Regeln måste vara skriven för att
   domen ska kunna räkna missar och falsklarm.
-- **(B) Populationen** (val 5). Döms kandidaten på de **754 stationerna** (där dess fel är känt) eller på **vägpunkterna** (där
-  räckvidden mellan stationerna är hela meningen med #547, men där den aldrig räknats)? Valet avgör vilka rader som går in i grind
-  A–C, och det kan inte ändras efter att fönstret öppnat. Rekommendationen 14/10 står kvar: stationerna först, vägpunkterna i steg
-  två — men då måste förregistreringen säga om vägpunkterna kommer **in i domen** när de börjar räknas, eller **står utanför** till
-  vintern 2027/28. Claudes förslag: **utanför** — ett mått vars population växer mitt i fönstret är inget mått.
+- **(B) Skuggloggen** — *frågan omformulerad 14/10 på Bengts ord "rätta b"; se rättelsen nedan.* Kommer kandidatens
+  segmentvarningar in i skuggloggen i vinter, bredvid RÅ? Gör de inte det kan grind B och C inte mätas på kandidaten, och #547:s
+  reservklausul fäller marsdomen på **RÅ** i stället — kandidaten vore live i appen utan att vara dömd den vintern. Det är kortets
+  steg *skuggan loggar kandidaten bredvid RÅ*, och det är ett eget krav, inte en följd av val 5.
 
 **Varför utkastet skrivs nu och inte 31/10.** Varje dygn förskjuter domfönstrets början, och november–mars är allt vi har. Två
 frågor är billigare att svara på än ett helt dokument, och allt annat är redan bestämt i #544, #547, #552 och #558 — utkastet
 samlar det så att signeringen blir ett ja eller ett nej, inte ett skrivarbete.
+
+**Rättelse 14/10 (Bengt: *"rätta b"*): domens population är inte ett öppet val, och punkt (B) frågade om något som inte finns.**
+
+Utkastets första lydelse frågade om kandidaten döms på de 754 stationerna eller på vägpunkterna. Den frågan går inte att ställa.
+**Grind A är definierad som leave-one-out per station** (TROSKLAR-SKUGGAN §3: *"prognostisera varje stations yttemp ur grannarnas
+offsetmodell, jämför med **mätt**"*), och en vägpunkt har ingen uppmätt yta att jämföra med. Grind B räknas på **segment**, mot
+facit ur station, kamera, RoadCondition, situationsarkivet eller testarlogg (§2). Populationen är alltså redan låst av
+tröskeldokumentet, och den delen av förregistreringen är därmed skriven utan att någon behöver svara:
+
+| grind | population | kandidaten där |
+| :-- | :-- | :-- |
+| A1–A3 | stationerna, mot mätt yta | **754 av ~761** riktiga stationer (99,1 %) |
+| B1–B3 | segmenten, mot facit | kräver att skuggan loggar kandidaten — annars omätbar |
+| C1–C3 | ≥ 20 facithändelser på täckta segment i ≥ 3 halkperioder, ≥ 30 skuggvarningar | följer av B |
+
+- **Varför 754 av ~761.** De 854 mätpunkterna är 761 stationer + 93 fjärrytor (#344). Fjärrytorna faller ur grind A av sig själva,
+  eftersom grinden kräver `air_temp_c IS NOT NULL` och de saknar luft helt. Kandidaten räknas vid 754; de 7 som fattas saknar
+  ECMWF-fil i Axels frysta indata. **Förregistreringen säger därför att grind A mäts på 99,1 % av populationen, inte på hela** —
+  det är ett tal som ska stå före vintern, inte upptäckas i mars.
+- **En följdfråga, ingen tröskeländring.** Tröskeldokumentet säger *"nationellt över alla 845 stationer"*. 845 ligger nära 854
+  **mätpunkter** och långt från 761 **stationer**, så talet är nästan säkert en mätpunktsräkning från tiden före #344. Ingen tröskel
+  rörs; men en dom som säger "845 stationer" beskriver något annat än den mäter, och raden bör rättas i samma post som §4(a)
+  (frågan i §4.2).
+- **Vad som ersatte punkt (B).** Skuggloggen, ovan. Val 5 (*var först*) står kvar som en byggordningsfråga för appen och styr inte
+  domen: kedjan räknar redan alla 13 714 punkterna, både stationer och vägpunkter.
+
+**Fuktfyndet för (A), som planen i #556 hoppade över.** Kandidaten levererar en **temperatur**, inte en varning: `kandidat_live` bär
+`ph, pg, ra, ank_km, pb` och **ingen fukt alls**. Punktmotorns villkor är `yta ≤ 1 °C (bro 3) OCH moisture === true`
+(`engine/src/engine.ts`), där `moisture` är stationens egna mätning (`publish/rekonstruktion.ts`: `rain OR snow OR precipitation
+NOT IN ('no','dry')`). Kandidaten fyller alltså halva villkoret, och regeln i (A) måste säga varifrån den andra halvan kommer vid en
+punkt mellan stationerna. Fem källor finns redan byggda:
+
+| källa | mätt | täcker punkten | hinder |
+| :-- | :-- | :-- | :-- |
+| radarn (`radar_precip.rate_mean_mmh`, utlösare 2,0 mm/h) | ja | ja, areatäckande | tyst över 70 min (#81 regel 7); mäter fallande nederbörd, inte blöt yta |
+| Trafikverkets RoadCondition på sträckan | operatörsbedömt | ja, segmentkälla | får bekräfta, aldrig fälla (asymmetriregeln §2) |
+| närmaste stations fuktflagga | ja | nej, upp till tiotals km bort | samma glapp som #75 finns för |
+| MET Nordics `nederbord_mm` vid punkten | nej, modellerat | ja | `Boolean(precipitation)` är en falsklarmsmaskin |
+| `regn_h` (timmar sedan nederbörd, 48 h) | ja | per station | används redan av efterhalkans S3 |
+
+**Asymmetrin är det bärande.** Ingen källa kan visa att en punkt är **torr** — radarn ser inte en blöt väg efter regnet, kameran ser
+inte svartis, och RoadConditions tystnad är inget torrt vägbesked. Regeln måste kräva ett **positivt** fuktbesked och får aldrig
+läsa tystnad som torrt (produktinvarianten *Silence is a feature*, och samma skäl som gör kamerabilden oförmögen att fälla ett
+falsklarm). Claudes lydelse till Axel: **pb ≤ 0 °C** (strängare än punktmotorns +1, eftersom pb är en skattning och inte en
+mätning) **och** ett positivt fuktbesked (radarn ≥ 2,0 mm/h inom 70 min **eller** RoadCondition med ett halkord på sträckan) **och**
+att ingen station inom ankaravståndet mätte > +2 °C inom ±45 min (samma gräns som falsklarmsdefinitionen i §2) **och** märkningen
+`modellerat`, aldrig `uppmätt`. Talen är Axels.
+
+**Två hinder före koden, oavsett vilken lydelse som väljs.** (1) TROSKLAR-SKUGGAN §4(a) säger i dag att segmentprognosen *"utlöser
+aldrig röst ensam"*; #556 ändrade beslutet men **texten är inte skriven**, och den kräver båda signaturerna. (2) Trenivåprincipen
+(§1): kandidaten vid en vägpunkt är `modellerat`, vilket får dömas men enligt §4(a):s nuvarande lydelse inte tala. Samma post rättar
+båda, och 845-raden ovan.
+
+**Stegnumreringen har glidit isär (fråga i §4.2).** Kort #343 räknar pariteten som steg 3, publiceringen 4, skuggloggen 5, motorn 6
+och bygget 7; den här sessionen har byggt med pariteten som steg 5, sedan historikhämtningen och pulsklockan blev egna steg; #556
+skriver "paritetsprovet (steg 4)" och #558 "publiceringen (steg 6)". Fyra numreringar på fem dokument. Claudes förslag: **namnge
+stegen och sluta numrera dem** — ett nummer som betyder olika saker i olika dokument är samma fälla som en rad döpt efter ett
+klockslag den inte bär.
 
 **Stomdokument:** KUV §5, SYS, BED §4.2, LIV.
