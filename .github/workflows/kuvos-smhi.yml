@@ -29,7 +29,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p smhi
-          curl -sSf -o vaglag.geojson https://axelstar.github.io/halkvakt-karta/data/vaglag.geojson
+          curl -sSfL -o vaglag.geojson https://axelstar.github.io/halkvakt-karta/data/vaglag.geojson
           {
             echo '```'
             node --experimental-strip-types kuvos/smhi-vinter.ts smhi
