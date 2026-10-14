@@ -12409,3 +12409,67 @@ kandidat-fysik"*).
 - Ingen dom. Talen säger att rörledningen bär timme för timme, inte att kandidaten är bra. Pariteten (steg 5) är provet.
 
 **Stomdokument:** LIV, BED §4.2, SYS.
+
+## #559 (14/10 2026) Pariteten förregistrerad: den levande kedjan mot kuvösens frysta procedur på samma körning (kort #343, steg 5)
+
+**Beslut.** Claude 14/10, inför Bengts och Axels läsning. Steg 5 i planen för att gå live (#556) är provet som säger om det som
+*går live* räknar samma sak som det som *mättes* i kuvösen. Regeln och förväntan skrivs här, före knappen.
+
+**Varför ett prov och inte ett resonemang.** Del A (`fysik/live/kandidat_fysik.py`) LÅNAR `run_lw`, `skarv`, `las_prognos`,
+`vader`, `base_features_mn` och `state_features_mn` ur kuvösens frysta moduler — de kan inte glida isär. Men den bygger SJÄLV två
+saker: (a) kraften ur MET Nordic (`bygg_F`) där kuvösen använder `metnordic.load_mn`, och (b) fönstret och omstarten för EN körning,
+45 dygn bakåt utan sparat tillstånd, där kuvösens `prognoslage` kör kolumnen från vinterns första timme. Två sidor som räknar samma
+sak på två sätt är exakt det som ska mätas.
+
+**Hur det mäts** (`fysik/live/paritet.py`, självtest i ci):
+- **Väg A (fryst):** `metnordic.load_mn(analysen)` → `run_lw` över analysen → kuvösens EGEN `prognoslage()` för den ena körningen,
+  med kandidatens frysta parametrar och kandidatens ENA modell i alla fem folds. Fold-maskineriet blir därmed en nulloperation, och
+  väg A är kuvösens egen funktion — ingen avskrift av den.
+- **Väg B (levande):** `kandidat_fysik.kor()` på samma analys, samma körningsfil och samma modell (sha256 mot
+  `kuvos/kandidat-2026-27.json`).
+- Provet bygger väg B:s indata ur samma frysta filer, med `elev_ifs.csv` skrivet som `indata.py` gör för stationer — `elev_ifs` är
+  ett av de 70 särdragen, och utan det hade provet mätt rörmokeriet i stället för kedjan. Metan jämförs kolumn för kolumn och
+  redovisas.
+- **Tre förregistrerade körningar i vintern 24/25:** 2024-12-15T00Z, 2025-01-15T00Z, 2025-02-15T00Z — en per månad, mitt i
+  säsongen, där snötäcket finns och därmed kan tappas.
+
+**Förväntan, skriven före körningen.** `ts_fysik` (fysikkolumnen före rättelsen) och `ph` (efter den), per punkt och timme:
+**median ≤ 0,10 °C och p95 ≤ 0,30 °C**. Talen är valda mot vad de ska skydda: kandidatens egna mått dömer på grova fel vid ±2,5 °C
+och spridningsgrinden vid X = 2,25 °C, så en skillnad mellan kodvägarna på 0,10 °C är fyra procent av domens egen upplösning.
+Toleransen bor på ETT ställe, `TOLERANS` i `scripts/matningar/kuvos-paritet-2026-10-14.ts`; paritetsskriptet mäter och dömer inte.
+
+**Två skillnader som är KÄNDA och redovisas för sig, inte gömda i ett totaltal:**
+1. Där MET Nordic saknar en timme faller väg A tillbaka på ECMWF (`load_mn`: `G[k] = where(isfinite(mn), mn, ec)`) medan väg B
+   fyller framåt och RÄKNAR cellen (`MAX_IFYLLT`, #558 steg 5). Antalet ifyllda punkttimmar skrivs ut; en parität mätt på ett
+   fönster med luckor mäter den skillnaden och inte kedjan.
+2. **Snön.** Väg A:s kolumn har drivits sedan vinterns första timme; väg B:s sedan R − 45 dygn. Det djupa randvillkoret (`tdeep`) är
+   ett 45-dygnsmedel och nollställer sig, men snötäcket ackumulerar utan gräns — och `swe`, `snowd`, `sn72`, `h_since_snow`,
+   `snowd_x_cold` och `sw_x_snowd` är **sex av kandidatens 70 särdrag**. Snöfälten redovisas som andel av väg A:s egen nivå (ett
+   snötäcke på 200 mm vatten som skiljer 10 mm är en annan sak än ett på 10 mm), och domen larmar över 10 %.
+
+**Faller provet mjukas toleransen INTE upp.** Svaret är ett beslut av Bengt och Axel, och de två vägarna är kända: höj `FONSTER`
+(längre analysfönster per körning, dyrare hämtning och längre kedja), eller låt den levande kedjan spara tillstånd mellan
+körningarna (billigare, men då måste ett tappat dygn kunna läka). Ett tredje svar — att gå live ändå och notera skillnaden — är
+möjligt bara om domen visar att den är liten där det räknas, och det är då ett skrivet beslut, inte en tystnad.
+
+**Knappen.** `kuvos.yml` med `matning` = `scripts/matningar/kuvos-paritet-2026-10-14.ts`, på Bengts ord. Flödet hämtar `modell.pkl`
+ur hinken (sha256 mot kandidatfilen), plockar de tre körningarna ur prognosarkivet och kör provet; mätfilen läser utfallen och
+skriver domen. Radfilen med de två vägarnas skattningar lämnar aldrig jobbet — bara aggregat går till sammanfattningen.
+
+**Självtestet, och varför det inte är en formalitet.** Provet körs i ci på en påhittad källa där ECMWF-fönstret och MET Nordic täcker
+samma timmar, så att vägarna startar i samma timme och bara koden kan skilja dem: max-skillnaden ska då vara ≤ 0,02 °C. Sedan
+muteras **bara den levande sidan**, två gånger, och båda måste fällas: `ta + 0,5 °C` (ts_fysik och ph ska röra sig) och `swe = 0`
+(snöraderna ska röra sig). Den första mutationen jag försökte, `CM_PER_MM × 1,5`, gav INGEN skillnad alls — ett djupt snötäcke
+mättar täckningsgraden, så mer snö per millimeter rör ingen yttemperatur. Ett motprov som inte fälls bevisar ingenting om provet,
+bara om mutationen (samma lärdom som #207 20/9).
+
+**Ett fynd på vägen: kandidatens tabeller var obesiktigade.** `kandidat_ph` och `kandidat_live` (sql/050) stod inte i värdevaktens
+`TIDSKOLUMN`, så deras fält skannades aldrig — inte ens som OBESIKTIGADE. Samma fälla som `trend_kandidater` gick i 15/9. Spannen är
+nu skrivna (`ts_fysik`, `ph`, `pg`, `ra`, `pb` −60…+80 °C, `ank_km` 0…300 km) och tabellerna står i listan; besiktningen körs med
+DB-knappen `las`. Spannet är fysikens yttergräns för en vägyta, inte ett väntat intervall — ett värde utanför är ett räknefel.
+
+**Alternativ som förkastades.** Att jämföra mot kuvösens sparade `oof_prognos6.npy`: den skattningen gjordes med **fold-vis**
+modeller (stationens egen region utelämnad), medan den levande kedjan kör den ENA frysta modellen tränad på alla stationer. De två
+är inte jämförbara, och en jämförelse mellan dem hade mätt utelämningen och inte kodvägen.
+
+**Stomdokument:** LIV, MAT, KAR, KUV §9.

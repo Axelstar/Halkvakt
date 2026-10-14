@@ -96,6 +96,7 @@ jobs:
           node --experimental-strip-types scripts/matningar/kuvos-blandning-vagb2-rutnat-2026-10-13.ts --sjalvtest
           node --experimental-strip-types scripts/matningar/kuvos-blandning-vagb2-terrang-2026-10-13.ts --sjalvtest
           node --experimental-strip-types scripts/matningar/kuvos-blandning-frysta-2026-10-13.ts --sjalvtest
+          node --experimental-strip-types scripts/matningar/kuvos-paritet-2026-10-14.ts --sjalvtest   # pariteten, domen (DECISIONS #559)
           node --experimental-strip-types scripts/vagdata-vagnummer.ts --sjalvtest   # DECISIONS #553, Europaväg
           node --experimental-strip-types kuvos/metnordic-prognos.ts --sjalvtest   # DECISIONS #519
           node --experimental-strip-types ingest/metnordic-live.ts --sjalvtest     # DECISIONS #556, steg 1
@@ -126,6 +127,7 @@ jobs:
           python3 fysik/blandning/grannar_blandning.py --sjalvtest   # DECISIONS #516
           python3 fysik/live/kandidat_fysik.py --sjalvtest   # kedjan live, del A (DECISIONS #558, kort #343 steg 3)
           python3 fysik/live/kandidat_timme.py --sjalvtest   # kedjan live, del B: grannarna, RÅ och blandningen
+          python3 fysik/live/paritet.py --sjalvtest          # pariteten: båda vägarna på en påhittad källa, två mutationer (kort #343, steg 5)
           python3 fysik/live/indata.py --sjalvtest           # kedjan live: indatan för alla punkter
           python3 fysik/niva2/vagb.py --help > /dev/null
           python3 fysik/niva2/vagb_terrang.py --help > /dev/null      # DECISIONS #549
