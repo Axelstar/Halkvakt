@@ -32,6 +32,7 @@ from prognos import skarv, las_prognos, vader, FONSTER, TIMSTEG
 RUBRIK_ANALYS = ['station_id', 'tid_utc'] + FALT
 LEDTID = prognos.LEDTIDER[6] if 6 in prognos.LEDTIDER else list(range(6, 12))      # the +6 h class: steps 6–11
 KORNINGAR = (0, 6, 12, 18)
+MAX_IFYLLT = 0.01            # the share of (point, hour) cells the analysis may lack before the run refuses (steg 5)
 
 
 def las_analys(filer, sids):
@@ -120,6 +121,10 @@ def kor(indata, analysfiler, korningsfil, modellfil, kandidatfil, ut, sha_kravs=
     hk = int(np.searchsorted(idx.values, np.datetime64(R)))
     F, fyllda = bygg_F(d[(d.tid_utc >= start) & (d.tid_utc <= R)], sids, idx, min(sista, R))
     logg(f'{ns} punkter; analysen {idx[0]}–{idx[hk - 1]} ({hk} timmar; {fyllda} saknade punkttimmar ifyllda), körningen {R}, {brus} nederbördsbrus satt till 0')
+    # Vakten (steg 5): saknade timmar fylls framåt, men är mer än en procent av fönstret ifyllt är vädret ofullständigt — då räknas
+    # inget, i stället för att fysiken drivs 45 dygn på ett väder som står still. Hellre tyst än fel.
+    if fyllda > MAX_IFYLLT * hk * ns:
+        raise ValueError(f'analysen är ofullständig: {fyllda} av {hk * ns} punkttimmar ifyllda ({100 * fyllda / (hk * ns):.1f} %, taket {100 * MAX_IFYLLT:.0f} %) — kandidaten räknas inte')
     Fa = {k: (v[:hk] if isinstance(v, np.ndarray) and v.ndim == 2 else v) for k, v in F.items()}
     Ts, T5, tillstand = run_lw(Fa, p, spara=[hk - 1])
     a = max(0, hk - FONSTER)
@@ -216,6 +221,12 @@ def sjalvtest():
         d2.assign(tid_utc=d2.tid_utc.dt.strftime('%Y-%m-%dT%H:%M:%SZ')).to_csv(f'{d}/a_hal.csv.gz', index=False, header=False)
         s2, _ = kor(d, [f'{d}/a_hal.csv.gz'], f'{d}/k.csv.gz', f'{d}/modell.pkl', f'{d}/kandidat.json', f'{d}/ut5')
         if s2['saknade_punkttimmar_ifyllda'] != 1: fel.append(f'en saknad punkttimme räknas: {s2["saknade_punkttimmar_ifyllda"]}')
+        # A whole missing day (2.2 % of the window) is refused: the chain must not run on weather that stands still.
+        d3 = da[~((da.tid_utc >= pd.Timestamp('2026-10-01')) & (da.tid_utc < pd.Timestamp('2026-10-02')))]
+        d3.assign(tid_utc=d3.tid_utc.dt.strftime('%Y-%m-%dT%H:%M:%SZ')).to_csv(f'{d}/a_dygn.csv.gz', index=False, header=False)
+        try: kor(d, [f'{d}/a_dygn.csv.gz'], f'{d}/k.csv.gz', f'{d}/modell.pkl', f'{d}/kandidat.json', f'{d}/ut6'); fel.append('ett saknat dygn släpptes igenom')
+        except ValueError as e:
+            if 'ofullständig' not in str(e): fel.append(f'fel skäl för stoppet: {e}')
         if s['timmar'][0] != '2026-10-20 12:00:00' or s['timmar'][-1] != '2026-10-20 17:00:00': fel.append(f'+6 h-klassen är R+6…R+11: {s["timmar"]}')
         if s['analys_till'] != '2026-10-20 05:00:00' or s['analys_fran'] != '2026-09-05 06:00:00': fel.append(f'analysens fönster 45 dygn fram till R−1: {s["analys_fran"]}–{s["analys_till"]}')
         if not (-15 < s['ph_min'] < s['ph_max'] < 20): fel.append(f'orimliga ytor: {s["ph_min"]}–{s["ph_max"]}')
