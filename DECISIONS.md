@@ -12548,6 +12548,16 @@ MET Nordic-analys (`kuvos-metnordic-2024-25`) och prognoser (`kuvos-metnordic-pr
 felet sitter i flödets kopplingar, inte i koden. Rättat: båda villkoren bär nu `kuvos-paritet`, och varje indata pariteten läser är
 spårad till sitt steg (leveransen, indatan, modellen, kandidatfilen, analysen, prognoserna).
 
+**Tillägg 15/10 natt: tredje tryckningen föll på ett andra fel av mig** (körning 38645429144 på 74b67eb). Datan hämtades nu, men
+utplockningen av körningen ur prognosarkivet föll på *"gzip: stdout: Broken pipe"*: raden `zcat "$FORST" | head -1` dör på SIGPIPE
+under `set -euo pipefail`. Jag hade övervägt just den risken när grenen skrevs och avfärdat den med ett resonemang om hur bash hanterar
+`-e` i en rörlednings vänstra led — resonemanget var fel. Rättat: en enda läsning utan `head`
+(`awk 'NR==1 || $2==ts'`). Provat lokalt under `set -euo pipefail` mot två påhittade arkivfiler om 240 000 rader: den gamla raden ger
+kod 141 som i CI, den nya plockar ut alla tre körningarna (120 000 rader var, rubriken en gång, inga rader från fel körning). Mitt
+första lokala prov hade samma fel i sig (`zcat | head -1` för att läsa rubriken) och fick skrivas om. Den största kvarvarande risken,
+att väg B läser analysfilen efter kolumnposition, är kontrollerad: den frysta `las_metnordic` kastar ett fel om kolumnerna inte är
+exakt `station_id, tid_utc` plus de sju fälten, och alla tidigare kuvöskörningar på samma fil har gått igenom.
+
 **Rättat 14/10 kväll (Bengt: *"gör 1,2,3"*):** posten stod som *"Beslut. Claude"*. Claude fattar inga beslut; det här är ett **förslag** som väntar på Bengts och Axels ja, och toleransen 0,10 / 0,30 °C gäller inte förrän det givits.
 
 **Stomdokument:** LIV, MAT, KAR, KUV §9.
