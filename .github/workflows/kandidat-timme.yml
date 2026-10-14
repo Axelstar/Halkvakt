@@ -2,7 +2,10 @@ name: kandidat-timme
 # KANDIDATEN LIVE, DEL B — grannarnas fel, RÅ och blandningen vid alla punkter för timmen (kort #343 steg 3, DECISIONS #556, #558).
 # Körs varje timme av pulsklockan när den raden finns; tills dess på knapp. Läser PH för timmen ur kandidat_ph (del A) och grind A:s
 # ankare just nu (sql/032 vagpunkt_ankare, samma population som skuggans RÅ), räknar med replikans tal (fysik/live/kandidat_timme.py)
-# och skriver kandidat_live (sql/050), sedan gallringen. Saknas PH för timmen (del A har inte kört) stannar jobbet med kod 3.
+# och skriver kandidat_live (sql/050), sedan gallringen. SAKNAS PH för timmen (DECISIONS #561, Bengts val a): är del A:s senaste
+# körning fallen eller pågår förklarar den luckan, och timmen hoppas över grönt, med en notis HOPPAD som räknar den — mätvakten
+# larmar redan på del A. Har del A:s senaste körning LYCKATS och PH ändå saknas är kedjan trasig, och då blir jobbet rött; annars
+# kunde del B tiga för alltid medan allt såg grönt ut.
 # Ingen Trafikverksdata i någon fil eller logg: ankarna lämnar aldrig jobbet, bara kandidatens egna tal skrivs.
 on:
   workflow_dispatch:
@@ -13,6 +16,7 @@ on:
         default: ""
 permissions:
   contents: read
+  actions: read      # del A:s senaste körning, för att avgöra om en saknad PH är förklarad
 jobs:
   timme:
     runs-on: ubuntu-latest
@@ -37,16 +41,33 @@ jobs:
         run: |
           TID="${{ inputs.tid }}"; [ -n "$TID" ] || TID=$(date -u +%Y-%m-%dT%H:00:00Z)
           echo "TID=$TID" >> "$GITHUB_ENV"
+          set +e
           node --experimental-strip-types ingest/kandidat-db.ts ph "$TID" ph.csv 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+          KOD=${PIPESTATUS[0]}
+          set -e
+          if [ "$KOD" = 3 ]; then
+            A=$(gh run list --workflow kandidat-fysik.yml --limit 1 --json conclusion,createdAt -q '.[0].conclusion + " " + .[0].createdAt' 2>/dev/null)               || A="okänd (gh svarade inte)"
+            if [ "${A%% *}" = success ]; then
+              echo "::error::ingen PH för $TID fast del A:s senaste körning lyckades ($A) — kedjan är trasig, inte bara sen (eller timmen är äldre än tabellens två dygn)"
+              exit 1
+            fi
+            echo "::notice title=HOPPAD::ingen PH för $TID; del A:s senaste körning: ${A:-ingen} (DECISIONS #561)"
+            echo "**HOPPAD:** ingen PH för $TID — del A:s senaste körning: ${A:-ingen}. Timmen räknas som hoppad, inte som fel." >> "$GITHUB_STEP_SUMMARY"
+            echo "HOPPAD=1" >> "$GITHUB_ENV"
+            exit 0
+          fi
+          [ "$KOD" = 0 ] || exit "$KOD"
           node --experimental-strip-types ingest/kandidat-db.ts ankare ankare.csv 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
           gh release download metnordic-live-2026-27 --pattern metnordic_punkter.csv --dir mn
           sed 's/^station_id,/sid,/' mn/metnordic_punkter.csv > punkter.csv
       - name: Del B — grannarna, RÅ och blandningen
+        if: env.HOPPAD != '1'
         shell: bash
         run: |
           set -o pipefail
           { echo '```'; python3 fysik/live/kandidat_timme.py --ph ph.csv --punkter punkter.csv --ankare ankare.csv --tid "$TID" --ut live.csv; echo '```'; } 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
           rm -f ankare.csv
       - name: Till tabellen kandidat_live, sedan gallringen
+        if: env.HOPPAD != '1'
         env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
         run: node --experimental-strip-types ingest/kandidat-db.ts skriv-live live.csv 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
