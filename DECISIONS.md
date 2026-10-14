@@ -11936,3 +11936,66 @@ provet"*; paketet hämtat av Bengt 13/10).
 - Paketet själv ligger kvar utanför repot. Det är 2,0 GB och behövs inte där.
 - **Europavägsprovet igen** (körning 38474910120 på 86586cf): 65 av 65 stationer lika med Axel (100 %), och inga saknade värden.
   Läget `alla` väntar på Bengts ord.
+
+## #554 (14/10 2026) A2:s population läses: var på yttemperaturskalan de grova felen ligger — förregistrerad läsning, ingen dom
+
+**Beslut.** Bengt 14/10: *"Läs a 2 population"* — på fyndet att grind A:s två mått räknar över olika populationer.
+
+**Fyndet som utlöste det.** En rad i `publish/grind-a.ts`:
+
+```ts
+const dec = rows.filter((r) => r.measured >= -5);   // decision band −5…+5
+```
+
+**A1 räknas i beslutsbandet −5…+5 °C. A2 och A3 räknas över ALLA rader** i populationen (uppmätt yta ≤ +5 °C),
+alltså också under −5 °C — där koden själv säger att vi är utanför beslutsbandet. Vid −15 °C är ett tvågradersfel
+ofarligt: vägen är frusen hur som helst. Och i det varma hörnet, +3…+5 °C, kan ingenting fyra — frysriskbetan kräver
+att ytan ligger mellan +1 och +3 °C och har fallit minst 0,8 °C på 30 minuter (#186, #222).
+
+Frågan är därför inte om modellen är bra. Den är om **A2 — det mått som FALLER för vägpunktsgrinden (6,9 %, #399)
+och för FYSIK (#485) — räknar fel i rader som inte kan skada någon.**
+
+**Genomförandet** (`scripts/matningar/a2-populationen-2026-10-14.ts`, självtest i ci.yml). Underlaget är grind A:s
+fråga rad för rad, med dess fyra vakter **importerade, inte kopierade** (#75, radvakten, karantänen, den långsamma
+vakten ur `publish/snapshot-core.ts`), och modellen är grind A:s `evaluate()` — läsningen kan alltså inte mäta en
+annan modell än grinden. Två kandidater: OFFSET (grind A själv) och RÅ (`utanOffset`). Per band redovisas antal,
+andel av populationen, A2 i bandet och bandets andel av alla grova fel; sedan samma mått över tre populationer.
+
+**Banden är inte valda efter utfall.** Varje gräns fanns före körningen:
+
+| band | varifrån gränsen kommer |
+| :-- | :-- |
+| < −5 °C | utanför A1:s eget beslutsband (`grind-a.ts`, raden ovan) |
+| −5…−1 °C | fruset, inom beslutsbandet |
+| −1…+1 °C | frysklassens avgörande (A3 mäter 2 °C tvärs över gränsen) |
+| +1…+3 °C | där frysriskbetan KAN fyra (#186, #222) |
+| +3…+5 °C | i populationen, men ingenting kan fyra där |
+
+**Förväntningar, skrivna före knappen.**
+
+| | förväntan |
+| :-- | :-- |
+| andel av populationen i +3…+5 °C | 25–50 % |
+| andel av de grova felen i +3…+5 °C | 15–40 % |
+| andel av de grova felen under −5 °C | 0–8 % |
+| A2 i beslutsbandet −5…+5 mot A2 alla | 0,2–2,0 pe lägre |
+| A2 i −5…+3 mot A2 alla | 0,5–3,0 pe lägre |
+
+Faller ett tal utanför sitt spann läses **populationen** först, inte slutsatsen.
+
+**Driftvakten.** Självtestet läser beslutsbandets gräns (−5), grovfelströskeln (> 2 °C), A2:s tak (0,05) och
+populationens tak (+5) ur grind A:s egen källa. **Motprov körts:** `DEC_LO` ändrad till −4 ⇒ självtestet faller på
+raden *"beslutsbandets gräns = grind A:s — fick -4, väntade -5"*, och de funktionella testerna såg ingenting. Det är
+skälet att vakten finns: en ändring i grind A som banden inte märker fångas av att källan läses.
+
+**Vad som INTE görs.** Inga trösklar rörs, ingen kod i driften ändras, ingen dom skrivs om. TROSKLAR-SKUGGAN §3
+gäller oförändrat, och vägpunktsgrindens dom (FALLEN, #399) står. Läsningen fäller ingenting och friar ingenting.
+
+**Vad den är till för.** En fråga till Bengt och Axel, införd i bedömningen §4.2: **vilken population ska A2 ha?**
+Visar läsningen att A2:s fall till stor del ligger utanför beslutsbandet är det ett skäl att ta upp måttet — men
+valet är deras. En population som väljs efter ett utfall är ingen population, och den regeln gäller också här:
+därför står banden, förväntningarna och läsregeln ovan skrivna före körningen.
+
+**Stomdokument:** MAT (måtten), BED §4.2.
+
+**Utfall** skrivs under den här posten när knappen körts.
