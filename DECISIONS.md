@@ -12197,3 +12197,20 @@ steg 1"*).
   timme räcker som i kuvösen. Ingen kedja körs, inget schema läggs, ingen tabell skrivs.
 
 **Stomdokument:** inga — ett byggsteg på kort #343; beslutet #556 och frågorna i §4.2 är oförändrade.
+
+## #557 (14/10 2026) Nivå 2+blandning live blir åttonde stomdokumentet, kopplat som kuvösen
+
+**Beslut.** Bengt 14/10: *"kan du lägga den till stomdokument och koppla en uppdatering till sidan på samma sätt som kuvösen etc"*,
+om sidan med stegen till kandidaten i appen, skriven samma dag för att skickas till Axel.
+- ***Nivå 2+blandning live*** (https://claude.ai/artifact/Wsuxr3UTG7d7axekXireqg, källa `docs/NIVA2-LIVE.html`) är det åttonde stomdokumentet under STOMREGELN, med samma krav
+  som de andra sju: handtexten stäms av en gång per dygn av morgonens dokumentsynk (#522), och artefakten republiceras ur repokopian.
+- Koden är **LIV** i `docs/kortkartan.json`. Korten #343, #342 och #333 kopplas till dess §3 (stegen). Delarna L4 segmentprognosen,
+  prognoslagrets kandidater och App Store beskrivs i sidan, så `projektkartan.ts` skriver lägesraderna under §3 och §1, och
+  `kortkartan.ts` skriver *Öppna kort* sist i sidan. Inget av det ändras för hand.
+- Sidan bär inga tal som inte står i DECISIONS, kort #343 eller projektkartan. Läget per steg bokförs på kortet och i kartan, och
+  gäller före sidan om de skiljer sig åt.
+
+**Varför.** Listan är det Bengt och Axel styr vinterns bygge efter. Står den bara i en chatt eller en privat sida glider den
+(SESSIONSREGELN); som stomdokument prövas den varje morgon mot besluten och korten, som kuvösen och favoriterna (#425, #445).
+
+**Stomdokument:** LIV — sidan själv. De övriga sju rörs inte av beslutet.

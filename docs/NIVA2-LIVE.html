@@ -1,0 +1,322 @@
+<title>Nivå 2+blandning live</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  /* Layout: the same paper sheet as the kuvös, systembild and app pages. The state today, the five choices, the steps as a numbered
+     table in four groups, then time, rules, risks and Axel's own list. Written 14/10 2026 for Bengt to send to Axel (DECISIONS #556). */
+  :root {
+    --papper: #F6F7F5;
+    --blad: #FFFFFF;
+    --black: #16202A;
+    --dampad: #4A5763;
+    --linje: #D9DFE3;
+    --gul: #A8720A;
+    --gul-yta: #FFF3D6;
+    --gron: #1F7A45;
+    --gron-yta: #E4F2EA;
+    --rod: #A63A2A;
+    --rod-yta: #F9E7E3;
+    --frost: #2F6E92;
+    --frost-yta: #E6F0F5;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --papper: #0B1014; --blad: #121A20; --black: #E6ECEF; --dampad: #9DAAB3; --linje: #26323B;
+      --gul: #FFC94A; --gul-yta: #2A2310; --gron: #4CC382; --gron-yta: #12261B; --rod: #F08A7A; --rod-yta: #2B1714;
+      --frost: #7FC0E0; --frost-yta: #13232C;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --papper: #0B1014; --blad: #121A20; --black: #E6ECEF; --dampad: #9DAAB3; --linje: #26323B;
+    --gul: #FFC94A; --gul-yta: #2A2310; --gron: #4CC382; --gron-yta: #12261B; --rod: #F08A7A; --rod-yta: #2B1714;
+    --frost: #7FC0E0; --frost-yta: #13232C;
+    color-scheme: dark;
+  }
+  body { background: var(--papper); color: var(--black); padding-inline: 16px; padding-block: 28px 48px;
+         font: 400 16px/1.6 "Source Serif 4", Georgia, "Times New Roman", serif; }
+  .blad { max-width: 860px; margin: 0 auto; background: var(--blad); border: 1px solid var(--linje);
+          padding: clamp(20px, 5vw, 56px); display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; }
+  h1, h2, h3, .etikett, th, .dom, .fakta b, .grupp { font-family: "Instrument Sans", "Helvetica Neue", Arial, sans-serif; }
+  h1 { font-size: clamp(30px, 5vw, 42px); line-height: 1.08; font-weight: 700; margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
+  h2 { font-size: 21px; font-weight: 700; margin: 18px 0 0; text-wrap: balance; }
+  h3 { font-size: 16px; font-weight: 600; margin: 0; }
+  p { margin: 0; max-width: 68ch; }
+  .etikett { font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gul); }
+  .ingress { font-size: 18px; color: var(--dampad); }
+  .mono, code { font-family: "JetBrains Mono", ui-monospace, Menlo, monospace; font-size: 0.86em; font-variant-numeric: tabular-nums; }
+  .litet { font-size: 14px; color: var(--dampad); }
+  ul, ol { margin: 0; padding-left: 1.2em; display: grid; gap: 5px; }
+  li { max-width: 70ch; }
+  hr { border: 0; border-top: 1px solid var(--linje); margin: 4px 0; width: 100%; }
+  .fakta { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 14px; color: var(--dampad);
+           border-top: 1px solid var(--linje); border-bottom: 1px solid var(--linje); padding-block: 10px; }
+  .fakta b { color: var(--black); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .tabell { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--linje); vertical-align: top; }
+  th { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dampad); }
+  td.nr { white-space: nowrap; font-variant-numeric: tabular-nums; font-weight: 600; }
+  tr.grupp td { background: var(--frost-yta); color: var(--frost); font-weight: 700; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+  .dom { display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+         padding: 1px 7px; border-radius: 3px; white-space: nowrap; }
+  .dom.klar { color: var(--gron); background: var(--gron-yta); }
+  .dom.vantar { color: var(--gul); background: var(--gul-yta); }
+  .dom.kvar { color: var(--dampad); border: 1px solid var(--linje); }
+  .dom.nej { color: var(--rod); background: var(--rod-yta); }
+  .par { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px 28px; }
+  .par > * { min-width: 0; }
+  .ruta { border-left: 3px solid var(--gul); padding: 4px 0 4px 14px; display: grid; gap: 6px; align-content: start; }
+  .ruta.gron { border-left-color: var(--gron); }
+  .ruta.rod { border-left-color: var(--rod); }
+  .ruta.frost { border-left-color: var(--frost); }
+  .lyft { background: var(--frost-yta); padding: 14px 16px; border-radius: 4px; display: grid; gap: 8px; }
+  a { color: var(--frost); }
+</style>
+
+<main class="blad">
+  <p class="etikett">Halkvakt · kort #343 · DECISIONS #556</p>
+  <h1>Stegen till nivå 2+blandning live i appen</h1>
+  <p class="ingress">Bengts och Axels beslut 14/10: kandidaten går live i appen före domen i mars, medan skuggan mäter alla spår
+    hela vintern. Den här sidan är hela listan av vad som återstår, vem som gör det, och i vilken ordning. Läget per steg bokförs
+    på kort #343 och i projektkartan; sidan skrivs om när läget ändras.</p>
+  <div class="fakta">
+    <span>Skriven <b>14/10 2026</b></span>
+    <span>Kandidaten <b>varv 1</b> (DECISIONS #552)</span>
+    <span>Väntat fel vid +6 h <b>5,12 %</b> grova fel</span>
+    <span>Tidigast i appen <b>december</b></span>
+    <span>Domen <b>mars 2027</b> (DECISIONS #547)</span>
+  </div>
+
+  <h2 id="avsnitt-1">1. Läget i dag</h2>
+<!-- LÄGESRADER §1: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
+<div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
+  <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gron, #1F7A45); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-u-app-store">App Store</a> <span style="color: var(--dampad, #4A5763)">klar</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Förberett</b> <span style="color: var(--dampad, #4A5763)">klart · marknadsforing/butik/appstore-ios.md, bilderna, integritet.html (karta b9626bf), bara Sverige (DECISIONS #432)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Inskickat</b> <span style="color: var(--dampad, #4A5763)">klart · 0.3.9 (20) inlämnad 2/10 00:09 (DECISIONS #433), avvisad av App Review 5/10 på 5.1.1(iv) och 2.5.4 (App Store Connect 09:23, DECISIONS #460); rättelsen i main (#758); 0.3.11 (23) uppladdad 6/10 07:25 (App Store Connect, signalen 08:23; be3b42a5, VALID, intern IN_BETA_TESTING); App Store-versionen 0.3.9 stod i READY_FOR_REVIEW 08:23, alltså förberedd men inte inlämnad; WAITING_FOR_REVIEW är beviset; regeln flyttad 7/10 till 0.3.11: 0.3.9:s WAITING_FOR_REVIEW från före avvisningen bockade steget falskt i kartsynken 7/10 kväll, och en regel som bara går framåt kan inte se en avvisning; 12/10: inlämnad igen under App Store-versionen 0.3.9, inte 0.3.11 — READY_FOR_REVIEW senast 10/10 20:23, WAITING_FOR_REVIEW till 12/10 05:23 och IN_REVIEW 06:23 UTC (byggsignalerna i ärende #706); regeln inlamnad:0.3.11 fick därför aldrig sin signal</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Godkänt och släppt</b> <span style="color: var(--dampad, #4A5763)">klart · 0.3.9 i READY_FOR_DISTRIBUTION 12/10 07:23 UTC (09:23 svensk tid) efter IN_REVIEW 06:23 (App Store Connect, byggsignalerna i ärende #706); vilket bygge versionen bär syns inte i signalerna, och Apples publika katalog (lookup för Sverige, USA och Norge, och sökningen) gav 0 träffar 12:30 UTC</span></li>
+    </ul>
+  </details>
+</div>
+<!-- /LÄGESRADER -->
+  <div class="par">
+    <div class="ruta gron">
+      <h3>Det här finns redan</h3>
+      <ul>
+        <li>Appen är live i App Store (Bengt 14/10). Den varnar för halka ur Trafikverkets väglag (A1) och väderstationerna (A2),
+          och för olyckor, vilt och kameror.</li>
+        <li>Efterhalkans beta (S3, <i>"Halkvakt tror: frysrisk framöver."</i>) ligger i bygget 0.3.12 (24), internt i TestFlight.
+          Den är ett App Review från App Store.</li>
+        <li>Kandidaten är fryst (DECISIONS #552): fysiken <code>lw</code>, blandningen W 0,25 · L 160 km. Rättelsens modell
+          (<code>modell.pkl</code>, 9,8 MB) ligger i hinken med kontrollsumma.</li>
+        <li>Vägpunkternas fasta särdrag är klara för alla 12 960 punkter (DECISIONS #553): terräng, höjd, vinterväghållningsklass,
+          Europaväg, ÅDT och vägklass.</li>
+        <li>Steg 1 (MET Nordic levande) är byggt. Mätknappen trycktes 14/10 06:21 och föll på ett avkortat svar från MET; rättelsen
+          är grön och väntar på sammanslagning. Tre tal lästes ändå: katalogen 22 minuter gammal, rutan som kuvösens, punkterna
+          högst 0,70 km från rutmitten.</li>
+      </ul>
+    </div>
+    <div class="ruta rod">
+      <h3>Det här saknas</h3>
+      <ul>
+        <li>Kandidaten har aldrig räknats levande. Den finns bara i Python i kuvösen, på arkiverade prognoser.</li>
+        <li>Inget väder finns levande vid vägpunkterna. MET Nordic hämtas i dag bara ur arkivet.</li>
+        <li>Appen har ingen karta. Kartan är webbsidan <code>karta.html</code>. I appen finns rösten och varningskortet.</li>
+        <li>Kandidaten har aldrig räknats på en vägpunkt och är inte prövad mot vägpunktsgrinden. Talet 5,12 % gäller
+          stationerna.</li>
+        <li>Fem val är inte gjorda (nedan). De styr formen i appen och körplatsen, inte de första byggstegen.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2 id="avsnitt-2">2. Fem val som Axel och Bengt gör</h2>
+  <p>De står i bedömningens §4.2 med samma lydelse. Steg 1–2 väntar inte på dem; steg 3 väntar på val 3, och steg 10–12 på val 1–2.</p>
+  <div class="tabell"><table>
+    <thead><tr><th>Val</th><th>Alternativ</th><th>Claudes rekommendation</th></tr></thead>
+    <tbody>
+      <tr><td class="nr">1</td><td><b>Formen i appen.</b> (a) En egen betavarning med röst och kort märkt BETA, som S3. (b) Bara en
+        förstärkare av varningar som redan finns. (c) Bara webbkartan.</td>
+        <td>(a), och samma lager på webbkartan. (a) bryter TROSKLAR-SKUGGAN §4(a), <i>aldrig rösten ensam</i>, och ändringen skrivs
+        där med båda era signaturer.</td></tr>
+      <tr><td class="nr">2</td><td><b>Regeln som utlöser varningen</b>, skriven i tröskeldokumentet före koden: yta, ledtid, fukt.</td>
+        <td>Axel skriver den, försiktigt. Förslag: ytan över 0 °C nu, prognosen ≤ 0 °C inom 6 h, och fukt. Talen är Axels.</td></tr>
+      <tr><td class="nr">3</td><td><b>Körplatsen.</b> Python-kedjan i GitHub Actions, startad av pulsklockan; eller kedjan och
+        modellen omskrivna till TypeScript.</td>
+        <td>Actions via pulsklockan: gratis i det publika repot, Axels kod körs oförändrad, samma väg som ingest och favoritprovet.
+        Edge-funktionerna kör inte Python och når redan sina resursgränser.</td></tr>
+      <tr><td class="nr">4</td><td><b>Avstängningen.</b> Publiceringen av prognosen stoppas, och appen tystnar utan nytt bygge.</td>
+        <td>Ja, och prövad i drift innan första bygget.</td></tr>
+      <tr><td class="nr">5</td><td><b>Var kandidaten räknas först.</b> Stationerna (754 punkter, felet känt: 5,12 %) och
+        vägpunkterna i steg två; eller vägpunkterna direkt.</td>
+        <td>Stationerna först. Snabbare och säkrare som första bygge, men det prövar inte räckvidden mellan stationerna, som är
+        kandidatens mening. Vägpunkterna följer när paritetsprovet och vägpunktsläsningen finns.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="avsnitt-3">3. Stegen, i ordning</h2>
+<!-- LÄGESRADER §3: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
+<div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
+  <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-segmentprognos">L4 räckvidden: segmentprognosen</a> <span style="color: var(--dampad, #4A5763)">väntar, 50 % · Domen i mars 2027 (grind B/C) på kandidaten NIVÅ 2+BLANDNING som ny fråga, RÅ kontroll och reserv (#547), och Bengts öppna val d på kort #270.</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Tröskeldokument</b> <span style="color: var(--dampad, #4A5763)">klart · docs/TROSKLAR-SKUGGAN.md:3–4 fastställt (Bengt 1/9, Axel 2/9, #61); vägpunkten §3 (#324, #328), §4 rättad (#319)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Data i arkivet</b> <span style="color: var(--dampad, #4A5763)">klart · shadow_log.prognos och vagpunkt_ankare() (sql/032_prognos.sql:7, 15)</span></li>
+      <li><span aria-hidden="true">○</span> <b>Publicerat i lägesfilen</b> <span style="color: var(--dampad, #4A5763)">saknas · Medvetet opublicerad före domen (INTEGRATIONSKARTAN.md:195)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Mätt i skuggan</b> <span style="color: var(--dampad, #4A5763)">klart · segmentPrognos + holdoutRader i skuggmotorn sedan 23/9 (#325, #326); dom-knappen publish/grind-s-b.ts (#327); ankarnas spridning loggas sedan 7/10 16:32Z (deploy 37650576469, #474)</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Dom</b> <span style="color: var(--dampad, #4A5763)">pågår · Grind A KLARAD 23/9 (#321); vägpunktsgrinden FALLEN 28/9, 6,9 % mot 5 % (#399); grind B/C döms i mars; marsdomen räknas med spridningsgrinden vid 2,25 °C och tystnad på täckt segment som miss (#475, #477, #478); vinterläsningen 1/12, 1/1, 1/2 och i domläget (KALENDERN); 13/10: domen i mars gäller kandidaten NIVÅ 2+BLANDNING som ny fråga, med domfönster från förregistreringen, RÅ kontroll och reserv (#547, TROSKLAR-SKUGGAN §3)</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Villkoret i motorn</b> <span style="color: var(--dampad, #4A5763)">pågår · engine/src/segment.ts:56–115 körs bara i skuggmotorn; förstärkarvillkoret finns inte i engine.ts</span></li>
+      <li><span aria-hidden="true">○</span> <b>Testfall i tre språk</b> <span style="color: var(--dampad, #4A5763)">saknas · Bara test/segment.test.ts i TypeScript; ingen vektor eller port (segment.ts:7)</span></li>
+      <li><span aria-hidden="true">○</span> <b>I appen</b> <span style="color: var(--dampad, #4A5763)">saknas · Aldrig röst ensam (TROSKLAR-SKUGGAN.md:148–151)</span></li>
+      <li><span aria-hidden="true">◐</span> <b>MET Nordic levande vid stationerna och väglagspunkterna (kort #343, steg 1)</b> <span style="color: var(--dampad, #4A5763)">pågår · Byggt 14/10: ingest/metnordic-live.ts --mat och knappen metnordic-live.yml, mätningen förregistrerad under DECISIONS #556; klart när mätningen är körd och bokförd och hämtningen går på körplatsen</span></li>
+    </ul>
+  </details>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-kv-prognoslagret">Prognoslagrets kandidater</a> <span style="color: var(--dampad, #4A5763)">delvis, 97 % · kvar: Den frysta kandidaten (varv 1, DECISIONS #552) ligger i hinken; kvar är förregistreringen för vintern 2026/27, senast 31/10, och Axels fråga om uppspelning eller drift (§4.2, kort #342)</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Fyra läsningar 6/10</b> <span style="color: var(--dampad, #4A5763)">klart · 37530898977, DECISIONS #471: ankarspridningen skiljer de grova felen (0,5–2 °C ger 1,8 % på 59 % av punkterna), vårens fel är dagsljuset (natten 4,2 %), regimstyrd offset ger 0,3 procentenheter, grova kovariater inget (R² 0,01)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Spridningen och natten korsade</b> <span style="color: var(--dampad, #4A5763)">klart · 37651865384, DECISIONS #476: grinden vid 2,25 °C talar på 60,6 % med 2,8 % grova fel, natten ensam 6,0 % på 63,0 %; grinden antagen med X = 2,25 °C och natten avstådd (DECISIONS #474, #477, #478)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>C8 med vägdata</b> <span style="color: var(--dampad, #4A5763)">klart · 37659713953, DECISIONS #479: vägdatan förklarar 4 % av stationernas särart mot RÅ (R² 0,042), de grova felen står kvar på 7,5 %; ingen kandidat</span></li>
+      <li><span aria-hidden="true">✓</span> <b>C8 mot vädret</b> <span style="color: var(--dampad, #4A5763)">klart · 37663768575, DECISIONS #480: mot en vädermodell ur MET Nordic förklarar vägdatan 30 % (R² 0,298); vädermodellen själv har 21,8 % grova fel; ingen kandidat</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Rutnätsmodellen och höjden</b> <span style="color: var(--dampad, #4A5763)">klart · 37669854795, DECISIONS #481: RN 9,3 %, RN+R 9,3 % och RÅ+HÖJD 8,8 % grova fel mot RÅ:s 7,4 % på samma punkter; ingen kandidat</span></li>
+      <li><span aria-hidden="true">✓</span> <b>FYSIK</b> <span style="color: var(--dampad, #4A5763)">klart · 37693105481, DECISIONS #485: 9,85 % grova fel på RÅ:s punkter mot RÅ:s 7,51 %, sämre i varje band; domen läses på vintern 2026/27; i Axels replika under kuvösens regler ger FYSIK med grannarnas fel 6,65 % och med blandningen 5,97 % (bortom 20 km 10,9 mot RÅ:s 13,6 %), inte körda i kuvösen: de kräver grannlagret och ett beslut (docs/FYSIKSPARET-FRYS-2026-10-07.md); vädret är ECMWF:s analys, inte en prognos</span></li>
+      <li><span aria-hidden="true">✓</span> <b>C8 mot fingeravtrycken</b> <span style="color: var(--dampad, #4A5763)">klart · DECISIONS #486: vägdatan förklarar ungefär 5 % av särarten mot den äldre modellen (VÄG R² 0,0499) och ingenting mot den frysta</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Kallkartan</b> <span style="color: var(--dampad, #4A5763)">klart · Körning 37885821554 på 28926d7 (förväntningarna incheckade i 1d3bb95 före knappen): KALL 9,76 %, KALL-NATT 8,79 % och KALL-½ 7,63 % grova fel mot RÅ:s 7,26 % på samma 4 216 946 punkter, bortom 20 km 16,56 · 15,32 · 13,31 mot 13,13 %; på natten 8,14 · 8,14 · 6,03 mot 5,73 %; ingen kandidat (DECISIONS #496); lagd åt sidan som rättelse på RÅ på Bengts ja 9/10 (DECISIONS #497)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Väderkällan, nivå 1 och 1b</b> <span style="color: var(--dampad, #4A5763)">klart · Nivå 1 (#504, 70 punkter mot SMHI): MET Nordic 8,7 mot ECMWF 16,0 % grova fel i luften. Nivå 1b (#505): körning 37927729663 på 6ab24e0 (förväntningarna i samma commit, pushad före knappen): 753 stationer, 2 680 361 timmar med luft; MET Nordic 9,0 % grova fel i luften mot ECMWF 16,2 %, vägt med trafiken 5,6 mot 13,2 %, norr 20,1 mot 27,2 %, söder 5,1 mot 12,3 %; daggpunkten lika (14,8 mot 14,7 %). Valet är Axels; nivå 2 avgör</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Norr och söder om 62°, per band och vägt med trafiken</b> <span style="color: var(--dampad, #4A5763)">klart · Körning 37932248631 på add4113 (förväntningarna i samma commit, pushad före knappen), DECISIONS #507: RÅ i norr 14,1 % (0–7 km 14,3, &gt;20 km 16,0, vägt med trafiken 12,6) mot söder 4,8 % (3,2 → 8,4, vägt 4,1); FYSIK sämre än RÅ i alla tio cellerna; taket OFFSET lämnar 10,7 % i norr. Den gemensamma redovisningen scripts/matningar/regioner.ts</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Fysikkoden i repot</b> <span style="color: var(--dampad, #4A5763)">klart · a10c9fa (PR #842 från Axels fysiksession, granskad i Bengts session), DECISIONS #508: fysik/ med de tolv filerna, sex kedjan kräver och params_v2.json; sex filer stämmer med frysdokumentet, sha256sum -c i ci 19 av 19 OK, ingen data, publikvakten grön</span></li>
+      <li><span aria-hidden="true">–</span> <b>Kriging</b> <span style="color: var(--dampad, #4A5763)">gäller inte · Lagd ned 13/10 (Bengt, DECISIONS #548): grannarnas fel i NIVÅ 2+BLANDNING är redan en interpolation av felen mellan stationerna, och kandidaten slår allt kuvösen kört</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Väderkällan nivå 2</b> <span style="color: var(--dampad, #4A5763)">klart · Körning 38106214849 på 0ee247a (förregistrerad i #509, Axels tips bredvid i 84d7721 före knappen), DECISIONS #509: NIVÅ 2 6,10 % grova fel mot FYSIK 9,85 och RÅ 7,51 % på samma 4 352 753 punkter, under RÅ i alla band (4,34 · 4,21 · 5,08 · 11,81), norr 12,3, söder 3,6, vägt med trafiken 4,0 %; kontrollen lika FYSIK på 100 %</span></li>
+      <li><span aria-hidden="true">✓</span> <b>FYSIK+BLANDNING i kuvösen</b> <span style="color: var(--dampad, #4A5763)">klart · Körning 38108320301 på 0ee247a (#516 pushad före knappen), DECISIONS #490 utfall läsning 1: FYSIK+GRANNAR 6,67 % och FYSIK+BLANDNING 6,00 % mot RÅ:s 7,51 % på 4 352 575 punkter, varje tal inom förväntan; filerna räknade i jobbet ur Axels frysta replika och aldrig utanför det</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Nivå 2 med grannarna och blandningen</b> <span style="color: var(--dampad, #4A5763)">klart · Körning 38112552084 på ca79cc9 (förväntningarna i samma commit, pushad före knappen), DECISIONS #517: NIVÅ 2+BLANDNING 5,02 % och NIVÅ 2+GRANNAR 5,10 % grova fel mot NIVÅ 2 6,10, FYSIK+BLANDNING 6,00 och RÅ 7,51 % på 4 352 575 punkter, under taket OFFSET 5,52 %; bortom 20 km 9,20, norr 9,9, söder 3,0, vägt med trafiken 3,4 %</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Operativt läge, prognosväder +6 h</b> <span style="color: var(--dampad, #4A5763)">klart · Kört 13/10 (körning 38351107743 på 59936e3): NIVÅ 2+BLANDNING +6 h 5,24 % och +24 h 5,43 %, inom Axels förväntan (#519); under RÅ i varje band, norr, söder och vägt med trafiken, och under OFFSET 5,52 %; frysflaggan 1 °C klarar K-A:s måttstock; utfallen under DECISIONS #490 (läsning 2)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Trafiken per band</b> <span style="color: var(--dampad, #4A5763)">klart · Körd lokalt på 9b1e93c, DECISIONS #490: 68,1 · 28,4 · 2,3 · 1,3 % av trafiken i banden 0–7 · 7–15 · 15–20 · &gt; 20 km; bortom 15 km 10,8 % av vägen och 3,6 % av trafiken, norr om 62° 17,5 %; trafikviktat har RÅ 5,4 % grova fel</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Den frysta kandidaten i hinken</b> <span style="color: var(--dampad, #4A5763)">klart · körning 38400052837 på f4d209b, DECISIONS #550 och #552: varv 1:s procedur på alla 754 stationer; modell.pkl (9757699 byte) i hinken arkiv under kuvos/kuvos-kandidat-2026-27/, hämtad tillbaka med sha256 c96c4072f4ecc6a9… lika; manifestet i kuvos/kandidat-2026-27.json</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Förregistreringen för 2026/27 på SMHI/MET</b> <span style="color: var(--dampad, #4A5763)">pågår · Bengts ja till väg B 13/10 (DECISIONS #544): ärliga tal först, frys och förregistrera senast 31/10; ledtiden +6 h; väg B körd 13/10 (körning 38368369876 på a6245a3): ärligt 4,84 % i analysläget och 5,12 % vid +6 h (fryst 5,02 och 5,24), vikten W 0,25 · L 160 km; Bengts val i §4.2; varv 2 körd 13/10 (38387172993, 38387177803): körning 1 gav 5,13 % och körning 2 5,09 % vid +6 h; varv 1 fryses (DECISIONS #552)</span></li>
+    </ul>
+  </details>
+</div>
+<!-- /LÄGESRADER -->
+  <p>Beroenden inom parentes. Kritisk väg: valen → 1–4 → 6 → 7 → 10–12 → App Review. Steg 8 och 9 och regeln (val 2) går parallellt.</p>
+  <div class="tabell"><table>
+    <thead><tr><th>Nr</th><th>Steg</th><th>Vad som görs</th><th>Vem</th><th>Läge</th></tr></thead>
+    <tbody>
+      <tr class="grupp"><td colspan="5">A. Räkna kandidaten levande</td></tr>
+      <tr><td class="nr">1</td><td>MET Nordic levande</td><td>Hämtningen läser MET:s levande katalog i stället för arkivet: analysen
+        varje timme och den senaste körningen, vid stationerna och vägpunkterna. Mätningen först: volym, tider, rutor, spann. Katalogen
+        visade sig bära en körning varje timme med 57 timsteg, mot arkivets fyra per dygn med 30; pariteten kräver kuvösens regler.</td>
+        <td>Claude</td><td><span class="dom vantar">byggt, mäts</span></td></tr>
+      <tr><td class="nr">2</td><td>Uppstarten (1)</td><td>Fysiken bär ett tillstånd (djuptemperatur, snötäcke) och behöver 45 dygns
+        väderhistorik. Historiken hämtas en gång ur arkivet, tillståndet sparas mellan körningarna. Utformas efter mätningens tal.</td>
+        <td>Claude</td><td><span class="dom kvar">kvar</span></td></tr>
+      <tr><td class="nr">3</td><td>Kedjan på körplatsen (1, 2, val 3)</td><td>Fysiken med de frysta parametrarna, rättelsen ur hinken med
+        kontrollsumman bekräftad, grannarnas fel ur stationernas mätningar, RÅ, och blandningen med W 0,25 och L 160 km. Utfallet
+        skrivs till en ny tabell per punkt. Med val 5 först vid stationerna.</td>
+        <td>Claude</td><td><span class="dom kvar">kvar</span></td></tr>
+      <tr><td class="nr">4</td><td>Paritetsprov (3)</td><td>Den levande kedjan körs på arkivet för vintern 24/25 och ska ge samma tal som
+        kuvösens frysta kandidat. Annars är det som går live inte det som mättes.</td>
+        <td>Claude, Axel läser</td><td><span class="dom kvar">kvar</span></td></tr>
+      <tr><td class="nr">5</td><td>Vakter (3)</td><td>Spann i värdevakten för de nya fälten. Är vädret gammalt eller ofullständigt blir
+        kandidaten tyst, aldrig fel.</td>
+        <td>Claude</td><td><span class="dom kvar">kvar</span></td></tr>
+      <tr class="grupp"><td colspan="5">B. Publicera och mät</td></tr>
+      <tr><td class="nr">6</td><td>Ny nyckel i live.json (3, 5, val 2)</td><td><code>publicera</code> läser tabellen och lägger till en
+        ny nyckel efter mönstret <code>rain_segments</code>. Regeln är <i>lägg till, ersätt aldrig</i>: varje rad i
+        <code>segments</code> blir en halkvarning. Tröskeln bor här, på ett ställe. Driftsätts och bevisas med en mätning efter
+        driftsättningen.</td>
+        <td>Claude</td><td><span class="dom kvar">kvar</span></td></tr>
+      <tr><td class="nr">7</td><td>Skuggan loggar kandidaten och läser takten (6)</td><td>En ny kolumn bredvid RÅ via en migration. Det är
+        mätningen av alla spår hela vintern. Innan rösten byggs läses takten per rutt i skuggan: taket på varningar kommer ur
+        mätningen, inte ur antagandet (DECISIONS #200).</td>
+        <td>Claude</td><td><span class="dom kvar">kvar</span></td></tr>
+      <tr><td class="nr">8</td><td>Förregistreringen för 2026/27</td><td>Senast 31/10, för alla spår. Domfönstret börjar den dagen.
+        Regeln i val 2 fryses här.</td>
+        <td>Claude skriver, Axel och Bengt godkänner</td><td><span class="dom kvar">kvar</span></td></tr>
+      <tr><td class="nr">9</td><td>Webbkartan (6)</td><td>Kandidatens lager på <code>karta.html</code>. Det kan gå live utan App
+        Review och blir det första användarna ser.</td>
+        <td>Claude, skrivrätt i halkvakt-karta</td><td><span class="dom kvar">kvar</span></td></tr>
+      <tr class="grupp"><td colspan="5">C. Motorn och appen</td></tr>
+      <tr><td class="nr">10</td><td>Ny farotyp i motorn (7, val 1–2)</td><td>En ny farotyp i <code>engine/src</code> med plats i
+        prioriteten A3 &gt; A1 &gt; A2 &gt; A4 &gt; A5, testvektorer, <code>beta</code>, texten (förslag: <i>"Halkvakt tror: halka
+        framöver"</i>, aldrig ett avstånd) och BETA-kortet. Adaptern och regeln i Kotlin och Swift ska ge samma utfall tecken för
+        tecken. Inga tal kopieras till tre språk; tröskeln ligger i steg 6.</td>
+        <td>Claude</td><td><span class="dom kvar">kvar</span></td></tr>
+      <tr><td class="nr">11</td><td>Produktboken (10)</td><td>Skärmbilder och text i samma commit som rösttexten. Integritetsuppgifterna
+        ändras inte: inget nytt lämnar telefonen.</td>
+        <td>Claude</td><td><span class="dom kvar">kvar</span></td></tr>
+      <tr><td class="nr">12</td><td>Bygget 0.3.13 (25) (10, 11, och 4 grönt)</td><td>Båda plattformarna, när ios-engine, android och ci
+        är gröna på samma commit. Axel arkiverar iOS på sin Mac (TestFlight-flödet i Actions finns inte än, kort #333). Sedan
+        TestFlight och App Review. Android ur CI som i dag.</td>
+        <td>Axel arkiverar och skickar in</td><td><span class="dom kvar">kvar</span></td></tr>
+      <tr><td class="nr">13</td><td>Avstängningen i drift (6, 12)</td><td>Publiceringen stoppas, och appen ska tystna. Provas innan
+        bygget går till App Review.</td>
+        <td>Claude, Bengt provar i bilen</td><td><span class="dom kvar">kvar</span></td></tr>
+      <tr class="grupp"><td colspan="5">D. Vintern</td></tr>
+      <tr><td class="nr">14</td><td>Mätningen och domen</td><td>Alla spår mäts i skuggan. Domen i mars (DECISIONS #547) avgör om
+        kandidaten får stanna: grind A–C med samma trösklar, RÅ som kontroll och reserv. Faller den, används avstängningen i steg 13.</td>
+        <td>Axel och Bengt dömer</td><td><span class="dom kvar">mars</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="avsnitt-4">4. Tiden, och de snabba vägarna</h2>
+  <div class="lyft">
+    <p><b>Kandidaten i appen tidigast i december.</b> Det är en uppskattning steg för steg, inte en mätning: MET levande och
+      uppstarten, kedjan på körplatsen, paritetsprovet, publiceringen, motorn i tre språk, bygget och App Review.</p>
+    <p><b>Något är live nu.</b> Appen varnar redan för halka ur väglaget och väderstationerna. Efterhalkans beta (S3) är ett App
+      Review från App Store: Axel arkiverar 0.3.12 (24) och skickar in den. Det är det snabbaste sättet att få ut en prognosvarning
+      i vinter, och det kostar ingenting av stegen ovan.</p>
+    <p><b>Med val 5 (stationerna först)</b> blir steg 3 mindre, och den första kandidaten i appen har ett känt fel. Vägpunkterna
+      kommer i steg två, samma vinter.</p>
+  </div>
+
+  <h2 id="avsnitt-5">5. Regler som gäller under bygget</h2>
+  <ul>
+    <li><b>Aldrig rösten ensam.</b> TROSKLAR-SKUGGAN §4(a) säger att en godkänd prognos når kartan först och aldrig rösten ensam.
+      Val 1(a) ändrar det, och ändringen skrivs i dokumentet med båda signaturerna, aldrig som en lättnad i efterhand.</li>
+    <li><b>Takten mäts, antas inte.</b> Skuggan läser hur ofta regeln skulle tala per rutt innan rösten byggs (DECISIONS #200). Tystnad
+      är en funktion.</li>
+    <li><b>Regeln fryses vid förregistreringen 31/10.</b> Ändras den sedan, bara genom en daterad post, aldrig en lättnad. Annars är
+      marsdomen förorenad.</li>
+    <li><b>Tröskeln bor på ett ställe</b>, i publiceringen. Motorn får en farotyp, text, prioritet och vektorer, inga tal.</li>
+    <li><b>Samma hazard aldrig två gånger inom 10 minuter eller 5 km</b>, och inom 10 sekunder efter en varning talar bara en viktigare
+      fara. Det gäller den nya farotypen som alla andra.</li>
+    <li><b>Inget lämnar telefonen.</b> Matchningen sker i appen mot den nedladdade filen, som i dag.</li>
+  </ul>
+
+  <h2 id="avsnitt-6">6. Risker, skrivna före bygget</h2>
+  <ul>
+    <li>Kandidatens väntade andel grova fel vid +6 h är 5,12 %, mot grind A:s tak 5 %. Marginalen är noll.</li>
+    <li>Vid vägpunkterna är felet okänt. 5,3 % av punkterna ligger utanför stationernas spann i något särdrag.</li>
+    <li>MET:s svar kan komma avkortade; den första mätningen föll på det. Hämtningen hämtar om och räknar fallen.</li>
+    <li>Volymen om allt hämtas varje timme kan bli 10–15 GB per dygn enligt kuvösens tal. Mätningen avgör takten.</li>
+    <li>Faller kandidaten i mars fälls domen på RÅ som förut (reserven i DECISIONS #547). Det blir inte två chanser.</li>
+  </ul>
+
+  <h2 id="avsnitt-7">7. Det här är Axels</h2>
+  <ol>
+    <li>Svaren på de fem valen, tillsammans med Bengt. Val 2, regeln, är Axels att skriva.</li>
+    <li>S3 till App Store: arkivera 0.3.12 (24) och skicka in den. Det ger en prognosvarning live medan resten byggs.</li>
+    <li>Läsa paritetsprovet (steg 4) innan något publiceras: det är Axels kedja och Axels kandidat.</li>
+    <li>Signaturen i TROSKLAR-SKUGGAN §4(a) om val 1(a) väljs.</li>
+    <li>Godkänna förregistreringen för 2026/27 senast 31/10 (steg 8).</li>
+    <li>Arkivera och skicka in bygget 0.3.13 (25) när steg 10–11 är gröna (steg 12).</li>
+  </ol>
+
+  <hr>
+  <p class="litet">Källan är <span class="mono">docs/NIVA2-LIVE.html</span> i repot Axelstar/Halkvakt. Beslutet är DECISIONS #556,
+    arbetet kort #343, frågorna bedömningens §4.2. Läget per steg bokförs på kortet och i projektkartan (delen L4 räckvidden) och är
+    det som gäller om sidan och kortet skiljer sig åt.</p>
+
+<!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
+  <h2 id="oppna-kort">Öppna kort</h2>
+  <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 3 kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>
+  <h3><a href="#avsnitt-3">3. Stegen, i ordning</a></h3>
+  <ul>
+    <li>#342 VÄG B — ÄRLIGA TAL FÖRE FRYSNINGEN (BESLUTAT 13/10 — Claude, Bengts ja och Axels ja via Bengt, DECISIONS #544) <span class="litet">· Claude</span></li>
+    <li>#343 NIVÅ 2+BLANDNING LIVE I APPEN FÖRE DOMEN — HALKVARNINGEN UTE I VINTER, MÄTNINGEN AV ALLA SPÅR FORTSÄTTER … <span class="litet">· Claude, låst</span></li>
+    <li>#333 TESTFLIGHT-FLÖDET I ACTIONS — iOS-BYGGEN UTAN AXELS MAC (LÅST 11/10 — Claude, DECISIONS #525; nyckel: App … <span class="litet">· Claude, låst</span></li>
+  </ul>
+<!-- /ÖPPNA KORT -->
+</main>

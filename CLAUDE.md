@@ -160,8 +160,8 @@ Varje arbetsvarv AVSLUTAS med att TAVLA.md synkas mot verkligheten:
    utan Verify-rad får en. Kortvakten i CI (#449) fäller det kartan själv vet; genomgången tar resten.
 Tavlan är människolagret; bedömningen, STATUS och DECISIONS är djuplagren.
 
-## STOMREGELN (Bengts order 2026-10-01 — sju stomdokument, DECISIONS #415, #425, #445)
-Sju dokument är Bengts facit och kontrollpunkter för var vi är, och stommen för det fortsatta bygget:
+## STOMREGELN (Bengts order 2026-10-01 — åtta stomdokument, DECISIONS #415, #425, #445, #557)
+Åtta dokument är Bengts facit och kontrollpunkter för var vi är, och stommen för det fortsatta bygget:
 1. *Halkvaktens mätningar* — artefakt https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc, källa `docs/MATNINGAR.html`
 2. *Halkvaktens app* — https://claude.ai/artifact/FThC1PqVqEMqWxofrCv1GT, källa `docs/APPEN.html`
 3. *Halkvaktens systembild* — https://claude.ai/artifact/6hHX4LeXQUrJSbaNthNY9i, källa `docs/SYSTEMBILDEN.html`
@@ -169,7 +169,8 @@ Sju dokument är Bengts facit och kontrollpunkter för var vi är, och stommen f
 5. Integrationskartan — `docs/INTEGRATIONSKARTAN.md`
 6. *Halkvaktens kuvös* — https://claude.ai/artifact/1xvv4hydYbfpF5eXFgLcxh, källa `docs/KUVOSEN.html` (tillagd 1/10 på Bengts order, DECISIONS #425)
 7. *Halkvaktens favoriter* — https://claude.ai/artifact/EJYcQFCyKYd9BgGcYkCMyT, källa `docs/FAVORITER.html` (tillagd 3/10 på Bengts order, DECISIONS #445)
-**En gång per dygn (Bengts order 11/10, DECISIONS #522).** De sju stäms av EN gång per dygn, av morgonens dokumentsynk (DOKUMENTSYNKEN
+8. *Nivå 2+blandning live* — https://claude.ai/artifact/Wsuxr3UTG7d7axekXireqg, källa `docs/NIVA2-LIVE.html` (tillagd 14/10 på Bengts order, DECISIONS #557): stegen till kandidaten i appen, kort #343
+**En gång per dygn (Bengts order 11/10, DECISIONS #522).** De åtta stäms av EN gång per dygn, av morgonens dokumentsynk (DOKUMENTSYNKEN
 nedan): den läser allt som hänt sedan förra synken och rättar handtexten, och artefakterna republiceras då — når rutinen dem inte,
 gör dagens första session det. I varje varv förs bara in det som maskinerna prövar: beslutet med sin rad `**Stomdokument:**` (som
 säger vad synken ska stämma av), tavlan, projektkartan och kortkartan (skripten skriver lägesraderna och korten i sidorna) och en
@@ -184,7 +185,7 @@ eller en ny rubrik på ett kort ⇒ kortkartan.json och skriptet i SAMMA commit 
 
 ## PROJEKTKARTAN (Bengts ja 2026-10-03 — navet över bygget, DECISIONS #446)
 *Halkvaktens projektkarta* — https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8, källa `docs/PROJEKTKARTAN.html`, skriven ur `docs/projektkartan.json` av
-`node --experimental-strip-types scripts/projektkartan.ts` (ändras aldrig för hand). Den är navet OVANFÖR de sju stomdokumenten:
+`node --experimental-strip-types scripts/projektkartan.ts` (ändras aldrig för hand). Den är navet OVANFÖR de åtta stomdokumenten:
 varje del av projektet med block, läge, bevis eller nyckel, vad som saknas, beroenden, kort, beslut och var delen beskrivs.
 - **Kartan äger LÄGET per del** och är vägen in i bygget. Den är **underordnad BEVISET**: grönt kräver ett bevis som går att följa
   (commit, grön körning, mätning efter driftsättning, beslut), blått en nyckel, orange och rött en lista över vad som saknas. Säger
@@ -237,7 +238,7 @@ sessioner på alla enheter:
    stå — 7/10 bockade regeln `inlamnad:0.3.9` en inlämning som App Review avvisat. Sedan `--bokford`.
 3. Kortgenomgången (TAVELREGELN 5): `kortkartan.ts --genomgang`; stäng varje kort vars Verify är uppfylld, med beviset.
 4. Stomgenomgången: `stomvakten.ts --lage`. Läs allt som hänt sedan förra dokumentsynken — commits på main från alla författare,
-   nya beslut, nya STATUS-rader, sammanslagna och öppna PR:er — och rätta handtexten i de sju, `docs/KALENDERN.md` och TAVLA.md
+   nya beslut, nya STATUS-rader, sammanslagna och öppna PR:er — och rätta handtexten i de åtta, `docs/KALENDERN.md` och TAVLA.md
    där den inte längre stämmer. **En rad i ett skriptskrivet block (LÄGESRADER, Öppna kort) räknas inte som att handtexten
    stämmer** (Bengts ja 13/10, DECISIONS #546). Varje ⚠ i `--lage` blir antingen text i dokumentets handtext, i det avsnitt
    beslutets rad `**Stomdokument:**` namnger, eller en post i synkens STATUS-rad med skälet: *#NN: ingen handtext, skälet*. Integrationskartans innehåll är fryst: bara dess läge-rader; en innehållsrättelse blir en fråga i
