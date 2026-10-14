@@ -1,0 +1,78 @@
+name: metnordic-historik
+# MET NORDIC — HISTORIEN FÖR UPPSTARTEN, steg 2 på kort #343 (DECISIONS #556): 45 dygns timvis analys bakåt (kedjans längsta fönster,
+# tdeep) för stationerna och väglagspunkterna, ur MET Norways arkiv metpparchive till den öppna releasen metnordic-live-2026-27
+# (MET Norway, NLOD / CC BY 4.0). Fem delar om nio dygn, EN åt gången (tjänstens villkor: en förbindelse åt gången), efter mallen
+# kuvos-metnordic-prognos.yml: en del som redan ligger i releasen hoppas över, en del hämtar sina klara dygn ur den senaste artefakten
+# och fortsätter där, och hämtningen stannar själv efter 320 min (MNH_MINUTER) så att artefakten hinner sparas. Trycks på Bengts ord.
+on:
+  workflow_dispatch:
+concurrency: { group: thredds-metnordic-live, cancel-in-progress: false }
+permissions:
+  contents: write
+  actions: read
+jobs:
+  hamta:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    strategy:
+      max-parallel: 1
+      fail-fast: false
+      matrix:
+        del:
+          - { fran: "2026-08-30", till: "2026-09-07" }
+          - { fran: "2026-09-08", till: "2026-09-16" }
+          - { fran: "2026-09-17", till: "2026-09-25" }
+          - { fran: "2026-09-26", till: "2026-10-04" }
+          - { fran: "2026-10-05", till: "2026-10-13" }
+    env:
+      GH_TOKEN: "${{ github.token }}"
+      REL: metnordic-live-2026-27
+      FIL: "metnordic_analys_${{ matrix.del.fran }}_${{ matrix.del.till }}.csv.gz"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Finns delen redan i releasen?
+        id: finns
+        shell: bash
+        run: |
+          if gh release view "$REL" --json assets -q '.assets[].name' 2>/dev/null | grep -qx "$FIL"; then
+            echo "ja=1" >> "$GITHUB_OUTPUT"; echo "$FIL finns redan i $REL — hoppas över"; fi
+      - uses: actions/setup-node@v4
+        if: ${{ steps.finns.outputs.ja != '1' }}
+        with: { node-version: 22 }
+      - name: Självtestet
+        if: ${{ steps.finns.outputs.ja != '1' }}
+        run: node --experimental-strip-types ingest/metnordic-historik.ts --sjalvtest 2>&1 | grep -v ExperimentalWarning
+      - name: Dygnen från en tidigare körning (återupptagningen)
+        if: ${{ steps.finns.outputs.ja != '1' }}
+        shell: bash
+        run: |
+          mkdir -p mnh/dagar
+          id=$(gh api "repos/${{ github.repository }}/actions/artifacts?name=mnh-${{ matrix.del.fran }}&per_page=100" \
+            -q '[.artifacts[] | select(.expired | not)] | sort_by(.created_at) | last | .id // empty')
+          if [ -n "$id" ]; then
+            gh api "repos/${{ github.repository }}/actions/artifacts/$id/zip" > tidigare.zip
+            unzip -o -q tidigare.zip -d mnh; rm -f tidigare.zip mnh/dagar/*.tmp mnh/metnordic_analys_*.csv.gz
+            for f in mnh/dagar/*.csv.gz; do [ -e "$f" ] || continue; gzip -t "$f" 2>/dev/null || { echo "trasig: $f"; rm -f "$f"; }; done
+          fi
+          echo "klara dygn från tidigare körning: $(ls mnh/dagar | grep -c 'csv.gz$' || true)"
+      - name: Hämtningen
+        if: ${{ steps.finns.outputs.ja != '1' }}
+        shell: bash
+        env: { MNH_MINUTER: "320" }
+        run: |
+          set -o pipefail
+          { echo '```'; node --experimental-strip-types ingest/metnordic-historik.ts --hamta mnh "${{ matrix.del.fran }}" "${{ matrix.del.till }}"; echo '```'; } 2>&1 | grep --line-buffered -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+      # Som kuvösen (DECISIONS #470): filerna sparas alltid som artefakt först, och releasen får falla utan att något går förlorat.
+      - name: Filerna som artefakt
+        if: ${{ always() && steps.finns.outputs.ja != '1' }}
+        uses: actions/upload-artifact@v4
+        with: { name: "mnh-${{ matrix.del.fran }}", path: mnh/, retention-days: 30, if-no-files-found: ignore }
+      - name: Till releasen
+        if: ${{ steps.finns.outputs.ja != '1' }}
+        shell: bash
+        run: |
+          gh release view "$REL" >/dev/null 2>&1 || gh release create "$REL" --target main --title "MET Nordic för kandidaten live, vintern 2026/27" \
+            --notes "Kort #343, DECISIONS #556. MET Nordic-analyser (1 km, timvis) ur MET Norways arkiv metpparchive, i rutan närmast varje väderstation och väglagspunkt (metnordic_punkter.csv), i kuvösens analysform. Källa: MET Norway, MET Nordic, licens NLOD / CC BY 4.0. Historien 45 dygn bakåt för kedjans uppstart; de levande dygnen följer."
+          gh release view "$REL" --json assets -q '.assets[].name' | grep -qx metnordic_punkter.csv || gh release upload "$REL" mnh/metnordic_punkter.csv
+          gh release upload "$REL" "mnh/$FIL"
+          { echo '```'; ls -l "mnh/$FIL"; sha256sum "mnh/$FIL"; cat "mnh/sammanfattning_${{ matrix.del.fran }}_${{ matrix.del.till }}.json"; echo '```'; } | tee -a "$GITHUB_STEP_SUMMARY"
