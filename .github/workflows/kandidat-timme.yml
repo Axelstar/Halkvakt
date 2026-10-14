@@ -1,0 +1,52 @@
+name: kandidat-timme
+# KANDIDATEN LIVE, DEL B — grannarnas fel, RÅ och blandningen vid alla punkter för timmen (kort #343 steg 3, DECISIONS #556, #558).
+# Körs varje timme av pulsklockan när den raden finns; tills dess på knapp. Läser PH för timmen ur kandidat_ph (del A) och grind A:s
+# ankare just nu (sql/032 vagpunkt_ankare, samma population som skuggans RÅ), räknar med replikans tal (fysik/live/kandidat_timme.py)
+# och skriver kandidat_live (sql/050), sedan gallringen. Saknas PH för timmen (del A har inte kört) stannar jobbet med kod 3.
+# Ingen Trafikverksdata i någon fil eller logg: ankarna lämnar aldrig jobbet, bara kandidatens egna tal skrivs.
+on:
+  workflow_dispatch:
+    inputs:
+      tid:
+        description: "timmen, t.ex. 2026-10-15T12:00:00Z — tomt = den timme som pågår just nu (UTC)"
+        required: false
+        default: ""
+permissions:
+  contents: read
+jobs:
+  timme:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: "${{ github.token }}"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13", cache: pip, cache-dependency-path: fysik/requirements.txt }
+      - name: Självtesten
+        run: |
+          node --experimental-strip-types ingest/kandidat-db.ts --sjalvtest 2>&1 | grep -v ExperimentalWarning | tail -1
+          python3 -m pip install -q $(grep -E '^(numpy|pandas)==' fysik/requirements.txt)
+          python3 fysik/live/kandidat_timme.py --sjalvtest | tail -1
+      - name: Timmen, PH och ankarna
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        shell: bash
+        run: |
+          TID="${{ inputs.tid }}"; [ -n "$TID" ] || TID=$(date -u +%Y-%m-%dT%H:00:00Z)
+          echo "TID=$TID" >> "$GITHUB_ENV"
+          node --experimental-strip-types ingest/kandidat-db.ts ph "$TID" ph.csv 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types ingest/kandidat-db.ts ankare ankare.csv 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+          gh release download metnordic-live-2026-27 --pattern metnordic_punkter.csv --dir mn
+          sed 's/^station_id,/sid,/' mn/metnordic_punkter.csv > punkter.csv
+      - name: Del B — grannarna, RÅ och blandningen
+        shell: bash
+        run: |
+          set -o pipefail
+          { echo '```'; python3 fysik/live/kandidat_timme.py --ph ph.csv --punkter punkter.csv --ankare ankare.csv --tid "$TID" --ut live.csv; echo '```'; } 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+          rm -f ankare.csv
+      - name: Till tabellen kandidat_live, sedan gallringen
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: node --experimental-strip-types ingest/kandidat-db.ts skriv-live live.csv 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"

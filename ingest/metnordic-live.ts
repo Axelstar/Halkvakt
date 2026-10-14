@@ -16,11 +16,11 @@
 // Kör:      node --experimental-strip-types ingest/metnordic-live.ts --mat [--ut <mapp>] [--rot <repo>]
 // Självtest: node --experimental-strip-types ingest/metnordic-live.ts --sjalvtest        (i ci.yml)
 // Källa: MET Norway, MET Nordic (NLOD / CC BY 4.0), https://thredds.met.no/thredds/catalog/metpplatest/catalog.html
-import { readFileSync, writeFileSync, mkdirSync, mkdtempSync, existsSync } from "node:fs";
-import { gzipSync } from "node:zlib";
+import { readFileSync, writeFileSync, mkdirSync, mkdtempSync, existsSync, renameSync } from "node:fs";
+import { gzipSync, gunzipSync } from "node:zlib";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { FALT, RUBRIK, PER_ANROP, tolkaDods, raderForKorning, varde, type Falt, type Ruta } from "../kuvos/metnordic-prognos.ts";
+import { FALT, RUBRIK, PER_ANROP, tolkaDods, raderForKorning, varde, lasRutor, type Falt, type Ruta } from "../kuvos/metnordic-prognos.ts";
 import { SPANN } from "../scripts/vardevakten.ts";
 
 const UA = "Halkvakt-live/0.1 (+https://github.com/Axelstar/Halkvakt)";
@@ -35,13 +35,18 @@ export const PUNKTFILER = ["data/vagdata/stationer.json", "data/vagdata/vaglagsp
 export const FALTEN = RUBRIK.split(",").slice(4);
 
 export type Typ = "analysis" | "forecast";
-/** Katalogens senaste fil av en typ: stämpeln ur filnamnet, tiden som ISO och hur många filer typen har. Inget annat i sidan tolkas. */
-export function senasteIKatalog(html: string, typ: Typ): { stamp: string; iso: string; antal: number } | null {
+/** Katalogens stämplar av en typ, sorterade. Inget annat i sidan tolkas. */
+export function allaStamplar(html: string, typ: Typ): string[] {
   const re = new RegExp(`met_${typ}_1_0km_nordic_(\\d{8}T\\d{2}Z)\\.nc`, "g");
-  const stamplar = [...new Set([...html.matchAll(re)].map((m) => m[1]))].sort();
+  return [...new Set([...html.matchAll(re)].map((m) => m[1]))].sort();
+}
+export const isoAv = (s: string) => `${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}T${s.slice(9, 11)}:00:00Z`;
+/** Katalogens senaste fil av en typ: stämpeln ur filnamnet, tiden som ISO och hur många filer typen har. */
+export function senasteIKatalog(html: string, typ: Typ): { stamp: string; iso: string; antal: number } | null {
+  const stamplar = allaStamplar(html, typ);
   if (!stamplar.length) return null;
   const s = stamplar[stamplar.length - 1];
-  return { stamp: s, iso: `${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}T${s.slice(9, 11)}:00:00Z`, antal: stamplar.length };
+  return { stamp: s, iso: isoAv(s), antal: stamplar.length };
 }
 export const filnamnLive = (typ: Typ, stamp: string) => `${BAS}/met_${typ}_1_0km_nordic_${stamp}.nc.dods`;
 
@@ -70,6 +75,24 @@ export function rutan(rutor: Ruta[]) {
   const y0 = Math.min(...rutor.map((r) => r.y)), y1 = Math.max(...rutor.map((r) => r.y));
   const x0 = Math.min(...rutor.map((r) => r.x)), x1 = Math.max(...rutor.map((r) => r.x));
   return { y0, y1, x0, x1, by: y1 - y0 + 1, bx: x1 - x0 + 1 };
+}
+export type Box = ReturnType<typeof rutan>;
+/** DAP-urvalet för stegen a–b i rutan. */
+export const urvalFor = (box: Box) => (a: number, b: number) =>
+  FALT.map(([f]) => `${f}.${f}${encodeURIComponent(`[${a}:${b}][${box.y0}:${box.y1}][${box.x0}:${box.x1}]`)}`).join(",");
+/** Svarets sju fält med väntade dimensioner (steg × rutan), annars fel: rutnätet eller tidsaxeln har ändrats. */
+export function kontrollera(falt: Falt[], steg: number, box: Box, vad: string) {
+  const fm = new Map(falt.map((f) => [f.namn, f]));
+  for (const [f] of FALT) {
+    const x = fm.get(f); if (!x) throw new Error(`${vad}: fältet ${f} saknas i svaret`);
+    if (x.dims.join() !== `${steg},${box.by},${box.bx}`) throw new Error(`${vad}: ${f} har ${x.dims} — rutnätet eller tidsaxeln har ändrats`);
+  }
+  return fm;
+}
+/** Rutorna ur releasens punktfil (metnordic_punkter.csv: station_id,lat,lon,ruta_y,ruta_x,avstand_km) — samma rutor som historien. */
+export function rutorUrFil(fil: string) {
+  const rutor = lasRutor(readFileSync(fil, "utf8"));
+  return { rutor, box: rutan(rutor) };
 }
 
 /** Spannet per kolumn över raderna (kolumnerna efter de fyra första), och hur många värden som saknas eller ligger utanför SPANN. */
@@ -164,15 +187,8 @@ export async function mat(rot: string, ut: string, h: Hamtare = hamta, katalog: 
     `ruta y ${box.y0}–${box.y1}, x ${box.x0}–${box.x1} (${box.by}×${box.bx}); längst från rutmitten ${maxKm.toFixed(2)} km, över 1,5 km: ${over}`);
 
   const anrop: { vad: string; byte: number; ms: number }[] = [{ vad: "lat+lon (rutnätet, en gång)", byte: grid.byte, ms: grid.ms }];
-  const urval = (a: number, b: number) => FALT.map(([f]) => `${f}.${f}${encodeURIComponent(`[${a}:${b}][${box.y0}:${box.y1}][${box.x0}:${box.x1}]`)}`).join(",");
-  const kontroll = (falt: Falt[], steg: number, vad: string) => {
-    const fm = new Map(falt.map((f) => [f.namn, f]));
-    for (const [f] of FALT) {
-      const x = fm.get(f); if (!x) throw new Error(`${vad}: fältet ${f} saknas i svaret`);
-      if (x.dims.join() !== `${steg},${box.by},${box.bx}`) throw new Error(`${vad}: ${f} har ${x.dims} — rutnätet eller tidsaxeln har ändrats`);
-    }
-    return fm;
-  };
+  const urval = urvalFor(box);
+  const kontroll = (falt: Falt[], steg: number, vad: string) => kontrollera(falt, steg, box, vad);
   // Analysen: ett timsteg, sju fält.
   const a = kravs(await hamtaTolkat(`${anFil}?${urval(0, 0)}`, "analysen", h, paus), "analysen");
   const anFm = kontroll(a.falt, 1, "analysen");
@@ -209,6 +225,62 @@ export async function mat(rot: string, ut: string, h: Hamtare = hamta, katalog: 
   writeFileSync(join(ut, "sammanfattning.json"), JSON.stringify(sammanfattning, null, 1));
   console.log("\nSAMMANFATTNING " + JSON.stringify({ ...sammanfattning, spann: undefined, anrop: undefined }));
   return sammanfattning;
+}
+
+/** ETT DYGNS ANALYSTIMMAR ur den levande katalogen, de som saknas i dagfilen (steg 3, kandidat-fysik.yml): läser dagfilen, hämtar de
+ *  timmar katalogen bär och filen inte har, skriver om filen atomärt. Raderna i analysfilens form utan rubrik, som historiken
+ *  (metnordic-historik.ts), med samma rutor ur releasens punktfil. Timmar som inte finns i katalogen än räknas och tas nästa gång. */
+export async function dygn(ut: string, dag: string, punkterCsv: string, h: Hamtare = hamta, katalog: () => Promise<string> = hamtaKatalog, paus = 5000) {
+  const { rutor, box } = rutorUrFil(punkterCsv);
+  mkdirSync(join(ut, "dagar"), { recursive: true });
+  const fil = join(ut, "dagar", `${dag}.csv.gz`);
+  const befintliga = existsSync(fil) ? gunzipSync(readFileSync(fil)).toString("utf8").split("\n").filter(Boolean) : [];
+  const finns = new Set(befintliga.map((r) => r.split(",")[1]));
+  const stamplar = new Set(allaStamplar(await katalog(), "analysis"));
+  const urval = urvalFor(box), nya: string[] = [];
+  let hamtade = 0, saknade = 0;
+  for (let t = 0; t < 24; t++) {
+    const stamp = `${dag.replace(/-/g, "")}T${String(t).padStart(2, "0")}Z`, tid = isoAv(stamp);
+    if (finns.has(tid)) continue;
+    if (!stamplar.has(stamp)) { saknade++; continue; }
+    const s = kravs(await hamtaTolkat(`${filnamnLive("analysis", stamp)}?${urval(0, 0)}`, tid, h, paus), tid);
+    const fm = kontrollera(s.falt, 1, box, tid);
+    for (const r of rutor) nya.push(`${r.id},${tid},${FALT.map(([f, kol]) => varde(kol, fm.get(f)!.data[(r.y - box.y0) * box.bx + (r.x - box.x0)])).join(",")}`);
+    hamtade++;
+  }
+  if (nya.length) { const tmp = fil + ".tmp"; writeFileSync(tmp, gzipSync([...befintliga, ...nya].join("\n") + "\n")); renameSync(tmp, fil); }
+  console.log(`${dag}: ${finns.size} timmar fanns, ${hamtade} hämtade, ${saknade} inte i katalogen än → ${fil}`);
+  return { dag, fanns: finns.size, hamtade, saknade, fil };
+}
+
+/** Körningen för +6 h-klassen just nu: den senaste av 00, 06, 12 och 18 UTC som är minst sex timmar gammal (stegen 6–11, #519). */
+export function korningFor(nu: Date): string {
+  const t = new Date(nu.getTime() - 6 * 3600_000);
+  const d = new Date(Date.UTC(t.getUTCFullYear(), t.getUTCMonth(), t.getUTCDate(), Math.floor(t.getUTCHours() / 6) * 6));
+  return d.toISOString().slice(0, 13).replace(/-/g, "").replace("T", "T") + "Z";
+}
+
+/** EN KÖRNINGS STEG 0–17 ur den levande katalogen (steg 3, kandidat-fysik.yml), i prognosfilens form (RUBRIK) till
+ *  <ut>/metnordic_korning_<stamp>.csv.gz och stämpeln i <ut>/korning.txt. Saknas körningen i katalogen: kod 3, inget skrivs. */
+export async function korning(ut: string, punkterCsv: string, stamp: string, h: Hamtare = hamta, katalog: () => Promise<string> = hamtaKatalog, paus = 5000) {
+  const { rutor, box } = rutorUrFil(punkterCsv);
+  mkdirSync(ut, { recursive: true });
+  if (!allaStamplar(await katalog(), "forecast").includes(stamp)) { console.log(`körningen ${stamp} finns inte i katalogen än`); return null; }
+  const urval = urvalFor(box), fil = filnamnLive("forecast", stamp), steg: Map<string, Falt>[] = [];
+  let byte = 0;
+  for (let s = 0; s < STEG_LIVE; s += PER_ANROP) {
+    const r = kravs(await hamtaTolkat(`${fil}?${urval(s, s + PER_ANROP - 1)}`, `${stamp} steg ${s}`, h, paus), `${stamp} steg ${s}`);
+    const fm = kontrollera(r.falt, PER_ANROP, box, `${stamp} steg ${s}`); byte += r.byte;
+    const n = box.by * box.bx;
+    for (let k = 0; k < PER_ANROP; k++)
+      steg.push(new Map(FALT.map(([f]) => { const x = fm.get(f)!; return [f, { namn: f, dims: [box.by, box.bx], data: x.data.subarray(k * n, (k + 1) * n) }]; })));
+  }
+  const rader = raderForKorning(isoAv(stamp), steg, rutor, box.y0, box.x0, box.bx);
+  const utfil = join(ut, `metnordic_korning_${stamp}.csv.gz`), tmp = utfil + ".tmp";
+  writeFileSync(tmp, gzipSync(RUBRIK + "\n" + rader.join("\n") + "\n")); renameSync(tmp, utfil);
+  writeFileSync(join(ut, "korning.txt"), stamp + "\n");
+  console.log(`körningen ${stamp}: ${rader.length} rader (${rutor.length} punkter × ${STEG_LIVE} steg), ${(byte / 1e6).toFixed(0)} MB → ${utfil}`);
+  return { stamp, rader: rader.length, byte, fil: utfil };
 }
 
 /** Ett DAP2-svar ur fält, i samma form som tolkaDods läser (självtestets fejkade källa). */
@@ -298,6 +370,30 @@ async function sjalvtest() {
       `spannen: temperaturen i °C med vägpunkten i rutans sista cell (1,11); analysens strålning rakt av och prognosens som timvärde ur summan över anropen (bara steg 0 saknas, två punkter): ${JSON.stringify(s.spann.t2m_c)} ${JSON.stringify(s.spann.langvag_jm2)}`);
     k(existsSync(join(ut, "metnordic_live_20261014T05Z.csv.gz")) && existsSync(join(ut, "sammanfattning.json")), "raderna och sammanfattningen skrivs");
   }
+  // Körningen för +6 h-klassen: den senaste av 00/06/12/18 som är minst sex timmar gammal.
+  k(korningFor(new Date("2026-10-14T14:00:00Z")) === "20261014T06Z" && korningFor(new Date("2026-10-14T12:00:00Z")) === "20261014T06Z"
+    && korningFor(new Date("2026-10-14T11:59:00Z")) === "20261014T00Z" && korningFor(new Date("2026-10-14T05:00:00Z")) === "20261013T18Z", "körningen för +6 h-klassen");
+  // Dygnet och körningen ur en fejkad katalog, med rutorna ur en punktfil (två punkter i en ruta 3×4): dygnet tar bara timmarna
+  // som saknas i filen och finns i katalogen, och hämtar aldrig om en timme; körningen skriver 18 steg per punkt med rubriken.
+  const rot2 = mkdtempSync(join(tmpdir(), "mnl2-"));
+  writeFileSync(join(rot2, "punkter.csv"), "station_id,lat,lon,ruta_y,ruta_x,avstand_km\n1001,60,15,1,1,0.1\nv00000,60,15,3,4,0.1\n");
+  let kat = `"met_analysis_1_0km_nordic_20261014T00Z.nc" "met_analysis_1_0km_nordic_20261014T01Z.nc" "met_forecast_1_0km_nordic_20261014T00Z.nc"`;
+  let anrop2 = 0;
+  const fejk2: Hamtare = async (u) => { anrop2++; const steg = u.includes("met_analysis_") ? 1 : PER_ANROP;
+    return { buf: dapSvar(FALT.map(([f, , summerad]) => ({ namn: f, dims: [steg, 3, 4], data: varden(steg, summerad, basen[f], Number(/%5B(\d+)%3A/u.exec(u)?.[1] ?? 0), f) }))), ms: 1 }; };
+  const d1 = await dygn(rot2, "2026-10-14", join(rot2, "punkter.csv"), fejk2, async () => kat, 0);
+  k(d1.hamtade === 2 && d1.saknade === 22 && anrop2 === 2, `dygnet första gången: ${JSON.stringify(d1)} (${anrop2} anrop)`);
+  kat += ` "met_analysis_1_0km_nordic_20261014T02Z.nc"`; anrop2 = 0;
+  const d2 = await dygn(rot2, "2026-10-14", join(rot2, "punkter.csv"), fejk2, async () => kat, 0);
+  const dagrader = gunzipSync(readFileSync(d1.fil)).toString("utf8").trim().split("\n");
+  k(d2.fanns === 2 && d2.hamtade === 1 && anrop2 === 1 && dagrader.length === 6 && dagrader[0].startsWith("1001,2026-10-14T00:00:00Z,1.00,") && dagrader[5].startsWith("v00000,2026-10-14T02:00:00Z,1.11,"),
+    `dygnet andra gången tar bara den nya timmen: ${JSON.stringify(d2)}, ${dagrader.length} rader, ${dagrader[5]}`);
+  anrop2 = 0;
+  const kr = await korning(rot2, join(rot2, "punkter.csv"), "20261014T00Z", fejk2, async () => kat, 0);
+  const krader = gunzipSync(readFileSync(kr!.fil)).toString("utf8").trim().split("\n");
+  k(!!kr && kr.rader === 36 && anrop2 === 3 && krader[0] === RUBRIK && krader.length === 37 && readFileSync(join(rot2, "korning.txt"), "utf8").trim() === "20261014T00Z",
+    `körningen: ${JSON.stringify(kr)}, ${krader.length} rader`);
+  k((await korning(rot2, join(rot2, "punkter.csv"), "20261014T06Z", fejk2, async () => kat, 0)) === null, "en körning som inte finns i katalogen ger null");
   if (fel) process.exit(1);
   console.log("✓ självtest: avkortade svar, katalogens senaste fil, filnamnet, närmaste rutan, rutan, spannen, volymen, och hela mätningen mot en fejkad källa");
 }
@@ -308,5 +404,7 @@ if (korsSjalv) {
   const v = (n: string, d: string) => { const i = arg.indexOf(n); return i >= 0 && arg[i + 1] ? arg[i + 1] : d; };
   if (arg.includes("--sjalvtest")) await sjalvtest();
   else if (arg.includes("--mat")) await mat(v("--rot", "."), v("--ut", "mn-live"));
-  else { console.error("kör: metnordic-live.ts --mat [--ut <mapp>] [--rot <repo>] | --sjalvtest"); process.exit(2); }
+  else if (arg.includes("--dygn")) await dygn(v("--ut", "mn"), v("--dygn", ""), v("--punkter", ""));
+  else if (arg.includes("--korning")) { const r = await korning(v("--ut", "mn"), v("--punkter", ""), v("--stamp", korningFor(new Date()))); if (!r) process.exit(3); }
+  else { console.error("kör: metnordic-live.ts --mat [--ut <mapp>] [--rot <repo>] | --dygn <dag> --punkter <csv> [--ut <mapp>] | --korning [--stamp <stämpel>] --punkter <csv> [--ut <mapp>] | --sjalvtest"); process.exit(2); }
 }

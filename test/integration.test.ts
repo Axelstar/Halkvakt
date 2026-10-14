@@ -1380,3 +1380,32 @@ test("#543 anropsfelen: jobbet ur processnumret, lyckade bort, misslyckade spara
     await pool.end();
   }
 });
+
+// KANDIDATEN LIVE (kort #343 steg 3, DECISIONS #558): sql/050 migrerar mot riktig PostGIS, upserten på (tid, punkt) skriver över, och
+// gallringen tar bara det gamla — PH efter två dygn, värdet efter tre.
+test("#343 kandidat_ph och kandidat_live: migrationen, upserten och gallringen", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  try {
+    for (const f of ["001_init.sql", "050_kandidat_live.sql"]) await pool.query(readFileSync(new URL("../sql/" + f, import.meta.url), "utf8"));
+    await pool.query("DELETE FROM kandidat_ph WHERE punkt LIKE 'KL_%'"); await pool.query("DELETE FROM kandidat_live WHERE punkt LIKE 'KL_%'");
+    const sats = `INSERT INTO kandidat_ph (korning, tid, punkt, ts_fysik, ph) SELECT * FROM UNNEST($1::timestamptz[], $2::timestamptz[], $3::text[], $4::real[], $5::real[])
+      ON CONFLICT (tid, punkt) DO UPDATE SET korning = EXCLUDED.korning, ts_fysik = EXCLUDED.ts_fysik, ph = EXCLUDED.ph`;
+    await pool.query(sats, [["2026-10-20T06:00:00Z", "2026-10-20T06:00:00Z"], ["2026-10-20T12:00:00Z", "2026-10-20T12:00:00Z"], ["KL_A", "KL_B"], [-1.5, 0.5], [-1.0, 0.8]]);
+    await pool.query(sats, [["2026-10-20T12:00:00Z"], ["2026-10-20T12:00:00Z"], ["KL_A"], [-1.4], [-0.9]]);
+    const r = await pool.query("SELECT punkt, ph, korning FROM kandidat_ph WHERE punkt LIKE 'KL_%' ORDER BY punkt");
+    assert.deepEqual(r.rows.map((x) => [x.punkt, x.ph]), [["KL_A", -0.9], ["KL_B", 0.8]], "upserten skriver över KL_A och behåller KL_B");
+    await pool.query(`INSERT INTO kandidat_live (tid, punkt, ph, pg, ra, ank_km, pb) VALUES
+      (now() - interval '4 days', 'KL_gammal', 0, 0, 0, 1, 0), (now() - interval '1 hour', 'KL_ny', 0, 0, NULL, NULL, 0)`);
+    await pool.query(`INSERT INTO kandidat_ph (korning, tid, punkt, ts_fysik, ph) VALUES (now() - interval '3 days', now() - interval '3 days', 'KL_gammal', 0, 0)`);
+    const g = await pool.query("SELECT gallra_kandidat()::int AS n");
+    assert.equal(g.rows[0].n, 2, "gallringen tar det fyra dygn gamla värdet och den tre dygn gamla PH:n, inget annat");
+    const kvar = await pool.query("SELECT punkt FROM kandidat_live WHERE punkt LIKE 'KL_%' ORDER BY punkt");
+    assert.deepEqual(kvar.rows.map((x) => x.punkt), ["KL_ny"], "det färska värdet står kvar, också utan RÅ");
+    assert.equal((await pool.query("SELECT gallra_kandidat()::int AS n")).rows[0].n, 0, "omkörningen tar inget");
+  } finally {
+    await pool.query("DELETE FROM kandidat_ph WHERE punkt LIKE 'KL_%'").catch(() => {}); await pool.query("DELETE FROM kandidat_live WHERE punkt LIKE 'KL_%'").catch(() => {});
+    await pool.end();
+  }
+});
