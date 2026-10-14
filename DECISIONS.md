@@ -12339,6 +12339,9 @@ förregistrering före första körningen.
   dygnen fyllda till senaste katalogtimme; del A inom 10 min; PH vid alla punkter utan luckor, inom −30…+20 °C; `kandidat_ph`
   83 000 rader per körning. **Del B:** 700–850 ankare (grind A:s population just nu), RÅ vid de flesta punkter (inom 50 km), PB inom
   −30…+20 °C, timmen inom 2 min. Faller ett tal utanför läses källan först. Inget är en dom.
+- **Vakten i del A (steg 5), lagd 14/10 innan första körningen:** saknade timmar fylls framåt, men är mer än 1 % av fönstrets punkttimmar
+  ifyllda räknas inget — fysiken får inte drivas 45 dygn på ett väder som står still. Självtestet fäller ett saknat dygn (2,2 %) och
+  släpper en saknad timme; MAX_IFYLLT 0,01 är ett tal valt före körningen, inte mätt.
 - **Vad som inte görs än:** migrationen 050 körs med DB-knappen på Bengts ord innan första körningen; pulsklockans rader
   (`scripts/pulsklocka.ts` och ett pg_cron-jobb som sql/048) läggs när första körningarna är bokförda; skuggans logg (steg 7) och
   publiceringen (steg 6) rör inte tabellerna än.
