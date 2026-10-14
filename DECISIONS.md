@@ -12664,3 +12664,32 @@ klockslag den inte bär.
 **Rättat 14/10 kväll (Bengt: *"gör 1,2,3"*):** posten stod som *"Beslut. Claude"*. Claude fattar inga beslut; det här är ett **förslag** som väntar på Bengts och Axels ja, och förregistreringen gäller inte förrän det givits.
 
 **Stomdokument:** KUV §5, SYS, BED §4.2, LIV.
+
+## #561 (14/10 2026) Paritetens tolerans godkänd, saknad PH hoppas tyst och räknat, och körningen hämtas i anrop om tre (kort #343, steg 1, 3 och 4)
+
+**Beslut.** Bengt 14/10: *"1 ja, 2 a, 3 ja"*, på de tre första frågorna efter granskningen av NIVA2-LIVE (bedömningen §4.2).
+
+1. **Paritetens tolerans (steg 4, #559) godkänd:** median ≤ 0,10 °C och p95 ≤ 0,30 °C för `ts_fysik` och `ph`, på de tre
+   förregistrerade körningarna. #559 är därmed inte längre bara ett förslag på den punkten. Knappen `kuvos-paritet` trycks på Bengts ord.
+   Axel ser beslutet i §4.2; det var hans och Bengts fråga, och Bengt svarade.
+2. **Saknad PH (steg 3) — (a), tyst och räknad.** `kandidat-timme.yml`: ger `kandidat-db.ts ph` kod 3 (ingen PH för timmen) läser
+   flödet del A:s senaste körning. **Har den fallit eller pågår förklarar den luckan:** timmen hoppas över grönt, med en notis
+   `HOPPAD` och en rad i sammanfattningen, och stegen efter (del B, skrivningen, gallringen) hoppas över. **Har den lyckats och PH ändå
+   saknas är kedjan trasig, och jobbet blir rött.** Det andra villet lades till av Claude i samma varv: utan det kunde del B tiga för
+   alltid medan allt såg grönt ut — mätvakten vaktar att del A går, men inte att del A:s lyckade körning faktiskt skrivit timmen. Kan
+   flödet inte läsa del A:s läge räknas det som förklarat (tyst), och notisen säger *okänd*. Provat lokalt i sex fall med låtsade
+   `node` och `gh` (föll, lyckades, pågår, gh svarar inte, PH finns, läsningen föll av annat skäl): utfallet rätt i alla sex. Flödet
+   behöver nu rättigheten `actions: read`. Räkningen: antalet körningar med notisen `HOPPAD`.
+3. **Hämtningen (steg 1) — ja, anrop om tre.** `PER_ANROP_LIVE = 3` i `ingest/metnordic-live.ts` (78 MB per anrop i stället för
+   158), körningens 18 steg i sex anrop. Kuvösens `PER_ANROP = 6` i `kuvos/metnordic-prognos.ts` är orörd, så pariteten rörs inte —
+   samma data hämtas, bara i mindre bitar. Självtestets facit är skrivet som tal (8 anrop i mätningen, 6 prognosanrop, 6 i
+   körningen), inte ur konstanten; motprovet med sex steg per anrop fälls på tre punkter.
+
+**Vad det inte ändrar.** Timeouten (180 s), omhämtningarna (tre), och att hämtningen väntar in varje anrop innan nästa (MET:s villkor).
+En server som stannar helt botas inte av mindre anrop; den syns nu som en fallen del A, som mätvakten larmar på, och en tyst timme i
+del B.
+
+**Bevis som återstår:** nästa lyckade del A på de mindre anropen, och nästa timkörning av del B som antingen hoppar med notisen eller
+skriver `kandidat_live`.
+
+**Stomdokument:** LIV, BED §4.2.

@@ -128,8 +128,8 @@
       <ul>
         <li>Kandidaten bär <b>ingen fukt</b>. Den ger ytans temperatur (<code>pb</code>), men punktmotorn varnar bara vid
           <code>yta ≤ 1 °C och fukt</code>. Regeln (val 2) måste säga varifrån fukten kommer mellan stationerna.</li>
-        <li>Hämtningen tål inte MET:s långsamma ände: anrop om 158 MB mot en timeout på 180 s. Del A föll två gånger 14/10, och
-          utan PH blir varje timkörning av del B röd tills nästa lyckade del A.</li>
+        <li>Del A föll två gånger 14/10 på MET:s långsamma ände (anrop om 158 MB mot timeouten 180 s). Anropen är nu delade i tre
+          steg, och en timme utan PH hoppas tyst när del A förklarar den (DECISIONS #561); beviset är nästa lyckade del A.</li>
         <li>Appen har ingen karta. Kartan är webbsidan <code>karta.html</code>. I appen finns rösten och varningskortet.</li>
         <li>Kandidaten har aldrig dömts på en vägpunkt och är inte prövad mot vägpunktsgrinden. Talet 5,12 % gäller
           stationerna.</li>
@@ -183,13 +183,13 @@
       <li><span aria-hidden="true">◐</span> <b>Villkoret i motorn</b> <span style="color: var(--dampad, #4A5763)">pågår · engine/src/segment.ts:56–115 körs bara i skuggmotorn; förstärkarvillkoret finns inte i engine.ts</span></li>
       <li><span aria-hidden="true">○</span> <b>Testfall i tre språk</b> <span style="color: var(--dampad, #4A5763)">saknas · Bara test/segment.test.ts i TypeScript; ingen vektor eller port (segment.ts:7)</span></li>
       <li><span aria-hidden="true">○</span> <b>I appen</b> <span style="color: var(--dampad, #4A5763)">saknas · Aldrig röst ensam (TROSKLAR-SKUGGAN.md:148–151)</span></li>
-      <li><span aria-hidden="true">◐</span> <b>MET Nordic levande vid stationerna och väglagspunkterna (kort #343, steg 1)</b> <span style="color: var(--dampad, #4A5763)">pågår · Byggt 14/10 (ingest/metnordic-live.ts); mätt 38526162017 (DECISIONS #556); på körplatsen sedan 14/10 i del A var sjätte timme; MET:s villkor lästa 14/10 kväll (ingen parallell hämtning, NLOD / CC BY 4.0, följs); klart när hämtningen har en tidsbudget som tål MET:s långsamma ände — del A föll två gånger 14/10 på timeouts</span></li>
+      <li><span aria-hidden="true">◐</span> <b>MET Nordic levande vid stationerna och väglagspunkterna (kort #343, steg 1)</b> <span style="color: var(--dampad, #4A5763)">pågår · Byggt 14/10 (ingest/metnordic-live.ts); mätt 38526162017 (DECISIONS #556); på körplatsen sedan 14/10 i del A var sjätte timme; MET:s villkor lästa 14/10 kväll (ingen parallell hämtning, NLOD / CC BY 4.0, följs); anropen delade i tre steg (78 MB) på Bengts ja efter två fall 14/10 (DECISIONS #561); klart när del A lyckats på dem</span></li>
       <li><span aria-hidden="true">✓</span> <b>Historien för uppstarten: 45 dygns MET Nordic-analys vid punkterna (kort #343, steg 2)</b> <span style="color: var(--dampad, #4A5763)">klart · Körning 38530312850 på 7a51a59, klar 14/10 11:11 UTC (DECISIONS #556): fem delar, 1 080 timmar, 0 saknade, 28,4 GB på 3 h 21 min, ett avkortat svar hämtat om; alla i releasen metnordic-live-2026-27 med metnordic_punkter.csv</span></li>
       <li><span aria-hidden="true">✓</span> <b>Kedjan på körplatsen, del A: fysiken och rättelsen vid alla punkter (kort #343, steg 3)</b> <span style="color: var(--dampad, #4A5763)">klart · Byggd 14/10 (fysik/live/kandidat_fysik.py, självtest i ci); första skarpa körningen 38599945843 på 048f3c6 (DECISIONS #558): 13 714 punkter, PH −3,2…+14,1 °C utan luckor, 82 284 rader i kandidat_ph, kedjan 50 s, modellen ur hinken med sha256 lika</span></li>
       <li><span aria-hidden="true">✓</span> <b>Rörledningen: indatan, den levande hämtningen, tabellerna och flödena (kort #343, steg 3)</b> <span style="color: var(--dampad, #4A5763)">klart · Byggd 14/10 med självtest i ci (indata.py, metnordic-live.ts --dygn/--korning, kandidat-db.ts, sql/050, kandidat-fysik.yml, kandidat-timme.yml), förregistrerad under DECISIONS #558; migrationen körd (DB-knappen 38537499021), del A skarp 38599945843 (82 284 rader) och del B skarp 38604051356 på 470d791: 765 ankare, RÅ vid 13 705 av 13 714, PB −2,3…+13,5 °C, 31 s, 13 714 rader i kandidat_live</span></li>
       <li><span aria-hidden="true">✓</span> <b>Kandidatens takt i databasens klocka (kort #343, steg 3)</b> <span style="color: var(--dampad, #4A5763)">klart · puls-kandidat-fysik 13 */6 * * * och puls-kandidat-timme :43 (scripts/pulsklocka.ts, c5504ee), skrivna i cron.job och lästa tillbaka (38633819536); vakthunden deployad och golvet bevisat i drift (38632391098: pulsjobb 14 aktiva, golv 14, 19:23 och 20:07); mätvakten läser del A:s kadens (körningen 21:07: &quot;kandidat-fysik: senaste körningen failure&quot; i stället för &quot;kadensen okänd&quot;)</span></li>
-      <li><span aria-hidden="true">◐</span> <b>Pariteten: den levande kedjan mot kuvösens frysta procedur (kort #343, steg 4)</b> <span style="color: var(--dampad, #4A5763)">pågår · Byggd och förregistrerad 14/10 (fysik/live/paritet.py med självtest och två mutationer i ci, scripts/matningar/kuvos-paritet-2026-10-14.ts, kuvos.yml-valet kuvos-paritet; DECISIONS #559): väg A är kuvösens egen prognoslage med kandidatens ena modell i alla fem folds, väg B kandidat_fysik.kor på samma analys och modell, tre körningar i vintern 24/25, tolerans median ≤ 0,10 °C och p95 ≤ 0,30 °C som förslag, väntar på Axels och Bengts godkännande; klart när knappen är tryckt och domen bokförd</span></li>
-      <li><span aria-hidden="true">◐</span> <b>Vakterna: värdevaktens spann för kandidatens fält (kort #343, steg 5)</b> <span style="color: var(--dampad, #4A5763)">pågår · Spannen skrivna 14/10 (scripts/vardevakten.ts) och besiktigade (38637169663): kandidatens sju fält inom spann; klart när färskhetsregeln för det som publiceras finns och frågan om saknad PH är avgjord</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Pariteten: den levande kedjan mot kuvösens frysta procedur (kort #343, steg 4)</b> <span style="color: var(--dampad, #4A5763)">pågår · Byggd och förregistrerad 14/10 (fysik/live/paritet.py med självtest och två mutationer i ci, scripts/matningar/kuvos-paritet-2026-10-14.ts, kuvos.yml-valet kuvos-paritet; DECISIONS #559): väg A är kuvösens egen prognoslage med kandidatens ena modell i alla fem folds, väg B kandidat_fysik.kor på samma analys och modell, tre körningar i vintern 24/25, tolerans median ≤ 0,10 °C och p95 ≤ 0,30 °C godkänd av Bengt 14/10 (DECISIONS #561); klart när knappen är tryckt och domen bokförd</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Vakterna: värdevaktens spann för kandidatens fält (kort #343, steg 5)</b> <span style="color: var(--dampad, #4A5763)">pågår · Spannen skrivna 14/10 (scripts/vardevakten.ts) och besiktigade (38637169663): kandidatens sju fält inom spann; saknad PH avgjord 14/10 (DECISIONS #561: tyst och räknad när del A förklarar den, röd annars); klart när färskhetsregeln för det som publiceras finns</span></li>
       <li><span aria-hidden="true">◐</span> <b>Förregistreringen för vintern 2026/27 (kort #343, steg 8)</b> <span style="color: var(--dampad, #4A5763)">pågår · Utkastet skrivet 14/10 (DECISIONS #560): kandidatens identitet (modell.pkl:s sha256), den levande kedjan som räknare och domen på det kedjan räknade vid timmen, måtten oförändrade, domfönstret från signeringens dag, RÅ som kontroll och reserv, och det väntade felet 5,12 % mot taket 5 % skrivet som förväntan; klart när Bengt och Axel svarat på (A) regeln och (B) populationen i bedömningens §4.2 och förregistreringen är signerad, senast 31/10</span></li>
     </ul>
   </details>
@@ -227,7 +227,8 @@
         varje timme och den senaste körningen, vid stationerna och vägpunkterna. Mätt 14/10: 158 MB och 9–145 s per anrop om sex
         timsteg, 2,5 GB per dygn med körningarna var sjätte timme (pariteten med kuvösen kräver samma körningar), alla spann inom.
         På schema sedan 14/10 (del A var sjätte timme). MET:s villkor lästa 14/10 kväll: ingen parallell hämtning, licens NLOD / CC BY 4.0
-        — båda följs. Kvar: tidsbudgeten. Anrop om 158 MB tål inte MET:s långsamma ände, och del A föll två gånger 14/10 (fråga i §4.2).</td>
+        — båda följs. Anropen delade i tre steg (78 MB i stället för 158) på Bengts ja 14/10 (DECISIONS #561), efter att del A fallit två gånger
+        på MET:s långsamma ände. Kvar: nästa lyckade del A som bevis.</td>
         <td>Claude</td><td><span class="dom vantar">på schema</span></td></tr>
       <tr><td class="nr">2</td><td>Uppstarten (1)</td><td>Fysiken bär ett tillstånd (djuptemperatur, snötäcke) och behöver 45 dygns
         väderhistorik (<code>tdeep</code>). Historiken hämtas en gång ur MET:s arkiv: 30/8–13/10 för alla punkter, i fem delar till den
@@ -245,17 +246,16 @@
         och <code>kandidat-timme.yml</code>. Migrationen är körd, och båda delarna gick skarpt 14/10: del A 13 714 punkter, PH
         −3,2…+14,1 °C utan luckor, 82 284 rader, kedjan 50 sekunder; del B 765 ankare, RÅ vid 13 705 av 13 714, PB −2,3…+13,5 °C,
         31 sekunder. Pulsklockan startar del A på <code>13 */6 * * *</code> (00:13, 06:13, 12:13, 18:13) och del B på
-        <code>:43</code> varje timme; vakthunden vaktar båda med golvet 14, bevisat i drift. Kvar: del A föll två gånger på MET-timeouts
-        14/10, och när PH saknas blir del B röd varje timme (fråga i §4.2: tyst och räknad, eller rött).</td>
+        <code>:43</code> varje timme; vakthunden vaktar båda med golvet 14, bevisat i drift. Saknas PH hoppar del B tyst och räknat över timmen om del A:s senaste körning
+        förklarar luckan (fallen eller pågår), och blir röd om del A lyckats ändå (DECISIONS #561).</td>
         <td>Claude; Bengt trycker</td><td><span class="dom vantar">båda delarna körda</span></td></tr>
       <tr><td class="nr">4</td><td>Paritetsprov (3)</td><td>Båda vägarna på samma körning, samma analys och samma modell: väg A är kuvösens egen slinga
         (<code>prognoslage</code>) med kandidatens ena modell, väg B den levande <code>kandidat_fysik.kor</code>; tre körningar i vintern
         24/25 (15/12, 15/1, 15/2). Annars är det som går live inte det som mättes. Byggd med självtest och två motprov (DECISIONS #559).
-        Toleransen median ≤ 0,10 °C och p95 ≤ 0,30 °C är Claudes förslag och godkänns av Axel och Bengt innan knappen trycks.</td>
+        Toleransen median ≤ 0,10 °C och p95 ≤ 0,30 °C är godkänd av Bengt 14/10 (DECISIONS #561); knappen trycks på hans ord.</td>
         <td>Claude, Axel läser</td><td><span class="dom vantar">byggd, otryckt</span></td></tr>
-      <tr><td class="nr">5</td><td>Vakter (3)</td><td>Spann i värdevakten för kandidatens sju fält: skrivna och besiktigade 14/10, alla inom spann. Kvar: en
-        färskhetsregel för det som publiceras (gammalt eller ofullständigt väder ⇒ kandidaten tyst, aldrig fel), och vad en saknad PH
-        ska betyda.</td>
+      <tr><td class="nr">5</td><td>Vakter (3)</td><td>Spann i värdevakten för kandidatens sju fält: skrivna och besiktigade 14/10, alla inom spann. Saknad PH är avgjord (#561). Kvar: en färskhetsregel för det som publiceras (gammalt eller
+        ofullständigt väder ⇒ kandidaten tyst, aldrig fel).</td>
         <td>Claude</td><td><span class="dom vantar">delvis</span></td></tr>
       <tr class="grupp"><td colspan="5">B. Publicera och mät</td></tr>
       <tr><td class="nr">6</td><td>Ny nyckel i live.json (3, 5, val 2)</td><td><code>publicera</code> läser tabellen och lägger till en
@@ -344,8 +344,7 @@
   <ol>
     <li>Svaren på de fem valen, tillsammans med Bengt. Val 2, regeln, är Axels att skriva.</li>
     <li>S3 till App Store: arkivera 0.3.12 (24) och skicka in den. Det ger en prognosvarning live medan resten byggs.</li>
-    <li>Godkänna paritetens tolerans (median ≤ 0,10 °C, p95 ≤ 0,30 °C) eller ändra den, innan knappen trycks.</li>
-    <li>Läsa paritetsprovet (steg 4) innan något publiceras: det är Axels kedja och Axels kandidat.</li>
+        <li>Läsa paritetsprovet (steg 4) innan något publiceras: det är Axels kedja och Axels kandidat.</li>
     <li>Signaturen i TROSKLAR-SKUGGAN §4(a) om val 1(a) väljs.</li>
     <li>Godkänna förregistreringen för 2026/27 senast 31/10 (steg 8).</li>
     <li>Arkivera och skicka in bygget 0.3.13 (25) när steg 10–11 är gröna (steg 12).</li>
