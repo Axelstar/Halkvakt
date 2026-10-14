@@ -12385,4 +12385,27 @@ kandidat-fysik"*).
 - 132 punkter saknar ÅDT och 137 tunga fordon i vägdatan; kända luckor som modellen tar som NaN, inte något nytt.
 - Ingen dom: talen säger att rörledningen bär, inte att kandidaten är bra. Pariteten (steg 4) är provet.
 
+**Tillägg 14/10: första skarpa körningen av del B, och pulsklockans rader** (körning 38604051356 på 470d791, 17:08 UTC; Bengt:
+*"slå ihop 952 och tryck db-knappen las och tryck kandidat timme"*).
+
+| förväntan (lagd före körningen) | utfall | |
+| :-- | :-- | :-- |
+| 700–850 ankare (grind A:s population just nu) | **765** | inom |
+| RÅ vid de flesta punkter (inom 50 km) | **13 705 av 13 714** (99,93 %) | inom |
+| PB inom −30…+20 °C | **−2,3…+13,5 °C** | inom |
+| timmen inom 2 min | **31 s** totalt, varav aritmetiken 2 s | inom |
+| `kandidat_live` en rad per punkt | **13 714** skrivna; gallringen tog 0 rader (inget är äldre än tre dygn än) | inom |
+
+- Timmen var 2026-10-14T17:00:00Z; PH kom ur `kandidat_ph` som del A skrev 16:59. Grannfelets medel var **+0,42 °C** —
+  fysiken låg alltså i snitt 0,42 °C under det mätarna visade vid ankarna, och rättelsen drar PB uppåt med den vikten.
+- De 9 punkter som inte fick RÅ saknar ankare inom 50 km. De behåller PG (fysik + grannarnas fel), som blandningen ger
+  full vikt när ankaravståndet är stort — samma väg som kuvösen.
+- **Pulsklockans rader** (steg 4): `puls-kandidat-fysik` på **:13 efter 00, 06, 12 och 18 UTC** och `puls-kandidat-timme` på
+  **:43 varje timme**. Takten följer +6 h-klassen (#519): vid :13 är körningen just sex timmar gammal, och del A skriver då
+  precis de sex timmar som följer (R+6…R+11, dvs. 06–11 för körningen 00Z), så täckningen blir obruten dygnet runt. Del B
+  ligger en halvtimme efter del A, när PH för timmen finns. Minuterna är lediga i databasens klocka. `ANTAL_NYA` och
+  vakthundens `PULS_GOLV` går 12 → 14 i samma commit (kontraktsgrinden kräver det); **vakthunden deployas först efter att
+  knappen skapat jobben**, annars larmar check 6a på två jobb som inte finns än.
+- Ingen dom. Talen säger att rörledningen bär timme för timme, inte att kandidaten är bra. Pariteten (steg 5) är provet.
+
 **Stomdokument:** LIV, BED §4.2, SYS.
