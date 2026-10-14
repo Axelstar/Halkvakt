@@ -17,7 +17,7 @@ type Sida = { fil: string; namn: string };
 type Inlagg = { id: string; text: string };
 type Rad = { inga: true; skal: string } | { inga: false; koder: string[] };
 
-/** Filer som dokumentsynkens gren får röra utöver de sju (#484 (d)). DECISIONS.md hör inte hit: ett beslut väntar på Bengts ord.
+/** Filer som dokumentsynkens gren får röra utöver stomdokumenten (#484 (d)). DECISIONS.md hör inte hit: ett beslut väntar på Bengts ord.
  *  docs/takten.json skrivs av projektkartan.ts ur git-historiken (#515) och ändras när main flyttat (Bengt 11/10, #518). */
 const OCKSA = ["docs/KALENDERN.md", "TAVLA.md", "STATUS.md", "docs/projektkartan.json", "docs/PROJEKTKARTAN.html", "docs/kortkartan.json", "docs/takten.json"];
 const RUBRIK = /^## #(\d+[a-z]?(?:-[a-zåäö]+)?)(?![\w-])/gmu;   // samma som scripts/beslutsnumren.ts
@@ -72,7 +72,7 @@ export function kuvosRegel(nya: Inlagg[], filer: string[]): string[] {
     `(${nya.map((n) => "#" + n.id).join(", ")}) namnger KUV — läsningen bokförs på kuvössidan och i kuvösblocket i projektkartan (DECISIONS #489)`];
 }
 
-/** Filerna dokumentsynkens gren får röra: de sju och OCKSA. */
+/** Filerna dokumentsynkens gren får röra: stomdokumenten (kortkartan.json sidor) och OCKSA. */
 export function tillatna(filer: string[], sidor: Record<string, Sida>): string[] {
   const ok = new Set([...Object.values(sidor).map((s) => s.fil), ...OCKSA]);
   return filer.filter((f) => !ok.has(f));

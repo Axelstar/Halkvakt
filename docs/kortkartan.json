@@ -7,7 +7,8 @@
     "BED": { "fil": "docs/BEDOMNING-2026-09-15.md", "namn": "Bedömningen" },
     "KAR": { "fil": "docs/INTEGRATIONSKARTAN.md", "namn": "Integrationskartan" },
     "KUV": { "fil": "docs/KUVOSEN.html", "namn": "Halkvaktens kuvös", "url": "https://claude.ai/artifact/1xvv4hydYbfpF5eXFgLcxh" },
-    "FAV": { "fil": "docs/FAVORITER.html", "namn": "Halkvaktens favoriter", "url": "https://claude.ai/artifact/EJYcQFCyKYd9BgGcYkCMyT" }
+    "FAV": { "fil": "docs/FAVORITER.html", "namn": "Halkvaktens favoriter", "url": "https://claude.ai/artifact/EJYcQFCyKYd9BgGcYkCMyT" },
+    "LIV": {"fil": "docs/NIVA2-LIVE.html", "namn": "Nivå 2+blandning live", "url": "https://claude.ai/artifact/Wsuxr3UTG7d7axekXireqg"}
   },
   "kort": {
     "#262": ["APP 8", "BED 2.1"],
@@ -37,9 +38,9 @@
     "#328": ["APP 6"],
     "#330": ["KUV 5"],
     "#331": ["KUV 5"],
-    "#333": ["APP 9"],
-    "#343": ["SYS 3", "APP 3", "BED 4.2"],
-    "#342": ["KUV 5", "BED 4.2"],
+    "#333": ["APP 9", "LIV 3"],
+    "#343": ["SYS 3", "APP 3", "BED 4.2", "LIV 3"],
+    "#342": ["KUV 5", "BED 4.2", "LIV 3"],
     "#285": ["APP 7", "FAV 8", "BED 4.2"],
     "#277": ["APP 9"],
     "#276": ["MAT 2", "APP 10", "BED 4.2", "FAV 3"],
