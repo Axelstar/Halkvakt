@@ -1521,3 +1521,73 @@ test("#571 funktionsnyckel: prövningen, längdkravet och bytets vakt", { skip: 
     await pool.end();
   }
 });
+
+// DECISIONS #573 (sql/055, sql/056): kandidatens regel på ett ställe. Ett fall per gräns, långt från provens övriga stationer
+// (70° N, 30° Ö): Våt varnar, fläckvis Våt inte; radarn 0,6 varnar, 0,4 inte, 0,7 för 90 minuter sedan inte; en varm station på
+// 10 km vetar, på 20 km inte, och en station i karantän räknas inte; en yta över 0 kommer inte med; och regeln tiger helt när
+// kandidatens timme är ofullständig eller för gammal.
+test("#573 kandidat_regel: ytan, fukten, radarn, vetot, vakterna och färskheten", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const st = (km: number) => 70 + km / 111.2;   // en punkt km norr om 70° N
+  const stad = async () => {
+    await q("DELETE FROM kandidat_live WHERE punkt LIKE 'v%'");
+    await q("DELETE FROM vagpunkt WHERE punkt LIKE 'vT%'");
+    await q("DELETE FROM road_conditions WHERE segment_id LIKE '9990%'");
+    await q("DELETE FROM radar_precip WHERE segment_id LIKE '9990%'");
+    await q("DELETE FROM weather_observations WHERE station_id LIKE 'RT%'");
+  };
+  try {
+    for (const f of ["001_init.sql", "008_rain_sum.sql", "009_radar_precip.sql", "030_langsam_vakt.sql", "050_kandidat_live.sql",
+                     "055_vagpunkter.sql", "056_kandidat_regel.sql"])
+      await q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+    await stad();
+    // Punkterna: [punkt, sträcka, km norr om 70° N, pb]
+    const P: [string, string, number, number][] = [
+      ["vT01", "99901", 0, -1.0],   // Våt ⇒ varnar
+      ["vT02", "99902", 0, -1.0],   // bara fläckvis Våt ⇒ torr
+      ["vT03", "99903", 0, -0.5],   // radar 0,6 för 30 min sedan ⇒ varnar
+      ["vT04", "99904", 0, -0.5],   // radar 0,4 ⇒ torr
+      ["vT05", "99905", 0, -0.5],   // radar 0,7 för 90 min sedan ⇒ torr
+      ["vT06", "99901", 200, -2.0], // Våt, varm station 10 km bort ⇒ veto
+      ["vT07", "99901", 400, -2.0], // Våt, varm station 20 km bort ⇒ varnar
+      ["vT08", "99901", 600, -2.0], // Våt, varm station 5 km bort men i karantän ⇒ varnar
+      ["vT09", "99901", 800, 0.5],  // ytan över 0 ⇒ inte med
+    ];
+    for (const [p, s, km, ] of P) await q("INSERT INTO vagpunkt (punkt, segment_id, lon, lat) VALUES ($1, $2, 30, $3)", [p, s, st(km)]);
+    await q(`INSERT INTO road_conditions (segment_id, condition_code, condition_text, condition_info) VALUES
+      ('99901', 1, 'Normalt', '{Våt}'), ('99902', 1, 'Normalt', '{"fläckvis Våt"}'), ('99903', 1, 'Normalt', '{Torrt}'),
+      ('99904', 1, 'Normalt', '{Torrt}'), ('99905', 1, 'Normalt', '{Torrt}')`);
+    await q(`INSERT INTO radar_precip (segment_id, observed_at, rate_max_mmh, rate_mean_mmh) VALUES
+      ('99903', now() - interval '30 minutes', 1, 0.6), ('99904', now() - interval '30 minutes', 1, 0.4),
+      ('99905', now() - interval '90 minutes', 1, 0.7)`);
+    const obs = "INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c) VALUES ($1, 'prov', ST_SetSRID(ST_MakePoint(30, $2), 4326), $3, $4, $5)";
+    await q(obs, ["RT1", st(210), new Date(Date.now() - 20 * 60e3), 3.0, 1.0]);   // 10 km från vT06
+    await q(obs, ["RT2", st(420), new Date(Date.now() - 20 * 60e3), 3.0, 1.0]);   // 20 km från vT07
+    await q(obs, ["RT3", st(605), new Date(Date.now() - 20 * 60e3), 3.0, 1.0]);   // 5 km från vT08 …
+    for (const d of [1, 2, 3]) await q(obs, ["RT3", st(605), new Date(Date.now() - d * 86400e3), -10.0, 5.0]);   // … men i karantän
+    const tid = (await q("SELECT date_trunc('hour', now()) AS t")).rows[0].t;
+    const sattPb = (t: Date) => q(`INSERT INTO kandidat_live (tid, punkt, pb) SELECT $1, v.punkt, $2 FROM vagpunkt v WHERE v.punkt NOT LIKE 'vT%'
+      ON CONFLICT (tid, punkt) DO NOTHING`, [t, 5]);
+    const sattTest = (t: Date) => Promise.all(P.map(([p, , , pb]) => q("INSERT INTO kandidat_live (tid, punkt, pb) VALUES ($1, $2, $3)", [t, p, pb])));
+    const regel = async () => Object.fromEntries((await q("SELECT punkt, utfall, flackvis_vat, veto_station FROM kandidat_regel() WHERE punkt LIKE 'vT%'"))
+      .rows.map((r) => [r.punkt, r.utfall + (r.flackvis_vat ? "+fläckvis" : "") + (r.veto_station ? `@${r.veto_station}` : "")]));
+    // Ofullständig timme: bara provpunkterna ⇒ inga rader.
+    await sattTest(tid);
+    assert.deepEqual(await regel(), {}, "ofullständig timme ⇒ regeln tiger");
+    // Fullständig timme.
+    await sattPb(tid);
+    assert.deepEqual(await regel(), {
+      vT01: "varnar", vT02: "torr+fläckvis", vT03: "varnar", vT04: "torr", vT05: "torr",
+      vT06: "veto@RT1", vT07: "varnar", vT08: "varnar",
+    });
+    // För gammal timme: allt flyttat tre timmar bakåt ⇒ inga rader.
+    await q("UPDATE kandidat_live SET tid = tid - interval '3 hours' WHERE punkt LIKE 'v%' AND tid = $1", [tid]);
+    assert.deepEqual(await regel(), {}, "en timme som är tre timmar gammal ⇒ regeln tiger");
+  } finally {
+    await stad().catch(() => {});
+    await pool.end();
+  }
+});
