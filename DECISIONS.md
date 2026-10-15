@@ -13122,3 +13122,19 @@ när ingen läser den. Varje anrop till de nio gör ett PostgREST-anrop till (n�
 knappen.
 
 **Stomdokument:** SYS, BED §4.2.
+
+## #572 (15/10 2026) Kandidatens stationsvärden sparas i hinken hela vintern (kort #349, #343)
+
+**Bengts ord 15/10:** *"spara i hinken där det finns mer plats"*, på frågan i bedömningen §4.2 (DECISIONS #569): var ska
+kandidatens värden vid stationerna bo hela vintern, när `kandidat_live` bara sparas sex timmar (#569)?
+
+**Beslutet.** Kandidatens timvärden vid stationerna (ph, pg, ra, ank_km, pb per station och timme, ungefär 760 × 24 rader per dygn)
+exporteras per dygn till hinken `arkiv` med samma väg som väderarkivet och trendtabellerna (export, återläsning mot radantalet,
+bokföring). Databasen gallrar dem efter exporten. Hinken har 281 av 1 024 MB; vinterns stationsvärden blir några tiotal MB packade.
+Grind A i mars läser dem ur hinken. Vägpunkternas värden sparas inte så: deras dom går genom skuggloggens varningar (grind B och C).
+
+**Bygget (kort #349), före förregistreringens signering 31/10:** stationsraderna i `kandidat_live` behålls tills dygnet är exporterat
+(vägpunkterna sex timmar som nu), och exporten och bokföringen följer sql/053:s mönster. *Verify:* ett exporterat dygn med samma
+radantal som databasen, läst tillbaka ur hinken, och gallringen som bara tar exporterade dygn.
+
+**Stomdokument:** KUV, LIV, BED §4.2.
