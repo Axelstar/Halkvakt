@@ -13145,3 +13145,35 @@ Grind A i mars läser dem ur hinken. Vägpunkternas värden sparas inte så: der
 radantal som databasen, läst tillbaka ur hinken, och gallringen som bara tar exporterade dygn.
 
 **Stomdokument:** KUV, LIV, BED §4.2.
+
+## #573 (15/10 2026) Kandidatens regel byggs i databasen, skuggan loggar också de tystade fallen, texten godkänd (kort #343)
+
+**Bengts ord 15/10:** *"ja 1, ja 2, texten ok"*, på Claudes förslag samma dag:
+1. **Regeln och skuggloggen börjar nu** (NIVA2-LIVE: regeln före steg 6 och 7). Takten behöver mätas två till tre veckor före App Review.
+2. **Skuggan loggar också de fall som stationsvetot tystar** (station, avstånd, yta), som följdfrågan i #566 — bredvid de fall där
+   fukten fäller med radarvärdet (#565).
+3. **Texten godkänd:** *"Halkvakt tror: halka framöver."* — i samma form som efterhalkans *"Halkvakt tror: frysrisk framöver."* (motorns
+   röst är svensk). En engelsk text har inte visats; Claudes förslag *"Halkvakt thinks: slippery ahead."* står i bedömningen §4.2.
+
+**Del 1 byggd** (regeln; del 2, skuggloggen, följer):
+- `sql/055_vagpunkter.sql`, GENERERAD av `scripts/vagpunkter-sql.ts` ur `data/vagdata/vaglagspunkter.json` (`--check` i ci): de
+  12 960 vägpunkterna med kandidatens namn (`v` + radnumret), sträckan (id:t före `@`, samma `segment_id` som `road_conditions` och
+  `radar_precip` — 818 sträckor, kontrollerat i databasen 15/10) och läget.
+- `sql/056_kandidat_regel.sql`: `kandidat_regel()`, talen på ett ställe — yta ≤ 0 °C; fukt = `Våt` i väglagets `condition_info`
+  (exakt) eller radarn `rate_mean_mmh` ≥ 0,5 mm/h någon gång de senaste 60 minuterna; veto = en station inom 15 km som mätt yta över
+  +2 °C de senaste 45 minuterna, med vagpunkt_ankare():s vakter (#75, karantänen, den långsamma vakten); färskhet = kandidatens
+  senaste timme högst två timmar gammal och med minst 95 % av vägpunkterna, annars tiger regeln helt (#562 punkt 5, steg 5:s
+  färskhetsregel). Varje kall vägpunkt får utfallet `varnar`, `veto` eller `torr`, med radarvärdet, vetostationen och flaggan
+  *fläckvis Våt*. `varma` är MATERIALIZED (läxan i #567).
+- Integrationsprovet prövar ett fall per gräns: Våt varnar, fläckvis Våt inte; radarn 0,6 varnar, 0,4 inte, 0,7 för 90 minuter sedan
+  inte; en varm station på 10 km vetar, på 20 km inte, en station i karantän räknas inte; en yta över 0 kommer inte med; regeln tiger
+  när timmen är ofullständig eller tre timmar gammal.
+
+**Fynd i databasen 15/10, före bygget:** `condition_text` bär bara *Normalt* (737) och *Besvärligt (risk för)* (81); *Våt* står i
+`condition_info` (173 sträckor, och *fläckvis Våt* på 418). Regeln läser `condition_info`. Att *fläckvis Våt* inte räknas är #562:s
+lydelse; frågan om den ska räknas står i §4.2, och skuggan bär flaggan så att vintern visar skillnaden.
+
+**Driftordning efter *slå ihop*:** DB-knappen `migrera sql/055` och `migrera sql/056`, med bevisrader som ger antal per utfall — inga
+värden.
+
+**Stomdokument:** KUV, LIV, BED §4.2.

@@ -39,6 +39,8 @@ jobs:
         run: node --experimental-strip-types scripts/bundle-skuggmotor.ts --check
       - name: publicera/index.ts i synk med snapshotkärnan + broarna (#74)
         run: node --experimental-strip-types scripts/bundle-publicera.ts --check
+      - name: sql/055 i synk med väglagspunkterna (#573)
+        run: node --experimental-strip-types scripts/vagpunkter-sql.ts --check
       - name: favoritprov/index.ts i synk med rapportkärnan, motorn och skuggans rutter (#529)
         run: |
           node --experimental-strip-types scripts/bundle-favoritprov.ts --check
