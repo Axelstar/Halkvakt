@@ -309,6 +309,77 @@ test("#83 arkivexporten: dygnet som text, bokföringen räknar om, raderingen ä
   }
 });
 
+// Kort #347 (sql/053, DECISIONS #569): trendtabellerna och radarn går samma väg som väderarkivet. Vitlistan stoppar andra
+// tabeller, filen bär dygnets värden i nyckelordning, bokföringen räknar om, och raderingen tar ett tabelldygn per anrop,
+// exporterar om ett dygn som vuxit och raderar aldrig det som inte står i en fil.
+test("#347 arkivexporten för trendtabellerna och radarn: vitlistan, filen, bokföringen och raderingen", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const ut = (s: string) => `DELETE FROM ${s}`;
+  try {
+    for (const f of ["001_init.sql", "009_radar_precip.sql", "017_trend_kandidater.sql", "018_trend_berakna.sql", "029_brott_index.sql",
+                     "030_langsam_vakt.sql", "053_arkiv_tabeller.sql"])
+      await pool.query(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+    await pool.query(ut("arkiv_export_tabell"));
+    const dag = (await pool.query(`SELECT ((now() - interval '40 days') AT TIME ZONE 'UTC')::date::text AS d`)).rows[0].d;
+    // Bara testets rader får finnas på testets dygn (andra prov lämnar rader på fasta datum).
+    for (const t of ["trend_kandidater", "trend_stigande", "radar_precip"])
+      await pool.query(`DELETE FROM ${t} WHERE (observed_at AT TIME ZONE 'UTC')::date = $1::date`, [dag]);
+    await pool.query(`INSERT INTO trend_kandidater (station_id, observed_at, surface_temp_c, air_temp_c, lutning15_c, utfall_rader)
+      SELECT 'AX' || (2 - i % 2), ($1::date + i * interval '5 hours' + interval '7 minutes') AT TIME ZONE 'UTC', -1.25 * i, 2.5, 0.125, i FROM generate_series(0, 2) i
+      UNION ALL SELECT 'AX1', now() - interval '1 day', 0, null, null, 0`, [dag]);
+    await pool.query(`INSERT INTO trend_stigande (station_id, observed_at, surface_temp_c) VALUES ('AX1', ($1::date + interval '3 hours') AT TIME ZONE 'UTC', 4.5)`, [dag]);
+    await pool.query(`INSERT INTO radar_precip (segment_id, observed_at, rate_max_mmh, rate_mean_mmh)
+      VALUES ('AXS', ($1::date + interval '1 hour') AT TIME ZONE 'UTC', 3.5, 0.75), ('AXS', ($1::date + interval '2 hours') AT TIME ZONE 'UTC', 0.25, 0.125)`, [dag]);
+    await assert.rejects(pool.query(`SELECT arkiv2_dygn('weather_observations', $1::date)`, [dag]), /okänd tabell weather_observations/);
+    const att = (await pool.query(`SELECT arkiv2_att_exportera('trend_kandidater', 100)::text AS d`)).rows.map((r) => r.d);
+    assert.ok(att.includes(dag), `dygnet ${dag} står i kö`);
+    const igar = (await pool.query(`SELECT ((now() - interval '1 day') AT TIME ZONE 'UTC')::date::text AS d`)).rows[0].d;
+    assert.ok(!att.includes(igar), "gårdagen är för ung");
+    // Filen: rubrikrad + en lista per rad, i nyckelordning (station, tid), med samma värden som tabellen.
+    const text: string = (await pool.query(`SELECT arkiv2_dygn('trend_kandidater', $1::date) AS t`, [dag])).rows[0].t;
+    const [hdrRad, ...rader] = text.split("\n");
+    const hdr = JSON.parse(hdrRad);
+    assert.equal(hdr[0], "station_id"); assert.ok(hdr.includes("lutning15_c") && hdr.includes("skriven_at"));
+    const db = (await pool.query(`SELECT station_id, observed_at, surface_temp_c::float8 AS y, air_temp_c::float8 AS l, utfall_rader FROM trend_kandidater
+      WHERE (observed_at AT TIME ZONE 'UTC')::date = $1::date ORDER BY station_id, observed_at`, [dag])).rows;
+    assert.equal(rader.length, 3, "tre rader efter rubriken");
+    rader.forEach((r, i) => {
+      const v = JSON.parse(r);
+      assert.equal(v[hdr.indexOf("station_id")], db[i].station_id);
+      assert.equal(new Date(v[hdr.indexOf("observed_at")]).getTime(), db[i].observed_at.getTime(), `rad ${i}: tiden`);
+      assert.equal(v[hdr.indexOf("surface_temp_c")], db[i].y, `rad ${i}: ytan`);
+      assert.equal(v[hdr.indexOf("utfall_rader")], db[i].utfall_rader);
+    });
+    // Bokföringen: fel radantal bokförs inte; rätt radantal bokförs och dygnet lämnar kön.
+    await assert.rejects(pool.query(`SELECT arkiv2_export_klar('trend_kandidater', $1::date, 2, 100, 'x', 'v')`, [dag]), /har 3 rader i databasen men filen bär 2/);
+    assert.equal((await pool.query(`SELECT arkiv2_export_klar('trend_kandidater', $1::date, 3, 100, 'x', 'v') AS n`, [dag])).rows[0].n, 3);
+    assert.equal((await pool.query(`SELECT arkiv2_export_klar('radar_precip', $1::date, 2, 50, 'r', 'v') AS n`, [dag])).rows[0].n, 2);
+    assert.ok(!(await pool.query(`SELECT arkiv2_att_exportera('trend_kandidater', 100)::text AS d`)).rows.some((r) => r.d === dag));
+    assert.ok((await pool.query(`SELECT arkiv2_att_exportera('trend_stigande', 100)::text AS d`)).rows.some((r) => r.d === dag),
+      "trend_stigande är inte exporterad och står kvar i sin kö");
+    // Raderingen: under gränsen inget, för ungt inget, sedan radarn före trendtabellen (dag, tabell), aldrig trend_stigande.
+    assert.match((await pool.query(`SELECT arkiv2_radera_exporterat(100000, 14) AS s`)).rows[0].s, /inget raderas/);
+    assert.match((await pool.query(`SELECT arkiv2_radera_exporterat(0, 50) AS s`)).rows[0].s, /inget exporterat tabelldygn äldre än 50/);
+    await pool.query(`INSERT INTO trend_kandidater (station_id, observed_at, surface_temp_c) VALUES ('AX3', ($1::date + interval '23 hours') AT TIME ZONE 'UTC', 1)`, [dag]);
+    assert.match((await pool.query(`SELECT arkiv2_radera_exporterat(0, 14) AS s`)).rows[0].s, /radar_precip: raderade 2 rader/);
+    assert.match((await pool.query(`SELECT arkiv2_radera_exporterat(0, 14) AS s`)).rows[0].s, /trend_kandidater .* har 4 rader, filen bara 3 — exporteras om/);
+    assert.match((await pool.query(`SELECT arkiv2_radera_exporterat(0, 14) AS s`)).rows[0].s, /inget exporterat tabelldygn/);
+    assert.equal((await pool.query(`SELECT count(*)::int AS n FROM trend_kandidater WHERE (observed_at AT TIME ZONE 'UTC')::date = $1::date`, [dag])).rows[0].n, 4, "ingen trendrad raderad");
+    assert.equal((await pool.query(`SELECT count(*)::int AS n FROM trend_stigande WHERE station_id = 'AX1'`)).rows[0].n, 1, "trend_stigande orörd");
+    assert.equal((await pool.query(`SELECT arkiv2_export_klar('trend_kandidater', $1::date, 4, 100, 'x2', 'v') AS n`, [dag])).rows[0].n, 4);
+    assert.match((await pool.query(`SELECT arkiv2_radera_exporterat(0, 14) AS s`)).rows[0].s, /trend_kandidater: raderade 4 rader/);
+    assert.equal((await pool.query(`SELECT count(*)::int AS n FROM trend_kandidater WHERE station_id LIKE 'AX%'`)).rows[0].n, 1, "bara gårdagens rad står kvar");
+    const e = (await pool.query(`SELECT tabell, raderade_rader FROM arkiv_export_tabell WHERE raderad IS NOT NULL ORDER BY tabell`)).rows;
+    assert.deepEqual(e, [{ tabell: "radar_precip", raderade_rader: 2 }, { tabell: "trend_kandidater", raderade_rader: 4 }]);
+  } finally {
+    for (const s of ["trend_kandidater WHERE station_id LIKE 'AX%'", "trend_stigande WHERE station_id LIKE 'AX%'", "radar_precip WHERE segment_id = 'AXS'", "arkiv_export_tabell"])
+      await pool.query(ut(s)).catch(() => {});
+    await pool.end();
+  }
+});
+
 // Kort #291 (sql/042, DECISIONS #450): exportfilen läses tillbaka. Ett dygn med de värden som är lätta att tappa — decimaler,
 // null, sant och falskt, kommatecken och citattecken i namnet, vind och sikt — exporteras, raderas och läses tillbaka, och
 // jämförs kolumn för kolumn. Jämförelsen själv prövas också: en ändrad rad måste synas på båda sidor.
