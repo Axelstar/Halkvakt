@@ -12751,3 +12751,112 @@ del B.
 skriver `kandidat_live`.
 
 **Stomdokument:** LIV, BED §4.2.
+
+## #562 (15/10 2026) Kandidaten blir en egen betavarning inom regel T; regeln, skuggloggen, grind A och avstängningen enligt Claudes rekommendation; snötäcket från säsongens början (kort #343)
+
+**Beslut.** Bengt 15/10, efter underlaget *Fyra beslut för kandidaten*: *"ja, (a) direkt och slå ihop 961, de övriga enligt din
+rekommendation och rätta snöfelet enligt din rekommendation"*. Bengt talade för båda (*"vi tror stenhårt på den här"*).
+
+1. **Formen (val 1): en egen betavarning, direkt** — utan webbkartan som villkor. Villkoret som står kvar är Bengts egen regel från
+   16/9 (#200): taket för hur ofta varningen får tala kommer ur uppmätt takt i skuggan, och den läses **innan bygget skickas till App
+   Review**. Skuggan loggar samtidigt som rösten byggs, så villkoret kostar ingen kalendertid.
+2. **Regeln (fråga 1):** kandidatens yta ≤ **0 °C** (Claudes föreslagna tal, antaget) **och** ett mätt fuktbesked — Trafikverkets
+   väglag *Våt* på punktens sträcka, eller radarn visar nederbörd över punkten senaste timmen — **och** ingen station inom ankarbandet
+   mätte yta över +2 °C inom ±45 minuter; märkt *modellerat*, aldrig *uppmätt*. Saknas fuktbesked tiger kandidaten. Radarns tröskel och
+   ankarbandet är Axels tal och står öppna (§4.2); radarns tröskel passerar värdevakten innan den bär något.
+3. **Skuggloggen (fråga 2): (c), sedan (a).** Regeln läggs på ett ställe, en funktion i databasen som både skuggan och publiceringen
+   anropar. Skuggan loggar kandidaten så fort regeln finns som utkast; domen räknar från signeringen; loggen är ett villkor för att
+   signera #560.
+4. **Grind A (fråga 3): (c).** Domen gäller den modell som är live, med samma tak. Förregistreringen säger att grind A vid stationerna är
+   en **övre gräns** för kvaliteten mellan stationerna (samma stationer, nytt år). En kontroll med regionmodeller körs i mars på vinterns
+   data och redovisas bredvid, inte som grind. Frågan om kandidaten fungerar mellan stationerna avgörs av grind B.
+5. **Avstängningen (val 4):** nyckeln tas bort ur publiceringen, inte hela publiceringen; kandidaten tystnar också av sig själv när vädret
+   är gammalt eller ofullständigt; att tysta kräver en av Bengt och Axel, att starta igen kräver båda. Provas i drift före App Review.
+6. **Snöfelet: väg 3** — bara snötäcket ackumuleras från säsongens början; resten av kolumnen stannar på 45 dygn. Byggt i
+   `fysik/live/kandidat_fysik.py` (`snotacke_fore`, `bygg_F(..., swe0=)`), med självtest mot ett oberoende facit och motprov.
+
+**Regel T — ett hinder som Claude hittade i samma varv och som ingen signatur tar bort.** TROSKLAR-KOMBINATIONEN §6 (Axels lydelse,
+fastställd av Bengt 16/9, #220): *"En storhet som inte kan motbevisas av en mätning får inte utlösa en varning. Extrapolation faller."*
+§10: regeln *"får skärpas men aldrig mjukas upp — **oavsett signaturer** … Regeln har inga förbehållna öppningar."* Kandidatens yta långt
+från en station är just det T3 och T5 förbjuder: ett värde där ingen mätt, som ingen mätning på platsen kan fälla. **Claude skrev fel i
+underlaget och i NIVA2-LIVE §5** när ändringen av TROSKLAR-SKUGGAN §4(a) kallades en formalitet med två signaturer — regel T, som §4(a)
+vilar på, lästes inte. Inom regel T finns formen redan: TROSKLAR-SKUGGAN §4(b), *talar nära ankare* — kandidaten talar bara där en
+station inom ett godkänt avstånd kan fälla ytans tillstånd och en mätning på sträckan visar fukten (T1, T2). Enligt #490 går **68,1 % av
+trafiken inom 7 km** från ett ankare och **96,5 % inom 15 km**; bortom 15 km (3,6 %) tiger kandidaten. **Därför skrivs ändringen av
+TROSKLAR-SKUGGAN inte i det här varvet:** den ska säga att den egna betavarningen talar i form (b), inom ett band som Axel väljer, och
+det är en fråga till Bengt och Axel i §4.2 — inte en tolkning Claude gör åt dem. *Överspelat samma dag av #563 (Bengt och Axel):
+låset i #220 är hävt, och kandidaten får tala också långt från ankare till domen i mars.*
+
+**Pariteten körd om med snötäcket från säsongens början** (körning 38651194568 på 3921b79; samma tre körningar, samma tolerans):
+
+| körning | `ts_fysik` median / p95 / max | `ph` median / p95 / max | dom |
+| :-- | --: | --: | :-- |
+| 2024-12-15 00Z | 0,065 / 0,099 / 0,140 | 0,067 / 0,132 / 0,716 | inom |
+| 2025-01-15 00Z | 0,018 / 0,035 / 0,068 | 0,018 / 0,053 / 0,379 | inom (förut p95 0,113) |
+| 2025-02-15 00Z | 0,051 / 0,089 / 0,159 | 0,048 / **0,120** / 0,593 | **inom** (förut p95 0,436) |
+
+**alla 3 körningar inom toleransen — det som går live räknar samma sak som kuvösens frysta kandidat; februari ph p95 0,120 (förut 0,436), snötäcket 0 % ifrån i median i alla tre**
+
+**Stomdokument:** LIV, BED §4.2, SYS.
+
+## #563 (15/10 2026) Låset i #220 hävs: regel T blir en vanlig tröskelregel, och kandidaten får tala utan vittne på platsen till domen i mars (kort #343)
+
+**Beslut.** Bengt och Axel 15/10. Bengt: *"men vi ändrar oss nu jag och axel. det spelar ingen roll vad den tidigare regeln säger den
+kan inte få binda upp oss i utvecklingen av det här"*, och *"ja"* på Claudes förslag till hur.
+
+1. **Låset hävs.** Meningen i #220, *"regel T i sin helhet får skärpas men aldrig mjukas upp, oavsett signaturer"*, och motsvarande
+   rader i TROSKLAR-KOMBINATIONEN §10 och TROSKLAR-FRYSKLASSNINGEN §7 gäller inte längre. Regel T ändras från i dag som
+   tröskeldokumenten: genom en daterad DECISIONS-post med båda signaturerna, aldrig som en lättnad efter att utfallet är sett. Lydelsen
+   och T1–T6 står kvar som huvudregel.
+2. **Undantaget för kandidaten, till domen i mars 2027.** Kandidaten NIVÅ 2+BLANDNING får utlösa en **egen betavarning utan vittne på
+   platsen för ytans tillstånd** — T3 och T5 lyfts för kandidatens yta och för inget annat — när regeln i #562 är uppfylld: yta ≤ 0 °C;
+   fukten har ett **mätt** vittne på platsen (väglaget *Våt* på sträckan, eller radarn över punkten senaste timmen; T1 och T2 gäller
+   fullt för fukten); ingen station inom ankaravståndet mätte yta över +2 °C inom ±45 minuter; märkt BETA och *modellerat*; avstängningen
+   på plats. Domen i mars (#547) avgör om den får stanna.
+3. **Bandet faller som krav.** Kandidaten talar överallt där regeln slår till, också långt från stationerna. Avståndet till närmaste
+   ankare (`ank_km`) loggas redan i `kandidat_live`, och domen redovisas per ankarband (0–7, 7–15, 15–20 och över 20 km). Ett band kan
+   läggas in genom en daterad post om skuggan visar att felet långt från stationerna är för stort.
+
+**Vad som inte ändras.** Regel T gäller allt annat: SMHI:s varningar och prognoser, frysklassningen, trenderna och offsetmodellen utanför
+kandidaten. Frysklassningens egna lås (K-A2:s tak, §1:s avgränsning) står kvar. Produktinvarianterna, domen i mars med samma trösklar
+och regel D är orörda.
+
+**Varför den smala formen och inte en strykning.** En strykning av regel T hade också låtit SMHI:s varningar, frysklassningen och
+trenderna utlösa på egen hand, och det är inte beslutat. Med låset hävt är nästa ändring ett beslut bort, inte blockerad.
+
+**Risk, skriven före.** Bortom 15 km från en station går 3,6 % av trafiken (#490). Där kan ingen mätning fälla kandidaten, och där är
+felet störst: 9,20 % grova fel bortom 20 km mot 5,02 % totalt (#517). Det som bär varningen där är fuktkravet, BETA-märkningen och
+avstängningen.
+
+**Skyltfonden.** Bilaga 7 i ansökan (skickad 30/9) säger *"En tröskel får skärpas men aldrig lättas när utfallet väl är sett"*. Den här
+ändringen gäller en princip, före kandidatens utfall, och inte en tröskel efter ett sett utfall. Om fonden ska få veta är Bengts och
+Axels beslut.
+
+**Ändrat i samma commit:** TROSKLAR-KOMBINATIONEN §6.1 (daterad not) och §10, TROSKLAR-FRYSKLASSNINGEN §7, TROSKLAR-SKUGGAN §4(d),
+NIVA2-LIVE (§2 val 1, §5, §6), #562 (not om att regel T-stycket är överspelat), bedömningen §4.2 och kort #343.
+
+**Stomdokument:** LIV, BED §4.2, SYS.
+
+## #564 (15/10 2026) Regel L införd: en lättnad efter sett utfall prövas enligt L1–L4, i alla tretton tröskeldokument (kort #282)
+
+**Beslut.** Bengt 15/10, för båda: *"ja enligt lydelsen L1-4 från nu och slå ihop 962"*, efter att Bengt bett att regel L skulle
+hanteras samtidigt som låset i regel T hävdes (#563). Förslaget skrevs 2/10 (`docs/FORSLAG-ANDRINGSREGELN-2026-10-02.md`).
+
+- **L1–L4 gäller från 15/10, i den lydelse förslaget har.** L1 domen på lästa data står som den föll; L2 en lättnad gäller bara data
+  som ingen har läst utfallet på; L3 en ändring som flyttar ett sett tal mot godkänt är en lättnad; L4 skälet får inte vara utfallet
+  — (a) följden för föraren med härledningen utskriven, eller (b) ett mindre anspråk. Inget tredje skäl i L4 (förslagets fråga 1).
+- **Formkrav:** båda signaturerna, före det att de nya data läses, och en post med det sedda talet, skälet, vilka data och svaret på L3.
+- **Var texten bor:** TROSKLAR-KOMBINATIONEN §5b, bredvid regel D, och en L-rad i vart och ett av de tolv övriga dokumenten, i samma
+  commit (förslagets fråga 2).
+- **Ändrat mot förslaget, i enlighet med #563:** regel T står inte längre bland de absoluta undantagen. Övriga absoluta undantag står
+  kvar: V1, KB-D3, K-A2, frysklassningens §1, givarvakten, SMHI-förstärkarens §1.1 och undantagen i VAGLAGETS-ALDER.
+- **Alternativ D**, Claudes rekommendation 2/10 och 15/10 (L1 och L3 nu, L2 och L4 efter Skyltfondens besked), valdes bort: Bengt
+  ville att alla fyra skulle gälla från nu.
+
+**Skyltfonden.** Bilaga 7 i ansökan (skickad 30/9, besked senast 15/12) säger *"En tröskel får skärpas men aldrig lättas när utfallet
+väl är sett"*. L2 och L4 säger något annat från och med i dag. Förslaget sade att fonden då bör få veta att ändringsregeln har fått ny
+lydelse; om och hur är Bengts och Axels beslut.
+
+**Kort #282 stängt** med beviset i samma commit: beslutet, texten i TROSKLAR-KOMBINATIONEN §5b och L-raden i alla tretton dokument.
+
+**Stomdokument:** MAT, KUV, BED §4.2.

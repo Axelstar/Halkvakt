@@ -144,5 +144,12 @@ I inget utfall ändras rösten, prioriteten eller en vektor. Hur metan sedan anv
 9. Norge (Vegvesen viker in `sleet` i `snow`) och Finland ingår inte.
 
 ## 8. Ändring
+
+**Ändring efter sett utfall — regel L** (införd 15/10 2026, TROSKLAR-KOMBINATIONEN §5b, DECISIONS #564). En lättnad efter att
+utfallet är sett prövas enligt L1–L4 och ersätter detta dokuments mening om att lättnad är utesluten: domen på lästa data står
+(L1), lättnaden gäller bara data som ingen har läst (L2), en ändring som flyttar ett sett tal mot godkänt är en lättnad (L3), och
+skälet får inte vara utfallet (L4). Den kräver båda signaturerna och en post med det sedda talet. Dokumentets absoluta undantag
+står kvar oavsett signaturer, och där dokumentet förbjuder all ändring efter första läsningen blir en lättnad en ny prövning med
+egen text och eget domfönster.
 Före första domläsningen: bara skriftligt, med en rad i DECISIONS och Bengts ja. Efter att ett utfall lästs: ingen ändring av gränser,
 svep eller population — bara en ny prövning med ett nytt dokument.

@@ -127,7 +127,8 @@ def sno_vag_b(indata, analysfiler, R, p):
     d = live.las_analys(analysfiler, set(sids))
     start = pd.Timestamp(R) - pd.Timedelta(hours=pg.FONSTER)
     idx = pd.date_range(start, pd.Timestamp(R) - pd.Timedelta(hours=1), freq='h')
-    F, _ = live.bygg_F(d[(d.tid_utc >= start) & (d.tid_utc < pd.Timestamp(R))], sids, idx, idx[-1])
+    s0, _, _ = live.snotacke_fore(d, sids, start)
+    F, _ = live.bygg_F(d[(d.tid_utc >= start) & (d.tid_utc < pd.Timestamp(R))], sids, idx, idx[-1], swe0=s0)
     Ts, T5 = run_lw(F, p)
     return sno_vid(meta, idx, F, Ts, T5, len(idx), sids), sids
 
@@ -163,7 +164,8 @@ def kraft_jamfor(mn_fil, indata, analysfiler, R, meta_idx_F, sids_b):
     maska = (idx >= start) & (idx < pd.Timestamp(R))
     d = live.las_analys(analysfiler, set(sids_b))
     idxb = pd.date_range(start, pd.Timestamp(R) - pd.Timedelta(hours=1), freq='h')
-    Fb, fyllda = live.bygg_F(d[(d.tid_utc >= start) & (d.tid_utc < pd.Timestamp(R))], sids_b, idxb, idxb[-1])
+    s0, _, _ = live.snotacke_fore(d, sids_b, start)
+    Fb, fyllda = live.bygg_F(d[(d.tid_utc >= start) & (d.tid_utc < pd.Timestamp(R))], sids_b, idxb, idxb[-1], swe0=s0)
     gem = sorted(set(sids_a) & set(sids_b))
     ia = [sids_a.index(s) for s in gem]; ib = [sids_b.index(s) for s in gem]
     rader = []
@@ -323,6 +325,11 @@ def sjalvtest():
         s = kor(d, f'{d}/mn.csv.gz', [f'{d}/mn.csv.gz'], f'{d}/k.csv.gz', f'{d}/modell.pkl', f'{d}/kandidat.json', R, f'{d}/ut')
         if s['punkter_gemensamma'] != NS: fel.append(f'{s["punkter_gemensamma"]} gemensamma punkter, väntat {NS}')
         if s['rader_jamforda'] != NS * 6: fel.append(f'{s["rader_jamforda"]} jämförda rader, väntat {NS * 6}')
+        # Snötäcket ackumuleras från säsongens början i båda vägarna (DECISIONS #562): på den här källan börjar de på samma
+        # timme, så snöraderna ska vara lika. Faller det här har den levande kedjan börjat på noll igen.
+        for r in s['snon_vid_korningen']:
+            if r['falt'] == 'swe' and (r['max_diff'] is None or r['max_diff'] > 1e-6):
+                fel.append(f'snötäcket skiljer mellan vägarna på en källa där de startar lika: max {r["max_diff"]}')
         for r in s['falt']:
             if r['max'] is None or r['max'] > TAK:
                 fel.append(f'{r["falt"]}: max {r["max"]} på en källa där vägarna startar i samma timme — ingen parität')

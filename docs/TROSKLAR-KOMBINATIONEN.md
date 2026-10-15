@@ -338,6 +338,36 @@ kallt*, och D4:s krav på båda halvorna är det som ska hindra att ett tunt fac
 
 ---
 
+## 5b. Regel L — ändring efter att utfallet är sett
+
+**Införd 15/10 2026** (Bengt för båda: *"ja enligt lydelsen L1-4 från nu"*, DECISIONS #564; förslaget
+`docs/FORSLAG-ANDRINGSREGELN-2026-10-02.md`, kort #282). Gemensam för alla tretton tröskeldokument. Den ersätter meningen
+*"lättnad är utesluten så snart utfallet är sett"* och dess varianter. Regeln ska hindra att **samma data både lär oss tröskeln och
+godkänner den**, inte att vi lär oss av ett utfall.
+
+| # | Regel |
+| :-- | :-- |
+| **L1** | **Domen på lästa data står som den föll.** Den skrivs aldrig om, och en senare ändring gör inte en fallen grind klarad. |
+| **L2** | **En lättnad gäller bara data som ingen i projektet har läst utfallet på.** För en pågående vinter: data efter postens datum. Posten bär nytt datum och skriver ut det tal som var sett när den skrevs. |
+| **L3** | **En ändring som flyttar ett redan sett tal mot godkänt är en lättnad,** också när tröskelns tal står kvar: annan population, annan kandidat, annan indelning, annan underlagsspärr. Frågan besvaras skriftligt i posten: *hade ändringen föreslagits om talet redan hade klarat sig?* |
+| **L4** | **Skälet får inte vara utfallet.** En lättnad ska antingen (a) härleda den nya gränsen ur följden för föraren, alltså vad felet kostar, med härledningen utskriven, eller (b) minska anspråket, så att resultatet får bära mindre än förut (stärka i stället för utlösa, karta i stället för röst). *"Modellen klarade inte gränsen"* är inget skäl. |
+
+**De sju strängare dokumenten.** Sju dokument tillåter ingen ändring alls efter första läsningen, inte heller en skärpning. Regel L
+rör inte det. Där blir en lättnad i praktiken det NEDERBORDSTYPEN redan säger: en ny prövning, med egen text och eget domfönster.
+
+**Formkrav.** En lättnad kräver båda signaturerna, före det att de nya data läses, och en DECISIONS-post med fyra saker: det sedda
+talet, skälet enligt L4, vilka data den gäller enligt L2 och svaret på frågan i L3. En skärpning kräver som förut en rad från Bengt.
+
+**Det här ändras inte:**
+
+- **De absoluta undantagen står kvar, oavsett signaturer:** V1 och KB-D3 (§10), taket för farliga fel K-A2 och §1:s avgränsning
+  (TROSKLAR-FRYSKLASSNINGEN §7), givarvakten (TROSKLAR-RIMFROST), §1.1:s tak (TROSKLAR-SMHI-FORSTARKAREN) och undantagen i
+  TROSKLAR-VAGLAGETS-ALDER. De får skärpas men aldrig mjukas upp. **Regel T står inte längre bland dem** — låset hävdes samma dag
+  (DECISIONS #563), och den ändras som tröskeldokumenten.
+- **Regel D** (D1–D7, §5) gäller som förut. L2 är samma tanke som D3 och D7: lärande och dom på skilda data.
+- **Blindningen** och rätten att justera fritt *före* första läsningen.
+- **Allt som redan är dömt.** Regeln gäller framåt, från 15/10 2026.
+
 ## 6. Regel T — tröskelregeln i Axels lydelse
 
 ### 6.1 Lydelsen
@@ -350,6 +380,9 @@ kallt*, och D4:s krav på båda halvorna är det som ska hindra att ett tunt fac
 Den ersätter den gamla meningen *"en modellerad storhet får aldrig vara en avtryckare"* (TROSKLAR-FRYSKLASSNINGEN §1
 och §7). Kartan §13.2 sade redan att Axels lydelse är bättre. Den gamla förbjöd bokstavligen varje integrerad
 storhet — också minne av mätningar, som aldrig var det regeln skrevs mot.
+
+*Ändrat 15/10 (DECISIONS #563, Bengt och Axel): regeln ändras sedan dess med båda signaturerna (§10), och ett tidsbegränsat
+undantag gäller kandidaten NIVÅ 2+BLANDNING (TROSKLAR-SKUGGAN §4(d)).*
 
 ### 6.2 Vad orden betyder, så att de går att tillämpa
 
@@ -404,6 +437,8 @@ täts** — och de är tätade:
 preciseringarna, och alla tre är skärpningar; han ska ändå ha läst dem. **Skyddet följer med:** den gamla meningen fick
 aldrig mjukas upp oavsett signaturer (TROSKLAR-FRYSKLASSNINGEN §7), och regel T i sin helhet har nu samma skydd (§10).
 Ett smalare skydd hade i sig varit en uppmjukning — och av samma skäl fick #153 beslut 2 ingen förbehållen öppning.
+*Hävt 15/10 (DECISIONS #563, Bengt och Axel): regel T ändras sedan dess med båda signaturerna, och kandidaten NIVÅ 2+BLANDNING
+har ett tidsbegränsat undantag (§10, TROSKLAR-SKUGGAN §4(d)). Stycket ovan beskriver läget 16/9.*
 
 ---
 
@@ -455,13 +490,15 @@ Skrivet före mätningen (DECISIONS #71):
 
 Fram till kombinationens första skuggkörning — för efterhalkan: betans första natt — får §2–§4 justeras av vem som
 helst av oss med en rad i DECISIONS. **Därefter gäller D6:** ingen tröskel ändras, skärpning med en rad från Bengt,
-lättnad utesluten när utfallet är sett.
+lättnad utesluten när utfallet är sett. *Sedan 15/10 prövas en lättnad efter sett utfall enligt regel L (§5b, DECISIONS #564).*
 
-**Undantagen från all lättnad:** V1 (additiv), KB-D3 (förarfacit ensamt fäller ingen dom) och **regel T i sin helhet** —
-lydelsen och T1–T6, alltså också prövningen per tillstånd (T1), vittneskravet (T2), att extrapolation faller (T3) och att
-prognoser aldrig ensamma utlöser (T6). De får skärpas men aldrig mjukas upp — **oavsett signaturer**, samma skydd som den
-gamla meningen hade (TROSKLAR-FRYSKLASSNINGEN §7; tillagt 16/9, DECISIONS #220). **Regeln har inga förbehållna
-öppningar:** ett beslut som vill låta något utlösa — #153 beslut 2 inräknat — måste klara T1–T3 som allt annat.
+**Undantagen från all lättnad:** V1 (additiv) och KB-D3 (förarfacit ensamt fäller ingen dom). De får skärpas men aldrig
+mjukas upp — **oavsett signaturer**.
+
+**Regel T** (§6) ändras sedan 15/10 som tröskeldokumenten: genom en daterad DECISIONS-post med båda signaturerna, aldrig som en
+lättnad efter att utfallet är sett (DECISIONS #563, Bengt och Axel). Låset *"oavsett signaturer"* från 16/9 (#220) är hävt.
+Lydelsen och T1–T6 står kvar som huvudregel, och ett beslut som vill låta något utlösa prövas mot T1–T3 eller fattas som ett
+uttryckligt undantag. **Gällande undantag:** kandidaten NIVÅ 2+BLANDNING, till domen i mars 2027 (TROSKLAR-SKUGGAN §4(d)).
 
 ---
 

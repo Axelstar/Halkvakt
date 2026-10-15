@@ -195,6 +195,15 @@ lydelsen från 1/9, som lät prognosen tala på modellerade värden i strid med 
 (TROSKLAR-KOMBINATIONEN §6, fastställd 16–17/9). Grind A, B och C oförändrade. Underlag:
 `docs/SKUGGAN-PAR4-MOT-REGEL-T.md`.*
 
+- **(d) KANDIDATEN FÖRE DOMEN** (DECISIONS #556, #562, #563 — Bengt och Axel 15/10): från 15/10 till domen i mars 2027 får
+  kandidaten NIVÅ 2+BLANDNING tala som en **egen betavarning** i appen, också långt från ankare, när: kandidatens yta ≤ 0 °C;
+  fukten har ett **mätt** vittne på platsen (väglaget *Våt* på sträckan, eller radarn över punkten senaste timmen — radarns
+  tröskel är Axels och passerar värdevakten först); ingen station inom ankaravståndet mätte yta över +2 °C inom ±45 minuter;
+  varningen märks BETA och *modellerat*; avstängningen finns (nyckeln tas bort ur publiceringen). Regel T3/T5 lyfts för
+  kandidatens yta och för inget annat (TROSKLAR-KOMBINATIONEN §10). Taket på hur ofta den talar kommer ur takten i skuggan
+  (#200) och läses före App Review. Domen (a)–(c) ovan fälls i mars som förut och avgör om den får stanna. Inget band krävs;
+  domen redovisas per ankarband, och ett band kan läggas in genom en daterad post.
+
 Bevisbördan ligger på skuggan. Vid tvekan: tystnad (produktinvarianten).
 
 ## 5. Ändringsregler
@@ -203,6 +212,13 @@ Bevisbördan ligger på skuggan. Vid tvekan: tystnad (produktinvarianten).
 det här dokumentet i en kombination, ändras den *för kombinationen* bara enligt D1–D7: värden ur detta dokuments svep,
 startvärden före första natten, kalibrering och dom på skilda nätter, alla prövade punkter redovisade. Parameterns egen
 tröskel följer detta dokument som förut.
+
+**Ändring efter sett utfall — regel L** (införd 15/10 2026, TROSKLAR-KOMBINATIONEN §5b, DECISIONS #564). En lättnad efter att
+utfallet är sett prövas enligt L1–L4 och ersätter detta dokuments mening om att lättnad är utesluten: domen på lästa data står
+(L1), lättnaden gäller bara data som ingen har läst (L2), en ändring som flyttar ett sett tal mot godkänt är en lättnad (L3), och
+skälet får inte vara utfallet (L4). Den kräver båda signaturerna och en post med det sedda talet. Dokumentets absoluta undantag
+står kvar oavsett signaturer, och där dokumentet förbjuder all ändring efter första läsningen blir en lättnad en ny prövning med
+egen text och eget domfönster.
 
 Efter första skuggkörningen får detta dokument bara ändras genom en DECISIONS-post
 från Bengt, som äger mätningen. Skärpning kräver en rad; **lättnad är utesluten
