@@ -344,6 +344,28 @@ export function segmentPrognos(line: [number, number][], ankare: Ankare[], stegK
   return { steg_km: stegKm, p };
 }
 
+// KANDIDATENS TAKT (DECISIONS #573, NIVA2-LIVE steg 7). Skuggan loggar de sträckor där kandidatens regel (sql/056
+// kandidat_regel) varnar och som rutten passerar — en gång per sträcka och körning, i körordning — så att takten kan läsas
+// innan rösten byggs (DECISIONS #200: taket kommer ur mätningen). En sträcka räknas när en av dess varnande vägpunkter ligger
+// inom UPPMATT_KM av rutten, samma 2 km som §2 matchar facit med; rutterna är raka linjer mellan stationer, inte vägarna, så
+// takten är en uppskattning. Tiden är läget längs rutten vid traceAlong:s fart.
+//   Rad: [t (s från rutens start), sträcka, km längs rutten, avstånd till rutten (km), antal varnande punkter inom 2 km]
+export type KandidatPassage = [number, string, number, number, number];
+
+export function kandidatLangsRutten(punkter: { segment_id: string; lon: number; lat: number }[], line: [number, number][],
+  kmh = 80): KandidatPassage[] {
+  const bast = new Map<string, { vid: number; km: number; n: number }>();
+  for (const p of punkter) {
+    const n = narmastLangs(p, line);
+    if (n.km > UPPMATT_KM) continue;
+    const b = bast.get(p.segment_id);
+    if (!b) bast.set(p.segment_id, { vid: n.vid, km: n.km, n: 1 });
+    else { b.n++; if (n.km < b.km) { b.km = n.km; b.vid = n.vid; } }
+  }
+  return [...bast].map(([seg, b]): KandidatPassage => [Math.round(b.vid / kmh * 3600), seg, r1(b.vid), r1(b.km), b.n])
+    .sort((x, y) => x[0] - y[0]);
+}
+
 
 // ═══ engine/src/texts.ts ═══
 // Spoken Swedish copy (PLAN §1 taxonomy). Phrasing rule, hard:
@@ -1272,6 +1294,22 @@ async function vagpunktAnkare(): Promise<{ lista: Ankare[]; skal: string | null 
   } catch (e) { return { lista: [], skal: `vagpunkt_ankare kastade: ${String(e).slice(0, 120)}` }; }
 }
 
+/** KANDIDATENS VARNANDE VÄGPUNKTER (sql/057 kandidat_regel, DECISIONS #573 del 2): regeln räknas i databasen, på ett ställe;
+ *  skuggan hämtar bara de punkter som varnar, en gång per anrop, för takten längs rutterna. Fail-soft med skäl, som ankarna.
+ *  Tom lista med skälet "regeln tiger" när kandidatens timme är gammal eller ofullständig, eller ingen punkt varnar. */
+type KandidatPunkt = { segment_id: string; lon: number; lat: number };
+async function kandidatVarnar(): Promise<{ lista: KandidatPunkt[]; tid: string | null; skal: string | null }> {
+  try {
+    const r = await fetch(`${SB}/rest/v1/rpc/kandidat_regel?utfall=eq.varnar&select=segment_id,lon,lat,tid`, { method: "POST",
+      headers: { Authorization: `Bearer ${SRK}`, apikey: SRK, "Content-Type": "application/json" }, body: "{}" });
+    if (!r.ok) return { lista: [], tid: null, skal: `kandidat_regel ${r.status}: ${(await r.text().catch(() => "")).slice(0, 120)}` };
+    const rows: any[] = await r.json();
+    const lista = rows.flatMap((x) => (typeof x.lon === "number" && typeof x.lat === "number" && x.segment_id != null
+      ? [{ segment_id: String(x.segment_id), lon: x.lon, lat: x.lat }] : []));
+    return { lista, tid: rows[0]?.tid ?? null, skal: lista.length ? null : "regeln tiger: ingen varnande punkt, eller kandidatens timme gammal eller ofullständig" };
+  } catch (e) { return { lista: [], tid: null, skal: `kandidat_regel kastade: ${String(e).slice(0, 120)}` }; }
+}
+
 // FÖRSPRÅNGET (kort #153 beslut 1, docs/TROSKLAR-FORSPRANG.md §4, DECISIONS #359). Eget anrop på :12/:42 — huvudvarvet slår redan i
 // datorkraftens tak (546 kl 04:32 och 05:02Z 25/9, på :02/:32). Samma halvtimmes rutter som huvudvarvet; bara rutter med en nivå 2-fara
 // i rutan körs, och där körs motorn två gånger på samma spår: baskörningen (dagens motor) och varianten (nivå 2 med halvtimmens
@@ -1404,6 +1442,9 @@ Deno.serve(async (req) => {
     const hazards = snapshotToHazards(st, lv);
     // Ankarna hämtas en gång per anrop, inte per rutt. Bara Sverige: funktionen läser det svenska arkivet.
     const ankare = land === "se" && !c ? await vagpunktAnkare() : { lista: [] as Ankare[], skal: c ? "grupp C loggar ingen prognos" : "bara Sverige" };
+    // Kandidatens takt (DECISIONS #573): bara huvudvarvet i Sverige, som prognosen.
+    const kandidatV = land === "se" && !c ? await kandidatVarnar()
+      : { lista: [] as KandidatPunkt[], tid: null, skal: c ? "grupp C loggar ingen kandidat" : "bara Sverige" };
     const oljaLista = land === "se" ? await oljaAktiva() : { lista: [] as Olja[], skal: "bara Sverige" };
     const results: Record<string, unknown> = {};
     let facitTotal = 0;
@@ -1452,6 +1493,11 @@ Deno.serve(async (req) => {
       const t2 = performance.now();
       const ankRutt = ankareNaraRutten(ankare.lista, line);
       const prognos = ankare.lista.length ? { ...segmentPrognos(line, ankRutt), h: holdoutRader(line, ankRutt) } : {};
+      // KANDIDATEN (DECISIONS #573 del 2): de varnande sträckorna längs rutten, för takten. Loggad, aldrig hörd.
+      const kandidat = land === "se" && !c
+        ? { tid: kandidatV.tid, n: kandidatV.lista.length,
+            h: kandidatLangsRutten(ankareNaraRutten(kandidatV.lista, line, UPPMATT_KM), line), ...(kandidatV.skal ? { skal: kandidatV.skal } : {}) }
+        : {};
       ms.prognos += performance.now() - t2;
       // Facit-bilder finns bara i Sverige (Trafikverkets väglagskameror). Punkterna slås upp ur
       // faran, inte ur larmet — motorns Alert bär ingen position (rättelse 4 ovan, DECISIONS #189).
@@ -1474,7 +1520,7 @@ Deno.serve(async (req) => {
       if (land === "se" && alerts.length && !punkter.length) f.skal.push("bara segment- eller fartkameralarm — inget som behöver väglagsfacit");
       facitBudget -= f.saved; facitTotal += f.saved; facitSkal.push(...f.skal);
       results[name] = { fixes: trace.length, alerts: alerts.length, vb: vb.length, olja: olja.length, suppressed: suppressed.length, efterhalka: efterhalka.length,
-        prognos: (prognos as Prognos).p?.length ?? 0 };
+        prognos: (prognos as Prognos).p?.length ?? 0, kandidat: (kandidat as { h?: unknown[] }).h?.length ?? 0 };
       // LARMETS POSITION (kort #158, DECISIONS #177/#179, Axels ja via Bengt 14/9).
       //
       // FÖRUT SKREVS `lon: a.lon` — OCH DET FÄLTET FINNS INTE. Motorns Alert bär `t`, `hazardId`,
@@ -1498,6 +1544,7 @@ Deno.serve(async (req) => {
       const body = JSON.stringify({
         route: name, land: land.toUpperCase(), snapshot_generated_at: lv.generated_at,
         n_hazards: hazards.length, n_alerts: alerts.length, vb, olja, suppressed, efterhalka, prognos,
+        ...(c ? {} : { kandidat }),   // shadow_log_c har ingen kandidatkolumn (sql/057 lägger den bara i shadow_log)
         alerts: alerts.map((a) => {
           const h = farorById.get(a.hazardId) as any;
           const punkt = h && h.kind !== "slippery_segment" && typeof h.lon === "number";

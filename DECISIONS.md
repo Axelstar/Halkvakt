@@ -13185,4 +13185,22 @@ väglaget, anon utan rätt; 38713334591 `migrera sql/056` — på kandidatens ti
 (66,4–68,4° N), alla med *Våt*, kandidatens yta i snitt −0,43 °C; närmaste station i snitt 14,9 km bort mätte −0,6…+0,8 °C
 (snitt +0,1), och 53 av 151 stationer frös själva — våta vägar kring nollan, det regeln ska fånga.
 
+**Del 2 byggd** (Bengt 15/10: *"ja, bygg del 2 enligt A och B"*, på Claudes förslag med tre dygn i databasen):
+- **A. Domloggen** (`sql/057_kandidat_skugga.sql`): `kandidat_logga()` körs av pg_cron på :50, efter del B. Den skriver en rad per
+  sträcka med kall yta i `kandidat_skugga` (antal punkter som varnar, vetas och är torra, Våt, fläckvis Våt, radarns högsta värde,
+  kandidatens kallaste värde, närmaste vetostation med avstånd och yta), kandidatens stationsvärden i `kandidat_station` (kort #349;
+  allt i `kandidat_live` som inte redan sparats, så att en missad körning tas igen) och en rad per körning i
+  `kandidat_skugga_korning` med status *räknad*, *redan räknad* eller *tyst* — en varm timme skiljs från en tyst. Båda tabellerna
+  går till hinken med sql/053:s väg, dygnet efter (`arkiv2_alder`) och raderas efter tre dygn (`arkiv2_golv`); trendtabellerna och
+  radarn behåller åtta respektive fjorton.
+- **Färskheten** flyttas till `kandidat_timme()` (två timmar, 95 % av vägpunkterna), som både regeln och loggen läser; `kandidat_regel()`
+  skrivs om med samma innehåll i övrigt.
+- **B. Takten**: skuggmotorn hämtar regelns varnande punkter en gång per anrop (`rpc/kandidat_regel?utfall=eq.varnar`) och loggar
+  per rutt de sträckor rutten passerar inom 2 km (`kandidatLangsRutten` i engine/src/segment.ts): `[t, sträcka, km längs rutten,
+  avstånd, punkter]`, i `shadow_log.kandidat` med regelns timme, antalet varnande punkter i landet och skälet när regeln tiger.
+- Prov: `kandidatLangsRutten` i test/segment.test.ts; integrationsprovet för loggen (en rad per sträcka med rätt antal, stationerna
+  utan dubbletter, räknad/redan räknad/tyst, ett dygns ålder och tre dygns golv i hinken).
+**Driftordning efter *slå ihop*:** `migrera sql/057` (bevis: jobbet finns, regeln ger samma antal som före), deploy av skuggmotorn och
+arkivexporten; beviset är körningsloggens första rad efter :50, skuggloggens kolumn efter :02/:32 och exporten dygnet efter.
+
 **Stomdokument:** KUV, LIV, BED §4.2.

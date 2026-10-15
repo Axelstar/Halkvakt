@@ -119,3 +119,25 @@ export function segmentPrognos(line: [number, number][], ankare: Ankare[], stegK
   });
   return { steg_km: stegKm, p };
 }
+
+// KANDIDATENS TAKT (DECISIONS #573, NIVA2-LIVE steg 7). Skuggan loggar de sträckor där kandidatens regel (sql/056
+// kandidat_regel) varnar och som rutten passerar — en gång per sträcka och körning, i körordning — så att takten kan läsas
+// innan rösten byggs (DECISIONS #200: taket kommer ur mätningen). En sträcka räknas när en av dess varnande vägpunkter ligger
+// inom UPPMATT_KM av rutten, samma 2 km som §2 matchar facit med; rutterna är raka linjer mellan stationer, inte vägarna, så
+// takten är en uppskattning. Tiden är läget längs rutten vid traceAlong:s fart.
+//   Rad: [t (s från rutens start), sträcka, km längs rutten, avstånd till rutten (km), antal varnande punkter inom 2 km]
+export type KandidatPassage = [number, string, number, number, number];
+
+export function kandidatLangsRutten(punkter: { segment_id: string; lon: number; lat: number }[], line: [number, number][],
+  kmh = 80): KandidatPassage[] {
+  const bast = new Map<string, { vid: number; km: number; n: number }>();
+  for (const p of punkter) {
+    const n = narmastLangs(p, line);
+    if (n.km > UPPMATT_KM) continue;
+    const b = bast.get(p.segment_id);
+    if (!b) bast.set(p.segment_id, { vid: n.vid, km: n.km, n: 1 });
+    else { b.n++; if (n.km < b.km) { b.km = n.km; b.vid = n.vid; } }
+  }
+  return [...bast].map(([seg, b]): KandidatPassage => [Math.round(b.vid / kmh * 3600), seg, r1(b.vid), r1(b.km), b.n])
+    .sort((x, y) => x[0] - y[0]);
+}
