@@ -12,8 +12,9 @@
 //   C) Missriktningen: stationsregn (≥ 0,5 mm/30 min) vid en samplad komposittid,
 //      station nära segmentnätet — skrev radarn någon rad ≤ 5 km? Approximation:
 //      komposittider = distinkta observed_at (en rikstorr komposit lämnar inget spår).
-//      Närheten tas ur nara (räknad en gång); ett avstånd per stationsregn sprängde
-//      300 s en blöt vecka (kort #346, DECISIONS #567). A och B skrivs ut före C.
+//      Närheten tas ur nara (räknad en gång), och kompositlistan räknas en gång
+//      (MATERIALIZED) i stället för en gång per stationsregn, som sprängde 300 s en blöt
+//      vecka (kort #346, DECISIONS #567). A och B skrivs ut före C.
 //
 // KEDJEBEVIS FÖRST: på tunt underlag bevisar körningen att parningen, enheterna och
 // tidsmatchningen håller — domen på kort #43 kräver ~7 dygns data och fälls inte här.
@@ -165,7 +166,9 @@ const missRes = await pool.query(`
     JOIN (SELECT DISTINCT station_id FROM nara) s USING (station_id)
     WHERE w.sample_time > now() - $1 * interval '1 day' AND w.rain_sum_mm >= ${MISS_MM}
   ),
-  komp AS (SELECT DISTINCT observed_at FROM radar_precip WHERE observed_at > now() - $1 * interval '1 day'),
+  -- MATERIALIZED: inlined, the planner reran the 7-day index scan once per station rain inside the
+  -- LATERAL below (EXPLAIN 38690252286) — that, not the distances, was the 300 s (kort #346).
+  komp AS MATERIALIZED (SELECT DISTINCT observed_at FROM radar_precip WHERE observed_at > now() - $1 * interval '1 day'),
   ek AS (
     SELECT ev.station_id, ev.sample_time, ev.rain_sum_mm, k.observed_at
     FROM ev

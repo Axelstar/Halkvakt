@@ -12939,4 +12939,32 @@ gör redan 0,1–0,5 det, eller faller 0,5–2 under hälften, går talet tillba
 utlösare 2,0 läses på bandet 2–10 och avgörs av Bengt och Axel (bedömningen §4.2). En vecka är ett stickprov: kurvan har drivit
 mellan veckorna (#565).
 
+**Utfall (i), 15/10 05:54 — förväntan uppfylld.** Gammal (38689303015 på main) och ny (38689306723 på grenen), ett dygn:
+A på `rate_max` identisk i alla fyra band (2 698 par), B identisk (0,60 över 1 259 par), C identisk (1 429 stationsregn, 1 373
+träffar).
+
+**Utfall (ii), 05:56 (38689543174, sju dygn) — förväntan delvis: C föll igen på 300 sekunder.** A och B skrevs ut före C och finns
+kvar: 60 123 par, 167 kompositer 8/10–15/10.
+
+| Band mm/h | `rate_max`: par · bekräftade | `rate_mean`: par · bekräftade |
+| :-- | --: | --: |
+| 0,1–0,5 | 21 984 · 40 % | 21 012 · 62 % |
+| 0,5–2 | 21 424 · 67 % | 16 131 · 82 % |
+| 2–10 | 14 895 · 80 % | 5 136 · 91 % |
+| ≥ 10 | 1 820 · 81 % | 136 · 95 % |
+| under 0,1 | — | 17 708 |
+
+Kalibreringen 0,68 över 36 528 par. Förväntan om A uppfylld: färre par över 0,5 mm/h på `rate_mean` (21 403 mot 38 139) och
+högre bekräftelse i varje band.
+
+**Orsaken till C, utpekad med EXPLAIN i DB-knappens läsläge (38690252286):** kompositlistan `komp` bakades in i den laterala
+frågan, så planeraren körde sjudygnsskanningen av `radar_precip_time_idx` en gång per stationsregn — i den gamla frågan likaså.
+Avståndet per stationsregn, som ombyggnaden tog bort, var inte huvudsaken. Med `komp AS MATERIALIZED` räknas listan en gång; planen
+i samma läsning visar det. Ändringen byter inga tal, bara planen. **Andra knappen:** den nya med sju dygn. Förväntan: grön; A och B
+inom någon procent av körningen ovan (fönstret har flyttat några minuter); C med en träffandel i samma trakt som tidigare veckor
+(91–96 %).
+
+**Läsningen enligt regeln ovan:** bandet 0,1–0,5 på `rate_mean` bekräftas redan i en majoritet (62 %), så talet 0,5 går tillbaka
+till Bengt och Axel före signeringen (bedömningen §4.2). Vattenplaningens band 2–10 bekräftas i 91 % på `rate_mean`.
+
 **Stomdokument:** MAT, BED §4.2.
