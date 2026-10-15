@@ -13203,4 +13203,16 @@ väglaget, anon utan rätt; 38713334591 `migrera sql/056` — på kandidatens ti
 **Driftordning efter *slå ihop*:** `migrera sql/057` (bevis: jobbet finns, regeln ger samma antal som före), deploy av skuggmotorn och
 arkivexporten; beviset är körningsloggens första rad efter :50, skuggloggens kolumn efter :02/:32 och exporten dygnet efter.
 
+**Del 2 i drift 15/10** (Bengt: *"slå ihop 977"*; PR #977 som 5be1d6f): DB-knappen 38717145069 `migrera sql/057` — jobbet
+`halkvakt-kandidat-logg` på :50, kolumnen i skuggloggen, anon utan rätt; skuggmotorn och arkivexporten deployade 10:03. Läsningen
+10:52 (38723295988): timmen 10:00 *räknad*, 9 sträckor, 53 varnande punkter, 0 vetade, 5 torra; 3 016 stationsrader (754 stationer
+× fyra timmar); skuggmotorn 10:32 loggade kandidaten på tre rutter med 127 varnande punkter i landet och **0 passager**.
+
+**Takten längs vägnätet** (Bengt: *"ja, räkna takten längs vägnätet"*). Nollan var sann men fel mätt: de 53 varnande punkterna låg
+som närmast 6,9 km från E10-ruttens raka linje mellan stationerna, men på 0,00 km från samma rutt längs vägnätet (OSRM,
+`data/favoritprov/rutter-osrm.json`, #531), som då gav en passage — och Nikkaluokta→Riksgränsen en till. Skuggmotorn räknar nu
+kandidatens passager längs vägnätet: `bundle-skuggmotor.ts` bäddar in huvudrutternas OSRM-geometri (`RUTTER_VAG`, 20 rutter) och
+fäller om en rutt saknar den; loggen bär `geo: "osrm"` eller `"linje"`. RÅ-prognosen och resten av skuggan rörs inte — deras
+domar är förregistrerade på de raka linjerna.
+
 **Stomdokument:** KUV, LIV, BED §4.2.
