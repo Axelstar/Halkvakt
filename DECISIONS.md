@@ -12836,3 +12836,27 @@ Axels beslut.
 NIVA2-LIVE (§2 val 1, §5, §6), #562 (not om att regel T-stycket är överspelat), bedömningen §4.2 och kort #343.
 
 **Stomdokument:** LIV, BED §4.2, SYS.
+
+## #564 (15/10 2026) Regel L införd: en lättnad efter sett utfall prövas enligt L1–L4, i alla tretton tröskeldokument (kort #282)
+
+**Beslut.** Bengt 15/10, för båda: *"ja enligt lydelsen L1-4 från nu och slå ihop 962"*, efter att Bengt bett att regel L skulle
+hanteras samtidigt som låset i regel T hävdes (#563). Förslaget skrevs 2/10 (`docs/FORSLAG-ANDRINGSREGELN-2026-10-02.md`).
+
+- **L1–L4 gäller från 15/10, i den lydelse förslaget har.** L1 domen på lästa data står som den föll; L2 en lättnad gäller bara data
+  som ingen har läst utfallet på; L3 en ändring som flyttar ett sett tal mot godkänt är en lättnad; L4 skälet får inte vara utfallet
+  — (a) följden för föraren med härledningen utskriven, eller (b) ett mindre anspråk. Inget tredje skäl i L4 (förslagets fråga 1).
+- **Formkrav:** båda signaturerna, före det att de nya data läses, och en post med det sedda talet, skälet, vilka data och svaret på L3.
+- **Var texten bor:** TROSKLAR-KOMBINATIONEN §5b, bredvid regel D, och en L-rad i vart och ett av de tolv övriga dokumenten, i samma
+  commit (förslagets fråga 2).
+- **Ändrat mot förslaget, i enlighet med #563:** regel T står inte längre bland de absoluta undantagen. Övriga absoluta undantag står
+  kvar: V1, KB-D3, K-A2, frysklassningens §1, givarvakten, SMHI-förstärkarens §1.1 och undantagen i VAGLAGETS-ALDER.
+- **Alternativ D**, Claudes rekommendation 2/10 och 15/10 (L1 och L3 nu, L2 och L4 efter Skyltfondens besked), valdes bort: Bengt
+  ville att alla fyra skulle gälla från nu.
+
+**Skyltfonden.** Bilaga 7 i ansökan (skickad 30/9, besked senast 15/12) säger *"En tröskel får skärpas men aldrig lättas när utfallet
+väl är sett"*. L2 och L4 säger något annat från och med i dag. Förslaget sade att fonden då bör få veta att ändringsregeln har fått ny
+lydelse; om och hur är Bengts och Axels beslut.
+
+**Kort #282 stängt** med beviset i samma commit: beslutet, texten i TROSKLAR-KOMBINATIONEN §5b och L-raden i alla tretton dokument.
+
+**Stomdokument:** MAT, KUV, BED §4.2.

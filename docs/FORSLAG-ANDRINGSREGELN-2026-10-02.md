@@ -1,5 +1,7 @@
 # Förslag: regel L — ändring av en tröskel efter att utfallet är sett
 
+> **INFÖRT 15/10 2026** (DECISIONS #564, Bengt för båda): L1–L4 gäller från samma dag i alla tretton tröskeldokument, texten i TROSKLAR-KOMBINATIONEN §5b. Ändrat mot förslaget: regel T står inte längre bland de absoluta undantagen (#563). Alternativ D valdes bort. Dokumentet nedan är förslaget som det skrevs 2/10.
+
 **Status: FÖRSLAG, inte fastställt.** Inget tröskeldokument är ändrat. Skrivet 2/10 2026 av Claude på Bengts order (*"skriv ett
 förslag för de fyra leden"*), efter läsningen av kort #270. Kräver Bengts och Axels signatur för att gälla. Kort #282,
 bedömningen §4.2.

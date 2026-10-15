@@ -154,6 +154,12 @@ ska inte blandas in i tystnadsmåttet.
   det här dokumentet i en kombination, ändras den *för kombinationen* bara enligt D1–D7: värden ur detta dokuments svep,
   startvärden före första natten, kalibrering och dom på skilda nätter, alla prövade punkter redovisade. Parameterns egen
   tröskel följer detta dokument som förut.
+- **Ändring efter sett utfall — regel L** (införd 15/10 2026, TROSKLAR-KOMBINATIONEN §5b, DECISIONS #564). En lättnad efter att
+  utfallet är sett prövas enligt L1–L4 och ersätter detta dokuments mening om att lättnad är utesluten: domen på lästa data står
+  (L1), lättnaden gäller bara data som ingen har läst (L2), en ändring som flyttar ett sett tal mot godkänt är en lättnad (L3), och
+  skälet får inte vara utfallet (L4). Den kräver båda signaturerna och en post med det sedda talet. Dokumentets absoluta undantag
+  står kvar oavsett signaturer, och där dokumentet förbjuder all ändring efter första läsningen blir en lättnad en ny prövning med
+  egen text och eget domfönster.
 - Skuggkolumn i skuggmotorn, aldrig röst före grind-A/B/C-dom (mars).
 - Punktkälla säger "risk framöver"; endast sträcka säger "på vägen".
 - Tröskelrad i TROSKLAR-SKUGGAN ändras enligt §5 i moderdokumentet innan den flyttas

@@ -107,5 +107,12 @@ och vektorerna i `engine/vectors/` rörs inte. Kroken förs till Kotlin och Swif
 
 ## 8. Ändring
 
+**Ändring efter sett utfall — regel L** (införd 15/10 2026, TROSKLAR-KOMBINATIONEN §5b, DECISIONS #564). En lättnad efter att
+utfallet är sett prövas enligt L1–L4 och ersätter detta dokuments mening om att lättnad är utesluten: domen på lästa data står
+(L1), lättnaden gäller bara data som ingen har läst (L2), en ändring som flyttar ett sett tal mot godkänt är en lättnad (L3), och
+skälet får inte vara utfallet (L4). Den kräver båda signaturerna och en post med det sedda talet. Dokumentets absoluta undantag
+står kvar oavsett signaturer, och där dokumentet förbjuder all ändring efter första läsningen blir en lättnad en ny prövning med
+egen text och eget domfönster.
+
 Trösklarna i §2–§5 ändras bara med båda signaturerna och en motivering som inte lutar sig mot utfallet (samma regel som varje
 tröskeldokument). Efter första lästa andel får inget tal i §3 eller §5 ändras före domen.

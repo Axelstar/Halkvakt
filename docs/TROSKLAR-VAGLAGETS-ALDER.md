@@ -209,6 +209,13 @@ det här dokumentet i en kombination, ändras den *för kombinationen* bara enli
 startvärden före första natten, kalibrering och dom på skilda nätter, alla prövade punkter redovisade. Parameterns egen
 tröskel följer detta dokument som förut.
 
+**Ändring efter sett utfall — regel L** (införd 15/10 2026, TROSKLAR-KOMBINATIONEN §5b, DECISIONS #564). En lättnad efter att
+utfallet är sett prövas enligt L1–L4 och ersätter detta dokuments mening om att lättnad är utesluten: domen på lästa data står
+(L1), lättnaden gäller bara data som ingen har läst (L2), en ändring som flyttar ett sett tal mot godkänt är en lättnad (L3), och
+skälet får inte vara utfallet (L4). Den kräver båda signaturerna och en post med det sedda talet. Dokumentets absoluta undantag
+står kvar oavsett signaturer, och där dokumentet förbjuder all ändring efter första läsningen blir en lättnad en ny prövning med
+egen text och eget domfönster.
+
 1. Dokumentet fastställs av **Bengt**, som äger mätningen och trösklarna. Ingen kontrasignering.
 2. **Inget mäts förrän vintern gett klassningar.** Körs Å-A i september blir svaret OAVGJORT på
    Å-A4, och det är rätt svar — inte ett misslyckande.
