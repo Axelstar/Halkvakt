@@ -13082,4 +13082,11 @@ nyckeln medan funktionerna hade den gamla; återställningen lade tillbaka den g
 Rättat: `satt_hemlighet` returnerar CLI:ts status. **Nyckeln byts inte förrän en nyckel med rätten finns** — Axel byter den i
 panelen (SQL Editor och Edge Functions → Secrets), eller ger deploynyckeln rätten; frågan står i bedömningen §4.2.
 
+**Bengt 15/10: *"axel ger deploynyckeln rätten"*.** Deploynyckeln (SUPABASE_ACCESS_TOKEN) får `edge_functions_secrets_write`, och
+bytet körs med `nyckelbyte-ingest.yml`. Claude rekommenderade bytet i panelen (rätten ligger kvar efteråt, och deploynyckeln är
+begränsad med flit); valet är Bengts och Axels. Gör Axel en ny nyckel i stället för att vidga den gamla ska GitHub-hemligheten
+`SUPABASE_ACCESS_TOKEN` bytas till den. **Tredje körningen 08:22 UTC** (38705146382, på 1760a77 med rättelsen): rätten saknades
+fortfarande, och flödet stannade vid första steget — *"supabase secrets set föll — inget är bytt"* — utan att röra hemligheten
+eller cron-jobben. Rättelsen höll alltså. Nästa körning när Axel sagt att rätten finns.
+
 **Stomdokument:** SYS, BED §4.2.
