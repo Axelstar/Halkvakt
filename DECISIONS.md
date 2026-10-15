@@ -12967,4 +12967,9 @@ inom någon procent av körningen ovan (fönstret har flyttat några minuter); C
 **Läsningen enligt regeln ovan:** bandet 0,1–0,5 på `rate_mean` bekräftas redan i en majoritet (62 %), så talet 0,5 går tillbaka
 till Bengt och Axel före signeringen (bedömningen §4.2). Vattenplaningens band 2–10 bekräftas i 91 % på `rate_mean`.
 
+**Utfall andra knappen, 06:05 (38690393504, sju dygn) — förväntan uppfylld.** Grön på 1 min 24 s för hela jobbet. A och B är
+identiska med körningen 05:56 (samma 167 kompositer; ingen ny bild hann komma). C: 33 102 stationsregn, radarn hade en rad
+inom 5 km i 30 062 (91 %) — 2,5 gånger fler stationsregn än veckan till 5/10 (13 075), vilket förklarar att timeouten kom
+just nu. Kort #346 stängt: frågan utpekad med EXPLAIN, rättad, och en grön sjudygnskörning med kurvan på båda fälten.
+
 **Stomdokument:** MAT, BED §4.2.
