@@ -13176,4 +13176,13 @@ lydelse; frågan om den ska räknas står i §4.2, och skuggan bär flaggan så 
 **Driftordning efter *slå ihop*:** DB-knappen `migrera sql/055` och `migrera sql/056`, med bevisrader som ger antal per utfall — inga
 värden.
 
+**Bengts svar 15/10:** *"nej till fläckvis, engelska texten ok"* — *fläckvis Våt* räknas inte som fukt (regeln står som byggd;
+skuggan bär flaggan), och den engelska texten är *"Halkvakt thinks: slippery ahead."*
+
+**I drift 15/10** (PR #976 som 15dc5b2): DB-knappen 38713056832 `migrera sql/055` — 12 960 punkter, 818 sträckor, alla 818 i
+väglaget, anon utan rätt; 38713334591 `migrera sql/056` — på kandidatens timme 08:00 UTC 316 kalla vägpunkter: 152 `varnar`,
+164 `torr`, inget veto; anon kan inte köra funktionen. Läsningen 38713689134: alla 152 på 8 sträckor i Norrbotten och Lappland
+(66,4–68,4° N), alla med *Våt*, kandidatens yta i snitt −0,43 °C; närmaste station i snitt 14,9 km bort mätte −0,6…+0,8 °C
+(snitt +0,1), och 53 av 151 stationer frös själva — våta vägar kring nollan, det regeln ska fånga.
+
 **Stomdokument:** KUV, LIV, BED §4.2.
