@@ -152,6 +152,7 @@ utlösaren nedan gäller. Utlösaren står (signerad). Kurvan mäts om på båda
 utlösaren ska omprövas är Bengts och Axels fråga (bedömningen §4.2).
 **Ommätt 15/10** (38690393504, 8–15/10, DECISIONS #567): på `rate_mean_mmh` bekräftas 0,1–0,5 i 62 %, 0,5–2 i 82 %,
 2–10 i 91 % och ≥ 10 i 95 % (samma vecka på `rate_max_mmh`: 40 · 67 · 80 · 81 %). En vecka; kurvan har drivit mellan veckorna.
+**Utlösaren står** (Bengt 15/10, DECISIONS #568): tröskeln är oförändrad och underlaget bär den bättre än det gamla.
 
 **UTLÖSARTRÖSKELN — satt av Bengt 13/9 2026 ("Ja till 2"):**
 

@@ -12974,6 +12974,22 @@ just nu. Kort #346 stängt: frågan utpekad med EXPLAIN, rättad, och en grön s
 
 **Stomdokument:** MAT, BED §4.2.
 
+## #568 (15/10 2026) Radarns tröskel avgörs på tre veckors kurva; vattenplaningens utlösare står (kort #343, #42)
+
+**Bengts ord 15/10:** *"slå ihop 966, 2 enligt din rekommendation, 3 ja"*, på Claudes förslag i bedömningen §4.2.
+
+1. **Radarns tröskel i kandidatens regel (#565, #567).** 0,5 mm/h på `rate_mean_mmh` står som arbetstal. Den förregistrerade
+   regeln i #567 — det lägsta bandet där en majoritet (över 50 %) bekräftas — prövas på tre veckors kurva i stället för en:
+   8–15/10 (38690393504: bandet 0,1–0,5 bekräftat i 62 %) och måndagskörningarna 19/10 och 26/10 06:20 (pulsklockan,
+   `puls-cell-matning-v3`). **Visar alla tre en majoritet i bandet 0,1–0,5 blir talet 0,1 mm/h; annars står 0,5.** Talet förs in
+   i förregistreringen (#560) och signeras senast 31/10. Måndagskörningarna räknar sju dygn bakåt, så fönstret 12–19/10 delar tre
+   dygn med det första; de tre kurvorna är alltså inte helt oberoende.
+2. **Vattenplaningens utlösare `rate_mean_mmh` ≥ 2,0 mm/h står** (signerad 13/9). Ommätningen 15/10 gav bandet 2–10 på
+   `rate_mean` 91 % bekräftelse (80 % på `rate_max` samma vecka, 77 % i det dokumenterade underlaget). Tröskeln ändras inte, så
+   ingen ny signatur behövs; tröskeldokumentets §3.4 får beslutet på raden under ommätningen.
+
+**Stomdokument:** MAT, KUV, LIV, BED §4.2.
+
 ## #569 (15/10 2026) Databasen under taket: kandidatens gallring i timmar, vakthunden räknar som Supabase, trendtabellerna och radarn till hinken (kort #322, #347)
 
 **Bengts ord 15/10:** *"kör steg 1 och steg 2 a"*, på Claudes förslag samma dag, efter Bengts fråga om ett andra Supabase-konto.
