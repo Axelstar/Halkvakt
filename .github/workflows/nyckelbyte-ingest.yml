@@ -4,6 +4,9 @@
 # som bär den gamla (DATABASE_URL). Arbetsflödena som anropar funktionerna läser nyckeln ur cron.job och följer med av sig själva.
 # Beviset: arkivexporten svarar inte 403 på den nya nyckeln och 403 på den gamla, och inget cron-jobb bär den gamla.
 # Misslyckas något efter att hemligheten satts läggs den gamla nyckeln tillbaka i båda ändarna, högljutt.
+# OMDEPLOYEN (första körningen 38701610490): en satt hemlighet når inte funktioner som redan körs — den nya nyckeln gav 403 i över
+# två minuter, och cron-anropen 07:52–07:54 fick 403. Därför deployas de nio funktioner som läser INGEST_KEY om direkt efter att
+# hemligheten satts, innan cron.job byts; vid återställning deployas de om med den gamla.
 name: nyckelbyte-ingest
 on:
   workflow_dispatch:
@@ -18,8 +21,17 @@ jobs:
   byt:
     if: inputs.bekrafta == 'BYT'
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 25
     steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Bundlarna i synk med källorna (deploya aldrig ur fas)
+        run: |
+          node --experimental-strip-types scripts/bundle-publicera.ts --check
+          node --experimental-strip-types scripts/bundle-skuggmotor.ts --check
+          node --experimental-strip-types scripts/bundle-favoritprov.ts --check
       - uses: supabase/setup-cli@v1
         with: { version: 2.117.0 }
       - name: Byt INGEST_KEY i funktionerna och i cron.job
@@ -51,11 +63,15 @@ jobs:
           SQL
           }
           satt_hemlighet() { local f="$RUNNER_TEMP/ingest.env"; printf 'INGEST_KEY=%s\n' "$1" > "$f"; supabase secrets set --env-file "$f" --project-ref "$REF" >/dev/null; rm -f "$f"; }
+          # De nio som läser INGEST_KEY (facit-svar och skuggrapport gör det inte).
+          FUNKTIONER="arkivdump arkivexport byggsignaler favoritprov ingest-live kamerafacit publicera skuggmotor vakthund"
+          deploya() { for f in $FUNKTIONER; do echo "== deploy $f"; supabase functions deploy "$f" --project-ref "$REF" --no-verify-jwt || return 1; done; }
           status() { curl -s -o /dev/null -w '%{http_code}' -X POST "$FN" -H "x-halkvakt-key: $1" -H "Content-Type: application/json" -d '{}' || echo 000; }
           tillbaka() {
             echo "::error::$1 — den gamla nyckeln läggs tillbaka"
             byt_cron "$NY" "$GAMMAL" >/dev/null || true
             satt_hemlighet "$GAMMAL" || true
+            deploya || echo "::error::omdeployen med den gamla nyckeln föll — deploya de nio med deploy-supabase.yml"
             exit 1
           }
 
@@ -65,12 +81,17 @@ jobs:
 
           satt_hemlighet "$NY" || { echo "::error::supabase secrets set föll — inget är bytt"; exit 1; }
           echo "Funktionshemligheten INGEST_KEY är satt"
+          # Upplysning, inte grind: listans digest jämförs med sha256 av den nya nyckeln; bara ja eller nej skrivs ut.
+          D=$(printf %s "$NY" | sha256sum | cut -d' ' -f1)
+          if supabase secrets list --project-ref "$REF" 2>/dev/null | grep -q "$D"; then echo "Hemligheten i Supabase stämmer med den nya nyckeln: ja"; else echo "Hemligheten i Supabase stämmer med den nya nyckeln: nej (eller listan visar en annan digest)"; fi
+          deploya || tillbaka "omdeployen föll"
+          echo "De nio funktionerna är omdeployade med den nya nyckeln"
           BYTTA=$(byt_cron "$GAMMAL" "$NY") || tillbaka "cron.job gick inte att byta"
           KVAR=$(rakna "$GAMMAL"); MED_NY=$(rakna "$NY")
           echo "cron.job: $BYTTA jobb bytta, $KVAR bär den gamla, $MED_NY bär den nya"
           [ "$KVAR" -eq 0 ] && [ "$MED_NY" -eq "$FORE" ] || tillbaka "cron.job bär inte den nya nyckeln i alla $FORE jobb"
 
-          # Hemligheten når funktionerna inom sekunder; pröva i upp till två minuter.
+          # Funktionerna är omdeployade; pröva i upp till två minuter.
           S=403
           for i in $(seq 1 24); do S=$(status "$NY"); [ "$S" != 403 ] && break; sleep 5; done
           echo "Ny nyckel: HTTP $S"
