@@ -13323,4 +13323,15 @@ med `funktion=publicera`. Sedan:
    - Vetot och radarn rullar med klockan. En skillnad läses därför om i ett nytt fönster och bortförklaras inte.
 3. **Storleken:** nyckelns längd i byte och live.json:s storlek före och efter gzip redovisas.
 
+**I drift 15/10** (Bengt: *"slå ihop 980"*; PR #980 som 2962d8e): `deploy-supabase.yml funktion=publicera` 38777364020, 17:27 UTC.
+Mätningen, som förregistrerad ovan:
+1. **Filen:** publiceringen 17:30:02. live.json bär nyckeln `kandidat`, och manifestets live-sha är lika med sha256(live.json)
+   (`ddc221286bf2…`).
+2. **Mot regeln:** DB-knappen 38778213239, i samma fönster. Regelns timme 16:00 UTC, 2 sträckor och 16 punkter. Nyckeln har samma
+   2 sträckor med lika många punkter per sträcka, och `tid` 16:00. **Nyckeln är regeln.**
+3. **Storleken:** nyckeln 435 byte. live.json 79 531 byte, 29 568 byte med gzip. `segments` har 40 sträckor.
+
+Timmen som publiceras är regelns `kandidat_timme()`: den senaste timme som del B (:43) skrivit. Mellan :00 och :43 är den alltså
+föregående timme, upp till 1 h 43 min gammal, inom färskhetsregelns två timmar.
+
 **Stomdokument:** LIV steg 6, SYS (live.json bär nyckeln `kandidat`).
