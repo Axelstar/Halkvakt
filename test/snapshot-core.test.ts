@@ -16,6 +16,8 @@ function fakeDb(rows: Partial<Record<string, any[]>>) {
   const q: Q = async (text, params) => {
     asked.push(text);
     if (text.includes("FROM cameras")) return rows.cameras ?? [];
+    if (text.includes("kandidat_timme()")) return rows.kandidatTimme ?? [{ t: "2026-10-15T08:00:00Z" }];   // #576
+    if (text.includes("FROM kandidat_regel()")) return rows.kandidat ?? [];
     if (text.includes("AS radar_mmh")) return rows.radarStation ?? [];   // radarn per station (#459), före weather_latest-frågorna
     if (text.includes("= ANY($1::text[])")) { anyParams.push(params); return rows.regnSegs ?? []; }
     if (text.includes("weather_latest f")) {
@@ -324,6 +326,51 @@ test("#154 en fallen geometrifråga fäller inte snapshoten — rain_segments to
   const { liveDoc, notes } = await buildSnapshot(q, [], NOW);
   assert.deepEqual(liveDoc.rain_segments, []);
   assert.ok(notes.some((n) => n.startsWith("regnsegment:")), "felet ska stå i noterna");
+});
+
+// ── KANDIDATENS NYCKEL (kort #343, NIVA2-LIVE steg 6, DECISIONS #576) ─────────────────────────
+// Regeln bor i databasen (kandidat_regel); publiceringen tar utfallet `varnar` och inget annat, i en egen nyckel.
+test("#576 kandidaten: regelns varnande punkter blir en rad per sträcka i en egen nyckel — motorn ser samma faror som utan den", async () => {
+  const T = new Date("2026-10-15T08:00:00Z");
+  const { q, asked } = fakeDb({
+    segments: [{ segment_id: "S1", condition_code: 3, condition_info: ["Is"], road_number: "E4", g: { coordinates: [[15, 60], [15.1, 60.1]] } }],
+    kandidatTimme: [{ t: T }],
+    kandidat: [
+      { segment_id: "S1", lon: 20.123456, lat: 67.654321, tid: T },
+      { segment_id: "S1", lon: 20.2, lat: 67.7, tid: T },
+      { segment_id: "S7", lon: 21, lat: 66.5, tid: "2026-10-15T08:00:00.000Z" },
+    ],
+  });
+  const { staticDoc, liveDoc, notes } = await buildSnapshot(q, [], NOW);
+  assert.deepEqual(liveDoc.kandidat, [
+    { id: "S1", tid: "2026-10-15T08:00:00.000Z", punkter: [[20.12346, 67.65432], [20.2, 67.7]] },
+    { id: "S7", tid: "2026-10-15T08:00:00.000Z", punkter: [[21, 66.5]] },
+  ]);
+  assert.match(asked.find((t) => t.includes("FROM kandidat_regel()"))!, /WHERE utfall = 'varnar' ORDER BY segment_id, punkt/,
+    "bara utfallet varnar — inga egna tal i publiceringen");
+  assert.ok(!notes.some((n) => n.startsWith("kandidat:")));
+  assert.deepEqual(liveDoc.segments.map((s) => s.id), ["S1"], "väglaget är orört");
+  // LÄGG TILL, ERSÄTT ALDRIG: nyckeln når ingen port — motorn ger samma faror med och utan den.
+  assert.deepEqual(snapshotToHazards(staticDoc, liveDoc), snapshotToHazards(staticDoc, { ...liveDoc, kandidat: [] }));
+});
+
+test("#576 tiger regeln är kandidat tom och noterad, och regeln frågas inte", async () => {
+  const { q, asked } = fakeDb({ kandidatTimme: [{ t: null }], kandidat: [{ segment_id: "S1", lon: 20, lat: 67, tid: "2026-10-15T05:00:00Z" }] });
+  const { liveDoc, notes } = await buildSnapshot(q, [], NOW);
+  assert.deepEqual(liveDoc.kandidat, []);
+  assert.ok(!asked.some((t) => t.includes("kandidat_regel")));
+  assert.ok(notes.some((n) => n.startsWith("kandidat: regeln tiger")), "en tyst timme ska inte se ut som en timme utan varningar");
+});
+
+test("#576 en fallen regelfråga fäller inte snapshoten — kandidat tom och noterad", async () => {
+  const q: Q = async (text) => {
+    if (text.includes("kandidat_timme()")) return [{ t: "2026-10-15T08:00:00Z" }];
+    if (text.includes("kandidat_regel()")) throw new Error("permission denied for function kandidat_regel");
+    return [];
+  };
+  const { liveDoc, notes } = await buildSnapshot(q, [], NOW);
+  assert.deepEqual(liveDoc.kandidat, []);
+  assert.ok(notes.some((n) => n.startsWith("kandidat: regeln ej läsbar")), "felet ska stå i noterna");
 });
 
 // ── F1: SKATTARENS RÅA INDATA (kort #187, bedömning v3 N4, DECISIONS #188) ─────────────────

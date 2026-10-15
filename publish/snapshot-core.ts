@@ -237,6 +237,34 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
     }
   }
 
+  // ---- live: kandidatens varningar (kort #343, NIVA2-LIVE steg 6, DECISIONS #562 punkt 3, #576) ----
+  // Regeln bor på ETT ställe, kandidat_regel() i databasen — samma funktion som domloggen (kandidat_logga) och skuggmotorns
+  // takt läser, så det som publiceras är det som döms. Här står inga tal: publiceringen tar bara utfallet `varnar`. Egen nyckel,
+  // aldrig `segments` — varje rad där blir en halkvarning i tre portar (LÄGG TILL, ERSÄTT ALDRIG, som rain_segments). En rad per
+  // sträcka med dess varnande vägpunkter, för skuggan räknar passager på punkterna (kandidatLangsRutten). Ingen port läser nyckeln
+  // än (steg 10). Fail-soft: tom + not. Tiger regeln (timmen gammal eller ofullständig) är nyckeln tom och noten säger det — en
+  // tyst timme ska inte se ut som en timme utan varningar.
+  const kandidat: { id: string; tid: string; punkter: [number, number][] }[] = [];
+  try {
+    const [timme] = await q(`SELECT kandidat_timme() AS t`);
+    if (timme?.t == null) {
+      notes.push("kandidat: regeln tiger — kandidatens timme är gammal eller ofullständig (kandidat_timme)");
+    } else {
+      const rader = await q(`
+        SELECT segment_id, lon, lat, tid FROM kandidat_regel()
+        WHERE utfall = 'varnar' ORDER BY segment_id, punkt`);
+      for (const r of rader) {
+        const id = String(r.segment_id), sist = kandidat[kandidat.length - 1];
+        const p: [number, number] = [Math.round(Number(r.lon) * 1e5) / 1e5, Math.round(Number(r.lat) * 1e5) / 1e5];
+        if (sist?.id === id) sist.punkter.push(p);
+        else kandidat.push({ id, tid: new Date(r.tid).toISOString(), punkter: [p] });
+      }
+    }
+  } catch (e) {
+    kandidat.length = 0;
+    notes.push(`kandidat: regeln ej läsbar (${String((e as Error).message).slice(0, 80)}) — kandidat blir tom`);
+  }
+
   // ---- karantänen (kort #234): svenska stationer som nyligen brutit grovt mot #75 ----
   // Fail-soft som arkivfrågorna nedan: går historiken inte att läsa publiceras stationerna som förut, och det noteras.
   const karantan = new Set<string>();
@@ -403,6 +431,8 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
     segments: segs.map(segRow),
     // Regnsegmenten (#154): normalklassade segment med råradar ≥ utlösaren. Ingen port läser nyckeln.
     rain_segments: regnSegs.map(segRow),
+    // Kandidatens varnande sträckor (#576): punkterna med fem decimaler, regelns timme. Ingen port läser nyckeln.
+    kandidat,
     weather: wx.map((r) => {
       const id = String(r.station_id), l = lutning.get(id);
       return {

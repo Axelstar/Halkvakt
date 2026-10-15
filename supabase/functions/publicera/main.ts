@@ -112,7 +112,7 @@ Deno.serve(async (req) => {
     }
     const sha = await publicera(files, inline);
     return new Response(JSON.stringify({ ok: true, sha, generated_at: liveDoc.generated_at,
-      segments: liveDoc.segments.length, weather: liveDoc.weather.length,
+      segments: liveDoc.segments.length, kandidat: liveDoc.kandidat.length, weather: liveDoc.weather.length,
       deviations: liveDoc.deviations.length, wildlife: liveDoc.wildlife.length,
       bridges: liveDoc.bridges.length, smhi: liveDoc.smhi.length,
       cameras: staticDoc.cameras.length, border, notes,
