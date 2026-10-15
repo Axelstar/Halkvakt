@@ -646,6 +646,13 @@ export const KONTRAKT: Kontrakt[] = [
     filer: /frosttryck\.ts$|trendarkivet\.ts$|grind-t-a\.ts$|sql\/044_/,
     golv: 4,
   },
+  {
+    namn: "Spridningsgrindens X — domen och kandidatens regel tiger vid samma spridning",
+    varfor: "Driver X i regeln (sql/058) från X i domen (grind-s-b.ts) dömer domen andra varningar än appen gav (DECISIONS #475, #477, #575).",
+    former: [/const SPRIDNING_X: number \| null = ([\d.]+);/, /k\.spr >= ([\d.]+) THEN 'spridning'/],
+    filer: /grind-s-b\.ts$|sql\/058_/,
+    golv: 2,
+  },
 ];
 
 // ── SJÄLVTEST mot känd sanning, utan disk ──────────────────────────────────────────────

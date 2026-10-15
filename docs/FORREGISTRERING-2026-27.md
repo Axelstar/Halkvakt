@@ -1,6 +1,6 @@
 # Förregistrering — kandidaten NIVÅ 2+BLANDNING, vintern 2026/27
 
-**Status: UTKAST 15/10 2026, klart att signera när punkterna i §10 är besvarade och spridningen loggas.** Signeras av Bengt och Axel senast
+**Status: UTKAST 15/10 2026. Kvar före signeringen: radarns tal 26/10 (§10 a) och beviset att spridningen loggas i drift.** Signeras av Bengt och Axel senast
 **31/10 2026** (DECISIONS #544, #547). Domfönstret börjar den dag förregistreringen är signerad och pushad; varje dygn utan signatur är
 ett dygn vinter utanför domen. Källorna är DECISIONS #544, #547, #552, #558–#573 och TROSKLAR-SKUGGAN §2–§4. Utkastet i #560 ersätts
 av det här dokumentet; frågorna (A) och (B) där är besvarade av #562.
@@ -37,6 +37,7 @@ En annan modell, ett annat par eller en annan fysik är en annan kandidat och en
 | Fukt | väglagets *Våt* på punktens sträcka (`condition_info`, exakt — *fläckvis Våt* räknas inte, #573), **eller** radarn `rate_mean_mmh` ≥ **R** mm/h över sträckan de senaste 60 minuterna |
 | Veto | ingen station inom **15 km** mätte yta över **+2 °C** de senaste 45 minuterna, med ankarnas vakter (#75, karantänen, den långsamma vakten) |
 | Färskhet | kandidatens timme högst **två timmar** gammal och med minst **95 %** av vägpunkterna, annars tiger regeln |
+| Spridning | där minst två av RÅ:s ankare bidrar tiger kandidaten när deras spridning är **2,25 °C** eller mer; med färre ankare grindar spridningen inte (#547, #563, #575) |
 | Märkning | BETA och *modellerat*, aldrig *uppmätt* |
 
 **R** är 0,5 eller 0,1 enligt regeln i #568, läst på cellmätningens kurvor 15/10, 19/10 och 26/10 (§10 a). Kandidaten talar också långt
@@ -92,25 +93,16 @@ Formen i appen, texten (*"Halkvakt tror: halka framöver."* / *"Halkvakt thinks:
 **(a) Radarns tal R.** Läses 26/10 enligt #568: visar alla tre kurvorna en majoritet i bandet 0,1–0,5 på `rate_mean` blir R = 0,1,
 annars 0,5. Claude för in talet samma dag.
 
-**(b) Spridningsgrinden för kandidaten — avgjord av #547 och #563 tillsammans; kvar är en fråga om appen och ett bygge.**
-- *Grinden.* #547: kandidaten döms med RÅ:s spridningsgrind, **X = 2,25 °C**. #563 punkt 3: *"Bandet faller som krav. Kandidaten
-  talar överallt där regeln slår till, också långt från stationerna."* Lästa ihop: **spridningen grindar där minst två ankare
-  bidrar** (spridning ≥ 2,25 °C ⇒ okänt), och med färre ankare grindar den inte — kandidaten döms där också, redovisad per ankarband
-  (0–7, 7–15, 15–20, över 20 km). RÅ:s andra villkor, *färre än två ankare ⇒ okänt*, gäller inte kandidaten, eftersom #563 säger att
-  den talar långt från ankare.
-- *Fråga: gäller samma grind varningen i appen?* **Claudes förslag: ja** — då döms det användaren hör (#562 punkt 4: domen gäller
-  modellen som är live); annars mäter B1 en delmängd av varningarna. Det är en ändring av regeln i #562 och kräver båda signaturerna.
-- *Bygget.* TROSKLAR-SKUGGAN §3 säger *"bara varv med loggad spridning räknas"*, och kandidatens logg bär i dag varken antalet
-  bidragande ankare eller spridningen — **utan dem kan grind B inte räknas på kandidaten, och domen faller på RÅ.** Del B skriver
-  dem till `kandidat_live` (värdevaktens spann först), och `kandidat_skugga` bär för varje sträcka den minsta spridningen bland de
-  varnande punkterna med minst två ankare och antalet varnande punkter med färre — så att domen kan räkna grinden vid X = 1, 2, 2,25
-  och 4 °C, som S-B gör för RÅ. Byggs före signeringen.
+**(b) Spridningsgrinden — besvarad 15/10 (DECISIONS #574, #575).** Spridningen grindar där minst två ankare bidrar (#547 och #563
+lästa ihop), **samma grind gäller varningen i appen** (Bengts ja; regeln i §3 har villkoret), och loggningen är byggd: del B skriver
+antalet ankare och spridningen, och `kandidat_skugga` bär `spridning`, `fukt_glest` och `fukt_spr_min`, så att domen kan räkna
+grinden vid X = 1, 2, 2,25 och 4 °C. Kvar är beviset i drift: en timme i domloggen med spridningen ifylld.
 
-**(c) "845 stationer" i TROSKLAR-SKUGGAN §3** (rad 62) är en räkning av mätpunkter från före #344. Rättas till *"761 stationer (854
-mätpunkter, varav 93 fjärrytor)"* i samma post som signeringen — ingen tröskel ändras.
+**(c) "845 stationer" — rättat 15/10** (Bengts ja, DECISIONS #575): TROSKLAR-SKUGGAN §3 säger nu *761 stationer (854 mätpunkter,
+varav 93 fjärrytor)*. Ingen tröskel ändrades.
 
-**(d) Tysta timmar.** Claudes förslag i §4: en timme där regeln teg för att kandidaten var gammal eller ofullständig är *okänt*, inte
-täckt; andelen redovisas. Alternativet — tystnaden som miss — straffar kedjans driftavbrott som om modellen missat halkan.
+**(d) Tysta timmar — besvarad 15/10** (Bengts ja, DECISIONS #575): en tyst timme är *okänt*, inte täckt, och räknas inte som miss;
+andelen redovisas. Står i TROSKLAR-SKUGGAN §3.
 
 ## 11. Signaturer
 

@@ -13245,3 +13245,29 @@ den inte. Claude ställde det som en ny fråga i stället för att läsa beslute
 om samma grind gäller varningen i appen (en ändring av #562:s regel, båda signaturerna), och bygget av loggningen.
 
 **Stomdokument:** KUV, LIV, BED §4.2.
+
+## #575 (15/10 2026) Spridningsgrinden i kandidatens regel och logg, "845 stationer" rättat, tysta timmar är okänt (kort #343)
+
+**Bengts ord 15/10:** *"ja till grinden i appen, bygg loggningen, ja c och d"*, på förregistreringens §10 (#574). Regeln i #562 ändras
+(villkoret läggs till) och tröskeldokumentet rättas: Bengts ja nu, Axels signatur med förregistreringen.
+
+1. **Grinden i appen.** Kandidatens regel tiger där minst två av RÅ:s ankare bidrar och deras spridning är **2,25 °C** eller mer
+   (#477); med färre ankare grindar spridningen inte (#563). Samma grind i appen som i domen — det som döms är det användaren hör.
+   `kandidat_regel()` får utfallet `spridning` (sql/058).
+2. **Loggningen byggd.** Del B (`fysik/live/kandidat_timme.py`) skriver RÅ:s bidragande ankare (`n_ank`, högst fem inom 50 km) och
+   deras spridning (`spr`, störst minus minst yta, en decimal) — facit för hand i självtestet; `kandidat-db.ts` för dem till
+   `kandidat_live`; `kandidat_station` bär dem; `kandidat_skugga` bär `spridning` (punkter grinden tystade), `fukt_glest` (fuktiga
+   punkter med färre än två ankare) och `fukt_spr_min` (minsta spridningen bland de fuktiga med minst två) — en sträcka varnar vid X om
+   `fukt_glest > 0` eller `fukt_spr_min < X`, så domen räknar grinden vid X = 1, 2, 2,25 och 4 °C som S-B gör för RÅ. Värdevaktens
+   spann deklarerade (`n_ank` 0–5, `spr` 0–60 °C, domloggens fält), och `kandidat_skugga`/`kandidat_station` står i TIDSKOLUMN.
+   Kontraktsgrinden: *Spridningsgrindens X* över `grind-s-b.ts` och sql/058, med motprov (2,5 i regeln fäller).
+3. **(c)** TROSKLAR-SKUGGAN §3: *"845 stationer"* → *761 stationer (854 mätpunkter, varav 93 fjärrytor)*. Ingen tröskel ändras.
+4. **(d)** En tyst timme (kandidaten gammal eller ofullständig) är *okänt*, inte täckt, och räknas inte som miss i B2; andelen
+   redovisas. Står i TROSKLAR-SKUGGAN §3.
+
+**Prov:** del B:s självtest (antal och spridning vid fyra punkter, med facit för hand); integrationsprovet för grinden (2,25 tystar,
+2,2 talar, ett och noll ankare grindas inte, domloggens tre fält och stationsvärdena). **Driftordning efter *slå ihop*:** `migrera
+sql/058` före del B:s nästa timme (:43), annars faller skrivningen av de nya kolumnerna; sedan värdevakten, och beviset är en timme i
+domloggen med spridningen ifylld. Kvar före signeringen: radarns tal 26/10.
+
+**Stomdokument:** KUV, LIV, BED §4.2.
