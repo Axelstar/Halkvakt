@@ -13064,4 +13064,13 @@ kan vem som helst anropa dem och tömma gratisnivåns kvoter, men den läser ing
    apikey-fält eller en JWT skrivs inte ut, oavsett sats — vakten läser svaret, inte satsen, så att `SELECT *`, en vy eller en ny
    tabell med kommandon också fångas. Självtestet körs i ci.
 
+**Första körningen 07:51 UTC (38701610490, efter *slå ihop 971*) — återställd, nyckeln inte bytt.** Hemligheten sattes,
+alla 14 cron-jobb byttes, men arkivexporten gav 403 på den nya nyckeln i två minuter, och flödet lade tillbaka den gamla i
+båda ändarna. `net._http_response` (DB-knappen 38702159891) visar varför: cron-anropen med den nya nyckeln fick 403 07:52–07:54
+(fyra anrop), och efter återställningen 200 igen från 07:55 — funktionerna som redan körde behöll den gamla nyckeln. En satt
+hemlighet når dem först när de deployas om. Rättat: flödet deployar om de nio funktioner som läser INGEST_KEY direkt efter att
+hemligheten satts och innan `cron.job` byts, och gör om det vid en återställning; det skriver också ut om hemligheten i Supabase
+stämmer med den nya nyckeln (digest mot sha256, bara ja eller nej). Fönstret där cron-anrop kan få 403 blir omdeployens längd,
+några minuter.
+
 **Stomdokument:** SYS, BED §4.2.
