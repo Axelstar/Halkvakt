@@ -13042,3 +13042,26 @@ Läsarna: tolv program läser tabellerna i driften; alla utom `scripts/tystnadsf
 finns.
 
 **Stomdokument:** MAT §1, LIV, BED §4.2.
+
+## #570 (15/10 2026) INGEST_KEY läckte i en publik Actions-logg: körningen raderas, nyckeln byts, DB-knappen får en nyckelvakt (kort #348)
+
+**Vad som hände.** Efter migrationen av sql/053 (DB-knappen 38698517939, 07:24 UTC) läste en av Claudes bevisrader kolumnen
+`command` ur `cron.job`. Arkivexportens kommando bär `x-halkvakt-key` (INGEST_KEY) i klartext, och nyckeln — 48 tecken — står
+omaskerad i körningens logg och sammanfattning. Den finns inte i GitHub Secrets, så GitHub kunde inte maskera den, och repot är
+publikt. Husregeln *skriv aldrig ut cron-kommandon* fanns; ingen vakt höll den. Nyckeln skyddar alla nio edge-funktioner: med den
+kan vem som helst anropa dem och tömma gratisnivåns kvoter, men den läser inga data ur databasen.
+
+**Bengts ord 15/10:** *"kan du fixa nyckelbytet själv jag har inte lösenord"*, sedan *"gör 1,2 och 3 ovan"*:
+1. **Körningen 38698517939 raderas — av Bengt i GitHub** (Actions → körningen → ⋯ → *Delete workflow run*). Claude raderar inte
+   data permanent, inte ens på uppdrag. Nyckeln är värdelös efter bytet i punkt 2, så raderingen är städning, inte skyddet.
+2. **Nyckeln byts** med `.github/workflows/nyckelbyte-ingest.yml` (knapp, bekräftelsen `BYT`): den nya nyckeln (`openssl rand
+   -hex 32`) skapas i körningen, maskeras innan något annat händer och skrivs aldrig ut; den sätts som funktionshemlighet med
+   `supabase secrets set` (SUPABASE_ACCESS_TOKEN) och byts in i varje pg_cron-jobb som bär den gamla (`cron.alter_job`, värdena
+   som psql-variabler, inget kommando i loggen). Arbetsflödena som anropar funktionerna läser nyckeln ur `cron.job` och följer med.
+   Beviset: arkivexporten svarar inte 403 på den nya och 403 på den gamla, och inget cron-jobb bär den gamla. Fallerar något efter
+   att hemligheten satts läggs den gamla tillbaka i båda ändarna.
+3. **Nyckelvakten i DB-knappen** (`scripts/nyckelvakt.ts`, kort #348): ett svar som bär `x-halkvakt-key`, en Bearer-token, ett
+   apikey-fält eller en JWT skrivs inte ut, oavsett sats — vakten läser svaret, inte satsen, så att `SELECT *`, en vy eller en ny
+   tabell med kommandon också fångas. Självtestet körs i ci.
+
+**Stomdokument:** SYS, BED §4.2.

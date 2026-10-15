@@ -107,6 +107,7 @@ jobs:
           node --experimental-strip-types scripts/matningar/kuvos-kallkartan-2026-10-09.ts --sjalvtest
           node --experimental-strip-types scripts/matningar/a2-populationen-2026-10-14.ts --sjalvtest   # DECISIONS #554
           node --experimental-strip-types scripts/testarvakt.ts --sjalvtest
+          node --experimental-strip-types scripts/nyckelvakt.ts --sjalvtest   # DECISIONS #570
           node --experimental-strip-types scripts/publikvakt.ts --sjalvtest
           node --experimental-strip-types scripts/matningar/regioner.ts --sjalvtest
           node --experimental-strip-types scripts/matningar/kuvos-fysik-regioner-2026-10-09.ts --sjalvtest

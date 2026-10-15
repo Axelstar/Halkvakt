@@ -1963,6 +1963,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 ---
 
 ## 🟢 KLART (senaste vinsterna)
+- [x] ✅ 🔑 **#348 DB-KNAPPENS NYCKELVAKT — ETT SVAR SOM BÄR EN NYCKEL SKRIVS INTE UT (BYGGT 15/10 — Claude, Bengts *"gör 1,2 och 3"*, DECISIONS #570)**: INGEST_KEY läckte i dbknapp-körningen 38698517939, när en bevisrad läste `cron.job.command`. `scripts/nyckelvakt.ts` vägrar svar med `x-halkvakt-key`, Bearer-token, apikey eller JWT i `skrivSvar`, bredvid testarvakten; självtestet i ci. Nyckelbytet är `nyckelbyte-ingest.yml` (DECISIONS #570 punkt 2).
 - [x] ✅ 📡 **#346 CELLMÄTNINGEN V3 RYMS INTE I 300 SEKUNDER (KLART 15/10 — grön sjudygnskörning 38690393504, DECISIONS #567)**: frågan utpekad med EXPLAIN i DB-knappens läsläge (38690252286) — kompositlistan bakades in i den laterala frågan och sjudygnsskanningen kördes en gång per stationsregn; `komp AS MATERIALIZED` räknar den en gång. A och B skrivs ut före C, A bandas på både `rate_mean_mmh` och `rate_max_mmh`, och C tar närheten ur `nara`. Gammal mot ny på ett dygn identiska (38689303015/38689306723). Kurvan på `rate_mean` 8–15/10: 62 · 82 · 91 · 95 % (DECISIONS #565–#567).
 - [x] ✅ ⚖️ **#282 REGEL L — ÄNDRING AV EN TRÖSKEL EFTER ATT UTFALLET ÄR SETT (INFÖRD 15/10 — DECISIONS #564)** (Bengts fråga och order 2/10: *"skriv ett
   ✅ **Klart 15/10:** Bengt för båda (*"ja enligt lydelsen L1-4 från nu"*, DECISIONS #564). Texten i TROSKLAR-KOMBINATIONEN §5b och L-raden i alla tretton dokument i samma commit; regel T inte längre bland de absoluta undantagen (#563); alternativ D valdes bort.
