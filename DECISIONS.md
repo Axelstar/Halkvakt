@@ -13027,4 +13027,18 @@ väderarkivet (kort #323).
 kedjan hade fått läsa och skriva i två databaser med dubbla nycklar, cron-jobb, vakthundar och migrationer; och om Supabases villkor
 tillåter ett extra gratiskonto är inte läst. Supabase Pro (~25 USD/mån, 8 GB): inte nu, kräver Axels ja.
 
+**Steg 1 i drift 15/10 06:57–07:05 UTC** (Bengt: *"slå ihop 968"*; PR #968 som bc85a88). DB-knappen 38695624938: `migrera
+sql/052` bekräftad, summan **485 MB** före, `TRUNCATE` (båda tabellerna 40 kB efteråt), funktionen bär en timme och sex timmar,
+summan **452 MB** efter. Del A med 20261015T00Z (38695874516): 82 284 PH-rader för 06–11 UTC. Vakthunden deployad från bc85a88
+(38695878352). Läsning 07:05 (38696440710): **459 MB**.
+
+**Steg 2 (a) byggt (kort #347).** `sql/053_arkiv_tabeller.sql`: bokföringen `arkiv_export_tabell` och funktionerna `arkiv2_*` med
+vitlista över de tre tabellerna; dygn minst åtta dygn gamla exporteras (trendens utfall och trendarkivets omräkning är klara då);
+raderingen 03:50 tar upp till 40 tabelldygn per natt äldre än 14 dygn, samma storleksgrind som väderarkivet (350 MB), och ett
+dygn som vuxit efter exporten exporteras om (045:s läxa). Arkivexporten tar tabellerna efter väderdygnen, två dygn per tabell och
+timme, med samma återläsning (kontrollsumma och radantal). Vakthunden har en rad och ett stillastående-larm för tabellerna.
+Läsarna: tolv program läser tabellerna i driften; alla utom `scripts/tystnadsfelet.ts` och värdevakten (30 dygn) läser högst
+14 dygn. Tystnadsfelet skriver redan ut att trendsignalen är okänd för äldre händelser, och värdevakten besiktigar de dygn som
+finns.
+
 **Stomdokument:** MAT §1, LIV, BED §4.2.

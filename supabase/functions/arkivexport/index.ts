@@ -3,6 +3,7 @@
 // arkiv/weather_observations/ÅÅÅÅ-MM-DD.ndjson.gz, LÄSER TILLBAKA filen, räknar raderna och jämför kontrollsumman, och
 // bokför dygnet (arkiv_export_klar, som räknar dygnet en gång till i databasen). Funktionen raderar aldrig något — det gör
 // bara pg_cron (arkiv_radera_exporterat), och bara bokförda dygn. Anropas av pg_cron varje timme på minut 40.
+// Sedan 15/10 (kort #347, DECISIONS #569, sql/053) tar samma anrop också trendtabellerna och radarn, två dygn per tabell.
 //
 // ÅTERLÄSPROVET (kort #291, DECISIONS #450): ?aterlasprov=1 hämtar det äldsta exporterade, ännu inte raderade dygnet ur hinken,
 // kontrollerar kontrollsumman mot bokföringen och jämför filens rader med databasens, kolumn för kolumn (sql/042 arkiv_jamfor).
@@ -13,6 +14,7 @@ const SRK = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const H = { Authorization: `Bearer ${SRK}`, apikey: SRK };
 const HINK = "arkiv";
 const MAX_DYGN = 2;
+const TABELLER = ["trend_kandidater", "trend_stigande", "radar_precip"];  // sql/053:s vitlista
 
 async function rpc(fn: string, args: Record<string, unknown>): Promise<any> {
   const r = await fetch(`${SB}/rest/v1/rpc/${fn}`, { method: "POST", headers: { ...H, "Content-Type": "application/json" }, body: JSON.stringify(args) });
@@ -51,29 +53,43 @@ Deno.serve(async (req) => {
   if (!k || req.headers.get("x-halkvakt-key") !== k) return new Response("forbidden", { status: 403 });
   if (new URL(req.url).searchParams.get("aterlasprov") === "1") return aterlasprov();
   const ut: unknown[] = [];
+  // Packa, ladda upp och LÄS TILLBAKA det som faktiskt ligger i hinken — ett grönt uppladdningssvar är inte beviset.
+  async function lagg(d: string, text: string, vag: string) {
+    const rader = radantal(text);
+    const gz = await packa(text);
+    const sha = hex(await crypto.subtle.digest("SHA-256", gz));
+    const up = await fetch(`${SB}/storage/v1/object/${HINK}/${vag}`, { method: "POST",
+      headers: { ...H, "Content-Type": "application/gzip", "x-upsert": "true" }, body: gz });
+    if (!up.ok) throw new Error(`uppladdning ${vag} ${up.status}: ${(await up.text()).slice(0, 200)}`);
+    const ner = await fetch(`${SB}/storage/v1/object/${HINK}/${vag}`, { headers: H });
+    if (!ner.ok) throw new Error(`återläsning ${vag} ${ner.status}`);
+    const tillbaka = await ner.arrayBuffer();
+    const sha2 = hex(await crypto.subtle.digest("SHA-256", tillbaka));
+    const rader2 = radantal(await packaUpp(tillbaka));
+    if (sha2 !== sha || rader2 !== rader) throw new Error(`verifiering ${vag}: sha ${sha2 === sha ? "lika" : "OLIKA"}, rader ${rader2} mot ${rader}`);
+    return { d, rader, storlek: gz.byteLength, text_bytes: text.length, sha };
+  }
   try {
     const dygn: string[] = await rpc("arkiv_att_exportera", { maxantal: MAX_DYGN });
     for (const d of dygn) {
-      const text: string = await rpc("arkiv_dygn", { d });
-      const rader = radantal(text);
-      const gz = await packa(text);
-      const sha = hex(await crypto.subtle.digest("SHA-256", gz));
       const vag = `weather_observations/${d}.ndjson.gz`;
-      const up = await fetch(`${SB}/storage/v1/object/${HINK}/${vag}`, { method: "POST",
-        headers: { ...H, "Content-Type": "application/gzip", "x-upsert": "true" }, body: gz });
-      if (!up.ok) throw new Error(`uppladdning ${d} ${up.status}: ${(await up.text()).slice(0, 200)}`);
-      // Läs tillbaka det som faktiskt ligger i hinken — ett grönt uppladdningssvar är inte beviset.
-      const ner = await fetch(`${SB}/storage/v1/object/${HINK}/${vag}`, { headers: H });
-      if (!ner.ok) throw new Error(`återläsning ${d} ${ner.status}`);
-      const tillbaka = await ner.arrayBuffer();
-      const sha2 = hex(await crypto.subtle.digest("SHA-256", tillbaka));
-      const rader2 = radantal(await packaUpp(tillbaka));
-      if (sha2 !== sha || rader2 !== rader) throw new Error(`verifiering ${d}: sha ${sha2 === sha ? "lika" : "OLIKA"}, rader ${rader2} mot ${rader}`);
-      const n = await rpc("arkiv_export_klar", { d, antal: rader, storlek: gz.byteLength, sha, vag });
-      ut.push({ dag: d, rader: n, bytes: gz.byteLength, text_bytes: text.length, sha: sha.slice(0, 12) });
+      const f = await lagg(d, await rpc("arkiv_dygn", { d }), vag);
+      const n = await rpc("arkiv_export_klar", { d, antal: f.rader, storlek: f.storlek, sha: f.sha, vag });
+      ut.push({ dag: d, rader: n, bytes: f.storlek, text_bytes: f.text_bytes, sha: f.sha.slice(0, 12) });
+    }
+    // Trendtabellerna och radarn (kort #347, DECISIONS #569, sql/053): samma väg, bokförda per tabell.
+    for (const tab of TABELLER) {
+      const tdygn: string[] = await rpc("arkiv2_att_exportera", { tab, maxantal: MAX_DYGN });
+      for (const d of tdygn) {
+        const vag = `${tab}/${d}.ndjson.gz`;
+        const f = await lagg(d, await rpc("arkiv2_dygn", { tab, d }), vag);
+        const n = await rpc("arkiv2_export_klar", { tab, d, antal: f.rader, storlek: f.storlek, sha: f.sha, vag });
+        ut.push({ tabell: tab, dag: d, rader: n, bytes: f.storlek, text_bytes: f.text_bytes, sha: f.sha.slice(0, 12) });
+      }
     }
     const efter = await rpc("arkiv_efterslap", {});
-    return new Response(JSON.stringify({ ok: true, exporterade: ut, efterslap: efter }), { headers: { "Content-Type": "application/json" } });
+    const efter2 = await rpc("arkiv2_efterslap", {});
+    return new Response(JSON.stringify({ ok: true, exporterade: ut, efterslap: efter, efterslap_tabeller: efter2 }), { headers: { "Content-Type": "application/json" } });
   } catch (e) {
     return new Response(JSON.stringify({ ok: false, exporterade: ut, fel: String(e).slice(0, 400) }), { status: 500, headers: { "Content-Type": "application/json" } });
   }

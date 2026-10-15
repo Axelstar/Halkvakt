@@ -993,6 +993,13 @@ Deno.serve(async (req) => {
       rad.push(`arkivexport: ${x.dygn} dygn exporterade (senast ${x.senast_dag ?? "–"}, ${x.timmar ?? "–"} h sedan), ${x.efter} väntar, ${x.raderade} raderade ur databasen`);
       if (x.efter > 3 && (x.timmar === null || Number(x.timmar) > 3))
         problem.push(`**Arkivexporten står still**: ${x.efter} färdiga dygn väntar och ingen export på ${x.timmar ?? "–"} h — läs net._http_response för arkivexport (kort #83, DECISIONS #334)`);
+      // Trendtabellerna och radarn (kort #347, DECISIONS #569, sql/053): samma rad och samma larm, räknat i tabelldygn.
+      const [y] = await sql`SELECT arkiv2_efterslap() AS efter, (SELECT count(*)::int FROM arkiv_export_tabell) AS dygn,
+        (SELECT round(extract(epoch FROM now() - max(exporterad)) / 3600, 1) FROM arkiv_export_tabell) AS timmar,
+        (SELECT count(*)::int FROM arkiv_export_tabell WHERE raderad IS NOT NULL) AS raderade`;
+      rad.push(`arkivexport, trendtabellerna och radarn: ${y.dygn} tabelldygn exporterade (${y.timmar ?? "–"} h sedan), ${y.efter} väntar, ${y.raderade} raderade ur databasen`);
+      if (y.efter > 3 && (y.timmar === null || Number(y.timmar) > 3))
+        problem.push(`**Arkivexporten av trendtabellerna och radarn står still**: ${y.efter} färdiga tabelldygn väntar och ingen export på ${y.timmar ?? "–"} h — läs net._http_response för arkivexport (kort #347, DECISIONS #569)`);
     } catch (e) { problem.push(`**Kunde inte läsa arkivexporten**: ${String(e).slice(0, 160)}`); }
   } catch (e) {
     // Samma regel som de andra: en blind vakt är värre än ingen.
