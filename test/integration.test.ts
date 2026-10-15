@@ -1675,7 +1675,7 @@ test("#573 del 2: domloggen per sträcka, stationsvärdena, körningsloggen och 
 
 // DECISIONS #575 (sql/058): spridningsgrinden i regeln och domloggen. Gränsen 2,25 åt båda hållen, punkter med färre än två ankare
 // grindas inte (#563), och domloggen bär det som räknar grinden vid vilket X som helst.
-test("#575 spridningsgrinden: regeln, gränsen, glesa punkter och domloggens fält", { skip: !url }, async () => {
+test("#575 spridningsgrinden: regeln, gränsen, glesa punkter och domloggens fält — och publiceringen (#576)", { skip: !url }, async () => {
   const { default: pg } = await import("pg");
   const { readFileSync } = await import("node:fs");
   const pool = new pg.Pool({ connectionString: url, max: 1 });
@@ -1713,6 +1713,11 @@ test("#575 spridningsgrinden: regeln, gränsen, glesa punkter och domloggens fä
     await q("INSERT INTO kandidat_live (tid, punkt, pb, n_ank, spr) VALUES ($1, 'ST_B', 1.5, 3, 1.5)", [tid]);
     const utfall = Object.fromEntries((await q("SELECT punkt, utfall FROM kandidat_regel() WHERE punkt LIKE 'vT%'")).rows.map((r) => [r.punkt, r.utfall]));
     assert.deepEqual(utfall, Object.fromEntries(P.map(([p, , , , u]) => [p, u])));
+    // NIVA2-LIVE steg 6 (#576): publiceringen tar regelns `varnar` och inget annat — de tystade punkterna kommer inte med.
+    const { buildSnapshot } = await import("../publish/snapshot-core.ts");
+    const { liveDoc } = await buildSnapshot(async (t, p) => (await pool.query(t, p as any[])).rows, []);
+    assert.deepEqual(liveDoc.kandidat.filter((r) => r.id.startsWith("9992")),
+      ["99921", "99922", "99923", "99924"].map((id) => ({ id, tid: tid.toISOString(), punkter: [[32, 70]] })));
     assert.match((await q("SELECT kandidat_logga() AS m")).rows[0].m, /4 sträckor, 4 varnande punkter, 0 vetade, 0 torra, 2 tystade av spridningen/);
     const rad = Object.fromEntries((await q("SELECT segment_id, varnar, spridning, fukt_glest, fukt_spr_min FROM kandidat_skugga WHERE segment_id LIKE '9992%'"))
       .rows.map((r) => [r.segment_id, [r.varnar, r.spridning, r.fukt_glest, r.fukt_spr_min]]));
