@@ -134,6 +134,17 @@ export const SPANN: Record<string, [number, number, string]> = {
   ts_fysik: [-60, 80, "°C — fysikkolumnens yta"], ph: [-60, 80, "°C — fysiken + rättelsen"],
   pg: [-60, 80, "°C — PH + grannarnas fel"], ra: [-60, 80, "°C — RÅ, grannarnas uppmätta yta"],
   pb: [-60, 80, "°C — blandningen, kandidatens värde"], ank_km: [0, 300, "km till närmaste bidragande ankare"],
+  // Spridningsgrinden för kandidaten (DECISIONS #575): RÅ:s bidragande ankare (högst fem inom 50 km) och deras spridning, störst
+  // minus minst yta. Spridningen bär grindens tröskel 2,25 °C, så den besiktigas innan grinden talar. Ytornas spann (−60…+80) ger en
+  // teoretisk spridning upp till 140; 60 °C är redan en trasig givare bland grannarna, inte ett väder.
+  n_ank: [0, 5, "antal bidragande ankare"], spr: [0, 60, "°C — ankarnas spridning"],
+  // Domloggen (sql/057–058, kandidat_skugga): antal vägpunkter per sträcka och utfall — en sträcka har högst 64 punkter
+  // (vaglagspunkter.json 15/10) — och sträckans radar, kallaste värde, vetostation och minsta spridning bland de varnande.
+  punkter: [0, 64, "vägpunkter med yta ≤ 0 på sträckan"], varnar: [0, 64, "varnande punkter"], veto: [0, 64, "vetade punkter"],
+  torr: [0, 64, "punkter utan fukt"], spridning: [0, 64, "punkter grinden tystade"], fukt_glest: [0, 64, "fuktiga punkter med färre än två ankare"],
+  radar_mmh: [0, 200, "mm/h — radarns rate_mean över sträckan"], pb_min: [-60, 80, "°C — kandidatens kallaste värde på sträckan"],
+  veto_km: [0, 15, "km till vetostationen"], veto_yta: [-60, 80, "°C — vetostationens yta"],
+  fukt_spr_min: [0, 60, "°C — minsta spridningen bland de fuktiga punkterna med minst två ankare"],
 };
 
 /** Identifierare är inte mätvärden. De ska inte stå som obesiktigade — men de ska inte heller
@@ -243,6 +254,8 @@ const TID: Record<string, string> = {
   // Kort #343: kandidatens två tabeller (sql/050). Utan raden här skannas deras fält aldrig, inte ens som OBESIKTIGADE
   // — samma fälla som trend_kandidater gick i 15/9.
   kandidat_ph: "tid", kandidat_live: "tid",
+  // DECISIONS #573/#575: domloggen och stationsvärdena — de bär måtten i mars.
+  kandidat_skugga: "observed_at", kandidat_station: "observed_at",
 };
 
 console.log(`Värdevakten — besiktning av arkivets numeriska fält (${DAGAR} dygns fönster)\n`);

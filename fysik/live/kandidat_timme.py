@@ -38,11 +38,12 @@ def timme(punkter, stationer, W, L):
     """punkter: DataFrame punkt, lon, lat, ph (PH at the hour, every point incl. the stations, punkt = station id for a station).
        stationer: DataFrame punkt, yta, lon, lat (the measured surface at the hour, grind A's population, with the station's own
        position). Every station is an anchor for RÅ; only a station that also has PH gives a residual — as the replica and the shadow.
-       Returns punkter with corr, pg, ra, ank_km, pb."""
+       Returns punkter with corr, pg, ra, ank_km, pb, and RÅ's anchors: n_ank (how many contribute, 0–5) and spr (their spread,
+       largest minus smallest surface, 0 with one, NaN without — the spread gate's input, DECISIONS #474, #575)."""
     p = punkter.reset_index(drop=True)
     st = stationer[['punkt', 'yta', 'lon', 'lat']].merge(p[['punkt', 'ph']], on='punkt', how='left').reset_index(drop=True)
     n, m = len(p), len(st)
-    corr = np.zeros(n); ra = np.full(n, np.nan); ank = np.full(n, np.nan)
+    corr = np.zeros(n); ra = np.full(n, np.nan); ank = np.full(n, np.nan); nank = np.zeros(n, dtype=int); spr = np.full(n, np.nan)
     if m:
         D = hav(p.lon.to_numpy()[:, None], p.lat.to_numpy()[:, None], st.lon.to_numpy()[None, :], st.lat.to_numpy()[None, :])
         sjalv = p.punkt.to_numpy()[:, None] == st.punkt.to_numpy()[None, :]
@@ -62,10 +63,12 @@ def timme(punkter, stationer, W, L):
             if a.size:
                 w = 1.0 / np.maximum(d[a], 1.0)
                 ra[j] = (w * yta[a]).sum() / w.sum(); ank[j] = d[a][0]
+                nank[j] = a.size; spr[j] = yta[a].max() - yta[a].min()
     pg = p.ph.to_numpy(float) + corr
     wb = W * np.exp(-np.nan_to_num(ank, nan=1e9) / L)
     pb = np.where(np.isfinite(ra), wb * ra + (1 - wb) * pg, pg)
-    return p.assign(corr=np.round(corr, 3), pg=np.round(pg, 2), ra=np.round(ra, 2), ank_km=np.round(ank, 1), pb=np.round(pb, 2))
+    return p.assign(corr=np.round(corr, 3), pg=np.round(pg, 2), ra=np.round(ra, 2), ank_km=np.round(ank, 1), pb=np.round(pb, 2),
+                    n_ank=nank, spr=np.round(spr, 1))
 
 
 def sjalvtest():
@@ -94,6 +97,11 @@ def sjalvtest():
         fel.append(f'A korrigerar inte sig själv, och blandas med exp(−10/160): corr {u.loc["A", "corr"]} ({corr_a:.3f}), ank {u.loc["A", "ank_km"]}, pb {u.loc["A", "pb"]} ({pb_a:.3f})')
     # At D (400 km from the others): no residual within 300 km, no anchor within 50 km ⇒ corr 0, pb = ph.
     if u.loc['D', 'corr'] != 0 or not np.isnan(u.loc['D', 'ra']) or u.loc['D', 'pb'] != 4.0: fel.append(f'D utan grannar: {u.loc["D"].to_dict()}')
+    # RÅ:s ankare och deras spridning (spridningsgrinden, #474/#575), facit för hand: v0 har A (−1), B (0), C (+2) inom 50 km ⇒ 3 och
+    # 3,0 °C; A utan sig själv B (0) och C (+2) ⇒ 2 och 2,0; D inga ⇒ 0 och NaN.
+    if not (u.loc['v0', 'n_ank'] == 3 and u.loc['v0', 'spr'] == 3.0 and u.loc['A', 'n_ank'] == 2 and u.loc['A', 'spr'] == 2.0
+            and u.loc['D', 'n_ank'] == 0 and np.isnan(u.loc['D', 'spr'])):
+        fel.append(f'ankarna och spridningen: v0 {u.loc["v0", "n_ank"]}/{u.loc["v0", "spr"]}, A {u.loc["A", "n_ank"]}/{u.loc["A", "spr"]}, D {u.loc["D", "n_ank"]}/{u.loc["D", "spr"]}')
     # The caps: 12 stations within 20 km with values 1…12 by distance — only the 8 nearest residuals and the 5 nearest anchors count.
     st2 = pd.DataFrame({'punkt': [f's{i}' for i in range(12)], 'yta': [float(i + 1) for i in range(12)], 'lon': [15 + (i + 1) * 1.5 * km for i in range(12)], 'lat': [60.0] * 12})
     p2 = pd.DataFrame({'punkt': ['v1'] + list(st2.punkt), 'lon': [15.0] + [15 + (i + 1) * 1.5 * km for i in range(12)], 'lat': [60.0] * 13, 'ph': [0.0] * 13})
@@ -102,6 +110,7 @@ def sjalvtest():
     if abs(u2.loc['v1', 'corr'] - corr8) > 1e-3: fel.append(f'bara de åtta närmaste felen räknas: {u2.loc["v1", "corr"]} ({corr8:.3f})')
     d5 = np.array([(i + 1) * 1.5 for i in range(5)]); w5 = 1 / np.maximum(d5, 1); ra5 = (w5 * np.arange(1, 6)).sum() / w5.sum()
     if abs(u2.loc['v1', 'ra'] - ra5) > 0.006 or u2.loc['v1', 'ank_km'] != 1.5: fel.append(f'RÅ ur de fem närmaste: {u2.loc["v1", "ra"]} ({ra5:.3f}), ank {u2.loc["v1", "ank_km"]}')
+    if not (u2.loc['v1', 'n_ank'] == 5 and u2.loc['v1', 'spr'] == 4.0): fel.append(f'spridningen över de fem: {u2.loc["v1", "n_ank"]}/{u2.loc["v1", "spr"]}')
     # A station without a measurement at the hour is not an anchor and gives no residual; a station with a measurement but
     # without PH (no frozen features, or outside the chain) is an anchor for RÅ but gives no residual — as the replica.
     u3 = timme(p, st[st.punkt != 'A'], W, L).set_index('punkt')
@@ -123,16 +132,18 @@ def sjalvtest():
         logg = print
         s = kor(f'{d}/ph.csv', f'{d}/punkter.csv', f'{d}/ankare.csv', '2026-10-15T12:00:00Z', f'{d}/live.csv')
         live = pd.read_csv(f'{d}/live.csv', dtype={'punkt': str})
-        if not (s['punkter'] == 2 and s['ankare'] == 2 and list(live.columns) == ['tid_utc', 'punkt', 'ph', 'pg', 'ra', 'ank_km', 'pb'] and live.tid_utc.iloc[0] == '2026-10-15T12:00:00Z'
+        if not (s['punkter'] == 2 and s['ankare'] == 2 and list(live.columns) == ['tid_utc', 'punkt', 'ph', 'pg', 'ra', 'ank_km', 'pb', 'n_ank', 'spr'] and live.tid_utc.iloc[0] == '2026-10-15T12:00:00Z'
                 and set(live.punkt) == {'1001', 'v00000'}):
             fel.append(f'körningen ur filer: {s}, {live.to_dict()}')
         # B (10 km, residual unknown: no PH at B) corrects nothing; v0 gets RÅ from A (0 km) and B.
         v = live.set_index('punkt').loc['v00000']
         if not (v.ank_km == 0.0 and abs(v.ra - (-1.0 * 1 + 0.0 * 0.1) / 1.1) < 0.01): fel.append(f'v0 ur filer: {v.to_dict()}')
+        s1 = live.set_index('punkt').loc['1001']
+        if not (v.n_ank == 2 and v.spr == 1.0 and s1.n_ank == 1 and s1.spr == 0.0): fel.append(f'ankarna och spridningen ur filer: v0 {v.n_ank}/{v.spr}, 1001 {s1.n_ank}/{s1.spr}')
     for f in fel: print('✗', f)
     if fel: sys.exit(1)
     print('✓ självtest: grannarnas fel (åtta närmaste inom 300 km, exp(−d/100), krympning 0,5, aldrig sig själv), RÅ (fem inom 50 km, 1/max(km, 1)), '
-          f'blandningen med paret W {W} · L {L:g} km ur kandidatfilen, taken, en station utan mätning, och körningen ur filer')
+          f'blandningen med paret W {W} · L {L:g} km ur kandidatfilen, taken, en station utan mätning, ankarna och spridningen, och körningen ur filer')
 
 
 def kor(ph_csv, punkter_csv, ankare_csv, tid, ut):
@@ -146,7 +157,7 @@ def kor(ph_csv, punkter_csv, ankare_csv, tid, ut):
     W, L = par()
     u = timme(p, ank, W, L)
     u.insert(0, 'tid_utc', tid)
-    u[['tid_utc', 'punkt', 'ph', 'pg', 'ra', 'ank_km', 'pb']].to_csv(ut, index=False)
+    u[['tid_utc', 'punkt', 'ph', 'pg', 'ra', 'ank_km', 'pb', 'n_ank', 'spr']].to_csv(ut, index=False)
     s = {'tid': tid, 'punkter': int(len(u)), 'ankare': int(len(ank)), 'med_ra': int(u.ra.notna().sum()), 'pb_min': float(u.pb.min()), 'pb_max': float(u.pb.max()),
          'corr_medel': float(u['corr'].mean()), 'W': W, 'L_km': L}            # u.corr vore DataFrame.corr(), metoden
     print(f'kandidaten {tid}: {s["punkter"]} punkter, {s["ankare"]} ankare, RÅ vid {s["med_ra"]}, pb {s["pb_min"]:.1f}–{s["pb_max"]:.1f} °C, grannfelets medel {s["corr_medel"]:+.2f} → {ut}')

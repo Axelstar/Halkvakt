@@ -59,7 +59,8 @@ inte för att underkänna segmentmotorn.
 
 Leave-one-out per station: prognostisera varje stations yttemp ur grannarnas
 offsetmodell, jämför med mätt. Räknat på vintertimmar (mätt yta ≤ +5 °C),
-nationellt över alla 845 stationer, redovisat per ankaravståndsband
+nationellt över alla 761 stationer (854 mätpunkter, varav 93 fjärrytor — rättat 15/10 2026 på Bengts ja, DECISIONS #575;
+talet 845 var en räkning av mätpunkter från före #344), redovisat per ankaravståndsband
 (0–7 / 7–15 / 15–20 / >20 km).
 
 | # | Mått | Tröskel |
@@ -145,6 +146,13 @@ nivå 2 på MET Nordic, rättad, med grannarnas fel och blandad med RÅ, i den f
 - RÅ:s dom ovan fälls som förut och redovisas bredvid, som kontroll. Domslutet i §4 gäller kandidaten.
 - Kan kandidaten inte räknas för vintern fälls domslutet på RÅ som förut (reserven). Det blir inte två chanser att klara grinden.
 - Hur kandidaten räknas under vintern (uppspelning efter vintern eller i drift) är Axels fråga i bedömningen §4.2.
+- **Spridningsgrinden för kandidaten** (15/10 2026, DECISIONS #574, #575 — Bengts ja, Axels signatur med förregistreringen):
+  lästa ihop med #563 (kandidaten talar också långt från stationerna) grindar spridningen bara där minst två ankare bidrar —
+  spridning ≥ 2,25 °C ⇒ okänt — och med färre ankare grindar den inte; kandidaten döms där också, redovisad per ankarband.
+  **Samma grind gäller varningen i appen** (regeln i #562 får villkoret; kandidat_regel(), sql/058), så att det som döms är det
+  användaren hör. Kandidatens logg bär antalet ankare och spridningen (kandidat_live, kandidat_skugga), som grinden kräver.
+- **Tysta timmar** (15/10 2026, DECISIONS #575, Bengts ja): en timme där kandidatens regel teg för att kandidaten var gammal eller
+  ofullständig (körningsloggen *tyst*) är *okänt* — inte täckt — och räknas inte som miss i B2; andelen redovisas för sig.
 
 ### Grind B — skuggdriften (hela vintern, dom i mars)
 

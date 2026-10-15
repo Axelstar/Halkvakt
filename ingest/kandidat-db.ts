@@ -39,9 +39,10 @@ export const SATS = {
     ON CONFLICT (tid, punkt) DO UPDATE SET korning = EXCLUDED.korning, ts_fysik = EXCLUDED.ts_fysik, ph = EXCLUDED.ph`,
   ph: `SELECT punkt, ph FROM kandidat_ph WHERE tid = $1::timestamptz AND ph IS NOT NULL ORDER BY punkt`,
   ankare: `SELECT id AS punkt, yta, lon, lat FROM vagpunkt_ankare() ORDER BY id`,
-  skrivLive: `INSERT INTO kandidat_live (tid, punkt, ph, pg, ra, ank_km, pb)
-    SELECT * FROM UNNEST($1::timestamptz[], $2::text[], $3::real[], $4::real[], $5::real[], $6::real[], $7::real[])
-    ON CONFLICT (tid, punkt) DO UPDATE SET ph = EXCLUDED.ph, pg = EXCLUDED.pg, ra = EXCLUDED.ra, ank_km = EXCLUDED.ank_km, pb = EXCLUDED.pb`,
+  skrivLive: `INSERT INTO kandidat_live (tid, punkt, ph, pg, ra, ank_km, pb, n_ank, spr)
+    SELECT * FROM UNNEST($1::timestamptz[], $2::text[], $3::real[], $4::real[], $5::real[], $6::real[], $7::real[], $8::smallint[], $9::real[])
+    ON CONFLICT (tid, punkt) DO UPDATE SET ph = EXCLUDED.ph, pg = EXCLUDED.pg, ra = EXCLUDED.ra, ank_km = EXCLUDED.ank_km, pb = EXCLUDED.pb,
+      n_ank = EXCLUDED.n_ank, spr = EXCLUDED.spr`,
   gallra: `SELECT gallra_kandidat() AS n`,
 };
 
@@ -83,12 +84,13 @@ async function main(arg: string[]) {
       console.log(`ankare just nu (vagpunkt_ankare): ${r.rows.length} stationer → ${a}`);
     } finally { await p.end(); }
   } else if (kmd === "skriv-live") {
-    const rader = lasCsv(a, ["tid_utc", "punkt", "ph", "pg", "ra", "ank_km", "pb"]);
+    const rader = lasCsv(a, ["tid_utc", "punkt", "ph", "pg", "ra", "ank_km", "pb", "n_ank", "spr"]);   // n_ank, spr: spridningsgrinden (#575)
     const p = await pool();
     try {
       let n = 0;
       for (const d of delar(rader)) {
-        await p.query(SATS.skrivLive, [d.map((r) => r.tid_utc), d.map((r) => r.punkt), d.map((r) => r.ph), d.map((r) => r.pg), d.map((r) => r.ra), d.map((r) => r.ank_km), d.map((r) => r.pb)]);
+        await p.query(SATS.skrivLive, [d.map((r) => r.tid_utc), d.map((r) => r.punkt), d.map((r) => r.ph), d.map((r) => r.pg), d.map((r) => r.ra), d.map((r) => r.ank_km), d.map((r) => r.pb),
+          d.map((r) => r.n_ank), d.map((r) => r.spr)]);
         n += d.length;
       }
       const g = await p.query(SATS.gallra);
