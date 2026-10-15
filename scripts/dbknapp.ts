@@ -23,10 +23,12 @@
 import pg from "pg";
 import { readFileSync } from "node:fs";
 import { testarvakt } from "./testarvakt.ts";
+import { nyckelvakt } from "./nyckelvakt.ts";
 
-/** Skriver ut svaret på en bevis- eller lässats — utom rader ur testartabellerna (kort #315, DECISIONS #498). */
+/** Skriver ut svaret på en bevis- eller lässats — utom rader ur testartabellerna (kort #315, DECISIONS #498) och svar som
+ *  bär en nyckel (DECISIONS #570). */
 function skrivSvar(sats: string, r: pg.QueryResult): void {
-  const vagrat = testarvakt(sats, r.fields ?? [], r.rows.length);
+  const vagrat = testarvakt(sats, r.fields ?? [], r.rows.length) ?? nyckelvakt(JSON.stringify(r.rows));
   if (vagrat) { console.log(`  ${vagrat}`); process.exitCode = 1; return; }
   for (const row of r.rows) console.log("  " + JSON.stringify(row));
   if (!r.rows.length) console.log("  (inga rader)");
