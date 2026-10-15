@@ -13121,6 +13121,13 @@ finns, längden räcker, anon saknar rätt, service-rollen har den); (2) deploy 
 när ingen läser den. Varje anrop till de nio gör ett PostgREST-anrop till (några tiotal millisekunder). Framtida byten kräver bara
 knappen.
 
+**I drift 15/10** (Bengt: *"slå ihop 974"*; PR #974 som 7ede4c2). DB-knappen 38707864953: `migrera sql/054` bekräftad; raden
+finns, längden räcker, raden är lika med cron-jobbens nyckel, anon och authenticated saknar rätt, service-rollen har den, och en
+fel nyckel släpps inte. Alla elva funktioner deployade från 7ede4c2 (38708185924); cron-anropen 08:49–08:52 svarade 200
+(38708757659). **Nyckeln bytt 08:54 UTC** (`nyckelbyte-ingest`, 38709059355): den nuvarande gav 200 före bytet, raden och 14
+jobb byttes i en transaktion, den nya gav 200 och den läckta 403. Cron-anropen 08:52–08:58 svarade 200 i varje minut, ingen 403
+(38709482864). Den läckta nyckeln är värdelös; funktionshemligheten INGEST_KEY ligger kvar oläst tills Axel tar bort den.
+
 **Stomdokument:** SYS, BED §4.2.
 
 ## #572 (15/10 2026) Kandidatens stationsvärden sparas i hinken hela vintern (kort #349, #343)
