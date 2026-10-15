@@ -13082,4 +13082,43 @@ nyckeln medan funktionerna hade den gamla; återställningen lade tillbaka den g
 Rättat: `satt_hemlighet` returnerar CLI:ts status. **Nyckeln byts inte förrän en nyckel med rätten finns** — Axel byter den i
 panelen (SQL Editor och Edge Functions → Secrets), eller ger deploynyckeln rätten; frågan står i bedömningen §4.2.
 
+**Bengt 15/10: *"axel ger deploynyckeln rätten"*.** Deploynyckeln (SUPABASE_ACCESS_TOKEN) får `edge_functions_secrets_write`, och
+bytet körs med `nyckelbyte-ingest.yml`. Claude rekommenderade bytet i panelen (rätten ligger kvar efteråt, och deploynyckeln är
+begränsad med flit); valet är Bengts och Axels. Gör Axel en ny nyckel i stället för att vidga den gamla ska GitHub-hemligheten
+`SUPABASE_ACCESS_TOKEN` bytas till den. **Tredje körningen 08:22 UTC** (38705146382, på 1760a77 med rättelsen): rätten saknades
+fortfarande, och flödet stannade vid första steget — *"supabase secrets set föll — inget är bytt"* — utan att röra hemligheten
+eller cron-jobben. Rättelsen höll alltså. Nästa körning när Axel sagt att rätten finns.
+
+**Stomdokument:** SYS, BED §4.2.
+
+## #571 (15/10 2026) Funktionernas nyckel bor i databasen: x-halkvakt-key prövas mot `funktionsnyckel`, och nyckeln byts med DATABASE_URL (DECISIONS #570)
+
+**Bengts ord 15/10:** *"kan du inte göra detta åt axel 1"* — nej: rätten på deploynyckeln ändras under Axels Supabase-konto, och
+Claude loggar inte in som någon annan och ändrar inte ett kontos säkerhetsinställningar — sedan *"gör den tredje vägen"*. Vägen i
+#570 där Axel ger deploynyckeln `edge_functions_secrets_write` behövs inte längre.
+
+**Byggt.**
+- `sql/054_funktionsnyckel.sql`: tabellen `funktionsnyckel` (en rad, minst 32 tecken) och `nyckel_giltig(k)`; bara service-rollen
+  får pröva och läsa, och anon och authenticated tas bort uttryckligen (Supabase ger dem rätt till nya objekt i public). Första
+  fyllningen tar nyckeln som arkivexportens cron-jobb redan bär, så att inget anrop faller när funktionerna deployas om, och inget
+  värde står i en fil eller en logg.
+- `supabase/functions/_shared/nyckel.ts`: `nyckelGiltig(req)` prövar rubriken mot raden med service-rollen via PostgREST och
+  stänger vid varje fel. De nio funktionerna (arkivdump, arkivexport, byggsignaler, favoritprov, ingest-live, kamerafacit,
+  publicera, skuggmotor, vakthund) använder den i stället för `Deno.env.get("INGEST_KEY")`; publicera, skuggmotor och favoritprov
+  är ombuntade ur sina `main.ts`.
+- `nyckelbyte-ingest.yml` skrivet om: bara DATABASE_URL. Raden och varje cron-jobb byts i en transaktion; är raden inte den
+  väntade eller antalet jobb fel fäller en typomvandling som beror på talet satsen (en konstant `1/0` kan planeraren räkna ut i
+  förväg) och allt rullas tillbaka. Före bytet prövas att funktionen tar emot den nuvarande nyckeln; efter bytet att den nya inte
+  ger 403 och den gamla ger 403 — annars byts den gamla tillbaka.
+- Integrationsprovet: tom tabell släpper inget, en kort nyckel stoppas, bara exakt raden släpps, och bytets vakt fäller på fel
+  gammal nyckel och byter på rätt.
+
+**Driftordning efter *slå ihop*:** (1) DB-knappen `migrera sql/054` med bevisrader som bara ger antal och sanningsvärden (raden
+finns, längden räcker, anon saknar rätt, service-rollen har den); (2) deploy av de nio; (3) cron-anropen svarar 200
+(`net._http_response`); (4) `nyckelbyte-ingest` med `BYT`.
+
+**Följder.** Funktionshemligheten INGEST_KEY läses inte längre; den ligger kvar i Supabase tills Axel tar bort den och är ofarlig
+när ingen läser den. Varje anrop till de nio gör ett PostgREST-anrop till (några tiotal millisekunder). Framtida byten kräver bara
+knappen.
+
 **Stomdokument:** SYS, BED §4.2.

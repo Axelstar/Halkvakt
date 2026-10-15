@@ -1353,9 +1353,9 @@ async function forsprangVarv(prov: boolean): Promise<Response> {
     niva2_i_snapshoten: [...nivaer.values()].filter((n) => n === 2).length, skrivet });
 }
 
+import { nyckelGiltig } from "../_shared/nyckel.ts";
 Deno.serve(async (req) => {
-  const k = Deno.env.get("INGEST_KEY");
-  if (!k || req.headers.get("x-halkvakt-key") !== k) return new Response("forbidden", { status: 403 });
+  if (!(await nyckelGiltig(req))) return new Response("forbidden", { status: 403 });  // nyckeln i databasen, DECISIONS #571
   try {
     // SPÄRRPROVET (kort #191 → bevis för #188, DECISIONS #197, Bengts ja 16/9). Två kameror på ett rakt spår
     // österut i 80 km/h: den första talar vid t=5 s, den andra når sin utlösning fem sekunder senare och

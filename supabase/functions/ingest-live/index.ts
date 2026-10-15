@@ -5,6 +5,7 @@
 // (idempotenta upserts).
 import postgres from "https://deno.land/x/postgresjs@v3.4.4/mod.js";
 import { skrivSituationer, skrivVader, skrivVaglag } from "./skriv.ts";
+import { nyckelGiltig } from "../_shared/nyckel.ts";
 
 const ENDPOINT = "https://api.trafikinfo.trafikverket.se/v2/data.json";
 const KEY = Deno.env.get("TRAFIKVERKET_API_KEY")!;
@@ -90,11 +91,8 @@ async function langsamVakt(): Promise<string> {
 }
 
 Deno.serve(async (req) => {
-  // Fail-closed: kräver delad hemlighet (sätts som secret INGEST_KEY; cron skickar headern).
-  const k = Deno.env.get("INGEST_KEY");
-  if (!k || req.headers.get("x-halkvakt-key") !== k) {
-    return new Response("forbidden", { status: 403 });
-  }
+  // Fail-closed: kräver delad hemlighet (raden i funktionsnyckel, sql/054; cron skickar headern).
+  if (!(await nyckelGiltig(req))) return new Response("forbidden", { status: 403 });  // nyckeln i databasen, DECISIONS #571
   try {
     const [s, r, w] = await Promise.all([situations(), roadconditions(), weather()]);
     // Efter vädret, aldrig parallellt med det: trenden räknar på raderna weather() nyss skrev.

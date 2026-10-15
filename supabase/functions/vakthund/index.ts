@@ -50,6 +50,7 @@
 import postgres from "https://deno.land/x/postgresjs@v3.4.4/mod.js";
 import { skaTrycka, senasteTryck, FROSTTRYCK_MARK, GALLRING_DYGN, TRYCK_INTERVALL_D } from "./frosttryck.ts";
 import { I_RAD, datavakter, noter, rad as datavaktRad } from "./datavakter.ts";
+import { nyckelGiltig } from "../_shared/nyckel.ts";
 
 const sql = postgres(Deno.env.get("SUPABASE_DB_URL")!, { max: 1, prepare: false });
 const REPO = "Axelstar/Halkvakt";
@@ -127,8 +128,7 @@ export function kadensTimmar(cron: string): number | null {
 }
 
 Deno.serve(async (req) => {
-  const k = Deno.env.get("INGEST_KEY");
-  if (!k || req.headers.get("x-halkvakt-key") !== k) return new Response("forbidden", { status: 403 });
+  if (!(await nyckelGiltig(req))) return new Response("forbidden", { status: 403 });  // nyckeln i databasen, DECISIONS #571
 
   const problem: string[] = [];
   if (new URL(req.url).searchParams.get("larmprov") === "1") problem.push("**LARMPROV** — medvetet framkallat fel för att bevisa larmvägen. Ska stängas automatiskt vid nästa gröna körning.");

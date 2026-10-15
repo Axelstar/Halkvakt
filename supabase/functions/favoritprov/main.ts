@@ -69,9 +69,9 @@ async function speglaSynk(): Promise<string> {
   return `synken: ${rader.length} körningar speglade, senast ${senaste.generated_at}`;
 }
 
+import { nyckelGiltig } from "../_shared/nyckel.ts";
 Deno.serve(async (req) => {
-  const k = Deno.env.get("INGEST_KEY");
-  if (!k || req.headers.get("x-halkvakt-key") !== k) return new Response("forbidden", { status: 403 });
+  if (!(await nyckelGiltig(req))) return new Response("forbidden", { status: 403 });  // nyckeln i databasen, DECISIONS #571
   const minne = minnesmatare(); minne.mat();
   const t0 = performance.now(); const ms: Record<string, number> = {}; const steg = (n: string, t: number) => { ms[n] = Math.round(performance.now() - t); minne.mat(); };
   try {

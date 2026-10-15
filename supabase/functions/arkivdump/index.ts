@@ -12,8 +12,9 @@
 //   POST ?lage=kuvos_hamta      {filer: [...]}                                          → { filer: [{fil, url}] }
 // Arkivexportens dygnsfiler (sql/034) för grindarnas tillfälliga databas (kort #323), bara hämtning:
 //   POST ?lage=dygn_hamta       {dagar: ["2026-09-01", …]}                               → { filer: [{dag, url}] }
-// Skyddet är INGEST_KEY i x-halkvakt-key, som pg_cron:s jobb redan bär; funktionen deployas med --no-verify-jwt.
+// Skyddet är x-halkvakt-key, som pg_cron:s jobb redan bär, prövad mot funktionsnyckel (sql/054, DECISIONS #571); funktionen deployas med --no-verify-jwt.
 import { BEHALL, MAPP, MAX_DYGN, NAMN, attGallra, delnamn, dumpAv, dygnnamn, kuvosnamn } from "./delar.ts";
+import { nyckelGiltig } from "../_shared/nyckel.ts";
 
 const SB = Deno.env.get("SUPABASE_URL")!;
 const SRK = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -39,8 +40,7 @@ async function lista(): Promise<{ name: string; metadata?: { size?: number } }[]
 const svar = (data: unknown, status = 200) => new Response(JSON.stringify(data), { status, headers: { "Content-Type": "application/json" } });
 
 Deno.serve(async (req) => {
-  const k = Deno.env.get("INGEST_KEY");
-  if (!k || req.headers.get("x-halkvakt-key") !== k) return new Response("forbidden", { status: 403 });
+  if (!(await nyckelGiltig(req))) return new Response("forbidden", { status: 403 });  // nyckeln i databasen, DECISIONS #571
   if (req.method !== "POST") return svar({ fel: "bara POST" }, 405);
   const lage = new URL(req.url).searchParams.get("lage");
   try {

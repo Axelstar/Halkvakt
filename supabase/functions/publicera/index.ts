@@ -1127,6 +1127,7 @@ const BRIDGES: Bridge[] = [{"id":"3992923","lon":13.1454826,"lat":58.491731,"roa
 // CI kör --check. Efter varje ändring: bunta + `supabase functions deploy publicera`,
 // och beviset är en färsk commit i kartrepot med ALLA TRE filerna, inte deploy-kvittot.
 import postgres from "https://deno.land/x/postgresjs@v3.4.4/mod.js";
+import { nyckelGiltig } from "../_shared/nyckel.ts";
 
 const sql = postgres(Deno.env.get("SUPABASE_DB_URL")!, { max: 1, prepare: false });
 const REPO = "Axelstar/halkvakt-karta";
@@ -1162,8 +1163,7 @@ async function publicera(files: Record<string, string>, inline: Record<string, s
 }
 
 Deno.serve(async (req) => {
-  const k = Deno.env.get("INGEST_KEY");
-  if (!k || req.headers.get("x-halkvakt-key") !== k) return new Response("forbidden", { status: 403 });
+  if (!(await nyckelGiltig(req))) return new Response("forbidden", { status: 403 });  // nyckeln i databasen, DECISIONS #571
   const t0 = Date.now();
   try {
     // GRANNLÄNDERNA (kort #238; Bengts princip 22/9: återkommande körningar i Supabase, inte i Actions): ?land=fi|no|dk
