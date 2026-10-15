@@ -13121,4 +13121,27 @@ finns, längden räcker, anon saknar rätt, service-rollen har den); (2) deploy 
 när ingen läser den. Varje anrop till de nio gör ett PostgREST-anrop till (några tiotal millisekunder). Framtida byten kräver bara
 knappen.
 
+**I drift 15/10** (Bengt: *"slå ihop 974"*; PR #974 som 7ede4c2). DB-knappen 38707864953: `migrera sql/054` bekräftad; raden
+finns, längden räcker, raden är lika med cron-jobbens nyckel, anon och authenticated saknar rätt, service-rollen har den, och en
+fel nyckel släpps inte. Alla elva funktioner deployade från 7ede4c2 (38708185924); cron-anropen 08:49–08:52 svarade 200
+(38708757659). **Nyckeln bytt 08:54 UTC** (`nyckelbyte-ingest`, 38709059355): den nuvarande gav 200 före bytet, raden och 14
+jobb byttes i en transaktion, den nya gav 200 och den läckta 403. Cron-anropen 08:52–08:58 svarade 200 i varje minut, ingen 403
+(38709482864). Den läckta nyckeln är värdelös; funktionshemligheten INGEST_KEY ligger kvar oläst tills Axel tar bort den.
+
 **Stomdokument:** SYS, BED §4.2.
+
+## #572 (15/10 2026) Kandidatens stationsvärden sparas i hinken hela vintern (kort #349, #343)
+
+**Bengts ord 15/10:** *"spara i hinken där det finns mer plats"*, på frågan i bedömningen §4.2 (DECISIONS #569): var ska
+kandidatens värden vid stationerna bo hela vintern, när `kandidat_live` bara sparas sex timmar (#569)?
+
+**Beslutet.** Kandidatens timvärden vid stationerna (ph, pg, ra, ank_km, pb per station och timme, ungefär 760 × 24 rader per dygn)
+exporteras per dygn till hinken `arkiv` med samma väg som väderarkivet och trendtabellerna (export, återläsning mot radantalet,
+bokföring). Databasen gallrar dem efter exporten. Hinken har 281 av 1 024 MB; vinterns stationsvärden blir några tiotal MB packade.
+Grind A i mars läser dem ur hinken. Vägpunkternas värden sparas inte så: deras dom går genom skuggloggens varningar (grind B och C).
+
+**Bygget (kort #349), före förregistreringens signering 31/10:** stationsraderna i `kandidat_live` behålls tills dygnet är exporterat
+(vägpunkterna sex timmar som nu), och exporten och bokföringen följer sql/053:s mönster. *Verify:* ett exporterat dygn med samma
+radantal som databasen, läst tillbaka ur hinken, och gallringen som bara tar exporterade dygn.
+
+**Stomdokument:** KUV, LIV, BED §4.2.
