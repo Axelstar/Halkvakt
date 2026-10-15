@@ -12894,3 +12894,82 @@ förslag samma dag.
 5. **Ankarbandet för stationsvetot:** Claudes förslag 15 km står som fråga i bedömningen §4.2 — Axels tal enligt #562.
 
 **Stomdokument:** MAT, KUV, LIV, BED §4.2.
+
+## #566 (15/10 2026) Ankarbandet för kandidatens stationsveto: 15 km (kort #343)
+
+**Bengts ord 15/10:** *"slå ihop 965, ja till 15 km och bygg 346"*, på Claudes förslag i bedömningen §4.2 (DECISIONS #565 punkt 5).
+
+Kandidaten tiger när en station inom **15 km** från punkten mätte yta över +2 °C inom ±45 minuter. Stationerna är desamma som
+ankarna och bär samma vakter (`vagpunkt_ankare()`, sql/032: #75:s givarvakt, radvakten, karantänen), men vetot läser stationens
+mätning inom ±45 minuter, inte ankarnas färskhet på tre timmar. Underlaget är vägpunktsgrinden (#324): grannarnas avståndsviktade yta
+låg mer än 2 °C fel i 0,9 % av fallen med närmaste ankare 0–7 km bort, 1,1 % vid 7–15, 5,0 % vid 15–20 och 4,0 % bortom 20 km. Det
+största hoppet ligger vid 15 km, och 15 km är redan en bandgräns i domen. Talet är Axels enligt #562 och signeras i förregistreringen
+(#560, senast 31/10) tillsammans med radarns tröskel (#565).
+
+**Reservation:** underlaget är från sensommar och höst utan frostnätter, och det gäller grannarnas viktade medel, inte en enskild
+station. Vinterns skugglogg visar hur ofta vetot biter per ankarband. **Öppet** (bedömningen §4.2): ska skuggloggen spara de vetade
+fallen (station, avstånd, yta)?
+
+**Stomdokument:** KUV, LIV, BED §4.2.
+
+## #567 (15/10 2026) Cellmätningen lagas och mäts om på båda radarfälten — regeln och förväntan före knappen (kort #346)
+
+**Bengts ord 15/10:** *"bygg 346"*, på förslaget i DECISIONS #565 punkt 4. Skrivet och pushat före knappen.
+
+**Bygget** (`scripts/cell-matning-v3.ts`; ingen migration):
+1. Kurvan (A) och kalibreringen (B) skrivs ut innan missriktningen (C) körs, så att de finns kvar om C faller.
+2. A redovisas två gånger: bandad på `rate_max_mmh` som förut (jämförbar med körningarna 12/9–5/10) och på `rate_mean_mmh`, som
+   tröskeln står på. Par vars `rate_mean_mmh` ligger under 0,1 mm/h redovisas på en egen rad. B räknas som förut.
+3. C tar närheten ur `nara` (stationerna och sträckorna inom 5 km, räknade en gång) och kopplar radarn på `(segment_id,
+   observed_at)` som en mängd, i stället för ett geografiavstånd per stationsregn. Skillnaden i vad som räknas: raderade sträckor
+   faller bort, och stationens senaste position används i stället för observationens.
+
+**Knapparna, i ordning:** (i) gammal (main) och ny (grenen) med 1 dygn, startade samtidigt; (ii) ny med 7 dygn.
+
+**Förväntan:**
+- (i) A bandad på `rate_max` och B är identiska mellan gammal och ny (samma fråga; en skillnad får bara komma av data som kommit
+  in mellan körningarna). C har samma antal stationsregn; träffarna är lika många eller färre i den nya, med högst 1 % skillnad.
+  Fler träffar i den nya, eller mer än 1 % färre, är ett fel som utreds före (ii).
+- (ii) Grön inom 300 sekunder per fråga. A på `rate_mean` har färre par över 0,5 mm/h än A på `rate_max` och minst lika hög
+  bekräftelse i varje band, eftersom `rate_mean ≤ rate_max` på varje rad.
+
+**Läsningen (regeln):** mätningen är underlag, ingen dom. Talet 0,5 (#565) prövas med samma regel som förslaget byggde på — det
+lägsta bandet där en majoritet (över 50 %) bekräftas — nu på `rate_mean`: bekräftas bandet 0,5–2 i en majoritet står förslaget;
+gör redan 0,1–0,5 det, eller faller 0,5–2 under hälften, går talet tillbaka till Bengt och Axel före signeringen. Vattenplaningens
+utlösare 2,0 läses på bandet 2–10 och avgörs av Bengt och Axel (bedömningen §4.2). En vecka är ett stickprov: kurvan har drivit
+mellan veckorna (#565).
+
+**Utfall (i), 15/10 05:54 — förväntan uppfylld.** Gammal (38689303015 på main) och ny (38689306723 på grenen), ett dygn:
+A på `rate_max` identisk i alla fyra band (2 698 par), B identisk (0,60 över 1 259 par), C identisk (1 429 stationsregn, 1 373
+träffar).
+
+**Utfall (ii), 05:56 (38689543174, sju dygn) — förväntan delvis: C föll igen på 300 sekunder.** A och B skrevs ut före C och finns
+kvar: 60 123 par, 167 kompositer 8/10–15/10.
+
+| Band mm/h | `rate_max`: par · bekräftade | `rate_mean`: par · bekräftade |
+| :-- | --: | --: |
+| 0,1–0,5 | 21 984 · 40 % | 21 012 · 62 % |
+| 0,5–2 | 21 424 · 67 % | 16 131 · 82 % |
+| 2–10 | 14 895 · 80 % | 5 136 · 91 % |
+| ≥ 10 | 1 820 · 81 % | 136 · 95 % |
+| under 0,1 | — | 17 708 |
+
+Kalibreringen 0,68 över 36 528 par. Förväntan om A uppfylld: färre par över 0,5 mm/h på `rate_mean` (21 403 mot 38 139) och
+högre bekräftelse i varje band.
+
+**Orsaken till C, utpekad med EXPLAIN i DB-knappens läsläge (38690252286):** kompositlistan `komp` bakades in i den laterala
+frågan, så planeraren körde sjudygnsskanningen av `radar_precip_time_idx` en gång per stationsregn — i den gamla frågan likaså.
+Avståndet per stationsregn, som ombyggnaden tog bort, var inte huvudsaken. Med `komp AS MATERIALIZED` räknas listan en gång; planen
+i samma läsning visar det. Ändringen byter inga tal, bara planen. **Andra knappen:** den nya med sju dygn. Förväntan: grön; A och B
+inom någon procent av körningen ovan (fönstret har flyttat några minuter); C med en träffandel i samma trakt som tidigare veckor
+(91–96 %).
+
+**Läsningen enligt regeln ovan:** bandet 0,1–0,5 på `rate_mean` bekräftas redan i en majoritet (62 %), så talet 0,5 går tillbaka
+till Bengt och Axel före signeringen (bedömningen §4.2). Vattenplaningens band 2–10 bekräftas i 91 % på `rate_mean`.
+
+**Utfall andra knappen, 06:05 (38690393504, sju dygn) — förväntan uppfylld.** Grön på 1 min 24 s för hela jobbet. A och B är
+identiska med körningen 05:56 (samma 167 kompositer; ingen ny bild hann komma). C: 33 102 stationsregn, radarn hade en rad
+inom 5 km i 30 062 (91 %) — 2,5 gånger fler stationsregn än veckan till 5/10 (13 075), vilket förklarar att timeouten kom
+just nu. Kort #346 stängt: frågan utpekad med EXPLAIN, rättad, och en grön sjudygnskörning med kurvan på båda fälten.
+
+**Stomdokument:** MAT, BED §4.2.
