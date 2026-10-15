@@ -146,6 +146,11 @@ station ≤ 5 km såg regn inom ±45 min, per radarband (13/9, med 12/9 inom par
 Kurvan stiger monotont med intensiteten i båda fönstren. Täckningen är 91 % (93): radarn hade en
 rad ≤ 5 km vid 14 190 av 15 540 stationsregn.
 
+**Rättelse 15/10 (DECISIONS #565):** kurvan ovan är bandad på `rate_max_mmh` — `utvardera()` i
+`scripts/cell-matning-v3.ts` väljer band med `p.rateMax` — inte på `rate_mean_mmh`, som kalibreringen och
+utlösaren nedan gäller. Utlösaren står (signerad). Kurvan mäts om på båda fälten när kort #346 är lagat; om
+utlösaren ska omprövas är Bengts och Axels fråga (bedömningen §4.2).
+
 **UTLÖSARTRÖSKELN — satt av Bengt 13/9 2026 ("Ja till 2"):**
 
 | Storhet | Värde |

@@ -12860,3 +12860,37 @@ lydelse; om och hur är Bengts och Axels beslut.
 **Kort #282 stängt** med beviset i samma commit: beslutet, texten i TROSKLAR-KOMBINATIONEN §5b och L-raden i alla tretton dokument.
 
 **Stomdokument:** MAT, KUV, BED §4.2.
+
+## #565 (15/10 2026) Radarns fukttröskel 0,5 mm/h och radarvärdet i skuggloggen — och bekräftelsekurvan är bandad på `rate_max_mmh` (kort #343, #346)
+
+**Bengts ord 15/10:** *"ja 0,5, ja till 2, och ge förslag på ankarbandet samt titta vad som kan göras åt kort 346"*, på Claudes
+förslag samma dag.
+
+1. **Radarns tröskel i kandidatens regel (#562): rå `rate_mean_mmh` ≥ 0,5 mm/h** över punktens väglagssträcka, högsta värdet de
+   senaste 60 minuterna (≈ 0,77 mm/h i stationens skala med faktorn 0,65). Radarn lagras ungefär en gång i timmen (168 kompositer på
+   sju dygn i körningen 5/10), så fönstret rymmer i praktiken den senaste bilden. Talet är Axels enligt #562 och signeras i
+   förregistreringen (#560, senast 31/10) — **först efter ommätningen i punkt 3**. `rate_mean_mmh` har spann i värdevakten (0–200).
+2. **Skuggloggen sparar radarvärdet** också där ytan och stationsvetot släpper igenom men fukten fäller, så att vintern visar vad
+   0,1–0,5 mm/h hade gett och en senare lättnad kan prövas mot data enligt regel L (#564).
+3. **Fyndet samma varv, ur kort #346: bekräftelsekurvan är bandad på `rate_max_mmh`, inte på `rate_mean_mmh`.** `utvardera()` i
+   `scripts/cell-matning-v3.ts` väljer band med `p.rateMax` sedan skriptet skrevs (43457b5, 3/9), och kurvan i
+   TROSKLAR-VATTENPLANING §3.4 kommer ur körningen 13/9 (34729680622 på e2d1272) med samma rad. Kalibreringen 0,65 är rätt räknad på
+   `rate_mean`. DECISIONS #161 säger att *hela bekräftelsekurvan* är mätt på `rate_mean` — det stämmer inte. Följderna:
+   - Andelarna bakom förslaget i punkt 1 (≈ 59/68/78 % bekräftade över 0,1/0,5/2,0) gäller `rate_max`. Eftersom `rate_mean ≤
+     rate_max` på varje rad är bilderna med `rate_mean ≥ 0,5` en delmängd av dem med `rate_max ≥ 0,5`: färre bilder och troligen
+     högre bekräftelse — men omätt.
+   - Vattenplaningens utlösare `rate_mean ≥ 2,0` (signerad 13/9) motiveras med *"77 % i det bandet"*, också ett `rate_max`-band.
+     Utlösaren står, eftersom den är signerad; om den ska omprövas efter ommätningen är Bengts och Axels fråga (bedömningen §4.2).
+   - Kurvan är inte stabil mellan veckorna (samma skript, `rate_max`-band 0,1–0,5 / 0,5–2 / 2–10 / ≥ 10): 13/9 42/56/77/82 %, 28/9
+     (36385928720) 30/57/67/62 %, 5/10 (37271881914) 20/50/61/40 %; kalibreringen 0,65 · 0,45 · 0,69. Bandet ≥ 10 mm/h föll till
+     40 % 5/10, vilket stämmer med att `rate_max` bär artefakter (#134).
+   - Ommätningen bandar på båda fälten och kräver att kort #346 lagas (punkt 4).
+4. **Kort #346 utpekat.** Körningen 14/10 (38637605788) föll på rad 120, missriktningen (del C); kurvan (A) och kalibreringen (B)
+   hade räknats färdigt och gick förlorade med körningen. Del C prövar för varje stationsregn (13 075 på sju dygn 5/10) radarraderna i
+   närmaste komposit med geografiavstånd, så frågan växer med både stationsregnen och radarraderna en blöt vecka. Claudes förslag,
+   som väntar på Bengts ord (bedömningen §4.2): A och B skrivs ut innan C körs; A bandas på båda fälten; C tar närheten ur `nara`
+   (stationerna och sträckorna inom 5 km, räknade en gång) och slår upp radarn på primärnyckeln `(segment_id, observed_at)` — ingen
+   migration. Prövas mot den gamla C på ett dygn och med en grön sjudygnskörning.
+5. **Ankarbandet för stationsvetot:** Claudes förslag 15 km står som fråga i bedömningen §4.2 — Axels tal enligt #562.
+
+**Stomdokument:** MAT, KUV, LIV, BED §4.2.
