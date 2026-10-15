@@ -1388,21 +1388,29 @@ test("#343 kandidat_ph och kandidat_live: migrationen, upserten och gallringen",
   const { readFileSync } = await import("node:fs");
   const pool = new pg.Pool({ connectionString: url, max: 1 });
   try {
-    for (const f of ["001_init.sql", "050_kandidat_live.sql"]) await pool.query(readFileSync(new URL("../sql/" + f, import.meta.url), "utf8"));
+    for (const f of ["001_init.sql", "050_kandidat_live.sql", "052_kandidat_gallring_kort.sql"]) await pool.query(readFileSync(new URL("../sql/" + f, import.meta.url), "utf8"));
     await pool.query("DELETE FROM kandidat_ph WHERE punkt LIKE 'KL_%'"); await pool.query("DELETE FROM kandidat_live WHERE punkt LIKE 'KL_%'");
     const sats = `INSERT INTO kandidat_ph (korning, tid, punkt, ts_fysik, ph) SELECT * FROM UNNEST($1::timestamptz[], $2::timestamptz[], $3::text[], $4::real[], $5::real[])
       ON CONFLICT (tid, punkt) DO UPDATE SET korning = EXCLUDED.korning, ts_fysik = EXCLUDED.ts_fysik, ph = EXCLUDED.ph`;
-    await pool.query(sats, [["2026-10-20T06:00:00Z", "2026-10-20T06:00:00Z"], ["2026-10-20T12:00:00Z", "2026-10-20T12:00:00Z"], ["KL_A", "KL_B"], [-1.5, 0.5], [-1.0, 0.8]]);
-    await pool.query(sats, [["2026-10-20T12:00:00Z"], ["2026-10-20T12:00:00Z"], ["KL_A"], [-1.4], [-0.9]]);
+    // Hours ahead of now, so the gallring below never reaches them (fixed dates aged out of the window, DECISIONS #569).
+    const nu = Date.now(), om = (h: number) => new Date(nu + h * 3600e3).toISOString();
+    await pool.query(sats, [[om(0), om(0)], [om(6), om(6)], ["KL_A", "KL_B"], [-1.5, 0.5], [-1.0, 0.8]]);
+    await pool.query(sats, [[om(1)], [om(6)], ["KL_A"], [-1.4], [-0.9]]);
     const r = await pool.query("SELECT punkt, ph, korning FROM kandidat_ph WHERE punkt LIKE 'KL_%' ORDER BY punkt");
     assert.deepEqual(r.rows.map((x) => [x.punkt, x.ph]), [["KL_A", -0.9], ["KL_B", 0.8]], "upserten skriver över KL_A och behåller KL_B");
+    // 052: PH from one hour back, the value six hours (DECISIONS #569) — one row on each side of each edge.
     await pool.query(`INSERT INTO kandidat_live (tid, punkt, ph, pg, ra, ank_km, pb) VALUES
-      (now() - interval '4 days', 'KL_gammal', 0, 0, 0, 1, 0), (now() - interval '1 hour', 'KL_ny', 0, 0, NULL, NULL, 0)`);
-    await pool.query(`INSERT INTO kandidat_ph (korning, tid, punkt, ts_fysik, ph) VALUES (now() - interval '3 days', now() - interval '3 days', 'KL_gammal', 0, 0)`);
+      (now() - interval '4 days', 'KL_gammal', 0, 0, 0, 1, 0), (now() - interval '7 hours', 'KL_sju', 0, 0, 0, 1, 0),
+      (now() - interval '5 hours', 'KL_fem', 0, 0, 0, 1, 0), (now() - interval '1 hour', 'KL_ny', 0, 0, NULL, NULL, 0)`);
+    await pool.query(`INSERT INTO kandidat_ph (korning, tid, punkt, ts_fysik, ph) VALUES
+      (now() - interval '3 days', now() - interval '3 days', 'KL_gammal', 0, 0), (now() - interval '8 hours', now() - interval '2 hours', 'KL_tva', 0, 0),
+      (now() - interval '6 hours', now() - interval '30 minutes', 'KL_halv', 0, 0)`);
     const g = await pool.query("SELECT gallra_kandidat()::int AS n");
-    assert.equal(g.rows[0].n, 2, "gallringen tar det fyra dygn gamla värdet och den tre dygn gamla PH:n, inget annat");
+    assert.equal(g.rows[0].n, 4, "gallringen tar värdena äldre än sex timmar och PH äldre än en timme, inget annat");
     const kvar = await pool.query("SELECT punkt FROM kandidat_live WHERE punkt LIKE 'KL_%' ORDER BY punkt");
-    assert.deepEqual(kvar.rows.map((x) => x.punkt), ["KL_ny"], "det färska värdet står kvar, också utan RÅ");
+    assert.deepEqual(kvar.rows.map((x) => x.punkt), ["KL_fem", "KL_ny"], "värdena inom sex timmar står kvar, också utan RÅ");
+    const phKvar = await pool.query("SELECT punkt FROM kandidat_ph WHERE punkt LIKE 'KL_%' ORDER BY punkt");
+    assert.deepEqual(phKvar.rows.map((x) => x.punkt), ["KL_A", "KL_B", "KL_halv"], "PH för timmen och de kommande står kvar");
     assert.equal((await pool.query("SELECT gallra_kandidat()::int AS n")).rows[0].n, 0, "omkörningen tar inget");
   } finally {
     await pool.query("DELETE FROM kandidat_ph WHERE punkt LIKE 'KL_%'").catch(() => {}); await pool.query("DELETE FROM kandidat_live WHERE punkt LIKE 'KL_%'").catch(() => {});

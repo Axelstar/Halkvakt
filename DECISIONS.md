@@ -12989,3 +12989,42 @@ just nu. Kort #346 stängt: frågan utpekad med EXPLAIN, rättad, och en grön s
    ingen ny signatur behövs; tröskeldokumentets §3.4 får beslutet på raden under ommätningen.
 
 **Stomdokument:** MAT, KUV, LIV, BED §4.2.
+
+## #569 (15/10 2026) Databasen under taket: kandidatens gallring i timmar, vakthunden räknar som Supabase, trendtabellerna och radarn till hinken (kort #322, #347)
+
+**Bengts ord 15/10:** *"kör steg 1 och steg 2 a"*, på Claudes förslag samma dag, efter Bengts fråga om ett andra Supabase-konto.
+
+**Läget, läst med DB-knappen i läsläge 06:30–06:38 UTC (38692803020, 38693317758, 38693640157).** Supabase räknar kvoten som summan
+av `pg_database_size` över alla databaser (deras sida *Database size*): **483 MB** — `postgres` 469, `template0` och `template1` 15.
+Vakthunden räknade bara `postgres`. Tillväxten sedan natten kom nästan helt från `kandidat_ph` (22 MB, 246 852 rader) och
+`kandidat_live` (10 MB, 95 998 rader på sju timmar). 050:s gallring — PH två dygn, värdet tre — ger ~700 000 + ~1 000 000 rader,
+ungefär 165 MB; den räknades i rader när kedjan byggdes, aldrig i MB mot marginalen, och granskningen av NIVA2-LIVE fångade det inte.
+`weather_observations` (276 MB) står still: 14-dygnsfönstret rullar, ~39 600 rader per gallrat dygn och 103 000–118 000 per dygn i
+full upplösning. `trend_kandidater` (32 MB, 7 000–17 000 rader per dygn sedan 8/9), `trend_stigande` (16 MB) och `radar_precip`
+(13 MB, 2 000–9 000 rader per dygn sedan 2/9) gallras aldrig: ~3–5 MB per dygn.
+
+**Steg 1, i dag:**
+1. `sql/052_kandidat_gallring_kort.sql`: `gallra_kandidat()` sparar PH från en timme bakåt och kandidatens värde i sex timmar. Del B
+   läser PH för sin timme (`kandidat-timme.yml`, TID = timmen nu); skuggloggen och publiceringen (steg 6–7) är inte byggda, så inget
+   läser äldre rader.
+2. Efter migrationen, som bevisrad: `TRUNCATE kandidat_ph, kandidat_live` — `TRUNCATE` lämnar tillbaka platsen, `DELETE` gör det
+   inte — och sedan del A (`kandidat-fysik.yml`) med körningen 20261015T00Z, så att PH för 06–11 UTC finns igen innan del B behöver
+   den; körningen 12:13 tar 12–17 UTC som vanligt.
+3. Vakthunden räknar summan över databaserna, som Supabase; larmet står kvar vid 450 MB.
+
+Väntat: summan ~451 MB direkt efter tömningen, ~458 MB efter påfyllningen och omkring 470 MB när tabellerna nått sina nya
+storlekar (PH och värdet ~10 MB vardera).
+
+**Steg 2 (a), inom en vecka (kort #347).** `trend_kandidater`, `trend_stigande` och `radar_precip` äldre än 14 dygn exporteras per dygn
+till hinken `arkiv`, läses tillbaka mot radantalet och raderas, som väderarkivet (#334, #450, #511). Hinken har 281 av 1 024 MB.
+
+**Kostnad.** Kandidatens timvärden äldre än sex timmar sparas inte. Inte heller förut sparades de efter tre dygn, men vinterns grind A
+behöver stationsvärdena hela vintern: var de ska bo (skuggloggen i steg 7, eller hinken) måste vara löst före förregistreringens
+signering (bedömningen §4.2). Den som läser trendtabellerna eller radarn längre bak än 14 dygn får läsa hinken, samma läge som
+väderarkivet (kort #323).
+
+**Alternativ.** Ett andra Supabase-konto eller -projekt för delar av databasen (Bengts fråga): inte valt — orsaken var ett tabellpar;
+kedjan hade fått läsa och skriva i två databaser med dubbla nycklar, cron-jobb, vakthundar och migrationer; och om Supabases villkor
+tillåter ett extra gratiskonto är inte läst. Supabase Pro (~25 USD/mån, 8 GB): inte nu, kräver Axels ja.
+
+**Stomdokument:** MAT §1, LIV, BED §4.2.
