@@ -13271,3 +13271,56 @@ sql/058` före del B:s nästa timme (:43), annars faller skrivningen av de nya k
 domloggen med spridningen ifylld. Kvar före signeringen: radarns tal 26/10.
 
 **Stomdokument:** KUV, LIV, BED §4.2.
+
+## #576 (15/10 2026) Kandidatens nyckel i live.json: regelns varnande punkter per sträcka, och mätningen efter driftsättningen (kort #343, NIVA2-LIVE steg 6)
+
+**Bengts ord 15/10:** *"börja med steg 6"*. NIVA2-LIVE steg 6: *publicera läser tabellen och lägger till en ny nyckel efter mönstret
+`rain_segments` … Tröskeln bor här, på ett ställe. Driftsätts och bevisas med en mätning efter driftsättningen.*
+
+**Byggt** (`publish/snapshot-core.ts`, bunten `publicera/index.ts`):
+- Publiceringen frågar `kandidat_timme()` och, när timmen är färsk och fullständig, `kandidat_regel()` med `utfall = 'varnar'` — samma
+  funktion som domloggen och skuggmotorns takt läser (#562 punkt 3). Tröskeln bor alltså på ett ställe, i databasen; publiceringen
+  bär inga tal. Det som publiceras är det som döms.
+- Ny nyckel `kandidat`, en rad per sträcka: `{ id, tid, punkter: [[lon, lat], …] }` — sträckans id (samma som `segments`), regelns timme
+  och de varnande vägpunkterna med fem decimaler.
+- **Lägg till, ersätt aldrig:** `segments` är orörd, och ingen port läser nyckeln förrän steg 10. Apparna läser live.json med `org.json`
+  (Kotlin) och `JSONSerialization` till en ordbok (Swift) och hämtar bara de nycklar de känner, samma skäl som `rain_segments` varit
+  ofarlig sedan 22/9 (#187).
+- **Fail-soft, aldrig tyst:** tiger regeln blir nyckeln `[]` med noten *regeln tiger*, och faller frågan `[]` med *ej läsbar* — en tyst
+  timme ska inte se ut som en timme utan varningar. Svaret från publicera bär antalet sträckor (`kandidat`).
+
+**Formen — Claudes val, som Bengt kan ändra före steg 10:** punkter, inte sträckans linje. Skuggan räknar passager på punkterna
+(`kandidatLangsRutten`, 2 km), och texten säger *framöver*, aldrig ett avstånd. Med punkter dömer motorn samma geometri som skuggan. Med
+linjen skulle den döma en annan. Linjen kan läggas till senare utan att något ersätts. **Storleken:** live.json var 79,7 kB (29,6 kB
+gzip) kl. 17:00 UTC 15/10, med 40 sträckor i `segments`. Varje varnande punkt kostar omkring 20 byte före gzip: 1 000 punkter blir
+omkring 20 kB, och alla 12 960 omkring 260 kB. Talet mäts efter driftsättningen.
+
+**Prov:**
+- Tre enhetsprov i `test/snapshot-core.test.ts`:
+  - grupperingen och avrundningen
+  - att motorn ger samma faror med och utan nyckeln
+  - att en tyst regel inte frågas, och att en fallen fråga inte fäller snapshoten
+- Publiceringen mot riktig PostGIS i #575-provet: de punkter spridningsgrinden tystat kommer inte med.
+
+**Motprov, ett per vakt, med raden som föll:**
+
+| motprov | raden som föll |
+| :-- | :-- |
+| utfallsfiltret bort | frågans `assert.match` |
+| grupperingen bort | nyckelns deepEqual |
+| en tyst regel frågas ändå | tystnadsprovet |
+| kandidaten läckt in i `segments` | *väglaget är orört* |
+| en motor som läser nyckeln | farornas deepEqual |
+
+**Mätningen efter driftsättningen — regeln och förväntan skrivna före knappen.** Driftordningen efter *slå ihop*: `deploy-supabase.yml`
+med `funktion=publicera`. Sedan:
+1. **Filen:** första :x0-publiceringen efter deployen. live.json på halkvakt.se bär nyckeln `kandidat`, och manifestets live-sha är
+   sha256(live.json).
+2. **Mot regeln:** DB-knappen `las` i samma tiominutersfönster räknar `kandidat_timme()` och `kandidat_regel()` med `utfall = 'varnar'`
+   per sträcka: antal sträckor, antal punkter och timmen, inga värden.
+   - **Förväntan:** live.json har exakt samma sträckor och lika många punkter per sträcka som regeln, och `tid` är regelns timme.
+   - Är regeln tyst ska nyckeln vara `[]`.
+   - Vetot och radarn rullar med klockan. En skillnad läses därför om i ett nytt fönster och bortförklaras inte.
+3. **Storleken:** nyckelns längd i byte och live.json:s storlek före och efter gzip redovisas.
+
+**Stomdokument:** LIV steg 6, SYS (live.json bär nyckeln `kandidat`).
