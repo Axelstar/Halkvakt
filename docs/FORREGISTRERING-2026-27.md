@@ -1,6 +1,6 @@
 # Förregistrering — kandidaten NIVÅ 2+BLANDNING, vintern 2026/27
 
-**Status: UTKAST 15/10 2026, klart att signera när de fyra punkterna i §10 är besvarade.** Signeras av Bengt och Axel senast
+**Status: UTKAST 15/10 2026, klart att signera när punkterna i §10 är besvarade och spridningen loggas.** Signeras av Bengt och Axel senast
 **31/10 2026** (DECISIONS #544, #547). Domfönstret börjar den dag förregistreringen är signerad och pushad; varje dygn utan signatur är
 ett dygn vinter utanför domen. Källorna är DECISIONS #544, #547, #552, #558–#573 och TROSKLAR-SKUGGAN §2–§4. Utkastet i #560 ersätts
 av det här dokumentet; frågorna (A) och (B) där är besvarade av #562.
@@ -44,7 +44,7 @@ från ankare till domen i mars, som ett undantag från regel T (#563, TROSKLAR-S
 
 ## 4. Måtten — oförändrade
 
-Grind A–C med trösklarna i TROSKLAR-SKUGGAN §3, spridningsgrinden (§10 b) och regeln att **tystnad på ett täckt segment är en
+Grind A–C med trösklarna i TROSKLAR-SKUGGAN §3, spridningsgrinden vid X = 2,25 °C där minst två ankare bidrar (§10 b) och regeln att **tystnad på ett täckt segment är en
 miss** (#475, #477). Inget krav sänks. Allt redovisas också per ankarband 0–7, 7–15, 15–20 och över 20 km (#563).
 
 | Grind | Population | För kandidaten |
@@ -87,28 +87,24 @@ genom en daterad post med båda signaturerna, och aldrig som en lättnad efter s
 Formen i appen, texten (*"Halkvakt tror: halka framöver."* / *"Halkvakt thinks: slippery ahead."*) och avstängningen (#560 punkt 8,
 #562 punkt 5, #573). De rör användaren, inte måttet.
 
-## 10. Före signeringen — fyra punkter
+## 10. Före signeringen
 
 **(a) Radarns tal R.** Läses 26/10 enligt #568: visar alla tre kurvorna en majoritet i bandet 0,1–0,5 på `rate_mean` blir R = 0,1,
 annars 0,5. Claude för in talet samma dag.
 
-**(b) Spridningsgrinden för kandidaten — en motsägelse mellan två beslut, och en lucka i loggen.**
-- *Motsägelsen.* #547 säger att kandidaten döms med RÅ:s spridningsgrind oförändrad: en punkt är *okänd* när **färre än två ankare**
-  bidrar eller spridningen är **2,25 °C eller mer**. #563 säger att kandidaten talar **också långt från ankare**. Kandidatens värde finns
-  utan ankare — fysiken och grannarnas fel bär det — men grindens första villkor gör varje punkt utan två ankare inom 50 km tyst i
-  domen. Tre vägar:
-  1. *Grinden som i #547*, båda villkoren. Kandidaten döms bara nära ankare; #563:s undantag blir verkningslöst i domen.
-  2. *Bara spridningen grindar* (≥ 2,25 °C ⇒ okänt) där minst två ankare bidrar; med färre ankare grindar den inte, och kandidaten
-     döms där också, redovisad per ankarband. **Claudes förslag** — grinden gör det den mättes för (ankare som inte är överens), och
-     #563 står.
-  3. *Ingen grind för kandidaten*: en ny fråga, som #547 säger måste skrivas före 31/10.
-- *Ska samma grind gälla varningen i appen?* **Claudes förslag: ja.** Då döms det användaren hör (#562 punkt 4: domen gäller modellen
-  som är live); annars mäter B1 en delmängd av varningarna.
-- *Luckan.* Grinden kräver antalet bidragande ankare och deras spridning per punkt, och TROSKLAR-SKUGGAN §3 säger *"bara varv med
-  loggad spridning räknas"*. Del B räknar ankarna men sparar dem inte, och domloggen bär dem inte. **Utan dem kan grind B inte räknas på
-  kandidaten, och domen faller på RÅ.** Bygget efter beslutet: del B skriver antalet ankare och spridningen till `kandidat_live`
-  (värdevaktens spann först), och `kandidat_skugga` bär för varje sträcka den minsta spridningen bland de varnande punkterna med minst
-  två ankare — så att domen kan räkna grinden vid X = 1, 2, 2,25 och 4 °C, som S-B gör för RÅ.
+**(b) Spridningsgrinden för kandidaten — avgjord av #547 och #563 tillsammans; kvar är en fråga om appen och ett bygge.**
+- *Grinden.* #547: kandidaten döms med RÅ:s spridningsgrind, **X = 2,25 °C**. #563 punkt 3: *"Bandet faller som krav. Kandidaten
+  talar överallt där regeln slår till, också långt från stationerna."* Lästa ihop: **spridningen grindar där minst två ankare
+  bidrar** (spridning ≥ 2,25 °C ⇒ okänt), och med färre ankare grindar den inte — kandidaten döms där också, redovisad per ankarband
+  (0–7, 7–15, 15–20, över 20 km). RÅ:s andra villkor, *färre än två ankare ⇒ okänt*, gäller inte kandidaten, eftersom #563 säger att
+  den talar långt från ankare.
+- *Fråga: gäller samma grind varningen i appen?* **Claudes förslag: ja** — då döms det användaren hör (#562 punkt 4: domen gäller
+  modellen som är live); annars mäter B1 en delmängd av varningarna. Det är en ändring av regeln i #562 och kräver båda signaturerna.
+- *Bygget.* TROSKLAR-SKUGGAN §3 säger *"bara varv med loggad spridning räknas"*, och kandidatens logg bär i dag varken antalet
+  bidragande ankare eller spridningen — **utan dem kan grind B inte räknas på kandidaten, och domen faller på RÅ.** Del B skriver
+  dem till `kandidat_live` (värdevaktens spann först), och `kandidat_skugga` bär för varje sträcka den minsta spridningen bland de
+  varnande punkterna med minst två ankare och antalet varnande punkter med färre — så att domen kan räkna grinden vid X = 1, 2, 2,25
+  och 4 °C, som S-B gör för RÅ. Byggs före signeringen.
 
 **(c) "845 stationer" i TROSKLAR-SKUGGAN §3** (rad 62) är en räkning av mätpunkter från före #344. Rättas till *"761 stationer (854
 mätpunkter, varav 93 fjärrytor)"* i samma post som signeringen — ingen tröskel ändras.

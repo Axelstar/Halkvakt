@@ -13238,4 +13238,10 @@ reserv, förväntan (5,12 % mot taket 5 %), vad som fryses och vad som inte hör
 - (c) **"845 stationer"** i TROSKLAR-SKUGGAN §3 rättas till *761 stationer (854 mätpunkter)* i samma post som signeringen.
 - (d) **Tysta timmar** (kandidaten gammal eller ofullständig) räknas som okänt, inte som miss — Claudes förslag.
 
+**Rättelse samma kväll (Bengt: *"var inte det här ett problem som uppstod igår och vi var tvungna att välja"*).** Punkt (b) var
+redan avgjord: #563 punkt 3 säger att kandidaten talar överallt där regeln slår till, också långt från stationerna, och #547 att
+spridningsgrinden gäller. Lästa ihop blir det väg 2 — spridningen grindar där minst två ankare bidrar, och med färre ankare grindar
+den inte. Claude ställde det som en ny fråga i stället för att läsa besluten tillsammans; väg 1 och 3 är strukna. Kvar under (b):
+om samma grind gäller varningen i appen (en ändring av #562:s regel, båda signaturerna), och bygget av loggningen.
+
 **Stomdokument:** KUV, LIV, BED §4.2.
