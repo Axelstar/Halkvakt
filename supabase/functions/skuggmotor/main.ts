@@ -513,10 +513,14 @@ Deno.serve(async (req) => {
       const t2 = performance.now();
       const ankRutt = ankareNaraRutten(ankare.lista, line);
       const prognos = ankare.lista.length ? { ...segmentPrognos(line, ankRutt), h: holdoutRader(line, ankRutt) } : {};
-      // KANDIDATEN (DECISIONS #573 del 2): de varnande sträckorna längs rutten, för takten. Loggad, aldrig hörd.
+      // KANDIDATEN (DECISIONS #573 del 2): de varnande sträckorna längs rutten, för takten. Loggad, aldrig hörd. Längs vägnätet
+      // (RUTTER_VAG, OSRM, inbäddad av bundle-skuggmotor.ts): de raka linjerna gick 6,9 km från de varnande punkterna på E10 15/10.
+      // geo säger vilken linje som räknades; den raka bara om vägnätet saknas för rutten.
+      const vag = (RUTTER_VAG as Record<string, [number, number][]>)[name];
+      const kandidatLinje = vag ?? line;
       const kandidat = land === "se" && !c
-        ? { tid: kandidatV.tid, n: kandidatV.lista.length,
-            h: kandidatLangsRutten(ankareNaraRutten(kandidatV.lista, line, UPPMATT_KM), line), ...(kandidatV.skal ? { skal: kandidatV.skal } : {}) }
+        ? { tid: kandidatV.tid, n: kandidatV.lista.length, geo: vag ? "osrm" : "linje",
+            h: kandidatLangsRutten(ankareNaraRutten(kandidatV.lista, kandidatLinje, UPPMATT_KM), kandidatLinje), ...(kandidatV.skal ? { skal: kandidatV.skal } : {}) }
         : {};
       ms.prognos += performance.now() - t2;
       // Facit-bilder finns bara i Sverige (Trafikverkets väglagskameror). Punkterna slås upp ur
