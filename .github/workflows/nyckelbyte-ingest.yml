@@ -4,9 +4,9 @@
 # som bär den gamla (DATABASE_URL). Arbetsflödena som anropar funktionerna läser nyckeln ur cron.job och följer med av sig själva.
 # Beviset: arkivexporten svarar inte 403 på den nya nyckeln och 403 på den gamla, och inget cron-jobb bär den gamla.
 # Misslyckas något efter att hemligheten satts läggs den gamla nyckeln tillbaka i båda ändarna, högljutt.
-# OMDEPLOYEN (första körningen 38701610490): en satt hemlighet når inte funktioner som redan körs — den nya nyckeln gav 403 i över
-# två minuter, och cron-anropen 07:52–07:54 fick 403. Därför deployas de nio funktioner som läser INGEST_KEY om direkt efter att
-# hemligheten satts, innan cron.job byts; vid återställning deployas de om med den gamla.
+# DEPLOYNYCKELN SAKNAR RÄTTEN (körningarna 38701610490 och 38703298551): SUPABASE_ACCESS_TOKEN har inte edge_functions_secrets_write,
+# så hemligheten sattes aldrig — flödet kräver en nyckel med den rätten (DECISIONS #570). Omdeployen av de nio funktioner som läser
+# INGEST_KEY står kvar: om en satt hemlighet når funktioner som redan körs är inte prövat.
 name: nyckelbyte-ingest
 on:
   workflow_dispatch:
@@ -62,7 +62,9 @@ jobs:
             from cron.job where position(:'fran' in command) > 0) x;
           SQL
           }
-          satt_hemlighet() { local f="$RUNNER_TEMP/ingest.env"; printf 'INGEST_KEY=%s\n' "$1" > "$f"; supabase secrets set --env-file "$f" --project-ref "$REF" >/dev/null; rm -f "$f"; }
+          # Statusen är CLI:ts, inte rm:s: 15/10 svarade CLI:t "Missing required permission(s): edge_functions_secrets_write", och
+          # funktionen returnerade ändå 0 eftersom rm var sista kommandot — två körningar trodde att hemligheten var satt.
+          satt_hemlighet() { local f="$RUNNER_TEMP/ingest.env" s=0; printf 'INGEST_KEY=%s\n' "$1" > "$f"; supabase secrets set --env-file "$f" --project-ref "$REF" >/dev/null || s=$?; rm -f "$f"; return $s; }
           # De nio som läser INGEST_KEY (facit-svar och skuggrapport gör det inte).
           FUNKTIONER="arkivdump arkivexport byggsignaler favoritprov ingest-live kamerafacit publicera skuggmotor vakthund"
           deploya() { for f in $FUNKTIONER; do echo "== deploy $f"; supabase functions deploy "$f" --project-ref "$REF" --no-verify-jwt || return 1; done; }
