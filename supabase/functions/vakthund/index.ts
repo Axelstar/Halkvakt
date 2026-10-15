@@ -462,8 +462,11 @@ Deno.serve(async (req) => {
     // Grepp 3 (DECISIONS #231/#232): databasens storlek. Gratisnivån skrivskyddar databasen vid 500 MB — då stannar
     // ingest-live och appen visar gammal data, utan att något annat larmar. Larm vid 450 MB (90 %; 400 till 10/10, DECISIONS #512).
     // Prov: ?databasprov=1 sänker gränsen till 0 MB så att larmvägen syns.
+    // Summan över alla databaser, som Supabase räknar kvoten (deras sida Database size): mallarna template0/template1 bar
+    // 15 MB som den gamla frågan (bara current_database) inte såg — 469 mot 483 MB 15/10 (DECISIONS #569).
     try {
-      const [db] = await sql`SELECT pg_database_size(current_database())::bigint AS b`;
+      const [db] = await sql`SELECT coalesce(sum(pg_database_size(datname)), 0)::bigint AS b FROM pg_database
+        WHERE has_database_privilege(datname, 'CONNECT')`;
       const mb = Math.round(Number(db.b) / 1048576);
       const grans = new URL(req.url).searchParams.get("databasprov") === "1" ? 0 : 450;
       rad.push(`databas: ${mb} MB av 500 (larm vid ${grans} MB)`);
