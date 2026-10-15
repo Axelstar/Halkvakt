@@ -8,6 +8,7 @@
 // tyst frånvaro vore ett tyst aldrig (#447 punkt 3). ?torrt=1 visar raderna utan att skriva något.
 import postgres from "https://deno.land/x/postgresjs@v3.4.4/mod.js";
 import { type Lagrad, type Rad, ISSUE_TITEL, anvandning, appStoreRader, ascToken, byggRader, facitRader, gruppRad, issueKropp, tillstandsRader } from "./signaler.ts";
+import { nyckelGiltig } from "../_shared/nyckel.ts";
 
 const BUNDLE = "se.halkvakt.app";
 const REPO = "Axelstar/Halkvakt";
@@ -68,8 +69,7 @@ async function gh(path: string, method = "GET", body?: unknown): Promise<any> {
 }
 
 Deno.serve(async (req) => {
-  const nyckel = Deno.env.get("INGEST_KEY");
-  if (!nyckel || req.headers.get("x-halkvakt-key") !== nyckel) return new Response("forbidden", { status: 403 });
+  if (!(await nyckelGiltig(req))) return new Response("forbidden", { status: 403 });  // nyckeln i databasen, DECISIONS #571
   const torrt = new URL(req.url).searchParams.get("torrt") === "1";
   try {
     const nya = [...await asc(), ...await facit()];

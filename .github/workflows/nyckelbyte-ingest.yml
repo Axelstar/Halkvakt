@@ -1,18 +1,18 @@
-# Nyckelbytet för INGEST_KEY (DECISIONS #570, Bengt 15/10 "gör 1,2 och 3"). Nyckeln läckte i klartext i en publik Actions-logg
-# (dbknapp 38698517939: en bevisrad läste cron.job.command). Den nya nyckeln skapas här, maskeras innan något annat händer och
-# skrivs aldrig ut: den sätts som funktionshemlighet (supabase secrets set, SUPABASE_ACCESS_TOKEN) och byts in i varje pg_cron-jobb
-# som bär den gamla (DATABASE_URL). Arbetsflödena som anropar funktionerna läser nyckeln ur cron.job och följer med av sig själva.
-# Beviset: arkivexporten svarar inte 403 på den nya nyckeln och 403 på den gamla, och inget cron-jobb bär den gamla.
-# Misslyckas något efter att hemligheten satts läggs den gamla nyckeln tillbaka i båda ändarna, högljutt.
-# DEPLOYNYCKELN SAKNAR RÄTTEN (körningarna 38701610490 och 38703298551): SUPABASE_ACCESS_TOKEN har inte edge_functions_secrets_write,
-# så hemligheten sattes aldrig — flödet kräver en nyckel med den rätten (DECISIONS #570). Omdeployen av de nio funktioner som läser
-# INGEST_KEY står kvar: om en satt hemlighet når funktioner som redan körs är inte prövat.
+# Nyckelbytet för funktionernas nyckel (DECISIONS #570, #571). Nyckeln läckte i klartext i en publik Actions-logg
+# (dbknapp 38698517939: en bevisrad läste cron.job.command). Sedan sql/054 prövar de nio funktionerna x-halkvakt-key mot raden i
+# `funktionsnyckel`, inte mot funktionshemligheten INGEST_KEY, så bytet görs helt med DATABASE_URL: raden och varje pg_cron-jobb
+# som bär den gamla nyckeln byts i SAMMA transaktion. Den nya nyckeln skapas här, maskeras innan något annat händer och skrivs
+# aldrig ut; värdena går till psql som variabler, så inget kommando hamnar i loggen. Arbetsflödena som anropar funktionerna läser
+# nyckeln ur cron.job och följer med av sig själva. Beviset: arkivexporten svarar inte 403 på den nya nyckeln och 403 på den gamla.
+# Fäller en kontroll i transaktionen rullas allt tillbaka (ON_ERROR_STOP); faller beviset efteråt byts den gamla tillbaka.
+# Historik: de tre första körningarna (38701610490, 38703298551, 38705146382) försökte sätta funktionshemligheten, som
+# deploynyckeln inte får skriva (edge_functions_secrets_write).
 name: nyckelbyte-ingest
 on:
   workflow_dispatch:
     inputs:
       bekrafta:
-        description: "Skriv BYT för att byta INGEST_KEY"
+        description: "Skriv BYT för att byta funktionernas nyckel"
         required: true
         default: ""
 permissions: { contents: read }
@@ -21,88 +21,63 @@ jobs:
   byt:
     if: inputs.bekrafta == 'BYT'
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 8
     steps:
-      - uses: actions/checkout@v4
-        with: { persist-credentials: false }
-      - uses: actions/setup-node@v4
-        with: { node-version: 22 }
-      - name: Bundlarna i synk med källorna (deploya aldrig ur fas)
-        run: |
-          node --experimental-strip-types scripts/bundle-publicera.ts --check
-          node --experimental-strip-types scripts/bundle-skuggmotor.ts --check
-          node --experimental-strip-types scripts/bundle-favoritprov.ts --check
-      - uses: supabase/setup-cli@v1
-        with: { version: 2.117.0 }
-      - name: Byt INGEST_KEY i funktionerna och i cron.job
+      - name: Byt nyckeln i funktionsnyckel och i cron.job
         shell: bash
         env:
-          SUPABASE_ACCESS_TOKEN: "${{ secrets.SUPABASE_ACCESS_TOKEN }}"
           DATABASE_URL: "${{ secrets.DATABASE_URL }}"
         run: |
           set -euo pipefail
-          REF=xmpfztykhyvhmrzsnjrc
-          FN="https://$REF.supabase.co/functions/v1/arkivexport"
-          [ -n "$SUPABASE_ACCESS_TOKEN" ] && [ -n "$DATABASE_URL" ] || { echo "::error::SUPABASE_ACCESS_TOKEN eller DATABASE_URL saknas"; exit 1; }
+          FN="https://xmpfztykhyvhmrzsnjrc.supabase.co/functions/v1/arkivexport"
+          [ -n "$DATABASE_URL" ] || { echo "::error::DATABASE_URL saknas"; exit 1; }
 
-          GAMMAL=$(psql "$DATABASE_URL" -At -c "select substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
-          [ "${#GAMMAL}" -ge 32 ] || { echo "::error::den gamla nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          GAMMAL=$(psql "$DATABASE_URL" -At -c "select nyckel from funktionsnyckel where id = 1")
+          [ "${#GAMMAL}" -ge 32 ] || { echo "::error::funktionsnyckel saknar en nyckel (sql/054 inte körd?)"; exit 1; }
           echo "::add-mask::$GAMMAL"
           NY=$(openssl rand -hex 32)
           echo "::add-mask::$NY"
           [ "${#NY}" -eq 64 ] && [ "$NY" != "$GAMMAL" ] || { echo "::error::den nya nyckeln blev inte 64 tecken"; exit 1; }
 
-          # Antal jobb som bär en nyckel (variablerna tolkas av psql ur stdin; inget kommando skrivs ut).
           rakna() { psql "$DATABASE_URL" -At -v ON_ERROR_STOP=1 -v k="$1" <<'SQL'
           select count(*) from cron.job where position(:'k' in command) > 0;
           SQL
           }
-          byt_cron() { psql "$DATABASE_URL" -At -v ON_ERROR_STOP=1 -v fran="$1" -v till="$2" <<'SQL'
-          select count(*) from (select cron.alter_job(jobid, command := replace(command, :'fran', :'till'))
-            from cron.job where position(:'fran' in command) > 0) x;
+          # Raden och cron-jobben i en transaktion. Är raden inte exakt en, eller antalet bytta jobb inte det väntade, fäller en
+          # omöjlig typomvandling satsen (beroende av talet, så att planeraren inte räknar ut den i förväg som en konstant 1/0),
+          # ON_ERROR_STOP stänger psql och transaktionen rullas tillbaka — inget är bytt.
+          byt() { psql "$DATABASE_URL" -At -v ON_ERROR_STOP=1 -v fran="$1" -v till="$2" -v antal="$3" <<'SQL'
+          begin;
+          with u as (update funktionsnyckel set nyckel = :'till', bytt_at = now() where id = 1 and nyckel = :'fran' returning 1)
+          select case when c = 1 then 'raden bytt' else ('fel: raderna ' || c)::int::text end from (select count(*) as c from u) z;
+          select case when n = :antal then n::text || ' jobb bytta' else ('fel: jobben ' || n)::int::text end
+            from (select count(*) as n from (select cron.alter_job(jobid, command := replace(command, :'fran', :'till'))
+                  from cron.job where position(:'fran' in command) > 0) x) y;
+          commit;
           SQL
           }
-          # Statusen är CLI:ts, inte rm:s: 15/10 svarade CLI:t "Missing required permission(s): edge_functions_secrets_write", och
-          # funktionen returnerade ändå 0 eftersom rm var sista kommandot — två körningar trodde att hemligheten var satt.
-          satt_hemlighet() { local f="$RUNNER_TEMP/ingest.env" s=0; printf 'INGEST_KEY=%s\n' "$1" > "$f"; supabase secrets set --env-file "$f" --project-ref "$REF" >/dev/null || s=$?; rm -f "$f"; return $s; }
-          # De nio som läser INGEST_KEY (facit-svar och skuggrapport gör det inte).
-          FUNKTIONER="arkivdump arkivexport byggsignaler favoritprov ingest-live kamerafacit publicera skuggmotor vakthund"
-          deploya() { for f in $FUNKTIONER; do echo "== deploy $f"; supabase functions deploy "$f" --project-ref "$REF" --no-verify-jwt || return 1; done; }
           status() { curl -s -o /dev/null -w '%{http_code}' -X POST "$FN" -H "x-halkvakt-key: $1" -H "Content-Type: application/json" -d '{}' || echo 000; }
-          tillbaka() {
-            echo "::error::$1 — den gamla nyckeln läggs tillbaka"
-            byt_cron "$NY" "$GAMMAL" >/dev/null || true
-            satt_hemlighet "$GAMMAL" || true
-            deploya || echo "::error::omdeployen med den gamla nyckeln föll — deploya de nio med deploy-supabase.yml"
-            exit 1
-          }
 
           FORE=$(rakna "$GAMMAL")
           echo "Före: $FORE cron-jobb bär den gamla nyckeln"
           [ "$FORE" -ge 1 ] || { echo "::error::inget cron-jobb bär den gamla nyckeln"; exit 1; }
+          # Funktionerna måste redan pröva mot databasen (sql/054 och omdeployen), annars faller beviset — pröva den gamla först.
+          F=$(status "$GAMMAL"); echo "Gammal nyckel före bytet: HTTP $F"
+          [ "$F" != 403 ] && [ "$F" != 000 ] || { echo "::error::funktionen tar inte emot den nuvarande nyckeln — inget är bytt"; exit 1; }
 
-          satt_hemlighet "$NY" || { echo "::error::supabase secrets set föll — inget är bytt"; exit 1; }
-          echo "Funktionshemligheten INGEST_KEY är satt"
-          # Upplysning, inte grind: listans digest jämförs med sha256 av den nya nyckeln; bara ja eller nej skrivs ut.
-          D=$(printf %s "$NY" | sha256sum | cut -d' ' -f1)
-          if supabase secrets list --project-ref "$REF" 2>/dev/null | grep -q "$D"; then echo "Hemligheten i Supabase stämmer med den nya nyckeln: ja"; else echo "Hemligheten i Supabase stämmer med den nya nyckeln: nej (eller listan visar en annan digest)"; fi
-          deploya || tillbaka "omdeployen föll"
-          echo "De nio funktionerna är omdeployade med den nya nyckeln"
-          BYTTA=$(byt_cron "$GAMMAL" "$NY") || tillbaka "cron.job gick inte att byta"
+          byt "$GAMMAL" "$NY" "$FORE" || { echo "::error::transaktionen föll — inget är bytt"; exit 1; }
           KVAR=$(rakna "$GAMMAL"); MED_NY=$(rakna "$NY")
-          echo "cron.job: $BYTTA jobb bytta, $KVAR bär den gamla, $MED_NY bär den nya"
-          [ "$KVAR" -eq 0 ] && [ "$MED_NY" -eq "$FORE" ] || tillbaka "cron.job bär inte den nya nyckeln i alla $FORE jobb"
+          echo "cron.job: $KVAR bär den gamla, $MED_NY bär den nya"
 
-          # Funktionerna är omdeployade; pröva i upp till två minuter.
-          S=403
-          for i in $(seq 1 24); do S=$(status "$NY"); [ "$S" != 403 ] && break; sleep 5; done
-          echo "Ny nyckel: HTTP $S"
-          [ "$S" != 403 ] && [ "$S" != 000 ] || tillbaka "funktionen tar inte emot den nya nyckeln (HTTP $S)"
-          G=$(status "$GAMMAL")
-          echo "Gammal nyckel: HTTP $G"
-          [ "$G" = 403 ] || { echo "::error::den gamla nyckeln ger HTTP $G, inte 403"; exit 1; }
+          S=$(status "$NY"); echo "Ny nyckel: HTTP $S"
+          G=$(status "$GAMMAL"); echo "Gammal nyckel: HTTP $G"
+          if [ "$S" = 403 ] || [ "$S" = 000 ] || [ "$G" != 403 ] || [ "$KVAR" -ne 0 ] || [ "$MED_NY" -ne "$FORE" ]; then
+            echo "::error::beviset föll — den gamla nyckeln byts tillbaka"
+            byt "$NY" "$GAMMAL" "$MED_NY" || echo "::error::tillbakabytet föll också — läs funktionsnyckel och cron.job"
+            exit 1
+          fi
           {
-            echo "### Nyckelbytet (DECISIONS #570)"
-            echo "- cron.job: $BYTTA jobb bytta, $KVAR bär den gamla nyckeln, $MED_NY bär den nya"
+            echo "### Nyckelbytet (DECISIONS #570, #571)"
+            echo "- cron.job: $KVAR bär den gamla nyckeln, $MED_NY bär den nya"
             echo "- arkivexporten: den nya nyckeln ger HTTP $S, den gamla HTTP $G"
           } >> "$GITHUB_STEP_SUMMARY"

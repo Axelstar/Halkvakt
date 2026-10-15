@@ -9,6 +9,7 @@
 // kontrollerar kontrollsumman mot bokföringen och jämför filens rader med databasens, kolumn för kolumn (sql/042 arkiv_jamfor).
 // Inget skrivs. Körs med databasknappen (aterlasprov); beviset är noll rader som bara finns på ena sidan.
 import postgres from "https://deno.land/x/postgresjs@v3.4.4/mod.js";
+import { nyckelGiltig } from "../_shared/nyckel.ts";
 const SB = Deno.env.get("SUPABASE_URL")!;
 const SRK = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const H = { Authorization: `Bearer ${SRK}`, apikey: SRK };
@@ -49,8 +50,7 @@ async function aterlasprov(): Promise<Response> {
 }
 
 Deno.serve(async (req) => {
-  const k = Deno.env.get("INGEST_KEY");
-  if (!k || req.headers.get("x-halkvakt-key") !== k) return new Response("forbidden", { status: 403 });
+  if (!(await nyckelGiltig(req))) return new Response("forbidden", { status: 403 });  // nyckeln i databasen, DECISIONS #571
   if (new URL(req.url).searchParams.get("aterlasprov") === "1") return aterlasprov();
   const ut: unknown[] = [];
   // Packa, ladda upp och LÄS TILLBAKA det som faktiskt ligger i hinken — ett grönt uppladdningssvar är inte beviset.

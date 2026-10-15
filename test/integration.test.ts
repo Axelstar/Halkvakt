@@ -1488,3 +1488,36 @@ test("#343 kandidat_ph och kandidat_live: migrationen, upserten och gallringen",
     await pool.end();
   }
 });
+
+// DECISIONS #571 (sql/054): funktionernas nyckel i databasen. Prövningen släpper bara exakt raden, längdkravet stoppar en kort
+// nyckel, och bytets vakt — samma sats som nyckelbyte-ingest.yml kör — fäller när raden inte bär den väntade nyckeln, utan att
+// planeraren räknar ut felgrenen i förväg.
+test("#571 funktionsnyckel: prövningen, längdkravet och bytets vakt", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const giltig = async (k: string | null) => (await pool.query("SELECT nyckel_giltig($1) AS g", [k])).rows[0].g;
+  const vakt = (fran: string, till: string) => pool.query(`with u as (update funktionsnyckel set nyckel = $2, bytt_at = now()
+      where id = 1 and nyckel = $1 returning 1)
+    select case when c = 1 then 'raden bytt' else ('fel: raderna ' || c)::int::text end as s from (select count(*) as c from u) z`, [fran, till]);
+  try {
+    await pool.query(readFileSync(new URL("../sql/054_funktionsnyckel.sql", import.meta.url), "utf8"));
+    await pool.query("DELETE FROM funktionsnyckel");
+    const a = "a".repeat(64), c = "c".repeat(64);
+    assert.equal(await giltig(a), false, "en tom tabell släpper inget");
+    await assert.rejects(pool.query("INSERT INTO funktionsnyckel (id, nyckel) VALUES (1, 'kort')"), /check/i, "en kort nyckel stoppas");
+    await pool.query("INSERT INTO funktionsnyckel (id, nyckel) VALUES (1, $1)", [a]);
+    assert.equal(await giltig(a), true, "raden släpps");
+    assert.equal(await giltig(a + "x"), false, "en längre sträng släpps inte");
+    assert.equal(await giltig(""), false, "tom sträng släpps inte");
+    assert.equal(await giltig(null), false, "null släpps inte");
+    await assert.rejects(vakt(c, "b".repeat(64)), /invalid input syntax/, "fel gammal nyckel fäller satsen");
+    assert.equal(await giltig(a), true, "efter den fällda satsen gäller den gamla");
+    assert.equal((await vakt(a, c)).rows[0].s, "raden bytt");
+    assert.equal(await giltig(c), true, "den nya släpps");
+    assert.equal(await giltig(a), false, "den gamla släpps inte längre");
+  } finally {
+    await pool.query("DELETE FROM funktionsnyckel").catch(() => {});
+    await pool.end();
+  }
+});

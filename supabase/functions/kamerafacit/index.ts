@@ -10,6 +10,7 @@
 // utan att hämta eller spara något — dbknappens kamerafacitprov.
 import postgres from "https://deno.land/x/postgresjs@v3.4.4/mod.js";
 import { type Kamera, type Punkt, STATION_M, V2_TAK, dagsljus, haversineM, kamerorVidFaror, taV2, valjStickprov, vag } from "./urval.ts";
+import { nyckelGiltig } from "../_shared/nyckel.ts";
 
 const SB = Deno.env.get("SUPABASE_URL")!;
 const SRK = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -39,8 +40,7 @@ async function spara(k: Kamera, sokvag: string): Promise<string> {
 }
 
 Deno.serve(async (req) => {
-  const nyckel = Deno.env.get("INGEST_KEY");
-  if (!nyckel || req.headers.get("x-halkvakt-key") !== nyckel) return new Response("forbidden", { status: 403 });
+  if (!(await nyckelGiltig(req))) return new Response("forbidden", { status: 403 });  // nyckeln i databasen, DECISIONS #571
   const torrt = new URL(req.url).searchParams.get("torrt") === "1";
   const nu = new Date();
   const timme = Math.floor(nu.getTime() / 3_600_000);
