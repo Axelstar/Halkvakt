@@ -2,7 +2,7 @@
 // Proven är små och geometriska med känd sanning — samma anda som grind A:s självtest.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { segmentPrognos, provpunkter, skatta, holdoutRader, narmastLangs, STEG_KM, UPPMATT_KM, FRYS_C, type Ankare } from "../engine/src/segment.ts";
+import { segmentPrognos, provpunkter, skatta, holdoutRader, narmastLangs, kandidatLangsRutten, STEG_KM, UPPMATT_KM, FRYS_C, type Ankare } from "../engine/src/segment.ts";
 
 // Rak linje österut vid 56° N: 0,01° lon ≈ 0,62 km. Linjen är ≈ 31 km.
 const LINE: [number, number][] = [[13.0, 56.0], [13.5, 56.0]];
@@ -124,4 +124,23 @@ test("spridningen (DECISIONS #474): störst minus minst av de bidragande ankarna
 test("determinism: samma indata ⇒ byte-identisk rad", () => {
   const a = [ank("a", 13.13, -0.37), ank("b", 13.31, 2.11), ank("c", 13.44, -1.9)];
   assert.equal(JSON.stringify(segmentPrognos(LINE, a)), JSON.stringify(segmentPrognos(LINE, [...a].reverse())));
+});
+
+test("#573 kandidatens takt: en rad per varnande sträcka inom 2 km, i körordning, tiden vid 80 km/h", () => {
+  // LINE är ≈ 31 km österut vid 56° N; 0,01° lat ≈ 1,11 km.
+  const p = (segment_id: string, lon: number, lat: number) => ({ segment_id, lon, lat });
+  const rader = kandidatLangsRutten([
+    p("B", 13.3, 56.005),          // ≈ 0,6 km norr om linjen, längre fram
+    p("A", 13.1, 56.0),            // på linjen
+    p("A", 13.1, 56.01),           // samma sträcka ≈ 1,1 km bort: räknas i n, inte som egen rad
+    p("C", 13.2, 56.03),           // ≈ 3,3 km bort: utanför 2 km
+    p("D", 14.0, 56.0),            // bortom linjens slut: ≈ 31 km från sista brytpunkten
+  ], LINE);
+  assert.deepEqual(rader.map((r) => r[1]), ["A", "B"], "körordning, bara inom 2 km");
+  const [tA, , kmA, dA, nA] = rader[0];
+  assert.equal(nA, 2); assert.ok(dA < 0.05, `A:s avstånd ${dA}`);
+  assert.ok(kmA > 6 && kmA < 7, `A ligger ≈ 6,2 km in: ${kmA}`);
+  assert.ok(Math.abs(tA - kmA / 80 * 3600) < 5, `t ${tA} mot läget ${kmA} km`);
+  assert.ok(rader[1][3] > 0.4 && rader[1][3] < 0.8, `B:s avstånd ${rader[1][3]}`);
+  assert.deepEqual(kandidatLangsRutten([], LINE), [], "inga punkter ⇒ inga rader");
 });

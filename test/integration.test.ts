@@ -1591,3 +1591,84 @@ test("#573 kandidat_regel: ytan, fukten, radarn, vetot, vakterna och färskheten
     await pool.end();
   }
 });
+
+// DECISIONS #573 del 2 (sql/057): domloggen. En rad per sträcka och timme med utfallens antal, stationsvärdena utan dubbletter,
+// en körningsrad som skiljer räknad, redan räknad och tyst, och arkivexportens nya tabeller med ett dygns ålder och tre dygns golv.
+test("#573 del 2: domloggen per sträcka, stationsvärdena, körningsloggen och hinkens nya tabeller", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const st = (km: number) => 70 + km / 111.2;
+  const stad = async () => {
+    await q("DELETE FROM kandidat_live WHERE punkt LIKE 'v%' OR punkt LIKE 'ST\_%'");
+    await q("DELETE FROM vagpunkt WHERE punkt LIKE 'vT%'");
+    await q("DELETE FROM road_conditions WHERE segment_id LIKE '9991%'");
+    await q("DELETE FROM weather_observations WHERE station_id LIKE 'RT2%'");
+    await q("DELETE FROM kandidat_skugga WHERE segment_id LIKE '9991%'");
+    await q("DELETE FROM kandidat_station WHERE station_id LIKE 'ST\_%'");
+    await q("DELETE FROM kandidat_skugga_korning");
+    await q("DELETE FROM arkiv_export_tabell");
+  };
+  try {
+    await q("CREATE TABLE IF NOT EXISTS shadow_log (id bigserial PRIMARY KEY, run_at timestamptz NOT NULL DEFAULT now(), alerts jsonb NOT NULL DEFAULT '[]'::jsonb)");
+    for (const f of ["001_init.sql", "008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql", "018_trend_berakna.sql",
+                     "029_brott_index.sql", "030_langsam_vakt.sql", "050_kandidat_live.sql", "053_arkiv_tabeller.sql", "055_vagpunkter.sql",
+                     "056_kandidat_regel.sql", "057_kandidat_skugga.sql"])
+      await q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+    await stad();
+    const P: [string, string, number, number][] = [
+      ["vT11", "99911", 0, -1.0], ["vT12", "99911", 1, -0.5],   // Våt ⇒ två varnar på samma sträcka
+      ["vT13", "99912", 0, -0.2],                               // Torrt ⇒ torr
+      ["vT14", "99913", 300, -0.8],                             // Våt, varm station 10 km bort ⇒ veto
+    ];
+    for (const [p, s, km] of P) await q("INSERT INTO vagpunkt (punkt, segment_id, lon, lat) VALUES ($1, $2, 31, $3)", [p, s, st(km)]);
+    await q(`INSERT INTO road_conditions (segment_id, condition_code, condition_text, condition_info) VALUES
+      ('99911', 1, 'Normalt', '{Våt}'), ('99912', 1, 'Normalt', '{Torrt}'), ('99913', 1, 'Normalt', '{Våt}')`);
+    await q("INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c) VALUES ('RT21', 'prov', ST_SetSRID(ST_MakePoint(31, $1), 4326), now() - interval '10 minutes', 3.5, 1.0)", [st(310)]);
+    const tid: Date = (await q("SELECT date_trunc('hour', now()) AS t")).rows[0].t;
+    await q("INSERT INTO kandidat_live (tid, punkt, pb) SELECT $1, v.punkt, 5 FROM vagpunkt v WHERE v.punkt NOT LIKE 'vT%'", [tid]);
+    for (const [p, , , pb] of P) await q("INSERT INTO kandidat_live (tid, punkt, pb) VALUES ($1, $2, $3)", [tid, p, pb]);
+    await q("INSERT INTO kandidat_live (tid, punkt, ph, pb) VALUES ($1, 'ST_A', 1.0, 1.5), ($1 - interval '1 hour', 'ST_A', 0.9, 1.2)", [tid]);
+
+    const m1: string = (await q("SELECT kandidat_logga() AS m")).rows[0].m;
+    assert.match(m1, /3 sträckor, 2 varnande punkter, 1 vetade, 1 torra/);
+    const rad = Object.fromEntries((await q("SELECT * FROM kandidat_skugga WHERE segment_id LIKE '9991%'")).rows.map((r) => [r.segment_id, r]));
+    assert.equal(rad["99911"].punkter, 2); assert.equal(rad["99911"].varnar, 2); assert.equal(rad["99911"].vat, true);
+    assert.equal(rad["99911"].pb_min, -1);
+    assert.equal(rad["99912"].torr, 1); assert.equal(rad["99912"].vat, false);
+    assert.equal(rad["99913"].veto, 1); assert.equal(rad["99913"].veto_station, "RT21");
+    assert.ok(Math.abs(rad["99913"].veto_km - 10) < 0.3, `vetots avstånd ${rad["99913"].veto_km}`);
+    assert.equal((await q("SELECT count(*)::int AS n FROM kandidat_station WHERE station_id = 'ST_A'")).rows[0].n, 2, "båda timmarna");
+    const k1 = (await q("SELECT status, stracker, varnar, veto, torr FROM kandidat_skugga_korning ORDER BY korning DESC LIMIT 1")).rows[0];
+    assert.deepEqual(k1, { status: "räknad", stracker: 3, varnar: 2, veto: 1, torr: 1 });
+
+    const m2: string = (await q("SELECT kandidat_logga() AS m")).rows[0].m;
+    assert.match(m2, /redan räknad/);
+    assert.equal((await q("SELECT count(*)::int AS n FROM kandidat_skugga WHERE segment_id LIKE '9991%'")).rows[0].n, 3, "inga dubbletter");
+    assert.equal((await q("SELECT count(*)::int AS n FROM kandidat_station WHERE station_id = 'ST_A'")).rows[0].n, 2, "inga dubbletter");
+
+    await q("UPDATE kandidat_live SET tid = tid - interval '3 hours' WHERE tid = $1 AND punkt LIKE 'v%'", [tid]);
+    assert.match((await q("SELECT kandidat_logga() AS m")).rows[0].m, /tyst/);
+    assert.equal((await q("SELECT status FROM kandidat_skugga_korning ORDER BY korning DESC LIMIT 1")).rows[0].status, "tyst");
+
+    // Hinken: dygnet efter exporteras, golvet är tre dygn.
+    const dag = (n: number) => q("SELECT ((now() - $1 * interval '1 day') AT TIME ZONE 'UTC')::date::text AS d", [n]).then((r) => r.rows[0].d as string);
+    const [d2, d5, idag] = [await dag(2), await dag(5), await dag(0)];
+    for (const d of [d2, d5])
+      await q(`INSERT INTO kandidat_skugga (segment_id, observed_at, punkter, varnar, veto, torr, vat, flackvis_vat, pb_min)
+        VALUES ('99919', ($1::date + interval '12 hours') AT TIME ZONE 'UTC', 1, 1, 0, 0, true, false, -1)`, [d]);
+    const att = (await q("SELECT arkiv2_att_exportera('kandidat_skugga', 100)::text AS d")).rows.map((r) => r.d);
+    assert.ok(att.includes(d2) && att.includes(d5), `två och fem dygn gamla står i kö: ${att}`);
+    assert.ok(!att.includes(idag), "i dag är inte färdigt");
+    const text: string = (await q("SELECT arkiv2_dygn('kandidat_skugga', $1::date) AS t", [d5])).rows[0].t;
+    assert.equal(JSON.parse(text.split("\n")[0])[0], "segment_id");
+    for (const d of [d2, d5]) await q("SELECT arkiv2_export_klar('kandidat_skugga', $1::date, 1, 10, 'x', 'v')", [d]);
+    assert.match((await q("SELECT arkiv2_radera_exporterat(0, 14) AS s")).rows[0].s, /kandidat_skugga: raderade 1 rader/, "fem dygn gammalt raderas");
+    assert.match((await q("SELECT arkiv2_radera_exporterat(0, 14) AS s")).rows[0].s, /inget exporterat tabelldygn/, "två dygn gammalt står kvar");
+    await assert.rejects(q("SELECT arkiv2_dygn('shadow_log', $1::date)", [d5]), /okänd tabell/);
+  } finally {
+    await stad().catch(() => {});
+    await pool.end();
+  }
+});

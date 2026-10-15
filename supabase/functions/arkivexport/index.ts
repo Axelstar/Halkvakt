@@ -15,7 +15,7 @@ const SRK = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const H = { Authorization: `Bearer ${SRK}`, apikey: SRK };
 const HINK = "arkiv";
 const MAX_DYGN = 2;
-const TABELLER = ["trend_kandidater", "trend_stigande", "radar_precip"];  // sql/053:s vitlista
+const TABELLER = ["trend_kandidater", "trend_stigande", "radar_precip", "kandidat_skugga", "kandidat_station"];  // sql/053 och sql/057:s vitlista
 
 async function rpc(fn: string, args: Record<string, unknown>): Promise<any> {
   const r = await fetch(`${SB}/rest/v1/rpc/${fn}`, { method: "POST", headers: { ...H, "Content-Type": "application/json" }, body: JSON.stringify(args) });
