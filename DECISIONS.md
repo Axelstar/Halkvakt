@@ -13216,3 +13216,26 @@ fäller om en rutt saknar den; loggen bär `geo: "osrm"` eller `"linje"`. RÅ-pr
 domar är förregistrerade på de raka linjerna.
 
 **Stomdokument:** KUV, LIV, BED §4.2.
+
+## #574 (15/10 2026) Förregistreringen ifylld som eget dokument — fyra punkter före signeringen (kort #343, steg 8)
+
+**Bengts ord 15/10:** *"ja, börja med förregistreringen"*, efter Claudes förslag om nästa åtgärd. **Förslag** till Bengt och Axel, inte
+beslut: dokumentet blir förregistreringen först när båda signerat (senast 31/10, #544, #547).
+
+`docs/FORREGISTRERING-2026-27.md` ersätter utkastet i #560 och samlar allt som beslutats sedan dess: identiteten (#552, med
+modell.pkl:s sha256), den levande kedjan och pariteten (#558, #561, #562), regeln med talen (#562, #565, #566, #568, #573), måtten
+per grind och ankarband (#547, #563), grind A som övre gräns (#562 punkt 4), domfönstret och regel L (#564), RÅ som kontroll och
+reserv, förväntan (5,12 % mot taket 5 %), vad som fryses och vad som inte hör till domen.
+
+**Fyra punkter före signeringen (bedömningen §4.2):**
+- (a) **Radarns tal** läses 26/10 enligt #568; Claude för in det samma dag.
+- (b) **Spridningsgrinden för kandidaten.** #547 säger RÅ:s grind oförändrad — färre än två ankare *eller* spridning ≥ 2,25 °C ⇒
+  okänt — och #563 att kandidaten talar också långt från ankare; båda kan inte stå. Claudes förslag: bara spridningen grindar där minst
+  två ankare bidrar, och samma grind gäller varningen i appen. **Fynd samma varv:** TROSKLAR-SKUGGAN §3 säger *"bara varv med loggad
+  spridning räknas"*, och kandidatens logg bär varken antalet ankare eller spridningen — utan dem kan grind B inte räknas på
+  kandidaten, och domen faller på RÅ. Bygget (del B skriver dem, domloggen bär den minsta spridningen bland de varnande punkterna)
+  väntar på beslutet.
+- (c) **"845 stationer"** i TROSKLAR-SKUGGAN §3 rättas till *761 stationer (854 mätpunkter)* i samma post som signeringen.
+- (d) **Tysta timmar** (kandidaten gammal eller ofullständig) räknas som okänt, inte som miss — Claudes förslag.
+
+**Stomdokument:** KUV, LIV, BED §4.2.
