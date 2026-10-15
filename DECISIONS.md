@@ -12784,7 +12784,8 @@ vilar på, lästes inte. Inom regel T finns formen redan: TROSKLAR-SKUGGAN §4(b
 station inom ett godkänt avstånd kan fälla ytans tillstånd och en mätning på sträckan visar fukten (T1, T2). Enligt #490 går **68,1 % av
 trafiken inom 7 km** från ett ankare och **96,5 % inom 15 km**; bortom 15 km (3,6 %) tiger kandidaten. **Därför skrivs ändringen av
 TROSKLAR-SKUGGAN inte i det här varvet:** den ska säga att den egna betavarningen talar i form (b), inom ett band som Axel väljer, och
-det är en fråga till Bengt och Axel i §4.2 — inte en tolkning Claude gör åt dem.
+det är en fråga till Bengt och Axel i §4.2 — inte en tolkning Claude gör åt dem. *Överspelat samma dag av #563 (Bengt och Axel):
+låset i #220 är hävt, och kandidaten får tala också långt från ankare till domen i mars.*
 
 **Pariteten körd om med snötäcket från säsongens början** (körning 38651194568 på 3921b79; samma tre körningar, samma tolerans):
 
@@ -12795,5 +12796,43 @@ det är en fråga till Bengt och Axel i §4.2 — inte en tolkning Claude gör �
 | 2025-02-15 00Z | 0,051 / 0,089 / 0,159 | 0,048 / **0,120** / 0,593 | **inom** (förut p95 0,436) |
 
 **alla 3 körningar inom toleransen — det som går live räknar samma sak som kuvösens frysta kandidat; februari ph p95 0,120 (förut 0,436), snötäcket 0 % ifrån i median i alla tre**
+
+**Stomdokument:** LIV, BED §4.2, SYS.
+
+## #563 (15/10 2026) Låset i #220 hävs: regel T blir en vanlig tröskelregel, och kandidaten får tala utan vittne på platsen till domen i mars (kort #343)
+
+**Beslut.** Bengt och Axel 15/10. Bengt: *"men vi ändrar oss nu jag och axel. det spelar ingen roll vad den tidigare regeln säger den
+kan inte få binda upp oss i utvecklingen av det här"*, och *"ja"* på Claudes förslag till hur.
+
+1. **Låset hävs.** Meningen i #220, *"regel T i sin helhet får skärpas men aldrig mjukas upp, oavsett signaturer"*, och motsvarande
+   rader i TROSKLAR-KOMBINATIONEN §10 och TROSKLAR-FRYSKLASSNINGEN §7 gäller inte längre. Regel T ändras från i dag som
+   tröskeldokumenten: genom en daterad DECISIONS-post med båda signaturerna, aldrig som en lättnad efter att utfallet är sett. Lydelsen
+   och T1–T6 står kvar som huvudregel.
+2. **Undantaget för kandidaten, till domen i mars 2027.** Kandidaten NIVÅ 2+BLANDNING får utlösa en **egen betavarning utan vittne på
+   platsen för ytans tillstånd** — T3 och T5 lyfts för kandidatens yta och för inget annat — när regeln i #562 är uppfylld: yta ≤ 0 °C;
+   fukten har ett **mätt** vittne på platsen (väglaget *Våt* på sträckan, eller radarn över punkten senaste timmen; T1 och T2 gäller
+   fullt för fukten); ingen station inom ankaravståndet mätte yta över +2 °C inom ±45 minuter; märkt BETA och *modellerat*; avstängningen
+   på plats. Domen i mars (#547) avgör om den får stanna.
+3. **Bandet faller som krav.** Kandidaten talar överallt där regeln slår till, också långt från stationerna. Avståndet till närmaste
+   ankare (`ank_km`) loggas redan i `kandidat_live`, och domen redovisas per ankarband (0–7, 7–15, 15–20 och över 20 km). Ett band kan
+   läggas in genom en daterad post om skuggan visar att felet långt från stationerna är för stort.
+
+**Vad som inte ändras.** Regel T gäller allt annat: SMHI:s varningar och prognoser, frysklassningen, trenderna och offsetmodellen utanför
+kandidaten. Frysklassningens egna lås (K-A2:s tak, §1:s avgränsning) står kvar. Produktinvarianterna, domen i mars med samma trösklar
+och regel D är orörda.
+
+**Varför den smala formen och inte en strykning.** En strykning av regel T hade också låtit SMHI:s varningar, frysklassningen och
+trenderna utlösa på egen hand, och det är inte beslutat. Med låset hävt är nästa ändring ett beslut bort, inte blockerad.
+
+**Risk, skriven före.** Bortom 15 km från en station går 3,6 % av trafiken (#490). Där kan ingen mätning fälla kandidaten, och där är
+felet störst: 9,20 % grova fel bortom 20 km mot 5,02 % totalt (#517). Det som bär varningen där är fuktkravet, BETA-märkningen och
+avstängningen.
+
+**Skyltfonden.** Bilaga 7 i ansökan (skickad 30/9) säger *"En tröskel får skärpas men aldrig lättas när utfallet väl är sett"*. Den här
+ändringen gäller en princip, före kandidatens utfall, och inte en tröskel efter ett sett utfall. Om fonden ska få veta är Bengts och
+Axels beslut.
+
+**Ändrat i samma commit:** TROSKLAR-KOMBINATIONEN §6.1 (daterad not) och §10, TROSKLAR-FRYSKLASSNINGEN §7, TROSKLAR-SKUGGAN §4(d),
+NIVA2-LIVE (§2 val 1, §5, §6), #562 (not om att regel T-stycket är överspelat), bedömningen §4.2 och kort #343.
 
 **Stomdokument:** LIV, BED §4.2, SYS.

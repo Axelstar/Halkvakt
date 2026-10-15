@@ -165,10 +165,10 @@ utfallet.
 
 **Ankaret flyttat 25/9 (DECISIONS #363):** B döms genom uppspelning ur arkivet, inte i en skuggkolumn, så "första skuggkörningen" inträffar aldrig. Ankaret är i stället **den första körning som läser ett B-utfall** — fram till dess gäller lättnaden ovan, därefter ändras ingen tröskel.
 
-**Undantaget från all lättnad är K-A2:s tak, §1:s avgränsning och tröskelregeln** (TROSKLAR-KOMBINATIONEN §6, i sin
-helhet). En storhet som inte kan motbevisas av en mätning får inte utlösa en varning, klassningen utlöser aldrig ensam,
-och taket för farliga fel får skärpas men aldrig mjukas upp — oavsett signaturer. *Ändrat 16/9 (DECISIONS #220);
-tidigare: "Ett modellerat värde får aldrig bli en avtryckare".*
+**Undantaget från all lättnad är K-A2:s tak och §1:s avgränsning.** Klassningen utlöser aldrig ensam, och taket för farliga
+fel får skärpas men aldrig mjukas upp — oavsett signaturer. *Ändrat 16/9 (DECISIONS #220); tidigare: "Ett modellerat värde
+får aldrig bli en avtryckare".* *Ändrat 15/10 (DECISIONS #563, Bengt och Axel): tröskelregeln (TROSKLAR-KOMBINATIONEN §6) står
+inte längre bland undantagen; den ändras som tröskeldokumenten, med båda signaturerna. Frysklassningens egna lås ovan är orörda.*
 
 ---
 

@@ -351,6 +351,9 @@ Den ersätter den gamla meningen *"en modellerad storhet får aldrig vara en avt
 och §7). Kartan §13.2 sade redan att Axels lydelse är bättre. Den gamla förbjöd bokstavligen varje integrerad
 storhet — också minne av mätningar, som aldrig var det regeln skrevs mot.
 
+*Ändrat 15/10 (DECISIONS #563, Bengt och Axel): regeln ändras sedan dess med båda signaturerna (§10), och ett tidsbegränsat
+undantag gäller kandidaten NIVÅ 2+BLANDNING (TROSKLAR-SKUGGAN §4(d)).*
+
 ### 6.2 Vad orden betyder, så att de går att tillämpa
 
 | # | Precisering |
@@ -404,6 +407,8 @@ täts** — och de är tätade:
 preciseringarna, och alla tre är skärpningar; han ska ändå ha läst dem. **Skyddet följer med:** den gamla meningen fick
 aldrig mjukas upp oavsett signaturer (TROSKLAR-FRYSKLASSNINGEN §7), och regel T i sin helhet har nu samma skydd (§10).
 Ett smalare skydd hade i sig varit en uppmjukning — och av samma skäl fick #153 beslut 2 ingen förbehållen öppning.
+*Hävt 15/10 (DECISIONS #563, Bengt och Axel): regel T ändras sedan dess med båda signaturerna, och kandidaten NIVÅ 2+BLANDNING
+har ett tidsbegränsat undantag (§10, TROSKLAR-SKUGGAN §4(d)). Stycket ovan beskriver läget 16/9.*
 
 ---
 
@@ -457,11 +462,13 @@ Fram till kombinationens första skuggkörning — för efterhalkan: betans för
 helst av oss med en rad i DECISIONS. **Därefter gäller D6:** ingen tröskel ändras, skärpning med en rad från Bengt,
 lättnad utesluten när utfallet är sett.
 
-**Undantagen från all lättnad:** V1 (additiv), KB-D3 (förarfacit ensamt fäller ingen dom) och **regel T i sin helhet** —
-lydelsen och T1–T6, alltså också prövningen per tillstånd (T1), vittneskravet (T2), att extrapolation faller (T3) och att
-prognoser aldrig ensamma utlöser (T6). De får skärpas men aldrig mjukas upp — **oavsett signaturer**, samma skydd som den
-gamla meningen hade (TROSKLAR-FRYSKLASSNINGEN §7; tillagt 16/9, DECISIONS #220). **Regeln har inga förbehållna
-öppningar:** ett beslut som vill låta något utlösa — #153 beslut 2 inräknat — måste klara T1–T3 som allt annat.
+**Undantagen från all lättnad:** V1 (additiv) och KB-D3 (förarfacit ensamt fäller ingen dom). De får skärpas men aldrig
+mjukas upp — **oavsett signaturer**.
+
+**Regel T** (§6) ändras sedan 15/10 som tröskeldokumenten: genom en daterad DECISIONS-post med båda signaturerna, aldrig som en
+lättnad efter att utfallet är sett (DECISIONS #563, Bengt och Axel). Låset *"oavsett signaturer"* från 16/9 (#220) är hävt.
+Lydelsen och T1–T6 står kvar som huvudregel, och ett beslut som vill låta något utlösa prövas mot T1–T3 eller fattas som ett
+uttryckligt undantag. **Gällande undantag:** kandidaten NIVÅ 2+BLANDNING, till domen i mars 2027 (TROSKLAR-SKUGGAN §4(d)).
 
 ---
 

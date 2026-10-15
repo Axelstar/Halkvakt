@@ -195,6 +195,15 @@ lydelsen från 1/9, som lät prognosen tala på modellerade värden i strid med 
 (TROSKLAR-KOMBINATIONEN §6, fastställd 16–17/9). Grind A, B och C oförändrade. Underlag:
 `docs/SKUGGAN-PAR4-MOT-REGEL-T.md`.*
 
+- **(d) KANDIDATEN FÖRE DOMEN** (DECISIONS #556, #562, #563 — Bengt och Axel 15/10): från 15/10 till domen i mars 2027 får
+  kandidaten NIVÅ 2+BLANDNING tala som en **egen betavarning** i appen, också långt från ankare, när: kandidatens yta ≤ 0 °C;
+  fukten har ett **mätt** vittne på platsen (väglaget *Våt* på sträckan, eller radarn över punkten senaste timmen — radarns
+  tröskel är Axels och passerar värdevakten först); ingen station inom ankaravståndet mätte yta över +2 °C inom ±45 minuter;
+  varningen märks BETA och *modellerat*; avstängningen finns (nyckeln tas bort ur publiceringen). Regel T3/T5 lyfts för
+  kandidatens yta och för inget annat (TROSKLAR-KOMBINATIONEN §10). Taket på hur ofta den talar kommer ur takten i skuggan
+  (#200) och läses före App Review. Domen (a)–(c) ovan fälls i mars som förut och avgör om den får stanna. Inget band krävs;
+  domen redovisas per ankarband, och ett band kan läggas in genom en daterad post.
+
 Bevisbördan ligger på skuggan. Vid tvekan: tystnad (produktinvarianten).
 
 ## 5. Ändringsregler
