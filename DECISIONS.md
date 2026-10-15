@@ -13073,4 +13073,13 @@ hemligheten satts och innan `cron.job` byts, och gör om det vid en återställn
 stämmer med den nya nyckeln (digest mot sha256, bara ja eller nej). Fönstret där cron-anrop kan få 403 blir omdeployens längd,
 några minuter.
 
+**Rättelse och andra körningen 08:06 UTC (38703298551, efter *slå ihop 972*) — återställd, nyckeln inte bytt.** Förklaringen
+ovan är fel. Loggen bär `supabase secrets set`:s svar: *"Missing required permission(s): edge_functions_secrets_write"* —
+deploynyckeln (SUPABASE_ACCESS_TOKEN) får inte skriva funktionshemligheter. Flödets `satt_hemlighet` returnerade ändå 0, eftersom
+`rm` var dess sista kommando, så båda körningarna skrev *hemligheten är satt* fast inget hade satts; den andra skrev dessutom att
+hemligheten i Supabase inte stämde med den nya nyckeln. 403:orna 07:52–07:54 och 08:08–08:09 kom av att cron-jobben bar den nya
+nyckeln medan funktionerna hade den gamla; återställningen lade tillbaka den gamla i cron-jobben. Hemligheten har aldrig ändrats.
+Rättat: `satt_hemlighet` returnerar CLI:ts status. **Nyckeln byts inte förrän en nyckel med rätten finns** — Axel byter den i
+panelen (SQL Editor och Edge Functions → Secrets), eller ger deploynyckeln rätten; frågan står i bedömningen §4.2.
+
 **Stomdokument:** SYS, BED §4.2.
