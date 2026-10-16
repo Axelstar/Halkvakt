@@ -1767,3 +1767,28 @@ test("#578 brytaren: en tystar, båda startar — och publiceringen utelämnar n
     await pool.end();
   }
 });
+
+test("#579 bitar av vägen: en kilometer åt vardera hållet i meter, sammanslagna per sträcka, och en punkt utanför vägen ritas inte", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { KANDIDAT_BITAR_SQL } = await import("../publish/map-core.ts");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  try {
+    await q("DELETE FROM road_conditions WHERE segment_id LIKE '99957%'");
+    // En rak sträcka norrut på 10 km vid 60° N, och en öst–västlig på 10 km — samma bitlängd oavsett riktning (meter, inte grader).
+    await q(`INSERT INTO road_conditions (segment_id, condition_code, condition_text, condition_info, geom) VALUES
+      ('99957N', 1, 'Normalt', '{}', ST_SetSRID(ST_MakeLine(ST_MakePoint(17.0, 60.0), ST_MakePoint(17.0, 60.0898)), 4326)),
+      ('99957O', 1, 'Normalt', '{}', ST_SetSRID(ST_MakeLine(ST_MakePoint(17.0, 61.0), ST_MakePoint(17.1852, 61.0)), 4326))`);
+    // Norr: punkter vid 2 och 3 km (bitarna 1–4 km, sammanslagna) och en punkt 1 km öster om vägen (ritas inte). Öst: en punkt vid 5 km.
+    const r = (await q(KANDIDAT_BITAR_SQL, [["99957N", "99957N", "99957N", "99957O"], [17.0, 17.0, 17.0185, 17.0926], [60.01797, 60.02695, 60.04, 61.0]])).rows;
+    const per = Object.fromEntries(r.map((x) => [x.seg, x]));
+    assert.deepEqual(Object.keys(per).sort(), ["99957N", "99957O"]);
+    assert.equal(per["99957N"].punkter, 2, "punkten en kilometer bort från vägen ritas inte");
+    assert.ok(Math.abs(Number(per["99957N"].km) - 3.0) <= 0.1, `två punkter 1 km isär ger en bit på 3 km: ${per["99957N"].km}`);
+    assert.equal(per["99957N"].g.type, "LineString", "bitarna slås ihop till en linje");
+    assert.ok(Math.abs(Number(per["99957O"].km) - 2.0) <= 0.1, `en ensam punkt ger 2 km också öster ut: ${per["99957O"].km}`);
+  } finally {
+    await q("DELETE FROM road_conditions WHERE segment_id LIKE '99957%'").catch(() => {});
+    await pool.end();
+  }
+});

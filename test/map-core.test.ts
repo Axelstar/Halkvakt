@@ -2,14 +2,19 @@
 // Trafikverket. Fail-soft-grenen för väglagskamerorna bevisas i båda riktningarna.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { buildMapData } from "../publish/map-core.ts";
+import { buildMapData, KANDIDAT_BITAR_SQL } from "../publish/map-core.ts";
 import type { Q } from "../publish/snapshot-core.ts";
 
 const NOW = new Date("2026-11-20T06:30:00Z");
 const pt = (lon: number, lat: number) => ({ type: "Point", coordinates: [lon, lat] });
 
-function fakeDb() {
-  const q: Q = async (text) => {
+function fakeDb(o: { bitar?: Record<string, unknown>[]; bitarKastar?: boolean; fragor?: { text: string; params?: unknown[] }[] } = {}) {
+  const q: Q = async (text, params) => {
+    if (text === KANDIDAT_BITAR_SQL) {   // #579
+      o.fragor?.push({ text, params });
+      if (o.bitarKastar) throw new Error("function st_transform does not exist");
+      return o.bitar ?? [];
+    }
     if (text.includes("FROM road_conditions")) return [
       { segment_id: "S1", condition_code: "2", condition_text: "Besvärligt", condition_info: ["Is"], road_number: "E10",
         location_text: "Kiruna", modified_time: "2026-11-20T06:00:00Z", lan: "25", g: { type: "LineString", coordinates: [[20.2, 67.8], [20.3, 67.9]] } },
@@ -35,9 +40,9 @@ function fakeDb() {
 const trvOk = async () => new Response(JSON.stringify({ RESPONSE: { RESULT: [{ Camera: Array.from({ length: 600 }, (_, i) => (
   { Id: `K${i}`, Name: `Kamera ${i}`, PhotoUrl: `https://x/${i}.jpg`, Direction: 90, Geometry: { WGS84: `POINT (15.${i} 58.${i})` } })) }] } }), { status: 200 });
 
-test("#77 alla sex kartfiler ur kärnan, i kartsajtens format", async () => {
+test("#77 alla sju kartfiler ur kärnan, i kartsajtens format (kandidaten sedan #579)", async () => {
   const { files, stats, notes } = await buildMapData(fakeDb(), { trvKey: "k", fetchFn: trvOk as any, now: NOW });
-  assert.deepEqual(Object.keys(files).sort(), ["kameror-vaglag.geojson", "kameror.geojson", "meta.json", "olyckor.geojson", "vader.geojson", "vaglag.geojson"]);
+  assert.deepEqual(Object.keys(files).sort(), ["kameror-vaglag.geojson", "kameror.geojson", "kandidat.geojson", "meta.json", "olyckor.geojson", "vader.geojson", "vaglag.geojson"]);
   assert.deepEqual(notes, []);
   const vaglag = JSON.parse(files["vaglag.geojson"]);
   assert.equal(vaglag.type, "FeatureCollection");
@@ -54,6 +59,7 @@ test("#77 alla sex kartfiler ur kärnan, i kartsajtens format", async () => {
     generated_at: "2026-11-20T06:30:00.000Z", vaglag_total: 2, vaglag_ej_normalt: 1, stationer: 2, kalla_stationer: 1,
     olyckor: 1, kameror: 1, kameror_vaglag: 600, vilt_dygn: 1, vilt_vecka: 3, vilt_vanligast: "älg",
     smhi_vinter: [{ event: "Snöfall", niva: "Gul", niva_kod: "YELLOW", omrade: "Norrbotten" }], waitlist_count: 31,
+    kandidat: { pa: false, strackor: 0, punkter: 0, ritade: 0, km: 0, tid: null },   // #579: ingen nyckel ⇒ av
   });
 });
 
@@ -61,7 +67,7 @@ test("#77 fail-soft för väglagskamerorna: TRV-fel eller tunt svar ⇒ filen ut
   const trv400 = async () => new Response("Invalid query attribute", { status: 400 });
   let r = await buildMapData(fakeDb(), { trvKey: "k", fetchFn: trv400 as any, now: NOW });
   assert.equal("kameror-vaglag.geojson" in r.files, false);
-  assert.equal(Object.keys(r.files).length, 5);
+  assert.equal(Object.keys(r.files).length, 6, "fem lager och meta — kameror-vaglag utelämnad (kandidaten sedan #579)");
   assert.match(r.notes[0], /TRV 400: Invalid query attribute/);
   assert.equal(r.stats.kameror_vaglag, null);
 
@@ -73,4 +79,37 @@ test("#77 fail-soft för väglagskamerorna: TRV-fel eller tunt svar ⇒ filen ut
   r = await buildMapData(fakeDb(), { now: NOW });
   assert.equal("kameror-vaglag.geojson" in r.files, false);
   assert.match(r.notes[0], /TRAFIKVERKET_API_KEY saknas/);
+});
+
+// ── KANDIDATENS BITAR AV VÄGEN (NIVA2-LIVE steg 9, DECISIONS #579) ─────────────────────────────────────────────────────
+test("#579 brytaren av (ingen nyckel): tom kandidatfil, frågan ställs inte, och meta säger av", async () => {
+  const fragor: { text: string; params?: unknown[] }[] = [];
+  const { files, notes } = await buildMapData(fakeDb({ fragor }), { now: NOW });
+  assert.deepEqual(JSON.parse(files["kandidat.geojson"]).features, []);
+  assert.equal(fragor.length, 0);
+  assert.deepEqual(JSON.parse(files["meta.json"]).kandidat, { pa: false, strackor: 0, punkter: 0, ritade: 0, km: 0, tid: null });
+  assert.ok(!notes.some((n) => n.startsWith("kandidat:")));
+});
+
+test("#579 brytaren på: en rad per punkt till frågan, en bit per sträcka tillbaka, och meta räknar det som inte ritades", async () => {
+  const fragor: { text: string; params?: unknown[] }[] = [];
+  const bitar = [{ seg: "S1", punkter: 2, km: "3.0", g: { type: "LineString", coordinates: [[17, 60.009], [17, 60.036]] } }];
+  const appKandidat = [
+    { id: "S1", tid: "2026-11-20T05:00:00.000Z", punkter: [[17, 60.018], [17, 60.027]] as [number, number][] },
+    { id: "S2", tid: "2026-11-20T05:00:00.000Z", punkter: [[18, 59.5]] as [number, number][] },
+  ];
+  const { files, notes } = await buildMapData(fakeDb({ fragor, bitar }), { now: NOW, appKandidat });
+  assert.deepEqual(fragor[0].params, [["S1", "S1", "S2"], [17, 17, 18], [60.018, 60.027, 59.5]]);
+  assert.deepEqual(JSON.parse(files["kandidat.geojson"]).features, [{ type: "Feature", geometry: bitar[0].g,
+    properties: { segment_id: "S1", punkter: 2, km: 3, tid: "2026-11-20T05:00:00.000Z" } }]);
+  assert.deepEqual(JSON.parse(files["meta.json"]).kandidat, { pa: true, strackor: 2, punkter: 3, ritade: 2, km: 3, tid: "2026-11-20T05:00:00.000Z" });
+  assert.ok(notes.some((n) => n.startsWith("kandidat: 1 av 3 punkter ritas inte")), "det som inte ritas ska synas");
+});
+
+test("#579 en fallen fråga fäller inte kartan — kandidatlagret tomt och noterat", async () => {
+  const appKandidat = [{ id: "S1", tid: "2026-11-20T05:00:00.000Z", punkter: [[17, 60.018]] as [number, number][] }];
+  const { files, notes } = await buildMapData(fakeDb({ bitarKastar: true }), { now: NOW, appKandidat });
+  assert.deepEqual(JSON.parse(files["kandidat.geojson"]).features, []);
+  assert.ok(notes.some((n) => n.startsWith("kandidat: bitarna ej läsbara")));
+  assert.ok(files["vaglag.geojson"] && files["meta.json"], "resten av kartan står kvar");
 });

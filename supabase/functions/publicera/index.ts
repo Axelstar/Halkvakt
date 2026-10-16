@@ -963,7 +963,7 @@ export function sitemapMed(xml: string, adresser: string[]): string | null {
 
 
 // ═══ publish/map-core.ts ═══
-// KARTLAGERKÄRNAN — kartsajtens filer data/{vaglag,vader,olyckor,kameror,kameror-vaglag}.geojson
+// KARTLAGERKÄRNAN — kartsajtens filer data/{vaglag,vader,olyckor,kameror,kameror-vaglag,kandidat}.geojson
 // och data/meta.json, byggda ur databasen. Allt här blir PUBLIKT (bara CC0/CC BY-data).
 //
 // Kort #77 (8/9 2026): publish-map.yml hade kvar sin egen cron (*/30) och hade ensam ätit
@@ -988,9 +988,42 @@ export const STATION_LAN_SQL = `
                       WHERE NOT rc.deleted AND rc.geom IS NOT NULL ORDER BY rc.geom <-> w.geom LIMIT 1) n
   WHERE n.lan IS NOT NULL AND ST_DWithin(n.geom::geography, w.geom::geography, 20000)`;
 
-/** `appVader` = lägesfilens väderpunkter (de som klarar appens vakter). Med den skrivs länssidorna (#458); utan den hoppas de över. */
+/** Kandidatens bitar av vägen (DECISIONS #579): $1 sträckor, $2 lon, $3 lat — en rad per punkt. Exporterad för integrationsprovet. */
+export const KANDIDAT_BITAR_SQL = `
+        WITH p AS (SELECT * FROM unnest($1::text[], $2::float8[], $3::float8[]) AS p(seg, lon, lat)),
+        del AS (
+          SELECT p.seg, p.lon, p.lat, d.path AS del, ST_Transform(d.geom, 3006) AS linje,
+                 ST_Transform(ST_SetSRID(ST_MakePoint(p.lon, p.lat), 4326), 3006) AS pt
+          FROM p JOIN road_conditions rc ON rc.segment_id = p.seg AND NOT rc.deleted AND rc.geom IS NOT NULL
+          CROSS JOIN LATERAL ST_Dump(ST_LineMerge(ST_Force2D(rc.geom))) d),
+        narm AS (
+          SELECT DISTINCT ON (seg, lon, lat) seg, del, linje, pt FROM del
+          WHERE ST_DWithin(linje, pt, 300) AND ST_Length(linje) > 0
+          ORDER BY seg, lon, lat, ST_Distance(linje, pt)),
+        -- Varje punkt blir ett intervall [a, b] längs sin linje (andelar), 1 000 m åt vardera hållet. Intervallen slås ihop där de
+        -- överlappar (luckor och öar) och skärs ut EN gång per ö — ST_Union på bitarna kände inte igen överlappet när linjerna
+        -- skilde sig på sista decimalen, och två punkter 1 km isär blev 4 km i stället för 3 (CI 38860931214, #579).
+        iv AS (
+          SELECT seg, del, linje, greatest(0, f - 1000 / ST_Length(linje)) AS a, least(1, f + 1000 / ST_Length(linje)) AS b
+          FROM narm, LATERAL (SELECT ST_LineLocatePoint(linje, pt) AS f) x),
+        ny AS (
+          SELECT *, CASE WHEN a <= max(b) OVER (PARTITION BY seg, del ORDER BY a, b ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING)
+                         THEN 0 ELSE 1 END AS borjar
+          FROM iv),
+        oar AS (SELECT *, sum(borjar) OVER (PARTITION BY seg, del ORDER BY a, b) AS o FROM ny),
+        bit AS (
+          SELECT seg, count(*)::int AS punkter, ST_LineSubstring((array_agg(linje))[1], min(a), max(b)) AS g
+          FROM oar GROUP BY seg, del, o)
+        SELECT seg, sum(punkter)::int AS punkter, round((sum(ST_Length(g)) / 1000)::numeric, 1) AS km,
+               ST_AsGeoJSON(ST_Transform(ST_SimplifyPreserveTopology(ST_LineMerge(ST_Collect(g)), 20), 4326), 5)::json AS g
+        FROM bit GROUP BY seg ORDER BY seg`;
+
+/** `appVader` = lägesfilens väderpunkter (de som klarar appens vakter). Med den skrivs länssidorna (#458); utan den hoppas de över.
+ *  `appKandidat` = lägesfilens nyckel `kandidat` (#576), eller undefined när brytaren är av (#578) — kartan visar aldrig något annat
+ *  än appen får. */
 export async function buildMapData(q: Q, opts: {
   trvKey?: string; fetchFn?: typeof fetch; now?: Date; appVader?: { id: string; yta: number | null; fukt: boolean }[];
+  appKandidat?: { id: string; tid: string; punkter: [number, number][] }[];
 } = {}) {
   const now = opts.now ?? new Date();
   const notes: string[] = [];
@@ -1088,6 +1121,34 @@ export async function buildMapData(q: Q, opts: {
     } catch (e) { notes.push(`kameror-vaglag HOPPAS ÖVER (förra filen kvar på CDN): ${String((e as Error).message)}`); }
   }
 
+  // KANDIDATEN — BITAR AV VÄGEN (NIVA2-LIVE steg 9, DECISIONS #579; Bengt 16/10: "bygg bitar av vägen"). Varje varnande punkt får
+  // vägen en kilometer åt vardera hållet längs sin sträckas linje, och bitarna slås ihop per sträcka — ungefär det punkterna står för
+  // (de ligger cirka 2 km isär), aldrig hela sträckan: i morse 16/10 hade 807 km sträcka 232 km varnande väg. Metrarna räknas i
+  // SWEREF 99 TM (3006), inte i grader, så att en bit blir 2 km oavsett vägens riktning. En punkt mer än 300 m från sin sträckas linje
+  // ritas inte (räknas som utanför). Brytaren av ⇒ appKandidat saknas ⇒ tom fil och meta.kandidat.pa = false. Fail-soft med not.
+  const kandidatMeta = { pa: opts.appKandidat !== undefined, strackor: 0, punkter: 0, ritade: 0, km: 0, tid: null as string | null };
+  let kandidatFeatures: unknown[] = [];
+  const kp = (opts.appKandidat ?? []).flatMap((k) => k.punkter.map(([lon, lat]) => ({ seg: k.id, lon, lat })));
+  kandidatMeta.strackor = opts.appKandidat?.length ?? 0;
+  kandidatMeta.punkter = kp.length;
+  kandidatMeta.tid = opts.appKandidat?.[0]?.tid ?? null;
+  if (kp.length) {
+    try {
+      const bitar = await q(KANDIDAT_BITAR_SQL,
+        [kp.map((x) => x.seg), kp.map((x) => x.lon), kp.map((x) => x.lat)]);
+      kandidatFeatures = bitar.map((r) => ({ type: "Feature", geometry: r.g,
+        properties: { segment_id: r.seg, punkter: Number(r.punkter), km: Number(r.km), tid: kandidatMeta.tid } }));
+      kandidatMeta.ritade = bitar.reduce((n, r) => n + Number(r.punkter), 0);
+      kandidatMeta.km = Math.round(bitar.reduce((n, r) => n + Number(r.km), 0) * 10) / 10;
+      if (kandidatMeta.ritade < kandidatMeta.punkter) {
+        notes.push(`kandidat: ${kandidatMeta.punkter - kandidatMeta.ritade} av ${kandidatMeta.punkter} punkter ritas inte (mer än 300 m från sin sträckas linje)`);
+      }
+    } catch (e) {
+      notes.push(`kandidat: bitarna ej läsbara (${String((e as Error).message).slice(0, 80)}) — kartlagret blir tomt`);
+    }
+  }
+  put("kandidat.geojson", featureCollection(kandidatFeatures));
+
   // Vilt: BARA länsstatistik (polisens GPS = länscentrum, DECISIONS #13 — inga låtsaspunkter).
   const vilt = await q(`
     SELECT count(*) FILTER (WHERE datetime > now() - interval '24 hours') AS dygn,
@@ -1118,6 +1179,8 @@ export async function buildMapData(q: Q, opts: {
     vilt_vanligast: vilt[0]?.vanligast ?? null,
     smhi_vinter: smhiW.map((r) => ({ event: r.event_sv, niva: r.level_sv, niva_kod: r.level_code, omrade: r.area_name })),
     waitlist_count: Number(wl[0]?.n ?? 0),
+    // Kandidaten (#579): pa = brytaren, punkter i lägesfilen, ritade = de som fick en bit, km = bitarnas längd.
+    kandidat: kandidatMeta,
   };
   put("meta.json", stats);
 
@@ -1245,7 +1308,7 @@ Deno.serve(async (req) => {
     if (karta) {
       const m = await buildMapData(
         (text, params) => sql.unsafe(text, (params ?? []) as any[]) as unknown as Promise<Record<string, any>[]>,
-        { trvKey: Deno.env.get("TRAFIKVERKET_API_KEY"), appVader: liveDoc.weather });
+        { trvKey: Deno.env.get("TRAFIKVERKET_API_KEY"), appVader: liveDoc.weather, appKandidat: liveDoc.kandidat });
       for (const [name, json] of Object.entries(m.files)) files[`data/${name}`] = json;
       notes.push(...m.notes);
       kartaStats = m.stats;
