@@ -6,6 +6,7 @@ package se.halkvakt.app
 import se.halkvakt.engine.Geo
 import se.halkvakt.engine.Hazard
 import se.halkvakt.engine.HazardKind
+import se.halkvakt.engine.KandidatHazard
 import se.halkvakt.engine.PointHazard
 import se.halkvakt.engine.SegmentHazard
 import kotlin.math.roundToInt

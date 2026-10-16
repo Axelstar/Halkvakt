@@ -8,6 +8,7 @@ package se.halkvakt.app
 
 import org.json.JSONObject
 import se.halkvakt.engine.Hazard
+import se.halkvakt.engine.KandidatHazard
 import se.halkvakt.engine.PointHazard
 import se.halkvakt.engine.SegmentHazard
 import java.io.File
