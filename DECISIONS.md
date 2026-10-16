@@ -13335,3 +13335,78 @@ Timmen som publiceras är regelns `kandidat_timme()`: den senaste timme som del 
 föregående timme, upp till 1 h 43 min gammal, inom färskhetsregelns två timmar.
 
 **Stomdokument:** LIV steg 6, SYS (live.json bär nyckeln `kandidat`).
+
+## #577 (16/10 2026) Kandidatens betavarning i motorn och apparna: sist i prioriteten, en fara per sträcka (kort #343, NIVA2-LIVE steg 10–11)
+
+**Bengts ord 16/10:** *"GÖR STEG 10"*. NIVA2-LIVE steg 10: en ny farotyp i engine/src med plats i prioriteten, testvektorer, `beta`,
+texten och BETA-kortet; adaptern och regeln i Kotlin och Swift med samma utfall tecken för tecken; inga tal i tre språk — tröskeln
+ligger i steg 6. Produktboken (steg 11) följer med i samma omgång enligt PRODUKTBOKSREGELN.
+
+**Byggt i tre språk** (engine/src, android/engine, ios/HalkvaktEngine):
+- Farotypen `kandidat`: EN fara per sträcka ur live.json:s `kandidat` (#576), med sträckans varnande punkter (id `kand:<sträcka>`).
+- Korridoren (35°) och förvarningen (30 s, 400–3 000 m) läggs på punkterna som på ett segment. Inga egna tal: regeln bor i databasen.
+- Alltid `beta`, med texten *"Halkvakt tror: halka framöver."* (#573).
+- Kortet: *BETA · Halka · Halkvakt tror — modellerat · FRAMÖVER*, med halkans ikon.
+- Upprepningsregeln (10 min och 5 km) gäller per sträcka, inte per punkt.
+
+**Claudes val.** Prioriteten är avgjord: Bengt 16/10, *"ok behåll den sist"*, efter frågan *"är det rätt att ha den som sist i
+prioriteringen"* och Claudes svar med skälen nedan och argumentet för en plats direkt efter A2. Val 2–6 kan Bengt ändra före
+sammanslagningen; de står i bedömningen §4.2.
+1. **Sist i prioriteten: A3 > A1 > A2 > A4 > A5 > K** (avgjort av Bengt 16/10).
+   - Spärren kastar bara en vinnare som inte är viktigare än det senast sagda. Sist kan kandidaten därför aldrig tysta eller fördröja
+     en annan varning.
+   - Alla andra varningar beter sig alltså exakt som utan den, och skuggans förregistrerade mätningar beskriver fortfarande vad appen
+     säger om dem.
+   - v44 bevisar det: kameran talar 3 s efter kandidaten. Låg kandidaten över kameran hade kameran kastats och talat först vid t=48.
+   - Kostnaden: kandidaten viker för en kamera och talar tidigast 10 s senare (v43). Hinner bilen förbi punkten flyttas varningen till
+     sträckans nästa punkt, ungefär 2 km bort (i snitt cirka 10 punkter per sträcka 16/10). En sträcka med en enda punkt kan förlora
+     sin varning. Hur ofta en kamera och kandidaten möts är inte mätt.
+   - Argumentet för en plats direkt efter A2 (halka är farligare än en kamera) vägdes in. Där kan kandidaten fördröja en kamera eller
+     ett djur med upp till 10 s, och appen beter sig då inte längre som skuggan mäter. Platsen prövas på nytt efter domen i mars.
+2. **En fara per sträcka.** Per punkt hade den talat ungefär varannan kilometer längs en blöt och kall väg.
+3. **Kortets underrad *"Halkvakt tror — modellerat"*.** Det är ny text, i samma form som efterhalkans *"Halkvakt tror — efter regnet"*.
+4. **Reglaget *Halka* i *Varna för* styr kandidaten.** Den säger halka och har inget eget reglage, så sidan har fortfarande fem.
+5. **Inte i *I närheten*.** Den är en modells punkter, och ett avstånd i listan vore ett nytt påstående. Den räknas inte heller i resans
+   Halka-siffra.
+6. **Samma sträcka som en rapporterad halka (A1).** Båda kan tala, minst 10 s isär. Det följer Bengts linje att cry wolf är falska larm,
+   inte upprepade sanna. Mätt i lägesfilen 04:40 UTC 16/10: 5 av kandidatens 12 sträckor var också halkklassade i `segments`.
+
+**Apparna (Android och iOS):**
+- Läsaren läser nyckeln.
+- Åldersvakten släpper kandidaten efter 45 min, som halksträckorna, så att appen tystnar på gammal data.
+- GPS-takten räknar kandidatens punkter som närliggande faror. Utan dem hade takten kunnat stå på 15 s nära dem.
+- Rubrik och ikon är Halkas.
+- Fotostudion har kroken `fotostudio_kandidat`, som betakortets (#525).
+- Engelska: rösten har ingen engelsk text. *"Halkvakt thinks: slippery ahead."* (#573) står bara här tills en engelsk röst finns.
+
+**Skuggan och favoriterna:**
+- Skuggmotorns motorvarv körs utan kandidaten (två ställen i main.ts). Deras domar är förregistrerade utan den (#573), och sist i
+  prioriteten ändrar den ingen annan varning i appen. Kandidatens egen takt loggas som förut (`kandidatVarnar`).
+- Ruttfiltret (`farorNaraRutten`, `farorLangsRutten`) och favoriternas synk (`synk-core.ts`) hoppar över kandidaten uttryckligen; förut
+  föll den bort som NaN.
+- CLAUDE.md:s varningsdisciplin säger nu `A3>A1>A2>A4>A5>K`.
+
+**Prov:**
+- **Vektorerna v42–v44:** en gång per sträcka; viker för kameran; tystar aldrig kameran. Marginalen är mätt till minst 9,4 m vid varje
+  gräns. Alla 41 tidigare vektorer är byte för byte orörda.
+- **Läsarprovet i tre språk:** antalet punkter, lon före lat och id som tal.
+- **Övriga prov:** kortet i Kotlin och Swift, åldersvakten (Android), motorns invariant (texten och beta) och ruttfiltret.
+- **Körningar:** TS-sviten är grön lokalt. ios-engine 38852114596 är grön på c230970; senare commits rör inte ios/ eller engine/.
+  android.yml 38852518205 på b98df72. Första körningen 38852111716 föll på kompileringen: två appfiler och läsarprovet importerar
+  motorns klasser en och en, och importen av `KandidatHazard` saknades.
+
+**Motprov i TypeScript, med raden som föll:**
+
+| motprov | föll |
+| :-- | :-- |
+| kandidaten före kameran | v43 och v44 |
+| frysrisktexten för all beta | v42–v44 |
+| en nyckel per punkt | v42 och v44 |
+| lat före lon i läsaren | läsarprovet och #576-provet |
+
+**Kvar före App Review:**
+- Takten ur skuggan, enligt #562 punkt 1 och #200.
+- Avstängningen i drift (steg 13).
+- Bygget 0.3.13 (steg 12).
+
+**Stomdokument:** LIV steg 10–11, APP (ny röst och nytt kort), SYS (prioriteten), BED §4.2.

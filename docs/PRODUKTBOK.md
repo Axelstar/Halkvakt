@@ -95,6 +95,7 @@ krymper och tonar bort; stapeln börjar om.
 | Halka | *Halka* | *FRAMFÖR DIG* | — |
 | Frysrisk vid station | *Frysrisk* — *Vägbanan nära noll grader* | *FRAMÖVER* | — |
 | Frysrisk efter regnet (beta, S3) | *Frysrisk* — *Halkvakt tror — efter regnet* | *FRAMÖVER* | *BETA* |
+| Halka enligt kandidaten (beta, nivå 2) | *Halka* — *Halkvakt tror — modellerat* | *FRAMÖVER* | *BETA*, halkans ikon |
 | Frysrisk på bro | *Frysrisk* — *Bro* | *600 M* (hundratal, som rösten) | egen ikon |
 | Vilt | *Vilt* | *FRAMÖVER* | — |
 | Fartkamera | *Fartkamera* | *500 M* | hastighetsskylt när gränsen är känd |
@@ -102,6 +103,12 @@ krymper och tonar bort; stapeln börjar om.
 ![Betakortet](produktbok/shot-8-betakortet.png)
 
 *(Betakortet, frysrisken efter regnet (S3): Android ur fotostudion 11/10, android.yml 38123089310 på grenen `claude/granskning-fotostudio-525`, en påhittad varning 655 m bort, bara i debug-bygget (DECISIONS #525). iOS-kortet har samma rader (`WarningCardTests.testPostRainBetaIsMarked`), men ingen skärmbild.)*
+
+![Kandidatens betakort](produktbok/shot-9-kandidatkortet.png)
+
+*(Kandidatens betakort: Android ur fotostudion 16/10, android.yml 38852518205 på grenen `claude/kandidat-farotyp-577`, en påhittad varning
+655 m bort, bara i debug-bygget (DECISIONS #577). iOS-kortet har samma rader (`WarningCardTests.testCandidateBetaIsMarked`), men ingen
+skärmbild.)*
 
 Kortets innehåll räknas i motorpaketen (`WarningCard` i Swift och Kotlin) och prövas av CI med samma fall på båda
 plattformarna; olycksläget kommer ur motorn (`Alert.step`, DECISIONS #443).
@@ -181,6 +188,7 @@ rörelseigenkänning, Bluetooth och plats "Tillåt hela tiden".)*
 | Rapporterad halka på din väg — kod 2 eller högre, eller kod 1 med is, snö, frost, halka, halt, halkrisk, halkig eller *mycket besvärligt* (det sista sedan 22/9, kort #156; sedan 16/9 även i sammansättningar: *Rimfrost*, *Nysnö*, *Blötsnö*; motåtgärder som *Halkbekämpning* tiger) | "Varning: halka rapporterad på vägen framför dig." |
 | Mätstation visar frysrisk | "Isrisk framöver — vägbanan nära noll grader." |
 | **Efter regnet, märkt beta (S3):** ytan +1…+3 °C, fallit minst 0,8 °C på 30 minuter och regn inom 2 timmar — vägbanan är fortfarande över fryspunkten men på väg ned (DECISIONS #222, #524) | "Halkvakt tror: frysrisk framöver." |
+| **Halka enligt kandidaten, märkt beta (nivå 2):** modellens vägyta 0 °C eller kallare och ett mätt fuktbesked — Trafikverkets *Våt* på sträckan eller nederbörd på radarn — ingen varm station inom 15 km och stationerna runt omkring överens; en gång per sträcka (DECISIONS #562–#577) | "Halkvakt tror: halka framöver." |
 | Djur på vägen enligt Trafikverket — älg, hjort, vildsvin, men också lösa kor och får (sedan 22/9, DECISIONS #318; polisens länspunkter är borta) | "Viltrisk framöver." |
 | Fartkamera (hastighetsgränsen sägs inte: Trafikverkets kameradata bär ingen) | "Fartkamera om 500 meter." |
 | Väglagsdatat är gammalt (en gång per körning) | "Ingen färsk väglagsdata – kör som om det kan vara halt." |
@@ -188,6 +196,12 @@ rörelseigenkänning, Bluetooth och plats "Tillåt hela tiden".)*
 **Frysrisken efter regnet är en beta.** *"Halkvakt tror"* säger att det är en gissning ur regnet och hur fort vägbanan kyls, inte
 en uppmätt frysning. Värdena är satta före frosten och döms i januari på förarnas svar: håller de fortsätter betan till mars,
 annars tas den bort (TROSKLAR-KOMBINATIONEN §7). Testförarna får veta att värdena är gissade.
+
+**Halkan som kandidaten tror på är också en beta.** Den räknas ur en vädermodell vid punkter ungefär varannan kilometer längs
+vägen, inte ur en mätning på platsen — därför *"Halkvakt tror"* och aldrig ett avstånd. Den talar sist av alla varningar: allt annat
+går före, och den kan aldrig tysta en annan varning. Den följer reglaget *Halka* i *Varna för* och tystnar när väglagsdatan är äldre
+än 45 minuter. Domen faller i mars (DECISIONS #547); den kan stängas av från servern utan ett nytt bygge, och det provas före App
+Review (NIVA2-LIVE steg 13).
 
 **Allvarlig olycka — varför två gånger?** Trafikverket klassar varje olycka efter
 hur mycket den påverkar trafiken. Är påverkan *mycket* stor — riktigt stopp — säger
