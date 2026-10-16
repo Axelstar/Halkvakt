@@ -932,15 +932,16 @@ ${l.olyckor.length ? `<ul>\n${olyckor}\n</ul>` : "<p>Trafikverket rapporterar in
 }
 
 function lsOversikt(lagen: Map<number, LanLage>, vagar: Map<string, LanLage>, now: Date): string {
-  const rad = (href: string, namn: string, l: LanLage) =>
-    `<tr><td><a href="${href}">${lsEsc(namn)}</a></td><td>${l.halt.length} av ${l.vagavsnitt}</td><td>${l.kalla.length}</td><td>${l.olyckor.length}</td></tr>`;
-  const rader = LAN.map((lan) => rad(`${lan.slug}/`, lan.namn, lagen.get(lan.kod)!)).join("\n");
+  const rad = (href: string, namn: string, l: LanLage, karta?: string) =>
+    `<tr><td><a href="${href}">${lsEsc(namn)}</a></td><td>${l.halt.length} av ${l.vagavsnitt}</td><td>${l.kalla.length}</td><td>${l.olyckor.length}</td>` +
+    `${karta ? `<td><a class="lank-mono" href="${karta}">Karta →</a></td>` : "<td></td>"}</tr>`;
+  const rader = LAN.map((lan) => rad(`${lan.slug}/`, lan.namn, lagen.get(lan.kod)!, `../karta.html?lan=${lan.slug}`)).join("\n");
   const vagrader = VAGAR.map((v) => rad(`../vag/${v.slug}/`, v.namn, vagar.get(v.slug)!)).join("\n");
   const innehall = `<p class="dim">Uppdaterad ${lsTid(now)}</p>
 <h1>Är det halt i Sverige just nu? Läget per län</h1>
 <p>Trafikverkets väglagsrapport, vägbanans temperatur vid vägväderstationerna och pågående olyckor, län för län.</p>
 <div class="tabell"><table>
-<thead><tr><th>Län</th><th>Halka¹</th><th>≤ 0 °C²</th><th>Olyckor</th></tr></thead>
+<thead><tr><th>Län</th><th>Halka¹</th><th>≤ 0 °C²</th><th>Olyckor</th><th>Just nu</th></tr></thead>
 <tbody>
 ${rader}
 </tbody>
@@ -949,7 +950,7 @@ ${rader}
 0 °C eller kallare. Olyckor: pågående, enligt Trafikverket.</p>
 <h2>Stora vägar</h2>
 <div class="tabell"><table>
-<thead><tr><th>Väg</th><th>Halka¹</th><th>≤ 0 °C²</th><th>Olyckor</th></tr></thead>
+<thead><tr><th>Väg</th><th>Halka¹</th><th>≤ 0 °C²</th><th>Olyckor</th><th></th></tr></thead>
 <tbody>
 ${vagrader}
 </tbody>

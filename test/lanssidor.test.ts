@@ -55,7 +55,7 @@ test("länssidorna: 21 län och en översikt, svaret ur källorna, Trafikverkets
   assert.ok(sthlm.includes("Trafikverket rapporterar ingen halka på länets 1 vägavsnitt just nu. Ingen mätstation i länet visar vägbana under noll."));
   assert.ok(sthlm.includes("Trafikverket rapporterar ingen pågående olycka i länet."));
   const oversikt = sidor["lan/index.html"];
-  assert.ok(oversikt.includes(`<tr><td><a href="skane/">Skåne län</a></td><td>1 av 2</td><td>1</td><td>1</td></tr>`));
+  assert.ok(oversikt.includes(`<tr><td><a href="skane/">Skåne län</a></td><td>1 av 2</td><td>1</td><td>1</td><td><a class="lank-mono" href="../karta.html?lan=skane">Karta →</a></td></tr>`));
   const json = JSON.parse(sidor["data/lan.json"]);
   assert.equal(json.generated_at, NOW.toISOString());
   assert.deepEqual(json.lan.find((l: any) => l.slug === "skane"), { kod: 12, namn: "Skåne län", kort: "Skåne", slug: "skane", halt: 1, vagavsnitt: 2, kalla: 1, kallast: { namn: "Lund", yta: -1.5 }, olyckor: 1 });
@@ -87,7 +87,7 @@ test("vägsidorna: vägnumret utan form, vägens sträckor i alla län, statione
   const rv40 = sidor["vag/rv40/index.html"];
   assert.ok(rv40.includes("Är det halt på riksväg 40 just nu?") && rv40.includes("1 av Riksväg 40:s 1 vägavsnitt"));
   assert.ok(rv40.includes("Trafikverket rapporterar ingen pågående olycka på riksväg 40."));
-  assert.ok(sidor["lan/index.html"].includes(`<tr><td><a href="../vag/e6/">E6</a></td><td>1 av 2</td><td>1</td><td>1</td></tr>`));
+  assert.ok(sidor["lan/index.html"].includes(`<tr><td><a href="../vag/e6/">E6</a></td><td>1 av 2</td><td>1</td><td>1</td><td></td></tr>`));
   assert.ok(sidor["lan/skane/index.html"].includes(`<a href="../../vag/e4/">E4</a>`), "länssidorna länkar till vägarna");
   for (const [p, html] of Object.entries(sidor)) if (p !== "data/lan.json") assert.ok(!/undefined|NaN|null/.test(html), `${p}: inget tomt läckte ut`);
 });
@@ -128,5 +128,5 @@ test("kartkärnan: med appens väderpunkter skrivs länssidorna; stationen får 
   assert.ok(nb.includes("Kiruna: −3,2 °C"), "W1 hör till Norrbotten via närmaste sträcka");
   assert.ok(!Object.values(med.sidor!).some((h) => h.includes("−9,0")), "W2 saknar län (ingen sträcka inom 20 km) och står inte på någon sida");
   assert.ok(nb.includes("E10, sedan 20 nov. 06:00"), "olyckan ur Date, i svensk tid");
-  assert.equal((med.sidor!["lan/index.html"].match(/<td>1<\/td><td>1<\/td><\/tr>/g) ?? []).length, 1, "bara Norrbottens rad bär olyckan; den finska räknas inte");
+  assert.equal((med.sidor!["lan/index.html"].match(/<td>1<\/td><td>1<\/td><td>[^<]*(<a[^>]*>[^<]*<\/a>)?<\/td><\/tr>/g) ?? []).length, 1, "bara Norrbottens rad bär olyckan; den finska räknas inte");
 });
