@@ -199,7 +199,8 @@ annars tas den bort (TROSKLAR-KOMBINATIONEN §7). Testförarna får veta att vä
 
 **Halkan som kandidaten tror på är också en beta.** Den räknas ur en vädermodell vid punkter ungefär varannan kilometer längs
 vägen, inte ur en mätning på platsen — därför *"Halkvakt tror"* och aldrig ett avstånd. Den talar sist av alla varningar: allt annat
-går före, och den kan aldrig tysta en annan varning. Den följer reglaget *Halka* i *Varna för* och tystnar när väglagsdatan är äldre
+går före, och den kan aldrig tysta en annan varning. Har Trafikverkets halkvarning för samma sträcka just hörts tiger den i två
+minuter, så att samma besked inte kommer två gånger i rad. Den följer reglaget *Halka* i *Varna för* och tystnar när väglagsdatan är äldre
 än 45 minuter. Domen faller i mars (DECISIONS #547); den kan stängas av från servern utan ett nytt bygge, och det provas före App
 Review (NIVA2-LIVE steg 13).
 
@@ -601,7 +602,7 @@ du var just då."* (Axels villkor för ja:et, DECISIONS #267.)
 | 0.3.10 (22) | 2–3/10 | Skinnet v4 ur designöverlämningen v2: varningskortet i helskärm, *Redo.*, körläget, introduktionen och inställningarna (kort #284, DECISIONS #443/#444). Släppt av Axel 3/10. |
 | 0.3.11 (23) | 4/10 | Självstoppet mäts på förflyttning, inte på ett mätvärde: en promenad efter resan håller inte längre vakten vid liv. På Android läser en stillastående telefon GPS glesare. Ett dubbeltryck på *Appen missade* blir en miss, och Siri markerar inga missar när vakten är av (kort #262 Å2/Å3, DECISIONS #461). |
 | 0.3.12 (24) | 11/10 | **Frysrisken efter regnet, märkt beta (S3):** rösten säger *"Halkvakt tror: frysrisk framöver."* och kortet visar *BETA* och *Halkvakt tror — efter regnet* när vägbanan är +1…+3 °C, fallit minst 0,8 °C på 30 minuter och regnet slutat inom 2 timmar (DECISIONS #524, #526). |
-| 0.3.13 (25) | 16/10 | **Halka enligt kandidaten, märkt beta (nivå 2):** rösten säger *"Halkvakt tror: halka framöver."* och kortet visar *BETA* och *Halkvakt tror — modellerat* när modellens vägyta är 0 °C eller kallare och ett mätt fuktbesked finns, en gång per sträcka; varningen talar sist av alla och följer reglaget *Halka* (DECISIONS #577). Kan stängas av från servern utan nytt bygge (#578). |
+| 0.3.13 (26) | 16/10 | **Halka enligt kandidaten, märkt beta (nivå 2):** rösten säger *"Halkvakt tror: halka framöver."* och kortet visar *BETA* och *Halkvakt tror — modellerat* när modellens vägyta är 0 °C eller kallare och ett mätt fuktbesked finns, en gång per sträcka; varningen talar sist av alla och följer reglaget *Halka* (DECISIONS #577). Kan stängas av från servern utan nytt bygge (#578), och tiger i två minuter efter Trafikverkets halkvarning för samma sträcka (#581). |
 | Android (CI) | 16/9 → | Facitknappen och betatest-brytaren (S4, DECISIONS #202), Efter resan (20/9), viltvarningen på Trafikverkets djur (22/9), omladdningsloopen lagad och reglaget (26/9), missarna (26/9). **0.3.9 (18)**, samma nummer som iOS (DECISIONS #377). |
 
 Android bar versionsnumret 0.3.1 (4) från 31/8 till 26/9, fast CI byggde den ur main med skinnet v3, facitknappen
