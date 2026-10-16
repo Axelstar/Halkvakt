@@ -65,6 +65,33 @@ jobs:
             }
             process.exit(fel ? 1 : 0);'
           curl -sSfL -o static.json https://axelstar.github.io/halkvakt-karta/data/app/v1/static.json
+      # Trafikverkets utlämnande TRV 2026/111808 (DECISIONS #591): väglaget och åtgärderna för vintern, i hinken under
+      # kuvos/trv-2026-111808/ (Axel via panelen). Bara när mätningen gäller facit; sha256 och storlek mot kuvos/trv-111808-leverans.json.
+      - name: Trafikverkets väglag ur hinken, kontrollsummorna mot manifestet
+        if: ${{ contains(inputs.matning, 'facit-trv') }}
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          FILER=$(node -e 'console.log(JSON.stringify(require("./kuvos/trv-111808-leverans.json").filer.map((f) => "trv-2026-111808/" + f.fil)))')
+          curl -sS --fail-with-body -X POST "$FN?lage=kuvos_hamta" -H "x-halkvakt-key: $KEY" -H "Content-Type: application/json" -d "{\"filer\":$FILER}" > hamta.json
+          mkdir -p trv
+          node -e 'for (const d of require("./hamta.json").filer) console.log(d.fil.split("/").pop() + " " + d.url)' | while read -r FIL URL; do
+            curl -sS --fail -o "trv/$FIL" "$URL"
+          done
+          rm hamta.json
+          node -e '
+            const m = require("./kuvos/trv-111808-leverans.json"), c = require("crypto"), fs = require("fs");
+            let fel = 0;
+            for (const f of m.filer) {
+              const b = fs.readFileSync("trv/" + f.fil), h = c.createHash("sha256").update(b).digest("hex");
+              const ok = h === f.sha256 && b.length === f.bytes; fel += !ok;
+              console.log(`${f.fil}: ${b.length} byte, ${ok ? "sha256 lika" : "FEL " + h}`);
+            }
+            process.exit(fel ? 1 : 0);' | tee -a "$GITHUB_STEP_SUMMARY"
       # Steg 4 (DECISIONS #441): SMHI för samma vinter — radarn samplad mot segmenten och fyra metobs-parametrar, hämtade en gång.
       # Hoppas över tills releasen finns och manifestet är incheckat (knappen kuvos-smhi skapar den) — fäller inte andras körningar.
       - name: SMHI ur releasen, kontrollsummorna mot manifestet
