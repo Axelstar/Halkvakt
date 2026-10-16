@@ -14036,3 +14036,41 @@ signeringen är `0b1d03a1a4f9e49484837ab6730a22067d9e3aa0c402e7a5e8ece067b1d3999
 - Utfallet är diagnos, ingen dom (§1).
 
 **Stomdokument:** KUV §7 facit, BED §4.2
+
+## #596 (16/10 2026) Soffprovet ersätter bilprovet i steg 4 inför App Review — Android-emulatorn hos Bengt (kort #343, steg 13)
+
+**Beslut.** Bengt 16/10: *"ja till soffprovet, med emulatorn hos mej"*. Det svarar på Claudes förslag efter hans fråga om bilprovet: *"det kan ju dröja hur länge som
+helst innan det blir kallt i skåne. Finns det något sätt att simulera detta"*.
+- Steg 4 i provet i drift (#578) var förregistrerat som *"Bilprovet (Bengt, med 0.3.13 i intern TestFlight)"*. Inför App Review görs
+  det i stället som ett **soffprov**: Android-appen 0.3.13 (26), debug-APK:n ur android-körningen 38866813325 på bd58e36, körs i
+  Android-emulatorn på Bengts dator. Emulatorn spelar upp en GPX-rutt genom en sträcka där kandidaten varnar just då.
+- Appen läser den riktiga lägesfilen.
+- Det riktiga bilprovet görs när det blir kallt i Skåne, som bekräftelse i fält.
+
+**Provet, skrivet före första körningen** (`android/SOFFPROVET.md`):
+- **A:** vakten startas och rutten spelas i 1x. Inom fem minuter säger appen *"Halkvakt tror: halka framöver."* och visar betakortet.
+- **B:**
+  1. Claude trycker *tysta* på Bengts ord, och lägesfilen saknar nyckeln inom 10 minuter.
+  2. Bengt stoppar och startar vakten; appen hämtar lägesfilen vid start och var 30:e minut.
+  3. Rutten spelas från början. Appen säger inte *"Halkvakt tror …"* under 45 minuter.
+- **C:** Bengt och Axel trycker *starta*. Axel trycker från sitt eget konto, eftersom brytaren räknar vem som trycker.
+- Faller A eller B är steg 13 inte klart. Felet skrivs ned och bortförklaras inte (#578).
+
+**Rutten.** `scripts/kandidat-gpx.ts` (självtest i ci):
+- skriptet läser lägesfilen som appen läser den och väglagsnätet som Körflödet hämtar det;
+- det väljer sträckan med flest varnande punkter och den del av linjen som bär flest av dem;
+- rutten går i 80 km/h, med en punkt var tredje sekund och 3 km inkörning bakåt från linjens början. Motorn varnar när en punkt ligger
+  framför i färdriktningen inom förvarningen (`evaluateKandidat`);
+- skriptet vägrar om kandidaten inte varnar någonstans;
+- positionen är påhittad och lämnar aldrig datorn.
+
+Provkört 16/10 19:30 mot den riktiga lägesfilen: kandidaten varnade på 5 sträckor. Sträcka 45130 hade 44 varnande punkter, alla
+inom 500 m från rutten, och rutten blev 1 609 punkter på 80 minuter.
+
+**Vad soffprovet inte visar:** riktig GPS i rörelse, att appen startar själv via Bluetooth, ljudet i bilens högtalare och iOS-bygget.
+
+**Alternativ.**
+- Axel vid Macen med Xcodes GPX-uppspelning (`ios/MAC-GUIDE.md`): valdes bort av Bengt.
+- Vänta på kylan i Skåne: tar bort vädret ur den kritiska vägen bara om den kommer före 2/11.
+
+**Stomdokument:** APP, LIV, BED §4.2
