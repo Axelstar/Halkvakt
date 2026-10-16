@@ -14089,3 +14089,37 @@ inom 500 m från rutten, och rutten blev 1 609 punkter på 80 minuter.
 - Vänta på kylan i Skåne: tar bort vädret ur den kritiska vägen bara om den kommer före 2/11.
 
 **Stomdokument:** APP, LIV, BED §4.2
+
+## #597 (16/10 2026) Identitetsprovet ersätter summakravet för den frysta kandidaten i facitläsningen (kort #232)
+
+**Beslut.** Bengt 16/10: *"slå ihop 1015 och ja till identitetsprovet för mej och Axel"*, på Claudes förslag i bedömningen §4.2 efter den vägrade körningen (#595). Det är en daterad post med
+båda signaturerna, Axel via Bengt, som förregistreringen §6 kräver. Den står i förregistreringens §9, och §4 är ändrad.
+- Läsningen räknar grind A:s mått för kandidatfilen med `korBlandning` (`kuvos-blandning-2026-10-08.ts`). Det är samma population som
+  13/10, med alla filer i manifestet, RÅ och taket.
+- Den kräver samma värden som körning 38368369876:
+  - n = 4 352 575 exakt;
+  - A1 0,56 ± 0,01 °C;
+  - A2 4,84 ± 0,02 procentenheter;
+  - A3 0,23 ± 0,02 procentenheter;
+  - samma par per veck i analysläget.
+- Paren läses ur fysikkedjans utskrift, som kuvos.yml nu också skriver till `fysik-utskrift.txt`.
+
+**Rättelse av förslaget.** Förslaget i §4.2 sa *"samma par på alla veck (W 0,25 · L 160 km)"*. I analysläget valde veck 4 i stället
+L 80 km 13/10, och i dag likaså. Provet kräver 13/10:s par veck för veck: 160, 160, 160, 160 och 80 km, och 160 km på alla veck.
+Avsikten var samma par som den frysta kandidaten. Det står i förregistreringen.
+
+**Varför toleransen.** Den vägrade körningen skilde sig från 13/10 med högst 0,01 i de utskrivna talen. Skillnaden mellan varv 1 och
+de andra kandidaterna var 0,01–0,04 (#552), men proceduren hålls dessutom fast av koden och av paren.
+
+**Prov:**
+- Självtestet ger inget fel för 13/10:s par och mått inom toleransen.
+- Paren läses ur det första blocket, analysläget.
+- Var och en fäller: n en för mycket, A2 4,865 %, A1 0,571 °C och A3 0,26 %.
+- Utan utskrift och utan mått fäller provet.
+- Tre motprov fällde: A2-toleransen 0,05, det sista blocket och n med spel.
+- **Fynd:** motproven visade först att de nya proven låg efter självtestets felkontroll och aldrig kunde fälla. De skrev ✗ men gav exit
+  0. Kontrollen flyttades sist, och därefter gav alla tre exit 1.
+
+Förregistreringens sha256 efter ändringen är `3b8e9a269e15…`.
+
+**Stomdokument:** KUV §7 facit, BED §4.2

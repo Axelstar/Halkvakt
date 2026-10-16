@@ -59,9 +59,12 @@ Rader utan start- eller stopptid räknas inte, och inte heller starttider före 
 Allt redovisas per månad och per breddgradsband (55–60, 60–64 och 64–69 °N), med antalen bakom varje andel.
 
 **Indata** (DECISIONS #592; räknas i kuvösjobbet av `scripts/matningar/kuvos-blandning-vagb-facit-trv-2026-10-16.ts`):
-- *Kandidaten* är NIVÅ 2 ÄRLIG+BLANDNING i analysläget ur väg B varv 1 (#544, #552), räknad i jobbet. Filen ska ha samma sha256 som
-  i körning 38368369876 (`dee13cd1…`), annars är det inte den frysta kandidaten och läsningen vägrar. Kedjan gav samma summa i två
-  körningar 13/10.
+- *Kandidaten* är NIVÅ 2 ÄRLIG+BLANDNING i analysläget ur väg B varv 1 (#544, #552), räknad i jobbet. *Identitetsprovet* (ändrat
+  16/10 efter signeringen, §9, DECISIONS #597) avgör att det är den frysta kandidaten; annars vägrar läsningen. Provet kräver två
+  saker jämfört med körning 38368369876:
+  - samma par per veck i analysläget (W 0,25 och L 160, 160, 160, 160 och 80 km) och W 0,25 · L 160 km på alla veck;
+  - samma grind A-mått på samma population som kuvösens läsning av kandidaten (#490): n = 4 352 575 exakt, A1 0,56 ± 0,01 °C, A2
+    4,84 ± 0,02 procentenheter och A3 0,23 ± 0,02 procentenheter.
 - *En kall timme* är en UTC-timme där något halvtimmesvärde är 0 °C eller kallare. Tillfällets tid t är timmens början. Det gäller
   både kandidaten och stationens egen yta.
 - *Stationens egen yta* läses med grind A:s vakter (#75, radvakten och karantänen) och den senaste raden per halvtimme, som i
@@ -114,3 +117,13 @@ kandidattimme och ingen fyrning har ställts mot väglaget.
 | :-- | :-- | :-- |
 | Bengt | 2026-10-16 | Bengt i chatten: *"slå ihop 1012 och signera detta för mej och Axel"* (DECISIONS #595) |
 | Axel | 2026-10-16 | Via Bengt i samma ord (DECISIONS #595) |
+
+## 9. Ändringar efter signeringen
+
+- **16/10 2026 — identitetsprovet (DECISIONS #597).** Bengt i chatten: *"slå ihop 1015 och ja till identitetsprovet för mej och Axel"*; Axel via Bengt i samma ord.
+
+  §4 krävde att kandidatfilen hade körning 38368369876:s sha256. Första körningen (38939248421) vägrade, eftersom kedjan inte ger
+  samma byte på en ny löparavbild (DECISIONS #595). Paren och måtten var desamma till andra decimalen.
+
+  Kravet ersattes av identitetsprovet i §4. **Inget hade lästs mot väglaget**, så ändringen är ingen lättnad efter sett utfall
+  (regel L).
