@@ -238,7 +238,7 @@
   </details>
 </div>
 <!-- /LÄGESRADER -->
-  <p>Beroenden inom parentes. Steg 1–6 är byggda. Kritisk väg: 7 för marsdomen, och vidare 10–12 → App Review för appen. Regeln (val 2) finns; signeringen i steg 8 väntar på radarns tal 26/10. Steg 9 går parallellt.</p>
+  <p>Beroenden inom parentes. Steg 1–6, 10 och 11 är byggda, och 9 och 13 är byggda men väntar på Axel (16/10). Kritisk väg: 7 för marsdomen, och för appen 12 (Axels bygge) → bilprovet i 13 → takten i 7 → App Review. Regeln (val 2) finns; signeringen i steg 8 väntar på radarns tal 26/10. Steg 9 går parallellt.</p>
   <div class="tabell"><table>
     <thead><tr><th>Nr</th><th>Steg</th><th>Vad som görs</th><th>Vem</th><th>Läge</th></tr></thead>
     <tbody>
@@ -307,23 +307,23 @@
         <td>Claude skriver, Axel och Bengt godkänner</td><td><span class="dom vantar">ifylld, osignerad</span></td></tr>
       <tr><td class="nr">9</td><td>Webbkartan (6)</td><td>Kandidatens lager på <code>karta.html</code>. Det kan gå live utan App
         Review och blir det första användarna ser.</td>
-        <td>Claude, skrivrätt i halkvakt-karta</td><td><span class="dom kvar">kvar</span></td></tr>
+        <td>Claude, skrivrätt i halkvakt-karta</td><td><span class="dom vantar">byggd 16/10 (#579), kartsidan väntar på skrivrätten</span></td></tr>
       <tr class="grupp"><td colspan="5">C. Motorn och appen</td></tr>
       <tr><td class="nr">10</td><td>Ny farotyp i motorn (7, val 1–2)</td><td>En ny farotyp i <code>engine/src</code> med plats i
         prioriteten A3 &gt; A1 &gt; A2 &gt; A4 &gt; A5, testvektorer, <code>beta</code>, texten (godkänd 15/10, DECISIONS #573: <i>"Halkvakt tror: halka
         framöver."</i>, aldrig ett avstånd; engelska <i>"Halkvakt thinks: slippery ahead."</i>) och BETA-kortet. Adaptern och regeln i Kotlin och
         Swift ska ge samma utfall tecken för tecken. Inga tal kopieras till tre språk; tröskeln ligger i databasen (steg 6).</td>
-        <td>Claude</td><td><span class="dom kvar">kvar</span></td></tr>
+        <td>Claude</td><td><span class="dom klar">byggd 16/10 (#577, #581)</span></td></tr>
       <tr><td class="nr">11</td><td>Produktboken (10)</td><td>Skärmbilder och text i samma commit som rösttexten. Integritetsuppgifterna
         ändras inte: inget nytt lämnar telefonen.</td>
-        <td>Claude</td><td><span class="dom kvar">kvar</span></td></tr>
-      <tr><td class="nr">12</td><td>Bygget 0.3.13 (25) (10, 11, och 4 grönt)</td><td>Båda plattformarna, när ios-engine, android och ci
+        <td>Claude</td><td><span class="dom klar">klar 16/10 (#577)</span></td></tr>
+      <tr><td class="nr">12</td><td>Bygget 0.3.13 (26) (10, 11, och 4 grönt)</td><td>Båda plattformarna, när ios-engine, android och ci
         är gröna på samma commit. Axel arkiverar iOS på sin Mac (TestFlight-flödet i Actions finns inte än, kort #333). Sedan
         TestFlight och App Review. Android ur CI som i dag.</td>
-        <td>Axel arkiverar och skickar in</td><td><span class="dom kvar">kvar</span></td></tr>
+        <td>Axel arkiverar och skickar in</td><td><span class="dom vantar">väntar på Axels bygge från bd58e36</span></td></tr>
       <tr><td class="nr">13</td><td>Avstängningen i drift (6, 12)</td><td>Nyckeln tas bort ur publiceringen, och appen ska tystna
         (DECISIONS #562). Provas i drift innan bygget går till App Review.</td>
-        <td>Claude, Bengt provar i bilen</td><td><span class="dom kvar">kvar</span></td></tr>
+        <td>Claude, Bengt provar i bilen</td><td><span class="dom vantar">byggd och provad 16/10 (#578), Axels starta och bilprovet kvar</span></td></tr>
       <tr class="grupp"><td colspan="5">D. Vintern</td></tr>
       <tr><td class="nr">14</td><td>Mätningen och domen</td><td>Alla spår mäts i skuggan. Domen i mars (DECISIONS #547) avgör om
         kandidaten får stanna: grind A–C med samma trösklar, RÅ som kontroll och reserv. Faller den, används avstängningen i steg 13.</td>
@@ -385,7 +385,7 @@
         <li>Läsa paritetsprovet (steg 4) innan något publiceras: det är Axels kedja och Axels kandidat.</li>
     <li>Signaturen på ändringen av TROSKLAR-SKUGGAN för den egna betavarningen (Bengts ja finns, DECISIONS #563, #575), vid förregistreringen.</li>
     <li>Godkänna förregistreringen för 2026/27 senast 31/10 (steg 8).</li>
-    <li>Arkivera och skicka in bygget 0.3.13 (25) när steg 10–11 är gröna (steg 12).</li>
+    <li>Arkivera bygget 0.3.13 (26) från main (bd58e36) till intern TestFlight för bilprovet, och skicka in det till App Review efter takten (steg 12).</li>
   </ol>
 
   <hr>
