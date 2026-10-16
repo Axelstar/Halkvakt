@@ -13682,3 +13682,40 @@ beslut, eftersom 14 dygn är ett tidigare val (#569).
 (CLAUDE.md-läxan om byggnummer).
 
 **Stomdokument:** LIV steg 10, APP rösten på halkklassade sträckor, BED §4.2.
+
+## #583 (16/10 2026) Kandidatens takt: läsningen byggd och provläst, och ett förslag till takregel som väntar på Bengts ja (kort #343, steg 7)
+
+**Beslut.** Bengt 16/10: *"Då kan vi göra de här så länge"* (punkt 1: bygg läsningen, skriv takregeln i förväg, provläs på det
+som finns). Läsningen är `scripts/matningar/kandidat-takten-2026-10-16.sql`: sex satser i DB-knappens läsläge över `shadow_log.kandidat`, bara aggregat.
+Provläsningen och huvudläsningen kör samma rader.
+
+**Provläsningen** (DB-knappen 38868581234; underlaget 15/10 10:32 – 16/10 07:32 UTC):
+- 123 körningar på alla 20 svenska rutter. Regeln varnade någonstans i alla 123, och ingen körning bar ett skäl (tyst regel).
+- 2 körningar hade passager, båda på E10 Luleå→Kiruna (7 körningar på rutten), 04 och 07 UTC 16/10: 7 och 3 passager på
+  7 olika sträckor.
+- 8 följder: den tätaste 334 s, ingen inom 2 eller 5 minuter, 3 inom 10 minuter (37,5 %), medianen 802 s.
+- Ingen passage låg inom 10 s eller 60 s från en annan varning i samma körning.
+- 2 av 10 passager låg på en sträcka med egen halkvarning i körningen, båda 2 172 s (36 min) efter den. Tvåminutersregeln (#581)
+  biter inte där, eftersom sträckan är lång.
+
+**Förslaget till takregeln.** Det är en tröskel och alltså Bengts. Den förregistreras när han sagt ja, före huvudläsningen:
+- **Underlaget:** alla svenska skuggkörningar med kandidatloggen från 15/10 10:32 UTC till läsdagen 2/11, med läsningens rader
+  oförändrade.
+- **Måttet:** följderna, alltså tiden mellan två kandidatpassager på olika sträckor i samma körning.
+- **Regeln:** ligger mer än 10 % av följderna inom 10 minuter, byggs ett tak före App Review. Kandidaten talar då högst en gång
+  per 10 minuter, vilken sträcka det än gäller (motorn i tre språk, vektorer). Annars byggs inget tak, och motorns spärrar räcker.
+- **Minsta underlag:** 30 följder på minst 3 rutter och 3 dygn. Saknas det byggs taket ändå: vid tvekan tystnad.
+- **Förväntan:** taket byggs. Provläsningen gav 37,5 %, men på en rutt en morgon.
+- **10 minuter** är motorns gräns för att upprepa en och samma fara, så kandidaten talar aldrig oftare än en fara får upprepas.
+
+**Alternativ.** Ett tak per körtimme, till exempel högst fyra, som räknar körtid i stället för följder. Eller inget tak: varje
+sträcka är en egen fara, och spärrarna gäller redan.
+
+**Varför.** Taket ska komma ur mätningen, inte ur antagandet (#200), och läsas före App Review (#562). Kandidaten är modellerad,
+så en upprepning är en gissning till, inte en bekräftelse.
+
+**Reservation.** Passagens tid är när rutten är närmast den varnande punkten; rösten kommer en ledtid tidigare (cirka 30 s), lika
+för alla, så följderna ändras knappt. Skuggan kör varje rutt var 3,5 timme, alltså ungefär sju körningar per rutt och dygn, och
+underlaget växer bara när det är kallt där rutterna går.
+
+**Stomdokument:** LIV steg 7, BED §4.2
