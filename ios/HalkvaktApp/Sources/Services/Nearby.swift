@@ -42,7 +42,7 @@ enum Nearby {
             return haversineM(lon, lat, plon, plat)
         case .segment(_, let line, _):
             return line.map { haversineM(lon, lat, $0[0], $0[1]) }.min() ?? .infinity
-        case .kandidat(_, let points):
+        case .kandidat(_, let points, _):
             return points.map { haversineM(lon, lat, $0[0], $0[1]) }.min() ?? .infinity
         }
     }

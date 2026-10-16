@@ -62,7 +62,7 @@ export function snapshotToHazards(staticDoc: StaticDoc, liveDoc: LiveDoc): Hazar
                meta: { surfaceTempC: b.yta, moisture: b.fukt, bridge: true } });
   }
   for (const k of liveDoc.kandidat ?? []) {
-    out.push({ id: `kand:${k.id}`, kind: "kandidat", points: k.punkter });
+    out.push({ id: `kand:${k.id}`, kind: "kandidat", points: k.punkter, segmentHazardId: `seg:${k.id}` });
   }
   return out;
 }

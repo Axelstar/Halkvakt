@@ -323,6 +323,9 @@ export class AlertEngine {
       if (ahead && (best === null || distM < best)) best = distM;
     }
     if (best === null || best > leadM) return null;
+    // (c), DECISIONS #581: tyst i kandidatEfterHalkaS efter att samma sträckas halkvarning (A1) talat.
+    const a1 = k.h.segmentHazardId ? this.fired.get(k.h.segmentHazardId) : undefined;
+    if (a1 && fix.t - a1.t < this.cfg.kandidatEfterHalkaS) return null;
     return { hazard: k.h, kind: "kandidat", distM: best, alertKey: k.h.id, beta: true };
   }
 }

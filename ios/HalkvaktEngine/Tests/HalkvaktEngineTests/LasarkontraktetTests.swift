@@ -47,10 +47,11 @@ struct LasarkontraktetTests {
             case "fall30C": return meta.fall30C
             default: break
             }
-        case .kandidat(_, let points):
+        case .kandidat(_, let points, let seg):
             // Kandidaten (DECISIONS #577): the number of points and the first point's lon and lat.
             switch nyckel {
             case "antalPunkter": return points.count
+            case "segmentHazardId": return seg
             case "lon0": return points.first?[0]
             case "lat0": return points.first?[1]
             default: break

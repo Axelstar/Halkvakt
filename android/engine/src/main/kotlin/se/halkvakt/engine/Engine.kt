@@ -213,6 +213,9 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
         }
         val b = best ?: return null
         if (b > leadM) return null
+        // (c), DECISIONS #581: tyst i kandidatEfterHalkaS efter att samma sträckas halkvarning (A1) talat.
+        val a1 = k.segmentHazardId?.let { fired[it] }
+        if (a1 != null && fix.t - a1.first < cfg.kandidatEfterHalkaS) return null
         return Candidate(k, HazardKind.KANDIDAT, b, k.id, beta = true)
     }
 }

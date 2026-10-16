@@ -58,6 +58,8 @@ data class SegmentHazard(
 data class KandidatHazard(
     override val id: String,
     val points: List<DoubleArray>, // [lon, lat]
+    /** The A1 hazard on the same stretch ("seg:<id>"): silent for kandidatEfterHalkaS after it spoke (DECISIONS #581). */
+    val segmentHazardId: String? = null,
 ) : Hazard { override val kind = HazardKind.KANDIDAT }
 
 data class Fix(
@@ -95,6 +97,8 @@ data class EngineConfig(
     val efterhalkaYtaMaxC: Double = 3.0,
     val efterhalkaFall30C: Double = 0.8,
     val efterhalkaRegnH: Double = 2.0,
+    // K (DECISIONS #581): tyst så här länge efter samma sträckas halkvarning — samma tal som engine/src/types.ts (kontraktsgrinden).
+    val kandidatEfterHalkaS: Double = 120.0,
 )
 
 // ---- geo (mirror of geo.ts, same formula sequences) ----

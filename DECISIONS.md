@@ -13631,4 +13631,54 @@ också i CI. Integrationsprovet kör filen två gånger och läser tillbaka para
 Faller provet tas steg 2: kortare förvaring av väderobservationerna i databasen, till exempel 10 dygn i stället för 14. Det är Bengts
 beslut, eftersom 14 dygn är ett tidigare val (#569).
 
+**Mätningen, steg 1 (16/10):**
+- Migrationen kördes 06:50 (DB-knappen 38863525814, PR #990 som 652e067).
+- 07:07 (38865193312): autovacuum körde **06:51** på `weather_observations`. Döda rader **0** (förut 154 472), `trend_kandidater` 212,
+  `trend_stigande` 9.
+- Databasen **481,4 MB**, 0,7 MB mindre än 06:50.
+- Steg 2, högst 2 MB tillväxt på ett dygn, läses 17/10.
+
 **Stomdokument:** SYS databasen och arkivet, BED §4.2.
+
+## #581 (16/10 2026) Kandidatens val 2–5 som byggt, och val 6 (c): kandidaten tiger i 2 min efter samma sträckas halkvarning (kort #343)
+
+**Bengts ord 16/10:**
+- Han frågade *"ska vi göra 2 öppna val 2-6 för kandidaten"* och sedan *"med vilket intervall kan man förvänta sig de dubbla
+  varningarna kommer"*.
+- På underlaget nedan: *"ja 2–5 som byggt, bygg c"*.
+
+**Val 2–5 står som byggda i #577:**
+- en varning per sträcka;
+- kortets underrad *Halkvakt tror — modellerat*;
+- reglaget *Halka* styr kandidaten;
+- kandidaten står inte i *I närheten* och räknas inte i resans Halka-siffra.
+
+**Underlaget för val 6.** Lägesfilen 04:40 UTC 16/10 hade 5 halkklassade sträckor bland kandidatens 12. För båda färdriktningarna och
+80 och 110 km/h blir det 20 fall:
+- **14 av 20:** kandidaten hade talat **10 s** efter Trafikverkets halkvarning, eftersom spärren håller 10 s och kandidatens punkter
+  börjar vid sträckans början. Det är den egentliga dubbelrösten.
+- **6 av 20:** kandidaten hade talat **22–44 min** senare, långt in på en lång sträcka. Där pekar den ut en del av sträckan, och
+  Trafikverkets varning upprepas ändå var 10:e minut.
+
+**Byggt (c), i motorns tre språk:**
+- Kandidatens fara bär `segmentHazardId`, alltså samma sträckas halkvarning (`seg:<sträcka>`). Läsarna i TS, Kotlin och Swift sätter
+  fältet.
+- Kandidaten tiger i `kandidatEfterHalkaS = 120` s efter att den halkvarningen talat.
+- Talet står i kontraktsgrinden för de tre filerna.
+- En annan sträckas halkvarning hindrar inte.
+- Rösten, kortet och prioriteten är orörda.
+
+**Prov:**
+- Vektorerna:
+  - **v45:** halkvarningen talar vid t=16, kandidatens närmaste punkt tiger fast den hade talat vid t=38, och punkten långt in talar
+    vid t=376.
+  - **v46:** en annan sträckas halkvarning hindrar inte, och kandidaten talar vid t=38.
+  - Marginalen är minst 10 m vid varje gräns. 120-sekundersfönstret har inga lägen nära sin gräns.
+  - Alla 44 tidigare vektorer är byte för byte orörda.
+- Läsarprovet i tre språk bär fältet.
+- **Körningar:** TS-sviten är grön. android.yml 38865321554 (grön) och ios-engine 38865338808 (grön) på grenen.
+
+**Byggnumret** höjdes till **0.3.13 (26)** i samma commit som den sista ändringen före bygget, eftersom (25) hade satts före (c)
+(CLAUDE.md-läxan om byggnummer).
+
+**Stomdokument:** LIV steg 10, APP rösten på halkklassade sträckor, BED §4.2.

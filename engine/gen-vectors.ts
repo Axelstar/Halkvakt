@@ -523,6 +523,32 @@ const scenarios: Scenario[] = [
     ],
     trace: northTrace(120, 80),
   },
+  // (c), DECISIONS #581 (Bengt 16/10: "bygg c"): kandidaten tiger i 120 s efter att SAMMA sträckas halkvarning (A1) talat. A1:s
+  // linje börjar 1 010 m fram, så A1 talar när början kommer inom förvarningen 667 m. Utan regeln hade kandidaten talat 10–22 s
+  // efter — den dubbla rösten. Den sena punkten långt in på sträckan får tala.
+  {
+    file: "v45_kandidat_tiger_efter_samma_strackas_halka", name: "Kandidaten tiger i 2 min efter samma sträckas halkvarning, men talar långt in (K)",
+    description:
+      "Sträckan S1 är halkklassad (kod 2) från 1 010 m fram till 20 km. A1 talar när sträckans början kommer inom 667 m. " +
+      "Kandidatens punkt 1 500 m fram på samma sträcka (segmentHazardId seg:S1) kommer inom förvarningen 22 s senare — inom 120 s " +
+      "efter A1 ⇒ tyst; utan regeln hade den talat då. Punkten 9 010 m fram kommer inom förvarningen långt efter 120 s och talar.",
+    hazards: [
+      { id: "seg:S1", kind: "slippery_segment", line: [[LON0, northOf(1010)], [LON0, northOf(20000)]], meta: { code: 2, info: [] } },
+      { id: "kand:S1", kind: "kandidat", points: [[LON0, northOf(1500)], [LON0, northOf(9010)]], segmentHazardId: "seg:S1" },
+    ],
+    trace: northTrace(450, 80),
+  },
+  {
+    file: "v46_kandidat_annan_stracka_talar", name: "Kandidaten tiger bara efter SAMMA sträckas halkvarning — en annan sträcka hindrar den inte (K)",
+    description:
+      "Samma geometri som v45, men halkvarningen gäller sträckan S2 och kandidaten S1. Kandidaten väntar bara ut spärren och talar " +
+      "när punkten 1 500 m fram är inom förvarningen och 10 s gått sedan A1.",
+    hazards: [
+      { id: "seg:S2", kind: "slippery_segment", line: [[LON0, northOf(1010)], [LON0, northOf(20000)]], meta: { code: 2, info: [] } },
+      { id: "kand:S1", kind: "kandidat", points: [[LON0, northOf(1500)]], segmentHazardId: "seg:S1" },
+    ],
+    trace: northTrace(120, 80),
+  },
 ];
 
 /** Canonical replay-with-updates — the reference all three test runners mirror. */
