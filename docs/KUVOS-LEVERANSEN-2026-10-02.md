@@ -311,6 +311,37 @@ dem för internt bruk. Det vi bad om har de inget jobb för, och det går inte a
   ställs den inte igen; svaret väntas i tråden.
 - Ett nej upprepas inte (#538). Ingen ny fråga om åtgärderna.
 
+### 5h. Svaret från Trafik 16/10: väglaget och åtgärderna för hela vintern (TRV 2026/111808)
+
+Ärendeberedningen Trafik svarade 16/10 14:50 med två filer (`svarptrv2026111808.zip`, 16,8 MB). **Filerna ligger inte i repot**
+(PUBLIKT REPO); de ska till hinken `arkiv` som leveransen 2/10. Här står bara formen och antalen.
+- **Väglaget** (`RoadCondition24-25.xlsx`): 337 779 rader, en per ändring av väglaget på en sträcka, 1/11 2024 00:40 – 31/3 2025
+  23:41, med kolumnerna ID, LocationText, RoadCondCode1/2 och deras texter, och ModifiedTime. 816 sträckor; **alla 816 finns
+  bland våra 818 väglagssträckor** i `data/vagdata/` (samma ID), och bara 2 av våra saknas. Median 374 ändringar per sträcka.
+  Koderna är Trafikverkets detaljerade väglag, 16 sorter i kod 1 (torrt, vått/fuktigt, fläckvis isigt, modd, lössnö …), alltså
+  finare än öppna API:ts fyra klasser. Bokstäverna å, ä och ö har blivit ersättningstecken i texterna; koderna är hela.
+- **Åtgärderna** (`RoadConditionMeasures24-25.xlsx`): 99 876 rader på 806 sträckor (alla i väglagsfilen), med typen (förebyggande
+  halkbekämpning, halkbekämpning, plogning, sandning och en till), start- och stopptid och ändringstid. Trafikverket skriver att
+  det är **planerade** åtgärder, inte utförda: de visar vad Trafikverket väntade sig, inte att vägen var saltad. 292 starttider och
+  305 stopptider är tomma, och några starttider ligger i februari 2008.
+- **Händelserna** är inte uttagna: Trafikverket vill veta vilka händelser vi behöver, eftersom det blir mycket data. Svaret, för
+  Bengt att skicka:
+
+> Hej Malin,
+>
+> tack, filerna har kommit fram och är precis det vi behövde.
+>
+> För händelserna räcker det med olyckor (i öppna API:t Situation med typen olycka) för samma period, 1/11 2024–31/3 2025:
+> starttid, sluttid, plats (koordinat eller vägnummer och sträcka) och händelsens typ och underrubrik, och orsaken om den
+> registreras. Djur, hinder och vägarbeten behöver vi inte.
+>
+> Vänliga hälsningar
+> Bengt
+
+Ingenting i kuvösen har lästs mot filerna. Läsningen av facit skrivs i förväg (kuvössidan §8): vilka koder som räknas som halka,
+hur en sträcka paras med en vägpunkt och en timme, och hur åtgärderna används. Först därefter läses kandidaten och efterhalkan mot
+dem. Hittills är bara antalen ovan sedda, och fördelningen över koderna i hela filen.
+
 ## 6. Vad det här inte är
 
 Ingen regel är körd och inget utfall är läst. Förregistreringen (DECISIONS #424, tilläggen #426 och #437) skrevs innan filen öppnades;
