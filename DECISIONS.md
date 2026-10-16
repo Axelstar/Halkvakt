@@ -13719,3 +13719,37 @@ för alla, så följderna ändras knappt. Skuggan kör varje rutt var 3,5 timme,
 underlaget växer bara när det är kallt där rutterna går.
 
 **Stomdokument:** LIV steg 7, BED §4.2
+
+## #584 (16/10 2026) Takregeln för kandidaten förregistrerad: högst en gång per 10 minuter om följderna är täta (kort #343, steg 7)
+
+**Beslut.** Bengt 16/10: *"slå ihop 982, 992 och 993 + skriv till axel vad han ska göra, slå på keep my email private, takregel ja, danmark ja"* — *takregel ja* på förslaget i #583. Regeln står i TROSKLAR-SKUGGAN §4 (d) som en daterad post:
+Läses 2/11 med `scripts/matningar/kandidat-takten-2026-10-16.sql`, oförändrad, på alla svenska skuggkörningar med kandidatloggen från 15/10 10:32 UTC. En följd är tiden mellan två kandidatpassager på olika sträckor i samma körning. Ligger mer än 10 % av följderna inom 10 minuter, eller är underlaget under 30 följder på minst 3 rutter och 3 dygn, byggs ett tak före App Review: kandidaten talar högst en gång per 10 minuter, vilken sträcka det än gäller (motorn i tre språk, vektorer). Annars byggs inget tak.
+
+**Alternativ.** Ett tak per körtimme, eller inget tak (#583).
+
+**Varför.** Taket kommer ur mätningen (#200) och läses före App Review (#562). 10 minuter är motorns gräns för att upprepa en och
+samma fara. Regeln kan bara tysta mer, så den är en skärpning, som §5 tillåter genom en post från Bengt.
+
+**Reservation.** Provläsningen 16/10 (8 följder, 3 inom 10 minuter) var sedd när regeln skrevs, och dess körningar ingår i
+underlaget 2/11. Det gör inte regeln till en lättnad (regel L), eftersom den bara kan bygga ett tak.
+
+**Stomdokument:** LIV steg 7, BED §4.2
+
+## #585 (16/10 2026) Danmark på kartan: DMI i källraden och gräsytan märkt som gräsyta (kort #351)
+
+**Beslut.** Bengt 16/10: *"slå ihop 982, 992 och 993 + skriv till axel vad han ska göra, slå på keep my email private, takregel ja, danmark ja"* — *danmark ja* på förslaget i kort #351:
+- DMI står i kartans källrad med en länk till licensen. DMI:s öppna data är CC BY 4.0 (dmi.dk/friedata, terms of use, läst 16/10), och
+  licensen kräver erkännande, en länk till licensen och att ändringar anges.
+- Vägväderpopupen säger *Gräsyta* för danska stationer i stället för *Vägbana*, och visar ingen nederbördsrad där. `ingest/dk.ts`
+  sparar DMI:s grästemperatur i `surface_temp_c` och 'grass' i `precipitation` (DECISIONS #45), så rutan visade ordet *grass*.
+- Vejdirektoratets avvikelser i olyckslagret kommer ur ett odokumenterat flöde med okänd licens (`ingest/dk.ts`). Det blir en egen
+  fråga, kort #352.
+
+Ändringen ligger i samma PR i halkvakt-karta som kandidatlagret (#579), eftersom båda rör källraden.
+
+**Alternativ.** Låta popupen stå och bara lägga till källan, eller ta bort de danska stationerna ur kartan.
+
+**Varför.** En ruta som säger *Vägbana* om en gräsyta överdriver vad datan säger (samma regel som rösttexterna), och CC BY kräver
+erkännandet.
+
+**Stomdokument:** SYS 1 kartsajten, BED §4.2
