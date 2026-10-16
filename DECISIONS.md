@@ -13917,3 +13917,62 @@ lästs mot väglaget.
 - Signaturerna.
 
 **Stomdokument:** KUV §7 facit, BED §4.2
+
+## #593 (16/10 2026) Hela regeln i kuvösen (del C), som driftens sql/058; Våt är kod 20; indataprovet gick (kort #232)
+
+**Beslut.** Bengt 16/10: *"slå ihop 1009, kör indataprovet och ja till del C"*. Claude bygger hela regeln (#562–#575) i facitläsningen,
+som förregistreringen §4 (a) säger: den räknas bredvid kandidatens kalla timmar.
+
+**Hur regeln speglas** (skrivet i förregistreringen §4 *Indata*):
+- Regeln prövas vid varje kall timme t i slutet av timmen, e = t + 1 h, i driftens ordning (`kandidat_regel()` i sql/058):
+  1. *veto*: en station inom 15 km, stationen själv medräknad, mätte en yta över +2 °C under (e − 45 min, e], med driftens vakter
+     (#75, radvakten och karantänen);
+  2. *torr*: ingen av stationens sträckor hade Våt vid e, och radarns medel var under 0,5 mm/h på alla under (e − 60 min, e];
+  3. *spridning*: minst två av RÅ:s ankare skiljer 2,25 °C eller mer, avrundat till en decimal. Ankarna är de fem närmaste *andra*
+     stationerna inom 50 km med en yta vid timmen, som i `fysik/live/kandidat_timme.py`, där en station aldrig är sitt eget ankare;
+  4. annars *varnar*.
+- De varnande timmarna läses med samma mått som kandidaten: bekräftelsen, lyftet mot B, missarna och åtgärderna.
+- Stationen står för en vägpunkt vid stationen. I driften räknas regeln vid vägpunkterna; i kuvösen finns kandidaten bara vid väg B:s
+  736 stationer.
+- Radarn är kuvösens `radar_precip` (SMHI:s tif-komposit, #441). Våt tas ur Trafikverkets väglag.
+
+**Våt är kod 20, inte 20 och 21.** Förregistreringens §2 sa *20 och 21*. Kod 21 är *fläckvis* vått, och regeln räknar inte fläckvis
+Våt (Bengt 15/10: *"nej till fläckvis"*, #573). Utkastet stred alltså mot regeln det skulle spegla. §2 och §4 är rättade före
+signeringen.
+
+**Trösklarna i kontraktsgrinden.** Kuvösens kopia är den andra av varje tal, och den förs in i samma commit enligt husregeln. Sju
+kontrakt mot sql/058:
+- kall yta, radarns gräns, radarns fönster, vetots fönster, vetots yta och vetots avstånd i meter;
+- spridningens ankarantal, och dessutom X som tredje kopia i det befintliga kontraktet.
+
+Grinden håller med 75 kontrakt. Ändras driftens regel efter signeringen fäller grinden, och skillnaden blir ett daterat beslut med
+båda signaturerna i stället för en tyst drift.
+
+**Prov:**
+- Självtesten i ci, med varje gräns och ordningen.
+- Sex motprov, som vart och ett fällde:
+  - vetot på 20 km;
+  - X 2,35;
+  - Våt med 21;
+  - sex ankare;
+  - e = t;
+  - vetots yta 3 i ena kopian (kontraktsgrinden).
+
+**Indataprovet (del B) gick 16/10**, körning 38928753954 på 767e6ce; mätningen tog 0,8 minuter:
+- 1 366 734 egna kalla station-timmar vid 736 stationer;
+- 1 110 fyrningar vid 514 stationer;
+- nederbörden känd i 2 677 274 station-timmar vid 753 stationer, varav 560 376 med nederbörd. Ordlistan: no, snow, rain, sleet,
+  freezing_rain och yes;
+- vaglag.geojson: 818 sträckor (sha256 `d1edf121…`);
+- parningen: 769 av 854 stationer och 613 av 818 sträckor;
+- en station med kalla timmar och fyrningar saknar läge i stationer.json.
+
+**Avvikelse.** Riktningsprovet 6/10 (37447617038) hade 1 109 fyrningar, och indataprovet 16/10 gav 1 110. Efterhalkans egna filer är
+oförändrade sedan dess (sql/028, kuvos/efterhalkan.ts, trend, vakterna och inläsningen). 19 nya migrationer har kommit till
+(044–060), och orsaken är inte funnen. Det är en fyrning på 1 110, och den står i förregistreringen.
+
+**Kvar:**
+- Ett nytt indataprov med hela regelns tre frågor (varma stationer, radarn och ytan vid timmen), som är oprövade mot databasen.
+- Signaturerna.
+
+**Stomdokument:** KUV §7 facit, BED §4.2
