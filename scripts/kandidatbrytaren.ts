@@ -9,14 +9,27 @@
 // Ändras läget körs publiceringens eget cron-jobb direkt, samma väg som DB-knappens larmprov: kommandot bär funktionens nyckel och
 // skrivs aldrig ut. Svaret läses: lägesfilens nyckel `kandidat` ska saknas när kandidaten är av och finnas när den är på.
 export const AKTORER: Record<string, "bengt" | "axel"> = { "895845": "bengt", Axelstar: "axel" };
+
+/** Publiceringens kommando med ?karta=1 (DECISIONS #579), så att webbkartan byggs om i samma körning. Exakt EN publicera-URL krävs;
+ *  annars lämnas kommandot orört (och kartan byggs vid nästa halvtimme). Kommandot bär nyckeln och skrivs aldrig ut. */
+export function medKartan(kommando: string): string {
+  if ((kommando.match(/functions\/v1\/publicera(?=['"?])/g) ?? []).length !== 1) return kommando;
+  return kommando.replace(/functions\/v1\/publicera(\?)?/, (_m: string, fr?: string) =>
+    fr ? "functions/v1/publicera?karta=1&" : "functions/v1/publicera?karta=1");
+}
+
 export const ATGARDER = ["las", "tysta", "starta"] as const;
 
 if (process.argv[2] === "--sjalvtest") {
   const fel: string[] = [];
   if (AKTORER["895845"] !== "bengt" || AKTORER["Axelstar"] !== "axel") fel.push("kontona");
   if (AKTORER["axelstar"] !== undefined || AKTORER["claude"] !== undefined) fel.push("okända konton ska avvisas, också med fel skiftläge");
+  const u = "https://x.supabase.co/functions/v1/publicera";
+  if (medKartan(`SELECT net.http_post(url := '${u}', body := '{}')`) !== `SELECT net.http_post(url := '${u}?karta=1', body := '{}')`) fel.push("karta=1 utan frågetecken");
+  if (medKartan(`SELECT net.http_post(url := '${u}?land=se', body := '{}')`) !== `SELECT net.http_post(url := '${u}?karta=1&land=se', body := '{}')`) fel.push("karta=1 med frågetecken");
+  if (medKartan(`'${u}' '${u}'`) !== `'${u}' '${u}'`) fel.push("två URL:er ska lämnas orörda");
   if (fel.length) { console.error(`kandidatbrytaren: självtestet föll — ${fel.join("; ")}`); process.exit(1); }
-  console.log("✓ kandidatbrytaren: två konton, alla andra avvisas");
+  console.log("✓ kandidatbrytaren: två konton, alla andra avvisas; kartan byggs om med karta=1, och två URL:er rörs inte");
   process.exit(0);
 }
 
@@ -56,9 +69,13 @@ try {
     else {
       // Publiceringens kommando ger inget request-id tillbaka (provet i drift 16/10: "request NaN", fast svaret kom). Svaret hittas
       // därför på tiden och på formen — publiceringens svar börjar med "ok" och bär "segments" — inte på id:t.
+      // Kartan byggs om i samma körning (?karta=1, DECISIONS #579), så att kandidatens lager på webbkartan lyder brytaren direkt och
+      // inte väntar på nästa halvtimme. Exakt EN publicera-URL ska finnas i kommandot, annars körs det som det är.
+      const kommando: string = j.rows[0].command;
+      const medKarta = medKartan(kommando);
       const fran = (await pool.query(`SELECT clock_timestamp() AS t`)).rows[0].t;
-      await pool.query(j.rows[0].command);
-      console.log(`publiceringen startad direkt (${j.rows[0].jobname}); kommandot skrivs aldrig ut`);
+      await pool.query(medKarta);
+      console.log(`publiceringen startad direkt (${j.rows[0].jobname}${medKarta === kommando ? ", utan kartan" : ", med kartan"}); kommandot skrivs aldrig ut`);
       let svar: { status_code: number | null; content: string | null } | null = null;
       for (let i = 0; i < 24 && !svar; i++) {
         await new Promise((res) => setTimeout(res, 5000));
