@@ -956,7 +956,7 @@ mätningar — R1–R16 nedan är strukna och står kvar bara som historik.**
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
 ## Öppna kort
 
-Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 30 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
+Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 29 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
 
 **§1 NU — före första frosten**
 
@@ -982,7 +982,6 @@ Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 30 kort
 - #270 PROGNOSLAGRET EFTER PREMISSMÄTNINGARNA — BENGTS VAL a–h — Bengt
 - #233 UR NIRAS PRODUKTSIDA: TVÅ SAKER VI INTE HAR, EN VI HAR PARKERAT — Bengt
 - #218 BATTERIBUDGETEN HAR ALDRIG MÄTTS, OCH iOS KÖR FULL GAS — Bengt
-- #349 🗄️ #349 KANDIDATENS STATIONSVÄRDEN TILL HINKEN — HELA VINTERN, FÖR GRIND A (BESTÄLLD 15/10 — Claude, Bengts … — Claude
 - #347 🗄️ #347 TRENDTABELLERNA OCH RADARN TILL HINKEN — ÄLDRE ÄN 14 DYGN EXPORTERAS OCH RADERAS (BESTÄLLD 15/10 — … — Claude
 - #342 VÄG B — ÄRLIGA TAL FÖRE FRYSNINGEN (BESLUTAT 13/10 — Claude, Bengts ja och Axels ja via Bengt, DECISIONS #544) — Claude
 - #344 🌡️ #344 FJÄRRYTORNA — EN PLATS GER TVÅ ANKARE I SKUGGANS RÅ (FYND 14/10, AVGJORT SAMMA KVÄLL: INGEN ÄNDRING … — Claude, låst
