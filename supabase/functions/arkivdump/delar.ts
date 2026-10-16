@@ -25,8 +25,9 @@ export function dumpAv(fil: string): string | null {
 }
 
 /** Kuvösens filer som inte får ligga i en publik release (kort #311, DECISIONS #499): Trafikverkets leverans, som #438 lade i en
- *  privat release. Namnet är `<release>/<fil>`, och filen hamnar i `kuvos/<release>/<fil>`; gallringen rör aldrig mappen. */
-export const KUVOSFIL = /^kuvos-[a-z0-9-]+\/[A-Za-z0-9][A-Za-z0-9_.-]*$/;
+ *  privat release. Namnet är `<release>/<fil>`, och filen hamnar i `kuvos/<release>/<fil>`; gallringen rör aldrig mappen. Sedan 16/10
+ *  också `trv-<ärende>/<fil>`: Trafikverkets utlämnanden, som Axel lägger i hinken via panelen (TRV 2026/111808, kuvos/trv-111808-leverans.json). */
+export const KUVOSFIL = /^(kuvos|trv)-[a-z0-9-]+\/[A-Za-z0-9][A-Za-z0-9_.-]*$/;
 export const KUVOSMAPP = "kuvos";
 
 export function kuvosnamn(fil: string): string {

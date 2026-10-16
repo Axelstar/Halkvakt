@@ -36,8 +36,10 @@ test("färre kopior än fyra gallrar ingenting, och behall under 1 avvisas", () 
 // Kort #311, DECISIONS #499: Trafikverkets leverans lämnar den publika releasen för hinken, under kuvos/.
 test("kuvösens filer hamnar under kuvos/<release>/, och inget annat namn släpps igenom", () => {
   assert.equal(kuvosnamn("kuvos-trv-2024-25/Halkvakt_2411.csv.gz"), "kuvos/kuvos-trv-2024-25/Halkvakt_2411.csv.gz");
+  assert.equal(kuvosnamn("trv-2026-111808/RoadCondition24-25.xlsx"), "kuvos/trv-2026-111808/RoadCondition24-25.xlsx");   // utlämnandet 16/10
   for (const fel of ["kuvos-trv-2024-25/../dump/x", "kuvos-trv-2024-25/..", "kuvos-trv-2024-25/.dold", "dump/halkvakt-arkiv-2026-10-11T0317Z.dump",
-    "../kuvos-trv-2024-25/a.csv", "kuvos-trv-2024-25/a/b.csv", "kuvos-trv-2024-25/", "facit/bild.jpg", "KUVOS-trv/a.csv"])
+    "../kuvos-trv-2024-25/a.csv", "kuvos-trv-2024-25/a/b.csv", "kuvos-trv-2024-25/", "facit/bild.jpg", "KUVOS-trv/a.csv",
+    "trv-2026-111808/../dump/x", "trv-2026-111808/", "trvx-1/a.xlsx", "TRV-1/a.xlsx", "trv/a.xlsx"])
     assert.throws(() => kuvosnamn(fel), fel);
 });
 
