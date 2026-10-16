@@ -14146,3 +14146,18 @@ väder — förkastat: "ingen halka" i oktober lär följarna att hoppa över in
 Motprov: tröskeln 2 i stället för 3 fällde två prov. Bilden förhandsgranskad mot exempeldata.
 
 **Stomdokument:** inga — marknadsföringen har inget stomdokument; planen bor i MARKNADSFORING-NOLLBUDGET.md.
+
+## #599 (16/10 2026) Halkvakt live: klickbar länk på Facebook, profilens länk på Instagram (kort #281)
+
+**Beslut.** Axel 16/10 23:17, efter första inlägget: *"Kan man inte göra så att vår hemsida kopplas då man trycker på posten"*. Texten
+skrivs nu per kanal: Facebook får hela adressen `https://halkvakt.se/lan`, som Facebook gör klickbar i ett bildinlägg; Instagram gör
+inga länkar klickbara i texten, så där pekar raden på länken i profilen. `inlagg/DATUM.json` bär `text` (Facebook) och `textIg`
+(Instagram; saknas den, som i 16/10:s fil, används `text`).
+
+**Alternativ.** Ett länkinlägg (`/{sida}/feed` med `link`) ger ett klickbart kort men ersätter den stora bilden med en liten
+förhandsvisning — förkastat, bilden är inlägget. En första kommentar med länken — onödigt när adressen i texten blir klickbar.
+
+**Prov:** `test/posta.test.ts` 6/6; motprov (adressen tillbaka i Instagram-texten) fällde det nya provet.
+
+**Stomdokument:** inga — marknadsföringen har inget stomdokument; planen bor i MARKNADSFORING-NOLLBUDGET.md.
+

@@ -86,8 +86,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   **"Halkvakt live"** (Axels idé 00:24): motorn postar riktiga larm själv till X/Bluesky/Mastodon/FB-sidan. Push till användarna är ett ägarbeslut (§4.2).
   🔨 **HALKVAKT LIVE BYGGT 16/10 för Facebook och Instagram** (Axels *"varför inte redan nu"*, DECISIONS #598): `marknadsforing/posta.mjs` i
   marknadsforing.yml — bild + text de morgnar ett län har halka eller minst tre stationer under noll, högst ett inlägg per dygn, torrkörning
-  utan hemligheterna. 🔑 Kvar (Axel): Meta-appen, sidans token och IG-id som `META_PAGE_ID`, `META_PAGE_TOKEN`, `META_IG_ID` i repots
-  secrets. Verify: ett inlägg på sidan och på Instagram med `postat.json` som kvitto. X/Bluesky/Mastodon kvar.
+  utan hemligheterna. ✅ **LIVE 16/10 23:14** — första inlägget på sidan och @halkvakt (körning 38967910636, kvitto i `postat.json`:
+  FB `1312515671952967_122097680613516187`, IG `17948923554341532`). Klickbar länk på Facebook, profilens länk på Instagram (DECISIONS #599).
+  🔑 Kvar (Axel): länken https://halkvakt.se/lan i Instagram-profilen. X/Bluesky/Mastodon kvar.
   🔍 **Sök (Axels fråga 00:28, planens §6):** länssidor + vägsidor *"Halt väglag i Skåne just nu"* som publicera-flödet skriver om var 30:e minut —
   byggs i karta-repot i oktober (Google behöver veckor) · domänen före första pressomgången · widget + "Sveriges halaste vägar" som länkbeten · Search Console.
   ✅ **VÄGSIDORNA I DRIFT 4/10 16:00Z** — deploy 37214328745 ur 45a07b4 · karta-repots commit 7f3b8c2 med `vag/` för alla sex · sitemapen 34 adresser · Pages svarar på `/vag/e4/`.
