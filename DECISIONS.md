@@ -13410,3 +13410,81 @@ sammanslagningen; de står i bedömningen §4.2.
 - Bygget 0.3.13 (steg 12).
 
 **Stomdokument:** LIV steg 10–11, APP (ny röst och nytt kort), SYS (prioriteten), BED §4.2.
+
+## #578 (16/10 2026) Kandidatens brytare: en tystar, båda startar, och nyckeln försvinner ur lägesfilen (kort #343, NIVA2-LIVE steg 13)
+
+**Bengts ord 16/10:** *"ja till förslaget, 40–50 minuter är ok"*, på Claudes förslag samma morgon för #562 punkt 5. Avstängningen tar bort
+nyckeln ur publiceringen, inte hela publiceringen. Att tysta kräver en av Bengt och Axel, att starta igen kräver båda.
+
+**Byggt:**
+- **Brytaren** (`sql/059_kandidat_brytare.sql`): loggen `kandidat_brytare`, ett tryck per rad med vem (bengt, axel) och när. Läget
+  räknas ur loggen av `kandidat_pa()`.
+  - Den är på om ingen tystning finns, eller om båda har tryckt *starta* efter den senaste tystningen. Ordningen räknas på id.
+  - Samma person två gånger räcker inte, och en ny tystning nollställer.
+  - Tabellen är låst med RLS utan policy och REVOKE.
+- **Knappen** (`.github/workflows/kandidatbrytaren.yml`, `scripts/kandidatbrytaren.ts`) har valen *las*, *tysta* och *starta*.
+  - Vem som trycker tas ur `github.actor`: 895845 är Bengt och Axelstar är Axel. Andra konton avvisas, också med fel skiftläge.
+  - Ändras läget körs publiceringens eget jobb direkt, samma väg som DB-knappens larmprov. Kommandot bär nyckeln och skrivs aldrig ut.
+    Svaret läses: status, *ok*, antalet sträckor eller *saknas*, och kandidatens noter.
+- **Publiceringen** (`publish/snapshot-core.ts`, bunten):
+  - Är brytaren av utelämnas nyckeln `kandidat` helt, inte tom. Regeln frågas inte, och noten säger *avstängd med brytaren*.
+  - Går brytaren inte att läsa utelämnas nyckeln också, eftersom tyst är det säkra hållet.
+  - Svaret från publicera tål en saknad nyckel.
+- **Apparna behöver ingen ändring.** Saknas nyckeln får motorn ingen kandidat (#577). Skuggan loggar kandidaten som förut, eftersom
+  domen ska ha hela vintern.
+
+**Det som är sagt rakt ut:**
+- **Claude trycker med Bengts konto (895845)**, så GitHub kan inte skilja dem åt, och en tryckning av Claude räknas som Bengts. Därför
+  trycker Claude bara på Bengts uttryckliga ord, som vid *slå ihop*.
+- **Tiden tills appen tystnar** är högst 40–50 minuter, och det godkände Bengt. Den består av:
+  - publiceringen, som sker direkt med knappen och annars inom 10 min;
+  - GitHub Pages cache, upp till 10 min;
+  - appens egen hämtning, var 30:e minut.
+
+  Kortare tid kräver att appen hämtar oftare, alltså ett nytt bygge med mer batteri och data. Det valdes bort.
+- **Bygget 0.3.13 (25)** höjdes i en egen commit efter den sista appändringen (1a61ca8, #983). Bengts fråga *"kan inte jag bygga 0.3.13
+  från 1a61ca8"*:
+  - Android byggs redan av CI.
+  - iOS kräver en Mac med Xcode och rätt att signera i Apples team, eller kort #333: TestFlight-flödet i Actions. Det kräver i sin tur
+    att Axel en gång skapar App Store Connect-nyckeln (Admin-roll: .p8-filen, nyckelns id och utfärdarens id) som tre hemligheter.
+    Därefter är iOS-bygget en knapp som Bengt kan trycka på.
+
+**Prov:**
+- Tre enhetsprov för publiceringen: av, oläsbar och på.
+- Integrationsprovet mot riktig databas:
+  - en tystar;
+  - samma person två gånger räcker inte;
+  - båda startar;
+  - en ny tystning nollställer;
+  - bara bengt och axel, bara *tysta* och *starta*;
+  - publiceringen utelämnar nyckeln när brytaren är av.
+- Knappens självtest i ci.
+
+**Motprov, med raden som föll:**
+
+| motprov | föll |
+| :-- | :-- |
+| publiceringen struntar i brytaren | *#578 brytaren av* |
+| en oläsbar brytare tolkas som på | *#578 brytaren oläsbar* |
+| en person räcker för att starta (SQL, PR #984, stängd) | integrationsprovets *samma person två gånger räcker inte* (ci 38854717626: väntat false, fick true; 1 fallet av 324) |
+
+**Driftordning efter *slå ihop*:**
+1. DB-knappen `migrera sql/059`. Bevis: `kandidat_pa()` är sann, loggen tom, anon utan rätt.
+2. Deploy av publicera.
+3. Knappen *las*: PÅ.
+
+**Provet i drift — regeln och förväntan skrivna före knappen.** Claude trycker som Bengt först på hans ord *kör provet*, och Axel trycker
+själv.
+1. **Tysta (Bengt).**
+   - Förväntan: *var PÅ, är AV*.
+   - Publiceringen startas direkt och svarar med status 200, *ok true*, *kandidat saknas* och noten *avstängd med brytaren*.
+   - Inom 10 min, när GitHub Pages cache har gått ut, saknar lägesfilen på halkvakt.se nyckeln, och manifestets sha är lika med
+     sha256(live.json).
+   - Tiden från tryck till fil mäts och redovisas.
+2. **Starta (Bengt).** Förväntan: *var AV, är AV, väntar på starta av axel*. Lägesfilen saknar fortfarande nyckeln.
+3. **Starta (Axel).** Förväntan: *var AV, är PÅ*. Publiceringen startas direkt, och lägesfilen bär nyckeln igen.
+4. **Bilprovet (Bengt, med 0.3.13 i intern TestFlight):** efter *tysta* säger appen inte *"Halkvakt tror …"* inom 40–50 minuter.
+
+Faller något steg är steg 13 inte klart. Felet skrivs ned och bortförklaras inte.
+
+**Stomdokument:** LIV steg 12–13, APP avstängningen och 0.3.13, SYS brytaren i publiceringen, BED §4.2.

@@ -369,8 +369,18 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
   // sträcka med dess varnande vägpunkter, för skuggan räknar passager på punkterna (kandidatLangsRutten). Ingen port läser nyckeln
   // än (steg 10). Fail-soft: tom + not. Tiger regeln (timmen gammal eller ofullständig) är nyckeln tom och noten säger det — en
   // tyst timme ska inte se ut som en timme utan varningar.
-  const kandidat: { id: string; tid: string; punkter: [number, number][] }[] = [];
+  // BRYTAREN (NIVA2-LIVE steg 13, DECISIONS #562 punkt 5, #578): är kandidaten avstängd utelämnas nyckeln helt — inte tom — och
+  // regeln frågas inte. Går brytaren inte att läsa utelämnas nyckeln också: tyst är det säkra hållet. Apparna tystnar på båda.
+  let kandidatPa = false;
   try {
+    const [b] = await q(`SELECT kandidat_pa() AS pa`);
+    kandidatPa = b?.pa === true;
+    if (!kandidatPa) notes.push("kandidat: avstängd med brytaren (kandidat_brytare, #578) — nyckeln utelämnas");
+  } catch (e) {
+    notes.push(`kandidat: brytaren ej läsbar (${String((e as Error).message).slice(0, 80)}) — nyckeln utelämnas`);
+  }
+  const kandidat: { id: string; tid: string; punkter: [number, number][] }[] = [];
+  if (kandidatPa) try {
     const [timme] = await q(`SELECT kandidat_timme() AS t`);
     if (timme?.t == null) {
       notes.push("kandidat: regeln tiger — kandidatens timme är gammal eller ofullständig (kandidat_timme)");
@@ -556,8 +566,8 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
     segments: segs.map(segRow),
     // Regnsegmenten (#154): normalklassade segment med råradar ≥ utlösaren. Ingen port läser nyckeln.
     rain_segments: regnSegs.map(segRow),
-    // Kandidatens varnande sträckor (#576): punkterna med fem decimaler, regelns timme. Ingen port läser nyckeln.
-    kandidat,
+    // Kandidatens varnande sträckor (#576): punkterna med fem decimaler, regelns timme. Saknas när brytaren är av (#578).
+    ...(kandidatPa ? { kandidat } : {}),
     weather: wx.map((r) => {
       const id = String(r.station_id), l = lutning.get(id);
       return {
@@ -1253,7 +1263,7 @@ Deno.serve(async (req) => {
     }
     const sha = await publicera(files, inline);
     return new Response(JSON.stringify({ ok: true, sha, generated_at: liveDoc.generated_at,
-      segments: liveDoc.segments.length, kandidat: liveDoc.kandidat.length, weather: liveDoc.weather.length,
+      segments: liveDoc.segments.length, kandidat: liveDoc.kandidat?.length ?? null, weather: liveDoc.weather.length,
       deviations: liveDoc.deviations.length, wildlife: liveDoc.wildlife.length,
       bridges: liveDoc.bridges.length, smhi: liveDoc.smhi.length,
       cameras: staticDoc.cameras.length, border, notes,

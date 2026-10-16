@@ -1692,7 +1692,7 @@ test("#575 spridningsgrinden: regeln, gränsen, glesa punkter och domloggens fä
     await q("CREATE TABLE IF NOT EXISTS shadow_log (id bigserial PRIMARY KEY, run_at timestamptz NOT NULL DEFAULT now(), alerts jsonb NOT NULL DEFAULT '[]'::jsonb)");
     for (const f of ["001_init.sql", "008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql", "018_trend_berakna.sql",
                      "029_brott_index.sql", "030_langsam_vakt.sql", "050_kandidat_live.sql", "053_arkiv_tabeller.sql", "055_vagpunkter.sql",
-                     "056_kandidat_regel.sql", "057_kandidat_skugga.sql", "058_kandidat_spridning.sql"])
+                     "056_kandidat_regel.sql", "057_kandidat_skugga.sql", "058_kandidat_spridning.sql", "059_kandidat_brytare.sql"])
       await q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
     await stad();
     // [punkt, sträcka, n_ank, spr, väntat utfall] — alla Våt och kalla, långt från provens stationer (70° N, 32° Ö)
@@ -1730,6 +1730,40 @@ test("#575 spridningsgrinden: regeln, gränsen, glesa punkter och domloggens fä
     assert.deepEqual(s, { n_ank: 3, spr: 1.5 }, "stationsvärdena bär ankarna och spridningen");
   } finally {
     await stad().catch(() => {});
+    await pool.end();
+  }
+});
+
+test("#578 brytaren: en tystar, båda startar — och publiceringen utelämnar nyckeln när den är av", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const { buildSnapshot } = await import("../publish/snapshot-core.ts");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const pa = async () => (await q("SELECT kandidat_pa() AS pa")).rows[0].pa as boolean;
+  const tryck = (atgard: string, vem: string) => q("INSERT INTO kandidat_brytare (atgard, vem) VALUES ($1, $2)", [atgard, vem]);
+  try {
+    await q(readFileSync(new URL("../sql/059_kandidat_brytare.sql", import.meta.url), "utf8"));
+    await q("DELETE FROM kandidat_brytare");
+    assert.equal(await pa(), true, "ingen tystning ⇒ på");
+    await tryck("tysta", "axel");
+    assert.equal(await pa(), false, "en tystar");
+    const { liveDoc, notes } = await buildSnapshot(async (t, p) => (await pool.query(t, p as any[])).rows, []);
+    assert.ok(!("kandidat" in liveDoc), "av ⇒ nyckeln borta ur lägesfilen");
+    assert.ok(notes.some((n) => n.startsWith("kandidat: avstängd med brytaren")));
+    await tryck("starta", "axel");
+    await tryck("starta", "axel");
+    assert.equal(await pa(), false, "samma person två gånger räcker inte");
+    await tryck("starta", "bengt");
+    assert.equal(await pa(), true, "båda har startat efter tystningen");
+    await tryck("tysta", "bengt");
+    assert.equal(await pa(), false, "en ny tystning nollställer: de gamla startarna räknas inte");
+    await tryck("starta", "bengt");
+    assert.equal(await pa(), false, "en av två efter den nya tystningen");
+    await assert.rejects(tryck("tysta", "claude"), "bara bengt och axel");
+    await assert.rejects(tryck("pausa", "bengt"), "bara tysta och starta");
+  } finally {
+    await q("DELETE FROM kandidat_brytare").catch(() => {});
     await pool.end();
   }
 });
