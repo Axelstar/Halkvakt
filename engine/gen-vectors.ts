@@ -490,8 +490,8 @@ const scenarios: Scenario[] = [
     description:
       "Sträckan S1 har tre varnande punkter 1 500, 3 500 och 5 500 m fram; S2 en punkt 4 500 m fram; S0 en punkt 300 m BAKOM. " +
       "S1 talar vid t=38 med 'Halkvakt tror: halka framöver.' och beta=true, och dess två senare punkter tiger — samma " +
-      "sträcka, upprepningsregeln (10 min och 5 km) gäller sträckan. S2 är en ny sträcka och talar när dess punkt kommer inom " +
-      "förvarningen (t=173). S0 bakom tiger.",
+      "sträcka, upprepningsregeln (10 min och 5 km) gäller sträckan. S2 är en ny sträcka; dess punkt kommer inom " +
+      "förvarningen vid t=173, 135 s efter S1, och tiger under taket (en kandidat per 10 min, DECISIONS #590). S0 bakom tiger.",
     hazards: [
       { id: "kand:S1", kind: "kandidat", points: [[LON0, northOf(1500)], [LON0, northOf(3500)], [LON0, northOf(5500)]] },
       { id: "kand:S2", kind: "kandidat", points: [[LON0, northOf(4500)]] },
@@ -548,6 +548,21 @@ const scenarios: Scenario[] = [
       { id: "kand:S1", kind: "kandidat", points: [[LON0, northOf(1500)]], segmentHazardId: "seg:S1" },
     ],
     trace: northTrace(120, 80),
+  },
+  // Taket, DECISIONS #584, #590: högst en kandidat per 600 s, vilken sträcka det än gäller — motorns gräns för att upprepa en och
+  // samma fara. Punkterna ligger mitt emellan två fixar (marginal 11 m åt båda håll, som v42).
+  {
+    file: "v47_kandidat_taket_en_per_tio_minuter", name: "Kandidaten talar högst en gång per 10 minuter, vilken sträcka det än gäller (K)",
+    description:
+      "S1 1 500 m fram talar vid t=38. S2 8 189 m fram kommer inom förvarningen vid t=339 (656 m; t=338 låg 678 m), 301 s efter " +
+      "S1 ⇒ tyst under taket, och den är passerad innan taket släpper. S3 16 234 m fram kommer inom förvarningen vid t=701 " +
+      "(656 m; t=700 låg 678 m), 663 s efter S1 ⇒ talar. Utan taket hade S2 talat vid t=339.",
+    hazards: [
+      { id: "kand:S1", kind: "kandidat", points: [[LON0, northOf(1500)]] },
+      { id: "kand:S2", kind: "kandidat", points: [[LON0, northOf(8189)]] },
+      { id: "kand:S3", kind: "kandidat", points: [[LON0, northOf(16234)]] },
+    ],
+    trace: northTrace(720, 80),
   },
 ];
 

@@ -477,6 +477,13 @@ export const KONTRAKT: Kontrakt[] = [
     golv: 3,
   },
   {
+    namn: "Kandidatens tak — högst en kandidat per så här många sekunder, vilken sträcka det än gäller",
+    varfor: "Motorns tre portar ska tiga lika länge (DECISIONS #590); en port med kortare tak säger fler gissningar än de andra.",
+    former: [/kandidatTakS(?::\s*\w+)?\s*[:=]\s*(\d+)(?:\.0)?\b/],
+    filer: /engine\/src\/types\.ts|engine\/Types\.kt|HalkvaktEngine\/Engine\.swift/,
+    golv: 3,
+  },
+  {
     namn: "Betans startvärde fall — °C på trendfönstret",
     varfor: "Samma som ovan: ett fallkrav som driver ändrar vilka nätter som räknas som fyrningar.",
     former: [/([\d.]+)::numeric AS fall\b/, /p_fall numeric DEFAULT ([\d.]+)/, /efterhalkaFall30C(?::\s*\w+)?\s*[:=]\s*([\d.]+)/],

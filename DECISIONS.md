@@ -13847,3 +13847,23 @@ reglerna här: PR, grön CI och *slå ihop* före deploy.
 **Alternativ.** Båda på allt, som hittills. **Varför.** Appen är ute sedan 13/10 och halksäsongen börjar nu; två spår i stället för ett.
 
 **Stomdokument:** inga — arbetsfördelning, inget av de åtta beskriver vem som gör vad
+
+## #590 (16/10 2026) Kandidatens tak byggt i förväg: högst en kandidat per 10 minuter — slås ihop bara om läsningen 2/11 kräver det (kort #343)
+
+**Beslut.** Bengt 16/10: *"slå ihop 999 och gör ett antal av de du listat du väljer själv"*. Taket i takregeln (#584) byggs nu, så att det står klart om huvudläsningen 2/11 utfaller så att
+det ska byggas (mer än 10 % av följderna inom 10 minuter, eller för litet underlag). PR:en ligger som utkast till dess och slås
+ihop bara på läsningens utfall och Bengts *slå ihop*; utfaller läsningen åt andra hållet stängs den.
+- **Motorn i tre språk:** `kandidatTakS = 600` s i `engine/src/types.ts`, `Types.kt` och `Engine.swift` (kontraktsgrinden). Motorn
+  kommer ihåg när kandidaten senast talade, och `evaluateKandidat` tiger under taket, vilken sträcka det än gäller. 10 minuter är
+  motorns gräns för att upprepa en och samma fara (`repeatMinS`).
+- **Vektorerna:** v47 (S1 talar vid t=38, S2 vid t=339 tiger 301 s efter, S3 vid t=701 talar 663 s efter; marginal 11 m vid varje
+  gräns). v42 ändras avsiktligt: S2 vid t=173, 135 s efter S1, tiger nu. Alla andra 45 vektorer byte för byte orörda.
+- **Buntarna** skuggmotor och favoritprov omskrivna; de måste deployas i samma varv som sammanslagningen.
+- **Produktboken:** *högst en gång per 10 minuter*.
+
+**Alternativ.** Bygga taket först efter läsningen 2/11, vilket skjuter bygget och App Review med de dagar det tar.
+
+**Varför.** Förväntan i #583 är att taket byggs (provläsningen gav 3 av 8 följder inom 10 minuter). Byggt i förväg kostar det
+inget om läsningen går åt andra hållet, och sparar tiden om den inte gör det.
+
+**Stomdokument:** APP kandidatens röst, LIV steg 7, BED §4.2

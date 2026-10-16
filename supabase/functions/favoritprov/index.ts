@@ -143,6 +143,9 @@ export interface EngineConfig {
   /** K (DECISIONS #581, Bengt 16/10 "bygg c"): seconds the candidate stays silent after the A1 warning for the same stretch spoke.
    *  Removes the back-to-back double (A1, then the candidate 10 s later); keeps the later call deep inside a long stretch. */
   kandidatEfterHalkaS: number;
+  /** Taket (DECISIONS #584, #590): the candidate speaks at most once per kandidatTakS, whatever the stretch. Built ahead of the
+   *  reading 2/11; merged only if more than 10 % of the follow-ups fall within 10 minutes, or the sample is too small. */
+  kandidatTakS: number;
 }
 
 export const DEFAULT_CONFIG: EngineConfig = {
@@ -176,6 +179,9 @@ export const DEFAULT_CONFIG: EngineConfig = {
   // K (DECISIONS #581): 2 min — täcker spärrens 10 s med god marginal men inte de sena fallen långt in på en sträcka (22–44 min
   // i lägesfilen 04:40 16/10). Samma tal i Types.kt och Engine.swift (kontraktsgrinden).
   kandidatEfterHalkaS: 120,
+  // Taket (DECISIONS #584, #590): 10 min — motorns gräns för att upprepa en och samma fara (repeatMinS). Samma tal i Types.kt och
+  // Engine.swift (kontraktsgrinden).
+  kandidatTakS: 600,
 };
 
 
