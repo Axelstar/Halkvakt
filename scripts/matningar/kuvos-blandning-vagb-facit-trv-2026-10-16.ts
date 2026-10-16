@@ -120,7 +120,6 @@ function sjalvtest() {
     "hela regelns frågor: vetot över +2 °C på 45 min med driftens vakter, radarn ≥ 0,5 på 60 min, ytan vid timmen");
   k(EGEN_YTA_SQL.includes("surface_temp_c >= air_temp_c - 12") && EGEN_YTA_SQL.includes(RADVAKT_SQL) && EGEN_YTA_SQL.includes(karantanSql("weather_observations"))
     && EGEN_YTA_SQL.includes("ORDER BY station_id, b, sample_time DESC"), "egen yta: grind A:s vakter och senaste raden per halvtimme, som korBlandning");
-  if (fel) process.exit(1);
   const utskr = (fyra: string) => ["[350 s] veck 0 (174 stationer): kalibrerat på de andra fyra", ...[0, 1, 2, 3].map((i) =>
     `veck ${i} (150 stationer): paret W 0.25 · L 160 km, valt på de andra fyra (grova 5.0 % där; Axels par 5.2 %)`),
     `veck 4 (103 stationer): paret W 0.25 · L ${fyra} km, valt på de andra fyra (grova 4.18 % där; Axels par 4.35 %)`,
@@ -133,6 +132,7 @@ function sjalvtest() {
     && identitet({ ...ok, mae: 0.571 }, bada).length === 1 && identitet({ ...ok, freeze: 0.0026 }, bada).length === 1,
     "identiteten: n en för mycket, A2 4,865 %, A1 0,571 °C och A3 0,26 % fäller var för sig");
   k(identitet(undefined, "").length === 3, "identiteten: utan utskrift och utan mått fäller både paren och måtten");
+  if (fel) process.exit(1);
   console.log("SJÄLVTEST OK: kuvos-blandning-vagb-facit-trv");
 }
 
