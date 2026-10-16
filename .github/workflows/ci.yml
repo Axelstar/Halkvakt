@@ -57,6 +57,8 @@ jobs:
         run: |
           node --experimental-strip-types scripts/beslutsnumren.ts --sjalvtest
           node --experimental-strip-types scripts/beslutsnumren.ts
+      - name: Radarns tal — regeln i #568 på de tre kurvorna (förregistreringen §10 a)
+        run: node --experimental-strip-types scripts/radarns-tal.ts --sjalvtest
       - name: Kortkartan — varje öppet kort kopplat till sitt område i stomdokumenten (#445)
         run: |
           node --experimental-strip-types scripts/kortkartan.ts --sjalvtest
