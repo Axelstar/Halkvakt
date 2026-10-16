@@ -70,7 +70,7 @@ public enum SnapshotReader {
                 let lat = (p[1] as? NSNumber)?.doubleValue ?? 0
                 points.append([lon, lat])
             }
-            out.append(.kandidat(id: "kand:\(str(k, "id"))", points: points))
+            out.append(.kandidat(id: "kand:\(str(k, "id"))", points: points, segmentHazardId: "seg:\(str(k, "id"))"))   // #581
         }
         return out
     }

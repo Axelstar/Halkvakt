@@ -51,13 +51,13 @@ public enum Hazard {
     case segment(id: String, line: [[Double]], meta: SegmentMeta)
     /// One stretch where the candidate's database rule says `varnar` (live.json `kandidat`, DECISIONS #576, #577): only the
     /// warning points [lon, lat], no threshold. One hazard per stretch, so the repeat rule holds per stretch.
-    case kandidat(id: String, points: [[Double]])
+    case kandidat(id: String, points: [[Double]], segmentHazardId: String?)
 
     public var id: String {
         switch self {
         case .point(let id, _, _, _, _, _): return id
         case .segment(let id, _, _): return id
-        case .kandidat(let id, _): return id
+        case .kandidat(let id, _, _): return id
         }
     }
 }
@@ -107,6 +107,8 @@ public struct EngineConfig {
     public var efterhalkaYtaMaxC = 3.0
     public var efterhalkaFall30C = 0.8
     public var efterhalkaRegnH = 2.0
+    // K (DECISIONS #581): tyst så här länge efter samma sträckas halkvarning — samma tal som engine/src/types.ts (kontraktsgrinden).
+    public var kandidatEfterHalkaS = 120.0
     public init() {}
 }
 
@@ -219,7 +221,7 @@ public final class AlertEngine {
     private let cfg: EngineConfig
     private struct Point { let id: String; let kind: HazardKind; let lon, lat: Double; let bearing: Double?; let meta: PointMeta }
     private struct Segment { let id: String; let meta: SegmentMeta; let samples: [[Double]] }
-    private struct Kandidat { let id: String; let points: [[Double]] }
+    private struct Kandidat { let id: String; let points: [[Double]]; let segmentHazardId: String? }
     private var points: [Point] = []
     private var segments: [Segment] = []
     private var kandidater: [Kandidat] = []
@@ -253,8 +255,8 @@ public final class AlertEngine {
                 points.append(Point(id: id, kind: kind, lon: lon, lat: lat, bearing: bearing, meta: meta))
             case .segment(let id, let line, let meta):
                 segments.append(Segment(id: id, meta: meta, samples: Geo.samplePolyline(line, cfg.segmentSampleM)))
-            case .kandidat(let id, let pts):
-                kandidater.append(Kandidat(id: id, points: pts))
+            case .kandidat(let id, let pts, let seg):
+                kandidater.append(Kandidat(id: id, points: pts, segmentHazardId: seg))
             }
         }
     }
@@ -372,6 +374,8 @@ public final class AlertEngine {
                 let (ahead, distM) = isAhead(fix, heading, pt[0], pt[1])
                 if ahead && (best == nil || distM < best!) { best = distM }
             }
+            // (c), DECISIONS #581: tyst i kandidatEfterHalkaS efter att samma sträckas halkvarning (A1) talat.
+            if let s = k.segmentHazardId, let a1 = fired[s], fix.t - a1.t < cfg.kandidatEfterHalkaS { continue }
             if let b = best, b <= leadM {
                 candidates.append(Candidate(id: k.id, kind: .kandidat, distM: b, limit: nil, alertKey: k.id, beta: true))
             }

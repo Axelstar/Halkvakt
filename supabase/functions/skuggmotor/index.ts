@@ -83,6 +83,9 @@ export interface KandidatHazard {
   kind: "kandidat";
   /** WGS84 [lon, lat] of the stretch's warning points. */
   points: [number, number][];
+  /** The A1 hazard on the same stretch (`seg:<id>`). The candidate stays silent for kandidatEfterHalkaS after that one spoke
+   *  (DECISIONS #581). */
+  segmentHazardId?: string;
 }
 
 export type Hazard = PointHazard | SegmentHazard | KandidatHazard;
@@ -137,6 +140,9 @@ export interface EngineConfig {
   efterhalkaYtaMaxC: number;
   efterhalkaFall30C: number;
   efterhalkaRegnH: number;
+  /** K (DECISIONS #581, Bengt 16/10 "bygg c"): seconds the candidate stays silent after the A1 warning for the same stretch spoke.
+   *  Removes the back-to-back double (A1, then the candidate 10 s later); keeps the later call deep inside a long stretch. */
+  kandidatEfterHalkaS: number;
 }
 
 export const DEFAULT_CONFIG: EngineConfig = {
@@ -167,6 +173,9 @@ export const DEFAULT_CONFIG: EngineConfig = {
   efterhalkaYtaMaxC: 3.0,
   efterhalkaFall30C: 0.8,
   efterhalkaRegnH: 2.0,
+  // K (DECISIONS #581): 2 min — täcker spärrens 10 s med god marginal men inte de sena fallen långt in på en sträcka (22–44 min
+  // i lägesfilen 04:40 16/10). Samma tal i Types.kt och Engine.swift (kontraktsgrinden).
+  kandidatEfterHalkaS: 120,
 };
 
 
@@ -787,6 +796,9 @@ export class AlertEngine {
       if (ahead && (best === null || distM < best)) best = distM;
     }
     if (best === null || best > leadM) return null;
+    // (c), DECISIONS #581: tyst i kandidatEfterHalkaS efter att samma sträckas halkvarning (A1) talat.
+    const a1 = k.h.segmentHazardId ? this.fired.get(k.h.segmentHazardId) : undefined;
+    if (a1 && fix.t - a1.t < this.cfg.kandidatEfterHalkaS) return null;
     return { hazard: k.h, kind: "kandidat", distM: best, alertKey: k.h.id, beta: true };
   }
 }
@@ -1029,7 +1041,7 @@ export function snapshotToHazards(staticDoc: StaticDoc, liveDoc: LiveDoc): Hazar
                meta: { surfaceTempC: b.yta, moisture: b.fukt, bridge: true } });
   }
   for (const k of liveDoc.kandidat ?? []) {
-    out.push({ id: `kand:${k.id}`, kind: "kandidat", points: k.punkter });
+    out.push({ id: `kand:${k.id}`, kind: "kandidat", points: k.punkter, segmentHazardId: `seg:${k.id}` });
   }
   return out;
 }

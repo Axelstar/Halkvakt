@@ -155,6 +155,7 @@ object SnapshotRepo {
                 val pts = k.getJSONArray("punkter")
                 out.add(KandidatHazard(
                     id = "kand:${k.idText()}",
+                    segmentHazardId = "seg:${k.idText()}",   // #581: samma sträckas halkvarning
                     points = (0 until pts.length()).map { j -> pts.getJSONArray(j).let { doubleArrayOf(it.getDouble(0), it.getDouble(1)) } },
                 ))
             }

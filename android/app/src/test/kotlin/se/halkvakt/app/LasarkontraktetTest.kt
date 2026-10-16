@@ -49,6 +49,7 @@ class LasarkontraktetTest {
         // Kandidaten (DECISIONS #577): the number of points and the first point's lon and lat.
         is KandidatHazard -> when (nyckel) {
             "antalPunkter" -> h.points.size
+            "segmentHazardId" -> h.segmentHazardId
             "lon0" -> h.points.firstOrNull()?.get(0)
             "lat0" -> h.points.firstOrNull()?.get(1)
             else -> error("${h.id}: unknown kandidat field $nyckel")

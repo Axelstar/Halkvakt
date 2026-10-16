@@ -359,8 +359,8 @@ test("#576 kandidaten: regelns varnande punkter blir en rad per sträcka i en eg
   const med = snapshotToHazards(staticDoc, liveDoc), utan = snapshotToHazards(staticDoc, { ...liveDoc, kandidat: [] });
   assert.deepEqual(med.filter((h) => h.kind !== "kandidat"), utan);
   assert.deepEqual(med.filter((h) => h.kind === "kandidat"), [
-    { id: "kand:S1", kind: "kandidat", points: [[20.12346, 67.65432], [20.2, 67.7]] },
-    { id: "kand:S7", kind: "kandidat", points: [[21, 66.5]] },
+    { id: "kand:S1", kind: "kandidat", points: [[20.12346, 67.65432], [20.2, 67.7]], segmentHazardId: "seg:S1" },
+    { id: "kand:S7", kind: "kandidat", points: [[21, 66.5]], segmentHazardId: "seg:S7" },
   ]);
 });
 

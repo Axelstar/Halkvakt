@@ -47,7 +47,7 @@
   { "id": "vilt:v1", "kind": "wildlife" },
   { "id": "djur:j1", "kind": "wildlife", "_varfor": "#318: Trafikverkets djur på vägen ersätter wildlife, som publiceras tom" },
   { "id": "bro:b1", "kind": "icing_point", "surfaceTempC": 2.5, "bridge": true },
-  { "id": "kand:k1", "kind": "kandidat", "antalPunkter": 2, "lon0": 20.5, "lat0": 67.1, "_varfor": "DECISIONS #577: EN fara per sträcka med alla dess punkter; lon först och lat sedan — omkastat hamnar punkten i Norska havet" },
-  { "id": "kand:4712", "kind": "kandidat", "antalPunkter": 1, "lon0": 21.0, "lat0": 66.5, "_varfor": "id som TAL, som dev:4711" }
+  { "id": "kand:k1", "kind": "kandidat", "segmentHazardId": "seg:k1", "antalPunkter": 2, "lon0": 20.5, "lat0": 67.1, "_varfor": "DECISIONS #577: EN fara per sträcka med alla dess punkter; lon först och lat sedan — omkastat hamnar punkten i Norska havet" },
+  { "id": "kand:4712", "kind": "kandidat", "segmentHazardId": "seg:4712", "antalPunkter": 1, "lon0": 21.0, "lat0": 66.5, "_varfor": "id som TAL, som dev:4711" }
  ]
 }
