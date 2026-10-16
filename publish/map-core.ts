@@ -100,6 +100,8 @@ export async function buildMapData(q: Q, opts: {
                   yta: numOrNull(r.surface_temp_c), luft: numOrNull(r.air_temp_c),
                   nbd: r.precipitation, sno: r.snow } }))));
 
+  // Danmarks avvikelser publiceras inte (Bengt 16/10, DECISIONS #587, kort #352): de kommer ur Vejdirektoratets odokumenterade
+  // trafikkort-flöde, vars licens är okänd. dk.deviations fylls som förut för skuggarkivet (ingest/dk.ts).
   const olyckor = await q(`
     SELECT 'SE' AS land, deviation_id, message_type, message, severity_text, road_number, start_time,
            ST_AsGeoJSON(COALESCE(geom, ST_Centroid(line_geom)))::json AS g, county_nos[1] AS lan
@@ -111,12 +113,6 @@ export async function buildMapData(q: Q, opts: {
     SELECT 'FI', deviation_id, message_type, message, severity_text, road_number, start_time,
            ST_AsGeoJSON(geom)::json, NULL::int
     FROM fi.deviations
-    WHERE NOT deleted AND geom IS NOT NULL AND (end_time IS NULL OR end_time > now())
-      AND message_type_value = 'Accident'
-    UNION ALL
-    SELECT 'DK', deviation_id, message_type, message, severity_text, road_number, start_time,
-           ST_AsGeoJSON(geom)::json, NULL::int
-    FROM dk.deviations
     WHERE NOT deleted AND geom IS NOT NULL AND (end_time IS NULL OR end_time > now())
       AND message_type_value = 'Accident'`);
   put("olyckor.geojson", featureCollection(olyckor.map((r) => ({
