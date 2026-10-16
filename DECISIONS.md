@@ -14123,3 +14123,26 @@ de andra kandidaterna var 0,01–0,04 (#552), men proceduren hålls dessutom fas
 Förregistreringens sha256 efter ändringen är `3b8e9a269e15…`.
 
 **Stomdokument:** KUV §7 facit, BED §4.2
+
+## #598 (16/10 2026) Halkvakt live: morgoninlägget till Facebook-sidan och Instagram (kort #281)
+
+**Beslut.** Axel 16/10 22:32: *"Ja eller varför inte redan nu"*, på Claudes förslag att bygga planens *Halkvakt live* först för
+Facebook och Instagram. `marknadsforing/posta.mjs` körs i marknadsforing.yml efter generatorn, alltså 05:45/06:45 svensk tid:
+- **Bara när det är halt.** Ett län tas med när Trafikverket rapporterar halka på minst ett vägavsnitt eller minst tre stationer visar
+  vägbana på 0 °C eller kallare, ur `data/lan.json` på halkvakt.se (samma siffror som länssidorna och rutan). Inget län, inget inlägg.
+  Data äldre än två timmar postas inte. Högst ett inlägg per dygn (`marknadsforing/postat.json`).
+- **Bild och text.** En bild 1080 × 1350 i sajtens mörka ram med högst fem län (flest halka först), och texten med en rad per län,
+  länken till halkvakt.se/lan och källan. Bilden läggs i `marknadsforing/inlagg/` och pushas före postningen, eftersom Meta hämtar den
+  via raw.githubusercontent.com. Instagram tar bara JPEG.
+- **Meta Graph API v23.0**: `/{sida}/photos` för Facebook, `/{ig}/media` + `/media_publish` för Instagram, med sidans token.
+- **Torrkörning tills hemligheterna finns.** Utan `META_PAGE_ID` och `META_PAGE_TOKEN` skriver steget texten i loggen och postar inget.
+  `META_IG_ID` saknas ⇒ bara Facebook.
+
+**Alternativ.** En edge function i Supabase (bilden kräver då en SVG-till-JPEG-kedja i Deno) — förkastat: motorn bor redan i
+Actions, repot är publikt och minuterna gratis, och Chromium ger sajtens typsnitt utan egen rendering. Posta varje morgon oavsett
+väder — förkastat: "ingen halka" i oktober lär följarna att hoppa över inlägget.
+
+**Prov:** `test/posta.test.ts` (urvalet, tröskeln, texten med minustecken och singular, taket fem län, rubriken i svensk tid).
+Motprov: tröskeln 2 i stället för 3 fällde två prov. Bilden förhandsgranskad mot exempeldata.
+
+**Stomdokument:** inga — marknadsföringen har inget stomdokument; planen bor i MARKNADSFORING-NOLLBUDGET.md.
