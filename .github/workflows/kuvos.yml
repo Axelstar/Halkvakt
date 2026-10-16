@@ -299,7 +299,7 @@ jobs:
               (cd /home/claude/fys && python3 prep.py && python3 niva2/kedja.py kontroll --ut "$UT" && python3 niva2/kedja.py niva2 --metnordic "$MN" --ut "$UT" --maxfev 120)
             fi
             echo '```'
-          } 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+          } 2>&1 | tee -a "$GITHUB_STEP_SUMMARY" fysik-utskrift.txt   # paren per veck läses av facitläsningens identitetsprov (#597)
       - name: Kedjans utdata sparas (modellens skattningar, inte Trafikverkets data)
         if: ${{ always() && contains(inputs.matning, 'kuvos-fysik-niva2') }}
         uses: actions/upload-artifact@v4

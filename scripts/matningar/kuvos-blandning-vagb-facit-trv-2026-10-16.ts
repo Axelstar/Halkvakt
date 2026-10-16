@@ -2,8 +2,9 @@
 // Vägrar utan båda signaturerna i förregistreringens §8. Samma kontroll står först i kuvos.yml, så att fysikkedjans tre timmar inte
 // körs förgäves. Namnet ger jobbet väg B varv 1 (fysik/niva2/vagb.py och fysik/blandning/vagb_blandning.py, #544) och Trafikverkets
 // filer i trv/ med manifestets summor (#1007). Indata, som förregistreringen §4 *Indata* säger:
-//   kandidaten    NIVÅ 2 ÄRLIG+BLANDNING i analysläget, den frysta proceduren (#552). Filen måste ha körning 38368369876:s sha256,
-//                 annars är det inte den frysta kandidaten och läsningen vägrar (vagb.py gav samma summa i två körningar 13/10).
+//   kandidaten    NIVÅ 2 ÄRLIG+BLANDNING i analysläget, den frysta proceduren (#552). Identitetsprovet (#597): samma par per veck som
+//                 körning 38368369876 och grind A:s mått som den (n exakt, A1 ± 0,01 °C, A2 och A3 ± 0,02 procentenheter), räknade
+//                 av korBlandning på samma population; annars vägrar läsningen. Summan går inte att upprepa mellan löparavbilder (#595).
 //                 En kall timme: något halvtimmesvärde i UTC-timmen ≤ 0 °C; tillfällets tid är timmens början.
 //   egen yta      stationens uppmätta yta med grind A:s vakter som korBlandning (#490), senaste raden per halvtimme; en kall timme
 //                 som kandidatens. Bara kandidatens stationer.
@@ -18,6 +19,7 @@
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { lasFysik, spannkontroll, type Fysik } from "./kuvos-fysik-2026-10-08.ts";
+import { korBlandning } from "./kuvos-blandning-2026-10-08.ts";
 import { RADVAKT_SQL, karantanSql } from "../../publish/snapshot-core.ts";
 import { givarklass } from "../../engine/src/nederbord.ts";
 import { lasning, linjerUr, natsumma, signerad, KALL_C, RADAR_MMH, RADAR_MIN, VETO_MIN, VETO_YTA_C, type Regelindata, type Tillfalle, type Timklass }
@@ -26,7 +28,27 @@ import { lasning, linjerUr, natsumma, signerad, KALL_C, RADAR_MMH, RADAR_MIN, VE
 const BUCKET_S = 1800, H = 3_600_000;
 const FORREG = "docs/FORREGISTRERING-FACIT-TRV-2024-25.md";
 const VAGLAG = "https://axelstar.github.io/halkvakt-karta/data/vaglag.geojson";
-export const FRYST = { fil: "niva2-arlig-blandning-analys-2024-25.csv.gz", sha256: "dee13cd1319c212aaf608cf0eb6146732ec41da3762c68deaf9156a4b31e6481", korning: 38368369876 };
+export const FRYST = {
+  fil: "niva2-arlig-blandning-analys-2024-25.csv.gz", namn: "NIVÅ 2 ÄRLIG+BLANDNING (analys)", korning: 38368369876,
+  n: 4_352_575, a1: 0.56, a2: 4.84, a3: 0.23, tol: { a1: 0.01, a2: 0.02, a3: 0.02 },
+  par: ["W 0.25 · L 160 km", "W 0.25 · L 160 km", "W 0.25 · L 160 km", "W 0.25 · L 160 km", "W 0.25 · L 80 km"], alla: "W 0.25 · L 160 km",
+};
+type Matt = { n: number; mae: number; gross: number; freeze: number };
+/** Identitetsprovet (DECISIONS #597): kandidatfilen är den frysta kandidaten om analyslägets par per veck och på alla veck (de första
+ *  i fysikkedjans utskrift; prognosläget kommer efter) och grind A:s mått är körning 38368369876:s. Lämnar felen; tomt = samma. */
+export function identitet(s: Matt | undefined, utskrift: string): string[] {
+  const fel: string[] = [];
+  const par = [...utskrift.matchAll(/veck ([0-4]) \(\d+ stationer\): paret (W [\d.]+ · L [\d.]+ km), valt på de andra fyra/g)].slice(0, 5);
+  const alla = utskrift.match(/paret valt på alla veck[^:]*: (W [\d.]+ · L [\d.]+ km)/);
+  if (par.length !== 5 || par.some((p, i) => Number(p[1]) !== i || p[2] !== FRYST.par[i])) fel.push(`paren per veck ${JSON.stringify(par.map((p) => p[2]))}, väntat ${JSON.stringify(FRYST.par)}`);
+  if (alla?.[1] !== FRYST.alla) fel.push(`paret på alla veck ${alla?.[1]}, väntat ${FRYST.alla}`);
+  if (!s) return [...fel, `${FRYST.namn} saknas i måtten`];
+  if (s.n !== FRYST.n) fel.push(`n ${s.n}, väntat ${FRYST.n}`);
+  if (!(Math.abs(s.mae - FRYST.a1) <= FRYST.tol.a1)) fel.push(`A1 ${s.mae.toFixed(3)} °C, väntat ${FRYST.a1} ± ${FRYST.tol.a1}`);
+  if (!(Math.abs(100 * s.gross - FRYST.a2) <= FRYST.tol.a2)) fel.push(`A2 ${(100 * s.gross).toFixed(3)} %, väntat ${FRYST.a2} ± ${FRYST.tol.a2}`);
+  if (!(Math.abs(100 * s.freeze - FRYST.a3) <= FRYST.tol.a3)) fel.push(`A3 ${(100 * s.freeze).toFixed(3)} %, väntat ${FRYST.a3} ± ${FRYST.tol.a3}`);
+  return fel;
+}
 
 /** Kandidatens kalla timmar: UTC-timmar där något halvtimmesvärde är KALL_C eller kallare, tiden är timmens början. */
 export function kallaTimmar(f: Fysik): Tillfalle[] {
@@ -99,6 +121,18 @@ function sjalvtest() {
   k(EGEN_YTA_SQL.includes("surface_temp_c >= air_temp_c - 12") && EGEN_YTA_SQL.includes(RADVAKT_SQL) && EGEN_YTA_SQL.includes(karantanSql("weather_observations"))
     && EGEN_YTA_SQL.includes("ORDER BY station_id, b, sample_time DESC"), "egen yta: grind A:s vakter och senaste raden per halvtimme, som korBlandning");
   if (fel) process.exit(1);
+  const utskr = (fyra: string) => ["[350 s] veck 0 (174 stationer): kalibrerat på de andra fyra", ...[0, 1, 2, 3].map((i) =>
+    `veck ${i} (150 stationer): paret W 0.25 · L 160 km, valt på de andra fyra (grova 5.0 % där; Axels par 5.2 %)`),
+    `veck 4 (103 stationer): paret W 0.25 · L ${fyra} km, valt på de andra fyra (grova 4.18 % där; Axels par 4.35 %)`,
+    "paret valt på alla veck (den frysta kandidatens vikt, #544 punkt 6): W 0.25 · L 160 km"].join("\n");
+  const bada = utskr("80") + "\n" + utskr("160");                        // analysläget först, sedan +6 h med veck 4 på 160 km
+  const ok: Matt = { n: 4_352_575, mae: 0.5649, gross: 0.04859, freeze: 0.00231 };
+  k(identitet(ok, bada).length === 0, `identiteten: 13/10:s par och mått inom toleransen ger inget fel (${identitet(ok, bada).join("; ")})`);
+  k(identitet(ok, utskr("160") + "\n" + utskr("80")).length === 1, "identiteten: paren läses ur analysläget, det första blocket");
+  k(identitet({ ...ok, n: 4_352_576 }, bada).length === 1 && identitet({ ...ok, gross: 0.04865 }, bada).length === 1
+    && identitet({ ...ok, mae: 0.571 }, bada).length === 1 && identitet({ ...ok, freeze: 0.0026 }, bada).length === 1,
+    "identiteten: n en för mycket, A2 4,865 %, A1 0,571 °C och A3 0,26 % fäller var för sig");
+  k(identitet(undefined, "").length === 3, "identiteten: utan utskrift och utan mått fäller både paren och måtten");
   console.log("SJÄLVTEST OK: kuvos-blandning-vagb-facit-trv");
 }
 
@@ -162,10 +196,14 @@ else if (korsSjalv) {
   if (!m) { console.error(`${FRYST.fil} saknas i blandning/manifest.json — väg B varv 1 kördes inte`); process.exit(1); }
   const fysik = lasFysik(readFileSync(`blandning/${FRYST.fil}`));
   console.log(`  ${FRYST.fil} (${m.namn}, ${m.lage}): ${fysik.rader} rader, ${fysik.serie.size} stationer; sha256 ${fysik.sha256}`);
-  if (fysik.sha256 !== m.sha256 || fysik.sha256 !== FRYST.sha256) {
-    console.error(`vägrar: summan är inte ${fysik.sha256 !== m.sha256 ? "manifestets" : `körning ${FRYST.korning}:s — inte den frysta kandidaten (#552)`}`); process.exit(1);
-  }
-  console.log(`  = manifestet och körning ${FRYST.korning} (den frysta kandidaten, #552) · ${spannkontroll(fysik)}`);
+  if (fysik.sha256 !== m.sha256) { console.error("vägrar: kandidatfilens summa är inte manifestets"); process.exit(1); }
+  console.log(`  = manifestet · ${spannkontroll(fysik)}`);
+  const statistik = await korBlandning(`IDENTITETSPROVET (DECISIONS #597) — kandidatfilen mot den frysta kandidaten i körning ${FRYST.korning}`);
+  const fel = identitet(statistik.get(FRYST.namn), readFileSync("fysik-utskrift.txt", "utf8"));
+  if (fel.length) { console.error(`vägrar: inte den frysta kandidaten (#552, #597): ${fel.join("; ")}`); process.exit(1); }
+  const s = statistik.get(FRYST.namn)!;
+  console.log(`\nIDENTITETSPROVET KLARAT (#597): paren per veck ${FRYST.par.join(", ")} och ${FRYST.alla} på alla veck; n ${s.n}, A1 ` +
+    `${s.mae.toFixed(3)} °C, A2 ${(100 * s.gross).toFixed(3)} %, A3 ${(100 * s.freeze).toFixed(3)} % (körning ${FRYST.korning}: 0,56 · 4,84 · 0,23)\n`);
   const kandidatStationer = new Set(fysik.serie.keys()), kandidat = kallaTimmar(fysik);
   const ind = await kuvosIndata();
   const kalla = ind.kalla.filter((x) => kandidatStationer.has(x.station)), lagen = new Set(ind.stationer.map((s) => s.id));
