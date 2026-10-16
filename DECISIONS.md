@@ -13512,3 +13512,76 @@ kom inte med, och skälet är inte utrett.
 kandidatkolumnen var ifylld i alla tre (DB-knappen). Varvet 05:02, med den gamla koden, gav fyra larm.
 
 **Stomdokument:** LIV steg 12–13, APP avstängningen och 0.3.13, SYS brytaren i publiceringen, BED §4.2.
+
+## #579 (16/10 2026) Webbkartan: kandidaten som bitar av vägen, avslaget från början, och brytaren gäller också kartan (kort #343, NIVA2-LIVE steg 9)
+
+**Bengts ord 16/10:**
+- På förslaget med ringar och lagret avslaget: *"jag måste få mer om ringar eller sträckor först"*.
+- På underlaget nedan: *"slå ihop 987 och bygg bitar av vägen"*.
+
+**Underlaget**, lägesfilen 04:40 UTC 16/10 (12 sträckor, 116 varnande punkter):
+- Hela sträckor hade målat **807 km** som hala, mot **cirka 232 km** varnande väg (116 punkter × cirka 2 km).
+- Andelen varnande punkter per sträcka var 4–100 %, med medianen 18 %.
+- Värsta fallet: sträckan 363015, 106 km, för 2 punkter.
+- 5 av de 12 sträckorna var redan halkklassade av Trafikverket och ligger alltså på kartans Halka-lager.
+- Ringar är ärliga men svårlästa över hela landet. *Bitar av vägen* är lika ärliga som ringar och följer vägen.
+
+**Byggt i Halkvakt:**
+- **Bitarna** räknas i kartkärnan (`publish/map-core.ts`, `KANDIDAT_BITAR_SQL`).
+  - Varje varnande punkt får sin sträckas linje en kilometer åt vardera hållet. Det räknas i SWEREF 99 TM (meter), så att en bit blir
+    2 km oavsett vägens riktning; i grader hade den blivit cirka 0,6–1,6 km.
+  - Bitarna slås ihop per sträcka.
+  - En punkt mer än 300 m från sin sträckas linje ritas inte. Den räknas i `meta.kandidat` och nämns i en not.
+  - Filen heter `data/kandidat.geojson`.
+- **Källan** är lägesfilens nyckel `kandidat` (#576), så kartan visar aldrig något annat än appen får. Brytaren av (#578) ger ingen
+  nyckel, alltså en tom fil och `meta.kandidat.pa = false`.
+- **Knappen** bygger om kartan i samma körning (`?karta=1`, `medKartan` med självtest). Avstängningen gäller då kartan direkt i stället
+  för vid nästa halvtimme.
+
+**Byggt för kartsidan** (`karta.html` i Axelstar/halkvakt-karta):
+- Lagret *Halkvakt tror · beta*: streckat, i en egen färg skild från den gula Halka-linjen, och **avslaget från början**.
+- Rutan vid klick: *Halka framöver — modellerat, inte uppmätt*, modellens timme i svensk tid, och att vägytan är beräknad ur MET Nordic
+  och stationerna runt omkring.
+- Avstängd kandidat: knappen säger *avstängd* och går inte att slå på.
+- **MET Norway (CC BY 4.0)** i källraden, där MET inte stod förut.
+- Kandidatens ruta går före väglagets där lagret syns.
+- Knapparnas läge gäller också om någon tryckte innan lagren fanns. Felet fanns före #579: knappen ändrades, men inte lagret.
+
+**Hinder:** kontot 895845 har bara läsrätt i halkvakt-karta. Pushen nekades (403). Ändringen ligger i
+`docs/patchar/karta-kandidat-lager-579.patch` och är prövad mot kartrepots main med `git apply --check`. Axel kan
+- ge 895845 skrivrätt i halkvakt-karta (rekommenderat, eftersom det räcker också för framtida kartarbete), så öppnar Claude PR:en där;
+- eller lägga in patchen själv.
+
+Tills dess skriver publiceringen kandidatfilen, men sidan läser den inte.
+
+**Prov:**
+- Tre enhetsprov i `test/map-core.test.ts`: av, på med räkningen av det som inte ritas, och en fallen fråga. De två befintliga
+  kartproven bär nu kandidatfilen.
+- Integrationsprovet mot PostGIS:
+  - två punkter 1 km isär ger en bit på 3,0 km;
+  - en ensam punkt ger 2,0 km också öster ut;
+  - en punkt en kilometer bort från vägen ritas inte;
+  - bitarna slås ihop till en linje.
+- Kartsidan provad i en lokal kopia med dagens kartdata och sträckan 97005:s riktiga bit:
+  - knappen är av från början;
+  - på ger den streckade biten längs vägen;
+  - rutans text är rätt (*kl. 06:00* för 04:00 UTC);
+  - MET Norway står i källraden.
+- Två sista ändringar på sidan är **inte provade i rendering**: en ruta per klick, och knappens läge vid tidigt tryck. Webbläsarpanelen
+  doldes, och kartan ritar inte då. De provas på halkvakt.se efter att ändringen lagts in.
+
+**Mätningen efter driftsättningen — förväntan skriven före knappen.** Driftordningen efter *slå ihop* är deploy av publicera. Sedan:
+1. Nästa kartbygge (:00/:30 eller knappen) skriver `data/kandidat.geojson` på halkvakt.se, och `meta.kandidat.pa` följer brytaren.
+2. När kandidaten är på:
+   - en feature per sträcka;
+   - summan av `punkter` är lika med `meta.kandidat.ritade`;
+   - `km` per sträcka ligger mellan 2 och 2 × punkterna.
+   - Andelen punkter som inte ritas redovisas. Är den över 5 % utreds den innan sidan visar lagret.
+3. När sidan har ändringen: lagret är av från början, ger en ruta per klick, och knappen säger *avstängd* när brytaren är av.
+
+**Det som inte rörs:** apparna, rösten och skuggan.
+
+**Avvikelse:** kartsidans källrad nämner inte Danmarks vägväder, som kartan också visar (`dk.weather_latest`). Det rättas inte här och
+står som fråga i bedömningen §4.2.
+
+**Stomdokument:** LIV steg 9, SYS webbkartan läser kandidaten, BED §4.2.
