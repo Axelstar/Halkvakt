@@ -126,3 +126,9 @@ test("spärrarna: tre per dygn, fyra timmar isär, samma nyckel inte inom 20 h",
   // 16/10 skrevs ett enda kvitto per dag, inte en lista
   assert.equal(valjHandelse(MORGON, bas(MORGON), null, hist(MORGON), { "2026-11-12": { tid: "2026-11-11T23:00:00Z" } }), null);
 });
+
+test("App Store-länken står i Facebook-texten, inte i Instagram-texten", () => {
+  const alla = [l("A", 1, 0)];
+  assert.match(bildtext(alla, "2026-11-12T05:30:00Z"), /https:\/\/apps\.apple\.com\/se\/app\/halkvakt\/id6806939784/);
+  assert.ok(!bildtext(alla, "2026-11-12T05:30:00Z", "instagram").includes("apps.apple.com"));
+});

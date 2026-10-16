@@ -14195,3 +14195,15 @@ mot riktiga data med en påhittad snövarning: SMHI-inlägget valdes, ritades oc
 
 **Stomdokument:** inga — marknadsföringen har inget stomdokument; planen bor i MARKNADSFORING-NOLLBUDGET.md.
 
+## #601 (16/10 2026) Halkvakt live: App Store-länken i varje Facebook-inlägg (kort #281)
+
+**Beslut.** Axel 16/10 23:51: *"Ja det hade varit smart!"* på förslaget att inläggen ska leda till nedladdningen. Facebook-texten får
+`https://apps.apple.com/se/app/halkvakt/id6806939784` (appen live i svenska App Store sedan 13/10) efter raden om rösten; Instagram,
+där länkar i texten aldrig är klickbara, hänvisar till profilen, där App Store-länken ska ligga först (Axel lägger in den).
+
+**Alternativ.** Länken till halkvakt.se i stället för App Store — förkastat: målet är nedladdningar, och sajten är redan länkad.
+
+**Prov:** `test/posta.test.ts` 15/15.
+
+**Stomdokument:** inga — marknadsföringen har inget stomdokument; planen bor i MARKNADSFORING-NOLLBUDGET.md.
+
