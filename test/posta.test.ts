@@ -32,3 +32,11 @@ test("rubriken följer svensk tid", () => {
   assert.equal(rubrik("2026-11-12T05:30:00Z"), "Halt i morse");
   assert.equal(rubrik("2026-11-12T20:30:00Z"), "Halt i kväll");
 });
+
+test("Facebook får klickbar adress, Instagram hänvisar till profilen", () => {
+  const alla = [l("A", 1, 0)];
+  assert.match(bildtext(alla, "2026-11-12T05:30:00Z"), /https:\/\/halkvakt\.se\/lan/);
+  const ig = bildtext(alla, "2026-11-12T05:30:00Z", "instagram");
+  assert.ok(!ig.includes("halkvakt.se/lan"));
+  assert.match(ig, /Länken finns i vår profil\./);
+});

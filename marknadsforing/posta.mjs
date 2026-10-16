@@ -47,7 +47,13 @@ export function rad(l) {
   return `${l.kort}: ${delar.join(", ")}.`;
 }
 
-export function bildtext(alla, generatedAt) {
+// Facebook gör en hel adress klickbar i texten; Instagram gör inga länkar klickbara i texten, där pekar raden på profilens länk.
+const LANK = {
+  facebook: "Läget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan",
+  instagram: "Läget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.",
+};
+
+export function bildtext(alla, generatedAt, kanal = "facebook") {
   const valda = alla.slice(0, MAX_LAN), fler = alla.length - valda.length;
   const taggar = ["#halka", "#väglag", ...valda.map(l => "#" + l.kort.replace(/s? län$/, "").replace(/\s+/g, ""))];
   return [
@@ -56,7 +62,7 @@ export function bildtext(alla, generatedAt) {
     ...valda.map(rad),
     ...(fler ? [`Halka eller minusgrader även i ${fler} län till.`] : []),
     "",
-    "Läget i ditt län uppdateras var 30:e minut: halkvakt.se/lan",
+    LANK[kanal],
     "Halkvakt säger till med rösten innan det blir halt. Gratis för iPhone.",
     "",
     "Källa: Trafikverkets öppna data.",
@@ -122,7 +128,8 @@ async function bild() {
   await browser.close();
 
   const text = bildtext(valda, d.generated_at);
-  writeFileSync(join(dir, `${idag}.json`), JSON.stringify({ datum: idag, generated_at: d.generated_at, lan: valda.map(l => l.slug), text }, null, 2) + "\n");
+  const textIg = bildtext(valda, d.generated_at, "instagram");
+  writeFileSync(join(dir, `${idag}.json`), JSON.stringify({ datum: idag, generated_at: d.generated_at, lan: valda.map(l => l.slug), text, textIg }, null, 2) + "\n");
   console.log(`Inlägg ${idag}: ${valda.map(l => l.kort).join(", ")}\n\n${text}`);
 }
 
@@ -136,7 +143,7 @@ async function graph(path, params) {
 async function skicka() {
   const fil = join(dir, `${idag}.json`);
   if (postat[idag] || !existsSync(fil)) return console.log(postat[idag] ? `Redan postat ${idag}.` : "Inget inlägg i dag.");
-  const { text } = JSON.parse(readFileSync(fil, "utf8"));
+  const { text, textIg = text } = JSON.parse(readFileSync(fil, "utf8"));
   const url = `${RAW}/${idag}.jpg`;
   const { META_PAGE_ID: page, META_PAGE_TOKEN: token, META_IG_ID: ig } = process.env;
   if (!page || !token) return console.log(`TORRKÖRNING (META_PAGE_ID/META_PAGE_TOKEN saknas). Skulle posta ${url}:\n\n${text}`);
@@ -146,7 +153,7 @@ async function skicka() {
   kvitto.facebook = fb.post_id ?? fb.id;
   console.log(`Facebook: ${kvitto.facebook}`);
   if (ig) {
-    const media = await graph(`${ig}/media`, { image_url: url, caption: text, access_token: token });
+    const media = await graph(`${ig}/media`, { image_url: url, caption: textIg, access_token: token });
     const ut = await graph(`${ig}/media_publish`, { creation_id: media.id, access_token: token });
     kvitto.instagram = ut.id;
     console.log(`Instagram: ${ut.id}`);
