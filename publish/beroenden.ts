@@ -217,11 +217,15 @@ export const KARTAN: Beroende[] = [
   { vard: "fonts.gstatic.com", roll: "bygg",
     matar: "typsnittsfilerna bakom fonts.googleapis.com",
     brister: "samma som fonts.googleapis.com", bevakad: "", signal: "OKÄND" },
+  // Länssidornas nedladdningsknapp (publish/lanssidor.ts, 16/10): en länk i sidan, inget skript hämtar därifrån.
+  { vard: "apps.apple.com", roll: "bygg",
+    matar: "länken till Halkvakt i App Store på läns- och vägsidorna",
+    brister: "knappen leder till en död sida; sidorna visas ändå", bevakad: "", signal: "OKÄND" },
 ];
 
 // Värdar som är vår EGEN infrastruktur eller allmän verktygsinfrastruktur — inte beroenden
 // i den mening kartan handlar om, och ska inte kräva en rad.
-export const EGEN = /github\.com|githubusercontent|axelstar\.github\.io|deno\.land|supabase\.co|npmjs|nodejs\.org|schemas?\.|w3\.org|json-schema|localhost|example\.com/i;
+export const EGEN = /github\.com|githubusercontent|axelstar\.github\.io|halkvakt\.se|deno\.land|supabase\.co|npmjs|nodejs\.org|schemas?\.|w3\.org|json-schema|localhost|example\.com/i;
 
 export type Granskning = { okanda: string[]; doda: string[]; obevakade: Beroende[] };
 
