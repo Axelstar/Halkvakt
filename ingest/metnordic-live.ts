@@ -340,7 +340,9 @@ async function sjalvtest() {
     if (kf <= fel) { if (kf === 3) return new Response("nere", { status: 503 }); throw new DOMException("The operation was aborted due to timeout", "TimeoutError"); }
     return new Response(html);
   }) as unknown as typeof fetch;
-  k((await hamtaKatalog(katFejk(3), 0)) === html && kf === 4, `katalogen hämtas om efter tidsgräns och HTTP-fel: ${kf} försök`);
+  let katSvar = "";
+  try { katSvar = await hamtaKatalog(katFejk(3), 0); } catch (e) { katSvar = `fel: ${(e as Error).message}`; }
+  k(katSvar === html && kf === 4, `katalogen hämtas om efter tidsgräns och HTTP-fel: ${kf} försök, ${katSvar.slice(0, 60)}`);
   kf = 0; let katFoll = "";
   try { await hamtaKatalog(katFejk(99), 0); } catch (e) { katFoll = (e as Error).message; }
   k(kf === 4 && katFoll.includes("efter fyra försök"), `fyra fel i rad fäller: ${kf} försök, "${katFoll}"`);
