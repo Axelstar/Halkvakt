@@ -324,8 +324,8 @@ dem för internt bruk. Det vi bad om har de inget jobb för, och det går inte a
   halkbekämpning, halkbekämpning, plogning, sandning och en till), start- och stopptid och ändringstid. Trafikverket skriver att
   det är **planerade** åtgärder, inte utförda: de visar vad Trafikverket väntade sig, inte att vägen var saltad. 292 starttider och
   305 stopptider är tomma, och några starttider ligger i februari 2008.
-- **Händelserna** är inte uttagna: Trafikverket vill veta vilka händelser vi behöver, eftersom det blir mycket data. Svaret, för
-  Bengt att skicka:
+- **Händelserna** är inte uttagna: Trafikverket vill veta vilka händelser vi behöver, eftersom det blir mycket data. Svaret,
+  **skickat av Bengt 16/10**:
 
 > Hej Malin,
 >
