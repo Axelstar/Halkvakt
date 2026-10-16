@@ -336,7 +336,7 @@ det som modulerar det.
 
 **Läget 9/10:** knappen är ankarspridningen. Spridningsgrinden är regel med X = 2,25 °C och ger 2,8 % grova fel på 61 % av punkterna i kuvösen (#474–#478). På vintern 2024/25 föll grind A (A2 5,5 %) och vägpunktsgrinden för alla kandidater (#467); med offsetmodellen gav 15–20 km 5,4 % och bortom 20 km 10,3 %, och 60-dygnsfönstren 3,4, 5,4 och 7,1 % (#469). Molnet köper 0,3 procentenheter (#471 L4), och terräng och vägdata förklarar nästan inget av stationernas särart mot grannarna (#471 L8, #479). FYSIK, Axels fysikmodell som fil, är ensam sämre än RÅ i varje band (9,85 mot 7,51 % grova fel, bortom 20 km 15,5 mot 13,6 %), men kuvösen räknar samma tal som replikan, så en kandidat utanför repot kan dömas där (#485). Kallkartan ur satelliten bär inte heller stationernas särart: alla tre rättelserna sämre än RÅ, totalt 7,63–9,76 mot 7,26 % och på natten 6,03–8,14 mot 5,73 %, och kartan är lagd åt sidan (#496, #497). Bortom 15 km går 3,6 % av trafiken, bortom 20 km 1,3 % (#490).
 
-**Läget 14/10:** FYSIK+BLANDNING 6,00 % (#516), NIVÅ 2+BLANDNING 5,02 % (#517) och på MET Nordics prognoser 5,24 % vid +6 h (#519), väg B med ärliga 4,84 och 5,12 % (#544); domen i mars gäller NIVÅ 2+BLANDNING med RÅ som kontroll och reserv (#547); kriging nedlagd (#548); vägpunkternas fasta särdrag inlagda i data/vagdata/ (#553).
+**Läget 15/10:** FYSIK+BLANDNING 6,00 % (#516), NIVÅ 2+BLANDNING 5,02 % (#517) och på MET Nordics prognoser 5,24 % vid +6 h (#519), väg B med ärliga 4,84 och 5,12 % (#544); domen i mars gäller NIVÅ 2+BLANDNING med RÅ som kontroll och reserv (#547); kriging nedlagd (#548); vägpunkternas fasta särdrag inlagda i data/vagdata/ (#553). Kandidaten går live i appen före domen (#556) och räknas i GitHub Actions via pulsklockan (#558); pariteten mot kuvösens frysta procedur gav 15/10 en körning av tre utanför toleransen, februari (#559, #561); förregistreringen för 2026/27 är ett utkast (#560).
 
 ### 6.2 Täckningen multipliceras — och krymper därmed
 
@@ -771,6 +771,7 @@ ingen läser en överspelad version någon annanstans.
 | 7/10 | **Kartan öppnad för R27–R34 — efter kuvösens läsningar 6–7/10 — och fryst igen.** R27 segmentprognosens fog (§5.4) · R28 lapsen i #45:s metod (§7.7) · R29 molnet som räckviddsknapp (§9.1) · R30 höjden (§9.1) · R31 räckvidden (§12) · R32 förarfacit (§12) · R33 L4:s knapp (§12) · R34 kamerafacit och ytstatus (§13.2) | DECISIONS #483 |
 | 9/10 | **Läge-raderna efter frosten, FYSIK och kallkartan:** L3 och L4 (§2), §6.1 och §13.6 (provet av helheten, Axels "en sak") — inget innehåll ändrat; fem innehållsfrågor (Ö-A1:s 76 % mot 18 % på frosten, operatörens *Våt*, väglagsarkivet, tre nej i §9.1, rimfrostens gren i §5.4) står i bedömningens §4.2 | DECISIONS #467, #485, #489–#492, #496, #497 |
 | 14/10 | **Läge-raderna efter nivå 2, prognosläget och väg B:** L4-raden (§2), §6.1 och §13.6 (provet av helheten) — ingen innehållsändring | DECISIONS #509, #516–#519, #544, #547–#553 |
+| 15/10 | **Läge-raden §13.6 efter beslutet att gå live:** kandidaten i appen före domen, körplatsen och pariteten — ingen innehållsändring | DECISIONS #556–#561 |
 
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
 ## Öppna kort
