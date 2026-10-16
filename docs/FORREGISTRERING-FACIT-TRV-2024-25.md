@@ -1,6 +1,6 @@
 # Förregistrering — kuvösens facit ur Trafikverkets väglag, vintern 2024/25
 
-**Status: UTKAST 16/10 2026** (Bengt: *"ja till alla tre"*, DECISIONS #591; indatan i §4 skriven 16/10, DECISIONS #592). Signeras av Bengt och Axel **innan** någon del av
+**Status: UTKAST 16/10 2026** (Bengt: *"ja till alla tre"*, DECISIONS #591; indatan i §4 skriven 16/10, DECISIONS #592, och hela regeln, #593). Signeras av Bengt och Axel **innan** någon del av
 kuvösen läses mot väglaget. Källorna är Trafikverkets svar TRV 2026/111808 (`docs/KUVOS-LEVERANSEN-2026-10-02.md` §5h, manifestet
 `kuvos/trv-111808-leverans.json`), TROSKLAR-SKUGGAN §2 och kuvössidan §7–§8. Filerna ligger i hinken `arkiv`, aldrig i repot.
 
@@ -21,7 +21,8 @@ Regel L gäller (#564).
 - **Is:** kod 60, 61, 70 eller 71 (isigt, fläckvis isigt, isigt med bart i hjulspår, fläckvis isigt med bart i hjulspår) i
   RoadCondCode1 eller RoadCondCode2.
 - **Snö och modd:** 30, 31, 40, 41, 50, 51, 100 och 101. Redovisas för sig och räknas inte som is.
-- **Vått:** 20 och 21. Används bara som fuktvittne i kandidatens regel (§4 a), aldrig som facit.
+- **Våt:** 20, i kod 1 eller kod 2. Fläckvis vått (21) räknas inte, som i regeln (Bengt 15/10: *"nej till fläckvis"*, #573;
+  rättat 16/10, #593). Används bara som fuktvittne i hela regeln (§4 a), aldrig som facit.
 - Ett väglag gäller från sin ModifiedTime till sträckans nästa ändring. En **is-episod** är en sammanhängande tid med is på en
   sträcka, och dess start är den första ändringen med is.
 - Som i TROSKLAR-SKUGGAN §2 får väglaget **bekräfta** en träff men **aldrig fälla** ett falsklarm: en varning utan is i fönstret är
@@ -47,8 +48,8 @@ Regel L gäller (#564).
 - *Miss:* en is-episod på en sträcka där ingen av dess stationer hade kandidatens yta på 0 °C eller kallare under de 2 h före
   episodens start (TROSKLAR-SKUGGAN §2). Andelen missade episoder redovisas, med missarna klassade som utstrålnings- eller
   nederbördsdrivna efter §2:s orsaksklassning.
-- *Hela regeln* (kall yta, fukt, veto och spridning, #562–#575) räknas bredvid. Väglagets Vått (20 och 21) är fuktvittnet, och
-  kuvösens radar tar timmarna där väglaget tiger.
+- *Hela regeln* (kall yta, fukt, veto och spridning, #562–#575) räknas bredvid, som driftens `kandidat_regel()` (sql/058). Väglagets
+  Våt (20) och kuvösens radar är fuktvittnena, som Våt och radarn i driften.
 
 **(b) Efterhalkan**, per fyrning: bekräftad om is uppträder inom [t, t + 6 h]. Andelen bekräftade redovisas, och basnivån räknas som i (a).
 
@@ -66,7 +67,7 @@ Allt redovisas per månad och per breddgradsband (55–60, 60–64 och 64–69 �
 - *Stationens egen yta* läses med grind A:s vakter (#75, radvakten och karantänen) och den senaste raden per halvtimme, som i
   kuvösens tidigare läsningar av kandidaten (#490). Basnivån räknas bara vid kandidatens 736 stationer, så A och B har samma stationer.
 - *Efterhalkans fyrningar* kommer ur ögonblicksvarianten av sql/028 med betans startvärden (#456). Varje fyrning räknas för sig;
-  riktningsprovet 6/10 hade 1 109.
+  riktningsprovet 6/10 hade 1 109, och indataprovet 16/10 gav 1 110 (en fler; orsaken är inte funnen, #593).
 - *Perioden* är 1/11 2024 00:00 till 31/3 2025 24:00, svensk tid. Tillfällen utanför räknas inte, eftersom väglaget saknas där.
 - *Basnivån för (b)* är stationernas egna kalla timmar i samma fönster som fyrningarna, [t, t + 6 h].
 - *Missarna* räknas bara på sträckor med någon av kandidatens stationer, eftersom bara de kan se en episod.
@@ -76,7 +77,17 @@ Allt redovisas per månad och per breddgradsband (55–60, 60–64 och 64–69 �
   - annars *okänd*. Ord som motorn inte känner (`yes`, `freezing_rain`) räknas som okända, aldrig som torra.
 - *Sträckorna* är `vaglag.geojson` som Körflödet hämtar det, med sha256 utskriven. Stationernas lägen kommer ur
   `data/vagdata/stationer.json`.
-- *Hela regeln* är inte byggd i kuvösen än (del C). Knappen trycks när den finns, så att läsningen körs en gång.
+- *Hela regeln* (DECISIONS #593) prövas vid varje kall timme t, i slutet av timmen e = t + 1 h, i driftens ordning:
+  1. *veto* om en station inom 15 km, stationen själv medräknad, mätte en yta över +2 °C under (e − 45 min, e], med driftens vakter
+     (#75, radvakten och karantänen);
+  2. annars *torr* om ingen av stationens sträckor hade Våt vid e och radarns medel var under 0,5 mm/h på alla under (e − 60 min, e];
+  3. annars *spridning* om minst två av RÅ:s ankare skiljer 2,25 °C eller mer, avrundat till en decimal. Ankarna är de fem närmaste
+     andra stationerna inom 50 km med en yta vid timmen; en station är aldrig sitt eget ankare, som i driften;
+  4. annars *varnar*.
+
+  De varnande timmarna läses med samma mått som kandidaten: bekräftelsen, lyftet mot B, missarna och åtgärderna. Stationen står för en
+  vägpunkt vid stationen, eftersom kandidaten i kuvösen bara finns vid väg B:s stationer. Trösklarna vaktas mot sql/058 av
+  kontraktsgrinden.
 
 ## 5. Förväntan, skriven före läsningen
 

@@ -3,7 +3,7 @@
 // nästa; en station hör till sträckorna inom 2 km från deras linje; kandidaten bekräftas inom [t − 1, t + 2] h och efterhalkan inom
 // [t, t + 6] h; en miss är en is-episod utan kandidatens kalla timme hos någon av sträckans stationer under de 2 h före, klassad mot
 // den närmaste stationens nederbörd inom ±1 h; åtgärderna (20 och 50) räknas inom [t − 6, t + 6] h. Allt redovisas per månad och
-// breddgradsband, bara som antal och andelar: Trafikverkets rader skrivs aldrig ut (PUBLIKT REPO). Läsningen (`lasning`) körs i
+// breddgradsband, bara som antal och andelar. Hela regeln (driftens sql/058) räknas bredvid kandidaten vid timmens slut: Trafikverkets rader skrivs aldrig ut (PUBLIKT REPO). Läsningen (`lasning`) körs i
 // kuvösen av scripts/matningar/kuvos-blandning-vagb-facit-trv-2026-10-16.ts och vägrar utan båda signaturerna i förregistreringen.
 //
 //   node --experimental-strip-types kuvos/facit-trv.ts --sjalvtest
@@ -11,6 +11,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { deflateRawSync, inflateRawSync } from "node:zlib";
+import { haversineM } from "../engine/src/geo.ts";
 
 export const IS = new Set([60, 61, 70, 71]);
 export const SNO = new Set([30, 31, 40, 41, 50, 51, 100, 101]);
@@ -22,6 +23,16 @@ export const MISS_FORE_H = 2;
 export const NEDERBORD_H = 1;
 export const ATGARD_FONSTER_H: [number, number] = [-6, 6];
 export const ATGARD_TYPER = new Set([20, 50]);
+// Hela regeln (§4 a, DECISIONS #562–#575, #593), som driftens kandidat_regel() i sql/058 — kontraktsgrinden vaktar kopiorna.
+export const VAT = new Set([20]);      // Våt i kod 1 eller kod 2; fläckvis (21) räknas inte (#573: "nej till fläckvis")
+export const RADAR_MMH = 0.5;          // fukt: radarns medel på någon av stationens sträckor (#565)
+export const RADAR_MIN = 60;
+export const VETO_M = 15000;           // veto: en station inom 15 km, stationen själv medräknad (#566)
+export const VETO_MIN = 45;
+export const VETO_YTA_C = 2;
+export const SPRIDNING_X_C = 2.25;     // spridningsgrinden där minst två ankare bidrar (#575)
+const K_NEIGHBOURS = 5;                // RÅ:s ankare, som grind A och fysik/live/kandidat_timme.py
+const MAX_KM = 50;
 export const PERIOD_START = Date.parse("2024-11-01T00:00:00+01:00");
 export const PERIOD_SLUT = Date.parse("2025-04-01T00:00:00+02:00");
 const H = 3_600_000;
@@ -154,6 +165,46 @@ export function narmaste(par: Map<string, string[]>, stationer: { id: string; lo
     if (!f || d < f[1]) ut.set(seg, [st, d]);
   }
   return new Map([...ut].map(([seg, [st]]) => [seg, st]));
+}
+
+/** Stationerna inom `maxM` från varje station, närmast först; med `sjalv` står stationen själv först (avståndet 0). */
+export function inom(stationer: { id: string; lon: number; lat: number }[], maxM: number, sjalv: boolean): Map<string, string[]> {
+  const ut = new Map<string, string[]>();
+  for (const a of stationer) {
+    const d: [string, number][] = [];
+    for (const b of stationer) {
+      if (b.id === a.id && !sjalv) continue;
+      const m = b.id === a.id ? 0 : haversineM(a, b);
+      if (m <= maxM) d.push([b.id, m]);
+    }
+    ut.set(a.id, d.sort((x, y) => x[1] - y[1]).map(([id]) => id));
+  }
+  return ut;
+}
+
+/** Regelns indata ur kuvösen, med fönstrets slut e (ms) som nyckel: `radar` sträckorna med radarns medel ≥ RADAR_MMH inom
+ *  (e − RADAR_MIN, e], `varma` stationerna med en yta över VETO_YTA_C inom (e − VETO_MIN, e] (driftens vakter), `yta` stationens
+ *  uppmätta yta vid timmen (grind A:s population, halvtimmen som börjar på timmen). Väglagets Våt tas ur facit i läsningen. */
+export type Regelindata = { radar: Map<string, Set<number>>; varma: Map<string, Set<number>>; yta: Map<string, Map<number, number>> };
+export type Regelutfall = "varnar" | "veto" | "torr" | "spridning";
+/** Driftens regel (sql/058) vid en station och dess kalla timme t, utvärderad vid e = t + 1 h: veto om en station inom 15 km mätte
+ *  över +2 °C de sista 45 minuterna; annars torr utan fukt (Våt vid e eller radarn de sista 60 minuterna, på någon av stationens
+ *  sträckor); annars spridning om minst två av RÅ:s ankare (de fem närmaste ANDRA stationerna inom 50 km med en yta vid timmen)
+ *  skiljer SPRIDNING_X_C eller mer, avrundat till en decimal som kandidat_timme.py; annars varnar. */
+export function regeln(x: Tillfalle, par: Map<string, string[]>, grannar: Map<string, string[]>, ankare: Map<string, string[]>,
+  vat: Map<string, [number, number][]>, ind: Regelindata): Regelutfall {
+  const e = x.t + H;
+  if ((grannar.get(x.station) ?? []).some((s) => ind.varma.get(s)?.has(e))) return "veto";
+  const seg = par.get(x.station) ?? [];
+  if (!seg.some((s) => (vat.get(s) ?? []).some(([a, b]) => a <= e && e < b) || !!ind.radar.get(s)?.has(e))) return "torr";
+  const ytor: number[] = [];
+  for (const s of ankare.get(x.station) ?? []) {
+    const v = ind.yta.get(s)?.get(x.t);
+    if (v !== undefined) ytor.push(v);
+    if (ytor.length === K_NEIGHBOURS) break;
+  }
+  if (ytor.length >= 2 && Math.round((Math.max(...ytor) - Math.min(...ytor)) * 10) / 10 >= SPRIDNING_X_C) return "spridning";
+  return "varnar";
 }
 
 // --- måtten (§4) ---
@@ -290,6 +341,40 @@ function sjalvtest() {
   const at12 = at.per.get("2024-12")!;
   k(at12.antal === 2 && at12.med === 1 && at.borttagna === 3, `åtgärderna: förebyggande 6 h efter räknas, plogning inte, tomma och 2008 borttagna ${JSON.stringify([...at.per])}`);
   k(signerad("| Bengt | 2026-10-20 | BL |\n| Axel | | |").axel === false && signerad("| Bengt | 2026-10-20 | BL |\n| Axel | 2026-10-20 | AL |").axel, "signaturerna");
+  // Hela regeln vid stationen "nara" (sträckan S), kall timme 4/12 06:00, utvärderad vid 07:00.
+  const t6 = T("2024-12-04T06:00Z"), e7 = T("2024-12-04T07:00Z"), x6 = { station: "nara", t: t6 };
+  const vatS = new Map([["S", [[T("2024-12-04T06:30Z"), T("2024-12-04T09:00Z")]] as [number, number][]]]);
+  const tomt: Regelindata = { radar: new Map(), varma: new Map(), yta: new Map() };
+  const gr = new Map([["nara", ["nara", "g14"]]]), ank = new Map([["nara", ["a1", "a2", "a3", "a4", "a5", "a6"]]]);
+  const ytaVid = (v: [string, number][]) => new Map(v.map(([id, y]) => [id, new Map([[t6, y]])]));
+  k(regeln(x6, p, gr, ank, vatS, tomt) === "varnar", "regeln: Våt vid 07:00 och inget annat ⇒ varnar");
+  k(regeln(x6, p, gr, ank, new Map([["S", [[T("2024-12-04T07:00Z"), T("2024-12-04T09:00Z")]] as [number, number][]]]), tomt) === "varnar"
+    && regeln(x6, p, gr, ank, new Map([["S", [[T("2024-12-04T05:00Z"), e7]] as [number, number][]]]), tomt) === "torr",
+    "regeln: Våt som börjar vid e räknas, Våt som slutar vid e inte");
+  k(regeln(x6, p, gr, ank, new Map(), { ...tomt, radar: new Map([["S", new Set([e7])]]) }) === "varnar"
+    && regeln(x6, p, gr, ank, new Map(), { ...tomt, radar: new Map([["S", new Set([t6])]]) }) === "torr",
+    "regeln: radarn i fönstret som slutar 07:00 ger fukt, fönstret som slutar 06:00 inte");
+  k(regeln(x6, p, gr, ank, vatS, { ...tomt, varma: new Map([["g14", new Set([e7])]]) }) === "veto"
+    && regeln(x6, p, gr, ank, vatS, { ...tomt, varma: new Map([["nara", new Set([e7])]]) }) === "veto"
+    && regeln(x6, p, gr, ank, vatS, { ...tomt, varma: new Map([["g16", new Set([e7])]]) }) === "varnar",
+    "regeln: en varm station inom 15 km, också stationen själv, vetar; en utanför grannlistan inte");
+  k(regeln(x6, p, gr, ank, new Map(), { ...tomt, varma: new Map([["g14", new Set([e7])]]) }) === "veto",
+    "regeln: vetot prövas först, som i sql/058 — en varm granne vetar också en torr timme");
+  k((episoder([a("S", "2024-12-04T05:00Z", 21), a("S", "2024-12-04T08:00Z", 10, 21)], VAT).get("S") ?? []).length === 0
+    && (episoder([a("S", "2024-12-04T05:00Z", 61, 20)], VAT).get("S") ?? []).length === 1,
+    "Våt är kod 20 i kod 1 eller kod 2; fläckvis vått (21) räknas inte (#573)");
+  k(regeln({ station: "langt", t: t6 }, p, gr, ank, vatS, { ...tomt, radar: new Map([["S", new Set([e7])]]) }) === "torr",
+    "regeln: en station utan sträcka har ingen fukt");
+  k(regeln(x6, p, gr, ank, vatS, { ...tomt, yta: ytaVid([["a1", -1], ["a2", 1.3]]) }) === "spridning"
+    && regeln(x6, p, gr, ank, vatS, { ...tomt, yta: ytaVid([["a1", -1], ["a2", 1.2]]) }) === "varnar",
+    "spridningen: 2,3 °C mellan två ankare tystar, 2,2 talar");
+  k(regeln(x6, p, gr, ank, vatS, { ...tomt, yta: ytaVid([["a1", -5]]) }) === "varnar",
+    "spridningen: ett ankare grindar inte");
+  k(regeln(x6, p, gr, ank, vatS, { ...tomt, yta: ytaVid([["a1", 0], ["a2", 0], ["a3", 0], ["a4", 0], ["a5", 0], ["a6", 5]]) }) === "varnar",
+    "spridningen: bara de fem närmaste ankarna räknas (det sjätte, +5 °C, är utanför)");
+  const ino = inom([{ id: "a", lon: 15, lat: 60 }, { id: "b", lon: 15, lat: 60 + 14 / 111.2 }, { id: "c", lon: 15, lat: 60 + 16 / 111.2 }], VETO_M, true);
+  k(JSON.stringify(ino.get("a")) === JSON.stringify(["a", "b"]) && JSON.stringify(inom([{ id: "a", lon: 15, lat: 60 }, { id: "b", lon: 15, lat: 60.1 }], 50_000, false).get("a")) === JSON.stringify(["b"]),
+    `grannarna: 14 km med, 16 km utanför, stationen själv först med sjalv och aldrig utan (${JSON.stringify([...ino])})`);
   // Hela vägen genom en liten xlsx: zip med en okomprimerad och en komprimerad fil.
   const xlsx = provXlsx();
   const x = lasXlsx(xlsx);
@@ -327,7 +412,7 @@ function provXlsx(): Buffer {
 export type Indata = {
   xlsx: string; linjer: { id: string; delar: [number, number][][] }[]; stationer: { id: string; lon: number; lat: number }[];
   kandidatStationer: Set<string>; kalla: Tillfalle[]; kandidat: Tillfalle[]; fyrningar: Tillfalle[];
-  nederbord: Map<string, Map<number, Timklass>>; forreg: string;
+  nederbord: Map<string, Map<number, Timklass>>; regel: Regelindata; forreg: string;
 };
 /** Väglagsnätets linjer ur vaglag.geojson, som Körflödet hämtar det. */
 export const linjerUr = (gj: any): Indata["linjer"] => gj.features.map((f: any) => ({ id: String(f.properties.segment_id),
@@ -348,7 +433,7 @@ export function lasning(ind: Indata) {
   if (tz.lage === "oklart") { console.error("vägrar: tidszonen går inte att avgöra"); process.exit(2); }
   const andr: Andring[] = v.rader.map((r) => ({ seg: r[ki("ID")], t: tid(r[ki("ModifiedTime")], tz.lage)!, kod1: Number(r[ki("RoadCondCode1")]),
     kod2: r[ki("RoadCondCode2")] === "NULL" || r[ki("RoadCondCode2")] === "" ? null : Number(r[ki("RoadCondCode2")]) })).filter((a) => a.t !== null);
-  const is = episoder(andr, IS), sno = episoder(andr, SNO);
+  const is = episoder(andr, IS), sno = episoder(andr, SNO), vat = episoder(andr, VAT);
   const a = lasXlsx(readFileSync(join(ind.xlsx, "RoadConditionMeasures24-25.xlsx")));
   const ai = (n: string) => a.kolumner.indexOf(n);
   const atg: Atgard[] = a.rader.map((r) => ({ seg: r[ai("Id")], typ: Number(r[ai("MeasureType")]), start: tid(r[ai("StartTime")], tz.lage), stopp: tid(r[ai("StopTime")], tz.lage) }));
@@ -378,7 +463,24 @@ export function lasning(ind: Indata) {
   console.log("== (a) missarna: is-episoder utan kandidatens kalla timme 2 h före, orsaken ur närmaste stationens nederbörd ±1 h");
   for (const [g, r] of [...ms.per].sort()) { console.log(mrad(g, r)); for (const k of Object.keys(mt) as (keyof Missrakning)[]) mt[k] += r[k]; }
   console.log(mrad("totalt", mt) + `; ${ms.utanStation} episoder på sträckor utan kandidatens station`);
-  for (const [namn, x] of [["(a) kandidaten", kand], ["(b) efterhalkan", fyr]] as const) {
+  // Hela regeln vid kandidatens kalla timmar (§4 a, #593): utfallen, och de varnande timmarna med samma mått som kandidaten.
+  const grannar = inom(ind.stationer, VETO_M, true), ankare = inom(ind.stationer, MAX_KM * 1000, false);
+  const utfall = kand.map((x) => regeln(x, par, grannar, ankare, vat, ind.regel));
+  const perUtfall = new Map<string, Record<Regelutfall, number>>();
+  kand.forEach((x, i) => { const g = perUtfall.get(grupp(x)) ?? perUtfall.set(grupp(x), { varnar: 0, veto: 0, torr: 0, spridning: 0 }).get(grupp(x))!; g[utfall[i]]++; });
+  const urad = (g: string, r: Record<Regelutfall, number>) => `  ${g}: varnar ${r.varnar} · veto ${r.veto} · torr ${r.torr} · spridning ${r.spridning}`;
+  const ut0: Record<Regelutfall, number> = { varnar: 0, veto: 0, torr: 0, spridning: 0 };
+  console.log("== (a) hela regeln vid kandidatens kalla timmar (driftens sql/058, vid timmens slut)");
+  for (const [g, r] of [...perUtfall].sort()) { console.log(urad(g, r)); for (const k of Object.keys(ut0) as Regelutfall[]) ut0[k] += r[k]; }
+  console.log(urad("totalt", ut0));
+  const regelV = kand.filter((_, i) => utfall[i] === "varnar");
+  skriv("(a) hela regeln, de varnande timmarna, [t − 1, t + 2] h", bekrafta(regelV, par, is, KANDIDAT_FONSTER_H, grupp), basA);
+  const mr = missar(is, parK, regelV, narmast, ind.nederbord, (seg, start) => `${manad(start)} · ${band(lat.get(narmast.get(seg)!)!)}`);
+  const mrt: Missrakning = { episoder: 0, missade: 0, nederbord: 0, utstralning: 0, okand: 0 };
+  console.log("== (a) missarna för hela regeln: is-episoder utan en varnande timme 2 h före");
+  for (const [g, r] of [...mr.per].sort()) { console.log(mrad(g, r)); for (const k of Object.keys(mrt) as (keyof Missrakning)[]) mrt[k] += r[k]; }
+  console.log(mrad("totalt", mrt) + `; ${mr.utanStation} episoder på sträckor utan kandidatens station`);
+  for (const [namn, x] of [["(a) kandidaten", kand], ["(a) hela regeln", regelV], ["(b) efterhalkan", fyr]] as const) {
     const r = atgarder(x, par, atg, grupp), tot = { antal: 0, med: 0 };
     console.log(`== (c) åtgärderna vid ${namn}: planerad halkbekämpning (20, 50) på stationens sträckor inom ±6 h; ${r.borttagna} åtgärdsrader av annan typ, utan tid eller före perioden`);
     for (const [g, s] of [...r.per].sort()) { console.log(`  ${g}: ${s.med} av ${s.antal} (${pct(s.med, s.antal)} %)`); tot.antal += s.antal; tot.med += s.med; }
