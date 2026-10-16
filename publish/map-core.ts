@@ -37,7 +37,7 @@ export const KANDIDAT_BITAR_SQL = `
           WHERE ST_DWithin(linje, pt, 300) AND ST_Length(linje) > 0
           ORDER BY seg, lon, lat, ST_Distance(linje, pt)),
         bit AS (
-          SELECT seg, ST_LineSubstring(linje, greatest(0, f - 1000 / ST_Length(linje)), least(1, f + 1000 / ST_Length(linje))) AS g
+          SELECT seg, ST_LineSubstring(linje, greatest(0, f - 1000 / ST_Length(ST_Transform(linje, 4326))), least(1, f + 1000 / ST_Length(ST_Transform(linje, 4326)))) AS g
           FROM narm, LATERAL (SELECT ST_LineLocatePoint(linje, pt) AS f) x)
         SELECT seg, count(*)::int AS punkter, round((ST_Length(ST_Union(g)) / 1000)::numeric, 1) AS km,
                ST_AsGeoJSON(ST_Transform(ST_SimplifyPreserveTopology(ST_LineMerge(ST_Union(g)), 20), 4326), 5)::json AS g
