@@ -211,6 +211,7 @@ lydelsen från 1/9, som lät prognosen tala på modellerade värden i strid med 
   kandidatens yta och för inget annat (TROSKLAR-KOMBINATIONEN §10). Taket på hur ofta den talar kommer ur takten i skuggan
   (#200) och läses före App Review. Domen (a)–(c) ovan fälls i mars som förut och avgör om den får stanna. Inget band krävs;
   domen redovisas per ankarband, och ett band kan läggas in genom en daterad post.
+  **Takregeln (Bengts ja 16/10, DECISIONS #584; en skärpning enligt §5):** Läses 2/11 med `scripts/matningar/kandidat-takten-2026-10-16.sql`, oförändrad, på alla svenska skuggkörningar med kandidatloggen från 15/10 10:32 UTC. En följd är tiden mellan två kandidatpassager på olika sträckor i samma körning. Ligger mer än 10 % av följderna inom 10 minuter, eller är underlaget under 30 följder på minst 3 rutter och 3 dygn, byggs ett tak före App Review: kandidaten talar högst en gång per 10 minuter, vilken sträcka det än gäller (motorn i tre språk, vektorer). Annars byggs inget tak.
 
 Bevisbördan ligger på skuggan. Vid tvekan: tystnad (produktinvarianten).
 
