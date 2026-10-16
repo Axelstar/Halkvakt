@@ -8,6 +8,7 @@
 //
 //   node --experimental-strip-types kuvos/facit-trv.ts --sjalvtest
 //   node --experimental-strip-types kuvos/facit-trv.ts --signerad <förregistreringen>     (kuvos.yml, före fysikkedjan)
+import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { deflateRawSync, inflateRawSync } from "node:zlib";
@@ -375,6 +376,11 @@ function sjalvtest() {
   const ino = inom([{ id: "a", lon: 15, lat: 60 }, { id: "b", lon: 15, lat: 60 + 14 / 111.2 }, { id: "c", lon: 15, lat: 60 + 16 / 111.2 }], VETO_M, true);
   k(JSON.stringify(ino.get("a")) === JSON.stringify(["a", "b"]) && JSON.stringify(inom([{ id: "a", lon: 15, lat: 60 }, { id: "b", lon: 15, lat: 60.1 }], 50_000, false).get("a")) === JSON.stringify(["b"]),
     `grannarna: 14 km med, 16 km utanför, stationen själv först med sjalv och aldrig utan (${JSON.stringify([...ino])})`);
+  const gj = (ordning: number[], vaglag: string, y = 60) => ({ features: ordning.map((i) => ({ properties: { segment_id: `S${i}`, condition_info: [vaglag] },
+    geometry: i === 1 ? { type: "MultiLineString", coordinates: [[[15, 59.9], [15, y]]] } : { type: "LineString", coordinates: [[16, 59.9], [16, 60]] } })) });
+  const n0 = natsumma(linjerUr(gj([1, 2], "Våt")));
+  k(n0 === natsumma(linjerUr(gj([2, 1], "Torr"))) && n0 !== natsumma(linjerUr(gj([1, 2], "Våt", 60.0001))) && /^[0-9a-f]{64}$/.test(n0),
+    "nätets summa: samma för annan ordning och annat väglag, ny när en koordinat flyttas");
   // Hela vägen genom en liten xlsx: zip med en okomprimerad och en komprimerad fil.
   const xlsx = provXlsx();
   const x = lasXlsx(xlsx);
@@ -417,6 +423,10 @@ export type Indata = {
 /** Väglagsnätets linjer ur vaglag.geojson, som Körflödet hämtar det. */
 export const linjerUr = (gj: any): Indata["linjer"] => gj.features.map((f: any) => ({ id: String(f.properties.segment_id),
   delar: f.geometry.type === "MultiLineString" ? f.geometry.coordinates : [f.geometry.coordinates] }));
+/** Nätets summa (DECISIONS #594): sha256 över sträckornas id och geometri, sorterade på id. Filen bär också dagens väglag och byter
+ *  därför summa vid varje publicering; den här summan byts bara när ett id eller en koordinat ändras. */
+export const natsumma = (linjer: Indata["linjer"]) => createHash("sha256")
+  .update(JSON.stringify([...linjer].sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0)).map((l) => [l.id, l.delar]))).digest("hex");
 const pct = (a: number, n: number) => (n ? (100 * a / n).toFixed(1).replace(".", ",") : "–");
 const summa = (m: Map<string, Rakning>): Rakning => [...m.values()].reduce((s, r) => ({ antal: s.antal + r.antal,
   bekraftade: s.bekraftade + r.bekraftade, utanStracka: s.utanStracka + r.utanStracka }), { antal: 0, bekraftade: 0, utanStracka: 0 });

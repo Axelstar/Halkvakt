@@ -13987,3 +13987,24 @@ oförändrade sedan dess (sql/028, kuvos/efterhalkan.ts, trend, vakterna och inl
   geometrin står i bedömningen §4.2.
 
 **Stomdokument:** KUV §7 facit, BED §4.2
+
+## #594 (16/10 2026) Nätets summa i facitläsningen: sha256 över sträckornas id och geometri (kort #232)
+
+**Beslut.** Bengt 16/10: *"ja till summan över geometrin"*, på Claudes förslag i bedömningen §4.2.
+- Facitläsningen skriver ut *nätets summa*: en sha256 över sträckornas id och geometri, sorterade på id (`natsumma()` i
+  `kuvos/facit-trv.ts`).
+- Filens egen sha256 skrivs ut bredvid. Förregistreringen §4 *Indata* säger detsamma.
+
+**Varför.**
+- vaglag.geojson bytte sha256 på 40 minuter mellan de två indataproven (`d1edf121…` → `3a40f50b…`, #593). Filen bär också dagens
+  väglag och publiceras om, så filens summa bevisar inte att nätet är detsamma.
+- Med nätets summa går läsningen att upprepa på samma nät, som §3:s antagande om sträckornas geometri kräver.
+
+**Alternativ.**
+- Spara nätet i repot och läsa det därifrån. Avvisat: det är en fil till att hålla i fas, och §3 säger dagens nät.
+
+**Prov:** självtestet ger samma summa för annan ordning och annat väglag, och en ny summa när en koordinat flyttas. Två motprov
+fällde: utan sorteringen, och med väglaget i sträckans id. Ett tredje var verkningslöst: hela objektet i summan ändrar ingenting,
+eftersom `linjerUr` redan tar bort egenskaperna. Summan själv visas först i nästa körning i kuvösen.
+
+**Stomdokument:** KUV §7 facit, BED §4.2
