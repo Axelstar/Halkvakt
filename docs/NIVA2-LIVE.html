@@ -121,25 +121,34 @@
         <li>Steg 2 och 3 är klara och körda 14/10: 45 dygns historik (1 080 timmar, 0 saknade), del A och del B skarpt, tabellerna
           migrerade, pulsklockans två jobb (del A <code>13 */6 * * *</code>, del B <code>:43</code>), vakthunden med golvet 14 bevisad i
           drift, och värdevakten har besiktigat kandidatens sju fält — alla inom spann.</li>
+        <li>Steg 4–6 är klara 15/10: pariteten inom toleransen på alla tre körningarna (DECISIONS #562), färskhetsregeln i
+          <code>kandidat_timme()</code> i drift (DECISIONS #573), och live.json bär nyckeln <code>kandidat</code> sedan publiceringen 17:30
+          (DECISIONS #576; nyckeln är regeln, 435 byte).</li>
+        <li>Regeln finns i databasen och är i drift (<code>kandidat_regel()</code>, sql/055–056, DECISIONS #573), och skuggloggen
+          räknar den sedan 15/10 (sql/057): domloggen, stationsvärdena och takten längs vägnätet (OSRM). Spridningsgrinden i regeln och
+          loggen är byggd (sql/058, DECISIONS #575).</li>
       </ul>
     </div>
     <div class="ruta rod">
       <h3>Det här saknas</h3>
       <ul>
         <li>Kandidaten bär <b>ingen fukt</b>. Den ger ytans temperatur (<code>pb</code>), men punktmotorn varnar bara vid
-          <code>yta ≤ 1 °C och fukt</code>. Regeln (val 2) måste säga varifrån fukten kommer mellan stationerna.</li>
+          <code>yta ≤ 1 °C och fukt</code>. Regeln (val 2) hämtar fukten utifrån: väglaget <i>Våt</i> eller radarn (DECISIONS #562,
+          #573). Radarns tröskel 0,5 mm/h är ett arbetstal som avgörs på tre veckors kurva; talet läses 26/10 (DECISIONS #568).</li>
         <li>Del A föll två gånger 14/10 på MET:s långsamma ände (anrop om 158 MB mot timeouten 180 s). Anropen är nu delade i tre
-          steg, och en timme utan PH hoppas tyst när del A förklarar den (DECISIONS #561); beviset är nästa lyckade del A.</li>
+          steg, och en timme utan PH hoppas tyst när del A förklarar den (DECISIONS #561); del A lyckades efter delningen, med 82 284
+          PH-rader för 06–11 UTC 15/10 (38695874516, DECISIONS #569).</li>
         <li>Appen har ingen karta. Kartan är webbsidan <code>karta.html</code>. I appen finns rösten och varningskortet.</li>
         <li>Kandidaten har aldrig dömts på en vägpunkt och är inte prövad mot vägpunktsgrinden. Talet 5,12 % gäller
           stationerna.</li>
-        <li>Fyra val är inte gjorda (nedan); val 3 är avgjort.</li>
+        <li>Val 1, 3 och 4 är avgjorda och val 2 är beslutad med talen öppna för signering (nedan); val 5 är inte gjort.
+          Radarns tal läses 26/10 och förregistreringen är inte signerad (senast 31/10).</li>
       </ul>
     </div>
   </div>
 
   <h2 id="avsnitt-2">2. Fem val som Axel och Bengt gör</h2>
-  <p>De står i bedömningens §4.2. Steg 1–4 väntar inte på dem. Regeln (val 2) styr steg 6 och därmed steg 7 — skuggloggen som marsdomen behöver — och val 1–2 styr steg 10–12.</p>
+  <p>De står i bedömningens §4.2. Steg 1–4 väntade inte på dem. Regeln (val 2) styrde steg 6 och därmed steg 7 — skuggloggen som marsdomen behöver — och val 1–2 styr steg 10–12.</p>
   <div class="tabell"><table>
     <thead><tr><th>Val</th><th>Alternativ</th><th>Claudes rekommendation</th></tr></thead>
     <tbody>
@@ -151,16 +160,21 @@
         besluten #490 och #519: kandidaten ger ett <b>nuläge</b> mellan stationerna (ytan vid timmen t, räknad på en 6–11 timmar gammal
         körning och stationernas mätningar vid t), inte en prognos sex timmar framåt. En varning framåt är en annan läsning, som hör till
         försprånget.</td>
-        <td>Axel skriver den, försiktigt, om nuläget: kandidatens yta ≤ 0 °C och fukt vid punkten, där ingen station säger annat, som A1
-        gör för väglaget. <b>Fukten måste komma utifrån</b>, för kandidaten bär ingen: radarn (≥ 2,0 mm/h, högst 70 minuter gammal) eller
-        Trafikverkets väglag med ett halkord på sträckan. Ingen källa kan visa att en punkt är torr, så regeln kräver ett positivt
-        fuktbesked och läser aldrig tystnad som torrt. Talen är Axels.</td></tr>
+        <td><b>Beslutad 15/10</b> (DECISIONS #562, #565, #566, #573, #575): kandidatens yta ≤ 0 °C och ett mätt fuktbesked, där ingen
+        station säger annat. <b>Fukten kommer utifrån</b>, för kandidaten bär ingen: väglaget <i>Våt</i> i <code>condition_info</code>
+        (<i>fläckvis Våt</i> räknas inte, Bengt 15/10) eller radarns <code>rate_mean_mmh</code> ≥ 0,5 mm/h någon gång de senaste 60
+        minuterna; radarns tal är ett arbetstal som avgörs 26/10 (DECISIONS #568). Saknas fuktbesked tiger kandidaten. <b>Veto:</b> en
+        station inom 15 km som mätt yta över +2 °C inom ±45 minuter (DECISIONS #566). <b>Spridningsgrinden:</b> regeln tiger där minst två
+        ankare bidrar och deras spridning är 2,25 °C eller mer (DECISIONS #575). Färskhet: kandidatens timme högst två timmar gammal och minst
+        95 % av vägpunkterna, annars tiger regeln. Talen är Axels och signeras i förregistreringen.</td></tr>
       <tr><td class="nr">3</td><td><b>Körplatsen.</b> <span class="dom klar">avgjort 14/10</span> Python-kedjan i GitHub Actions,
         startad av pulsklockan (Bengt: <i>"val 3 är actions"</i>, DECISIONS #558).</td>
         <td>Gratis i det publika repot, Axels kod körs oförändrad, samma väg som ingest och favoritprovet. Mätningen: 2,5 GB per dygn
         och 7 minuter per hämtning ryms där, inte i en edge-funktion.</td></tr>
       <tr><td class="nr">4</td><td><b>Avstängningen.</b> Publiceringen av prognosen stoppas, och appen tystnar utan nytt bygge.</td>
-        <td>Ja, och prövad i drift innan första bygget.</td></tr>
+        <td><b>Beslutat 15/10</b> (DECISIONS #562 punkt 5): nyckeln tas bort ur publiceringen, inte hela publiceringen; kandidaten tystnar
+        också av sig själv när vädret är gammalt eller ofullständigt. Att tysta kräver en av Bengt och Axel, att starta igen båda. Prövad
+        i drift före App Review.</td></tr>
       <tr><td class="nr">5</td><td><b>Vad appen publicerar först.</b> Stationerna (754 punkter, felet känt) eller vägpunkterna direkt.
         Kedjan räknar redan alla 13 714 punkter, och valet rör inte domen: grind A kan bara mätas vid stationerna (mot uppmätt yta),
         grind B på sträckorna.</td>
@@ -199,7 +213,7 @@
       <li><span aria-hidden="true">◐</span> <b>Förregistreringen för vintern 2026/27 (kort #343, steg 8)</b> <span style="color: var(--dampad, #4A5763)">pågår · Utkastet skrivet 14/10 (DECISIONS #560): kandidatens identitet (modell.pkl:s sha256), den levande kedjan som räknare och domen på det kedjan räknade vid timmen, måtten oförändrade, domfönstret från signeringens dag, RÅ som kontroll och reserv, och det väntade felet 5,12 % mot taket 5 % skrivet som förväntan; klart när Bengt och Axel svarat på (A) regeln och (B) populationen i bedömningens §4.2 och förregistreringen är signerad, senast 31/10</span></li>
     </ul>
   </details>
-  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-kv-prognoslagret">Prognoslagrets kandidater</a> <span style="color: var(--dampad, #4A5763)">delvis, 97 % · kvar: Den frysta kandidaten (varv 1, DECISIONS #552) ligger i hinken; kvar är förregistreringen för vintern 2026/27, senast 31/10, och Axels fråga om uppspelning eller drift (§4.2, kort #342)</span></summary>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-kv-prognoslagret">Prognoslagrets kandidater</a> <span style="color: var(--dampad, #4A5763)">delvis, 97 % · kvar: Den frysta kandidaten (varv 1, DECISIONS #552) ligger i hinken; kvar är förregistreringen för vintern 2026/27, senast 31/10, (kort #342); frågan om uppspelning eller drift är avgjord, kandidaten körs levande (DECISIONS #556, #558)</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">✓</span> <b>Fyra läsningar 6/10</b> <span style="color: var(--dampad, #4A5763)">klart · 37530898977, DECISIONS #471: ankarspridningen skiljer de grova felen (0,5–2 °C ger 1,8 % på 59 % av punkterna), vårens fel är dagsljuset (natten 4,2 %), regimstyrd offset ger 0,3 procentenheter, grova kovariater inget (R² 0,01)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Spridningen och natten korsade</b> <span style="color: var(--dampad, #4A5763)">klart · 37651865384, DECISIONS #476: grinden vid 2,25 °C talar på 60,6 % med 2,8 % grova fel, natten ensam 6,0 % på 63,0 %; grinden antagen med X = 2,25 °C och natten avstådd (DECISIONS #474, #477, #478)</span></li>
@@ -224,7 +238,7 @@
   </details>
 </div>
 <!-- /LÄGESRADER -->
-  <p>Beroenden inom parentes. Steg 1–4 är byggda. Kritisk väg: regeln (val 2) → 6 → 7 för marsdomen, och vidare 10–12 → App Review för appen. Signeringen i steg 8 kräver också regeln. Steg 9 går parallellt.</p>
+  <p>Beroenden inom parentes. Steg 1–6, 10 och 11 är byggda, och 9 och 13 är byggda men väntar på Axel (16/10). Kritisk väg: 7 för marsdomen, och för appen 12 (Axels bygge) → bilprovet i 13 → takten i 7 → App Review. Regeln (val 2) finns; signeringen i steg 8 väntar på radarns tal 26/10. Steg 9 går parallellt.</p>
   <div class="tabell"><table>
     <thead><tr><th>Nr</th><th>Steg</th><th>Vad som görs</th><th>Vem</th><th>Läge</th></tr></thead>
     <tbody>
@@ -234,7 +248,7 @@
         timsteg, 2,5 GB per dygn med körningarna var sjätte timme (pariteten med kuvösen kräver samma körningar), alla spann inom.
         På schema sedan 14/10 (del A var sjätte timme). MET:s villkor lästa 14/10 kväll: ingen parallell hämtning, licens NLOD / CC BY 4.0
         — båda följs. Anropen delade i tre steg (78 MB i stället för 158) på Bengts ja 14/10 (DECISIONS #561), efter att del A fallit två gånger
-        på MET:s långsamma ände. Kvar: nästa lyckade del A som bevis.</td>
+        på MET:s långsamma ände. Beviset kom 15/10: del A lyckades med 82 284 PH-rader (38695874516, DECISIONS #569).</td>
         <td>Claude</td><td><span class="dom vantar">på schema</span></td></tr>
       <tr><td class="nr">2</td><td>Uppstarten (1)</td><td>Fysiken bär ett tillstånd (djuptemperatur, snötäcke) och behöver 45 dygns
         väderhistorik (<code>tdeep</code>). Historiken hämtas en gång ur MET:s arkiv: 30/8–13/10 för alla punkter, i fem delar till den
@@ -261,45 +275,55 @@
         Toleransen median ≤ 0,10 °C och p95 ≤ 0,30 °C är godkänd av Bengt 14/10 (DECISIONS #561). Första körningen 15/10: februari utanför (<code>ph</code> p95 0,436), orsak snötäcket som började på noll 45 dygn bakåt.
         Rättat 15/10 (DECISIONS #562): snötäcket ackumuleras från säsongens början. <b>Omkörd: alla 3 körningar inom toleransen — det som går live räknar samma sak som kuvösens frysta kandidat; februari ph p95 0,120 (förut 0,436), snötäcket 0 % ifrån i median i alla tre</b></td>
         <td>Claude, Axel läser</td><td><span class="dom klar">inom</span></td></tr>
-      <tr><td class="nr">5</td><td>Vakter (3)</td><td>Spann i värdevakten för kandidatens sju fält: skrivna och besiktigade 14/10, alla inom spann. Saknad PH är avgjord (#561). Kvar: en färskhetsregel för det som publiceras (gammalt eller
-        ofullständigt väder ⇒ kandidaten tyst, aldrig fel).</td>
-        <td>Claude</td><td><span class="dom vantar">delvis</span></td></tr>
+      <tr><td class="nr">5</td><td>Vakter (3)</td><td>Spann i värdevakten för kandidatens sju fält: skrivna och besiktigade 14/10, alla inom spann. Saknad PH är avgjord (#561). Färskhetsregeln för det som publiceras (gammalt eller
+        ofullständigt väder ⇒ kandidaten tyst, aldrig fel) är i drift 15/10 i <code>kandidat_timme()</code>: högst två timmar gammal och minst 95 % av
+        vägpunkterna (sql/057, DECISIONS #573).</td>
+        <td>Claude</td><td><span class="dom klar">klar</span></td></tr>
       <tr class="grupp"><td colspan="5">B. Publicera och mät</td></tr>
-      <tr><td class="nr">6</td><td>Ny nyckel i live.json (3, 5, val 2)</td><td><code>publicera</code> läser tabellen och lägger till en
-        ny nyckel efter mönstret <code>rain_segments</code>. Regeln är <i>lägg till, ersätt aldrig</i>: varje rad i
-        <code>segments</code> blir en halkvarning. Tröskeln bor här, på ett ställe. Driftsätts och bevisas med en mätning efter
-        driftsättningen.</td>
-        <td>Claude</td><td><span class="dom kvar">kvar</span></td></tr>
-      <tr><td class="nr">7</td><td>Skuggan loggar kandidaten och läser takten (6)</td><td>En ny kolumn bredvid RÅ via en migration. Det är
-        mätningen av alla spår hela vintern. Innan rösten byggs läses takten per rutt i skuggan: taket på varningar kommer ur
-        mätningen, inte ur antagandet (DECISIONS #200). <b>Marsdomen hänger på det här steget:</b> grind B och C räknar
+      <tr><td class="nr">6</td><td>Ny nyckel i live.json (3, 5, val 2)</td><td><code>publicera</code> läser regeln och lägger till en
+        ny nyckel <code>kandidat</code> efter mönstret <code>rain_segments</code>. Regeln är <i>lägg till, ersätt aldrig</i>:
+        <code>segments</code> är orörd. Publiceringen frågar <code>kandidat_regel()</code> med utfallet <i>varnar</i> och skriver en rad
+        per sträcka med de varnande punkterna (<code>id</code>, <code>tid</code>, <code>punkter</code>); tröskeln bor i databasen, på ett
+        ställe, och publiceringen bär inga tal. Tiger regeln blir nyckeln <code>[]</code> med noten <i>regeln tiger</i>, faller frågan
+        <code>[]</code> med <i>ej läsbar</i> (DECISIONS #576). Klar 15/10: i drift (deploy 38777364020), och mätningen efter
+        driftsättningen visade att nyckeln är regeln (sträckor, punkter och timme lika), 435 byte. Punkter i stället för sträckans linje är
+        Claudes val som Bengt kan ändra före steg 10.</td>
+        <td>Claude</td><td><span class="dom klar">klar</span></td></tr>
+      <tr><td class="nr">7</td><td>Skuggan loggar kandidaten och läser takten (6)</td><td>Domloggen <code>kandidat_skugga</code> och
+        <code>shadow_log.kandidat</code> bredvid RÅ via migrationer (sql/057, sql/058). Det är mätningen av alla spår hela vintern. Loggen
+        bär också de fall där stationsvetot tystar och radarvärdet där fukten fäller (DECISIONS #565, #573), och spridningen och antalet
+        ankar (DECISIONS #575). Kandidatens stationsvärden sparas i hinken hela vintern (DECISIONS #572, kort #349). Regeln och loggen är i
+        drift sedan 15/10; takten räknas längs vägnätet (OSRM) sedan DECISIONS #573:s tillägg. Innan rösten byggs läses takten per rutt i
+        skuggan: taket på varningar kommer ur mätningen, inte ur antagandet (DECISIONS #200), och den läses före App Review. <b>Marsdomen hänger på det här steget:</b> grind B och C räknar
         kandidatens varningar i skuggloggen, och domfönstret börjar vid signeringen (steg 8). Varje vecka mellan signering och
         steg 7 är en vecka utan kandidaten i domen.</td>
-        <td>Claude</td><td><span class="dom kvar">kvar</span></td></tr>
-      <tr><td class="nr">8</td><td>Förregistreringen för 2026/27</td><td>Senast 31/10, för alla spår. Domfönstret börjar den dagen. Regeln i val 2 fryses här. Utkastet är
-        skrivet (DECISIONS #560, förslag). Före signeringen: regeln och fuktkällan, från vilket datum skuggloggen räknar kandidaten, och
-        hur grind A vid stationerna ska läsas. Modellen är tränad på alla 754, så grind A prövar <i>samma stationer, nytt år</i>, medan
+        <td>Claude</td><td><span class="dom vantar">pågår</span></td></tr>
+      <tr><td class="nr">8</td><td>Förregistreringen för 2026/27</td><td>Senast 31/10, för alla spår. Domfönstret börjar den dagen. Regeln i val 2 fryses här. Förregistreringen är
+        ifylld som <span class="mono">docs/FORREGISTRERING-2026-27.md</span> (DECISIONS #574, förslag till signering): identiteten, den levande
+        kedjan, regeln med talen, måtten per grind och ankarband, grind A som övre gräns (DECISIONS #562), domfönstret och regel L. Av de fyra
+        punkterna före signeringen är spridningsgrinden (2,25 °C), <i>761 stationer</i> i stället för 845 och tysta timmar som okänt avgjorda
+        (DECISIONS #575). Kvar: radarns tal, som läses 26/10 enligt DECISIONS #568, och beviset att spridningen loggas i drift. Modellen är tränad på alla 754, så grind A prövar <i>samma stationer, nytt år</i>, medan
         5,12 % är <i>andra stationer, samma år</i>. Grind A mäts på 754 av ~761 stationer.</td>
-        <td>Claude skriver, Axel och Bengt godkänner</td><td><span class="dom vantar">utkast</span></td></tr>
+        <td>Claude skriver, Axel och Bengt godkänner</td><td><span class="dom vantar">ifylld, osignerad</span></td></tr>
       <tr><td class="nr">9</td><td>Webbkartan (6)</td><td>Kandidatens lager på <code>karta.html</code>. Det kan gå live utan App
         Review och blir det första användarna ser.</td>
-        <td>Claude, skrivrätt i halkvakt-karta</td><td><span class="dom kvar">kvar</span></td></tr>
+        <td>Claude, skrivrätt i halkvakt-karta</td><td><span class="dom vantar">byggd 16/10 (#579), kartsidan väntar på skrivrätten</span></td></tr>
       <tr class="grupp"><td colspan="5">C. Motorn och appen</td></tr>
       <tr><td class="nr">10</td><td>Ny farotyp i motorn (7, val 1–2)</td><td>En ny farotyp i <code>engine/src</code> med plats i
-        prioriteten A3 &gt; A1 &gt; A2 &gt; A4 &gt; A5, testvektorer, <code>beta</code>, texten (förslag: <i>"Halkvakt tror: halka
-        framöver"</i>, aldrig ett avstånd) och BETA-kortet. Adaptern och regeln i Kotlin och Swift ska ge samma utfall tecken för
-        tecken. Inga tal kopieras till tre språk; tröskeln ligger i steg 6.</td>
-        <td>Claude</td><td><span class="dom kvar">kvar</span></td></tr>
+        prioriteten A3 &gt; A1 &gt; A2 &gt; A4 &gt; A5, testvektorer, <code>beta</code>, texten (godkänd 15/10, DECISIONS #573: <i>"Halkvakt tror: halka
+        framöver."</i>, aldrig ett avstånd; engelska <i>"Halkvakt thinks: slippery ahead."</i>) och BETA-kortet. Adaptern och regeln i Kotlin och
+        Swift ska ge samma utfall tecken för tecken. Inga tal kopieras till tre språk; tröskeln ligger i databasen (steg 6).</td>
+        <td>Claude</td><td><span class="dom klar">byggd 16/10 (#577, #581)</span></td></tr>
       <tr><td class="nr">11</td><td>Produktboken (10)</td><td>Skärmbilder och text i samma commit som rösttexten. Integritetsuppgifterna
         ändras inte: inget nytt lämnar telefonen.</td>
-        <td>Claude</td><td><span class="dom kvar">kvar</span></td></tr>
-      <tr><td class="nr">12</td><td>Bygget 0.3.13 (25) (10, 11, och 4 grönt)</td><td>Båda plattformarna, när ios-engine, android och ci
+        <td>Claude</td><td><span class="dom klar">klar 16/10 (#577)</span></td></tr>
+      <tr><td class="nr">12</td><td>Bygget 0.3.13 (26) (10, 11, och 4 grönt)</td><td>Båda plattformarna, när ios-engine, android och ci
         är gröna på samma commit. Axel arkiverar iOS på sin Mac (TestFlight-flödet i Actions finns inte än, kort #333). Sedan
         TestFlight och App Review. Android ur CI som i dag.</td>
-        <td>Axel arkiverar och skickar in</td><td><span class="dom kvar">kvar</span></td></tr>
-      <tr><td class="nr">13</td><td>Avstängningen i drift (6, 12)</td><td>Publiceringen stoppas, och appen ska tystna. Provas innan
-        bygget går till App Review.</td>
-        <td>Claude, Bengt provar i bilen</td><td><span class="dom kvar">kvar</span></td></tr>
+        <td>Axel arkiverar och skickar in</td><td><span class="dom vantar">väntar på Axels bygge från bd58e36</span></td></tr>
+      <tr><td class="nr">13</td><td>Avstängningen i drift (6, 12)</td><td>Nyckeln tas bort ur publiceringen, och appen ska tystna
+        (DECISIONS #562). Provas i drift innan bygget går till App Review.</td>
+        <td>Claude, Bengt provar i bilen</td><td><span class="dom vantar">byggd och provad 16/10 (#578), Axels starta och bilprovet kvar</span></td></tr>
       <tr class="grupp"><td colspan="5">D. Vintern</td></tr>
       <tr><td class="nr">14</td><td>Mätningen och domen</td><td>Alla spår mäts i skuggan. Domen i mars (DECISIONS #547) avgör om
         kandidaten får stanna: grind A–C med samma trösklar, RÅ som kontroll och reserv. Faller den, används avstängningen i steg 13.</td>
@@ -325,9 +349,9 @@
       stationerna, till domen i mars, när fukten har ett mätt vittne (TROSKLAR-SKUGGAN §4(d)).</li>
     <li><b>Takten mäts, antas inte.</b> Skuggan läser hur ofta regeln skulle tala per rutt innan rösten byggs (DECISIONS #200). Tystnad
       är en funktion.</li>
-    <li><b>Regeln fryses vid förregistreringen 31/10.</b> Ändras den sedan, bara genom en daterad post, aldrig en lättnad. Annars är
-      marsdomen förorenad.</li>
-    <li><b>Tröskeln bor på ett ställe</b>, i publiceringen. Motorn får en farotyp, text, prioritet och vektorer, inga tal.</li>
+    <li><b>Regeln fryses vid förregistreringen 31/10.</b> Ändras den sedan, bara genom en daterad post med båda signaturerna; en lättnad efter sett utfall
+      prövas enligt regel L1–L4 (DECISIONS #564). Annars är marsdomen förorenad.</li>
+    <li><b>Tröskeln bor på ett ställe</b>, i databasen (<code>kandidat_regel()</code>); publiceringen läser den och bär inga tal (DECISIONS #576). Motorn får en farotyp, text, prioritet och vektorer, inga tal.</li>
     <li><b>Samma hazard aldrig två gånger inom 10 minuter eller 5 km</b>, och inom 10 sekunder efter en varning talar bara en viktigare
       fara. Det gäller den nya farotypen som alla andra.</li>
     <li><b>Inget lämnar telefonen.</b> Matchningen sker i appen mot den nedladdade filen, som i dag.</li>
@@ -348,17 +372,20 @@
     <li>Volymen är mätt: 12 GB per dygn om allt hämtas varje timme, 2,5 GB med körningarna var sjätte timme. Tiden per anrop
       spretar (9–145 s, en timeout på 180 s), så en timkörning behöver en tidsbudget. MET:s villkor är lästa (14/10 kväll): <i>"avoid spawning multiple parallel
       sessions"</i> — vi hämtar ett anrop i taget.</li>
+    <li>Radarns tröskel 0,5 mm/h bygger på ett stickprov: bekräftelsekurvan har drivit mellan veckorna och var bandad på
+      <code>rate_max_mmh</code>, inte på <code>rate_mean_mmh</code> (DECISIONS #565). Talet avgörs på tre veckors kurva och läses 26/10 (#568).
+      Ankarbandet 15 km vilar på underlag från sensommar och höst utan frostnätter (DECISIONS #566).</li>
     <li>Faller kandidaten i mars fälls domen på RÅ som förut (reserven i DECISIONS #547). Det blir inte två chanser.</li>
   </ul>
 
   <h2 id="avsnitt-7">7. Det här är Axels</h2>
   <ol>
-    <li>Svaren på de fem valen, tillsammans med Bengt. Val 2, regeln, är Axels att skriva.</li>
+    <li>Svaren på de fem valen, tillsammans med Bengt (val 1, 3 och 4 är avgjorda, val 2 beslutad, val 5 kvar). Regelns tal (DECISIONS #562, #565, #566, #575) är Axels och signeras i förregistreringen.</li>
     <li>S3 till App Store: arkivera 0.3.12 (24) och skicka in den. Det ger en prognosvarning live medan resten byggs.</li>
         <li>Läsa paritetsprovet (steg 4) innan något publiceras: det är Axels kedja och Axels kandidat.</li>
-    <li>Signaturen i TROSKLAR-SKUGGAN §4(a) om val 1(a) väljs.</li>
+    <li>Signaturen på ändringen av TROSKLAR-SKUGGAN för den egna betavarningen (Bengts ja finns, DECISIONS #563, #575), vid förregistreringen.</li>
     <li>Godkänna förregistreringen för 2026/27 senast 31/10 (steg 8).</li>
-    <li>Arkivera och skicka in bygget 0.3.13 (25) när steg 10–11 är gröna (steg 12).</li>
+    <li>Arkivera bygget 0.3.13 (26) från main (bd58e36) till intern TestFlight för bilprovet, och skicka in det till App Review efter takten (steg 12).</li>
   </ol>
 
   <hr>
