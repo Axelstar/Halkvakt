@@ -67,6 +67,10 @@ data class WarningCard(
                 // The voice always says 500 m (the trigger distance), whatever the exact distance was.
                 HazardKind.CAMERA ->
                     WarningCard(Icon.KAMERA, null, "Fartkamera", null, Distance.Number("500", "M"), null, meta?.speedLimitKmh, null, null, q)
+                // K (DECISIONS #562, #577): märkt beta och modellerat, aldrig uppmätt — samma kort som efterhalkans, med halkans ikon.
+                HazardKind.KANDIDAT ->
+                    WarningCard(Icon.HALKA, "BETA", "Halka", "Halkvakt tror — modellerat", Distance.Words("FRAMÖVER"),
+                        null, null, null, null, q)
             }
         }
 

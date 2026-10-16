@@ -28,6 +28,9 @@ export interface LiveDoc {
   djur?: { id: string; lon: number; lat: number; art: string | null; slut?: string | null }[];
   /** #38 — bridges whose nearest station is near freezing. Publisher pre-filters; engine re-checks. */
   bridges?: { id: string; lon: number; lat: number; road: string | null; yta: number | null; fukt: boolean }[];
+  /** #576 — the candidate's warning stretches: the database rule's `varnar` points per stretch. Absent = switched off (#562
+   *  punkt 5), empty = the rule is silent; both mean no candidate hazard. `tid` is the rule's hour; the engine does not read it. */
+  kandidat?: { id: string; tid: string; punkter: [number, number][] }[];
 }
 
 export function snapshotToHazards(staticDoc: StaticDoc, liveDoc: LiveDoc): Hazard[] {
@@ -57,6 +60,9 @@ export function snapshotToHazards(staticDoc: StaticDoc, liveDoc: LiveDoc): Hazar
   for (const b of liveDoc.bridges ?? []) {
     out.push({ id: `bro:${b.id}`, kind: "icing_point", lon: b.lon, lat: b.lat,
                meta: { surfaceTempC: b.yta, moisture: b.fukt, bridge: true } });
+  }
+  for (const k of liveDoc.kandidat ?? []) {
+    out.push({ id: `kand:${k.id}`, kind: "kandidat", points: k.punkter });
   }
   return out;
 }

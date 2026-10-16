@@ -64,6 +64,14 @@ class WarningCardTest {
         assertEquals("Halkvakt tror: frysrisk framöver.", c.quote)
     }
 
+    @Test fun candidateBetaIsMarked() {   // kandidaten, DECISIONS #562, #577
+        val c = WarningCard.make(alert(HazardKind.KANDIDAT, 655, "Halkvakt tror: halka framöver.", beta = true), null)
+        assertEquals(WarningCard.Icon.HALKA, c.icon); assertEquals("BETA", c.stage); assertEquals("Halka", c.title)
+        assertEquals("Halkvakt tror — modellerat", c.sub); assertEquals(words("FRAMÖVER"), c.distance)
+        assertNull(c.road); assertNull(c.advice)
+        assertEquals("Halkvakt tror: halka framöver.", c.quote)
+    }
+
     @Test fun bridgeInHundredsOfMetresLikeTheVoice() {   // K
         val k = WarningCard.make(alert(HazardKind.ICING_POINT, 640, "Frysrisk framöver — bro om 600 meter."), PointMeta(bridge = true))
         assertEquals(WarningCard.Icon.BRO, k.icon); assertEquals("Bro", k.sub); assertEquals(num("600", "M"), k.distance)

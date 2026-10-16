@@ -364,7 +364,9 @@ async function forsprangVarv(prov: boolean): Promise<Response> {
     fetch(CDN + "static.json" + bust).then((r) => r.json()),
     fetch(CDN + "live.json" + bust).then((r) => r.json()),
   ]);
-  const hazards = snapshotToHazards(st, lv);
+  // Kandidaten (K, DECISIONS #577) hålls utanför skuggans motorkörningar: deras domar är förregistrerade utan den, och sist i
+  // prioriteten ändrar den ingen annan varning i appen. Kandidatens egen takt loggas för sig (kandidatVarnar, #573).
+  const hazards = snapshotToHazards(st, lv).filter((h) => h.kind !== "kandidat");
   const vata = new Map<string, number>();
   for (const w of (Array.isArray(lv?.weather) ? lv.weather : [])) if (typeof w?.bevis?.vata === "number") vata.set(`wx:${w.id}`, w.bevis.vata);
   const nivaer = new Map<string, ForsprangNiva>();
@@ -459,7 +461,8 @@ Deno.serve(async (req) => {
       fetch(CDN + "static.json" + bust).then((r) => r.json()),
       fetch(CDN + "live.json" + bust).then((r) => r.json()),
     ]);
-    const hazards = snapshotToHazards(st, lv);
+    // Utan kandidaten, som ovan (DECISIONS #577).
+    const hazards = snapshotToHazards(st, lv).filter((h) => h.kind !== "kandidat");
     // Ankarna hämtas en gång per anrop, inte per rutt. Bara Sverige: funktionen läser det svenska arkivet.
     const ankare = land === "se" && !c ? await vagpunktAnkare() : { lista: [] as Ankare[], skal: c ? "grupp C loggar ingen prognos" : "bara Sverige" };
     // Kandidatens takt (DECISIONS #573): bara huvudvarvet i Sverige, som prognosen.

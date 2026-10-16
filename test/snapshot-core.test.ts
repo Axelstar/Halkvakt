@@ -330,7 +330,7 @@ test("#154 en fallen geometrifråga fäller inte snapshoten — rain_segments to
 
 // ── KANDIDATENS NYCKEL (kort #343, NIVA2-LIVE steg 6, DECISIONS #576) ─────────────────────────
 // Regeln bor i databasen (kandidat_regel); publiceringen tar utfallet `varnar` och inget annat, i en egen nyckel.
-test("#576 kandidaten: regelns varnande punkter blir en rad per sträcka i en egen nyckel — motorn ser samma faror som utan den", async () => {
+test("#576 kandidaten: regelns varnande punkter blir en rad per sträcka i en egen nyckel — motorn får bara kandidatens faror till (#577)", async () => {
   const T = new Date("2026-10-15T08:00:00Z");
   const { q, asked } = fakeDb({
     segments: [{ segment_id: "S1", condition_code: 3, condition_info: ["Is"], road_number: "E4", g: { coordinates: [[15, 60], [15.1, 60.1]] } }],
@@ -350,8 +350,14 @@ test("#576 kandidaten: regelns varnande punkter blir en rad per sträcka i en eg
     "bara utfallet varnar — inga egna tal i publiceringen");
   assert.ok(!notes.some((n) => n.startsWith("kandidat:")));
   assert.deepEqual(liveDoc.segments.map((s) => s.id), ["S1"], "väglaget är orört");
-  // LÄGG TILL, ERSÄTT ALDRIG: nyckeln når ingen port — motorn ger samma faror med och utan den.
-  assert.deepEqual(snapshotToHazards(staticDoc, liveDoc), snapshotToHazards(staticDoc, { ...liveDoc, kandidat: [] }));
+  // LÄGG TILL, ERSÄTT ALDRIG: sedan steg 10 (#577) läser motorn nyckeln, men den lägger bara till kandidatens faror — en per
+  // sträcka — och alla andra faror är desamma som utan den.
+  const med = snapshotToHazards(staticDoc, liveDoc), utan = snapshotToHazards(staticDoc, { ...liveDoc, kandidat: [] });
+  assert.deepEqual(med.filter((h) => h.kind !== "kandidat"), utan);
+  assert.deepEqual(med.filter((h) => h.kind === "kandidat"), [
+    { id: "kand:S1", kind: "kandidat", points: [[20.12346, 67.65432], [20.2, 67.7]] },
+    { id: "kand:S7", kind: "kandidat", points: [[21, 66.5]] },
+  ]);
 });
 
 test("#576 tiger regeln är kandidat tom och noterad, och regeln frågas inte", async () => {

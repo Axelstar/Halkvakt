@@ -45,6 +45,13 @@ class LasarkontraktetTest {
             "fall30C" -> h.meta.fall30C
             else -> error("${h.id}: unknown point field $nyckel")
         }
+        // Kandidaten (DECISIONS #577): the number of points and the first point's lon and lat.
+        is KandidatHazard -> when (nyckel) {
+            "antalPunkter" -> h.points.size
+            "lon0" -> h.points.firstOrNull()?.get(0)
+            "lat0" -> h.points.firstOrNull()?.get(1)
+            else -> error("${h.id}: unknown kandidat field $nyckel")
+        }
     }
 
     /** Numbers compare by value (the fixture's 180 is an Int, the reader's bearing a Double). */

@@ -25,6 +25,7 @@ struct HazardIcon: View {
         case .accident:         return "ikon-olycka"
         case .wildlife:         return "ikon-vilt"
         case .camera:           return "ikon-kamera"
+        case .kandidat:         return "ikon-halka"   // #577
         }
     }
 }

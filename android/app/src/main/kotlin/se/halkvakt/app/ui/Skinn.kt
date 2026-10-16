@@ -86,6 +86,7 @@ fun rubrik(k: HazardKind) = when (k) {
     HazardKind.ICING_POINT -> "Frysrisk"
     HazardKind.WILDLIFE -> "Vilt"
     HazardKind.CAMERA -> "Fartkamera"
+    HazardKind.KANDIDAT -> "Halka"   // #577: kortets rubrik, märkt BETA på kortet
 }
 
 /* ---------- Delar som återkommer ---------- */

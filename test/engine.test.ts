@@ -61,6 +61,11 @@ function assertInvariants(alerts: Alert[], trace: Fix[], label: string): void {
     }
     if (a.kind === "slippery_segment") assert.match(a.text, /på vägen framför dig/);
     if (a.kind === "icing_point") assert.match(a.text, /framöver/);
+    // Kandidaten (DECISIONS #562, #577): alltid märkt beta, alltid den godkända texten — punktkälla, aldrig ett avstånd.
+    if (a.kind === "kandidat") {
+      assert.equal(a.text, "Halkvakt tror: halka framöver.", `${label}: kandidatens text`);
+      assert.equal(a.beta, true, `${label}: kandidaten är alltid beta`);
+    }
     assert.ok(PRIORITY.includes(a.kind), `${label}: unknown kind ${a.kind}`);
     const fixTimes = new Set(trace.map((f) => f.t));
     assert.ok(fixTimes.has(a.t), `${label}: alert at t=${a.t} has no matching fix`);
@@ -109,7 +114,7 @@ for (const f of vectorFiles) {
 
 test("vectors cover every discipline rule", () => {
   const names = vectorFiles.join(" ");
-  for (const need of ["priority", "throttle", "no_repeat", "silent_drive", "stationary", "segment", "icing"]) {
+  for (const need of ["priority", "throttle", "no_repeat", "silent_drive", "stationary", "segment", "icing", "kandidat"]) {
     assert.ok(names.includes(need), `missing a vector for: ${need}`);
   }
   // The silence vector must actually be silent — the product's soul, asserted twice.

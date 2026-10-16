@@ -36,7 +36,10 @@ test("läsarkontraktet: TS-läsaren ger provfilens väntade utfall, och null bli
     const meta = (h as { meta?: Record<string, unknown> }).meta ?? {};
     for (const [nyckel, forvantat] of Object.entries(v)) {
       if (nyckel === "id" || nyckel === "kind" || nyckel.startsWith("_")) continue;
-      const fick = nyckel === "bearing" ? (h as { bearing?: unknown }).bearing : meta[nyckel];
+      // Kandidaten (DECISIONS #577) bär punkter, inte meta: antalet och första punktens lon och lat.
+      const k = h!.kind === "kandidat" ? (h as { points: [number, number][] }).points : null;
+      const fick = k ? ({ antalPunkter: k.length, lon0: k[0]?.[0], lat0: k[0]?.[1] } as Record<string, unknown>)[nyckel]
+        : nyckel === "bearing" ? (h as { bearing?: unknown }).bearing : meta[nyckel];
       assert.strictEqual(fick === undefined ? null : fick, forvantat, `${v.id}: ${nyckel} — ${v._varfor ?? ""}`);
     }
   }

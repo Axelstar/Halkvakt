@@ -8,7 +8,8 @@ export type HazardKind =
   | "slippery_segment"  // A1 — Trafikverket RoadCondition (operator-classified)
   | "icing_point"       // A2 — WeatherMeasurepoint showing icing conditions
   | "wildlife"          // A4 — historical hotspot / fresh polisen event
-  | "camera";           // A5 — TrafficSafetyCamera
+  | "camera"            // A5 — TrafficSafetyCamera
+  | "kandidat";         // K — kandidatens betavarning: modellerad halka per sträcka (NIVÅ 2+BLANDNING, DECISIONS #562, #577)
 
 /** Spoken priority, highest first. Lower priority candidates are DROPPED, never queued. */
 export const PRIORITY: readonly HazardKind[] = [
@@ -17,11 +18,15 @@ export const PRIORITY: readonly HazardKind[] = [
   "icing_point",
   "wildlife",
   "camera",
+  // LAST on purpose (DECISIONS #577): every other kind outranks it, so the priority-aware cooldown can never drop or delay
+  // another warning because the candidate spoke — the other kinds behave exactly as without it, and the shadow's
+  // pre-registered measurements still describe what the app says about them.
+  "kandidat",
 ] as const;
 
 export interface PointHazard {
   id: string;
-  kind: Exclude<HazardKind, "slippery_segment">;
+  kind: Exclude<HazardKind, "slippery_segment" | "kandidat">;
   lon: number;
   lat: number;
   /** Camera: monitored direction of travel (deg). Warn only when roughly co-directional. */
@@ -67,7 +72,17 @@ export interface SegmentHazard {
   };
 }
 
-export type Hazard = PointHazard | SegmentHazard;
+/** K — one road stretch where the candidate's rule says `varnar` (live.json `kandidat`, DECISIONS #576). The threshold lives
+ *  in the database rule; the engine only gets the warning points. One hazard per stretch, so the repeat rule holds per stretch,
+ *  not per point (the points sit about every 2 km). */
+export interface KandidatHazard {
+  id: string;
+  kind: "kandidat";
+  /** WGS84 [lon, lat] of the stretch's warning points. */
+  points: [number, number][];
+}
+
+export type Hazard = PointHazard | SegmentHazard | KandidatHazard;
 
 export interface Fix {
   /** Seconds. Any epoch; only deltas matter. Engine reads no clocks. */
@@ -90,8 +105,9 @@ export interface Alert {
    *  every other alert, so the log shape of all other vectors is unchanged. The warning card
    *  shows it as a stage chip (design handoff 2/10, DECISIONS #443). */
   step?: AccidentStep;
-  /** S3 only: the frost-risk call came from the post-rain beta rule, not from surface + moisture (DECISIONS #524).
-   *  Absent otherwise, so the log shape of every other vector is unchanged. The warning card marks it as beta. */
+  /** S3: the frost-risk call came from the post-rain beta rule, not from surface + moisture (DECISIONS #524). K: always —
+   *  the candidate is a beta warning (DECISIONS #562). Absent otherwise, so the log shape of every other vector is unchanged.
+   *  The warning card marks it as beta. */
   beta?: true;
 }
 

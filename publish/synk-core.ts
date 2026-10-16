@@ -62,7 +62,9 @@ export function farorLangs(faror: Hazard[], line: [number, number][]): Hazard[] 
   // null, och leadM ≤ leadMaxM), så avsnitt längre bort än leadMaxM plus provavståndet kan aldrig larma. Avsnitten var nästan hela
   // tiden: tio avsnitt kostade 2,7 s på Värmlandsrutten 11/10.
   const naraSeg = rutnat(line, DEFAULT_CONFIG.leadMaxM + DEFAULT_CONFIG.segmentSampleM + 300);
-  return faror.filter((h) => (h.kind === "slippery_segment" ? naraSeg : nara)([h]) !== null);
+  // Kandidaten (DECISIONS #577) står inte i favoriternas rapport och jämförs därför inte — uttryckligen, så att den inte faller bort
+  // som NaN i rutnätet.
+  return faror.filter((h) => h.kind !== "kandidat" && (h.kind === "slippery_segment" ? naraSeg : nara)([h]) !== null);
 }
 
 /** Vad bilen får höra: motorns larm längs linjen, med platsen för faran längs rutten (bilens plats vid larmet plus avståndet fram). */

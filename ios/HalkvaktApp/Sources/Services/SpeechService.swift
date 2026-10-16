@@ -133,6 +133,7 @@ final class Prefs {
         case .icing_point: return icing
         case .wildlife: return wildlife
         case .camera: return camera
+        case .kandidat: return slippery   // #577: följer reglaget Halka — den säger halka, och har inget eget reglage
         }
     }
 
@@ -143,6 +144,7 @@ final class Prefs {
         case .icing_point: return "Frysrisk"
         case .wildlife: return "Vilt"
         case .camera: return "Fartkamera"
+        case .kandidat: return "Halka (beta)"
         }
     }
 }

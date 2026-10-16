@@ -135,7 +135,8 @@ class GuardService : Service() {
             if (g == null) {
                 val warnM = kotlinx.coroutines.runBlocking { Prefs.warnDistanceM(this@GuardService).first() }.toDouble()
                 guard = Guard(hazards, cfg = EngineConfig(leadMaxM = warnM), speak = ::speak, notify = ::updateNotification, onEvent = AlertBus::post,
-                    isEnabled = { it !in disabledKinds },
+                    // Kandidaten (#577) följer reglaget Halka i Varna för — den säger halka, och har inget eget reglage.
+                    isEnabled = { (if (it == HazardKind.KANDIDAT) HazardKind.SLIPPERY_SEGMENT else it) !in disabledKinds },
                     onAlert = { a ->
                         // Kortet (DECISIONS #444) slår upp farans metadata: vägnummer, gräns, bro, röjningstid.
                         val meta = (hazardsNow.firstOrNull { it.id == a.hazardId } as? PointHazard)?.meta

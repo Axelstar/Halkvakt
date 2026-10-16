@@ -6,6 +6,7 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
 
     private var points: List<PointHazard> = emptyList()
     private var segments: List<Pair<SegmentHazard, List<DoubleArray>>> = emptyList()
+    private var kandidater: List<KandidatHazard> = emptyList()
 
     init { ingest(hazards) }
 
@@ -13,6 +14,7 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
         points = hazards.filterIsInstance<PointHazard>()
         segments = hazards.filterIsInstance<SegmentHazard>()
             .map { it to Geo.samplePolyline(it.line, cfg.segmentSampleM) }
+        kandidater = hazards.filterIsInstance<KandidatHazard>()
     }
 
     /**
@@ -65,6 +67,7 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
         val candidates = ArrayList<Candidate>()
         for (p in points) evaluatePoint(fix, heading, p, leadM)?.let { candidates.add(it) }
         for ((s, samples) in segments) evaluateSegment(fix, heading, s, samples, leadM)?.let { candidates.add(it) }
+        for (k in kandidater) evaluateKandidat(fix, heading, k, leadM)?.let { candidates.add(it) }
         if (candidates.isEmpty()) return null
 
         val eligible = candidates.filter { c ->
@@ -93,7 +96,8 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
         return Alert(
             t = fix.t, hazardId = win.hazard.id, kind = win.kind,
             distanceM = Math.round(win.distM),
-            text = if (win.beta) Texts.EFTERHALKA_TEXT else Texts.alertText(win.kind, win.distM, ph, win.step),
+            text = if (win.beta && win.kind == HazardKind.ICING_POINT) Texts.EFTERHALKA_TEXT
+                   else Texts.alertText(win.kind, win.distM, ph, win.step),
             step = win.step,
             beta = win.beta,
         )
@@ -195,5 +199,20 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
         val b = best ?: return null
         if (b > leadM) return null
         return Candidate(s, HazardKind.SLIPPERY_SEGMENT, b, s.id)
+    }
+
+    /**
+     * K — kandidatens betavarning (DECISIONS #562, #577), spegel av evaluateKandidat i engine.ts. The rule lives in the
+     * database; the engine adds no threshold — only the corridor and the lead over the stretch's points. One key per stretch.
+     */
+    private fun evaluateKandidat(fix: Fix, heading: Double, k: KandidatHazard, leadM: Double): Candidate? {
+        var best: Double? = null
+        for (pt in k.points) {
+            val (ahead, distM) = isAhead(fix, heading, pt[0], pt[1])
+            if (ahead && (best == null || distM < best!!)) best = distM
+        }
+        val b = best ?: return null
+        if (b > leadM) return null
+        return Candidate(k, HazardKind.KANDIDAT, b, k.id, beta = true)
     }
 }

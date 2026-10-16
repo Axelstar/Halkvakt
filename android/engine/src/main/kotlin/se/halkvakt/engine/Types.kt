@@ -10,7 +10,10 @@ enum class HazardKind(val wire: String) {
     SLIPPERY_SEGMENT("slippery_segment"),
     ICING_POINT("icing_point"),
     WILDLIFE("wildlife"),
-    CAMERA("camera");
+    CAMERA("camera"),
+    /** K — kandidatens betavarning (DECISIONS #562, #577). LAST on purpose: every other kind outranks it, so the cooldown can
+     *  never drop or delay another warning because the candidate spoke. Mirrors PRIORITY in engine/src/types.ts. */
+    KANDIDAT("kandidat");
     companion object { fun of(s: String) = entries.first { it.wire == s } }
 }
 
@@ -50,6 +53,12 @@ data class SegmentHazard(
     val line: List<DoubleArray>, // [lon, lat]
     val meta: SegmentMeta = SegmentMeta(),
 ) : Hazard { override val kind = HazardKind.SLIPPERY_SEGMENT }
+/** K — one stretch where the candidate's database rule says `varnar` (live.json `kandidat`, DECISIONS #576, #577). The engine
+ *  gets only the warning points — no threshold — and one hazard per stretch, so the repeat rule holds per stretch. */
+data class KandidatHazard(
+    override val id: String,
+    val points: List<DoubleArray>, // [lon, lat]
+) : Hazard { override val kind = HazardKind.KANDIDAT }
 
 data class Fix(
     val t: Double, val lon: Double, val lat: Double,
@@ -61,7 +70,8 @@ data class Alert(
     val distanceM: Long, val text: String,
     /** Serious accidents only — which of the two-step calls (DECISIONS #28, #443). Null otherwise. */
     val step: AccidentStep? = null,
-    /** S3 only — the frost-risk call came from the post-rain beta rule (DECISIONS #524). The warning card marks it as beta. */
+    /** S3: the frost-risk call came from the post-rain beta rule (DECISIONS #524). K: always (DECISIONS #562). The warning
+     *  card marks it as beta. */
     val beta: Boolean = false,
 )
 
@@ -136,6 +146,9 @@ object Texts {
     /** S3, efterhalkan som märkt beta (DECISIONS #222, #524) — spegel av EFTERHALKA_TEXT i texts.ts. */
     const val EFTERHALKA_TEXT = "Halkvakt tror: frysrisk framöver."
 
+    /** K, kandidatens betavarning (DECISIONS #562, #573) — spegel av KANDIDAT_TEXT i texts.ts. */
+    const val KANDIDAT_TEXT = "Halkvakt tror: halka framöver."
+
     /** " på E18" / " på väg 25" / "" när numret saknas. */
     fun roadPhrase(road: String?): String {
         val r = road?.trim().orEmpty()
@@ -175,5 +188,6 @@ object Texts {
         HazardKind.WILDLIFE -> "Viltrisk framöver."
         HazardKind.CAMERA -> hazard?.meta?.speedLimitKmh?.let { "Fartkamera om 500 meter. Gränsen är $it." }
             ?: "Fartkamera om 500 meter."
+        HazardKind.KANDIDAT -> KANDIDAT_TEXT
     }
 }

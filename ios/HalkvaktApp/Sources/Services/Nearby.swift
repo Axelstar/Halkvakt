@@ -17,6 +17,8 @@ enum Nearby {
 
     static func nearest(_ hazards: [Hazard], lon: Double, lat: Double, n: Int = 6) -> [NearbyItem] {
         hazards.compactMap { h -> NearbyItem? in
+            // Kandidaten (#577) står inte i listan: den är en modells punkter, och rösten och kortet bär den.
+            if case .kandidat = h { return nil }
             let d = distanceM(h, lon: lon, lat: lat)
             guard d <= maxM else { return nil }
             return NearbyItem(id: h.id, kind: kind(of: h), distM: d, secondary: secondary(h))
@@ -30,6 +32,7 @@ enum Nearby {
         switch h {
         case .point(_, let kind, _, _, _, _): return kind
         case .segment: return .slippery_segment
+        case .kandidat: return .kandidat
         }
     }
 
@@ -39,6 +42,8 @@ enum Nearby {
             return haversineM(lon, lat, plon, plat)
         case .segment(_, let line, _):
             return line.map { haversineM(lon, lat, $0[0], $0[1]) }.min() ?? .infinity
+        case .kandidat(_, let points):
+            return points.map { haversineM(lon, lat, $0[0], $0[1]) }.min() ?? .infinity
         }
     }
 
@@ -47,6 +52,8 @@ enum Nearby {
         switch h {
         case .segment(_, _, let meta):
             return meta.info.first
+        case .kandidat:
+            return nil
         case .point(_, let kind, _, _, _, let meta):
             switch kind {
             case .icing_point:

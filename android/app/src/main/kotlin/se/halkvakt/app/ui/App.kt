@@ -89,6 +89,7 @@ fun HazardIcon(k: HazardKind, size: Dp = 24.dp, tint: Color = Brand.yellow) {
             HazardKind.ACCIDENT         -> R.drawable.ikon_olycka
             HazardKind.WILDLIFE         -> R.drawable.ikon_vilt
             HazardKind.CAMERA           -> R.drawable.ikon_kamera
+            HazardKind.KANDIDAT         -> R.drawable.ikon_halka   // #577
         }),
         contentDescription = rubrik(k),
         tint = tint,

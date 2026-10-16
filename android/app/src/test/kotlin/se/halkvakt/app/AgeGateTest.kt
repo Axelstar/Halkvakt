@@ -35,4 +35,10 @@ class AgeGateTest {
         assertTrue(AgeGate.filter(med, t0, t0 + 50 * 60_000).hazards.any { it.id == "djur:1" })
         assertFalse(AgeGate.filter(med, t0, t0 + 121 * 60_000).hazards.any { it.id == "djur:1" })
     }
+
+    @Test fun `kandidaten åldras som halksträckorna (#577)`() {
+        val med = hazards + KandidatHazard("kand:S1", listOf(doubleArrayOf(18.0, 59.0)))
+        assertTrue(AgeGate.filter(med, t0, t0 + 44 * 60_000).hazards.any { it.id == "kand:S1" })
+        assertFalse(AgeGate.filter(med, t0, t0 + 50 * 60_000).hazards.any { it.id == "kand:S1" })
+    }
 }

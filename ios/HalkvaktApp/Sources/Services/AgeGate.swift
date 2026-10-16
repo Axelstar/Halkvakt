@@ -16,6 +16,7 @@ enum AgeGate {
         let kept = hazards.filter { h in
             switch h {
             case .segment: return false
+            case .kandidat: return false   // kandidaten (#577): väglag, åldras som halksträckorna
             case .point(_, let kind, _, _, _, _):
                 switch kind {
                 case .icing_point: return false
