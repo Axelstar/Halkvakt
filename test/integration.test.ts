@@ -1792,3 +1792,17 @@ test("#579 bitar av vägen: en kilometer åt vardera hållet i meter, sammanslag
     await pool.end();
   }
 });
+
+test("#580 autovacuum: tabellerna som byts ut städas vid 2 % + 1 000 döda rader, och saknade tabeller hoppas över", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  try {
+    await pool.query(readFileSync(new URL("../sql/060_autovacuum.sql", import.meta.url), "utf8"));
+    await pool.query(readFileSync(new URL("../sql/060_autovacuum.sql", import.meta.url), "utf8"));   // två gånger: idempotent
+    const { rows } = await pool.query(`SELECT reloptions FROM pg_class WHERE oid = 'public.weather_observations'::regclass`);
+    for (const o of ["autovacuum_vacuum_scale_factor=0.02", "autovacuum_vacuum_threshold=1000", "autovacuum_analyze_scale_factor=0.02"]) {
+      assert.ok((rows[0].reloptions ?? []).includes(o), `${o} saknas: ${rows[0].reloptions}`);
+    }
+  } finally { await pool.end(); }
+});

@@ -13590,3 +13590,45 @@ Tills dess skriver publiceringen kandidatfilen, men sidan läser den inte.
 står som fråga i bedömningen §4.2.
 
 **Stomdokument:** LIV steg 9, SYS webbkartan läser kandidaten, BED §4.2.
+
+## #580 (16/10 2026) Databasen under taket: autovacuum städar tabellerna som byts ut efter varje radering (kort #347)
+
+**Bengts fråga och ord 16/10:**
+- På vakthundens rapport *"DATABASEN ÄR 482 MB"* frågade han *"har vi säker koll på att vi håller oss under 500"*.
+- På Claudes svar och förslag: *"ja till migrationen"*.
+
+**Läget**, DB-knappen 38862206832 och vakthundens timserie i ärende #963:
+- 482 MB, varav 15 MB är Supabases två fasta mallar.
+- Från 455 MB kl. 02 den 15/10. Sedan kl. 17 samma dag har tillväxten varit cirka 0,4 MB/timme, cirka 9–10 MB per dygn, så taket
+  hade nåtts om cirka två dygn.
+- `weather_observations` är 276 MB, med 810 000 levande och **154 000 döda rader (19 %)**. Autovacuum körde senast 15/10 03:15.
+- `trend_kandidater` hade 23 000 döda rader och `trend_stigande` 15 000.
+- Kandidatens tabeller är cirka 24 MB och står still, eftersom de gallras.
+
+**Orsaken:**
+- Nattens raderingar av exporterade dygn lämnar döda rader.
+- Autovacuum städar först vid 20 % + 50 döda rader, och vi låg på 19 %. Platsen blev därför aldrig ledig att återanvända.
+- Nya observationer lades i nytt utrymme, och filen växte.
+
+**Byggt:** `sql/060_autovacuum.sql` sätter autovacuum vid 2 % + 1 000 döda rader (analys likaså) på:
+- väderobservationerna i alla fyra länder;
+- trendtabellerna;
+- radarn;
+- kandidatens tre tabeller som byts ut.
+
+Ändringen sätter bara lagringsparametrar. Den raderar inget, kostar inget utrymme och låser inte läsning eller skrivning. Ingen
+`VACUUM FULL`: den dubblar tabellen tillfälligt och kunde skrivskydda databasen. Tabeller som saknas hoppas över, så migrationen går
+också i CI. Integrationsprovet kör filen två gånger och läser tillbaka parametrarna.
+
+**Siffran sjunker inte.** Vakuum gör platsen återanvändbar men lämnar inte tillbaka den, så 482 MB står kvar. Det mätningen ska visa
+är att tillväxten stannar.
+
+**Mätningen efter migrationen — regeln och förväntan skrivna före knappen:**
+1. **Inom en timme:** `last_autovacuum` för `weather_observations` ligger efter migrationen, och `n_dead_tup` är under 20 000
+   (DB-knappen *las*).
+2. **Det följande dygnet:** databasen växer med högst 2 MB, enligt vakthundens timserie.
+
+Faller provet tas steg 2: kortare förvaring av väderobservationerna i databasen, till exempel 10 dygn i stället för 14. Det är Bengts
+beslut, eftersom 14 dygn är ett tidigare val (#569).
+
+**Stomdokument:** SYS databasen och arkivet, BED §4.2.
