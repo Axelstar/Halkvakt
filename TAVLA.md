@@ -88,7 +88,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   marknadsforing.yml — bild + text de morgnar ett län har halka eller minst tre stationer under noll, högst ett inlägg per dygn, torrkörning
   utan hemligheterna. ✅ **LIVE 16/10 23:14** — första inlägget på sidan och @halkvakt (körning 38967910636, kvitto i `postat.json`:
   FB `1312515671952967_122097680613516187`, IG `17948923554341532`). Klickbar länk på Facebook, profilens länk på Instagram (DECISIONS #599).
-  🔑 Kvar (Axel): länken https://halkvakt.se/lan i Instagram-profilen. X/Bluesky/Mastodon kvar.
+  🔨 **Halkvakt live 2 (DECISIONS #600):** sex typer — SMHI-varning, höstens första, halkan sprider sig, höstens kallaste, veckan, morgonlistan —
+  en vinnare per körning, morgon/lunch/kväll via `halkvakt-live.yml` och tre pulsjobb, högst tre om dygnet. Verify: pulsjobben läses tillbaka och
+  ett händelseinlägg står i `postat.json` med sin typ. 🔑 Kvar (Axel): länken https://halkvakt.se/lan i Instagram-profilen. X/Bluesky/Mastodon kvar.
   🔍 **Sök (Axels fråga 00:28, planens §6):** länssidor + vägsidor *"Halt väglag i Skåne just nu"* som publicera-flödet skriver om var 30:e minut —
   byggs i karta-repot i oktober (Google behöver veckor) · domänen före första pressomgången · widget + "Sveriges halaste vägar" som länkbeten · Search Console.
   ✅ **VÄGSIDORNA I DRIFT 4/10 16:00Z** — deploy 37214328745 ur 45a07b4 · karta-repots commit 7f3b8c2 med `vag/` för alla sex · sitemapen 34 adresser · Pages svarar på `/vag/e4/`.

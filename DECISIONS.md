@@ -14161,3 +14161,37 @@ förhandsvisning — förkastat, bilden är inlägget. En första kommentar med 
 
 **Stomdokument:** inga — marknadsföringen har inget stomdokument; planen bor i MARKNADSFORING-NOLLBUDGET.md.
 
+## #600 (16/10 2026) Halkvakt live 2: olika inlägg när något händer, högst tre om dygnet (kort #281)
+
+**Beslut.** Axel 16/10 23:23: *"få lite olika posts och inte alltid samma. Det är bra med samma ibland men ibland ska det komma nya då
+det är något som händer"*; i planeringen valde han fem nya typer och 23:27 *"högst tre om dagen"*. `marknadsforing/posta.mjs` väljer
+nu EN vinnare per körning, som larmdisciplinen i appen, i prioritetsordning:
+1. **SMHI-varning** för snö eller halka (`meta.json` → `smhi_vinter`; vind till havs räknas inte), en gång per varning.
+2. **Höstens första** i ett län: första gången i säsongen som länet räknas (halka på minst ett vägavsnitt eller minst tre stationer
+   under noll). Länen i generatorns `state.json` och de som räknas vid första körningen är redan sedda — flödet påstår aldrig en
+   första gång det inte själv har sett.
+3. **Halkan sprider sig**: mot ögonblicksbilden närmast 24 h före (inom 20–28 h) — halkan minst fördubblad och minst +10 vägavsnitt,
+   eller minst två nya län med halka.
+4. **Höstens kallaste vägbana**: minst 0,5 °C under säsongens lägsta och högst −3 °C. En punktkälla: stationens namn och länet,
+   aldrig ett avstånd. Säsongens lägsta räknas från första körningen (16/10), därför "i Halkvakts mätningar".
+5. **Veckan på vägarna**, söndag kväll med minst fem dagars historik och någon halka eller minusgrad.
+6. **Morgonlistan** som förut, bara på morgonen och bara om inget ovan vann; inledningen skiftar mellan tre lydelser.
+Lunch och kväll postar bara händelser. **Spärrar:** högst tre inlägg per dygn, minst 4 h mellan två, samma nyckel (typ + län)
+högst en gång per 20 h — 20 och inte 24, så att morgonens puls inte fastnar en minut för tidigt. Varje typ har ett eget utseende i
+samma mörka ram: stort tal, gult varningskort, isblått för rekordkylan, staplar för veckan.
+
+**Flödet.** `.github/workflows/halkvakt-live.yml` (nytt) bär bild och postning, som flyttades ur `marknadsforing.yml` så att
+utkasten och snölarmen inte körs tre gånger. Tre pulsjobb: `puls-live-morgon` 04:50, `puls-live-lunch` 10:50, `puls-live-kvall`
+15:50 UTC. `ANTAL_NYA` och vakthundens `PULS_GOLV` 14 → 17 (kontraktsgrinden). `marknadsforing/live-historik.json` sparar en
+ögonblicksbild per körning (halka, minusstationer, kallast per län) i 14 dygn: ett aggregat per län ur sajtens publika `lan.json`.
+`postat.json` blir en lista per dag; 16/10:s enda kvitto läses fortfarande.
+
+**Alternativ.** Ett pulsjobb med timlistan `50 4,10,15 * * *` — förkastat: vakthundens `kadensTimmar` läser inga listor (#558).
+Flera inlägg per körning — förkastat: samma skäl som i appen, ett ord för mycket tystar nästa.
+
+**Prov:** `test/posta.test.ts` 14/14 (varje typ, prioriteten, tystnaden på lunch och kväll, de tre spärrarna, det gamla kvittot).
+Motprov: fördubblingen sänkt, 4 h-spärren 1 h, 20 h-spärren 1 h och rekordsteget 0,1 °C fällde vart och ett sitt prov. Torrkörning
+mot riktiga data med en påhittad snövarning: SMHI-inlägget valdes, ritades och skrevs ut som torrkörning.
+
+**Stomdokument:** inga — marknadsföringen har inget stomdokument; planen bor i MARKNADSFORING-NOLLBUDGET.md.
+

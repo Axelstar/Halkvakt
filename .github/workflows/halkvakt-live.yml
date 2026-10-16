@@ -1,0 +1,49 @@
+# Halkvakt live (kort #281, DECISIONS #598–#600): inlägg till Facebook-sidan och Instagram.
+# Startas av pulsklockan tre gånger om dygnet — puls-live-morgon 04:50, puls-live-lunch 10:50 och puls-live-kvall 15:50 UTC
+# (06:50/12:50/17:50 sommartid, 05:50/11:50/16:50 vintertid). posta.mjs väljer EN händelse per körning; lunch och kväll
+# postar bara när något händer. Högst tre inlägg per dygn, minst fyra timmar isär.
+name: halkvakt-live
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency: { group: halkvakt-live, cancel-in-progress: false }
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+
+      # Bilden måste vara pushad innan den skickas — Meta hämtar den via raw.githubusercontent.com.
+      - name: Välj händelse och rita bilden
+        run: |
+          npm i --no-save --no-audit --no-fund playwright@1.47.2
+          npx playwright install --with-deps chromium
+          node marknadsforing/posta.mjs bild
+
+      - name: Committa bilden och historiken
+        run: |
+          git config user.name "Halkvakt live"
+          git config user.email "motor@halkvakt.dev"
+          git add marknadsforing/live-historik.json
+          if [ -d marknadsforing/inlagg ]; then git add marknadsforing/inlagg; fi
+          git diff --cached --quiet || git commit -m "Halkvakt live: bild $(date -u +%FT%H:%M) [skip ci]"
+          git pull --rebase --autostash origin main && git push origin main || { git status --porcelain; exit 1; }
+
+      # Utan hemligheterna är steget en torrkörning: texten skrivs i loggen och inget postas.
+      - name: Posta
+        env:
+          META_PAGE_ID: ${{ secrets.META_PAGE_ID }}
+          META_PAGE_TOKEN: ${{ secrets.META_PAGE_TOKEN }}
+          META_IG_ID: ${{ secrets.META_IG_ID }}
+        run: |
+          node marknadsforing/posta.mjs skicka
+          git add marknadsforing/postat.json 2>/dev/null || true
+          git diff --cached --quiet || git commit -m "Halkvakt live: postat $(date -u +%FT%H:%M) [skip ci]"
+          git pull --rebase --autostash origin main && git push origin main || { git status --porcelain; exit 1; }
