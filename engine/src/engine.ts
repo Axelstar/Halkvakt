@@ -4,7 +4,7 @@
 //
 //   1. Within 10 s of an utterance only a MORE important hazard may speak (priority-aware
 //      cooldown, globalCooldownS; kort #127, v23 — replaced the blind 45 s). Priority
-//      accident > slippery > icing > wildlife > camera.
+//      accident > slippery > icing > wildlife > camera > kandidat (the beta candidate, last: #577).
 //      Losers are DROPPED, not queued. No exceptions, not even for accidents (logged in
 //      DECISIONS — revisit only on beta evidence).
 //   2. Same hazard never repeats until BOTH 10 min have passed AND 5 km been driven.
@@ -17,7 +17,7 @@
 //   4. Silence is the default. No hazard in corridor ⇒ no sound. Ever.
 
 import type {
-  Alert, EngineConfig, Fix, Hazard, HazardKind, PointHazard, SegmentHazard,
+  Alert, EngineConfig, Fix, Hazard, HazardKind, KandidatHazard, PointHazard, SegmentHazard,
 } from "./types.ts";
 import { DEFAULT_CONFIG, PRIORITY } from "./types.ts";
 import { angDiffDeg, bearingDeg, haversineM, isAhead, samplePolyline, type LonLat } from "./geo.ts";
@@ -55,6 +55,7 @@ export class AlertEngine {
   private readonly cfg: EngineConfig;
   private points: PointHazard[] = [];
   private segments: { h: SegmentHazard; samples: LonLat[] }[] = [];
+  private kandidater: { h: KandidatHazard; samples: LonLat[] }[] = [];
 
   private prevFix: Fix | null = null;
   private lastHeadingDeg: number | null = null;
@@ -78,9 +79,12 @@ export class AlertEngine {
   private ingest(hazards: Hazard[]): void {
     this.points = [];
     this.segments = [];
+    this.kandidater = [];
     for (const h of hazards) {
       if (h.kind === "slippery_segment") {
         this.segments.push({ h, samples: samplePolyline(h.line, this.cfg.segmentSampleM) });
+      } else if (h.kind === "kandidat") {
+        this.kandidater.push({ h, samples: h.points.map(([lon, lat]) => ({ lon, lat })) });
       } else {
         this.points.push(h);
       }
@@ -128,6 +132,10 @@ export class AlertEngine {
       const c = this.evaluateSegment(fix, heading, s, lead(s.h));
       if (c) candidates.push(c);
     }
+    for (const k of this.kandidater) {
+      const c = this.evaluateKandidat(fix, heading, k, lead(k.h));
+      if (c) candidates.push(c);
+    }
     if (candidates.length === 0) return null;
 
     // Rule 2: per-hazard repeat suppression (both time AND distance must have elapsed).
@@ -171,13 +179,14 @@ export class AlertEngine {
     this.lastSpokenT = fix.t;
     this.lastSpokenKind = win.kind;
     this.fired.set(win.alertKey, { t: fix.t, odometerM: this.odometerM });
-    const pointHazard = win.hazard.kind === "slippery_segment" ? undefined : (win.hazard as PointHazard);
+    const pointHazard = win.hazard.kind === "slippery_segment" || win.hazard.kind === "kandidat"
+      ? undefined : (win.hazard as PointHazard);
     return {
       t: fix.t,
       hazardId: win.hazard.id,
       kind: win.kind,
       distanceM: Math.round(win.distM),
-      text: win.beta ? EFTERHALKA_TEXT : alertText(win.kind, win.distM, pointHazard, win.step),
+      text: win.beta && win.kind === "icing_point" ? EFTERHALKA_TEXT : alertText(win.kind, win.distM, pointHazard, win.step),
       ...(win.step ? { step: win.step } : {}),
       ...(win.beta ? { beta: true as const } : {}),
     };
@@ -298,5 +307,25 @@ export class AlertEngine {
     }
     if (best === null || best > leadM) return null;
     return { hazard: s.h, kind: "slippery_segment", distM: best, alertKey: s.h.id };
+  }
+
+  /**
+   * K — kandidatens betavarning (DECISIONS #562, #577). The rule lives in the database (kandidat_regel, #576): every point
+   * published is one where it says `varnar`, so the engine adds no threshold — only the corridor and the lead, like a
+   * segment, over the stretch's points. One alert key per stretch: the repeat rule holds per stretch, not per point.
+   */
+  private evaluateKandidat(
+    fix: Fix, heading: number, k: { h: KandidatHazard; samples: LonLat[] }, leadM: number,
+  ): Candidate | null {
+    let best: number | null = null;
+    for (const pt of k.samples) {
+      const { ahead, distM } = isAhead(fix, heading, pt, this.cfg.corridorHalfAngleDeg);
+      if (ahead && (best === null || distM < best)) best = distM;
+    }
+    if (best === null || best > leadM) return null;
+    // (c), DECISIONS #581: tyst i kandidatEfterHalkaS efter att samma sträckas halkvarning (A1) talat.
+    const a1 = k.h.segmentHazardId ? this.fired.get(k.h.segmentHazardId) : undefined;
+    if (a1 && fix.t - a1.t < this.cfg.kandidatEfterHalkaS) return null;
+    return { hazard: k.h, kind: "kandidat", distM: best, alertKey: k.h.id, beta: true };
   }
 }

@@ -94,7 +94,7 @@ Deno.serve(async (req) => {
     if (karta) {
       const m = await buildMapData(
         (text, params) => sql.unsafe(text, (params ?? []) as any[]) as unknown as Promise<Record<string, any>[]>,
-        { trvKey: Deno.env.get("TRAFIKVERKET_API_KEY"), appVader: liveDoc.weather });
+        { trvKey: Deno.env.get("TRAFIKVERKET_API_KEY"), appVader: liveDoc.weather, appKandidat: liveDoc.kandidat });
       for (const [name, json] of Object.entries(m.files)) files[`data/${name}`] = json;
       notes.push(...m.notes);
       kartaStats = m.stats;
@@ -112,7 +112,7 @@ Deno.serve(async (req) => {
     }
     const sha = await publicera(files, inline);
     return new Response(JSON.stringify({ ok: true, sha, generated_at: liveDoc.generated_at,
-      segments: liveDoc.segments.length, kandidat: liveDoc.kandidat.length, weather: liveDoc.weather.length,
+      segments: liveDoc.segments.length, kandidat: liveDoc.kandidat?.length ?? null, weather: liveDoc.weather.length,
       deviations: liveDoc.deviations.length, wildlife: liveDoc.wildlife.length,
       bridges: liveDoc.bridges.length, smhi: liveDoc.smhi.length,
       cameras: staticDoc.cameras.length, border, notes,

@@ -19,6 +19,10 @@ final class VectorTests: XCTestCase {
 
     func parseHazard(_ o: [String: Any]) -> Hazard {
         let kind = HazardKind(rawValue: o["kind"] as! String)!
+        if kind == .kandidat {   // DECISIONS #577: one stretch with its warning points
+            let points = (o["points"] as! [[Any]]).map { $0.map { ($0 as! NSNumber).doubleValue } }
+            return .kandidat(id: o["id"] as! String, points: points, segmentHazardId: o["segmentHazardId"] as? String)
+        }
         if kind == .slippery_segment {
             let line = (o["line"] as! [[Any]]).map { $0.map { ($0 as! NSNumber).doubleValue } }
             let m = o["meta"] as? [String: Any]

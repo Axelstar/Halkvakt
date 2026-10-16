@@ -138,6 +138,7 @@ struct VaktenView: View {
         case .icing_point: return "Frysrisk"
         case .wildlife: return "Vilt"
         case .camera: return "Fartkamera"
+        case .kandidat: return "Halka"   // #577: kortets rubrik, märkt BETA på kortet
         case nil: return kind
         }
     }

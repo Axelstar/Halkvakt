@@ -10,6 +10,7 @@ import se.halkvakt.engine.HazardKind
 import se.halkvakt.engine.Fix
 import se.halkvakt.engine.Geo
 import se.halkvakt.engine.Hazard
+import se.halkvakt.engine.KandidatHazard
 import se.halkvakt.engine.PointHazard
 import se.halkvakt.engine.SegmentHazard
 
@@ -65,6 +66,7 @@ class Guard(
         for (h in hazards) when (h) {
             is PointHazard -> add(doubleArrayOf(h.lon, h.lat))
             is SegmentHazard -> addAll(h.line)
+            is KandidatHazard -> addAll(h.points)   // #577: takten följer också kandidatens punkter
         }
     }
 

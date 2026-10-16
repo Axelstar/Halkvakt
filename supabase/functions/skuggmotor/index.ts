@@ -11,7 +11,8 @@ export type HazardKind =
   | "slippery_segment"  // A1 — Trafikverket RoadCondition (operator-classified)
   | "icing_point"       // A2 — WeatherMeasurepoint showing icing conditions
   | "wildlife"          // A4 — historical hotspot / fresh polisen event
-  | "camera";           // A5 — TrafficSafetyCamera
+  | "camera"            // A5 — TrafficSafetyCamera
+  | "kandidat";         // K — kandidatens betavarning: modellerad halka per sträcka (NIVÅ 2+BLANDNING, DECISIONS #562, #577)
 
 /** Spoken priority, highest first. Lower priority candidates are DROPPED, never queued. */
 export const PRIORITY: readonly HazardKind[] = [
@@ -20,11 +21,15 @@ export const PRIORITY: readonly HazardKind[] = [
   "icing_point",
   "wildlife",
   "camera",
+  // LAST on purpose (DECISIONS #577): every other kind outranks it, so the priority-aware cooldown can never drop or delay
+  // another warning because the candidate spoke — the other kinds behave exactly as without it, and the shadow's
+  // pre-registered measurements still describe what the app says about them.
+  "kandidat",
 ] as const;
 
 export interface PointHazard {
   id: string;
-  kind: Exclude<HazardKind, "slippery_segment">;
+  kind: Exclude<HazardKind, "slippery_segment" | "kandidat">;
   lon: number;
   lat: number;
   /** Camera: monitored direction of travel (deg). Warn only when roughly co-directional. */
@@ -70,7 +75,20 @@ export interface SegmentHazard {
   };
 }
 
-export type Hazard = PointHazard | SegmentHazard;
+/** K — one road stretch where the candidate's rule says `varnar` (live.json `kandidat`, DECISIONS #576). The threshold lives
+ *  in the database rule; the engine only gets the warning points. One hazard per stretch, so the repeat rule holds per stretch,
+ *  not per point (the points sit about every 2 km). */
+export interface KandidatHazard {
+  id: string;
+  kind: "kandidat";
+  /** WGS84 [lon, lat] of the stretch's warning points. */
+  points: [number, number][];
+  /** The A1 hazard on the same stretch (`seg:<id>`). The candidate stays silent for kandidatEfterHalkaS after that one spoke
+   *  (DECISIONS #581). */
+  segmentHazardId?: string;
+}
+
+export type Hazard = PointHazard | SegmentHazard | KandidatHazard;
 
 export interface Fix {
   /** Seconds. Any epoch; only deltas matter. Engine reads no clocks. */
@@ -93,8 +111,9 @@ export interface Alert {
    *  every other alert, so the log shape of all other vectors is unchanged. The warning card
    *  shows it as a stage chip (design handoff 2/10, DECISIONS #443). */
   step?: AccidentStep;
-  /** S3 only: the frost-risk call came from the post-rain beta rule, not from surface + moisture (DECISIONS #524).
-   *  Absent otherwise, so the log shape of every other vector is unchanged. The warning card marks it as beta. */
+  /** S3: the frost-risk call came from the post-rain beta rule, not from surface + moisture (DECISIONS #524). K: always —
+   *  the candidate is a beta warning (DECISIONS #562). Absent otherwise, so the log shape of every other vector is unchanged.
+   *  The warning card marks it as beta. */
   beta?: true;
 }
 
@@ -121,6 +140,9 @@ export interface EngineConfig {
   efterhalkaYtaMaxC: number;
   efterhalkaFall30C: number;
   efterhalkaRegnH: number;
+  /** K (DECISIONS #581, Bengt 16/10 "bygg c"): seconds the candidate stays silent after the A1 warning for the same stretch spoke.
+   *  Removes the back-to-back double (A1, then the candidate 10 s later); keeps the later call deep inside a long stretch. */
+  kandidatEfterHalkaS: number;
 }
 
 export const DEFAULT_CONFIG: EngineConfig = {
@@ -151,6 +173,9 @@ export const DEFAULT_CONFIG: EngineConfig = {
   efterhalkaYtaMaxC: 3.0,
   efterhalkaFall30C: 0.8,
   efterhalkaRegnH: 2.0,
+  // K (DECISIONS #581): 2 min — täcker spärrens 10 s med god marginal men inte de sena fallen långt in på en sträcka (22–44 min
+  // i lägesfilen 04:40 16/10). Samma tal i Types.kt och Engine.swift (kontraktsgrinden).
+  kandidatEfterHalkaS: 120,
 };
 
 
@@ -396,6 +421,10 @@ export function roadPhrase(road?: string | null): string {
  *  gissning ur regn och fall, inte en uppmätt frysning; punktkälla ⇒ "framöver". */
 export const EFTERHALKA_TEXT = "Halkvakt tror: frysrisk framöver.";
 
+/** K, kandidatens betavarning (DECISIONS #562, #573: texten godkänd av Bengt 15/10). Modellerad, aldrig uppmätt — därför
+ *  "Halkvakt tror" och "framöver", aldrig ett avstånd. */
+export const KANDIDAT_TEXT = "Halkvakt tror: halka framöver.";
+
 export function alertText(
   kind: HazardKind,
   distanceM: number,
@@ -441,6 +470,8 @@ export function alertText(
         ? `Fartkamera om 500 meter. Gränsen är ${limit}.`
         : "Fartkamera om 500 meter.";
     }
+    case "kandidat":
+      return KANDIDAT_TEXT;
   }
 }
 
@@ -452,7 +483,7 @@ export function alertText(
 //
 //   1. Within 10 s of an utterance only a MORE important hazard may speak (priority-aware
 //      cooldown, globalCooldownS; kort #127, v23 — replaced the blind 45 s). Priority
-//      accident > slippery > icing > wildlife > camera.
+//      accident > slippery > icing > wildlife > camera > kandidat (the beta candidate, last: #577).
 //      Losers are DROPPED, not queued. No exceptions, not even for accidents (logged in
 //      DECISIONS — revisit only on beta evidence).
 //   2. Same hazard never repeats until BOTH 10 min have passed AND 5 km been driven.
@@ -497,6 +528,7 @@ export class AlertEngine {
   private readonly cfg: EngineConfig;
   private points: PointHazard[] = [];
   private segments: { h: SegmentHazard; samples: LonLat[] }[] = [];
+  private kandidater: { h: KandidatHazard; samples: LonLat[] }[] = [];
 
   private prevFix: Fix | null = null;
   private lastHeadingDeg: number | null = null;
@@ -520,9 +552,12 @@ export class AlertEngine {
   private ingest(hazards: Hazard[]): void {
     this.points = [];
     this.segments = [];
+    this.kandidater = [];
     for (const h of hazards) {
       if (h.kind === "slippery_segment") {
         this.segments.push({ h, samples: samplePolyline(h.line, this.cfg.segmentSampleM) });
+      } else if (h.kind === "kandidat") {
+        this.kandidater.push({ h, samples: h.points.map(([lon, lat]) => ({ lon, lat })) });
       } else {
         this.points.push(h);
       }
@@ -570,6 +605,10 @@ export class AlertEngine {
       const c = this.evaluateSegment(fix, heading, s, lead(s.h));
       if (c) candidates.push(c);
     }
+    for (const k of this.kandidater) {
+      const c = this.evaluateKandidat(fix, heading, k, lead(k.h));
+      if (c) candidates.push(c);
+    }
     if (candidates.length === 0) return null;
 
     // Rule 2: per-hazard repeat suppression (both time AND distance must have elapsed).
@@ -613,13 +652,14 @@ export class AlertEngine {
     this.lastSpokenT = fix.t;
     this.lastSpokenKind = win.kind;
     this.fired.set(win.alertKey, { t: fix.t, odometerM: this.odometerM });
-    const pointHazard = win.hazard.kind === "slippery_segment" ? undefined : (win.hazard as PointHazard);
+    const pointHazard = win.hazard.kind === "slippery_segment" || win.hazard.kind === "kandidat"
+      ? undefined : (win.hazard as PointHazard);
     return {
       t: fix.t,
       hazardId: win.hazard.id,
       kind: win.kind,
       distanceM: Math.round(win.distM),
-      text: win.beta ? EFTERHALKA_TEXT : alertText(win.kind, win.distM, pointHazard, win.step),
+      text: win.beta && win.kind === "icing_point" ? EFTERHALKA_TEXT : alertText(win.kind, win.distM, pointHazard, win.step),
       ...(win.step ? { step: win.step } : {}),
       ...(win.beta ? { beta: true as const } : {}),
     };
@@ -741,6 +781,26 @@ export class AlertEngine {
     if (best === null || best > leadM) return null;
     return { hazard: s.h, kind: "slippery_segment", distM: best, alertKey: s.h.id };
   }
+
+  /**
+   * K — kandidatens betavarning (DECISIONS #562, #577). The rule lives in the database (kandidat_regel, #576): every point
+   * published is one where it says `varnar`, so the engine adds no threshold — only the corridor and the lead, like a
+   * segment, over the stretch's points. One alert key per stretch: the repeat rule holds per stretch, not per point.
+   */
+  private evaluateKandidat(
+    fix: Fix, heading: number, k: { h: KandidatHazard; samples: LonLat[] }, leadM: number,
+  ): Candidate | null {
+    let best: number | null = null;
+    for (const pt of k.samples) {
+      const { ahead, distM } = isAhead(fix, heading, pt, this.cfg.corridorHalfAngleDeg);
+      if (ahead && (best === null || distM < best)) best = distM;
+    }
+    if (best === null || best > leadM) return null;
+    // (c), DECISIONS #581: tyst i kandidatEfterHalkaS efter att samma sträckas halkvarning (A1) talat.
+    const a1 = k.h.segmentHazardId ? this.fired.get(k.h.segmentHazardId) : undefined;
+    if (a1 && fix.t - a1.t < this.cfg.kandidatEfterHalkaS) return null;
+    return { hazard: k.h, kind: "kandidat", distM: best, alertKey: k.h.id, beta: true };
+  }
 }
 
 
@@ -817,6 +877,7 @@ const iRutan = (x: number, y: number, r: Ruta) => x >= r.x0 && x <= r.x1 && y >=
 export function farorNaraRutten(hazards: Hazard[], line: [number, number][], marginalKm = FARA_MARGINAL_KM): Hazard[] {
   const r = rutaKring(line, marginalKm);
   return hazards.filter((h) => {
+    if (h.kind === "kandidat") return false;   // K (DECISIONS #577): utanför urvalet, som i farorLangsRutten nedan
     if (h.kind === "slippery_segment") {
       const xs = h.line.map((p) => p[0]), ys = h.line.map((p) => p[1]);
       return Math.max(...xs) >= r.x0 && Math.min(...xs) <= r.x1 && Math.max(...ys) >= r.y0 && Math.min(...ys) <= r.y1;
@@ -882,6 +943,9 @@ export function farorLangsRutten(hazards: Hazard[], line: [number, number][], ma
   };
   const ut: LangsRutten[] = [];
   for (const h of hazards) {
+    // K (DECISIONS #577): kandidaten hör inte till urvalet längs rutten (favoriterna, skuggans förfilter) — hoppas över
+    // uttryckligen, så att den inte faller bort som NaN. Kandidatens egen takt räknas av kandidatLangsRutten (segment.ts).
+    if (h.kind === "kandidat") continue;
     let d: number, langs: number;
     if (h.kind === "slippery_segment") {
       ({ d, langs } = narmast(h.line[0]));
@@ -943,6 +1007,9 @@ export interface LiveDoc {
   djur?: { id: string; lon: number; lat: number; art: string | null; slut?: string | null }[];
   /** #38 — bridges whose nearest station is near freezing. Publisher pre-filters; engine re-checks. */
   bridges?: { id: string; lon: number; lat: number; road: string | null; yta: number | null; fukt: boolean }[];
+  /** #576 — the candidate's warning stretches: the database rule's `varnar` points per stretch. Absent = switched off (#562
+   *  punkt 5), empty = the rule is silent; both mean no candidate hazard. `tid` is the rule's hour; the engine does not read it. */
+  kandidat?: { id: string; tid: string; punkter: [number, number][] }[];
 }
 
 export function snapshotToHazards(staticDoc: StaticDoc, liveDoc: LiveDoc): Hazard[] {
@@ -972,6 +1039,9 @@ export function snapshotToHazards(staticDoc: StaticDoc, liveDoc: LiveDoc): Hazar
   for (const b of liveDoc.bridges ?? []) {
     out.push({ id: `bro:${b.id}`, kind: "icing_point", lon: b.lon, lat: b.lat,
                meta: { surfaceTempC: b.yta, moisture: b.fukt, bridge: true } });
+  }
+  for (const k of liveDoc.kandidat ?? []) {
+    out.push({ id: `kand:${k.id}`, kind: "kandidat", points: k.punkter, segmentHazardId: `seg:${k.id}` });
   }
   return out;
 }
@@ -1347,7 +1417,9 @@ async function forsprangVarv(prov: boolean): Promise<Response> {
     fetch(CDN + "static.json" + bust).then((r) => r.json()),
     fetch(CDN + "live.json" + bust).then((r) => r.json()),
   ]);
-  const hazards = snapshotToHazards(st, lv);
+  // Kandidaten (K, DECISIONS #577) hålls utanför skuggans motorkörningar: deras domar är förregistrerade utan den, och sist i
+  // prioriteten ändrar den ingen annan varning i appen. Kandidatens egen takt loggas för sig (kandidatVarnar, #573).
+  const hazards = snapshotToHazards(st, lv).filter((h) => h.kind !== "kandidat");
   const vata = new Map<string, number>();
   for (const w of (Array.isArray(lv?.weather) ? lv.weather : [])) if (typeof w?.bevis?.vata === "number") vata.set(`wx:${w.id}`, w.bevis.vata);
   const nivaer = new Map<string, ForsprangNiva>();
@@ -1442,7 +1514,8 @@ Deno.serve(async (req) => {
       fetch(CDN + "static.json" + bust).then((r) => r.json()),
       fetch(CDN + "live.json" + bust).then((r) => r.json()),
     ]);
-    const hazards = snapshotToHazards(st, lv);
+    // Utan kandidaten, som ovan (DECISIONS #577).
+    const hazards = snapshotToHazards(st, lv).filter((h) => h.kind !== "kandidat");
     // Ankarna hämtas en gång per anrop, inte per rutt. Bara Sverige: funktionen läser det svenska arkivet.
     const ankare = land === "se" && !c ? await vagpunktAnkare() : { lista: [] as Ankare[], skal: c ? "grupp C loggar ingen prognos" : "bara Sverige" };
     // Kandidatens takt (DECISIONS #573): bara huvudvarvet i Sverige, som prognosen.

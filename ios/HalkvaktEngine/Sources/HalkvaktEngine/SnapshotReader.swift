@@ -62,6 +62,16 @@ public enum SnapshotReader {
                               meta: PointMeta(surfaceTempC: optDbl(b, "yta"),
                                               moisture: (b["fukt"] as? Bool) ?? false, bridge: true)))
         }
+        for k in arr(liveDoc, "kandidat") {   // #576, #577 — kandidatens varnande punkter per sträcka
+            let rawPoints = k["punkter"] as? [[Any]] ?? []
+            var points: [[Double]] = []
+            for p in rawPoints where p.count >= 2 {
+                let lon = (p[0] as? NSNumber)?.doubleValue ?? 0
+                let lat = (p[1] as? NSNumber)?.doubleValue ?? 0
+                points.append([lon, lat])
+            }
+            out.append(.kandidat(id: "kand:\(str(k, "id"))", points: points, segmentHazardId: "seg:\(str(k, "id"))"))   // #581
+        }
         return out
     }
 

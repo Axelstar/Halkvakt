@@ -74,3 +74,10 @@ test("prognosen och holdouten blir desamma med och utan filtret", () => {
   assert.deepEqual(holdoutRader(LINE, nara), holdoutRader(LINE, ankare));
   assert.ok(ANKARE_MARGINAL_KM > 50);
 });
+
+test("kandidaten (DECISIONS #577) hoppas över uttryckligen i alla tre urvalen — den räknas för sig, inte som NaN", () => {
+  const k = { id: "kand:S1", kind: "kandidat", points: [[15.1, 59.0], [15.2, 59.0]] } as Hazard;
+  assert.deepEqual(farorNaraRutten([k], LINE), []);
+  assert.deepEqual(farorLangsRutten([k], LINE, 2000), []);
+  assert.deepEqual(farorVidLinjen([k], LINE), []);
+});

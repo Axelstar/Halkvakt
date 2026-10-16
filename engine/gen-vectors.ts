@@ -482,6 +482,73 @@ const scenarios: Scenario[] = [
     hazards: [{ id: "wx1", kind: "icing_point", lon: LON0, lat: northOf(1900), meta: { surfaceTempC: 0.4, moisture: true, rainH: 0.5, fall30C: 1.0 } }],
     trace: northTrace(120, 80),
   },
+  // K — KANDIDATENS BETAVARNING (DECISIONS #562, #576, #577). Regeln bor i databasen; motorn får bara de varnande punkterna per
+  // sträcka och lägger korridoren och förvarningen på dem som på ett segment. Sist i prioriteten. 80 km/h ger förvarningen
+  // 667 m; punkten 1 500 m fram kommer inom den vid t=38 (655 m; t=37 låg 677 m — marginal 10 m åt båda håll, som v37).
+  {
+    file: "v42_kandidat_en_gang_per_stracka", name: "Kandidaten talar en gång per sträcka, inte per punkt (K)",
+    description:
+      "Sträckan S1 har tre varnande punkter 1 500, 3 500 och 5 500 m fram; S2 en punkt 4 500 m fram; S0 en punkt 300 m BAKOM. " +
+      "S1 talar vid t=38 med 'Halkvakt tror: halka framöver.' och beta=true, och dess två senare punkter tiger — samma " +
+      "sträcka, upprepningsregeln (10 min och 5 km) gäller sträckan. S2 är en ny sträcka och talar när dess punkt kommer inom " +
+      "förvarningen (t=173). S0 bakom tiger.",
+    hazards: [
+      { id: "kand:S1", kind: "kandidat", points: [[LON0, northOf(1500)], [LON0, northOf(3500)], [LON0, northOf(5500)]] },
+      { id: "kand:S2", kind: "kandidat", points: [[LON0, northOf(4500)]] },
+      { id: "kand:S0", kind: "kandidat", points: [[LON0, northOf(-300)]] },
+    ],
+    trace: northTrace(300, 80),
+  },
+  {
+    file: "v43_kandidat_viker_for_kameran", name: "Kandidaten viker: kameran talade nyss, kandidaten väntar spärren ut (K)",
+    description:
+      "Kameran 1 310 m fram talar vid t=37 (487 m; t=36 låg 509 m). Kandidatens punkt 1 500 m fram kommer inom förvarningen " +
+      "vid t=38, men inom 10 s efter kameran och lägre i prioriteten ⇒ kastad. När spärren släpper (t=47) är punkten fortfarande " +
+      "framför och kandidaten talar.",
+    hazards: [
+      { id: "cam1", kind: "camera", lon: LON0, lat: northOf(1310), bearing: 180 },
+      { id: "kand:S1", kind: "kandidat", points: [[LON0, northOf(1500)]] },
+    ],
+    trace: northTrace(120, 80),
+  },
+  {
+    file: "v44_kandidat_tystar_aldrig_kameran", name: "Kandidaten tystar aldrig en annan varning: kameran talar 3 s efter (K)",
+    description:
+      "Kandidatens punkt 1 500 m fram talar vid t=38. Kameran 1 400 m fram kommer inom 500 m vid t=41 (488 m; t=40 låg 510 m) — " +
+      "inom 10 s efter kandidaten, men kameran är viktigare och talar direkt. Hade kandidaten legat över kameran hade kameran " +
+      "kastats och talat först vid t=48. Det är skälet till platsen sist: ingen annan varning ändras av kandidaten.",
+    hazards: [
+      { id: "kand:S1", kind: "kandidat", points: [[LON0, northOf(1500)]] },
+      { id: "cam1", kind: "camera", lon: LON0, lat: northOf(1400), bearing: 180 },
+    ],
+    trace: northTrace(120, 80),
+  },
+  // (c), DECISIONS #581 (Bengt 16/10: "bygg c"): kandidaten tiger i 120 s efter att SAMMA sträckas halkvarning (A1) talat. A1:s
+  // linje börjar 1 010 m fram, så A1 talar när början kommer inom förvarningen 667 m. Utan regeln hade kandidaten talat 10–22 s
+  // efter — den dubbla rösten. Den sena punkten långt in på sträckan får tala.
+  {
+    file: "v45_kandidat_tiger_efter_samma_strackas_halka", name: "Kandidaten tiger i 2 min efter samma sträckas halkvarning, men talar långt in (K)",
+    description:
+      "Sträckan S1 är halkklassad (kod 2) från 1 010 m fram till 20 km. A1 talar när sträckans början kommer inom 667 m. " +
+      "Kandidatens punkt 1 500 m fram på samma sträcka (segmentHazardId seg:S1) kommer inom förvarningen 22 s senare — inom 120 s " +
+      "efter A1 ⇒ tyst; utan regeln hade den talat då. Punkten 9 010 m fram kommer inom förvarningen långt efter 120 s och talar.",
+    hazards: [
+      { id: "seg:S1", kind: "slippery_segment", line: [[LON0, northOf(1010)], [LON0, northOf(20000)]], meta: { code: 2, info: [] } },
+      { id: "kand:S1", kind: "kandidat", points: [[LON0, northOf(1500)], [LON0, northOf(9010)]], segmentHazardId: "seg:S1" },
+    ],
+    trace: northTrace(450, 80),
+  },
+  {
+    file: "v46_kandidat_annan_stracka_talar", name: "Kandidaten tiger bara efter SAMMA sträckas halkvarning — en annan sträcka hindrar den inte (K)",
+    description:
+      "Samma geometri som v45, men halkvarningen gäller sträckan S2 och kandidaten S1. Kandidaten väntar bara ut spärren och talar " +
+      "när punkten 1 500 m fram är inom förvarningen och 10 s gått sedan A1.",
+    hazards: [
+      { id: "seg:S2", kind: "slippery_segment", line: [[LON0, northOf(1010)], [LON0, northOf(20000)]], meta: { code: 2, info: [] } },
+      { id: "kand:S1", kind: "kandidat", points: [[LON0, northOf(1500)]], segmentHazardId: "seg:S1" },
+    ],
+    trace: northTrace(120, 80),
+  },
 ];
 
 /** Canonical replay-with-updates — the reference all three test runners mirror. */

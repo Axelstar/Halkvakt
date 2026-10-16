@@ -60,6 +60,14 @@ final class WarningCardTests: XCTestCase {
         XCTAssertEqual(c.quote, "Halkvakt tror: frysrisk framöver.")
     }
 
+    func testCandidateBetaIsMarked() {   // kandidaten, DECISIONS #562, #577
+        let c = WarningCard.make(alert(.kandidat, 655, "Halkvakt tror: halka framöver.", beta: true), meta: nil)
+        XCTAssertEqual(c.icon, .halka); XCTAssertEqual(c.stage, "BETA"); XCTAssertEqual(c.title, "Halka")
+        XCTAssertEqual(c.sub, "Halkvakt tror — modellerat"); XCTAssertEqual(c.distance, .words("FRAMÖVER"))
+        XCTAssertNil(c.road); XCTAssertNil(c.advice)
+        XCTAssertEqual(c.quote, "Halkvakt tror: halka framöver.")
+    }
+
     func testBridgeInHundredsOfMetresLikeTheVoice() {   // K
         let k = WarningCard.make(alert(.icing_point, 640, "Frysrisk framöver — bro om 600 meter."), meta: PointMeta(bridge: true))
         XCTAssertEqual(k.icon, .bro); XCTAssertEqual(k.sub, "Bro"); XCTAssertEqual(k.distance, .number("600", unit: "M"))

@@ -4,8 +4,10 @@
 import Foundation
 
 public enum HazardKind: String, CaseIterable {
-    case accident, slippery_segment, icing_point, wildlife, camera
+    case accident, slippery_segment, icing_point, wildlife, camera, kandidat
     // Spoken priority = declaration order above. Losers are DROPPED, never queued.
+    // `kandidat` (DECISIONS #562, #577) is LAST on purpose: every other kind outranks it, so the cooldown can never drop or
+    // delay another warning because the candidate spoke. Mirrors PRIORITY in engine/src/types.ts.
     var priority: Int { HazardKind.allCases.firstIndex(of: self)! }
 }
 
@@ -47,11 +49,15 @@ public struct SegmentMeta {
 public enum Hazard {
     case point(id: String, kind: HazardKind, lon: Double, lat: Double, bearing: Double?, meta: PointMeta)
     case segment(id: String, line: [[Double]], meta: SegmentMeta)
+    /// One stretch where the candidate's database rule says `varnar` (live.json `kandidat`, DECISIONS #576, #577): only the
+    /// warning points [lon, lat], no threshold. One hazard per stretch, so the repeat rule holds per stretch.
+    case kandidat(id: String, points: [[Double]], segmentHazardId: String?)
 
     public var id: String {
         switch self {
         case .point(let id, _, _, _, _, _): return id
         case .segment(let id, _, _): return id
+        case .kandidat(let id, _, _): return id
         }
     }
 }
@@ -72,7 +78,8 @@ public struct Alert: Equatable {
     public let text: String
     /// Serious accidents only — which of the two-step calls (DECISIONS #28, #443). nil otherwise.
     public let step: AccidentStep?
-    /// S3 only — the frost-risk call came from the post-rain beta rule (DECISIONS #524). The warning card marks it as beta.
+    /// S3: the frost-risk call came from the post-rain beta rule (DECISIONS #524). Kandidaten: always (DECISIONS #562).
+    /// The warning card marks it as beta.
     public let beta: Bool
     public init(t: Double, hazardId: String, kind: HazardKind, distanceM: Int, text: String, step: AccidentStep? = nil, beta: Bool = false) {
         self.t = t; self.hazardId = hazardId; self.kind = kind; self.distanceM = distanceM; self.text = text; self.step = step
@@ -100,6 +107,8 @@ public struct EngineConfig {
     public var efterhalkaYtaMaxC = 3.0
     public var efterhalkaFall30C = 0.8
     public var efterhalkaRegnH = 2.0
+    // K (DECISIONS #581): tyst så här länge efter samma sträckas halkvarning — samma tal som engine/src/types.ts (kontraktsgrinden).
+    public var kandidatEfterHalkaS = 120.0
     public init() {}
 }
 
@@ -155,6 +164,8 @@ enum Geo {
 enum Texts {
     /// S3, efterhalkan som märkt beta (DECISIONS #222, #524) — spegel av EFTERHALKA_TEXT i texts.ts.
     static let efterhalkaText = "Halkvakt tror: frysrisk framöver."
+    /// Kandidatens betavarning (DECISIONS #562, #573) — spegel av KANDIDAT_TEXT i texts.ts.
+    static let kandidatText = "Halkvakt tror: halka framöver."
 
     /// " på E18" / " på väg 25" / "" när numret saknas.
     static func roadPhrase(_ road: String?) -> String {
@@ -198,6 +209,8 @@ enum Texts {
         case .camera:
             if let limit = speedLimitKmh { return "Fartkamera om 500 meter. Gränsen är \(limit)." }
             return "Fartkamera om 500 meter."
+        case .kandidat:
+            return kandidatText
         }
     }
 }
@@ -208,8 +221,10 @@ public final class AlertEngine {
     private let cfg: EngineConfig
     private struct Point { let id: String; let kind: HazardKind; let lon, lat: Double; let bearing: Double?; let meta: PointMeta }
     private struct Segment { let id: String; let meta: SegmentMeta; let samples: [[Double]] }
+    private struct Kandidat { let id: String; let points: [[Double]]; let segmentHazardId: String? }
     private var points: [Point] = []
     private var segments: [Segment] = []
+    private var kandidater: [Kandidat] = []
 
     private var prevFix: Fix?
     private var lastHeadingDeg: Double?
@@ -233,12 +248,15 @@ public final class AlertEngine {
     private func ingest(_ hazards: [Hazard]) {
         points = []
         segments = []
+        kandidater = []
         for h in hazards {
             switch h {
             case .point(let id, let kind, let lon, let lat, let bearing, let meta):
                 points.append(Point(id: id, kind: kind, lon: lon, lat: lat, bearing: bearing, meta: meta))
             case .segment(let id, let line, let meta):
                 segments.append(Segment(id: id, meta: meta, samples: Geo.samplePolyline(line, cfg.segmentSampleM)))
+            case .kandidat(let id, let pts, let seg):
+                kandidater.append(Kandidat(id: id, points: pts, segmentHazardId: seg))
             }
         }
     }
@@ -329,7 +347,7 @@ public final class AlertEngine {
                 if p.meta.active, distM <= leadM {
                     candidates.append(Candidate(id: p.id, kind: p.kind, distM: distM, limit: nil, alertKey: p.id))
                 }
-            case .slippery_segment:
+            case .slippery_segment, .kandidat:
                 continue
             }
         }
@@ -346,6 +364,20 @@ public final class AlertEngine {
             }
             if let b = best, b <= leadM {
                 candidates.append(Candidate(id: s.id, kind: .slippery_segment, distM: b, limit: nil, alertKey: s.id))
+            }
+        }
+        // Kandidaten (DECISIONS #562, #577), spegel av evaluateKandidat i engine.ts: the rule lives in the database, so no
+        // threshold here — only the corridor and the lead over the stretch's points. One key per stretch.
+        for k in kandidater {
+            var best: Double?
+            for pt in k.points {
+                let (ahead, distM) = isAhead(fix, heading, pt[0], pt[1])
+                if ahead && (best == nil || distM < best!) { best = distM }
+            }
+            // (c), DECISIONS #581: tyst i kandidatEfterHalkaS efter att samma sträckas halkvarning (A1) talat.
+            if let s = k.segmentHazardId, let a1 = fired[s], fix.t - a1.t < cfg.kandidatEfterHalkaS { continue }
+            if let b = best, b <= leadM {
+                candidates.append(Candidate(id: k.id, kind: .kandidat, distM: b, limit: nil, alertKey: k.id, beta: true))
             }
         }
         if candidates.isEmpty { return nil }
@@ -375,7 +407,7 @@ public final class AlertEngine {
         return Alert(
             t: fix.t, hazardId: win.id, kind: win.kind,
             distanceM: Int(win.distM.rounded()),
-            text: win.beta ? Texts.efterhalkaText
+            text: win.beta && win.kind == .icing_point ? Texts.efterhalkaText
                            : Texts.alertText(win.kind, win.distM, win.limit, win.step, win.endTimeLocal, win.bridge, win.road),
             step: win.step, beta: win.beta)
     }

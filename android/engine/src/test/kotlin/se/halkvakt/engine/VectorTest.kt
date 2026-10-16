@@ -23,6 +23,17 @@ class VectorTest {
 
     private fun parseHazard(o: JSONObject): Hazard {
         val kind = HazardKind.of(o.getString("kind"))
+        if (kind == HazardKind.KANDIDAT) {
+            // K (DECISIONS #577): one stretch with its warning points.
+            val points = o.getJSONArray("points").let { arr ->
+                (0 until arr.length()).map { i ->
+                    val p = arr.getJSONArray(i)
+                    doubleArrayOf(p.getDouble(0), p.getDouble(1))
+                }
+            }
+            return KandidatHazard(id = o.getString("id"), points = points,
+                segmentHazardId = if (o.has("segmentHazardId") && !o.isNull("segmentHazardId")) o.getString("segmentHazardId") else null)
+        }
         if (kind == HazardKind.SLIPPERY_SEGMENT) {
             val line = o.getJSONArray("line").let { arr ->
                 (0 until arr.length()).map { i ->

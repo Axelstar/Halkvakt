@@ -13335,3 +13335,350 @@ Timmen som publiceras är regelns `kandidat_timme()`: den senaste timme som del 
 föregående timme, upp till 1 h 43 min gammal, inom färskhetsregelns två timmar.
 
 **Stomdokument:** LIV steg 6, SYS (live.json bär nyckeln `kandidat`).
+
+## #577 (16/10 2026) Kandidatens betavarning i motorn och apparna: sist i prioriteten, en fara per sträcka (kort #343, NIVA2-LIVE steg 10–11)
+
+**Bengts ord 16/10:** *"GÖR STEG 10"*. NIVA2-LIVE steg 10: en ny farotyp i engine/src med plats i prioriteten, testvektorer, `beta`,
+texten och BETA-kortet; adaptern och regeln i Kotlin och Swift med samma utfall tecken för tecken; inga tal i tre språk — tröskeln
+ligger i steg 6. Produktboken (steg 11) följer med i samma omgång enligt PRODUKTBOKSREGELN.
+
+**Byggt i tre språk** (engine/src, android/engine, ios/HalkvaktEngine):
+- Farotypen `kandidat`: EN fara per sträcka ur live.json:s `kandidat` (#576), med sträckans varnande punkter (id `kand:<sträcka>`).
+- Korridoren (35°) och förvarningen (30 s, 400–3 000 m) läggs på punkterna som på ett segment. Inga egna tal: regeln bor i databasen.
+- Alltid `beta`, med texten *"Halkvakt tror: halka framöver."* (#573).
+- Kortet: *BETA · Halka · Halkvakt tror — modellerat · FRAMÖVER*, med halkans ikon.
+- Upprepningsregeln (10 min och 5 km) gäller per sträcka, inte per punkt.
+
+**Claudes val.** Prioriteten är avgjord: Bengt 16/10, *"ok behåll den sist"*, efter frågan *"är det rätt att ha den som sist i
+prioriteringen"* och Claudes svar med skälen nedan och argumentet för en plats direkt efter A2. Val 2–6 kan Bengt ändra före
+sammanslagningen; de står i bedömningen §4.2.
+1. **Sist i prioriteten: A3 > A1 > A2 > A4 > A5 > K** (avgjort av Bengt 16/10).
+   - Spärren kastar bara en vinnare som inte är viktigare än det senast sagda. Sist kan kandidaten därför aldrig tysta eller fördröja
+     en annan varning.
+   - Alla andra varningar beter sig alltså exakt som utan den, och skuggans förregistrerade mätningar beskriver fortfarande vad appen
+     säger om dem.
+   - v44 bevisar det: kameran talar 3 s efter kandidaten. Låg kandidaten över kameran hade kameran kastats och talat först vid t=48.
+   - Kostnaden: kandidaten viker för en kamera och talar tidigast 10 s senare (v43). Hinner bilen förbi punkten flyttas varningen till
+     sträckans nästa punkt, ungefär 2 km bort (i snitt cirka 10 punkter per sträcka 16/10). En sträcka med en enda punkt kan förlora
+     sin varning. Hur ofta en kamera och kandidaten möts är inte mätt.
+   - Argumentet för en plats direkt efter A2 (halka är farligare än en kamera) vägdes in. Där kan kandidaten fördröja en kamera eller
+     ett djur med upp till 10 s, och appen beter sig då inte längre som skuggan mäter. Platsen prövas på nytt efter domen i mars.
+2. **En fara per sträcka.** Per punkt hade den talat ungefär varannan kilometer längs en blöt och kall väg.
+3. **Kortets underrad *"Halkvakt tror — modellerat"*.** Det är ny text, i samma form som efterhalkans *"Halkvakt tror — efter regnet"*.
+4. **Reglaget *Halka* i *Varna för* styr kandidaten.** Den säger halka och har inget eget reglage, så sidan har fortfarande fem.
+5. **Inte i *I närheten*.** Den är en modells punkter, och ett avstånd i listan vore ett nytt påstående. Den räknas inte heller i resans
+   Halka-siffra.
+6. **Samma sträcka som en rapporterad halka (A1).** Båda kan tala, minst 10 s isär. Det följer Bengts linje att cry wolf är falska larm,
+   inte upprepade sanna. Mätt i lägesfilen 04:40 UTC 16/10: 5 av kandidatens 12 sträckor var också halkklassade i `segments`.
+
+**Apparna (Android och iOS):**
+- Läsaren läser nyckeln.
+- Åldersvakten släpper kandidaten efter 45 min, som halksträckorna, så att appen tystnar på gammal data.
+- GPS-takten räknar kandidatens punkter som närliggande faror. Utan dem hade takten kunnat stå på 15 s nära dem.
+- Rubrik och ikon är Halkas.
+- Fotostudion har kroken `fotostudio_kandidat`, som betakortets (#525).
+- Engelska: rösten har ingen engelsk text. *"Halkvakt thinks: slippery ahead."* (#573) står bara här tills en engelsk röst finns.
+
+**Skuggan och favoriterna:**
+- Skuggmotorns motorvarv körs utan kandidaten (två ställen i main.ts). Deras domar är förregistrerade utan den (#573), och sist i
+  prioriteten ändrar den ingen annan varning i appen. Kandidatens egen takt loggas som förut (`kandidatVarnar`).
+- Ruttfiltret (`farorNaraRutten`, `farorLangsRutten`) och favoriternas synk (`synk-core.ts`) hoppar över kandidaten uttryckligen; förut
+  föll den bort som NaN.
+- CLAUDE.md:s varningsdisciplin säger nu `A3>A1>A2>A4>A5>K`.
+
+**Prov:**
+- **Vektorerna v42–v44:** en gång per sträcka; viker för kameran; tystar aldrig kameran. Marginalen är mätt till minst 9,4 m vid varje
+  gräns. Alla 41 tidigare vektorer är byte för byte orörda.
+- **Läsarprovet i tre språk:** antalet punkter, lon före lat och id som tal.
+- **Övriga prov:** kortet i Kotlin och Swift, åldersvakten (Android), motorns invariant (texten och beta) och ruttfiltret.
+- **Körningar:** TS-sviten är grön lokalt. ios-engine 38852114596 är grön på c230970; senare commits rör inte ios/ eller engine/.
+  android.yml 38852518205 på b98df72. Första körningen 38852111716 föll på kompileringen: två appfiler och läsarprovet importerar
+  motorns klasser en och en, och importen av `KandidatHazard` saknades.
+
+**Motprov i TypeScript, med raden som föll:**
+
+| motprov | föll |
+| :-- | :-- |
+| kandidaten före kameran | v43 och v44 |
+| frysrisktexten för all beta | v42–v44 |
+| en nyckel per punkt | v42 och v44 |
+| lat före lon i läsaren | läsarprovet och #576-provet |
+
+**Kvar före App Review:**
+- Takten ur skuggan, enligt #562 punkt 1 och #200.
+- Avstängningen i drift (steg 13).
+- Bygget 0.3.13 (steg 12).
+
+**Stomdokument:** LIV steg 10–11, APP (ny röst och nytt kort), SYS (prioriteten), BED §4.2.
+
+## #578 (16/10 2026) Kandidatens brytare: en tystar, båda startar, och nyckeln försvinner ur lägesfilen (kort #343, NIVA2-LIVE steg 13)
+
+**Bengts ord 16/10:** *"ja till förslaget, 40–50 minuter är ok"*, på Claudes förslag samma morgon för #562 punkt 5. Avstängningen tar bort
+nyckeln ur publiceringen, inte hela publiceringen. Att tysta kräver en av Bengt och Axel, att starta igen kräver båda.
+
+**Byggt:**
+- **Brytaren** (`sql/059_kandidat_brytare.sql`): loggen `kandidat_brytare`, ett tryck per rad med vem (bengt, axel) och när. Läget
+  räknas ur loggen av `kandidat_pa()`.
+  - Den är på om ingen tystning finns, eller om båda har tryckt *starta* efter den senaste tystningen. Ordningen räknas på id.
+  - Samma person två gånger räcker inte, och en ny tystning nollställer.
+  - Tabellen är låst med RLS utan policy och REVOKE.
+- **Knappen** (`.github/workflows/kandidatbrytaren.yml`, `scripts/kandidatbrytaren.ts`) har valen *las*, *tysta* och *starta*.
+  - Vem som trycker tas ur `github.actor`: 895845 är Bengt och Axelstar är Axel. Andra konton avvisas, också med fel skiftläge.
+  - Ändras läget körs publiceringens eget jobb direkt, samma väg som DB-knappens larmprov. Kommandot bär nyckeln och skrivs aldrig ut.
+    Svaret läses: status, *ok*, antalet sträckor eller *saknas*, och kandidatens noter.
+- **Publiceringen** (`publish/snapshot-core.ts`, bunten):
+  - Är brytaren av utelämnas nyckeln `kandidat` helt, inte tom. Regeln frågas inte, och noten säger *avstängd med brytaren*.
+  - Går brytaren inte att läsa utelämnas nyckeln också, eftersom tyst är det säkra hållet.
+  - Svaret från publicera tål en saknad nyckel.
+- **Apparna behöver ingen ändring.** Saknas nyckeln får motorn ingen kandidat (#577). Skuggan loggar kandidaten som förut, eftersom
+  domen ska ha hela vintern.
+
+**Det som är sagt rakt ut:**
+- **Claude trycker med Bengts konto (895845)**, så GitHub kan inte skilja dem åt, och en tryckning av Claude räknas som Bengts. Därför
+  trycker Claude bara på Bengts uttryckliga ord, som vid *slå ihop*.
+- **Tiden tills appen tystnar** är högst 40–50 minuter, och det godkände Bengt. Den består av:
+  - publiceringen, som sker direkt med knappen och annars inom 10 min;
+  - GitHub Pages cache, upp till 10 min;
+  - appens egen hämtning, var 30:e minut.
+
+  Kortare tid kräver att appen hämtar oftare, alltså ett nytt bygge med mer batteri och data. Det valdes bort.
+- **Bygget 0.3.13 (25)** höjdes i en egen commit efter den sista appändringen (1a61ca8, #983). Bengts fråga *"kan inte jag bygga 0.3.13
+  från 1a61ca8"*:
+  - Android byggs redan av CI.
+  - iOS kräver en Mac med Xcode och rätt att signera i Apples team, eller kort #333: TestFlight-flödet i Actions. Det kräver i sin tur
+    att Axel en gång skapar App Store Connect-nyckeln (Admin-roll: .p8-filen, nyckelns id och utfärdarens id) som tre hemligheter.
+    Därefter är iOS-bygget en knapp som Bengt kan trycka på.
+
+**Prov:**
+- Tre enhetsprov för publiceringen: av, oläsbar och på.
+- Integrationsprovet mot riktig databas:
+  - en tystar;
+  - samma person två gånger räcker inte;
+  - båda startar;
+  - en ny tystning nollställer;
+  - bara bengt och axel, bara *tysta* och *starta*;
+  - publiceringen utelämnar nyckeln när brytaren är av.
+- Knappens självtest i ci.
+
+**Motprov, med raden som föll:**
+
+| motprov | föll |
+| :-- | :-- |
+| publiceringen struntar i brytaren | *#578 brytaren av* |
+| en oläsbar brytare tolkas som på | *#578 brytaren oläsbar* |
+| en person räcker för att starta (SQL, PR #984, stängd) | integrationsprovets *samma person två gånger räcker inte* (ci 38854717626: väntat false, fick true; 1 fallet av 324) |
+
+**Driftordning efter *slå ihop*:**
+1. DB-knappen `migrera sql/059`. Bevis: `kandidat_pa()` är sann, loggen tom, anon utan rätt.
+2. Deploy av publicera.
+3. Knappen *las*: PÅ.
+
+**Provet i drift — regeln och förväntan skrivna före knappen.** Claude trycker som Bengt först på hans ord *kör provet*, och Axel trycker
+själv.
+1. **Tysta (Bengt).**
+   - Förväntan: *var PÅ, är AV*.
+   - Publiceringen startas direkt och svarar med status 200, *ok true*, *kandidat saknas* och noten *avstängd med brytaren*.
+   - Inom 10 min, när GitHub Pages cache har gått ut, saknar lägesfilen på halkvakt.se nyckeln, och manifestets sha är lika med
+     sha256(live.json).
+   - Tiden från tryck till fil mäts och redovisas.
+2. **Starta (Bengt).** Förväntan: *var AV, är AV, väntar på starta av axel*. Lägesfilen saknar fortfarande nyckeln.
+3. **Starta (Axel).** Förväntan: *var AV, är PÅ*. Publiceringen startas direkt, och lägesfilen bär nyckeln igen.
+4. **Bilprovet (Bengt, med 0.3.13 i intern TestFlight):** efter *tysta* säger appen inte *"Halkvakt tror …"* inom 40–50 minuter.
+
+Faller något steg är steg 13 inte klart. Felet skrivs ned och bortförklaras inte.
+
+**I drift 16/10** (Bengt: *"slå ihop 985 och kör provet"*; PR #985 som 474b8c1).
+
+Driftordningen:
+- DB-knappen 38856034930 `migrera sql/059`: `kandidat_pa()` sann, loggen tom, anon får varken läsa tabellen eller köra funktionen.
+- Deploy av publicera 38856067963.
+- Knappen *las* 38856128156: PÅ.
+
+Provet, som förregistrerat:
+
+| steg | utfall |
+| :-- | :-- |
+| 1. *Tysta* (Claude som Bengt, 38856220977) | Trycket 05:31:39 UTC gav *var PÅ, är AV*. Publiceringen startades direkt: lägesfilen 05:31:42 och svaret 96738 med status 200, *ok true*, *kandidat saknas* och noten *avstängd med brytaren*. Nyckeln saknades i lägesfilen senast 05:33:50, också utan cachebrytare (det apparna hämtar), och manifestets sha var lika. **Tiden från tryck till fil var högst 2 min 11 s**, mot förväntade högst 10. |
+| 2. *Starta* (Claude som Bengt, 38856729086) | 05:37:29 gav *var AV, är AV, väntar på starta av: axel*. Lägesfilen saknade fortfarande nyckeln. |
+| 3. *Starta* (Axel) | Väntar på Axel. Tills dess är kandidaten av i lägesfilen. Domloggen och skuggan räknar som förut, och ingen app läser nyckeln än. |
+| 4. Bilprovet | Väntar på 0.3.13 i intern TestFlight. ci, android och ios-engine är gröna på 474b8c1 (38856020371, 38856020435, 38856020383). |
+
+**Avvikelse i steg 1:** knappen kunde inte läsa publiceringens svar (*request NaN*). Publiceringens cron-kommando ger inget request-id
+tillbaka, fast publiceringen kördes. Svaret lästes i stället med DB-knappen (38856503897) och höll varje förväntan. Rättat: knappen
+hittar nu svaret på tiden och på formen. En fråga efter publiceringens svar från 05:29 gav bara trycket 05:31. Det ordinarie slaget 05:30
+kom inte med, och skälet är inte utrett.
+
+**Skuggmotorn efter deployen i #577** (38853698967, 05:03): varvet 05:32 gav tre rader och nio larm, inga kandidatlarm, och
+kandidatkolumnen var ifylld i alla tre (DB-knappen). Varvet 05:02, med den gamla koden, gav fyra larm.
+
+**Stomdokument:** LIV steg 12–13, APP avstängningen och 0.3.13, SYS brytaren i publiceringen, BED §4.2.
+
+## #579 (16/10 2026) Webbkartan: kandidaten som bitar av vägen, avslaget från början, och brytaren gäller också kartan (kort #343, NIVA2-LIVE steg 9)
+
+**Bengts ord 16/10:**
+- På förslaget med ringar och lagret avslaget: *"jag måste få mer om ringar eller sträckor först"*.
+- På underlaget nedan: *"slå ihop 987 och bygg bitar av vägen"*.
+
+**Underlaget**, lägesfilen 04:40 UTC 16/10 (12 sträckor, 116 varnande punkter):
+- Hela sträckor hade målat **807 km** som hala, mot **cirka 232 km** varnande väg (116 punkter × cirka 2 km).
+- Andelen varnande punkter per sträcka var 4–100 %, med medianen 18 %.
+- Värsta fallet: sträckan 363015, 106 km, för 2 punkter.
+- 5 av de 12 sträckorna var redan halkklassade av Trafikverket och ligger alltså på kartans Halka-lager.
+- Ringar är ärliga men svårlästa över hela landet. *Bitar av vägen* är lika ärliga som ringar och följer vägen.
+
+**Byggt i Halkvakt:**
+- **Bitarna** räknas i kartkärnan (`publish/map-core.ts`, `KANDIDAT_BITAR_SQL`).
+  - Varje varnande punkt får sin sträckas linje en kilometer åt vardera hållet. Det räknas i SWEREF 99 TM (meter), så att en bit blir
+    2 km oavsett vägens riktning; i grader hade den blivit cirka 0,6–1,6 km.
+  - Bitarna slås ihop per sträcka.
+  - En punkt mer än 300 m från sin sträckas linje ritas inte. Den räknas i `meta.kandidat` och nämns i en not.
+  - Filen heter `data/kandidat.geojson`.
+- **Källan** är lägesfilens nyckel `kandidat` (#576), så kartan visar aldrig något annat än appen får. Brytaren av (#578) ger ingen
+  nyckel, alltså en tom fil och `meta.kandidat.pa = false`.
+- **Knappen** bygger om kartan i samma körning (`?karta=1`, `medKartan` med självtest). Avstängningen gäller då kartan direkt i stället
+  för vid nästa halvtimme.
+
+**Byggt för kartsidan** (`karta.html` i Axelstar/halkvakt-karta):
+- Lagret *Halkvakt tror · beta*: streckat, i en egen färg skild från den gula Halka-linjen, och **avslaget från början**.
+- Rutan vid klick: *Halka framöver — modellerat, inte uppmätt*, modellens timme i svensk tid, och att vägytan är beräknad ur MET Nordic
+  och stationerna runt omkring.
+- Avstängd kandidat: knappen säger *avstängd* och går inte att slå på.
+- **MET Norway (CC BY 4.0)** i källraden, där MET inte stod förut.
+- Kandidatens ruta går före väglagets där lagret syns.
+- Knapparnas läge gäller också om någon tryckte innan lagren fanns. Felet fanns före #579: knappen ändrades, men inte lagret.
+
+**Hinder:** kontot 895845 har bara läsrätt i halkvakt-karta. Pushen nekades (403). Ändringen ligger i
+`docs/patchar/karta-kandidat-lager-579.patch` och är prövad mot kartrepots main med `git apply --check`. Axel kan
+- ge 895845 skrivrätt i halkvakt-karta (rekommenderat, eftersom det räcker också för framtida kartarbete), så öppnar Claude PR:en där;
+- eller lägga in patchen själv.
+
+Tills dess skriver publiceringen kandidatfilen, men sidan läser den inte.
+
+**Prov:**
+- Tre enhetsprov i `test/map-core.test.ts`: av, på med räkningen av det som inte ritas, och en fallen fråga. De två befintliga
+  kartproven bär nu kandidatfilen.
+- Integrationsprovet mot PostGIS:
+  - två punkter 1 km isär ger en bit på 3,0 km;
+  - en ensam punkt ger 2,0 km också öster ut;
+  - en punkt en kilometer bort från vägen ritas inte;
+  - bitarna slås ihop till en linje.
+- **Provet fällde den första versionen** (CI 38860931214): två punkter 1 km isär gav 4,0 km i stället för 3,0. Bitarna slogs ihop med
+  `ST_Union`, som inte kände igen överlappet när linjerna skilde sig på sista decimalen, så överlappet räknades två gånger. Rättat:
+  intervallen längs linjen slås ihop först, och varje sammanslaget intervall skärs ut en gång.
+- **Motprovet** (PR #988, stängd): bitarnas halva längd räknad i grader i stället för meter gav 10,0 km. Integrationsprovet föll
+  (CI 38860899648).
+- Kartsidan provad i en lokal kopia med dagens kartdata och sträckan 97005:s riktiga bit:
+  - knappen är av från början;
+  - på ger den streckade biten längs vägen;
+  - rutans text är rätt (*kl. 06:00* för 04:00 UTC);
+  - MET Norway står i källraden.
+- Två sista ändringar på sidan är **inte provade i rendering**: en ruta per klick, och knappens läge vid tidigt tryck. Webbläsarpanelen
+  doldes, och kartan ritar inte då. De provas på halkvakt.se efter att ändringen lagts in.
+
+**Mätningen efter driftsättningen — förväntan skriven före knappen.** Driftordningen efter *slå ihop* är deploy av publicera. Sedan:
+1. Nästa kartbygge (:00/:30 eller knappen) skriver `data/kandidat.geojson` på halkvakt.se, och `meta.kandidat.pa` följer brytaren.
+2. När kandidaten är på:
+   - en feature per sträcka;
+   - summan av `punkter` är lika med `meta.kandidat.ritade`;
+   - `km` per sträcka ligger mellan 2 och 2 × punkterna.
+   - Andelen punkter som inte ritas redovisas. Är den över 5 % utreds den innan sidan visar lagret.
+3. När sidan har ändringen: lagret är av från början, ger en ruta per klick, och knappen säger *avstängd* när brytaren är av.
+
+**Det som inte rörs:** apparna, rösten och skuggan.
+
+**Avvikelse:** kartsidans källrad nämner inte Danmarks vägväder, som kartan också visar (`dk.weather_latest`). Det rättas inte här och
+står som fråga i bedömningen §4.2.
+
+**Stomdokument:** LIV steg 9, SYS webbkartan läser kandidaten, BED §4.2.
+
+## #580 (16/10 2026) Databasen under taket: autovacuum städar tabellerna som byts ut efter varje radering (kort #347)
+
+**Bengts fråga och ord 16/10:**
+- På vakthundens rapport *"DATABASEN ÄR 482 MB"* frågade han *"har vi säker koll på att vi håller oss under 500"*.
+- På Claudes svar och förslag: *"ja till migrationen"*.
+
+**Läget**, DB-knappen 38862206832 och vakthundens timserie i ärende #963:
+- 482 MB, varav 15 MB är Supabases två fasta mallar.
+- Från 455 MB kl. 02 den 15/10. Sedan kl. 17 samma dag har tillväxten varit cirka 0,4 MB/timme, cirka 9–10 MB per dygn, så taket
+  hade nåtts om cirka två dygn.
+- `weather_observations` är 276 MB, med 810 000 levande och **154 000 döda rader (19 %)**. Autovacuum körde senast 15/10 03:15.
+- `trend_kandidater` hade 23 000 döda rader och `trend_stigande` 15 000.
+- Kandidatens tabeller är cirka 24 MB och står still, eftersom de gallras.
+
+**Orsaken:**
+- Nattens raderingar av exporterade dygn lämnar döda rader.
+- Autovacuum städar först vid 20 % + 50 döda rader, och vi låg på 19 %. Platsen blev därför aldrig ledig att återanvända.
+- Nya observationer lades i nytt utrymme, och filen växte.
+
+**Byggt:** `sql/060_autovacuum.sql` sätter autovacuum vid 2 % + 1 000 döda rader (analys likaså) på:
+- väderobservationerna i alla fyra länder;
+- trendtabellerna;
+- radarn;
+- kandidatens tre tabeller som byts ut.
+
+Ändringen sätter bara lagringsparametrar. Den raderar inget, kostar inget utrymme och låser inte läsning eller skrivning. Ingen
+`VACUUM FULL`: den dubblar tabellen tillfälligt och kunde skrivskydda databasen. Tabeller som saknas hoppas över, så migrationen går
+också i CI. Integrationsprovet kör filen två gånger och läser tillbaka parametrarna.
+
+**Siffran sjunker inte.** Vakuum gör platsen återanvändbar men lämnar inte tillbaka den, så 482 MB står kvar. Det mätningen ska visa
+är att tillväxten stannar.
+
+**Mätningen efter migrationen — regeln och förväntan skrivna före knappen:**
+1. **Inom en timme:** `last_autovacuum` för `weather_observations` ligger efter migrationen, och `n_dead_tup` är under 20 000
+   (DB-knappen *las*).
+2. **Det följande dygnet:** databasen växer med högst 2 MB, enligt vakthundens timserie.
+
+Faller provet tas steg 2: kortare förvaring av väderobservationerna i databasen, till exempel 10 dygn i stället för 14. Det är Bengts
+beslut, eftersom 14 dygn är ett tidigare val (#569).
+
+**Mätningen, steg 1 (16/10):**
+- Migrationen kördes 06:50 (DB-knappen 38863525814, PR #990 som 652e067).
+- 07:07 (38865193312): autovacuum körde **06:51** på `weather_observations`. Döda rader **0** (förut 154 472), `trend_kandidater` 212,
+  `trend_stigande` 9.
+- Databasen **481,4 MB**, 0,7 MB mindre än 06:50.
+- Steg 2, högst 2 MB tillväxt på ett dygn, läses 17/10.
+
+**Stomdokument:** SYS databasen och arkivet, BED §4.2.
+
+## #581 (16/10 2026) Kandidatens val 2–5 som byggt, och val 6 (c): kandidaten tiger i 2 min efter samma sträckas halkvarning (kort #343)
+
+**Bengts ord 16/10:**
+- Han frågade *"ska vi göra 2 öppna val 2-6 för kandidaten"* och sedan *"med vilket intervall kan man förvänta sig de dubbla
+  varningarna kommer"*.
+- På underlaget nedan: *"ja 2–5 som byggt, bygg c"*.
+
+**Val 2–5 står som byggda i #577:**
+- en varning per sträcka;
+- kortets underrad *Halkvakt tror — modellerat*;
+- reglaget *Halka* styr kandidaten;
+- kandidaten står inte i *I närheten* och räknas inte i resans Halka-siffra.
+
+**Underlaget för val 6.** Lägesfilen 04:40 UTC 16/10 hade 5 halkklassade sträckor bland kandidatens 12. För båda färdriktningarna och
+80 och 110 km/h blir det 20 fall:
+- **14 av 20:** kandidaten hade talat **10 s** efter Trafikverkets halkvarning, eftersom spärren håller 10 s och kandidatens punkter
+  börjar vid sträckans början. Det är den egentliga dubbelrösten.
+- **6 av 20:** kandidaten hade talat **22–44 min** senare, långt in på en lång sträcka. Där pekar den ut en del av sträckan, och
+  Trafikverkets varning upprepas ändå var 10:e minut.
+
+**Byggt (c), i motorns tre språk:**
+- Kandidatens fara bär `segmentHazardId`, alltså samma sträckas halkvarning (`seg:<sträcka>`). Läsarna i TS, Kotlin och Swift sätter
+  fältet.
+- Kandidaten tiger i `kandidatEfterHalkaS = 120` s efter att den halkvarningen talat.
+- Talet står i kontraktsgrinden för de tre filerna.
+- En annan sträckas halkvarning hindrar inte.
+- Rösten, kortet och prioriteten är orörda.
+
+**Prov:**
+- Vektorerna:
+  - **v45:** halkvarningen talar vid t=16, kandidatens närmaste punkt tiger fast den hade talat vid t=38, och punkten långt in talar
+    vid t=376.
+  - **v46:** en annan sträckas halkvarning hindrar inte, och kandidaten talar vid t=38.
+  - Marginalen är minst 10 m vid varje gräns. 120-sekundersfönstret har inga lägen nära sin gräns.
+  - Alla 44 tidigare vektorer är byte för byte orörda.
+- Läsarprovet i tre språk bär fältet.
+- **Körningar:** TS-sviten är grön. android.yml 38865321554 (grön) och ios-engine 38865338808 (grön) på grenen.
+
+**Byggnumret** höjdes till **0.3.13 (26)** i samma commit som den sista ändringen före bygget, eftersom (25) hade satts före (c)
+(CLAUDE.md-läxan om byggnummer).
+
+**Stomdokument:** LIV steg 10, APP rösten på halkklassade sträckor, BED §4.2.

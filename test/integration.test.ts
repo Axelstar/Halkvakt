@@ -1692,7 +1692,7 @@ test("#575 spridningsgrinden: regeln, gränsen, glesa punkter och domloggens fä
     await q("CREATE TABLE IF NOT EXISTS shadow_log (id bigserial PRIMARY KEY, run_at timestamptz NOT NULL DEFAULT now(), alerts jsonb NOT NULL DEFAULT '[]'::jsonb)");
     for (const f of ["001_init.sql", "008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql", "018_trend_berakna.sql",
                      "029_brott_index.sql", "030_langsam_vakt.sql", "050_kandidat_live.sql", "053_arkiv_tabeller.sql", "055_vagpunkter.sql",
-                     "056_kandidat_regel.sql", "057_kandidat_skugga.sql", "058_kandidat_spridning.sql"])
+                     "056_kandidat_regel.sql", "057_kandidat_skugga.sql", "058_kandidat_spridning.sql", "059_kandidat_brytare.sql"])
       await q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
     await stad();
     // [punkt, sträcka, n_ank, spr, väntat utfall] — alla Våt och kalla, långt från provens stationer (70° N, 32° Ö)
@@ -1732,4 +1732,77 @@ test("#575 spridningsgrinden: regeln, gränsen, glesa punkter och domloggens fä
     await stad().catch(() => {});
     await pool.end();
   }
+});
+
+test("#578 brytaren: en tystar, båda startar — och publiceringen utelämnar nyckeln när den är av", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const { buildSnapshot } = await import("../publish/snapshot-core.ts");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const pa = async () => (await q("SELECT kandidat_pa() AS pa")).rows[0].pa as boolean;
+  const tryck = (atgard: string, vem: string) => q("INSERT INTO kandidat_brytare (atgard, vem) VALUES ($1, $2)", [atgard, vem]);
+  try {
+    await q(readFileSync(new URL("../sql/059_kandidat_brytare.sql", import.meta.url), "utf8"));
+    await q("DELETE FROM kandidat_brytare");
+    assert.equal(await pa(), true, "ingen tystning ⇒ på");
+    await tryck("tysta", "axel");
+    assert.equal(await pa(), false, "en tystar");
+    const { liveDoc, notes } = await buildSnapshot(async (t, p) => (await pool.query(t, p as any[])).rows, []);
+    assert.ok(!("kandidat" in liveDoc), "av ⇒ nyckeln borta ur lägesfilen");
+    assert.ok(notes.some((n) => n.startsWith("kandidat: avstängd med brytaren")));
+    await tryck("starta", "axel");
+    await tryck("starta", "axel");
+    assert.equal(await pa(), false, "samma person två gånger räcker inte");
+    await tryck("starta", "bengt");
+    assert.equal(await pa(), true, "båda har startat efter tystningen");
+    await tryck("tysta", "bengt");
+    assert.equal(await pa(), false, "en ny tystning nollställer: de gamla startarna räknas inte");
+    await tryck("starta", "bengt");
+    assert.equal(await pa(), false, "en av två efter den nya tystningen");
+    await assert.rejects(tryck("tysta", "claude"), "bara bengt och axel");
+    await assert.rejects(tryck("pausa", "bengt"), "bara tysta och starta");
+  } finally {
+    await q("DELETE FROM kandidat_brytare").catch(() => {});
+    await pool.end();
+  }
+});
+
+test("#579 bitar av vägen: en kilometer åt vardera hållet i meter, sammanslagna per sträcka, och en punkt utanför vägen ritas inte", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { KANDIDAT_BITAR_SQL } = await import("../publish/map-core.ts");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  try {
+    await q("DELETE FROM road_conditions WHERE segment_id LIKE '99957%'");
+    // En rak sträcka norrut på 10 km vid 60° N, och en öst–västlig på 10 km — samma bitlängd oavsett riktning (meter, inte grader).
+    await q(`INSERT INTO road_conditions (segment_id, condition_code, condition_text, condition_info, geom) VALUES
+      ('99957N', 1, 'Normalt', '{}', ST_SetSRID(ST_MakeLine(ST_MakePoint(17.0, 60.0), ST_MakePoint(17.0, 60.0898)), 4326)),
+      ('99957O', 1, 'Normalt', '{}', ST_SetSRID(ST_MakeLine(ST_MakePoint(17.0, 61.0), ST_MakePoint(17.1852, 61.0)), 4326))`);
+    // Norr: punkter vid 2 och 3 km (bitarna 1–4 km, sammanslagna) och en punkt 1 km öster om vägen (ritas inte). Öst: en punkt vid 5 km.
+    const r = (await q(KANDIDAT_BITAR_SQL, [["99957N", "99957N", "99957N", "99957O"], [17.0, 17.0, 17.0185, 17.0926], [60.01797, 60.02695, 60.04, 61.0]])).rows;
+    const per = Object.fromEntries(r.map((x) => [x.seg, x]));
+    assert.deepEqual(Object.keys(per).sort(), ["99957N", "99957O"]);
+    assert.equal(per["99957N"].punkter, 2, "punkten en kilometer bort från vägen ritas inte");
+    assert.ok(Math.abs(Number(per["99957N"].km) - 3.0) <= 0.1, `två punkter 1 km isär ger en bit på 3 km: ${per["99957N"].km}`);
+    assert.equal(per["99957N"].g.type, "LineString", "bitarna slås ihop till en linje");
+    assert.ok(Math.abs(Number(per["99957O"].km) - 2.0) <= 0.1, `en ensam punkt ger 2 km också öster ut: ${per["99957O"].km}`);
+  } finally {
+    await q("DELETE FROM road_conditions WHERE segment_id LIKE '99957%'").catch(() => {});
+    await pool.end();
+  }
+});
+
+test("#580 autovacuum: tabellerna som byts ut städas vid 2 % + 1 000 döda rader, och saknade tabeller hoppas över", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  try {
+    await pool.query(readFileSync(new URL("../sql/060_autovacuum.sql", import.meta.url), "utf8"));
+    await pool.query(readFileSync(new URL("../sql/060_autovacuum.sql", import.meta.url), "utf8"));   // två gånger: idempotent
+    const { rows } = await pool.query(`SELECT reloptions FROM pg_class WHERE oid = 'public.weather_observations'::regclass`);
+    for (const o of ["autovacuum_vacuum_scale_factor=0.02", "autovacuum_vacuum_threshold=1000", "autovacuum_analyze_scale_factor=0.02"]) {
+      assert.ok((rows[0].reloptions ?? []).includes(o), `${o} saknas: ${rows[0].reloptions}`);
+    }
+  } finally { await pool.end(); }
 });
