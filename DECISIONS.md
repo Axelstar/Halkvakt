@@ -13865,3 +13865,55 @@ ska läsas med regeln skriven först (#463).
 **Varför.** Utan facit säger kuvösen bara att det blev kallt (kuvössidan §7).
 
 **Stomdokument:** KUV §7 facit, BED §4.2
+
+## #592 (16/10 2026) Facitläsningens indata (del B): kandidaten ur väg B i jobbet, stationernas yta, fyrningarna och nederbörden — fyra luckor i del A täppta (kort #232)
+
+**Beslut.** Bengt 16/10: *"slå ihop 1008, jag och axel signerar förregistreringen och ta del B själv"*. Claude bygger del B, alltså
+kuvösens indata till läsningen i #591, och skriver in dess definitioner i förregistreringens §4 (*Indata*) före signaturerna. Inget har
+lästs mot väglaget.
+
+**Byggt:**
+- `scripts/matningar/kuvos-blandning-vagb-facit-trv-2026-10-16.ts` är läsningen. Namnet ger jobbet väg B varv 1 (vagb.py och
+  vagb_blandning.py) och Trafikverkets filer med manifestets summor. Den vägrar utan båda signaturerna. Kandidatfilen
+  `niva2-arlig-blandning-analys-2024-25.csv.gz` måste ha samma sha256 som i körning 38368369876 (`dee13cd1…`), annars är det inte den
+  frysta kandidaten. Kedjan är deterministisk: `oof_vagb_analys.npy` hade samma summa (`2ac6b4b2…`) i 38368369876 och 38387172993.
+- `kuvos.yml`: steget *Förregistreringen signerad* står först i jobbet, så att fysikkedjans tre timmar inte körs förgäves.
+- `scripts/matningar/kuvos-facit-trv-indata-2026-10-16.ts` provar indatan utan facit och utan kandidaten (~15 minuter). Det läser
+  frågorna mot kuvösens databas, efterhalkans fyrningar med riktningsprovets 1 109 som kontroll, sträckorna och parningen. Trafikverkets
+  filer öppnas inte.
+- `kuvos/facit-trv.ts` (del A) fick fyra saker som §4 kräver men som saknades:
+  1. missarnas orsak (TROSKLAR-SKUGGAN §2);
+  2. basnivån för efterhalkans fönster;
+  3. perioden;
+  4. missarna och åtgärderna per månad och band, och lyftet A/B per grupp.
+  Missarna räknas nu bara på sträckor som har någon av kandidatens stationer.
+- Förregistreringen §1: kandidaten räknas vid **736** stationer i väg B, inte 754 (754 är driftens tal).
+
+**Varför valen** (skrivna i §4 *Indata*):
+- *En kall timme* är en timme där något halvtimmesvärde är 0 °C eller kallare. Förregistreringen säger "per station och timme", och
+  kandidaten har halvtimmar. Samma regel gäller kandidaten och stationens egen yta, så att lyftet jämför lika med lika.
+- *Basnivån* räknas vid kandidatens stationer, så att A och B har samma stationer.
+- *Ord som motorn inte känner* (`yes`, `freezing_rain`) ger okänd orsak, aldrig torr. Hellre okänt än en gissning.
+- *Missarna* räknas bara vid kandidatens stationer. En sträcka med enbart andra stationer hade alltid blivit en miss.
+
+**Alternativ som valdes bort:**
+- Bara värdet på hela timmen. Det tappar halvtimmen.
+- Basnivån vid alla 854 mätpunkter. Det ger en annan population än kandidatens.
+
+**Prov:**
+- Självtesten för läsaren och mätningen, i ci.
+- Fem motprov, som vart och ett fällde sitt prov:
+  - kall gräns 0,5;
+  - nederbördsfönstret ±2 h;
+  - okända ord som torra;
+  - perioden borttagen;
+  - första stationen i stället för närmaste.
+- Utan signaturer: exit 2.
+- Kontraktsgrinden (68 kontrakt) och beroendekartan håller.
+
+**Kvar:**
+- *Indataprovet* i kuvösen, på Bengts ord.
+- *Hela regeln* (del C: fukt, veto och spridning, #562–#575) i kuvösen, före knappen.
+- Signaturerna.
+
+**Stomdokument:** KUV §7 facit, BED §4.2

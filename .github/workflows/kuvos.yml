@@ -38,6 +38,11 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm }
       - run: npm ci
+      # Facitläsningen (DECISIONS #591, #592) läser utfall: utan båda signaturerna i förregistreringens §8 fälls jobbet här, före
+      # leveransen och fysikkedjans tre timmar. Indatans prov (kuvos-facit-trv-indata-*) läser inget facit och spärras inte.
+      - name: Förregistreringen signerad (facitläsningen)
+        if: ${{ contains(inputs.matning, 'kuvos-blandning-vagb-facit-trv') }}
+        run: node --experimental-strip-types kuvos/facit-trv.ts --signerad docs/FORREGISTRERING-FACIT-TRV-2024-25.md
       # Leveransen ligger sedan 9/10 i den privata hinken `arkiv` i Supabase, inte i releasen, som blir publik med repot (kort #311,
       # DECISIONS #499). Signerade adresser ur arkivdump; nyckeln ur pg_cron:s jobb som i arkivbackup.yml, maskerad.
       - name: Leveransen ur hinken, kontrollsummorna mot manifestet

@@ -1,6 +1,6 @@
 # Förregistrering — kuvösens facit ur Trafikverkets väglag, vintern 2024/25
 
-**Status: UTKAST 16/10 2026** (Bengt: *"ja till alla tre"*, DECISIONS #591). Signeras av Bengt och Axel **innan** någon del av
+**Status: UTKAST 16/10 2026** (Bengt: *"ja till alla tre"*, DECISIONS #591; indatan i §4 skriven 16/10, DECISIONS #592). Signeras av Bengt och Axel **innan** någon del av
 kuvösen läses mot väglaget. Källorna är Trafikverkets svar TRV 2026/111808 (`docs/KUVOS-LEVERANSEN-2026-10-02.md` §5h, manifestet
 `kuvos/trv-111808-leverans.json`), TROSKLAR-SKUGGAN §2 och kuvössidan §7–§8. Filerna ligger i hinken `arkiv`, aldrig i repot.
 
@@ -9,7 +9,7 @@ kuvösen läses mot väglaget. Källorna är Trafikverkets svar TRV 2026/111808 
 Tre frågor. Alla är diagnos: ingen ändrar en tröskel eller fäller en grind, och domen i mars fälls på driften som förut (#547).
 Regel L gäller (#564).
 
-- **(a) Kandidaten** NIVÅ 2+BLANDNING, den frysta (#552), i kuvösens analysläge (#544 väg B) vid de 754 stationerna: hur ofta
+- **(a) Kandidaten** NIVÅ 2+BLANDNING, den frysta (#552), i kuvösens analysläge (#544 väg B) vid de 736 stationer där väg B räknar den (körning 38368369876; 754 är driftens tal): hur ofta
   bekräftar väglaget kandidatens kalla timmar, och hur ofta missar kandidaten Trafikverkets is?
 - **(b) Efterhalkan** (S3, betan): hur stor andel av fyrningarna bekräftas? Det skiljer dess pris (45 %) från stationens blindhet
   (kuvössidan §7).
@@ -56,6 +56,27 @@ Regel L gäller (#564).
 Rader utan start- eller stopptid räknas inte, och inte heller starttider före 2024-11-01.
 
 Allt redovisas per månad och per breddgradsband (55–60, 60–64 och 64–69 °N), med antalen bakom varje andel.
+
+**Indata** (DECISIONS #592; räknas i kuvösjobbet av `scripts/matningar/kuvos-blandning-vagb-facit-trv-2026-10-16.ts`):
+- *Kandidaten* är NIVÅ 2 ÄRLIG+BLANDNING i analysläget ur väg B varv 1 (#544, #552), räknad i jobbet. Filen ska ha samma sha256 som
+  i körning 38368369876 (`dee13cd1…`), annars är det inte den frysta kandidaten och läsningen vägrar. Kedjan gav samma summa i två
+  körningar 13/10.
+- *En kall timme* är en UTC-timme där något halvtimmesvärde är 0 °C eller kallare. Tillfällets tid t är timmens början. Det gäller
+  både kandidaten och stationens egen yta.
+- *Stationens egen yta* läses med grind A:s vakter (#75, radvakten och karantänen) och den senaste raden per halvtimme, som i
+  kuvösens tidigare läsningar av kandidaten (#490). Basnivån räknas bara vid kandidatens 736 stationer, så A och B har samma stationer.
+- *Efterhalkans fyrningar* kommer ur ögonblicksvarianten av sql/028 med betans startvärden (#456). Varje fyrning räknas för sig;
+  riktningsprovet 6/10 hade 1 109.
+- *Perioden* är 1/11 2024 00:00 till 31/3 2025 24:00, svensk tid. Tillfällen utanför räknas inte, eftersom väglaget saknas där.
+- *Basnivån för (b)* är stationernas egna kalla timmar i samma fönster som fyrningarna, [t, t + 6 h].
+- *Missarna* räknas bara på sträckor med någon av kandidatens stationer, eftersom bara de kan se en episod.
+- *Missens orsak* läses ur givarens ord vid sträckans närmaste station inom 2 km, i timmarna som når in i [start − 1 h, start + 1 h]:
+  - regn, snöblandat eller snö i någon timme ⇒ *nederbördsdriven*;
+  - annars uppehåll (`no`, `dry`) i någon timme ⇒ *utstrålningsdriven*;
+  - annars *okänd*. Ord som motorn inte känner (`yes`, `freezing_rain`) räknas som okända, aldrig som torra.
+- *Sträckorna* är `vaglag.geojson` som Körflödet hämtar det, med sha256 utskriven. Stationernas lägen kommer ur
+  `data/vagdata/stationer.json`.
+- *Hela regeln* är inte byggd i kuvösen än (del C). Knappen trycks när den finns, så att läsningen körs en gång.
 
 ## 5. Förväntan, skriven före läsningen
 
