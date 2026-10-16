@@ -75,8 +75,9 @@ Allt redovisas per månad och per breddgradsband (55–60, 60–64 och 64–69 �
   - regn, snöblandat eller snö i någon timme ⇒ *nederbördsdriven*;
   - annars uppehåll (`no`, `dry`) i någon timme ⇒ *utstrålningsdriven*;
   - annars *okänd*. Ord som motorn inte känner (`yes`, `freezing_rain`) räknas som okända, aldrig som torra.
-- *Sträckorna* är `vaglag.geojson` som Körflödet hämtar det, med sha256 utskriven. Stationernas lägen kommer ur
-  `data/vagdata/stationer.json`.
+- *Sträckorna* är `vaglag.geojson` som Körflödet hämtar det. Läsningen skriver ut *nätets summa*, en sha256 över sträckornas id och
+  geometri sorterade på id (#594). Filens egen summa byts vid varje publicering, eftersom filen också bär dagens väglag. Stationernas
+  lägen kommer ur `data/vagdata/stationer.json`.
 - *Hela regeln* (DECISIONS #593) prövas vid varje kall timme t, i slutet av timmen e = t + 1 h, i driftens ordning:
   1. *veto* om en station inom 15 km, stationen själv medräknad, mätte en yta över +2 °C under (e − 45 min, e], med driftens vakter
      (#75, radvakten och karantänen);
