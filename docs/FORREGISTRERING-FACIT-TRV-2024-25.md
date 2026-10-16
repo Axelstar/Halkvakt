@@ -30,7 +30,9 @@ Regel L gäller (#564).
 ## 3. Tid och plats
 
 - **Tidszonen mäts före läsningen**, som 2/10 (KUVOS-LEVERANSEN §3): saknar timmen 02 natten till 30/3 2025 ändringar är stämplarna
-  svensk lokaltid och görs om till UTC; annars läses de som UTC. Utfallet skrivs in här innan läsningen börjar.
+  svensk lokaltid och görs om till UTC; annars läses de som UTC. **Mätt 16/10 med `kuvos/facit-trv.ts` på filerna lokalt: svensk
+  lokaltid.** Timmen 02 den natten har 0 ändringar, medan timmarna runt har 26, 12, 10 och 13 (00, 01, 03 och 04). Det är samma
+  utfall som leveransen 2/10.
 - **Station och sträcka:** en station hör till de sträckor vars linje ligger inom **2 km** från stationen (TROSKLAR-SKUGGAN §2:s
   matchning), med linjerna ur `road_conditions` i dag. En station utan sträcka inom 2 km redovisas som utanför.
 - **Antagande:** sträckorna har samma geometri som 2024/25. ID:na stödjer det, eftersom alla 816 finns i dag (§5h); antagandet står
@@ -69,8 +71,9 @@ signaturerna, och aldrig som en lättnad efter sett utfall (regel L).
 
 ## 7. Hittills sett
 
-Bara formen, antalen och kodernas fördelning i hela filen (KUVOS-LEVERANSEN §5h). Ingen station, ingen kandidattimme och ingen
-fyrning har ställts mot väglaget.
+Bara formen, antalen och kodernas fördelning i hela filen (KUVOS-LEVERANSEN §5h), tidszonsprovet (§3) och facitets omfång:
+10 256 is-episoder på 721 sträckor och 11 880 snö- och moddepisoder (läsaren på filerna lokalt, 16/10). Ingen station, ingen
+kandidattimme och ingen fyrning har ställts mot väglaget.
 
 ## 8. Signaturer
 
