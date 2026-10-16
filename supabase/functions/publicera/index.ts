@@ -679,8 +679,8 @@ export async function buildGrannSnapshot(q: Q, land: Granne, now: Date = new Dat
 // Ren och körtidsneutral som kartkärnan: inga importer, för scripts/bundle-publicera.ts klistrar in filen i publicera. Namnen får
 // därför inte krocka med snapshot-core.ts eller map-core.ts.
 
-/** Kartsajtens adress. Byts den (egen domän) skickar GitHub Pages vidare, men kanoniska adresser och sitemapen följer härifrån. */
-export const SIDBAS = "https://axelstar.github.io/halkvakt-karta";
+/** Kartsajtens adress: halkvakt.se sedan 13/10 (Pages skickar github.io vidare). Kanoniska adresser och sitemapen följer härifrån. */
+export const SIDBAS = "https://halkvakt.se";
 
 // Det som får MOTORN att tala om en sträcka (engine.ts, evaluateSegment): kod ≥ 2 eller ett halkord. En kopia, vaktad av
 // kontraktsgrinden ("Halkorden i MOTORN", "Halkstammarna i MOTORN") — sidan och rösten ska mena samma sak med halt.
@@ -740,7 +740,7 @@ export const LAN: { kod: number; namn: string; kort: string; slug: string; styck
 /** De stora vägarna (planens §6). Stycket är skrivet för hand och säger bara var vägen går. */
 export const VAGAR: { nyckel: string; namn: string; rubrik: string; slug: string; stycke: string }[] = [
   { nyckel: "e4", namn: "E4", rubrik: "E4", slug: "e4",
-    stycke: "E4 går från Helsingborg via Jönköping, Linköping, Stockholm, Gävle, Sundsvall, Umeå och Luleå till Haparanda — från mild kustvinter i söder till lång vinter i norr." },
+    stycke: "E4 går från Helsingborg via Jönköping, Linköping, Stockholm, Gävle, Sundsvall, Umeå och Luleå till Haparanda, från mild kustvinter i söder till lång vinter i norr." },
   { nyckel: "e6", namn: "E6", rubrik: "E6", slug: "e6",
     stycke: "E6 går längs västkusten från Trelleborg via Malmö, Helsingborg, Halmstad och Göteborg till norska gränsen vid Svinesund." },
   { nyckel: "e18", namn: "E18", rubrik: "E18", slug: "e18",
@@ -767,22 +767,20 @@ const lsTid = (d: Date, datum = true) => new Intl.DateTimeFormat("sv-SE", {
 }).format(d);
 const lsPlural = (n: number, en: string, flera: string) => `${n} ${n === 1 ? en : flera}`;
 
-const LS_STIL = `:root{--bg:#0E1B25;--panel:#14344A;--fg:#F3F6F9;--dim:#9FB3C8;--gul:#FFC400;--gron:#1E7A46}
-*{box-sizing:border-box;margin:0}body{background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,sans-serif}
-a{color:var(--gul)}.wrap{max-width:880px;margin:0 auto;padding:0 20px}header{padding:18px 0;border-bottom:2px solid var(--panel)}
-.brand{font-family:ui-monospace,monospace;font-weight:700;color:var(--gul);font-size:20px;letter-spacing:.5px;text-decoration:none}
-main{padding:24px 0 8px}h1{font-size:30px;line-height:1.2;margin:6px 0 12px;text-wrap:balance}h2{font-size:19px;margin:26px 0 8px}
-.dim{color:var(--dim);font-size:14px}.svar{font-size:19px;background:var(--panel);border-radius:12px;padding:14px 16px}
-ul{padding-left:20px}li{margin:4px 0}table{border-collapse:collapse;width:100%;font-size:15px;font-variant-numeric:tabular-nums}
-td,th{text-align:left;padding:6px 8px;border-bottom:1px solid var(--panel)}td+td,th+th{white-space:nowrap}nav p{line-height:2}
-footer{padding:20px 0 40px;color:var(--dim);font-size:13px}`;
+// Samma ram som resten av halkvakt.se (16/10): sajtens delade stil `assets/hv.css` i kartrepot plus det sidorna själva behöver.
+const LS_STIL = `.dok{max-width:760px}.svar{font:500 19px/1.5 var(--sans);color:var(--text);background:var(--panel);border:1px solid var(--kant);border-radius:18px;padding:18px 22px;margin:18px 0 8px}
+.dok nav p{line-height:2.1}.dok nav a{white-space:nowrap}.tabell{overflow-x:auto}.dok td+td,.dok th+th{white-space:nowrap;text-align:right}
+.ladda{display:grid;gap:12px;background:var(--panel);border:1px solid var(--kant);border-radius:18px;padding:22px 24px;margin-top:44px}
+.ladda b{font-size:19px}.ladda p{margin:0}.ladda .knapp{justify-self:start}`;
+const LS_APP = "https://apps.apple.com/se/app/id6806939784";
+const LS_MARKE = `<svg viewBox="3 3 94 83" aria-hidden="true"><path fill-rule="evenodd" fill="#FFC94A" d="M55.196 6 L96.196 77 A6 6 0 0 1 91 86 L9 86 A6 6 0 0 1 3.804 77 L44.804 6 A6 6 0 0 1 55.196 6 Z M46.4 32 L53.6 32 L52 58 L48 58 Z M45.6 68 A4.4 4.4 0 1 0 54.4 68 A4.4 4.4 0 1 0 45.6 68 Z"/></svg>`;
 
 function lsSkal(o: { titel: string; beskrivning: string; adress: string; rot: string; innehall: string }) {
   return `<!doctype html>
 <html lang="sv">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>${lsEsc(o.titel)}</title>
 <meta name="description" content="${lsEsc(o.beskrivning)}">
 <link rel="canonical" href="${o.adress}">
@@ -792,16 +790,41 @@ function lsSkal(o: { titel: string; beskrivning: string; adress: string; rot: st
 <meta property="og:url" content="${o.adress}">
 <meta property="og:locale" content="sv_SE">
 <meta property="og:image" content="${SIDBAS}/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="apple-itunes-app" content="app-id=6806939784">
 <link rel="icon" type="image/png" href="${o.rot}favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="${o.rot}assets/hv.css">
 <style>${LS_STIL}</style>
 </head>
 <body>
-<header><div class="wrap"><a class="brand" href="${o.rot}">HALKVAKT</a></div></header>
+<header class="topp">
+  <div class="wrap">
+    <a class="logo" href="${o.rot}" aria-label="Halkvakt, till startsidan">${LS_MARKE}<b>HALKVAKT</b></a>
+    <nav class="meny" aria-label="Huvudmeny">
+      <a href="${o.rot}#appen">Appen</a>
+      <a href="${o.rot}#sa-funkar">Så funkar det</a>
+      <a href="${o.rot}karta.html">Livekartan</a>
+      <a href="${o.rot}lan/" aria-current="page">Länen</a>
+    </nav>
+    <a class="knapp" href="${LS_APP}">Ladda ner för iPhone</a>
+  </div>
+</header>
 <main class="wrap">
+<div class="dok">
 ${o.innehall}
+<div class="ladda"><b>Hör det här medan du kör.</b><p>Halkvakt säger till med rösten när det är halt på vägen framför dig. Samma data som på den här sidan. Gratis för iPhone.</p><a class="knapp" href="${LS_APP}">Ladda ner i App Store</a></div>
+</div>
 </main>
-<footer><div class="wrap">Källa: Trafikverkets öppna data (väglag, vägväderstationer och olyckor). Sidan skrivs om var 30:e minut.
-Halkvakt är en app som varnar med rösten för halka, olyckor, vilt och fartkameror på vägen framför dig — <a href="${o.rot}">läs mer</a>.</div></footer>
+<footer class="fot">
+  <div class="wrap">
+    <a class="logo" href="${o.rot}">${LS_MARKE}<b>HALKVAKT</b></a>
+    <p class="kallor">Källa: Trafikverkets öppna data (CC0): väglag, vägväderstationer och olyckor. Sidan skrivs om var 30:e minut. Fristående från myndigheterna.</p>
+    <nav aria-label="Sidfot"><a href="${o.rot}karta.html">Livekartan</a><a href="${o.rot}lan/">Länen</a><a href="${o.rot}om.html">Om appen</a><a href="${o.rot}press.html">Press</a><a href="${o.rot}integritet.html">Integritet</a></nav>
+  </div>
+</footer>
 </body>
 </html>
 `;
@@ -849,12 +872,12 @@ function lsVagsida(vag: (typeof VAGAR)[number], l: LanLage, now: Date): string {
   const halt = l.halt.slice(0, 20).map((s) =>
     `<li>${med(s.lan, `${lsEsc(s.plats ?? s.road ?? "Vägavsnitt")}: ${lsEsc([s.text, ...s.info].filter(Boolean).join(", "))}`)}</li>`).join("\n");
   const kalla = l.kalla.slice(0, 8).map((s) =>
-    `<li>${med(s.lan, `${lsEsc(s.name)}: ${lsGrad(s.yta)}${s.fukt ? " — nederbörd eller fukt rapporteras" : ""}`)}</li>`).join("\n");
+    `<li>${med(s.lan, `${lsEsc(s.name)}: ${lsGrad(s.yta)}${s.fukt ? ", nederbörd eller fukt rapporteras" : ""}`)}</li>`).join("\n");
   const olyckor = l.olyckor.slice(0, 10).map((o) =>
     `<li>${med(o.lan, `${o.start ? `sedan ${lsTid(new Date(o.start))}` : "pågår"}${o.allvar ? ` (${lsEsc(o.allvar)})` : ""}`)}</li>`).join("\n");
   const andra = VAGAR.filter((x) => x.slug !== vag.slug).map((x) => `<a href="../${x.slug}/">${lsEsc(x.namn)}</a>`).join(" · ");
   const innehall = `<p class="dim">Uppdaterad ${lsTid(now)}</p>
-<h1>Halt väglag på ${lsEsc(vag.rubrik)} just nu?</h1>
+<h1>Är det halt på ${lsEsc(vag.rubrik)} just nu?</h1>
 <p class="svar">${lsEsc(lsSvar(l, `${vag.namn}:s`, "vid vägen"))}</p>
 <h2>Väglaget enligt Trafikverket</h2>
 ${l.halt.length ? `<ul>\n${halt}\n</ul>${l.halt.length > 20 ? `\n<p class="dim">och ${l.halt.length - 20} till.</p>` : ""}`
@@ -869,7 +892,7 @@ ${l.olyckor.length ? `<ul>\n${olyckor}\n</ul>` : `<p>Trafikverket rapporterar in
 <p>Se hela landet på <a href="../../karta.html">livekartan</a>, eller <a href="../../lan/">läget i alla län</a>.</p>
 <nav><h2>Andra vägar</h2><p>${andra}</p></nav>`;
   return lsSkal({
-    titel: `Halt väglag på ${vag.rubrik} just nu? Väglag och vägtemperatur längs vägen | Halkvakt`,
+    titel: `Är det halt på ${vag.rubrik} just nu? Väglag och vägtemperatur längs vägen | Halkvakt`,
     beskrivning: `Väglaget på ${vag.rubrik} just nu: Trafikverkets rapporter om halka, vägbanans temperatur vid mätstationerna längs vägen och pågående olyckor. Uppdateras var 30:e minut.`,
     adress: `${SIDBAS}/vag/${vag.slug}/`, rot: "../../", innehall,
   });
@@ -881,13 +904,14 @@ function lsLanssida(lan: (typeof LAN)[number], l: LanLage, now: Date): string {
     return `<li>${lsEsc(s.plats ?? s.road ?? "Vägavsnitt")}: ${lsEsc(vad)}</li>`;
   }).join("\n");
   const kalla = l.kalla.slice(0, 5).map((s) =>
-    `<li>${lsEsc(s.name)}: ${lsGrad(s.yta)}${s.fukt ? " — nederbörd eller fukt rapporteras" : ""}</li>`).join("\n");
+    `<li>${lsEsc(s.name)}: ${lsGrad(s.yta)}${s.fukt ? ", nederbörd eller fukt rapporteras" : ""}</li>`).join("\n");
   const olyckor = l.olyckor.slice(0, 10).map((o) => `<li>${lsEsc(o.road ?? "Väg")}${o.start ? `, sedan ${lsTid(new Date(o.start))}` : ""}` +
     `${o.allvar ? ` (${lsEsc(o.allvar)})` : ""}</li>`).join("\n");
   const andra = LAN.filter((x) => x.kod !== lan.kod).map((x) => `<a href="../${x.slug}/">${lsEsc(x.kort)}</a>`).join(" · ");
   const innehall = `<p class="dim">Uppdaterad ${lsTid(now)}</p>
-<h1>Halt väglag i ${lsEsc(lan.kort)} just nu?</h1>
+<h1>Är det halt i ${lsEsc(lan.kort)} just nu?</h1>
 <p class="svar">${lsEsc(lsSvar(l))}</p>
+<p><a class="lank-mono" href="../../karta.html?lan=${lan.slug}">Se ${lsEsc(lan.kort)} på livekartan →</a></p>
 <h2>Väglaget enligt Trafikverket</h2>
 ${l.halt.length ? `<ul>\n${halt}\n</ul>${l.halt.length > 15 ? `\n<p class="dim">och ${l.halt.length - 15} till.</p>` : ""}`
     : `<p>Inget av länets ${l.vagavsnitt} vägavsnitt har halka eller vinterväglag i Trafikverkets rapport.</p>`}
@@ -898,10 +922,10 @@ ${l.kalla.length ? `<p>Kallast just nu, vid Trafikverkets vägväderstationer:</
 ${l.olyckor.length ? `<ul>\n${olyckor}\n</ul>` : "<p>Trafikverket rapporterar ingen pågående olycka i länet.</p>"}
 <h2>Vintern i ${lsEsc(lan.kort)}</h2>
 <p>${lsEsc(lan.stycke)}</p>
-<p>Se hela landet på <a href="../../karta.html">livekartan</a>, eller <a href="../">läget i alla län</a>.</p>
+<p>Hela landet på <a href="../../karta.html">livekartan</a>, eller <a href="../">läget i alla län</a>. Redaktioner kan <a href="../../press.html#redaktioner">bädda in läget i ${lsEsc(lan.kort)}</a> på sin egen sajt.</p>
 <nav><h2>Andra län</h2><p>${andra}</p><h2>Stora vägar</h2><p>${lsVagLankar("../../")}</p></nav>`;
   return lsSkal({
-    titel: `Halt väglag i ${lan.kort} just nu? Väglag och vägtemperatur | Halkvakt`,
+    titel: `Är det halt i ${lan.kort} just nu? Väglag och vägtemperatur | Halkvakt`,
     beskrivning: `Väglaget i ${lan.namn} just nu: Trafikverkets rapporter om halka, vägbanans temperatur vid mätstationerna och pågående olyckor. Uppdateras var 30:e minut.`,
     adress: `${SIDBAS}/lan/${lan.slug}/`, rot: "../../", innehall,
   });
@@ -913,9 +937,9 @@ function lsOversikt(lagen: Map<number, LanLage>, vagar: Map<string, LanLage>, no
   const rader = LAN.map((lan) => rad(`${lan.slug}/`, lan.namn, lagen.get(lan.kod)!)).join("\n");
   const vagrader = VAGAR.map((v) => rad(`../vag/${v.slug}/`, v.namn, vagar.get(v.slug)!)).join("\n");
   const innehall = `<p class="dim">Uppdaterad ${lsTid(now)}</p>
-<h1>Halt väglag i Sverige just nu? Läget per län</h1>
+<h1>Är det halt i Sverige just nu? Läget per län</h1>
 <p>Trafikverkets väglagsrapport, vägbanans temperatur vid vägväderstationerna och pågående olyckor, län för län.</p>
-<div style="overflow-x:auto"><table>
+<div class="tabell"><table>
 <thead><tr><th>Län</th><th>Halka¹</th><th>≤ 0 °C²</th><th>Olyckor</th></tr></thead>
 <tbody>
 ${rader}
@@ -924,7 +948,7 @@ ${rader}
 <p class="dim">¹ Vägavsnitt med halka eller vinterväglag i Trafikverkets rapport, av länets alla. ² Vägväderstationer som visar vägbana på
 0 °C eller kallare. Olyckor: pågående, enligt Trafikverket.</p>
 <h2>Stora vägar</h2>
-<div style="overflow-x:auto"><table>
+<div class="tabell"><table>
 <thead><tr><th>Väg</th><th>Halka¹</th><th>≤ 0 °C²</th><th>Olyckor</th></tr></thead>
 <tbody>
 ${vagrader}
@@ -932,7 +956,7 @@ ${vagrader}
 </table></div>
 <p>Se hela landet på <a href="../karta.html">livekartan</a>.</p>`;
   return lsSkal({
-    titel: "Halt väglag i Sverige just nu? Läget per län | Halkvakt",
+    titel: "Är det halt i Sverige just nu? Läget per län | Halkvakt",
     beskrivning: "Väglaget i alla 21 län just nu: Trafikverkets rapporter om halka, vägbanans temperatur och pågående olyckor. Uppdateras var 30:e minut.",
     adress: `${SIDBAS}/lan/`, rot: "../", innehall,
   });
@@ -942,10 +966,21 @@ ${vagrader}
 export function byggLanssidor(d: { vaglag: LanSegment[]; stationer: LanStation[]; olyckor: LanOlycka[]; now: Date }): Record<string, string> {
   const lagen = new Map(LAN.map((lan) => [lan.kod, lsLage(lan.kod, d)] as const));
   const vagar = new Map(VAGAR.map((v) => [v.slug, lsVagLage(v.nyckel, d)] as const));
-  const ut: Record<string, string> = { "lan/index.html": lsOversikt(lagen, vagar, d.now) };
+  const ut: Record<string, string> = { "lan/index.html": lsOversikt(lagen, vagar, d.now), "data/lan.json": lsLanJson(lagen, vagar, d.now) };
   for (const lan of LAN) ut[`lan/${lan.slug}/index.html`] = lsLanssida(lan, lagen.get(lan.kod)!, d.now);
   for (const v of VAGAR) ut[`vag/${v.slug}/index.html`] = lsVagsida(v, vagar.get(v.slug)!, d.now);
   return ut;
+}
+
+/** Widgetens och startsidans datafil (kort #281, widgeten): samma tal som sidorna, utan text. Kallast = kallaste stationen under noll. */
+function lsLanJson(lagen: Map<number, LanLage>, vagar: Map<string, LanLage>, now: Date): string {
+  const tal = (l: LanLage) => ({ halt: l.halt.length, vagavsnitt: l.vagavsnitt, kalla: l.kalla.length,
+    kallast: l.kalla.length ? { namn: l.kalla[0].name, yta: l.kalla[0].yta } : null, olyckor: l.olyckor.length });
+  return JSON.stringify({
+    generated_at: now.toISOString(),
+    lan: LAN.map((lan) => ({ kod: lan.kod, namn: lan.namn, kort: lan.kort, slug: lan.slug, ...tal(lagen.get(lan.kod)!) })),
+    vag: VAGAR.map((v) => ({ namn: v.namn, slug: v.slug, ...tal(vagar.get(v.slug)!) })),
+  });
 }
 
 export const sidAdresser = () => [`${SIDBAS}/lan/`, ...LAN.map((l) => `${SIDBAS}/lan/${l.slug}/`),

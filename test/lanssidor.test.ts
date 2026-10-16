@@ -38,16 +38,17 @@ test("länssidorna: 21 län och en översikt, svaret ur källorna, Trafikverkets
     olyckor: [{ road: "E22", start: "2026-11-20T05:10:00Z", allvar: "Stor påverkan", lan: 12 }],   // olyckornas form: utan mellanslag
     now: NOW,
   });
-  assert.equal(Object.keys(sidor).length, 28);
-  assert.deepEqual(Object.keys(sidor).filter((p) => p !== "lan/index.html").sort(),
+  assert.equal(Object.keys(sidor).length, 29, "översikten, 21 län, 6 vägar och widgetens datafil");
+  assert.deepEqual(Object.keys(sidor).filter((p) => p !== "lan/index.html" && p !== "data/lan.json").sort(),
     [...LAN.map((l) => `lan/${l.slug}/index.html`), ...VAGAR.map((v) => `vag/${v.slug}/index.html`)].sort());
   const skane = sidor["lan/skane/index.html"];
-  assert.ok(skane.includes("<title>Halt väglag i Skåne just nu? Väglag och vägtemperatur | Halkvakt</title>"));
+  assert.ok(skane.includes("<title>Är det halt i Skåne just nu? Väglag och vägtemperatur | Halkvakt</title>"));
   assert.ok(skane.includes(`<link rel="canonical" href="${SIDBAS}/lan/skane/">`));
   assert.ok(skane.includes("Trafikverket rapporterar halka eller vinterväglag på 1 av länets 2 vägavsnitt."), "fläckvis Våt räknas inte");
   assert.ok(skane.includes("1 mätstation visar vägbana på 0 °C eller kallare."));
   assert.ok(skane.includes("E 6 Malmö - Lund: Mycket besvärligt, Is, &lt;b&gt;"), "Trafikverkets ord, escapade");
-  assert.ok(skane.includes("Lund: −1,5 °C — nederbörd eller fukt rapporteras") && !skane.includes("Malmö: 0,4"));
+  assert.ok(skane.includes("Lund: −1,5 °C, nederbörd eller fukt rapporteras") && !skane.includes("Malmö: 0,4"));
+  assert.ok(!skane.includes("—"), "inga långa tankstreck (varumärkesguiden)");
   assert.ok(skane.includes("E22, sedan 20 nov. 06:10 (Stor påverkan)"), "svensk tid, vinter +1");
   assert.ok(skane.includes("Uppdaterad 20 nov. 07:30"));
   const sthlm = sidor["lan/stockholm/index.html"];
@@ -55,7 +56,12 @@ test("länssidorna: 21 län och en översikt, svaret ur källorna, Trafikverkets
   assert.ok(sthlm.includes("Trafikverket rapporterar ingen pågående olycka i länet."));
   const oversikt = sidor["lan/index.html"];
   assert.ok(oversikt.includes(`<tr><td><a href="skane/">Skåne län</a></td><td>1 av 2</td><td>1</td><td>1</td></tr>`));
-  for (const [p, html] of Object.entries(sidor)) assert.ok(!/undefined|NaN|null/.test(html), `${p}: inget tomt läckte ut`);
+  const json = JSON.parse(sidor["data/lan.json"]);
+  assert.equal(json.generated_at, NOW.toISOString());
+  assert.deepEqual(json.lan.find((l: any) => l.slug === "skane"), { kod: 12, namn: "Skåne län", kort: "Skåne", slug: "skane", halt: 1, vagavsnitt: 2, kalla: 1, kallast: { namn: "Lund", yta: -1.5 }, olyckor: 1 });
+  assert.equal(json.lan.find((l: any) => l.slug === "stockholm").kallast, null);
+  assert.equal(json.lan.length, 21); assert.equal(json.vag.length, 6);
+  for (const [p, html] of Object.entries(sidor)) if (p !== "data/lan.json") assert.ok(!/undefined|NaN|null/.test(html), `${p}: inget tomt läckte ut`);
 });
 
 // Vägsidorna (#458, "vägsidorna sedan"): väglaget skriver "E 6" och "Väg 40", olyckorna "E22" — samma väg ska mötas.
@@ -73,17 +79,17 @@ test("vägsidorna: vägnumret utan form, vägens sträckor i alla län, statione
     now: NOW,
   });
   const e6 = sidor["vag/e6/index.html"];
-  assert.ok(e6.includes("<title>Halt väglag på E6 just nu? Väglag och vägtemperatur längs vägen | Halkvakt</title>"));
+  assert.ok(e6.includes("<title>Är det halt på E6 just nu? Väglag och vägtemperatur längs vägen | Halkvakt</title>"));
   assert.ok(e6.includes("Trafikverket rapporterar halka eller vinterväglag på 1 av E6:s 2 vägavsnitt. 1 mätstation visar vägbana på 0 °C eller kallare."));
   assert.ok(e6.includes("Skåne: E 6 Malmö - Lund: Mycket besvärligt, Is") && !e6.includes("Kungälv"), "bara det hala listas, med länet");
   assert.ok(e6.includes("Skåne: Lund: −1,5 °C") && !e6.includes("Kall men vid en annan väg"));
   assert.ok(e6.includes("Västra Götaland: sedan 20 nov. 06:10"), "olyckan 'E6' möter väglagets 'E 6'");
   const rv40 = sidor["vag/rv40/index.html"];
-  assert.ok(rv40.includes("Halt väglag på riksväg 40 just nu?") && rv40.includes("1 av Riksväg 40:s 1 vägavsnitt"));
+  assert.ok(rv40.includes("Är det halt på riksväg 40 just nu?") && rv40.includes("1 av Riksväg 40:s 1 vägavsnitt"));
   assert.ok(rv40.includes("Trafikverket rapporterar ingen pågående olycka på riksväg 40."));
   assert.ok(sidor["lan/index.html"].includes(`<tr><td><a href="../vag/e6/">E6</a></td><td>1 av 2</td><td>1</td><td>1</td></tr>`));
   assert.ok(sidor["lan/skane/index.html"].includes(`<a href="../../vag/e4/">E4</a>`), "länssidorna länkar till vägarna");
-  for (const [p, html] of Object.entries(sidor)) assert.ok(!/undefined|NaN|null/.test(html), `${p}: inget tomt läckte ut`);
+  for (const [p, html] of Object.entries(sidor)) if (p !== "data/lan.json") assert.ok(!/undefined|NaN|null/.test(html), `${p}: inget tomt läckte ut`);
 });
 
 test("länssidorna: sitemapen får de adresser som saknas, en gång, och Axels rader står kvar", () => {

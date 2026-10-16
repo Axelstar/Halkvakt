@@ -13811,3 +13811,39 @@ fäller om kartan läser tabellen igen; motprovet med grenen tillbaka gav 1 fall
 **Varför.** Kartan är publik, och en källa utan känd licens får inte ligga där. (a) kan tas senare när någon har nyckeln.
 
 **Stomdokument:** SYS 1 kartsajten, BED §4.2
+
+## #588 (16/10 2026) Länssidorna i sajtens ram, länstalen i data/lan.json och ett inbäddningskort för redaktioner (kort #353)
+
+**Bakgrund.** Trafikverket varnade 16/10 för förrädisk halka de kommande nätterna i sju län (Värmland, Västmanland, Örebro, Södermanland,
+Uppsala, Dalarna, Gävleborg; Aftonbladet). Axel 16/10: *"vi måste komma igång nu"*, *"vi börjar bygga länen och det för tidningar"*,
+*"sen en widget"*, *"vi bygger innan vi skickar"*, *"se live karta och det visar bara det länet"*. Länssidorna (DECISIONS #458) skrevs i
+en egen enkel ram; sedan halkvakt.se byggdes om 13/10 såg de inte ut som sajten.
+
+**Beslut.** (1) `publish/lanssidor.ts` skriver sidorna i sajtens ram: `assets/hv.css`, topp med meny och App Store-knapp, fot med
+källorna; rubriken är frågan läsaren ställer, *Är det halt i X just nu?*, svaret står först och är oförändrat i sak (Trafikverkets
+rapport, stationerna, olyckorna). (2) Samma varv skriver `data/lan.json`: per län och väg antalet halka-avsnitt, vägavsnitt, stationer
+under noll, den kallaste stationen och pågående olyckor, med `generated_at`. Talen är de som redan står på sidorna; filen är rådata
+för kortet och för redaktioner. (3) Karta-repot (Axels, 24aa540): `karta.html?lan=<slug>` visar bara länet, `widget.html?lan=<slug>`
+(eller `?vag=`, eller inget för hela landet) är ett inbäddningskort som läser lan.json, och press.html#redaktioner bär koden och
+citeringsregeln *Halkvakt / Trafikverkets öppna data*. Sitemap och robots pekar på halkvakt.se; publicera fogar bara in adresser som
+saknas (#458), så inget dubbleras. Länssidorna länkar till kortet.
+
+**Alternativ.** (a) Skicka tipset till tidningarna på sidorna som de var: avvisat av Axel, sidorna ska vara klara först. (b) Kortet
+ur `vaglag.geojson` direkt i webbläsaren: då hade varje inbäddning laddat 818 segment; lan.json är några kB.
+
+**Varför.** Lokaltidningarna och P4 i de sju länen skriver om varningen i dag; en sida som svarar på *är det halt i Värmland just nu* med
+Trafikverkets siffror, uppdaterad var 30:e minut, och ett kort de kan bädda in, är det Halkvakt kan ge dem utan annonskonto. Sidan
+påstår fortfarande aldrig själv att det är halt (#458).
+
+**Stomdokument:** SYS 1 kartsajten, APP 9
+
+## #589 (16/10 2026) Arbetsfördelningen i oktober: Bengt appen och facit, Axel marknadsföringen
+
+**Beslut.** Axel 15/10 (marknadschatten): *"pappa fokuserar på appen och dess facit och jag marknadsföring"*. Marknadsarbetet
+(sajten, länssidorna, kontona, tipsen till redaktioner) drivs i Axels sessioner och skrivs som Halkvakt, aldrig i Axels namn utom i
+pressmaterialet (*"vi ska alltid skriva som halkvakt"*). Appen, motorn och facit är Bengts. Kod i det här repot följer fortfarande
+reglerna här: PR, grön CI och *slå ihop* före deploy.
+
+**Alternativ.** Båda på allt, som hittills. **Varför.** Appen är ute sedan 13/10 och halksäsongen börjar nu; två spår i stället för ett.
+
+**Stomdokument:** inga — arbetsfördelning, inget av de åtta beskriver vem som gör vad
