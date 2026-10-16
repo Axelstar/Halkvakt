@@ -77,13 +77,17 @@ const LANK = {
   facebook: "Läget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan",
   instagram: "Läget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.",
 };
-const APP = "Halkvakt säger till med rösten innan det blir halt. Gratis för iPhone.";
+// Facebook får App Store-länken klickbar i varje inlägg; på Instagram ligger den först i profilen (DECISIONS #601).
+const APP = {
+  facebook: "Halkvakt säger till med rösten innan det blir halt. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784",
+  instagram: "Halkvakt säger till med rösten innan det blir halt. Gratis för iPhone, länken finns i vår profil.",
+};
 const lanTagg = l => "#" + l.kort.replace(/s? län$/, "").replace(/\s+/g, "");
 
 // Gemensam svans för alla inlägg: länk, app, källa och taggar.
 function svans(kanal, kalla, lanen) {
   const taggar = ["#halka", "#väglag", ...lanen.map(lanTagg)];
-  return ["", LANK[kanal], APP, "", `Källa: ${kalla}.`, "", [...new Set(taggar)].join(" ")];
+  return ["", LANK[kanal], APP[kanal], "", `Källa: ${kalla}.`, "", [...new Set(taggar)].join(" ")];
 }
 
 // Morgonlistans inledning skiftar mellan dagarna så att inläggen inte ser likadana ut varje morgon.
