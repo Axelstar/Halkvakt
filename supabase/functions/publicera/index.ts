@@ -992,18 +992,30 @@ export const STATION_LAN_SQL = `
 export const KANDIDAT_BITAR_SQL = `
         WITH p AS (SELECT * FROM unnest($1::text[], $2::float8[], $3::float8[]) AS p(seg, lon, lat)),
         del AS (
-          SELECT p.seg, p.lon, p.lat, ST_Transform(d.geom, 3006) AS linje, ST_Transform(ST_SetSRID(ST_MakePoint(p.lon, p.lat), 4326), 3006) AS pt
+          SELECT p.seg, p.lon, p.lat, d.path AS del, ST_Transform(d.geom, 3006) AS linje,
+                 ST_Transform(ST_SetSRID(ST_MakePoint(p.lon, p.lat), 4326), 3006) AS pt
           FROM p JOIN road_conditions rc ON rc.segment_id = p.seg AND NOT rc.deleted AND rc.geom IS NOT NULL
           CROSS JOIN LATERAL ST_Dump(ST_LineMerge(ST_Force2D(rc.geom))) d),
         narm AS (
-          SELECT DISTINCT ON (seg, lon, lat) seg, linje, pt FROM del
+          SELECT DISTINCT ON (seg, lon, lat) seg, del, linje, pt FROM del
           WHERE ST_DWithin(linje, pt, 300) AND ST_Length(linje) > 0
           ORDER BY seg, lon, lat, ST_Distance(linje, pt)),
+        -- Varje punkt blir ett intervall [a, b] längs sin linje (andelar), 1 000 m åt vardera hållet. Intervallen slås ihop där de
+        -- överlappar (luckor och öar) och skärs ut EN gång per ö — ST_Union på bitarna kände inte igen överlappet när linjerna
+        -- skilde sig på sista decimalen, och två punkter 1 km isär blev 4 km i stället för 3 (CI 38860931214, #579).
+        iv AS (
+          SELECT seg, del, linje, greatest(0, f - 1000 / ST_Length(linje)) AS a, least(1, f + 1000 / ST_Length(linje)) AS b
+          FROM narm, LATERAL (SELECT ST_LineLocatePoint(linje, pt) AS f) x),
+        ny AS (
+          SELECT *, CASE WHEN a <= max(b) OVER (PARTITION BY seg, del ORDER BY a, b ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING)
+                         THEN 0 ELSE 1 END AS borjar
+          FROM iv),
+        oar AS (SELECT *, sum(borjar) OVER (PARTITION BY seg, del ORDER BY a, b) AS o FROM ny),
         bit AS (
-          SELECT seg, ST_LineSubstring(linje, greatest(0, f - 1000 / ST_Length(linje)), least(1, f + 1000 / ST_Length(linje))) AS g
-          FROM narm, LATERAL (SELECT ST_LineLocatePoint(linje, pt) AS f) x)
-        SELECT seg, count(*)::int AS punkter, round((ST_Length(ST_Union(g)) / 1000)::numeric, 1) AS km,
-               ST_AsGeoJSON(ST_Transform(ST_SimplifyPreserveTopology(ST_LineMerge(ST_Union(g)), 20), 4326), 5)::json AS g
+          SELECT seg, count(*)::int AS punkter, ST_LineSubstring((array_agg(linje))[1], min(a), max(b)) AS g
+          FROM oar GROUP BY seg, del, o)
+        SELECT seg, sum(punkter)::int AS punkter, round((sum(ST_Length(g)) / 1000)::numeric, 1) AS km,
+               ST_AsGeoJSON(ST_Transform(ST_SimplifyPreserveTopology(ST_LineMerge(ST_Collect(g)), 20), 4326), 5)::json AS g
         FROM bit GROUP BY seg ORDER BY seg`;
 
 /** `appVader` = lägesfilens väderpunkter (de som klarar appens vakter). Med den skrivs länssidorna (#458); utan den hoppas de över.

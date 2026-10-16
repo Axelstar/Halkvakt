@@ -13562,6 +13562,11 @@ Tills dess skriver publiceringen kandidatfilen, men sidan läser den inte.
   - en ensam punkt ger 2,0 km också öster ut;
   - en punkt en kilometer bort från vägen ritas inte;
   - bitarna slås ihop till en linje.
+- **Provet fällde den första versionen** (CI 38860931214): två punkter 1 km isär gav 4,0 km i stället för 3,0. Bitarna slogs ihop med
+  `ST_Union`, som inte kände igen överlappet när linjerna skilde sig på sista decimalen, så överlappet räknades två gånger. Rättat:
+  intervallen längs linjen slås ihop först, och varje sammanslaget intervall skärs ut en gång.
+- **Motprovet** (PR #988, stängd): bitarnas halva längd räknad i grader i stället för meter gav 10,0 km. Integrationsprovet föll
+  (CI 38860899648).
 - Kartsidan provad i en lokal kopia med dagens kartdata och sträckan 97005:s riktiga bit:
   - knappen är av från början;
   - på ger den streckade biten längs vägen;
