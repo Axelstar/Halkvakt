@@ -1,13 +1,13 @@
 // KUVÖSENS FACIT UR TRAFIKVERKETS VÄGLAG 2024/25 (DECISIONS #591, docs/FORREGISTRERING-FACIT-TRV-2024-25.md). Läsningen följer
 // förregistreringen rad för rad: is är kod 60, 61, 70 och 71 i kod 1 eller kod 2; väglaget gäller från sin ändring till sträckans
 // nästa; en station hör till sträckorna inom 2 km från deras linje; kandidaten bekräftas inom [t − 1, t + 2] h och efterhalkan inom
-// [t, t + 6] h; en miss är en is-episod utan kandidatens kalla timme hos någon av sträckans stationer under de 2 h före; åtgärderna
-// (20 och 50) räknas inom [t − 6, t + 6] h. Allt redovisas per månad och breddgradsband, bara som antal och andelar: Trafikverkets
-// rader skrivs aldrig ut (PUBLIKT REPO). Den skarpa läsningen vägrar utan båda signaturerna i förregistreringen.
+// [t, t + 6] h; en miss är en is-episod utan kandidatens kalla timme hos någon av sträckans stationer under de 2 h före, klassad mot
+// den närmaste stationens nederbörd inom ±1 h; åtgärderna (20 och 50) räknas inom [t − 6, t + 6] h. Allt redovisas per månad och
+// breddgradsband, bara som antal och andelar: Trafikverkets rader skrivs aldrig ut (PUBLIKT REPO). Läsningen (`lasning`) körs i
+// kuvösen av scripts/matningar/kuvos-blandning-vagb-facit-trv-2026-10-16.ts och vägrar utan båda signaturerna i förregistreringen.
 //
 //   node --experimental-strip-types kuvos/facit-trv.ts --sjalvtest
-//   node --experimental-strip-types kuvos/facit-trv.ts --las --xlsx <mapp> --linjer <vaglag.geojson> --stationer <stationer.json>
-//        --kalla <csv: station,t_utc> --kandidat <csv: station,t_utc> --fyrningar <csv: station,t_utc> --forreg <förregistreringen>
+//   node --experimental-strip-types kuvos/facit-trv.ts --signerad <förregistreringen>     (kuvos.yml, före fysikkedjan)
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { deflateRawSync, inflateRawSync } from "node:zlib";
@@ -15,9 +15,11 @@ import { deflateRawSync, inflateRawSync } from "node:zlib";
 export const IS = new Set([60, 61, 70, 71]);
 export const SNO = new Set([30, 31, 40, 41, 50, 51, 100, 101]);
 export const PAR_M = 2000;
+export const KALL_C = 0;               // en kall timme: yta ≤ 0 °C (§4), kandidatens och stationens egen
 export const KANDIDAT_FONSTER_H: [number, number] = [-1, 2];
 export const EFTERHALKA_FONSTER_H: [number, number] = [0, 6];
 export const MISS_FORE_H = 2;
+export const NEDERBORD_H = 1;
 export const ATGARD_FONSTER_H: [number, number] = [-6, 6];
 export const ATGARD_TYPER = new Set([20, 50]);
 export const PERIOD_START = Date.parse("2024-11-01T00:00:00+01:00");
@@ -140,6 +142,19 @@ export function parning(stationer: { id: string; lon: number; lat: number }[], l
   }
   return ut;
 }
+/** För varje sträcka den av dess parade stationer som ligger närmast linjen: missens nederbördsvittne (TROSKLAR-SKUGGAN §2). */
+export function narmaste(par: Map<string, string[]>, stationer: { id: string; lon: number; lat: number }[],
+  linjer: { id: string; delar: [number, number][][] }[]): Map<string, string> {
+  const pos = new Map(stationer.map((s) => [s.id, [s.lon, s.lat] as [number, number]])), lin = new Map(linjer.map((l) => [l.id, l.delar]));
+  const ut = new Map<string, [string, number]>();
+  for (const [st, segs] of par) for (const seg of segs) {
+    let d = Infinity;
+    for (const del of lin.get(seg)!) for (let i = 0; i < del.length - 1; i++) d = Math.min(d, tillStracka(pos.get(st)!, del[i], del[i + 1]));
+    const f = ut.get(seg);
+    if (!f || d < f[1]) ut.set(seg, [st, d]);
+  }
+  return new Map([...ut].map(([seg, [st]]) => [seg, st]));
+}
 
 // --- måtten (§4) ---
 export type Tillfalle = { station: string; t: number };
@@ -161,38 +176,62 @@ export function bekrafta(tillfallen: Tillfalle[], par: Map<string, string[]>, is
   return ut;
 }
 
-/** Is-episoder utan kandidatens kalla timme hos någon av sträckans stationer under MISS_FORE_H före starten. */
-export function missar(is: Map<string, [number, number][]>, par: Map<string, string[]>, kalla: Tillfalle[]):
-  { episoder: number; missade: number; utanStation: number } {
+/** Tillfällena inom facitets period; utanför finns inget väglag att bekräfta med. */
+export const inomPerioden = (x: Tillfalle[]) => x.filter((y) => y.t >= PERIOD_START && y.t < PERIOD_SLUT);
+
+/** Givarens nederbörd per station och timme (timmens början i ms): "nederbord" om någon rad i timmen bar regn, snöblandat eller
+ *  snö, annars "uppehall" om någon bar uppehåll. En timme utan känt ord finns inte i kartan och är okänd. */
+export type Timklass = "nederbord" | "uppehall";
+/** Missens orsak (TROSKLAR-SKUGGAN §2) ur timmarna som når in i [start − 1 h, start + 1 h]: nederbörd i någon ⇒ nederbördsdriven,
+ *  annars uppehåll i någon ⇒ utstrålningsdriven, annars okänd. */
+export function orsak(nb: Map<number, Timklass> | undefined, start: number): "nederbord" | "utstralning" | "okand" {
+  let uppehall = false;
+  for (let h = Math.floor((start - NEDERBORD_H * H) / H) * H; h <= start + NEDERBORD_H * H; h += H) {
+    const k = nb?.get(h);
+    if (k === "nederbord") return "nederbord";
+    if (k === "uppehall") uppehall = true;
+  }
+  return uppehall ? "utstralning" : "okand";
+}
+
+export type Missrakning = { episoder: number; missade: number; nederbord: number; utstralning: number; okand: number };
+/** Is-episoder utan kandidatens kalla timme hos någon av sträckans stationer under MISS_FORE_H före starten, per grupp, varje miss
+ *  klassad mot sträckans närmaste stations nederbörd. */
+export function missar(is: Map<string, [number, number][]>, par: Map<string, string[]>, kalla: Tillfalle[], narmast: Map<string, string>,
+  nb: Map<string, Map<number, Timklass>>, grupp: (seg: string, start: number) => string): { per: Map<string, Missrakning>; utanStation: number } {
   const stationerPa = new Map<string, string[]>();
   for (const [st, segs] of par) for (const s of segs) (stationerPa.get(s) ?? stationerPa.set(s, []).get(s)!).push(st);
   const perStation = new Map<string, number[]>();
   for (const k of kalla) (perStation.get(k.station) ?? perStation.set(k.station, []).get(k.station)!).push(k.t);
-  let episoderN = 0, missade = 0, utanStation = 0;
+  const per = new Map<string, Missrakning>();
+  let utanStation = 0;
   for (const [seg, ep] of is) for (const [start] of ep) {
     const st = stationerPa.get(seg) ?? [];
     if (!st.length) { utanStation++; continue; }
-    episoderN++;
-    const sedd = st.some((s) => (perStation.get(s) ?? []).some((t) => t < start && t >= start - MISS_FORE_H * H));
-    if (!sedd) missade++;
+    const g = grupp(seg, start), r = per.get(g) ?? per.set(g, { episoder: 0, missade: 0, nederbord: 0, utstralning: 0, okand: 0 }).get(g)!;
+    r.episoder++;
+    if (st.some((s) => (perStation.get(s) ?? []).some((t) => t < start && t >= start - MISS_FORE_H * H))) continue;
+    r.missade++; r[orsak(nb.get(narmast.get(seg)!), start)]++;
   }
-  return { episoder: episoderN, missade, utanStation };
+  return { per, utanStation };
 }
 
 export type Atgard = { seg: string; typ: number; start: number | null; stopp: number | null };
-/** Andelen tillfällen med planerad halkbekämpning (20 eller 50) på stationens sträckor inom ATGARD_FONSTER_H. */
-export function atgarder(tillfallen: Tillfalle[], par: Map<string, string[]>, atg: Atgard[]): { antal: number; med: number; borttagna: number } {
+/** Andelen tillfällen med planerad halkbekämpning (20 eller 50) på stationens sträckor inom ATGARD_FONSTER_H, per grupp. */
+export function atgarder(tillfallen: Tillfalle[], par: Map<string, string[]>, atg: Atgard[], grupp: (t: Tillfalle) => string):
+  { per: Map<string, { antal: number; med: number }>; borttagna: number } {
   const giltiga = atg.filter((a) => ATGARD_TYPER.has(a.typ) && a.start !== null && a.stopp !== null && a.start >= PERIOD_START);
-  const per = new Map<string, [number, number][]>();
-  for (const a of giltiga) (per.get(a.seg) ?? per.set(a.seg, []).get(a.seg)!).push([a.start!, a.stopp!]);
-  let antal = 0, med = 0;
+  const ep = new Map<string, [number, number][]>();
+  for (const a of giltiga) (ep.get(a.seg) ?? ep.set(a.seg, []).get(a.seg)!).push([a.start!, a.stopp!]);
+  const per = new Map<string, { antal: number; med: number }>();
   for (const x of tillfallen) {
     const seg = par.get(x.station) ?? [];
     if (!seg.length) continue;
-    antal++;
-    if (seg.some((s) => overlappar(per.get(s), x.t + ATGARD_FONSTER_H[0] * H, x.t + ATGARD_FONSTER_H[1] * H))) med++;
+    const g = per.get(grupp(x)) ?? per.set(grupp(x), { antal: 0, med: 0 }).get(grupp(x))!;
+    g.antal++;
+    if (seg.some((s) => overlappar(ep.get(s), x.t + ATGARD_FONSTER_H[0] * H, x.t + ATGARD_FONSTER_H[1] * H))) g.med++;
   }
-  return { antal, med, borttagna: atg.length - giltiga.length };
+  return { per, borttagna: atg.length - giltiga.length };
 }
 
 /** Signaturerna i förregistreringens §8: båda raderna ska ha ett datum och en signatur. */
@@ -228,12 +267,28 @@ function sjalvtest() {
     { station: "nara", t: T("2024-12-01T01:00Z") }, { station: "langt", t: T("2024-12-01T04:00Z") }], p, ep, KANDIDAT_FONSTER_H, grupp).get("g")!;
   k(b.antal === 3 && b.bekraftade === 2 && b.utanStracka === 1,
     `bekräftelsen [t − 1, t + 2] h, gränserna inräknade: 02:30 och 01:00 bekräftas av isen från 03:00, 07:30 inte (isen slutade 06:00), stationen 2,1 km bort saknar sträcka ${JSON.stringify(b)}`);
-  const m = missar(ep, p, [{ station: "nara", t: T("2024-12-01T01:30Z") }]);
-  k(m.episoder === 2 && m.missade === 1, `missarna: episoden 03:00 sedd 01:30, episoden 2/12 00:00 missad ${JSON.stringify(m)}`);
+  const st2 = [{ id: "nara", lon: 15 + 1.9 / 55.8, lat: 60 }, { id: "narmre", lon: 15 + 0.5 / 55.8, lat: 60 }];
+  const nm = narmaste(parning(st2, linjer), st2, linjer);
+  k(nm.get("S") === "narmre", `närmaste stationen: 0,5 km före 1,9 km (${JSON.stringify([...nm])})`);
+  const narmast = new Map([["S", "nara"]]), mg = (seg: string, start: number) => manad(start);
+  const nbFor = (h: [string, Timklass][]) => new Map([["nara", new Map(h.map(([t, kl]) => [T(t), kl]))]]);
+  const m = missar(ep, p, [{ station: "nara", t: T("2024-12-01T01:30Z") }], narmast, nbFor([["2024-12-01T23:00Z", "uppehall"]]), mg);
+  const m12 = m.per.get("2024-12")!;
+  k(m12.episoder === 2 && m12.missade === 1 && m12.utstralning === 1 && m.utanStation === 0,
+    `missarna: episoden 03:00 sedd 01:30, episoden 2/12 00:00 missad och utstrålningsdriven (uppehåll timmen 23) ${JSON.stringify([...m.per])}`);
+  const m2 = missar(ep, p, [{ station: "nara", t: T("2024-12-01T01:30Z") }], narmast,
+    nbFor([["2024-12-01T23:00Z", "uppehall"], ["2024-12-02T01:00Z", "nederbord"]]), mg).per.get("2024-12")!;
+  k(m2.nederbord === 1 && m2.utstralning === 0, `missens orsak: nederbörd timmen 01 (start + 1 h) går före uppehållet ${JSON.stringify(m2)}`);
+  const m3 = missar(ep, p, [{ station: "nara", t: T("2024-12-01T01:30Z") }], narmast,
+    nbFor([["2024-12-01T22:00Z", "nederbord"], ["2024-12-02T02:00Z", "nederbord"]]), mg).per.get("2024-12")!;
+  k(m3.okand === 1, `missens orsak: timmarna 22 och 02 når inte in i [start − 1, start + 1] h ⇒ okänd ${JSON.stringify(m3)}`);
+  k(inomPerioden([{ station: "a", t: T("2024-10-31T22:59Z") }, { station: "a", t: T("2024-10-31T23:00Z") }, { station: "a", t: T("2025-03-31T21:59Z") },
+    { station: "a", t: T("2025-03-31T22:00Z") }]).length === 2, "perioden: 1/11 00:00 och 31/3 23:59 svensk tid med, minuten före och 1/4 00:00 utanför");
   const at = atgarder([{ station: "nara", t: T("2024-12-01T02:30Z") }, { station: "nara", t: T("2024-12-03T02:30Z") }], p,
     [{ seg: "S", typ: 50, start: T("2024-12-01T06:00Z"), stopp: T("2024-12-01T09:00Z") }, { seg: "S", typ: 10, start: T("2024-12-03T01:00Z"), stopp: T("2024-12-03T03:00Z") },
-     { seg: "S", typ: 20, start: null, stopp: T("2024-12-03T03:00Z") }, { seg: "S", typ: 20, start: T("2008-02-03T18:00Z"), stopp: T("2008-02-05T06:00Z") }]);
-  k(at.antal === 2 && at.med === 1 && at.borttagna === 3, `åtgärderna: förebyggande 6 h efter räknas, plogning inte, tomma och 2008 borttagna ${JSON.stringify(at)}`);
+     { seg: "S", typ: 20, start: null, stopp: T("2024-12-03T03:00Z") }, { seg: "S", typ: 20, start: T("2008-02-03T18:00Z"), stopp: T("2008-02-05T06:00Z") }], (x) => manad(x.t));
+  const at12 = at.per.get("2024-12")!;
+  k(at12.antal === 2 && at12.med === 1 && at.borttagna === 3, `åtgärderna: förebyggande 6 h efter räknas, plogning inte, tomma och 2008 borttagna ${JSON.stringify([...at.per])}`);
   k(signerad("| Bengt | 2026-10-20 | BL |\n| Axel | | |").axel === false && signerad("| Bengt | 2026-10-20 | BL |\n| Axel | 2026-10-20 | AL |").axel, "signaturerna");
   // Hela vägen genom en liten xlsx: zip med en okomprimerad och en komprimerad fil.
   const xlsx = provXlsx();
@@ -267,13 +322,26 @@ function provXlsx(): Buffer {
 }
 
 // --- den skarpa läsningen ---
-function csv(fil: string): Tillfalle[] {
-  return readFileSync(fil, "utf8").trim().split(/\r?\n/).slice(1).map((r) => { const [station, t] = r.split(","); return { station, t: Date.parse(t) }; });
-}
-function las(arg: Record<string, string>) {
-  const forreg = readFileSync(arg["--forreg"], "utf8"), sig = signerad(forreg);
+/** Läsningens indata, framtagna i kuvösen (scripts/matningar/kuvos-blandning-vagb-facit-trv-2026-10-16.ts). `kandidatStationer` är
+ *  stationerna där kandidaten har en skattning: bara de kan se en is-episod, så bara de räknas i missarna. */
+export type Indata = {
+  xlsx: string; linjer: { id: string; delar: [number, number][][] }[]; stationer: { id: string; lon: number; lat: number }[];
+  kandidatStationer: Set<string>; kalla: Tillfalle[]; kandidat: Tillfalle[]; fyrningar: Tillfalle[];
+  nederbord: Map<string, Map<number, Timklass>>; forreg: string;
+};
+/** Väglagsnätets linjer ur vaglag.geojson, som Körflödet hämtar det. */
+export const linjerUr = (gj: any): Indata["linjer"] => gj.features.map((f: any) => ({ id: String(f.properties.segment_id),
+  delar: f.geometry.type === "MultiLineString" ? f.geometry.coordinates : [f.geometry.coordinates] }));
+const pct = (a: number, n: number) => (n ? (100 * a / n).toFixed(1).replace(".", ",") : "–");
+const summa = (m: Map<string, Rakning>): Rakning => [...m.values()].reduce((s, r) => ({ antal: s.antal + r.antal,
+  bekraftade: s.bekraftade + r.bekraftade, utanStracka: s.utanStracka + r.utanStracka }), { antal: 0, bekraftade: 0, utanStracka: 0 });
+const lyftet = (r: Rakning, b: Rakning) => (r.antal && b.antal && b.bekraftade ? ((r.bekraftade / r.antal) / (b.bekraftade / b.antal)).toFixed(2).replace(".", ",") : "–");
+
+/** Hela läsningen enligt förregistreringen §4. Vägrar (exit 2) utan båda signaturerna eller med oklar tidszon. */
+export function lasning(ind: Indata) {
+  const sig = signerad(ind.forreg);
   if (!sig.bengt || !sig.axel) { console.error(`vägrar: förregistreringen är inte signerad av båda (Bengt ${sig.bengt}, Axel ${sig.axel})`); process.exit(2); }
-  const v = lasXlsx(readFileSync(join(arg["--xlsx"], "RoadCondition24-25.xlsx")));
+  const v = lasXlsx(readFileSync(join(ind.xlsx, "RoadCondition24-25.xlsx")));
   const ki = (n: string) => v.kolumner.indexOf(n);
   const tz = tidszonsprov(v.rader.map((r) => r[ki("ModifiedTime")]));
   console.log(`tidszonen: ${tz.lage} (timmen 02 natten till 30/3 2025: ${tz.i02} ändringar, timmarna runt: ${tz.runt})`);
@@ -281,29 +349,40 @@ function las(arg: Record<string, string>) {
   const andr: Andring[] = v.rader.map((r) => ({ seg: r[ki("ID")], t: tid(r[ki("ModifiedTime")], tz.lage)!, kod1: Number(r[ki("RoadCondCode1")]),
     kod2: r[ki("RoadCondCode2")] === "NULL" || r[ki("RoadCondCode2")] === "" ? null : Number(r[ki("RoadCondCode2")]) })).filter((a) => a.t !== null);
   const is = episoder(andr, IS), sno = episoder(andr, SNO);
-  const a = lasXlsx(readFileSync(join(arg["--xlsx"], "RoadConditionMeasures24-25.xlsx")));
+  const a = lasXlsx(readFileSync(join(ind.xlsx, "RoadConditionMeasures24-25.xlsx")));
   const ai = (n: string) => a.kolumner.indexOf(n);
   const atg: Atgard[] = a.rader.map((r) => ({ seg: r[ai("Id")], typ: Number(r[ai("MeasureType")]), start: tid(r[ai("StartTime")], tz.lage), stopp: tid(r[ai("StopTime")], tz.lage) }));
-  const gj = JSON.parse(readFileSync(arg["--linjer"], "utf8"));
-  const linjer = gj.features.map((f: any) => ({ id: String(f.properties.segment_id),
-    delar: f.geometry.type === "MultiLineString" ? f.geometry.coordinates : [f.geometry.coordinates] }));
-  const st = JSON.parse(readFileSync(arg["--stationer"], "utf8")).rader.map((s: any) => ({ id: String(s.id), lon: Number(s.lon), lat: Number(s.lat) }));
-  const lat = new Map(st.map((s: any) => [s.id, s.lat]));
-  const par = parning(st, linjer);
-  const grupp = (x: Tillfalle) => `${manad(x.t)} · ${band((lat.get(x.station) as number) ?? 0)}`;
-  const kalla = csv(arg["--kalla"]), kand = csv(arg["--kandidat"]), fyr = csv(arg["--fyrningar"]);
-  const skriv = (namn: string, m: Map<string, Rakning>) => { console.log(`== ${namn}`);
-    for (const [g, r] of [...m].sort()) console.log(`  ${g}: ${r.bekraftade} av ${r.antal} bekräftade (${r.antal ? (100 * r.bekraftade / r.antal).toFixed(1) : "–"} %), utan sträcka ${r.utanStracka}`); };
+  const par = parning(ind.stationer, ind.linjer), narmast = narmaste(par, ind.stationer, ind.linjer);
+  const parK = new Map([...par].filter(([s]) => ind.kandidatStationer.has(s)));
+  const lat = new Map(ind.stationer.map((s) => [s.id, s.lat]));
+  const grupp = (x: Tillfalle) => `${manad(x.t)} · ${lat.has(x.station) ? band(lat.get(x.station)!) : "utan läge"}`;
   console.log(`sträckor med is-episod: ${[...is.values()].filter((e) => e.length).length}; is-episoder ${[...is.values()].reduce((n, e) => n + e.length, 0)}; snö- och moddepisoder ${[...sno.values()].reduce((n, e) => n + e.length, 0)}`);
-  console.log(`stationer med sträcka inom 2 km: ${[...par.values()].filter((x) => x.length).length} av ${par.size}`);
-  skriv("basnivån: kalla station-timmar, [t − 1, t + 2] h", bekrafta(kalla, par, is, KANDIDAT_FONSTER_H, grupp));
-  skriv("kandidaten, [t − 1, t + 2] h", bekrafta(kand, par, is, KANDIDAT_FONSTER_H, grupp));
-  skriv("efterhalkan, [t, t + 6] h", bekrafta(fyr, par, is, EFTERHALKA_FONSTER_H, grupp));
-  const m = missar(is, par, kand);
-  console.log(`missar: ${m.missade} av ${m.episoder} is-episoder utan kandidatens kalla timme 2 h före; ${m.utanStation} episoder på sträckor utan station`);
-  for (const [namn, x] of [["kandidaten", kand], ["efterhalkan", fyr]] as const) {
-    const r = atgarder(x, par, atg);
-    console.log(`åtgärder vid ${namn}: ${r.med} av ${r.antal} med planerad halkbekämpning inom ±6 h (${r.borttagna} åtgärdsrader utan tid eller före perioden)`);
+  console.log(`stationer med sträcka inom 2 km: ${[...par.values()].filter((x) => x.length).length} av ${par.size}; av kandidatens ${ind.kandidatStationer.size}: ${[...parK.values()].filter((x) => x.length).length}`);
+  const [kalla, kand, fyr] = [ind.kalla, ind.kandidat, ind.fyrningar].map(inomPerioden);
+  console.log(`inom perioden: kalla station-timmar ${kalla.length} av ${ind.kalla.length} · kandidatens kalla timmar ${kand.length} av ${ind.kandidat.length} · fyrningar ${fyr.length} av ${ind.fyrningar.length}`);
+  const rad = (g: string, r: Rakning, b?: Rakning) => `  ${g}: ${r.bekraftade} av ${r.antal} bekräftade (${pct(r.bekraftade, r.antal)} %), utan sträcka ${r.utanStracka}` +
+    (b ? ` · basnivån ${b.bekraftade} av ${b.antal} (${pct(b.bekraftade, b.antal)} %) · lyftet ${lyftet(r, b)}` : "");
+  const skriv = (namn: string, m: Map<string, Rakning>, bas?: Map<string, Rakning>) => {
+    console.log(`== ${namn}`);
+    for (const [g, r] of [...m].sort()) console.log(rad(g, r, bas?.get(g)));
+    console.log(rad("totalt", summa(m), bas && summa(bas)));
+  };
+  const basA = bekrafta(kalla, par, is, KANDIDAT_FONSTER_H, grupp), basB = bekrafta(kalla, par, is, EFTERHALKA_FONSTER_H, grupp);
+  skriv("(a) basnivån: stationernas egna kalla timmar, [t − 1, t + 2] h", basA);
+  skriv("(a) kandidaten, [t − 1, t + 2] h", bekrafta(kand, par, is, KANDIDAT_FONSTER_H, grupp), basA);
+  skriv("(b) basnivån: stationernas egna kalla timmar, [t, t + 6] h", basB);
+  skriv("(b) efterhalkan, [t, t + 6] h", bekrafta(fyr, par, is, EFTERHALKA_FONSTER_H, grupp), basB);
+  const ms = missar(is, parK, kand, narmast, ind.nederbord, (seg, start) => `${manad(start)} · ${band(lat.get(narmast.get(seg)!)!)}`);
+  const mrad = (g: string, r: Missrakning) => `  ${g}: ${r.missade} av ${r.episoder} missade (${pct(r.missade, r.episoder)} %) · nederbördsdrivna ${r.nederbord} · utstrålningsdrivna ${r.utstralning} · okänd orsak ${r.okand}`;
+  const mt: Missrakning = { episoder: 0, missade: 0, nederbord: 0, utstralning: 0, okand: 0 };
+  console.log("== (a) missarna: is-episoder utan kandidatens kalla timme 2 h före, orsaken ur närmaste stationens nederbörd ±1 h");
+  for (const [g, r] of [...ms.per].sort()) { console.log(mrad(g, r)); for (const k of Object.keys(mt) as (keyof Missrakning)[]) mt[k] += r[k]; }
+  console.log(mrad("totalt", mt) + `; ${ms.utanStation} episoder på sträckor utan kandidatens station`);
+  for (const [namn, x] of [["(a) kandidaten", kand], ["(b) efterhalkan", fyr]] as const) {
+    const r = atgarder(x, par, atg, grupp), tot = { antal: 0, med: 0 };
+    console.log(`== (c) åtgärderna vid ${namn}: planerad halkbekämpning (20, 50) på stationens sträckor inom ±6 h; ${r.borttagna} åtgärdsrader av annan typ, utan tid eller före perioden`);
+    for (const [g, s] of [...r.per].sort()) { console.log(`  ${g}: ${s.med} av ${s.antal} (${pct(s.med, s.antal)} %)`); tot.antal += s.antal; tot.med += s.med; }
+    console.log(`  totalt: ${tot.med} av ${tot.antal} (${pct(tot.med, tot.antal)} %)`);
   }
 }
 
@@ -311,6 +390,9 @@ const direkt = (process.argv[1] ?? "").replace(/\\/g, "/").endsWith("kuvos/facit
 if (direkt) {
   const args = process.argv.slice(2);
   if (args[0] === "--sjalvtest") sjalvtest();
-  else if (args[0] === "--las") { const o: Record<string, string> = {}; for (let i = 1; i < args.length; i += 2) o[args[i]] = args[i + 1]; las(o); }
-  else { console.error("kör: facit-trv.ts --sjalvtest | --las --xlsx <mapp> --linjer <geojson> --stationer <json> --kalla <csv> --kandidat <csv> --fyrningar <csv> --forreg <md>"); process.exit(1); }
+  else if (args[0] === "--signerad" && args[1]) {
+    const s = signerad(readFileSync(args[1], "utf8"));
+    console.log(`förregistreringen ${args[1]}: Bengt ${s.bengt ? "signerat" : "INTE signerat"} · Axel ${s.axel ? "signerat" : "INTE signerat"}`);
+    if (!s.bengt || !s.axel) { console.error("vägrar: läsningen kräver båda signaturerna i §8 (DECISIONS #591)"); process.exit(2); }
+  } else { console.error("kör: facit-trv.ts --sjalvtest | --signerad <förregistreringen>"); process.exit(1); }
 }
