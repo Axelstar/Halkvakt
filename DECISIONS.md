@@ -13975,4 +13975,15 @@ oförändrade sedan dess (sql/028, kuvos/efterhalkan.ts, trend, vakterna och inl
 - Ett nytt indataprov med hela regelns tre frågor (varma stationer, radarn och ytan vid timmen), som är oprövade mot databasen.
 - Signaturerna.
 
+**Indataprovet 2 (16/10, Bengt: *"slå ihop 1010 och kör indataprovet igen"*):** körning 38934229806 på f341190; mätningen tog 1,5 min.
+- Regelns tre frågor fungerar:
+  - varma fönster: 900 884 vid 733 stationer;
+  - radarfönster med minst 0,5 mm/h: 103 350 på 816 sträckor;
+  - ytan vid timmen: 2 618 267 värden vid 737 stationer.
+- Resten var som i första provet: 1 366 734 kalla station-timmar, 1 110 fyrningar, nederbörden i 2 677 274 station-timmar och
+  769 av 854 stationer parade.
+- **Fynd:** vaglag.geojson fick en annan sha256 på 40 minuter (`d1edf121…` → `3a40f50b…`). Filen bär dagens väglag och publiceras om,
+  så summan bevisar inte att nätet är detsamma; parningen gav samma antal båda gångerna. Förslaget att skriva ut en summa över bara
+  geometrin står i bedömningen §4.2.
+
 **Stomdokument:** KUV §7 facit, BED §4.2
