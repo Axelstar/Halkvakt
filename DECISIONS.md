@@ -14008,3 +14008,31 @@ fällde: utan sorteringen, och med väglaget i sträckans id. Ett tredje var ver
 eftersom `linjerUr` redan tar bort egenskaperna. Summan själv visas först i nästa körning i kuvösen.
 
 **Stomdokument:** KUV §7 facit, BED §4.2
+
+## #595 (16/10 2026) Förregistreringen av facitläsningen signerad — Bengt, och Axel via Bengt (kort #232)
+
+**Beslut.** Bengt 16/10: *"slå ihop 1012 och signera detta för mej och Axel"*. `docs/FORREGISTRERING-FACIT-TRV-2024-25.md` är signerad i §8 med det datumet. Dokumentets sha256 vid
+signeringen är `0b1d03a1a4f9e49484837ab6730a22067d9e3aa0c402e7a5e8ece067b1d39993`.
+- **Bengts signatur** är hans ord i chatten.
+- **Axels signatur** är Bengts ord för Axel. Den står som *via Bengt*, som Axels tidigare ja i #291 (21/9), #353, #359 och #362
+  (25/9). Axel har inte själv skrivit i repot.
+
+**Vad som nu är fryst** (§6): koderna (§2, Våt bara kod 20), avståndet och fönstren (§3, §4), måtten och indatan (§4 *Indata*):
+- kandidatens frysta summa;
+- de kalla timmarna;
+- basnivån vid kandidatens stationer;
+- fyrningarna;
+- perioden;
+- missarnas orsak;
+- hela regeln;
+- nätets summa.
+
+Ändras något efteråt sker det bara genom en daterad post med båda signaturerna, aldrig som en lättnad efter sett utfall (regel L).
+
+**Vad som följer.**
+- Läsningen trycks på Bengts ord: kuvösen med mätningen `scripts/matningar/kuvos-blandning-vagb-facit-trv-2026-10-16.ts`, ungefär tre
+  timmar.
+- Spärren i kuvos.yml släpper först när signaturerna ligger på main.
+- Utfallet är diagnos, ingen dom (§1).
+
+**Stomdokument:** KUV §7 facit, BED §4.2

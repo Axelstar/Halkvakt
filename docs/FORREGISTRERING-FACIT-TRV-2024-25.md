@@ -1,6 +1,6 @@
 # Förregistrering — kuvösens facit ur Trafikverkets väglag, vintern 2024/25
 
-**Status: UTKAST 16/10 2026** (Bengt: *"ja till alla tre"*, DECISIONS #591; indatan i §4 skriven 16/10, DECISIONS #592, och hela regeln, #593). Signeras av Bengt och Axel **innan** någon del av
+**Status: SIGNERAD 16/10 2026** (Bengt, och Axel via Bengt, DECISIONS #595). Utkastet: Bengt: *"ja till alla tre"*, DECISIONS #591; indatan i §4 skriven 16/10, DECISIONS #592, hela regeln #593 och nätets summa #594. Signeras av Bengt och Axel **innan** någon del av
 kuvösen läses mot väglaget. Källorna är Trafikverkets svar TRV 2026/111808 (`docs/KUVOS-LEVERANSEN-2026-10-02.md` §5h, manifestet
 `kuvos/trv-111808-leverans.json`), TROSKLAR-SKUGGAN §2 och kuvössidan §7–§8. Filerna ligger i hinken `arkiv`, aldrig i repot.
 
@@ -112,5 +112,5 @@ kandidattimme och ingen fyrning har ställts mot väglaget.
 
 | | Datum | Signatur |
 | :-- | :-- | :-- |
-| Bengt | | |
-| Axel | | |
+| Bengt | 2026-10-16 | Bengt i chatten: *"slå ihop 1012 och signera detta för mej och Axel"* (DECISIONS #595) |
+| Axel | 2026-10-16 | Via Bengt i samma ord (DECISIONS #595) |
