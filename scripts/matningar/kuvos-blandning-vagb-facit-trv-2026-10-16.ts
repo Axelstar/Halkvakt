@@ -11,7 +11,8 @@
 //   nederbörden   givarens ord per station och timme, klassade med motorns givarklass (engine/src/nederbord.ts); missens orsak.
 //   hela regeln   (#593) radarns medel per sträcka och fönster ur kuvösens radar_precip; varma stationer med driftens vakter
 //                 (#75, radvakten, karantänen) för vetot; stationernas yta vid timmen (grind A:s population) för spridningen.
-//   sträckorna    vaglag.geojson som Körflödet hämtar det (sha256 skrivs ut); stationernas lägen ur data/vagdata/stationer.json.
+//   sträckorna    vaglag.geojson som Körflödet hämtar det, med nätets summa över id och geometri (#594); stationernas lägen ur
+//                 data/vagdata/stationer.json.
 // Utskriften är aggregat per månad och band; Trafikverkets rader och stationernas värden skrivs aldrig ut (PUBLIKT REPO).
 // Kör: DATABASE_URL=... node --experimental-strip-types scripts/matningar/kuvos-blandning-vagb-facit-trv-2026-10-16.ts [--sjalvtest]
 import { createHash } from "node:crypto";
@@ -19,7 +20,7 @@ import { readFileSync } from "node:fs";
 import { lasFysik, spannkontroll, type Fysik } from "./kuvos-fysik-2026-10-08.ts";
 import { RADVAKT_SQL, karantanSql } from "../../publish/snapshot-core.ts";
 import { givarklass } from "../../engine/src/nederbord.ts";
-import { lasning, linjerUr, signerad, KALL_C, RADAR_MMH, RADAR_MIN, VETO_MIN, VETO_YTA_C, type Regelindata, type Tillfalle, type Timklass }
+import { lasning, linjerUr, natsumma, signerad, KALL_C, RADAR_MMH, RADAR_MIN, VETO_MIN, VETO_YTA_C, type Regelindata, type Tillfalle, type Timklass }
   from "../../kuvos/facit-trv.ts";
 
 const BUCKET_S = 1800, H = 3_600_000;
@@ -142,7 +143,7 @@ export async function kuvosIndata() {
   const svar = await fetch(VAGLAG);
   if (!svar.ok) { console.error(`vaglag.geojson: HTTP ${svar.status}`); process.exit(1); }
   const text = await svar.text(), linjer = linjerUr(JSON.parse(text));
-  console.log(`  vaglag.geojson: ${linjer.length} sträckor, sha256 ${createHash("sha256").update(text).digest("hex")}`);
+  console.log(`  vaglag.geojson: ${linjer.length} sträckor; nätets summa (id och geometri, #594) ${natsumma(linjer)} · filens sha256 ${createHash("sha256").update(text).digest("hex")}`);
   const stationer: { id: string; lon: number; lat: number }[] = JSON.parse(readFileSync("data/vagdata/stationer.json", "utf8")).rader
     .map((s: any) => ({ id: String(s.id), lon: Number(s.lon), lat: Number(s.lat) }));
   const lagen = new Set(stationer.map((s) => s.id));
