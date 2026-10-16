@@ -13683,6 +13683,35 @@ beslut, eftersom 14 dygn är ett tidigare val (#569).
 
 **Stomdokument:** LIV steg 10, APP rösten på halkklassade sträckor, BED §4.2.
 
+## #582 (16/10 2026) TestFlight-flödet i Actions byggt med ett provläge; uppladdningen väntar på Axels nyckel (kort #333)
+
+**Beslut.** Bengt 16/10: *"Då kan vi göra de här så länge"* (punkt 4: bygg flödet nu, med ett provläge, så att det bara väntar på
+nyckeln). `.github/workflows/testflight.yml`:
+- **Löparen** är `macos-26` (Xcode 26.6). Standardlöpare, också macOS, är gratis och utan tak i ett publikt repo: GitHubs sidor om
+  löpare och om fakturering, lästa 16/10. Det var kortets kontroll före bygget.
+- **`prov`:** XcodeGen, arkivering utan signering, och versionen i bygget prövad mot `project.yml`. Inga hemligheter. Körs också av
+  sig själv på en PR som ändrar flödet.
+- **`ladda-upp`:** bara från main och bara via knappen. Arkiverar och exporterar med automatisk signering och App Store
+  Connect-nyckeln (`-allowProvisioningUpdates`), och laddar upp till App Store Connect (`destination upload`). Xcode får inte räkna
+  upp byggnumret (`manageAppVersionAndBuildNumber` av), så numret är repots. Bygget når intern TestFlight; den externa gruppen och
+  App Review väljs i App Store Connect som i dag.
+- **Vakten för byggnumret:** en ändring i appens eller Swift-motorns källor efter commiten som höjde `CURRENT_PROJECT_VERSION` fäller
+  uppladdningen (läxan 16/9, DECISIONS #240). I provläget skrivs den bara ut.
+- **Hemligheterna:** `ASC_KEY_ID`, `ASC_ISSUER_ID` och `ASC_KEY_P8` (hela .p8-filens innehåll). Nyckelfilen skrivs till löparens
+  tempmapp och tas bort efter körningen; den skrivs aldrig ut.
+
+**Alternativ.** fastlane, en Ruby-kedja för samma sak. Eller vänta med flödet tills nyckeln finns.
+
+**Varför.** Varje iOS-bygge hänger i dag på Axels Mac (#525), och App Review kan kräva omtag. Med flödet trycker vem som helst av
+Bengt och Axel, och bygget kommer från en commit som går att peka på.
+
+**Prov.** Provläget grönt på PR #992 (körning 38868022413, 1 min 35 s): XcodeGen 2.46.0, `** ARCHIVE SUCCEEDED **` på 74 s, bygget bär
+0.3.13 (26) som `project.yml`, byggnumret höjt i bd58e36 och ingen appändring efter det.
+
+**Reservation.** Signeringen kan inte provas förrän nyckeln finns: första uppladdningen är provet. Vid arkiveringen kan Xcode behöva
+skapa ett utvecklingscertifikat för löparen; ett sådant syns under Certificates i Apple-kontot och kan återkallas.
+
+**Stomdokument:** APP §9 TestFlight, BED §4.2
 ## #583 (16/10 2026) Kandidatens takt: läsningen byggd och provläst, och ett förslag till takregel som väntar på Bengts ja (kort #343, steg 7)
 
 **Beslut.** Bengt 16/10: *"Då kan vi göra de här så länge"* (punkt 1: bygg läsningen, skriv takregeln i förväg, provläs på det

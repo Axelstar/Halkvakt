@@ -1,0 +1,122 @@
+name: testflight
+# TestFlight-flödet (kort #333, DECISIONS #525, #582): arkiverar iOS-appen på en macOS-löpare och laddar upp den till App Store
+# Connect, så att ett bygge inte kräver Axels Mac. Standardlöpare är gratis och utan tak i ett publikt repo (GitHubs dokumentation,
+# läst 16/10). Två lägen:
+#   prov       bygger och arkiverar utan signering och prövar versionen — inga hemligheter. Körs också av sig själv när flödet ändras.
+#   ladda-upp  signerar med App Store Connect-nyckeln och laddar upp. Bara från main och bara via knappen. Kräver hemligheterna
+#              ASC_KEY_ID, ASC_ISSUER_ID och ASC_KEY_P8 (hela .p8-filens innehåll), som Axel lägger in en gång.
+# Bygget når intern TestFlight av sig självt; den externa gruppen och App Review väljs i App Store Connect som i dag.
+on:
+  workflow_dispatch:
+    inputs:
+      lage:
+        description: "prov = bygg utan signering · ladda-upp = signera och ladda upp till TestFlight (bara från main)"
+        type: choice
+        default: prov
+        options: [prov, ladda-upp]
+  pull_request:
+    paths: [".github/workflows/testflight.yml"]
+concurrency: { group: testflight, cancel-in-progress: false }
+jobs:
+  ios:
+    runs-on: macos-26
+    timeout-minutes: 45
+    env:
+      LAGE: "${{ inputs.lage || 'prov' }}"
+    steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false, fetch-depth: 0 }
+      - name: Läget, grenen och byggnumret
+        shell: bash
+        run: |
+          set -euo pipefail
+          Y=ios/HalkvaktApp/project.yml
+          VER=$(sed -n 's/^ *MARKETING_VERSION: *//p' "$Y"); NR=$(sed -n 's/^ *CURRENT_PROJECT_VERSION: *//p' "$Y")
+          { echo "VER=$VER"; echo "NR=$NR"; echo "ARKIV=$RUNNER_TEMP/Halkvakt.xcarchive"; } >> "$GITHUB_ENV"
+          echo "läge $LAGE · $GITHUB_REF · ${GITHUB_SHA:0:7} · version $VER ($NR)"
+          if [ "$LAGE" = ladda-upp ] && [ "$GITHUB_REF" != refs/heads/main ]; then
+            echo "::error::ladda-upp körs bara från main"; exit 1
+          fi
+          # Byggnumret ska höjas i samma commit som den sista ändringen av appen, eller efter den (16/9: (10) sattes före
+          # facitknapparna och bygget i TestFlight saknade dem). En appändring efter höjningen fäller uppladdningen.
+          HOJD=$(git log -1 --format=%H -G 'CURRENT_PROJECT_VERSION' -- "$Y")
+          SENARE=$(git log --format='%h %s' "$HOJD..HEAD" -- ios/HalkvaktApp/Sources ios/HalkvaktEngine/Sources)
+          echo "byggnumret höjt i ${HOJD:0:7}"
+          if [ -n "$SENARE" ]; then
+            echo "appen ändrad efter höjningen:"; echo "$SENARE"
+            if [ "$LAGE" = ladda-upp ]; then echo "::error::höj byggnumret före uppladdningen"; exit 1; fi
+          fi
+      - name: Xcode och XcodeGen
+        shell: bash
+        run: |
+          set -euo pipefail
+          xcodebuild -version
+          command -v xcodegen >/dev/null || brew install xcodegen
+          cd ios/HalkvaktApp && xcodegen generate
+      - name: Nyckeln
+        if: env.LAGE == 'ladda-upp'
+        shell: bash
+        env:
+          ASC_KEY_ID: "${{ secrets.ASC_KEY_ID }}"
+          ASC_ISSUER_ID: "${{ secrets.ASC_ISSUER_ID }}"
+          ASC_KEY_P8: "${{ secrets.ASC_KEY_P8 }}"
+        run: |
+          set -euo pipefail
+          for v in ASC_KEY_ID ASC_ISSUER_ID ASC_KEY_P8; do
+            if [ -z "${!v}" ]; then echo "::error::hemligheten $v saknas"; exit 1; fi
+          done
+          P8="$RUNNER_TEMP/AuthKey.p8"; printf '%s\n' "$ASC_KEY_P8" > "$P8"; chmod 600 "$P8"
+          grep -q 'BEGIN PRIVATE KEY' "$P8" || { echo "::error::ASC_KEY_P8 är inte en .p8-fil"; exit 1; }
+          # Signeringens flaggor till båda xcodebuild-stegen; nyckelns id och utfärdare maskeras i loggen av GitHub.
+          echo "SIGNERA=-allowProvisioningUpdates -authenticationKeyPath $P8 -authenticationKeyID $ASC_KEY_ID -authenticationKeyIssuerID $ASC_ISSUER_ID" >> "$GITHUB_ENV"
+      - name: Arkivera
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd ios/HalkvaktApp
+          if [ "$LAGE" = prov ]; then UTAN="CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO"; else UTAN=""; fi
+          # $SIGNERA och $UTAN delas med flit på mellanslag. Hela loggen är för stor; vid fel visas felraderna och slutet.
+          LOGG="$RUNNER_TEMP/arkivera.log"
+          if ! xcodebuild archive -project Halkvakt.xcodeproj -scheme Halkvakt -configuration Release \
+            -destination 'generic/platform=iOS' -archivePath "$ARKIV" ${SIGNERA:-} $UTAN > "$LOGG" 2>&1; then
+            grep -E 'error:|\*\* ARCHIVE' "$LOGG" | head -n 60; tail -n 40 "$LOGG"; exit 1
+          fi
+          tail -n 5 "$LOGG"
+          test -d "$ARKIV/Products/Applications/Halkvakt.app"
+      - name: Versionen i bygget
+        shell: bash
+        run: |
+          set -euo pipefail
+          PL="$ARKIV/Products/Applications/Halkvakt.app/Info.plist"
+          V=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$PL"); N=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$PL")
+          echo "bygget bär $V ($N), project.yml säger $VER ($NR)"
+          [ "$V" = "$VER" ] && [ "$N" = "$NR" ] || { echo "::error::versionen i bygget är inte project.yml:s"; exit 1; }
+          echo "### $LAGE: Halkvakt $V ($N) på ${GITHUB_SHA:0:7}" >> "$GITHUB_STEP_SUMMARY"
+      - name: Ladda upp till TestFlight
+        if: env.LAGE == 'ladda-upp'
+        shell: bash
+        run: |
+          set -euo pipefail
+          # manageAppVersionAndBuildNumber av: numret är repots, Xcode får inte räkna upp det.
+          cat > "$RUNNER_TEMP/export.plist" <<'PLIST'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>destination</key><string>upload</string>
+            <key>teamID</key><string>R93LGMM343</string>
+            <key>signingStyle</key><string>automatic</string>
+            <key>manageAppVersionAndBuildNumber</key><false/>
+          </dict></plist>
+          PLIST
+          LOGG="$RUNNER_TEMP/ladda-upp.log"
+          if ! xcodebuild -exportArchive -archivePath "$ARKIV" -exportOptionsPlist "$RUNNER_TEMP/export.plist" \
+            -exportPath "$RUNNER_TEMP/export" $SIGNERA > "$LOGG" 2>&1; then
+            grep -E 'error:|\*\* EXPORT' "$LOGG" | head -n 60; tail -n 40 "$LOGG"; exit 1
+          fi
+          tail -n 5 "$LOGG"
+          echo "uppladdad: Halkvakt $VER ($NR), körning $GITHUB_RUN_ID" | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Städa nyckeln
+        if: always()
+        shell: bash
+        run: rm -f "$RUNNER_TEMP/AuthKey.p8"

@@ -195,6 +195,11 @@ export const KARTAN: Beroende[] = [
   { vard: "download.swift.org", roll: "bygg",
     matar: "Swift-verktygskedjan i ios-engine.yml",
     brister: "ios-engine slutar bygga", bevakad: "", signal: "OKÄND" },
+  // Plist-formatets DTD-adress i exportinställningarna i testflight.yml (kort #333, DECISIONS #582). Inget hämtas därifrån;
+  // uppladdningen går till App Store Connect genom xcodebuild, utan en adress i koden.
+  { vard: "www.apple.com", roll: "bygg",
+    matar: "DTD-adressen i testflight.yml:s exportinställningar; själva uppladdningen går till App Store Connect via xcodebuild",
+    brister: "inget hämtas därifrån; är App Store Connect nere faller uppladdningen i körningen", bevakad: "", signal: "OKÄND" },
   { vard: "apt.postgresql.org", roll: "bygg",
     matar: "pg_dump/pg_restore i serverns version (17) till arkivbackup.yml (#213)",
     brister: "veckodumpen av arkivet slutar — larm-issue `arkivbackup` samma körning", bevakad: "", signal: "OKÄND" },
