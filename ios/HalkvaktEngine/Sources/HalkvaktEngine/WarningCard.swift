@@ -74,6 +74,10 @@ public struct WarningCard: Equatable {
             // The voice always says 500 m (the trigger distance), whatever the exact distance was.
             return WarningCard(icon: .kamera, stage: nil, title: "Fartkamera", sub: nil, distance: .number("500", unit: "M"),
                                road: nil, limit: meta?.speedLimitKmh, advice: nil, adviceSub: nil, quote: alert.text)
+        case .kandidat:
+            // Kandidaten (DECISIONS #562, #577): märkt beta och modellerat, aldrig uppmätt — samma kort som efterhalkans, med halkans ikon.
+            return WarningCard(icon: .halka, stage: "BETA", title: "Halka", sub: "Halkvakt tror — modellerat",
+                               distance: .words("FRAMÖVER"), road: nil, limit: nil, advice: nil, adviceSub: nil, quote: alert.text)
         }
     }
 

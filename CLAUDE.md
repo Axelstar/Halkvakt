@@ -39,7 +39,8 @@ Define success criteria. Loop until verified.
 - Alert copy must never overstate the data: segment sources (RoadCondition) may say
   "on the road ahead"; point sources (weather stations) say "framöver", never a distance
   the data doesn't support.
-- Alert discipline: priority A3>A1>A2>A4>A5 picks ONE winner per step, lower dropped —
+- Alert discipline: priority A3>A1>A2>A4>A5>K (K = kandidatens betavarning, always last so it can never silence
+  another warning — DECISIONS #577) picks ONE winner per step, lower dropped —
   never queued. Within 10 s of an utterance only a MORE important hazard may speak
   (priority-aware cooldown, kort #127 13/9 — replaced the blind 45 s that silenced ice
   20 s behind a camera, v23). Same hazard never repeated within 10 min / 5 km. Covered by

@@ -24,6 +24,7 @@ object AgeGate {
         val kept = hazards.filter { h ->
             when (h) {
                 is SegmentHazard -> false                       // halksträckor: bort
+                is KandidatHazard -> false                      // kandidaten (#577): väglag, åldras som halksträckorna
                 is PointHazard -> when (h.kind) {
                     HazardKind.ICING_POINT -> false             // frysrisk: bort
                     HazardKind.ACCIDENT -> keepAccidents

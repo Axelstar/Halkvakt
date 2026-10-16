@@ -84,6 +84,11 @@ class MainActivity : ComponentActivity() {
             val a = Alert(System.currentTimeMillis() / 1000.0, "wx:fotostudio", HazardKind.ICING_POINT, 655, Texts.EFTERHALKA_TEXT, beta = true)
             GuardService.currentWarning.value = ShownWarning(a, WarningCard.make(a, null))
         }
+        // Fotostudion: kandidatens betakort (DECISIONS #577) på en påhittad varning, för produktboken. Bara debug-byggen.
+        if (debug && intent?.getBooleanExtra("fotostudio_kandidat", false) == true) {
+            val a = Alert(System.currentTimeMillis() / 1000.0, "kand:fotostudio", HazardKind.KANDIDAT, 655, Texts.KANDIDAT_TEXT, beta = true)
+            GuardService.currentWarning.value = ShownWarning(a, WarningCard.make(a, null))
+        }
     }
 
     /**

@@ -11,7 +11,8 @@ export type HazardKind =
   | "slippery_segment"  // A1 — Trafikverket RoadCondition (operator-classified)
   | "icing_point"       // A2 — WeatherMeasurepoint showing icing conditions
   | "wildlife"          // A4 — historical hotspot / fresh polisen event
-  | "camera";           // A5 — TrafficSafetyCamera
+  | "camera"            // A5 — TrafficSafetyCamera
+  | "kandidat";         // K — kandidatens betavarning: modellerad halka per sträcka (NIVÅ 2+BLANDNING, DECISIONS #562, #577)
 
 /** Spoken priority, highest first. Lower priority candidates are DROPPED, never queued. */
 export const PRIORITY: readonly HazardKind[] = [
@@ -20,11 +21,15 @@ export const PRIORITY: readonly HazardKind[] = [
   "icing_point",
   "wildlife",
   "camera",
+  // LAST on purpose (DECISIONS #577): every other kind outranks it, so the priority-aware cooldown can never drop or delay
+  // another warning because the candidate spoke — the other kinds behave exactly as without it, and the shadow's
+  // pre-registered measurements still describe what the app says about them.
+  "kandidat",
 ] as const;
 
 export interface PointHazard {
   id: string;
-  kind: Exclude<HazardKind, "slippery_segment">;
+  kind: Exclude<HazardKind, "slippery_segment" | "kandidat">;
   lon: number;
   lat: number;
   /** Camera: monitored direction of travel (deg). Warn only when roughly co-directional. */
@@ -70,7 +75,17 @@ export interface SegmentHazard {
   };
 }
 
-export type Hazard = PointHazard | SegmentHazard;
+/** K — one road stretch where the candidate's rule says `varnar` (live.json `kandidat`, DECISIONS #576). The threshold lives
+ *  in the database rule; the engine only gets the warning points. One hazard per stretch, so the repeat rule holds per stretch,
+ *  not per point (the points sit about every 2 km). */
+export interface KandidatHazard {
+  id: string;
+  kind: "kandidat";
+  /** WGS84 [lon, lat] of the stretch's warning points. */
+  points: [number, number][];
+}
+
+export type Hazard = PointHazard | SegmentHazard | KandidatHazard;
 
 export interface Fix {
   /** Seconds. Any epoch; only deltas matter. Engine reads no clocks. */
@@ -93,8 +108,9 @@ export interface Alert {
    *  every other alert, so the log shape of all other vectors is unchanged. The warning card
    *  shows it as a stage chip (design handoff 2/10, DECISIONS #443). */
   step?: AccidentStep;
-  /** S3 only: the frost-risk call came from the post-rain beta rule, not from surface + moisture (DECISIONS #524).
-   *  Absent otherwise, so the log shape of every other vector is unchanged. The warning card marks it as beta. */
+  /** S3: the frost-risk call came from the post-rain beta rule, not from surface + moisture (DECISIONS #524). K: always —
+   *  the candidate is a beta warning (DECISIONS #562). Absent otherwise, so the log shape of every other vector is unchanged.
+   *  The warning card marks it as beta. */
   beta?: true;
 }
 
@@ -401,6 +417,7 @@ const iRutan = (x: number, y: number, r: Ruta) => x >= r.x0 && x <= r.x1 && y >=
 export function farorNaraRutten(hazards: Hazard[], line: [number, number][], marginalKm = FARA_MARGINAL_KM): Hazard[] {
   const r = rutaKring(line, marginalKm);
   return hazards.filter((h) => {
+    if (h.kind === "kandidat") return false;   // K (DECISIONS #577): utanför urvalet, som i farorLangsRutten nedan
     if (h.kind === "slippery_segment") {
       const xs = h.line.map((p) => p[0]), ys = h.line.map((p) => p[1]);
       return Math.max(...xs) >= r.x0 && Math.min(...xs) <= r.x1 && Math.max(...ys) >= r.y0 && Math.min(...ys) <= r.y1;
@@ -466,6 +483,9 @@ export function farorLangsRutten(hazards: Hazard[], line: [number, number][], ma
   };
   const ut: LangsRutten[] = [];
   for (const h of hazards) {
+    // K (DECISIONS #577): kandidaten hör inte till urvalet längs rutten (favoriterna, skuggans förfilter) — hoppas över
+    // uttryckligen, så att den inte faller bort som NaN. Kandidatens egen takt räknas av kandidatLangsRutten (segment.ts).
+    if (h.kind === "kandidat") continue;
     let d: number, langs: number;
     if (h.kind === "slippery_segment") {
       ({ d, langs } = narmast(h.line[0]));
@@ -527,6 +547,9 @@ export interface LiveDoc {
   djur?: { id: string; lon: number; lat: number; art: string | null; slut?: string | null }[];
   /** #38 — bridges whose nearest station is near freezing. Publisher pre-filters; engine re-checks. */
   bridges?: { id: string; lon: number; lat: number; road: string | null; yta: number | null; fukt: boolean }[];
+  /** #576 — the candidate's warning stretches: the database rule's `varnar` points per stretch. Absent = switched off (#562
+   *  punkt 5), empty = the rule is silent; both mean no candidate hazard. `tid` is the rule's hour; the engine does not read it. */
+  kandidat?: { id: string; tid: string; punkter: [number, number][] }[];
 }
 
 export function snapshotToHazards(staticDoc: StaticDoc, liveDoc: LiveDoc): Hazard[] {
@@ -556,6 +579,9 @@ export function snapshotToHazards(staticDoc: StaticDoc, liveDoc: LiveDoc): Hazar
   for (const b of liveDoc.bridges ?? []) {
     out.push({ id: `bro:${b.id}`, kind: "icing_point", lon: b.lon, lat: b.lat,
                meta: { surfaceTempC: b.yta, moisture: b.fukt, bridge: true } });
+  }
+  for (const k of liveDoc.kandidat ?? []) {
+    out.push({ id: `kand:${k.id}`, kind: "kandidat", points: k.punkter });
   }
   return out;
 }

@@ -27,6 +27,10 @@ export function roadPhrase(road?: string | null): string {
  *  gissning ur regn och fall, inte en uppmätt frysning; punktkälla ⇒ "framöver". */
 export const EFTERHALKA_TEXT = "Halkvakt tror: frysrisk framöver.";
 
+/** K, kandidatens betavarning (DECISIONS #562, #573: texten godkänd av Bengt 15/10). Modellerad, aldrig uppmätt — därför
+ *  "Halkvakt tror" och "framöver", aldrig ett avstånd. */
+export const KANDIDAT_TEXT = "Halkvakt tror: halka framöver.";
+
 export function alertText(
   kind: HazardKind,
   distanceM: number,
@@ -72,5 +76,7 @@ export function alertText(
         ? `Fartkamera om 500 meter. Gränsen är ${limit}.`
         : "Fartkamera om 500 meter.";
     }
+    case "kandidat":
+      return KANDIDAT_TEXT;
   }
 }

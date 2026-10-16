@@ -27,7 +27,11 @@
   "smhi": [],
   "wildlife": [{ "id": "v1", "lon": 15.9, "lat": 60.9, "art": null }],
   "djur": [{ "id": "j1", "lon": 16.1, "lat": 61.1, "art": "Älg", "slut": null }],
-  "bridges": [{ "id": "b1", "lon": 16.0, "lat": 61.0, "road": null, "yta": 2.5, "fukt": true }]
+  "bridges": [{ "id": "b1", "lon": 16.0, "lat": 61.0, "road": null, "yta": 2.5, "fukt": true }],
+  "kandidat": [
+   { "id": "k1", "tid": "2026-10-15T16:00:00.000Z", "punkter": [[20.5, 67.1], [20.52, 67.12]] },
+   { "id": 4712, "tid": "2026-10-15T16:00:00.000Z", "punkter": [[21.0, 66.5]] }
+  ]
  },
  "vantat": [
   { "id": "cam:k1", "kind": "camera", "bearing": 180, "speedLimitKmh": null, "_varfor": "kamerans limit läses inte (DECISIONS #448 b): TS är referensen, och static.json publicerar ingen fartgräns — en röst med fartgräns är en egen funktion" },
@@ -42,6 +46,8 @@
   { "id": "dev:4711", "kind": "accident", "road": "25", "severityCode": 4, "endTimeLocal": null, "_varfor": "id som TAL, inte sträng. Ska bli \"dev:4711\" — det är därför fallback-grenen i iOS str() finns kvar" },
   { "id": "vilt:v1", "kind": "wildlife" },
   { "id": "djur:j1", "kind": "wildlife", "_varfor": "#318: Trafikverkets djur på vägen ersätter wildlife, som publiceras tom" },
-  { "id": "bro:b1", "kind": "icing_point", "surfaceTempC": 2.5, "bridge": true }
+  { "id": "bro:b1", "kind": "icing_point", "surfaceTempC": 2.5, "bridge": true },
+  { "id": "kand:k1", "kind": "kandidat", "antalPunkter": 2, "lon0": 20.5, "lat0": 67.1, "_varfor": "DECISIONS #577: EN fara per sträcka med alla dess punkter; lon först och lat sedan — omkastat hamnar punkten i Norska havet" },
+  { "id": "kand:4712", "kind": "kandidat", "antalPunkter": 1, "lon0": 21.0, "lat0": 66.5, "_varfor": "id som TAL, som dev:4711" }
  ]
 }

@@ -149,6 +149,16 @@ object SnapshotRepo {
                 ))
             }
         }
+        liveDoc.optJSONArray("kandidat")?.let { ks ->   // #576, #577 — kandidatens varnande punkter per sträcka
+            for (i in 0 until ks.length()) {
+                val k = ks.getJSONObject(i)
+                val pts = k.getJSONArray("punkter")
+                out.add(KandidatHazard(
+                    id = "kand:${k.idText()}",
+                    points = (0 until pts.length()).map { j -> pts.getJSONArray(j).let { doubleArrayOf(it.getDouble(0), it.getDouble(1)) } },
+                ))
+            }
+        }
         return out
     }
 

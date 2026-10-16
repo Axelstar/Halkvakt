@@ -72,6 +72,10 @@ jobs:
             adb shell am start -S -W -n se.halkvakt.app/.MainActivity --ez fotostudio_beta true
             sleep 5
             adb exec-out screencap -p > /tmp/shot-8-betakortet.png
+            adb shell am start -S -W -n se.halkvakt.app/.MainActivity --ez fotostudio_kandidat true
+            sleep 5
+            adb exec-out screencap -p > /tmp/shot-9-kandidatkortet.png
+            # #577 16/10: kandidatens betakort på en påhittad varning, som betakortet ovan — till produktboken.
             # #525 11/10: betakortet (S3) på en påhittad varning, bara i debug-bygget — till produktboken. -S startar om appen:
             # utan den för am start bara fram den öppna aktiviteten, onCreate körs inte, och bilden blev en kopia av shot-7.
             # #250 (c) 24/9: Om, Nära dig och Körläget är inga egna skärmar längre — de tre bilderna var dubbletter och är borta.

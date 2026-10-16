@@ -68,6 +68,9 @@ public enum RouteFilter {
                 }
             case let .point(_, _, lon, lat, _, _):
                 (d, along) = nearest([lon, lat])
+            case .kandidat:
+                // Kandidaten (DECISIONS #577) hör inte till favoriternas urval — hoppas över, som i rutfilter.ts.
+                continue
             }
             if d <= marginM { out.append(AlongRoute(hazard: h, distanceM: d, alongM: along)) }
         }
