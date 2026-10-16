@@ -314,14 +314,19 @@ dem för internt bruk. Det vi bad om har de inget jobb för, och det går inte a
 ### 5h. Svaret från Trafik 16/10: väglaget och åtgärderna för hela vintern (TRV 2026/111808)
 
 Ärendeberedningen Trafik svarade 16/10 14:50 med två filer (`svarptrv2026111808.zip`, 16,8 MB). **Filerna ligger inte i repot**
-(PUBLIKT REPO); de ska till hinken `arkiv` som leveransen 2/10. Här står bara formen och antalen.
+(PUBLIKT REPO). Vägen 2/10 (en release som en knapp kopierade till hinken) är stängd sedan repot blev publikt, eftersom releaser
+är publika; Axel lägger filerna i hinken `arkiv` under `kuvos/trv-2026-111808/` via Supabase-panelen, och kontrollsummorna står i
+`kuvos/trv-111808-leverans.json`. Hinken bär i dag 301,6 MB av kvoten och databasen 481 MB av 500; filerna tar 17 MB i hinken och
+ingenting i databasen, eftersom kuvösen läser dem i sin egen databas i Actions (kuvos.yml). Här står bara formen och antalen.
 - **Väglaget** (`RoadCondition24-25.xlsx`): 337 779 rader, en per ändring av väglaget på en sträcka, 1/11 2024 00:40 – 31/3 2025
   23:41, med kolumnerna ID, LocationText, RoadCondCode1/2 och deras texter, och ModifiedTime. 816 sträckor; **alla 816 finns
   bland våra 818 väglagssträckor** i `data/vagdata/` (samma ID), och bara 2 av våra saknas. Median 374 ändringar per sträcka.
   Koderna är Trafikverkets detaljerade väglag, 16 sorter i kod 1 (torrt, vått/fuktigt, fläckvis isigt, modd, lössnö …), alltså
-  finare än öppna API:ts fyra klasser. Bokstäverna å, ä och ö har blivit ersättningstecken i texterna; koderna är hela.
+  finare än öppna API:ts fyra klasser. Kodboken: 16 koder i par, grundläget och *fläckvis* (10/11 torrt, 20/21 vått/fuktigt,
+  30/31 moddsträngar, 40/41 modd, 50/51 packad snö, 60/61 isigt, 70/71 isigt med bart i hjulspår, 100/101 lössnö); kod 2 är tom i
+  59 % av raderna.
 - **Åtgärderna** (`RoadConditionMeasures24-25.xlsx`): 99 876 rader på 806 sträckor (alla i väglagsfilen), med typen (förebyggande
-  halkbekämpning, halkbekämpning, plogning, sandning och en till), start- och stopptid och ändringstid. Trafikverket skriver att
+  halkbekämpning 50, halkbekämpning 20, plogning 10, sandning 30 och ishyvling 40), start- och stopptid och ändringstid. Trafikverket skriver att
   det är **planerade** åtgärder, inte utförda: de visar vad Trafikverket väntade sig, inte att vägen var saltad. 292 starttider och
   305 stopptider är tomma, och några starttider ligger i februari 2008.
 - **Händelserna** är inte uttagna: Trafikverket vill veta vilka händelser vi behöver, eftersom det blir mycket data. Svaret,
