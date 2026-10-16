@@ -16,6 +16,10 @@ function fakeDb(rows: Partial<Record<string, any[]>>) {
   const q: Q = async (text, params) => {
     asked.push(text);
     if (text.includes("FROM cameras")) return rows.cameras ?? [];
+    if (text.includes("kandidat_pa()")) {   // #578: brytaren, på som standard
+      if (rows.brytareKastar) throw new Error("relation \"kandidat_brytare\" does not exist");
+      return rows.brytare ?? [{ pa: true }];
+    }
     if (text.includes("kandidat_timme()")) return rows.kandidatTimme ?? [{ t: "2026-10-15T08:00:00Z" }];   // #576
     if (text.includes("FROM kandidat_regel()")) return rows.kandidat ?? [];
     if (text.includes("AS radar_mmh")) return rows.radarStation ?? [];   // radarn per station (#459), före weather_latest-frågorna
@@ -370,6 +374,7 @@ test("#576 tiger regeln är kandidat tom och noterad, och regeln frågas inte", 
 
 test("#576 en fallen regelfråga fäller inte snapshoten — kandidat tom och noterad", async () => {
   const q: Q = async (text) => {
+    if (text.includes("kandidat_pa()")) return [{ pa: true }];
     if (text.includes("kandidat_timme()")) return [{ t: "2026-10-15T08:00:00Z" }];
     if (text.includes("kandidat_regel()")) throw new Error("permission denied for function kandidat_regel");
     return [];
@@ -377,6 +382,31 @@ test("#576 en fallen regelfråga fäller inte snapshoten — kandidat tom och no
   const { liveDoc, notes } = await buildSnapshot(q, [], NOW);
   assert.deepEqual(liveDoc.kandidat, []);
   assert.ok(notes.some((n) => n.startsWith("kandidat: regeln ej läsbar")), "felet ska stå i noterna");
+});
+
+// ── BRYTAREN (NIVA2-LIVE steg 13, DECISIONS #562 punkt 5, #578) ─────────────────────────────────────────────────────────
+test("#578 brytaren av: nyckeln kandidat saknas helt — inte tom — regeln frågas inte, och noten säger det", async () => {
+  const { q, asked } = fakeDb({ brytare: [{ pa: false }], kandidat: [{ segment_id: "S1", lon: 20, lat: 67, tid: "2026-10-15T08:00:00Z" }] });
+  const { staticDoc, liveDoc, notes } = await buildSnapshot(q, [], NOW);
+  assert.ok(!("kandidat" in liveDoc), "avstängd = nyckeln borta ur lägesfilen (#562 punkt 5)");
+  assert.ok(!asked.some((t) => t.includes("kandidat_regel") || t.includes("kandidat_timme")));
+  assert.ok(notes.some((n) => n.startsWith("kandidat: avstängd med brytaren")));
+  assert.ok(!snapshotToHazards(staticDoc, liveDoc).some((h) => h.kind === "kandidat"), "motorn får ingen kandidat");
+  assert.ok(Array.isArray(liveDoc.segments) && Array.isArray(liveDoc.rain_segments), "resten av publiceringen står kvar");
+});
+
+test("#578 brytaren oläsbar: nyckeln utelämnas — tyst är det säkra hållet — och felet står i noten", async () => {
+  const { q } = fakeDb({ brytareKastar: true, kandidat: [{ segment_id: "S1", lon: 20, lat: 67, tid: "2026-10-15T08:00:00Z" }] });
+  const { liveDoc, notes } = await buildSnapshot(q, [], NOW);
+  assert.ok(!("kandidat" in liveDoc));
+  assert.ok(notes.some((n) => n.startsWith("kandidat: brytaren ej läsbar")));
+});
+
+test("#578 brytaren på: nyckeln finns som förut", async () => {
+  const { q } = fakeDb({ brytare: [{ pa: true }], kandidat: [{ segment_id: "S1", lon: 20, lat: 67, tid: "2026-10-15T08:00:00Z" }] });
+  const { liveDoc, notes } = await buildSnapshot(q, [], NOW);
+  assert.deepEqual(liveDoc.kandidat, [{ id: "S1", tid: "2026-10-15T08:00:00.000Z", punkter: [[20, 67]] }]);
+  assert.ok(!notes.some((n) => n.startsWith("kandidat:")));
 });
 
 // ── F1: SKATTARENS RÅA INDATA (kort #187, bedömning v3 N4, DECISIONS #188) ─────────────────
