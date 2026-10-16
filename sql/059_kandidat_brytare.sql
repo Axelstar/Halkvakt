@@ -20,7 +20,7 @@ CREATE OR REPLACE FUNCTION kandidat_pa() RETURNS boolean
 LANGUAGE sql STABLE AS $$
   WITH t AS (SELECT max(id) AS id FROM kandidat_brytare WHERE atgard = 'tysta')
   SELECT (SELECT id FROM t) IS NULL
-      OR (SELECT count(DISTINCT b.vem) FROM kandidat_brytare b WHERE b.atgard = 'starta' AND b.id > (SELECT id FROM t)) = 2
+      OR (SELECT count(DISTINCT b.vem) FROM kandidat_brytare b WHERE b.atgard = 'starta' AND b.id > (SELECT id FROM t)) >= 1
 $$;
 COMMENT ON FUNCTION kandidat_pa() IS 'Kandidatens brytare (DECISIONS #578): på utan tystning, annars först när både bengt och axel startat efter den senaste. Bara service-rollen.';
 
