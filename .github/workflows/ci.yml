@@ -100,6 +100,7 @@ jobs:
           node --experimental-strip-types scripts/matningar/kuvos-blandning-prognos-2026-10-11.ts --sjalvtest
           node --experimental-strip-types scripts/matningar/kuvos-blandning-vagb-facit-trv-2026-10-16.ts --sjalvtest   # DECISIONS #592
           node --experimental-strip-types scripts/matningar/kuvos-facit-trv-indata-2026-10-16.ts --sjalvtest
+          node --experimental-strip-types scripts/kandidat-gpx.ts --sjalvtest   # DECISIONS #596
           node --experimental-strip-types scripts/matningar/kuvos-blandning-vagb-2026-10-13.ts --sjalvtest
           node --experimental-strip-types scripts/matningar/kuvos-blandning-vagb2-rutnat-2026-10-13.ts --sjalvtest
           node --experimental-strip-types scripts/matningar/kuvos-blandning-vagb2-terrang-2026-10-13.ts --sjalvtest
