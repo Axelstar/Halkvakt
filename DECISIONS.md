@@ -13487,4 +13487,28 @@ själv.
 
 Faller något steg är steg 13 inte klart. Felet skrivs ned och bortförklaras inte.
 
+**I drift 16/10** (Bengt: *"slå ihop 985 och kör provet"*; PR #985 som 474b8c1).
+
+Driftordningen:
+- DB-knappen 38856034930 `migrera sql/059`: `kandidat_pa()` sann, loggen tom, anon får varken läsa tabellen eller köra funktionen.
+- Deploy av publicera 38856067963.
+- Knappen *las* 38856128156: PÅ.
+
+Provet, som förregistrerat:
+
+| steg | utfall |
+| :-- | :-- |
+| 1. *Tysta* (Claude som Bengt, 38856220977) | Trycket 05:31:39 UTC gav *var PÅ, är AV*. Publiceringen startades direkt: lägesfilen 05:31:42 och svaret 96738 med status 200, *ok true*, *kandidat saknas* och noten *avstängd med brytaren*. Nyckeln saknades i lägesfilen senast 05:33:50, också utan cachebrytare (det apparna hämtar), och manifestets sha var lika. **Tiden från tryck till fil var högst 2 min 11 s**, mot förväntade högst 10. |
+| 2. *Starta* (Claude som Bengt, 38856729086) | 05:37:29 gav *var AV, är AV, väntar på starta av: axel*. Lägesfilen saknade fortfarande nyckeln. |
+| 3. *Starta* (Axel) | Väntar på Axel. Tills dess är kandidaten av i lägesfilen. Domloggen och skuggan räknar som förut, och ingen app läser nyckeln än. |
+| 4. Bilprovet | Väntar på 0.3.13 i intern TestFlight. ci, android och ios-engine är gröna på 474b8c1 (38856020371, 38856020435, 38856020383). |
+
+**Avvikelse i steg 1:** knappen kunde inte läsa publiceringens svar (*request NaN*). Publiceringens cron-kommando ger inget request-id
+tillbaka, fast publiceringen kördes. Svaret lästes i stället med DB-knappen (38856503897) och höll varje förväntan. Rättat: knappen
+hittar nu svaret på tiden och på formen. En fråga efter publiceringens svar från 05:29 gav bara trycket 05:31. Det ordinarie slaget 05:30
+kom inte med, och skälet är inte utrett.
+
+**Skuggmotorn efter deployen i #577** (38853698967, 05:03): varvet 05:32 gav tre rader och nio larm, inga kandidatlarm, och
+kandidatkolumnen var ifylld i alla tre (DB-knappen). Varvet 05:02, med den gamla koden, gav fyra larm.
+
 **Stomdokument:** LIV steg 12–13, APP avstängningen och 0.3.13, SYS brytaren i publiceringen, BED §4.2.

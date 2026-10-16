@@ -54,13 +54,16 @@ try {
     const j = await pool.query(`SELECT jobid, jobname, command FROM cron.job WHERE command LIKE '%functions/v1/publicera%' AND command !~ 'land='`);
     if (j.rows.length !== 1) { console.error(`kandidatbrytaren: hittade ${j.rows.length} publiceringsjobb — publiceringen sker vid nästa tiominutersslag`); process.exitCode = 1; }
     else {
-      const r = await pool.query(j.rows[0].command);
-      const reqId = Number(Object.values(r.rows[0] ?? {})[0]);
-      console.log(`publiceringen startad direkt (${j.rows[0].jobname}, request ${reqId}); kommandot skrivs aldrig ut`);
+      // Publiceringens kommando ger inget request-id tillbaka (provet i drift 16/10: "request NaN", fast svaret kom). Svaret hittas
+      // därför på tiden och på formen — publiceringens svar börjar med "ok" och bär "segments" — inte på id:t.
+      const fran = (await pool.query(`SELECT clock_timestamp() AS t`)).rows[0].t;
+      await pool.query(j.rows[0].command);
+      console.log(`publiceringen startad direkt (${j.rows[0].jobname}); kommandot skrivs aldrig ut`);
       let svar: { status_code: number | null; content: string | null } | null = null;
-      for (let i = 0; i < 24 && !svar && Number.isFinite(reqId); i++) {
+      for (let i = 0; i < 24 && !svar; i++) {
         await new Promise((res) => setTimeout(res, 5000));
-        svar = (await pool.query(`SELECT status_code, content FROM net._http_response WHERE id = $1`, [reqId])).rows[0] ?? null;
+        svar = (await pool.query(`SELECT status_code, content FROM net._http_response
+          WHERE created >= $1 AND content LIKE '{"ok":%' AND content LIKE '%"segments":%' ORDER BY id LIMIT 1`, [fran])).rows[0] ?? null;
       }
       if (!svar) console.log("  inget svar inom 120 s — läs beviset i lägesfilen");
       else {
