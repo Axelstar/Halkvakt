@@ -159,8 +159,20 @@ export async function hamtaTolkat(url: string, vad: string, h: (u: string) => Pr
 
 const kravs = <T,>(x: T | null, vad: string): T => { if (x === null) throw new Error(`${vad}: filen saknas i katalogen (404)`); return x; };
 
-async function hamtaKatalog(): Promise<string> {
-  return (await fetch(KATALOG, { headers: { "User-Agent": UA }, signal: AbortSignal.timeout(60_000) })).text();
+/** Katalogen, med samma omförsök som datafilerna: 16/10 12:13 svarade MET:s katalog inte på 60 s, och del A föll i ett enda
+ *  försök medan filerna efter den hade fått fyra. Ett HTTP-fel räknas som fel, så att en felsida aldrig tolkas som katalog. */
+async function hamtaKatalog(f: typeof fetch = fetch, paus = 10_000): Promise<string> {
+  for (let forsok = 0; ; forsok++) {
+    try {
+      const r = await f(KATALOG, { headers: { "User-Agent": UA }, signal: AbortSignal.timeout(60_000) });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return await r.text();
+    } catch (e) {
+      if (forsok === 3) throw new Error(`katalogen: ${(e as Error).message} efter fyra försök`);
+      console.log(`  katalogen, försök ${forsok + 1}: ${(e as Error).message} — väntar och hämtar om`);
+      await new Promise((ok) => setTimeout(ok, paus * (forsok + 1)));
+    }
+  }
 }
 
 export type Hamtare = (u: string) => Promise<{ buf: Uint8Array; ms: number }>;
@@ -321,6 +333,17 @@ async function sjalvtest() {
   k(an?.stamp === "20261014T05Z" && an.iso === "2026-10-14T05:00:00Z" && an.antal === 2, `katalogen: senaste analysen ${JSON.stringify(an)}`);
   k(fc?.stamp === "20261014T03Z" && fc.antal === 1 && senasteIKatalog("inget", "analysis") === null, "katalogen: prognosen, och tomt blir null");
   k(filnamnLive("forecast", "20261014T03Z") === `${BAS}/met_forecast_1_0km_nordic_20261014T03Z.nc.dods`, "filnamnet");
+  // Katalogens omförsök (16/10 12:13): två tidsgränser och ett HTTP 503, sedan ett svar ⇒ svaret; fyra fel i rad ⇒ fel.
+  let kf = 0;
+  const katFejk = (fel: number) => (async () => {
+    kf++;
+    if (kf <= fel) { if (kf === 3) return new Response("nere", { status: 503 }); throw new DOMException("The operation was aborted due to timeout", "TimeoutError"); }
+    return new Response(html);
+  }) as unknown as typeof fetch;
+  k((await hamtaKatalog(katFejk(3), 0)) === html && kf === 4, `katalogen hämtas om efter tidsgräns och HTTP-fel: ${kf} försök`);
+  kf = 0; let katFoll = "";
+  try { await hamtaKatalog(katFejk(99), 0); } catch (e) { katFoll = (e as Error).message; }
+  k(kf === 4 && katFoll.includes("efter fyra försök"), `fyra fel i rad fäller: ${kf} försök, "${katFoll}"`);
   // Närmaste ruta på ett snett rutnät 60×60 med 0,01° steg: punkten mitt i en ruta ska träffa just den rutan (kuvösens prov).
   const ny = 60, nx = 60, la = new Float32Array(ny * nx), lo = new Float32Array(ny * nx);
   for (let y = 0; y < ny; y++) for (let x = 0; x < nx; x++) { la[y * nx + x] = 60 + y * 0.01 + x * 0.001; lo[y * nx + x] = 15 + x * 0.02; }
