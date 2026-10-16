@@ -13847,3 +13847,21 @@ reglerna här: PR, grön CI och *slå ihop* före deploy.
 **Alternativ.** Båda på allt, som hittills. **Varför.** Appen är ute sedan 13/10 och halksäsongen börjar nu; två spår i stället för ett.
 
 **Stomdokument:** inga — arbetsfördelning, inget av de åtta beskriver vem som gör vad
+
+## #591 (16/10 2026) Facitläsningen mot Trafikverkets väglag 2024/25 förregistrerad som utkast; filerna till hinken via panelen (kort #232)
+
+**Beslut.** Bengt 16/10: *"ja till alla tre"* — svaret om händelserna (skickat av Bengt), filerna till hinken och förregistreringen före läsningen.
+- **Förregistreringen** står i `docs/FORREGISTRERING-FACIT-TRV-2024-25.md` som utkast. Is är kod 60, 61, 70 och 71; snö och modd
+  redovisas för sig. Väglaget får bekräfta men aldrig fälla (TROSKLAR-SKUGGAN §2), och station och sträcka paras inom 2 km. Fönstren
+  är [t − 1, t + 2] h för kandidaten och [t, t + 6] h för efterhalkan; tidszonen mäts först. Läsningen är diagnos, ingen dom. Den
+  signeras av Bengt och Axel innan något läses.
+- **Hinken:** vägen 2/10 (en release som en knapp kopierade) är stängd sedan repot blev publikt. Axel lägger de två filerna i
+  `arkiv/kuvos/trv-2026-111808/` via Supabase-panelen, och kontrollsummorna står i `kuvos/trv-111808-leverans.json`. Hinken bär
+  301,6 MB och filerna 17 MB; databasen berörs inte, eftersom kuvösen läser i sin egen databas i Actions.
+
+**Alternativ.** Läsa direkt, som en undersökning; avvisat, eftersom väglaget är det första oberoende facitet för förra vintern och
+ska läsas med regeln skriven först (#463).
+
+**Varför.** Utan facit säger kuvösen bara att det blev kallt (kuvössidan §7).
+
+**Stomdokument:** KUV §7 facit, BED §4.2
