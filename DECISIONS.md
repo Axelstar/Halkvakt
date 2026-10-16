@@ -13782,3 +13782,32 @@ underlaget 2/11. Det gör inte regeln till en lättnad (regel L), eftersom den b
 erkännandet.
 
 **Stomdokument:** SYS 1 kartsajten, BED §4.2
+
+## #586 (16/10 2026) Bengts e-post i den publika historiken får stå; framåt bär sammanslagningarna noreply-adressen (kort #350)
+
+**Beslut.** Bengt 16/10: *"slå ihop karta 2, vejdirektoratet b och historiken låt den stå"* — *historiken låt den stå*. De 971 författar- och committerfälten med Bengts gmail-adress på
+Axelstar/Halkvakts main, 27/8–16/10, skrivs inte om. Detsamma gäller den lösa commiten 25104ef i halkvakt-karta, som går att nå på sin
+sha; den tas inte bort genom GitHub Support. Framåt är Bengts konto inställt på *Keep my email addresses private* och *Block command
+line pushes that expose my email* (Bengts skärmbild 16/10). Sammanslagningarna #982 (82d7f00), #992 (8e9fc91), #993 (00746fe) och
+halkvakt-karta#2 (da4f442) bär `271615319+895845@users.noreply.github.com` som författare.
+
+**Alternativ.** Skriva om historiken med en ny e-post, vilket kräver en tvingad push av main i ett publikt repo. Eller be GitHub
+Support ta bort den lösa commiten.
+
+**Varför.** Kloner och forkar behåller den gamla historiken ändå, och en omskrivning av main bryter varje arbetsträd och varje
+öppen gren. Det som går att påverka är det som kommer, och det är stängt.
+
+**Stomdokument:** inga — gäller repots metadata, inte innehållet i något stomdokument
+
+## #587 (16/10 2026) Vejdirektoratets avvikelser publiceras inte på kartan förrän licensen är känd (kort #352)
+
+**Beslut.** Bengt 16/10: *"slå ihop karta 2, vejdirektoratet b och historiken låt den stå"* — *vejdirektoratet b*. Kartans olyckslager visar inte längre de danska avvikelserna. De kommer
+ur Vejdirektoratets trafikkort-flöde (`ingest/dk.ts`), som är odokumenterat och vars licens är okänd. Den danska grenen är borttagen ur
+olycksfrågan i `publish/map-core.ts`. `dk.deviations` fylls som förut för skuggarkivet, och appens lägesfil bar dem aldrig. Ett prov
+fäller om kartan läser tabellen igen; motprovet med grenen tillbaka gav 1 fallet prov av 6.
+
+**Alternativ.** (a) NAP-flödet, som kräver ett konto och en nyckel som Bengt eller Axel skaffar. (c) Låta dem stå.
+
+**Varför.** Kartan är publik, och en källa utan känd licens får inte ligga där. (a) kan tas senare när någon har nyckeln.
+
+**Stomdokument:** SYS 1 kartsajten, BED §4.2
