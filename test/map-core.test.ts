@@ -113,3 +113,10 @@ test("#579 en fallen fråga fäller inte kartan — kandidatlagret tomt och note
   assert.ok(notes.some((n) => n.startsWith("kandidat: bitarna ej läsbara")));
   assert.ok(files["vaglag.geojson"] && files["meta.json"], "resten av kartan står kvar");
 });
+test("#587 kartan läser inte Vejdirektoratets avvikelser (licensen okänd), men Sveriges och Finlands står kvar", async () => {
+  const fragor: string[] = []; const db = fakeDb();
+  await buildMapData(async (text, params) => { fragor.push(text); return db(text, params); }, { now: NOW });
+  assert.deepEqual(fragor.filter((f) => f.includes("dk.deviations")), []);
+  const olyckor = fragor.find((f) => f.includes("FROM deviations"));
+  assert.ok(olyckor && olyckor.includes("FROM fi.deviations"));
+});
