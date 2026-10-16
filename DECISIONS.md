@@ -14035,6 +14035,21 @@ signeringen är `0b1d03a1a4f9e49484837ab6730a22067d9e3aa0c402e7a5e8ece067b1d3999
 - Spärren i kuvos.yml släpper först när signaturerna ligger på main.
 - Utfallet är diagnos, ingen dom (§1).
 
+**Första körningen vägrade 16/10** (Bengt: *"slå ihop 1013 och kör läsningen"*; körning 38939248421 på e5a8fac, 17:22–18:28 UTC).
+Spärren gjorde det den var byggd för, och **inget lästes mot väglaget**.
+- Signaturerna släppte jobbet. Fysikkedjan körde väg B varv 1 på 58 minuter (13/10: 76).
+- Kandidatfilen fick sha256 `2251e3ae…` i stället för den frysta `dee13cd1…`, och läsningen vägrade innan Trafikverkets filer öppnades.
+- Redan kedjans mellanfil skiljer sig: `e6dd8c4d…` i stället för `2ac6b4b2…`, som 13/10 gav två gånger.
+- Kod, data och Python 3.13.16 med de fastlåsta paketen är desamma. Löparens avbild är ny (`ubuntu24/20261012.334` mot `20261004.327`
+  13/10), och kalibreringens optimering förstärker skillnader i sista decimalen. Det är den troliga orsaken, inte bevisad.
+- Skillnaderna i det som skrevs ut är i andra decimalen. Paren är desamma (W 0,25 · L 160 km på alla veck), men till exempel:
+  - veck 1: 4,91 mot 4,92 % grova fel;
+  - ett avståndsband: MAE 0,61 mot 0,62 °C;
+  - alla hinkar: A2 5,17 mot 5,16 %.
+- Läxan: en summa över kedjans utdata går att upprepa på samma löpare men inte mellan löparavbilder. Att kedjan var deterministisk
+  visades bara på samma avbild. Förslaget om ett nytt identitetsprov står i bedömningen §4.2 och kräver en daterad post med båda
+  signaturerna (§6).
+
 **Stomdokument:** KUV §7 facit, BED §4.2
 
 ## #596 (16/10 2026) Soffprovet ersätter bilprovet i steg 4 inför App Review — Android-emulatorn hos Bengt (kort #343, steg 13)
