@@ -13638,6 +13638,20 @@ beslut, eftersom 14 dygn är ett tidigare val (#569).
 - Databasen **481,4 MB**, 0,7 MB mindre än 06:50.
 - Steg 2, högst 2 MB tillväxt på ett dygn, läses 17/10.
 
+**Mätningen, steg 2 (17/10, Bengt: *"har du läst databasprovet"*) — provet faller:**
+- Vakthundens timserie (issue #963): 481 MB 16/10 07:07 och 485 MB 17/10 07:07. DB-knappen *las*: 481,4 MB 16/10 07:07
+  (38865193312) och 485,6 MB 17/10 07:50 (39015138970), alltså **+4,2 MB** mot högst 2 MB.
+- **Väderobservationerna stod still:** `weather_observations` 275,7 MB både 16/10 06:37 (38862206832) och 17/10 07:50, med 837 000
+  mot 793 000 rader. Migrationen verkade alltså där den skulle.
+- **Tillväxten sitter i andra tabeller** (16/10 06:37 → 17/10 07:50, samma satser): `kandidat_station` 1,9 → 3,9 MB (ny 15/10; den
+  har upp till fyra dygn i databasen och växer tills första raderingen 19/10 03:50), `shadow_log` +0,4, trendtabellerna +0,6,
+  `road_condition_history` +0,3, `storage.objects` +0,3, `cron.job_run_details` +0,2, fyra mindre +0,4; `kandidat_live` −1,0.
+  `shadow_log`, `road_condition_history`, `situation_archive` och `smhi_warnings_history` rensas aldrig.
+- **Den förskrivna åtgärden träffar inte.** Kortare förvaring av väderobservationerna frigör plats inne i den tabellen, och den
+  platsen kan bara den tabellen återanvända. Den står redan still, så totalen och tillväxten blir desamma. Valet står i
+  bedömningen §4.2 och är Bengts; ingen åtgärd är tagen.
+- Prognos på ett dygns data, osäker: ungefär 494 MB 19/10 och 500 MB omkring 21–22/10 om takten håller.
+
 **Stomdokument:** SYS databasen och arkivet, BED §4.2.
 
 ## #581 (16/10 2026) Kandidatens val 2–5 som byggt, och val 6 (c): kandidaten tiger i 2 min efter samma sträckas halkvarning (kort #343)
@@ -14421,6 +14435,8 @@ timmar utan export står kvar, och väderarkivets larm (ett dygn per natt, grän
 - En ny tabell räknas först när den exporterats en gång. Natten innan dess kan larmet gå i glappet en gång.
 
 **I drift:** efter *slå ihop* deployas vakthunden. Beviset är vakthundens rad med *(gräns 5)* och inget larm mellan 00:00 och 00:40.
+Deployad 17/10 från a27ed7b (39009723881); vakthundens körning 07:07 UTC (issue #963) skriver *"0 väntar (gräns 5)"*. Kvar som bevis:
+natten mellan 00:00 och 00:40 utan larm.
 
 Issue #1022 (halkvakt-live hade aldrig kört) stängdes av mätvakten själv 05:07 UTC efter körning 39004036248 kl. 04:50, så där behövdes
 inget.
