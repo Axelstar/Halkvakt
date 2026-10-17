@@ -14316,3 +14316,42 @@ emulatorn går segt på Axels Mac (M1, 8 GB).
   som blev 1 593 punkter och 80 minuter.
 
 **Stomdokument:** APP, LIV, BED §4.2
+
+## #606 (17/10 2026) Kandidatens tak byggt nu: högst en kandidat per 10 minuter, i 0.3.13 (27) — före läsningen 2/11 (kort #343, steg 7 och 12)
+
+**Beslut.** Bengt 17/10: *"taket nu"*, efter Claudes bedömning att 2/11 bara kan ändra utfallet till *inget tak*. Det kräver minst 30 följder
+på minst 3 rutter och 3 dygn **och** högst 10 % inom 10 minuter, och ingetdera var nära.
+- Taket byggs nu. Det är en skärpning, som TROSKLAR-SKUGGAN §5 tillåter genom en post från Bengt, och posten står i §4 (d).
+- Läsningen 2/11 körs ändå, som förregistrerad, men som mätning och inte som beslut.
+
+**Underlaget:** mellanläsningen 17/10 (DB-knappen 38992453770, underlaget 15/10 10:32 – 17/10 01:32 UTC): 226 körningar på 20 rutter, passager bara på E10 Luleå→Kiruna (5 körningar, 22 passager, 2 dygn), 17 följder, 3 inom 10 minuter = 17,6 %, tätast 334 s, median 1 047 s. Provläsningen 16/10 gav 8 följder, varav 3 inom 10 minuter (#583).
+
+**Byggt** (ur utkastet PR #1001 från 16/10, ombaserat på main och numrerat om från #590, som aldrig nådde main):
+- **Motorn i tre språk:** `kandidatTakS = 600` s i `engine/src/types.ts`, `Types.kt` och `Engine.swift`, med kontraktet i
+  kontraktsgrinden. Motorn minns när kandidaten senast talade, och kandidaten tiger under taket, vilken sträcka det än gäller.
+- **Vektorerna:**
+  - v47 är ny: S1 talar vid t=38; S2 vid t=339 tiger, 301 s efter; S3 vid t=701 talar, 663 s efter. Marginalen är 11 m vid varje
+    gräns.
+  - v42 ändras avsiktligt: S2 vid t=173, 135 s efter S1, tiger nu.
+  - Alla andra vektorer är byte för byte orörda; generatorn återskapar dem.
+- **Buntarna** för skuggmotorn och favoritprovet är omskrivna med buntskripten.
+- **Produktboken:** *högst en gång per 10 minuter*.
+- **Byggnumret** är 0.3.13 (27) på iOS och Android, i samma commit som motorn, som TestFlight-flödets vakt kräver.
+
+**Prov:**
+- Buntarna i synk.
+- Alla 76 kontrakt håller.
+- Vektorgeneratorn återskapar v42 och v47.
+- `npm test`: 306 gröna. De 2 som föll kräver paketet proj4 för kuvösens radar, som saknas i den lokala kopian; ci installerar det.
+- Motprov: taket 300 s fäller både vektorprovet för v47 och kontraktsgrinden, var för sig.
+
+**Priset:** *inget tak* prövas aldrig. Att ta bort taket efter läsningen 2/11 vore en lättnad efter sett utfall (regel L, #564).
+
+**Driftordning efter *slå ihop*:**
+1. Deploy av skuggmotorn och favoritprovet i samma varv (motorändringen).
+2. Bygge 27 via TestFlight-flödet (`ladda-upp`, kort #333).
+3. PR #1001 stängs som ersatt.
+
+Varje steg på Bengts ord.
+
+**Stomdokument:** APP kandidatens röst, LIV steg 7 och 12, BED §4.2
