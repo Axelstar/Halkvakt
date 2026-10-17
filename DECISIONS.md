@@ -14558,3 +14558,20 @@ Kamerorna (id, väg, lat, lon ur `static.json`): 13009040 väg 939 57,42842 12,1
 väg 859 59,55854 17,89555 · 02040030 väg 859 59,58638 17,89612 · 21006010 väg 83 61,07564 16,96293 · 22017010 E14 62,38275 17,33471.
 
 **Stomdokument:** FAV §3 rapporten och §4 färskheten och §10 Fintraffic och §11 vad som väntar, BED §4.2
+
+## #615 (17/10 2026) Synkprovets sex kameror passerar föraren inte: rapporten står på 100 m, rösten prövas för sig (kort #340, #356)
+
+**Bengts ord 17/10:** *"1 nej"*, på frågan i bedömningen §4.2 (DECISIONS #614): passerar föraren de sex kamerorna som synkprovet saknat,
+144–202 m från rutten på väg 939, E45, 859 (två), 83 och E14?
+
+**Beslut:**
+- Rapportens gräns för fartkameror står kvar på **100 m**. #614 (1) a genomförs alltså inte som en höjning: kamerorna som motorn larmar för
+  där står inte på förarens väg, så rapporten ska inte ta med dem.
+- Att motorn larmar för de sex är troligen **falsklarm i rösten**: den väljer kamera efter läge och riktning (inom 500 m framför bilen och
+  högst 60° från färdriktningen), inte efter väg. Det prövas för sig på nya **kort #356**: hur ofta, var, och vad en rättning skulle kosta.
+- **Inget ändras i motorn.** Fältdomen 11/9 (TAVLA-ARKIV vid kort #100: en varning 500 m före varje verklig kamera) står. En ändring i
+  rösten kräver Bengts ord efter mätningen och ett prov i bil.
+
+**Alternativ.** 210 m i rapporten, så att rapporten följer motorn även där motorn har fel. Avböjt av Bengt.
+
+**Stomdokument:** APP §3 rösten och FAV §3 rapporten, BED §4.2
