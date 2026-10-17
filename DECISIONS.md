@@ -14207,3 +14207,48 @@ där länkar i texten aldrig är klickbara, hänvisar till profilen, där App St
 
 **Stomdokument:** inga — marknadsföringen har inget stomdokument; planen bor i MARKNADSFORING-NOLLBUDGET.md.
 
+## #602 (16/10 2026) Facitläsningen mot Trafikverkets väglag 2024/25 — utfallet (kort #232)
+
+**Läsningen.** Bengt 16/10: *"slå ihop 1016"*, på hans ja till körningen (#597). Körning 38958523766 på c156995, 19:56–21:25 UTC:
+inläsningen tog 6,4 min, fysikkedjan 77,6 min och mätningen 4,1 min.
+- **Identitetsprovet klarat:** paren per veck som 13/10, n 4 352 575, A1 0,562 °C, A2 4,836 % och A3 0,227 % (13/10: 0,56 · 4,84 ·
+  0,23).
+- Tidszonen var lokal tid.
+- Facit: 10 256 is-episoder på 721 sträckor.
+- 666 av kandidatens 736 stationer har en sträcka inom 2 km.
+
+Utskriften står i sin helhet, bara aggregat, i `docs/FACIT-TRV-2024-25-UTFALL.md`. **Diagnos, ingen dom.**
+
+| Mått | Söder 55–60 | Mitten 60–64 | Norr 64–69 | Totalt |
+| :-- | --: | --: | --: | --: |
+| (a) Basnivån B: stationens egna kalla timmar med is inom [t − 1, t + 2] h | 5,4 % | 47,2 % | 77,3 % | 35,9 % (429 913 av 1 196 207) |
+| (a) Kandidatens kalla timmar, bekräftade (A) | 5,6 % | 47,8 % | 77,6 % | 36,8 % (437 916 av 1 190 663) · lyftet **1,02** |
+| (a) Hela regeln, de varnande timmarna | 4,3 % | 23,6 % | 62,0 % | 14,8 % (33 552 av 227 143) · lyftet **0,41** |
+| (a) Missar, kandidaten (is-episoder utan kall timme 2 h före) | 248 av 1 739 | 219 av 3 821 | 101 av 2 743 | 568 av 8 303 (6,8 %): nederbörd 194 · utstrålning 323 · okänd 51 |
+| (a) Missar, hela regeln | 1 048 av 1 739 | 2 784 av 3 821 | 2 305 av 2 743 | 6 137 av 8 303 (73,9 %): nederbörd 2 015 · utstrålning 3 713 · okänd 409 |
+| (b) Basnivån: egna kalla timmar med is inom [t, t + 6] h | 6,3 % | 50,3 % | 80,0 % | 37,9 % |
+| (b) Efterhalkans fyrningar, bekräftade | 0,7 % (6 av 819) | 14,2 % (24 av 169) | 43,3 % (13 av 30) | 4,2 % (43 av 1 018) · lyftet **0,11** |
+| (c) Planerad halkbekämpning inom ±6 h: kandidaten · hela regeln · efterhalkan | | | | 37,4 % · **72,2 %** · 62,7 % |
+
+**Förväntan (§5):**
+1. Lyftet över 1: **1,02**, alltså knappt. Kandidatens kalla timmar är i praktiken stationernas egna, så väglaget säger inte mer om
+   dem än om kylan.
+2. Söder mindre än norr: **ja**, men det är klimatet, eftersom basnivån skiljer lika mycket.
+3. Missarna vid nederbörd: **nej.** Utstrålningsdrivna missar är fler, 323 mot 194.
+
+**Det oväntade:**
+- **Hela regelns varningar bekräftas mer sällan än kylan i allmänhet:** 14,8 % mot 35,9 %, och under basnivån i varje band.
+  Sannolikt finns två skäl, och inget av dem är mätt:
+  - **Fuktvittnet tas ur samma fil som facit.** Väglagets Våt (kod 20) vid e betyder att Trafikverket i det ögonblicket inte sa is,
+    så regelns fukt väljer bort is i fönstret.
+  - **Trafikverket hade planerat halkbekämpning vid 72,2 %** av regelns varningar, mot 37,4 % vid kandidatens kalla timmar.
+    Saltad väg blir våt och inte isig. Åtgärderna är planerade, inte utförda (§5h), så de bekräftar ingenting.
+- **Efterhalkan bekräftas i 4,2 %** av fyrningarna (43 av 1 018), mot basnivån 37,9 %. 819 av fyrningarna ligger i söder, där
+  basnivån är 6,3 %. Där ligger också planerad halkbekämpning vid 62,7 %.
+- Månaden räknas i UTC, så periodens första timme (1/11 00:00 svensk tid) hamnar i gruppen 2024-10 med några tiotal timmar. Det
+  ändrar inga totaler.
+
+**Vad som följer.** Inget ändras av utfallet (§1). Om hela regelns fukt ska delas efter vittne (Våt eller radar), och efterhalkan
+efter åtgärd, är en ny läsning. Den förregistreras före körningen, och frågan står i bedömningen §4.2.
+
+**Stomdokument:** KUV §7 facit, BED §4.2
