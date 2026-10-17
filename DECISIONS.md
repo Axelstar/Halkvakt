@@ -14285,3 +14285,14 @@ förregistreringens §4: bara Våt bekräftas mer sällan än bara radarn, och f
 **Kostnad:** en körning som läsningen, ungefär 90 minuter.
 
 **Stomdokument:** KUV §7 facit, BED §4.2
+
+## #604 (17/10 2026) Uppföljningens förregistrering signerad — Bengt, och Axel via Bengt (kort #232)
+
+**Beslut.** Bengt 17/10: *"slå ihop 1023, signera för mej och Axel och kör uppföljningen"*. `docs/FORREGISTRERING-FACIT-TRV-UPPFOLJNING.md` är signerad i §6.
+- Bengts signatur är hans ord.
+- Axels signatur är Bengts ord för Axel, *via Bengt*, som i #595 och #597.
+- Dokumentets sha256 vid signeringen är `c29faea63835…`.
+- Signaturerna ligger i samma PR som uppföljningen (#1023), så de når main i samma sammanslagning.
+- Därefter trycks körningen på Bengts ord, med mätningen `scripts/matningar/kuvos-blandning-vagb-facit-trv-uppfoljning-2026-10-17.ts`.
+
+**Stomdokument:** KUV §7 facit, BED §4.2

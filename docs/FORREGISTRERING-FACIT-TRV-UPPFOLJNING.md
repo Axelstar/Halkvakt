@@ -1,6 +1,6 @@
 # Förregistrering — uppföljningen av facitläsningen 2024/25
 
-**Status: UTKAST 17/10 2026** (Bengt: *"ja till uppföljningen"*, DECISIONS #603). Signeras av Bengt och Axel **innan** körningen.
+**Status: SIGNERAD 17/10 2026** (Bengt, och Axel via Bengt, DECISIONS #604). Utkastet: Bengt: *"ja till uppföljningen"*, DECISIONS #603. Signeras av Bengt och Axel **innan** körningen.
 Läsningen den följer upp är `docs/FORREGISTRERING-FACIT-TRV-2024-25.md` (signerad 16/10, #595 och #597), och dess utfall
 står i `docs/FACIT-TRV-2024-25-UTFALL.md` (#602).
 
@@ -52,5 +52,5 @@ Ingen tröskel, ingen ändring i regeln, appen eller kandidaten och ingen dom. D
 
 | | Datum | Signatur |
 | :-- | :-- | :-- |
-| Bengt | | |
-| Axel | | |
+| Bengt | 2026-10-17 | Bengt i chatten: *"slå ihop 1023, signera för mej och Axel och kör uppföljningen"* (DECISIONS #604) |
+| Axel | 2026-10-17 | Via Bengt i samma ord (DECISIONS #604) |
