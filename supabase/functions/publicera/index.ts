@@ -775,7 +775,17 @@ const LS_STIL = `.dok{max-width:760px}.svar{font:500 19px/1.5 var(--sans);color:
 const LS_APP = "https://apps.apple.com/se/app/id6806939784";
 const LS_MARKE = `<svg viewBox="3 3 94 83" aria-hidden="true"><path fill-rule="evenodd" fill="#FFC94A" d="M55.196 6 L96.196 77 A6 6 0 0 1 91 86 L9 86 A6 6 0 0 1 3.804 77 L44.804 6 A6 6 0 0 1 55.196 6 Z M46.4 32 L53.6 32 L52 58 L48 58 Z M45.6 68 A4.4 4.4 0 1 0 54.4 68 A4.4 4.4 0 1 0 45.6 68 Z"/></svg>`;
 
-function lsSkal(o: { titel: string; beskrivning: string; adress: string; rot: string; innehall: string }) {
+// Strukturerad data (17/10, DECISIONS #629): vad sidan är, när den skrevs och vilken data den bygger på, så att sökmotorer och
+// AI-tjänster kan läsa tiden och källan utan att tolka texten.
+function lsJsonLd(o: { titel: string; beskrivning: string; adress: string; now?: Date }): string {
+  const d = { "@context": "https://schema.org", "@type": "WebPage", name: o.titel, description: o.beskrivning, url: o.adress, inLanguage: "sv-SE",
+    ...(o.now ? { dateModified: o.now.toISOString() } : {}),
+    isBasedOn: { "@type": "Dataset", name: "Trafikverkets öppna data: väglag, vägväderstationer och olyckor", license: "https://creativecommons.org/publicdomain/zero/1.0/" },
+    publisher: { "@type": "Organization", name: "Halkvakt", url: `${SIDBAS}/` } };
+  return `<script type="application/ld+json">${JSON.stringify(d).replace(/</g, "\\u003c")}</script>`;
+}
+
+function lsSkal(o: { titel: string; beskrivning: string; adress: string; rot: string; innehall: string; now?: Date }) {
   return `<!doctype html>
 <html lang="sv">
 <head>
@@ -796,6 +806,7 @@ function lsSkal(o: { titel: string; beskrivning: string; adress: string; rot: st
 <link rel="stylesheet" href="${o.rot}assets/fonts/fonts.css">
 <link rel="stylesheet" href="${o.rot}assets/hv.css">
 <style>${LS_STIL}</style>
+${lsJsonLd(o)}
 </head>
 <body>
 <header class="topp">
@@ -841,12 +852,14 @@ function lsLage(kod: number, d: { vaglag: LanSegment[]; stationer: LanStation[];
 }
 
 /** Svaret överst: vad källorna säger, med deras ord. `vems` = "länets" eller "E4:s", `var` = "i länet" eller "vid vägen". */
-function lsSvar(l: LanLage, vems = "länets", var_ = "i länet"): string {
-  const vag = l.halt.length
-    ? `Trafikverket rapporterar halka eller vinterväglag på ${l.halt.length} av ${vems} ${l.vagavsnitt} vägavsnitt.`
-    : `Trafikverket rapporterar ingen halka på ${vems} ${l.vagavsnitt} vägavsnitt just nu.`;
+function lsSvar(l: LanLage, vems = "länets", var_ = "i länet", now?: Date): string {
+  const vad = l.halt.length
+    ? `halka eller vinterväglag på ${l.halt.length} av ${vems} ${l.vagavsnitt} vägavsnitt`
+    : `ingen halka på ${vems} ${l.vagavsnitt} vägavsnitt just nu`;
+  // Med klockslaget först (17/10, DECISIONS #629): en mening som en AI-tjänst eller en reporter kan citera som den står.
+  const vag = now ? `Kl. ${lsTid(now, false)} rapporterar Trafikverket ${vad}.` : `Trafikverket rapporterar ${vad}.`;
   const temp = l.kalla.length
-    ? `${lsPlural(l.kalla.length, "mätstation visar", "mätstationer visar")} vägbana på 0 °C eller kallare.`
+    ? `${lsPlural(l.kalla.length, "mätstation visar", "mätstationer visar")} vägbana på 0 °C eller kallare, kallast ${lsGrad(l.kalla[0].yta)} vid ${l.kalla[0].name}.`
     : `Ingen mätstation ${var_} visar vägbana under noll.`;
   return `${vag} ${temp}`;
 }
@@ -876,7 +889,7 @@ function lsVagsida(vag: (typeof VAGAR)[number], l: LanLage, now: Date): string {
   const andra = VAGAR.filter((x) => x.slug !== vag.slug).map((x) => `<a href="../${x.slug}/">${lsEsc(x.namn)}</a>`).join(" · ");
   const innehall = `<p class="dim">Uppdaterad ${lsTid(now)}</p>
 <h1>Är det halt på ${lsEsc(vag.rubrik)} just nu?</h1>
-<p class="svar">${lsEsc(lsSvar(l, `${vag.namn}:s`, "vid vägen"))}</p>
+<p class="svar">${lsEsc(lsSvar(l, `${vag.namn}:s`, "vid vägen", now))}</p>
 <h2>Väglaget enligt Trafikverket</h2>
 ${l.halt.length ? `<ul>\n${halt}\n</ul>${l.halt.length > 20 ? `\n<p class="dim">och ${l.halt.length - 20} till.</p>` : ""}`
     : `<p>Inget av vägens ${l.vagavsnitt} vägavsnitt har halka eller vinterväglag i Trafikverkets rapport.</p>`}
@@ -892,7 +905,7 @@ ${l.olyckor.length ? `<ul>\n${olyckor}\n</ul>` : `<p>Trafikverket rapporterar in
   return lsSkal({
     titel: `Är det halt på ${vag.rubrik} just nu? Väglag och vägtemperatur längs vägen | Halkvakt`,
     beskrivning: `Väglaget på ${vag.rubrik} just nu: Trafikverkets rapporter om halka, vägbanans temperatur vid mätstationerna längs vägen och pågående olyckor. Uppdateras var 30:e minut.`,
-    adress: `${SIDBAS}/vag/${vag.slug}/`, rot: "../../", innehall,
+    adress: `${SIDBAS}/vag/${vag.slug}/`, rot: "../../", innehall, now,
   });
 }
 
@@ -908,7 +921,7 @@ function lsLanssida(lan: (typeof LAN)[number], l: LanLage, now: Date): string {
   const andra = LAN.filter((x) => x.kod !== lan.kod).map((x) => `<a href="../${x.slug}/">${lsEsc(x.kort)}</a>`).join(" · ");
   const innehall = `<p class="dim">Uppdaterad ${lsTid(now)}</p>
 <h1>Är det halt i ${lsEsc(lan.kort)} just nu?</h1>
-<p class="svar">${lsEsc(lsSvar(l))}</p>
+<p class="svar">${lsEsc(lsSvar(l, "länets", "i länet", now))}</p>
 <p><a class="lank-mono" href="../../karta.html?lan=${lan.slug}">Se ${lsEsc(lan.kort)} på livekartan →</a></p>
 <h2>Väglaget enligt Trafikverket</h2>
 ${l.halt.length ? `<ul>\n${halt}\n</ul>${l.halt.length > 15 ? `\n<p class="dim">och ${l.halt.length - 15} till.</p>` : ""}`
@@ -925,7 +938,7 @@ ${l.olyckor.length ? `<ul>\n${olyckor}\n</ul>` : "<p>Trafikverket rapporterar in
   return lsSkal({
     titel: `Är det halt i ${lan.kort} just nu? Väglag och vägtemperatur | Halkvakt`,
     beskrivning: `Väglaget i ${lan.namn} just nu: Trafikverkets rapporter om halka, vägbanans temperatur vid mätstationerna och pågående olyckor. Uppdateras var 30:e minut.`,
-    adress: `${SIDBAS}/lan/${lan.slug}/`, rot: "../../", innehall,
+    adress: `${SIDBAS}/lan/${lan.slug}/`, rot: "../../", innehall, now,
   });
 }
 
@@ -957,7 +970,7 @@ ${vagrader}
   return lsSkal({
     titel: "Är det halt i Sverige just nu? Läget per län | Halkvakt",
     beskrivning: "Väglaget i alla 21 län just nu: Trafikverkets rapporter om halka, vägbanans temperatur och pågående olyckor. Uppdateras var 30:e minut.",
-    adress: `${SIDBAS}/lan/`, rot: "../", innehall,
+    adress: `${SIDBAS}/lan/`, rot: "../", innehall, now,
   });
 }
 
