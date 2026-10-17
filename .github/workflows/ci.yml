@@ -45,6 +45,8 @@ jobs:
         run: |
           node --experimental-strip-types scripts/bundle-favoritprov.ts --check
           node --experimental-strip-types scripts/favoritprov-synk.ts --sjalvtest
+      - name: favoriter/index.ts i synk med rapportkärnan och motorn (appens rapportfil, #617)
+        run: node --experimental-strip-types scripts/bundle-favoriter.ts --check
       - name: Kontraktsgrinden — samma tröskelvärde i varje kopia (#144)
         run: |
           node --experimental-strip-types scripts/kontraktsgrinden.ts --sjalvtest
