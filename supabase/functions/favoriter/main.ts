@@ -49,6 +49,8 @@ async function sha256(s: string): Promise<string> {
   const h = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
   return [...new Uint8Array(h)].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
+// Storleken i byte som filen ligger i hinken (UTF-8), inte i tecken: å, ä och ö är två byte (17/10: 386 171 byte mot 380 188 tecken).
+const utf8Byte = (s: string) => new TextEncoder().encode(s).length;
 async function gzBytes(s: string): Promise<number> {
   const cs = new CompressionStream("gzip"); const w = cs.writable.getWriter(); w.write(new TextEncoder().encode(s)); w.close();
   return (await new Response(cs.readable).arrayBuffer()).byteLength;
@@ -80,8 +82,8 @@ Deno.serve(async (req) => {
     const innehall = await sha256(JSON.stringify(lang.linjer));
     const nyLang = !fore?.lang || fore.lang.innehall !== innehall;
     const manifest = { schema: 1, generated_at: snabb.generated_at, lagesfil: lv.generated_at,
-      snabb: { fil: "rapport-snabb.json", sha256: await sha256(sSnabb), byte: sSnabb.length, gz_byte: await gzBytes(sSnabb) },
-      lang: nyLang ? { fil: "rapport-lang.json", sha256: await sha256(sLang), innehall, byte: sLang.length, gz_byte: await gzBytes(sLang), skriven: snabb.generated_at }
+      snabb: { fil: "rapport-snabb.json", sha256: await sha256(sSnabb), byte: utf8Byte(sSnabb), gz_byte: await gzBytes(sSnabb) },
+      lang: nyLang ? { fil: "rapport-lang.json", sha256: await sha256(sLang), innehall, byte: utf8Byte(sLang), gz_byte: await gzBytes(sLang), skriven: snabb.generated_at }
         : fore.lang };
     await skrivHink("rapport-snabb.json", sSnabb);
     if (nyLang) await skrivHink("rapport-lang.json", sLang);
