@@ -14650,4 +14650,21 @@ b när trafiken passerar en gräns.
   räcker det till ungefär 700 användare (räknat, inte mätt). Den utgående trafiken går inte att läsa ur databasen, så vakthunden räknar
   den inte. Hur den ska mätas avgörs innan appen läser filen (kort #357).
 
+**I drift 17/10** (Bengt: *"kör alla steg i driftordningen"*):
+1. Deploy av `favoriter` (39045608630) och `favoritprov` (39045611229) från 5548607, båda buntarna i synk.
+2. *Migrera* `sql/061` (39045828605, 15:37 UTC): hinken `favoriter` publik, och `halkvakt-favoriter` aktiv på `6,16,26,36,46,56`.
+3. **Första körningen 15:46:01:**
+   - 1 970 ms och 1 395 poster;
+   - snabba delen 61 689 byte packat, långa 108 807;
+   - **sha256 stämmer för båda filerna** i den publika hinken.
+   - Favoritprovet med den nya bunten skrev 15:38 som vanligt.
+4. Deploy av vakthunden (39046531491). Körningen 16:07 skriver *"favoriter 1 min"*, utan fel på kontrollsumman (issue #963).
+
+**Fynd i första körningen, rättat:**
+- Manifestets `byte` var antalet tecken, inte byte: 380 188 mot filens 386 171, eftersom å, ä och ö är två byte i UTF-8. En app
+  som prövar storleken hade förkastat filen.
+- `byte` räknas nu i UTF-8 (`utf8Byte`), i båda funktionerna. Rättelsen kräver en ny deploy av båda.
+
+**Fynd, inte rättat:** minnesmätningen ger `rss` 0 i Supabases körtid; bara `heap` mäts (40,2 MB i första körningen).
+
 **Stomdokument:** FAV §7 bygget, SYS funktionerna och hinkarna
