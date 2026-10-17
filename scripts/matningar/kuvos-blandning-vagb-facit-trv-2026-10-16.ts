@@ -22,7 +22,7 @@ import { lasFysik, spannkontroll, type Fysik } from "./kuvos-fysik-2026-10-08.ts
 import { korBlandning } from "./kuvos-blandning-2026-10-08.ts";
 import { RADVAKT_SQL, karantanSql } from "../../publish/snapshot-core.ts";
 import { givarklass } from "../../engine/src/nederbord.ts";
-import { lasning, linjerUr, natsumma, signerad, KALL_C, RADAR_MMH, RADAR_MIN, VETO_MIN, VETO_YTA_C, type Regelindata, type Tillfalle, type Timklass }
+import { lasning, linjerUr, natsumma, signerad, type Indata, KALL_C, RADAR_MMH, RADAR_MIN, VETO_MIN, VETO_YTA_C, type Regelindata, type Tillfalle, type Timklass }
   from "../../kuvos/facit-trv.ts";
 
 const BUCKET_S = 1800, H = 3_600_000;
@@ -186,12 +186,12 @@ export async function kuvosIndata() {
   return { kalla, nederbord, fyrningar, linjer, stationer, regel };
 }
 
-const korsSjalv = !!process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, "/").split("/").pop()!);
-if (korsSjalv && process.argv.includes("--sjalvtest")) sjalvtest();
-else if (korsSjalv) {
+/** Läsningens beredning, som uppföljningen delar (kuvos-blandning-vagb-facit-trv-uppfoljning-2026-10-17.ts): signaturerna,
+ *  kandidatfilen och identitetsprovet (#597), kuvösens indata. Lämnar indatan till lasning() eller uppfoljning(). */
+export async function forbered(rubrik: string): Promise<Indata> {
   const forreg = readFileSync(FORREG, "utf8"), sig = signerad(forreg);
   if (!sig.bengt || !sig.axel) { console.error(`vägrar: ${FORREG} är inte signerad av båda (Bengt ${sig.bengt}, Axel ${sig.axel})`); process.exit(2); }
-  console.log("KUVÖSENS FACIT UR TRAFIKVERKETS VÄGLAG (DECISIONS #591, #592) — kandidaten, efterhalkan och åtgärderna mot väglaget 2024/25. Diagnos, ingen dom.");
+  console.log(rubrik);
   const m = JSON.parse(readFileSync("blandning/manifest.json", "utf8")).filer.find((x: any) => x.fil === FRYST.fil);
   if (!m) { console.error(`${FRYST.fil} saknas i blandning/manifest.json — väg B varv 1 kördes inte`); process.exit(1); }
   const fysik = lasFysik(readFileSync(`blandning/${FRYST.fil}`));
@@ -209,5 +209,9 @@ else if (korsSjalv) {
   const kalla = ind.kalla.filter((x) => kandidatStationer.has(x.station)), lagen = new Set(ind.stationer.map((s) => s.id));
   console.log(`  kandidatens kalla timmar ${kandidat.length} vid ${new Set(kandidat.map((x) => x.station)).size} av ${kandidatStationer.size} stationer · ` +
     `stationernas egna vid kandidatens stationer ${kalla.length} · kandidatens stationer utan läge i stationer.json: ${[...kandidatStationer].filter((s) => !lagen.has(s)).length}`);
-  lasning({ xlsx: "trv", linjer: ind.linjer, stationer: ind.stationer, kandidatStationer, kalla, kandidat, fyrningar: ind.fyrningar, nederbord: ind.nederbord, regel: ind.regel, forreg });
+  return { xlsx: "trv", linjer: ind.linjer, stationer: ind.stationer, kandidatStationer, kalla, kandidat, fyrningar: ind.fyrningar, nederbord: ind.nederbord, regel: ind.regel, forreg };
 }
+
+const korsSjalv = !!process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, "/").split("/").pop()!);
+if (korsSjalv && process.argv.includes("--sjalvtest")) sjalvtest();
+else if (korsSjalv) lasning(await forbered("KUVÖSENS FACIT UR TRAFIKVERKETS VÄGLAG (DECISIONS #591, #592) — kandidaten, efterhalkan och åtgärderna mot väglaget 2024/25. Diagnos, ingen dom."));

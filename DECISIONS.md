@@ -14252,3 +14252,47 @@ Utskriften står i sin helhet, bara aggregat, i `docs/FACIT-TRV-2024-25-UTFALL.m
 efter åtgärd, är en ny läsning. Den förregistreras före körningen, och frågan står i bedömningen §4.2.
 
 **Stomdokument:** KUV §7 facit, BED §4.2
+
+## #603 (17/10 2026) Uppföljningen av facitläsningen: fuktvittnet och åtgärderna, förregistrerad som utkast (kort #232)
+
+**Beslut.** Bengt 17/10: *"slå ihop 1019 och ja till uppföljningen"*. Det svarar på Claudes förslag efter utfallet (#602). Uppföljningen är skriven som en egen
+förregistrering, `docs/FORREGISTRERING-FACIT-TRV-UPPFOLJNING.md`, och den signeras av Bengt och Axel före körningen.
+
+**Vad den läser:**
+- **(i) Fuktvittnet.** Hela regelns varnande timmar delas efter vad som gav fukten vid timmens slut: bara Våt, bara radarn eller båda.
+- **(ii) Åtgärderna.** Basnivån, kandidaten, hela regeln och efterhalkan delas efter om Trafikverket hade planerat halkbekämpning
+  inom ±6 h.
+
+Båda redovisas per band och totalt, med lyftet mot basnivån i samma del. Fönster, perioden, regeln och identitetsprovet är desamma som i
+läsningen. Inga nya tal.
+
+**Sagt högt:** utfallet är redan sett. Uppföljningen förklarar det och ändrar ingen tröskel och ingen regel (regel L). Förväntan står i
+förregistreringens §4: bara Våt bekräftas mer sällan än bara radarn, och för åtgärderna förväntas ingen riktning.
+
+**Byggt:**
+- `kuvos/facit-trv-uppfoljning.ts` med `fuktvittne()`, `medAtgard()` och `tabell()`.
+- Mätningen `scripts/matningar/kuvos-blandning-vagb-facit-trv-uppfoljning-2026-10-17.ts`. Den delar läsningens beredning, som nu är
+  `forbered()`: signaturerna, identitetsprovet och indatan.
+- `giltigaAtgarder()` delas med läsningen i stället för att kopieras, och `MAX_KM` exporteras, så kontraktsgrinden vaktar den
+  fortfarande.
+- Spärren i kuvos.yml prövar också uppföljningens signaturer när mätningen heter *uppfoljning*.
+
+**Prov:**
+- Självtest i ci.
+- Fuktvittnet och regeln är överens i varje fall.
+- Tre motprov fällde: radarn räknad som Våt, åtgärdsfönstret ±5 h och Våt vid t i stället för e.
+
+**Kostnad:** en körning som läsningen, ungefär 90 minuter.
+
+**Stomdokument:** KUV §7 facit, BED §4.2
+
+## #604 (17/10 2026) Uppföljningens förregistrering signerad — Bengt, och Axel via Bengt (kort #232)
+
+**Beslut.** Bengt 17/10: *"slå ihop 1023, signera för mej och Axel och kör uppföljningen"*. `docs/FORREGISTRERING-FACIT-TRV-UPPFOLJNING.md` är signerad i §6.
+- Bengts signatur är hans ord.
+- Axels signatur är Bengts ord för Axel, *via Bengt*, som i #595 och #597.
+- Dokumentets sha256 vid signeringen är `c29faea63835…`.
+- Signaturerna ligger i samma PR som uppföljningen (#1023), så de når main i samma sammanslagning.
+- Därefter trycks körningen på Bengts ord, med mätningen `scripts/matningar/kuvos-blandning-vagb-facit-trv-uppfoljning-2026-10-17.ts`.
+
+**Stomdokument:** KUV §7 facit, BED §4.2
