@@ -123,8 +123,10 @@ test("spärrarna: tre per dygn, fyra timmar isär, samma nyckel inte inom 20 h",
   const lan = lanVid(LUNCH, [L(23, "Jämtland", 3, 0), ...bas(LUNCH)]);
   const igar = { "2026-11-11": [{ tid: "2026-11-11T20:00:00Z", nyckel: "forsta:23", typ: "forsta" }] };
   assert.equal(valjHandelse(LUNCH, lan, null, hist(LUNCH), igar), null);
-  // 16/10 skrevs ett enda kvitto per dag, inte en lista
-  assert.equal(valjHandelse(MORGON, bas(MORGON), null, hist(MORGON), { "2026-11-12": { tid: "2026-11-11T23:00:00Z" } }), null);
+  // 16/10 skrevs ett enda kvitto per dag, inte en lista; det läses fortfarande
+  assert.equal(valjHandelse(MORGON, bas(MORGON), null, hist(MORGON), { "2026-11-12": { tid: "2026-11-12T00:30:00Z" } }), null);
+  // 17/10: gårdagens kvällsinlägg kl. 22 tystade morgonlistan. Listan spärras bara av en lista samma dag.
+  assert.equal(valjHandelse(MORGON, bas(MORGON), null, hist(MORGON), { "2026-11-11": { tid: "2026-11-11T21:14:00Z" } })?.typ, "lista");
 });
 
 test("App Store-länken står i Facebook-texten, inte i Instagram-texten", () => {

@@ -301,7 +301,8 @@ function vecka(nu, lan, meta, historik, postat) {
 }
 
 function morgonlista(nu, lan, meta, historik, postat) {
-  if (pass(nu) !== "morgon" || nyligen(postat, nu, "lista")) return null;
+  // En gång per dag, inte 20 h: gårdagens kvällsinlägg får aldrig tysta morgonlistan (17/10, DECISIONS #609).
+  if (pass(nu) !== "morgon" || inlaggIdag(postat, nu).some(p => p.nyckel === "lista")) return null;
   const valda = valjLan(lan);
   if (!valda.length) return null;
   return {
