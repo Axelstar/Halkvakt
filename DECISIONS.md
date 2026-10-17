@@ -15008,3 +15008,5 @@ skrivs ned och står kvar: simuleringen stannade efter 31 av 45 minuter, när te
 **Alternativ.** Gör om B en annan kväll med hela 45 minuter (§4.2). Valdes bort av Bengt.
 
 **Stomdokument:** LIV steg 13, BED §4.2
+
+**C 17/10 (Bengts ord *"1a"*: tryck mitt *starta* nu, kandidaten förblir av tills Axel trycker).** Axel tryckte *starta* 19:50:52 UTC (kandidatbrytaren 39064197746) och Claude Bengts 21:04:12 UTC på hans ord *"1a"* (39069356865): kandidaten var AV, är PÅ. Lägesfilen 21:04:14 UTC bär nyckeln med 4 sträckor (10025, 45080, 87010, 94003), och manifestets sha256 är lika med filens. 45080 och 87010 saknar Trafikverkets halka, så kortprovet kan göras. Axels tryck 19:50 var okänt för Claude när (a) föreslogs, så kandidaten slogs på direkt i stället för vid Axels tryck. Kvar i steg 13: betakortet.
