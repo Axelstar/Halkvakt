@@ -88,3 +88,37 @@ jobs:
           name: app-screenshots
           path: /tmp/shot-*.png
           retention-days: 14
+  # Play-deklarationens demovideo (bakgrundsplats + förgrundstjänst), 17/10: bara vid workflow_dispatch.
+  # Riktig skärminspelning på en Android 14-emulator med Google Play-tjänster: förklaringen före varje behörighetsruta,
+  # "Tillåt hela tiden", vakten med notisen, låsskärmen, provkortet och att notisen går när vakten avslutas.
+  demovideo:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 21 }
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Build debug APK
+        run: cd android && ./gradlew --no-daemon :app:assembleDebug
+      - name: Record the demo
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          arch: x86_64
+          target: google_apis
+          disable-animations: false
+          script: bash scripts/demovideo.sh
+      - name: Upload demo video
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: demovideo
+          path: /tmp/demo/*
+          retention-days: 14
