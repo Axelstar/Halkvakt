@@ -994,11 +994,14 @@ Deno.serve(async (req) => {
       if (x.efter > 3 && (x.timmar === null || Number(x.timmar) > 3))
         problem.push(`**Arkivexporten står still**: ${x.efter} färdiga dygn väntar och ingen export på ${x.timmar ?? "–"} h — läs net._http_response för arkivexport (kort #83, DECISIONS #334)`);
       // Trendtabellerna och radarn (kort #347, DECISIONS #569, sql/053): samma rad och samma larm, räknat i tabelldygn.
+      // Gränsen är antalet tabeller (DECISIONS #608): vid midnatt UTC blir ett dygn per tabell färdigt och exporten tar dem
+      // :40, så först mer än ett dygn per tabell är stillastående. Talet 3 var antalet före sql/057 och larmade i glappet.
       const [y] = await sql`SELECT arkiv2_efterslap() AS efter, (SELECT count(*)::int FROM arkiv_export_tabell) AS dygn,
+        (SELECT count(DISTINCT tabell)::int FROM arkiv_export_tabell) AS tabeller,
         (SELECT round(extract(epoch FROM now() - max(exporterad)) / 3600, 1) FROM arkiv_export_tabell) AS timmar,
         (SELECT count(*)::int FROM arkiv_export_tabell WHERE raderad IS NOT NULL) AS raderade`;
-      rad.push(`arkivexport, trendtabellerna och radarn: ${y.dygn} tabelldygn exporterade (${y.timmar ?? "–"} h sedan), ${y.efter} väntar, ${y.raderade} raderade ur databasen`);
-      if (y.efter > 3 && (y.timmar === null || Number(y.timmar) > 3))
+      rad.push(`arkivexport, trendtabellerna och radarn: ${y.dygn} tabelldygn exporterade (${y.timmar ?? "–"} h sedan), ${y.efter} väntar (gräns ${y.tabeller}), ${y.raderade} raderade ur databasen`);
+      if (y.efter > y.tabeller && (y.timmar === null || Number(y.timmar) > 3))
         problem.push(`**Arkivexporten av trendtabellerna och radarn står still**: ${y.efter} färdiga tabelldygn väntar och ingen export på ${y.timmar ?? "–"} h — läs net._http_response för arkivexport (kort #347, DECISIONS #569)`);
     } catch (e) { problem.push(`**Kunde inte läsa arkivexporten**: ${String(e).slice(0, 160)}`); }
   } catch (e) {
