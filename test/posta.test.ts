@@ -139,3 +139,10 @@ test("varje inlägg säger att Halkvakt är oberoende och var siffrorna kommer f
   const t = bildtext([l("A", 1, 0)], "2026-11-12T05:30:00Z");
   assert.match(t, /Halkvakt är en oberoende app och sajt, inte en del av Trafikverket\. Siffrorna kommer från Trafikverkets öppna data\./);
 });
+
+test("varje inlägg slutar med #halkvakt, på båda kanalerna (DECISIONS #622)", () => {
+  for (const kanal of ["facebook", "instagram"]) {
+    const sista = bildtext([l("A", 1, 0)], "2026-11-12T05:30:00Z", kanal).trim().split("\n").at(-1);
+    assert.match(sista, /^#halka #väglag .*#halkvakt$/);
+  }
+});

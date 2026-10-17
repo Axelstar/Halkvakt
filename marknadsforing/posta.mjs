@@ -86,7 +86,8 @@ const lanTagg = l => "#" + l.kort.replace(/s? län$/, "").replace(/\s+/g, "");
 
 // Gemensam svans för alla inlägg: länk, app, källa och taggar.
 function svans(kanal, kalla, lanen) {
-  const taggar = ["#halka", "#väglag", ...lanen.map(lanTagg)];
+  // #halkvakt sist i varje inlägg, så att inläggen samlas under vårt namn (Axel 17/10, DECISIONS #622).
+  const taggar = ["#halka", "#väglag", ...lanen.map(lanTagg), "#halkvakt"];
   // Bengts förslag 17/10 (DECISIONS #610): säg att vi är oberoende, så att ingen tror att inlägget kommer från Trafikverket.
   return ["", LANK[kanal], APP[kanal], "", `Halkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från ${kalla}.`, "", [...new Set(taggar)].join(" ")];
 }
