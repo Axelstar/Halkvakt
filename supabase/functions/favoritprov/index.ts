@@ -604,7 +604,8 @@ export function snapshotToHazards(staticDoc: StaticDoc, liveDoc: LiveDoc): Hazar
 
 // ═══ publish/rapport-core.ts ═══
 // RAPPORTFILEN OCH FAVORITPROVET (favoriterna, DECISIONS #529). Ren logik, inget I/O — Deno-kopplingen bor i
-// supabase/functions/favoritprov/main.ts, och index.ts där är genererad av scripts/bundle-favoritprov.ts.
+// supabase/functions/favoritprov/main.ts (testmiljön) och supabase/functions/favoriter/main.ts (appens fil, DECISIONS #617), och
+// index.ts där är genererade av scripts/bundle-favoritprov.ts och scripts/bundle-favoriter.ts.
 //
 // 1. byggRapport: det lägesfilen saknar, ur Trafikverkets öppna API när filen byggs (ingen ny tabell, docs/FAVORITER.html §7):
 //    stationernas namn och lufttemperatur, olyckornas och djurens text, hinder, kömeddelanden, vägarbeten, hastigheter, omledningar,
@@ -736,6 +737,36 @@ export type In = {
   farjeleder: any[];                        // FerryRoute 1.2
   stationer: { id: string; namn: string; luft: number | null }[];   // weather_latest
 };
+
+/** En fråga till Trafikverkets öppna API. */
+export type Fraga = { objecttype: string; version: string; ns: string; filter: string; include: string[] };
+/** Frågorna bakom rapportfilen, i ordningen situationer, restider, färjor, färjeleder. Delade av favoritprovet och favoriter (appens
+ *  fil, DECISIONS #617), så att testmiljön och appens fil aldrig ställer olika frågor. Bara de slag rapporten bär, bara aktiva, och
+ *  bara fälten den läser — svaret för hela Situation är stort. */
+export function rapportFragor(nu: number): Fraga[] {
+  const fran = new Date(nu).toISOString(), till = new Date(nu + 24 * 3_600_000).toISOString();
+  const TYPER = "Accident,AnimalPresenceObstruction,AbnormalTraffic,MaintenanceWorks,RoadOrCarriagewayOrLaneManagement,VehicleObstruction,GeneralObstruction";
+  // Deviation.Deleted finns inte (torrkörningen 38135721921: "Invalid query attribute"); Situation.Deleted gör det.
+  const DEV = ["Id", "Suspended", "StartTime", "EndTime", "CreationTime", "ValidUntilFurtherNotice", "MessageTypeValue", "MessageCode",
+    "MessageCodeValue", "Header", "Message", "RoadNumber", "LocationDescriptor", "SeverityCode", "SeverityText", "NumberOfLanesRestricted",
+    "TemporaryLimit", "TrafficRestrictionType", "Geometry.Point.WGS84", "Geometry.Line.WGS84"].map((f) => `Deviation.${f}`);
+  return [
+    // Inget tidsfilter här: avvikelser utan sluttid (vägarbeten tills vidare) skulle falla bort. byggRapport avgör vad som är aktivt.
+    { objecttype: "Situation", version: "1.6", ns: "road.trafficinfo", filter: `<IN name="Deviation.MessageTypeValue" value="${TYPER}"/>`, include: ["Id", "Deleted", ...DEV] },
+    { objecttype: "TravelTimeRoute", version: "1.6", ns: "road.trafficinfo", filter: "",
+      include: ["Id", "Name", "TravelTime", "FreeFlowTravelTime", "TrafficStatus", "MeasureTime", "Geometry.WGS84"] },
+    { objecttype: "FerryAnnouncement", version: "1.2", ns: "ferry.trafficinfo", filter: `<AND><GTE name="DepartureTime" value="${fran}"/><LT name="DepartureTime" value="${till}"/></AND>`, include: [] },
+    { objecttype: "FerryRoute", version: "1.2", ns: "ferry.trafficinfo", filter: "", include: [] },
+  ];
+}
+
+/** Stationerna rapporten bär: bara de i lägesfilens weather[] (ytan högst +3 °C), de enda som kan stå som frysrisk — namnen för alla
+ *  855 vägde 8,8 kB (#530). `latest` är raderna ur weather_latest. */
+export function kallaStationer(live: Pick<LiveDoc, "weather">, latest: { station_id: unknown; name: unknown; air_temp_c: unknown }[]): In["stationer"] {
+  const kalla = new Set((live.weather as any[]).map((w) => String(w.id)));
+  return latest.filter((w) => kalla.has(String(w.station_id)))
+    .map((w) => ({ id: String(w.station_id), namn: String(w.name ?? ""), luft: w.air_temp_c == null ? null : Number(w.air_temp_c) }));
+}
 
 /** Rapportfilens två delar ur Trafikverkets svar. Rena data; texten är Trafikverkets egen, bara kortad. */
 export function byggRapport(x: In): { snabb: Rapport; lang: Linjer } {
@@ -1037,7 +1068,7 @@ function minnesmatare() {
   return { mat, varde: () => (ok ? { heap: mb(heap), rss: mb(rss) } : null) };
 }
 
-async function trv(objekt: string, version: string, ns: string, filter: string, include: string[] = [], limit = 20000): Promise<{ rader: any[]; byte: number }> {
+async function trv({ objecttype: objekt, version, ns, filter, include }: Fraga, limit = 20000): Promise<{ rader: any[]; byte: number }> {
   const inc = include.map((f) => `<INCLUDE>${f}</INCLUDE>`).join("");
   const q = `<REQUEST><LOGIN authenticationkey="${TRV}"/><QUERY objecttype="${objekt}" schemaversion="${version}" namespace="${ns}" limit="${limit}">` +
     `${filter ? `<FILTER>${filter}</FILTER>` : ""}${inc}</QUERY></REQUEST>`;
@@ -1091,31 +1122,20 @@ Deno.serve(async (req) => {
   const minne = minnesmatare(); minne.mat();
   const t0 = performance.now(); const ms: Record<string, number> = {}; const steg = (n: string, t: number) => { ms[n] = Math.round(performance.now() - t); minne.mat(); };
   try {
-    const nu = Date.now(); const fran = new Date(nu).toISOString(), till = new Date(nu + 24 * 3_600_000).toISOString();
+    const nu = Date.now();
     let t = performance.now();
-    // Bara de slag rapporten bär, bara aktiva, och bara fälten den läser — svaret för hela Situation är stort.
-    const TYPER = "Accident,AnimalPresenceObstruction,AbnormalTraffic,MaintenanceWorks,RoadOrCarriagewayOrLaneManagement,VehicleObstruction,GeneralObstruction";
-    // Deviation.Deleted finns inte (torrkörningen 38135721921: "Invalid query attribute"); Situation.Deleted gör det.
-    const DEV = ["Id", "Suspended", "StartTime", "EndTime", "CreationTime", "ValidUntilFurtherNotice", "MessageTypeValue", "MessageCode",
-      "MessageCodeValue", "Header", "Message", "RoadNumber", "LocationDescriptor", "SeverityCode", "SeverityText", "NumberOfLanesRestricted",
-      "TemporaryLimit", "TrafficRestrictionType", "Geometry.Point.WGS84", "Geometry.Line.WGS84"].map((f) => `Deviation.${f}`);
+    // Frågorna och urvalet av stationer bor i rapport-core, delade med favoriter (appens fil, DECISIONS #617).
+    const [qSit, qTt, qFa, qFr] = rapportFragor(nu);
     const [sit, tt, fa, fr, lv, st, wl] = await Promise.all([
-      // Inget tidsfilter här: avvikelser utan sluttid (vägarbeten tills vidare) skulle falla bort. byggRapport avgör vad som är aktivt.
-      trv("Situation", "1.6", "road.trafficinfo", `<IN name="Deviation.MessageTypeValue" value="${TYPER}"/>`, ["Id", "Deleted", ...DEV]),
-      trv("TravelTimeRoute", "1.6", "road.trafficinfo", "", ["Id", "Name", "TravelTime", "FreeFlowTravelTime", "TrafficStatus", "MeasureTime", "Geometry.WGS84"]),
-      trv("FerryAnnouncement", "1.2", "ferry.trafficinfo", `<AND><GTE name="DepartureTime" value="${fran}"/><LT name="DepartureTime" value="${till}"/></AND>`),
-      trv("FerryRoute", "1.2", "ferry.trafficinfo", ""),
+      trv(qSit), trv(qTt), trv(qFa), trv(qFr),
       fetch(CDN + "live.json?t=" + nu).then((r) => r.json()),
       fetch(CDN + "static.json?t=" + nu).then((r) => r.json()),
       fetch(`${SB}/rest/v1/weather_latest?select=station_id,name,air_temp_c`, { headers: { Authorization: `Bearer ${SRK}`, apikey: SRK } }).then((r) => r.json()),
     ]);
     steg("hamtning", t);
     t = performance.now();
-    const kalla = new Set((lv.weather as any[]).map((w) => String(w.id)));
     const { snabb, lang } = byggRapport({ nu, situationer: sit.rader, restider: tt.rader, farjor: fa.rader, farjeleder: fr.rader,
-      // Bara stationerna i lägesfilens weather[] (ytan högst +3 °C) — de enda som kan stå som frysrisk; namnen för alla 855 vägde 8,8 kB (#530).
-      stationer: (wl as any[]).filter((w) => kalla.has(String(w.station_id)))
-        .map((w) => ({ id: String(w.station_id), namn: String(w.name ?? ""), luft: w.air_temp_c == null ? null : Number(w.air_temp_c) })) });
+      stationer: kallaStationer(lv, wl) });
     if (fr.rader.length) snabb.noter.push(`färjeledens fält: ${Object.keys(fr.rader[0]).join(", ")}`);
     steg("rapport", t);
     t = performance.now();

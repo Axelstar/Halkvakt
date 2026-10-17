@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { byggRapport, favoritRapport, glesa, grupperade, langsVagen, linjerUr, notis, nyttSedan, punktUr, slagFor, tomma, vagNamn, visning, ORDNING, GRUPP_FRAN,
-  MARGINALER, MARGINALER_RAKA, type Rad } from "../publish/rapport-core.ts";
+import { byggRapport, favoritRapport, glesa, grupperade, kallaStationer, langsVagen, linjerUr, notis, nyttSedan, punktUr, rapportFragor, slagFor, tomma, vagNamn,
+  visning, ORDNING, GRUPP_FRAN, MARGINALER, MARGINALER_RAKA, type Rad } from "../publish/rapport-core.ts";
 import type { Hazard } from "../engine/src/types.ts";
 import type { LiveDoc, StaticDoc } from "../engine/src/snapshot.ts";
 
@@ -175,4 +175,21 @@ test("längs vägen: en tvärväg är inte längs rutten, en väg längs den är
   assert.equal(langsVagen([langs], RUTT, MARGINALER.vagarbete), true);
   assert.equal(langsVagen([kort], RUTT, MARGINALER.vagarbete), false, "~450 m med en fjärdedel inom 100 m är för lite");
   assert.equal(MARGINALER.kamera, 100); assert.equal(MARGINALER_RAKA.kamera, 1500);
+});
+
+test("frågorna bakom rapportfilen är delade av favoritprovet och favoriter (#617): fyra, i byggRapports ordning", () => {
+  const f = rapportFragor(NU);
+  assert.deepEqual(f.map((x) => x.objecttype), ["Situation", "TravelTimeRoute", "FerryAnnouncement", "FerryRoute"]);
+  assert.match(f[0].filter, /Deviation\.MessageTypeValue/);
+  assert.ok(f[0].include.includes("Deleted") && f[0].include.includes("Deviation.Geometry.Line.WGS84"));
+  assert.ok(!f[0].include.includes("Deviation.Deleted"), "fältet finns inte hos Trafikverket (38135721921)");
+  // Färjorna de närmaste 24 timmarna, räknat från körningen.
+  assert.ok(f[2].filter.includes("2026-10-12T06:00:00.000Z") && f[2].filter.includes("2026-10-13T06:00:00.000Z"));
+});
+
+test("stationerna i rapportfilen: bara de kalla i lägesfilen, med namn och luft", () => {
+  const latest = [{ station_id: 101, name: "Kall", air_temp_c: -1.5 }, { station_id: 102, name: "Varm", air_temp_c: 8 },
+    { station_id: 103, name: null, air_temp_c: null }];
+  assert.deepEqual(kallaStationer({ weather: [{ id: "101" }, { id: "103" }] } as any, latest),
+    [{ id: "101", namn: "Kall", luft: -1.5 }, { id: "103", namn: "", luft: null }]);
 });
