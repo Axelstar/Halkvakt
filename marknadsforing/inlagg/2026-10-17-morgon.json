@@ -1,0 +1,19 @@
+{
+  "typ": "lista",
+  "nyckel": "lista",
+  "etikett": "Halkläget kl. 09:31",
+  "rubrik": "Halt i morse",
+  "underrad": "lördag 17 oktober",
+  "text": "God morgon. Så här ser vägarna ut kl. 09:34.\n\nNorrbotten: halka på 40 av 58 vägavsnitt, 50 stationer under noll, kallast −3,4 °C vid Avvakko.\nVästerbotten: halka på 21 av 44 vägavsnitt, 26 stationer under noll, kallast −3,0 °C vid Bjurträsk.\nVästernorrland: halka på 6 av 22 vägavsnitt, 1 station under noll, kallast 0,0 °C vid Norrhög.\nJämtland: halka på 4 av 17 vägavsnitt, 15 stationer under noll, kallast −1,4 °C vid Rörström, 1 olycka.\nDalarna: 5 stationer under noll, kallast −0,4 °C vid Koppången.\n\nLäget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\n\nKälla: Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Västernorrland #Jämtland #Dalarna",
+  "textIg": "God morgon. Så här ser vägarna ut kl. 09:34.\n\nNorrbotten: halka på 40 av 58 vägavsnitt, 50 stationer under noll, kallast −3,4 °C vid Avvakko.\nVästerbotten: halka på 21 av 44 vägavsnitt, 26 stationer under noll, kallast −3,0 °C vid Bjurträsk.\nVästernorrland: halka på 6 av 22 vägavsnitt, 1 station under noll, kallast 0,0 °C vid Norrhög.\nJämtland: halka på 4 av 17 vägavsnitt, 15 stationer under noll, kallast −1,4 °C vid Rörström, 1 olycka.\nDalarna: 5 stationer under noll, kallast −0,4 °C vid Koppången.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone, länken finns i vår profil.\n\nKälla: Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Västernorrland #Jämtland #Dalarna",
+  "pass": "morgon",
+  "datum": "2026-10-17",
+  "generated_at": "2026-10-17T07:31:13.580Z",
+  "lan": [
+    "norrbotten",
+    "vasterbotten",
+    "vasternorrland",
+    "jamtland",
+    "dalarna"
+  ]
+}
