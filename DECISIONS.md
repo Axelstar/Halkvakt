@@ -14810,3 +14810,48 @@ hand om resten, för efter 10 min och 5 km får zonen tala igen.
 kontraktsgrinden för talet i tre språk, testvektorer för korsningen vid Vittangi och för en lång zon som upprepas, och produktboken.
 
 **Stomdokument:** APP §3 rösten, BED §4.2
+
+## #622 (17/10 2026) Halkzonens glapp: 500 m (kort #360)
+
+**Bengts ord 17/10:** *"1 ja"*, på förslaget i #621.
+
+**Beslut.** Två halksträckor räknas som samma zon när deras linjer ligger högst **500 m** från varandra. Reprisregeln (10 min och
+5 km) räknar då på zonen: en ny halkvarning tystas, om en sträcka inom 500 m fick en halkvarning för mindre än 10 min och 5 km sedan.
+
+**Skälet:** mätningen i #621. Alla 17 täta följder i skuggan låg inom 451 m, och ingen följd alls låg mellan 500 m och 2 km.
+
+**Byggs:**
+- motorn i tre språk;
+- talet i kontraktsgrinden;
+- testvektorer för korsningen vid Vittangi (tre sträckor 11–21 m isär blir en varning) och för en lång zon som upprepas efter
+  10 min och 5 km;
+- det tystade i skuggans `suppressed`, med skälet *zon*;
+- produktboken.
+
+Rösttexten ändras inte. Talet läses om när vintern når södra Sverige.
+
+**Stomdokument:** APP §3 rösten, BED §4.2
+
+## #623 (17/10 2026) Favoriterna steg 2: brytaren i fliken Favoriter, fasta namnförslag med datum (kort #357)
+
+**Bengts ord 17/10:** *"1 c och 2 a"*. Han frågade *"om vi har en flik för favoriter är det inte också då mest logiskt att man har
+brytaren där"*.
+
+**Besluten:**
+- **Brytaren *Erbjud att spara resor* ligger i fliken *Favoriter*,** inte i Inställningar. Fliken byggs därför i en enkel form redan i
+  steg 2. Med brytaren av visar den en förklaring och brytaren. Med brytaren på och inga rutter står *"Kör en resa, så frågar appen
+  efteråt om du vill spara den."* Med rutter visas de, högst fem, med *Ta bort* och *Ta bort alla*. Steg 3 lägger till lägena och
+  rapporten.
+- **Integritetssidan i Inställningar** talar om att rutter kan sparas och pekar på fliken, i samma commit som koden (#616).
+- **Namnförslagen efter resan är fasta, med datum:** *Till jobbet*, *Hem* och *Resa 17/10*. Fritext går alltid. Inget förslag kräver
+  att något om platsen slås upp.
+
+**Alternativ:**
+- Brytaren i *Integritet* (a): den hade inte flyttat skärmbildernas tryck, men den som letar efter favoriterna tittar inte där.
+- En ny rad i Inställningar (b).
+- En fråga på *Redo.* (d).
+- Namnen ur stationerna (c) hade krävt att publiceringen lägger till 855 stationsnamn i den fasta filen.
+
+**Följd:** en tredje flik flyttar flikarnas lägen, så fotostudions skärmbildsflöde för Android rättas i samma varv.
+
+**Stomdokument:** FAV §2 fliken och §6 spara, APP §4 skärmarna, BED §4.2
