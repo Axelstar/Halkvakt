@@ -1614,7 +1614,7 @@ test("#573 del 2: domloggen per sträcka, stationsvärdena, körningsloggen och 
     await q("CREATE TABLE IF NOT EXISTS shadow_log (id bigserial PRIMARY KEY, run_at timestamptz NOT NULL DEFAULT now(), alerts jsonb NOT NULL DEFAULT '[]'::jsonb)");
     for (const f of ["001_init.sql", "008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql", "018_trend_berakna.sql",
                      "029_brott_index.sql", "030_langsam_vakt.sql", "050_kandidat_live.sql", "053_arkiv_tabeller.sql", "055_vagpunkter.sql",
-                     "056_kandidat_regel.sql", "057_kandidat_skugga.sql"])
+                     "056_kandidat_regel.sql", "057_kandidat_skugga.sql", "062_kortare_forvaring.sql"])
       await q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
     await stad();
     const P: [string, string, number, number][] = [
@@ -1652,20 +1652,22 @@ test("#573 del 2: domloggen per sträcka, stationsvärdena, körningsloggen och 
     assert.match((await q("SELECT kandidat_logga() AS m")).rows[0].m, /tyst/);
     assert.equal((await q("SELECT status FROM kandidat_skugga_korning ORDER BY korning DESC LIMIT 1")).rows[0].status, "tyst");
 
-    // Hinken: dygnet efter exporteras, golvet är tre dygn.
+    // Hinken: dygnet efter exporteras, golvet är ett dygn (sql/062, DECISIONS #618; tre dygn till 17/10, #573).
     const dag = (n: number) => q("SELECT ((now() - $1 * interval '1 day') AT TIME ZONE 'UTC')::date::text AS d", [n]).then((r) => r.rows[0].d as string);
-    const [d2, d5, idag] = [await dag(2), await dag(5), await dag(0)];
-    for (const d of [d2, d5])
+    const [d1, d2, d5, idag] = [await dag(1), await dag(2), await dag(5), await dag(0)];
+    for (const d of [d1, d2, d5])
       await q(`INSERT INTO kandidat_skugga (segment_id, observed_at, punkter, varnar, veto, torr, vat, flackvis_vat, pb_min)
         VALUES ('99919', ($1::date + interval '12 hours') AT TIME ZONE 'UTC', 1, 1, 0, 0, true, false, -1)`, [d]);
     const att = (await q("SELECT arkiv2_att_exportera('kandidat_skugga', 100)::text AS d")).rows.map((r) => r.d);
-    assert.ok(att.includes(d2) && att.includes(d5), `två och fem dygn gamla står i kö: ${att}`);
+    assert.ok(att.includes(d1) && att.includes(d2) && att.includes(d5), `ett, två och fem dygn gamla står i kö: ${att}`);
     assert.ok(!att.includes(idag), "i dag är inte färdigt");
     const text: string = (await q("SELECT arkiv2_dygn('kandidat_skugga', $1::date) AS t", [d5])).rows[0].t;
     assert.equal(JSON.parse(text.split("\n")[0])[0], "segment_id");
-    for (const d of [d2, d5]) await q("SELECT arkiv2_export_klar('kandidat_skugga', $1::date, 1, 10, 'x', 'v')", [d]);
+    for (const d of [d1, d2, d5]) await q("SELECT arkiv2_export_klar('kandidat_skugga', $1::date, 1, 10, 'x', 'v')", [d]);
     assert.match((await q("SELECT arkiv2_radera_exporterat(0, 14) AS s")).rows[0].s, /kandidat_skugga: raderade 1 rader/, "fem dygn gammalt raderas");
-    assert.match((await q("SELECT arkiv2_radera_exporterat(0, 14) AS s")).rows[0].s, /inget exporterat tabelldygn/, "två dygn gammalt står kvar");
+    assert.match((await q("SELECT arkiv2_radera_exporterat(0, 14) AS s")).rows[0].s, /kandidat_skugga: raderade 1 rader/, "två dygn gammalt raderas");
+    assert.match((await q("SELECT arkiv2_radera_exporterat(0, 14) AS s")).rows[0].s, /inget exporterat tabelldygn äldre än golvet \(14 dygn, kandidatens loggar 1\)/,
+      "ett dygn gammalt står kvar");
     await assert.rejects(q("SELECT arkiv2_dygn('shadow_log', $1::date)", [d5]), /okänd tabell/);
   } finally {
     await stad().catch(() => {});
