@@ -4,7 +4,6 @@
 set -u
 mkdir -p /tmp/demo
 APK=android/app/build/outputs/apk/debug/app-debug.apk
-adb shell wm size 1080x2340; adb shell wm density 420
 adb shell settings put system screen_off_timeout 600000
 adb shell locksettings set-disabled false >/dev/null 2>&1 || true
 adb install -r "$APK"
@@ -25,6 +24,15 @@ for m in re.finditer(r'<node [^>]*>',s):
         print((a+c)//2,(b+e)//2); break
 P
 }
+# center of the first checkable node (the Compose Switch) — the row text is not what toggles it
+find_switch() { python3 - <<'P'
+import re
+s=open('/tmp/u.xml',encoding='utf-8',errors='ignore').read()
+for m in re.finditer(r'<node [^>]*checkable="true"[^>]*>',s):
+    a,b,c,e=map(int,re.search(r'bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"',m.group(0)).groups())
+    print((a+c)//2,(b+e)//2); break
+P
+}
 tap() {  # tap <text> [tries]
   for i in $(seq 1 "${2:-10}"); do dump; xy=$(find_xy "$1"); if [ -n "$xy" ]; then echo "tap '$1' @ $xy"; adb shell input tap $xy; sleep 2; return 0; fi; sleep 1; done
   echo "MISSING '$1'"; return 1
@@ -39,7 +47,7 @@ adb shell am start -W -n se.halkvakt.app/.MainActivity; sleep 4; shot 01-redo
 
 # 1. Autostart = background location. The app explains BEFORE every Android dialog.
 tap "INSTÄLLNINGAR"; tap "Start"; shot 02-start
-dump; xy=$(find_xy "Vaknar själv när du kör"); y=${xy#* }; echo "switch row y=$y"; adb shell input tap 960 "$y"; sleep 2
+dump; xy=$(find_switch); echo "switch @ $xy"; adb shell input tap $xy; sleep 2
 shot 03-forklaring-autostart; sleep 2; tap "Fortsätt"
 tap_any "Precise" "Exakt" ; tap_any "While using the app" "När appen används"; shot 04-platsruta
 tap_any "Allow" "Tillåt"; tap_any "Allow" "Tillåt"; tap_any "Allow" "Tillåt" 3
@@ -47,6 +55,7 @@ sleep 2; shot 05-forklaring-bakgrund; sleep 3; tap "Fortsätt"
 sleep 3; tap_any "Allow all the time" "Tillåt hela tiden"; shot 06-tillat-hela-tiden; sleep 2
 adb shell input keyevent 4; sleep 3; shot 07-autostart-pa; sleep 2
 adb shell input keyevent 4; sleep 2
+adb shell am start -n se.halkvakt.app/.MainActivity; sleep 3   # back in the app whatever the back presses did
 
 # 2. The guard: foreground service with its notification, also on the lock screen.
 tap "VAKTEN"; tap "Starta vakten"; tap_any "Allow" "Tillåt" 3
