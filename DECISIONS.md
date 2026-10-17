@@ -14502,3 +14502,18 @@ inuti. `widget.html` och `vagar.html` står kvar för den som bara vill ha en vy
 
 **Stomdokument:** inga — publiceringens innehåll för pressen; planen bor i MARKNADSFORING-NOLLBUDGET.md.
 
+## #613 (17/10 2026) Förslaget till NWT som en sida att läsa, med rutan live (kort #281)
+
+**Beslut.** Axel 17/10 13:23: *"låt oss göra presentationen perfekt! Tänker att det bör vara en HTML presentation istället för en direkt
+presenting"*. Förslaget blir en sida på kartsajten, `halkvakt.se/nwt.html` (noindex, inte i sitemapen), som cheferna läser själva:
+varför, de tre vyerna, ett exempel på en artikel med rutan live, koden med parametrar, morgonnotisen och länssidan, datan, villkoren,
+om Halkvakt och nästa steg. Sidan bär den riktiga rutan (`ruta.html`, #612) två gånger, så att läsaren kan svepa i den med dagens
+siffror. Artikeln är ritad utan någon tidnings varumärke; skärmbilderna från nwt.se läggs inte på den publika sajten.
+
+**Alternativ.** Bildspelet i en claude.ai-artefakt — står kvar som underlag, men kan inte bära rutan live (artefakter bäddar inte in
+andra sajter), och en adress på halkvakt.se är det mottagaren känner igen.
+
+**Prov:** renderad lokalt på dator och mobil (390 px) utan sidledsrullning och utan skriptfel; rutan i artikeln öppnar på Pendling.
+
+**Stomdokument:** inga — publiceringens innehåll för pressen; planen bor i MARKNADSFORING-NOLLBUDGET.md.
+
