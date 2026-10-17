@@ -106,7 +106,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Trafikverket …"*) och bär JSON-LD; `llms.txt` i karta-repot. MCP-servern `mcp` (publik, läsande, utan nyckel): `lage_i_lan`, `vag`,
   `sverige_just_nu`, `kallaste_stationer`, ovanpå sajtens filer; vakthunden prövar `tools/list`. Verify: deploy, `tools/list` och ett
   `tools/call` mot funktionen live, och en fråga i Claude med servern som egen koppling som återger tid och källa. 🔑 Kvar (Axel): ansökan
-  till Claudes kopplingskatalog.
+  till Claudes kopplingskatalog. ✅ **I drift 17/10 22:00** (deploy 39065419676 ur 2499d7b): `initialize`, `tools/list` (fyra) och
+  `lage_i_lan` Norrbotten svarar live, GET ger 405; adressen olänkad tills Axel säger till.
+  💡 **Kundverktyg ovanpå servern (Axel 17/10: *"exakt det jag tänker att det är bra för"*):** åkerier och budfirmor *"kolla dagens rutter"*
+  (kundens rutter, lagrade bara om kunden vill) · redaktioner *"skriv morgonnotisen för mitt län"* · kommuner, skolskjuts och färdtjänst ·
+  försäkringsbolag och bilpooler. Först: Axel provar servern själv och frågar ett åkeri hur transportledaren tar reda på väglaget i dag.
+  Nycklar per kund och en betald plan är ett ägarbeslut i DECISIONS innan något tas betalt.
   ⚙️ **Regel (Axels order 00:31, planens §7): allt som kan gå av sig själv när det är uppsatt ska gå av sig själv** — motorn, Halkvakt live,
   länssidorna, nyhetsbrevet, pressutkast vid larm, måndagsmätningen, widgeten, årsrapporten. Det som kräver ett ok landar som färdigt utkast med en knapp.
   Verify: 12 Android-testare + 50 iPhone-installationer till första snön; 1 000 installationer, 5 pressomnämnanden, 100 facitsvar till 31/12 (§6).
