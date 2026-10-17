@@ -14440,3 +14440,17 @@ för hand före 10:00 så att dagens lista gick ut.
 
 **Stomdokument:** inga — marknadsföringen har inget stomdokument; planen bor i MARKNADSFORING-NOLLBUDGET.md.
 
+## #610 (17/10 2026) Halkvakt live: varje inlägg säger att Halkvakt är oberoende (kort #281)
+
+**Beslut.** Bengts kommentar 17/10 via Axel: *"Halkvakt är en oberoende app/hemsida som gör prognoser för vinterväglag. Prognoserna är
+baserade på Trafikverkets data"*; Axel 10:17: *"kan du uppdatera alla"*. Källraden i varje inlägg blir *"Halkvakt är en oberoende app
+och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data."* (SMHI-inläggen: "från SMHI och Trafikverkets
+öppna data"). Ordet "prognoser" tas inte med ännu: inläggen visar rapporterat väglag och uppmätt vägbana, och prognoslagret är inte i
+drift — CLAUDE.md:s regel att texten aldrig överdriver datan. Byts när prognosen går live.
+
+**Alternativ.** Bengts lydelse ordagrant — förkastat för "prognoser", av skälet ovan.
+
+**Prov:** `test/posta.test.ts` 16/16.
+
+**Stomdokument:** inga — marknadsföringen har inget stomdokument; planen bor i MARKNADSFORING-NOLLBUDGET.md.
+
