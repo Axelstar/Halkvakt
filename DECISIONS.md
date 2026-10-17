@@ -14396,3 +14396,33 @@ Fysikkedjan är inte bytelik mellan löpare (#595, #597). Skillnaden ryms i iden
 decimalen.
 
 **Stomdokument:** KUV §7 facit, BED §4.2
+
+## #608 (17/10 2026) Vakthundens exportlarm för trendtabellerna och radarn: gränsen är antalet tabeller (kort #347)
+
+**Bengts ord 17/10:** *"stäng 1022 och ja till att rätta tröskeln"*, på frågan om vakthundens larm *"Arkivexporten av trendtabellerna och radarn står still"*
+natten till 17/10.
+
+**Felet:**
+- Larmet gick när fler än 3 tabelldygn väntade och ingen export skett på 3 timmar.
+- Talet 3 var antalet tabeller när larmet byggdes (#569). Sedan `sql/057` (15/10) exporteras fem: `kandidat_skugga` och
+  `kandidat_station` kom till.
+- Vid midnatt UTC blir ett dygn per tabell färdigt, alltså 5 tabelldygn, och exporten tar dem :40. Då är senaste exporten nästan ett
+  dygn gammal, så vakthunden larmade varje gång den körde mellan 00:00 och 00:40. Natten till 17/10 körde den 00:07; exporten gick
+  00:40 och 0 tabelldygn väntade efteråt.
+
+**Rättat:** `supabase/functions/vakthund/index.ts` larmar när fler tabelldygn väntar än det finns tabeller, räknat som
+`count(DISTINCT tabell)` i `arkiv_export_tabell`, och gränsen skrivs ut på raden. Ingen ny kopia av tabellistan. Villkoret om tre
+timmar utan export står kvar, och väderarkivets larm (ett dygn per natt, gräns 3) är orört.
+
+**Vad det ändrar:**
+- Står hela exporten still larmar vakten när två dygn per tabell väntar, alltså vid nästa midnatt.
+- Står en enda tabell still larmar den när vakthunden kör mellan midnatt och :40, eftersom de nya dygnen och den stillastående
+  tabellens dygn då väntar samtidigt. Annars larmar den när tabellen har fler än fem dygn efter.
+- En ny tabell räknas först när den exporterats en gång. Natten innan dess kan larmet gå i glappet en gång.
+
+**I drift:** efter *slå ihop* deployas vakthunden. Beviset är vakthundens rad med *(gräns 5)* och inget larm mellan 00:00 och 00:40.
+
+Issue #1022 (halkvakt-live hade aldrig kört) stängdes av mätvakten själv 05:07 UTC efter körning 39004036248 kl. 04:50, så där behövdes
+inget.
+
+**Stomdokument:** SYS databasen och arkivet, BED §4.2
