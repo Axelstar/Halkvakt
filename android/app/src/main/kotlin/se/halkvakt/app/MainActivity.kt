@@ -34,6 +34,9 @@ object AppEvents {
     }
 }
 
+/** The explanation shown BEFORE an Android permission dialog (Play's prominent disclosure; iOS has it in the intro). */
+data class Disclosure(val titel: String, val text: String, val onFortsatt: () -> Unit)
+
 class MainActivity : ComponentActivity() {
 
     val autostartOn = MutableStateFlow(false)
@@ -42,6 +45,10 @@ class MainActivity : ComponentActivity() {
     val stations = MutableStateFlow<List<Station>>(emptyList())
     val lastLoc = MutableStateFlow<Pair<Double, Double>?>(null)
     private var testTts: TextToSpeech? = null
+    /** Visible replacement for the log nobody saw: why the guard did not start, what is missing. */
+    val notice = MutableStateFlow<String?>(null)
+    val disclosure = MutableStateFlow<Disclosure?>(null)
+    private var askedNotifications = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,7 +68,7 @@ class MainActivity : ComponentActivity() {
                     GuardService.snapshotInfo.value = "${gate.hazards.size} faror · väglag $tid"
                 }
         }
-        if (intent?.getBooleanExtra("auto_start", false) == true && hasPermissions() && !GuardService.running) onToggle()
+        handleAutoStart(intent)
         // S4: osända facitsvar går iväg när appen öppnas — bilen står stilla då.
         lifecycleScope.launch(Dispatchers.IO) { runCatching { FacitSender.flush(this@MainActivity) } }
         // Fotostudion (android.yml): visar facitknapparna på en påhittad varning. Bara debug-byggen.
@@ -91,6 +98,23 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onNewIntent(intent: android.content.Intent) {
+        super.onNewIntent(intent)
+        handleAutoStart(intent)   // the "Kör du?" notification while the app is already open
+    }
+
+    private fun handleAutoStart(i: android.content.Intent?) {
+        if (i?.getBooleanExtra("auto_start", false) == true && hasPermissions() && !GuardService.running) onToggle()
+    }
+
+    /** iOS's long-press on "På vakt" (kort #280): a sample card for 8 s, no voice — App Review sees a warning without driving. */
+    fun demoWarning() {
+        val a = Alert(0.0, "demo", HazardKind.SLIPPERY_SEGMENT, 900, "Varning: halka rapporterad på vägen framför dig.")
+        val shown = ShownWarning(a, WarningCard.make(a, null))
+        GuardService.currentWarning.value = shown
+        lifecycleScope.launch { kotlinx.coroutines.delay(8000); if (GuardService.currentWarning.value === shown) GuardService.currentWarning.value = null }
+    }
+
     /**
      * Autostart-trappan (oförändrad semantik). Android FORCES background location
      * ("Allow all the time") to be requested in a separate step after foreground
@@ -104,30 +128,57 @@ class MainActivity : ComponentActivity() {
             return
         }
         val missing = mutableListOf<String>()
-        if (!hasPermissions()) missing.add(Manifest.permission.ACCESS_FINE_LOCATION)
+        if (!hasPermissions()) missing.addAll(LOCATION)
         if (Build.VERSION.SDK_INT >= 29 &&
             checkSelfPermission(Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED)
             missing.add(Manifest.permission.ACTIVITY_RECOGNITION)
         if (Build.VERSION.SDK_INT >= 31 &&
             checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED)
             missing.add(Manifest.permission.BLUETOOTH_CONNECT)
+        // Notifications once per session only: they are optional, and re-adding a denied one re-opened this step forever.
+        if (Build.VERSION.SDK_INT >= 33 && !notificationsOk() && !askedNotifications) missing.add(Manifest.permission.POST_NOTIFICATIONS)
         if (missing.isNotEmpty()) {
-            AppEvents.post("Autostart behöver veta när du sitter i ett fordon (rörelseigenkänning) och när bilens Bluetooth kopplar upp.")
-            requestPermissions(missing.toTypedArray(), 2); return
+            if (Manifest.permission.POST_NOTIFICATIONS in missing) askedNotifications = true
+            disclosure.value = Disclosure("Vakten vaknar själv",
+                "För att starta själv behöver vakten din plats, se när du åker bil (rörelseigenkänning) och när bilens Bluetooth kopplar upp. " +
+                    "Notisen \"Halkvakt vaktar\" visar när den är på. Din position lämnar inte telefonen av sig själv.") {
+                requestPermissions(missing.toTypedArray(), 2)
+            }
+            return
         }
         if (Build.VERSION.SDK_INT >= 29 &&
             checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            AppEvents.post("Sista steget: välj \"Tillåt hela tiden\" för platsen — annars får vakten inte se vägen när den startar sig själv i bakgrunden.")
-            requestPermissions(arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION), 3); return
+            disclosure.value = Disclosure("Platsen även i bakgrunden",
+                "Halkvakt läser din plats även när appen är stängd eller skärmen släckt, så att vakten kan starta själv när du börjar köra och " +
+                    "varna medan du kör. Platsen läses bara medan vakten är på och notisen \"Halkvakt vaktar\" syns. Matchningen sker i telefonen — " +
+                    "positionen skickas aldrig av sig själv.\n\nVälj \"Tillåt hela tiden\" på nästa sida.") {
+                requestPermissions(arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION), 3)
+            }
+            return
         }
         AutostartManager.setEnabled(this, true)
         autostartOn.value = true
+        notice.value = null
         AppEvents.post("Autostart på. Vakten lär sig bilens Bluetooth vid nästa körning.")
     }
 
     fun onToggle() {
         if (!GuardService.running) {
-            if (!hasPermissions()) { requestStartPermissions(); return }
+            if (!hasPermissions()) {
+                disclosure.value = Disclosure("Platsen — bara i telefonen",
+                    "Halkvakt läser din plats medan vakten är på, för att veta vad som finns på vägen framför dig. " +
+                        "Matchningen sker i telefonen — positionen skickas aldrig av sig själv.\n\nVälj \"Exakt\" och \"När appen används\" på nästa sida.",
+                    ::requestStartPermissions)
+                return
+            }
+            // The notification permission used to be asked only together with the first location question,
+            // so with location already granted it was never asked — and Android 13+ hid "Halkvakt vaktar".
+            if (Build.VERSION.SDK_INT >= 33 && !notificationsOk() && !askedNotifications) {
+                askedNotifications = true
+                requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 4); return
+            }
+            notice.value = if (notificationsOk()) null
+                else "Notiser är av: vakten varnar med rösten, men \"Halkvakt vaktar\" och bannern syns inte."
             GuardService.start(this)
         } else {
             GuardService.stop(this)
@@ -135,35 +186,67 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    /** Provvarning i samma TTS-kanal som riktiga varningar — volymkontroll i bilen. */
+    /** Provvarning i samma ljudkanal som riktiga varningar (Voice.ATTRS) — volymkontroll i bilen. */
     fun testVoice() {
         val text = "Fartkamera om 500 meter. Gränsen är 80."   // en riktig motorreplik (DECISIONS #444)
-        if (testTts == null) {
-            testTts = TextToSpeech(this) { st ->
-                if (st == TextToSpeech.SUCCESS) {
-                    testTts?.language = Locale("sv", "SE")
-                    testTts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "hv-test")
-                } else AppEvents.post("Ingen svensk röst hittades — kontrollera systemets talsyntes-inställningar.")
+        testTts?.let { it.speak(text, TextToSpeech.QUEUE_FLUSH, null, "hv-test"); return }
+        testTts = TextToSpeech(this) { st ->
+            if (st == TextToSpeech.SUCCESS) {
+                val problem = Voice.problem(testTts?.setLanguage(Locale("sv", "SE")) ?: TextToSpeech.LANG_NOT_SUPPORTED)
+                GuardService.voiceProblem.value = problem
+                testTts?.setAudioAttributes(Voice.ATTRS)
+                testTts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "hv-test")
+            } else {
+                GuardService.voiceProblem.value = Voice.NO_ENGINE
+                testTts?.shutdown(); testTts = null   // a failed engine is never reused; the next tap tries again
             }
-        } else testTts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "hv-test")
+        }
     }
+
+    fun openAppSettings() = runCatching {
+        startActivity(android.content.Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+            android.net.Uri.fromParts("package", packageName, null)))
+    }
+
+    fun openVoiceSettings() = runCatching { startActivity(android.content.Intent("com.android.settings.TTS_SETTINGS")) }
+
+    private fun notificationsOk(): Boolean =
+        (getSystemService(android.app.NotificationManager::class.java)).areNotificationsEnabled()
 
     private fun hasPermissions(): Boolean =
         checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
+    /** Notifications are optional for autostart's step 2 (a denial there must not block the climb). */
+    private fun hasAllAutostart(): Boolean = hasPermissions() &&
+        (Build.VERSION.SDK_INT < 29 || checkSelfPermission(Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED) &&
+        (Build.VERSION.SDK_INT < 31 || checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED)
+
+    private companion object {
+        /** Android 12+ ignores a FINE request without COARSE (targetSdk 31+). */
+        val LOCATION = listOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+    }
+
     private fun requestStartPermissions() {
-        val wanted = mutableListOf(Manifest.permission.ACCESS_FINE_LOCATION)
-        if (Build.VERSION.SDK_INT >= 33) wanted.add(Manifest.permission.POST_NOTIFICATIONS)
-        AppEvents.post("Halkvakt behöver din plats för att veta vad som finns på vägen framför dig. Positionen lämnar inte telefonen av sig själv.")
+        val wanted = LOCATION.toMutableList()
+        if (Build.VERSION.SDK_INT >= 33 && !notificationsOk()) { wanted.add(Manifest.permission.POST_NOTIFICATIONS); askedNotifications = true }
         requestPermissions(wanted.toTypedArray(), 1)
     }
 
     @Deprecated("Deprecated in Java")
     override fun onRequestPermissionsResult(code: Int, perms: Array<String>, results: IntArray) {
         super.onRequestPermissionsResult(code, perms, results)
+        val granted = results.isNotEmpty() && results.all { it == PackageManager.PERMISSION_GRANTED }
         when (code) {
-            1 -> if (hasPermissions()) onToggle() else AppEvents.post("Utan platsbehörighet kan vakten inte varna. Ge behörighet och försök igen.")
-            2, 3 -> onAutostartToggle() // klättra vidare i trappan; avslutas när allt är på plats
+            1 -> if (hasPermissions()) onToggle()
+                 else notice.value = if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+                     "Ungefärlig plats räcker inte — välj \"Exakt plats\" för Halkvakt under Plats i appens inställningar."
+                     else "Platsen är av. Utan plats vet vakten inte vad som ligger framför dig."
+            4 -> onToggle()   // starts with or without notifications; asked once per app session
+            // Climb on only when this step was granted — re-asking after a denial looped (and reopened Settings forever).
+            2 -> if (granted || hasAllAutostart()) onAutostartToggle()
+                 else notice.value = "Autostart är av: den behöver plats, rörelseigenkänning, Bluetooth och notiser. Slå på dem i appens inställningar."
+            3 -> if (granted) onAutostartToggle()
+                 else notice.value = "Autostart är av: välj \"Tillåt hela tiden\" under Plats i appens inställningar och slå på igen."
         }
     }
 

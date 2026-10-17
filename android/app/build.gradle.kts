@@ -6,7 +6,7 @@ android {
         applicationId = "se.halkvakt.app"
         minSdk = 26; targetSdk = 36
         // Femma åtta (4), DECISIONS #377: i takt med iOS FÖRE första Play-uppladdningen, som låser versionCode-spåret.
-        versionCode = 28; versionName = "0.3.13"   // 17/10: targetSdk 36 (Play kräver det; (27) är förbrukad i Play Console). Samma kod som iOS 0.3.13 (27)
+        versionCode = 29; versionName = "0.3.13"   // 17/10: Android i takt med iOS — platsrutan (COARSE), rösten (TTS-queries, kö, svensk röst), notisen, förklaringen före behörigheterna, långtrycket. (28): targetSdk 36
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     sourceSets.getByName("androidTest") {
