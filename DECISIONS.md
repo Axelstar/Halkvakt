@@ -14354,4 +14354,45 @@ på minst 3 rutter och 3 dygn **och** högst 10 % inom 10 minuter, och ingetdera
 
 Varje steg på Bengts ord.
 
+**I drift 17/10** (Bengt: *"slå ihop 1025 och deploya och bygg 27"*):
+- PR #1025 sammanslagen som 60e8905; ci, md-vakt, ios-engine (alla vektorer byte för byte i Swift) och android var gröna på huvudet.
+- Skuggmotorn deployad (38993694695) och favoritprovet deployat (38993700962), båda från 60e8905. Bunten är i synk enligt ci.
+- **Bygge 27:** 0.3.13 (27) uppladdat av flödet, körning 38993725899 på 60e8905 (02:08–02:11 UTC): ARCHIVE SUCCEEDED, bygget bär 0.3.13 (27) som project.yml, Upload succeeded. Det är den första uppladdningen via Actions, så kort #333 är stängt.
+- PR #1001 stängd som ersatt; grenen står kvar.
+- **Kvar som bevis i drift:** att skuggan och appen tiger under taket. Det syns först när kandidaten har två passager inom
+  10 minuter på samma rutt.
+
 **Stomdokument:** APP kandidatens röst, LIV steg 7 och 12, BED §4.2
+
+## #607 (17/10 2026) Uppföljningen av facitläsningen — utfallet: fuktvittnet Våt förklarar hela regelns låga bekräftelse (kort #232)
+
+**Läsningen.** Bengt 17/10: *"slå ihop 1023, signera för mej och Axel och kör uppföljningen"*. Körning 38990118718 på ee80d30,
+01:16–02:07 UTC. Identitetsprovet klarades. Diagnos, ingen dom. Ingen tröskel och ingen regel ändras (regel L).
+
+| Del | Söder 55–60 | Norr 64–69 | Totalt |
+| :-- | --: | --: | --: |
+| (i) Hela regeln, **bara Våt** | 3,8 % · lyft 0,70 | 57,6 % · lyft 0,75 | 12,7 % (25 464 av 200 183) · lyft **0,35** |
+| (i) Hela regeln, **bara radarn** | 9,5 % · lyft **1,74** | 71,3 % · lyft 0,92 | 34,5 % (6 963 av 20 161) · lyft **0,96** |
+| (i) Hela regeln, båda | 6,9 % · lyft 1,26 | 68,6 % · lyft 0,89 | 16,5 % (1 122 av 6 787) · lyft 0,46 |
+| (ii) Basnivån med / utan planerad åtgärd | 6,1 / 4,7 % | 70,1 / 78,1 % | 20,8 / 45,2 % |
+| (ii) Kandidaten med / utan åtgärd | lyft 1,01 / 1,03 | lyft 1,00 / 1,00 | lyft 1,03 / 1,02 |
+| (ii) Hela regeln med / utan åtgärd | lyft 0,72 / 0,77 | lyft 0,78 / 0,83 | lyft 0,53 / 0,55 |
+| (ii) Efterhalkan med / utan åtgärd | 4 av 552 / 2 av 267 | 6 av 10 / 7 av 20 | 2,5 % (16 av 638) / 7,1 % (27 av 380) |
+
+**Förväntan:**
+- **(i)** Bara Våt bekräftas mer sällan än bara radarn: **ja**. 12,7 % (lyft 0,35) mot 34,5 % (lyft 0,96). Bara Våt ligger under
+  basnivån i varje band (0,70–0,75), och bara radarn ligger över den i söder (1,74).
+- **(ii)** Ingen riktning för åtgärderna: **ja, inom banden**. Hela regelns lyft är under 1 med och utan åtgärd, så åtgärderna
+  förklarar inte det låga utfallet. Totalens 20,8 mot 45,2 % är mest geografi, eftersom Trafikverket planerar bekämpning i söder där is
+  är ovanlig.
+
+**Vad det betyder, som diagnos.** Facitläsningens låga tal för hela regeln (#602) är framför allt ett urvalsfel i läsningen. Fukten tas
+ur samma väglag som facit, och *Våt* betyder att Trafikverket i det ögonblicket inte sa is. Det säger inte att regelns varningar är
+fel. Ett väglag som säger Vått kan inte bekräfta is. Varningarna med bara radarn, som är oberoende av väglaget, bekräftas som kylan
+eller bättre.
+
+**Fynd.** Kandidatens kalla timmar blev 1 357 485 och regelns varnande timmar 227 131, mot 1 357 480 och 227 143 i läsningen (#602).
+Fysikkedjan är inte bytelik mellan löpare (#595, #597). Skillnaden ryms i identitetsprovets tolerans och ändrar inga tal i andra
+decimalen.
+
+**Stomdokument:** KUV §7 facit, BED §4.2
