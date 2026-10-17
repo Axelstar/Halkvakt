@@ -143,6 +143,9 @@ export interface EngineConfig {
   /** K (DECISIONS #581, Bengt 16/10 "bygg c"): seconds the candidate stays silent after the A1 warning for the same stretch spoke.
    *  Removes the back-to-back double (A1, then the candidate 10 s later); keeps the later call deep inside a long stretch. */
   kandidatEfterHalkaS: number;
+  /** Taket (DECISIONS #584, #606): the candidate speaks at most once per kandidatTakS, whatever the stretch. Built ahead of the
+   *  reading 2/11; merged only if more than 10 % of the follow-ups fall within 10 minutes, or the sample is too small. */
+  kandidatTakS: number;
 }
 
 export const DEFAULT_CONFIG: EngineConfig = {
@@ -176,6 +179,9 @@ export const DEFAULT_CONFIG: EngineConfig = {
   // K (DECISIONS #581): 2 min — täcker spärrens 10 s med god marginal men inte de sena fallen långt in på en sträcka (22–44 min
   // i lägesfilen 04:40 16/10). Samma tal i Types.kt och Engine.swift (kontraktsgrinden).
   kandidatEfterHalkaS: 120,
+  // Taket (DECISIONS #584, #606): 10 min — motorns gräns för att upprepa en och samma fara (repeatMinS). Samma tal i Types.kt och
+  // Engine.swift (kontraktsgrinden).
+  kandidatTakS: 600,
 };
 
 
@@ -536,6 +542,8 @@ export class AlertEngine {
   private lastSpokenT: number | null = null;
   /** Vad som senast sades — spärren får bara tysta något som INTE är viktigare (#127). */
   private lastSpokenKind: HazardKind | null = null;
+  /** När kandidaten senast talade — taket räknas därifrån, oavsett sträcka (DECISIONS #606). */
+  private lastKandidatT: number | null = null;
   /** Skuggmotorn lyssnar här (#127 a): vad spärren kastar syns annars ingenstans. */
   onSuppressed?: (c: { kind: HazardKind; hazardId: string; distM: number; by: HazardKind; sinceS: number }) => void;
   /** FÖRSPRÅNGET (kort #153 beslut 1, docs/TROSKLAR-FORSPRANG.md §4): valfri krok som ger förvarningsavståndet per fara. Utan
@@ -651,6 +659,7 @@ export class AlertEngine {
 
     this.lastSpokenT = fix.t;
     this.lastSpokenKind = win.kind;
+    if (win.kind === "kandidat") this.lastKandidatT = fix.t;
     this.fired.set(win.alertKey, { t: fix.t, odometerM: this.odometerM });
     const pointHazard = win.hazard.kind === "slippery_segment" || win.hazard.kind === "kandidat"
       ? undefined : (win.hazard as PointHazard);
@@ -799,6 +808,8 @@ export class AlertEngine {
     // (c), DECISIONS #581: tyst i kandidatEfterHalkaS efter att samma sträckas halkvarning (A1) talat.
     const a1 = k.h.segmentHazardId ? this.fired.get(k.h.segmentHazardId) : undefined;
     if (a1 && fix.t - a1.t < this.cfg.kandidatEfterHalkaS) return null;
+    // Taket, DECISIONS #606: högst en kandidat per kandidatTakS, vilken sträcka det än gäller.
+    if (this.lastKandidatT !== null && fix.t - this.lastKandidatT < this.cfg.kandidatTakS) return null;
     return { hazard: k.h, kind: "kandidat", distM: best, alertKey: k.h.id, beta: true };
   }
 }

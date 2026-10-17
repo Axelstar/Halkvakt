@@ -109,6 +109,8 @@ public struct EngineConfig {
     public var efterhalkaRegnH = 2.0
     // K (DECISIONS #581): tyst så här länge efter samma sträckas halkvarning — samma tal som engine/src/types.ts (kontraktsgrinden).
     public var kandidatEfterHalkaS = 120.0
+    // Taket (DECISIONS #606): högst en kandidat per så här många sekunder — samma tal som engine/src/types.ts (kontraktsgrinden).
+    public var kandidatTakS = 600.0
     public init() {}
 }
 
@@ -232,6 +234,8 @@ public final class AlertEngine {
     private var lastSpokenT: Double?
     /// Vad som senast sades — spärren får bara tysta något som INTE är viktigare (#127).
     private var lastSpokenKind: HazardKind?
+    /// När kandidaten senast talade — taket räknas därifrån, oavsett sträcka (DECISIONS #606).
+    private var lastKandidatT: Double?
     private var fired: [String: (t: Double, odo: Double)] = [:]
 
     private let slipperyInfo = try! NSRegularExpression(
@@ -376,6 +380,8 @@ public final class AlertEngine {
             }
             // (c), DECISIONS #581: tyst i kandidatEfterHalkaS efter att samma sträckas halkvarning (A1) talat.
             if let s = k.segmentHazardId, let a1 = fired[s], fix.t - a1.t < cfg.kandidatEfterHalkaS { continue }
+            // Taket, DECISIONS #606: högst en kandidat per kandidatTakS, vilken sträcka det än gäller.
+            if let lk = lastKandidatT, fix.t - lk < cfg.kandidatTakS { continue }
             if let b = best, b <= leadM {
                 candidates.append(Candidate(id: k.id, kind: .kandidat, distM: b, limit: nil, alertKey: k.id, beta: true))
             }
@@ -403,6 +409,7 @@ public final class AlertEngine {
 
         lastSpokenT = fix.t
         lastSpokenKind = win.kind
+        if win.kind == .kandidat { lastKandidatT = fix.t }
         fired[win.alertKey] = (fix.t, odometerM)
         return Alert(
             t: fix.t, hazardId: win.id, kind: win.kind,
