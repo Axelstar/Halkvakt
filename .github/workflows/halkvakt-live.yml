@@ -1,7 +1,8 @@
 # Halkvakt live (kort #281, DECISIONS #598–#600): inlägg till Facebook-sidan och Instagram.
 # Startas av pulsklockan tre gånger om dygnet — puls-live-morgon 04:50, puls-live-lunch 10:50 och puls-live-kvall 15:50 UTC
 # (06:50/12:50/17:50 sommartid, 05:50/11:50/16:50 vintertid). posta.mjs väljer EN händelse per körning; lunch och kväll
-# postar bara när något händer. Högst tre inlägg per dygn, minst fyra timmar isär.
+# postar bara när något händer. Högst tre inlägg per dygn, minst fyra timmar isär. De gula larmen (SMHI-varning, höstens
+# första) postas inte här utan av halkvakt-larm.yml var 30:e minut (DECISIONS #627).
 name: halkvakt-live
 on:
   workflow_dispatch:

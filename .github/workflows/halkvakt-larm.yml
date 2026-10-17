@@ -1,0 +1,58 @@
+# Halkvakt live, larmen (kort #281, DECISIONS #627): de gula inläggen — SMHI-varning och höstens första — när det händer.
+# Startas av pulsklockan var 30:e minut (puls-live-larm, :07 och :37, efter publicera :00/:30 som skriver lan.json).
+# Larmen räknas inte mot dagslägets tre inlägg per dygn; högst fyra larm per dygn, och samma varning eller samma län
+# högst en gång per 20 h. Inget larm ⇒ inget installeras, ritas eller committas (koll-steget tar några sekunder).
+name: halkvakt-larm
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Samma grupp som halkvakt-live: postat.json skrivs av båda, och två samtidiga körningar får aldrig posta på var sin kopia.
+concurrency: { group: halkvakt-live, cancel-in-progress: false }
+
+jobs:
+  larm:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+
+      - name: Finns ett larm att posta?
+        id: koll
+        run: node marknadsforing/posta.mjs koll
+
+      # Bilden måste vara pushad innan den skickas — Meta hämtar den via raw.githubusercontent.com.
+      - name: Rita larmet
+        if: steps.koll.outputs.har == 'ja'
+        id: bild
+        run: |
+          npm i --no-save --no-audit --no-fund playwright@1.47.2
+          npx playwright install --with-deps chromium
+          node marknadsforing/posta.mjs bild --live
+
+      - name: Committa bilden
+        if: steps.koll.outputs.har == 'ja'
+        run: |
+          git config user.name "Halkvakt live"
+          git config user.email "motor@halkvakt.dev"
+          git add marknadsforing/inlagg
+          git diff --cached --quiet || git commit -m "Halkvakt live: larm $(date -u +%FT%H:%M) [skip ci]"
+          git pull --rebase --autostash origin main && git push origin main || { git status --porcelain; exit 1; }
+
+      # Utan hemligheterna är steget en torrkörning: texten skrivs i loggen och inget postas.
+      - name: Posta
+        if: steps.koll.outputs.har == 'ja' && steps.bild.outputs.namn != ''
+        env:
+          HV_NAMN: ${{ steps.bild.outputs.namn }}
+          META_PAGE_ID: ${{ secrets.META_PAGE_ID }}
+          META_PAGE_TOKEN: ${{ secrets.META_PAGE_TOKEN }}
+          META_IG_ID: ${{ secrets.META_IG_ID }}
+        run: |
+          node marknadsforing/posta.mjs skicka
+          git add marknadsforing/postat.json 2>/dev/null || true
+          git diff --cached --quiet || git commit -m "Halkvakt live: larm postat $(date -u +%FT%H:%M) [skip ci]"
+          git pull --rebase --autostash origin main && git push origin main || { git status --porcelain; exit 1; }
