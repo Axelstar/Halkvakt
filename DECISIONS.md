@@ -14651,3 +14651,32 @@ b när trafiken passerar en gräns.
   den inte. Hur den ska mätas avgörs innan appen läser filen (kort #357).
 
 **Stomdokument:** FAV §7 bygget, SYS funktionerna och hinkarna
+
+## #618 (17/10 2026) Soffprovet på iPhone 17/10 kväll: förväntan A föll som provet var byggt — rutten gick genom en sträcka med Trafikverkets halkvarning (kort #343, steg 13; kort #359)
+
+**Axel 17/10**, provet på iPhone via Xcode (#605), main på 5548607, rutten `soffprovet-xcode.gpx` ur lägesfilen 16:10 UTC: sträcka 45130
+(Norrbotten, nära Vittangi), 51 varnande punkter.
+
+**Utfallet, som det var:**
+- 16:24 UTC rutten startad; vakten startad 16:23. Loggen: *"väckt — provar farten"*, *"start begärd"*, *"startar"*, sedan *"ingen bilfart — somnar
+  om"* — vakten tog inte emot fler positioner (kort #359 nedan). Vakten stoppad och startad igen 16:26; loggen slutade på *"startar"*.
+- 16:26, 16:27, 16:27 sa appen *halka* och 16:28 *frysrisk*. **Inget *"Halkvakt tror"*** (Axel: *"den sa aldrig halkvakt tror är jag ganska
+  säker på"*). **Förväntan A föll.**
+- 16:27 tryckt *tysta* av Axel (kandidatbrytaren 39049449392): lägesfilen 16:27:13 utan nyckeln. Förväntan B gjordes inte — utan A bevisar en
+  tyst kandidat ingenting.
+
+**Orsaken till A: provet, inte appen.** 45130 stod också i `segments` (Trafikverkets halka). Den vanliga varningen vinner, kandidaten är sist
+(#577) och tiger i 2 min efter samma sträckas halkvarning (#581). Appen gjorde det reglerna säger. `scripts/kandidat-gpx.ts` valde sträckan
+med flest kandidatpunkter utan att se på `segments`. **Rättat:** skriptet väljer bara sträckor utan Trafikverkets halkvarning och vägrar
+annars; självtestet har fallet.
+
+**Fyndet bakom:** kandidatens timme 15:00 UTC (DB-knappen, `kandidat_skugga`) varnade på sju sträckor — 45130, 99030, 10015, 10020, 395000,
+10025, 45125 — och **alla sju** hade Trafikverkets halka i lägesfilen 16:27. Den kvällen kunde kandidaten inte höras någonstans. Om det
+gäller oftare är det en fråga för takten och domen (hur ofta kandidaten säger något som Trafikverket inte redan säger); frågan i §4.2.
+
+**Kort #359 — vakten tappar positionen när den startas under fartkollen.** `GuardManager.swift`: självväckningen hade börjat sin fartkoll
+(`probing`) när föraren tryckte *Starta vakten*. `start()` nollar inte `probing`, så `handle()` gick vidare till fartkollen i stället för
+motorn, och när kollen gav upp anropade `endProbe(false)` `stopUpdatingLocation()` — vakten stod som igång utan positioner. Samma kod finns
+i 0.3.13 (27). Stopp och start nollar `probing` (`stop()`), därav omvägen i provet. Inget rättat ännu.
+
+**Stomdokument:** APP §3, BED §4.2
