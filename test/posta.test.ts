@@ -66,17 +66,35 @@ test("morgonen utan händelse ger listan; lunch och kväll är tysta", () => {
 
 test("SMHI-varning för snö vinner över höstens första; vind till havs räknas inte", () => {
   const lan = lanVid(LUNCH, [L(23, "Jämtland", 3, 0), ...bas(LUNCH)]);
-  assert.equal(valjHandelse(LUNCH, lan, snofall, hist(LUNCH), {})?.typ, "smhi");
+  assert.equal(valjHandelse(LUNCH, lan, snofall, hist(LUNCH), {}, true)?.typ, "smhi");
   const hav = { smhi_vinter: [{ event: "Medelvind till havs", niva: "Gul", niva_kod: "YELLOW", omrade: "Norra Östersjön" }] };
-  assert.equal(valjHandelse(LUNCH, lan, hav, hist(LUNCH), {})?.typ, "forsta");
+  assert.equal(valjHandelse(LUNCH, lan, hav, hist(LUNCH), {}, true)?.typ, "forsta");
+});
+
+// Larmen (DECISIONS #627): prövas bara i larmkollen, räknas inte mot dagens tre, högst fyra per dygn.
+test("larmen: bara i larmkollen, utanför dagens tre, högst fyra per dygn", () => {
+  const lan = lanVid(LUNCH, [L(23, "Jämtland", 3, 0), ...bas(LUNCH)]);
+  const p = (tid: string, typ: string, nyckel = typ + tid) => ({ tid, nyckel, typ });
+  assert.equal(valjHandelse(LUNCH, lan, snofall, hist(LUNCH), {}), null, "dagslägets pass tar inga larm");
+  const tre = { "2026-11-12": [p("2026-11-12T00:10:00Z", "lista"), p("2026-11-12T05:20:00Z", "forandring"), p("2026-11-12T11:30:00Z", "kallaste")] };
+  const v = valjHandelse(LUNCH, lan, snofall, hist(LUNCH), tre, true);
+  assert.equal(v?.typ, "smhi", "dagens tre stoppar inte ett larm");
+  assert.equal(v?.pass, "live");
+  const fyra = { "2026-11-12": ["00", "03", "06", "09"].map(h => p(`2026-11-12T${h}:00:00Z`, "smhi")) };
+  assert.match(sparr(fyra, LUNCH, true), /redan 4 larm/);
+  assert.equal(valjHandelse(LUNCH, lan, snofall, hist(LUNCH), fyra, true), null);
+  assert.equal(sparr(fyra, LUNCH), null, "larmen tar ingen av dagslägets platser och startar inte fyratimmarsspärren");
+  const sammaVarning = { "2026-11-12": [p("2026-11-12T08:00:00Z", "smhi", "smhi:Snöfall:Norrbottens län:YELLOW")] };
+  assert.equal(valjHandelse(LUNCH, bas(LUNCH), snofall, hist(LUNCH), sammaVarning, true), null, "samma varning inom 20 h");
 });
 
 test("höstens första: bara län som inte setts, och första körningen påstår ingen första gång", () => {
   const lan = lanVid(MORGON, [L(23, "Jämtland", 3, 0), ...bas(MORGON)]);
-  const h = valjHandelse(MORGON, lan, null, hist(MORGON), {});
+  const h = valjHandelse(MORGON, lan, null, hist(MORGON), {}, true);
   assert.equal(h?.typ, "forsta");
   assert.match(h.text, /^I natt kom höstens första halka i Jämtland\./);
-  assert.equal(valjHandelse(MORGON, lan, null, nyHistorik(MORGON, null, lan), {})?.typ, "lista");
+  assert.equal(valjHandelse(MORGON, lan, null, nyHistorik(MORGON, null, lan), {}, true), null);
+  assert.equal(valjHandelse(MORGON, lan, null, hist(MORGON), {})?.typ, "lista", "morgonens pass tar listan, larmet tar larmkollen");
 });
 
 test("stor förändring: fördubbling med minst +10, eller två nya län; samma tid i går krävs", () => {
@@ -122,7 +140,7 @@ test("spärrarna: tre per dygn, fyra timmar isär, samma nyckel inte inom 20 h",
   assert.equal(sparr({ "2026-11-12": [p("2026-11-12T05:50:00Z")] }, LUNCH), null);
   const lan = lanVid(LUNCH, [L(23, "Jämtland", 3, 0), ...bas(LUNCH)]);
   const igar = { "2026-11-11": [{ tid: "2026-11-11T20:00:00Z", nyckel: "forsta:23", typ: "forsta" }] };
-  assert.equal(valjHandelse(LUNCH, lan, null, hist(LUNCH), igar), null);
+  assert.equal(valjHandelse(LUNCH, lan, null, hist(LUNCH), igar, true), null);
   // 16/10 skrevs ett enda kvitto per dag, inte en lista; det läses fortfarande
   assert.equal(valjHandelse(MORGON, bas(MORGON), null, hist(MORGON), { "2026-11-12": { tid: "2026-11-12T00:30:00Z" } }), null);
   // 17/10: gårdagens kvällsinlägg kl. 22 tystade morgonlistan. Listan spärras bara av en lista samma dag.

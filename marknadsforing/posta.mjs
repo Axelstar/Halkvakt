@@ -1,15 +1,20 @@
 // Halkvakt live — inlägg till Facebook-sidan och Instagram (kort #281; DECISIONS #598, #599, #600).
-// Körs i halkvakt-live.yml tre gånger om dygnet (morgon, lunch, kväll), i två steg:
+// Körs i halkvakt-live.yml tre gånger om dygnet (morgon, lunch, kväll) och i halkvakt-larm.yml var 30:e minut (DECISIONS #627):
 //   node marknadsforing/posta.mjs bild    → väljer händelsen, skriver inlagg/DATUM-PASS.jpg + .json och live-historik.json
-//   node marknadsforing/posta.mjs skicka  → postar bilden och texten (bilden måste vara pushad: Meta hämtar den via raw-URL)
+//   node marknadsforing/posta.mjs koll    → finns ett larm att posta? (har=ja|nej i GITHUB_OUTPUT; ritar och skriver inget)
+//   node marknadsforing/posta.mjs bild --live → ritar larmet till inlagg/DATUM-live-HHMM.jpg + .json (ingen historik)
+//   node marknadsforing/posta.mjs skicka  → postar bilden och texten (bilden måste vara pushad: Meta hämtar den via raw-URL);
+//                                           HV_NAMN väljer filerna, annars dagens pass
 // Utan META_PAGE_ID/META_PAGE_TOKEN är "skicka" en torrkörning: texten skrivs ut, inget postas.
 // HV_NU=<ISO-tid> låter en torrkörning låtsas att klockan är en annan.
 //
-// Urvalet är larmdisciplinen i appen överförd till flödet: EN vinnare per körning, i prioritetsordning
-// SMHI-varning > höstens första > stor förändring > höstens kallaste > veckosummering > morgonlistan.
-// Lunch och kväll postar bara händelser; ingen händelse betyder inget inlägg. Högst tre inlägg per dygn,
-// minst fyra timmar isär, och samma sorts inlägg för samma län högst en gång per 20 timmar.
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
+// Urvalet är larmdisciplinen i appen överförd till flödet: EN vinnare per körning, i prioritetsordning.
+// LARMEN (gula, DECISIONS #627): SMHI-varning > höstens första. De prövas var 30:e minut av halkvakt-larm.yml
+// (`bild --live`), postas när det händer och räknas inte mot dagens tre; högst fyra larm per dygn.
+// DAGSLÄGET (mörka): stor förändring > höstens kallaste > veckosummering > morgonlistan, morgon, lunch och kväll.
+// Lunch och kväll postar bara händelser; ingen händelse betyder inget inlägg. Högst tre per dygn, minst fyra timmar
+// isär. Samma sorts inlägg för samma län (eller samma varning) högst en gång per 20 timmar, larm som dagsläge.
+import { readFileSync, writeFileSync, appendFileSync, mkdirSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -24,6 +29,10 @@ const GRAPH = "https://graph.facebook.com/v23.0";
 const MIN_HALT = 1, MIN_KALLA = 3, MAX_LAN = 5;
 // Spärrarna (DECISIONS #600). 20 h och inte 24 h för samma nyckel: pulsklockans morgon får inte fastna en minut för tidigt.
 const MAX_PER_DYGN = 3, MIN_MELLAN_H = 4, SAMMA_NYCKEL_H = 20;
+// Larmen (DECISIONS #627): utanför dagens tre, men högst fyra per dygn — en stormdag med tio SMHI-varningar ska inte
+// bli tio inlägg i rad. Varje SMHI-inlägg räknar redan upp varningarna som inte fick eget inlägg.
+const MAX_LARM_PER_DYGN = 4;
+const LARMTYPER = new Set(["smhi", "forsta"]);
 // Stor förändring mot samma tid i går: halkan minst fördubblad och minst +10 vägavsnitt, eller minst två nya län.
 const FORANDRING_FAKTOR = 2, FORANDRING_MIN = 10, NYA_LAN_MIN = 2;
 // Höstens kallaste: minst 0,5 °C under säsongens lägsta och högst −3 °C.
@@ -157,10 +166,13 @@ export function inlaggIdag(postat, iso) {
 
 const allaInlagg = postat => Object.values(postat).flatMap(somLista);
 
-export function sparr(postat, iso) {
+export function sparr(postat, iso, larm = false) {
   // Ett inlägg om flera läns första gång har en kopia per län; kopiorna är inga egna inlägg.
-  if (inlaggIdag(postat, iso).filter(p => !p.kopia).length >= MAX_PER_DYGN) return `redan ${MAX_PER_DYGN} inlägg i dag`;
-  const senast = allaInlagg(postat).map(p => p.tid).sort().at(-1);
+  // Larmen och dagsläget har var sin räkning: ett larm tar aldrig en av dagens tre platser (DECISIONS #627).
+  const egna = p => !p.kopia && LARMTYPER.has(p.typ) === larm;
+  if (larm) return inlaggIdag(postat, iso).filter(egna).length >= MAX_LARM_PER_DYGN ? `redan ${MAX_LARM_PER_DYGN} larm i dag` : null;
+  if (inlaggIdag(postat, iso).filter(egna).length >= MAX_PER_DYGN) return `redan ${MAX_PER_DYGN} inlägg i dag`;
+  const senast = allaInlagg(postat).filter(egna).map(p => p.tid).sort().at(-1);
   if (senast && timmarMellan(senast, iso) < MIN_MELLAN_H) return `senaste inlägget ${tid(senast)}, mindre än ${MIN_MELLAN_H} h sedan`;
   return null;
 }
@@ -208,6 +220,7 @@ function forstaGangen(nu, lan, meta, historik, postat) {
   const ett = nya.length === 1;
   return {
     typ: "forsta", nyckel: `forsta:${nya[0].kod}`, alla: nya.map(l => `forsta:${l.kod}`),
+    ikon: vad === "minusgrader på vägbanan" ? "frys" : "halka",   // en ikon per fara (guiden, avsnitt 05)
     etikett: "Höstens första",
     rubrik: ett ? `Första ${vad === "halka" ? "halkan" : "minusgraderna"} i ${nya[0].kort}` : `Höstens första ${vad}`,
     underrad: `${nar.toLowerCase()} · ${datumText(nu)}`,
@@ -316,14 +329,15 @@ function morgonlista(nu, lan, meta, historik, postat) {
   };
 }
 
-const ORDNING = [smhi, forstaGangen, forandring, kallaste, vecka, morgonlista];
+const LARM = [smhi, forstaGangen];
+const ORDNING = [forandring, kallaste, vecka, morgonlista];
 
-/** Ren funktion: körningens vinnare eller null. `lan` bär `generatedAt` som egenskap. */
-export function valjHandelse(nu, lan, meta, historik, postat) {
-  if (sparr(postat, nu)) return null;
-  for (const f of ORDNING) {
+/** Ren funktion: körningens vinnare eller null. `lan` bär `generatedAt` som egenskap. `larm` prövar bara larmen (#627). */
+export function valjHandelse(nu, lan, meta, historik, postat, larm = false) {
+  if (sparr(postat, nu, larm)) return null;
+  for (const f of larm ? LARM : ORDNING) {
     const h = f(nu, lan, meta, historik, postat);
-    if (h) return { ...h, pass: pass(nu) };
+    if (h) return { ...h, pass: larm ? "live" : pass(nu) };
   }
   return null;
 }
@@ -332,12 +346,12 @@ export function valjHandelse(nu, lan, meta, historik, postat) {
 
 // Bilden följer Varumärkesguide 1.0 och Sociala mallar (Axel 17/10, DECISIONS #626): gult är bara ytan för en fara som är live
 // (SMHI-varning, höstens första), allt annat är Dagsläget på mörk mark. Gult är aldrig text, och inga andra färger.
-const LIVE = new Set(["smhi", "forsta"]);
 const MARKE = "M55.196 6 L96.196 77 A6 6 0 0 1 91 86 L9 86 A6 6 0 0 1 3.804 77 L44.804 6 A6 6 0 0 1 55.196 6 Z M46.4 32 L53.6 32 L52 58 L48 58 Z M45.6 68 A4.4 4.4 0 1 0 54.4 68 A4.4 4.4 0 1 0 45.6 68 Z";
+const FRYS = `<svg class="ikon" viewBox="0 0 48 48"><g><path d="M24 5 V43 M19 8 L24 13 L29 8 M19 40 L24 35 L29 40"/></g><g transform="rotate(60 24 24)"><path d="M24 5 V43 M19 8 L24 13 L29 8 M19 40 L24 35 L29 40"/></g><g transform="rotate(-60 24 24)"><path d="M24 5 V43 M19 8 L24 13 L29 8 M19 40 L24 35 L29 40"/></g></svg>`;
 const HALKA = `<svg class="ikon" viewBox="0 0 48 48"><path d="M13 18 L16 9 H32 L35 18"/><rect x="8" y="17" width="32" height="10" rx="3"/><path d="M13 22 H16 M32 22 H35 M13 27 V31 M35 27 V31"/><path d="M5 38 q4.5 -4 9.5 0 t9.5 0 t9.5 0 t9.5 0"/><path d="M5 45 q4.5 -4 9.5 0 t9.5 0 t9.5 0 t9.5 0"/></svg>`;
 
 export function html(h) {
-  const live = LIVE.has(h.typ);
+  const live = LARMTYPER.has(h.typ);
   // Med ett stort tal eller ett varningskort ryms tre län; annars fem.
   const valda = h.lan.slice(0, h.lyft || h.varning ? 3 : MAX_LAN), fler = h.lan.length - valda.length;
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -405,7 +419,7 @@ export function html(h) {
   .live .fot{border-top:3px solid #080B0D;color:#3A2E0B}.live .fot .lock{color:#080B0D}.live .fot .u{color:#3A2E0B}
 </style></head><body class="${live ? "live" : ""}">
   <div class="meta"><span><span class="prick"></span>${live ? "Live · " : ""}${esc(h.etikett)}</span></div>
-  ${live ? HALKA : ""}
+  ${live ? (h.ikon === "frys" ? FRYS : HALKA) : ""}
   <h1>${esc(h.rubrik)}</h1>
   <p class="under">${esc(forst(h.underrad))}</p>
   ${varning}${lyft}
@@ -424,7 +438,12 @@ const postatPath = join(HERE, "postat.json");
 const historikPath = join(HERE, "live-historik.json");
 const lasJson = (p, annars) => existsSync(p) ? JSON.parse(readFileSync(p, "utf8")) : annars;
 
-async function bild() {
+// Namnet på inläggets filer: larmen får klockslaget, eftersom flera larm kan komma samma dag.
+const filnamn = (nu, larm) => larm ? `${dag(nu)}-live-${tid(nu).replace(":", "")}` : `${dag(nu)}-${pass(nu)}`;
+// Steget efter läser namnet ur GITHUB_OUTPUT (HV_NAMN), så att det postar exakt den bild som ritades.
+const utdata = (nyckel, varde) => { if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, `${nyckel}=${varde}\n`); };
+
+async function bild(larm, bara_koll) {
   const nu = process.env.HV_NU || new Date().toISOString();
   const postat = lasJson(postatPath, {});
   const d = await (await fetch(DATA, { cache: "no-store" })).json();
@@ -436,17 +455,21 @@ async function bild() {
   let historik = lasJson(historikPath, null);
   // Första körningen (eller ny säsong) sår historiken; då kan bara det som inte kräver historik vinna.
   if (!historik || historik.sasong !== sasong(nu)) historik = nyHistorik(nu, lasJson(join(HERE, "state.json"), null), lan);
-  const h = valjHandelse(nu, lan, meta, historik, postat);
-  writeFileSync(historikPath, JSON.stringify(lagg(historik, nu, lan)) + "\n");
+  const h = valjHandelse(nu, lan, meta, historik, postat, larm);
+  // Historiken är en ögonblicksbild per dagslägespass; larmkollen var 30:e minut skriver ingen (den skulle bli 48 om dygnet).
+  if (!larm) writeFileSync(historikPath, JSON.stringify(lagg(historik, nu, lan)) + "\n");
 
-  if (!h) return console.log(`${pass(nu)} ${dag(nu)}: inget inlägg (${sparr(postat, nu) ?? "ingen händelse"}).`);
+  utdata("har", h ? "ja" : "nej");
+  if (!h) return console.log(`${larm ? "larm" : pass(nu)} ${dag(nu)}: inget inlägg (${sparr(postat, nu, larm) ?? "ingen händelse"}).`);
+  if (bara_koll) return console.log(`Larm att posta: ${h.typ} (${h.nyckel}).`);
   const { chromium } = await import("playwright");
   const browser = await chromium.launch(process.env.HV_CHROMIUM ? { executablePath: process.env.HV_CHROMIUM } : {});
   const page = await browser.newPage({ viewport: { width: 1080, height: 1350 } });
   await page.setContent(html(h), { waitUntil: "networkidle" });
   await page.evaluate(() => document.fonts.ready);
   mkdirSync(dir, { recursive: true });
-  const namn = `${dag(nu)}-${h.pass}`;
+  const namn = filnamn(nu, larm);
+  utdata("namn", namn);
   await page.screenshot({ path: join(dir, `${namn}.jpg`), type: "jpeg", quality: 90 });
   await browser.close();
   const { lan: valda, staplar, ...resten } = h;
@@ -464,18 +487,19 @@ async function graph(path, params) {
 async function skicka() {
   const nu = process.env.HV_NU || new Date().toISOString();
   const postat = lasJson(postatPath, {});
-  const namn = `${dag(nu)}-${pass(nu)}`;
+  const namn = process.env.HV_NAMN || filnamn(nu, false);
   const fil = join(dir, `${namn}.json`);
   if (!existsSync(fil)) return console.log(`Inget inlägg ${namn}.`);
   const inlagg = JSON.parse(readFileSync(fil, "utf8"));
-  if (inlaggIdag(postat, nu).some(p => p.pass === inlagg.pass)) return console.log(`Redan postat ${namn}.`);
-  const stopp = sparr(postat, nu);
+  const larm = inlagg.pass === "live";
+  if (inlaggIdag(postat, nu).some(p => p.namn ? p.namn === namn : !larm && p.pass === inlagg.pass)) return console.log(`Redan postat ${namn}.`);
+  const stopp = sparr(postat, nu, larm);
   if (stopp) return console.log(`Postar inte ${namn}: ${stopp}.`);
   const url = `${RAW}/${namn}.jpg`;
   const { META_PAGE_ID: page, META_PAGE_TOKEN: token, META_IG_ID: ig } = process.env;
   if (!page || !token) return console.log(`TORRKÖRNING (META_PAGE_ID/META_PAGE_TOKEN saknas). Skulle posta ${url}:\n\n${inlagg.text}`);
 
-  const kvitto = { pass: inlagg.pass, typ: inlagg.typ, nyckel: inlagg.nyckel, tid: new Date().toISOString(), bild: url };
+  const kvitto = { pass: inlagg.pass, namn, typ: inlagg.typ, nyckel: inlagg.nyckel, tid: new Date().toISOString(), bild: url };
   const fb = await graph(`${page}/photos`, { url, caption: inlagg.text, access_token: token });
   kvitto.facebook = fb.post_id ?? fb.id;
   console.log(`Facebook: ${kvitto.facebook}`);
@@ -491,7 +515,8 @@ async function skicka() {
   writeFileSync(postatPath, JSON.stringify(postat, null, 2) + "\n");
 }
 
-const steg = process.argv[2];
-if (steg === "bild") await bild();
+const steg = process.argv[2], larm = process.argv.includes("--live");
+if (steg === "bild") await bild(larm, false);
+else if (steg === "koll") await bild(true, true);
 else if (steg === "skicka") await skicka();
-else if (steg) { console.error(`Okänt steg "${steg}" — använd bild eller skicka.`); process.exit(1); }
+else if (steg) { console.error(`Okänt steg "${steg}" — använd bild [--live], koll eller skicka.`); process.exit(1); }

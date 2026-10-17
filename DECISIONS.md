@@ -14900,3 +14900,26 @@ sträcka — inte nu: motorn postar per län, inte per vägsträcka.
 **Prov:** `test/posta.test.ts` 18/18, ett nytt. Motprov: gul textfärg på talen fäller det nya provet och inget annat.
 
 **Stomdokument:** inga — marknadsföringen har inget stomdokument; guiden bor i designsystemet Halkvakt och projektets brand/varumarkesguide.md.
+
+## #627 (17/10 2026) Halkvakt live: larmen postas när de händer (kort #281)
+
+**Beslut.** Axel 17/10 21:23, *"jag gillar det"*. De gula inläggen (SMHI-varning och höstens första) är larm och postas när det
+händer, inte i de tre dagliga passen. Ett eget arbetsflöde, `halkvakt-larm.yml`, kör `posta.mjs koll` varannan halvtimme
+(pulsklockans `puls-live-larm`, schema `7,37 * * * *`); finns ett larm renderas och postas det direkt, annars slutar körningen
+innan Playwright laddas. Larmen räknas inte mot de tre inläggen per dygn och inte mot fyratimmarsluckan, och de mörka inläggen
+räknas inte mot larmen. Larmen har ett eget tak: **högst fyra per dygn**. Spärren 20 timmar för samma nyckel (samma län och typ)
+står kvar. Höstens första minusgrader får frysikonen, halka på vägbanan halkaikonen — en ikon per fara. Larmfilerna heter
+`<dag>-live-HHMM` så att flera samma dag inte krockar; båda arbetsflödena delar concurrency-gruppen `halkvakt-live`.
+Pulsklockan får ett nytt jobb: `ANTAL_NYA` och vakthundens `PULS_GOLV` blir 18.
+
+**Alternativ.** Låta larmen gå i passen men före de mörka (för sent: Värmlands första minusgrader 17/10 kvällen stoppades av
+luckan efter ett handpostat inlägg). Inget tak alls (en natt med många län kan bli en ström; fyra räcker för en dålig natt och
+länen samlas i samma bild).
+
+**Prov:** `test/posta.test.ts` 19/19, ett nytt (*larmen: bara i larmkollen, utanför dagens tre, högst fyra per dygn*). Motprov:
+att ta bort larmens särräkning, och att höja taket till 40, fäller var för sig bara det nya provet.
+
+**Följd:** efter sammanslagningen ska pulsklockan läggas in (`scripts/pulsklocka.ts`, kräver DATABASE_URL) och vakthunden
+deployas, annars larmar vakthunden på det saknade jobbet eller jobbet körs aldrig.
+
+**Stomdokument:** inga — marknadsföringen har inget stomdokument.
