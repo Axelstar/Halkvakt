@@ -33,7 +33,7 @@ export const VETO_MIN = 45;
 export const VETO_YTA_C = 2;
 export const SPRIDNING_X_C = 2.25;     // spridningsgrinden där minst två ankare bidrar (#575)
 const K_NEIGHBOURS = 5;                // RÅ:s ankare, som grind A och fysik/live/kandidat_timme.py
-const MAX_KM = 50;
+export const MAX_KM = 50;
 export const PERIOD_START = Date.parse("2024-11-01T00:00:00+01:00");
 export const PERIOD_SLUT = Date.parse("2025-04-01T00:00:00+02:00");
 const H = 3_600_000;
@@ -270,9 +270,11 @@ export function missar(is: Map<string, [number, number][]>, par: Map<string, str
 
 export type Atgard = { seg: string; typ: number; start: number | null; stopp: number | null };
 /** Andelen tillfällen med planerad halkbekämpning (20 eller 50) på stationens sträckor inom ATGARD_FONSTER_H, per grupp. */
+/** Åtgärdsraderna som räknas: halkbekämpning (20, 50) med start- och stopptid och start inom perioden (§4 c). */
+export const giltigaAtgarder = (atg: Atgard[]) => atg.filter((a) => ATGARD_TYPER.has(a.typ) && a.start !== null && a.stopp !== null && a.start >= PERIOD_START);
 export function atgarder(tillfallen: Tillfalle[], par: Map<string, string[]>, atg: Atgard[], grupp: (t: Tillfalle) => string):
   { per: Map<string, { antal: number; med: number }>; borttagna: number } {
-  const giltiga = atg.filter((a) => ATGARD_TYPER.has(a.typ) && a.start !== null && a.stopp !== null && a.start >= PERIOD_START);
+  const giltiga = giltigaAtgarder(atg);
   const ep = new Map<string, [number, number][]>();
   for (const a of giltiga) (ep.get(a.seg) ?? ep.set(a.seg, []).get(a.seg)!).push([a.start!, a.stopp!]);
   const per = new Map<string, { antal: number; med: number }>();
