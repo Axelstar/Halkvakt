@@ -14810,3 +14810,16 @@ hand om resten, för efter 10 min och 5 km får zonen tala igen.
 kontraktsgrinden för talet i tre språk, testvektorer för korsningen vid Vittangi och för en lång zon som upprepas, och produktboken.
 
 **Stomdokument:** APP §3 rösten, BED §4.2
+
+## #622 (17/10 2026) Halkvakt live: #halkvakt sist i varje inlägg (kort #281)
+
+**Beslut.** Axel 17/10 17:48, *"Ja gör det!"*, på frågan om `#halkvakt` ska läggas till i de automatiska inläggen. Taggraden blir
+`#halka #väglag <län …> #halkvakt` på Facebook och Instagram, så att inläggen samlas under vårt eget namn. Samma kväll lades
+kvällsinlägget om svarthalka i Västsverige för hand (73d5f83), postat av halkvakt-live med de vanliga spärrarna.
+
+**Alternativ.** Stadstaggar (`#göteborg`, `#umeå`) — inte nu: inläggen räknar per län, och en stad som inte står i datan vore en
+plats texten inte bär. Fler taggar än så — nej: fem till åtta räcker, fler ser ut som spam.
+
+**Prov:** `test/posta.test.ts` 17/17, ett nytt. Motprov: taggen borttagen fäller det nya provet och inget annat.
+
+**Stomdokument:** inga — marknadsföringen har inget stomdokument; planen bor i MARKNADSFORING-NOLLBUDGET.md.
