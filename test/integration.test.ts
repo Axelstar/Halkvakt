@@ -1824,10 +1824,16 @@ test("#618 (ii): skuggloggen, väglaget, händelserna och SMHI exporteras på si
   };
   try {
     await q("CREATE TABLE IF NOT EXISTS shadow_log (id bigserial PRIMARY KEY, run_at timestamptz NOT NULL DEFAULT now(), alerts jsonb NOT NULL DEFAULT '[]'::jsonb)");
-    for (const f of ["001_init.sql", "003_situation_archive.sql", "008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql",
-                     "018_trend_berakna.sql", "029_brott_index.sql", "030_langsam_vakt.sql", "050_kandidat_live.sql", "053_arkiv_tabeller.sql",
-                     "055_vagpunkter.sql", "056_kandidat_regel.sql", "057_kandidat_skugga.sql", "062_kortare_forvaring.sql", "063_arkiv_fyra_tabeller.sql"])
-      await q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+    // Bara det som saknas laddas: provet kan gå sist, när senare prov redan har gett äldre filers funktioner nya returtyper, och då
+    // fäller en omladdning av 056/057 med "cannot change return type". sql/062 och 063 ändrar inga returtyper och laddas alltid.
+    const las = (f: string) => q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+    if (!(await q("SELECT to_regclass('road_condition_history') AS t")).rows[0].t) await las("001_init.sql");
+    if (!(await q("SELECT to_regclass('situation_archive') AS t")).rows[0].t) await las("003_situation_archive.sql");
+    if (!(await q("SELECT to_regprocedure('arkiv2_golv(text,integer)') AS t")).rows[0].t)
+      for (const f of ["008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql", "018_trend_berakna.sql", "029_brott_index.sql",
+                       "030_langsam_vakt.sql", "050_kandidat_live.sql", "053_arkiv_tabeller.sql", "055_vagpunkter.sql", "056_kandidat_regel.sql",
+                       "057_kandidat_skugga.sql"]) await las(f);
+    for (const f of ["062_kortare_forvaring.sql", "063_arkiv_fyra_tabeller.sql"]) await las(f);
     await stad();
     const d = (await q("SELECT ((now() - interval '30 days') AT TIME ZONE 'UTC')::date::text AS d")).rows[0].d as string;
     const kl = (h: number) => `${d}T${String(h).padStart(2, "0")}:00:00Z`;
