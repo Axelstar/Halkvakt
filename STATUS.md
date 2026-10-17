@@ -2599,3 +2599,5 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 17/10 (Claude; Bengts kommentar via Axel, Axel: *"uppdatera alla"*): **DECISIONS #610**: varje inlägg säger att Halkvakt är oberoende och inte en del av Trafikverket; "prognoser" väntar tills prognoslagret är i drift. Prov 16/16.
 
 - 17/10 (Claude; Bengt: *"har du läst databasprovet"*): **#580 steg 2 föll.** Databasen 481,4 → 485,6 MB på dygnet (DB-knappen 38865193312, 39015138970; vakthunden 481 → 485 MB) mot högst 2 MB. Väderobservationerna stod still på 275,7 MB, så den förskrivna åtgärden (kortare väderförvaring) träffar inte; tillväxten sitter i `kandidat_station` (+2,0 MB, fyller sitt fönster till 19/10) och fyra tabeller som aldrig rensas. Valet (a)–(d) i bedömningen §4.2. **#608 i drift:** vakthunden 07:07 skriver *gräns 5*.
+- 17/10 (Claude; Axel: *"above and beyond"* för NWT, valde stora vägar och pendlarstråk): **DECISIONS #611**: publicera skriver `data/strackor.json`, kartsajten får `vagar.html` (stora vägar / pendlarstråk från Karlstad). `test/lanssidor.test.ts` 6/6; motprov fällde två. Kräver deploy av publicera.
+

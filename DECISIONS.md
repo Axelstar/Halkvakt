@@ -14470,3 +14470,21 @@ drift — CLAUDE.md:s regel att texten aldrig överdriver datan. Byts när progn
 
 **Stomdokument:** inga — marknadsföringen har inget stomdokument; planen bor i MARKNADSFORING-NOLLBUDGET.md.
 
+## #611 (17/10 2026) Vägrutan: länets stora vägar och pendlarstråk, sträcka för sträcka (kort #281)
+
+**Beslut.** NWT:s webbredaktör svarade 17/10 att det "låter spännande" och att cheferna tar ställning på måndag; Axel: *"vi får gå above
+and beyond för denna tidning"*, och valde i frågan om extra för NWT *Värmlands stora vägar* och *Pendlarstråken*. Publicera skriver nu
+`data/strackor.json` i länssidornas varv (var 30:e minut): varje läns vägar, sträcka för sträcka med Trafikverkets ord, halt enligt samma
+regel som sidorna och motorn (`arHalt`), och vägbanans kallaste station bland dem vars närmaste sträcka är vägen. Kartsajten får
+`vagar.html?lan=<län>&vy=vagar|pendling`: E-vägar och riksvägar (nummer under 100) med halka per sträcka, eller pendlarstråken från
+länets centralort som kedjor av Trafikverkets egna sträckor (först Värmland: Karlstad–Kristinehamn, –Arvika, –Säffle, –Sunne och Torsby,
+–Filipstad, –Årjäng). Stråken visar ingen temperatur: stationerna är knutna till vägen i länet, inte till stråkets del, och en
+siffra från fel ände av vägen vore en överdrift (CLAUDE.md).
+
+**Alternativ.** Rutan läser `vaglag.geojson` direkt — förkastat: 260 kB komprimerat för varje läsare av en tidningsartikel. Kameror och
+"först till NWT" — inte valda nu.
+
+**Prov:** `test/lanssidor.test.ts` 6/6 med ett nytt prov för filen; motprov (filen borttagen ur `byggLanssidor`) fällde två.
+
+**Stomdokument:** inga — publiceringens innehåll för pressen; planen bor i MARKNADSFORING-NOLLBUDGET.md.
+
