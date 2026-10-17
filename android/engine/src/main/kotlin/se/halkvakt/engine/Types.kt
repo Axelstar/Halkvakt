@@ -99,6 +99,8 @@ data class EngineConfig(
     val efterhalkaRegnH: Double = 2.0,
     // K (DECISIONS #581): tyst så här länge efter samma sträckas halkvarning — samma tal som engine/src/types.ts (kontraktsgrinden).
     val kandidatEfterHalkaS: Double = 120.0,
+    // Taket (DECISIONS #606): högst en kandidat per så här många sekunder — samma tal som engine/src/types.ts (kontraktsgrinden).
+    val kandidatTakS: Double = 600.0,
 )
 
 // ---- geo (mirror of geo.ts, same formula sequences) ----

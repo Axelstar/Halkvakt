@@ -63,6 +63,8 @@ export class AlertEngine {
   private lastSpokenT: number | null = null;
   /** Vad som senast sades — spärren får bara tysta något som INTE är viktigare (#127). */
   private lastSpokenKind: HazardKind | null = null;
+  /** När kandidaten senast talade — taket räknas därifrån, oavsett sträcka (DECISIONS #606). */
+  private lastKandidatT: number | null = null;
   /** Skuggmotorn lyssnar här (#127 a): vad spärren kastar syns annars ingenstans. */
   onSuppressed?: (c: { kind: HazardKind; hazardId: string; distM: number; by: HazardKind; sinceS: number }) => void;
   /** FÖRSPRÅNGET (kort #153 beslut 1, docs/TROSKLAR-FORSPRANG.md §4): valfri krok som ger förvarningsavståndet per fara. Utan
@@ -178,6 +180,7 @@ export class AlertEngine {
 
     this.lastSpokenT = fix.t;
     this.lastSpokenKind = win.kind;
+    if (win.kind === "kandidat") this.lastKandidatT = fix.t;
     this.fired.set(win.alertKey, { t: fix.t, odometerM: this.odometerM });
     const pointHazard = win.hazard.kind === "slippery_segment" || win.hazard.kind === "kandidat"
       ? undefined : (win.hazard as PointHazard);
@@ -326,6 +329,8 @@ export class AlertEngine {
     // (c), DECISIONS #581: tyst i kandidatEfterHalkaS efter att samma sträckas halkvarning (A1) talat.
     const a1 = k.h.segmentHazardId ? this.fired.get(k.h.segmentHazardId) : undefined;
     if (a1 && fix.t - a1.t < this.cfg.kandidatEfterHalkaS) return null;
+    // Taket, DECISIONS #606: högst en kandidat per kandidatTakS, vilken sträcka det än gäller.
+    if (this.lastKandidatT !== null && fix.t - this.lastKandidatT < this.cfg.kandidatTakS) return null;
     return { hazard: k.h, kind: "kandidat", distM: best, alertKey: k.h.id, beta: true };
   }
 }

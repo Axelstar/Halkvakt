@@ -31,6 +31,8 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
     private var lastSpokenT: Double? = null
     /** Vad som senast sades — spärren får bara tysta något som INTE är viktigare (#127). */
     private var lastSpokenKind: HazardKind? = null
+    /** När kandidaten senast talade — taket räknas därifrån, oavsett sträcka (DECISIONS #606). */
+    private var lastKandidatT: Double? = null
     private val fired = HashMap<String, Pair<Double, Double>>() // id -> (t, odometerM)
 
     private val slipperyInfo = Regex("(?<![a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt)", RegexOption.IGNORE_CASE)
@@ -91,6 +93,7 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
 
         lastSpokenT = fix.t
         lastSpokenKind = win.kind
+        if (win.kind == HazardKind.KANDIDAT) lastKandidatT = fix.t
         fired[win.alertKey] = fix.t to odometerM
         val ph = win.hazard as? PointHazard
         return Alert(
@@ -216,6 +219,8 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
         // (c), DECISIONS #581: tyst i kandidatEfterHalkaS efter att samma sträckas halkvarning (A1) talat.
         val a1 = k.segmentHazardId?.let { fired[it] }
         if (a1 != null && fix.t - a1.first < cfg.kandidatEfterHalkaS) return null
+        // Taket, DECISIONS #606: högst en kandidat per kandidatTakS, vilken sträcka det än gäller.
+        lastKandidatT?.let { if (fix.t - it < cfg.kandidatTakS) return null }
         return Candidate(k, HazardKind.KANDIDAT, b, k.id, beta = true)
     }
 }
