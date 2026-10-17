@@ -15010,3 +15010,25 @@ skrivs ned och står kvar: simuleringen stannade efter 31 av 45 minuter, när te
 **Stomdokument:** LIV steg 13, BED §4.2
 
 **C 17/10 (Bengts ord *"1a"*: tryck mitt *starta* nu, kandidaten förblir av tills Axel trycker).** Axel tryckte *starta* 19:50:52 UTC (kandidatbrytaren 39064197746) och Claude Bengts 21:04:12 UTC på hans ord *"1a"* (39069356865): kandidaten var AV, är PÅ. Lägesfilen 21:04:14 UTC bär nyckeln med 4 sträckor (10025, 45080, 87010, 94003), och manifestets sha256 är lika med filens. 45080 och 87010 saknar Trafikverkets halka, så kortprovet kan göras. Axels tryck 19:50 var okänt för Claude när (a) föreslogs, så kandidaten slogs på direkt i stället för vid Axels tryck. Kvar i steg 13: betakortet.
+
+## #632 (18/10 2026) Bygge 29 med halkzonen före App Review — 0.3.13 (29) är bygget som granskas (kort #343 steg 12, kort #360)
+
+**Bengts ord 17/10 kväll:** *"2 ja"*, på frågan i §4.2: bygge 29 med halkzonen före App Review?
+
+**Beslut.** Byggnumret höjs till 0.3.13 (29) på iOS och Android i en egen commit efter den sista appändringen, och 29 laddas upp med
+TestFlight-flödet från main. 29 är bygget som går till App Review, inte 28.
+
+**Vad 29 har som 28 saknar** (`git diff d33467c` i `ios/HalkvaktApp/Sources`, `ios/HalkvaktEngine/Sources`, `android/app/src` och
+`android/engine/src/main`):
+- **Halkzonen** (PR #1049, DECISIONS #621, #624): hala sträckor inom 500 m från varandra är en zon för reprisregeln, i `Engine.swift` och
+  `Engine.kt`. I appen hörs en *halka* per korsning i stället för tre på 90 sekunder, som vid Vittangi i soffprovet (#619).
+- `Rutter.swift` och `Rutter.kt` (PR #1052) finns i motorpaketet men används inte av appen än.
+- Inget annat i appkoden.
+
+**Soffprovet på 28 gäller också 29.** Inga ändrade rader rör kandidaten, och zonregeln gäller bara Trafikverkets hala sträckor
+(`slippery_segment`). Provets sträcka 87010 saknade Trafikverkets halka, så zonregeln spelade inte in. Betakortet, det sista i steg 13,
+prövas på 29.
+
+**Alternativ.** App Review med 28, utan halkzonen — förkastat: granskarna och testarna hade fått tre *halka* i en korsning.
+
+**Stomdokument:** APP 0.3.13, LIV steg 12, BED §4.2
