@@ -4,7 +4,9 @@
 // längs linjen i 80 km/h, en punkt var tredje sekund, med 3 km inkörning rakt bakåt från linjens början. Motorn varnar när en punkt
 // ligger framför i färdriktningen inom förvarningen (engine.ts, evaluateKandidat), så inkörningen ger den tid att tala.
 // Vägrar om kandidaten inte varnar någonstans. Positionen är påhittad och lämnar aldrig datorn.
-// Kör: node --experimental-strip-types scripts/kandidat-gpx.ts [--stracka <id>] [--ut soffprovet.gpx] | --sjalvtest
+// --xcode skriver rutten som punkter med tid (<wpt>), som Xcodes platssimulering läser (ios/MAC-GUIDE.md); utan den spårpunkter
+// (<trkpt>) för Android-emulatorn (DECISIONS #605).
+// Kör: node --experimental-strip-types scripts/kandidat-gpx.ts [--stracka <id>] [--ut soffprovet.gpx] [--xcode] | --sjalvtest
 import { writeFileSync } from "node:fs";
 import { haversineM } from "../engine/src/geo.ts";
 import { linjerUr, parning } from "../kuvos/facit-trv.ts";
@@ -43,11 +45,12 @@ export function rutt(linje: P[], stegM = FART_MS * STEG_S, inkorningM = INKORNIN
   return ut;
 }
 
-export function gpx(punkter: P[], namn: string, start: number): string {
-  const rad = (p: P, i: number) =>
-    `      <trkpt lat="${p[1].toFixed(6)}" lon="${p[0].toFixed(6)}"><time>${new Date(start + i * STEG_S * 1000).toISOString().replace(".000", "")}</time></trkpt>`;
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="Halkvakt soffprovet (DECISIONS #596)">\n  <trk><name>${namn}</name><trkseg>\n` +
-    punkter.map(rad).join("\n") + "\n  </trkseg></trk>\n</gpx>\n";
+export function gpx(punkter: P[], namn: string, start: number, xcode = false): string {
+  const tid = (i: number) => new Date(Math.floor(start / 1000) * 1000 + i * STEG_S * 1000).toISOString().replace(".000Z", "Z");   // hela sekunder
+  const huvud = `<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="Halkvakt soffprovet (DECISIONS #596)">\n`;
+  if (xcode) return huvud + punkter.map((p, i) => `  <wpt lon="${p[0].toFixed(6)}" lat="${p[1].toFixed(6)}"><time>${tid(i)}</time></wpt>`).join("\n") + "\n</gpx>\n";
+  const rad = (p: P, i: number) => `      <trkpt lat="${p[1].toFixed(6)}" lon="${p[0].toFixed(6)}"><time>${tid(i)}</time></trkpt>`;
+  return huvud + `  <trk><name>${namn}</name><trkseg>\n` + punkter.map(rad).join("\n") + "\n  </trkseg></trk>\n</gpx>\n";
 }
 
 function sjalvtest() {
@@ -68,6 +71,11 @@ function sjalvtest() {
   k(g.includes(`<trkpt lat="${r[0][1].toFixed(6)}" lon="16.000000"><time>2026-10-17T05:00:00Z</time></trkpt>`) && g.includes("<time>2026-10-17T05:00:03Z</time>")
     && (g.match(/<trkpt /g) ?? []).length === 2,
     "GPX: spårpunkter med lat, lon och tid, tre sekunder isär");
+  const x = gpx(r.slice(0, 3), "prov", Date.parse("2026-10-17T05:00:00Z"), true);
+  k(x.includes(`<wpt lon="16.000000" lat="${r[0][1].toFixed(6)}"><time>2026-10-17T05:00:00Z</time></wpt>`) && x.includes("<time>2026-10-17T05:00:06Z</time></wpt>")
+    && (x.match(/<wpt /g) ?? []).length === 3 && !x.includes("<trk") && x.endsWith("</gpx>\n"),
+    "GPX för Xcode: punkter med tid (<wpt>) som TestkorningE22.gpx, inga spår");
+  k(gpx(r.slice(0, 1), "prov", Date.parse("2026-10-17T05:00:00.197Z"), true).includes("<time>2026-10-17T05:00:00Z</time>"), "tiden i hela sekunder också när starten har millisekunder");
   if (fel) process.exit(1);
   console.log("SJÄLVTEST OK: kandidat-gpx");
 }
@@ -85,8 +93,8 @@ else if (direkt) {
   const linje = linjerUr(await hamta(VAGLAG)).find((l) => l.id === k.id);
   if (!linje) { console.error(`vägrar: sträckan ${k.id} finns inte i väglagsnätet`); process.exit(1); }
   const del = [...linje.delar].sort((a, b) => nara(b, k.punkter) - nara(a, k.punkter))[0];
-  const r = rutt(del), ut = arg("--ut") ?? "soffprovet.gpx";
-  writeFileSync(ut, gpx(r, `Kandidaten på sträcka ${k.id}`, Date.now()));
+  const xcode = process.argv.includes("--xcode"), r = rutt(del), ut = arg("--ut") ?? (xcode ? "soffprovet-xcode.gpx" : "soffprovet.gpx");
+  writeFileSync(ut, gpx(r, `Kandidaten på sträcka ${k.id}`, Date.now(), xcode));
   console.log(`sträcka ${k.id}: ${k.punkter.length} varnande punkter, ${nara(del, k.punkter)} inom ${NARA_M} m från rutten; ` +
     `${r.length} punkter, ${(r.length * STEG_S / 60).toFixed(0)} min i 80 km/h → ${ut}`);
 }
