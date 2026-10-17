@@ -14883,3 +14883,43 @@ brytaren där"*.
 **Följd:** en tredje flik flyttar flikarnas lägen, så fotostudions skärmbildsflöde för Android rättas i samma varv.
 
 **Stomdokument:** FAV §2 fliken och §6 spara, APP §4 skärmarna, BED §4.2
+
+## #626 (17/10 2026) Halkvakt live: bilderna följer Varumärkesguide 1.0 (kort #281)
+
+**Beslut.** Axel 17/10 21:01, *"Jag gillar dem"*, på exemplen. Bildmallen i `marknadsforing/posta.mjs` (`html`) följer nu
+Varumärkesguide 1.0 och Sociala mallar: gult är bara ytan för en fara som är live — SMHI-varning och höstens första blir ett helt
+gult kort med halkaikonen, bläck #080B0D och sekundär text #3A2E0B — och allt annat (morgonlistan, sedan i går, höstens kallaste,
+veckan) är Dagsläget på mörk mark med länen i en panel med streckade linjer. Gult är aldrig text: siffrorna, det stora talet och
+staplarna är ljusa. Isblått (#9AD8FF, `tema: "is"`) är borttaget, rubrikerna har vikt 600 och spärrning −0,035 em, och logotypen
+står i foten med källan och halkvakt.se/lan. Texterna, urvalet och spärrarna är oförändrade.
+
+**Alternativ.** Ett län per bild som Dagsläget i mallarna — nej: fler inlägg, och spärren tre per dygn skulle tvinga bort län.
+Morgonlistan behåller upp till fem län per bild; det är den enda medvetna avvikelsen från mallarna. Live-mallens vägskylt och
+sträcka — inte nu: motorn postar per län, inte per vägsträcka.
+
+**Prov:** `test/posta.test.ts` 18/18, ett nytt. Motprov: gul textfärg på talen fäller det nya provet och inget annat.
+
+**Stomdokument:** inga — marknadsföringen har inget stomdokument; guiden bor i designsystemet Halkvakt och projektets brand/varumarkesguide.md.
+
+## #627 (17/10 2026) Halkvakt live: larmen postas när de händer (kort #281)
+
+**Beslut.** Axel 17/10 21:23, *"jag gillar det"*. De gula inläggen (SMHI-varning och höstens första) är larm och postas när det
+händer, inte i de tre dagliga passen. Ett eget arbetsflöde, `halkvakt-larm.yml`, kör `posta.mjs koll` varannan halvtimme
+(pulsklockans `puls-live-larm`, schema `7,37 * * * *`); finns ett larm renderas och postas det direkt, annars slutar körningen
+innan Playwright laddas. Larmen räknas inte mot de tre inläggen per dygn och inte mot fyratimmarsluckan, och de mörka inläggen
+räknas inte mot larmen. Larmen har ett eget tak: **högst fyra per dygn**. Spärren 20 timmar för samma nyckel (samma län och typ)
+står kvar. Höstens första minusgrader får frysikonen, halka på vägbanan halkaikonen — en ikon per fara. Larmfilerna heter
+`<dag>-live-HHMM` så att flera samma dag inte krockar; båda arbetsflödena delar concurrency-gruppen `halkvakt-live`.
+Pulsklockan får ett nytt jobb: `ANTAL_NYA` och vakthundens `PULS_GOLV` blir 18.
+
+**Alternativ.** Låta larmen gå i passen men före de mörka (för sent: Värmlands första minusgrader 17/10 kvällen stoppades av
+luckan efter ett handpostat inlägg). Inget tak alls (en natt med många län kan bli en ström; fyra räcker för en dålig natt och
+länen samlas i samma bild).
+
+**Prov:** `test/posta.test.ts` 19/19, ett nytt (*larmen: bara i larmkollen, utanför dagens tre, högst fyra per dygn*). Motprov:
+att ta bort larmens särräkning, och att höja taket till 40, fäller var för sig bara det nya provet.
+
+**Följd:** efter sammanslagningen ska pulsklockan läggas in (`scripts/pulsklocka.ts`, kräver DATABASE_URL) och vakthunden
+deployas, annars larmar vakthunden på det saknade jobbet eller jobbet körs aldrig.
+
+**Stomdokument:** inga — marknadsföringen har inget stomdokument.
