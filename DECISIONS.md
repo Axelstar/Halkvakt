@@ -14781,3 +14781,32 @@ Glappet som räknas som samma zon sätts ur sträckornas geometri vid de täta f
 motorn i tre språk, testvektorerna, rösttexten och produktboken.
 
 **Stomdokument:** APP §3 rösten, LIV steg 12 bygget, BED §4.2
+
+## #621 (17/10 2026) Halkzonen (kort #360): form (b) — grannsträckor blir en zon för reprisregeln; glappet ur geometrin
+
+**Bengts ord 17/10:** *"1b"*, på valen i #620.
+
+**Beslut (b):**
+- Grannsträckor med halka slås ihop till en zon bara för den första varningen. Tre *halka* i korsningen vid Vittangi blir alltså en.
+- Inne i zonen gäller reprisregeln som i dag (10 min och 5 km). En lång zon upprepas därför som #103 vill.
+- Rösttexten ändras inte.
+- I motorn blir det så här: reprisregeln räknar på zonen i stället för på sträckan. En ny halkvarning tystas om en sträcka inom glappet
+  fick en halkvarning för mindre än 10 min och 5 km sedan. Det tystade loggas i skuggans `suppressed`, med skälet.
+
+**Glappet, mätt ur geometrin** (DB-knappen 39055345325, skuggloggens halkvarningar i 14 dygn och sträckornas linjer i
+`road_conditions`, beskrivande):
+
+| Två halkvarningar i följd för olika sträckor | Par | Under 100 m isär | 100–500 m | Över 2 km | Största |
+| :-- | --: | --: | --: | --: | --: |
+| Inom 120 s | 17 | 15 | 2 | 0 | 451 m |
+| Över 120 s | 49 | 17 | 11 | 21 | 151 km |
+
+Korsningen vid Vittangi: 45125, 45130 och 395000 ligger 11–21 m från varandra. Grannsträckor kan få varningar långt isär i tid när
+den första sträckan är lång: 14025 och 14027 ligger 4 m isär, och varningarna kom 590–865 s efter varandra. Där tar reprisregeln
+hand om resten, för efter 10 min och 5 km får zonen tala igen.
+
+**Förslag till glapp: 500 m.** Alla 17 täta följder ryms inom det (största 451 m), och inga följder alls har ett avstånd mellan 500 m och
+2 km, så gränsen ligger i ett tomrum i datan. Talet blir en tröskel i motorn och kräver Bengts ord (bedömningen §4.2). Därefter
+kontraktsgrinden för talet i tre språk, testvektorer för korsningen vid Vittangi och för en lång zon som upprepas, och produktboken.
+
+**Stomdokument:** APP §3 rösten, BED §4.2
