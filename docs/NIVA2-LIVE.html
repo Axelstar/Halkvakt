@@ -238,7 +238,7 @@
   </details>
 </div>
 <!-- /LÄGESRADER -->
-  <p>Beroenden inom parentes. Steg 1–6, 10 och 11 är byggda, och 9 och 13 är byggda men väntar på Axel (16/10). Kritisk väg: 7 för marsdomen, och för appen 12 (Axels bygge) → bilprovet i 13 → takten i 7 → App Review. Regeln (val 2) finns; signeringen i steg 8 väntar på radarns tal 26/10. Steg 9 går parallellt.</p>
+  <p>Beroenden inom parentes. Steg 1–6 och 10–12 är byggda, och 9 och 13 är byggda men väntar på Axel (17/10). Kritisk väg: 7 för marsdomen, och för appen soffprovet i 13 (#596, #605) med bygget 0.3.13 (27), uppladdat 17/10 av TestFlight-flödet (38993725899), #606 → App Review. Takten i 7 är byggd som tak (#606); läsningen 2/11 körs som mätning och inte som beslut. Regeln (val 2) finns; signeringen i steg 8 väntar på radarns tal 26/10. Steg 9 går parallellt.</p>
   <div class="tabell"><table>
     <thead><tr><th>Nr</th><th>Steg</th><th>Vad som görs</th><th>Vem</th><th>Läge</th></tr></thead>
     <tbody>
@@ -317,13 +317,13 @@
       <tr><td class="nr">11</td><td>Produktboken (10)</td><td>Skärmbilder och text i samma commit som rösttexten. Integritetsuppgifterna
         ändras inte: inget nytt lämnar telefonen.</td>
         <td>Claude</td><td><span class="dom klar">klar 16/10 (#577)</span></td></tr>
-      <tr><td class="nr">12</td><td>Bygget 0.3.13 (26) (10, 11, och 4 grönt)</td><td>Båda plattformarna, när ios-engine, android och ci
-        är gröna på samma commit. Axel arkiverar iOS på sin Mac (TestFlight-flödet i Actions finns inte än, kort #333). Sedan
+      <tr><td class="nr">12</td><td>Bygget 0.3.13 (27) (10, 11, och 4 grönt)</td><td>Båda plattformarna, när ios-engine, android och ci
+        är gröna på samma commit. iOS går via TestFlight-flödet i Actions (#582, kort #333 stängt 17/10). Sedan
         TestFlight och App Review. Android ur CI som i dag.</td>
-        <td>Axel arkiverar och skickar in</td><td><span class="dom vantar">väntar på Axels bygge från bd58e36</span></td></tr>
+        <td>Flödet laddar upp, Axel skickar in</td><td><span class="dom klar">0.3.13 (27) med kandidatens tak uppladdat 17/10 av TestFlight-flödet (38993725899), #606; App Review efter soffprovet</span></td></tr>
       <tr><td class="nr">13</td><td>Avstängningen i drift (6, 12)</td><td>Nyckeln tas bort ur publiceringen, och appen ska tystna
-        (DECISIONS #562). Provas i drift innan bygget går till App Review.</td>
-        <td>Claude, Bengt provar i bilen</td><td><span class="dom vantar">byggd och provad 16/10 (#578), Axels starta och bilprovet kvar</span></td></tr>
+        (DECISIONS #562). Provas i drift innan bygget går till App Review, som soffprov (Android-emulatorn hos Bengt eller en iPhone via Xcode, #596, #605); bilprovet görs när det blir kallt i Skåne, som bekräftelse i fält.</td>
+        <td>Claude, Bengt provar i bilen</td><td><span class="dom vantar">byggd och provad 16/10 (#578); soffprovet (rutten genererad 16/10 och 17/10) och Axels starta kvar</span></td></tr>
       <tr class="grupp"><td colspan="5">D. Vintern</td></tr>
       <tr><td class="nr">14</td><td>Mätningen och domen</td><td>Alla spår mäts i skuggan. Domen i mars (DECISIONS #547) avgör om
         kandidaten får stanna: grind A–C med samma trösklar, RÅ som kontroll och reserv. Faller den, används avstängningen i steg 13.</td>
@@ -353,7 +353,8 @@
       prövas enligt regel L1–L4 (DECISIONS #564). Annars är marsdomen förorenad.</li>
     <li><b>Tröskeln bor på ett ställe</b>, i databasen (<code>kandidat_regel()</code>); publiceringen läser den och bär inga tal (DECISIONS #576). Motorn får en farotyp, text, prioritet och vektorer, inga tal.</li>
     <li><b>Samma hazard aldrig två gånger inom 10 minuter eller 5 km</b>, och inom 10 sekunder efter en varning talar bara en viktigare
-      fara. Det gäller den nya farotypen som alla andra.</li>
+      fara. Det gäller den nya farotypen som alla andra. Kandidaten har dessutom ett eget tak: högst en kandidatvarning per 10 minuter,
+      vilken sträcka det än gäller (kandidatTakS = 600 s i motorn i tre språk, vektor v47; DECISIONS #606).</li>
     <li><b>Inget lämnar telefonen.</b> Matchningen sker i appen mot den nedladdade filen, som i dag.</li>
   </ul>
 
@@ -381,11 +382,11 @@
   <h2 id="avsnitt-7">7. Det här är Axels</h2>
   <ol>
     <li>Svaren på de fem valen, tillsammans med Bengt (val 1, 3 och 4 är avgjorda, val 2 beslutad, val 5 kvar). Regelns tal (DECISIONS #562, #565, #566, #575) är Axels och signeras i förregistreringen.</li>
-    <li>S3 till App Store: arkivera 0.3.12 (24) och skicka in den. Det ger en prognosvarning live medan resten byggs.</li>
+    <li>S3 till App Store: <i>↪ överspelad 17/10</i>, bygget 0.3.12 (24) har ersatts av 0.3.13 (27) (sista punkten nedan).</li>
         <li>Läsa paritetsprovet (steg 4) innan något publiceras: det är Axels kedja och Axels kandidat.</li>
     <li>Signaturen på ändringen av TROSKLAR-SKUGGAN för den egna betavarningen (Bengts ja finns, DECISIONS #563, #575), vid förregistreringen.</li>
     <li>Godkänna förregistreringen för 2026/27 senast 31/10 (steg 8).</li>
-    <li>Arkivera bygget 0.3.13 (26) från main (bd58e36) till intern TestFlight för bilprovet, och skicka in det till App Review efter takten (steg 12).</li>
+    <li>Skicka in bygget 0.3.13 (27), uppladdat 17/10 av TestFlight-flödet (38993725899) (#606), till App Review efter soffprovet (steg 13). Nyckeln ligger på plats (#582).</li>
   </ol>
 
   <hr>
