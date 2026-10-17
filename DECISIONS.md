@@ -14426,3 +14426,17 @@ Issue #1022 (halkvakt-live hade aldrig kört) stängdes av mätvakten själv 05:
 inget.
 
 **Stomdokument:** SYS databasen och arkivet, BED §4.2
+
+## #609 (17/10 2026) Halkvakt live: morgonlistan spärras per dag, inte per 20 timmar (kort #281)
+
+**Beslut.** Axel 17/10 09:26: *"Varför har vi inte postat idag?"* Morgonens körning 04:50 UTC (39004036248) såg halka i fem län men
+postade inget: provinlägget 16/10 23:14 räknades som en morgonlista, och 20-timmarsspärren för samma nyckel (#600) gällde till 19:14
+i dag. Morgonlistan spärras nu bara av en morgonlista samma dag; 20 h-spärren gäller kvar för händelserna. Körningen startades om
+för hand före 10:00 så att dagens lista gick ut.
+
+**Alternativ.** Sänka 20 h-spärren för alla nycklar — förkastat: den skyddar händelserna mot att upprepas morgon och kväll.
+
+**Prov:** `test/posta.test.ts` 15/15, med fallet från i dag (kvällskvitto i går, morgon i dag ⇒ listan postas).
+
+**Stomdokument:** inga — marknadsföringen har inget stomdokument; planen bor i MARKNADSFORING-NOLLBUDGET.md.
+
