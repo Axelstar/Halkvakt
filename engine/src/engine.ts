@@ -8,7 +8,7 @@
 //      Losers are DROPPED, not queued. No exceptions, not even for accidents (logged in
 //      DECISIONS — revisit only on beta evidence).
 //   2. Same hazard never repeats until BOTH 10 min have passed AND 5 km been driven. Slippery stretches whose lines lie
-//      within halkZonM of each other are one hazard for this rule (the halka zone, kort #360, DECISIONS #621, #622).
+//      within halkZonM of each other are one hazard for this rule (the halka zone, kort #360, DECISIONS #621, #624).
 //      SINGLE EXCEPTION (DECISIONS #28): a serious accident speaks twice by design —
 //      once early (10 km, while exits remain) and once close (2 km, "slow down").
 //      These are two different messages about one hazard, not a repeat of one message,

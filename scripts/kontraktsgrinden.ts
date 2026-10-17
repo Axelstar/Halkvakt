@@ -485,7 +485,7 @@ export const KONTRAKT: Kontrakt[] = [
   },
   {
     namn: "Halkzonen — två halksträckor inom så här många meter är en zon för reprisregeln",
-    varfor: "Motorns tre portar ska slå ihop samma grannsträckor (DECISIONS #621, #622); en port med annat glapp säger fler eller färre halka i en korsning än de andra.",
+    varfor: "Motorns tre portar ska slå ihop samma grannsträckor (DECISIONS #621, #624); en port med annat glapp säger fler eller färre halka i en korsning än de andra.",
     former: [/halkZonM(?::\s*\w+)?\s*[:=]\s*(\d+)(?:\.0)?\b/],
     filer: /engine\/src\/types\.ts|engine\/Types\.kt|HalkvaktEngine\/Engine\.swift/,
     golv: 3,

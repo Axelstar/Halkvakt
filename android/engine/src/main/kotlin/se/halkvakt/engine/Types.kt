@@ -101,7 +101,7 @@ data class EngineConfig(
     val kandidatEfterHalkaS: Double = 120.0,
     // Taket (DECISIONS #606): högst en kandidat per så här många sekunder — samma tal som engine/src/types.ts (kontraktsgrinden).
     val kandidatTakS: Double = 600.0,
-    // Halkzonen (DECISIONS #622): sträckor inom så här många meter är en zon för reprisregeln — samma tal som engine/src/types.ts
+    // Halkzonen (DECISIONS #624): sträckor inom så här många meter är en zon för reprisregeln — samma tal som engine/src/types.ts
     // (kontraktsgrinden).
     val halkZonM: Double = 500.0,
 )

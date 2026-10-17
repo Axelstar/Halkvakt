@@ -111,7 +111,7 @@ public struct EngineConfig {
     public var kandidatEfterHalkaS = 120.0
     // Taket (DECISIONS #606): högst en kandidat per så här många sekunder — samma tal som engine/src/types.ts (kontraktsgrinden).
     public var kandidatTakS = 600.0
-    // Halkzonen (DECISIONS #622): sträckor inom så här många meter är en zon för reprisregeln — samma tal som engine/src/types.ts
+    // Halkzonen (DECISIONS #624): sträckor inom så här många meter är en zon för reprisregeln — samma tal som engine/src/types.ts
     // (kontraktsgrinden).
     public var halkZonM = 500.0
     public init() {}
@@ -409,7 +409,7 @@ public final class AlertEngine {
         var eligible: [Candidate] = []
         for c in candidates {
             if let f = fired[c.alertKey], !rearmed(f) { continue }
-            // Halkzonen (kort #360, DECISIONS #621, #622): a neighbour stretch within halkZonM spoke and is not re-armed.
+            // Halkzonen (kort #360, DECISIONS #621, #624): a neighbour stretch within halkZonM spoke and is not re-armed.
             if c.kind == .slippery_segment, let a = segments.first(where: { $0.id == c.id }),
                segments.contains(where: { s in
                    s.id != c.id && (fired[s.id].map { !rearmed($0) } ?? false) && grannar(a, s)

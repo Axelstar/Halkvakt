@@ -86,7 +86,7 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
         val eligible = candidates.filter { c ->
             val f = fired[c.alertKey]
             if (f != null && !rearmed(f)) return@filter false
-            // Halkzonen (kort #360, DECISIONS #621, #622): a neighbour stretch within halkZonM spoke and is not re-armed.
+            // Halkzonen (kort #360, DECISIONS #621, #624): a neighbour stretch within halkZonM spoke and is not re-armed.
             val a = c.hazard as? SegmentHazard
             if (c.kind == HazardKind.SLIPPERY_SEGMENT && a != null &&
                 segments.any { (s, _) -> s.id != a.id && fired[s.id]?.let { !rearmed(it) } == true && grannar(a, s) }) return@filter false

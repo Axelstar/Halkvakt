@@ -44,7 +44,7 @@ Define success criteria. Loop until verified.
   never queued. Within 10 s of an utterance only a MORE important hazard may speak
   (priority-aware cooldown, kort #127 13/9 — replaced the blind 45 s that silenced ice
   20 s behind a camera, v23). Same hazard never repeated within 10 min / 5 km; slippery stretches whose lines lie within
-  500 m are one hazard for this rule (the halka zone, kort #360, DECISIONS #621, #622, v48–v50). Covered by
+  500 m are one hazard for this rule (the halka zone, kort #360, DECISIONS #621, #624, v48–v50). Covered by
   tests in `engine/vectors/` — never weaken a vector to make a build pass. The cadence is
   MEASURED, not assumed: skuggrapportens `takt` (tätaste följd, följder inom 60 s) is where
   any cap must come from (Bengt 16/9, DECISIONS #200).

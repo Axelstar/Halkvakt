@@ -564,7 +564,7 @@ const scenarios: Scenario[] = [
     ],
     trace: northTrace(720, 80),
   },
-  // Halkzonen, kort #360, DECISIONS #621, #622: sträckor vars linjer ligger inom halkZonM (500 m) är en zon för reprisregeln. Alla
+  // Halkzonen, kort #360, DECISIONS #621, #624: sträckor vars linjer ligger inom halkZonM (500 m) är en zon för reprisregeln. Alla
   // avstånd ligger långt från 500 m (15–18 m eller 2 km), och varje förvarningsgräns minst 10 m från en hel sekunds fix.
   {
     file: "v48_halkzon_korsning_en_varning", name: "Tre halksträckor i en korsning talar en gång (halkzonen, #360)",
