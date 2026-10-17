@@ -14923,3 +14923,25 @@ att ta bort larmens särräkning, och att höja taket till 40, fäller var för 
 deployas, annars larmar vakthunden på det saknade jobbet eller jobbet körs aldrig.
 
 **Stomdokument:** inga — marknadsföringen har inget stomdokument.
+
+## #628 (17/10 2026) Soffprovet på iPhone 17/10, andra försöket: A klarat, B tyst i 31 av 45 minuter (kort #343, steg 13)
+
+**Axel 17/10**, iPhone via Xcode på main d33467c (0.3.13 (28), rättelsen #359 med), rutten `soffprovet-xcode-2.gpx` ur lägesfilen 18:50
+UTC: sträcka 87010 (Jämtland), en varnande punkt, ingen Trafikverkets halka på sträckan (`kandidat-gpx` väljer bara sådana, #619). Rutten
+passerar grannsträckan 87005 (väg 87, Trafikverkets *fläckvis Is*) ungefär 2 min in och kandidatpunkten ungefär 4 min in.
+
+**Utfallet, som det var (lokal tid):**
+- **A.** 21:07 rutten och vakten startade; loggen slutade på *"startar"*, inget *"somnar om"*. 21:09 *"Varning: halka rapporterad på vägen
+  framför dig."* (87005). **21:12 *"Halkvakt tror: halka framöver."*** Förväntan A uppfylld. Om betakortet visades är inte säkert (Axel:
+  *"jag vet inte helt 100 %"*).
+- **Tysta** 21:12 av Axel (kandidatbrytaren 39061437666); lägesfilen 19:12:29 UTC utan nyckeln, ute på halkvakt.se 21:13:45.
+- **B.** 21:14 vakten stoppad och startad, rutten om. Passagen omkring 21:18 låg inom taket (en kandidat per 10 min, #606, från 21:12) och
+  räknas inte. 21:24 rutten om; passagen omkring 21:28 låg utanför taket. 21:18 och senare bara Trafikverkets *halka* (87005). **Inget
+  *"Halkvakt tror"* 21:14–21:45** (Axel: *"neg"*). Telefonen drogs ur Macen omkring 21:45, så simuleringen stannade efter **31 av 45
+  minuter**. Provet startades inte om: en ny start hämtar en ny lägesfil och är ett annat prov.
+
+**Bedömningen:** A klarat. B klarat på den passage som kan fälla den (21:28), men inte över hela 45-minutersfönstret, som skulle täcka appens
+omläsning av lägesfilen var 30:e minut (en omläsning hann ske omkring 21:44). Om det räcker för steg 13 är Bengts beslut (frågan i §4.2).
+Kvar: *starta* av Bengt och Axel (del C).
+
+**Stomdokument:** LIV 3, BED §4.2
