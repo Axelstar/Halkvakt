@@ -1808,3 +1808,58 @@ test("#580 autovacuum: tabellerna som byts ut städas vid 2 % + 1 000 döda rade
     }
   } finally { await pool.end(); }
 });
+
+// DECISIONS #618 (ii), sql/063: de fyra tabellerna som aldrig rensas exporteras per dygn på sin egen tidskolumn, men raderas aldrig.
+test("#618 (ii): skuggloggen, väglaget, händelserna och SMHI exporteras på sin tidskolumn och raderas aldrig", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const stad = async () => {
+    await q("DELETE FROM road_condition_history WHERE segment_id = 'T618'");
+    await q("DELETE FROM situation_archive WHERE deviation_id = 'T618'");
+    await q("DELETE FROM smhi_warnings_history WHERE area_id = 618618");
+    await q("DELETE FROM shadow_log WHERE alerts = '[\"T618\"]'::jsonb");
+    await q("DELETE FROM arkiv_export_tabell");
+  };
+  try {
+    await q("CREATE TABLE IF NOT EXISTS shadow_log (id bigserial PRIMARY KEY, run_at timestamptz NOT NULL DEFAULT now(), alerts jsonb NOT NULL DEFAULT '[]'::jsonb)");
+    for (const f of ["001_init.sql", "003_situation_archive.sql", "008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql",
+                     "018_trend_berakna.sql", "029_brott_index.sql", "030_langsam_vakt.sql", "050_kandidat_live.sql", "053_arkiv_tabeller.sql",
+                     "055_vagpunkter.sql", "056_kandidat_regel.sql", "057_kandidat_skugga.sql", "062_kortare_forvaring.sql", "063_arkiv_fyra_tabeller.sql"])
+      await q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+    await stad();
+    const d = (await q("SELECT ((now() - interval '30 days') AT TIME ZONE 'UTC')::date::text AS d")).rows[0].d as string;
+    const kl = (h: number) => `${d}T${String(h).padStart(2, "0")}:00:00Z`;
+    // Bara testets rader får finnas på testets dygn.
+    await q("DELETE FROM road_condition_history WHERE (modified_time AT TIME ZONE 'UTC')::date = $1::date", [d]);
+    await q("DELETE FROM situation_archive WHERE (first_seen AT TIME ZONE 'UTC')::date = $1::date", [d]);
+    await q("DELETE FROM smhi_warnings_history WHERE (archived_at AT TIME ZONE 'UTC')::date = $1::date", [d]);
+    await q("DELETE FROM shadow_log WHERE (run_at AT TIME ZONE 'UTC')::date = $1::date", [d]);
+    await q(`INSERT INTO road_condition_history (segment_id, condition_code, condition_text, modified_time) VALUES
+      ('T618', 2, 'Halt', $1), ('T618', 1, 'Torrt', $2)`, [kl(3), kl(9)]);
+    // Händelsen började dagen innan men skrevs i arkivet på testets dygn: first_seen räknas, inte start_time.
+    await q(`INSERT INTO situation_archive (deviation_id, message_type_value, start_time, first_seen, last_seen)
+      VALUES ('T618', 'Accident', $1::timestamptz - interval '1 day', $1, $1)`, [kl(5)]);
+    await q(`INSERT INTO smhi_warnings_history (area_id, published, warning_id, event_code, level_code, archived_at)
+      VALUES (618618, $1::timestamptz - interval '2 days', 1, 'ICE', 'YELLOW', $1)`, [kl(6)]);
+    await q("INSERT INTO shadow_log (run_at, alerts) VALUES ($1, '[\"T618\"]'::jsonb)", [kl(7)]);
+
+    for (const [tab, n] of [["road_condition_history", 2], ["situation_archive", 1], ["smhi_warnings_history", 1], ["shadow_log", 1]] as const) {
+      const att = (await q("SELECT arkiv2_att_exportera($1, 100000)::text AS d", [tab])).rows.map((r) => r.d);
+      assert.ok(att.includes(d), `${tab}: dygnet står i kö (${att.length} dygn)`);
+      const text: string = (await q("SELECT arkiv2_dygn($1, $2::date) AS t", [tab, d])).rows[0].t;
+      assert.equal(text.split("\n").length - 1, n, `${tab}: ${n} rader i filen`);
+      await assert.rejects(q("SELECT arkiv2_export_klar($1, $2::date, $3, 10, 'x', 'v')", [tab, d, n + 1]), /har \d+ rader i databasen/);
+      assert.equal((await q("SELECT arkiv2_export_klar($1, $2::date, $3, 10, 'x', 'v') AS n", [tab, d, n])).rows[0].n, n);
+    }
+    // Golvet är NULL för de fyra: inte ens golvet noll raderar dem.
+    assert.match((await q("SELECT arkiv2_radera_exporterat(0, 0) AS s")).rows[0].s, /inget exporterat tabelldygn/);
+    assert.equal((await q("SELECT count(*)::int AS n FROM road_condition_history WHERE segment_id = 'T618'")).rows[0].n, 2, "väglaget står kvar");
+    assert.equal((await q("SELECT count(*)::int AS n FROM arkiv_export_tabell WHERE raderad IS NOT NULL")).rows[0].n, 0, "inget bokfört som raderat");
+    await assert.rejects(q("SELECT arkiv2_tidkolumn('weather_observations')"), /okänd tabell/);
+  } finally {
+    await stad().catch(() => {});
+    await pool.end();
+  }
+});

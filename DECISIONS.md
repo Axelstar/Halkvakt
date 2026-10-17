@@ -14694,6 +14694,17 @@ kom från en annan Claude-session via Bengt. Claude räknade fram vad det sparar
 
 Integrationsprovet för kandidatens loggar är omskrivet: fem och två dygn gamla raderas, ett dygn gammalt står kvar.
 
+**(ii) byggt** (`sql/063_arkiv_fyra_tabeller.sql`):
+- Exporten känner de fyra tabellerna. Dygnet räknas på tabellens egen tidskolumn (`arkiv2_tidkolumn`): skuggans `run_at`, väglagets
+  `modified_time`, händelsernas `first_seen` och SMHI:s `archived_at`.
+- Dygnet exporteras när det är åtta dygn gammalt, som trendtabellerna, eftersom en händelse skrivs om så länge den pågår och väglagets
+  rader kan komma in sent.
+- Golvet är NULL, så de fyra raderas aldrig.
+- `arkivexport` tar dem i sin lista.
+- Integrationsprovet prövar varje tabell: dygnet i kön, filens rader, radantalet vid bokföringen, och att inte ens golvet noll raderar
+  något.
+- Eftersläpningen är ungefär 160 tabelldygn sedan 24/8. Med två per tabell och timme tar exporten ikapp på ungefär ett dygn.
+
 **Mätningen, skriven före knappen:**
 1. **Natten till 18/10:** nattjobbet 03:50 raderar kandidatens dygn äldre än 17/10 och trendtabellernas och radarns dygn äldre än 8/10.
    Det läses med DB-knappen *las* efter 04 UTC i `arkiv_export_tabell` (`raderad`).
