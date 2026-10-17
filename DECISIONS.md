@@ -14517,3 +14517,44 @@ andra sajter), och en adress på halkvakt.se är det mottagaren känner igen.
 
 **Stomdokument:** inga — publiceringens innehåll för pressen; planen bor i MARKNADSFORING-NOLLBUDGET.md.
 
+## #614 (17/10 2026) Favoriterna: Bengts svar på synkprovets fynd, kort #233 och #283, färskheten och Nowcast (kort #340, #233, #283)
+
+**Bengts ord 17/10:** *"synkprovets fynd 1a 2a 2, 2 kort nira och fintraffic 233 a 283 (1) stängs med favoriterna  283 (2)senare 283(3) utred senare 283(4) ja, 3a 4 4a"*, på Claudes lista över favoriternas fyra frågor och svarsalternativen.
+
+**Besluten:**
+- **Synkprovets fynd (1) a:** rapportens gräns för fartkameror höjs så att kamerorna som motorn larmar för kommer med. **Talet sätts
+  inte än** (se *Fyndet* nedan); det visas för Bengt innan det används.
+- **Synkprovets fynd (2) a:** rapporten tar inte med halkavsnitt som korsar rutten (#531 står). Att motorn larmar för korsande
+  avsnitt prövas för sig.
+- **Kort #233 stängs (a).** Del 1, före resan, har blivit favoriterna. Del 2, snöflingan, kördes på kuvösens vinter (#440: 3,0 % över
+  +3 °C, inget säljargument). Del 3, köslut, står kvar som kort #15.
+- **Kort #283 stängs:** (1) ruttkollen stängs med favoriterna; (2) Fintraffics prognoser per vägavsnitt som extern jämförelse:
+  *senare*; (3) Finlands väghållningsdata som facit: *utred senare*; (4) *"när du kör, så kör du"* som argument i marknadsplanen: *ja*,
+  en rad på kort #281. (2) och (3) står på nya kort #355, med domen i mars som nyckel.
+- **Färskheten (a):** tio minuters publicering räcker för kollen före avresan. Synkprovet visar att det som saknas är systematiskt,
+  samma kameror och korsningar varje körning, inte filens ålder.
+- **Nowcast (a):** inte i första versionen. Prognosen kommer först efter domen i mars (FAVORITER §11).
+
+**Fyndet, när talet skulle sättas (17/10).** Synkprovets 60 senaste körningar (16/10 08:48 → 17/10 14:18) saknade samma sex kameror
+varje gång, och de ligger 144–202 m från rutten. Kamerornas avstånd mot favoritprovets 30 rutter räknades med rapportens eget urval
+längs linjen (`farorLangsRutten`) på `static.json`:
+
+| Gräns | Kameror i rapporten | Av de sex saknade | Andra nya, som motorn inte larmade för |
+| :-- | --: | --: | --: |
+| 100 m (i dag) | 356 | 0 | 0 |
+| 200 m | 368 | 5 | 7 |
+| 210 m | 369 | 6 | 7 |
+| 250 m | 372 | 6 | 10 |
+
+Men **alla sex står i Trafikverkets data på en annan väg än rutten:** väg 939 och E45 vid E6 Halmstad→Göteborg, väg 859 två gånger vid
+E4 Södertälje→Uppsala, väg 83 och E14 vid E4 Gävle→Sundsvall. Motorn väljer en kamera efter läge och riktning (inom 500 m framför
+bilen och högst 60° från färdriktningen), inte efter väg. E45 och E14 delar väg med E6 och E4 på delar av sträckorna; 939, 859 och 83
+är andra vägar. Om föraren inte passerar kamerorna är det rösten som larmar för en kamera på en annan väg, och då ska rapporten inte ta
+med dem. Frågan står i bedömningen §4.2; Bengt har kört E4 och E6 och sagt att kamerorna larmade rätt (fältdomen 11/9, TAVLA-ARKIV vid kort #100: en varning 500 m före
+varje verklig kamera). Inget ändras
+i motorn, och inget tal sätts i rapporten förrän frågan är besvarad.
+
+Kamerorna (id, väg, lat, lon ur `static.json`): 13009040 väg 939 57,42842 12,15641 · 14108020 E45 57,70974 11,96449 · 02040020
+väg 859 59,55854 17,89555 · 02040030 väg 859 59,58638 17,89612 · 21006010 väg 83 61,07564 16,96293 · 22017010 E14 62,38275 17,33471.
+
+**Stomdokument:** FAV §3 rapporten och §4 färskheten och §10 Fintraffic och §11 vad som väntar, BED §4.2
