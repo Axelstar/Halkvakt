@@ -154,3 +154,13 @@ test("vägrutans fil: länets vägar i ordning E före väg, sträckan utan väg
   assert.equal(v.vagar[1].strackor[0].halt, false);
   assert.equal(d.lan.find((l: any) => l.slug === "skane").vagar[0].strackor[0].plats, "Malmö - Lund");
 });
+
+test("läns- och vägsidorna hämtar typsnitten från halkvakt.se, aldrig från Google (DECISIONS #623)", () => {
+  const sidor = byggLanssidor({ vaglag: [], stationer: [], olyckor: [], now: NOW });
+  const html = Object.entries(sidor).filter(([namn]) => namn.endsWith(".html"));
+  assert.ok(html.length > 0);
+  for (const [namn, sida] of html) {
+    assert.ok(!/fonts\.(googleapis|gstatic)\.com/.test(String(sida)), namn);
+    assert.match(String(sida), /assets\/fonts\/fonts\.css/, namn);
+  }
+});
