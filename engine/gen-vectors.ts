@@ -564,6 +564,46 @@ const scenarios: Scenario[] = [
     ],
     trace: northTrace(720, 80),
   },
+  // Halkzonen, kort #360, DECISIONS #621, #622: sträckor vars linjer ligger inom halkZonM (500 m) är en zon för reprisregeln. Alla
+  // avstånd ligger långt från 500 m (15–18 m eller 2 km), och varje förvarningsgräns minst 10 m från en hel sekunds fix.
+  {
+    file: "v48_halkzon_korsning_en_varning", name: "Tre halksträckor i en korsning talar en gång (halkzonen, #360)",
+    description:
+      "Som vid Vittangi i soffprovet 17/10 (#619): A 1 010–3 000 m norrut, fortsättningen B från 3 015 m (15 m efter A:s slut) och en " +
+      "avtagsväg C som börjar 18 m från A:s slut och viker av 30° österut. A talar vid t=16 (654 m; t=15 låg 677 m). B och C ligger " +
+      "inom 500 m från A och är samma zon, så de tiger så länge A inte är fri enligt reprisregeln. Utan zonen hade C talat vid t=106 " +
+      "och B vid t=116: tre halka på 100 s.",
+    hazards: [
+      { id: "seg:A", kind: "slippery_segment", line: [[LON0, northOf(1010)], [LON0, northOf(3000)]], meta: { code: 2, info: [] } },
+      { id: "seg:B", kind: "slippery_segment", line: [[LON0, northOf(3015)], [LON0, northOf(6000)]], meta: { code: 2, info: [] } },
+      { id: "seg:C", kind: "slippery_segment", line: [[eastOf(15), northOf(3010)], [eastOf(2515), northOf(7340)]], meta: { code: 2, info: [] } },
+    ],
+    trace: northTrace(200, 80),
+  },
+  {
+    file: "v49_halkzon_lang_zon_upprepas", name: "En lång halkzon upprepas som en lång sträcka (halkzonen, #360, #103)",
+    description:
+      "A 1 010–20 000 m och B från 20 015 m (15 m efter A:s slut). A talar vid t=16 och igen vid t=616, när reprisregeln släpper " +
+      "(10 min och 5 km). B kommer inom förvarningen vid t=871, men A talade för 255 s sedan, så zonen tiger. B talar först vid " +
+      "t=1216, 600 s efter A:s andra varning. Utan zonen hade B talat redan vid t=871. B:s avstånd vid t=1216 är 0,65 m oavrundat " +
+      "(1 m i vektorn), 15 cm från avrundningsgränsen — långt över skillnaderna mellan språkens flyttal.",
+    hazards: [
+      { id: "seg:A", kind: "slippery_segment", line: [[LON0, northOf(1010)], [LON0, northOf(20000)]], meta: { code: 2, info: [] } },
+      { id: "seg:B", kind: "slippery_segment", line: [[LON0, northOf(20015)], [LON0, northOf(40000)]], meta: { code: 2, info: [] } },
+    ],
+    trace: northTrace(1260, 80),
+  },
+  {
+    file: "v50_halkzon_langt_isar_talar", name: "Två halksträckor 2 km isär är inte en zon — båda talar (halkzonen, #360)",
+    description:
+      "A 1 010–3 000 m och B 5 010–8 000 m, 2 010 m efter A:s slut, långt utanför 500 m. A talar vid t=16, B vid t=196 (654 m; " +
+      "t=195 låg 677 m).",
+    hazards: [
+      { id: "seg:A", kind: "slippery_segment", line: [[LON0, northOf(1010)], [LON0, northOf(3000)]], meta: { code: 2, info: [] } },
+      { id: "seg:B", kind: "slippery_segment", line: [[LON0, northOf(5010)], [LON0, northOf(8000)]], meta: { code: 2, info: [] } },
+    ],
+    trace: northTrace(240, 80),
+  },
 ];
 
 /** Canonical replay-with-updates — the reference all three test runners mirror. */
