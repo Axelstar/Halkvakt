@@ -14488,3 +14488,17 @@ siffra från fel ände av vägen vore en överdrift (CLAUDE.md).
 
 **Stomdokument:** inga — publiceringens innehåll för pressen; planen bor i MARKNADSFORING-NOLLBUDGET.md.
 
+## #612 (17/10 2026) Rutan med flikar: länet, vägarna och pendlingen i en iframe (kort #281)
+
+**Beslut.** Axel 17/10 13:11, på frågan om tre rutor eller en: *"Ja exakt! Så det är typ som man bytar bild på Instagram"*. Kartsajten
+får `ruta.html?lan=<län>&flik=lan|vagar|pendling&tema=ljus`: en ruta med tre vyer som man sveper mellan i sidled (snäpp, som bilderna i
+ett inlägg) eller väljer med flikarna, och prickar i foten som visar var man är. Länet läser `data/lan.json`, vägarna och pendlingen
+`data/strackor.json` (#611). Fliken Pendling visas bara för län som har stråk (i dag Värmland). Fast höjd i iframen; en lång vy rullar
+inuti. `widget.html` och `vagar.html` står kvar för den som bara vill ha en vy.
+
+**Alternativ.** Tre separata iframes — förkastat: tre höjder och tre rader kod för redaktionen.
+
+**Prov:** renderad lokalt i alla tre vyerna utan skriptfel.
+
+**Stomdokument:** inga — publiceringens innehåll för pressen; planen bor i MARKNADSFORING-NOLLBUDGET.md.
+
