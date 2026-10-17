@@ -294,7 +294,8 @@ ${vagrader}
 export function byggLanssidor(d: { vaglag: LanSegment[]; stationer: LanStation[]; olyckor: LanOlycka[]; now: Date }): Record<string, string> {
   const lagen = new Map(LAN.map((lan) => [lan.kod, lsLage(lan.kod, d)] as const));
   const vagar = new Map(VAGAR.map((v) => [v.slug, lsVagLage(v.nyckel, d)] as const));
-  const ut: Record<string, string> = { "lan/index.html": lsOversikt(lagen, vagar, d.now), "data/lan.json": lsLanJson(lagen, vagar, d.now) };
+  const ut: Record<string, string> = { "lan/index.html": lsOversikt(lagen, vagar, d.now), "data/lan.json": lsLanJson(lagen, vagar, d.now),
+    "data/strackor.json": lsStrackorJson(d) };
   for (const lan of LAN) ut[`lan/${lan.slug}/index.html`] = lsLanssida(lan, lagen.get(lan.kod)!, d.now);
   for (const v of VAGAR) ut[`vag/${v.slug}/index.html`] = lsVagsida(v, vagar.get(v.slug)!, d.now);
   return ut;
@@ -309,6 +310,33 @@ function lsLanJson(lagen: Map<number, LanLage>, vagar: Map<string, LanLage>, now
     lan: LAN.map((lan) => ({ kod: lan.kod, namn: lan.namn, kort: lan.kort, slug: lan.slug, ...tal(lagen.get(lan.kod)!) })),
     vag: VAGAR.map((v) => ({ namn: v.namn, slug: v.slug, ...tal(vagar.get(v.slug)!) })),
   });
+}
+
+/** Vägrutans datafil (DECISIONS #611, NWT 17/10): varje läns vägar, sträcka för sträcka med Trafikverkets ord, och vägbanans
+ *  temperatur vid de stationer vars närmaste sträcka är vägen. Halt = samma regel som sidorna och motorn (arHalt). Litet nog för en
+ *  inbäddad ruta: rutan läser bara sitt läns del. */
+function lsStrackorJson(d: { vaglag: LanSegment[]; stationer: LanStation[]; now: Date }): string {
+  const ordning = (r: string) => { const m = /^(E|Väg)\s*(\d+)/.exec(r); return m ? (m[1] === "E" ? 0 : 1000) + Number(m[2]) : 9999; };
+  const lan = LAN.map((l) => {
+    const segs = d.vaglag.filter((x) => x.lan === l.kod && x.road);
+    const vagar = [...new Set(segs.map((x) => x.road as string))].sort((a, b) => ordning(a) - ordning(b));
+    return {
+      slug: l.slug, kort: l.kort,
+      vagar: vagar.map((vag) => {
+        const st = d.stationer.filter((x) => x.lan === l.kod && vagNyckel(x.vag ?? null) === vagNyckel(vag)).sort((a, b) => a.yta - b.yta);
+        return {
+          vag,
+          strackor: segs.filter((x) => x.road === vag).map((x) => ({
+            plats: (x.plats ?? vag).replace(new RegExp("^" + vag.replace(/\s+/g, "\\s*") + "\\s*"), ""),
+            halt: arHalt(x.code, x.info), text: x.text, info: x.info,
+          })),
+          kallast: st.length ? { namn: st[0].name, yta: st[0].yta } : null,
+          kalla: st.filter((x) => x.yta <= 0).length,
+        };
+      }),
+    };
+  });
+  return JSON.stringify({ generated_at: d.now.toISOString(), lan });
 }
 
 export const sidAdresser = () => [`${SIDBAS}/lan/`, ...LAN.map((l) => `${SIDBAS}/lan/${l.slug}/`),
