@@ -14668,3 +14668,48 @@ b när trafiken passerar en gräns.
 **Fynd, inte rättat:** minnesmätningen ger `rss` 0 i Supabases körtid; bara `heap` mäts (40,2 MB i första körningen).
 
 **Stomdokument:** FAV §7 bygget, SYS funktionerna och hinkarna
+
+## #618 (17/10 2026) Databasen under taket: kandidatens loggar ett dygn, trendtabellerna och radarn tio dygn; de fyra tabellerna som aldrig rensas exporteras utan att raderas (kort #347)
+
+**Bengts ord 17/10:** *"1 b och c"* och *"2 välj ii"*, på valen efter att #580:s steg 2 föll (+4,2 MB på dygnet mot högst 2). Förslaget om de fyra tabellerna
+kom från en annan Claude-session via Bengt. Claude räknade fram vad det sparar, och Bengt valde mellan (i) och (ii).
+
+**Besluten:**
+- **(b)** Kandidatens två loggar (`kandidat_skugga`, `kandidat_station`) raderas ur databasen efter **ett dygn** i stället för tre (#573).
+  De exporteras dygnet efter, så nattjobbet 03:50 tar bara dygn som redan ligger i hinken. `kandidat_station` växte 1,9 MB per dygn
+  och hade fyllt sina tre dygn till 19/10.
+- **(c)** Trendtabellerna och radarn raderas efter **tio dygn** i stället för fjorton. De exporteras när de är åtta dygn gamla, så inget
+  raderas innan det ligger i hinken. Steg 0 läser radarn fjorton dygn bakåt och ser nu tio, vilket den själv skriver ut (*"N dygn med
+  radardata"*).
+- **(ii)** `shadow_log`, `road_condition_history`, `situation_archive` och `smhi_warnings_history` exporteras till hinken som de andra,
+  men **raderas inte**. 43 filer läser dem, och vissa går 21 och 60 dygn bakåt eller från ett fast datum. Att radera dem (i) hade sparat
+  ungefär 0,9 MB per dygn men gett läsarna luckor. Exporten byggs i en egen ändring, eftersom tabellerna har andra tidskolumner än de
+  fem som exporteras i dag.
+- Väderobservationerna står kvar på fjorton dygn: (a) valdes inte, eftersom tabellen redan står still.
+
+**Byggt:** `sql/062_kortare_forvaring.sql`:
+- `arkiv2_golv` ger 1 för kandidatens loggar;
+- `arkiv2_radera_exporterat` är oförändrad utom texten, som läser golvet i stället för att säga 3;
+- nattjobbet `halkvakt-arkivradering-tabeller` får golvet 10.
+
+Integrationsprovet för kandidatens loggar är omskrivet: fem och två dygn gamla raderas, ett dygn gammalt står kvar.
+
+**(ii) byggt** (`sql/063_arkiv_fyra_tabeller.sql`):
+- Exporten känner de fyra tabellerna. Dygnet räknas på tabellens egen tidskolumn (`arkiv2_tidkolumn`): skuggans `run_at`, väglagets
+  `modified_time`, händelsernas `first_seen` och SMHI:s `archived_at`.
+- Dygnet exporteras när det är åtta dygn gammalt, som trendtabellerna, eftersom en händelse skrivs om så länge den pågår och väglagets
+  rader kan komma in sent.
+- Golvet är NULL, så de fyra raderas aldrig.
+- `arkivexport` tar dem i sin lista.
+- Integrationsprovet prövar varje tabell: dygnet i kön, filens rader, radantalet vid bokföringen, och att inte ens golvet noll raderar
+  något.
+- Eftersläpningen är ungefär 160 tabelldygn sedan 24/8. Med två per tabell och timme tar exporten ikapp på ungefär ett dygn.
+
+**Mätningen, skriven före knappen:**
+1. **Natten till 18/10:** nattjobbet 03:50 raderar kandidatens dygn äldre än 17/10 och trendtabellernas och radarns dygn äldre än 8/10.
+   Det läses med DB-knappen *las* efter 04 UTC i `arkiv_export_tabell` (`raderad`).
+2. **Omläsningen 19/10:** databasen växer med **högst 2 MB** från 18/10 07:07 till 19/10 07:07, enligt vakthundens timserie
+   (issue #963). Det är samma regel som #580:s steg 2.
+- Faller provet läggs valet fram igen: Supabase Pro (d), som kräver Axels ja, eller radering av de fyra tabellerna (i).
+
+**Stomdokument:** SYS databasen och arkivet, MAT steg 0 läser radarn tio dygn, BED §4.2
