@@ -491,6 +491,23 @@ export const KONTRAKT: Kontrakt[] = [
     golv: 3,
   },
   {
+    // Favoriterna steg 2 (kort #357, DECISIONS #616, #625): de sparade rutterna glesas lika i alla tre språk, och facit
+    // engine/fixtures/rutter.json prövar utfallet. `(?![\d.])` gör att en kopia som blivit 75.5 faller på golvet i stället
+    // för att läsas som 75.
+    namn: "Sparade rutter — en punkt per så här många meter körning",
+    varfor: "Glesar telefonerna olika blir samma resa olika rutter, och urvalet längs rutten ger olika faror på iPhone och Android.",
+    former: [/(?:RUTT_STEG_M|stegM)\s*=\s*(\d+)(?:\.0)?(?![\d.])/],
+    filer: /engine\/src\/rutter\.ts|engine\/Rutter\.kt|HalkvaktEngine\/Rutter\.swift/,
+    golv: 3,
+  },
+  {
+    namn: "Sparade rutter — högst så här många",
+    varfor: "Med olika tak nekar iPhone och Android den sjätte resan olika, och appens och integritetssidans tal blir fel på en av dem.",
+    former: [/(?:MAX_RUTTER|static let max)\s*=\s*(\d+)(?![\d.])/],
+    filer: /engine\/src\/rutter\.ts|engine\/Rutter\.kt|HalkvaktEngine\/Rutter\.swift/,
+    golv: 3,
+  },
+  {
     namn: "Betans startvärde fall — °C på trendfönstret",
     varfor: "Samma som ovan: ett fallkrav som driver ändrar vilka nätter som räknas som fyrningar.",
     former: [/([\d.]+)::numeric AS fall\b/, /p_fall numeric DEFAULT ([\d.]+)/, /efterhalkaFall30C(?::\s*\w+)?\s*[:=]\s*([\d.]+)/],
