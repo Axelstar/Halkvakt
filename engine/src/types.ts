@@ -143,6 +143,10 @@ export interface EngineConfig {
   /** Taket (DECISIONS #584, #606): the candidate speaks at most once per kandidatTakS, whatever the stretch. Built ahead of the
    *  reading 2/11; merged only if more than 10 % of the follow-ups fall within 10 minutes, or the sample is too small. */
   kandidatTakS: number;
+  /** Halkzonen (kort #360, DECISIONS #621, #624): two slippery stretches whose lines lie within halkZonM of each other count as one
+   *  zone for the repeat rule. A new halka warning stays silent while a neighbour's warning is not yet re-armed (10 min AND 5 km),
+   *  so three stretches meeting at a junction speak once, and a long zone still repeats like a long stretch (#103). */
+  halkZonM: number;
 }
 
 export const DEFAULT_CONFIG: EngineConfig = {
@@ -179,4 +183,7 @@ export const DEFAULT_CONFIG: EngineConfig = {
   // Taket (DECISIONS #584, #606): 10 min — motorns gräns för att upprepa en och samma fara (repeatMinS). Samma tal i Types.kt och
   // Engine.swift (kontraktsgrinden).
   kandidatTakS: 600,
+  // Halkzonen (DECISIONS #624): 500 m — all 17 close pairs in the shadow log lay within 451 m, and no pair at all between 500 m and
+  // 2 km (#621). Samma tal i Types.kt och Engine.swift (kontraktsgrinden).
+  halkZonM: 500,
 };

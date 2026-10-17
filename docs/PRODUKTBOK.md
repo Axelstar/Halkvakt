@@ -237,6 +237,14 @@ det ÄR halt. "Cry wolf" handlar om falska varningar — det är falskheten som 
 förtroendet, inte upprepningen. Mot uppmärksamhetsförfall under två monotona timmar är
 upprepning rätt design.
 
+**Halkzonen (ändrad 17/10, DECISIONS #621, #624):** halksträckor som möts eller ligger tätt —
+linjerna inom 500 meter från varandra — räknas som **en** zon för uppförandekoden. I en
+korsning där tre sträckor med halka möts säger rösten *"halka"* en gång, inte tre gånger på
+en och en halv minut (soffprovet vid Vittangi 17/10). Inne i zonen gäller samma regel som på
+en lång sträcka: *"halka"* igen efter 10 minuter och 5 km, så åtta mil is fortfarande
+påminner var tionde minut. Två sträckor med halka som ligger långt isär talar var för sig,
+som förut. Rösttexten är densamma.
+
 ## Broarna (0.3.3)
 
 Broar fryser före vägen. Halkvakt känner till varje bro på riks- och europavägarna (ur
