@@ -238,3 +238,102 @@ inom perioden: kalla station-timmar 1365184 av 1365184 · kandidatens kalla timm
   2025-03 · 64–69: 7 av 22 (31,8 %)
   totalt: 638 av 1018 (62,7 %)
 ```
+
+## Uppföljningen, 17/10 (DECISIONS #607)
+
+Körning 38990118718 på ee80d30 (förregistreringen `docs/FORREGISTRERING-FACIT-TRV-UPPFOLJNING.md`, signerad 17/10, #604). Identitetsprovet
+klarades. Diagnos, ingen dom.
+
+| Del | Söder 55–60 | Norr 64–69 | Totalt |
+| :-- | --: | --: | --: |
+| (i) Hela regeln, **bara Våt** | 3,8 % · lyft 0,70 | 57,6 % · lyft 0,75 | 12,7 % (25 464 av 200 183) · lyft **0,35** |
+| (i) Hela regeln, **bara radarn** | 9,5 % · lyft **1,74** | 71,3 % · lyft 0,92 | 34,5 % (6 963 av 20 161) · lyft **0,96** |
+| (i) Hela regeln, båda | 6,9 % · lyft 1,26 | 68,6 % · lyft 0,89 | 16,5 % (1 122 av 6 787) · lyft 0,46 |
+| (ii) Basnivån med / utan planerad åtgärd | 6,1 / 4,7 % | 70,1 / 78,1 % | 20,8 / 45,2 % |
+| (ii) Kandidaten med / utan åtgärd | lyft 1,01 / 1,03 | lyft 1,00 / 1,00 | lyft 1,03 / 1,02 |
+| (ii) Hela regeln med / utan åtgärd | lyft 0,72 / 0,77 | lyft 0,78 / 0,83 | lyft 0,53 / 0,55 |
+| (ii) Efterhalkan med / utan åtgärd | 4 av 552 / 2 av 267 | 6 av 10 / 7 av 20 | 2,5 % (16 av 638) / 7,1 % (27 av 380) |
+
+- **(i) Fuktvittnet förklarar hela regelns låga bekräftelse.** 88 % av regelns varningar har bara Våt som vittne, och de bekräftas
+  under basnivån i varje band. Varningarna med bara radarn bekräftas som kylan i allmänhet totalt, och över den i söder. Förväntan
+  (i) höll.
+- **(ii) Åtgärderna förklarar den inte.** Lyftet är under 1 med och utan planerad halkbekämpning. Totalens 20,8 mot 45,2 % speglar
+  mest var Trafikverket planerade bekämpning (två tredjedelar av timmarna med åtgärd ligger i söder, där is är ovanlig). Inom varje
+  band är skillnaden liten. Förväntan (ii), ingen riktning, höll inom banden.
+
+### Hela utskriften
+
+```
+IDENTITETSPROVET KLARAT (#597): paren per veck W 0.25 · L 160 km, W 0.25 · L 160 km, W 0.25 · L 160 km, W 0.25 · L 160 km, W 0.25 · L 80 km och W 0.25 · L 160 km på alla veck; n 4352575, A1 0.563 °C, A2 4.837 %, A3 0.227 % (körning 38368369876: 0,56 · 4,84 · 0,23)
+  hela regeln: varma fönster 900884 vid 733 stationer · radarfönster med ≥ 0.5 mm/h 103350 på 816 sträckor · ytan vid timmen 2618267 värden vid 737 stationer
+  stationernas egna kalla timmar 1366734 vid 736 stationer · efterhalkans fyrningar 1110 vid 514 stationer (riktningsprovet 6/10: 1 109)
+  nederbörden: känd i 2677274 station-timmar vid 753 stationer, varav 560376 med nederbörd; givarens ord (station-timmar per ord): no 2278213 · snow 306908 · rain 256424 · sleet 20793 · freezing_rain 752 · yes 500
+  vaglag.geojson: 818 sträckor; nätets summa (id och geometri, #594) bc86f500b88f105b84fd584ff6a8ec70fcb22d973b0f0a3f7956efc065efff05 · filens sha256 e89dedea14ee7fa299e313308a38a14c64dc50a1e342bef0f9534b77b623f73b
+  stationer.json: 854 lägen; utan läge där: 1 stationer med kalla timmar, 1 med fyrningar
+  kandidatens kalla timmar 1357485 vid 736 av 736 stationer · stationernas egna vid kandidatens stationer 1365184 · kandidatens stationer utan läge i stationer.json: 0
+UPPFÖLJNINGEN (förregistreringen docs/FORREGISTRERING-FACIT-TRV-UPPFOLJNING.md) — tidszonen lokal; kalla station-timmar 1365184, kandidatens 1357485, hela regelns varnande 227131, fyrningar 1110. Diagnos, ingen dom.
+== basnivån, [t − 1, t + 2] h
+  alla · 55–60: 28646 av 526218 bekräftade (5,4 %)
+  alla · 60–64: 182903 av 387601 bekräftade (47,2 %)
+  alla · 64–69: 218364 av 282388 bekräftade (77,3 %)
+  alla · totalt: 429913 av 1196207 bekräftade (35,9 %)
+== (i) hela regelns varnande timmar efter fuktvittne, [t − 1, t + 2] h
+  bara Våt · 55–60: 4979 av 130272 bekräftade (3,8 %) · basnivån 28646 av 526218 (5,4 %) · lyftet 0,70
+  bara Våt · 60–64: 12584 av 56204 bekräftade (22,4 %) · basnivån 182903 av 387601 (47,2 %) · lyftet 0,47
+  bara Våt · 64–69: 7901 av 13707 bekräftade (57,6 %) · basnivån 218364 av 282388 (77,3 %) · lyftet 0,75
+  bara Våt · totalt: 25464 av 200183 bekräftade (12,7 %) · basnivån 429913 av 1196207 (35,9 %) · lyftet 0,35
+  bara radarn · 55–60: 860 av 9098 bekräftade (9,5 %) · basnivån 28646 av 526218 (5,4 %) · lyftet 1,74
+  bara radarn · 60–64: 1822 av 5059 bekräftade (36,0 %) · basnivån 182903 av 387601 (47,2 %) · lyftet 0,76
+  bara radarn · 64–69: 4281 av 6004 bekräftade (71,3 %) · basnivån 218364 av 282388 (77,3 %) · lyftet 0,92
+  bara radarn · totalt: 6963 av 20161 bekräftade (34,5 %) · basnivån 429913 av 1196207 (35,9 %) · lyftet 0,96
+  båda · 55–60: 307 av 4462 bekräftade (6,9 %) · basnivån 28646 av 526218 (5,4 %) · lyftet 1,26
+  båda · 60–64: 502 av 1869 bekräftade (26,9 %) · basnivån 182903 av 387601 (47,2 %) · lyftet 0,57
+  båda · 64–69: 313 av 456 bekräftade (68,6 %) · basnivån 218364 av 282388 (77,3 %) · lyftet 0,89
+  båda · totalt: 1122 av 6787 bekräftade (16,5 %) · basnivån 429913 av 1196207 (35,9 %) · lyftet 0,46
+== (ii) basnivån efter planerad halkbekämpning, [t − 1, t + 2] h
+  med åtgärd · 55–60: 17109 av 278633 bekräftade (6,1 %)
+  med åtgärd · 60–64: 56905 av 145381 bekräftade (39,1 %)
+  med åtgärd · 64–69: 20055 av 28617 bekräftade (70,1 %)
+  med åtgärd · totalt: 94069 av 452631 bekräftade (20,8 %)
+  utan åtgärd · 55–60: 11537 av 247585 bekräftade (4,7 %)
+  utan åtgärd · 60–64: 125998 av 242220 bekräftade (52,0 %)
+  utan åtgärd · 64–69: 198309 av 253771 bekräftade (78,1 %)
+  utan åtgärd · totalt: 335844 av 743576 bekräftade (45,2 %)
+== (ii) kandidaten efter planerad halkbekämpning, [t − 1, t + 2] h
+  med åtgärd · 55–60: 16835 av 271131 bekräftade (6,2 %) · basnivån 17109 av 278633 (6,1 %) · lyftet 1,01
+  med åtgärd · 60–64: 57396 av 144601 bekräftade (39,7 %) · basnivån 56905 av 145381 (39,1 %) · lyftet 1,01
+  med åtgärd · 64–69: 20640 av 29417 bekräftade (70,2 %) · basnivån 20055 av 28617 (70,1 %) · lyftet 1,00
+  med åtgärd · totalt: 94871 av 445149 bekräftade (21,3 %) · basnivån 94069 av 452631 (20,8 %) · lyftet 1,03
+  utan åtgärd · 55–60: 11774 av 244216 bekräftade (4,8 %) · basnivån 11537 av 247585 (4,7 %) · lyftet 1,03
+  utan åtgärd · 60–64: 126204 av 239843 bekräftade (52,6 %) · basnivån 125998 av 242220 (52,0 %) · lyftet 1,01
+  utan åtgärd · 64–69: 205059 av 261444 bekräftade (78,4 %) · basnivån 198309 av 253771 (78,1 %) · lyftet 1,00
+  utan åtgärd · totalt: 343037 av 745503 bekräftade (46,0 %) · basnivån 335844 av 743576 (45,2 %) · lyftet 1,02
+== (ii) hela regeln efter planerad halkbekämpning, [t − 1, t + 2] h
+  med åtgärd · 55–60: 5147 av 116163 bekräftade (4,4 %) · basnivån 17109 av 278633 (6,1 %) · lyftet 0,72
+  med åtgärd · 60–64: 9506 av 41873 bekräftade (22,7 %) · basnivån 56905 av 145381 (39,1 %) · lyftet 0,58
+  med åtgärd · 64–69: 3289 av 6051 bekräftade (54,4 %) · basnivån 20055 av 28617 (70,1 %) · lyftet 0,78
+  med åtgärd · totalt: 17942 av 164087 bekräftade (10,9 %) · basnivån 94069 av 452631 (20,8 %) · lyftet 0,53
+  utan åtgärd · 55–60: 999 av 27669 bekräftade (3,6 %) · basnivån 11537 av 247585 (4,7 %) · lyftet 0,77
+  utan åtgärd · 60–64: 5402 av 21259 bekräftade (25,4 %) · basnivån 125998 av 242220 (52,0 %) · lyftet 0,49
+  utan åtgärd · 64–69: 9206 av 14116 bekräftade (65,2 %) · basnivån 198309 av 253771 (78,1 %) · lyftet 0,83
+  utan åtgärd · totalt: 15607 av 63044 bekräftade (24,8 %) · basnivån 335844 av 743576 (45,2 %) · lyftet 0,55
+== (ii) basnivån efter planerad halkbekämpning, [t, t + 6] h
+  med åtgärd · 55–60: 20893 av 278633 bekräftade (7,5 %)
+  med åtgärd · 60–64: 62453 av 145381 bekräftade (43,0 %)
+  med åtgärd · 64–69: 21005 av 28617 bekräftade (73,4 %)
+  med åtgärd · totalt: 104351 av 452631 bekräftade (23,1 %)
+  utan åtgärd · 55–60: 12413 av 247585 bekräftade (5,0 %)
+  utan åtgärd · 60–64: 132347 av 242220 bekräftade (54,6 %)
+  utan åtgärd · 64–69: 204791 av 253771 bekräftade (80,7 %)
+  utan åtgärd · totalt: 349551 av 743576 bekräftade (47,0 %)
+== (ii) efterhalkan efter planerad halkbekämpning, [t, t + 6] h
+  med åtgärd · 55–60: 4 av 552 bekräftade (0,7 %) · basnivån 20893 av 278633 (7,5 %) · lyftet 0,10
+  med åtgärd · 60–64: 6 av 76 bekräftade (7,9 %) · basnivån 62453 av 145381 (43,0 %) · lyftet 0,18
+  med åtgärd · 64–69: 6 av 10 bekräftade (60,0 %) · basnivån 21005 av 28617 (73,4 %) · lyftet 0,82
+  med åtgärd · totalt: 16 av 638 bekräftade (2,5 %) · basnivån 104351 av 452631 (23,1 %) · lyftet 0,11
+  utan åtgärd · 55–60: 2 av 267 bekräftade (0,7 %) · basnivån 12413 av 247585 (5,0 %) · lyftet 0,15
+  utan åtgärd · 60–64: 18 av 93 bekräftade (19,4 %) · basnivån 132347 av 242220 (54,6 %) · lyftet 0,35
+  utan åtgärd · 64–69: 7 av 20 bekräftade (35,0 %) · basnivån 204791 av 253771 (80,7 %) · lyftet 0,43
+  utan åtgärd · utan läge: 0 av 0 bekräftade (– %) · basnivån – · lyftet –
+  utan åtgärd · totalt: 27 av 380 bekräftade (7,1 %) · basnivån 349551 av 743576 (47,0 %) · lyftet 0,15
+```

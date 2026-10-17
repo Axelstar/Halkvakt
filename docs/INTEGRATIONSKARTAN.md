@@ -296,7 +296,7 @@ byråkrati: den är stället där "sex vektorer" blir ett verkligt tal i ställe
 *Läget i projektkartan:*
 
 - [L2 tillståndet (skattaren S1–S3)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-tillstand): delvis, 93 % · kvar: S1-grinden på frostnätter (Axel, DECISIONS #196)
-- [L4 räckvidden: segmentprognosen](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-segmentprognos): väntar, 68 % · Domen i mars 2027 (grind B/C) på kandidaten NIVÅ 2+BLANDNING som ny fråga, RÅ kontroll och reserv (#547), och Bengts öppna val d på kort #270.
+- [L4 räckvidden: segmentprognosen](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-segmentprognos): väntar, 70 % · Domen i mars 2027 (grind B/C) på kandidaten NIVÅ 2+BLANDNING som ny fråga, RÅ kontroll och reserv (#547), och Bengts öppna val d på kort #270.
 - [L5 allvar som försprång](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-forsprang): delvis, 56 % · kvar: FS-A: nivå 2-fall i vinter (kod 3–4, eller yta ≤ 0 °C med väta ≥ 3)
 - [Prognoslagret](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-prognoslagret): väntar, 44 % · Bengts öppna val b, c, d, e och h; läsningen tisdag 24/11 (DECISIONS #435); (g) mätt i kuvösen 6/10 (#467).
 
