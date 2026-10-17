@@ -14923,3 +14923,88 @@ att ta bort larmens särräkning, och att höja taket till 40, fäller var för 
 deployas, annars larmar vakthunden på det saknade jobbet eller jobbet körs aldrig.
 
 **Stomdokument:** inga — marknadsföringen har inget stomdokument.
+
+## #628 (17/10 2026) Soffprovet på iPhone 17/10, andra försöket: A klarat, B tyst i 31 av 45 minuter (kort #343, steg 13)
+
+**Axel 17/10**, iPhone via Xcode på main d33467c (0.3.13 (28), rättelsen #359 med), rutten `soffprovet-xcode-2.gpx` ur lägesfilen 18:50
+UTC: sträcka 87010 (Jämtland), en varnande punkt, ingen Trafikverkets halka på sträckan (`kandidat-gpx` väljer bara sådana, #619). Rutten
+passerar grannsträckan 87005 (väg 87, Trafikverkets *fläckvis Is*) ungefär 2 min in och kandidatpunkten ungefär 4 min in.
+
+**Utfallet, som det var (lokal tid):**
+- **A.** 21:07 rutten och vakten startade; loggen slutade på *"startar"*, inget *"somnar om"*. 21:09 *"Varning: halka rapporterad på vägen
+  framför dig."* (87005). **21:12 *"Halkvakt tror: halka framöver."*** Förväntan A uppfylld. Om betakortet visades är inte säkert (Axel:
+  *"jag vet inte helt 100 %"*).
+- **Tysta** 21:12 av Axel (kandidatbrytaren 39061437666); lägesfilen 19:12:29 UTC utan nyckeln, ute på halkvakt.se 21:13:45.
+- **B.** 21:14 vakten stoppad och startad, rutten om. Passagen omkring 21:18 låg inom taket (en kandidat per 10 min, #606, från 21:12) och
+  räknas inte. 21:24 rutten om; passagen omkring 21:28 låg utanför taket. 21:18 och senare bara Trafikverkets *halka* (87005). **Inget
+  *"Halkvakt tror"* 21:14–21:45** (Axel: *"neg"*). Telefonen drogs ur Macen omkring 21:45, så simuleringen stannade efter **31 av 45
+  minuter**. Provet startades inte om: en ny start hämtar en ny lägesfil och är ett annat prov.
+
+**Bedömningen:** A klarat. B klarat på den passage som kan fälla den (21:28), men inte över hela 45-minutersfönstret, som skulle täcka appens
+omläsning av lägesfilen var 30:e minut (en omläsning hann ske omkring 21:44). Om det räcker för steg 13 är Bengts beslut (frågan i §4.2).
+Kvar: *starta* av Bengt och Axel (del C).
+
+**Stomdokument:** LIV 3, BED §4.2
+
+## #629 (17/10 2026) Läns- och vägsidorna skrivs för att citeras: klockslaget först i svaret, och strukturerad data (kort #281)
+
+**Beslut.** Axel 17/10 20:48: *"hur får vi in våra svar då folk endast skriver i Claude och frågar om halka?"* AI-tjänster svarar på
+frågor om läget nu genom att söka och läsa sidor, så läns- och vägsidorna, som redan skrivs om var 30:e minut, ska gå att citera som de
+står. Svarsmeningen överst börjar med klockslaget och får länets kallaste station: *"Kl. 06:30 rapporterar Trafikverket halka eller
+vinterväglag på 9 av länets 52 vägavsnitt. 14 mätstationer visar vägbana på 0 °C eller kallare, kallast −4,2 °C vid Vadje."* Varje sida bär
+JSON-LD (`WebPage`, `dateModified`, `isBasedOn` Trafikverkets öppna data med CC0, `publisher` Halkvakt). I karta-repot: `llms.txt`.
+`robots.txt` släpper redan in alla robotar och sitemapen har alla 28 läns- och vägsidor.
+
+**Alternativ.** Bara MCP-servern — förkastat: den når bara den som kopplat in den.
+
+**Prov:** `test/lanssidor.test.ts` 8/8, ett nytt (strukturerad data, noll halka sägs som noll); motprov utan JSON-LD fäller bara det.
+
+**Stomdokument:** inga — sajtens sidor, inget stomdokument beskriver dem.
+
+## #630 (17/10 2026) Halkvakts MCP-server: publik, läsande, utan nyckel, ovanpå sajtens filer (kort #281)
+
+**Beslut.** Axel 17/10 20:47: *"Så bör vi inte bygga MCP nu?"*, planen godkänd samma kväll. En ny edge function `mcp`, MCP över
+streamable HTTP, tillståndslös: POST JSON-RPC → `application/json`, ingen SSE. Fyra verktyg: `lage_i_lan`, `vag`, `sverige_just_nu`,
+`kallaste_stationer`. Den läser bara `lan.json`, `strackor.json` och `meta.json` på CDN:et (5 min cache), har ingen databas och inga
+hemligheter, sparar inga frågor och har en takspärr på 60 anrop/min per adress. Varje svar säger klockslaget och källan och att det är
+rapporterat nuläge, ingen prognos; inga avstånd; data äldre än 2 h sägs. Den första funktionen utan nyckel (DECISIONS #571 gäller de andra).
+
+**Värdevakten.** `kallaste_stationer` läser länens `kallast` i `lan.json`, inte stationernas råvärden i `vader.geojson`: där stod 17/10 Ollsta
+på −49,9 °C, en trasig givare som sajtens och appens vakter redan tar bort. Rikstalen räknas ur länen, eftersom `meta.json` räknar med
+Finlands och Danmarks stationer (1 321 mot Sveriges 855).
+
+**Alternativ.** SSE och sessioner — onödigt för fyra läsande verktyg, och gatewayen är oprövad för `text/event-stream`. Nyckel — förkastat:
+ingen kan då koppla in den från Claudes katalog.
+
+**Prov:** `test/mcp.test.ts` 7/7 (protokollet, varje verktyg, okänt län och väg, gammal data, trasig källa, inga avstånd); två motprov fällda
+på sina prov. Vakthunden prövar att `tools/list` svarar med fyra verktyg.
+
+**Stomdokument:** SYS — en ny tjänst i systemet.
+
+## #631 (17/10 2026) Soffprovets B godtas med den rena passagen — avvikelsen från 45 minuter står kvar; i steg 13 återstår C och betakortet (kort #343)
+
+**Bengts ord 17/10 kväll:** *"1 godta"*, på frågan i §4.2 efter #628: räcker B med 31 av 45 minuter?
+
+**Beslut.** Förväntan B i soffprovet (#596) räknas som uppfylld på den rena passagen 21:28 lokal tid. Avvikelsen från det förregistrerade
+skrivs ned och står kvar: simuleringen stannade efter 31 av 45 minuter, när telefonen drogs ur Macen.
+
+**Varför de 14 minuter som saknas inte kunde fälla B** (Claude, läst mot källorna samma kväll):
+- Lägesfilen saknade nyckeln `kandidat` i varje version från 19:12:29 till 19:40 UTC (halkvakt-kartans historik för
+  `data/app/v1/live.json`), och ingen *starta* trycktes efter Axels *tysta* 19:12:28 UTC (kandidatbrytaren 39061437666). Omläsningen
+  omkring 21:44 lokal tid kunde bara hämta en fil utan nyckel.
+- Efter passagen 21:28 kom ingen ny passage av kandidatpunkten, eftersom rutten inte startades om.
+- Passagen 21:28 kunde fälla B. Taket (600 s, #606) från rösten 21:12 gick ut 21:22. Upprepningsregeln kräver både 10 min och 5 km
+  (engine.ts regel 2): 16 min hade gått, och rutten spelades 21:14–21:24 i 80 km/h, omkring 13 km. Nollar omstarten av vakten motorn,
+  finns inget minne alls. Tystnaden förklaras alltså av den saknade nyckeln.
+- Underlaget för A håller: 87010 var kandidatsträcka i lägesfilerna 18:50–19:10 UTC utan Trafikverkets halka, och grannen 87005 bar
+  Trafikverkets halka (den vanliga *halka* 21:09).
+
+**Kvar i steg 13:**
+- **Betakortet i A** är inte säkert sett (#628, Axel: *"jag vet inte helt 100 %"*), och kortet ingår i förväntan A (#596). Det prövas när
+  kandidaten är på igen och en fri sträcka finns: A-rutten i fem minuter och en skärmbild av kortet.
+- **C:** *starta* av Bengt och Axel. Bengt 17/10: *"starta när det finns en fri kandidatsträcka"*. Medan brytaren är av saknas kandidaten i
+  lägesfilen, så en fri sträcka syns bara i databasen eller när kandidaten är på.
+
+**Alternativ.** Gör om B en annan kväll med hela 45 minuter (§4.2). Valdes bort av Bengt.
+
+**Stomdokument:** LIV steg 13, BED §4.2

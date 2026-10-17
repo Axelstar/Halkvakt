@@ -531,9 +531,19 @@ Deno.serve(async (req) => {
       const sum = [...new Uint8Array(await crypto.subtle.digest("SHA-256", rå))].map((b) => b.toString(16).padStart(2, "0")).join("");
       shaFv = sum === m?.snabb?.sha256;
     } catch { /* aFv förblir null */ }
-    rad.push(`källor: skuggloggen ${visa(aSl)} · olycksarkivet ${visa(aSa)} · radarn ${visa(aRp)} (stationsnederbörd 3 h: ${vatt.n}) · väglaget ${visa(aRc)} (kalla stationer 3 h: ${kallt.n}/${kallt.alla}) · kamerafacit ${visa(aFc)} (skuggans svenska larm 12 h: ${sl12.n}) · favoritprovet ${visa(aFp)} · favoriter ${visa(aFv)}${shaFv === false ? " (sha256 stämmer inte)" : ""}`);
+    // MCP-SERVERN (DECISIONS #630): den publika servern ska svara på tools/list med fyra verktyg. Den läser samma CDN-filer som
+    // sajten, så ett stopp här är servern själv (deploy, gateway), inte datan.
+    let mcpOk: boolean | null = null;
+    try {
+      const r = await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/mcp`, { method: "POST", headers: { "content-type": "application/json" },
+        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/list" }) });
+      mcpOk = r.ok && ((await r.json())?.result?.tools?.length ?? 0) === 4;
+    } catch { mcpOk = false; }
+    rad.push(`källor: skuggloggen ${visa(aSl)} · olycksarkivet ${visa(aSa)} · radarn ${visa(aRp)} (stationsnederbörd 3 h: ${vatt.n}) · väglaget ${visa(aRc)} (kalla stationer 3 h: ${kallt.n}/${kallt.alla}) · kamerafacit ${visa(aFc)} (skuggans svenska larm 12 h: ${sl12.n}) · favoritprovet ${visa(aFp)} · favoriter ${visa(aFv)}${shaFv === false ? " (sha256 stämmer inte)" : ""} · mcp ${mcpOk ? "svarar" : "svarar inte"}`);
 
     const torra: string[] = [];
+    if (mcpOk === false)
+      torra.push("**MCP-servern** svarar inte på tools/list med fyra verktyg — AI-assistenter som kopplat in Halkvakt får inga svar (DECISIONS #630)");
     if (aSl === null || aSl > 2)
       torra.push(`**shadow_log** har inte växt på ${visa(aSl)} (skrivs var 30:e min) — skuggans utdata bär B3, V-B och upprepningen`);
     if (aSa === null || aSa > 3)

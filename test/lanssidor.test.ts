@@ -44,15 +44,15 @@ test("länssidorna: 21 län och en översikt, svaret ur källorna, Trafikverkets
   const skane = sidor["lan/skane/index.html"];
   assert.ok(skane.includes("<title>Är det halt i Skåne just nu? Väglag och vägtemperatur | Halkvakt</title>"));
   assert.ok(skane.includes(`<link rel="canonical" href="${SIDBAS}/lan/skane/">`));
-  assert.ok(skane.includes("Trafikverket rapporterar halka eller vinterväglag på 1 av länets 2 vägavsnitt."), "fläckvis Våt räknas inte");
-  assert.ok(skane.includes("1 mätstation visar vägbana på 0 °C eller kallare."));
+  assert.ok(skane.includes("Kl. 07:30 rapporterar Trafikverket halka eller vinterväglag på 1 av länets 2 vägavsnitt."), "fläckvis Våt räknas inte");
+  assert.ok(skane.includes("1 mätstation visar vägbana på 0 °C eller kallare, kallast −1,5 °C vid Lund."));
   assert.ok(skane.includes("E 6 Malmö - Lund: Mycket besvärligt, Is, &lt;b&gt;"), "Trafikverkets ord, escapade");
   assert.ok(skane.includes("Lund: −1,5 °C, nederbörd eller fukt rapporteras") && !skane.includes("Malmö: 0,4"));
   assert.ok(!skane.includes("—"), "inga långa tankstreck (varumärkesguiden)");
   assert.ok(skane.includes("E22, sedan 20 nov. 06:10 (Stor påverkan)"), "svensk tid, vinter +1");
   assert.ok(skane.includes("Uppdaterad 20 nov. 07:30"));
   const sthlm = sidor["lan/stockholm/index.html"];
-  assert.ok(sthlm.includes("Trafikverket rapporterar ingen halka på länets 1 vägavsnitt just nu. Ingen mätstation i länet visar vägbana under noll."));
+  assert.ok(sthlm.includes("Kl. 07:30 rapporterar Trafikverket ingen halka på länets 1 vägavsnitt just nu. Ingen mätstation i länet visar vägbana under noll."));
   assert.ok(sthlm.includes("Trafikverket rapporterar ingen pågående olycka i länet."));
   const oversikt = sidor["lan/index.html"];
   assert.ok(oversikt.includes(`<tr><td><a href="skane/">Skåne län</a></td><td>1 av 2</td><td>1</td><td>1</td><td><a class="lank-mono" href="../karta.html?lan=skane">Karta →</a></td></tr>`));
@@ -80,7 +80,7 @@ test("vägsidorna: vägnumret utan form, vägens sträckor i alla län, statione
   });
   const e6 = sidor["vag/e6/index.html"];
   assert.ok(e6.includes("<title>Är det halt på E6 just nu? Väglag och vägtemperatur längs vägen | Halkvakt</title>"));
-  assert.ok(e6.includes("Trafikverket rapporterar halka eller vinterväglag på 1 av E6:s 2 vägavsnitt. 1 mätstation visar vägbana på 0 °C eller kallare."));
+  assert.ok(e6.includes("Kl. 07:30 rapporterar Trafikverket halka eller vinterväglag på 1 av E6:s 2 vägavsnitt. 1 mätstation visar vägbana på 0 °C eller kallare, kallast −1,5 °C vid Lund."));
   assert.ok(e6.includes("Skåne: E 6 Malmö - Lund: Mycket besvärligt, Is") && !e6.includes("Kungälv"), "bara det hala listas, med länet");
   assert.ok(e6.includes("Skåne: Lund: −1,5 °C") && !e6.includes("Kall men vid en annan väg"));
   assert.ok(e6.includes("Västra Götaland: sedan 20 nov. 06:10"), "olyckan 'E6' möter väglagets 'E 6'");
@@ -124,7 +124,7 @@ test("kartkärnan: med appens väderpunkter skrivs länssidorna; stationen får 
   assert.equal(utan.sidor, null, "utan appens väderpunkter skrivs inga sidor (Node-vägen)");
   const med = await buildMapData(q, { now: NOW, appVader: [{ id: "W1", yta: -3.2, fukt: false }, { id: "W2", yta: -9, fukt: false }] });
   const nb = med.sidor!["lan/norrbotten/index.html"];
-  assert.ok(nb.includes("Trafikverket rapporterar halka eller vinterväglag på 1 av länets 1 vägavsnitt."));
+  assert.ok(nb.includes("rapporterar Trafikverket halka eller vinterväglag på 1 av länets 1 vägavsnitt."));
   assert.ok(nb.includes("Kiruna: −3,2 °C"), "W1 hör till Norrbotten via närmaste sträcka");
   assert.ok(!Object.values(med.sidor!).some((h) => h.includes("−9,0")), "W2 saknar län (ingen sträcka inom 20 km) och står inte på någon sida");
   assert.ok(nb.includes("E10, sedan 20 nov. 06:00"), "olyckan ur Date, i svensk tid");
@@ -163,4 +163,17 @@ test("läns- och vägsidorna hämtar typsnitten från halkvakt.se, aldrig från 
     assert.ok(!/fonts\.(googleapis|gstatic)\.com/.test(String(sida)), namn);
     assert.match(String(sida), /assets\/fonts\/fonts\.css/, namn);
   }
+});
+
+test("läns- och vägsidorna bär tiden och källan som strukturerad data (DECISIONS #629)", () => {
+  const sidor = byggLanssidor({ vaglag: [], stationer: [], olyckor: [], now: NOW });
+  for (const namn of ["lan/skane/index.html", "vag/e6/index.html", "lan/index.html"]) {
+    const m = sidor[namn].match(/<script type="application\/ld\+json">(.*?)<\/script>/);
+    assert.ok(m, namn);
+    const d = JSON.parse(m![1]);
+    assert.equal(d["@type"], "WebPage");
+    assert.equal(d.dateModified, NOW.toISOString());
+    assert.match(d.isBasedOn.name, /Trafikverkets öppna data/);
+  }
+  assert.ok(sidor["lan/skane/index.html"].includes("rapporterar Trafikverket ingen halka"), "noll halka sägs som noll, aldrig som halka");
 });

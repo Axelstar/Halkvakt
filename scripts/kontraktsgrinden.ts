@@ -486,8 +486,26 @@ export const KONTRAKT: Kontrakt[] = [
   {
     namn: "Halkzonen — två halksträckor inom så här många meter är en zon för reprisregeln",
     varfor: "Motorns tre portar ska slå ihop samma grannsträckor (DECISIONS #621, #624); en port med annat glapp säger fler eller färre halka i en korsning än de andra.",
-    former: [/halkZonM(?::\s*\w+)?\s*[:=]\s*(\d+)(?:\.0)?\b/],
+    // `(?![\d.])`, inte `\b`: med `\b` lästes en kopia som blivit 500.5 som 500 och gick igenom (motprov 17/10).
+    former: [/halkZonM(?::\s*\w+)?\s*[:=]\s*(\d+)(?:\.0)?(?![\d.])/],
     filer: /engine\/src\/types\.ts|engine\/Types\.kt|HalkvaktEngine\/Engine\.swift/,
+    golv: 3,
+  },
+  {
+    // Favoriterna steg 2 (kort #357, DECISIONS #616, #625): de sparade rutterna glesas lika i alla tre språk, och facit
+    // engine/fixtures/rutter.json prövar utfallet. `(?![\d.])` gör att en kopia som blivit 75.5 faller på golvet i stället
+    // för att läsas som 75.
+    namn: "Sparade rutter — en punkt per så här många meter körning",
+    varfor: "Glesar telefonerna olika blir samma resa olika rutter, och urvalet längs rutten ger olika faror på iPhone och Android.",
+    former: [/(?:RUTT_STEG_M|stegM)\s*=\s*(\d+)(?:\.0)?(?![\d.])/],
+    filer: /engine\/src\/rutter\.ts|engine\/Rutter\.kt|HalkvaktEngine\/Rutter\.swift/,
+    golv: 3,
+  },
+  {
+    namn: "Sparade rutter — högst så här många",
+    varfor: "Med olika tak nekar iPhone och Android den sjätte resan olika, och appens och integritetssidans tal blir fel på en av dem.",
+    former: [/(?:MAX_RUTTER|static let max)\s*=\s*(\d+)(?![\d.])/],
+    filer: /engine\/src\/rutter\.ts|engine\/Rutter\.kt|HalkvaktEngine\/Rutter\.swift/,
     golv: 3,
   },
   {
