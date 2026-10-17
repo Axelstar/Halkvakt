@@ -16,7 +16,7 @@ on:
         description: "Vilken funktion"
         type: choice
         default: publicera
-        options: [publicera, ingest-live, vakthund, skuggmotor, skuggrapport, facit-svar, arkivexport, arkivdump, kamerafacit, byggsignaler, favoritprov, alla, plan]
+        options: [publicera, ingest-live, vakthund, skuggmotor, skuggrapport, facit-svar, arkivexport, arkivdump, kamerafacit, byggsignaler, favoritprov, alla]
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -45,20 +45,6 @@ jobs:
           set -euo pipefail
           if [ -z "$SUPABASE_ACCESS_TOKEN" ]; then
             echo "::error::SUPABASE_ACCESS_TOKEN saknas i GitHub Secrets — kort #78, Axel lägger in den"; exit 1
-          fi
-          # `plan` (DECISIONS #611): läser projektets plan och disk ur Management API och deployar ingenting. Bara plan och storlek
-          # skrivs ut — loggarna är publika.
-          if [ "$FUNKTION" = plan ]; then
-            # Med User-Agent: Supabases API svarar 403 på curls standard (första försöket 17/10, 39019664106).
-            api() { curl -sS -A "halkvakt-plan" -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" -w '\n%{http_code}' "https://api.supabase.com/v1/$1"; }
-            P=xmpfztykhyvhmrzsnjrc
-            R=$(api "projects/$P"); echo "projekt: HTTP $(tail -n1 <<<"$R")"
-            ORG=$(head -n -1 <<<"$R" | jq -r '.organization_id // empty')
-            R=$(api "organizations/$ORG"); echo "organisation: HTTP $(tail -n1 <<<"$R")"
-            head -n -1 <<<"$R" | jq -c '{organisation: .name, plan: .plan}' | tee -a "$GITHUB_STEP_SUMMARY" || true
-            R=$(api "projects/$P/config/disk"); echo "disk: HTTP $(tail -n1 <<<"$R")"
-            head -n -1 <<<"$R" | jq -c '{disk: .attributes}' | tee -a "$GITHUB_STEP_SUMMARY" || true
-            exit 0
           fi
           if [ "$FUNKTION" = alla ]; then F="publicera ingest-live vakthund skuggmotor skuggrapport facit-svar arkivexport arkivdump kamerafacit byggsignaler favoritprov"; else F="$FUNKTION"; fi
           for f in $F; do

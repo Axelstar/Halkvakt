@@ -14479,7 +14479,7 @@ smhi_warnings_history): exportera till arkivet först och gallra sedan."*
 **(d) Supabase Pro — Axels godkännande enligt gratisnivåregeln i CLAUDE.md.** Ca 25 USD/mån, organisationen *tagratt* som bär projektet.
 Disken blir 8 GB; gratisnivåns skrivskydd vid 500 MB upphör. Vakthundens databasrad räknar mot 8 192 MB med larm vid 90 % (7 373 MB) i
 stället för 450 av 500 MB. Den ändringen deployas först när uppgraderingen är bekräftad — före den hade den gömt ett verkligt tak.
-Beviset för gränsen läses ur Supabases Management API (projektets disk i GB och organisationens plan), inte ur fakturan.
+Beviset för gränsen läses i Supabases panel (organisationens plan och projektets disk). Deploy-nyckeln når inte planen: Management API svarar 403 på projekt, organisation och disk (deploy-supabase 39019696227, provat på grenen och borttaget).
 
 **(b) Kandidatens loggar ett dygn.** `sql/061`: `arkiv2_golv` ger 1 för `kandidat_skugga` och `kandidat_station` (förut 3, #573). De
 exporteras dygnet efter som förut, och domen i mars läser hinken. Ingen läsare i repot går mer än ett dygn bakåt i dem i databasen
