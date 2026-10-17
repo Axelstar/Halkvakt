@@ -14945,3 +14945,31 @@ omläsning av lägesfilen var 30:e minut (en omläsning hann ske omkring 21:44).
 Kvar: *starta* av Bengt och Axel (del C).
 
 **Stomdokument:** LIV 3, BED §4.2
+
+## #629 (17/10 2026) Soffprovets B godtas med den rena passagen — avvikelsen från 45 minuter står kvar; i steg 13 återstår C och betakortet (kort #343)
+
+**Bengts ord 17/10 kväll:** *"1 godta"*, på frågan i §4.2 efter #628: räcker B med 31 av 45 minuter?
+
+**Beslut.** Förväntan B i soffprovet (#596) räknas som uppfylld på den rena passagen 21:28 lokal tid. Avvikelsen från det förregistrerade
+skrivs ned och står kvar: simuleringen stannade efter 31 av 45 minuter, när telefonen drogs ur Macen.
+
+**Varför de 14 minuter som saknas inte kunde fälla B** (Claude, läst mot källorna samma kväll):
+- Lägesfilen saknade nyckeln `kandidat` i varje version från 19:12:29 till 19:40 UTC (halkvakt-kartans historik för
+  `data/app/v1/live.json`), och ingen *starta* trycktes efter Axels *tysta* 19:12:28 UTC (kandidatbrytaren 39061437666). Omläsningen
+  omkring 21:44 lokal tid kunde bara hämta en fil utan nyckel.
+- Efter passagen 21:28 kom ingen ny passage av kandidatpunkten, eftersom rutten inte startades om.
+- Passagen 21:28 kunde fälla B. Taket (600 s, #606) från rösten 21:12 gick ut 21:22. Upprepningsregeln kräver både 10 min och 5 km
+  (engine.ts regel 2): 16 min hade gått, och rutten spelades 21:14–21:24 i 80 km/h, omkring 13 km. Nollar omstarten av vakten motorn,
+  finns inget minne alls. Tystnaden förklaras alltså av den saknade nyckeln.
+- Underlaget för A håller: 87010 var kandidatsträcka i lägesfilerna 18:50–19:10 UTC utan Trafikverkets halka, och grannen 87005 bar
+  Trafikverkets halka (den vanliga *halka* 21:09).
+
+**Kvar i steg 13:**
+- **Betakortet i A** är inte säkert sett (#628, Axel: *"jag vet inte helt 100 %"*), och kortet ingår i förväntan A (#596). Det prövas när
+  kandidaten är på igen och en fri sträcka finns: A-rutten i fem minuter och en skärmbild av kortet.
+- **C:** *starta* av Bengt och Axel. Bengt 17/10: *"starta när det finns en fri kandidatsträcka"*. Medan brytaren är av saknas kandidaten i
+  lägesfilen, så en fri sträcka syns bara i databasen eller när kandidaten är på.
+
+**Alternativ.** Gör om B en annan kväll med hela 45 minuter (§4.2). Valdes bort av Bengt.
+
+**Stomdokument:** LIV steg 13, BED §4.2
