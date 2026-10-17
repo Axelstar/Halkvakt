@@ -16,7 +16,7 @@ on:
         description: "Vilken funktion"
         type: choice
         default: publicera
-        options: [publicera, ingest-live, vakthund, skuggmotor, skuggrapport, facit-svar, arkivexport, arkivdump, kamerafacit, byggsignaler, favoritprov, alla]
+        options: [publicera, ingest-live, vakthund, skuggmotor, skuggrapport, facit-svar, arkivexport, arkivdump, kamerafacit, byggsignaler, favoritprov, alla, plan]
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -45,6 +45,16 @@ jobs:
           set -euo pipefail
           if [ -z "$SUPABASE_ACCESS_TOKEN" ]; then
             echo "::error::SUPABASE_ACCESS_TOKEN saknas i GitHub Secrets — kort #78, Axel lägger in den"; exit 1
+          fi
+          # `plan` (DECISIONS #611): läser projektets plan och disk ur Management API och deployar ingenting. Bara plan och storlek
+          # skrivs ut — loggarna är publika.
+          if [ "$FUNKTION" = plan ]; then
+            A="Authorization: Bearer $SUPABASE_ACCESS_TOKEN"; P=xmpfztykhyvhmrzsnjrc
+            ORG=$(curl -fsS -H "$A" "https://api.supabase.com/v1/projects/$P" | jq -r '.organization_id')
+            curl -fsS -H "$A" "https://api.supabase.com/v1/organizations/$ORG" | jq -c '{organisation: .name, plan: .plan}' | tee -a "$GITHUB_STEP_SUMMARY"
+            curl -fsS -H "$A" "https://api.supabase.com/v1/projects/$P/config/disk" | jq -c '{disk: .attributes}' | tee -a "$GITHUB_STEP_SUMMARY" \
+              || echo "disk: kunde inte läsas" | tee -a "$GITHUB_STEP_SUMMARY"
+            exit 0
           fi
           if [ "$FUNKTION" = alla ]; then F="publicera ingest-live vakthund skuggmotor skuggrapport facit-svar arkivexport arkivdump kamerafacit byggsignaler favoritprov"; else F="$FUNKTION"; fi
           for f in $F; do

@@ -1806,3 +1806,66 @@ test("#580 autovacuum: tabellerna som byts ut städas vid 2 % + 1 000 döda rade
     }
   } finally { await pool.end(); }
 });
+
+// DECISIONS #611 (sql/061): kandidatens loggar raderas efter ett dygn, och de fyra tabellerna som aldrig rensats exporteras dygnsvis
+// på sin egen tidskolumn — men raderas inte (golvet null) förrän grindarnas tillfälliga databas läser dem ur hinken.
+test("#611 kandidatens loggar ett dygn, och de fyra tabellerna till hinken utan radering", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const stad = async () => {
+    await q("DELETE FROM kandidat_skugga WHERE segment_id = '99961'");
+    await q("DELETE FROM shadow_log WHERE alerts = '[\"t611\"]'::jsonb");
+    await q("DELETE FROM situation_archive WHERE deviation_id LIKE 't611:%'");
+    await q("DELETE FROM arkiv_export_tabell");
+  };
+  try {
+    await q("CREATE TABLE IF NOT EXISTS shadow_log (id bigserial PRIMARY KEY, run_at timestamptz NOT NULL DEFAULT now(), alerts jsonb NOT NULL DEFAULT '[]'::jsonb)");
+    for (const f of ["001_init.sql", "003_situation_archive.sql", "008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql",
+                     "018_trend_berakna.sql", "029_brott_index.sql", "030_langsam_vakt.sql", "050_kandidat_live.sql", "053_arkiv_tabeller.sql",
+                     "055_vagpunkter.sql"])
+      await q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+    // 056/057 bara om domloggen saknas: efter 058 (provet #575) har kandidat_regel en annan returtyp och kan inte skrivas över.
+    if (!(await q("SELECT to_regclass('kandidat_skugga') AS t")).rows[0].t)
+      for (const f of ["056_kandidat_regel.sql", "057_kandidat_skugga.sql"]) await q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+    for (let i = 0; i < 2; i++) await q(readFileSync(new URL("../sql/061_arkiv_fyra_tabeller.sql", import.meta.url), "utf8"));   // idempotent
+    await stad();
+    const dag = (n: number) => q("SELECT ((now() - $1 * interval '1 day') AT TIME ZONE 'UTC')::date::text AS d", [n]).then((r) => r.rows[0].d as string);
+    const [d1, d2, d9, d10] = [await dag(1), await dag(2), await dag(9), await dag(10)];
+
+    // (b): ett dygn gammalt står kvar, två dygn gammalt raderas.
+    for (const d of [d1, d2])
+      await q(`INSERT INTO kandidat_skugga (segment_id, observed_at, punkter, varnar, veto, torr, vat, flackvis_vat, pb_min)
+        VALUES ('99961', ($1::date + interval '12 hours') AT TIME ZONE 'UTC', 1, 1, 0, 0, true, false, -1)`, [d]);
+    for (const d of [d1, d2]) await q("SELECT arkiv2_export_klar('kandidat_skugga', $1::date, 1, 10, 'x', 'v')", [d]);
+    assert.match((await q("SELECT arkiv2_radera_exporterat(0, 14) AS s")).rows[0].s, /kandidat_skugga: raderade 1 rader/, "två dygn gammalt raderas");
+
+    // De fyra: dygnen delas på run_at och last_seen, filen bär tabellens kolumner, och inget av dem raderas.
+    await q(`INSERT INTO shadow_log (run_at, alerts) VALUES (($1::date + interval '6 hours') AT TIME ZONE 'UTC', '["t611"]'),
+                                                           (($1::date + interval '7 hours') AT TIME ZONE 'UTC', '["t611"]')`, [d10]);
+    await q(`INSERT INTO situation_archive (deviation_id, message_type_value, geom, first_seen, last_seen)
+             VALUES ('t611:a', 'Accident', ST_SetSRID(ST_MakePoint(15, 59), 4326), ($1::date + interval '1 hour') AT TIME ZONE 'UTC',
+                     ($1::date + interval '2 hours') AT TIME ZONE 'UTC')`, [d9]);
+    assert.equal((await q("SELECT arkiv2_tid('situation_archive') AS k")).rows[0].k, "last_seen");
+    const att = (await q("SELECT arkiv2_att_exportera('shadow_log', 1000)::text AS d")).rows.map((r) => r.d);
+    assert.ok(att.includes(d10), `tio dygn gammalt står i kö: ${att}`);
+    assert.ok(!att.includes(d2), "två dygn gammalt är inte färdigt (åtta dygns ålder)");
+    const sl: string = (await q("SELECT arkiv2_dygn('shadow_log', $1::date) AS t", [d10])).rows[0].t;
+    assert.equal(sl.split("\n").filter((l) => l.includes("t611")).length, 2, "båda raderna i filen");
+    assert.equal(JSON.parse(sl.split("\n")[0])[1], "run_at");
+    const sa: string = (await q("SELECT arkiv2_dygn('situation_archive', $1::date) AS t", [d9])).rows[0].t;
+    assert.equal(sa.split("\n").filter((l) => l.includes("t611:a")).length, 1, "händelsen i sitt last_seen-dygn");
+    await assert.rejects(q("SELECT arkiv2_export_klar('shadow_log', $1::date, 99999, 10, 'x', 'v')", [d10]), /men filen bär 99999/);
+    const n = (await q("SELECT count(*)::int AS n FROM shadow_log WHERE run_at >= $1::date AT TIME ZONE 'UTC' AND run_at < ($1::date + 1) AT TIME ZONE 'UTC'", [d10])).rows[0].n;
+    await q("SELECT arkiv2_export_klar('shadow_log', $1::date, $2, 10, 'x', 'v')", [d10, n]);
+    await q("SELECT arkiv2_export_klar('situation_archive', $1::date, (SELECT count(*)::int FROM situation_archive WHERE last_seen >= $1::date AT TIME ZONE 'UTC' AND last_seen < ($1::date + 1) AT TIME ZONE 'UTC'), 10, 'x', 'v')", [d9]);
+    assert.match((await q("SELECT arkiv2_radera_exporterat(0, 0) AS s")).rows[0].s, /inget exporterat tabelldygn/, "de fyra raderas inte, inte ens med golvet 0");
+    assert.equal((await q("SELECT count(*)::int AS n FROM shadow_log WHERE alerts = '[\"t611\"]'::jsonb")).rows[0].n, 2);
+    assert.ok((await q("SELECT arkiv2_efterslap() AS n")).rows[0].n >= 0);
+    await assert.rejects(q("SELECT arkiv2_dygn('weather_observations', $1::date)", [d10]), /okänd tabell/);
+  } finally {
+    await stad().catch(() => {});
+    await pool.end();
+  }
+});

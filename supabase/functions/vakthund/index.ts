@@ -459,8 +459,9 @@ Deno.serve(async (req) => {
       const senast = df.senast ? ` (senast ${new Date(df.senast).toISOString().slice(0, 16).replace("T", " ")}Z)` : "";
       rad.push(`förarfacit: ${df.n} svar${senast}${df.prov ? ` · ${df.prov} prov uteslutna` : ""}`);
     } catch { rad.push("förarfacit: tabellen saknas — hoppar"); }
-    // Grepp 3 (DECISIONS #231/#232): databasens storlek. Gratisnivån skrivskyddar databasen vid 500 MB — då stannar
-    // ingest-live och appen visar gammal data, utan att något annat larmar. Larm vid 450 MB (90 %; 400 till 10/10, DECISIONS #512).
+    // Grepp 3 (DECISIONS #231/#232): databasens storlek. Gratisnivån skrivskyddade databasen vid 500 MB — då stannar
+    // ingest-live och appen visar gammal data, utan att något annat larmar. Sedan Supabase Pro (Axel 17/10, DECISIONS #611) är
+    // disken 8 GB; larm vid 90 %, 7 373 MB (förut 450 av 500 MB, #512).
     // Prov: ?databasprov=1 sänker gränsen till 0 MB så att larmvägen syns.
     // Summan över alla databaser, som Supabase räknar kvoten (deras sida Database size): mallarna template0/template1 bar
     // 15 MB som den gamla frågan (bara current_database) inte såg — 469 mot 483 MB 15/10 (DECISIONS #569).
@@ -468,9 +469,10 @@ Deno.serve(async (req) => {
       const [db] = await sql`SELECT coalesce(sum(pg_database_size(datname)), 0)::bigint AS b FROM pg_database
         WHERE has_database_privilege(datname, 'CONNECT')`;
       const mb = Math.round(Number(db.b) / 1048576);
-      const grans = new URL(req.url).searchParams.get("databasprov") === "1" ? 0 : 450;
-      rad.push(`databas: ${mb} MB av 500 (larm vid ${grans} MB)`);
-      if (mb >= grans) problem.push(`**DATABASEN ÄR ${mb} MB** — gratisnivån skrivskyddar vid 500 MB och då stannar ingest-live (grepp 3, docs/GREPP3-ARKIVEN.md)`);
+      const TAK_MB = 8192;  // Supabase Pro, 8 GB disk (DECISIONS #611)
+      const grans = new URL(req.url).searchParams.get("databasprov") === "1" ? 0 : Math.round(TAK_MB * 0.9);
+      rad.push(`databas: ${mb} MB av ${TAK_MB} (larm vid ${grans} MB)`);
+      if (mb >= grans) problem.push(`**DATABASEN ÄR ${mb} MB** — disken är ${TAK_MB} MB (Supabase Pro), och full disk skrivskyddar databasen så att ingest-live stannar (grepp 3, docs/GREPP3-ARKIVEN.md)`);
     } catch { rad.push("databas: storleken kunde inte läsas"); }
     // Lagringen (Bengts ja 26/9, DECISIONS #380): facit-hinkens bilder och arkivexporten delar gratisnivåns 1 GB fillagring, och
     // bilderna ska ligga kvar till mars (blindningen). Kamerafacit V2/V3 räknades till högst ≈ 760 MB till 1 mars. Larm vid 800 MB.
@@ -984,7 +986,7 @@ Deno.serve(async (req) => {
     } catch (e) { problem.push(`**Kunde inte läsa arkivbackupens hink**: ${String(e)}`); }
     // 9k. ARKIVEXPORTEN (kort #83 steg 2a, DECISIONS #334). Exporten får ligga efter medan den beta av eftersläpningen, men
     //     inte STÅ STILLA: färdiga dygn som inte exporterats OCH ingen export på tre timmar ⇒ larm. Står exporten stilla
-    //     raderas heller ingenting (bara bokförda dygn får tas), så databasvakten vid 450 MB är den andra vakten.
+    //     raderas heller ingenting (bara bokförda dygn får tas), så databasvakten (90 % av disken) är den andra vakten.
     try {
       const [x] = await sql`SELECT arkiv_efterslap() AS efter, (SELECT count(*)::int FROM arkiv_export) AS dygn,
         (SELECT max(dag)::text FROM arkiv_export) AS senast_dag,

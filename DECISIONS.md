@@ -14470,3 +14470,40 @@ drift — CLAUDE.md:s regel att texten aldrig överdriver datan. Byts när progn
 
 **Stomdokument:** inga — marknadsföringen har inget stomdokument; planen bor i MARKNADSFORING-NOLLBUDGET.md.
 
+## #611 (17/10 2026) Supabase Pro godkänd; kandidatens loggar ett dygn; de fyra tabellerna som aldrig rensats till hinken — raderingen väntar (kort #347)
+
+**Axels ord 17/10:** *"Jag har godkänt (d) Supabase Pro och uppgraderar själv. Gör (b): kandidatens två loggar sparas ett dygn i databasen i
+stället för tre. Gallra också de fyra tabellerna som aldrig rensas (shadow_log, road_condition_history, situation_archive,
+smhi_warnings_history): exportera till arkivet först och gallra sedan."*
+
+**(d) Supabase Pro — Axels godkännande enligt gratisnivåregeln i CLAUDE.md.** Ca 25 USD/mån, organisationen *tagratt* som bär projektet.
+Disken blir 8 GB; gratisnivåns skrivskydd vid 500 MB upphör. Vakthundens databasrad räknar mot 8 192 MB med larm vid 90 % (7 373 MB) i
+stället för 450 av 500 MB. Den ändringen deployas först när uppgraderingen är bekräftad — före den hade den gömt ett verkligt tak.
+Beviset för gränsen läses ur Supabases Management API (projektets disk i GB och organisationens plan), inte ur fakturan.
+
+**(b) Kandidatens loggar ett dygn.** `sql/061`: `arkiv2_golv` ger 1 för `kandidat_skugga` och `kandidat_station` (förut 3, #573). De
+exporteras dygnet efter som förut, och domen i mars läser hinken. Ingen läsare i repot går mer än ett dygn bakåt i dem i databasen
+(värdevakten läser sitt fönster, inga grindar). Väntad verkan: `kandidat_station` slutar på ca 1–2 MB i stället för att fylla fyra dygn.
+
+**De fyra tabellerna: exporten byggd, raderingen avstängd.** `sql/061` lägger `shadow_log` (10 MB), `road_condition_history` (4 MB),
+`situation_archive` (4 MB) och `smhi_warnings_history` (4 MB) i arkivexportens vitlista (DB-knappen 39019241018), med var sin
+tidskolumn (`run_at`, `modified_time`, `last_seen`, `published`, samma som värdevakten) i den nya `arkiv2_tid()`. De exporteras dygnsvis
+efter åtta dygn, läses tillbaka och bokförs bara med dygnets radantal (sql/053:s väg). Historiken (road_condition_history från 21/2,
+shadow_log från 29/8) tas två dygn per tabell och timme, ikapp på ungefär fem dygn. **Raderingen är avstängd** (`arkiv2_golv` = null):
+- Grindarna läser längre bakåt än 14 dygn: K-B och R-B 30 dygn av `road_condition_history` och `situation_archive`, höjdprovet 60 dygn
+  av `shadow_log`, V-B hela säsongen av `shadow_log` och `situation_archive`.
+- Grindarnas tillfälliga databas (`scripts/tillfalliga-arkivet.ts` steg 5) kopierar de tabellerna HELA ur driften, inte ur hinken. En
+  radering skulle alltså tyst korta grindarnas fönster — de skriver inte ut saknade dygn för sidotabellerna.
+- De fyra är 22 MB tillsammans och växer ca 0,9 MB/dygn. Med 8 GB är det ingen fråga om plats längre.
+
+Att gallra dem kräver ett av två: att tillfälliga arkivet läser dem ur hinken (som väderarkivet), eller ett golv som täcker den längsta
+läsaren. Valet står i bedömningen §4.2.
+
+**Alternativ förkastade:** (a) kortare väderförvaring — ingen verkan på totalen (#580 steg 2). (c) trendtabellerna och radarn tio dygn
+— onödig med Pro. Radera de fyra efter 14 dygn nu — förkastat av skälet ovan.
+
+**Prov:** `test/integration.test.ts` *#611*: ett dygn gammal kandidatrad står kvar och två dygn gammal raderas; shadow_log delas på
+`run_at` och situation_archive på `last_seen`; filen bär tabellens kolumner; bokföringen fäller fel radantal; de fyra raderas inte ens
+med golvet 0; 061 körd två gånger. Hela sviten mot en färsk PostGIS lokalt: 350 gröna (main 349).
+
+**Stomdokument:** SYS databasen och arkivet, BED §4.2
