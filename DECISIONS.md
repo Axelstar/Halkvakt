@@ -14606,3 +14606,48 @@ beslutet här.
 kräver en särskild behörighet (utreds i version två).
 
 **Stomdokument:** FAV §2 fliken och §5 tider och §6 spara och §7 bygget och §11 vad som väntar, APP §9 var appen står, BED §4.2
+
+## #617 (17/10 2026) Appens rapportfil i en publik hink i Supabase Storage, byggd av en egen funktion `favoriter` var tionde minut (kort #357, steg 1)
+
+**Bengts ord 17/10:** *"börja med steg 1"*, och på frågan var appen ska hämta rapportfilen: *"a"*, alltså en publik hink i Supabase
+Storage som skrivs över var tionde minut. #541 och FAVORITER §7 lämnade valet till formen (#616), och det stod inte bland 5–7.
+
+**Alternativ:** (b) kartrepot, som lägesfilen (GitHub Pages): klarar många användare gratis, men varje skrivning blir en commit (repot
+var 67 MB efter 54 dygn, och dagens snabba del skulle lägga till ungefär 0,5–2 MB per dygn, räknat). (c) Börja med a och flytta till
+b när trafiken passerar en gräns.
+
+**Byggt** (commit 0d69979):
+- **`supabase/functions/favoriter`**: bygger rapportfilen med samma frågor och samma kärna som favoritprovet och skriver
+  `rapport-snabb.json`, `rapport-lang.json` (bara när linjerna ändrats), sist `manifest.json` med sha256 och filnamn för båda, och
+  `historik.json` (ett dygn) till hinken `favoriter`. Manifestet skrivs sist, så att det aldrig pekar på en fil som inte är skriven.
+  Inga rutter och inga förare: matchningen mot förarens rutt sker i telefonen.
+- **`sql/061_favoriter.sql`**: hinken, publik, och jobbet `halkvakt-favoriter` på **:x6** (6, 16, 26, 36, 46, 56). Det är minuter
+  som inget annat jobb använder (cron.job läst med DB-knappen 39043120615), sex minuter efter publiceringen. Kommandot kopieras ur
+  skuggmotorns jobb, så att nyckeln aldrig står i en fil.
+- **Delat med favoritprovet** (`publish/rapport-core.ts`): `rapportFragor` (de fyra frågorna till Trafikverket) och `kallaStationer`.
+  Testmiljön och appens fil kan alltså inte ställa olika frågor. Favoritprovet använder dem nu, utan ändrat beteende. Fältet heter
+  `objecttype`, så att beroendekartans vakt ser de fyra typerna.
+- **Vakthunden** läser manifestets ålder och prövar kontrollsumman mot filen i hinken. Larmet går efter 25 min, alltså två uteblivna
+  körningar, eller vid fel sha256. Det är en källa i mätvakten tills appen läser filen, och därefter ett larm i kedjan, som för
+  lägesfilen.
+- **`scripts/bundle-favoriter.ts`**, med `--check` i ci och i deploy-flödet; `favoriter` är ett val i deploy-knappen.
+
+**Prov:**
+- `test/rapport-core.test.ts`: 12 av 12, två nya.
+- Tre motprov, var och en fälld på sitt eget prov:
+  - stationsurvalet släpper igenom alla;
+  - fältet `Deviation.Deleted`, som Trafikverket inte har, i frågan;
+  - funktionen ändrad utan ny bunt.
+
+**Driftordning efter *slå ihop***, varje steg på Bengts ord:
+1. Deploy av `favoriter` och `favoritprov`. Favoritprovets bunt ändrades men beter sig likadant.
+2. *Migrera* `sql/061`.
+3. Första körningen :x6. Beviset är att manifestets sha256 är lika med sha256 av `rapport-snabb.json` i den publika hinken.
+4. Deploy av vakthunden. Beviset är raden *favoriter N min* i nästa timkörning.
+
+**Kvar:**
+- **Trafiken mäts inte än.** Supabases gratisnivå har 5 GB utgående trafik i månaden. Med fyra hämtningar om dagen à cirka 60 kB
+  räcker det till ungefär 700 användare (räknat, inte mätt). Den utgående trafiken går inte att läsa ur databasen, så vakthunden räknar
+  den inte. Hur den ska mätas avgörs innan appen läser filen (kort #357).
+
+**Stomdokument:** FAV §7 bygget, SYS funktionerna och hinkarna
