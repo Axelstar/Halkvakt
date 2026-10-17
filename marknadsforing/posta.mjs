@@ -496,6 +496,30 @@ async function vantaPaIg(id, token) {
   throw new Error(`Instagram-behållaren ${id} blev inte klar på en minut`);
 }
 
+async function postaIg(ig, url, caption, token) {
+  const media = await graph(`${ig}/media`, { image_url: url, caption, access_token: token });
+  await vantaPaIg(media.id, token);
+  const ut = await graph(`${ig}/media_publish`, { creation_id: media.id, access_token: token });
+  console.log(`Instagram: ${ut.id}`);
+  return ut.id;
+}
+
+// Ta igen Instagram för ett inlägg som nådde Facebook men inte Instagram (larmet 17/10 19:37). Facebook rörs inte.
+async function ikapp() {
+  const namn = process.env.HV_NAMN;
+  const postat = lasJson(postatPath, {});
+  const kvitton = allaInlagg(postat).filter(p => p.namn === namn);
+  const huvud = kvitton.find(p => !p.kopia);
+  if (!huvud?.facebook) throw new Error(`Inget Facebook-kvitto för ${namn}; ikapp tar bara igen Instagram.`);
+  if (huvud.instagram) return console.log(`${namn} finns redan på Instagram: ${huvud.instagram}.`);
+  const { META_PAGE_TOKEN: token, META_IG_ID: ig } = process.env;
+  if (!token || !ig) return console.log(`TORRKÖRNING (META_PAGE_TOKEN/META_IG_ID saknas). Skulle posta ${huvud.bild} på Instagram.`);
+  const inlagg = JSON.parse(readFileSync(join(dir, `${namn}.json`), "utf8"));
+  const id = await postaIg(ig, huvud.bild, inlagg.textIg ?? inlagg.text, token);
+  for (const k of kvitton) k.instagram = id;
+  writeFileSync(postatPath, JSON.stringify(postat, null, 2) + "\n");
+}
+
 async function skicka() {
   const nu = process.env.HV_NU || new Date().toISOString();
   const postat = lasJson(postatPath, {});
@@ -524,11 +548,7 @@ async function skicka() {
   };
   if (!ig) return spara();
   try {
-    const media = await graph(`${ig}/media`, { image_url: url, caption: inlagg.textIg ?? inlagg.text, access_token: token });
-    await vantaPaIg(media.id, token);
-    const ut = await graph(`${ig}/media_publish`, { creation_id: media.id, access_token: token });
-    kvitto.instagram = ut.id;
-    console.log(`Instagram: ${ut.id}`);
+    kvitto.instagram = await postaIg(ig, url, inlagg.textIg ?? inlagg.text, token);
   } finally {
     spara();
   }
@@ -538,4 +558,5 @@ const steg = process.argv[2], larm = process.argv.includes("--live");
 if (steg === "bild") await bild(larm, false);
 else if (steg === "koll") await bild(true, true);
 else if (steg === "skicka") await skicka();
-else if (steg) { console.error(`Okänt steg "${steg}" — använd bild [--live], koll eller skicka.`); process.exit(1); }
+else if (steg === "ikapp") await ikapp();
+else if (steg) { console.error(`Okänt steg "${steg}" — använd bild [--live], koll, skicka eller ikapp.`); process.exit(1); }
