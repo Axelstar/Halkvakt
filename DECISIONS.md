@@ -14823,3 +14823,18 @@ plats texten inte bär. Fler taggar än så — nej: fem till åtta räcker, fle
 **Prov:** `test/posta.test.ts` 17/17, ett nytt. Motprov: taggen borttagen fäller det nya provet och inget annat.
 
 **Stomdokument:** inga — marknadsföringen har inget stomdokument; planen bor i MARKNADSFORING-NOLLBUDGET.md.
+
+## #623 (17/10 2026) Sajtens och rutans typsnitt på egen server, inga anrop till Google Fonts (kort #281)
+
+**Beslut.** Axel 17/10 20:22, *"Lägg typsnitten på vår egen server"*. Inför NWT:s chefer: rutan som redaktioner bäddar in hämtade
+Instrument Sans och IBM Plex Mono från Google Fonts, så läsarnas IP-adresser gick till Google, fast nwt.html lovar *ingen spårning*.
+Typsnitten (OFL 1.1, licenserna medföljer) ligger nu i karta-repots `assets/fonts/`; sajtens elva sidor i roten bytte i 691246182,
+och läns- och vägsidorna som `publish/lanssidor.ts` skriver byter här. Projektkartans sida (`scripts/projektkartan.ts`) är intern och
+behåller Google Fonts, så posterna i `publish/beroenden.ts` står kvar.
+
+**Alternativ.** Systemtypsnitt i rutan — förkastat: rutan ska se ut som sajten och varningskorten.
+
+**Prov:** `test/lanssidor.test.ts` 7/7, ett nytt; motprov med Google-länken tillbaka fäller det nya provet och inget annat. I karta-repot
+lästes ruta, widget, vagar och nwt.html i Chromium: inga anrop utanför halkvakt.se, typsnitten laddade.
+
+**Stomdokument:** inga — sajtens utseende, inget stomdokument beskriver typsnittens källa.

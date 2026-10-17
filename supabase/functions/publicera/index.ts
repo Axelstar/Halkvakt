@@ -793,9 +793,7 @@ function lsSkal(o: { titel: string; beskrivning: string; adress: string; rot: st
 <meta name="twitter:card" content="summary_large_image">
 <meta name="apple-itunes-app" content="app-id=6806939784">
 <link rel="icon" type="image/png" href="${o.rot}favicon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="${o.rot}assets/fonts/fonts.css">
 <link rel="stylesheet" href="${o.rot}assets/hv.css">
 <style>${LS_STIL}</style>
 </head>
