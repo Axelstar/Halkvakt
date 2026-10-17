@@ -4,6 +4,7 @@
 set -u
 mkdir -p /tmp/demo
 APK=android/app/build/outputs/apk/debug/app-debug.apk
+adb shell wm size 1080x2340; adb shell wm density 420   # uiautomator's bounds follow the override, so the taps do too
 adb shell settings put system screen_off_timeout 600000
 adb shell locksettings set-disabled false >/dev/null 2>&1 || true
 adb install -r "$APK"
@@ -40,7 +41,7 @@ tap() {  # tap <text> [tries]
 tap_any() { for t in "$@"; do dump; xy=$(find_xy "$t"); [ -n "$xy" ] && { echo "tap '$t' @ $xy"; adb shell input tap $xy; sleep 2; return 0; }; done; echo "MISSING any of: $*"; return 1; }
 shot() { adb exec-out screencap -p > "/tmp/demo/$1.png"; }
 
-adb shell screenrecord --time-limit 180 --bit-rate 8000000 /sdcard/demo.mp4 &
+adb shell screenrecord --time-limit 180 --bit-rate 6000000 /sdcard/demo.mp4 &
 REC=$!
 sleep 2
 adb shell am start -W -n se.halkvakt.app/.MainActivity; sleep 4; shot 01-redo
@@ -65,8 +66,9 @@ adb shell input keyevent 26; sleep 2; adb shell input keyevent 224; sleep 4; sho
 adb shell wm dismiss-keyguard; adb shell input keyevent 82; sleep 3
 
 # 3. The sample card (long-press "På vakt"), then stop: the notification goes away.
-dump; xy=$(find_xy "PÅ VAKT"); echo "long-press @ $xy"; [ -n "$xy" ] && adb shell input swipe $xy $xy 900; sleep 3; shot 11-provkortet; sleep 7
-tap "Avsluta vakten"; sleep 2
+dump; xy=$(find_xy "PÅ VAKT"); echo "long-press @ $xy"; [ -n "$xy" ] && adb shell input swipe $xy $xy 900; sleep 3; shot 11-provkortet; sleep 6
+# Stop from the notification itself (Å1, kort #262) — then the shade shows it gone.
+adb shell cmd statusbar expand-notifications; sleep 3; tap "Avsluta vakten"; sleep 2
 adb shell cmd statusbar expand-notifications; sleep 4; shot 12-notisen-borta; adb shell cmd statusbar collapse; sleep 2
 
 adb shell pkill -INT screenrecord; wait $REC; sleep 3
