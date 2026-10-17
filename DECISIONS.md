@@ -14575,3 +14575,34 @@ väg 859 59,55854 17,89555 · 02040030 väg 859 59,58638 17,89612 · 21006010 v�
 **Alternativ.** 210 m i rapporten, så att rapporten följer motorn även där motorn har fel. Avböjt av Bengt.
 
 **Stomdokument:** APP §3 rösten och FAV §3 rapporten, BED §4.2
+
+## #616 (17/10 2026) Favoriternas form: egen flik, fem rutter, sparade körda vägar utan karta, påminnelse i version två — och appbygget får börja (kort #357, #358)
+
+**Bengts ord 17/10:** *"1. som du rekommenderar och 8 häv inget byggs i appen"*, på Claudes alternativ för favoriternas punkt 5–8. FAVORITER §11 anger Axel som den som bestämmer formen och
+påminnelsen, och Axel tillsammans med Bengt för att spara körda vägar; Bengt tog punkterna själv (*"jag tar punkterna 5-7"*). Axel ser
+beslutet här.
+
+**Besluten:**
+- **5.1 Egen flik *Favoriter*,** mellan Vakten och Inställningar, som skärmarna i FAVORITER §2. Varje rutt är en rad med läget *Nytt*,
+  *Inget nytt* eller *Lugnt*.
+- **5.2 Högst fem sparade rutter.** Inget underlag satte talet; det är Claudes bedömning, och det kan ändras.
+- **5.3 Version ett utan tider:** fliken, rapporten och de sparade rutterna (9–13 arbetsdagar, FAVORITER §7). Tider, påminnelse och Siri
+  kommer i version två (2–3 arbetsdagar).
+- **6.1 Körda vägar sparas,** med brytaren *Erbjud att spara resor*, av från början, som FAVORITER §6: en egen fil i telefonen utanför
+  säkerhetskopian, en tillfällig fil tills föraren svarat efter resan, radering med ett tryck. *"Din position lämnar inte telefonen av sig
+  själv"* och butikernas uppgifter står kvar. Det som offras är att appen inte sparar några positioner: Om-sidans *"ingen spårning"*
+  skrivs om, och CLAUDE.md:s produktregel får en rad om att körda vägar bara sparas på förarens begäran och aldrig följer med i en
+  säkerhetskopia — i samma commit som koden, med introduktionen, produktboken och integritetssidan.
+- **6.2 Ingen karta bakom den sparade linjen.** Linjen ritas i telefonen utan bakgrund; ingen kartserver får veta var rutten går.
+- **7.1 Påminnelse vid inställd tid på iPhone** (version två). Telefonen schemalägger den själv. En notis bara för det nya kräver en
+  automation i Genvägar per förare (#38, #39) och byggs inte.
+- **7.2 Det nya är listan i FAVORITER §5:** ny halka eller frysrisk, olycka, hinder och djur, ett nytt vägarbete när regeln prövats i
+  skuggan (#420), och en inställd färja när Trafikverkets fält säger det (#528). Aldrig gamla vägarbeten, köer, kameror, restider,
+  prognoser eller SMHI (regel T6).
+- **8. Bengts *"inget byggs i appen nu"* (2/10) är hävt.** Version ett byggs på kort #357 och version två på kort #358, som väntar på
+  version ett.
+
+**Kvar att avgöra:** gränsen för hur ofta en notis får komma, där telefonen själv kan köra kollen (Android); om en exakt tid på Android
+kräver en särskild behörighet (utreds i version två).
+
+**Stomdokument:** FAV §2 fliken och §5 tider och §6 spara och §7 bygget och §11 vad som väntar, APP §9 var appen står, BED §4.2
