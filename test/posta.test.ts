@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 // @ts-ignore — .mjs utan typer
-import { valjLan, rad, bildtext, rubrik } from "../marknadsforing/posta.mjs";
+import { valjLan, rad, bildtext, rubrik, html } from "../marknadsforing/posta.mjs";
 
 const l = (kort: string, halt: number, kalla: number, extra = {}) =>
   ({ kort, slug: kort.toLowerCase(), halt, vagavsnitt: 40, kalla, kallast: null, olyckor: 0, ...extra });
@@ -144,5 +144,25 @@ test("varje inlägg slutar med #halkvakt, på båda kanalerna (DECISIONS #622)",
   for (const kanal of ["facebook", "instagram"]) {
     const sista = bildtext([l("A", 1, 0)], "2026-11-12T05:30:00Z", kanal).trim().split("\n").at(-1);
     assert.match(sista, /^#halka #väglag .*#halkvakt$/);
+  }
+});
+
+// Bilden följer Varumärkesguide 1.0 (DECISIONS #626): gult bara som yta för en fara som är live, aldrig som text.
+test("bilden: gul yta bara för SMHI-varning och höstens första, inga andra färger, ingen vikt 700", () => {
+  const lan = [l("Norrbotten", 4, 6, { kallast: { namn: "Avvakko", yta: -3.4 } })];
+  const morgon = html({ typ: "lista", etikett: "Halkläget kl. 06:45", rubrik: "Halt i morse", underrad: "lördag 17 oktober", lan });
+  const smhi = html({ typ: "smhi", etikett: "SMHI-varning", rubrik: "Varning för väglaget", underrad: "Halkläget kl. 06:45",
+    varning: { niva: "Gul varning", event: "Halka", omrade: "Norrbottens län", fler: 0 }, lan });
+  const kall = html({ typ: "kallaste", etikett: "Höstens kallaste", rubrik: "Kallaste vägbanan i höst", underrad: "Avvakko",
+    lyft: { stort: "−8,4°", liten: "på vägbanan" }, lan });
+  assert.match(smhi, /<body class="live">/);
+  for (const b of [morgon, kall]) {
+    assert.match(b, /<body class="">/);
+    assert.ok(!/color:\s*(#FFC94A|var\(--gul\))/i.test(b), "gult som textfärg");
+  }
+  for (const b of [morgon, smhi, kall]) {
+    assert.ok(!/9AD8FF/i.test(b), "isblått finns inte i guiden");
+    assert.ok(!/font:\s*700|font-weight:\s*700/.test(b), "rubriker är 600");
+    assert.ok(!b.includes("—"), "inga långa tankstreck");
   }
 });

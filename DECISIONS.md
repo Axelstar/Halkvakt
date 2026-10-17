@@ -14883,3 +14883,20 @@ brytaren där"*.
 **Följd:** en tredje flik flyttar flikarnas lägen, så fotostudions skärmbildsflöde för Android rättas i samma varv.
 
 **Stomdokument:** FAV §2 fliken och §6 spara, APP §4 skärmarna, BED §4.2
+
+## #626 (17/10 2026) Halkvakt live: bilderna följer Varumärkesguide 1.0 (kort #281)
+
+**Beslut.** Axel 17/10 21:01, *"Jag gillar dem"*, på exemplen. Bildmallen i `marknadsforing/posta.mjs` (`html`) följer nu
+Varumärkesguide 1.0 och Sociala mallar: gult är bara ytan för en fara som är live — SMHI-varning och höstens första blir ett helt
+gult kort med halkaikonen, bläck #080B0D och sekundär text #3A2E0B — och allt annat (morgonlistan, sedan i går, höstens kallaste,
+veckan) är Dagsläget på mörk mark med länen i en panel med streckade linjer. Gult är aldrig text: siffrorna, det stora talet och
+staplarna är ljusa. Isblått (#9AD8FF, `tema: "is"`) är borttaget, rubrikerna har vikt 600 och spärrning −0,035 em, och logotypen
+står i foten med källan och halkvakt.se/lan. Texterna, urvalet och spärrarna är oförändrade.
+
+**Alternativ.** Ett län per bild som Dagsläget i mallarna — nej: fler inlägg, och spärren tre per dygn skulle tvinga bort län.
+Morgonlistan behåller upp till fem län per bild; det är den enda medvetna avvikelsen från mallarna. Live-mallens vägskylt och
+sträcka — inte nu: motorn postar per län, inte per vägsträcka.
+
+**Prov:** `test/posta.test.ts` 18/18, ett nytt. Motprov: gul textfärg på talen fäller det nya provet och inget annat.
+
+**Stomdokument:** inga — marknadsföringen har inget stomdokument; guiden bor i designsystemet Halkvakt och projektets brand/varumarkesguide.md.
