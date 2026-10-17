@@ -1,6 +1,7 @@
-# Soffprovet på Android-emulatorn
+# Soffprovet — Android-emulatorn eller iPhone via Xcode
 
-Det här provet ersätter bilprovet i steg 4 av provet i drift (DECISIONS #578 och #596, kort #343 steg 13) inför App Review. Det
+Det här provet ersätter bilprovet i steg 4 av provet i drift (DECISIONS #578 och #596, kort #343 steg 13) inför App Review. Det kan
+göras i Android-emulatorn eller på en iPhone via Xcode, och de två vägarna är likvärdiga (DECISIONS #605, längst ned). Det
 riktiga bilprovet görs senare, när det blir kallt i Skåne, som bekräftelse i fält.
 
 Provet visar två saker. Kandidatens betavarning hörs med riktiga data: appen läser den riktiga lägesfilen, och emulatorn kör en
@@ -58,3 +59,25 @@ Kandidaten varnar bara där det är kallt och fuktigt, och just nu är det oftas
    - Tills båda har tryckt är kandidaten tyst för alla testare och på kartan.
 
 Utfallet, alltså tiderna, förväntan A och B och skärmbilderna, skrivs in i DECISIONS #596 och i provet i #578.
+
+## På iPhone via Xcode (likvärdigt, DECISIONS #605)
+
+Den här vägen är lättare för en Mac utan mycket minne, och den prövar iOS-appen, alltså den som går till App Review. Xcode läser bara
+punkter med tid (`<wpt>`), så rutten skrivs med `--xcode`.
+
+**En gång:** projektet, Team och telefonen enligt `ios/MAC-GUIDE.md` (xcodegen, Team, ▶ på din iPhone). Appkoden på main är densamma
+som i 0.3.13 (26). Xcodes bygge ersätter TestFlight-appen på telefonen, så installera om från TestFlight efteråt.
+
+**Provet, en kall morgon:**
+1. **Rutten.** Kör `node --experimental-strip-types scripts/kandidat-gpx.ts --xcode` i repot. Det skriver `soffprovet-xcode.gpx`, och
+   skriptet vägrar om kandidaten inte varnar någonstans.
+2. **Starta appen.** Kör den på telefonen med ▶ i Xcode, starta vakten och skruva upp ljudet.
+3. **Spela rutten.** I Xcodes felsökningsrad: platspilen (📍) → **Add GPX File to Project…** → `soffprovet-xcode.gpx`, och välj sedan
+   den i listan. Xcode spelar upp rutten i verklig hastighet.
+4. **Förväntan A:** som ovan. Inom ungefär 5 minuter säger appen *"Halkvakt tror: halka framöver."*
+5. **Tysta och kör igen.**
+   - Tryck *tysta*, eller säg det till Claude via Bengt.
+   - Vänta tills lägesfilen saknar nyckeln, högst 10 minuter.
+   - Stoppa och starta vakten. Appen hämtar lägesfilen vid start och sedan var 30:e minut (`GuardManager.swift`).
+   - Börja om rutten: 📍 → **Don't Simulate Location**, och välj sedan filen igen.
+6. **Förväntan B och starta igen:** som i steg 6–7 ovan.

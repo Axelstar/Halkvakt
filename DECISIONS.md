@@ -14296,3 +14296,23 @@ förregistreringens §4: bara Våt bekräftas mer sällan än bara radarn, och f
 - Därefter trycks körningen på Bengts ord, med mätningen `scripts/matningar/kuvos-blandning-vagb-facit-trv-uppfoljning-2026-10-17.ts`.
 
 **Stomdokument:** KUV §7 facit, BED §4.2
+
+## #605 (17/10 2026) Soffprovet kan också göras på iPhone via Xcode — rutten i Xcodes format (kort #343, steg 13)
+
+**Beslut.** Bengt 17/10: *"ja till xcode-formatet"*, på Claudes förslag efter svaret från Axels session. Den föreslog iPhone via Xcode som reserv om
+emulatorn går segt på Axels Mac (M1, 8 GB).
+- `scripts/kandidat-gpx.ts --xcode` skriver rutten som punkter med tid (`<wpt>`), i samma form som `ios/HalkvaktApp/Sources/TestkorningE22.gpx`.
+  Xcodes platssimulering läser bara det; spårpunkterna (`<trkpt>`) som Android-emulatorn läser flyttar inte positionen i Xcode.
+- Soffprovet i #596 görs i Android-emulatorn **eller** på en iPhone via Xcode, och förväntan A och B är desamma.
+- Guiden `android/SOFFPROVET.md` har fått iPhone-vägen.
+- Tiden i rutten skrivs nu i hela sekunder. Förut fick den millisekunder när starten inte låg på en hel sekund.
+
+**Varför.** iPhone-vägen prövar iOS-appen, som är den som går till App Review, och den kräver ingen emulator på en Mac med lite minne.
+
+**Prov:**
+- Självtestet: punkter med tid utan spår, och hela sekunder också när starten har millisekunder.
+- Två motprov fällde: flaggan ignorerad, och millisekunderna kvar.
+- Provkört mot lägesfilen 01:10 UTC: kandidaten varnade på 23 sträckor. Sträcka 99030 i Norrbotten hade 53 punkter, alla på rutten,
+  som blev 1 593 punkter och 80 minuter.
+
+**Stomdokument:** APP, LIV, BED §4.2
