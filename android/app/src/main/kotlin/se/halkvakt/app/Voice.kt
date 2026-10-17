@@ -5,10 +5,11 @@ import android.speech.tts.TextToSpeech
 
 /** One audio path for real warnings and "Testa rösten" — the test used to play on the media stream, the warnings on navigation. */
 object Voice {
-    val ATTRS: AudioAttributes = AudioAttributes.Builder()
+    // lazy: the JVM unit tests touch Voice.problem, and android.jar stubs throw when AudioAttributes is built.
+    val ATTRS: AudioAttributes by lazy { AudioAttributes.Builder()
         .setUsage(AudioAttributes.USAGE_ASSISTANCE_NAVIGATION_GUIDANCE)
         .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-        .build()
+        .build() }
 
     const val NO_ENGINE = "Telefonen har ingen talmotor igång. Installera eller välj \"Talsyntes från Google\" under Text till tal."
     const val NO_SWEDISH = "Den svenska rösten saknas. Ladda ner Svenska under Text till tal, annars hörs inga varningar."
