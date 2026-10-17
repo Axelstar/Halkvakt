@@ -112,6 +112,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   (kundens rutter, lagrade bara om kunden vill) · redaktioner *"skriv morgonnotisen för mitt län"* · kommuner, skolskjuts och färdtjänst ·
   försäkringsbolag och bilpooler. Först: Axel provar servern själv och frågar ett åkeri hur transportledaren tar reda på väglaget i dag.
   Nycklar per kund och en betald plan är ett ägarbeslut i DECISIONS innan något tas betalt.
+  🔨 **Nästa (Axel 17/10 22:14: *"ja"*, *"ett säljverktyg … snygga dashboards till våra kunder"*):** fyra verktyg till — morgonnotisen
+  per län, rutten med vägarna utskrivna (*"E18 Karlstad–Örebro"*, sträckorna ur Trafikverkets namn), olyckor och vilt. Rutten från A till B
+  utan vägar kräver en egen vägplanerare ur vägnätet och byggs först om ett åkeri behöver den. Därefter en dashboard per kund på samma data.
   ⚙️ **Regel (Axels order 00:31, planens §7): allt som kan gå av sig själv när det är uppsatt ska gå av sig själv** — motorn, Halkvakt live,
   länssidorna, nyhetsbrevet, pressutkast vid larm, måndagsmätningen, widgeten, årsrapporten. Det som kräver ett ok landar som färdigt utkast med en knapp.
   Verify: 12 Android-testare + 50 iPhone-installationer till första snön; 1 000 installationer, 5 pressomnämnanden, 100 facitsvar till 31/12 (§6).
