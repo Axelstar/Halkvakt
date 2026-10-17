@@ -14742,3 +14742,42 @@ motorn, och när kollen gav upp anropade `endProbe(false)` `stopUpdatingLocation
 i 0.3.13 (27). Stopp och start nollar `probing` (`stop()`), därav omvägen i provet. Inget rättat ännu.
 
 **Stomdokument:** APP §3, BED §4.2
+
+## #620 (17/10 2026) Bygge 28 med rättelsen av #359; kort #360 drivs — takten för halka på grannsträckor är läst, formen väljs av Bengt (kort #359, #360)
+
+**Bengts ord 17/10:** *"1 ja 2 slå ihop och bygg 28 3 kör på kort 360"*. Det gäller PR #1044 (soffprovet, #619), PR #1045 (rättelsen av #359) och kort #360.
+
+**Bygge 28:**
+- PR #1044 sammanslagen som 303eb41, PR #1045 som d33467c.
+- ios-engine 39053553774, android 39053553845 och ci 39053553737 var gröna på d33467c före uppladdningen (CLAUDE.md).
+- 0.3.13 (28) uppladdat av TestFlight-flödet, körning 39054060542 på d33467c: ARCHIVE SUCCEEDED, bygget bär 0.3.13 (28), Upload succeeded.
+- Kort #359 är stängt. `Fartkollen` är en ren struct i motorpaketet med fyra prov, bland dem att en vakt som startats för hand
+  under kollen aldrig får `.sleep`. `start()` och `stop()` avslutar kollen, och `endProbe` stänger aldrig positionen medan vakten kör.
+  Motprovet, där `end()` inte nollar kollen, fälldes av provet. Att positionerna fortsätter i telefonen syns först i bygge 28.
+
+**Kort #360 drivs** (Bengt: *"kör på kort 360"*). Takten för halka på grannsträckor är läst ur skuggloggen, 14 dygn, med DB-knappen
+39053719135. Läsningen är beskrivande; ingen dom:
+
+| Mått | Värde |
+| :-- | --: |
+| Halkvarningar | 223 i 134 körningar på 6 rutter |
+| Två halkvarningar i följd för olika sträckor | 66, varav 4 inom 30 s, 17 inom 120 s och 19 inom 300 s |
+| Mellanrummet för olika sträckor (p10, median, p90) | 80 s, 1 170 s, 6 895 s |
+| Samma sträcka igen (reprisregeln) | 23 |
+| E14 Sundsvall→Åre | 25 följder, 17 inom 120 s, tätast 10 s; ingen annan rutt har en följd inom 120 s |
+
+De täta följderna är alltså ett kluster på en rutt, som korsningen vid Vittangi i soffprovet. Resten ligger mer än 12 minuter isär.
+
+**Formen väntar på Bengts val** (bedömningen §4.2):
+- **(a)** Axels förslag: en varning per halkzon med avstånd och längd, och sedan tyst till zonen är slut. Det går emot #103 (12/9): en
+  59 km lång sträcka i Jämtland hade gett en varning på 39 minuter, och Bengt avgjorde att upprepade sanna halkvarningar inte är *cry
+  wolf*.
+- **(b)** Grannsträckor slås ihop till en zon bara för den första varningen, så att tre *halka* i en korsning blir en. Inne i zonen
+  gäller reprisregeln som i dag (10 min / 5 km), så att en lång zon upprepas som #103 vill.
+- **(c)** Som (b), med avstånd och längd i texten (*"halka om 500 meter, ungefär 5 km"*). Längden går bara att räkna på den väg bilen är
+  på, i färdriktningen.
+
+Glappet som räknas som samma zon sätts ur sträckornas geometri vid de täta följderna, och mäts före bygget (#200). Ändringen rör
+motorn i tre språk, testvektorerna, rösttexten och produktboken.
+
+**Stomdokument:** APP §3 rösten, LIV steg 12 bygget, BED §4.2
