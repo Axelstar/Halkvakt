@@ -15156,3 +15156,21 @@ funktion som butiksversionen saknar. Väntar på Bengts ord.
 fältprovet — alla förkastade.
 
 **Stomdokument:** FAV §3 rapporten och §6 spara, BED §4.2
+
+## #638 (18/10 2026) Soffprovet klart: betakortet i A godtas utan skärmbild — steg 13 är klart (kort #343)
+
+**Bengts ord 18/10:** *"vi struntar i betakortets skärmbild. kör vidare och klarmarkera soffprovet"*, efter att Claude föreslagit A-rutten igen genom sträcka 16060 med en skärmbild av kortet.
+
+**Beslut.** Förväntan A i soffprovet (#596) räknas som uppfylld på rösten: *"Halkvakt tror: halka framöver."* kom 17/10 21:12 på
+sträcka 87010 (#628). Att betakortet visades samtidigt är inte säkert sett (Axel: *"jag vet inte helt 100 %"*), och det prövas inte
+mer. Med B godtagen (#631) och C gjord 17/10 21:04 UTC (Axels *starta* 19:50:52, Bengts 21:04:12) är **steg 13, avstängningen i drift,
+klart**. Avvikelsen från förregistreringen står kvar här, som i #631: kortet ingick i förväntan A och är inte bevisat.
+
+**Vad som står kvar som stöd.** Kortet för kandidaten är prövat i koden: `testCandidateBetaIsMarked` i Swift och `candidateBetaIsMarked` i Kotlin (#577),
+och Android-kortet finns som skärmbild ur fotostudion (produktboken, *Kandidatens betakort*). Det som inte är sett är kortet på en
+iPhone under en riktig passage. Bilprovet i fält (#596) står kvar för när det blir kallt i Skåne.
+
+**Alternativ.** A-rutten igen i förmiddag med en skärmbild (Claudes förslag 18/10, rutten skriven ur lägesfilen 09:40 svensk tid) —
+valdes bort av Bengt.
+
+**Stomdokument:** LIV steg 13, BED §4.2
