@@ -15058,3 +15058,30 @@ kopian.
 bort av Bengt.
 
 **Stomdokument:** FAV §6 spara, APP §4 skärmarna, BED §4.2
+
+## #634 (18/10 2026) App Review med 0.3.13 (30): kandidaten, halkzonen och favoriterna i samma granskning — ersätter #632:s 29 (kort #343, #357)
+
+**Bengts ord 18/10:** *"29 är inte inskickad ännu så jag ser gärna att vi gör ett inskick till app review och vad saknas för att vi ska
+kunna göra det. slå ihop 1063"*, efter frågan i §4.2 om favoriterna skulle gå med i samma granskning.
+
+**Beslut.** Byggnumret höjs till 0.3.13 (30) på iOS och Android i en egen commit efter favoriternas sista appändring (PR #1063), och 30
+laddas upp med TestFlight-flödet från main. 30 är bygget som går till App Review, inte 29 (#632). En granskning i stället för två.
+
+**Vad 30 har som 29 saknar:** favoriternas steg 2 på iPhone och Android (PR #1062, #1063; DECISIONS #616, #625, #633). Kandidaten och
+halkzonen är desamma som i 29.
+
+**Kvar före inskicket** (BED §4.2):
+1. **Bygget 30** — höjningen ihopslagen, TestFlight-flödet *ladda-upp*, beviset *ARCHIVE SUCCEEDED*, 0.3.13 (30), *Upload succeeded* (Claude).
+2. **Prov på 30 på en iPhone** — betakortet, det sista i steg 13 (#631), och en sparad resa: brytaren på, en resa på minst 1 km,
+   *Spara resan?*, fliken (Axel).
+3. **Sajtens texter** om sparade resor, framför allt integritetspolicyn, som granskarna läser (Axel godkänner, Claude gör PR:en).
+4. **Butikstexterna** i `marknadsforing/butik/appstore-ios.md`: *Nyheter i den här versionen*, granskarens anteckningar och
+   beskrivningen, utkast 18/10 (Axel godkänner och klistrar in).
+5. **Skärmbilderna** i App Store är tagna ur (19) 1/10, före designen v2 och fliken Favoriter; Apple kräver att de visar appen som
+   den är (2.3.3). Nya bilder ur 30 på Axels iPhone.
+6. **Skärminspelningen** för bakgrundsljudet (2.5.4, #460), som ännu inte är skickad: *Testa i bakgrunden* på en riktig iPhone.
+7. **Inskicket** — ny version 0.3.13 i App Store Connect, bygge 30, *Submit for Review*; *Copyright:* ur upphovsrättsfältet (#433) (Axel).
+
+**Alternativ.** 29 nu och favoriterna i nästa version — förkastat av Bengt: två granskningar.
+
+**Stomdokument:** APP 0.3.13, LIV steg 12, FAV §11 vad som väntar, BED §4.2

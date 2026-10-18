@@ -6,7 +6,7 @@ android {
         applicationId = "se.halkvakt.app"
         minSdk = 26; targetSdk = 35
         // Femma åtta (4), DECISIONS #377: i takt med iOS FÖRE första Play-uppladdningen, som låser versionCode-spåret.
-        versionCode = 29; versionName = "0.3.13"   // 18/10: halkzonen, grannsträckor inom 500 m är en zon för reprisregeln (kort #360, DECISIONS #624), i takt med iOS 0.3.13 (29)
+        versionCode = 30; versionName = "0.3.13"   // 18/10: favoriternas steg 2 (kort #357, DECISIONS #634), i takt med iOS 0.3.13 (30)
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     sourceSets.getByName("androidTest") {
