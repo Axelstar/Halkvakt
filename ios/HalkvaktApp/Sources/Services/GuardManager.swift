@@ -244,6 +244,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
             // behålls det gamla — annars hade varningarna före macken fallit utanför "alla".
             Prefs.shared.tripStart = startedAt
         }
+        Favoriter.shared.resanBorjar(ny: !sameTrip)   // kort #357: bara med brytaren på
         tripEndedAt = nil
         staleAnnounced = false
         prevLoc = nil
@@ -287,6 +288,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
     }
 
     func stop() {
+        let korde = running
         Task { _ = await FacitSender.flush() }   // S4: resan är slut — osända svar går iväg
         if running, autoWoke, let t0 = startedAt {
             Prefs.shared.lastAutoWakeMinutes = max(1, Int(Date.now.timeIntervalSince(t0) / 60))
@@ -300,6 +302,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         // Redo efter tur (designen 01b): kvittot behöver resans slut och sträcka.
         Prefs.shared.lastTripEnd = tripEndedAt
         Prefs.shared.lastTripKm = distanceKm
+        if korde { Favoriter.shared.resanSlutar(km: distanceKm) }   // kort #357: frågan på Redo., bara med brytaren på
         staleToast = false
         headsUpTask?.cancel()
         manager.stopUpdatingLocation()
@@ -379,6 +382,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         }
 
         guard running else { return }
+        if loc.horizontalAccuracy >= 0 { Favoriter.shared.fix(lon: loc.coordinate.longitude, lat: loc.coordinate.latitude) }   // #357
         if !loading, Date.now >= nextLoadAt { Task { await refreshSnapshot() } }   // #258: också när första laddningen föll
         guard let engine else { return }
 

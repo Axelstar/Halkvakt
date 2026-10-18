@@ -49,6 +49,10 @@ Define success criteria. Loop until verified.
   MEASURED, not assumed: skuggrapportens `takt` (tätaste följd, följder inom 60 s) is where
   any cap must come from (Bengt 16/9, DECISIONS #200).
 - Silence is a feature. When in doubt, don't alert.
+- Driven routes are saved only when the driver asks (the switch *Erbjud att spara resor* in the Favoriter tab, off by
+  default), only on the phone and never in a backup (iOS: Application Support with `isExcludedFromBackup`; Android:
+  `noBackupFilesDir`), and no code that reaches the network may touch them — `scripts/rutterspar.ts` in ci
+  (DECISIONS #616, #625).
 
 **Engineering:**
 - The alert engine is pure and platform-free; Android (and later iOS) implementations
