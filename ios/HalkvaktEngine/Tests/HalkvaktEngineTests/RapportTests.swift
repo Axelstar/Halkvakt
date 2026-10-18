@@ -59,6 +59,12 @@ final class RapportTests: XCTestCase {
         XCTAssertEqual((try Self.facit()["gruppFran"] as! NSNumber).intValue, ResansRapport.gruppFran)
     }
 
+    func testNamnenArDeIFacit() throws {
+        let n = try Self.facit()["rubrik"] as! [String: String]
+        XCTAssertEqual(n.count, RapportSlag.allCases.count)
+        for (k, v) in n { XCTAssertEqual(ResansRapport.namn[RapportSlag(rawValue: k)!], v, k) }
+    }
+
     func testDitOchHemSomTypeScript() throws {
         let f = try Self.facit(), i = Self.indata(f)
         for (hem, nyckel) in [(false, "dit"), (true, "hem")] {

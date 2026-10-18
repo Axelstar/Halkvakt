@@ -58,6 +58,10 @@ public enum ResansRapport {
     public static let langsMinstM = 500.0
     public static let langsStegM = 100.0
     public static let gruppFran = 3
+    /// Slagens namn på raden om det tomma (rapport-core.ts RUBRIK): "Inget rapporterat: halt väglag på sträckorna, vilt …".
+    public static let namn: [RapportSlag: String] = [.halka: "halt väglag på sträckorna", .frysrisk: "frysrisk vid stationerna",
+        .olycka: "olyckor", .hinder: "hinder", .vilt: "vilt", .ko: "köer", .restid: "restider", .vagarbete: "vägarbeten",
+        .hastighet: "hastighet", .omledning: "omledningar", .farja: "färjor", .kamera: "fartkameror", .smhi: "SMHI-varningar"]
     public static let rutaGrad = 0.05
     static let efterhalka = EngineConfig()
 

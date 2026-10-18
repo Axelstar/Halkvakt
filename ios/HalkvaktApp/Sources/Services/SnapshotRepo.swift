@@ -31,6 +31,14 @@ enum SnapshotRepo {
         return Snapshot(hazards: out, generatedAt: gen, stations: stations)
     }
 
+    /// static.json och live.json som de ligger, verifierade som ovan — för favoriternas rapport (kort #357), som läser fler fält än
+    /// motorn (vägen på sträckorna, broarna, SMHI:s områden).
+    static func dokument() async throws -> (stat: [String: Any], live: [String: Any]) {
+        let manifest = (try? await fetchJSON("manifest.json")) ?? [:]
+        let files = manifest["files"] as? [String: Any] ?? [:]
+        return (try await fetchVerified("static.json", manifestFiles: files), try await fetchVerified("live.json", manifestFiles: files))
+    }
+
     // MARK: - Hämtning med verifiering + cache
 
     private static func fetchVerified(_ name: String, manifestFiles: [String: Any]) async throws -> [String: Any] {

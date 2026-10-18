@@ -19,8 +19,9 @@ export const GOLV = { swift: 1, kotlin: 1 };
 export const MANIFEST = "android/app/src/main/AndroidManifest.xml";
 export const REGLER = "android/app/src/main/res/xml/data_extraction_rules.xml";
 const NAT = { swift: /\bURLSession\b|\bURLRequest\b|\bNWConnection\b/, kotlin: /HttpURLConnection|openConnection\s*\(|\bOkHttp|\bURL\s*\(/ };
-const RUTT = /\bFavoriter\b|\bRuttinsamlare\b|\bSparadRutt\b|\bVantandeResa\b|\bRutter\b|\bRuttLager\b|\bRuttJson\b|rutter\.json|senaste-resan/;
-const SKRIVER = /"rutter\.json"|"senaste-resan\.json"/;
+const RUTT = /\bFavoriter\b|\bRuttinsamlare\b|\bSparadRutt\b|\bVantandeResa\b|\bRutter\b|\bRuttLager\b|\bRuttJson\b|rutter\.json|senaste-resan|kollen\.json/;
+// kollen.json (steg 3b): förra kollen per resa, farornas id längs vägen — de pekar på platser, så filen vaktas som rutterna.
+const SKRIVER = /"rutter\.json"|"senaste-resan\.json"|"kollen\.json"/;
 const UNDANTAG = {
   swift: [/isExcludedFromBackup\s*=\s*true/, /\.applicationSupportDirectory\b/],
   kotlin: [/\bnoBackupFilesDir\b/],
@@ -78,6 +79,8 @@ if (korsSjalv && process.argv.includes("--sjalvtest")) {
   k(tva(ratt).length === 0, "ruttfiler med undantaget passerar på båda plattformarna");
   k(tva(ratt.replace("rv.isExcludedFromBackup = true", "")).some((e) => e.includes("isExcludedFromBackup")), "utan isExcludedFromBackup fälls");
   k(tva(ratt.replace(".applicationSupportDirectory", ".documentDirectory")).some((e) => e.includes("applicationSupportDirectory")), "i Documents fälls");
+  k(tva(ratt, rattKt, [f("a/Kollen.swift", 'let f = "kollen.json"')]).some((e) => e.includes("Kollen.swift") && e.includes("isExcludedFromBackup")),
+    "kollen utan isExcludedFromBackup fälls");
   k(tva(ratt, rattKt, [f("a/Sander.swift", "URLSession.shared.data(for: r)\nlet x = Favoriter.shared.rutter")]).some((e) => e.includes("når nätet")), "en nätfil som rör rutterna fälls");
   k(tva(ratt, rattKt, [f("a/Sander.swift", "URLSession.shared.data(for: r) // Favoriter rörs inte här")]).length === 0, "ett ord i en kommentar fäller inte");
   k(tva(ratt + "\nUserDefaults.standard.set(rutter, forKey: \"k.x\")").some((e) => e.includes("UserDefaults")), "rutterna i UserDefaults fälls");

@@ -21,6 +21,21 @@
   "stegM": 100
  },
  "gruppFran": 3,
+ "rubrik": {
+  "halka": "halt väglag på sträckorna",
+  "frysrisk": "frysrisk vid stationerna",
+  "olycka": "olyckor",
+  "hinder": "hinder",
+  "vilt": "vilt",
+  "ko": "köer",
+  "restid": "restider",
+  "vagarbete": "vägarbeten",
+  "hastighet": "hastighet",
+  "omledning": "omledningar",
+  "farja": "färjor",
+  "kamera": "fartkameror",
+  "smhi": "SMHI-varningar"
+ },
  "in": {
   "rutt": [
    [

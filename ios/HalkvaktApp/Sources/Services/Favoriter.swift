@@ -7,6 +7,8 @@
 // och flaggan läses tillbaka: går den inte att sätta raderas filen hellre än att en körd väg följer med i iCloud.
 //   rutter.json         de sparade rutterna
 //   senaste-resan.json  den senaste resans väg tills föraren svarat, högst ett dygn (FAVORITER §6)
+//   kollen.json         förra kollen per resa: när rapporten öppnades och vilka faror den visade (steg 3b). Farornas id pekar på
+//                       platser längs vägen, så filen behandlas som rutterna.
 // Inget här når nätet. scripts/rutterspar.ts i ci fäller en fil som både når nätet och rör rutterna.
 import Foundation
 import Observation
@@ -36,12 +38,20 @@ final class Favoriter {
     }
     private(set) var rutter: [SparadRutt] = []
     private(set) var vantande: VantandeResa?
+
+    /// Förra kollen av en resas rapport, åt båda hållen (steg 3b): det som tillkommit sedan dess är Nytt.
+    struct Koll: Codable, Equatable {
+        let tid: Date
+        let ids: [String]
+    }
+    private(set) var kollar: [String: Koll] = [:]
     private var insamlare: Ruttinsamlare?
 
     private init() {
         erbjud = UserDefaults.standard.bool(forKey: "k.favErbjud")
         rutter = Self.las(Rutter.self, Self.rutterFil)?.rutter ?? []
         vantande = Self.las(VantandeResa.self, Self.vantandeFil)
+        kollar = Self.las([String: Koll].self, Self.kollenFil) ?? [:]
         if let v = vantande, Date.now.timeIntervalSince(v.slut) >= Self.fragaKvarS { avsta() }
     }
 
@@ -58,6 +68,8 @@ final class Favoriter {
     /// Vakten stoppar: vägen så långt läggs i den tillfälliga filen, och Redo. frågar om den ska sparas.
     func resanSlutar(km: Double, nu: Date = .now) {
         guard erbjud, km >= Self.minstaResaKm, let r = insamlare?.route(), r.count >= 2 else { return }
+        // DECISIONS #637: vägen hem, eller samma väg igen, är redan sparad — en resa räcker för båda hållen, så ingen ny fråga.
+        guard !rutter.contains(where: { Rutter.sammaResa($0.punkter, r) }) else { return }
         let v = VantandeResa(slut: nu, punkter: r)
         if Self.skriv(v, Self.vantandeFil) { vantande = v }
     }
@@ -90,11 +102,22 @@ final class Favoriter {
         let lista = Rutter(rutter: rutter).taBort(id: id)
         if lista.rutter.isEmpty { taBortAlla(); return }
         if Self.skriv(lista, Self.rutterFil) { rutter = lista.rutter }
+        if kollar[id] != nil { var k = kollar; k[id] = nil; if Self.skriv(k, Self.kollenFil) { kollar = k } }
     }
 
     func taBortAlla() {
         try? FileManager.default.removeItem(at: Self.rutterFil)
+        try? FileManager.default.removeItem(at: Self.kollenFil)
         rutter = []
+        kollar = [:]
+    }
+
+    /// Föraren har läst rapporten: det den visade, åt båda hållen, är grunden för nästa Nytt.
+    func kollad(rutt id: String, ids: [String], nu: Date = .now) {
+        guard rutter.contains(where: { $0.id == id }) else { return }
+        var k = kollar
+        k[id] = Koll(tid: nu, ids: ids)
+        if Self.skriv(k, Self.kollenFil) { kollar = k }
     }
 
     // MARK: - Filerna
@@ -105,6 +128,7 @@ final class Favoriter {
     }
     static var rutterFil: URL { mapp.appendingPathComponent("rutter.json") }
     static var vantandeFil: URL { mapp.appendingPathComponent("senaste-resan.json") }
+    static var kollenFil: URL { mapp.appendingPathComponent("kollen.json") }
 
     private static func skriv<T: Encodable>(_ v: T, _ url: URL) -> Bool {
         do {

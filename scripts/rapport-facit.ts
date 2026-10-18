@@ -9,8 +9,8 @@
 //      node --experimental-strip-types scripts/rapport-facit.ts --check    fäller om filen inte är den skriptet skriver
 import { readFileSync, writeFileSync } from "node:fs";
 import { resansRapport, riktning } from "../publish/rapport-app.ts";
-import { GRUPP_FRAN, grupperade, LANGS_ANDEL, LANGS_MINST_M, LANGS_STEG_M, MARGINALER, nyttSedan, tomma, type Linje, type Linjer,
-  type Rapport } from "../publish/rapport-core.ts";
+import { GRUPP_FRAN, grupperade, LANGS_ANDEL, LANGS_MINST_M, LANGS_STEG_M, MARGINALER, nyttSedan, RUBRIK, tomma, type Linje,
+  type Linjer, type Rapport } from "../publish/rapport-core.ts";
 import type { LiveDoc, StaticDoc } from "../engine/src/snapshot.ts";
 
 const LON0 = 18.0, LAT0 = 59.3, M_LAT = 111_320;
@@ -91,6 +91,7 @@ const R = (o: [number, number], t: [number, number]) => [linje(o, t, 100)];
 const ut = {
   _om: "Facit för resans rapport (scripts/rapport-facit.ts). Skrivs av skriptet — ändras aldrig för hand.",
   marginaler: MARGINALER, langs: { andel: LANGS_ANDEL, minstM: LANGS_MINST_M, stegM: LANGS_STEG_M }, gruppFran: GRUPP_FRAN,
+  rubrik: RUBRIK,
   in: { rutt, live, stat, snabb, lang },
   dit, hem,
   nytt: { fore: fore.map((r) => r.id), ut: nyttSedan(fore, dit.rader) },
