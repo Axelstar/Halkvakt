@@ -44,5 +44,17 @@
       "facebook": "1312515671952967_122098390041516187",
       "instagram": "18168766261473166"
     }
+  ],
+  "2026-10-18": [
+    {
+      "pass": "live",
+      "namn": "2026-10-18-live-0207",
+      "typ": "forsta",
+      "nyckel": "forsta:14",
+      "tid": "2026-10-18T00:07:41.158Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-10-18-live-0207.jpg",
+      "facebook": "1312515671952967_122098486497516187",
+      "instagram": "17951500143303103"
+    }
   ]
 }
