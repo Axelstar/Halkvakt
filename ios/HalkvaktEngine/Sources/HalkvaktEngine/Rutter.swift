@@ -63,4 +63,20 @@ public struct Rutter: Codable, Equatable {
     public static func namnforslag(dag: Int, manad: Int) -> [String] {
         ["Till jobbet", "Hem", "Resa \(dag)/\(manad)"]
     }
+
+    /// Recognising the way home (DECISIONS #637): at least `sammaAndel` of each trip within `sammaM` of the other, in either direction.
+    public static let sammaM = 100.0
+    public static let sammaAndel = 0.8
+
+    private static func andelNara(_ a: [[Double]], _ b: [[Double]]) -> Double {
+        let prov: [Hazard] = Geo.samplePolyline(a, sammaM).enumerated().map { i, q in
+            .point(id: "p\(i)", kind: .accident, lon: q[0], lat: q[1], bearing: nil, meta: PointMeta())
+        }
+        return prov.isEmpty ? 0 : Double(RouteFilter.alongRoute(prov, b, marginM: sammaM).count) / Double(prov.count)
+    }
+
+    /// Is b the same trip as a, in either direction?
+    public static func sammaResa(_ a: [[Double]], _ b: [[Double]]) -> Bool {
+        a.count >= 2 && b.count >= 2 && andelNara(a, b) >= sammaAndel && andelNara(b, a) >= sammaAndel
+    }
 }
