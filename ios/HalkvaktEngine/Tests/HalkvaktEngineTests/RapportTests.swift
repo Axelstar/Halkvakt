@@ -59,6 +59,12 @@ final class RapportTests: XCTestCase {
         XCTAssertEqual((try Self.facit()["gruppFran"] as! NSNumber).intValue, ResansRapport.gruppFran)
     }
 
+    func testNamnenArDeIFacit() throws {
+        let n = try Self.facit()["rubrik"] as! [String: String]
+        XCTAssertEqual(n.count, RapportSlag.allCases.count)
+        for (k, v) in n { XCTAssertEqual(ResansRapport.namn[RapportSlag(rawValue: k)!], v, k) }
+    }
+
     func testDitOchHemSomTypeScript() throws {
         let f = try Self.facit(), i = Self.indata(f)
         for (hem, nyckel) in [(false, "dit"), (true, "hem")] {
@@ -95,5 +101,42 @@ final class RapportTests: XCTestCase {
         let n = f["nytt"] as! [String: Any], foreIds = n["fore"] as! [String]
         XCTAssertEqual(ResansRapport.nyttSedan(dit.filter { foreIds.contains($0.id) }, dit), n["ut"] as! [String])
         XCTAssertEqual(ResansRapport.nyttSedan(nil, dit), [])
+    }
+
+    func testFlikenOchSkarmenSomTypeScript() throws {
+        let f = try Self.facit(), i = Self.indata(f), a = f["app"] as! [String: Any]
+        let dit = ResansRapport.resansRapport(i.rutt, hem: false, lage: i.lage, kameror: i.kameror, snabb: i.snabb, linjer: i.linjer)
+        let hem = ResansRapport.resansRapport(i.rutt, hem: true, lage: i.lage, kameror: i.kameror, snabb: i.snabb, linjer: i.linjer)
+        let ur = { (rader: [RapportRad], ids: Any?) in rader.filter { (ids as! [String]).contains($0.id) } }
+        for l in a["lagen"] as! [[String: Any]] {
+            let namn = l["namn"] as! String, svar = l["svar"] as! [String: Any]
+            switch ResansRapport.radlage(ur(dit, l["dit"]), ur(hem, l["hem"]), sett: l["sett"] as? [String]) {
+            case .nytt(let antal, let viktigast):
+                XCTAssertEqual(svar["lage"] as? String, "nytt", namn)
+                XCTAssertEqual(antal, (svar["antal"] as! NSNumber).intValue, namn)
+                XCTAssertEqual(viktigast.id, svar["id"] as? String, namn)
+            case .ingetNytt(let storst):
+                XCTAssertEqual(svar["lage"] as? String, "ingetNytt", namn)
+                XCTAssertEqual(storst.id, svar["id"] as? String, namn)
+            case .lugnt:
+                XCTAssertEqual(svar["lage"] as? String, "lugnt", namn)
+            }
+        }
+        for n in a["nytt"] as! [[String: Any]] {
+            XCTAssertEqual(ResansRapport.nyttSedanKollen(dit, sett: n["sett"] as? [String]).map(\.id), n["svar"] as! [String], n["namn"] as! String)
+        }
+        XCTAssertEqual(ResansRapport.kollensIds(dit, hem), a["kollen"] as! [String])
+        for t in a["titlar"] as! [[String: Any]] {
+            XCTAssertEqual(ResansRapport.titel(t["rubrik"] as! String, vag: t["vag"] as? String), t["svar"] as! String)
+        }
+        for g in a["grind"] as! [[String: Any]] {
+            XCTAssertEqual(ResansRapport.aldersgrind(dit, gammaltVaglag: g["vaglag"] as! Bool, gamlaOlyckor: g["olyckor"] as! Bool).map(\.id),
+                           g["svar"] as! [String])
+        }
+        for t in a["tomt"] as! [[String: Any]] {
+            let rader = ur((t["hem"] as! Bool) ? hem : dit, t["rader"])
+            XCTAssertEqual(ResansRapport.tomtRad(rader, gammaltVaglag: t["vaglag"] as! Bool, gamlaOlyckor: t["olyckor"] as! Bool),
+                           t["svar"] as? String, t["namn"] as! String)
+        }
     }
 }

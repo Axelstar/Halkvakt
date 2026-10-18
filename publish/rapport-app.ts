@@ -7,7 +7,8 @@ import { farorLangsRutten } from "../engine/src/rutfilter.ts";
 import { samplePolyline } from "../engine/src/geo.ts";
 import type { Hazard } from "../engine/src/types.ts";
 import type { LiveDoc, StaticDoc } from "../engine/src/snapshot.ts";
-import { favoritRapport, LANGS_STEG_M, MARGINALER, type Linje, type Linjer, type Rad, type Rapport } from "./rapport-core.ts";
+import { favoritRapport, LANGS_STEG_M, MARGINALER, ORDNING, RUBRIK, tomma, vagNamn, type Linje, type Linjer, type Rad, type Rapport,
+  type Slag } from "./rapport-core.ts";
 
 /** Hem: samma väg åt andra hållet. */
 export function vand(rutt: Linje): Linje {
@@ -41,4 +42,71 @@ export function resansRapport(rutt: Linje, hem: boolean, live: LiveDoc, stat: St
   const linjer = new Map(snabb.poster.filter((p) => p.l).map((p) => [p.id, lang.linjer[p.l as string] ?? []]));
   return favoritRapport(r, live, stat, snabb, lang, MARGINALER)
     .filter((rad) => !rad.id.startsWith("tt:") || riktning(linjer.get(rad.id) ?? [], r, MARGINALER[rad.slag]) !== -1);
+}
+
+// ── Fliken och rapportskärmen (steg 3b): radens läge, det nya sedan förra kollen, rubriken med vägen, åldersgränsen och raden om
+//    det tomma. Samma regler i båda apparna, prövade mot facit; apparna ritar bara.
+
+/** Det som pågår längs resan åt något håll, utom fartkamerorna — de är fasta och varken nya eller något som pågår. Dit först, sedan
+ *  det som bara finns Hem. */
+export function pagar(dit: Rad[], hem: Rad[]): Rad[] {
+  const d = new Set(dit.map((r) => r.id));
+  return [...dit, ...hem.filter((r) => !d.has(r.id))].filter((r) => r.slag !== "kamera");
+}
+
+export type Radlage = { lage: "nytt"; antal: number; viktigast: Rad } | { lage: "ingetNytt"; storst: Rad } | { lage: "lugnt" };
+
+/** Radens läge i fliken (FAVORITER §2): Nytt när något tillkommit sedan förra kollen (sett: dess id, null före den första), annars
+ *  Inget nytt med det största som pågår, annars Lugnt. Det viktigaste och det största är det första i viktordningen. */
+export function radlage(dit: Rad[], hem: Rad[], sett: string[] | null): Radlage {
+  const p = pagar(dit, hem);
+  const forst = (a: Rad[]) => a.reduce<Rad | null>((m, r) => (m === null || ORDNING.indexOf(r.slag) < ORDNING.indexOf(m.slag) ? r : m), null);
+  if (sett) {
+    const s = new Set(sett);
+    const nya = p.filter((r) => !s.has(r.id));
+    const v = forst(nya);
+    if (v) return { lage: "nytt", antal: nya.length, viktigast: v };
+  }
+  const st = forst(p);
+  return st ? { lage: "ingetNytt", storst: st } : { lage: "lugnt" };
+}
+
+/** Det nya åt det valda hållet sedan förra kollen, utom kamerorna; före den första kollen finns inget nytt (som nyttSedan). */
+export function nyttSedanKollen(rader: Rad[], sett: string[] | null): Rad[] {
+  if (!sett) return [];
+  const s = new Set(sett);
+  return rader.filter((r) => !s.has(r.id) && r.slag !== "kamera");
+}
+
+/** Alla id resan visar åt båda hållen, sorterade — det som sparas som förra kollen. */
+export function kollensIds(dit: Rad[], hem: Rad[]): string[] {
+  return [...new Set([...dit, ...hem].map((r) => r.id))].sort();
+}
+
+/** Rubriken med vägen, när rubriken inte redan säger var: "Olycka på E4", men "Djur på vägen" som den står. */
+export function titel(rubrik: string, vag: string | null | undefined): string {
+  const v = vagNamn(vag);
+  return v && !rubrik.includes(" på ") ? `${rubrik} på ${v}` : rubrik;
+}
+
+/** Samma åldersgränser som rösten (apparnas AgeGate, FAVORITER §3): ur en gammal lägesfil visas varken väglag eller frysrisk, och ur
+ *  en gammal rapportfil varken olyckor eller vilt, som läget just nu. Gränserna i minuter bor i AgeGate, inte här. */
+export const VAGLAGETS: Slag[] = ["halka", "frysrisk"];
+export const OLYCKORNAS: Slag[] = ["olycka", "vilt"];
+const dolt = (s: Slag, gammaltVaglag: boolean, gamlaOlyckor: boolean) =>
+  (gammaltVaglag && VAGLAGETS.includes(s)) || (gamlaOlyckor && OLYCKORNAS.includes(s));
+
+export function aldersgrind(rader: Rad[], gammaltVaglag: boolean, gamlaOlyckor: boolean): Rad[] {
+  return rader.filter((r) => !dolt(r.slag, gammaltVaglag, gamlaOlyckor));
+}
+
+/** Raden om det tomma (FAVORITER §3): "Inget rapporterat: vilt, färjor och SMHI-varningar. Köer mäts inte längs den här vägen."
+ *  Slag som åldersgränsen dolt står inte med — där vet appen inte att det är tomt — och köerna inte heller när de inte mäts.
+ *  null när det inte finns något att säga. */
+export function tomtRad(rader: Rad[], gammaltVaglag: boolean, gamlaOlyckor: boolean): string | null {
+  const t = tomma(rader);
+  const namn = t.inget.filter((s) => !dolt(s, gammaltVaglag, gamlaOlyckor) && !(t.koerMatsInte && s === "ko")).map((s) => RUBRIK[s]);
+  let ut = namn.length ? `Inget rapporterat: ${namn.length === 1 ? namn[0] : `${namn.slice(0, -1).join(", ")} och ${namn[namn.length - 1]}`}.` : "";
+  if (t.koerMatsInte) ut += `${ut ? " " : ""}Köer mäts inte längs den här vägen.`;
+  return ut || null;
 }

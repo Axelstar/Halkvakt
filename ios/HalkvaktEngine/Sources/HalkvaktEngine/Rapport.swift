@@ -58,6 +58,10 @@ public enum ResansRapport {
     public static let langsMinstM = 500.0
     public static let langsStegM = 100.0
     public static let gruppFran = 3
+    /// Slagens namn på raden om det tomma (rapport-core.ts RUBRIK): "Inget rapporterat: halt väglag på sträckorna, vilt …".
+    public static let namn: [RapportSlag: String] = [.halka: "halt väglag på sträckorna", .frysrisk: "frysrisk vid stationerna",
+        .olycka: "olyckor", .hinder: "hinder", .vilt: "vilt", .ko: "köer", .restid: "restider", .vagarbete: "vägarbeten",
+        .hastighet: "hastighet", .omledning: "omledningar", .farja: "färjor", .kamera: "fartkameror", .smhi: "SMHI-varningar"]
     public static let rutaGrad = 0.05
     static let efterhalka = EngineConfig()
 
@@ -419,5 +423,82 @@ public enum ResansRapport {
             ut.append(RapportGrupp(id: "grupp:\(nyckel)", slag: slag, rubrik: rubrik, text: text, antal: n, ids: l.map(\.id), langsM: fran))
         }
         return sorterad(ut, slag: \.slag, langs: \.langsM, id: \.id)
+    }
+
+    // MARK: - Fliken och rapportskärmen (steg 3b), som rapport-app.ts
+
+    /// Det som pågår längs resan åt något håll, utom fartkamerorna — de är fasta och varken nya eller något som pågår. Dit först,
+    /// sedan det som bara finns Hem.
+    public static func pagar(_ dit: [RapportRad], _ hem: [RapportRad]) -> [RapportRad] {
+        let d = Set(dit.map(\.id))
+        return (dit + hem.filter { !d.contains($0.id) }).filter { $0.slag != .kamera }
+    }
+
+    public enum Radlage: Equatable {
+        case nytt(antal: Int, viktigast: RapportRad)
+        case ingetNytt(storst: RapportRad)
+        case lugnt
+    }
+
+    /// Radens läge i fliken (FAVORITER §2): Nytt när något tillkommit sedan förra kollen (`sett`: dess id, nil före den första),
+    /// annars Inget nytt med det största som pågår, annars Lugnt. Det viktigaste och det största är det första i viktordningen.
+    public static func radlage(_ dit: [RapportRad], _ hem: [RapportRad], sett: [String]?) -> Radlage {
+        let p = pagar(dit, hem)
+        let vikt = { (r: RapportRad) in ordning.firstIndex(of: r.slag) ?? ordning.count }
+        let forst = { (a: [RapportRad]) -> RapportRad? in
+            var m: RapportRad?
+            for r in a where m.map({ vikt(r) < vikt($0) }) ?? true { m = r }
+            return m
+        }
+        if let sett {
+            let s = Set(sett)
+            let nya = p.filter { !s.contains($0.id) }
+            if let v = forst(nya) { return .nytt(antal: nya.count, viktigast: v) }
+        }
+        if let st = forst(p) { return .ingetNytt(storst: st) }
+        return .lugnt
+    }
+
+    /// Det nya åt det valda hållet sedan förra kollen, utom kamerorna; före den första kollen finns inget nytt (som nyttSedan).
+    public static func nyttSedanKollen(_ rader: [RapportRad], sett: [String]?) -> [RapportRad] {
+        guard let sett else { return [] }
+        let s = Set(sett)
+        return rader.filter { !s.contains($0.id) && $0.slag != .kamera }
+    }
+
+    /// Alla id resan visar åt båda hållen, sorterade som i TypeScript (UTF-16) — det som sparas som förra kollen.
+    public static func kollensIds(_ dit: [RapportRad], _ hem: [RapportRad]) -> [String] {
+        Set((dit + hem).map(\.id)).sorted { $0.utf16.lexicographicallyPrecedes($1.utf16) }
+    }
+
+    /// Rubriken med vägen, när rubriken inte redan säger var: "Olycka på E4", men "Djur på vägen" som den står.
+    public static func titel(_ rubrik: String, vag: String?) -> String {
+        guard let v = vagNamn(vag), !rubrik.contains(" på ") else { return rubrik }
+        return "\(rubrik) på \(v)"
+    }
+
+    /// Samma åldersgränser som rösten (appens AgeGate, FAVORITER §3): ur en gammal lägesfil visas varken väglag eller frysrisk, och ur
+    /// en gammal rapportfil varken olyckor eller vilt, som läget just nu. Gränserna i minuter bor i AgeGate, inte här.
+    public static let vaglagets: [RapportSlag] = [.halka, .frysrisk]
+    public static let olyckornas: [RapportSlag] = [.olycka, .vilt]
+    private static func dolt(_ s: RapportSlag, _ gammaltVaglag: Bool, _ gamlaOlyckor: Bool) -> Bool {
+        (gammaltVaglag && vaglagets.contains(s)) || (gamlaOlyckor && olyckornas.contains(s))
+    }
+
+    public static func aldersgrind(_ rader: [RapportRad], gammaltVaglag: Bool, gamlaOlyckor: Bool) -> [RapportRad] {
+        rader.filter { !dolt($0.slag, gammaltVaglag, gamlaOlyckor) }
+    }
+
+    /// Raden om det tomma (FAVORITER §3): "Inget rapporterat: vilt, färjor och SMHI-varningar. Köer mäts inte längs den här vägen."
+    /// Slag som åldersgränsen dolt står inte med — där vet appen inte att det är tomt — och köerna inte heller när de inte mäts.
+    public static func tomtRad(_ rader: [RapportRad], gammaltVaglag: Bool, gamlaOlyckor: Bool) -> String? {
+        let t = tomma(rader)
+        let n = t.inget.filter { !dolt($0, gammaltVaglag, gamlaOlyckor) && !(t.koerMatsInte && $0 == .ko) }.compactMap { namn[$0] }
+        var ut = ""
+        if let sista = n.last {
+            ut = "Inget rapporterat: " + (n.count == 1 ? sista : n.dropLast().joined(separator: ", ") + " och " + sista) + "."
+        }
+        if t.koerMatsInte { ut += (ut.isEmpty ? "" : " ") + "Köer mäts inte längs den här vägen." }
+        return ut.isEmpty ? nil : ut
     }
 }
