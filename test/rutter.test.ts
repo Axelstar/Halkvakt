@@ -1,7 +1,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { MAX_RUTTER, RUTT_STEG_M, Ruttinsamlare, laggTill, namnforslag, taBort, type Rutter } from "../engine/src/rutter.ts";
+import { MAX_RUTTER, RUTT_STEG_M, Ruttinsamlare, SAMMA_RESA_ANDEL, SAMMA_RESA_M, laggTill, namnforslag, sammaResa, taBort,
+  type Rutter } from "../engine/src/rutter.ts";
 
 // De sparade rutterna (favoriterna steg 2, kort #357, DECISIONS #616, #625): TypeScript mot det delade facit, som Swift och Kotlin
 // prövas mot, och några invarianter som facit inte säger.
@@ -31,6 +32,14 @@ test("listan: högst fem, den sjätte nekas, inget trängs ut tyst; ta bort en",
   assert.deepEqual(taBort(l, "r2").rutter.map((x) => x.id), ["r1", "r3", "r4", "r5"]);
   assert.deepEqual(facit.lista.efterTaBortR3, ["r1", "r2", "r4", "r5"]);
   assert.equal(facit.lista.sjatteSvar, "null");
+});
+
+test("igenkänningen: samma väg åt något håll, men inte en del av den eller en annan väg (DECISIONS #637)", () => {
+  assert.equal(facit.samma.m, SAMMA_RESA_M);
+  assert.equal(facit.samma.andel, SAMMA_RESA_ANDEL);
+  for (const c of facit.samma.fall) assert.equal(sammaResa(facit.samma.a, c.b), c.svar, c.namn);
+  assert.deepEqual(facit.samma.fall.map((c: { svar: boolean }) => c.svar), [true, true, false, false, false]);
+  for (const c of facit.samma.fall) assert.equal(sammaResa(c.b, facit.samma.a), c.svar, `${c.namn}, åt andra hållet`);
 });
 
 test("namnförslagen: fasta och datumet (DECISIONS #625)", () => {

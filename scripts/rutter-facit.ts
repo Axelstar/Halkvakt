@@ -5,7 +5,8 @@
 // Kör: node --experimental-strip-types scripts/rutter-facit.ts            skriver filen
 //      node --experimental-strip-types scripts/rutter-facit.ts --check    fäller om filen inte är den skriptet skriver
 import { readFileSync, writeFileSync } from "node:fs";
-import { MAX_RUTTER, RUTT_STEG_M, Ruttinsamlare, laggTill, namnforslag, taBort, type Punkt, type Rutter } from "../engine/src/rutter.ts";
+import { MAX_RUTTER, RUTT_STEG_M, Ruttinsamlare, SAMMA_RESA_ANDEL, SAMMA_RESA_M, laggTill, namnforslag, sammaResa, taBort, type Punkt,
+  type Rutter } from "../engine/src/rutter.ts";
 
 const LAT0 = 59.0, LON0 = 15.0, M_PER_DEG_LAT = 111_320;
 const norr = (m: number) => LAT0 + m / M_PER_DEG_LAT;
@@ -24,6 +25,19 @@ const FALL: { namn: string; fixar: Punkt[] }[] = [
     fixar: [[LON0, LAT0], [LON0, LAT0]] },
   { namn: "en enda fix", fixar: [[LON0, LAT0]] },
   { namn: "inga fixar", fixar: [] },
+];
+
+// Igenkänningen (DECISIONS #637): en resa 6 km norrut, en punkt per 75 m, mot samma väg vänd, en parallell väg, halva vägen och en
+// annan väg. Avstånden ligger långt från SAMMA_RESA_M (40 m och 300 m mot 100 m) och andelarna långt från SAMMA_RESA_ANDEL.
+const vag = (ost: number, fran: number, till: number): Punkt[] =>
+  Array.from({ length: Math.round(Math.abs(till - fran) / 75) + 1 }, (_, i) => [oster(ost), norr(fran + Math.sign(till - fran) * i * 75)] as Punkt);
+const RESA = vag(0, 0, 6000);
+const SAMMA = [
+  { namn: "samma väg åt andra hållet", b: vag(0, 6000, 0) },
+  { namn: "parallell väg 40 m bort (andra körbanan)", b: vag(40, 6000, 0) },
+  { namn: "bara halva vägen", b: vag(0, 0, 3000) },
+  { namn: "en annan väg 300 m bort", b: vag(300, 0, 6000) },
+  { namn: "längre resa som fortsätter 3 km", b: vag(0, 0, 9000) },
 ];
 
 const rutt = (id: string) => ({ id, namn: id, sparad: "2026-10-17T18:00:00Z", punkter: [[LON0, LAT0]] as Punkt[] });
@@ -46,6 +60,7 @@ const ut = {
     efterTaBortOkand: taBort(full, "okand").rutter.map((x) => x.id),
   },
   namnforslag: { dag: 17, manad: 10, svar: namnforslag(17, 10) },
+  samma: { m: SAMMA_RESA_M, andel: SAMMA_RESA_ANDEL, a: RESA, fall: SAMMA.map((f) => ({ namn: f.namn, b: f.b, svar: sammaResa(RESA, f.b) })) },
 };
 const json = JSON.stringify(ut, null, 1) + "\n";
 const fil = new URL("../engine/fixtures/rutter.json", import.meta.url);
@@ -57,4 +72,5 @@ if (process.argv.includes("--check")) {
   writeFileSync(fil, json);
   for (const f of ut.fall) console.log(`${f.namn}: ${f.fixar.length} fixar → index ${JSON.stringify(f.sparas)}`);
   console.log(JSON.stringify(ut.lista), JSON.stringify(ut.namnforslag.svar));
+  for (const f of ut.samma.fall) console.log(`samma resa? ${f.namn}: ${f.svar}`);
 }
