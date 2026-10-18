@@ -91,7 +91,7 @@ private struct RapportInnehall: View {
     let gamlaOlyckor: Bool
 
     var body: some View {
-        let nya = Rapporten.nytt(rader, koll: fore)
+        let nya = ResansRapport.nyttSedanKollen(rader, sett: fore?.ids)
         let nyaIds = Set(nya.map(\.id))
         let ovriga = rader.filter { !nyaIds.contains($0.id) }
         let perId = Dictionary(rader.map { ($0.id, $0) }, uniquingKeysWith: { a, _ in a })
@@ -114,7 +114,7 @@ private struct RapportInnehall: View {
                 MonoLabel(text: "Nytt sedan \(Self.sedan(fore.tid))", color: Brand.yellow).padding(.top, 24).padding(.bottom, 10).padding(.horizontal, 4)
                 RowPanel {
                     ForEach(Array(nya.enumerated()), id: \.element.id) { i, r in
-                        RapportRadVy(titel: Rapporten.titel(r.rubrik, vag: r.vag), text: r.text, gul: true, divider: i < nya.count - 1)
+                        RapportRadVy(titel: ResansRapport.titel(r.rubrik, vag: r.vag), text: r.text, gul: true, divider: i < nya.count - 1)
                     }
                 }
             }
@@ -128,13 +128,13 @@ private struct RapportInnehall: View {
                 RowPanel {
                     ForEach(Array(grupper.enumerated()), id: \.element.id) { i, g in
                         let ensam = g.antal == 1 && !g.id.hasPrefix("grupp:")
-                        RapportRadVy(titel: ensam ? Rapporten.titel(g.rubrik, vag: perId[g.id]?.vag) : g.rubrik, text: g.text,
+                        RapportRadVy(titel: ensam ? ResansRapport.titel(g.rubrik, vag: perId[g.id]?.vag) : g.rubrik, text: g.text,
                                      divider: i < grupper.count - 1)
                     }
                 }
             }
 
-            if let tomt = tomtRad() {
+            if let tomt = ResansRapport.tomtRad(rader, gammaltVaglag: gammaltVaglag, gamlaOlyckor: gamlaOlyckor) {
                 Text(tomt).font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.dim).padding(.top, 14).padding(.horizontal, 4)
             }
 
@@ -144,21 +144,6 @@ private struct RapportInnehall: View {
             }
             .padding(.top, 24).padding(.horizontal, 4)
         }
-    }
-
-    /// "Inget rapporterat: vilt, färjor och SMHI-varningar. Köer mäts inte längs den här vägen." Slag som åldersgränsen dolt
-    /// står inte med: där vet appen inte att det är tomt.
-    private func tomtRad() -> String? {
-        let t = ResansRapport.tomma(rader)
-        let namn = t.inget.filter { s in
-            !(gammaltVaglag && (s == .halka || s == .frysrisk)) && !(gamlaOlyckor && (s == .olycka || s == .vilt))
-        }.compactMap { ResansRapport.namn[$0] }
-        var ut = ""
-        if let sista = namn.last {
-            ut = "Inget rapporterat: " + (namn.count == 1 ? sista : namn.dropLast().joined(separator: ", ") + " och " + sista) + "."
-        }
-        if t.koerMatsInte { ut += (ut.isEmpty ? "" : " ") + "Köer mäts inte längs den här vägen." }
-        return ut.isEmpty ? nil : ut
     }
 
     /// "16:20" i dag, "i går 16:20", annars "17 okt. 16:20".

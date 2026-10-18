@@ -20,13 +20,6 @@ final class Rapporten {
         let hem: [RapportRad]
     }
 
-    /// Radens läge i fliken (FAVORITER §2).
-    enum Radlage {
-        case nytt(antal: Int, viktigast: RapportRad)
-        case ingetNytt(storst: RapportRad)
-        case lugnt
-    }
-
     private(set) var resor: [String: Resa] = [:]
     private(set) var kollat: Date?
     private(set) var lagesfil: Date?
@@ -70,44 +63,17 @@ final class Rapporten {
         }
     }
 
-    // MARK: - Fliken och skärmen
-
-    /// Det som pågår längs resan åt något håll, utom kamerorna — de är fasta och varken nya eller "något som pågår".
-    private static func pagar(_ r: Resa) -> [RapportRad] {
-        let dit = Set(r.dit.map(\.id))
-        return (r.dit + r.hem.filter { !dit.contains($0.id) }).filter { $0.slag != .kamera }
-    }
+    // MARK: - Fliken och skärmen — reglerna bor i motorn (ResansRapport, prövade mot facit), här bara resans rader
 
     /// Alla id resan visar åt båda hållen — det som sparas som förra kollen.
     func ids(_ id: String) -> [String] {
         guard let r = resor[id] else { return [] }
-        return Array(Set(r.dit.map(\.id) + r.hem.map(\.id))).sorted()
+        return ResansRapport.kollensIds(r.dit, r.hem)
     }
 
-    func radlage(_ id: String, koll: Favoriter.Koll?) -> Radlage? {
+    func radlage(_ id: String, koll: Favoriter.Koll?) -> ResansRapport.Radlage? {
         guard let r = resor[id] else { return nil }
-        let p = Self.pagar(r)
-        let vikt = { (a: RapportRad) in ResansRapport.ordning.firstIndex(of: a.slag) ?? .max }
-        if let koll {
-            let sett = Set(koll.ids)
-            let nya = p.filter { !sett.contains($0.id) }
-            if let forst = nya.min(by: { vikt($0) < vikt($1) }) { return .nytt(antal: nya.count, viktigast: forst) }
-        }
-        if let storst = p.min(by: { vikt($0) < vikt($1) }) { return .ingetNytt(storst: storst) }
-        return .lugnt
-    }
-
-    /// Det nya åt det valda hållet sedan förra kollen; första kollen har inget nytt (som motorns nyttSedan).
-    static func nytt(_ rader: [RapportRad], koll: Favoriter.Koll?) -> [RapportRad] {
-        guard let koll else { return [] }
-        let sett = Set(koll.ids)
-        return rader.filter { !sett.contains($0.id) && $0.slag != .kamera }
-    }
-
-    /// Radens rubrik med vägen, när rubriken inte redan säger var: "Olycka på E4", men "Djur på vägen" som den står.
-    static func titel(_ rubrik: String, vag: String?) -> String {
-        guard let v = ResansRapport.vagNamn(vag), !rubrik.contains(" på ") else { return rubrik }
-        return "\(rubrik) på \(v)"
+        return ResansRapport.radlage(r.dit, r.hem, sett: koll?.ids)
     }
 
     // MARK: - Räkningen, utanför huvudtråden
@@ -128,11 +94,7 @@ final class Rapporten {
         let alder = { (t: Date?) in t.map { nu.timeIntervalSince($0) / 60 } ?? .infinity }
         let gammaltVaglag = alder(lagesTid) >= AgeGate.weatherMaxMin
         let gamlaOlyckor = alder(rapportTid) >= AgeGate.accidentMaxMin
-        let grind = { (rader: [RapportRad]) in
-            rader.filter { r in
-                !(gammaltVaglag && (r.slag == .halka || r.slag == .frysrisk)) && !(gamlaOlyckor && (r.slag == .olycka || r.slag == .vilt))
-            }
-        }
+        let grind = { (rader: [RapportRad]) in ResansRapport.aldersgrind(rader, gammaltVaglag: gammaltVaglag, gamlaOlyckor: gamlaOlyckor) }
         var resor: [String: Resa] = [:]
         for r in rutter {
             if Task.isCancelled { return nil }

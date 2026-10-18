@@ -8,7 +8,8 @@
 // Kör: node --experimental-strip-types scripts/rapport-facit.ts            skriver filen
 //      node --experimental-strip-types scripts/rapport-facit.ts --check    fäller om filen inte är den skriptet skriver
 import { readFileSync, writeFileSync } from "node:fs";
-import { resansRapport, riktning } from "../publish/rapport-app.ts";
+import { aldersgrind, kollensIds, nyttSedanKollen, radlage, resansRapport, riktning, titel, tomtRad } from "../publish/rapport-app.ts";
+import type { Rad } from "../publish/rapport-core.ts";
 import { GRUPP_FRAN, grupperade, LANGS_ANDEL, LANGS_MINST_M, LANGS_STEG_M, MARGINALER, nyttSedan, RUBRIK, tomma, type Linje,
   type Linjer, type Rapport } from "../publish/rapport-core.ts";
 import type { LiveDoc, StaticDoc } from "../engine/src/snapshot.ts";
@@ -101,7 +102,50 @@ const ut = {
     { namn: "för långt bort", delar: R([400, 0], [400, 2000]), svar: riktning(R([400, 0], [400, 2000]), rutt, 100) },
     { namn: "når bara en provpunkt", delar: R([50, 3000], [250, 3000]), svar: riktning(R([50, 3000], [250, 3000]), rutt, 100) },   // 50, 150 och 250 m: en inom
   ],
+  app: appen(),
 };
+
+/** Fliken och rapportskärmen (steg 3b): fallen ges som id ur Dit- och Hem-raderna ovan, så att apparna bygger samma indata. */
+function appen() {
+  const alla = kollensIds(dit.rader, hem.rader);
+  const ur = (rader: Rad[], ids: string[]) => rader.filter((r) => ids.includes(r.id));
+  const id = (rader: Rad[], villkor: (r: Rad) => boolean) => rader.filter(villkor).map((r) => r.id);
+  const kam = (r: Rad) => r.slag === "kamera";
+  const lagen = [
+    { namn: "första kollen: inget nytt, det största pågår", dit: id(dit.rader, () => true), hem: id(hem.rader, () => true), sett: null },
+    { namn: "en olycka och en kö har tillkommit", dit: id(dit.rader, () => true), hem: id(hem.rader, () => true),
+      sett: alla.filter((i) => i !== "dev:100" && i !== "tt:2") },
+    { namn: "en ny kamera räknas inte", dit: id(dit.rader, () => true), hem: id(hem.rader, () => true), sett: alla.filter((i) => i !== "cam:30") },
+    { namn: "utan halkan är frysrisken störst", dit: id(dit.rader, (r) => r.slag !== "halka"), hem: id(hem.rader, (r) => r.slag !== "halka"), sett: alla },
+    { namn: "lugnt: bara kameror", dit: id(dit.rader, kam), hem: id(hem.rader, kam), sett: null },
+  ].map((f) => {
+    const l = radlage(ur(dit.rader, f.dit), ur(hem.rader, f.hem), f.sett);
+    return { ...f, svar: l.lage === "nytt" ? { lage: l.lage, antal: l.antal, id: l.viktigast.id }
+      : l.lage === "ingetNytt" ? { lage: l.lage, id: l.storst.id } : { lage: l.lage } };
+  });
+  const sett = alla.filter((i) => i !== "dev:100" && i !== "tt:1" && i !== "cam:30");
+  const grind = (v: boolean, o: boolean) => ({ vaglag: v, olyckor: o, svar: aldersgrind(dit.rader, v, o).map((r) => r.id) });
+  const tomt = (namn: string, rader: Rad[], v: boolean, o: boolean) =>
+    ({ namn, rader: rader.map((r) => r.id), hem: rader === hem.rader, vaglag: v, olyckor: o, svar: tomtRad(rader, v, o) });
+  return {
+    lagen,
+    nytt: [
+      { namn: "olyckan och restiden är nya, kameran räknas inte", sett, svar: nyttSedanKollen(dit.rader, sett).map((r) => r.id) },
+      { namn: "före den första kollen", sett: null, svar: nyttSedanKollen(dit.rader, null).map((r) => r.id) },
+    ],
+    kollen: alla,
+    titlar: [["Olycka", "E4"], ["Djur på vägen", "E4"], ["Vägarbete", "73"], ["Fartkamera", null], ["Halt väglag på E4", "E4"]]
+      .map(([rubrik, vag]) => ({ rubrik, vag, svar: titel(rubrik as string, vag) })),
+    grind: [grind(true, false), grind(false, true), grind(true, true)],
+    tomt: [
+      tomt("Dit", dit.rader, false, false),
+      tomt("Hem", hem.rader, false, false),
+      tomt("Dit med gammalt väglag", aldersgrind(dit.rader, true, false), true, false),
+      tomt("bara kameror: köerna mäts inte", dit.rader.filter(kam), false, false),
+      tomt("ingenting alls", [], false, true),
+    ],
+  };
+}
 const json = JSON.stringify(ut, null, 1) + "\n";
 const fil = new URL("../engine/fixtures/rapport.json", import.meta.url);
 if (process.argv.includes("--check")) {

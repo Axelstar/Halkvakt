@@ -116,7 +116,7 @@ struct FavoriterView: View {
 
 /// Radens läge under namnet: Nytt med ett gult märke, Inget nytt med det största som pågår, eller Lugnt (FAVORITER §2).
 private struct RadLageText: View {
-    let lage: Rapporten.Radlage?
+    let lage: ResansRapport.Radlage?
     let laddar: Bool
     let gickInte: Bool
     var body: some View {
@@ -126,10 +126,10 @@ private struct RadLageText: View {
                 Text(antal == 1 ? "1 NY" : "\(antal) NYA").font(Typo.mono(10, .semibold)).tracking(1.2).foregroundStyle(Brand.onAmber)
                     .padding(.horizontal, 7).padding(.vertical, 3)
                     .background(Brand.yellow, in: Capsule())
-                Text(Rapporten.titel(viktigast.rubrik, vag: viktigast.vag)).font(Typo.sans(14)).foregroundStyle(Brand.yellow).lineLimit(2)
+                Text(ResansRapport.titel(viktigast.rubrik, vag: viktigast.vag)).font(Typo.sans(14)).foregroundStyle(Brand.yellow).lineLimit(2)
             }
         case .ingetNytt(let storst):
-            Text("Inget nytt · \(Rapporten.titel(storst.rubrik, vag: storst.vag))").font(Typo.sans(14)).foregroundStyle(Brand.text2).lineLimit(2)
+            Text("Inget nytt · \(ResansRapport.titel(storst.rubrik, vag: storst.vag))").font(Typo.sans(14)).foregroundStyle(Brand.text2).lineLimit(2)
         case .lugnt:
             Text("Lugnt · inget rapporterat längs vägen just nu").font(Typo.sans(14)).foregroundStyle(Brand.greenText)
         case nil:
