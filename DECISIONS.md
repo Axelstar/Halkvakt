@@ -15085,3 +15085,5 @@ halkzonen är desamma som i 29.
 **Alternativ.** 29 nu och favoriterna i nästa version — förkastat av Bengt: två granskningar.
 
 **Stomdokument:** APP 0.3.13, LIV steg 12, FAV §11 vad som väntar, BED §4.2
+
+**Punkt 1 klar 18/10.** 0.3.13 (30) uppladdat av TestFlight-flödet 18/10, körning 39104250625 på fe26205 (06:30–06:33 UTC): byggnumret höjt i fe26205, ARCHIVE SUCCEEDED, bygget bär 0.3.13 (30), Upload succeeded; ci, ios-engine och android gröna på PR #1064:s huvud 3acbd4b (39103578348, 39103578034, 39103580350).
