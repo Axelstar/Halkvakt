@@ -14714,6 +14714,8 @@ Integrationsprovet för kandidatens loggar är omskrivet: fem och två dygn gaml
 
 **Stomdokument:** SYS databasen och arkivet, MAT steg 0 läser radarn tio dygn, BED §4.2
 
+**Punkt 1, natten till 18/10 — höll som förregistrerat:** nattjobbet 03:50:00 (`halkvakt-arkivradering-tabeller`, succeeded) raderade kandidatens dygn 15–16/10 (`kandidat_skugga` 703 rader, `kandidat_station` 30 160) och trendtabellernas och radarns dygn 3–7/10 (`trend_kandidater` 31 496, `trend_stigande` 10 073, `radar_precip` 8 013), 80 445 rader; kvar oraderade: kandidatens 17/10 och trendtabellernas och radarns 8–10/10, och de fyra tabellerna med 24 exporterade dygn var och ingen radering (DB-knappen *las* 39098265661, 04:46 UTC). Databasens storlek i samma läsning, bara den egna databasen: 497 044 627 byte (474 MiB). Vakthunden räknar alla databaser, så talet jämförs inte med #580:s; punkt 2 läses 19/10 ur vakthundens timserie.
+
 ## #619 (17/10 2026) Soffprovet på iPhone 17/10 kväll: förväntan A föll som provet var byggt — rutten gick genom en sträcka med Trafikverkets halkvarning (kort #343, steg 13; kort #359)
 
 **Axel 17/10**, provet på iPhone via Xcode (#605), main på 5548607, rutten `soffprovet-xcode.gpx` ur lägesfilen 16:10 UTC: sträcka 45130
@@ -15032,3 +15034,5 @@ prövas på 29.
 **Alternativ.** App Review med 28, utan halkzonen — förkastat: granskarna och testarna hade fått tre *halka* i en korsning.
 
 **Stomdokument:** APP 0.3.13, LIV steg 12, BED §4.2
+
+**Uppladdat 18/10.** 0.3.13 (29) uppladdat av TestFlight-flödet 18/10, körning 39098203732 på 39d3a8a (04:45–04:48 UTC): byggnumret höjt i 39d3a8a, ARCHIVE SUCCEEDED, bygget bär 0.3.13 (29), Upload succeeded; ci, ios-engine och android gröna på PR #1058:s huvud 63b76b6 (39073864224, 39073863929, 39073866309).
