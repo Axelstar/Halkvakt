@@ -47,11 +47,14 @@ export function resansRapport(rutt: Linje, hem: boolean, live: LiveDoc, stat: St
 // ── Fliken och rapportskärmen (steg 3b): radens läge, det nya sedan förra kollen, rubriken med vägen, åldersgränsen och raden om
 //    det tomma. Samma regler i båda apparna, prövade mot facit; apparna ritar bara.
 
-/** Det som pågår längs resan åt något håll, utom fartkamerorna — de är fasta och varken nya eller något som pågår. Dit först, sedan
- *  det som bara finns Hem. */
+/** Det som inte är en händelse: fartkamerorna står fast, och en restidssträcka i normal trafik är bara en mätpunkt (en restid med
+ *  fördröjning är slaget ko och räknas). De är varken nya eller något som pågår, så de varken ger Nytt eller håller en resa från Lugnt. */
+export const INTE_HANDELSER: Slag[] = ["kamera", "restid"];
+
+/** Det som pågår längs resan åt något håll, utom det som inte är händelser. Dit först, sedan det som bara finns Hem. */
 export function pagar(dit: Rad[], hem: Rad[]): Rad[] {
   const d = new Set(dit.map((r) => r.id));
-  return [...dit, ...hem.filter((r) => !d.has(r.id))].filter((r) => r.slag !== "kamera");
+  return [...dit, ...hem.filter((r) => !d.has(r.id))].filter((r) => !INTE_HANDELSER.includes(r.slag));
 }
 
 export type Radlage = { lage: "nytt"; antal: number; viktigast: Rad } | { lage: "ingetNytt"; storst: Rad } | { lage: "lugnt" };
@@ -71,11 +74,11 @@ export function radlage(dit: Rad[], hem: Rad[], sett: string[] | null): Radlage 
   return st ? { lage: "ingetNytt", storst: st } : { lage: "lugnt" };
 }
 
-/** Det nya åt det valda hållet sedan förra kollen, utom kamerorna; före den första kollen finns inget nytt (som nyttSedan). */
+/** Det nya åt det valda hållet sedan förra kollen, utom det som inte är händelser; före den första kollen finns inget nytt. */
 export function nyttSedanKollen(rader: Rad[], sett: string[] | null): Rad[] {
   if (!sett) return [];
   const s = new Set(sett);
-  return rader.filter((r) => !s.has(r.id) && r.slag !== "kamera");
+  return rader.filter((r) => !s.has(r.id) && !INTE_HANDELSER.includes(r.slag));
 }
 
 /** Alla id resan visar åt båda hållen, sorterade — det som sparas som förra kollen. */

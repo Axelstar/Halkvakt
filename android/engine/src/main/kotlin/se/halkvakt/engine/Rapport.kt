@@ -389,11 +389,14 @@ object ResansRapport {
 
     // ── Fliken och rapportskärmen (steg 3b), som rapport-app.ts ──────────────────────────────────────────────────────────────
 
-    /** Det som pågår längs resan åt något håll, utom fartkamerorna — de är fasta och varken nya eller något som pågår. Dit först,
-     *  sedan det som bara finns Hem. */
+    /** Det som inte är en händelse: fartkamerorna står fast, och en restidssträcka i normal trafik är bara en mätpunkt (en restid
+     *  med fördröjning är slaget ko och räknas). De varken ger Nytt eller håller en resa från Lugnt. */
+    val INTE_HANDELSER = listOf(RapportSlag.KAMERA, RapportSlag.RESTID)
+
+    /** Det som pågår längs resan åt något håll, utom det som inte är händelser. Dit först, sedan det som bara finns Hem. */
     fun pagar(dit: List<RapportRad>, hem: List<RapportRad>): List<RapportRad> {
         val d = dit.map { it.id }.toSet()
-        return (dit + hem.filter { it.id !in d }).filter { it.slag != RapportSlag.KAMERA }
+        return (dit + hem.filter { it.id !in d }).filter { it.slag !in INTE_HANDELSER }
     }
 
     sealed interface Radlage {
@@ -419,11 +422,11 @@ object ResansRapport {
         return forst(p)?.let { Radlage.IngetNytt(it) } ?: Radlage.Lugnt
     }
 
-    /** Det nya åt det valda hållet sedan förra kollen, utom kamerorna; före den första kollen finns inget nytt (som nyttSedan). */
+    /** Det nya åt det valda hållet sedan förra kollen, utom det som inte är händelser; före den första kollen finns inget nytt. */
     fun nyttSedanKollen(rader: List<RapportRad>, sett: List<String>?): List<RapportRad> {
         if (sett == null) return emptyList()
         val s = sett.toSet()
-        return rader.filter { it.id !in s && it.slag != RapportSlag.KAMERA }
+        return rader.filter { it.id !in s && it.slag !in INTE_HANDELSER }
     }
 
     /** Alla id resan visar åt båda hållen, sorterade som i TypeScript (UTF-16) — det som sparas som förra kollen. */

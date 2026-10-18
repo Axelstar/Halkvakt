@@ -110,14 +110,14 @@ function appen() {
   const alla = kollensIds(dit.rader, hem.rader);
   const ur = (rader: Rad[], ids: string[]) => rader.filter((r) => ids.includes(r.id));
   const id = (rader: Rad[], villkor: (r: Rad) => boolean) => rader.filter(villkor).map((r) => r.id);
-  const kam = (r: Rad) => r.slag === "kamera";
+  const fast = (r: Rad) => r.slag === "kamera" || r.slag === "restid";
   const lagen = [
     { namn: "första kollen: inget nytt, det största pågår", dit: id(dit.rader, () => true), hem: id(hem.rader, () => true), sett: null },
     { namn: "en olycka och en kö har tillkommit", dit: id(dit.rader, () => true), hem: id(hem.rader, () => true),
       sett: alla.filter((i) => i !== "dev:100" && i !== "tt:2") },
     { namn: "en ny kamera räknas inte", dit: id(dit.rader, () => true), hem: id(hem.rader, () => true), sett: alla.filter((i) => i !== "cam:30") },
     { namn: "utan halkan är frysrisken störst", dit: id(dit.rader, (r) => r.slag !== "halka"), hem: id(hem.rader, (r) => r.slag !== "halka"), sett: alla },
-    { namn: "lugnt: bara kameror", dit: id(dit.rader, kam), hem: id(hem.rader, kam), sett: null },
+    { namn: "lugnt: bara kameror och restider i normal trafik", dit: id(dit.rader, fast), hem: id(hem.rader, fast), sett: null },
   ].map((f) => {
     const l = radlage(ur(dit.rader, f.dit), ur(hem.rader, f.hem), f.sett);
     return { ...f, svar: l.lage === "nytt" ? { lage: l.lage, antal: l.antal, id: l.viktigast.id }
@@ -130,7 +130,7 @@ function appen() {
   return {
     lagen,
     nytt: [
-      { namn: "olyckan och restiden är nya, kameran räknas inte", sett, svar: nyttSedanKollen(dit.rader, sett).map((r) => r.id) },
+      { namn: "olyckan är ny; restiden i normal trafik och kameran räknas inte", sett, svar: nyttSedanKollen(dit.rader, sett).map((r) => r.id) },
       { namn: "före den första kollen", sett: null, svar: nyttSedanKollen(dit.rader, null).map((r) => r.id) },
     ],
     kollen: alla,
@@ -141,7 +141,7 @@ function appen() {
       tomt("Dit", dit.rader, false, false),
       tomt("Hem", hem.rader, false, false),
       tomt("Dit med gammalt väglag", aldersgrind(dit.rader, true, false), true, false),
-      tomt("bara kameror: köerna mäts inte", dit.rader.filter(kam), false, false),
+      tomt("bara kameror: köerna mäts inte", dit.rader.filter((r) => r.slag === "kamera"), false, false),
       tomt("ingenting alls", [], false, true),
     ],
   };

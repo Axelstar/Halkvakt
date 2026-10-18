@@ -3227,8 +3227,10 @@
     }
    },
    {
-    "namn": "lugnt: bara kameror",
+    "namn": "lugnt: bara kameror och restider i normal trafik",
     "dit": [
+     "tt:1",
+     "tt:3",
      "cam:30",
      "cam:31",
      "cam:32",
@@ -3250,7 +3252,7 @@
   ],
   "nytt": [
    {
-    "namn": "olyckan och restiden är nya, kameran räknas inte",
+    "namn": "olyckan är ny; restiden i normal trafik och kameran räknas inte",
     "sett": [
      "bro:20",
      "cam:31",
@@ -3273,8 +3275,7 @@
      "wx:11"
     ],
     "svar": [
-     "dev:100",
-     "tt:1"
+     "dev:100"
     ]
    },
    {

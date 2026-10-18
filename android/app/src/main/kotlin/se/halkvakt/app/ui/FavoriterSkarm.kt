@@ -130,7 +130,7 @@ private fun ResaRad(r: SparadRutt, lage: ResansRapport.Radlage?, laddar: Boolean
             Column(Modifier.weight(1f).clickable(role = Role.Button, onClickLabel = "Öppnar rapporten för resan", onClick = onOppna),
                 verticalArrangement = Arrangement.spacedBy(3.dp)) {
                 Text(r.namn, color = Brand.text, fontFamily = Typo.sans, fontWeight = FontWeight.Medium, fontSize = 16.sp)
-                Text(under(r) + " →", color = Brand.dim, fontFamily = Typo.mono, fontSize = 11.sp, letterSpacing = 0.1.em)
+                Text(under(r), color = Brand.dim, fontFamily = Typo.mono, fontSize = 11.sp, letterSpacing = 0.1.em)
                 RadLageText(lage, laddar, gickInte)
             }
             Text("Ta bort", color = Brand.text2, fontFamily = Typo.sans, fontWeight = FontWeight.Medium, fontSize = 14.sp,

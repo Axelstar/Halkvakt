@@ -427,11 +427,14 @@ public enum ResansRapport {
 
     // MARK: - Fliken och rapportskärmen (steg 3b), som rapport-app.ts
 
-    /// Det som pågår längs resan åt något håll, utom fartkamerorna — de är fasta och varken nya eller något som pågår. Dit först,
-    /// sedan det som bara finns Hem.
+    /// Det som inte är en händelse: fartkamerorna står fast, och en restidssträcka i normal trafik är bara en mätpunkt (en restid
+    /// med fördröjning är slaget ko och räknas). De varken ger Nytt eller håller en resa från Lugnt.
+    public static let inteHandelser: [RapportSlag] = [.kamera, .restid]
+
+    /// Det som pågår längs resan åt något håll, utom det som inte är händelser. Dit först, sedan det som bara finns Hem.
     public static func pagar(_ dit: [RapportRad], _ hem: [RapportRad]) -> [RapportRad] {
         let d = Set(dit.map(\.id))
-        return (dit + hem.filter { !d.contains($0.id) }).filter { $0.slag != .kamera }
+        return (dit + hem.filter { !d.contains($0.id) }).filter { !inteHandelser.contains($0.slag) }
     }
 
     public enum Radlage: Equatable {
@@ -459,11 +462,11 @@ public enum ResansRapport {
         return .lugnt
     }
 
-    /// Det nya åt det valda hållet sedan förra kollen, utom kamerorna; före den första kollen finns inget nytt (som nyttSedan).
+    /// Det nya åt det valda hållet sedan förra kollen, utom det som inte är händelser; före den första kollen finns inget nytt.
     public static func nyttSedanKollen(_ rader: [RapportRad], sett: [String]?) -> [RapportRad] {
         guard let sett else { return [] }
         let s = Set(sett)
-        return rader.filter { !s.contains($0.id) && $0.slag != .kamera }
+        return rader.filter { !s.contains($0.id) && !inteHandelser.contains($0.slag) }
     }
 
     /// Alla id resan visar åt båda hållen, sorterade som i TypeScript (UTF-16) — det som sparas som förra kollen.
