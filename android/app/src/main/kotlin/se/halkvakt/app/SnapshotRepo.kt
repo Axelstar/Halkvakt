@@ -15,15 +15,27 @@ object SnapshotRepo {
 
     private const val BASE = "https://axelstar.github.io/halkvakt-karta/data/app/v1/"
 
-    data class Snapshot(val hazards: List<Hazard>, val generatedAtMs: Long, val stations: List<Station> = emptyList())
+    /** [fromCache]: hämtningen föll och den sparade filen gäller — då kan åldern bero på nätet, inte på datan. */
+    data class Snapshot(val hazards: List<Hazard>, val generatedAtMs: Long, val stations: List<Station> = emptyList(),
+                        val fromCache: Boolean = false)
 
     fun loadSnapshot(ctx: Context): Snapshot {
-        val staticDoc = fetchVerified(ctx, "static.json")
-        val liveDoc = fetchVerified(ctx, "live.json")
+        // Provkörning 18/10: ett manifest från nästa publicering (var tionde minut) fäller kontrollsumman och lämnar en gammal
+        // sparad fil. Ett nytt försök innan den sparade filen får gälla.
+        var docs = fetchBoth(ctx)
+        if (docs.fromCache) docs = fetchBoth(ctx)
         val gen = try {
-            java.time.Instant.parse(liveDoc.getString("generated_at")).toEpochMilli()
+            java.time.Instant.parse(docs.live.getString("generated_at")).toEpochMilli()
         } catch (e: Exception) { 0L }  // saknad tidsstämpel = maximalt gammal ⇒ vakten fäller
-        return Snapshot(toHazards(staticDoc, liveDoc), gen, stations(staticDoc))
+        return Snapshot(toHazards(docs.stat, docs.live), gen, stations(docs.stat), docs.fromCache)
+    }
+
+    private class Docs(val stat: JSONObject, val live: JSONObject, val fromCache: Boolean)
+
+    private fun fetchBoth(ctx: Context): Docs {
+        val (stat, statCached) = fetchVerified(ctx, "static.json")
+        val (live, liveCached) = fetchVerified(ctx, "live.json")
+        return Docs(stat, live, statCached || liveCached)
     }
 
     /** Kort #203 lager 2: alla stationers id och position (static.json sedan 26/9) — missknappens plats. Inga faror. */
@@ -36,9 +48,10 @@ object SnapshotRepo {
 
     /** static.json och live.json som de ligger, verifierade som ovan — för favoriternas rapport (kort #357), som läser fler fält än
      *  motorn (vägen på sträckorna, broarna, SMHI:s områden). Blockerar. */
-    fun dokument(ctx: Context): Pair<JSONObject, JSONObject> = fetchVerified(ctx, "static.json") to fetchVerified(ctx, "live.json")
+    fun dokument(ctx: Context): Pair<JSONObject, JSONObject> = fetchVerified(ctx, "static.json").first to fetchVerified(ctx, "live.json").first
 
-    private fun fetchVerified(ctx: Context, name: String): JSONObject {
+    /** Dokumentet, och true om det kom ur den sparade filen. */
+    private fun fetchVerified(ctx: Context, name: String): Pair<JSONObject, Boolean> {
         val cache = File(ctx.filesDir, name)
         return try {
             val manifest = JSONObject(httpGet("manifest.json"))
@@ -48,9 +61,9 @@ object SnapshotRepo {
                 .joinToString("") { "%02x".format(it) }
             require(sha == meta.getString("sha256")) { "checksum mismatch for $name" }
             cache.writeText(body)
-            JSONObject(body)
+            JSONObject(body) to false
         } catch (e: Exception) {
-            if (cache.exists()) JSONObject(cache.readText()) // offline: last snapshot stays valid
+            if (cache.exists()) JSONObject(cache.readText()) to true // offline: last snapshot stays valid
             else throw e
         }
     }

@@ -64,6 +64,7 @@ class GuardService : Service() {
     private var focusRequest: AudioFocusRequest? = null
     private val snapshotSchedule = SnapshotSchedule()   // #218: one load at a time, a minute's wait after a failure
     private var staleAnnounced = false
+    private var staleGrace = AgeGate.StaleGrace()
     /** Den laddade vägdatan — kortet slår upp farans metadata här. Skrivs i laddtråden, läses i varningen. */
     @Volatile private var hazardsNow: List<Hazard> = emptyList()
     private val idleStop = IdleStop()   // #248: samma kvart som iOS
@@ -100,6 +101,7 @@ class GuardService : Service() {
         running = true
         prevLon = Double.NaN; prevLat = Double.NaN
         session.value = Session(startedAt = System.currentTimeMillis())
+        staleGrace = AgeGate.StaleGrace()
         staleAnnounced = false   // #250 (a): EN rad om gammal data per körning — nollställs här, inte vid laddningen
         // Resans fönster överlever tjänsten (kort #203): notisens knapp trycks minuter senare,
         // i en annan process, och måste veta vad "alla varningar" syftar på.
@@ -126,7 +128,7 @@ class GuardService : Service() {
             hazardsNow = hazards
             dataStale.value = gate.stale
             dataTime.value = snap.generatedAtMs.takeIf { it > 0 }
-            if (gate.stale && !staleAnnounced) {
+            if (staleGrace.announce(gate.stale, snap.fromCache) && !staleAnnounced) {
                 staleAnnounced = true; speak(AgeGate.STALE_LINE)
                 // Designen M: mörk rad överst i På vakt i 8 s medan rösten talar — inget gult kort, ingen fara.
                 staleToast.value = true
@@ -160,7 +162,7 @@ class GuardService : Service() {
                 AlertBus.post("Vägdata uppdaterad: ${hazards.size} faror.")
                 snapshotInfo.value = "${hazards.size} faror · väglag $dataTid"
             }
-            ok = true
+            ok = !(gate.stale && snap.fromCache)   // gammal sparad fil: nytt försök om en minut, inte om 30
         } catch (e: Exception) {
             AlertBus.post("Kunde inte ladda vägdata: ${e.message}")
         } finally {
