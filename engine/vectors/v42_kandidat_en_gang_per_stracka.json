@@ -1,6 +1,6 @@
 {
  "name": "Kandidaten talar en gång per sträcka, inte per punkt (K)",
- "description": "Sträckan S1 har tre varnande punkter 1 500, 3 500 och 5 500 m fram; S2 en punkt 4 500 m fram; S0 en punkt 300 m BAKOM. S1 talar vid t=38 med 'Halkvakt tror: halka framöver.' och beta=true, och dess två senare punkter tiger — samma sträcka, upprepningsregeln (10 min och 5 km) gäller sträckan. S2 är en ny sträcka och talar när dess punkt kommer inom förvarningen (t=173). S0 bakom tiger.",
+ "description": "Sträckan S1 har tre varnande punkter 1 500, 3 500 och 5 500 m fram; S2 en punkt 4 500 m fram; S0 en punkt 300 m BAKOM. S1 talar vid t=38 med 'Halkvakt tror: halka framöver.' och beta=true, och dess två senare punkter tiger — samma sträcka, upprepningsregeln (10 min och 5 km) gäller sträckan. S2 är en ny sträcka; dess punkt kommer inom förvarningen vid t=173, 135 s efter S1, och tiger under taket (en kandidat per 10 min, DECISIONS #606). S0 bakom tiger.",
  "hazards": [
   {
    "id": "kand:S1",
@@ -1552,14 +1552,6 @@
   {
    "t": 38,
    "hazardId": "kand:S1",
-   "kind": "kandidat",
-   "distanceM": 655,
-   "text": "Halkvakt tror: halka framöver.",
-   "beta": true
-  },
-  {
-   "t": 173,
-   "hazardId": "kand:S2",
    "kind": "kandidat",
    "distanceM": 655,
    "text": "Halkvakt tror: halka framöver.",

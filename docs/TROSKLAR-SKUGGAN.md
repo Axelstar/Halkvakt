@@ -213,6 +213,8 @@ lydelsen från 1/9, som lät prognosen tala på modellerade värden i strid med 
   domen redovisas per ankarband, och ett band kan läggas in genom en daterad post.
   **Takregeln (Bengts ja 16/10, DECISIONS #584; en skärpning enligt §5):** Läses 2/11 med `scripts/matningar/kandidat-takten-2026-10-16.sql`, oförändrad, på alla svenska skuggkörningar med kandidatloggen från 15/10 10:32 UTC. En följd är tiden mellan två kandidatpassager på olika sträckor i samma körning. Ligger mer än 10 % av följderna inom 10 minuter, eller är underlaget under 30 följder på minst 3 rutter och 3 dygn, byggs ett tak före App Review: kandidaten talar högst en gång per 10 minuter, vilken sträcka det än gäller (motorn i tre språk, vektorer). Annars byggs inget tak.
 
+  **Taket byggt före läsningen (Bengt 17/10: *"taket nu"*, DECISIONS #606; en skärpning enligt §5):** kandidaten talar högst en gång per 10 minuter från bygge 0.3.13 (27), utan att vänta på läsningen 2/11. Underlaget: mellanläsningen 17/10 (DB-knappen 38992453770, underlaget 15/10 10:32 – 17/10 01:32 UTC): 226 körningar på 20 rutter, passager bara på E10 Luleå→Kiruna (5 körningar, 22 passager, 2 dygn), 17 följder, 3 inom 10 minuter = 17,6 %, tätast 334 s, median 1 047 s. Båda grenarna i regeln ovan pekade redan mot tak. Läsningen 2/11 körs ändå, som mätning och inte som beslut. Att ta bort taket efteråt vore en lättnad efter sett utfall och går bara genom regel L (#564).
+
 Bevisbördan ligger på skuggan. Vid tvekan: tystnad (produktinvarianten).
 
 ## 5. Ändringsregler

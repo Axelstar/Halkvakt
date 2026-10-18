@@ -1,6 +1,6 @@
 # Förregistrering — kandidaten NIVÅ 2+BLANDNING, vintern 2026/27
 
-**Status: UTKAST 15/10 2026. Kvar före signeringen: radarns tal 26/10 (§10 a) och beviset att spridningen loggas i drift.** Signeras av Bengt och Axel senast
+**Status: UTKAST 15/10 2026. Kvar före signeringen: radarns tal 26/10 (§10 a). Spridningen loggas i drift sedan 16/10 (§10 b).** Signeras av Bengt och Axel senast
 **31/10 2026** (DECISIONS #544, #547). Domfönstret börjar den dag förregistreringen är signerad och pushad; varje dygn utan signatur är
 ett dygn vinter utanför domen. Källorna är DECISIONS #544, #547, #552, #558–#573 och TROSKLAR-SKUGGAN §2–§4. Utkastet i #560 ersätts
 av det här dokumentet; frågorna (A) och (B) där är besvarade av #562.
@@ -91,12 +91,12 @@ Formen i appen, texten (*"Halkvakt tror: halka framöver."* / *"Halkvakt thinks:
 ## 10. Före signeringen
 
 **(a) Radarns tal R.** Läses 26/10 enligt #568: visar alla tre kurvorna en majoritet i bandet 0,1–0,5 på `rate_mean` blir R = 0,1,
-annars 0,5. Claude för in talet samma dag.
+annars 0,5. Claude för in talet samma dag. Läsningen är `scripts/radarns-tal.ts` (självtest i ci): den läser bandet 0,1–0,5 på `rate_mean_mmh` ur de tre körningarnas loggar och tillämpar regeln. Kurva 1 (38690393504, 8–15/10): 13 026 av 21 012 par, 62,0 %.
 
 **(b) Spridningsgrinden — besvarad 15/10 (DECISIONS #574, #575).** Spridningen grindar där minst två ankare bidrar (#547 och #563
 lästa ihop), **samma grind gäller varningen i appen** (Bengts ja; regeln i §3 har villkoret), och loggningen är byggd: del B skriver
 antalet ankare och spridningen, och `kandidat_skugga` bär `spridning`, `fukt_glest` och `fukt_spr_min`, så att domen kan räkna
-grinden vid X = 1, 2, 2,25 och 4 °C. Kvar är beviset i drift: en timme i domloggen med spridningen ifylld.
+grinden vid X = 1, 2, 2,25 och 4 °C. ✅ Beviset i drift, en timme i domloggen med spridningen ifylld, är bevisat i drift 16/10 (DB-knappen 38899101913): domloggen 15/10 10:00–16/10 08:00 UTC har 23 timmar, varav 12 med spridningsgrinden i spel (36 rader, 183 punkter), `fukt_spr_min` ifylld i 133 rader och 153 punkter med glest fuktbesked; 12 av 26 körningar bar spridningen.
 
 **(c) "845 stationer" — rättat 15/10** (Bengts ja, DECISIONS #575): TROSKLAR-SKUGGAN §3 säger nu *761 stationer (854 mätpunkter,
 varav 93 fjärrytor)*. Ingen tröskel ändrades.

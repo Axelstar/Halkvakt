@@ -28,7 +28,8 @@ const rad = (s: ReturnType<typeof stats>) =>
   `n ${s.n} · A1 MAE ${Number.isFinite(s.mae) ? s.mae.toFixed(2).replace(".", ",") : "—"} °C · A2 grova ${pct(s.gross)} · A3 frysklass ${pct(s.freeze)}`;
 
 /** Kandidaterna på RÅ:s punkter: RÅ, OFFSET (taket) och varje fil. Måtten på de punkter där alla har ett värde. */
-export function blandningILkuvosen(stations: Map<string, Station>, filer: Fil[], vikt: Map<string, number>, regim?: Regim): Record<string, number> {
+export function blandningILkuvosen(stations: Map<string, Station>, filer: Fil[], vikt: Map<string, number>, regim?: Regim,
+  statistik?: Map<string, ReturnType<typeof stats>>): Record<string, number> {
   const RA = evaluate(stations, { utanOffset: true });
   const OFF = evaluate(stations);
   const kand: [string, (number | null)[]][] = [
@@ -46,7 +47,7 @@ export function blandningILkuvosen(stations: Map<string, Station>, filer: Fil[],
   for (const [namn, v] of kand) {
     const ev: Eval[] = [], evKlass: string[] = [];
     for (let k = 0; k < N; k++) if (med[k]) { ev.push({ ...RA[k], pred: v[k]! }); if (klass) evKlass.push(klass[k]); }
-    const tot = stats(ev); ut[namn] = tot.gross;
+    const tot = stats(ev); ut[namn] = tot.gross; statistik?.set(namn, tot);
     console.log(`  ${namn}: ${rad(tot)}`);
     for (const [b, lo, hi] of BANDS) console.log(`      ${b.padEnd(8)} ${rad(stats(ev.filter((e) => e.ankKm >= lo && e.ankKm < hi)))}`);
     const norr = ev.filter((e) => stations.get(e.station)!.lat >= NORR_LAT), soder = ev.filter((e) => stations.get(e.station)!.lat < NORR_LAT);
@@ -250,10 +251,12 @@ export async function korBlandning(rubrik: string, { natt = false } = {}) {
     if (nattFel) console.error(`::error::NATTDELNINGEN GJORDES INTE (tillägg 3, DECISIONS #536): ${nattFel}`);
     else regim = b.regim;
   }
-  blandningILkuvosen(stations, filer, vikt, regim);
+  const statistik = new Map<string, ReturnType<typeof stats>>();   // identitetsprovet läser dem (#597)
+  blandningILkuvosen(stations, filer, vikt, regim, statistik);
   console.log(`\nklart (${min(t0)})`);
   await db.end();
   if (nattFel) process.exit(1);
+  return statistik;
 }
 
 if (korsSjalv) await korBlandning("BLANDNINGEN I KUVÖSEN (DECISIONS #490) — fysikspåret som filer, analysläge och operativt läge, hela vintern 2024/25. Ingen dom.");

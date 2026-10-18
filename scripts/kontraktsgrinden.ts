@@ -127,6 +127,9 @@ export function rapport(utfall: Utfall[]): boolean {
 }
 
 // ── DE VAKTADE KONTRAKTEN ──────────────────────────────────────────────────────────────
+// Resans rapport: källan, dess två buntar och telefonernas två tvillingar (favoriterna steg 3a).
+const RAPPORTEN = /publish\/rapport-core\.ts$|functions\/favorit(?:er|prov)\/index\.ts$|HalkvaktEngine\/Rapport\.swift$|engine\/Rapport\.kt$/;
+
 export const KONTRAKT: Kontrakt[] = [
   // ── HEALTHCHECKENS TRÖSKLAR (kort #87). PERMANENTA — läs den här raden innan du rör dem.
   // De skrevs 14/9 som tidsbegränsade, för planen var att healthcheck.yml skulle raderas när
@@ -477,6 +480,114 @@ export const KONTRAKT: Kontrakt[] = [
     golv: 3,
   },
   {
+    namn: "Kandidatens tak — högst en kandidat per så här många sekunder, vilken sträcka det än gäller",
+    varfor: "Motorns tre portar ska tiga lika länge (DECISIONS #606); en port med kortare tak säger fler gissningar än de andra.",
+    former: [/kandidatTakS(?::\s*\w+)?\s*[:=]\s*(\d+)(?:\.0)?\b/],
+    filer: /engine\/src\/types\.ts|engine\/Types\.kt|HalkvaktEngine\/Engine\.swift/,
+    golv: 3,
+  },
+  {
+    namn: "Halkzonen — två halksträckor inom så här många meter är en zon för reprisregeln",
+    varfor: "Motorns tre portar ska slå ihop samma grannsträckor (DECISIONS #621, #624); en port med annat glapp säger fler eller färre halka i en korsning än de andra.",
+    // `(?![\d.])`, inte `\b`: med `\b` lästes en kopia som blivit 500.5 som 500 och gick igenom (motprov 17/10).
+    former: [/halkZonM(?::\s*\w+)?\s*[:=]\s*(\d+)(?:\.0)?(?![\d.])/],
+    filer: /engine\/src\/types\.ts|engine\/Types\.kt|HalkvaktEngine\/Engine\.swift/,
+    golv: 3,
+  },
+  {
+    // Favoriterna steg 2 (kort #357, DECISIONS #616, #625): de sparade rutterna glesas lika i alla tre språk, och facit
+    // engine/fixtures/rutter.json prövar utfallet. `(?![\d.])` gör att en kopia som blivit 75.5 faller på golvet i stället
+    // för att läsas som 75.
+    namn: "Sparade rutter — en punkt per så här många meter körning",
+    varfor: "Glesar telefonerna olika blir samma resa olika rutter, och urvalet längs rutten ger olika faror på iPhone och Android.",
+    former: [/(?:RUTT_STEG_M|stegM)\s*=\s*(\d+)(?:\.0)?(?![\d.])/],
+    filer: /engine\/src\/rutter\.ts|engine\/Rutter\.kt|HalkvaktEngine\/Rutter\.swift/,
+    golv: 3,
+  },
+  {
+    namn: "Sparade rutter — högst så här många",
+    varfor: "Med olika tak nekar iPhone och Android den sjätte resan olika, och appens och integritetssidans tal blir fel på en av dem.",
+    former: [/(?:MAX_RUTTER|static let max)\s*=\s*(\d+)(?![\d.])/],
+    filer: /engine\/src\/rutter\.ts|engine\/Rutter\.kt|HalkvaktEngine\/Rutter\.swift/,
+    golv: 3,
+  },
+  {
+    // DECISIONS #633: frågan Spara resan? kommer bara efter en resa på minst så här många km — samma i båda apparna.
+    namn: "Sparade rutter — kortaste resa som erbjuds, km",
+    varfor: "Med olika gräns frågar iPhone och Android efter olika resor, och produktbokens 'minst en kilometer' blir fel på en av dem.",
+    former: [/(?:MINSTA_RESA_KM|minstaResaKm)\s*=\s*(\d+)(?:\.0)?(?![\d.])/],
+    filer: /app\/Favoriter\.kt|Services\/Favoriter\.swift/,
+    golv: 2,
+  },
+  {
+    namn: "Sparade rutter — timmar som frågan och vägen står kvar",
+    varfor: "Den tillfälliga filen med en körd väg ska raderas lika snabbt på båda plattformarna (FAVORITER §6: ett dygn).",
+    former: [/FRAGA_KVAR_MS\s*=\s*(\d+)\s*\*\s*3600\s*\*\s*1000L/, /fragaKvarS: TimeInterval\s*=\s*(\d+)\s*\*\s*3600/],
+    filer: /app\/Favoriter\.kt|Services\/Favoriter\.swift/,
+    golv: 2,
+  },
+  // Favoriterna steg 3a (kort #357, DECISIONS #637): provmiljöns avstånd per slag är appens trösklar, i TypeScript (rapport-core.ts
+  // och dess två buntar), Swift och Kotlin. Facit engine/fixtures/rapport.json prövar utfallet i alla tre, men telefonernas prov körs
+  // inte i en PR: grinden fäller kopian som driver innan dess. MARGINALER står på två rader i TypeScript, och MARGINALER_RAKA har samma
+  // form med andra tal — andra raden känns därför igen på att den inte bär 1500. Blir ett avstånd 1500, eller ändras de raka, fäller
+  // grinden högljutt (golvet eller två värden), aldrig tyst.
+  ...["halka", "frysrisk", "olycka", "hinder", "vilt", "ko", "restid", "vagarbete", "hastighet", "omledning", "farja", "kamera", "smhi"]
+    .map((slag, i): Kontrakt => ({
+      namn: `Resans rapport — avståndet till resan för ${slag}, m`,
+      varfor: "Med olika avstånd visar iPhone, Android och provmiljön olika faror för samma resa (DECISIONS #637).",
+      former: [
+        new RegExp(i < 6 ? `^export const MARGINALER: Record<Slag, number> = \\{.*\\b${slag}: (\\d+)(?![\\d.])`
+          : `^  (?=restid: )(?!.*\\b1500\\b).*\\b${slag}: (\\d+)(?![\\d.])`),
+        new RegExp(`\\.${slag}: (\\d+)(?:\\.0)?(?![\\d.])`),
+        new RegExp(`RapportSlag\\.${slag.toUpperCase()} to (\\d+)(?:\\.0)?(?![\\d.])`),
+      ],
+      filer: RAPPORTEN,
+      golv: 5,
+    })),
+  {
+    namn: "Resans rapport — andel av en linje som ska ligga längs resan",
+    varfor: "En väg som bara korsar resan ska sållas bort lika i telefonerna och i provmiljön (DECISIONS #531, #637).",
+    former: [/(?:LANGS_ANDEL|langsAndel)\s*=\s*(\d+(?:\.\d+)?)(?![\d.])/],
+    filer: RAPPORTEN,
+    golv: 5,
+  },
+  {
+    namn: "Resans rapport — meter av en linje som räcker för att ligga längs resan",
+    varfor: "Samma som ovan, för långa linjer där andelen blir liten.",
+    former: [/(?:LANGS_MINST_M|langsMinstM)\s*=\s*(\d+)(?:\.0)?(?![\d.])/],
+    filer: RAPPORTEN,
+    golv: 5,
+  },
+  {
+    namn: "Resans rapport — en provpunkt per så här många meter linje",
+    varfor: "Linjerna provas lika tätt, annars ger andelen och riktningen olika svar på iPhone och Android.",
+    former: [/(?:LANGS_STEG_M|langsStegM)\s*=\s*(\d+)(?:\.0)?(?![\d.])/],
+    filer: RAPPORTEN,
+    golv: 5,
+  },
+  {
+    namn: "Resans rapport — så här många av samma slag slås samman",
+    varfor: "Med olika gräns visar telefonerna olika många rader för samma resa.",
+    former: [/(?:GRUPP_FRAN|gruppFran)\s*=\s*(\d+)(?![\d.])/],
+    filer: RAPPORTEN,
+    golv: 5,
+  },
+  {
+    // DECISIONS #637: vägen hem känns igen som samma resa, så frågan Spara resan? kommer inte en gång till.
+    namn: "Igenkänningen — meter mellan två resor som räknas som samma väg",
+    varfor: "Med olika avstånd frågar iPhone och Android om olika resor, och en resa sparas två gånger på den ena.",
+    former: [/(?:SAMMA_RESA_M|static let sammaM)\s*=\s*(\d+)(?:\.0)?(?![\d.])/],
+    filer: /engine\/src\/rutter\.ts$|engine\/Rutter\.kt$|HalkvaktEngine\/Rutter\.swift$/,
+    golv: 3,
+  },
+  {
+    namn: "Igenkänningen — andel av varje resa som ska ligga nära den andra",
+    varfor: "Samma som ovan.",
+    former: [/(?:SAMMA_RESA_ANDEL|static let sammaAndel)\s*=\s*(\d+(?:\.\d+)?)(?![\d.])/],
+    filer: /engine\/src\/rutter\.ts$|engine\/Rutter\.kt$|HalkvaktEngine\/Rutter\.swift$/,
+    golv: 3,
+  },
+  {
     namn: "Betans startvärde fall — °C på trendfönstret",
     varfor: "Samma som ovan: ett fallkrav som driver ändrar vilka nätter som räknas som fyrningar.",
     former: [/([\d.]+)::numeric AS fall\b/, /p_fall numeric DEFAULT ([\d.]+)/, /efterhalkaFall30C(?::\s*\w+)?\s*[:=]\s*([\d.]+)/],
@@ -656,8 +767,62 @@ export const KONTRAKT: Kontrakt[] = [
   {
     namn: "Spridningsgrindens X — domen och kandidatens regel tiger vid samma spridning",
     varfor: "Driver X i regeln (sql/058) från X i domen (grind-s-b.ts) dömer domen andra varningar än appen gav (DECISIONS #475, #477, #575).",
-    former: [/const SPRIDNING_X: number \| null = ([\d.]+);/, /k\.spr >= ([\d.]+) THEN 'spridning'/],
-    filer: /grind-s-b\.ts$|sql\/058_/,
+    former: [/const SPRIDNING_X: number \| null = ([\d.]+);/, /k\.spr >= ([\d.]+) THEN 'spridning'/, /export const SPRIDNING_X_C = ([\d.]+);/],
+    // Kuvösens facitläsning speglar regeln (DECISIONS #593): en tredje kopia sedan 16/10.
+    filer: /grind-s-b\.ts$|sql\/058_|kuvos\/facit-trv\.ts$/,
+    golv: 3,
+  },
+  // KANDIDATENS REGEL I KUVÖSEN (DECISIONS #593). Facitläsningen räknar driftens regel (sql/058) vid stationerna vintern 2024/25,
+  // och förregistreringen fryser den. Driver en kopia läser kuvösen en annan regel än den användaren hör; ändras driftens regel
+  // efter signeringen fäller grinden, och skillnaden blir ett daterat beslut med båda signaturerna i stället för en tyst drift.
+  // Våt (driftens 'Våt' i condition_info) och kod 20 (Trafikverkets kodbok) är olika ordlistor för samma sak och vaktas inte här.
+  {
+    namn: "Kandidatens kalla yta — regeln och facitläsningen",
+    varfor: "Driver gränsen läser kuvösen andra kalla timmar än regeln varnar på (DECISIONS #562, #593).",
+    former: [/l\.pb <= ([\d.]+)\s+-- YTA_GRANS_C/, /export const KALL_C = ([\d.]+);/],
+    filer: /sql\/058_|kuvos\/facit-trv\.ts$/,
+    golv: 2,
+  },
+  {
+    namn: "Kandidatens radargräns för fukt — regeln och facitläsningen",
+    varfor: "Driver gränsen räknar kuvösen fukt där regeln ser torrt (DECISIONS #565, #593).",
+    former: [/coalesce\(r\.mmh, 0\) >= ([\d.]+)\) THEN 'torr'/, /export const RADAR_MMH = ([\d.]+);/],
+    filer: /sql\/058_|kuvos\/facit-trv\.ts$/,
+    golv: 2,
+  },
+  {
+    namn: "Kandidatens radarfönster — regeln och facitläsningen",
+    varfor: "Driver fönstret läser kuvösen radarn längre eller kortare bakåt än regeln (DECISIONS #573, #593).",
+    former: [/r\.observed_at > now\(\) - interval '(\d+) minutes'/, /export const RADAR_MIN = (\d+);/],
+    filer: /sql\/058_|kuvos\/facit-trv\.ts$/,
+    golv: 2,
+  },
+  {
+    namn: "Kandidatens vetofönster — regeln och facitläsningen",
+    varfor: "Driver fönstret vetar kuvösen andra timmar än regeln (DECISIONS #566, #593).",
+    former: [/w\.sample_time > now\(\) - interval '(\d+) minutes' AND w\.surface_temp_c >/, /export const VETO_MIN = (\d+);/],
+    filer: /sql\/058_|kuvos\/facit-trv\.ts$/,
+    golv: 2,
+  },
+  {
+    namn: "Kandidatens vetoyta — regeln och facitläsningen",
+    varfor: "Driver gränsen vetar kuvösen på andra stationer än regeln (DECISIONS #566, #593).",
+    former: [/AND w\.surface_temp_c > (\d+)\s+-- VETO_MIN/, /export const VETO_YTA_C = (\d+);/],
+    filer: /sql\/058_|kuvos\/facit-trv\.ts$/,
+    golv: 2,
+  },
+  {
+    namn: "Kandidatens vetoavstånd i meter — regeln och facitläsningen",
+    varfor: "Driver avståndet vetar kuvösen med fler eller färre stationer än regeln (DECISIONS #566, #593).",
+    former: [/k\.geom::geography, (\d+)\)\s+-- VETO_KM/, /export const VETO_M = (\d+);/],
+    filer: /sql\/058_|kuvos\/facit-trv\.ts$/,
+    golv: 2,
+  },
+  {
+    namn: "Spridningsgrindens ankarantal — regeln och facitläsningen",
+    varfor: "Med färre ankare grindar spridningen inte (#574); driver talet tystar kuvösen andra timmar än regeln (DECISIONS #593).",
+    former: [/coalesce\(k\.n_ank, 0\) >= (\d+) AND k\.spr/, /ytor\.length >= (\d+) && Math\.round/],
+    filer: /sql\/058_|kuvos\/facit-trv\.ts$/,
     golv: 2,
   },
 ];

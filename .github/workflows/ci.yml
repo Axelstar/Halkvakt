@@ -45,6 +45,16 @@ jobs:
         run: |
           node --experimental-strip-types scripts/bundle-favoritprov.ts --check
           node --experimental-strip-types scripts/favoritprov-synk.ts --sjalvtest
+      - name: favoriter/index.ts i synk med rapportkärnan och motorn (appens rapportfil, #617)
+        run: node --experimental-strip-types scripts/bundle-favoriter.ts --check
+      - name: engine/fixtures/rutter.json i synk med engine/src/rutter.ts (de sparade rutterna, #625)
+        run: node --experimental-strip-types scripts/rutter-facit.ts --check
+      - name: engine/fixtures/rapport.json i synk med rapportkärnan och rapport-app.ts (resans rapport, #637)
+        run: node --experimental-strip-types scripts/rapport-facit.ts --check
+      - name: Ruttspärren — rutterna utanför säkerhetskopian och aldrig i en fil som når nätet (#616, #625)
+        run: |
+          node --experimental-strip-types scripts/rutterspar.ts --sjalvtest
+          node --experimental-strip-types scripts/rutterspar.ts
       - name: Kontraktsgrinden — samma tröskelvärde i varje kopia (#144)
         run: |
           node --experimental-strip-types scripts/kontraktsgrinden.ts --sjalvtest
@@ -57,6 +67,13 @@ jobs:
         run: |
           node --experimental-strip-types scripts/beslutsnumren.ts --sjalvtest
           node --experimental-strip-types scripts/beslutsnumren.ts
+      - name: Radarns tal — regeln i #568 på de tre kurvorna (förregistreringen §10 a)
+        run: node --experimental-strip-types scripts/radarns-tal.ts --sjalvtest
+      - name: Kuvösens facit ur Trafikverkets väglag — läsningen efter förregistreringen (#591)
+        run: |
+          node --experimental-strip-types kuvos/facit-trv.ts --sjalvtest
+          node --experimental-strip-types kuvos/facit-trv-uppfoljning.ts --sjalvtest
+          node --experimental-strip-types scripts/matningar/kuvos-blandning-vagb-facit-trv-uppfoljning-2026-10-17.ts --sjalvtest
       - name: Kortkartan — varje öppet kort kopplat till sitt område i stomdokumenten (#445)
         run: |
           node --experimental-strip-types scripts/kortkartan.ts --sjalvtest
@@ -94,6 +111,9 @@ jobs:
           node --experimental-strip-types scripts/matningar/kuvos-blandning-2026-10-08.ts --sjalvtest
           node --experimental-strip-types scripts/matningar/kuvos-blandning-niva2-2026-10-11.ts --sjalvtest
           node --experimental-strip-types scripts/matningar/kuvos-blandning-prognos-2026-10-11.ts --sjalvtest
+          node --experimental-strip-types scripts/matningar/kuvos-blandning-vagb-facit-trv-2026-10-16.ts --sjalvtest   # DECISIONS #592
+          node --experimental-strip-types scripts/matningar/kuvos-facit-trv-indata-2026-10-16.ts --sjalvtest
+          node --experimental-strip-types scripts/kandidat-gpx.ts --sjalvtest   # DECISIONS #596
           node --experimental-strip-types scripts/matningar/kuvos-blandning-vagb-2026-10-13.ts --sjalvtest
           node --experimental-strip-types scripts/matningar/kuvos-blandning-vagb2-rutnat-2026-10-13.ts --sjalvtest
           node --experimental-strip-types scripts/matningar/kuvos-blandning-vagb2-terrang-2026-10-13.ts --sjalvtest

@@ -51,8 +51,9 @@ det en bugg. Mörkt, tyst, Instrument Sans för text och IBM Plex Mono i versale
 Logotypen är triangeln med utropstecknet urstansat; *v3*:s skinn (31/8) och dess ikoner är ersatta.
 
 **Toppraden** bär logotypen i mitten och läget till höger med ett ljus som andas: *LIVE* med gult ljus när vakten väntar,
-*PÅ* med grönt när den kör. **Två flikar** i en flytande kapsel längst ner — *Vakten* och *Inställningar*. Ingen flikrad
-medan vakten kör.
+*PÅ* med grönt när den kör. **Tre flikar** i en flytande kapsel längst ner — *Vakten*, *Favoriter* och *Inställningar*
+(*Favoriter* i mitten sedan 18/10, kort #357; 104 punkter per flik, så att tre ryms på en smal telefon). Ingen flikrad medan
+vakten kör.
 
 **01 Redo.** En 3D-sockel med logotypen, ordet *"Redo."*, raden *"Vakten vaknar själv när du kör. Din position lämnar
 inte telefonen av sig själv."* (första meningen bara när vakten kan vakna själv), källorna i mono
@@ -63,6 +64,11 @@ under den *INGEN TUR ÄN*.
 sträckan (*16:58–17:34 · 36 MIN · 31 KM*) och en rad per varning — klockslag, ikon, rubrik och exakt vad rösten sa.
 Under: *3 VARNINGAR · VISAS TILLS NÄSTA TUR*. En tur utan varningar ger tillbaka 01.
 **Betatestare** ser dessutom kortet *Efter resan* överst, som förut (kort #203) — designen visar det inte, men det står kvar.
+**Spara resan?** (18/10, kort #357) Har föraren slagit på *Erbjud att spara resor* under Favoriter står frågan som en
+egen panel efter resan: *SPARA RESAN?* och *"Resan slutade 14:05. Spara vägen du körde, så finns den under Favoriter. Den
+stannar i telefonen."*, tre namnknappar — *Till jobbet*, *Hem* och *Resa 18/10* (dagens datum) — *EGET NAMN* för fritext och
+*NEJ TACK* (på Android två namnknappar per rad, som missraderna). Med fem sparade resor står i stället *"Du har redan fem resor. Ta bort en under Favoriter först."* Frågan kommer
+bara efter en resa på minst en kilometer, och utan svar försvinner den och vägen efter ett dygn (DECISIONS #616, #625).
 
 **02 På vakt.** En panel med *● PÅ VAKT* i grönt, minuter och kilometer i stort, och tre räknare (varningar, halka,
 vilt). Under den en streckad ruta: *"Tyst så länge — Inget på din väg än. Du hör det direkt när något dyker upp."*,
@@ -134,13 +140,40 @@ och *fartkamera* (en låda på stolpe med blixtlinjer). Svarta på kortet, ljusa
   pekar på en fara på kartan, så vi ser ungefär var du var just då. Appens namn och version följer med. Bara för
   betatestare."*
 - *Integritet* — löftet: *"Din position lämnar inte telefonen av sig själv."* och *"All matchning mot vägdata sker lokalt
-  i appen. Inget konto, ingen spårning. Undantaget är betatestet — bara om du själv slår på det."*, raden till Betatest
-  och Integritetspolicyn.
+  i appen. Inget konto. Undantaget är betatestet — bara om du själv slår på det."*, sedan *"Slår du på Erbjud att spara
+  resor under Favoriter sparas vägarna du väljer, bara i telefonen och aldrig i en säkerhetskopia. Du tar bort dem där."*
+  (18/10; *"ingen spårning"* ströks, för en sparad resa är ett spår, även om det bara finns hos föraren, #616),
+  raden till Betatest och Integritetspolicyn.
 - *Visa introduktionen igen* (iOS).
 - *Om Halkvakt* — Livekartan, Om appen & vanliga frågor, Press & material, ärlighetsraden och attributionen
   (oförändrade), och versionen.
 
 Under panelerna: *LÖFTET — Din position lämnar inte telefonen av sig själv.*
+
+## Favoriter (18/10, kort #357 — steg 2 och 3)
+
+![Spara resan? på Redo.](produktbok/shot-10-spara-resan.png) ![Fliken Favoriter med resans läge](produktbok/shot-11-favoriter.png) ![Rapporten för en sparad resa](produktbok/shot-12-rapporten.png)
+
+*Fotostudion (Android-emulatorn) med påhittade vägar ur kroken `fotostudio_favoriter`; läget och rapporten ur den riktiga rapportfilen och lägesfilen när bilden togs (android 39113957298). Klockslagen är emulatorns, i UTC.*
+
+Den mittersta fliken. Överst *"Favoriter — Vägar du kör ofta, sparade efter en resa."* och vippan **Erbjud att spara resor**
+(*Appen frågar efter resan*), **av från början**. Av: ingen väg samlas in och ingen fil skrivs — appen är som förut, och
+texten säger *"Slå på, så frågar appen efter en resa om du vill spara vägen du körde. Högst fem resor."* På och inga resor:
+*"Kör en resa, så frågar appen efteråt om du vill spara den."* Med resor: *DINA RESOR · 2 AV 5* och en rad per resa med
+namnet och *34 KM · SPARAD 18/10*, knappen *Ta bort* på varje rad och *TA BORT ALLA* under, som frågar en gång till. Sist
+*BARA I TELEFONEN — "Resorna sparas bara i telefonen och följer inte med i säkerhetskopian. De försvinner när du tar bort
+dem eller appen."* Sparade resor står kvar i listan också om vippan slås av; den som vill bli av med dem tar bort dem.
+
+**Hur det fungerar.** Under resan glesas positionerna till en punkt per 75 meter (motorns `Ruttinsamlare`, samma regel i
+tre språk, `engine/fixtures/rutter.json`). När vakten stoppar läggs vägen i en tillfällig fil tills föraren svarat på
+*Redo.* (se 01b ovan), högst ett dygn. Båda filerna ligger i telefonen och följer aldrig med i en säkerhetskopia: på iPhone under
+Application Support, undantagna från iCloud-kopian; på Android i `noBackupFilesDir`, och en egen regel
+(`res/xml/data_extraction_rules.xml`) stänger ute dem när appen flyttas till en ny telefon. Ingen kod som når nätet rör dem, och ingen karta ritas bakom vägen (ruttspärren i ci,
+`scripts/rutterspar.ts`).
+
+**Läget och rapporten (steg 3b på iPhone, 18/10; DECISIONS #636, #637).** Under namnet på varje rad står resans läge (FAVORITER §2): **Nytt** med ett gult märke — *2 NYA* — och det viktigaste av det nya, till exempel *Olycka på E4*; **Inget nytt** med det största som pågår — *Inget nytt · Halt väglag på E4*; eller **Lugnt** — *Lugnt · inget rapporterat längs vägen just nu*. Fartkamerorna och restidssträckorna i normal trafik räknas inte: de är inga händelser (en restid med fördröjning är en kö och räknas). Läget räknas om när fliken visas och när föraren drar nedåt. Ett tryck på raden öppnar **rapporten**: tillbakalänken *← FAVORITER*, resans namn och valet **Dit / Hem** — samma sparade väg åt två håll, där *Hem* är den vända, så att farorna kommer i körordning och köerna och restiderna gäller förarens håll. Sedan *JUST NU · KOLLAT 07:05* med *Läget från 07:00* och *"Läget kan ändras under resan, och då säger rösten till."*; *NYTT SEDAN 16:20* (i gult, *i går 16:20* dagen efter) med det som tillkommit sedan rapporten senast öppnades; *LÄNGS VÄGEN JUST NU* med en rad per sak i viktordning, där fartkamerorna läggs samman per väg, restiderna i normal trafik till en rad och vägarbeten, hastigheter och omledningar per väg från tre; raden om det tomma — *"Inget rapporterat: vilt, färjor och SMHI-varningar."* och *"Köer mäts inte längs den här vägen."* där ingen restidssträcka går; *PROGNOSEN · KOMMER SENARE* med *"Prognosen längs vägen visas här tidigast efter domen i mars."*; och sist *Starta vakten*. Trafikverkets *Vägen avstängd* heter *Avstängning* i rapporten, med vägen när den finns (*Avstängning på E45*), och för vägarbeten, olyckor och hinder står Trafikverkets påverkan i texten — *"Drift- och underhållsarbete. Tunneln avstängd under arbetet. · ingen påverkan enligt Trafikverket · till 19 oktober"* (DECISIONS #641). Inga avstånd på raderna. Är lägesfilen 45 minuter eller äldre visas inte väglag och frysrisk, och är rapportfilen två timmar eller äldre visas inte olyckor och vilt — samma gränser som rösten — och rapporten säger det i gult.
+
+Appen hämtar rapportfilen ur den publika hinken `favoriter` (samma fil för alla, utan fråga och utan plats; manifestets sha256 prövas, och en del som inte stämmer förkastas) och räknar rapporten i telefonen med motorns `ResansRapport`. Förra kollen per resa — när rapporten öppnades och vilka faror den visade — ligger i `kollen.json` bredvid rutterna, utanför säkerhetskopian, eftersom farornas id pekar på platser längs vägen. **Vägen hem känns igen:** ligger en ny resa längs en sparad, åt något håll (minst 80 % av varje inom 100 m av den andra), frågar appen inte *Spara resan?* en gång till. **Android (steg 3c, 18/10)** gör samma sak med samma ord: rapporten öppnas en nivå ned, som inställningarnas undersidor, och tillbakaknappen leder till listan. I stället för att dra nedåt finns *KOLLA IGEN* bredvid *Dit / Hem* — appens Compose-version saknar dra-för-att-uppdatera — och läget räknas om varje gång fliken eller rapporten visas. Förra kollen ligger i `noBackupFilesDir` med rutterna.
 
 ## Första gången — introduktionen (iOS)
 
@@ -149,7 +182,7 @@ Fyra sidor med punkter längst ner, *HOPPA ÖVER* till vänster och *NÄSTA* / *
 
 1. **Löftet** — logotypen stort, *"Varnar med rösten"*, *"Halka, olyckor, frysrisk, vilt och fartkameror från
    Trafikverket — i din högtalare, innan du är där."*, sockeln med logotypen, rutan *LÖFTET — "Din position lämnar inte
-   telefonen av sig själv."* och *Testa rösten* (som säger *"Fartkamera om 500 meter. Gränsen är 80."*).
+   telefonen av sig själv."* med raden *"Sparar du resor som favoriter stannar de också i telefonen."* (18/10) och *Testa rösten* (som säger *"Fartkamera om 500 meter. Gränsen är 80."*).
 2. **Platsen** — *"Platsen — bara i telefonen"*, *"Välj Alltid så kan vakten starta själv när du kör."* och en kartnål på
    sockeln. *Fortsätt* → iOS egen fråga; sedan den gröna *Fortsätt* → iOS fråga om Alltid (Apple 5.1.1(iv), DECISIONS #460). Med Alltid: en grön bock och *"Alltid —
    vakten vaknar själv när du kör"*, ringarna blir gröna. Avböjer du Alltid: *"Bara när appen är öppen — vakten startar
@@ -188,7 +221,7 @@ rörelseigenkänning, Bluetooth och plats "Tillåt hela tiden".)*
 | Rapporterad halka på din väg — kod 2 eller högre, eller kod 1 med is, snö, frost, halka, halt, halkrisk, halkig eller *mycket besvärligt* (det sista sedan 22/9, kort #156; sedan 16/9 även i sammansättningar: *Rimfrost*, *Nysnö*, *Blötsnö*; motåtgärder som *Halkbekämpning* tiger) | "Varning: halka rapporterad på vägen framför dig." |
 | Mätstation visar frysrisk | "Isrisk framöver — vägbanan nära noll grader." |
 | **Efter regnet, märkt beta (S3):** ytan +1…+3 °C, fallit minst 0,8 °C på 30 minuter och regn inom 2 timmar — vägbanan är fortfarande över fryspunkten men på väg ned (DECISIONS #222, #524) | "Halkvakt tror: frysrisk framöver." |
-| **Halka enligt kandidaten, märkt beta (nivå 2):** modellens vägyta 0 °C eller kallare och ett mätt fuktbesked — Trafikverkets *Våt* på sträckan eller nederbörd på radarn — ingen varm station inom 15 km och stationerna runt omkring överens; en gång per sträcka (DECISIONS #562–#577) | "Halkvakt tror: halka framöver." |
+| **Halka enligt kandidaten, märkt beta (nivå 2):** modellens vägyta 0 °C eller kallare och ett mätt fuktbesked — Trafikverkets *Våt* på sträckan eller nederbörd på radarn — ingen varm station inom 15 km och stationerna runt omkring överens; en gång per sträcka och högst en gång per 10 minuter (DECISIONS #562–#577, #606) | "Halkvakt tror: halka framöver." |
 | Djur på vägen enligt Trafikverket — älg, hjort, vildsvin, men också lösa kor och får (sedan 22/9, DECISIONS #318; polisens länspunkter är borta) | "Viltrisk framöver." |
 | Fartkamera (hastighetsgränsen sägs inte: Trafikverkets kameradata bär ingen) | "Fartkamera om 500 meter." |
 | Väglagsdatat är gammalt (en gång per körning) | "Ingen färsk väglagsdata – kör som om det kan vara halt." |
@@ -200,7 +233,7 @@ annars tas den bort (TROSKLAR-KOMBINATIONEN §7). Testförarna får veta att vä
 **Halkan som kandidaten tror på är också en beta.** Den räknas ur en vädermodell vid punkter ungefär varannan kilometer längs
 vägen, inte ur en mätning på platsen — därför *"Halkvakt tror"* och aldrig ett avstånd. Den talar sist av alla varningar: allt annat
 går före, och den kan aldrig tysta en annan varning. Har Trafikverkets halkvarning för samma sträcka just hörts tiger den i två
-minuter, så att samma besked inte kommer två gånger i rad. Den följer reglaget *Halka* i *Varna för* och tystnar när väglagsdatan är äldre
+minuter, så att samma besked inte kommer två gånger i rad, och den talar högst en gång per 10 minuter, vilken sträcka det än gäller (DECISIONS #606). Den följer reglaget *Halka* i *Varna för* och tystnar när väglagsdatan är äldre
 än 45 minuter. Domen faller i mars (DECISIONS #547); den kan stängas av från servern utan ett nytt bygge, och det provas före App
 Review (NIVA2-LIVE steg 13).
 
@@ -236,6 +269,14 @@ varningar som upprepas. Kör du åtta mil på is säger rösten *"halka"* var ti
 det ÄR halt. "Cry wolf" handlar om falska varningar — det är falskheten som äter
 förtroendet, inte upprepningen. Mot uppmärksamhetsförfall under två monotona timmar är
 upprepning rätt design.
+
+**Halkzonen (ändrad 17/10, DECISIONS #621, #624):** halksträckor som möts eller ligger tätt —
+linjerna inom 500 meter från varandra — räknas som **en** zon för uppförandekoden. I en
+korsning där tre sträckor med halka möts säger rösten *"halka"* en gång, inte tre gånger på
+en och en halv minut (soffprovet vid Vittangi 17/10). Inne i zonen gäller samma regel som på
+en lång sträcka: *"halka"* igen efter 10 minuter och 5 km, så åtta mil is fortfarande
+påminner var tionde minut. Två sträckor med halka som ligger långt isär talar var för sig,
+som förut. Rösttexten är densamma.
 
 ## Broarna (0.3.3)
 
@@ -419,12 +460,13 @@ i stället för att det *fungerade*. Instrumenten är byggda. Vintern är facit.
 
 Ingen prognos (varnar på uppmätt läge, inte gissningar), tyst mellan
 mätstationerna, ingen ködetektion ännu. Skickar ingenting om
-dig — med ett enda undantag som du själv slår på: betatestets facitsvar (se Om). Hela ärliga
+dig — med ett enda undantag som du själv slår på: betatestets facitsvar (se Om). Vägar du kört sparas bara om du slår på
+det under Favoriter, och bara i telefonen. Hela ärliga
 listan: [SYSTEM.md §4](SYSTEM.md).
 
 ## iOS-utgåvan (byggd 29/8 2026)
 
-Samma två flikar, samma röst, samma motor — skillnaderna står utskrivna ovan där de finns. Flikraden är
+Samma tre flikar, samma röst, samma motor — skillnaderna står utskrivna ovan där de finns. Flikraden är
 systemets egen (iOS 26 ritar den som svävande glas). Överst på Vakten och i körläget sitter varumärkesraden
 **⚠ HALKVAKT** med statuspillen till höger: *Trafikverket live* i vila, *Vakten på* under körning.
 Skärmbilder från iOS tas på Axels iPhone eller i simulatorn med fotostudio-kroken (CI:n fotar bara Android).

@@ -89,6 +89,16 @@ class MainActivity : ComponentActivity() {
             val a = Alert(System.currentTimeMillis() / 1000.0, "kand:fotostudio", HazardKind.KANDIDAT, 655, Texts.KANDIDAT_TEXT, beta = true)
             GuardService.currentWarning.value = ShownWarning(a, WarningCard.make(a, null))
         }
+        // Fotostudion: favoriterna (kort #357) — brytaren på, en sparad resa och en som väntar på svar, så att frågan på Redo. och
+        // fliken syns i produktboken. Påhittade vägar, aldrig en riktig resa. Betatestets kort stängs av så att frågan syns överst.
+        if (debug && intent?.getBooleanExtra("fotostudio_favoriter", false) == true) lifecycleScope.launch {
+            Prefs.setFacitEnabled(this@MainActivity, false)
+            Prefs.setFavErbjud(this@MainActivity, true)
+            val l = Favoriter.lager(this@MainActivity)
+            val resa = { lat0: Double -> l.resanBorjar(true); repeat(400) { i -> l.fix(18.063, lat0 + i * 85 / 111_320.0) }; l.resanSlutar(34.0) }
+            if (l.rutter.value.isEmpty()) { resa(59.20); l.spara("Till jobbet") }
+            if (l.vantande.value == null) resa(59.33)
+        }
     }
 
     /**

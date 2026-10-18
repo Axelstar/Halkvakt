@@ -75,6 +75,14 @@ jobs:
             adb shell am start -S -W -n se.halkvakt.app/.MainActivity --ez fotostudio_kandidat true
             sleep 5
             adb exec-out screencap -p > /tmp/shot-9-kandidatkortet.png
+            adb shell am start -S -W -n se.halkvakt.app/.MainActivity --ez fotostudio_favoriter true
+            sleep 6
+            SZ=$(adb shell wm size | tr -d '\r' | awk '{print $NF}'); W=${SZ%x*}; H=${SZ#*x}; Y=$((H*95/100)); adb exec-out screencap -p > /tmp/shot-10-spara-resan.png; adb shell input tap $((W/2)) $Y; sleep 12; adb exec-out screencap -p > /tmp/shot-11-favoriter.png; adb shell input tap $((W/3)) $((H*53/100)); sleep 12; adb exec-out screencap -p > /tmp/shot-12-rapporten.png; md5sum /tmp/shot-11-favoriter.png /tmp/shot-12-rapporten.png
+            # Kort #357 18/10, steg 3c: ett tryck på den sparade resans namn (W/3, 53 % — vänster om Ta bort; 47 % träffade luckan ovanför) öppnar
+            # rapporten, som hämtar den riktiga rapportfilen och lägesfilen; md5 skrivs ut så att ett missat tryck syns (samma bild som shot-11).
+            # Listan får 12 s före bilden (3 s gav "Kollar läget …"), så att resans läge syns; md5 räcker inte som bevis — bilden läses.
+            # Kort #357 18/10: favoriterna — frågan Spara resan? på Redo. och fliken Favoriter, med påhittade vägar ur kroken
+            # fotostudio_favoriter. Tre flikar sedan dess: Vakten under W/4, Favoriter under W/2, Inställningar under W*3/4 (104 dp var).
             # #577 16/10: kandidatens betakort på en påhittad varning, som betakortet ovan — till produktboken.
             # #525 11/10: betakortet (S3) på en påhittad varning, bara i debug-bygget — till produktboken. -S startar om appen:
             # utan den för am start bara fram den öppna aktiviteten, onCreate körs inte, och bilden blev en kopia av shot-7.

@@ -156,7 +156,11 @@ struct InstallningarView: View {
             VStack(alignment: .leading, spacing: 12) {
                 MonoLabel(text: "Löftet", size: 11)
                 Text("Din position lämnar inte telefonen av sig själv.").font(Typo.sans(20, .medium)).foregroundStyle(Brand.text)
-                Text("All matchning mot vägdata sker lokalt i appen. Inget konto, ingen spårning. Undantaget är betatestet — bara om du själv slår på det.")
+                // Kort #357 (DECISIONS #616, #625): "ingen spårning" blev osant när resor kan sparas — en sparad resa är ett spår,
+                // även om det bara finns hos föraren. Texten säger var de ligger och hur de tas bort.
+                Text("All matchning mot vägdata sker lokalt i appen. Inget konto. Undantaget är betatestet — bara om du själv slår på det.")
+                    .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2)
+                Text("Slår du på Erbjud att spara resor under Favoriter sparas vägarna du väljer, bara i telefonen och aldrig i en säkerhetskopia. Du tar bort dem där.")
                     .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2)
             }
             .padding(20)
@@ -316,16 +320,17 @@ private struct GenvagarGuide: View {
     }
 }
 
-/// Två flikar under en flytande kapsel (designen v2, DECISIONS #444) — Vakten och Inställningar.
-/// Ingen flikrad medan vakten kör: körläget täcker allt.
+/// Tre flikar under en flytande kapsel (designen v2, DECISIONS #444; Favoriter i mitten sedan kort #357, #616) — Vakten,
+/// Favoriter och Inställningar. Ingen flikrad medan vakten kör: körläget täcker allt.
 struct RootView: View {
     @State private var tab = 0
     @State private var guardM = GuardManager.shared
     var body: some View {
         ZStack(alignment: .bottom) {
-            // Båda flikarna lever hela tiden, som i TabView: ingen omladdning och ingen tappad undersida vid flikbyte.
+            // Flikarna lever hela tiden, som i TabView: ingen omladdning och ingen tappad undersida vid flikbyte.
             VaktenView().opacity(tab == 0 ? 1 : 0).allowsHitTesting(tab == 0).accessibilityHidden(tab != 0)
-            InstallningarView().opacity(tab == 1 ? 1 : 0).allowsHitTesting(tab == 1).accessibilityHidden(tab != 1)
+            FavoriterView(synlig: tab == 1).opacity(tab == 1 ? 1 : 0).allowsHitTesting(tab == 1).accessibilityHidden(tab != 1)
+            InstallningarView().opacity(tab == 2 ? 1 : 0).allowsHitTesting(tab == 2).accessibilityHidden(tab != 2)
             LinearGradient(colors: [Brand.bg.opacity(0), Brand.bg], startPoint: .top, endPoint: .init(x: 0.5, y: 0.6))
                 .frame(height: 130).allowsHitTesting(false)
                 .ignoresSafeArea(edges: .bottom)

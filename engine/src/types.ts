@@ -140,6 +140,13 @@ export interface EngineConfig {
   /** K (DECISIONS #581, Bengt 16/10 "bygg c"): seconds the candidate stays silent after the A1 warning for the same stretch spoke.
    *  Removes the back-to-back double (A1, then the candidate 10 s later); keeps the later call deep inside a long stretch. */
   kandidatEfterHalkaS: number;
+  /** Taket (DECISIONS #584, #606): the candidate speaks at most once per kandidatTakS, whatever the stretch. Built ahead of the
+   *  reading 2/11; merged only if more than 10 % of the follow-ups fall within 10 minutes, or the sample is too small. */
+  kandidatTakS: number;
+  /** Halkzonen (kort #360, DECISIONS #621, #624): two slippery stretches whose lines lie within halkZonM of each other count as one
+   *  zone for the repeat rule. A new halka warning stays silent while a neighbour's warning is not yet re-armed (10 min AND 5 km),
+   *  so three stretches meeting at a junction speak once, and a long zone still repeats like a long stretch (#103). */
+  halkZonM: number;
 }
 
 export const DEFAULT_CONFIG: EngineConfig = {
@@ -173,4 +180,10 @@ export const DEFAULT_CONFIG: EngineConfig = {
   // K (DECISIONS #581): 2 min — täcker spärrens 10 s med god marginal men inte de sena fallen långt in på en sträcka (22–44 min
   // i lägesfilen 04:40 16/10). Samma tal i Types.kt och Engine.swift (kontraktsgrinden).
   kandidatEfterHalkaS: 120,
+  // Taket (DECISIONS #584, #606): 10 min — motorns gräns för att upprepa en och samma fara (repeatMinS). Samma tal i Types.kt och
+  // Engine.swift (kontraktsgrinden).
+  kandidatTakS: 600,
+  // Halkzonen (DECISIONS #624): 500 m — all 17 close pairs in the shadow log lay within 451 m, and no pair at all between 500 m and
+  // 2 km (#621). Samma tal i Types.kt och Engine.swift (kontraktsgrinden).
+  halkZonM: 500,
 };

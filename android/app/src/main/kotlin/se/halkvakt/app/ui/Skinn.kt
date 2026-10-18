@@ -20,6 +20,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -56,6 +58,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import se.halkvakt.app.AgeGate
 import se.halkvakt.app.AlertEntry
+import se.halkvakt.app.Favoriter
 import se.halkvakt.app.GuardService
 import se.halkvakt.app.MainActivity
 import se.halkvakt.app.Missar
@@ -207,18 +210,21 @@ fun GreenToggleRow(title: String, sub: String?, checked: Boolean, onChange: (Boo
 fun Plinth(res: Int, height: Dp = 220.dp) =
     Image(painterResource(res), null, modifier = Modifier.fillMaxWidth().height(height))
 
-/** Den flytande flikraden: Vakten / Inställningar. */
+/** Den flytande flikraden: Vakten / Favoriter / Inställningar, 104 × 52 dp per flik — tre i bredd ryms på 360 dp (kort #357). */
 @Composable
 fun FloatingTabBar(tab: Int, onTab: (Int) -> Unit) {
     Row(Modifier.background(Brand.panel, RoundedCornerShape(32.dp)).border(1.dp, Line, RoundedCornerShape(32.dp)).padding(4.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-        listOf("VAKTEN", "INSTÄLLNINGAR").forEachIndexed { i, title ->
-            Column(Modifier.size(112.dp, 52.dp).background(if (tab == i) Raised else Color.Transparent, RoundedCornerShape(26.dp))
+        listOf("VAKTEN", "FAVORITER", "INSTÄLLNINGAR").forEachIndexed { i, title ->
+            Column(Modifier.size(104.dp, 52.dp).background(if (tab == i) Raised else Color.Transparent, RoundedCornerShape(26.dp))
                 .clickable(role = Role.Tab) { onTab(i) }.semantics { selected = tab == i },
                 horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-                if (i == 0) Mark(16.dp, if (tab == 0) Brand.yellow else Brand.dim)
-                else Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
-                    repeat(3) { Box(Modifier.size(16.dp, 2.dp).background(if (tab == 1) Brand.text else Brand.dim, RoundedCornerShape(1.dp))) }
+                when (i) {
+                    0 -> Mark(16.dp, if (tab == 0) Brand.yellow else Brand.dim)
+                    1 -> Icon(Icons.Filled.Star, null, tint = if (tab == 1) Brand.text else Brand.dim, modifier = Modifier.size(16.dp))
+                    else -> Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
+                        repeat(3) { Box(Modifier.size(16.dp, 2.dp).background(if (tab == 2) Brand.text else Brand.dim, RoundedCornerShape(1.dp))) }
+                    }
                 }
                 Spacer(Modifier.height(6.dp))
                 Text(title, color = if (tab == i) Brand.text else Brand.dim, fontFamily = Typo.mono, fontSize = 10.sp, letterSpacing = 0.12.em)
@@ -238,6 +244,11 @@ fun RedoScreen(activity: MainActivity, overst: @Composable () -> Unit) {
     val disabled by remember { Prefs.disabledKinds(ctx) }.collectAsStateWithLifecycle(initialValue = emptySet())
     val autostart by activity.autostartOn.collectAsStateWithLifecycle()
     val snapshot by GuardService.snapshotInfo.collectAsStateWithLifecycle()
+    // Kort #357 (DECISIONS #625): frågan om resan ska sparas, bara med brytaren Erbjud att spara resor på.
+    val lager = remember { Favoriter.lager(ctx) }
+    val erbjud by remember { Prefs.favErbjud(ctx) }.collectAsStateWithLifecycle(initialValue = false)
+    val vantande by lager.vantande.collectAsStateWithLifecycle()
+    val spara = if (erbjud) vantande else null
     val (slutMs, km) = slut
     val tur = remember(historik, start, slutMs) {
         if (start <= 0L || slutMs < start) emptyList() else historik.filter { it.t in start..slutMs }.sortedBy { it.t }
@@ -247,7 +258,8 @@ fun RedoScreen(activity: MainActivity, overst: @Composable () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally) {
         DesignTopBar(if (snapshot == null) "Hämtar" else "Live", if (snapshot == null) Muted2 else Brand.yellow)
         overst()
-        if (tur.isEmpty()) Plinth(R.drawable.plinth_logo) else Spacer(Modifier.height(24.dp))
+        spara?.let { Box(Modifier.padding(top = 14.dp)) { SparaResanKort(lager, it) } }
+        if (tur.isEmpty() && spara == null) Plinth(R.drawable.plinth_logo) else Spacer(Modifier.height(24.dp))
         Text("Redo.", color = Brand.text, fontFamily = Typo.sans, fontWeight = FontWeight.SemiBold, fontSize = 44.sp,
             letterSpacing = (-0.03).em, modifier = Modifier.padding(top = 12.dp))
         val vaknar = if (autostart) "Vakten vaknar själv när du kör. " else ""
@@ -589,7 +601,10 @@ private fun Undersida(sida: Sida, activity: MainActivity, open: (Sida) -> Unit, 
                     verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     MonoLabel("Löftet", size = 11.sp)
                     Text("Din position lämnar inte telefonen av sig själv.", color = Brand.text, fontFamily = Typo.sans, fontWeight = FontWeight.Medium, fontSize = 20.sp)
-                    Text("All matchning mot vägdata sker lokalt i appen. Inget konto, ingen spårning. Undantaget är betatestet — bara om du själv slår på det.",
+                    // Kort #357 (DECISIONS #616, #625): "ingen spårning" blev osant när resor kan sparas — samma ord som iOS.
+                    Text("All matchning mot vägdata sker lokalt i appen. Inget konto. Undantaget är betatestet — bara om du själv slår på det.",
+                        color = Text2, fontFamily = Typo.sans, fontSize = 14.sp, lineHeight = 21.sp)
+                    Text("Slår du på Erbjud att spara resor under Favoriter sparas vägarna du väljer, bara i telefonen och aldrig i en säkerhetskopia. Du tar bort dem där.",
                         color = Text2, fontFamily = Typo.sans, fontSize = 14.sp, lineHeight = 21.sp)
                 }
                 Spacer(Modifier.height(10.dp))

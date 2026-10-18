@@ -89,6 +89,10 @@ Policyn måste få ett eget stycke om facitsvaret — vad det innehåller, att d
 standard, och att det säger ungefär var och när. Utkast finns; texten är Axels att godkänna, för det är ett
 publikt löfte.
 
+**Sparade resor (kort #357, 18/10).** En förare som slår på *Erbjud att spara resor* kan spara en körd väg. Den lagras bara i
+telefonen (`noBackupFilesDir`, utesluten också vid flytt till en ny telefon) och lämnar den aldrig, så formuläret ändras inte:
+Google räknar bara det som lämnar enheten. Deklarationen för bakgrundsposition sa att inget lagras och är rättad.
+
 ## Behörighetsdeklarationer (görs i samma veva)
 
 - **Bakgrundsposition:** kräver videodeklaration + motivering. Text och manus: `docs/PLAY-BACKGROUND-LOCATION.md`.

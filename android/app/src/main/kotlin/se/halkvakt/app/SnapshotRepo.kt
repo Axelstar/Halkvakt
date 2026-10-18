@@ -34,6 +34,10 @@ object SnapshotRepo {
 
     fun loadHazards(ctx: Context): List<Hazard> = loadSnapshot(ctx).hazards
 
+    /** static.json och live.json som de ligger, verifierade som ovan — för favoriternas rapport (kort #357), som läser fler fält än
+     *  motorn (vägen på sträckorna, broarna, SMHI:s områden). Blockerar. */
+    fun dokument(ctx: Context): Pair<JSONObject, JSONObject> = fetchVerified(ctx, "static.json") to fetchVerified(ctx, "live.json")
+
     private fun fetchVerified(ctx: Context, name: String): JSONObject {
         val cache = File(ctx.filesDir, name)
         return try {

@@ -287,8 +287,14 @@
     {
       "date": "2026-10-16",
       "waitlist": 4,
-      "halka": 49,
-      "frys": 52
+      "halka": 47,
+      "frys": 86
+    },
+    {
+      "date": "2026-10-17",
+      "waitlist": 4,
+      "halka": 56,
+      "frys": 195
     }
   ]
 }

@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { byggRapport, favoritRapport, glesa, grupperade, langsVagen, linjerUr, notis, nyttSedan, punktUr, slagFor, tomma, vagNamn, visning, ORDNING, GRUPP_FRAN,
-  MARGINALER, MARGINALER_RAKA, type Rad } from "../publish/rapport-core.ts";
+import { byggRapport, favoritRapport, glesa, grupperade, kallaStationer, langsVagen, linjerUr, notis, nyttSedan, punktUr, rapportFragor, slagFor, tomma, vagNamn,
+  visning, ORDNING, GRUPP_FRAN, MARGINALER, MARGINALER_RAKA, type Rad } from "../publish/rapport-core.ts";
 import type { Hazard } from "../engine/src/types.ts";
 import type { LiveDoc, StaticDoc } from "../engine/src/snapshot.ts";
 
@@ -52,6 +52,10 @@ const IN = {
     dev({ Id: "slut", MessageTypeValue: "Accident", EndTime: "2026-10-12T05:30:00Z", Geometry: { Point: { WGS84: "POINT (15.1 59.0)" } } }),
     dev({ Id: "fjarran", MessageTypeValue: "Accident", Geometry: { Point: { WGS84: "POINT (18.0 59.3)" } } }),
   ] },
+  // DECISIONS #641: Trafikverkets *Vägen avstängd* blir vår rubrik *Avstängning*, och påverkan står i texten. En egen situation —
+  // vägarbetena i samma situation slås ihop till ett.
+  { Deviation: [dev({ Id: "stangd", MessageTypeValue: "MaintenanceWorks", MessageCode: "Vägen avstängd", MessageCodeValue: "roadworks", SeverityCode: 1,
+    Header: "Drift- och underhållsarbete. Tunneln avstängd under arbetet.", Geometry: { Point: { WGS84: "POINT (16.5 60.0)" } } })] },
   // En hastighet utan vägarbete i sin situation står kvar för sig.
   { Deviation: [dev({ Id: "h2", MessageTypeValue: "RoadOrCarriagewayOrLaneManagement", MessageCodeValue: "speedRestrictionInOperation",
     TemporaryLimit: "Rekommenderad hastighet: 70km/h", Geometry: { Point: { WGS84: "POINT (15.32 59.0)" } } })] }],
@@ -73,7 +77,10 @@ const IN = {
 test("rapportfilen: bara det aktiva, linjerna i den långsamma delen, restider och färjor", () => {
   const { snabb, lang } = byggRapport(IN);
   const ids = snabb.poster.map((p) => p.id);
-  assert.deepEqual(ids.filter((i) => i.startsWith("dev:")).sort(), ["dev:fjarran", "dev:h2", "dev:o1", "dev:v1"], "vilande och slutade borta, h1 lagd på v1");
+  assert.deepEqual(ids.filter((i) => i.startsWith("dev:")).sort(), ["dev:fjarran", "dev:h2", "dev:o1", "dev:stangd", "dev:v1"], "vilande och slutade borta, h1 lagd på v1");
+  const stangd = snabb.poster.find((p) => p.id === "dev:stangd")!;
+  assert.equal(stangd.rubrik, "Avstängning", "aldrig Trafikverkets Vägen avstängd som rubrik (#641)");
+  assert.match(visning(stangd), /^Drift- och underhållsarbete\. Tunneln avstängd under arbetet\. · ingen påverkan enligt Trafikverket · till /);
   const v1 = snabb.poster.find((p) => p.id === "dev:v1")!;
   assert.equal(v1.grans, 50, "hastigheten i samma situation ligger på vägarbetet");
   assert.equal(visning(v1), "2 körfält avstängda · 50 km/h förbi vägarbetet · till 20 oktober", "v1b:s två körfält på v1");
@@ -175,4 +182,21 @@ test("längs vägen: en tvärväg är inte längs rutten, en väg längs den är
   assert.equal(langsVagen([langs], RUTT, MARGINALER.vagarbete), true);
   assert.equal(langsVagen([kort], RUTT, MARGINALER.vagarbete), false, "~450 m med en fjärdedel inom 100 m är för lite");
   assert.equal(MARGINALER.kamera, 100); assert.equal(MARGINALER_RAKA.kamera, 1500);
+});
+
+test("frågorna bakom rapportfilen är delade av favoritprovet och favoriter (#617): fyra, i byggRapports ordning", () => {
+  const f = rapportFragor(NU);
+  assert.deepEqual(f.map((x) => x.objecttype), ["Situation", "TravelTimeRoute", "FerryAnnouncement", "FerryRoute"]);
+  assert.match(f[0].filter, /Deviation\.MessageTypeValue/);
+  assert.ok(f[0].include.includes("Deleted") && f[0].include.includes("Deviation.Geometry.Line.WGS84"));
+  assert.ok(!f[0].include.includes("Deviation.Deleted"), "fältet finns inte hos Trafikverket (38135721921)");
+  // Färjorna de närmaste 24 timmarna, räknat från körningen.
+  assert.ok(f[2].filter.includes("2026-10-12T06:00:00.000Z") && f[2].filter.includes("2026-10-13T06:00:00.000Z"));
+});
+
+test("stationerna i rapportfilen: bara de kalla i lägesfilen, med namn och luft", () => {
+  const latest = [{ station_id: 101, name: "Kall", air_temp_c: -1.5 }, { station_id: 102, name: "Varm", air_temp_c: 8 },
+    { station_id: 103, name: null, air_temp_c: null }];
+  assert.deepEqual(kallaStationer({ weather: [{ id: "101" }, { id: "103" }] } as any, latest),
+    [{ id: "101", namn: "Kall", luft: -1.5 }, { id: "103", namn: "", luft: null }]);
 });

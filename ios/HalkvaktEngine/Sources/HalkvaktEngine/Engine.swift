@@ -109,6 +109,11 @@ public struct EngineConfig {
     public var efterhalkaRegnH = 2.0
     // K (DECISIONS #581): tyst så här länge efter samma sträckas halkvarning — samma tal som engine/src/types.ts (kontraktsgrinden).
     public var kandidatEfterHalkaS = 120.0
+    // Taket (DECISIONS #606): högst en kandidat per så här många sekunder — samma tal som engine/src/types.ts (kontraktsgrinden).
+    public var kandidatTakS = 600.0
+    // Halkzonen (DECISIONS #624): sträckor inom så här många meter är en zon för reprisregeln — samma tal som engine/src/types.ts
+    // (kontraktsgrinden).
+    public var halkZonM = 500.0
     public init() {}
 }
 
@@ -220,7 +225,7 @@ enum Texts {
 public final class AlertEngine {
     private let cfg: EngineConfig
     private struct Point { let id: String; let kind: HazardKind; let lon, lat: Double; let bearing: Double?; let meta: PointMeta }
-    private struct Segment { let id: String; let meta: SegmentMeta; let samples: [[Double]] }
+    private struct Segment { let id: String; let meta: SegmentMeta; let samples: [[Double]]; let line: [[Double]] }
     private struct Kandidat { let id: String; let points: [[Double]]; let segmentHazardId: String? }
     private var points: [Point] = []
     private var segments: [Segment] = []
@@ -232,7 +237,11 @@ public final class AlertEngine {
     private var lastSpokenT: Double?
     /// Vad som senast sades — spärren får bara tysta något som INTE är viktigare (#127).
     private var lastSpokenKind: HazardKind?
+    /// När kandidaten senast talade — taket räknas därifrån, oavsett sträcka (DECISIONS #606).
+    private var lastKandidatT: Double?
     private var fired: [String: (t: Double, odo: Double)] = [:]
+    /// Halkzonen (kort #360): whether two stretches are neighbours, per sorted id pair (the geometry does not change).
+    private var zonGrannar: [String: Bool] = [:]
 
     private let slipperyInfo = try! NSRegularExpression(
         pattern: "(?<![a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt)",
@@ -254,11 +263,21 @@ public final class AlertEngine {
             case .point(let id, let kind, let lon, let lat, let bearing, let meta):
                 points.append(Point(id: id, kind: kind, lon: lon, lat: lat, bearing: bearing, meta: meta))
             case .segment(let id, let line, let meta):
-                segments.append(Segment(id: id, meta: meta, samples: Geo.samplePolyline(line, cfg.segmentSampleM)))
+                segments.append(Segment(id: id, meta: meta, samples: Geo.samplePolyline(line, cfg.segmentSampleM), line: line))
             case .kandidat(let id, let pts, let seg):
                 kandidater.append(Kandidat(id: id, points: pts, segmentHazardId: seg))
             }
         }
+    }
+
+    /// Halkzonen (#360): the two stretches' lines lie within halkZonM — measured line to line by the route filter, the same
+    /// function as engine/src/rutfilter.ts. Cached per pair.
+    private func grannar(_ a: Segment, _ b: Segment) -> Bool {
+        let nyckel = a.id < b.id ? "\(a.id)|\(b.id)" : "\(b.id)|\(a.id)"
+        if let v = zonGrannar[nyckel] { return v }
+        let v = !RouteFilter.alongRoute([.segment(id: b.id, line: b.line, meta: b.meta)], a.line, marginM: cfg.halkZonM).isEmpty
+        zonGrannar[nyckel] = v
+        return v
     }
 
     /// Swap the hazard set mid-drive (fresh snapshot) WITHOUT losing memory: odometer,
@@ -376,15 +395,26 @@ public final class AlertEngine {
             }
             // (c), DECISIONS #581: tyst i kandidatEfterHalkaS efter att samma sträckas halkvarning (A1) talat.
             if let s = k.segmentHazardId, let a1 = fired[s], fix.t - a1.t < cfg.kandidatEfterHalkaS { continue }
+            // Taket, DECISIONS #606: högst en kandidat per kandidatTakS, vilken sträcka det än gäller.
+            if let lk = lastKandidatT, fix.t - lk < cfg.kandidatTakS { continue }
             if let b = best, b <= leadM {
                 candidates.append(Candidate(id: k.id, kind: .kandidat, distM: b, limit: nil, alertKey: k.id, beta: true))
             }
         }
         if candidates.isEmpty { return nil }
 
-        let eligible = candidates.filter { c in
-            guard let f = fired[c.alertKey] else { return true }
-            return fix.t - f.t >= cfg.repeatMinS && odometerM - f.odo >= cfg.repeatMinM
+        let rearmed: ((t: Double, odo: Double)) -> Bool = { f in
+            fix.t - f.t >= self.cfg.repeatMinS && self.odometerM - f.odo >= self.cfg.repeatMinM
+        }
+        var eligible: [Candidate] = []
+        for c in candidates {
+            if let f = fired[c.alertKey], !rearmed(f) { continue }
+            // Halkzonen (kort #360, DECISIONS #621, #624): a neighbour stretch within halkZonM spoke and is not re-armed.
+            if c.kind == .slippery_segment, let a = segments.first(where: { $0.id == c.id }),
+               segments.contains(where: { s in
+                   s.id != c.id && (fired[s.id].map { !rearmed($0) } ?? false) && grannar(a, s)
+               }) { continue }
+            eligible.append(c)
         }
         if eligible.isEmpty { return nil }
 
@@ -403,6 +433,7 @@ public final class AlertEngine {
 
         lastSpokenT = fix.t
         lastSpokenKind = win.kind
+        if win.kind == .kandidat { lastKandidatT = fix.t }
         fired[win.alertKey] = (fix.t, odometerM)
         return Alert(
             t: fix.t, hazardId: win.id, kind: win.kind,

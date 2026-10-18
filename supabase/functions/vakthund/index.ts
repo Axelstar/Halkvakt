@@ -388,7 +388,7 @@ Deno.serve(async (req) => {
     // Kort #222: ett puls-jobb som avaktiveras eller raderas föll TYST ur bevakningslistan — vakten
     // såg en sen körning, aldrig ett försvunnet schema. Golvet är pulsklockans egen NYA-lista
     // (scripts/pulsklocka.ts); kontraktsgrinden vaktar att de två talen inte glider isär.
-    const PULS_GOLV = 14;   // 14 sedan kandidaten live (kort #343, DECISIONS #558); 12 sedan puls-favoritprov-synk (#534)
+    const PULS_GOLV = 18;   // 18 sedan larmen i Halkvakt live (kort #281, DECISIONS #627); 17 sedan Halkvakt live (kort #281, DECISIONS #600); 14 sedan kandidaten live (kort #343, DECISIONS #558); 12 sedan puls-favoritprov-synk (#534)
     rad.push(`pulsjobb: ${puls.length} aktiva (golv ${PULS_GOLV})`);
     if (puls.length < PULS_GOLV) problem.push(
       `**Pulsklockan har tappat jobb**: ${puls.length} aktiva av ${PULS_GOLV} — ett schema har avaktiverats eller raderats och faller tyst ur bevakningslistan (kort #222)`);
@@ -518,9 +518,32 @@ Deno.serve(async (req) => {
       const m = await (await fetch(`${Deno.env.get("SUPABASE_URL")}/storage/v1/object/public/favoritprov/manifest.json?t=${Date.now()}`, { cache: "no-store" })).json();
       aFp = alderH(m?.generated_at);
     } catch { /* aFp förblir null */ }
-    rad.push(`källor: skuggloggen ${visa(aSl)} · olycksarkivet ${visa(aSa)} · radarn ${visa(aRp)} (stationsnederbörd 3 h: ${vatt.n}) · väglaget ${visa(aRc)} (kalla stationer 3 h: ${kallt.n}/${kallt.alla}) · kamerafacit ${visa(aFc)} (skuggans svenska larm 12 h: ${sl12.n}) · favoritprovet ${visa(aFp)}`);
+    // FAVORITER (DECISIONS #617): appens rapportfil i hinken `favoriter`, var tionde minut (:x6, sql/061). Åldern ur manifestets
+    // generated_at, och kontrollsumman prövas mot filen som den ligger i hinken: appen förkastar en fil vars sha256 inte stämmer, så en
+    // trasig fil syns här innan den syns i telefonen. Larm efter 25 min, alltså två uteblivna körningar. En källa i mätvakten tills
+    // appen läser filen (kort #357); därefter hör den till kedjans larm, som lägesfilen.
+    let aFv: number | null = null, shaFv: boolean | null = null;
+    try {
+      const bas = `${Deno.env.get("SUPABASE_URL")}/storage/v1/object/public/favoriter/`;
+      const m = await (await fetch(`${bas}manifest.json?t=${Date.now()}`, { cache: "no-store" })).json();
+      aFv = alderH(m?.generated_at);
+      const rå = new Uint8Array(await (await fetch(`${bas}${m?.snabb?.fil ?? "rapport-snabb.json"}?t=${Date.now()}`, { cache: "no-store" })).arrayBuffer());
+      const sum = [...new Uint8Array(await crypto.subtle.digest("SHA-256", rå))].map((b) => b.toString(16).padStart(2, "0")).join("");
+      shaFv = sum === m?.snabb?.sha256;
+    } catch { /* aFv förblir null */ }
+    // MCP-SERVERN (DECISIONS #630): den publika servern ska svara på tools/list med fyra verktyg. Den läser samma CDN-filer som
+    // sajten, så ett stopp här är servern själv (deploy, gateway), inte datan.
+    let mcpOk: boolean | null = null;
+    try {
+      const r = await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/mcp`, { method: "POST", headers: { "content-type": "application/json" },
+        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/list" }) });
+      mcpOk = r.ok && ((await r.json())?.result?.tools?.length ?? 0) === 4;
+    } catch { mcpOk = false; }
+    rad.push(`källor: skuggloggen ${visa(aSl)} · olycksarkivet ${visa(aSa)} · radarn ${visa(aRp)} (stationsnederbörd 3 h: ${vatt.n}) · väglaget ${visa(aRc)} (kalla stationer 3 h: ${kallt.n}/${kallt.alla}) · kamerafacit ${visa(aFc)} (skuggans svenska larm 12 h: ${sl12.n}) · favoritprovet ${visa(aFp)} · favoriter ${visa(aFv)}${shaFv === false ? " (sha256 stämmer inte)" : ""} · mcp ${mcpOk ? "svarar" : "svarar inte"}`);
 
     const torra: string[] = [];
+    if (mcpOk === false)
+      torra.push("**MCP-servern** svarar inte på tools/list med fyra verktyg — AI-assistenter som kopplat in Halkvakt får inga svar (DECISIONS #630)");
     if (aSl === null || aSl > 2)
       torra.push(`**shadow_log** har inte växt på ${visa(aSl)} (skrivs var 30:e min) — skuggans utdata bär B3, V-B och upprepningen`);
     if (aSa === null || aSa > 3)
@@ -533,6 +556,10 @@ Deno.serve(async (req) => {
       torra.push(`**road_conditions** står stilla sedan ${visa(aRc)} MEDAN ${kallt.n} av ${kallt.alla} stationer (${(kallAndel * 100).toFixed(0)} %) legat på eller under noll de senaste 3 h — operatören borde klassa om; antingen ingest-live:s roadconditions() eller Trafikverket är tyst (#124)`);
     if (aFp === null || aFp > 1.25)
       torra.push(`**favoritprovet** (hinken \`favoritprov\`) har inte skrivit manifest.json på ${visa(aFp)} (körs :08/:38) — favoriternas provmiljö står still; funktionens svar med felet ligger i net._http_response`);
+    if (aFv === null || aFv > 25 / 60)
+      torra.push(`**favoriter** (hinken \`favoriter\`, appens rapportfil) har inte skrivit manifest.json på ${visa(aFv)} (körs :x6) — funktionens svar med felet ligger i net._http_response`);
+    else if (shaFv === false)
+      torra.push(`**favoriter**: \`rapport-snabb.json\` stämmer inte med manifestets sha256 — appen skulle förkasta filen och behålla den förra`);
 
     // Egen livscykel, egen etikett. Aldrig problem.push() — se huvudkommentaren.
     const allt = [...sena.map((x) => `- ❌ KÖRNING · ${x}`), ...torra.map((x) => `- ❌ KÄLLA · ${x}`)];
@@ -994,11 +1021,14 @@ Deno.serve(async (req) => {
       if (x.efter > 3 && (x.timmar === null || Number(x.timmar) > 3))
         problem.push(`**Arkivexporten står still**: ${x.efter} färdiga dygn väntar och ingen export på ${x.timmar ?? "–"} h — läs net._http_response för arkivexport (kort #83, DECISIONS #334)`);
       // Trendtabellerna och radarn (kort #347, DECISIONS #569, sql/053): samma rad och samma larm, räknat i tabelldygn.
+      // Gränsen är antalet tabeller (DECISIONS #608): vid midnatt UTC blir ett dygn per tabell färdigt och exporten tar dem
+      // :40, så först mer än ett dygn per tabell är stillastående. Talet 3 var antalet före sql/057 och larmade i glappet.
       const [y] = await sql`SELECT arkiv2_efterslap() AS efter, (SELECT count(*)::int FROM arkiv_export_tabell) AS dygn,
+        (SELECT count(DISTINCT tabell)::int FROM arkiv_export_tabell) AS tabeller,
         (SELECT round(extract(epoch FROM now() - max(exporterad)) / 3600, 1) FROM arkiv_export_tabell) AS timmar,
         (SELECT count(*)::int FROM arkiv_export_tabell WHERE raderad IS NOT NULL) AS raderade`;
-      rad.push(`arkivexport, trendtabellerna och radarn: ${y.dygn} tabelldygn exporterade (${y.timmar ?? "–"} h sedan), ${y.efter} väntar, ${y.raderade} raderade ur databasen`);
-      if (y.efter > 3 && (y.timmar === null || Number(y.timmar) > 3))
+      rad.push(`arkivexport, trendtabellerna och radarn: ${y.dygn} tabelldygn exporterade (${y.timmar ?? "–"} h sedan), ${y.efter} väntar (gräns ${y.tabeller}), ${y.raderade} raderade ur databasen`);
+      if (y.efter > y.tabeller && (y.timmar === null || Number(y.timmar) > 3))
         problem.push(`**Arkivexporten av trendtabellerna och radarn står still**: ${y.efter} färdiga tabelldygn väntar och ingen export på ${y.timmar ?? "–"} h — läs net._http_response för arkivexport (kort #347, DECISIONS #569)`);
     } catch (e) { problem.push(`**Kunde inte läsa arkivexporten**: ${String(e).slice(0, 160)}`); }
   } catch (e) {

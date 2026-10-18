@@ -39,6 +39,15 @@ const NYA: { namn: string; schema: string; fil: string }[] = [
   // Kort #200 (Bengt + Axel 17/9, DECISIONS #226): marknadsföringens morgonutkast ska nå pendlingen. GitHub-cronen
   // var bokad 04:45 UTC men levererade 08:49–10:07 (10–16/9). ~20 s per körning.
   { namn: "puls-marknadsforing", schema: "45 4 * * *", fil: "marknadsforing.yml" },
+  // Kort #281 (Axel 16/10, DECISIONS #600): Halkvakt live postar högst tre gånger om dygnet — morgon, lunch och kväll.
+  // Tre jobb och inte ett schema med en timlista: vakthundens kadensTimmar läser inga listor (#558). ~1 min per körning.
+  { namn: "puls-live-morgon", schema: "50 4 * * *", fil: "halkvakt-live.yml" },
+  { namn: "puls-live-lunch", schema: "50 10 * * *", fil: "halkvakt-live.yml" },
+  { namn: "puls-live-kvall", schema: "50 15 * * *", fil: "halkvakt-live.yml" },
+  // Kort #281 (Axel 17/10, DECISIONS #627): larmen — SMHI-varning och höstens första — när det händer, inte vid nästa pass.
+  // :07 och :37, sju minuter efter publicera (:00/:30) som skriver lan.json; minuterna är lediga i databasens klocka.
+  // Inget larm ⇒ körningen slutar efter koll-steget (~20 s), inget installeras eller committas.
+  { namn: "puls-live-larm", schema: "7,37 * * * *", fil: "halkvakt-larm.yml" },
   // Kort #160 (Bengt 18/9): måndagsseriens sju mätningar, 20 min isär eftersom de bygger på varandra. GitHub-cronen
   // levererade dem 5–7 h sent 14/9 och 40 % av bokad takt i #70; pulsklockan ligger på sekunden.
   { namn: "puls-grind-a", schema: "40 5 * * 1", fil: "grind-a.yml" },
@@ -68,7 +77,7 @@ const NYA: { namn: string; schema: string; fil: string }[] = [
 // avaktiveras eller raderas ska larma, inte tyst falla ur bevakningslistan. Vakthunden kör i Deno
 // hos Supabase och kan inte importera den här filen, så talet är en KOPIA — kontraktsgrinden vaktar
 // att kopiorna bär samma värde, och raden under vaktar att värdet stämmer med listan ovan.
-const ANTAL_NYA = 14;
+const ANTAL_NYA = 18;
 if (NYA.length !== ANTAL_NYA) {
   console.error(`NYA har ${NYA.length} jobb men ANTAL_NYA säger ${ANTAL_NYA} — uppdatera båda, och vakthundens PULS_GOLV.`);
   process.exit(1);

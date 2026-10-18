@@ -490,8 +490,8 @@ const scenarios: Scenario[] = [
     description:
       "Sträckan S1 har tre varnande punkter 1 500, 3 500 och 5 500 m fram; S2 en punkt 4 500 m fram; S0 en punkt 300 m BAKOM. " +
       "S1 talar vid t=38 med 'Halkvakt tror: halka framöver.' och beta=true, och dess två senare punkter tiger — samma " +
-      "sträcka, upprepningsregeln (10 min och 5 km) gäller sträckan. S2 är en ny sträcka och talar när dess punkt kommer inom " +
-      "förvarningen (t=173). S0 bakom tiger.",
+      "sträcka, upprepningsregeln (10 min och 5 km) gäller sträckan. S2 är en ny sträcka; dess punkt kommer inom " +
+      "förvarningen vid t=173, 135 s efter S1, och tiger under taket (en kandidat per 10 min, DECISIONS #606). S0 bakom tiger.",
     hazards: [
       { id: "kand:S1", kind: "kandidat", points: [[LON0, northOf(1500)], [LON0, northOf(3500)], [LON0, northOf(5500)]] },
       { id: "kand:S2", kind: "kandidat", points: [[LON0, northOf(4500)]] },
@@ -548,6 +548,61 @@ const scenarios: Scenario[] = [
       { id: "kand:S1", kind: "kandidat", points: [[LON0, northOf(1500)]], segmentHazardId: "seg:S1" },
     ],
     trace: northTrace(120, 80),
+  },
+  // Taket, DECISIONS #584, #606: högst en kandidat per 600 s, vilken sträcka det än gäller — motorns gräns för att upprepa en och
+  // samma fara. Punkterna ligger mitt emellan två fixar (marginal 11 m åt båda håll, som v42).
+  {
+    file: "v47_kandidat_taket_en_per_tio_minuter", name: "Kandidaten talar högst en gång per 10 minuter, vilken sträcka det än gäller (K)",
+    description:
+      "S1 1 500 m fram talar vid t=38. S2 8 189 m fram kommer inom förvarningen vid t=339 (656 m; t=338 låg 678 m), 301 s efter " +
+      "S1 ⇒ tyst under taket, och den är passerad innan taket släpper. S3 16 234 m fram kommer inom förvarningen vid t=701 " +
+      "(656 m; t=700 låg 678 m), 663 s efter S1 ⇒ talar. Utan taket hade S2 talat vid t=339.",
+    hazards: [
+      { id: "kand:S1", kind: "kandidat", points: [[LON0, northOf(1500)]] },
+      { id: "kand:S2", kind: "kandidat", points: [[LON0, northOf(8189)]] },
+      { id: "kand:S3", kind: "kandidat", points: [[LON0, northOf(16234)]] },
+    ],
+    trace: northTrace(720, 80),
+  },
+  // Halkzonen, kort #360, DECISIONS #621, #624: sträckor vars linjer ligger inom halkZonM (500 m) är en zon för reprisregeln. Alla
+  // avstånd ligger långt från 500 m (15–18 m eller 2 km), och varje förvarningsgräns minst 10 m från en hel sekunds fix.
+  {
+    file: "v48_halkzon_korsning_en_varning", name: "Tre halksträckor i en korsning talar en gång (halkzonen, #360)",
+    description:
+      "Som vid Vittangi i soffprovet 17/10 (#619): A 1 010–3 000 m norrut, fortsättningen B från 3 015 m (15 m efter A:s slut) och en " +
+      "avtagsväg C som börjar 18 m från A:s slut och viker av 30° österut. A talar vid t=16 (654 m; t=15 låg 677 m). B och C ligger " +
+      "inom 500 m från A och är samma zon, så de tiger så länge A inte är fri enligt reprisregeln. Utan zonen hade C talat vid t=106 " +
+      "och B vid t=116: tre halka på 100 s.",
+    hazards: [
+      { id: "seg:A", kind: "slippery_segment", line: [[LON0, northOf(1010)], [LON0, northOf(3000)]], meta: { code: 2, info: [] } },
+      { id: "seg:B", kind: "slippery_segment", line: [[LON0, northOf(3015)], [LON0, northOf(6000)]], meta: { code: 2, info: [] } },
+      { id: "seg:C", kind: "slippery_segment", line: [[eastOf(15), northOf(3010)], [eastOf(2515), northOf(7340)]], meta: { code: 2, info: [] } },
+    ],
+    trace: northTrace(200, 80),
+  },
+  {
+    file: "v49_halkzon_lang_zon_upprepas", name: "En lång halkzon upprepas som en lång sträcka (halkzonen, #360, #103)",
+    description:
+      "A 1 010–20 000 m och B från 20 015 m (15 m efter A:s slut). A talar vid t=16 och igen vid t=616, när reprisregeln släpper " +
+      "(10 min och 5 km). B kommer inom förvarningen vid t=871, men A talade för 255 s sedan, så zonen tiger. B talar först vid " +
+      "t=1216, 600 s efter A:s andra varning. Utan zonen hade B talat redan vid t=871. B:s avstånd vid t=1216 är 0,65 m oavrundat " +
+      "(1 m i vektorn), 15 cm från avrundningsgränsen — långt över skillnaderna mellan språkens flyttal.",
+    hazards: [
+      { id: "seg:A", kind: "slippery_segment", line: [[LON0, northOf(1010)], [LON0, northOf(20000)]], meta: { code: 2, info: [] } },
+      { id: "seg:B", kind: "slippery_segment", line: [[LON0, northOf(20015)], [LON0, northOf(40000)]], meta: { code: 2, info: [] } },
+    ],
+    trace: northTrace(1260, 80),
+  },
+  {
+    file: "v50_halkzon_langt_isar_talar", name: "Två halksträckor 2 km isär är inte en zon — båda talar (halkzonen, #360)",
+    description:
+      "A 1 010–3 000 m och B 5 010–8 000 m, 2 010 m efter A:s slut, långt utanför 500 m. A talar vid t=16, B vid t=196 (654 m; " +
+      "t=195 låg 677 m).",
+    hazards: [
+      { id: "seg:A", kind: "slippery_segment", line: [[LON0, northOf(1010)], [LON0, northOf(3000)]], meta: { code: 2, info: [] } },
+      { id: "seg:B", kind: "slippery_segment", line: [[LON0, northOf(5010)], [LON0, northOf(8000)]], meta: { code: 2, info: [] } },
+    ],
+    trace: northTrace(240, 80),
   },
 ];
 

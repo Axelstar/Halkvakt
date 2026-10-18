@@ -12,6 +12,7 @@ import HalkvaktEngine
 struct VaktenView: View {
     @State private var guardM = GuardManager.shared
     @State private var prefs = Prefs.shared
+    @State private var fav = Favoriter.shared
 
     var body: some View {
         ZStack {
@@ -45,7 +46,11 @@ struct VaktenView: View {
                     .padding(.top, 14)
             }
 
-            if tur == nil && resa == nil {
+            // Kort #357 (DECISIONS #625): frågan om resan ska sparas, bara med brytaren Erbjud att spara resor på.
+            let spara = fav.erbjud ? fav.vantande : nil
+            if let spara { SparaResanKort(resa: spara).padding(.top, 14) }
+
+            if tur == nil && resa == nil && spara == nil {
                 Spacer(minLength: 12)
                 Plinth(name: "plinth-logo").frame(height: 220)
             } else {

@@ -493,8 +493,10 @@ Deno.serve(async (req) => {
       // Sedan 12/10 räknas räckvidden från själva linjen, inte från rektangeln runt rutten (Bengt, DECISIONS #535).
       const t1 = performance.now();
       const motor = new AlertEngine(farorVidLinjen(hazards, line));
-      const suppressed: { kind: string; id: string; distM: number; by: string; sinceS: number }[] = [];
-      motor.onSuppressed = (c) => suppressed.push({ kind: c.kind, id: c.hazardId, distM: Math.round(c.distM), by: c.by, sinceS: c.sinceS });
+      // Halkzonen (kort #360, DECISIONS #624): en halkvarning som tystas för att en grannsträcka inom 500 m nyss talade bär `zon`.
+      const suppressed: { kind: string; id: string; distM: number; by: string; sinceS: number; zon?: string }[] = [];
+      motor.onSuppressed = (c) => suppressed.push({ kind: c.kind, id: c.hazardId, distM: Math.round(c.distM), by: c.by, sinceS: c.sinceS,
+        ...(c.zon ? { zon: c.zon } : {}) });
       const alerts = motor.run(trace);
       ms.motor += performance.now() - t1;
       const vb = land === "se" ? vbAlerts(lv, line, trace) : [];

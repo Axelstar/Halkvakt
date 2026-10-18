@@ -25,12 +25,24 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
      */
     fun updateHazards(hazards: List<Hazard>) = ingest(hazards)
 
+    /** Halkzonen (kort #360): whether two stretches are neighbours, per sorted id pair (the geometry does not change). */
+    private val zonGrannar = HashMap<String, Boolean>()
+
+    /** Halkzonen (#360): the two stretches' lines lie within halkZonM — measured line to line by the route filter, the same
+     *  function as engine/src/rutfilter.ts. Cached per pair. */
+    private fun grannar(a: SegmentHazard, b: SegmentHazard): Boolean {
+        val nyckel = if (a.id < b.id) "${a.id}|${b.id}" else "${b.id}|${a.id}"
+        return zonGrannar.getOrPut(nyckel) { RouteFilter.alongRoute(listOf(b), a.line, cfg.halkZonM).isNotEmpty() }
+    }
+
     private var prevFix: Fix? = null
     private var lastHeadingDeg: Double? = null
     private var odometerM = 0.0
     private var lastSpokenT: Double? = null
     /** Vad som senast sades — spärren får bara tysta något som INTE är viktigare (#127). */
     private var lastSpokenKind: HazardKind? = null
+    /** När kandidaten senast talade — taket räknas därifrån, oavsett sträcka (DECISIONS #606). */
+    private var lastKandidatT: Double? = null
     private val fired = HashMap<String, Pair<Double, Double>>() // id -> (t, odometerM)
 
     private val slipperyInfo = Regex("(?<![a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt)", RegexOption.IGNORE_CASE)
@@ -70,9 +82,15 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
         for (k in kandidater) evaluateKandidat(fix, heading, k, leadM)?.let { candidates.add(it) }
         if (candidates.isEmpty()) return null
 
+        val rearmed = { f: Pair<Double, Double> -> fix.t - f.first >= cfg.repeatMinS && odometerM - f.second >= cfg.repeatMinM }
         val eligible = candidates.filter { c ->
-            val f = fired[c.alertKey] ?: return@filter true
-            fix.t - f.first >= cfg.repeatMinS && odometerM - f.second >= cfg.repeatMinM
+            val f = fired[c.alertKey]
+            if (f != null && !rearmed(f)) return@filter false
+            // Halkzonen (kort #360, DECISIONS #621, #624): a neighbour stretch within halkZonM spoke and is not re-armed.
+            val a = c.hazard as? SegmentHazard
+            if (c.kind == HazardKind.SLIPPERY_SEGMENT && a != null &&
+                segments.any { (s, _) -> s.id != a.id && fired[s.id]?.let { !rearmed(it) } == true && grannar(a, s) }) return@filter false
+            true
         }
         if (eligible.isEmpty()) return null
 
@@ -91,6 +109,7 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
 
         lastSpokenT = fix.t
         lastSpokenKind = win.kind
+        if (win.kind == HazardKind.KANDIDAT) lastKandidatT = fix.t
         fired[win.alertKey] = fix.t to odometerM
         val ph = win.hazard as? PointHazard
         return Alert(
@@ -216,6 +235,8 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
         // (c), DECISIONS #581: tyst i kandidatEfterHalkaS efter att samma sträckas halkvarning (A1) talat.
         val a1 = k.segmentHazardId?.let { fired[it] }
         if (a1 != null && fix.t - a1.first < cfg.kandidatEfterHalkaS) return null
+        // Taket, DECISIONS #606: högst en kandidat per kandidatTakS, vilken sträcka det än gäller.
+        lastKandidatT?.let { if (fix.t - it < cfg.kandidatTakS) return null }
         return Candidate(k, HazardKind.KANDIDAT, b, k.id, beta = true)
     }
 }
