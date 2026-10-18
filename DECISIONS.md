@@ -15251,3 +15251,5 @@ säga om en nattstängd tunnel är öppen just nu.
 avstängningar med påverkan 1 — tar bort sant läge; bara påverkan utan ny rubrik — rubriken ensam vilseleder i fliken.
 
 **Stomdokument:** FAV §3 rapporten, BED §4.2
+
+**(1) i drift 18/10** (Bengt: *"slå ihop 1072"*, deployen godkänd i §4.2): deploy av favoriter (39120705291) och favoritprov (39120707469) från main b095128 18/10 10:49 UTC; rapportfilen 10:56:01 bär Avstängning 7 och Vägen avstängd 0 (före: 10:46, 7 och 0 omvänt), manifestets sha256 lika med filens; favoritprov 11:08:23 likadant (Avstängning 7, Vägen avstängd 0), körtiden 3 429 ms. (2) väntar på bygge 32.
