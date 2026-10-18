@@ -114,6 +114,7 @@ fun HalkvaktApp(activity: MainActivity) {
                 if (running) PaVaktScreen(activity)
                 else when (tab) {
                     0 -> RedoScreen(activity) { BetaOverst(activity) }
+                    1 -> FavoriterScreen()   // kort #357, DECISIONS #616: den mittersta fliken
                     else -> SettingsScreen(activity)
                 }
             }

@@ -509,6 +509,21 @@ export const KONTRAKT: Kontrakt[] = [
     golv: 3,
   },
   {
+    // DECISIONS #633: frågan Spara resan? kommer bara efter en resa på minst så här många km — samma i båda apparna.
+    namn: "Sparade rutter — kortaste resa som erbjuds, km",
+    varfor: "Med olika gräns frågar iPhone och Android efter olika resor, och produktbokens 'minst en kilometer' blir fel på en av dem.",
+    former: [/(?:MINSTA_RESA_KM|minstaResaKm)\s*=\s*(\d+)(?:\.0)?(?![\d.])/],
+    filer: /app\/Favoriter\.kt|Services\/Favoriter\.swift/,
+    golv: 2,
+  },
+  {
+    namn: "Sparade rutter — timmar som frågan och vägen står kvar",
+    varfor: "Den tillfälliga filen med en körd väg ska raderas lika snabbt på båda plattformarna (FAVORITER §6: ett dygn).",
+    former: [/FRAGA_KVAR_MS\s*=\s*(\d+)\s*\*\s*3600\s*\*\s*1000L/, /fragaKvarS: TimeInterval\s*=\s*(\d+)\s*\*\s*3600/],
+    filer: /app\/Favoriter\.kt|Services\/Favoriter\.swift/,
+    golv: 2,
+  },
+  {
     namn: "Betans startvärde fall — °C på trendfönstret",
     varfor: "Samma som ovan: ett fallkrav som driver ändrar vilka nätter som räknas som fyrningar.",
     former: [/([\d.]+)::numeric AS fall\b/, /p_fall numeric DEFAULT ([\d.]+)/, /efterhalkaFall30C(?::\s*\w+)?\s*[:=]\s*([\d.]+)/],
