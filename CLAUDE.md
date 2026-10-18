@@ -214,7 +214,7 @@ varje del av projektet med block, läge, bevis eller nyckel, vad som saknas, ber
   morgon och kväll i Claude-appen är avstängt sedan 6/10: två körningar hängde på sitt första kommando; Bengts ord.) (1) *Maskinvägen:* steg med `regel` bockas ur
   byggsignalerna (edge function `byggsignaler` varje timme → tabellen `byggsignaler` → ärendet *📡 Byggsignaler*), bara framåt och
   med signalens tidpunkt som bevis; `kvar` är delens saknas-rader som stryks när steget blir klart. (2) *Bokföringsvägen:*
-  skriptet listar varje commit på main sedan `synk.till` som inte rörde kartan (utom Marknadsmotorns, trv-bevakningens och
+  skriptet listar varje commit på main sedan `synk.till` som inte rörde kartan (utom Marknadsmotorns och Halkvakt lives, trv-bevakningens och
   kartsynkens egna). Sessionen bokför var och en på sin del — steget och kort sha som bevis — eller konstaterar att den inte rör
   någon del, och kör sedan `--bokford`. Grenen heter `kartsynk/<datum>`, PR-rubriken börjar med "Kartsynk:", och en gren där
   `--tillatna` är grön (den rör bara kartan och det kartan skriver) slås ihop på grön CI på exakt huvudet utan "slå ihop" och
