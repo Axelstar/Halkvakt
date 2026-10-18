@@ -197,7 +197,7 @@ struct Plinth: View {
     }
 }
 
-/// Den flytande flikraden: Vakten / Inställningar, 112 × 52 per flik.
+/// Den flytande flikraden: Vakten / Favoriter / Inställningar, 104 × 52 per flik — tre i bredd ryms på en 375 pt-skärm.
 struct FloatingTabBar: View {
     @Binding var tab: Int
     var body: some View {
@@ -206,9 +206,13 @@ struct FloatingTabBar: View {
                 Image("ikon-mark").renderingMode(.template).resizable().scaledToFit().frame(width: 16, height: 14)
                     .foregroundStyle(tab == 0 ? Brand.yellow : Brand.dim)
             }
-            item(1, "INSTÄLLNINGAR") {
+            item(1, "FAVORITER") {
+                Image(systemName: tab == 1 ? "star.fill" : "star").font(.system(size: 13))
+                    .foregroundStyle(tab == 1 ? Brand.text : Brand.dim).frame(height: 14)
+            }
+            item(2, "INSTÄLLNINGAR") {
                 VStack(spacing: 3) { ForEach(0..<3, id: \.self) { _ in Capsule().frame(width: 16, height: 2) } }
-                    .foregroundStyle(tab == 1 ? Brand.text : Brand.dim)
+                    .foregroundStyle(tab == 2 ? Brand.text : Brand.dim)
             }
         }
         .padding(4)
@@ -222,10 +226,10 @@ struct FloatingTabBar: View {
                 icon()
                 Text(title).font(Typo.mono(10)).tracking(1.2).foregroundStyle(tab == i ? Brand.text : Brand.dim)
             }
-            .frame(width: 112, height: 52)
+            .frame(width: 104, height: 52)
             .background(tab == i ? Brand.raisedSolid : .clear, in: Capsule())
         }
-        .accessibilityLabel(i == 0 ? "Vakten" : "Inställningar")
+        .accessibilityLabel(["Vakten", "Favoriter", "Inställningar"][i])
         .accessibilityAddTraits(tab == i ? .isSelected : [])
     }
 }

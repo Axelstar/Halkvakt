@@ -97,6 +97,8 @@ struct OnboardingView: View {
             VStack(alignment: .leading, spacing: 8) {
                 MonoLabel(text: "Löftet")
                 Text("Din position lämnar inte telefonen av sig själv.").font(Typo.sans(17, .medium)).foregroundStyle(Brand.text)
+                // Kort #357 (DECISIONS #616): introduktionen säger att resor kan sparas, och var.
+                Text("Sparar du resor som favoriter stannar de också i telefonen.").font(Typo.sans(14)).foregroundStyle(Brand.text2)
             }
             .padding(.horizontal, 20).padding(.vertical, 18)
             .frame(maxWidth: .infinity, alignment: .leading)
