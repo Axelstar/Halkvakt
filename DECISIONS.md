@@ -15174,3 +15174,48 @@ iPhone under en riktig passage. Bilprovet i fält (#596) står kvar för när de
 valdes bort av Bengt.
 
 **Stomdokument:** LIV steg 13, BED §4.2
+
+## #639 (18/10 2026) Favoriternas rapport: de fem valen i bygget står — och restiderna i normal trafik räknas inte som händelser (kort #357)
+
+**Bengts ord 18/10:** *"kör alla dessa"*, på listan där punkt 2 var *"De fem valen i bygget (bedömningen §4.2). Val 2 är utvidgat: restiderna i
+normal trafik räknas inte heller. Jag föreslår ja till alla fem."*
+
+**Beslut.** Som byggt i 3b och 3c (PR #1068, #1069), i båda apparna:
+1. **Förra kollen är när rapporten senast öppnades**, inte när fliken visades. Den sparas i `kollen.json` bredvid rutterna, utanför
+   säkerhetskopian, eftersom farornas id pekar på platser längs vägen; ruttspärren vaktar filen.
+2. **Radens läge räknas över båda hållen, och det som inte är händelser räknas inte**: fartkamerorna och restidssträckorna i normal
+   trafik (`INTE_HANDELSER` i `publish/rapport-app.ts` och tvillingarna) — varken som nya eller som något som pågår. En restid med
+   fördröjning är en kö och räknas. Utvidgningen kom ur fotostudion 18/10: raden sade *"Inget nytt · 75 O Avfart Huddingevägen"*.
+3. **Åldersgränsen följer FAVORITER §3 ordagrant:** väglag och frysrisk visas inte när lägesfilen är 45 minuter eller äldre, olyckor och
+   vilt inte när rapportfilen är två timmar eller äldre (AgeGates tal); hinder, köer och vägarbeten står kvar med filens tid överst.
+4. **Inga avstånd på raderna.** De sammanslagna vägarbetena säger som i provet *"Mellan 9 km och 12 km in på rutten"*.
+5. **Rapportfilen hämtas bara när fliken visas, när föraren drar nedåt (Android: KOLLA IGEN) eller när en rapport öppnas**, och bara
+   om det finns sparade resor — ingen hämtning i bakgrunden.
+
+**Alternativ.** Förra kollen när fliken visas (märket hade försvunnit oläst); kamerorna och restiderna som händelser (ingen resa i
+Stockholm hade blivit *Lugnt*); en egen åldersregel för hinder och köer — inte valda.
+
+**Stomdokument:** FAV §2 fliken och §3 rapporten, BED §4.2
+
+## #640 (18/10 2026) Bygge 31 med favoriternas rapport; Android i takt; butikstexterna nämner rapporten (kort #357; #634, #636)
+
+**Bengts ord 18/10:** *"kör alla dessa"*, på listan där punkt 4 var 3d: *"Axel provar på en riktig telefon. Ett nytt bygge går till TestFlight, och
+Android till Play internt. Butikstexterna nämner favoriterna. Det första jag behöver är ditt ja till ett nytt byggnummer efter
+sammanslagningen."*
+
+**Beslut.**
+1. **0.3.13 (31)** på iPhone, med favoriternas steg 3 (rapporten längs resan, *Dit / Hem*, igenkänningen; PR #1068, #1069). Byggnumret
+   höjs efter den sista appändringen, i den här PR:en, och TestFlight-flödet laddar upp från main efter sammanslagningen.
+2. **Android versionCode 31**, i takt med iOS (#377). CI bygger den signerade AAB:n (`halkvakt-release-aab`). **Play internt går inte
+   än**: Play-kontots identitetsverifiering hos Google väntar på Axel (tavlan, Play-kortet 4/10), och något uppladdningsflöde finns
+   inte (`docs/PLAY-KONTO.md` §4). AAB:n står klar tills kontot öppnas.
+3. **Butikstexterna** i `marknadsforing/butik/appstore-ios.md`: beskrivningen, integritetsstycket, *Nyheter i 0.3.13* och granskarens
+   anteckningar nämner rapporten — samma fil för alla, matchningen i telefonen, inget om förarens väg i anropet. Axel godkänner och
+   klistrar in.
+4. **Provet på en riktig iPhone (Axel), på 31:** en sparad resa, fliken med läget, rapporten *Dit / Hem*, och att hemvägen inte frågas
+   om. Sedan inskicket, med punkterna 2–7 i #634.
+
+**Kvar som påverkar 31:** frågan om *"Vägen avstängd"* (bedömningen §4.2). Rubriken skrivs på servern och kan rättas utan nytt bygge;
+påverkan i texten kräver ett bygge till.
+
+**Stomdokument:** APP 0.3.13, FAV §11 vad som väntar, BED §4.2
