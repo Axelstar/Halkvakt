@@ -85,6 +85,16 @@
       "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-10-18-live-0408.jpg",
       "facebook": "1312515671952967_122098537665516187",
       "instagram": "18077206034452421"
+    },
+    {
+      "pass": "morgon",
+      "namn": "2026-10-18-morgon",
+      "typ": "kallaste",
+      "nyckel": "kallaste",
+      "tid": "2026-10-18T04:50:32.687Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-10-18-morgon.jpg",
+      "facebook": "1312515671952967_122098624623516187",
+      "instagram": "18126142579807043"
     }
   ]
 }
