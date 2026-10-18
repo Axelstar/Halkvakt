@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Kort #357 (DECISIONS #616, #625): de sparade resorna följer aldrig med. allowBackup="false" stänger molnkopian, men från
+     Android 12 gäller den inte flytten till en ny telefon. Den här regeln stänger ute mappen där också. Filerna ligger dessutom
+     i noBackupFilesDir (Favoriter.kt). Allt annat flyttas som förut. scripts/rutterspar.ts i ci prövar att regeln finns. -->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="root" path="no_backup/favoriter/"/>
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="root" path="no_backup/favoriter/"/>
+    </device-transfer>
+</data-extraction-rules>

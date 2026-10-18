@@ -104,6 +104,9 @@ class GuardService : Service() {
         // Resans fönster överlever tjänsten (kort #203): notisens knapp trycks minuter senare,
         // i en annan process, och måste veta vad "alla varningar" syftar på.
         scope.launch { Prefs.setTripStart(this@GuardService, session.value.startedAt) }
+        // Kort #357: insamlingen bara med brytaren på. På huvudtråden, som positionerna — de första fixarna före läsningen tappas.
+        val app = applicationContext
+        scope.launch(Dispatchers.Main) { Favoriter.lager(app).resanBorjar(Prefs.favErbjud(app).first()) }
         loadSnapshotAsync(force = true)
         startLocationUpdates()
         AlertBus.post("Tjänsten startad. Laddar vägdata …")
@@ -175,6 +178,7 @@ class GuardService : Service() {
                 else session.value = session.value.copy(lon = loc.longitude, lat = loc.latitude)
             } else session.value = session.value.copy(lon = loc.longitude, lat = loc.latitude)
             prevLon = loc.longitude; prevLat = loc.latitude
+            if (loc.hasAccuracy()) Favoriter.lager(this@GuardService).fix(loc.longitude, loc.latitude)   // kort #357
             loadSnapshotAsync()   // the schedule decides; most fixes start nothing
             val fix = Fix(
                 t = loc.time / 1000.0,
@@ -304,6 +308,7 @@ class GuardService : Service() {
     override fun onDestroy() {
         efterResan()          // FÖRE scope.cancel() — läser sitt eget, kortlivade scope
         sparaTuren()
+        Favoriter.lager(this).resanSlutar(session.value.km)   // kort #357: frågan på Redo., bara om insamlingen var på
         staleToast.value = false
         scope.cancel()
         running = false

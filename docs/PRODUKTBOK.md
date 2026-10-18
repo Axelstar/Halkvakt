@@ -52,8 +52,8 @@ Logotypen är triangeln med utropstecknet urstansat; *v3*:s skinn (31/8) och des
 
 **Toppraden** bär logotypen i mitten och läget till höger med ett ljus som andas: *LIVE* med gult ljus när vakten väntar,
 *PÅ* med grönt när den kör. **Tre flikar** i en flytande kapsel längst ner — *Vakten*, *Favoriter* och *Inställningar*
-(*Favoriter* i mitten på iPhone sedan 18/10, kort #357; Android följer i nästa steg, och tills dess skiljer plattformarna sig
-här). Ingen flikrad medan vakten kör.
+(*Favoriter* i mitten sedan 18/10, kort #357; 104 punkter per flik, så att tre ryms på en smal telefon). Ingen flikrad medan
+vakten kör.
 
 **01 Redo.** En 3D-sockel med logotypen, ordet *"Redo."*, raden *"Vakten vaknar själv när du kör. Din position lämnar
 inte telefonen av sig själv."* (första meningen bara när vakten kan vakna själv), källorna i mono
@@ -64,10 +64,10 @@ under den *INGEN TUR ÄN*.
 sträckan (*16:58–17:34 · 36 MIN · 31 KM*) och en rad per varning — klockslag, ikon, rubrik och exakt vad rösten sa.
 Under: *3 VARNINGAR · VISAS TILLS NÄSTA TUR*. En tur utan varningar ger tillbaka 01.
 **Betatestare** ser dessutom kortet *Efter resan* överst, som förut (kort #203) — designen visar det inte, men det står kvar.
-**Spara resan?** (iPhone, 18/10, kort #357) Har föraren slagit på *Erbjud att spara resor* under Favoriter står frågan som en
+**Spara resan?** (18/10, kort #357) Har föraren slagit på *Erbjud att spara resor* under Favoriter står frågan som en
 egen panel efter resan: *SPARA RESAN?* och *"Resan slutade 14:05. Spara vägen du körde, så finns den under Favoriter. Den
 stannar i telefonen."*, tre namnknappar — *Till jobbet*, *Hem* och *Resa 18/10* (dagens datum) — *EGET NAMN* för fritext och
-*NEJ TACK*. Med fem sparade resor står i stället *"Du har redan fem resor. Ta bort en under Favoriter först."* Frågan kommer
+*NEJ TACK* (på Android två namnknappar per rad, som missraderna). Med fem sparade resor står i stället *"Du har redan fem resor. Ta bort en under Favoriter först."* Frågan kommer
 bara efter en resa på minst en kilometer, och utan svar försvinner den och vägen efter ett dygn (DECISIONS #616, #625).
 
 **02 På vakt.** En panel med *● PÅ VAKT* i grönt, minuter och kilometer i stort, och tre räknare (varningar, halka,
@@ -142,15 +142,19 @@ och *fartkamera* (en låda på stolpe med blixtlinjer). Svarta på kortet, ljusa
 - *Integritet* — löftet: *"Din position lämnar inte telefonen av sig själv."* och *"All matchning mot vägdata sker lokalt
   i appen. Inget konto. Undantaget är betatestet — bara om du själv slår på det."*, sedan *"Slår du på Erbjud att spara
   resor under Favoriter sparas vägarna du väljer, bara i telefonen och aldrig i en säkerhetskopia. Du tar bort dem där."*
-  (iPhone 18/10; *"ingen spårning"* ströks, för en sparad resa är ett spår, även om det bara finns hos föraren, #616),
-  raden till Betatest och Integritetspolicyn. Android har den gamla texten tills dess steg 2 är byggt.
+  (18/10; *"ingen spårning"* ströks, för en sparad resa är ett spår, även om det bara finns hos föraren, #616),
+  raden till Betatest och Integritetspolicyn.
 - *Visa introduktionen igen* (iOS).
 - *Om Halkvakt* — Livekartan, Om appen & vanliga frågor, Press & material, ärlighetsraden och attributionen
   (oförändrade), och versionen.
 
 Under panelerna: *LÖFTET — Din position lämnar inte telefonen av sig själv.*
 
-## Favoriter (iPhone 18/10, kort #357 — steg 2)
+## Favoriter (18/10, kort #357 — steg 2)
+
+![Spara resan? på Redo.](produktbok/shot-10-spara-resan.png) ![Fliken Favoriter](produktbok/shot-11-favoriter.png)
+
+*Fotostudion (Android-emulatorn) med påhittade vägar ur kroken `fotostudio_favoriter`.*
 
 Den mittersta fliken. Överst *"Favoriter — Vägar du kör ofta, sparade efter en resa."* och vippan **Erbjud att spara resor**
 (*Appen frågar efter resan*), **av från början**. Av: ingen väg samlas in och ingen fil skrivs — appen är som förut, och
@@ -162,8 +166,9 @@ dem eller appen."* Sparade resor står kvar i listan också om vippan slås av; 
 
 **Hur det fungerar.** Under resan glesas positionerna till en punkt per 75 meter (motorns `Ruttinsamlare`, samma regel i
 tre språk, `engine/fixtures/rutter.json`). När vakten stoppar läggs vägen i en tillfällig fil tills föraren svarat på
-*Redo.* (se 01b ovan), högst ett dygn. Båda filerna ligger i telefonen under Application Support och är undantagna från
-iCloud-kopian; ingen kod som når nätet rör dem, och ingen karta ritas bakom vägen (ruttspärren i ci,
+*Redo.* (se 01b ovan), högst ett dygn. Båda filerna ligger i telefonen och följer aldrig med i en säkerhetskopia: på iPhone under
+Application Support, undantagna från iCloud-kopian; på Android i `noBackupFilesDir`, och en egen regel
+(`res/xml/data_extraction_rules.xml`) stänger ute dem när appen flyttas till en ny telefon. Ingen kod som når nätet rör dem, och ingen karta ritas bakom vägen (ruttspärren i ci,
 `scripts/rutterspar.ts`). Steg 3 lägger till lägena *Nytt / Inget nytt / Lugnt* och rapporten per resa.
 
 ## Första gången — introduktionen (iOS)
@@ -457,7 +462,7 @@ listan: [SYSTEM.md §4](SYSTEM.md).
 
 ## iOS-utgåvan (byggd 29/8 2026)
 
-Samma flikar (Favoriter först på iPhone, 18/10), samma röst, samma motor — skillnaderna står utskrivna ovan där de finns. Flikraden är
+Samma tre flikar, samma röst, samma motor — skillnaderna står utskrivna ovan där de finns. Flikraden är
 systemets egen (iOS 26 ritar den som svävande glas). Överst på Vakten och i körläget sitter varumärkesraden
 **⚠ HALKVAKT** med statuspillen till höger: *Trafikverket live* i vila, *Vakten på* under körning.
 Skärmbilder från iOS tas på Axels iPhone eller i simulatorn med fotostudio-kroken (CI:n fotar bara Android).

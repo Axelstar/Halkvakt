@@ -15036,3 +15036,25 @@ prövas på 29.
 **Stomdokument:** APP 0.3.13, LIV steg 12, BED §4.2
 
 **Uppladdat 18/10.** 0.3.13 (29) uppladdat av TestFlight-flödet 18/10, körning 39098203732 på 39d3a8a (04:45–04:48 UTC): byggnumret höjt i 39d3a8a, ARCHIVE SUCCEEDED, bygget bär 0.3.13 (29), Upload succeeded; ci, ios-engine och android gröna på PR #1058:s huvud 63b76b6 (39073864224, 39073863929, 39073866309).
+
+## #633 (18/10 2026) Favoriternas steg 2: tre val i bygget står kvar — minst 1 km, sparade resor kvar när brytaren slås av, en pågående resa sparas först vid stopp (kort #357)
+
+**Bengts ord 18/10:** *"ja till 1,2 och 3"*. Punkt 1 var frågan i §4.2 om tre val som Claude gjorde i iPhone-bygget (PR #1062); punkt 2
+*slå ihop 1062*, punkt 3 Android-delen.
+
+**Besluten:**
+- **Minst 1 km.** Frågan *Spara resan?* kommer bara efter en resa på minst en kilometer (`Favoriter.minstaResaKm`). Annars hade en vakt som
+  startats i en parkering eller burits av en gående gett en fråga.
+- **Sparade resor står kvar när brytaren slås av.** Brytaren styr bara om nya resor samlas in; den väntande vägen raderas, de sparade
+  står kvar i fliken med *Ta bort* och *Ta bort alla*. #625 sade att fliken med brytaren av visar en förklaring och brytaren — det gäller
+  när inga resor är sparade.
+- **En pågående resa sparas först vid stopp.** Vägen hålls i minnet under resan och skrivs till den tillfälliga filen när vakten stoppar.
+  Stänger telefonen appen mitt i en resa går vägen förlorad, och ingen fråga kommer. Det håller borta en fil med en halv resa.
+
+**Android byggs likadant** i samma tal och samma ordning (kort #357). Talet 1 km förs in i kontraktsgrinden i samma commit som den andra
+kopian.
+
+**Alternativ.** Ingen minsta längd; radera de sparade resorna när brytaren slås av; skriva vägen löpande under resan. Alla tre valdes
+bort av Bengt.
+
+**Stomdokument:** FAV §6 spara, APP §4 skärmarna, BED §4.2
