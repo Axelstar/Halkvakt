@@ -15221,3 +15221,33 @@ påverkan i texten kräver ett bygge till.
 **Stomdokument:** APP 0.3.13, FAV §11 vad som väntar, BED §4.2
 
 **Punkt 1 och 2 klara 18/10.** 0.3.13 (31) uppladdat av TestFlight-flödet, körning 39116883577 på f5012e6 (09:50–09:53 UTC): läget ladda-upp från main, byggnumret höjt i f5012e6, ARCHIVE SUCCEEDED, bygget bär 0.3.13 (31), Upload succeeded. Android: android.yml 39116875018 på f5012e6 grön, med den signerade AAB:n versionCode 31 (`halkvakt-release-aab`); Play internt väntar på kontot. ci, md-vakt, ios-engine och android gröna på PR #1070:s huvud 925e131 (39116468255, 39116468254, 39116468354, 39116470160).
+
+## #641 (18/10 2026) "Avstängning" i stället för Trafikverkets "Vägen avstängd", och Trafikverkets påverkan i rapportens text (kort #357)
+
+**Bengts ord 18/10:** *"texten vägen avstängd kan vara vilseledande. kan få folk att tro att man inte kan köra på vägen för att den är
+avstängd och det är väl inte det vi vill"*, och *"2 ja"* på förslaget i bedömningen §4.2.
+
+**Underlaget.** Rubriken var Trafikverkets meddelandekod, ordagrant. Rapportfilen 18/10 11:16 hade sex poster med *Vägen avstängd*: fem
+riktiga avstängningar med påverkan 5 (Tossåbron väg 642, Strömsundsbron E45 två gånger, Stekenjokkvägen väg 1067 och 824 vinterstängd)
+och en tunnel i Stockholm utan vägnummer — *"Drift- och underhållsarbete. Tunneln avstängd under arbetet."* — med påverkan **1 Ingen
+påverkan**, giltig 16/10 19:00–19/10, troligen nätter. Fotostudion 18/10 visade den som *"Vägen avstängd"* på en resa genom Stockholm.
+
+**Beslut.**
+1. **Rubriken är vår egen:** *Vägen avstängd* blir *Avstängning* på servern (`byggRapport` i `publish/rapport-core.ts`, buntarna
+   `favoriter` och `favoritprov`), och appen lägger till vägen när den finns: *Avstängning på E45*. Trafikverkets mening står i texten
+   och säger vad som är avstängt.
+2. **Trafikverkets påverkan i texten** för vägarbeten, olyckor och hinder, som skissen i FAVORITER §3: *ingen påverkan*, *liten
+   påverkan*, *stor påverkan* eller *mycket stor påverkan enligt Trafikverket* (SeverityCode 1, 2, 4, 5; 3 förekommer inte). I
+   TypeScript, Swift och Kotlin, prövat mot facit.
+
+**Driftordningen:** (1) gäller när `favoriter` och `favoritprov` är deployade — första rapportfilen efter deployen bär *Avstängning*
+där Trafikverket skriver *Vägen avstängd*, och manifestets sha256 stämmer; inget nytt appbygge behövs. (2) når telefonerna med nästa
+bygge (32).
+
+**Kvar som rapporten inte ser:** klockslagen för en avstängning, bara giltighetstiden. Texten överdriver inte längre, men den kan inte
+säga om en nattstängd tunnel är öppen just nu.
+
+**Alternativ.** Trafikverkets rubrik med vägen tillagd (*Vägen avstängd på E45*) — säger fortfarande att förarens väg är stängd; dölja
+avstängningar med påverkan 1 — tar bort sant läge; bara påverkan utan ny rubrik — rubriken ensam vilseleder i fliken.
+
+**Stomdokument:** FAV §3 rapporten, BED §4.2

@@ -1211,7 +1211,8 @@
      ],
      "vag": "E4",
      "start": "2026-10-18T04:10:00Z",
-     "slut": null
+     "slut": null,
+     "sev": 2
     },
     {
      "id": "dev:102",
@@ -1257,7 +1258,8 @@
      "l": "dev:111",
      "vag": "väg 73",
      "start": "2026-10-10T06:00:00Z",
-     "slut": "2026-11-20"
+     "slut": "2026-11-20",
+     "sev": 1
     },
     {
      "id": "dev:112",
@@ -1272,13 +1274,14 @@
     {
      "id": "dev:113",
      "slag": "vagarbete",
-     "rubrik": "Vägarbete",
-     "t": "Bro under arbete",
+     "rubrik": "Avstängning",
+     "t": "Bron avstängd under arbetet",
      "l": "dev:113",
      "vag": "E4",
      "start": "2026-09-01T06:00:00Z",
      "slut": "tv",
-     "korfalt": 2
+     "korfalt": 2,
+     "sev": 5
     },
     {
      "id": "dev:120",
@@ -1892,7 +1895,7 @@
     "id": "dev:100",
     "slag": "olycka",
     "rubrik": "Olycka",
-    "text": "Trafikolycka söder om Arninge · rapporterad 07:52",
+    "text": "Trafikolycka söder om Arninge · stor påverkan enligt Trafikverket · rapporterad 07:52",
     "avstandM": 60,
     "langsM": 3496,
     "vag": "E4",
@@ -1902,7 +1905,7 @@
     "id": "dev:101",
     "slag": "hinder",
     "rubrik": "Föremål på vägen",
-    "text": "Däck på körbanan · rapporterad 06:10",
+    "text": "Däck på körbanan · liten påverkan enligt Trafikverket · rapporterad 06:10",
     "avstandM": 80,
     "langsM": 7392,
     "vag": "E4",
@@ -1941,8 +1944,8 @@
    {
     "id": "dev:113",
     "slag": "vagarbete",
-    "rubrik": "Vägarbete",
-    "text": "Bro under arbete · 2 körfält avstängda · tills vidare",
+    "rubrik": "Avstängning",
+    "text": "Bron avstängd under arbetet · 2 körfält avstängda · mycket stor påverkan enligt Trafikverket · tills vidare",
     "avstandM": 40,
     "langsM": 6593,
     "vag": "E4",
@@ -1962,7 +1965,7 @@
     "id": "dev:111",
     "slag": "vagarbete",
     "rubrik": "Vägarbete",
-    "text": "Beläggningsarbete · till 20 november",
+    "text": "Beläggningsarbete · ingen påverkan enligt Trafikverket · till 20 november",
     "avstandM": 30,
     "langsM": 10184,
     "vag": "väg 73",
@@ -2108,7 +2111,7 @@
     "id": "dev:100",
     "slag": "olycka",
     "rubrik": "Olycka",
-    "text": "Trafikolycka söder om Arninge · rapporterad 07:52",
+    "text": "Trafikolycka söder om Arninge · stor påverkan enligt Trafikverket · rapporterad 07:52",
     "antal": 1,
     "ids": [
      "dev:100"
@@ -2119,7 +2122,7 @@
     "id": "dev:101",
     "slag": "hinder",
     "rubrik": "Föremål på vägen",
-    "text": "Däck på körbanan · rapporterad 06:10",
+    "text": "Däck på körbanan · liten påverkan enligt Trafikverket · rapporterad 06:10",
     "antal": 1,
     "ids": [
      "dev:101"
@@ -2152,8 +2155,8 @@
    {
     "id": "dev:113",
     "slag": "vagarbete",
-    "rubrik": "Vägarbete",
-    "text": "Bro under arbete · 2 körfält avstängda · tills vidare",
+    "rubrik": "Avstängning",
+    "text": "Bron avstängd under arbetet · 2 körfält avstängda · mycket stor påverkan enligt Trafikverket · tills vidare",
     "antal": 1,
     "ids": [
      "dev:113"
@@ -2286,7 +2289,7 @@
     "id": "dev:100",
     "slag": "olycka",
     "rubrik": "Olycka",
-    "text": "Trafikolycka söder om Arninge · rapporterad 07:52",
+    "text": "Trafikolycka söder om Arninge · stor påverkan enligt Trafikverket · rapporterad 07:52",
     "avstandM": 60,
     "langsM": 10476,
     "vag": "E4",
@@ -2296,7 +2299,7 @@
     "id": "dev:101",
     "slag": "hinder",
     "rubrik": "Föremål på vägen",
-    "text": "Däck på körbanan · rapporterad 06:10",
+    "text": "Däck på körbanan · liten påverkan enligt Trafikverket · rapporterad 06:10",
     "avstandM": 80,
     "langsM": 6580,
     "vag": "E4",
@@ -2336,7 +2339,7 @@
     "id": "dev:111",
     "slag": "vagarbete",
     "rubrik": "Vägarbete",
-    "text": "Beläggningsarbete · till 20 november",
+    "text": "Beläggningsarbete · ingen påverkan enligt Trafikverket · till 20 november",
     "avstandM": 30,
     "langsM": 3788,
     "vag": "väg 73",
@@ -2355,8 +2358,8 @@
    {
     "id": "dev:113",
     "slag": "vagarbete",
-    "rubrik": "Vägarbete",
-    "text": "Bro under arbete · 2 körfält avstängda · tills vidare",
+    "rubrik": "Avstängning",
+    "text": "Bron avstängd under arbetet · 2 körfält avstängda · mycket stor påverkan enligt Trafikverket · tills vidare",
     "avstandM": 40,
     "langsM": 7379,
     "vag": "E4",
@@ -2492,7 +2495,7 @@
     "id": "dev:100",
     "slag": "olycka",
     "rubrik": "Olycka",
-    "text": "Trafikolycka söder om Arninge · rapporterad 07:52",
+    "text": "Trafikolycka söder om Arninge · stor påverkan enligt Trafikverket · rapporterad 07:52",
     "antal": 1,
     "ids": [
      "dev:100"
@@ -2503,7 +2506,7 @@
     "id": "dev:101",
     "slag": "hinder",
     "rubrik": "Föremål på vägen",
-    "text": "Däck på körbanan · rapporterad 06:10",
+    "text": "Däck på körbanan · liten påverkan enligt Trafikverket · rapporterad 06:10",
     "antal": 1,
     "ids": [
      "dev:101"
@@ -2548,8 +2551,8 @@
    {
     "id": "dev:113",
     "slag": "vagarbete",
-    "rubrik": "Vägarbete",
-    "text": "Bro under arbete · 2 körfält avstängda · tills vidare",
+    "rubrik": "Avstängning",
+    "text": "Bron avstängd under arbetet · 2 körfält avstängda · mycket stor påverkan enligt Trafikverket · tills vidare",
     "antal": 1,
     "ids": [
      "dev:113"

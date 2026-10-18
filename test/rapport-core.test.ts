@@ -52,6 +52,10 @@ const IN = {
     dev({ Id: "slut", MessageTypeValue: "Accident", EndTime: "2026-10-12T05:30:00Z", Geometry: { Point: { WGS84: "POINT (15.1 59.0)" } } }),
     dev({ Id: "fjarran", MessageTypeValue: "Accident", Geometry: { Point: { WGS84: "POINT (18.0 59.3)" } } }),
   ] },
+  // DECISIONS #641: Trafikverkets *Vägen avstängd* blir vår rubrik *Avstängning*, och påverkan står i texten. En egen situation —
+  // vägarbetena i samma situation slås ihop till ett.
+  { Deviation: [dev({ Id: "stangd", MessageTypeValue: "MaintenanceWorks", MessageCode: "Vägen avstängd", MessageCodeValue: "roadworks", SeverityCode: 1,
+    Header: "Drift- och underhållsarbete. Tunneln avstängd under arbetet.", Geometry: { Point: { WGS84: "POINT (16.5 60.0)" } } })] },
   // En hastighet utan vägarbete i sin situation står kvar för sig.
   { Deviation: [dev({ Id: "h2", MessageTypeValue: "RoadOrCarriagewayOrLaneManagement", MessageCodeValue: "speedRestrictionInOperation",
     TemporaryLimit: "Rekommenderad hastighet: 70km/h", Geometry: { Point: { WGS84: "POINT (15.32 59.0)" } } })] }],
@@ -73,7 +77,10 @@ const IN = {
 test("rapportfilen: bara det aktiva, linjerna i den långsamma delen, restider och färjor", () => {
   const { snabb, lang } = byggRapport(IN);
   const ids = snabb.poster.map((p) => p.id);
-  assert.deepEqual(ids.filter((i) => i.startsWith("dev:")).sort(), ["dev:fjarran", "dev:h2", "dev:o1", "dev:v1"], "vilande och slutade borta, h1 lagd på v1");
+  assert.deepEqual(ids.filter((i) => i.startsWith("dev:")).sort(), ["dev:fjarran", "dev:h2", "dev:o1", "dev:stangd", "dev:v1"], "vilande och slutade borta, h1 lagd på v1");
+  const stangd = snabb.poster.find((p) => p.id === "dev:stangd")!;
+  assert.equal(stangd.rubrik, "Avstängning", "aldrig Trafikverkets Vägen avstängd som rubrik (#641)");
+  assert.match(visning(stangd), /^Drift- och underhållsarbete\. Tunneln avstängd under arbetet\. · ingen påverkan enligt Trafikverket · till /);
   const v1 = snabb.poster.find((p) => p.id === "dev:v1")!;
   assert.equal(v1.grans, 50, "hastigheten i samma situation ligger på vägarbetet");
   assert.equal(visning(v1), "2 körfält avstängda · 50 km/h förbi vägarbetet · till 20 oktober", "v1b:s två körfält på v1");
