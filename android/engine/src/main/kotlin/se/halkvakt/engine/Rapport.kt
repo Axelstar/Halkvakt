@@ -65,6 +65,11 @@ object ResansRapport {
     const val LANGS_MINST_M = 500.0
     const val LANGS_STEG_M = 100.0
     const val GRUPP_FRAN = 3
+    /** Slagens namn på raden om det tomma (rapport-core.ts RUBRIK): "Inget rapporterat: halt väglag på sträckorna, vilt …". */
+    val NAMN: Map<RapportSlag, String> = mapOf(RapportSlag.HALKA to "halt väglag på sträckorna", RapportSlag.FRYSRISK to "frysrisk vid stationerna",
+        RapportSlag.OLYCKA to "olyckor", RapportSlag.HINDER to "hinder", RapportSlag.VILT to "vilt", RapportSlag.KO to "köer",
+        RapportSlag.RESTID to "restider", RapportSlag.VAGARBETE to "vägarbeten", RapportSlag.HASTIGHET to "hastighet",
+        RapportSlag.OMLEDNING to "omledningar", RapportSlag.FARJA to "färjor", RapportSlag.KAMERA to "fartkameror", RapportSlag.SMHI to "SMHI-varningar")
     const val RUTA_GRAD = 0.05
     private val cfg = EngineConfig()
 
@@ -380,5 +385,73 @@ object ResansRapport {
             ut += RapportGrupp("grupp:$nyckel", slag, rubrik, text, n, l.map { it.id }, fran)
         }
         return ut.sortedWith(gruppOrdning)
+    }
+
+    // ── Fliken och rapportskärmen (steg 3b), som rapport-app.ts ──────────────────────────────────────────────────────────────
+
+    /** Det som pågår längs resan åt något håll, utom fartkamerorna — de är fasta och varken nya eller något som pågår. Dit först,
+     *  sedan det som bara finns Hem. */
+    fun pagar(dit: List<RapportRad>, hem: List<RapportRad>): List<RapportRad> {
+        val d = dit.map { it.id }.toSet()
+        return (dit + hem.filter { it.id !in d }).filter { it.slag != RapportSlag.KAMERA }
+    }
+
+    sealed interface Radlage {
+        data class Nytt(val antal: Int, val viktigast: RapportRad) : Radlage
+        data class IngetNytt(val storst: RapportRad) : Radlage
+        data object Lugnt : Radlage
+    }
+
+    /** Radens läge i fliken (FAVORITER §2): Nytt när något tillkommit sedan förra kollen ([sett]: dess id, null före den första),
+     *  annars Inget nytt med det största som pågår, annars Lugnt. Det viktigaste och det största är det första i viktordningen. */
+    fun radlage(dit: List<RapportRad>, hem: List<RapportRad>, sett: List<String>?): Radlage {
+        val p = pagar(dit, hem)
+        fun forst(a: List<RapportRad>): RapportRad? {
+            var m: RapportRad? = null
+            for (r in a) if (m == null || ORDNING.indexOf(r.slag) < ORDNING.indexOf(m.slag)) m = r
+            return m
+        }
+        if (sett != null) {
+            val s = sett.toSet()
+            val nya = p.filter { it.id !in s }
+            forst(nya)?.let { return Radlage.Nytt(nya.size, it) }
+        }
+        return forst(p)?.let { Radlage.IngetNytt(it) } ?: Radlage.Lugnt
+    }
+
+    /** Det nya åt det valda hållet sedan förra kollen, utom kamerorna; före den första kollen finns inget nytt (som nyttSedan). */
+    fun nyttSedanKollen(rader: List<RapportRad>, sett: List<String>?): List<RapportRad> {
+        if (sett == null) return emptyList()
+        val s = sett.toSet()
+        return rader.filter { it.id !in s && it.slag != RapportSlag.KAMERA }
+    }
+
+    /** Alla id resan visar åt båda hållen, sorterade som i TypeScript (UTF-16) — det som sparas som förra kollen. */
+    fun kollensIds(dit: List<RapportRad>, hem: List<RapportRad>): List<String> = (dit + hem).map { it.id }.toSortedSet().toList()
+
+    /** Rubriken med vägen, när rubriken inte redan säger var: "Olycka på E4", men "Djur på vägen" som den står. */
+    fun titel(rubrik: String, vag: String?): String {
+        val v = vagNamn(vag)
+        return if (v != null && !rubrik.contains(" på ")) "$rubrik på $v" else rubrik
+    }
+
+    /** Samma åldersgränser som rösten (appens AgeGate, FAVORITER §3): ur en gammal lägesfil visas varken väglag eller frysrisk, och ur
+     *  en gammal rapportfil varken olyckor eller vilt, som läget just nu. Gränserna i minuter bor i AgeGate, inte här. */
+    val VAGLAGETS = listOf(RapportSlag.HALKA, RapportSlag.FRYSRISK)
+    val OLYCKORNAS = listOf(RapportSlag.OLYCKA, RapportSlag.VILT)
+    private fun dolt(s: RapportSlag, gammaltVaglag: Boolean, gamlaOlyckor: Boolean) =
+        (gammaltVaglag && s in VAGLAGETS) || (gamlaOlyckor && s in OLYCKORNAS)
+
+    fun aldersgrind(rader: List<RapportRad>, gammaltVaglag: Boolean, gamlaOlyckor: Boolean): List<RapportRad> =
+        rader.filter { !dolt(it.slag, gammaltVaglag, gamlaOlyckor) }
+
+    /** Raden om det tomma (FAVORITER §3): "Inget rapporterat: vilt, färjor och SMHI-varningar. Köer mäts inte längs den här vägen."
+     *  Slag som åldersgränsen dolt står inte med — där vet appen inte att det är tomt — och köerna inte heller när de inte mäts. */
+    fun tomtRad(rader: List<RapportRad>, gammaltVaglag: Boolean, gamlaOlyckor: Boolean): String? {
+        val t = tomma(rader)
+        val n = t.inget.filter { !dolt(it, gammaltVaglag, gamlaOlyckor) && !(t.koerMatsInte && it == RapportSlag.KO) }.mapNotNull { NAMN[it] }
+        var ut = if (n.isEmpty()) "" else "Inget rapporterat: " + (if (n.size == 1) n[0] else n.dropLast(1).joinToString(", ") + " och " + n.last()) + "."
+        if (t.koerMatsInte) ut += (if (ut.isEmpty()) "" else " ") + "Köer mäts inte längs den här vägen."
+        return ut.ifEmpty { null }
     }
 }

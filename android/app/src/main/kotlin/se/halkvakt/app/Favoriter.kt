@@ -8,6 +8,8 @@
 // stänger ute mappen där också (FAVORITER §6).
 //   rutter.json         de sparade rutterna
 //   senaste-resan.json  den senaste resans väg tills föraren svarat, högst ett dygn
+//   kollen.json         förra kollen per resa: när rapporten öppnades och vilka faror den visade (steg 3c). Farornas id pekar på
+//                       platser längs vägen, så filen behandlas som rutterna.
 // Inget här når nätet. scripts/rutterspar.ts i ci fäller en fil som både når nätet och rör rutterna.
 package se.halkvakt.app
 
@@ -31,6 +33,7 @@ object Favoriter {
     const val MINSTA_RESA_KM = 1.0
     const val RUTTER_FIL = "rutter.json"
     const val VANTANDE_FIL = "senaste-resan.json"
+    const val KOLLEN_FIL = "kollen.json"
 
     @Volatile private var lager: RuttLager? = null
 
@@ -54,9 +57,15 @@ class RuttLager(private val mapp: File, private val nu: () -> Long = System::cur
     val vantande: StateFlow<VantandeResa?> = _vantande
     private var insamlare: Ruttinsamlare? = null
 
+    /** Förra kollen av en resas rapport, åt båda hållen (steg 3c): det som tillkommit sedan dess är Nytt. [tid] i millisekunder. */
+    data class Koll(val tid: Long, val ids: List<String>)
+    private val _kollar = MutableStateFlow<Map<String, Koll>>(emptyMap())
+    val kollar: StateFlow<Map<String, Koll>> = _kollar
+
     init {
         _rutter.value = las(Favoriter.RUTTER_FIL)?.let(RuttJson::rutter) ?: emptyList()
         _vantande.value = las(Favoriter.VANTANDE_FIL)?.let(RuttJson::vantande)
+        _kollar.value = las(Favoriter.KOLLEN_FIL)?.let(RuttJson::kollar) ?: emptyMap()
         _vantande.value?.let { if (nu() - it.slut >= Favoriter.FRAGA_KVAR_MS) avsta() }
     }
 
@@ -72,6 +81,8 @@ class RuttLager(private val mapp: File, private val nu: () -> Long = System::cur
         val r = insamlare?.route() ?: return
         insamlare = null
         if (km < Favoriter.MINSTA_RESA_KM || r.size < 2) return
+        // DECISIONS #637: vägen hem, eller samma väg igen, är redan sparad — en resa räcker för båda hållen, så ingen ny fråga.
+        if (_rutter.value.any { Rutter.sammaResa(it.punkter, r) }) return
         val v = VantandeResa(nu(), r)
         if (skriv(Favoriter.VANTANDE_FIL, RuttJson.vantande(v))) _vantande.value = v
     }
@@ -105,11 +116,21 @@ class RuttLager(private val mapp: File, private val nu: () -> Long = System::cur
         val lista = Rutter(_rutter.value).taBort(id)
         if (lista.rutter.isEmpty()) { taBortAlla(); return }
         if (skriv(Favoriter.RUTTER_FIL, RuttJson.rutter(lista))) _rutter.value = lista.rutter
+        if (id in _kollar.value) { val k = _kollar.value - id; if (skriv(Favoriter.KOLLEN_FIL, RuttJson.kollar(k))) _kollar.value = k }
     }
 
     fun taBortAlla() {
         File(mapp, Favoriter.RUTTER_FIL).delete()
+        File(mapp, Favoriter.KOLLEN_FIL).delete()
         _rutter.value = emptyList()
+        _kollar.value = emptyMap()
+    }
+
+    /** Föraren har läst rapporten: det den visade, åt båda hållen, är grunden för nästa Nytt. */
+    fun kollad(id: String, ids: List<String>) {
+        if (_rutter.value.none { it.id == id }) return
+        val k = _kollar.value + (id to Koll(nu(), ids))
+        if (skriv(Favoriter.KOLLEN_FIL, RuttJson.kollar(k))) _kollar.value = k
     }
 
     // ── Filerna ─────────────────────────────────────────────────────────────────────────────────
@@ -146,6 +167,22 @@ object RuttJson {
     fun vantande(s: String): VantandeResa? = runCatching {
         val o = JSONObject(s)
         VantandeResa(Instant.parse(o.get("slut").toString()).toEpochMilli(), punkter(o.getJSONArray("punkter")))
+    }.getOrNull()
+
+    /** kollen.json som på iOS: ett objekt per resa, {"tid": ISO-8601, "ids": [...]}. */
+    fun kollar(k: Map<String, RuttLager.Koll>): String = JSONObject().apply {
+        k.forEach { (id, v) ->
+            put(id, JSONObject().put("tid", Instant.ofEpochMilli(v.tid).truncatedTo(ChronoUnit.SECONDS).toString())
+                .put("ids", JSONArray().apply { v.ids.forEach { put(it) } }))
+        }
+    }.toString()
+
+    fun kollar(s: String): Map<String, RuttLager.Koll>? = runCatching {
+        val o = JSONObject(s)
+        o.keys().asSequence().associateWith { id ->
+            val v = o.getJSONObject(id); val a = v.getJSONArray("ids")
+            RuttLager.Koll(Instant.parse(v.get("tid").toString()).toEpochMilli(), (0 until a.length()).map { a.get(it).toString() })
+        }
     }.getOrNull()
 
     private fun punkter(p: List<DoubleArray>) = JSONArray().apply { p.forEach { put(JSONArray().put(it[0]).put(it[1])) } }

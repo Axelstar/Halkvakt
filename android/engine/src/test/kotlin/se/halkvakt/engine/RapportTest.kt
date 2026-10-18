@@ -98,4 +98,39 @@ class RapportTest {
         assertEquals(n["ut"], ResansRapport.nyttSedan(dit.filter { it.id in foreIds }, dit))
         assertEquals(emptyList(), ResansRapport.nyttSedan(null, dit))
     }
+
+    @Test fun namnenArDeIFacit() {
+        val n = obj(facit()["rubrik"])
+        assertEquals(RapportSlag.entries.size, n.size)
+        for ((k, v) in n) assertEquals(v, ResansRapport.NAMN[RapportSlag.of(k)!!], k)
+    }
+
+    @Test fun flikenOchSkarmenSomTypeScript() {
+        val f = facit(); val i = indata(f); val a = obj(f["app"])
+        val dit = ResansRapport.resansRapport(i.rutt, false, i.lage, i.kameror, i.snabb, i.linjer)
+        val hem = ResansRapport.resansRapport(i.rutt, true, i.lage, i.kameror, i.snabb, i.linjer)
+        fun ur(rader: List<RapportRad>, ids: Any?) = lista(ids).let { s -> rader.filter { it.id in s } }
+        @Suppress("UNCHECKED_CAST") fun sett(x: Any?) = x as List<String>?
+        for (l in lista(a["lagen"]).map(::obj)) {
+            val namn = l["namn"] as String; val svar = obj(l["svar"])
+            when (val r = ResansRapport.radlage(ur(dit, l["dit"]), ur(hem, l["hem"]), sett(l["sett"]))) {
+                is ResansRapport.Radlage.Nytt -> {
+                    assertEquals("nytt", svar["lage"], namn)
+                    assertEquals((svar["antal"] as Number).toInt(), r.antal, namn)
+                    assertEquals(svar["id"], r.viktigast.id, namn)
+                }
+                is ResansRapport.Radlage.IngetNytt -> { assertEquals("ingetNytt", svar["lage"], namn); assertEquals(svar["id"], r.storst.id, namn) }
+                ResansRapport.Radlage.Lugnt -> assertEquals("lugnt", svar["lage"], namn)
+            }
+        }
+        for (n in lista(a["nytt"]).map(::obj)) assertEquals(n["svar"], ResansRapport.nyttSedanKollen(dit, sett(n["sett"])).map { it.id }, n["namn"] as String)
+        assertEquals(a["kollen"], ResansRapport.kollensIds(dit, hem))
+        for (t in lista(a["titlar"]).map(::obj)) assertEquals(t["svar"], ResansRapport.titel(t["rubrik"] as String, t["vag"] as String?))
+        for (g in lista(a["grind"]).map(::obj))
+            assertEquals(g["svar"], ResansRapport.aldersgrind(dit, g["vaglag"] as Boolean, g["olyckor"] as Boolean).map { it.id })
+        for (t in lista(a["tomt"]).map(::obj)) {
+            val rader = ur(if (t["hem"] as Boolean) hem else dit, t["rader"])
+            assertEquals(t["svar"], ResansRapport.tomtRad(rader, t["vaglag"] as Boolean, t["olyckor"] as Boolean), t["namn"] as String)
+        }
+    }
 }
