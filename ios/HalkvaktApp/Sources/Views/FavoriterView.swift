@@ -83,7 +83,7 @@ struct FavoriterView: View {
                 NavigationLink(value: Sida.rapport(r.id)) {
                     VStack(alignment: .leading, spacing: 3) {
                         Text(r.namn).font(Typo.sans(16, .medium)).foregroundStyle(Brand.text)
-                        Text(Self.under(r) + " →").font(Typo.mono(11)).tracking(1.1).foregroundStyle(Brand.dim)
+                        Text(Self.under(r)).font(Typo.mono(11)).tracking(1.1).foregroundStyle(Brand.dim)
                         RadLageText(lage: rapporten.radlage(r.id, koll: fav.kollar[r.id]), laddar: rapporten.laddar,
                                     gickInte: rapporten.gickInte)
                             .padding(.top, 3)

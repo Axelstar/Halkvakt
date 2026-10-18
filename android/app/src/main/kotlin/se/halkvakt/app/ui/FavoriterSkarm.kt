@@ -1,9 +1,18 @@
-// FLIKEN FAVORITER och frågan SPARA RESAN? (favoriterna steg 2, kort #357; DECISIONS #616, #625, #633) — spegel av iOS
-// FavoriterView.swift och SparaResanKort.swift, samma ord. Steg 3 lägger till lägena (Nytt, Inget nytt, Lugnt) och rapporten.
+// FLIKEN FAVORITER och frågan SPARA RESAN? (kort #357; DECISIONS #616, #625, #633, #637) — spegel av iOS FavoriterView.swift och
+// SparaResanKort.swift, samma ord. Varje resa har sitt läge (Nytt, Inget nytt, Lugnt; FAVORITER §2) och sin rapport (RapportSkarm.kt,
+// steg 3c); läget räknas om när fliken visas.
 // Ingen karta bakom linjen: ingen kartserver får veta var en resa går (#616, 6.2). Namnförslagen är fasta, med datum
 // (Rutter.namnforslag); inget slås upp om platsen.
 package se.halkvakt.app.ui
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -18,6 +27,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
@@ -31,24 +41,45 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import se.halkvakt.app.Favoriter
+import se.halkvakt.app.MainActivity
 import se.halkvakt.app.Prefs
+import se.halkvakt.app.Rapporten
 import se.halkvakt.app.RuttLager
 import se.halkvakt.app.VantandeResa
 import se.halkvakt.engine.Geo
+import se.halkvakt.engine.ResansRapport
 import se.halkvakt.engine.Rutter
 import se.halkvakt.engine.SparadRutt
 import java.time.Instant
 import java.time.ZoneId
 import java.util.Calendar
 
+/** Fliken: listan, och rapporten för den resa föraren öppnat — en nivå till, som inställningarnas undersidor. */
 @Composable
-fun FavoriterScreen() {
+fun FavoriterScreen(activity: MainActivity) {
+    var oppen by rememberSaveable { mutableStateOf<String?>(null) }
+    androidx.activity.compose.BackHandler(enabled = oppen != null) { oppen = null }
+    AnimatedContent(oppen, transitionSpec = {
+        val e = CubicBezierEasing(.2f, .8f, .2f, 1f)
+        if (targetState != null) slideInHorizontally(tween(420, easing = e)) { it } togetherWith fadeOut(tween(420))
+        else fadeIn(tween(420)) togetherWith slideOutHorizontally(tween(420, easing = e)) { it }
+    }, label = "favoriter") { id ->
+        if (id == null) FavoriterLista { oppen = it } else RapportSkarm(id, activity) { oppen = null }
+    }
+}
+
+@Composable
+private fun FavoriterLista(oppna: (String) -> Unit) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
     val lager = remember { Favoriter.lager(ctx) }
     val erbjud by remember { Prefs.favErbjud(ctx) }.collectAsStateWithLifecycle(initialValue = false)
     val rutter by lager.rutter.collectAsStateWithLifecycle()
+    val kollar by lager.kollar.collectAsStateWithLifecycle()
+    val rapport by Rapporten.lage.collectAsStateWithLifecycle()
     var fragaTaBortAlla by remember { mutableStateOf(false) }
+    // När fliken visas, och när en resa sparas eller tas bort medan den visas.
+    LaunchedEffect(rutter.map { it.id }) { Rapporten.uppdatera(ctx) }
 
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp).padding(top = 24.dp, bottom = 150.dp)) {
         Text("Favoriter", color = Brand.text, fontFamily = Typo.sans, fontWeight = FontWeight.SemiBold, fontSize = 32.sp, letterSpacing = (-0.025).em)
@@ -67,7 +98,10 @@ fun FavoriterScreen() {
         } else {
             MonoLabel("Dina resor · ${rutter.size} av ${Rutter.MAX_RUTTER}", modifier = Modifier.padding(top = 28.dp, bottom = 10.dp, start = 4.dp))
             RowPanel {
-                rutter.forEachIndexed { i, r -> ResaRad(r, divider = i < rutter.size - 1) { lager.taBort(r.id) } }
+                rutter.forEachIndexed { i, r ->
+                    val lage = rapport.resor[r.id]?.let { ResansRapport.radlage(it.dit, it.hem, kollar[r.id]?.ids) }
+                    ResaRad(r, lage, rapport.laddar, rapport.gickInte, divider = i < rutter.size - 1, onOppna = { oppna(r.id) }) { lager.taBort(r.id) }
+                }
             }
             Box(Modifier.fillMaxWidth().padding(top = 12.dp), contentAlignment = androidx.compose.ui.Alignment.Center) {
                 MonoLink("Ta bort alla") { fragaTaBortAlla = true }
@@ -89,18 +123,42 @@ fun FavoriterScreen() {
 }
 
 @Composable
-private fun ResaRad(r: SparadRutt, divider: Boolean, onTaBort: () -> Unit) {
+private fun ResaRad(r: SparadRutt, lage: ResansRapport.Radlage?, laddar: Boolean, gickInte: Boolean, divider: Boolean,
+                    onOppna: () -> Unit, onTaBort: () -> Unit) {
     Column {
         Row(Modifier.fillMaxWidth().padding(vertical = 10.dp), verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
+            Column(Modifier.weight(1f).clickable(role = Role.Button, onClickLabel = "Öppnar rapporten för resan", onClick = onOppna),
+                verticalArrangement = Arrangement.spacedBy(3.dp)) {
                 Text(r.namn, color = Brand.text, fontFamily = Typo.sans, fontWeight = FontWeight.Medium, fontSize = 16.sp)
                 Text(under(r), color = Brand.dim, fontFamily = Typo.mono, fontSize = 11.sp, letterSpacing = 0.1.em)
+                RadLageText(lage, laddar, gickInte)
             }
             Text("Ta bort", color = Brand.text2, fontFamily = Typo.sans, fontWeight = FontWeight.Medium, fontSize = 14.sp,
                 modifier = Modifier.heightIn(min = 44.dp).clickable(role = Role.Button, onClick = onTaBort)
                     .semantics { contentDescription = "Ta bort ${r.namn}" }.wrapContentHeight().padding(horizontal = 4.dp))
         }
         if (divider) DashedDivider()
+    }
+}
+
+/** Radens läge under namnet: Nytt med ett gult märke, Inget nytt med det största som pågår, eller Lugnt (FAVORITER §2). */
+@Composable
+private fun RadLageText(lage: ResansRapport.Radlage?, laddar: Boolean, gickInte: Boolean) {
+    val m = Modifier.padding(top = 3.dp)
+    when (lage) {
+        is ResansRapport.Radlage.Nytt -> Row(m, verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(if (lage.antal == 1) "1 NY" else "${lage.antal} NYA", color = Brand.onAmber, fontFamily = Typo.mono, fontWeight = FontWeight.SemiBold,
+                fontSize = 10.sp, letterSpacing = 0.12.em,
+                modifier = Modifier.background(Brand.yellow, RoundedCornerShape(50)).padding(horizontal = 7.dp, vertical = 3.dp))
+            Text(ResansRapport.titel(lage.viktigast.rubrik, lage.viktigast.vag), color = Brand.yellow, fontFamily = Typo.sans, fontSize = 14.sp, maxLines = 2)
+        }
+        is ResansRapport.Radlage.IngetNytt -> Text("Inget nytt · ${ResansRapport.titel(lage.storst.rubrik, lage.storst.vag)}", color = Brand.text2,
+            fontFamily = Typo.sans, fontSize = 14.sp, maxLines = 2, modifier = m)
+        ResansRapport.Radlage.Lugnt -> Text("Lugnt · inget rapporterat längs vägen just nu", color = Brand.greenText, fontFamily = Typo.sans,
+            fontSize = 14.sp, modifier = m)
+        null -> if (laddar || gickInte) Text(if (laddar) "Kollar läget …" else "Läget kunde inte hämtas", color = Brand.dim, fontFamily = Typo.sans,
+            fontSize = 14.sp, modifier = m)
     }
 }
 
