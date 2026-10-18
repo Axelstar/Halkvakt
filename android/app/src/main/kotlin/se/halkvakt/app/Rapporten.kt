@@ -8,6 +8,7 @@
 package se.halkvakt.app
 
 import android.content.Context
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -40,21 +41,27 @@ object Rapporten {
     val lage: StateFlow<Lage> = _lage
     private val mutex = Mutex()
 
-    /** Hämtar och räknar om, utanför huvudtråden. Ett anrop medan en hämtning pågår väntar in den i stället för att göra om den. */
+    /** Hämtar och räknar om, utanför huvudtråden. Anropen går ett i taget: ett andra väntar på låset och hämtar sedan själv — delarna
+     *  ligger kvar med sin kontrollsumma, så det kostar manifesten och en omräkning. Den som anropar äger arbetet: avbryts den (listan
+     *  lämnar skärmen när rapporten öppnas) är det inget fel, och läget säger inte "kunde inte hämtas" (fotostudion 18/10). */
     suspend fun uppdatera(ctx: Context) {
         val app = ctx.applicationContext
-        val rutter = Favoriter.lager(app).rutter.value
-        if (rutter.isEmpty()) return
-        if (mutex.isLocked) { mutex.withLock { }; return }
         mutex.withLock {
+            val rutter = Favoriter.lager(app).rutter.value
+            if (rutter.isEmpty()) return
             _lage.update { it.copy(laddar = true) }
-            val u = runCatching {
+            val u = try {
                 withContext(Dispatchers.IO) {
                     val (stat, live) = SnapshotRepo.dokument(app)
                     val f = RapportRepo.hamta(app)
                     rakna(rutter, karta(stat), karta(live), karta(f.snabb), karta(f.lang), System.currentTimeMillis())
                 }
-            }.getOrNull()
+            } catch (e: CancellationException) {
+                _lage.update { it.copy(laddar = false) }
+                throw e
+            } catch (e: Exception) {
+                null
+            }
             _lage.update {
                 if (u == null) it.copy(laddar = false, gickInte = true)
                 else it.copy(resor = u.resor, kollat = System.currentTimeMillis(), lagesfil = u.lagesfil, gammaltVaglag = u.gammaltVaglag,
