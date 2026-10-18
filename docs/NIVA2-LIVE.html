@@ -127,6 +127,7 @@
         <li>Regeln finns i databasen och är i drift (<code>kandidat_regel()</code>, sql/055–056, DECISIONS #573), och skuggloggen
           räknar den sedan 15/10 (sql/057): domloggen, stationsvärdena och takten längs vägnätet (OSRM). Spridningsgrinden i regeln och
           loggen är byggd (sql/058, DECISIONS #575).</li>
+        <li>Steg 10–13 är byggda 16–17/10: betavarningen i motorns tre språk och i båda apparna (DECISIONS #577, #581), taket en per 10 minuter (#606) och avstängningen i drift (#578). Bygget 0.3.13 (27) och sedan (28), med rättelsen av kort #359, laddades upp 17/10 av TestFlight-flödet (DECISIONS #606, #620). Soffprovet på iPhone: första försöket 17/10 föll på provets rutt, som gick genom en sträcka med Trafikverkets egen halkvarning (DECISIONS #619); i andra försöket klarades A och B godtogs med den rena passagen 21:28 (DECISIONS #628, #631). Kandidaten är på igen: Axel tryckte <i>starta</i> 19:50 UTC och Bengt 21:04 UTC, och lägesfilen bär nyckeln med fyra sträckor (DECISIONS #631).</li>
       </ul>
     </div>
     <div class="ruta rod">
@@ -238,7 +239,7 @@
   </details>
 </div>
 <!-- /LÄGESRADER -->
-  <p>Beroenden inom parentes. Steg 1–6 och 10–12 är byggda, och 9 och 13 är byggda men väntar på Axel (17/10). Kritisk väg: 7 för marsdomen, och för appen soffprovet i 13 (#596, #605) med bygget 0.3.13 (27), uppladdat 17/10 av TestFlight-flödet (38993725899), #606 → App Review. Takten i 7 är byggd som tak (#606); läsningen 2/11 körs som mätning och inte som beslut. Regeln (val 2) finns; signeringen i steg 8 väntar på radarns tal 26/10. Steg 9 går parallellt.</p>
+  <p>Beroenden inom parentes. Steg 1–6 och 10–13 är byggda (18/10), och 9 är byggt men väntar på Axel. Kritisk väg: 7 för marsdomen, och för appen betakortet i soffprovet (13, #596, #605, #631) → ett bygge med halkzonen (0.3.13 (28) är uppladdat 17/10; (29) ligger i PR #1058) → App Review. Takten i 7 är byggd som tak (#606); läsningen 2/11 körs som mätning och inte som beslut. Regeln (val 2) finns; signeringen i steg 8 väntar på radarns tal 26/10. Steg 9 går parallellt.</p>
   <div class="tabell"><table>
     <thead><tr><th>Nr</th><th>Steg</th><th>Vad som görs</th><th>Vem</th><th>Läge</th></tr></thead>
     <tbody>
@@ -320,10 +321,10 @@
       <tr><td class="nr">12</td><td>Bygget 0.3.13 (27) (10, 11, och 4 grönt)</td><td>Båda plattformarna, när ios-engine, android och ci
         är gröna på samma commit. iOS går via TestFlight-flödet i Actions (#582, kort #333 stängt 17/10). Sedan
         TestFlight och App Review. Android ur CI som i dag.</td>
-        <td>Flödet laddar upp, Axel skickar in</td><td><span class="dom klar">0.3.13 (27) med kandidatens tak uppladdat 17/10 av TestFlight-flödet (38993725899), #606; App Review efter soffprovet</span></td></tr>
+        <td>Flödet laddar upp, Axel skickar in</td><td><span class="dom klar">0.3.13 (27) med kandidatens tak (38993725899, #606) och (28) med rättelsen av kort #359 (39054060542 på d33467c, #620) uppladdade 17/10 av TestFlight-flödet; (29) med halkzonen ligger i PR #1058; App Review efter betakortet i soffprovet</span></td></tr>
       <tr><td class="nr">13</td><td>Avstängningen i drift (6, 12)</td><td>Nyckeln tas bort ur publiceringen, och appen ska tystna
         (DECISIONS #562). Provas i drift innan bygget går till App Review, som soffprov (Android-emulatorn hos Bengt eller en iPhone via Xcode, #596, #605); bilprovet görs när det blir kallt i Skåne, som bekräftelse i fält.</td>
-        <td>Claude, Bengt provar i bilen</td><td><span class="dom vantar">byggd och provad 16/10 (#578); soffprovet (rutten genererad 16/10 och 17/10) och Axels starta kvar</span></td></tr>
+        <td>Claude, Bengt provar i bilen</td><td><span class="dom vantar">byggd och provad 16/10 (#578); soffprovet 17/10: A klarat, B godtagen (#628, #631); Axels och Bengts starta tryckta 17/10 (#631); kvar: betakortet i A, som inte är säkert sett</span></td></tr>
       <tr class="grupp"><td colspan="5">D. Vintern</td></tr>
       <tr><td class="nr">14</td><td>Mätningen och domen</td><td>Alla spår mäts i skuggan. Domen i mars (DECISIONS #547) avgör om
         kandidaten får stanna: grind A–C med samma trösklar, RÅ som kontroll och reserv. Faller den, används avstängningen i steg 13.</td>
@@ -386,7 +387,7 @@
         <li>Läsa paritetsprovet (steg 4) innan något publiceras: det är Axels kedja och Axels kandidat.</li>
     <li>Signaturen på ändringen av TROSKLAR-SKUGGAN för den egna betavarningen (Bengts ja finns, DECISIONS #563, #575), vid förregistreringen.</li>
     <li>Godkänna förregistreringen för 2026/27 senast 31/10 (steg 8).</li>
-    <li>Skicka in bygget 0.3.13 (27), uppladdat 17/10 av TestFlight-flödet (38993725899) (#606), till App Review efter soffprovet (steg 13). Nyckeln ligger på plats (#582).</li>
+    <li>Skicka in bygget till App Review när betakortet i soffprovet är sett (steg 13): 0.3.13 (28) är uppladdat 17/10 av TestFlight-flödet (39054060542, #620), och (29) med halkzonen ligger i PR #1058. Nyckeln ligger på plats (#582).</li>
   </ol>
 
   <hr>
