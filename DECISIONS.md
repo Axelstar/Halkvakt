@@ -15133,3 +15133,26 @@ funktion som butiksversionen saknar. Väntar på Bengts ord.
 **Alternativ.** Skicka 30 nu och rapporten i nästa version, eller 29 utan favoriterna — förkastade av Bengt.
 
 **Stomdokument:** FAV §3 rapporten och §11 vad som väntar, APP 0.3.13, LIV steg 12, BED §4.2
+
+## #637 (18/10 2026) Favoriternas rapport: köer och restider åt rätt håll, en resa för båda hållen med igenkänning, provmiljöns avstånd som trösklar (kort #357)
+
+**Bengts ord 18/10:** *"börja bygg inklusive 3a, 2 ja igenkänning 3 provmiljöns tal 4 slå ihop 1066"*, på de tre frågorna i §4.2.
+
+**Besluten:**
+1. **Köer och restider bara åt det håll föraren kör**, byggt i 3a. Trafikverket ritar restidssträckorna i körriktningen (136 av 140 med
+   riktning i namnet stämmer, rapportfilen 18/10 06:56 UTC). Riktningen avgörs utan vinkelgräns: sträckan provas var 100:e meter, och
+   ökar provpunkternas plats längs resan i sträckans egen ordning går den åt samma håll. Når bara en provpunkt resan går riktningen inte
+   att avgöra, och sträckan står kvar som i dag. Köer ur Trafikverkets meddelanden har ingen riktning mot resan och står kvar åt båda
+   hållen. Täckning: 201 sträckor, 194 i Stockholm, 5 i Göteborg, 2 i Malmö.
+2. **En sparad resa för båda hållen.** Rapporten har *Dit* och *Hem* överst; *Hem* är samma väg vänd, så farorna kommer i körordning.
+   Appen känner igen hemresan: ligger en ny resa längs en sparad, åt något håll, kommer ingen ny fråga *Spara resan?*. Igenkänningens tal
+   är Claudes förslag och står i kontraktsgrinden: **minst 80 % av vardera resan inom 100 m från den andra**, så att en kortare resa
+   på en del av vägen inte räknas som samma.
+3. **Provmiljöns avstånd blir appens trösklar** (`MARGINALER` i `publish/rapport-core.ts`, #529–#531): halka, linjer och kameror 100 m;
+   olyckor, hinder och djur 150 m; stationer och färjor 500 m; en linje räknas först när hälften av den, eller 500 m, ligger inom
+   avståndet. Kontrakt i kontraktsgrinden; ändras efter fältprovet.
+
+**Alternativ.** Två sparade resor för dit och hem (som steg 2 är byggt); en vinkelgräns för riktningen; egna appavstånd före
+fältprovet — alla förkastade.
+
+**Stomdokument:** FAV §3 rapporten och §6 spara, BED §4.2
