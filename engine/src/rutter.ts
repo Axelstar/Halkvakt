@@ -5,7 +5,9 @@
 // A route is the road the driver actually drove, collected during the trip and offered after it — never an address, never a
 // route search on the net. The collector thins the fixes to one point per RUTT_STEG_M (FAVORITER §6: one point per 50–100 m;
 // a 34 km commute is a few hundred points, a few kilobytes) and always keeps the last fix, so the route ends where the trip did.
-import { haversineM } from "./geo.ts";
+import { haversineM, samplePolyline } from "./geo.ts";
+import { farorLangsRutten } from "./rutfilter.ts";
+import type { Hazard } from "./types.ts";
 
 /** One kept point per this many metres of driving (FAVORITER §6). */
 export const RUTT_STEG_M = 75;
@@ -52,4 +54,20 @@ export function taBort(r: Rutter, id: string): Rutter {
 /** The name suggestions after a trip (DECISIONS #625): fixed ones and the date. Free text is always possible in the apps. */
 export function namnforslag(dag: number, manad: number): string[] {
   return ["Till jobbet", "Hem", `Resa ${dag}/${manad}`];
+}
+
+/** Recognising the way home (DECISIONS #637): a new trip that lies along a saved one, in either direction, is the same trip and gets
+ *  no new question. Both ways, so that a shorter trip on part of the road is not "the same". */
+export const SAMMA_RESA_M = 100;
+export const SAMMA_RESA_ANDEL = 0.8;
+
+/** Share of a's points, sampled every SAMMA_RESA_M, that lie within SAMMA_RESA_M of b. */
+function andelNara(a: Punkt[], b: Punkt[]): number {
+  const prov = samplePolyline(a, SAMMA_RESA_M).map((q, i) => ({ id: `p${i}`, kind: "accident", lon: q.lon, lat: q.lat } as Hazard));
+  return prov.length ? farorLangsRutten(prov, b, SAMMA_RESA_M).length / prov.length : 0;
+}
+
+/** Is b the same trip as a, in either direction? At least SAMMA_RESA_ANDEL of each lies within SAMMA_RESA_M of the other. */
+export function sammaResa(a: Punkt[], b: Punkt[]): boolean {
+  return a.length >= 2 && b.length >= 2 && andelNara(a, b) >= SAMMA_RESA_ANDEL && andelNara(b, a) >= SAMMA_RESA_ANDEL;
 }

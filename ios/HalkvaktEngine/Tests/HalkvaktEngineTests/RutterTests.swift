@@ -58,6 +58,20 @@ final class RutterTests: XCTestCase {
                        n["svar"] as! [String])
     }
 
+    func testIgenkanningenSomTypeScript() throws {
+        let s = try Self.facit()["samma"] as! [String: Any]
+        XCTAssertEqual((s["m"] as! NSNumber).doubleValue, Rutter.sammaM)
+        XCTAssertEqual((s["andel"] as! NSNumber).doubleValue, Rutter.sammaAndel)
+        let pkt = { (a: Any?) in (a as! [[Any]]).map { [($0[0] as! NSNumber).doubleValue, ($0[1] as! NSNumber).doubleValue] } }
+        let a = pkt(s["a"])
+        let fall = s["fall"] as! [[String: Any]]
+        XCTAssertEqual(fall.count, 5, "facit bär sina fall")
+        for f in fall {
+            XCTAssertEqual(Rutter.sammaResa(a, pkt(f["b"])), f["svar"] as! Bool, f["namn"] as! String)
+            XCTAssertEqual(Rutter.sammaResa(pkt(f["b"]), a), f["svar"] as! Bool, "\(f["namn"] as! String), åt andra hållet")
+        }
+    }
+
     func testFilenTurOchRetur() throws {
         let r = Rutter(rutter: [Self.rutt("r1")])
         XCTAssertEqual(try JSONDecoder().decode(Rutter.self, from: JSONEncoder().encode(r)), r)

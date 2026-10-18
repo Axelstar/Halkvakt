@@ -49,5 +49,18 @@ data class Rutter(val rutter: List<SparadRutt> = emptyList()) {
 
         /** The name suggestions after a trip (DECISIONS #625): fixed ones and the date. Free text is always possible in the app. */
         fun namnforslag(dag: Int, manad: Int): List<String> = listOf("Till jobbet", "Hem", "Resa $dag/$manad")
+
+        /** Recognising the way home (DECISIONS #637): at least [SAMMA_RESA_ANDEL] of each trip within [SAMMA_RESA_M] of the other, in either direction. */
+        const val SAMMA_RESA_M = 100.0
+        const val SAMMA_RESA_ANDEL = 0.8
+
+        private fun andelNara(a: List<DoubleArray>, b: List<DoubleArray>): Double {
+            val prov = Geo.samplePolyline(a, SAMMA_RESA_M).mapIndexed { i, q -> PointHazard("p$i", HazardKind.ACCIDENT, q[0], q[1]) }
+            return if (prov.isEmpty()) 0.0 else RouteFilter.alongRoute(prov, b, SAMMA_RESA_M).size.toDouble() / prov.size
+        }
+
+        /** Is b the same trip as a, in either direction? */
+        fun sammaResa(a: List<DoubleArray>, b: List<DoubleArray>): Boolean =
+            a.size >= 2 && b.size >= 2 && andelNara(a, b) >= SAMMA_RESA_ANDEL && andelNara(b, a) >= SAMMA_RESA_ANDEL
     }
 }

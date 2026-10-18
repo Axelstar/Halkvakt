@@ -60,4 +60,19 @@ class RutterTest {
         val n = facit().getJSONObject("namnforslag")
         assertEquals(strangar(n.getJSONArray("svar")), Rutter.namnforslag(n.getInt("dag"), n.getInt("manad")))
     }
+
+    @Test fun igenkanningenSomTypeScript() {
+        val s = facit().getJSONObject("samma")
+        assertEquals(s.getDouble("m"), Rutter.SAMMA_RESA_M)
+        assertEquals(s.getDouble("andel"), Rutter.SAMMA_RESA_ANDEL)
+        val pkt = { a: JSONArray -> (0 until a.length()).map { val p = a.getJSONArray(it); doubleArrayOf(p.getDouble(0), p.getDouble(1)) } }
+        val a = pkt(s.getJSONArray("a"))
+        val fall = s.getJSONArray("fall")
+        assertEquals(5, fall.length(), "facit bär sina fall")
+        for (k in 0 until fall.length()) {
+            val f = fall.getJSONObject(k); val b = pkt(f.getJSONArray("b"))
+            assertEquals(f.getBoolean("svar"), Rutter.sammaResa(a, b), f.getString("namn"))
+            assertEquals(f.getBoolean("svar"), Rutter.sammaResa(b, a), "${f.getString("namn")}, åt andra hållet")
+        }
+    }
 }

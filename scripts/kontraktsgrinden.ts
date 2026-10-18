@@ -127,6 +127,9 @@ export function rapport(utfall: Utfall[]): boolean {
 }
 
 // ── DE VAKTADE KONTRAKTEN ──────────────────────────────────────────────────────────────
+// Resans rapport: källan, dess två buntar och telefonernas två tvillingar (favoriterna steg 3a).
+const RAPPORTEN = /publish\/rapport-core\.ts$|functions\/favorit(?:er|prov)\/index\.ts$|HalkvaktEngine\/Rapport\.swift$|engine\/Rapport\.kt$/;
+
 export const KONTRAKT: Kontrakt[] = [
   // ── HEALTHCHECKENS TRÖSKLAR (kort #87). PERMANENTA — läs den här raden innan du rör dem.
   // De skrevs 14/9 som tidsbegränsade, för planen var att healthcheck.yml skulle raderas när
@@ -522,6 +525,67 @@ export const KONTRAKT: Kontrakt[] = [
     former: [/FRAGA_KVAR_MS\s*=\s*(\d+)\s*\*\s*3600\s*\*\s*1000L/, /fragaKvarS: TimeInterval\s*=\s*(\d+)\s*\*\s*3600/],
     filer: /app\/Favoriter\.kt|Services\/Favoriter\.swift/,
     golv: 2,
+  },
+  // Favoriterna steg 3a (kort #357, DECISIONS #637): provmiljöns avstånd per slag är appens trösklar, i TypeScript (rapport-core.ts
+  // och dess två buntar), Swift och Kotlin. Facit engine/fixtures/rapport.json prövar utfallet i alla tre, men telefonernas prov körs
+  // inte i en PR: grinden fäller kopian som driver innan dess. MARGINALER står på två rader i TypeScript, och MARGINALER_RAKA har samma
+  // form med andra tal — andra raden känns därför igen på att den inte bär 1500. Blir ett avstånd 1500, eller ändras de raka, fäller
+  // grinden högljutt (golvet eller två värden), aldrig tyst.
+  ...["halka", "frysrisk", "olycka", "hinder", "vilt", "ko", "restid", "vagarbete", "hastighet", "omledning", "farja", "kamera", "smhi"]
+    .map((slag, i): Kontrakt => ({
+      namn: `Resans rapport — avståndet till resan för ${slag}, m`,
+      varfor: "Med olika avstånd visar iPhone, Android och provmiljön olika faror för samma resa (DECISIONS #637).",
+      former: [
+        new RegExp(i < 6 ? `^export const MARGINALER: Record<Slag, number> = \\{.*\\b${slag}: (\\d+)(?![\\d.])`
+          : `^  (?=restid: )(?!.*\\b1500\\b).*\\b${slag}: (\\d+)(?![\\d.])`),
+        new RegExp(`\\.${slag}: (\\d+)(?:\\.0)?(?![\\d.])`),
+        new RegExp(`RapportSlag\\.${slag.toUpperCase()} to (\\d+)(?:\\.0)?(?![\\d.])`),
+      ],
+      filer: RAPPORTEN,
+      golv: 5,
+    })),
+  {
+    namn: "Resans rapport — andel av en linje som ska ligga längs resan",
+    varfor: "En väg som bara korsar resan ska sållas bort lika i telefonerna och i provmiljön (DECISIONS #531, #637).",
+    former: [/(?:LANGS_ANDEL|langsAndel)\s*=\s*(\d+(?:\.\d+)?)(?![\d.])/],
+    filer: RAPPORTEN,
+    golv: 5,
+  },
+  {
+    namn: "Resans rapport — meter av en linje som räcker för att ligga längs resan",
+    varfor: "Samma som ovan, för långa linjer där andelen blir liten.",
+    former: [/(?:LANGS_MINST_M|langsMinstM)\s*=\s*(\d+)(?:\.0)?(?![\d.])/],
+    filer: RAPPORTEN,
+    golv: 5,
+  },
+  {
+    namn: "Resans rapport — en provpunkt per så här många meter linje",
+    varfor: "Linjerna provas lika tätt, annars ger andelen och riktningen olika svar på iPhone och Android.",
+    former: [/(?:LANGS_STEG_M|langsStegM)\s*=\s*(\d+)(?:\.0)?(?![\d.])/],
+    filer: RAPPORTEN,
+    golv: 5,
+  },
+  {
+    namn: "Resans rapport — så här många av samma slag slås samman",
+    varfor: "Med olika gräns visar telefonerna olika många rader för samma resa.",
+    former: [/(?:GRUPP_FRAN|gruppFran)\s*=\s*(\d+)(?![\d.])/],
+    filer: RAPPORTEN,
+    golv: 5,
+  },
+  {
+    // DECISIONS #637: vägen hem känns igen som samma resa, så frågan Spara resan? kommer inte en gång till.
+    namn: "Igenkänningen — meter mellan två resor som räknas som samma väg",
+    varfor: "Med olika avstånd frågar iPhone och Android om olika resor, och en resa sparas två gånger på den ena.",
+    former: [/(?:SAMMA_RESA_M|static let sammaM)\s*=\s*(\d+)(?:\.0)?(?![\d.])/],
+    filer: /engine\/src\/rutter\.ts$|engine\/Rutter\.kt$|HalkvaktEngine\/Rutter\.swift$/,
+    golv: 3,
+  },
+  {
+    namn: "Igenkänningen — andel av varje resa som ska ligga nära den andra",
+    varfor: "Samma som ovan.",
+    former: [/(?:SAMMA_RESA_ANDEL|static let sammaAndel)\s*=\s*(\d+(?:\.\d+)?)(?![\d.])/],
+    filer: /engine\/src\/rutter\.ts$|engine\/Rutter\.kt$|HalkvaktEngine\/Rutter\.swift$/,
+    golv: 3,
   },
   {
     namn: "Betans startvärde fall — °C på trendfönstret",
