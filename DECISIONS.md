@@ -15219,3 +15219,5 @@ sammanslagningen."*
 påverkan i texten kräver ett bygge till.
 
 **Stomdokument:** APP 0.3.13, FAV §11 vad som väntar, BED §4.2
+
+**Punkt 1 och 2 klara 18/10.** 0.3.13 (31) uppladdat av TestFlight-flödet, körning 39116883577 på f5012e6 (09:50–09:53 UTC): läget ladda-upp från main, byggnumret höjt i f5012e6, ARCHIVE SUCCEEDED, bygget bär 0.3.13 (31), Upload succeeded. Android: android.yml 39116875018 på f5012e6 grön, med den signerade AAB:n versionCode 31 (`halkvakt-release-aab`); Play internt väntar på kontot. ci, md-vakt, ios-engine och android gröna på PR #1070:s huvud 925e131 (39116468255, 39116468254, 39116468354, 39116470160).
