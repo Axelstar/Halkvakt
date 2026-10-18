@@ -15106,3 +15106,30 @@ halkzonen är desamma som i 29.
 **Alternativ.** Låta sajten vara tills Axel skrivit egna texter — valdes bort: inskicket väntar på policyn.
 
 **Stomdokument:** FAV §8 integriteten, APP §4, BED §4.2
+
+## #636 (18/10 2026) Inget App Review förrän favoriternas rapport är byggd — steg 3 före inskicket; ersätter #634:s bygge 30 (kort #357, #343)
+
+**Bengts ord 18/10:** *"vi ska inte skicka in till app review innan detta är byggt det är ju hela vitsen med bygget"*, efter hans fråga
+*"vitsen med favoriter var att jag skulle kunna spara en resa och vid ett senare tillfälle, resa tillbaka från den sparade platsen
+skulle kunna få uppdaterade uppgifter om vägen redan innan jag påbörjade resan. Var finns den funktionen"*.
+
+**Beslut.** Ingen version går till App Review förrän favoriternas steg 3 är byggt i båda apparna. Bygge 30 (#634) stannar i TestFlight för
+prov; inskicket sker med ett senare bygge som bär rapporten. Det ersätter #634:s *30 går till App Review*. Kandidaten och halkzonen följer
+med i samma granskning.
+
+**Steg 3 — rapporten längs den sparade resan** (FAVORITER §3; kort #357):
+- **3a Motorn:** rapportens logik ur `publish/rapport-core.ts` (`favoritRapport`, `nyttSedan`, `tomma`, `grupperade`), som favoritprovet
+  kör på servern, i Swift och Kotlin med ett delat facit, som urvalet längs rutten (#528) och de sparade rutterna (#625).
+- **3b iPhone och 3c Android:** appen hämtar rapportfilen ur hinken `favoriter` (manifest och sha256; en fil med fel kontrollsumma avvisas
+  och den förra behålls), kör urvalet längs varje sparad resa i telefonen, visar läget per rad i fliken (*Nytt*, *Inget nytt*, *Lugnt*)
+  och en rapportskärm per resa. Ingen fråga om just förarens väg lämnar telefonen.
+- **Åt andra hållet:** en knapp i rapporten som vänder den sparade vägen, så att hemresan får farorna i körordning. Bengts behov; nytt
+  jämfört med FAVORITER.
+- **3d:** produktboken, skärmbilderna och butikstexterna; sedan ett nytt bygge, provet och inskicket (punkterna 2–7 i #634 gäller).
+
+**Sajtens texter (#635, halkvakt-karta#8):** förslag att de slås ihop när bygget med rapporten skickas in, så att sajten inte beskriver en
+funktion som butiksversionen saknar. Väntar på Bengts ord.
+
+**Alternativ.** Skicka 30 nu och rapporten i nästa version, eller 29 utan favoriterna — förkastade av Bengt.
+
+**Stomdokument:** FAV §3 rapporten och §11 vad som väntar, APP 0.3.13, LIV steg 12, BED §4.2
