@@ -13,6 +13,7 @@ public struct RapportPost {
     public let id: String, slag: RapportSlag, rubrik: String
     public let t: String?, p: [Double]?, l: String?, vag: String?, start: String?, slut: String?
     public let korfalt: Int?, grans: Int?, tid: Int?, normal: Int?, text: String?
+    public var sev: Int? = nil   // Trafikverkets påverkan (SeverityCode)
 }
 
 /// Rapportfilens snabba del: posterna och stationernas namn och lufttemperatur.
@@ -86,7 +87,8 @@ public enum ResansRapport {
             let pp = punkter([p["p"] as Any]).first
             return RapportPost(id: id, slag: slag, rubrik: str(p, "rubrik") ?? "", t: str(p, "t"), p: p["p"] == nil ? nil : pp,
                                l: str(p, "l"), vag: str(p, "vag"), start: str(p, "start"), slut: str(p, "slut"), korfalt: int(p, "korfalt"),
-                               grans: int(p, "grans"), tid: int(p, "tid"), normal: int(p, "normal"), text: str(p, "text"))
+                               grans: int(p, "grans"), tid: int(p, "tid"), normal: int(p, "normal"), text: str(p, "text"),
+                               sev: int(p, "sev"))
         }, stationer: st)
     }
 
@@ -150,6 +152,9 @@ public enum ResansRapport {
         return f.string(from: d)
     }
 
+    /// Trafikverkets påverkan (SeverityCode) i texten för vägarbeten, olyckor och hinder (rapport-core.ts PAVERKAN, DECISIONS #641).
+    public static let paverkanText: [Int: String] = [1: "ingen påverkan", 2: "liten påverkan", 4: "stor påverkan", 5: "mycket stor påverkan"]
+
     /// Den läsbara texten för en post, ur fälten — som rapport-core.ts visning().
     public static func visning(_ p: RapportPost) -> String {
         if let text = p.text, !text.isEmpty { return text }
@@ -157,8 +162,9 @@ public enum ResansRapport {
             return p.tid.map { "\($0) minuter, normalt \(p.normal.map(String.init) ?? "–")" } ?? "restid saknas"
         }
         let slut = p.slut == "tv" ? "tills vidare" : (p.slut ?? "").isEmpty ? "" : "till \(datum(p.slut! + "T12:00:00Z") ?? "null")"
+        let paverkan = p.sev.flatMap { paverkanText[$0] }.map { [.vagarbete, .olycka, .hinder].contains(p.slag) ? "\($0) enligt Trafikverket" : "" } ?? ""
         let delar = [p.t ?? "", (p.korfalt ?? 0) != 0 ? "\(p.korfalt!) körfält avstängda" : "",
-                     (p.grans ?? 0) != 0 ? "\(p.grans!) km/h förbi vägarbetet" : "", slut,
+                     (p.grans ?? 0) != 0 ? "\(p.grans!) km/h förbi vägarbetet" : "", paverkan, slut,
                      [.olycka, .hinder, .ko].contains(p.slag) ? "rapporterad \(klocka(p.start) ?? "–")" : ""]
         return delar.filter { !$0.isEmpty }.joined(separator: " · ")
     }

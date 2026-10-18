@@ -29,7 +29,7 @@ enum class RapportSlag(val wire: String) {
 data class RapportPost(
     val id: String, val slag: RapportSlag, val rubrik: String, val t: String? = null, val p: DoubleArray? = null, val l: String? = null,
     val vag: String? = null, val start: String? = null, val slut: String? = null, val korfalt: Int? = null, val grans: Int? = null,
-    val tid: Int? = null, val normal: Int? = null, val text: String? = null,
+    val tid: Int? = null, val normal: Int? = null, val text: String? = null, val sev: Int? = null,
 )
 data class RapportStation(val namn: String, val luft: Double?)
 data class Rapportfil(val generatedAt: String, val poster: List<RapportPost>, val stationer: Map<String, RapportStation>)
@@ -94,7 +94,7 @@ object ResansRapport {
             val id = str(p, "id") ?: return@mapNotNull null
             val slag = str(p, "slag")?.let { RapportSlag.of(it) } ?: return@mapNotNull null
             RapportPost(id, slag, str(p, "rubrik") ?: "", str(p, "t"), punkter(listOf(p["p"])).firstOrNull(), str(p, "l"), str(p, "vag"),
-                str(p, "start"), str(p, "slut"), int(p, "korfalt"), int(p, "grans"), int(p, "tid"), int(p, "normal"), str(p, "text"))
+                str(p, "start"), str(p, "slut"), int(p, "korfalt"), int(p, "grans"), int(p, "tid"), int(p, "normal"), str(p, "text"), int(p, "sev"))
         }, st)
     }
 
@@ -147,14 +147,19 @@ object ResansRapport {
     private fun klocka(iso: String?): String? = tid(iso)?.let(KLOCKA::format)
     private fun datum(iso: String?): String? = tid(iso)?.let(DATUM::format)
 
+    /** Trafikverkets påverkan (SeverityCode) i texten för vägarbeten, olyckor och hinder (rapport-core.ts PAVERKAN, DECISIONS #641). */
+    val PAVERKAN: Map<Int, String> = mapOf(1 to "ingen påverkan", 2 to "liten påverkan", 4 to "stor påverkan", 5 to "mycket stor påverkan")
+    private val MED_PAVERKAN = setOf(RapportSlag.VAGARBETE, RapportSlag.OLYCKA, RapportSlag.HINDER)
+
     /** Den läsbara texten för en post, ur fälten — som rapport-core.ts visning(). */
     fun visning(p: RapportPost): String {
         if (!p.text.isNullOrEmpty()) return p.text
         if (p.slag == RapportSlag.RESTID || (p.slag == RapportSlag.KO && p.id.startsWith("tt:")))
             return if (p.tid != null) "${p.tid} minuter, normalt ${p.normal ?: "–"}" else "restid saknas"
         val slut = if (p.slut == "tv") "tills vidare" else if (!p.slut.isNullOrEmpty()) "till ${datum(p.slut + "T12:00:00Z") ?: "null"}" else ""
+        val paverkan = p.sev?.let { PAVERKAN[it] }?.takeIf { p.slag in MED_PAVERKAN }?.let { "$it enligt Trafikverket" } ?: ""
         return listOf(p.t ?: "", if ((p.korfalt ?: 0) != 0) "${p.korfalt} körfält avstängda" else "",
-            if ((p.grans ?: 0) != 0) "${p.grans} km/h förbi vägarbetet" else "", slut,
+            if ((p.grans ?: 0) != 0) "${p.grans} km/h förbi vägarbetet" else "", paverkan, slut,
             if (p.slag == RapportSlag.OLYCKA || p.slag == RapportSlag.HINDER || p.slag == RapportSlag.KO) "rapporterad ${klocka(p.start) ?: "–"}" else "",
         ).filter { it.isNotEmpty() }.joinToString(" · ")
     }
