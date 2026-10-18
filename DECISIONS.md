@@ -15087,3 +15087,49 @@ halkzonen är desamma som i 29.
 **Stomdokument:** APP 0.3.13, LIV steg 12, FAV §11 vad som väntar, BED §4.2
 
 **Punkt 1 klar 18/10.** 0.3.13 (30) uppladdat av TestFlight-flödet 18/10, körning 39104250625 på fe26205 (06:30–06:33 UTC): byggnumret höjt i fe26205, ARCHIVE SUCCEEDED, bygget bär 0.3.13 (30), Upload succeeded; ci, ios-engine och android gröna på PR #1064:s huvud 3acbd4b (39103578348, 39103578034, 39103580350).
+
+## #635 (18/10 2026) Sajtens texter om sparade resor: startsidan, Om-sidan och integritetspolicyn (kort #357; #634 punkt 3)
+
+**Bengts ord 18/10:** *"ja till förslagen på sajtens texter"*, på förslagen i §4.2.
+
+**Beslut.** Tre ställen i karta-repot ändras, i PR [halkvakt-karta#8](https://github.com/Axelstar/halkvakt-karta/pull/8) (775d6a3):
+- startsidans kvitto: *Spårning — Ingen. Sparade resor bara i telefonen*;
+- Om-sidan, *Sparar ni min position?*: *Nej. Sparar du själv en resa som favorit stannar den i telefonen.* först i svaret;
+- integritetspolicyn: en punkt om brytaren *Erbjud att spara resor*, att vägarna bara sparas i telefonen och aldrig i en säkerhetskopia,
+  och hur de tas bort; *GÄLLER FRÅN 2026-10-18 · FÖREGÅENDE VERSION 2026-10-01*, som policyn själv lovar vid en ändring.
+
+**Varför.** Apparna kan spara körda vägar sedan PR #1062 och #1063, och granskarna läser integritetspolicyn när 0.3.13 (30) skickas in
+(#634). Inget nytt skickas från appen, så inga andra meningar ändras.
+
+**Kvar:** *slå ihop* PR:en i karta-repot; Axel ser texterna i meddelandet om inskicket.
+
+**Alternativ.** Låta sajten vara tills Axel skrivit egna texter — valdes bort: inskicket väntar på policyn.
+
+**Stomdokument:** FAV §8 integriteten, APP §4, BED §4.2
+
+## #636 (18/10 2026) Inget App Review förrän favoriternas rapport är byggd — steg 3 före inskicket; ersätter #634:s bygge 30 (kort #357, #343)
+
+**Bengts ord 18/10:** *"vi ska inte skicka in till app review innan detta är byggt det är ju hela vitsen med bygget"*, efter hans fråga
+*"vitsen med favoriter var att jag skulle kunna spara en resa och vid ett senare tillfälle, resa tillbaka från den sparade platsen
+skulle kunna få uppdaterade uppgifter om vägen redan innan jag påbörjade resan. Var finns den funktionen"*.
+
+**Beslut.** Ingen version går till App Review förrän favoriternas steg 3 är byggt i båda apparna. Bygge 30 (#634) stannar i TestFlight för
+prov; inskicket sker med ett senare bygge som bär rapporten. Det ersätter #634:s *30 går till App Review*. Kandidaten och halkzonen följer
+med i samma granskning.
+
+**Steg 3 — rapporten längs den sparade resan** (FAVORITER §3; kort #357):
+- **3a Motorn:** rapportens logik ur `publish/rapport-core.ts` (`favoritRapport`, `nyttSedan`, `tomma`, `grupperade`), som favoritprovet
+  kör på servern, i Swift och Kotlin med ett delat facit, som urvalet längs rutten (#528) och de sparade rutterna (#625).
+- **3b iPhone och 3c Android:** appen hämtar rapportfilen ur hinken `favoriter` (manifest och sha256; en fil med fel kontrollsumma avvisas
+  och den förra behålls), kör urvalet längs varje sparad resa i telefonen, visar läget per rad i fliken (*Nytt*, *Inget nytt*, *Lugnt*)
+  och en rapportskärm per resa. Ingen fråga om just förarens väg lämnar telefonen.
+- **Åt andra hållet:** en knapp i rapporten som vänder den sparade vägen, så att hemresan får farorna i körordning. Bengts behov; nytt
+  jämfört med FAVORITER.
+- **3d:** produktboken, skärmbilderna och butikstexterna; sedan ett nytt bygge, provet och inskicket (punkterna 2–7 i #634 gäller).
+
+**Sajtens texter (#635, halkvakt-karta#8):** förslag att de slås ihop när bygget med rapporten skickas in, så att sajten inte beskriver en
+funktion som butiksversionen saknar. Väntar på Bengts ord.
+
+**Alternativ.** Skicka 30 nu och rapporten i nästa version, eller 29 utan favoriterna — förkastade av Bengt.
+
+**Stomdokument:** FAV §3 rapporten och §11 vad som väntar, APP 0.3.13, LIV steg 12, BED §4.2
