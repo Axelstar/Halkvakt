@@ -320,7 +320,8 @@ object ResansRapport {
     fun resansRapport(rutt: List<DoubleArray>, hem: Boolean, lage: RapportLage, kameror: List<RapportKamera>, snabb: Rapportfil,
                       linjer: Map<String, List<List<DoubleArray>>>): List<RapportRad> {
         val r = if (hem) vand(rutt) else rutt
-        val linjeFor = snabb.poster.mapNotNull { p -> p.l?.let { p.id to (linjer[it] ?: emptyList()) } }.toMap()
+        val linjeFor = HashMap<String, List<List<DoubleArray>>>()
+        for (p in snabb.poster) p.l?.let { linjeFor[p.id] = linjer[it] ?: emptyList() }
         return favoritRapport(r, lage, kameror, snabb, linjer).filter { rad ->
             !rad.id.startsWith("tt:") || riktning(linjeFor[rad.id] ?: emptyList(), r, MARGINALER[rad.slag] ?: 0.0) != -1
         }
