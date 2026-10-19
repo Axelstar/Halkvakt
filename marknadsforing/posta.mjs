@@ -6,6 +6,7 @@
 //   node marknadsforing/posta.mjs skicka  → postar bilden och texten (bilden måste vara pushad: Meta hämtar den via raw-URL);
 //                                           X får bilden ur arbetsträdet och textX(), när X_API_KEY m.fl. finns (DECISIONS #645);
 //   node marknadsforing/posta.mjs ikapp-x → lägger HV_NAMN på X, för ett inlägg som redan nått Facebook (rör inget annat)
+//   node marknadsforing/posta.mjs manuell-x → postar en handgjord HV_NAMN.jpg med textX ur HV_NAMN.json, bara på X
 //                                           HV_NAMN väljer filerna, annars dagens pass
 // Utan META_PAGE_ID/META_PAGE_TOKEN är "skicka" en torrkörning: texten skrivs ut, inget postas.
 // HV_NU=<ISO-tid> låter en torrkörning låtsas att klockan är en annan.
@@ -582,6 +583,18 @@ async function ikappX() {
   writeFileSync(postatPath, JSON.stringify(postat, null, 2) + "\n");
 }
 
+// Post a hand-made image and text on X only (the pinned intro post 20/10). The receipt is written into the post's own
+// .json, not postat.json, so it never counts against the day's posts or their spacing.
+async function manuellX() {
+  const namn = process.env.HV_NAMN, fil = join(dir, `${namn}.json`);
+  const inlagg = JSON.parse(readFileSync(fil, "utf8"));
+  if (!inlagg.textX) throw new Error(`${namn}.json saknar textX.`);
+  if (inlagg.x) return console.log(`${namn} finns redan på X: ${inlagg.x}.`);
+  if (!["X_API_KEY", "X_API_SECRET", "X_ACCESS_TOKEN", "X_ACCESS_SECRET"].every(n => process.env[n])) return console.log(`TORRKÖRNING (X-nycklarna saknas). Skulle posta:\n\n${inlagg.textX}`);
+  inlagg.x = await postaX(join(dir, `${namn}.jpg`), inlagg.textX, process.env);
+  writeFileSync(fil, JSON.stringify(inlagg, null, 2) + "\n");
+}
+
 async function skicka() {
   const nu = process.env.HV_NU || new Date().toISOString();
   const postat = lasJson(postatPath, {});
@@ -623,4 +636,5 @@ else if (steg === "koll") await bild(true, true);
 else if (steg === "skicka") await skicka();
 else if (steg === "ikapp") await ikapp();
 else if (steg === "ikapp-x") await ikappX();
-else if (steg) { console.error(`Okänt steg "${steg}" — använd bild [--live], koll, skicka, ikapp eller ikapp-x.`); process.exit(1); }
+else if (steg === "manuell-x") await manuellX();
+else if (steg) { console.error(`Okänt steg "${steg}" — använd bild [--live], koll, skicka, ikapp, ikapp-x eller manuell-x.`); process.exit(1); }
