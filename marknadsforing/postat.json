@@ -96,5 +96,28 @@
       "facebook": "1312515671952967_122098624623516187",
       "instagram": "18126142579807043"
     }
+  ],
+  "2026-10-19": [
+    {
+      "pass": "live",
+      "namn": "2026-10-19-live-0437",
+      "typ": "forsta",
+      "nyckel": "forsta:6",
+      "tid": "2026-10-19T02:37:36.361Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-10-19-live-0437.jpg",
+      "facebook": "1312515671952967_122099261781516187",
+      "instagram": "18093852533680415"
+    },
+    {
+      "pass": "live",
+      "namn": "2026-10-19-live-0437",
+      "typ": "forsta",
+      "nyckel": "forsta:5",
+      "tid": "2026-10-19T02:37:36.361Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-10-19-live-0437.jpg",
+      "facebook": "1312515671952967_122099261781516187",
+      "instagram": "18093852533680415",
+      "kopia": true
+    }
   ]
 }
