@@ -15373,3 +15373,21 @@ månad läses följare, visningar och omnämnanden; ger det inget stängs X.
 X:s regler och kontot kan stängas. Vänta med X: valt bort av Axel.
 
 **Stomdokument:** inga — marknadsföringen ligger utanför de åtta (#598).
+
+## #646 (20/10 2026) Halkvakt live: veckans siffror för X varje måndag morgon (kort #281)
+
+**Axels ord 20/10:** *"Okej okej!"* på förslaget att börja med mätningen av X, inför utvärderingen efter en månad (#645).
+
+**Beslut.** Måndagens morgonpass i halkvakt-live.yml läser våra egna X-inlägg från de senaste sju dygnen (`GET /2/users/:id/tweets`
+med `public_metrics`) och lägger en rad i `marknadsforing/x-matning.json`: antal inlägg, visningar, gillningar, delningar (reposts och
+citat), svar och det mest visade inlägget. Användar-id:t hämtas en gång och sparas i filen. Steget får falla utan att inläggen påverkas.
+Inget nytt pulsjobb: mätningen åker med morgonpasset.
+
+**Kostnad.** X:s prislista (docs.x.com, läst 20/10): egna inlägg ur den egna tidslinjen räknas som *Owned Reads*, 0,001 USD per inlägg;
+en användaruppslagning 0,010 USD. Med ett par inlägg om dagen blir det ett par cent i veckan.
+
+**Kvar:** första mätningen måndag 26/10; signaturen för GET med frågeparametrar är inte prövad mot X förrän då.
+
+**Alternativ.** Ett eget pulsjobb: kräver databasens nyckel och ger inget mer. Läsa siffrorna i X-konsolen för hand: ingen historik i repot.
+
+**Stomdokument:** inga — marknadsföringen ligger utanför de åtta (#598).

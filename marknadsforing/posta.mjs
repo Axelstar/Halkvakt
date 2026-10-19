@@ -7,6 +7,7 @@
 //                                           X får bilden ur arbetsträdet och textX(), när X_API_KEY m.fl. finns (DECISIONS #645);
 //   node marknadsforing/posta.mjs ikapp-x → lägger HV_NAMN på X, för ett inlägg som redan nått Facebook (rör inget annat)
 //   node marknadsforing/posta.mjs manuell-x → postar en handgjord HV_NAMN.jpg med textX ur HV_NAMN.json, bara på X
+//   node marknadsforing/posta.mjs matning-x → veckans siffror för våra egna X-inlägg till x-matning.json (måndag morgon)
 //                                           HV_NAMN väljer filerna, annars dagens pass
 // Utan META_PAGE_ID/META_PAGE_TOKEN är "skicka" en torrkörning: texten skrivs ut, inget postas.
 // HV_NU=<ISO-tid> låter en torrkörning låtsas att klockan är en annan.
@@ -522,12 +523,12 @@ export function signatur(method, url, params, consumerSecret, tokenSecret) {
   const bas = [method, pct(url), pct(Object.keys(params).sort().map(n => `${pct(n)}=${pct(params[n])}`).join("&"))].join("&");
   return createHmac("sha1", `${pct(consumerSecret)}&${pct(tokenSecret)}`).update(bas).digest("base64");
 }
-function oauth(method, url, k) {
+function oauth(method, url, k, query = {}) {
   const p = {
     oauth_consumer_key: k.X_API_KEY, oauth_nonce: randomBytes(16).toString("hex"), oauth_signature_method: "HMAC-SHA1",
     oauth_timestamp: String(Math.floor(Date.now() / 1000)), oauth_token: k.X_ACCESS_TOKEN, oauth_version: "1.0",
   };
-  p.oauth_signature = signatur(method, url, p, k.X_API_SECRET, k.X_ACCESS_SECRET);
+  p.oauth_signature = signatur(method, url, { ...query, ...p }, k.X_API_SECRET, k.X_ACCESS_SECRET);
   return "OAuth " + Object.keys(p).sort().map(n => `${pct(n)}="${pct(p[n])}"`).join(", ");
 }
 async function xApi(url, body, k) {
@@ -536,6 +537,39 @@ async function xApi(url, body, k) {
   if (!r.ok || !svar.data) throw new Error(`${url}: ${r.status} ${JSON.stringify(svar)}`);
   return svar.data;
 }
+async function xHamta(url, query, k) {
+  const r = await fetch(`${url}?${new URLSearchParams(query)}`, { headers: { Authorization: oauth("GET", url, k, query) } });
+  const svar = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(`${url}: ${r.status} ${JSON.stringify(svar)}`);
+  return svar;
+}
+
+// The weekly measurement for the one-month review of X (DECISIONS #645, #646): our own posts of the last seven days with
+// their metrics, one row per week in x-matning.json. Own-timeline reads are X's cheapest kind (about 0.001 USD per post).
+const matningPath = join(HERE, "x-matning.json");
+export function veckorad(nu, poster) {
+  const summa = f => poster.reduce((s, p) => s + (p.public_metrics?.[f] ?? 0), 0);
+  const basta = [...poster].sort((a, b) => (b.public_metrics?.impression_count ?? 0) - (a.public_metrics?.impression_count ?? 0))[0];
+  return {
+    tid: nu, inlagg: poster.length, visningar: summa("impression_count"), gillningar: summa("like_count"),
+    delningar: summa("retweet_count") + summa("quote_count"), svar: summa("reply_count"),
+    basta: basta ? { id: basta.id, visningar: basta.public_metrics?.impression_count ?? 0, text: basta.text.split("\n")[0] } : null,
+  };
+}
+async function matningX() {
+  const k = process.env;
+  if (!["X_API_KEY", "X_API_SECRET", "X_ACCESS_TOKEN", "X_ACCESS_SECRET"].every(n => k[n])) return console.log("TORRKÖRNING (X-nycklarna saknas).");
+  const nu = process.env.HV_NU || new Date().toISOString();
+  const m = lasJson(matningPath, { veckor: [] });
+  m.anvandare ??= (await xHamta("https://api.x.com/2/users/me", {}, k)).data.id;
+  const start = new Date(Date.parse(nu) - 7 * 864e5).toISOString().replace(/\.\d+Z$/, "Z");
+  const svar = await xHamta(`https://api.x.com/2/users/${m.anvandare}/tweets`, { max_results: "100", start_time: start, "tweet.fields": "created_at,public_metrics" }, k);
+  const rad = veckorad(nu, svar.data ?? []);
+  m.veckor.push(rad);
+  writeFileSync(matningPath, JSON.stringify(m, null, 2) + "\n");
+  console.log(`X vecka till ${dag(nu)}: ${rad.inlagg} inlägg, ${rad.visningar} visningar, ${rad.gillningar} gillningar, ${rad.delningar} delningar, ${rad.svar} svar.`);
+}
+
 async function postaX(jpg, text, k) {
   const media = await xApi("https://api.x.com/2/media/upload", { media: readFileSync(jpg).toString("base64"), media_category: "tweet_image" }, k);
   const ut = await xApi("https://api.x.com/2/tweets", { text, media: { media_ids: [media.id] } }, k);
@@ -637,4 +671,5 @@ else if (steg === "skicka") await skicka();
 else if (steg === "ikapp") await ikapp();
 else if (steg === "ikapp-x") await ikappX();
 else if (steg === "manuell-x") await manuellX();
-else if (steg) { console.error(`Okänt steg "${steg}" — använd bild [--live], koll, skicka, ikapp, ikapp-x eller manuell-x.`); process.exit(1); }
+else if (steg === "matning-x") await matningX();
+else if (steg) { console.error(`Okänt steg "${steg}" — använd bild [--live], koll, skicka, ikapp, ikapp-x, manuell-x eller matning-x.`); process.exit(1); }
