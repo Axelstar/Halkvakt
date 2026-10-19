@@ -41,4 +41,23 @@ class AgeGateTest {
         assertTrue(AgeGate.filter(med, t0, t0 + 44 * 60_000).hazards.any { it.id == "kand:S1" })
         assertFalse(AgeGate.filter(med, t0, t0 + 50 * 60_000).hazards.any { it.id == "kand:S1" })
     }
+
+    // Provkörning 18/10: gammal data ur den sparade filen sägs först när den står kvar vid nästa försök.
+    @Test fun gammalSparadFilSagsForstVidAndraForsoket() {
+        val g = AgeGate.StaleGrace()
+        assertFalse(g.announce(stale = true, fromCache = true))    // nätmiss: tyst, nytt försök om en minut
+        assertTrue(g.announce(stale = true, fromCache = true))     // står kvar: raden sägs
+    }
+
+    @Test fun nathamtningEmellanNollstallerFristen() {
+        val g = AgeGate.StaleGrace()
+        assertFalse(g.announce(stale = true, fromCache = true))
+        assertFalse(g.announce(stale = false, fromCache = false))  // färsk från nätet: tyst
+        assertFalse(g.announce(stale = true, fromCache = true))    // ny nätmiss: tyst igen
+    }
+
+    @Test fun gammalDataFranNatetSagsDirekt() {
+        assertTrue(AgeGate.StaleGrace().announce(stale = true, fromCache = false))
+        assertFalse(AgeGate.StaleGrace().announce(stale = false, fromCache = true))
+    }
 }
