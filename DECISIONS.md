@@ -15103,6 +15103,10 @@ halkzonen är desamma som i 29.
 
 **Kvar:** *slå ihop* PR:en i karta-repot; Axel ser texterna i meddelandet om inskicket.
 
+**Sammanslagen 19/10** (Bengt: *"gör 1 och 2"*): halkvakt-karta#8 som cfd2de4, på halkvakt.se från 04:31 UTC (startsidan, Om-sidan och
+policyn lästa på sajten). Policyn gäller från **2026-10-19**, dagen den publicerades, inte 2026-10-18: datumet flyttat i grenens sista
+commit (6600a05), eftersom en policy inte ska gälla från en dag före publiceringen.
+
 **Alternativ.** Låta sajten vara tills Axel skrivit egna texter — valdes bort: inskicket väntar på policyn.
 
 **Stomdokument:** FAV §8 integriteten, APP §4, BED §4.2
@@ -15128,7 +15132,8 @@ med i samma granskning.
 - **3d:** produktboken, skärmbilderna och butikstexterna; sedan ett nytt bygge, provet och inskicket (punkterna 2–7 i #634 gäller).
 
 **Sajtens texter (#635, halkvakt-karta#8):** förslag att de slås ihop när bygget med rapporten skickas in, så att sajten inte beskriver en
-funktion som butiksversionen saknar. Väntar på Bengts ord.
+funktion som butiksversionen saknar. Väntar på Bengts ord. **Avgjort 19/10** (Bengt: *"gör 1 och 2"*): sammanslagen nu, före inskicket
+(#635). Tills bygget med rapporten är godkänt beskriver sajten en brytare som bara betaversionen har.
 
 **Alternativ.** Skicka 30 nu och rapporten i nästa version, eller 29 utan favoriterna — förkastade av Bengt.
 
