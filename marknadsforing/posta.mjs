@@ -5,6 +5,7 @@
 //   node marknadsforing/posta.mjs bild --live → ritar larmet till inlagg/DATUM-live-HHMM.jpg + .json (ingen historik)
 //   node marknadsforing/posta.mjs skicka  → postar bilden och texten (bilden måste vara pushad: Meta hämtar den via raw-URL);
 //                                           X får bilden ur arbetsträdet och textX(), när X_API_KEY m.fl. finns (DECISIONS #645);
+//   node marknadsforing/posta.mjs ikapp-x → lägger HV_NAMN på X, för ett inlägg som redan nått Facebook (rör inget annat)
 //                                           HV_NAMN väljer filerna, annars dagens pass
 // Utan META_PAGE_ID/META_PAGE_TOKEN är "skicka" en torrkörning: texten skrivs ut, inget postas.
 // HV_NU=<ISO-tid> låter en torrkörning låtsas att klockan är en annan.
@@ -565,6 +566,22 @@ async function ikapp() {
   writeFileSync(postatPath, JSON.stringify(postat, null, 2) + "\n");
 }
 
+// Put a post that already reached Facebook on X as well (the first X post 20/10, or X falling after Instagram). Nothing else is touched.
+async function ikappX() {
+  const namn = process.env.HV_NAMN;
+  const postat = lasJson(postatPath, {});
+  const kvitton = allaInlagg(postat).filter(p => p.namn === namn);
+  const huvud = kvitton.find(p => !p.kopia);
+  if (!huvud?.facebook) throw new Error(`Inget Facebook-kvitto för ${namn}; ikapp-x tar bara igen X.`);
+  if (huvud.x) return console.log(`${namn} finns redan på X: ${huvud.x}.`);
+  const inlagg = JSON.parse(readFileSync(join(dir, `${namn}.json`), "utf8"));
+  const text = textX(inlagg.textIg ?? inlagg.text);
+  if (!["X_API_KEY", "X_API_SECRET", "X_ACCESS_TOKEN", "X_ACCESS_SECRET"].every(n => process.env[n])) return console.log(`TORRKÖRNING (X-nycklarna saknas). Skulle posta:\n\n${text}`);
+  const id = await postaX(join(dir, `${namn}.jpg`), text, process.env);
+  for (const k of kvitton) k.x = id;
+  writeFileSync(postatPath, JSON.stringify(postat, null, 2) + "\n");
+}
+
 async function skicka() {
   const nu = process.env.HV_NU || new Date().toISOString();
   const postat = lasJson(postatPath, {});
@@ -605,4 +622,5 @@ if (steg === "bild") await bild(larm, false);
 else if (steg === "koll") await bild(true, true);
 else if (steg === "skicka") await skicka();
 else if (steg === "ikapp") await ikapp();
-else if (steg) { console.error(`Okänt steg "${steg}" — använd bild [--live], koll, skicka eller ikapp.`); process.exit(1); }
+else if (steg === "ikapp-x") await ikappX();
+else if (steg) { console.error(`Okänt steg "${steg}" — använd bild [--live], koll, skicka, ikapp eller ikapp-x.`); process.exit(1); }
