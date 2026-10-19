@@ -15322,6 +15322,10 @@ står musiken kvar nedduckad efter rösten och påverkan saknas i texten.
 
 **Stomdokument:** APP 0.3.13, FAV §11 vad som väntar, LIV steg 12, BED §4.2
 
+**Bygget klart 19/10** (Bengt: *"slå ihop 1074 och 1082"*). #1074 sammanslagen som 26bda75 och #1082 som e83e56c. 0.3.13 (32) uppladdat av TestFlight-flödet 39271856967 på e83e56c (14:46–14:49 UTC): läget ladda-upp från main, ARCHIVE SUCCEEDED, bygget bär 0.3.13 (32) som project.yml, Upload succeeded; Android: android.yml 39271818731 på e83e56c grön, med AAB:n versionCode 32.
+ci, ios-engine och md-vakt gröna på e83e56c (39271818698, 39271818727, 39271818675). Kvar: proven på 32, skärmbilderna ur 32 och
+inskicket (#634 punkt 4–7).
+
 ## #644 (19/10 2026) Databasen: Supabase Pro (d), eftersom #618 punkt 2 föll och raderingen (i) inte räcker (kort #347)
 
 **Bengts ord 19/10:** *"gör 1-5"*, där punkt 3 var valet (d) eller (i) med rekommendationen (d), i bedömningen §4.2 (PR #1084).
