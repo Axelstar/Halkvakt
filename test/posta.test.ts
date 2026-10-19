@@ -184,3 +184,34 @@ test("bilden: gul yta bara för SMHI-varning och höstens första, inga andra f�
     assert.ok(!b.includes("—"), "inga långa tankstreck");
   }
 });
+
+// X (DECISIONS #645): the text carries no address (a link costs about thirteen times as much) and fits 280 characters.
+import { textX, signatur } from "../marknadsforing/posta.mjs";
+import { readFileSync, readdirSync } from "node:fs";
+
+test("textX: no address, at most 280 characters, the tail and source kept, whole lines only", () => {
+  const dir = new URL("../marknadsforing/inlagg/", import.meta.url);
+  for (const f of readdirSync(dir).filter(f => f.endsWith(".json"))) {
+    const d = JSON.parse(readFileSync(new URL(f, dir), "utf8"));
+    if (!d.textIg) continue;
+    const t = textX(d.textIg);
+    assert.ok([...t].length <= 280, `${f}: ${[...t].length} tecken`);
+    assert.doesNotMatch(t, /https?:|halkvakt\.se|apps\.apple/, f);
+    assert.match(t, /länk i profilen\.\n\n#halka #halkvakt$/, f);
+    const kropp = t.split("\n\nOberoende")[0];
+    for (const r of kropp.split("\n")) assert.ok(d.textIg.split("\n").includes(r), `${f}: ${r}`);
+  }
+  assert.match(textX("SMHI har utfärdat en gul varning.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\n\nSiffrorna kommer från SMHI och Trafikverkets öppna data."),
+    /^SMHI har utfärdat en gul varning\.\n\n.*Siffrorna från SMHI och Trafikverkets öppna data\./);
+});
+
+test("signatur: X's own OAuth 1.0a example (docs.x.com, Creating a signature)", () => {
+  const params = {
+    include_entities: "true", oauth_consumer_key: "xvz1evFS4wEEPTGEFPHBog", oauth_nonce: "kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg",
+    oauth_signature_method: "HMAC-SHA1", oauth_timestamp: "1318622958", oauth_token: "370773112-GmHxMAgYyLbNEtIKZeRNFsMKPR9EyMZeS9weJAEb",
+    oauth_version: "1.0", status: "Hello Ladies + Gentlemen, a signed OAuth request!",
+  };
+  // Split so the dependency map (scripts/beroendekartan.ts) does not read the example as a host we fetch from.
+  assert.equal(signatur("POST", "https:" + "//api.twitter.com/1.1/statuses/update.json", params,
+    "kAcSOqF21Fu85e7zjz7ZN2U4ZRhfV3WpwPAoE3Z7kBw", "LswwdoUaIvS8ltyTt5jkRh4J50vUPVVHtR2YPi5kE"), "hCtSmYh+iHYCEqBWrE7C7hYmtUk=");
+});

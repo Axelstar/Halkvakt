@@ -9,6 +9,9 @@ on:
       ikapp:
         description: "Namnet på ett inlägg som nådde Facebook men inte Instagram (t.ex. 2026-10-17-live-2137): postar bara Instagram"
         default: ""
+      ikapp_x:
+        description: "Namnet på ett inlägg som nådde Facebook men inte X (t.ex. 2026-10-19-lunch): postar bara på X (DECISIONS #645)"
+        default: ""
 
 permissions:
   contents: write
@@ -40,8 +43,25 @@ jobs:
           git pull --rebase --autostash origin main && git push origin main || { git status --porcelain; exit 1; }
           exit $fel
 
+      - name: Ta igen X
+        if: inputs.ikapp_x != ''
+        env:
+          HV_NAMN: ${{ inputs.ikapp_x }}
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
+        run: |
+          fel=0; node marknadsforing/posta.mjs ikapp-x || fel=$?
+          git config user.name "Halkvakt live"
+          git config user.email "motor@halkvakt.dev"
+          git add marknadsforing/postat.json
+          git diff --cached --quiet || git commit -m "Halkvakt live: X ikapp ${HV_NAMN} [skip ci]"
+          git pull --rebase --autostash origin main && git push origin main || { git status --porcelain; exit 1; }
+          exit $fel
+
       - name: Finns ett larm att posta?
-        if: inputs.ikapp == ''
+        if: inputs.ikapp == '' && inputs.ikapp_x == ''
         id: koll
         run: node marknadsforing/posta.mjs koll
 
@@ -71,6 +91,10 @@ jobs:
           META_PAGE_ID: ${{ secrets.META_PAGE_ID }}
           META_PAGE_TOKEN: ${{ secrets.META_PAGE_TOKEN }}
           META_IG_ID: ${{ secrets.META_IG_ID }}
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
         run: |
           # Kvittot committas även när Instagram faller, annars postar nästa körning Facebook igen (17/10).
           fel=0; node marknadsforing/posta.mjs skicka || fel=$?
