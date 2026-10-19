@@ -77,7 +77,7 @@ avstånd, fara, väg) och vägdatans klockslag till höger om rubriken. Längst 
 den neutrala knappen *Avsluta vakten*. Håll fingret på *PÅ VAKT* en halv sekund så visas kort B, halkkortet, med
 motorns riktiga replik — så att granskaren ser ett varningskort utan att köra.
 
-**Gammal väglagsdata (M och N).** När vägdatan är för gammal säger rösten en gång per tur *"Ingen färsk väglagsdata – kör
+**Gammal väglagsdata (M och N).** När vägdatan är för gammal säger rösten en gång per tur *"Ingen färsk väglagsdata. Kör
 som om det kan vara halt."* **Inget gult kort** — gult betyder en fara framför dig. I stället glider en mörk rad in överst
 i åtta sekunder med repliken (M), och resten av turen står *VÄGLAGSDATA · GAMMAL — "Kör som om det kan vara halt." —
 SENAST FÄRSK 14:05* där *Tyst så länge* annars står (N). Ljuset förblir grönt; vakten är på. Ingen banner över kartappen.
@@ -224,7 +224,7 @@ rörelseigenkänning, Bluetooth och plats "Tillåt hela tiden".)*
 | **Halka enligt kandidaten, märkt beta (nivå 2):** modellens vägyta 0 °C eller kallare och ett mätt fuktbesked — Trafikverkets *Våt* på sträckan eller nederbörd på radarn — ingen varm station inom 15 km och stationerna runt omkring överens; en gång per sträcka och högst en gång per 10 minuter (DECISIONS #562–#577, #606) | "Halkvakt tror: halka framöver." |
 | Djur på vägen enligt Trafikverket — älg, hjort, vildsvin, men också lösa kor och får (sedan 22/9, DECISIONS #318; polisens länspunkter är borta) | "Viltrisk framöver." |
 | Fartkamera (hastighetsgränsen sägs inte: Trafikverkets kameradata bär ingen) | "Fartkamera om 500 meter." |
-| Väglagsdatat är gammalt (en gång per körning) | "Ingen färsk väglagsdata – kör som om det kan vara halt." |
+| Väglagsdatat är gammalt (en gång per körning) | "Ingen färsk väglagsdata. Kör som om det kan vara halt." |
 
 **Frysrisken efter regnet är en beta.** *"Halkvakt tror"* säger att det är en gissning ur regnet och hur fort vägbanan kyls, inte
 en uppmätt frysning. Värdena är satta före frosten och döms i januari på förarnas svar: håller de fortsätter betan till mars,
@@ -295,7 +295,7 @@ vars närmaste station inom 15 km är +3 grader eller kallare och våt — så l
 flowchart TD
     A[Du trycker Starta vakten] --> B[GPS börjar lyssna<br/>skärmen kan släckas]
     B --> C{Färsk vägdata?}
-    C -- "äldre än 45 min" --> D["🔊 En gång: Ingen färsk väglagsdata –<br/>kör som om det kan vara halt"]
+    C -- "äldre än 45 min" --> D["🔊 En gång: Ingen färsk väglagsdata.<br/>Kör som om det kan vara halt"]
     C -- färsk --> E[Motorn vakar tyst]
     D --> E
     E --> F{Fara i korridoren<br/>framför dig?}

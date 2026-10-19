@@ -118,6 +118,16 @@
       "facebook": "1312515671952967_122099261781516187",
       "instagram": "18093852533680415",
       "kopia": true
+    },
+    {
+      "pass": "lunch",
+      "namn": "2026-10-19-lunch",
+      "typ": "forandring",
+      "nyckel": "forandring",
+      "tid": "2026-10-19T10:50:40.229Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-10-19-lunch.jpg",
+      "facebook": "1312515671952967_122099504715516187",
+      "instagram": "18411872035090837"
     }
   ]
 }

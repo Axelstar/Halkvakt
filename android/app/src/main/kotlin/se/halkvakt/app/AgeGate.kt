@@ -37,5 +37,16 @@ object AgeGate {
         return Result(kept, true)
     }
 
-    const val STALE_LINE = "Ingen färsk väglagsdata – kör som om det kan vara halt."
+    const val STALE_LINE = "Ingen färsk väglagsdata. Kör som om det kan vara halt."
+
+    /** Provkörning 18/10: raden sades fast servern publicerat var tionde minut — telefonen hade fallit tillbaka på en
+     *  gammal sparad fil. Gammal data ur cachen kan vara en tillfällig nätmiss, så raden sägs först om den står kvar vid
+     *  nästa försök (en minut senare). Gammal data som kom färsk från nätet sägs direkt. */
+    class StaleGrace {
+        private var cacheLoads = 0
+        fun announce(stale: Boolean, fromCache: Boolean): Boolean {
+            cacheLoads = if (stale && fromCache) cacheLoads + 1 else 0
+            return stale && (!fromCache || cacheLoads >= 2)
+        }
+    }
 }

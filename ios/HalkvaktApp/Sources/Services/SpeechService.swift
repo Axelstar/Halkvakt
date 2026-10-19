@@ -1,5 +1,6 @@
 // Rösten + inställningarna. AVSpeechSynthesizer duckar bilens musik via
-// audiosessionens .duckOthers — samma beteende som Androids audio focus.
+// audiosessionens .duckOthers och släpper den när repliken är sagd — samma beteende som Androids audio focus
+// (GuardService.abandonFocus i onDone).
 import Foundation
 import AVFoundation
 import UIKit
@@ -7,13 +8,20 @@ import Observation
 import HalkvaktEngine
 
 @MainActor
-final class SpeechService {
+final class SpeechService: NSObject, AVSpeechSynthesizerDelegate {
     static let shared = SpeechService()
     private let synth = AVSpeechSynthesizer()
 
+    private override init() {
+        super.init()
+        synth.delegate = self
+    }
+
     func speak(_ text: String) {
         let session = AVAudioSession.sharedInstance()
-        try? session.setCategory(.playback, options: [.duckOthers])
+        // .voicePrompt: CarPlay och Bluetooth spelar repliken som en navigationsröst, på navigationsvolymen
+        // i stället för mediavolymen (provkörning 18/10: rösten högt, musiken lågt).
+        try? session.setCategory(.playback, mode: .voicePrompt, options: [.duckOthers])
         try? session.setActive(true)
         let u = AVSpeechUtterance(string: text)
         u.voice = AVSpeechSynthesisVoice(language: "sv-SE")
@@ -34,6 +42,21 @@ final class SpeechService {
             try? await Task.sleep(for: .seconds(6))
             endBackgroundTask()
         }
+    }
+
+    // Provkörning 18/10: sessionen aktiverades men släpptes aldrig, så bilens musik stod kvar nedduckad efter repliken.
+    // När rösten tystnat avaktiveras den med .notifyOthersOnDeactivation, så att musiken tonar upp igen.
+    nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
+        Task { @MainActor in self.releaseSession() }
+    }
+
+    nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didCancel utterance: AVSpeechUtterance) {
+        Task { @MainActor in self.releaseSession() }
+    }
+
+    private func releaseSession() {
+        guard !synth.isSpeaking else { return }   // en replik till står i kö — släpp efter den
+        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
     }
 
     private var bgTask: UIBackgroundTaskIdentifier = .invalid

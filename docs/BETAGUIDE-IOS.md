@@ -96,7 +96,7 @@ viktiga.
 **Rösten säger aldrig mer än datan bär.** Hör du något som låter överdrivet eller fel — säg till.
 
 **Vägdatan förnyas var 30:e minut under resan.** Är datan gammal — till exempel utan nät — säger rösten en gång:
-*"Ingen färsk väglagsdata – kör som om det kan vara halt."*
+*"Ingen färsk väglagsdata. Kör som om det kan vara halt."*
 
 ---
 
