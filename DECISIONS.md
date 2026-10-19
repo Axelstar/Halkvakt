@@ -15103,6 +15103,10 @@ halkzonen är desamma som i 29.
 
 **Kvar:** *slå ihop* PR:en i karta-repot; Axel ser texterna i meddelandet om inskicket.
 
+**Sammanslagen 19/10** (Bengt: *"gör 1 och 2"*): halkvakt-karta#8 som cfd2de4, på halkvakt.se från 04:31 UTC (startsidan, Om-sidan och
+policyn lästa på sajten). Policyn gäller från **2026-10-19**, dagen den publicerades, inte 2026-10-18: datumet flyttat i grenens sista
+commit (6600a05), eftersom en policy inte ska gälla från en dag före publiceringen.
+
 **Alternativ.** Låta sajten vara tills Axel skrivit egna texter — valdes bort: inskicket väntar på policyn.
 
 **Stomdokument:** FAV §8 integriteten, APP §4, BED §4.2
@@ -15128,7 +15132,8 @@ med i samma granskning.
 - **3d:** produktboken, skärmbilderna och butikstexterna; sedan ett nytt bygge, provet och inskicket (punkterna 2–7 i #634 gäller).
 
 **Sajtens texter (#635, halkvakt-karta#8):** förslag att de slås ihop när bygget med rapporten skickas in, så att sajten inte beskriver en
-funktion som butiksversionen saknar. Väntar på Bengts ord.
+funktion som butiksversionen saknar. Väntar på Bengts ord. **Avgjort 19/10** (Bengt: *"gör 1 och 2"*): sammanslagen nu, före inskicket
+(#635). Tills bygget med rapporten är godkänt beskriver sajten en brytare som bara betaversionen har.
 
 **Alternativ.** Skicka 30 nu och rapporten i nästa version, eller 29 utan favoriterna — förkastade av Bengt.
 
@@ -15251,6 +15256,8 @@ säga om en nattstängd tunnel är öppen just nu.
 avstängningar med påverkan 1 — tar bort sant läge; bara påverkan utan ny rubrik — rubriken ensam vilseleder i fliken.
 
 **Stomdokument:** FAV §3 rapporten, BED §4.2
+
+**(1) i drift 18/10** (Bengt: *"slå ihop 1072"*, deployen godkänd i §4.2): deploy av favoriter (39120705291) och favoritprov (39120707469) från main b095128 18/10 10:49 UTC; rapportfilen 10:56:01 bär Avstängning 7 och Vägen avstängd 0 (före: 10:46, 7 och 0 omvänt), manifestets sha256 lika med filens; favoritprov 11:08:23 likadant (Avstängning 7, Vägen avstängd 0), körtiden 3 429 ms. (2) väntar på bygge 32.
 
 ## #642 (18/10 2026) Rösten släpper musiken på iOS, och raden om gammal väglagsdata väntar ut en nätmiss (provkörning i Malmö)
 
