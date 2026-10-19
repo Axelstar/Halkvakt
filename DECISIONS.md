@@ -15350,3 +15350,19 @@ GREPP3-ARKIVENs skrivskyddsrad om mot den nya kvoten, i en egen ändring.
 
 **Köpt 19/10** (Bengt: *"vi har köpt supabase pro"*). Planen är inte läst i panelen av Claude, eftersom inloggningen saknas. Kvar: vakthundens gräns och
 GREPP3-ARKIVENs skrivskyddsrad mot den nya kvoten, i en egen ändring med deploy.
+
+## #645 (20/10 2026) Besöksräknare på halkvakt.se: egen, utan kakor, i stället för Google Analytics
+
+**Axels beställning 20/10:** *"how do we set this up so i can track things?"* efter att Search Console visat 111 exponeringar och 2 klick
+ett dygn. Search Console ser bara trafik från Google; tidningarna, Facebook och Instagram syns inte.
+
+**Beslut.** En egen räknare: `/assets/besok.js` i kartrepot skickar sökväg, hänvisande domän, en `?r=`-kod och mobil/dator till edge-
+funktionen `besok`, som skriver en rad i `besok` (sql/064). Ingen IP, inga kakor, inget användar-id. Statistiksidan `statistik.html` i
+kartrepot läser sammanställningen `besok_stat` med en nyckel (sha256 i `besok_nyckel`, aldrig i repot). Länssidorna och vägsidorna får
+skriptet via mallen i `publish/lanssidor.ts`. Inte i `ruta.html` eller `widget.html`: rutan lovar tidningarna ingen spårning.
+
+**Alternativ.** Google Analytics 4: kräver samtyckesbanner (kakor), skickar data till Google och bryter sajtens och rutans löfte om
+ingen spårning; Axel fick valet 20/10 och räknaren byggdes. GoatCounter och Cloudflare Web Analytics: gratis och utan kakor men tredje
+part. Söka i GitHub Pages loggar: Pages har inga.
+
+**Stomdokument:** SYS sajten
