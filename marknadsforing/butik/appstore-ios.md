@@ -87,5 +87,8 @@ Klistra in på engelska — granskarna läser engelska:
 Kontaktuppgifter i formuläret: Axel Lagerlöf, +46 (ditt nummer), ‹Axels e-postadress›. *Sign-in required:* **Nej**.
 
 ## Skärmbilder
-Mappen `appstore/` i den här katalogen: 1320 × 2868 (6,9 tum), inramade ur råbilder tagna på Axels iPhone 14 ur (19), 1/10 kväll. Apple
-kräver 6,9-tumsstorleken; samma bilder kan laddas upp även under 6,5 tum (Apple skalar). Ordningen i butiken är filnamnens ordning.
+Bilderna i butiken sedan 0.3.9 kommer ur `appstore/alf/` (skriptet `alf.py`): 1284 × 2778, Apples 6,5-tumsfack, det App Store Connect
+visade för Halkvakt 1/10; 0.3.9 godkändes med dem 12/10. Råbilderna tas på Axels iPhone 14 (1170 × 2532, för små för facket) och ramas
+in av skriptet, med statusraden (översta 150 px) ersatt av skärmens färg. `appstore/` har en reservserie i 1320 × 2868 (6,9 tum,
+`rama.py`) om App Store Connect kräver det facket. Nya bilder tas ur bygget som skickas in, 0.3.13 (32) (DECISIONS #643): de nuvarande
+är ur (19), före designen v2 och fliken Favoriter (2.3.3). Ordningen i butiken är filnamnens ordning.

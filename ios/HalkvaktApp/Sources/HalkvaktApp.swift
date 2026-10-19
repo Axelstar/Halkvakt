@@ -337,6 +337,9 @@ struct RootView: View {
             FloatingTabBar(tab: $tab).padding(.bottom, 8)
         }
         .background(Brand.bg)
+        // Skärmens bakgrund bakom klockan: flikarna döljer navigeringsfältet, så texten rullade annars upp under statusfältet
+        // (Bengts skärmbilder 18/10, DECISIONS #643). Gäller flikarna och sidorna under dem; körläget är en egen skärm.
+        .safeAreaInset(edge: .top, spacing: 0) { Color.clear.frame(height: 0).background(Brand.bg) }
         // Här och inte i VaktenView: vakten kan starta (Siri, Genvägar, självväckning) medan Inställningar visas.
         .fullScreenCover(isPresented: $guardM.running) { KorlageView() }
     }

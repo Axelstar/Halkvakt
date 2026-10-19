@@ -15258,3 +15258,31 @@ avstängningar med påverkan 1 — tar bort sant läge; bara påverkan utan ny r
 **Stomdokument:** FAV §3 rapporten, BED §4.2
 
 **(1) i drift 18/10** (Bengt: *"slå ihop 1072"*, deployen godkänd i §4.2): deploy av favoriter (39120705291) och favoritprov (39120707469) från main b095128 18/10 10:49 UTC; rapportfilen 10:56:01 bär Avstängning 7 och Vägen avstängd 0 (före: 10:46, 7 och 0 omvänt), manifestets sha256 lika med filens; favoritprov 11:08:23 likadant (Avstängning 7, Vägen avstängd 0), körtiden 3 429 ms. (2) väntar på bygge 32.
+
+## #643 (19/10 2026) Bygge 32 före App Review: påverkan i rapportens text, rösten som släpper musiken och statusfältet (kort #357, #343)
+
+**Bengts ord 19/10:** *"2 bygge 32"*, på frågan i bedömningen §4.2 (PR #1081): bygge 32 med de tre, eller 31 som det är.
+
+**Beslut.** Inget inskick med 31. 0.3.13 (32) byggs från main när tre saker ligger där:
+1. Trafikverkets påverkan i rapportens text (#641 punkt 2), på main sedan b095128;
+2. Axels PR #1074 (#642): iOS släpper musiken efter repliken, och raden om gammal väglagsdata väntar ut en nätmiss; main införd i
+   PR:en 19/10 (031aa84);
+3. statusfältet: skärmens bakgrund bakom klockan i `RootView` (`safeAreaInset` med `Brand.bg`), så att texten i Favoriter,
+   Inställningar och Vakten inte rullar upp under statusfältet (Bengts skärmbilder 18/10). Android har inte felet: innehållet ligger
+   under `statusBarsPadding()`.
+
+Byggnumret 32 på iOS och Android (#377) i samma PR som rättelsen. Den slås ihop efter #1074 och provas om mot main innan dess, så att
+numret sätts efter den sista ändringen. Sedan TestFlight-flödet *ladda-upp* från main, proven på 32 (Bengt: *Nytt sedan* och samma väg
+tillbaka; Axel), skärmbilderna ur 32 och inskicket (#634 punkt 4–7).
+
+**Utanför:** Axels PR #1029 (API 36 för Play). Den bär mer än API-nivån (MainActivity, rösten, ett demovideoskript) och rör inte App
+Review; Play internt väntar ändå på kontot (#640). AAB:n 32 byggs med API 35, som 31.
+
+**Skärmbilderna (Bengt 19/10: *"3 ja"*).** Butiken har bilderna ur `alf.py`, 1284 × 2778 i 6,5-tumsfacket som App Store Connect visade
+1/10; 0.3.9 godkändes med dem 12/10. `appstore-ios.md` och kort #357 sa 6,9 tum; rättat. Axels råbilder från iPhone 14 (1170 × 2532) är
+för små för facket och ramas in av skriptet. Kräver App Store Connect 6,9 tum vid inskicket finns `rama.py` (1320 × 2868).
+
+**Alternativ.** 31 som det är: förkastat. Provet och skärmbilderna är inte gjorda och görs då en gång, på bygget som granskas; med 31
+står musiken kvar nedduckad efter rösten och påverkan saknas i texten.
+
+**Stomdokument:** APP 0.3.13, FAV §11 vad som väntar, LIV steg 12, BED §4.2

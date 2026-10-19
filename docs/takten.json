@@ -1,4 +1,4 @@
-{"fran":"2026-10-12T04:43:04.000Z","till":"2026-10-19T04:43:04.000Z","sha":"31a2a66ff755b7c4e4bfadcd500e8bd6f8a506a0","procentFore":70,"procent":76,"handelser":[
+{"fran":"2026-10-12T05:16:45.000Z","till":"2026-10-19T05:16:45.000Z","sha":"bd216c27b45806304c5231389373d30842a08ec3","procentFore":70,"procent":76,"handelser":[
 {"sha":"fc95fcceb21e5206ec83e297c4a0e89045f341c1","tid":"2026-10-12T12:55:56.000Z","rubrik":"Dokumentsynk: 2026-10-12 (#893)","art":"steg","del":"i-export","delnamn":"Arkivexporten och säkerhetskopian","block":"insamling","steg":"Grindarna läser dygnen äldre än 14 ur hinken","fran":"pagar","till":"klar"},
 {"sha":"fc95fcceb21e5206ec83e297c4a0e89045f341c1","tid":"2026-10-12T12:55:56.000Z","rubrik":"Dokumentsynk: 2026-10-12 (#893)","art":"steg","del":"f-provmiljo","delnamn":"Favoritprovet, testmiljön","block":"favoriterna","steg":"Rutter längs vägen","fran":"pagar","till":"klar"},
 {"sha":"fc95fcceb21e5206ec83e297c4a0e89045f341c1","tid":"2026-10-12T12:55:56.000Z","rubrik":"Dokumentsynk: 2026-10-12 (#893)","art":"steg","del":"u-app-store","delnamn":"App Store","block":"forarna","steg":"Inskickat","fran":"pagar","till":"klar"},
