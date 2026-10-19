@@ -215,3 +215,11 @@ test("signatur: X's own OAuth 1.0a example (docs.x.com, Creating a signature)", 
   assert.equal(signatur("POST", "https:" + "//api.twitter.com/1.1/statuses/update.json", params,
     "kAcSOqF21Fu85e7zjz7ZN2U4ZRhfV3WpwPAoE3Z7kBw", "LswwdoUaIvS8ltyTt5jkRh4J50vUPVVHtR2YPi5kE"), "hCtSmYh+iHYCEqBWrE7C7hYmtUk=");
 });
+
+import { veckorad } from "../marknadsforing/posta.mjs";
+test("veckorad: sums the week's metrics and picks the most-viewed post (DECISIONS #646)", () => {
+  const p = (id, v, l, r, q, s) => ({ id, text: `Rad ${id}\nmer`, public_metrics: { impression_count: v, like_count: l, retweet_count: r, quote_count: q, reply_count: s } });
+  const rad = veckorad("2026-10-26T04:50:00Z", [p("1", 40, 2, 1, 0, 1), p("2", 120, 5, 2, 1, 0)]);
+  assert.deepEqual(rad, { tid: "2026-10-26T04:50:00Z", inlagg: 2, visningar: 160, gillningar: 7, delningar: 4, svar: 1, basta: { id: "2", visningar: 120, text: "Rad 2" } });
+  assert.equal(veckorad("2026-10-26T04:50:00Z", []).basta, null);
+});
