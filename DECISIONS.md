@@ -14716,6 +14716,8 @@ Integrationsprovet för kandidatens loggar är omskrivet: fem och två dygn gaml
 
 **Punkt 1, natten till 18/10 — höll som förregistrerat:** nattjobbet 03:50:00 (`halkvakt-arkivradering-tabeller`, succeeded) raderade kandidatens dygn 15–16/10 (`kandidat_skugga` 703 rader, `kandidat_station` 30 160) och trendtabellernas och radarns dygn 3–7/10 (`trend_kandidater` 31 496, `trend_stigande` 10 073, `radar_precip` 8 013), 80 445 rader; kvar oraderade: kandidatens 17/10 och trendtabellernas och radarns 8–10/10, och de fyra tabellerna med 24 exporterade dygn var och ingen radering (DB-knappen *las* 39098265661, 04:46 UTC). Databasens storlek i samma läsning, bara den egna databasen: 497 044 627 byte (474 MiB). Vakthunden räknar alla databaser, så talet jämförs inte med #580:s; punkt 2 läses 19/10 ur vakthundens timserie.
 
+**Punkt 2, 19/10: föll.** Vakthunden (summan över alla databaser, #569) visade 488 MB 18/10 07:08 och 492 MB 19/10 09:07. 07:07-läsningen saknas, eftersom databasen inte tog emot anslutningar 03:49 till ungefär 08:05 (nattens avbrott, bedömningen §4.2). Det är 3–4 MB per dygn mot högst 2, och 500 MB nås omkring 21/10. Valet lades fram igen; Bengt valde (d), DECISIONS #644.
+
 ## #619 (17/10 2026) Soffprovet på iPhone 17/10 kväll: förväntan A föll som provet var byggt — rutten gick genom en sträcka med Trafikverkets halkvarning (kort #343, steg 13; kort #359)
 
 **Axel 17/10**, provet på iPhone via Xcode (#605), main på 5548607, rutten `soffprovet-xcode.gpx` ur lägesfilen 16:10 UTC: sträcka 45130
@@ -15291,3 +15293,28 @@ av de två orsakerna som utlöste raden i Malmö går inte att avgöra utan tele
 en hel tur hör den aldrig; höja tröskeln från 45 minuter — ändrar åldersvakten för alla, inte felet.
 
 **Stomdokument:** inga — appbeteende och en replik; produktboken, SYSTEM, BETAGUIDE-IOS och APPEN rättade i samma commit.
+
+## #644 (19/10 2026) Databasen: Supabase Pro (d), eftersom #618 punkt 2 föll och raderingen (i) inte räcker (kort #347)
+
+**Bengts ord 19/10:** *"gör 1-5"*, där punkt 3 var valet (d) eller (i) med rekommendationen (d), i bedömningen §4.2 (PR #1084).
+
+**Underlaget.** #618 punkt 2 föll: 488 MB 18/10 07:08 och 492 MB 19/10 09:07 enligt vakthunden, som räknar summan över alla databaser
+som Supabase räknar kvoten (#569). Det är 3–4 MB per dygn, och 500 MB nås omkring 21/10. Då skrivskyddas databasen och ingest-live
+stannar (GREPP3-ARKIVEN). Huvuddatabasen är 477,5 MB; `weather_observations` bär 275,7 MB av dem (DB-knappen *las* 39256382877).
+(i), att radera de fyra tabellerna efter exporten, sparar ungefär 0,9 MB per dygn (#618) och räcker inte ensam.
+
+**Beslut.** Supabase Pro, 25 USD/mån. Det kräver Axels ja (gratisnivåregeln) och att den som får byta plan gör det i Supabase-panelen
+före 21/10. De fyra tabellerna raderas inte; (ii) i #618 står kvar.
+
+**Kvar:** Axels ja och bytet. Beviset är planen i panelen. Efter bytet skrivs vakthundens gräns (*av 500, larm vid 450 MB*) och
+GREPP3-ARKIVENs skrivskyddsrad om mot den nya kvoten, i en egen ändring.
+
+**Säger Axel nej:** valet läggs fram samma dag med (i) och fler gallrade dygn i `weather_observations` ((a) i #618). Utan åtgärd före
+21/10 skrivskyddas databasen.
+
+**Alternativ.** (i) ensam: räcker inte (0,9 av 3–4 MB per dygn). Vänta och läsa om: taket nås före nästa omläsning.
+
+**Stomdokument:** SYS databasen och arkivet, BED §4.2
+
+**Köpt 19/10** (Bengt: *"vi har köpt supabase pro"*). Planen är inte läst i panelen av Claude, eftersom inloggningen saknas. Kvar: vakthundens gräns och
+GREPP3-ARKIVENs skrivskyddsrad mot den nya kvoten, i en egen ändring med deploy.
