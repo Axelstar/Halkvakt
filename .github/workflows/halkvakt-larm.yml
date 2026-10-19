@@ -12,6 +12,9 @@ on:
       ikapp_x:
         description: "Namnet på ett inlägg som nådde Facebook men inte X (t.ex. 2026-10-19-lunch): postar bara på X (DECISIONS #645)"
         default: ""
+      manuell_x:
+        description: "Namnet på en handgjord bild med text i marknadsforing/inlagg (t.ex. 2026-10-20-x-fast): postar bara på X"
+        default: ""
 
 permissions:
   contents: write
@@ -44,24 +47,25 @@ jobs:
           exit $fel
 
       - name: Ta igen X
-        if: inputs.ikapp_x != ''
+        if: inputs.ikapp_x != '' || inputs.manuell_x != ''
         env:
-          HV_NAMN: ${{ inputs.ikapp_x }}
+          HV_NAMN: ${{ inputs.ikapp_x || inputs.manuell_x }}
+          STEG: ${{ inputs.ikapp_x != '' && 'ikapp-x' || 'manuell-x' }}
           X_API_KEY: ${{ secrets.X_API_KEY }}
           X_API_SECRET: ${{ secrets.X_API_SECRET }}
           X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
           X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
         run: |
-          fel=0; node marknadsforing/posta.mjs ikapp-x || fel=$?
+          fel=0; node marknadsforing/posta.mjs "$STEG" || fel=$?
           git config user.name "Halkvakt live"
           git config user.email "motor@halkvakt.dev"
-          git add marknadsforing/postat.json
-          git diff --cached --quiet || git commit -m "Halkvakt live: X ikapp ${HV_NAMN} [skip ci]"
+          git add marknadsforing/postat.json "marknadsforing/inlagg/${HV_NAMN}.json"
+          git diff --cached --quiet || git commit -m "Halkvakt live: X ${STEG} ${HV_NAMN} [skip ci]"
           git pull --rebase --autostash origin main && git push origin main || { git status --porcelain; exit 1; }
           exit $fel
 
       - name: Finns ett larm att posta?
-        if: inputs.ikapp == '' && inputs.ikapp_x == ''
+        if: inputs.ikapp == '' && inputs.ikapp_x == '' && inputs.manuell_x == ''
         id: koll
         run: node marknadsforing/posta.mjs koll
 
