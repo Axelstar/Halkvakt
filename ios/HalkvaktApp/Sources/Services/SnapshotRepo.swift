@@ -10,15 +10,15 @@ enum SnapshotError: Error { case checksum(String), http(Int) }
 enum SnapshotRepo {
     static let base = "https://axelstar.github.io/halkvakt-karta/data/app/v1/"
 
-    struct Snapshot { let hazards: [Hazard]; let generatedAt: Date; var stations: [Station] = [] }
+    /// `fromCache`: hämtningen föll och den sparade filen gäller — då kan åldern bero på nätet, inte på datan.
+    struct Snapshot { let hazards: [Hazard]; let generatedAt: Date; var stations: [Station] = []; var fromCache = false }
 
     static func loadSnapshot() async throws -> Snapshot {
-        // Kort #258: utan nät faller manifestet — då ska den sparade snapshoten gälla (fetchVerified), inte hela laddningen
-        // falla. Tomt manifest ⇒ kontrollsumman fäller varje hämtning ⇒ cachen, som Androids SnapshotRepo gör.
-        let manifest = (try? await fetchJSON("manifest.json")) ?? [:]
-        let files = manifest["files"] as? [String: Any] ?? [:]
-        let staticDoc = try await fetchVerified("static.json", manifestFiles: files)
-        let liveDoc = try await fetchVerified("live.json", manifestFiles: files)
+        // Provkörning 18/10: ett manifest från nästa publicering (var tionde minut) fäller kontrollsumman och lämnar en gammal
+        // sparad fil. Ett nytt försök innan den sparade filen får gälla.
+        var docs = try await fetchBoth()
+        if docs.fromCache { docs = try await fetchBoth() }
+        let (staticDoc, liveDoc) = (docs.stat, docs.live)
         let gen = (liveDoc["generated_at"] as? String)
             .flatMap { ISO8601DateFormatter.withFraction.date(from: $0) } ?? .distantPast
 
@@ -28,7 +28,17 @@ enum SnapshotRepo {
         let stations = SnapshotReader.arr(staticDoc, "stations")
             .map { Station(id: SnapshotReader.str($0, "id"), lon: SnapshotReader.dbl($0, "lon"), lat: SnapshotReader.dbl($0, "lat")) }
             .filter { !$0.id.isEmpty }
-        return Snapshot(hazards: out, generatedAt: gen, stations: stations)
+        return Snapshot(hazards: out, generatedAt: gen, stations: stations, fromCache: docs.fromCache)
+    }
+
+    private static func fetchBoth() async throws -> (stat: [String: Any], live: [String: Any], fromCache: Bool) {
+        // Kort #258: utan nät faller manifestet — då ska den sparade snapshoten gälla (fetchVerified), inte hela laddningen
+        // falla. Tomt manifest ⇒ kontrollsumman fäller varje hämtning ⇒ cachen, som Androids SnapshotRepo gör.
+        let manifest = (try? await fetchJSON("manifest.json")) ?? [:]
+        let files = manifest["files"] as? [String: Any] ?? [:]
+        let stat = try await fetchVerified("static.json", manifestFiles: files)
+        let live = try await fetchVerified("live.json", manifestFiles: files)
+        return (stat.doc, live.doc, stat.fromCache || live.fromCache)
     }
 
     /// static.json och live.json som de ligger, verifierade som ovan — för favoriternas rapport (kort #357), som läser fler fält än
@@ -36,12 +46,13 @@ enum SnapshotRepo {
     static func dokument() async throws -> (stat: [String: Any], live: [String: Any]) {
         let manifest = (try? await fetchJSON("manifest.json")) ?? [:]
         let files = manifest["files"] as? [String: Any] ?? [:]
-        return (try await fetchVerified("static.json", manifestFiles: files), try await fetchVerified("live.json", manifestFiles: files))
+        return (try await fetchVerified("static.json", manifestFiles: files).doc, try await fetchVerified("live.json", manifestFiles: files).doc)
     }
 
     // MARK: - Hämtning med verifiering + cache
 
-    private static func fetchVerified(_ name: String, manifestFiles: [String: Any]) async throws -> [String: Any] {
+    /// Dokumentet, och true om det kom ur den sparade filen.
+    private static func fetchVerified(_ name: String, manifestFiles: [String: Any]) async throws -> (doc: [String: Any], fromCache: Bool) {
         let cacheURL = cacheDir().appendingPathComponent(name)
         do {
             let key = String(name.dropLast(".json".count))
@@ -51,10 +62,10 @@ enum SnapshotRepo {
             let sha = SHA256.hash(data: body).map { String(format: "%02x", $0) }.joined()
             guard sha == expected else { throw SnapshotError.checksum(name) }
             try? body.write(to: cacheURL)
-            return try parse(body)
+            return (try parse(body), false)
         } catch {
             // Offline eller trasig hämtning: senaste verifierade snapshoten gäller.
-            if let cached = try? Data(contentsOf: cacheURL) { return try parse(cached) }
+            if let cached = try? Data(contentsOf: cacheURL) { return (try parse(cached), true) }
             throw error
         }
     }

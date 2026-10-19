@@ -103,6 +103,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
     // MARK: - Snapshot
 
     private var staleAnnounced = false
+    private var staleGrace = AgeGate.StaleGrace()
 
     // Kort #258 (DECISIONS #371): under resan laddas vägdatan om var 30:e minut, som på Android (SnapshotSchedule) —
     // en laddning i taget, och efter ett fel väntar nästa försök en minut. Förut laddades den bara vid start och när
@@ -124,10 +125,11 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
             if !snap.stations.isEmpty { stations = snap.stations }
             if !fresh, running, let engine { engine.updateHazards(gate.hazards) }
             else { engine = AlertEngine(gate.hazards, EngineConfig.withPrefs()) }
-            nextLoadAt = .now.addingTimeInterval(Self.refreshEvery)
+            // Gammal sparad fil: nytt försök om en minut, inte om 30.
+            nextLoadAt = .now.addingTimeInterval(gate.stale && snap.fromCache ? Self.retryAfter : Self.refreshEvery)
             dataStale = gate.stale
             dataTime = snap.generatedAt > .distantPast ? snap.generatedAt : nil
-            if gate.stale && running && !staleAnnounced {
+            if staleGrace.announce(stale: gate.stale, fromCache: snap.fromCache) && running && !staleAnnounced {
                 staleAnnounced = true
                 SpeechService.shared.speak(AgeGate.staleLine)
                 staleToast = true
@@ -246,6 +248,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         }
         Favoriter.shared.resanBorjar(ny: !sameTrip)   // kort #357: bara med brytaren på
         tripEndedAt = nil
+        staleGrace = AgeGate.StaleGrace()
         staleAnnounced = false
         prevLoc = nil
         // ALLTID sant när vakten startas av föraren (#273). Apple: "When the value of this property is

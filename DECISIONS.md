@@ -15261,6 +15261,39 @@ avstängningar med påverkan 1 — tar bort sant läge; bara påverkan utan ny r
 
 **(1) i drift 18/10** (Bengt: *"slå ihop 1072"*, deployen godkänd i §4.2): deploy av favoriter (39120705291) och favoritprov (39120707469) från main b095128 18/10 10:49 UTC; rapportfilen 10:56:01 bär Avstängning 7 och Vägen avstängd 0 (före: 10:46, 7 och 0 omvänt), manifestets sha256 lika med filens; favoritprov 11:08:23 likadant (Avstängning 7, Vägen avstängd 0), körtiden 3 429 ms. (2) väntar på bygge 32.
 
+## #642 (18/10 2026) Rösten släpper musiken på iOS, och raden om gammal väglagsdata väntar ut en nätmiss (provkörning i Malmö)
+
+**Axels ord 18/10:** en vän körde med appen i Malmö (iPhone, CarPlay): *"Den sänker volymen då den ska ge meddelande och sedan höjer
+det mycket"* — rösten hög, sedan musiken låg — och *"en felaktig varning"*: raden om att väglagsdatan inte är färsk. Sedan *"Okej ska du
+fixa?"*.
+
+**Underlaget.**
+1. `SpeechService.swift` aktiverade audiosessionen med `.duckOthers` före varje replik men avaktiverade den aldrig — inget
+   `setActive(false)` fanns i iOS-appen. Bilens musik stod därför kvar nedduckad efter repliken. Android släpper redan ljudfokus i
+   `onDone`/`onError` (GuardService).
+2. `live.json` publicerades var tionde minut hela 18/10 (halkvakt-kartas historik, 00:50–12:40 utan lucka), så servern var aldrig
+   45 minuter efter. Raden sägs när telefonens snapshot är äldre än 45 minuter, och telefonen faller tillbaka på den sparade filen när en
+   hämtning misslyckas — nätmiss, eller ett manifest från nästa publicering som fäller kontrollsumman. Den sparade filen kan vara från
+   förra turen. Nästa försök kom först efter 30 minuter.
+
+**Beslut.**
+1. **iOS släpper sessionen** när repliken är sagd (`didFinish`/`didCancel` → `setActive(false, options: .notifyOthersOnDeactivation)`),
+   och sessionen går i läget `.voicePrompt` så att CarPlay och Bluetooth spelar repliken som en navigationsröst på navigationsvolymen.
+2. **Snapshoten vet om den kom ur cachen** (`fromCache`, iOS och Android). Kom den ur cachen görs ett nytt försök direkt, och är datan
+   ändå gammal och ur cachen sägs raden först om den står kvar vid nästa försök en minut senare (`AgeGate.StaleGrace`, Swift och Kotlin,
+   prövad i `AgeGateTest`). Gammal data som kom färsk från nätet sägs direkt, som förut. Panelen N visas som förut.
+3. **Raden utan tankstreck:** *"Ingen färsk väglagsdata. Kör som om det kan vara halt."* — varumärkesguiden tillåter kort streck bara
+   mellan orter och tider (samma regel som beslutet 17/10 om motorns repliker). Ändrad i appen och i PRODUKTBOK, SYSTEM, BETAGUIDE-IOS
+   och APPEN.
+
+**Verify:** ett iOS-bygge med ändringen där musiken tonar upp efter en replik i CarPlay; Android-jobbet grönt på `AgeGateTest`. Vilken
+av de två orsakerna som utlöste raden i Malmö går inte att avgöra utan telefonens logg.
+
+**Alternativ.** Avaktivera sessionen efter en fast tid — klipper en lång replik; tysta raden helt vid cache — en förare som är utan nät
+en hel tur hör den aldrig; höja tröskeln från 45 minuter — ändrar åldersvakten för alla, inte felet.
+
+**Stomdokument:** inga — appbeteende och en replik; produktboken, SYSTEM, BETAGUIDE-IOS och APPEN rättade i samma commit.
+
 ## #644 (19/10 2026) Databasen: Supabase Pro (d), eftersom #618 punkt 2 föll och raderingen (i) inte räcker (kort #347)
 
 **Bengts ord 19/10:** *"gör 1-5"*, där punkt 3 var valet (d) eller (i) med rekommendationen (d), i bedömningen §4.2 (PR #1084).
