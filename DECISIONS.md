@@ -15315,3 +15315,6 @@ GREPP3-ARKIVENs skrivskyddsrad om mot den nya kvoten, i en egen ändring.
 **Alternativ.** (i) ensam: räcker inte (0,9 av 3–4 MB per dygn). Vänta och läsa om: taket nås före nästa omläsning.
 
 **Stomdokument:** SYS databasen och arkivet, BED §4.2
+
+**Köpt 19/10** (Bengt: *"vi har köpt supabase pro"*). Planen är inte läst i panelen av Claude, eftersom inloggningen saknas. Kvar: vakthundens gräns och
+GREPP3-ARKIVENs skrivskyddsrad mot den nya kvoten, i en egen ändring med deploy.
