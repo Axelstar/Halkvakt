@@ -4,6 +4,7 @@
 //   node marknadsforing/posta.mjs koll    → finns ett larm att posta? (har=ja|nej i GITHUB_OUTPUT; ritar och skriver inget)
 //   node marknadsforing/posta.mjs bild --live → ritar larmet till inlagg/DATUM-live-HHMM.jpg + .json (ingen historik)
 //   node marknadsforing/posta.mjs skicka  → postar bilden och texten (bilden måste vara pushad: Meta hämtar den via raw-URL);
+//                                           X får bilden ur arbetsträdet och textX(), när X_API_KEY m.fl. finns (DECISIONS #645);
 //                                           HV_NAMN väljer filerna, annars dagens pass
 // Utan META_PAGE_ID/META_PAGE_TOKEN är "skicka" en torrkörning: texten skrivs ut, inget postas.
 // HV_NU=<ISO-tid> låter en torrkörning låtsas att klockan är en annan.
@@ -17,6 +18,7 @@
 import { readFileSync, writeFileSync, appendFileSync, mkdirSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createHmac, randomBytes } from "node:crypto";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const DATA = process.env.HV_LAN_URL ?? "https://halkvakt.se/data/lan.json";
@@ -496,6 +498,49 @@ async function vantaPaIg(id, token) {
   throw new Error(`Instagram-behållaren ${id} blev inte klar på en minut`);
 }
 
+// ---------- X (DECISIONS #645) ----------
+// X charges per post, and a post with a link costs about thirteen times one without, so the X text carries no address:
+// the Instagram text up to its link line, cut by whole lines to fit 280 characters, and a short tail.
+const X_MAX = 280;
+export function textX(textIg) {
+  const rader = textIg.split("\n"), slut = rader.indexOf(LANK.instagram);
+  const kalla = textIg.match(/Siffrorna kommer från (.+)\./)?.[1] ?? "Trafikverkets öppna data";
+  const svansX = `\n\nOberoende, inte en del av Trafikverket. Siffrorna från ${kalla}. Appen och ditt län: länk i profilen.\n\n#halka #halkvakt`;
+  const kropp = [];
+  for (const r of rader.slice(0, slut < 0 ? rader.length : slut)) {
+    if ([...[...kropp, r].join("\n").trim() + svansX].length > X_MAX) break;
+    kropp.push(r);
+  }
+  return kropp.join("\n").trim() + svansX;
+}
+
+// OAuth 1.0a user context (the four keys from the X console). A JSON body is not part of the signature.
+const pct = s => encodeURIComponent(s).replace(/[!'()*]/g, c => "%" + c.charCodeAt(0).toString(16).toUpperCase());
+export function signatur(method, url, params, consumerSecret, tokenSecret) {
+  const bas = [method, pct(url), pct(Object.keys(params).sort().map(n => `${pct(n)}=${pct(params[n])}`).join("&"))].join("&");
+  return createHmac("sha1", `${pct(consumerSecret)}&${pct(tokenSecret)}`).update(bas).digest("base64");
+}
+function oauth(method, url, k) {
+  const p = {
+    oauth_consumer_key: k.X_API_KEY, oauth_nonce: randomBytes(16).toString("hex"), oauth_signature_method: "HMAC-SHA1",
+    oauth_timestamp: String(Math.floor(Date.now() / 1000)), oauth_token: k.X_ACCESS_TOKEN, oauth_version: "1.0",
+  };
+  p.oauth_signature = signatur(method, url, p, k.X_API_SECRET, k.X_ACCESS_SECRET);
+  return "OAuth " + Object.keys(p).sort().map(n => `${pct(n)}="${pct(p[n])}"`).join(", ");
+}
+async function xApi(url, body, k) {
+  const r = await fetch(url, { method: "POST", headers: { Authorization: oauth("POST", url, k), "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const svar = await r.json().catch(() => ({}));
+  if (!r.ok || !svar.data) throw new Error(`${url}: ${r.status} ${JSON.stringify(svar)}`);
+  return svar.data;
+}
+async function postaX(jpg, text, k) {
+  const media = await xApi("https://api.x.com/2/media/upload", { media: readFileSync(jpg).toString("base64"), media_category: "tweet_image" }, k);
+  const ut = await xApi("https://api.x.com/2/tweets", { text, media: { media_ids: [media.id] } }, k);
+  console.log(`X: ${ut.id}`);
+  return ut.id;
+}
+
 async function postaIg(ig, url, caption, token) {
   const media = await graph(`${ig}/media`, { image_url: url, caption, access_token: token });
   await vantaPaIg(media.id, token);
@@ -546,9 +591,10 @@ async function skicka() {
     postat[dag(nu)] = [...inlaggIdag(postat, nu), ...kvitton];
     writeFileSync(postatPath, JSON.stringify(postat, null, 2) + "\n");
   };
-  if (!ig) return spara();
+  const x = ["X_API_KEY", "X_API_SECRET", "X_ACCESS_TOKEN", "X_ACCESS_SECRET"].every(n => process.env[n]);
   try {
-    kvitto.instagram = await postaIg(ig, url, inlagg.textIg ?? inlagg.text, token);
+    if (ig) kvitto.instagram = await postaIg(ig, url, inlagg.textIg ?? inlagg.text, token);
+    if (x) kvitto.x = await postaX(join(dir, `${namn}.jpg`), textX(inlagg.textIg ?? inlagg.text), process.env);
   } finally {
     spara();
   }
