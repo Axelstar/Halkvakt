@@ -15605,3 +15605,27 @@ Med reserven hade del A startats 07:43 20/10, och kandidaten hade sannolikt räk
 2. Ett eget pg_cron-jobb: valt bort, eftersom det står still av samma skäl som pulsklockan.
 
 **Stomdokument:** LIV §1 — regeln för saknad PH har fått reserven.
+
+## #652 (20/10 2026) Vakthundens gränser efter Supabase Pro: 90 % av prislistans 8 GB databas och 100 GB lagring
+
+**Bengts ord 20/10:** *"Prislistan nu"*, ur genomgången av projektkartans block 2, Insamling och arkiv (bedömningen §4.2, kort #347).
+
+**Varför.** Supabase Pro köptes 19/10 (#644), och Axel bekräftade 20/10 14:00 i ärende #1099 att API:t visar organisationen på
+`plan: pro`. Vakthunden hade ändå kvar gratisnivåns gränser: *databas: 506 MB av 500 (larm vid 450 MB)* 20/10 18:07 UTC, ett larm
+varje timme i #963 för ett skrivskydd som inte längre gäller. Ett larm som alltid står döljer ett riktigt larm (#512). Lagringsvakten
+byggde på samma gratisnivå (1 GB, larm vid 800 MB, #380) och nämndes varken i #644 eller i §4.2.
+
+**Beslut.** Vakthunden larmar vid 90 % av Pro:s kvoter enligt Supabases prislista: databasen vid 7373 MB av 8 GB och lagringen vid
+92160 MB av 100 GB. Talen står som konstanter i `supabase/functions/vakthund/index.ts` (`DB_KVOT_MB`, `LAGRING_KVOT_MB`, `LARM_ANDEL`).
+Raderna blir *databas: N MB av 8 GB* och *lagring: N MB av 100 GB*. Proven `?databasprov=1` och `?lagringsprov=1` står kvar.
+Visar panelen en annan kvot rättas talen. Över kvoten skrivskyddas inget men det kostar extra eller stryps, beroende på kostnadstaket.
+
+**Kvar:** deployen av vakthunden (deploy-supabase, funktionen vakthund) på Bengts ord, och raden i #963 efter den. Därefter stängs kort
+#347 och fristärendet #1099.
+
+**Alternativ.**
+1. Läsa kvoten i panelen först: valt bort för nu, eftersom vakthunden larmar fel varje timme tills dess. Panelen kan rätta talen sedan.
+2. Stänga av databas- och lagringsvakten: valt bort. Tillväxten (3–4 MB per dygn) ska fortfarande synas, och en vakt som tiger
+   upptäcker inte en tabell som skenar.
+
+**Stomdokument:** BED §4.2 — vakthundens gräns efter Pro avgjord, SYS arkivet — Supabase Pro och kvoterna

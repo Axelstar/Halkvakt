@@ -1,6 +1,6 @@
 # GREPP 3 — arkiven till mars (kort #83 steg 2)
 
-**Status:** ✅ **AVGJORT — gratisvägen, inte Pro:** exporten (#334, 24/9), gallring efter tre dygn och raderingens golv 14 dygn (#511, 10/10); databasvakten larmar vid 450 MB sedan 10/10 (#512). Underlaget nedan är från 17/9 (*Pro-beslutet återstår (larm vid 400 MB eller 1/11)*), skrivet av Claude på Bengts order *"kör grepp 3"*. Besluten är Bengts och
+**Status:** ✅ **AVGJORT — Supabase Pro (#644, köpt 19/10; planen bekräftad 20/10 i ärende #1099):** gratisvägen räckte inte, eftersom #618 punkt 2 föll 19/10 (3–4 MB per dygn mot högst 2). Exporten (#334, 24/9), gallringen efter tre dygn och raderingens golv 14 dygn (#511, 10/10) och trendtabellerna och radarn efter tio dygn (sql/062, #618) står kvar. Vakthunden larmar vid 90 % av Pro:s 8 GB databas och 100 GB lagring enligt prislistan (#652); under gratisnivån stod larmen vid 450 MB (#512) och 800 MB (#380), och gratisnivån skrivskyddade databasen vid 500 MB. Underlaget nedan är från 17/9 (*Pro-beslutet återstår (larm vid 400 MB eller 1/11)*), skrivet av Claude på Bengts order *"kör grepp 3"*. Besluten är Bengts och
 Axels (bedömningen §4.2). En betald tjänst kräver en DECISIONS-post som Axel godkänt (CLAUDE.md, gratisnivåregeln).
 
 ---
