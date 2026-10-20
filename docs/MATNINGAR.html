@@ -289,14 +289,14 @@
       <li><span aria-hidden="true">○</span> <b>I appen</b> <span style="color: var(--dampad, #4A5763)">saknas · Meta på halkan, aldrig egen röst (TROSKLAR-NEDERBORDSTYPEN.md:12–14)</span></li>
     </ul>
   </details>
-  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-vattenplaning">Vattenplaningen</a> <span style="color: var(--dampad, #4A5763)">väntar, 56 % · V-C:s underlag (≥200 varningar, ≥15 facit) för V-B-domen i nov–dec; sedan Axels beslut om steg D.</span></summary>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-vattenplaning">Vattenplaningen</a> <span style="color: var(--dampad, #4A5763)">väntar, 63 % · Axels beslut om steg D, nu när båda spåren fallit: V-A (#104) och V-B 19/10 (#648).</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">✓</span> <b>Tröskeldokument</b> <span style="color: var(--dampad, #4A5763)">klart · docs/TROSKLAR-VATTENPLANING.md:3–5 fastställt av Axel 4/9 (#68); utlösaren 2,0 mm/h (#155, #156)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Data i arkivet</b> <span style="color: var(--dampad, #4A5763)">klart · rain_sum_mm (sql/008_rain_sum.sql:7) och radar_precip (sql/009_radar_precip.sql:5)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Publicerat i lägesfilen</b> <span style="color: var(--dampad, #4A5763)">klart · rain_segments och segments[].regn (snapshot-core.ts:373, 380; DECISIONS #187)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Mätt i skuggan</b> <span style="color: var(--dampad, #4A5763)">klart · vbAlerts till shadow_log.vb (sql/019) sedan 15/9 (#191); grind-v-b.ts måndagar (grind-v-b.yml:16)</span></li>
-      <li><span aria-hidden="true">◐</span> <b>Dom</b> <span style="color: var(--dampad, #4A5763)">pågår · V-A FALLER (61 % mot 70 %, #69, #104); V-B under V-C:s spärr, 57/200 varningar och 10/15 facit 25/9 (#350)</span></li>
-      <li><span aria-hidden="true">○</span> <b>Villkoret i motorn</b> <span style="color: var(--dampad, #4A5763)">saknas · Inget farslag aquaplaning i types.ts:6–11; steg D efter V-C och Axels beslut</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Dom</b> <span style="color: var(--dampad, #4A5763)">klart · V-A FALLER (61 % mot 70 %, #69, #104); V-B FALLER 19/10 (#648): V-C giltig med 256 varningar och 55 facit, falsklarm 81 ± 5 % mot ≤ 20 %, 8 av 19 rutter över 3 per regndygn</span></li>
+      <li><span aria-hidden="true">○</span> <b>Villkoret i motorn</b> <span style="color: var(--dampad, #4A5763)">saknas · Inget farslag aquaplaning i types.ts:6–11; steg D är Axels beslut efter V-B:s dom (#648)</span></li>
       <li><span aria-hidden="true">○</span> <b>Testfall i tre språk</b> <span style="color: var(--dampad, #4A5763)">saknas · F5 rör alla vektorer; ingen vektor eller port finns</span></li>
       <li><span aria-hidden="true">○</span> <b>I appen</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen text i texts.ts; Axels utgångspunkt 'Vattenplaning framöver — sakta ner' (#196)</span></li>
     </ul>
@@ -348,7 +348,7 @@
         <tr><td><a href="#d-tillstand">7.1 Tillståndsskattaren</a></td><td>L2</td><td><span class="lage drift">i drift</span></td><td>bevis i snapshoten sedan 24/9</td></tr>
         <tr><td><a href="#d-nedtyp">7.2 Nederbördstypen</a></td><td>L2</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>dom tidigast 1/3 2027</td></tr>
         <tr><td><a href="#d-radar">7.3 Nederbördsradarn</a></td><td>L2</td><td><span class="lage drift">i drift</span></td><td>faktor 0,65, täckning 91 %</td></tr>
-        <tr><td><a href="#d-vatten">7.4 Vattenplaning</a></td><td>L2</td><td><span class="lage skugga">körs i skuggan</span></td><td>57 av 200 varningar till domen</td></tr>
+        <tr><td><a href="#d-vatten">7.4 Vattenplaning</a></td><td>L2</td><td><span class="lage skugga">körs i skuggan</span></td><td>V-B faller 19/10: 81 % falsklarm mot 20 % (#648)</td></tr>
         <tr><td><a href="#d-vind">7.5 Vind och sikt</a></td><td>L2</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>W-A: sikten faller, byvinden oavgjord</td></tr>
         <tr><td><a href="#d-smhi">7.6 SMHI-förstärkaren</a></td><td>L2</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>0 vintervarningar i arkivet</td></tr>
         <tr><td><a href="#d-olja">7.7 Olja på vägen</a></td><td>L2</td><td><span class="lage skugga">körs i skuggan</span></td><td>i drift 1/10, 5 aktiva (alla vägskador)</td></tr>
@@ -1310,11 +1310,11 @@
     <p><b>Mäter:</b> två spår. Stationsspåret prövade om grannstationernas regn förutsäger hur mycket det regnar där du kör, och är nedlagt. Radarspåret loggar vad rösten skulle ha sagt om vattenplaning ur radarn längs rutterna.</p>
     <div class="nyckel">
       <div><b>61 %</b><span>träff i stationsspåret, krav 70 % <span class="dom faller">faller</span></span></div>
-      <div><b>57 av 200</b><span>radarvarningar till domens underlag (25/9)</span></div>
-      <div><b>10 av 15</b><span>facit till underlaget</span></div>
-      <div><b>7</b><span>regndygn, kravet är 5</span></div>
+      <div><b>81 %</b><span>falsklarm i radarspåret 19/10, krav 20 % <span class="dom faller">faller</span></span></div>
+      <div><b>256 av 200</b><span>radarvarningar till domens underlag, och 55 av 15 facit (19/10)</span></div>
+      <div><b>24</b><span>regndygn i 42 län, kraven är 5 och 3</span></div>
     </div>
-    <p><b>Nytta:</b> klarar radarspåret får rösten säga <i>"Vattenplaning framöver — sakta ner."</i>, placerat under halka och över vilt. Domen fälls när underlaget räcker, enligt tröskeldokumentet i november–december.</p>
+    <p><b>Nytta:</b> klarar radarspåret får rösten säga <i>"Vattenplaning framöver — sakta ner."</i>, placerat under halka och över vilt. Underlaget räckte 19/10, och radarspåret föll: falsklarm 81 ± 5 % mot 20 %, och 8 av 19 rutter talade mer än 3 gånger per regndygn (V-B, #648). Båda spåren har därmed fallit; om rösten ändå ska byggas (steg D) är Axels beslut.</p>
     <details><summary>Hur den mäter</summary><div class="inne">
       <ul>
         <li>Ett regnsegment är ett segment som inte är halkklassat, där radarn visat minst 2,0 mm/h de senaste 70 minuterna. Skuggvarvet kör motorns egna regler i en egen instans över regnsegmenten och loggar bilens position när rösten skulle ha talat.</li>
@@ -1573,19 +1573,19 @@
 <!-- LÄGESRADER §11: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 <div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
   <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
-  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-p-grindarna">Grindarna och domkalendern</a> <span style="color: var(--dampad, #4A5763)">delvis, 75 % · kvar: S1-grinden, T-A, R-A, K-A och W-A väntar på frost (minst 50 stationer ≤ 0 °C)</span></summary>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-p-grindarna">Grindarna och domkalendern</a> <span style="color: var(--dampad, #4A5763)">delvis, 84 % · kvar: S1-grinden väntar på blöta frostnätter, W-A:s byvind på en storm</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">✓</span> <b>Tröskeldokument skrivna</b> <span style="color: var(--dampad, #4A5763)">klart · TROSKLAR-SKUGGAN, -VATTENPLANING (#68), -TRENDEN, -RIMFROST, -FRYSKLASSNINGEN (#135), -VIND-SIKT, -NEDERBORDSTYPEN (#361, #362)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Grind A</b> <span style="color: var(--dampad, #4A5763)">klart · KLARAD 23/9 (DECISIONS #321); måndagskörningen 28/9 klarar igen: A2 3,7 % (#399); kuvösen 2024/25 (riktningsprov, ingen dom): A2 5,5 % faller, A1 0,60 °C och A3 0,3 % klarar (DECISIONS #466); på 60-dygnsfönster förvintern 3,4 % klarar, midvintern 5,4 % och vårvintern 7,1 % faller (#469)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Vägpunktsgrinden</b> <span style="color: var(--dampad, #4A5763)">klart · FALLEN 28/9: A2 6,9 % ± 0,4 mot kravet 5 % (DECISIONS #399); premissmätningen läses 24/11 (#435); kuvösen 2024/25 (riktningsprov): fallen för RÅ 7,5 %, INTERP 7,2 %, RÅ+HÖJD 8,8 % (#467)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Grind V-A</b> <span style="color: var(--dampad, #4A5763)">klart · FALLER 4/9 (DECISIONS #69), omkörd 12/9, domen står (#104)</span></li>
-      <li><span aria-hidden="true">◐</span> <b>Grind V-B</b> <span style="color: var(--dampad, #4A5763)">pågår · publish/grind-v-b.ts (#211), varje måndag via puls-grind-v-b; dom tidigast nov–dec</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Grind V-B</b> <span style="color: var(--dampad, #4A5763)">klart · FALLER 19/10 (DECISIONS #648): V-C giltig, 256 varningar, 55 facit, 24 regndygn, 42 län (grind-v-b 39258864189); V-B1 falsklarm 81 ± 5 % mot ≤ 20 %, V-B3 8 av 19 rutter över 3 per regndygn; V-B2 går inte att mäta i skuggan</span></li>
       <li><span aria-hidden="true">◐</span> <b>Grind S-B och S-C</b> <span style="color: var(--dampad, #4A5763)">pågår · publish/grind-s-b.ts (#327, lagad #352), knappen grind-s-b.yml; dom i mars 2027</span></li>
       <li><span aria-hidden="true">◐</span> <b>Grind NT</b> <span style="color: var(--dampad, #4A5763)">pågår · scripts/grind-nt.ts (#361); --dom låst till 2027-03-01; kuvösen 2024/25 (riktningsprov, startvärdet): NT-A och NT-D klarar, NT-B och NT-C faller (#467)</span></li>
-      <li><span aria-hidden="true">◐</span> <b>Grind K-A</b> <span style="color: var(--dampad, #4A5763)">pågår · scripts/grind-k-a.ts (#136); INGEN DOM 12/9 och 24/9 (#137, #331); trycks vid frost (#338)</span></li>
-      <li><span aria-hidden="true">◐</span> <b>Grind R-A</b> <span style="color: var(--dampad, #4A5763)">pågår · scripts/grind-r-a.ts (#136); OAVGJORT på finska arkivet; land=se trycks vid frost (#338)</span></li>
-      <li><span aria-hidden="true">◐</span> <b>Grind T-A</b> <span style="color: var(--dampad, #4A5763)">pågår · scripts/grind-t-a.ts (#113): OAVGJORT 12/9, 17 frostnätter mot spärrens 30; trycks vid frost (#338)</span></li>
-      <li><span aria-hidden="true">◐</span> <b>Grind W-A</b> <span style="color: var(--dampad, #4A5763)">pågår · scripts/vindsikt-steg0.ts; OAVGJORT 24/9 (#331); trycks vid frost (#338)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Grind K-A</b> <span style="color: var(--dampad, #4A5763)">klart · PASSERAD 8/10 (DECISIONS #491, 37754426571): 13 av 27 kombinationer, bäst täckning 97,8 %, träff 99,3 %, farliga fel 0,5 %; trycks vid frost (#338); K-B döms efter en vintermånad (kort #309, #510)</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Grind R-A</b> <span style="color: var(--dampad, #4A5763)">pågår · svenska arkivet 8/10 (DECISIONS #491, 37754423323): spärren passerad, R-A3 73 % och R-A5 6 % klarar, R-A4 4,73 × stödjer — signalen är fysik; R-B döms efter en frostmånad (#510); finska körningen inte omtryckt; land=se trycks vid frost (#338)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Grind T-A</b> <span style="color: var(--dampad, #4A5763)">klart · domspärren släppt 8/10 (DECISIONS #491, 37754420461): 169 frostnätter på 119 stationer; tröskeln 60 min · lutning 0,4 · gap 2,0 · startband +1…+3 inskriven i TROSKLAR-TRENDEN §2 (#492); T-B saknar instrument; trycks vid frost (#338)</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Grind W-A</b> <span style="color: var(--dampad, #4A5763)">pågår · 8/10 (DECISIONS #491, 37754429130): B2 sikt FALLER (kvot 0,37 mot ≥ 1,5); B1 byvind OAVGJORT, 116 stationstimmar i högsta bandet mot 500; trycks vid frost (#338)</span></li>
       <li><span aria-hidden="true">◐</span> <b>S1-grinden</b> <span style="color: var(--dampad, #4A5763)">pågår · S1-loggen sql/021 (#198); grinden (Axel, #196) kräver blöta frostnätter; 35 rader 24/9</span></li>
       <li><span aria-hidden="true">✓</span> <b>Pulsklockan och frosttriggern</b> <span style="color: var(--dampad, #4A5763)">klart · puls-grind-a, -hojd-prov, -grind-v-a, -grind-v-b (pulsklocka.ts:44-50); vakthund/frosttryck.ts (#338, #352)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Självtester i CI</b> <span style="color: var(--dampad, #4A5763)">klart · ci.yml: A, vägpunkten, K-A, R-A, S-B, NT, V-B; T-A och W-A i egna flöden</span></li>

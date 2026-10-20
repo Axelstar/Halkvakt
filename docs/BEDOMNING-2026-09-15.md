@@ -788,10 +788,10 @@ bevisbart säker (vid 0 km/h går det inte att nå faran) och är rimligen stör
 - [Efterhalkan som märkt beta](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-efterhalkan): väntar, 81 % · Första frostnätterna för S1-grinden (Axel, DECISIONS #196) och S3-bygget (24) till Kompisarna (Axel; Bengt granskade och godkände S3 i Axels ställe, DECISIONS #525, #526); sedan betan i november (#186).
 - [L3 trenden](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-trenden): delvis, 44 % · kvar: T-B (B3-paret och tystnadsfelet för trenden) har inget instrument
 - [Rimfrosten](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-rimfrost): väntar, 44 % · En frostmånad för R-B; uppspelningen ur arkivet byggs efter R-A (#363, #491).
-- [Vattenplaningen](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-vattenplaning): väntar, 56 % · V-C:s underlag (≥200 varningar, ≥15 facit) för V-B-domen i nov–dec; sedan Axels beslut om steg D.
+- [Vattenplaningen](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-vattenplaning): väntar, 63 % · Axels beslut om steg D, nu när båda spåren fallit: V-A (#104) och V-B 19/10 (#648).
 - [L4 räckvidden: segmentprognosen](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-segmentprognos): väntar, 75 % · Domen i mars 2027 (grind B/C) på kandidaten NIVÅ 2+BLANDNING som ny fråga, RÅ kontroll och reserv (#547), och Bengts öppna val d på kort #270.
 - [L5 allvar som försprång](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-forsprang): delvis, 56 % · kvar: FS-A: nivå 2-fall i vinter (kod 3–4, eller yta ≤ 0 °C med väta ≥ 3)
-- [Grindarna och domkalendern](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-p-grindarna): delvis, 75 % · kvar: S1-grinden, T-A, R-A, K-A och W-A väntar på frost (minst 50 stationer ≤ 0 °C)
+- [Grindarna och domkalendern](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-p-grindarna): delvis, 84 % · kvar: S1-grinden väntar på blöta frostnätter, W-A:s byvind på en storm
 - [Projektkartan](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-g-projektkartan): klar
 - [Actions-taket och kassavakten](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-g-kassan): delvis, 100 % · kvar: 0 USD debiterat för november i kassavakten (kort #311:s Verify)
 

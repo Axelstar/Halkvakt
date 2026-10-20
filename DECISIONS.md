@@ -15418,3 +15418,46 @@ listar repliken; bilagan är inlämnad och ändras inte. Bygget 0.3.13 (32) hos 
 data (åldersvakten, Bengts granskning 28/8). Behålla raden bara i texten utan röst: Bengt vill bort med informationen.
 
 **Stomdokument:** inga — appbeteende och en replik; PRODUKTBOK, SYSTEM, BETAGUIDE-IOS och APPEN rättade i samma ändring.
+
+## #648 (20/10 2026) Grind V-B fälld: radarspåret för vattenplaning FALLER på V-B1 och V-B3 (kort #42)
+
+**Bengts ord 20/10:** *"Ja, bokför V-B-domen i DECISIONS och rätta projektkartans rader för K-A, R-A, T-A, W-A och V-B, i en egen
+gren och PR."* Domen skrevs av knappen redan 19/10 men hade inte bokförts; projektkartan sade fortfarande *"dom tidigast nov–dec"*.
+
+**Underlaget.** Grind V-B, körning 39258864189 (19/10 13:17 UTC, måndagsserien omkörd för hand efter morgonavbrottet, STATUS 19/10),
+fönstret 14/9–19/10, 35 dygn. V-C i TROSKLAR-VATTENPLANING §3 är uppfylld, så domen får fällas:
+
+| V-C | Krav | Utfall |
+| :-- | --: | --: |
+| V-C1 skuggvarningar | ≥ 200 | 256 (225 mätbara, 31 omätbara) |
+| V-C1 facitbekräftade händelser | ≥ 15 | 55 |
+| V-C2 regndygn | ≥ 5 | 24 |
+| V-C2 län | ≥ 3 | 42 |
+
+**Domen, som knappen skrev den: V-B FALLER på V-B1 och V-B3.**
+
+| Grind | Krav | Utfall |
+| :-- | :-- | :-- |
+| V-B1 falsklarm | ≤ 20 % | **81 ± 5 %**: av 225 mätbara bekräftade 42, delvis (blöt men under tröskeln 3,1 mm/h) 166, torrt 17 |
+| V-B2 miss | ≤ 40 % | går inte att mäta i skuggan: en olycka i regn bekräftar att något hände, inte vattenplaning (§2) |
+| V-B3 frekvens | ≤ 3 per rutt och regndygn | **8 av 19 rutter över 3**, värst E4 Uppsala→Gävle 5,0 och E10 Luleå→Kiruna 4,5 |
+
+Marginalen på V-B1 är mer än tio gånger bruset (±5 pe, V-C3), och domen vilar inte på V-B2.
+
+**Följd.** Båda spåren för vattenplaning har nu fallit: stationsspåret V-A (61 % mot 70 %, #69, #104) och radarspåret V-B. Rösten
+*"Vattenplaning framöver — sakta ner"* har därmed inget mätt stöd. Steg D, farslaget aquaplaning, är Axels beslut (kort #42). Inget
+ändras i drift: skuggvarvet loggar vattenplaningen vidare och måndagskörningen av grind-v-b fortsätter tills Axel bestämt.
+
+**Projektkartan rättad i samma ändring.** I *Grindarna och domkalendern* stod stegen kvar på septemberläget:
+- K-A klar: PASSERAD 8/10 (#491);
+- T-A klar: domspärren släppt och tröskeln inskriven 8/10 (#491, #492);
+- R-A och W-A pågår, med utfallen 8/10 (#491). R-A har inte kallats passerad: #491 skriver att *"signalen är fysik"* och att R-B
+  är nästa;
+- V-B klar: fälld enligt det här beslutet.
+
+I *Vattenplaningen* är domsteget, nyckeln och saknas-raderna rättade. Grindarnas saknas-rad om frosten är ersatt med det som faktiskt
+återstår (S1, W-A:s byvind, R-B och K-B).
+
+**Alternativ.** Vänta med bokföringen till Axel tagit ställning till steg D: valt bort av Bengt; domen är en mätning, inte steg D.
+
+**Stomdokument:** MAT §2 §7.4 — handtexten om vattenplaningens underlag och dom rättad i samma ändring.
