@@ -3,6 +3,10 @@ on:
   # Startas av pulsklockan (Supabase pg_cron, puls-grind-a "40 5 * * 1" UTC) — kort #160: GitHub-cronen kom
   # 5–7 h sent 14/9 och levererade 40 % i #70. Tiden: måndagar — underlaget växer med vintern
   workflow_dispatch:
+# Domlarmet (DECISIONS #649) skriver ärenden; inget annat behöver token.
+permissions:
+  contents: read
+  issues: write
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -23,4 +27,10 @@ jobs:
         shell: bash
         run: |
           node --experimental-strip-types publish/grind-a.ts --sjalvtest | tee -a "$GITHUB_STEP_SUMMARY"
-          node --experimental-strip-types publish/grind-a.ts | tee -a "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types publish/grind-a.ts | tee -a "$GITHUB_STEP_SUMMARY" "$RUNNER_TEMP/utskrift.txt"
+      # Domlarmet (DECISIONS #649): domraderna i utskriften (scripts/domrad.ts) blir ärenden med etiketten dom,
+      # en gång per grind och utfall. Körs även när grinden fällt jobbet — en FALLER ska också larma.
+      - name: Domlarmet (#649)
+        if: ${{ !cancelled() }}
+        run: node --experimental-strip-types scripts/domlarm.ts "$RUNNER_TEMP/utskrift.txt"
+        env: { GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}" }

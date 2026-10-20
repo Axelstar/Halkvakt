@@ -54,6 +54,7 @@ export function separation(natter: Natt[], p: Param) {
 import { andelSe, skiljbar, marginalPe } from "../publish/marginal.ts";
 import { vaktdiagnos, led234 } from "../publish/vaktdiagnos.ts";
 import { brottSql, givarfelSql } from "../publish/snapshot-core.ts";
+import { domrad } from "./domrad.ts";
 import { klassaMoln, haversineKm, narmastITid, molnForPunkter, type Molnklass }
   from "../publish/moln.ts";
 
@@ -219,6 +220,8 @@ console.log(`  halvorna delas vid ${mitt}`);
 
 // ── Domspärren FÖRST, så att ingen läser tabellen som en dom.
 const domFaller = frostN.length >= MIN_FROSTNATTER && stationer >= MIN_STATIONER;
+domrad("T-A", domFaller ? "LÄS" : "SPÄRRAD", domFaller ? `domspärren släppt: ${frostN.length} frostnätter på ${stationer} stationer — läs svepet och fysikkontrollen`
+  : `domspärren håller: ${frostN.length} frostnätter på ${stationer} stationer (kräver ${MIN_FROSTNATTER} och ${MIN_STATIONER})`);
 if (!domFaller) {
   console.log(`\n⊘ INGEN DOM — domspärren i §4 håller.`);
   console.log(`  Kräver >= ${MIN_FROSTNATTER} frostnätter och >= ${MIN_STATIONER} stationer; finns ${frostN.length} och ${stationer}.`);

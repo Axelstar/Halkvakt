@@ -101,7 +101,8 @@ Allt i repot är publikt och går inte att ta tillbaka: filerna, historiken, är
 Every session, in order:
 1. Run the kartsynk first (`node --experimental-strip-types scripts/kartsynk.ts`) and book what it lists (PROJEKTKARTAN →
    Kartsynken below). Read the morning's dokumentsynk (DOKUMENTSYNKEN below): its STATUS line, its PR, and republish every artifact its line lists under
-   *Att republicera* that this machine can reach. Then orient per SESSIONSREGELN below: the project map (`docs/PROJEKTKARTAN.html`, PROJEKTKARTAN below) for where every part stands, the latest `docs/BEDOMNING-*.md` in full, `docs/INTEGRATIONSKARTAN.md` when it
+   *Att republicera* that this machine can reach. Then the open issues labelled `frist` and `dom` (DECISIONS #649): a frist due
+   today or overdue, and a dom waiting to be booked, are raised with Bengt before anything else. Then orient per SESSIONSREGELN below: the project map (`docs/PROJEKTKARTAN.html`, PROJEKTKARTAN below) for where every part stands, the latest `docs/BEDOMNING-*.md` in full, `docs/INTEGRATIONSKARTAN.md` when it
    changed or a new grepp starts, TAVLA.md's 🟡 section, DECISIONS added since last session, latest CI runs. Search
    TAVLA, STATUS and DECISIONS — don't read them whole (halved 26/9; the older half is in TAVLA-ARKIV.md and
    DECISIONS-ARKIV.md — search there too).
@@ -238,6 +239,21 @@ sessioner på alla enheter:
 - **Väntar på Bengt / Väntar på Axel** överst i projektkartan, skrivna av `projektkartan.ts` ur tavlans avsnitt för Bengt och Axel
   (kortets *Kvar*, annars dess nyckel) och kartsynkens lista över öppna PR:er (`synk.prar`). Ändras aldrig för hand.
 
+**Fristvakten och domlarmet** (Bengts order 20/10, DECISIONS #649). Kalendern listade datumen men larmade inte, och en dom som
+en körning skrev nådde aldrig synken, som läser beslut och commits, inte utskrifter (V-B fälldes 19/10 och bokfördes först 20/10):
+- **Fristvakten.** `docs/fristerna.json` bär varje frist: datum, förvarning, vad, ägare, källa och *klart när*. `fristvakten.yml`
+  (07:13, 11:13 och 15:13 UTC; GitHubs cron och inte pulsklockan, som står när databasen står) gör ett ärende med etiketten `frist`,
+  tilldelat ägarna, förvarningen före datumet, kommenterar på dagen och en gång per dygn efter. Ett stängt ärende tiger, och ett
+  flyttat datum ger ny rubrik. `fristvakten.ts --check` i ci fäller en trasig lista. Repot är publikt: en frist med personuppgifter,
+  hemligheter eller leveransinnehåll skrivs inte dit.
+- **Domlarmet.** Grindskripten skriver en rad `DOMRAD: <grind> · <KLARAR|FALLER|LÄS|OAVGJORT|SPÄRRAD> · <text>`
+  (`scripts/domrad.ts`). Grindflödenas sista steg (`scripts/domlarm.ts`) gör ett ärende med etiketten `dom`, tilldelat Bengt, för
+  KLARAR, FALLER och LÄS (spärren har släppt och domslutet ska läsas), en gång per grind och utfall. Stäng ärendet när domen är
+  bokförd. Ett nytt grindskript skriver en domrad, och dess flöde får domlarmets steg.
+- **En ägare per grind.** I projektkartan står en grinds dom i en enda ämnesdels Dom-steg; *Grindarna och domkalendern* bär bara det
+  gemensamma (tröskeldokumenten, pulsklockan, självtesterna, domkalendern, domlarmet och fristvakten). En del som vilar på en annan
+  dels grind pekar dit utan att upprepa talen: S1-grinden står i tillståndet, vägpunktsgrinden i prognoslagret.
+
 **Dokumentsynken, steg för steg** (rutinen varje morgon, eller en session som gör den för hand):
 1. `git fetch origin`; gren `claude/dokumentsynk-<ÅÅÅÅ-MM-DD>` från origin/main.
 2. Kartsynken (PROJEKTKARTAN ovan): bokför varje obokförd commit på sin del, och läs varje maskinbock mot beviset innan den får
@@ -245,16 +261,20 @@ sessioner på alla enheter:
 3. Kortgenomgången (TAVELREGELN 5): `kortkartan.ts --genomgang`; stäng varje kort vars Verify är uppfylld, med beviset.
 4. Stomgenomgången: `stomvakten.ts --lage`. Läs allt som hänt sedan förra dokumentsynken — commits på main från alla författare,
    nya beslut, nya STATUS-rader, sammanslagna och öppna PR:er — och rätta handtexten i de åtta, `docs/KALENDERN.md` och TAVLA.md
-   där den inte längre stämmer. **En rad i ett skriptskrivet block (LÄGESRADER, Öppna kort) räknas inte som att handtexten
+   där den inte längre stämmer. **Fristerna** (#649): varje nytt datum som någon ska agera på — i ett beslut, en STATUS-rad,
+   bedömningens §4.2, kalendern eller på tavlan — får en rad i `docs/fristerna.json`, ett flyttat datum rättas där, och en
+   frist vars ärende är stängt tas bort. **En rad i ett skriptskrivet block (LÄGESRADER, Öppna kort) räknas inte som att handtexten
    stämmer** (Bengts ja 13/10, DECISIONS #546). Varje ⚠ i `--lage` blir antingen text i dokumentets handtext, i det avsnitt
    beslutets rad `**Stomdokument:**` namnger, eller en post i synkens STATUS-rad med skälet: *#NN: ingen handtext, skälet*. Integrationskartans innehåll är fryst: bara dess läge-rader; en innehållsrättelse blir en fråga i
    bedömningens §4.2. Ett tal förs bara in om det står i källan (DECISIONS, STATUS, koden, en körning) — aldrig ur minnet.
    **Kuvösen** (eget block i projektkartan sedan 8/10, DECISIONS #489): en ny läsning är ett byggsteg på sin del i blocket — testbädden,
    systemets delar, prognoslagrets kandidater, före resan eller facit — med körning, beslut och utfall som bevis, och en kandidat för
    prognoslagret får en rad i jämförelsetabellen på kuvössidan (§5). Kön står i sidans §9, bara framtid; historiken i §12.
-5. `projektkartan.ts` och `kortkartan.ts`, sedan `--check` på båda, `kartsynk.ts --check` och `stomvakten.ts --tillatna`.
+5. `projektkartan.ts` och `kortkartan.ts`, sedan `--check` på båda, `kartsynk.ts --check`, `fristvakten.ts --check` och
+   `stomvakten.ts --tillatna`.
 6. En rad i STATUS.md: *Dokumentsynk <datum>:* vad som rättades per dokument, eller *inget att stämma av* — en tyst morgon ska inte
-   se ut som en lyckad — och *Att republicera:* med de artefakter vars källa ändrades.
+   se ut som en lyckad — och *Att republicera:* med de artefakter vars källa ändrades. Raden och rapporten listar också de öppna
+   ärendena med etiketterna `frist` och `dom` (#649); ett dom-ärende bokförs på Bengts ord, aldrig av rutinen.
 7. Commit (märk den aldrig så att CI hoppas över), push, PR med rubriken *Dokumentsynk: <datum>*. Rutinen slår aldrig ihop: PR:en
    väntar på Bengts *slå ihop*, och rapporten säger om ci och md-vakt är gröna på exakt huvudet och om `--tillatna` är grön (Bengts
    val (b) 8/10, DECISIONS #488: auto-läget nekade sammanslagningen första morgonen, och (d) i #484 är struken).

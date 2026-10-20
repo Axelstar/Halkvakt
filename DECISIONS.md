@@ -15461,3 +15461,85 @@ I *Vattenplaningen* är domsteget, nyckeln och saknas-raderna rättade. Grindarn
 **Alternativ.** Vänta med bokföringen till Axel tagit ställning till steg D: valt bort av Bengt; domen är en mätning, inte steg D.
 
 **Stomdokument:** MAT §2 §7.4 — handtexten om vattenplaningens underlag och dom rättad i samma ändring.
+
+## #649 (20/10 2026) Fristvakten, domlarmet och en ägare per grind: datum och domar larmar av sig själva
+
+**Bengts ord 20/10:** *"jag vill dessutom att du lägger upp automatiska bevakningar på de saker som ska göras och när de ska göras
+och att de dyker upp som påminnelser så att vi inte missar tidpunkter"*, och sedan *"Bygg alla tre, A fristvakten, B domlarmet och C
+en ägare per grind, i en egen gren och PR. Fristvakten först."*
+
+**Varför det missades.** Dokumentautomatiken (dokumentsynken #484 och #522, kartsynken, stomvakten) håller dokumenten i fas med
+*beslut och commits*. Tre saker låg utanför den:
+1. En dom som en körning skriver blir ingen commit. V-B fälldes i måndagskörningen 19/10 och bokfördes först 20/10 (#648).
+2. Projektkartan bar grinddomarna på två ställen, i *Grindarna och domkalendern* och i ämnesdelens Dom-steg, och de gled isär
+   (K-A, R-A, T-A, W-A och V-B rättade i #648).
+3. Datumen i KALENDERN, i bedömningens §4.2 och i besluten larmade ingenstans. Appens påminnelser går bara när appen är öppen.
+
+**A. Fristvakten.** `docs/fristerna.json` bär 26 frister från 21/10 2026 till 1/3 2027, var och en med datum, förvarning, vad, ägare,
+källa och *klart när*. `scripts/fristvakten.ts` körs av `fristvakten.yml` 07:13, 11:13 och 15:13 UTC och gör ett ärende med
+etiketten `frist`, tilldelat ägarna, *förvarning* dygn före datumet (3 om fältet saknas). På dagen kommer en kommentar, sedan en per
+dygn tills ärendet stängs; en markör per dygn gör att tre körningar om dagen ger en påminnelse. Ett stängt ärende tiger, och ett
+flyttat datum ger ny rubrik. En återkommande plikt får ett id per tillfälle. Flödet går på GitHubs cron och inte på pulsklockan:
+pulsklockan är pg_cron och stod still när databasen stod still 19 och 20/10. GitHub-cronen kan komma timmar sent (kort #160), men
+förvarningen räknas i dygn. Självtestet och `--check` går i ci; en PR som rör listan kör vakten torrt.
+
+**B. Domlarmet.** `scripts/domrad.ts` skriver en rad `DOMRAD: <grind> · <utfall> · <text>`. Utfallen är KLARAR, FALLER, LÄS
+(spärren har släppt och en människa ska fälla domslutet), OAVGJORT och SPÄRRAD. Raden finns i de 13 grindskripten: grind A, V-A, V-B,
+S-B, K-A, K-B, R-A, R-B, T-A, NT, W-A (B1 och B2), kodgrinden och vägpunktsgrinden (hojd-prov). Deras flöden skriver utskriften också
+till `$RUNNER_TEMP/utskrift.txt` och får `permissions: contents: read, issues: write`. Ett sista steg, `scripts/domlarm.ts`, körs även
+när grinden fällt jobbet och gör ett ärende med etiketten `dom`, tilldelat Bengt, för KLARAR, FALLER och LÄS, en gång per grind och
+utfall. Domar som var bokförda innan larmar inte: A KLARAR (#321), vägpunktsgrinden FALLER (#399), V-A FALLER (#69, #104), V-B
+FALLER (#648), K-A KLARAR, R-A LÄS och W-A B2 FALLER (#491), T-A LÄS (#491, #492). Vägpunktsgrindens premissmätning är fryst (#435)
+och fick ingen domrad. Övergångarnas steg 0 är en premissmätning utan dom.
+
+**C. En ägare per grind.** Stegen Grind A, vägpunktsgrinden, V-A, V-B, S-B och S-C, NT, K-A, R-A, T-A, W-A och S1-grinden är borta
+ur *Grindarna och domkalendern*. Domen står i ämnesdelens Dom-steg:
+- segmentprognosen: A, S-B och S-C;
+- prognoslagret: vägpunktsgrinden;
+- vattenplaningen: V-A och V-B;
+- nederbördstypen: NT;
+- frysklassningen: K-A;
+- rimfrosten: R-A;
+- trenden: T-A;
+- vind och sikt: W-A;
+- tillståndet: S1.
+
+Det som bara stod i grindraderna är flyttat in i ägarens Dom-steg: kuvösens riktningsprov (#466, #467, #469), skriptens och
+körningarnas nummer, och *trycks vid frost* (#338). Ingen uppgift föll bort, och inga statusar ändrades i ämnesdelarna.
+*Grindarna och domkalendern* bär nu bara det gemensamma: tröskeldokumenten, pulsklockan, självtesterna, domkalendern och A2:s
+population. Dit kommer också de två nya stegen *Domlarmet* och *Fristvakten*, som står som pågår tills de har kört på main. Delen går
+från 84 till 86 %.
+
+Två grindar till hade sina tal på mer än ett ställe bland ämnesdelarna, och de fick också en ägare var (Bengts *"gör 1-4"* 20/10):
+- **S1-grinden** ägs av tillståndet. Efterhalkans domsteg pekar dit och säger att efterhalkans egen dom är KB-B i januari.
+  Körningsnumret 38118591156 och *på sju dygn* fanns bara i efterhalkans rad och är flyttade till tillståndets.
+- **Vägpunktsgrinden** ägs av prognoslagret. Segmentprognosen pekar dit utan tal. Höjden behåller sitt eget tal, kandidaten RÅ+HÖJD
+  (7,1 %), med en hänvisning till grinden.
+
+En del som vilar på en annan dels grind pekar dit utan att upprepa talen. Statusarna är oförändrade.
+
+**Dokumenten.** I CLAUDE.md:
+- ett avsnitt om fristvakten och domlarmet under DOKUMENTSYNKEN;
+- synken för in nya datum i fristerna.json (steg 4), kör `fristvakten.ts --check` (steg 5) och listar öppna `frist`- och
+  `dom`-ärenden (steg 6);
+- sessionsprotokollet läser dem i steg 1.
+
+KALENDERN och MATNINGAR §11 säger att datumen larmar, och raden om vattenplaningens radarspår i §11 är avbockad (#648). Två datum
+fanns i kalendern och §11 men inte i den första listan, och de är nu införda: databasens storlek 24/10 och höjdprovet 23/10 (#357).
+Tre punkter fanns bara i appens påminnelser och är också införda:
+- morgonavbrotten (21/10);
+- kandidat-timme, som föll 20/10 (före signeringen);
+- måndagsserien 26/10.
+
+Ö-B och Supabase-planen har förvarning 1, eftersom gallringen tar frostnätterna 22/10 03:15 UTC och databasen stod på 499 av 500 MB.
+Appens påminnelser tas bort när fristvakten har kört på main.
+
+**Inte gjort här.** Skyltfondens datum står inte i fristerna.json, eftersom repot är publikt.
+
+**Alternativ.**
+1. Behåll grindraderna på båda ställena och låt `projektkartan.ts --check` fälla rader med olika senaste beslutsnummer: valt bort.
+   En vakt mot att två rader glider isär är sämre än att bara ha en rad.
+2. Påminnelser i Claude-appen: finns, men går bara när appen är öppen och syns bara för Bengt.
+3. Fristvakten i pulsklockan: valt bort, eftersom den står när databasen står.
+
+**Stomdokument:** MAT §11 — domkalendern larmar och raden om vattenplaningens radarspår är avbockad.

@@ -89,6 +89,11 @@ jobs:
       # Själva vakten kör i md-vakt.yml, som ser varje ändring i DECISIONS.md; här prövas skriptet när koden ändras.
       - name: Stomvaktens självtest (#484)
         run: node --experimental-strip-types scripts/stomvakten.ts --sjalvtest
+      - name: Fristvakten och domlarmet — självtester och fristlistan (#649)
+        run: |
+          node --experimental-strip-types scripts/fristvakten.ts --sjalvtest
+          node --experimental-strip-types scripts/fristvakten.ts --check
+          node --experimental-strip-types scripts/domlarm.ts --sjalvtest
       - name: Grind V-B:s självtest — facit enligt §2 och bara räkningar under spärren (#349, #350)
         run: node --experimental-strip-types publish/grind-v-b.ts --sjalvtest
       # Knapparna som granskningen 25/9 ändrade (kort #252, DECISIONS #352) prövas i varje PR, inte bara när de körs.

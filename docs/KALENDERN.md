@@ -22,6 +22,13 @@ på arbete.
 som beskriver samma sak glider isär — det är samma läxa som vitlistan i `dbknapp` (CLAUDE.md). Ett datum som får
 en dom eller ett bygge hängande på sig flyttar tillbaka till tavlan som kort.
 
+**Datumen larmar sedan 20/10** (Bengts order, DECISIONS #649). Listan här larmade inte: ett datum syntes bara för den
+som läste den. Varje datum nedan har nu en rad i `docs/fristerna.json`, och fristvakten (`fristvakten.yml`, tre gånger om dagen)
+gör ett ärende med etiketten `frist` till ägaren före datumet, påminner på dagen och varje dygn efter, tills ärendet
+stängs. Ett nytt eller flyttat datum här rättas i fristerna.json i samma ändring; dokumentsynken stämmer av de två varje
+morgon. En återkommande plikt står där som nästa tillfälle, med eget id. Repot är publikt, så en plikt med privata
+uppgifter bevakas inte där.
+
 ## Plikterna
 
 | När | Vad | Ägare | Vad som ska läsas | Konsekvens om det missas |
