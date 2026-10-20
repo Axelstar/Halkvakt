@@ -11,7 +11,7 @@ name: arkivbackup
 #
 # Larm: en issue med etiketten `arkivbackup` när körningen faller. Egen etikett med flit —
 # healthcheckens `incident` auto-stängs av nästa gröna healthcheck och skulle tysta larmet.
-# Kvarhållning: de fyra senaste dumparna i hinken (hinken delas med kamerafacit och arkivexporten inom 1 GB). Äldre tas bort
+# Kvarhållning: de fyra senaste dumparna i hinken (hinken delas med kamerafacit och arkivexporten; Pro-kvoten 100 GB, #652). Äldre tas bort
 # SIST, efter att den nya är uppladdad OCH hämtad tillbaka med samma sha256 — en misslyckad körning gallrar ingenting.
 # Återläsning: POST functions/v1/arkivdump?lage=hamta {"namn": "<dump>"} med x-halkvakt-key ger adresser till delarna;
 # ladda ner dem, `cat <dump>.del* > <dump>`, och läs tillbaka med pg_restore som i provet nedan.
