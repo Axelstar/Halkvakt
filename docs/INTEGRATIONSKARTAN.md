@@ -79,7 +79,7 @@ L2 + L3 stänger det hålet. Det är den enskilt största vinsten som finns att 
 <!-- LÄGESRADER §4: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 *Läget i projektkartan:*
 
-- [Trafikverkets väderstationer](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-vader): delvis, 89 % · kvar: Mätpunkter utan lufttemperatur (kort #344, fynd 14/10): 93 VViS-stationer har en andra mätpunkt <nr>100 som saknar luft helt (0 av 25 528 rader på sju dygn) och därför släpps igenom av alla tre givarvakterna; 66 färska ankare, 51 par båda ankare. Bengts och Axels val i bedömningen §4.2
+- [Trafikverkets väderstationer](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-vader): delvis, 89 % · kvar: Mätpunkter utan lufttemperatur vaktas inte (kort #344, #345): avgjort 14/10, ingen ändring nu, frågan tas upp inför 2027/28 (bedömningen §4.2). Mätt mot kandidatens veto 20/10: tre fjärrytor vetade 16 punkter på 9 sträcktimmar 17–20/10 och tystade ingen fuktig sträcka (DB-knappen 39415616056)
 - [Trafikverkets väglag (RoadCondition)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-vaglag): klar
 - [Trafikverkets olyckor, djur och hinder](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-situation): klar
 - [Publiceringen var tionde minut](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-l-publicera): klar
@@ -146,9 +146,9 @@ kamerorna att arbeta med just nu.
 <!-- LÄGESRADER §5: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 *Läget i projektkartan:*
 
-- [SMHI:s varningar](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-smhi-varningar): delvis, 75 % · kvar: Ingen läsare i motorn eller apparna
-- [SMHI:s nederbördsradar](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-radar): delvis, 93 % · kvar: Motorn och apparna läser inte regn eller rain_segments
-- [Vägdatalagret (NVDB)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-vagdata): delvis, 77 % · kvar: Kuvösens inläsning till kuvos_ra.vagdata (kort #303)
+- [SMHI:s varningar](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-smhi-varningar): delvis, 83 % · kvar: Ingen läsare i motorn: efter F-A (de första vintervarningarna) och F-B (en vintermånad)
+- [SMHI:s nederbördsradar](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-radar): delvis, 88 % · kvar: Motorns LiveDoc läser inte regn eller rain_segments; vattenplaningens röst har inget mätt stöd sedan V-B föll 19/10 (#648), och steg D är Axels (kort #42)
+- [Vägdatalagret (NVDB)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-vagdata): delvis, 92 % · kvar: Kuvösens inläsning till kuvos_ra.vagdata (kort #303)
 - [Lägesfilens fält för skuggdelarna](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-l-falten): delvis, 57 % · kvar: Motorn läser inte regn, rain_segments, regn_h, lutning, bevis eller smhi (fogarna F2–F4)
 - [L3 trenden](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-trenden): delvis, 44 % · kvar: T-B (B3-paret och tystnadsfelet för trenden) har inget instrument
 - [Rimfrosten](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-rimfrost): väntar, 44 % · En frostmånad för R-B; uppspelningen ur arkivet byggs efter R-A (#363, #491).

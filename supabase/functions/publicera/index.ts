@@ -366,8 +366,8 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
   // Regeln bor på ETT ställe, kandidat_regel() i databasen — samma funktion som domloggen (kandidat_logga) och skuggmotorns
   // takt läser, så det som publiceras är det som döms. Här står inga tal: publiceringen tar bara utfallet `varnar`. Egen nyckel,
   // aldrig `segments` — varje rad där blir en halkvarning i tre portar (LÄGG TILL, ERSÄTT ALDRIG, som rain_segments). En rad per
-  // sträcka med dess varnande vägpunkter, för skuggan räknar passager på punkterna (kandidatLangsRutten). Ingen port läser nyckeln
-  // än (steg 10). Fail-soft: tom + not. Tiger regeln (timmen gammal eller ofullständig) är nyckeln tom och noten säger det — en
+  // sträcka med dess varnande vägpunkter, för skuggan räknar passager på punkterna (kandidatLangsRutten). Apparna läser nyckeln
+  // sedan 0.3.13 (25) (steg 10, #577). Fail-soft: tom + not. Tiger regeln (timmen gammal eller ofullständig) är nyckeln tom och noten säger det — en
   // tyst timme ska inte se ut som en timme utan varningar.
   // BRYTAREN (NIVA2-LIVE steg 13, DECISIONS #562 punkt 5, #578): är kandidaten avstängd utelämnas nyckeln helt — inte tom — och
   // regeln frågas inte. Går brytaren inte att läsa utelämnas nyckeln också: tyst är det säkra hållet. Apparna tystnar på båda.
