@@ -129,6 +129,7 @@ jobs:
           node --experimental-strip-types ingest/metnordic-live.ts --sjalvtest     # DECISIONS #556, steg 1
           node --experimental-strip-types ingest/metnordic-historik.ts --sjalvtest # DECISIONS #556, steg 2
           node --experimental-strip-types ingest/kandidat-db.ts --sjalvtest        # DECISIONS #558, steg 3: databasens in- och utgång
+          node --experimental-strip-types scripts/kandidat-reserv.ts --sjalvtest   # reserven för del A (20/10)
           node --experimental-strip-types scripts/matningar/kuvos-trafik-per-band-2026-10-08.ts --sjalvtest
           node --experimental-strip-types scripts/matningar/kuvos-fysik-givarvakt-2026-10-08.ts --sjalvtest
           node --experimental-strip-types scripts/matningar/kuvos-kallkartan-2026-10-09.ts --sjalvtest

@@ -15575,3 +15575,33 @@ förs inte in i `segment.ts`. RÅ+HÖJD ströks samtidigt som kandidat (kort #27
 **Alternativ.** Behålla 23/10 som en läsning utan beslut, som kunskap om RÅ: valt bort. Den ändrar inget som väntar.
 
 **Stomdokument:** MAT §11, BED §4.2 — kalenderraden och höjdens rader rättade och K-B-utkastet inskrivet.
+
+## #651 (20/10 2026) Reserven för kandidatens del A: del B startar del A när pulsklockan missat slotten
+
+**Bengts ord 20/10:** *"gör reserv för kandidaten del a"*.
+
+**Varför.** 20/10 stod pulsklockan (pg_cron) still 03:28–07:39 under morgonavbrottet, och del A:s körning 06:13 startades aldrig. Del B
+frågade bara om del A:s *senaste* körning lyckades. Det gjorde 00:13-körningen, så del B föll varje timme som "trasig kedja", och
+kandidaten teg 02:00–12:43 UTC, tills nästa ordinarie del A 12:13. En enda missad slott tystar alltså kandidaten i upp till sex timmar,
+och det händer varje gång databasen står still när en slott kommer.
+
+**Beslut.** När PH saknas för den pågående timmen avgör `scripts/kandidat-reserv.ts` ur del A:s körningar sedan den senaste slotten
+(00:13, 06:13, 12:13, 18:13 UTC):
+- ingen körning sedan slotten → del B startar del A (`gh workflow run`; flödet får `actions: write`) och hoppar timmen;
+- körningen pågår → timmen hoppas;
+- den enda körningen sedan slotten föll → ett nytt försök;
+- två eller fler har fallit → timmen hoppas, och mätvakten larmar redan på del A;
+- körningen lyckades men PH saknas → rött, som förut.
+
+#561:s regel står kvar för en angiven tid och när gh inte svarar. En dubbel körning är ofarlig: del A har en concurrency-grupp, och
+`kandidat_ph` skrivs med ON CONFLICT DO UPDATE.
+
+**Prov.** Självtestet med åtta fall, däribland 20/10 07:43 → *starta*, går i ci och i flödet. Bash-logiken är provad med en låtsad gh.
+Med reserven hade del A startats 07:43 20/10, och kandidaten hade sannolikt räknat igen 08:43 i stället för 12:43.
+
+**Alternativ.**
+1. En GitHub-cron som reserv för del A: valt bort. GitHub-cronen kan komma timmar sent (kort #160) och hade startat del A även när
+   pulsklockan gått.
+2. Ett eget pg_cron-jobb: valt bort, eftersom det står still av samma skäl som pulsklockan.
+
+**Stomdokument:** LIV §1 — regeln för saknad PH har fått reserven.
