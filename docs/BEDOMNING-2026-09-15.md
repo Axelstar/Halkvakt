@@ -24,7 +24,7 @@ att läsa mot varandra. Kort utan rad här hör hemma på tavlan, inte i bedömn
 
 ---
 
-## Läget 19/10 — facitläsningen mot Trafikverkets väglag är gjord, soffprovet är klart och kandidaten är på; favoriternas rapport är byggd i båda apparna (bygge 31), inget App Review förrän den är provad; databasen står på 491 MB av 500
+## Läget 20/10 — facitläsningen mot Trafikverkets väglag är gjord, soffprovet är klart och kandidaten är på; favoriternas rapport är byggd i båda apparna och bygge 32 är uppladdat, inget App Review förrän det är provat; databasen står på 492 MB av 500 men Supabase Pro är köpt
 
 Det här läget gäller prognoslagret, skuggan, kuvösen och vägdatalagret, som var dagens arbete. Övriga områden står som i läget 29/9
 nedan med rättelserna under *Övrigt sedan 29/9*, om inte §0, §0b eller §4.2 säger annat.
@@ -53,8 +53,8 @@ nedan med rättelserna under *Övrigt sedan 29/9*, om inte §0, §0b eller §4.2
 - **Favoriterna i appen (17–18/10, kort #357).** Bengt hävde *inget byggs i appen* (#616). Rapportfilen ligger i en publik hink och skrivs var
   tionde minut sedan 17/10 (#617); brytaren *Erbjud att spara resor* ligger i fliken Favoriter (#625, #633); rapporten längs den sparade
   resan, *Dit / Hem* och igenkänningen är byggda på iPhone och Android (#636, #637, #639), och *Avstängning* ersatte Trafikverkets *Vägen
-  avstängd* (#641, i drift 18/10). Bygge 0.3.13 (31) ligger i TestFlight (#640); Bengt provade det 18/10 (spara, *Lugnt*, *Dit / Hem*).
-  **Inget App Review förrän rapporten är provad och byggd** (#636, ersätter #634); Android-AAB 31 är byggd men Play internt väntar på kontot.
+  avstängd* (#641, i drift 18/10). Bygge 0.3.13 (31) låg i TestFlight (#640); Bengt provade det 18/10 (spara, *Lugnt*, *Dit / Hem*). **0.3.13 (32) är uppladdat 19/10** (TestFlight-flödet 39271856967 på e83e56c) med
+  påverkan i rapportens text, rösten som släpper musiken (#642) och statusfältet (#643). **Inget App Review förrän rapporten är provad** (#636, ersätter #634), och inte med (31) utan med (32) (#643); Android-AAB 32 är byggd men Play internt väntar på kontot.
 - **Databasen (17–19/10, kort #347).** Kandidatens loggar ligger ett dygn och trendtabellerna och radarn tio dygn i databasen, och de fyra
   tabellerna som aldrig rensas exporteras utan att raderas (#618). Nattjobbet 18/10 raderade 80 445 rader. Vakthundens rad *databas*
   (issue #963, hela MB): 488 MB 18/10 07:08 och 491 MB 19/10 03:07, gräns 500 MB. Omläsningen enligt #618 punkt 2 föll 19/10: 492 MB 09:07, alltså 3–4 MB per dygn; Supabase Pro köpt 19/10 (#644).
@@ -63,7 +63,7 @@ nedan med rättelserna under *Övrigt sedan 29/9*, om inte §0, §0b eller §4.2
 - **Appen:** 0.3.9 (20) avvisades av App Review 5/10 (#460). **12/10 godkände Apple App Store-versionen 0.3.9**: *IN_REVIEW* 06:23
   och *READY_FOR_DISTRIBUTION* 07:23 UTC (byggsignalerna, ärende #706; kort #280 stängt). Vilket bygge versionen bär syns inte i
   signalerna, och Apples publika katalog gav 0 träffar 12:30 UTC (frågan till Axel i §4.2). 0.3.10 (22) är hos testarna sedan 3/10;
-  0.3.11 (23) och 0.3.12 (24) med S3 (uppladdad 11/10 14:18 UTC) är interna i TestFlight. 0.3.13 ligger i TestFlight sedan 16/10, senast (31) 18/10 (#640). Play: Googles identitetsgranskning
+  0.3.11 (23) och 0.3.12 (24) med S3 (uppladdad 11/10 14:18 UTC) är interna i TestFlight. 0.3.13 ligger i TestFlight sedan 16/10, senast (32) 19/10 (#643). Play: Googles identitetsgranskning
   inskickad 4/10.
 - **Förarsvaren:** 32 riktiga svar 6/10, alla projektgruppens (Bengt 22, Axel 10), inget om halka.
 - **Databasen:** 388 MB 10/10 06:14 UTC (dbknapp 38030231454), ~30 MB/dygn det senaste dygnet; 500 MB omkring 14–16/10.
