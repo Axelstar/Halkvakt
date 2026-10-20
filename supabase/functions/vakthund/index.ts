@@ -433,7 +433,8 @@ Deno.serve(async (req) => {
     //
     //     polisen_events och smhi_warnings vaktas INTE här med flit: deras luckor är världens,
     //     inte vårt systems. Att ingen viltolycka rapporterats på ett dygn är inte ett fel. Att
-    //     INGESTEN slutat hämta är det, och den frågan ställer check 1 via sync_state.
+    //     INGESTEN slutat hämta är det, och den frågan ställer check 1 via sync_state — för SMHI,
+    //     som inte har någon kursor där, ställer 9c (b) den via smhi_synk (20/10).
     const alderH = (t: unknown) => t ? (Date.now() - new Date(t as string).getTime()) / 3600000 : null;
     const [sl] = await sql`SELECT max(run_at) t FROM shadow_log`;
     const [sa] = await sql`SELECT max(last_seen) t FROM situation_archive`;
@@ -912,6 +913,16 @@ Deno.serve(async (req) => {
       rad.push(`${r.source}: ${min.toFixed(0)} min (mjuk gräns 150)`);
       if (min > 150) problem.push(`**${r.source} står stilla**: ${min.toFixed(0)} min (gräns 150)`);
     }
+    // 9c (b). SMHI:s varningssynk (Källornas genomgång 20/10). Synken går med ingest.yml varje timme och lämnar en rad i
+    //     smhi_synk även när flödet är tomt (sql/024). Förut gav ett SMHI-fel en tom lista som tömde nuläget och skrevs som
+    //     "0 varningar"; sedan 20/10 hoppas blocket över vid fel, så att en rad som uteblir betyder att synken inte gått.
+    //     Gränsen 150 min som de vilande källorna ovan: en missad timme är ingen olycka, två är det.
+    try {
+      const [ss] = await sql`SELECT round(extract(epoch FROM now() - max(synkad_at)) / 60) AS min FROM smhi_synk`;
+      rad.push(`smhi_synk: ${ss?.min ?? "aldrig"} min (mjuk gräns 150)`);
+      if (ss?.min === null || ss?.min === undefined || Number(ss.min) > 150)
+        problem.push(`**SMHI:s varningssynk står stilla**: senaste synk för ${ss?.min ?? "aldrig"} min sedan (gräns 150) — fel hos SMHI eller i ingest.yml`);
+    } catch { rad.push("smhi_synk: tabellen saknas — hoppar"); }
 
     // 9d. Livemotorns egen cron-puls. Tål att job_run_details inte är läsbar.
     //     ⚠️ VAD DEN INTE BEVISAR (kort #222): pg_net är ASYNKRONT, så `succeeded` betyder att anropet
