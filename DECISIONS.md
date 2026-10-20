@@ -15350,3 +15350,44 @@ GREPP3-ARKIVENs skrivskyddsrad om mot den nya kvoten, i en egen ändring.
 
 **Köpt 19/10** (Bengt: *"vi har köpt supabase pro"*). Planen är inte läst i panelen av Claude, eftersom inloggningen saknas. Kvar: vakthundens gräns och
 GREPP3-ARKIVENs skrivskyddsrad mot den nya kvoten, i en egen ändring med deploy.
+
+## #645 (20/10 2026) Halkvakt live på X, utan länk i texten (kort #281)
+
+**Axels ord 20/10:** *"Ja det är okej"* om att X kostar runt 15 kr i månaden, och att kontot är ett prov som stängs om det inte ger
+något efter en månad. Axel skapade @Halkvakt, utvecklarkontot (betalning per inlägg) och appen samma natt, och lade in de fyra
+nycklarna som hemligheter: `X_API_KEY`, `X_API_SECRET`, `X_ACCESS_TOKEN`, `X_ACCESS_SECRET` (OAuth 1.0a, Read and write).
+
+**Underlaget.** X:s API har ingen gratisnivå för nya projekt sedan februari 2026; ett inlägg kostar enligt opentweet.io runt 0,015 USD
+utan länk och 0,20 USD med länk (inte läst i X:s egna dokument). Med högst tre dagslägen och fyra larm per dygn, men i praktiken ett par,
+blir det ett par dollar i månaden utan länk och runt 18 med.
+
+**Beslut.** Samma inlägg som Facebook och Instagram går till X i samma körning, efter Instagram, med samma bild (ur arbetsträdet, via
+`POST /2/media/upload`) och en egen text: `textX()` tar Instagram-texten fram till länkraden, hela rader så länge det ryms i 280 tecken,
+och en svans med oberoendet (#610), källan, *länk i profilen* och `#halka #halkvakt`. Ingen adress i texten, inte ens halkvakt.se, eftersom
+X gör den till en länk. Kvittot får fältet `x`. Utan de fyra hemligheterna postas inget på X.
+
+**Kvar:** krediter i X-konsolen innan första inlägget, annars faller steget (kvittot för Facebook och Instagram skrivs ändå). Efter en
+månad läses följare, visningar och omnämnanden; ger det inget stängs X.
+
+**Alternativ.** App Store-länken som på Facebook: tretton gånger dyrare per inlägg. Ett skript som postar via webbläsaren: bryter mot
+X:s regler och kontot kan stängas. Vänta med X: valt bort av Axel.
+
+**Stomdokument:** inga — marknadsföringen ligger utanför de åtta (#598).
+
+## #646 (20/10 2026) Halkvakt live: veckans siffror för X varje måndag morgon (kort #281)
+
+**Axels ord 20/10:** *"Okej okej!"* på förslaget att börja med mätningen av X, inför utvärderingen efter en månad (#645).
+
+**Beslut.** Måndagens morgonpass i halkvakt-live.yml läser våra egna X-inlägg från de senaste sju dygnen (`GET /2/users/:id/tweets`
+med `public_metrics`) och lägger en rad i `marknadsforing/x-matning.json`: antal inlägg, visningar, gillningar, delningar (reposts och
+citat), svar och det mest visade inlägget. Användar-id:t hämtas en gång och sparas i filen. Steget får falla utan att inläggen påverkas.
+Inget nytt pulsjobb: mätningen åker med morgonpasset.
+
+**Kostnad.** X:s prislista (docs.x.com, läst 20/10): egna inlägg ur den egna tidslinjen räknas som *Owned Reads*, 0,001 USD per inlägg;
+en användaruppslagning 0,010 USD. Med ett par inlägg om dagen blir det ett par cent i veckan.
+
+**Kvar:** första mätningen måndag 26/10; signaturen för GET med frågeparametrar är inte prövad mot X förrän då.
+
+**Alternativ.** Ett eget pulsjobb: kräver databasens nyckel och ger inget mer. Läsa siffrorna i X-konsolen för hand: ingen historik i repot.
+
+**Stomdokument:** inga — marknadsföringen ligger utanför de åtta (#598).

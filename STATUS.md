@@ -2662,3 +2662,5 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - Länkarna, som nu pekar direkt på halkvakt.se (github.io skickar dit med 301).
   - Två punkter i nyheterna: musiken efter rösten (#642) och nätavbrottet.
   **Upptäckt:** versionsposten som väntar i App Store Connect heter 0.3.10 (*Prepare for Submission*, byggsignalerna) och måste få numret 0.3.13 innan bygge 32 kan väljas. Bygge 32 är inläst hos Apple men inte installerat än. Stegen för inskicket står sist i filen; kvar för Axel är skärminspelningen (2.5.4), råbilderna ur 32 och själva klicken.
+- 20/10 (Claude; Axel: *"Ja det är okej"*): Halkvakt live postar även på X (DECISIONS #645): `textX()` utan länk, OAuth 1.0a, bilden via media/upload; prov i test/posta.test.ts (X:s eget signaturexempel, 280 tecken, ingen adress). Kvar: krediter i X-konsolen.
+- 20/10 (Claude; Axel: *"Okej okej!"*): X-mätningen varje måndag morgon (DECISIONS #646): `matning-x` i posta.mjs, steget *Mät veckan på X* i halkvakt-live.yml, rad per vecka i marknadsforing/x-matning.json. Första mätningen 26/10.
