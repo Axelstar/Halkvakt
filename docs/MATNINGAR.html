@@ -149,7 +149,7 @@
 </style>
 
 <main class="blad">
-  <div class="etikett">Teknisk analys · intern · 29 september 2026 · uppdaterad 12 oktober</div>
+  <div class="etikett">Teknisk analys · intern · 29 september 2026 · uppdaterad 20 oktober</div>
   <h1>Vad Halkvakt mäter, hur det räknas och vad det visat</h1>
   <p class="ingress">Syskonsidan till Halkvaktens systembild: allt projektet mäter. Motorn som kör i apparna, vakterna och källorna som är i drift, reglerna som prövas i skuggan och facitkällorna, i 22 delområden. För varje del står vad den mäter, hur, vilka tal som finns och vad mätningen är till för. Talen kommer ur beslutsloggen (numren inom parentes), tröskeldokumenten, koden och körningarnas loggar. Utfall som är blindade till domarna visas bara som antal.</p>
   <div class="fakta">
@@ -1318,7 +1318,7 @@
     <details><summary>Hur den mäter</summary><div class="inne">
       <ul>
         <li>Ett regnsegment är ett segment som inte är halkklassat, där radarn visat minst 2,0 mm/h de senaste 70 minuterna. Skuggvarvet kör motorns egna regler i en egen instans över regnsegmenten och loggar bilens position när rösten skulle ha talat.</li>
-        <li>Varningen döms mot närmaste station inom ±30 minuter. Tröskeln blir 2,0 / 0,65 ≈ 3,1 mm/h i stationens skala. Utlösaren <span class="mono">rate_mean_mmh</span> ≥ 2,0 står (signerad 13/9): bandet 2–10 bekräftades 15/10 i 91 % på <span class="mono">rate_mean</span>, 80 % på <span class="mono">rate_max</span> (#568).En station som är igång men tyst inom ±3 timmar räknas som torr (#351).</li>
+        <li>Varningen döms mot närmaste station inom ±30 minuter. Tröskeln blir 2,0 / 0,65 ≈ 3,1 mm/h i stationens skala. Utlösaren <span class="mono">rate_mean_mmh</span> ≥ 2,0 står (signerad 13/9): bandet 2–10 bekräftades 15/10 i 91 % på <span class="mono">rate_mean</span>, 80 % på <span class="mono">rate_max</span> (#568). En station som är igång men tyst inom ±3 timmar räknas som torr (#351).</li>
         <li>Krav för stationsspåret: träff ≥ 70 % och falsklarm ≤ 25 % inom 10 km. Krav för radarspåret: falsklarm ≤ 20 %, missar ≤ 40 %, högst 3 varningar per rutt och regndygn. Underlaget: ≥ 200 varningar, ≥ 15 facit, ≥ 5 regndygn och ≥ 3 län. Till dess skrivs bara antal (#350).</li>
       </ul>
     </div></details>
@@ -1614,7 +1614,7 @@
   <p>Datumen i tabellen larmar sedan 20/10 (#649): de står i <span class="mono">docs/fristerna.json</span>, och fristvakten gör ett ärende till ägaren före varje datum. En grind som fäller en dom i en körning gör själv ett ärende (domlarmet), och domen bokförs i ämnesdelens domsteg i projektkartan, en ägare per grind.</p>
   <p>Det första vinterunderlaget kom med frosten 6–8/10 (#491): K-A passerad, T-A:s domspärr släppt på 169 frostnätter vid 119 stationer, och bildfacitet gav noll omklassningar till halka också under frostnätterna. Förarsvaren har 32 riktiga svar (6/10) men inget om halka, missarna inga riktiga poster, och kamerafacit har ingen halka. Mätningarna hittills prövar metoden. Vintern prövar produkten.</p>
   <hr>
-  <p class="litet">Källor: beslutsloggen (DECISIONS), tröskeldokumenten, systembeskrivningen, koden och körningarnas loggar till 11/10. Samma underlag som bilaga 3–8 till Skyltfondsansökan, men sidan är intern och innehåller opublicerade regelvärden. Alla tidpunkter avser 2026 om inget annat står.</p>
+  <p class="litet">Källor: beslutsloggen (DECISIONS), tröskeldokumenten, systembeskrivningen, koden och körningarnas loggar till 20/10. Samma underlag som bilaga 3–8 till Skyltfondsansökan, men sidan är intern och innehåller opublicerade regelvärden. Alla tidpunkter avser 2026 om inget annat står.</p>
 
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
   <h2 id="oppna-kort">Öppna kort</h2>
