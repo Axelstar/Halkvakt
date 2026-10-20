@@ -12,7 +12,8 @@ will file an incident issue — see above.
 
 ## Livemotorn (Supabase pg_cron → edge function) — "deviations/road_conditions stale"
 Arkitektur: `cron.job` (jobid 1, varje minut) → `net.http_post` med header `x-halkvakt-key`
-→ edge-funktionen `ingest-live` (fail-closed på samma nyckel, secret `INGEST_KEY`)
+→ edge-funktionen `ingest-live` (fail-closed på samma nyckel, prövad mot raden i tabellen `funktionsnyckel` sedan
+DECISIONS #571, sql/054; secreten `INGEST_KEY` läses inte längre)
 → delta-hämtar Situation/RoadCondition från Trafikverket → upsert + `sync_state`-kursorer.
 GitHub-ingesten (timvis) delar kursorerna och fungerar som reserv.
 
@@ -23,7 +24,8 @@ Felsökningstrappa när vakthunden larmar (>15 min stale):
      -d '{"query":"SELECT status,return_message,end_time FROM cron.job_run_details WHERE jobid=1 ORDER BY end_time DESC LIMIT 5"}'`
    `failed` + meddelande pekar oftast direkt på orsaken (timeout/DNS/403).
 2. **Funktionsloggar**: dashboard → Edge Functions → ingest-live → Logs (500-stackar syns här).
-3. **Manuell trigg** (nyckeln ligger i cron-kommandot):
+3. **Manuell trigg** (nyckeln ligger i cron-kommandot och i `funktionsnyckel`; läs den lokalt, aldrig i ett publikt
+   Actions-flöde — så läckte den 15/10, DECISIONS #570):
    hämta: `SELECT command FROM cron.job WHERE jobid=1` → kopiera `x-halkvakt-key`-värdet →
    `curl -X POST -H "x-halkvakt-key: <nyckel>" https://xmpfztykhyvhmrzsnjrc.supabase.co/functions/v1/ingest-live`
    Svar `{"ok":true,...}` = funktionen frisk ⇒ felet ligger i cron/nät; `403` = nyckelosynk (se rotation).
@@ -34,20 +36,21 @@ Felsökningstrappa när vakthunden larmar (>15 min stale):
    (schema `* * * * *`, kommandot i punkt 3). Sajten överlever paus — GitHub-reserven
    håller datat ≤ ~75 min gammalt.
 
-Rotation av `INGEST_KEY` (3 steg, ingen nertid):
-a) ny nyckel: `openssl rand -hex 24`; b) `supabase secrets set INGEST_KEY=<ny> --project-ref ...`
-+ deploya om funktionen (`supabase functions deploy ingest-live --no-verify-jwt --use-api`);
-c) `SELECT cron.alter_job(1, command:='...samma http_post med nya nyckeln...');`
-(ordningen ger max ~1 missad minut).
+Byte av funktionernas nyckel (DECISIONS #570, #571): kör `nyckelbyte-ingest.yml` med knappen och skriv `BYT`. Flödet byter
+raden i `funktionsnyckel` och varje pg_cron-jobb som bär den gamla nyckeln i samma transaktion, utan att värdet hamnar i loggen,
+och prövar att arkivexporten svarar på den nya nyckeln och 403 på den gamla; faller provet byts den gamla tillbaka. Ingen deploy
+behövs. (Före #571 byttes secreten `INGEST_KEY` och `cron.alter_job` för hand; deploynyckeln får inte skriva secreten.)
 
 Kadenser efter beslut #22: livemotorn 1 min · GitHub-ingest timvis (väder/kameror/polisen/smhi)
 · publicera (Supabase pg_cron) var 10:e min, kartlager :00/:30 · fi/dk-snapshoter sist i ingest-grannar (#85) · healthcheck varannan timme
 (trösklar: deviations/road_conditions 15 min, övriga 150 min, + puls på cron-status).
 
 ## Arkivet tillbaka — ett raderat dygn behövs (kort #291, DECISIONS #450)
-Raderingen (sql/034 `arkiv_radera_exporterat`, 03:45) tar det äldsta exporterade dygnet ur `weather_observations` när databasen
-passerar 350 MB. Dygnet finns kvar i två kopior: exportfilen `arkiv/weather_observations/ÅÅÅÅ-MM-DD.ndjson.gz` i Supabase Storage
-(privat hink) och veckodumpen `arkiv-…` som GitHub-release (arkivbackup.yml, de 12 senaste).
+Raderingen (`arkiv_radera_exporterat(350, 14)`, 03:45, sql/034 och sql/044) tar exporterade dygn äldre än 14 dygn ur
+`weather_observations` medan databasen är över 350 MB, högst 40 per natt. Trendtabellerna och radarn (golvet tio dygn) och kandidatens
+två loggar (ett dygn) raderas 03:50 (`arkiv2_radera_exporterat`, sql/053 och sql/062). Dygnet finns kvar i två kopior: exportfilen
+`arkiv/weather_observations/ÅÅÅÅ-MM-DD.ndjson.gz` i Supabase Storage (privat hink) och veckodumpen i hinken `arkiv`, i delar
+`dump/<namn>.dump.delNN` (arkivbackup.yml och funktionen arkivdump, de fyra senaste, DECISIONS #495).
 - **Att filerna går att läsa tillbaka** prövas med databasknappen: `dbknapp` med `atgard = aterlasprov`. Den hämtar det äldsta
   ännu inte raderade dygnet ur hinken och jämför det med databasen kolumn för kolumn (`arkiv_jamfor`). Inget skrivs. Väntat:
   `ok: true`, `sha_lika`, och `bara_i_filen` = `bara_i_databasen` = 0.
