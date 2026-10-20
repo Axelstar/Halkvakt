@@ -189,7 +189,7 @@
 </style>
 
 <main class="blad">
-  <div class="etikett">Stomdokument 7 · 2–3 oktober 2026, provmiljön 11 oktober, läget 19 oktober · kort #357 · version ett byggd i båda apparna, i TestFlight och på Axels och Bengts prov</div>
+  <div class="etikett">Stomdokument 7 · 2–3 oktober 2026, provmiljön 11 oktober, läget 20 oktober · kort #357 · version ett byggd i båda apparna, i TestFlight och på Axels och Bengts prov</div>
   <h1>Favoriter: läget längs dina vägar innan du sätter dig i bilen</h1>
   <p class="ingress">Halkvakts honnörsord är att ligga före. Vi varnar för en fara innan den har uppstått, och då är det inte mer än rimligt att vi visar farorna längs vägen redan innan färden har börjat. Det är att ta hand om de dubbla riskerna, före resan och under den, på ett ansvarsfullt sätt. Det ger föraren alternativ att välja redan innan bilen startar och kör in på vägar där det finns risker.</p>
   <p class="ingress">Det här är underlaget för en egen flik i appen, och sedan 17/10 byggs den (kort #357): form och omfattning avgjordes av Bengt (DECISIONS #616) och version ett finns i iPhone- och Android-appen 0.3.13, i TestFlight och som signerad Android-AAB. Föraren sparar sina vanliga rutter, till och från jobbet eller till sommarstället, och läser före resan en rapport om allt Halkvakt vet om vägen just nu. Rapporten är så färsk som systemet kan göra den tio minuter före avresan. Skärmarna nedan är ritade före bygget och visar också version två (tider, notis, Siri); version ett har ingen tid, notis eller Siri (avsnitt 5). Ingen version med favoriterna har skickats till App Review, och det görs inte förrän rapporten är byggd och provad (Bengt 18/10, DECISIONS #636).</p>
@@ -516,7 +516,7 @@
   <p><b>Beslutat 17/10 (DECISIONS #616 punkt 6.2): ingen karta bakom den sparade linjen.</b> Kartbitar hämtas från en kartserver, som då får veta i vilken trakt rutten går. Linjen ritas i telefonen utan bakgrund. Ortsnamnen i rapporten kommer ur Trafikverkets egna texter, som läggs i rapportfilen (avsnitt 7), och aldrig ur en adressökning, som skulle skicka koordinater.</p>
 
   <h3>Så var det före 0.3.13 (30)</h3>
-  <p>Före steg 2 (PR #1062 och #1063, sammanslagna 18/10) kunde ingen av apparna spara en rutt, och ingen butiksversion kan det än. Brytaren är byggd i båda apparna och byggena 0.3.13 (30) och (31) ligger i TestFlight; Android är en signerad AAB som väntar på Play-kontot (DECISIONS #640). Sparade rutter kommer in i en butiksversion först med det bygge som går till App Review (DECISIONS #636). Så var det: under körningen håller appen bara den senaste och den förra positionen i minnet, för att räkna sträckan och låta motorn jämföra, och sedan 0.3.11 (23) ungefär den senaste minutens positioner för självstoppet (DECISIONS #461). De nollas inte när resan slutar, men försvinner när appen stängs. Dessutom lägger iPhone-appen efter varje resa ett staket på 150 meter runt bilens sista plats hos iOS, så att den kan vakna när bilen rullar nästa gång, om självväckningen och platsen <i>Alltid</i> är på. Den punkten håller iOS, inte appen, och den byts ut efter varje resa. Det appen själv sparar i telefonen är inställningarna, lägesfilen, facitsvaren och historiken för <i>Efter resan</i>: tid, slag, text och varningens id för högst 50 varningar, men inga koordinater. Läst i koden 2/10.</p>
+  <p>Före steg 2 (PR #1062 och #1063, sammanslagna 18/10) kunde ingen av apparna spara en rutt, och ingen butiksversion kan det än. Brytaren är byggd i båda apparna och byggena 0.3.13 (30) och (31) låg i TestFlight, och (32) ligger där sedan 19/10 (DECISIONS #643); Android är en signerad AAB som väntar på Play-kontot (DECISIONS #640). Sparade rutter kommer in i en butiksversion först med det bygge som går till App Review (DECISIONS #636). Så var det: under körningen håller appen bara den senaste och den förra positionen i minnet, för att räkna sträckan och låta motorn jämföra, och sedan 0.3.11 (23) ungefär den senaste minutens positioner för självstoppet (DECISIONS #461). De nollas inte när resan slutar, men försvinner när appen stängs. Dessutom lägger iPhone-appen efter varje resa ett staket på 150 meter runt bilens sista plats hos iOS, så att den kan vakna när bilen rullar nästa gång, om självväckningen och platsen <i>Alltid</i> är på. Den punkten håller iOS, inte appen, och den byts ut efter varje resa. Det appen själv sparar i telefonen är inställningarna, lägesfilen, facitsvaren och historiken för <i>Efter resan</i>: tid, slag, text och varningens id för högst 50 varningar, men inga koordinater. Läst i koden 2/10.</p>
 
   <h3>Vad som krävs för att bygga det</h3>
   <ol class="steg">
@@ -765,9 +765,9 @@
   </ol>
   <p><b>Det som väntar.</b></p>
   <ol class="steg">
-    <li><div><b>Provet på en riktig telefon, Axel och Bengt:</b> Bengt har provat 0.3.13 (31) på iPhone 18/10; kvar är <i>Nytt sedan förra kollen</i>, samma väg tillbaka (igenkänningen) och Axels prov (kort #357).</div></li>
-    <li><div><b>App Review, Bengt och Axel:</b> inget inskick förrän rapporten är provad (#636). Kvar enligt DECISIONS #634 punkt 2–7 och #640: skärmbilder ur ett nytt bygge, skärminspelningen för bakgrundsljudet, butikstexterna (Axel godkänner) och själva inskicket. Påverkan i rapportens text (#641 punkt 2) når telefonerna med bygge 32.</div></li>
-    <li><div><b>Play internt, Axel:</b> AAB:n (versionCode 31) står klar, men Play-kontots identitetsverifiering väntar (#640).</div></li>
+    <li><div><b>Provet på en riktig telefon, Axel och Bengt:</b> Bengt har provat 0.3.13 (31) på iPhone 18/10; bygge 0.3.13 (32) är uppladdat 19/10 (#643) och är det som provas vidare. Kvar är <i>Nytt sedan förra kollen</i>, samma väg tillbaka (igenkänningen) och Axels prov (kort #357).</div></li>
+    <li><div><b>App Review, Bengt och Axel:</b> inget inskick förrän rapporten är provad (#636). Bengt 19/10: inget inskick med (31) utan med (32), som bär påverkan i rapportens text, rösten som släpper musiken och statusfältet (#643). Kvar enligt DECISIONS #634 punkt 4–7, #640 och #643: skärmbilder ur (32), skärminspelningen för bakgrundsljudet, butikstexterna (Axel godkänner) och själva inskicket. Påverkan i rapportens text (#641 punkt 2) finns i bygge 32.</div></li>
+    <li><div><b>Play internt, Axel:</b> AAB:n (versionCode 32) står klar, men Play-kontots identitetsverifiering väntar (#640).</div></li>
     <li><div><b>Version två, kort #358:</b> tider, påminnelse och Siri. Gränsen för hur ofta en notis får komma, där telefonen själv kan köra kollen (Android), och om en exakt tid där kräver en särskild behörighet, är inte avgjort (#616).</div></li>
     <li><div><b>Trafiken mot hinken:</b> hur den ska mätas avgörs innan butiksversionen läser filen (#617).</div></li>
     <li><div><b>Det rapporten inte ser:</b> klockslagen för en avstängning, bara giltighetstiden (#641). Prognosen längs vägen först efter domen i mars.</div></li>
@@ -880,6 +880,7 @@
         <tr><td>18/10</td><td>Fliken och rapporten i iPhone och Android; de fem valen i bygget; bygge 0.3.13 (31) i TestFlight och Android-AAB 31; Bengt provar på iPhone.</td><td>DECISIONS #639, #640, PR #1068, #1069</td></tr>
         <tr><td>18/10</td><td><i>Avstängning</i> i stället för <i>Vägen avstängd</i> i drift; Trafikverkets påverkan i rapportens text byggd.</td><td>DECISIONS #641</td></tr>
         <tr><td>19/10</td><td>Sajtens texter om sparade resor på halkvakt.se, före inskicket; integritetspolicyn gäller från 2026-10-19.</td><td>DECISIONS #635, #636</td></tr>
+        <tr><td>19/10</td><td>Bygge 0.3.13 (32) i TestFlight och Android-AAB 32: påverkan i rapportens text, rösten som släpper musiken och statusfältet; inskicket väntar på proven på (32).</td><td>DECISIONS #642, #643</td></tr>
       </tbody>
     </table>
   </div>
