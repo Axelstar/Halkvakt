@@ -15475,7 +15475,7 @@ en ägare per grind, i en egen gren och PR. Fristvakten först."*
    (K-A, R-A, T-A, W-A och V-B rättade i #648).
 3. Datumen i KALENDERN, i bedömningens §4.2 och i besluten larmade ingenstans. Appens påminnelser går bara när appen är öppen.
 
-**A. Fristvakten.** `docs/fristerna.json` bär 23 frister från 21/10 2026 till 1/3 2027, var och en med datum, förvarning, vad, ägare,
+**A. Fristvakten.** `docs/fristerna.json` bär 26 frister från 21/10 2026 till 1/3 2027, var och en med datum, förvarning, vad, ägare,
 källa och *klart när*. `scripts/fristvakten.ts` körs av `fristvakten.yml` 07:13, 11:13 och 15:13 UTC och gör ett ärende med
 etiketten `frist`, tilldelat ägarna, *förvarning* dygn före datumet (3 om fältet saknas). På dagen kommer en kommentar, sedan en per
 dygn tills ärendet stängs; en markör per dygn gör att tre körningar om dagen ger en påminnelse. Ett stängt ärende tiger, och ett
@@ -15510,6 +15510,14 @@ körningarnas nummer, och *trycks vid frost* (#338). Ingen uppgift föll bort, o
 population. Dit kommer också de två nya stegen *Domlarmet* och *Fristvakten*, som står som pågår tills de har kört på main. Delen går
 från 84 till 86 %.
 
+Två grindar till hade sina tal på mer än ett ställe bland ämnesdelarna, och de fick också en ägare var (Bengts *"gör 1-4"* 20/10):
+- **S1-grinden** ägs av tillståndet. Efterhalkans domsteg pekar dit och säger att efterhalkans egen dom är KB-B i januari.
+  Körningsnumret 38118591156 och *på sju dygn* fanns bara i efterhalkans rad och är flyttade till tillståndets.
+- **Vägpunktsgrinden** ägs av prognoslagret. Segmentprognosen pekar dit utan tal. Höjden behåller sitt eget tal, kandidaten RÅ+HÖJD
+  (7,1 %), med en hänvisning till grinden.
+
+En del som vilar på en annan dels grind pekar dit utan att upprepa talen. Statusarna är oförändrade.
+
 **Dokumenten.** I CLAUDE.md:
 - ett avsnitt om fristvakten och domlarmet under DOKUMENTSYNKEN;
 - synken för in nya datum i fristerna.json (steg 4), kör `fristvakten.ts --check` (steg 5) och listar öppna `frist`- och
@@ -15518,12 +15526,15 @@ från 84 till 86 %.
 
 KALENDERN och MATNINGAR §11 säger att datumen larmar, och raden om vattenplaningens radarspår i §11 är avbockad (#648). Två datum
 fanns i kalendern och §11 men inte i den första listan, och de är nu införda: databasens storlek 24/10 och höjdprovet 23/10 (#357).
+Tre punkter fanns bara i appens påminnelser och är också införda:
+- morgonavbrotten (21/10);
+- kandidat-timme, som föll 20/10 (före signeringen);
+- måndagsserien 26/10.
 
-**Inte gjort här.**
-- Skyltfondens datum står inte i fristerna.json, eftersom repot är publikt.
-- Appens påminnelser 21/10–24/11 ligger kvar tills fristvakten har kört på main.
-- Två grinddubbletter mellan ämnesdelar står kvar och hör inte till den här ändringen: S1-grinden finns både i tillståndet och i
-  efterhalkan, och vägpunktsgrinden nämns i segmentprognosen, prognoslagret och höjden.
+Ö-B och Supabase-planen har förvarning 1, eftersom gallringen tar frostnätterna 22/10 03:15 UTC och databasen stod på 499 av 500 MB.
+Appens påminnelser tas bort när fristvakten har kört på main.
+
+**Inte gjort här.** Skyltfondens datum står inte i fristerna.json, eftersom repot är publikt.
 
 **Alternativ.**
 1. Behåll grindraderna på båda ställena och låt `projektkartan.ts --check` fälla rader med olika senaste beslutsnummer: valt bort.

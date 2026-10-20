@@ -250,8 +250,9 @@ en körning skrev nådde aldrig synken, som läser beslut och commits, inte utsk
   (`scripts/domrad.ts`). Grindflödenas sista steg (`scripts/domlarm.ts`) gör ett ärende med etiketten `dom`, tilldelat Bengt, för
   KLARAR, FALLER och LÄS (spärren har släppt och domslutet ska läsas), en gång per grind och utfall. Stäng ärendet när domen är
   bokförd. Ett nytt grindskript skriver en domrad, och dess flöde får domlarmets steg.
-- **En ägare per grind.** I projektkartan står en grinds dom i ämnesdelens Dom-steg; *Grindarna och domkalendern* bär bara det
-  gemensamma (tröskeldokumenten, pulsklockan, självtesterna, domkalendern, domlarmet och fristvakten).
+- **En ägare per grind.** I projektkartan står en grinds dom i en enda ämnesdels Dom-steg; *Grindarna och domkalendern* bär bara det
+  gemensamma (tröskeldokumenten, pulsklockan, självtesterna, domkalendern, domlarmet och fristvakten). En del som vilar på en annan
+  dels grind pekar dit utan att upprepa talen: S1-grinden står i tillståndet, vägpunktsgrinden i prognoslagret.
 
 **Dokumentsynken, steg för steg** (rutinen varje morgon, eller en session som gör den för hand):
 1. `git fetch origin`; gren `claude/dokumentsynk-<ÅÅÅÅ-MM-DD>` från origin/main.
