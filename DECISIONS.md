@@ -15629,3 +15629,32 @@ Visar panelen en annan kvot rättas talen. Över kvoten skrivskyddas inget men d
    upptäcker inte en tabell som skenar.
 
 **Stomdokument:** BED §4.2 — vakthundens gräns efter Pro avgjord, SYS arkivet — Supabase Pro och kvoterna
+## #653 (20/10 2026) Rättigheterna skrivs ut i migrationerna: Supabase slutar ge nya tabeller i public rättigheter 30/10
+
+**Axels ord 20/10:** *"Okay yes please fix it for us"* (om Supabases mejl samma kväll).
+
+**Varför.** Från 30/10 2026 får en ny tabell i `public` inga Data API-rättigheter av sig själv. Befintliga tabeller behåller sina.
+Hittills har varje ny tabell fått `service_role` ur Supabases standardrättigheter, inte ur våra filer: 059 ger `service_role` ingenting
+på `kandidat_brytare` och 055 bara SELECT på `vagpunkt`, men databasen visar fullt för `service_role` på båda (läst 20/10 ur
+`pg_class.relacl`). Edge-funktionerna (`publicera`, `ingest-live`, `facit-svar`, `byggsignaler`, `vakthund`, `kamerafacit`,
+`arkivexport`) når databasen med supabase-js och service-nyckeln, och `service_role` går förbi RLS men inte förbi GRANT. En ny
+tabell efter 30/10 utan grant ger alltså "permission denied" i driften, och ett schema som byggs om ur `sql/` får inga rättigheter alls.
+
+**Beslut.**
+- `sql/064_rattigheter_uttryckliga.sql` skriver ut det databasen redan har: ALL till `service_role` på varje tabell som postgres äger i
+  `public`, USAGE, SELECT, UPDATE på varje sekvens, INSERT till `anon` på `waitlist`. Inget nytt till `anon` eller `authenticated`;
+  låsningen står kvar. Vaktad på `pg_roles` för ci:s PostGIS. Provad mot produktionen i en transaktion som rullades tillbaka:
+  48 objekt, 0 ändrade.
+- Regeln framåt (CLAUDE.md): varje ny tabell i `public` ger `service_role` sina rättigheter i samma fil, och en serial-kolumns sekvens
+  med den. `test/rattigheter.test.ts` fäller en fil från 064 och framåt som saknar det; motprovet är 059 i miniatyr.
+
+**Lämnat.** `spatial_ref_sys` (PostGIS) har RLS av och fulla rättigheter för `anon` och `authenticated` (Supabases säkerhetsråd). Den
+ägs av `supabase_admin` och rättigheterna gavs av `supabase_admin`, så en REVOKE från postgres verkar inte. Tabellen bär bara
+PostGIS:s referenssystem. Att flytta PostGIS ur `public` är en större ändring och är inte gjort.
+
+**Alternativ.**
+1. `ALTER DEFAULT PRIVILEGES ... TO service_role`: valt bort. Det är just standardrättigheterna Supabase ändrar 30/10, och en regel som
+   hänger på dem kan tas bort under oss.
+2. Bara regeln i CLAUDE.md: valt bort. En regel utan vakt hänger på minnet; testet fäller.
+
+**Stomdokument:** SYS — databasens rättigheter skrivs ut i migrationerna från och med 064.

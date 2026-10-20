@@ -335,6 +335,11 @@ i samma commit när de överlappar.
   roller, och en naken REVOKE fäller integrationstestet (003, 31/8). 002 kördes bara via
   Management API och gick därför oupptäckt förbi — hade den legat i auto-migrationen hade
   samma sak hänt.
+- Från 30/10 2026 ger Supabase INTE längre nya tabeller i `public` några rättigheter av sig själv (DECISIONS #653). Våra
+  edge-funktioner går via supabase-js med service-nyckeln, och `service_role` går förbi RLS men inte förbi GRANT. Regel: varje
+  migration som skapar en tabell i `public` ger `service_role` sina rättigheter i SAMMA fil (`GRANT ALL ON TABLE x TO service_role`,
+  och `GRANT USAGE, SELECT, UPDATE ON SEQUENCE x_id_seq TO service_role` för en serial-kolumn), vaktat på `pg_roles` som ovan.
+  `anon` och `authenticated` får fortfarande ingenting utan ett beslut. `test/rattigheter.test.ts` fäller en fil från 064 som saknar det.
 - SwiftUI TabView(.page) lägger sidprickarna OVANPÅ innehållet, inte under det. Sista
   elementet på varje sida måste ha ≥ 56 pt fri höjd under sig, annars täcks knappar.
   Fångat på Axels telefon 31/8: "Byt bilkoppling" låg under prickarna och gick inte att träffa.
