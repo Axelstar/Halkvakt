@@ -43,7 +43,10 @@ const [weather, conditions, cameras, deviations, wildlife, smhi] = await Promise
   fetchCameras(apiKey, since.cameras ?? "0"),
   SKIP.has("deviations") ? tom : fetchDeviations(apiKey, since.deviations ?? "0"),
   fetchWildlifeEvents().catch((e) => { console.warn("polisen.se skipped:", e.message); return { items: [] }; }),
-  fetchSmhiWarnings().catch((e) => { console.warn("SMHI skipped:", e.message); return { items: [] }; }),
+  // Vid fel undefined, inte en tom lista (Källornas genomgång 20/10): writeAll ersätter nuläget med flödet och skriver en
+  // rad i smhi_synk, så en tom lista tömde smhi_warnings och såg ut som "0 varningar". Nu lämnas nuläget och smhi_synk
+  // orörda, och vakthundens 9c (b) larmar när synken står stilla.
+  fetchSmhiWarnings().catch((e) => { console.warn("SMHI skipped — nuläget och smhi_synk lämnas orörda:", e.message); return undefined; }),
 ]);
 
 const coldStations = weather.items.filter(w => w.surfaceTempC !== null && w.surfaceTempC <= 5);
@@ -58,7 +61,9 @@ console.log(`live deviations kept: ${deviations.items.filter(d => !d.deleted).le
 const wl = wildlife.items;
 const wlRoads = wl.filter(w => w.roadNumber).length;
 console.log(`wildlife events:      ${wl.length} (road extracted: ${wlRoads}, species: ${wl.filter(w => w.species).length})`);
-console.log(`smhi warning areas:   ${smhi.items.length} (winter-relevant: ${smhi.items.filter(x => isWinterRelevant(x.eventCode)).length})`);
+console.log(smhi
+  ? `smhi warning areas:   ${smhi.items.length} (winter-relevant: ${smhi.items.filter(x => isWinterRelevant(x.eventCode)).length})`
+  : "smhi warning areas:   — (SMHI skipped)");
 for (const d of deviations.items.filter(d => !d.deleted).slice(0, 5)) {
   console.log(`  [${d.messageType}/${d.severityText ?? "-"}] ${d.roadNumber ?? "?"}: ${d.message.slice(0, 90)}`);
 }

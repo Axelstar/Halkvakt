@@ -75,6 +75,12 @@ test("writeAll: migrate, insert, idempotent re-run", { skip: !url }, async () =>
   // körning — den är en klocka, inte data, så två körningar ger två rader utan att bryta idempotensen.
   assert.equal(await n("SELECT count(*) FROM smhi_warnings_history WHERE senast_sedd IS NOT NULL"), 1);
   assert.equal(await n("SELECT count(*) FROM smhi_synk WHERE varningar = 1"), 2);
+  // Källornas genomgång 20/10: när SMHI-hämtningen fallerar skickar ingest ingen smhi alls. Då får nuläget inte tömmas
+  // och ingen synkrad skrivas — förut blev ett fel en tom lista, som raderade smhi_warnings och loggades som 0 varningar.
+  const c3 = await writeAll({ ...data, smhi: undefined });
+  assert.equal(c3.smhi, 0);
+  assert.equal(await n("SELECT count(*) FROM smhi_warnings"), 1, "ett SMHI-fel tömmer inte nuläget");
+  assert.equal(await n("SELECT count(*) FROM smhi_synk"), 2, "ett SMHI-fel skriver ingen synkrad");
   const wv = await pool.query("SELECT road_number, species FROM polisen_events WHERE event_id=999001");
   assert.equal(wv.rows[0].road_number, "E45");
   assert.equal(wv.rows[0].species, "älg");
