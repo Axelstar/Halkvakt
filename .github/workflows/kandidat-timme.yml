@@ -6,6 +6,9 @@ name: kandidat-timme
 # körning fallen eller pågår förklarar den luckan, och timmen hoppas över grönt, med en notis HOPPAD som räknar den — mätvakten
 # larmar redan på del A. Har del A:s senaste körning LYCKATS och PH ändå saknas är kedjan trasig, och då blir jobbet rött; annars
 # kunde del B tiga för alltid medan allt såg grönt ut.
+# RESERVEN (Bengts order 20/10): för den pågående timmen avgör scripts/kandidat-reserv.ts ur del A:s körningar sedan den senaste
+# slotten (00:13, 06:13, 12:13, 18:13 UTC). Har pulsklockan inte startat slottens körning, eller har den enda fallit, startar del B
+# del A själv och hoppar timmen — 20/10 föll 06:13 bort under morgonavbrottet och kandidaten teg nästan elva timmar.
 # Ingen Trafikverksdata i någon fil eller logg: ankarna lämnar aldrig jobbet, bara kandidatens egna tal skrivs.
 on:
   workflow_dispatch:
@@ -16,7 +19,7 @@ on:
         default: ""
 permissions:
   contents: read
-  actions: read      # del A:s senaste körning, för att avgöra om en saknad PH är förklarad
+  actions: write     # del A:s körningar, för att avgöra om en saknad PH är förklarad, och reserven som startar del A (20/10)
 jobs:
   timme:
     runs-on: ubuntu-latest
@@ -33,6 +36,7 @@ jobs:
       - name: Självtesten
         run: |
           node --experimental-strip-types ingest/kandidat-db.ts --sjalvtest 2>&1 | grep -v ExperimentalWarning | tail -1
+          node --experimental-strip-types scripts/kandidat-reserv.ts --sjalvtest 2>&1 | grep -v ExperimentalWarning | tail -1
           python3 -m pip install -q $(grep -E '^(numpy|pandas)==' fysik/requirements.txt)
           python3 fysik/live/kandidat_timme.py --sjalvtest | tail -1
       - name: Timmen, PH och ankarna
@@ -46,13 +50,30 @@ jobs:
           KOD=${PIPESTATUS[0]}
           set -e
           if [ "$KOD" = 3 ]; then
-            A=$(gh run list --workflow kandidat-fysik.yml --limit 1 --json conclusion,createdAt -q '.[0].conclusion + " " + .[0].createdAt' 2>/dev/null)               || A="okänd (gh svarade inte)"
-            if [ "${A%% *}" = success ]; then
-              echo "::error::ingen PH för $TID fast del A:s senaste körning lyckades ($A) — kedjan är trasig, inte bara sen (eller timmen är äldre än tabellens två dygn)"
-              exit 1
+            # Reserven (scripts/kandidat-reserv.ts, 20/10) gäller den pågående timmen. En angiven tid, eller ett gh som inte
+            # svarar, prövas som förut: lyckades del A:s senaste körning är kedjan trasig, annars hoppas timmen.
+            RES=""
+            if [ -z "${{ inputs.tid }}" ]; then
+              RES=$(gh run list --workflow kandidat-fysik.yml --limit 10 --json status,conclusion,createdAt 2>/dev/null \
+                | node --experimental-strip-types scripts/kandidat-reserv.ts 2>/dev/null) || RES=""
             fi
-            echo "::notice title=HOPPAD::ingen PH för $TID; del A:s senaste körning: ${A:-ingen} (DECISIONS #561)"
-            echo "**HOPPAD:** ingen PH för $TID — del A:s senaste körning: ${A:-ingen}. Timmen räknas som hoppad, inte som fel." >> "$GITHUB_STEP_SUMMARY"
+            if [ -z "$RES" ]; then
+              A=$(gh run list --workflow kandidat-fysik.yml --limit 1 --json conclusion,createdAt -q '.[0].conclusion + " " + .[0].createdAt' 2>/dev/null) || A="okänd (gh svarade inte)"
+              if [ "${A%% *}" = success ]; then RES="trasig"$'\t'"del A:s senaste körning lyckades ($A)"; else RES="hoppa"$'\t'"del A:s senaste körning: ${A:-ingen}"; fi
+            fi
+            BESLUT="${RES%%$'\t'*}"; SKAL="${RES#*$'\t'}"
+            case "$BESLUT" in
+              trasig)
+                echo "::error::ingen PH för $TID: $SKAL — kedjan är trasig, inte bara sen (eller timmen är äldre än tabellens två dygn)"
+                exit 1 ;;
+              starta)
+                gh workflow run kandidat-fysik.yml
+                echo "::warning title=RESERV::ingen PH för $TID: $SKAL — del A startad som reserv (scripts/kandidat-reserv.ts)"
+                echo "**RESERV:** ingen PH för $TID — $SKAL. Del A är startad nu; timmen räknas som hoppad." >> "$GITHUB_STEP_SUMMARY" ;;
+              *)
+                echo "::notice title=HOPPAD::ingen PH för $TID: $SKAL (DECISIONS #561)"
+                echo "**HOPPAD:** ingen PH för $TID — $SKAL. Timmen räknas som hoppad, inte som fel." >> "$GITHUB_STEP_SUMMARY" ;;
+            esac
             echo "HOPPAD=1" >> "$GITHUB_ENV"
             exit 0
           fi
