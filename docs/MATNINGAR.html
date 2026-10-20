@@ -663,13 +663,13 @@
 <!-- LÄGESRADER §5: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 <div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
   <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
-  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-hojd">Höjden i terrängen</a> <span style="color: var(--dampad, #4A5763)">väntar, 75 % · Läsningen 23/10 (DECISIONS #357) och premissläsningen 24/11 (#435).</span></summary>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-hojd">Höjden i terrängen</a> <span style="color: var(--dampad, #4A5763)">väntar, 75 % · Premissläsningen 24/11 (#435); höjdbeslutet togs i #547, och läsningen 23/10 utgick (#650).</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">–</span> <b>Tröskeldokument</b> <span style="color: var(--dampad, #4A5763)">gäller inte · Görs inte (DECISIONS #547): domen i mars gäller NIVÅ 2+BLANDNING, där höjd och terräng redan är särdrag i rättelsen; förut: Ingen egen; prövas med A-måtten i TROSKLAR-SKUGGAN.md:113–116; tröskelrad för höjdkolumn saknas</span></li>
       <li><span aria-hidden="true">–</span> <b>Data i arkivet</b> <span style="color: var(--dampad, #4A5763)">gäller inte · Görs inte (DECISIONS #547): domen i mars gäller NIVÅ 2+BLANDNING, där höjd och terräng redan är särdrag i rättelsen; förut: Höjden lagras inte; EU-DEM hämtas ur opentopodata vid varje körning (scripts/hojd-prov.ts:16–17)</span></li>
       <li><span aria-hidden="true">–</span> <b>Publicerat i lägesfilen</b> <span style="color: var(--dampad, #4A5763)">gäller inte · Görs inte (DECISIONS #547): domen i mars gäller NIVÅ 2+BLANDNING, där höjd och terräng redan är särdrag i rättelsen; förut: Ingen höjd i weather_latest eller live.json</span></li>
       <li><span aria-hidden="true">✓</span> <b>Mätt i skuggan</b> <span style="color: var(--dampad, #4A5763)">klart · scripts/hojd-prov.ts + hojd-prov.yml måndagar 07:00 via pulsklockan; RÅ+HÖJD i premissmätningen (#435)</span></li>
-      <li><span aria-hidden="true">◐</span> <b>Dom</b> <span style="color: var(--dampad, #4A5763)">pågår · Kandidaten RÅ+HÖJD i vägpunktsgrinden, vars dom står i Prognoslagret (#649): FALLER 28/9, 7,1 % (#399), oavgjord vägviktat 30/9 (#405–#408); läsning 23/10 (#357) och 24/11 (#435); 13/10: läsningarna står kvar som kunskap om RÅ, kontrollen och reserven (#547)</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Dom</b> <span style="color: var(--dampad, #4A5763)">pågår · Kandidaten RÅ+HÖJD i vägpunktsgrinden, vars dom står i Prognoslagret (#649): FALLER 28/9, 7,1 % (#399), oavgjord vägviktat 30/9 (#405–#408); läsningen 23/10 utgick 20/10, eftersom höjdbeslutet togs i #547 (#650); premissläsningen 24/11 (#435) står kvar som kunskap om RÅ, kontrollen och reserven</span></li>
       <li><span aria-hidden="true">–</span> <b>Villkoret i motorn</b> <span style="color: var(--dampad, #4A5763)">gäller inte · Görs inte (DECISIONS #547): domen i mars gäller NIVÅ 2+BLANDNING, där höjd och terräng redan är särdrag i rättelsen; förut: segment.ts:56–68 viktar 1/km utan höjd</span></li>
       <li><span aria-hidden="true">–</span> <b>Testfall i tre språk</b> <span style="color: var(--dampad, #4A5763)">gäller inte · Segmentprognosen körs inte i telefonerna (segment.ts:7)</span></li>
       <li><span aria-hidden="true">–</span> <b>I appen</b> <span style="color: var(--dampad, #4A5763)">gäller inte · Höjden är en korrektion i prognosen, aldrig en egen röst</span></li>
@@ -863,7 +863,7 @@
       <ul>
         <li><b>SMHI:s luftstationer som extra ankare.</b> På samma 1 918 punkter steg medelfelet från 1,05 till 1,20 °C. De 352 punkter som bara fanns tack vare SMHI hade 2,36 °C (#119).</li>
         <li><b>Inlärd stationsoffset.</b> Den utgick 23/9 eftersom den inte tillförde något mot den råa viktningen, 0,72 mot 0,71 °C (#324). Med varma grannar är det offseten som håller: 4,4 % grova fel efter 25/9 mot rå viktnings 11,1 %.</li>
-        <li><b>Höjdkorrektion.</b> 28/9 hjälper den inom 7 km (0,59 mot 0,82 °C) och i bandet 7–15 km (0,74 mot 0,81) men stjälper bortom 20 km (0,86 mot 0,82 °C). Den empiriska temperaturgradienten är 0,63 °C per 100 m, både ur 3 476 par 12/9 och ur 3 261 par 28/9. Frågan läses om 23/10 (#357). 30/9 på ärliga rader: höjden halverar felet inom 7 km i Sverige (0,96 → 0,63 °C) och ger inget i Finland; rå + höjd är oavgjord vägviktat, 5,1–5,3 % (#405, #407).</li>
+        <li><b>Höjdkorrektion.</b> 28/9 hjälper den inom 7 km (0,59 mot 0,82 °C) och i bandet 7–15 km (0,74 mot 0,81) men stjälper bortom 20 km (0,86 mot 0,82 °C). Den empiriska temperaturgradienten är 0,63 °C per 100 m, både ur 3 476 par 12/9 och ur 3 261 par 28/9. Frågan läses inte om: höjden förs inte in, eftersom höjd och terräng redan är särdrag i kandidatens rättelse (#547, #650). 30/9 på ärliga rader: höjden halverar felet inom 7 km i Sverige (0,96 → 0,63 °C) och ger inget i Finland; rå + höjd är oavgjord vägviktat, 5,1–5,3 % (#405, #407).</li>
         <li><b>ANOM och regimen, 30/9.</b> Luft ur många grannar med anomali ur de närmaste blev sämre än rå viktning i båda länderna (14,5 % i Sverige, 6,6 % i Finland); en regim ur vind och natt skilde inte när terrängen biter. Båda förregistrerade, båda strukna som kandidater (#405, #408).</li>
       </ul>
 
@@ -1601,7 +1601,7 @@
         <tr><td>Varje måndag</td><td>grind A, vägpunktsgrinden och populationsläsningen, vattenplaningens radarspår (bara antal); premissmätningen går med sedan 2/10 men läses inte förrän 24/11 (#435)</td></tr>
         <tr><td>Inom 3 dygn efter frost</td><td>trenden, rimfrosten, övergångarna, frysklassningen, vind och sikt; körs när minst 50 stationer haft ytan ≤ 0 °C, högst vartannat dygn (sju dygn till 10/10, då gallringen flyttades från sju till tre dygn, #511)</td></tr>
         <tr><td>Vecka 41–42</td><td>kuvösen: Trafikverkets stationsdata för vintern 2024/25 inventeras och riktningsprovet körs, med prognoslagrets flaggmarginal (#437); därefter den gemensamma kalibreringen, som förut stod på 1 februari 2027 (#424, #425) — ✅ båda gjorda 6/10: riktningsprovet läst (#467), kalibreringen gav startvärdena (#468)</td></tr>
-        <tr><td>23/10</td><td>höjdkorrektionen läses om på fyra veckors fullständigt underlag</td></tr>
+        <tr><td><s>23/10</s></td><td>höjdkorrektionen läses om på fyra veckors fullständigt underlag — utgår: beslutet om höjden togs 13/10 (#547, #650)</td></tr>
         <tr><td>24/11</td><td>premissmätningen läses, en gång, på en egen körning; den finska körs samma dag som stöd (#435, #436)</td></tr>
         <tr><td><s>November–december</s></td><td>vattenplaningens radarspår, när underlaget räcker — ✅ dömt redan 19/10: V-B FALLER (#648)</td></tr>
         <tr><td>November</td><td>efterhalkan som märkt beta: S1-grinden läst 11/10 (#521), S3 byggd och godkänd (#524, #526); 0.3.12 (24) till testarna; iOS uppladdat 11/10 och internt, till Kompisarna när Axel skickar in det</td></tr>
@@ -1618,7 +1618,7 @@
 
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
   <h2 id="oppna-kort">Öppna kort</h2>
-  <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 29 kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>
+  <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 28 kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>
   <h3><a href="#avsnitt-1">1. Datan som samlas in</a></h3>
   <ul>
     <li>#303 VÄGDATALAGRET, STEG 3 — KUVÖSENS INLÄSNING OCH AXELS KOLUMNER <span class="litet">· Bengt</span></li>
@@ -1651,7 +1651,6 @@
     <li>#298 PROGNOSLAGRET — ALLT PÅ BORDET: FEMTON VÄGAR, FYRA MÄTBARA I KUVÖSEN NU <span class="litet">· Bengt</span></li>
     <li>#344 🌡️ #344 FJÄRRYTORNA — EN PLATS GER TVÅ ANKARE I SKUGGANS RÅ (FYND 14/10, AVGJORT SAMMA KVÄLL: INGEN ÄNDRING … <span class="litet">· Claude, låst</span></li>
     <li>#38b Stråket / skuggmotorn — ÅTERSTÄLLT 10/9 <span class="litet">· Claude, låst</span></li>
-    <li>#96 HÖJDPROVET — terrängens första faktor, mäter redan <span class="litet">· Claude, låst</span></li>
   </ul>
   <h3><a href="#avsnitt-6">6. Utveckling (L3)</a></h3>
   <ul>

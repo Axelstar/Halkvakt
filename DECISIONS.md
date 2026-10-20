@@ -15543,3 +15543,35 @@ Appens påminnelser tas bort när fristvakten har kört på main.
 3. Fristvakten i pulsklockan: valt bort, eftersom den står när databasen står.
 
 **Stomdokument:** MAT §11 — domkalendern larmar och raden om vattenplaningens radarspår är avbockad.
+
+## #650 (20/10 2026) Höjdprovets läsning 23/10 utgår och kort #96 stängs: beslutet om höjden togs i #547
+
+**Bengts ord 20/10:** *"Ja: stryk höjdprovet 23/10 med DECISIONS #650 och stäng kort #96; lägg K-B-frågan som frist 28/10 och
+utkastet i §4.2. Egen gren och PR."* Frågan kom ur Bengts undran samma dag: är en del av mätningarna mindre betydelsefulla nu när
+prognosen bygger på fysiken?
+
+**Varför.** Läsningen 23/10 (#357) skulle avgöra en sak: om höjden ska in i segmentprognosen före novembers skarpa prövning. Den frågan
+avgjordes 13/10 i #547. Domen i mars gäller kandidaten NIVÅ 2+BLANDNING, där höjd och terräng redan är särdrag i rättelsen, och höjden
+förs inte in i `segment.ts`. RÅ+HÖJD ströks samtidigt som kandidat (kort #270, val (b)), och reserven är RÅ. Läsningen kan alltså inte
+ändra något, och en läsning utan fråga bjuder in till efterhandstolkning.
+
+**Beslut.**
+1. Läsningen 23/10 utgår. Kort #96 stängs, eftersom dess Verify (*"beslutet i DECISIONS"*) är uppfylld genom #547.
+2. Måndagskörningen `hojd-prov` fortsätter som förut, automatiskt, som mätning av RÅ. Premissläsningen 24/11 (#435) står kvar: den är
+   förregistrerad, och datumet flyttas inte.
+3. Fristen `hojd-23-10` tas bort ur `docs/fristerna.json` innan den hunnit bli ett ärende. Rättade i samma ändring:
+   - MATNINGAR §5 och §11;
+   - bedömningens §1, oktoberraden och vårlistans Ä2 och Ä5;
+   - MALET.md;
+   - höjdens del i projektkartan (nyckel, saknas och domsteg).
+
+**Samma ändring, inget beslut: K-B och kandidatens frysflagga.**
+- K-B döms omkring 16/11 på offsetmodellen, som förregistrerat (#510, TROSKLAR-FRYSKLASSNINGEN §7).
+- Den frysklass som skulle användas framåt är kandidatens frysflagga. I kuvösen klarade den K-A:s måttstock, vilket RÅ inte gör (#490).
+- Om den ska stå i förregistreringen före signeringen 31/10 är Bengts och Axels fråga.
+- Utkastet står i bedömningen §4.2, och fristen `kb-frysflaggan` 28/10 larmar.
+- I frysklassningens saknas-lista står modellfrågan nu så. Raden om K-B-uppspelningen är struken, eftersom den är byggd (#510).
+
+**Alternativ.** Behålla 23/10 som en läsning utan beslut, som kunskap om RÅ: valt bort. Den ändrar inget som väntar.
+
+**Stomdokument:** MAT §11, BED §4.2 — kalenderraden och höjdens rader rättade och K-B-utkastet inskrivet.

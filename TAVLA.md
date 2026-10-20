@@ -1374,31 +1374,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ⏭️ **B-GRINDEN UR ARKIVET 25/9 (DECISIONS #363, Bengts ja):** skuggkolumnen byggs inte — B spelas upp ur arkivet när A passerat,
   spärrad som grind NT. Inget behöver byggas i skuggmotorn före frosten. Låsankaret är första körning som läser ett B-utfall.
   🥶 **FROSTEN 8/10 (DECISIONS #491):** W-A (37754429130): **B2 sikt FALLER** — olycksfrekvensen sjunker med sikten (kvot 0,37, krav ≥ 1,5); B1 byvind OAVGJORT, 116 stationstimmar i högsta bandet mot 500. 27 stationer med trasig byvindgivare.
-- [ ] ⛰️ **#96 HÖJDPROVET — terrängens första faktor, mäter redan** (utlyft ur #38b 10/9 på Bengts order:
-  📅 **DATUM 23/10 (Bengt 25/9, DECISIONS #357) — står kvar, stängs inte:** efter fyra veckor med de varma grannarna i arkivet (#353) läser Claude vägpunktsgrindens RÅ mot RÅ+HÖJD ur måndagskörningen, och beslutet om höjden i segmentprognosen tas före novembers skarpa prövning. Skälet: 23/9:s RÅ+HÖJD (A2 4,7 %, oavgjord) mättes på ett arkiv utan hälften av grannarna — just de varma, där höjden spelar roll. Verify (från 25/9): utfallet på fyra veckors ocensurerat underlag inskrivet här och beslutet i DECISIONS.
-  "höjdmätningar o nivåskillnader är väl också en del av detta" — ja: terrängfaktorn i #95:s lager och
-  grunden för #91). scripts/hojd-prov.ts + knappen Actions → hojd-prov: EU-DEM 25 m via opentopodata,
-  747/757 stationer, tre varianter RÅ / RÅ+HÖJD / OFFSET=taket mot arkivet. FYND 1 (starkt, 3 455 par):
-  empirisk lapse **0,71 °C/100 m** (standard 0,65; *rättat till 0,63 nedan, FYND 1, DECISIONS #226*) — höjden bär en äkta del av parsystematiken.
-  FYND 2 (ärligt, 40 augustipunkter): rå+höjd 8,36 ≈ rå 8,36 mot offsetens 2,50 °C — i utstrålningslägen
-  räcker höjden INTE ensam, den vänder t.o.m. tecken i inversionsnätter (kalluft i dalen). Aldrig
-  fristående: felkartan dömer, luftankarna lagar, höjden finjusterar. AUTOMATISK måndagar 07:00 UTC
-  sedan 4/9. ⚠️ Måndag 7/9 kördes aldrig (hela mätserien föll i spending-limit-stoppet, 2 s) — nästa
-  14/9 07:00, samma morgon som radardomen. Höjd lagras inte i databasen; korrektionen finns bara i
-  provskriptet, aldrig i motorn. 💰 1 Actions-min/vecka ≈ 0,4 kr/mån, 8 API-anrop, 6 kB om höjden
-  lagras. 🔒 NYCKEL: vinterdata (≥ 500 punkter) — samma dom som grind A. Sedan: höjd som kolumn i
-  weather_latest (så snapshoten och #91 kan läsa den) kräver tröskelrad i TROSKLAR-SKUGGAN.
-  Verify: måndagsserien 14/9 grön med hojd-prov-sammanfattning; vinterkurvan lapse/MAE per band växer
-  vecka för vecka utan knapptryck. Resonemanget: Drive-dokumentet v3 §2.4.
-  ✅ **OMKÖRT 12/9 PÅ KNAPP** (Bengts "ta alla fem", DECISIONS #119) — och båda fynden ska rättas:
-  **FYND 1 rör sig:** empirisk lapse **0,63 °C/100 m ur 3 476 par**, inte 0,71 ur 3 455. Med mer
-  underlag gick talet NÄRMARE lärobokens 0,65, inte längre ifrån. **FYND 2 håller, med 49 gånger mer
-  data:** på 1 962 punkter (mot 40) är rå 1,65 °C och rå+höjd **1,65 °C** — höjden återvinner exakt
-  ingenting totalt, och gör det sämre i banden 7–15 km (5,21 → 5,34) och > 20 km (1,30 → 1,33).
-  Den hjälper bara nära ankaret (0–7 km: 2,58 → 2,31) och i 15–20 km (1,52 → 1,38). Offsetmodellen
-  slår båda överallt (1,06 °C). **Rangordningen står — men "felkartan dömer" dömer nu emot sig själv,
-  se grind A i #38b.** 751 av 761 stationer fick EU-DEM-höjd.
-  🛑 **13/10 (Bengt, DECISIONS #547):** domen i mars gäller kandidaten NIVÅ 2+BLANDNING, där höjd och terräng redan är särdrag i rättelsen; höjden förs inte in i `segment.ts`. Måndagsserien och läsningarna 23/10 (#357) och 24/11 (#435) står kvar som kunskap om RÅ, kontrollen och reserven.
 - [ ] 🌧️ **#42 Vattenplaningsvarningen** — ÄGARE: BENGT (issue #15, 1/9) — regnintensitet (VViS RainSum,
   ny ingestkolumn — vi lagrar idag bara regn ja/nej) × spårdjupslager (Trafikverkets
   vägytemätning via Lastkajen; licens/färskhet kollas först) × fartgrind ≥ ~70 km/h
@@ -1946,6 +1921,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 ---
 
 ## 🟢 KLART (senaste vinsterna)
+- [x] ✅ ⛰️ **#96 HÖJDPROVET — TERRÄNGENS FÖRSTA FAKTOR (STÄNGT 20/10 — DECISIONS #650, #547)**: Verify uppfylld genom #547: beslutet om höjden i segmentprognosen fattades 13/10 (höjden förs inte in i `segment.ts`; höjd och terräng är redan särdrag i kandidatens rättelse), så läsningen 23/10 utgår (#650). Måndagskörningen `hojd-prov` fortsätter automatiskt som mätning av RÅ, och premissläsningen 24/11 (#435) står kvar. Fynden: lapse 0,63 °C/100 m (#226), höjden återvinner ingenting som medelkorrektion (#119), RÅ+HÖJD föll i vägpunktsgrinden (#399, #405–#408) och på vintern 2024/25 (#467).
 - [x] ✅ 🔊 **#360 TRE "HALKA" PÅ 90 SEKUNDER VID EN KORSNING — HALKZONEN (STÄNGT 17/10 — DECISIONS #620, #621, #624)**: Verify uppfylld: takten läst (39053719135, 14 dygn: 66 följder för olika sträckor, 17 inom 120 s); Bengts beslut, form (b) där reprisregeln räknar på zonen (#621), och glappet 500 m (#624); regeln i TypeScript, Swift och Kotlin med vektorerna v48–v50 och kontraktet `halkZonM` (PR #1049, 96d1045; ci 39059733552, ios-engine 39059741757 och android 39059744207 gröna på grenens huvud); produktboken har stycket *Halkzonen*; skuggmotorn deployad 18:57 UTC från 96d1045 (39060328769) och loggar `zon` när en granne tystas. Hörs i appen med nästa bygge.
 - [x] ✅ 🐛 **#359 VAKTEN TAPPAR POSITIONEN NÄR DEN STARTAS UNDER SJÄLVVÄCKNINGENS FARTKOLL (STÄNGT 17/10 — DECISIONS #620)**: Verify uppfylld: `start()` avslutar fartkollen (PR #1045, d33467c); `FartkollenTests` på main (ios-engine 39053553774) med provet *vakten startad för hand under kollen*, och motprovet fälldes; 0.3.13 (28) uppladdat av TestFlight-flödet, körning 39054060542 på d33467c: ARCHIVE SUCCEEDED, bygget bär 0.3.13 (28), Upload succeeded.
 - [x] ✅ 🔭 **#233 UR NIRAS PRODUKTSIDA (STÄNGT 17/10 — DECISIONS #614, Bengt: *"233 a"*)**: Verify uppfylld: valet inskrivet. Del 1, före resan, har blivit favoriterna (`docs/FAVORITER.html`); del 2, snöflingan, körd på kuvösens vinter (#440: 3,0 % över +3 °C, inget säljargument); del 3, köslut, står som kort #15.
