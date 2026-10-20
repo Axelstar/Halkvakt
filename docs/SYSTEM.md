@@ -54,7 +54,7 @@ byggen, prognoslagrets form, kamerafacit, missknappen, arkivet och anmälningarn
 ## 3 · Vad appen säger
 - Motorns svenska varningstexter (avstånd + fara + uppmaning), byggda i motorn och identiska på alla plattformar —
   vektorerna i `engine/vectors/` ska klaras byte för byte av server, Android och iOS.
-- Vid passerad ålderströskel, EN gång per körning: *"Ingen färsk väglagsdata. Kör som om det kan vara halt."*
+- Vid passerad ålderströskel säger rösten ingenting (sedan 20/10, DECISIONS #647). Körläget visar då inte *Tyst så länge*.
 - Statusrader går till loggen, inte rösten. UI visar datans tid ("N faror · väglag 06:10").
 - **Facit (S4, sedan 16/9):** efter en varning kan en testförare som själv slagit på funktionen trycka *Stämde* eller
   *Stämde inte*. Det som skickas är varningens id, tidpunkten och svaret — ingen identitet, inget spår. Av som standard.
