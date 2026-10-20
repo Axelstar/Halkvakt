@@ -413,7 +413,7 @@ Fem rader. Inget annat är "nu". **17/9: fyra klara — kvar är N3, nycklarna (
 <!-- LÄGESRADER §2.1: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 *Läget i projektkartan:*
 
-- [App Store](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-u-app-store): klar
+- [App Store](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-u-app-store): delvis, 88 % · kvar: Inskicket 0.3.13 (32): provet på 32, skärminspelningen, skärmbilderna ur 32 och klicken (kort #361)
 - [Google Play](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-u-play): delvis, 10 % · kvar: Googles identitetsgranskning (inskickad 4/10), sedan enhetsverifieringen på en lånad Android och telefonnumret (Axel)
 
 <!-- /LÄGESRADER -->

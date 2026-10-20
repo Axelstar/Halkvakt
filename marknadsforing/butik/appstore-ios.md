@@ -125,7 +125,8 @@ har installerat det än. Versionen i butiken är 0.3.9. Versionsposten som vänt
 8. **App Privacy:** inget nytt skickas i 0.3.13; sparade resor stannar i telefonen. Kontrollera att det publicerade svaret är
    *Coarse Location* och *Product Interaction*, inte kopplade till identitet och inte för spårning, som manifestet i bygget
    (`PrivacyInfo.xcprivacy`). Exportfrågan ställs inte (`ITSAppUsesNonExemptEncryption = false`).
-9. **Kategori, ålder, pris, länder och upphovsrätt** som ovan. Släpp manuellt, som 0.3.9 (#433).
+9. **Kategori, ålder, pris, länder och upphovsrätt** som ovan. Upphovsrättsfältet sparades 2/10 som *Copyright: © 2026 Lagerlöf Labs*;
+   ta bort ordet *Copyright:* så att det står *© 2026 Lagerlöf Labs* (#433). Släpp manuellt, som 0.3.9 (#433).
 10. **Submit for Review.** Beviset är `appstore:0.3.13:WAITING_FOR_REVIEW` i byggsignalerna inom en timme.
 
 **Kontrollerat i koden 19/10 (0.3.13 (32), e83e56c):**
