@@ -15391,3 +15391,30 @@ en användaruppslagning 0,010 USD. Med ett par inlägg om dagen blir det ett par
 **Alternativ.** Ett eget pulsjobb: kräver databasens nyckel och ger inget mer. Läsa siffrorna i X-konsolen för hand: ingen historik i repot.
 
 **Stomdokument:** inga — marknadsföringen ligger utanför de åtta (#598).
+
+## #647 (20/10 2026) Raden om gammal väglagsdata tas bort ur appen
+
+**Bengts ord 20/10:** *"det är informationen ingen färsk väglagsdata kör som om det är halt. vi vill ta bort den informationen från
+appen"*. Raden är en allmän uppmaning utan underlag, som bilens snöflinga under fyra plusgrader. Efter granskningen valde Bengt
+alternativ B: *"Ja, genomför alternativ B på iOS och Android, med dokumenten, i en egen gren och PR mot main."*
+
+**Beslut.**
+1. **Borta på iOS och Android:** repliken *"Ingen färsk väglagsdata. Kör som om det kan vara halt."*, den mörka raden överst i
+   *På vakt* (designen M) och kortet *VÄGLAGSDATA · GAMMAL — SENAST FÄRSK* (designen N). Med dem går `staleLine`/`STALE_LINE`,
+   `StaleGrace` (#642 punkt 2) och dess tre prov i `AgeGateTest`, `dataTime`, `staleToast` och `Vagform`.
+2. **Åldersvakten är orörd.** `AgeGate.filter` tar fortfarande bort halka, frysrisk och kandidaten efter 45 minuter, olyckor och vilt
+   efter två timmar. En gammal sparad fil laddas om efter en minut (`stale` och `fromCache` finns kvar för det).
+3. **Ingen lugnande rad på gammal data.** `dataStale` finns kvar för en sak: *På vakt* visar inte *Tyst så länge — "Inget på din väg
+   än. Du hör det direkt när något dyker upp."* medan datan är gammal, eftersom halkvarningarna då är avstängda. *Senast sagt* visas
+   som förut, och väglagets klockslag står kvar under *På din väg*.
+
+**Följd.** Läget 5/9 (DECISIONS-ARKIV #72, live.json 66,7 timmar gammal) hade i dag varit tyst i bilen. Skyltfondens bilaga 6 (28/9)
+listar repliken; bilagan är inlämnad och ändras inte. Bygget 0.3.13 (32) hos Apple har kvar raden, och dess nyheter
+(`marknadsforing/butik/appstore-ios.md`) beskriver den.
+
+**Verify:** android.yml grön på grenen (`AgeGateTest` och bygget). iOS-appmålet kompileras inte i CI: beviset är nästa TestFlight-bygge.
+
+**Alternativ.** A, ta bort också `dataStale` så att *Tyst så länge* visas på gammal data: valt bort, det är att tala lugnt på gammal
+data (åldersvakten, Bengts granskning 28/8). Behålla raden bara i texten utan röst: Bengt vill bort med informationen.
+
+**Stomdokument:** inga — appbeteende och en replik; PRODUKTBOK, SYSTEM, BETAGUIDE-IOS och APPEN rättade i samma ändring.
