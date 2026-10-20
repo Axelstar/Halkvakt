@@ -4,6 +4,10 @@
 #432 (bara Sverige). Play-texten i `butikstext.md` är förlagan; skillnaderna: Polisen är struken som källa (#318/#320), autostarten
 beskrivs som iPhone gör den (vaknar själv), och missarna står med i integritetsstycket. Allt under rubrikerna är klart att klistra in.*
 
+*Granskad 19/10 mot koden i 0.3.13 (32) (e83e56c), avsnitt för avsnitt (Bengt: "kan du förbereda vårt inskick till apple så att det blir
+rätt"). Rättat: provkortets text i granskarens anteckningar, en intern rad som stod inne i den engelska texten, länkarna till halkvakt.se
+och två punkter i nyheterna. Stegen för inskicket står sist.*
+
 ## Namn (30 tecken)
 Halkvakt
 
@@ -39,9 +43,12 @@ Halkvakt varnar vid Trafikverkets mätstationer och rapporterade väglag — mel
 halka,halkvarning,väglag,vinterväg,fartkamera,viltvarning,olycka,trafikverket,bilkörning,röst
 
 ## Länkar
-- Support-URL: https://axelstar.github.io/halkvakt-karta/support.html
-- Marknadsförings-URL: https://axelstar.github.io/halkvakt-karta/
-- Integritetspolicy: https://axelstar.github.io/halkvakt-karta/integritet.html *(uppdaterad 1/10 med missarna och raderingsmeningen)*
+- Support-URL: https://halkvakt.se/support.html
+- Marknadsförings-URL: https://halkvakt.se/
+- Integritetspolicy: https://halkvakt.se/integritet.html *(gäller från 2026-10-19, med sparade resor; halkvakt-karta#8)*
+
+*De gamla adresserna på axelstar.github.io skickar vidare med 301 till samma sidor (läst 19/10), så de fungerar också, men butiken bör
+peka direkt på halkvakt.se.*
 
 ## Kategori, ålder, pris, länder
 - Primär kategori: Navigation. Sekundär: Resor.
@@ -66,19 +73,22 @@ Versionen i butiken är 0.3.9; listan gäller allt som kommit sedan dess (PRODUK
 • Där flera hala vägsträckor möts säger rösten halka en gång, inte en gång per sträcka.
 • Vakten stoppar sig själv när bilen stått still en kvart — en promenad efter resan håller den inte längre igång.
 • Vakten tappar inte längre positionen om du startar den medan den själv provar om du kör.
+• Musiken går tillbaka till full volym när rösten har sagt sitt, i CarPlay och över Bluetooth.
+• Ett kort nätavbrott ger inte längre raden om gammal väglagsdata.
 
 ## Granskarens anteckningar (App Review Information → Notes)
-Klistra in på engelska — granskarna läser engelska:
+Klistra in på engelska — granskarna läser engelska. Stycket om nyheterna i 0.3.13 är ett utkast 18/10 som Axel godkänner; meningen om
+inspelningen gäller först när den är bifogad (steg 2 nedan).
 
 > Halkvakt is a Swedish road-safety app. It reads Trafikverket's (the Swedish Transport Administration's) open data about slippery roads, accidents, wildlife, freezing risk and speed cameras, matches the phone's position against it locally, and speaks a warning through the car speakers before the driver reaches the hazard. There is no account and no sign-in.
 >
 > BACKGROUND LOCATION (2.5.4): the warnings must work with the screen locked while driving, which is why the app uses background location. Nothing about the user's position ever leaves the device automatically; matching happens on the phone against a downloaded data file. "Always" is only requested so the guard can start itself when the user begins driving; "When In Use" is enough for the warnings.
 >
-> HOW TO SEE A WARNING WITHOUT DRIVING: open the app, allow location, tap "Starta vakten" (Start the guard). The driving screen appears. Press and hold the label "PÅ VAKT" at the top for half a second: a sample warning card ("Halt väglag om två kilometer") fills the screen for eight seconds, without sound. Real warnings are spoken aloud. Tap "Avsluta vakten" to stop.
+> HOW TO SEE A WARNING WITHOUT DRIVING: open the app, allow location, tap "Starta vakten" (Start the guard). The driving screen appears. Press and hold the label "PÅ VAKT" at the top for half a second: a sample warning card ("Halka", "FRAMFÖR DIG", with the spoken line "Varning: halka rapporterad på vägen framför dig.") fills the screen for eight seconds, without sound. Real warnings are spoken aloud. Tap "Avsluta vakten" to stop.
 >
 > The optional "Betatest" switch in Settings (off by default) lets a tester send a one-tap answer after a trip about whether a warning was correct; the data sent is described in the app and in the privacy policy (hazard id, timestamp, answer, app version).
 >
-> NEW IN 0.3.13 (utkast 18/10, Axel godkänner): two optional additions. (1) "Halkvakt tror" (beta): a modelled warning for slippery roads or freezing risk, spoken only when Swedish road-weather data says the road surface is near or below 0 °C — it cannot appear in Cupertino. The card is marked BETA, and the warning follows the "Halt väglag" switch in Settings → Varna för. (2) Favoriter, a new middle tab: the switch "Erbjud att spara resor" is off by default. When it is on, the home screen asks after a trip of at least 1 km whether to save the route that was driven. Saved routes are stored only on the device, excluded from iCloud backup, never transmitted, and deleted with one tap in the tab. No map is loaded behind them. Each saved route has a report ("Dit / Hem", out and back): the app downloads one public file of Trafikverket's current situations — the same file for every user, with no route, position or query in the request — and matches it against the saved route on the device. Saving a route needs a drive of at least 1 km, so the tab is empty on a fresh install.
+> NEW IN 0.3.13: two optional additions. (1) "Halkvakt tror" (beta): a modelled warning for slippery roads or freezing risk, spoken only when Swedish road-weather data says the road surface is near or below 0 °C — it cannot appear in Cupertino. The card is marked BETA, and the warning follows the "Halt väglag" switch in Settings → Varna för. (2) Favoriter, a new middle tab: the switch "Erbjud att spara resor" is off by default. When it is on, the home screen asks after a trip of at least 1 km whether to save the route that was driven. Saved routes are stored only on the device, excluded from iCloud backup, never transmitted, and deleted with one tap in the tab. No map is loaded behind them. Each saved route has a report ("Dit / Hem", out and back): the app downloads one public file of Trafikverket's current situations — the same file for every user, with no route, position or query in the request — and matches it against the saved route on the device. Saving a route needs a drive of at least 1 km, so the tab is empty on a fresh install.
 >
 > BACKGROUND AUDIO (2.5.4): the "audio" background mode keeps the voice speaking with the screen locked while driving. To hear it: Settings → Rösten → "Testa i bakgrunden (talar om 5 s)", then go to the Home Screen; the voice speaks five seconds later. A screen recording from a real iPhone is attached.
 >
@@ -92,3 +102,39 @@ visade för Halkvakt 1/10; 0.3.9 godkändes med dem 12/10. Råbilderna tas på A
 in av skriptet, med statusraden (översta 150 px) ersatt av skärmens färg. `appstore/` har en reservserie i 1320 × 2868 (6,9 tum,
 `rama.py`) om App Store Connect kräver det facket. Nya bilder tas ur bygget som skickas in, 0.3.13 (32) (DECISIONS #643): de nuvarande
 är ur (19), före designen v2 och fliken Favoriter (2.3.3). Ordningen i butiken är filnamnens ordning.
+
+## Inskicket steg för steg — 0.3.13 (32)
+Läget 19/10: bygge 32 är uppladdat och inläst hos Apple (byggsignalerna, issue #706: `bygge:32 … READY_FOR_BETA_SUBMISSION`), men ingen
+har installerat det än. Versionen i butiken är 0.3.9. Versionsposten som väntar i App Store Connect heter **0.3.10** och står i
+*Prepare for Submission* (`appstore:0.3.10:PREPARE_FOR_SUBMISSION`); den skapades efter avslaget 5/10 (#460).
+
+1. **Provet på 32** (Bengt och Axel, #640 punkt 4, #643): spara en resa, se fliken och rapporten *Dit / Hem*, kör samma väg tillbaka
+   (frågan ska inte komma igen), *Nytt sedan förra kollen*, och rulla i Favoriter och Inställningar: klockan ska stå på mörk botten.
+2. **Skärminspelningen för bakgrundsljudet** (Apples 2.5.4, avslaget 5/10): på en riktig iPhone med 32, starta skärminspelningen,
+   öppna *Inställningar → Rösten → Testa i bakgrunden (talar om 5 s)*, gå till hemskärmen och vänta tills rösten hörs. Den bifogas
+   under *App Review Information* (Attachment). Utan den säger anteckningarna något som inte stämmer.
+3. **Råbilder ur 32** på Axels iPhone 14, i stående läge, till Claude, som ramar in dem med `alf.py` i 6,5-tumsfacket (1284 × 2778):
+   varningskortet (håll på *PÅ VAKT* i körläget), körläget, *Redo.*, fliken Favoriter med en sparad resa, rapporten för en resa,
+   *Inställningar → Varna för*, notisen över kartappen och onboardingens platssida. Bilderna i butiken är ur (19), före designen v2
+   och fliken Favoriter (2.3.3).
+4. **Versionsposten:** byt versionsnumret i posten från 0.3.10 till **0.3.13**, och välj **bygge 32** under *Build*. App Store Connect
+   visar bara byggen vars version stämmer med postens nummer.
+5. **Texterna** ur den här filen: *What's New* (nyheterna ovan), beskrivningen, kampanjtexten, nyckelorden och länkarna till halkvakt.se.
+6. **Skärmbilderna:** ersätt de sju gamla med de nya, i filnamnens ordning.
+7. **App Review Information:** anteckningarna på engelska, kontaktuppgifterna, *Sign-in required: Nej*, och inspelningen ur steg 2.
+8. **App Privacy:** inget nytt skickas i 0.3.13; sparade resor stannar i telefonen. Kontrollera att det publicerade svaret är
+   *Coarse Location* och *Product Interaction*, inte kopplade till identitet och inte för spårning, som manifestet i bygget
+   (`PrivacyInfo.xcprivacy`). Exportfrågan ställs inte (`ITSAppUsesNonExemptEncryption = false`).
+9. **Kategori, ålder, pris, länder och upphovsrätt** som ovan. Släpp manuellt, som 0.3.9 (#433).
+10. **Submit for Review.** Beviset är `appstore:0.3.13:WAITING_FOR_REVIEW` i byggsignalerna inom en timme.
+
+**Kontrollerat i koden 19/10 (0.3.13 (32), e83e56c):**
+- Avslagets 5.1.1(iv): knapparna före platsfrågorna heter *Fortsätt*, inte *Tillåt* (OnboardingView rad 124–136).
+- Granskningsläget: långtrycket på *PÅ VAKT* är 0,5 s och visar kortet i 8 s utan röst (KorlageView rad 38–43). *Starta vakten* och
+  *Avsluta vakten* heter så.
+- *Testa i bakgrunden (talar om 5 s)* finns under Rösten.
+- *Halkvakt tror* märks BETA och följer reglaget *Halt väglag*. Brytaren *Erbjud att spara resor* är av från början, och en resa tas
+  bort med *Ta bort* i fliken.
+- Rapporten hämtar `favoriter/`-filerna utan fråga om rutt eller position. Bakgrundslägena är `location` och `audio`. Integritetsmanifestet
+  har CoarseLocation och ProductInteraction samt UserDefaults (CA92.1), och inga andra API:er med krav på skäl används.
+- Datakällorna i beskrivningen är desamma som i appens text.
