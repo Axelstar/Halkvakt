@@ -3,6 +3,8 @@
 # tills någon deklarerat vad det får innehålla. Helt läsande. Knapp, inte cron.
 name: vardevakten
 on:
+  schedule:
+    - cron: '0 6 * * 1'
   workflow_dispatch:
     inputs:
       dagar:

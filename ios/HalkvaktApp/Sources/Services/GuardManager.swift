@@ -34,13 +34,8 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
     }
     var alertCount = 0
     var lastSaid: String?
-    /// Gammal väglagsdata (designen M–N): sant så länge den laddade datan är för gammal för att lita på.
+    /// Sant så länge den laddade väglagsdatan är för gammal. Halkvarningarna är då avstängda, så På vakt säger inte "Tyst så länge".
     var dataStale = false
-    /// När den laddade datan skapades — "SENAST FÄRSK 14:05" på raden i På vakt.
-    var dataTime: Date?
-    /// Den mörka raden överst i På vakt i 8 s medan rösten säger repliken om gammal data.
-    var staleToast = false
-    private var staleToastTask: Task<Void, Never>?
 
     private let manager = CLLocationManager()
     private var engine: AlertEngine?
@@ -102,9 +97,6 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
 
     // MARK: - Snapshot
 
-    private var staleAnnounced = false
-    private var staleGrace = AgeGate.StaleGrace()
-
     // Kort #258 (DECISIONS #371): under resan laddas vägdatan om var 30:e minut, som på Android (SnapshotSchedule) —
     // en laddning i taget, och efter ett fel väntar nästa försök en minut. Förut laddades den bara vid start och när
     // Vakten-vyn visades, så åldersvakten prövades aldrig igen under en lång resa.
@@ -128,17 +120,6 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
             // Gammal sparad fil: nytt försök om en minut, inte om 30.
             nextLoadAt = .now.addingTimeInterval(gate.stale && snap.fromCache ? Self.retryAfter : Self.refreshEvery)
             dataStale = gate.stale
-            dataTime = snap.generatedAt > .distantPast ? snap.generatedAt : nil
-            if staleGrace.announce(stale: gate.stale, fromCache: snap.fromCache) && running && !staleAnnounced {
-                staleAnnounced = true
-                SpeechService.shared.speak(AgeGate.staleLine)
-                staleToast = true
-                staleToastTask?.cancel()
-                staleToastTask = Task {
-                    try? await Task.sleep(for: .seconds(8))
-                    if !Task.isCancelled { self.staleToast = false }
-                }
-            }
             let df = DateFormatter(); df.dateFormat = "HH:mm"
             let tid = snap.generatedAt > .distantPast ? df.string(from: snap.generatedAt) : "okänd tid"
             snapshotInfo = "\(gate.hazards.count) faror · väglag \(tid)"
@@ -248,8 +229,6 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         }
         Favoriter.shared.resanBorjar(ny: !sameTrip)   // kort #357: bara med brytaren på
         tripEndedAt = nil
-        staleGrace = AgeGate.StaleGrace()
-        staleAnnounced = false
         prevLoc = nil
         // ALLTID sant när vakten startas av föraren (#273). Apple: "When the value of this property is
         // true and you start location updates while the app is in the foreground, Core Location configures
@@ -306,7 +285,6 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         Prefs.shared.lastTripEnd = tripEndedAt
         Prefs.shared.lastTripKm = distanceKm
         if korde { Favoriter.shared.resanSlutar(km: distanceKm) }   // kort #357: frågan på Redo., bara med brytaren på
-        staleToast = false
         headsUpTask?.cancel()
         manager.stopUpdatingLocation()
         dismissTask?.cancel()
