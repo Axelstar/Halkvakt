@@ -63,7 +63,7 @@ const ARKIVBACKUP_MAX_DYGN = 8;
 // fillagring, inte lästa i panelen. Larm vid 90 % (#652); visar panelen en annan kvot rättas talen här.
 const DB_KVOT_MB = 8 * 1024;
 const LAGRING_KVOT_MB = 100 * 1024;
-const LARM_ANDEL = 0.9;
+const KVOT_LARM_ANDEL = 0.9;   // eget namn: hanteraren har en egen LARM_ANDEL (kassan, 0.70), som annars skuggar den här
 
 async function gh(path: string, method = "GET", body?: unknown): Promise<any> {
   const r = await fetch(`https://api.github.com/repos/${REPO}${path}`, {
@@ -474,7 +474,7 @@ Deno.serve(async (req) => {
       const [db] = await sql`SELECT coalesce(sum(pg_database_size(datname)), 0)::bigint AS b FROM pg_database
         WHERE has_database_privilege(datname, 'CONNECT')`;
       const mb = Math.round(Number(db.b) / 1048576);
-      const grans = new URL(req.url).searchParams.get("databasprov") === "1" ? 0 : Math.round(DB_KVOT_MB * LARM_ANDEL);
+      const grans = new URL(req.url).searchParams.get("databasprov") === "1" ? 0 : Math.round(DB_KVOT_MB * KVOT_LARM_ANDEL);
       rad.push(`databas: ${mb} MB av ${DB_KVOT_MB / 1024} GB (larm vid ${grans} MB)`);
       if (mb >= grans) problem.push(`**DATABASEN ÄR ${mb} MB** — 90 % av Pro-kvoten ${DB_KVOT_MB / 1024} GB; över kvoten kostar det extra eller stryps, läs panelen (grepp 3, docs/GREPP3-ARKIVEN.md, DECISIONS #652)`);
     } catch { rad.push("databas: storleken kunde inte läsas"); }
@@ -485,7 +485,7 @@ Deno.serve(async (req) => {
     try {
       const [st] = await sql`SELECT coalesce(sum((metadata->>'size')::bigint), 0)::bigint AS b FROM storage.objects`;
       const mb = Math.round(Number(st.b) / 1048576);
-      const grans = new URL(req.url).searchParams.get("lagringsprov") === "1" ? 0 : Math.round(LAGRING_KVOT_MB * LARM_ANDEL);
+      const grans = new URL(req.url).searchParams.get("lagringsprov") === "1" ? 0 : Math.round(LAGRING_KVOT_MB * KVOT_LARM_ANDEL);
       rad.push(`lagring: ${mb} MB av ${LAGRING_KVOT_MB / 1024} GB (larm vid ${grans} MB)`);
       if (mb >= grans) problem.push(`**LAGRINGEN ÄR ${mb} MB** — 90 % av Pro-kvoten ${LAGRING_KVOT_MB / 1024} GB, och facit-hinkens bilder ska ligga kvar till mars (DECISIONS #380, #652, docs/UTREDNING-FARTKAMEROR-2026-09-26.md §7)`);
     } catch { rad.push("lagring: storleken kunde inte läsas"); }
