@@ -1,0 +1,26 @@
+{
+  "typ": "forandring",
+  "nyckel": "forandring",
+  "etikett": "Sedan i går",
+  "rubrik": "Halkan sprider sig",
+  "underrad": "vägavsnitt med halka, mot samma tid i går",
+  "lyft": {
+    "stort": "120 → 128",
+    "liten": "ny halka i Uppsala län, Västmanland och Gävleborg"
+  },
+  "text": "Trafikverket rapporterar halka på 128 vägavsnitt, mot 120 vid samma tid i går.\nNy halka sedan i går: Uppsala län, Västmanland och Gävleborg.\n\nNorrbotten: halka på 46 av 58 vägavsnitt, 2 stationer under noll, kallast −0,4 °C vid Riddarhällan.\nVästerbotten: halka på 35 av 44 vägavsnitt, 9 stationer under noll, kallast −2,0 °C vid Gunnarn.\nVästernorrland: halka på 16 av 22 vägavsnitt, 4 stationer under noll, kallast −0,7 °C vid Gålsjö.\nVästmanland: halka på 12 av 24 vägavsnitt.\nDalarna: halka på 6 av 38 vägavsnitt, 1 station under noll, kallast −1,0 °C vid Ryggen.\nHalka eller minusgrader även i 3 län till.\n\nLäget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Västernorrland #Västmanland #Dalarna #halkvakt",
+  "textIg": "Trafikverket rapporterar halka på 128 vägavsnitt, mot 120 vid samma tid i går.\nNy halka sedan i går: Uppsala län, Västmanland och Gävleborg.\n\nNorrbotten: halka på 46 av 58 vägavsnitt, 2 stationer under noll, kallast −0,4 °C vid Riddarhällan.\nVästerbotten: halka på 35 av 44 vägavsnitt, 9 stationer under noll, kallast −2,0 °C vid Gunnarn.\nVästernorrland: halka på 16 av 22 vägavsnitt, 4 stationer under noll, kallast −0,7 °C vid Gålsjö.\nVästmanland: halka på 12 av 24 vägavsnitt.\nDalarna: halka på 6 av 38 vägavsnitt, 1 station under noll, kallast −1,0 °C vid Ryggen.\nHalka eller minusgrader även i 3 län till.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone, länken finns i vår profil.\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Västernorrland #Västmanland #Dalarna #halkvakt",
+  "pass": "lunch",
+  "datum": "2026-10-20",
+  "generated_at": "2026-10-20T10:30:59.794Z",
+  "lan": [
+    "norrbotten",
+    "vasterbotten",
+    "vasternorrland",
+    "vastmanland",
+    "dalarna",
+    "jamtland",
+    "gavleborg",
+    "uppsala"
+  ]
+}
