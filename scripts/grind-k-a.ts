@@ -32,6 +32,7 @@ import { andelSe, utfallGolv, utfallTak, grindutfall, marginalPe, type Utfall }
   from "../publish/marginal.ts";
 import { vaktdiagnos, led234, saknadeDygn, skrivSaknade } from "../publish/vaktdiagnos.ts";
 import { RADVAKT_SQL, karantanSql } from "../publish/snapshot-core.ts";
+import { domrad } from "./domrad.ts";
 
 // ── Speglar publish/grind-a.ts. ÄNDRA DÄR FÖRST — driftvakten fäller annars.
 const K_NEIGHBOURS = 5;
@@ -269,6 +270,7 @@ const bast = rader[0];
 const nog = dom(bast.u.uttalade + bast.u.avstod, bast.stationer, bast.frys, true);
 if (!nog) {
   console.log(`\n⊘ INGEN DOM — domspärren (K-A4) håller.`);
+  domrad("K-A", "SPÄRRAD", `domspärren K-A4: ${bast.frys} frysande vid gränsen 0 °C`);
   console.log(`  Krav: ≥ ${MIN_PUNKTER} punkter över ≥ ${MIN_STATIONER} stationer, och ≥ ${MIN_FRYS} punkter med UPPMÄTT frys.`);
   console.log(`  Har:  ${bast.u.uttalade + bast.u.avstod} punkter över ${bast.stationer} stationer, ${bast.frys} frysande vid gränsen 0 °C.`);
   console.log(`  Septembervakten är den som biter: en klassificerare som aldrig sett ett positivt`);
@@ -282,6 +284,7 @@ for (const r of rader) console.log(kaRad(r.km, r.grans, r.zon, r.u, r.g.utfall, 
 if (nog) {
   const klarar = rader.filter((r) => r.g.utfall === "KLARAR");
   console.log(`\nDOM: ${klarar.length ? `K-A PASSERAD i ${klarar.length} kombinationer` : "K-A FALLER i alla kombinationer"}`);
+  domrad("K-A", klarar.length ? "KLARAR" : "FALLER", klarar.length ? `passerad i ${klarar.length} kombinationer` : "faller i alla kombinationer");
   if (klarar.length) {
     const b = klarar.sort((a, c) => c.u.tackning - a.u.tackning)[0];
     console.log(`  Bäst täckning bland dem: K1 ${b.grans} °C, K2 ±${b.zon}, K3 ${b.km} km —`);

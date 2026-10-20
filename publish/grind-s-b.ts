@@ -51,6 +51,7 @@ import { readFileSync } from "node:fs";
 import { Z, andelSe, utfallTak, utfallGolv, grindutfall, type Utfall } from "./marginal.ts";
 import { narmastLangs, FRYS_C } from "../engine/src/segment.ts";
 import { skuggmotornsRutter, hamtaHandelser, FACIT_KM, type Rutter, type Handelse } from "./skuggfacit.ts";
+import { domrad } from "../scripts/domrad.ts";
 
 const B1_MAX = 0.20, B2_MAX = 0.30, B3_MIN = 0.25;                        // §3 grind B
 const C1_MIN_HANDELSER = 20, C1_MIN_PERIODER = 3, C2_MIN_EPISODER = 30, C3_MAX_PE = 10;   // §3 grind C
@@ -281,11 +282,13 @@ export function rapport(varv: Varv[], handelser: Handelse[], rutter: Rutter, lag
   // Väg c (#475): domen fälls med grinden. Utan fastställt X ingen dom — självtestet räknar ändå.
   if (X === null && !selftest) {
     console.log(`\n⏳ INGEN DOM — spridningsgrindens X är inte fastställt i TROSKLAR-SKUGGAN (DECISIONS #475). Utfallet är fortsatt skugga.`);
+    domrad("S-B", "SPÄRRAD", "spridningsgrindens X är inte fastställt");
     return null;
   }
   // Andelarna först när C1 och C2 är uppfyllda (DECISIONS #352) — självtestet räknar dem ändå, utan att det är en läsning.
   if ((!c1 || !c2) && !selftest) {
     console.log(`\n⏳ INGEN DOM — grind C inte uppfylld. Andelarna skrivs först när C1 och C2 är uppfyllda; utfallet är ALLTID fortsatt skugga (§4 c).`);
+    domrad("S-B", "SPÄRRAD", "grind C inte uppfylld");
     return null;
   }
   const b1n = r.b1Bekr.length + r.b1Falska.length, b1 = b1n ? r.b1Falska.length / b1n : NaN;
@@ -313,6 +316,7 @@ export function rapport(varv: Varv[], handelser: Handelse[], rutter: Rutter, lag
   if (selftest) return { b1, b2, b3, uB1, uB2, uB3, c1, c2, c3 };
   const dom = grindutfall([uB1, uB2, uB3, c3] as Utfall[]);
   console.log(`\nDOM: GRIND B ${dom === "KLARAR" ? "KLARAD — §4 (a)/(b) avgörs av banden" : dom === "FALLER" ? "FALLEN — tyst (§4 c)" : "OAVGJORD — mät vidare"}`);
+  domrad("S-B", dom === "KLARAR" ? "KLARAR" : dom === "FALLER" ? "FALLER" : "OAVGJORT", `B1 ${uB1} · B2 ${uB2} · B3 ${uB3} · C3 ${c3}`);
   return dom;
 }
 

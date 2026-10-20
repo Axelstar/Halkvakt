@@ -791,7 +791,7 @@ bevisbart säker (vid 0 km/h går det inte att nå faran) och är rimligen stör
 - [Vattenplaningen](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-vattenplaning): väntar, 63 % · Axels beslut om steg D, nu när båda spåren fallit: V-A (#104) och V-B 19/10 (#648).
 - [L4 räckvidden: segmentprognosen](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-segmentprognos): väntar, 75 % · Domen i mars 2027 (grind B/C) på kandidaten NIVÅ 2+BLANDNING som ny fråga, RÅ kontroll och reserv (#547), och Bengts öppna val d på kort #270.
 - [L5 allvar som försprång](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-forsprang): delvis, 56 % · kvar: FS-A: nivå 2-fall i vinter (kod 3–4, eller yta ≤ 0 °C med väta ≥ 3)
-- [Grindarna och domkalendern](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-p-grindarna): delvis, 84 % · kvar: S1-grinden väntar på blöta frostnätter, W-A:s byvind på en storm
+- [Grindarna och domkalendern](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-p-grindarna): delvis, 86 % · kvar: Domlarmet och fristvakten i drift: första körningarna på main efter sammanslagningen (DECISIONS #649)
 - [Projektkartan](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-g-projektkartan): klar
 - [Actions-taket och kassavakten](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-g-kassan): delvis, 100 % · kvar: 0 USD debiterat för november i kassavakten (kort #311:s Verify)
 

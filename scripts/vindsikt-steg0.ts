@@ -44,6 +44,7 @@
 
 import { skiljbarKvot } from "../publish/marginal.ts";
 import { vaktdiagnos } from "../publish/vaktdiagnos.ts";
+import { domrad } from "./domrad.ts";
 
 const RACKVIDD_M = 15000;      // station ↔ olycka, samma som #89:s steg 0 (0d)
 const MIN_STATIONSTIMMAR = 500; // W-A4, högsta bandet
@@ -395,7 +396,9 @@ for (const [rubrik, kolumn, banden, riktning, uteslut] of [
   const kvot = sista.kvot;
   // Underlagsvakten FÖRE tabellen (kort #254 c): under spärren visar tabellen bara räkningar.
   const oppen = !!dom(sista.timmar, olyckorTot, true);
+  const grindId = `W-A ${rubrik.slice(0, 2)}`;
   if (!oppen) {
+    domrad(grindId, "SPÄRRAD", `underlagsvakten W-A4: ${sista.timmar} stationstimmar i högsta bandet, ${olyckorTot} olyckor`);
     console.log(`  ⊘ OAVGJORT — underlagsvakten (W-A4) håller: ${sista.timmar} stationstimmar i högsta bandet`);
     console.log(`    (kräver ${MIN_STATIONSTIMMAR}) och ${olyckorTot} olyckor totalt (kräver ${MIN_OLYCKOR}).`);
     console.log(`    September är inte blåsigast på året. Det här är ett underlagsbesked, inte ett nej.`);
@@ -410,8 +413,10 @@ for (const [rubrik, kolumn, banden, riktning, uteslut] of [
     if (!skilj) {
       console.log(`  ⊘ OAVGJORT — kvoten går inte att skilja från 1,5 vid ${sista.olyckor} respektive`);
       console.log(`    ${rader[0].olyckor} olyckor. Marginalvakten: ett tal inom bruset fäller inte och friar inte.`);
+      domrad(grindId, "OAVGJORT", `kvoten ${tal(kvot)} går inte att skilja från 1,5`);
     } else {
       console.log(`  ⇒ ${mono && kvot >= 1.5 ? "W-A PASSERAD för den här storheten" : "W-A FALLER för den här storheten"}`);
+      domrad(grindId, mono && kvot >= 1.5 ? "KLARAR" : "FALLER", `kvoten högsta mot lägsta band ${tal(kvot)} (krav ≥ 1,5), monotont ${mono ? "ja" : "nej"}`);
     }
   }
 }

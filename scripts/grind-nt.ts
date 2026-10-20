@@ -18,6 +18,7 @@
 import pg from "pg";
 import { RADVAKT_SQL, karantanSql } from "../publish/snapshot-core.ts";
 import { saknadeDygn, skrivSaknade } from "../publish/vaktdiagnos.ts";
+import { domrad } from "./domrad.ts";
 import { vatbulb, klassa, givarklass, smhiKlass, SVEP, BAND_C, type Klass, type Givarklass, type SmhiKlass } from "../engine/src/nederbord.ts";
 import { skatta } from "../engine/src/segment.ts";
 import { haversineM } from "../engine/src/geo.ts";
@@ -337,6 +338,7 @@ if (smhiStationFel) console.log(`SMHI: ${smhiStationFel} av ${par.size} parstati
 for (const r of sparrRader(stat)) console.log(r);
 if (!DOM && !KUVOS) {
   console.log(`\nSPÄRRAT till ${DOM_FRAN.slice(0, 10)}. Modellens klasser och all överensstämmelse visas först i domläget (§5).`);
+  domrad("NT", "SPÄRRAD", `till ${DOM_FRAN.slice(0, 10)}`);
   process.exit(0);
 }
 
@@ -374,3 +376,5 @@ const klarar = utfall.filter((u) => u.B).sort((x, y) => x.bf - y.bf || (x.L === 
 const vald = klarar[0];
 console.log(`\nValregeln (§3): ${vald ? `L ${vald.L} · U ${vald.U}${vald.C ? " — NT-C klarar också" : " — NT-C faller"}` : "ingen kombination klarar NT-B"}.`);
 console.log(`Domslutet fälls av Axel mot den här utskriften (§6). ${D ? "" : "D faller: utskriften är OAVGJORD, inte ett nej."}`);
+domrad("NT", D ? "LÄS" : "OAVGJORT", D ? `NT-A ${A ? "klarar" : "faller"}; valregeln: ${vald ? `L ${vald.L} · U ${vald.U}` : "ingen kombination klarar NT-B"} — domslutet fälls av Axel`
+  : "NT-D faller: fönstret förlängs med mars");
