@@ -15629,6 +15629,8 @@ Visar panelen en annan kvot rättas talen. Över kvoten skrivskyddas inget men d
    upptäcker inte en tabell som skenar.
 
 **Stomdokument:** BED §4.2 — vakthundens gräns efter Pro avgjord, SYS arkivet — Supabase Pro och kvoterna
+
+**I drift 20/10:** deploy 39501388272 från ab5fe036 (efter lagningen #1112: den första deployen 39490018800 gav *storleken kunde inte läsas* 21:07, eftersom kassans LARM_ANDEL skuggade konstanten), vakthundens svar 22:07 UTC *databas: 504 MB av 8 GB (larm vid 7373 MB)* och *lagring: 376 MB av 100 GB (larm vid 92160 MB)* (DB-knappen *las* 39505986110 ur net._http_response; #963 stängdes 21:07 och får ingen kommentar när allt är grönt), och larmet är borta. Kort #347 är stängt. Kvar: ärendet #1099 (fristen för planen).
 ## #653 (20/10 2026) Rättigheterna skrivs ut i migrationerna: Supabase slutar ge nya tabeller i public rättigheter 30/10
 
 **Axels ord 20/10:** *"Okay yes please fix it for us"* (om Supabases mejl samma kväll).
