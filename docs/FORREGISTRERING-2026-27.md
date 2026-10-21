@@ -1,7 +1,7 @@
 # Förregistrering — kandidaten NIVÅ 2+BLANDNING, vintern 2026/27
 
-**Status: UTKAST 15/10 2026, §4b tillagt 21/10. Kvar före signeringen: radarns tal 26/10 (§10 a) och Bengts och Axels läsning av §4b. Loggen sql/065
-i drift sedan 21/10 (§10 e). Spridningen loggas i drift sedan 16/10 (§10 b).** Signeras av Bengt och Axel senast
+**Status: UTKAST 15/10 2026, §4b tillagt 21/10. Kvar före signeringen: radarns tal 26/10 (§10 a). §4b fastställt 21/10 (#655, #656); loggen
+sql/065 i drift sedan 21/10 (§10 e). Spridningen loggas i drift sedan 16/10 (§10 b).** Signeras av Bengt och Axel senast
 **31/10 2026** (DECISIONS #544, #547). Domfönstret börjar den dag förregistreringen är signerad och pushad; varje dygn utan signatur är
 ett dygn vinter utanför domen. Källorna är DECISIONS #544, #547, #552, #558–#573 och TROSKLAR-SKUGGAN §2–§4. Utkastet i #560 ersätts
 av det här dokumentet; frågorna (A) och (B) där är besvarade av #562.
@@ -64,9 +64,7 @@ ofullständig räknas som *okänt* — inte täckta — och deras andel redovisa
 
 ## 4b. Läsningen — hur domen räknas
 
-*UTKAST 21/10 (Claude, Bengts beslut ur underlaget för paket A: §4b skrivs, val (d) ersätts av domen per band, frysflaggan in;
-DECISIONS #655). Läses av Bengt och Axel före signeringen. Punkter märkta **Att välja** har två alternativ; resten är förslag som
-signeras med texten om ingen invänder.* Avsnittet fryses med §4 (§8). Skriptet som räknar enligt det byggs efter signeringen,
+*Skrivet 21/10 (Claude, Bengts beslut ur underlaget för paket A, DECISIONS #655). Punkterna 5, 6, 7, 10 och 11 fastställda samma dag av Bengt och Axel (*"Axel och jag säger ja till rekommendationer 5,6,7,10 och 11"*, DECISIONS #656); övriga punkter signeras med texten.* Avsnittet fryses med §4 (§8). Skriptet som räknar enligt det byggs efter signeringen,
 provas bara på låtsasdata och på kuvösens redan kända tal, och fryses med sin sha256 i en daterad post med båda signaturerna innan
 det första gången läser data ur domfönstret.
 
@@ -96,19 +94,18 @@ grind A jämförs kandidatens värde för timmen med stationens senaste mätning
 
 **5. Väglaget är både indata och facit.** §2 kallar Trafikverkets väglag oberoende av segmentmotorns indata; för kandidaten gäller det
 inte, eftersom *Våt* är ett av regelns fuktvillkor. B räknas som §2 föreskriver, och **redovisas också utan väglaget som facit**
-(stationer, kamera, situation_archive, SMHI, testare), med skillnaden utskriven. **Att välja:** (a) raden utan väglaget är bara
-redovisning; (b) raden utan väglaget är den som döms. *Förslag:* (a) — (b) byter facit innan utfallet syns, vilket är tillåtet men
-sänker antalet facithändelser och kan göra C1 ouppnåelig.
+(stationer, kamera, situation_archive, SMHI, testare), med skillnaden utskriven. Raden utan väglaget är **bara redovisning**; domen
+fälls som §2 föreskriver (Bengt och Axel 21/10, #656). *Skäl:* att döma utan väglaget sänker antalet facithändelser och kan göra C1
+ouppnåelig.
 
 **6. B1 och vetot (B1-fällan).** Regelns veto tystar varje punkt där en station inom 15 km mätt över +2 °C de senaste 45 minuterna, och
 just de punkterna är de som B1 kunde fälla. B1 blir därför nära noll av konstruktion. Det skrivs ut i domen. Bredvid redovisas
 **B1 utan vetot**: på de vetade punkter som var fuktiga (sql/065: `fukt_utfall` = *veto* på en sträcka med Våt eller radar över R)
-räknas hur många som hade varit falsklarm. Raden fäller inte domen.
+räknas hur många som hade varit falsklarm. Raden fäller inte domen. (Fastställt 21/10, #656.)
 
 **7. B3, mervärdet.** Punktmotorns larm loggas bara längs skuggrutterna (`shadow_log`). B3 räknas på de träffar som ligger på
-skuggrutternas sträckor, och antalet sådana träffar skrivs ut; under C-spärren är B3 OAVGJORT. **Att välja:** (a) så; (b) punktmotorns
-frysrisk räknas om ur arkivet för alla sträckor med samma regel som i motorn. *Förslag:* (a) — (b) är en ny beräkning som själv
-måste provas och förregistreras.
+skuggrutternas sträckor, och antalet sådana träffar skrivs ut; under C-spärren är B3 OAVGJORT. Punktmotorns frysrisk räknas inte om
+för hela landet (Bengt och Axel 21/10, #656). *Skäl:* det vore en ny beräkning som själv måste provas och förregistreras.
 
 **8. Grind A och spridningsgrinden.** A räknas på alla stationstimmar, som för RÅ: spridningsgrinden grindar tal, inte temperatur.
 Talen redovisas också utan de stationstimmar där grinden hade tystat (minst två ankare och spridning ≥ 2,25 °C).
@@ -118,10 +115,10 @@ Talen redovisas också utan de stationstimmar där grinden hade tystat (minst tv
 
 **10. När kandidaten inte kan dömas (reserven, §6).** Bara om loggen saknas, aldrig för att utfallet är dåligt: om mindre än hälften av
 domfönstrets timmar är *räknad* i körningsloggen, eller om hinkens dygnsfiler för `kandidat_station` eller `kandidat_skugga` saknas
-för mer än 30 av domfönstrets dygn. Ett otillräckligt underlag (C) ger fortsatt skugga, inte reserven. **Att välja:** gränserna
-hälften och 30 dygn är förslag; ett annat tal kan skrivas in nu, men inte efter att loggen setts.
+för mer än 30 av domfönstrets dygn. Ett otillräckligt underlag (C) ger fortsatt skugga, inte reserven. Gränserna
+hälften och 30 dygn är fastställda 21/10 av Bengt och Axel (#656) och ändras inte efter att loggen setts.
 
-**11. Frysflaggan (frist 28/10, bedömningen §4.2, #650).** Kandidatens frysflagga med 1 °C marginal (*fryser* när kandidatens värde
+**11. Frysflaggan (bedömningen §4.2, #650; fastställd 21/10, #656).** Kandidatens frysflagga med 1 °C marginal (*fryser* när kandidatens värde
 är ≤ +1 °C) döms i mars mot K-A:s krav (rätt klass ≥ 95 %, farliga fel ≤ 1 %, täckning ≥ 70 %, underlag K-A4) och mot K-B1 (≥ 5 % av
 de bekräftade halktillfällena där klassningen var rätt och punktmotorn tyst eller mer än 30 min senare), på grind A:s population
 (`kandidat_station`, utan stationen själv) och i samma domfönster; RÅ och offsetmodellen redovisas bredvid som kontroll. K-C1 gäller.
