@@ -80,7 +80,7 @@ Koden är i takt på båda plattformarna: iOS och Android bär 0.3.9 (18) från 
 | Batteriet | iPhone mätt 27/9: 7 %/h på (14), inom budget. Android: batteripaketet Å0–Å6 efter fältrapporten, släppblockerare; mätningen på minst två fabrikat återstår; Å2/Å3 bär trösklar som Bengt och Axel beslutar | #262, #218 |
 | Integritetssidan | omskriven 23/9; meningen om radering och raden om missar publiceras av Axel | #214 |
 | Tolv testare | Axels åtagande 31/8 | tolv testare |
-| Motorregeln S3 | efterhalkans regel i motorn, byggd 11/10 (PR #872, DECISIONS #524) efter S1-läsningen 11/10 (#521); i appbyggena (24)–(32), ännu inte hos externa testare. Om S1-grinden räknas som passerad och hur S3 når användarna är Bengts och Axels frågor (åtgärdslistan B4-46, B4-47). Utan S3 är novemberbetan dagens motor med facitknappar, ingen ny regel | bedömningen S3, #89 |
+| Motorregeln S3 | efterhalkans regel i motorn, byggd 11/10 (PR #872, DECISIONS #524) efter S1-läsningen 11/10 (#521); i appbyggena (24)–(32), ännu inte hos externa testare. S1-grinden är bokförd som passerad 21/10 (#661); hur S3 når användarna är Bengts och Axels fråga (åtgärdslistan B4-46). Utan S3 är novemberbetan dagens motor med facitknappar, ingen ny regel | bedömningen S3, #89 |
 
 ## 6. Utgångsläget vid fastställandet, 29/9 (uppdateras inte här)
 

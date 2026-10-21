@@ -15832,3 +15832,35 @@ blindningen är orörd (#248, #335). Inför 1/2: mätningen av V2-taket (åtgär
 bilderna får bara bekräfta, aldrig fälla (TROSKLAR-SKUGGAN §2).
 
 **Stomdokument:** BED §4.2 — bildfacitbeslutet: (b) avgjord
+
+## #661 (21/10 2026) Omgång 2: S1-grinden passerad som ordning, tystnadsfelet utan kandidaten, Å-A:s regel först och försprångets domknapp nu
+
+**Bengts ord 21/10:** *"Passerad, som ordning"*, *"Nej för i vinter"*, *"Regeln nu, skript 31/1"* och *"Bygg nu, 15/12"* (åtgärdslistan B4-47, B4-49, B4-50, B4-51; underlaget och förklaringen på Bengts Skrivbord,
+`Halkvakt_Omgang2_Underlag_2026-10-21.md` och `Halkvakt_Omgang2_Forklaring_2026-10-21.md`).
+
+**Beslut.**
+1. **S1-grinden passerad 11/10, som byggordning** (B4-47). #196 sa: *S1 (skuggjämförelsen) körs INNAN något mer byggs på `regn_h`*.
+   Jämförelsen lästes 8/10 (#491) och 11/10 (#521; 1 349 ögonblick, logg och arkiv ense) innan S3 byggdes (#523, #524). Grinden hade
+   inget tal; *"nätter, inte ögonblick"* (#198) och *"blöta frostnätter"* (#331) var senare formuleringar, inte Axels villkor. Den säger
+   inget om S3:s kvalitet, som döms i januari (KB-B, bedömningens S6) och syns i facit 2024/25 (#602). Frostnätterna läses som kontrollen
+   logg mot arkiv i januaridomen (#226 punkt 5).
+2. **Tystnadsfelet räknar inte kandidatens betavarning 2026/27** (B4-49; B4-56 bortvald). Måttet gäller punktmotorns trösklar
+   (TROSKLAR-TYSTNADSFEL §1, §3), och *tyst* avgörs i skuggvarvet, som körs utan kandidaten (#577). Där punktmotorn teg och kandidaten
+   varnade rätt räknas det i kandidatens B3 (förregistreringen §4b punkt 7). En rad som räknade kandidaten löpande skulle visa delar av
+   kandidatens utfall i domfönstret. S3 räknas som att systemet talade (den varnar som frysrisk), nu utskrivet i §6. Omprövas före
+   2027/28 om kandidaten klarar mars. Ingen tröskel ändras.
+3. **Å-A: räkneregeln först, skriptet senast 31/1** (B4-50). Data går inte förlorad (`road_condition_history` raderas aldrig, sql/063;
+   vädret finns i hinken). Räkneregeln (B4-89) läggs fram före något Å-A-tal; skriptet (B4-54) byggs efter försprångets knapp, med domrad
+   och domlarmets steg, och fryses med sha256 före första domläget (fristen `a-a-skriptet`).
+4. **Försprångets domknapp byggs nu, senast 15/12** (B4-51; #359: *"Dom-knappen byggs före mars"*). Underlagsläge med bara antal (FS-A2,
+   FS-C1–C2 per svepvärde) och spärrat domläge, domrad och domlarmets steg (#649). Räkneregeln (B4-90: FS-A1:s nämnare, län, halkperiod,
+   taktens andel) beslutas före första lästa andel och fryses med sha256. Underlagskörningar 15/12, 1/1 och 1/2; domen 1/3 (`mars-domar`).
+   En radräkning av `forsprang_log` med DB-knappen (*las*) görs direkt, så att vi vet att loggen fylls.
+
+**Alternativ.** (1) Överspelad, eller öppen med ett nytt villkor: valt bort — en öppen spärr framför S3, som redan finns i alla byggen, och
+ett villkor skrivet efter sett utfall. (2) Kandidaten som egen rad efter mars, eller i måttet: valt bort — kod för det B3 redan säger,
+respektive en lättnad (L3) som också visar kandidatens utfall. (3) Bygga Å-A nu, eller vänta till april: valt bort — tre stora byggen samma
+månad, respektive en eventuell tystnad ett år senare. (4) Domknappen i februari, eller bara en radräkning nu: valt bort — en tom logg eller
+en saknad nämnare upptäcks för sent.
+
+**Stomdokument:** BED §4.2 — omgång 2 avgjord; MAT §11 — 15/12 och 31/1 inlagda

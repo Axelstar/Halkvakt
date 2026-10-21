@@ -82,11 +82,11 @@ Förkortningar: sc = `publish/snapshot-core.ts`, sk = `supabase/functions/skuggm
 | B4-44 | Prognoslagret: slås ihop med segmentprognosen, eller döps om till *RÅ: kontroll och reserv* (vikten sänks, vägpunktsgrinden kvar, #649)? | Bengt | **klar** — omdöpt till *RÅ: kontroll och reserv*, vikt 1 (*"Döp om, sänk vikten"*, #657) | #657 |
 | B4-45 | Läsningen 24/11 (#435): står kvar fast frågan (b) är struken? | Bengt | **klar** — står kvar som förregistrerad kunskap om RÅ, under RÅ-delen (#650, #657) | #657 |
 | B4-46 | S3 till användarna: publikt med (32), eller Kompisarna först? (underlag: facit lyft 0,11, #602) | Bengt, Axel | öppen | |
-| B4-47 | S1-grinden: räknas den som passerad (S3 byggdes efter S1-läsningen 11/10, #521, #524)? | Bengt | öppen | |
+| B4-47 | S1-grinden: räknas den som passerad (S3 byggdes efter S1-läsningen 11/10, #521, #524)? | Bengt | **klar** — *"Passerad, som ordning"* (Bengt 21/10): passerad 11/10 som byggordning, säger inget om S3:s kvalitet | #661 |
 | B4-48 | Trenden: byggs T-B nu, eller vilar trendens röst till T-C? | Bengt, Axel | öppen | |
-| B4-49 | Tystnadsfelet: ska kandidatens betavarning räknas med? | Bengt | öppen | |
-| B4-50 | Väglagets ålder: byggs Å-A-skriptet nu? | Bengt | öppen | |
-| B4-51 | Försprånget: byggs domknappen för FS-A–C före mars? | Bengt | öppen | |
+| B4-49 | Tystnadsfelet: ska kandidatens betavarning räknas med? | Bengt | **klar** — *"Nej för i vinter"* (Bengt 21/10): kandidaten räknas inte 2026/27; meningen i TROSKLAR-TYSTNADSFEL §6 | #661 |
+| B4-50 | Väglagets ålder: byggs Å-A-skriptet nu? | Bengt | **klar** — *"Regeln nu, skript 31/1"* (Bengt 21/10): räkneregeln B4-89 först, skriptet B4-54 senast 31/1 (fristen `a-a-skriptet`) | #661 |
+| B4-51 | Försprånget: byggs domknappen för FS-A–C före mars? | Bengt | **klar** — *"Bygg nu, 15/12"* (Bengt 21/10): bygget B4-55 senast 15/12 (fristen `fs-domknappen`), räkneregeln B4-90 före första lästa andel | #661 |
 | B4-52 | Byvinden: vilken utlösare ska köra W-A igen (*efter första höststormen* har ingen), och en frist? | Bengt | öppen | |
 
 ## E. Byggen som besluten beställer
@@ -96,7 +96,7 @@ Förkortningar: sc = `publish/snapshot-core.ts`, sk = `supabase/functions/skuggm
 | B4-53 | Domrad (#649) och frist för F-A, FS, tystnadsfelet och Å-A | — | öppen | |
 | B4-54 | Å-A-skriptet | B4-50 | öppen | |
 | B4-55 | Domknappen för FS-A–C | B4-51 | öppen | |
-| B4-56 | Tystnadsfelet med kandidaten (`scripts/tystnadsfelet.ts:225`) | B4-49 | öppen | |
+| B4-56 | Tystnadsfelet med kandidaten (`scripts/tystnadsfelet.ts:225`) | B4-49 | **bortvald** — tystnadsfelet räknar inte kandidaten 2026/27 (B4-49) | #661 |
 | B4-57 | En vektor som prövar S3 och kandidaten tillsammans (S3 kastar kandidaten inom 10 s men inte tvärtom) | — | öppen | |
 
 ## F. Publikt och appen
@@ -143,6 +143,9 @@ rör grindarna och domkalendern; de står kvar där. S-1–S-11 är rapportens n
 | B4-74 | DECISIONS-posten om bildfacitet (kort #209) när Axel svarat på val (b) — fristen `bildfacit-axel` 23/10 | Bengt, Axel | **klar** — *"axel har svarat vi kör b)"* (Bengt 21/10); fristen `bildfacit-axel` borttagen före sitt ärende | #660 |
 | B4-75 | Kartskriptet räknar stängda delar som 0 % i målens procent (`malDelar`, `andel`); B4-67 rättade bara hindren och hävstången | Bengt | öppen | |
 | B4-88 | Kandidatens del A föll 3 av 10 körningar 19–21/10 på MET Nordic: katalogen svarade inte på fyra försök (19/10 12:13), avkortade svar som till sist gav RangeError i `kuvos/metnordic-prognos.ts:57` (21/10 06:13); 19/10 00:13 inte läst. Reserven (#651) gör ett nytt försök, men två fall i rad tystar kandidaten sex timmar — fler omförsök med längre väntan, och RangeError som ett omförsök | Claude | öppen | |
+| B4-89 | Å-A:s räkneregel före något Å-A-tal: valregeln bland svepets värden, för vilket värde Å-A4 (≥ 100) räknas, Å-A3:s fönster och regel för klassningar som inte hunnit ändras, och blindningen (ett underlagsläge som skriver Å-A2 och Å-A4 läcker Å-A2) | Claude (förslag), Bengt (beslut) | öppen | |
+| B4-90 | Försprångets räkneregel före första lästa andel: FS-A1:s nämnare (loggas inte i räknebar form; kan kräva en loggändring i skuggmotorn, deploy på Bengts ord), län (finns inte i loggen), halkperiod, och taktens andel i FS-B3 | Claude (förslag), Bengt och Axel (beslut) | öppen | |
+| B4-91 | `forsprang_log` har bara 15 rader (14–18/10) och inga efter 18/10 13:12 UTC, med en nivå 2-varning per svepvärde (DB-knappen 39633634808); FS-C1 kräver ≥ 60. Orsaken är oläst: inga nivå 2-faror på skuggrutterna sedan dess, eller att jobbet `halkvakt-skuggmotor-forsprang` (:12/:42) står — läses med DB-knappen på Bengts ord | Claude | öppen | |
 
 **Beslut**
 
