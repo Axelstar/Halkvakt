@@ -1,7 +1,7 @@
 # Förregistrering — kandidaten NIVÅ 2+BLANDNING, vintern 2026/27
 
-**Status: UTKAST 15/10 2026, §4b tillagt 21/10. Kvar före signeringen: radarns tal 26/10 (§10 a), Bengts och Axels läsning av §4b och
-loggen sql/065 i drift (§10 e). Spridningen loggas i drift sedan 16/10 (§10 b).** Signeras av Bengt och Axel senast
+**Status: UTKAST 15/10 2026, §4b tillagt 21/10. Kvar före signeringen: radarns tal 26/10 (§10 a) och Bengts och Axels läsning av §4b. Loggen sql/065
+i drift sedan 21/10 (§10 e). Spridningen loggas i drift sedan 16/10 (§10 b).** Signeras av Bengt och Axel senast
 **31/10 2026** (DECISIONS #544, #547). Domfönstret börjar den dag förregistreringen är signerad och pushad; varje dygn utan signatur är
 ett dygn vinter utanför domen. Källorna är DECISIONS #544, #547, #552, #558–#573 och TROSKLAR-SKUGGAN §2–§4. Utkastet i #560 ersätts
 av det här dokumentet; frågorna (A) och (B) där är besvarade av #562.
@@ -173,8 +173,7 @@ varav 93 fjärrytor)*. Ingen tröskel ändrades.
 andelen redovisas. Står i TROSKLAR-SKUGGAN §3.
 
 **(e) Loggen för domen per band — sql/065** (Bengts ja 21/10, DECISIONS #655, åtgärdslistan B4-36). `kandidat_skugga` bär punkterna
-och ankaravståndet (§2, §4b punkt 2). Måste vara i drift före signeringen: det som loggas före saknar fälten för alltid. Beviset är en
-timme i domloggen med `fukt_ank_km` ifyllt.
+och ankaravståndet (§2, §4b punkt 2). Måste vara i drift före signeringen: det som loggas före saknar fälten för alltid. ✅ **I drift:** migrerad 21/10 04:44 UTC med DB-knappen (39545613098, transaktionen bekräftad; alla sex kolumner och den nya loggfunktionen på plats); första timmen 04:50 UTC (DB-knappen *las* 39546397709): timmen 04:00 *räknad*, 85 sträckor, 23 med punkter, 330 punkter = 194 varnande + 133 tystade av spridningen + 3 vetade, 0 rader där listan och räknarna skiljer, ankaravstånd 0–42,3 km.
 
 ## 11. Signaturer
 
