@@ -15659,6 +15659,8 @@ PostGIS:s referenssystem. Att flytta PostGIS ur `public` är en större ändring
    hänger på dem kan tas bort under oss.
 2. Bara regeln i CLAUDE.md: valt bort. En regel utan vakt hänger på minnet; testet fäller.
 
+**I drift 21/10** (Bengt: *"kör sql/064 med DB-knappen (migrera) med en bevisrad som visar att inga tabeller saknar service_role-rättigheter, och bokför körningen"*): migrerad 18:30 UTC med DB-knappen (39653339899, transaktionen bekräftad). Beviset efter filen: 38 tabeller och 9 sekvenser som postgres äger i `public`, 0 tabeller utan SELECT, INSERT, UPDATE och DELETE för `service_role`, 0 sekvenser utan USAGE, SELECT och UPDATE, och `anon` har INSERT på `waitlist`. Fristen `rattigheter-30-10` är därmed gjord.
+
 **Stomdokument:** SYS — databasens rättigheter skrivs ut i migrationerna från och med 064.
 
 ## #654 (20/10 2026) Lägesfilens olästa fält gäller inte längre, och publiceringens reserv väntar på morgonavbrottens orsak
