@@ -15813,3 +15813,22 @@ på testarlogg och saknar identitet. Att ta bort en källa som kunde fälla är 
 innan ett enda svar i fönstret finns. (4) Var och en signerar själv, eller Bengt med Axels citat: Bengt valde att signera för båda.
 
 **Stomdokument:** BED §4.2 — A2:s population avgjord (B4-76)
+
+## #660 (21/10 2026) Bildfacitet (kort #209): (b) — omklassningarna bär januaridomen, bygget av bildläsningen beslutas före 1/2
+
+**Bengts ord 21/10:** *"axel har svarat vi kör b)"* (Bengts val 20/10, STATUS 20/10, och Axels svar; fristen `bildfacit-axel` 23/10, åtgärdslistan B4-74).
+
+**Frågan.** Beslutet om att bygga läsningen av kamerabilderna flyttades 20/9 (#248) från *före 1/2* till *inom sju dygn efter första
+frosten*, eftersom väglagsarkivet då hade noll omklassningar till halka och januaridomen (efterhalkan, bedömningens S6) annars hade
+stått på bilderna, som ingen läsning fanns för. 8/10 var talet fortfarande 0 (#491). Omkörningen 20/10 (dbknapp 39401269093, samma
+satser) gav 624 omklassningar till halka på sju dygn, 514 inom 5 km från 442 froststationer på 77 sträckor. Premissen för
+tidigareläggningen gäller alltså inte längre.
+
+**Beslut.** (b): väglagsarkivets omklassningar bär januaridomen, och beslutet om att bygga bildläsningen (automatisk klassning torrt ·
+vått · snö · is med ett mänskligt stickprov) återgår till fristen före 1/2 (`bildfacit-beslut`). Bilderna läses i mars som planerat;
+blindningen är orörd (#248, #335). Inför 1/2: mätningen av V2-taket (åtgärdslistan B4-80; kamerorna tar troligen mest nattbilder) och koden för tabellen vädertyp × bar/våt väg (kort #231, B4-69).
+
+**Alternativ.** (a) Bygga bildläsningen nu, som en andra facitkälla till januari: valt bort — källan januaridomen behövde finns nu, och
+bilderna får bara bekräfta, aldrig fälla (TROSKLAR-SKUGGAN §2).
+
+**Stomdokument:** BED §4.2 — bildfacitbeslutet: (b) avgjord

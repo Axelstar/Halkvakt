@@ -140,7 +140,7 @@ rör grindarna och domkalendern; de står kvar där. S-1–S-11 är rapportens n
 | B4-71 | Domlarmets kanter: ärendena tilldelas alltid Bengt (`domlarm.ts:89`), också NT där domslutet är Axels; vakthundens utlösarprov startar vindsikt-steg0 och "skriver ingen issue" (`vakthund/index.ts:141–143`), men flödet har nu domlarmet; en handkörd finsk R-A skriver `R-A FI`, som inte är bokförd | Claude | öppen | |
 | B4-72 | Syns Betatest och facitfrågan i App Store-versionen? I så fall kan vem som helst svara utan identitet, och premissen i #201 (tolv testare med samtycke) rubbas | Axel | öppen | |
 | B4-73 | KALENDERN: Ubuntu 26 (19/10) står oavbockad, och vägdatalagret *före vintern* saknar frist | Claude | öppen | |
-| B4-74 | DECISIONS-posten om bildfacitet (kort #209) när Axel svarat på val (b) — fristen `bildfacit-axel` 23/10 | Bengt, Axel | öppen | |
+| B4-74 | DECISIONS-posten om bildfacitet (kort #209) när Axel svarat på val (b) — fristen `bildfacit-axel` 23/10 | Bengt, Axel | **klar** — *"axel har svarat vi kör b)"* (Bengt 21/10); fristen `bildfacit-axel` borttagen före sitt ärende | #660 |
 | B4-75 | Kartskriptet räknar stängda delar som 0 % i målens procent (`malDelar`, `andel`); B4-67 rättade bara hindren och hävstången | Bengt | öppen | |
 
 **Beslut**
