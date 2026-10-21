@@ -87,7 +87,7 @@ Förkortningar: sc = `publish/snapshot-core.ts`, sk = `supabase/functions/skuggm
 | B4-49 | Tystnadsfelet: ska kandidatens betavarning räknas med? | Bengt | **klar** — *"Nej för i vinter"* (Bengt 21/10): kandidaten räknas inte 2026/27; meningen i TROSKLAR-TYSTNADSFEL §6 | #661 |
 | B4-50 | Väglagets ålder: byggs Å-A-skriptet nu? | Bengt | **klar** — *"Regeln nu, skript 31/1"* (Bengt 21/10): räkneregeln B4-89 först, skriptet B4-54 senast 31/1 (fristen `a-a-skriptet`) | #661 |
 | B4-51 | Försprånget: byggs domknappen för FS-A–C före mars? | Bengt | **klar** — *"Bygg nu, 15/12"* (Bengt 21/10): bygget B4-55 senast 15/12 (fristen `fs-domknappen`), räkneregeln B4-90 före första lästa andel | #661 |
-| B4-52 | Byvinden: vilken utlösare ska köra W-A igen (*efter första höststormen* har ingen), och en frist? | Bengt | öppen | |
+| B4-52 | Byvinden: vilken utlösare ska köra W-A igen (*efter första höststormen* har ingen), och en frist? | Bengt | **klar** — *"Läs hinken, 1/12 och 31/1"* (Bengt 21/10): W-A läser 60 dygn ur hinken (bygget B4-93) och körs vid frostlarmet och 1/12 och 31/1; första körning som når 500 timmar är domen | #662 |
 
 ## E. Byggen som besluten beställer
 
@@ -146,7 +146,9 @@ rör grindarna och domkalendern; de står kvar där. S-1–S-11 är rapportens n
 | B4-89 | Å-A:s räkneregel före något Å-A-tal: valregeln bland svepets värden, för vilket värde Å-A4 (≥ 100) räknas, Å-A3:s fönster och regel för klassningar som inte hunnit ändras, och blindningen (ett underlagsläge som skriver Å-A2 och Å-A4 läcker Å-A2) | Claude (förslag), Bengt (beslut) | öppen | |
 | B4-90 | Försprångets räkneregel före första lästa andel: FS-A1:s nämnare (loggas inte i räknebar form; kan kräva en loggändring i skuggmotorn, deploy på Bengts ord), län (finns inte i loggen), halkperiod, och taktens andel i FS-B3 | Claude (förslag), Bengt och Axel (beslut) | öppen | |
 | B4-91 | `forsprang_log` har bara 15 rader (14–18/10) och inga efter 18/10 13:12 UTC, med en nivå 2-varning per svepvärde (DB-knappen 39633634808); FS-C1 kräver ≥ 60. Orsaken är oläst: inga nivå 2-faror på skuggrutterna sedan dess, eller att jobbet `halkvakt-skuggmotor-forsprang` (:12/:42) står — läses med DB-knappen på Bengts ord | Claude | **klar** — läst 21/10 (DB-knappen *las* 39638598817): jobbet går och svarar 200, 5 och 6 körningar föll i morgonavbrotten 19 och 20/10; loggen är tom för att nivå 2-farorna är få och inte ligger i rutternas rutor (3 i landet 21/10 11–15 UTC, sedan 0); följdfrågan är B4-92 | DB-knappen 39638598817 |
-| B4-92 | **Försprångets underlag:** FS-C1 kräver ≥ 60 nivå 2-varningar per svepvärde i ≥ 3 halkperioder och ≥ 3 län, men de 20 skuggrutterna (ett par rutter per halvtimme) gav 15 rader och 1 nivå 2-varning per svepvärde på en vecka. Ska försprånget prövas på fler rutter (C-rutterna, eller kring varje nivå 2-fara i landet) före vintern — beslutat innan någon andel är läst — eller får domen stå på *för lite underlag* i mars? | Bengt, Axel | öppen | |
+| B4-92 | **Försprångets underlag:** FS-C1 kräver ≥ 60 nivå 2-varningar per svepvärde i ≥ 3 halkperioder och ≥ 3 län, men de 20 skuggrutterna (ett par rutter per halvtimme) gav 15 rader och 1 nivå 2-varning per svepvärde på en vecka. Ska försprånget prövas på fler rutter (C-rutterna, eller kring varje nivå 2-fara i landet) före vintern — beslutat innan någon andel är läst — eller får domen stå på *för lite underlag* i mars? | Bengt, Axel | **klar** — *"Alla 30 rutter, med B4-90"* (Bengt 21/10): de 20 och de 10 C-rutterna varje halvtimme; bygget B4-94 med räkneregeln B4-90 före 1/11 | #662 |
+| B4-93 | W-A läser hinken: steget tillfälliga arkivet (med `situation_archive`) i `vindsikt-steg0.yml`, tidsgränsen 30 minuter och vakten mot saknade dygn som de andra grindarna har; före fristen `w-a-byvind-1` 1/12 | Claude | öppen | |
+| B4-94 | Försprånget på alla 30 rutter: skuggmotorns försprångsanrop tar alla rotationsplatser och C-rutterna i egna anrop om högst tre rutter, en cron-ändring och deploy på Bengts ord, tillsammans med räkneregeln B4-90 och TROSKLAR-FORSPRANG §4 med båda signaturerna; före 1/11 (fristen `fs-rutter-och-regel`) | Claude, Bengt, Axel | öppen | |
 
 **Beslut**
 
@@ -160,7 +162,7 @@ rör grindarna och domkalendern; de står kvar där. S-1–S-11 är rapportens n
 | B4-81 | S-5 **V3** fotograferar bara kalla stationer som vakterna tystat: behålls med ny text, eller stryks? | Bengt | öppen | |
 | B4-82 | S-6 **KB-D4** (≥ 5 förare, ingen > 25 %) utan identitet: räkna testarna i gruppen och skriv att 25 %-villkoret inte kan prövas? | Bengt, Axel; före 15/12 | öppen | |
 | B4-83 | S-7 **Termisk kartering:** stängas, stå kvar för 2027/28, eller in i §4b? | Bengt, Axel; före 15/12 | öppen | |
-| B4-84 | S-8 **Två domar utan ägardel:** kodgrinden C till m-halka, KB-A/KB-B i mars till m-efterhalkan? | Bengt | öppen | |
-| B4-85 | S-9 **p-grindarnas beroenden:** bara i-arkivet, i-vakterna och p-skuggmotorn? | Bengt | öppen | |
-| B4-86 | S-10 **Fallna spår som körs vidare:** V-A och V-B varje måndag, vattenplaningens bilpositioner till kamerafacit — "med flit"? | Bengt | öppen | |
+| B4-84 | S-8 **Två domar utan ägardel:** kodgrinden C till m-halka, KB-A/KB-B i mars till m-efterhalkan? | Bengt | **klar** — *"Allt enligt förslaget"* (Bengt 21/10): kodgrinden C i m-halkas text (delen förblir grön), KB-A/KB-B i mars i m-efterhalkans Dom-steg | #662 |
+| B4-85 | S-9 **p-grindarnas beroenden:** bara i-arkivet, i-vakterna och p-skuggmotorn? | Bengt | **klar** — *"Allt enligt förslaget"* (Bengt 21/10): p-grindarna beror på arkivet, vakterna och skuggmotorn; målet Domarna i mars bär m-forsprang, m-nederbord och m-efterhalkan | #662 |
+| B4-86 | S-10 **Fallna spår som körs vidare:** V-A och V-B varje måndag, vattenplaningens bilpositioner till kamerafacit — "med flit"? | Bengt | **klar** — *"Låt gå, med flit"* (Bengt 21/10): V-A, V-B och vattenplaningens bilder körs vidare med flit | #662 |
 | B4-87 | S-11 **Regel L och Skyltfonden** (bilaga 7: en tröskel "aldrig lättas"): en saknas-rad i u-skyltfonden? | Bengt; före 15/12 | öppen | |
