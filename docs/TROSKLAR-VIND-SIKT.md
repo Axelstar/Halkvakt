@@ -135,6 +135,7 @@ koncentrerar exponeringen. Det säger också när grinden ska köras om: **efter
 samma sätt som T-A körs om efter första frostnatten. Till skillnad från T-A finns ingen
 gallringsdeadline — W-A räknar stationstimmar, och gallringen (#83) tunnar till en rad per halvtimme,
 vilket lämnar stationstimmen intakt.
+*Not 21/10 2026 (DECISIONS #662):* sedan 10/10 (#511) raderas väderdygnen ur databasen efter 14 dygn när den är över 350 MB; de finns kvar i hinken. W-A läser därför hinken med 60 dygns fönster och körs vid frostlarmet och 1/12 och 31/1; den första körning där W-A4 släpper är domen, och senare körningar på överlappande data ändrar den inte (L1). Inget tal i dokumentet är ändrat.
 
 ### 3.3 Stationsvakten — FASTSTÄLLD 2026-09-13 av Bengt (DECISIONS #164, #166)
 

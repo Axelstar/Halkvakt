@@ -15866,3 +15866,36 @@ månad, respektive en eventuell tystnad ett år senare. (4) Domknappen i februar
 en saknad nämnare upptäcks för sent.
 
 **Stomdokument:** BED §4.2 — omgång 2 avgjord; MAT §11 — 15/12 och 31/1 inlagda
+
+## #662 (21/10 2026) Omgång 3: byvinden ur hinken, försprånget på 30 rutter, kartans ägare och beroenden, fallna spår med flit
+
+**Bengts ord 21/10:** *"Läs hinken, 1/12 och 31/1"*, *"Alla 30 rutter, med B4-90"*, *"Allt enligt förslaget"* och *"Låt gå, med flit"* (åtgärdslistan B4-52, B4-92, B4-84, B4-85 och B4-86; förklaringen på Bengts Skrivbord,
+`Halkvakt_Omgang3_Forklaring_2026-10-21.md`).
+
+**Beslut.**
+1. **Byvinden (B4-52).** W-A krävde 500 stationstimmar med byvind 20–30 m/s och hade 116 den 8/10 (#491). Det som stoppar domen är inte en
+   saknad utlösare — frostutlösaren kör redan W-A (`vakthund/index.ts:81–87`) — utan att väderdygnen sedan #511 raderas ur databasen efter 14
+   dygn och att W-A bara läser databasen. W-A får läsa 60 dygn ur hinken (bygget B4-93, som fem andra grindar redan gör) och körs vid
+   frostlarmet och 1/12 och 31/1 (fristerna `w-a-byvind-1`, `w-a-byvind-2`). Den första körning där W-A4 släpper är domen; senare körningar på
+   överlappande data ändrar den inte (L1). Inget tal i TROSKLAR-VIND-SIKT ändras; en daterad not i §3. Utlösaren räknar bara kalender och
+   frost, aldrig olyckor eller kvoter.
+2. **Försprångets underlag (B4-92).** De 20 skuggrutterna, 2–3 per halvtimme, gav 15 rader och en nivå 2-varning per svepvärde 14–18/10
+   (DB-knappen 39633634808, 39638598817); FS-C1 kräver 60 per svepvärde i tre halkperioder och tre län. Försprånget prövas på alla 30 rutter —
+   de 20 och de 10 C-rutterna (#527) — varje halvtimme. TROSKLAR-FORSPRANG §4 ändras i samma post som räkneregeln B4-90 (räkneenheten, så att
+   samma fara inte räknas om varje halvtimme; FS-A1:s nämnare ur samma rutter; län; halkperiod; taktens andel), med båda signaturerna (§8),
+   och skuggmotorn driftsätts på Bengts ord, före 1/11 (bygget B4-94, fristen `fs-rutter-och-regel`). Ingen andel är läst; inget tal i §3 eller
+   §5 ändras. Raderna före ändringen redovisas för sig.
+3. **Kartans ägare (B4-84).** Kodgrinden C ägs av m-halka och KB-A/KB-B i mars av m-efterhalkan (#649: en ägare per dom). Kodgrinden står i
+   m-halkas text, inte som ett steg: ett pågående steg hade gjort den gröna delen orange för ett förslag (kort #52) som inte rör dess drift.
+4. **Grindarnas beroenden (B4-85).** Grindarna och domkalendern beror på arkivet, vakterna och skuggmotorn; förarfacit, kamerafacit och SMHI:s
+   observationer var rester från före #649. Målet *Domarna i mars* bär nu också försprånget, nederbördstypen och efterhalkan, som äger
+   marsdomarna, så att deras hinder (t.ex. SMHI:s observationer för nederbördstypen) syns.
+5. **Fallna spår (B4-86).** V-A och V-B körs vidare varje måndag, och skuggan tar kamerabilder vid vattenplaningens varningar, med flit
+   (#648, #657): frågan ska kunna öppnas igen på ny data, och bilderna tas bara när motorns egna punkter inte fyllt budgeten.
+
+**Alternativ.** (1) Ett stormlarm i vakthunden eller SMHI:s vindvarning: valt bort — båda fastnar på 14-dygnsgränsen. Stryka byvinden: valt
+bort. (2) Behålla upplägget (troligen *för lite underlag*, dom tidigast mars 2028) eller bara de 20 rutterna: valt bort. Konstgjorda rutter
+förbi varje fara: valt bort, ändrar vad FS-B mäter. (3–4) Bara ägarna och beroendena utan målet: valt bort — då försvinner ett verkligt hinder.
+(5) Stoppa körningarna: valt bort.
+
+**Stomdokument:** BED §4.2 — omgång 3 avgjord; MAT §11 — 1/11 och 1/12 och 31/1 inlagda
