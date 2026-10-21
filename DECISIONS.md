@@ -15899,3 +15899,20 @@ förbi varje fara: valt bort, ändrar vad FS-B mäter. (3–4) Bara ägarna och 
 (5) Stoppa körningarna: valt bort.
 
 **Stomdokument:** BED §4.2 — omgång 3 avgjord; MAT §11 — 1/11 och 1/12 och 31/1 inlagda
+
+## #663 (21/10 2026) Halkvakt live: lunch och kväll utan händelse tar ett län (kort #281)
+
+**Axels ord 21/10:** *"we need to be more aggresive on the socials"* och *"Yes please"* på förslaget att Halkvakt live ska ta Dagsläget
+för ett län när inget annat händer, inom spärrarna i #600.
+
+**Beslut.** En ny sorts dagsläge, `lan` (Sociala mallar nr 2, ett län per inlägg), sist i ordningen efter morgonlistan. Lunch- och
+kvällspasset tar, när ingen händelse vinner, det län som räknas (halka på minst ett vägavsnitt eller minst tre stationer under noll) med
+mest halka och som inte haft eget länsinlägg på 20 h (nyckeln `lan:<kod>`). Texten är länets rad först och klockslaget efter, så att X
+(som behåller hela rader uppifrån, #645) får siffrorna. Är vägarna fria blir det inget inlägg. Spärrarna står kvar: högst tre dagslägen
+per dygn, minst fyra timmar isär; larmen räknas som förut för sig. En kall dag ger alltså morgonlistan och två län i stället för bara
+listan.
+
+**Alternativ.** Höja taket över tre per dygn: valt bort, nya sidor som postar tätt riskerar räckvidden. Ett nytt pass: inget behövs,
+lunch och kväll körs redan. Threads: kräver en egen nyckel från Meta, inte byggt.
+
+**Stomdokument:** inga — marknadsföringen ligger utanför de åtta (#598).

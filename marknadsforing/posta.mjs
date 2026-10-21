@@ -15,8 +15,8 @@
 // Urvalet är larmdisciplinen i appen överförd till flödet: EN vinnare per körning, i prioritetsordning.
 // LARMEN (gula, DECISIONS #627): SMHI-varning > höstens första. De prövas var 30:e minut av halkvakt-larm.yml
 // (`bild --live`), postas när det händer och räknas inte mot dagens tre; högst fyra larm per dygn.
-// DAGSLÄGET (mörka): stor förändring > höstens kallaste > veckosummering > morgonlistan, morgon, lunch och kväll.
-// Lunch och kväll postar bara händelser; ingen händelse betyder inget inlägg. Högst tre per dygn, minst fyra timmar
+// DAGSLÄGET (mörka): stor förändring > höstens kallaste > veckosummering > morgonlistan > ett län, morgon, lunch och kväll.
+// Lunch och kväll utan händelse tar ett län med halka eller minusgrader (#663); är vägarna fria blir det inget inlägg. Högst tre per dygn, minst fyra timmar
 // isär. Samma sorts inlägg för samma län (eller samma varning) högst en gång per 20 timmar, larm som dagsläge.
 import { readFileSync, writeFileSync, appendFileSync, mkdirSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -334,8 +334,27 @@ function morgonlista(nu, lan, meta, historik, postat) {
   };
 }
 
+// Dagsläget för ett län (Sociala mallar nr 2; Axel 21/10, DECISIONS #663): lunch och kväll utan händelse tar det län som
+// har mest halka och inte haft eget inlägg på 20 h, så att en kall dag ger tre inlägg i stället för ett. Bara län som räknas.
+function lanet(nu, lan, meta, historik, postat) {
+  if (pass(nu) === "morgon") return null;
+  const l = valjLan(lan).find(x => !nyligen(postat, nu, `lan:${x.kod}`));
+  if (!l) return null;
+  const text = kanal => [
+    // Raden först: X behåller hela rader uppifrån och ska få siffrorna, inte bara klockslaget.
+    rad(l),
+    `Läget kl. ${tid(lan.generatedAt)}, ${datumText(nu)}.`,
+    ...svans(kanal, "Trafikverkets öppna data", [l]),
+  ].join("\n");
+  return {
+    typ: "lan", nyckel: `lan:${l.kod}`,
+    etikett: `Dagsläget kl. ${tid(lan.generatedAt)}`, rubrik: l.kort, underrad: datumText(nu),
+    lan: [l], text: text("facebook"), textIg: text("instagram"),
+  };
+}
+
 const LARM = [smhi, forstaGangen];
-const ORDNING = [forandring, kallaste, vecka, morgonlista];
+const ORDNING = [forandring, kallaste, vecka, morgonlista, lanet];
 
 /** Ren funktion: körningens vinnare eller null. `lan` bär `generatedAt` som egenskap. `larm` prövar bara larmen (#627). */
 export function valjHandelse(nu, lan, meta, historik, postat, larm = false) {
