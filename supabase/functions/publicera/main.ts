@@ -33,7 +33,7 @@ async function gh(path: string, method = "GET", body?: unknown): Promise<any> {
 }
 
 /** En commit med alla filerna via Git Data API — inget git, inga Actions-minuter. `inline` går som innehåll direkt i
- *  trädanropet (länssidorna, #458): 22 sidor utan 22 extra blob-anrop. */
+ *  trädanropet (länssidorna, #458): alla sidor och deras data utan ett blob-anrop per fil. */
 async function publicera(files: Record<string, string>, inline: Record<string, string> = {}) {
   const branch = await gh("/branches/main");
   const baseCommit = branch.commit.sha, baseTree = branch.commit.commit.tree.sha;

@@ -15658,3 +15658,30 @@ PostGIS:s referenssystem. Att flytta PostGIS ur `public` är en större ändring
 2. Bara regeln i CLAUDE.md: valt bort. En regel utan vakt hänger på minnet; testet fäller.
 
 **Stomdokument:** SYS — databasens rättigheter skrivs ut i migrationerna från och med 064.
+
+## #654 (20/10 2026) Lägesfilens olästa fält gäller inte längre, och publiceringens reserv väntar på morgonavbrottens orsak
+
+**Bengts val 20/10:** *"Gäller inte"* och *"Vänta på orsaken"*, ur genomgången av projektkartans block 3, Lägesfilen.
+
+**Varför.** l-falten bar sedan 3/10 tre steg *Oläst av motorn* och saknas-raden om fogarna F2–F4 (integrationskartan §5.2, 14/9),
+från tiden då radarns väta skulle in i motorn. Två av fälten läser motorn redan: `regn_h` och `lutning30` sedan S3 (#524), och
+kandidatens fält sedan 17/10 (#631). Kartan motsade sig själv: m-tillstand och m-efterhalkan hade S3 som klart. Resten behövs inte
+längre i motorn. Radarn är fuktvillkoret i kandidatens regel på servern (#556), vattenplaningen föll (#648), tillståndet ska inte in
+i appen (m-tillstand, steget *I appen* gäller inte) och SMHI läses av favoritrapporten.
+
+**Beslut.**
+1. Stegen för `segments[].regn` och `rain_segments`, `lutning15/60` och `bevis`, och `smhi[]` i motorn gäller inte, och delen är
+   grön. Fälten publiceras vidare för skuggmotorn, vakthunden och favoritrapporten. Integrationskartan är fryst och ändras inte här.
+2. Publiceringen får ingen reserv utanför pg_cron nu. Den läser databasen, och 19/10 tog databasen inte emot anslutningar, så en
+   reserv hade inte hjälpt. Frågan tas upp när orsaken till morgonavbrotten är känd (fristen 21/10, ärende #1100).
+
+**Följd.** Under morgonavbrotten stod publiceringen, och appens åldersvakt släcker halka, frysrisk och kandidaten efter 45 minuter
+(#647). Ungefär 06:15–09:40 svensk tid 20/10 kunde appen inte varna. Livemotorns steg *Drift utan morgonavbrott* säger det.
+
+**Alternativ.**
+1. Låta fälten stå som saknas: valt bort, eftersom ingen del av motorn väntar på dem och delen då förblir orange för en väg som inte
+   längre gås.
+2. Ett GitHub-flöde som publicerar när manifestet är äldre än 20 minuter: väntar, eftersom det bara hjälper om databasen svarar
+   medan pg_cron står.
+
+**Stomdokument:** BED §5 — lägesfilens fält och fogarna F2–F4
