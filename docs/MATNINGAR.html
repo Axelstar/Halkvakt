@@ -252,7 +252,7 @@
 <!-- LÄGESRADER §2: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 <div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
   <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
-  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-radar">SMHI:s nederbördsradar</a> <span style="color: var(--dampad, #4A5763)">delvis, 88 % · kvar: Motorns LiveDoc läser inte regn eller rain_segments; vattenplaningens röst har inget mätt stöd sedan V-B föll 19/10 (#648), och steg D är Axels (kort #42)</span></summary>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-radar">SMHI:s nederbördsradar</a> <span style="color: var(--dampad, #4A5763)">delvis, 88 % · kvar: Radarns tal R i förregistreringen §10 (a), läses 26/10 (#568)</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">✓</span> <b>Hämtning byggd</b> <span style="color: var(--dampad, #4A5763)">klart · ingest/radar.ts (SMHI h5-komposit), samplingen i ingest/radar-karna.ts</span></li>
       <li><span aria-hidden="true">✓</span> <b>Hämtning i drift</b> <span style="color: var(--dampad, #4A5763)">klart · ingest.yml:27-29 (continue-on-error) via puls-ingest '11 * * * *'</span></li>
@@ -289,16 +289,16 @@
       <li><span aria-hidden="true">○</span> <b>I appen</b> <span style="color: var(--dampad, #4A5763)">saknas · Meta på halkan, aldrig egen röst (TROSKLAR-NEDERBORDSTYPEN.md:12–14)</span></li>
     </ul>
   </details>
-  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-vattenplaning">Vattenplaningen</a> <span style="color: var(--dampad, #4A5763)">väntar, 63 % · Axels beslut om steg D, nu när båda spåren fallit: V-A (#104) och V-B 19/10 (#648).</span></summary>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--dampad, #6B7680); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-vattenplaning">Vattenplaningen</a> <span style="color: var(--dampad, #4A5763)">stängd</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">✓</span> <b>Tröskeldokument</b> <span style="color: var(--dampad, #4A5763)">klart · docs/TROSKLAR-VATTENPLANING.md:3–5 fastställt av Axel 4/9 (#68); utlösaren 2,0 mm/h (#155, #156)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Data i arkivet</b> <span style="color: var(--dampad, #4A5763)">klart · rain_sum_mm (sql/008_rain_sum.sql:7) och radar_precip (sql/009_radar_precip.sql:5)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Publicerat i lägesfilen</b> <span style="color: var(--dampad, #4A5763)">klart · rain_segments och segments[].regn (snapshot-core.ts:373, 380; DECISIONS #187)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Mätt i skuggan</b> <span style="color: var(--dampad, #4A5763)">klart · vbAlerts till shadow_log.vb (sql/019) sedan 15/9 (#191); grind-v-b.ts måndagar (grind-v-b.yml:16)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Dom</b> <span style="color: var(--dampad, #4A5763)">klart · V-A FALLER (61 % mot 70 %, #69, #104); V-B FALLER 19/10 (#648): V-C giltig med 256 varningar och 55 facit, falsklarm 81 ± 5 % mot ≤ 20 %, 8 av 19 rutter över 3 per regndygn (grind-v-b 39258864189); V-B2 går inte att mäta i skuggan</span></li>
-      <li><span aria-hidden="true">○</span> <b>Villkoret i motorn</b> <span style="color: var(--dampad, #4A5763)">saknas · Inget farslag aquaplaning i types.ts:6–11; steg D är Axels beslut efter V-B:s dom (#648)</span></li>
-      <li><span aria-hidden="true">○</span> <b>Testfall i tre språk</b> <span style="color: var(--dampad, #4A5763)">saknas · F5 rör alla vektorer; ingen vektor eller port finns</span></li>
-      <li><span aria-hidden="true">○</span> <b>I appen</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen text i texts.ts; Axels utgångspunkt 'Vattenplaning framöver — sakta ner' (#196)</span></li>
+      <li><span aria-hidden="true">–</span> <b>Villkoret i motorn</b> <span style="color: var(--dampad, #4A5763)">gäller inte · Gäller inte: steg D struket 21/10 (DECISIONS #657) — båda spåren fallna, V-A (#69, #104) och V-B 19/10 (#648)</span></li>
+      <li><span aria-hidden="true">–</span> <b>Testfall i tre språk</b> <span style="color: var(--dampad, #4A5763)">gäller inte · Gäller inte: steg D struket 21/10 (DECISIONS #657) — båda spåren fallna, V-A (#69, #104) och V-B 19/10 (#648)</span></li>
+      <li><span aria-hidden="true">–</span> <b>I appen</b> <span style="color: var(--dampad, #4A5763)">gäller inte · Gäller inte: steg D struket 21/10 (DECISIONS #657) — båda spåren fallna, V-A (#69, #104) och V-B 19/10 (#648)</span></li>
     </ul>
   </details>
   <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-vind-sikt">Vind och sikt</a> <span style="color: var(--dampad, #4A5763)">väntar, 38 % · Blåsigt väder: W-A körs om efter första höststormen och vid frostlarmet tills högsta bandet bär underlag.</span></summary>
@@ -663,13 +663,13 @@
 <!-- LÄGESRADER §5: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 <div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
   <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
-  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-hojd">Höjden i terrängen</a> <span style="color: var(--dampad, #4A5763)">väntar, 75 % · Premissläsningen 24/11 (#435); höjdbeslutet togs i #547, och läsningen 23/10 utgick (#650).</span></summary>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--dampad, #6B7680); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-hojd">Höjden i terrängen</a> <span style="color: var(--dampad, #4A5763)">stängd</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">–</span> <b>Tröskeldokument</b> <span style="color: var(--dampad, #4A5763)">gäller inte · Görs inte (DECISIONS #547): domen i mars gäller NIVÅ 2+BLANDNING, där höjd och terräng redan är särdrag i rättelsen; förut: Ingen egen; prövas med A-måtten i TROSKLAR-SKUGGAN.md:113–116; tröskelrad för höjdkolumn saknas</span></li>
       <li><span aria-hidden="true">–</span> <b>Data i arkivet</b> <span style="color: var(--dampad, #4A5763)">gäller inte · Görs inte (DECISIONS #547): domen i mars gäller NIVÅ 2+BLANDNING, där höjd och terräng redan är särdrag i rättelsen; förut: Höjden lagras inte; EU-DEM hämtas ur opentopodata vid varje körning (scripts/hojd-prov.ts:16–17)</span></li>
       <li><span aria-hidden="true">–</span> <b>Publicerat i lägesfilen</b> <span style="color: var(--dampad, #4A5763)">gäller inte · Görs inte (DECISIONS #547): domen i mars gäller NIVÅ 2+BLANDNING, där höjd och terräng redan är särdrag i rättelsen; förut: Ingen höjd i weather_latest eller live.json</span></li>
       <li><span aria-hidden="true">✓</span> <b>Mätt i skuggan</b> <span style="color: var(--dampad, #4A5763)">klart · scripts/hojd-prov.ts + hojd-prov.yml måndagar 07:00 via pulsklockan; RÅ+HÖJD i premissmätningen (#435)</span></li>
-      <li><span aria-hidden="true">◐</span> <b>Dom</b> <span style="color: var(--dampad, #4A5763)">pågår · Kandidaten RÅ+HÖJD i vägpunktsgrinden, vars dom står i Prognoslagret (#649): FALLER 28/9, 7,1 % (#399), oavgjord vägviktat 30/9 (#405–#408); läsningen 23/10 utgick 20/10, eftersom höjdbeslutet togs i #547 (#650); premissläsningen 24/11 (#435) står kvar som kunskap om RÅ, kontrollen och reserven</span></li>
+      <li><span aria-hidden="true">–</span> <b>Dom</b> <span style="color: var(--dampad, #4A5763)">gäller inte · Gäller inte: höjden avgjord i #547 (den ligger i kandidaten), läsningen 23/10 struken (#650), delen stängd 21/10 (#657); premissläsningen 24/11 (#435) står kvar under RÅ: kontroll och reserv</span></li>
       <li><span aria-hidden="true">–</span> <b>Villkoret i motorn</b> <span style="color: var(--dampad, #4A5763)">gäller inte · Görs inte (DECISIONS #547): domen i mars gäller NIVÅ 2+BLANDNING, där höjd och terräng redan är särdrag i rättelsen; förut: segment.ts:56–68 viktar 1/km utan höjd</span></li>
       <li><span aria-hidden="true">–</span> <b>Testfall i tre språk</b> <span style="color: var(--dampad, #4A5763)">gäller inte · Segmentprognosen körs inte i telefonerna (segment.ts:7)</span></li>
       <li><span aria-hidden="true">–</span> <b>I appen</b> <span style="color: var(--dampad, #4A5763)">gäller inte · Höjden är en korrektion i prognosen, aldrig en egen röst</span></li>
@@ -957,16 +957,16 @@
       <li><span aria-hidden="true">○</span> <b>I appen</b> <span style="color: var(--dampad, #4A5763)">saknas · Texten oförändrad 'Isrisk framöver' (texts.ts:62); vidgningen finns inte i någon byggd app</span></li>
     </ul>
   </details>
-  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-prognoslagret">Prognoslagret</a> <span style="color: var(--dampad, #4A5763)">väntar, 44 % · Bengts öppna val b, c, d, e och h; läsningen tisdag 24/11 (DECISIONS #435); (g) mätt i kuvösen 6/10 (#467).</span></summary>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-prognoslagret">RÅ: kontroll och reserv</a> <span style="color: var(--dampad, #4A5763)">väntar, 88 % · Premissläsningen tisdag 24/11 (DECISIONS #435), som kunskap om RÅ; RÅ:s dom i mars redovisas bredvid kandidatens som kontroll och reserv (#547).</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">✓</span> <b>Tröskeldokument</b> <span style="color: var(--dampad, #4A5763)">klart · TROSKLAR-SKUGGAN.md:3 fastställt 1–2/9; vägpunkten rad 109–122 (DECISIONS #324, #328)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Data i arkivet</b> <span style="color: var(--dampad, #4A5763)">klart · shadow_log.prognos (sql/032_prognos.sql:7), ankare via vagpunkt_ankare()</span></li>
-      <li><span aria-hidden="true">○</span> <b>Publicerat i lägesfilen</b> <span style="color: var(--dampad, #4A5763)">saknas · Medvetet opublicerad fram till domen (BEDOMNING-2026-09-15.md:568)</span></li>
+      <li><span aria-hidden="true">–</span> <b>Publicerat i lägesfilen</b> <span style="color: var(--dampad, #4A5763)">gäller inte · Gäller inte: RÅ är kontroll och reserv (#547), och kandidaten är den som publiceras och talar (#556, #631); delen omdöpt 21/10 (#657)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Mätt i skuggan</b> <span style="color: var(--dampad, #4A5763)">klart · Prognosen loggas sedan 23/9; premissmätningen varje måndag i hojd-prov.yml:33–43, driftprov 36968196427 (DECISIONS #435); flaggmarginalen mätt i kuvösen 6/10 (#467); kuvösläsningarna 6–7/10 gav ingen ny kandidat: L1–L8 (#471), korsade läsningen (#476), C8 mot grannarna och mot vädret (#479, #480), rutnätsmodellen (#481); fysikspåret som fil 8/10 (FYSIK 9,85 % mot RÅ 7,51 %, 37693105481, #485) och C8 mot dess fingeravtryck (#486)</span></li>
       <li><span aria-hidden="true">◐</span> <b>Dom</b> <span style="color: var(--dampad, #4A5763)">pågår · Vägpunktsgrinden föll 28/9, 6,9 % mot 5 % (#399), bekräftat 30/9 (#405–#408); kuvösen 2024/25 (riktningsprov): fallen för RÅ 7,5 %, INTERP 7,2 %, RÅ+HÖJD 8,8 % (#467); premissmätningen läses 24/11 (#435), och mars återstår</span></li>
-      <li><span aria-hidden="true">○</span> <b>Villkoret i motorn</b> <span style="color: var(--dampad, #4A5763)">saknas · engine/src/segment.ts räknar prognosen men telefonen kör den inte; ingen F4-koppling</span></li>
-      <li><span aria-hidden="true">○</span> <b>Testfall i tre språk</b> <span style="color: var(--dampad, #4A5763)">saknas</span></li>
-      <li><span aria-hidden="true">○</span> <b>I appen</b> <span style="color: var(--dampad, #4A5763)">saknas · 'Ingenting av detta når föraren' (MATNINGAR 5.1)</span></li>
+      <li><span aria-hidden="true">–</span> <b>Villkoret i motorn</b> <span style="color: var(--dampad, #4A5763)">gäller inte · Gäller inte: RÅ är kontroll och reserv (#547), och kandidaten är den som publiceras och talar (#556, #631); delen omdöpt 21/10 (#657)</span></li>
+      <li><span aria-hidden="true">–</span> <b>Testfall i tre språk</b> <span style="color: var(--dampad, #4A5763)">gäller inte · Gäller inte: RÅ är kontroll och reserv (#547), och kandidaten är den som publiceras och talar (#556, #631); delen omdöpt 21/10 (#657)</span></li>
+      <li><span aria-hidden="true">–</span> <b>I appen</b> <span style="color: var(--dampad, #4A5763)">gäller inte · Gäller inte: RÅ är kontroll och reserv (#547), och kandidaten är den som publiceras och talar (#556, #631); delen omdöpt 21/10 (#657)</span></li>
     </ul>
   </details>
 </div>
@@ -1618,7 +1618,7 @@
 
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
   <h2 id="oppna-kort">Öppna kort</h2>
-  <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 26 kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>
+  <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 25 kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>
   <h3><a href="#avsnitt-1">1. Datan som samlas in</a></h3>
   <ul>
     <li>#303 VÄGDATALAGRET, STEG 3 — KUVÖSENS INLÄSNING OCH AXELS KOLUMNER <span class="litet">· Bengt</span></li>
@@ -1627,7 +1627,6 @@
   <ul>
     <li>#276 OLJA PÅ VÄGEN — HALKA SOM RÖSTEN INTE SÄGER <span class="litet">· Claude, låst</span></li>
     <li>#90 VIND OCH SIKT — AXELS JA GIVET 12/9, TRÖSKELDOKUMENT SKRIVET <span class="litet">· Claude, låst</span></li>
-    <li>#42 Vattenplaningsvarningen <span class="litet">· Claude, låst</span></li>
     <li>#46 Rimfrosten — svartis utan nederbörd <span class="litet">· Claude, låst</span></li>
     <li>#45 Nederbördstypen — regn, snö eller slask? <span class="litet">· Claude, låst</span></li>
   </ul>

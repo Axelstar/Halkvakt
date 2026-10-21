@@ -80,6 +80,8 @@ rå 3,1 % stilla natt (klarar), 5,9 % övrigt. Blåsigt nästan tomt (133 respek
 
 ## 4. Väg framåt
 
+*Läget 21/10 2026:* (a), (f) och (g) valda 2/10 (#435–#437); (b) struket 13/10 (#547); (d) ersatt 21/10 av domen per band i förregistreringens §4b (#655); (c), (e) och (h) strukna 21/10 (#657). Inga öppna val; läsningen 24/11 står. Delen i projektkartan heter *RÅ: kontroll och reserv*.
+
 **Ingenting krävs före Skyltfondsansökan.** Den skickas 30/9 med bilden från 28/9; ändringslistans punkt A står. Domen i mars.
 
 **Bengts val, bedömningen §4.2 (a–h):** *Valt 2/10: a, f och g (DECISIONS #435, #436, #437). Öppna: b, c, d, e, h. Läsdatum för (a): tisdag 24/11, en egen körning. (g) mäts i kuvösen med frysklassningens måttstock, inte som en fri mätning vid ≤ 2 °C.*

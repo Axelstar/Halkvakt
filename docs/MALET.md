@@ -55,7 +55,7 @@ Plikterna som återkommer (nycklar, databasens storlek, Actions-kassan, Ubuntu-b
 | ~~23/10~~ | ~~höjdkorrektionen läses om på fyra veckors fullständigt underlag, beslut före november~~ utgår: beslutet togs 13/10 (#547, #650) | kort #96, DECISIONS #357 |
 | 24/11 | premissmätningen av vägpunktsgrinden läses, en gång, med den finska bredvid som stöd; underlag för valet om grinden ska preciseras | kort #270, DECISIONS #435, #436 |
 | senast 1/11 | Pro-beslutet om databasen, villkor för domarna | bedömningen §4.2, Axel |
-| november | **betan till tolv testare:** slutet Play-test 14 dygn, efterhalkan som märkt beta om skuggloggen bär nätter och S3 är byggd; vattenplaningens radarspår döms nov–dec när underlaget räcker | bedömningen S5, mätningssidan §11 |
+| november | **betan till tolv testare:** slutet Play-test 14 dygn, efterhalkan som märkt beta om skuggloggen bär nätter och S3 är byggd; vattenplaningens radarspår föll 19/10 (#648), steg D struket 21/10 (#657) när underlaget räcker | bedömningen S5, mätningssidan §11 |
 | 15/12 | Skyltfondens besked | ansökan |
 | januari 2027 | **dom 1:** betans varningsregler på förar- och kamerafacit; golv nettonytt ≥ 5 %, tillkomna falsklarm ≤ 25 %; godkänd eller oavgjord ⇒ fortsätter, underkänd ⇒ tas bort | bedömningen S6, TROSKLAR-OVERGANGAR |
 | ~~1 februari 2027~~ hösten 2026, i kuvösen | den enda kalibreringen, 48 punkter — på vintern 2024/25 i stället för på data november–januari (ändrat 1/10, DECISIONS #425) | TROSKLAR-KOMBINATIONEN D1–D7 |
@@ -80,7 +80,7 @@ Koden är i takt på båda plattformarna: iOS och Android bär 0.3.9 (18) från 
 | Batteriet | iPhone mätt 27/9: 7 %/h på (14), inom budget. Android: batteripaketet Å0–Å6 efter fältrapporten, släppblockerare; mätningen på minst två fabrikat återstår; Å2/Å3 bär trösklar som Bengt och Axel beslutar | #262, #218 |
 | Integritetssidan | omskriven 23/9; meningen om radering och raden om missar publiceras av Axel | #214 |
 | Tolv testare | Axels åtagande 31/8 | tolv testare |
-| Motorregeln S3 | efterhalkans regel i motorn, Axels bygge, väntar på S1-grinden: skuggloggen ska bära blöta frostnätter först. Utan S3 är novemberbetan dagens motor med facitknappar, ingen ny regel | bedömningen S3, #89 |
+| Motorregeln S3 | efterhalkans regel i motorn, byggd 11/10 (PR #872, DECISIONS #524) efter S1-läsningen 11/10 (#521); i appbyggena (24)–(32), ännu inte hos externa testare. Om S1-grinden räknas som passerad och hur S3 når användarna är Bengts och Axels frågor (åtgärdslistan B4-46, B4-47). Utan S3 är novemberbetan dagens motor med facitknappar, ingen ny regel | bedömningen S3, #89 |
 
 ## 6. Utgångsläget vid fastställandet, 29/9 (uppdateras inte här)
 
