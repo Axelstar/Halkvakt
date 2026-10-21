@@ -15783,3 +15783,33 @@ frost kommer. Ö-B:s golv (nettonytt ≥ 5 %, tillkomna falsklarm ≤ 25 %) leve
 **Alternativ.** Bygga instrumentet före 22/10 03:15 UTC: valt bort av samma skäl som 8/10.
 
 **Stomdokument:** BED §4.2 — Ö-B avgjord för frostnätterna 19 och 20/10
+
+## #659 (21/10 2026) Omgång 1 före signeringen: A2:s population oförändrad, förarsvaren och kameran i §4b, Bengt signerar för båda
+
+**Bengts ord 21/10:** *"Oförändrad, stäng"*, *"Ja, en mening"*, *"Bara redovisning"* och *"Bengt för båda"* (åtgärdslistan B4-76–B4-79, underlaget `Halkvakt_Omgang1_Underlag_2026-10-21.md` på Bengts Skrivbord,
+Skuggan-genomgången 21/10).
+
+**Frågan.** Fyra saker i texten som fryses vid signeringen 31/10 (förregistreringen §8) stod öppna: A2:s population (bedömningen §4.2,
+#554), vad kamerabilderna kan säga om kandidaten, hur förarnas svar i appen på kandidatens varningar räknas, och hur förregistreringen
+signeras.
+
+**Beslut.**
+1. **A2:s population oförändrad för vintern 2026/27** (B4-76): A1 i beslutsbandet −5…+5 °C, A2 och A3 över alla stationstimmar med
+   mätt yta ≤ +5 °C, som `publish/grind-a.ts:125`. Läsningen 14/10 (#554, körning 38510855935) gav nästan samma A2 i bandet som över
+   alla rader (OFFSET 4,0 mot 4,1 %, RÅ 8,3 mot 8,4 %), och kuvösens tal per band är redan sedda. En ändrad population kan bara gälla
+   2027/28, med en daterad post i TROSKLAR-SKUGGAN §3 före den vinterns data. Skrivet i förregistreringen §4.
+2. **Kamerabilderna** (B4-77): en mening i §4b punkt 5 — bilderna väljs vid kalla stationer och skuggans larm, aldrig vid kandidatens
+   varningar (`kamerafacit/index.ts:52–55`, `skuggmotor/main.ts:367–369`), och kamerorna står vid stationerna; kamerakolumnen
+   redovisas per band och når i praktiken bara bandet närmast ankarna. Urvalet ändras inte för kandidaten.
+3. **Förarsvaren bara redovisning** (B4-78): appens *Stämde*/*Stämde inte* på kandidatens varningar är inte TROSKLAR-SKUGGAN §2:s
+   testarlogg (förare + tid + plats, som aktivt säger torr/bar väg); de bär varken förare eller ett uttryckligt torr/bar väg (sql/022).
+   De redovisas bredvid och varken fäller eller bekräftar. Skrivet i §4b punkt 4.
+4. **Signaturen** (B4-79): Bengt signerar förregistreringen för Bengt och Axel, som #564 och #656–#658. Skrivet i §11.
+
+**Alternativ.** (1) Smalna av A2 till −5…+5 före signeringen, eller låta frågan stå öppen till mars: valt bort, kuvösens tal per band är
+sedda och läsningen visade ingen skillnad. (2) Rikta kamerorna mot kandidatens varningar: valt bort, en källa som bara får bekräfta,
+tagen där kandidaten varnade, vore en lättnad i praktiken. (3) Räkna förarsvaren enligt §2: valt bort, svaren uppfyller inte §2:s krav
+på testarlogg och saknar identitet. Att ta bort en källa som kunde fälla är i sak en uppmjukning av B1; den görs före domfönstret,
+innan ett enda svar i fönstret finns. (4) Var och en signerar själv, eller Bengt med Axels citat: Bengt valde att signera för båda.
+
+**Stomdokument:** BED §4.2 — A2:s population avgjord (B4-76)

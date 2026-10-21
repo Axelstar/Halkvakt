@@ -147,10 +147,10 @@ rör grindarna och domkalendern; de står kvar där. S-1–S-11 är rapportens n
 
 | Nr | Fråga | Vem | Status | Stängd av |
 | :-- | :-- | :-- | :-- | :-- |
-| B4-76 | S-1 **A2:s population** (bedömningen §4.2, #554): stängs före signeringen? Förregistreringen säger "Måtten — oförändrade" | Bengt, Axel; före 31/10 | öppen | |
-| B4-77 | S-2 **Kamerabilderna i §4b punkt 5:** en mening om att bilderna väljs vid kalla stationer och skuggans larm, inte vid kandidatens varningar | Bengt, Axel; före 31/10 | öppen | |
-| B4-78 | S-3 **Förarsvar på kandidatens varningar:** räknas *Stämde inte* i B1, eller bara redovisning? | Bengt, Axel; före 31/10 | öppen | |
-| B4-79 | **Signaturen:** signerar Axel förregistreringen med egna ord? Flera beslut bär Bengts ord för båda (#564, #656, #657); regel L kräver båda signaturerna för en lättnad | Bengt, Axel; före 31/10 | öppen | |
+| B4-76 | S-1 **A2:s population** (bedömningen §4.2, #554): stängs före signeringen? Förregistreringen säger "Måtten — oförändrade" | Bengt, Axel; före 31/10 | **klar** — *"Oförändrad, stäng"* (Bengt 21/10): A2 oförändrad för 2026/27, meningen i förregistreringen §4, bedömningen §4.2 avgjord | #659 |
+| B4-77 | S-2 **Kamerabilderna i §4b punkt 5:** en mening om att bilderna väljs vid kalla stationer och skuggans larm, inte vid kandidatens varningar | Bengt, Axel; före 31/10 | **klar** — *"Ja, en mening"* (Bengt 21/10): meningen i §4b punkt 5 | #659 |
+| B4-78 | S-3 **Förarsvar på kandidatens varningar:** räknas *Stämde inte* i B1, eller bara redovisning? | Bengt, Axel; före 31/10 | **klar** — *"Bara redovisning"* (Bengt 21/10): meningen i §4b punkt 4 | #659 |
+| B4-79 | **Signaturen:** signerar Axel förregistreringen med egna ord? Flera beslut bär Bengts ord för båda (#564, #656, #657); regel L kräver båda signaturerna för en lättnad | Bengt, Axel; före 31/10 | **klar** — *"Bengt för båda"* (Bengt 21/10): raden i förregistreringen §11 | #659 |
 | B4-80 | S-4 **V2-taket** (150 per UTC-dygn) fylls troligen av nattbilder: höjas eller få en dagsljuskvot — efter en mätning med DB-knappen *las* | Bengt | öppen | |
 | B4-81 | S-5 **V3** fotograferar bara kalla stationer som vakterna tystat: behålls med ny text, eller stryks? | Bengt | öppen | |
 | B4-82 | S-6 **KB-D4** (≥ 5 förare, ingen > 25 %) utan identitet: räkna testarna i gruppen och skriv att 25 %-villkoret inte kan prövas? | Bengt, Axel; före 15/12 | öppen | |

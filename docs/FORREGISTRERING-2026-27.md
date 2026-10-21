@@ -1,7 +1,7 @@
 # Förregistrering — kandidaten NIVÅ 2+BLANDNING, vintern 2026/27
 
-**Status: UTKAST 15/10 2026, §4b tillagt 21/10. Kvar före signeringen: radarns tal 26/10 (§10 a). §4b fastställt 21/10 (#655, #656); loggen
-sql/065 i drift sedan 21/10 (§10 e). Spridningen loggas i drift sedan 16/10 (§10 b).** Signeras av Bengt och Axel senast
+**Status: UTKAST 15/10 2026, §4b tillagt 21/10. Kvar före signeringen: radarns tal 26/10 (§10 a). §4b fastställt 21/10 (#655, #656); omgång 1 avgjord 21/10
+(#659: populationen i §4, förarsvaren i §4b punkt 4, kameran i punkt 5, Bengt signerar för båda); loggen sql/065 i drift sedan 21/10 (§10 e). Spridningen loggas i drift sedan 16/10 (§10 b).** Signeras av Bengt och Axel senast
 **31/10 2026** (DECISIONS #544, #547). Domfönstret börjar den dag förregistreringen är signerad och pushad; varje dygn utan signatur är
 ett dygn vinter utanför domen. Källorna är DECISIONS #544, #547, #552, #558–#573 och TROSKLAR-SKUGGAN §2–§4. Utkastet i #560 ersätts
 av det här dokumentet; frågorna (A) och (B) där är besvarade av #562.
@@ -56,6 +56,8 @@ miss** (#475, #477). Inget krav sänks. Allt redovisas också per ankarband 0–
 | B1–B3 | sträckorna, mot facit (§2) | en skuggvarning är en sträcka och timme i `kandidat_skugga` där regeln varnar och grinden släpper fram; falsklarm, miss och mervärde som §2 och §3 |
 | C1–C3 | ≥ 20 facithändelser på täckta sträckor i ≥ 3 halkperioder, ≥ 30 skuggvarningar | följer av B |
 
+**Populationen (Bengt 21/10, #659):** A1 räknas i beslutsbandet −5…+5 °C, A2 och A3 över alla stationstimmar med mätt yta ≤ +5 °C, som `publish/grind-a.ts`. Den är oförändrad för vintern 2026/27; en ändrad population kan bara gälla 2027/28, med en daterad post i TROSKLAR-SKUGGAN §3 före den vinterns data. Läsningen 14/10 (#554) gav nästan samma A2 i bandet som över alla rader (OFFSET 4,0 mot 4,1 %, RÅ 8,3 mot 8,4 %).
+
 **Grind A är en övre gräns** för kvaliteten mellan stationerna (#562 punkt 4): `modell.pkl` är tränad på samma 754 stationer, så grind A
 prövar *samma stationer, nytt år*. En kontroll med regionmodeller körs i mars och redovisas bredvid, inte som grind.
 
@@ -64,7 +66,7 @@ ofullständig räknas som *okänt* — inte täckta — och deras andel redovisa
 
 ## 4b. Läsningen — hur domen räknas
 
-*Skrivet 21/10 (Claude, Bengts beslut ur underlaget för paket A, DECISIONS #655). Punkterna 5, 6, 7, 10 och 11 fastställda samma dag av Bengt och Axel (*"Axel och jag säger ja till rekommendationer 5,6,7,10 och 11"*, DECISIONS #656); övriga punkter signeras med texten.* Avsnittet fryses med §4 (§8). Skriptet som räknar enligt det byggs efter signeringen,
+*Skrivet 21/10 (Claude, Bengts beslut ur underlaget för paket A, DECISIONS #655). Punkterna 5, 6, 7, 10 och 11 fastställda samma dag av Bengt och Axel (*"Axel och jag säger ja till rekommendationer 5,6,7,10 och 11"*, DECISIONS #656); övriga punkter signeras med texten. Punkt 4 och 5 kompletterade 21/10 (Bengt, DECISIONS #659).* Avsnittet fryses med §4 (§8). Skriptet som räknar enligt det byggs efter signeringen,
 provas bara på låtsasdata och på kuvösens redan kända tal, och fryses med sin sha256 i en daterad post med båda signaturerna innan
 det första gången läser data ur domfönstret.
 
@@ -90,13 +92,13 @@ spärren kan nås (räknat 21/10 på `data/vagdata/stationer.json`).
 *station på segmentet* (falsklarmet) är en VViS-station inom 2 km från sträckans linje. Falsklarm är det när en sådan station mätte
 yta över +2 °C någon gång inom ±45 minuter från varningens tid, med grind A:s vakter (#75, karantänen, den långsamma vakten). Vid
 grind A jämförs kandidatens värde för timmen med stationens senaste mätning i halvtimmen som börjar vid timmen, som grind A gör för RÅ
-(`publish/grind-a.ts`, 30-minutersbuckets).
+(`publish/grind-a.ts`, 30-minutersbuckets). **Förarnas svar i appen** (*Stämde* eller *Stämde inte*) på kandidatens varningar är inte §2:s testarlogg: de bär varken förare eller ett uttryckligt *torr/bar väg*. De redovisas bredvid med antalet svar och varken fäller eller bekräftar (Bengt 21/10, #659).
 
 **5. Väglaget är både indata och facit.** §2 kallar Trafikverkets väglag oberoende av segmentmotorns indata; för kandidaten gäller det
 inte, eftersom *Våt* är ett av regelns fuktvillkor. B räknas som §2 föreskriver, och **redovisas också utan väglaget som facit**
 (stationer, kamera, situation_archive, SMHI, testare), med skillnaden utskriven. Raden utan väglaget är **bara redovisning**; domen
 fälls som §2 föreskriver (Bengt och Axel 21/10, #656). *Skäl:* att döma utan väglaget sänker antalet facithändelser och kan göra C1
-ouppnåelig.
+ouppnåelig. Kamerabilderna väljs vid kalla stationer och vid skuggans larm, aldrig vid kandidatens varningar, och kamerorna står vid stationerna (738 av 744); kamerakolumnen redovisas därför per band med antalet bilder och når i praktiken bara bandet närmast ankarna. Urvalet ändras inte för kandidaten: en källa som bara får bekräfta, riktad dit kandidaten varnade, vore en lättnad i praktiken (Bengt 21/10, #659).
 
 **6. B1 och vetot (B1-fällan).** Regelns veto tystar varje punkt där en station inom 15 km mätt över +2 °C de senaste 45 minuterna, och
 just de punkterna är de som B1 kunde fälla. B1 blir därför nära noll av konstruktion. Det skrivs ut i domen. Bredvid redovisas
@@ -173,6 +175,8 @@ andelen redovisas. Står i TROSKLAR-SKUGGAN §3.
 och ankaravståndet (§2, §4b punkt 2). Måste vara i drift före signeringen: det som loggas före saknar fälten för alltid. ✅ **I drift:** migrerad 21/10 04:44 UTC med DB-knappen (39545613098, transaktionen bekräftad; alla sex kolumner och den nya loggfunktionen på plats); första timmen 04:50 UTC (DB-knappen *las* 39546397709): timmen 04:00 *räknad*, 85 sträckor, 23 med punkter, 330 punkter = 194 varnande + 133 tystade av spridningen + 3 vetade, 0 rader där listan och räknarna skiljer, ankaravstånd 0–42,3 km.
 
 ## 11. Signaturer
+
+*Bengt signerar för Bengt och Axel (Bengts val 21/10, DECISIONS #659; som #564 och #656–#658).*
 
 | | Datum | Signatur |
 | :-- | :-- | :-- |
