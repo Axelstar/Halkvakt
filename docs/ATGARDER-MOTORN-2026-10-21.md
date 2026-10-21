@@ -28,31 +28,32 @@ Förkortningar: sc = `publish/snapshot-core.ts`, sk = `supabase/functions/skuggm
 
 | Nr | Del | Brist | Status | Stängd av |
 | :-- | :-- | :-- | :-- | :-- |
-| B4-04 | m-motorn | engine.ts 368 rader (kartan 292), Engine.swift 466 (379); **50 vektorer** (37); fixtures; hänvisning till var kandidaten (m-segmentprognos) och halkzonen (m-halka) bor | öppen | |
-| B4-05 | m-olyckor | skrivningarna i `il/skriv.ts:16-59` och `situationspolicy.ts:23` (inte ingest-live/index.ts); sc:385-392, :456-464; sk:494-500; engine.ts:306-327; "31 på 7 dygn" är från 26/9 | öppen | |
-| B4-06 | m-halka | `il/skriv.ts:61-85`; sc:166-180; engine.ts:329-345; vektorerna v45–v46 (kandidaten) och v48–v50 (halkzonen); MATNINGAR-talen står nu på :448; halkzonen i appen från (29) | öppen | |
-| B4-07 | m-frysrisk | `il/skriv.ts:87-167`; engine.ts:273-286, grenen bär S3; vektorerna v38–v41; texts.ts:64-70 | öppen | |
-| B4-08 | m-vilt | `situationspolicy.ts:23, :36`; sc:393-403; på iOS läses djuren i `SnapshotReader.swift:55-56` | öppen | |
-| B4-09 | m-kameror | 22 vektorer med kamera (v43, v44 tillkomna); sc:149-162; engine.ts:259-270 | öppen | |
-| B4-10 | m-tillstand | saknas-raden *S1-grinden på frostnätter (Axel, #196)* stämmer inte med #196, och ägaren är tillståndet (#649); sk:286-300, :504-512 | öppen | |
-| B4-11 | m-efterhalkan | nyckeln *(24) till Kompisarna* är överspelad (vägen är App Review med (32)); texten finns i tre språk (texts.ts:28, Engine.swift:171, Types.kt:156); kort #297:s tre beslut saknas i saknas-listan; **facitläsningen 2024/25, lyft 0,11** (#602) saknas | öppen | |
-| B4-12 | m-trenden | stegen säger att lägesfilen saknar lutning; motorn läser `lutning30` sedan S3 (#524, snapshot.ts:46, engine.ts:279-285); TROSKLAR-TRENDEN :245 → :264 | öppen | |
-| B4-13 | m-overgangar | saknas-raderna nämner de gallrade nätterna 6–8/10 (fristen `ob-beslut` gäller 19–20/10) och S3 som Axels bygge (byggt 11/10, PR #872); motor-, testfalls- och appstegen står *saknas* men är klara i m-efterhalkan | öppen | |
-| B4-14 | m-rimfrost | *Mätt i skuggan* säger att R-B byggs när R-A passerat; R-B är byggd 10/10 (#510) | öppen | |
-| B4-15 | m-nederbord | radnummer: grind-nt.ts :186 → :188, vakthund :73-76 → :82-86 | öppen | |
+| B4-04 | m-motorn | engine.ts 368 rader (kartan 292), Engine.swift 466 (379); **50 vektorer** (37); fixtures; hänvisning till var kandidaten (m-segmentprognos) och halkzonen (m-halka) bor | **klar** — rättad mot koden på main 21/10 (kontrollerad rad för rad) | PR paket B |
+| B4-05 | m-olyckor | skrivningarna i `il/skriv.ts:16-59` och `situationspolicy.ts:23` (inte ingest-live/index.ts); sc:385-392, :456-464; sk:494-500; engine.ts:306-327; "31 på 7 dygn" är från 26/9 | **klar** — rättad mot koden på main 21/10 (kontrollerad rad för rad) | PR paket B |
+| B4-06 | m-halka | `il/skriv.ts:61-85`; sc:166-180; engine.ts:329-345; vektorerna v45–v46 (kandidaten) och v48–v50 (halkzonen); MATNINGAR-talen står nu på :448; halkzonen i appen från (29) | **klar** — rättad mot koden på main 21/10 (kontrollerad rad för rad) | PR paket B |
+| B4-07 | m-frysrisk | `il/skriv.ts:87-167`; engine.ts:273-286, grenen bär S3; vektorerna v38–v41; texts.ts:64-70 | **klar** — rättad mot koden på main 21/10 (kontrollerad rad för rad) | PR paket B |
+| B4-08 | m-vilt | `situationspolicy.ts:23, :36`; sc:393-403; på iOS läses djuren i `SnapshotReader.swift:55-56` | **klar** — rättad mot koden på main 21/10 (kontrollerad rad för rad) | PR paket B |
+| B4-09 | m-kameror | 22 vektorer med kamera (v43, v44 tillkomna); sc:149-162; engine.ts:259-270 | **klar** — rättad mot koden på main 21/10 (kontrollerad rad för rad) | PR paket B |
+| B4-10 | m-tillstand | saknas-raden *S1-grinden på frostnätter (Axel, #196)* stämmer inte med #196, och ägaren är tillståndet (#649); sk:286-300, :504-512 | **klar** — rättad mot koden på main 21/10 (kontrollerad rad för rad) | PR paket B |
+| B4-11 | m-efterhalkan | nyckeln *(24) till Kompisarna* är överspelad (vägen är App Review med (32)); texten finns i tre språk (texts.ts:28, Engine.swift:171, Types.kt:156); kort #297:s tre beslut saknas i saknas-listan; **facitläsningen 2024/25, lyft 0,11** (#602) saknas | **klar** — nyckeln och saknas rättade; facitläsningen #602 inlagd med #607:s delning efter planerad åtgärd (2,5 % mot 7,1 %) | PR paket B |
+| B4-12 | m-trenden | stegen säger att lägesfilen saknar lutning; motorn läser `lutning30` sedan S3 (#524, snapshot.ts:46, engine.ts:279-285); TROSKLAR-TRENDEN :245 → :264 | **klar** — rättad mot koden på main 21/10 (kontrollerad rad för rad) | PR paket B |
+| B4-13 | m-overgangar | saknas-raderna nämner de gallrade nätterna 6–8/10 (fristen `ob-beslut` gäller 19–20/10) och S3 som Axels bygge (byggt 11/10, PR #872); motor-, testfalls- och appstegen står *saknas* men är klara i m-efterhalkan | **klar** — rättad mot koden på main 21/10 (kontrollerad rad för rad) | PR paket B |
+| B4-14 | m-rimfrost | *Mätt i skuggan* säger att R-B byggs när R-A passerat; R-B är byggd 10/10 (#510) | **klar** — rättad mot koden på main 21/10 (kontrollerad rad för rad) | PR paket B |
+| B4-15 | m-nederbord | radnummer: grind-nt.ts :186 → :188, vakthund :73-76 → :82-86 | **klar** — grind-nt-raden rättad; m-nederbord bär ingen vakthund-hänvisning (frostflödenas rader rättade där de står) | PR paket B |
 | B4-16 | m-vattenplaning | stegen efter beslutet B4-38 | **klar** — delen stängd 21/10: stegen *Villkoret i motorn*, *Testfall* och *I appen* gäller inte, kort #42 bort (DECISIONS #657) | #657 |
-| B4-17 | m-vind-sikt | W-A-läget 8/10 (B2 sikt föll, B1 byvind 116 av 500 stationstimmar, #491) står inte i saknas; vakthund :82-86 | öppen | |
+| B4-17 | m-vind-sikt | W-A-läget 8/10 (B2 sikt föll, B1 byvind 116 av 500 stationstimmar, #491) står inte i saknas; vakthund :82-86 | **klar** — rättad mot koden på main 21/10 (kontrollerad rad för rad) | PR paket B |
 | B4-18 | m-hojd | saknas-raden om kuvösens flaggmarginal (#437) är gjord (#467, #490); läsningen 24/11 hör till prognoslagret (#649) | **klar** — delen stängd 21/10 (#657); *Dom* gäller inte, 24/11 under RÅ-delen; saknas-raden om #437 borta med delen | #657 |
-| B4-19 | m-segmentprognos | nyckeln säger grind B/C, men kandidaten döms på A–C (#547); betavarningens *Kvar* (avstängningen, bygget 0.3.13) är gjord; förregistreringssteget (A) och (B) besvarade av #562; *takten före App Review* klar (#606); TROSKLAR-SKUGGAN :148-151 → :187; INTEGRATIONSKARTAN :195 → :225 | öppen | |
-| B4-20 | m-kallplatser | kallkartan (MODIS) föll och lades åt sidan (#496, #497) — står inte i delen | öppen | |
-| B4-21 | m-smhi-forstarkare | radnummer (vakthund :81-87, INTEGRATIONSKARTAN :189, sc :404, :465); beslutet *#114* ska vara #121–#123 och #135 | öppen | |
-| B4-22 | m-forsprang | radnummer (engine.ts:75, :131-132; sk:337; sc:434, :453); kort #153 står på TAVLA :1521, inte :1575 | öppen | |
-| B4-23 | m-vaglagets-alder | *0 vinterklassningar* är inaktuellt: kodgrinden 20/10 (39401059236) 1 929 rader med kod 2, 485 *fläckvis Is*; 624 omklassningar (39401269093) | öppen | |
-| B4-24 | m-frysklassning | nyckeln *uppspelningen byggs först* och steget *K-B obyggd (#363)* är inaktuella (byggd, #510); TROSKLAR-FRYSKLASSNINGEN :167; skrivningen i `il/skriv.ts:132-135` | öppen | |
-| B4-25 | m-tystnadsfel | *2 av 20* är från 24/9 | öppen | |
-| B4-26 | m-olja | radnummer: `situationspolicy.ts:34`, sc:389-403, sk:255-290 (den syntetiska faran på :279) | öppen | |
+| B4-19 | m-segmentprognos | nyckeln säger grind B/C, men kandidaten döms på A–C (#547); betavarningens *Kvar* (avstängningen, bygget 0.3.13) är gjord; förregistreringssteget (A) och (B) besvarade av #562; *takten före App Review* klar (#606); TROSKLAR-SKUGGAN :148-151 → :187; INTEGRATIONSKARTAN :195 → :225 | **klar** — rättad mot koden på main 21/10 (kontrollerad rad för rad) | PR paket B |
+| B4-20 | m-kallplatser | kallkartan (MODIS) föll och lades åt sidan (#496, #497) — står inte i delen | **klar** — rättad mot koden på main 21/10 (kontrollerad rad för rad) | PR paket B |
+| B4-21 | m-smhi-forstarkare | radnummer (vakthund :81-87, INTEGRATIONSKARTAN :189, sc :404, :465); beslutet *#114* ska vara #121–#123 och #135 | **klar** — rättad mot koden på main 21/10 (kontrollerad rad för rad) | PR paket B |
+| B4-22 | m-forsprang | radnummer (engine.ts:75, :131-132; sk:337; sc:434, :453); kort #153 står på TAVLA :1521, inte :1575 | **klar** — rättad mot koden på main 21/10 (kontrollerad rad för rad) | PR paket B |
+| B4-23 | m-vaglagets-alder | *0 vinterklassningar* är inaktuellt: kodgrinden 20/10 (39401059236) 1 929 rader med kod 2, 485 *fläckvis Is*; 624 omklassningar (39401269093) | **klar** — rättad mot koden på main 21/10 (kontrollerad rad för rad) | PR paket B |
+| B4-24 | m-frysklassning | nyckeln *uppspelningen byggs först* och steget *K-B obyggd (#363)* är inaktuella (byggd, #510); TROSKLAR-FRYSKLASSNINGEN :167; skrivningen i `il/skriv.ts:132-135` | **klar** — rättad mot koden på main 21/10 (kontrollerad rad för rad) | PR paket B |
+| B4-25 | m-tystnadsfel | *2 av 20* är från 24/9 | **klar** — rättad mot koden på main 21/10 (kontrollerad rad för rad) | PR paket B |
+| B4-26 | m-olja | radnummer: `situationspolicy.ts:34`, sc:389-403, sk:255-290 (den syntetiska faran på :279) | **klar** — rättad mot koden på main 21/10 (kontrollerad rad för rad) | PR paket B |
 | B4-27 | m-prognoslagret | val (b) står öppen fast struken (#547); efter besluten B4-42 och B4-44 | **klar** — omdöpt till *RÅ: kontroll och reserv*, vikt 1, inga öppna val (#657) | #657 |
-| B4-28 | fem delar | *beskrivs*-hänvisningarna till MATNINGAR pekar på fel avsnitt: prognoslagret MAT 6 → 5.1, frysklassningen MAT 7 → 5.2, väglagets ålder MAT 7 → 6.5, SMHI MAT 9 → 7.6, tystnadsfelet MAT 4 → 3.4 | öppen | |
+| B4-28 | fem delar | *beskrivs*-hänvisningarna till MATNINGAR pekar på fel avsnitt: prognoslagret MAT 6 → 5.1, frysklassningen MAT 7 → 5.2, väglagets ålder MAT 7 → 6.5, SMHI MAT 9 → 7.6, tystnadsfelet MAT 4 → 3.4 | **klar** — *beskrivs* pekar på MATNINGAR:s huvudavsnitt (5, 5, 6, 7, 3): kartskriptet godtar bara numrerade huvudrubriker, så radens förslag 5.1 m.fl. hade fällt det | PR paket B |
+| B4-61 | 21 delar | **Funna 21/10 vid kontrollen av paket B, utanför raderna:** 42 döda eller glidna hänvisningar av samma slag — `ingest-live/index.ts:124–216` i åtta delar (filen har 106 rader), `skuggmotor/main.ts:449-452` i fyra gröna delar (pekar nu på spärrprovet), integrationskartan +30 rader, snapshot-core +1 rad efter rad 244, m-efterhalkan *beskrivs* MAT 7 → 6, texter som #655 och #656 gjort inaktuella | **klar** — rättade i samma PR, var och en kontrollerad mot koden | PR paket B |
 
 ## C. Handtext utanför kartan
 
@@ -63,7 +64,7 @@ Förkortningar: sc = `publish/snapshot-core.ts`, sk = `supabase/functions/skuggm
 | B4-31 | NIVA2-LIVE | säger att förregistreringen gäller *för alla spår*; den gäller kandidaten | **klar** — NIVA2-LIVE: förregistreringen gäller kandidaten, RÅ som kontroll och reserv (#547) | PR paket C/D |
 | B4-32 | bedömningen §4.2 | raden *Fysikregeln i hela skuggan* står öppen fast #563 löste regel T; kort #153:s beslut 2 är avgjort av #563 för kandidaten | **klar** — §4.2-raden markerad avgjord för kandidaten (#563), givarvakten nej (#493) | PR paket C/D |
 | B4-33 | TROSKLAR-SKUGGAN :110-123 | vägpunktsgrinden står som *klarar*, utan not om att RÅ föll (#399) | **klar** — not i TROSKLAR-SKUGGAN om #399; ingen tröskel ändrad | PR paket C/D |
-| B4-34 | kort #270, kartan, §4.2, PROGNOSLAGRET §4, m-segmentprognos | de öppna valen står olika på fem ställen (c, d, e, h mot b, c, d, e, h mot bara d); §4.2 märker (h) *mätt* men listar den öppen | pågår — kort #270, §4.2, PROGNOSLAGRET §4 och RÅ-delen säger *inga öppna val* (#655, #657); m-segmentprognos rättas i paket B |  |
+| B4-34 | kort #270, kartan, §4.2, PROGNOSLAGRET §4, m-segmentprognos | de öppna valen står olika på fem ställen (c, d, e, h mot b, c, d, e, h mot bara d); §4.2 märker (h) *mätt* men listar den öppen | **klar** — alla fem ställen säger att inga val är öppna (#655, #657); m-segmentprognos rättad i paket B | PR #1122, PR paket B |
 | B4-35 | fristerna.json | KB-B kallas *S6* i fristen för efterhalkans dom (kontrolleras och rättas) | **klar utan ändring** — *S6* är bedömningens eget steg *Dom i januari* (§4.2-tabellen, rad 428), inget fel | — |
 
 ## D. Bengts beslut (i omgångar om tre eller fyra frågor)

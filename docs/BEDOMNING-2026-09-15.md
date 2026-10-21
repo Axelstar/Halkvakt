@@ -785,12 +785,12 @@ bevisbart säker (vid 0 km/h går det inte att nå faran) och är rimligen stör
 - [Arkivexporten och säkerhetskopian](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-i-export): klar
 - [Datavakterna (givarvakten, radvakten, karantänen)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-i-vakterna): klar
 - [Lägesfilens fält för skuggdelarna](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-l-falten): klar
-- [L2 tillståndet (skattaren S1–S3)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-tillstand): delvis, 93 % · kvar: S1-grinden på frostnätter (Axel, DECISIONS #196)
-- [Efterhalkan som märkt beta](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-efterhalkan): väntar, 81 % · Första frostnätterna för S1-grinden (Axel, DECISIONS #196) och S3-bygget (24) till Kompisarna (Axel; Bengt granskade och godkände S3 i Axels ställe, DECISIONS #525, #526); sedan betan i november (#186).
+- [L2 tillståndet (skattaren S1–S3)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-tillstand): delvis, 93 % · kvar: S1-grinden (#196: S1 körs innan något mer byggs på regn_h): läst 11/10 i Axels ställe (#521) och S3 byggd samma dag (#524); om den räknas som passerad är Bengts beslut. Grinden ägs här (#649)
+- [Efterhalkan som märkt beta](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-efterhalkan): väntar, 81 % · App Review med 0.3.13 (32) (DECISIONS #643), som bär S3 liksom alla byggen sedan (24) (Bengt godkände S3 i Axels ställe, #525, #526); publikt med (32) eller Kompisarna först är Bengts och Axels beslut; sedan betan i november (#186) och domen KB-B i januari.
 - [L3 trenden](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-trenden): delvis, 44 % · kvar: T-B (B3-paret och tystnadsfelet för trenden) har inget instrument
-- [Rimfrosten](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-rimfrost): väntar, 44 % · En frostmånad för R-B; uppspelningen ur arkivet byggs efter R-A (#363, #491).
+- [Rimfrosten](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-rimfrost): väntar, 44 % · En frostmånad för R-B; uppspelningen ur arkivet är byggd (#510), domen läses 9/11 (frist r-b-dom).
 - [Vattenplaningen](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-vattenplaning): stängd
-- [L4 räckvidden: segmentprognosen](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-segmentprognos): väntar, 75 % · Domen i mars 2027 (grind B/C) på kandidaten NIVÅ 2+BLANDNING som ny fråga, RÅ kontroll och reserv (#547), och Bengts öppna val d på kort #270.
+- [L4 räckvidden: segmentprognosen](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-segmentprognos): väntar, 77 % · Domen i mars 2027 (grind A–C) på kandidaten NIVÅ 2+BLANDNING som ny fråga, RÅ kontroll och reserv (#547), val d på kort #270 struket 21/10, domslut (b) döms per band (#655).
 - [L5 allvar som försprång](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-forsprang): delvis, 56 % · kvar: FS-A: nivå 2-fall i vinter (kod 3–4, eller yta ≤ 0 °C med väta ≥ 3)
 - [Grindarna och domkalendern](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-p-grindarna): delvis, 86 % · kvar: Domlarmet och fristvakten i drift: första körningarna på main efter sammanslagningen (DECISIONS #649)
 - [Projektkartan](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-g-projektkartan): klar
