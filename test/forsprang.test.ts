@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { AlertEngine } from "../engine/src/engine.ts";
-import { forsprangNiva, forsprangKrok, forsprangUrval, FORSPRANG_SVEP_S } from "../engine/src/forsprang.ts";
+import { forsprangNiva, forsprangKrok, forsprangUrval, FORSPRANG_A_SLAG, FORSPRANG_SVEP_S } from "../engine/src/forsprang.ts";
 import type { Fix, Hazard } from "../engine/src/types.ts";
 
 // Kort #153 beslut 1, docs/TROSKLAR-FORSPRANG.md, DECISIONS #359: samma ord, tidigare — nivå 2 talar tidigare, allt annat orört.
@@ -102,4 +102,11 @@ test("utan slot väljer halvtimmen, som före #662 — samma rutter som huvudvar
   }
   // Ordningen i indata spelar ingen roll: urvalet sorterar, som skuggmotorns allNames.
   assert.deepEqual(forsprangUrval([...namn].reverse(), 3)!.batch, forsprangUrval(namn, 3)!.batch);
+});
+
+test("nämnarradens slag och betavarningen: S3 är frysrisk men aldrig nivå 2 (DECISIONS #663, räkneregeln R4)", () => {
+  assert.deepEqual([...FORSPRANG_A_SLAG], ["slippery_segment", "icing_point"]);
+  // S3 talar vid +1…+3 °C; nivå 2 kräver ytan ≤ 0 °C och väta ≥ 3. En betavarning kan alltså bara vara nivå 1.
+  const s3 = { id: "wx:1", kind: "icing_point", lon: 15, lat: 59, meta: { surfaceTempC: 2, moisture: false } } as unknown as Hazard;
+  assert.equal(forsprangNiva(s3, new Map([["wx:1", 4]])), 1);
 });

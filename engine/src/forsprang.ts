@@ -31,6 +31,9 @@ export function forsprangNiva(h: Hazard, vata: Map<string, number>): ForsprangNi
   return null;
 }
 
+/** FS-A1:s varningsslag (§2: A1 halt väglag och A2 frysrisk): nämnarradens varningar och nämnaren i räkneregeln R4 (DECISIONS #663). */
+export const FORSPRANG_A_SLAG: readonly string[] = ["slippery_segment", "icing_point"];
+
 /** Rutter per försprångsanrop: skuggmotorns tak, som huvudvarvets (546 vid fler, kort #244). */
 export const FORSPRANG_RUTTER_PER_ANROP = 3;
 

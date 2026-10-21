@@ -886,6 +886,9 @@ export function forsprangNiva(h: Hazard, vata: Map<string, number>): ForsprangNi
   return null;
 }
 
+/** FS-A1:s varningsslag (§2: A1 halt väglag och A2 frysrisk): nämnarradens varningar och nämnaren i räkneregeln R4 (DECISIONS #663). */
+export const FORSPRANG_A_SLAG: readonly string[] = ["slippery_segment", "icing_point"];
+
 /** Rutter per försprångsanrop: skuggmotorns tak, som huvudvarvets (546 vid fler, kort #244). */
 export const FORSPRANG_RUTTER_PER_ANROP = 3;
 
@@ -1462,8 +1465,9 @@ async function forsprangVarv(prov: boolean, c = false, slot: number | null = nul
     if (krok) motor.leadFor = forsprangKrok(nivaer, svepS);
     const suppressed: { kind: string; id: string; distM: number; by: string }[] = [];
     motor.onSuppressed = (c) => suppressed.push({ kind: c.kind, id: c.hazardId, distM: Math.round(c.distM), by: c.by });
+    // `beta` märker efterhalkans betavarning (S3), som är frysrisk men aldrig nivå 2 (DECISIONS #663, räkneregeln R4).
     const alerts = motor.run(trace).map((a) => ({ t: a.t, id: a.hazardId, kind: a.kind, distanceM: Math.round(a.distanceM),
-      niva: nivaer.get(a.hazardId) ?? null }));
+      niva: nivaer.get(a.hazardId) ?? null, ...(a.beta ? { beta: true } : {}) }));
     return { alerts, suppressed };
   };
   if (prov) {
@@ -1490,10 +1494,6 @@ async function forsprangVarv(prov: boolean, c = false, slot: number | null = nul
   for (const w of (Array.isArray(lv?.weather) ? lv.weather : [])) if (typeof w?.bevis?.vata === "number") vata.set(`wx:${w.id}`, w.bevis.vata);
   const nivaer = new Map<string, ForsprangNiva>();
   for (const h of hazards) { const n = forsprangNiva(h, vata); if (n !== null) nivaer.set(h.id, n); }
-  const iRutan = (h: Hazard, x0: number, x1: number, y0: number, y1: number) => {
-    const pts: [number, number][] = h.kind === "slippery_segment" ? h.line : [[(h as any).lon, (h as any).lat]];
-    return pts.some(([x, y]) => x >= x0 && x <= x1 && y >= y0 && y <= y1);
-  };
   const routes = c ? ROUTES_C : ROUTES;
   const urval = forsprangUrval(Object.keys(routes), halvtimme, slot);
   if (!urval) return new Response("okänt slot", { status: 400 });
@@ -1501,13 +1501,20 @@ async function forsprangVarv(prov: boolean, c = false, slot: number | null = nul
   const rader: Record<string, unknown>[] = [];
   for (const name of batch) {
     const line = routes[name];
-    const M = 0.05, lons = line.map((q) => q[0]), lats = line.map((q) => q[1]);
-    const x0 = Math.min(...lons) - M, x1 = Math.max(...lons) + M, y0 = Math.min(...lats) - M, y1 = Math.max(...lats) + M;
-    const niva2 = hazards.filter((h) => nivaer.get(h.id) === 2 && iRutan(h, x0, x1, y0, y1)).length;
-    if (!niva2) continue;
     const trace = traceAlong(line);
-    const naraFaror = farorVidLinjen(hazards, line);   // rutfiltret (kort #244, DECISIONS #360, #535) — samma utfall, mindre arbete
-    const bas = kor(naraFaror, trace, nivaer, false), variant = kor(naraFaror, trace, nivaer, true);
+    // Urvalet vid vägen (DECISIONS #663, TROSKLAR-FORSPRANG §4): nivå 2 bland motorns faror vid linjen (rutfiltret, kort #244, #535).
+    // Rektangeln runt rutten, som gällde till #663, prövade bara sträckornas brytpunkter och tog med faror långt från vägen.
+    const naraFaror = farorVidLinjen(hazards, line);
+    const niva2 = naraFaror.filter((h) => nivaer.get(h.id) === 2).length;
+    const bas = kor(naraFaror, trace, nivaer, false);
+    if (!niva2) {
+      // Nämnarraden (FS-A1, DECISIONS #663, räkneregeln R4): baskörningens A1- och A2-varningar med nivå; ingen variant — den vore
+      // byte för byte densamma. Samma nycklar som de andra raderna, eftersom PostgREST kräver det i en gemensam skrivning.
+      rader.push({ route: name, svep_s: svepS, niva2: 0, bas: bas.alerts.filter((a) => FORSPRANG_A_SLAG.includes(a.kind)),
+        variant: [], bas_suppressed: bas.suppressed, variant_suppressed: [], nytt: [] });
+      continue;
+    }
+    const variant = kor(naraFaror, trace, nivaer, true);
     // FS-B4: en varning i varianten om en fara baskörningen aldrig talade om. Avståndet kvar till rutans slut följer med, så att
     // faror där baskörningens spår tog slut före faran kan redovisas för sig.
     const basIds = new Set(bas.alerts.map((a) => a.id));
@@ -1529,7 +1536,8 @@ async function forsprangVarv(prov: boolean, c = false, slot: number | null = nul
       body: JSON.stringify(rader) });
     skrivet = r.ok ? `${rader.length} rader` : `forsprang_log ${r.status}: ${(await r.text().catch(() => "")).slice(0, 120)}`;
   }
-  return svar({ ok: true, lage: "forsprang", grupp: c ? "c" : null, slot: urval.plats, svep_s: svepS, rutter: batch.length, med_niva2: rader.length,
+  return svar({ ok: true, lage: "forsprang", grupp: c ? "c" : null, slot: urval.plats, svep_s: svepS, rutter: batch.length,
+    med_niva2: rader.filter((r) => (r.niva2 as number) > 0).length, namnarrader: rader.filter((r) => r.niva2 === 0).length,
     niva2_i_snapshoten: [...nivaer.values()].filter((n) => n === 2).length, skrivet });
 }
 
