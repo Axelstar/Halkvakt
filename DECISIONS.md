@@ -15718,3 +15718,25 @@ domen. Behålla (d): behövs inte, och en lägre spärr vore en lättnad.
 **Stomdokument:** BED §4.2 — val (d) ersatt och frysflaggan i utkastet
 
 **I drift 21/10 (punkt 2, Bengt: *"kör migrationen"*):** sql/065 migrerad 21/10 04:44 UTC med DB-knappen (39545613098, transaktionen bekräftad; alla sex kolumner och den nya loggfunktionen på plats); första timmen 04:50 UTC (DB-knappen *las* 39546397709): timmen 04:00 *räknad*, 85 sträckor, 23 med punkter, 330 punkter = 194 varnande + 133 tystade av spridningen + 3 vetade, 0 rader där listan och räknarna skiljer, ankaravstånd 0–42,3 km.
+
+## #656 (21/10 2026) Förregistreringens §4b fastställd: väglaget som redovisning, B1-fällan, B3 på skuggrutterna, reservens gränser och frysflaggan
+
+**Bengts ord 21/10, för Bengt och Axel:** *"Axel och jag säger ja till rekommendationer 5,6,7,10 och 11 så du kan göra dem klara nu"*.
+Rekommendationerna stod i Claudes lista över det som återstod i paket A samma dag (åtgärdslistan B4-01, B4-03, B4-37).
+
+**Beslut.** I förregistreringens §4b (#655):
+1. **Punkt 5, väglaget som facit:** B räknas som TROSKLAR-SKUGGAN §2 föreskriver; raden utan väglaget som facit är bara redovisning.
+2. **Punkt 6, B1-fällan:** att vetot gör B1 nära noll skrivs ut i domen, och B1 utan vetot redovisas utan att fälla domen.
+3. **Punkt 7, B3:** räknas på träffarna längs skuggrutterna; punktmotorns frysrisk räknas inte om för hela landet.
+4. **Punkt 10, reserven:** RÅ fäller domslutet bara om mindre än hälften av domfönstrets timmar är räknade eller om dygnsfilerna saknas
+   för mer än 30 dygn; ett otillräckligt underlag ger fortsatt skugga.
+5. **Punkt 11, frysflaggan:** står i förregistreringen, med meningen att den mäter klassen (≤ +1 °C) och inte rösten.
+
+**Följder.** Inga punkter *Att välja* återstår i §4b. Fristen `kb-frysflaggan` (28/10) tas bort innan den blivit ett ärende, eftersom
+beslutet är bokfört; en frist för läsningen av §4b behövs inte. Ny frist `domskriptet-kandidaten` 30/11 (Claude). Kvar före
+signeringen 31/10: radarns tal 26/10.
+
+**Alternativ.** (5b) döma utan väglaget: färre facithändelser, C1 kan bli ouppnåelig. (7b) räkna om punktmotorn för hela landet: en ny
+beräkning som själv måste provas och förregistreras före 31/10. (10) andra gränser: möjligt nu, inte efter att loggen setts.
+
+**Stomdokument:** BED §4.2 — frysflaggan avgjord
