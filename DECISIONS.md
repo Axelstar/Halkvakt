@@ -15716,3 +15716,5 @@ läser domfönstrets data.
 domen. Behålla (d): behövs inte, och en lägre spärr vore en lättnad.
 
 **Stomdokument:** BED §4.2 — val (d) ersatt och frysflaggan i utkastet
+
+**I drift 21/10 (punkt 2, Bengt: *"kör migrationen"*):** sql/065 migrerad 21/10 04:44 UTC med DB-knappen (39545613098, transaktionen bekräftad; alla sex kolumner och den nya loggfunktionen på plats); första timmen 04:50 UTC (DB-knappen *las* 39546397709): timmen 04:00 *räknad*, 85 sträckor, 23 med punkter, 330 punkter = 194 varnande + 133 tystade av spridningen + 3 vetade, 0 rader där listan och räknarna skiljer, ankaravstånd 0–42,3 km.
