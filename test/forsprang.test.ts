@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { AlertEngine } from "../engine/src/engine.ts";
-import { forsprangNiva, forsprangKrok, FORSPRANG_SVEP_S } from "../engine/src/forsprang.ts";
+import { forsprangNiva, forsprangKrok, forsprangUrval, FORSPRANG_SVEP_S } from "../engine/src/forsprang.ts";
 import type { Fix, Hazard } from "../engine/src/types.ts";
 
 // Kort #153 beslut 1, docs/TROSKLAR-FORSPRANG.md, DECISIONS #359: samma ord, tidigare — nivå 2 talar tidigare, allt annat orört.
@@ -75,4 +75,31 @@ test("reglagets tak tar bara grundvarningen, försprånget går till motorns tak
 
 test("svepet är dokumentets", () => {
   assert.deepEqual([...FORSPRANG_SVEP_S], [45, 60, 90]);
+});
+
+test("alla rutter varje halvtimme: platserna täcker varje rutt exakt en gång, högst tre per anrop (DECISIONS #662)", () => {
+  const tjugo = Array.from({ length: 20 }, (_, i) => `R${String(i).padStart(2, "0")}`), tio = Array.from({ length: 10 }, (_, i) => `C ${i}`);
+  for (const [namn, platser] of [[tjugo, 7], [tio, 4]] as const) {
+    const sedda: string[] = [];
+    for (let k = 0; k < platser; k++) {
+      const u = forsprangUrval([...namn], 0, k)!;
+      assert.equal(u.platser, platser);
+      assert.ok(u.batch.length >= 1 && u.batch.length <= 3, `plats ${k}: ${u.batch.length} rutter`);
+      sedda.push(...u.batch);
+    }
+    assert.deepEqual([...sedda].sort(), [...namn].sort(), "varje rutt en gång");
+    assert.equal(forsprangUrval([...namn], 0, platser), null, "ett slot utanför platserna ger null");
+    assert.equal(forsprangUrval([...namn], 0, -1), null);
+  }
+});
+
+test("utan slot väljer halvtimmen, som före #662 — samma rutter som huvudvarvet", () => {
+  const namn = Array.from({ length: 20 }, (_, i) => `R${String(i).padStart(2, "0")}`);
+  for (const h of [0, 1, 6, 7, 13, 99]) {
+    const u = forsprangUrval(namn, h)!;
+    assert.equal(u.plats, h % 7);
+    assert.deepEqual(u.batch, [...namn].sort().filter((_, i) => i % 7 === h % 7));
+  }
+  // Ordningen i indata spelar ingen roll: urvalet sorterar, som skuggmotorns allNames.
+  assert.deepEqual(forsprangUrval([...namn].reverse(), 3)!.batch, forsprangUrval(namn, 3)!.batch);
 });

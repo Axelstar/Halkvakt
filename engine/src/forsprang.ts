@@ -31,6 +31,21 @@ export function forsprangNiva(h: Hazard, vata: Map<string, number>): ForsprangNi
   return null;
 }
 
+/** Rutter per försprångsanrop: skuggmotorns tak, som huvudvarvets (546 vid fler, kort #244). */
+export const FORSPRANG_RUTTER_PER_ANROP = 3;
+
+/** Vilka rutter ett försprångsanrop kör (§4; alla rutter varje halvtimme sedan DECISIONS #662). Rutterna sorteras och delas på
+ *  ceil(n/3) platser — 7 för de 20 rutterna, 4 för de 10 C-rutterna, som huvudvarvet — och plats k tar var k:te rutt. Ett angivet
+ *  `slot` väljer sin plats; utan det väljer halvtimmen, som före #662. Ett slot utanför platserna ger null. Svepvärdet följer
+ *  halvtimmen, inte platsen, så varje rutt möter alla tre värden över tre halvtimmar. */
+export function forsprangUrval(namn: string[], halvtimme: number, slot: number | null = null) {
+  const sorterade = [...namn].sort();
+  const platser = Math.max(1, Math.ceil(sorterade.length / FORSPRANG_RUTTER_PER_ANROP));
+  const plats = slot ?? halvtimme % platser;
+  if (!Number.isInteger(plats) || plats < 0 || plats >= platser) return null;
+  return { platser, plats, batch: sorterade.filter((_, i) => i % platser === plats) };
+}
+
 /** Kroken till motorn (AlertEngine.leadFor): nivå 2 får svepvärdets försprång, allt annat dagens. Motorn klämmer svaret. */
 export function forsprangKrok(nivaer: Map<string, ForsprangNiva>, svepS: number) {
   return (h: Hazard, leadM: number, speedMps: number): number => (nivaer.get(h.id) === 2 ? speedMps * svepS : leadM);
