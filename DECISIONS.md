@@ -15687,3 +15687,32 @@ i appen (m-tillstand, steget *I appen* gäller inte) och SMHI läses av favoritr
    medan pg_cron står.
 
 **Stomdokument:** BED §5 — lägesfilens fält och fogarna F2–F4
+
+## #655 (21/10 2026) Paket A före signeringen: läsningen i förregistreringen, loggen för domen per band, val (d) ersatt och frysflaggan i utkastet
+
+**Bengts ord 21/10**, ur underlaget för paket A (Desktop/Halkvakt_PaketA_Underlag_2026-10-21.md, åtgärdslistan B4-01 till B4-03):
+*"Ja, skriv utkastet"*, *"Bygg PR:en"*, *"Stryk, dom per band"* och *"Ja, i utkastet"*. Bengts villkor för paket A: *"så att jag inte
+beslutar om något jag är osäker på"*.
+
+**Varför.** Förregistreringen fryser text, inte kod (§8), och lämnade räkneval öppna som annars hade tolkats i mars efter att utfallet
+setts. Domloggen sparade bara antal per sträcka, så domen per ankarband kunde inte räknas. Påståendet att bandet 0–7 km inte når
+grind A:s spärr (#406) gällde septembers urval av 236 stationer; i hela nätet har 103 av 761 stationer sin närmaste granne inom 7 km.
+
+**Beslut.**
+1. Förregistreringen får avsnittet §4b *Läsningen* — som utkast, med ett förslag och ett skäl per räkneval och tre punkter märkta
+   *Att välja*. Bengt och Axel läser det före signeringen 31/10; det fryses med §4.
+2. Loggen kompletteras: sql/065 (åtgärdslistan B4-36) ger `kandidat_skugga` punkterna, utfallet, ankaravståndet, ankarna,
+   spridningen och värdet för sträckans punkter som inte är torra. Regeln rörs inte. I drift med DB-knappen på Bengts ord.
+3. Val (d) på kort #270, en egen spärr för bandet 0–7 km, stryks. I stället döms domslut (b) per band med samma krav räknade inom
+   bandet (§4b punkt 3). En sänkt spärr hade varit en lättnad, eftersom bandens tal är sedda.
+4. Frysflaggan (#650) skrivs in i utkastet (§4b punkt 11), med meningen att flaggan mäter klassen (≤ +1 °C) och inte rösten (≤ 0 °C
+   och fukt).
+
+**Inte beslutat här:** signeringen, de tre punkterna *Att välja* i §4b (väglaget som facit, B3 utanför skuggrutterna, gränserna för
+reserven) och B1-fällans redovisning (åtgärdslistan B4-37). Domskriptet byggs efter signeringen och fryses med sin sha256 innan det
+läser domfönstrets data.
+
+**Alternativ.** Signera texten som den är: billigare nu, men valen blir osignerade. Skjuta signeringen: varje dygn är vinter utanför
+domen. Behålla (d): behövs inte, och en lägre spärr vore en lättnad.
+
+**Stomdokument:** BED §4.2 — val (d) ersatt och frysflaggan i utkastet

@@ -1,6 +1,7 @@
 # Förregistrering — kandidaten NIVÅ 2+BLANDNING, vintern 2026/27
 
-**Status: UTKAST 15/10 2026. Kvar före signeringen: radarns tal 26/10 (§10 a). Spridningen loggas i drift sedan 16/10 (§10 b).** Signeras av Bengt och Axel senast
+**Status: UTKAST 15/10 2026, §4b tillagt 21/10. Kvar före signeringen: radarns tal 26/10 (§10 a), Bengts och Axels läsning av §4b och
+loggen sql/065 i drift (§10 e). Spridningen loggas i drift sedan 16/10 (§10 b).** Signeras av Bengt och Axel senast
 **31/10 2026** (DECISIONS #544, #547). Domfönstret börjar den dag förregistreringen är signerad och pushad; varje dygn utan signatur är
 ett dygn vinter utanför domen. Källorna är DECISIONS #544, #547, #552, #558–#573 och TROSKLAR-SKUGGAN §2–§4. Utkastet i #560 ersätts
 av det här dokumentet; frågorna (A) och (B) där är besvarade av #562.
@@ -25,11 +26,12 @@ En annan modell, ett annat par eller en annan fysik är en annan kandidat och en
   på alla tre körningarna (38651194568; #561, #562).
 - **Domen fälls på det kedjan räknade vid timmen**, inte på en omräkning i efterhand: kandidatens värden vid stationerna i
   `kandidat_station` och regelns utfall per sträcka och timme i `kandidat_skugga`, båda exporterade till hinken dygnet efter (#572,
-  #573). Körningsloggen `kandidat_skugga_korning` säger för varje timme om regeln räknade eller teg.
+  #573). Sedan sql/065 bär `kandidat_skugga` också punkterna som inte är torra, med utfall, ankaravstånd, ankare, spridning och värde
+  (§4b). Körningsloggen `kandidat_skugga_korning` säger för varje timme om regeln räknade eller teg; den raderas aldrig.
 
 ## 3. Regeln som utlöser varningen (#562, #565, #566, #568, #573)
 
-`kandidat_regel()` (sql/057), med talen på ett ställe:
+`kandidat_regel()` (sql/058, med spridningsgrinden; sql/057 till 16/10), med talen på ett ställe:
 
 | Villkor | Tal |
 | :-- | :-- |
@@ -60,6 +62,72 @@ prövar *samma stationer, nytt år*. En kontroll med regionmodeller körs i mars
 **Täckt sträcka** är en sträcka och timme där körningsloggen säger *räknad*. Timmar där regeln teg för att kandidaten var gammal eller
 ofullständig räknas som *okänt* — inte täckta — och deras andel redovisas för sig (§10 d).
 
+## 4b. Läsningen — hur domen räknas
+
+*UTKAST 21/10 (Claude, Bengts beslut ur underlaget för paket A: §4b skrivs, val (d) ersätts av domen per band, frysflaggan in;
+DECISIONS #655). Läses av Bengt och Axel före signeringen. Punkter märkta **Att välja** har två alternativ; resten är förslag som
+signeras med texten om ingen invänder.* Avsnittet fryses med §4 (§8). Skriptet som räknar enligt det byggs efter signeringen,
+provas bara på låtsasdata och på kuvösens redan kända tal, och fryses med sin sha256 i en daterad post med båda signaturerna innan
+det första gången läser data ur domfönstret.
+
+**1. Varningen.** En skuggvarning är en sträcka och timme i `kandidat_skugga` där regeln varnar vid X = 2,25 °C (§4): minst en punkt
+med utfallet *varnar*. Varningens tid är `skriven_at`, då den fanns i domloggen — inte kandidatens timme, som ligger upp till tre
+timmar tidigare. *Skäl:* en varning får inte räknas före den fanns; den senare tiden kan bara göra B2 strängare. Påföljande timmar på
+samma sträcka är var sin varning, som §4 säger; antalet *episoder* (sammanhängande timmar på samma sträcka) redovisas bredvid C2.
+
+**2. Bandet.** En varning hör till bandet för den varnande punkt som ligger **längst** från sitt ankare (`fukt_ank_km`, sql/065):
+0–7, 7–15, 15–20 eller över 20 km; en punkt utan ankare inom 50 km hör till *över 20 km*. *Skäl:* domslut (b) låter kandidaten tala
+där *maxavståndet* till ankare ligger i ett godkänt band (TROSKLAR-SKUGGAN §4). Vid stationerna (grind A) är bandet stationens
+`ank_km` i `kandidat_station`; stationen är aldrig sitt eget ankare.
+
+**3. Domen per band (ersätter val (d) på kort #270).** Domslut (b) prövas per band med **samma krav, räknade inom bandet**: A1–A3,
+marginalvakten och underlagsspärren (≥ 500 bedömbara punkter över ≥ 20 stationer) för grind A; B1–B3 på varningarna och
+facithändelserna i bandet; C1–C2 inom bandet. Ett band under spärren är *obedömt*, aldrig godkänt. Banden prövas inifrån: 0–7 km
+först, 7–15 km bara om också 0–7 km klarar. Ingen egen spärr och inget sänkt krav — en sänkt spärr för ett band vore en lättnad
+(regel L3), eftersom kuvösens tal per band redan är sedda. *Skäl:* §7 väntar sig att A2 inte klaras nationellt; utan regeln måste
+"klaras i banden" tolkas i mars, efter att utfallet syns. Hela nätet har 103 av 761 stationer med närmaste granne inom 7 km, så
+spärren kan nås (räknat 21/10 på `data/vagdata/stationer.json`).
+
+**4. Facit och matchningen** som TROSKLAR-SKUGGAN §2: en facithändelse matchas till en sträcka inom 2 km från sträckans linje, och
+*station på segmentet* (falsklarmet) är en VViS-station inom 2 km från sträckans linje. Falsklarm är det när en sådan station mätte
+yta över +2 °C någon gång inom ±45 minuter från varningens tid, med grind A:s vakter (#75, karantänen, den långsamma vakten). Vid
+grind A jämförs kandidatens värde för timmen med stationens senaste mätning i halvtimmen som börjar vid timmen, som grind A gör för RÅ
+(`publish/grind-a.ts`, 30-minutersbuckets).
+
+**5. Väglaget är både indata och facit.** §2 kallar Trafikverkets väglag oberoende av segmentmotorns indata; för kandidaten gäller det
+inte, eftersom *Våt* är ett av regelns fuktvillkor. B räknas som §2 föreskriver, och **redovisas också utan väglaget som facit**
+(stationer, kamera, situation_archive, SMHI, testare), med skillnaden utskriven. **Att välja:** (a) raden utan väglaget är bara
+redovisning; (b) raden utan väglaget är den som döms. *Förslag:* (a) — (b) byter facit innan utfallet syns, vilket är tillåtet men
+sänker antalet facithändelser och kan göra C1 ouppnåelig.
+
+**6. B1 och vetot (B1-fällan).** Regelns veto tystar varje punkt där en station inom 15 km mätt över +2 °C de senaste 45 minuterna, och
+just de punkterna är de som B1 kunde fälla. B1 blir därför nära noll av konstruktion. Det skrivs ut i domen. Bredvid redovisas
+**B1 utan vetot**: på de vetade punkter som var fuktiga (sql/065: `fukt_utfall` = *veto* på en sträcka med Våt eller radar över R)
+räknas hur många som hade varit falsklarm. Raden fäller inte domen.
+
+**7. B3, mervärdet.** Punktmotorns larm loggas bara längs skuggrutterna (`shadow_log`). B3 räknas på de träffar som ligger på
+skuggrutternas sträckor, och antalet sådana träffar skrivs ut; under C-spärren är B3 OAVGJORT. **Att välja:** (a) så; (b) punktmotorns
+frysrisk räknas om ur arkivet för alla sträckor med samma regel som i motorn. *Förslag:* (a) — (b) är en ny beräkning som själv
+måste provas och förregistreras.
+
+**8. Grind A och spridningsgrinden.** A räknas på alla stationstimmar, som för RÅ: spridningsgrinden grindar tal, inte temperatur.
+Talen redovisas också utan de stationstimmar där grinden hade tystat (minst två ankare och spridning ≥ 2,25 °C).
+
+**9. C3.** Backtest och drift jämförs i A-måtten: kuvösens tal vid +6 h (#552; 5,12 % grova fel) mot driftens A vid stationerna.
+*Skäl:* del A lämnar PH för R+6…R+11, så PB i drift vilar på en prognos som är sex till elva timmar gammal.
+
+**10. När kandidaten inte kan dömas (reserven, §6).** Bara om loggen saknas, aldrig för att utfallet är dåligt: om mindre än hälften av
+domfönstrets timmar är *räknad* i körningsloggen, eller om hinkens dygnsfiler för `kandidat_station` eller `kandidat_skugga` saknas
+för mer än 30 av domfönstrets dygn. Ett otillräckligt underlag (C) ger fortsatt skugga, inte reserven. **Att välja:** gränserna
+hälften och 30 dygn är förslag; ett annat tal kan skrivas in nu, men inte efter att loggen setts.
+
+**11. Frysflaggan (frist 28/10, bedömningen §4.2, #650).** Kandidatens frysflagga med 1 °C marginal (*fryser* när kandidatens värde
+är ≤ +1 °C) döms i mars mot K-A:s krav (rätt klass ≥ 95 %, farliga fel ≤ 1 %, täckning ≥ 70 %, underlag K-A4) och mot K-B1 (≥ 5 % av
+de bekräftade halktillfällena där klassningen var rätt och punktmotorn tyst eller mer än 30 min senare), på grind A:s population
+(`kandidat_station`, utan stationen själv) och i samma domfönster; RÅ och offsetmodellen redovisas bredvid som kontroll. K-C1 gäller.
+**Flaggan mäter klassen, inte rösten:** dess tröskel (≤ +1 °C) är inte regelns i §3 (≤ 0 °C och fukt), och domen säger ingenting om
+när kandidaten talar.
+
 ## 5. Domfönstret
 
 Från signeringens dag till domen i mars 2027. Bara data som ingen sett räknas (regel L, #564: L1–L4).
@@ -80,7 +148,7 @@ en **reserv**, inte två chanser att klara grinden (#547).
 
 ## 8. Fryst vid signeringen
 
-Identiteten (§1), regeln med talen (§3), måtten och populationen (§4), domfönstret (§5). Ändras något av det efteråt sker det bara
+Identiteten (§1), regeln med talen (§3), måtten och populationen (§4), läsningen (§4b), domfönstret (§5). Ändras något av det efteråt sker det bara
 genom en daterad post med båda signaturerna, och aldrig som en lättnad efter sett utfall (regel L).
 
 ## 9. Inte en del av domen
@@ -103,6 +171,10 @@ varav 93 fjärrytor)*. Ingen tröskel ändrades.
 
 **(d) Tysta timmar — besvarad 15/10** (Bengts ja, DECISIONS #575): en tyst timme är *okänt*, inte täckt, och räknas inte som miss;
 andelen redovisas. Står i TROSKLAR-SKUGGAN §3.
+
+**(e) Loggen för domen per band — sql/065** (Bengts ja 21/10, DECISIONS #655, åtgärdslistan B4-36). `kandidat_skugga` bär punkterna
+och ankaravståndet (§2, §4b punkt 2). Måste vara i drift före signeringen: det som loggas före saknar fälten för alltid. Beviset är en
+timme i domloggen med `fukt_ank_km` ifyllt.
 
 ## 11. Signaturer
 
