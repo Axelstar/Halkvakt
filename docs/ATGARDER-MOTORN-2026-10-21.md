@@ -40,9 +40,9 @@ Förkortningar: sc = `publish/snapshot-core.ts`, sk = `supabase/functions/skuggm
 | B4-13 | m-overgangar | saknas-raderna nämner de gallrade nätterna 6–8/10 (fristen `ob-beslut` gäller 19–20/10) och S3 som Axels bygge (byggt 11/10, PR #872); motor-, testfalls- och appstegen står *saknas* men är klara i m-efterhalkan | öppen | |
 | B4-14 | m-rimfrost | *Mätt i skuggan* säger att R-B byggs när R-A passerat; R-B är byggd 10/10 (#510) | öppen | |
 | B4-15 | m-nederbord | radnummer: grind-nt.ts :186 → :188, vakthund :73-76 → :82-86 | öppen | |
-| B4-16 | m-vattenplaning | stegen efter beslutet B4-38 | öppen | |
+| B4-16 | m-vattenplaning | stegen efter beslutet B4-38 | **klar** — delen stängd 21/10: stegen *Villkoret i motorn*, *Testfall* och *I appen* gäller inte, kort #42 bort (DECISIONS #657) | #657 |
 | B4-17 | m-vind-sikt | W-A-läget 8/10 (B2 sikt föll, B1 byvind 116 av 500 stationstimmar, #491) står inte i saknas; vakthund :82-86 | öppen | |
-| B4-18 | m-hojd | saknas-raden om kuvösens flaggmarginal (#437) är gjord (#467, #490); läsningen 24/11 hör till prognoslagret (#649) | öppen | |
+| B4-18 | m-hojd | saknas-raden om kuvösens flaggmarginal (#437) är gjord (#467, #490); läsningen 24/11 hör till prognoslagret (#649) | **klar** — delen stängd 21/10 (#657); *Dom* gäller inte, 24/11 under RÅ-delen; saknas-raden om #437 borta med delen | #657 |
 | B4-19 | m-segmentprognos | nyckeln säger grind B/C, men kandidaten döms på A–C (#547); betavarningens *Kvar* (avstängningen, bygget 0.3.13) är gjord; förregistreringssteget (A) och (B) besvarade av #562; *takten före App Review* klar (#606); TROSKLAR-SKUGGAN :148-151 → :187; INTEGRATIONSKARTAN :195 → :225 | öppen | |
 | B4-20 | m-kallplatser | kallkartan (MODIS) föll och lades åt sidan (#496, #497) — står inte i delen | öppen | |
 | B4-21 | m-smhi-forstarkare | radnummer (vakthund :81-87, INTEGRATIONSKARTAN :189, sc :404, :465); beslutet *#114* ska vara #121–#123 och #135 | öppen | |
@@ -51,20 +51,20 @@ Förkortningar: sc = `publish/snapshot-core.ts`, sk = `supabase/functions/skuggm
 | B4-24 | m-frysklassning | nyckeln *uppspelningen byggs först* och steget *K-B obyggd (#363)* är inaktuella (byggd, #510); TROSKLAR-FRYSKLASSNINGEN :167; skrivningen i `il/skriv.ts:132-135` | öppen | |
 | B4-25 | m-tystnadsfel | *2 av 20* är från 24/9 | öppen | |
 | B4-26 | m-olja | radnummer: `situationspolicy.ts:34`, sc:389-403, sk:255-290 (den syntetiska faran på :279) | öppen | |
-| B4-27 | m-prognoslagret | val (b) står öppen fast struken (#547); efter besluten B4-42 och B4-44 | öppen | |
+| B4-27 | m-prognoslagret | val (b) står öppen fast struken (#547); efter besluten B4-42 och B4-44 | **klar** — omdöpt till *RÅ: kontroll och reserv*, vikt 1, inga öppna val (#657) | #657 |
 | B4-28 | fem delar | *beskrivs*-hänvisningarna till MATNINGAR pekar på fel avsnitt: prognoslagret MAT 6 → 5.1, frysklassningen MAT 7 → 5.2, väglagets ålder MAT 7 → 6.5, SMHI MAT 9 → 7.6, tystnadsfelet MAT 4 → 3.4 | öppen | |
 
 ## C. Handtext utanför kartan
 
 | Nr | Var | Brist | Status | Stängd av |
 | :-- | :-- | :-- | :-- | :-- |
-| B4-29 | TAVLA kort #42, vårlistans Ä1 | V-B-domen (#648) saknas; Ä1 säger *avgörs på V-B:s data* | öppen | |
-| B4-30 | MALET §5 | säger att S3 väntar på S1-grinden | öppen | |
-| B4-31 | NIVA2-LIVE | säger att förregistreringen gäller *för alla spår*; den gäller kandidaten | öppen | |
-| B4-32 | bedömningen §4.2 | raden *Fysikregeln i hela skuggan* står öppen fast #563 löste regel T; kort #153:s beslut 2 är avgjort av #563 för kandidaten | öppen | |
-| B4-33 | TROSKLAR-SKUGGAN :110-123 | vägpunktsgrinden står som *klarar*, utan not om att RÅ föll (#399) | öppen | |
-| B4-34 | kort #270, kartan, §4.2, PROGNOSLAGRET §4, m-segmentprognos | de öppna valen står olika på fem ställen (c, d, e, h mot b, c, d, e, h mot bara d); §4.2 märker (h) *mätt* men listar den öppen | öppen | |
-| B4-35 | fristerna.json | KB-B kallas *S6* i fristen för efterhalkans dom (kontrolleras och rättas) | öppen | |
+| B4-29 | TAVLA kort #42, vårlistans Ä1 | V-B-domen (#648) saknas; Ä1 säger *avgörs på V-B:s data* | **klar** — kort #42 stängt och vårlistans Ä1 avgjord (#648, #657) | #657 |
+| B4-30 | MALET §5 | säger att S3 väntar på S1-grinden | **klar** — MALET säger att S3 byggdes 11/10 (#524) och hänvisar S1-frågan till B4-47; vattenplaningens rad rättad | PR paket C/D |
+| B4-31 | NIVA2-LIVE | säger att förregistreringen gäller *för alla spår*; den gäller kandidaten | **klar** — NIVA2-LIVE: förregistreringen gäller kandidaten, RÅ som kontroll och reserv (#547) | PR paket C/D |
+| B4-32 | bedömningen §4.2 | raden *Fysikregeln i hela skuggan* står öppen fast #563 löste regel T; kort #153:s beslut 2 är avgjort av #563 för kandidaten | **klar** — §4.2-raden markerad avgjord för kandidaten (#563), givarvakten nej (#493) | PR paket C/D |
+| B4-33 | TROSKLAR-SKUGGAN :110-123 | vägpunktsgrinden står som *klarar*, utan not om att RÅ föll (#399) | **klar** — not i TROSKLAR-SKUGGAN om #399; ingen tröskel ändrad | PR paket C/D |
+| B4-34 | kort #270, kartan, §4.2, PROGNOSLAGRET §4, m-segmentprognos | de öppna valen står olika på fem ställen (c, d, e, h mot b, c, d, e, h mot bara d); §4.2 märker (h) *mätt* men listar den öppen | pågår — kort #270, §4.2, PROGNOSLAGRET §4 och RÅ-delen säger *inga öppna val* (#655, #657); m-segmentprognos rättas i paket B |  |
+| B4-35 | fristerna.json | KB-B kallas *S6* i fristen för efterhalkans dom (kontrolleras och rättas) | **klar utan ändring** — *S6* är bedömningens eget steg *Dom i januari* (§4.2-tabellen, rad 428), inget fel | — |
 
 ## D. Bengts beslut (i omgångar om tre eller fyra frågor)
 
@@ -72,14 +72,14 @@ Förkortningar: sc = `publish/snapshot-core.ts`, sk = `supabase/functions/skuggm
 | :-- | :-- | :-- | :-- | :-- |
 | B4-36 | **Loggen för domen per band:** `kandidat_skugga` sparade bara antal per sträcka; sql/065 lägger till punkterna, deras utfall, ankaravstånd, ankare, spridning och värde (regeln orörd). Måste vara i drift före signeringen 31/10 | Bengt (*"Bygg PR:en"*, Bengt 21/10, ur underlaget för paket A); i drift med DB-knappen på Bengts ord | **klar** — migrerad 21/10 04:44 UTC med DB-knappen (39545613098, transaktionen bekräftad; alla sex kolumner och den nya loggfunktionen på plats); första timmen 04:50 UTC (DB-knappen *las* 39546397709): timmen 04:00 *räknad*, 85 sträckor, 23 med punkter, 330 punkter = 194 varnande + 133 tystade av spridningen + 3 vetade, 0 rader där listan och räknarna skiljer, ankaravstånd 0–42,3 km | PR #1117 (0859d863), DB-knappen 39545613098 |
 | B4-37 | **B1-fällan:** kandidatens veto (station inom 15 km över +2 °C) tar bort nästan alla varningar som B1 kunde räkna som falsklarm, så B1 blir nära noll av konstruktion. Förslag i §4b: skriv ut det, och redovisa B1 utan vetot på en rad som inte fäller domen (sql/065 loggar de vetade punkterna) | Bengt, Axel (med §4b) | **klar** — fastställt 21/10 (§4b punkt 6, DECISIONS #656): fällan skrivs ut och B1 utan vetot redovisas utan att fälla domen | #656 |
-| B4-38 | Vattenplaningens steg D: stryks? (fallen, V-A #69/#104 och V-B #648) | Bengt; formellt Axel | öppen | |
+| B4-38 | Vattenplaningens steg D: stryks? (fallen, V-A #69/#104 och V-B #648) | Bengt; formellt Axel | **klar** — stryks, för Bengt och Axel (*"Stryk, för oss båda"*, #657) | #657 |
 | B4-39 | Sikten som egen fara: stryks, eller prövas i vinter? (en höstläsning på 14 dygn, #491) | Bengt | öppen | |
-| B4-40 | Höjden: *gäller inte*? (redan avgjord, #547, #650) | Bengt | öppen | |
+| B4-40 | Höjden: *gäller inte*? (redan avgjord, #547, #650) | Bengt | **klar** — delen stängd (*"Ja, stäng delen"*, #657) | #657 |
 | B4-41 | Kallplatserna: stryks, eller står vårlistans Ä6 kvar för RÅ-reserven? (bedömning: kandidatens särdrag, vikterna okända) | Bengt | öppen | |
-| B4-42 | Prognoslagrets val (c), (e) och (h): strykas? (besvarade av #556, #472, #471) | Bengt | öppen | |
+| B4-42 | Prognoslagrets val (c), (e) och (h): strykas? (besvarade av #556, #472, #471) | Bengt | **klar** — alla tre strukna (*"Stryk alla tre"*, #657) | #657 |
 | B4-43 | SMHI:s Verify 2 (luft mot yta som reserv): stryks? | Bengt | öppen | |
-| B4-44 | Prognoslagret: slås ihop med segmentprognosen, eller döps om till *RÅ: kontroll och reserv* (vikten sänks, vägpunktsgrinden kvar, #649)? | Bengt | öppen | |
-| B4-45 | Läsningen 24/11 (#435): står kvar fast frågan (b) är struken? | Bengt | öppen | |
+| B4-44 | Prognoslagret: slås ihop med segmentprognosen, eller döps om till *RÅ: kontroll och reserv* (vikten sänks, vägpunktsgrinden kvar, #649)? | Bengt | **klar** — omdöpt till *RÅ: kontroll och reserv*, vikt 1 (*"Döp om, sänk vikten"*, #657) | #657 |
+| B4-45 | Läsningen 24/11 (#435): står kvar fast frågan (b) är struken? | Bengt | **klar** — står kvar som förregistrerad kunskap om RÅ, under RÅ-delen (#650, #657) | #657 |
 | B4-46 | S3 till användarna: publikt med (32), eller Kompisarna först? (underlag: facit lyft 0,11, #602) | Bengt, Axel | öppen | |
 | B4-47 | S1-grinden: räknas den som passerad (S3 byggdes efter S1-läsningen 11/10, #521, #524)? | Bengt | öppen | |
 | B4-48 | Trenden: byggs T-B nu, eller vilar trendens röst till T-C? | Bengt, Axel | öppen | |

@@ -121,6 +121,7 @@ Status per provpunkt (DECISIONS #325): *uppmätt* när närmaste ankare ligger i
 Holdout (DECISIONS #326): varje station inom 2 km av rutten skattas varje varv ur de övriga ankarna och loggas med sin egen
 mätning (`prognos.h`) — det är §2:s stationsfacit, utan att något tas bort ur prognosen.
 Faller RÅ på vinterdata tas frågan upp i bedömningen §4.2 — grinden körs om varje måndag.
+*Not 21/10 2026 (åtgärdslistan B4-33): talen ovan är från 23/9. RÅ föll i vägpunktsgrinden 28/9 på ärliga rader (DECISIONS #399), och domen i mars gäller kandidaten med RÅ som kontroll och reserv (#547). Ingen tröskel ändrad.*
 
 **Spridningsgrinden** (7/10 2026, DECISIONS #474 — Bengts ja och Axels signatur 7/10, relayerad av Bengt i chatten; kort #299
 förslag 1, ur kuvösens läsning L1, DECISIONS #471): en provpunkt är *okänt* — prognosen tiger — när färre än två ankare bidrar eller

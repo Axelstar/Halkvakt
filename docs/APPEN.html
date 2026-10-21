@@ -594,16 +594,16 @@
       <li><span aria-hidden="true">◐</span> <b>Används av motorn eller appen</b> <span style="color: var(--dampad, #4A5763)">pågår · Apparnas favoritrapport: RapportRepo.swift:11-19, RapportRepo.kt:18-25, slagen i Rapport.swift och Rapport.kt; i TestFlight 0.3.13 (31)/(32), App Store-versionen väntar på App Review (#636, #643); engine/src läser dem inte</span></li>
     </ul>
   </details>
-  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-vattenplaning">Vattenplaningen</a> <span style="color: var(--dampad, #4A5763)">väntar, 63 % · Axels beslut om steg D, nu när båda spåren fallit: V-A (#104) och V-B 19/10 (#648).</span></summary>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--dampad, #6B7680); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-vattenplaning">Vattenplaningen</a> <span style="color: var(--dampad, #4A5763)">stängd</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">✓</span> <b>Tröskeldokument</b> <span style="color: var(--dampad, #4A5763)">klart · docs/TROSKLAR-VATTENPLANING.md:3–5 fastställt av Axel 4/9 (#68); utlösaren 2,0 mm/h (#155, #156)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Data i arkivet</b> <span style="color: var(--dampad, #4A5763)">klart · rain_sum_mm (sql/008_rain_sum.sql:7) och radar_precip (sql/009_radar_precip.sql:5)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Publicerat i lägesfilen</b> <span style="color: var(--dampad, #4A5763)">klart · rain_segments och segments[].regn (snapshot-core.ts:373, 380; DECISIONS #187)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Mätt i skuggan</b> <span style="color: var(--dampad, #4A5763)">klart · vbAlerts till shadow_log.vb (sql/019) sedan 15/9 (#191); grind-v-b.ts måndagar (grind-v-b.yml:16)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Dom</b> <span style="color: var(--dampad, #4A5763)">klart · V-A FALLER (61 % mot 70 %, #69, #104); V-B FALLER 19/10 (#648): V-C giltig med 256 varningar och 55 facit, falsklarm 81 ± 5 % mot ≤ 20 %, 8 av 19 rutter över 3 per regndygn (grind-v-b 39258864189); V-B2 går inte att mäta i skuggan</span></li>
-      <li><span aria-hidden="true">○</span> <b>Villkoret i motorn</b> <span style="color: var(--dampad, #4A5763)">saknas · Inget farslag aquaplaning i types.ts:6–11; steg D är Axels beslut efter V-B:s dom (#648)</span></li>
-      <li><span aria-hidden="true">○</span> <b>Testfall i tre språk</b> <span style="color: var(--dampad, #4A5763)">saknas · F5 rör alla vektorer; ingen vektor eller port finns</span></li>
-      <li><span aria-hidden="true">○</span> <b>I appen</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen text i texts.ts; Axels utgångspunkt 'Vattenplaning framöver — sakta ner' (#196)</span></li>
+      <li><span aria-hidden="true">–</span> <b>Villkoret i motorn</b> <span style="color: var(--dampad, #4A5763)">gäller inte · Gäller inte: steg D struket 21/10 (DECISIONS #657) — båda spåren fallna, V-A (#69, #104) och V-B 19/10 (#648)</span></li>
+      <li><span aria-hidden="true">–</span> <b>Testfall i tre språk</b> <span style="color: var(--dampad, #4A5763)">gäller inte · Gäller inte: steg D struket 21/10 (DECISIONS #657) — båda spåren fallna, V-A (#69, #104) och V-B 19/10 (#648)</span></li>
+      <li><span aria-hidden="true">–</span> <b>I appen</b> <span style="color: var(--dampad, #4A5763)">gäller inte · Gäller inte: steg D struket 21/10 (DECISIONS #657) — båda spåren fallna, V-A (#69, #104) och V-B 19/10 (#648)</span></li>
     </ul>
   </details>
   <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-olja">Olja på vägen</a> <span style="color: var(--dampad, #4A5763)">delvis, 25 % · kvar: Första riktiga oljeraden i skuggloggen och en läsning</span></summary>
@@ -653,7 +653,7 @@
 
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
   <h2 id="oppna-kort">Öppna kort</h2>
-  <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 25 kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>
+  <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 24 kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>
   <h3><a href="#avsnitt-2">2. En körning</a></h3>
   <ul>
     <li>#258 iOS LADDAR ALDRIG OM VÄGDATAN UNDER RESAN <span class="litet">· Axel</span></li>
@@ -704,7 +704,6 @@
   <h3><a href="#avsnitt-10">10. Vad appen inte gör</a></h3>
   <ul>
     <li>#276 OLJA PÅ VÄGEN — HALKA SOM RÖSTEN INTE SÄGER <span class="litet">· Claude, låst</span></li>
-    <li>#42 Vattenplaningsvarningen <span class="litet">· Claude, låst</span></li>
   </ul>
 <!-- /ÖPPNA KORT -->
 </main>

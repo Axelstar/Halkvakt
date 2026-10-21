@@ -15740,3 +15740,30 @@ signeringen 31/10: radarns tal 26/10.
 beräkning som själv måste provas och förregistreras före 31/10. (10) andra gränser: möjligt nu, inte efter att loggen setts.
 
 **Stomdokument:** BED §4.2 — frysflaggan avgjord
+
+## #657 (21/10 2026) Paket D, första omgången: vattenplaningens steg D stryks, höjden stängs, prognoslagrets val (c), (e) och (h) stryks, och prognoslagret blir "RÅ: kontroll och reserv"
+
+**Bengts ord 21/10** (åtgärdslistan för block 4, paket D, B4-38, B4-40, B4-42, B4-44): *"Stryk, för oss båda"*, *"Ja, stäng delen"*,
+*"Stryk alla tre"* och *"Döp om, sänk vikten"*. Vattenplaningens steg D var formellt Axels; Bengt svarade för dem båda.
+
+**Beslut.**
+1. **Vattenplaningen:** steg D, en egen varning med förvillkoret yta ≤ +4 °C, stryks. Båda spåren är fallna: V-A (#69, omkörd #104) och
+   V-B 19/10 (#648). Kort #42 stängs, och delen i projektkartan blir *Stängd*. Skuggan loggar vattenplaning vidare med flit (#648), så
+   frågan kan öppnas igen om ny data visar något.
+2. **Höjden:** delen stängs. Höjden avgjordes i #547 (den är ett särdrag i kandidaten), och läsningen 23/10 ströks i #650.
+   Premissläsningen 24/11 (#435) står kvar som förregistrerad, under RÅ-delen.
+3. **Prognoslagrets val (c), (e) och (h) stryks:** (c) *inget utöver skuggan* är överspelat av #556 (alla spår mäts hela vintern),
+   (e) ÅDT ur Lastkajen behövs inte (ÅDT kom ur öppna API:et, #472, och är ett särdrag i kandidaten), (h) molnmängden är besvarad
+   (#471: 0,3 procentenheter; kandidaten har molnet). Kort #270 har inga öppna val kvar; läsningen 24/11 står.
+4. **Prognoslagret** döps om till *RÅ: kontroll och reserv* med vikten 1. Vägpunktsgrinden (#649), läsningen 24/11 och korten #270,
+   #298 och #355 står kvar där. Stegen om lägesfilen, motorn, testfallen och appen gäller inte RÅ, eftersom kandidaten är den som
+   publiceras och talar (#547, #556).
+
+**Samma ändring, inga beslut (åtgärdslistans paket C):** vårlistans Ä1, raden om valen och raden om fysikregeln i bedömningen §4.2
+(avgjord för kandidaten i #563), PROGNOSLAGRET §4:s läge, MALET om S3 och vattenplaningen, NIVA2-LIVE om förregistreringen, och en not
+i TROSKLAR-SKUGGAN om att RÅ föll i vägpunktsgrinden (#399; ingen tröskel ändrad).
+
+**Alternativ.** Låta Axel avgöra steg D: delen hade stått kvar som *Väntar* utan stöd i någon dom. Slå ihop prognoslagret med
+segmentprognosen: vägpunktsgrinden hade behövt en ny ägare (#649).
+
+**Stomdokument:** BED §4.2 — valen och fysikregeln, MAT 2 — vattenplaningen stängd

@@ -147,7 +147,7 @@ kamerorna att arbeta med just nu.
 *Läget i projektkartan:*
 
 - [SMHI:s varningar](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-smhi-varningar): delvis, 92 % · kvar: Ingen läsare i motorn: efter F-A (de första vintervarningarna) och F-B (en vintermånad)
-- [SMHI:s nederbördsradar](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-radar): delvis, 88 % · kvar: Motorns LiveDoc läser inte regn eller rain_segments; vattenplaningens röst har inget mätt stöd sedan V-B föll 19/10 (#648), och steg D är Axels (kort #42)
+- [SMHI:s nederbördsradar](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-radar): delvis, 88 % · kvar: Radarns tal R i förregistreringen §10 (a), läses 26/10 (#568)
 - [Vägdatalagret (NVDB)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-vagdata): delvis, 92 % · kvar: Kuvösens inläsning till kuvos_ra.vagdata (kort #303)
 - [Lägesfilens fält för skuggdelarna](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-l-falten): klar
 - [L3 trenden](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-trenden): delvis, 44 % · kvar: T-B (B3-paret och tystnadsfelet för trenden) har inget instrument
@@ -298,7 +298,7 @@ byråkrati: den är stället där "sex vektorer" blir ett verkligt tal i ställe
 - [L2 tillståndet (skattaren S1–S3)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-tillstand): delvis, 93 % · kvar: S1-grinden på frostnätter (Axel, DECISIONS #196)
 - [L4 räckvidden: segmentprognosen](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-segmentprognos): väntar, 75 % · Domen i mars 2027 (grind B/C) på kandidaten NIVÅ 2+BLANDNING som ny fråga, RÅ kontroll och reserv (#547), och Bengts öppna val d på kort #270.
 - [L5 allvar som försprång](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-forsprang): delvis, 56 % · kvar: FS-A: nivå 2-fall i vinter (kod 3–4, eller yta ≤ 0 °C med väta ≥ 3)
-- [Prognoslagret](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-prognoslagret): väntar, 44 % · Bengts öppna val b, c, d, e och h; läsningen tisdag 24/11 (DECISIONS #435); (g) mätt i kuvösen 6/10 (#467).
+- [RÅ: kontroll och reserv](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-prognoslagret): väntar, 88 % · Premissläsningen tisdag 24/11 (DECISIONS #435), som kunskap om RÅ; RÅ:s dom i mars redovisas bredvid kandidatens som kontroll och reserv (#547).
 
 <!-- /LÄGESRADER -->
 
