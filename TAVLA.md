@@ -1582,6 +1582,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↪ **Hit sammanslaget 22/9 (DECISIONS #303):** #51 *Vinterarkivet* — dess Verify (DECISIONS #252) är samma mätning som den här.
   🔑 **Nyckel, sorterat 22/9 (kort #224):** första frosten — sedan mätningen, därefter Bengts och Axels beslut.
   🥶 **FROSTEN 8/10 (DECISIONS #491):** omklassningsmätningen (dbknapp 37755033058): **0 omklassningar till halka** inom 5 km från de 82 froststationerna, av 12 469 på 7 dygn (*Normalt* 12 468, *Besvärligt (risk för)* 1). Talet står i bedömningen §4.2; beslutet är Bengts och Axels, inom sju dygn från frostnätterna.
+  🔁 **OMKÖRT 20/10 (dbknapp 39401269093): 624 omklassningar till halka** på sju dygn, 514 inom 5 km från 442 froststationer på 77 sträckor. **Bengt valde (b) 20/10:** beslut före 1/2, och väglagsarkivets omklassningar bär januaridomen. Axels svar senast 23/10 (fristen `bildfacit-axel`), sedan DECISIONS-posten. Kod för tabellen i kort #231 saknas (åtgärdslistan B4-69).
 
 - [ ] 🧊 **#151 VÄGLAGETS ÅLDER — ska en stående vinterklassning tystas när mätningarna säger att vintern tagit slut?**
   📄 **TRÖSKELDOKUMENT FASTSTÄLLT 12/9 av Bengt** (`docs/TROSKLAR-VAGLAGETS-ALDER.md`, DECISIONS #151/#152).
