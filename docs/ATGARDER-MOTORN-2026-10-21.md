@@ -142,6 +142,7 @@ rör grindarna och domkalendern; de står kvar där. S-1–S-11 är rapportens n
 | B4-73 | KALENDERN: Ubuntu 26 (19/10) står oavbockad, och vägdatalagret *före vintern* saknar frist | Claude | öppen | |
 | B4-74 | DECISIONS-posten om bildfacitet (kort #209) när Axel svarat på val (b) — fristen `bildfacit-axel` 23/10 | Bengt, Axel | **klar** — *"axel har svarat vi kör b)"* (Bengt 21/10); fristen `bildfacit-axel` borttagen före sitt ärende | #660 |
 | B4-75 | Kartskriptet räknar stängda delar som 0 % i målens procent (`malDelar`, `andel`); B4-67 rättade bara hindren och hävstången | Bengt | öppen | |
+| B4-88 | Kandidatens del A föll 3 av 10 körningar 19–21/10 på MET Nordic: katalogen svarade inte på fyra försök (19/10 12:13), avkortade svar som till sist gav RangeError i `kuvos/metnordic-prognos.ts:57` (21/10 06:13); 19/10 00:13 inte läst. Reserven (#651) gör ett nytt försök, men två fall i rad tystar kandidaten sex timmar — fler omförsök med längre väntan, och RangeError som ett omförsök | Claude | öppen | |
 
 **Beslut**
 
