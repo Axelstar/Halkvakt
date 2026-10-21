@@ -145,6 +145,7 @@ rör grindarna och domkalendern; de står kvar där. S-1–S-11 är rapportens n
 | B4-88 | Kandidatens del A föll 3 av 10 körningar 19–21/10 på MET Nordic: katalogen svarade inte på fyra försök (19/10 12:13), avkortade svar som till sist gav RangeError i `kuvos/metnordic-prognos.ts:57` (21/10 06:13); 19/10 00:13 inte läst. Reserven (#651) gör ett nytt försök, men två fall i rad tystar kandidaten sex timmar — fler omförsök med längre väntan, och RangeError som ett omförsök | Claude | öppen | |
 | B4-89 | Å-A:s räkneregel före något Å-A-tal: valregeln bland svepets värden, för vilket värde Å-A4 (≥ 100) räknas, Å-A3:s fönster och regel för klassningar som inte hunnit ändras, och blindningen (ett underlagsläge som skriver Å-A2 och Å-A4 läcker Å-A2) | Claude (förslag), Bengt (beslut) | öppen | |
 | B4-90 | Försprångets räkneregel före första lästa andel: FS-A1:s nämnare (loggas inte i räknebar form; kan kräva en loggändring i skuggmotorn, deploy på Bengts ord), län (finns inte i loggen), halkperiod, och taktens andel i FS-B3 | Claude (förslag), Bengt och Axel (beslut) | öppen | |
+| B4-91 | `forsprang_log` har bara 15 rader (14–18/10) och inga efter 18/10 13:12 UTC, med en nivå 2-varning per svepvärde (DB-knappen 39633634808); FS-C1 kräver ≥ 60. Orsaken är oläst: inga nivå 2-faror på skuggrutterna sedan dess, eller att jobbet `halkvakt-skuggmotor-forsprang` (:12/:42) står — läses med DB-knappen på Bengts ord | Claude | öppen | |
 
 **Beslut**
 
