@@ -15767,3 +15767,19 @@ i TROSKLAR-SKUGGAN om att RÅ föll i vägpunktsgrinden (#399; ingen tröskel ä
 segmentprognosen: vägpunktsgrinden hade behövt en ny ägare (#649).
 
 **Stomdokument:** BED §4.2 — valen och fysikregeln, MAT 2 — vattenplaningen stängd
+
+## #658 (21/10 2026) Ö-B läses på senare frost och i kuvösen; frostnätterna 19 och 20/10 tunnas utan eget instrument
+
+**Bengts ord 21/10, för Bengt och Axel:** *"Läs senare, för oss båda"* (fristen `ob-beslut` 21/10, ärende #1098; bedömningen §4.2,
+Frostens läsningar 8/10, fråga 2; DECISIONS #491).
+
+**Frågan.** Ö-B (övergångarna, kort #89) saknar instrument. Frostnätterna 19 och 20/10 tunnas av gallringen efter tre dygn (#511) 22
+och 23/10 kl 03:15 UTC. Skulle instrumentet byggas före dess, för att läsa nätterna med full upplösning?
+
+**Beslut.** Nej. Ö-B läses på senare frost och i kuvösen, samma val som 8/10 för nätterna 6–8/10. Ett instrument som ska döma, byggt
+och provat på mindre än ett dygn, är fel ordning. Nätterna finns kvar med en rad per halvtimme, kuvösen har vintern 2024/25, och ny
+frost kommer. Ö-B:s golv (nettonytt ≥ 5 %, tillkomna falsklarm ≤ 25 %) lever vidare i efterhalkans dom i januari (S6) och i KB-B.
+
+**Alternativ.** Bygga instrumentet före 22/10 03:15 UTC: valt bort av samma skäl som 8/10.
+
+**Stomdokument:** BED §4.2 — Ö-B avgjord för frostnätterna 19 och 20/10
