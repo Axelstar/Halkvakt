@@ -1011,7 +1011,7 @@ mätningar — R1–R16 nedan är strukna och står kvar bara som historik.**
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
 ## Öppna kort
 
-Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 25 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
+Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 26 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
 
 **§1 NU — före första frosten**
 
@@ -1035,6 +1035,7 @@ Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 25 kort
 - #296 EFTER GRANSKNINGEN — TVÅ BESLUT FÖRE MARS-DOMEN: Ö-B1 "INOM RÄCKVIDD" OCH STARTBANDETS ÖVRE DEL — Bengt
 - #270 PROGNOSLAGRET EFTER PREMISSMÄTNINGARNA — BENGTS VAL a–h — Bengt
 - #218 BATTERIBUDGETEN HAR ALDRIG MÄTTS, OCH iOS KÖR FULL GAS — Bengt
+- #361 🧭 #361 BLOCK 4, MOTORN — ÅTGÄRDSLISTAN B4-01 TILL B4-60 (BESTÄLLD 21/10 — Claude, Bengts "jag vill åtgärda … — Claude
 - #342 VÄG B — ÄRLIGA TAL FÖRE FRYSNINGEN (BESLUTAT 13/10 — Claude, Bengts ja och Axels ja via Bengt, DECISIONS #544) — Claude
 - #344 🌡️ #344 FJÄRRYTORNA — EN PLATS GER TVÅ ANKARE I SKUGGANS RÅ (FYND 14/10, AVGJORT SAMMA KVÄLL: INGEN ÄNDRING … — Claude, låst
 - #343 NIVÅ 2+BLANDNING LIVE I APPEN FÖRE DOMEN — HALKVARNINGEN UTE I VINTER, MÄTNINGEN AV ALLA SPÅR FORTSÄTTER … — Claude, låst
