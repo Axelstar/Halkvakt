@@ -1700,7 +1700,8 @@ test("#575 spridningsgrinden: regeln, gränsen, glesa punkter och domloggens fä
     await q("CREATE TABLE IF NOT EXISTS shadow_log (id bigserial PRIMARY KEY, run_at timestamptz NOT NULL DEFAULT now(), alerts jsonb NOT NULL DEFAULT '[]'::jsonb)");
     for (const f of ["001_init.sql", "008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql", "018_trend_berakna.sql",
                      "029_brott_index.sql", "030_langsam_vakt.sql", "050_kandidat_live.sql", "053_arkiv_tabeller.sql", "055_vagpunkter.sql",
-                     "056_kandidat_regel.sql", "057_kandidat_skugga.sql", "058_kandidat_spridning.sql", "059_kandidat_brytare.sql"])
+                     "056_kandidat_regel.sql", "057_kandidat_skugga.sql", "058_kandidat_spridning.sql", "059_kandidat_brytare.sql",
+                     "065_kandidat_domlogg_punkter.sql"])
       await q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
     await stad();
     // [punkt, sträcka, n_ank, spr, väntat utfall] — alla Våt och kalla, långt från provens stationer (70° N, 32° Ö)
@@ -1711,13 +1712,17 @@ test("#575 spridningsgrinden: regeln, gränsen, glesa punkter och domloggens fä
       ["vT24", "99923", 0, null, "varnar"],     // inget ankare: grindas inte
       ["vT25", "99924", 2, 2.25, "spridning"],  // exakt på gränsen ⇒ tyst (≥ 2,25)
       ["vT26", "99924", 2, 2.2, "varnar"],      // under gränsen ⇒ talar
+      ["vT27", "99925", 2, 1.0, "torr"],        // ingen fukt på sträckan ⇒ torr, och inte med i domloggens punktfält (sql/065)
     ];
+    // sql/065: ankaravståndet per punkt (kandidat_live.ank_km), som domen lägger i ankarband
+    const ANK: Record<string, number | null> = { vT21: 4.5, vT22: 12, vT23: 30, vT24: null, vT25: 6.5, vT26: 18, vT27: 3 };
     for (const [p, s] of P) await q("INSERT INTO vagpunkt (punkt, segment_id, lon, lat) VALUES ($1, $2, 32, 70)", [p, s]);
     await q(`INSERT INTO road_conditions (segment_id, condition_code, condition_text, condition_info) VALUES
-      ('99921', 1, 'Normalt', '{Våt}'), ('99922', 1, 'Normalt', '{Våt}'), ('99923', 1, 'Normalt', '{Våt}'), ('99924', 1, 'Normalt', '{Våt}')`);
+      ('99921', 1, 'Normalt', '{Våt}'), ('99922', 1, 'Normalt', '{Våt}'), ('99923', 1, 'Normalt', '{Våt}'), ('99924', 1, 'Normalt', '{Våt}'),
+      ('99925', 1, 'Normalt', '{}')`);
     const tid: Date = (await q("SELECT date_trunc('hour', now()) AS t")).rows[0].t;
     await q("INSERT INTO kandidat_live (tid, punkt, pb) SELECT $1, v.punkt, 5 FROM vagpunkt v WHERE v.punkt NOT LIKE 'vT%'", [tid]);
-    for (const [p, , n, spr] of P) await q("INSERT INTO kandidat_live (tid, punkt, pb, n_ank, spr) VALUES ($1, $2, -1, $3, $4)", [tid, p, n, spr]);
+    for (const [p, , n, spr] of P) await q("INSERT INTO kandidat_live (tid, punkt, pb, n_ank, spr, ank_km) VALUES ($1, $2, -1, $3, $4, $5)", [tid, p, n, spr, ANK[p]]);
     await q("INSERT INTO kandidat_live (tid, punkt, pb, n_ank, spr) VALUES ($1, 'ST_B', 1.5, 3, 1.5)", [tid]);
     const utfall = Object.fromEntries((await q("SELECT punkt, utfall FROM kandidat_regel() WHERE punkt LIKE 'vT%'")).rows.map((r) => [r.punkt, r.utfall]));
     assert.deepEqual(utfall, Object.fromEntries(P.map(([p, , , , u]) => [p, u])));
@@ -1726,12 +1731,23 @@ test("#575 spridningsgrinden: regeln, gränsen, glesa punkter och domloggens fä
     const { liveDoc } = await buildSnapshot(async (t, p) => (await pool.query(t, p as any[])).rows, []);
     assert.deepEqual(liveDoc.kandidat.filter((r) => r.id.startsWith("9992")),
       ["99921", "99922", "99923", "99924"].map((id) => ({ id, tid: tid.toISOString(), punkter: [[32, 70]] })));
-    assert.match((await q("SELECT kandidat_logga() AS m")).rows[0].m, /4 sträckor, 4 varnande punkter, 0 vetade, 0 torra, 2 tystade av spridningen/);
+    assert.match((await q("SELECT kandidat_logga() AS m")).rows[0].m, /5 sträckor, 4 varnande punkter, 0 vetade, 1 torra, 2 tystade av spridningen/);
     const rad = Object.fromEntries((await q("SELECT segment_id, varnar, spridning, fukt_glest, fukt_spr_min FROM kandidat_skugga WHERE segment_id LIKE '9992%'"))
       .rows.map((r) => [r.segment_id, [r.varnar, r.spridning, r.fukt_glest, r.fukt_spr_min]]));
     assert.deepEqual(rad, {
-      "99921": [1, 1, 0, 1], "99922": [1, 0, 1, null], "99923": [1, 0, 1, null], "99924": [1, 1, 0, 2.2],
+      "99921": [1, 1, 0, 1], "99922": [1, 0, 1, null], "99923": [1, 0, 1, null], "99924": [1, 1, 0, 2.2], "99925": [0, 0, 0, null],
     }, "en sträcka varnar vid X om fukt_glest > 0 eller fukt_spr_min < X");
+    // sql/065 (åtgärdslistan B4-36): punkterna som inte är torra, med utfall, ankaravstånd, ankare, spridning och värde, i punktordning
+    const pf = Object.fromEntries((await q(`SELECT segment_id, fukt_punkter, fukt_utfall, fukt_ank_km, fukt_n_ank, fukt_spr, fukt_pb
+      FROM kandidat_skugga WHERE segment_id LIKE '9992%'`)).rows.map((r) => [r.segment_id,
+        [r.fukt_punkter, r.fukt_utfall, r.fukt_ank_km, r.fukt_n_ank, r.fukt_spr, r.fukt_pb]]));
+    assert.deepEqual(pf, {
+      "99921": [["vT21", "vT22"], ["varnar", "spridning"], [4.5, 12], [3, 2], [1, 3], [-1, -1]],
+      "99922": [["vT23"], ["varnar"], [30], [1], [0], [-1]],
+      "99923": [["vT24"], ["varnar"], [null], [0], [null], [-1]],
+      "99924": [["vT25", "vT26"], ["spridning", "varnar"], [6.5, 18], [2, 2], [2.25, 2.2], [-1, -1]],
+      "99925": [null, null, null, null, null, null],
+    }, "domloggen bär punkterna och ankaravståndet, och en torr sträcka bär inga punkter");
     const k = (await q("SELECT status, spridning FROM kandidat_skugga_korning ORDER BY korning DESC LIMIT 1")).rows[0];
     assert.deepEqual(k, { status: "räknad", spridning: 2 });
     const s = (await q("SELECT n_ank, spr FROM kandidat_station WHERE station_id = 'ST_B'")).rows[0];
