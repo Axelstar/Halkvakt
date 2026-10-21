@@ -1,0 +1,21 @@
+{
+  "typ": "lista",
+  "nyckel": "lista",
+  "etikett": "Halkläget kl. 06:31",
+  "rubrik": "Halt i morse",
+  "underrad": "onsdag 21 oktober",
+  "text": "Innan du kör i dag: läget kl. 06:50, onsdag 21 oktober.\n\nNorrbotten: halka på 51 av 58 vägavsnitt, 25 stationer under noll, kallast −3,3 °C vid Vajmat.\nVästerbotten: halka på 44 av 44 vägavsnitt, 31 stationer under noll, kallast −2,1 °C vid Kåtaviken.\nVästernorrland: halka på 16 av 22 vägavsnitt, 5 stationer under noll, kallast −0,6 °C vid Mellansel.\nJämtland: halka på 10 av 17 vägavsnitt, 19 stationer under noll, kallast −3,6 °C vid Gevsjön.\nDalarna: halka på 7 av 38 vägavsnitt.\nHalka eller minusgrader även i 2 län till.\n\nLäget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Västernorrland #Jämtland #Dalarna #halkvakt",
+  "textIg": "Innan du kör i dag: läget kl. 06:50, onsdag 21 oktober.\n\nNorrbotten: halka på 51 av 58 vägavsnitt, 25 stationer under noll, kallast −3,3 °C vid Vajmat.\nVästerbotten: halka på 44 av 44 vägavsnitt, 31 stationer under noll, kallast −2,1 °C vid Kåtaviken.\nVästernorrland: halka på 16 av 22 vägavsnitt, 5 stationer under noll, kallast −0,6 °C vid Mellansel.\nJämtland: halka på 10 av 17 vägavsnitt, 19 stationer under noll, kallast −3,6 °C vid Gevsjön.\nDalarna: halka på 7 av 38 vägavsnitt.\nHalka eller minusgrader även i 2 län till.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone, länken finns i vår profil.\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Västernorrland #Jämtland #Dalarna #halkvakt",
+  "pass": "morgon",
+  "datum": "2026-10-21",
+  "generated_at": "2026-10-21T04:31:01.787Z",
+  "lan": [
+    "norrbotten",
+    "vasterbotten",
+    "vasternorrland",
+    "jamtland",
+    "dalarna",
+    "uppsala",
+    "gavleborg"
+  ]
+}
