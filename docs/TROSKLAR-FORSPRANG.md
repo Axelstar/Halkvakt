@@ -52,8 +52,8 @@ nu:** klarar flera värden grindarna väljs det **kortaste** som klarar FS-B1 �
 **Eget anrop, inte skuggmotorns huvudvarv.** Skuggmotorns huvudvarv slår redan i datorkraftens tak (546 kl 04:32 och 05:02Z 25/9, på de
 nya minuterna :02/:32 — flytten i kort #244 löste det inte). Försprånget körs därför som eget anrop på **:12/:42**.
 **Populationen från T0** (DECISIONS #662, #664): **alla 30 rutter varje halvtimme** — de 20 i `ROUTES` och de 10 i `ROUTES_C`
-(`supabase/functions/skuggmotor/main.ts`), högst tre per anrop (sql/066). T0 är första körningen med sql/066:s jobb; datum och
-klockslag (UTC) skrivs i posten som driftsätter det. För varje rutt och varv avgörs om någon nivå 2-fara finns bland motorns faror vid
+(`supabase/functions/skuggmotor/main.ts`), högst tre per anrop (sql/066). T0 är första körningen med sql/066:s jobb: **T0 = 2026-10-22 11:12 UTC** (DECISIONS #674; 30 rader för de 30 rutterna, DB-knappen
+39769246317). För varje rutt och varv avgörs om någon nivå 2-fara finns bland motorns faror vid
 linjen (`farorVidLinjen`). Finns en körs motorn två gånger på samma spår: **baskörningen** (dagens motor) och **varianten** (nivå 2 med
 halvtimmens svepvärde; värdet är detsamma för alla rutter i varvet, så varje rutt möter alla tre var 90:e minut). Båda körningarnas
 varningar och undanträngda (`suppressed`) loggas, med nivån per varning. Finns ingen skrivs en **nämnarrad** (`niva2` = 0):
