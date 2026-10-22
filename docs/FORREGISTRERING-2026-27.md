@@ -183,6 +183,10 @@ mot godkänt på grund av det (regel L). Utfallet är det första mått som säg
 
 *Bengt signerar för Bengt och Axel (Bengts val 21/10, DECISIONS #659; som #564 och #656–#658).*
 
+*Läst före signeringen (§10 f): den frysta kandidaten på vintern 2022/23, 22/10 2026, körning 39766761188 (DECISIONS #680).
+NIVÅ 2+BLANDNING på grind A:s population, 4 361 591 punkter vid 718 stationer: A1 0,522 °C, A2 4,52 %, A3 0,30 % (RÅ 0,693 °C,
+8,66 %, 0,60 %). Inget i §1–§5 är ändrat på grund av det.*
+
 | | Datum | Signatur |
 | :-- | :-- | :-- |
 | Bengt | | |
