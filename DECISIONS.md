@@ -16244,3 +16244,28 @@ Fristen `fs-rutter-och-regel` är klar före sitt ärende och därför struken.
 Beviset är, som sammanfattningen säger, nästa commit i `halkvakt-karta` på :00 eller :30.
 
 **Stomdokument:** BED §4.2 — försprånget i drift på 30 rutter och T0 bokförd
+
+## #675 (22/10 2026) Omgång 4: sikten avgörs av vinterserien, kallplatserna och Verify 2 stryks, T-B vilar
+
+**Bengts ord 22/10:** *"Låt vinterserien avgöra"*, *"Stryk Ä6"*, *"Stryk"* och *"Vila till 2027/28"* (åtgärdslistan B4-39, B4-41,
+B4-43 och B4-48; förklaringen gavs i chatten).
+
+**Beslut.**
+1. **Sikten (B4-39).** Sikten föll i W-A 8/10, med kvoten 0,37 mot kravet ≥ 1,5 på 14 höstdygn (#491). Den stryks inte nu, utan avgörs
+   av W-A-serien på hela vintern 2024/25 med Trafikverkets olyckor och kuvösens `siktdjup` (FORREGISTRERING-OLYCKOR-2024-25 §5, W-A3).
+   Faller den där stryks den. Inget tal i TROSKLAR-VIND-SIKT ändras.
+2. **Kallplatserna (B4-41).** Kallplatslagret (#91) stryks ur vårlistans Ä6. Idén lever i kandidatens terrängsärdrag och i kort #321,
+   terrängen i fysikens energibalans, och RÅ, som Ä6 skulle stödja, är inte längre huvudspåret.
+3. **Verify 2 (B4-43).** Provet av SMHI:s lufttemperatur som reserv för vägytan stryks ur Ä4, och SMHI som reserv stryks ur Ä6. Luften
+   som vägyta ger fel på mer än 2 °C ungefär var tredje timme (Axels mätning, 33,5 %; inte kuvösens tal), och reserven är redan RÅ och
+   kandidaten.
+4. **Trenden (B4-48).** T-B, trendens skuggprov, byggs inte i vinter, och trendens egen röst vilar till 2027/28. Trendens värden prövas
+   inom efterhalkan. Tiden läggs i stället på domskriptet, W-A och försprångets domknapp före december.
+
+**Alternativ.**
+- Stryka sikten nu, eller pröva den i driftens W-A: valt bort, eftersom vinterserien ger en hel vinter med olyckor.
+- Behålla Ä6 till våren 2027: valt bort.
+- Pröva Verify 2 i mars ändå: valt bort.
+- Bygga T-B nu, eller fråga Axel först: valt bort. Axel kan öppna frågan inför 2027/28.
+
+**Stomdokument:** BED §4.2 — omgång 4 avgjord
