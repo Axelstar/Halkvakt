@@ -347,6 +347,37 @@ Ingenting i kuvösen har lästs mot filerna. Läsningen av facit skrivs i förv�
 hur en sträcka paras med en vägpunkt och en timme, och hur åtgärderna används. Först därefter läses kandidaten och efterhalkan mot
 dem. Hittills är bara antalen ovan sedda, och fördelningen över koderna i hela filen.
 
+### 5i. Kompletteringen 20/10: olyckorna (TRV 2026/111808, DECISIONS #665)
+
+Ärendeberedningen Trafik svarade 20/10 15:47 på Bengts svar i §5h med en fil till punkt 3, olyckorna (`Olyckor 24-25.xlsx`, 702 842
+byte, sha256 `d2498641065dc4609fad1ee547d9bb3a698a308be2709d4ec3d527afeec33e61`). **Filen ligger inte i repot** (PUBLIKT REPO). Läst
+lokalt 22/10, bara formen: flik, kolumner, typer, tomma celler, period och antal. Ingen fördelning är räknad och ingen olycka är parad
+med en station, en varning eller ett väglag.
+- **7 269 olyckor** på en flik, 2024-11-01 00:51 – 2025-03-31 22:19, rader i alla fem månaderna. Kolumnerna är `Händelse` (alltid
+  *Olycka*), `EventText` (påverkan: ett, två eller tre körfält blockerade, väg avstängd, vägren blockerad, eller texten `NULL`),
+  `Beskrivning` (fritext, 2–401 tecken), `StartTid`, `Sluttid`, `X`, `Y` och `Plats`.
+- **Tiderna** är text med millisekunder, inte Excel-datum, och tidszonen står inte i filen; den avgörs med ett prov före läsningen,
+  som för väglaget. Sluttiden finns på alla rader och ligger aldrig före starttiden.
+- **Koordinaterna** är SWEREF 99 TM i meter, men **`X` är nordlig** (6 137 751–7 594 286) och `Y` östlig (280 588–916 273), Trafikverkets
+  ordning.
+- **22 rader är förskjutna:** fritexten har spillt över i nästa kolumn, så tid, koordinat och plats står ett, två eller fyra steg till
+  höger. Regeln *första kolumnen från och med StartTid som är en tid* lagar alla 22. **23 dubbletter** har samma starttid och koordinat.
+- **Orsaken** som Bengt bad om finns inte som kolumn, bara ibland i fritexten.
+- **Fritexten bär personuppgifter**: regnummer, två telefonnummer och minst ett namn. Därför läggs en **rensad kopia** i hinken, med
+  regnummer och telefonnummer maskade och resten orört, som `trv-2026-111808/Olyckor24-25.xlsx` (hinkens namnregel tillåter inte
+  mellanslag, `arkivdump/delar.ts:30`). Axel lägger den via Supabase-panelen. Manifestet får posten, med originalets och kopians
+  kontrollsummor, först när filen ligger i hinken, eftersom kuvösens facit-körning hämtar varje fil i manifestet. Fritexten och platsen
+  skrivs aldrig ut i en logg.
+
+**Användningen (Bengt 22/10, #665).** Olyckorna används på två sätt, och båda kräver först ett eget tillägg till förregistreringen med
+båda signaturerna (regel L, #564):
+- **Facit i kuvösen.** De blir en andra bekräftelse för kandidaten och efterhalkan, enligt regeln att en olycka får bekräfta en varning
+  men aldrig fälla den (#247).
+- **Byvindens W-A.** W-A får en andra serie ur vintern 2024/25, med kuvösens alla halvtimmar som nämnare. Driftens W-A står kvar som
+  domen.
+
+Väglagets utfall är redan sett (#602) och driftens W-A likaså (#491), så tillägget kan kallas *före olyckorna*, inte *före facit*.
+
 ## 6. Vad det här inte är
 
 Ingen regel är körd och inget utfall är läst. Förregistreringen (DECISIONS #424, tilläggen #426 och #437) skrevs innan filen öppnades;
