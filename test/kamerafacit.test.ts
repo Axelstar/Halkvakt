@@ -2,7 +2,7 @@
 // hämtar och sparar; allt som bestämmer VILKA bilder som tas bor i urval.ts och prövas här.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { FARA_M, dagsljus, kamerorVidFaror, solhojd, taV2, valjStickprov, vag } from "../supabase/functions/kamerafacit/urval.ts";
+import { FARA_M, V2_NATT_TAK, V2_TAK, dagsljus, kamerorVidFaror, nattbilderIDag, solhojd, taV2, valjStickprov, valjV2, vag } from "../supabase/functions/kamerafacit/urval.ts";
 
 const sthlm = { lon: 18.07, lat: 59.33 };
 
@@ -40,4 +40,25 @@ test("V3: bara i dagsljus, två stycken, samma timme ger samma val", () => {
 test("vägen i hinken bär timmen, som kontaktarket läser", () => {
   assert.equal(vag("v2", new Date("2026-09-26T07:30:00Z"), "SE_STA_CAMERA_VViS_2241_K1"),
     "v2/2026-09-26/SE_STA_CAMERA_VViS_2241_K1-h497335.jpg");
+});
+
+test("V2:s nattkvot (#676): högst 30 nattbilder per dygn, dagsljuset får resten av taket", () => {
+  const kams = Array.from({ length: 200 }, (_, i) => ({ id: `K${i}`, lon: 18, lat: 59, url: "u" }));
+  const morker = () => false, ljus = () => true, ingen = () => false;
+  assert.equal(V2_NATT_TAK, 30); assert.equal(V2_TAK, 150);
+  assert.equal(valjV2(kams, morker, ingen, 0, 0).length, 30, "midnatt: bara nattkvoten, inte hela taket");
+  assert.equal(valjV2(kams, morker, ingen, 30, 30).length, 0, "nattkvoten slut: inga fler nattbilder");
+  assert.equal(valjV2(kams, ljus, ingen, 30, 30).length, 120, "dagsljuset får resten av taket");
+  assert.equal(valjV2(kams, ljus, ingen, 150, 30).length, 0, "taket nått: inget mer");
+  assert.equal(valjV2(kams, morker, () => true, 0, 0).length, 0, "en kamera med bild de senaste tolv timmarna tas inte i mörker");
+  const blandat = (k: { id: string }) => Number(k.id.slice(1)) % 2 === 0;
+  const val = valjV2(kams, blandat, ingen, 140, 25);
+  assert.equal(val.length, 10, "taket begränsar"); assert.ok(val.filter((k) => !blandat(k)).length <= 5, "nattkvoten begränsar");
+});
+
+test("V2: dygnets nattbilder räknas ur namnens kamera och timme", () => {
+  const kams = [{ id: "A", lon: 18.07, lat: 59.33, url: "a" }];
+  const h = (iso: string) => Math.floor(new Date(iso).getTime() / 3_600_000);
+  assert.equal(nattbilderIDag([{ k: "A", h: h("2026-12-21T00:00:00Z") }, { k: "A", h: h("2026-12-21T11:00:00Z") }, { k: "X", h: 1 }], kams), 1,
+    "midnatt räknas, mitt på dagen inte, okänd kamera inte");
 });
