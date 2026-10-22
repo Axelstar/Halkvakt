@@ -104,6 +104,11 @@ object ResansRapport {
         return ut
     }
 
+    /** Läget utan efterhalkans regnfält (DECISIONS #676, #677): `regnH` töms i varje station, så att S3 inte räknas fram i rapporten för
+     *  den som inte slagit på Betatest. Frysrisken på yta och fukt, och allt annat, är orört. Spegel av SnapshotRepo.utanEfterhalka. */
+    fun utanEfterhalka(l: RapportLage): RapportLage =
+        l.copy(weather = l.weather.map { if (it.regnH == null) it else it.copy(regnH = null) })
+
     fun lasLage(o: Map<*, *>): RapportLage {
         val smhi = objekt(o["smhi"]).map { w ->
             val g = w["geom"] as? Map<*, *>

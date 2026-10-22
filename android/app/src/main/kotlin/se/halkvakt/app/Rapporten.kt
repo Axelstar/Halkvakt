@@ -11,6 +11,7 @@ import android.content.Context
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
@@ -54,7 +55,8 @@ object Rapporten {
                 withContext(Dispatchers.IO) {
                     val (stat, live) = SnapshotRepo.dokument(app)
                     val f = RapportRepo.hamta(app)
-                    rakna(rutter, karta(stat), karta(live), karta(f.snabb), karta(f.lang), System.currentTimeMillis())
+                    val betatest = Prefs.facitEnabled(app).first()
+                    rakna(rutter, karta(stat), karta(live), karta(f.snabb), karta(f.lang), System.currentTimeMillis(), betatest)
                 }
             } catch (e: CancellationException) {
                 _lage.update { it.copy(laddar = false) }
@@ -73,9 +75,11 @@ object Rapporten {
     private class Utfall(val resor: Map<String, Resa>, val lagesfil: Long?, val gammaltVaglag: Boolean, val gamlaOlyckor: Boolean)
 
     private fun rakna(rutter: List<SparadRutt>, stat: Map<String, Any?>, live: Map<String, Any?>, snabb: Map<String, Any?>,
-                      lang: Map<String, Any?>, nu: Long): Utfall? {
+                      lang: Map<String, Any?>, nu: Long, betatest: Boolean): Utfall? {
         val fil = ResansRapport.lasRapportfil(snabb) ?: return null
-        val lage = ResansRapport.lasLage(live); val kameror = ResansRapport.lasKameror(stat); val linjer = ResansRapport.lasLinjer(lang)
+        // Efterhalkans spärr (#676, #677): utan Betatest räknas S3 inte fram i rapporten, som rösten tiger om den (SnapshotRepo).
+        val lage = ResansRapport.lasLage(live).let { if (betatest) it else ResansRapport.utanEfterhalka(it) }
+        val kameror = ResansRapport.lasKameror(stat); val linjer = ResansRapport.lasLinjer(lang)
         val lagesTid = tid(live["generated_at"] as? String); val rapportTid = tid(fil.generatedAt)
         val alderMin = { t: Long? -> if (t == null) Long.MAX_VALUE else (nu - t) / 60_000 }
         val gammaltVaglag = alderMin(lagesTid) >= AgeGate.WEATHER_MAX_MIN

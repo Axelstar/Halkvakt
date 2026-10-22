@@ -44,11 +44,12 @@ final class Rapporten {
     private func ladda() async {
         let rutter = Favoriter.shared.rutter
         guard !rutter.isEmpty else { return }
+        let betatest = Prefs.shared.facitOn
         do {
             async let dok = SnapshotRepo.dokument()
             async let fil = RapportRepo.hamta()
             let (d, f) = try await (dok, fil)
-            guard let u = await Self.rakna(rutter, stat: d.stat, live: d.live, snabb: f.snabb, lang: f.lang, nu: .now) else {
+            guard let u = await Self.rakna(rutter, stat: d.stat, live: d.live, snabb: f.snabb, lang: f.lang, nu: .now, betatest: betatest) else {
                 gickInte = true
                 return
             }
@@ -86,9 +87,11 @@ final class Rapporten {
     }
 
     nonisolated private static func rakna(_ rutter: [SparadRutt], stat: [String: Any], live: [String: Any], snabb: [String: Any],
-                                          lang: [String: Any], nu: Date) async -> Utfall? {
+                                          lang: [String: Any], nu: Date, betatest: Bool) async -> Utfall? {
         guard let fil = ResansRapport.lasRapportfil(snabb) else { return nil }
-        let lage = ResansRapport.lasLage(live), kameror = ResansRapport.lasKameror(stat), linjer = ResansRapport.lasLinjer(lang)
+        // Efterhalkans spärr (#676, #677): utan Betatest räknas S3 inte fram i rapporten, som rösten tiger om den (SnapshotRepo).
+        let lage = betatest ? ResansRapport.lasLage(live) : ResansRapport.utanEfterhalka(ResansRapport.lasLage(live))
+        let kameror = ResansRapport.lasKameror(stat), linjer = ResansRapport.lasLinjer(lang)
         let tid = { (s: String?) in s.flatMap { ISO8601DateFormatter.withFraction.date(from: $0) ?? ISO8601DateFormatter().date(from: $0) } }
         let lagesTid = tid(live["generated_at"] as? String), rapportTid = tid(fil.generatedAt)
         let alder = { (t: Date?) in t.map { nu.timeIntervalSince($0) / 60 } ?? .infinity }
