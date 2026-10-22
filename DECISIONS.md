@@ -16000,3 +16000,39 @@ minst ett namn.
 - Oljan på vägen ingår inte, eftersom leveransen bara har olyckor. V-C1, olycka i regn, hör till vattenplaningen.
 
 **Stomdokument:** KUV §7 — olyckorna levererade 20/10 och deras användning beslutad
+
+## #666 (22/10 2026) Fler vintrar från VViS: den frysta kandidaten prövas först, så fort kedjan är byggd, och filerna går via Axel till hinken
+
+**Bengts ord 22/10:** *"jag har nu fått filer från trafikverket som ska användas för att träna fysikspåret"*, och på förslaget
+*"Pröva frysta kandidaten"*, *"Så fort den är byggd"* och *"Axel, med höjd gräns"* (underlaget på Bengts Skrivbord,
+`Halkvakt_VViS_Fler_Vintrar_Underlag_2026-10-22.md`).
+
+**Leveransen.** Bengt bad VViS Förvaltning 9/10 om tidigare vintrar för att träna på några och pröva på andra (kort #321). Leveransen
+21/10 har 14 filer för 2018–2024 och 75 418 775 rader, i samma form som 2/10. Den ger fem hela vintrar, 2018/19–2022/23, och dessutom
+januari–mars 2024 och januari–mars 2018. Hösten 2023 och oktober 2024 saknas, liksom `siktdjup`. Formen och antalen står i
+KUVOS-LEVERANSEN §9, och manifestet i `kuvos/vvis-2018-24-leverans.json`. Filerna ligger inte i repot.
+
+**Beslut.**
+1. **Först prövas den frysta kandidaten** NIVÅ 2+BLANDNING (#552) på de fem hela vintrarna, en i taget, utan omträning. Måtten är
+   kuvösens: A1, A2, norr och söder om 62° och banden. Prövningen mäter *samma stationer, nytt år*, som FORREGISTRERING-2026-27 säger
+   inte är mätt. Utfallet är diagnos och ändrar ingen tröskel och ingen kandidat.
+2. **Förregistreringen kommer först.** Ingen vinter läses mot kandidaten förrän prövningen är förregistrerad med båda signaturerna
+   (regel L, #564; fristen `vvis-forregistrering`). Kedjan byggs i nya filer under `fysik/`, och de frysta rörs inte. Vintern blir en
+   parameter, ECMWF hämtas per vinter (Open-Meteos arkiv har 2018), och tidszonen provas.
+3. **Körningen sker så fort kedjan är byggd**, alltså möjligen före signeringen av FORREGISTRERING-2026-27 den 31/10. Då står det vid
+   signaturerna att utfallet var sett, och ingenting i dess §1–§5 får ändras mot godkänt på grund av det (§10 f där).
+4. **Hinken.** Claude packar de 14 filerna lokalt, med sha256 före och efter packning. Axel höjer hinkens gräns per fil, eftersom en
+   packad fil blir upp till ungefär 90 MB och Pro tillåter det, och lägger filerna under `kuvos/kuvos-vvis-2018-24/` (fristen
+   `vvis-hinken`). Publikvakten fäller också `Halkvakt_ÅÅÅÅ-N.csv`.
+5. **Senare, var för sig:**
+   - en kandidat tränad på flera vintrar och prövad på den som hålls utanför; den blir en ny kandidat, för 2027/28;
+   - prognosfelet sex timmar fram med MET Nordics arkiv.
+
+**Alternativ.**
+- Träna en ny kandidat först: valt bort, eftersom den frysta kandidatens beteende på nya år är den fråga som är öppen inför vintern.
+- Prognosfelet först: valt bort, eftersom det kräver en tung hämtning.
+- Köra efter 31/10: Bengt valde att köra så fort kedjan är byggd.
+- Dela filerna under 50 MB: valt bort, eftersom en fil per leveransfil håller manifestet enkelt.
+- Fråga Micke om hösten 2023: inte nu (#538, Bengt väljer noga när han frågar).
+
+**Stomdokument:** KUV §5 — fler vintrar levererade och prövningen av den frysta kandidaten beslutad

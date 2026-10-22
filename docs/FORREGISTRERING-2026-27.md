@@ -174,6 +174,11 @@ andelen redovisas. Står i TROSKLAR-SKUGGAN §3.
 **(e) Loggen för domen per band — sql/065** (Bengts ja 21/10, DECISIONS #655, åtgärdslistan B4-36). `kandidat_skugga` bär punkterna
 och ankaravståndet (§2, §4b punkt 2). Måste vara i drift före signeringen: det som loggas före saknar fälten för alltid. ✅ **I drift:** migrerad 21/10 04:44 UTC med DB-knappen (39545613098, transaktionen bekräftad; alla sex kolumner och den nya loggfunktionen på plats); första timmen 04:50 UTC (DB-knappen *las* 39546397709): timmen 04:00 *räknad*, 85 sträckor, 23 med punkter, 330 punkter = 194 varnande + 133 tystade av spridningen + 3 vetade, 0 rader där listan och räknarna skiljer, ankaravstånd 0–42,3 km.
 
+**(f) Fler vintrar (Bengt 22/10, DECISIONS #666).** VViS har levererat stationsdata för 2018–2024. Den frysta kandidaten prövas på de
+fem hela vintrarna 2018/19–2022/23, en i taget, med en egen förregistrering, och körs så fort kedjan är byggd, alltså möjligen
+före signeringen. Är utfallet läst före signeringen står det vid signaturerna med datum och körning. Inget i §1–§5 får då ändras
+mot godkänt på grund av det (regel L). Utfallet är det första mått som säger något om *samma stationer, nytt år* (§4, §7).
+
 ## 11. Signaturer
 
 *Bengt signerar för Bengt och Axel (Bengts val 21/10, DECISIONS #659; som #564 och #656–#658).*

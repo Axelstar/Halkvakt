@@ -483,3 +483,35 @@ kodning, och den ligger högre än driftens. Frågan står i bedömningen §4.2.
 **Vad steg 5 behöver av det här:** snapshoten läser `radar_precip` genom klockans vy — klar. `moln.ts` och grind NT hämtar vid körning
 ur `latest-months`; i kuvösen måste de läsa `kuvos_ra.smhi_obs` i stället, och det är körflödets sak.
 
+## 9. Fler vintrar: VViS-leveransen 21/10, 2018–2024 (DECISIONS #666)
+
+Bengt bad 9/10 VViS Förvaltning om stationsdata för tidigare vintrar, så att fysikspåret kan tränas på några vintrar och prövas på
+andra (kort #321). Micke Wallin svarade 21/10 att historiska uttag följer säsonger, inte kalenderår, och att det därför blir en del
+dubbletter. Filerna kom samma eftermiddag som `deaddrop.zip` (1 026 580 534 byte, sha256 `b5bf7ce17cf2a233ce8721383a1dc2ae6ae743cc5067df61a8fc852ad7a76a42`),
+med 14 CSV-filer, `Halkvakt_ÅÅÅÅ-1.csv` och `Halkvakt_ÅÅÅÅ-2.csv` för 2018–2024, 5,1 GB opackat. **Filerna ligger inte i repot**
+(PUBLIKT REPO). De packas en och en, och Axel lägger dem i hinken under `kuvos/kuvos-vvis-2018-24/`. Manifestet är
+`kuvos/vvis-2018-24-leverans.json`, med sha256 före och efter packning. Läst 22/10 direkt i zip-arkivet, bara formen: rubrik,
+fältantal, rader per månad, stationer, stämplar och dubbletter. Inga mätvärden är summerade.
+
+- **75 418 775 rader** och 756–782 stationer per fil. **Formen är densamma som 2/10:** semikolon, decimalkomma, BOM, platshållarna
+  −99,9 och −9, och SSMS-sidfoten (fem rader per fil). `ÅÅÅÅ-1` är januari–juni och `ÅÅÅÅ-2` hösten. Leveransen gäller hela år, också
+  somrarna.
+- **Fem hela vintrar, november–mars:** 2018/19, 2019/20, 2020/21, 2021/22 och 2022/23. Av 2023/24 finns bara januari–mars, eftersom
+  `2023-2` slutar 2023-09-07. Av 2017/18 finns januari–mars 2018 och nyårsafton. `2024-2` slutar 2024-09-07, så oktober 2024 saknas
+  också. 2024/25 finns sedan 2/10 (§1).
+- **12 kolumner, inte 13: `siktdjup` saknas.** Sikten kan inte prövas på de gamla vintrarna, men byvinden kan (`vimax`).
+- **Stämplarna** har millisekunder (`2019-08-15 00:30:00.000`), och sekunden varierar som förut. Tidszonen står inte i filerna och mäts
+  före första läsningen, som i §3.
+- **Inga dubbletter per station och stämpel inom en fil.** De dubbletter Micke varnade för är troligen stämplarna vid midnatt i skarven
+  mellan filerna, några hundra rader per årsskifte (till exempel 526 rader i januari 2019 i `2018-2`). De räknas exakt vid
+  inläsningen.
+- **Packat** blir en fil upp till ungefär 90 MB. Det är över hinkens gräns på 50 MB per fil, som var gratisnivåns. Axel höjer gränsen
+  (Pro, #644) innan filerna läggs in.
+
+**Användningen (Bengt 22/10, #666).** Först prövas den frysta kandidaten NIVÅ 2+BLANDNING (#552) på de fem hela vintrarna, en i
+taget, utan omträning. Det mäter *samma stationer, nytt år*, som förregistreringen för 2026/27 säger inte är mätt (§4 och §7 där).
+Läsningen förregistreras först och körs så fort kedjan är byggd. En kandidat som tränas på flera vintrar är en ny kandidat, för
+2027/28 (#552), och prognosfelet sex timmar fram med MET Nordics arkiv kommer senare. Fysikens kedja är låst vid 2024/25 (ECMWF-datumen i
+`fysik/fetch_ifs.py`, `VINTER_START` i `fysik/niva2/kedja.py`, filnamnen och `kuvos.yml`). Flera vintrar byggs därför i nya filer;
+de frysta rörs inte (fysik/README). Drivdatan finns: Open-Meteos ECMWF-arkiv (`models=ecmwf_ifs`) gav 1/11 2018, och MET Nordics
+prognosarkiv har kataloger för 2018, 2019 och 2022.
