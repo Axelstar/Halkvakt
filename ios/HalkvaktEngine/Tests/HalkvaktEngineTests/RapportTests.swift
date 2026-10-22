@@ -48,6 +48,20 @@ final class RapportTests: XCTestCase {
         }
     }
 
+    /// Efterhalkans spärr i rapporten (DECISIONS #676, #677): utan Betatest faller facitets betarad (S3), och inget annat ändras.
+    func testUtanEfterhalkaFallerBaraBetaraden() throws {
+        let i = Self.indata(try Self.facit())
+        var betarader = 0
+        for hem in [false, true] {
+            let med = ResansRapport.resansRapport(i.rutt, hem: hem, lage: i.lage, kameror: i.kameror, snabb: i.snabb, linjer: i.linjer)
+            let utan = ResansRapport.resansRapport(i.rutt, hem: hem, lage: ResansRapport.utanEfterhalka(i.lage), kameror: i.kameror,
+                                                   snabb: i.snabb, linjer: i.linjer)
+            betarader += med.filter { $0.rubrik.hasSuffix("(beta)") }.count
+            XCTAssertEqual(med.filter { !$0.rubrik.hasSuffix("(beta)") }, utan, "hem=\(hem): allt utom betaraden orört")
+        }
+        XCTAssertGreaterThan(betarader, 0, "facit bär en betarad (S3), annars prövar provet ingenting")
+    }
+
     func testTroskalarnaArDeIFacit() throws {
         let m = try Self.facit()["marginaler"] as! [String: NSNumber]
         XCTAssertEqual(m.count, RapportSlag.allCases.count)

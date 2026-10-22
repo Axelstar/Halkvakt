@@ -16369,3 +16369,30 @@ ställda till Bengt och Axel; Bengt svarade, och han har sagt i dag att han sign
 - CLAUDE.md (frysregeln; stomvaktens kodlista har fått LIV, som redan fanns i kortkartan).
 
 **Stomdokument:** KAR §4.4 kandidatens väg in, MAT §3 KB-D4 och kartering, SYS §3 kartering stängd, BED §4.2 omgång 6 avgjord
+
+## #679 (22/10 2026) Efterhalkans spärr också i favoriternas rapport: utan Betatest räknas S3 inte fram där
+
+**Bakgrund.** Genomgången av blocket Appen 22/10 (läs-only, Bengts ord: *"börja den läsande genomgången av blocket Appen"*) hittade ett
+hål i #677. Spärren tömde `regn_h` bara på vägen till rösten (`SnapshotRepo`). Favoriternas rapport läser lägesfilen direkt
+(`Rapporten.kt:55`, `Rapporten.swift:48`) och räknar själv fram S3 (`Rapport.kt:274`, `Rapport.swift:302`). Rapporten visade därför
+*"Frysrisk vid stationen … (beta)"* med *"efter regnet"* för alla, också utan Betatest, tvärt emot #676 punkt 3 (Kompisarna först).
+
+**Bengts ord 22/10:** *"Ja, laga spärren i favoriternas rapport först (PR, slå inte ihop utan mitt ord)"*.
+
+**Bygget.**
+- Motorn får `ResansRapport.utanEfterhalka` i Kotlin och Swift: `regnH` töms i varje station, och frysrisken på yta och fukt och allt
+  annat är orört.
+- `Rapporten` i båda apparna läser Betatest (`Prefs.facitEnabled`, `Prefs.shared.facitOn`) och använder läget utan regnfält när
+  brytaren är av. Ändrar man brytaren gäller det från nästa omräkning av rapporten.
+- Prov i båda motorerna mot det delade facit (`engine/fixtures/rapport.json`, som bär betaraden från Täby): utan regnfältet faller
+  betaraden, och övriga rader är lika, dit och hem.
+
+**Rättat i samma PR: #677 byggde inte på iPhone.** Ett prov-bygge av appen i `testflight.yml` (läget *prov*, utan signering) på
+grenen föll 22/10 på `SnapshotRepo.swift:28`: *"expression is 'async' but is not marked with 'await'"*. #677 läste Betatest-flaggan,
+som bor på huvudaktören, utan `await`. PR-flödet bygger bara motorpaketet (`ios-engine.yml`), inte appen, så felet syntes inte där,
+och main har sedan #677 inte gått att arkivera för iPhone. Läsningen väntas nu in.
+
+**Det som återstår.** Spärren når användarna först med Axels nästa bygge, som för #677. Serverns rapportfil (`byggRapport`, funktionen
+favoriter) räknar inte S3. Favoritprovet i testmiljön (#529) gör det och rörs inte.
+
+**Stomdokument:** APP spärren också i rapporten, FAV rapportens frysrisk utan Betatest
