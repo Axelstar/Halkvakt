@@ -71,8 +71,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   (JVM-prov, APK, AAB, emulator); motprovet 36925352744 (stale cache + ingen nollning) rött på exakt de två proven — 56 prov, 2 fällda.
   🔨 **Å2 och Å3 BYGGDA 4/10 (Axels ja 13:35, DECISIONS #461) i 0.3.11 (23):** självstoppet på förflyttning (snitt ≥ 12 km/h över 60 s;
   Swift `HalkvaktEngine/IdleStop.swift`, Kotlin `Autostart.kt`), stillaståendetiern MID under 3 km/h (Android). **Bevis:** ios-engine 37199541693
-  grön (IdleStopTests 5/5); android se PR. ✅ **Bengts ja 6/10** (*"ja till 748"*), i main; i inget uppladdat bygge än.
+  grön (IdleStopTests 5/5); android se PR. ✅ **Bengts ja 6/10** (*"ja till 748"*), i main; ~~i inget uppladdat bygge än~~ (↪ 22/10).
   🔑 Kvar: Å0 (testaren får (23)) · Å6 protokoll · Å7/Å8 mätningar (Axel).
+  ↪ **22/10 (genomgången av blocket Appen):** *i inget uppladdat bygge än* gäller inte längre. Å2/Å3 (410f2a5e, PR #748) ligger före
+  81d1a0b, som blev 0.3.11 (23) och laddades upp 6/10 07:25 (STATUS 6/10), och därmed i varje uppladdat iPhone-bygge sedan, till 0.3.13 (32)
+  19/10 (#643). Android: AAB:n ur android.yml bär dem sedan versionCode 23; Play Console vägrade (27), och (28) från Axels PR #1029 låg i
+  internt test 17/10 (a874fbb1, 3cd31a97; `docs/PLAY-KONTO.md` §4).
 
 - [ ] 📣 **#281 MARKNADSFÖRING UTAN PENGAR** (Axels order 2/10 00:17: *"vi måste verkligen börja med marknadsföring utan att spendera
   pengar … förstår att vi måste köpa hemsidan men utöver det"*). Planen: `docs/MARKNADSFORING-NOLLBUDGET.md`, artefakt
@@ -207,14 +211,19 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   veva. Utkast skrivet, väntar Axels ja — det är ett publikt löfte.
   📏 **26/9: (b) är klar** — `integritet.html` skrevs om 23/9 (DECISIONS #320). **Kvar bara (a) raderingsfrågan**, Axels ja.
   🔨 **26/9: (a) avgjord — Nej** (Bengts *"gör 214"*, DECISIONS #378). Filen besvarad; policymeningen färdig i filen men inte
-  publicerad (Bengts konto saknar skrivrätt i karta-repot). 🔑 Kvar: Axel klistrar in meningen i `integritet.html` och fyller i
-  formuläret i Play Console vid första uppladdningen.
+  publicerad (Bengts konto saknar skrivrätt i karta-repot). 🔑 ~~Kvar: Axel klistrar in meningen i `integritet.html` och fyller i
+  formuläret i Play Console vid första uppladdningen.~~ (↪ 22/10)
   *Beslutet som bygget vilar på:* invarianten skrivs om till *aldrig utan aktivt val* — ingen
   positionsdata lämnar telefonen automatiskt; det enda som skickas är ett facitsvar föraren själv trycker på. Data Safety svarar
   sanningsenligt **Ja** (ändamål: förbättra varningarna; frivilligt; kan inte kopplas till person). **Bygg nästa varv:** CLAUDE.md:s
   invariant, `docs/PLAY-DATASAFETY.md` och produktboken i samma commit.
   ↦ **Sorterat 22/9 (kort #224):** kvar är ägarbeslut — raderingsfrågan och integritet.html; produktbokens rad 21 och 82 rättades 22/9 (DECISIONS #304).
   ↪ **Hit 24/9 (DECISIONS #346):** ur *Butiksuppladdning + Data safety-inklistring* (29/8, låst: Play-kontot). Inklistringen av formuläret är sista steget här och följer Verify-raden ovan. Själva uppladdningen står i *Play: uppladdningsguide*, och iOS går före Android (DECISIONS #320).
+  ↪ **22/10 (genomgången av blocket Appen): rubriken och Kvar-raden 26/9 är överspelade.** `docs/PLAY-DATASAFETY.md` är sann sedan 20/9
+  (#270) och policyn sedan 23/9 (#320). Raderingsmeningen, missarna och datumraden fördes in i `integritet.html` 1/10 av Claude, inte
+  av Axel (karta-repot b9626bf, *gäller från 2026-10-01*, DECISIONS #432); sparade resor kom 19/10 (halkvakt-karta#8, #635). Kvar:
+  Data safety-formuläret i Play Console ifyllt likadant som filen; om det gjordes när (27) laddades upp till Play Console 17/10
+  (a874fbb1) är oklart, fråga Axel.
 
 ### Axel — hösten (brainstorm 31/8)
 - [ ] **Skydda namnet:** varumärket Halkvakt hos PRV + domänen halkvakt.se. Enda juridiska
@@ -232,8 +241,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   startar och när Vakten-vyn visas (`GuardManager.swift:230`, `VaktenView.swift:68`); under resan ligger körläget som helskärm över
   vyn, så ingenting laddas om. Åldersvakten (45 min väder, 120 min olyckor och djur) prövas bara vid laddningen ⇒ en tre timmars
   resa varnar på starttidens is och olyckor, och nya olyckor når aldrig telefonen. Android förnyar var 30:e minut (`SnapshotSchedule`).
-  Läst i koden, inte framkallat. Nyckel: Bengts ja till bygget (§4.2) · Axels Xcode-bygge. Verify: en resa längre än 30 min där
-  körlägets rad *väglag HH:mm* flyttar sig framåt utan att appen öppnats.
+  Läst i koden, inte framkallat. Nyckel: Bengts ja till bygget (§4.2) · Axels Xcode-bygge. Verify: en resa på 45–60 min där
+  klockslaget vid *PÅ DIN VÄG* i körläget flyttar sig minst en gång utan att appen öppnats (DECISIONS #434; rättat 22/10 — stod
+  *längre än 30 min* och raden *väglag HH:mm*, som inte finns på iPhone sedan skinnet v3).
   🔨 **BYGGT 26/9, 0.3.9 (16)** (Bengts ja, DECISIONS #371): var 30:e minut under resan, en laddning i taget, en minuts paus
   efter fel, minnet behålls mitt i resan (`updateHazards`); utan nät gäller cachen och åldras. Skrivet utan kompilator.
   🔑 Kvar: Axels Xcode-bygge (första kompileringen) och Verify i bil.
@@ -264,10 +274,15 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **KOMPILERADE OCH UPPLADDAT 1/10 22:25** (Axels Xcode, Organizer: *Halkvakt 0.3.9 (19) uploaded*, ur 4f88513); ✅ **TESTING I KOMPISARNA 22:34**
   (App Store Connect-skärmbild: (19) *Testing*, (14) *Testing* 37 sessioner — samma versionsnummer ⇒ ingen ny granskning). En varning i bygget —
   `EfterResanNotis.actionJa` läst ur nonisolated delegat — rättad i main samma kväll, går med i (20).
-  🔑 Kvar: Axels blick på telefonen (Verify nedan) · nya iOS-skärmbilder till produktboken ur (19) · 4a dubbeltrycksspärren och 4b Siri när
-  vakten är av (Axels beslut, §4.2).
+  🔑 Kvar: Axels blick på telefonen (Verify nedan) · nya iOS-skärmbilder till produktboken ur ~~(19)~~ · ~~4a dubbeltrycksspärren och 4b Siri när
+  vakten är av (Axels beslut, §4.2)~~ (↪ 22/10).
   🔨 **ANDROIDS STATUSRAD BYGGD 4/10** (`TILL-AXEL-BYGGE-19` Android 1, Bengts *"kör på"*): samma regler som iPhone, som rena funktioner i
   `Facit.kt` med JVM-prov, och raden bär sin tid (`facit_status_at`). 📏 Bevis: android 37183577252 grön på c02514a (`:app:compileDebugUnitTestKotlin` och `:app:testDebugUnitTest` körda, BUILD SUCCESSFUL). Androids spärr mot dubbeltryck följer 4a.
+  ↪ **22/10 (genomgången av blocket Appen):** 4a och 4b är avgjorda sedan 4/10 (Axels ja 13:35, Bengts ja 6/10, DECISIONS #461) och
+  byggda i 0.3.11 (23) på båda plattformarna: ett andra tryck inom 60 s blir ingen ny miss (Androids spärr med, `MissarTest`), och Siri
+  vägrar när vakten är av. Skärmarna som (19) rättade ritades om i skinnet v2, 0.3.10 (22) (kort #284, DECISIONS #444), så Verify och
+  skärmbilderna gäller (22) eller senare, inte (19). Kvar: Axels blick på en iPhone med (22) eller senare (Verify nedan) · nya
+  iOS-skärmbilder till produktboken ur samma bygge.
   Verify: på en iPhone finns inget "…" i kortet med fyra varningar, sista raden ligger ovanför flikraden, *Stämde*-knapparna finns på ett
   ställe, ingen *Skickat*-rad under en obesvarad rad, och *Senaste tur* skrivs *1 okt. 12:39*.
 
@@ -571,9 +586,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🔨 **KADENSTESTET LAGAT 26/9** (femma sju, DECISIONS #373): `tiers()` ersatt av ett körprov i 140 km/h rakt mot en fara från varje start 3,6–60 km; inom motorns räckvidd (leadMaxM + cameraTriggerM) ska varje GPS-punkt komma högst 1 s efter förra. android.yml 36217938454 grön på grenen; motprovet 36217945802 (NEAR_MS 1 → 10 s) rött på exakt två prov — körprovet och `noSnapshotMeansFullAlertness` — där det gamla testet höll. Enligt en modell av provet fäller det också FAR 15 → 450 s men inte 15 → 150 s, som fortfarande är säkert. Kvar på kortet: **mätningen** (iPhone: Bengt · Android: testtelefonen).
 
 - [ ] ↩︎ **Introduktionen** (iOS) — bevis saknas: radera appen → installera → intron ska komma
-  först; "Visa igen" i Inställningar. Introduktionen i Claude Design är enda skärmen som inte
-  ritats om än. Android-spegeln (DECISIONS #36) efter att iOS-varianten testats.
+  först; "Visa igen" i Inställningar. ~~Introduktionen i Claude Design är enda skärmen som inte
+  ritats om än.~~ Android-spegeln (DECISIONS #36) efter att iOS-varianten testats.
   ↪ **Flyttat 26/9 från *Axel — hösten (brainstorm 31/8)*** (femma åtta, DECISIONS #377): nästa steg är Bengts två minuter (*Visa introduktionen igen*).
+  ↪ **22/10 (genomgången av blocket Appen):** introduktionen är omritad. Designöverlämningen v2 tog med den (DECISIONS #444), och
+  kort #284 byggde den på iOS i 0.3.10 (22), släppt av Axel 3/10. Beviset ovan saknas fortfarande. Android har ingen introduktion
+  (kort #284 (c)).
   **Verify** *(kortgenomgången 3/10, DECISIONS #451)*: appen raderad och installerad om på en iPhone, introduktionen kommer först, och *Visa igen* i Inställningar visar den — bokfört med datum och bygge.
 
 ### Claude — olåst
@@ -710,6 +728,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   sett: 26/9 gav 8 varningar (12:11–12:55) åtta rader i en sändning 13:13, men om föraren stannat syns inte i datan. Det andra provet
   saknas, eftersom inget svar är *Stämde inte* och ingen rad kom via Siri. `driver_miss`: bara serverns prov. Sändningarna 1/10 17:22 (fyra kameror 13:16–13:22) är
   Axels resa 12:39–13:44 (kort #279); samma fyra kameror 28/9 17:41–17:48 och en av dem 21/9. ~~Vems resan 26–27/9 är står i §4.2.~~ ✅ 6/10: Bengts; händelsen 29/9 Axels. Alla 29 är projektgruppens (Bengt 19 (26–27/9), Axel 10 (21/9, 28/9, 29/9, 1/10); båda i projektgruppen (Bengts besked 6/10)).
+  ↪ **22/10 (DECISIONS #681 punkt 3–4):** från 0.3.13 (33) syns Betatest och facitfrågan bara i TestFlight och i utvecklarbyggen. I ett
+  App Store-bygge gäller inte en brytare som slagits på i en äldre version, och Siris två facitkommandon svarar att det bara finns i
+  testversionen. Facitsvaren kommer alltså bara från testarna; App Store-versionen 0.3.9 räknas bort på sitt versionsnummer. Android
+  saknar ännu en offentlig kanal och får samma spärr före Google Plays produktion.
 - [ ] 🔓 **#321 TERRÄNGEN OCH TRAFIKEN IN I ENERGIBALANSEN — FYSIKEN SOM GÄLLER MELLAN STATIONERNA (Bengts ord 9/10 kväll — Claude, nyckel: nivå 2 (DECISIONS #509) och FYSIK+BLANDNING (#490) lästa)**: fysikspåret läser terrängen (himmelsfaktor, horisont, dal, skog, vatten, broar) och trafiken bara som särdrag i den inlärda rättelsen, och `q_traffic` är en konstant för hela landet som kalibreringen satte till −1 W/m² — samtidigt förklarar trafiken 23 % av stationernas särart (kuvössidan §5). Stationerna står där terrängen varierar lite, så rättelsen ser terrängens verkan bara i stationernas smala spann; satelliten visade ±1,3 °C längs vanliga vägar. Det som är känd fysik flyttas in i energibalansen, räknat för alla 12 960 väglagspunkter ur öppna data: himmelsfaktor och horisont (mindre himmel ⇒ mindre utstrålning på natten, skuggad sol på dagen), `q_traffic` som funktion av ÅDT, broar som kyls från båda håll. Kalluftssjöarna stannar som särdrag — ingen enkel fysik. Facit mellan stationerna finns inte i kuvösen: mönstret prövas mot satellitens kallkarta (MODIS natt-LST, releasen kuvos-modis-2022-25) och, ~~när den finns, mätbilen (#271)~~ (stängd 22/10, #678); temperaturen mot stationerna med ovanlig terräng. Nya filer under `fysik/`, de frysta rörs inte; egen förregistrering med förväntningar före knappen. Inte nu (Claude 9/10): störst utdelning per timme har nivå 2, blandningen, fler vintrar från Trafikverket och vägens tillstånd. **Verify:** himmelsfaktor, horisont och trafik räknade för alla väglagspunkter (fil i repot med källa och licens i `data/KALLOR.json`), fysiken med dem i energibalansen förregistrerad i DECISIONS och körd i kuvösen mot FYSIK på RÅ:s punkter och mot kallkartans mönster, utfallet bokfört. **Kvar:** 🔓 nyckeln uppfylld 13/10 (nivå 2 #509 och FYSIK+BLANDNING #490 lästa, prognosläget körd 38351107743). ✅ **Förregistrerat 13/10 för stationerna** (DECISIONS #549, väg B varv 2, körning 2): himmelsfaktor och horisont i lång- och kortvågen, och trafiken som log10(ÅDT). ~~Kvar: Axels förväntan, bygget~~ ✅ 13/10: förväntan godkänd (Axel via Bengt), bygget `fysik/niva2/terrang.py` och `vagb_terrang.py` med självtestet och motproven (tillägget under #549). ~~Kvar: knappen~~ ✅ körd 13/10 (38387177803). Fysiken ensam gick från 14,98 till 14,70 %, men efter rättelsen fanns ingen skillnad (6,45 mot 6,46 %). Vid +6 h gav den 5,09 % mot körning 1:s 5,13 %, under marginalen, och den valdes inte (DECISIONS #552). q_trafik_ådt blev +2,4…+6,7 W/m² per tiopotens. Kvar: väglagspunkterna och kallkartans mönster.
 - [ ] 🔓 **#331 FYSIKEN SOM VITTNE — DE RADER VAKTERNA BEHÅLLER MEN FYSIKEN FLAGGAR (LÅST 11/10 — Claude, Bengts ja 11/10, DECISIONS #520; nyckel: en kuvöskörning efter prognosläsningen)**: #493 visade att fysikens grova oenigheter till 82 % är fel som #75 redan tar, och att den flaggar 1,3 % av raderna vakterna behåller. Vad de raderna är har ingen läst. Läses på nivå 2:s skattning, som har ungefär halva felen. **Verify:** ~~raderna beskrivna (station, tid, yta, luft, avvikelse)~~ raderna beskrivna i kategorier med antal i loggen (t.ex. ytband, månad, avvikelsens storlek och tecken; aggregat per station får ingå), aldrig en rad med station och tid (DECISIONS #551), och förregistrerade före knappen. **Kvar:** 🔓 nyckeln uppfylld 13/10 (prognosläsningen körd, körning 38351107743); förregistreringen och knappen. ⚠ 13/10: Verify kräver raderna beskrivna en och en, och det är Trafikverkets data rad för rad i en publik logg. ~~Frågan om kategorier eller hinken står i bedömningen §4.2.~~ ✅ Avgjort 13/10: kategorier (Bengt, DECISIONS #551).
 - [ ] 🧪 **#342 VÄG B — ÄRLIGA TAL FÖRE FRYSNINGEN (BESLUTAT 13/10 — Claude, Bengts ja och Axels ja via Bengt, DECISIONS #544)**: kandidaten NIVÅ 2+BLANDNING räknas om så att varje stations tal kommer från en kedja som aldrig sett stationens veck: kalibreringen, rättelsen och blandningens vikt väljs på de andra fyra vecken. Den räknas i analysläget och vid +6 h, och fryses och förregistreras för vintern 2026/27 senast 31/10. **Verify:** körd i kuvösen på Bengts ord med förregistreringen i DECISIONS #544 före knappen, utfallet bokfört under #544, och förregistreringen för 2026/27 skriven senast 31/10. **Kvar:** ~~bygget~~ ✅ 13/10 (`fysik/niva2/vagb.py`, `fysik/blandning/vagb_blandning.py`, flödets gren `kuvos-blandning-vagb`, självtest och tre motprov, se tillägget under #544); ~~Axels förväntan~~ ✅ via Bengt 13/10; ~~knappen på Bengts ord~~ ✅ körd 13/10 (körning 38368369876 på a6245a3): ärligt 4,84 % i analysläget och 5,12 % vid +6 h, mot fryst 5,02 och 5,24; vikten W 0,25 · L 160 km; utfallet under #544. ~~Kvar: Bengts val~~ ✅ 13/10: ett varv till (DECISIONS #549), två körningar och valregeln bestämd i förväg. ~~Kvar: Axels förväntan, bygget~~ ✅ 13/10: förväntan godkänd (Axel via Bengt), körning 1 och 2 byggda (tillägget under #549). ~~Kvar: de två knapparna~~ ✅ körningarna 38387172993 (körning 1) och 38387177803 (körning 2) på f0235f4, tryckta 13/10 11:00 UTC på Bengts ord. ✅ Den frysta kandidaten byggd (`fysik/niva2/frysta.py`, DECISIONS #550; rättelsen till hinken). ~~Kvar: utfallet och valregeln, valfilen~~ ✅ 13/10: körning 1 gav 5,13 % och körning 2 5,09 % vid +6 h (utfallet under #549). Bengt valde varv 1 (DECISIONS #552), och valfilen är incheckad. ~~Kvar: knappen för den frysta kandidaten~~ ✅ körning 38400052837 på f4d209b: rättelsen i hinken med sha256 lika efter hämtning, manifestet i `kuvos/kandidat-2026-27.json` (utfallet under #550). Kvar: förregistreringen för 2026/27, senast 31/10.
@@ -1904,7 +1926,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   **Kvar:** de första riktiga körningarna efter 19/10 läses, med operativsystemet ur loggens *Set up job*: ci (första PR:en), arkivbackup (söndag 25/10 03:17 UTC) och kuvos (nästa knapptryckning).
 - [x] ✅ **#306 KARTSYNKEN NÅR GITHUB I MOLNET — `gh api` FÖRST (KLART 9/10 — Verify uppfylld: morgonrutinens körlogg 9/10 visar Signalerna (ärende #706, skrivet 9/10 05:23) och PR-listan med #814, utan 401; Claude, Bengts val 8/10, DECISIONS #487)**: morgonrutinens första körning 8/10 03:40 UTC fick *GitHub 401: Bad credentials* på signalerna och PR-listan, fast `gh api` fungerade i samma session (`cse_01VhX7G7E1KzUnMT3EKZmVY2`). Orsaken är att GH_TOKEN och GITHUB_TOKEN i molnet bär platshållaren `proxy-injected`, enligt molnmiljöns dokumentation, och kartsynken skickade den till GitHub. ✅ **Byggt 8/10:** `scripts/kartsynk.ts` går via `gh api` när gh finns och annars via fetch med GH_TOKEN, GITHUB_TOKEN eller git credential, där platshållaren inte räknas som nyckel. Felraden bär nyckelns källa och gh:s skäl, aldrig nyckeln. Självtestet har en låtsad kommandokörare och fetch, och fyra motprov fälldes. Lokalt, där gh saknas, går den via git som förut. ✅ **Sammanslagen 8/10** (Bengt: *"slå ihop 806"*) som 43c9328, på ci och md-vakt gröna på exakt huvudet c3dad88. ✅ **Bevisat 9/10:** morgonrutinens kartsynk (den första efter sammanslagningen) läste signalerna och listade en öppen PR via `gh api`, utan 401. *Verify:* morgonrutinens körlogg efter sammanslagningen visar *Signalerna (ärende #706 …)* och PR-listan, utan 401.
 - [ ] 🔨 **#284 APPENS NYA SKINN — DESIGNÖVERLÄMNINGEN V2 (BYGGT, SLÄPPT AV AXEL 3/10 — Claude, Axels order 2/10 18:46; DECISIONS #443, #444, PR #698; iOS 0.3.10 (22), Android 0.3.10 (22))**:
-  varningskorten A–L med lägesetikett, vägskylt, gränsskylt och rådruta; gammal data M–N; Redo efter tur; På vakt; inställningar i
+  varningskorten A–L med lägesetikett, vägskylt, gränsskylt och rådruta; ~~gammal data M–N~~ (↪ 22/10); Redo efter tur; På vakt; inställningar i
   två nivåer; introduktionen (iOS); sex ikoner; logotypen med "!"; 3D-socklarna renderade ur designens CSS. iOS och Android lika,
   Androids "Uppfattat" och källrad borta. Rösten oförändrad.
   ✅ (1) motorn bär `Alert.step` — TS 235 tester, `ios-engine` och `android` gröna på grenen (workflow_dispatch) · ✅ (2) kortets innehåll
@@ -1920,6 +1942,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ägarens konto~~ ✅ republicerad 3/10 ur repokopian (PR #703 och detta varv) · (c) Androids introduktion i fyra sidor är inte byggd (Android
   har trappan i MainActivity; designen förutsätter iOS dialoger) · (d) Kort #219/#280: byggnumret höjs i samma commit som sista
   ändringen före arkivering. **Verify:** ett iOS-bygge visar kort F/G/H vid en allvarlig olycka och kvittot på Redo efter en tur.
+  ↪ **22/10 (genomgången av blocket Appen):** *gammal data M–N* är borttagen på main sedan 20/10 (DECISIONS #647): den mörka raden
+  överst i *På vakt* (M), kortet *VÄGLAGSDATA · GAMMAL* (N) och repliken *"Ingen färsk väglagsdata. Kör som om det kan vara halt."*.
+  0.3.13 (32) hos Apple har kvar dem; (33), nästa bygge från main, har dem inte (#681 punkt 1).
+  ↪ **22/10 (DECISIONS #681 punkt 3):** i inställningarna syns *Betatest* från (33) bara i TestFlight och i utvecklarbyggen; i ett App
+  Store-bygge gäller inte en brytare som slagits på i en äldre version. Android får samma spärr före Google Plays produktion.
 
 
 ---

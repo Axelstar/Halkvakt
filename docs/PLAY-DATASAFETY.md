@@ -25,6 +25,10 @@ fara med koordinat och `t` säger när — **ett svar är alltså ungefär en pl
 i appens Om-avsnitt och i produktboken (Axels krav, DECISIONS #196), och knappen är AV tills testaren slår på
 den själv.
 
+**Betatest bara för testare (DECISIONS #681, 22/10).** Från iOS 0.3.13 (33) syns Betatest och facitfrågan bara i TestFlight och i
+utvecklarbyggen, och i ett App Store-bygge gäller inte en brytare som slagits på i en äldre version (`Prefs.betatestTillaten`).
+Android saknar ännu en offentlig kanal och ska få **samma spärr före Google Plays produktion**; Android-appen på main har den inte än.
+
 ## Grundfrågorna
 
 | Fråga | Svar | Motivering |
@@ -64,8 +68,9 @@ Tre vägar prövades (Bengt + Axel, före första uppladdningen) — **väg 1 va
    identifierare där det i dag inte finns någon** — det gör appen sämre på det den är bäst på. Avråds.
 
 **Vald: 1.** Det ska stå i policyn samtidigt som i formuläret. Policyn sade redan *"vi kan inte heller plocka fram just dina"*; den
-ska säga vad det betyder för radering. **Färdig text för `integritet.html`** (karta-repot — Bengts konto har ingen skrivrätt där, så
-det är Axels att klistra in, och att slå ihop publicerar sidan):
+ska säga vad det betyder för radering. **Gjort 1/10** (rättat här 22/10; raden sade att texten väntade på Axel): Claude förde in de tre
+ändringarna nedan i `integritet.html` i karta-repot (commit b9626bf, DECISIONS #432), med datumraden *gäller från 2026-10-01*, dagen
+den publicerades, i stället för utkastets 26/9. Texten som den skrevs 26/9:
 
 - Byt meningen *"Svaren kan därför inte kopplas till dig, och vi kan inte heller plocka fram just dina."* mot:
   > Svaren kan därför inte kopplas till dig, och vi kan inte heller plocka fram just dina — alltså inte heller radera just dina på begäran. Du bestämmer ändå: slår du av <i>Betatest</i> slutar appen skicka direkt, och det som sparats i telefonen försvinner när du avinstallerar appen.
@@ -75,19 +80,21 @@ det är Axels att klistra in, och att slå ihop publicerar sidan):
 - Byt datumraden *"GÄLLER FRÅN 2026-09-23 · FÖREGÅENDE VERSION 2026-08-26"* mot *"GÄLLER FRÅN 2026-09-26 · FÖREGÅENDE VERSION
   2026-09-23"* — policyn lovar själv att datumet flyttas när den ändras.
 
-## ✅ Integritetspolicyn — omskriven 23/9 (DECISIONS #320); raderingsmeningen ovan återstår
+## ✅ Integritetspolicyn — omskriven 23/9 (DECISIONS #320), raderingsmeningen införd 1/10 (#432)
 
-`integritet.html` i `Axelstar/halkvakt-karta` (publicerad, och den URL Google kräver i butiksfältet) säger
-fortfarande:
+*Rättat 22/10: stycket sade att policyn "fortfarande" lovar Ingenting och att texten väntar på Axel.* `integritet.html` i
+`Axelstar/halkvakt-karta` (den URL Google kräver i butiksfältet) sade fram till 23/9:
 
 - *"Kärnlöftet: din position lämnar aldrig telefonen."*
 - *"Vad vi samlar in — **Ingenting.** … skickar aldrig din position, dina resor eller något annat om dig till
   oss eller någon annan."*
 
+Den skrevs om 23/9 (karta-repot a2b7981, DECISIONS #320): ingen position lämnar telefonen av sig själv, och undantaget är
+betatestets facitsvar, med vad det bär (varnings-id, klockslag, svar, plattform, version) och vad det inte bär. 1/10 kom
+raderingsmeningen, missarna och datumraden ovan (b9626bf, #432), och 19/10 en punkt om sparade resor (halkvakt-karta#8, #635),
+*gäller från 2026-10-19*.
+
 **Google jämför formuläret mot policyn.** Står det olika saker i dem är det ett avslag som ser ut som slarv.
-Policyn måste få ett eget stycke om facitsvaret — vad det innehåller, att det är frivilligt och av som
-standard, och att det säger ungefär var och när. Utkast finns; texten är Axels att godkänna, för det är ett
-publikt löfte.
 
 **Sparade resor (kort #357, 18/10).** En förare som slår på *Erbjud att spara resor* kan spara en körd väg. Den lagras bara i
 telefonen (`noBackupFilesDir`, utesluten också vid flytt till en ny telefon) och lämnar den aldrig, så formuläret ändras inte:
@@ -102,6 +109,10 @@ Google räknar bara det som lämnar enheten. Deklarationen för bakgrundspositio
 ## Butiksfältens integritetslänkar
 
 - Privacy policy URL: `https://axelstar.github.io/halkvakt-karta/integritet.html`
+  — samma adress som båda apparna länkar till (`android/app/src/main/kotlin/se/halkvakt/app/ui/Skinn.kt:586`,
+  `ios/HalkvaktApp/Sources/HalkvaktApp.swift:178`; kontrollerat 22/10). Sedan 13/10 svarar github.io-adressen 301 till
+  `https://halkvakt.se/integritet.html` (karta-repots egen domän, DECISIONS #559, tillägget 14/10), och App Store-texten anger
+  halkvakt.se-adressen (`marknadsforing/butik/appstore-ios.md:48`). Båda når samma sida.
 
 ---
 
