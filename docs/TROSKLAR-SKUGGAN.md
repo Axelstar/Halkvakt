@@ -244,8 +244,9 @@ DECISIONS #327/#330). Bengt läser skuggloggen i söndagsrutinen. **Facit-hinken
 öppnas vid domens tidpunkt (DECISIONS #248) — Claude klassar dem blint ur kontaktark (kort #246; sökvägen visar kamera
 och tid, aldrig skuggans larm), Axel ok:ar (stickprov ≥ 10 % och varje is/snö/slask), Bengt stickprovar. Axel fäller domen.
 Från 26/9 (DECISIONS #380) fylls hinken på tre vägar: skuggmotorn (`facit/`, larmpunkter längs rutterna, **inte längre
-fartkameror** — V1), kamerafacitet V2 (`v2/`, kameran närmast varje aktuell frysrisk i hela landet, tak 150 om dygnet) och V3
-(`v3/`, två stickprov i timmen vid kalla stationer utan larm, i dagsljus — tystnadsfelets bildfacit). Alla tre klassas i samma
+fartkameror** — V1), kamerafacitet V2 (`v2/`, kameran närmast varje aktuell frysrisk i hela landet, tak 150 om dygnet, varav högst 30 i mörker sedan 22/10, #676) och V3
+(`v3/`, två stickprov i timmen i dagsljus vid kalla stationer, yta ≤ +3 °C, där ingen fara gick ut — där motorn eller vakterna
+teg; bilderna visar vad tystnaden kostar, tystnadsfelets bildfacit, #676). Alla tre klassas i samma
 blinda kontaktark, och §2:s asymmetriregel gäller alla: en bild bekräftar, fäller aldrig. Prognoskolumnen buntas ur
 `engine/src` som allt annat (DECISIONS #43/#51) — en handklistrad kolumn driver
 isär på ett dygn.
