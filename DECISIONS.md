@@ -16369,3 +16369,69 @@ ställda till Bengt och Axel; Bengt svarade, och han har sagt i dag att han sign
 - CLAUDE.md (frysregeln; stomvaktens kodlista har fått LIV, som redan fanns i kortkartan).
 
 **Stomdokument:** KAR §4.4 kandidatens väg in, MAT §3 KB-D4 och kartering, SYS §3 kartering stängd, BED §4.2 omgång 6 avgjord
+
+## #680 (22/10 2026) Den frysta kandidaten på vintern 2022/23: proven klarade, NIVÅ 2+BLANDNING A2 4,52 % mot RÅ 8,66 % — diagnos, ingen dom
+
+**Körningen.** `kuvos-vintrar.yml` med vinter 2022-23, körning 39766761188 på main 64fd769, 22/10 10:56–17:23 UTC, grön. Förregistreringen
+är FORREGISTRERING-FLER-VINTRAR (signerad #668), och bara 2022/23 räknas för den frysta kandidaten (#670). Kandidaten är #552: fysiken
+`lw`, `modell.pkl` c96c4072…, paret W 0,25 · L 160 km, analysläget. Här står bara aggregaten ur körningens sammanfattning, och
+ingenting per station.
+
+**Proven före läsningen (§3), alla KLARADE.**
+- **(a) Identitetsprovet på 2024/25:** n 2 210 532, A1 0,46477 °C och A2 1,4449 %, lika kraven (± 0,01 °C, ± 0,02 pe). Fysiken ensam
+  ger A1 0,981 °C och A2 14,78 %, som kandidatfilen.
+- **(b) Sommartidsnatten 2023-03-26:** 1 536 rader i varje lokal timme 00–09 utom 02, som har 0.
+- **(b) SMHI:** 10 par räknade av 88 kandidater, alla med toppen vid +0 h.
+
+**Indata.**
+- MET Nordic: 11 delar, 3 648 timmar och 754 stationer, med 0,33 % saknat per fält.
+- ECMWF: 4 152 timmar, och höjden skiljer sig inte från 2024/25.
+- VViS: 11 227 174 rader och 0 dubbletter.
+- Vakterna: 5 104 663 rader med yta blir 5 063 508 efter vakterna, vid 718 stationer.
+
+**Måtten.** Grind A:s population är 4 361 591 punkter vid 718 stationer, varav norr 1 239 136 och söder 3 122 455. Talen nedan har
+felmarginalen 1,96 · standardfel.
+
+| | A1 | A2 | A3 |
+| :-- | :-- | :-- | :-- |
+| RÅ | 0,693 °C ± 0,001 | 8,66 % ± 0,03 | 0,60 % ± 0,01 |
+| NIVÅ 2 | 0,709 °C ± 0,001 | 8,10 % ± 0,03 | 0,26 % ± 0,00 |
+| **NIVÅ 2+BLANDNING** | **0,522 °C ± 0,001** | **4,52 % ± 0,02** | **0,30 % ± 0,01** |
+
+A2 per band, för RÅ · NIVÅ 2 · NIVÅ 2+BLANDNING:
+
+| Band | Punkter | RÅ | NIVÅ 2 | NIVÅ 2+BLANDNING |
+| :-- | :-- | :-- | :-- | :-- |
+| 0–7 km | 458 955 | 6,89 % | 7,36 % | 4,82 % |
+| 7–15 km | 2 032 560 | 5,73 % | 5,39 % | 2,78 % |
+| 15–20 km | 912 534 | 8,81 % | 7,98 % | 4,61 % |
+| > 20 km | 957 542 | 15,59 % | 14,33 % | 7,97 % |
+| norr ≥ 62° | 1 239 136 | 16,55 % | 14,74 % | 9,01 % |
+| söder | 3 122 455 | 5,53 % | 5,47 % | 2,73 % |
+
+A2 per månad för NIVÅ 2+BLANDNING (RÅ inom parentes):
+
+| Månad | A2 |
+| :-- | :-- |
+| november | 2,34 % (3,04) |
+| december | 4,09 % (8,90) |
+| januari | 2,33 % (5,44) |
+| februari | 3,75 % (8,80) |
+| mars | 9,92 % (16,02) |
+
+Kuvösens replika skiljer sig från den levande kedjan i 135 punkter, med största skillnaden 0,228 °C i grannfelet. Räknat med replikans
+urval blir talen desamma: A1 0,522 °C, A2 4,52 % och A3 0,30 %.
+
+**Bredvid, inte som prov.** Grind A:s tak för A2, 5 %, står bredvid och fäller ingenting. Väg B:s 4,84 % (analysläget) och 5,12 %
+(+6 h) gäller andra stationer samma år, 2024/25 (#544).
+
+**Mot förväntan, skriven före läsningen (§6).**
+- NIVÅ 2+BLANDNING har lägre A2 än RÅ: 4,52 mot 8,66 %. **Höll.**
+- A2 för NIVÅ 2 är högre än i urvalet 2024/25: 8,10 mot 1,44 %. **Höll.**
+- Norr är sämre än söder i alla tre: RÅ 16,55 mot 5,53 %, NIVÅ 2 14,74 mot 5,47 %, NIVÅ 2+BLANDNING 9,01 mot 2,73 %. **Höll.**
+- Att vintrarna skiljer sig mer i norr kan inte prövas med en vinter.
+
+**Diagnos, ingen dom (§5).** Ingen tröskel ändras. Eftersom utfallet är läst före signeringen av FORREGISTRERING-2026-27 står det vid
+dess signaturer med datum och körning (dess §10 f). Inget i dess §1–§5 är ändrat på grund av det.
+
+**Stomdokument:** KUV fler vintrar 2022/23, BED §4.2 utfallet före signeringen
