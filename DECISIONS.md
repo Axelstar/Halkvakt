@@ -16313,7 +16313,7 @@ Betatest"*. Det följer av #676 punkt 3 (B4-46, Kompisarna först), där spärre
   gröna i CI på 2d2beb9c.
 
 **Det som återstår.**
-- Spärren når användarna först med Axels nästa bygge. Bygge (32), som ligger i App Review, har S3 utan spärr: släpps det publikt hör
+- Spärren når användarna först med Axels nästa bygge. Bygge (32), som är uppladdat och väntar på inskicket till App Review (#643; rättat 22/10, stod "ligger i App Review"), har S3 utan spärr: släpps det publikt hör
   alla S3, tvärt emot #676 punkt 3.
 - Spärren håller S3 inom testgruppen bara så länge Betatest bara nås av testgruppen. Om Betatest syns i App Store-versionen är frågan
   B4-72 (Axel).

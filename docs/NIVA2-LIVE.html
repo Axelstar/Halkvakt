@@ -86,7 +86,7 @@
     <span>Skriven <b>14/10 2026</b></span>
     <span>Kandidaten <b>varv 1</b> (DECISIONS #552)</span>
     <span>Väntat fel vid +6 h <b>5,12 %</b> grova fel, över taket 5 %</span>
-    <span>Tidigast i appen <b>december</b></span>
+    <span>Tidigast i appen <b>efter App Review</b> av 0.3.13 (32), inskicket återstår (#643, #678)</span>
     <span>Domen <b>mars 2027</b> (DECISIONS #547)</span>
   </div>
 
@@ -109,8 +109,9 @@
       <ul>
         <li>Appen är live i App Store (Bengt 14/10). Den varnar för halka ur Trafikverkets väglag (A1) och väderstationerna (A2),
           och för olyckor, vilt och kameror.</li>
-        <li>Efterhalkans beta (S3, <i>"Halkvakt tror: frysrisk framöver."</i>) ligger i bygget 0.3.12 (24), internt i TestFlight.
-          Den är ett App Review från App Store.</li>
+        <li>Efterhalkans beta (S3, <i>"Halkvakt tror: frysrisk framöver."</i>) ligger i alla byggen sedan 0.3.12 (24), också 0.3.13 (32).
+          Den går till Kompisarna först och inte publikt (#676); spärren bakom Betatest är byggd 22/10 och når användarna med Axels
+          nästa bygge, så (32) bär S3 utan spärr (#677).</li>
         <li>Kandidaten är fryst (DECISIONS #552): fysiken <code>lw</code>, blandningen W 0,25 · L 160 km. Rättelsens modell
           (<code>modell.pkl</code>, 9,8 MB) ligger i hinken med kontrollsumma.</li>
         <li>Vägpunkternas fasta särdrag är klara för alla 12 960 punkter (DECISIONS #553): terräng, höjd, vinterväghållningsklass,
@@ -312,10 +313,10 @@
         punkterna före signeringen är spridningsgrinden (2,25 °C), <i>761 stationer</i> i stället för 845 och tysta timmar som okänt avgjorda
         (DECISIONS #575). Kvar: radarns tal, som läses 26/10 enligt DECISIONS #568. Spridningen loggas i drift sedan 16/10 (DB-knappen 38899101913: 12 av 23 timmar). Modellen är tränad på alla 754, så grind A prövar <i>samma stationer, nytt år</i>, medan
         5,12 % är <i>andra stationer, samma år</i>. Grind A mäts på 754 av ~761 stationer.</td>
-        <td>Claude skriver, Axel och Bengt godkänner</td><td><span class="dom vantar">ifylld, osignerad</span></td></tr>
+        <td>Claude skriver, Bengt signerar för båda (#659)</td><td><span class="dom vantar">ifylld, osignerad</span></td></tr>
       <tr><td class="nr">9</td><td>Webbkartan (6)</td><td>Kandidatens lager på <code>karta.html</code>. Det kan gå live utan App
         Review och blir det första användarna ser.</td>
-        <td>Claude, skrivrätt i halkvakt-karta</td><td><span class="dom vantar">byggd 16/10 (#579), kartsidan väntar på skrivrätten</span></td></tr>
+        <td>Claude, skrivrätt i halkvakt-karta</td><td><span class="dom klar">ute 16/10 (#579; halkvakt-karta da4f442, #586), mätt 18/10 enligt förväntan i #579</span></td></tr>
       <tr class="grupp"><td colspan="5">C. Motorn och appen</td></tr>
       <tr><td class="nr">10</td><td>Ny farotyp i motorn (7, val 1–2)</td><td>En ny farotyp i <code>engine/src</code> med plats i
         prioriteten A3 &gt; A1 &gt; A2 &gt; A4 &gt; A5, testvektorer, <code>beta</code>, texten (godkänd 15/10, DECISIONS #573: <i>"Halkvakt tror: halka
@@ -342,10 +343,12 @@
   <h2 id="avsnitt-4">4. Tiden, och de snabba vägarna</h2>
   <div class="lyft">
     <p><b>Kandidaten i appen tidigast i december.</b> Det är en uppskattning steg för steg, inte en mätning: MET levande och
-      uppstarten, kedjan på körplatsen, paritetsprovet, publiceringen, motorn i tre språk, bygget och App Review.</p>
+      uppstarten, kedjan på körplatsen, paritetsprovet, publiceringen, motorn i tre språk, bygget och App Review. <i>↪ överspelad 19/10:</i>
+      stegen fram till App Review är gjorda. Kandidaten finns i byggena 0.3.13 (26)–(32), inte i App Store-versionen 0.3.9, och inskicket
+      av (32) till App Review återstår (#643, #678).</p>
     <p><b>Något är live nu.</b> Appen varnar redan för halka ur väglaget och väderstationerna. Efterhalkans beta (S3) är ett App
       Review från App Store: Axel arkiverar 0.3.12 (24) och skickar in den. Det är det snabbaste sättet att få ut en prognosvarning
-      i vinter, och det kostar ingenting av stegen ovan. <i>↪ överspelad 17/10:</i> bygget som går till App Review är 0.3.13 med kandidaten, halkzonen och favoriterna, och Bengt vill ha inskicket först när favoriternas rapport är byggd (#634, #636).</p>
+      i vinter, och det kostar ingenting av stegen ovan. <i>↪ överspelad 17/10:</i> bygget som går till App Review är 0.3.13 med kandidaten, halkzonen och favoriterna, och Bengt vill ha inskicket först när favoriternas rapport är byggd (#634, #636). <i>↪ 22/10:</i> S3 går till Kompisarna först och inte publikt (#676), och spärren når användarna med Axels nästa bygge (#677).</p>
     <p><b>Kedjan räknar redan alla punkter.</b> Val 5 avgör bara vad appen publicerar först; domen påverkas inte.</p>
   </div>
 
@@ -357,8 +360,8 @@
       stationerna, till domen i mars, när fukten har ett mätt vittne (TROSKLAR-SKUGGAN §4(d)).</li>
     <li><b>Takten mäts, antas inte.</b> Skuggan läser hur ofta regeln skulle tala per rutt innan rösten byggs (DECISIONS #200). Tystnad
       är en funktion.</li>
-    <li><b>Regeln fryses vid förregistreringen 31/10.</b> Ändras den sedan, bara genom en daterad post med båda signaturerna; en lättnad efter sett utfall
-      prövas enligt regel L1–L4 (DECISIONS #564). Annars är marsdomen förorenad.</li>
+    <li><b>Regeln fryses vid förregistreringen 31/10.</b> Ändras den sedan, bara genom en daterad post med båda signaturerna, och bara som en skärpning:
+      regel L:s lättnadsväg (L2 och L4) används inte, och en lättnad efter sett utfall kräver ett nytt beslut (DECISIONS #564, #678). Annars är marsdomen förorenad.</li>
     <li><b>Tröskeln bor på ett ställe</b>, i databasen (<code>kandidat_regel()</code>); publiceringen läser den och bär inga tal (DECISIONS #576). Motorn får en farotyp, text, prioritet och vektorer, inga tal.</li>
     <li><b>Samma hazard aldrig två gånger inom 10 minuter eller 5 km</b>, och inom 10 sekunder efter en varning talar bara en viktigare
       fara. Det gäller den nya farotypen som alla andra. Kandidaten har dessutom ett eget tak: högst en kandidatvarning per 10 minuter,
@@ -384,16 +387,17 @@
     <li>Radarns tröskel 0,5 mm/h bygger på ett stickprov: bekräftelsekurvan har drivit mellan veckorna och var bandad på
       <code>rate_max_mmh</code>, inte på <code>rate_mean_mmh</code> (DECISIONS #565). Talet avgörs på tre veckors kurva och läses 26/10 (#568).
       Ankarbandet 15 km vilar på underlag från sensommar och höst utan frostnätter (DECISIONS #566).</li>
-    <li>Faller kandidaten i mars fälls domen på RÅ som förut (reserven i DECISIONS #547). Det blir inte två chanser.</li>
+    <li>Kan kandidaten inte räknas för vintern fälls domslutet på RÅ som förut (reserven i DECISIONS #547): bara om loggen saknas, aldrig
+      för att utfallet är dåligt (gränserna i #656). Det blir inte två chanser.</li>
   </ul>
 
   <h2 id="avsnitt-7">7. Det här är Axels</h2>
   <ol>
     <li>Svaren på de fem valen, tillsammans med Bengt (val 1, 3 och 4 är avgjorda, val 2 beslutad, val 5 kvar). Regelns tal (DECISIONS #562, #565, #566, #575) är Axels och signeras i förregistreringen.</li>
-    <li>S3 till App Store: <i>↪ överspelad 17/10</i>, bygget 0.3.12 (24) har ersatts av 0.3.13, nu (32) (sista punkten nedan).</li>
+    <li>S3 till App Store: <i>↪ överspelad 17/10</i>, bygget 0.3.12 (24) har ersatts av 0.3.13, nu (32) (sista punkten nedan). <i>↪ 22/10:</i> S3 går till Kompisarna först (#676); spärren är byggd och når användarna med Axels nästa bygge (#677).</li>
         <li>Läsa paritetsprovet (steg 4) innan något publiceras: det är Axels kedja och Axels kandidat.</li>
     <li>Signaturen på ändringen av TROSKLAR-SKUGGAN för den egna betavarningen (Bengts ja finns, DECISIONS #563, #575), vid förregistreringen.</li>
-    <li>Godkänna förregistreringen för 2026/27 senast 31/10 (steg 8).</li>
+    <li>Godkänna förregistreringen för 2026/27 senast 31/10 (steg 8). <i>↪ 21/10:</i> Bengt signerar för båda (#659).</li>
     <li>Prova 0.3.13 (32), uppladdat 19/10 av TestFlight-flödet (39271856967, #643), på en riktig iPhone (<i>Nytt sedan</i>, samma väg tillbaka, en sparad resa, fliken, rapporten <i>Dit / Hem</i>, statusfältet) och skicka sedan in det till App Review; soffprovet i steg 13 är klart (#638), och favoriternas rapport är byggd (#636) och med i 32. Nyckeln ligger på plats (#582).</li>
   </ol>
 
