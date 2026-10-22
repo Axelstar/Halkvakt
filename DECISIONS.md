@@ -15916,3 +15916,42 @@ listan.
 lunch och kväll körs redan. Threads: kräver en egen nyckel från Meta, inte byggt.
 
 **Stomdokument:** inga — marknadsföringen ligger utanför de åtta (#598).
+
+## #664 (21/10 2026) Försprångets räkneregel och population, fastställda före första lästa andel (TROSKLAR-FORSPRANG §4, §5, §8)
+
+**Bengts ord 21/10, för Bengt och Axel:** *"Ja, hela paketet"*, *"Ja, i #1135"* och *"Bengt för båda"* (åtgärdslistan B4-90; förklaringen på Bengts Skrivbord,
+`Halkvakt_B4-90_Rakneregel_2026-10-21.md`). TROSKLAR-FORSPRANG §8 kräver båda signaturerna för ändringar i §2–§5; Bengt signerar för
+båda, som i #564 och #656–#659.
+
+**Frågan.** Domen i mars räknar andelar ur `forsprang_log`, men §5 sa vilka krav som gäller, inte hur man räknar: ingen räkneenhet (samma
+fara ger en varning varje halvtimme), ingen nämnare för FS-A1 i loggen, ingen regel för län och halkperiod, ingen definition av takten i
+FS-B3, inga regler för vilka rader som ingår, och en blindning som lät FS-A1 räknas fram. Med 30 rutter varje halvtimme från ungefär 1/11
+(#662) blir frågan skarp.
+
+**Beslut.** Inskrivet i TROSKLAR-FORSPRANG:
+- **§4 Populationen från T0:** alla 30 rutter varje halvtimme, urvalet bland motorns faror vid linjen (`farorVidLinjen`) i stället för
+  rutans rektangel, en nämnarrad (`niva2` = 0) för varje rutt och varv utan nivå 2, och `beta` på efterhalkans betavarning. Raderna före T0
+  redovisas för sig. T0 skrivs här när skuggmotorn och sql/066 är driftsatta.
+- **§5 Räkneregeln R1–R9:** episod (högst 2 h mellan körningarna, S-B:s gräns), räkneenhet (en nivå 2-episod och ett svepvärde),
+  domkörningar, FS-A1:s täljare och nämnare, FS-C1, län (sträckans län, stationens via närmaste sträcka inom 20 km som länssidorna),
+  halkperiod (2 dygn per län, sedan i hela landet), FS-B1–B4 per svepvärde, och bruset.
+- **§5 Blindningen:** en fast lista över de antal knappen får skriva före FS-C; inga nämnare.
+- **§8:** en not med det sedda talet och regel L:s fyra svar.
+
+**Det sedda talet.** `forsprang_log` 15 rader 14–18/10, en nivå 2-varning per svepvärde (DB-knappen 39633634808, 39638598817) — antal,
+ingen andel. **Inget tal** i §3 eller §5 ändras (45/60/90 s, 5–50 %, 15 s, 2 %, 5 procentenheter, 1 %, 60/3/3, 1,96).
+
+**Regel L.** L1: ingen dom finns. L2: raderna före T0 redovisas för sig. L3: nej — de 30 rutterna hade inte föreslagits om FS-C1 redan var
+uppfyllt; den delen prövas som lättnad av underlagsspärren, medan R2–R3 skärper. L4: skälet är underlaget, inte ett utfall; 2–3 rutter per
+halvtimme var datorkraftens tak (#359), inte ett val av vad som skulle mätas. Halkperioden per län (R7) är mildare än S-C:s regel för hela
+landet, men vald innan något tal är sett, för att en vinter med kvarliggande is i norr annars blir en enda period.
+
+**Koden.** Punkt 2 (nämnarrader, urval vid vägen, betamärkning) ligger i PR #1135 med de 30 rutterna (B4-94). Driftsättningen — först
+skuggmotorn, sedan sql/066 med DB-knappen — sker på Bengts ord före 1/11 (fristen `fs-rutter-och-regel`). Räkneregeln fryses med sha256 i
+domknappen (B4-55, fristen `fs-domknappen` 15/12).
+
+**Alternativ.** Räkneenhet per halkperiod eller per dygn: valt bort — perioden kan vara i månader, och dygnet låter kvarliggande faror
+dominera. Nämnaren ur `shadow_log`: valt bort — annan population och ingen nivå per varning. Halkperiod för hela landet: valt bort —
+risken att hela vintern blir en period. Alla rader i FS-B: valt bort — utspädning. Axel signerar själv: Bengt valde att signera för båda.
+
+**Stomdokument:** BED §4.2 — försprångets räkneregel fastställd
