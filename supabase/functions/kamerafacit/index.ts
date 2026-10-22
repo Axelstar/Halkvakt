@@ -9,7 +9,7 @@
 // Bilderna läses först i mars (blindningen, DECISIONS #335) och ligger i facit-hinken under v2/ och v3/. ?torrt=1 visar urvalet
 // utan att hämta eller spara något — dbknappens kamerafacitprov.
 import postgres from "https://deno.land/x/postgresjs@v3.4.4/mod.js";
-import { type Kamera, type Punkt, STATION_M, V2_TAK, dagsljus, haversineM, kamerorVidFaror, taV2, valjStickprov, vag } from "./urval.ts";
+import { type Kamera, type Punkt, STATION_M, dagsljus, haversineM, kamerorVidFaror, nattbilderIDag, valjStickprov, valjV2, vag } from "./urval.ts";
 import { nyckelGiltig } from "../_shared/nyckel.ts";
 
 const SB = Deno.env.get("SUPABASE_URL")!;
@@ -58,7 +58,11 @@ Deno.serve(async (req) => {
       WHERE bucket_id = 'facit' AND name LIKE 'v2/%' AND created_at >= date_trunc('day', now())`;
     const nattbilder = new Set((await sql`SELECT DISTINCT split_part(split_part(name, '/', 3), '-h', 1) AS k FROM storage.objects
       WHERE bucket_id = 'facit' AND name LIKE 'v2/%' AND created_at > now() - interval '12 hours'`).map((r: any) => r.k));
-    const v2 = vidFaror.filter((k) => taV2(dagsljus(k, nu), nattbilder.has(k.id))).slice(0, Math.max(0, V2_TAK - v2IDag));
+    // Nattkvoten (#676): dygnets nattbilder räknas ur namnen (kamera och timme), mörker avgörs som vid tagningen.
+    const idag = await sql`SELECT split_part(split_part(name, '/', 3), '-h', 1) AS k, split_part(split_part(name, '-h', 2), '.', 1)::bigint AS h
+      FROM storage.objects WHERE bucket_id = 'facit' AND name LIKE 'v2/%' AND created_at >= date_trunc('day', now())`;
+    const nattIDag = nattbilderIDag(idag.map((r: any) => ({ k: r.k, h: Number(r.h) })), kams);
+    const v2 = valjV2(vidFaror, (k) => dagsljus(k, nu), (k) => nattbilder.has(k.id), v2IDag, nattIDag);
 
     // V3 — kalla stationer UTAN fara, med en kamera vid stationen. #75:s vakt och färskhet som grindarna.
     const farligt = new Set(faror.map((f) => f.id));
@@ -79,7 +83,7 @@ Deno.serve(async (req) => {
       for (const k of v2) rakna(`v2 ${await spara(k, vag("v2", nu, k.id))}`);
       for (const k of v3) rakna(`v3 ${await spara(k, vag("v3", nu, k.id))}`);
     }
-    return new Response(JSON.stringify({ ok: true, torrt, faror: faror.length, kameror_vid_faror: vidFaror.length, v2_i_dag: v2IDag,
+    return new Response(JSON.stringify({ ok: true, torrt, faror: faror.length, kameror_vid_faror: vidFaror.length, v2_i_dag: v2IDag, v2_natt_i_dag: nattIDag,
       v2: v2.map((k) => k.id), kalla_stationer: kalla.length, v3_kandidater: kandidater.length, v3: v3.map((k) => k.id), utfall }),
       { headers: { "Content-Type": "application/json" } });
   } catch (e) {

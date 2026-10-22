@@ -16269,3 +16269,32 @@ B4-43 och B4-48; förklaringen gavs i chatten).
 - Bygga T-B nu, eller fråga Axel först: valt bort. Axel kan öppna frågan inför 2027/28.
 
 **Stomdokument:** BED §4.2 — omgång 4 avgjord
+
+## #676 (22/10 2026) Omgång 5: V2 får en dagsljuskvot, V3 behålls med ny text, efterhalkan till Kompisarna först
+
+**Bengts ord 22/10:** *"Dagsljuskvot 30/120"*, *"Behåll, skriv om texten"* och *"Kompisarna först"* (åtgärdslistan B4-80, B4-81 och
+B4-46; förklaringen gavs i chatten).
+
+**Mätningen före beslutet (B4-80).** DB-knappen i läsläge (39791886348) räknade V2-bilderna i facit-hinken per UTC-dygn 12–22/10. Taket
+på 150 fylldes under **första timmen efter midnatt UTC 9 dygn av 11**, alltså nästan bara med nattbilder. Bara 16/10 (22) och 22/10 (86)
+fick några dagsljusbilder.
+
+**Beslut.**
+1. **V2:s dagsljuskvot (B4-80).** Högst **30 nattbilder** per UTC-dygn. Resten av taket, 120 när kvoten är full, tas i dagsljus. Taket
+   150 och regeln om en nattbild per kamera och tolv timmar står kvar. Koden finns i `supabase/functions/kamerafacit/urval.ts`
+   (`V2_NATT_TAK`, `valjV2`, `nattbilderIDag`) med prov i `test/kamerafacit.test.ts`. Dygnets nattbilder räknas ur bildnamnens kamera och
+   timme. Den gäller först när kamerafacit är deployad, och det gör Bengt. Blindningen rörs inte, och urvalet är inte fryst
+   (TROSKLAR-SKUGGAN §8).
+2. **V3 (B4-81).** V3 behålls. Texten i TROSKLAR-SKUGGAN säger nu vad bilderna är: dagsljusbilder vid kalla stationer där ingen fara gick
+   ut, där motorn eller vakterna teg. De visar vad tystnaden kostar.
+3. **Efterhalkan (B4-46).** S3 går till Kompisarna, testgruppen, först och inte publikt i bygge (32). Underlaget är facitläsningen mot
+   väglaget, med lyftet 0,11 (#602). Axel ordnar spärren i bygget. Frågan tas upp igen efter domen i mars.
+
+**Alternativ.**
+- Höja taket utan kvot: valt bort, eftersom natten ändå tar allt först.
+- Både kvot och högre tak: valt bort.
+- Stryka V3: valt bort.
+- Efterhalkan publikt för alla, enligt planen från september (#186): valt bort på facitet.
+- Fråga Axel först: Bengt valde.
+
+**Stomdokument:** BED §4.2 — omgång 5 avgjord
