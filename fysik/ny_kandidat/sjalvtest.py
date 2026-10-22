@@ -290,8 +290,14 @@ def vecken(d, ind):
 
 
 # ── 4. Spärren ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+# Ett påhittat utkast med samma statusrad och signaturtabell som förregistreringen hade före signeringen (#670), så att provet inte
+# beror på om repots förregistrering är signerad (den är det sedan #671).
+UTKAST = ('# Förregistrering — påhittad, för självtestet\n\n**Status: UTKAST 22/10 2026** (DECISIONS #670).\n\n## 9. Signaturer\n\n'
+          '| | Datum | Signatur |\n| :-- | :-- | :-- |\n| Bengt | | |\n| Axel | | |\n')
+
+
 def signerad_text(status=True, bengt=True, axel=True):
-    t = text('docs/FORREGISTRERING-NY-KANDIDAT-2027-28.md')
+    t = UTKAST
     if status: t = t.replace('**Status: UTKAST 22/10 2026**', '**Status: SIGNERAD 23/10 2026**')
     if bengt: t = t.replace('| Bengt | | |', '| Bengt | 2026-10-23 | Bengt i chatten |')
     if axel: t = t.replace('| Axel | | |', '| Axel | 2026-10-23 | Via Bengt |')
@@ -299,8 +305,9 @@ def signerad_text(status=True, bengt=True, axel=True):
 
 
 def sparren_(d):
-    t = text('docs/FORREGISTRERING-NY-KANDIDAT-2027-28.md')
-    k('**Status: UTKAST' in t and '| Bengt | | |' in t and '| Axel | | |' in t and not sparren.signerad(t), 'förregistreringen är ett osignerat utkast i repot')
+    repot = text('docs/FORREGISTRERING-NY-KANDIDAT-2027-28.md')
+    k(sparren.signerad(repot), 'förregistreringen i repot är signerad (#671)')
+    t = UTKAST
     for i, (namn, x, vantat) in enumerate((('utkastet', t, False), ('statusraden utan signaturer', signerad_text(True, False, False), False),
                                            ('bara Bengt', signerad_text(True, True, False), False), ('signaturer utan statusrad', signerad_text(False, True, True), False),
                                            ('signerad', signerad_text(), True))):
@@ -313,13 +320,24 @@ def sparren_(d):
     # Prövningens lägen vägrar innan de läser något: sökvägarna finns inte, så allt annat än kod 2 vore en läsning.
     ns = types.SimpleNamespace(veck='2022-23', enheter=['/finns/inte'], ph='/finns/inte', vvis='/finns/inte', indata='/finns/inte', ut=d,
                                samman='/finns/inte', frysta=None)
-    for f_ in (provning.veck, provning.samman):
-        try:
-            tyst(f_, ns); k(False, f'{f_.__name__} räknade utan signerad förregistrering')
-        except SystemExit as e:
-            k(e.code == 2, f'{f_.__name__}: vägrar med kod 2 före läsningen, fick {e.code!r}')
-    p = subprocess.run([sys.executable, os.path.join(HERE, 'provning.py'), '--sparren'], capture_output=True, text=True, encoding='utf-8')
-    k(p.returncode == 2 and 'vägrar' in p.stderr, f'provning.py --sparren mot repots utkast: {p.returncode} {p.stderr[-200:]}')
+    osign = os.path.join(d, 'forreg_0.md')                      # utkastet ovan
+    gammal = os.environ.get('NYKAND_FORREG_SJALVTEST')
+    os.environ['NYKAND_FORREG_SJALVTEST'] = osign
+    try:
+        for f_ in (provning.veck, provning.samman):
+            try:
+                tyst(f_, ns); k(False, f'{f_.__name__} räknade utan signerad förregistrering')
+            except SystemExit as e:
+                k(e.code == 2, f'{f_.__name__}: vägrar med kod 2 före läsningen, fick {e.code!r}')
+    finally:
+        if gammal is None: os.environ.pop('NYKAND_FORREG_SJALVTEST', None)
+        else: os.environ['NYKAND_FORREG_SJALVTEST'] = gammal
+    miljo = {k_: v for k_, v in os.environ.items() if k_ != 'NYKAND_FORREG_SJALVTEST'}
+    p = subprocess.run([sys.executable, os.path.join(HERE, 'provning.py'), '--sparren'], capture_output=True, text=True, encoding='utf-8',
+                       env={**miljo, 'NYKAND_FORREG_SJALVTEST': osign})
+    k(p.returncode == 2 and 'vägrar' in p.stderr, f'provning.py --sparren mot ett utkast: {p.returncode} {p.stderr[-200:]}')
+    p = subprocess.run([sys.executable, os.path.join(HERE, 'provning.py'), '--sparren'], capture_output=True, text=True, encoding='utf-8', env=miljo)
+    k(p.returncode == 0, f'provning.py --sparren mot repots signerade förregistrering: {p.returncode} {p.stderr[-200:]}')
 
 
 @contextlib.contextmanager

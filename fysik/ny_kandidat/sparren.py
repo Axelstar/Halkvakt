@@ -31,8 +31,12 @@ def signerad(text):
     return s['status_signerad'] and s['bengt'] and s['axel']
 
 
-def vagra_osignerad(fil=FORREG):
-    """Kastar SystemExit(2) om förregistreringen inte är signerad. Returnerar läget när den är det."""
+def vagra_osignerad(fil=None):
+    """Kastar SystemExit(2) om förregistreringen inte är signerad. Returnerar läget när den är det.
+
+    Utan fil läses repots förregistrering. Självtestet pekar ut en påhittad med miljövariabeln NYKAND_FORREG_SJALVTEST, så att
+    spärren kan prövas oberoende av om repots förregistrering är signerad; flödet sätter aldrig variabeln."""
+    fil = fil or os.environ.get('NYKAND_FORREG_SJALVTEST') or FORREG
     try:
         text = open(fil, encoding='utf-8').read()
     except OSError as e:
@@ -49,6 +53,6 @@ def vagra_osignerad(fil=FORREG):
 
 
 if __name__ == '__main__':
-    fil = sys.argv[1] if len(sys.argv) > 1 else FORREG
+    fil = sys.argv[1] if len(sys.argv) > 1 else (os.environ.get('NYKAND_FORREG_SJALVTEST') or FORREG)
     vagra_osignerad(fil)
     print(f'förregistreringen {os.path.basename(fil)}: signerad (statusraden och båda signaturerna)')
