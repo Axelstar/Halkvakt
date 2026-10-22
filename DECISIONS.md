@@ -16036,3 +16036,32 @@ KUVOS-LEVERANSEN §9, och manifestet i `kuvos/vvis-2018-24-leverans.json`. Filer
 - Fråga Micke om hösten 2023: inte nu (#538, Bengt väljer noga när han frågar).
 
 **Stomdokument:** KUV §5 — fler vintrar levererade och prövningen av den frysta kandidaten beslutad
+
+## #667 (22/10 2026) Förregistreringen av prövningen på fem äldre vintrar, som utkast
+
+**Bengts ord 22/10:** *"Slå ihop 1141 och skriv sedan förregistreringen för prövningen av den frysta kandidaten på de fem vintrarna."*
+
+**Utkastet** står i `docs/FORREGISTRERING-FLER-VINTRAR.md`. Bengt och Axel signerar det innan någon av vintrarna 2018/19–2022/23
+läses mot kandidaten (#666; fristen `vvis-forregistrering`, 28/10). Huvuddragen:
+- **Kandidaten** är den frysta ur #552, med fysiken `lw`, `modell.pkl` c96c4072… och W 0,25 · L 160 km. Den körs i analysläget med
+  MET Nordics analys och ECMWF IFS per vinter, och den levande kedjans blandning med stationens egen mätning utesluten. Prognosläget
+  +6 h ingår inte.
+- **Två prov före läsningen:**
+  - identitetsprovet på 2024/25 ska ge modellens egna tal i urvalet, A1 0,46477 °C och A2 1,4449 % på n = 2 210 532, inom ± 0,01 °C
+    och ± 0,02 procentenheter (som #597);
+  - tidszonen provas per vinter, med sommartidsnatten och SMHI:s förskjutning.
+- **Måtten** är grind A:s A1, A2 och A3 på grind A:s population. De redovisas per vinter och för de fem tillsammans, för RÅ, NIVÅ 2 och
+  NIVÅ 2+BLANDNING, per band, norr och söder och månad. 2024/25 står bredvid, märkt *i urvalet*.
+- **Diagnos.** Ingen dom, ingen tröskel och ingen kandidat ändras. Väg B:s 4,84 och 5,12 % står bredvid, inte som prov.
+- **Förväntan** är skriven före läsningen (§6).
+
+**Hittills sett:** bara leveransens form och att indatan finns. ECMWF har 1/11 2018, och MET Nordics analys har 24 filer per dygn i
+fyra stickprov 2018–2023. Inga mätvärden är lästa.
+
+**Alternativ.**
+- Prognosläget +6 h: valt bort nu, eftersom MET Nordics prognoser saknas i stickprovet 1/11 2018 och hämtningen är tung (#666 punkt 5).
+- Kuvösens replika av blandningen (32 grannar, sedan 8): valt bort, eftersom kandidaten döms på den levande kedjans värden
+  (FORREGISTRERING-2026-27 §2).
+- Halvvintrarna 2017/18 och 2023/24: valt bort, eftersom deras höstar saknas.
+
+**Stomdokument:** KUV §5 — prövningen av den frysta kandidaten på fem äldre vintrar förregistrerad som utkast
