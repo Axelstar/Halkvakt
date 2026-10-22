@@ -98,6 +98,14 @@ public enum ResansRapport {
         return ut
     }
 
+    /// Läget utan efterhalkans regnfält (DECISIONS #676, #677): `regnH` töms i varje station, så att S3 inte räknas fram i rapporten för
+    /// den som inte slagit på Betatest. Frysrisken på yta och fukt, och allt annat, är orört. Spegel av SnapshotReader.utanEfterhalka.
+    public static func utanEfterhalka(_ l: RapportLage) -> RapportLage {
+        RapportLage(segments: l.segments, weather: l.weather.map {
+            RapportLage.Station(id: $0.id, lon: $0.lon, lat: $0.lat, yta: $0.yta, fukt: $0.fukt, regnH: nil, lutning30: $0.lutning30)
+        }, bridges: l.bridges, smhi: l.smhi)
+    }
+
     public static func lasLage(_ o: [String: Any]) -> RapportLage {
         let arr = { (k: String) in (o[k] as? [[String: Any]]) ?? [] }
         let smhi: [RapportLage.Smhi] = arr("smhi").map { w in
