@@ -1,8 +1,7 @@
 # Förregistrering — den frysta kandidaten på fem äldre vintrar, 2018/19–2022/23
 
-**Status: UTKAST 22/10 2026** (Bengt: *"skriv sedan förregistreringen för prövningen av den frysta kandidaten på de fem vintrarna"*,
-DECISIONS #666, #667). Bengt och Axel signerar **innan** någon av vintrarna läses mot kandidaten. Fristen är `vvis-forregistrering`,
-28/10.
+**Status: SIGNERAD 22/10 2026** (Bengt, och Axel via Bengt, DECISIONS #668). Utkastet: DECISIONS #667, efter #666. Dokumentets sha256
+vid signeringen, före den här raden och signaturerna: `7e457903c0bab37e1eb010df6e7e109f7e674c4449ca23dec2077c6892ce2c56`. Ingen av vintrarna var läst mot kandidaten vid signeringen.
 
 Källorna:
 - VViS-leveransen 21/10 (`docs/KUVOS-LEVERANSEN-2026-10-02.md` §9, manifestet `kuvos/vvis-2018-24-leverans.json`);
@@ -136,5 +135,5 @@ och körning (§10 f där), och ingenting i dess §1–§5 får ändras mot godk
 
 | | Datum | Signatur |
 | :-- | :-- | :-- |
-| Bengt | | |
-| Axel | | |
+| Bengt | 2026-10-22 | Bengt i chatten: *"gör alla de punkter som väntar som går att göra nu jag signerar för axel om mej själv"* (DECISIONS #668) |
+| Axel | 2026-10-22 | Via Bengt i samma ord (DECISIONS #668) |

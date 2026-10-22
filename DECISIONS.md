@@ -16065,3 +16065,48 @@ fyra stickprov 2018–2023. Inga mätvärden är lästa.
 - Halvvintrarna 2017/18 och 2023/24: valt bort, eftersom deras höstar saknas.
 
 **Stomdokument:** KUV §5 — prövningen av den frysta kandidaten på fem äldre vintrar förregistrerad som utkast
+
+## #668 (22/10 2026) Förregistreringen av prövningen på fem äldre vintrar, signerad
+
+**Bengts ord 22/10, för Bengt och Axel:** *"gör alla de punkter som väntar som går att göra nu jag signerar för axel om mej själv"*.
+
+**Beslut.** `docs/FORREGISTRERING-FLER-VINTRAR.md` (utkastet #667) är signerat av Bengt och av Axel via Bengt, som #595 och #664.
+Dokumentets sha256 vid signeringen, före statusraden och signaturerna, är
+`7e457903c0bab37e1eb010df6e7e109f7e674c4449ca23dec2077c6892ce2c56`.
+
+Frysta från och med nu är kandidaten (§1), räkningen (§2), proven (§3) och måtten och populationen (§4). Ändringar efteråt kräver en
+daterad post med båda signaturerna, och aldrig som en lättnad efter sett utfall (regel L).
+
+**Vid signeringen** var ingen av vintrarna 2018/19–2022/23 läst mot kandidaten. Bara leveransens form och att indatan finns var sett
+(§7 där). Fristen `vvis-forregistrering` är stängd före sitt ärende och därför struken. Kvar före läsningen:
+- filerna i hinken (fristen `vvis-hinken`, Axel);
+- kedjan i nya filer;
+- identitetsprovet på 2024/25 och tidszonsprovet (§3 där).
+
+**Stomdokument:** KUV §5 — förregistreringen av prövningen på fem äldre vintrar signerad
+
+## #669 (22/10 2026) Förregistreringen av olyckorna 2024/25, som utkast
+
+**Bengts ord 22/10:** *"gör alla de punkter som väntar som går att göra nu"*. Förregistreringen av olyckorna (#665 punkt 4, fristen
+`olyckor-forregistrering` 15/11) är en av dem.
+
+**Utkastet** står i `docs/FORREGISTRERING-OLYCKOR-2024-25.md`. Bengt och Axel signerar det innan någon olycka läses. Förslagen bygger
+på regler som redan är frysta, så att inget val görs efter sett utfall:
+- **Urvalet:**
+  - alla olyckor, och halkolyckor ur skuggfacitets ordlista (`HANDELSE_SQL`), som inte väljs om;
+  - de förskjutna raderna lagade och dubbletterna räknade en gång;
+  - `X` nordlig.
+- **Tidszonen:** två prov, sommartidsnatten och rusningens toppar. Utan klart svar gäller svensk lokaltid som i väglagsfilen, och allt
+  redovisas också med en timmes förskjutning.
+- **(a) Facit:** väglagsläsningens populationer och fönster (#591–#594). Avståndet är 2 km och redovisas också vid 5 km. Bekräftelse,
+  basnivå och lyft räknas; en olycka bekräftar men fäller aldrig (#247).
+- **(b) W-A:** `vindsikt-steg0.ts` regler oförändrade (15 km, banden, G_TAK 30 m/s, stationsvakten, W-A1–W-A4) på kuvösens alla
+  stationstimmar. Diagnos bredvid driftens dom (#662).
+- **Hittills sett:** bara filens form.
+
+**Alternativ.**
+- `EventText` som urval: valt bort, eftersom påverkan inte säger om det var halt.
+- Ett större avstånd som primärt: valt bort, eftersom 2 km är väglagsläsningens avstånd. 5 km står bredvid.
+- Att låta läsningen välja ordlista: valt bort (regel L).
+
+**Stomdokument:** KUV §7 — olyckornas förregistrering skriven som utkast
