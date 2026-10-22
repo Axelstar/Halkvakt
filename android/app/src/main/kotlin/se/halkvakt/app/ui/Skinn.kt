@@ -564,7 +564,7 @@ private fun Undersida(sida: Sida, activity: MainActivity, open: (Sida) -> Unit, 
                     ReceiptRow("Vid missad", "Klockslag, närmaste mätstation, vad det var")
                     ReceiptRow("Aldrig", "Konto, resa, position", divider = false)
                 }
-                Text("Ett varnings-id pekar på en fara på kartan, så vi ser ungefär var du var just då. Appens namn och version följer med. Bara för betatestare.",
+                Text("Ett varnings-id pekar på en fara på kartan, så vi ser ungefär var du var just då. Appens namn och version följer med. Bara för betatestare. Betatest slår också på betavarningen efter regn (Halkvakt tror: frysrisk framöver), som prövas bland testarna först.",
                     color = Brand.dim, fontFamily = Typo.sans, fontSize = 13.sp, lineHeight = 19.sp, modifier = Modifier.padding(top = 14.dp, start = 4.dp))
             }
             Sida.INTEGRITET -> {

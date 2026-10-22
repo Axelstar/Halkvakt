@@ -13,7 +13,10 @@ struct StamdeInteIntent: AppIntent {
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
         let p = Prefs.shared
-        guard p.facitOn else { return .result(dialog: "Slå på Betatest i Halkvakts inställningar först.") }
+        guard p.facitOn else {
+            return .result(dialog: Prefs.betatestTillaten ? "Slå på Betatest i Halkvakts inställningar först."
+                                                          : "Det finns bara i testversionen av Halkvakt.")   // #681
+        }
         guard let id = p.lastSaidId, let at = p.lastSaidAt, Date.now.timeIntervalSince(at) < Self.maxAlder else {
             return .result(dialog: "Ingen varning de senaste tio minuterna.")
         }

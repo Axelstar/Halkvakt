@@ -25,7 +25,9 @@ struct InstallningarView: View {
                     .padding(.top, 28)
 
                     RowPanel {
-                        NavigationLink(value: Sida.betatest) { NavRowLabel(title: "Betatest", value: prefs.facitOn ? "På" : "Av") }
+                        if Prefs.betatestTillaten {   // bara i TestFlight (#681)
+                            NavigationLink(value: Sida.betatest) { NavRowLabel(title: "Betatest", value: prefs.facitOn ? "På" : "Av") }
+                        }
                         NavigationLink(value: Sida.integritet) { NavRowLabel(title: "Integritet") }
                         Button { prefs.onboardingDone = false } label: { NavRowLabel(title: "Visa introduktionen igen") }
                         NavigationLink(value: Sida.om) { NavRowLabel(title: "Om Halkvakt", divider: false) }
@@ -148,7 +150,7 @@ struct InstallningarView: View {
                 ReceiptRow(label: "Vid missad", value: "Klockslag, närmaste mätstation, vad det var")
                 ReceiptRow(label: "Aldrig", value: "Konto, resa, position", divider: false)
             }
-            Text("Ett varnings-id pekar på en fara på kartan, så vi ser ungefär var du var just då. Appens namn och version följer med. Bara för betatestare.")
+            Text("Ett varnings-id pekar på en fara på kartan, så vi ser ungefär var du var just då. Appens namn och version följer med. Bara för betatestare. Betatest slår också på betavarningen efter regn (*Halkvakt tror: frysrisk framöver*), som prövas bland testarna först.")
                 .font(Typo.sans(13)).lineSpacing(3).foregroundStyle(Brand.dim)
                 .padding(.top, 14).padding(.horizontal, 4)
         case .integritet:
@@ -158,7 +160,9 @@ struct InstallningarView: View {
                 Text("Din position lämnar inte telefonen av sig själv.").font(Typo.sans(20, .medium)).foregroundStyle(Brand.text)
                 // Kort #357 (DECISIONS #616, #625): "ingen spårning" blev osant när resor kan sparas — en sparad resa är ett spår,
                 // även om det bara finns hos föraren. Texten säger var de ligger och hur de tas bort.
-                Text("All matchning mot vägdata sker lokalt i appen. Inget konto. Undantaget är betatestet — bara om du själv slår på det.")
+                Text(Prefs.betatestTillaten
+                     ? "All matchning mot vägdata sker lokalt i appen. Inget konto. Undantaget är betatestet — bara om du själv slår på det."
+                     : "All matchning mot vägdata sker lokalt i appen. Inget konto, och inget skickas.")
                     .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2)
                 Text("Slår du på Erbjud att spara resor under Favoriter sparas vägarna du väljer, bara i telefonen och aldrig i en säkerhetskopia. Du tar bort dem där.")
                     .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2)
@@ -168,7 +172,9 @@ struct InstallningarView: View {
             .background(Brand.panel, in: RoundedRectangle(cornerRadius: 18))
             .padding(.top, 24)
             RowPanel {
-                NavigationLink(value: Sida.betatest) { NavRowLabel(title: "Betatest", value: prefs.facitOn ? "På" : "Av") }
+                if Prefs.betatestTillaten {
+                    NavigationLink(value: Sida.betatest) { NavRowLabel(title: "Betatest", value: prefs.facitOn ? "På" : "Av") }
+                }
                 LankRad(titel: "Integritetspolicy", url: "https://axelstar.github.io/halkvakt-karta/integritet.html", divider: false)
             }
             .padding(.top, 10)
