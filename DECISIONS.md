@@ -16221,3 +16221,26 @@ av olyckorna byggs efter att FORREGISTRERING-OLYCKOR-2024-25 är signerad.
 Bevakningen i sessionen startar nästa steg när det förra är klart.
 
 **Stomdokument:** KUV §5 — filerna för fler vintrar i hinken och prövningen på 2022/23 startad
+
+## #674 (22/10 2026) Försprånget på alla 30 rutter i drift: T0 = 2026-10-22 11:12 UTC
+
+**Bengts ord 22/10:** *"gör alla de punkter som väntar som går att göra nu"*. Bengt startade själv deployen och sql/066, eftersom
+spärren för produktionsdeploy stoppade Claude.
+
+**Driftsättningen (B4-94, fristen `fs-rutter-och-regel`):**
+1. `deploy-supabase` #153 deployade av misstag `publicera`, som var standardvalet, från main 32675f6. Det märktes på 10:12-svaret, som
+   kom från den gamla skuggmotorn.
+2. #154 deployade **skuggmotorn** 10:20 UTC. 10:42-svaret kom från den nya koden: `slot`, `namnarrader`, 3 rader (DB-knappen
+   39765385527).
+3. **sql/066** kördes med DB-knappen (39767946676). Transaktionen är bekräftad, och jobbet `halkvakt-skuggmotor-forsprang` har schemat
+   `12,42 * * * *`, är aktivt och gör 11 anrop.
+4. **T0 = 2026-10-22 11:12 UTC.** Första körningen skrev 30 rader för de 30 rutterna, alla nämnarrader eftersom ingen nivå 2-fara
+   fanns, med ett svepvärde (DB-knappen 39769246317).
+
+T0 skrivs in i TROSKLAR-FORSPRANG §4, som #664 bestämde. Det är ingen ändring av §4, så inga nya signaturer behövs. B4-94 är klar.
+Fristen `fs-rutter-och-regel` är klar före sitt ärende och därför struken.
+
+**Följd för `publicera`:** #153 körde mains senaste kod för lägesfilen och appdatan. Bundlarna var i synk enligt deployens egen kontroll.
+Beviset är, som sammanfattningen säger, nästa commit i `halkvakt-karta` på :00 eller :30.
+
+**Stomdokument:** BED §4.2 — försprånget i drift på 30 rutter och T0 bokförd
