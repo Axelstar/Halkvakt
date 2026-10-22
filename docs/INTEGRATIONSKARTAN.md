@@ -230,7 +230,7 @@ tiger fortfarande (#524).
 
 | Fält som publiceras | Läses av motorn? | Följd |
 | :-- | :-- | :-- |
-| **`weather[].regn_h`** · **`weather[].lutning30`** | **JA**, sedan 11/10 i alla tre portarna (`snapshot.ts:46`, `SnapshotRepo.kt`, `SnapshotReader.swift`; #524) | efterhalkans gren i `icing_point`, S3 (§4.1) |
+| **`weather[].regn_h`** · **`weather[].lutning30`** | **JA**, sedan 11/10 i alla tre portarna (`snapshot.ts:46`, `SnapshotRepo.kt`, `SnapshotReader.swift`; #524) | efterhalkans gren i `icing_point`, S3 (§4.1); i iOS- och Android-apparna töms `regn_h` vid inläsningen utan Betatest, så S3 talar bara för testgruppen (#677) |
 | **`kandidat`** | **JA**, sedan 16/10 i alla tre portarna (`snapshot.ts:64–66`; #577); regelns timme `tid` läses inte | kandidatens betavarning (§4.4) |
 | **`segments[].regn`** och **`rain_segments`** — radarns mm/h per segment (#81 C) | **NEJ**, och det gäller inte längre (#654). `regn` finns inte i `LiveDoc`-typen | Radarns väta når rösten genom kandidatens fuktvillkor på servern, inte genom adaptern (#562, #565). Normalklassade segment med radarregn ≥ 2,0 mm/h har en egen toppnyckel, `rain_segments` (DECISIONS #187), eftersom varje rad i `segments[]` blir en halkvarning i motorn och båda portarna — fogen var F4/F5, inte F1 (R16). Skuggmotorn läser `rain_segments` (`skuggmotor/main.ts:238`); vattenplaningen föll (#648) |
 | `weather[].lutning15/60` · `weather[].bevis` | NEJ, och det gäller inte (#654) | tillståndet ska inte in i appen; skuggan läser `lutning15/60` och `bevis.vata`, vakthunden `bevis` |

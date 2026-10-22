@@ -16299,6 +16299,27 @@ fick några dagsljusbilder.
 
 **Stomdokument:** BED §4.2 — omgång 5 avgjord
 
+## #677 (22/10 2026) Efterhalkans spärr i apparna: S3 bara för den som slagit på Betatest
+
+**Bengts ord 22/10:** *"jag ordnar gärna efterhalkans spärr i appen härifån"* och, på frågan vem som ska höra S3, *"Den som slått på
+Betatest"*. Det följer av #676 punkt 3 (B4-46, Kompisarna först), där spärren låg på Axel.
+
+**Bygget.**
+- S3 (efterhalkan, *"Halkvakt tror: frysrisk framöver."*) talar bara när Betatest är påslaget i appen. S3 är den enda regeln i motorn
+  som läser `regn_h`. Utan Betatest töms fältet när lägesfilen läses in, och S3 tiger som när fältet saknas. Kandidaten och alla andra
+  regler är orörda.
+- iOS: `SnapshotReader.utanEfterhalka` i motorpaketet, anropad i `SnapshotRepo.swift` när Betatest är av (`facitOn`). Android:
+  `SnapshotRepo.utanEfterhalka`, styrd av `Prefs.facitEnabled`. Prov i båda (`EfterhalkaSparrTests.swift`, `EfterhalkaSparrTest.kt`),
+  gröna i CI på 2d2beb9c.
+
+**Det som återstår.**
+- Spärren når användarna först med Axels nästa bygge. Bygge (32), som ligger i App Review, har S3 utan spärr: släpps det publikt hör
+  alla S3, tvärt emot #676 punkt 3.
+- Spärren håller S3 inom testgruppen bara så länge Betatest bara nås av testgruppen. Om Betatest syns i App Store-versionen är frågan
+  B4-72 (Axel).
+
+**Stomdokument:** APP spärren för S3, MAT §7 efterhalkan
+
 ## #678 (22/10 2026) Omgång 6: KB-D4 räknas på testarna, termisk kartering stängs, regel L:s lättnadsväg används inte, integrationskartan rättad och inte längre fryst
 
 **Bengts ord 22/10:** *"Räkna testarna, skriv öppet"* (B4-82), *"Stäng"* (B4-83), *"vi förklarar ingenting och kringgår regel L"*
