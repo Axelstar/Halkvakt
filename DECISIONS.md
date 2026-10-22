@@ -16163,3 +16163,37 @@ n 2 210 532, A1 0,46477 °C, A2 1,4449 %), och det gäller den frysta kandidaten
 - träningskoden, som byggs.
 
 **Stomdokument:** KUV §5 — förregistreringen av den nya kandidaten signerad
+
+## #672 (22/10 2026) Den nya kandidatens träning byggd; parvalet och huvudtalet preciserade efter signeringen
+
+**Bengts ord 22/10, för Bengt och Axel:** *"På ärliga skattningar"*, *"Enkelt medel"* och *"Bengt för båda"* (på frågan om luckorna i
+FORREGISTRERING-NY-KANDIDAT-2027-28 §3).
+
+**Koden.** Träningen och prövningen ligger i `fysik/ny_kandidat/` och `.github/workflows/kuvos-ny-kandidat.yml`, med en manifestmall i
+`kuvos/kandidat-2027-28.json`. Det blir 22 jobb:
+- den slutliga kandidaten;
+- sex veck, där en vinter i taget hålls utanför;
+- 15 parveck.
+
+Långvågen tas alltid ur fysikens reserv, och vinden för 2018/19 räknas ur x och y. Spärren vägrar räkna utfall utan statusen SIGNERAD och
+båda signaturerna. VViS-filerna läses bara i jobben och laddas aldrig upp; modellerna läggs i den privata hinken. De frysta filerna och
+`fysik/vintrar/` är orörda. Självtesten är gröna lokalt. Uppskattningen är omkring 8 timmar träning med sex jobb parallellt, efter
+hämtningen av MET Nordic.
+
+**Ändringen i förregistreringen (§10 där).** Preciseringar av det §3 inte sa, gjorda innan något utfall var läst:
+- **Parvalet** görs på ärliga skattningar: varje träningsvinter skattas av en modell som varken sett den eller den utelämnade, och paret
+  med minst andel grova fel över träningsvintrarna väljs, som i väg B (#544).
+- **Huvudtalet** är det enkla medlet över de sex vintrarna. Talen ur alla punkter ihop står bredvid.
+
+**Kedjans egna val**, fastlagda före läsningen:
+- en vinter tas bara bort när tidszonsprovet faller; saknas indata stannar planen i stället;
+- SMHI-provet körs också för 2024/25;
+- `cloud_p` påverkar fysiken när långvågen alltid tas ur reserven, men kalibreras inte, eftersom proceduren är oförändrad;
+- `A2_KONFIG` drar sina 1,4 miljoner rader ur alla träningsvintrar.
+
+**Alternativ.**
+- Paret valt på skattningar i urvalet: valt bort, eftersom de är för goda och drar mot W = 0.
+- Den frysta kandidatens par: valt bort, eftersom kandidaten ska väljas på sina egna data.
+- Alla punkter ihop som huvudtal: valt bort, eftersom förregistreringen säger medel och varje vinter är ett väderår.
+
+**Stomdokument:** KUV §5 — den nya kandidatens träning byggd och parvalet preciserat

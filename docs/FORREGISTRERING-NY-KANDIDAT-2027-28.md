@@ -94,3 +94,13 @@ det bara genom en daterad post med båda signaturerna, och aldrig som en lättna
 | :-- | :-- | :-- |
 | Bengt | 2026-10-22 | Bengt i chatten: *"Jag har läst utkastet i #1145. Signera förregistreringen för den nya kandidaten för mej och Axel och slå ihop."* (DECISIONS #671) |
 | Axel | 2026-10-22 | Via Bengt i samma ord (DECISIONS #671) |
+
+## 10. Ändringar efter signeringen
+
+- **22/10 2026 — parvalet och huvudtalet (DECISIONS #672).** Bengt i chatten valde *"På ärliga skattningar"*, *"Enkelt medel"* och *"Bengt för båda"*. Axel signerar via Bengt i samma ord.
+
+  §3 sa att paret väljs på träningsvintrarna och att talen redovisas som medel över de sex, men inte vilka skattningar paret väljs på och vilket tal som är huvudtalet. Två preciseringar fyller den luckan:
+  - **Parvalet.** I varje prov skattas varje träningsvinter av en modell som varken har sett den vintern eller den utelämnade. Paret väljs bland de 15 på de skattningarna, som det par som ger minst andel grova fel (> 2 °C) på grind A:s population över träningsvintrarna tillsammans; vid lika vinner det första i rutnätet. Det är samma princip som väg B (#544). Den slutliga kandidatens par väljs på samma sätt, på de sex provens egna skattningar.
+  - **Huvudtalet** är det enkla medlet av de sex utelämnade vintrarnas A1, A2 och A3, där varje vinter väger lika. Talen ur alla punkter ihop redovisas bredvid.
+
+  Inget utfall var läst när ändringen gjordes. Den preciserar och lättar ingenting (regel L).
