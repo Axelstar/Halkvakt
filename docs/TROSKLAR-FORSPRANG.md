@@ -50,10 +50,16 @@ nu:** klarar flera värden grindarna väljs det **kortaste** som klarar FS-B1 �
 ## 4. Hur det mäts — skuggan
 
 **Eget anrop, inte skuggmotorns huvudvarv.** Skuggmotorns huvudvarv slår redan i datorkraftens tak (546 kl 04:32 och 05:02Z 25/9, på de
-nya minuterna :02/:32 — flytten i kort #244 löste det inte). Försprånget körs därför som eget anrop på **:12/:42**, samma rutter som
-halvtimmens huvudvarv, och bara för rutter som har minst en nivå 2-fara i sin ruta. Per sådan rutt körs motorn två gånger på samma spår:
-**baskörningen** (dagens motor) och **varianten** (nivå 2 med halvtimmens svepvärde; värdet roterar över de tre så att varje rutt möter
-alla). Båda körningarnas varningar och undanträngda (`suppressed`) loggas, med nivån per varning.
+nya minuterna :02/:32 — flytten i kort #244 löste det inte). Försprånget körs därför som eget anrop på **:12/:42**.
+**Populationen från T0** (DECISIONS #662, #664): **alla 30 rutter varje halvtimme** — de 20 i `ROUTES` och de 10 i `ROUTES_C`
+(`supabase/functions/skuggmotor/main.ts`), högst tre per anrop (sql/066). T0 är första körningen med sql/066:s jobb; datum och
+klockslag (UTC) skrivs i posten som driftsätter det. För varje rutt och varv avgörs om någon nivå 2-fara finns bland motorns faror vid
+linjen (`farorVidLinjen`). Finns en körs motorn två gånger på samma spår: **baskörningen** (dagens motor) och **varianten** (nivå 2 med
+halvtimmens svepvärde; värdet är detsamma för alla rutter i varvet, så varje rutt möter alla tre var 90:e minut). Båda körningarnas
+varningar och undanträngda (`suppressed`) loggas, med nivån per varning. Finns ingen skrivs en **nämnarrad** (`niva2` = 0):
+baskörningens A1- och A2-varningar med nivå, ingen variant — den vore byte för byte densamma. Varje varning bär `beta` när den är
+efterhalkans betavarning (S3). En rad per rutt och varv. **Raderna före T0** (halvtimmens 2–3 av de 20 rutterna, urval på rutans
+rektangel; vid beslutet 15 rader 14–18/10, sedda som antal) räknas med samma regel men redovisas för sig och ingår inte i domen.
 
 **Motorn får en krok, ingen ny regel:** en valfri funktion som ger försprånget per fara. Utan kroken är motorn byte för byte densamma,
 och vektorerna i `engine/vectors/` rörs inte. Kroken förs till Kotlin och Swift först vid steg 7, efter domen.
@@ -84,8 +90,41 @@ och vektorerna i `engine/vectors/` rörs inte. Kroken förs till Kotlin och Swif
 | FS-C2 | Spridning | **≥ 3 halkperioder** och **≥ 3 län** |
 | FS-C3 | Bruset | ±1,96·√(p(1−p)/N) redovisas med varje andel |
 
-**Blindningen:** under FS-C skriver knappen bara antal — varningar, nivåer, svepvärden, perioder, län. Andelarna först när C är uppfylld
-(samma princip som grind V-B och S-B, DECISIONS #350).
+### Räkneregeln (fastställd 21/10 2026 före första lästa andel, DECISIONS #664)
+
+Gäller rader från T0. Inga nya tal: 2 h och 2 dygn är grind S-B:s och S-C:s, 20 km länssidornas.
+
+- **R1 Episod.** En fara (`id`) på en rutt med en nivå, över körningar där den gav en varning med den nivån, så länge det är högst 2 h
+  mellan två på varandra följande sådana körningar. Längre glapp eller annan nivå börjar en ny episod. FS-B och FS-C: nivå 2-varning i
+  basen eller varianten. FS-A1: varning i basen.
+- **R2 Räkneenhet.** En nivå 2-episod och ett svepvärde, representerad av episodens första körning (tidigast `run_at`) med det värdet.
+  Senare körningar i episoden med samma värde räknas inte.
+- **R3 Domkörningar.** Per svepvärde de rader som representerar minst en räkneenhet, varje rad en gång, samt rader där basen och
+  varianten skiljer sig fast ingen har en nivå 2-varning (antalet redovisas). Övriga rader bara som antal.
+- **R4 FS-A1.** Täljare: basens episoder med nivå 2. Nämnare: basens episoder om `slippery_segment` och `icing_point`, broarna (`bro:`) på
+  nivå 1, `beta` inte medräknad. Alla rader från T0, nämnarraderna med; ett tal, inte per svepvärde. A1:s nivå 2 räknas först när FS-A2
+  är uppfyllt.
+- **R5 FS-C1.** Per svepvärde: räkneenheter där varianten i den representerande körningen har en nivå 2-varning om faran.
+- **R6 Län.** Farans län. `seg:<id>`: `road_conditions.county_nos[1]` (Trafikverkets länsnummer). `wx:<id>`: länet för närmaste
+  väglagssträcka inom 20 km (`STATION_LAN_SQL`, `publish/map-core.ts`). Utan träff: okänt — räknas i FS-C1, inte i FS-C2; antalet
+  redovisas. FS-C2:s län = olika län bland FS-C1:s enheter, per svepvärde.
+- **R7 Halkperiod.** Per svepvärde och län sorteras FS-C1:s enheter i tid; en enhet mer än 2 dygn efter föregående i länet börjar en ny
+  länsperiod. Länsperiodernas starter i hela landet sorteras, och samma regel räknar halkperioderna. Enheter utan län räknas inte.
+- **R8 FS-B per svepvärde, på domkörningarna.** B1: där båda körningarna har en varning om faran, basens tid minus variantens (första
+  varningen i var och en), sekunder; medianen. B2: täljare = per `id` hur många fler varningar basen har än varianten; nämnare = basens
+  varningar; noll `accident` bland de saknade. B3: yttranden = alla varningar; följd = yttrande vars föregående ligger högst 60 s före
+  (skuggrapportens `foljder_inom_60s`); takt = summa följder / summa yttranden, för basen och varianten var för sig; kravet gäller
+  skillnaden i procentenheter. B4: täljare = `nytt`; nämnare = variantens varningar; `kvarKm` = 0,0 (spåret tog slut) redovisas separat
+  och står utanför båda.
+- **R9 Bruset.** N = andelens nämnare. Varningar i samma körning hänger ihop, så bruset är snarare för smalt; det står i domraden.
+
+**Blindningen** (ersätter meningen *"varningar, nivåer, svepvärden, perioder, län"*, DECISIONS #664): Under FS-C skriver knappen bara antal
+rader (totalt, per dygn, före och efter T0), FS-C1:s enheter per svepvärde (också per A1 och A2), FS-C2:s halkperioder och län per
+svepvärde med enheterna utan län, FS-A2:s sträckor med kod 3 eller 4, och om FS-C är uppfyllt per värde. Den skriver **inte** A1/A2-
+episoder, nivå 1-episoder, basens nivå 2-varningar, domkörningar, varningar i bas eller variant, saknade, nya, följder, yttranden eller
+sekunder — ur två sådana tal går en andel att räkna (FS-A1 = nivå 2 / alla). Andelarna med bruset skrivs bara i domläget, 1/3 2027
+(`mars-domar`) eller på Bengts uttryckliga beställning, för de värden där FS-C är uppfyllt; FS-A1 när FS-C är uppfyllt för minst ett
+värde (samma princip som grind V-B och S-B, DECISIONS #350).
 
 ## 6. Domslutet (mars 2027, Axel fäller mot Bengts mätning)
 
@@ -116,3 +155,11 @@ egen text och eget domfönster.
 
 Trösklarna i §2–§5 ändras bara med båda signaturerna och en motivering som inte lutar sig mot utfallet (samma regel som varje
 tröskeldokument). Efter första lästa andel får inget tal i §3 eller §5 ändras före domen.
+
+*Not 21/10 2026 (DECISIONS #664; Bengt för Bengt och Axel, som #564 och #656–#659):* §4:s population och §5:s räkneregel skrevs före
+första lästa andel. Sett: `forsprang_log` 15 rader 14–18/10, en nivå 2-varning per svepvärde (DB-knappen 39633634808, 39638598817) —
+antal, ingen andel. Inget tal i §3 eller §5 ändras. L1: ingen dom finns. L2: raderna före T0 redovisas för sig. L3: nej — de 30
+rutterna hade inte föreslagits om FS-C1 redan var uppfyllt; den delen prövas som lättnad av underlagsspärren, medan R2–R3 skärper.
+L4: skälet är underlaget, inte ett utfall; 2–3 rutter per halvtimme var datorkraftens tak (#359), inte ett val av vad som skulle
+mätas. Räkneregeln fryses med sha256 i domknappen (B4-55); efter första lästa andel ändras varken talen i §3 och §5 eller räkneregeln
+före domen.
