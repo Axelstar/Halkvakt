@@ -463,7 +463,7 @@ private fun SettingsRoot(activity: MainActivity, onIntro: (() -> Unit)?, open: (
         }
         Spacer(Modifier.height(14.dp))
         RowPanel {
-            NavRow("Betatest", if (facitOn) "På" else "Av") { open(Sida.BETATEST) }
+            if (Prefs.betatestTillaten) NavRow("Betatest", if (facitOn) "På" else "Av") { open(Sida.BETATEST) }   // bara i testbyggen (#681)
             NavRow("Integritet") { open(Sida.INTEGRITET) }
             onIntro?.let { NavRow("Visa introduktionen igen", onClick = it) }
             NavRow("Om Halkvakt", divider = false) { open(Sida.OM) }
@@ -575,14 +575,15 @@ private fun Undersida(sida: Sida, activity: MainActivity, open: (Sida) -> Unit, 
                     MonoLabel("Löftet", size = 11.sp)
                     Text("Din position lämnar inte telefonen av sig själv.", color = Brand.text, fontFamily = Typo.sans, fontWeight = FontWeight.Medium, fontSize = 20.sp)
                     // Kort #357 (DECISIONS #616, #625): "ingen spårning" blev osant när resor kan sparas — samma ord som iOS.
-                    Text("All matchning mot vägdata sker lokalt i appen. Inget konto. Undantaget är betatestet — bara om du själv slår på det.",
+                    Text(if (Prefs.betatestTillaten) "All matchning mot vägdata sker lokalt i appen. Inget konto. Undantaget är betatestet — bara om du själv slår på det."
+                         else "All matchning mot vägdata sker lokalt i appen. Inget konto, och inget skickas.",
                         color = Text2, fontFamily = Typo.sans, fontSize = 14.sp, lineHeight = 21.sp)
                     Text("Slår du på Erbjud att spara resor under Favoriter sparas vägarna du väljer, bara i telefonen och aldrig i en säkerhetskopia. Du tar bort dem där.",
                         color = Text2, fontFamily = Typo.sans, fontSize = 14.sp, lineHeight = 21.sp)
                 }
                 Spacer(Modifier.height(10.dp))
                 RowPanel {
-                    NavRow("Betatest", if (facitOn) "På" else "Av") { open(Sida.BETATEST) }
+                    if (Prefs.betatestTillaten) NavRow("Betatest", if (facitOn) "På" else "Av") { open(Sida.BETATEST) }
                     NavRow("Integritetspolicy", divider = false) { uri.openUri("https://axelstar.github.io/halkvakt-karta/integritet.html") }
                 }
             }

@@ -3,7 +3,13 @@ on:
   push:
     branches: [main]
     paths: ["android/**", "engine/src/**", "engine/vectors/**", "engine/fixtures/**", ".github/workflows/android.yml"]
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      betatest:
+        description: "true = testbygge med Betatest; false = produktionens AAB utan (DECISIONS #681)"
+        type: choice
+        options: ["true", "false"]
+        default: "true"
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -29,7 +35,7 @@ jobs:
         run: |
           echo "$HV_KEYSTORE_B64" | base64 -d > /tmp/upload.jks
           export HV_KEYSTORE_PATH=/tmp/upload.jks
-          cd android && ./gradlew --no-daemon :app:bundleRelease
+          cd android && ./gradlew --no-daemon :app:bundleRelease -Phalkvakt.betatest=${{ inputs.betatest || 'true' }}
       - name: Ladda upp release-AAB
         uses: actions/upload-artifact@v4
         with:

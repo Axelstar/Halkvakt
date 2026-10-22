@@ -22,4 +22,12 @@ class EfterhalkaSparrTest {
         val p = PointHazard(id = "wx:2", kind = HazardKind.ICING_POINT, lon = 18.0, lat = 59.0)
         assertEquals(listOf(p), SnapshotRepo.utanEfterhalka(listOf(p)))
     }
+
+    /** Betatest bara i testbyggen (DECISIONS #681): i ett produktionsbygge är brytaren av, också om den slagits på förut. */
+    @Test fun betatestBaraITestbyggen() {
+        assertEquals(true, Prefs.betatestPa(lagrad = true, tillaten = true))
+        assertEquals(false, Prefs.betatestPa(lagrad = true, tillaten = false))
+        assertEquals(false, Prefs.betatestPa(lagrad = false, tillaten = true))
+        assertEquals(true, BuildConfig.BETATEST_TILLATEN, "enhetsproven körs i ett testbygge, där betatestet finns")
+    }
 }
