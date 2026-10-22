@@ -16143,3 +16143,23 @@ förregistreringen, och ingen metod i den ändras. Inget utfall var läst när d
 - Pröva bara på 2024/25: valt bort, eftersom det ger en enda provvinter.
 
 **Stomdokument:** KUV §5 — kedjan för flera vintrar byggd och den nya kandidatens förregistrering skriven som utkast
+
+## #671 (22/10 2026) Förregistreringen av den nya kandidaten på sex vintrar, signerad
+
+**Bengts ord 22/10, för Bengt och Axel:** *"Jag har läst utkastet i #1145. Signera förregistreringen för den nya kandidaten för mej och
+Axel och slå ihop."*
+
+**Beslut.** `docs/FORREGISTRERING-NY-KANDIDAT-2027-28.md` (utkastet #670) är signerat av Bengt och av Axel via Bengt. Dokumentets
+sha256 vid signeringen, före statusraden och signaturerna, är
+`8fe0818f772267763d63353ab5d60fff0c34968fd913a203db48bdbe3470e619`.
+
+Frysta från och med nu är procedurerna och indatan (§1), vintrarna (§2), prövningen och måtten (§3) och proven (§4). Det betyder
+bland annat att långvågen tas ur fysikens reserv alla år och att en vinter i taget hålls utanför. Ändringar efteråt kräver en daterad
+post med båda signaturerna, och aldrig som en lättnad efter sett utfall (regel L).
+
+**Vid signeringen** var ingen vinter läst mot någon kandidat. Bara identitetsprovet på 2024/25 var läst (körning 39752084226, klarat:
+n 2 210 532, A1 0,46477 °C, A2 1,4449 %), och det gäller den frysta kandidaten i urvalet. Kvar före träningen:
+- VViS-filerna i hinken (fristen `vvis-hinken`, Axel);
+- träningskoden, som byggs.
+
+**Stomdokument:** KUV §5 — förregistreringen av den nya kandidaten signerad
