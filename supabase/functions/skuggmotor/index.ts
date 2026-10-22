@@ -886,7 +886,7 @@ export function forsprangNiva(h: Hazard, vata: Map<string, number>): ForsprangNi
   return null;
 }
 
-/** FS-A1:s varningsslag (§2: A1 halt väglag och A2 frysrisk): nämnarradens varningar och nämnaren i räkneregeln R4 (DECISIONS #663). */
+/** FS-A1:s varningsslag (§2: A1 halt väglag och A2 frysrisk): nämnarradens varningar och nämnaren i räkneregeln R4 (DECISIONS #664). */
 export const FORSPRANG_A_SLAG: readonly string[] = ["slippery_segment", "icing_point"];
 
 /** Rutter per försprångsanrop: skuggmotorns tak, som huvudvarvets (546 vid fler, kort #244). */
@@ -1465,7 +1465,7 @@ async function forsprangVarv(prov: boolean, c = false, slot: number | null = nul
     if (krok) motor.leadFor = forsprangKrok(nivaer, svepS);
     const suppressed: { kind: string; id: string; distM: number; by: string }[] = [];
     motor.onSuppressed = (c) => suppressed.push({ kind: c.kind, id: c.hazardId, distM: Math.round(c.distM), by: c.by });
-    // `beta` märker efterhalkans betavarning (S3), som är frysrisk men aldrig nivå 2 (DECISIONS #663, räkneregeln R4).
+    // `beta` märker efterhalkans betavarning (S3), som är frysrisk men aldrig nivå 2 (DECISIONS #664, räkneregeln R4).
     const alerts = motor.run(trace).map((a) => ({ t: a.t, id: a.hazardId, kind: a.kind, distanceM: Math.round(a.distanceM),
       niva: nivaer.get(a.hazardId) ?? null, ...(a.beta ? { beta: true } : {}) }));
     return { alerts, suppressed };
@@ -1502,13 +1502,13 @@ async function forsprangVarv(prov: boolean, c = false, slot: number | null = nul
   for (const name of batch) {
     const line = routes[name];
     const trace = traceAlong(line);
-    // Urvalet vid vägen (DECISIONS #663, TROSKLAR-FORSPRANG §4): nivå 2 bland motorns faror vid linjen (rutfiltret, kort #244, #535).
-    // Rektangeln runt rutten, som gällde till #663, prövade bara sträckornas brytpunkter och tog med faror långt från vägen.
+    // Urvalet vid vägen (DECISIONS #664, TROSKLAR-FORSPRANG §4): nivå 2 bland motorns faror vid linjen (rutfiltret, kort #244, #535).
+    // Rektangeln runt rutten, som gällde till #664, prövade bara sträckornas brytpunkter och tog med faror långt från vägen.
     const naraFaror = farorVidLinjen(hazards, line);
     const niva2 = naraFaror.filter((h) => nivaer.get(h.id) === 2).length;
     const bas = kor(naraFaror, trace, nivaer, false);
     if (!niva2) {
-      // Nämnarraden (FS-A1, DECISIONS #663, räkneregeln R4): baskörningens A1- och A2-varningar med nivå; ingen variant — den vore
+      // Nämnarraden (FS-A1, DECISIONS #664, räkneregeln R4): baskörningens A1- och A2-varningar med nivå; ingen variant — den vore
       // byte för byte densamma. Samma nycklar som de andra raderna, eftersom PostgREST kräver det i en gemensam skrivning.
       rader.push({ route: name, svep_s: svepS, niva2: 0, bas: bas.alerts.filter((a) => FORSPRANG_A_SLAG.includes(a.kind)),
         variant: [], bas_suppressed: bas.suppressed, variant_suppressed: [], nytt: [] });

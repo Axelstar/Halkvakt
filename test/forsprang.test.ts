@@ -104,7 +104,7 @@ test("utan slot väljer halvtimmen, som före #662 — samma rutter som huvudvar
   assert.deepEqual(forsprangUrval([...namn].reverse(), 3)!.batch, forsprangUrval(namn, 3)!.batch);
 });
 
-test("nämnarradens slag och betavarningen: S3 är frysrisk men aldrig nivå 2 (DECISIONS #663, räkneregeln R4)", () => {
+test("nämnarradens slag och betavarningen: S3 är frysrisk men aldrig nivå 2 (DECISIONS #664, räkneregeln R4)", () => {
   assert.deepEqual([...FORSPRANG_A_SLAG], ["slippery_segment", "icing_point"]);
   // S3 talar vid +1…+3 °C; nivå 2 kräver ytan ≤ 0 °C och väta ≥ 3. En betavarning kan alltså bara vara nivå 1.
   const s3 = { id: "wx:1", kind: "icing_point", lon: 15, lat: 59, meta: { surfaceTempC: 2, moisture: false } } as unknown as Hazard;
