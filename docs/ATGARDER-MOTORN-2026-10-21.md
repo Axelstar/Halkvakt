@@ -103,8 +103,8 @@ Förkortningar: sc = `publish/snapshot-core.ts`, sk = `supabase/functions/skuggm
 
 | Nr | Brist | Ägare | Status | Stängd av |
 | :-- | :-- | :-- | :-- | :-- |
-| B4-58 | Butikstexten `marknadsforing/butik/appstore-ios.md`: :136 säger att *Halkvakt tror* följer *Halt väglag* (gäller bara kandidaten; S3 följer *Frysrisk*), :91 säger *near or below 0 °C* (S3 talar vid +1…+3 °C) | Claude (utkast), Axel (App Store Connect) | öppen | |
-| B4-59 | Bygget (32) har kvar raden om gammal data som #647 tog bort på main — rättas i nästa bygge | Axel | öppen | |
+| B4-58 | Butikstexten `marknadsforing/butik/appstore-ios.md`: :136 säger att *Halkvakt tror* följer *Halt väglag* (gäller bara kandidaten; S3 följer *Frysrisk*), :91 säger *near or below 0 °C* (S3 talar vid +1…+3 °C) | Claude (utkast), Axel (App Store Connect) | pågår — utkastet skrivet 22/10 (#681): beskrivningen, nyheterna och anteckningarna rättade för (33), S3 bara i TestFlight; Axel klistrar in | |
+| B4-59 | Bygget (32) har kvar raden om gammal data som #647 tog bort på main — rättas i nästa bygge | Axel | pågår — inskicket görs med (33), som bär #647 (Bengt 22/10, #681); stängs när (33) är inskickat | |
 
 ## G. Integrationskartan
 
@@ -138,7 +138,7 @@ rör grindarna och domkalendern; de står kvar där. S-1–S-11 är rapportens n
 | B4-69 | Kod för tabellen vädertyp × bar/våt väg (kort #231): `kontaktark.py` läser en platt mapp, hinken har `v2/<datum>/` och `v3/<datum>/` | Claude, före 1/2 | öppen | |
 | B4-70 | Vakthundens engångsspärr släppte igenom #1125 (21/10 14:07 UTC) fast #815 med etiketten `vinterord` finns; samma spärr skyddar frostlarmet | Claude | öppen | |
 | B4-71 | Domlarmets kanter: ärendena tilldelas alltid Bengt (`domlarm.ts:89`), också NT där domslutet är Axels; vakthundens utlösarprov startar vindsikt-steg0 och "skriver ingen issue" (`vakthund/index.ts:141–143`), men flödet har nu domlarmet; en handkörd finsk R-A skriver `R-A FI`, som inte är bokförd | Claude | öppen | |
-| B4-72 | Syns Betatest och facitfrågan i App Store-versionen? I så fall kan vem som helst svara utan identitet, och premissen i #201 (tolv testare med samtycke) rubbas | Axel | öppen | |
+| B4-72 | Syns Betatest och facitfrågan i App Store-versionen? I så fall kan vem som helst svara utan identitet, och premissen i #201 (tolv testare med samtycke) rubbas | Axel | **klar** — *"Dölj utanför TestFlight"* och *"Versionen räcker"* (Bengt 22/10): Betatest dolt i App Store-bygget från (33), svar från (33) och senare kommer bara från testarna; Android före Google Plays produktion | #681 |
 | B4-73 | KALENDERN: Ubuntu 26 (19/10) står oavbockad, och vägdatalagret *före vintern* saknar frist | Claude | öppen | |
 | B4-74 | DECISIONS-posten om bildfacitet (kort #209) när Axel svarat på val (b) — fristen `bildfacit-axel` 23/10 | Bengt, Axel | **klar** — *"axel har svarat vi kör b)"* (Bengt 21/10); fristen `bildfacit-axel` borttagen före sitt ärende | #660 |
 | B4-75 | Kartskriptet räknar stängda delar som 0 % i målens procent (`malDelar`, `andel`); B4-67 rättade bara hindren och hävstången | Bengt | öppen | |

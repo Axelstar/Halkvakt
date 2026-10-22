@@ -32,7 +32,7 @@ SÅ FUNGERAR DET
 DIN INTEGRITET, PÅ RIKTIGT
 Din position lämnar inte telefonen av sig själv. All matchning mot vägdata sker lokalt i appen. Inga konton, ingen inloggning, inga annonser. Sparar du resor som favoriter stannar de i telefonen och följer inte med i säkerhetskopian. Läget längs dem räknas i telefonen: appen hämtar samma fil som alla andra, utan att fråga om din väg.
 
-Det enda som någonsin skickas är något du själv trycker på. Slår du på Betatest i Inställningar kan du efter resan svara om varningarna stämde, eller markera att appen missade något — då skickas varningens id (eller närmaste mätstation), klockslaget och ditt svar. Det säger ungefär var du var just då, och därför är brytaren av tills du slår på den.
+Ingenting skickas från appen. Betatestet, där testare efter resan kan svara om varningarna stämde, finns bara i testversionen i TestFlight och inte i App Store-versionen.
 
 GRATIS, UTAN FÖRBEHÅLL
 Halkvakt är gratis och byggd på öppna svenska data. Vägen är redan betald med dina skattepengar — vi ser bara till att den får tala.
@@ -69,7 +69,7 @@ Versionen i butiken är 0.3.9; listan gäller allt som kommit sedan dess (PRODUK
 
 • Nytt utseende: Redo., körläget och varningskortet i helskärm är omgjorda.
 • Favoriter, en ny flik: spara vägar du kör ofta efter en resa, och se läget längs dem innan du kör — dit och hem, med det som är nytt sedan du sist tittade. Vägarna stannar i telefonen och följer inte med i säkerhetskopian. Av från början.
-• Halkvakt tror, märkt beta: rösten kan varna för frysrisk efter regn, och för halka som Halkvakt räknat fram ur väder och vägyta.
+• Halkvakt tror, märkt beta: rösten kan varna för halka som Halkvakt räknat fram ur väder och vägyta. Följer reglaget Halt väglag.
 • Där flera hala vägsträckor möts säger rösten halka en gång, inte en gång per sträcka.
 • Vakten stoppar sig själv när bilen stått still en kvart — en promenad efter resan håller den inte längre igång.
 • Vakten tappar inte längre positionen om du startar den medan den själv provar om du kör.
@@ -86,9 +86,9 @@ inspelningen gäller först när den är bifogad (steg 2 nedan).
 >
 > HOW TO SEE A WARNING WITHOUT DRIVING: open the app, allow location, tap "Starta vakten" (Start the guard). The driving screen appears. Press and hold the label "PÅ VAKT" at the top for half a second: a sample warning card ("Halka", "FRAMFÖR DIG", with the spoken line "Varning: halka rapporterad på vägen framför dig.") fills the screen for eight seconds, without sound. Real warnings are spoken aloud. Tap "Avsluta vakten" to stop.
 >
-> The optional "Betatest" switch in Settings (off by default) lets a tester send a one-tap answer after a trip about whether a warning was correct; the data sent is described in the app and in the privacy policy (hazard id, timestamp, answer, app version).
+> The optional "Betatest" switch (off by default) is shown only in TestFlight builds; in the App Store version it is hidden and nothing is sent. In a test build it lets a tester send a one-tap answer after a trip about whether a warning was correct; the data sent is described in the app and in the privacy policy (hazard id, timestamp, answer, app version).
 >
-> NEW IN 0.3.13: two optional additions. (1) "Halkvakt tror" (beta): a modelled warning for slippery roads or freezing risk, spoken only when Swedish road-weather data says the road surface is near or below 0 °C — it cannot appear in Cupertino. The card is marked BETA, and the warning follows the "Halt väglag" switch in Settings → Varna för. (2) Favoriter, a new middle tab: the switch "Erbjud att spara resor" is off by default. When it is on, the home screen asks after a trip of at least 1 km whether to save the route that was driven. Saved routes are stored only on the device, excluded from iCloud backup, never transmitted, and deleted with one tap in the tab. No map is loaded behind them. Each saved route has a report ("Dit / Hem", out and back): the app downloads one public file of Trafikverket's current situations — the same file for every user, with no route, position or query in the request — and matches it against the saved route on the device. Saving a route needs a drive of at least 1 km, so the tab is empty on a fresh install.
+> NEW IN 0.3.13: two optional additions. (1) "Halkvakt tror" (beta): a modelled warning for slippery roads, spoken only when the modelled road surface is at or below 0 °C and moisture is measured nearby — it cannot appear in Cupertino. The card is marked BETA, and the warning follows the "Halt väglag" switch in Settings → Varna för. A second beta rule, freezing risk after rain, speaks only in TestFlight builds with "Betatest" on. (2) Favoriter, a new middle tab: the switch "Erbjud att spara resor" is off by default. When it is on, the home screen asks after a trip of at least 1 km whether to save the route that was driven. Saved routes are stored only on the device, excluded from iCloud backup, never transmitted, and deleted with one tap in the tab. No map is loaded behind them. Each saved route has a report ("Dit / Hem", out and back): the app downloads one public file of Trafikverket's current situations — the same file for every user, with no route, position or query in the request — and matches it against the saved route on the device. Saving a route needs a drive of at least 1 km, so the tab is empty on a fresh install.
 >
 > BACKGROUND AUDIO (2.5.4): the "audio" background mode keeps the voice speaking with the screen locked while driving. To hear it: Settings → Rösten → "Testa i bakgrunden (talar om 5 s)", then go to the Home Screen; the voice speaks five seconds later. A screen recording from a real iPhone is attached.
 >
@@ -104,6 +104,9 @@ in av skriptet, med statusraden (översta 150 px) ersatt av skärmens färg. `ap
 är ur (19), före designen v2 och fliken Favoriter (2.3.3). Ordningen i butiken är filnamnens ordning.
 
 ## Inskicket steg för steg — 0.3.13 (32)
+
+**22/10: inskicket görs med (33), inte (32)** (Bengt, DECISIONS #681). (32) har efterhalkan utan spärr och raden om gammal data.
+Byt 32 mot 33 i stegen nedan. Beskrivningen, nyheterna och anteckningarna ovan är rättade för (33).
 Läget 19/10: bygge 32 är uppladdat och inläst hos Apple (byggsignalerna, issue #706: `bygge:32 … READY_FOR_BETA_SUBMISSION`), men ingen
 har installerat det än. Versionen i butiken är 0.3.9. Versionsposten som väntar i App Store Connect heter **0.3.10** och står i
 *Prepare for Submission* (`appstore:0.3.10:PREPARE_FOR_SUBMISSION`); den skapades efter avslaget 5/10 (#460).
@@ -133,7 +136,8 @@ har installerat det än. Versionen i butiken är 0.3.9. Versionsposten som vänt
 - Granskningsläget: långtrycket på *PÅ VAKT* är 0,5 s och visar kortet i 8 s utan röst (KorlageView rad 38–43). *Starta vakten* och
   *Avsluta vakten* heter så.
 - *Testa i bakgrunden (talar om 5 s)* finns under Rösten.
-- *Halkvakt tror* märks BETA och följer reglaget *Halt väglag*. Brytaren *Erbjud att spara resor* är av från början, och en resa tas
+- Kandidatens *Halkvakt tror: halka framöver.* märks BETA och följer reglaget *Halt väglag*. Efterhalkans *frysrisk framöver* (S3)
+  följer *Frysrisk* och talar bara med Betatest på, som bara finns i TestFlight (#677, #681; rättat 22/10, B4-58). Brytaren *Erbjud att spara resor* är av från början, och en resa tas
   bort med *Ta bort* i fliken.
 - Rapporten hämtar `favoriter/`-filerna utan fråga om rutt eller position. Bakgrundslägena är `location` och `audio`. Integritetsmanifestet
   har CoarseLocation och ProductInteraction samt UserDefaults (CA92.1), och inga andra API:er med krav på skäl används.

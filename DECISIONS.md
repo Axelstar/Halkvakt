@@ -16462,3 +16462,42 @@ urval blir talen desamma: A1 0,522 °C, A2 4,52 % och A3 0,30 %.
 dess signaturer med datum och körning (dess §10 f). Inget i dess §1–§5 är ändrat på grund av det.
 
 **Stomdokument:** KUV fler vintrar 2022/23, BED §4.2 utfallet före signeringen
+
+## #681 (22/10 2026) Appen omgång 1: (33) till App Review, Axels #1029 när Axel bekräftat, Betatest dolt utanför TestFlight
+
+**Bengts ord 22/10**, på genomgången av blocket Appen (förklarad i chatten 22/10, läs-only):
+- *"(33)"*;
+- *"Ja, när Axel bekräftat"*;
+- *"Dölj utanför TestFlight"*;
+- *"Behåll, skriv ut det"*;
+- *"Grön som nu"*;
+- *"Versionen räcker"*.
+
+**Beslut.**
+1. **App Review med 0.3.13 (33), inte (32).** (32) har efterhalkan utan spärr (#677, #679) och raden om gammal data som #647 tog bort
+   (B4-59). Byggnumret höjs sist, efter #1029, i samma PR som den sista appändringen (#377). Claude laddar upp med TestFlight-flödet
+   från main. Axel klistrar in texterna och skickar in. `marknadsforing/butik/appstore-ios.md` är rättad för (33) (B4-58).
+2. **Axels PR #1029 tas in i (33) när Axel bekräftat att den är färdig.** Den lagar Android-rösten och notisen, som tiger i internt
+   test (28) enligt Axels commit 3cd31a97, och trappan för behörigheter. Den höjer också targetSdk till 36. Provet på en riktig
+   Android är Axels.
+3. **Betatest dolt utanför TestFlight (B4-72).** I ett App Store-bygge syns varken brytaren eller facitfrågan, och en brytare som slagits
+   på i en äldre version gäller inte (`Prefs.betatestTillaten`). TestFlight känns igen på kvittots namn, och utvecklarbyggen räknas
+   som test. Siris två facitkommandon svarar att det bara finns i testversionen. Därmed når varken facitsvar eller S3 allmänheten från
+   (33). Android saknar ännu en offentlig kanal och får samma spärr före Google Plays produktion.
+4. **Kanalen läses ur versionen.** Från (33) kommer facitsvaren bara från testarna. App Store-versionen 0.3.9 räknas bort på sitt
+   versionsnummer. Ingen ny kolumn och ingen ny deploy.
+5. **S3 hänger kvar på Betatest-brytaren**, och det står nu i appen. Betatest-sidan i båda apparna säger att brytaren också slår på
+   betavarningen efter regn. Ingenting skickas av att brytaren slås på, så löftet i butikstexten håller.
+6. **Start och stopp på iPhone står kvar som grön.** Proven i bil 31/8–2/9 får räcka.
+
+**Bygget i samma PR:** `Prefs.betatestTillaten` och raderna i inställningarna och integritetssidan i `HalkvaktApp.swift`, Siris två
+facitkommandon, Betatest-sidans text i iOS och Android, och butikstexten. Ett prov-bygge i `testflight.yml` (läget *prov*) kompilerar appen.
+
+**Det som återstår:**
+- Axels bekräftelse av #1029;
+- byggnumret 33 och uppladdningen;
+- att Axel klistrar in texterna och skickar in;
+- Androids spärr före Google Plays produktion;
+- integritetssidan på halkvakt.se, som nämner betatestet. Den ligger i karta-repot.
+
+**Stomdokument:** APP Betatest dolt utanför TestFlight och (33)
