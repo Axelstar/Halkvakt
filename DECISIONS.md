@@ -16110,3 +16110,56 @@ på regler som redan är frysta, så att inget val görs efter sett utfall:
 - Att låta läsningen välja ordlista: valt bort (regel L).
 
 **Stomdokument:** KUV §7 — olyckornas förregistrering skriven som utkast
+
+## #670 (22/10 2026) Bara 2022/23 räknas för den frysta kandidaten; en ny kandidat tränas på sex vintrar med fysikens långvåg
+
+**Bengts ord 22/10:** *"ok genomför allt som går att genomföra nu, kolla om axel lagt in filerna i hinken och träna en ny kandidat
+på alla vintrar"*, och på förslaget *"Fysikens reserv alla år"*, *"En vinter i taget utanför"* och *"Bengt för båda"*.
+
+**Det kedjan visade (#1144).** MET Nordics analysarkiv saknar långvågen före 14/3 2022, och 2018/19 saknar dessutom
+`wind_speed_10m`. Det är läst ur filernas beskrivning, inte ur värdena. Den frysta kandidaten räknar med uppmätt långvåg, så av de fem
+vintrarna i FORREGISTRERING-FLER-VINTRAR går **bara 2022/23** att räkna så som dess §2 säger. De fyra andra läses inte enligt den
+förregistreringen, och ingen metod i den ändras. Inget utfall var läst när detta upptäcktes.
+
+**Kedjans val där förregistreringen är tyst**, fastlagda i koden före all läsning:
+- MET Nordic-filen får sakna högst 1 % per fält (`MAX_IFYLLT`, den levande kedjans gräns);
+- månaden räknas i svensk tid;
+- i filskarven behålls raden ur `ÅÅÅÅ-2`;
+- PH avrundas till hundradelar, som den levande kedjans del A;
+- SMHI-provet kräver minst fem par, alla med förskjutningen 0 h.
+
+**Beslut.**
+1. **Identitetsprovet på 2024/25** är startat i `kuvos-vintrar`, efter att #1144 slogs ihop. 2022/23 körs när Axel har lagt in VViS-filerna.
+   Hinken hade dem inte 22/10: DB-knappen 39751928626 visade bara de två väglagsfilerna i `trv-2026-111808/`, ingen
+   `kuvos-vvis-2018-24/` och ingen olycksfil.
+2. **En ny kandidat för 2027/28** tränas på sex vintrar (2018/19–2022/23 och 2024/25) med den frysta kandidatens procedur. Långvågen
+   tas ur **fysikens reserv alla år**, så att indatan är densamma alla vintrar. Den prövas **en vinter i taget utanför**, med grind A:s
+   mått, och jämförs med den frysta bara på 2022/23. Utkastet står i `docs/FORREGISTRERING-NY-KANDIDAT-2027-28.md`. Bengt signerar för
+   båda innan något utfall läses. Den frysta kandidaten och vintern 2026/27 påverkas inte.
+
+**Alternativ.**
+- MET:s långvåg där den finns: valt bort, eftersom indatan då skiljer sig mellan vintrarna.
+- Bara de två vintrarna med uppmätt långvåg: valt bort, eftersom det blir för få vintrar.
+- Pröva bara på 2024/25: valt bort, eftersom det ger en enda provvinter.
+
+**Stomdokument:** KUV §5 — kedjan för flera vintrar byggd och den nya kandidatens förregistrering skriven som utkast
+
+## #671 (22/10 2026) Förregistreringen av den nya kandidaten på sex vintrar, signerad
+
+**Bengts ord 22/10, för Bengt och Axel:** *"Jag har läst utkastet i #1145. Signera förregistreringen för den nya kandidaten för mej och
+Axel och slå ihop."*
+
+**Beslut.** `docs/FORREGISTRERING-NY-KANDIDAT-2027-28.md` (utkastet #670) är signerat av Bengt och av Axel via Bengt. Dokumentets
+sha256 vid signeringen, före statusraden och signaturerna, är
+`8fe0818f772267763d63353ab5d60fff0c34968fd913a203db48bdbe3470e619`.
+
+Frysta från och med nu är procedurerna och indatan (§1), vintrarna (§2), prövningen och måtten (§3) och proven (§4). Det betyder
+bland annat att långvågen tas ur fysikens reserv alla år och att en vinter i taget hålls utanför. Ändringar efteråt kräver en daterad
+post med båda signaturerna, och aldrig som en lättnad efter sett utfall (regel L).
+
+**Vid signeringen** var ingen vinter läst mot någon kandidat. Bara identitetsprovet på 2024/25 var läst (körning 39752084226, klarat:
+n 2 210 532, A1 0,46477 °C, A2 1,4449 %), och det gäller den frysta kandidaten i urvalet. Kvar före träningen:
+- VViS-filerna i hinken (fristen `vvis-hinken`, Axel);
+- träningskoden, som byggs.
+
+**Stomdokument:** KUV §5 — förregistreringen av den nya kandidaten signerad
