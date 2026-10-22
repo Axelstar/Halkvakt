@@ -121,7 +121,7 @@ Every session, in order:
 Repot är enda synken mellan sessioner (dator, webb, mobil). Det som bara stod i chatten finns inte nästa gång.
 1. **Vid start — orientera.** Läs den senaste bedömningen (`docs/BEDOMNING-*.md`) hela: den är den enda listan, med
    bevakningen (§0b) och de öppna besluten (§4.2). Läs `docs/INTEGRATIONSKARTAN.md` när `git log` visar att den ändrats
-   sedan förra sessionen eller när ett nytt grepp börjar — den är fryst och ger annars inget nytt (~14 000 tokens).
+   sedan förra sessionen eller när ett nytt grepp börjar (~14 000 tokens).
 2. **Innan något stryks eller sägs vara omöjligt — sök i repot.** Lista tabellerna
    (`grep -ho "CREATE TABLE[A-Z ]* [a-z_]*" sql/*.sql`) och sök nyckelordet i `docs/TROSKLAR-*.md` och i koden. Det
    kostar några hundra tokens. Skälet: 16/9 ströks radarn för att den "inte gick att spela upp" — fast `radar_precip`
@@ -130,8 +130,7 @@ Repot är enda synken mellan sessioner (dator, webb, mobil). Det som bara stod i
    ställs; ett beslut i chatten skrivs in i DECISIONS och bedömningen (§4.1, §0b) i samma varv som det fattas.
    Kontroll före sessionens slut: frågorna i sista svaret ska finnas som rader i §4.2.
 4. **Stryk fortlöpande i bedömningen.** En rad stryks i samma varv som beviset finns, med beviset på raden, och
-   läget överst (var vi är, vart vi är på väg) hålls aktuellt. Integrationskartan stryks inte löpande — den är fryst
-   och ändras först efter bygge och mätning.
+   läget överst (var vi är, vart vi är på väg) hålls aktuellt.
 
 ## KONTAKTREGELN (Bengts order 2026-10-12 — externa kontakter är ingen frågetjänst, DECISIONS #538)
 Bengts kontakter hos Trafikverket och andra myndigheter svarar av välvilja, och varje fråga drar på den. Bengt väljer noga innan han
@@ -173,7 +172,7 @@ Tavlan är människolagret; bedömningen, STATUS och DECISIONS är djuplagren.
 2. *Halkvaktens app* — https://claude.ai/artifact/FThC1PqVqEMqWxofrCv1GT, källa `docs/APPEN.html`
 3. *Halkvaktens systembild* — https://claude.ai/artifact/6hHX4LeXQUrJSbaNthNY9i, källa `docs/SYSTEMBILDEN.html`
 4. Bedömningen — den senaste `docs/BEDOMNING-*.md`
-5. Integrationskartan — `docs/INTEGRATIONSKARTAN.md`
+5. Integrationskartan — `docs/INTEGRATIONSKARTAN.md` (inte längre fryst sedan 22/10, DECISIONS #678)
 6. *Halkvaktens kuvös* — https://claude.ai/artifact/1xvv4hydYbfpF5eXFgLcxh, källa `docs/KUVOSEN.html` (tillagd 1/10 på Bengts order, DECISIONS #425)
 7. *Halkvaktens favoriter* — https://claude.ai/artifact/EJYcQFCyKYd9BgGcYkCMyT, källa `docs/FAVORITER.html` (tillagd 3/10 på Bengts order, DECISIONS #445)
 8. *Nivå 2+blandning live* — https://claude.ai/artifact/Wsuxr3UTG7d7axekXireqg, källa `docs/NIVA2-LIVE.html` (tillagd 14/10 på Bengts order, DECISIONS #557): stegen till kandidaten i appen, kort #343
@@ -182,8 +181,8 @@ nedan): den läser allt som hänt sedan förra synken och rättar handtexten, oc
 gör dagens första session det. I varje varv förs bara in det som maskinerna prövar: beslutet med sin rad `**Stomdokument:**` (som
 säger vad synken ska stämma av), tavlan, projektkartan och kortkartan (skripten skriver lägesraderna och korten i sidorna) och en
 rad i STATUS. Skälet: 107 av 118 commits 4–11/10 rörde dokument, och varje ändring rättade två till tre sidor och republicerade dem
-efter sammanslagningen. En artefakt får ligga högst ett dygn efter sin repokopia. Kartans frysregel gäller fortfarande dess INNEHÅLL
-(ändras efter bygge och mätning), men dess läge-rader (§2, §6.1, §8, §13.6, §14) hålls aktuella av synken. Kontrollen att inget
+efter sammanslagningen. En artefakt får ligga högst ett dygn efter sin repokopia. Integrationskartans frysregel är hävd
+sedan 22/10 (Bengt, DECISIONS #678): den rättas av synken som de andra. Kontrollen att inget
 beslut glömts är `stomvakten.ts --lage` i synken: varje dokuments senaste handtextändring och besluten sedan dess som namnger det.
 **KORTKARTAN (Bengts order 3/10, DECISIONS #445).** Varje öppet kort på tavlan hör till ett eller flera avsnitt i stomdokumenten,
 och varje stomdokument visar sina öppna kort under rubriken *Öppna kort*. Kopplingen bor på ETT ställe, `docs/kortkartan.json`;
@@ -228,7 +227,7 @@ Genomgången 7/10 (DECISIONS #483) behövde ett sjuttiotal rättelser i handtext
 prövade bara det skripten skriver, och regeln *samma varv* hängde på minnet. Tre delar håller nu dokumenten i fas, för alla
 sessioner på alla enheter:
 - **Stomvakten (CI).** Varje nytt beslut slutar med `**Stomdokument:** MAT, SYS` (koderna ur `docs/kortkartan.json`: MAT APP SYS
-  BED KAR KUV FAV; text efter koden är fri, t.ex. `BED §4.2`) eller `**Stomdokument:** inga — skälet`. `scripts/stomvakten.ts --bas
+  BED KAR KUV FAV LIV; text efter koden är fri, t.ex. `BED §4.2`) eller `**Stomdokument:** inga — skälet`. `scripts/stomvakten.ts --bas
   <sha>` i md-vakt.yml fäller ett nytt beslut utan raden, ett *inga* utan skäl och en okänd kod. Att det namngivna dokumentets
   handtext ändras prövas inte längre i PR:en (#522): det gör morgonens synk. Gamla beslut prövas inte. En ändring som rör `kuvos/` eller
   `scripts/matningar/kuvos-*` och lägger till beslut måste namnge KUV i minst ett av dem (DECISIONS #489).
@@ -265,8 +264,7 @@ en körning skrev nådde aldrig synken, som läser beslut och commits, inte utsk
    bedömningens §4.2, kalendern eller på tavlan — får en rad i `docs/fristerna.json`, ett flyttat datum rättas där, och en
    frist vars ärende är stängt tas bort. **En rad i ett skriptskrivet block (LÄGESRADER, Öppna kort) räknas inte som att handtexten
    stämmer** (Bengts ja 13/10, DECISIONS #546). Varje ⚠ i `--lage` blir antingen text i dokumentets handtext, i det avsnitt
-   beslutets rad `**Stomdokument:**` namnger, eller en post i synkens STATUS-rad med skälet: *#NN: ingen handtext, skälet*. Integrationskartans innehåll är fryst: bara dess läge-rader; en innehållsrättelse blir en fråga i
-   bedömningens §4.2. Ett tal förs bara in om det står i källan (DECISIONS, STATUS, koden, en körning) — aldrig ur minnet.
+   beslutets rad `**Stomdokument:**` namnger, eller en post i synkens STATUS-rad med skälet: *#NN: ingen handtext, skälet*. Ett tal förs bara in om det står i källan (DECISIONS, STATUS, koden, en körning) — aldrig ur minnet.
    **Kuvösen** (eget block i projektkartan sedan 8/10, DECISIONS #489): en ny läsning är ett byggsteg på sin del i blocket — testbädden,
    systemets delar, prognoslagrets kandidater, före resan eller facit — med körning, beslut och utfall som bevis, och en kandidat för
    prognoslagret får en rad i jämförelsetabellen på kuvössidan (§5). Kön står i sidans §9, bara framtid; historiken i §12.

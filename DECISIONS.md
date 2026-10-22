@@ -16319,3 +16319,53 @@ Betatest"*. Det följer av #676 punkt 3 (B4-46, Kompisarna först), där spärre
   B4-72 (Axel).
 
 **Stomdokument:** APP spärren för S3, MAT §7 efterhalkan
+
+## #678 (22/10 2026) Omgång 6: KB-D4 räknas på testarna, termisk kartering stängs, regel L:s lättnadsväg används inte, integrationskartan rättad och inte längre fryst
+
+**Bengts ord 22/10:** *"Räkna testarna, skriv öppet"* (B4-82), *"Stäng"* (B4-83), *"vi förklarar ingenting och kringgår regel L"*
+(B4-87) och om integrationskartan (B4-60) först *"stäng integrationskartan. Den här tjänat ut sitt syfte nu"*, samma dag ändrat till
+*"öppna den och uppdatera med kandidatens väg rätt allt och strunta i att frysa den"*. Förklaringen gavs i chatten. B4-82 och B4-83 var
+ställda till Bengt och Axel; Bengt svarade, och han har sagt i dag att han signerar för Axel.
+
+**Beslut.**
+1. **KB-D4 (B4-82).** Svaren bär ingen identitet (#378: inget id per telefon). Villkoret *≥ 5 förare* räknas därför som antalet
+   testare i gruppen, och domen skriver ut att *ingen förare > 25 %* inte kan prövas. Inget id införs. Inget KB-D-utfall är läst:
+   svarens innehåll har inte lästs sedan 6/10, och då gällde inget svar en halkvarning (#460). Antalet testare bokförs under
+   fristen `testforarna` 15/12. Texten står i TROSKLAR-KOMBINATIONEN §4.
+2. **Termisk kartering (B4-83).** Stängd, efter Axels *"görs inte"* 6/10 (#481). Ingen utrustning köps och ingen karteringsnatt
+   planeras. Kort #271 är stängt, delen p-termisk grå, och fristen `kartering-beslut` 15/12 är borttagen före sitt ärende. Kort #321
+   prövas mot satellitens kallkarta utan mätbilen. Den skickade Skyltfondsansökan (`docs/skyltfonden-2026-09-28/`) nämner inte
+   karteringen.
+3. **Regel L och Skyltfonden (B4-87).** Ansökan säger i bilaga 1 och 7 *"En tröskel får skärpas men aldrig lättas när utfallet väl är
+   sett"*. Den meningen hålls som den står: regel L:s lättnadsväg (L2 och L4) används inte, i något av de tretton tröskeldokumenten.
+   L1 och L3 gäller som förut, eftersom de bara stramar åt. Då stämmer ansökan med det som görs, och fonden behöver ingen förklaring.
+   Tolkningen bekräftades av Bengt i chatten 22/10 (*"stämmer"*). En lättnad efter sett utfall kräver ett nytt beslut, och då är
+   frågan om fonden öppen igen. Noten står i TROSKLAR-KOMBINATIONEN §5b, och regelns text står kvar.
+4. **Integrationskartan (B4-60).** Öppnad och rättad mot main, och **frysregeln hävd**: kartan stäms av i dokumentsynken som de andra
+   stomdokumenten (CLAUDE.md, STOMREGELN och DOKUMENTSYNKEN). Kandidatens väg in står i nya §4.4: nyckeln `kandidat`, eget slag
+   sist i prioriteten, BETA, spärrarna och domen i mars. §5.2 säger nu att motorn läser `regn_h`, `lutning30` och `kandidat`.
+   §4–§13 är rättade mot besluten och koden, med en ny rad i §14. Radhänvisningarna in i kartan i projektkartan är flyttade
+   (:189, :225, :229 → :237, :279, :283).
+
+**Det rättelsen visade.**
+- Kandidaten är inte publik: App Store-versionen 0.3.9 bär den inte. Den finns i byggena 0.3.13 (26)–(32), och inskicket av (32)
+  till App Review återstår (#643).
+- Rimfrostens gren beskrevs som gjord men finns inte i koden. Den står nu som beslutad, inte byggd.
+- Farslagskriteriet (#186) säger att Axel beslutar prioriteten för ett nytt slag. För kandidaten beslutade Bengt (#577), och ingen post
+  prövar kriteriet. Det står neutralt i kartans §7.
+
+**Alternativ.**
+- B4-82: ett slumpat id per telefon, som river #378 och butikernas dataskyddsuppgifter, eller att stryka KB-D4. Båda valdes bort.
+- B4-83: stå kvar till 2027/28 (Claudes förslag), eller pröva redan i vinter. Båda valdes bort.
+- B4-87: förklara regel L för fonden före 15/12 (Claudes förslag). Valdes bort.
+- B4-60: öppna, rätta och frysa igen (Claudes förslag), eller bara en not. Båda valdes bort, och stängningen ändrades samma dag.
+
+**Ändrat i samma PR:**
+- åtgärdslistan (B4-60, B4-82, B4-83, B4-87);
+- projektkartan (p-forarfacit, p-termisk, p-regel-l och radhänvisningarna);
+- kortkartan och tavlan (#271 stängt, #321);
+- fristerna och TROSKLAR-KOMBINATIONEN §4 och §5b;
+- INTEGRATIONSKARTAN;
+- CLAUDE.md (frysregeln; stomvaktens kodlista har fått LIV, som redan fanns i kortkartan).
+
+**Stomdokument:** KAR §4.4 kandidatens väg in, MAT §3 KB-D4 och kartering, SYS §3 kartering stängd, BED §4.2 omgång 6 avgjord
