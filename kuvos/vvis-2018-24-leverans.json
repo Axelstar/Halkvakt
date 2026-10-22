@@ -1,0 +1,236 @@
+{
+ "kalla": "Trafikverket, VViS Förvaltning (leverans på projektets begäran 9/10, kort #321; svaret 21/10 15:29)",
+ "mottagen": "2026-10-22T08:08+02:00",
+ "hink": "arkiv/kuvos/kuvos-vvis-2018-24/",
+ "period": [
+  "2017-12-31",
+  "2024-09-07"
+ ],
+ "vintrar_hela": [
+  "2018/19",
+  "2019/20",
+  "2020/21",
+  "2021/22",
+  "2022/23"
+ ],
+ "vintrar_delvis": {
+  "2017/18": "januari–mars 2018 och 2017-12-31",
+  "2023/24": "januari–mars 2024 och 2023-12-31"
+ },
+ "saknas": [
+  "kolumnen siktdjup",
+  "2023-09-07 – 2023-12-30",
+  "2024-09-07 – 2024-10-31"
+ ],
+ "tidszon": "ej mätt; mäts före första läsningen som för 2024/25 (KUVOS-LEVERANSEN §3)",
+ "kolumner": [
+  "measurepoint",
+  "measuretime",
+  "tyta",
+  "tluft",
+  "daggp",
+  "lu_fu",
+  "ned_typ",
+  "ned_maengd",
+  "vimax",
+  "vimed",
+  "virik",
+  "vind30"
+ ],
+ "format": {
+  "avgransare": ";",
+  "decimal": ",",
+  "bom": true,
+  "sidfot": "SSMS: (N rows affected) — fem rader per fil"
+ },
+ "paket": {
+  "fil": "deaddrop.zip",
+  "bytes": 1026580534,
+  "sha256": "b5bf7ce17cf2a233ce8721383a1dc2ae6ae743cc5067df61a8fc852ad7a76a42"
+ },
+ "filer": [
+  {
+   "fil": "Halkvakt_2018-1.csv",
+   "bytes": 463874474,
+   "sha256": "8ec30b023873f4f385e20b6c69ac0fcad3cf5cdf0a0bd09d3c05314118eb1346",
+   "radslut": 6759180,
+   "packad": "Halkvakt_2018-1.csv.gz",
+   "packad_bytes": 88460909,
+   "packad_sha256": "98bc063e4a884c162be55ec39b3b667c8c0a3179cfd0246ee51921b7ea0bbdab",
+   "rader": 6759174,
+   "stationer": 782,
+   "forsta": "2017-12-31 00:00:00.000",
+   "sista": "2018-06-30 00:00:00.000"
+  },
+  {
+   "fil": "Halkvakt_2018-2.csv",
+   "bytes": 294941322,
+   "sha256": "d107a58e63b86284e44c9d09f239624924c3b7f93c9c39527b1a6a076a70b18d",
+   "radslut": 4356043,
+   "packad": "Halkvakt_2018-2.csv.gz",
+   "packad_bytes": 54149674,
+   "packad_sha256": "86f4f1551848ef6c5528ba65336a99d6b15e86b72e143928bf8a459e98c5f304",
+   "rader": 4356037,
+   "stationer": 780,
+   "forsta": "2018-09-06 09:10:00.000",
+   "sista": "2019-01-01 00:00:00.000"
+  },
+  {
+   "fil": "Halkvakt_2019-1.csv",
+   "bytes": 457644851,
+   "sha256": "a8c03c15aa7ce621966ba062eb238764701855785eeb383fcafe2ca1e54d2711",
+   "radslut": 6709311,
+   "packad": "Halkvakt_2019-1.csv.gz",
+   "packad_bytes": 89138016,
+   "packad_sha256": "686f51f4b5fa30a37246949dfb6ce336e7e0ca1b00d8d0f453bd8b7e84a44440",
+   "rader": 6709305,
+   "stationer": 780,
+   "forsta": "2019-01-01 00:00:00.000",
+   "sista": "2019-06-30 00:00:00.000"
+  },
+  {
+   "fil": "Halkvakt_2019-2.csv",
+   "bytes": 349654151,
+   "sha256": "c4bbf9a14ede56823da92f21a124b129a2163722165d32040cfdb782158a48ca",
+   "radslut": 5156500,
+   "packad": "Halkvakt_2019-2.csv.gz",
+   "packad_bytes": 63795960,
+   "packad_sha256": "b093ddef9d7e09a48eed470be83058c23bcac3e229274d9b4c4d63014aa25097",
+   "rader": 5156494,
+   "stationer": 779,
+   "forsta": "2019-08-15 00:00:01.000",
+   "sista": "2020-01-01 00:00:00.000"
+  },
+  {
+   "fil": "Halkvakt_2020-1.csv",
+   "bytes": 457463289,
+   "sha256": "ddbd9b081e5e623512bcc675392c0273146f7fff7e03e6a2300aaad0dfd6cec1",
+   "radslut": 6744136,
+   "packad": "Halkvakt_2020-1.csv.gz",
+   "packad_bytes": 90250388,
+   "packad_sha256": "c30ede8a3f26fd8deeab5a32ddab84553c2ad5ac22f09e9317abcb087263bcf2",
+   "rader": 6744130,
+   "stationer": 773,
+   "forsta": "2020-01-01 00:00:00.000",
+   "sista": "2020-07-01 00:00:00.000"
+  },
+  {
+   "fil": "Halkvakt_2020-2.csv",
+   "bytes": 328019809,
+   "sha256": "4a40a3edce8c6744e344ef165b896b36821fcf54a4597d5cc43022919ed7dfbf",
+   "radslut": 4863544,
+   "packad": "Halkvakt_2020-2.csv.gz",
+   "packad_bytes": 59075937,
+   "packad_sha256": "ac8aeae47b8267323ef14792fae6b28c1448e7ac1a2ab5302eb49ed895e1d15c",
+   "rader": 4863538,
+   "stationer": 776,
+   "forsta": "2020-08-22 19:28:27.000",
+   "sista": "2021-01-01 00:00:00.000"
+  },
+  {
+   "fil": "Halkvakt_2021-1.csv",
+   "bytes": 453981628,
+   "sha256": "5d05d6b3c6f1f5e457557f3fbc5d5132b74a4f31fa7f8c4c29e23e7a6937a2ad",
+   "radslut": 6663956,
+   "packad": "Halkvakt_2021-1.csv.gz",
+   "packad_bytes": 87647872,
+   "packad_sha256": "47456d568dfddb062c24f6b6cdb819f0eab3e0a8327309f77e42f7cd38fa2c57",
+   "rader": 6663950,
+   "stationer": 774,
+   "forsta": "2021-01-01 00:00:00.000",
+   "sista": "2021-07-01 00:00:00.000"
+  },
+  {
+   "fil": "Halkvakt_2021-2.csv",
+   "bytes": 323349030,
+   "sha256": "ba900bb5ce9ff19376da6fee67730dca8fe15117fa1003845007030668d634a1",
+   "radslut": 4785763,
+   "packad": "Halkvakt_2021-2.csv.gz",
+   "packad_bytes": 61058433,
+   "packad_sha256": "a327494ae3774fb6509cf85f0327ff5e43167eed8c5dea10b0dbab17a172d9b9",
+   "rader": 4785757,
+   "stationer": 778,
+   "forsta": "2021-08-24 12:17:23.000",
+   "sista": "2022-01-01 00:00:00.000"
+  },
+  {
+   "fil": "Halkvakt_2022-1.csv",
+   "bytes": 449262609,
+   "sha256": "54d07f48dc42b41e39f35debc9d50b49d8fab3174a3b3567e838459718e9841d",
+   "radslut": 6637457,
+   "packad": "Halkvakt_2022-1.csv.gz",
+   "packad_bytes": 90781172,
+   "packad_sha256": "80d56072507a1581993c1359cc44c376b4ce23323e6aa436eed9783c53af1d47",
+   "rader": 6637451,
+   "stationer": 780,
+   "forsta": "2022-01-01 00:00:00.000",
+   "sista": "2022-07-01 00:00:00.000"
+  },
+  {
+   "fil": "Halkvakt_2022-2.csv",
+   "bytes": 311147150,
+   "sha256": "20e5de0488f7dad7da3d1b4266047af4e956a127b56849b475b714436c629958",
+   "radslut": 4639559,
+   "packad": "Halkvakt_2022-2.csv.gz",
+   "packad_bytes": 59725543,
+   "packad_sha256": "2fb80ef8c62fef39ea81b4f9b0900efa93a870b04e2153163838a8498f0f8b83",
+   "rader": 4639553,
+   "stationer": 771,
+   "forsta": "2022-08-24 07:26:22.000",
+   "sista": "2022-12-31 00:00:00.000"
+  },
+  {
+   "fil": "Halkvakt_2023-1.csv",
+   "bytes": 443052441,
+   "sha256": "b272b67c594fd54b1cc5717ba951dcaa8f93330da297bc0c3715ad35c2cea512",
+   "radslut": 6587627,
+   "packad": "Halkvakt_2023-1.csv.gz",
+   "packad_bytes": 90819390,
+   "packad_sha256": "d138db312bf405bd72e3e4532ccd45ac1346bb1ff09226c414ba209f29aecc07",
+   "rader": 6587621,
+   "stationer": 773,
+   "forsta": "2023-01-01 00:00:00.000",
+   "sista": "2023-07-01 00:00:00.000"
+  },
+  {
+   "fil": "Halkvakt_2023-2.csv",
+   "bytes": 166831268,
+   "sha256": "c28778bf1e3d360790c40d23231ce9718cbe0fb62769163a62557cbc38d5cb9c",
+   "radslut": 2447694,
+   "packad": "Halkvakt_2023-2.csv.gz",
+   "packad_bytes": 33007969,
+   "packad_sha256": "9a33a3a9a8a3f831780671d73f4db5f1ae0c0c731473115b88d3ab5f3e482b2d",
+   "rader": 2447688,
+   "stationer": 756,
+   "forsta": "2023-07-01 00:00:00.000",
+   "sista": "2023-09-07 06:30:16.000"
+  },
+  {
+   "fil": "Halkvakt_2024-1.csv",
+   "bytes": 447095560,
+   "sha256": "303980e9b7a70c42ee8914bfea9a4016a1cf4968fcc9b45b918b991d499d7a3d",
+   "radslut": 6650790,
+   "packad": "Halkvakt_2024-1.csv.gz",
+   "packad_bytes": 92267801,
+   "packad_sha256": "e3eb84478cfe89ac492a8a4afbab47d56a7ef5343f3fa248ff8735aed3e39ffd",
+   "rader": 6650784,
+   "stationer": 772,
+   "forsta": "2023-12-31 00:00:00.000",
+   "sista": "2024-07-01 00:00:00.000"
+  },
+  {
+   "fil": "Halkvakt_2024-2.csv",
+   "bytes": 163723595,
+   "sha256": "1f0a375a340ec9879014d85d5e115293b370c544209f1cf66912a7f45799faab",
+   "radslut": 2417299,
+   "packad": "Halkvakt_2024-2.csv.gz",
+   "packad_bytes": 33248181,
+   "packad_sha256": "db12156c7f5bbb6cb010e4b8a554080729bc2bb382f14b98c2ca53b812246a33",
+   "rader": 2417293,
+   "stationer": 759,
+   "forsta": "2024-07-01 00:00:00.000",
+   "sista": "2024-09-07 06:30:03.000"
+  }
+ ],
+ "anm": "Filerna ligger aldrig i repot och aldrig i en release (PUBLIKT REPO); de packade läggs i hinken av Axel via Supabase-panelen (DECISIONS #666). 'radslut' räknar också rubriken och sidfotens fem rader."
+}
