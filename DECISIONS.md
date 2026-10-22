@@ -15955,3 +15955,48 @@ dominera. Nämnaren ur `shadow_log`: valt bort — annan population och ingen ni
 risken att hela vintern blir en period. Alla rader i FS-B: valt bort — utspädning. Axel signerar själv: Bengt valde att signera för båda.
 
 **Stomdokument:** BED §4.2 — försprångets räkneregel fastställd
+
+## #665 (22/10 2026) Olyckorna från Trafikverket: facit i kuvösen och en andra serie för W-A, en rensad kopia i hinken, förregistrering före läsningen
+
+**Bengts ord 22/10:** *"Vi har fått olyckstatistik från Trafikverket. Kan du läsa den och lägga in den på rätt ställe i statistiken"*, och på
+förslaget *"Kuvösens facit och W-A"*, *"Rensad kopia"* och *"Bengt för båda"* (underlaget på Bengts Skrivbord,
+`Halkvakt_Olyckor_TRV_Underlag_2026-10-22.md`).
+
+**Leveransen.** Trafikverket kompletterade TRV 2026/111808 den 20/10 med olyckorna som Bengt valde bland händelserna 16/10 (KUVOS-LEVERANSEN
+§5h). Filen innehåller 7 269 olyckor från 1/11 2024 till 31/3 2025, med tid, koordinat (SWEREF 99 TM, X nordlig), påverkan och fritext,
+men ingen orsak. Formen och antalen står i KUVOS-LEVERANSEN §5i; filen ligger inte i repot. Fritexten bär regnummer, telefonnummer och
+minst ett namn.
+
+**Beslut.**
+1. **Facit i kuvösen.** Olyckorna blir en andra bekräftelse för kandidaten och efterhalkan (frågorna (a) och (b) i
+   FORREGISTRERING-FACIT-TRV-2024-25). Regeln från #247 gäller: en olycka får bekräfta en varning men aldrig fälla den, och räknas för sig.
+2. **Byvindens W-A.** W-A får en andra serie ur vintern 2024/25: olyckorna mot kuvösens alla halvtimmar (`vimax`, `siktdjup`). Driftens
+   diet (#116) och 14-dygnsgräns (#511) gäller inte där. Driftens W-A står kvar som domen, med fristerna `w-a-byvind-1` och
+   `w-a-byvind-2` (#662). Serien ur 2024/25 är diagnos och redovisas bredvid.
+3. **Hinken.** En kopia läggs i hinken, med regnummer och telefonnummer maskade och resten orört, som
+   `trv-2026-111808/Olyckor24-25.xlsx`. Hinkens namnregel tillåter inte mellanslag. Bengt skickar kopian och Axel lägger in den via
+   Supabase-panelen (fristen `olyckor-hinken`). Manifestet får posten, med originalets och kopians sha256, först när filen ligger i
+   hinken. Publikvakten fäller sedan i dag utlämnandets filnamn (`RoadCondition…`, `Olyckor…`) var de än checkas in.
+4. **Förregistreringen.** Ingen olycka läses mot kuvösen eller vinden förrän ett tillägg är signerat med båda signaturerna. Bengt
+   signerar för båda (regel L, #564), med fristen `olyckor-forregistrering` 15/11. Tillägget bestämmer:
+   - vilka olyckor som räknas som halka;
+   - hur en olycka paras med station eller sträcka och tid;
+   - hur dubbletterna och de förskjutna raderna behandlas;
+   - tidszonen, som avgörs med ett prov;
+   - W-A-seriens band.
+
+**Regel L.**
+- L1: ingen dom ändras.
+- L2: väglagets utfall (#602) och driftens W-A (#491) är redan sedda. Därför kan tillägget kallas *före olyckorna*, men inte *före facit*,
+  och det ska stå så.
+- L3: nej.
+- L4: skälet är att leveransen kom, inte ett utfall.
+
+**Alternativ.**
+- Bara facit, eller bara W-A: valt bort.
+- Originalet i hinken: valt bort, eftersom regnummer och telefonnummer sparas utan nytta.
+- Bara tid, plats och en halkflagga: valt bort, eftersom halkregeln då väljs före förregistreringen.
+- Axel signerar själv: Bengt valde att signera för båda.
+- Oljan på vägen ingår inte, eftersom leveransen bara har olyckor. V-C1, olycka i regn, hör till vattenplaningen.
+
+**Stomdokument:** KUV §7 — olyckorna levererade 20/10 och deras användning beslutad
