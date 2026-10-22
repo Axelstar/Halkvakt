@@ -149,7 +149,7 @@
 </style>
 
 <main class="blad">
-  <div class="etikett">Teknisk analys · intern · 29 september 2026 · uppdaterad 20 oktober</div>
+  <div class="etikett">Teknisk analys · intern · 29 september 2026 · uppdaterad 22 oktober</div>
   <h1>Vad Halkvakt mäter, hur det räknas och vad det visat</h1>
   <p class="ingress">Syskonsidan till Halkvaktens systembild: allt projektet mäter. Motorn som kör i apparna, vakterna och källorna som är i drift, reglerna som prövas i skuggan och facitkällorna, i 22 delområden. För varje del står vad den mäter, hur, vilka tal som finns och vad mätningen är till för. Talen kommer ur beslutsloggen (numren inom parentes), tröskeldokumenten, koden och körningarnas loggar. Utfall som är blindade till domarna visas bara som antal.</p>
   <div class="fakta">
@@ -236,7 +236,7 @@
   <div class="par">
     <div class="ruta">
       <h4>Volym</h4>
-      <p>Säkerhetskopian 20/9 läste tillbaka 601 712 rader ur 30 tabeller, varav 389 779 svenska väderobservationer, 64 105 finska och 50 292 radarrader (#257). Databasen låg på 388 MB av gratisnivåns 500 MB den 10/10 och växte med ungefär 30 MB per dygn, när kylan gav fler rader. Gamla dygn exporteras till lagring i stället för att köpa en större databas (#334), och sedan 10/10 snävare (#511): väderarkivet bär minutupplösningen i tre dygn i stället för sju, brotten mot givarvakten sparas för karantänen, och exporterade dygn äldre än 14 raderas i stället för äldre än 30. Grindarna som läser längre bakåt läser de raderade dygnen ur exporten: varje grindflöde bygger en tillfällig databas i Actions med fönstrets dygn ur exporten och de senaste ur driften, och provet 10/10 gav samma rader dygn för dygn och samma utskrift i grind A och V-A (#513; återläsningen #450). Veckokopian av hela databasen flyttar 9/10 från GitHub-releaser till den privata hinken <span class="mono">arkiv</span> i Supabase, inför ett publikt repo (#495). Supabase Pro valdes bort 10/10 (#511). Den 11/10 låg databasen på 418 MB, varav skuggloggen 7,5 MB (#523). Den 15/10 visade läsningen 483 MB: Supabase räknar kvoten som summan över alla databaser (postgres 469, de två mallarna 15), medan vakthunden bara räknat postgres, och tillväxten kom nästan helt från kandidatens tabeller, vars gallring räknats i rader och aldrig i MB. Gallringen sparar nu kandidatens PH en timme och värdet sex timmar, vakthunden räknar summan (larmet står kvar vid 450 MB), och summan låg på 459 MB efter tömningen och påfyllningen. Trendtabellerna och radarn (<span class="mono">trend_kandidater</span>, <span class="mono">trend_stigande</span>, <span class="mono">radar_precip</span>), som aldrig gallrats, exporteras per dygn till hinken <span class="mono">arkiv</span> och raderas efter tio dygn, när de är åtta dygn gamla ligger de i hinken; kandidatens två loggar raderas efter ett dygn (#618, <span class="mono">sql/062</span>). Steg 0 läser radarn tio dygn bakåt i stället för fjorton. Den som läser längre bak läser hinken (#569). Fyra tabeller som aldrig rensats (<span class="mono">shadow_log</span>, <span class="mono">road_condition_history</span>, <span class="mono">situation_archive</span>, <span class="mono">smhi_warnings_history</span>) exporteras till hinken men raderas inte, eftersom 43 filer läser dem (<span class="mono">sql/063</span>). Nattjobbet 18/10 03:50 raderade 80 445 rader som förregistrerat. Databasen låg på 486 MB 17/10 08:07, 488 MB 18/10 07:08 och 491 MB 19/10 03:07 enligt vakthundens rad (larm vid 450); förregistreringen kräver högst 2 MB från 18/10 07:07 till 19/10 07:07 och slutläses 19/10 07:07.</p>
+      <p>Säkerhetskopian 20/9 läste tillbaka 601 712 rader ur 30 tabeller, varav 389 779 svenska väderobservationer, 64 105 finska och 50 292 radarrader (#257). Databasen låg på 388 MB av gratisnivåns 500 MB den 10/10 och växte med ungefär 30 MB per dygn, när kylan gav fler rader. Gamla dygn exporteras till lagring i stället för att köpa en större databas (#334), och sedan 10/10 snävare (#511): väderarkivet bär minutupplösningen i tre dygn i stället för sju, brotten mot givarvakten sparas för karantänen, och exporterade dygn äldre än 14 raderas i stället för äldre än 30. Grindarna som läser längre bakåt läser de raderade dygnen ur exporten: varje grindflöde bygger en tillfällig databas i Actions med fönstrets dygn ur exporten och de senaste ur driften, och provet 10/10 gav samma rader dygn för dygn och samma utskrift i grind A och V-A (#513; återläsningen #450). Veckokopian av hela databasen flyttar 9/10 från GitHub-releaser till den privata hinken <span class="mono">arkiv</span> i Supabase, inför ett publikt repo (#495). Supabase Pro valdes bort 10/10 (#511), men köptes 19/10 när gallringen inte räckte (#644). Den 11/10 låg databasen på 418 MB, varav skuggloggen 7,5 MB (#523). Den 15/10 visade läsningen 483 MB: Supabase räknar kvoten som summan över alla databaser (postgres 469, de två mallarna 15), medan vakthunden bara räknat postgres, och tillväxten kom nästan helt från kandidatens tabeller, vars gallring räknats i rader och aldrig i MB. Gallringen sparar nu kandidatens PH en timme och värdet sex timmar, vakthunden räknar summan (larmet stod då kvar vid 450 MB), och summan låg på 459 MB efter tömningen och påfyllningen. Trendtabellerna och radarn (<span class="mono">trend_kandidater</span>, <span class="mono">trend_stigande</span>, <span class="mono">radar_precip</span>), som aldrig gallrats, exporteras per dygn till hinken <span class="mono">arkiv</span> och raderas efter tio dygn, när de är åtta dygn gamla ligger de i hinken; kandidatens två loggar raderas efter ett dygn (#618, <span class="mono">sql/062</span>). Steg 0 läser radarn tio dygn bakåt i stället för fjorton. Den som läser längre bak läser hinken (#569). Fyra tabeller som aldrig rensats (<span class="mono">shadow_log</span>, <span class="mono">road_condition_history</span>, <span class="mono">situation_archive</span>, <span class="mono">smhi_warnings_history</span>) exporteras till hinken men raderas inte, eftersom 43 filer läser dem (<span class="mono">sql/063</span>). Nattjobbet 18/10 03:50 raderade 80 445 rader som förregistrerat. Databasen låg på 486 MB 17/10 08:07, 488 MB 18/10 07:08 och 491 MB 19/10 03:07 enligt vakthundens rad (larm vid 450); förregistreringen krävde högst 2 MB från 18/10 07:07 till 19/10 07:07, och den föll: 3–4 MB per dygn, 492 MB 19/10 (#644). Supabase Pro köptes samma dag (#644), och sedan 20/10 larmar vakthunden vid 90 % av Pro:s 8 GB databas och 100 GB lagring (#652).</p>
     </div>
     <div class="ruta">
       <h4>En lucka som stängdes</h4>
@@ -327,13 +327,13 @@
   </details>
 </div>
 <!-- /LÄGESRADER -->
-  <p>Delområdena är av tre slag, och kolumnen <i>Läge</i> säger vilket. <b>Motorn i drift</b> mäts genom huvudvarvet (3.1): samma motor som apparna kör, med samma regler, körd längs fasta rutter var 30:e minut så att varje varning den skulle ha gett loggas. <b>Vakterna, radarn, tillståndsskattaren och förarsvaren är i drift</b> och mäts där de går, fyra delområden. <b>Resten är regler som prövas utan att föraren hör dem:</b> sju körs i skuggvarvet, nio räknas i arkivet med tabeller, uppspelningar eller knappar som trycks varje måndag eller när frosten kommer, en är mätt en gång och en är fastställd men obyggd. De flesta delar har ett tröskeldokument som skrevs innan mätningen fanns.</p>
+  <p>Delområdena är av tre slag, och kolumnen <i>Läge</i> säger vilket. <b>Motorn i drift</b> mäts genom huvudvarvet (3.1): samma motor som apparna kör, med samma regler, körd längs fasta rutter var 30:e minut så att varje varning den skulle ha gett loggas. <b>Vakterna, radarn, tillståndsskattaren och förarsvaren är i drift</b> och mäts där de går, fyra delområden. <b>Resten är regler som prövas utan att föraren hör dem:</b> sex körs i skuggvarvet, nio räknas i arkivet med tabeller, uppspelningar eller knappar som trycks varje måndag eller när frosten kommer, en är mätt en gång och en är fastställd men obyggd. Vattenplaningen är stängd sedan 21/10 (#657). De flesta delar har ett tröskeldokument som skrevs innan mätningen fanns.</p>
   <div class="tabell">
     <table class="oversikt">
       <thead><tr><th>Delområde</th><th>Lager</th><th>Läge</th><th>Nu</th></tr></thead>
       <tbody>
         <tr><td><a href="#d-varvet">3.1 Huvudvarvet</a></td><td>röst</td><td><span class="lage skugga">körs i skuggan</span></td><td>144 av 144 varv skrev rader 25–28/9</td></tr>
-        <tr><td><a href="#d-kamera">3.2 Kamerafacit</a></td><td>facit</td><td><span class="lage skugga">körs i skuggan</span></td><td>988 bilder, blint arkiv till mars</td></tr>
+        <tr><td><a href="#d-kamera">3.2 Kamerafacit</a></td><td>facit</td><td><span class="lage skugga">körs i skuggan</span></td><td>1 783 bilder (3/10), blint arkiv till mars</td></tr>
         <tr><td><a href="#d-forare">3.3 Förarsvar och missar</a></td><td>facit</td><td><span class="lage drift">i drift</span></td><td>32 riktiga svar (6/10), alla projektgruppens: 0 halkhändelser</td></tr>
         <tr><td><a href="#d-tystnad">3.4 Tystnadsfelet</a></td><td>facit</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>2 av 20 tillfällen</td></tr>
         <tr><td><a href="#d-vakter">4.1 Vakterna</a></td><td>L1</td><td><span class="lage drift">i drift</span></td><td>706 av 811 felrader tagna</td></tr>
@@ -341,18 +341,18 @@
         <tr><td><a href="#d-frysklass">5.2 Frysklassningen</a></td><td>L4</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>K-A passerad 8/10; K-B:s uppspelning byggd 10/10, spärrad (#510); döms efter en vintermånad</td></tr>
         <tr><td><a href="#d-tathet">5.3 Stationstätheten</a></td><td>L4</td><td><span class="lage arkiv">mätt</span></td><td>median 6,8 km till station</td></tr>
         <tr><td><a href="#d-trend">6.1 Trenden</a></td><td>L3</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>T-A: domspärren släppt 8/10, 169 frostnätter</td></tr>
-        <tr><td><a href="#d-efterhalka">6.2 Efterhalkan</a></td><td>L3</td><td><span class="lage skugga">körs i skuggan</span></td><td>S1 läst 11/10: ense på 1 349 ögonblick (#521); S3 byggd och godkänd, 0.3.12 (24) (#524, #526); dom i januari</td></tr>
+        <tr><td><a href="#d-efterhalka">6.2 Efterhalkan</a></td><td>L3</td><td><span class="lage skugga">körs i skuggan</span></td><td>S1 läst 11/10: ense på 1 349 ögonblick (#521); S3 i byggena sedan 0.3.12 (24), 0.3.13 (32) uppladdat, inskicket till App Review återstår (#643); Kompisarna först, med spärren för Betatest (#676, #677); dom i januari</td></tr>
         <tr><td><a href="#d-rimfrost">6.3 Rimfrosten</a></td><td>L3</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>R-A: 163 episoder på 61 stationer, signalen är fysik; R-B:s uppspelning byggd 10/10, spärrad (#510)</td></tr>
         <tr><td><a href="#d-overgang">6.4 Övergångarna</a></td><td>L3</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>Ö-A passerad; 42 regnstopp följda av frost 8/10</td></tr>
-        <tr><td><a href="#d-alder">6.5 Väglagets ålder</a></td><td>L3</td><td><span class="lage obyggd">fastställd, obyggd</span></td><td>0 omklassningar till halka</td></tr>
+        <tr><td><a href="#d-alder">6.5 Väglagets ålder</a></td><td>L3</td><td><span class="lage obyggd">fastställd, obyggd</span></td><td>624 omklassningar till halka på sju dygn (20/10, #660); Å-A-skriptet byggs senast 31/1 (#661)</td></tr>
         <tr><td><a href="#d-tillstand">7.1 Tillståndsskattaren</a></td><td>L2</td><td><span class="lage drift">i drift</span></td><td>bevis i snapshoten sedan 24/9</td></tr>
         <tr><td><a href="#d-nedtyp">7.2 Nederbördstypen</a></td><td>L2</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>dom tidigast 1/3 2027</td></tr>
         <tr><td><a href="#d-radar">7.3 Nederbördsradarn</a></td><td>L2</td><td><span class="lage drift">i drift</span></td><td>faktor 0,65, täckning 91 %</td></tr>
-        <tr><td><a href="#d-vatten">7.4 Vattenplaning</a></td><td>L2</td><td><span class="lage skugga">körs i skuggan</span></td><td>V-B faller 19/10: 81 % falsklarm mot 20 % (#648)</td></tr>
+        <tr><td><a href="#d-vatten">7.4 Vattenplaning</a></td><td>L2</td><td><span class="lage nedlagd">stängd</span></td><td>V-B föll 19/10: 81 % falsklarm mot 20 % (#648); steg D struket 21/10 (#657)</td></tr>
         <tr><td><a href="#d-vind">7.5 Vind och sikt</a></td><td>L2</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>W-A: sikten faller, byvinden oavgjord</td></tr>
         <tr><td><a href="#d-smhi">7.6 SMHI-förstärkaren</a></td><td>L2</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>0 vintervarningar i arkivet</td></tr>
         <tr><td><a href="#d-olja">7.7 Olja på vägen</a></td><td>L2</td><td><span class="lage skugga">körs i skuggan</span></td><td>i drift 1/10, 5 aktiva (alla vägskador)</td></tr>
-        <tr><td><a href="#d-forsprang">8.1 Försprånget</a></td><td>L5</td><td><span class="lage skugga">körs i skuggan</span></td><td>0 rader, väntar på nivå 2</td></tr>
+        <tr><td><a href="#d-forsprang">8.1 Försprånget</a></td><td>L5</td><td><span class="lage skugga">körs i skuggan</span></td><td>alla 30 rutter sedan T0 22/10 (#664, #674); kod 3–4 i arkivet sedan 20–21/10</td></tr>
         <tr><td><a href="#d-kombination">8.2 Kombinationen</a></td><td>L5</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>kalibrerad i kuvösen 6/10: startvärdena frysta (#468)</td></tr>
       </tbody>
     </table>
@@ -515,7 +515,7 @@
         <li>Sju dygn med V1–V3, 26/9–3/10: 822 bilder och 18,1 MB. Av dem kom 742 vid frysrisker (V2), 5 från stickproven (V3) och 75 från skuggvarvet. Det blir högst 3,74 MB per dygn. V2-taket på 150 nåddes 27/9 och 30/9 men passerades aldrig, och alla 177 timkörningar gick igenom. Före läsningen trodde vi att V2 väntade på kyla, men snapshotens frysrisker finns nattetid redan i september. 2/10 och 3/10 gav bara 20 och 18 bilder, i varmare väder (0 stationer ≤ 0 °C enligt vakthunden 3/10). Hinken: 1 783 bilder, 39,8 MB (dbknapp 37139942663; bedömningen §6.2).</li>
         <li>De 41 klassade bilderna är Trafikverkets direktbilder som använts för att pröva klassningen: 20 bar (24/9), en våt (Tierp), 12 bar och 8 okända i mörker 26/9, varav sju skymda av spindelväv.</li>
         <li>Första sjudygnsavläsningen efter de nya vägarna gjordes 3/10 (ovan).</li>
-        <li>8/10 (#491): omklassningarna till halka var 0 under de första frostnätterna, inom 5 km från 82 froststationer, av 12 469 omklassningar på sju dygn. Januaridomen står därmed på kamerabilderna; beslutet om granskningen är Bengts och Axels.</li>
+        <li>8/10 (#491): omklassningarna till halka var 0 under de första frostnätterna, inom 5 km från 82 froststationer, av 12 469 omklassningar på sju dygn. Omkörningen 20/10 gav 624 omklassningar till halka på sju dygn, och sedan 21/10 bär omklassningarna januaridomen; bygget av bildläsningen beslutas före 1/2 (#660).</li>
       </ul>
     </div></details>
   </section>
@@ -779,7 +779,7 @@
         <li><b>Två hypoteser föll, förregistrerade:</b> ANOM (luft ur många grannar, anomali ur de närmaste) blev sämre än rå i båda länderna, och regimen ur vind och natt skiljer inte (Sverige rå 12,5 % stilla natt mot 9,2 % övrigt, Finland 3,1 mot 5,9 %). Molnmängd saknas i arkivet och blåsigt var nästan tomt.</li>
         <li><b>Höjden är den enda platsegenskap som bär:</b> den halverar felet inom 7 km i Sverige (0,96 → 0,63 °C) och ger inget i Finland. Golvet: inga svenska stationspar inom 3 km; Finland 40 par, 3,9 %. På vintern 2024/25 i kuvösen gav höjden inget: rå + höjd var sämre än rå i tre band av fyra, och den empiriska lapsen var 0,18 °C per 100 m mot höstens 0,63 (#467) — vinterns inversioner vänder sambandet.</li>
       </ul>
-      <p class="litet">Domen står och ingen tröskel är lättad: 7/10 skärptes §3 med spridningsgrinden (#474, #477). Ingenting når föraren. Bengt valde tre av vägarna 2/10 (#435–#437): premissmätningen går varje måndag och läses en gång, tisdag 24/11; det finska utfallet är stöd för närbandet, inte dom; flaggmarginalen mäts i kuvösen. Öppna är precisering per band, egen spärr för 0–7 km och molnmängd (bedömningen §4.2); ÅDT finns sedan 7/10 (#473), och kort #271, termisk kartering som facit mellan stationerna. Sammanfattning med slutsatser: <span class="mono">docs/PROGNOSLAGRET-2026-09-30.md</span>.</p>
+      <p class="litet">Domen står och ingen tröskel är lättad: 7/10 skärptes §3 med spridningsgrinden (#474, #477). Ingenting når föraren. Bengt valde tre av vägarna 2/10 (#435–#437): premissmätningen går varje måndag och läses en gång, tisdag 24/11; det finska utfallet är stöd för närbandet, inte dom; flaggmarginalen mäts i kuvösen. Valen på kort #270 är avgjorda: domen räknas per band i stället för en egen spärr för 0–7 km (#655), och molnmängden är besvarad (#657); ÅDT finns sedan 7/10 (#473). Kort #271, termisk kartering som facit mellan stationerna, stängdes 22/10 (#678). Sammanfattning med slutsatser: <span class="mono">docs/PROGNOSLAGRET-2026-09-30.md</span>.</p>
     </div>
     <details><summary>Hur den mäter</summary><div class="inne">
       <div class="formel">
@@ -1057,7 +1057,7 @@
         <li>Per station i ruttens ruta (±0,05°, ungefär 5 km) sparas ytan, fukten, timmar sedan regn, fallet över 15, 30 och 60 minuter, och om motorn larmade. Loggen innehåller ingen tröskel. Sedan 11/10 loggar varvets första rutt (en av tre per halvtimme) i stället varje väderpunkt i lägesfilen, och de andra två som förut; larmet gäller fortfarande bara den rutt raden hör till (#523).</li>
         <li>Uppspelningen: blöt betyder regn senaste 2 timmarna; en episod är stationens första ögonblick per natt, middag till middag svensk tid; facit är en omklassning till halka inom 5 km. Utfallet är blindat till domen.</li>
         <li>Krav: loggen ska bära nätter, inte enstaka ögonblick, innan något mer byggs (Axel 16/9). S3 byggdes 11/10 på Bengts ja efter S1-läsningen med ett positivt fall (#521, #524). Domen i januari kräver nettonytt ≥ 5 % och högst 25 % tillkomna falsklarm, och minst 30 nätter med regn följt av frost vid 20 stationer, 40 facit, 15 frostnätter och 3 län.</li>
-        <li><b>Motorregeln S3</b> är byggd 11/10 (#524): betans gren i <span class="mono">icing_point</span> i motorns tre portar, ytan +1…+3 °C, fall ≥ 0,8 °C på 30 min och regn inom 2 h, inte broar, och dagens regel går först. Startvärdena ur #222 står i kontraktsgrinden, vektorerna är v38–v41, och kortet är märkt <i>BETA</i> med rösten <i>"Halkvakt tror: frysrisk framöver."</i> Bengt granskade och godkände S3 i Axels ställe (#525, #526). Bygget till testarna är 0.3.12 (24) på iOS och Android; iOS (24) är uppladdat 11/10 och internt i TestFlight, men ännu inte hos Kompisarna. Skuggmotorn kör S3 sedan 11/10, och regeln syns där först som ett larm när vädret ger ett fall.</li>
+        <li><b>Motorregeln S3</b> är byggd 11/10 (#524): betans gren i <span class="mono">icing_point</span> i motorns tre portar, ytan +1…+3 °C, fall ≥ 0,8 °C på 30 min och regn inom 2 h, inte broar, och dagens regel går först. Startvärdena ur #222 står i kontraktsgrinden, vektorerna är v38–v41, och kortet är märkt <i>BETA</i> med rösten <i>"Halkvakt tror: frysrisk framöver."</i> Bengt granskade och godkände S3 i Axels ställe (#525, #526). S3 finns i alla byggen sedan 0.3.12 (24), och 0.3.13 (32) är uppladdat, och inskicket till App Review återstår (#643). S3 går till Kompisarna, testgruppen, först och inte publikt (#676). Spärren som låter S3 tala bara när Betatest är påslaget är byggd i iOS och Android och når användarna med nästa bygge, eftersom (32) saknar den (#677). Skuggmotorn kör S3 sedan 11/10, och regeln syns där först som ett larm när vädret ger ett fall.</li>
       </ul>
     </div></details>
     <details><summary>Siffror och beräkningar</summary><div class="inne">
@@ -1320,7 +1320,7 @@
   </section>
 
   <section class="del" id="d-vatten">
-    <div class="del-huvud"><span class="nr">7.4</span><h3>Vattenplaning</h3><span class="lage skugga">körs i skuggan</span><span class="lager">sedan 15/9 · kort #42 · #81</span></div>
+    <div class="del-huvud"><span class="nr">7.4</span><h3>Vattenplaning</h3><span class="lage nedlagd">stängd</span><span class="lager">sedan 15/9 · kort #42 · #81</span></div>
     <p><b>Mäter:</b> två spår. Stationsspåret prövade om grannstationernas regn förutsäger hur mycket det regnar där du kör, och är nedlagt. Radarspåret loggar vad rösten skulle ha sagt om vattenplaning ur radarn längs rutterna.</p>
     <div class="nyckel">
       <div><b>61 %</b><span>träff i stationsspåret, krav 70 % <span class="dom faller">faller</span></span></div>
@@ -1328,7 +1328,7 @@
       <div><b>256 av 200</b><span>radarvarningar till domens underlag, och 55 av 15 facit (19/10)</span></div>
       <div><b>24</b><span>regndygn i 42 län, kraven är 5 och 3</span></div>
     </div>
-    <p><b>Nytta:</b> klarar radarspåret får rösten säga <i>"Vattenplaning framöver — sakta ner."</i>, placerat under halka och över vilt. Underlaget räckte 19/10, och radarspåret föll: falsklarm 81 ± 5 % mot 20 %, och 8 av 19 rutter talade mer än 3 gånger per regndygn (V-B, #648). Båda spåren har därmed fallit; om rösten ändå ska byggas (steg D) är Axels beslut.</p>
+    <p><b>Nytta:</b> klarar radarspåret får rösten säga <i>"Vattenplaning framöver — sakta ner."</i>, placerat under halka och över vilt. Underlaget räckte 19/10, och radarspåret föll: falsklarm 81 ± 5 % mot 20 %, och 8 av 19 rutter talade mer än 3 gånger per regndygn (V-B, #648). Båda spåren har därmed fallit. Steg D, rösten, ströks 21/10 och delen är stängd; skuggan loggar vattenplaningen vidare med flit, så frågan kan öppnas igen om ny data visar något (#657).</p>
     <details><summary>Hur den mäter</summary><div class="inne">
       <ul>
         <li>Ett regnsegment är ett segment som inte är halkklassat, där radarn visat minst 2,0 mm/h de senaste 70 minuterna. Skuggvarvet kör motorns egna regler i en egen instans över regnsegmenten och loggar bilens position när rösten skulle ha talat.</li>
@@ -1461,8 +1461,8 @@
     <div class="del-huvud"><span class="nr">8.1</span><h3>Försprånget</h3><span class="lage skugga">körs i skuggan</span><span class="lager">sedan 25/9 · kort #153 · #359</span></div>
     <p><b>Mäter:</b> om en varning som vilar på en mätning kan sägas tidigare när faran är allvarligare. Samma ord, tidigare, utan att rösten blir pratsam eller tränger undan annat.</p>
     <div class="nyckel">
-      <div><b>0</b><span>loggade rader, inga allvarliga faror än</span></div>
-      <div><b>846</b><span>väglagsrader i arkivet, alla på lägsta koden</span></div>
+      <div><b>30</b><span>rutter sedan T0 22/10 11:12 UTC; första körningen skrev 30 rader utan nivå 2-fara (#674)</span></div>
+      <div><b>75 · 5</b><span>väglagsrader med kod 3 och 4 i arkivet sedan 20–21/10 (kodgrinden 39617620449)</span></div>
       <div><b>45 · 60 · 90 s</b><span>förvarning som prövas</span></div>
       <div><b>mars 2027</b><span>dom</span></div>
     </div>
@@ -1471,7 +1471,7 @@
       <ul>
         <li><b>Nivå 2:</b> halt väglag med kod 3 eller 4, eller frysrisk med ytan ≤ 0 °C och väta ≥ 3 av 4. Allt annat är nivå 1 med dagens fart × 30 s.</li>
         <li>Svepet 45 · 60 · 90 s motsvarar 1 125 · 1 500 · 2 250 m i 90 km/h. Värdet byts varje halvtimme. Förvarningen kläms till motorns 3 000 m, aldrig till appens reglage (#275, #419).</li>
-        <li>Körs på minut 12 och 42 över samma rutter som huvudvarvet, men bara där en nivå 2-fara finns. Motorn körs två gånger på samma spår, en gång som i dag och en gång med längre förvarning, och båda loggas.</li>
+        <li>Körs på minut 12 och 42 över alla 30 rutter sedan T0 22/10 11:12 UTC (#664, #674); en rutt utan nivå 2-fara skriver bara en rad till nämnaren. Motorn körs två gånger på samma spår, en gång som i dag och en gång med längre förvarning, och båda loggas.</li>
       </ul>
       <p><b>Krav:</b> andelen nivå 2 mellan 5 och 50 %; median extra förvarning ≥ 15 s; undanträngning ≤ 2 % och noll olyckor; takten ökar högst 5 procentenheter; nya varningar ≤ 1 %; minst 60 nivå 2-varningar per svepvärde över 3 halkperioder i 3 län.</p>
     </div></details>
@@ -1562,7 +1562,7 @@
 </div>
 <!-- /LÄGESRADER -->
   <ul>
-    <li><b>Kraven skrivs först.</b> Tretton tröskeldokument är daterade innan mätningen eller koden de styr. En tröskel som ändras efter sett utfall prövas sedan 15/10 enligt regel L (L1–L4, #564): domen på lästa data står som den föll, och en lättnad gäller bara data som ingen har läst utfallet på.</li>
+    <li><b>Kraven skrivs först.</b> Tretton tröskeldokument är daterade innan mätningen eller koden de styr. En tröskel som ändras efter sett utfall prövas sedan 15/10 enligt regel L (L1–L4, #564): domen på lästa data står som den föll, och en lättnad gäller bara data som ingen har läst utfallet på. Lättnadsvägen (L2 och L4) används inte sedan 22/10, i något av de tretton dokumenten (#678).</li>
     <li><b>Blindning.</b> Fram till domen redovisas bara antal. Betans regler döms i januari, kalibreringen gjordes i kuvösen på vintern 2024/25 den 6/10 (startvärdena, #468) och kandidaten döms i mars, med RÅ som kontroll och reserv (#547).</li>
     <li><b>Samma motor överallt.</b> Server, Android och iOS måste klara 50 gemensamma testfall tecken för tecken; v38–v41 kom med S3 11/10 (#524), v42–v47 med kandidaten och v48–v50 med halkzonen.</li>
     <li><b>Kontraktsgrinden.</b> 100 kontrakt — tal som finns i mer än en fil — får inte glida isär (21/10).</li>
@@ -1614,7 +1614,7 @@
         <tr><td>24/11</td><td>premissmätningen läses, en gång, på en egen körning; den finska körs samma dag som stöd (#435, #436)</td></tr>
         <tr><td>30/11</td><td>domskriptet för kandidaten byggt och fryst med sha256 (förregistreringen §4b)</td></tr>
         <tr><td><s>November–december</s></td><td>vattenplaningens radarspår, när underlaget räcker — ✅ dömt redan 19/10: V-B FALLER (#648)</td></tr>
-        <tr><td>November</td><td>efterhalkan som märkt beta: S1-grinden läst 11/10 (#521), S3 byggd och godkänd (#524, #526) och i byggena (24)–(32) internt; App Review med 0.3.13 (32) (#643); hur S3 når användarna avgörs i åtgärdslistan (B4-46)</td></tr>
+        <tr><td>November</td><td>efterhalkan som märkt beta: S1-grinden läst 11/10 (#521), S3 byggd och godkänd (#524, #526) och i byggena (24)–(32) internt; App Review med 0.3.13 (32) (#643); S3 till Kompisarna först (#676), med spärren för Betatest i nästa bygge (#677)</td></tr>
         <tr><td>1/12 och 31/1</td><td>byvindens W-A med 60 dygn ur hinken; den första körning som når 500 stationstimmar är domen (#662)</td></tr>
         <tr><td>1/12, 1/1, 1/2</td><td>spridningsgrindens täckning läses ur grind S-B i underlagsläge; grova fel per band i domläget när C1 och C2 är uppfyllda, senast vid marsdomen (#478)</td></tr>
         <tr><td>15/12</td><td>försprångets domknapp byggd och dess första underlagskörning (bara antal; sedan 1/1 och 1/2), räkneregeln fryst före första lästa andel (#661)</td></tr>
@@ -1627,7 +1627,7 @@
   <p>Datumen i tabellen larmar sedan 20/10 (#649): de står i <span class="mono">docs/fristerna.json</span>, och fristvakten gör ett ärende till ägaren före varje datum. En grind som fäller en dom i en körning gör själv ett ärende (domlarmet), och domen bokförs i ämnesdelens domsteg i projektkartan, en ägare per grind.</p>
   <p>Det första vinterunderlaget kom med frosten 6–8/10 (#491): K-A passerad, T-A:s domspärr släppt på 169 frostnätter vid 119 stationer, och väglagsarkivet gav noll omklassningar till halka också under frostnätterna (omkörningen 20/10 gav 624). Förarsvaren har 32 riktiga svar (6/10; 41 enligt vakthunden 21/10, innehållet oläst) men inget om halka, missarna inga riktiga poster, och kamerafacit har ingen halka. Mätningarna hittills prövar metoden. Vintern prövar produkten.</p>
   <hr>
-  <p class="litet">Källor: beslutsloggen (DECISIONS), tröskeldokumenten, systembeskrivningen, koden och körningarnas loggar till 21/10. Samma underlag som bilaga 3–8 till Skyltfondsansökan, men sidan är intern och innehåller opublicerade regelvärden. Alla tidpunkter avser 2026 om inget annat står.</p>
+  <p class="litet">Källor: beslutsloggen (DECISIONS), tröskeldokumenten, systembeskrivningen, koden och körningarnas loggar till 22/10. Samma underlag som bilaga 3–8 till Skyltfondsansökan, men sidan är intern och innehåller opublicerade regelvärden. Alla tidpunkter avser 2026 om inget annat står.</p>
 
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
   <h2 id="oppna-kort">Öppna kort</h2>
