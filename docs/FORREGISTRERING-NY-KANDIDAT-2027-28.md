@@ -1,6 +1,7 @@
 # Förregistrering — en ny kandidat tränad på sex vintrar, för vintern 2027/28
 
-**Status: UTKAST 22/10 2026** (Bengt 22/10: *"träna en ny kandidat på alla vintrar"*; valen *"Fysikens reserv alla år"*, *"En vinter
+**Status: SIGNERAD 22/10 2026** (Bengt, och Axel via Bengt, DECISIONS #671; dokumentets sha256 vid signeringen, före den här
+raden och signaturerna: `8fe0818f772267763d63353ab5d60fff0c34968fd913a203db48bdbe3470e619`). Utkastet: Bengt 22/10: *"träna en ny kandidat på alla vintrar"*; valen *"Fysikens reserv alla år"*, *"En vinter
 i taget utanför"* och *"Bengt för båda"*, DECISIONS #670). Bengt signerar för sig och Axel **innan** något utfall av den nya
 kandidaten läses.
 
@@ -91,5 +92,5 @@ det bara genom en daterad post med båda signaturerna, och aldrig som en lättna
 
 | | Datum | Signatur |
 | :-- | :-- | :-- |
-| Bengt | | |
-| Axel | | |
+| Bengt | 2026-10-22 | Bengt i chatten: *"Jag har läst utkastet i #1145. Signera förregistreringen för den nya kandidaten för mej och Axel och slå ihop."* (DECISIONS #671) |
+| Axel | 2026-10-22 | Via Bengt i samma ord (DECISIONS #671) |
