@@ -16197,3 +16197,27 @@ hämtningen av MET Nordic.
 - Alla punkter ihop som huvudtal: valt bort, eftersom förregistreringen säger medel och varje vinter är ett väderår.
 
 **Stomdokument:** KUV §5 — den nya kandidatens träning byggd och parvalet preciserat
+
+## #673 (22/10 2026) Filerna i hinken: VViS-vintrarna och olyckorna, kontrollerade; prövningen på 2022/23 startad
+
+**Bengts ord 22/10:** *"jag har fått besked om att alla filer ligger i hinken nu så att vi kan börja"*.
+
+**Hinken.** DB-knappen i läsläge (39766607745) visar:
+- alla 14 VViS-filerna under `kuvos/kuvos-vvis-2018-24/`, var och en med storleken i `kuvos/vvis-2018-24-leverans.json`;
+- `kuvos/trv-2026-111808/Olyckor24-25.xlsx`, 653 196 byte, samma storlek som den rensade kopian.
+
+Fristerna `vvis-hinken` och `olyckor-hinken` är klara före sina ärenden och därför strukna.
+
+**Manifestet.** Olyckorna får sin post i `kuvos/trv-111808-leverans.json` under en egen nyckel, `komplettering`, med kopians och
+originalets sha256 (#665). Den läggs inte under `filer`, eftersom kuvösens facit-trv-steg hämtar och kontrollerar varje fil där. Läsaren
+av olyckorna byggs efter att FORREGISTRERING-OLYCKOR-2024-25 är signerad.
+
+**Körningarna**, i den ordning som MET Norways villkor kräver, en hämtning åt gången:
+1. Prövningen av den frysta kandidaten på 2022/23 är startad (`kuvos-vintrar`, körning 39766761188). Den hämtar MET Nordic för vintern.
+2. Därefter den nya kandidatens indata, en vinter i taget (2018/19, 2019/20, 2020/21, 2021/22). 2022/23 återanvänder hämtningen från
+   steg 1.
+3. Sist förberedning, träning och prövning (`kuvos-ny-kandidat`).
+
+Bevakningen i sessionen startar nästa steg när det förra är klart.
+
+**Stomdokument:** KUV §5 — filerna för fler vintrar i hinken och prövningen på 2022/23 startad
