@@ -886,6 +886,24 @@ export function forsprangNiva(h: Hazard, vata: Map<string, number>): ForsprangNi
   return null;
 }
 
+/** FS-A1:s varningsslag (§2: A1 halt väglag och A2 frysrisk): nämnarradens varningar och nämnaren i räkneregeln R4 (DECISIONS #664). */
+export const FORSPRANG_A_SLAG: readonly string[] = ["slippery_segment", "icing_point"];
+
+/** Rutter per försprångsanrop: skuggmotorns tak, som huvudvarvets (546 vid fler, kort #244). */
+export const FORSPRANG_RUTTER_PER_ANROP = 3;
+
+/** Vilka rutter ett försprångsanrop kör (§4; alla rutter varje halvtimme sedan DECISIONS #662). Rutterna sorteras och delas på
+ *  ceil(n/3) platser — 7 för de 20 rutterna, 4 för de 10 C-rutterna, som huvudvarvet — och plats k tar var k:te rutt. Ett angivet
+ *  `slot` väljer sin plats; utan det väljer halvtimmen, som före #662. Ett slot utanför platserna ger null. Svepvärdet följer
+ *  halvtimmen, inte platsen, så varje rutt möter alla tre värden över tre halvtimmar. */
+export function forsprangUrval(namn: string[], halvtimme: number, slot: number | null = null) {
+  const sorterade = [...namn].sort();
+  const platser = Math.max(1, Math.ceil(sorterade.length / FORSPRANG_RUTTER_PER_ANROP));
+  const plats = slot ?? halvtimme % platser;
+  if (!Number.isInteger(plats) || plats < 0 || plats >= platser) return null;
+  return { platser, plats, batch: sorterade.filter((_, i) => i % platser === plats) };
+}
+
 /** Kroken till motorn (AlertEngine.leadFor): nivå 2 får svepvärdets försprång, allt annat dagens. Motorn klämmer svaret. */
 export function forsprangKrok(nivaer: Map<string, ForsprangNiva>, svepS: number) {
   return (h: Hazard, leadM: number, speedMps: number): number => (nivaer.get(h.id) === 2 ? speedMps * svepS : leadM);
@@ -1436,7 +1454,9 @@ async function kandidatVarnar(): Promise<{ lista: KandidatPunkt[]; tid: string |
 // datorkraftens tak (546 kl 04:32 och 05:02Z 25/9, på :02/:32). Samma halvtimmes rutter som huvudvarvet; bara rutter med en nivå 2-fara
 // i rutan körs, och där körs motorn två gånger på samma spår: baskörningen (dagens motor) och varianten (nivå 2 med halvtimmens
 // svepvärde). Båda körningarnas varningar och undanträngda loggas i forsprang_log. Aldrig hört. `prov` skriver inget.
-async function forsprangVarv(prov: boolean): Promise<Response> {
+// ALLA RUTTER VARJE HALVTIMME (DECISIONS #662, åtgärdslistan B4-94): `?slot=k` kör plats k av de 20 rutterna (0–6) och `&grupp=c`
+// de 10 C-rutterna (0–3), högst tre rutter per anrop; ett jobb per plats (sql/066). Utan slot väljer halvtimmen, som förut.
+async function forsprangVarv(prov: boolean, c = false, slot: number | null = null): Promise<Response> {
   const svar = (x: unknown) => new Response(JSON.stringify(x), { headers: { "Content-Type": "application/json" } });
   const halvtimme = Math.floor(Date.now() / 1800e3);
   const svepS = prov ? FORSPRANG_SVEP_S[1] : FORSPRANG_SVEP_S[halvtimme % FORSPRANG_SVEP_S.length];
@@ -1445,8 +1465,9 @@ async function forsprangVarv(prov: boolean): Promise<Response> {
     if (krok) motor.leadFor = forsprangKrok(nivaer, svepS);
     const suppressed: { kind: string; id: string; distM: number; by: string }[] = [];
     motor.onSuppressed = (c) => suppressed.push({ kind: c.kind, id: c.hazardId, distM: Math.round(c.distM), by: c.by });
+    // `beta` märker efterhalkans betavarning (S3), som är frysrisk men aldrig nivå 2 (DECISIONS #664, räkneregeln R4).
     const alerts = motor.run(trace).map((a) => ({ t: a.t, id: a.hazardId, kind: a.kind, distanceM: Math.round(a.distanceM),
-      niva: nivaer.get(a.hazardId) ?? null }));
+      niva: nivaer.get(a.hazardId) ?? null, ...(a.beta ? { beta: true } : {}) }));
     return { alerts, suppressed };
   };
   if (prov) {
@@ -1473,23 +1494,27 @@ async function forsprangVarv(prov: boolean): Promise<Response> {
   for (const w of (Array.isArray(lv?.weather) ? lv.weather : [])) if (typeof w?.bevis?.vata === "number") vata.set(`wx:${w.id}`, w.bevis.vata);
   const nivaer = new Map<string, ForsprangNiva>();
   for (const h of hazards) { const n = forsprangNiva(h, vata); if (n !== null) nivaer.set(h.id, n); }
-  const iRutan = (h: Hazard, x0: number, x1: number, y0: number, y1: number) => {
-    const pts: [number, number][] = h.kind === "slippery_segment" ? h.line : [[(h as any).lon, (h as any).lat]];
-    return pts.some(([x, y]) => x >= x0 && x <= x1 && y >= y0 && y <= y1);
-  };
-  const allNames = Object.keys(ROUTES).sort();
-  const slots = 7;
-  const batch = allNames.filter((_, i) => i % slots === halvtimme % slots);   // samma halvtimmes rutter som huvudvarvet
+  const routes = c ? ROUTES_C : ROUTES;
+  const urval = forsprangUrval(Object.keys(routes), halvtimme, slot);
+  if (!urval) return new Response("okänt slot", { status: 400 });
+  const { batch } = urval;
   const rader: Record<string, unknown>[] = [];
   for (const name of batch) {
-    const line = ROUTES[name];
-    const M = 0.05, lons = line.map((q) => q[0]), lats = line.map((q) => q[1]);
-    const x0 = Math.min(...lons) - M, x1 = Math.max(...lons) + M, y0 = Math.min(...lats) - M, y1 = Math.max(...lats) + M;
-    const niva2 = hazards.filter((h) => nivaer.get(h.id) === 2 && iRutan(h, x0, x1, y0, y1)).length;
-    if (!niva2) continue;
+    const line = routes[name];
     const trace = traceAlong(line);
-    const naraFaror = farorVidLinjen(hazards, line);   // rutfiltret (kort #244, DECISIONS #360, #535) — samma utfall, mindre arbete
-    const bas = kor(naraFaror, trace, nivaer, false), variant = kor(naraFaror, trace, nivaer, true);
+    // Urvalet vid vägen (DECISIONS #664, TROSKLAR-FORSPRANG §4): nivå 2 bland motorns faror vid linjen (rutfiltret, kort #244, #535).
+    // Rektangeln runt rutten, som gällde till #664, prövade bara sträckornas brytpunkter och tog med faror långt från vägen.
+    const naraFaror = farorVidLinjen(hazards, line);
+    const niva2 = naraFaror.filter((h) => nivaer.get(h.id) === 2).length;
+    const bas = kor(naraFaror, trace, nivaer, false);
+    if (!niva2) {
+      // Nämnarraden (FS-A1, DECISIONS #664, räkneregeln R4): baskörningens A1- och A2-varningar med nivå; ingen variant — den vore
+      // byte för byte densamma. Samma nycklar som de andra raderna, eftersom PostgREST kräver det i en gemensam skrivning.
+      rader.push({ route: name, svep_s: svepS, niva2: 0, bas: bas.alerts.filter((a) => FORSPRANG_A_SLAG.includes(a.kind)),
+        variant: [], bas_suppressed: bas.suppressed, variant_suppressed: [], nytt: [] });
+      continue;
+    }
+    const variant = kor(naraFaror, trace, nivaer, true);
     // FS-B4: en varning i varianten om en fara baskörningen aldrig talade om. Avståndet kvar till rutans slut följer med, så att
     // faror där baskörningens spår tog slut före faran kan redovisas för sig.
     const basIds = new Set(bas.alerts.map((a) => a.id));
@@ -1511,7 +1536,8 @@ async function forsprangVarv(prov: boolean): Promise<Response> {
       body: JSON.stringify(rader) });
     skrivet = r.ok ? `${rader.length} rader` : `forsprang_log ${r.status}: ${(await r.text().catch(() => "")).slice(0, 120)}`;
   }
-  return svar({ ok: true, lage: "forsprang", svep_s: svepS, rutter: batch.length, med_niva2: rader.length,
+  return svar({ ok: true, lage: "forsprang", grupp: c ? "c" : null, slot: urval.plats, svep_s: svepS, rutter: batch.length,
+    med_niva2: rader.filter((r) => (r.niva2 as number) > 0).length, namnarrader: rader.filter((r) => r.niva2 === 0).length,
     niva2_i_snapshoten: [...nivaer.values()].filter((n) => n === 2).length, skrivet });
 }
 
@@ -1529,7 +1555,13 @@ Deno.serve(async (req) => {
     // innanför de 10 sekunderna. Skriver INGET i shadow_log — en provrad hade förorenat tystnadsfelet och
     // upprepningen — svaret läses av dbknapp ur net._http_response.
     // Försprångets eget läge (kort #153 beslut 1) — före allt annat, så att huvudvarvets arbete aldrig körs i samma anrop.
-    if (new URL(req.url).searchParams.get("lage") === "forsprang") return await forsprangVarv(new URL(req.url).searchParams.get("prov") === "1");
+    if (new URL(req.url).searchParams.get("lage") === "forsprang") {
+      // Alla rutter varje halvtimme (DECISIONS #662): `slot` väljer platsen och `grupp=c` C-rutterna; ett felaktigt värde ger 400.
+      const q = new URL(req.url).searchParams, g = q.get("grupp"), s = q.get("slot");
+      if (g !== null && g !== "c") return new Response("okänd grupp", { status: 400 });
+      if (s !== null && !/^\d+$/.test(s)) return new Response("okänt slot", { status: 400 });
+      return await forsprangVarv(q.get("prov") === "1", g === "c", s === null ? null : Number(s));
+    }
     // OLJEPROVET (kort #276): en påhittad oljefläck 1,1 km in på ett rakt spår ⇒ EN rad i `olja`, plus hur många aktiva händelser
     // arkivet ger just nu (RPC:n prövad i drift). Skriver INGET i shadow_log, samma skäl som spärrprovet nedan.
     if (new URL(req.url).searchParams.get("oljaprov") === "1") {
