@@ -150,10 +150,10 @@ kamerorna att arbeta med just nu.
 - [SMHI:s nederbördsradar](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-radar): delvis, 88 % · kvar: Radarns tal R i förregistreringen §10 (a), läses 26/10 (#568)
 - [Vägdatalagret (NVDB)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-vagdata): delvis, 92 % · kvar: Kuvösens inläsning till kuvos_ra.vagdata (kort #303)
 - [Lägesfilens fält för skuggdelarna](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-l-falten): klar
-- [L3 trenden](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-trenden): delvis, 44 % · kvar: T-B (B3-paret och tystnadsfelet för trenden) har inget instrument
+- [L3 trenden](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-trenden): delvis, 44 % · kvar: T-B vilar till 2027/28 (#675); trendens värden prövas inom efterhalkan
 - [Rimfrosten](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-rimfrost): väntar, 44 % · En frostmånad för R-B; uppspelningen ur arkivet är byggd (#510), domen läses 9/11 (frist r-b-dom).
 - [Nederbördstypen (snö, slask)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-nederbord): väntar, 44 % · Domen tidigast 1/3 2027 när vintern gett ≥100 snö- och ≥40 slaskepisoder (NT-D).
-- [Kallplatserna](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-kallplatser): stängd · Kortet #91 stängt 25/9, öppnas våren 2027 (vårlistan Ä6)
+- [Kallplatserna](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-kallplatser): stängd · Kortet #91 stängt 25/9; vårlistans Ä6 struken 22/10 (#675): idén lever i kandidatens terrängsärdrag och kort #321
 
 <!-- /LÄGESRADER -->
 
