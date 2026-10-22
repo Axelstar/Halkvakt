@@ -467,7 +467,7 @@ Fem rader. Inget annat är "nu". **17/9: fyra klara — kvar är N3, nycklarna (
 *Läget i projektkartan:*
 
 - [Grindarna och domkalendern](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-p-grindarna): delvis, 93 % · kvar: Domlarmet i drift: måndagsserien 26/10 med domlarmet i grind A, hojd-prov, V-A och V-B (bokförda domar, ska tiga; fristen mandagsserien-26-10)
-- [Termisk kartering](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-p-termisk): väntar, 0 % · Bengts och Axels ja, utrustningen (Axel prissätter) och pengarna: projektets egna, eller Skyltfondens AP2 (#409).
+- [Termisk kartering](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-p-termisk): stängd · Inget: stängd 22/10 (#678). Ingen utrustning köps och ingen karteringsnatt planeras; kort #271 stängt; kort #321 prövas mot satellitens kallkarta utan mätbilen
 - [Regel L: ändra en tröskel efter sett utfall](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-p-regel-l): klar
 
 <!-- /LÄGESRADER -->
@@ -1024,7 +1024,7 @@ mätningar — R1–R16 nedan är strukna och står kvar bara som historik.**
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
 ## Öppna kort
 
-Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 25 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
+Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 24 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
 
 **§1 NU — före första frosten**
 
@@ -1055,7 +1055,6 @@ Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 25 kort
 - #317 NORR OCH SÖDER OM 62° — VAR FÖR SIG NÄR PROGNOSLAGRET OPTIMERAS (BESLUTAT 9/10 — Claude, nyckel: Bengts ord … — Claude, låst
 - #285 iCLOUD-KOPIAN BÄR UNGEFÄR VAR OCH NÄR — Claude, låst
 - #276 OLJA PÅ VÄGEN — HALKA SOM RÖSTEN INTE SÄGER — Claude, låst
-- #271 TERMISK KARTERING — FACIT MELLAN STATIONERNA — Claude, låst
 - #153 ALLVAR SOM FÖRSPRÅNG + ETT SMALARE UNDANTAG — beslut 1 omformulerat 16/9 och väntar, beslut 2 öppet (Bengts) — Claude, låst
 - #316 UBUNTU-LATEST BLIR UBUNTU 26 DEN 19/10 — FLÖDENA PRÖVAS FÖRE (UPPTÄCKT 9/10 — Claude, GitHubs notis i … — pågår
 
