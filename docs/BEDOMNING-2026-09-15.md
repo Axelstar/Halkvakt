@@ -810,6 +810,8 @@ bevisbart säker (vid 0 km/h går det inte att nå faran) och är rimligen stör
 
 <!-- /LÄGESRADER -->
 
+*Lägesfilens fält (Bengts val 20/10, DECISIONS #654):* fogarna F2–F4 (motorns läsning av radarns regn, `rain_segments`, `lutning15/60`, `bevis` och `smhi[]`) gäller inte längre: `regn_h` och `lutning30` läses av motorn sedan S3 (#524), kandidatens fält sedan 17/10 (#631), och resten behövs inte (radarn är fuktvillkoret på servern, #556; vattenplaningen föll, #648). Fälten publiceras vidare för skuggmotorn, vakthunden och favoritrapporten. Publiceringen får ingen reserv utanför pg_cron förrän orsaken till morgonavbrotten är känd (fristen `morgonavbrotten`, ärende #1100); under avbrottet 20/10 kunde appen inte varna ungefär 06:15–09:40 svensk tid, eftersom åldersvakten släcker efter 45 minuter (#647).
+
 Kartan (`docs/INTEGRATIONSKARTAN.md`, fryst) är måttstocken: fem lager (§2), fem fogar (§5.1), sekvensen per länk (§5.5) och
 minimilistan A–E (§8). Läget per del skrivs sedan 3/10 ur projektkartan, raderna ovan; 5.4 och 5.5 nedan är analys och historik.
 
