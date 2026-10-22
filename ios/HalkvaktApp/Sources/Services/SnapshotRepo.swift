@@ -25,7 +25,9 @@ enum SnapshotRepo {
         // Tolkningen bor i motorpaketet (kort #289) och prövas där mot engine/fixtures/lasarprov.json.
         let lasta = SnapshotReader.toHazards(staticDoc: staticDoc, liveDoc: liveDoc)
         // Efterhalkan (S3) bara för den som slagit på Betatest — Kompisarna först (Bengt 22/10, DECISIONS #676/#677).
-        let out = Prefs.shared.facitOn ? lasta : SnapshotReader.utanEfterhalka(lasta)
+        // Prefs bor på huvudaktören, så läsningen väntas in (utan await byggdes inte appen, prov-bygget 22/10, #679).
+        let betatest = await Prefs.shared.facitOn
+        let out = betatest ? lasta : SnapshotReader.utanEfterhalka(lasta)
         // Kort #203 lager 2: alla stationers id och position (static.json sedan 26/9) — missens plats. Inga faror.
         let stations = SnapshotReader.arr(staticDoc, "stations")
             .map { Station(id: SnapshotReader.str($0, "id"), lon: SnapshotReader.dbl($0, "lon"), lat: SnapshotReader.dbl($0, "lat")) }

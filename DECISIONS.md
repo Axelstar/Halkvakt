@@ -16387,6 +16387,11 @@ hål i #677. Spärren tömde `regn_h` bara på vägen till rösten (`SnapshotRep
 - Prov i båda motorerna mot det delade facit (`engine/fixtures/rapport.json`, som bär betaraden från Täby): utan regnfältet faller
   betaraden, och övriga rader är lika, dit och hem.
 
+**Rättat i samma PR: #677 byggde inte på iPhone.** Ett prov-bygge av appen i `testflight.yml` (läget *prov*, utan signering) på
+grenen föll 22/10 på `SnapshotRepo.swift:28`: *"expression is 'async' but is not marked with 'await'"*. #677 läste Betatest-flaggan,
+som bor på huvudaktören, utan `await`. PR-flödet bygger bara motorpaketet (`ios-engine.yml`), inte appen, så felet syntes inte där,
+och main har sedan #677 inte gått att arkivera för iPhone. Läsningen väntas nu in.
+
 **Det som återstår.** Spärren når användarna först med Axels nästa bygge, som för #677. Serverns rapportfil (`byggRapport`, funktionen
 favoriter) räknar inte S3. Favoritprovet i testmiljön (#529) gör det och rörs inte.
 
