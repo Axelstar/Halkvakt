@@ -17,6 +17,7 @@ on:
         default: ingen
 permissions:
   contents: read
+  issues: write   # domlarmet (DECISIONS #649) för olycksläsningens dom över sikten (#697); inget annat steg använder det
 jobs:
   inlasning:
     runs-on: ubuntu-latest
@@ -46,6 +47,11 @@ jobs:
         run: |
           node --experimental-strip-types kuvos/facit-trv.ts --signerad docs/FORREGISTRERING-FACIT-TRV-2024-25.md
           if [[ "$MATNING" == *uppfoljning* ]]; then node --experimental-strip-types kuvos/facit-trv.ts --signerad docs/FORREGISTRERING-FACIT-TRV-UPPFOLJNING.md; fi
+      # Olycksläsningen (DECISIONS #697) läser utfall: utan båda signaturerna i förregistreringens §9 fälls jobbet här, före leveransen
+      # och fysikkedjans tre timmar. Läsningen prövar signaturerna igen, och facitläsningens förregistrering i forbered().
+      - name: Förregistreringen signerad (olyckorna)
+        if: ${{ contains(inputs.matning, 'olyckor-trv') }}
+        run: node --experimental-strip-types kuvos/olyckor-trv.ts --signerad docs/FORREGISTRERING-OLYCKOR-2024-25.md
       # Leveransen ligger sedan 9/10 i den privata hinken `arkiv` i Supabase, inte i releasen, som blir publik med repot (kort #311,
       # DECISIONS #499). Signerade adresser ur arkivdump; nyckeln ur pg_cron:s jobb som i arkivbackup.yml, maskerad.
       - name: Leveransen ur hinken, kontrollsummorna mot manifestet
@@ -95,6 +101,34 @@ jobs:
             const m = require("./kuvos/trv-111808-leverans.json"), c = require("crypto"), fs = require("fs");
             let fel = 0;
             for (const f of m.filer) {
+              const b = fs.readFileSync("trv/" + f.fil), h = c.createHash("sha256").update(b).digest("hex");
+              const ok = h === f.sha256 && b.length === f.bytes; fel += !ok;
+              console.log(`${f.fil}: ${b.length} byte, ${ok ? "sha256 lika" : "FEL " + h}`);
+            }
+            process.exit(fel ? 1 : 0);' | tee -a "$GITHUB_STEP_SUMMARY"
+      # Olyckorna ur samma utlämnande (kompletteringen 20/10, DECISIONS #665): den rensade kopian, med regnummer och telefonnummer
+      # maskade, i hinken under kuvos/trv-2026-111808/. Den står under manifestets 'komplettering', som steget ovan inte hämtar; sha256
+      # och storlek mot den. Bara för olycksläsningen (#697).
+      - name: Trafikverkets olyckor ur hinken, kontrollsumman mot manifestet
+        if: ${{ contains(inputs.matning, 'olyckor-trv') }}
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          FILER=$(node -e 'console.log(JSON.stringify(require("./kuvos/trv-111808-leverans.json").komplettering.map((f) => "trv-2026-111808/" + f.fil)))')
+          curl -sS --fail-with-body -X POST "$FN?lage=kuvos_hamta" -H "x-halkvakt-key: $KEY" -H "Content-Type: application/json" -d "{\"filer\":$FILER}" > hamta.json
+          mkdir -p trv
+          node -e 'for (const d of require("./hamta.json").filer) console.log(d.fil.split("/").pop() + " " + d.url)' | while read -r FIL URL; do
+            curl -sS --fail -o "trv/$FIL" "$URL"
+          done
+          rm hamta.json
+          node -e '
+            const m = require("./kuvos/trv-111808-leverans.json"), c = require("crypto"), fs = require("fs");
+            let fel = 0;
+            for (const f of m.komplettering) {
               const b = fs.readFileSync("trv/" + f.fil), h = c.createHash("sha256").update(b).digest("hex");
               const ok = h === f.sha256 && b.length === f.bytes; fel += !ok;
               console.log(`${f.fil}: ${b.length} byte, ${ok ? "sha256 lika" : "FEL " + h}`);
@@ -347,7 +381,17 @@ jobs:
         env: { MATNING: "${{ inputs.matning }}", NODE_OPTIONS: "--max-old-space-size=10240" }
         run: |
           [[ "$MATNING" =~ ^scripts/matningar/[A-Za-z0-9._-]+\.ts$ && -f "$MATNING" ]] || { echo "okänd mätning: $MATNING"; exit 1; }
-          { echo '```'; node --experimental-strip-types "$MATNING"; echo '```'; } 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+          { echo '```'; node --experimental-strip-types "$MATNING"; echo '```'; } 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY" "$RUNNER_TEMP/utskrift.txt"
+      # Olycksläsningens aggregat (DECISIONS #697): JSON och markdown med antal, andelar, kvoter och marginaler — aldrig fritexten eller
+      # platsen (PUBLIKT REPO). Domlarmet (#649) gör siktens dom (DOMRAD i utskriften) till ett ärende, också när läsningen fällt jobbet.
+      - name: Olycksläsningens aggregat sparas
+        if: ${{ always() && contains(inputs.matning, 'olyckor-trv') }}
+        uses: actions/upload-artifact@v4
+        with: { name: olyckor-2024-25, path: olyckor-ut/, retention-days: 90, if-no-files-found: ignore }
+      - name: Domlarmet (#649)
+        if: ${{ !cancelled() && contains(inputs.matning, 'olyckor-trv') }}
+        run: node --experimental-strip-types scripts/domlarm.ts "$RUNNER_TEMP/utskrift.txt"
+        env: { GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}" }
       # Körflödet (steg 5, DECISIONS #426). Väglagsnätets geometri är dagens, som #426 säger; dess sha256 skrivs ut så att körningen
       # går att upprepa på samma nät. tid-sju-dygn läser inga varningar — den avgör bara om serie B ryms var tredje timme.
       - name: Körflödet

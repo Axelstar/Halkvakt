@@ -74,6 +74,11 @@ jobs:
           node --experimental-strip-types kuvos/facit-trv.ts --sjalvtest
           node --experimental-strip-types kuvos/facit-trv-uppfoljning.ts --sjalvtest
           node --experimental-strip-types scripts/matningar/kuvos-blandning-vagb-facit-trv-uppfoljning-2026-10-17.ts --sjalvtest
+      - name: Kuvösens olyckor 2024/25 — läsaren efter förregistreringen (#697), och W-A:s regler som den lånar
+        run: |
+          node --experimental-strip-types kuvos/olyckor-trv.ts --sjalvtest
+          node --experimental-strip-types scripts/matningar/kuvos-blandning-vagb-olyckor-trv-2026-10-23.ts --sjalvtest
+          node --experimental-strip-types scripts/vindsikt-steg0.ts --sjalvtest
       - name: Kortkartan — varje öppet kort kopplat till sitt område i stomdokumenten (#445)
         run: |
           node --experimental-strip-types scripts/kortkartan.ts --sjalvtest
