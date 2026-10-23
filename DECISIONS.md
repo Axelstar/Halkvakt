@@ -16638,3 +16638,84 @@ Bengt svarade 23/10:
 14. **Besöksräknaren** (B6-26) görs klar i PR #1088 som #684 (sql/067).
 
 **Stomdokument:** APP kort #228 och #1029, BED §4.2 frågorna till Axel
+
+## #686 (23/10 2026) Favoriterna omgång 1: trafiken räknas ur hämtningarna, larmet till driften vid släppet, Nytt som byggt, köerna i App Store-texten, rapportfilens tid och en inspelning till granskaren
+
+**Bengts ord 23/10**, på genomgången av blocket Favoriterna (förklarad i chatten 23/10, läs-only, två hjälpagenter):
+- *"Claude räknar på hämtningarna"*;
+- *"Driftlarm vid släppet"*;
+- *"Som det är byggt"*;
+- *"där Trafikverket mäter dem"*;
+- *"Visa tiden"*;
+- *"Låt stå, skriv ut"*;
+- *"Bifoga en inspelning"*;
+- *"Utred utan att ändra"*.
+
+**Beslut.**
+1. **Trafiken mot hinken** (#617) räknas av Claude ur appens hämtningar, inte i Supabase-panelen. Det blir en uppskattning med
+   antagandena utskrivna, jämförd med den utgående trafik som ingår i Pro-planen (#644). Den bokförs före inskicket av (33).
+2. **Larmet:** `favoriter` flyttas från mätvakten till driftlarmet när (33) släpps i App Store, och vakten prövar då också den
+   långa delens sha256. Fristen är `favoriter-driftlarm` 15/11. Koden skriver Claude, och deployen av vakthunden gör Bengt.
+   Vakthundens egen kommentar säger redan att favoriterna hör till kedjans larm när appen läser filen.
+3. **Nytt i fliken** är det som är byggt (#639): allt utom fartkamerorna och restidssträckorna i normal trafik. FAV §11 rättas
+   efter koden.
+4. **App Store-texten** säger *"köer åt ditt håll där Trafikverket mäter dem"* (`marknadsforing/butik/appstore-ios.md`).
+   Köerna och restiderna mäts nästan bara i Stockholm.
+5. **Rapportfilens tid** visas i rapporten, *"Rapporten från HH:MM"*, i bygget efter (33) i båda apparna. Köer, restider och
+   färjor kommer ur rapportfilen, men i dag visas bara lägesfilens tid.
+6. **Resorna räknas olika i apparna, och det får stå.**
+   - iPhone slår ihop starter inom 3 timmar till samma resa så länge frågan inte är besvarad (`GuardManager.swift`, `sameTripWithin`).
+   - Android börjar en ny resa vid varje start (`Favoriter.kt`, `resanBorjar`).
+   - Skillnaden skrivs ut i FAVORITER och i betaguiderna.
+7. **Granskaren** får en inspelning av favoriterna, eftersom fliken annars är tom utan en körning på 1 km. Bengt spelar in fliken
+   och rapporten samtidigt som inspelningen av bakgrundsljudet, och den bifogas vid inskicket av (33). Granskningsanteckningen har
+   en mening om det.
+8. **Den långa delen** skrevs om i 140 av 144 körningar, så uppdelningen sparar nästan ingen trafik. Den utreds läs-only: är det
+   verkliga ändringar eller ordningen i Trafikverkets svar? Svaret används i trafikräkningen.
+
+**Utan beslut** (Claudes förslag, framlagda i chatten):
+- Steget *Marginalen i egen funktion* stängs med funktionens egen historik (`historik.json` i hinken, 22/10 05:36–23/10 05:26 UTC):
+  - 144 av 144 körningar, ingen lucka över 10,3 min;
+  - totaltiden median 2 828 ms, 130 av 144 under 3 603 ms, max 6 889 ms;
+  - heap 40,9–43,8 MB;
+  - snabba delen 62 278–69 150 byte och långa 112 651–127 420 byte packad, 1 437–1 597 poster.
+  Processortiden mäts inte, och rss ges som 0 av körtiden. Båda är kända gränser.
+- Favoritprovet och synken går en vecka med (33) innan någon tar ställning till dem.
+- Tider på Android följer kort #358.
+
+**Rättat i samma PR, utan beslut:**
+- Projektkartans favoritdelar:
+  - radering och frågan efter resan var byggda redan i steg 2 (3e47b62a, 25236324);
+  - ingen av apparna har schemaläggning, så tidernas provsteg står som saknas;
+  - (32) är bytt mot (33);
+  - besluten är förda in.
+- Tavlans kort #357: byte i UTF-8 är i drift sedan 18/10 (a282b85 ingår i b095128).
+- App Store-filens inskicksteg säger nu bygge 33, inte 32 (#681).
+- PRODUKTBOK (33), betaraden och targetSdk 36. Betaguiderna har tre flikar och Favoriter, och Android-guiden har fått sitt avsnitt
+  om (33) (B6-32).
+
+**Morgonsynken rättar FAV:s handtext** (#522). Detta hittades i genomgången:
+- *Inledningen:* "på Axels och Bengts prov", men inget prov av Axel är bokfört.
+- *§1:* "skickar en notis om något har tillkommit" gäller inte iPhone, som får en påminnelse vid inställd tid (#616).
+- *§2, §3, §7, §11 och §12:* (31) och (32) ska vara (33), och inskicket görs med (33) (#681).
+- *§3:* S3 "gäller från nästa bygge". Det gäller från (33), och Betatest finns bara i TestFlight (#679, #681).
+- *§4:* "Rapporten skriver alltid ut vilken fil den läser". Appen visar bara lägesfilens tid, och rapportfilens tid kommer enligt
+  beslut 5.
+- *§5:* iPhone frågar om notiser redan i introduktionen, inte först när vakten startar.
+- *§6:* frågan efter resan "blir en egen rad", men den är byggd sedan (30). Skillnaden i hur resorna räknas skrivs ut (beslut 6).
+- *§7, tabellen (läget 2/10):*
+  - köer, restider, färjor och SMHI-varningar finns i rapporten i dag;
+  - hinder och köer går också till rapportfilen;
+  - inställda färjeavgångar syns inte i Trafikverkets data.
+- *§7, På servern:*
+  - filen byggs i en egen funktion (#541) och ligger i hinken `favoriter` (#617);
+  - delningen blev en snabb och en lång del, inte "restidernas status 2 kB";
+  - formen är avgjord (#617).
+- *§7, Byggtiden:* "5 GB", "cirka 60 kB" och "700 användare" gäller inte längre. Planen är Pro sedan 19/10 (#644). En hämtning av
+  båda delarna är 175–197 kB packad (historiken 22–23/10), och trafiken räknas enligt beslut 1.
+- *§11:* Nytt är allt utom kamerorna och restiderna i normal trafik (#639, beslut 3).
+- *§12:* avstånden är appens trösklar sedan #637. Loggen slutar 19/10 och saknar #644, #679, #681 och den här omgången.
+
+**Åtgärdslistan:** `docs/ATGARDER-FAVORITERNA-2026-10-23.md` (B7-01 och framåt).
+
+**Stomdokument:** FAV inledningen och §1–§7 §11 §12 efter genomgången, APP favoriterna och butikstexten

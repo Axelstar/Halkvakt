@@ -63,7 +63,7 @@
 | B6-29 | Marknadsmotorn skrev inga utkast 18–20/10, och orsaken är oklar | Claude | öppen | |
 | B6-30 | App Store-datumet står som 12, 13 eller 14/10 på olika ställen | Claude | öppen | |
 | B6-31 | `marknadsforing/butik/butikstext.md` (Play) säger fortfarande "ingen spårning" och "aldrig", och saknar meningen om sparade resor som iOS-texten fick (#616, #625) | Claude | öppen | |
-| B6-32 | `docs/BETAGUIDE-ANDROID.md` säger inget om att Betatest bara finns i testbyggen (#681, PR #1159) | Claude | öppen | |
+| B6-32 | `docs/BETAGUIDE-ANDROID.md` säger inget om att Betatest bara finns i testbyggen (#681, PR #1159) | Claude | **klar** — avsnittet *Nytt från versionCode 33* (#686) | #686 |
 | B6-33 | PRODUKTBOK: raden "Android (CI)" är gammal, och (25) saknas eftersom det ersattes av (26) innan något byggdes | Claude | öppen | |
 | B6-34 | hej@halkvakt.se: tar brevlådan emot post? | Bengt | **klar** — *"fungerar"* (Bengt 23/10) | #685 |
 | B6-35 | Lösenorden till Facebook, Instagram och X | Axel | **klar** — *"axel har ansvar för denna"* (Bengt 23/10); var de förvaras skrivs aldrig i repot | #685 |
