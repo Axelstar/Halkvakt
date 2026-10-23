@@ -16598,8 +16598,8 @@ Bengt svarade 23/10:
    - Claude höjer byggnumret och laddar upp efter #1029;
    - Bengt provar (33) och gör skärminspelningen;
    - Axel klistrar in texterna och skickar in.
-3. **Vilket bygge App Store-versionen 0.3.9 bär** (B5-35) har låg vikt, eftersom (33) ersätter versionen. Bengt frågade om det har
-   betydelse. Raden står öppen.
+3. **Vilket bygge App Store-versionen 0.3.9 bär** (B5-35) är **bortvalt** (Bengt: *"stryk fråga 3 som bortvald"*). Frågan har låg
+   vikt, eftersom (33) ersätter versionen.
 4. **Läget i Google Play** (B5-36), **Kompisarna** (B5-38) och **PR #1056** med ansökan till katalogen (B6-27) står på Axels lista.
 5. **Integritetssidans datum 20/10** (B5-37, B5-43) är besöksräknaren. Sidan beskriver den, och den bokförs som #684 (PR #1088).
 6. **Kort #228 är stängt** (B5-39). CI kör `xcodegen` på en ren maskin.

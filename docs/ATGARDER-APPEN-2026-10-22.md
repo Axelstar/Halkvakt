@@ -79,7 +79,7 @@ Förkortningar:
 | :-- | :-- | :-- | :-- |
 | B5-33 | #1029: bekräfta att den är färdig och prova den på en riktig Android | pågår — *"ta in den i 33"* (Bengt 23/10): main införd i #1029 (c39233f6), Android-flödet körs; provet på Axels lånade Android står kvar | |
 | B5-34 | Inskicket av (33): texterna i `marknadsforing/butik/appstore-ios.md`, versionsposten 0.3.13, skärminspelningen och *Submit for Review* | pågår — *"ja"* (Bengt 23/10): Claude höjer byggnumret och laddar upp efter #1029, Bengt provar (33) och gör skärminspelningen, Axel klistrar in och skickar in | |
-| B5-35 | Vilket bygge bär App Store-versionen 0.3.9? Rättelsen efter avslaget 5/10 kom först i (23) | öppen — låg vikt: Bengt frågade 23/10 om det har betydelse; (33) ersätter versionen | |
+| B5-35 | Vilket bygge bär App Store-versionen 0.3.9? Rättelsen efter avslaget 5/10 kom först i (23) | **bortvald** — *"stryk fråga 3 som bortvald"* (Bengt 23/10): låg vikt, eftersom (33) ersätter App Store-versionen 0.3.9 | #685 |
 | B5-36 | Google Play: identitetsgranskningen, enhetsverifieringen, Data safety, vilka versionCode som är förbrukade i internt test (27–29) och det slutna testet | öppen — på Axels lista (Bengt 23/10) | |
 | B5-37 | Integritetssidan på halkvakt.se: vad ändrades 20/10 (eventuellt PR #1088), och ska den säga att Betatest bara finns i TestFlight? | **klar** — ändringen 20/10 är besöksräknaren: integritetssidan beskriver den, och räknaren är bokförd som #684; ska sidan säga att Betatest bara finns i TestFlight står kvar för Axel | #684 |
 | B5-38 | Vilka byggen har Kompisarna, och har Android-testaren fått en numrerad APK (Å0)? | öppen — på Axels lista (Bengt 23/10) | |
