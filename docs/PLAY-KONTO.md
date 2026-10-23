@@ -86,17 +86,24 @@ tappas appen. Samma resonemang som CLAUDE.md redan har om signeringsnyckeln.
 
 ## 4. Vad som måste vara klart innan första uppladdningen
 
-Det här finns redan, eller är kända hål:
+**Läget 22/10** (rättat 22/10 ur STATUS.md, DECISIONS, `android/app/build.gradle.kts` och git; tabellen stod till dess på läget
+20/9: 0.3.1 (4), Data Safety *osann* och inget uppladdningsflöde). Det som saknar källa här står som *oklart, fråga Axel*.
 
-| Sak | Läge |
-| :-- | :-- |
-| Signerad AAB ur CI | ✅ finns (`android.yml` bygger `app-release.aab` som artefakt) |
-| Signeringsnyckeln | ✅ i GitHub Secrets. ⚠️ **Efter första Play-uppladdningen är nyckeln bunden hos Google** (CLAUDE.md) — jks-filen måste finnas i iCloud först |
-| **Data Safety-deklarationen** | ❌ **osann sedan 16/9** — kort #214. Måste rättas FÖRE uppladdning |
-| Uppladdningsflöde | ❌ finns inte — CI bygger en artefakt och där slutar det |
-| Android-versionen | ⚠️ 0.3.1 (4) mot iOS 0.3.8 (11) — kort #219 |
-| Onboarding på Android | ❌ saknas helt — kort #217 |
-| Butikstext, ikon, skärmbilder | ❌ inte gjort |
+| Sak | Läget 22/10 | Källa |
+| :-- | :-- | :-- |
+| Android-versionen | ✅ 0.3.13, **versionCode 32** på main, i takt med iOS 0.3.13 (32) | `android/app/build.gradle.kts:9`; DECISIONS #643 |
+| Signerad AAB ur CI | ✅ `android.yml` bygger `app-release.aab` (artefakten `halkvakt-release-aab`); versionCode 32 i android 39271818731 på e83e56c | DECISIONS #643; STATUS 19/10 |
+| Uppladdningsflöde | ❌ inget flöde laddar upp till Play: android.yml slutar med artefakten. Hur (27) kom till Play Console: **oklart, fråga Axel** | `.github/workflows/android.yml` (inga Play-steg) |
+| targetSdk | ⚠️ **35 på main.** Play Console vägrade 0.3.13 (27) i internt test: appen måste vara inriktad på minst API-nivå 36. Axels PR #1029 (grenen `claude/target-sdk-36`) höjer targetSdk och compileSdk till 36; (27) är *förbrukad i Play Console*, så grenen tog versionCode 28. PR:en tas in i (33) när Axel bekräftat att den är färdig | `build.gradle.kts:7`; commit a874fbb1 17/10; DECISIONS #681 punkt 2 |
+| Identitetsgranskningen | ⚠️ inskickad till Google 4/10, och enligt DECISIONS #640 (18/10) och #643 väntar Play internt på den. Men Axel hade 0.3.13 (28) i **internt test** på sin Android 17/10 (commit 3cd31a97, DECISIONS #681 punkt 2), vilket kräver att appen finns i Play Console. Om granskningen är klar: **oklart, fråga Axel** | TAVLA kort #219 (4/10); DECISIONS #640, #681; 3cd31a97 |
+| Signeringsnyckeln | ✅ i GitHub Secrets. ⚠️ Efter första Play-uppladdningen är nyckeln bunden hos Google (CLAUDE.md), och (27) är uppladdad (a874fbb1). Vilken nyckel den bar, och om jks-filen ligger i iCloud: **oklart, fråga Axel** | CLAUDE.md; a874fbb1 |
+| **Data Safety-deklarationen** | ✅ sann sedan 20/9 (kort #214, DECISIONS #270), radering *Nej* 26/9 (#378), policyn rättad 23/9 och 1/10 (#320, #432). Om formuläret är ifyllt i Play Console: **oklart, fråga Axel** | `docs/PLAY-DATASAFETY.md` |
+| Betatest-spärren | ❌ inte på Android: från iOS (33) syns Betatest bara i TestFlight och utvecklarbyggen; Android ska få samma spärr före Google Plays produktion | DECISIONS #681 punkt 3 |
+| Slutet test | ❌ **inte startat** — tolv testare i fjorton löpande dygn krävs före produktion (§1); inga testare bokförda | TAVLA *Tolv testare till Play-perioden* (Verify öppen); DECISIONS #681 punkt 3 (*ingen offentlig kanal*) |
+| Introduktion på Android | ❌ ingen på main; första trycket på Starta ber om plats och notiser. PR #1029 lägger en förklaring före Androids behörighetsrutor (3cd31a97), inte i main | kort #284 (c); `docs/APPEN.html` §4 |
+| Butikstext, ikon, skärmbilder | Butikstexten `marknadsforing/butik/butikstext.md` (rättad 2/10), ikon 512 och feature graphic gjorda 1/10; Android-skärmbilderna: **oklart, fråga Axel** | TAVLA kort #219, fredagens lista 2/10 |
+
+↪ **22/10:** stycket nedan skrevs 20/9. #214 är rättad sedan 20/9, och en första uppladdning är gjord ((27), a874fbb1).
 
 **Ordningen som följer av det:** kontot kan registreras i dag, men första uppladdningen bör vänta tills
 #214 är rättad. En osann Data Safety-deklaration är grund för avslag, och avslaget kommer mitt i det

@@ -16501,3 +16501,43 @@ facitkommandon, Betatest-sidans text i iOS och Android, och butikstexten. Ett pr
 - integritetssidan på halkvakt.se, som nämner betatestet. Den ligger i karta-repot.
 
 **Stomdokument:** APP Betatest dolt utanför TestFlight och (33)
+
+## #682 (22/10 2026) Åtgärdslistan för Appen, och rättelserna i projektkartan, tavlan, Play-dokumenten och APPEN
+
+**Bengts ord 22/10:** *"Ja, skriv åtgärdslistan för Appen och gör rättelserna och Androids Betatest-spärr"*.
+
+**Åtgärdslistan.** `docs/ATGARDER-APPEN-2026-10-22.md` har B5-01–B5-43 och samma regler som Motorns lista:
+- A: besluten i omgång 1, alla klara (#681);
+- B och C: rättelserna;
+- D: byggen;
+- E: prov med telefon eller bil (Bengt eller Axel);
+- F: Axels frågor och steg;
+- G: fynd som kom fram under rättelserna.
+
+**Rättelserna (B5-07–B5-23, klara).** Två hjälpagenter prövade varje punkt mot koden och källorna innan de rättade:
+- **Projektkartans tio appdelar:**
+  - radhänvisningarna;
+  - bygget 0.3.13 (32), med (33) efter #1029;
+  - batteriets "Byggt i koden" är nu klart;
+  - kort #284 på a-android;
+  - rösten nämner S3 bakom Betatest och kandidaten;
+  - saknas-raderna för korten v4, #356 och #642;
+  - Android-filerna i betatestet;
+  - löftet på fler ställen.
+- **Tavlan:** daterade ↪-rader på #262, #214, #258, #279, #284, Introduktionen och #203.
+- **`docs/PLAY-KONTO.md` §4:** läget 22/10, med källor. Det som saknar källa står som en fråga till Axel.
+- **`docs/PLAY-DATASAFETY.md`:** policyns historik, och Betatest-spärren i båda apparna.
+- **`docs/APPEN.html`:**
+  - spärren för S3 i §3, och den sena olycksrepliken;
+  - raden om gammal data i §4;
+  - Betatest bara i TestFlight i §6.
+
+**Det som inte stämde mot underlaget, och skrevs efter källan:**
+- 4a och 4b finns redan i (23), inte först i (24).
+- Reglaget nådde en telefon först i (19), eftersom (15)–(18) aldrig arkiverades.
+- Plays identitetsgranskning är oklar, eftersom (27) och (28) låg i Play Console 17/10. Det är en fråga till Axel.
+- *Ingenting* togs bort ur policyn redan 23/9 (#320). 1/10 kom raderingsmeningen.
+
+**Androids Betatest-spärr (B5-24)** är en egen PR, #1159.
+
+**Stomdokument:** APP rättelserna och åtgärdslistan
