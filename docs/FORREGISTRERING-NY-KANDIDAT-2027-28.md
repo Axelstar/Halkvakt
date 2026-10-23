@@ -104,3 +104,9 @@ det bara genom en daterad post med båda signaturerna, och aldrig som en lättna
   - **Huvudtalet** är det enkla medlet av de sex utelämnade vintrarnas A1, A2 och A3, där varje vinter väger lika. Talen ur alla punkter ihop redovisas bredvid.
 
   Inget utfall var läst när ändringen gjordes. Den preciserar och lättar ingenting (regel L).
+
+- **23/10 2026 — skuggan och valet (DECISIONS #691).** Bengt i chatten: *"Väg 2: den frysta signeras 26/10 och talar i vinter, och den
+  nya körs i skugga från november om den klarar V1–V4."* Klarar den nya villkoren i `docs/FORREGISTRERING-ERSATTNING-2027-28.md` §3
+  körs den i skugga under vintern 2026/27, och i mars väljs kandidaten för 2027/28 på den levande vintern (där §4 och §5). Det ändrar
+  §5 punkt 1 för skuggan: den frysta, regeln, grindarna och den frystas dom står kvar, och den nya talar inte i appen. Ändringen
+  gäller från signeringen av ersättningsregeln, med båda signaturerna där. Inget utfall är läst, och ingenting lättas (regel L).

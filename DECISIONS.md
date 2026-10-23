@@ -16917,3 +16917,32 @@ fristen är `ersattningsregel-ny-kandidat` 26/10. I korthet:
 Inget utfall av den nya kandidaten finns. Indata för 2020-21 pågår, och 2021-22 återstår.
 
 **Stomdokument:** KUV §5 ersättningsregeln utkast
+
+## #691 (23/10 2026) Ersättningsregeln: den nya kandidaten i skugga från november om den klarar V1–V4, valet inför 2027/28 i mars, X = 0,25
+
+**Bengts ord 23/10:**
+- *"Ja, skriv in X = 0,25 procentenheter och marsdomen (b)"*.
+- Bengt stoppade sedan och frågade: *"är inte tanken att den nya ska ersätta den frysta redan från nu om den är bättre"*. Claude
+  svarade att förregistreringen som Bengt signerade 22/10 (#671) säger 2027/28 och *"ingen ändring för vintern 2026/27"*. Det kan
+  ändras före läsningen. Claude lade fram tre vägar och rekommenderade väg 2.
+- Bengt valde: *"Väg 2: den frysta signeras 26/10 och talar i vinter, och den nya körs i skugga från november om den klarar V1–V4.
+  Skriv om utkastet efter det."*
+
+**Beslut.**
+1. **Den frysta** signeras 26/10 (#689) och talar i appen hela vintern 2026/27. Ingenting i dess förregistrering ändras. §9 där
+   har fått en not om skuggan.
+2. **Den nya körs i skugga** från november om den klarar V1–V4, med X = 0,25 procentenheter i V2 (ERSATTNING-2027-28 §3).
+   - Den räknas i en egen kedja med fysikens reserv.
+   - Kedjan klarar först ett paritetsprov på 2024/25.
+   - Värdena loggas i en egen tabell bredvid `kandidat_skugga`.
+   - Fristen är `ny-kandidat-skugga` 15/11, och migrationen och deployen gör Bengt.
+   - Ingenting når förarna.
+3. **I mars 2027** döms båda med 2026/27 §4–§4b på det gemensamma fönstret, och den som klarar går vidare till 2027/28. Klarar
+   båda, tar den nya platsen bara om dess A2 är minst 0,25 procentenheter lägre. Klarar ingen, gäller RÅ (#657).
+4. **Marsdomens val (b)**, att den nya bara tar platsen om den frysta faller, ersätts av punkt 3. Valet görs nu på levande data för
+   båda, inte på den nyas historiska tal.
+5. **NY-KANDIDAT §10** har fått en daterad post. §5 punkt 1 ändras för skuggan från signeringen av ersättningsregeln.
+
+Inget utfall av den nya kandidaten är läst. Indata för 2020-21 pågår.
+
+**Stomdokument:** KUV §5 skuggan och valet inför 2027/28, LIV den nya kandidaten i skugga bredvid den frysta

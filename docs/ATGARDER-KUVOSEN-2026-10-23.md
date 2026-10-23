@@ -47,7 +47,7 @@
 | Nr | Brist | Ägare | Status | Stängd av |
 | :-- | :-- | :-- | :-- | :-- |
 | B8-20 | Övergångarna och försprånget i kuvösen med okorrigerad tif, eller bortvalda med skäl (fristen `kuvos-tif-lasningarna` 15/11); Ö-B saknar instrument (#658), väglagshistoriken är inte inläst | Claude | öppen | |
-| B8-21 | Ersättningsregeln, utkastet (B8-03) | Claude | **klar** — `docs/FORREGISTRERING-ERSATTNING-2027-28.md`; Bengts två val och signaturerna står kvar (B8-03) | #690 |
+| B8-21 | Ersättningsregeln, utkastet (B8-03) | Claude | **klar** — `docs/FORREGISTRERING-ERSATTNING-2027-28.md`, omskrivet efter Bengts val 23/10 (väg 2, X = 0,25); signaturerna står kvar (B8-03) | #690, #691 |
 | B8-22 | Radarns tal R 26/10: kurva 2 (39257448840, körd 13:20 UTC, inte 06:20 som #568 säger) är oläst; kurva 3 körs 06:20 UTC i morgonavbrottens fönster | Claude | öppen | |
 | B8-23 | Utfallet 2022/23 (#680) vid signaturerna för 2026/27, enligt §10 f | Claude, Bengt | öppen | |
 | B8-24 | Jämförelsen i den nya kandidatens samman prövar inte att populationerna är lika och skriver inte ut n (`provning.py`) | Claude | öppen | |
@@ -67,3 +67,4 @@
 | B8-33 | KUV:s öppna kort för §5 listar #270, som enligt #657 hör till RÅ som kontroll och reserv | Claude | öppen | |
 | B8-34 | STATUS sade 57 öppna kort, kortkartan 56 | Claude | öppen | |
 | B8-35 | Den rensade olyckskopian i den privata hinken bär fortfarande minst ett namn; det är medvetet enligt #665 (bara regnummer och telefonnummer maskas) | Bengt | öppen | |
+| B8-36 | Den nya kandidatens skugga, om V1–V4 håller: egen kedja med fysikens reserv, paritet på 2024/25 och egen logg (fristen `ny-kandidat-skugga` 15/11) | Claude (kod), Bengt (migration och deploy) | öppen | |
