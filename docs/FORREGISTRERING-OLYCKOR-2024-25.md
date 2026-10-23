@@ -1,21 +1,21 @@
 # Förregistrering — Trafikverkets olyckor 2024/25: facit i kuvösen och en andra serie för W-A
 
-**Status: UTKAST 22/10 2026** (DECISIONS #665, #669). Bengt och Axel signerar **innan** någon olycka läses mot kuvösen eller vinden.
+**Status: UTKAST 22/10 2026, rättat 23/10** (DECISIONS #665, #669; §1 och §5 efter #675 och #689). Bengt och Axel signerar **innan** någon olycka läses mot kuvösen eller vinden.
 Fristen är `olyckor-forregistrering`, 15/11.
 
 Källorna:
 - olyckorna i TRV 2026/111808, kompletteringen 20/10 (`docs/KUVOS-LEVERANSEN-2026-10-02.md` §5i);
 - facitläsningen mot väglaget (`docs/FORREGISTRERING-FACIT-TRV-2024-25.md`), vars frågor (a) och (b) olyckorna ger en andra
   bekräftelse;
-- W-A i `docs/TROSKLAR-VIND-SIKT.md` §3 och `scripts/vindsikt-steg0.ts`.
+- W-A i `docs/TROSKLAR-VIND-SIKT.md` §4 och `scripts/vindsikt-steg0.ts`.
 
 Filen ligger i hinken `arkiv` som den rensade kopian `kuvos/trv-2026-111808/Olyckor24-25.xlsx`, aldrig i repot. Fritexten och platsen
 skrivs aldrig ut i en logg.
 
 ## 1. Vad som läses
 
-Två frågor. Båda är **diagnos**: ingen ändrar en tröskel eller fäller en grind, och domarna fälls på driften som förut (#547, #662).
-Regel L gäller (#564).
+Två frågor. Båda är **diagnos** med ett undantag: ingen ändrar en tröskel, och domarna fälls på driften som förut (#547, #662).
+Undantaget är sikten: W-A3 i fråga (b) avgör den (#675, #689; §5). Regel L gäller (#564).
 
 - **(a) Facit.** Hur ofta har kandidatens kalla timmar och efterhalkans fyrningar en olycka nära sig i tid och rum, jämfört med kalla
   timmar i allmänhet? Det är frågorna (a) och (b) i facitläsningen mot väglaget, med olyckor i stället för väglag.
@@ -69,10 +69,11 @@ Allt redovisas också per månad och norr och söder om 62°. Alla tal skrivs ut
 
 ## 5. Fråga (b): W-A på vintern 2024/25
 
-**W-A:s regler, oförändrade** (`scripts/vindsikt-steg0.ts`, TROSKLAR-VIND-SIKT §3):
+**W-A:s regler, oförändrade** (`scripts/vindsikt-steg0.ts`, TROSKLAR-VIND-SIKT §4):
 - **Räckvidden** mellan station och olycka är 15 km.
 - **Vindbanden** är < 10, 10–15, 15–20 och 20–30 m/s. Taket G_TAK är 30 m/s, och timmar över taket kastas.
-- **Siktbanden** är > 1000, 500–1000, 200–500 och < 200 m, med platshållarna −100 och 20 000 kastade.
+- **Siktbanden** är > 1000, 500–1000, 200–500 och < 200 m. Platshållaren −100 kastas. 20 000 m räknas i bandet över 1000 m, som i
+  driften (`SIKTBAND` i `scripts/vindsikt-steg0.ts`) och i kuvösens översättning (`kuvos/oversattning.sql`) (#689).
 - **Stationsvakten** är densamma (#164).
 - **Kraven:**
   - W-A1: frekvensen stiger monotont med byvinden;
@@ -85,7 +86,9 @@ Allt redovisas också per månad och norr och söder om 62°. Alla tal skrivs ut
 - **Byvinden** är timmens högsta `vimax`, och **sikten** timmens lägsta `siktdjup`.
 - **Frekvensen** är olyckor inom räckvidd per 1 000 stationstimmar och band.
 
-Serien är **diagnos bredvid driftens dom**. Den fäller inte byvinden och avgör inte sikten (#491). Allt redovisas per band, med
+Serien är **diagnos bredvid driftens dom** för byvinden, som den inte fäller. **Sikten avgörs här** (#675, #689): faller W-A3 stryks
+sikten. Klarar den sig står sikten kvar, trots fallet i driftens W-A 8/10 (#491). Det är en lättnad, och därför gäller den bara
+med båda signaturerna på det här dokumentet (regel L, #564). Allt redovisas per band, med
 kvoten och dess marginal (`skiljbarKvot`).
 
 ## 6. Förväntan, skriven före läsningen

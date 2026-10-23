@@ -8,7 +8,8 @@ av det här dokumentet; frågorna (A) och (B) där är besvarade av #562.
 
 ## 1. Vad som döms — kandidatens identitet
 
-Den frysta kandidaten ur #552, ingenting annat (`kuvos/kandidat-2026-27.json`, körning 38368369876):
+Den frysta kandidaten ur #552, ingenting annat (`kuvos/kandidat-2026-27.json`; väg B i körning 38368369876, modellen byggd i
+38400052837, #550):
 - fysiken `lw` (utan terräng) med de femton parametrarna i manifestet, kalibrerad på vintern 2024/25 (754 stationer, 4 152 timmar
   10/10 2024–31/3 2025);
 - rättelsen `modell.pkl`, 9 757 699 byte, **sha256 c96c4072f4ecc6a979afea23c7854f77cb9f205a1cf47d8ed68fba53f58fc0ae**, i hinken `arkiv`
@@ -158,7 +159,8 @@ Formen i appen, texten (*"Halkvakt tror: halka framöver."* / *"Halkvakt thinks:
 ## 10. Före signeringen
 
 **(a) Radarns tal R.** Läses 26/10 enligt #568: visar alla tre kurvorna en majoritet i bandet 0,1–0,5 på `rate_mean` blir R = 0,1,
-annars 0,5. Claude för in talet samma dag. Läsningen är `scripts/radarns-tal.ts` (självtest i ci): den läser bandet 0,1–0,5 på `rate_mean_mmh` ur de tre körningarnas loggar och tillämpar regeln. Kurva 1 (38690393504, 8–15/10): 13 026 av 21 012 par, 62,0 %.
+annars 0,5. Claude för in talet samma dag. Saknas en kurva står R = 0,5 kvar, och bortfallet redovisas vid signaturerna (Bengt
+23/10, #689). Signeringen sker samma dag (#689). Läsningen är `scripts/radarns-tal.ts` (självtest i ci): den läser bandet 0,1–0,5 på `rate_mean_mmh` ur de tre körningarnas loggar och tillämpar regeln. Kurva 1 (38690393504, 8–15/10): 13 026 av 21 012 par, 62,0 %.
 
 **(b) Spridningsgrinden — besvarad 15/10 (DECISIONS #574, #575).** Spridningen grindar där minst två ankare bidrar (#547 och #563
 lästa ihop), **samma grind gäller varningen i appen** (Bengts ja; regeln i §3 har villkoret), och loggningen är byggd: del B skriver
@@ -178,6 +180,9 @@ och ankaravståndet (§2, §4b punkt 2). Måste vara i drift före signeringen: 
 fem hela vintrarna 2018/19–2022/23, en i taget, med en egen förregistrering, och körs så fort kedjan är byggd, alltså möjligen
 före signeringen. Är utfallet läst före signeringen står det vid signaturerna med datum och körning. Inget i §1–§5 får då ändras
 mot godkänt på grund av det (regel L). Utfallet är det första mått som säger något om *samma stationer, nytt år* (§4, §7).
+*Tillägg 23/10 (#689):* bara 2022/23 gick att köra, eftersom MET:s arkiv saknar långvågen före 14/3 2022 (#672). Utfallet lästes
+22/10 (kuvos-vintrar 39766761188, #680) och ska stå vid signaturerna. Den nya kandidaten på sex vintrar (#670–#672) prövas utanför
+den här domen, och dess provning trycks först när ersättningsregeln är signerad (#689).
 
 ## 11. Signaturer
 

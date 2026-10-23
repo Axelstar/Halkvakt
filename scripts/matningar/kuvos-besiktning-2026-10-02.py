@@ -1,5 +1,5 @@
 # Kuvösens besiktning av Trafikverkets leverans (kort #232, DECISIONS #424; PLAN-KUVOSEN steg 3). LÄS-ONLY: ingenting skrivs
-# någonstans utom till stdout. Fem filer, november 2024–mars 2025, levererade 2/10 av VViS Förvaltning (Micke Wallin).
+# någonstans utom till stdout. Fem filer, november 2024–mars 2025, levererade 2/10 av VViS Förvaltning (Trafikverkets kontakt).
 #
 # Inventeringen (kuvos/inventering.ts) gav kolumnerna och spannen. Det här går ett steg längre, utan att tolka koderna:
 #   1. rader, stationer, och vilka id som inte finns i dagens stationslista (static.json på CDN, 854 stationer) — inget gissas
