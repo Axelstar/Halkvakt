@@ -1,7 +1,8 @@
 # Tillägg till förregistreringen NY-KANDIDAT-2027-28: SMHI:s station 7 och MET:s saknade timmar
 
-**Status: UTKAST 23/10 2026, inte signerat** (DECISIONS #694). Bengt och Axel signerar **innan** fyllningen och förberedningen körs
-och innan något modelltal (A1, A2, A3) läses; målet är 26/10, samma dag som förregistreringen för 2026/27. Koden är byggd före
+**Status: SIGNERAT 23/10 2026** (Bengt, och Axel via Bengt, DECISIONS #695; dokumentets sha256 vid signeringen, före den här
+raden och signaturerna: `ed4ebb1f1845cd2f61960707900d80ce2f5f6b5ffc4c2804c21aa6a95d2159df`). Utkastet: DECISIONS #694. Signerat **innan** fyllningen och förberedningen körs och innan
+något modelltal (A1, A2, A3) läses. Koden är byggd före
 signeringen, på Axels och Bengts ord 23/10: *"axel godkänner bygg"*. Bengts ord före utkastet: *"men det kan vi ju inte acceptera vi
 måste hitta en väg runt det här så att materialet kan användas"* och *"Ja, utred Gävleparet och v4 läsande och skriv ett utkast till
 tillägget. Starta inget och läs inga modelltal."*
@@ -109,5 +110,5 @@ Ersättningsregelns villkor V1–V4, kravet X = 0,25 och valet i mars ändras in
 
 | | Datum | Signatur |
 | :-- | :-- | :-- |
-| Bengt | | |
-| Axel | | |
+| Bengt | 2026-10-23 | Bengt i chatten: *"tillägget är signerat nu"* (DECISIONS #695) |
+| Axel | 2026-10-23 | Via Bengt i samma ord (DECISIONS #695) |
