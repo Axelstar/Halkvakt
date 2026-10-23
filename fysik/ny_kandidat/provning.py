@@ -303,6 +303,31 @@ def kandidatfilen(enh, alla, forreg=sparren.FORREG):
             'versioner': f['versioner'], 'filer': filer}
 
 
+def skilda_populationer(fr_matt, ny_matt):
+    """Ersättningsregeln §2 (DECISIONS #692, åtgärdslistan B8-24): jämförelsen med den frysta gäller bara på samma punkter. Populationen
+    bokförs bara som antal, så provet jämför antalen: stationer, punkter, norr och söder, och n i varje cell av RÅ (totalt, norr, söder,
+    banden och månaderna). Tom lista ⇒ samma population, så nära det går att se ur aggregaten; annars skillnaderna, och jämförelsen
+    gäller inte. Läser bara aggregat."""
+    olika = []
+    for f in ('stationer', 'punkter', 'norr', 'soder'):
+        a, b = fr_matt['population'].get(f), ny_matt['population'].get(f)
+        if a != b:
+            olika.append(f'{f}: den frysta {a}, den nya {b}')
+
+    def celler(serie):
+        ut = {c: serie.get(c) for c in ('totalt', 'norr', 'soder')}
+        for grupp in ('band', 'manad'):
+            for namn, c in (serie.get(grupp) or {}).items():
+                ut[f'{grupp} {namn}'] = c
+        return ut
+    fc, nc = celler(fr_matt['serier']['RÅ']), celler(ny_matt['serier']['RÅ'])
+    for cell in sorted(set(fc) | set(nc)):
+        a, b = (fc.get(cell) or {}).get('n'), (nc.get(cell) or {}).get('n')
+        if a != b:
+            olika.append(f'n i {cell}: den frysta {a}, den nya {b}')
+    return olika
+
+
 def samman(a):
     sparren.vagra_osignerad()
     enh = las_enheter(a.enheter)
@@ -323,8 +348,12 @@ def samman(a):
     if a.frysta and '2022-23' in vintrar and os.path.exists(a.frysta):
         fr = kedjan.las_json(a.frysta)
         if fr.get('vinter') == '2022-23' and 'matt' in fr:
-            s['jamforelse_2022_23'] = {'frysta': {'kandidat': fr.get('kandidat'), 'population': fr['matt']['population'], 'serier': fr['matt']['serier']},
+            olika = skilda_populationer(fr['matt'], veck_['2022-23']['matt'])
+            s['jamforelse_2022_23'] = {'samma_population': not olika, 'skillnader': olika[:20],
+                                       'frysta': {'kandidat': fr.get('kandidat'), 'population': fr['matt']['population'], 'serier': fr['matt']['serier']},
                                        'nya': {'population': veck_['2022-23']['matt']['population'], 'serier': per['2022-23']}}
+    if '2022-23' in vintrar and 'jamforelse_2022_23' not in s:     # tyst förut (åtgärdslistan B8-25): nu sägs det
+        s['jamforelse_saknas'] = f"ingen läsbar fil för den frysta på 2022/23 ({a.frysta or 'ingen angiven'})"
     os.makedirs(a.ut, exist_ok=True)
     k = kandidatfilen(enh, veck_['alla'])
     with open(os.path.join(a.ut, 'kandidat-2027-28.json'), 'w', encoding='utf-8') as fh: json.dump(k, fh, ensure_ascii=False, indent=1)
@@ -350,11 +379,21 @@ def markdown_samman(s, k):
                 ut.append(f"| {n} · {cell} | {c['vintrar']} | {matt.grad(c['A1'])} | {matt.pct(c['A2'])} | {matt.pct(c['A3'])} |")
     ut += [''] + matt.markdown_serier(s['ur_summorna']['serier'], 'Vintrarna tillsammans, ur summorna (som FLER-VINTRAR)')
     j = s.get('jamforelse_2022_23')
-    if j:
-        ut += ['', '### Jämförelsen med den frysta, bara 2022/23', '', '| | den frysta | den nya (2022/23 utanför) |', '| :-- | :-- | :-- |']
+    if j and j['samma_population']:
+        ut += ['', '### Jämförelsen med den frysta, bara 2022/23', '',
+               'Samma population: antalen stämmer i stationer, punkter, norr och söder och i varje band och månad (ersättningsregeln §2).', '',
+               '| | den frysta | den nya (2022/23 utanför) |', '| :-- | :-- | :-- |']
         for n in matt.SERIER:
             for cell in ('totalt', 'norr', 'soder'):
                 ut.append(f"| {n} · {cell} | {matt.kort(j['frysta']['serier'][n][cell])} | {matt.kort(j['nya']['serier'][n][cell])} |")
+    elif j:
+        ut += ['', '### Jämförelsen med den frysta, bara 2022/23: gäller inte', '',
+               f"**Populationerna skiljer sig, så jämförelsen gäller inte** (ersättningsregeln §2). Båda ska räknas om på de gemensamma "
+               f"punkterna innan något jämförs. Den frysta: n {matt.tal(j['frysta']['population']['punkter'])} vid "
+               f"{j['frysta']['population']['stationer']} stationer; den nya: n {matt.tal(j['nya']['population']['punkter'])} vid "
+               f"{j['nya']['population']['stationer']} stationer.", ''] + [f'- {x}' for x in j['skillnader']]
+    elif s.get('jamforelse_saknas'):
+        ut += ['', f"### Jämförelsen med den frysta saknas: {s['jamforelse_saknas']}"]
     ut += ['', f"**Den slutliga kandidaten** (tränad på alla {len(s['vintrar'])} vintrar): paret W {str(k['par']['W']).replace('.', ',')} · "
                f"L {k['par']['L_km']:g} km. I urvalet (inte det väntade felet): "
                + (f"fysik + rättelse A1 {matt.grad(k['i_urvalet']['alla']['fysik_rattelse']['A1'])}, A2 {matt.pct(k['i_urvalet']['alla']['fysik_rattelse']['A2'])} "

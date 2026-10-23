@@ -578,6 +578,29 @@ def hela(d, ind):
     k(langsta(sm) <= 20 and langsta(s1) <= 20, f'bara aggregat: ingen lista längre än 20 ({langsta(sm)}, {langsta(s1)})')
     md = open(os.path.join(d, 'sam', 'samman.md'), encoding='utf-8').read()
     k('Medel över vintrarna' in md and 'ur summorna' in md and 'Den slutliga kandidaten' in md, 'sammanfattningen i markdown')
+    k('Jämförelsen med den frysta saknas' in md and 'jamforelse_2022_23' not in sm and sm.get('jamforelse_saknas'),
+      'utan den frystas fil sägs det att jämförelsen saknas, i stället för att samman tiger (B8-25)')
+    # Ersättningsregeln §2 (DECISIONS #692, B8-24): jämförelsen med den frysta bara på samma population.
+    fr = {'vinter': '2022-23', 'kandidat': 'den frysta (prov)', 'matt': copy.deepcopy(s1['matt'])}
+    fp = os.path.join(d, 'frysta.json')
+    def samman_med_frysta(mapp):
+        json.dump(fr, open(fp, 'w', encoding='utf-8'), ensure_ascii=False)
+        with signerad_forreg(d):
+            tyst(provning.samman, types.SimpleNamespace(samman=os.path.join(d, 'pr'), enheter=[ut], frysta=fp, ut=os.path.join(d, mapp)))
+        return (kedjan.las_json(os.path.join(d, mapp, 'samman.json')).get('jamforelse_2022_23') or {},
+                open(os.path.join(d, mapp, 'samman.md'), encoding='utf-8').read())
+    j, md2 = samman_med_frysta('sam2')
+    k(j.get('samma_population') is True and j.get('skillnader') == [] and 'Samma population' in md2
+      and '| | den frysta | den nya (2022/23 utanför) |' in md2, f"samma population: jämförelsen skrivs ut ({j.get('skillnader')})")
+    mn = sorted(fr['matt']['serier']['RÅ']['manad'])[0]
+    fr['matt']['serier']['RÅ']['manad'][mn]['n'] += 1                     # motprovet: en punkt mer i en månad, allt annat lika
+    j, md3 = samman_med_frysta('sam3')
+    k(j.get('samma_population') is False and any(f'manad {mn}' in x for x in j.get('skillnader', [])) and 'gäller inte' in md3
+      and '| | den frysta | den nya (2022/23 utanför) |' not in md3, f"en punkt fel i en månad fäller jämförelsen, och tabellen skrivs inte ut ({j.get('skillnader')})")
+    fr['matt']['serier']['RÅ']['manad'][mn]['n'] -= 1; fr['matt']['population']['stationer'] += 1   # motprovet: en station för mycket
+    j, md4 = samman_med_frysta('sam4')
+    k(j.get('samma_population') is False and any(x.startswith('stationer:') for x in j.get('skillnader', [])),
+      f"en station för mycket fäller jämförelsen ({j.get('skillnader')})")
 
 
 if __name__ == '__main__':
