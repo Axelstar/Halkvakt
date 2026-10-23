@@ -1,10 +1,10 @@
 # Värdevakten (Bengts order 12/9, DECISIONS #133): besiktar varje numeriskt fält i arkivet.
 # Schemat läses UR DATABASEN, så ett nytt fält är med från dag ett — och står som OBESIKTIGAT
-# tills någon deklarerat vad det får innehålla. Helt läsande. Knapp, inte cron.
+# tills någon deklarerat vad det får innehålla. Helt läsande.
 name: vardevakten
 on:
-  schedule:
-    - cron: '0 6 * * 1'
+  # Startas av pulsklockan (Supabase pg_cron, puls-vardevakten "0 8 * * 1" UTC, DECISIONS #688) — kort #160: GitHub-cronen
+  # som lades till 20/10 (b3d72112) avfyrades aldrig den första måndagen, och mätvakten larmade 22/10 (#1161).
   workflow_dispatch:
     inputs:
       dagar:
