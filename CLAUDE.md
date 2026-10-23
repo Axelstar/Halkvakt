@@ -101,7 +101,8 @@ Allt i repot är publikt och går inte att ta tillbaka: filerna, historiken, är
 Every session, in order:
 1. Run the kartsynk first (`node --experimental-strip-types scripts/kartsynk.ts`) and book what it lists (PROJEKTKARTAN →
    Kartsynken below). Read the morning's dokumentsynk (DOKUMENTSYNKEN below): its STATUS line, its PR, and republish every artifact its line lists under
-   *Att republicera* that this machine can reach. Then orient per SESSIONSREGELN below: the project map (`docs/PROJEKTKARTAN.html`, PROJEKTKARTAN below) for where every part stands, the latest `docs/BEDOMNING-*.md` in full, `docs/INTEGRATIONSKARTAN.md` when it
+   *Att republicera* that this machine can reach. Then the open issues labelled `frist` and `dom` (DECISIONS #649): a frist due
+   today or overdue, and a dom waiting to be booked, are raised with Bengt before anything else. Then orient per SESSIONSREGELN below: the project map (`docs/PROJEKTKARTAN.html`, PROJEKTKARTAN below) for where every part stands, the latest `docs/BEDOMNING-*.md` in full, `docs/INTEGRATIONSKARTAN.md` when it
    changed or a new grepp starts, TAVLA.md's 🟡 section, DECISIONS added since last session, latest CI runs. Search
    TAVLA, STATUS and DECISIONS — don't read them whole (halved 26/9; the older half is in TAVLA-ARKIV.md and
    DECISIONS-ARKIV.md — search there too).
@@ -120,7 +121,7 @@ Every session, in order:
 Repot är enda synken mellan sessioner (dator, webb, mobil). Det som bara stod i chatten finns inte nästa gång.
 1. **Vid start — orientera.** Läs den senaste bedömningen (`docs/BEDOMNING-*.md`) hela: den är den enda listan, med
    bevakningen (§0b) och de öppna besluten (§4.2). Läs `docs/INTEGRATIONSKARTAN.md` när `git log` visar att den ändrats
-   sedan förra sessionen eller när ett nytt grepp börjar — den är fryst och ger annars inget nytt (~14 000 tokens).
+   sedan förra sessionen eller när ett nytt grepp börjar (~14 000 tokens).
 2. **Innan något stryks eller sägs vara omöjligt — sök i repot.** Lista tabellerna
    (`grep -ho "CREATE TABLE[A-Z ]* [a-z_]*" sql/*.sql`) och sök nyckelordet i `docs/TROSKLAR-*.md` och i koden. Det
    kostar några hundra tokens. Skälet: 16/9 ströks radarn för att den "inte gick att spela upp" — fast `radar_precip`
@@ -129,8 +130,7 @@ Repot är enda synken mellan sessioner (dator, webb, mobil). Det som bara stod i
    ställs; ett beslut i chatten skrivs in i DECISIONS och bedömningen (§4.1, §0b) i samma varv som det fattas.
    Kontroll före sessionens slut: frågorna i sista svaret ska finnas som rader i §4.2.
 4. **Stryk fortlöpande i bedömningen.** En rad stryks i samma varv som beviset finns, med beviset på raden, och
-   läget överst (var vi är, vart vi är på väg) hålls aktuellt. Integrationskartan stryks inte löpande — den är fryst
-   och ändras först efter bygge och mätning.
+   läget överst (var vi är, vart vi är på väg) hålls aktuellt.
 
 ## KONTAKTREGELN (Bengts order 2026-10-12 — externa kontakter är ingen frågetjänst, DECISIONS #538)
 Bengts kontakter hos Trafikverket och andra myndigheter svarar av välvilja, och varje fråga drar på den. Bengt väljer noga innan han
@@ -172,7 +172,7 @@ Tavlan är människolagret; bedömningen, STATUS och DECISIONS är djuplagren.
 2. *Halkvaktens app* — https://claude.ai/artifact/FThC1PqVqEMqWxofrCv1GT, källa `docs/APPEN.html`
 3. *Halkvaktens systembild* — https://claude.ai/artifact/6hHX4LeXQUrJSbaNthNY9i, källa `docs/SYSTEMBILDEN.html`
 4. Bedömningen — den senaste `docs/BEDOMNING-*.md`
-5. Integrationskartan — `docs/INTEGRATIONSKARTAN.md`
+5. Integrationskartan — `docs/INTEGRATIONSKARTAN.md` (inte längre fryst sedan 22/10, DECISIONS #678)
 6. *Halkvaktens kuvös* — https://claude.ai/artifact/1xvv4hydYbfpF5eXFgLcxh, källa `docs/KUVOSEN.html` (tillagd 1/10 på Bengts order, DECISIONS #425)
 7. *Halkvaktens favoriter* — https://claude.ai/artifact/EJYcQFCyKYd9BgGcYkCMyT, källa `docs/FAVORITER.html` (tillagd 3/10 på Bengts order, DECISIONS #445)
 8. *Nivå 2+blandning live* — https://claude.ai/artifact/Wsuxr3UTG7d7axekXireqg, källa `docs/NIVA2-LIVE.html` (tillagd 14/10 på Bengts order, DECISIONS #557): stegen till kandidaten i appen, kort #343
@@ -181,8 +181,8 @@ nedan): den läser allt som hänt sedan förra synken och rättar handtexten, oc
 gör dagens första session det. I varje varv förs bara in det som maskinerna prövar: beslutet med sin rad `**Stomdokument:**` (som
 säger vad synken ska stämma av), tavlan, projektkartan och kortkartan (skripten skriver lägesraderna och korten i sidorna) och en
 rad i STATUS. Skälet: 107 av 118 commits 4–11/10 rörde dokument, och varje ändring rättade två till tre sidor och republicerade dem
-efter sammanslagningen. En artefakt får ligga högst ett dygn efter sin repokopia. Kartans frysregel gäller fortfarande dess INNEHÅLL
-(ändras efter bygge och mätning), men dess läge-rader (§2, §6.1, §8, §13.6, §14) hålls aktuella av synken. Kontrollen att inget
+efter sammanslagningen. En artefakt får ligga högst ett dygn efter sin repokopia. Integrationskartans frysregel är hävd
+sedan 22/10 (Bengt, DECISIONS #678): den rättas av synken som de andra. Kontrollen att inget
 beslut glömts är `stomvakten.ts --lage` i synken: varje dokuments senaste handtextändring och besluten sedan dess som namnger det.
 **KORTKARTAN (Bengts order 3/10, DECISIONS #445).** Varje öppet kort på tavlan hör till ett eller flera avsnitt i stomdokumenten,
 och varje stomdokument visar sina öppna kort under rubriken *Öppna kort*. Kopplingen bor på ETT ställe, `docs/kortkartan.json`;
@@ -227,7 +227,7 @@ Genomgången 7/10 (DECISIONS #483) behövde ett sjuttiotal rättelser i handtext
 prövade bara det skripten skriver, och regeln *samma varv* hängde på minnet. Tre delar håller nu dokumenten i fas, för alla
 sessioner på alla enheter:
 - **Stomvakten (CI).** Varje nytt beslut slutar med `**Stomdokument:** MAT, SYS` (koderna ur `docs/kortkartan.json`: MAT APP SYS
-  BED KAR KUV FAV; text efter koden är fri, t.ex. `BED §4.2`) eller `**Stomdokument:** inga — skälet`. `scripts/stomvakten.ts --bas
+  BED KAR KUV FAV LIV; text efter koden är fri, t.ex. `BED §4.2`) eller `**Stomdokument:** inga — skälet`. `scripts/stomvakten.ts --bas
   <sha>` i md-vakt.yml fäller ett nytt beslut utan raden, ett *inga* utan skäl och en okänd kod. Att det namngivna dokumentets
   handtext ändras prövas inte längre i PR:en (#522): det gör morgonens synk. Gamla beslut prövas inte. En ändring som rör `kuvos/` eller
   `scripts/matningar/kuvos-*` och lägger till beslut måste namnge KUV i minst ett av dem (DECISIONS #489).
@@ -238,6 +238,21 @@ sessioner på alla enheter:
 - **Väntar på Bengt / Väntar på Axel** överst i projektkartan, skrivna av `projektkartan.ts` ur tavlans avsnitt för Bengt och Axel
   (kortets *Kvar*, annars dess nyckel) och kartsynkens lista över öppna PR:er (`synk.prar`). Ändras aldrig för hand.
 
+**Fristvakten och domlarmet** (Bengts order 20/10, DECISIONS #649). Kalendern listade datumen men larmade inte, och en dom som
+en körning skrev nådde aldrig synken, som läser beslut och commits, inte utskrifter (V-B fälldes 19/10 och bokfördes först 20/10):
+- **Fristvakten.** `docs/fristerna.json` bär varje frist: datum, förvarning, vad, ägare, källa och *klart när*. `fristvakten.yml`
+  (07:13, 11:13 och 15:13 UTC; GitHubs cron och inte pulsklockan, som står när databasen står) gör ett ärende med etiketten `frist`,
+  tilldelat ägarna, förvarningen före datumet, kommenterar på dagen och en gång per dygn efter. Ett stängt ärende tiger, och ett
+  flyttat datum ger ny rubrik. `fristvakten.ts --check` i ci fäller en trasig lista. Repot är publikt: en frist med personuppgifter,
+  hemligheter eller leveransinnehåll skrivs inte dit.
+- **Domlarmet.** Grindskripten skriver en rad `DOMRAD: <grind> · <KLARAR|FALLER|LÄS|OAVGJORT|SPÄRRAD> · <text>`
+  (`scripts/domrad.ts`). Grindflödenas sista steg (`scripts/domlarm.ts`) gör ett ärende med etiketten `dom`, tilldelat Bengt, för
+  KLARAR, FALLER och LÄS (spärren har släppt och domslutet ska läsas), en gång per grind och utfall. Stäng ärendet när domen är
+  bokförd. Ett nytt grindskript skriver en domrad, och dess flöde får domlarmets steg.
+- **En ägare per grind.** I projektkartan står en grinds dom i en enda ämnesdels Dom-steg; *Grindarna och domkalendern* bär bara det
+  gemensamma (tröskeldokumenten, pulsklockan, självtesterna, domkalendern, domlarmet och fristvakten). En del som vilar på en annan
+  dels grind pekar dit utan att upprepa talen: S1-grinden står i tillståndet, vägpunktsgrinden i prognoslagret.
+
 **Dokumentsynken, steg för steg** (rutinen varje morgon, eller en session som gör den för hand):
 1. `git fetch origin`; gren `claude/dokumentsynk-<ÅÅÅÅ-MM-DD>` från origin/main.
 2. Kartsynken (PROJEKTKARTAN ovan): bokför varje obokförd commit på sin del, och läs varje maskinbock mot beviset innan den får
@@ -245,16 +260,19 @@ sessioner på alla enheter:
 3. Kortgenomgången (TAVELREGELN 5): `kortkartan.ts --genomgang`; stäng varje kort vars Verify är uppfylld, med beviset.
 4. Stomgenomgången: `stomvakten.ts --lage`. Läs allt som hänt sedan förra dokumentsynken — commits på main från alla författare,
    nya beslut, nya STATUS-rader, sammanslagna och öppna PR:er — och rätta handtexten i de åtta, `docs/KALENDERN.md` och TAVLA.md
-   där den inte längre stämmer. **En rad i ett skriptskrivet block (LÄGESRADER, Öppna kort) räknas inte som att handtexten
+   där den inte längre stämmer. **Fristerna** (#649): varje nytt datum som någon ska agera på — i ett beslut, en STATUS-rad,
+   bedömningens §4.2, kalendern eller på tavlan — får en rad i `docs/fristerna.json`, ett flyttat datum rättas där, och en
+   frist vars ärende är stängt tas bort. **En rad i ett skriptskrivet block (LÄGESRADER, Öppna kort) räknas inte som att handtexten
    stämmer** (Bengts ja 13/10, DECISIONS #546). Varje ⚠ i `--lage` blir antingen text i dokumentets handtext, i det avsnitt
-   beslutets rad `**Stomdokument:**` namnger, eller en post i synkens STATUS-rad med skälet: *#NN: ingen handtext, skälet*. Integrationskartans innehåll är fryst: bara dess läge-rader; en innehållsrättelse blir en fråga i
-   bedömningens §4.2. Ett tal förs bara in om det står i källan (DECISIONS, STATUS, koden, en körning) — aldrig ur minnet.
+   beslutets rad `**Stomdokument:**` namnger, eller en post i synkens STATUS-rad med skälet: *#NN: ingen handtext, skälet*. Ett tal förs bara in om det står i källan (DECISIONS, STATUS, koden, en körning) — aldrig ur minnet.
    **Kuvösen** (eget block i projektkartan sedan 8/10, DECISIONS #489): en ny läsning är ett byggsteg på sin del i blocket — testbädden,
    systemets delar, prognoslagrets kandidater, före resan eller facit — med körning, beslut och utfall som bevis, och en kandidat för
    prognoslagret får en rad i jämförelsetabellen på kuvössidan (§5). Kön står i sidans §9, bara framtid; historiken i §12.
-5. `projektkartan.ts` och `kortkartan.ts`, sedan `--check` på båda, `kartsynk.ts --check` och `stomvakten.ts --tillatna`.
+5. `projektkartan.ts` och `kortkartan.ts`, sedan `--check` på båda, `kartsynk.ts --check`, `fristvakten.ts --check` och
+   `stomvakten.ts --tillatna`.
 6. En rad i STATUS.md: *Dokumentsynk <datum>:* vad som rättades per dokument, eller *inget att stämma av* — en tyst morgon ska inte
-   se ut som en lyckad — och *Att republicera:* med de artefakter vars källa ändrades.
+   se ut som en lyckad — och *Att republicera:* med de artefakter vars källa ändrades. Raden och rapporten listar också de öppna
+   ärendena med etiketterna `frist` och `dom` (#649); ett dom-ärende bokförs på Bengts ord, aldrig av rutinen.
 7. Commit (märk den aldrig så att CI hoppas över), push, PR med rubriken *Dokumentsynk: <datum>*. Rutinen slår aldrig ihop: PR:en
    väntar på Bengts *slå ihop*, och rapporten säger om ci och md-vakt är gröna på exakt huvudet och om `--tillatna` är grön (Bengts
    val (b) 8/10, DECISIONS #488: auto-läget nekade sammanslagningen första morgonen, och (d) i #484 är struken).
@@ -315,6 +333,11 @@ i samma commit när de överlappar.
   roller, och en naken REVOKE fäller integrationstestet (003, 31/8). 002 kördes bara via
   Management API och gick därför oupptäckt förbi — hade den legat i auto-migrationen hade
   samma sak hänt.
+- Från 30/10 2026 ger Supabase INTE längre nya tabeller i `public` några rättigheter av sig själv (DECISIONS #653). Våra
+  edge-funktioner går via supabase-js med service-nyckeln, och `service_role` går förbi RLS men inte förbi GRANT. Regel: varje
+  migration som skapar en tabell i `public` ger `service_role` sina rättigheter i SAMMA fil (`GRANT ALL ON TABLE x TO service_role`,
+  och `GRANT USAGE, SELECT, UPDATE ON SEQUENCE x_id_seq TO service_role` för en serial-kolumn), vaktat på `pg_roles` som ovan.
+  `anon` och `authenticated` får fortfarande ingenting utan ett beslut. `test/rattigheter.test.ts` fäller en fil från 064 som saknar det.
 - SwiftUI TabView(.page) lägger sidprickarna OVANPÅ innehållet, inte under det. Sista
   elementet på varje sida måste ha ≥ 56 pt fri höjd under sig, annars täcks knappar.
   Fångat på Axels telefon 31/8: "Byt bilkoppling" låg under prickarna och gick inte att träffa.

@@ -4,6 +4,7 @@
 package se.halkvakt.app
 
 import android.content.Context
+import kotlinx.coroutines.flow.first
 import org.json.JSONObject
 import se.halkvakt.engine.*
 import java.io.File
@@ -27,8 +28,16 @@ object SnapshotRepo {
         val gen = try {
             java.time.Instant.parse(docs.live.getString("generated_at")).toEpochMilli()
         } catch (e: Exception) { 0L }  // saknad tidsstämpel = maximalt gammal ⇒ vakten fäller
-        return Snapshot(toHazards(docs.stat, docs.live), gen, stations(docs.stat), docs.fromCache)
+        // Efterhalkan (S3) bara för den som slagit på Betatest — Kompisarna först (Bengt 22/10, DECISIONS #676/#677).
+        val betatest = kotlinx.coroutines.runBlocking { Prefs.facitEnabled(ctx).first() }
+        val faror = toHazards(docs.stat, docs.live)
+        return Snapshot(if (betatest) faror else utanEfterhalka(faror), gen, stations(docs.stat), docs.fromCache)
     }
+
+    /** Efterhalkans spärr (#676/#677): S3 är den enda regeln som läser `regn_h`. Utan betatestet töms fältet, och betan tiger
+     *  som när lägesfilen saknar det; allt annat, kandidaten med, är orört. Spegel av SnapshotReader.utanEfterhalka i iOS. */
+    fun utanEfterhalka(faror: List<Hazard>): List<Hazard> =
+        faror.map { if (it is PointHazard && it.meta.rainH != null) it.copy(meta = it.meta.copy(rainH = null)) else it }
 
     private class Docs(val stat: JSONObject, val live: JSONObject, val fromCache: Boolean)
 

@@ -123,24 +123,32 @@ export function volym(byteAnalys: number, bytePrognos: number) {
   return { per_timme_mb: perTimme / 1e6, per_dygn_gb: perTimme * 24 / 1e9, per_manad_gb: perTimme * 24 * 30 / 1e9 };
 }
 
+/** Omförsöken mot MET (åtgärdslistan B4-88, 21/10): del A föll 3 av 10 körningar 19–21/10 när försöken tog slut — katalogen svarade
+ *  inte på fyra försök (19/10 12:13), och avkortade svar kom i över en minut och tömde sex försök (21/10 06:13). Väntan före nästa
+ *  försök dubbleras från pausen och stannar vid två minuter. Hela fönstret ryms med god marginal före del B på :43: datafilerna
+ *  väntar högst 635 s per anrop och katalogen högst 510 s, och självtestet håller summorna under 20 minuter. */
+export const FORSOK_HAMTA = 6, FORSOK_TOLKAT = 10, FORSOK_KATALOG = 8;
+export const vantan = (paus: number, forsok: number, tak = 120_000) => Math.min(paus * 2 ** forsok, tak);
+
 async function hamta(url: string): Promise<{ buf: Uint8Array; ms: number }> {
-  for (let forsok = 0; forsok < 4; forsok++) {
+  for (let forsok = 0; forsok < FORSOK_HAMTA; forsok++) {
     const t = Date.now();
     try {
       const r = await fetch(url, { headers: { "User-Agent": UA }, signal: AbortSignal.timeout(180_000) });
       if (!r.ok) throw new Error(`HTTP ${r.status}: ${(await r.text()).slice(0, 200)}`);
       return { buf: new Uint8Array(await r.arrayBuffer()), ms: Date.now() - t };
     } catch (e) {
-      if (forsok === 3) throw new Error(`${url.slice(0, 120)}…: ${(e as Error).message}`);
+      if (forsok === FORSOK_HAMTA - 1) throw new Error(`${url.slice(0, 120)}…: ${(e as Error).message}`);
       console.log(`  försök ${forsok + 1}: ${(e as Error).message} — väntar och hämtar om`);
-      await new Promise((ok) => setTimeout(ok, 10_000 * (forsok + 1)));
+      await new Promise((ok) => setTimeout(ok, vantan(10_000, forsok)));
     }
   }
   throw new Error("ohämtat");
 }
 
 /** Avkortade svar: ett svar kan komma med 200 men kapat (kuvösen såg det 6/10; mätningen 14/10 06:22 fick 3,75 MB av 26 MB). Då hämtas
- *  det om, högst sex gånger, och varje kapat svar räknas — det är ett av mätningens tal, inte ett fel som döljs. */
+ *  det om, högst tio gånger med dubblad väntan (B4-88), och varje kapat svar räknas — det är ett av mätningens tal, inte ett fel som
+ *  döljs. Ett svar som tolkaDods inte kan läsa (RangeError utanför DataView) räknas likadant. */
 export let avkortade = 0;
 /** Ett tomt svar är en fil som saknas (404, arkivets hämtare) och ger null; mätningen kräver sina filer (kravs). */
 export async function hamtaTolkat(url: string, vad: string, h: (u: string) => Promise<{ buf: Uint8Array; ms: number }> = hamta, paus = 5000) {
@@ -150,16 +158,16 @@ export async function hamtaTolkat(url: string, vad: string, h: (u: string) => Pr
     try { return { falt: tolkaDods(buf), byte: buf.length, ms }; }
     catch (e) {
       avkortade++;
-      if (forsok === 5) throw e;
+      if (forsok === FORSOK_TOLKAT - 1) throw e;
       console.log(`  ${vad}: ${(e as Error).message} — hämtar om`);
-      await new Promise((ok) => setTimeout(ok, paus * (forsok + 1)));
+      await new Promise((ok) => setTimeout(ok, vantan(paus, forsok)));
     }
   }
 }
 
 const kravs = <T,>(x: T | null, vad: string): T => { if (x === null) throw new Error(`${vad}: filen saknas i katalogen (404)`); return x; };
 
-/** Katalogen, med samma omförsök som datafilerna: 16/10 12:13 svarade MET:s katalog inte på 60 s, och del A föll i ett enda
+/** Katalogen, med omförsök som datafilerna (åtta sedan B4-88): 16/10 12:13 svarade MET:s katalog inte på 60 s, och del A föll i ett enda
  *  försök medan filerna efter den hade fått fyra. Ett HTTP-fel räknas som fel, så att en felsida aldrig tolkas som katalog. */
 async function hamtaKatalog(f: typeof fetch = fetch, paus = 10_000): Promise<string> {
   for (let forsok = 0; ; forsok++) {
@@ -168,9 +176,9 @@ async function hamtaKatalog(f: typeof fetch = fetch, paus = 10_000): Promise<str
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       return await r.text();
     } catch (e) {
-      if (forsok === 3) throw new Error(`katalogen: ${(e as Error).message} efter fyra försök`);
+      if (forsok === FORSOK_KATALOG - 1) throw new Error(`katalogen: ${(e as Error).message} efter ${FORSOK_KATALOG} försök`);
       console.log(`  katalogen, försök ${forsok + 1}: ${(e as Error).message} — väntar och hämtar om`);
-      await new Promise((ok) => setTimeout(ok, paus * (forsok + 1)));
+      await new Promise((ok) => setTimeout(ok, vantan(paus, forsok)));
     }
   }
 }
@@ -314,7 +322,7 @@ export function dapSvar(falt: { namn: string; dims: number[]; data: number[] }[]
 
 async function sjalvtest() {
   let fel = 0; const k = (ok: boolean, m: string) => { if (!ok) { fel++; console.error("✗ " + m); } };
-  // Avkortade svar: två kapade svar och sedan ett helt ⇒ det hela tolkas och två räknas; sex kapade i rad ⇒ fel.
+  // Avkortade svar: två kapade svar och sedan ett helt ⇒ det hela tolkas och två räknas; tio kapade i rad ⇒ fel (B4-88).
   const rubrik = new TextEncoder().encode("Dataset {\n  Structure {\n    Float32 a[time = 1][y = 1][x = 2];\n  } a;\n} t.nc;\n\nData:\n");
   const kropp = new DataView(new ArrayBuffer(16)); kropp.setUint32(0, 2); kropp.setUint32(4, 2); kropp.setFloat32(8, 1.5); kropp.setFloat32(12, 2.5);
   const helt = new Uint8Array(rubrik.length + 16); helt.set(rubrik); helt.set(new Uint8Array(kropp.buffer), rubrik.length);
@@ -325,7 +333,17 @@ async function sjalvtest() {
   k((await hamtaTolkat("u", "prov", async () => ({ buf: new Uint8Array(0), ms: 1 }), 0)) === null && avkortade === 2, "ett tomt svar (404) är null och räknas inte som avkortat");
   let foll = false; n = -100;
   try { await hamtaTolkat("u", "prov", fejk, 0); } catch { foll = true; }
-  k(foll && avkortade === 8, `sex kapade i rad fäller, och alla räknas: ${avkortade}`);
+  k(foll && avkortade === 2 + FORSOK_TOLKAT, `${FORSOK_TOLKAT} kapade i rad fäller, och alla räknas: ${avkortade}`);
+  // Nio kapade och sedan ett helt (21/10 06:13 tog sex försök slut mitt i en sådan svit) ⇒ det hela tolkas.
+  avkortade = 0; n = 2 - (FORSOK_TOLKAT - 1);
+  const h9 = await hamtaTolkat("u", "prov", fejk, 0);
+  k(!!h9 && h9.falt[0].data[1] === 2.5 && avkortade === FORSOK_TOLKAT - 1, `${FORSOK_TOLKAT - 1} kapade och sedan ett helt tolkas: ${avkortade}`);
+  // Väntan dubbleras och stannar vid två minuter; hela fönstret ryms före del B på :43 (B4-88).
+  const summa = (paus: number, forsok: number) => Array.from({ length: forsok - 1 }, (_, i) => vantan(paus, i)).reduce((s, x) => s + x, 0);
+  k(vantan(5000, 0) === 5000 && vantan(5000, 4) === 80_000 && vantan(5000, 5) === 120_000 && vantan(0, 9) === 0, "väntan dubbleras och stannar vid 120 s");
+  k(summa(5000, FORSOK_TOLKAT) === 635_000 && summa(10_000, FORSOK_KATALOG) === 510_000 && summa(10_000, FORSOK_HAMTA) === 270_000,
+    `väntan per anrop: datafilerna ${summa(5000, FORSOK_TOLKAT) / 1000} s, katalogen ${summa(10_000, FORSOK_KATALOG) / 1000} s, nätet ${summa(10_000, FORSOK_HAMTA) / 1000} s`);
+  k(summa(5000, FORSOK_TOLKAT) + summa(10_000, FORSOK_KATALOG) < 20 * 60_000, "katalogen och ett datafilsanrop ryms under 20 minuter");
   avkortade = 0;
   const html = `x "catalog.html?dataset=metpplatest/met_analysis_1_0km_nordic_20261014T05Z.nc" "…met_analysis_1_0km_nordic_20261014T04Z.nc"
     "…met_forecast_1_0km_nordic_20261014T03Z.nc" "…met_analysis_1_0km_nordic_20261014T05Z.nc"`;
@@ -333,7 +351,7 @@ async function sjalvtest() {
   k(an?.stamp === "20261014T05Z" && an.iso === "2026-10-14T05:00:00Z" && an.antal === 2, `katalogen: senaste analysen ${JSON.stringify(an)}`);
   k(fc?.stamp === "20261014T03Z" && fc.antal === 1 && senasteIKatalog("inget", "analysis") === null, "katalogen: prognosen, och tomt blir null");
   k(filnamnLive("forecast", "20261014T03Z") === `${BAS}/met_forecast_1_0km_nordic_20261014T03Z.nc.dods`, "filnamnet");
-  // Katalogens omförsök (16/10 12:13): två tidsgränser och ett HTTP 503, sedan ett svar ⇒ svaret; fyra fel i rad ⇒ fel.
+  // Katalogens omförsök (16/10 12:13; fler 21/10, B4-88): två tidsgränser och ett HTTP 503, sedan ett svar ⇒ svaret; åtta fel i rad ⇒ fel.
   let kf = 0;
   const katFejk = (fel: number) => (async () => {
     kf++;
@@ -345,7 +363,11 @@ async function sjalvtest() {
   k(katSvar === html && kf === 4, `katalogen hämtas om efter tidsgräns och HTTP-fel: ${kf} försök, ${katSvar.slice(0, 60)}`);
   kf = 0; let katFoll = "";
   try { await hamtaKatalog(katFejk(99), 0); } catch (e) { katFoll = (e as Error).message; }
-  k(kf === 4 && katFoll.includes("efter fyra försök"), `fyra fel i rad fäller: ${kf} försök, "${katFoll}"`);
+  k(kf === FORSOK_KATALOG && katFoll.includes(`efter ${FORSOK_KATALOG} försök`), `${FORSOK_KATALOG} fel i rad fäller: ${kf} försök, "${katFoll}"`);
+  // Sju fel och sedan ett svar (19/10 12:13 föll katalogen efter fyra) ⇒ svaret.
+  kf = 0; katSvar = "";
+  try { katSvar = await hamtaKatalog(katFejk(FORSOK_KATALOG - 1), 0); } catch (e) { katSvar = `fel: ${(e as Error).message}`; }
+  k(katSvar === html && kf === FORSOK_KATALOG, `${FORSOK_KATALOG - 1} fel och sedan ett svar ger svaret: ${kf} försök`);
   // Närmaste ruta på ett snett rutnät 60×60 med 0,01° steg: punkten mitt i en ruta ska träffa just den rutan (kuvösens prov).
   const ny = 60, nx = 60, la = new Float32Array(ny * nx), lo = new Float32Array(ny * nx);
   for (let y = 0; y < ny; y++) for (let x = 0; x < nx; x++) { la[y * nx + x] = 60 + y * 0.01 + x * 0.001; lo[y * nx + x] = 15 + x * 0.02; }

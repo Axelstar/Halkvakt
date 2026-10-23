@@ -59,6 +59,11 @@ const CDN = "https://axelstar.github.io/halkvakt-karta/data/app/v1/live.json";
 const MARK = "<!-- vakthund -->";   // hittar vår egen issue igen
 // Veckodumpen (arkivbackup.yml) kör söndagar; 8 dygn = en missad söndag + ett dygns marginal (kort #223).
 const ARKIVBACKUP_MAX_DYGN = 8;
+// Supabase Pro (köpt 19/10, DECISIONS #644; planen bekräftad 20/10 i ärende #1099): prislistans 8 GB databas och 100 GB
+// fillagring, inte lästa i panelen. Larm vid 90 % (#652); visar panelen en annan kvot rättas talen här.
+const DB_KVOT_MB = 8 * 1024;
+const LAGRING_KVOT_MB = 100 * 1024;
+const KVOT_LARM_ANDEL = 0.9;   // eget namn: hanteraren har en egen LARM_ANDEL (kassan, 0.70), som annars skuggar den här
 
 async function gh(path: string, method = "GET", body?: unknown): Promise<any> {
   const r = await fetch(`https://api.github.com/repos/${REPO}${path}`, {
@@ -433,7 +438,8 @@ Deno.serve(async (req) => {
     //
     //     polisen_events och smhi_warnings vaktas INTE här med flit: deras luckor är världens,
     //     inte vårt systems. Att ingen viltolycka rapporterats på ett dygn är inte ett fel. Att
-    //     INGESTEN slutat hämta är det, och den frågan ställer check 1 via sync_state.
+    //     INGESTEN slutat hämta är det, och den frågan ställer check 1 via sync_state — för SMHI,
+    //     som inte har någon kursor där, ställer 9c (b) den via smhi_synk (20/10).
     const alderH = (t: unknown) => t ? (Date.now() - new Date(t as string).getTime()) / 3600000 : null;
     const [sl] = await sql`SELECT max(run_at) t FROM shadow_log`;
     const [sa] = await sql`SELECT max(last_seen) t FROM situation_archive`;
@@ -459,8 +465,8 @@ Deno.serve(async (req) => {
       const senast = df.senast ? ` (senast ${new Date(df.senast).toISOString().slice(0, 16).replace("T", " ")}Z)` : "";
       rad.push(`förarfacit: ${df.n} svar${senast}${df.prov ? ` · ${df.prov} prov uteslutna` : ""}`);
     } catch { rad.push("förarfacit: tabellen saknas — hoppar"); }
-    // Grepp 3 (DECISIONS #231/#232): databasens storlek. Gratisnivån skrivskyddar databasen vid 500 MB — då stannar
-    // ingest-live och appen visar gammal data, utan att något annat larmar. Larm vid 450 MB (90 %; 400 till 10/10, DECISIONS #512).
+    // Grepp 3 (DECISIONS #231/#232): databasens storlek. Gratisnivån skrivskyddade databasen vid 500 MB och larmet stod vid
+    // 450 (#512); sedan Pro (#644, #652) larmar vakthunden vid 90 % av Pro-kvoten — över den kostar det extra eller stryps.
     // Prov: ?databasprov=1 sänker gränsen till 0 MB så att larmvägen syns.
     // Summan över alla databaser, som Supabase räknar kvoten (deras sida Database size): mallarna template0/template1 bar
     // 15 MB som den gamla frågan (bara current_database) inte såg — 469 mot 483 MB 15/10 (DECISIONS #569).
@@ -468,19 +474,20 @@ Deno.serve(async (req) => {
       const [db] = await sql`SELECT coalesce(sum(pg_database_size(datname)), 0)::bigint AS b FROM pg_database
         WHERE has_database_privilege(datname, 'CONNECT')`;
       const mb = Math.round(Number(db.b) / 1048576);
-      const grans = new URL(req.url).searchParams.get("databasprov") === "1" ? 0 : 450;
-      rad.push(`databas: ${mb} MB av 500 (larm vid ${grans} MB)`);
-      if (mb >= grans) problem.push(`**DATABASEN ÄR ${mb} MB** — gratisnivån skrivskyddar vid 500 MB och då stannar ingest-live (grepp 3, docs/GREPP3-ARKIVEN.md)`);
+      const grans = new URL(req.url).searchParams.get("databasprov") === "1" ? 0 : Math.round(DB_KVOT_MB * KVOT_LARM_ANDEL);
+      rad.push(`databas: ${mb} MB av ${DB_KVOT_MB / 1024} GB (larm vid ${grans} MB)`);
+      if (mb >= grans) problem.push(`**DATABASEN ÄR ${mb} MB** — 90 % av Pro-kvoten ${DB_KVOT_MB / 1024} GB; över kvoten kostar det extra eller stryps, läs panelen (grepp 3, docs/GREPP3-ARKIVEN.md, DECISIONS #652)`);
     } catch { rad.push("databas: storleken kunde inte läsas"); }
-    // Lagringen (Bengts ja 26/9, DECISIONS #380): facit-hinkens bilder och arkivexporten delar gratisnivåns 1 GB fillagring, och
-    // bilderna ska ligga kvar till mars (blindningen). Kamerafacit V2/V3 räknades till högst ≈ 760 MB till 1 mars. Larm vid 800 MB.
+    // Lagringen (Bengts ja 26/9, DECISIONS #380): facit-hinkens bilder och arkivexporten delar fillagringen, och bilderna ska ligga
+    // kvar till mars (blindningen). Kamerafacit V2/V3 räknades till högst ≈ 760 MB till 1 mars. Gratisnivån hade 1 GB och larmet
+    // stod vid 800 MB; sedan Pro larmar vakthunden vid 90 % av Pro-kvoten (#652).
     // Prov: ?lagringsprov=1 sänker gränsen till 0 MB så att larmvägen syns.
     try {
       const [st] = await sql`SELECT coalesce(sum((metadata->>'size')::bigint), 0)::bigint AS b FROM storage.objects`;
       const mb = Math.round(Number(st.b) / 1048576);
-      const grans = new URL(req.url).searchParams.get("lagringsprov") === "1" ? 0 : 800;
-      rad.push(`lagring: ${mb} MB av 1 024 (larm vid ${grans} MB)`);
-      if (mb >= grans) problem.push(`**LAGRINGEN ÄR ${mb} MB** — gratisnivån har 1 GB, och facit-hinkens bilder ska ligga kvar till mars (DECISIONS #380, docs/UTREDNING-FARTKAMEROR-2026-09-26.md §7)`);
+      const grans = new URL(req.url).searchParams.get("lagringsprov") === "1" ? 0 : Math.round(LAGRING_KVOT_MB * KVOT_LARM_ANDEL);
+      rad.push(`lagring: ${mb} MB av ${LAGRING_KVOT_MB / 1024} GB (larm vid ${grans} MB)`);
+      if (mb >= grans) problem.push(`**LAGRINGEN ÄR ${mb} MB** — 90 % av Pro-kvoten ${LAGRING_KVOT_MB / 1024} GB, och facit-hinkens bilder ska ligga kvar till mars (DECISIONS #380, #652, docs/UTREDNING-FARTKAMEROR-2026-09-26.md §7)`);
     } catch { rad.push("lagring: storleken kunde inte läsas"); }
     // DATAVAKTERNA (kort #292, DECISIONS #452): vad publiceringen säger om sina vakter (./datavakter.ts). Raden visar vilka stationer
     // karantänen och den långsamma vakten tystar; larmet kommer när samma källa varit oläsbar i I_RAD publiceringar i rad — då
@@ -912,6 +919,16 @@ Deno.serve(async (req) => {
       rad.push(`${r.source}: ${min.toFixed(0)} min (mjuk gräns 150)`);
       if (min > 150) problem.push(`**${r.source} står stilla**: ${min.toFixed(0)} min (gräns 150)`);
     }
+    // 9c (b). SMHI:s varningssynk (Källornas genomgång 20/10). Synken går med ingest.yml varje timme och lämnar en rad i
+    //     smhi_synk även när flödet är tomt (sql/024). Förut gav ett SMHI-fel en tom lista som tömde nuläget och skrevs som
+    //     "0 varningar"; sedan 20/10 hoppas blocket över vid fel, så att en rad som uteblir betyder att synken inte gått.
+    //     Gränsen 150 min som de vilande källorna ovan: en missad timme är ingen olycka, två är det.
+    try {
+      const [ss] = await sql`SELECT round(extract(epoch FROM now() - max(synkad_at)) / 60) AS min FROM smhi_synk`;
+      rad.push(`smhi_synk: ${ss?.min ?? "aldrig"} min (mjuk gräns 150)`);
+      if (ss?.min === null || ss?.min === undefined || Number(ss.min) > 150)
+        problem.push(`**SMHI:s varningssynk står stilla**: senaste synk för ${ss?.min ?? "aldrig"} min sedan (gräns 150) — fel hos SMHI eller i ingest.yml`);
+    } catch { rad.push("smhi_synk: tabellen saknas — hoppar"); }
 
     // 9d. Livemotorns egen cron-puls. Tål att job_run_details inte är läsbar.
     //     ⚠️ VAD DEN INTE BEVISAR (kort #222): pg_net är ASYNKRONT, så `succeeded` betyder att anropet
@@ -1011,7 +1028,7 @@ Deno.serve(async (req) => {
     } catch (e) { problem.push(`**Kunde inte läsa arkivbackupens hink**: ${String(e)}`); }
     // 9k. ARKIVEXPORTEN (kort #83 steg 2a, DECISIONS #334). Exporten får ligga efter medan den beta av eftersläpningen, men
     //     inte STÅ STILLA: färdiga dygn som inte exporterats OCH ingen export på tre timmar ⇒ larm. Står exporten stilla
-    //     raderas heller ingenting (bara bokförda dygn får tas), så databasvakten vid 450 MB är den andra vakten.
+    //     raderas heller ingenting (bara bokförda dygn får tas), så databasvakten (90 % av Pro-kvoten, #652) är den andra vakten.
     try {
       const [x] = await sql`SELECT arkiv_efterslap() AS efter, (SELECT count(*)::int FROM arkiv_export) AS dygn,
         (SELECT max(dag)::text FROM arkiv_export) AS senast_dag,

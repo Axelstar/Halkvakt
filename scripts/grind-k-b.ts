@@ -19,6 +19,7 @@ import { andelSe, utfallGolv, marginalPe, type Utfall } from "../publish/margina
 import { RADVAKT_SQL, karantanSql } from "../publish/snapshot-core.ts";
 import { saknadeDygn, skrivSaknade } from "../publish/vaktdiagnos.ts";
 import { K1_GRANS, K2_ZON, K3_KM, utvardera, type Punkt, type Station } from "./grind-k-a.ts";
+import { domrad } from "./domrad.ts";
 import { BUCKET_S, FACIT_SQL, OLYCKOR_SQL, FUKT_SQL, PUNKT_YTA_C, b3, falsklarm, sparrRader, giltighet, bandFor, natt,
   type Tillfalle, type Fyrningar, type B3 } from "./uppspelning-facit.ts";
 
@@ -137,10 +138,13 @@ if (korsSjalv) {
   console.log(`K-C1 (giltighet, räkningar): frostdygn ${g.dygn}/${K_C1_DYGN} · regioner med frost ${g.regioner}/${K_C1_REGIONER} ⇒ ${g.ok ? "en vintermånad finns i fönstret" : "ingen vintermånad än"}`);
   if (!DOM) {
     console.log(`\nSPÄRRAT. Klassningens fyrningar och K-B1–K-B2 visas först i domläget (--dom), när K-C1 är uppfylld — på Bengts ord.`);
+    domrad("K-B", g.ok ? "LÄS" : "SPÄRRAD", g.ok ? `en vintermånad finns i fönstret (frostdygn ${g.dygn}/${K_C1_DYGN}, regioner ${g.regioner}/${K_C1_REGIONER}) — kör domläget (--dom) på Bengts ord`
+      : `ingen vintermånad än: frostdygn ${g.dygn}/${K_C1_DYGN}, regioner ${g.regioner}/${K_C1_REGIONER}`);
     await pool.end(); process.exit(0);
   }
   if (!g.ok) {
     console.log(`\n⊘ OAVGJORT — K-C1 håller inte i fönstret: ingen dom, inget utfall läses (K-C3). Ovan bara räkningar.`);
+    domrad("K-B", "OAVGJORT", `K-C1 håller inte: frostdygn ${g.dygn}/${K_C1_DYGN}, regioner ${g.regioner}/${K_C1_REGIONER}`);
     await pool.end(); process.exit(0);
   }
 
@@ -160,5 +164,6 @@ if (korsSjalv) {
   console.log(`    gränsen och utan bekräftat tillfälle inom 90 min: det falsklarm den hade orsakat om den fick tala.`);
   console.log(`  Netto = punktmotorn tyst · tidsvinst = punktmotorn > 30 min senare. K-B1 räknar båda; läs dem delat (TRENDEN T-B).`);
   console.log(`  Domslutet fälls av Bengt mot den här utskriften; ett ja ger ingen rätt att varna (§1, K4 = E0).`);
+  domrad("K-B", "LÄS", `domtabellen skriven på ${tillf.length} bekräftade halktillfällen — domslutet fälls av Bengt`);
   await pool.end();
 }

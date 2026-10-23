@@ -112,6 +112,7 @@ mäts där systemet faktiskt hade en chans.
 som säger hur långt bort en station får vara som *granne*). Tyst = inget larm av slaget frysrisk eller halt väglag inom
 **2 km** av tillfället i det senaste skuggvarvet på en rutt som passerar inom 2 km, högst **4 h** före (flottan besöker
 varje rutt var 3,5:e timme); inget sådant varv ⇒ okänt, aldrig tyst. Facitradien 2 km är TROSKLAR-SKUGGAN §2:s.
+*Systemet* är skuggvarvets motor — punkt- och segmentlarm, med efterhalkans betagren (S3, sedan 11/10, varnar som frysrisk) — inte kandidatens betavarning, som skuggvarvet körs utan (#577) och som döms i sin förregistrering (B3, mervärdet). Gäller vintern 2026/27; omprövas före 2027/28 om kandidaten klarar mars. Ingen tröskel är ändrad (Bengt 21/10, DECISIONS #661).
 
 ### 6b. Minsta underlag
 

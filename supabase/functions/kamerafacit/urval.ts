@@ -13,6 +13,9 @@ export type Punkt = { id: string; lon: number; lat: number };
 export const FARA_M = 15_000;       // samma radie som skuggmotorns facit (archiveFacit)
 export const STATION_M = 1_000;     // en kamera "vid" stationen — 738 av 744 står vid en VViS-station (#55)
 export const V2_TAK = 150;          // bilder per dygn (UTC) — lagringens värsta fall ≈ 540 MB till 1 mars
+/** Högst så många av dygnets V2-bilder får tas i mörker (Bengt 22/10, DECISIONS #676). Mätningen 22/10 (DB-knappen 39791886348):
+ *  taket fylldes under första timmen efter midnatt UTC 9 dygn av 11, nästan bara nattbilder, så dagsljuset fick inga. */
+export const V2_NATT_TAK = 30;
 export const V3_PER_TIMME = 2;
 
 export function haversineM(aLon: number, aLat: number, bLon: number, bLat: number): number {
@@ -54,6 +57,26 @@ export function kamerorVidFaror(faror: Punkt[], kameror: Kamera[]): Kamera[] {
  *  senaste tolv timmarna — en per natt, och en fara som stod redan i eftermiddags får sin nästa bild i gryningen. */
 export function taV2(dag: boolean, harNyligBild: boolean): boolean {
   return dag || !harNyligBild;
+}
+
+/** V2:s urval för en körning (#676): kamerorna i ordning, dagsljus så länge dygnets tak räcker, mörker bara så länge nattkvoten
+ *  (V2_NATT_TAK minus dygnets nattbilder hittills) räcker och kameran inte har en bild från de senaste tolv timmarna. */
+export function valjV2(kameror: Kamera[], dag: (k: Kamera) => boolean, harNyligBild: (k: Kamera) => boolean,
+                       v2IDag: number, nattIDag: number, tak = V2_TAK, nattTak = V2_NATT_TAK): Kamera[] {
+  let platser = Math.max(0, tak - v2IDag), natt = Math.max(0, nattTak - nattIDag);
+  const ut: Kamera[] = [];
+  for (const k of kameror) {
+    if (platser <= 0) break;
+    if (dag(k)) { ut.push(k); platser--; }
+    else if (natt > 0 && taV2(false, harNyligBild(k))) { ut.push(k); platser--; natt--; }
+  }
+  return ut;
+}
+
+/** Dygnets nattbilder hittills: V2-bilderna vars kamera var i mörker vid bildens timme (`h<N>` i namnet, vag()). */
+export function nattbilderIDag(bilder: { k: string; h: number }[], kameror: Kamera[]): number {
+  const per = new Map(kameror.map((k) => [k.id, k]));
+  return bilder.filter((b) => { const k = per.get(b.k); return k !== undefined && !dagsljus(k, new Date(b.h * 3_600_000)); }).length;
 }
 
 /** V3: kameror vid kalla stationer utan larm, i dagsljus — [antal] stycken, deterministiskt valda per timme (samma timme ⇒ samma val). */

@@ -12,6 +12,10 @@ on:
       dagar:
         description: "Dagar bakåt"
         default: "60"
+# Domlarmet (DECISIONS #649) skriver ärenden; inget annat behöver token.
+permissions:
+  contents: read
+  issues: write
 jobs:
   hojd-prov:
     runs-on: ubuntu-latest
@@ -32,7 +36,7 @@ jobs:
         shell: bash
         run: |
           echo '```' >> "$GITHUB_STEP_SUMMARY"
-          node --experimental-strip-types scripts/hojd-prov.ts "${{ inputs.dagar || '60' }}" | tee -a "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/hojd-prov.ts "${{ inputs.dagar || '60' }}" | tee -a "$GITHUB_STEP_SUMMARY" "$RUNNER_TEMP/utskrift.txt"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
         env: { DATABASE_URL: "${{ env.TILLFALLIG_URL || secrets.DATABASE_URL }}" }
       # Vägpunktsgrindens premisser (DECISIONS #405, kort #269): `dagar: premisser` kör bara den förregistrerade mätningen
@@ -58,3 +62,9 @@ jobs:
           node --experimental-strip-types scripts/vagpunkt-population.ts 60 | tee -a "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
         env: { DATABASE_URL: "${{ env.TILLFALLIG_URL || secrets.DATABASE_URL }}" }
+      # Domlarmet (DECISIONS #649): domraderna i utskriften (scripts/domrad.ts) blir ärenden med etiketten dom,
+      # en gång per grind och utfall. Körs även när grinden fällt jobbet — en FALLER ska också larma.
+      - name: Domlarmet (#649)
+        if: ${{ !cancelled() }}
+        run: node --experimental-strip-types scripts/domlarm.ts "$RUNNER_TEMP/utskrift.txt"
+        env: { GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}" }

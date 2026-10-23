@@ -22,6 +22,7 @@ import { RADVAKT_SQL, karantanSql } from "../publish/snapshot-core.ts";
 import { saknadeDygn, skrivSaknade } from "../publish/vaktdiagnos.ts";
 import { molnForPunkter, type Molnklass } from "../publish/moln.ts";
 import { R1_MARGINAL, R2_YTA, R3_UTHALL, episoder, type Rad, type Episod } from "./grind-r-a.ts";
+import { domrad } from "./domrad.ts";
 import { BUCKET_S, FACIT_SQL, OLYCKOR_SQL, FUKT_SQL, PUNKT_YTA_C, FONSTER_HINKAR, b3, falsklarm, sparrRader, giltighet, bandFor, natt,
   type Tillfalle, type Fyrningar, type B3 } from "./uppspelning-facit.ts";
 
@@ -156,10 +157,13 @@ if (korsSjalv) {
   console.log(`\nGRENENS EPISODER per kombination (räkningar, som R-A): ` + svep.map((s) => `${s.m}/${s.y}/${s.u}: ${s.ep.length}`).join(" · "));
   if (!DOM) {
     console.log(`\nSPÄRRAT. R-B1–R-B3 visas först i domläget (--dom), när R-C1–R-C2 är uppfyllda — på Bengts ord (R-C4).`);
+    domrad("R-B", g.ok ? "LÄS" : "SPÄRRAD", g.ok ? `giltigt fönster (frostdygn ${g.dygn}/${R_C1_DYGN}, regioner ${g.regioner}/${R_C2_REGIONER}) — kör domläget (--dom) på Bengts ord`
+      : `inte giltigt än: frostdygn ${g.dygn}/${R_C1_DYGN}, regioner ${g.regioner}/${R_C2_REGIONER}`);
     await pool.end(); process.exit(0);
   }
   if (!g.ok) {
     console.log(`\n⊘ OAVGJORT — R-C1/R-C2 håller inte i fönstret: ingen dom, inget utfall läses (R-C4). Ovan bara räkningar.`);
+    domrad("R-B", "OAVGJORT", `R-C1/R-C2 håller inte: frostdygn ${g.dygn}/${R_C1_DYGN}, regioner ${g.regioner}/${R_C2_REGIONER}`);
     await pool.end(); process.exit(0);
   }
 
@@ -188,5 +192,6 @@ if (korsSjalv) {
   console.log(`\n  Netto = punktmotorn tyst · tidsvinst = punktmotorn > 30 min senare; R-B1 räknar båda, läs dem delat. R-B2:s facit är`);
   console.log(`  omklassningen inom 5 km, inte stationens yta. R-B3 fäller inte (DECISIONS #103). Domslutet fälls av Bengt mot den här`);
   console.log(`  utskriften; ett ja gör rimfrosten till en andra gren i icing_point bakom sin grind — rösten är Axels (§8 steg 6).`);
+  domrad("R-B", "LÄS", `domtabellen skriven på ${tillf.length} bekräftade halktillfällen — domslutet fälls av Bengt`);
   await pool.end();
 }

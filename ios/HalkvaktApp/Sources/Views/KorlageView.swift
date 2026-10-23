@@ -1,5 +1,5 @@
 // KÖRLÄGET — designöverlämningen v2 (DECISIONS #444), 02 På vakt: PÅ VAKT, tid och km, tre räknare,
-// "Tyst så länge" / senast sagt / gammal data (N), PÅ DIN VÄG, Avsluta vakten. Skärmen ligger i hållaren.
+// "Tyst så länge" / senast sagt, PÅ DIN VÄG, Avsluta vakten. Skärmen ligger i hållaren.
 // Varningskortet tar hela skärmen i gult i 8 s och försvinner själv — ingen knapp.
 // Rullar när den måste (kort #279): på Bengts 4,7-tums iPhone 28/9 klipptes raden om förvarningen till "…".
 // Samma mönster som VaktenView — minsta höjd = skärmen, så stora telefoner ser ut som förut.
@@ -106,31 +106,6 @@ struct KorlageView: View {
                 .scrollIndicators(.hidden)
             }
 
-            // Gammal väglagsdata (designen M): mörk rad överst i 8 s medan rösten talar. Inget gult — ingen fara.
-            if guardM.staleToast {
-                VStack {
-                    HStack(alignment: .top, spacing: 14) {
-                        HStack(spacing: 3) {
-                            ForEach([8.0, 16, 11, 18, 7], id: \.self) { h in RoundedRectangle(cornerRadius: 2).frame(width: 3, height: h) }
-                        }
-                        .frame(height: 22).foregroundStyle(Brand.text)
-                        VStack(alignment: .leading, spacing: 6) {
-                            MonoLabel(text: "Halkvakt · väglagsdata")
-                            Text("”\(AgeGate.staleLine)”").font(Typo.sans(17, .medium)).foregroundStyle(Brand.text)
-                        }
-                    }
-                    .padding(.horizontal, 18).padding(.vertical, 16)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Brand.raisedSolid, in: RoundedRectangle(cornerRadius: 22))
-                    .overlay(RoundedRectangle(cornerRadius: 22).strokeBorder(Color(hex: 0x34424A), lineWidth: 1))
-                    .shadow(color: .black.opacity(0.6), radius: 20, y: 18)
-                    .padding(.horizontal, 12).padding(.top, 4)
-                    Spacer()
-                }
-                .transition(.move(edge: .top).combined(with: .opacity))
-                .accessibilityElement(children: .combine)
-            }
-
             if let w = guardM.currentWarning ?? demoWarning {
                 // Kort ersätter kort (designen 04): det nya glider upp och täcker, det gamla krymper och tonar bort.
                 // .id per varning ger en ny vy — och en ny 8-sekundersstapel — när en viktigare fara tar över.
@@ -143,7 +118,6 @@ struct KorlageView: View {
             }
         }
         .animation(.timingCurve(0.2, 0.8, 0.2, 1, duration: 0.38), value: (guardM.currentWarning ?? demoWarning).map(Self.warningID))
-        .animation(.easeOut(duration: 0.3), value: guardM.staleToast)
         .onReceive(clock) { now = $0 }
         .preferredColorScheme(.dark)
         .persistentSystemOverlays(.hidden)
@@ -158,24 +132,10 @@ struct KorlageView: View {
         }
     }
 
-    /// Raden under panelen: gammal data (designen N) går före allt; annars det senast sagda, eller "Tyst så länge".
+    /// Raden under panelen: det senast sagda, annars "Tyst så länge". Inte på gammal data — då är halkvarningarna
+    /// avstängda, och appen får aldrig tala lugnt på gammal data.
     @ViewBuilder private var tillstand: some View {
-        if guardM.dataStale {
-            HStack(alignment: .top, spacing: 14) {
-                Image("ikon-halka").renderingMode(.template).resizable().scaledToFit().frame(width: 24, height: 24)
-                    .foregroundStyle(Brand.text)
-                VStack(alignment: .leading, spacing: 6) {
-                    MonoLabel(text: "Väglagsdata · gammal")
-                    Text("Kör som om det kan vara halt.").font(Typo.sans(15, .medium)).foregroundStyle(Brand.text)
-                    if let t = guardM.dataTime { MonoLabel(text: "Senast färsk \(t.klockslag)", color: Brand.faint) }
-                }
-                Spacer(minLength: 0)
-            }
-            .padding(.horizontal, 20).padding(.vertical, 16)
-            .background(Color(hex: 0x0B1013), in: RoundedRectangle(cornerRadius: 18))
-            .overlay(RoundedRectangle(cornerRadius: 18).strokeBorder(Color(hex: 0x34424A), lineWidth: 1))
-            .accessibilityElement(children: .combine)
-        } else if let said = guardM.lastSaid {
+        if let said = guardM.lastSaid {
             VStack(alignment: .leading, spacing: 6) {
                 // #250 (b): när repliken sades, inte klockan nu
                 MonoLabel(text: "Senast sagt · \((Prefs.shared.lastSaidAt ?? now).klockslag)")
@@ -184,7 +144,7 @@ struct KorlageView: View {
             .padding(.horizontal, 20).padding(.vertical, 16)
             .frame(maxWidth: .infinity, alignment: .leading)
             .overlay(RoundedRectangle(cornerRadius: 18).strokeBorder(Brand.divider, style: StrokeStyle(lineWidth: 1, dash: [4, 4])))
-        } else {
+        } else if !guardM.dataStale {
             VStack(alignment: .leading, spacing: 6) {
                 MonoLabel(text: "Tyst så länge")
                 Text("Inget på din väg än. Du hör det direkt när något dyker upp.").font(Typo.sans(15)).foregroundStyle(Brand.text2)

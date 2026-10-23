@@ -1,4 +1,4 @@
--- 064: besöksräknaren för halkvakt.se (DECISIONS #645, Axels beställning 20/10).
+-- 067: besöksräknaren för halkvakt.se (DECISIONS #684, Axels beställning 20/10; körd 20/10 som 064 och numrerad om 23/10).
 -- En rad per sidvisning: sökväg, hänvisande domän, ?r=-kod och mobil/dator. Ingen IP, inga kakor, inget användar-id.
 -- Skrivs och läses bara av edge-funktionen `besok` med servicenyckeln; RLS utan policy + REVOKE (CLAUDE.md-läxan).
 -- Nyckeln till statistiksidan ligger som sha256 i besok_nyckel och sätts för hand, aldrig i repot.

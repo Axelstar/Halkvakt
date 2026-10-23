@@ -1,0 +1,641 @@
+name: kuvos-ny-kandidat
+# DEN NYA KANDIDATEN FÖR 2027/28 (docs/FORREGISTRERING-NY-KANDIDAT-2027-28.md, DECISIONS #670): den frysta kandidatens procedur på sex
+# vintrar, med långvågen ur fysikens reserv alla år, prövad en vinter i taget utanför. Knapp, inte cron. Ett steg per tryckning:
+#   indata        en äldre vinter: förprovet (vinterns fält utan långvåg; 2018/19 vinden ur x och y), ECMWF IFS och MET Nordics analys
+#                 utan långvåg i delar om 15 dygn (fysik/ny_kandidat/metnordic_reserv.ts), till den öppna releasen kuvos-vintrar-<vinter>
+#                 — bara öppna data, aldrig VViS. En del som redan finns hoppas över, också den frysta kedjans metnordic_analys_-del för
+#                 en vinter med vindhastigheten (samma rutor och sex fält; långvågen töms vid läsningen). 2024/25 hämtas inte: kuvösens
+#                 releaser kuvos-fysik-indata-2024-25 och kuvos-metnordic-2024-25.
+#   forberedning  per vinter (sex jobb): identitetsprovet på 2024/25, tidszonen (sommartidsnatten och SMHI), MET- och ECMWF-provet och
+#                 summorna (fysik/ny_kandidat/forbered.py); artefakten nykand-prov-<vinter> bär bara aggregat och summor.
+#   traning       planen ur förberedningarna (en vinter vars tidszonsprov fallit tas bort ur alla prov, §4; allt annat som saknas
+#                 stoppar), sedan ett jobb per enhet (fysik/ny_kandidat/trana.py): den slutliga (alla vintrar), ett veck per vinter
+#                 (fem tränar, en förutsägs) och ett parveck per par (fyra tränar, två förutsägs — skattningarna paret väljs på). Bara
+#                 träningsvintrarnas VViS-filer hämtas till jobbet. Modellerna och skattningarna går till hinken
+#                 (kuvos/kuvos-kandidat-2027-28/), hämtas tillbaka och jämförs; artefakten nykand-enhet-<enhet> bär parametrar och summor.
+#   provning      SPÄRREN först: förregistreringen ska vara SIGNERAD av båda (fysik/ny_kandidat/sparren.py), annars körs ingenting;
+#                 sedan ett jobb per utelämnad vinter och ett för den slutligas par (fysik/ny_kandidat/provning.py), och samman.
+#   samman        bara sammanslagningen ur de senaste artefakterna, också bakom spärren.
+# MET Norways villkor är en förbindelse åt gången: tryck inte indata här medan kuvos-vintrar.yml hämtar.
+# Trafikverkets filer, modellerna och skattningarna hämtas ur hinken som i kuvos-vintrar.yml och lämnar aldrig jobbet.
+on:
+  workflow_dispatch:
+    inputs:
+      steg:
+        description: "indata (en äldre vinter) → forberedning → traning → provning (bakom spärren) → samman"
+        type: choice
+        options: ["indata", "forberedning", "traning", "provning", "samman"]
+        default: "forberedning"
+      vinter:
+        description: "bara för indata: vintern som hämtas"
+        type: choice
+        options: ["2018-19", "2019-20", "2020-21", "2021-22", "2022-23"]
+        default: "2022-23"
+concurrency: { group: kuvos-ny-kandidat, cancel-in-progress: false }
+permissions:
+  contents: read
+jobs:
+  # ── indata ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  indata-forprov:
+    if: ${{ inputs.steg == 'indata' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      delar: ${{ steps.prov.outputs.delar }}
+    env: { VINTER: "${{ inputs.vinter }}" }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      # Provtimmarna 31/10, den första i varje månad och 31/3: vinterns fält på rutnätet 2321 × 1796 (långvågen behövs inte), och för
+      # 2018/19 att vindhastigheten verkligen saknas — förregistreringens premiss för x och y.
+      - name: Förprovet — vinterns fält utan långvåg i MET Nordics arkiv
+        id: prov
+        shell: bash
+        run: |
+          node --experimental-strip-types fysik/ny_kandidat/metnordic_reserv.ts --sjalvtest 2>&1 | grep -v ExperimentalWarning
+          RC=0
+          node --experimental-strip-types fysik/ny_kandidat/metnordic_reserv.ts --forprov "$VINTER" > forprov.txt 2>&1 || RC=$?
+          grep -v ExperimentalWarning forprov.txt
+          { echo '```'; grep -v ExperimentalWarning forprov.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          [ "$RC" -eq 0 ] || exit "$RC"
+          echo "delar=$(node --experimental-strip-types fysik/ny_kandidat/metnordic_reserv.ts --delar "$VINTER" 15 2>/dev/null)" >> "$GITHUB_OUTPUT"
+
+  # ECMWF IFS (CC BY 4.0) för vinterns 10/10–31/3, en gång, till releasen — samma fil som kuvos-vintrar.yml skriver (hamta_ifs.py).
+  indata-ecmwf:
+    needs: indata-forprov
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions: { contents: write }
+    env: { GH_TOKEN: "${{ github.token }}", VINTER: "${{ inputs.vinter }}", REL: "kuvos-vintrar-${{ inputs.vinter }}" }
+    steps:
+      - uses: actions/checkout@v4
+      - name: Finns ECMWF redan i releasen?
+        id: finns
+        shell: bash
+        run: |
+          if gh release view "$REL" --json assets -q '.assets[].name' 2>/dev/null | grep -qx "ifs_$VINTER.tar.gz"; then
+            echo "ja=1" >> "$GITHUB_OUTPUT"; echo "ifs_$VINTER.tar.gz finns redan i $REL — hoppas över"; fi
+      - uses: actions/setup-node@v4
+        if: ${{ steps.finns.outputs.ja != '1' }}
+        with: { node-version: 22 }
+      - uses: actions/setup-python@v5
+        if: ${{ steps.finns.outputs.ja != '1' }}
+        with: { python-version: "3.13", cache: pip, cache-dependency-path: fysik/requirements.txt }
+      - name: ECMWF ur Open-Meteos arkiv (fysik/vintrar/hamta_ifs.py), stationerna ur indatan
+        if: ${{ steps.finns.outputs.ja != '1' }}
+        shell: bash
+        run: |
+          python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
+          mkdir -p indata && gh release download kuvos-fysik-indata-2024-25 --dir indata
+          node -e '
+            const m = require("./kuvos/fysik-indata-leverans.json"), c = require("crypto"), fs = require("fs");
+            let fel = 0;
+            for (const f of m.filer) { const h = c.createHash("sha256").update(fs.readFileSync("indata/" + f.fil)).digest("hex");
+              console.log(`${f.fil}: ${h === f.sha256 ? "ok" : "FEL " + h}`); if (h !== f.sha256) fel++; }
+            process.exit(fel ? 1 : 0);'
+          mkdir -p frusen && for f in indata/*.tar.gz; do tar -xzf "$f" -C frusen; done
+          if [ -d frusen/data ]; then mv frusen/data/* frusen/ && rmdir frusen/data; fi
+          A="${VINTER%-*}"; B=$((A + 1))
+          python3 fysik/vintrar/hamta_ifs.py --stationer frusen/stations.csv --fran "$A-10-10" --till "$B-03-31" --ut ifs | tail -3 | tee -a "$GITHUB_STEP_SUMMARY"
+          tar -czf "ifs_$VINTER.tar.gz" ifs && sha256sum "ifs_$VINTER.tar.gz" | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Till releasen
+        if: ${{ steps.finns.outputs.ja != '1' }}
+        shell: bash
+        run: |
+          gh release view "$REL" >/dev/null 2>&1 || gh release create "$REL" --target main --title "Kuvösen, fler vintrar: indata för $VINTER" \
+            --notes "Förregistreringarna FLER-VINTRAR och NY-KANDIDAT-2027-28 (DECISIONS #666–#670). Öppna data: MET Nordics analys (MET Norway, NLOD / CC BY 4.0, metpparchive) i kuvösens rutor (metnordic_stationer.csv i kuvos-metnordic-2024-25) och ECMWF IFS via Open-Meteo (CC BY 4.0). Inga Trafikverksdata."
+          gh release upload "$REL" "ifs_$VINTER.tar.gz"
+
+  # MET Nordics analys 31/10–31/3 utan långvåg, i delar om 15 dygn, EN åt gången (MET:s villkor), som kuvos-vintrar.yml: en del som redan
+  # ligger i releasen hoppas över, en del tar vid ur sin senaste artefakt, och hämtningen stannar själv efter 320 min.
+  indata-metnordic:
+    needs: indata-forprov
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    permissions: { contents: write, actions: read }
+    strategy:
+      max-parallel: 1
+      fail-fast: false
+      matrix:
+        del: ${{ fromJSON(needs.indata-forprov.outputs.delar) }}
+    env:
+      GH_TOKEN: "${{ github.token }}"
+      VINTER: "${{ inputs.vinter }}"
+      REL: "kuvos-vintrar-${{ inputs.vinter }}"
+      FIL: "metnordic_reserv_${{ matrix.del.fran }}_${{ matrix.del.till }}.csv.gz"
+      FRYST: "metnordic_analys_${{ matrix.del.fran }}_${{ matrix.del.till }}.csv.gz"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Finns delen redan i releasen?
+        id: finns
+        shell: bash
+        run: |
+          N=$(gh release view "$REL" --json assets -q '.assets[].name' 2>/dev/null || true)
+          if grep -qx "$FIL" <<< "$N"; then echo "ja=1" >> "$GITHUB_OUTPUT"; echo "$FIL finns redan i $REL — hoppas över"
+          elif [ "$VINTER" != "2018-19" ] && grep -qx "$FRYST" <<< "$N"; then
+            echo "ja=1" >> "$GITHUB_OUTPUT"; echo "$FRYST (den frysta kedjans del, samma sex fält) finns i $REL — hoppas över"; fi
+      - uses: actions/setup-node@v4
+        if: ${{ steps.finns.outputs.ja != '1' }}
+        with: { node-version: 22 }
+      - name: Rutorna (kuvos-metnordic-2024-25) och stationerna (kuvos-fysik-indata-2024-25), summorna mot manifesten
+        if: ${{ steps.finns.outputs.ja != '1' }}
+        shell: bash
+        run: |
+          mkdir -p mn indata && gh release download kuvos-metnordic-2024-25 --dir mn --pattern metnordic_stationer.csv
+          gh release download kuvos-fysik-indata-2024-25 --dir indata
+          node -e '
+            const c = require("crypto"), fs = require("fs"); let fel = 0;
+            const prova = (fil, sha) => { const h = c.createHash("sha256").update(fs.readFileSync(fil)).digest("hex"); console.log(`${fil}: ${h === sha ? "ok" : "FEL " + h}`); if (h !== sha) fel++; };
+            prova("mn/metnordic_stationer.csv", require("./kuvos/metnordic-leverans.json").filer.find((f) => f.fil === "metnordic_stationer.csv").sha256);
+            for (const f of require("./kuvos/fysik-indata-leverans.json").filer) prova("indata/" + f.fil, f.sha256);
+            process.exit(fel ? 1 : 0);'
+          mkdir -p frusen && for f in indata/*.tar.gz; do tar -xzf "$f" -C frusen; done
+          if [ -d frusen/data ]; then mv frusen/data/* frusen/ && rmdir frusen/data; fi
+      - name: Dygnen från en tidigare körning (återupptagningen)
+        if: ${{ steps.finns.outputs.ja != '1' }}
+        shell: bash
+        run: |
+          mkdir -p mnr/dagar
+          id=$(gh api "repos/${{ github.repository }}/actions/artifacts?name=mnr-$VINTER-${{ matrix.del.fran }}&per_page=100" \
+            -q '[.artifacts[] | select(.expired | not)] | sort_by(.created_at) | last | .id // empty')
+          if [ -n "$id" ]; then
+            gh api "repos/${{ github.repository }}/actions/artifacts/$id/zip" > tidigare.zip
+            unzip -o -q tidigare.zip -d mnr; rm -f tidigare.zip mnr/dagar/*.tmp mnr/metnordic_reserv_*.csv.gz
+            for f in mnr/dagar/*.csv.gz; do [ -e "$f" ] || continue; gzip -t "$f" 2>/dev/null || { echo "trasig: $f"; rm -f "$f"; }; done
+          fi
+          echo "klara dygn från tidigare körning: $(ls mnr/dagar | grep -c 'csv.gz$' || true)"
+      - name: Hämtningen
+        if: ${{ steps.finns.outputs.ja != '1' }}
+        shell: bash
+        env: { MNV_MINUTER: "320" }
+        run: |
+          { echo '```'; node --experimental-strip-types fysik/ny_kandidat/metnordic_reserv.ts --hamta mnr "${{ matrix.del.fran }}" "${{ matrix.del.till }}" \
+              --vinter "$VINTER" --rutor mn/metnordic_stationer.csv --stationer frusen/stations.csv; echo '```'; } 2>&1 | grep --line-buffered -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+          [ -f "mnr/$FIL" ] || { echo "::error::$FIL skrevs inte — tidsbudgeten eller ett fel; tryck igen så tar delen vid"; exit 1; }
+      - name: Filerna som artefakt
+        if: ${{ always() && steps.finns.outputs.ja != '1' }}
+        uses: actions/upload-artifact@v4
+        with: { name: "mnr-${{ inputs.vinter }}-${{ matrix.del.fran }}", path: mnr/, retention-days: 30, if-no-files-found: ignore }
+      - name: Till releasen
+        if: ${{ steps.finns.outputs.ja != '1' }}
+        shell: bash
+        run: |
+          gh release view "$REL" >/dev/null 2>&1 || gh release create "$REL" --target main --title "Kuvösen, fler vintrar: indata för $VINTER" \
+            --notes "Förregistreringarna FLER-VINTRAR och NY-KANDIDAT-2027-28 (DECISIONS #666–#670). Öppna data: MET Nordics analys (MET Norway, NLOD / CC BY 4.0, metpparchive) i kuvösens rutor (metnordic_stationer.csv i kuvos-metnordic-2024-25) och ECMWF IFS via Open-Meteo (CC BY 4.0). Inga Trafikverksdata."
+          gh release upload "$REL" "mnr/$FIL"
+          { echo '```'; ls -l "mnr/$FIL"; sha256sum "mnr/$FIL"; cat "mnr/sammanfattning_${{ matrix.del.fran }}_${{ matrix.del.till }}.json"; echo '```'; } | tee -a "$GITHUB_STEP_SUMMARY"
+
+  # ── forberedning ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  forberedning:
+    if: ${{ inputs.steg == 'forberedning' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        vinter: ["2018-19", "2019-20", "2020-21", "2021-22", "2022-23", "2024-25"]
+    env: { GH_TOKEN: "${{ github.token }}", VINTER: "${{ matrix.vinter }}" }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13", cache: pip, cache-dependency-path: fysik/requirements.txt }
+      - name: Beroendena och de frysta filerna
+        shell: bash
+        run: |
+          python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
+          (cd fysik && sha256sum -c --quiet SHA256SUMS)
+      # Hinken som i kuvos-vintrar.yml: signerade adresser ur arkivdump, nyckeln ur pg_cron:s jobb, maskerad. Vinterns VViS-filer, och för
+      # 2024/25 den frysta kandidatens modell.pkl (identitetsprovet); summorna mot manifesten.
+      - name: Hinken — vinterns VViS-filer, kontrollsummorna mot manifesten
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          FILER=$(node -e '
+            const v = process.env.VINTER, a = Number(v.slice(0, 4));
+            const f = v === "2024-25" ? ["kuvos-kandidat-2026-27/modell.pkl", ...require("./kuvos/leverans.json").filer.map((x) => "kuvos-trv-2024-25/" + x.packad)]
+                                      : [`Halkvakt_${a}-2.csv.gz`, `Halkvakt_${a + 1}-1.csv.gz`].map((x) => "kuvos-vvis-2018-24/" + x);
+            console.log(JSON.stringify(f));')
+          curl -sS --fail-with-body -X POST "$FN?lage=kuvos_hamta" -H "x-halkvakt-key: $KEY" -H "Content-Type: application/json" -d "{\"filer\":$FILER}" > hamta.json
+          mkdir -p "hink/$VINTER"
+          node -e '
+            const { execFileSync } = require("child_process");
+            // execFileSync:s fel bär kommandoraden och därmed den signerade adressen: fångas, bara statusen skrivs ut.
+            for (const d of require("./hamta.json").filer) {
+              const ut = d.fil.endsWith("modell.pkl") ? "modell.pkl" : "hink/" + process.env.VINTER + "/" + d.fil.split("/").pop();
+              try { execFileSync("curl", ["-sS", "--fail", "-o", ut, d.url], { stdio: ["ignore", "ignore", "ignore"] }); }
+              catch (e) { console.error(`hämtningen av ${d.fil} föll (curl ${e.status})`); process.exit(1); }
+            }'
+          rm hamta.json
+          node -e '
+            const c = require("crypto"), fs = require("fs"), v = process.env.VINTER; let fel = 0;
+            const prova = (fil, sha, bytes) => { const b = fs.readFileSync(fil), h = c.createHash("sha256").update(b).digest("hex");
+              const ok = h === sha && (bytes === undefined || b.length === bytes); fel += !ok; console.log(`${fil}: ${b.length} byte, ${ok ? "sha256 lika manifestet" : "FEL " + h}`); };
+            if (v === "2024-25") {
+              const k = require("./kuvos/kandidat-2026-27.json").filer.find((f) => f.fil === "modell.pkl"); prova("modell.pkl", k.sha256, k.bytes);
+              for (const f of require("./kuvos/leverans.json").filer) prova("hink/2024-25/" + f.packad, f.packad_sha256);
+            } else { const a = Number(v.slice(0, 4)), beh = [`Halkvakt_${a}-2.csv.gz`, `Halkvakt_${a + 1}-1.csv.gz`];
+              for (const f of require("./kuvos/vvis-2018-24-leverans.json").filer.filter((x) => beh.includes(x.packad))) prova("hink/" + v + "/" + f.packad, f.packad_sha256, f.packad_bytes); }
+            process.exit(fel ? 1 : 0);' | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Releaserna — indatan och vinterns ECMWF och MET Nordic
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p indata && gh release download kuvos-fysik-indata-2024-25 --dir indata
+          node -e '
+            const c = require("crypto"), fs = require("fs"); let fel = 0;
+            for (const f of require("./kuvos/fysik-indata-leverans.json").filer) { const h = c.createHash("sha256").update(fs.readFileSync("indata/" + f.fil)).digest("hex");
+              console.log(`${f.fil}: ${h === f.sha256 ? "ok" : "FEL " + h}`); if (h !== f.sha256) fel++; }
+            process.exit(fel ? 1 : 0);' | tee -a "$GITHUB_STEP_SUMMARY"
+          mkdir -p frusen && for f in indata/*.tar.gz; do tar -xzf "$f" -C frusen; done
+          if [ -d frusen/data ]; then mv frusen/data/* frusen/ && rmdir frusen/data; fi
+          mkdir -p "v/$VINTER/metnordic"
+          if [ "$VINTER" = "2024-25" ]; then
+            gh release download kuvos-metnordic-2024-25 --dir mn2425 --pattern 'metnordic_2024-25.csv.gz'
+            node -e '
+              const c = require("crypto"), fs = require("fs"), f = require("./kuvos/metnordic-leverans.json").filer.find((x) => x.fil === "metnordic_2024-25.csv.gz");
+              const h = c.createHash("sha256").update(fs.readFileSync("mn2425/metnordic_2024-25.csv.gz")).digest("hex");
+              console.log(`metnordic_2024-25.csv.gz: ${h === f.sha256 ? "ok" : "FEL " + h}`); process.exit(h === f.sha256 ? 0 : 1);' | tee -a "$GITHUB_STEP_SUMMARY"
+            cp -r frusen/ifs "v/$VINTER/ifs"; cp mn2425/metnordic_2024-25.csv.gz "v/$VINTER/metnordic/"
+          else
+            gh release download "kuvos-vintrar-$VINTER" --dir rel --pattern "ifs_$VINTER.tar.gz" --pattern 'metnordic_*.csv.gz'
+            tar -xzf "rel/ifs_$VINTER.tar.gz" -C "v/$VINTER"
+            node --experimental-strip-types fysik/ny_kandidat/metnordic_reserv.ts --valj "$VINTER" rel > delar.txt
+            while read -r f; do cp "$f" "v/$VINTER/metnordic/"; done < delar.txt
+            { echo '```'; (cd rel && sha256sum ./*.gz); echo "ECMWF: $(ls "v/$VINTER/ifs" | wc -l) stationer; MET Nordic: $(wc -l < delar.txt) delar"; echo '```'; } | tee -a "$GITHUB_STEP_SUMMARY"
+            rm -rf rel
+          fi
+      - name: Förberedningen — identitetsprovet (2024/25), tidszonen, MET och ECMWF
+        shell: bash
+        run: |
+          set -o pipefail
+          ARGS=(--vinter "$VINTER" --indata frusen --vvis "hink/$VINTER" --ifs "v/$VINTER/ifs" --metnordic v/$VINTER/metnordic/*.csv.gz --smhi smhi --arbete arbete --ut ut)
+          if [ "$VINTER" = "2024-25" ]; then ARGS+=(--kandidat kuvos/kandidat-2026-27.json --modell modell.pkl --urvalet-metnordic "v/$VINTER/metnordic/metnordic_2024-25.csv.gz"); fi
+          RC=0; python3 fysik/ny_kandidat/forbered.py "${ARGS[@]}" 2>&1 | tee forberedning.txt || RC=$?
+          cat ut/*.md >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
+          rm -rf arbete hink modell.pkl
+          exit "$RC"
+      - name: Proven och summorna (bara aggregat)
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with: { name: "nykand-prov-${{ matrix.vinter }}", path: ut/, retention-days: 90, if-no-files-found: ignore }
+
+  # ── traning ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  traning-plan:
+    if: ${{ inputs.steg == 'traning' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions: { contents: read, actions: read }
+    outputs:
+      enheter: ${{ steps.plan.outputs.enheter }}
+    env: { GH_TOKEN: "${{ github.token }}" }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13", cache: pip, cache-dependency-path: fysik/requirements.txt }
+      - name: Självtestet (påhittade data) och de frysta filerna
+        shell: bash
+        run: |
+          python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
+          (cd fysik && sha256sum -c --quiet SHA256SUMS)
+          python3 fysik/ny_kandidat/sjalvtest.py | grep -v '^  '
+      - name: Planen ur förberedningarna
+        id: plan
+        shell: bash
+        run: |
+          mkdir -p in
+          for V in 2018-19 2019-20 2020-21 2021-22 2022-23 2024-25; do
+            id=$(gh api "repos/${{ github.repository }}/actions/artifacts?name=nykand-prov-$V&per_page=100" -q '[.artifacts[] | select(.expired | not)] | sort_by(.created_at) | last | .id // empty')
+            if [ -n "$id" ]; then gh api "repos/${{ github.repository }}/actions/artifacts/$id/zip" > a.zip && unzip -o -q a.zip -d in && rm a.zip; echo "$V: artefakt $id"; else echo "$V: ingen förberedning"; fi
+          done
+          { echo '```'; python3 fysik/ny_kandidat/trana.py --plan --prov in --ut plan; echo '```'; } 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "enheter=$(cat plan/enheter.json)" >> "$GITHUB_OUTPUT"
+
+  traning:
+    needs: traning-plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    permissions: { contents: read, actions: read }
+    strategy:
+      fail-fast: false
+      max-parallel: 6
+      matrix:
+        enhet: ${{ fromJSON(needs.traning-plan.outputs.enheter) }}
+    env:
+      GH_TOKEN: "${{ github.token }}"
+      ENHET: "${{ matrix.enhet.namn }}"
+      TRANA: "${{ join(matrix.enhet.trana, ' ') }}"
+      UTAN: "${{ join(matrix.enhet.utan, ' ') }}"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13", cache: pip, cache-dependency-path: fysik/requirements.txt }
+      - name: Beroendena, de frysta filerna och förberedningarna
+        shell: bash
+        run: |
+          python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
+          (cd fysik && sha256sum -c --quiet SHA256SUMS)
+          mkdir -p in
+          for V in 2018-19 2019-20 2020-21 2021-22 2022-23 2024-25; do
+            id=$(gh api "repos/${{ github.repository }}/actions/artifacts?name=nykand-prov-$V&per_page=100" -q '[.artifacts[] | select(.expired | not)] | sort_by(.created_at) | last | .id // empty')
+            if [ -n "$id" ]; then gh api "repos/${{ github.repository }}/actions/artifacts/$id/zip" > a.zip && unzip -o -q a.zip -d in && rm a.zip; fi
+          done
+          echo "enheten $ENHET: tränar på $TRANA; förutsäger ${UTAN:-ingen}" | tee -a "$GITHUB_STEP_SUMMARY"
+      # Bara träningsvintrarnas Trafikverksfiler: en utelämnad vinter läses utan mätningar, och trana.py vägrar om dess filer finns.
+      - name: Hinken — träningsvintrarnas VViS-filer, kontrollsummorna mot manifesten
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          FILER=$(node -e '
+            const f = [];
+            for (const v of process.env.TRANA.split(" ")) { const a = Number(v.slice(0, 4));
+              if (v === "2024-25") f.push(...require("./kuvos/leverans.json").filer.map((x) => "kuvos-trv-2024-25/" + x.packad));
+              else f.push(...[`Halkvakt_${a}-2.csv.gz`, `Halkvakt_${a + 1}-1.csv.gz`].map((x) => "kuvos-vvis-2018-24/" + x)); }
+            console.log(JSON.stringify(f));')
+          curl -sS --fail-with-body -X POST "$FN?lage=kuvos_hamta" -H "x-halkvakt-key: $KEY" -H "Content-Type: application/json" -d "{\"filer\":$FILER}" > hamta.json
+          node -e '
+            const { execFileSync } = require("child_process"), fs = require("fs");
+            const vinter = (fil) => { const m = /Halkvakt_(\d{4})-(\d)\.csv\.gz$/.exec(fil); if (!m) return "2024-25"; const a = Number(m[1]) - (m[2] === "1" ? 1 : 0); return `${a}-${String(a + 1).slice(2)}`; };
+            for (const d of require("./hamta.json").filer) {
+              const v = vinter(d.fil); fs.mkdirSync(`v/${v}/vvis`, { recursive: true });
+              // execFileSync:s fel bär kommandoraden och därmed den signerade adressen: fångas, bara statusen skrivs ut.
+              try { execFileSync("curl", ["-sS", "--fail", "-o", `v/${v}/vvis/` + d.fil.split("/").pop(), d.url], { stdio: ["ignore", "ignore", "ignore"] }); }
+              catch (e) { console.error(`hämtningen av ${d.fil} föll (curl ${e.status})`); process.exit(1); }
+            }'
+          rm hamta.json
+          node -e '
+            const c = require("crypto"), fs = require("fs"); let fel = 0;
+            const prova = (fil, sha, bytes) => { const b = fs.readFileSync(fil), h = c.createHash("sha256").update(b).digest("hex");
+              const ok = h === sha && (bytes === undefined || b.length === bytes); fel += !ok; console.log(`${fil}: ${b.length} byte, ${ok ? "sha256 lika manifestet" : "FEL " + h}`); };
+            for (const v of process.env.TRANA.split(" ")) {
+              if (v === "2024-25") { for (const f of require("./kuvos/leverans.json").filer) prova("v/2024-25/vvis/" + f.packad, f.packad_sha256); continue; }
+              const a = Number(v.slice(0, 4)), beh = [`Halkvakt_${a}-2.csv.gz`, `Halkvakt_${a + 1}-1.csv.gz`];
+              for (const f of require("./kuvos/vvis-2018-24-leverans.json").filer.filter((x) => beh.includes(x.packad))) prova(`v/${v}/vvis/` + f.packad, f.packad_sha256, f.packad_bytes); }
+            for (const v of process.env.UTAN.split(" ").filter(Boolean)) if (fs.existsSync(`v/${v}/vvis`)) { console.error(`${v} är utelämnad men har VViS i jobbet`); fel++; }
+            process.exit(fel ? 1 : 0);' | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Releaserna — indatan och varje vinters ECMWF och MET Nordic
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p indata && gh release download kuvos-fysik-indata-2024-25 --dir indata
+          node -e '
+            const c = require("crypto"), fs = require("fs"); let fel = 0;
+            for (const f of require("./kuvos/fysik-indata-leverans.json").filer) { const h = c.createHash("sha256").update(fs.readFileSync("indata/" + f.fil)).digest("hex");
+              console.log(`${f.fil}: ${h === f.sha256 ? "ok" : "FEL " + h}`); if (h !== f.sha256) fel++; }
+            process.exit(fel ? 1 : 0);'
+          mkdir -p frusen && for f in indata/*.tar.gz; do tar -xzf "$f" -C frusen; done
+          if [ -d frusen/data ]; then mv frusen/data/* frusen/ && rmdir frusen/data; fi
+          for V in $TRANA $UTAN; do
+            mkdir -p "v/$V/metnordic"
+            if [ "$V" = "2024-25" ]; then
+              gh release download kuvos-metnordic-2024-25 --dir mn2425 --pattern 'metnordic_2024-25.csv.gz' --clobber
+              cp -r frusen/ifs "v/$V/ifs"; cp mn2425/metnordic_2024-25.csv.gz "v/$V/metnordic/"
+            else
+              rm -rf rel && gh release download "kuvos-vintrar-$V" --dir rel --pattern "ifs_$V.tar.gz" --pattern 'metnordic_*.csv.gz'
+              tar -xzf "rel/ifs_$V.tar.gz" -C "v/$V"
+              node --experimental-strip-types fysik/ny_kandidat/metnordic_reserv.ts --valj "$V" rel | while read -r f; do cp "$f" "v/$V/metnordic/"; done
+            fi
+            echo "$V: ECMWF $(ls "v/$V/ifs" | wc -l) stationer, MET Nordic $(ls "v/$V/metnordic" | wc -l) delar"
+          done
+          rm -rf rel mn2425 indata
+      # Summorna mot förberedningen prövas i trana.py (ECMWF, MET, VViS, de fasta filerna) innan något läses.
+      - name: Träningen
+        shell: bash
+        run: |
+          set -o pipefail
+          RC=0; python3 fysik/ny_kandidat/trana.py --enhet "$ENHET" --prov in --indata frusen --vintrar v --arbete arbete --ut ut 2>&1 | tee traning.txt || RC=$?
+          { echo '```'; grep -E '^\[[0-9]+ s\] (enheten|enhet_|i urvalet|träningen:|kalibrerat|rättelsen)' traning.txt || true; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          rm -rf arbete v
+          exit "$RC"
+      # Modellen och skattningarna är räknade ur Trafikverkets rader och går bara till den privata hinken, aldrig till en artefakt.
+      # Signerad uppladdning skriver aldrig över: finns filerna redan (en omkörning) ska de vara byte för byte desamma, annars står det
+      # som ligger i hinken kvar och körningen faller. Beviset är filerna hämtade tillbaka med enhetsfilens sha256.
+      - name: Till hinken, hämtat tillbaka och jämfört
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          anrop() { curl -sS --fail-with-body -X POST "$FN?lage=$1" -H "x-halkvakt-key: $KEY" -H "Content-Type: application/json" -d "$2"; }
+          FILER=$(node -e 'console.log(JSON.stringify(require("./ut/enhet_" + process.env.ENHET + ".json").filer.map((f) => "kuvos-kandidat-2027-28/" + f.fil)))')
+          JAMFOR='
+            const e = require("./ut/enhet_" + process.env.ENHET + ".json"), h = require("./hamta.json").filer, c = require("crypto"), { execFileSync } = require("child_process");
+            let fel = 0;
+            const curl = (a) => { try { return execFileSync("curl", a, { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); } catch (x) { console.error(`hämtningen föll (curl ${x.status})`); process.exit(1); } };
+            h.forEach((d, i) => { const b = curl(["-sS", "--fail", d.url]); const f = e.filer[i];
+              const ok = c.createHash("sha256").update(b).digest("hex") === f.sha256 && b.length === f.bytes; fel += !ok;
+              console.log(`i hinken: ${d.fil} (${b.length} byte) — ${ok ? "sha256 lika enhetsfilen" : "FEL: inte enhetsfilens"}`); });
+            process.exit(fel ? 1 : 0);'
+          if anrop kuvos_hamta "{\"filer\":$FILER}" > hamta.json 2>/dev/null; then
+            echo "filerna finns redan i hinken (en omkörning): de jämförs, ingenting skrivs över"
+          else
+            anrop kuvos_ladda_upp "{\"filer\":$FILER}" > urls.json
+            node -e '
+              const e = require("./ut/enhet_" + process.env.ENHET + ".json"), u = require("./urls.json").urls, { execFileSync } = require("child_process");
+              // execFileSync:s fel bär kommandoraden och därmed den signerade adressen: fångas, bara statusen skrivs ut.
+              const curl = (a) => { try { return execFileSync("curl", a, { stdio: ["ignore", "ignore", "ignore"] }); } catch (x) { console.error(`uppladdningen föll (curl ${x.status}) — finns filen redan i hinken skrivs den inte över`); process.exit(1); } };
+              e.filer.forEach((f, i) => { curl(["-sS", "--fail", "-X", "PUT", "-H", "Content-Type: application/octet-stream", "--data-binary", "@ut/" + f.fil, u[i]]);
+                console.log(`uppladdad: ${f.fil}`); });'
+            rm urls.json
+            anrop kuvos_hamta "{\"filer\":$FILER}" > hamta.json
+          fi
+          node -e "$JAMFOR" | tee -a "$GITHUB_STEP_SUMMARY"
+          rm -f hamta.json ut/*.pkl ut/*.npz
+      - name: Enhetsfilen (parametrar och summor, inga rader)
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with: { name: "nykand-enhet-${{ matrix.enhet.namn }}", path: "ut/enhet_*.json", retention-days: 90, if-no-files-found: ignore }
+
+  # ── provning och samman: bakom spärren ────────────────────────────────────────────────────────────────────────────────────────
+  provning-sparr:
+    if: ${{ inputs.steg == 'provning' || inputs.steg == 'samman' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      # Som kuvos/facit-trv.ts: utan statusraden **Status: SIGNERAD och båda signaturerna i §9 körs ingenting (utgångskod 2).
+      - name: Spärren — förregistreringen signerad av båda
+        shell: bash
+        run: python3 fysik/ny_kandidat/provning.py --sparren 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+
+  provning-plan:
+    needs: provning-sparr
+    if: ${{ inputs.steg == 'provning' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions: { contents: read, actions: read }
+    outputs:
+      veck: ${{ steps.plan.outputs.veck }}
+    env: { GH_TOKEN: "${{ github.token }}" }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13", cache: pip, cache-dependency-path: fysik/requirements.txt }
+      - name: Självtestet (påhittade data) och de frysta filerna
+        shell: bash
+        run: |
+          python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
+          (cd fysik && sha256sum -c --quiet SHA256SUMS)
+          python3 fysik/ny_kandidat/sjalvtest.py | grep -v '^  '
+      - name: Enheterna ur träningen, vecken
+        id: plan
+        shell: bash
+        run: |
+          hamta() { id=$(gh api "repos/${{ github.repository }}/actions/artifacts?name=$1&per_page=100" -q '[.artifacts[] | select(.expired | not)] | sort_by(.created_at) | last | .id // empty')
+                    [ -n "$id" ] || { echo "::error::artefakten $1 saknas"; return 1; }
+                    gh api "repos/${{ github.repository }}/actions/artifacts/$id/zip" > a.zip && unzip -o -q a.zip -d "$2" && rm a.zip; }
+          mkdir -p enh && hamta nykand-enhet-alla enh
+          for E in $(python3 -c "import json,sys; sys.path.insert(0, 'fysik/ny_kandidat'); import kedjan; print(' '.join(e['namn'] for e in kedjan.enheter(json.load(open('enh/enhet_alla.json', encoding='utf-8'))['vintrar'])))"); do
+            hamta "nykand-enhet-$E" enh
+          done
+          echo "veck=$(python3 fysik/ny_kandidat/provning.py --plan --enheter enh)" | tee -a "$GITHUB_OUTPUT" "$GITHUB_STEP_SUMMARY"
+
+  provning:
+    needs: provning-plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    permissions: { contents: read, actions: read }
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        veck: ${{ fromJSON(needs.provning-plan.outputs.veck) }}
+    env: { GH_TOKEN: "${{ github.token }}", VECK: "${{ matrix.veck }}" }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13", cache: pip, cache-dependency-path: fysik/requirements.txt }
+      - name: Beroendena, de frysta filerna, spärren och enheterna
+        shell: bash
+        run: |
+          python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
+          (cd fysik && sha256sum -c --quiet SHA256SUMS)
+          python3 fysik/ny_kandidat/provning.py --sparren
+          hamta() { id=$(gh api "repos/${{ github.repository }}/actions/artifacts?name=$1&per_page=100" -q '[.artifacts[] | select(.expired | not)] | sort_by(.created_at) | last | .id // empty')
+                    [ -n "$id" ] || { echo "::error::artefakten $1 saknas"; return 1; }
+                    gh api "repos/${{ github.repository }}/actions/artifacts/$id/zip" > a.zip && unzip -o -q a.zip -d "$2" && rm a.zip; }
+          mkdir -p enh && hamta nykand-enhet-alla enh
+          for E in $(python3 -c "import json,sys; sys.path.insert(0, 'fysik/ny_kandidat'); import kedjan; print(' '.join(e['namn'] for e in kedjan.enheter(json.load(open('enh/enhet_alla.json', encoding='utf-8'))['vintrar'])))"); do
+            hamta "nykand-enhet-$E" enh
+          done
+      # Vecket läser skattningarna ur hinken (summorna mot enhetsfilerna i provning.py) och alla vintrars VViS-filer: träningsvintrarna
+      # för parvalet och den utelämnade för måtten. Summorna mot manifesten här, mot förberedningen i provning.py.
+      - name: Hinken — skattningarna och VViS-filerna, kontrollsummorna mot manifesten
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          PH=$(python3 fysik/ny_kandidat/provning.py --behov "$VECK" --enheter enh)
+          export VINTRAR=$(python3 -c "import json; print(' '.join(json.load(open('enh/enhet_alla.json', encoding='utf-8'))['vintrar']))")
+          VV=$(node -e '
+            const f = [];
+            for (const v of process.env.VINTRAR.split(" ")) { const a = Number(v.slice(0, 4));
+              if (v === "2024-25") f.push(...require("./kuvos/leverans.json").filer.map((x) => "kuvos-trv-2024-25/" + x.packad));
+              else f.push(...[`Halkvakt_${a}-2.csv.gz`, `Halkvakt_${a + 1}-1.csv.gz`].map((x) => "kuvos-vvis-2018-24/" + x)); }
+            console.log(JSON.stringify(f));')
+          curl -sS --fail-with-body -X POST "$FN?lage=kuvos_hamta" -H "x-halkvakt-key: $KEY" -H "Content-Type: application/json" -d "{\"filer\":$PH}" > hamta1.json
+          curl -sS --fail-with-body -X POST "$FN?lage=kuvos_hamta" -H "x-halkvakt-key: $KEY" -H "Content-Type: application/json" -d "{\"filer\":$VV}" > hamta2.json
+          node -e '
+            const { execFileSync } = require("child_process"), fs = require("fs");
+            const vinter = (fil) => { const m = /Halkvakt_(\d{4})-(\d)\.csv\.gz$/.exec(fil); if (!m) return "2024-25"; const a = Number(m[1]) - (m[2] === "1" ? 1 : 0); return `${a}-${String(a + 1).slice(2)}`; };
+            fs.mkdirSync("ph", { recursive: true });
+            for (const d of [...require("./hamta1.json").filer, ...require("./hamta2.json").filer]) {
+              const namn = d.fil.split("/").pop();
+              const ut = d.fil.startsWith("kuvos-kandidat-2027-28/") ? "ph/" + namn : `vv/${vinter(d.fil)}/` + namn;
+              fs.mkdirSync(ut.slice(0, ut.lastIndexOf("/")), { recursive: true });
+              // execFileSync:s fel bär kommandoraden och därmed den signerade adressen: fångas, bara statusen skrivs ut.
+              try { execFileSync("curl", ["-sS", "--fail", "-o", ut, d.url], { stdio: ["ignore", "ignore", "ignore"] }); }
+              catch (e) { console.error(`hämtningen av ${d.fil} föll (curl ${e.status})`); process.exit(1); }
+            }'
+          rm hamta1.json hamta2.json
+          node -e '
+            const c = require("crypto"), fs = require("fs"); let fel = 0;
+            const prova = (fil, sha, bytes) => { const b = fs.readFileSync(fil), h = c.createHash("sha256").update(b).digest("hex");
+              const ok = h === sha && (bytes === undefined || b.length === bytes); fel += !ok; console.log(`${fil}: ${b.length} byte, ${ok ? "sha256 lika manifestet" : "FEL " + h}`); };
+            for (const v of process.env.VINTRAR.split(" ")) {
+              if (v === "2024-25") { for (const f of require("./kuvos/leverans.json").filer) prova("vv/2024-25/" + f.packad, f.packad_sha256); continue; }
+              const a = Number(v.slice(0, 4)), beh = [`Halkvakt_${a}-2.csv.gz`, `Halkvakt_${a + 1}-1.csv.gz`];
+              for (const f of require("./kuvos/vvis-2018-24-leverans.json").filer.filter((x) => beh.includes(x.packad))) prova(`vv/${v}/` + f.packad, f.packad_sha256, f.packad_bytes); }
+            process.exit(fel ? 1 : 0);' | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Stationerna (kuvos-fysik-indata-2024-25)
+        shell: bash
+        run: |
+          mkdir -p indata && gh release download kuvos-fysik-indata-2024-25 --dir indata
+          node -e '
+            const c = require("crypto"), fs = require("fs"); let fel = 0;
+            for (const f of require("./kuvos/fysik-indata-leverans.json").filer) { const h = c.createHash("sha256").update(fs.readFileSync("indata/" + f.fil)).digest("hex");
+              console.log(`${f.fil}: ${h === f.sha256 ? "ok" : "FEL " + h}`); if (h !== f.sha256) fel++; }
+            process.exit(fel ? 1 : 0);'
+          mkdir -p frusen && for f in indata/*.tar.gz; do tar -xzf "$f" -C frusen; done
+          if [ -d frusen/data ]; then mv frusen/data/* frusen/ && rmdir frusen/data; fi
+      - name: Prövningen — parvalet och måtten
+        shell: bash
+        run: |
+          set -o pipefail
+          RC=0; python3 fysik/ny_kandidat/provning.py --veck "$VECK" --enheter enh --ph ph --vvis vv --indata frusen --ut ut 2>&1 | tee provning.txt || RC=$?
+          cat ut/*.md >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
+          rm -rf vv ph frusen indata
+          exit "$RC"
+      - name: Vecket (bara aggregat)
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with: { name: "nykand-veck-${{ matrix.veck }}", path: ut/, retention-days: 90, if-no-files-found: ignore }
+
+  # Vecken ihop: per utelämnad vinter, medel över vintrarna och ur summorna, jämförelsen med den frysta bara på 2022/23 (dess tal ur
+  # kuvos-vintrar.yml:s senaste artefakt för 2022-23), och kandidatfilen för kuvos/kandidat-2027-28.json.
+  samman:
+    needs: [provning-sparr, provning]
+    if: ${{ !cancelled() && needs.provning-sparr.result == 'success' && (inputs.steg == 'samman' || needs.provning.result == 'success') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions: { contents: read, actions: read }
+    env: { GH_TOKEN: "${{ github.token }}" }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13", cache: pip, cache-dependency-path: fysik/requirements.txt }
+      - name: Enheterna, vecken och den frystas 2022/23, ihop
+        shell: bash
+        run: |
+          python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
+          python3 fysik/ny_kandidat/provning.py --sparren
+          hamta() { id=$(gh api "repos/${{ github.repository }}/actions/artifacts?name=$1&per_page=100" -q '[.artifacts[] | select(.expired | not)] | sort_by(.created_at) | last | .id // empty')
+                    [ -n "$id" ] || { echo "artefakten $1 saknas"; return 1; }
+                    gh api "repos/${{ github.repository }}/actions/artifacts/$id/zip" > a.zip && unzip -o -q a.zip -d "$2" && rm a.zip; }
+          mkdir -p enh vk fr && hamta nykand-enhet-alla enh
+          for E in $(python3 -c "import json,sys; sys.path.insert(0, 'fysik/ny_kandidat'); import kedjan; print(' '.join(e['namn'] for e in kedjan.enheter(json.load(open('enh/enhet_alla.json', encoding='utf-8'))['vintrar'])))"); do
+            hamta "nykand-enhet-$E" enh
+          done
+          for V in $(python3 -c "import json; print(' '.join(json.load(open('enh/enhet_alla.json', encoding='utf-8'))['vintrar']))") alla; do hamta "nykand-veck-$V" vk; done
+          hamta kuvos-vintrar-2022-23 fr || echo "den frystas 2022/23 är inte körd — jämförelsen står tom"
+          python3 fysik/ny_kandidat/provning.py --samman vk --enheter enh --frysta fr/kuvos-vintrar-2022-23.json --ut ut
+          cat ut/samman.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with: { name: nykand-samman, path: ut/, retention-days: 90 }

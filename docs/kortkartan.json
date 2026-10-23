@@ -11,6 +11,7 @@
     "LIV": {"fil": "docs/NIVA2-LIVE.html", "namn": "Nivå 2+blandning live", "url": "https://claude.ai/artifact/Wsuxr3UTG7d7axekXireqg"}
   },
   "kort": {
+    "#361": ["BED 4.2"],
     "#354": ["APP 9", "BED 4.2"],
     "#262": ["APP 8", "BED 2.1"],
     "#281": ["APP 9"],
@@ -47,15 +48,12 @@
     "#285": ["APP 7", "FAV 8", "BED 4.2"],
     "#277": ["APP 9"],
     "#276": ["MAT 2", "APP 10", "BED 4.2", "FAV 3"],
-    "#271": ["MAT 3", "SYS 3", "BED 4.2"],
     "#231": ["MAT 4"],
     "#38b": ["SYS 2", "MAT 5", "KAR 6"],
     "#88": ["MAT 6", "SYS 2", "KAR 5"],
     "#98": ["MAT 4"],
     "#89": ["MAT 6"],
     "#90": ["MAT 2"],
-    "#96": ["MAT 5", "BED 1"],
-    "#42": ["MAT 2", "APP 10", "BED 4.2"],
     "#153": ["MAT 8", "BED 4.2"],
     "#228": ["APP 9"],
     "#209": ["MAT 3", "MAT 11", "BED 1"],
@@ -69,8 +67,6 @@
     "#316": ["BED 4.2"],
     "#317": ["KUV 8", "BED 4.2"],
     "#321": ["KUV 5"],
-    "#322": ["MAT 1", "BED 4.2"],
-    "#347": ["MAT 1", "BED 4.2"],
     "#326": ["APP 9"]
   }
 }

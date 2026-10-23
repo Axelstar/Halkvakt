@@ -21,12 +21,12 @@ byggen, prognoslagrets form, kamerafacit, missknappen, arkivet och anmälningarn
   {manifest,static,live}.json` på CDN med sha256 i manifestet; timvisa och dagliga flöden trycks igång av pulsklockan
   (Supabase pg_cron), eftersom GitHubs egen schemaläggare svälter jobb. Appen verifierar checksumman, behåller förra
   snapshoten vid fel och visar DATANS klocka (`generated_at`), inte nedladdningens.
-- **Arkiv (Supabase, gratisnivå, 190 MB av 500 den 22/9, ~4,5 MB/dygn netto):** väderobservationer (Sverige tunnas till en rad
+- **Arkiv (Supabase Pro sedan 19/10, #644; 506 MB 20/10, 3–4 MB/dygn netto; vakthunden larmar vid 90 % av 8 GB, #652):** väderobservationer (Sverige tunnas till en rad
   per halvtimme efter sju dygn; Finland behåller kalla rader 60 dygn; Norge och Danmark sju dygn; tidsstämplar före 2020 och
   gravstenar äldre än 30 dygn raderas, kort #240), väglagshistorik, händelsearkiv, SMHI-historik, radar (gallras aldrig), trendkandidater, skugglogg,
   förarfacit, förarnas missar, stationsdygn i givarfel. Sedan 25/9 sparas även en varm och torr rad per station och halvtimme,
-  så att grindarna ser samma värld som driften (#353). Storleken mäts. Pro valdes bort 24/9: gamla dygn exporteras till
-  Supabase Storage (#334).
+  så att grindarna ser samma värld som driften (#353). Storleken mäts. Gamla dygn exporteras till
+  Supabase Storage (#334). Pro valdes bort 24/9 men köptes 19/10, när gratisvägen inte räckte (#644).
 - **Givarvakterna, före allt annat** (kort #75, #234, #236): en väderrad tystas om ytan ligger mer än 12 ° under luften;
   om luften är ≥ +10 °C och ytan ≥ 8 ° under den (radvakten); om stationen brutit mot 12-gränsen minst tre gånger på
   sju dygn (karantänen); eller om ytan legat ≥ 6 ° under luften i minst 90 % av det senaste dygnets rader (den
@@ -54,7 +54,7 @@ byggen, prognoslagrets form, kamerafacit, missknappen, arkivet och anmälningarn
 ## 3 · Vad appen säger
 - Motorns svenska varningstexter (avstånd + fara + uppmaning), byggda i motorn och identiska på alla plattformar —
   vektorerna i `engine/vectors/` ska klaras byte för byte av server, Android och iOS.
-- Vid passerad ålderströskel, EN gång per körning: *"Ingen färsk väglagsdata. Kör som om det kan vara halt."*
+- Vid passerad ålderströskel säger rösten ingenting (sedan 20/10, DECISIONS #647). Körläget visar då inte *Tyst så länge*.
 - Statusrader går till loggen, inte rösten. UI visar datans tid ("N faror · väglag 06:10").
 - **Facit (S4, sedan 16/9):** efter en varning kan en testförare som själv slagit på funktionen trycka *Stämde* eller
   *Stämde inte*. Det som skickas är varningens id, tidpunkten och svaret — ingen identitet, inget spår. Av som standard.
@@ -161,4 +161,4 @@ hör. Alla länder mappas till samma fem faror i motorn.
 | 🇩🇰 Danmark | DMI (öppet) + Vejdirektoratets flöde → NAP | Skugga, live; skuggrutter | Grästemp som proxy | "Glat føre" i händelseflödet | Ja | — | Vägyta, NAP-registrering |
 
 Öppna beslut: Danmark — räcker grästemperatur, eller avtal om vägyta? Sökande till Skyltfonden — se bedömningen §4.2.
-(Play-kontot är skapat, #271; Supabase Pro valdes bort till förmån för export, #334.)
+(Play-kontot är skapat, #271; Supabase Pro köptes 19/10, #644, sedan exporten ensam inte räckt, #334.)

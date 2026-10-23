@@ -63,8 +63,6 @@ class GuardService : Service() {
     private lateinit var audio: AudioManager
     private var focusRequest: AudioFocusRequest? = null
     private val snapshotSchedule = SnapshotSchedule()   // #218: one load at a time, a minute's wait after a failure
-    private var staleAnnounced = false
-    private var staleGrace = AgeGate.StaleGrace()
     /** Den laddade vägdatan — kortet slår upp farans metadata här. Skrivs i laddtråden, läses i varningen. */
     @Volatile private var hazardsNow: List<Hazard> = emptyList()
     private val idleStop = IdleStop()   // #248: samma kvart som iOS
@@ -101,8 +99,6 @@ class GuardService : Service() {
         running = true
         prevLon = Double.NaN; prevLat = Double.NaN
         session.value = Session(startedAt = System.currentTimeMillis())
-        staleGrace = AgeGate.StaleGrace()
-        staleAnnounced = false   // #250 (a): EN rad om gammal data per körning — nollställs här, inte vid laddningen
         // Resans fönster överlever tjänsten (kort #203): notisens knapp trycks minuter senare,
         // i en annan process, och måste veta vad "alla varningar" syftar på.
         scope.launch { Prefs.setTripStart(this@GuardService, session.value.startedAt) }
@@ -127,13 +123,6 @@ class GuardService : Service() {
             val hazards = gate.hazards
             hazardsNow = hazards
             dataStale.value = gate.stale
-            dataTime.value = snap.generatedAtMs.takeIf { it > 0 }
-            if (staleGrace.announce(gate.stale, snap.fromCache) && !staleAnnounced) {
-                staleAnnounced = true; speak(AgeGate.STALE_LINE)
-                // Designen M: mörk rad överst i På vakt i 8 s medan rösten talar — inget gult kort, ingen fara.
-                staleToast.value = true
-                scope.launch { kotlinx.coroutines.delay(8000); staleToast.value = false }
-            }
             val dataTid = if (snap.generatedAtMs > 0)
                 android.text.format.DateFormat.format("HH:mm", snap.generatedAtMs) else "okänd tid"
             val g = guard
@@ -311,7 +300,6 @@ class GuardService : Service() {
         efterResan()          // FÖRE scope.cancel() — läser sitt eget, kortlivade scope
         sparaTuren()
         Favoriter.lager(this).resanSlutar(session.value.km)   // kort #357: frågan på Redo., bara om insamlingen var på
-        staleToast.value = false
         scope.cancel()
         running = false
         fused.removeLocationUpdates(callback)
@@ -400,12 +388,8 @@ class GuardService : Service() {
         val session = MutableStateFlow(Session())
         /** Varningskortet (DECISIONS #444): sätts vid uppläst varning, släcks efter 8 s — ingen knapp. */
         val currentWarning = MutableStateFlow<ShownWarning?>(null)
-        /** Gammal väglagsdata (designen M–N): sant så länge den laddade datan är för gammal. */
+        /** Sant så länge den laddade väglagsdatan är för gammal. Halkvarningarna är då avstängda, så På vakt säger inte "Tyst så länge". */
         val dataStale = MutableStateFlow(false)
-        /** När den laddade datan skapades (ms) — "SENAST FÄRSK 14:05". */
-        val dataTime = MutableStateFlow<Long?>(null)
-        /** Mörka raden överst i På vakt i 8 s medan rösten säger repliken om gammal data. */
-        val staleToast = MutableStateFlow(false)
         var running: Boolean
             get() = runningFlow.value
             set(v) { runningFlow.value = v }

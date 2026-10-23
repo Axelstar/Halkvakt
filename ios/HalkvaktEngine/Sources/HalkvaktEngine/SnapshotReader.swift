@@ -77,6 +77,16 @@ public enum SnapshotReader {
 
     // MARK: - JSON pickers (mirror the tolerance of the org.json calls in the Kotlin reader)
 
+    /// Efterhalkans spärr (DECISIONS #676/#677): S3 är den enda regeln som läser `regn_h`. Utan betatestet töms fältet, och
+    /// betan tiger som när lägesfilen saknar det; allt annat, kandidaten med, är orört. Spegel av SnapshotRepo.utanEfterhalka i android/app.
+    public static func utanEfterhalka(_ hz: [Hazard]) -> [Hazard] {
+        hz.map { h in
+            guard case let .point(id, kind, lon, lat, bearing, meta) = h, meta.rainH != nil else { return h }
+            var m = meta; m.rainH = nil
+            return .point(id: id, kind: kind, lon: lon, lat: lat, bearing: bearing, meta: m)
+        }
+    }
+
     public static func arr(_ d: [String: Any], _ k: String) -> [[String: Any]] { d[k] as? [[String: Any]] ?? [] }
 
     /// ROTFIXEN till #210 (20/9). Den gamla raden var `d[k] as? String ?? "\(d[k] ?? "")"`, och JSON-null

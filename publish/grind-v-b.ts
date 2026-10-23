@@ -39,6 +39,7 @@ import { REGN_UTLOSARE_MMH, RADAR_FAKTOR } from "./snapshot-core.ts";
 import { Z, andelSe, utfallTak, grindutfall, type Utfall } from "./marginal.ts";
 import { vaktdiagnos, saknadeDygn, skrivSaknade } from "./vaktdiagnos.ts";
 import { FACIT_KM, skuggmotornsRutter, ruttWkt } from "./skuggfacit.ts";
+import { domrad } from "../scripts/domrad.ts";
 
 /** Tröskeln i STATIONENS skala — härledd ur de två fastställda talen, aldrig skriven för hand.
  *  Radarn utlöser på 2,0 mm/h rått; stationen mäter i sin egen skala, alltså 2,0 / 0,65 ≈ 3,1. */
@@ -171,6 +172,7 @@ export function rapport(varningar: Varning[], matningar: Matning[], f: FacitUtfa
     for (const s of sparr) console.log(`   · ${s}`);
     console.log(`\nUnder spärren skrivs bara räkningarna ut (DECISIONS #350): måttet ska inte formas av siffror man redan`);
     console.log(`sett. V-B1 och V-B3 visas första gången när V-C är uppfylld. Mätningen upprepas varje måndag.`);
+    domrad("V-B", "SPÄRRAD", sparr.join("; "));
     return;
   }
 
@@ -194,6 +196,8 @@ export function rapport(varningar: Varning[], matningar: Matning[], f: FacitUtfa
 
   const utf: Utfall = grindutfall([utfallTak(p, V_B1, andelSe(p, matta)), over ? "FALLER" : "KLARAR"]);
   console.log(`DOM: V-B ${utf === "KLARAR" ? "KLARAS" : utf === "OAVGJORT" ? "OAVGJORT (inom bruset)" : "FALLER"} på V-B1 och V-B3. V-B2 saknas fortfarande (se ovan).`);
+  domrad("V-B", utf === "KLARAR" ? "KLARAR" : utf === "OAVGJORT" ? "OAVGJORT" : "FALLER",
+    `falsklarm ${(100 * p).toFixed(0)} % (krav ≤ ${(100 * V_B1).toFixed(0)} %), ${over} av ${fr.length} rutter över ${V_B3} per regndygn`);
 }
 
 // ── Självtest med känd sanning: två poler som måste ge motsatta svar ────────────────────────

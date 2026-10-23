@@ -26,11 +26,9 @@ Din position lämnar aldrig telefonen av sig själv. All matchning mot vägdata
 sker lokalt i appen. Inga konton, ingen inloggning, inga annonser, ingen
 spårning.
 
-Det enda som någonsin skickas är något du själv trycker på. Slår du på
-Betatest i Inställningar kan du efter resan svara om varningarna stämde,
-eller markera att appen missade något — då skickas varningens id (eller
-närmaste mätstation), klockslaget och ditt svar. Det säger ungefär var du
-var just då, och därför är brytaren av tills du slår på den.
+Ingenting skickas från appen. Betatestet, där testare efter resan kan svara
+om varningarna stämde, finns bara i testversionen och inte i den publika
+versionen i Google Play.
 
 **Gratis, utan förbehåll**
 Halkvakt är gratis och byggd på öppna svenska data. Vägen är redan betald med
@@ -52,3 +50,5 @@ ingen koppling till myndigheterna.
 - Play-skärmbilder: sidförhållande högst 2:1 — alltså **1080×2160**, inte App Stores 1284×2778. Råbilder ur Axels Android, inramning med `appstore/alf.py` (mått som argument).
 - Skärmdumpar: minst 2 (fotostudion levererar 3 per push — ta senaste artefakten).
 - Feature graphic + ikon ligger i denna mapp.
+- **23/10 (DECISIONS #681, #683):** stycket om Betatest omskrivet som iOS-texten i `appstore-ios.md`. Betatestet finns bara i
+  testversionen: sedan PR #1159 (sammanslagen 23/10) byggs produktionens AAB med `betatest=false` och saknar brytaren.

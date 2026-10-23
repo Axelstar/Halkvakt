@@ -45,5 +45,32 @@
    ]
   }
  ],
- "anm": "Filerna ligger aldrig i repot och aldrig i en release (PUBLIKT REPO); de läggs i hinken av Axel via Supabase-panelen."
+ "anm": "Filerna ligger aldrig i repot och aldrig i en release (PUBLIKT REPO); de läggs i hinken av Axel via Supabase-panelen.",
+ "komplettering": [
+  {
+   "kalla": "TRV 2026/111808, kompletteringen 20/10 15:47, punkt 3: olyckorna (KUVOS-LEVERANSEN §5i, DECISIONS #665)",
+   "mottagen": "2026-10-20T15:47+02:00",
+   "fil": "Olyckor24-25.xlsx",
+   "bytes": 653196,
+   "sha256": "eac72b509c3762aee274f3a8364acb7f0fd759586685ae5055e3cc9d53044287",
+   "kallfil": {
+    "fil": "Olyckor 24-25.xlsx",
+    "bytes": 702842,
+    "sha256": "d2498641065dc4609fad1ee547d9bb3a698a308be2709d4ec3d527afeec33e61"
+   },
+   "rensning": "regnummer (40) och telefonnummer (2) maskade i 32 celler, i övrigt orörd; namnet utan mellanslag för hinkens namnregel (DECISIONS #665)",
+   "rader": 7269,
+   "kolumner": [
+    "Händelse",
+    "EventText",
+    "Beskrivning",
+    "StartTid",
+    "Sluttid",
+    "X",
+    "Y",
+    "Plats"
+   ],
+   "anm": "Ligger under en egen nyckel och läses inte av kuvos.yml:s facit-trv-steg, som bara hämtar 'filer'. Läsaren byggs efter förregistreringen (docs/FORREGISTRERING-OLYCKOR-2024-25.md). I hinken 22/10, storleken kontrollerad (DB-knappen 39766607745)."
+  }
+ ]
 }

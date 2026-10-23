@@ -77,10 +77,10 @@ avstånd, fara, väg) och vägdatans klockslag till höger om rubriken. Längst 
 den neutrala knappen *Avsluta vakten*. Håll fingret på *PÅ VAKT* en halv sekund så visas kort B, halkkortet, med
 motorns riktiga replik — så att granskaren ser ett varningskort utan att köra.
 
-**Gammal väglagsdata (M och N).** När vägdatan är för gammal säger rösten en gång per tur *"Ingen färsk väglagsdata. Kör
-som om det kan vara halt."* **Inget gult kort** — gult betyder en fara framför dig. I stället glider en mörk rad in överst
-i åtta sekunder med repliken (M), och resten av turen står *VÄGLAGSDATA · GAMMAL — "Kör som om det kan vara halt." —
-SENAST FÄRSK 14:05* där *Tyst så länge* annars står (N). Ljuset förblir grönt; vakten är på. Ingen banner över kartappen.
+**Gammal väglagsdata.** När vägdatan är för gammal varnar appen inte för halka eller frysrisk på den. Sedan 20/10 säger
+den inte heller något om det (DECISIONS #647): ingen röstrad, ingen mörk rad överst, inget kort. Det som skiljer är att
+*Tyst så länge* inte visas, eftersom appen aldrig får tala lugnt på gammal data, och att väglagets klockslag står kvar
+under *På din väg*. Ljuset förblir grönt; vakten är på.
 
 **Varningskortet** — helgult i åtta sekunder medan rösten talar, sedan bort av sig självt. **Ingen knapp på någon
 plattform** (Androids *Uppfattat* är borta). Samma ordning varje gång: *HALKVAKT VARNAR* och klockslaget, för allvarliga
@@ -224,7 +224,6 @@ rörelseigenkänning, Bluetooth och plats "Tillåt hela tiden".)*
 | **Halka enligt kandidaten, märkt beta (nivå 2):** modellens vägyta 0 °C eller kallare och ett mätt fuktbesked — Trafikverkets *Våt* på sträckan eller nederbörd på radarn — ingen varm station inom 15 km och stationerna runt omkring överens; en gång per sträcka och högst en gång per 10 minuter (DECISIONS #562–#577, #606) | "Halkvakt tror: halka framöver." |
 | Djur på vägen enligt Trafikverket — älg, hjort, vildsvin, men också lösa kor och får (sedan 22/9, DECISIONS #318; polisens länspunkter är borta) | "Viltrisk framöver." |
 | Fartkamera (hastighetsgränsen sägs inte: Trafikverkets kameradata bär ingen) | "Fartkamera om 500 meter." |
-| Väglagsdatat är gammalt (en gång per körning) | "Ingen färsk väglagsdata. Kör som om det kan vara halt." |
 
 **Frysrisken efter regnet är en beta.** *"Halkvakt tror"* säger att det är en gissning ur regnet och hur fort vägbanan kyls, inte
 en uppmätt frysning. Värdena är satta före frosten och döms i januari på förarnas svar: håller de fortsätter betan till mars,
@@ -295,7 +294,7 @@ vars närmaste station inom 15 km är +3 grader eller kallare och våt — så l
 flowchart TD
     A[Du trycker Starta vakten] --> B[GPS börjar lyssna<br/>skärmen kan släckas]
     B --> C{Färsk vägdata?}
-    C -- "äldre än 45 min" --> D["🔊 En gång: Ingen färsk väglagsdata.<br/>Kör som om det kan vara halt"]
+    C -- "äldre än 45 min" --> D["Halka och frysrisk filtreras bort<br/>ingen röstrad"]
     C -- färsk --> E[Motorn vakar tyst]
     D --> E
     E --> F{Fara i korridoren<br/>framför dig?}
@@ -315,7 +314,7 @@ flowchart LR
     S --> T[Telefonen hämtar<br/>+ verifierar äkthet]
     T --> Å{Åldersvakten:<br/>är datat färskt?}
     Å -- ja --> M[Motorn i telefonen<br/>position möter faror]
-    Å -- "gammalt väglag" --> M2[Gammalt filtreras bort<br/>+ en ärlig röstrad]
+    Å -- "gammalt väglag" --> M2[Gammalt filtreras bort]
     M2 --> M
     M --> R[🔊 Din högtalare]
 ```
@@ -645,11 +644,21 @@ du var just då."* (Axels villkor för ja:et, DECISIONS #267.)
 | 0.3.11 (23) | 4/10 | Självstoppet mäts på förflyttning, inte på ett mätvärde: en promenad efter resan håller inte längre vakten vid liv. På Android läser en stillastående telefon GPS glesare. Ett dubbeltryck på *Appen missade* blir en miss, och Siri markerar inga missar när vakten är av (kort #262 Å2/Å3, DECISIONS #461). |
 | 0.3.12 (24) | 11/10 | **Frysrisken efter regnet, märkt beta (S3):** rösten säger *"Halkvakt tror: frysrisk framöver."* och kortet visar *BETA* och *Halkvakt tror — efter regnet* när vägbanan är +1…+3 °C, fallit minst 0,8 °C på 30 minuter och regnet slutat inom 2 timmar (DECISIONS #524, #526). |
 | 0.3.13 (26) | 16/10 | **Halka enligt kandidaten, märkt beta (nivå 2):** rösten säger *"Halkvakt tror: halka framöver."* och kortet visar *BETA* och *Halkvakt tror — modellerat* när modellens vägyta är 0 °C eller kallare och ett mätt fuktbesked finns, en gång per sträcka; varningen talar sist av alla och följer reglaget *Halka* (DECISIONS #577). Kan stängas av från servern utan nytt bygge (#578), och tiger i två minuter efter Trafikverkets halkvarning för samma sträcka (#581). |
+| 0.3.13 (27) | 17/10 | Kandidatens tak: högst en *"Halkvakt tror: halka framöver."* per 10 minuter (DECISIONS #606). Första bygget som TestFlight-flödet i Actions laddade upp (körning 38993725899; #582, #606). Android (27) låg i Play Console 17/10 men vägrades i internt test, eftersom den var inriktad på API 35 och Play kräver 36 (a874fbb1, #682). |
+| 0.3.13 (28) | 17/10 | Fartkollen avslutas när vakten startas för hand, så att vakten inte tappar positionen (kort #359, DECISIONS #620). Android (28) ur Axels gren `claude/target-sdk-36` (targetSdk 36) låg i internt test på Axels Android 17/10, där rösten och notisen teg (3cd31a97; #681 punkt 2, #682). |
+| 0.3.13 (29) | 18/10 | Halkzonen: hala sträckor inom 500 m från varandra är en zon för reprisregeln, så en korsning ger en *halka* i stället för tre (DECISIONS #621, #624, #632). |
+| 0.3.13 (30) | 18/10 | Favoriternas steg 2 på iPhone och Android: brytaren *Erbjud att spara resor* i fliken *Favoriter* och frågan efter resan (DECISIONS #625, #633, #634). |
+| 0.3.13 (31) | 18/10 | Favoriternas rapport längs resan, med *Dit / Hem* och igenkänningen (DECISIONS #637, #639, #640). Android versionCode 31 i takt. |
+| 0.3.13 (32) | 19/10 | Trafikverkets påverkan i rapportens text (#641), rösten släpper musiken efter repliken (#642), och skärmens bakgrund bakom klockan så att texten inte rullar upp under statusfältet (#643). Bär också raden om gammal väglagsdata, som togs bort ur koden 20/10 (#647). Ingen av (27)–(32) är skickad till App Review; inskicket görs med (33) (#681). |
 | Android (CI) | 16/9 → | Facitknappen och betatest-brytaren (S4, DECISIONS #202), Efter resan (20/9), viltvarningen på Trafikverkets djur (22/9), omladdningsloopen lagad och reglaget (26/9), missarna (26/9). **0.3.9 (18)**, samma nummer som iOS (DECISIONS #377). |
 
 Android bar versionsnumret 0.3.1 (4) från 31/8 till 26/9, fast CI byggde den ur main med skinnet v3, facitknappen
-och Efter resan; sedan 26/9 bär den 0.3.9 (17) som iOS, rättat före första Play-uppladdningen som låser spåret. Ingen Android-version har gått ut via Play än
-(kort #219).
+och Efter resan; sedan 26/9 bär den 0.3.9 (17) som iOS, rättat före första Play-uppladdningen som låser spåret.
+
+↪ **23/10 (DECISIONS #683):** (27) och (28) låg i Play Console 17/10, i internt test. (27) vägrades, eftersom den var inriktad
+på API 35 och Play kräver 36 (a874fbb1). (28) kom ur Axels gren `claude/target-sdk-36` och låg i internt test på Axels Android,
+där rösten och notisen teg (3cd31a97; #681 punkt 2, #682). Main bygger fortfarande med targetSdk 35, och lagningen är Axels
+PR #1029. Ingen Android-version har gått ut i ett slutet test eller i produktion (kort #219).
 
 ## Vad vi lärde oss om oss själva (13/9)
 

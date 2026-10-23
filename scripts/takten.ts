@@ -3,6 +3,7 @@
 // arbetet självt: varje ändring av en del eller ett steg i docs/projektkartan.json de senaste sju dygnen, ur git-historiken, med sin
 // commit, så att varje steg går att härleda till det arbete som flyttade det. projektkartan.ts skriver docs/takten.json och visar den
 // överst på kartan; --check prövar sidan mot filen, inte filen mot historiken (en PR-körning bär inte main-historiken).
+// Historiken läses längs main:s första förälder (--first-parent, 20/10), så en sammanslagen PR är en ändring, hur den än slogs ihop.
 import { execFileSync } from "node:child_process";
 
 export type Status = "klar" | "pagar" | "saknas" | "ej";
@@ -78,8 +79,17 @@ export function lasTakten(rot: string, procent: (k: any) => number): Takten | nu
   const sha = git("rev-parse", "HEAD").trim();
   const till = new Date(git("log", "-1", "--format=%cI", "HEAD").trim()).toISOString();
   const fran = new Date(Date.parse(till) - DYGN * 86_400_000).toISOString();
-  const commits = git("log", "--reverse", "--format=%H%x09%cI%x09%s", `--since=${fran}`, "HEAD", "--", FIL)
-    .split("\n").filter(Boolean).map((r) => { const [s, t, ...rub] = r.split("\t"); return { sha: s, tid: new Date(t).toISOString(), rubrik: rub.join("\t") }; });
+  // --first-parent (20/10): bara main:s egen linje. Utan den kom sidogrenarnas commits med i tidsordning, och varje commit jämfördes
+  // med den föregående i listan, inte med sin förälder. Två grenar som ändrade kartan parallellt (20/10: dokumentsynken, #1096 och
+  // #1097, sammanslagna som merge-commits) fick stegen att hoppa mellan grenarnas lägen, så samma steg räknades som borttagna och
+  // tillagda flera gånger. Nu räknas en sammanslagning som en ändring mot sin första förälder, och rubriken blir PR:ens titel.
+  const commits = git("log", "--first-parent", "--reverse", "--format=%H%x09%cI%x09%s%x09%b%x1e", `--since=${fran}`, "HEAD", "--", FIL)
+    .split("\x1e").map((r) => r.trim()).filter(Boolean).map((r) => {
+      const [s, t, rub = "", ...kropp] = r.split("\t");
+      const pr = /^Merge pull request (#\d+)/u.exec(rub);
+      const titel = pr ? (kropp.join("\t").trim().split("\n")[0] ?? "").trim() : "";
+      return { sha: s, tid: new Date(t).toISOString(), rubrik: pr && titel ? `${titel} (${pr[1]})` : rub };
+    });
   const visa = (ref: string) => { try { return JSON.parse(git("show", `${ref}:${FIL}`)); } catch { return null; } };
   const nu = visa("HEAD");
   let fore = commits.length ? (visa(`${commits[0].sha}^`) ?? { delar: [] }) : nu;

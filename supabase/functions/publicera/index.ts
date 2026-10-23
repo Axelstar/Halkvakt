@@ -366,8 +366,9 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
   // Regeln bor på ETT ställe, kandidat_regel() i databasen — samma funktion som domloggen (kandidat_logga) och skuggmotorns
   // takt läser, så det som publiceras är det som döms. Här står inga tal: publiceringen tar bara utfallet `varnar`. Egen nyckel,
   // aldrig `segments` — varje rad där blir en halkvarning i tre portar (LÄGG TILL, ERSÄTT ALDRIG, som rain_segments). En rad per
-  // sträcka med dess varnande vägpunkter, för skuggan räknar passager på punkterna (kandidatLangsRutten). Ingen port läser nyckeln
-  // än (steg 10). Fail-soft: tom + not. Tiger regeln (timmen gammal eller ofullständig) är nyckeln tom och noten säger det — en
+  // sträcka med dess varnande vägpunkter, samma punkter som skuggan räknar passager på (kandidatLangsRutten; skuggan hämtar dem
+  // ur kandidat_regel, inte ur nyckeln). Motorn, kartan (kandidat.geojson) och apparna läser nyckeln
+  // sedan 0.3.13 (25) (steg 10, #577). Fail-soft: tom + not. Tiger regeln (timmen gammal eller ofullständig) är nyckeln tom och noten säger det — en
   // tyst timme ska inte se ut som en timme utan varningar.
   // BRYTAREN (NIVA2-LIVE steg 13, DECISIONS #562 punkt 5, #578): är kandidaten avstängd utelämnas nyckeln helt — inte tom — och
   // regeln frågas inte. Går brytaren inte att läsa utelämnas nyckeln också: tyst är det säkra hållet. Apparna tystnar på båda.
@@ -454,7 +455,7 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
   // ---- live: skattarens råa indata per station (F1, kort #187, DECISIONS #188) ----
   // Bredvid `fukt`, utan tolkning: `regn_h` = timmar sedan arkivet senast såg regn på stationen,
   // `lutning15/30/60` = ytans fall per fönster ur trendkandidaterna (positivt = faller). Motorn
-  // läser inget av det ännu — F1 ligger ett varv före F4 så att skuggan kan mäta först (S1).
+  // och apparna läser regn_h och lutning30 sedan S3 (DECISIONS #524); lutning15/60 läser bara skuggan.
   // Null betyder "inget i fönstret" eller "okänt", aldrig noll. Fail-soft som radarn.
   const regnH = new Map<string, number>();
   const regnMm = new Map<string, number>();
@@ -572,7 +573,7 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
       const id = String(r.station_id), l = lutning.get(id);
       return {
         id, lon: Number(r.lon), lat: Number(r.lat), yta: num(r.surface_temp_c), fukt: fukt(r),
-        // F1 (#187): råa indata bredvid fukt. Motorn läser dem inte; skuggan mäter (S1).
+        // F1 (#187): råa indata bredvid fukt. Motorn läser regn_h och lutning30 (S3, #524); skuggan läser alla.
         regn_h: regnH.get(id) ?? null,
         lutning15: l?.l15 ?? null, lutning30: l?.l30 ?? null, lutning60: l?.l60 ?? null,
         bevis: bevisRad(id, regnH.get(id) ?? null, regnMm.get(id) ?? null),
@@ -1319,7 +1320,7 @@ async function gh(path: string, method = "GET", body?: unknown): Promise<any> {
 }
 
 /** En commit med alla filerna via Git Data API — inget git, inga Actions-minuter. `inline` går som innehåll direkt i
- *  trädanropet (länssidorna, #458): 22 sidor utan 22 extra blob-anrop. */
+ *  trädanropet (länssidorna, #458): alla sidor och deras data utan ett blob-anrop per fil. */
 async function publicera(files: Record<string, string>, inline: Record<string, string> = {}) {
   const branch = await gh("/branches/main");
   const baseCommit = branch.commit.sha, baseTree = branch.commit.commit.tree.sha;

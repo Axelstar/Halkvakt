@@ -119,13 +119,15 @@ export function stockholm(iso: string): string {
   return `${p.day}/${p.month} ${p.hour}:${p.minute}`;
 }
 
-/** Det som står i vägen för ett mål: målets delar och, under dem, allt de beror på som inte är klart. En del visas en gång. */
+/** Det som står i vägen för ett mål: målets delar och, under dem, allt de beror på som inte är klart. En del visas en gång.
+ *  En stängd del (grå) står inte i vägen, och inte heller det den beror på genom den (Skuggan-genomgången 21/10: m-hojd,
+ *  stängd i #657, stod kvar som hinder för Domarna i mars). */
 export function hinder(m: Mal, del: Map<string, Del>): { d: Del; djup: number }[] {
   const ut: { d: Del; djup: number }[] = [];
   const sedda = new Set<string>();
   const ga = (id: string, djup: number) => {
     const d = del.get(id)!;
-    if (d.lage === "gron" || sedda.has(id)) return;
+    if (d.lage === "gron" || d.lage === "gra" || sedda.has(id)) return;
     sedda.add(id);
     ut.push({ d, djup });
     for (const b of d.beror) ga(b, djup + 1);
@@ -174,11 +176,11 @@ export function havstang(k: Karta, del: Map<string, Del>): Map<string, { mal: st
   for (const d of k.delar) for (const b of d.beror) bygger.set(b, [...(bygger.get(b) ?? []), d.id]);
   const ut = new Map<string, { mal: string[]; delar: number }>();
   for (const d of k.delar) {
-    if (d.lage === "gron") continue;
+    if (d.lage === "gron" || d.lage === "gra") continue;
     const sedda = new Set<string>();
     const ko = [...(bygger.get(d.id) ?? [])];
     while (ko.length) { const x = ko.pop()!; if (sedda.has(x)) continue; sedda.add(x); ko.push(...(bygger.get(x) ?? [])); }
-    const delar = [...sedda].filter((x) => del.get(x)!.lage !== "gron").length;
+    const delar = [...sedda].filter((x) => del.get(x)!.lage !== "gron" && del.get(x)!.lage !== "gra").length;
     const mal = k.mal.filter((m) => hinder(m, del).some((h) => h.d.id === d.id)).map((m) => m.namn);
     ut.set(d.id, { mal, delar });
   }
@@ -769,6 +771,18 @@ if (direkt && process.argv[2] === "--sjalvtest") {
   // Hävstången: j bär h, i och g (två ej klara) och målet; h är grön och har ingen.
   const hv = havstang({ url: "u", projektmal: pm, block: [], mal: [mal], delar: [...del.values()] }, del);
   if (hv.get("j")!.delar !== 2 || hv.get("j")!.mal.join() !== "M" || hv.has("h")) { console.error("✗ självtest: hävstången", [...hv]); process.exit(1); }
+  // Stängda delar (grå) står inte i vägen och är ingen hävstång: x beror på den stängda y, som beror på z.
+  const delG = new Map<string, Del>([
+    ["x", { id: "x", namn: "X", block: "a", lage: "orange", klar: 40, saknas: ["s"], beror: ["y"], kort: [], beskrivs: [] }],
+    ["y", { id: "y", namn: "Y", block: "a", lage: "gra", saknas: ["s"], beror: ["z"], kort: [], beskrivs: [] }],
+    ["z", { id: "z", namn: "Z", block: "a", lage: "rod", saknas: ["s"], beror: [], kort: [], beskrivs: [] }],
+  ]);
+  const malG: Mal = { id: "mg", namn: "MG", om: "", klart_nar: "k", datum: "", delar: ["x"] };
+  const hG = hinder(malG, delG).map((x) => `${x.d.id}${x.djup}`).join(" ");
+  const hvG = havstang({ url: "u", projektmal: pm, block: [], mal: [malG], delar: [...delG.values()] }, delG);
+  if (hG !== "x0" || hvG.has("y") || hvG.get("z")!.delar !== 1 || hvG.get("z")!.mal.length !== 0) {
+    console.error("✗ självtest: stängda delar", hG, [...hvG]); process.exit(1);
+  }
   // Byggstegen (kort #286): klart helt, pågående till hälften, "gäller inte" räknas bort; vikten väger medlet.
   const s1: Del = { id: "s", namn: "S", block: "a", lage: "orange", vikt: 3, saknas: ["c"], beror: [], kort: [], beskrivs: [],
     steg: [{ namn: "a", status: "klar", bevis: "x" }, { namn: "b", status: "pagar" }, { namn: "c", status: "saknas" }, { namn: "d", status: "ej" }] };

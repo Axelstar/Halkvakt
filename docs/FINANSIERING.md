@@ -25,12 +25,12 @@ hemtjänst, åkeri — därmed saknar AP3 partner och måste strykas eller skriv
 (v.37) · 5 NTF Skåne sist (kan då räkna upp partnerlistan) · 6 Åkeri om lätt.
 Regel: ej underskrift 25/9 = struken; "två räcker, fem är utmärkt".
 
-**Öppet beslut (Axel):** sökande = Bengt privat eller ideell förening (bildas
-på en vecka, 3 i styrelsen; lagar svagheten "ingen organisation"). Kopplat till
-rollfördelningskortet.
+**Sökande (avgjort 29/9, DECISIONS #404):** Bengt som privatperson; ansökan skickad 30/9 (#409). Den ideella
+föreningen, som var alternativet, bildades aldrig (#500). Halkvakt drivs av Bengt och Axel Lagerlöf som
+privatpersoner (↪ 23/10, DECISIONS #683).
 
 Övriga: Länsförsäkringar Skåne okt (kräver glasklart integritetslöfte — KLART
-i appen ✓), Vinnova mars 2027 (kräver AB + vintersiffror), föreningsbidrag TrV.
+i appen ✓), Vinnova mars 2027 (kräver AB + vintersiffror), föreningsbidrag TrV (kräver en förening; ingen finns, #500).
 
 
 ## Plan B — teknisk ansökan utan utomstående (Bengts skräckscenario 22/9, Claudes bedömning)
@@ -43,7 +43,7 @@ H2 och H3 blir huvudhypoteser, H1 sekundär med egna data; AP3 byts mot egna tes
 ersätts av litteraturbaserad effektskattning plus hastighetsdata från egna testförare vid varnade avsnitt, utan kontrollgrupp;
 AP4 (VTI/LTH) väger tyngre; spridningen är rapporten, metoden öppen och appen själv (gratis i båda butikerna). Belopp cirka
 300 000 kr. **Sökandefrågan blir viktigare utan partner:** ideell förening flyttar ansökan från produktutveckling till
-kunskapsprojekt (Axels öppna fråga). **En trafikskola räcker för AP3** — släpp den inte förrän 25/9.
+kunskapsprojekt (Axels öppna fråga; ↪ 23/10: avgjord — Bengt sökte som privatperson, #404, och föreningen bildades aldrig, #500). **En trafikskola räcker för AP3** — släpp den inte förrän 25/9.
 
 **Bengts argument 22/9, in i BÅDA versionerna (Innovationsgrad punkt 2):** fordonsburna halkvarningar är i dag betaltjänster
 knutna till bilmärken (Nira Dynamics till biltillverkare och flottor, datan stängd även för kommuner som köper den, DECISIONS #281);
@@ -88,6 +88,8 @@ Arbetsbladet med sida 1, checklistan och mejltexten ligger i Drive. På vägen r
 sedan v4, och påståendet att varningarna "formuleras som åtgärd".
 
 **Jämförelse med vårens 32 beviljade projekt (Bengts lista 28/9; 18 716 352 kr, median 594 050 kr, spann 140 376–898 000).**
+*↪ 23/10 (DECISIONS #683): historik från 28/9. Förslaget om förening (punkt 1) föll: Bengt sökte som privatperson (#404), och
+föreningen bildades aldrig (#500).*
 - **Sökande.** Ingen av de 32 är en privatperson. Fördelningen är lärosäten och institut 13 (VTI 4, Lund 3, Chalmers 2), SAFER 2,
   konsultbolag 10 (Strandroth 2, Trivector 2, Lightness by Design 2), ideella organisationer 5 (MHF 2, NTF 2, FOT), Region Skåne 1
   och VALMA 1. VALMA hade sitt namn *"inskickat för registrering"* och beviljades ändå, vilket är ett prejudikat för en förening
@@ -114,7 +116,7 @@ sedan v4, och påståendet att varningarna "formuleras som åtgärd".
   3. Lyft felkartans nytta för kommunal vinterdrift (#8, #14, #28, #29, SKR).
   4. Väg granskningen (343 000 kr) mot 283 000 kr en gång till i ljuset av att alla utvärderare i listan är meriterade.
 
-**Sökande: Bengt Lagerlöf som privatperson (29/9 kväll, DECISIONS #404; #400:s förening under bildande valdes bort eftersom ett tomt organisationsnummerfält kan göra ansökan ofullständig). Versionen som skickas är Axels V2, 413 000 kr.** Sammanfattningen till Axel av jämförelsen ligger på https://claude.ai/artifact/JguqbJ3PEDrnuVAue1qBF6.
+*↪ 23/10 (DECISIONS #683): föreningen bildades aldrig (#500).* **Sökande: Bengt Lagerlöf som privatperson (29/9 kväll, DECISIONS #404; #400:s förening under bildande valdes bort eftersom ett tomt organisationsnummerfält kan göra ansökan ofullständig). Versionen som skickas är Axels V2, 413 000 kr.** Sammanfattningen till Axel av jämförelsen ligger på https://claude.ai/artifact/JguqbJ3PEDrnuVAue1qBF6.
 https://claude.ai/artifact/JguqbJ3PEDrnuVAue1qBF6. Den är privat tills Bengt delar den.
 
 ## Malmö stad — läget 23/9
@@ -122,6 +124,9 @@ https://claude.ai/artifact/JguqbJ3PEDrnuVAue1qBF6. Den är privat tills Bengt de
 Anna Axberg, systemförvaltare på Fastighets- och gatukontoret (kommunikation och digitalisering), ringde Bengt 23/9 efter följdmejlet 19/9 (ärende 1255995): staden planerar **12 väderstationer nedfrästa i asfalten under hösten** och undersöker om datan kan lämnas via API; hon ber om en påminnelse mot årets slut och lovar att prioritera upp. Det är exakt den datatyp appen varnar på (yttemperatur mätt i vägen), och en ny källa i Trafikverkets form är dagar av ingest-arbete, inte veckor. **Avtalsfrågan om de BEFINTLIGA stationerna (19/9-mejlet) är obesvarad** — samtalet handlade om de nya installationerna (Bengt 23/9). Den är vinterns fråga: de tolv nya hinner kanske inte få API förrän långt in i säsongen. **Svaret** (Bengt): tack och en sammanfattning av samtalet, sedan två numrerade frågor som går att vidarebefordra — (1) kan yta, luft och nederbörd från de befintliga stationerna delas under avtal inom ett avgränsat trafiksäkerhetsprojekt, och om det inte är hennes fråga: vem äger den? (2) får vi skriva i Skyltfondsansökan att samtal förs med FGK? — plus erbjudandet att vara första externa testkonsument av API:et och vinterns resultat i Malmö som motprestation. Bildspelet skickas som kort bilaga. Allt som skickas till kommunen är allmän handling — inga partnernamn före deras ja, inga opublicerade trösklar. Påminnelse: **början av december**, före fondens besked 15/12.
 
 ## Ideell förening som sökande — så bildas den, läst på skatteverket.se 22/9 (Bengts fråga)
+
+*↪ 23/10 (DECISIONS #683): historik. Föreningen bildades aldrig (#500), och `docs/forening/` är borttagen ur repot. Bengt sökte
+som privatperson (#404, #409). Halkvakt drivs av Bengt och Axel Lagerlöf som privatpersoner.*
 
 **Skatteverkets sida "Starta en ideell förening":** *"Ni måste vara minst tre personer för att starta en ideell förening."* Stadgar
 (utförligt ideellt ändamål, namn, beslutsordning) + konstituerande möte med protokoll (föreningen bildad, stadgarna antagna, styrelsen

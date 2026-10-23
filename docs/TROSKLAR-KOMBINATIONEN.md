@@ -260,7 +260,7 @@ Därför:
 | KB-D1 | *Stämde* **bekräftar** en träff |
 | KB-D2 | *Stämde inte* **fäller** en fyrning som falsklarm bara om ingen annan facitkälla bekräftar halka inom utfallsfönstret **och** ytan inte kom inom nära-miss-bandet |
 | KB-D3 | **Förarfacit ensamt fäller eller friar ingen dom.** KB-B redovisas två gånger, med och utan förarfacit. Pekar de åt olika håll är utfallet OAVGJORT. **Följden ska man vara beredd på:** förblir omklassningarna tomma blir januari OAVGJORT även om hundratals förare svarat *Stämde* |
-| KB-D4 | **Underlag (fastställt 17/9, #225/#226):** ≥ 30 svar på kombinationens varningar, från ≥ 5 förare, och ingen förare står för mer än 25 % |
+| KB-D4 | **Underlag (fastställt 17/9, #225/#226):** ≥ 30 svar på kombinationens varningar, från ≥ 5 förare, och ingen förare står för mer än 25 % · *22/10 (Bengt, DECISIONS #678, B4-82): svaren bär ingen identitet (#378), så ≥ 5 förare räknas som testarna i gruppen, och domen skriver ut att 25 %-villkoret inte kan prövas.* |
 | KB-D5 | **Trafiklärarnas svar redovisas separat** (Skyltfonden AP3, DECISIONS #216) — som expertfacit, aldrig viktade in i samma tal |
 | KB-D6 | **Provrader räknas aldrig** — de två som finns i dag är prov (kort #196) |
 
@@ -344,6 +344,11 @@ kallt*, och D4:s krav på båda halvorna är det som ska hindra att ett tunt fac
 `docs/FORSLAG-ANDRINGSREGELN-2026-10-02.md`, kort #282). Gemensam för alla tretton tröskeldokument. Den ersätter meningen
 *"lättnad är utesluten så snart utfallet är sett"* och dess varianter. Regeln ska hindra att **samma data både lär oss tröskeln och
 godkänner den**, inte att vi lär oss av ett utfall.
+
+**Lättnadsvägen används inte (22/10 2026, Bengt: *"vi förklarar ingenting och kringgår regel L"*, DECISIONS #678, B4-87).**
+Skyltfondsansökan (skickad 30/9, bilaga 1 och 7) säger *"En tröskel får skärpas men aldrig lättas när utfallet väl är sett"*. Den
+meningen hålls: ingen tröskel i de tretton dokumenten lättas efter sett utfall enligt L2 och L4. L1 och L3 gäller som förut, och
+texten nedan står kvar. En lättnad efter sett utfall kräver ett nytt beslut, och då är frågan om fonden ska få veta öppen igen.
 
 | # | Regel |
 | :-- | :-- |

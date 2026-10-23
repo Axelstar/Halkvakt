@@ -1,7 +1,7 @@
 // Livemotorn — Supabase Edge Function, körs varje minut av pg_cron.
 // Hämtar ENDAST ändringar (changeid) för Situation (olyckor m.m.) + RoadCondition (halka)
-// och upsertar direkt i databasen. Väder/kameror/vilt ligger kvar i 30-min-flödet (källorna
-// uppdaterar ändå inte oftare). GitHub-ingesten blir reserv — dubbla skrivningar är ofarliga
+// och upsertar direkt i databasen. Vädret (WeatherMeasurepoint) hämtas också här varje minut, se weather() nedan;
+// kameror och vilt ligger kvar i GitHub-ingesten. GitHub-ingesten blir reserv — dubbla skrivningar är ofarliga
 // (idempotenta upserts).
 import postgres from "https://deno.land/x/postgresjs@v3.4.4/mod.js";
 import { skrivSituationer, skrivVader, skrivVaglag } from "./skriv.ts";

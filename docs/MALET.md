@@ -17,6 +17,9 @@ någon position lämnar telefonen automatiskt, med träffsäkerhet, falsklarm oc
 granskade och öppet redovisade** efter två vintrar, 2026/27 och 2027/28. Sökt av Bengt Lagerlöf som privatperson, med
 Föreningen Halkvakt som förvaltare av de öppna resultaten, rapporterad till Skyltfonden i april 2028.
 
+*↪ 23/10 (DECISIONS #683): föreningen bildades aldrig (#500) och kan inte förvalta resultaten. Halkvakt drivs av Bengt och Axel
+Lagerlöf som privatpersoner.*
+
 ## 2. "Klart" betyder (bedömningen §6.4, fastställd 29/9)
 
 1. Varje vinterlänk har gått hela kartans sekvens: publicerad · mätt i skuggan · villkoret ändrat · tre portar gröna.
@@ -32,6 +35,8 @@ Ansökan som skickas 30/9 är Axels V2 efter ändringslistan (DECISIONS #404): s
 privatperson, 413 000 kr i fem arbetspaket (AP1 utvärdering 141 000 varav blind bildklassning 15 000 · AP2 prognoslager 70 000 ·
 AP3 testförare 88 000 · AP4 oberoende granskning 60 000 · AP5 rapport och spridning 36 000 · drift 12 000 · resor 6 000; egen tid
 350 timmar = 245 000). Föreningen Halkvakt står inte som sökande men förvaltar de öppna resultaten efter projektet.
+
+*↪ 23/10 (DECISIONS #683): föreningen bildades aldrig (#500); Halkvakt drivs av Bengt och Axel Lagerlöf som privatpersoner.*
 
 | Mål | Vad vi lovat | Måttet eller tröskeln | När | Ägare |
 | :-- | :-- | :-- | :-- | :-- |
@@ -52,10 +57,10 @@ Plikterna som återkommer (nycklar, databasens storlek, Actions-kassan, Ubuntu-b
 | När | Vad | Källa |
 | :-- | :-- | :-- |
 | inom 7 dygn efter första frostnatten | T-A steg 0, radarns bidrag mäts om, uppspelningen av S1:s nätter; frostgrindarna trycks om när ≥ 50 stationer haft ytan ≤ 0 °C | bedömningen S9, DECISIONS #352 |
-| 23/10 | höjdkorrektionen läses om på fyra veckors fullständigt underlag, beslut före november | kort #96, DECISIONS #357 |
+| ~~23/10~~ | ~~höjdkorrektionen läses om på fyra veckors fullständigt underlag, beslut före november~~ utgår: beslutet togs 13/10 (#547, #650) | kort #96, DECISIONS #357 |
 | 24/11 | premissmätningen av vägpunktsgrinden läses, en gång, med den finska bredvid som stöd; underlag för valet om grinden ska preciseras | kort #270, DECISIONS #435, #436 |
 | senast 1/11 | Pro-beslutet om databasen, villkor för domarna | bedömningen §4.2, Axel |
-| november | **betan till tolv testare:** slutet Play-test 14 dygn, efterhalkan som märkt beta om skuggloggen bär nätter och S3 är byggd; vattenplaningens radarspår döms nov–dec när underlaget räcker | bedömningen S5, mätningssidan §11 |
+| november | **betan till tolv testare:** slutet Play-test 14 dygn, efterhalkan som märkt beta om skuggloggen bär nätter och S3 är byggd; vattenplaningens radarspår föll 19/10 (#648), steg D struket 21/10 (#657) när underlaget räcker | bedömningen S5, mätningssidan §11 |
 | 15/12 | Skyltfondens besked | ansökan |
 | januari 2027 | **dom 1:** betans varningsregler på förar- och kamerafacit; golv nettonytt ≥ 5 %, tillkomna falsklarm ≤ 25 %; godkänd eller oavgjord ⇒ fortsätter, underkänd ⇒ tas bort | bedömningen S6, TROSKLAR-OVERGANGAR |
 | ~~1 februari 2027~~ hösten 2026, i kuvösen | den enda kalibreringen, 48 punkter — på vintern 2024/25 i stället för på data november–januari (ändrat 1/10, DECISIONS #425) | TROSKLAR-KOMBINATIONEN D1–D7 |
@@ -80,7 +85,7 @@ Koden är i takt på båda plattformarna: iOS och Android bär 0.3.9 (18) från 
 | Batteriet | iPhone mätt 27/9: 7 %/h på (14), inom budget. Android: batteripaketet Å0–Å6 efter fältrapporten, släppblockerare; mätningen på minst två fabrikat återstår; Å2/Å3 bär trösklar som Bengt och Axel beslutar | #262, #218 |
 | Integritetssidan | omskriven 23/9; meningen om radering och raden om missar publiceras av Axel | #214 |
 | Tolv testare | Axels åtagande 31/8 | tolv testare |
-| Motorregeln S3 | efterhalkans regel i motorn, Axels bygge, väntar på S1-grinden: skuggloggen ska bära blöta frostnätter först. Utan S3 är novemberbetan dagens motor med facitknappar, ingen ny regel | bedömningen S3, #89 |
+| Motorregeln S3 | efterhalkans regel i motorn, byggd 11/10 (PR #872, DECISIONS #524) efter S1-läsningen 11/10 (#521); i appbyggena (24)–(32), ännu inte hos externa testare. S1-grinden är bokförd som passerad 21/10 (#661); hur S3 når användarna är Bengts och Axels fråga (åtgärdslistan B4-46). Utan S3 är novemberbetan dagens motor med facitknappar, ingen ny regel | bedömningen S3, #89 |
 
 ## 6. Utgångsläget vid fastställandet, 29/9 (uppdateras inte här)
 

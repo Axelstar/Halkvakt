@@ -129,5 +129,77 @@
       "facebook": "1312515671952967_122099504715516187",
       "instagram": "18411872035090837"
     }
+  ],
+  "2026-10-20": [
+    {
+      "pass": "live",
+      "namn": "2026-10-20-live-0107",
+      "typ": "forsta",
+      "nyckel": "forsta:5",
+      "tid": "2026-10-19T23:07:42.071Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-10-20-live-0107.jpg",
+      "facebook": "1312515671952967_122099968677516187",
+      "instagram": "17910803595482465",
+      "x": "2112319883316994348"
+    },
+    {
+      "pass": "lunch",
+      "namn": "2026-10-20-lunch",
+      "typ": "forandring",
+      "nyckel": "forandring",
+      "tid": "2026-10-20T10:50:38.174Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-10-20-lunch.jpg",
+      "facebook": "1312515671952967_122100357981516187",
+      "instagram": "18009176150994336",
+      "x": "2112496788347224301"
+    }
+  ],
+  "2026-10-21": [
+    {
+      "pass": "morgon",
+      "namn": "2026-10-21-morgon",
+      "typ": "lista",
+      "nyckel": "lista",
+      "tid": "2026-10-21T04:50:36.637Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-10-21-morgon.jpg",
+      "facebook": "1312515671952967_122101105329516187",
+      "instagram": "18207243670374410",
+      "x": "2112768555439558721"
+    }
+  ],
+  "2026-10-22": [
+    {
+      "pass": "morgon",
+      "namn": "2026-10-22-morgon",
+      "typ": "lista",
+      "nyckel": "lista",
+      "tid": "2026-10-22T04:50:41.402Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-10-22-morgon.jpg",
+      "facebook": "1312515671952967_122102028159516187",
+      "instagram": "18108986816113830",
+      "x": "2113131104664265045"
+    },
+    {
+      "pass": "lunch",
+      "namn": "2026-10-22-lunch",
+      "typ": "lan",
+      "nyckel": "lan:25",
+      "tid": "2026-10-22T10:52:13.500Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-10-22-lunch.jpg",
+      "facebook": "1312515671952967_122102247189516187",
+      "instagram": "18069646895509630",
+      "x": "2113221956111827059"
+    },
+    {
+      "pass": "kvall",
+      "namn": "2026-10-22-kvall",
+      "typ": "lan",
+      "nyckel": "lan:22",
+      "tid": "2026-10-22T15:51:22.955Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-10-22-kvall.jpg",
+      "facebook": "1312515671952967_122102457129516187",
+      "instagram": "17914062984282456",
+      "x": "2113297227615543783"
+    }
   ]
 }

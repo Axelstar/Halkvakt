@@ -83,6 +83,19 @@ class RapportTest {
         }
     }
 
+    /** Efterhalkans spärr i rapporten (DECISIONS #676, #677): utan Betatest faller facitets betarad (S3), och inget annat ändras. */
+    @Test fun utanEfterhalkaFallerBaraBetaraden() {
+        val i = indata(facit())
+        var betarader = 0
+        for (hem in listOf(false, true)) {
+            val med = ResansRapport.resansRapport(i.rutt, hem, i.lage, i.kameror, i.snabb, i.linjer)
+            val utan = ResansRapport.resansRapport(i.rutt, hem, ResansRapport.utanEfterhalka(i.lage), i.kameror, i.snabb, i.linjer)
+            betarader += med.count { it.rubrik.endsWith("(beta)") }
+            assertEquals(med.filterNot { it.rubrik.endsWith("(beta)") }, utan, "hem=$hem: allt utom betaraden orört")
+        }
+        assertTrue(betarader > 0, "facit bär en betarad (S3), annars prövar provet ingenting")
+    }
+
     @Test fun riktningenSomTypeScript() {
         val f = facit(); val i = indata(f)
         val fall = lista(f["riktning"]).map(::obj)
