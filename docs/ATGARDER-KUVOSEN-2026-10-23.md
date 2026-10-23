@@ -14,7 +14,7 @@
 | :-- | :-- | :-- | :-- |
 | B8-01 | Den nya kandidatens provning kan läsas före signeringen av 2026/27; spärren hindrar det inte | **klar** — *"Kör när träningen är klar"*, men efter den signerade ersättningsregeln (B8-03) | #689 |
 | B8-02 | När signeras förregistreringen för 2026/27? | öppen — *"26/10, direkt efter R"*; fristen 31/10 står kvar som yttersta datum (Bengt) | |
-| B8-03 | Ingen regel för när den nya kandidaten ersätter den frysta | öppen — *"Ja, en kort regel först"*: utkast av Claude, signerat av Bengt och Axel före provningen (fristen `ersattningsregel-ny-kandidat` 26/10) | |
+| B8-03 | Ingen regel för när den nya kandidaten ersätter den frysta | **klar** — signerad 23/10 (väg 2: skugga från november om V1–V4 håller, valet i mars på levande data, X = 0,25); `docs/FORREGISTRERING-ERSATTNING-2027-28.md` | #692 |
 | B8-04 | Två kandidater för 2027/28 på samma kort | **klar** — *"Håll isär, nytt kort"*: kort #362 för den nya, #321 för terrängen | #689 |
 | B8-05 | Saknas en kurva till R 26/10 | **klar** — *"0,5 står kvar"*, inskrivet i FORREGISTRERING-2026-27 §10 a | #689 |
 | B8-06 | Norr om 62° mitt i vintern (kort #317 b) saknar datum | öppen — *"Frist 15/11"* (`norr-62`, Bengt) | |

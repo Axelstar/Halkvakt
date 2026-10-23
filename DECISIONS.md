@@ -16946,3 +16946,24 @@ Inget utfall av den nya kandidaten finns. Indata för 2020-21 pågår, och 2021-
 Inget utfall av den nya kandidaten är läst. Indata för 2020-21 pågår.
 
 **Stomdokument:** KUV §5 skuggan och valet inför 2027/28, LIV den nya kandidaten i skugga bredvid den frysta
+
+## #692 (23/10 2026) Ersättningsregeln signerad: den nya kandidaten i skugga från november om den klarar V1–V4, valet inför 2027/28 i mars
+
+**Bengts ord 23/10:** *"Jag har läst det omskrivna utkastet. Signera ersättningsregeln för mej och Axel och slå ihop #1170 när CI är grön."*
+
+**Signerad:** `docs/FORREGISTRERING-ERSATTNING-2027-28.md`. Bengt signerar för sig och för Axel via Bengt, som i #671. Dokumentets
+sha256 vid signeringen, före statusraden och signaturerna, är `15788047fc582f4fd8f06f5787d9900d4f17a574d02341e736fcffd9d6525214`. Det är versionen e7d96c30 i #1170, som Bengt läste.
+
+**Det som nu gäller:**
+- **V1–V4** (§3), med X = 0,25 procentenheter.
+- **Skuggan från november** (§4): egen kedja med fysikens reserv, paritet på 2024/25, egen logg och fristen `ny-kandidat-skugga`
+  15/11.
+- **Valet i mars** (§5), på levande data för båda.
+- **Ändringen av NY-KANDIDAT §5 punkt 1 för skuggan** (§8) gäller från och med i dag.
+
+**Följd:**
+- Den nya kandidatens provning får tryckas när träningen är grön (#689 punkt 1).
+- Fristen `ersattningsregel-ny-kandidat` är klar och borttagen.
+- Inget utfall av den nya kandidaten var läst vid signeringen. Indata för 2020-21 pågår.
+
+**Stomdokument:** KUV §5 ersättningsregeln signerad, LIV den nya kandidaten i skugga bredvid den frysta

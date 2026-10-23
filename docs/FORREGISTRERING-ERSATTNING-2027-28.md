@@ -1,12 +1,12 @@
 # Ersättningsregeln — den nya kandidaten i skugga vintern 2026/27, och valet inför 2027/28
 
-**Status: UTKAST 23/10 2026, omskrivet samma dag efter Bengts val** (DECISIONS #689 punkt 3, #690, #691). Bengt och Axel signerar
-**innan** den nya kandidatens provning trycks (`kuvos-ny-kandidat` steg=provning). Fristen är `ersattningsregel-ny-kandidat`, 26/10.
+**Status: SIGNERAD 23/10 2026** (Bengt, och Axel via Bengt, DECISIONS #692; dokumentets sha256 vid signeringen, före den här
+raden och signaturerna: `15788047fc582f4fd8f06f5787d9900d4f17a574d02341e736fcffd9d6525214`). Utkastet: DECISIONS #689 punkt 3, #690 och #691. Signerad **innan**
+den nya kandidatens provning trycks (`kuvos-ny-kandidat` steg=provning); provningen får tryckas när träningen är grön.
 Bengts val 23/10:
 - *"Väg 2: den frysta signeras 26/10 och talar i vinter, och den nya körs i skugga från november om den klarar V1–V4"*;
 - X = 0,25 procentenheter.
 
-Kvar före signeringen är bara signaturerna.
 
 Källorna:
 - den nya kandidaten: `docs/FORREGISTRERING-NY-KANDIDAT-2027-28.md` §1, §3, §5 och §10 (DECISIONS #670–#672), `fysik/ny_kandidat/`;
@@ -126,5 +126,5 @@ dokumentet och står också i NY-KANDIDAT §10. Den görs före varje utfall av 
 
 | | Datum | Signatur |
 | :-- | :-- | :-- |
-| Bengt | | |
-| Axel | | |
+| Bengt | 2026-10-23 | Bengt i chatten: *"Jag har läst det omskrivna utkastet. Signera ersättningsregeln för mej och Axel och slå ihop #1170 när CI är grön."* (DECISIONS #692) |
+| Axel | 2026-10-23 | Via Bengt i samma ord (DECISIONS #692) |
