@@ -17047,3 +17047,23 @@ Utan tillägg tas 2019/20, 2020/21 och 2021/22 bort (NY-KANDIDAT §4), och ersä
 **Inte gjort:** ingenting är kört. Bevakningen av körningarna är pausad till signeringen.
 
 **Stomdokument:** KUV den nya kandidatens förberedning föll 23/10 och tillägget T1/T2 är ett utkast med signering 26/10
+
+## #695 (23/10 2026) Tillägget T1 och T2 till NY-KANDIDAT signerat: SMHI:s station 7 ur tidszonsprovet, MET-timmar ur v4
+
+**Bengts ord 23/10:** *"tillägget är signerat nu"*
+
+**Signerat:** `docs/FORREGISTRERING-NY-KANDIDAT-TILLAGG-2026-10-23.md`. Bengt för sig och för Axel via Bengt, som i #671 och #692.
+Dokumentets sha256 vid signeringen, före statusraden och signaturerna: `ed4ebb1f1845cd2f61960707900d80ce2f5f6b5ffc4c2804c21aa6a95d2159df`. Det är versionen i #1172 (#694), som Bengt och Axel
+läste, sammanslagen 23/10 17:50 UTC.
+
+**Det som nu gäller:**
+- **T1:** SMHI:s station 7 räknas inte i tidszonsprovet för den nya kandidaten.
+- **T2:** timmar som arkivet saknar tas ur v4; kravet 1 % prövas efter fyllningen.
+- **T3:** hamnar ett annat par fel eller saknas mer än 1 %, gäller förregistreringen som den står.
+
+**Följd:**
+- `steg=fyll` får köras, sedan förberedningen, träningen, provningen och samman.
+- Inget modelltal var läst vid signeringen.
+- Fristen `tillagg-ny-kandidat` är klar och borttagen.
+
+**Stomdokument:** KUV tillägget T1/T2 signerat 23/10
