@@ -17110,3 +17110,55 @@ regler och sikten som avgörs med tre villkor (§5). Fryst (§8).
 - Fristen `olyckor-forregistrering` är klar och borttagen.
 
 **Stomdokument:** KUV olycksförregistreringen signerad
+
+## #698 (23/10 2026) Olycksläsaren byggd efter den signerade förregistreringen (#697); inte körd
+
+**Bengts ord 23/10:** *"jag och axel signerar detta så du kan bygga läsaren"*.
+
+**Byggt:**
+- `kuvos/olyckor-trv.ts`:
+  - §2: lagar de förskjutna raderna, räknar dubbletterna en gång och gör om SWEREF 99 TM till WGS 84;
+  - §2: ordlistan läses ordagrant ur `HANDELSE_SQL`, med träffar per ord och fördelningen av EventText;
+  - §3: tidszonsproven;
+  - §4: lyften med marginal och halk mot alla;
+  - §5: W-A och siktens dom med de tre villkoren.
+  - Bara aggregat skrivs ut. Läsaren vägrar köra utan båda signaturerna, med en annan ordlista, med en annan fil än manifestets
+    eller med ett annat radantal än 7 269.
+- `scripts/matningar/kuvos-blandning-vagb-olyckor-trv-2026-10-23.ts`: facitläsningens `forbered()` (väg B varv 1 och
+  identitetsprovet mot 38368369876) och stationstimmarna ur `weather_observations`, med timmens högsta byvind och lägsta sikt.
+- `kuvos.yml`:
+  - spärren först;
+  - olycksfilen ur hinken mot manifestets `komplettering`, med sha256 och storlek;
+  - artefakten `olyckor-2024-25` med bara aggregat;
+  - domlarmet, eftersom sikten döms här.
+- `ci.yml`: självtesterna.
+- `scripts/vindsikt-steg0.ts`: går att importera utan att något körs, och kvoten 1,5 är en namngiven konstant. Inget tal är ändrat.
+
+**Prov:**
+- Självtestet har 40 prov. 24 motprov med en mutation i taget fälls alla.
+- `npm test`: 351 godkända och 0 fel. Ordlistans prov mot Postgres körs i CI.
+- Koordinaterna stämmer med proj4 till 1e-11°.
+- Publikvakten och kontraktsgrinden är gröna.
+
+**Val där förregistreringen är otydlig, alla bokförda före läsningen:**
+- **Dagtid:** timmarna 07:00–18:00, alltså 07–17, som räkningen i #696.
+- **Känsligheten:** den flyttar tiden +1 h (UTC). Siktens dom fälls på den primära tolkningen, och känsligheten redovisas bara.
+- **Dubbletterna:** starttid plus koordinat. En grupp räknas som halkolycka om någon rad träffar.
+- **Marginalen i (a):** Katz på logaritmen.
+- **"Olyckor" i W-A:** stationstimmar med minst en olycka, som i driftens kod, också i W-A4:s krav på 20. Antalet olika olyckor står
+  bredvid.
+- **Avståndet:** haversine, 15 km i (b) och 2 eller 5 km i (a).
+- **Stationsvakten:** den tar en station ur byvinden men inte ur sikten.
+- **Tidszonsproven:** rusningen avgör. Natten till 30/3 kan bara fälla tolkningen som svensk tid.
+
+**Avvikelser:**
+- **Driftens W-A räknar i praktiken på kortare avstånd än 15 km.** `band()` i `vindsikt-steg0.ts` använder `ST_Expand(geom, 0.25)` i
+  grader, vilket blir ungefär 14 km vid 60° N och 10 km vid 68° N. Läsaren följer förregistreringens 15 km, och driften är inte rörd.
+  Det berör domen #491, och frågan går till Bengt.
+- **Den frysta ordlistan fångar inte alla böjningar:** "isigt", "isiga", "hala", "glashalt" och "ishalt" träffar inte. Listan ändras
+  inte (regel L), men räkningen per ord visar det.
+- **Ingen egen maskning:** kopian i hinken är redan maskad (manifestets `rensning`), och läsaren maskar inget själv.
+
+**Inte gjort:** läsningen är inte körd. Den körs på Bengts ord, i `kuvos.yml` med mätningen ovan och `korflode = ingen`.
+
+**Stomdokument:** KUV olycksläsaren byggd och inte körd

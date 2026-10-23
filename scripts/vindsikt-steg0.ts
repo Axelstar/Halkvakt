@@ -46,9 +46,10 @@ import { skiljbarKvot } from "../publish/marginal.ts";
 import { vaktdiagnos } from "../publish/vaktdiagnos.ts";
 import { domrad } from "./domrad.ts";
 
-const RACKVIDD_M = 15000;      // station ↔ olycka, samma som #89:s steg 0 (0d)
-const MIN_STATIONSTIMMAR = 500; // W-A4, högsta bandet
-const MIN_OLYCKOR = 20;         // W-A4, totalt
+export const RACKVIDD_M = 15000;      // station ↔ olycka, samma som #89:s steg 0 (0d)
+export const MIN_STATIONSTIMMAR = 500; // W-A4, högsta bandet
+export const MIN_OLYCKOR = 20;         // W-A4, totalt
+export const KVOT_KRAV = 1.5;          // W-A2 och W-A3, högsta bandet mot lägsta
 
 /** G_tak, rimlighetstaket ur TROSKLAR-VIND-SIKT §3.1 (Bengts order 13/9).
  *
@@ -148,8 +149,12 @@ function waRad(r: { namn: string; timmar: number; olyckor: number; per1000: numb
   return `  ${r.namn.padEnd(12)} ${String(r.timmar).padStart(14)} ${String(r.olyckor).padStart(18)} ${dolt(tal(r.per1000)).padStart(15)} ${dolt(tal(r.kvot)).padStart(17)}`;
 }
 
+// Självtestet och den skarpa delen körs bara när skriptet startas direkt: kuvos/olyckor-trv.ts lånar konstanterna, vakten och
+// W-A:s funktioner ovan (FORREGISTRERING-OLYCKOR-2024-25 §5, DECISIONS #697).
+const direkt = (process.argv[1] ?? "").replace(/\\/g, "/").endsWith("scripts/vindsikt-steg0.ts");
+
 // ── Självtest med känd sanning, utan DB.
-if (process.argv.includes("--sjalvtest")) {
+if (direkt && process.argv.includes("--sjalvtest")) {
   console.log("SJÄLVTEST — frekvens, monotoni och underlagsvakt mot känd sanning\n");
   let ok = true;
   const k = (namn: string, fick: unknown, vantat: unknown) => {
@@ -212,219 +217,221 @@ if (process.argv.includes("--sjalvtest")) {
 }
 
 // ── Skarpt (läser bara).
-const url = process.env.DATABASE_URL;
-if (!url) { console.error("DATABASE_URL not set"); process.exit(1); }
-const DAGAR = Number(process.argv.slice(2).find((a) => /^\d+$/.test(a)) ?? 14);
-const pg = (await import("pg")).default;
-const pool = new pg.Pool({ connectionString: url, max: 1, ssl: url.includes("localhost") ? undefined : { rejectUnauthorized: false } });
-await pool.query("SET statement_timeout = '300s'");
-const q = async (sql: string, p: unknown[] = []) => (await pool.query(sql, p)).rows as any[];
+if (direkt) {
+  const url = process.env.DATABASE_URL;
+  if (!url) { console.error("DATABASE_URL not set"); process.exit(1); }
+  const DAGAR = Number(process.argv.slice(2).find((a) => /^\d+$/.test(a)) ?? 14);
+  const pg = (await import("pg")).default;
+  const pool = new pg.Pool({ connectionString: url, max: 1, ssl: url.includes("localhost") ? undefined : { rejectUnauthorized: false } });
+  await pool.query("SET statement_timeout = '300s'");
+  const q = async (sql: string, p: unknown[] = []) => (await pool.query(sql, p)).rows as any[];
 
-console.log(`Steg 0 för kort #90 — givarkollen och grind W-A (${DAGAR} dygns fönster)\n`);
+  console.log(`Steg 0 för kort #90 — givarkollen och grind W-A (${DAGAR} dygns fönster)\n`);
 
-// VAKTDIAGNOSEN FÖRST (DECISIONS #141): bär arkivet fälten alls?
-await vaktdiagnos(q, "weather_observations",
-  `WHERE sample_time > now() - ${DAGAR} * interval '1 day'`, [
-    { namn: "byvind finns", bar: "wind_gust_ms IS NOT NULL", villkor: "true" },
-    { namn: "sikt finns", bar: "visibility_m IS NOT NULL", villkor: "true" },
-    { namn: "sikt under taket 20 000 m", bar: "visibility_m IS NOT NULL", villkor: "visibility_m < 20000" },
-    { namn: "#75: lufttemperatur finns", bar: "air_temp_c IS NOT NULL", villkor: "true" },
-  ]);
+  // VAKTDIAGNOSEN FÖRST (DECISIONS #141): bär arkivet fälten alls?
+  await vaktdiagnos(q, "weather_observations",
+    `WHERE sample_time > now() - ${DAGAR} * interval '1 day'`, [
+      { namn: "byvind finns", bar: "wind_gust_ms IS NOT NULL", villkor: "true" },
+      { namn: "sikt finns", bar: "visibility_m IS NOT NULL", villkor: "true" },
+      { namn: "sikt under taket 20 000 m", bar: "visibility_m IS NOT NULL", villkor: "visibility_m < 20000" },
+      { namn: "#75: lufttemperatur finns", bar: "air_temp_c IS NOT NULL", villkor: "true" },
+    ]);
 
-// ── A. GIVARKOLLEN
-console.log(`A — GIVARKOLLEN: går det att lita på vind och sikt?`);
-const g = (await q(`SELECT count(*)::int AS rader,
-    count(*) FILTER (WHERE wind_gust_ms IS NOT NULL)::int AS med_by,
-    count(*) FILTER (WHERE wind_speed_ms IS NOT NULL)::int AS med_medel,
-    count(*) FILTER (WHERE visibility_m IS NOT NULL)::int AS med_sikt,
-    count(DISTINCT station_id) FILTER (WHERE wind_gust_ms IS NOT NULL)::int AS stationer_by,
-    count(DISTINCT station_id) FILTER (WHERE visibility_m IS NOT NULL)::int AS stationer_sikt,
-    count(*) FILTER (WHERE wind_gust_ms < wind_speed_ms)::int AS by_under_medel,
-    count(*) FILTER (WHERE wind_gust_ms < 0 OR wind_speed_ms < 0 OR visibility_m < 0)::int AS negativa,
-    max(wind_gust_ms) AS max_by, max(visibility_m) AS max_sikt, min(visibility_m) AS min_sikt
-  FROM weather_observations WHERE sample_time > now() - $1 * interval '1 day'`, [DAGAR]))[0];
-console.log(`  ${g.rader} rader · byvind i ${pct(g.med_by, g.rader)} (${g.stationer_by} stationer) · sikt i ${pct(g.med_sikt, g.rader)} (${g.stationer_sikt} stationer)`);
-console.log(`  byvind < medelvind (fysiskt omöjligt): ${g.by_under_medel} rader (${pct(g.by_under_medel, g.med_by)})`);
-console.log(`  negativa värden: ${g.negativa}`);
-console.log(`  spann: byvind max ${g.max_by} m/s · sikt ${g.min_sikt}–${g.max_sikt} m`);
+  // ── A. GIVARKOLLEN
+  console.log(`A — GIVARKOLLEN: går det att lita på vind och sikt?`);
+  const g = (await q(`SELECT count(*)::int AS rader,
+      count(*) FILTER (WHERE wind_gust_ms IS NOT NULL)::int AS med_by,
+      count(*) FILTER (WHERE wind_speed_ms IS NOT NULL)::int AS med_medel,
+      count(*) FILTER (WHERE visibility_m IS NOT NULL)::int AS med_sikt,
+      count(DISTINCT station_id) FILTER (WHERE wind_gust_ms IS NOT NULL)::int AS stationer_by,
+      count(DISTINCT station_id) FILTER (WHERE visibility_m IS NOT NULL)::int AS stationer_sikt,
+      count(*) FILTER (WHERE wind_gust_ms < wind_speed_ms)::int AS by_under_medel,
+      count(*) FILTER (WHERE wind_gust_ms < 0 OR wind_speed_ms < 0 OR visibility_m < 0)::int AS negativa,
+      max(wind_gust_ms) AS max_by, max(visibility_m) AS max_sikt, min(visibility_m) AS min_sikt
+    FROM weather_observations WHERE sample_time > now() - $1 * interval '1 day'`, [DAGAR]))[0];
+  console.log(`  ${g.rader} rader · byvind i ${pct(g.med_by, g.rader)} (${g.stationer_by} stationer) · sikt i ${pct(g.med_sikt, g.rader)} (${g.stationer_sikt} stationer)`);
+  console.log(`  byvind < medelvind (fysiskt omöjligt): ${g.by_under_medel} rader (${pct(g.by_under_medel, g.med_by)})`);
+  console.log(`  negativa värden: ${g.negativa}`);
+  console.log(`  spann: byvind max ${g.max_by} m/s · sikt ${g.min_sikt}–${g.max_sikt} m`);
 
-const sentinel = await q(`SELECT visibility_m AS v, count(*)::int AS n FROM weather_observations
-  WHERE sample_time > now() - $1 * interval '1 day' AND visibility_m IS NOT NULL
-  GROUP BY 1 ORDER BY 2 DESC LIMIT 6`, [DAGAR]);
-console.log(`  vanligaste siktvärdena (sentineltal syns här): ${sentinel.map((r) => `${r.v} m ×${r.n}`).join(" · ")}`);
-console.log(`  ⚠️  Läs raden ovan för hand. Ett värde som dominerar är ofta en sentinel ("ingen mätning"),`);
-console.log(`     inte en observation — och det ska in i givarvakten innan W-A får sätta en tröskel.`);
+  const sentinel = await q(`SELECT visibility_m AS v, count(*)::int AS n FROM weather_observations
+    WHERE sample_time > now() - $1 * interval '1 day' AND visibility_m IS NOT NULL
+    GROUP BY 1 ORDER BY 2 DESC LIMIT 6`, [DAGAR]);
+  console.log(`  vanligaste siktvärdena (sentineltal syns här): ${sentinel.map((r) => `${r.v} m ×${r.n}`).join(" · ")}`);
+  console.log(`  ⚠️  Läs raden ovan för hand. Ett värde som dominerar är ofta en sentinel ("ingen mätning"),`);
+  console.log(`     inte en observation — och det ska in i givarvakten innan W-A får sätta en tröskel.`);
 
-// TÄCKNINGSGRADEN — hur stor del av de MÖJLIGA stationstimmarna bär ett vindvärde alls?
-// Arkivdieten sparar inte lugna, torra, milda timmar, så W-A:s nämnare är "timmar dieten
-// sparade". Talet nedan säger hur stor del vi faktiskt ser och ska följa med i varje utfall.
-const t = (await q(`
-  WITH h AS (
-    SELECT DISTINCT station_id, date_trunc('hour', sample_time) AS h
-    FROM weather_observations
-    WHERE sample_time > now() - $1 * interval '1 day' AND wind_gust_ms IS NOT NULL
-  )
-  SELECT (SELECT count(*) FROM h)::int AS faktiska,
-         (SELECT count(DISTINCT station_id) FROM h)::int AS stationer,
-         (SELECT min(h) FROM h) AS forsta`, [DAGAR]))[0];
-// Kolumnerna är äldre än värdena: sql/011 la till fälten 4/9, men de fylldes först när
-// ingest-live deployades 9/9 (kort #84). Ett fönster längre än så läser tomma dygn.
-const dygnMedData = t.forsta ? (Date.now() - new Date(t.forsta).getTime()) / 86400000 : 0;
-const mojliga = Math.round(Number(t.stationer) * dygnMedData * 24);
-console.log(`  FÖRSTA TIMMEN MED BYVIND: ${t.forsta ?? "–"} ⇒ ${tal(dygnMedData, 1)} dygn med data`);
-console.log(`     (fönstret är ${DAGAR} dygn — dygn därutöver är tomma på vind och sikt)`);
-console.log(`  TÄCKNINGSGRAD: ${t.faktiska} stationstimmar med byvind av ${mojliga} möjliga`);
-console.log(`     (${t.stationer} stationer × ${tal(dygnMedData, 1)} dygn × 24 h) = ${pct(Number(t.faktiska), mojliga)}`);
-console.log(`  ⚠️  ARKIVDIETEN (DECISIONS #4) sparar bara rader vid yta ≤ 5 °C, nederbörd eller`);
-console.log(`     Δyta ≥ 0,5 °C. W-A:s nämnare är därför stationstimmar SOM SPARATS, inte som`);
-console.log(`     INTRÄFFAT. Riktningen på felet står i skriptets huvud — den är resonerad, inte mätt.`);
-
-// ── B. GRIND W-A
-// Exponeringen: stationstimmar per band. Olyckorna: station-timme där en olycka låg inom räckvidd.
-async function band(kolumn: string, banden: [string, number, number][], riktning: "hog" | "lag",
-                    uteslutna: string[] = []): Promise<Bandrad[]> {
-  const ut: Bandrad[] = [];
-  for (const [namn, lo, hi] of banden) {
-    const r = (await q(`
-      WITH st AS (
-        SELECT station_id, date_trunc('hour', sample_time) AS h,
-               ${riktning === "hog" ? `max(${kolumn})` : `min(${kolumn})`} AS v,
-               (array_agg(geom ORDER BY sample_time))[1] AS geom
-        FROM weather_observations
-        WHERE sample_time > now() - $1 * interval '1 day' AND ${kolumn} IS NOT NULL
-          AND NOT (station_id = ANY($4::text[]))
-        GROUP BY 1, 2
-      ),
-      i AS (SELECT * FROM st WHERE v >= $2 AND v < $3)
-      SELECT count(*)::int AS timmar,
-        count(*) FILTER (WHERE EXISTS (
-          SELECT 1 FROM situation_archive a
-          WHERE a.geom IS NOT NULL AND a.start_time >= i.h AND a.start_time < i.h + interval '1 hour'
-            AND a.geom && ST_Expand(i.geom, 0.25)
-            AND ST_DWithin(a.geom::geography, i.geom::geography, ${RACKVIDD_M})))::int AS olyckor
-      FROM i`, [DAGAR, lo, hi, uteslutna]))[0];
-    ut.push({ namn, timmar: Number(r.timmar), olyckor: Number(r.olyckor) });
-  }
-  return ut;
-}
-
-// G_TAK-SVEPET, skrivet ut så att valet kan göras på mätning. Dokumentets regel är "det lägsta
-// som inte kastar verkliga stormar" — och det går bara att avgöra när man ser vad varje steg
-// kastar. I september väntas allt utom den trasiga givaren ligga under 30.
-console.log(`\nG_TAK-SVEPET (TROSKLAR-VIND-SIKT §3.1) — vad varje steg skulle kasta:`);
-{
-  const over = await q(`
-    WITH st AS (
-      SELECT station_id, date_trunc('hour', sample_time) AS h, max(wind_gust_ms) AS v
+  // TÄCKNINGSGRADEN — hur stor del av de MÖJLIGA stationstimmarna bär ett vindvärde alls?
+  // Arkivdieten sparar inte lugna, torra, milda timmar, så W-A:s nämnare är "timmar dieten
+  // sparade". Talet nedan säger hur stor del vi faktiskt ser och ska följa med i varje utfall.
+  const t = (await q(`
+    WITH h AS (
+      SELECT DISTINCT station_id, date_trunc('hour', sample_time) AS h
       FROM weather_observations
       WHERE sample_time > now() - $1 * interval '1 day' AND wind_gust_ms IS NOT NULL
-      GROUP BY 1, 2)
-    SELECT count(*) FILTER (WHERE v >= 30)::int AS over30,
-           count(*) FILTER (WHERE v >= 40)::int AS over40,
-           count(*) FILTER (WHERE v >= 50)::int AS over50,
-           count(DISTINCT station_id) FILTER (WHERE v >= 30)::int AS stationer30,
-           round(max(v), 1) AS hogsta
-    FROM st`, [DAGAR]);
-  const o = over[0];
-  console.log(`  ≥ 30 m/s: ${o.over30} stationstimmar på ${o.stationer30} stationer · ≥ 40: ${o.over40} · ≥ 50: ${o.over50} · högsta ${o.hogsta} m/s`);
-  console.log(`  VALT: ${G_TAK} m/s (lägsta steget). Allt över räknas som trasig givare och ingår`);
-  console.log(`  inte i något band. Kommer höststormarna och steget visar sig kasta verkliga`);
-  console.log(`  stormar ska det höjas — med en rad i DECISIONS, före mätningen som ska använda det.`);
-  if (Number(o.over30) > 0 && Number(o.stationer30) > 2)
-    console.log(`  ⚠️ ${o.stationer30} STATIONER över 30 m/s — det kan vara väder och inte givarfel. LÄS för hand.`);
-}
-
-
-console.log(`\nSTATIONSVAKTEN — omöjliga stationstimmar (byvind ≥ ${BYVIND_GOLV} m/s och kvot > ${BYKVOT_TAK})`);
-const diskade: string[] = [];
-{
-  // Svepets steg blir varsin kolumn, så taket har EN källa och SQL:en inte en andra kopia.
-  const kol = BYKVOT_SVEP.map((s, i) =>
-    `count(*) FILTER (WHERE byvind >= $2 AND medel > 0 AND byvind / medel > ${s})::int AS o${i}`).join(",\n             ");
-  const rader = await q(`
-    WITH t AS (
-      SELECT station_id, date_trunc('hour', sample_time) AS h,
-             max(wind_gust_ms) AS byvind, max(wind_speed_ms) AS medel
-      FROM weather_observations
-      WHERE sample_time > now() - $1 * interval '1 day'
-        AND wind_gust_ms IS NOT NULL AND wind_speed_ms IS NOT NULL
-      GROUP BY 1, 2
     )
-    SELECT station_id, ${kol},
-           count(*) FILTER (WHERE byvind >= $2)::int AS hoga_timmar,
-           round(max(byvind / NULLIF(medel, 0))::numeric, 1) AS varsta_kvot,
-           round(max(byvind)::numeric, 1) AS max_by
-    FROM t GROUP BY 1
-    HAVING count(*) FILTER (WHERE byvind >= $2) > 0
-    ORDER BY 2 DESC, 4 DESC`, [DAGAR, BYVIND_GOLV]);
-  const valt = BYKVOT_SVEP.indexOf(BYKVOT_TAK);
-  console.log(`  ${rader.length} stationer har någon timme över ${BYVIND_GOLV} m/s — bara de kan bedömas`);
-  console.log(`  TAKSVEPET (vid krav ≥ ${OMOJLIGA_TIMMAR} omöjlig timme):`);
-  for (const [i, s] of BYKVOT_SVEP.entries()) {
-    const n = rader.filter((r) => diskvalificera(Number(r[`o${i}`]))).length;
-    console.log(`    kvot > ${String(s).padStart(2)}: ${String(n).padStart(3)} stationer${s === BYKVOT_TAK ? "   ← VALT" : ""}`);
-  }
-  console.log(`  KRAVSVEPET (vid tak ${BYKVOT_TAK}):`);
-  for (const krav of OMOJLIGA_TIMMAR_SVEP) {
-    const n = rader.filter((r) => diskvalificera(Number(r[`o${valt}`]), krav)).length;
-    console.log(`    ≥ ${krav} omöjliga timmar: ${String(n).padStart(3)} stationer${krav === OMOJLIGA_TIMMAR ? "   ← VALT" : ""}`);
-  }
-  const ut = rader.filter((r) => diskvalificera(Number(r[`o${valt}`])));
-  for (const r of ut) diskade.push(String(r.station_id));
-  console.log(`  DISKVALIFICERADE (${diskade.length}) — utesluts ur B1, men INTE ur B2:`);
-  for (const r of ut.slice(0, 12)) {
-    console.log(`    station ${String(r.station_id).padEnd(6)} ${String(r[`o${valt}`]).padStart(3)} omöjliga av ${String(r.hoga_timmar).padStart(3)} höga timmar` +
-      ` · värsta kvot ${String(r.varsta_kvot).padStart(6)} · max byvind ${r.max_by} m/s${Number(r.max_by) < G_TAK ? "   ← under G_tak, osynlig för värdetaket" : ""}`);
-  }
-  if (ut.length > 12) console.log(`    … och ${ut.length - 12} till`);
-  console.log(`  Arkivets egen medianbyvindfaktor i höga timmar är ~2,0 — taket ${BYKVOT_TAK} ligger långt ovanför.`);
-  console.log(`  Stationerna ovan har en trasig BYVINDGIVARE — det bör meddelas Trafikverket.`);
-}
+    SELECT (SELECT count(*) FROM h)::int AS faktiska,
+           (SELECT count(DISTINCT station_id) FROM h)::int AS stationer,
+           (SELECT min(h) FROM h) AS forsta`, [DAGAR]))[0];
+  // Kolumnerna är äldre än värdena: sql/011 la till fälten 4/9, men de fylldes först när
+  // ingest-live deployades 9/9 (kort #84). Ett fönster längre än så läser tomma dygn.
+  const dygnMedData = t.forsta ? (Date.now() - new Date(t.forsta).getTime()) / 86400000 : 0;
+  const mojliga = Math.round(Number(t.stationer) * dygnMedData * 24);
+  console.log(`  FÖRSTA TIMMEN MED BYVIND: ${t.forsta ?? "–"} ⇒ ${tal(dygnMedData, 1)} dygn med data`);
+  console.log(`     (fönstret är ${DAGAR} dygn — dygn därutöver är tomma på vind och sikt)`);
+  console.log(`  TÄCKNINGSGRAD: ${t.faktiska} stationstimmar med byvind av ${mojliga} möjliga`);
+  console.log(`     (${t.stationer} stationer × ${tal(dygnMedData, 1)} dygn × 24 h) = ${pct(Number(t.faktiska), mojliga)}`);
+  console.log(`  ⚠️  ARKIVDIETEN (DECISIONS #4) sparar bara rader vid yta ≤ 5 °C, nederbörd eller`);
+  console.log(`     Δyta ≥ 0,5 °C. W-A:s nämnare är därför stationstimmar SOM SPARATS, inte som`);
+  console.log(`     INTRÄFFAT. Riktningen på felet står i skriptets huvud — den är resonerad, inte mätt.`);
 
-for (const [rubrik, kolumn, banden, riktning, uteslut] of [
-  ["B1 — BYVIND", "wind_gust_ms", VINDBAND, "hog", diskade],
-  // SIKTEN UTESLUTER INGEN STATION: en trasig byvindgivare säger ingenting om siktgivaren
-  // på samma stolpe. De är olika instrument, och att diskvalificera båda vore att kasta
-  // mätningar vi inte har något skäl att misstro.
-  ["B2 — SIKT", "visibility_m", SIKTBAND, "lag", []],
-] as [string, string, [string, number, number][], "hog" | "lag", string[]][]) {
-  console.log(`\n${rubrik}: stiger olycksfrekvensen?`);
-  const rader = frekvens(await band(kolumn, banden, riktning, uteslut));
-  const sista = rader[rader.length - 1];
-  const olyckorTot = rader.reduce((s, r) => s + r.olyckor, 0);
-  const mono = monoton(rader);
-  const kvot = sista.kvot;
-  // Underlagsvakten FÖRE tabellen (kort #254 c): under spärren visar tabellen bara räkningar.
-  const oppen = !!dom(sista.timmar, olyckorTot, true);
-  const grindId = `W-A ${rubrik.slice(0, 2)}`;
-  if (!oppen) {
-    domrad(grindId, "SPÄRRAD", `underlagsvakten W-A4: ${sista.timmar} stationstimmar i högsta bandet, ${olyckorTot} olyckor`);
-    console.log(`  ⊘ OAVGJORT — underlagsvakten (W-A4) håller: ${sista.timmar} stationstimmar i högsta bandet`);
-    console.log(`    (kräver ${MIN_STATIONSTIMMAR}) och ${olyckorTot} olyckor totalt (kräver ${MIN_OLYCKOR}).`);
-    console.log(`    September är inte blåsigast på året. Det här är ett underlagsbesked, inte ett nej.`);
+  // ── B. GRIND W-A
+  // Exponeringen: stationstimmar per band. Olyckorna: station-timme där en olycka låg inom räckvidd.
+  async function band(kolumn: string, banden: [string, number, number][], riktning: "hog" | "lag",
+                      uteslutna: string[] = []): Promise<Bandrad[]> {
+    const ut: Bandrad[] = [];
+    for (const [namn, lo, hi] of banden) {
+      const r = (await q(`
+        WITH st AS (
+          SELECT station_id, date_trunc('hour', sample_time) AS h,
+                 ${riktning === "hog" ? `max(${kolumn})` : `min(${kolumn})`} AS v,
+                 (array_agg(geom ORDER BY sample_time))[1] AS geom
+          FROM weather_observations
+          WHERE sample_time > now() - $1 * interval '1 day' AND ${kolumn} IS NOT NULL
+            AND NOT (station_id = ANY($4::text[]))
+          GROUP BY 1, 2
+        ),
+        i AS (SELECT * FROM st WHERE v >= $2 AND v < $3)
+        SELECT count(*)::int AS timmar,
+          count(*) FILTER (WHERE EXISTS (
+            SELECT 1 FROM situation_archive a
+            WHERE a.geom IS NOT NULL AND a.start_time >= i.h AND a.start_time < i.h + interval '1 hour'
+              AND a.geom && ST_Expand(i.geom, 0.25)
+              AND ST_DWithin(a.geom::geography, i.geom::geography, ${RACKVIDD_M})))::int AS olyckor
+        FROM i`, [DAGAR, lo, hi, uteslutna]))[0];
+      ut.push({ namn, timmar: Number(r.timmar), olyckor: Number(r.olyckor) });
+    }
+    return ut;
   }
-  console.log(`  band          stationstimmar   timmar m. olycka   per 1 000 tim   kvot mot första`);
-  for (const r of rader) console.log(waRad(r, oppen));
-  if (oppen) {
-    // MARGINALVAKTEN (DECISIONS #128). En KVOT av två olycksfrekvenser får inte binomialfel —
-    // osäkerheten sitter i logaritmen och domineras av det minsta antalet olyckor.
-    const skilj = skiljbarKvot(kvot, 1.5, sista.olyckor, rader[0].olyckor);
-    console.log(`  monotont stigande: ${mono ? "JA" : "NEJ"} · högsta mot lägsta: ${tal(kvot)} × (krav ≥ 1,5)`);
-    if (!skilj) {
-      console.log(`  ⊘ OAVGJORT — kvoten går inte att skilja från 1,5 vid ${sista.olyckor} respektive`);
-      console.log(`    ${rader[0].olyckor} olyckor. Marginalvakten: ett tal inom bruset fäller inte och friar inte.`);
-      domrad(grindId, "OAVGJORT", `kvoten ${tal(kvot)} går inte att skilja från 1,5`);
-    } else {
-      console.log(`  ⇒ ${mono && kvot >= 1.5 ? "W-A PASSERAD för den här storheten" : "W-A FALLER för den här storheten"}`);
-      domrad(grindId, mono && kvot >= 1.5 ? "KLARAR" : "FALLER", `kvoten högsta mot lägsta band ${tal(kvot)} (krav ≥ 1,5), monotont ${mono ? "ja" : "nej"}`);
+
+  // G_TAK-SVEPET, skrivet ut så att valet kan göras på mätning. Dokumentets regel är "det lägsta
+  // som inte kastar verkliga stormar" — och det går bara att avgöra när man ser vad varje steg
+  // kastar. I september väntas allt utom den trasiga givaren ligga under 30.
+  console.log(`\nG_TAK-SVEPET (TROSKLAR-VIND-SIKT §3.1) — vad varje steg skulle kasta:`);
+  {
+    const over = await q(`
+      WITH st AS (
+        SELECT station_id, date_trunc('hour', sample_time) AS h, max(wind_gust_ms) AS v
+        FROM weather_observations
+        WHERE sample_time > now() - $1 * interval '1 day' AND wind_gust_ms IS NOT NULL
+        GROUP BY 1, 2)
+      SELECT count(*) FILTER (WHERE v >= 30)::int AS over30,
+             count(*) FILTER (WHERE v >= 40)::int AS over40,
+             count(*) FILTER (WHERE v >= 50)::int AS over50,
+             count(DISTINCT station_id) FILTER (WHERE v >= 30)::int AS stationer30,
+             round(max(v), 1) AS hogsta
+      FROM st`, [DAGAR]);
+    const o = over[0];
+    console.log(`  ≥ 30 m/s: ${o.over30} stationstimmar på ${o.stationer30} stationer · ≥ 40: ${o.over40} · ≥ 50: ${o.over50} · högsta ${o.hogsta} m/s`);
+    console.log(`  VALT: ${G_TAK} m/s (lägsta steget). Allt över räknas som trasig givare och ingår`);
+    console.log(`  inte i något band. Kommer höststormarna och steget visar sig kasta verkliga`);
+    console.log(`  stormar ska det höjas — med en rad i DECISIONS, före mätningen som ska använda det.`);
+    if (Number(o.over30) > 0 && Number(o.stationer30) > 2)
+      console.log(`  ⚠️ ${o.stationer30} STATIONER över 30 m/s — det kan vara väder och inte givarfel. LÄS för hand.`);
+  }
+
+
+  console.log(`\nSTATIONSVAKTEN — omöjliga stationstimmar (byvind ≥ ${BYVIND_GOLV} m/s och kvot > ${BYKVOT_TAK})`);
+  const diskade: string[] = [];
+  {
+    // Svepets steg blir varsin kolumn, så taket har EN källa och SQL:en inte en andra kopia.
+    const kol = BYKVOT_SVEP.map((s, i) =>
+      `count(*) FILTER (WHERE byvind >= $2 AND medel > 0 AND byvind / medel > ${s})::int AS o${i}`).join(",\n             ");
+    const rader = await q(`
+      WITH t AS (
+        SELECT station_id, date_trunc('hour', sample_time) AS h,
+               max(wind_gust_ms) AS byvind, max(wind_speed_ms) AS medel
+        FROM weather_observations
+        WHERE sample_time > now() - $1 * interval '1 day'
+          AND wind_gust_ms IS NOT NULL AND wind_speed_ms IS NOT NULL
+        GROUP BY 1, 2
+      )
+      SELECT station_id, ${kol},
+             count(*) FILTER (WHERE byvind >= $2)::int AS hoga_timmar,
+             round(max(byvind / NULLIF(medel, 0))::numeric, 1) AS varsta_kvot,
+             round(max(byvind)::numeric, 1) AS max_by
+      FROM t GROUP BY 1
+      HAVING count(*) FILTER (WHERE byvind >= $2) > 0
+      ORDER BY 2 DESC, 4 DESC`, [DAGAR, BYVIND_GOLV]);
+    const valt = BYKVOT_SVEP.indexOf(BYKVOT_TAK);
+    console.log(`  ${rader.length} stationer har någon timme över ${BYVIND_GOLV} m/s — bara de kan bedömas`);
+    console.log(`  TAKSVEPET (vid krav ≥ ${OMOJLIGA_TIMMAR} omöjlig timme):`);
+    for (const [i, s] of BYKVOT_SVEP.entries()) {
+      const n = rader.filter((r) => diskvalificera(Number(r[`o${i}`]))).length;
+      console.log(`    kvot > ${String(s).padStart(2)}: ${String(n).padStart(3)} stationer${s === BYKVOT_TAK ? "   ← VALT" : ""}`);
+    }
+    console.log(`  KRAVSVEPET (vid tak ${BYKVOT_TAK}):`);
+    for (const krav of OMOJLIGA_TIMMAR_SVEP) {
+      const n = rader.filter((r) => diskvalificera(Number(r[`o${valt}`]), krav)).length;
+      console.log(`    ≥ ${krav} omöjliga timmar: ${String(n).padStart(3)} stationer${krav === OMOJLIGA_TIMMAR ? "   ← VALT" : ""}`);
+    }
+    const ut = rader.filter((r) => diskvalificera(Number(r[`o${valt}`])));
+    for (const r of ut) diskade.push(String(r.station_id));
+    console.log(`  DISKVALIFICERADE (${diskade.length}) — utesluts ur B1, men INTE ur B2:`);
+    for (const r of ut.slice(0, 12)) {
+      console.log(`    station ${String(r.station_id).padEnd(6)} ${String(r[`o${valt}`]).padStart(3)} omöjliga av ${String(r.hoga_timmar).padStart(3)} höga timmar` +
+        ` · värsta kvot ${String(r.varsta_kvot).padStart(6)} · max byvind ${r.max_by} m/s${Number(r.max_by) < G_TAK ? "   ← under G_tak, osynlig för värdetaket" : ""}`);
+    }
+    if (ut.length > 12) console.log(`    … och ${ut.length - 12} till`);
+    console.log(`  Arkivets egen medianbyvindfaktor i höga timmar är ~2,0 — taket ${BYKVOT_TAK} ligger långt ovanför.`);
+    console.log(`  Stationerna ovan har en trasig BYVINDGIVARE — det bör meddelas Trafikverket.`);
+  }
+
+  for (const [rubrik, kolumn, banden, riktning, uteslut] of [
+    ["B1 — BYVIND", "wind_gust_ms", VINDBAND, "hog", diskade],
+    // SIKTEN UTESLUTER INGEN STATION: en trasig byvindgivare säger ingenting om siktgivaren
+    // på samma stolpe. De är olika instrument, och att diskvalificera båda vore att kasta
+    // mätningar vi inte har något skäl att misstro.
+    ["B2 — SIKT", "visibility_m", SIKTBAND, "lag", []],
+  ] as [string, string, [string, number, number][], "hog" | "lag", string[]][]) {
+    console.log(`\n${rubrik}: stiger olycksfrekvensen?`);
+    const rader = frekvens(await band(kolumn, banden, riktning, uteslut));
+    const sista = rader[rader.length - 1];
+    const olyckorTot = rader.reduce((s, r) => s + r.olyckor, 0);
+    const mono = monoton(rader);
+    const kvot = sista.kvot;
+    // Underlagsvakten FÖRE tabellen (kort #254 c): under spärren visar tabellen bara räkningar.
+    const oppen = !!dom(sista.timmar, olyckorTot, true);
+    const grindId = `W-A ${rubrik.slice(0, 2)}`;
+    if (!oppen) {
+      domrad(grindId, "SPÄRRAD", `underlagsvakten W-A4: ${sista.timmar} stationstimmar i högsta bandet, ${olyckorTot} olyckor`);
+      console.log(`  ⊘ OAVGJORT — underlagsvakten (W-A4) håller: ${sista.timmar} stationstimmar i högsta bandet`);
+      console.log(`    (kräver ${MIN_STATIONSTIMMAR}) och ${olyckorTot} olyckor totalt (kräver ${MIN_OLYCKOR}).`);
+      console.log(`    September är inte blåsigast på året. Det här är ett underlagsbesked, inte ett nej.`);
+    }
+    console.log(`  band          stationstimmar   timmar m. olycka   per 1 000 tim   kvot mot första`);
+    for (const r of rader) console.log(waRad(r, oppen));
+    if (oppen) {
+      // MARGINALVAKTEN (DECISIONS #128). En KVOT av två olycksfrekvenser får inte binomialfel —
+      // osäkerheten sitter i logaritmen och domineras av det minsta antalet olyckor.
+      const skilj = skiljbarKvot(kvot, KVOT_KRAV, sista.olyckor, rader[0].olyckor);
+      console.log(`  monotont stigande: ${mono ? "JA" : "NEJ"} · högsta mot lägsta: ${tal(kvot)} × (krav ≥ 1,5)`);
+      if (!skilj) {
+        console.log(`  ⊘ OAVGJORT — kvoten går inte att skilja från 1,5 vid ${sista.olyckor} respektive`);
+        console.log(`    ${rader[0].olyckor} olyckor. Marginalvakten: ett tal inom bruset fäller inte och friar inte.`);
+        domrad(grindId, "OAVGJORT", `kvoten ${tal(kvot)} går inte att skilja från 1,5`);
+      } else {
+        console.log(`  ⇒ ${mono && kvot >= KVOT_KRAV ? "W-A PASSERAD för den här storheten" : "W-A FALLER för den här storheten"}`);
+        domrad(grindId, mono && kvot >= KVOT_KRAV ? "KLARAR" : "FALLER", `kvoten högsta mot lägsta band ${tal(kvot)} (krav ≥ 1,5), monotont ${mono ? "ja" : "nej"}`);
+      }
     }
   }
-}
 
-console.log(`\nRESERVATION SOM SKA FÖLJA MED VARJE UTFALL`);
-console.log(`  situation_archive bär ingen ORSAK (situations.ts:37). Ett samband mellan vind och`);
-console.log(`  olycka är inte ett bevis på orsak — en hastighetsolycka i blåst räknas här som en`);
-console.log(`  blåstolycka. W-A mäter samband, inte kausalitet, och det är allt den påstår.`);
-console.log(`  Räckvidden är ${RACKVIDD_M / 1000} km, samma som #89:s steg 0. En olycka räknas till varje station`);
-console.log(`  inom den radien, så tätt liggande stationer delar på samma olycka.`);
-await pool.end();
+  console.log(`\nRESERVATION SOM SKA FÖLJA MED VARJE UTFALL`);
+  console.log(`  situation_archive bär ingen ORSAK (situations.ts:37). Ett samband mellan vind och`);
+  console.log(`  olycka är inte ett bevis på orsak — en hastighetsolycka i blåst räknas här som en`);
+  console.log(`  blåstolycka. W-A mäter samband, inte kausalitet, och det är allt den påstår.`);
+  console.log(`  Räckvidden är ${RACKVIDD_M / 1000} km, samma som #89:s steg 0. En olycka räknas till varje station`);
+  console.log(`  inom den radien, så tätt liggande stationer delar på samma olycka.`);
+  await pool.end();
+}
