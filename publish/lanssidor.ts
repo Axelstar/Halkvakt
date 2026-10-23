@@ -161,6 +161,7 @@ ${o.innehall}
     <nav aria-label="Sidfot"><a href="${o.rot}karta.html">Livekartan</a><a href="${o.rot}lan/">Länen</a><a href="${o.rot}om.html">Om appen</a><a href="${o.rot}press.html">Press</a><a href="${o.rot}integritet.html">Integritet</a></nav>
   </div>
 </footer>
+<script src="/assets/besok.js" defer></script>
 </body>
 </html>
 `;

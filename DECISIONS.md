@@ -16583,6 +16583,29 @@ facitkommandon, Betatest-sidans text i iOS och Android, och butikstexten. Ett pr
 
 **Stomdokument:** APP förarna och butikerna, BED §4.2 omgång 1 för förarna avgjord
 
+## #684 (20/10 2026, bokförd 23/10) Besöksräknare på halkvakt.se: egen, utan kakor, i stället för Google Analytics
+
+**Axels beställning 20/10:** *"how do we set this up so i can track things?"* efter att Search Console visat 111 exponeringar och 2 klick
+ett dygn. Search Console ser bara trafik från Google; tidningarna, Facebook och Instagram syns inte.
+
+**Beslut.** En egen räknare: `/assets/besok.js` i kartrepot skickar sökväg, hänvisande domän, en `?r=`-kod och mobil/dator till edge-
+funktionen `besok`, som skriver en rad i `besok` (sql/067). Ingen IP, inga kakor, inget användar-id. Statistiksidan `statistik.html` i
+kartrepot läser sammanställningen `besok_stat` med en nyckel (sha256 i `besok_nyckel`, aldrig i repot). Länssidorna och vägsidorna får
+skriptet via mallen i `publish/lanssidor.ts`. Inte i `ruta.html` eller `widget.html`: rutan lovar tidningarna ingen spårning.
+
+**Alternativ.** Google Analytics 4: kräver samtyckesbanner (kakor), skickar data till Google och bryter sajtens och rutans löfte om
+ingen spårning; Axel fick valet 20/10 och räknaren byggdes. GoatCounter och Cloudflare Web Analytics: gratis och utan kakor men tredje
+part. Söka i GitHub Pages loggar: Pages har inga.
+
+**Stomdokument:** SYS sajten
+
+**Bokförd 23/10** (Bengt: *"gör besöksräknaren"*, frågan B6-26 i `docs/ATGARDER-FORARNA-2026-10-23.md`). PR #1088 låg öppen sedan
+20/10 med numren #645 och sql/064, som båda redan var upptagna på main. Posten bär nu #684, och filen heter sql/067_besok.sql. Det
+som redan var i drift 20/10 enligt STATUS är oförändrat: tabellen `besok`, funktionen `besok_stat`, edge-funktionen `besok` och
+skriptet `/assets/besok.js` på halkvakt.se. Integritetssidan beskriver räknaren sedan 20/10, och det förklarar datumet *gäller
+från 2026-10-20* (B5-37, B5-43). Mallen för läns- och vägsidorna (`publish/lanssidor.ts`) får skriptet med nästa deploy av
+publicera, som Bengt gör.
+
 ## #685 (23/10 2026) Bengts svar på frågorna till Axel: #1029 in i (33), kort #228 stängt, hej@ fungerar, Axel äger domänen, neutral pressrubrik
 
 **Underlaget** var listan med 16 frågor till Axel ur åtgärdslistorna för Appen (B5) och förarna (B6), med förslag, i chatten 23/10.
