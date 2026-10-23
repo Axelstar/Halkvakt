@@ -65,3 +65,13 @@ BEGIN
     REVOKE ALL ON besok, besok_nyckel FROM authenticated; REVOKE ALL ON FUNCTION besok_stat(int) FROM authenticated;
   END IF;
 END $$;
+-- Rättigheterna för service_role står uttryckligen i filen (DECISIONS #653). Filen numrerades om från 064 till 067 23/10 (#684);
+-- tabellerna skapades 20/10 och fick då också Supabases standard. Raderna nedan är idempotenta.
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'service_role') THEN
+    GRANT ALL ON TABLE besok TO service_role;
+    GRANT ALL ON TABLE besok_nyckel TO service_role;
+    GRANT EXECUTE ON FUNCTION besok_stat(int) TO service_role;
+  END IF;
+END $$;
