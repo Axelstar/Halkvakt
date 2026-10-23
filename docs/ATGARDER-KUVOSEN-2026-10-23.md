@@ -47,7 +47,7 @@
 | Nr | Brist | Ägare | Status | Stängd av |
 | :-- | :-- | :-- | :-- | :-- |
 | B8-20 | Övergångarna och försprånget i kuvösen med okorrigerad tif, eller bortvalda med skäl (fristen `kuvos-tif-lasningarna` 15/11); Ö-B saknar instrument (#658), väglagshistoriken är inte inläst | Claude | öppen | |
-| B8-21 | Ersättningsregeln, utkastet (B8-03) | Claude | öppen | |
+| B8-21 | Ersättningsregeln, utkastet (B8-03) | Claude | **klar** — `docs/FORREGISTRERING-ERSATTNING-2027-28.md`; Bengts två val och signaturerna står kvar (B8-03) | #690 |
 | B8-22 | Radarns tal R 26/10: kurva 2 (39257448840, körd 13:20 UTC, inte 06:20 som #568 säger) är oläst; kurva 3 körs 06:20 UTC i morgonavbrottens fönster | Claude | öppen | |
 | B8-23 | Utfallet 2022/23 (#680) vid signaturerna för 2026/27, enligt §10 f | Claude, Bengt | öppen | |
 | B8-24 | Jämförelsen i den nya kandidatens samman prövar inte att populationerna är lika och skriver inte ut n (`provning.py`) | Claude | öppen | |

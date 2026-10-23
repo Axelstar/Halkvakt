@@ -16891,3 +16891,29 @@ före pulsklockan larmar den på det saknade jobbet.
 **Åtgärdslistan:** `docs/ATGARDER-KUVOSEN-2026-10-23.md` (B8-01 och framåt).
 
 **Stomdokument:** KUV §2 §3 §5 §7 §9–§12 efter genomgången, BED §6.1 testbädden och §4.2 tif och norr, LIV förregistreringen signeras 26/10
+
+## #690 (23/10 2026) Utkast: ersättningsregeln för den nya kandidaten inför 2027/28
+
+**Bengts ord 23/10:** *"skriv ett utkast till ersättningsregeln"* (#689 punkt 3).
+
+**Utkastet** är `docs/FORREGISTRERING-ERSATTNING-2027-28.md`. Bengt och Axel signerar innan den nya kandidatens provning trycks, och
+fristen är `ersattningsregel-ny-kandidat` 26/10. I korthet:
+- **Underlaget** är bara den nyas sex prov, med en vinter i taget utanför, och den frystas tal på 2022/23 (#680). Jämförelsen gäller
+  på samma punkter. Är populationerna olika räknas båda om på de gemensamma punkterna.
+- **Villkoren:** den nya tar platsen bara om alla fyra håller.
+  - V1: proven är klarade, och högst en vinter är borttagen.
+  - V2: den nya är bättre än den frysta på 2022/23. A2 ska vara minst X lägre totalt och inte X högre i norr eller söder. A1 får
+    vara högst 0,01 °C högre och A3 högst 0,05 procentenheter högre.
+  - V3: blandningen är bättre än RÅ varje utelämnad vinter.
+  - V4: blandningen är bättre än RÅ i norr och i söder i medel.
+- **Om villkoren håller:** kedjan byggs om till fysikens reserv, eftersom den levande tar långvågen ur MET. Ett paritetsprov körs
+  före deploy, och domen över 2027/28 får en egen förregistrering. Om något villkor inte håller står den frysta kvar, om den klarar
+  marsdomen, annars RÅ (#657).
+- **Bengts två val** görs före signeringen:
+  - X är (a) 0,25 procentenheter (förslag) eller (b) marginalen;
+  - marsdomen: (a) den nya tar platsen oavsett, eller (b) bara om den frysta faller, och annars går den nya i skugga 2027/28
+    (förslag).
+
+Inget utfall av den nya kandidaten finns. Indata för 2020-21 pågår, och 2021-22 återstår.
+
+**Stomdokument:** KUV §5 ersättningsregeln utkast
