@@ -57,6 +57,9 @@ const NYA: { namn: string; schema: string; fil: string }[] = [
   { namn: "puls-hojd-prov", schema: "0 7 * * 1", fil: "hojd-prov.yml" },
   { namn: "puls-grind-v-a", schema: "20 7 * * 1", fil: "grind-v-a.yml" },
   { namn: "puls-grind-v-b", schema: "40 7 * * 1", fil: "grind-v-b.yml" },
+  // DECISIONS #688 (Bengt 23/10): värdevakten efter måndagsserien. GitHub-cronen som lades till 20/10 (b3d72112) avfyrades
+  // aldrig den första måndagen, och mätvakten larmade 22/10 (#1161) — kort #160:s läxa gäller också den. ~1 min per körning.
+  { namn: "puls-vardevakten", schema: "0 8 * * 1", fil: "vardevakten.yml" },
   // Kort #340 (DECISIONS #534, Bengts plan via Axel 11/10): synkprovets bil tio minuter efter favoritprovet (:08/:38). Motorn längs de
   // 30 vägrutterna tar 5–9 s och föll på Supabases resurstak; i Actions är det gratis för det publika repot. ~1 min per körning.
   { namn: "puls-favoritprov-synk", schema: "18,48 * * * *", fil: "favoritprov-synk.yml" },
@@ -77,7 +80,7 @@ const NYA: { namn: string; schema: string; fil: string }[] = [
 // avaktiveras eller raderas ska larma, inte tyst falla ur bevakningslistan. Vakthunden kör i Deno
 // hos Supabase och kan inte importera den här filen, så talet är en KOPIA — kontraktsgrinden vaktar
 // att kopiorna bär samma värde, och raden under vaktar att värdet stämmer med listan ovan.
-const ANTAL_NYA = 18;
+const ANTAL_NYA = 19;
 if (NYA.length !== ANTAL_NYA) {
   console.error(`NYA har ${NYA.length} jobb men ANTAL_NYA säger ${ANTAL_NYA} — uppdatera båda, och vakthundens PULS_GOLV.`);
   process.exit(1);
