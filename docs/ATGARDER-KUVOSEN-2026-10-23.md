@@ -50,8 +50,8 @@
 | B8-21 | Ersättningsregeln, utkastet (B8-03) | Claude | **klar** — `docs/FORREGISTRERING-ERSATTNING-2027-28.md`, omskrivet efter Bengts val 23/10 (väg 2, X = 0,25); signaturerna står kvar (B8-03) | #690, #691 |
 | B8-22 | Radarns tal R 26/10: kurva 2 (39257448840, körd 13:20 UTC, inte 06:20 som #568 säger) är oläst; kurva 3 körs 06:20 UTC i morgonavbrottens fönster | Claude | öppen | |
 | B8-23 | Utfallet 2022/23 (#680) vid signaturerna för 2026/27, enligt §10 f | Claude, Bengt | öppen | |
-| B8-24 | Jämförelsen i den nya kandidatens samman prövar inte att populationerna är lika och skriver inte ut n (`provning.py`) | Claude | öppen | |
-| B8-25 | Artefakterna `kuvos-vintrar-2022-23` och `nykand-prov-*` sparas 90 dagar (till omkring 20/1 2027); saknas den frystas tiger samman | Claude | öppen | |
+| B8-24 | Jämförelsen i den nya kandidatens samman prövar inte att populationerna är lika och skriver inte ut n (`provning.py`) | Claude | **klar** — `skilda_populationer()`, två motprov; n skrevs redan ut (`matt.kort`) | #693 |
+| B8-25 | Artefakterna `kuvos-vintrar-2022-23` och `nykand-prov-*` sparas 90 dagar (till omkring 20/1 2027); saknas den frystas tiger samman | Claude | pågår — samman säger nu att jämförelsen saknas (#693); att artefakterna sparas längre återstår | |
 | B8-26 | Ett innehållsprov i publikvakten för namn som inte får stå i repot, på hashade ordpar så att provet inte själv bär namnet | Claude | öppen | |
 
 ## E. Övrigt

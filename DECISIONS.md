@@ -16967,3 +16967,28 @@ sha256 vid signeringen, före statusraden och signaturerna, är `15788047fc582f4
 - Inget utfall av den nya kandidaten var läst vid signeringen. Indata för 2020-21 pågår.
 
 **Stomdokument:** KUV §5 ersättningsregeln signerad, LIV den nya kandidaten i skugga bredvid den frysta
+
+## #693 (23/10 2026) Samman kontrollerar att den nya och den frysta har samma population innan 2022/23 jämförs (B8-24)
+
+**Bengts ord 23/10:** *"Ja, bygg kontrollen av populationen i samman (B8-24) i en PR innan den nya kandidaten når dit"*.
+
+**Vad som byggts:** `skilda_populationer()` i `fysik/ny_kandidat/provning.py`.
+- **Varför:** ersättningsregeln §2 (#692) säger att jämförelsen på 2022/23 bara gäller på samma punkter. Populationen bokförs bara
+  som antal, så kontrollen jämför antalen: stationer, punkter, norr och söder, och n i varje cell av RÅ, alltså totalt, norr,
+  söder, banden och månaderna.
+- **Är antalen lika** skrivs jämförelsen ut med raden *"Samma population"*.
+- **Skiljer de sig** skrivs ingen jämförelsetabell. Sammanfattningen säger *"gäller inte"* och listar skillnaderna, och båda ska då
+  räknas om på de gemensamma punkterna innan något jämförs.
+- **Saknas den frystas fil** sägs det nu i sammanfattningen. Förut tystnade samman (B8-25).
+
+**Prov:** självtestet `fysik/ny_kandidat/sjalvtest.py`, grönt lokalt på 104 s.
+- Med samma population skrivs jämförelsen ut.
+- **Två motprov fälls:** en punkt för mycket i en månad, och en station för mycket.
+
+**Låset vid förberedningen:** filen ligger inte i `KODEN` (`kedjan.py`). Inget som räknar en vinter ändras, och ingen förberedning
+behöver köras om. Inga mått och ingen tröskel ändras.
+
+**Rättat i åtgärdslistan:** B8-24:s andra halva ("n skrivs inte ut") var fel. `matt.kort()` har alltid skrivit ut n i
+jämförelsetabellen.
+
+**Stomdokument:** inga — en kontroll i koden som ersättningsregeln redan kräver, ingen handtext
