@@ -17,6 +17,9 @@ någon position lämnar telefonen automatiskt, med träffsäkerhet, falsklarm oc
 granskade och öppet redovisade** efter två vintrar, 2026/27 och 2027/28. Sökt av Bengt Lagerlöf som privatperson, med
 Föreningen Halkvakt som förvaltare av de öppna resultaten, rapporterad till Skyltfonden i april 2028.
 
+*↪ 23/10 (DECISIONS #683): föreningen bildades aldrig (#500) och kan inte förvalta resultaten. Halkvakt drivs av Bengt och Axel
+Lagerlöf som privatpersoner.*
+
 ## 2. "Klart" betyder (bedömningen §6.4, fastställd 29/9)
 
 1. Varje vinterlänk har gått hela kartans sekvens: publicerad · mätt i skuggan · villkoret ändrat · tre portar gröna.
@@ -32,6 +35,8 @@ Ansökan som skickas 30/9 är Axels V2 efter ändringslistan (DECISIONS #404): s
 privatperson, 413 000 kr i fem arbetspaket (AP1 utvärdering 141 000 varav blind bildklassning 15 000 · AP2 prognoslager 70 000 ·
 AP3 testförare 88 000 · AP4 oberoende granskning 60 000 · AP5 rapport och spridning 36 000 · drift 12 000 · resor 6 000; egen tid
 350 timmar = 245 000). Föreningen Halkvakt står inte som sökande men förvaltar de öppna resultaten efter projektet.
+
+*↪ 23/10 (DECISIONS #683): föreningen bildades aldrig (#500); Halkvakt drivs av Bengt och Axel Lagerlöf som privatpersoner.*
 
 | Mål | Vad vi lovat | Måttet eller tröskeln | När | Ägare |
 | :-- | :-- | :-- | :-- | :-- |

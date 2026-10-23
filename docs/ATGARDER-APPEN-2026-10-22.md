@@ -58,7 +58,7 @@ Förkortningar:
 
 | Nr | Brist | Ägare | Status | Stängd av |
 | :-- | :-- | :-- | :-- | :-- |
-| B5-24 | **Androids Betatest-spärr** före Google Plays produktion. Android kan inte känna igen ett testspår, så spärren blir en byggflagga: testbyggena har Betatest, och produktionens AAB byggs utan | Claude | pågår — PR #1159 (android.yml med betatest=false grönt, körning 39851429519) | |
+| B5-24 | **Androids Betatest-spärr** före Google Plays produktion. Android kan inte känna igen ett testspår, så spärren blir en byggflagga: testbyggena har Betatest, och produktionens AAB byggs utan | Claude | **klar** — PR #1159 sammanslagen 23/10 (b4f68bc6); android.yml med betatest=false grönt (39851429519) | PR #1159 |
 | B5-25 | **Byggnumret 33**, höjt i samma PR som den sista appändringen, efter #1029. Sedan TestFlight-flödet *ladda-upp* från main | Claude, efter Axels ja till #1029 | öppen | |
 | B5-26 | Spärren i favoriternas rapport (hålet i #677) | Claude | **klar** — PR #1156 | #679 |
 | B5-27 | iPhone-appen gick inte att bygga efter #677 (`SnapshotRepo.swift:28` utan `await`) | Claude | **klar** — PR #1156; prov-bygget i `testflight.yml` grönt | #679 |
