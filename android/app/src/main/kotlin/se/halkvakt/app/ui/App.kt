@@ -135,6 +135,19 @@ fun HalkvaktApp(activity: MainActivity) {
                 label = "varningskort",
             ) { w -> if (w != null) WarningCardScreen(w.card) }
         }
+        // Förklaringen FÖRE Androids behörighetsruta (Plays krav på tydlig redogörelse; iOS har den i introduktionen).
+        val d by activity.disclosure.collectAsStateWithLifecycle()
+        d?.let { dis ->
+            AlertDialog(
+                onDismissRequest = { activity.disclosure.value = null },
+                containerColor = Yta, titleContentColor = Text, textContentColor = Dis,
+                title = { Text(dis.titel, fontFamily = Typo.sans, fontWeight = FontWeight.SemiBold) },
+                text = { Text(dis.text, fontFamily = Typo.sans, fontSize = 15.sp, lineHeight = 22.sp) },
+                // "Fortsätt", inte "Tillåt": själva valet görs i Androids ruta (samma regel som Apple 5.1.1(iv) på iOS).
+                confirmButton = { TextButton({ activity.disclosure.value = null; dis.onFortsatt() }) { Text("Fortsätt", color = Gul, fontWeight = FontWeight.Bold) } },
+                dismissButton = { TextButton({ activity.disclosure.value = null }) { Text("Inte nu", color = Dis) } },
+            )
+        }
     }
 }
 

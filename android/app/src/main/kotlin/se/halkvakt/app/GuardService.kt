@@ -59,7 +59,9 @@ class GuardService : Service() {
     private var guard: Guard? = null
     private lateinit var fused: FusedLocationProviderClient
     private var tts: TextToSpeech? = null
-    private var ttsReady = false
+    @Volatile private var ttsReady = false
+    /** Det som sades innan talmotorn var klar (gammal data direkt vid start) — talas så fort den är det, aldrig tappat. */
+    @Volatile private var pendingSpeech: String? = null
     private lateinit var audio: AudioManager
     private var focusRequest: AudioFocusRequest? = null
     private val snapshotSchedule = SnapshotSchedule()   // #218: one load at a time, a minute's wait after a failure
@@ -76,15 +78,16 @@ class GuardService : Service() {
         scope.launch { Prefs.disabledKinds(this@GuardService).collect { disabledKinds = it } }
         tts = TextToSpeech(this) { status ->
             if (status == TextToSpeech.SUCCESS) {
-                tts?.language = Locale("sv", "SE")
+                // A missing Swedish voice used to fail silently (or read Swedish with an English voice).
+                voiceProblem.value = Voice.problem(tts?.setLanguage(Locale("sv", "SE")) ?: TextToSpeech.LANG_NOT_SUPPORTED)
                 // Navigation-guidance stream: routes correctly over car Bluetooth and
                 // follows the navigation volume the driver already trusts, not media.
-                tts?.setAudioAttributes(
-                    AudioAttributes.Builder()
-                        .setUsage(AudioAttributes.USAGE_ASSISTANCE_NAVIGATION_GUIDANCE)
-                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-                        .build())
+                tts?.setAudioAttributes(Voice.ATTRS)
                 ttsReady = true
+                pendingSpeech?.let { pendingSpeech = null; speak(it) }
+            } else {
+                voiceProblem.value = Voice.NO_ENGINE
+                AlertBus.post(Voice.NO_ENGINE)
             }
         }
         tts?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
@@ -95,7 +98,7 @@ class GuardService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        startForeground(NOTIF_ID, buildNotification("Halkvakt aktiv — inga varningar just nu"))
+        startForeground(NOTIF_ID, buildNotification(IDLE_TEXT))
         running = true
         prevLon = Double.NaN; prevLat = Double.NaN
         session.value = Session(startedAt = System.currentTimeMillis())
@@ -220,21 +223,17 @@ class GuardService : Service() {
     }
 
     private fun speak(text: String) {
-        if (!ttsReady) return
+        if (!ttsReady) { pendingSpeech = text; return }
         requestFocus()
         tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "hv-${System.nanoTime()}")
     }
 
     private fun requestFocus() {
-        val attrs = AudioAttributes.Builder()
-            .setUsage(AudioAttributes.USAGE_ASSISTANCE_NAVIGATION_GUIDANCE)
-            .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-            .build()
         val fr = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK)
-            .setAudioAttributes(attrs).build()
+            .setAudioAttributes(Voice.ATTRS).build()
         focusRequest = fr
         audio.requestAudioFocus(fr)
-        tts?.setAudioAttributes(attrs)
+        tts?.setAudioAttributes(Voice.ATTRS)
     }
 
     private fun abandonFocus() { focusRequest?.let { audio.abandonAudioFocusRequest(it) } }
@@ -256,14 +255,21 @@ class GuardService : Service() {
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setContentIntent(pi)
             .setOngoing(true)
+            .setVisibility(Notification.VISIBILITY_PUBLIC)
             .addAction(0, "Avsluta vakten", stoppa)
+            .apply { if (Build.VERSION.SDK_INT >= 31) setForegroundServiceBehavior(Notification.FOREGROUND_SERVICE_IMMEDIATE) }
             .build()
     }
+
+    private var idleReset: kotlinx.coroutines.Job? = null
 
     private fun updateNotification(text: String) {
         val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         nm.notify(NOTIF_ID, buildNotification(text))
         headsUp(nm, text)
+        // The ongoing notification used to keep the last warning forever; back to idle when the banner goes.
+        idleReset?.cancel()
+        idleReset = scope.launch { kotlinx.coroutines.delay(HEADS_UP_MS); if (running) nm.notify(NOTIF_ID, buildNotification(IDLE_TEXT)) }
     }
 
     // #23: heads-up-varningen. Egen kanal med IMPORTANCE_HIGH så bannern lägger sig ÖVER
@@ -289,6 +295,7 @@ class GuardService : Service() {
                 .setContentText(text)
                 .setSmallIcon(android.R.drawable.ic_dialog_alert)
                 .setCategory(Notification.CATEGORY_NAVIGATION)
+                .setVisibility(Notification.VISIBILITY_PUBLIC)
                 .setContentIntent(pi)
                 .setAutoCancel(true)
                 .setTimeoutAfter(HEADS_UP_MS)
@@ -382,6 +389,9 @@ class GuardService : Service() {
         private const val HEADS_UP_CH = "heads_up"
         private const val HEADS_UP_ID = 2
         private const val HEADS_UP_MS = 8_000L  // samma 8 s som helskärmskortet
+        private const val IDLE_TEXT = "Halkvakt vaktar — inga varningar just nu"
+        /** Null = rösten fungerar. Annars raden som visas på Redo och under Rösten. */
+        val voiceProblem = MutableStateFlow<String?>(null)
         /** UI observerar; autostart-limmet läser var-formen. Flow är sanningen. */
         val runningFlow = MutableStateFlow(false)
         val snapshotInfo = MutableStateFlow<String?>(null)

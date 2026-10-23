@@ -49,11 +49,11 @@
 
 | Nr | Fråga | Status | Stängd av |
 | :-- | :-- | :-- | :-- |
-| B6-23 | Vem äger domänen halkvakt.se? Kortets Verify kräver att ägaren bokförs (TAVLA, kortet om namnet och domänen) | öppen | |
-| B6-24 | Är varumärket sökt hos PRV? | öppen | |
-| B6-25 | Är Search Console uppsatt? DNS har två verifieringsposter | öppen | |
-| B6-26 | PR #1088 (besöksräknaren) använder DECISIONS #645 och sql/064, som båda redan är upptagna på main | öppen | |
-| B6-27 | PR #1056 (MCP-servern i drift) är inte sammanslagen sedan 17/10 | öppen | |
+| B6-23 | Vem äger domänen halkvakt.se? Kortets Verify kräver att ägaren bokförs (TAVLA, kortet om namnet och domänen) | **klar** — *"axel"* (Bengt 23/10); förnyelsedatumet är inte bokfört och står på Axels lista | #685 |
+| B6-24 | Är varumärket sökt hos PRV? | öppen — *"axel äger men ingen åtgärd ännu"* (Bengt 23/10) | |
+| B6-25 | Är Search Console uppsatt? DNS har två verifieringsposter | **klar** — uppsatt: Axel läste 111 exponeringar och 2 klick på ett dygn 20/10 (#684) | #684 |
+| B6-26 | PR #1088 (besöksräknaren) använder DECISIONS #645 och sql/064, som båda redan är upptagna på main | **klar** — *"gör besöksräknaren"* (Bengt 23/10): omnumrerad till #684 och sql/067, PR #1088 | #684 |
+| B6-27 | PR #1056 (MCP-servern i drift) är inte sammanslagen sedan 17/10 | öppen — på Axels lista (Bengt 23/10) | |
 | B6-28 | Läget i Google Play: se B5-36 i åtgärdslistan för Appen | öppen | |
 
 ## E. Övrigt
@@ -65,3 +65,6 @@
 | B6-31 | `marknadsforing/butik/butikstext.md` (Play) säger fortfarande "ingen spårning" och "aldrig", och saknar meningen om sparade resor som iOS-texten fick (#616, #625) | Claude | öppen | |
 | B6-32 | `docs/BETAGUIDE-ANDROID.md` säger inget om att Betatest bara finns i testbyggen (#681, PR #1159) | Claude | öppen | |
 | B6-33 | PRODUKTBOK: raden "Android (CI)" är gammal, och (25) saknas eftersom det ersattes av (26) innan något byggdes | Claude | öppen | |
+| B6-34 | hej@halkvakt.se: tar brevlådan emot post? | Bengt | **klar** — *"fungerar"* (Bengt 23/10) | #685 |
+| B6-35 | Lösenorden till Facebook, Instagram och X | Axel | **klar** — *"axel har ansvar för denna"* (Bengt 23/10); var de förvaras skrivs aldrig i repot | #685 |
+| B6-36 | Pressrubriken vid Skyltfondens besked ställde Halkvakt mot Trafikverket | Claude | **klar** — *"ändra så att texten är mer neutral"* (Bengt 23/10): ny rubrik i marknadsplanen, alternativen i chatten | #685 |

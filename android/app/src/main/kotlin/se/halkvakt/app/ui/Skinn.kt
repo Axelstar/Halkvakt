@@ -15,6 +15,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -276,6 +278,7 @@ fun RedoScreen(activity: MainActivity, overst: @Composable () -> Unit) {
         }
         Spacer(Modifier.height(32.dp))
         YellowPill("Starta vakten", play = true) { activity.onToggle() }
+        Problemrader(activity)
         MonoLabel(if (tur.isEmpty()) "Ingen tur än" else "${tur.size} ${if (tur.size == 1) "varning" else "varningar"} · visas tills nästa tur",
             Muted2, modifier = Modifier.padding(top = 16.dp))
     }
@@ -304,6 +307,27 @@ private fun Kvitto(tur: List<AlertEntry>, start: Long, slut: Long, km: Float) {
     }
 }
 
+/**
+ * Det som förut bara gick till en logg ingen skärm visade (AppEvents): varför vakten inte startade, och om rösten saknas.
+ * Motsvarar iOS LocationDeniedRow — en rad med en väg vidare, ingen dialog.
+ */
+@Composable
+fun Problemrader(activity: MainActivity) {
+    val notice by activity.notice.collectAsStateWithLifecycle()
+    val voice by GuardService.voiceProblem.collectAsStateWithLifecycle()
+    notice?.let { ProblemRad(it, "Öppna inställningar") { activity.openAppSettings() } }
+    voice?.let { ProblemRad(it, "Text till tal") { activity.openVoiceSettings() } }
+}
+
+@Composable
+private fun ProblemRad(text: String, lank: String, onClick: () -> Unit) {
+    Column(Modifier.padding(top = 18.dp).widthIn(max = 300.dp), horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Text(text, color = Text2, fontFamily = Typo.sans, fontSize = 14.sp, lineHeight = 20.sp, textAlign = TextAlign.Center)
+        MonoLink(lank, onClick)
+    }
+}
+
 /* ---------- 02 PÅ VAKT ---------- */
 
 @Composable
@@ -328,7 +352,9 @@ fun PaVaktScreen(activity: MainActivity) {
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp)) {
             DesignTopBar("På", Brand.green)
             Column(Modifier.padding(top = 12.dp).fillMaxWidth().background(Brand.panel, RoundedCornerShape(18.dp)).padding(20.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                // Långtryck en halv sekund = ett provkort i 8 s utan röst, som på iOS (kort #280): granskaren ser en varning utan att köra.
+                Row(Modifier.fillMaxWidth().height(28.dp).pointerInput(Unit) { detectTapGestures(onLongPress = { activity.demoWarning() }) },
+                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Box(Modifier.size(7.dp).background(Brand.green, CircleShape)); MonoLabel("På vakt", Brand.green)
                 }
                 Row(Modifier.padding(top = 14.dp), horizontalArrangement = Arrangement.spacedBy(22.dp), verticalAlignment = Alignment.Bottom) {
@@ -538,6 +564,7 @@ private fun Undersida(sida: Sida, activity: MainActivity, open: (Sida) -> Unit, 
                 RowPanel { GreenToggleRow("Vaknar själv när du kör", "Startar när telefonen märker att du åker bil, direkt om bilens Bluetooth kopplas",
                     autostart) { activity.onAutostartToggle() } }
                 MonoLabel("Stoppar själv efter 15 min parkerad", Muted2, modifier = Modifier.padding(top = 16.dp, start = 4.dp))
+                Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) { Column(horizontalAlignment = Alignment.CenterHorizontally) { Problemrader(activity) } }
             }
             Sida.ROSTEN -> {
                 SidRubrik("Rösten", "Halkvakt talar med systemets svenska röst.")
@@ -548,7 +575,10 @@ private fun Undersida(sida: Sida, activity: MainActivity, open: (Sida) -> Unit, 
                             .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)) } }
                         .padding(horizontal = 20.dp, vertical = 16.dp))
                 Box(Modifier.fillMaxWidth().padding(top = 32.dp), contentAlignment = Alignment.Center) {
-                    YellowPill("Testa rösten", play = true) { activity.testVoice() }
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        YellowPill("Testa rösten", play = true) { activity.testVoice() }
+                        Problemrader(activity)
+                    }
                 }
             }
             Sida.BETATEST -> {
