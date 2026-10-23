@@ -18,6 +18,9 @@ Prövar:
      jobbet, prövningen av ett veck — parvalet står still när den utelämnade vinterns mätningar och skattningar ändras men rör sig när en
      träningsvinters gör det, och en skattning med fel summa fälls —, den slutligas par och samman med kandidatfilen (bara aggregat).
      Enheterna utom den tränade får påhittade skattningar: prövningen läser bara skattningen, inte hur den räknades.
+  7. tillägget (docs/FORREGISTRERING-NY-KANDIDAT-TILLAGG-2026-10-23.md): T1 — SMHI:s station 7 tas ur listan innan paren väljs, och
+     en station 7 med klockan en timme fel fäller provet utan T1 men inte med; tidszon.py är orörd; T2 — fyllningens listor summeras
+     per vinter och redovisas i förberedningens markdown.
 """
 import contextlib, copy, glob, gzip, importlib.util, io, json, math, os, shutil, subprocess, sys, tempfile, time, types
 import numpy as np
@@ -432,6 +435,8 @@ def hela(d, ind):
         k(rk == 0 and s['klarat'] and s['tidszon_klarat'] and s['data_klarat'] and s['prov']['smhi']['klarat'] and s['prov']['sommartid']['klarat']
           and s['prov']['metnordic']['klarat'] and s['prov']['ecmwf']['klarat'] and s['kod'] == kedjan.kodsummor(), f"förberedningen av {v}: {rk} {s.get('stopp')} {s['prov']['metnordic'].get('andel_saknad')}")
         k('Sommartidsnatten' in open(os.path.join(prov, f'prov_{v}.md'), encoding='utf-8').read(), f'förberedningens markdown för {v}')
+        k(s['prov']['smhi'].get('uteslutna') == forbered.UTESLUTNA_SMHI and s['prov']['metnordic'].get('fyllt', {}).get('delar') == 0,
+          f"förberedningen av {v} redovisar T1 (uteslutna SMHI-stationer) och T2 (inga fyllningslistor här)")
     # Planen: utan identitetsprovet läses ingenting; med det klarat men 2024/25:s eget prov fallet tas 2024/25 bort.
     try:
         trana.plan(trana.las_prov(prov)); k(False, 'planen gick utan identitetsprovet')
@@ -603,15 +608,59 @@ def hela(d, ind):
       f"en station för mycket fäller jämförelsen ({j.get('skillnader')})")
 
 
+def tillagget(d):
+    """T1 och T2: SMHI:s station 7 bort ur listan (och provet med en station 7 vars klocka går en timme fel), fyllningens listor."""
+    import tidszon
+    # T1: listan. Station 7 ligger närmast VViS-stationen; med den räknas paret mot den, utan den mot nästa.
+    cache = os.path.join(d, 'smhi'); os.makedirs(cache, exist_ok=True)
+    lat, lon = float(vs.LAT[0]), float(vs.LON[0])
+    stationer = [{'key': '7', 'name': 'Gävle', 'latitude': lat + 0.005, 'longitude': lon, 'from': 0, 'to': 2e12},
+                 {'key': 107420, 'name': 'Gävle A', 'latitude': lat + 0.03, 'longitude': lon, 'from': 0, 'to': 2e12}]
+    json.dump({'station': stationer}, open(os.path.join(cache, 'smhi_p1.json'), 'w', encoding='utf-8'))
+    li = forbered.smhi_lista(cache)
+    k([s['key'] for s in li['station']] == [107420] and forbered.UTESLUTNA_SMHI.keys() == {'7'},
+      f"T1: station 7 tas ur SMHI:s lista, inget annat: {[s['key'] for s in li['station']]}")
+    # Provet: VViS-luften för en station; station 7 en timme efter (stämplad i normaltid), Gävle A rätt.
+    t = pd.date_range('2019-11-01', '2019-11-20', freq='h')
+    L = luften_v(t)[:, 0]
+    luft = pd.DataFrame({'sid': SIDS[0], 'lokal': t.tz_localize('UTC').tz_convert('Europe/Stockholm').tz_localize(None), 'luft': L})
+    st = pd.DataFrame({'sid': [SIDS[0]], 'lon': [lon], 'lat': [lat]})
+    def serie(nyckel, skift):
+        rader = ['Datum;Tid (UTC);Lufttemperatur;Kvalitet;;Tidsutsnitt:']
+        rader += [f"{(x + pd.Timedelta(hours=skift)).strftime('%Y-%m-%d;%H:%M:%S')};{L[j] + 0.05 * math.sin(3 * j):.1f};G" for j, x in enumerate(t)]
+        open(os.path.join(cache, f'smhi_{nyckel}.csv'), 'w', encoding='utf-8').write('\n'.join(rader) + '\n')
+    serie('7', 1); serie(107420, 0)
+    fran, till = pd.Timestamp('2019-11-01').to_pydatetime(), pd.Timestamp('2019-11-20').to_pydatetime()
+    utan_t1 = tidszon.provet(luft, st, fran, till, cache)
+    med_t1 = tidszon.provet(luft, st, fran, till, cache, lista=li)
+    k([(p['smhi'], p['bast']) for p in utan_t1['par']] == [('7', 1)] and [(p['smhi'], p['bast']) for p in med_t1['par']] == [(107420, 0)],
+      f"T1: paret tas mot station 7 (topp +1 h) utan tillägget och mot Gävle A (0 h) med det: {[(p['smhi'], p['bast']) for p in utan_t1['par']]} "
+      f"{[(p['smhi'], p['bast']) for p in med_t1['par']]}")
+    tz = text('fysik/vintrar/tidszon.py')
+    k('MAX_KM, PER_BAND, MIN_PAR = 8, 2, 5' in tz and 'klarat = len(par) >= MIN_PAR and all(p["bast"] == 0 for p in par)' in tz
+      and "'7'" not in tz, 'T1: tidszon.py är orörd (regeln, avståndet och paren per band), uteslutningen ligger i forbered.py')
+    k('tidszon.provet(luft, st, v[\'fran\'], v[\'till\'], a.smhi, lista=smhi_lista(a.smhi))' in text('fysik/ny_kandidat/forbered.py'),
+      'T1: förberedningen ger provet den filtrerade listan')
+    # T2: fyllningens listor per vinter.
+    lista = lambda n, **x: {'saknade_fore': [f't{i}' for i in range(n)], 'ur_arkivet': [], 'ur_v4': [], 'saknas_i_bada': [], **x}
+    f1, f2 = os.path.join(d, 'fyllt_a.json'), os.path.join(d, 'fyllt_b.json')
+    json.dump(lista(3, ur_v4=['t0', 't1'], saknas_i_bada=['t2']), open(f1, 'w', encoding='utf-8'))
+    json.dump(lista(1, ur_arkivet=['t0']), open(f2, 'w', encoding='utf-8'))
+    su = forbered.fyllt_summa([f1, f2, os.path.join(d, 'finns_inte.json')])
+    k(su == {'delar': 2, 'saknade_fore': 4, 'ur_arkivet': 1, 'ur_v4': 2, 'saknas_i_bada': 1} and forbered.fyllt_summa(None)['delar'] == 0,
+      f'T2: listorna summeras per vinter, en lista som saknas räknas inte: {su}')
+
+
 if __name__ == '__main__':
     print(f'prövar {", ".join(m.__file__ for m in (kedjan, provning, trana, forbered, sparren))}', flush=True)
     with tempfile.TemporaryDirectory() as d:
         _BAS['_rot'] = os.path.join(d, 'bas')
-        for i in range(1, 7): os.makedirs(os.path.join(d, str(i)))
+        for i in range(1, 8): os.makedirs(os.path.join(d, str(i)))
         ind = None
         for namn, steg in (('reserven', lambda: reserven(os.path.join(d, '1'))), ('vinden', lambda: vinden(os.path.join(d, '2'), ind)),
                            ('vecken', lambda: vecken(os.path.join(d, '3'), ind)), ('spärren', lambda: sparren_(os.path.join(d, '4'))),
-                           ('måtten', lambda: mattet(os.path.join(d, '5'))), ('hela kedjan', lambda: hela(os.path.join(d, '6'), ind))):
+                           ('måtten', lambda: mattet(os.path.join(d, '5'))), ('hela kedjan', lambda: hela(os.path.join(d, '6'), ind)),
+                           ('tillägget', lambda: tillagget(os.path.join(d, '7')))):
             t = time.time(); r = steg()
             if namn == 'reserven': ind = r
             print(f'  {namn}: {time.time() - t:.1f} s', flush=True)
@@ -620,4 +669,4 @@ if __name__ == '__main__':
     print(f'✓ självtest ({time.time() - T0:.0f} s): långvågen alltid ur reserven (MET:s kolumn påverkar ingenting), vinden ur x och y, '
           'enheterna och staplingen (bit för bit som vintern ensam), en utelämnad vinter utan mätningar och vägran när dess filer finns, '
           'parvalet orört av den utelämnade vintern, spärren mot en osignerad förregistrering, måtten som matt.py:s och parvalet som '
-          'timme():s, och hela kedjan från förberedningen till kandidatfilen')
+          'timme():s, hela kedjan från förberedningen till kandidatfilen, och tillägget (T1: station 7 ur SMHI:s lista, T2: fyllningens listor)')

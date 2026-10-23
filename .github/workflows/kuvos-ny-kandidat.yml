@@ -6,6 +6,9 @@ name: kuvos-ny-kandidat
 #                 — bara öppna data, aldrig VViS. En del som redan finns hoppas över, också den frysta kedjans metnordic_analys_-del för
 #                 en vinter med vindhastigheten (samma rutor och sex fält; långvågen töms vid läsningen). 2024/25 hämtas inte: kuvösens
 #                 releaser kuvos-fysik-indata-2024-25 och kuvos-metnordic-2024-25.
+#   fyll          tillägget T2 (docs/FORREGISTRERING-NY-KANDIDAT-TILLAGG-2026-10-23.md): timmar som MET:s arkiv saknar i vinterns delar
+#                 frågas i arkivet igen och tas annars ur MET:s omräkning v4 (metpparchivev4); metnordic_fylld_<del> och fyllt_<del>.json
+#                 läggs bredvid originalen i releasen, som står kvar. En vinter i taget, en hämtning åt gången.
 #   forberedning  per vinter (sex jobb): identitetsprovet på 2024/25, tidszonen (sommartidsnatten och SMHI), MET- och ECMWF-provet och
 #                 summorna (fysik/ny_kandidat/forbered.py); artefakten nykand-prov-<vinter> bär bara aggregat och summor.
 #   traning       planen ur förberedningarna (en vinter vars tidszonsprov fallit tas bort ur alla prov, §4; allt annat som saknas
@@ -22,9 +25,9 @@ on:
   workflow_dispatch:
     inputs:
       steg:
-        description: "indata (en äldre vinter) → forberedning → traning → provning (bakom spärren) → samman"
+        description: "indata (en äldre vinter) → fyll (T2) → forberedning → traning → provning (bakom spärren) → samman"
         type: choice
-        options: ["indata", "forberedning", "traning", "provning", "samman"]
+        options: ["indata", "fyll", "forberedning", "traning", "provning", "samman"]
         default: "forberedning"
       vinter:
         description: "bara för indata: vintern som hämtas"
@@ -186,6 +189,57 @@ jobs:
           gh release upload "$REL" "mnr/$FIL"
           { echo '```'; ls -l "mnr/$FIL"; sha256sum "mnr/$FIL"; cat "mnr/sammanfattning_${{ matrix.del.fran }}_${{ matrix.del.till }}.json"; echo '```'; } | tee -a "$GITHUB_STEP_SUMMARY"
 
+  # ── fyll (tillägget T2) ───────────────────────────────────────────────────────────────────────────────────────────────────────────
+  # Vinterns delar ur releasen (fysik/ny_kandidat/metnordic_reserv.ts --valj); för varje del en metnordic_fylld_<del>: de timmar som
+  # saknas frågas i arkivet igen och tas annars ur v4, en hämtning åt gången. En del som redan är fylld hoppas över. Bara öppna data.
+  fyll-metnordic:
+    if: ${{ inputs.steg == 'fyll' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    permissions: { contents: write }
+    strategy:
+      max-parallel: 1
+      fail-fast: false
+      matrix:
+        vinter: ["2018-19", "2019-20", "2020-21", "2021-22", "2022-23"]
+    env: { GH_TOKEN: "${{ github.token }}", VINTER: "${{ matrix.vinter }}", REL: "kuvos-vintrar-${{ matrix.vinter }}" }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Självtestet, rutorna (kuvos-metnordic-2024-25) och stationerna (kuvos-fysik-indata-2024-25), summorna mot manifesten
+        shell: bash
+        run: |
+          node --experimental-strip-types fysik/ny_kandidat/metnordic_reserv.ts --sjalvtest 2>&1 | grep -v ExperimentalWarning
+          mkdir -p mn indata && gh release download kuvos-metnordic-2024-25 --dir mn --pattern metnordic_stationer.csv
+          gh release download kuvos-fysik-indata-2024-25 --dir indata
+          node -e '
+            const c = require("crypto"), fs = require("fs"); let fel = 0;
+            const prova = (fil, sha) => { const h = c.createHash("sha256").update(fs.readFileSync(fil)).digest("hex"); console.log(`${fil}: ${h === sha ? "ok" : "FEL " + h}`); if (h !== sha) fel++; };
+            prova("mn/metnordic_stationer.csv", require("./kuvos/metnordic-leverans.json").filer.find((f) => f.fil === "metnordic_stationer.csv").sha256);
+            for (const f of require("./kuvos/fysik-indata-leverans.json").filer) prova("indata/" + f.fil, f.sha256);
+            process.exit(fel ? 1 : 0);'
+          mkdir -p frusen && for f in indata/*.tar.gz; do tar -xzf "$f" -C frusen; done
+          if [ -d frusen/data ]; then mv frusen/data/* frusen/ && rmdir frusen/data; fi
+      - name: Fyllningen, del för del
+        shell: bash
+        run: |
+          set -o pipefail
+          gh release download "$REL" --dir rel --pattern 'metnordic_*.csv.gz'
+          node --experimental-strip-types fysik/ny_kandidat/metnordic_reserv.ts --valj "$VINTER" rel > delar.txt
+          { echo '```'; while read -r f; do
+              case "$(basename "$f")" in metnordic_fylld_*) echo "$(basename "$f") finns redan — hoppas över"; continue;; esac
+              node --experimental-strip-types fysik/ny_kandidat/metnordic_reserv.ts --fyll "$f" ut --vinter "$VINTER" \
+                --rutor mn/metnordic_stationer.csv --stationer frusen/stations.csv < /dev/null || exit 1
+            done < delar.txt; echo '```'; } 2>&1 | grep --line-buffered -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Till releasen, bredvid originalen
+        shell: bash
+        run: |
+          shopt -s nullglob; F=(ut/metnordic_fylld_*.csv.gz ut/fyllt_*.json)
+          [ ${#F[@]} -gt 0 ] || { echo "inget nytt att ladda upp"; exit 0; }
+          gh release upload "$REL" "${F[@]}"
+          { echo '```'; (cd ut && sha256sum ./*); echo '```'; } | tee -a "$GITHUB_STEP_SUMMARY"
+
   # ── forberedning ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
   forberedning:
     if: ${{ inputs.steg == 'forberedning' }}
@@ -267,9 +321,13 @@ jobs:
             cp -r frusen/ifs "v/$VINTER/ifs"; cp mn2425/metnordic_2024-25.csv.gz "v/$VINTER/metnordic/"
           else
             gh release download "kuvos-vintrar-$VINTER" --dir rel --pattern "ifs_$VINTER.tar.gz" --pattern 'metnordic_*.csv.gz'
+            gh release download "kuvos-vintrar-$VINTER" --dir rel --pattern 'fyllt_*.json' 2>/dev/null || echo "inga fyllningslistor (T2) i releasen"
             tar -xzf "rel/ifs_$VINTER.tar.gz" -C "v/$VINTER"
             node --experimental-strip-types fysik/ny_kandidat/metnordic_reserv.ts --valj "$VINTER" rel > delar.txt
-            while read -r f; do cp "$f" "v/$VINTER/metnordic/"; done < delar.txt
+            mkdir -p "v/$VINTER/fyllt"
+            while read -r f; do cp "$f" "v/$VINTER/metnordic/"
+              case "$(basename "$f")" in metnordic_fylld_*) b=$(basename "$f" .csv.gz); cp "rel/fyllt_${b#metnordic_fylld_}.json" "v/$VINTER/fyllt/";; esac
+            done < delar.txt
             { echo '```'; (cd rel && sha256sum ./*.gz); echo "ECMWF: $(ls "v/$VINTER/ifs" | wc -l) stationer; MET Nordic: $(wc -l < delar.txt) delar"; echo '```'; } | tee -a "$GITHUB_STEP_SUMMARY"
             rm -rf rel
           fi
@@ -279,6 +337,7 @@ jobs:
           set -o pipefail
           ARGS=(--vinter "$VINTER" --indata frusen --vvis "hink/$VINTER" --ifs "v/$VINTER/ifs" --metnordic v/$VINTER/metnordic/*.csv.gz --smhi smhi --arbete arbete --ut ut)
           if [ "$VINTER" = "2024-25" ]; then ARGS+=(--kandidat kuvos/kandidat-2026-27.json --modell modell.pkl --urvalet-metnordic "v/$VINTER/metnordic/metnordic_2024-25.csv.gz"); fi
+          shopt -s nullglob; FY=(v/$VINTER/fyllt/*.json); if [ ${#FY[@]} -gt 0 ]; then ARGS+=(--fyllt "${FY[@]}"); fi
           RC=0; python3 fysik/ny_kandidat/forbered.py "${ARGS[@]}" 2>&1 | tee forberedning.txt || RC=$?
           cat ut/*.md >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
           rm -rf arbete hink modell.pkl

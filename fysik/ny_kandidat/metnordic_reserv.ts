@@ -15,12 +15,15 @@
 //           node --experimental-strip-types fysik/ny_kandidat/metnordic_reserv.ts --valj <vinter> <mapp>      delarnas filer i mappen
 //           node --experimental-strip-types fysik/ny_kandidat/metnordic_reserv.ts --hamta <utmapp> <fran> <till> --vinter <vinter>
 //                --rutor <metnordic_stationer.csv> --stationer <stations.csv>
+//           node --experimental-strip-types fysik/ny_kandidat/metnordic_reserv.ts --fyll <del.csv.gz> <utmapp> --vinter <vinter>
+//                --rutor <metnordic_stationer.csv> --stationer <stations.csv>     tillägget T2: saknade timmar ur arkivet igen, annars v4
 // Självtest: node --experimental-strip-types fysik/ny_kandidat/metnordic_reserv.ts --sjalvtest        (i ci.yml)
 // Källa: MET Norway, MET Nordic (NLOD / CC BY 4.0), https://thredds.met.no/thredds/catalog/metpparchive/catalog.html
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, renameSync, writeFileSync } from "node:fs";
 import { gzipSync, gunzipSync } from "node:zlib";
-import { join } from "node:path";
+import { basename, join } from "node:path";
 import { tmpdir } from "node:os";
+import { createHash } from "node:crypto";
 import { FALT, varde, dagar } from "../../kuvos/metnordic-prognos.ts";
 import { rutorUrFil, rutan, hamtaTolkat, avkortade, dapSvar, type Hamtare } from "../../ingest/metnordic-live.ts";
 import { filnamnArkiv, RUBRIK_ANALYS } from "../../ingest/metnordic-historik.ts";
@@ -93,30 +96,43 @@ export async function forprov(vinter: string, h: Hamtare = hamta, rutnat = RUTNA
   return { fel, lage, medLangvag };
 }
 
+/** MET:s omräkning version 4 (metpparchivev4, "Rerun version 4", 2012–2025): samma filnamn och rutnät som arkivet (tillägget T2). */
+export const filnamnV4 = (dag: string, timme: number) => filnamnArkiv(dag, timme).replace("/metpparchive/", "/metpparchivev4/");
+
+/** En timmes rader i analysfilens form ur filen (arkivets eller v4:s): varje station i sin ruta, långvågen tom, vinden enligt läget.
+ *  null när timmen saknas (404). */
+async function timmensRader(fil: string, dag: string, t: number, r: { id: string; y: number; x: number }[], box: ReturnType<typeof rutan>,
+  lage: "fart" | "xy", h: Hamtare, paus: number) {
+  const falt = faltFor(lage);
+  const urval = falt.map((f) => `${f}.${f}${encodeURIComponent(`[0:0][${box.y0}:${box.y1}][${box.x0}:${box.x1}]`)}`).join(",");
+  const svar = await hamtaTolkat(`${fil}?${urval}`, `${dag} ${t}Z`, h, paus);
+  if (!svar) return null;
+  const fm = new Map(svar.falt.map((f) => [f.namn, f]));
+  for (const f of falt) {
+    const x = fm.get(f); if (!x) throw new Error(`${dag} ${t}Z: fältet ${f} saknas i svaret`);
+    if (x.dims.join() !== `1,${box.by},${box.bx}`) throw new Error(`${dag} ${t}Z: ${f} har ${x.dims} — rutnätet har ändrats`);
+  }
+  const tid = `${dag}T${String(t).padStart(2, "0")}:00:00Z`;
+  const rader: string[] = [];
+  for (const p of r) {
+    const i = (p.y - box.y0) * box.bx + (p.x - box.x0);
+    const v = (f: string) => fm.get(f)!.data[i];
+    const kol: Record<string, string> = { langvag_jm2: "" };
+    for (const f of falt) if (KOL.has(f)) kol[KOL.get(f)!] = varde(KOL.get(f)!, v(f));
+    if (lage === "xy") kol.vind10_ms = varde("vind10_ms", hastighet(v("x_wind_10m"), v("y_wind_10m")));
+    rader.push(`${p.id},${tid},${KOLUMNER.map((k) => { if (!(k in kol)) throw new Error(`kolumnen ${k} saknar fält`); return kol[k]; }).join(",")}`);
+  }
+  return { rader, byte: svar.byte, ms: svar.ms };
+}
+
 /** Ett dygns rader i analysfilens form: 24 timmar, varje station i sin ruta; långvågen tom, vinden enligt läget. */
 export async function dygnReserv(dag: string, r: { id: string; y: number; x: number }[], box: ReturnType<typeof rutan>, lage: "fart" | "xy",
   h: Hamtare, paus: number) {
-  const falt = faltFor(lage);
-  const urval = falt.map((f) => `${f}.${f}${encodeURIComponent(`[0:0][${box.y0}:${box.y1}][${box.x0}:${box.x1}]`)}`).join(",");
   const rader: string[] = []; let saknade = 0, byte = 0, ms = 0;
   for (let t = 0; t < 24; t++) {
-    const svar = await hamtaTolkat(`${filnamnArkiv(dag, t)}?${urval}`, `${dag} ${t}Z`, h, paus);
+    const svar = await timmensRader(filnamnArkiv(dag, t), dag, t, r, box, lage, h, paus);
     if (!svar) { saknade++; console.log(`  saknas i arkivet: ${dag} ${String(t).padStart(2, "0")}Z`); continue; }
-    byte += svar.byte; ms += svar.ms;
-    const fm = new Map(svar.falt.map((f) => [f.namn, f]));
-    for (const f of falt) {
-      const x = fm.get(f); if (!x) throw new Error(`${dag} ${t}Z: fältet ${f} saknas i svaret`);
-      if (x.dims.join() !== `1,${box.by},${box.bx}`) throw new Error(`${dag} ${t}Z: ${f} har ${x.dims} — rutnätet har ändrats`);
-    }
-    const tid = `${dag}T${String(t).padStart(2, "0")}:00:00Z`;
-    for (const p of r) {
-      const i = (p.y - box.y0) * box.bx + (p.x - box.x0);
-      const v = (f: string) => fm.get(f)!.data[i];
-      const kol: Record<string, string> = { langvag_jm2: "" };
-      for (const f of falt) if (KOL.has(f)) kol[KOL.get(f)!] = varde(KOL.get(f)!, v(f));
-      if (lage === "xy") kol.vind10_ms = varde("vind10_ms", hastighet(v("x_wind_10m"), v("y_wind_10m")));
-      rader.push(`${p.id},${tid},${KOLUMNER.map((k) => { if (!(k in kol)) throw new Error(`kolumnen ${k} saknar fält`); return kol[k]; }).join(",")}`);
-    }
+    byte += svar.byte; ms += svar.ms; rader.push(...svar.rader);
   }
   return { rader, saknade, byte, ms };
 }
@@ -153,14 +169,58 @@ export async function hamtaVinter(rutorFil: string, stationerFil: string, ut: st
   return s;
 }
 
-/** Delarnas filer i en mapp (en release): metnordic_reserv_<del> för varje del, eller för en vinter med vindhastigheten den frysta
- *  kedjans metnordic_analys_<del> (kuvos-vintrar.yml, samma rutor och samma sex fält; långvågen töms vid läsningen). Saknas en del
- *  kastas ett fel. */
+/** Tillägget T2 (docs/FORREGISTRERING-NY-KANDIDAT-TILLAGG-2026-10-23.md): en dels saknade timmar fylls. Varje timme i delens dygn
+ *  (00–23 UTC) som saknas i delen frågas först i arkivet igen och sedan i MET:s omräkning v4, med vinden som wind_speed_10m (v4 har den
+ *  alla år) och långvågen tom som förut. En timme som saknas i båda förblir saknad. Delen skrivs som metnordic_fylld_<del> bredvid
+ *  originalet, som står kvar i releasen, med långvågen tömd på varje rad; fyllt_<del>.json listar timmarna per källa. */
+export async function fyllDel(delFil: string, ut: string, vinter: string, rutorFil: string, stationerFil: string, h: Hamtare = hamta, paus = 5000) {
+  const m = /_(\d{4}-\d\d-\d\d)_(\d{4}-\d\d-\d\d)\.csv\.gz$/u.exec(basename(delFil));
+  if (!m) throw new Error(`${basename(delFil)}: väntat <namn>_<fran>_<till>.csv.gz`);
+  const [, fran, till] = m;
+  const { lage } = vinterns(vinter);
+  const b = readFileSync(delFil);
+  const [rubrik, ...gamla] = gunzipSync(b).toString().trim().split("\n");
+  if (rubrik !== RUBRIK_ANALYS) throw new Error(`${basename(delFil)}: rubriken är inte analysfilens: ${rubrik}`);
+  const lv = RUBRIK_ANALYS.split(",").indexOf("langvag_jm2");
+  const sids = new Set(readFileSync(stationerFil, "utf8").trim().split("\n").slice(1).map((x) => x.split(",")[0].trim()));
+  const r = rutorUrFil(rutorFil).rutor.filter((x) => sids.has(x.id));
+  const box = rutan(r);
+  const finns = new Set(gamla.map((x) => x.split(",")[1]));
+  const s = { vinter, fran, till, kalla: basename(delFil), kalla_sha256: createHash("sha256").update(b).digest("hex"),
+    saknade_fore: [] as string[], ur_arkivet: [] as string[], ur_v4: [] as string[], saknas_i_bada: [] as string[],
+    rader_fore: gamla.length, rader_efter: 0, stationer: r.length, fil: "" };
+  const nya: string[] = [];
+  for (const dag of dagar(fran, till)) for (let t = 0; t < 24; t++) {
+    const tid = `${dag}T${String(t).padStart(2, "0")}:00:00Z`;
+    if (finns.has(tid)) continue;
+    s.saknade_fore.push(tid);
+    const a = await timmensRader(filnamnArkiv(dag, t), dag, t, r, box, lage, h, paus);
+    if (a) { s.ur_arkivet.push(tid); nya.push(...a.rader); console.log(`  ur arkivet (finns nu): ${tid}`); continue; }
+    const v = await timmensRader(filnamnV4(dag, t), dag, t, r, box, "fart", h, paus);
+    if (v) { s.ur_v4.push(tid); nya.push(...v.rader); console.log(`  ur v4: ${tid}`); continue; }
+    s.saknas_i_bada.push(tid); console.log(`  saknas i arkivet och i v4: ${tid}`);
+  }
+  const tom = (x: string) => { const k = x.split(","); k[lv] = ""; return k.join(","); };
+  const alla = [...gamla.map(tom), ...nya].sort((p, q) => (p.split(",")[1] < q.split(",")[1] ? -1 : p.split(",")[1] > q.split(",")[1] ? 1 : 0));
+  mkdirSync(ut, { recursive: true });
+  s.fil = join(ut, `metnordic_fylld_${fran}_${till}.csv.gz`); s.rader_efter = alla.length;
+  writeFileSync(s.fil, gzipSync(RUBRIK_ANALYS + "\n" + alla.join("\n") + (alla.length ? "\n" : "")));
+  writeFileSync(join(ut, `fyllt_${fran}_${till}.json`), JSON.stringify({ ...s, fil: basename(s.fil) }, null, 1));
+  console.log(`${basename(delFil)}: ${s.saknade_fore.length} timmar saknades, ${s.ur_arkivet.length} ur arkivet, ${s.ur_v4.length} ur v4, ` +
+    `${s.saknas_i_bada.length} saknas i båda → ${basename(s.fil)} (${s.rader_fore} → ${s.rader_efter} rader)`);
+  return s;
+}
+
+/** Delarnas filer i en mapp (en release): metnordic_fylld_<del> (T2) före metnordic_reserv_<del>, eller för en vinter med
+ *  vindhastigheten den frysta kedjans metnordic_analys_<del> (kuvos-vintrar.yml, samma rutor och samma sex fält; långvågen töms vid
+ *  läsningen). Saknas en del kastas ett fel. */
 export function valjDelar(vinter: string, filer: string[], n = 15) {
   const { lage, fran, till } = vinterns(vinter);
   const har = new Set(filer);
   return delar(fran, till, n).map((d) => {
     const egen = `metnordic_reserv_${d.fran}_${d.till}.csv.gz`, frysta = `metnordic_analys_${d.fran}_${d.till}.csv.gz`;
+    const fylld = `metnordic_fylld_${d.fran}_${d.till}.csv.gz`;
+    if (har.has(fylld)) return fylld;
     if (har.has(egen)) return egen;
     if (lage === "fart" && har.has(frysta)) return frysta;
     throw new Error(`delen ${d.fran}–${d.till} saknas (${egen}${lage === "fart" ? ` eller ${frysta}` : ""})`);
@@ -238,8 +298,46 @@ async function sjalvtest() {
   k(e2.includes("saknas"), "en saknad del fäller");
   let e3 = ""; try { vinterns("2024-25"); } catch (e) { e3 = (e as Error).message; }
   k(e3.includes("väntat"), "2024/25 hämtas inte här (kuvösens release)");
+  // Tillägget T2: fyllningen. Delen ur x/y-hämtningen ovan saknar 2023-01-01 05Z (arkivet svarar 404).
+  const dapFor = (u: string) => {
+    const t = Number(/T(\d{2})Z/u.exec(u)![1]);
+    const begarda = decodeURIComponent(u.split("?")[1]).split(",").map((x) => x.split(".")[0]);
+    return { buf: dapSvar(begarda.map((f) => ({ namn: f, dims: [1, 3, 4], data: Array.from({ length: 12 }, (_, i) =>
+      f === "air_temperature_2m" ? 273.15 + t + i * 0.01 : f === "x_wind_10m" ? 3 : f === "y_wind_10m" ? -4 : f === "wind_speed_10m" ? 2.5 : 3600) }))), ms: 2 };
+  };
+  const fyllare = (o: { arkivHar?: boolean; v4Saknas?: boolean } = {}): Hamtare => async (u) => {
+    urls.push(u);
+    const v4 = u.includes("/metpparchivev4/");
+    if (u.includes("20230101T05Z") && (v4 ? o.v4Saknas : !o.arkivHar)) return { buf: new Uint8Array(0), ms: 1 };
+    return dapFor(u);
+  };
+  urls = [];
+  const fore = createHash("sha256").update(readFileSync(s.fil)).digest("hex");
+  const f1 = await tyst(() => fyllDel(s.fil, join(d, "fyll1"), "2018-19", join(d, "rutor.csv"), join(d, "stations.csv"), fyllare(), 0));
+  const rf = gunzipSync(readFileSync(f1.fil)).toString().trim().split("\n");
+  k(JSON.stringify([f1.saknade_fore, f1.ur_arkivet, f1.ur_v4, f1.saknas_i_bada]) === JSON.stringify([["2023-01-01T05:00:00Z"], [], ["2023-01-01T05:00:00Z"], []])
+    && f1.rader_fore === 94 && f1.rader_efter === 96 && rf.length === 97 && rf[0] === RUBRIK_ANALYS && basename(f1.fil) === "metnordic_fylld_2022-12-31_2023-01-01.csv.gz",
+    `fyllningen: den saknade timmen ur v4, 94 → 96 rader i metnordic_fylld_: ${JSON.stringify({ ...f1, fil: basename(f1.fil) })}`);
+  k(urls.length === 2 && urls[0].includes("/metpparchive/2023/01/01/") && urls[0].includes("x_wind_10m") && urls[1].includes("/metpparchivev4/2023/01/01/")
+    && urls[1].includes("wind_speed_10m") && !urls[1].includes("x_wind") && urls.every((u) => !u.includes("longwave")),
+    `arkivet först (vinterns fält), sedan v4 med vindhastigheten, aldrig långvågen: ${urls.map((u) => u.split("?")[0].split("/thredds/")[1] ?? u.split("?")[0]).join(" | ")}`);
+  k(rf.includes("1001,2023-01-01T05:00:00Z,5.00,3600,2.5,3600,3600,,3600") && rf.indexOf("1001,2023-01-01T05:00:00Z,5.00,3600,2.5,3600,3600,,3600") === 1 + 2 * 29
+    && rf.slice(1).every((x) => x.split(",")[7] === ""), "den ifyllda timmen på sin plats i tidsordningen, vinden ur v4:s hastighet, långvågen tom överallt");
+  const j1 = JSON.parse(readFileSync(join(d, "fyll1", "fyllt_2022-12-31_2023-01-01.json"), "utf8"));
+  k(j1.ur_v4.length === 1 && j1.kalla === basename(s.fil) && /^[0-9a-f]{64}$/u.test(j1.kalla_sha256) && j1.fil === basename(f1.fil),
+    `fyllt_<del>.json: källa, summa och timmarna per källa: ${JSON.stringify(j1).slice(0, 160)}`);
+  k(createHash("sha256").update(readFileSync(s.fil)).digest("hex") === fore && j1.kalla_sha256 === fore, "originaldelen står kvar orörd, och listan bär dess summa");
+  const f2 = await tyst(() => fyllDel(s.fil, join(d, "fyll2"), "2018-19", join(d, "rutor.csv"), join(d, "stations.csv"), fyllare({ v4Saknas: true }), 0));
+  k(f2.saknas_i_bada.length === 1 && f2.ur_v4.length === 0 && f2.rader_efter === 94, `en timme som saknas i båda förblir saknad: ${JSON.stringify(f2.saknas_i_bada)}`);
+  const f3 = await tyst(() => fyllDel(s.fil, join(d, "fyll3"), "2018-19", join(d, "rutor.csv"), join(d, "stations.csv"), fyllare({ arkivHar: true }), 0));
+  const r3 = gunzipSync(readFileSync(f3.fil)).toString();
+  k(f3.ur_arkivet.length === 1 && f3.ur_v4.length === 0 && r3.includes("1001,2023-01-01T05:00:00Z,5.00,3600,5,3600,3600,,3600"),
+    "finns timmen i arkivet vid omhämtningen tas den därifrån, med vinterns vind (x och y)");
+  const dl2 = delar("2018-10-31", "2019-03-31", 15).map((x) => `metnordic_reserv_${x.fran}_${x.till}.csv.gz`);
+  const fylld0 = dl2[0].replace("reserv", "fylld");
+  k(JSON.stringify(valjDelar("2018-19", [...dl2, fylld0])) === JSON.stringify([fylld0, ...dl2.slice(1)]), "delarna: den fyllda före den egna");
   if (fel) process.exit(1);
-  console.log("✓ självtest: fälten utan långvåg, vinden ur x och y (√(x² + y²)) och som hastighet, förprovet (premissen för 2018/19, en saknad vindhastighet), hämtningen i analysfilens form med tom långvåg, återupptagningen och delarnas filer");
+  console.log("✓ självtest: fälten utan långvåg, vinden ur x och y (√(x² + y²)) och som hastighet, förprovet (premissen för 2018/19, en saknad vindhastighet), hämtningen i analysfilens form med tom långvåg, återupptagningen, delarnas filer och fyllningen (T2: arkivet först, sedan v4, saknad i båda förblir saknad, originalet orört)");
 }
 
 const korsSjalv = !!process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, "/").split("/").pop()!);
@@ -258,5 +356,7 @@ if (korsSjalv) {
   else if (arg[0] === "--valj" && arg[1] && arg[2]) console.log(valjDelar(arg[1], readdirSync(arg[2])).map((f) => join(arg[2], f)).join("\n"));
   else if (arg[0] === "--hamta" && arg[1] && arg[2] && arg[3] && v("--vinter") && v("--rutor") && v("--stationer"))
     await hamtaVinter(v("--rutor"), v("--stationer"), arg[1], arg[2], arg[3], v("--vinter"));
-  else { console.error("kör: metnordic_reserv.ts --forprov <vinter> | --delar <vinter> <n> | --valj <vinter> <mapp> | --hamta <ut> <fran> <till> --vinter <v> --rutor <fil> --stationer <fil> | --sjalvtest"); process.exit(2); }
+  else if (arg[0] === "--fyll" && arg[1] && arg[2] && v("--vinter") && v("--rutor") && v("--stationer"))
+    await fyllDel(arg[1], arg[2], v("--vinter"), v("--rutor"), v("--stationer"));
+  else { console.error("kör: metnordic_reserv.ts --forprov <vinter> | --delar <vinter> <n> | --valj <vinter> <mapp> | --hamta <ut> <fran> <till> --vinter <v> --rutor <fil> --stationer <fil> | --fyll <del> <ut> --vinter <v> --rutor <fil> --stationer <fil> | --sjalvtest"); process.exit(2); }
 }

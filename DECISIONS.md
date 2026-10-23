@@ -16992,3 +16992,58 @@ behöver köras om. Inga mått och ingen tröskel ändras.
 jämförelsetabellen.
 
 **Stomdokument:** inga — en kontroll i koden som ersättningsregeln redan kräver, ingen handtext
+
+## #694 (23/10 2026) Den nya kandidatens förberedning föll; tillägget T1 (SMHI:s station 7) och T2 (MET-timmar ur v4) som utkast, koden byggd
+
+**Bengts ord 23/10:**
+- *"men det kan vi ju inte acceptera vi måste hitta en väg runt det här så att materialet kan användas"*;
+- *"Ja, utred Gävleparet och v4 läsande och skriv ett utkast till tillägget. Starta inget och läs inga modelltal."*;
+- *"axel godkänner bygg"*.
+
+**Förberedningen föll** (kuvos-ny-kandidat 39964156753, 23/10 13:47–13:58 UTC; bara provens aggregat är lästa):
+
+| | 2018/19 | 2019/20 | 2020/21 | 2021/22 | 2022/23 | 2024/25 |
+| :-- | :-- | :-- | :-- | :-- | :-- | :-- |
+| Tidszonsprovet (SMHI) | klarat | faller | faller | faller | klarat | klarat |
+| MET Nordic, saknat (krav ≤ 1 %) | 3,07 % | 1,80 % | 0,36 % | 1,86 % | 0,33 % | 0,0 % |
+| Identitetsprovet | | | | | | klarat |
+
+Utan tillägg tas 2019/20, 2020/21 och 2021/22 bort (NY-KANDIDAT §4), och ersättningsregelns V1 (#692) håller inte.
+
+**Utredningen (läsande, inga modelltal):**
+- **Tidszonen.** Det fallna paret är samma alla tre vintrarna: VViS 2138 mot SMHI:s station 7 ("Gävle", *Övriga stationer*,
+  2017–november 2022). Station 7 ligger en timme efter SMHI:s egen Gävle A (107420) 6 km bort och efter fyra VViS-stationer,
+  alla vintrar den finns. VViS 2138 har toppen vid 0 h mot Gävle A och mot sina VViS-grannar, med god marginal. Felet sitter i
+  referensen, inte i Trafikverkets data.
+- **MET.** Timmarna saknas i MET:s arkiv `metpparchive` (nio dygn i stickprov stämmer timme för timme mot katalogen; hämtningen räknar
+  bara HTTP 404 som saknat). MET:s omräkning v4 (`metpparchivev4`) har dem, på samma rutnät. v4 är dagens metod räknad bakåt:
+  15/2 2025 är den identisk med arkivet; för de äldre åren skiljer luften 0,10–0,37 °C i medel per timme vid stationerna, utan
+  systematisk förskjutning (−0,04 till +0,07 °C).
+
+**Tillägget, utkast:** `docs/FORREGISTRERING-NY-KANDIDAT-TILLAGG-2026-10-23.md`.
+- **T1:** SMHI:s station 7 räknas inte i tidszonsprovet. Regeln, avståndet, banden och paren per band står kvar. `tidszon.py` är
+  orörd, så FLER-VINTRAR:s prov för den frysta är detsamma.
+- **T2:** timmar som arkivet saknar tas ur v4, med vinden som hastighet och långvågen som förut ur reserven. Kravet 1 % står kvar och
+  prövas efter fyllningen. Originaldelarna står kvar i releaserna.
+- **T3:** hamnar ett annat par fel, eller saknas fortfarande mer än 1 %, gäller förregistreringen som den står.
+- **Ingen lättnad efter sett utfall** (regel L, ersättningsregeln §7): inga krav sänks, inga modelltal är lästa, samma för alla
+  vintrar, och det redovisas öppet. Bengt och Axel signerar **före** fyllningen och förberedningen; målet är 26/10, fristen
+  `tillagg-ny-kandidat`.
+
+**Koden, byggd före signeringen:**
+- `forbered.py` (`UTESLUTNA_SMHI`, `smhi_lista()`, `fyllt_summa()`, `--fyllt`);
+- `metnordic_reserv.ts` (`fyllDel()`, `--fyll`, `filnamnV4`; `valjDelar()` tar den fyllda delen först; timmens rader utbrutna ur
+  `dygnReserv()` utan att hämtningen ändras);
+- `kuvos-ny-kandidat.yml` (steget `fyll`, och förberedningen läser listorna).
+
+**Prov:**
+- `metnordic_reserv.ts --sjalvtest` grönt, med T2:s tre fall: timmen ur v4, saknad i båda förblir saknad, finns i arkivet igen tas
+  därifrån; originalet orört.
+- `fysik/ny_kandidat/sjalvtest.py` med T1:s motprov: utan T1 tas paret mot station 7 (+1 h), med T1 mot Gävle A (0 h).
+
+**Låset:** `forbered.py` och `metnordic_reserv.ts` ligger inte i `KODEN`; ingen fil som räknar en vinter ändras. Förberedningen körs
+ändå om efter fyllningen.
+
+**Inte gjort:** ingenting är kört. Bevakningen av körningarna är pausad till signeringen.
+
+**Stomdokument:** KUV den nya kandidatens förberedning föll 23/10 och tillägget T1/T2 är ett utkast med signering 26/10
