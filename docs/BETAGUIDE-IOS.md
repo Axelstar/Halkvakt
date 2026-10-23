@@ -6,7 +6,7 @@ guide går till novemberbetans testare — ändras appen ändras den här filen 
 
 ## Nytt från 0.3.13 (33) — tillagt 23/10
 
-Guiden nedan är skriven för 0.3.9 (16)/(17). Tre saker är nya från (33) (DECISIONS #681, #683):
+Guiden nedan är skriven för 0.3.9 (16)/(17). Fyra saker är nya från (33) (DECISIONS #681, #683, #686):
 
 - **Betatest finns bara i TestFlight.** I App Store-versionen syns varken brytaren eller frågan efter resan, och en brytare som
   slagits på i en äldre version gäller inte där (#681 punkt 3).
@@ -14,6 +14,10 @@ Guiden nedan är skriven för 0.3.9 (16)/(17). Tre saker är nya från (33) (DEC
   Betatest tiger den (#677, #681 punkt 5).
 - **Kandidatens varning *"Halkvakt tror: halka framöver."*** är märkt *BETA* på kortet och talar sist av alla. Den följer reglaget
   *Halka*, inte Betatest (#577).
+- **Fliken Favoriter.** Slå på *Erbjud att spara resor*, kör minst 1 km och svara *Spara* på *Redo.*. Svara innan nästa resa:
+  på iPhone räknas starter inom tre timmar som samma resa så länge frågan inte är besvarad (Android börjar en ny resa vid
+  varje start, #686). Ett tryck på en sparad resa öppnar rapporten *Dit / Hem*, och *Nytt sedan …* visar det som tillkommit
+  sedan du senast tittade. Resorna stannar i telefonen och följer inte med i säkerhetskopian.
 
 ---
 
@@ -78,7 +82,8 @@ Introduktionen tar dig igenom dem i ordning. Vill du se den igen: **Inställning
 
 ## 3. Kör
 
-Appen har två flikar: **Vakten** och **Inställningar**.
+Appen har tre flikar: **Vakten**, **Favoriter** och **Inställningar** (Favoriter sedan (30)). Under **Favoriter** finns
+brytaren *Erbjud att spara resor* (av från början); se avsnittet om (33) överst.
 
 - På **Vakten** står det *Redo.* Tryck **Starta vakten** — eller säg **"Hej Siri, starta Halkvakt"**.
 - När vakten är på visas körläget med tid och sträcka. När rösten talar kommer ett kort, **HALKVAKT VARNAR**, i åtta

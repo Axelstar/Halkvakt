@@ -7,6 +7,19 @@ testare — ändras appen ändras den här filen i samma commit.*
 vakten är en förgrundstjänst med typen `location`, och då räcker "medan appen används" (Googles egen
 dokumentation, läst 20/9). "Tillåt hela tiden" behövs bara för Autostart. Se DECISIONS #272.*
 
+## Nytt från versionCode 33 — tillagt 23/10
+
+Guiden nedan är skriven 20/9. Det här är nytt från 33 (DECISIONS #681, #683, #686):
+
+- **Betatest finns bara i testbyggen.** Bygget till Google Play byggs utan det (`-Phalkvakt.betatest=false`, PR #1159): där syns
+  varken brytaren eller frågan efter resan, och integritetsraden säger *"Inget konto, och inget skickas."* (#681).
+- **Brytaren slår också på betavarningen efter regn** (S3): *"Halkvakt tror: frysrisk framöver."*, med *BETA* på kortet. Utan
+  Betatest tiger den, också i favoriternas rapport (#677, #679).
+- **Fliken Favoriter.** Slå på *Erbjud att spara resor*, kör minst 1 km och svara *Spara* på *Redo.*. På Android börjar varje
+  start en ny resa (på iPhone räknas starter inom tre timmar som samma resa, #686). Ett tryck på en sparad resa öppnar
+  rapporten *Dit / Hem*; *Kolla igen* hämtar på nytt. Resorna stannar i telefonen och följer inte med till en ny telefon.
+- **targetSdk 36** (PR #1029): kontrollera att inget hamnar under status- eller navigeringsfältet.
+
 ---
 
 ## Till dig som ska testa
@@ -63,7 +76,8 @@ Appen frågar om behörigheter i tur och ordning. Alla behövs för att den ska 
 
 ## 3. Kör
 
-Appen har två flikar: **Vakten** och **Inställningar**.
+Appen har tre flikar: **Vakten**, **Favoriter** och **Inställningar** (Favoriter sedan (30)). Under **Favoriter** finns
+brytaren *Erbjud att spara resor* (av från början); se avsnittet om (33) överst.
 
 - På **Vakten** står det *Redo.* Tryck den gröna **Starta vakten**.
 - Under knappen finns **Autostart** — slår du på den startar vakten själv när telefonen märker att du åker bil (i vilket
