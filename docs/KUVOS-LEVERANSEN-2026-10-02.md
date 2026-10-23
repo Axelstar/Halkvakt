@@ -8,7 +8,7 @@ databas och vakterna körda som antal — §7. Fortfarande inget utfall läst.*
 
 ## 1. Vad som kom
 
-Bengt laddade ner fem filer från VViS Förvaltning (Micke Wallin) 2/10 kl. 16:04–16:05, en per månad november 2024–mars 2025.
+Bengt laddade ner fem filer från VViS Förvaltning (Trafikverkets kontakt) 2/10 kl. 16:04–16:05, en per månad november 2024–mars 2025.
 De är packade och ligger som tillgångar i den privata releasen **`kuvos-trv-2024-25`**, med sha256 före och efter packning; varje
 tillgång är nedladdad igen och jämförd (lika). Manifestet står i `kuvos/leverans.json`. Filerna ligger aldrig i repot och aldrig i
 Supabase. Originalen ligger kvar i Bengts *Hämtade filer*.
@@ -136,9 +136,9 @@ där är ett medelvärde över 30 minuter. Tidszonen är redan mätt (§3). **In
 
 ### 5b. Frågorna till Trafikverket
 
-Bengt skickar till Micke Wallin, som svar i samma tråd. Fyra frågor och en bekräftelse; tidszonen och vinden behöver inte frågas.
+Bengt skickar till Trafikverkets kontakt, som svar i samma tråd. Fyra frågor och en bekräftelse; tidszonen och vinden behöver inte frågas.
 
-**Skickat 2/10 kväll av Bengt** till Micke Wallin, som svar i leveranstråden: de fyra frågorna och bekräftelsen, med fråga 1 i den allmänna lydelsen (*vad betyder koderna 1, 2, 3, 4, 6 och 9, och −9?*). Omskrivningen nedan efter #439 kom på main samtidigt och gick inte med; svaret på den allmänna frågan täcker den.
+**Skickat 2/10 kväll av Bengt** till Trafikverkets kontakt, som svar i leveranstråden: de fyra frågorna och bekräftelsen, med fråga 1 i den allmänna lydelsen (*vad betyder koderna 1, 2, 3, 4, 6 och 9, och −9?*). Omskrivningen nedan efter #439 kom på main samtidigt och gick inte med; svaret på den allmänna frågan täcker den.
 
 1. `ned_typ`: följer VViS-filen MESAN:s numrering i *Ersättningsmodell VädErs 2019* (1 ingen nederbörd, 2 regn, 4 snö, 6 både snö
    och regn)? Och vad betyder 3, 9 och −9, som inte står där? *(Omskriven 2/10 kväll, DECISIONS #439.)*
@@ -209,7 +209,7 @@ men Lastkajen kräver konto, och om nedlagda stolpar finns med står inte i meta
 > Vänliga hälsningar
 > Bengt
 
-**Skickat 8/10 av Bengt** till Micke Wallin i leveranstråden, med texten ovan.
+**Skickat 8/10 av Bengt** till Trafikverkets kontakt i leveranstråden, med texten ovan.
 
 *Omskrivet igen 8/10 (Bengt: "stryk och skriv om bara fokus på det nya viktiga").* Mejlet bär nu bara begäran. Struket: frågan om
 läget för de 23 stationerna (104 671 rader av 5 496 270, 1,9 %; troligen nedlagda och inte i dagens nät, så som grannar skulle de ge
@@ -223,7 +223,7 @@ utanför; Bengt avgör om den ska med.
 
 Inget i utkastet bär tal ur tröskeldokumenten eller resultat (DECISIONS #463).
 
-### 5e. Trafikverkets svar 8/10 10:40 (Micke Wallin, VViS Förvaltning)
+### 5e. Trafikverkets svar 8/10 10:40 (Trafikverkets kontakt, VViS Förvaltning)
 
 Svar i samma tråd, 13 minuter efter begäran. Han besvarar också tre av frågorna från 2/10; en annan fråga har han skickat vidare och
 väntar på svar om. Läst mot vår översättning (`kuvos/oversattning.sql`, DECISIONS #464):
@@ -259,7 +259,7 @@ samma väg som det första, Datautbytesportalens kontaktformulär (data.trafikve
 > Hej,
 >
 > jag utvärderar en halkvarningstjänst som bygger på Trafikverkets öppna data, och har fått väderstationernas historik för vintern
-> 2024/25 från VViS Förvaltning (Michael Wallin). Han hänvisade mig hit för det som ligger utanför VViS. Jag skulle vilja be om
+> 2024/25 från VViS Förvaltning (Trafikverkets kontakt). Han hänvisade mig hit för det som ligger utanför VViS. Jag skulle vilja be om
 > följande för perioden 1 november 2024–31 mars 2025:
 >
 > 1. **Rapporterat väglag** per vägsträcka, det som i öppna API:t heter RoadCondition, om historiken sparas.
@@ -486,7 +486,7 @@ ur `latest-months`; i kuvösen måste de läsa `kuvos_ra.smhi_obs` i stället, o
 ## 9. Fler vintrar: VViS-leveransen 21/10, 2018–2024 (DECISIONS #666)
 
 Bengt bad 9/10 VViS Förvaltning om stationsdata för tidigare vintrar, så att fysikspåret kan tränas på några vintrar och prövas på
-andra (kort #321). Micke Wallin svarade 21/10 att historiska uttag följer säsonger, inte kalenderår, och att det därför blir en del
+andra (kort #321). Trafikverkets kontakt svarade 21/10 att historiska uttag följer säsonger, inte kalenderår, och att det därför blir en del
 dubbletter. Filerna kom samma eftermiddag som `deaddrop.zip` (1 026 580 534 byte, sha256 `b5bf7ce17cf2a233ce8721383a1dc2ae6ae743cc5067df61a8fc852ad7a76a42`),
 med 14 CSV-filer, `Halkvakt_ÅÅÅÅ-1.csv` och `Halkvakt_ÅÅÅÅ-2.csv` för 2018–2024, 5,1 GB opackat. **Filerna ligger inte i repot**
 (PUBLIKT REPO). De packas en och en, och Axel lägger dem i hinken under `kuvos/kuvos-vvis-2018-24/`. Manifestet är

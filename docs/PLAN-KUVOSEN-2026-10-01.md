@@ -6,7 +6,7 @@ efter steg 0 väntar på Bengts ja.*
 
 ## 1. Läget
 
-**Trafikverket (Micke Wallin, VViS Förvaltning, 1/10 13:30):** uttaget för samtliga stationer *"bör kunna levereras under nästa vecka"*,
+**Trafikverket (Trafikverkets kontakt, VViS Förvaltning, 1/10 13:30):** uttaget för samtliga stationer *"bör kunna levereras under nästa vecka"*,
 som **CSV**, i ett format som är *"annorlunda i historiken jämfört med API"*. Han avslutar: *"Låter detta som en bra plan? I så fall lägger
 jag en beställning."* **Beställningen är alltså inte lagd än** — den väntar på Bengts svar (utkast i §2).
 

@@ -6484,10 +6484,10 @@ och ovanpå de andra, facit = stationens egen yta, ändrar ingen tröskel, tillf
 **Inga regelvärden** — mätningssidan är intern just för att den bär opublicerade trösklar; projektsidan är extern. Novembersvaret är skrivet som
 villkorat: *om uttaget kommer i oktober*. Appens exempelrop är motorns egen text (*Isrisk framöver, vägbanan nära noll grader*), inte påhittad.
 
-**Vad sidan inte lovar:** ingen tidplan för kuvösen utöver villkoret, ingen partner, inget om kostnad för uttaget (det står i svaret till Micke
-Wallin, #398 styr), och inget om vad Trafikverket ska göra med sina givare (anmälningarna står för sig).
+**Vad sidan inte lovar:** ingen tidplan för kuvösen utöver villkoret, ingen partner, inget om kostnad för uttaget (det står i svaret till Trafikverkets
+kontakt, #398 styr), och inget om vad Trafikverket ska göra med sina givare (anmälningarna står för sig).
 
-**Delning:** artefakten är privat tills Bengt delar den. Han avgör om länken går till Trafikverket (Micke Wallin) och om den nämns för
+**Delning:** artefakten är privat tills Bengt delar den. Han avgör om länken går till Trafikverket (Trafikverkets kontakt) och om den nämns för
 Skyltfonden. Källa `docs/HALKVAKT-OCH-KUVOSEN.html`, artefakt https://claude.ai/artifact/CrrMKX7vcRcXHiqqYGjs9S; ändringar görs i repokopian och
 republiceras till samma URL i samma commit (samma regel som stomdokumenten, #415, utan att sidan är ett stomdokument).
 
@@ -16807,3 +16807,87 @@ deployar sedan vakthunden. Fram till det läget är värdevakten oschemalagd och
 före pulsklockan larmar den på det saknade jobbet.
 
 **Stomdokument:** SYS värdevakten i pulsklockan
+
+## #689 (23/10 2026) Kuvösen omgång 1: provningen väntar på en signerad ersättningsregel, 2026/27 signeras 26/10, sikten avgörs i olycksserien, tif och NT-orden står, kort #232 stängt och kontaktens namn bort
+
+**Bengts ord 23/10**, på genomgången av blocket Kuvösen (förklarad i chatten 23/10, läs-only, två hjälpagenter):
+- *"Kör när träningen är klar"*;
+- *"26/10, direkt efter R"*;
+- *"Ja, en kort regel först"*;
+- *"Håll isär, nytt kort"*;
+- *"0,5 står kvar"*;
+- *"Frist 15/11"*;
+- *"Skriv in #675"*;
+- *"Behåll som driften"*;
+- *"Låt stå, redovisa"*;
+- *"Låt stå som okända"*;
+- *"Stäng kortet"*;
+- *"Byt ut nu och framåt"*.
+
+**Beslut.**
+1. **Den nya kandidatens provning** (#670–#672) trycks när träningen är grön. Enligt punkt 3 måste ersättningsregeln då vara
+   signerad. Provningen väntar alltså på regeln, inte på signeringen av 2026/27. Spärren i `fysik/ny_kandidat/sparren.py` prövar
+   bara den nya kandidatens egen förregistrering, så ordningen hålls av den session som trycker. Ingen kod ändras: läskoden låses
+   vid förberedningen (#672).
+2. **Förregistreringen för 2026/27 signeras 26/10**, direkt när radarns tal R är infört i §3 och §10 a. Fristen 31/10 står kvar som
+   yttersta datum. Domfönstret blir fem dygn längre.
+3. **En ersättningsregel skrivs och signeras före provningen.** Den säger vilka tal och vilka vintrar som avgör om den nya
+   kandidaten ersätter den frysta, och att den levande kedjan då måste byggas om, eftersom den nya tar långvågen ur reserven och
+   den levande tar den ur MET. Utkastet skrivs av Claude, och Bengt och Axel signerar. Fristen är `ersattningsregel-ny-kandidat`.
+4. **De två kandidaterna för 2027/28 hålls isär.** Den nya kandidaten på sex vintrar får kort #362 med eget Verify, och kort #321
+   bär terrängen.
+5. **Saknas en kurva till R 26/10** står R = 0,5 kvar, enligt ordalydelsen i #568. Signeringen sker ändå, och bortfallet redovisas
+   vid signaturerna.
+6. **Norr om 62° mitt i vintern** (kort #317 b) får fristen `norr-62` 15/11. Underlaget är skuggans vinter i norr i november.
+7. **Sikten i olycksförregistreringen** skrivs in enligt #675. W-A3 på vintern 2024/25 avgör sikten. Faller den, stryks sikten.
+   Klarar den sig, står sikten kvar trots fallet i driftens W-A 8/10 (#491). Det är en lättnad, och därför gäller den bara med båda
+   signaturerna på förregistreringen (regel L, #564).
+8. **Sikt 20 000 m** räknas i bandet över 1 000 m, som i driften (`SIKTBAND` i `scripts/vindsikt-steg0.ts`) och i kuvösens
+   översättning (`kuvos/oversattning.sql`). Bara platshållaren −100 kastas. Serien mäter då samma sak som domen.
+9. **Radarns tif korrigeras inte** (#441 punkt 3, nu avgjort). Skillnaden mot h5, ungefär 3,4 dBZ och 1,6 gånger regnet, skrivs ut
+   vid varje tal som bygger på tif, också facitets *"bara radarn 34,5 %"* (#607). Övergångarna och försprånget i kuvösen körs med
+   okorrigerad tif eller väljs bort med skäl senast 15/11 (fristen `kuvos-tif-lasningarna`). Ö-B saknar dessutom instrument (#658).
+10. **Nederbördstypens ord `yes` och `freezing_rain`** (1 411 rader) står kvar som okända, och steget är läst. Marsdomens instrument,
+    grind NT med samma givarklass, ändras då inte efter ett sett utfall.
+11. **Kort #232 stängs.** Verify var uppfyllt 6/10. Det som återstår, olyckorna, bärs av kartans del kv-facit och fristen
+    `olyckor-forregistrering` 15/11.
+12. **Trafikverkskontaktens fullständiga namn** byts mot *Trafikverkets kontakt* i alla nuvarande filer i det publika repot (33
+    ställen i 11 filer) och skrivs inte framåt. Git-historiken behåller namnet. Publikvakten prövar bara filnamn, inte innehåll, och
+    ett innehållsprov som jämför med namnet skulle själv lägga namnet i repot. Ett prov på hashade ordpar står som en egen rad på
+    åtgärdslistan. Förnamnet ensamt står kvar på ett tiotal ställen, de flesta i Bengts egna citat.
+
+**Rättat i samma PR, utan beslut:**
+- **Kartans kuvösdelar:**
+  - två bevis som varit avhuggna sedan 3/10 (679e43d);
+  - försprångets hinder: väglagshistoriken är levererad sedan 16/10;
+  - ledet om åtgärder per tid och plats är borttaget, eftersom svaret 13/10 var nej;
+  - den nya kandidatens steg står som pågår;
+  - förregistreringen för 2026/27 har bara R kvar;
+  - besluten #568, #574, #655, #656, #659, #675 och #689 är införda.
+- **Förregistreringen för 2026/27 (utkast):**
+  - §1 anger körningen där den frysta modellen byggdes (38400052837);
+  - §10 a regeln för en saknad kurva;
+  - §10 f vad som blev av fler vintrar (#680) och den nya kandidaten.
+- **Olycksförregistreringen (utkast):** §1 och §5 följer #675 och punkt 8, och hänvisningen till W-A pekar på
+  TROSKLAR-VIND-SIKT §4.
+
+**Morgonsynken rättar KUV:s handtext (#522).** Detta hittades i genomgången:
+- *Etiketten (rad 100):* "läget 17 oktober". *§2:* "den senaste 13/10", fast det finns läsningar 16/10, 17/10 och 22/10.
+- *§2:* vind och sikt "väntar på startvärden". Sikten går nu genom #675.
+- *§3 och §7:* "händelser och åtgärder", fast bara olyckorna kom. "Väglagshistoriken är begärd", fast den är levererad 16/10.
+  "Saltning och plogning finns i begäran", fast svaret 13/10 var nej.
+- *§5:*
+  - inget om fler vintrar, utfallet 2022/23 (#680) eller den nya kandidaten;
+  - tabellen saknar raden 2022/23 på dess egen population;
+  - FYSIK "inte körda i kuvösen", fast de kördes 11/10 (#516);
+  - "valet är Axels" om väderkällan, fast valet gjordes i #518.
+- *§7:* W-A-serien kallas bara diagnos (#675). "Den rensade kopian" finns, och fristen 15/11 nämns inte.
+- *§9:* kort #349 står kvar, fast det stängdes 16/10. "Omkring 8 timmar" gäller bara träningen (#672).
+- *§10 och §11:* "ingen kandidat har slagit RÅ" stämmer inte sedan 11/10. "En vinter är en vinter" stämmer inte längre, eftersom
+  fler vintrar finns.
+- *§12:* loggen sammanfattas som "2/10–17/10" och saknar #607, #658, #665 och #675.
+- *BED §6.1:* beskriver testbädden som "väntar på Trafikverkets beslut", alltså läget 1/10.
+
+**Åtgärdslistan:** `docs/ATGARDER-KUVOSEN-2026-10-23.md` (B8-01 och framåt).
+
+**Stomdokument:** KUV §2 §3 §5 §7 §9–§12 efter genomgången, BED §6.1 testbädden och §4.2 tif och norr, LIV förregistreringen signeras 26/10

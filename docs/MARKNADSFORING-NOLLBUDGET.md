@@ -56,7 +56,7 @@ nedan är rättad efter det: ingen förening som tillgång, avsändare, pressvin
 14. **NTF** (Nationalföreningen för Trafiksäkerhetens Främjande) — deras vinterkampanjer behöver konkret innehåll.
 15. **Trafikskolor + STR** (Sveriges Trafikutbildares Riksförbund): Bulltoftabanan först, sedan "varje riskutbildning del 2 i Skåne".
     Handledare är trovärdighetsspridare; eleverna är 18-åringar med telefon.
-16. **Trafikverket** — Micke Wallin-kontakten och trafficdata.se: Trafikverket visar gärna *goda exempel* på öppna data. Fråga om vi får stå där.
+16. **Trafikverket** — Trafikverkets kontakt-kontakten och trafficdata.se: Trafikverket visar gärna *goda exempel* på öppna data. Fråga om vi får stå där.
 17. **Försäkringsbolag** (If, Folksam, Länsförsäkringar) skriver vintertips varje år — en gratis app är innehåll för dem, inte konkurrens.
 18. **Halkvarning.se** (Icebug/Klimator, fotgängare) — komplement, inte konkurrent: korslänk "för bilen: Halkvakt" / "till fots: Halkvarning".
 19. **Kommuner** (Malmö, Lund) och **åkerier/budfirmor** — GTM kanal 3; ett mejl från hej@halkvakt.se.
