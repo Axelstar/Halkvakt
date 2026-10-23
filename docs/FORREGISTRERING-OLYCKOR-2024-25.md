@@ -1,7 +1,8 @@
 # Förregistrering — Trafikverkets olyckor 2024/25: facit i kuvösen och en andra serie för W-A
 
-**Status: UTKAST 22/10 2026, rättat 23/10** (DECISIONS #665, #669; §1 och §5 efter #675 och #689). Bengt och Axel signerar **innan** någon olycka läses mot kuvösen eller vinden.
-Fristen är `olyckor-forregistrering`, 15/11.
+**Status: SIGNERAD 23/10 2026** (Bengt och Axel, DECISIONS #697; dokumentets sha256 vid signeringen, före den här raden och
+signaturerna: `d1a2b46d16ccf784c03a305206ff5a92fdee547dd19a863dbd3a5f57a61686e8`). Utkastet: DECISIONS #665, #669; §1 och §5 efter #675 och #689; §2–§5 och §7 skärpta efter #696.
+Signerad **innan** någon olycka läses mot kuvösen eller vinden.
 
 Källorna:
 - olyckorna i TRV 2026/111808, kompletteringen 20/10 (`docs/KUVOS-LEVERANSEN-2026-10-02.md` §5i);
@@ -35,7 +36,8 @@ Undantaget är sikten: W-A3 i fråga (b) avgör den (#675, #689; §5). Regel L g
   - **alla olyckor**;
   - **halkolyckor**: fritexten (`Beskrivning`, efter maskningen) matchar skuggfacitets frysta ordlista, utan hänsyn till stora och
     små bokstäver (`publish/skuggfacit.ts`, `HANDELSE_SQL`): `halk|ishalka|\mis\M|\misig\M|\msnö|snöfall|glatt|\mhalt\M`.
-    Ordlistan väljs inte om efter att antalet träffar är sett.
+    Ordlistan väljs inte om efter att antalet träffar är sett. **Antalet träffar per ord redovisas**, så att det syns om ett ord
+    (till exempel `snö`, som också fångar *snöröjning*) dominerar serien.
 
   **Den primära serien för (a) är halkolyckorna, och för (b) alla olyckor**, som i driftens W-A.
 - **`EventText`** (påverkan) används inte för urvalet. Fördelningen redovisas.
@@ -44,8 +46,11 @@ Undantaget är sikten: W-A3 i fråga (b) avgör den (#675, #689; §5). Regel L g
 
 Filen säger inte vilken tidszon den har. Två prov görs före läsningen:
 - natten till 30/3 2025, timmen 02:00–02:59 svensk tid, ska sakna olyckor. Det är ett svagt prov, eftersom olyckor är glesa;
-- vardagarnas timmar med flest olyckor ska ligga i rusningen 07–09 och 15–18 svensk tid. Ligger båda topparna en timme tidigare,
-  tolkas tiden som UTC.
+- vardagarnas timmar med flest olyckor ska ligga i rusningen svensk tid. Regeln: förmiddagens topptimme (av 05–11) och
+  eftermiddagens (av 13–19) räknas som de läses i filen.
+  - Ligger förmiddagens i 07–09 och eftermiddagens i 15–18: svensk tid.
+  - Ligger båda exakt en timme tidigare (06–08 och 14–17): UTC.
+  - Allt annat: inget klart svar.
 
 Ger proven inget klart svar antas svensk lokaltid, som väglagsfilen ur samma ärende (KUVOS-LEVERANSEN §3). Alla tal i §4 och §5
 redovisas då också med tiden flyttad en timme, som känslighet.
@@ -64,6 +69,10 @@ redovisas då också med tiden flyttad en timme, som känslighet.
 - **bekräftelsen**: andelen varningar med minst en olycka inom avstånd och fönster;
 - **basnivån**: samma andel för alla stationens egna kalla timmar, som i väglagsläsningen;
 - **lyftet**: bekräftelsen delat med basnivån.
+
+**Huvudjämförelsen** är halkolyckornas lyft mot alla olyckors lyft. Alla olyckor följer trafiken, tiden på dygnet och mörkret;
+det är skillnaden mot halkolyckorna som visar halkan. Varje lyft, och kvoten mellan dem, redovisas **med marginal** (95 %),
+eftersom olyckorna inom 2 km och fönstret kan bli få.
 
 Allt redovisas också per månad och norr och söder om 62°. Alla tal skrivs ut, också de som talar emot.
 
@@ -84,12 +93,20 @@ Allt redovisas också per månad och norr och söder om 62°. Alla tal skrivs ut
 **Underlaget:**
 - **Stationstimmen** är kuvösens VViS-rader 1/11 2024–31/3 2025, alla halvtimmar och alla stationer efter vakterna.
 - **Byvinden** är timmens högsta `vimax`, och **sikten** timmens lägsta `siktdjup`.
-- **Frekvensen** är olyckor inom räckvidd per 1 000 stationstimmar och band.
+- **Frekvensen** är olyckor inom räckvidd per 1 000 stationstimmar och band. Inom 15 km kan samma olycka räknas vid flera
+  stationer (W-A:s regel, oförändrad); frekvenserna är alltså inte oberoende olyckor.
+- **Dagtid** (07–18 svensk tid) redovisas för båda serierna, som diagnos bredvid hela dygnet.
 
-Serien är **diagnos bredvid driftens dom** för byvinden, som den inte fäller. **Sikten avgörs här** (#675, #689): faller W-A3 stryks
-sikten. Klarar den sig står sikten kvar, trots fallet i driftens W-A 8/10 (#491). Det är en lättnad, och därför gäller den bara
-med båda signaturerna på det här dokumentet (regel L, #564). Allt redovisas per band, med
-kvoten och dess marginal (`skiljbarKvot`).
+Serien är **diagnos bredvid driftens dom** för byvinden, som den inte fäller. **Sikten avgörs här** (#675, #689). Sikten står kvar,
+trots fallet i driftens W-A 8/10 (#491), bara om **alla tre** villkoren håller (skärpta före signeringen, #696):
+1. **W-A3 över hela vintern, med driftens marginalvakt:** frekvensen stiger monotont när sikten sjunker, och kvoten mellan bandet
+   under 200 m och bandet över 1000 m är minst 1,5 och går att skilja från 1,5 (`skiljbarKvot`, #128). *Oavgjort* räknas som fall.
+2. **W-A4 för sikten:** minst 500 stationstimmar under 200 m och minst 20 olyckor totalt.
+3. **Riktningen på dagtid** (07–18): kvoten mellan bandet under 200 m och bandet över 1000 m är över 1 också på dagtid. Pekar den
+   åt andra hållet förklaras sikten av trafiken, inte av sikten.
+
+Faller något av dem stryks sikten. Att sikten kan stå kvar är en lättnad, och därför gäller den bara med båda signaturerna på det
+här dokumentet (regel L, #564). Allt redovisas per band, med kvoten och dess marginal (`skiljbarKvot`).
 
 ## 6. Förväntan, skriven före läsningen
 
@@ -103,6 +120,10 @@ Bara filens form (KUVOS-LEVERANSEN §5i): flik, kolumner, typer, period och anta
 is, snö, vilt och älg, men inte hur ofta. Ingen olycka är räknad per månad, plats eller ord, och ingen är ställd mot en station, en
 varning eller vinden.
 
+Stationstimmarna per siktband 2024/25 är räknade **utan olyckor** (23/10, #696), för att veta om W-A4 går att nå: under 200 m
+12 175 stationstimmar (4 042 på dagtid), 200–500 m 55 729, 500–1000 m 58 551 och över 1000 m 2 597 356, från 762 stationer.
+Bandet under 200 m kommer från 675 stationer; de fem största står för 10 %.
+
 ## 8. Fryst vid signeringen
 
 Det som fryses är urvalet (§2), tidszonsproven (§3), populationerna, avstånden, fönstren och måtten (§4) och W-A:s regler och underlag
@@ -113,5 +134,5 @@ Det som fryses är urvalet (§2), tidszonsproven (§3), populationerna, avstånd
 
 | | Datum | Signatur |
 | :-- | :-- | :-- |
-| Bengt | | |
-| Axel | | |
+| Bengt | 2026-10-23 | Bengt i chatten: *"jag och axel signerar detta så du kan bygga läsaren"* (DECISIONS #697) |
+| Axel | 2026-10-23 | Via Bengt i samma ord (DECISIONS #697) |
