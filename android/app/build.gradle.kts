@@ -1,10 +1,10 @@
 plugins { id("com.android.application"); id("org.jetbrains.kotlin.android") }
 android {
     namespace = "se.halkvakt.app"
-    compileSdk = 35
+    compileSdk = 36
     defaultConfig {
         applicationId = "se.halkvakt.app"
-        minSdk = 26; targetSdk = 35
+        minSdk = 26; targetSdk = 36
         // Femma åtta (4), DECISIONS #377: i takt med iOS FÖRE första Play-uppladdningen, som låser versionCode-spåret.
         versionCode = 32; versionName = "0.3.13"   // 19/10: påverkan i rapporten, rösten släpper musiken, statusfältet (DECISIONS #643), i takt med iOS 0.3.13 (32)
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
