@@ -17067,3 +17067,29 @@ läste, sammanslagen 23/10 17:50 UTC.
 - Fristen `tillagg-ny-kandidat` är klar och borttagen.
 
 **Stomdokument:** KUV tillägget T1/T2 signerat 23/10
+
+## #696 (23/10 2026) Olycksförregistreringen skärpt före signeringen: sikten, halk mot alla, marginalen, orden och tidszonen
+
+**Bengts ord 23/10:** *"kan du ge rekommendationer på det här"*, *"är det här omöjliga krav att möta?"*, *"Ja, räkna kövösens
+stationstimmar per siktband vintern 2024/25, utan att röra olyckorna, och rapportera."* och *"ja skriv in de justerade
+rekommendationerna"*.
+
+**Skrivet in i `docs/FORREGISTRERING-OLYCKOR-2024-25.md`, fortfarande utkast:**
+- **§5 sikten.** Sikten står kvar bara om tre villkor håller:
+  1. W-A3 över hela vintern med driftens marginalvakt (`skiljbarKvot`, #128), där oavgjort räknas som fall;
+  2. W-A4 uttryckligen för sikten;
+  3. kvoten över 1 också på dagtid, som kontroll av riktningen.
+- **§4.** Huvudjämförelsen är halkolyckornas lyft mot alla olyckors, med marginal.
+- **§5.** Dagtid redovisas för båda serierna. Det står uttryckligen att samma olycka kan räknas vid flera stationer inom 15 km.
+- **§2.** Träffarna per ord i ordlistan redovisas, men ordlistan ändras inte.
+- **§3.** Regeln för tidszonen är mätbar: topptimmarna för förmiddag och eftermiddag.
+
+Inga krav är sänkta. Allt är skärpningar eller förtydliganden före signeringen (regel L).
+
+**Underlaget för W-A4, räknat utan olyckor:** kuvösens stationstimmar per siktband 2024/25 ur leveransfilerna, med samma sha256 som
+`kuvos/leverans.json`. Under 200 m finns 12 175 stationstimmar (4 042 på dagtid) mot kravet 500, från 675 stationer, där de fem
+största står för 10 %. W-A4 är alltså inget hinder i stationstimmar. Hur många olyckor som faller i bandet är inte läst.
+
+**Ingen olycka är läst.**
+
+**Stomdokument:** KUV olycksförregistreringen skärpt före signeringen
