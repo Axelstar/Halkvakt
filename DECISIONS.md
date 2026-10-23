@@ -16334,8 +16334,8 @@ ställda till Bengt och Axel; Bengt svarade, och han har sagt i dag att han sign
    fristen `testforarna` 15/12. Texten står i TROSKLAR-KOMBINATIONEN §4.
 2. **Termisk kartering (B4-83).** Stängd, efter Axels *"görs inte"* 6/10 (#481). Ingen utrustning köps och ingen karteringsnatt
    planeras. Kort #271 är stängt, delen p-termisk grå, och fristen `kartering-beslut` 15/12 är borttagen före sitt ärende. Kort #321
-   prövas mot satellitens kallkarta utan mätbilen. Den skickade Skyltfondsansökan (`docs/skyltfonden-2026-09-28/`) nämner inte
-   karteringen.
+   prövas mot satellitens kallkarta utan mätbilen. Utkasten till Skyltfondsansökan (`docs/skyltfonden-2026-09-28/`) nämner inte
+   karteringen. Den skickade versionen finns bara i Bengts Drive (#411). *(Rättat 23/10, #683: stod "Den skickade Skyltfondsansökan".)*
 3. **Regel L och Skyltfonden (B4-87).** Ansökan säger i bilaga 1 och 7 *"En tröskel får skärpas men aldrig lättas när utfallet väl är
    sett"*. Den meningen hålls som den står: regel L:s lättnadsväg (L2 och L4) används inte, i något av de tretton tröskeldokumenten.
    L1 och L3 gäller som förut, eftersom de bara stramar åt. Då stämmer ansökan med det som görs, och fonden behöver ingen förklaring.
@@ -16541,3 +16541,44 @@ facitkommandon, Betatest-sidans text i iOS och Android, och butikstexten. Ett pr
 **Androids Betatest-spärr (B5-24)** är en egen PR, #1159.
 
 **Stomdokument:** APP rättelserna och åtgärdslistan
+
+## #683 (23/10 2026) Ut till förarna omgång 1: TestFlight-länken förblir publik, integritetssidan står, föreningen rättas, frist för Skyltfonden, QR-koden väntar
+
+**Bengts ord 23/10**, på genomgången av blocket Ut till förarna (förklarad i chatten 23/10, läs-only, två hjälpagenter):
+- *"Behåll den publika länken"*;
+- *"Låt stå som det är"*;
+- *"Rätta allt som ska ut eller styr"*;
+- ingen preferens om Skyltfonden;
+- *"Vänta på Google Play"*;
+- *"Stäng den"*.
+
+**Beslut.**
+1. **TestFlight-länken förblir publik.** Den står i klartext i det publika repot (TAVLA, kort om testarna) och går inte att ta bort ur
+   git-historiken. Följden skrivs ut:
+   - vem som helst kan gå med i Kompisarna;
+   - "testarna i gruppen" i KB-D4 (#678) och "Kompisarna först" för S3 (#676, #681) gäller därför en öppen grupp, inte en sluten;
+   - facitsvaren från (33) kommer från dem som gått med via länken, och vilka de är vet inte projektet.
+2. **Integritetssidan står som den är:** Halkvakt ges ut av Axel Lagerlöf, Malmö, under namnet Lagerlöf Labs.
+3. **Föreningen rättas i allt som ska ut eller styr.** Den bildades aldrig (#500), och Halkvakt drivs av Bengt och Axel som
+   privatpersoner (Bengt 22/10).
+   - Rättat: marknadsplanen och dess sida (pressrubriken och partnerbreven), FINANSIERING, bedömningen, tavlan, projektkartan och
+     PLAY-KONTO.
+   - MALET är fryst, så där står en daterad not med hänvisning hit.
+   - Utkasten i `docs/skyltfonden-2026-09-28/` och historiken står kvar.
+4. **Skyltfondens besked får en frist** (`skyltfonden-besked` 15/12, förvarning 7 dygn). Bengt angav ingen preferens, så Claude valde
+   frist med plan.
+   - Vid ja: pressnotisen ur marknadsplanen, granskningen och projektstarten, som FINANSIERING och MALET beskriver.
+   - Vid nej: Bengt och Axel bestämmer vad som står kvar utan pengarna. Planen för det skrivs när beskedet kommit. Det som bara
+     pengarna bar är granskningen och timmarna i arbetspaketen.
+5. **QR-koden väntar på Google Play.** iPhone-länken ska då vara App Store-länken (#601), inte TestFlight.
+6. **PR #1093** (inskicket med (32)) stängs, eftersom den är överspelad av #681.
+
+**Rättat i samma PR, utan beslut:**
+- Projektkartans sju förardelar. Domänen är vår sedan 13/10 (tillägget till #559) och e-posten går via Zoho. Postningen till X är i gång (#663),
+  presskitet är ute (#588), och (27) och (28) låg i Play Console 17/10.
+- PRODUKTBOK, betaguiden, Play-texten om Betatest och PLAY-dokumentens rader om PR #1159.
+- Claudes fel i #678: den beskrev utkasten som "den skickade" ansökan.
+
+**Åtgärdslistan:** `docs/ATGARDER-FORARNA-2026-10-23.md` (B6-01 och framåt).
+
+**Stomdokument:** APP förarna och butikerna, BED §4.2 omgång 1 för förarna avgjord

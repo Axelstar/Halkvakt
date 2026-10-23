@@ -27,7 +27,9 @@ den själv.
 
 **Betatest bara för testare (DECISIONS #681, 22/10).** Från iOS 0.3.13 (33) syns Betatest och facitfrågan bara i TestFlight och i
 utvecklarbyggen, och i ett App Store-bygge gäller inte en brytare som slagits på i en äldre version (`Prefs.betatestTillaten`).
-Android saknar ännu en offentlig kanal och ska få **samma spärr före Google Plays produktion**; Android-appen på main har den inte än.
+Android har samma spärr sedan **PR #1159, sammanslagen 23/10** (b4f68bc6): en byggflagga (`-Phalkvakt.betatest`,
+`BuildConfig.BETATEST_TILLATEN`), och `android.yml` bygger produktionens AAB med `betatest=false`. Där syns varken brytaren eller
+raden i Integritet, och en påslagen brytare gäller inte (`Prefs.betatestPa`). Testbyggena har Betatest.
 
 ## Grundfrågorna
 

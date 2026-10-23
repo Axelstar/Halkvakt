@@ -50,10 +50,10 @@ Kontotypen väljs vid registreringen och styr både vad som krävs och vad som s
 
 **Tre saker gör valet skarpt:**
 
-1. **Organisationen finns inte än.** Skyltfondspaketet har en obesvarad fråga: *sökande — privat eller
-   ideell förening?* (bedömningen §4.2). Väljs organisationskontot måste föreningen finnas, ha ett
-   DUNS-nummer och en webbplats, och det är 30 dagars ledtid från i dag — alltså **20 oktober i bästa
-   fall**, tio dagar före betan.
+1. **Det finns ingen organisation.** Halkvakt drivs av Bengt och Axel som privatpersoner (Bengt 22/10,
+   DECISIONS #683). Föreningen som planerades bildades aldrig (#500), och Skyltfondsansökan gick in med
+   Bengt som privatperson (#404). Ett organisationskonto kräver en organisation med DUNS-nummer och
+   webbplats, och DUNS tar upp till 30 dagar. *(Omskriven 23/10; stod 20/9 som en öppen fråga om en förening.)*
 2. **Apple-kontot är Individual i Axels namn** (CLAUDE.md, 31/8). Ett organisationskonto hos Google och
    ett individkonto hos Apple ger två olika säljare för samma app.
 3. **Ett personligt konto exponerar en privatperson.** Officiellt namn och land visas på Google Play.
@@ -88,6 +88,7 @@ tappas appen. Samma resonemang som CLAUDE.md redan har om signeringsnyckeln.
 
 **Läget 22/10** (rättat 22/10 ur STATUS.md, DECISIONS, `android/app/build.gradle.kts` och git; tabellen stod till dess på läget
 20/9: 0.3.1 (4), Data Safety *osann* och inget uppladdningsflöde). Det som saknar källa här står som *oklart, fråga Axel*.
+Betatest-spärren och butikstexten rättade 23/10 (DECISIONS #683).
 
 | Sak | Läget 22/10 | Källa |
 | :-- | :-- | :-- |
@@ -98,10 +99,10 @@ tappas appen. Samma resonemang som CLAUDE.md redan har om signeringsnyckeln.
 | Identitetsgranskningen | ⚠️ inskickad till Google 4/10, och enligt DECISIONS #640 (18/10) och #643 väntar Play internt på den. Men Axel hade 0.3.13 (28) i **internt test** på sin Android 17/10 (commit 3cd31a97, DECISIONS #681 punkt 2), vilket kräver att appen finns i Play Console. Om granskningen är klar: **oklart, fråga Axel** | TAVLA kort #219 (4/10); DECISIONS #640, #681; 3cd31a97 |
 | Signeringsnyckeln | ✅ i GitHub Secrets. ⚠️ Efter första Play-uppladdningen är nyckeln bunden hos Google (CLAUDE.md), och (27) är uppladdad (a874fbb1). Vilken nyckel den bar, och om jks-filen ligger i iCloud: **oklart, fråga Axel** | CLAUDE.md; a874fbb1 |
 | **Data Safety-deklarationen** | ✅ sann sedan 20/9 (kort #214, DECISIONS #270), radering *Nej* 26/9 (#378), policyn rättad 23/9 och 1/10 (#320, #432). Om formuläret är ifyllt i Play Console: **oklart, fråga Axel** | `docs/PLAY-DATASAFETY.md` |
-| Betatest-spärren | ❌ inte på Android: från iOS (33) syns Betatest bara i TestFlight och utvecklarbyggen; Android ska få samma spärr före Google Plays produktion | DECISIONS #681 punkt 3 |
+| Betatest-spärren | ✅ **PR #1159 sammanslagen 23/10** (b4f68bc6): en byggflagga, `-Phalkvakt.betatest` (`BuildConfig.BETATEST_TILLATEN`, standard true). `android.yml` bygger produktionens AAB med valet `betatest=false`, och då syns varken brytaren eller raden i Integritet, och en påslagen brytare gäller inte (`Prefs.betatestPa`). Byggena vid push till main är testbyggen med Betatest. iOS: från (33) bara i TestFlight och utvecklarbyggen | DECISIONS #681 punkt 3; PR #1159 (d93f3206) |
 | Slutet test | ❌ **inte startat** — tolv testare i fjorton löpande dygn krävs före produktion (§1); inga testare bokförda | TAVLA *Tolv testare till Play-perioden* (Verify öppen); DECISIONS #681 punkt 3 (*ingen offentlig kanal*) |
 | Introduktion på Android | ❌ ingen på main; första trycket på Starta ber om plats och notiser. PR #1029 lägger en förklaring före Androids behörighetsrutor (3cd31a97), inte i main | kort #284 (c); `docs/APPEN.html` §4 |
-| Butikstext, ikon, skärmbilder | Butikstexten `marknadsforing/butik/butikstext.md` (rättad 2/10), ikon 512 och feature graphic gjorda 1/10; Android-skärmbilderna: **oklart, fråga Axel** | TAVLA kort #219, fredagens lista 2/10 |
+| Butikstext, ikon, skärmbilder | Butikstexten `marknadsforing/butik/butikstext.md` (rättad 2/10, och 23/10: betatestet bara i testversionen, #681, #683), ikon 512 och feature graphic gjorda 1/10; Android-skärmbilderna: **oklart, fråga Axel** | TAVLA kort #219, fredagens lista 2/10 |
 
 ↪ **22/10:** stycket nedan skrevs 20/9. #214 är rättad sedan 20/9, och en första uppladdning är gjord ((27), a874fbb1).
 

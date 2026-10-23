@@ -81,10 +81,13 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [ ] 📣 **#281 MARKNADSFÖRING UTAN PENGAR** (Axels order 2/10 00:17: *"vi måste verkligen börja med marknadsföring utan att spendera
   pengar … förstår att vi måste köpa hemsidan men utöver det"*). Planen: `docs/MARKNADSFORING-NOLLBUDGET.md`, artefakt
   https://claude.ai/artifact/XcFLRPAK4Y2FK52Sa1tUeX (källa `docs/MARKNADSFORING.html`, privat tills Axel delar) — bygger på det som finns
-  (Trafikverkets data, livekartan, marknadsmotorn, föreningen, Skyltfonden 15/12, Bulltoftabanan jan–mar, kuvösen) och GTM.md:s kanaler
+  (Trafikverkets data, livekartan, marknadsmotorn, ~~föreningen~~ (↪ 23/10), Skyltfonden 15/12, Bulltoftabanan jan–mar, kuvösen) och GTM.md:s kanaler
   utan annonsdelarna. Väderstyrd tidslinje: frost ⇒ lokalpress + forum · snökaos ⇒ TT + riks · 15/12 ⇒ Skyltfondsnotis · jan–mar ⇒ Bulltofta.
-  🔑 **Axels sex handgrepp (§4):** domänen · ansiktet (rekommendation: föreningen som avsändare, Axel med namn i presskitet) · varumärkeskontona ·
+  🔑 **Axels sex handgrepp (§4):** domänen · ansiktet (~~rekommendation: föreningen som avsändare, Axel med namn i presskitet~~ ↪ 23/10) · varumärkeskontona ·
   demovideon 60 s · partnerbreven skickas från hej@halkvakt.se · vem som klistrar in i FB-grupper (inte Axel, DECISIONS #18).
+  ↪ **23/10 (DECISIONS #683):** föreningen bildades aldrig (#500) och är varken tillgång eller avsändare. Halkvakt drivs av Bengt och Axel
+  Lagerlöf som privatpersoner. Ansiktet är avgjort (#589): vi skriver som Halkvakt, Axel med namn bara i pressmaterialet. Partnerbreven
+  skickas av Bengt och Axel med namn.
   🔨 **Claude (§5), utan att fråga:** marknadsmotorn igång igen med snölarmet · press.html som presskit · fyra pressmeddelanden · partnerbrev
   (NTF, STR, Trafikverket, If/Folksam, Halkvarning.se) · betygsfrågan i appen efter tredje resan · måndagsmätningen i bedömningen ·
   **"Halkvakt live"** (Axels idé 00:24): motorn postar riktiga larm själv till X/Bluesky/Mastodon/FB-sidan. Push till användarna är ett ägarbeslut (§4.2).
