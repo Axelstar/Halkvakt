@@ -156,6 +156,10 @@ genom en daterad post med båda signaturerna, och aldrig som en lättnad efter s
 Formen i appen, texten (*"Halkvakt tror: halka framöver."* / *"Halkvakt thinks: slippery ahead."*) och avstängningen (#560 punkt 8,
 #562 punkt 5, #573). De rör användaren, inte måttet.
 
+Den nya kandidaten på sex vintrar (#670), om den körs i skugga enligt `docs/FORREGISTRERING-ERSATTNING-2027-28.md` (#691). Den
+talar inte i appen och rör varken regeln, grindarna eller den här domen. Den här domens mått används i mars också för att välja
+kandidat inför 2027/28 (där §5), men domen över den frysta fälls som här står.
+
 ## 10. Före signeringen
 
 **(a) Radarns tal R.** Läses 26/10 enligt #568: visar alla tre kurvorna en majoritet i bandet 0,1–0,5 på `rate_mean` blir R = 0,1,

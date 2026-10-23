@@ -16891,3 +16891,79 @@ före pulsklockan larmar den på det saknade jobbet.
 **Åtgärdslistan:** `docs/ATGARDER-KUVOSEN-2026-10-23.md` (B8-01 och framåt).
 
 **Stomdokument:** KUV §2 §3 §5 §7 §9–§12 efter genomgången, BED §6.1 testbädden och §4.2 tif och norr, LIV förregistreringen signeras 26/10
+
+## #690 (23/10 2026) Utkast: ersättningsregeln för den nya kandidaten inför 2027/28
+
+**Bengts ord 23/10:** *"skriv ett utkast till ersättningsregeln"* (#689 punkt 3).
+
+**Utkastet** är `docs/FORREGISTRERING-ERSATTNING-2027-28.md`. Bengt och Axel signerar innan den nya kandidatens provning trycks, och
+fristen är `ersattningsregel-ny-kandidat` 26/10. I korthet:
+- **Underlaget** är bara den nyas sex prov, med en vinter i taget utanför, och den frystas tal på 2022/23 (#680). Jämförelsen gäller
+  på samma punkter. Är populationerna olika räknas båda om på de gemensamma punkterna.
+- **Villkoren:** den nya tar platsen bara om alla fyra håller.
+  - V1: proven är klarade, och högst en vinter är borttagen.
+  - V2: den nya är bättre än den frysta på 2022/23. A2 ska vara minst X lägre totalt och inte X högre i norr eller söder. A1 får
+    vara högst 0,01 °C högre och A3 högst 0,05 procentenheter högre.
+  - V3: blandningen är bättre än RÅ varje utelämnad vinter.
+  - V4: blandningen är bättre än RÅ i norr och i söder i medel.
+- **Om villkoren håller:** kedjan byggs om till fysikens reserv, eftersom den levande tar långvågen ur MET. Ett paritetsprov körs
+  före deploy, och domen över 2027/28 får en egen förregistrering. Om något villkor inte håller står den frysta kvar, om den klarar
+  marsdomen, annars RÅ (#657).
+- **Bengts två val** görs före signeringen:
+  - X är (a) 0,25 procentenheter (förslag) eller (b) marginalen;
+  - marsdomen: (a) den nya tar platsen oavsett, eller (b) bara om den frysta faller, och annars går den nya i skugga 2027/28
+    (förslag).
+
+Inget utfall av den nya kandidaten finns. Indata för 2020-21 pågår, och 2021-22 återstår.
+
+**Stomdokument:** KUV §5 ersättningsregeln utkast
+
+## #691 (23/10 2026) Ersättningsregeln: den nya kandidaten i skugga från november om den klarar V1–V4, valet inför 2027/28 i mars, X = 0,25
+
+**Bengts ord 23/10:**
+- *"Ja, skriv in X = 0,25 procentenheter och marsdomen (b)"*.
+- Bengt stoppade sedan och frågade: *"är inte tanken att den nya ska ersätta den frysta redan från nu om den är bättre"*. Claude
+  svarade att förregistreringen som Bengt signerade 22/10 (#671) säger 2027/28 och *"ingen ändring för vintern 2026/27"*. Det kan
+  ändras före läsningen. Claude lade fram tre vägar och rekommenderade väg 2.
+- Bengt valde: *"Väg 2: den frysta signeras 26/10 och talar i vinter, och den nya körs i skugga från november om den klarar V1–V4.
+  Skriv om utkastet efter det."*
+
+**Beslut.**
+1. **Den frysta** signeras 26/10 (#689) och talar i appen hela vintern 2026/27. Ingenting i dess förregistrering ändras. §9 där
+   har fått en not om skuggan.
+2. **Den nya körs i skugga** från november om den klarar V1–V4, med X = 0,25 procentenheter i V2 (ERSATTNING-2027-28 §3).
+   - Den räknas i en egen kedja med fysikens reserv.
+   - Kedjan klarar först ett paritetsprov på 2024/25.
+   - Värdena loggas i en egen tabell bredvid `kandidat_skugga`.
+   - Fristen är `ny-kandidat-skugga` 15/11, och migrationen och deployen gör Bengt.
+   - Ingenting når förarna.
+3. **I mars 2027** döms båda med 2026/27 §4–§4b på det gemensamma fönstret, och den som klarar går vidare till 2027/28. Klarar
+   båda, tar den nya platsen bara om dess A2 är minst 0,25 procentenheter lägre. Klarar ingen, gäller RÅ (#657).
+4. **Marsdomens val (b)**, att den nya bara tar platsen om den frysta faller, ersätts av punkt 3. Valet görs nu på levande data för
+   båda, inte på den nyas historiska tal.
+5. **NY-KANDIDAT §10** har fått en daterad post. §5 punkt 1 ändras för skuggan från signeringen av ersättningsregeln.
+
+Inget utfall av den nya kandidaten är läst. Indata för 2020-21 pågår.
+
+**Stomdokument:** KUV §5 skuggan och valet inför 2027/28, LIV den nya kandidaten i skugga bredvid den frysta
+
+## #692 (23/10 2026) Ersättningsregeln signerad: den nya kandidaten i skugga från november om den klarar V1–V4, valet inför 2027/28 i mars
+
+**Bengts ord 23/10:** *"Jag har läst det omskrivna utkastet. Signera ersättningsregeln för mej och Axel och slå ihop #1170 när CI är grön."*
+
+**Signerad:** `docs/FORREGISTRERING-ERSATTNING-2027-28.md`. Bengt signerar för sig och för Axel via Bengt, som i #671. Dokumentets
+sha256 vid signeringen, före statusraden och signaturerna, är `15788047fc582f4fd8f06f5787d9900d4f17a574d02341e736fcffd9d6525214`. Det är versionen e7d96c30 i #1170, som Bengt läste.
+
+**Det som nu gäller:**
+- **V1–V4** (§3), med X = 0,25 procentenheter.
+- **Skuggan från november** (§4): egen kedja med fysikens reserv, paritet på 2024/25, egen logg och fristen `ny-kandidat-skugga`
+  15/11.
+- **Valet i mars** (§5), på levande data för båda.
+- **Ändringen av NY-KANDIDAT §5 punkt 1 för skuggan** (§8) gäller från och med i dag.
+
+**Följd:**
+- Den nya kandidatens provning får tryckas när träningen är grön (#689 punkt 1).
+- Fristen `ersattningsregel-ny-kandidat` är klar och borttagen.
+- Inget utfall av den nya kandidaten var läst vid signeringen. Indata för 2020-21 pågår.
+
+**Stomdokument:** KUV §5 ersättningsregeln signerad, LIV den nya kandidaten i skugga bredvid den frysta

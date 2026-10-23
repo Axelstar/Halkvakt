@@ -14,7 +14,7 @@
 | :-- | :-- | :-- | :-- |
 | B8-01 | Den nya kandidatens provning kan läsas före signeringen av 2026/27; spärren hindrar det inte | **klar** — *"Kör när träningen är klar"*, men efter den signerade ersättningsregeln (B8-03) | #689 |
 | B8-02 | När signeras förregistreringen för 2026/27? | öppen — *"26/10, direkt efter R"*; fristen 31/10 står kvar som yttersta datum (Bengt) | |
-| B8-03 | Ingen regel för när den nya kandidaten ersätter den frysta | öppen — *"Ja, en kort regel först"*: utkast av Claude, signerat av Bengt och Axel före provningen (fristen `ersattningsregel-ny-kandidat` 26/10) | |
+| B8-03 | Ingen regel för när den nya kandidaten ersätter den frysta | **klar** — signerad 23/10 (väg 2: skugga från november om V1–V4 håller, valet i mars på levande data, X = 0,25); `docs/FORREGISTRERING-ERSATTNING-2027-28.md` | #692 |
 | B8-04 | Två kandidater för 2027/28 på samma kort | **klar** — *"Håll isär, nytt kort"*: kort #362 för den nya, #321 för terrängen | #689 |
 | B8-05 | Saknas en kurva till R 26/10 | **klar** — *"0,5 står kvar"*, inskrivet i FORREGISTRERING-2026-27 §10 a | #689 |
 | B8-06 | Norr om 62° mitt i vintern (kort #317 b) saknar datum | öppen — *"Frist 15/11"* (`norr-62`, Bengt) | |
@@ -47,7 +47,7 @@
 | Nr | Brist | Ägare | Status | Stängd av |
 | :-- | :-- | :-- | :-- | :-- |
 | B8-20 | Övergångarna och försprånget i kuvösen med okorrigerad tif, eller bortvalda med skäl (fristen `kuvos-tif-lasningarna` 15/11); Ö-B saknar instrument (#658), väglagshistoriken är inte inläst | Claude | öppen | |
-| B8-21 | Ersättningsregeln, utkastet (B8-03) | Claude | öppen | |
+| B8-21 | Ersättningsregeln, utkastet (B8-03) | Claude | **klar** — `docs/FORREGISTRERING-ERSATTNING-2027-28.md`, omskrivet efter Bengts val 23/10 (väg 2, X = 0,25); signaturerna står kvar (B8-03) | #690, #691 |
 | B8-22 | Radarns tal R 26/10: kurva 2 (39257448840, körd 13:20 UTC, inte 06:20 som #568 säger) är oläst; kurva 3 körs 06:20 UTC i morgonavbrottens fönster | Claude | öppen | |
 | B8-23 | Utfallet 2022/23 (#680) vid signaturerna för 2026/27, enligt §10 f | Claude, Bengt | öppen | |
 | B8-24 | Jämförelsen i den nya kandidatens samman prövar inte att populationerna är lika och skriver inte ut n (`provning.py`) | Claude | öppen | |
@@ -67,3 +67,4 @@
 | B8-33 | KUV:s öppna kort för §5 listar #270, som enligt #657 hör till RÅ som kontroll och reserv | Claude | öppen | |
 | B8-34 | STATUS sade 57 öppna kort, kortkartan 56 | Claude | öppen | |
 | B8-35 | Den rensade olyckskopian i den privata hinken bär fortfarande minst ett namn; det är medvetet enligt #665 (bara regnummer och telefonnummer maskas) | Bengt | öppen | |
+| B8-36 | Den nya kandidatens skugga, om V1–V4 håller: egen kedja med fysikens reserv, paritet på 2024/25 och egen logg (fristen `ny-kandidat-skugga` 15/11) | Claude (kod), Bengt (migration och deploy) | öppen | |
