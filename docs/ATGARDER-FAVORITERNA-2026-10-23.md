@@ -13,14 +13,14 @@
 
 | Nr | Fråga | Status | Stängd av |
 | :-- | :-- | :-- | :-- |
-| B7-01 | Trafiken mot hinken: #617 kräver att den är mätt innan butiksversionen läser rapportfilen, och (33) är den versionen | pågår — *"Claude räknar på hämtningarna"*: en uppskattning ur appens hämtningar mot Pro-planens utgående trafik (#644), bokförd före inskicket av (33) | |
+| B7-01 | Trafiken mot hinken: #617 kräver att den är mätt innan butiksversionen läser rapportfilen, och (33) är den versionen | **klar** — cirka 173 kB per koll; Pro-planens 250 GB okachad trafik räcker till ungefär 4 800 användare med tio kollar om dagen, och kachad trafik har en egen kvot | #687 |
 | B7-02 | Favoriterna ligger i mätvakten, som aldrig färgar vakthunden röd | öppen — *"Driftlarm vid släppet"*: till driftlarmet när (33) släpps, med den långa delens sha256; fristen `favoriter-driftlarm` 15/11; Claude skriver koden, Bengt deployar | |
 | B7-03 | Vad räknas som Nytt i fliken? | **klar** — *"Som det är byggt"* (#639): allt utom kamerorna och restiderna i normal trafik; FAV §11 rättas av morgonsynken | #686 |
 | B7-04 | App Store-texten lovar "köer åt ditt håll" | **klar** — *"där Trafikverket mäter dem"*, rättat i `appstore-ios.md` | #686 |
 | B7-05 | Rapporten visar bara lägesfilens tid, aldrig rapportfilens | öppen — *"Visa tiden"*: *Rapporten från HH:MM* i bygget efter (33), båda apparna (Claude) | |
 | B7-06 | iPhone slår ihop starter inom 3 h till samma resa, Android börjar en ny vid varje start | **klar** — *"Låt stå, skriv ut"*: i betaguiderna i samma PR, i FAV §6 av morgonsynken | #686 |
 | B7-07 | Granskaren ser inte favoriterna utan en körning på 1 km | pågår — *"Bifoga en inspelning"*: meningen i granskningsanteckningen och steg 2 i `appstore-ios.md` klara; Bengt spelar in fliken och rapporten på (33) | |
-| B7-08 | Den långa delen skrevs om i 140 av 144 körningar 22–23/10 | pågår — *"Utred utan att ändra"*: verkliga ändringar eller ordningen i Trafikverkets svar (Claude, läs-only) | |
+| B7-08 | Den långa delen skrevs om i 140 av 144 körningar 22–23/10 | **klar** — verkliga ändringar: 10–11 nya och 3 borttagna linjer per körning (vägarbeten som börjar och slutar), identisk ordning | #687 |
 
 ## B. Rättelser (samma PR som besluten)
 
@@ -66,3 +66,4 @@
 | B7-31 | rss ges som 0 av körtiden, så minnet mäts bara som heap (fyndet i #617) | Claude | öppen | |
 | B7-32 | Favoritprovet och synken: en vecka med (33), sedan beslut om de ska fortsätta | Bengt | öppen | |
 | B7-33 | Tider på Android: schemaläggning och notis för det nya enligt kort #358 | Claude | öppen | |
+| B7-34 | Den snabba delen byter sha256 i varje körning bara för genereringstiden, så varje koll hämtar den (#687) | Claude | öppen | |

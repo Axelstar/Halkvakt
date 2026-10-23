@@ -16719,3 +16719,60 @@ Bengt svarade 23/10:
 **Åtgärdslistan:** `docs/ATGARDER-FAVORITERNA-2026-10-23.md` (B7-01 och framåt).
 
 **Stomdokument:** FAV inledningen och §1–§7 §11 §12 efter genomgången, APP favoriterna och butikstexten
+
+## #687 (23/10 2026) Trafiken mot hinken räknad: cirka 173 kB per koll, och Pro-planen räcker till ungefär 4 800 användare med tio kollar om dagen; den långa delen ändras på riktigt
+
+**Underlag:** beslut 1 och 8 i #686 (Bengt 23/10: *"Claude räknar på hämtningarna"* och *"Utred utan att ändra"*). Utredningen var
+läs-only 23/10 och omfattade:
+- koden i `supabase/functions/favoriter/main.ts`, `publish/rapport-core.ts` och apparnas `RapportRepo` med vyerna;
+- 11 GET utan nyckel mot den publika hinken `favoriter`, 05:56–06:16 UTC.
+
+Skripten och svaren är sparade utanför repot.
+
+**Den långa delen (B7-08) ändras på riktigt.**
+- Den skrivs om när `sha256(lang.linjer)` ändras (`main.ts:82–83`). Genereringstiden ingår inte.
+- Två par körningar jämfördes: 05:56→06:06 och 06:06→06:16 UTC.
+  - Ordningen var identisk, och ingen geometri hade ändrats.
+  - Skillnaden var 11 respektive 10 nya linjer (vägarbeten, olyckor, hinder och vilt) och 3 borttagna.
+  - Det är ungefär 1 % av cirka 1 400 linjer, eller 0,6–0,9 kB packat av cirka 110 kB.
+- Ändringarna kommer från att vägarbeten börjar och slutar enligt sin tidtabell (filtret start ≤ nu < slut i `rapport-core.ts`).
+- En stabil ordning hade inte sparat något. Linjerna innehåller inga fält som ändras av sig själva.
+- De fyra körningarna av 144 som inte skrev om delen (21:46, 23:46, 01:36 och 04:26 UTC) är nattens lugn.
+
+**När apparna hämtar:** bara när föraren tittar, det vill säga när fliken visas, när en rapport öppnas, vid dra-för-att-uppdatera
+eller *Kolla igen*, och på Android också när föraren går tillbaka till listan.
+- Ingen hämtning sker i bakgrunden, och ingen alls utan sparade resor.
+- Manifestet hämtas varje gång. En del hämtas bara när dess sha256 skiljer sig från den sparade.
+- Den snabba delen bär genereringstiden och byter sha256 i varje körning. En koll hämtar därför i praktiken båda delarna.
+
+**Per koll** (uppmätt från CDN:et, kroppen packad med gzip): manifest 305 B + snabb del 62–63 kB + lång del 109–110 kB =
+**cirka 173 kB**. Utan den långa delen hade det varit cirka 64 kB.
+
+**Per månad** (30 dagar, GB = 10⁹ byte, svarsrubriker inte medräknade):
+
+| Användare med favoriter | 2 kollar om dagen | 5 kollar om dagen | 10 kollar om dagen |
+| --: | --: | --: | --: |
+| 100 | 1,0 GB | 2,6 GB | 5,2 GB |
+| 1 000 | 10,4 GB | 26,0 GB | 52,0 GB |
+| 10 000 | 104,0 GB | 259,9 GB | 519,8 GB |
+
+**Mot Pro-planen** (#644). Källor: supabase.com/pricing och supabase.com/docs/guides/platform/manage-your-usage/egress, lästa 23/10.
+- Planen innehåller 250 GB okachad och 250 GB kachad utgående trafik. Kvoterna är separata.
+- Därefter kostar okachad trafik 0,09 USD/GB och kachad 0,03 USD/GB.
+- Hinken svarar via Smart CDN (`x-smart-cdn: true`), så träffar i cachen räknas som kachad trafik.
+- Även om all trafik vore okachad räcker 250 GB till cirka 4 800 användare med tio kollar om dagen, eller 9 600 med fem.
+- 10 000 användare med tio kollar om dagen ger som mest cirka 24 USD i månaden över kvoten.
+- Kvoten delas med projektets övriga trafik.
+
+**Slutsats:** trafiken hindrar varken inskicket av (33) eller släppet. Kalkylen i FAV §7 ("cirka 60 kB", "700 användare inom
+5 GB") räknade varken med den långa delen eller med Pro-planen. Den står redan i morgonsynkens lista i #686, och talet att föra in
+är 173 kB per koll.
+
+**Utan beslut, till åtgärdslistan (B7-34):** den snabba delen byter sha256 i varje körning bara för genereringstiden. Om tiden
+flyttades till manifestet skulle delen bara hämtas vid en verklig ändring. Hur mycket det sparar är inte utrett, eftersom
+restiderna och färjorna i den snabba delen också ändras ofta.
+
+**Agentens fel, rättat här:** hjälpagenten skrev att planen är oklar och utgick från gratisnivån (#334). Projektet har Pro sedan
+19/10 (#644, #652), och svaren från hinken bekräftar Smart CDN, som bara finns i Pro.
+
+**Stomdokument:** FAV §7 trafiken räknad
