@@ -17093,3 +17093,20 @@ största står för 10 %. W-A4 är alltså inget hinder i stationstimmar. Hur m�
 **Ingen olycka är läst.**
 
 **Stomdokument:** KUV olycksförregistreringen skärpt före signeringen
+
+## #697 (23/10 2026) Olycksförregistreringen signerad: facit i kuvösen och W-A:s andra serie, med sikten skärpt (#696)
+
+**Bengts ord 23/10:** *"jag och axel signerar detta så du kan bygga läsaren"*
+
+**Signerad:** `docs/FORREGISTRERING-OLYCKOR-2024-25.md`, versionen i #1174 med skärpningarna i #696, som Bengt och Axel läste.
+Dokumentets sha256 vid signeringen, före statusraden och signaturerna, är `d1a2b46d16ccf784c03a305206ff5a92fdee547dd19a863dbd3a5f57a61686e8`.
+
+**Det som nu gäller:** urvalet (§2), tidszonsproven (§3), fråga (a) med halk mot alla som huvudjämförelse (§4), och fråga (b) med W-A:s
+regler och sikten som avgörs med tre villkor (§5). Fryst (§8).
+
+**Följd:**
+- Läsaren byggs: inläsningen, urvalet och tidszonen, sedan (a) och (b), med fritexten och platsen aldrig i en logg.
+- Inget är läst vid signeringen; olycksfilen ligger orörd i hinken.
+- Fristen `olyckor-forregistrering` är klar och borttagen.
+
+**Stomdokument:** KUV olycksförregistreringen signerad

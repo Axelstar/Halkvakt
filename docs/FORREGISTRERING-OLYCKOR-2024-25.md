@@ -1,7 +1,8 @@
 # Förregistrering — Trafikverkets olyckor 2024/25: facit i kuvösen och en andra serie för W-A
 
-**Status: UTKAST 22/10 2026, rättat 23/10** (DECISIONS #665, #669; §1 och §5 efter #675 och #689; §2–§5 och §7 skärpta efter #696). Bengt och Axel signerar **innan** någon olycka läses mot kuvösen eller vinden.
-Fristen är `olyckor-forregistrering`, 15/11.
+**Status: SIGNERAD 23/10 2026** (Bengt och Axel, DECISIONS #697; dokumentets sha256 vid signeringen, före den här raden och
+signaturerna: `d1a2b46d16ccf784c03a305206ff5a92fdee547dd19a863dbd3a5f57a61686e8`). Utkastet: DECISIONS #665, #669; §1 och §5 efter #675 och #689; §2–§5 och §7 skärpta efter #696.
+Signerad **innan** någon olycka läses mot kuvösen eller vinden.
 
 Källorna:
 - olyckorna i TRV 2026/111808, kompletteringen 20/10 (`docs/KUVOS-LEVERANSEN-2026-10-02.md` §5i);
@@ -133,5 +134,5 @@ Det som fryses är urvalet (§2), tidszonsproven (§3), populationerna, avstånd
 
 | | Datum | Signatur |
 | :-- | :-- | :-- |
-| Bengt | | |
-| Axel | | |
+| Bengt | 2026-10-23 | Bengt i chatten: *"jag och axel signerar detta så du kan bygga läsaren"* (DECISIONS #697) |
+| Axel | 2026-10-23 | Via Bengt i samma ord (DECISIONS #697) |
