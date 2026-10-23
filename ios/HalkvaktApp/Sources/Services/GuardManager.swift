@@ -34,13 +34,8 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
     }
     var alertCount = 0
     var lastSaid: String?
-    /// Gammal väglagsdata (designen M–N): sant så länge den laddade datan är för gammal för att lita på.
+    /// Sant så länge den laddade väglagsdatan är för gammal. Halkvarningarna är då avstängda, så På vakt säger inte "Tyst så länge".
     var dataStale = false
-    /// När den laddade datan skapades — "SENAST FÄRSK 14:05" på raden i På vakt.
-    var dataTime: Date?
-    /// Den mörka raden överst i På vakt i 8 s medan rösten säger repliken om gammal data.
-    var staleToast = false
-    private var staleToastTask: Task<Void, Never>?
 
     private let manager = CLLocationManager()
     private var engine: AlertEngine?
@@ -67,10 +62,8 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
     // När vi väcks PROVAR vi: full positionsström i högst 90 s. Ser vi bilfart startar
     // vakten på riktigt; annars släcks strömmen igen. Det är iOS-motsvarigheten till
     // Androids rörelseigenkänning. Apples lås gäller Bluetooth, inte plats.
-    private static let probeMaxS: TimeInterval = 90
-    private static let probeStartKmh = 15.0
-    private var probing = false
-    private var probeStartedAt: Date?
+    // Fartkollen (90 s, 15 km/h) bor i motorpaketet, där ci provar den (Fartkollen.swift, kort #359).
+    private var fartkoll = Fartkollen()
     /// Den här körningen startades av självväckningen (för kvittots körtid).
     private var autoWoke = false
     /// Vila efter misslyckat prov — annars kan en sen positionsleverans starta nästa direkt.
@@ -104,8 +97,6 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
 
     // MARK: - Snapshot
 
-    private var staleAnnounced = false
-
     // Kort #258 (DECISIONS #371): under resan laddas vägdatan om var 30:e minut, som på Android (SnapshotSchedule) —
     // en laddning i taget, och efter ett fel väntar nästa försök en minut. Förut laddades den bara vid start och när
     // Vakten-vyn visades, så åldersvakten prövades aldrig igen under en lång resa.
@@ -126,19 +117,9 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
             if !snap.stations.isEmpty { stations = snap.stations }
             if !fresh, running, let engine { engine.updateHazards(gate.hazards) }
             else { engine = AlertEngine(gate.hazards, EngineConfig.withPrefs()) }
-            nextLoadAt = .now.addingTimeInterval(Self.refreshEvery)
+            // Gammal sparad fil: nytt försök om en minut, inte om 30.
+            nextLoadAt = .now.addingTimeInterval(gate.stale && snap.fromCache ? Self.retryAfter : Self.refreshEvery)
             dataStale = gate.stale
-            dataTime = snap.generatedAt > .distantPast ? snap.generatedAt : nil
-            if gate.stale && running && !staleAnnounced {
-                staleAnnounced = true
-                SpeechService.shared.speak(AgeGate.staleLine)
-                staleToast = true
-                staleToastTask?.cancel()
-                staleToastTask = Task {
-                    try? await Task.sleep(for: .seconds(8))
-                    if !Task.isCancelled { self.staleToast = false }
-                }
-            }
             let df = DateFormatter(); df.dateFormat = "HH:mm"
             let tid = snap.generatedAt > .distantPast ? df.string(from: snap.generatedAt) : "okänd tid"
             snapshotInfo = "\(gate.hazards.count) faror · väglag \(tid)"
@@ -201,19 +182,17 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
 
     /// Väckt av iOS utan att vakten kör: prova om vi är i en bil.
     private func beginProbe() {
-        guard !running, !probing, Prefs.shared.autoWake else { return }
+        guard !running, !fartkoll.active, Prefs.shared.autoWake else { return }
         if let t = manualStoppedAt, Date.now.timeIntervalSince(t) < Self.noProbeAfterManualStopS { return }
         if let t = lastProbeFailedAt, Date.now.timeIntervalSince(t) < Self.probeCooldownS { return }
-        probing = true
-        probeStartedAt = .now
+        fartkoll.begin(t: Date.now.timeIntervalSince1970)
         manager.allowsBackgroundLocationUpdates = true
         manager.startUpdatingLocation()
         print("[Vakten] väckt — provar farten")
     }
 
     private func endProbe(startGuard: Bool) {
-        probing = false
-        probeStartedAt = nil
+        fartkoll.end()
         if startGuard {
             print("[Vakten] bilfart — startar själv")
             Prefs.shared.lastAutoWakeAt = .now      // kvittot: vaknade själv
@@ -223,7 +202,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
             start()
         } else {
             lastProbeFailedAt = .now
-            manager.stopUpdatingLocation()
+            if !running { manager.stopUpdatingLocation() }   // kort #359: aldrig under en vakt som kör
             print("[Vakten] ingen bilfart — somnar om")
         }
     }
@@ -232,6 +211,9 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         guard !running else { return }
         print("[Vakten] startar")
         running = true
+        // Kort #359: startas vakten för hand medan självväckningens fartkoll pågår måste kollen ta slut här. Annars gick varje
+        // position till kollen, och när den gav upp efter 90 s stängde den positionen under en vakt som stod igång.
+        fartkoll.end()
         idleStop = IdleStop()
         // Ny resa bara om det gått länge sedan förra; annars fortsätter tid och sträcka.
         let sameTrip = tripEndedAt.map { Date.now.timeIntervalSince($0) < Self.sameTripWithin } ?? false
@@ -245,8 +227,8 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
             // behålls det gamla — annars hade varningarna före macken fallit utanför "alla".
             Prefs.shared.tripStart = startedAt
         }
+        Favoriter.shared.resanBorjar(ny: !sameTrip)   // kort #357: bara med brytaren på
         tripEndedAt = nil
-        staleAnnounced = false
         prevLoc = nil
         // ALLTID sant när vakten startas av föraren (#273). Apple: "When the value of this property is
         // true and you start location updates while the app is in the foreground, Core Location configures
@@ -288,6 +270,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
     }
 
     func stop() {
+        let korde = running
         Task { _ = await FacitSender.flush() }   // S4: resan är slut — osända svar går iväg
         if running, autoWoke, let t0 = startedAt {
             Prefs.shared.lastAutoWakeMinutes = max(1, Int(Date.now.timeIntervalSince(t0) / 60))
@@ -296,12 +279,12 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         if running { manualStoppedAt = .now }
         running = false
         startRequested = false
-        probing = false; probeStartedAt = nil
+        fartkoll.end()
         tripEndedAt = .now
         // Redo efter tur (designen 01b): kvittot behöver resans slut och sträcka.
         Prefs.shared.lastTripEnd = tripEndedAt
         Prefs.shared.lastTripKm = distanceKm
-        staleToast = false
+        if korde { Favoriter.shared.resanSlutar(km: distanceKm) }   // kort #357: frågan på Redo., bara med brytaren på
         headsUpTask?.cancel()
         manager.stopUpdatingLocation()
         dismissTask?.cancel()
@@ -365,10 +348,12 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         prevLoc = loc
         recomputeNearby()
 
-        if probing {
-            let kmh = loc.speed >= 0 ? loc.speed * 3.6 : 0
-            if kmh >= Self.probeStartKmh { endProbe(startGuard: true); return }
-            if let t0 = probeStartedAt, Date.now.timeIntervalSince(t0) > Self.probeMaxS { endProbe(startGuard: false) }
+        if fartkoll.active {
+            switch fartkoll.onFix(t: Date.now.timeIntervalSince1970, kmh: loc.speed >= 0 ? loc.speed * 3.6 : 0) {
+            case .startGuard: endProbe(startGuard: true)
+            case .sleep: endProbe(startGuard: false)
+            case .waiting: break
+            }
             return
         }
         // Väckt av betydande förflyttning medan vakten är av ⇒ prova.
@@ -378,6 +363,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         }
 
         guard running else { return }
+        if loc.horizontalAccuracy >= 0 { Favoriter.shared.fix(lon: loc.coordinate.longitude, lat: loc.coordinate.latitude) }   // #357
         if !loading, Date.now >= nextLoadAt { Task { await refreshSnapshot() } }   // #258: också när första laddningen föll
         guard let engine else { return }
 

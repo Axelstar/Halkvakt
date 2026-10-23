@@ -102,7 +102,17 @@ const LS_STIL = `.dok{max-width:760px}.svar{font:500 19px/1.5 var(--sans);color:
 const LS_APP = "https://apps.apple.com/se/app/id6806939784";
 const LS_MARKE = `<svg viewBox="3 3 94 83" aria-hidden="true"><path fill-rule="evenodd" fill="#FFC94A" d="M55.196 6 L96.196 77 A6 6 0 0 1 91 86 L9 86 A6 6 0 0 1 3.804 77 L44.804 6 A6 6 0 0 1 55.196 6 Z M46.4 32 L53.6 32 L52 58 L48 58 Z M45.6 68 A4.4 4.4 0 1 0 54.4 68 A4.4 4.4 0 1 0 45.6 68 Z"/></svg>`;
 
-function lsSkal(o: { titel: string; beskrivning: string; adress: string; rot: string; innehall: string }) {
+// Strukturerad data (17/10, DECISIONS #629): vad sidan är, när den skrevs och vilken data den bygger på, så att sökmotorer och
+// AI-tjänster kan läsa tiden och källan utan att tolka texten.
+function lsJsonLd(o: { titel: string; beskrivning: string; adress: string; now?: Date }): string {
+  const d = { "@context": "https://schema.org", "@type": "WebPage", name: o.titel, description: o.beskrivning, url: o.adress, inLanguage: "sv-SE",
+    ...(o.now ? { dateModified: o.now.toISOString() } : {}),
+    isBasedOn: { "@type": "Dataset", name: "Trafikverkets öppna data: väglag, vägväderstationer och olyckor", license: "https://creativecommons.org/publicdomain/zero/1.0/" },
+    publisher: { "@type": "Organization", name: "Halkvakt", url: `${SIDBAS}/` } };
+  return `<script type="application/ld+json">${JSON.stringify(d).replace(/</g, "\\u003c")}</script>`;
+}
+
+function lsSkal(o: { titel: string; beskrivning: string; adress: string; rot: string; innehall: string; now?: Date }) {
   return `<!doctype html>
 <html lang="sv">
 <head>
@@ -120,11 +130,10 @@ function lsSkal(o: { titel: string; beskrivning: string; adress: string; rot: st
 <meta name="twitter:card" content="summary_large_image">
 <meta name="apple-itunes-app" content="app-id=6806939784">
 <link rel="icon" type="image/png" href="${o.rot}favicon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="${o.rot}assets/fonts/fonts.css">
 <link rel="stylesheet" href="${o.rot}assets/hv.css">
 <style>${LS_STIL}</style>
+${lsJsonLd(o)}
 </head>
 <body>
 <header class="topp">
@@ -170,12 +179,14 @@ function lsLage(kod: number, d: { vaglag: LanSegment[]; stationer: LanStation[];
 }
 
 /** Svaret överst: vad källorna säger, med deras ord. `vems` = "länets" eller "E4:s", `var` = "i länet" eller "vid vägen". */
-function lsSvar(l: LanLage, vems = "länets", var_ = "i länet"): string {
-  const vag = l.halt.length
-    ? `Trafikverket rapporterar halka eller vinterväglag på ${l.halt.length} av ${vems} ${l.vagavsnitt} vägavsnitt.`
-    : `Trafikverket rapporterar ingen halka på ${vems} ${l.vagavsnitt} vägavsnitt just nu.`;
+function lsSvar(l: LanLage, vems = "länets", var_ = "i länet", now?: Date): string {
+  const vad = l.halt.length
+    ? `halka eller vinterväglag på ${l.halt.length} av ${vems} ${l.vagavsnitt} vägavsnitt`
+    : `ingen halka på ${vems} ${l.vagavsnitt} vägavsnitt just nu`;
+  // Med klockslaget först (17/10, DECISIONS #629): en mening som en AI-tjänst eller en reporter kan citera som den står.
+  const vag = now ? `Kl. ${lsTid(now, false)} rapporterar Trafikverket ${vad}.` : `Trafikverket rapporterar ${vad}.`;
   const temp = l.kalla.length
-    ? `${lsPlural(l.kalla.length, "mätstation visar", "mätstationer visar")} vägbana på 0 °C eller kallare.`
+    ? `${lsPlural(l.kalla.length, "mätstation visar", "mätstationer visar")} vägbana på 0 °C eller kallare, kallast ${lsGrad(l.kalla[0].yta)} vid ${l.kalla[0].name}.`
     : `Ingen mätstation ${var_} visar vägbana under noll.`;
   return `${vag} ${temp}`;
 }
@@ -205,7 +216,7 @@ function lsVagsida(vag: (typeof VAGAR)[number], l: LanLage, now: Date): string {
   const andra = VAGAR.filter((x) => x.slug !== vag.slug).map((x) => `<a href="../${x.slug}/">${lsEsc(x.namn)}</a>`).join(" · ");
   const innehall = `<p class="dim">Uppdaterad ${lsTid(now)}</p>
 <h1>Är det halt på ${lsEsc(vag.rubrik)} just nu?</h1>
-<p class="svar">${lsEsc(lsSvar(l, `${vag.namn}:s`, "vid vägen"))}</p>
+<p class="svar">${lsEsc(lsSvar(l, `${vag.namn}:s`, "vid vägen", now))}</p>
 <h2>Väglaget enligt Trafikverket</h2>
 ${l.halt.length ? `<ul>\n${halt}\n</ul>${l.halt.length > 20 ? `\n<p class="dim">och ${l.halt.length - 20} till.</p>` : ""}`
     : `<p>Inget av vägens ${l.vagavsnitt} vägavsnitt har halka eller vinterväglag i Trafikverkets rapport.</p>`}
@@ -221,7 +232,7 @@ ${l.olyckor.length ? `<ul>\n${olyckor}\n</ul>` : `<p>Trafikverket rapporterar in
   return lsSkal({
     titel: `Är det halt på ${vag.rubrik} just nu? Väglag och vägtemperatur längs vägen | Halkvakt`,
     beskrivning: `Väglaget på ${vag.rubrik} just nu: Trafikverkets rapporter om halka, vägbanans temperatur vid mätstationerna längs vägen och pågående olyckor. Uppdateras var 30:e minut.`,
-    adress: `${SIDBAS}/vag/${vag.slug}/`, rot: "../../", innehall,
+    adress: `${SIDBAS}/vag/${vag.slug}/`, rot: "../../", innehall, now,
   });
 }
 
@@ -237,7 +248,7 @@ function lsLanssida(lan: (typeof LAN)[number], l: LanLage, now: Date): string {
   const andra = LAN.filter((x) => x.kod !== lan.kod).map((x) => `<a href="../${x.slug}/">${lsEsc(x.kort)}</a>`).join(" · ");
   const innehall = `<p class="dim">Uppdaterad ${lsTid(now)}</p>
 <h1>Är det halt i ${lsEsc(lan.kort)} just nu?</h1>
-<p class="svar">${lsEsc(lsSvar(l))}</p>
+<p class="svar">${lsEsc(lsSvar(l, "länets", "i länet", now))}</p>
 <p><a class="lank-mono" href="../../karta.html?lan=${lan.slug}">Se ${lsEsc(lan.kort)} på livekartan →</a></p>
 <h2>Väglaget enligt Trafikverket</h2>
 ${l.halt.length ? `<ul>\n${halt}\n</ul>${l.halt.length > 15 ? `\n<p class="dim">och ${l.halt.length - 15} till.</p>` : ""}`
@@ -254,7 +265,7 @@ ${l.olyckor.length ? `<ul>\n${olyckor}\n</ul>` : "<p>Trafikverket rapporterar in
   return lsSkal({
     titel: `Är det halt i ${lan.kort} just nu? Väglag och vägtemperatur | Halkvakt`,
     beskrivning: `Väglaget i ${lan.namn} just nu: Trafikverkets rapporter om halka, vägbanans temperatur vid mätstationerna och pågående olyckor. Uppdateras var 30:e minut.`,
-    adress: `${SIDBAS}/lan/${lan.slug}/`, rot: "../../", innehall,
+    adress: `${SIDBAS}/lan/${lan.slug}/`, rot: "../../", innehall, now,
   });
 }
 
@@ -286,7 +297,7 @@ ${vagrader}
   return lsSkal({
     titel: "Är det halt i Sverige just nu? Läget per län | Halkvakt",
     beskrivning: "Väglaget i alla 21 län just nu: Trafikverkets rapporter om halka, vägbanans temperatur och pågående olyckor. Uppdateras var 30:e minut.",
-    adress: `${SIDBAS}/lan/`, rot: "../", innehall,
+    adress: `${SIDBAS}/lan/`, rot: "../", innehall, now,
   });
 }
 
@@ -294,7 +305,8 @@ ${vagrader}
 export function byggLanssidor(d: { vaglag: LanSegment[]; stationer: LanStation[]; olyckor: LanOlycka[]; now: Date }): Record<string, string> {
   const lagen = new Map(LAN.map((lan) => [lan.kod, lsLage(lan.kod, d)] as const));
   const vagar = new Map(VAGAR.map((v) => [v.slug, lsVagLage(v.nyckel, d)] as const));
-  const ut: Record<string, string> = { "lan/index.html": lsOversikt(lagen, vagar, d.now), "data/lan.json": lsLanJson(lagen, vagar, d.now) };
+  const ut: Record<string, string> = { "lan/index.html": lsOversikt(lagen, vagar, d.now), "data/lan.json": lsLanJson(lagen, vagar, d.now),
+    "data/strackor.json": lsStrackorJson(d) };
   for (const lan of LAN) ut[`lan/${lan.slug}/index.html`] = lsLanssida(lan, lagen.get(lan.kod)!, d.now);
   for (const v of VAGAR) ut[`vag/${v.slug}/index.html`] = lsVagsida(v, vagar.get(v.slug)!, d.now);
   return ut;
@@ -309,6 +321,33 @@ function lsLanJson(lagen: Map<number, LanLage>, vagar: Map<string, LanLage>, now
     lan: LAN.map((lan) => ({ kod: lan.kod, namn: lan.namn, kort: lan.kort, slug: lan.slug, ...tal(lagen.get(lan.kod)!) })),
     vag: VAGAR.map((v) => ({ namn: v.namn, slug: v.slug, ...tal(vagar.get(v.slug)!) })),
   });
+}
+
+/** Vägrutans datafil (DECISIONS #611, NWT 17/10): varje läns vägar, sträcka för sträcka med Trafikverkets ord, och vägbanans
+ *  temperatur vid de stationer vars närmaste sträcka är vägen. Halt = samma regel som sidorna och motorn (arHalt). Litet nog för en
+ *  inbäddad ruta: rutan läser bara sitt läns del. */
+function lsStrackorJson(d: { vaglag: LanSegment[]; stationer: LanStation[]; now: Date }): string {
+  const ordning = (r: string) => { const m = /^(E|Väg)\s*(\d+)/.exec(r); return m ? (m[1] === "E" ? 0 : 1000) + Number(m[2]) : 9999; };
+  const lan = LAN.map((l) => {
+    const segs = d.vaglag.filter((x) => x.lan === l.kod && x.road);
+    const vagar = [...new Set(segs.map((x) => x.road as string))].sort((a, b) => ordning(a) - ordning(b));
+    return {
+      slug: l.slug, kort: l.kort,
+      vagar: vagar.map((vag) => {
+        const st = d.stationer.filter((x) => x.lan === l.kod && vagNyckel(x.vag ?? null) === vagNyckel(vag)).sort((a, b) => a.yta - b.yta);
+        return {
+          vag,
+          strackor: segs.filter((x) => x.road === vag).map((x) => ({
+            plats: (x.plats ?? vag).replace(new RegExp("^" + vag.replace(/\s+/g, "\\s*") + "\\s*"), ""),
+            halt: arHalt(x.code, x.info), text: x.text, info: x.info,
+          })),
+          kallast: st.length ? { namn: st[0].name, yta: st[0].yta } : null,
+          kalla: st.filter((x) => x.yta <= 0).length,
+        };
+      }),
+    };
+  });
+  return JSON.stringify({ generated_at: d.now.toISOString(), lan });
 }
 
 export const sidAdresser = () => [`${SIDBAS}/lan/`, ...LAN.map((l) => `${SIDBAS}/lan/${l.slug}/`),

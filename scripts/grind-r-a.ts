@@ -39,6 +39,7 @@ import { andelSe, utfallGolv, utfallTak, marginalPe } from "../publish/marginal.
 import { vaktdiagnos, led234, saknadeDygn, skrivSaknade } from "../publish/vaktdiagnos.ts";
 import { RADVAKT_SQL, karantanSql } from "../publish/snapshot-core.ts";
 import { molnForPunkter, type Molnklass } from "../publish/moln.ts";
+import { domrad } from "./domrad.ts";
 
 // ── Svepet ur TROSKLAR-RIMFROST §2. Inget tal är valt ur ett utfall.
 export const R1_MARGINAL = [0, 0.5, 1.0];   // yta ≤ daggpunkt + M
@@ -261,6 +262,10 @@ const bast = alla.reduce((a, b) => (b.ep.length > a.ep.length ? b : a));
 const stationer = new Set(bast.ep.map((e) => e.station)).size;
 const oppen = harRh && !!dom(stationstimmar(bast.ep), stationer, true);
 console.log(`\nGRIND R-A`);
+domrad(LAND === "se" ? "R-A" : `R-A ${LAND.toUpperCase()}`, !harRh ? "OAVGJORT" : oppen ? "LÄS" : "SPÄRRAD",
+  !harRh ? "korsgivarkontrollen går inte att utvärdera i det här arkivet (förhandsbesked)"
+    : oppen ? `spärren passerad: ${bast.ep.length} episoder, ${stationstimmar(bast.ep)} stationstimmar, ${stationer} stationer — läs R-A3–R-A5`
+    : `domspärren håller: ${stationstimmar(bast.ep)} stationstimmar på ${stationer} stationer`);
 if (!harRh) {
   console.log(`  OAVGJORT — korsgivarkontrollen (§3, tredje ledet) går inte att utvärdera i det`);
   console.log(`  här arkivet. Talen nedan är ett FÖRHANDSBESKED och får inte läsas som ett`);

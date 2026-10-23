@@ -65,6 +65,7 @@ function utvardera(stationer: Station[], T: number): Utfall[] {
 // 70 % är nio procentenheters gap mot två i brus, alltså avgjort med bred marginal.
 import { Z, andelSe, utfallGolv, utfallTak, grindutfall } from "./marginal.ts";
 import { vaktdiagnos, saknadeDygn, skrivSaknade } from "./vaktdiagnos.ts";
+import { domrad } from "../scripts/domrad.ts";
 const brus = (p: number, n: number) => n > 0 ? Z * andelSe(p, n) : NaN;
 
 function rapport(stationer: Station[], label: string, domspärr: boolean) {
@@ -91,6 +92,8 @@ function rapport(stationer: Station[], label: string, domspärr: boolean) {
     }
   }
   console.log("");
+  domrad("V-A", domspärr ? "SPÄRRAD" : basta !== null ? "KLARAR" : "FALLER",
+    domspärr ? "underlaget räcker inte" : basta !== null ? `från tröskeln ${basta} mm/h` : `på alla prövade trösklar (${TROSKLAR.join(", ")} mm/h)`);
   if (domspärr) {
     console.log(`DOMSPÄRR: underlaget räcker inte (kräver ≥ ${MIN_HANDELSER} fall i 0–10 km och ≥ ${MIN_STATIONER} stationer).`);
     console.log(`Ingen dom går att läsa av. Kurvan växer med varje regnvecka — mätningen upprepas.`);

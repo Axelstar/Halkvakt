@@ -36,6 +36,7 @@ import { Z, andelSe, medelSe, utfallTak, grindutfall, type Utfall } from "../pub
 import { vaktdiagnos, led234, saknadeDygn, skrivSaknade } from "../publish/vaktdiagnos.ts";
 import { RADVAKT_SQL, karantanSql } from "../publish/snapshot-core.ts";
 import { skrivFrysflaggan } from "../publish/frysflagga.ts";
+import { domrad } from "./domrad.ts";
 
 const K_NEIGHBOURS = 5;
 const MAX_KM = 50;
@@ -200,6 +201,8 @@ function vagpunktsgrinden(rows: Row[], selftest: boolean): Utfall {
   // Grinden öppnar om NÅGON kandidat klarar alla tre; en oavgjord kandidat håller den öppen för omprövning.
   const grind: Utfall = domar.includes("KLARAR") ? "KLARAR" : domar.includes("OAVGJORT") ? "OAVGJORT" : "FALLER";
   if (selftest) return grind;
+  domrad("Vägpunktsgrinden", grind === "KLARAR" ? "KLARAR" : grind === "OAVGJORT" ? "OAVGJORT" : "FALLER",
+    `kandidaterna ${KANDIDATER.map((k, i) => `${k.namn} ${domar[i]}`).join(", ")}`);
   if (grind === "KLARAR")
     console.log(`\nDOM: VÄGPUNKTSGRINDEN ÖPPEN — ${KANDIDATER.filter((_, i) => domar[i] === "KLARAR").map((k) => k.namn).join(", ")} klarar A1–A3 utan målets historik. Den kandidaten är offsetens väg till vägpunkten (TROSKLAR-SKUGGAN §3, kort #38b 4a).`);
   else if (grind === "OAVGJORT")

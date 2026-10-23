@@ -17,6 +17,7 @@
         <intent><action android:name="android.intent.action.TTS_SERVICE"/></intent>
     </queries>
     <application android:label="Halkvakt" android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
         android:theme="@android:style/Theme.Material.NoActionBar"
         android:icon="@mipmap/ic_launcher">
         <activity android:name=".MainActivity" android:exported="true">

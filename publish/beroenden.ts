@@ -217,6 +217,10 @@ export const KARTAN: Beroende[] = [
   { vard: "fonts.gstatic.com", roll: "bygg",
     matar: "typsnittsfilerna bakom fonts.googleapis.com",
     brister: "samma som fonts.googleapis.com", bevakad: "", signal: "OKÄND" },
+  // Licensadressen i länssidornas strukturerade data (publish/lanssidor.ts, 17/10, DECISIONS #629): en adress i sidan, ingen hämtar därifrån.
+  { vard: "creativecommons.org", roll: "bygg",
+    matar: "licensadressen (CC0) i läns- och vägsidornas strukturerade data",
+    brister: "inget: adressen är en identifierare, sidan visas som vanligt", bevakad: "", signal: "OKÄND" },
   // Länssidornas nedladdningsknapp (publish/lanssidor.ts, 16/10): en länk i sidan, inget skript hämtar därifrån.
   { vard: "apps.apple.com", roll: "bygg",
     matar: "länken till Halkvakt i App Store på läns- och vägsidorna",

@@ -2,7 +2,7 @@
 // läsas av vem som helst och går inte att ta tillbaka. Vakten prövar HELA trädet (git ls-files), inte bara ändringen:
 //   1. varje fil under data/ står i registret data/KALLOR.json med källa och licens — och varje rad i registret finns som fil;
 //   2. ingen fil är större än 20 MB (stora data hör hemma i en release eller i hinken);
-//   3. inga kända mönster: Trafikverkets leveransfiler (Halkvakt_ÅÅMM.csv), modellarrayer (.npy), utfall per rad (oof) och exporter av
+//   3. inga kända mönster: Trafikverkets leveransfiler (Halkvakt_ÅÅMM.csv och Halkvakt_ÅÅÅÅ-N.csv, och utlämnandet 111808: RoadCondition…, Olyckor…), modellarrayer (.npy), utfall per rad (oof) och exporter av
 //      testarnas svar och missar (driver_facit, driver_miss).
 // Den letar efter namn och storlekar, inte innehåll — ett nytt sorts misstag fångar den inte; då gäller regeln i CLAUDE.md (PUBLIKT REPO).
 // Kör: node --experimental-strip-types scripts/publikvakt.ts [--sjalvtest]
@@ -12,7 +12,8 @@ import { lstatSync, readFileSync } from "node:fs";
 export const MAX_BYTE = 20_000_000;
 export const REGISTER = "data/KALLOR.json";
 export const MONSTER: [RegExp, string][] = [
-  [/(^|\/)Halkvakt_\d{4}\.csv(\.gz)?$/i, "Trafikverkets leveransfil — ligger i hinken arkiv, aldrig i repot (#438, #499)"],
+  [/(^|\/)Halkvakt_\d{4}(-\d)?\.csv(\.gz)?$/i, "Trafikverkets leveransfil — ligger i hinken arkiv, aldrig i repot (#438, #499)"],
+  [/(^|\/)(RoadCondition(Measures)?|Olyckor) ?\d{2}-\d{2}\.xlsx$/i, "Trafikverkets utlämnande TRV 2026/111808 — ligger i hinken arkiv, aldrig i repot (#591, #665)"],
   [/\.npy$/i, "modellarray — räknad rad för rad, hör inte hemma i ett publikt repo"],
   [/(^|\/)oof[_.-]/i, "utfall per rad (oof) — räknat ur Trafikverkets leverans"],
   [/driver_(facit|miss)[^/]*\.(csv|tsv|json|xlsx?|gz)$/i, "export av testarnas svar eller missar (#498)"],   // migrationerna i sql/ är schema, inte data
@@ -45,12 +46,17 @@ if (korsSjalv && process.argv.includes("--sjalvtest")) {
   k(granska([f("data/a.csv"), f("data/b.csv")], reg).some((e) => e.startsWith("data/b.csv: står inte")), "en oregistrerad datafil fälls");
   k(granska([f("data/a.csv"), f("docs/stor.pdf", 25_000_000)], reg).some((e) => e.includes("över gränsen")), "en fil över 20 MB fälls");
   k(granska([f("data/a.csv"), f("kuvos/Halkvakt_2411.csv.gz")], reg).some((e) => e.includes("Trafikverkets leveransfil")), "Trafikverkets leveransfil fälls var den än ligger");
+  k(["Halkvakt_2019-2.csv", "x/Halkvakt_2024-1.csv.gz"].every((n) => granska([f("data/a.csv"), f(n)], reg).some((e) => e.includes("Trafikverkets leveransfil"))),
+    "fler vintrars filer (Halkvakt_ÅÅÅÅ-N) fälls också");
+  k(["kuvos/Olyckor 24-25.xlsx", "Olyckor24-25.xlsx", "x/RoadConditionMeasures24-25.xlsx"].every((n) => granska([f("data/a.csv"), f(n)], reg).some((e) => e.includes("111808"))),
+    "utlämnandet 111808 fälls, också med mellanslag i namnet");
+  k(granska([f("data/a.csv"), f("ingest/sources/roadcondition.ts"), f("test/fixtures/roadcondition.json")], reg).length === 0, "väglagskoden och dess fixtur är inte utlämnandet");
   k(granska([f("data/a.csv"), f("x/oof_A2.npy")], reg).length === 2, "modellarray och oof fälls var för sig");
   k(granska([f("data/a.csv"), f("export/driver_facit_2026.csv")], reg).some((e) => e.includes("testarnas svar")), "en export av testarnas svar fälls");
   k(granska([f("data/a.csv"), f("sql/038_driver_miss.sql")], reg).length === 0, "en migration som skapar testartabellen är inte data");
   k(granska([], reg).some((e) => e.includes("finns inte i repot")), "en registerrad utan fil fälls");
   k(granska([f("data/a.csv")], { "data/a.csv": { kalla: "SMHI", licens: "" } }).some((e) => e.includes("saknar källa eller licens")), "en rad utan licens fälls");
-  console.log("✓ självtest: registret, storleken, Trafikverkets filer, modellarrayer, oof, testarnas svar och inaktuella registerrader");
+  console.log("✓ självtest: registret, storleken, Trafikverkets filer och utlämnandet 111808, modellarrayer, oof, testarnas svar och inaktuella registerrader");
   process.exit(0);
 }
 

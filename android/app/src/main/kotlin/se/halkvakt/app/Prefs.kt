@@ -26,7 +26,12 @@ object Prefs {
     private val KEY_TRIP_END = longPreferencesKey("trip_end")      // Redo efter tur (DECISIONS #444)
     private val KEY_TRIP_KM = floatPreferencesKey("trip_km")
     private val KEY_MISSAR = stringPreferencesKey("missar")
+    private val KEY_FAV_ERBJUD = booleanPreferencesKey("fav_erbjud")   // kort #357: brytaren, aldrig vägarna (Favoriter.kt)
     private fun kindKey(k: HazardKind) = booleanPreferencesKey("warn_${k.wire}")
+
+    /** Favoriterna (kort #357, DECISIONS #616): "Erbjud att spara resor", AV tills föraren själv slår på den. */
+    fun favErbjud(ctx: Context): Flow<Boolean> = ctx.dataStore.data.map { it[KEY_FAV_ERBJUD] ?: false }
+    suspend fun setFavErbjud(ctx: Context, on: Boolean) { ctx.dataStore.edit { it[KEY_FAV_ERBJUD] = on } }
 
     /** Kategorier föraren stängt av (default: allt PÅ). */
     fun disabledKinds(ctx: Context): Flow<Set<HazardKind>> =
@@ -52,8 +57,15 @@ object Prefs {
     fun history(ctx: Context): Flow<List<AlertEntry>> =
         ctx.dataStore.data.map { AlertHistory.decode(it[KEY_HISTORY] ?: "") }
 
-    /** Betatestets facitknapp (S4, DECISIONS #186): AV tills föraren själv slår på den. */
-    fun facitEnabled(ctx: Context): Flow<Boolean> = ctx.dataStore.data.map { it[KEY_FACIT_ON] ?: false }
+    /** Betatestet finns bara i testbyggen (DECISIONS #681): produktionens AAB byggs med -Phalkvakt.betatest=false. Spegel av
+     *  Prefs.betatestTillaten i iOS, som känner igen TestFlight på kvittot. */
+    val betatestTillaten: Boolean get() = BuildConfig.BETATEST_TILLATEN
+
+    /** Brytaren gäller bara där betatestet finns; i ett produktionsbygge är den av, också om den slagits på i ett testbygge. */
+    fun betatestPa(lagrad: Boolean, tillaten: Boolean): Boolean = tillaten && lagrad
+
+    /** Betatestets facitknapp (S4, DECISIONS #186): AV tills föraren själv slår på den, och bara i testbyggen (#681). */
+    fun facitEnabled(ctx: Context): Flow<Boolean> = ctx.dataStore.data.map { betatestPa(it[KEY_FACIT_ON] ?: false, betatestTillaten) }
     suspend fun setFacitEnabled(ctx: Context, on: Boolean) { ctx.dataStore.edit { it[KEY_FACIT_ON] = on } }
     fun facit(ctx: Context): Flow<List<FacitEntry>> = ctx.dataStore.data.map { Facit.decode(it[KEY_FACIT] ?: "") }
     suspend fun answerFacit(ctx: Context, id: String, t: Long, svar: Boolean) {

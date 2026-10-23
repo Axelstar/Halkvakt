@@ -1,0 +1,14 @@
+{
+  "pass": "kvall",
+  "typ": "manuell",
+  "nyckel": "manuell:vastsverige",
+  "rubrik": "Risk för svarthalka i Västsverige",
+  "text": "Trafikverket varnar för risk för svarthalka i Västsverige i helgen och måndag morgon 19 oktober. Broar, viadukter och vägar nära vatten fryser först.\n\nJust nu visar ingen av vägväderstationerna i Västra Götaland eller Halland vägbana under noll, men det kan vända snabbt nattetid. Följ läget län för län, uppdaterat var 30:e minut: https://halkvakt.se/lan\n\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.",
+  "textIg": "Trafikverket varnar för risk för svarthalka i Västsverige i helgen och måndag morgon 19 oktober. Broar, viadukter och vägar nära vatten fryser först.\n\nJust nu visar ingen av vägväderstationerna i Västra Götaland eller Halland vägbana under noll, men det kan vända snabbt nattetid. Läget län för län, uppdaterat var 30:e minut – länken finns i vår profil.\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #svarthalka #väglag #göteborg #västragötaland #halland #trafikverket",
+  "datum": "2026-10-17",
+  "generated_at": "2026-10-17T15:31:00.544Z",
+  "lan": [
+    "vastra-gotaland",
+    "halland"
+  ]
+}

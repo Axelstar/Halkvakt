@@ -4,6 +4,17 @@
 guide går till novemberbetans testare — ändras appen ändras den här filen i samma commit. Android-guiden är
 `docs/BETAGUIDE-ANDROID.md`; de två ska säga samma sak där apparna gör samma sak.*
 
+## Nytt från 0.3.13 (33) — tillagt 23/10
+
+Guiden nedan är skriven för 0.3.9 (16)/(17). Tre saker är nya från (33) (DECISIONS #681, #683):
+
+- **Betatest finns bara i TestFlight.** I App Store-versionen syns varken brytaren eller frågan efter resan, och en brytare som
+  slagits på i en äldre version gäller inte där (#681 punkt 3).
+- **Brytaren slår också på betavarningen efter regn** (S3): *"Halkvakt tror: frysrisk framöver."*, med *BETA* på kortet. Utan
+  Betatest tiger den (#677, #681 punkt 5).
+- **Kandidatens varning *"Halkvakt tror: halka framöver."*** är märkt *BETA* på kortet och talar sist av alla. Den följer reglaget
+  *Halka*, inte Betatest (#577).
+
 ---
 
 ## Till TestFlight — klistra in som *Vad ska testas*
@@ -95,8 +106,8 @@ viktiga.
 
 **Rösten säger aldrig mer än datan bär.** Hör du något som låter överdrivet eller fel — säg till.
 
-**Vägdatan förnyas var 30:e minut under resan.** Är datan gammal — till exempel utan nät — säger rösten en gång:
-*"Ingen färsk väglagsdata – kör som om det kan vara halt."*
+**Vägdatan förnyas var 30:e minut under resan.** Är datan gammal, till exempel utan nät, varnar appen inte för halka på
+den, och rösten säger ingenting om det. Väglagets klockslag syns under *På din väg*.
 
 ---
 

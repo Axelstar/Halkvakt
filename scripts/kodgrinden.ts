@@ -24,6 +24,7 @@
 //
 // Helt läsande. Run: DATABASE_URL=... node --experimental-strip-types scripts/kodgrinden.ts
 // Självtest utan DB: scripts/kodgrinden.ts --sjalvtest
+import { domrad } from "./domrad.ts";
 
 // Motorns ordlista, delad i de två nivåer förslaget bygger på. Lookbehind som engine/src/engine.ts:43.
 // Sedan 16/9 (kort #97): halkrisk/halkig/halt står explicit, och snö/frost räknas även inuti ord.
@@ -230,6 +231,10 @@ const cUnderlag = (await q(`SELECT count(*)::int AS rader,
     AND EXISTS (SELECT 1 FROM unnest(h.condition_info) i WHERE i ~* '(^|[^a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt)|frost' OR i ~* 'snö')`))[0];
 console.log(`\nC — PREMISSEN: lämnar Trafikverket farlighetsord på kod 1 (Normalt)?`);
 console.log(`  underlag: ${cUnderlag.rader} rader med vinterord på kod 1 från ${cUnderlag.lan} län (spärren kräver ≥ ${C_MIN_RADER} från ≥ ${C_MIN_LAN}, DECISIONS #510)`);
+domrad("Kodgrinden C", !vinterord ? "OAVGJORT" : !cSparr(Number(cUnderlag.rader), Number(cUnderlag.lan)) ? "SPÄRRAD" : !cAntal ? "KLARAR" : "FALLER",
+  !vinterord ? "noll vinterord i arkivet"
+    : !cSparr(Number(cUnderlag.rader), Number(cUnderlag.lan)) ? `underlagsspärren: ${cUnderlag.rader} kod 1-rader med vinterord från ${cUnderlag.lan} län (kräver ${C_MIN_RADER} från ${C_MIN_LAN})`
+    : !cAntal ? `premissen håller: noll farlighetsord på ${cUnderlag.rader} kod 1-rader med vinterord` : `${cAntal} kod 1-rader bär ett farlighetsord — premissen håller inte rakt av`);
 if (!vinterord) {
   console.log(`  ⊘ OAVGJORT. Arkivet innehåller noll farlighetsord och noll ytord — oavsett kod.`);
   console.log(`    Frågan KAN alltså inte falsifieras med det här underlaget, och noll träffar`);

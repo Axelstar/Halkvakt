@@ -13,7 +13,7 @@ object AgeGate {
 
     data class Result(
         val hazards: List<Hazard>,
-        /** true = tröskeln passerad ⇒ en (1) röstrad per körning, sedan tyst. */
+        /** true = tröskeln passerad ⇒ en gammal sparad fil laddas om efter en minut, och På vakt säger inte "Tyst så länge". */
         val stale: Boolean,
     )
 
@@ -36,6 +36,4 @@ object AgeGate {
         }
         return Result(kept, true)
     }
-
-    const val STALE_LINE = "Ingen färsk väglagsdata – kör som om det kan vara halt."
 }

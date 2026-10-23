@@ -1,5 +1,6 @@
 // RAPPORTFILEN OCH FAVORITPROVET (favoriterna, DECISIONS #529). Ren logik, inget I/O — Deno-kopplingen bor i
-// supabase/functions/favoritprov/main.ts, och index.ts där är genererad av scripts/bundle-favoritprov.ts.
+// supabase/functions/favoritprov/main.ts (testmiljön) och supabase/functions/favoriter/main.ts (appens fil, DECISIONS #617), och
+// index.ts där är genererade av scripts/bundle-favoritprov.ts och scripts/bundle-favoriter.ts.
 //
 // 1. byggRapport: det lägesfilen saknar, ur Trafikverkets öppna API när filen byggs (ingen ny tabell, docs/FAVORITER.html §7):
 //    stationernas namn och lufttemperatur, olyckornas och djurens text, hinder, kömeddelanden, vägarbeten, hastigheter, omledningar,
@@ -28,7 +29,7 @@ export const RUBRIK: Record<Slag, string> = { halka: "halt väglag på sträckor
 /** Provmiljöns avstånd till rutten per slag, i meter, när rutten följer vägen (OSRM på OpenStreetMap, kort #338, DECISIONS #531):
  *  linjer och kameror 100 m (Trafikverkets och OpenStreetMaps vägmitt skiljer några tiotal meter, och en motorvägs körbanor ligger
  *  isär), olyckor, hinder och djur 150 m, stationer och färjor 500 m (en station står vid vägen, en färjeled är en punkt mitt i
- *  överfarten). Provets parametrar, inte appens trösklar — Axels form sätter dem. */
+ *  överfarten). Sedan DECISIONS #637 är de också appens trösklar, i Swift och Kotlin, och kontraktsgrinden vaktar kopiorna. */
 export const MARGINALER: Record<Slag, number> = { halka: 100, frysrisk: 500, olycka: 150, hinder: 150, vilt: 150, ko: 100,
   restid: 100, vagarbete: 100, hastighet: 100, omledning: 100, farja: 500, kamera: 100, smhi: 0 };
 /** Avstånden för raka rutter, som skuggans brytpunkter (DECISIONS #529): 1,5 km, 2 km för stationer och färjor. */
@@ -94,13 +95,18 @@ const datumIso = (iso: unknown) => {
   const v = Date.parse(String(iso ?? "")); if (!Number.isFinite(v)) return null;
   return FMT_ISO.format(v);
 };
+/** Trafikverkets påverkan (SeverityCode; 3 förekommer inte, CLAUDE.md) i texten för meddelandena, som skissen i FAVORITER §3
+ *  (*liten påverkan*): en avstängning med *ingen påverkan* är inte en väg som är stängd för föraren (DECISIONS #641). */
+export const PAVERKAN: Record<number, string> = { 1: "ingen påverkan", 2: "liten påverkan", 4: "stor påverkan", 5: "mycket stor påverkan" };
+const MED_PAVERKAN: Slag[] = ["vagarbete", "olycka", "hinder"];
 /** Den läsbara texten för en post, ur fälten — som appen skulle sätta ihop den (#530). */
 export function visning(p: Post): string {
   if (p.text) return p.text;   // färjorna bär sin text färdig
   if (p.slag === "restid" || (p.slag === "ko" && p.id.startsWith("tt:")))
     return p.tid != null ? `${p.tid} minuter, normalt ${p.normal ?? "–"}` : "restid saknas";
   const slut = p.slut === "tv" ? "tills vidare" : p.slut ? `till ${datum(p.slut + "T12:00:00Z")}` : "";
-  return [p.t ?? "", p.korfalt ? `${p.korfalt} körfält avstängda` : "", p.grans ? `${p.grans} km/h förbi vägarbetet` : "", slut,
+  const paverkan = p.sev != null && PAVERKAN[p.sev] && MED_PAVERKAN.includes(p.slag) ? `${PAVERKAN[p.sev]} enligt Trafikverket` : "";
+  return [p.t ?? "", p.korfalt ? `${p.korfalt} körfält avstängda` : "", p.grans ? `${p.grans} km/h förbi vägarbetet` : "", paverkan, slut,
     p.slag === "olycka" || p.slag === "hinder" || p.slag === "ko" ? `rapporterad ${klocka(p.start) ?? "–"}` : ""].filter(Boolean).join(" · ");
 }
 /** Vägnamnen skrivna lika, så att sammanslagningen per väg träffar: E-vägar som "E22", övriga som "väg 17" — Trafikverket skriver
@@ -137,6 +143,36 @@ export type In = {
   stationer: { id: string; namn: string; luft: number | null }[];   // weather_latest
 };
 
+/** En fråga till Trafikverkets öppna API. */
+export type Fraga = { objecttype: string; version: string; ns: string; filter: string; include: string[] };
+/** Frågorna bakom rapportfilen, i ordningen situationer, restider, färjor, färjeleder. Delade av favoritprovet och favoriter (appens
+ *  fil, DECISIONS #617), så att testmiljön och appens fil aldrig ställer olika frågor. Bara de slag rapporten bär, bara aktiva, och
+ *  bara fälten den läser — svaret för hela Situation är stort. */
+export function rapportFragor(nu: number): Fraga[] {
+  const fran = new Date(nu).toISOString(), till = new Date(nu + 24 * 3_600_000).toISOString();
+  const TYPER = "Accident,AnimalPresenceObstruction,AbnormalTraffic,MaintenanceWorks,RoadOrCarriagewayOrLaneManagement,VehicleObstruction,GeneralObstruction";
+  // Deviation.Deleted finns inte (torrkörningen 38135721921: "Invalid query attribute"); Situation.Deleted gör det.
+  const DEV = ["Id", "Suspended", "StartTime", "EndTime", "CreationTime", "ValidUntilFurtherNotice", "MessageTypeValue", "MessageCode",
+    "MessageCodeValue", "Header", "Message", "RoadNumber", "LocationDescriptor", "SeverityCode", "SeverityText", "NumberOfLanesRestricted",
+    "TemporaryLimit", "TrafficRestrictionType", "Geometry.Point.WGS84", "Geometry.Line.WGS84"].map((f) => `Deviation.${f}`);
+  return [
+    // Inget tidsfilter här: avvikelser utan sluttid (vägarbeten tills vidare) skulle falla bort. byggRapport avgör vad som är aktivt.
+    { objecttype: "Situation", version: "1.6", ns: "road.trafficinfo", filter: `<IN name="Deviation.MessageTypeValue" value="${TYPER}"/>`, include: ["Id", "Deleted", ...DEV] },
+    { objecttype: "TravelTimeRoute", version: "1.6", ns: "road.trafficinfo", filter: "",
+      include: ["Id", "Name", "TravelTime", "FreeFlowTravelTime", "TrafficStatus", "MeasureTime", "Geometry.WGS84"] },
+    { objecttype: "FerryAnnouncement", version: "1.2", ns: "ferry.trafficinfo", filter: `<AND><GTE name="DepartureTime" value="${fran}"/><LT name="DepartureTime" value="${till}"/></AND>`, include: [] },
+    { objecttype: "FerryRoute", version: "1.2", ns: "ferry.trafficinfo", filter: "", include: [] },
+  ];
+}
+
+/** Stationerna rapporten bär: bara de i lägesfilens weather[] (ytan högst +3 °C), de enda som kan stå som frysrisk — namnen för alla
+ *  855 vägde 8,8 kB (#530). `latest` är raderna ur weather_latest. */
+export function kallaStationer(live: Pick<LiveDoc, "weather">, latest: { station_id: unknown; name: unknown; air_temp_c: unknown }[]): In["stationer"] {
+  const kalla = new Set((live.weather as any[]).map((w) => String(w.id)));
+  return latest.filter((w) => kalla.has(String(w.station_id)))
+    .map((w) => ({ id: String(w.station_id), namn: String(w.name ?? ""), luft: w.air_temp_c == null ? null : Number(w.air_temp_c) }));
+}
+
 /** Rapportfilens två delar ur Trafikverkets svar. Rena data; texten är Trafikverkets egen, bara kortad. */
 export function byggRapport(x: In): { snabb: Rapport; lang: Linjer } {
   const iso = new Date(x.nu).toISOString();
@@ -155,7 +191,10 @@ export function byggRapport(x: In): { snabb: Rapport; lang: Linjer } {
       const id = `dev:${d.Id}`;
       const kmh = Number(/(\d+)\s*km\/h/i.exec(String(d.TemporaryLimit ?? ""))?.[1]);
       const post: Post = { id, slag, rubrik: slag === "hastighet" ? (Number.isFinite(kmh) ? `${kmh} km/h` : "Tillfälligt nedsatt hastighet")
-        : slag === "omledning" ? "Omledning" : ren(d.MessageCode, 60) || RUBRIK[slag],
+        : slag === "omledning" ? "Omledning"
+        // Trafikverkets *Vägen avstängd* som rubrik fick det att låta som att förarens väg var stängd, också för en tunnel med
+        // nattarbete och *ingen påverkan* (Bengt 18/10, DECISIONS #641). Rubriken är vår egen; Trafikverkets mening står i texten.
+        : ren(d.MessageCode, 60) === "Vägen avstängd" ? "Avstängning" : ren(d.MessageCode, 60) || RUBRIK[slag],
         t: ren(d.Header ?? d.Message, 100) || ren(d.LocationDescriptor, 100) || undefined,
         ...(p ? { p } : {}), ...(l.length ? { l: id } : {}), vag: vagNamn(d.RoadNumber),
         ...(slag === "vagarbete" || slag === "olycka" || slag === "hinder" || slag === "ko" ? { start: d.StartTime ?? d.CreationTime ?? null } : {}),

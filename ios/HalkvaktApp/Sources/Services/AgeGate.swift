@@ -5,7 +5,6 @@ import HalkvaktEngine
 enum AgeGate {
     static let weatherMaxMin: Double = 45
     static let accidentMaxMin: Double = 120
-    static let staleLine = "Ingen färsk väglagsdata – kör som om det kan vara halt."
 
     struct Result { let hazards: [Hazard]; let stale: Bool }
 

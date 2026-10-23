@@ -7,7 +7,8 @@
 //      accident > slippery > icing > wildlife > camera > kandidat (the beta candidate, last: #577).
 //      Losers are DROPPED, not queued. No exceptions, not even for accidents (logged in
 //      DECISIONS — revisit only on beta evidence).
-//   2. Same hazard never repeats until BOTH 10 min have passed AND 5 km been driven.
+//   2. Same hazard never repeats until BOTH 10 min have passed AND 5 km been driven. Slippery stretches whose lines lie
+//      within halkZonM of each other are one hazard for this rule (the halka zone, kort #360, DECISIONS #621, #624).
 //      SINGLE EXCEPTION (DECISIONS #28): a serious accident speaks twice by design —
 //      once early (10 km, while exits remain) and once close (2 km, "slow down").
 //      These are two different messages about one hazard, not a repeat of one message,
@@ -22,6 +23,7 @@ import type {
 import { DEFAULT_CONFIG, PRIORITY } from "./types.ts";
 import { angDiffDeg, bearingDeg, haversineM, isAhead, samplePolyline, type LonLat } from "./geo.ts";
 import { alertText, EFTERHALKA_TEXT, type AccidentStep } from "./texts.ts";
+import { farorLangsRutten } from "./rutfilter.ts";
 
 interface FiredState { t: number; odometerM: number; }
 
@@ -66,12 +68,16 @@ export class AlertEngine {
   /** När kandidaten senast talade — taket räknas därifrån, oavsett sträcka (DECISIONS #606). */
   private lastKandidatT: number | null = null;
   /** Skuggmotorn lyssnar här (#127 a): vad spärren kastar syns annars ingenstans. */
-  onSuppressed?: (c: { kind: HazardKind; hazardId: string; distM: number; by: HazardKind; sinceS: number }) => void;
+  onSuppressed?: (c: { kind: HazardKind; hazardId: string; distM: number; by: HazardKind; sinceS: number; zon?: string }) => void;
   /** FÖRSPRÅNGET (kort #153 beslut 1, docs/TROSKLAR-FORSPRANG.md §4): valfri krok som ger förvarningsavståndet per fara. Utan
    *  krok är motorn byte för byte densamma — vektorerna rörs inte. Svaret klämms till leadMinM och MOTORNS leadMaxM (3 000 m),
    *  inte till appens reglage (kort #275 väg (a)). Bara skuggan sätter den i vinter; portarna får den först vid steg 7, efter domen. */
   leadFor?: (h: Hazard, leadM: number, speedMps: number) => number;
   private fired = new Map<string, FiredState>();
+  /** Halkzonen (#360): whether two stretches are neighbours, per sorted id pair — the geometry is the same in every snapshot. */
+  private zonGrannar = new Map<string, boolean>();
+  /** A zone silencing is reported once per stretch and neighbour warning, not on every fix inside the lead distance. */
+  private zonRapporterad = new Set<string>();
 
   constructor(hazards: Hazard[], cfg: Partial<EngineConfig> = {}) {
     this.cfg = { ...DEFAULT_CONFIG, ...cfg };
@@ -141,12 +147,26 @@ export class AlertEngine {
     if (candidates.length === 0) return null;
 
     // Rule 2: per-hazard repeat suppression (both time AND distance must have elapsed).
+    const rearmed = (f: FiredState) =>
+      fix.t - f.t >= this.cfg.repeatMinS && this.odometerM - f.odometerM >= this.cfg.repeatMinM;
     const eligible = candidates.filter((c) => {
       const f = this.fired.get(c.alertKey);
-      if (!f) return true;
-      const rearmed =
-        fix.t - f.t >= this.cfg.repeatMinS && this.odometerM - f.odometerM >= this.cfg.repeatMinM;
-      return rearmed;
+      if (f && !rearmed(f)) return false;
+      // The halka zone (kort #360): a neighbour stretch within halkZonM spoke and is not re-armed ⇒ this one is the same zone.
+      if (c.kind === "slippery_segment") {
+        for (const s of this.segments) {
+          if (s.h.id === c.hazard.id) continue;
+          const g = this.fired.get(s.h.id);
+          if (!g || rearmed(g) || !this.grannar(c.hazard as SegmentHazard, s.h)) continue;
+          const nyckel = `${c.hazard.id}|${s.h.id}|${g.t}`;
+          if (!this.zonRapporterad.has(nyckel)) {
+            this.zonRapporterad.add(nyckel);
+            this.onSuppressed?.({ kind: c.kind, hazardId: c.hazard.id, distM: c.distM, by: "slippery_segment", sinceS: fix.t - g.t, zon: s.h.id });
+          }
+          return false;
+        }
+      }
+      return true;
     });
     if (eligible.length === 0) return null;
 
@@ -193,6 +213,18 @@ export class AlertEngine {
       ...(win.step ? { step: win.step } : {}),
       ...(win.beta ? { beta: true as const } : {}),
     };
+  }
+
+  /** Halkzonen (#360): the two stretches' lines lie within halkZonM — measured line to line by the route filter (break points both
+   *  ways, a crossing is 0), the same function in all three languages. Cached per pair; stretch geometry does not change. */
+  private grannar(a: SegmentHazard, b: SegmentHazard): boolean {
+    const nyckel = a.id < b.id ? `${a.id}|${b.id}` : `${b.id}|${a.id}`;
+    let v = this.zonGrannar.get(nyckel);
+    if (v === undefined) {
+      v = farorLangsRutten([b], a.line, this.cfg.halkZonM).length > 0;
+      this.zonGrannar.set(nyckel, v);
+    }
+    return v;
   }
 
   /** Run a whole trace. Convenience for replay/tests. */

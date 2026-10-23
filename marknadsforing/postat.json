@@ -4,5 +4,202 @@
     "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-10-16.jpg",
     "facebook": "1312515671952967_122097680613516187",
     "instagram": "17948923554341532"
-  }
+  },
+  "2026-10-17": [
+    {
+      "pass": "morgon",
+      "typ": "lista",
+      "nyckel": "lista",
+      "tid": "2026-10-17T07:35:01.962Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-10-17-morgon.jpg",
+      "facebook": "1312515671952967_122097943497516187",
+      "instagram": "17879849217554010"
+    },
+    {
+      "pass": "kvall",
+      "typ": "manuell",
+      "nyckel": "manuell:vastsverige",
+      "tid": "2026-10-17T15:45:36.992Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-10-17-kvall.jpg",
+      "facebook": "1312515671952967_122098224069516187",
+      "instagram": "17934267471143721"
+    },
+    {
+      "pass": "live",
+      "namn": "2026-10-17-live-2137",
+      "typ": "forsta",
+      "nyckel": "forsta:17",
+      "tid": "2026-10-17T19:37:44.446Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-10-17-live-2137.jpg",
+      "facebook": "1312515671952967_122098329669516187",
+      "instagram": "18062161064629907"
+    },
+    {
+      "pass": "live",
+      "namn": "2026-10-17-live-2337",
+      "typ": "forsta",
+      "nyckel": "forsta:21",
+      "tid": "2026-10-17T21:37:34.081Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-10-17-live-2337.jpg",
+      "facebook": "1312515671952967_122098390041516187",
+      "instagram": "18168766261473166"
+    }
+  ],
+  "2026-10-18": [
+    {
+      "pass": "live",
+      "namn": "2026-10-18-live-0207",
+      "typ": "forsta",
+      "nyckel": "forsta:14",
+      "tid": "2026-10-18T00:07:41.158Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-10-18-live-0207.jpg",
+      "facebook": "1312515671952967_122098486497516187",
+      "instagram": "17951500143303103"
+    },
+    {
+      "pass": "live",
+      "namn": "2026-10-18-live-0237",
+      "typ": "forsta",
+      "nyckel": "forsta:3",
+      "tid": "2026-10-18T00:37:38.318Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-10-18-live-0237.jpg",
+      "facebook": "1312515671952967_122098497417516187",
+      "instagram": "18464820703190428"
+    },
+    {
+      "pass": "live",
+      "namn": "2026-10-18-live-0307",
+      "typ": "forsta",
+      "nyckel": "forsta:18",
+      "tid": "2026-10-18T01:07:51.834Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-10-18-live-0307.jpg",
+      "facebook": "1312515671952967_122098512195516187",
+      "instagram": "18116030924008067"
+    },
+    {
+      "pass": "live",
+      "namn": "2026-10-18-live-0408",
+      "typ": "forsta",
+      "nyckel": "forsta:19",
+      "tid": "2026-10-18T02:08:36.628Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-10-18-live-0408.jpg",
+      "facebook": "1312515671952967_122098537665516187",
+      "instagram": "18077206034452421"
+    },
+    {
+      "pass": "morgon",
+      "namn": "2026-10-18-morgon",
+      "typ": "kallaste",
+      "nyckel": "kallaste",
+      "tid": "2026-10-18T04:50:32.687Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-10-18-morgon.jpg",
+      "facebook": "1312515671952967_122098624623516187",
+      "instagram": "18126142579807043"
+    }
+  ],
+  "2026-10-19": [
+    {
+      "pass": "live",
+      "namn": "2026-10-19-live-0437",
+      "typ": "forsta",
+      "nyckel": "forsta:6",
+      "tid": "2026-10-19T02:37:36.361Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-10-19-live-0437.jpg",
+      "facebook": "1312515671952967_122099261781516187",
+      "instagram": "18093852533680415"
+    },
+    {
+      "pass": "live",
+      "namn": "2026-10-19-live-0437",
+      "typ": "forsta",
+      "nyckel": "forsta:5",
+      "tid": "2026-10-19T02:37:36.361Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-10-19-live-0437.jpg",
+      "facebook": "1312515671952967_122099261781516187",
+      "instagram": "18093852533680415",
+      "kopia": true
+    },
+    {
+      "pass": "lunch",
+      "namn": "2026-10-19-lunch",
+      "typ": "forandring",
+      "nyckel": "forandring",
+      "tid": "2026-10-19T10:50:40.229Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-10-19-lunch.jpg",
+      "facebook": "1312515671952967_122099504715516187",
+      "instagram": "18411872035090837"
+    }
+  ],
+  "2026-10-20": [
+    {
+      "pass": "live",
+      "namn": "2026-10-20-live-0107",
+      "typ": "forsta",
+      "nyckel": "forsta:5",
+      "tid": "2026-10-19T23:07:42.071Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-10-20-live-0107.jpg",
+      "facebook": "1312515671952967_122099968677516187",
+      "instagram": "17910803595482465",
+      "x": "2112319883316994348"
+    },
+    {
+      "pass": "lunch",
+      "namn": "2026-10-20-lunch",
+      "typ": "forandring",
+      "nyckel": "forandring",
+      "tid": "2026-10-20T10:50:38.174Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-10-20-lunch.jpg",
+      "facebook": "1312515671952967_122100357981516187",
+      "instagram": "18009176150994336",
+      "x": "2112496788347224301"
+    }
+  ],
+  "2026-10-21": [
+    {
+      "pass": "morgon",
+      "namn": "2026-10-21-morgon",
+      "typ": "lista",
+      "nyckel": "lista",
+      "tid": "2026-10-21T04:50:36.637Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-10-21-morgon.jpg",
+      "facebook": "1312515671952967_122101105329516187",
+      "instagram": "18207243670374410",
+      "x": "2112768555439558721"
+    }
+  ],
+  "2026-10-22": [
+    {
+      "pass": "morgon",
+      "namn": "2026-10-22-morgon",
+      "typ": "lista",
+      "nyckel": "lista",
+      "tid": "2026-10-22T04:50:41.402Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-10-22-morgon.jpg",
+      "facebook": "1312515671952967_122102028159516187",
+      "instagram": "18108986816113830",
+      "x": "2113131104664265045"
+    },
+    {
+      "pass": "lunch",
+      "namn": "2026-10-22-lunch",
+      "typ": "lan",
+      "nyckel": "lan:25",
+      "tid": "2026-10-22T10:52:13.500Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-10-22-lunch.jpg",
+      "facebook": "1312515671952967_122102247189516187",
+      "instagram": "18069646895509630",
+      "x": "2113221956111827059"
+    },
+    {
+      "pass": "kvall",
+      "namn": "2026-10-22-kvall",
+      "typ": "lan",
+      "nyckel": "lan:22",
+      "tid": "2026-10-22T15:51:22.955Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-10-22-kvall.jpg",
+      "facebook": "1312515671952967_122102457129516187",
+      "instagram": "17914062984282456",
+      "x": "2113297227615543783"
+    }
+  ]
 }

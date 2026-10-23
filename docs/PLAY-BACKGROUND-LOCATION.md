@@ -5,6 +5,10 @@ Detta är underlaget som klistras in i Play Console vid inlämning (Fas 4).
 
 ## Deklarationstext (sv → en lämnas i konsolen på engelska)
 
+*Rättad 18/10 (kort #357, DECISIONS #616): texten sa att ingen position, rutt eller resa **lagras**. Det blev osant när en
+förare kan spara en körd väg som favorit. Inget nytt skickas; meningen om de sparade resorna är ny. Axel läser den före
+inlämningen.*
+
 **EN (till konsolen):**
 "Halkvakt is a road-safety app that warns drivers by voice about slippery roads,
 accidents, wildlife and speed cameras ahead. Its core feature is hands-free operation:
@@ -13,8 +17,10 @@ Bluetooth) and must then read the phone's location to know what lies on the road
 ahead. Background location is used ONLY while the user is driving with the guard
 active, shown persistently in a foreground-service notification. Location is never
 sent automatically: all hazard matching happens on-phone against a downloaded
-snapshot, and no position, route or trip is transmitted, stored or shared. The one
-exception is opt-in and manual: beta testers who turn on "Betatest" (off by default)
+snapshot, and no position, route or trip is transmitted or shared. A driver who turns on
+"Offer to save trips" (off by default) can save a driven route as a favourite after the trip: it
+is stored only on the phone, excluded from backup and device transfer, and deleted with one tap.
+The one exception to "nothing leaves the phone" is opt-in and manual: beta testers who turn on "Betatest" (off by default)
 can press a button to say whether a warning was right, or mark afterwards that the app
 missed something. Each press sends the warning id or nearest weather-station id, a
 timestamp and the answer — which reveals roughly where and when — with no account,

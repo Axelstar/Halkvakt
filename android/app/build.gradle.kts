@@ -6,8 +6,11 @@ android {
         applicationId = "se.halkvakt.app"
         minSdk = 26; targetSdk = 36
         // Femma åtta (4), DECISIONS #377: i takt med iOS FÖRE första Play-uppladdningen, som låser versionCode-spåret.
-        versionCode = 29; versionName = "0.3.13"   // 17/10: Android i takt med iOS — platsrutan (COARSE), rösten (TTS-queries, kö, svensk röst), notisen, förklaringen före behörigheterna, långtrycket. (28): targetSdk 36
+        versionCode = 32; versionName = "0.3.13"   // 19/10: påverkan i rapporten, rösten släpper musiken, statusfältet (DECISIONS #643), i takt med iOS 0.3.13 (32)
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        // Betatestet bara i testbyggen (Bengt 22/10, DECISIONS #681): Android kan inte se ett testspår i Google Play, så
+        // produktionens AAB byggs med -Phalkvakt.betatest=false och saknar då brytaren. Allt annat är ett testbygge.
+        buildConfigField("boolean", "BETATEST_TILLATEN", (project.findProperty("halkvakt.betatest") ?: "true").toString())
     }
     sourceSets.getByName("androidTest") {
         // Replays the SAME frozen fixture as the TS and Kotlin JVM suites — one truth.
@@ -35,7 +38,7 @@ android {
             if (System.getenv("HV_KEYSTORE_PATH") != null) signingConfig = signingConfigs.getByName("upload")
         }
     }
-    buildFeatures { compose = true }
+    buildFeatures { compose = true; buildConfig = true }
     composeOptions { kotlinCompilerExtensionVersion = "1.5.14" }
 }
 dependencies {

@@ -1,5 +1,6 @@
 // Rösten + inställningarna. AVSpeechSynthesizer duckar bilens musik via
-// audiosessionens .duckOthers — samma beteende som Androids audio focus.
+// audiosessionens .duckOthers och släpper den när repliken är sagd — samma beteende som Androids audio focus
+// (GuardService.abandonFocus i onDone).
 import Foundation
 import AVFoundation
 import UIKit
@@ -7,13 +8,20 @@ import Observation
 import HalkvaktEngine
 
 @MainActor
-final class SpeechService {
+final class SpeechService: NSObject, AVSpeechSynthesizerDelegate {
     static let shared = SpeechService()
     private let synth = AVSpeechSynthesizer()
 
+    private override init() {
+        super.init()
+        synth.delegate = self
+    }
+
     func speak(_ text: String) {
         let session = AVAudioSession.sharedInstance()
-        try? session.setCategory(.playback, options: [.duckOthers])
+        // .voicePrompt: CarPlay och Bluetooth spelar repliken som en navigationsröst, på navigationsvolymen
+        // i stället för mediavolymen (provkörning 18/10: rösten högt, musiken lågt).
+        try? session.setCategory(.playback, mode: .voicePrompt, options: [.duckOthers])
         try? session.setActive(true)
         let u = AVSpeechUtterance(string: text)
         u.voice = AVSpeechSynthesisVoice(language: "sv-SE")
@@ -34,6 +42,21 @@ final class SpeechService {
             try? await Task.sleep(for: .seconds(6))
             endBackgroundTask()
         }
+    }
+
+    // Provkörning 18/10: sessionen aktiverades men släpptes aldrig, så bilens musik stod kvar nedduckad efter repliken.
+    // När rösten tystnat avaktiveras den med .notifyOthersOnDeactivation, så att musiken tonar upp igen.
+    nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
+        Task { @MainActor in self.releaseSession() }
+    }
+
+    nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didCancel utterance: AVSpeechUtterance) {
+        Task { @MainActor in self.releaseSession() }
+    }
+
+    private func releaseSession() {
+        guard !synth.isSpeaking else { return }   // en replik till står i kö — släpp efter den
+        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
     }
 
     private var bgTask: UIBackgroundTaskIdentifier = .invalid
@@ -64,6 +87,16 @@ final class Prefs {
     var lastSaidAt: Date? { didSet { d.set(lastSaidAt, forKey: "k.lastSaidAt") } }
     /// S4: vilken varning "Senast sagt" gäller — facitknappen behöver id:t (DECISIONS #203).
     var lastSaidId: String? { didSet { d.set(lastSaidId, forKey: "k.lastSaidId") } }
+    /// Betatestet bara i TestFlight och i utvecklarbyggen (Bengt 22/10, DECISIONS #681): i ett App Store-bygge syns det inte, och en
+    /// brytare som slagits på i en äldre version gäller inte, så att varken facitsvar eller efterhalkans betavarning (#677, #679)
+    /// når allmänheten. TestFlight känns igen på kvittots namn; App Store-bygget har ett riktigt kvitto.
+    static let betatestTillaten: Bool = {
+        #if DEBUG
+        return true
+        #else
+        return Bundle.main.appStoreReceiptURL?.lastPathComponent == "sandboxReceipt"
+        #endif
+    }()
     /// S4: betatestets facitknapp (DECISIONS #186) — AV tills föraren själv slår på den.
     var facitOn: Bool { didSet { d.set(facitOn, forKey: "k.facitOn") } }
     /// S4: svaren, sända och osända. Ren Swift-logik i Facit.swift.
@@ -109,7 +142,7 @@ final class Prefs {
         lastSaidText = d.string(forKey: "k.lastSaidText")
         lastSaidAt = d.object(forKey: "k.lastSaidAt") as? Date
         lastSaidId = d.string(forKey: "k.lastSaidId")
-        facitOn = d.bool(forKey: "k.facitOn")
+        facitOn = Self.betatestTillaten && d.bool(forKey: "k.facitOn")   // det sparade värdet rörs inte (#681)
         facit = d.data(forKey: "k.facit").flatMap { try? JSONDecoder().decode([FacitEntry].self, from: $0) } ?? []
         facitStatus = d.string(forKey: "k.facitStatus")
         facitStatusAt = d.object(forKey: "k.facitStatusAt") as? Date

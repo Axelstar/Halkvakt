@@ -12,7 +12,10 @@ struct AppenMissadeIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
-        guard Prefs.shared.facitOn else { return .result(dialog: "Slå på Betatest i Halkvakts inställningar först.") }
+        guard Prefs.shared.facitOn else {
+            return .result(dialog: Prefs.betatestTillaten ? "Slå på Betatest i Halkvakts inställningar först."
+                                                          : "Det finns bara i testversionen av Halkvakt.")   // #681
+        }
         switch GuardManager.shared.markeraMiss() {
         case .markerat: return .result(dialog: "Markerat. Välj vad det var efter resan.")
         case .redan: return .result(dialog: "Redan markerat.")

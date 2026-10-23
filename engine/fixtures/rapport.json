@@ -1,0 +1,3522 @@
+{
+ "_om": "Facit för resans rapport (scripts/rapport-facit.ts). Skrivs av skriptet — ändras aldrig för hand.",
+ "marginaler": {
+  "halka": 100,
+  "frysrisk": 500,
+  "olycka": 150,
+  "hinder": 150,
+  "vilt": 150,
+  "ko": 100,
+  "restid": 100,
+  "vagarbete": 100,
+  "hastighet": 100,
+  "omledning": 100,
+  "farja": 500,
+  "kamera": 100,
+  "smhi": 0
+ },
+ "langs": {
+  "andel": 0.5,
+  "minstM": 500,
+  "stegM": 100
+ },
+ "gruppFran": 3,
+ "rubrik": {
+  "halka": "halt väglag på sträckorna",
+  "frysrisk": "frysrisk vid stationerna",
+  "olycka": "olyckor",
+  "hinder": "hinder",
+  "vilt": "vilt",
+  "ko": "köer",
+  "restid": "restider",
+  "vagarbete": "vägarbeten",
+  "hastighet": "hastighet",
+  "omledning": "omledningar",
+  "farja": "färjor",
+  "kamera": "fartkameror",
+  "smhi": "SMHI-varningar"
+ },
+ "in": {
+  "rutt": [
+   [
+    18,
+    59.3
+   ],
+   [
+    18,
+    59.3006737
+   ],
+   [
+    18,
+    59.3013475
+   ],
+   [
+    18,
+    59.3020212
+   ],
+   [
+    18,
+    59.3026949
+   ],
+   [
+    18,
+    59.3033687
+   ],
+   [
+    18,
+    59.3040424
+   ],
+   [
+    18,
+    59.3047161
+   ],
+   [
+    18,
+    59.3053899
+   ],
+   [
+    18,
+    59.3060636
+   ],
+   [
+    18,
+    59.3067373
+   ],
+   [
+    18,
+    59.3074111
+   ],
+   [
+    18,
+    59.3080848
+   ],
+   [
+    18,
+    59.3087585
+   ],
+   [
+    18,
+    59.3094323
+   ],
+   [
+    18,
+    59.310106
+   ],
+   [
+    18,
+    59.3107797
+   ],
+   [
+    18,
+    59.3114535
+   ],
+   [
+    18,
+    59.3121272
+   ],
+   [
+    18,
+    59.3128009
+   ],
+   [
+    18,
+    59.3134747
+   ],
+   [
+    18,
+    59.3141484
+   ],
+   [
+    18,
+    59.3148221
+   ],
+   [
+    18,
+    59.3154959
+   ],
+   [
+    18,
+    59.3161696
+   ],
+   [
+    18,
+    59.3168433
+   ],
+   [
+    18,
+    59.3175171
+   ],
+   [
+    18,
+    59.3181908
+   ],
+   [
+    18,
+    59.3188645
+   ],
+   [
+    18,
+    59.3195383
+   ],
+   [
+    18,
+    59.320212
+   ],
+   [
+    18,
+    59.3208857
+   ],
+   [
+    18,
+    59.3215595
+   ],
+   [
+    18,
+    59.3222332
+   ],
+   [
+    18,
+    59.3229069
+   ],
+   [
+    18,
+    59.3235807
+   ],
+   [
+    18,
+    59.3242544
+   ],
+   [
+    18,
+    59.3249281
+   ],
+   [
+    18,
+    59.3256019
+   ],
+   [
+    18,
+    59.3262756
+   ],
+   [
+    18,
+    59.3269493
+   ],
+   [
+    18,
+    59.3276231
+   ],
+   [
+    18,
+    59.3282968
+   ],
+   [
+    18,
+    59.3289705
+   ],
+   [
+    18,
+    59.3296443
+   ],
+   [
+    18,
+    59.330318
+   ],
+   [
+    18,
+    59.3309917
+   ],
+   [
+    18,
+    59.3316655
+   ],
+   [
+    18,
+    59.3323392
+   ],
+   [
+    18,
+    59.3330129
+   ],
+   [
+    18,
+    59.3336867
+   ],
+   [
+    18,
+    59.3343604
+   ],
+   [
+    18,
+    59.3350341
+   ],
+   [
+    18,
+    59.3357079
+   ],
+   [
+    18,
+    59.3363816
+   ],
+   [
+    18,
+    59.3370553
+   ],
+   [
+    18,
+    59.3377291
+   ],
+   [
+    18,
+    59.3384028
+   ],
+   [
+    18,
+    59.3390765
+   ],
+   [
+    18,
+    59.3397503
+   ],
+   [
+    18,
+    59.340424
+   ],
+   [
+    18,
+    59.3410977
+   ],
+   [
+    18,
+    59.3417715
+   ],
+   [
+    18,
+    59.3424452
+   ],
+   [
+    18,
+    59.3431189
+   ],
+   [
+    18,
+    59.3437927
+   ],
+   [
+    18,
+    59.3444664
+   ],
+   [
+    18,
+    59.3451401
+   ],
+   [
+    18,
+    59.3458139
+   ],
+   [
+    18,
+    59.3464876
+   ],
+   [
+    18,
+    59.3471613
+   ],
+   [
+    18,
+    59.3478351
+   ],
+   [
+    18,
+    59.3485088
+   ],
+   [
+    18,
+    59.3491825
+   ],
+   [
+    18,
+    59.3498563
+   ],
+   [
+    18,
+    59.35053
+   ],
+   [
+    18,
+    59.3512037
+   ],
+   [
+    18,
+    59.3518775
+   ],
+   [
+    18,
+    59.3525512
+   ],
+   [
+    18,
+    59.3532249
+   ],
+   [
+    18,
+    59.3538987
+   ],
+   [
+    18,
+    59.3545724
+   ],
+   [
+    18,
+    59.3552461
+   ],
+   [
+    18,
+    59.3559199
+   ],
+   [
+    18,
+    59.3565936
+   ],
+   [
+    18,
+    59.3572673
+   ],
+   [
+    18,
+    59.3579411
+   ],
+   [
+    18,
+    59.3586148
+   ],
+   [
+    18,
+    59.3592885
+   ],
+   [
+    18,
+    59.3599623
+   ],
+   [
+    18,
+    59.360636
+   ],
+   [
+    18,
+    59.3613097
+   ],
+   [
+    18,
+    59.3619835
+   ],
+   [
+    18,
+    59.3626572
+   ],
+   [
+    18,
+    59.3633309
+   ],
+   [
+    18,
+    59.3640047
+   ],
+   [
+    18,
+    59.3646784
+   ],
+   [
+    18,
+    59.3653521
+   ],
+   [
+    18,
+    59.3660259
+   ],
+   [
+    18,
+    59.3666996
+   ],
+   [
+    18,
+    59.3673733
+   ],
+   [
+    18,
+    59.3680471
+   ],
+   [
+    18,
+    59.3687208
+   ],
+   [
+    18,
+    59.3693945
+   ],
+   [
+    18,
+    59.3700683
+   ],
+   [
+    18,
+    59.370742
+   ],
+   [
+    18,
+    59.3714157
+   ],
+   [
+    18,
+    59.3718649
+   ],
+   [
+    18.0013196,
+    59.3718649
+   ],
+   [
+    18.0026393,
+    59.3718649
+   ],
+   [
+    18.0039589,
+    59.3718649
+   ],
+   [
+    18.0052786,
+    59.3718649
+   ],
+   [
+    18.0065982,
+    59.3718649
+   ],
+   [
+    18.0079178,
+    59.3718649
+   ],
+   [
+    18.0092375,
+    59.3718649
+   ],
+   [
+    18.0105571,
+    59.3718649
+   ],
+   [
+    18.0118768,
+    59.3718649
+   ],
+   [
+    18.0131964,
+    59.3718649
+   ],
+   [
+    18.0145161,
+    59.3718649
+   ],
+   [
+    18.0158357,
+    59.3718649
+   ],
+   [
+    18.0171553,
+    59.3718649
+   ],
+   [
+    18.018475,
+    59.3718649
+   ],
+   [
+    18.0197946,
+    59.3718649
+   ],
+   [
+    18.0211143,
+    59.3718649
+   ],
+   [
+    18.0224339,
+    59.3718649
+   ],
+   [
+    18.0237535,
+    59.3718649
+   ],
+   [
+    18.0250732,
+    59.3718649
+   ],
+   [
+    18.0263928,
+    59.3718649
+   ],
+   [
+    18.0277125,
+    59.3718649
+   ],
+   [
+    18.0290321,
+    59.3718649
+   ],
+   [
+    18.0303517,
+    59.3718649
+   ],
+   [
+    18.0316714,
+    59.3718649
+   ],
+   [
+    18.032991,
+    59.3718649
+   ],
+   [
+    18.0343107,
+    59.3718649
+   ],
+   [
+    18.0356303,
+    59.3718649
+   ],
+   [
+    18.0369499,
+    59.3718649
+   ],
+   [
+    18.0382696,
+    59.3718649
+   ],
+   [
+    18.0395892,
+    59.3718649
+   ],
+   [
+    18.0409089,
+    59.3718649
+   ],
+   [
+    18.0422285,
+    59.3718649
+   ],
+   [
+    18.0435482,
+    59.3718649
+   ],
+   [
+    18.0448678,
+    59.3718649
+   ],
+   [
+    18.0461874,
+    59.3718649
+   ],
+   [
+    18.0475071,
+    59.3718649
+   ],
+   [
+    18.0488267,
+    59.3718649
+   ],
+   [
+    18.0501464,
+    59.3718649
+   ],
+   [
+    18.051466,
+    59.3718649
+   ],
+   [
+    18.0527856,
+    59.3718649
+   ],
+   [
+    18.0541053,
+    59.3718649
+   ],
+   [
+    18.0554249,
+    59.3718649
+   ],
+   [
+    18.0567446,
+    59.3718649
+   ],
+   [
+    18.0580642,
+    59.3718649
+   ],
+   [
+    18.0593838,
+    59.3718649
+   ],
+   [
+    18.0607035,
+    59.3718649
+   ],
+   [
+    18.0620231,
+    59.3718649
+   ],
+   [
+    18.0633428,
+    59.3718649
+   ],
+   [
+    18.0646624,
+    59.3718649
+   ],
+   [
+    18.0659821,
+    59.3718649
+   ],
+   [
+    18.0673017,
+    59.3718649
+   ],
+   [
+    18.0686213,
+    59.3718649
+   ],
+   [
+    18.069941,
+    59.3718649
+   ],
+   [
+    18.0712606,
+    59.3718649
+   ],
+   [
+    18.0725803,
+    59.3718649
+   ],
+   [
+    18.0738999,
+    59.3718649
+   ],
+   [
+    18.0752195,
+    59.3718649
+   ],
+   [
+    18.0765392,
+    59.3718649
+   ],
+   [
+    18.0778588,
+    59.3718649
+   ],
+   [
+    18.0791785,
+    59.3718649
+   ],
+   [
+    18.0804981,
+    59.3718649
+   ],
+   [
+    18.0818177,
+    59.3718649
+   ],
+   [
+    18.0831374,
+    59.3718649
+   ],
+   [
+    18.084457,
+    59.3718649
+   ],
+   [
+    18.0857767,
+    59.3718649
+   ],
+   [
+    18.0870963,
+    59.3718649
+   ],
+   [
+    18.0884159,
+    59.3718649
+   ],
+   [
+    18.0897356,
+    59.3718649
+   ],
+   [
+    18.0910552,
+    59.3718649
+   ],
+   [
+    18.0923749,
+    59.3718649
+   ],
+   [
+    18.0936945,
+    59.3718649
+   ],
+   [
+    18.0950142,
+    59.3718649
+   ],
+   [
+    18.0963338,
+    59.3718649
+   ],
+   [
+    18.0976534,
+    59.3718649
+   ],
+   [
+    18.0989731,
+    59.3718649
+   ],
+   [
+    18.1002927,
+    59.3718649
+   ],
+   [
+    18.1016124,
+    59.3718649
+   ],
+   [
+    18.102932,
+    59.3718649
+   ],
+   [
+    18.1042516,
+    59.3718649
+   ],
+   [
+    18.1055713,
+    59.3718649
+   ]
+  ],
+  "live": {
+   "schema": 2,
+   "generated_at": "2026-10-18T05:00:00Z",
+   "segments": [
+    {
+     "id": "1",
+     "line": [
+      [
+       18.0003519,
+       59.3089831
+      ],
+      [
+       18.0003519,
+       59.3098814
+      ],
+      [
+       18.0003519,
+       59.3107797
+      ],
+      [
+       18.0003519,
+       59.311678
+      ],
+      [
+       18.0003519,
+       59.3125764
+      ],
+      [
+       18.0003519,
+       59.3134747
+      ],
+      [
+       18.0003519,
+       59.314373
+      ],
+      [
+       18.0003519,
+       59.3152713
+      ],
+      [
+       18.0003519,
+       59.3161696
+      ],
+      [
+       18.0003519,
+       59.3170679
+      ],
+      [
+       18.0003519,
+       59.3179662
+      ],
+      [
+       18.0003519,
+       59.3188645
+      ],
+      [
+       18.0003519,
+       59.3197628
+      ],
+      [
+       18.0003519,
+       59.3206612
+      ],
+      [
+       18.0003519,
+       59.3215595
+      ],
+      [
+       18.0003519,
+       59.3224578
+      ],
+      [
+       18.0003519,
+       59.3233561
+      ],
+      [
+       18.0003519,
+       59.3242544
+      ],
+      [
+       18.0003519,
+       59.3251527
+      ],
+      [
+       18.0003519,
+       59.326051
+      ],
+      [
+       18.0003519,
+       59.3269493
+      ]
+     ],
+     "code": 3,
+     "info": [
+      "Is",
+      "Snö"
+     ],
+     "road": "E4"
+    },
+    {
+     "id": "2",
+     "line": [
+      [
+       17.9824048,
+       59.3449156
+      ],
+      [
+       17.9841643,
+       59.3449156
+      ],
+      [
+       17.9859238,
+       59.3449156
+      ],
+      [
+       17.9876834,
+       59.3449156
+      ],
+      [
+       17.9894429,
+       59.3449156
+      ],
+      [
+       17.9912024,
+       59.3449156
+      ],
+      [
+       17.9929619,
+       59.3449156
+      ],
+      [
+       17.9947214,
+       59.3449156
+      ],
+      [
+       17.996481,
+       59.3449156
+      ],
+      [
+       17.9982405,
+       59.3449156
+      ],
+      [
+       18,
+       59.3449156
+      ],
+      [
+       18.0017595,
+       59.3449156
+      ],
+      [
+       18.003519,
+       59.3449156
+      ],
+      [
+       18.0052786,
+       59.3449156
+      ],
+      [
+       18.0070381,
+       59.3449156
+      ],
+      [
+       18.0087976,
+       59.3449156
+      ],
+      [
+       18.0105571,
+       59.3449156
+      ],
+      [
+       18.0123166,
+       59.3449156
+      ],
+      [
+       18.0140762,
+       59.3449156
+      ],
+      [
+       18.0158357,
+       59.3449156
+      ],
+      [
+       18.0175952,
+       59.3449156
+      ]
+     ],
+     "code": 3,
+     "info": [
+      "Is"
+     ],
+     "road": "263"
+    },
+    {
+     "id": "3",
+     "line": [
+      [
+       18.0351904,
+       59.3
+      ],
+      [
+       18.0351904,
+       59.3008983
+      ],
+      [
+       18.0351904,
+       59.3017966
+      ],
+      [
+       18.0351904,
+       59.3026949
+      ],
+      [
+       18.0351904,
+       59.3035932
+      ],
+      [
+       18.0351904,
+       59.3044916
+      ],
+      [
+       18.0351904,
+       59.3053899
+      ],
+      [
+       18.0351904,
+       59.3062882
+      ],
+      [
+       18.0351904,
+       59.3071865
+      ],
+      [
+       18.0351904,
+       59.3080848
+      ],
+      [
+       18.0351904,
+       59.3089831
+      ]
+     ],
+     "code": 3,
+     "info": [],
+     "road": null
+    }
+   ],
+   "weather": [
+    {
+     "id": "10",
+     "lon": 18.0052786,
+     "lat": 59.3179662,
+     "yta": -0.8,
+     "fukt": true,
+     "regn_h": null,
+     "lutning30": null
+    },
+    {
+     "id": "11",
+     "lon": 17.996481,
+     "lat": 59.3538987,
+     "yta": 2,
+     "fukt": false,
+     "regn_h": 1,
+     "lutning30": 1
+    },
+    {
+     "id": "12",
+     "lon": 18.0017595,
+     "lat": 59.3377291,
+     "yta": 5,
+     "fukt": true,
+     "regn_h": null,
+     "lutning30": null
+    },
+    {
+     "id": "13",
+     "lon": 18.0158357,
+     "lat": 59.3628818,
+     "yta": -2.4,
+     "fukt": true,
+     "regn_h": null,
+     "lutning30": null
+    }
+   ],
+   "deviations": [],
+   "smhi": [
+    {
+     "id": "smhi-1",
+     "event": "Halka",
+     "niva": 2,
+     "geom": {
+      "type": "Polygon",
+      "coordinates": [
+       [
+        [
+         17.9824048,
+         59.3538987
+        ],
+        [
+         18.0175952,
+         59.3538987
+        ],
+        [
+         18.0175952,
+         59.380848
+        ],
+        [
+         17.9824048,
+         59.380848
+        ],
+        [
+         17.9824048,
+         59.3538987
+        ]
+       ]
+      ]
+     }
+    }
+   ],
+   "bridges": [
+    {
+     "id": "20",
+     "lon": 18.0008798,
+     "lat": 59.3359324,
+     "road": "E4",
+     "yta": 2,
+     "fukt": true
+    }
+   ]
+  },
+  "stat": {
+   "schema": 1,
+   "cameras": [
+    {
+     "id": "30",
+     "lon": 18.0005279,
+     "lat": 59.3044916,
+     "bearing": null,
+     "road": "E4"
+    },
+    {
+     "id": "31",
+     "lon": 18.0005279,
+     "lat": 59.3224578,
+     "bearing": null,
+     "road": "E4"
+    },
+    {
+     "id": "32",
+     "lon": 18.0005279,
+     "lat": 59.3395257,
+     "bearing": null,
+     "road": "E4"
+    },
+    {
+     "id": "33",
+     "lon": 18.0005279,
+     "lat": 59.3592885,
+     "bearing": null,
+     "road": "E4"
+    },
+    {
+     "id": "34",
+     "lon": 18.0527856,
+     "lat": 59.3722242,
+     "bearing": null,
+     "road": "73"
+    },
+    {
+     "id": "35",
+     "lon": 18.0879761,
+     "lat": 59.3179662,
+     "bearing": null,
+     "road": "E4"
+    }
+   ]
+  },
+  "snabb": {
+   "schema": 2,
+   "generated_at": "2026-10-18T05:06:00Z",
+   "noter": [],
+   "stationer": {
+    "10": {
+     "namn": "Arninge",
+     "luft": 1.2
+    },
+    "11": {
+     "namn": "Täby",
+     "luft": 3.4
+    },
+    "13": {
+     "namn": "Vallentuna",
+     "luft": -1.1
+    }
+   },
+   "poster": [
+    {
+     "id": "dev:100",
+     "slag": "olycka",
+     "rubrik": "Olycka",
+     "t": "Trafikolycka söder om Arninge",
+     "p": [
+      18.0010557,
+      59.3314409
+     ],
+     "vag": "E4",
+     "start": "2026-10-18T05:52:00Z",
+     "sev": 4
+    },
+    {
+     "id": "dev:101",
+     "slag": "hinder",
+     "rubrik": "Föremål på vägen",
+     "t": "Däck på körbanan",
+     "p": [
+      17.9985924,
+      59.366475
+     ],
+     "vag": "E4",
+     "start": "2026-10-18T04:10:00Z",
+     "slut": null,
+     "sev": 2
+    },
+    {
+     "id": "dev:102",
+     "slag": "vilt",
+     "rubrik": "Djur på vägen",
+     "t": "Älg vid vägen",
+     "p": [
+      18.0351904,
+      59.3709666
+     ],
+     "vag": "väg 73",
+     "slut": null
+    },
+    {
+     "id": "dev:103",
+     "slag": "olycka",
+     "rubrik": "Olycka",
+     "t": "Olycka vid Täby",
+     "p": [
+      18.0070381,
+      59.3089831
+     ],
+     "vag": "E4",
+     "start": "2026-10-18T05:30:00Z"
+    },
+    {
+     "id": "dev:110",
+     "slag": "vagarbete",
+     "rubrik": "Vägarbete",
+     "t": "Vägarbete vid Bro",
+     "l": "dev:110",
+     "vag": "väg 73",
+     "start": "2026-10-01T06:00:00Z",
+     "slut": "2026-12-15",
+     "korfalt": 1,
+     "grans": 60
+    },
+    {
+     "id": "dev:111",
+     "slag": "vagarbete",
+     "rubrik": "Vägarbete",
+     "t": "Beläggningsarbete",
+     "l": "dev:111",
+     "vag": "väg 73",
+     "start": "2026-10-10T06:00:00Z",
+     "slut": "2026-11-20",
+     "sev": 1
+    },
+    {
+     "id": "dev:112",
+     "slag": "vagarbete",
+     "rubrik": "Vägarbete",
+     "t": "Kantstolpar",
+     "l": "dev:112",
+     "vag": "väg 73",
+     "start": "2026-10-17T06:00:00Z",
+     "slut": "tv"
+    },
+    {
+     "id": "dev:113",
+     "slag": "vagarbete",
+     "rubrik": "Avstängning",
+     "t": "Bron avstängd under arbetet",
+     "l": "dev:113",
+     "vag": "E4",
+     "start": "2026-09-01T06:00:00Z",
+     "slut": "tv",
+     "korfalt": 2,
+     "sev": 5
+    },
+    {
+     "id": "dev:120",
+     "slag": "hastighet",
+     "rubrik": "50 km/h",
+     "t": "Sänkt hastighet",
+     "p": [
+      18.0008798,
+      59.3476105
+     ],
+     "vag": "E4",
+     "slut": "2026-10-31"
+    },
+    {
+     "id": "dev:130",
+     "slag": "omledning",
+     "rubrik": "Omledning",
+     "t": "Omledning via Bro",
+     "p": [
+      18.0527856,
+      59.3269493
+     ],
+     "vag": "263",
+     "slut": "tv"
+    },
+    {
+     "id": "tt:1",
+     "slag": "restid",
+     "rubrik": "E4 N Arninge - Täby",
+     "l": "tt:1",
+     "tid": 7,
+     "normal": 6,
+     "status": "normal"
+    },
+    {
+     "id": "tt:2",
+     "slag": "ko",
+     "rubrik": "E4 S Täby - Arninge",
+     "l": "tt:2",
+     "tid": 12,
+     "normal": 6,
+     "status": "slow"
+    },
+    {
+     "id": "tt:3",
+     "slag": "restid",
+     "rubrik": "73 O Bro - Mora",
+     "l": "tt:3",
+     "tid": 3,
+     "normal": 3,
+     "status": "normal"
+    },
+    {
+     "id": "farja:200",
+     "slag": "farja",
+     "rubrik": "Ledsgårdsleden",
+     "text": "nästa 08:10 från Ledsgård, 08:40 från Bro",
+     "p": [
+      18.0527856,
+      59.3745598
+     ]
+    }
+   ]
+  },
+  "lang": {
+   "schema": 2,
+   "generated_at": "2026-10-18T05:06:00Z",
+   "linjer": {
+    "dev:110": [
+     [
+      [
+       18.0105571,
+       59.3721344
+      ],
+      [
+       18.0123166,
+       59.3721344
+      ],
+      [
+       18.0140762,
+       59.3721344
+      ],
+      [
+       18.0158357,
+       59.3721344
+      ],
+      [
+       18.0175952,
+       59.3721344
+      ],
+      [
+       18.0193547,
+       59.3721344
+      ],
+      [
+       18.0211143,
+       59.3721344
+      ],
+      [
+       18.0228738,
+       59.3721344
+      ],
+      [
+       18.0246333,
+       59.3721344
+      ]
+     ]
+    ],
+    "dev:111": [
+     [
+      [
+       18.0387095,
+       59.3721344
+      ],
+      [
+       18.040469,
+       59.3721344
+      ],
+      [
+       18.0422285,
+       59.3721344
+      ],
+      [
+       18.043988,
+       59.3721344
+      ],
+      [
+       18.0457476,
+       59.3721344
+      ],
+      [
+       18.0475071,
+       59.3721344
+      ],
+      [
+       18.0492666,
+       59.3721344
+      ],
+      [
+       18.0510261,
+       59.3721344
+      ],
+      [
+       18.0527856,
+       59.3721344
+      ]
+     ]
+    ],
+    "dev:112": [
+     [
+      [
+       18.0703809,
+       59.3721344
+      ],
+      [
+       18.0721404,
+       59.3721344
+      ],
+      [
+       18.0738999,
+       59.3721344
+      ],
+      [
+       18.0756594,
+       59.3721344
+      ],
+      [
+       18.0774189,
+       59.3721344
+      ],
+      [
+       18.0791785,
+       59.3721344
+      ],
+      [
+       18.080938,
+       59.3721344
+      ],
+      [
+       18.0826975,
+       59.3721344
+      ],
+      [
+       18.084457,
+       59.3721344
+      ]
+     ]
+    ],
+    "dev:113": [
+     [
+      [
+       18.0007038,
+       59.3538987
+      ],
+      [
+       18.0007038,
+       59.354797
+      ],
+      [
+       18.0007038,
+       59.3556953
+      ],
+      [
+       18.0007038,
+       59.3565936
+      ],
+      [
+       18.0007038,
+       59.3574919
+      ],
+      [
+       18.0007038,
+       59.3583902
+      ],
+      [
+       18.0007038,
+       59.3592885
+      ]
+     ]
+    ],
+    "tt:1": [
+     [
+      [
+       18.0002639,
+       59.3089831
+      ],
+      [
+       18.0002639,
+       59.3098814
+      ],
+      [
+       18.0002639,
+       59.3107797
+      ],
+      [
+       18.0002639,
+       59.311678
+      ],
+      [
+       18.0002639,
+       59.3125764
+      ],
+      [
+       18.0002639,
+       59.3134747
+      ],
+      [
+       18.0002639,
+       59.314373
+      ],
+      [
+       18.0002639,
+       59.3152713
+      ],
+      [
+       18.0002639,
+       59.3161696
+      ],
+      [
+       18.0002639,
+       59.3170679
+      ],
+      [
+       18.0002639,
+       59.3179662
+      ],
+      [
+       18.0002639,
+       59.3188645
+      ],
+      [
+       18.0002639,
+       59.3197628
+      ],
+      [
+       18.0002639,
+       59.3206612
+      ],
+      [
+       18.0002639,
+       59.3215595
+      ],
+      [
+       18.0002639,
+       59.3224578
+      ],
+      [
+       18.0002639,
+       59.3233561
+      ],
+      [
+       18.0002639,
+       59.3242544
+      ],
+      [
+       18.0002639,
+       59.3251527
+      ],
+      [
+       18.0002639,
+       59.326051
+      ],
+      [
+       18.0002639,
+       59.3269493
+      ],
+      [
+       18.0002639,
+       59.3278476
+      ],
+      [
+       18.0002639,
+       59.328746
+      ],
+      [
+       18.0002639,
+       59.3296443
+      ],
+      [
+       18.0002639,
+       59.3305426
+      ],
+      [
+       18.0002639,
+       59.3314409
+      ],
+      [
+       18.0002639,
+       59.3323392
+      ],
+      [
+       18.0002639,
+       59.3332375
+      ],
+      [
+       18.0002639,
+       59.3341358
+      ],
+      [
+       18.0002639,
+       59.3350341
+      ],
+      [
+       18.0002639,
+       59.3359324
+      ]
+     ]
+    ],
+    "tt:2": [
+     [
+      [
+       17.9997361,
+       59.3359324
+      ],
+      [
+       17.9997361,
+       59.3350341
+      ],
+      [
+       17.9997361,
+       59.3341358
+      ],
+      [
+       17.9997361,
+       59.3332375
+      ],
+      [
+       17.9997361,
+       59.3323392
+      ],
+      [
+       17.9997361,
+       59.3314409
+      ],
+      [
+       17.9997361,
+       59.3305426
+      ],
+      [
+       17.9997361,
+       59.3296443
+      ],
+      [
+       17.9997361,
+       59.328746
+      ],
+      [
+       17.9997361,
+       59.3278476
+      ],
+      [
+       17.9997361,
+       59.3269493
+      ],
+      [
+       17.9997361,
+       59.326051
+      ],
+      [
+       17.9997361,
+       59.3251527
+      ],
+      [
+       17.9997361,
+       59.3242544
+      ],
+      [
+       17.9997361,
+       59.3233561
+      ],
+      [
+       17.9997361,
+       59.3224578
+      ],
+      [
+       17.9997361,
+       59.3215595
+      ],
+      [
+       17.9997361,
+       59.3206612
+      ],
+      [
+       17.9997361,
+       59.3197628
+      ],
+      [
+       17.9997361,
+       59.3188645
+      ],
+      [
+       17.9997361,
+       59.3179662
+      ],
+      [
+       17.9997361,
+       59.3170679
+      ],
+      [
+       17.9997361,
+       59.3161696
+      ],
+      [
+       17.9997361,
+       59.3152713
+      ],
+      [
+       17.9997361,
+       59.314373
+      ],
+      [
+       17.9997361,
+       59.3134747
+      ],
+      [
+       17.9997361,
+       59.3125764
+      ],
+      [
+       17.9997361,
+       59.311678
+      ],
+      [
+       17.9997361,
+       59.3107797
+      ],
+      [
+       17.9997361,
+       59.3098814
+      ],
+      [
+       17.9997361,
+       59.3089831
+      ]
+     ]
+    ],
+    "tt:3": [
+     [
+      [
+       18.0175952,
+       59.3719547
+      ],
+      [
+       18.0193547,
+       59.3719547
+      ],
+      [
+       18.0211143,
+       59.3719547
+      ],
+      [
+       18.0228738,
+       59.3719547
+      ],
+      [
+       18.0246333,
+       59.3719547
+      ],
+      [
+       18.0263928,
+       59.3719547
+      ],
+      [
+       18.0281523,
+       59.3719547
+      ],
+      [
+       18.0299119,
+       59.3719547
+      ],
+      [
+       18.0316714,
+       59.3719547
+      ],
+      [
+       18.0334309,
+       59.3719547
+      ],
+      [
+       18.0351904,
+       59.3719547
+      ],
+      [
+       18.0369499,
+       59.3719547
+      ],
+      [
+       18.0387095,
+       59.3719547
+      ],
+      [
+       18.040469,
+       59.3719547
+      ],
+      [
+       18.0422285,
+       59.3719547
+      ],
+      [
+       18.043988,
+       59.3719547
+      ],
+      [
+       18.0457476,
+       59.3719547
+      ],
+      [
+       18.0475071,
+       59.3719547
+      ],
+      [
+       18.0492666,
+       59.3719547
+      ],
+      [
+       18.0510261,
+       59.3719547
+      ],
+      [
+       18.0527856,
+       59.3719547
+      ]
+     ]
+    ]
+   }
+  }
+ },
+ "dit": {
+  "rader": [
+   {
+    "id": "seg:1",
+    "slag": "halka",
+    "rubrik": "Halt väglag på E4",
+    "text": "Is, Snö",
+    "avstandM": 20,
+    "langsM": 2997,
+    "vag": "E4",
+    "start": null
+   },
+   {
+    "id": "wx:10",
+    "slag": "frysrisk",
+    "rubrik": "Frysrisk vid stationen i Arninge",
+    "text": "Vägytan −0,8 °C, luften +1,2 °C, fukt på vägbanan",
+    "avstandM": 300,
+    "langsM": 1998,
+    "vag": null,
+    "start": null
+   },
+   {
+    "id": "bro:20",
+    "slag": "frysrisk",
+    "rubrik": "Frysrisk på bron på E4",
+    "text": "närmaste station +2,0 °C",
+    "avstandM": 50,
+    "langsM": 3996,
+    "vag": "E4",
+    "start": null
+   },
+   {
+    "id": "wx:11",
+    "slag": "frysrisk",
+    "rubrik": "Frysrisk vid stationen i Täby (beta)",
+    "text": "Vägytan +2,0 °C, luften +3,4 °C, efter regnet",
+    "avstandM": 199,
+    "langsM": 5993,
+    "vag": null,
+    "start": null
+   },
+   {
+    "id": "dev:100",
+    "slag": "olycka",
+    "rubrik": "Olycka",
+    "text": "Trafikolycka söder om Arninge · stor påverkan enligt Trafikverket · rapporterad 07:52",
+    "avstandM": 60,
+    "langsM": 3496,
+    "vag": "E4",
+    "start": "2026-10-18T05:52:00Z"
+   },
+   {
+    "id": "dev:101",
+    "slag": "hinder",
+    "rubrik": "Föremål på vägen",
+    "text": "Däck på körbanan · liten påverkan enligt Trafikverket · rapporterad 06:10",
+    "avstandM": 80,
+    "langsM": 7392,
+    "vag": "E4",
+    "start": "2026-10-18T04:10:00Z"
+   },
+   {
+    "id": "dev:102",
+    "slag": "vilt",
+    "rubrik": "Djur på vägen",
+    "text": "Älg vid vägen",
+    "avstandM": 100,
+    "langsM": 9985,
+    "vag": "väg 73",
+    "start": null
+   },
+   {
+    "id": "tt:1",
+    "slag": "restid",
+    "rubrik": "E4 N Arninge - Täby",
+    "text": "7 minuter, normalt 6",
+    "avstandM": 15,
+    "langsM": 3996,
+    "vag": null,
+    "start": null
+   },
+   {
+    "id": "tt:3",
+    "slag": "restid",
+    "rubrik": "73 O Bro - Mora",
+    "text": "3 minuter, normalt 3",
+    "avstandM": 10,
+    "langsM": 8988,
+    "vag": null,
+    "start": null
+   },
+   {
+    "id": "dev:113",
+    "slag": "vagarbete",
+    "rubrik": "Avstängning",
+    "text": "Bron avstängd under arbetet · 2 körfält avstängda · mycket stor påverkan enligt Trafikverket · tills vidare",
+    "avstandM": 40,
+    "langsM": 6593,
+    "vag": "E4",
+    "start": "2026-09-01T06:00:00Z"
+   },
+   {
+    "id": "dev:110",
+    "slag": "vagarbete",
+    "rubrik": "Vägarbete",
+    "text": "Vägarbete vid Bro · 1 körfält avstängda · 60 km/h förbi vägarbetet · till 15 december",
+    "avstandM": 30,
+    "langsM": 8589,
+    "vag": "väg 73",
+    "start": "2026-10-01T06:00:00Z"
+   },
+   {
+    "id": "dev:111",
+    "slag": "vagarbete",
+    "rubrik": "Vägarbete",
+    "text": "Beläggningsarbete · ingen påverkan enligt Trafikverket · till 20 november",
+    "avstandM": 30,
+    "langsM": 10184,
+    "vag": "väg 73",
+    "start": "2026-10-10T06:00:00Z"
+   },
+   {
+    "id": "dev:112",
+    "slag": "vagarbete",
+    "rubrik": "Vägarbete",
+    "text": "Kantstolpar · tills vidare",
+    "avstandM": 30,
+    "langsM": 11978,
+    "vag": "väg 73",
+    "start": "2026-10-17T06:00:00Z"
+   },
+   {
+    "id": "dev:120",
+    "slag": "hastighet",
+    "rubrik": "50 km/h",
+    "text": "Sänkt hastighet · till 31 oktober",
+    "avstandM": 50,
+    "langsM": 5294,
+    "vag": "E4",
+    "start": null
+   },
+   {
+    "id": "farja:200",
+    "slag": "farja",
+    "rubrik": "Ledsgårdsleden",
+    "text": "nästa 08:10 från Ledsgård, 08:40 från Bro",
+    "avstandM": 300,
+    "langsM": 10981,
+    "vag": null,
+    "start": null
+   },
+   {
+    "id": "cam:30",
+    "slag": "kamera",
+    "rubrik": "Fartkamera",
+    "text": "E4",
+    "avstandM": 30,
+    "langsM": 499,
+    "vag": "E4",
+    "start": null
+   },
+   {
+    "id": "cam:31",
+    "slag": "kamera",
+    "rubrik": "Fartkamera",
+    "text": "E4",
+    "avstandM": 30,
+    "langsM": 2497,
+    "vag": "E4",
+    "start": null
+   },
+   {
+    "id": "cam:32",
+    "slag": "kamera",
+    "rubrik": "Fartkamera",
+    "text": "E4",
+    "avstandM": 30,
+    "langsM": 4395,
+    "vag": "E4",
+    "start": null
+   },
+   {
+    "id": "cam:33",
+    "slag": "kamera",
+    "rubrik": "Fartkamera",
+    "text": "E4",
+    "avstandM": 30,
+    "langsM": 6593,
+    "vag": "E4",
+    "start": null
+   },
+   {
+    "id": "cam:34",
+    "slag": "kamera",
+    "rubrik": "Fartkamera",
+    "text": "väg 73",
+    "avstandM": 40,
+    "langsM": 10981,
+    "vag": "väg 73",
+    "start": null
+   },
+   {
+    "id": "smhi:smhi-1:Halka",
+    "slag": "smhi",
+    "rubrik": "SMHI: Halka",
+    "text": "nivå 2",
+    "avstandM": 0,
+    "langsM": 0,
+    "vag": null,
+    "start": null
+   }
+  ],
+  "grupper": [
+   {
+    "id": "seg:1",
+    "slag": "halka",
+    "rubrik": "Halt väglag på E4",
+    "text": "Is, Snö",
+    "antal": 1,
+    "ids": [
+     "seg:1"
+    ],
+    "langsM": 2997
+   },
+   {
+    "id": "wx:10",
+    "slag": "frysrisk",
+    "rubrik": "Frysrisk vid stationen i Arninge",
+    "text": "Vägytan −0,8 °C, luften +1,2 °C, fukt på vägbanan",
+    "antal": 1,
+    "ids": [
+     "wx:10"
+    ],
+    "langsM": 1998
+   },
+   {
+    "id": "bro:20",
+    "slag": "frysrisk",
+    "rubrik": "Frysrisk på bron på E4",
+    "text": "närmaste station +2,0 °C",
+    "antal": 1,
+    "ids": [
+     "bro:20"
+    ],
+    "langsM": 3996
+   },
+   {
+    "id": "wx:11",
+    "slag": "frysrisk",
+    "rubrik": "Frysrisk vid stationen i Täby (beta)",
+    "text": "Vägytan +2,0 °C, luften +3,4 °C, efter regnet",
+    "antal": 1,
+    "ids": [
+     "wx:11"
+    ],
+    "langsM": 5993
+   },
+   {
+    "id": "dev:100",
+    "slag": "olycka",
+    "rubrik": "Olycka",
+    "text": "Trafikolycka söder om Arninge · stor påverkan enligt Trafikverket · rapporterad 07:52",
+    "antal": 1,
+    "ids": [
+     "dev:100"
+    ],
+    "langsM": 3496
+   },
+   {
+    "id": "dev:101",
+    "slag": "hinder",
+    "rubrik": "Föremål på vägen",
+    "text": "Däck på körbanan · liten påverkan enligt Trafikverket · rapporterad 06:10",
+    "antal": 1,
+    "ids": [
+     "dev:101"
+    ],
+    "langsM": 7392
+   },
+   {
+    "id": "dev:102",
+    "slag": "vilt",
+    "rubrik": "Djur på vägen",
+    "text": "Älg vid vägen",
+    "antal": 1,
+    "ids": [
+     "dev:102"
+    ],
+    "langsM": 9985
+   },
+   {
+    "id": "grupp:restid",
+    "slag": "restid",
+    "rubrik": "Två restidssträckor",
+    "text": "Normal trafik på sträckorna längs rutten.",
+    "antal": 2,
+    "ids": [
+     "tt:1",
+     "tt:3"
+    ],
+    "langsM": 3996
+   },
+   {
+    "id": "dev:113",
+    "slag": "vagarbete",
+    "rubrik": "Avstängning",
+    "text": "Bron avstängd under arbetet · 2 körfält avstängda · mycket stor påverkan enligt Trafikverket · tills vidare",
+    "antal": 1,
+    "ids": [
+     "dev:113"
+    ],
+    "langsM": 6593
+   },
+   {
+    "id": "grupp:vagarbete|väg 73",
+    "slag": "vagarbete",
+    "rubrik": "Tre vägarbeten på väg 73",
+    "text": "Mellan 9 km och 12 km in på rutten. Närmast: Vägarbete vid Bro · 1 körfält avstängda · 60 km/h förbi vägarbetet · till 15 december",
+    "antal": 3,
+    "ids": [
+     "dev:110",
+     "dev:111",
+     "dev:112"
+    ],
+    "langsM": 8589
+   },
+   {
+    "id": "dev:120",
+    "slag": "hastighet",
+    "rubrik": "50 km/h",
+    "text": "Sänkt hastighet · till 31 oktober",
+    "antal": 1,
+    "ids": [
+     "dev:120"
+    ],
+    "langsM": 5294
+   },
+   {
+    "id": "farja:200",
+    "slag": "farja",
+    "rubrik": "Ledsgårdsleden",
+    "text": "nästa 08:10 från Ledsgård, 08:40 från Bro",
+    "antal": 1,
+    "ids": [
+     "farja:200"
+    ],
+    "langsM": 10981
+   },
+   {
+    "id": "grupp:kamera|E4",
+    "slag": "kamera",
+    "rubrik": "Fyra fartkameror på E4",
+    "text": "Rösten säger till före varje kamera.",
+    "antal": 4,
+    "ids": [
+     "cam:30",
+     "cam:31",
+     "cam:32",
+     "cam:33"
+    ],
+    "langsM": 499
+   },
+   {
+    "id": "grupp:kamera|väg 73",
+    "slag": "kamera",
+    "rubrik": "En fartkamera på väg 73",
+    "text": "Rösten säger till före varje kamera.",
+    "antal": 1,
+    "ids": [
+     "cam:34"
+    ],
+    "langsM": 10981
+   },
+   {
+    "id": "smhi:smhi-1:Halka",
+    "slag": "smhi",
+    "rubrik": "SMHI: Halka",
+    "text": "nivå 2",
+    "antal": 1,
+    "ids": [
+     "smhi:smhi-1:Halka"
+    ],
+    "langsM": 0
+   }
+  ],
+  "tomma": {
+   "inget": [
+    "ko",
+    "omledning"
+   ],
+   "koerMatsInte": false
+  }
+ },
+ "hem": {
+  "rader": [
+   {
+    "id": "seg:1",
+    "slag": "halka",
+    "rubrik": "Halt väglag på E4",
+    "text": "Is, Snö",
+    "avstandM": 20,
+    "langsM": 10975,
+    "vag": "E4",
+    "start": null
+   },
+   {
+    "id": "wx:11",
+    "slag": "frysrisk",
+    "rubrik": "Frysrisk vid stationen i Täby (beta)",
+    "text": "Vägytan +2,0 °C, luften +3,4 °C, efter regnet",
+    "avstandM": 199,
+    "langsM": 7978,
+    "vag": null,
+    "start": null
+   },
+   {
+    "id": "bro:20",
+    "slag": "frysrisk",
+    "rubrik": "Frysrisk på bron på E4",
+    "text": "närmaste station +2,0 °C",
+    "avstandM": 50,
+    "langsM": 9976,
+    "vag": "E4",
+    "start": null
+   },
+   {
+    "id": "wx:10",
+    "slag": "frysrisk",
+    "rubrik": "Frysrisk vid stationen i Arninge",
+    "text": "Vägytan −0,8 °C, luften +1,2 °C, fukt på vägbanan",
+    "avstandM": 300,
+    "langsM": 11974,
+    "vag": null,
+    "start": null
+   },
+   {
+    "id": "dev:100",
+    "slag": "olycka",
+    "rubrik": "Olycka",
+    "text": "Trafikolycka söder om Arninge · stor påverkan enligt Trafikverket · rapporterad 07:52",
+    "avstandM": 60,
+    "langsM": 10476,
+    "vag": "E4",
+    "start": "2026-10-18T05:52:00Z"
+   },
+   {
+    "id": "dev:101",
+    "slag": "hinder",
+    "rubrik": "Föremål på vägen",
+    "text": "Däck på körbanan · liten påverkan enligt Trafikverket · rapporterad 06:10",
+    "avstandM": 80,
+    "langsM": 6580,
+    "vag": "E4",
+    "start": "2026-10-18T04:10:00Z"
+   },
+   {
+    "id": "dev:102",
+    "slag": "vilt",
+    "rubrik": "Djur på vägen",
+    "text": "Älg vid vägen",
+    "avstandM": 100,
+    "langsM": 3987,
+    "vag": "väg 73",
+    "start": null
+   },
+   {
+    "id": "tt:2",
+    "slag": "ko",
+    "rubrik": "E4 S Täby - Arninge",
+    "text": "12 minuter, normalt 6",
+    "avstandM": 15,
+    "langsM": 9976,
+    "vag": null,
+    "start": null
+   },
+   {
+    "id": "dev:112",
+    "slag": "vagarbete",
+    "rubrik": "Vägarbete",
+    "text": "Kantstolpar · tills vidare",
+    "avstandM": 30,
+    "langsM": 1994,
+    "vag": "väg 73",
+    "start": "2026-10-17T06:00:00Z"
+   },
+   {
+    "id": "dev:111",
+    "slag": "vagarbete",
+    "rubrik": "Vägarbete",
+    "text": "Beläggningsarbete · ingen påverkan enligt Trafikverket · till 20 november",
+    "avstandM": 30,
+    "langsM": 3788,
+    "vag": "väg 73",
+    "start": "2026-10-10T06:00:00Z"
+   },
+   {
+    "id": "dev:110",
+    "slag": "vagarbete",
+    "rubrik": "Vägarbete",
+    "text": "Vägarbete vid Bro · 1 körfält avstängda · 60 km/h förbi vägarbetet · till 15 december",
+    "avstandM": 30,
+    "langsM": 5383,
+    "vag": "väg 73",
+    "start": "2026-10-01T06:00:00Z"
+   },
+   {
+    "id": "dev:113",
+    "slag": "vagarbete",
+    "rubrik": "Avstängning",
+    "text": "Bron avstängd under arbetet · 2 körfält avstängda · mycket stor påverkan enligt Trafikverket · tills vidare",
+    "avstandM": 40,
+    "langsM": 7379,
+    "vag": "E4",
+    "start": "2026-09-01T06:00:00Z"
+   },
+   {
+    "id": "dev:120",
+    "slag": "hastighet",
+    "rubrik": "50 km/h",
+    "text": "Sänkt hastighet · till 31 oktober",
+    "avstandM": 50,
+    "langsM": 8678,
+    "vag": "E4",
+    "start": null
+   },
+   {
+    "id": "farja:200",
+    "slag": "farja",
+    "rubrik": "Ledsgårdsleden",
+    "text": "nästa 08:10 från Ledsgård, 08:40 från Bro",
+    "avstandM": 300,
+    "langsM": 2990,
+    "vag": null,
+    "start": null
+   },
+   {
+    "id": "cam:34",
+    "slag": "kamera",
+    "rubrik": "Fartkamera",
+    "text": "väg 73",
+    "avstandM": 40,
+    "langsM": 2990,
+    "vag": "väg 73",
+    "start": null
+   },
+   {
+    "id": "cam:33",
+    "slag": "kamera",
+    "rubrik": "Fartkamera",
+    "text": "E4",
+    "avstandM": 30,
+    "langsM": 7379,
+    "vag": "E4",
+    "start": null
+   },
+   {
+    "id": "cam:32",
+    "slag": "kamera",
+    "rubrik": "Fartkamera",
+    "text": "E4",
+    "avstandM": 30,
+    "langsM": 9577,
+    "vag": "E4",
+    "start": null
+   },
+   {
+    "id": "cam:31",
+    "slag": "kamera",
+    "rubrik": "Fartkamera",
+    "text": "E4",
+    "avstandM": 30,
+    "langsM": 11474,
+    "vag": "E4",
+    "start": null
+   },
+   {
+    "id": "cam:30",
+    "slag": "kamera",
+    "rubrik": "Fartkamera",
+    "text": "E4",
+    "avstandM": 30,
+    "langsM": 13472,
+    "vag": "E4",
+    "start": null
+   },
+   {
+    "id": "smhi:smhi-1:Halka",
+    "slag": "smhi",
+    "rubrik": "SMHI: Halka",
+    "text": "nivå 2",
+    "avstandM": 0,
+    "langsM": 0,
+    "vag": null,
+    "start": null
+   }
+  ],
+  "grupper": [
+   {
+    "id": "seg:1",
+    "slag": "halka",
+    "rubrik": "Halt väglag på E4",
+    "text": "Is, Snö",
+    "antal": 1,
+    "ids": [
+     "seg:1"
+    ],
+    "langsM": 10975
+   },
+   {
+    "id": "wx:11",
+    "slag": "frysrisk",
+    "rubrik": "Frysrisk vid stationen i Täby (beta)",
+    "text": "Vägytan +2,0 °C, luften +3,4 °C, efter regnet",
+    "antal": 1,
+    "ids": [
+     "wx:11"
+    ],
+    "langsM": 7978
+   },
+   {
+    "id": "bro:20",
+    "slag": "frysrisk",
+    "rubrik": "Frysrisk på bron på E4",
+    "text": "närmaste station +2,0 °C",
+    "antal": 1,
+    "ids": [
+     "bro:20"
+    ],
+    "langsM": 9976
+   },
+   {
+    "id": "wx:10",
+    "slag": "frysrisk",
+    "rubrik": "Frysrisk vid stationen i Arninge",
+    "text": "Vägytan −0,8 °C, luften +1,2 °C, fukt på vägbanan",
+    "antal": 1,
+    "ids": [
+     "wx:10"
+    ],
+    "langsM": 11974
+   },
+   {
+    "id": "dev:100",
+    "slag": "olycka",
+    "rubrik": "Olycka",
+    "text": "Trafikolycka söder om Arninge · stor påverkan enligt Trafikverket · rapporterad 07:52",
+    "antal": 1,
+    "ids": [
+     "dev:100"
+    ],
+    "langsM": 10476
+   },
+   {
+    "id": "dev:101",
+    "slag": "hinder",
+    "rubrik": "Föremål på vägen",
+    "text": "Däck på körbanan · liten påverkan enligt Trafikverket · rapporterad 06:10",
+    "antal": 1,
+    "ids": [
+     "dev:101"
+    ],
+    "langsM": 6580
+   },
+   {
+    "id": "dev:102",
+    "slag": "vilt",
+    "rubrik": "Djur på vägen",
+    "text": "Älg vid vägen",
+    "antal": 1,
+    "ids": [
+     "dev:102"
+    ],
+    "langsM": 3987
+   },
+   {
+    "id": "tt:2",
+    "slag": "ko",
+    "rubrik": "E4 S Täby - Arninge",
+    "text": "12 minuter, normalt 6",
+    "antal": 1,
+    "ids": [
+     "tt:2"
+    ],
+    "langsM": 9976
+   },
+   {
+    "id": "grupp:vagarbete|väg 73",
+    "slag": "vagarbete",
+    "rubrik": "Tre vägarbeten på väg 73",
+    "text": "Mellan 2 km och 5 km in på rutten. Närmast: Kantstolpar · tills vidare",
+    "antal": 3,
+    "ids": [
+     "dev:112",
+     "dev:111",
+     "dev:110"
+    ],
+    "langsM": 1994
+   },
+   {
+    "id": "dev:113",
+    "slag": "vagarbete",
+    "rubrik": "Avstängning",
+    "text": "Bron avstängd under arbetet · 2 körfält avstängda · mycket stor påverkan enligt Trafikverket · tills vidare",
+    "antal": 1,
+    "ids": [
+     "dev:113"
+    ],
+    "langsM": 7379
+   },
+   {
+    "id": "dev:120",
+    "slag": "hastighet",
+    "rubrik": "50 km/h",
+    "text": "Sänkt hastighet · till 31 oktober",
+    "antal": 1,
+    "ids": [
+     "dev:120"
+    ],
+    "langsM": 8678
+   },
+   {
+    "id": "farja:200",
+    "slag": "farja",
+    "rubrik": "Ledsgårdsleden",
+    "text": "nästa 08:10 från Ledsgård, 08:40 från Bro",
+    "antal": 1,
+    "ids": [
+     "farja:200"
+    ],
+    "langsM": 2990
+   },
+   {
+    "id": "grupp:kamera|väg 73",
+    "slag": "kamera",
+    "rubrik": "En fartkamera på väg 73",
+    "text": "Rösten säger till före varje kamera.",
+    "antal": 1,
+    "ids": [
+     "cam:34"
+    ],
+    "langsM": 2990
+   },
+   {
+    "id": "grupp:kamera|E4",
+    "slag": "kamera",
+    "rubrik": "Fyra fartkameror på E4",
+    "text": "Rösten säger till före varje kamera.",
+    "antal": 4,
+    "ids": [
+     "cam:33",
+     "cam:32",
+     "cam:31",
+     "cam:30"
+    ],
+    "langsM": 7379
+   },
+   {
+    "id": "smhi:smhi-1:Halka",
+    "slag": "smhi",
+    "rubrik": "SMHI: Halka",
+    "text": "nivå 2",
+    "antal": 1,
+    "ids": [
+     "smhi:smhi-1:Halka"
+    ],
+    "langsM": 0
+   }
+  ],
+  "tomma": {
+   "inget": [
+    "omledning"
+   ],
+   "koerMatsInte": false
+  }
+ },
+ "nytt": {
+  "fore": [
+   "seg:1",
+   "wx:10",
+   "bro:20",
+   "wx:11",
+   "dev:101",
+   "dev:102",
+   "tt:3",
+   "dev:113",
+   "dev:110",
+   "dev:111",
+   "dev:112",
+   "dev:120",
+   "farja:200",
+   "cam:30",
+   "cam:31",
+   "cam:32",
+   "cam:33",
+   "cam:34",
+   "smhi:smhi-1:Halka"
+  ],
+  "ut": [
+   "dev:100",
+   "tt:1"
+  ]
+ },
+ "riktning": [
+  {
+   "namn": "samma håll",
+   "delar": [
+    [
+     [
+      18.000176,
+      59.3
+     ],
+     [
+      18.000176,
+      59.3008983
+     ],
+     [
+      18.000176,
+      59.3017966
+     ],
+     [
+      18.000176,
+      59.3026949
+     ],
+     [
+      18.000176,
+      59.3035932
+     ],
+     [
+      18.000176,
+      59.3044916
+     ],
+     [
+      18.000176,
+      59.3053899
+     ],
+     [
+      18.000176,
+      59.3062882
+     ],
+     [
+      18.000176,
+      59.3071865
+     ],
+     [
+      18.000176,
+      59.3080848
+     ],
+     [
+      18.000176,
+      59.3089831
+     ],
+     [
+      18.000176,
+      59.3098814
+     ],
+     [
+      18.000176,
+      59.3107797
+     ],
+     [
+      18.000176,
+      59.311678
+     ],
+     [
+      18.000176,
+      59.3125764
+     ],
+     [
+      18.000176,
+      59.3134747
+     ],
+     [
+      18.000176,
+      59.314373
+     ],
+     [
+      18.000176,
+      59.3152713
+     ],
+     [
+      18.000176,
+      59.3161696
+     ],
+     [
+      18.000176,
+      59.3170679
+     ],
+     [
+      18.000176,
+      59.3179662
+     ]
+    ]
+   ],
+   "svar": 1
+  },
+  {
+   "namn": "motsatt håll",
+   "delar": [
+    [
+     [
+      17.999824,
+      59.3179662
+     ],
+     [
+      17.999824,
+      59.3170679
+     ],
+     [
+      17.999824,
+      59.3161696
+     ],
+     [
+      17.999824,
+      59.3152713
+     ],
+     [
+      17.999824,
+      59.314373
+     ],
+     [
+      17.999824,
+      59.3134747
+     ],
+     [
+      17.999824,
+      59.3125764
+     ],
+     [
+      17.999824,
+      59.311678
+     ],
+     [
+      17.999824,
+      59.3107797
+     ],
+     [
+      17.999824,
+      59.3098814
+     ],
+     [
+      17.999824,
+      59.3089831
+     ],
+     [
+      17.999824,
+      59.3080848
+     ],
+     [
+      17.999824,
+      59.3071865
+     ],
+     [
+      17.999824,
+      59.3062882
+     ],
+     [
+      17.999824,
+      59.3053899
+     ],
+     [
+      17.999824,
+      59.3044916
+     ],
+     [
+      17.999824,
+      59.3035932
+     ],
+     [
+      17.999824,
+      59.3026949
+     ],
+     [
+      17.999824,
+      59.3017966
+     ],
+     [
+      17.999824,
+      59.3008983
+     ],
+     [
+      17.999824,
+      59.3
+     ]
+    ]
+   ],
+   "svar": -1
+  },
+  {
+   "namn": "för långt bort",
+   "delar": [
+    [
+     [
+      18.0070381,
+      59.3
+     ],
+     [
+      18.0070381,
+      59.3008983
+     ],
+     [
+      18.0070381,
+      59.3017966
+     ],
+     [
+      18.0070381,
+      59.3026949
+     ],
+     [
+      18.0070381,
+      59.3035932
+     ],
+     [
+      18.0070381,
+      59.3044916
+     ],
+     [
+      18.0070381,
+      59.3053899
+     ],
+     [
+      18.0070381,
+      59.3062882
+     ],
+     [
+      18.0070381,
+      59.3071865
+     ],
+     [
+      18.0070381,
+      59.3080848
+     ],
+     [
+      18.0070381,
+      59.3089831
+     ],
+     [
+      18.0070381,
+      59.3098814
+     ],
+     [
+      18.0070381,
+      59.3107797
+     ],
+     [
+      18.0070381,
+      59.311678
+     ],
+     [
+      18.0070381,
+      59.3125764
+     ],
+     [
+      18.0070381,
+      59.3134747
+     ],
+     [
+      18.0070381,
+      59.314373
+     ],
+     [
+      18.0070381,
+      59.3152713
+     ],
+     [
+      18.0070381,
+      59.3161696
+     ],
+     [
+      18.0070381,
+      59.3170679
+     ],
+     [
+      18.0070381,
+      59.3179662
+     ]
+    ]
+   ],
+   "svar": 0
+  },
+  {
+   "namn": "når bara en provpunkt",
+   "delar": [
+    [
+     [
+      18.0008798,
+      59.3269493
+     ],
+     [
+      18.0026393,
+      59.3269493
+     ],
+     [
+      18.0043988,
+      59.3269493
+     ]
+    ]
+   ],
+   "svar": 0
+  }
+ ],
+ "app": {
+  "lagen": [
+   {
+    "namn": "första kollen: inget nytt, det största pågår",
+    "dit": [
+     "seg:1",
+     "wx:10",
+     "bro:20",
+     "wx:11",
+     "dev:100",
+     "dev:101",
+     "dev:102",
+     "tt:1",
+     "tt:3",
+     "dev:113",
+     "dev:110",
+     "dev:111",
+     "dev:112",
+     "dev:120",
+     "farja:200",
+     "cam:30",
+     "cam:31",
+     "cam:32",
+     "cam:33",
+     "cam:34",
+     "smhi:smhi-1:Halka"
+    ],
+    "hem": [
+     "seg:1",
+     "wx:11",
+     "bro:20",
+     "wx:10",
+     "dev:100",
+     "dev:101",
+     "dev:102",
+     "tt:2",
+     "dev:112",
+     "dev:111",
+     "dev:110",
+     "dev:113",
+     "dev:120",
+     "farja:200",
+     "cam:34",
+     "cam:33",
+     "cam:32",
+     "cam:31",
+     "cam:30",
+     "smhi:smhi-1:Halka"
+    ],
+    "sett": null,
+    "svar": {
+     "lage": "ingetNytt",
+     "id": "seg:1"
+    }
+   },
+   {
+    "namn": "en olycka och en kö har tillkommit",
+    "dit": [
+     "seg:1",
+     "wx:10",
+     "bro:20",
+     "wx:11",
+     "dev:100",
+     "dev:101",
+     "dev:102",
+     "tt:1",
+     "tt:3",
+     "dev:113",
+     "dev:110",
+     "dev:111",
+     "dev:112",
+     "dev:120",
+     "farja:200",
+     "cam:30",
+     "cam:31",
+     "cam:32",
+     "cam:33",
+     "cam:34",
+     "smhi:smhi-1:Halka"
+    ],
+    "hem": [
+     "seg:1",
+     "wx:11",
+     "bro:20",
+     "wx:10",
+     "dev:100",
+     "dev:101",
+     "dev:102",
+     "tt:2",
+     "dev:112",
+     "dev:111",
+     "dev:110",
+     "dev:113",
+     "dev:120",
+     "farja:200",
+     "cam:34",
+     "cam:33",
+     "cam:32",
+     "cam:31",
+     "cam:30",
+     "smhi:smhi-1:Halka"
+    ],
+    "sett": [
+     "bro:20",
+     "cam:30",
+     "cam:31",
+     "cam:32",
+     "cam:33",
+     "cam:34",
+     "dev:101",
+     "dev:102",
+     "dev:110",
+     "dev:111",
+     "dev:112",
+     "dev:113",
+     "dev:120",
+     "farja:200",
+     "seg:1",
+     "smhi:smhi-1:Halka",
+     "tt:1",
+     "tt:3",
+     "wx:10",
+     "wx:11"
+    ],
+    "svar": {
+     "lage": "nytt",
+     "antal": 2,
+     "id": "dev:100"
+    }
+   },
+   {
+    "namn": "en ny kamera räknas inte",
+    "dit": [
+     "seg:1",
+     "wx:10",
+     "bro:20",
+     "wx:11",
+     "dev:100",
+     "dev:101",
+     "dev:102",
+     "tt:1",
+     "tt:3",
+     "dev:113",
+     "dev:110",
+     "dev:111",
+     "dev:112",
+     "dev:120",
+     "farja:200",
+     "cam:30",
+     "cam:31",
+     "cam:32",
+     "cam:33",
+     "cam:34",
+     "smhi:smhi-1:Halka"
+    ],
+    "hem": [
+     "seg:1",
+     "wx:11",
+     "bro:20",
+     "wx:10",
+     "dev:100",
+     "dev:101",
+     "dev:102",
+     "tt:2",
+     "dev:112",
+     "dev:111",
+     "dev:110",
+     "dev:113",
+     "dev:120",
+     "farja:200",
+     "cam:34",
+     "cam:33",
+     "cam:32",
+     "cam:31",
+     "cam:30",
+     "smhi:smhi-1:Halka"
+    ],
+    "sett": [
+     "bro:20",
+     "cam:31",
+     "cam:32",
+     "cam:33",
+     "cam:34",
+     "dev:100",
+     "dev:101",
+     "dev:102",
+     "dev:110",
+     "dev:111",
+     "dev:112",
+     "dev:113",
+     "dev:120",
+     "farja:200",
+     "seg:1",
+     "smhi:smhi-1:Halka",
+     "tt:1",
+     "tt:2",
+     "tt:3",
+     "wx:10",
+     "wx:11"
+    ],
+    "svar": {
+     "lage": "ingetNytt",
+     "id": "seg:1"
+    }
+   },
+   {
+    "namn": "utan halkan är frysrisken störst",
+    "dit": [
+     "wx:10",
+     "bro:20",
+     "wx:11",
+     "dev:100",
+     "dev:101",
+     "dev:102",
+     "tt:1",
+     "tt:3",
+     "dev:113",
+     "dev:110",
+     "dev:111",
+     "dev:112",
+     "dev:120",
+     "farja:200",
+     "cam:30",
+     "cam:31",
+     "cam:32",
+     "cam:33",
+     "cam:34",
+     "smhi:smhi-1:Halka"
+    ],
+    "hem": [
+     "wx:11",
+     "bro:20",
+     "wx:10",
+     "dev:100",
+     "dev:101",
+     "dev:102",
+     "tt:2",
+     "dev:112",
+     "dev:111",
+     "dev:110",
+     "dev:113",
+     "dev:120",
+     "farja:200",
+     "cam:34",
+     "cam:33",
+     "cam:32",
+     "cam:31",
+     "cam:30",
+     "smhi:smhi-1:Halka"
+    ],
+    "sett": [
+     "bro:20",
+     "cam:30",
+     "cam:31",
+     "cam:32",
+     "cam:33",
+     "cam:34",
+     "dev:100",
+     "dev:101",
+     "dev:102",
+     "dev:110",
+     "dev:111",
+     "dev:112",
+     "dev:113",
+     "dev:120",
+     "farja:200",
+     "seg:1",
+     "smhi:smhi-1:Halka",
+     "tt:1",
+     "tt:2",
+     "tt:3",
+     "wx:10",
+     "wx:11"
+    ],
+    "svar": {
+     "lage": "ingetNytt",
+     "id": "wx:10"
+    }
+   },
+   {
+    "namn": "lugnt: bara kameror och restider i normal trafik",
+    "dit": [
+     "tt:1",
+     "tt:3",
+     "cam:30",
+     "cam:31",
+     "cam:32",
+     "cam:33",
+     "cam:34"
+    ],
+    "hem": [
+     "cam:34",
+     "cam:33",
+     "cam:32",
+     "cam:31",
+     "cam:30"
+    ],
+    "sett": null,
+    "svar": {
+     "lage": "lugnt"
+    }
+   }
+  ],
+  "nytt": [
+   {
+    "namn": "olyckan är ny; restiden i normal trafik och kameran räknas inte",
+    "sett": [
+     "bro:20",
+     "cam:31",
+     "cam:32",
+     "cam:33",
+     "cam:34",
+     "dev:101",
+     "dev:102",
+     "dev:110",
+     "dev:111",
+     "dev:112",
+     "dev:113",
+     "dev:120",
+     "farja:200",
+     "seg:1",
+     "smhi:smhi-1:Halka",
+     "tt:2",
+     "tt:3",
+     "wx:10",
+     "wx:11"
+    ],
+    "svar": [
+     "dev:100"
+    ]
+   },
+   {
+    "namn": "före den första kollen",
+    "sett": null,
+    "svar": []
+   }
+  ],
+  "kollen": [
+   "bro:20",
+   "cam:30",
+   "cam:31",
+   "cam:32",
+   "cam:33",
+   "cam:34",
+   "dev:100",
+   "dev:101",
+   "dev:102",
+   "dev:110",
+   "dev:111",
+   "dev:112",
+   "dev:113",
+   "dev:120",
+   "farja:200",
+   "seg:1",
+   "smhi:smhi-1:Halka",
+   "tt:1",
+   "tt:2",
+   "tt:3",
+   "wx:10",
+   "wx:11"
+  ],
+  "titlar": [
+   {
+    "rubrik": "Olycka",
+    "vag": "E4",
+    "svar": "Olycka på E4"
+   },
+   {
+    "rubrik": "Djur på vägen",
+    "vag": "E4",
+    "svar": "Djur på vägen"
+   },
+   {
+    "rubrik": "Vägarbete",
+    "vag": "73",
+    "svar": "Vägarbete på väg 73"
+   },
+   {
+    "rubrik": "Fartkamera",
+    "vag": null,
+    "svar": "Fartkamera"
+   },
+   {
+    "rubrik": "Halt väglag på E4",
+    "vag": "E4",
+    "svar": "Halt väglag på E4"
+   }
+  ],
+  "grind": [
+   {
+    "vaglag": true,
+    "olyckor": false,
+    "svar": [
+     "dev:100",
+     "dev:101",
+     "dev:102",
+     "tt:1",
+     "tt:3",
+     "dev:113",
+     "dev:110",
+     "dev:111",
+     "dev:112",
+     "dev:120",
+     "farja:200",
+     "cam:30",
+     "cam:31",
+     "cam:32",
+     "cam:33",
+     "cam:34",
+     "smhi:smhi-1:Halka"
+    ]
+   },
+   {
+    "vaglag": false,
+    "olyckor": true,
+    "svar": [
+     "seg:1",
+     "wx:10",
+     "bro:20",
+     "wx:11",
+     "dev:101",
+     "tt:1",
+     "tt:3",
+     "dev:113",
+     "dev:110",
+     "dev:111",
+     "dev:112",
+     "dev:120",
+     "farja:200",
+     "cam:30",
+     "cam:31",
+     "cam:32",
+     "cam:33",
+     "cam:34",
+     "smhi:smhi-1:Halka"
+    ]
+   },
+   {
+    "vaglag": true,
+    "olyckor": true,
+    "svar": [
+     "dev:101",
+     "tt:1",
+     "tt:3",
+     "dev:113",
+     "dev:110",
+     "dev:111",
+     "dev:112",
+     "dev:120",
+     "farja:200",
+     "cam:30",
+     "cam:31",
+     "cam:32",
+     "cam:33",
+     "cam:34",
+     "smhi:smhi-1:Halka"
+    ]
+   }
+  ],
+  "tomt": [
+   {
+    "namn": "Dit",
+    "rader": [
+     "seg:1",
+     "wx:10",
+     "bro:20",
+     "wx:11",
+     "dev:100",
+     "dev:101",
+     "dev:102",
+     "tt:1",
+     "tt:3",
+     "dev:113",
+     "dev:110",
+     "dev:111",
+     "dev:112",
+     "dev:120",
+     "farja:200",
+     "cam:30",
+     "cam:31",
+     "cam:32",
+     "cam:33",
+     "cam:34",
+     "smhi:smhi-1:Halka"
+    ],
+    "hem": false,
+    "vaglag": false,
+    "olyckor": false,
+    "svar": "Inget rapporterat: köer och omledningar."
+   },
+   {
+    "namn": "Hem",
+    "rader": [
+     "seg:1",
+     "wx:11",
+     "bro:20",
+     "wx:10",
+     "dev:100",
+     "dev:101",
+     "dev:102",
+     "tt:2",
+     "dev:112",
+     "dev:111",
+     "dev:110",
+     "dev:113",
+     "dev:120",
+     "farja:200",
+     "cam:34",
+     "cam:33",
+     "cam:32",
+     "cam:31",
+     "cam:30",
+     "smhi:smhi-1:Halka"
+    ],
+    "hem": true,
+    "vaglag": false,
+    "olyckor": false,
+    "svar": "Inget rapporterat: omledningar."
+   },
+   {
+    "namn": "Dit med gammalt väglag",
+    "rader": [
+     "dev:100",
+     "dev:101",
+     "dev:102",
+     "tt:1",
+     "tt:3",
+     "dev:113",
+     "dev:110",
+     "dev:111",
+     "dev:112",
+     "dev:120",
+     "farja:200",
+     "cam:30",
+     "cam:31",
+     "cam:32",
+     "cam:33",
+     "cam:34",
+     "smhi:smhi-1:Halka"
+    ],
+    "hem": false,
+    "vaglag": true,
+    "olyckor": false,
+    "svar": "Inget rapporterat: köer och omledningar."
+   },
+   {
+    "namn": "bara kameror: köerna mäts inte",
+    "rader": [
+     "cam:30",
+     "cam:31",
+     "cam:32",
+     "cam:33",
+     "cam:34"
+    ],
+    "hem": false,
+    "vaglag": false,
+    "olyckor": false,
+    "svar": "Inget rapporterat: halt väglag på sträckorna, frysrisk vid stationerna, olyckor, hinder, vilt, vägarbeten, hastighet, omledningar, färjor och SMHI-varningar. Köer mäts inte längs den här vägen."
+   },
+   {
+    "namn": "ingenting alls",
+    "rader": [],
+    "hem": false,
+    "vaglag": false,
+    "olyckor": true,
+    "svar": "Inget rapporterat: halt väglag på sträckorna, frysrisk vid stationerna, hinder, vägarbeten, hastighet, omledningar, färjor, fartkameror och SMHI-varningar. Köer mäts inte längs den här vägen."
+   }
+  ]
+ }
+}

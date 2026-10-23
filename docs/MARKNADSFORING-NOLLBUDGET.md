@@ -4,10 +4,13 @@
 
 *Axels order 2/10 00:17: "Sedan måste vi verkligen börja med marknadsföring utan att spendera pengar. Gör upp en plan och vad som
 kommer att krävas. Förstår att vi måste köpa hemsidan men utöver det." Skriven mot läget samma natt: 0.3.9 (20) hos Apple (Waiting
-for Review, bara Sverige), Play-vägen fredag, föreningen Halkvakt bildad 29/9, Skyltfondsansökan inne (svar 15/12), halkbaneförsöket
+for Review, bara Sverige), Play-vägen fredag, ~~föreningen Halkvakt bildad 29/9~~ (bildades aldrig, #500), Skyltfondsansökan inne (svar 15/12), halkbaneförsöket
 på Bulltoftabanan jan–mar 2027, kuvösen med Trafikverket. Ersätter de betalda delarna i `docs/GTM.md` (25/8); kanalerna därifrån behålls.*
 
-**Grundregeln står (DECISIONS #18):** inget från Axels privata konton. Allt går i **föreningens/Halkvakts** namn.
+*↪ 23/10 (DECISIONS #683): föreningen bildades aldrig (#500). Halkvakt drivs av Bengt och Axel Lagerlöf som privatpersoner, och planen
+nedan är rättad efter det: ingen förening som tillgång, avsändare, pressvinkel eller förvar, och partnerbreven skickas av Bengt och Axel med namn.*
+
+**Grundregeln står (DECISIONS #18):** inget från Axels privata konton. Allt går i **Halkvakts** namn (#589).
 **Enda kostnaden:** domänen (halkvakt.se, kortet *Skydda namnet*). Allt annat nedan kostar tid, inte kronor.
 
 ---
@@ -20,7 +23,7 @@ på Bulltoftabanan jan–mar 2027, kuvösen med Trafikverket. Ersätter de betal
 | **Livekartan** (`karta.html`) | ett dagsaktuellt innehåll som förnyar sig självt — journalister och forum kan länka till den | i drift, 30-minutersuppdatering |
 | **Marknadsmotorn** (`marknadsforing/generator.mjs`) | skriver färdiga kanaltexter varje morgon + **snölarm per län** ur datan — vi vet var det är halt innan nyheterna | stannade 3/9 (Actions); startas om |
 | **Löftet** "positionen lämnar inte telefonen av sig själv" | det enda i kategorin som är sant och bevisbart (öppen kod, öppna data) | sant sedan 23/9 |
-| **Föreningen Halkvakt** (ideell, 29/9) | ingen kommersiell aktör — dörren till NTF, kommuner, trafikskolor, Trafikverket | bildad; org.nr på väg |
+| ~~**Föreningen Halkvakt** (ideell, 29/9)~~ | — | bildades aldrig (#500); Halkvakt drivs av Bengt och Axel Lagerlöf som privatpersoner |
 | **Skyltfonden** (svar 15/12) | ett ja = Trafikverket står bakom = pressrubrik gratis | ansökan inne |
 | **Halkbaneförsöket** jan–mar 2027, ~100 elever i riskutbildning | en lokal nyhet i Malmö med bilder, siffror och en skola som ställer upp | muntligt ja, Mattias |
 | **Gratis, inget konto, svensk** | lågt motstånd — det enda vi ber om är en nedladdning | ja |
@@ -39,7 +42,7 @@ på Bulltoftabanan jan–mar 2027, kuvösen med Trafikverket. Ersätter de betal
 5. **Första frostnatten** (motorn larmar per län): lokalpress i det länet samma morgon — *tips@*-adresser, P4-redaktionen. Kroken:
    *"Gratis app byggd på Trafikverkets mätstationer säger till med rösten när det är halt — i natt var det första gången i [län]."*
 6. **Första snökaoset** (nov/dec): TT + rikspress + motor-/teknikpress (Vi Bilägare, Teknikens Värld, Mobil.se, SweClockers, Feber, Ny Teknik).
-7. **15/12 Skyltfonden** — ja eller nej är en nyhet ("Trafikverket satsar på…" / "Ideell förening bygger det Trafikverket inte gör").
+7. **15/12 Skyltfonden** — ja eller nej är en nyhet ("Trafikverket satsar på…" / "Två privatpersoner bygger det Trafikverket inte gör").
 8. **Jan–mar Bulltoftabanan** — Sydsvenskan, Lokaltidningen Malmö, P4 Malmöhus, SVT Skåne: elever på halkbanan med en röst i örat. Bilder + siffror.
 9. **Podcast/radio**: P1 Trafikredaktionen, P4 Trafik — de talar om halka varje vinterdag och vill ha något nytt att säga.
 
@@ -49,8 +52,8 @@ på Bulltoftabanan jan–mar 2027, kuvösen med Trafikverket. Ersätter de betal
 12. **Bilforum**: Garaget, Bilsnack, Volvo-/Tesla-forum (elbilsförare är tidiga användare och pratar).
 13. **Facebook-grupper** (pendlargrupper, "Trafiken i Skåne", bilgrupper) — kräver en person, inte en sida: **Bengt eller en vän**, inte Axel.
 
-**D. Partners och multiplikatorer (gratis, förening till förening)**
-14. **NTF** (Nationalföreningen för Trafiksäkerhetens Främjande) — ideell till ideell; deras vinterkampanjer behöver konkret innehåll.
+**D. Partners och multiplikatorer (gratis)**
+14. **NTF** (Nationalföreningen för Trafiksäkerhetens Främjande) — deras vinterkampanjer behöver konkret innehåll.
 15. **Trafikskolor + STR** (Sveriges Trafikutbildares Riksförbund): Bulltoftabanan först, sedan "varje riskutbildning del 2 i Skåne".
     Handledare är trovärdighetsspridare; eleverna är 18-åringar med telefon.
 16. **Trafikverket** — Micke Wallin-kontakten och trafficdata.se: Trafikverket visar gärna *goda exempel* på öppna data. Fråga om vi får stå där.
@@ -72,12 +75,11 @@ på Bulltoftabanan jan–mar 2027, kuvösen med Trafikverket. Ersätter de betal
 ## 4. Vad som krävs av Axel (beslut och handgrepp, inget annat)
 
 1. **Domänen** — halkvakt.se: kolla ägaren (sajten svarar redan på adressen), annars .nu/.app. Cloudflare för DNS + e-post (gratis).
-2. **Ansiktet** — press vill ha ett namn. Tre vägar: *Axel Lagerlöf, grundare* · *Föreningen Halkvakt* med Bengt som talesperson · anonymt
-   "teamet bakom". GTM.md väntar på detta sedan augusti. **Rekommendation:** föreningen som avsändare, Axel med namn i presskitet (det är
-   inte hans privata kanal, det är ett pressmeddelande).
-3. **Kontona** — skapa FB-sida, Instagram, LinkedIn-sida i Halkvakts namn (1 h). Lösenord i föreningens förvar.
+2. **Ansiktet** — press vill ha ett namn. **Avgjort 16/10 (DECISIONS #589):** vi skriver som Halkvakt, och Axel står med namn bara i
+   pressmaterialet (det är inte hans privata kanal, det är ett pressmeddelande). GTM.md hade väntat på detta sedan augusti.
+3. **Kontona** — skapa FB-sida, Instagram, LinkedIn-sida i Halkvakts namn (1 h). Vem som förvarar lösenorden är inte bokfört (fråga till Axel, 23/10).
 4. **Demovideon** — 60 sekunder, telefonen i hållaren, en riktig varning som hörs. Filmas när första kameravarningen kommer på en resa.
-5. **Partnerbreven** — Claude skriver, Axel skickar från hej@halkvakt.se i föreningens namn. Fem brev, en förmiddag.
+5. **Partnerbreven** — Claude skriver; Bengt och Axel skickar från hej@halkvakt.se och skriver under med sina namn. Fem brev, en förmiddag.
 6. **Vem klistrar in i grupper** — Bengt eller någon annan som får använda sitt eget konto.
 
 ## 5. Vad Claude bygger (utan att fråga)

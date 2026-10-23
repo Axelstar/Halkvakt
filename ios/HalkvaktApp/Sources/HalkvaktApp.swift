@@ -25,7 +25,9 @@ struct InstallningarView: View {
                     .padding(.top, 28)
 
                     RowPanel {
-                        NavigationLink(value: Sida.betatest) { NavRowLabel(title: "Betatest", value: prefs.facitOn ? "På" : "Av") }
+                        if Prefs.betatestTillaten {   // bara i TestFlight (#681)
+                            NavigationLink(value: Sida.betatest) { NavRowLabel(title: "Betatest", value: prefs.facitOn ? "På" : "Av") }
+                        }
                         NavigationLink(value: Sida.integritet) { NavRowLabel(title: "Integritet") }
                         Button { prefs.onboardingDone = false } label: { NavRowLabel(title: "Visa introduktionen igen") }
                         NavigationLink(value: Sida.om) { NavRowLabel(title: "Om Halkvakt", divider: false) }
@@ -148,7 +150,7 @@ struct InstallningarView: View {
                 ReceiptRow(label: "Vid missad", value: "Klockslag, närmaste mätstation, vad det var")
                 ReceiptRow(label: "Aldrig", value: "Konto, resa, position", divider: false)
             }
-            Text("Ett varnings-id pekar på en fara på kartan, så vi ser ungefär var du var just då. Appens namn och version följer med. Bara för betatestare.")
+            Text("Ett varnings-id pekar på en fara på kartan, så vi ser ungefär var du var just då. Appens namn och version följer med. Bara för betatestare. Betatest slår också på betavarningen efter regn (*Halkvakt tror: frysrisk framöver*), som prövas bland testarna först.")
                 .font(Typo.sans(13)).lineSpacing(3).foregroundStyle(Brand.dim)
                 .padding(.top, 14).padding(.horizontal, 4)
         case .integritet:
@@ -156,7 +158,13 @@ struct InstallningarView: View {
             VStack(alignment: .leading, spacing: 12) {
                 MonoLabel(text: "Löftet", size: 11)
                 Text("Din position lämnar inte telefonen av sig själv.").font(Typo.sans(20, .medium)).foregroundStyle(Brand.text)
-                Text("All matchning mot vägdata sker lokalt i appen. Inget konto, ingen spårning. Undantaget är betatestet — bara om du själv slår på det.")
+                // Kort #357 (DECISIONS #616, #625): "ingen spårning" blev osant när resor kan sparas — en sparad resa är ett spår,
+                // även om det bara finns hos föraren. Texten säger var de ligger och hur de tas bort.
+                Text(Prefs.betatestTillaten
+                     ? "All matchning mot vägdata sker lokalt i appen. Inget konto. Undantaget är betatestet — bara om du själv slår på det."
+                     : "All matchning mot vägdata sker lokalt i appen. Inget konto, och inget skickas.")
+                    .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2)
+                Text("Slår du på Erbjud att spara resor under Favoriter sparas vägarna du väljer, bara i telefonen och aldrig i en säkerhetskopia. Du tar bort dem där.")
                     .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2)
             }
             .padding(20)
@@ -164,7 +172,9 @@ struct InstallningarView: View {
             .background(Brand.panel, in: RoundedRectangle(cornerRadius: 18))
             .padding(.top, 24)
             RowPanel {
-                NavigationLink(value: Sida.betatest) { NavRowLabel(title: "Betatest", value: prefs.facitOn ? "På" : "Av") }
+                if Prefs.betatestTillaten {
+                    NavigationLink(value: Sida.betatest) { NavRowLabel(title: "Betatest", value: prefs.facitOn ? "På" : "Av") }
+                }
                 LankRad(titel: "Integritetspolicy", url: "https://axelstar.github.io/halkvakt-karta/integritet.html", divider: false)
             }
             .padding(.top, 10)
@@ -316,22 +326,26 @@ private struct GenvagarGuide: View {
     }
 }
 
-/// Två flikar under en flytande kapsel (designen v2, DECISIONS #444) — Vakten och Inställningar.
-/// Ingen flikrad medan vakten kör: körläget täcker allt.
+/// Tre flikar under en flytande kapsel (designen v2, DECISIONS #444; Favoriter i mitten sedan kort #357, #616) — Vakten,
+/// Favoriter och Inställningar. Ingen flikrad medan vakten kör: körläget täcker allt.
 struct RootView: View {
     @State private var tab = 0
     @State private var guardM = GuardManager.shared
     var body: some View {
         ZStack(alignment: .bottom) {
-            // Båda flikarna lever hela tiden, som i TabView: ingen omladdning och ingen tappad undersida vid flikbyte.
+            // Flikarna lever hela tiden, som i TabView: ingen omladdning och ingen tappad undersida vid flikbyte.
             VaktenView().opacity(tab == 0 ? 1 : 0).allowsHitTesting(tab == 0).accessibilityHidden(tab != 0)
-            InstallningarView().opacity(tab == 1 ? 1 : 0).allowsHitTesting(tab == 1).accessibilityHidden(tab != 1)
+            FavoriterView(synlig: tab == 1).opacity(tab == 1 ? 1 : 0).allowsHitTesting(tab == 1).accessibilityHidden(tab != 1)
+            InstallningarView().opacity(tab == 2 ? 1 : 0).allowsHitTesting(tab == 2).accessibilityHidden(tab != 2)
             LinearGradient(colors: [Brand.bg.opacity(0), Brand.bg], startPoint: .top, endPoint: .init(x: 0.5, y: 0.6))
                 .frame(height: 130).allowsHitTesting(false)
                 .ignoresSafeArea(edges: .bottom)
             FloatingTabBar(tab: $tab).padding(.bottom, 8)
         }
         .background(Brand.bg)
+        // Skärmens bakgrund bakom klockan: flikarna döljer navigeringsfältet, så texten rullade annars upp under statusfältet
+        // (Bengts skärmbilder 18/10, DECISIONS #643). Gäller flikarna och sidorna under dem; körläget är en egen skärm.
+        .safeAreaInset(edge: .top, spacing: 0) { Color.clear.frame(height: 0).background(Brand.bg) }
         // Här och inte i VaktenView: vakten kan starta (Siri, Genvägar, självväckning) medan Inställningar visas.
         .fullScreenCover(isPresented: $guardM.running) { KorlageView() }
     }

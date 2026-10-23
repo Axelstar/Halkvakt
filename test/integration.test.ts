@@ -75,6 +75,12 @@ test("writeAll: migrate, insert, idempotent re-run", { skip: !url }, async () =>
   // körning — den är en klocka, inte data, så två körningar ger två rader utan att bryta idempotensen.
   assert.equal(await n("SELECT count(*) FROM smhi_warnings_history WHERE senast_sedd IS NOT NULL"), 1);
   assert.equal(await n("SELECT count(*) FROM smhi_synk WHERE varningar = 1"), 2);
+  // Källornas genomgång 20/10: när SMHI-hämtningen fallerar skickar ingest ingen smhi alls. Då får nuläget inte tömmas
+  // och ingen synkrad skrivas — förut blev ett fel en tom lista, som raderade smhi_warnings och loggades som 0 varningar.
+  const c3 = await writeAll({ ...data, smhi: undefined });
+  assert.equal(c3.smhi, 0);
+  assert.equal(await n("SELECT count(*) FROM smhi_warnings"), 1, "ett SMHI-fel tömmer inte nuläget");
+  assert.equal(await n("SELECT count(*) FROM smhi_synk"), 2, "ett SMHI-fel skriver ingen synkrad");
   const wv = await pool.query("SELECT road_number, species FROM polisen_events WHERE event_id=999001");
   assert.equal(wv.rows[0].road_number, "E45");
   assert.equal(wv.rows[0].species, "älg");
@@ -1614,7 +1620,7 @@ test("#573 del 2: domloggen per sträcka, stationsvärdena, körningsloggen och 
     await q("CREATE TABLE IF NOT EXISTS shadow_log (id bigserial PRIMARY KEY, run_at timestamptz NOT NULL DEFAULT now(), alerts jsonb NOT NULL DEFAULT '[]'::jsonb)");
     for (const f of ["001_init.sql", "008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql", "018_trend_berakna.sql",
                      "029_brott_index.sql", "030_langsam_vakt.sql", "050_kandidat_live.sql", "053_arkiv_tabeller.sql", "055_vagpunkter.sql",
-                     "056_kandidat_regel.sql", "057_kandidat_skugga.sql"])
+                     "056_kandidat_regel.sql", "057_kandidat_skugga.sql", "062_kortare_forvaring.sql"])
       await q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
     await stad();
     const P: [string, string, number, number][] = [
@@ -1652,20 +1658,22 @@ test("#573 del 2: domloggen per sträcka, stationsvärdena, körningsloggen och 
     assert.match((await q("SELECT kandidat_logga() AS m")).rows[0].m, /tyst/);
     assert.equal((await q("SELECT status FROM kandidat_skugga_korning ORDER BY korning DESC LIMIT 1")).rows[0].status, "tyst");
 
-    // Hinken: dygnet efter exporteras, golvet är tre dygn.
+    // Hinken: dygnet efter exporteras, golvet är ett dygn (sql/062, DECISIONS #618; tre dygn till 17/10, #573).
     const dag = (n: number) => q("SELECT ((now() - $1 * interval '1 day') AT TIME ZONE 'UTC')::date::text AS d", [n]).then((r) => r.rows[0].d as string);
-    const [d2, d5, idag] = [await dag(2), await dag(5), await dag(0)];
-    for (const d of [d2, d5])
+    const [d1, d2, d5, idag] = [await dag(1), await dag(2), await dag(5), await dag(0)];
+    for (const d of [d1, d2, d5])
       await q(`INSERT INTO kandidat_skugga (segment_id, observed_at, punkter, varnar, veto, torr, vat, flackvis_vat, pb_min)
         VALUES ('99919', ($1::date + interval '12 hours') AT TIME ZONE 'UTC', 1, 1, 0, 0, true, false, -1)`, [d]);
     const att = (await q("SELECT arkiv2_att_exportera('kandidat_skugga', 100)::text AS d")).rows.map((r) => r.d);
-    assert.ok(att.includes(d2) && att.includes(d5), `två och fem dygn gamla står i kö: ${att}`);
+    assert.ok(att.includes(d1) && att.includes(d2) && att.includes(d5), `ett, två och fem dygn gamla står i kö: ${att}`);
     assert.ok(!att.includes(idag), "i dag är inte färdigt");
     const text: string = (await q("SELECT arkiv2_dygn('kandidat_skugga', $1::date) AS t", [d5])).rows[0].t;
     assert.equal(JSON.parse(text.split("\n")[0])[0], "segment_id");
-    for (const d of [d2, d5]) await q("SELECT arkiv2_export_klar('kandidat_skugga', $1::date, 1, 10, 'x', 'v')", [d]);
+    for (const d of [d1, d2, d5]) await q("SELECT arkiv2_export_klar('kandidat_skugga', $1::date, 1, 10, 'x', 'v')", [d]);
     assert.match((await q("SELECT arkiv2_radera_exporterat(0, 14) AS s")).rows[0].s, /kandidat_skugga: raderade 1 rader/, "fem dygn gammalt raderas");
-    assert.match((await q("SELECT arkiv2_radera_exporterat(0, 14) AS s")).rows[0].s, /inget exporterat tabelldygn/, "två dygn gammalt står kvar");
+    assert.match((await q("SELECT arkiv2_radera_exporterat(0, 14) AS s")).rows[0].s, /kandidat_skugga: raderade 1 rader/, "två dygn gammalt raderas");
+    assert.match((await q("SELECT arkiv2_radera_exporterat(0, 14) AS s")).rows[0].s, /inget exporterat tabelldygn äldre än golvet \(14 dygn, kandidatens loggar 1\)/,
+      "ett dygn gammalt står kvar");
     await assert.rejects(q("SELECT arkiv2_dygn('shadow_log', $1::date)", [d5]), /okänd tabell/);
   } finally {
     await stad().catch(() => {});
@@ -1692,7 +1700,8 @@ test("#575 spridningsgrinden: regeln, gränsen, glesa punkter och domloggens fä
     await q("CREATE TABLE IF NOT EXISTS shadow_log (id bigserial PRIMARY KEY, run_at timestamptz NOT NULL DEFAULT now(), alerts jsonb NOT NULL DEFAULT '[]'::jsonb)");
     for (const f of ["001_init.sql", "008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql", "018_trend_berakna.sql",
                      "029_brott_index.sql", "030_langsam_vakt.sql", "050_kandidat_live.sql", "053_arkiv_tabeller.sql", "055_vagpunkter.sql",
-                     "056_kandidat_regel.sql", "057_kandidat_skugga.sql", "058_kandidat_spridning.sql", "059_kandidat_brytare.sql"])
+                     "056_kandidat_regel.sql", "057_kandidat_skugga.sql", "058_kandidat_spridning.sql", "059_kandidat_brytare.sql",
+                     "065_kandidat_domlogg_punkter.sql"])
       await q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
     await stad();
     // [punkt, sträcka, n_ank, spr, väntat utfall] — alla Våt och kalla, långt från provens stationer (70° N, 32° Ö)
@@ -1703,13 +1712,17 @@ test("#575 spridningsgrinden: regeln, gränsen, glesa punkter och domloggens fä
       ["vT24", "99923", 0, null, "varnar"],     // inget ankare: grindas inte
       ["vT25", "99924", 2, 2.25, "spridning"],  // exakt på gränsen ⇒ tyst (≥ 2,25)
       ["vT26", "99924", 2, 2.2, "varnar"],      // under gränsen ⇒ talar
+      ["vT27", "99925", 2, 1.0, "torr"],        // ingen fukt på sträckan ⇒ torr, och inte med i domloggens punktfält (sql/065)
     ];
+    // sql/065: ankaravståndet per punkt (kandidat_live.ank_km), som domen lägger i ankarband
+    const ANK: Record<string, number | null> = { vT21: 4.5, vT22: 12, vT23: 30, vT24: null, vT25: 6.5, vT26: 18, vT27: 3 };
     for (const [p, s] of P) await q("INSERT INTO vagpunkt (punkt, segment_id, lon, lat) VALUES ($1, $2, 32, 70)", [p, s]);
     await q(`INSERT INTO road_conditions (segment_id, condition_code, condition_text, condition_info) VALUES
-      ('99921', 1, 'Normalt', '{Våt}'), ('99922', 1, 'Normalt', '{Våt}'), ('99923', 1, 'Normalt', '{Våt}'), ('99924', 1, 'Normalt', '{Våt}')`);
+      ('99921', 1, 'Normalt', '{Våt}'), ('99922', 1, 'Normalt', '{Våt}'), ('99923', 1, 'Normalt', '{Våt}'), ('99924', 1, 'Normalt', '{Våt}'),
+      ('99925', 1, 'Normalt', '{}')`);
     const tid: Date = (await q("SELECT date_trunc('hour', now()) AS t")).rows[0].t;
     await q("INSERT INTO kandidat_live (tid, punkt, pb) SELECT $1, v.punkt, 5 FROM vagpunkt v WHERE v.punkt NOT LIKE 'vT%'", [tid]);
-    for (const [p, , n, spr] of P) await q("INSERT INTO kandidat_live (tid, punkt, pb, n_ank, spr) VALUES ($1, $2, -1, $3, $4)", [tid, p, n, spr]);
+    for (const [p, , n, spr] of P) await q("INSERT INTO kandidat_live (tid, punkt, pb, n_ank, spr, ank_km) VALUES ($1, $2, -1, $3, $4, $5)", [tid, p, n, spr, ANK[p]]);
     await q("INSERT INTO kandidat_live (tid, punkt, pb, n_ank, spr) VALUES ($1, 'ST_B', 1.5, 3, 1.5)", [tid]);
     const utfall = Object.fromEntries((await q("SELECT punkt, utfall FROM kandidat_regel() WHERE punkt LIKE 'vT%'")).rows.map((r) => [r.punkt, r.utfall]));
     assert.deepEqual(utfall, Object.fromEntries(P.map(([p, , , , u]) => [p, u])));
@@ -1718,12 +1731,23 @@ test("#575 spridningsgrinden: regeln, gränsen, glesa punkter och domloggens fä
     const { liveDoc } = await buildSnapshot(async (t, p) => (await pool.query(t, p as any[])).rows, []);
     assert.deepEqual(liveDoc.kandidat.filter((r) => r.id.startsWith("9992")),
       ["99921", "99922", "99923", "99924"].map((id) => ({ id, tid: tid.toISOString(), punkter: [[32, 70]] })));
-    assert.match((await q("SELECT kandidat_logga() AS m")).rows[0].m, /4 sträckor, 4 varnande punkter, 0 vetade, 0 torra, 2 tystade av spridningen/);
+    assert.match((await q("SELECT kandidat_logga() AS m")).rows[0].m, /5 sträckor, 4 varnande punkter, 0 vetade, 1 torra, 2 tystade av spridningen/);
     const rad = Object.fromEntries((await q("SELECT segment_id, varnar, spridning, fukt_glest, fukt_spr_min FROM kandidat_skugga WHERE segment_id LIKE '9992%'"))
       .rows.map((r) => [r.segment_id, [r.varnar, r.spridning, r.fukt_glest, r.fukt_spr_min]]));
     assert.deepEqual(rad, {
-      "99921": [1, 1, 0, 1], "99922": [1, 0, 1, null], "99923": [1, 0, 1, null], "99924": [1, 1, 0, 2.2],
+      "99921": [1, 1, 0, 1], "99922": [1, 0, 1, null], "99923": [1, 0, 1, null], "99924": [1, 1, 0, 2.2], "99925": [0, 0, 0, null],
     }, "en sträcka varnar vid X om fukt_glest > 0 eller fukt_spr_min < X");
+    // sql/065 (åtgärdslistan B4-36): punkterna som inte är torra, med utfall, ankaravstånd, ankare, spridning och värde, i punktordning
+    const pf = Object.fromEntries((await q(`SELECT segment_id, fukt_punkter, fukt_utfall, fukt_ank_km, fukt_n_ank, fukt_spr, fukt_pb
+      FROM kandidat_skugga WHERE segment_id LIKE '9992%'`)).rows.map((r) => [r.segment_id,
+        [r.fukt_punkter, r.fukt_utfall, r.fukt_ank_km, r.fukt_n_ank, r.fukt_spr, r.fukt_pb]]));
+    assert.deepEqual(pf, {
+      "99921": [["vT21", "vT22"], ["varnar", "spridning"], [4.5, 12], [3, 2], [1, 3], [-1, -1]],
+      "99922": [["vT23"], ["varnar"], [30], [1], [0], [-1]],
+      "99923": [["vT24"], ["varnar"], [null], [0], [null], [-1]],
+      "99924": [["vT25", "vT26"], ["spridning", "varnar"], [6.5, 18], [2, 2], [2.25, 2.2], [-1, -1]],
+      "99925": [null, null, null, null, null, null],
+    }, "domloggen bär punkterna och ankaravståndet, och en torr sträcka bär inga punkter");
     const k = (await q("SELECT status, spridning FROM kandidat_skugga_korning ORDER BY korning DESC LIMIT 1")).rows[0];
     assert.deepEqual(k, { status: "räknad", spridning: 2 });
     const s = (await q("SELECT n_ank, spr FROM kandidat_station WHERE station_id = 'ST_B'")).rows[0];
@@ -1805,4 +1829,65 @@ test("#580 autovacuum: tabellerna som byts ut städas vid 2 % + 1 000 döda rade
       assert.ok((rows[0].reloptions ?? []).includes(o), `${o} saknas: ${rows[0].reloptions}`);
     }
   } finally { await pool.end(); }
+});
+
+// DECISIONS #618 (ii), sql/063: de fyra tabellerna som aldrig rensas exporteras per dygn på sin egen tidskolumn, men raderas aldrig.
+test("#618 (ii): skuggloggen, väglaget, händelserna och SMHI exporteras på sin tidskolumn och raderas aldrig", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const stad = async () => {
+    await q("DELETE FROM road_condition_history WHERE segment_id = 'T618'");
+    await q("DELETE FROM situation_archive WHERE deviation_id = 'T618'");
+    await q("DELETE FROM smhi_warnings_history WHERE area_id = 618618");
+    await q("DELETE FROM shadow_log WHERE alerts = '[\"T618\"]'::jsonb");
+    await q("DELETE FROM arkiv_export_tabell");
+  };
+  try {
+    await q("CREATE TABLE IF NOT EXISTS shadow_log (id bigserial PRIMARY KEY, run_at timestamptz NOT NULL DEFAULT now(), alerts jsonb NOT NULL DEFAULT '[]'::jsonb)");
+    // Bara det som saknas laddas: provet kan gå sist, när senare prov redan har gett äldre filers funktioner nya returtyper, och då
+    // fäller en omladdning av 056/057 med "cannot change return type". sql/062 och 063 ändrar inga returtyper och laddas alltid.
+    const las = (f: string) => q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+    if (!(await q("SELECT to_regclass('road_condition_history') AS t")).rows[0].t) await las("001_init.sql");
+    if (!(await q("SELECT to_regclass('situation_archive') AS t")).rows[0].t) await las("003_situation_archive.sql");
+    if (!(await q("SELECT to_regprocedure('arkiv2_golv(text,integer)') AS t")).rows[0].t)
+      for (const f of ["008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql", "018_trend_berakna.sql", "029_brott_index.sql",
+                       "030_langsam_vakt.sql", "050_kandidat_live.sql", "053_arkiv_tabeller.sql", "055_vagpunkter.sql", "056_kandidat_regel.sql",
+                       "057_kandidat_skugga.sql"]) await las(f);
+    for (const f of ["062_kortare_forvaring.sql", "063_arkiv_fyra_tabeller.sql"]) await las(f);
+    await stad();
+    const d = (await q("SELECT ((now() - interval '30 days') AT TIME ZONE 'UTC')::date::text AS d")).rows[0].d as string;
+    const kl = (h: number) => `${d}T${String(h).padStart(2, "0")}:00:00Z`;
+    // Bara testets rader får finnas på testets dygn.
+    await q("DELETE FROM road_condition_history WHERE (modified_time AT TIME ZONE 'UTC')::date = $1::date", [d]);
+    await q("DELETE FROM situation_archive WHERE (first_seen AT TIME ZONE 'UTC')::date = $1::date", [d]);
+    await q("DELETE FROM smhi_warnings_history WHERE (archived_at AT TIME ZONE 'UTC')::date = $1::date", [d]);
+    await q("DELETE FROM shadow_log WHERE (run_at AT TIME ZONE 'UTC')::date = $1::date", [d]);
+    await q(`INSERT INTO road_condition_history (segment_id, condition_code, condition_text, modified_time) VALUES
+      ('T618', 2, 'Halt', $1), ('T618', 1, 'Torrt', $2)`, [kl(3), kl(9)]);
+    // Händelsen började dagen innan men skrevs i arkivet på testets dygn: first_seen räknas, inte start_time.
+    await q(`INSERT INTO situation_archive (deviation_id, message_type_value, start_time, first_seen, last_seen)
+      VALUES ('T618', 'Accident', $1::timestamptz - interval '1 day', $1, $1)`, [kl(5)]);
+    await q(`INSERT INTO smhi_warnings_history (area_id, published, warning_id, event_code, level_code, archived_at)
+      VALUES (618618, $1::timestamptz - interval '2 days', 1, 'ICE', 'YELLOW', $1)`, [kl(6)]);
+    await q("INSERT INTO shadow_log (run_at, alerts) VALUES ($1, '[\"T618\"]'::jsonb)", [kl(7)]);
+
+    for (const [tab, n] of [["road_condition_history", 2], ["situation_archive", 1], ["smhi_warnings_history", 1], ["shadow_log", 1]] as const) {
+      const att = (await q("SELECT arkiv2_att_exportera($1, 100000)::text AS d", [tab])).rows.map((r) => r.d);
+      assert.ok(att.includes(d), `${tab}: dygnet står i kö (${att.length} dygn)`);
+      const text: string = (await q("SELECT arkiv2_dygn($1, $2::date) AS t", [tab, d])).rows[0].t;
+      assert.equal(text.split("\n").length - 1, n, `${tab}: ${n} rader i filen`);
+      await assert.rejects(q("SELECT arkiv2_export_klar($1, $2::date, $3, 10, 'x', 'v')", [tab, d, n + 1]), /har \d+ rader i databasen/);
+      assert.equal((await q("SELECT arkiv2_export_klar($1, $2::date, $3, 10, 'x', 'v') AS n", [tab, d, n])).rows[0].n, n);
+    }
+    // Golvet är NULL för de fyra: inte ens golvet noll raderar dem.
+    assert.match((await q("SELECT arkiv2_radera_exporterat(0, 0) AS s")).rows[0].s, /inget exporterat tabelldygn/);
+    assert.equal((await q("SELECT count(*)::int AS n FROM road_condition_history WHERE segment_id = 'T618'")).rows[0].n, 2, "väglaget står kvar");
+    assert.equal((await q("SELECT count(*)::int AS n FROM arkiv_export_tabell WHERE raderad IS NOT NULL")).rows[0].n, 0, "inget bokfört som raderat");
+    await assert.rejects(q("SELECT arkiv2_tidkolumn('weather_observations')"), /okänd tabell/);
+  } finally {
+    await stad().catch(() => {});
+    await pool.end();
+  }
 });

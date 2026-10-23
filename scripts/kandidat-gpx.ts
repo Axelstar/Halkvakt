@@ -17,6 +17,13 @@ const FART_MS = 80 / 3.6, STEG_S = 3, INKORNING_M = 3000, NARA_M = 500;
 type P = [number, number];
 type Kandidat = { id: string; punkter: P[] };
 
+/** Kandidatens sträckor utan Trafikverkets halkvarning (live.segments). På en sådan sträcka vinner den vanliga varningen och
+ *  kandidaten tiger (prioriteten, DECISIONS #577 och #581) — soffprovet 17/10 18:26 hörde bara "halka" på sträcka 45130. */
+export function utanVanliga(kandidat: Kandidat[], segments: { id: unknown }[]): Kandidat[] {
+  const vanliga = new Set(segments.map((s) => String(s.id)));
+  return kandidat.filter((k) => !vanliga.has(k.id));
+}
+
 /** Sträckan med flest varnande punkter, eller den önskade; null om kandidaten inte varnar någonstans. */
 export function valj(kandidat: Kandidat[], onskad?: string): Kandidat | null {
   if (onskad) return kandidat.find((k) => k.id === onskad) ?? null;
@@ -65,6 +72,8 @@ function sjalvtest() {
   const langd = 3000 + fran(linje[0], linje[1]) + fran(linje[1], linje[2]);
   k(fran(r[r.length - 1], linje[2]) < 67 && r.length === Math.floor(langd / (80 / 3.6 * 3)) + 1, `rutten slutar vid linjens slut (${r.length} punkter på ${langd.toFixed(0)} m)`);
   const kand: Kandidat[] = [{ id: "a", punkter: [[16, 65 + km(5)]] }, { id: "b", punkter: [[16, 65 + km(2)], [16, 65 + km(8)]] }];
+  k(utanVanliga(kand, [{ id: "b" }]).map((x) => x.id).join() === kand.filter((x) => x.id !== "b").map((x) => x.id).join(),
+    "sträckor med Trafikverkets halkvarning väljs aldrig");
   k(valj(kand)?.id === "b" && valj(kand, "a")?.id === "a" && valj([]) === null && valj(kand, "x") === null, "valet: flest punkter, eller den önskade; ingen kandidat ⇒ inget");
   k(nara(linje, [[16, 65 + km(5)], [16 + 0.6 / 47, 65 + km(5)]]) === 1, "nära linjen: 0 m med, 600 m utanför");
   const g = gpx(r.slice(0, 2), "prov", Date.parse("2026-10-17T05:00:00Z"));
@@ -88,8 +97,10 @@ else if (direkt) {
   const live = await hamta(LIVE);
   const kand: Kandidat[] = (live.kandidat ?? []).map((x: any) => ({ id: String(x.id), punkter: x.punkter }));
   console.log(`lägesfilen: ${live.generated_at ?? live.tid ?? "?"} · kandidaten varnar på ${kand.length} sträckor`);
-  const k = valj(kand, arg("--stracka"));
-  if (!k) { console.error("vägrar: kandidaten varnar inte på någon sträcka just nu (eller inte på den önskade) — prova en kall morgon"); process.exit(2); }
+  const fria = utanVanliga(kand, live.segments ?? []);
+  console.log(`${kand.length - fria.length} av dem har också Trafikverkets halkvarning och väljs inte (kandidaten tiger där)`);
+  const k = valj(fria, arg("--stracka"));
+  if (!k) { console.error("vägrar: kandidaten varnar inte på någon sträcka utan Trafikverkets halkvarning just nu (eller inte på den önskade) — prova en kall morgon"); process.exit(2); }
   const linje = linjerUr(await hamta(VAGLAG)).find((l) => l.id === k.id);
   if (!linje) { console.error(`vägrar: sträckan ${k.id} finns inte i väglagsnätet`); process.exit(1); }
   const del = [...linje.delar].sort((a, b) => nara(b, k.punkter) - nara(a, k.punkter))[0];

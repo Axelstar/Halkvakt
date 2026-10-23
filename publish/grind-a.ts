@@ -118,6 +118,7 @@ export function evaluate(stations: Map<string, Station>, variant: Variant = {}):
 import { Z, andelSe, medelSe, skiljbar, utfallTak, grindutfall } from "./marginal.ts";
 import { vaktdiagnos, led234, saknadeDygn, skrivSaknade } from "./vaktdiagnos.ts";
 import { RADVAKT_SQL, karantanSql } from "./snapshot-core.ts";
+import { domrad } from "../scripts/domrad.ts";
 
 export { BANDS, MAX_KM };
 export function stats(rows: Eval[]) {
@@ -166,6 +167,8 @@ function report(evals: Eval[], label: string, selftest = false) {
   console.log(`A3 frysklassningsfel ≤ ${A3_MAX_FREEZE * 100} %: ${(tot.freeze * 100).toFixed(1)} %${margPe(tot.freezeSe)} → ${a3}`);
   if (nog && !selftest) {
     const domar = grindutfall([a1, a2, a3] as any);
+    domrad("Grind A", domar === "FALLER" ? "FALLER" : domar === "OAVGJORT" ? "OAVGJORT" : "KLARAR",
+      `A1 ${tot.mae.toFixed(2)} °C · A2 ${(tot.gross * 100).toFixed(1)} % grova fel · A3 ${(tot.freeze * 100).toFixed(1)} % (${tot.n} punkter, ${nStations} stationer)`);
     if (domar === "FALLER") {
       console.log(`\nDOM: GRIND A FALLEN — bygg ingen skugga (tre veckor sparade)`);
     } else if (domar === "OAVGJORT") {
@@ -177,6 +180,7 @@ function report(evals: Eval[], label: string, selftest = false) {
       console.log(`\nDOM: GRIND A KLARAD — skuggbygget får starta`);
     }
   } else if (!selftest) {
+    domrad("Grind A", "SPÄRRAD", `underlaget räcker inte: ${tot.n} punkter över ${nStations} stationer`);
     console.log(`\n⏳ INGEN DOM — underlaget räcker inte.`);
     console.log(`   Krav: ≥ ${MIN_POINTS_FOR_VERDICT} bedömbara punkter över ≥ ${MIN_STATIONS_FOR_VERDICT} stationer.`);
     console.log(`   Har:  ${tot.n} punkter över ${nStations} stationer. Underlaget växer med vintern.`);

@@ -22,6 +22,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -56,8 +58,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import se.halkvakt.app.AgeGate
 import se.halkvakt.app.AlertEntry
+import se.halkvakt.app.Favoriter
 import se.halkvakt.app.GuardService
 import se.halkvakt.app.MainActivity
 import se.halkvakt.app.Missar
@@ -209,18 +211,21 @@ fun GreenToggleRow(title: String, sub: String?, checked: Boolean, onChange: (Boo
 fun Plinth(res: Int, height: Dp = 220.dp) =
     Image(painterResource(res), null, modifier = Modifier.fillMaxWidth().height(height))
 
-/** Den flytande flikraden: Vakten / Inställningar. */
+/** Den flytande flikraden: Vakten / Favoriter / Inställningar, 104 × 52 dp per flik — tre i bredd ryms på 360 dp (kort #357). */
 @Composable
 fun FloatingTabBar(tab: Int, onTab: (Int) -> Unit) {
     Row(Modifier.background(Brand.panel, RoundedCornerShape(32.dp)).border(1.dp, Line, RoundedCornerShape(32.dp)).padding(4.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-        listOf("VAKTEN", "INSTÄLLNINGAR").forEachIndexed { i, title ->
-            Column(Modifier.size(112.dp, 52.dp).background(if (tab == i) Raised else Color.Transparent, RoundedCornerShape(26.dp))
+        listOf("VAKTEN", "FAVORITER", "INSTÄLLNINGAR").forEachIndexed { i, title ->
+            Column(Modifier.size(104.dp, 52.dp).background(if (tab == i) Raised else Color.Transparent, RoundedCornerShape(26.dp))
                 .clickable(role = Role.Tab) { onTab(i) }.semantics { selected = tab == i },
                 horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-                if (i == 0) Mark(16.dp, if (tab == 0) Brand.yellow else Brand.dim)
-                else Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
-                    repeat(3) { Box(Modifier.size(16.dp, 2.dp).background(if (tab == 1) Brand.text else Brand.dim, RoundedCornerShape(1.dp))) }
+                when (i) {
+                    0 -> Mark(16.dp, if (tab == 0) Brand.yellow else Brand.dim)
+                    1 -> Icon(Icons.Filled.Star, null, tint = if (tab == 1) Brand.text else Brand.dim, modifier = Modifier.size(16.dp))
+                    else -> Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
+                        repeat(3) { Box(Modifier.size(16.dp, 2.dp).background(if (tab == 2) Brand.text else Brand.dim, RoundedCornerShape(1.dp))) }
+                    }
                 }
                 Spacer(Modifier.height(6.dp))
                 Text(title, color = if (tab == i) Brand.text else Brand.dim, fontFamily = Typo.mono, fontSize = 10.sp, letterSpacing = 0.12.em)
@@ -240,6 +245,11 @@ fun RedoScreen(activity: MainActivity, overst: @Composable () -> Unit) {
     val disabled by remember { Prefs.disabledKinds(ctx) }.collectAsStateWithLifecycle(initialValue = emptySet())
     val autostart by activity.autostartOn.collectAsStateWithLifecycle()
     val snapshot by GuardService.snapshotInfo.collectAsStateWithLifecycle()
+    // Kort #357 (DECISIONS #625): frågan om resan ska sparas, bara med brytaren Erbjud att spara resor på.
+    val lager = remember { Favoriter.lager(ctx) }
+    val erbjud by remember { Prefs.favErbjud(ctx) }.collectAsStateWithLifecycle(initialValue = false)
+    val vantande by lager.vantande.collectAsStateWithLifecycle()
+    val spara = if (erbjud) vantande else null
     val (slutMs, km) = slut
     val tur = remember(historik, start, slutMs) {
         if (start <= 0L || slutMs < start) emptyList() else historik.filter { it.t in start..slutMs }.sortedBy { it.t }
@@ -249,7 +259,8 @@ fun RedoScreen(activity: MainActivity, overst: @Composable () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally) {
         DesignTopBar(if (snapshot == null) "Hämtar" else "Live", if (snapshot == null) Muted2 else Brand.yellow)
         overst()
-        if (tur.isEmpty()) Plinth(R.drawable.plinth_logo) else Spacer(Modifier.height(24.dp))
+        spara?.let { Box(Modifier.padding(top = 14.dp)) { SparaResanKort(lager, it) } }
+        if (tur.isEmpty() && spara == null) Plinth(R.drawable.plinth_logo) else Spacer(Modifier.height(24.dp))
         Text("Redo.", color = Brand.text, fontFamily = Typo.sans, fontWeight = FontWeight.SemiBold, fontSize = 44.sp,
             letterSpacing = (-0.03).em, modifier = Modifier.padding(top = 12.dp))
         val vaknar = if (autostart) "Vakten vaknar själv när du kör. " else ""
@@ -325,8 +336,6 @@ fun PaVaktScreen(activity: MainActivity) {
     val hazards by activity.hazards.collectAsStateWithLifecycle()
     val stations by activity.stations.collectAsStateWithLifecycle()
     val stale by GuardService.dataStale.collectAsStateWithLifecycle()
-    val dataTime by GuardService.dataTime.collectAsStateWithLifecycle()
-    val toast by GuardService.staleToast.collectAsStateWithLifecycle()
     val snapshot by GuardService.snapshotInfo.collectAsStateWithLifecycle()
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -361,7 +370,7 @@ fun PaVaktScreen(activity: MainActivity) {
                 }
             }
             Spacer(Modifier.height(14.dp))
-            Tillstand(stale, dataTime, session.lastSaid)
+            Tillstand(stale, session.lastSaid)
             Row(Modifier.fillMaxWidth().padding(top = 26.dp, start = 4.dp, end = 4.dp)) {
                 MonoLabel("På din väg"); Spacer(Modifier.weight(1f))
                 snapshot?.let { MonoLabel(it.substringAfterLast("· "), Muted2) }
@@ -393,18 +402,6 @@ fun PaVaktScreen(activity: MainActivity) {
                 NeutralPill("Avsluta vakten") { activity.onToggle() }
             }
         }
-        // Gammal väglagsdata (designen M): mörk rad överst i 8 s medan rösten talar.
-        if (toast) {
-            Row(Modifier.align(Alignment.TopCenter).padding(horizontal = 12.dp, vertical = 4.dp).fillMaxWidth()
-                .background(Raised, RoundedCornerShape(22.dp)).border(1.dp, Ring, RoundedCornerShape(22.dp))
-                .padding(horizontal = 18.dp, vertical = 16.dp), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                Vagform(Brand.text)
-                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    MonoLabel("Halkvakt · väglagsdata")
-                    Text("”${AgeGate.STALE_LINE}”", color = Brand.text, fontFamily = Typo.sans, fontWeight = FontWeight.Medium, fontSize = 17.sp)
-                }
-            }
-        }
     }
 }
 
@@ -418,29 +415,17 @@ fun PaVaktScreen(activity: MainActivity) {
     MonoLabel(label)
 }
 
-@Composable fun Vagform(color: Color) = Row(Modifier.height(22.dp), horizontalArrangement = Arrangement.spacedBy(3.dp), verticalAlignment = Alignment.CenterVertically) {
-    listOf(8, 16, 11, 18, 7).forEach { h -> Box(Modifier.size(3.dp, h.dp).background(color, RoundedCornerShape(2.dp))) }
-}
-
-/** Raden under panelen: gammal data (N) går före allt; annars det senast sagda, eller "Tyst så länge". */
+/** Raden under panelen: det senast sagda, annars "Tyst så länge". Inte på gammal data — då är halkvarningarna
+ *  avstängda, och appen får aldrig tala lugnt på gammal data. */
 @Composable
-private fun Tillstand(stale: Boolean, dataTime: Long?, lastSaid: Pair<String, Long>?) {
+private fun Tillstand(stale: Boolean, lastSaid: Pair<String, Long>?) {
     val dashed = Modifier.fillMaxWidth().dashedBorder().padding(horizontal = 20.dp, vertical = 16.dp)
     when {
-        stale -> Row(Modifier.fillMaxWidth().background(Color(0xFF0B1013), RoundedCornerShape(18.dp)).border(1.dp, Ring, RoundedCornerShape(18.dp))
-            .padding(horizontal = 20.dp, vertical = 16.dp), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-            HazardIcon(HazardKind.SLIPPERY_SEGMENT, 24.dp, Brand.text)
-            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                MonoLabel("Väglagsdata · gammal")
-                Text("Kör som om det kan vara halt.", color = Brand.text, fontFamily = Typo.sans, fontWeight = FontWeight.Medium, fontSize = 15.sp)
-                dataTime?.let { MonoLabel("Senast färsk ${klockslag(it)}", Muted2) }
-            }
-        }
         lastSaid != null -> Column(dashed, verticalArrangement = Arrangement.spacedBy(6.dp)) {
             MonoLabel("Senast sagt · ${klockslag(lastSaid.second)}")
             Text("”${lastSaid.first}”", color = Brand.text, fontFamily = Typo.sans, fontSize = 15.sp)
         }
-        else -> Column(dashed, verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        !stale -> Column(dashed, verticalArrangement = Arrangement.spacedBy(6.dp)) {
             MonoLabel("Tyst så länge")
             Text("Inget på din väg än. Du hör det direkt när något dyker upp.", color = Text2, fontFamily = Typo.sans, fontSize = 15.sp)
         }
@@ -504,7 +489,7 @@ private fun SettingsRoot(activity: MainActivity, onIntro: (() -> Unit)?, open: (
         }
         Spacer(Modifier.height(14.dp))
         RowPanel {
-            NavRow("Betatest", if (facitOn) "På" else "Av") { open(Sida.BETATEST) }
+            if (Prefs.betatestTillaten) NavRow("Betatest", if (facitOn) "På" else "Av") { open(Sida.BETATEST) }   // bara i testbyggen (#681)
             NavRow("Integritet") { open(Sida.INTEGRITET) }
             onIntro?.let { NavRow("Visa introduktionen igen", onClick = it) }
             NavRow("Om Halkvakt", divider = false) { open(Sida.OM) }
@@ -609,7 +594,7 @@ private fun Undersida(sida: Sida, activity: MainActivity, open: (Sida) -> Unit, 
                     ReceiptRow("Vid missad", "Klockslag, närmaste mätstation, vad det var")
                     ReceiptRow("Aldrig", "Konto, resa, position", divider = false)
                 }
-                Text("Ett varnings-id pekar på en fara på kartan, så vi ser ungefär var du var just då. Appens namn och version följer med. Bara för betatestare.",
+                Text("Ett varnings-id pekar på en fara på kartan, så vi ser ungefär var du var just då. Appens namn och version följer med. Bara för betatestare. Betatest slår också på betavarningen efter regn (Halkvakt tror: frysrisk framöver), som prövas bland testarna först.",
                     color = Brand.dim, fontFamily = Typo.sans, fontSize = 13.sp, lineHeight = 19.sp, modifier = Modifier.padding(top = 14.dp, start = 4.dp))
             }
             Sida.INTEGRITET -> {
@@ -619,12 +604,16 @@ private fun Undersida(sida: Sida, activity: MainActivity, open: (Sida) -> Unit, 
                     verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     MonoLabel("Löftet", size = 11.sp)
                     Text("Din position lämnar inte telefonen av sig själv.", color = Brand.text, fontFamily = Typo.sans, fontWeight = FontWeight.Medium, fontSize = 20.sp)
-                    Text("All matchning mot vägdata sker lokalt i appen. Inget konto, ingen spårning. Undantaget är betatestet — bara om du själv slår på det.",
+                    // Kort #357 (DECISIONS #616, #625): "ingen spårning" blev osant när resor kan sparas — samma ord som iOS.
+                    Text(if (Prefs.betatestTillaten) "All matchning mot vägdata sker lokalt i appen. Inget konto. Undantaget är betatestet — bara om du själv slår på det."
+                         else "All matchning mot vägdata sker lokalt i appen. Inget konto, och inget skickas.",
+                        color = Text2, fontFamily = Typo.sans, fontSize = 14.sp, lineHeight = 21.sp)
+                    Text("Slår du på Erbjud att spara resor under Favoriter sparas vägarna du väljer, bara i telefonen och aldrig i en säkerhetskopia. Du tar bort dem där.",
                         color = Text2, fontFamily = Typo.sans, fontSize = 14.sp, lineHeight = 21.sp)
                 }
                 Spacer(Modifier.height(10.dp))
                 RowPanel {
-                    NavRow("Betatest", if (facitOn) "På" else "Av") { open(Sida.BETATEST) }
+                    if (Prefs.betatestTillaten) NavRow("Betatest", if (facitOn) "På" else "Av") { open(Sida.BETATEST) }
                     NavRow("Integritetspolicy", divider = false) { uri.openUri("https://axelstar.github.io/halkvakt-karta/integritet.html") }
                 }
             }

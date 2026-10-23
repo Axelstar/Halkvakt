@@ -146,6 +146,10 @@ export interface EngineConfig {
   /** Taket (DECISIONS #584, #606): the candidate speaks at most once per kandidatTakS, whatever the stretch. Built ahead of the
    *  reading 2/11; merged only if more than 10 % of the follow-ups fall within 10 minutes, or the sample is too small. */
   kandidatTakS: number;
+  /** Halkzonen (kort #360, DECISIONS #621, #624): two slippery stretches whose lines lie within halkZonM of each other count as one
+   *  zone for the repeat rule. A new halka warning stays silent while a neighbour's warning is not yet re-armed (10 min AND 5 km),
+   *  so three stretches meeting at a junction speak once, and a long zone still repeats like a long stretch (#103). */
+  halkZonM: number;
 }
 
 export const DEFAULT_CONFIG: EngineConfig = {
@@ -182,6 +186,9 @@ export const DEFAULT_CONFIG: EngineConfig = {
   // Taket (DECISIONS #584, #606): 10 min — motorns gräns för att upprepa en och samma fara (repeatMinS). Samma tal i Types.kt och
   // Engine.swift (kontraktsgrinden).
   kandidatTakS: 600,
+  // Halkzonen (DECISIONS #624): 500 m — all 17 close pairs in the shadow log lay within 451 m, and no pair at all between 500 m and
+  // 2 km (#621). Samma tal i Types.kt och Engine.swift (kontraktsgrinden).
+  halkZonM: 500,
 };
 
 
@@ -492,7 +499,8 @@ export function alertText(
 //      accident > slippery > icing > wildlife > camera > kandidat (the beta candidate, last: #577).
 //      Losers are DROPPED, not queued. No exceptions, not even for accidents (logged in
 //      DECISIONS — revisit only on beta evidence).
-//   2. Same hazard never repeats until BOTH 10 min have passed AND 5 km been driven.
+//   2. Same hazard never repeats until BOTH 10 min have passed AND 5 km been driven. Slippery stretches whose lines lie
+//      within halkZonM of each other are one hazard for this rule (the halka zone, kort #360, DECISIONS #621, #624).
 //      SINGLE EXCEPTION (DECISIONS #28): a serious accident speaks twice by design —
 //      once early (10 km, while exits remain) and once close (2 km, "slow down").
 //      These are two different messages about one hazard, not a repeat of one message,
@@ -545,12 +553,16 @@ export class AlertEngine {
   /** När kandidaten senast talade — taket räknas därifrån, oavsett sträcka (DECISIONS #606). */
   private lastKandidatT: number | null = null;
   /** Skuggmotorn lyssnar här (#127 a): vad spärren kastar syns annars ingenstans. */
-  onSuppressed?: (c: { kind: HazardKind; hazardId: string; distM: number; by: HazardKind; sinceS: number }) => void;
+  onSuppressed?: (c: { kind: HazardKind; hazardId: string; distM: number; by: HazardKind; sinceS: number; zon?: string }) => void;
   /** FÖRSPRÅNGET (kort #153 beslut 1, docs/TROSKLAR-FORSPRANG.md §4): valfri krok som ger förvarningsavståndet per fara. Utan
    *  krok är motorn byte för byte densamma — vektorerna rörs inte. Svaret klämms till leadMinM och MOTORNS leadMaxM (3 000 m),
    *  inte till appens reglage (kort #275 väg (a)). Bara skuggan sätter den i vinter; portarna får den först vid steg 7, efter domen. */
   leadFor?: (h: Hazard, leadM: number, speedMps: number) => number;
   private fired = new Map<string, FiredState>();
+  /** Halkzonen (#360): whether two stretches are neighbours, per sorted id pair — the geometry is the same in every snapshot. */
+  private zonGrannar = new Map<string, boolean>();
+  /** A zone silencing is reported once per stretch and neighbour warning, not on every fix inside the lead distance. */
+  private zonRapporterad = new Set<string>();
 
   constructor(hazards: Hazard[], cfg: Partial<EngineConfig> = {}) {
     this.cfg = { ...DEFAULT_CONFIG, ...cfg };
@@ -620,12 +632,26 @@ export class AlertEngine {
     if (candidates.length === 0) return null;
 
     // Rule 2: per-hazard repeat suppression (both time AND distance must have elapsed).
+    const rearmed = (f: FiredState) =>
+      fix.t - f.t >= this.cfg.repeatMinS && this.odometerM - f.odometerM >= this.cfg.repeatMinM;
     const eligible = candidates.filter((c) => {
       const f = this.fired.get(c.alertKey);
-      if (!f) return true;
-      const rearmed =
-        fix.t - f.t >= this.cfg.repeatMinS && this.odometerM - f.odometerM >= this.cfg.repeatMinM;
-      return rearmed;
+      if (f && !rearmed(f)) return false;
+      // The halka zone (kort #360): a neighbour stretch within halkZonM spoke and is not re-armed ⇒ this one is the same zone.
+      if (c.kind === "slippery_segment") {
+        for (const s of this.segments) {
+          if (s.h.id === c.hazard.id) continue;
+          const g = this.fired.get(s.h.id);
+          if (!g || rearmed(g) || !this.grannar(c.hazard as SegmentHazard, s.h)) continue;
+          const nyckel = `${c.hazard.id}|${s.h.id}|${g.t}`;
+          if (!this.zonRapporterad.has(nyckel)) {
+            this.zonRapporterad.add(nyckel);
+            this.onSuppressed?.({ kind: c.kind, hazardId: c.hazard.id, distM: c.distM, by: "slippery_segment", sinceS: fix.t - g.t, zon: s.h.id });
+          }
+          return false;
+        }
+      }
+      return true;
     });
     if (eligible.length === 0) return null;
 
@@ -672,6 +698,18 @@ export class AlertEngine {
       ...(win.step ? { step: win.step } : {}),
       ...(win.beta ? { beta: true as const } : {}),
     };
+  }
+
+  /** Halkzonen (#360): the two stretches' lines lie within halkZonM — measured line to line by the route filter (break points both
+   *  ways, a crossing is 0), the same function in all three languages. Cached per pair; stretch geometry does not change. */
+  private grannar(a: SegmentHazard, b: SegmentHazard): boolean {
+    const nyckel = a.id < b.id ? `${a.id}|${b.id}` : `${b.id}|${a.id}`;
+    let v = this.zonGrannar.get(nyckel);
+    if (v === undefined) {
+      v = farorLangsRutten([b], a.line, this.cfg.halkZonM).length > 0;
+      this.zonGrannar.set(nyckel, v);
+    }
+    return v;
   }
 
   /** Run a whole trace. Convenience for replay/tests. */
@@ -846,6 +884,24 @@ export function forsprangNiva(h: Hazard, vata: Map<string, number>): ForsprangNi
     return typeof yta === "number" && yta <= A2_NIVA2_YTA_C && typeof v === "number" && v >= A2_NIVA2_VATA ? 2 : 1;
   }
   return null;
+}
+
+/** FS-A1:s varningsslag (§2: A1 halt väglag och A2 frysrisk): nämnarradens varningar och nämnaren i räkneregeln R4 (DECISIONS #664). */
+export const FORSPRANG_A_SLAG: readonly string[] = ["slippery_segment", "icing_point"];
+
+/** Rutter per försprångsanrop: skuggmotorns tak, som huvudvarvets (546 vid fler, kort #244). */
+export const FORSPRANG_RUTTER_PER_ANROP = 3;
+
+/** Vilka rutter ett försprångsanrop kör (§4; alla rutter varje halvtimme sedan DECISIONS #662). Rutterna sorteras och delas på
+ *  ceil(n/3) platser — 7 för de 20 rutterna, 4 för de 10 C-rutterna, som huvudvarvet — och plats k tar var k:te rutt. Ett angivet
+ *  `slot` väljer sin plats; utan det väljer halvtimmen, som före #662. Ett slot utanför platserna ger null. Svepvärdet följer
+ *  halvtimmen, inte platsen, så varje rutt möter alla tre värden över tre halvtimmar. */
+export function forsprangUrval(namn: string[], halvtimme: number, slot: number | null = null) {
+  const sorterade = [...namn].sort();
+  const platser = Math.max(1, Math.ceil(sorterade.length / FORSPRANG_RUTTER_PER_ANROP));
+  const plats = slot ?? halvtimme % platser;
+  if (!Number.isInteger(plats) || plats < 0 || plats >= platser) return null;
+  return { platser, plats, batch: sorterade.filter((_, i) => i % platser === plats) };
 }
 
 /** Kroken till motorn (AlertEngine.leadFor): nivå 2 får svepvärdets försprång, allt annat dagens. Motorn klämmer svaret. */
@@ -1398,7 +1454,9 @@ async function kandidatVarnar(): Promise<{ lista: KandidatPunkt[]; tid: string |
 // datorkraftens tak (546 kl 04:32 och 05:02Z 25/9, på :02/:32). Samma halvtimmes rutter som huvudvarvet; bara rutter med en nivå 2-fara
 // i rutan körs, och där körs motorn två gånger på samma spår: baskörningen (dagens motor) och varianten (nivå 2 med halvtimmens
 // svepvärde). Båda körningarnas varningar och undanträngda loggas i forsprang_log. Aldrig hört. `prov` skriver inget.
-async function forsprangVarv(prov: boolean): Promise<Response> {
+// ALLA RUTTER VARJE HALVTIMME (DECISIONS #662, åtgärdslistan B4-94): `?slot=k` kör plats k av de 20 rutterna (0–6) och `&grupp=c`
+// de 10 C-rutterna (0–3), högst tre rutter per anrop; ett jobb per plats (sql/066). Utan slot väljer halvtimmen, som förut.
+async function forsprangVarv(prov: boolean, c = false, slot: number | null = null): Promise<Response> {
   const svar = (x: unknown) => new Response(JSON.stringify(x), { headers: { "Content-Type": "application/json" } });
   const halvtimme = Math.floor(Date.now() / 1800e3);
   const svepS = prov ? FORSPRANG_SVEP_S[1] : FORSPRANG_SVEP_S[halvtimme % FORSPRANG_SVEP_S.length];
@@ -1407,8 +1465,9 @@ async function forsprangVarv(prov: boolean): Promise<Response> {
     if (krok) motor.leadFor = forsprangKrok(nivaer, svepS);
     const suppressed: { kind: string; id: string; distM: number; by: string }[] = [];
     motor.onSuppressed = (c) => suppressed.push({ kind: c.kind, id: c.hazardId, distM: Math.round(c.distM), by: c.by });
+    // `beta` märker efterhalkans betavarning (S3), som är frysrisk men aldrig nivå 2 (DECISIONS #664, räkneregeln R4).
     const alerts = motor.run(trace).map((a) => ({ t: a.t, id: a.hazardId, kind: a.kind, distanceM: Math.round(a.distanceM),
-      niva: nivaer.get(a.hazardId) ?? null }));
+      niva: nivaer.get(a.hazardId) ?? null, ...(a.beta ? { beta: true } : {}) }));
     return { alerts, suppressed };
   };
   if (prov) {
@@ -1435,23 +1494,27 @@ async function forsprangVarv(prov: boolean): Promise<Response> {
   for (const w of (Array.isArray(lv?.weather) ? lv.weather : [])) if (typeof w?.bevis?.vata === "number") vata.set(`wx:${w.id}`, w.bevis.vata);
   const nivaer = new Map<string, ForsprangNiva>();
   for (const h of hazards) { const n = forsprangNiva(h, vata); if (n !== null) nivaer.set(h.id, n); }
-  const iRutan = (h: Hazard, x0: number, x1: number, y0: number, y1: number) => {
-    const pts: [number, number][] = h.kind === "slippery_segment" ? h.line : [[(h as any).lon, (h as any).lat]];
-    return pts.some(([x, y]) => x >= x0 && x <= x1 && y >= y0 && y <= y1);
-  };
-  const allNames = Object.keys(ROUTES).sort();
-  const slots = 7;
-  const batch = allNames.filter((_, i) => i % slots === halvtimme % slots);   // samma halvtimmes rutter som huvudvarvet
+  const routes = c ? ROUTES_C : ROUTES;
+  const urval = forsprangUrval(Object.keys(routes), halvtimme, slot);
+  if (!urval) return new Response("okänt slot", { status: 400 });
+  const { batch } = urval;
   const rader: Record<string, unknown>[] = [];
   for (const name of batch) {
-    const line = ROUTES[name];
-    const M = 0.05, lons = line.map((q) => q[0]), lats = line.map((q) => q[1]);
-    const x0 = Math.min(...lons) - M, x1 = Math.max(...lons) + M, y0 = Math.min(...lats) - M, y1 = Math.max(...lats) + M;
-    const niva2 = hazards.filter((h) => nivaer.get(h.id) === 2 && iRutan(h, x0, x1, y0, y1)).length;
-    if (!niva2) continue;
+    const line = routes[name];
     const trace = traceAlong(line);
-    const naraFaror = farorVidLinjen(hazards, line);   // rutfiltret (kort #244, DECISIONS #360, #535) — samma utfall, mindre arbete
-    const bas = kor(naraFaror, trace, nivaer, false), variant = kor(naraFaror, trace, nivaer, true);
+    // Urvalet vid vägen (DECISIONS #664, TROSKLAR-FORSPRANG §4): nivå 2 bland motorns faror vid linjen (rutfiltret, kort #244, #535).
+    // Rektangeln runt rutten, som gällde till #664, prövade bara sträckornas brytpunkter och tog med faror långt från vägen.
+    const naraFaror = farorVidLinjen(hazards, line);
+    const niva2 = naraFaror.filter((h) => nivaer.get(h.id) === 2).length;
+    const bas = kor(naraFaror, trace, nivaer, false);
+    if (!niva2) {
+      // Nämnarraden (FS-A1, DECISIONS #664, räkneregeln R4): baskörningens A1- och A2-varningar med nivå; ingen variant — den vore
+      // byte för byte densamma. Samma nycklar som de andra raderna, eftersom PostgREST kräver det i en gemensam skrivning.
+      rader.push({ route: name, svep_s: svepS, niva2: 0, bas: bas.alerts.filter((a) => FORSPRANG_A_SLAG.includes(a.kind)),
+        variant: [], bas_suppressed: bas.suppressed, variant_suppressed: [], nytt: [] });
+      continue;
+    }
+    const variant = kor(naraFaror, trace, nivaer, true);
     // FS-B4: en varning i varianten om en fara baskörningen aldrig talade om. Avståndet kvar till rutans slut följer med, så att
     // faror där baskörningens spår tog slut före faran kan redovisas för sig.
     const basIds = new Set(bas.alerts.map((a) => a.id));
@@ -1473,7 +1536,8 @@ async function forsprangVarv(prov: boolean): Promise<Response> {
       body: JSON.stringify(rader) });
     skrivet = r.ok ? `${rader.length} rader` : `forsprang_log ${r.status}: ${(await r.text().catch(() => "")).slice(0, 120)}`;
   }
-  return svar({ ok: true, lage: "forsprang", svep_s: svepS, rutter: batch.length, med_niva2: rader.length,
+  return svar({ ok: true, lage: "forsprang", grupp: c ? "c" : null, slot: urval.plats, svep_s: svepS, rutter: batch.length,
+    med_niva2: rader.filter((r) => (r.niva2 as number) > 0).length, namnarrader: rader.filter((r) => r.niva2 === 0).length,
     niva2_i_snapshoten: [...nivaer.values()].filter((n) => n === 2).length, skrivet });
 }
 
@@ -1491,7 +1555,13 @@ Deno.serve(async (req) => {
     // innanför de 10 sekunderna. Skriver INGET i shadow_log — en provrad hade förorenat tystnadsfelet och
     // upprepningen — svaret läses av dbknapp ur net._http_response.
     // Försprångets eget läge (kort #153 beslut 1) — före allt annat, så att huvudvarvets arbete aldrig körs i samma anrop.
-    if (new URL(req.url).searchParams.get("lage") === "forsprang") return await forsprangVarv(new URL(req.url).searchParams.get("prov") === "1");
+    if (new URL(req.url).searchParams.get("lage") === "forsprang") {
+      // Alla rutter varje halvtimme (DECISIONS #662): `slot` väljer platsen och `grupp=c` C-rutterna; ett felaktigt värde ger 400.
+      const q = new URL(req.url).searchParams, g = q.get("grupp"), s = q.get("slot");
+      if (g !== null && g !== "c") return new Response("okänd grupp", { status: 400 });
+      if (s !== null && !/^\d+$/.test(s)) return new Response("okänt slot", { status: 400 });
+      return await forsprangVarv(q.get("prov") === "1", g === "c", s === null ? null : Number(s));
+    }
     // OLJEPROVET (kort #276): en påhittad oljefläck 1,1 km in på ett rakt spår ⇒ EN rad i `olja`, plus hur många aktiva händelser
     // arkivet ger just nu (RPC:n prövad i drift). Skriver INGET i shadow_log, samma skäl som spärrprovet nedan.
     if (new URL(req.url).searchParams.get("oljaprov") === "1") {
@@ -1557,8 +1627,10 @@ Deno.serve(async (req) => {
       // Sedan 12/10 räknas räckvidden från själva linjen, inte från rektangeln runt rutten (Bengt, DECISIONS #535).
       const t1 = performance.now();
       const motor = new AlertEngine(farorVidLinjen(hazards, line));
-      const suppressed: { kind: string; id: string; distM: number; by: string; sinceS: number }[] = [];
-      motor.onSuppressed = (c) => suppressed.push({ kind: c.kind, id: c.hazardId, distM: Math.round(c.distM), by: c.by, sinceS: c.sinceS });
+      // Halkzonen (kort #360, DECISIONS #624): en halkvarning som tystas för att en grannsträcka inom 500 m nyss talade bär `zon`.
+      const suppressed: { kind: string; id: string; distM: number; by: string; sinceS: number; zon?: string }[] = [];
+      motor.onSuppressed = (c) => suppressed.push({ kind: c.kind, id: c.hazardId, distM: Math.round(c.distM), by: c.by, sinceS: c.sinceS,
+        ...(c.zon ? { zon: c.zon } : {}) });
       const alerts = motor.run(trace);
       ms.motor += performance.now() - t1;
       const vb = land === "se" ? vbAlerts(lv, line, trace) : [];

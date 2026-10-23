@@ -1,0 +1,43 @@
+# Fristvakten (Bengts order 20/10, DECISIONS #649): datum som larmar. Varje frist i docs/fristerna.json blir ett ärende med
+# etiketten `frist`, tilldelat ägarna, några dygn före; på dagen och varje dygn efteråt en kommentar tills ärendet stängs.
+# GitHub-cronen, inte pulsklockan, med flit: pulsklockan bor i databasen, som stod still 03:28–07:39 UTC 19 och 20/10, och
+# fristvakten behöver ingen databas. Cronen kan utebli (40 % i #70), därför tre tider; körningen gör ingenting två gånger samma
+# dygn. Repot är publikt, så körningen debiteras inte (#503). På en PR körs den torrt: den skriver vad den skulle göra.
+name: fristvakten
+on:
+  schedule:
+    - cron: "13 7 * * *"
+    - cron: "13 11 * * *"
+    - cron: "13 15 * * *"
+  workflow_dispatch:
+    inputs:
+      torr:
+        description: "Bara skriv vad den skulle göra"
+        type: boolean
+        default: false
+  pull_request:
+    paths: ["docs/fristerna.json", "scripts/fristvakten.ts", ".github/workflows/fristvakten.yml"]
+permissions:
+  issues: write
+  contents: read
+concurrency: { group: fristvakten, cancel-in-progress: false }
+jobs:
+  fristvakten:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: node --experimental-strip-types scripts/fristvakten.ts --sjalvtest
+      - run: node --experimental-strip-types scripts/fristvakten.ts --check
+      # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
+      - shell: bash
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/fristvakten.ts $TORR | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          TORR: "${{ (github.event_name == 'pull_request' || inputs.torr) && '--torr' || '' }}"
