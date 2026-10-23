@@ -77,13 +77,13 @@ Förkortningar:
 
 | Nr | Fråga eller steg | Status | Stängd av |
 | :-- | :-- | :-- | :-- |
-| B5-33 | #1029: bekräfta att den är färdig och prova den på en riktig Android | öppen | |
-| B5-34 | Inskicket av (33): texterna i `marknadsforing/butik/appstore-ios.md`, versionsposten 0.3.13, skärminspelningen och *Submit for Review* | öppen | |
-| B5-35 | Vilket bygge bär App Store-versionen 0.3.9? Rättelsen efter avslaget 5/10 kom först i (23) | öppen | |
-| B5-36 | Google Play: identitetsgranskningen, enhetsverifieringen, Data safety, vilka versionCode som är förbrukade i internt test (27–29) och det slutna testet | öppen | |
-| B5-37 | Integritetssidan på halkvakt.se: vad ändrades 20/10 (eventuellt PR #1088), och ska den säga att Betatest bara finns i TestFlight? | öppen | |
-| B5-38 | Vilka byggen har Kompisarna, och har Android-testaren fått en numrerad APK (Å0)? | öppen | |
-| B5-39 | #228: schemat i `project.yml`. CI kör `xcodegen` på en ren löpare med ARCHIVE SUCCEEDED (27)–(32), så behövs kortet kvar? | öppen | |
+| B5-33 | #1029: bekräfta att den är färdig och prova den på en riktig Android | pågår — *"ta in den i 33"* (Bengt 23/10): main införd i #1029 (c39233f6), Android-flödet körs; provet på Axels lånade Android står kvar | |
+| B5-34 | Inskicket av (33): texterna i `marknadsforing/butik/appstore-ios.md`, versionsposten 0.3.13, skärminspelningen och *Submit for Review* | pågår — *"ja"* (Bengt 23/10): Claude höjer byggnumret och laddar upp efter #1029, Bengt provar (33) och gör skärminspelningen, Axel klistrar in och skickar in | |
+| B5-35 | Vilket bygge bär App Store-versionen 0.3.9? Rättelsen efter avslaget 5/10 kom först i (23) | öppen — låg vikt: Bengt frågade 23/10 om det har betydelse; (33) ersätter versionen | |
+| B5-36 | Google Play: identitetsgranskningen, enhetsverifieringen, Data safety, vilka versionCode som är förbrukade i internt test (27–29) och det slutna testet | öppen — på Axels lista (Bengt 23/10) | |
+| B5-37 | Integritetssidan på halkvakt.se: vad ändrades 20/10 (eventuellt PR #1088), och ska den säga att Betatest bara finns i TestFlight? | **klar** — ändringen 20/10 är besöksräknaren: integritetssidan beskriver den, och räknaren är bokförd som #684; ska sidan säga att Betatest bara finns i TestFlight står kvar för Axel | #684 |
+| B5-38 | Vilka byggen har Kompisarna, och har Android-testaren fått en numrerad APK (Å0)? | öppen — på Axels lista (Bengt 23/10) | |
+| B5-39 | #228: schemat i `project.yml`. CI kör `xcodegen` på en ren löpare med ARCHIVE SUCCEEDED (27)–(32), så behövs kortet kvar? | **klar** — *"stäng kortet"* (Bengt 23/10): kort #228 stängt, släppvägen hänger inte på Axels Xcode | #685 |
 
 ## G. Fynd i rättelserna 22/10 (utanför listan ovan)
 
@@ -92,4 +92,4 @@ Förkortningar:
 | B5-40 | `docs/APPEN.html` §7 och §9 | Säger fortfarande att Plays interna test väntar på identiteten och att formuläret fylls i vid första uppladdningen, fast (27) och (28) låg i Play Console 17/10 (a874fbb1, 3cd31a97) | Claude, efter Axels svar (B5-36) | öppen | |
 | B5-41 | TAVLA #214 | Rubriken "OSANN SEDAN 16/9" står kvar. En ny rubrik kräver att `kortkartan.ts` körs om | Claude | öppen | |
 | B5-42 | `docs/PLAY-DATASAFETY.md` | Tabellen över utgående anrop saknar hämtningen av favoriternas rapportfil (`RapportRepo.kt:18`). Den bär ingen användardata | Claude | öppen | |
-| B5-43 | Integritetssidan på halkvakt.se | Säger *gäller från 2026-10-20*, men #635 säger 2026-10-19 (se B5-37) | Axel | öppen | |
+| B5-43 | Integritetssidan på halkvakt.se | Säger *gäller från 2026-10-20*, men #635 säger 2026-10-19 (se B5-37) | Axel | **klar** — datumet 20/10 är besöksräknarens (#684) | #684 |
