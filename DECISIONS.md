@@ -16777,6 +16777,37 @@ restiderna och färjorna i den snabba delen också ändras ofta.
 
 **Stomdokument:** FAV §7 trafiken räknad
 
+## #688 (23/10 2026) Värdevakten startas av pulsklockan, måndagar 08:00 UTC, och GitHub-cronen tas bort
+
+**Bengts ord 23/10:** *"Flytta värdevakten till pulsklockan, måndagar 08:00 UTC, i en PR. Pulsklockan skarp och vakthunden
+deployar jag."*
+
+**Bakgrund.** Mätvakten larmade 22/10 21:07 UTC (ärende #1161): *"vardevakten: 171 h sedan senaste körning, kadens 168 h"*.
+- Schemat `0 6 * * 1` lades direkt på main 20/10 kl. 05:03 UTC (b3d72112, en annan session).
+- Den första måndagen avfyrades det aldrig. Alla körningar i flödets historik är startade för hand, och den senaste dessförinnan
+  var 15/10 17:54 UTC.
+- Varför GitHub inte körde är inte känt. Det kan bero på att schemat lades in 57 minuter före sin första tid, eller på hel timme.
+- Regeln fanns redan: kort #160 visade att GitHub-cronen kom 5–7 timmar sent och levererade 40 % av den bokade takten. Därför
+  startas måndagsmätningarna av pulsklockan, och b3d72112 gick förbi den regeln.
+
+**Körd för hand 23/10** (39913371242, 30 dygns fönster, grön):
+- 57 fält besiktade och rimliga, 0 obesiktigade och 3 kända takvärden (sikten 20 000 m och väggreppet 0,82).
+- **Ett fält utanför sitt spann:** `weather_observations.wind_gust_ms`, med max 88,4 m/s mot spannets 60 m/s. Det är troligen ett
+  givarfel. Körningen 15/10 läste bara ett dygn och såg det inte. Ingen tröskel eller varning bygger på fältet, eftersom vind och
+  sikt saknar startvärden (Kuvösen, kv-delarna). Ska vind och sikt prövas måste sådana rader gallras först.
+
+**Beslut.**
+1. `puls-vardevakten` med schemat `0 8 * * 1` läggs i pulsklockans lista (`scripts/pulsklocka.ts`). Det är 20 minuter efter
+   måndagsseriens sista mätning (grind V-B 07:40).
+2. GitHub-cronen tas bort ur `vardevakten.yml`, så att flödet inte startas två gånger.
+3. Vakthundens `PULS_GOLV` och pulsklockans `ANTAL_NYA` blir 19. Kontraktsgrinden vaktar att de två är lika.
+
+**Följd** (som #627): efter sammanslagningen kör Bengt `pulsklocka` i läget skarp, så att jobbet läggs in i pg_cron, och
+deployar sedan vakthunden. Fram till det läget är värdevakten oschemalagd och mätvakten blind för den. Deployas vakthunden
+före pulsklockan larmar den på det saknade jobbet.
+
+**Stomdokument:** SYS värdevakten i pulsklockan
+
 ## #689 (23/10 2026) Kuvösen omgång 1: provningen väntar på en signerad ersättningsregel, 2026/27 signeras 26/10, sikten avgörs i olycksserien, tif och NT-orden står, kort #232 stängt och kontaktens namn bort
 
 **Bengts ord 23/10**, på genomgången av blocket Kuvösen (förklarad i chatten 23/10, läs-only, två hjälpagenter):
