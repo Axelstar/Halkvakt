@@ -20,7 +20,8 @@ test("ordlistan: Postgres ~* och översättningen ger samma träffar", { skip: !
   const db = new pg.Client({ connectionString: url });
   await db.connect();
   try {
-    const [{ ctype }] = (await db.query("SELECT current_setting('lc_ctype') AS ctype")).rows;
+    // lc_ctype är ingen inställning längre i nyare Postgres (CI: "unrecognized configuration parameter"); databasens egen kolumn finns alltid.
+    const [{ ctype }] = (await db.query("SELECT datctype AS ctype FROM pg_database WHERE datname = current_database()")).rows;
     for (const [mening] of PROVMENINGAR) {
       const { rows } = await db.query("SELECT $1 ~* $2 AS hela, array(SELECT $1 ~* o FROM unnest($3::text[]) WITH ORDINALITY AS u(o, i) ORDER BY i) AS ord",
         [mening, ORDLISTA, ORD]);
