@@ -42,7 +42,7 @@ nedan är rättad efter det: ingen förening som tillgång, avsändare, pressvin
 5. **Första frostnatten** (motorn larmar per län): lokalpress i det länet samma morgon — *tips@*-adresser, P4-redaktionen. Kroken:
    *"Gratis app byggd på Trafikverkets mätstationer säger till med rösten när det är halt — i natt var det första gången i [län]."*
 6. **Första snökaoset** (nov/dec): TT + rikspress + motor-/teknikpress (Vi Bilägare, Teknikens Värld, Mobil.se, SweClockers, Feber, Ny Teknik).
-7. **15/12 Skyltfonden** — ja eller nej är en nyhet ("Trafikverket satsar på…" / "Två privatpersoner bygger det Trafikverket inte gör").
+7. **15/12 Skyltfonden** — ja eller nej är en nyhet ("Halkvakt får stöd ur Skyltfonden" / "Ny gratisapp läser upp halkan på vägen framför dig"). *Neutral sedan 23/10 (Bengt, #685): Halkvakt ställs inte mot Trafikverket, som är både datakällan och Skyltfondens huvudman.*
 8. **Jan–mar Bulltoftabanan** — Sydsvenskan, Lokaltidningen Malmö, P4 Malmöhus, SVT Skåne: elever på halkbanan med en röst i örat. Bilder + siffror.
 9. **Podcast/radio**: P1 Trafikredaktionen, P4 Trafik — de talar om halka varje vinterdag och vill ha något nytt att säga.
 

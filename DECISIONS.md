@@ -16582,3 +16582,36 @@ facitkommandon, Betatest-sidans text i iOS och Android, och butikstexten. Ett pr
 **Åtgärdslistan:** `docs/ATGARDER-FORARNA-2026-10-23.md` (B6-01 och framåt).
 
 **Stomdokument:** APP förarna och butikerna, BED §4.2 omgång 1 för förarna avgjord
+
+## #685 (23/10 2026) Bengts svar på frågorna till Axel: #1029 in i (33), kort #228 stängt, hej@ fungerar, Axel äger domänen, neutral pressrubrik
+
+**Underlaget** var listan med 16 frågor till Axel ur åtgärdslistorna för Appen (B5) och förarna (B6), med förslag, i chatten 23/10.
+Bengt svarade 23/10:
+- *"1. ta in den i 33, 2 ja 3 har det någon betydelse? 4 den får axel ta lista den 5. axel på lista 6 axel på lista 7 stäng kortet"*;
+- *"8 axel har en lånad android 9 axel 10 axel äger men ingen åtgärd ännu 11 axel på lista 12 fungerar 13 axel har ansvar för denna"*;
+- *"14 ändra så att texten är mer neutral kom med andra förslag 15 gör besöksräknaren 16 den får axel på en lista"*.
+
+**Beslut och svar.**
+1. **#1029 tas in i (33)** (B5-33). Main är införd (c39233f6). Krocken i `build.gradle.kts` löstes med SDK 36 ur #1029, Betatest-flaggan
+   ur #1159 och byggnumret 32 ur main. Provet på Axels Android står kvar.
+2. **Inskicket av (33)** följer förslaget (B5-34):
+   - Claude höjer byggnumret och laddar upp efter #1029;
+   - Bengt provar (33) och gör skärminspelningen;
+   - Axel klistrar in texterna och skickar in.
+3. **Vilket bygge App Store-versionen 0.3.9 bär** (B5-35) är **bortvalt** (Bengt: *"stryk fråga 3 som bortvald"*). Frågan har låg
+   vikt, eftersom (33) ersätter versionen.
+4. **Läget i Google Play** (B5-36), **Kompisarna** (B5-38) och **PR #1056** med ansökan till katalogen (B6-27) står på Axels lista.
+5. **Integritetssidans datum 20/10** (B5-37, B5-43) är besöksräknaren. Sidan beskriver den, och den bokförs som #684 (PR #1088).
+6. **Kort #228 är stängt** (B5-39). CI kör `xcodegen` på en ren maskin.
+7. **Axel har en lånad Android.**
+8. **Domänen halkvakt.se:** Axel (B6-23). Förnyelsedatumet står på Axels lista.
+9. **Varumärket hos PRV** (B6-24): Axel äger frågan, men ingen åtgärd ännu.
+10. **Search Console är uppsatt** (B6-25). Axel läste siffror därifrån 20/10 (#684).
+11. **hej@halkvakt.se fungerar** (B6-34), enligt Bengt. Raderna från 9/10 i tavlan och bedömningen har fått en daterad not.
+12. **Lösenorden till kontona är Axels ansvar** (B6-35). Var de förvaras skrivs aldrig i repot.
+13. **Pressrubriken är neutral** (B6-36). Vid ja: *"Halkvakt får stöd ur Skyltfonden"*. Vid nej: *"Ny gratisapp läser upp halkan på
+    vägen framför dig"*. Halkvakt ställs inte mot Trafikverket, som är både datakällan och Skyltfondens huvudman. Fler förslag gavs i
+    chatten.
+14. **Besöksräknaren** (B6-26) görs klar i PR #1088 som #684 (sql/067).
+
+**Stomdokument:** APP kort #228 och #1029, BED §4.2 frågorna till Axel
