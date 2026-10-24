@@ -1912,11 +1912,18 @@ test("#692 den nya kandidatens skugga (sql/068): samma regel och logg som den fr
   };
   try {
     await q("CREATE TABLE IF NOT EXISTS shadow_log (id bigserial PRIMARY KEY, run_at timestamptz NOT NULL DEFAULT now(), alerts jsonb NOT NULL DEFAULT '[]'::jsonb)");
-    for (const f of ["001_init.sql", "008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql", "018_trend_berakna.sql",
-                     "029_brott_index.sql", "030_langsam_vakt.sql", "050_kandidat_live.sql", "052_kandidat_gallring_kort.sql", "053_arkiv_tabeller.sql",
-                     "055_vagpunkter.sql", "056_kandidat_regel.sql", "057_kandidat_skugga.sql", "058_kandidat_spridning.sql",
-                     "065_kandidat_domlogg_punkter.sql", "068_ny_kandidat_skugga.sql", "068_ny_kandidat_skugga.sql"])
-      await q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+    // Den frystas kedja laddas bara när den saknas: i ci har tidigare prov redan laddat 058, som ger kandidat_regel() fler kolumner,
+    // och en omladdning av 056/057 fälls då med "cannot change return type" (som provet ovan). 065 är sist i kedjan (fukt_pb).
+    // Saknas 065 tas kandidat_regel() bort först, som 058 själv gör. 068 laddas alltid, två gånger (idempotent).
+    const las = (f: string) => q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+    if (!(await q("SELECT 1 FROM information_schema.columns WHERE table_name = 'kandidat_skugga' AND column_name = 'fukt_pb'")).rowCount) {
+      await q("DROP FUNCTION IF EXISTS kandidat_regel()");
+      for (const f of ["001_init.sql", "008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql", "018_trend_berakna.sql",
+                       "029_brott_index.sql", "030_langsam_vakt.sql", "050_kandidat_live.sql", "052_kandidat_gallring_kort.sql", "053_arkiv_tabeller.sql",
+                       "055_vagpunkter.sql", "056_kandidat_regel.sql", "057_kandidat_skugga.sql", "058_kandidat_spridning.sql",
+                       "065_kandidat_domlogg_punkter.sql"]) await las(f);
+    }
+    for (const f of ["068_ny_kandidat_skugga.sql", "068_ny_kandidat_skugga.sql"]) await las(f);
     await stad();
     // [punkt, sträcka, km norr om 70° N, pb, n_ank, spr, ank_km]
     const P: [string, string, number, number, number, number | null, number | null][] = [
