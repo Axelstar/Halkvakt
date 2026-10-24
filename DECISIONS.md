@@ -17541,4 +17541,31 @@ ersättningsregeln). Det gäller oavsett om bytet görs.
 **Att lägga märke till:** den exakta skillnaden på 2022/23 är −0,183 procentenheter (4,3349 mot 4,5179 %, samman 40024563991). "−0,19"
 i #702 är skillnaden mellan två avrundade tal. Ingenting ändras av det, eftersom V2 krävde −0,25.
 
+**3. Utfallet** (kuvos-ny-kandidat 40092007287, steget osakerhet på `claude/osakerhet-2022-23` 37f1011a, 11:58–12:30 UTC; bara
+aggregat):
+- **Identiteten höll.** Båda kandidaternas summor är exakt samman:s, och de har samma 4 361 591 punkter vid 711 stationer och 152 dygn
+  (99 487 celler med punkter).
+
+| Δ (den nya − den låsta) | På populationen | 95 %, stationer och dygn (SD) | Stationer (S) | Dygn (D) | Andel ≥ 0 (SD) |
+| :-- | --: | --: | --: | --: | --: |
+| A2 totalt | −0,183 pe | −0,417 till +0,039 | −0,394 till +0,017 | −0,247 till −0,118 | 0,051 |
+| A2 norr | −0,494 pe | −1,206 till +0,170 | −1,146 till +0,126 | −0,678 till −0,307 | 0,075 |
+| A2 söder | −0,060 pe | −0,224 till +0,085 | −0,213 till +0,068 | −0,100 till −0,018 | 0,230 |
+| A1 totalt | −0,0153 °C | −0,0236 till −0,0074 | −0,0233 till −0,0078 | −0,0175 till −0,0131 | 0,000 |
+| A3 totalt | −0,030 pe | −0,048 till −0,014 | −0,045 till −0,017 | −0,039 till −0,022 | 0,000 |
+
+Det naiva intervallet, med punkterna som oberoende, är för ΔA2 −0,198 till −0,168 pe.
+
+**Läsningen (regeln ovan): förbättringen i A2 går inte att skilja från noll.** SD-intervallet når +0,039, och 5,1 % av omdragningarna
+ger ingen förbättring. Att lägga märke till:
+- **Osäkerheten sitter i stationerna.** Stationsschemat är nästan lika brett som SD, medan dygnsschemat är smalt. Den nya är alltså
+  mycket bättre vid vissa stationer och sämre vid andra, och vilka stationer som råkar ingå avgör talet.
+- **Det verkliga intervallet är femton gånger bredare än det naiva** (0,456 mot 0,030 pe), och ± 0,02 i ersättningsregeln §3 var det
+  naiva talet. Kravet 0,25 ligger inne i intervallet. På 2022/23 går −0,183 alltså varken att skilja från noll eller från −0,25.
+- **A1 och A3 är förbättrade utom rimligt tvivel:** medelfelet −0,015 °C och fel sida om noll −0,030 pe, där inga omdragningar gav
+  noll eller sämre.
+- I norr är punkttalet −0,49 pe, men intervallet når +0,17.
+
+Ingen dom och inget krav ändras (regel L). V2 står som fallet. Talen är underlag för bytesbeslutet (§12 b) och valet inför 2027/28 (§12 g).
+
 **Stomdokument:** KUV osäkerheten på 2022/23 med omdragning och v4 med långvåg före 2022
