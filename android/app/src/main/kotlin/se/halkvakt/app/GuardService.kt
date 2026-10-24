@@ -306,7 +306,7 @@ class GuardService : Service() {
     override fun onDestroy() {
         efterResan()          // FÖRE scope.cancel() — läser sitt eget, kortlivade scope
         sparaTuren()
-        Favoriter.lager(this).resanSlutar(session.value.km)   // kort #357: frågan på Redo., bara om insamlingen var på
+        Favoriter.lager(this).resanSlutar(session.value.km, (System.currentTimeMillis() - session.value.startedAt) / 60_000.0)   // kort #357: frågan på Redo., bara om insamlingen var på
         scope.cancel()
         running = false
         fused.removeLocationUpdates(callback)

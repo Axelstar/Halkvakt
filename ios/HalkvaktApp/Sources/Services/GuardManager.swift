@@ -284,7 +284,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         // Redo efter tur (designen 01b): kvittot behöver resans slut och sträcka.
         Prefs.shared.lastTripEnd = tripEndedAt
         Prefs.shared.lastTripKm = distanceKm
-        if korde { Favoriter.shared.resanSlutar(km: distanceKm) }   // kort #357: frågan på Redo., bara med brytaren på
+        if korde { Favoriter.shared.resanSlutar(km: distanceKm, minuter: drivingSeconds / 60) }   // kort #357: frågan på Redo., bara med brytaren på
         headsUpTask?.cancel()
         manager.stopUpdatingLocation()
         dismissTask?.cancel()

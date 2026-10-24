@@ -346,9 +346,14 @@ public enum ResansRapport {
         }
         for w in lage.smhi where polygonTraffar(w.polygoner, rutt) {
             rader.append(RapportRad(id: "smhi:\(w.id):\(w.event ?? "undefined")", slag: .smhi, rubrik: "SMHI: \(w.event ?? "varning")",
-                                    text: "nivå \(w.niva ?? "–")", avstandM: 0, langsM: 0, vag: nil, start: nil))
+                                    text: smhiNiva(w.niva), avstandM: 0, langsM: 0, vag: nil, start: nil))
         }
         return sorterad(rader, slag: \.slag, langs: \.langsM, id: \.id)
+    }
+
+    /// SMHI:s nivåkod i klartext (rapport-core.ts smhiNiva; DECISIONS #701). Okänd kod ⇒ bara "Varning".
+    public static func smhiNiva(_ kod: String?) -> String {
+        switch kod { case "YELLOW": return "Gul varning"; case "ORANGE": return "Orange varning"; case "RED": return "Röd varning"; default: return "Varning" }
     }
 
     /// Hem: samma väg åt andra hållet.

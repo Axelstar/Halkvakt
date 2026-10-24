@@ -30,7 +30,9 @@ object Favoriter {
     /** Frågan står kvar ett dygn; sedan raderas vägen (FAVORITER §6). */
     const val FRAGA_KVAR_MS = 24 * 3600 * 1000L
     /** Kortare resor erbjuds inte (DECISIONS #633): en vakt som startades i en parkering eller bars av en gående är ingen väg. */
-    const val MINSTA_RESA_KM = 1.0
+    // Minst 2 km och 5 minuters körtid (DECISIONS #701): på tåget 24/10 kom frågan två gånger på en minut.
+    const val MINSTA_RESA_KM = 2.0
+    const val MINSTA_RESA_MIN = 5.0
     const val RUTTER_FIL = "rutter.json"
     const val VANTANDE_FIL = "senaste-resan.json"
     const val KOLLEN_FIL = "kollen.json"
@@ -77,10 +79,10 @@ class RuttLager(private val mapp: File, private val nu: () -> Long = System::cur
     fun fix(lon: Double, lat: Double) { insamlare?.add(lon, lat) }
 
     /** Vakten stoppar: vägen läggs i den tillfälliga filen, och Redo. frågar om den ska sparas. */
-    fun resanSlutar(km: Double) {
+    fun resanSlutar(km: Double, minuter: Double) {
         val r = insamlare?.route() ?: return
         insamlare = null
-        if (km < Favoriter.MINSTA_RESA_KM || r.size < 2) return
+        if (km < Favoriter.MINSTA_RESA_KM || minuter < Favoriter.MINSTA_RESA_MIN || r.size < 2) return
         // DECISIONS #637: vägen hem, eller samma väg igen, är redan sparad — en resa räcker för båda hållen, så ingen ny fråga.
         if (_rutter.value.any { Rutter.sammaResa(it.punkter, r) }) return
         val v = VantandeResa(nu(), r)
