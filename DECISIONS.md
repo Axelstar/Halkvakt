@@ -17162,3 +17162,37 @@ regler och sikten som avgörs med tre villkor (§5). Fryst (§8).
 **Inte gjort:** läsningen är inte körd. Den körs på Bengts ord, i `kuvos.yml` med mätningen ovan och `korflode = ingen`.
 
 **Stomdokument:** KUV olycksläsaren byggd och inte körd
+
+## #699 (24/10 2026) Ägandet och licensen: Axel och Bengt äger gemensamt, koden Apache 2.0, dokumenten CC BY-SA 4.0
+
+**Bakgrund.** Repot hade ingen licens, och fyra artefakter bar fyra avsändare (repot på Axels konto, App Store "© 2026 Lagerlöf
+Labs", integritetssidan "Axel Lagerlöf under namnet Lagerlöf Labs", Skyltfondsansökan Bengt som privatperson, #404). Lagerlöf Labs
+är inget rättssubjekt. Inbäddningskortet (#588) kan inte erbjudas en redaktion förrän det står vem som äger och vad kortet får
+användas under. Underlaget lades fram för Axel 24/10.
+
+**Axels ord 24/10:** ägandet *"Du och Bengt gemensamt"*; licensen och resten *"Det du tycker är bäst"*; *"Gör det härifrån"*.
+
+**Beslut.**
+1. **Ägandet.** Axel Lagerlöf och Bengt Lagerlöf äger upphovsrätten till kod och dokument gemensamt och licensierar tillsammans.
+   Föreningen Halkvakt äger inget. Bengt bekräftar raden; till dess står den som Axels beslut.
+2. **Koden:** Apache License 2.0 (`LICENSE`, `NOTICE`, `"license": "Apache-2.0"` i package.json).
+3. **Dokumenten:** CC BY-SA 4.0 (`LICENSE-docs`), med docs/, besluts-, tavel- och statusfilerna och data som KALLOR.json kallar
+   "Halkvakts eget".
+4. **Data under data/:** oförändrat, licensen per fil i KALLOR.json.
+5. **Namnet och logotypen** är varumärken och ingår inte i någon licens.
+6. **Kartrepot** (`Axelstar/halkvakt-karta`, där widget.html och press.html ligger) får samma licens för sin kod; görs när det repot
+   är kopplat.
+
+**Alternativ.** (a) Upphovsrätten till Föreningen Halkvakt: avvisat av Axel 24/10; kan göras senare genom en överlåtelse från
+båda. (b) MIT: saknar patentklausulen. (c) En icke-kommersiell licens: stänger dörren till tidningarna, som är kommersiella bolag,
+och är inte öppen källkod.
+
+**Att veta.** Share-alike gäller texten och bearbetningar av den, inte idéerna eller talen i den: den som läser trösklarna och
+bygger egna med egna ord är inte skyldig att publicera något. Licensen skyddar alltså attributionen och texten, inte metoden.
+Samägd upphovsrätt utan avtal betyder att varje ny licens och varje överlåtelse kräver båda; ett kort samäganderättsavtal är det som
+fortfarande är värt en halvtimmes rådgivning.
+
+**Följd.** App Store-copyrighten och integritetssidans avsändare säger fortfarande Lagerlöf Labs; de rättas när nästa bygge och nästa
+kartdeploy görs. Kanalen till redaktionerna (#588) är inte längre hindrad av licensen.
+
+**Stomdokument:** inga — en licens och ett ägarbeslut, ingen stomtext ändrad
