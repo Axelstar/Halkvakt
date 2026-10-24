@@ -17316,3 +17316,69 @@ Skillnaden är ett dygn. Filens tal kommer ur träningens slutliga enhet och är
 - sql/068 är inte migrerad, och inga pulsrader finns.
 
 **Stomdokument:** KUV den nya kandidatens kedja klarade paritetsprovet och en felstartad förberedning avbröts
+
+## #702 (24/10 2026) Olycksläsningen 2024/25 bokförd: sikten stryks; olyckorna bekräftar varken kandidaten eller efterhalkan
+
+**Bengts ord 24/10:** *"du kan också registrera olycksfallskortet"*. Domlarmets ärende #1176 (*"W-A sikt 2024/25 (olyckorna) faller:
+sikten stryks"*) stängs med den här posten.
+
+**Körningen:** kuvos 40014153522 med mätningen `scripts/matningar/kuvos-blandning-vagb-olyckor-trv-2026-10-23.ts`, på main d3df55ec,
+23/10. Den följer FORREGISTRERING-OLYCKOR-2024-25 (#697) och läsaren (#698). Filen Olyckor24-25.xlsx (653 196 byte) hade sha256 lika
+manifestet. Bara aggregat är lästa. Ingen fritext och ingen plats är utskriven.
+
+**Inläsningen (§2):**
+- 7 269 rader i bladet. 22 förskjutna rader är lagade och 23 dubbletter räknade en gång, båda som formläsningen.
+- Det ger 7 246 olyckor, alla med giltig koordinat.
+- **18 halkolyckor** enligt ordlistan.
+
+**Tidszonen (§3):** svensk tid.
+- Natten till 30/3 kl. 02 har 0 olyckor.
+- Vardagarnas topptimmar är 07 och 16.
+
+**Fråga (a), facit (diagnos, §1):** lyft med 95 % marginal.
+
+| | Varningar | Med olycka | Lyft, alla | Lyft, halk | Halk mot alla |
+| :-- | :-- | :-- | :-- | :-- | :-- |
+| Kandidaten, 2 km (primärt) | 1 357 485 kalla timmar | 1 626 (0,12 %) | 1,04 [0,97–1,11] | 1,01 [0,40–2,53] | 0,97 [0,39–2,43] |
+| Kandidaten, 5 km | | 5 425 (0,40 %) | 1,01 [0,97–1,05] | 1,01 [0,57–1,77] | 1,00 [0,57–1,75] |
+| Efterhalkan, 2 km (primärt) | 1 109 fyrningar | 3 (0,27 %) | 1,20 [0,39–3,73] | 0 | 0 |
+| Efterhalkan, 5 km | | 19 (1,71 %) | 2,26 [1,45–3,53] | 0 | 0 |
+
+- **Förväntan (§6)** var att halkolyckornas lyft skulle vara över 1. Den slog **inte** in: kandidatens halklyft är 1,01 med marginalen
+  0,40–2,53, och efterhalkan har inga halkolyckor i sina fönster.
+- Med 18 halkolyckor på hela vintern säger frågan nästan ingenting åt något håll.
+- En olycka får bekräfta men aldrig fälla en varning (§1). Ingen tröskel och ingen dom ändras.
+
+**Fråga (b), W-A:s andra serie:** 2 701 498 stationstimmar vid 754 stationer.
+- **Byvinden** är diagnos och fäller inget. Alla olyckor över hela dygnet stiger monotont med kvoten 1,33. W-A4 håller, men utfallet
+  är OAVGJORT, eftersom kvoten inte går att skilja från 1,5. Halkolyckorna är för få.
+- **Sikten**, alla olyckor (primär serie), per 1 000 stationstimmar:
+
+| Band | Stationstimmar | Timmar med olycka | Per 1 000 | Kvot mot > 1000 m |
+| :-- | :-- | :-- | :-- | :-- |
+| > 1000 m | 2 574 742 | 22 768 | 8,84 | 1,00 |
+| 500–1000 m | 58 243 | 524 | 9,00 | 1,02 [0,93–1,11] |
+| 200–500 m | 55 317 | 387 | 7,00 | 0,79 [0,72–0,87] |
+| < 200 m | 11 839 | 80 | 6,76 | 0,76 [0,61–0,95] |
+
+**Domen (§5): sikten stryks.**
+
+| Villkor | Utfall |
+| :-- | :-- |
+| 1. W-A3 med marginalvakten | **nej**: kvoten är 0,76, alltså färre olyckor i dålig sikt |
+| 2. W-A4 | ja |
+| 3. Riktningen på dagtid | **nej**: kvoten är 0,85 [0,63–1,14] |
+
+Två av tre villkor föll, och ett räckte. Driftens fall 8/10 (#491) står därmed, nu med en riktig nämnare.
+
+**Att lägga märke till:**
+- Halkolyckornas siktkvot är 15,5 [4,8–50,1], men den bygger på 3 timmar med olycka under 200 m. Det är inte den primära serien, och
+  den ändrar ingenting (regel L).
+- Läsningens 11 839 stationstimmar under 200 m och 754 stationer är färre än räkningen utan olyckor 23/10 (#696), som gav 12 175
+  timmar och 762 stationer. Skillnaden är inte utredd. Den rör inte domen: W-A4 kräver 500.
+- Avvikelsen i #698 står kvar: driftens W-A räknar i praktiken på 10–14 km (ST_Expand 0,25°), inte på 15 km.
+
+**Inte gjort:** sikten är struken som fråga, men ingen text eller kod som nämner siktgrinden är ändrad här. Följer i egen PR om det
+behövs.
+
+**Stomdokument:** KUV olycksläsningen bokförd och sikten stryks
