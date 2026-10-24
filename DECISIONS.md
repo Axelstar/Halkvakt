@@ -17196,3 +17196,24 @@ fortfarande är värt en halvtimmes rådgivning.
 kartdeploy görs. Kanalen till redaktionerna (#588) är inte längre hindrad av licensen.
 
 **Stomdokument:** inga — en licens och ett ägarbeslut, ingen stomtext ändrad
+
+## #700 (24/10 2026) Redaktionernas tipsvägar per län i marknadsforing/redaktioner.json, och vädermodulen som inte syns
+
+**Axels ord 24/10:** *"Okay ska vi göra det också?"* om adresslistan och frågan vem som levererar vädret till de regionala sajterna
+(dörr 1 och dörr 3 i underlaget om tidningarnas vädersidor, #699).
+
+**Byggt.** `marknadsforing/redaktioner.json`: de 28 tidningar som har en förslagssida i kartrepot, per län, med koncern, väg (e-post,
+formulär eller saknas), adress och sidan den lästes på. 21 har en funktionsadress, 4 bara tipsformulär (UNT, Enköpings-Posten, SN,
+Piteå-Tidningen) och 3 gick inte att läsa (DT, VK, Folkbladet). Bara redaktionernas egna adresser, inga namngivna personer: repot är
+publikt. Varje adress är läst i sidans egen text 24/10, inte ur en sammanfattning. Att den står där bevisar inte att den tar emot post.
+
+**Fynd, dörr 3.** Inget tecken på en vädermodul hos de regionala sajterna: förstasidorna hos 20 av dem länkar ingen vädersida och
+nämner ingen väderleverantör, och nwt.se/vader är en artikel från 2008. Läsningen är förstasidornas html och en sida i webbläsare,
+inte varje sajt renderad; *ingen modul hittad*, inte *ingen modul finns*. Följd: platsen *under vädermodulen* finns troligen inte hos
+lokaltidningarna, och dörr 3 har ingen leverantör att gå till. Pitchen till dörr 2 blir platsen i halkartiklarna och på förstasidan
+under halkvarningen.
+
+**Fynd, dörr 2.** 13 av de 28 hör till Bonnier News Local och 8 till NTM, enligt sidornas egen kod. Två produktfunktioner når 21
+tidningar; piloten kan därför väljas som en väg in i en koncern.
+
+**Stomdokument:** inga — marknadsföringen ligger utanför de åtta (#598)

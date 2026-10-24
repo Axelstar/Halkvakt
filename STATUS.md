@@ -2729,3 +2729,4 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 23/10 (Claude): **Olycksläsaren byggd** (DECISIONS #698) efter den signerade förregistreringen. Inte körd. Avvikelse: driftens W-A räknar i praktiken på 10–14 km (ST_Expand 0,25°), inte 15 km.
 
 - **24/10 (Claude, webben):** licens och ägande (DECISIONS #699): LICENSE (Apache 2.0), NOTICE, LICENSE-docs (CC BY-SA 4.0), package.json, README och §4.2 i 81d8934; kartrepot 0755651. Väntar på Bengts bekräftelse av ägarraden.
+- **24/10 (Claude, webben):** redaktionernas tipsvägar för 28 tidningar i `marknadsforing/redaktioner.json` (DECISIONS #700); ingen vädermodul hittad hos de regionala sajterna; pilotens tidning väntar på Axel (§4.2).
