@@ -508,6 +508,10 @@ def hela(d, ind):
     # Prövningen bakom spärren, med en signerad kopia av förregistreringen.
     vv = os.path.join(d, 'vvis')
     for v in VI: shutil.copytree(os.path.join(rot, v, 'vvis'), os.path.join(vv, v))
+    # De påhittade skattningarna har egna summor: prövningen här läser en tom kandidatfil, inte repots (ifylld ur samman 24/10, #699).
+    orig = provning.manifestets_summor
+    tom = os.path.join(d, 'kandidat-tom.json'); json.dump({'filer': []}, open(tom, 'w', encoding='utf-8'))
+    provning.manifestets_summor = lambda fil=tom: orig(fil)
     def veck(veck_, ph=ut, enh=ut, vvis=vv, utm=os.path.join(d, 'pr')):
         with signerad_forreg(d):
             tyst(provning.veck, types.SimpleNamespace(veck=veck_, enheter=[enh], ph=ph, vvis=vvis, indata=ind, ut=utm))
@@ -552,15 +556,17 @@ def hela(d, ind):
     # Kandidatfilen i repot, när den är ifylld: en skattning med en annan summa där fälls.
     mf = os.path.join(d, 'kandidat-2027-28.json')
     json.dump({'filer': [{'fil': 'ph_utan-2019-20_2022-23_2019-20.npz', 'sha256': '0' * 64}]}, open(mf, 'w', encoding='utf-8'))
-    orig = provning.manifestets_summor
     provning.manifestets_summor = lambda fil=mf: orig(fil)
     try:
         veck('2022-23', utm=os.path.join(d, 'pr6')); k(False, 'en skattning med annan summa än kandidatfilen lästes')
     except SystemExit as e:
         k('kandidat-2027-28.json' in str(e), f'en skattning med annan summa än kandidatfilen fälls: {e}')
     finally:
-        provning.manifestets_summor = orig
-    k(provning.manifestets_summor() == {}, 'kandidatfilen i repot har inga summor före träningen')
+        provning.manifestets_summor = lambda fil=tom: orig(fil)
+    rep = orig()
+    k(rep == {} or (len(rep) == len(kedjan.las_json(kedjan.MANIFEST)['filer']) and 'modell_alla.pkl' in rep
+                    and all(len(x) == 64 for x in rep.values())),
+      f'kandidatfilen i repot: tom före samman, eller ifylld med en summa per fil och den slutliga modellen ({len(rep)} filer)')
     # Den slutligas par och samman.
     sa = veck('alla')
     k(sa['vinter'] == 'alla' and set(sa['parvalet']['vintrar']) == set(VI) and all(sa['parvalet']['vintrar'][v]['enhet'] == f'utan-{v}' for v in VI)
@@ -606,6 +612,7 @@ def hela(d, ind):
     j, md4 = samman_med_frysta('sam4')
     k(j.get('samma_population') is False and any(x.startswith('stationer:') for x in j.get('skillnader', [])),
       f"en station för mycket fäller jämförelsen ({j.get('skillnader')})")
+    provning.manifestets_summor = orig
 
 
 def tillagget(d):
