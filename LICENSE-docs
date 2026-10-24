@@ -1,0 +1,21 @@
+Dokumenten i Halkvakt
+Copyright 2026 Axel Lagerlöf och Bengt Lagerlöf
+
+Licens: Creative Commons Erkännande-DelaLika 4.0 Internationell (CC BY-SA 4.0)
+https://creativecommons.org/licenses/by-sa/4.0/legalcode.sv
+(engelska: https://creativecommons.org/licenses/by-sa/4.0/legalcode)
+
+Gäller:
+- alla Markdown- och HTML-dokument under docs/
+- DECISIONS.md, DECISIONS-ARKIV.md, TAVLA.md, TAVLA-ARKIV.md, STATUS.md,
+  PLAN.md, BACKLOG.md och README.md
+- filer under data/ som i data/KALLOR.json har licensen "Halkvakts eget"
+  eller "Halkvakts eget aggregat"
+
+Gäller inte:
+- kod (TypeScript, Kotlin, Swift, SQL, skript, workflows): Apache 2.0, se LICENSE
+- övriga filer under data/: licensen som står i data/KALLOR.json
+- namnet Halkvakt och logotypen, som är varumärken
+
+Erkännande: "Halkvakt (Axel Lagerlöf och Bengt Lagerlöf), CC BY-SA 4.0",
+med länk till https://github.com/Axelstar/halkvakt.

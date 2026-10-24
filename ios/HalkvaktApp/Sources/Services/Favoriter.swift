@@ -28,7 +28,9 @@ final class Favoriter {
     /// Frågan står kvar ett dygn; sedan raderas vägen (FAVORITER §6).
     static let fragaKvarS: TimeInterval = 24 * 3600
     /// Kortare resor erbjuds inte: en vakt som startades i en parkering eller bars av en gående är ingen väg att spara.
-    static let minstaResaKm = 1.0
+    /// Minst 2 km och 5 minuters körtid (DECISIONS #701): på tåget 24/10 kom frågan två gånger på en minut.
+    static let minstaResaKm = 2.0
+    static let minstaResaMin = 5.0
 
     var erbjud: Bool {
         didSet {
@@ -66,8 +68,8 @@ final class Favoriter {
     func fix(lon: Double, lat: Double) { insamlare?.add(lon: lon, lat: lat) }
 
     /// Vakten stoppar: vägen så långt läggs i den tillfälliga filen, och Redo. frågar om den ska sparas.
-    func resanSlutar(km: Double, nu: Date = .now) {
-        guard erbjud, km >= Self.minstaResaKm, let r = insamlare?.route(), r.count >= 2 else { return }
+    func resanSlutar(km: Double, minuter: Double, nu: Date = .now) {
+        guard erbjud, km >= Self.minstaResaKm, minuter >= Self.minstaResaMin, let r = insamlare?.route(), r.count >= 2 else { return }
         // DECISIONS #637: vägen hem, eller samma väg igen, är redan sparad — en resa räcker för båda hållen, så ingen ny fråga.
         guard !rutter.contains(where: { Rutter.sammaResa($0.punkter, r) }) else { return }
         let v = VantandeResa(slut: nu, punkter: r)
