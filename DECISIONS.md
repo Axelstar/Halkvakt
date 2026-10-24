@@ -17270,3 +17270,49 @@ men det är ett avsteg från ersättningsregeln, och det står i tillägget §4.
 **Fristen** `tillagg-bytet` 26/10.
 
 **Stomdokument:** KUV bytet till den nya kandidaten förregistrerat i §12 med tillägg till ersättningsregeln och signering 26/10
+
+## #701 (24/10 2026) Paritetsprovet för den nya kandidatens kedja klarat; en felstartad förberedning avbruten
+
+**Bengts ord 24/10:**
+- *"Ja, kör paritetsprovet på grenen claude/ny-kandidat-kedja och rapportera bara aggregaten."*;
+- *"Ja, bokför paritetsprovet som DECISIONS #701 i #1179, med felstarten redovisad. Slå inte ihop."*
+
+**Körningen:** kuvos-ny-kandidat 40067785091 med steg=paritet, på `claude/ny-kandidat-kedja` (68d73313), 05:49:54–05:54:46 UTC.
+Bara jobbet `paritet` körde. Bara aggregaten är lästa, ur körningens sammanfattning.
+
+**Utfallet: KLARAT.** Den levande kedjan i analysläget på 2024/25 mot den slutliga enhetens tal i urvalet
+(`i_urvalet.per_vinter['2024-25'].fysik_rattelse`):
+
+| | Kedjan | Kravet | Skillnad | Tolerans |
+| :-- | --: | --: | --: | :-- |
+| n | 2 210 532 | 2 210 532 | 0 | exakt |
+| A1 | 0,61053 °C | 0,61053 °C | +0,000000 °C | ± 0,01 °C |
+| A2 | 4,6640 % | 4,6640 % | +0,00000 pe | ± 0,02 pe |
+
+- **Långvågen:** reserven är bit för bit som träningens, och MET:s långvåg är tömd i filen kedjan läser.
+- **Fysiken ensam:** A1 1,12254 °C och A2 21,1079 %, samma som kandidatfilens tal i urvalet.
+- **Underlaget:** 754 stationer och 4 152 timmar.
+- **Kandidatfilen i repot** är lika samman:s i beslut, par, parametrar, särdrag, filer och versioner.
+- **Kontrollsummorna** för `modell_alla.pkl`, de fem VViS-filerna, indatan och MET 2024/25 är lika manifesten.
+
+**Vad det betyder:** ersättningsregelns *"Paritet först"* (§4) och första villkoret i FORREGISTRERING-2026-27 §12 (a) är uppfyllda
+för kandidatfilen fb372d79…. Skillnaden är exakt noll eftersom kedjan använder träningens kod och data. Provet prövar analysläget på
+en vinter som den slutliga enheten är tränad på. Prognosläget med MET:s levande prognos prövas först när kedjan loggar i drift.
+
+**Att lägga märke till:** kandidatfilens `timmar` är 4 176, men provet räknade 4 152 timmar för 2024/25, samma som den frystas (§1).
+Skillnaden är ett dygn. Filens tal kommer ur träningens slutliga enhet och är inte utrett. Antalet punkter stämmer exakt.
+
+**Felstarten, Claudes fel:**
+- Körning 40067556017 startade 05:46:17 UTC på main (78c0268b) med standardvalet steg=forberedning. Skriptet klickade på knappen som
+  startar körningen i stället för den som öppnar rutan.
+- Den avbröts direkt. Alla sex förberedningsjobb stoppades 05:46:47–05:48 UTC, och ingen artefakt skrevs.
+- Tre jobb (2018/19, 2019/20, 2020/21) hann hämta vinterns VViS-filer ur hinken och MET-releaserna till löparen, samma väg som en
+  vanlig förberedning. Ingenting skrevs någonstans, och den nya kandidatens underlag är orört.
+- **Läxa:** knapprutan har två knappar med samma text. Välj knappen på typ och läge, och kontrollera gren och steg innan något skickas.
+  Paritetsprovet startades därefter så.
+
+**Inte gjort:**
+- Flaggan i `kuvos/ny-kandidat-skugga.json` är av. Körningens nummer för den är 40067785091.
+- sql/068 är inte migrerad, och inga pulsrader finns.
+
+**Stomdokument:** KUV den nya kandidatens kedja klarade paritetsprovet och en felstartad förberedning avbröts
