@@ -769,9 +769,11 @@ export const KONTRAKT: Kontrakt[] = [
     varfor: "Driver X i regeln (sql/058) från X i domen (grind-s-b.ts) dömer domen andra varningar än appen gav (DECISIONS #475, #477, #575).",
     former: [/const SPRIDNING_X: number \| null = ([\d.]+);/, /k\.spr >= ([\d.]+) THEN 'spridning'/, /export const SPRIDNING_X_C = ([\d.]+);/],
     // Kuvösens facitläsning speglar regeln (DECISIONS #593): en tredje kopia sedan 16/10.
-    filer: /grind-s-b\.ts$|sql\/058_|kuvos\/facit-trv\.ts$/,
-    golv: 3,
+    filer: /grind-s-b\.ts$|sql\/058_|sql\/068_|kuvos\/facit-trv\.ts$/,
+    golv: 4,
   },
+  // Den nya kandidatens skugga (sql/068, DECISIONS #692) bär regelns tal en gång till: samma regel på den nyas värden, så att domen i
+  // ersättningsregeln §5 räknas likadant för båda. Den kopian vaktas här med de andra (golven höjda med ett).
   // KANDIDATENS REGEL I KUVÖSEN (DECISIONS #593). Facitläsningen räknar driftens regel (sql/058) vid stationerna vintern 2024/25,
   // och förregistreringen fryser den. Driver en kopia läser kuvösen en annan regel än den användaren hör; ändras driftens regel
   // efter signeringen fäller grinden, och skillnaden blir ett daterat beslut med båda signaturerna i stället för en tyst drift.
@@ -780,50 +782,50 @@ export const KONTRAKT: Kontrakt[] = [
     namn: "Kandidatens kalla yta — regeln och facitläsningen",
     varfor: "Driver gränsen läser kuvösen andra kalla timmar än regeln varnar på (DECISIONS #562, #593).",
     former: [/l\.pb <= ([\d.]+)\s+-- YTA_GRANS_C/, /export const KALL_C = ([\d.]+);/],
-    filer: /sql\/058_|kuvos\/facit-trv\.ts$/,
-    golv: 2,
+    filer: /sql\/058_|sql\/068_|kuvos\/facit-trv\.ts$/,
+    golv: 3,
   },
   {
     namn: "Kandidatens radargräns för fukt — regeln och facitläsningen",
     varfor: "Driver gränsen räknar kuvösen fukt där regeln ser torrt (DECISIONS #565, #593).",
     former: [/coalesce\(r\.mmh, 0\) >= ([\d.]+)\) THEN 'torr'/, /export const RADAR_MMH = ([\d.]+);/],
-    filer: /sql\/058_|kuvos\/facit-trv\.ts$/,
-    golv: 2,
+    filer: /sql\/058_|sql\/068_|kuvos\/facit-trv\.ts$/,
+    golv: 3,
   },
   {
     namn: "Kandidatens radarfönster — regeln och facitläsningen",
     varfor: "Driver fönstret läser kuvösen radarn längre eller kortare bakåt än regeln (DECISIONS #573, #593).",
     former: [/r\.observed_at > now\(\) - interval '(\d+) minutes'/, /export const RADAR_MIN = (\d+);/],
-    filer: /sql\/058_|kuvos\/facit-trv\.ts$/,
-    golv: 2,
+    filer: /sql\/058_|sql\/068_|kuvos\/facit-trv\.ts$/,
+    golv: 3,
   },
   {
     namn: "Kandidatens vetofönster — regeln och facitläsningen",
     varfor: "Driver fönstret vetar kuvösen andra timmar än regeln (DECISIONS #566, #593).",
     former: [/w\.sample_time > now\(\) - interval '(\d+) minutes' AND w\.surface_temp_c >/, /export const VETO_MIN = (\d+);/],
-    filer: /sql\/058_|kuvos\/facit-trv\.ts$/,
-    golv: 2,
+    filer: /sql\/058_|sql\/068_|kuvos\/facit-trv\.ts$/,
+    golv: 3,
   },
   {
     namn: "Kandidatens vetoyta — regeln och facitläsningen",
     varfor: "Driver gränsen vetar kuvösen på andra stationer än regeln (DECISIONS #566, #593).",
     former: [/AND w\.surface_temp_c > (\d+)\s+-- VETO_MIN/, /export const VETO_YTA_C = (\d+);/],
-    filer: /sql\/058_|kuvos\/facit-trv\.ts$/,
-    golv: 2,
+    filer: /sql\/058_|sql\/068_|kuvos\/facit-trv\.ts$/,
+    golv: 3,
   },
   {
     namn: "Kandidatens vetoavstånd i meter — regeln och facitläsningen",
     varfor: "Driver avståndet vetar kuvösen med fler eller färre stationer än regeln (DECISIONS #566, #593).",
     former: [/k\.geom::geography, (\d+)\)\s+-- VETO_KM/, /export const VETO_M = (\d+);/],
-    filer: /sql\/058_|kuvos\/facit-trv\.ts$/,
-    golv: 2,
+    filer: /sql\/058_|sql\/068_|kuvos\/facit-trv\.ts$/,
+    golv: 3,
   },
   {
     namn: "Spridningsgrindens ankarantal — regeln och facitläsningen",
     varfor: "Med färre ankare grindar spridningen inte (#574); driver talet tystar kuvösen andra timmar än regeln (DECISIONS #593).",
     former: [/coalesce\(k\.n_ank, 0\) >= (\d+) AND k\.spr/, /ytor\.length >= (\d+) && Math\.round/],
-    filer: /sql\/058_|kuvos\/facit-trv\.ts$/,
-    golv: 2,
+    filer: /sql\/058_|sql\/068_|kuvos\/facit-trv\.ts$/,
+    golv: 3,
   },
 ];
 

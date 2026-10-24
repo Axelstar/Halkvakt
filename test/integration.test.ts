@@ -1891,3 +1891,93 @@ test("#618 (ii): skuggloggen, väglaget, händelserna och SMHI exporteras på si
     await pool.end();
   }
 });
+
+// Ersättningsregeln §4 (sql/068, DECISIONS #692): den nya kandidatens skugga. Samma rader i kandidat_live och ny_kandidat_live ger samma
+// regel och samma logg, rad för rad, och den nyas logg och gallring rör aldrig den frystas tabeller. 068 körs två gånger (idempotent).
+test("#692 den nya kandidatens skugga (sql/068): samma regel och logg som den frystas på samma rader, och den frysta orörd", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const st = (km: number) => 70 + km / 111.2;   // en punkt km norr om 70° N
+  const stad = async () => {
+    for (const t of ["kandidat_live", "ny_kandidat_live", "kandidat_ph", "ny_kandidat_ph", "kandidat_skugga_korning", "ny_kandidat_skugga_korning"])
+      await q(`DELETE FROM ${t}`);
+    await q("DELETE FROM vagpunkt WHERE punkt LIKE 'vN%'");
+    await q("DELETE FROM road_conditions WHERE segment_id LIKE '9993%'");
+    await q("DELETE FROM radar_precip WHERE segment_id LIKE '9993%'");
+    await q("DELETE FROM weather_observations WHERE station_id LIKE 'RN%'");
+    for (const t of ["kandidat_skugga", "ny_kandidat_skugga"]) await q(`DELETE FROM ${t} WHERE segment_id LIKE '9993%'`);
+    for (const t of ["kandidat_station", "ny_kandidat_station"]) await q(`DELETE FROM ${t} WHERE station_id LIKE 'SN%'`);
+  };
+  try {
+    await q("CREATE TABLE IF NOT EXISTS shadow_log (id bigserial PRIMARY KEY, run_at timestamptz NOT NULL DEFAULT now(), alerts jsonb NOT NULL DEFAULT '[]'::jsonb)");
+    for (const f of ["001_init.sql", "008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql", "018_trend_berakna.sql",
+                     "029_brott_index.sql", "030_langsam_vakt.sql", "050_kandidat_live.sql", "052_kandidat_gallring_kort.sql", "053_arkiv_tabeller.sql",
+                     "055_vagpunkter.sql", "056_kandidat_regel.sql", "057_kandidat_skugga.sql", "058_kandidat_spridning.sql",
+                     "065_kandidat_domlogg_punkter.sql", "068_ny_kandidat_skugga.sql", "068_ny_kandidat_skugga.sql"])
+      await q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+    await stad();
+    // [punkt, sträcka, km norr om 70° N, pb, n_ank, spr, ank_km]
+    const P: [string, string, number, number, number, number | null, number | null][] = [
+      ["vN01", "99931", 0, -1.0, 3, 1.0, 4.5],     // Våt, ankarna överens ⇒ varnar
+      ["vN02", "99931", 0, -0.5, 2, 3.0, 12],      // Våt, ankarna oense ⇒ spridning
+      ["vN03", "99932", 0, -0.5, 1, 0.0, 30],      // radar 0,6 för 30 min sedan, ett ankare ⇒ varnar
+      ["vN04", "99933", 0, -0.5, 0, null, null],   // radar 0,4 ⇒ torr
+      ["vN05", "99934", 200, -2.0, 2, 1.0, 6],     // Våt, varm station 10 km bort ⇒ veto
+      ["vN06", "99934", 400, 0.5, 2, 1.0, 6],      // ytan över 0 ⇒ inte med
+    ];
+    for (const [p, s, km] of P) await q("INSERT INTO vagpunkt (punkt, segment_id, lon, lat) VALUES ($1, $2, 33, $3)", [p, s, st(km)]);
+    await q(`INSERT INTO road_conditions (segment_id, condition_code, condition_text, condition_info) VALUES
+      ('99931', 1, 'Normalt', '{Våt}'), ('99932', 1, 'Normalt', '{Torrt}'), ('99933', 1, 'Normalt', '{Torrt}'), ('99934', 1, 'Normalt', '{Våt}')`);
+    await q(`INSERT INTO radar_precip (segment_id, observed_at, rate_max_mmh, rate_mean_mmh) VALUES
+      ('99932', now() - interval '30 minutes', 1, 0.6), ('99933', now() - interval '30 minutes', 1, 0.4)`);
+    await q("INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c) VALUES ('RN1', 'prov', ST_SetSRID(ST_MakePoint(33, $1), 4326), now() - interval '20 minutes', 3.0, 1.0)", [st(210)]);
+    const tid: Date = (await q("SELECT date_trunc('hour', now()) AS t")).rows[0].t;
+    for (const t of ["kandidat_live", "ny_kandidat_live"]) {
+      await q(`INSERT INTO ${t} (tid, punkt, pb) SELECT $1, v.punkt, 5 FROM vagpunkt v WHERE v.punkt NOT LIKE 'vN%'`, [tid]);
+      for (const [p, , , pb, n, spr, ank] of P) await q(`INSERT INTO ${t} (tid, punkt, pb, n_ank, spr, ank_km) VALUES ($1, $2, $3, $4, $5, $6)`, [tid, p, pb, n, spr, ank]);
+      await q(`INSERT INTO ${t} (tid, punkt, ph, pg, ra, ank_km, pb, n_ank, spr) VALUES ($1, 'SNA', 1.0, 1.1, 1.2, 3.5, 1.5, 3, 1.5)`, [tid]);
+    }
+    const regel = (f: string) => q(`SELECT * FROM ${f}() WHERE punkt LIKE 'vN%' ORDER BY punkt`).then((r) => r.rows);
+    const fryst = await regel("kandidat_regel"), ny = await regel("ny_kandidat_regel");
+    assert.deepEqual(Object.fromEntries(ny.map((r) => [r.punkt, r.utfall + (r.veto_station ? `@${r.veto_station}` : "")])),
+      { vN01: "varnar", vN02: "spridning", vN03: "varnar", vN04: "torr", vN05: "veto@RN1" }, "den nyas regel på provets punkter");
+    assert.deepEqual(ny, fryst, "ny_kandidat_regel() = kandidat_regel() rad för rad på samma värden");
+    // Loggen: den nyas först, och den frystas tabeller står still under den; sedan den frystas, och de två loggarna jämförs.
+    const antal = async () => Promise.all(["kandidat_skugga", "kandidat_station", "kandidat_skugga_korning", "kandidat_live", "kandidat_ph"]
+      .map((t) => q(`SELECT count(*)::int AS n FROM ${t}`).then((r) => r.rows[0].n)));
+    const fore = await antal();
+    const mNy: string = (await q("SELECT ny_kandidat_logga() AS m")).rows[0].m;
+    assert.deepEqual(await antal(), fore, "ny_kandidat_logga() skriver ingenting i den frystas tabeller");
+    const mFryst: string = (await q("SELECT kandidat_logga() AS m")).rows[0].m;
+    assert.equal(mNy, mFryst, "samma utfall i loggens svar");
+    assert.match(mNy, /4 sträckor, 2 varnande punkter, 1 vetade, 1 torra, 1 tystade av spridningen; 1 stationsrader/);
+    const KOL = `segment_id, observed_at, punkter, varnar, veto, torr, vat, flackvis_vat, radar_mmh, pb_min, veto_station, veto_km, veto_yta,
+      spridning, fukt_glest, fukt_spr_min, fukt_punkter, fukt_utfall, fukt_ank_km, fukt_n_ank, fukt_spr, fukt_pb`;
+    const logg = (t: string) => q(`SELECT ${KOL} FROM ${t} WHERE segment_id LIKE '9993%' ORDER BY segment_id`).then((r) => r.rows);
+    const lNy = await logg("ny_kandidat_skugga");
+    assert.equal(lNy.length, 4);
+    assert.deepEqual(lNy, await logg("kandidat_skugga"), "ny_kandidat_skugga = kandidat_skugga, fält för fält");
+    const stn = (t: string) => q(`SELECT station_id, observed_at, ph, pg, ra, ank_km, pb, n_ank, spr FROM ${t} WHERE station_id LIKE 'SN%'`).then((r) => r.rows);
+    assert.deepEqual(await stn("ny_kandidat_station"), await stn("kandidat_station"), "stationsvärdena lika");
+    const korning = (t: string) => q(`SELECT observed_at, status, stracker, varnar, veto, torr, stationer, spridning FROM ${t} ORDER BY korning DESC LIMIT 1`).then((r) => r.rows[0]);
+    assert.deepEqual(await korning("ny_kandidat_skugga_korning"), await korning("kandidat_skugga_korning"), "körningsraden lika");
+    // En gång per timme, och tyst när timmen är gammal — som den frystas.
+    assert.match((await q("SELECT ny_kandidat_logga() AS m")).rows[0].m, /redan räknad/);
+    assert.equal((await q("SELECT count(*)::int AS n FROM ny_kandidat_skugga WHERE segment_id LIKE '9993%'")).rows[0].n, 4, "inga dubbletter");
+    await q("UPDATE ny_kandidat_live SET tid = tid - interval '3 hours' WHERE tid = $1 AND punkt LIKE 'v%'", [tid]);
+    assert.match((await q("SELECT ny_kandidat_logga() AS m")).rows[0].m, /tyst/);
+    assert.equal((await korning("ny_kandidat_skugga_korning")).status, "tyst");
+    // Gallringen: bara den nyas tabeller.
+    for (const t of ["kandidat_ph", "ny_kandidat_ph"])
+      await q(`INSERT INTO ${t} (korning, tid, punkt, ts_fysik, ph) VALUES (now() - interval '9 hours', now() - interval '3 hours', 'SNA', 0, 0)`);
+    const fore2 = await antal();
+    assert.ok(Number((await q("SELECT gallra_ny_kandidat() AS n")).rows[0].n) >= 1, "gallra_ny_kandidat() tar den nyas gamla rader");
+    assert.deepEqual(await antal(), fore2, "gallra_ny_kandidat() rör inte den frystas tabeller");
+    assert.equal((await q("SELECT count(*)::int AS n FROM ny_kandidat_ph")).rows[0].n, 0);
+  } finally {
+    await stad().catch(() => {});
+    await pool.end();
+  }
+});

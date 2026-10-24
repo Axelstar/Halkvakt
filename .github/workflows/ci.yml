@@ -136,6 +136,7 @@ jobs:
           node --experimental-strip-types fysik/vintrar/metnordic_vinter.ts --sjalvtest   # fler vintrar: förprovet och hämtningen (DECISIONS #666–#668)
           node --experimental-strip-types fysik/ny_kandidat/metnordic_reserv.ts --sjalvtest   # den nya kandidaten: MET utan långvåg, vinden ur x och y (DECISIONS #670)
           node --experimental-strip-types ingest/kandidat-db.ts --sjalvtest        # DECISIONS #558, steg 3: databasens in- och utgång
+          node --experimental-strip-types ingest/ny-kandidat-db.ts --sjalvtest     # den nya kandidatens skugga: flaggan och den nyas tabeller (DECISIONS #692)
           node --experimental-strip-types scripts/kandidat-reserv.ts --sjalvtest   # reserven för del A (20/10)
           node --experimental-strip-types scripts/matningar/kuvos-trafik-per-band-2026-10-08.ts --sjalvtest
           node --experimental-strip-types scripts/matningar/kuvos-fysik-givarvakt-2026-10-08.ts --sjalvtest
@@ -169,6 +170,8 @@ jobs:
           python3 fysik/vintrar/sjalvtest.py                 # fler vintrar: läsaren, vakterna, måtten mot grind-a.ts, blandningen, proven (DECISIONS #666–#668)
           python3 fysik/ny_kandidat/sjalvtest.py             # den nya kandidaten: reserven, vinden, vecken, spärren, måtten, hela kedjan (DECISIONS #670)
           python3 fysik/ny_kandidat/trana.py --help > /dev/null && python3 fysik/ny_kandidat/forbered.py --help > /dev/null && python3 fysik/ny_kandidat/provning.py --help > /dev/null
+          python3 fysik/ny_kandidat/sjalvtest_levande.py     # den nyas levande kedja: reserven alla timmar, paret, pariteten, den frysta orörd (DECISIONS #692)
+          python3 fysik/ny_kandidat/levande.py --help > /dev/null
           python3 fysik/niva2/vagb.py --help > /dev/null
           python3 fysik/niva2/vagb_terrang.py --help > /dev/null      # DECISIONS #549
           python3 fysik/niva2/frysta.py --help > /dev/null            # DECISIONS #544 punkt 6
