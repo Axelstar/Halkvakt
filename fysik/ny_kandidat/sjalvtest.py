@@ -508,7 +508,7 @@ def hela(d, ind):
     # Prövningen bakom spärren, med en signerad kopia av förregistreringen.
     vv = os.path.join(d, 'vvis')
     for v in VI: shutil.copytree(os.path.join(rot, v, 'vvis'), os.path.join(vv, v))
-    # De påhittade skattningarna har egna summor: prövningen här läser en tom kandidatfil, inte repots (ifylld ur samman 24/10, #699).
+    # De påhittade skattningarna har egna summor: prövningen här läser en tom kandidatfil, inte repots (ifylld ur samman 24/10, #702).
     orig = provning.manifestets_summor
     tom = os.path.join(d, 'kandidat-tom.json'); json.dump({'filer': []}, open(tom, 'w', encoding='utf-8'))
     provning.manifestets_summor = lambda fil=tom: orig(fil)

@@ -1,6 +1,6 @@
 # Förregistrering — kandidaten NIVÅ 2+BLANDNING, vintern 2026/27
 
-**Status: UTKAST 15/10 2026, §4b tillagt 21/10, §12 (bytet) tillagt 24/10 (#700). Kvar före signeringen: radarns tal 26/10 (§10 a). §4b fastställt 21/10 (#655, #656); omgång 1 avgjord 21/10
+**Status: UTKAST 15/10 2026, §4b tillagt 21/10, §12 (bytet) tillagt 24/10 (#703). Kvar före signeringen: radarns tal 26/10 (§10 a). §4b fastställt 21/10 (#655, #656); omgång 1 avgjord 21/10
 (#659: populationen i §4, förarsvaren i §4b punkt 4, kameran i punkt 5, Bengt signerar för båda); loggen sql/065 i drift sedan 21/10 (§10 e). Spridningen loggas i drift sedan 16/10 (§10 b).** Signeras av Bengt och Axel senast
 **31/10 2026** (DECISIONS #544, #547). Domfönstret börjar den dag förregistreringen är signerad och pushad; varje dygn utan signatur är
 ett dygn vinter utanför domen. Källorna är DECISIONS #544, #547, #552, #558–#573 och TROSKLAR-SKUGGAN §2–§4. Utkastet i #560 ersätts
@@ -156,7 +156,7 @@ genom en daterad post med båda signaturerna, och aldrig som en lättnad efter s
 Formen i appen, texten (*"Halkvakt tror: halka framöver."* / *"Halkvakt thinks: slippery ahead."*) och avstängningen (#560 punkt 8,
 #562 punkt 5, #573). De rör användaren, inte måttet.
 
-Den nya kandidaten på sex vintrar (#670). Ersättningsregelns V2 föll (#699), så den körs inte i skugga enligt
+Den nya kandidaten på sex vintrar (#670). Ersättningsregelns V2 föll (#702), så den körs inte i skugga enligt
 `docs/FORREGISTRERING-ERSATTNING-2027-28.md`. Den räknas i en egen kedja, talar i appen bara enligt §12, och rör varken regeln,
 grindarna eller den här domen över den frysta. Valet inför 2027/28 görs enligt §12 (g), och domen över den frysta fälls som här står.
 
@@ -190,17 +190,17 @@ den här domen, och dess provning trycks först när ersättningsregeln är sign
 
 ## 12. Om den nya kandidaten talar i appen
 
-*Inskrivet 24/10, före signeringen (DECISIONS #700). Står före §11 eftersom det är en del av den signerade texten. Ändrar
+*Inskrivet 24/10, före signeringen (DECISIONS #703). Står före §11 eftersom det är en del av den signerade texten. Ändrar
 ersättningsregelns följd när V2 föll, genom tillägget `docs/FORREGISTRERING-ERSATTNING-TILLAGG-2026-10-24.md`, som signeras samtidigt.*
 
-**(a) Villkoret.** Den nya kandidaten (sex vintrar, #670, #699) får tala i appen i stället för den frysta bara när:
+**(a) Villkoret.** Den nya kandidaten (sex vintrar, #670, #702) får tala i appen i stället för den frysta bara när:
 - dess egen kedja (ersättningsregeln §4, `fysik/ny_kandidat/levande.py`) har klarat paritetsprovet på 2024/25
   (`kuvos-ny-kandidat` steg=paritet), med n exakt och inom ± 0,01 °C för A1 och ± 0,02 pe för A2; och
 - kedjan räknar och loggar i drift i sin egen tabell, med samma färskhetskrav som i §3: högst två timmar gammal och minst 95 % av
   punkterna.
 
 **(b) Beslutet.** Bytet beslutas av Bengt och Axel i en daterad DECISIONS-post med båda signaturerna, innan någon timme av vinterns
-utfall för någon av kandidaterna är läst. Posten anger tidpunkten för bytet. Den säger öppet att ersättningsregelns V2 föll (#699),
+utfall för någon av kandidaterna är läst. Posten anger tidpunkten för bytet. Den säger öppet att ersättningsregelns V2 föll (#702),
 och att bytet är ett beslut om **vad förarna hör**, inte en ändring av någon dom.
 
 **(c) Den frysta påverkas inte.** Den räknas och loggas oförändrat hela vintern i sin kedja (`kandidat_station`, `kandidat_skugga`).

@@ -6,7 +6,7 @@ android {
         applicationId = "se.halkvakt.app"
         minSdk = 26; targetSdk = 36
         // Femma åtta (4), DECISIONS #377: i takt med iOS FÖRE första Play-uppladdningen, som låser versionCode-spåret.
-        versionCode = 33; versionName = "0.3.13"   // 23/10: efterhalkans spärr (#677, #679), Betatest bara i testbyggen (#681), Android-lagningarna och SDK 36 (#1029), i takt med iOS 0.3.13 (33)
+        versionCode = 34; versionName = "0.3.13"   // 24/10: rättelserna efter Axels prov på (33) (#701), i takt med iOS 0.3.13 (34)
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // Betatestet bara i testbyggen (Bengt 22/10, DECISIONS #681): Android kan inte se ett testspår i Google Play, så
         // produktionens AAB byggs med -Phalkvakt.betatest=false och saknar då brytaren. Allt annat är ett testbygge.

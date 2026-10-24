@@ -2055,7 +2055,7 @@
     "id": "smhi:smhi-1:Halka",
     "slag": "smhi",
     "rubrik": "SMHI: Halka",
-    "text": "nivå 2",
+    "text": "Varning",
     "avstandM": 0,
     "langsM": 0,
     "vag": null,
@@ -2227,7 +2227,7 @@
     "id": "smhi:smhi-1:Halka",
     "slag": "smhi",
     "rubrik": "SMHI: Halka",
-    "text": "nivå 2",
+    "text": "Varning",
     "antal": 1,
     "ids": [
      "smhi:smhi-1:Halka"
@@ -2439,7 +2439,7 @@
     "id": "smhi:smhi-1:Halka",
     "slag": "smhi",
     "rubrik": "SMHI: Halka",
-    "text": "nivå 2",
+    "text": "Varning",
     "avstandM": 0,
     "langsM": 0,
     "vag": null,
@@ -2610,7 +2610,7 @@
     "id": "smhi:smhi-1:Halka",
     "slag": "smhi",
     "rubrik": "SMHI: Halka",
-    "text": "nivå 2",
+    "text": "Varning",
     "antal": 1,
     "ids": [
      "smhi:smhi-1:Halka"

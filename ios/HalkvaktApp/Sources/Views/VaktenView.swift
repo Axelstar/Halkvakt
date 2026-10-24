@@ -80,7 +80,7 @@ struct VaktenView: View {
             YellowPill(title: "Starta vakten", playIcon: true) { guardM.requestPermissionAndStart() }
             if guardM.locationDenied { LocationDeniedRow().padding(.top, 10) }
 
-            Text(tur.map { "\($0.varningar.count) \($0.varningar.count == 1 ? "VARNING" : "VARNINGAR") · VISAS TILLS NÄSTA TUR" } ?? "INGEN TUR ÄN")
+            Text(tur.map { "\($0.varningar.count) \($0.varningar.count == 1 ? "VARNING" : "VARNINGAR") · VISAS TILLS NÄSTA TUR" } ?? (prefs.lastTripEnd == nil ? "INGEN TUR ÄN" : "INGA VARNINGAR SENASTE TUREN"))
                 .font(Typo.mono(10)).tracking(1.4).foregroundStyle(Brand.faint)
                 .padding(.top, 16)
 
@@ -125,7 +125,8 @@ struct VaktenView: View {
 
     private struct SenasteTur { let rubrik: String; let varningar: [AlertEntry] }
 
-    /// Senaste avslutade turen med minst en varning; nil ⇒ Redo utan kvitto ("INGEN TUR ÄN").
+    /// Senaste avslutade turen med minst en varning; nil ⇒ Redo utan kvitto ("INGEN TUR ÄN", eller "INGA VARNINGAR SENASTE TUREN"
+    /// efter en tur utan varningar — "ingen tur än" sa emot frågan Spara resan?, Axels skärmbild 24/10).
     private var senasteTuren: SenasteTur? {
         guard let start = prefs.tripStart, let slut = prefs.lastTripEnd, slut >= start else { return nil }
         let v = prefs.history.filter { $0.t >= start && $0.t <= slut }.sorted { $0.t < $1.t }
