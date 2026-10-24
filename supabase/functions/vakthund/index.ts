@@ -393,7 +393,7 @@ Deno.serve(async (req) => {
     // Kort #222: ett puls-jobb som avaktiveras eller raderas föll TYST ur bevakningslistan — vakten
     // såg en sen körning, aldrig ett försvunnet schema. Golvet är pulsklockans egen NYA-lista
     // (scripts/pulsklocka.ts); kontraktsgrinden vaktar att de två talen inte glider isär.
-    const PULS_GOLV = 19;   // 19 sedan värdevakten (#1161, DECISIONS #688); 18 sedan larmen i Halkvakt live (kort #281, DECISIONS #627); 17 sedan Halkvakt live (kort #281, DECISIONS #600); 14 sedan kandidaten live (kort #343, DECISIONS #558); 12 sedan puls-favoritprov-synk (#534)
+    const PULS_GOLV = 21;   // 21 sedan den nya kandidatens kedja (DECISIONS #706); 19 sedan värdevakten (#1161, DECISIONS #688); 18 sedan larmen i Halkvakt live (kort #281, DECISIONS #627); 17 sedan Halkvakt live (kort #281, DECISIONS #600); 14 sedan kandidaten live (kort #343, DECISIONS #558); 12 sedan puls-favoritprov-synk (#534)
     rad.push(`pulsjobb: ${puls.length} aktiva (golv ${PULS_GOLV})`);
     if (puls.length < PULS_GOLV) problem.push(
       `**Pulsklockan har tappat jobb**: ${puls.length} aktiva av ${PULS_GOLV} — ett schema har avaktiverats eller raderats och faller tyst ur bevakningslistan (kort #222)`);

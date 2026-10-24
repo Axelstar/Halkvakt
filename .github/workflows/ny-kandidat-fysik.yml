@@ -9,9 +9,8 @@ name: ny-kandidat-fysik
 #      som måste vara ifylld ur samman-artefakten nykand-samman, annars stannar jobbet innan något hämtas;
 #   4. PH för R+6…R+11 → ny_kandidat_ph (sql/068) BARA med flaggan på (kuvos/ny-kandidat-skugga.json, ingest/ny-kandidat-db.ts);
 #      med flaggan av är artefakten enda utdatan.
-# KNAPP, INTE PULSKLOCKA: kedjan är byggd, inte påslagen. I drift sätts den av Bengt efter migrationen sql/068, paritetsprovet
-# (kuvos-ny-kandidat.yml steg=paritet) och flaggan, med en rad i scripts/pulsklocka.ts (förslaget: "28 */6 * * *", en kvart efter den
-# frystas :13, minuten ledig i databasens klocka).
+# PULSKLOCKAN sedan 24/10 (DECISIONS #706): puls-ny-kandidat-fysik "28 */6 * * *", en kvart efter den frystas :13, efter migrationen
+# sql/068, paritetsprovet (40067785091, #704) och flaggan. Knappen finns kvar för en enskild körning.
 # MET:s villkor är en förbindelse åt gången: jobbet väntar först tills den frystas del A inte kör. Egen concurrency-grupp med flit: i en
 # delad grupp hade en körning här kunnat ersätta en VÄNTANDE körning av den frystas del A (GitHub håller bara en väntande per grupp).
 # Ingen Trafikverksdata i någon fil eller logg: MET Nordic (NLOD / CC BY 4.0), öppna särdrag och kandidatens egna tal.

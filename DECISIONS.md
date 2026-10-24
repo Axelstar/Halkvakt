@@ -17471,3 +17471,35 @@ Två av tre villkor föll, och ett räckte. Driftens fall 8/10 (#491) står där
 behövs.
 
 **Stomdokument:** KUV olycksläsningen bokförd och sikten stryks
+
+## #706 (24/10 2026) Den nya kandidaten loggar bredvid den låsta: flaggan på och pulsraderna inlagda; den låsta talar
+
+**Bengts ord 24/10:** *"Ja, slå på flaggan med körningen 40067785091 och lägg in pulsraderna, så att den nya kandidaten börjar logga bredvid den låsta. Den låsta talar tills vidare."* Han frågade först: *"går det inte att drifta båda eller är det krav att en är driftad nu och vi efter
+vintern gör en bedömning av vem som för vintern 26/27 visade sig vara bäst"*.
+
+**Vad som slås på:**
+- **Flaggan** `kuvos/ny-kandidat-skugga.json`: `skriv` blir true, och paritetsprovet 40067785091 (#704) står som klarat. Med flaggan
+  på skriver den nya kedjan i sina egna tabeller (sql/068, migrerad 24/10, #704).
+- **Pulsklockan:**
+  - `puls-ny-kandidat-fysik` "28 */6 * * *" (del A);
+  - `puls-ny-kandidat-timme` "47 * * * *" (del B och loggen).
+  - Pulsjobben blir 21. Golvet `PULS_GOLV` i vakthunden och `ANTAL_NYA` i pulsklockan är båda 21, och kontraktsgrinden vaktar dem.
+
+**Vad som inte ändras:**
+- **Den låsta talar** i appen, rösten, lägesfilen och på kartan. Publiceringen läser `kandidat_regel()`, aldrig `ny_kandidat_regel()`
+  (sql/068).
+- Den låstas kedja, tabeller och dom är orörda (FORREGISTRERING-2026-27 §2 och §12 c).
+- Bytet enligt §12 är inte beslutat. Det kräver ett daterat beslut av båda (§12 b).
+
+**Varför nu:** varje dygn som den nya inte loggar är ett dygn mindre i jämförelsen efter vintern (§12 e, tillägget till
+ersättningsregeln). Det gäller oavsett om bytet görs.
+
+**Att väga:**
+- Den nya kedjan har ingen reserv för en missad del A. Den låsta har `scripts/kandidat-reserv.ts`. Missas en slott tiger den nya i sex
+  timmar, och timmarna redovisas som tysta.
+- Den nyas logg ligger kvar i databasen, cirka 2 MB per dygn, eftersom arkivexporten inte tar den (sql/068). Det blir cirka 300 MB över
+  vintern, inom Pro-kvoten.
+- Vakthunden i drift har golvet 19 tills den deployas med det nya talet (deploy-supabase.yml, funktion vakthund). Fram till dess larmar
+  den först när tre pulsjobb har försvunnit, inte vid ett eller två.
+
+**Stomdokument:** KUV den nya kandidaten loggar bredvid den låsta och den låsta talar
