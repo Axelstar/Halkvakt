@@ -97,7 +97,7 @@
 </style>
 
 <main class="blad">
-  <div class="etikett">Kuvösen · läget 17 oktober 2026</div>
+  <div class="etikett">Kuvösen · läget 24 oktober 2026</div>
   <h1>Hela systemet prövat på en vinter som redan har varit</h1>
   <p class="ingress">Fjärde sidan i serien efter systembilden, mätningarna och appen. Kuvösen är en testbädd där motorn och alla regler som prövas i skuggan körs tillsammans mot vintern 2024/25, långt från appar och förare. Sidan följer kuvösens fem delar i projektkartan: testbädden, systemets delar, prognoslagrets kandidater, före resan och facit från Trafikverket. Under varje avsnitt står delens läge, skrivet ur kartan.</p>
   <div class="fakta">
@@ -105,7 +105,7 @@
     <span><b>≈ 7 250</b> halvtimmar</span>
     <span><b>20</b> skuggrutter och hela väglagsnätet, <b>23 681</b> km</span>
     <span>data mottagen <b>2/10</b>, <b>5,5</b> miljoner rader</span>
-    <span>läsningar sedan <b>2/10</b>, den senaste <b>13/10</b></span>
+    <span>läsningar sedan <b>2/10</b>, den senaste <b>22/10</b></span>
     <span><b>0</b> når föraren</span>
   </div>
 
@@ -116,8 +116,8 @@
 
   <h2 id="avsnitt-2">2. Läget i dag</h2>
   <div class="lyft">
-    <p><b>22 oktober.</b> Testbädden är färdig och har kört sina läsningar på vintern 2024/25 sedan 2/10. Efterhalkan, nederbördstypen och
-    prognoslagret är prövade; övergångarna, försprånget och vind och sikt väntar på beslutet om radarn eller på startvärden.</p>
+    <p><b>24 oktober.</b> Testbädden är färdig och har kört sina läsningar på vintern 2024/25 sedan 2/10. Efterhalkan, nederbördstypen och
+    prognoslagret är prövade; övergångarna och försprånget körs med okorrigerad tif eller väljs bort med skäl senast 15/11 (#689), vinden väntar på startvärden och sikten avgörs i olycksserien (#675, #689).</p>
     <p>Natten till 11/10 slog tre modeller som kuvösen själv kört dagens avståndsviktning RÅ, som har 7,5 % grova fel: fysikmodellen
     på MET Nordics väder (nivå 2) med 6,10 %, och fysikmodellen på ECMWF med grannarnas fel (6,67 %) och med blandningen (6,00 %),
     räknade i kuvösjobbet ur Axels frysta kod (#509, #490, #516). Samma morgon nivå 2 med grannarna och blandningen: 5,02 %, under
@@ -149,6 +149,7 @@
     Utfallet lästes före signeringen av förregistreringen för 2026/27 och står vid dess signaturer. Samtidigt är en <b>ny kandidat för 2027/28</b>
     förregistrerad och signerad (#671) och dess träning byggd (#672): sex vintrar, fysikens långvåg alla år, en vinter i taget utanför och ärliga
     skattningar vid parvalet. Den har inte körts och inget utfall är läst.</p>
+    <p>23/10 genomgicks blocket (#689) och flera saker signerades. <b>Ersättningsregeln</b> för den nya kandidaten är signerad (#692, X = 0,25 procentenheter): den frysta signeras 26/10 och talar hela vintern 2026/27, och den nya körs i skugga från november om den klarar V1–V4, i en egen kedja med fysikens reserv, paritet på 2024/25 och egen logg (fristen <span class="mono">ny-kandidat-skugga</span> 15/11); valet inför 2027/28 görs i mars på levande data för båda (#690–#692). Förberedningen av den nya kandidatens vintrar <b>föll</b> (körning 39964156753): tidszonsprovet mot SMHI:s station 7 föll för 2019/20, 2020/21 och 2021/22 och MET Nordic saknade 1,8–3,1 % av timmarna 2018/19–2019/20 och 2021/22 mot kravet 1 %. Tillägget T1/T2 (station 7 räknas inte i tidszonsprovet, saknade timmar tas ur MET:s v4) är signerat (#694, #695), och inga modelltal var lästa. Samman kontrollerar nu att populationen är densamma innan 2022/23 jämförs (#693). Förregistreringen av <b>olyckorna</b> skärptes och signerades (#696, #697) och läsaren är byggd, men inte körd (#698); sikten står kvar i W-A bara om tre villkor håller (W-A3 med marginal, W-A4 och rätt riktning på dagtid). Förregistreringen för 2026/27 signeras 26/10, direkt efter radarns tal R (R = 0,5 om en kurva saknas, #689).</p>
   </div>
   <div class="tabell">
     <table>
@@ -158,7 +159,7 @@
         <tr><td><b>Systemets delar på vintern</b></td><td>Riktningsprovet, kalibreringen, granskningen, måttet och daggpunkten, delarna som väntar</td><td><a href="#avsnitt-4">4</a></td></tr>
         <tr><td><b>Prognoslagrets kandidater</b></td><td>Varje modell för vägen mellan stationerna, prövad mot RÅ på samma punkter</td><td><a href="#avsnitt-5">5</a></td></tr>
         <tr><td><b>Före resan på vintern</b></td><td>Snöflingan och pendlarens notis</td><td><a href="#avsnitt-6">6</a></td></tr>
-        <tr><td><b>Facit från Trafikverket</b></td><td>Väglag, händelser och åtgärder för samma vinter; ytstatusen sparas inte</td><td><a href="#avsnitt-7">7</a></td></tr>
+        <tr><td><b>Facit från Trafikverket</b></td><td>Väglag och olyckor för samma vinter (åtgärderna per sträcka och tid fanns inte i något rimligt format, #689); ytstatusen sparas inte</td><td><a href="#avsnitt-7">7</a></td></tr>
       </tbody>
     </table>
   </div>
@@ -260,11 +261,11 @@
         <tr><td>Frysrisken och broarna</td><td><span class="dom klar">ja</span></td><td>Byggs ur yta och fukt.</td></tr>
         <tr><td>Efterhalkan, betans regel</td><td><span class="dom klar">ja</span></td><td>Regnmängden översatt ur dokumentationen 6/10 (DECISIONS #464). Körd i riktningsprovet: nettonytt 175 (0,2 %), pris 45,1 %; kalibreringen behöll startvärdena (#467, #468).</td></tr>
         <tr><td>Trenden och rimfrosten</td><td><span class="dom nej">inte ensamma</span></td><td>Båda saknar egna startvärden. Deras första prov väljer bästa kombinationen ur ett svep, och riktningsprovet väljer ingenting. Trendens värden prövas i stället inom efterhalkan, med betans startvärden (rättat 3/10).</td></tr>
-        <tr><td>Övergångarna och tillståndet</td><td><span class="dom nej">ej körda</span></td><td>Ej körda 6/10: radarn finns bara som tif, ungefär 3,4 dBZ över driftens h5, och frågan om korrektion är Bengts (bedömningen §4.2, DECISIONS #441, #467). Regnmängden finns sedan 6/10 (#464).</td></tr>
+        <tr><td>Övergångarna och tillståndet</td><td><span class="dom nej">ej körda</span></td><td>Ej körda 6/10: radarn finns bara som tif, ungefär 3,4 dBZ över driftens h5. Tif korrigeras inte (Bengt 23/10, DECISIONS #441 punkt 3, #689); övergångarna körs med okorrigerad tif eller väljs bort med skäl senast 15/11 (fristen kuvos-tif-lasningarna). Regnmängden finns sedan 6/10 (#464).</td></tr>
         <tr><td>Prognoslagret mellan stationerna</td><td><span class="dom klar">ja</span></td><td>En hel vinter med kalla nätter, som september inte hade. Kandidaterna står i <a href="#avsnitt-5">avsnitt 5</a>.</td></tr>
-        <tr><td>Nederbördstypen, vind och sikt</td><td><span class="dom klar">delvis</span></td><td>Nederbördstypen körd 6/10: NT-A och NT-D klarar, NT-B och NT-C faller vid startvärdet (DECISIONS #467). Vinden översatt (#464); vind och sikt saknar startvärden och är inte prövade.</td></tr>
-        <tr><td>Försprånget</td><td><span class="dom nej">ej körd</span></td><td>Ej körd 6/10, av samma skäl som övergångarna (radarn bara som tif, DECISIONS #441). Väglagets svåra klasser kräver väglagshistoriken, som är begärd (§5d).</td></tr>
-        <tr><td>Väglagssträckorna och olyckorna</td><td><span class="dom klar">delvis</span></td><td>Väglaget kom 16/10 och är läst som facit (<a href="#avsnitt-7">avsnitt 7</a>, DECISIONS #602). Olyckorna kom 20/10, 7 269 för hela vintern (KUVOS-LEVERANSEN §5i), och läses först efter en egen förregistrering (#665).</td></tr>
+        <tr><td>Nederbördstypen, vind och sikt</td><td><span class="dom klar">delvis</span></td><td>Nederbördstypen körd 6/10: NT-A och NT-D klarar, NT-B och NT-C faller vid startvärdet (DECISIONS #467). Vinden översatt (#464); vinden saknar startvärden och är inte prövad. Sikten avgörs i olycksserien (#675, #689); sikt 20 000 m räknas i bandet över 1 000 m, som i driften, och bara platshållaren −100 kastas (#689 punkt 8).</td></tr>
+        <tr><td>Försprånget</td><td><span class="dom nej">ej körd</span></td><td>Ej körd 6/10, av samma skäl som övergångarna (radarn bara som tif, DECISIONS #441). Väglagets svåra klasser kräver väglagshistoriken, som levererades 16/10 (avsnitt 7); radarns tif är ändå okorrigerad (#689).</td></tr>
+        <tr><td>Väglagssträckorna och olyckorna</td><td><span class="dom klar">delvis</span></td><td>Väglaget kom 16/10 och är läst som facit (<a href="#avsnitt-7">avsnitt 7</a>, DECISIONS #602). Olyckorna kom 20/10, 7 269 för hela vintern (KUVOS-LEVERANSEN §5i), och läses först efter en egen förregistrering (#665). Förregistreringen skärptes (#696) och signerades 23/10 (#697), och läsaren är byggd men inte körd (#698).</td></tr>
         <tr><td>Olja på vägen</td><td><span class="dom nej">nej</span></td><td>Kommer ur händelserna. Oljefilmen efter torka är struken sedan 12/9 och hör till sommaren.</td></tr>
         <tr><td>SMHI:s varningar</td><td><span class="dom nej">nej</span></td><td>SMHI har inget öppet arkiv över utfärdade varningar.</td></tr>
         <tr><td>Kamerabilder och förarsvar</td><td><span class="dom nej">nej</span></td><td>Finns inte bakåt i tiden.</td></tr>
@@ -339,7 +340,8 @@
         <tr><td><b>Väg B</b>, ärliga tal: kalibrering, rättelse och blandningens vikt väljs bara på de andra fyra vecken◊</td><td class="nr">4,84 % analys · 5,12 % vid +6 h</td><td class="nr">+6 h: 3,62 · 3,59 · 4,62 · 9,48</td><td>Bättre än den frysta läsningens 5,02 och 5,24 %; vikten W 0,25 · L 160 km, vid rutnätets kant; ingen dom</td><td class="nr">#544</td></tr>
         <tr><td><b>Väg B, varv 2</b>, körning 1 med blandningens rutnät utvidgat och körning 2 med terräng och trafik i energibalansen◊</td><td class="nr">5,13 % · 5,09 % vid +6 h</td><td class="nr">+6 h: 3,62 · 3,59 · 4,64 · 9,49 · 3,58 · 3,56 · 4,67 · 9,39</td><td>Skillnaderna är 0,01–0,04 enheter, och valregeln täckte inte utfallet; Bengt valde varv 1 som den frysta kandidaten</td><td class="nr">#549, #552</td></tr>
         <tr><td><b>Kandidatens regel i appen</b>, betavarning inom regel T: yta ≤ 0 °C, mätt fukt, stationsveto och spridningsgrind</td><td class="nr">—</td><td class="nr">—</td><td>Ingen läsning på vintern 2024/25 och ingen dom; regeln loggas i skuggan sedan 15/10. Radarns tröskel 0,5 mm/h är arbetstal till kurvan 19/10 och 26/10, ankarbandet 15 km, spridningsgrinden 2,25 °C där minst två ankare bidrar. Talen signeras i förregistreringen senast 31/10</td><td class="nr">#562, #563, #565, #566, #568, #573, #575</td></tr>
-        <tr><td><b>NIVÅ 2</b>, fysikmodellen omkalibrerad på MET Nordics väder, utan grannar och blandning†</td><td class="nr">6,10 %</td><td class="nr">4,3 · 4,2 · 5,1 · 11,8</td><td>Slår RÅ i alla band; stöder MET Nordic som källa, valet är Axels</td><td class="nr">#509</td></tr>
+        <tr><td><b>NIVÅ 2</b>, fysikmodellen omkalibrerad på MET Nordics väder, utan grannar och blandning†</td><td class="nr">6,10 %</td><td class="nr">4,3 · 4,2 · 5,1 · 11,8</td><td>Slår RÅ i alla band; stöder MET Nordic som källa, valet gjordes av Bengt och Axel (#518)</td><td class="nr">#509</td></tr>
+        <tr><td><b>NIVÅ 2 + blandning på 2022/23</b>, den frysta kandidaten på en äldre vinter, proven klarade (körning 39766761188)</td><td class="nr">4,52 % (RÅ 8,66 %)</td><td class="nr">A1 0,522 mot 0,693 °C; norr 9,01 mot 16,55 %, söder 2,73 mot 5,53 %</td><td>Diagnos, ingen dom; ingen tröskel ändras. Egen population, inte kuvösens 2024/25; läst före signeringen av förregistreringen för 2026/27</td><td class="nr">#680</td></tr>
       </tbody>
     </table>
   </div>
@@ -411,6 +413,7 @@
   <p><b>Domen i mars och kriging (13/10, #547, #548).</b> Domen i mars för segmentprognosen gäller kandidaten NIVÅ 2+BLANDNING som en ny
   fråga, mot samma trösklar och med samma spridningsgrind; RÅ döms bredvid som kontroll och är reserv om kandidaten inte kan räknas för
   vintern. Kriging läggs ned: grannarnas fel i kandidaten är redan en interpolation av felen mellan stationerna.</p>
+  <p><b>Fler vintrar och den nya kandidaten (21–23/10, #670–#673, #680, #689–#695).</b> Av vintrarna 2018–2024 går bara 2022/23 att räkna för den frysta kandidaten, eftersom MET Nordics analysarkiv saknar långvågen före 14/3 2022 (#670). På 2022/23 klarade proven, och NIVÅ 2+BLANDNING gav 4,52 % grova fel mot RÅ:s 8,66 % (A1 0,522 mot 0,693 °C; norr 9,01 mot 16,55 %, söder 2,73 mot 5,53 %): diagnos, ingen dom (#680). Den nya kandidaten för 2027/28 tränas på sex vintrar med fysikens långvåg alla år, en vinter i taget utanför och ärliga skattningar vid parvalet (#671, #672). Den ersätter den frysta bara om V1–V4 håller (ersättningsregeln, #692); jämförelsen på 2022/23 skrivs bara ut när populationen är densamma (#693). Kandidaten är hållen isär från terrängen och trafiken, som bär kort #321, och den nya har kort #362 (#689).</p>
   <p><b>Vägpunkternas fasta särdrag (13/10, #553).</b> Rättelsen i kandidaten läser ett tjugotal fasta särdrag per plats, och de fanns bara
   för stationerna. Axels frysta skript körda oförändrade reproducerade terrängen till 100 % lika med hans release, och höjden ur hans
   <span class="mono">fetch_elev.py</span> till 78 %, eftersom skriptet återanvänder förra anropets höjder när Open-Meteo stryper. Höjden vid
@@ -438,8 +441,8 @@
       <li><b>Satelliten ser kalla fläckar.</b> MODIS nattliga yttemperatur visar ett stabilt mönster, ±1,3 °C i Västerbottens inland, som
       terrängläget i 5 km-skala förklarar till 40–50 %. Det var underlaget för kallkartan, som prövades 9/10 och inte bar (#496, #497); kriging lades ned 13/10 (#548).</li>
       <li><b>Vad som skulle flytta fallet med 100 km mot 5 %:</b> vägens tillstånd (saltnings- och plogningsloggar), finska och norska
-      gränsstationer, termisk kartering (#271), SMHI:s MESAN på 2,5 km och svaret som en sannolikhet. Saltning och plogning finns i
-      begäran till Trafikverket (avsnitt 7).</li>
+      gränsstationer, termisk kartering (#271), SMHI:s MESAN på 2,5 km och svaret som en sannolikhet. Saltning och plogning finns inte som facitkälla:
+      svaret 13/10 var nej (avsnitt 7).</li>
     </ul>
   </div>
 
@@ -488,7 +491,7 @@
 </div>
 <!-- /LÄGESRADER -->
   <p>Facit i kuvösen är stationens egen yta efteråt. Den säger att det blev kallt, inte att vägen blev hal, och den ser inte saltet. Ett
-  starkare facit finns hos Trafikverket: väglaget, händelserna och åtgärderna för samma vinter. Ytstatusen sparas inte historiskt, så
+  starkare facit finns hos Trafikverket: väglaget och olyckorna för samma vinter (åtgärderna per sträcka och tid fanns inte i något rimligt format, svaret 13/10). Ytstatusen sparas inte historiskt, så
   den finns bara i driftens eget arkiv sedan 6/10 (kort #294).</p>
   <p>Det här är första gången Trafikverket lämnar ut historiska data till projektet. Leveransen 2/10 gick bra, och 6/10 skrevs en begäran
   om facit för samma vinter (KUVOS-LEVERANSEN §5d, DECISIONS #465). Bengt skickade den 8/10, och svaret kom samma förmiddag: VViS har
@@ -555,17 +558,16 @@
     <table>
       <thead><tr><th>Läsning</th><th>Väntar på</th><th>Del</th></tr></thead>
       <tbody>
-        <tr><td>Övergångarna, tillståndet och försprånget</td><td>Bengts svar om radarns tif-korrektion (bedömningen §4.2, #441)</td><td><a href="#avsnitt-4">4</a></td></tr>
-        <tr><td>Vind och sikt</td><td>Startvärden</td><td><a href="#avsnitt-4">4</a></td></tr>
-        <tr><td>Nederbördstypen igen</td><td>Ordlistan får <i>yes</i> och <i>freezing_rain</i> före nästa körning (#467)</td><td><a href="#avsnitt-4">4</a></td></tr>
-        <tr><td>Förregistreringen för vintern 2026/27 på SMHI/MET</td><td><b>Ifylld som eget dokument 15/10 (#574), ett förslag</b> (<span class="mono">docs/FORREGISTRERING-2026-27.md</span>): signeras av Bengt och Axel senast 31/10 (#544). Kvar före signeringen: radarns tal, som läses 26/10 enligt #568; spridningen loggas i drift sedan 16/10 (#575, DB-knappen 38899101913). Kandidaten är fryst (#552) och ligger i hinken (#550); frågan om uppspelning eller drift är avgjord: kandidaten körs levande (bedömningen §4.2, #556, #558; kort #342)</td><td><a href="#avsnitt-5">5</a></td></tr>
-        <tr><td>Kandidatens stationsvärden i hinken (kort #349)</td><td>Exporten av ett dygn läst tillbaka ur hinken med samma radantal som databasen, och gallringen som bara tar exporterade dygn; före signeringen 31/10 (#572)</td><td><a href="#avsnitt-5">5</a></td></tr>
-        <tr><td>Fysiken som vittne (kort #331)</td><td>Förregistrering och knapp; raderna beskrivs i kategorier med antal, aldrig rad för rad (#551)</td><td><a href="#avsnitt-5">5</a></td></tr>
+        <tr><td>Övergångarna, tillståndet och försprånget</td><td>Körs med okorrigerad tif eller väljs bort med skäl senast 15/11 (#441 punkt 3, #689; fristen <span class="mono">kuvos-tif-lasningarna</span>). Ö-B saknar dessutom instrument (#658)</td><td><a href="#avsnitt-4">4</a></td></tr>
+        <tr><td>Vind och sikt</td><td>Vinden: startvärden. Sikten: olycksserien (#675, #689)</td><td><a href="#avsnitt-4">4</a></td></tr>
+        <tr><td>Nederbördstypen igen</td><td>Inget väntar: orden <i>yes</i> och <i>freezing_rain</i> (1 411 rader) står kvar som okända, och steget är läst; marsdomens instrument, grind NT, ändras inte efter ett sett utfall (#689)</td><td><a href="#avsnitt-4">4</a></td></tr>
+        <tr><td>Förregistreringen för vintern 2026/27 på SMHI/MET</td><td><b>Ifylld som eget dokument 15/10 (#574), ett förslag</b> (<span class="mono">docs/FORREGISTRERING-2026-27.md</span>): signeras 26/10, direkt när radarns tal R är infört (#689 punkt 2); 31/10 står kvar som yttersta datum (#544). Kvar före signeringen: radarns tal R, som läses 26/10 enligt #568 och står kvar som 0,5 om en kurva saknas (#689 punkt 5); spridningen loggas i drift sedan 16/10 (#575, DB-knappen 38899101913). Kandidaten är fryst (#552) och ligger i hinken (#550); frågan om uppspelning eller drift är avgjord: kandidaten körs levande (bedömningen §4.2, #556, #558; kort #342)</td><td><a href="#avsnitt-5">5</a></td></tr>
+                <tr><td>Fysiken som vittne (kort #331)</td><td>Förregistrering och knapp; raderna beskrivs i kategorier med antal, aldrig rad för rad (#551)</td><td><a href="#avsnitt-5">5</a></td></tr>
         <tr><td>Vägpunkternas särdrag i kuvösen</td><td>Inläsning av <span class="mono">data/vagdata/</span> till kuvösen, och Europaväg för alla vägpunkter (kort #303, #553)</td><td><a href="#avsnitt-5">5</a></td></tr>
         <tr><td>Terräng och trafik i en kandidat för vintern 2027/28</td><td>Väglagspunkterna och kallkartans mönster (kort #321, #552)</td><td><a href="#avsnitt-5">5</a></td></tr>
         <tr><td>Den frysta kandidaten på fem äldre vintrar</td><td>Bara 2022/23 går att räkna (långvågen saknas före 14/3 2022, #670) och är körd: A2 4,52 % mot RÅ 8,66 % (#680). De fyra andra läses inte enligt förregistreringen FLER-VINTRAR</td><td><a href="#avsnitt-5">5</a></td></tr>
-        <tr><td>Den nya kandidaten för 2027/28</td><td>Indata för 2018/19–2021/22, en vinter i taget (MET Norways villkor: en hämtning åt gången), sedan träning och prövning i <span class="mono">kuvos-ny-kandidat</span>: omkring 8 timmar (#673, #672). Förregistreringen är signerad (#671)</td><td><a href="#avsnitt-5">5</a></td></tr>
-        <tr><td>Olyckorna för samma vinter</td><td>Den rensade kopian i hinken, och tillägget till förregistreringen med båda signaturerna, före läsningen (KUVOS-LEVERANSEN §5i, #665)</td><td><a href="#avsnitt-7">7</a></td></tr>
+        <tr><td>Den nya kandidaten för 2027/28</td><td>Indata för 2018/19–2021/22, en vinter i taget (MET Norways villkor: en hämtning åt gången), sedan träning (omkring 8 timmar) och prövning i <span class="mono">kuvos-ny-kandidat</span> (#673, #672). Förregistreringen är signerad (#671), ersättningsregeln (#692) och tillägget T1/T2 (#695) likaså; fyllningen får köras, sedan förberedningen, träningen, provningen och samman. Klarar den V1–V4 körs den i skugga från november (fristen <span class="mono">ny-kandidat-skugga</span> 15/11); kort #362</td><td><a href="#avsnitt-5">5</a></td></tr>
+        <tr><td>Olyckorna för samma vinter</td><td>Förregistreringen är signerad (#697) och läsaren byggd (#698, kuvos/olyckor-trv.ts); läsningen körs på Bengts ord i kuvos.yml. Avvikelsen att driftens W-A räknar på ungefär 10–14 km (ST_Expand 0,25°) i stället för 15 km går till Bengt (#698)</td><td><a href="#avsnitt-7">7</a></td></tr>
       </tbody>
     </table>
   </div>
@@ -585,7 +587,7 @@
     </div>
     <div class="ruta gron">
       <h3>Prognoslagret får sin vinter</h3>
-      <p>Skattningen mellan stationerna föll i september, på ett underlag med fyra frostnätter. En hel vinter visar hur ofta frysflaggan missar och larmar fel när det verkligen är kallt, och om höjden hjälper. Tillagt 2/10, innan filen har kommit: flaggan mäts med tre marginaler (0, 0,5 och 1 grad) för rå viktning och för rå viktning med höjd. Alla tre redovisas och ingen väljs. <b>Utfallet 6–8/10:</b> grind A 5,5 % och vägpunktsgrinden 7,5 % grova fel, och ingen kandidat som kuvösen själv kört har slagit RÅ, medan Axels replika med blandningen ger 5,97 % och väntar på beslut; med spridningsgrinden vid 2,25 °C 2,8 % på 61 % av punkterna. Alla kandidater står i <a href="#avsnitt-5">avsnitt 5</a>.</p>
+      <p>Skattningen mellan stationerna föll i september, på ett underlag med fyra frostnätter. En hel vinter visar hur ofta frysflaggan missar och larmar fel när det verkligen är kallt, och om höjden hjälper. Tillagt 2/10, innan filen har kommit: flaggan mäts med tre marginaler (0, 0,5 och 1 grad) för rå viktning och för rå viktning med höjd. Alla tre redovisas och ingen väljs. <b>Utfallet 6–8/10:</b> grind A 5,5 % och vägpunktsgrinden 7,5 % grova fel, och ingen kandidat som kuvösen kört hade då slagit RÅ, medan Axels replika med blandningen gav 5,97 %; från 11/10 slår flera RÅ (NIVÅ 2+BLANDNING 5,02 %, avsnitt 5); med spridningsgrinden vid 2,25 °C 2,8 % på 61 % av punkterna. Alla kandidater står i <a href="#avsnitt-5">avsnitt 5</a>.</p>
     </div>
     <div class="ruta gron">
       <h3>Årets vinter blir bara domdata</h3>
@@ -609,7 +611,7 @@
     </div>
     <div class="ruta rod">
       <h3>En vinter är en vinter</h3>
-      <p>Resultatet säger vad som är troligt. Vintern 2024/25 kan ha varit mild eller hård på sätt som nästa vinter inte är. Därför fälls domarna fortfarande på årets vinter.</p>
+      <p>Resultatet säger vad som är troligt. Vintern 2024/25 kan ha varit mild eller hård på sätt som nästa vinter inte är. Fler vintrar finns nu för den frysta kandidaten (bara 2022/23 går att räkna, #670) och är på väg för den nya, men de är diagnos. Därför fälls domarna fortfarande på årets vinter.</p>
     </div>
     <div class="ruta rod">
       <h3>Kalibreringen väljer mot samma tunna facit</h3>
@@ -623,7 +625,7 @@
   <p>Ingenting i kuvösen når en förare. Appen, rösten och det telefonen hämtar är orörda.</p>
   <h2 id="avsnitt-12">12. Loggen, dag för dag</h2>
   <details>
-    <summary style="cursor: pointer">Vad som hände 2/10–17/10, som det skrevs då</summary>
+    <summary style="cursor: pointer">Vad som hände 2/10–23/10, som det skrevs då</summary>
     <ol class="tid">
       <li><b>2/10</b><div>Filen kom, en vecka tidigare än väntat. Den är inventerad, packad i en privat release och tidszonen är mätt. Frågorna om koderna går till Trafikverket.</div></li>
       <li><b>2/10 kväll</b><div>Axel hittade fyra av nederbördskoderna i Trafikverkets ersättningsmodell. Vintern är inläst i kuvösens databas och vakterna är körda som antal. SMHI:s stationer och radar för samma vinter är hämtade. Inget utfall är läst.</div></li>
@@ -644,12 +646,15 @@
       <li><b>17/10</b><div>Facitläsningens utfall bokfört (#602): kandidatens lyft 1,02, hela regelns varningar bekräftade i 14,8 % mot basnivån 35,9 %, efterhalkan 4,2 %; diagnos, ingen dom. Uppföljningen förregistrerad (#603), signerad (#604) och körd (38990118718); utfallet bokfört (#607): bara Våt bekräftas i 12,7 % (lyft 0,35) och bara radarn i 34,5 % (lyft 0,96), så fuktvittnet förklarar hela regelns låga tal. Soffprovet kan också göras på iPhone via Xcode (#605). Kandidatens tak byggt, högst en per 10 minuter, efter mellanläsningens 17,6 % inom 10 minuter (#606); i drift samma dag, och bygget 0.3.13 (27) uppladdat 17/10 av TestFlight-flödet (38993725899).</div></li>
       <li><b>17–18/10</b><div>Soffprovet på iPhone: första försöket föll på provets egen rutt, som gick genom en sträcka med Trafikverkets halka (#619); andra försöket klarade A, och B godtogs på den rena passagen trots att simuleringen stannade efter 31 av 45 minuter (#628, #631). C gjord 17/10 21:04 UTC. Soffprovet klart 18/10: betakortets skärmbild uteblev och prövas inte mer (#638). Avvikelsen från förregistreringen står kvar.</div></li>
       <li><b>21–22/10</b><div>VViS-leveransen och olyckorna lagda i hinken och kontrollerade (#666, #673). Kedjan för flera vintrar byggd (#666–#668); bara 2022/23 går att räkna för den frysta kandidaten eftersom långvågen saknas före 14/3 2022 (#670). Den frysta kandidaten körd på 2022/23 (körning 39766761188): proven klarade, A2 4,52 % mot RÅ 8,66 % (#680). Den nya kandidatens förregistrering signerad (#671) och träningen byggd (#672).</div></li>
+      <li><b>22/10</b><div>Omgång 4: sikten avgörs av vinterserien i olyckorna, och Verify 2 stryks (#675). Olyckorna från Trafikverket: facit i kuvösen och en andra serie för W-A, en rensad kopia i hinken, förregistrering före läsningen (#665). Ö-B läses på senare frost och i kuvösen (#658).</div></li>
+      <li><b>23/10</b><div>Genomgången av blocket (#689): provningen väntar på en signerad ersättningsregel, 2026/27 signeras 26/10, sikten avgörs i olycksserien, tif korrigeras inte, kort #232 stängt. Ersättningsregeln utkast (#690), skriven om efter Bengts val av väg 2 (#691) och signerad (#692). Samman kontrollerar populationen (#693).</div></li>
+      <li><b>23/10</b><div>Förberedningen av den nya kandidatens vintrar föll (körning 39964156753); tillägget T1/T2 utkast (#694) och signerat (#695). Olycksförregistreringen skärpt (#696) och signerad (#697); olycksläsaren byggd, inte körd (#698).</div></li>
     </ol>
   </details>
   <p class="litet">Besluten och STATUS bär samma historik i detalj.</p>
 
   <hr>
-  <p class="litet">Källor: beslutsloggen (DECISIONS #292, #388, #397, #398, #418, #424–#428, #437, #438, #440, #442, #453–#456, #463–#482, #485, #486, #489, #496, #497, #502, #505, #507, #509, #516–#519, #536, #539, #540, #544, #547–#553, #559–#566, #568, #572–#575, #591–#597, #602–#606, #666–#673, #680), fysikspårets frysdokument (docs/FYSIKSPARET-FRYS-2026-10-07.md) och Axels sida <i>Physics-First Road Ice Test</i>, kort #232, #270, #278 och #298, planen (docs/PLAN-KUVOSEN-2026-10-01.md), bedömningen §4.2, §6.1 och §7 och tröskeldokumentet för kombinationen (regel D). Sidan till Trafikverkets handläggare, <i>Halkvakt och kuvösen</i>, är en annan sida och säger mindre. Alla datum avser 2026 om inget annat står.</p>
+  <p class="litet">Källor: beslutsloggen (DECISIONS #292, #388, #397, #398, #418, #424–#428, #437, #438, #440, #442, #453–#456, #463–#482, #485, #486, #489, #496, #497, #502, #505, #507, #509, #516–#519, #536, #539, #540, #544, #547–#553, #559–#566, #568, #572–#575, #591–#597, #602–#606, #666–#673, #675, #680, #689–#698), fysikspårets frysdokument (docs/FYSIKSPARET-FRYS-2026-10-07.md) och Axels sida <i>Physics-First Road Ice Test</i>, kort #232, #270, #278 och #298, planen (docs/PLAN-KUVOSEN-2026-10-01.md), bedömningen §4.2, §6.1 och §7 och tröskeldokumentet för kombinationen (regel D). Sidan till Trafikverkets handläggare, <i>Halkvakt och kuvösen</i>, är en annan sida och säger mindre. Alla datum avser 2026 om inget annat står.</p>
 
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
   <h2 id="oppna-kort">Öppna kort</h2>

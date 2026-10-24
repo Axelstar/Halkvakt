@@ -143,7 +143,7 @@
         <li>Kandidaten har aldrig dömts på en vägpunkt och är inte prövad mot vägpunktsgrinden. Talet 5,12 % gäller
           stationerna.</li>
         <li>Val 1, 3 och 4 är avgjorda och val 2 är beslutad med talen öppna för signering (nedan); val 5 är inte gjort.
-          Radarns tal läses 26/10 och förregistreringen är inte signerad (senast 31/10).</li>
+          Radarns tal läses 26/10 och förregistreringen signeras samma dag, direkt efter det (Bengt 23/10, DECISIONS #689); 31/10 står kvar som yttersta datum. Den frysta kandidaten talar hela vintern 2026/27. En ny kandidat för 2027/28 körs i skugga bredvid den från november, om den klarar V1–V4 i den signerade ersättningsregeln (DECISIONS #691, #692); den når inga förare, och fristen <span class="mono">ny-kandidat-skugga</span> är 15/11.</li>
       </ul>
     </div>
   </div>
@@ -247,7 +247,7 @@
   </details>
 </div>
 <!-- /LÄGESRADER -->
-  <p>Beroenden inom parentes. Steg 1–6 och 9–13 är byggda: steg 13, soffprovet, är klart 18/10 (#638). Kritisk väg: 7 för marsdomen, och för appen App Review, som enligt Bengt 18/10 inte går förrän favoriternas rapport är byggd (#636): bygget 0.3.13 (31), uppladdat 18/10 av TestFlight-flödet (39116883577, #640), bar den, men Bengt 19/10 (#643): inget inskick med (31). Bygget 0.3.13 (32), uppladdat 19/10 (flödet 39271856967), är det som går till App Review, och proven på det samt inskicket kvarstår. Takten i 7 är byggd som tak (#606); läsningen 2/11 körs som mätning och inte som beslut. Regeln (val 2) finns; signeringen i steg 8 väntar på radarns tal 26/10. Steg 9 går parallellt.</p>
+  <p>Beroenden inom parentes. Steg 1–6 och 9–13 är byggda: steg 13, soffprovet, är klart 18/10 (#638). Kritisk väg: 7 för marsdomen, och för appen App Review, som enligt Bengt 18/10 inte går förrän favoriternas rapport är byggd (#636): bygget 0.3.13 (31), uppladdat 18/10 av TestFlight-flödet (39116883577, #640), bar den, men Bengt 19/10 (#643): inget inskick med (31). Bengt 22/10 (#681): inskicket görs med 0.3.13 (33), inte (32), som har efterhalkan utan spärr; byggnumret är höjt till 33 (#685) och uppladdningen av (33) är inte bokförd. (32) laddades upp 19/10 (flödet 39271856967). Proven på (33) och inskicket kvarstår. Takten i 7 är byggd som tak (#606); läsningen 2/11 körs som mätning och inte som beslut. Regeln (val 2) finns; signeringen i steg 8 väntar på radarns tal 26/10. Steg 9 går parallellt.</p>
   <div class="tabell"><table>
     <thead><tr><th>Nr</th><th>Steg</th><th>Vad som görs</th><th>Vem</th><th>Läge</th></tr></thead>
     <tbody>
@@ -307,11 +307,11 @@
         kandidatens varningar i skuggloggen, och domfönstret börjar vid signeringen (steg 8). Varje vecka mellan signering och
         steg 7 är en vecka utan kandidaten i domen.</td>
         <td>Claude</td><td><span class="dom vantar">pågår</span></td></tr>
-      <tr><td class="nr">8</td><td>Förregistreringen för 2026/27</td><td>Senast 31/10, för kandidaten; RÅ redovisas bredvid som kontroll och reserv (#547). Domfönstret börjar den dagen. Regeln i val 2 fryses här. Förregistreringen är
+      <tr><td class="nr">8</td><td>Förregistreringen för 2026/27</td><td>Signeras 26/10, direkt efter radarns tal (#689), och senast 31/10, för kandidaten; RÅ redovisas bredvid som kontroll och reserv (#547). Domfönstret börjar den dagen. Regeln i val 2 fryses här. Förregistreringen är
         ifylld som <span class="mono">docs/FORREGISTRERING-2026-27.md</span> (DECISIONS #574, förslag till signering): identiteten, den levande
         kedjan, regeln med talen, måtten per grind och ankarband, grind A som övre gräns (DECISIONS #562), domfönstret och regel L. Av de fyra
         punkterna före signeringen är spridningsgrinden (2,25 °C), <i>761 stationer</i> i stället för 845 och tysta timmar som okänt avgjorda
-        (DECISIONS #575). Kvar: radarns tal, som läses 26/10 enligt DECISIONS #568. Spridningen loggas i drift sedan 16/10 (DB-knappen 38899101913: 12 av 23 timmar). Modellen är tränad på alla 754, så grind A prövar <i>samma stationer, nytt år</i>, medan
+        (DECISIONS #575). Kvar: radarns tal R, som läses 26/10 enligt DECISIONS #568 (R = 0,5 om en kurva saknas, #689) och som signeringen väntar på. Spridningen loggas i drift sedan 16/10 (DB-knappen 38899101913: 12 av 23 timmar). Modellen är tränad på alla 754, så grind A prövar <i>samma stationer, nytt år</i>, medan
         5,12 % är <i>andra stationer, samma år</i>. Grind A mäts på 754 av ~761 stationer.</td>
         <td>Claude skriver, Bengt signerar för båda (#659)</td><td><span class="dom vantar">ifylld, osignerad</span></td></tr>
       <tr><td class="nr">9</td><td>Webbkartan (6)</td><td>Kandidatens lager på <code>karta.html</code>. Det kan gå live utan App
@@ -360,7 +360,7 @@
       stationerna, till domen i mars, när fukten har ett mätt vittne (TROSKLAR-SKUGGAN §4(d)).</li>
     <li><b>Takten mäts, antas inte.</b> Skuggan läser hur ofta regeln skulle tala per rutt innan rösten byggs (DECISIONS #200). Tystnad
       är en funktion.</li>
-    <li><b>Regeln fryses vid förregistreringen 31/10.</b> Ändras den sedan, bara genom en daterad post med båda signaturerna, och bara som en skärpning:
+    <li><b>Regeln fryses vid förregistreringen, som signeras 26/10 (senast 31/10).</b> Ändras den sedan, bara genom en daterad post med båda signaturerna, och bara som en skärpning:
       regel L:s lättnadsväg (L2 och L4) används inte, och en lättnad efter sett utfall kräver ett nytt beslut (DECISIONS #564, #678). Annars är marsdomen förorenad.</li>
     <li><b>Tröskeln bor på ett ställe</b>, i databasen (<code>kandidat_regel()</code>); publiceringen läser den och bär inga tal (DECISIONS #576). Motorn får en farotyp, text, prioritet och vektorer, inga tal.</li>
     <li><b>Samma hazard aldrig två gånger inom 10 minuter eller 5 km</b>, och inom 10 sekunder efter en varning talar bara en viktigare
@@ -397,7 +397,7 @@
     <li>S3 till App Store: <i>↪ överspelad 17/10</i>, bygget 0.3.12 (24) har ersatts av 0.3.13, nu (32) (sista punkten nedan). <i>↪ 22/10:</i> S3 går till Kompisarna först (#676); spärren är byggd och når användarna med Axels nästa bygge (#677).</li>
         <li>Läsa paritetsprovet (steg 4) innan något publiceras: det är Axels kedja och Axels kandidat.</li>
     <li>Signaturen på ändringen av TROSKLAR-SKUGGAN för den egna betavarningen (Bengts ja finns, DECISIONS #563, #575), vid förregistreringen.</li>
-    <li>Godkänna förregistreringen för 2026/27 senast 31/10 (steg 8). <i>↪ 21/10:</i> Bengt signerar för båda (#659).</li>
+    <li>Godkänna förregistreringen för 2026/27 26/10, direkt efter radarns tal, och senast 31/10 (steg 8; #689). <i>↪ 21/10:</i> Bengt signerar för båda (#659).</li>
     <li>Prova 0.3.13 (32), uppladdat 19/10 av TestFlight-flödet (39271856967, #643), på en riktig iPhone (<i>Nytt sedan</i>, samma väg tillbaka, en sparad resa, fliken, rapporten <i>Dit / Hem</i>, statusfältet) och skicka sedan in det till App Review; soffprovet i steg 13 är klart (#638), och favoriternas rapport är byggd (#636) och med i 32. Nyckeln ligger på plats (#582).</li>
   </ol>
 
