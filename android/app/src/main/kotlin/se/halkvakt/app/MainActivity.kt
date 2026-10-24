@@ -102,7 +102,7 @@ class MainActivity : ComponentActivity() {
             Prefs.setFacitEnabled(this@MainActivity, false)
             Prefs.setFavErbjud(this@MainActivity, true)
             val l = Favoriter.lager(this@MainActivity)
-            val resa = { lat0: Double -> l.resanBorjar(true); repeat(400) { i -> l.fix(18.063, lat0 + i * 85 / 111_320.0) }; l.resanSlutar(34.0) }
+            val resa = { lat0: Double -> l.resanBorjar(true); repeat(400) { i -> l.fix(18.063, lat0 + i * 85 / 111_320.0) }; l.resanSlutar(34.0, 30.0) }
             if (l.rutter.value.isEmpty()) { resa(59.20); l.spara("Till jobbet") }
             if (l.vantande.value == null) resa(59.33)
         }
