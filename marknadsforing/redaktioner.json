@@ -1,5 +1,5 @@
 {
- "_om": "Redaktionernas tipsvägar för dörr 1 (en länk i artikeln när de skriver om halka), per län, för de tidningar som har en förslagssida i kartrepot. Bara redaktionernas egna funktionsadresser och formulär, aldrig en namngiven persons adress (repot är publikt). Varje adress är läst i sidans egen text på källsidan 24/10 2026, inte ur en sammanfattning; att den står där bevisar inte att den tar emot post, så första utskicket till en adress är provet (CLAUDE.md, läxan om datex@trafikverket.se). Koncernen är bara satt där sidan själv säger det (Bonnier News Locals eller NTM:s namn i sidans egen kod); annars 'fristående eller okänd'. DECISIONS #700.",
+ "_om": "Redaktionernas tipsvägar för dörr 1 (en länk i artikeln när de skriver om halka), per län, för de tidningar som har en förslagssida i kartrepot. Bara redaktionernas egna funktionsadresser och formulär, aldrig en namngiven persons adress (repot är publikt). Varje adress är läst i sidans egen text på källsidan 24/10 2026, inte ur en sammanfattning; att den står där bevisar inte att den tar emot post, så första utskicket till en adress är provet (CLAUDE.md, läxan om datex@trafikverket.se). Koncernen är bara satt där sidan själv säger det (Bonnier News Locals eller NTM:s namn i sidans egen kod); annars 'fristående eller okänd'. DECISIONS #700. Adress och last_pa är sökvägar på tidningens sajt (fältet sajt), utan https-adress, så att beroendekartan inte läser dem som något koden hämtar.",
  "last": "2026-10-24",
  "redaktioner": [
   {
@@ -9,7 +9,7 @@
    "koncern": "Bonnier News Local",
    "vag": "e-post",
    "adress": "red@daladem.se",
-   "last_pa": "https://www.dalademokraten.se/kontakt/"
+   "last_pa": "/kontakt/"
   },
   {
    "lan": "dalarna",
@@ -18,7 +18,7 @@
    "koncern": "fristående eller okänd",
    "vag": "saknas",
    "adress": "",
-   "last_pa": "https://www.dt.se/ (svarar inte på läsning, 24/10)"
+   "last_pa": "/ (svarar inte på läsning, 24/10)"
   },
   {
    "lan": "gavleborg",
@@ -27,7 +27,7 @@
    "koncern": "Bonnier News Local",
    "vag": "e-post",
    "adress": "tips@arbetarbladet.se",
-   "last_pa": "https://www.arbetarbladet.se/kontakt/"
+   "last_pa": "/kontakt/"
   },
   {
    "lan": "gavleborg",
@@ -36,7 +36,7 @@
    "koncern": "Bonnier News Local",
    "vag": "e-post",
    "adress": "tips@gd.se",
-   "last_pa": "https://www.gd.se/tipsa"
+   "last_pa": "/tipsa"
   },
   {
    "lan": "gavleborg",
@@ -45,7 +45,7 @@
    "koncern": "Bonnier News Local",
    "vag": "e-post",
    "adress": "redaktion@ht.se",
-   "last_pa": "https://www.ht.se/tipsa"
+   "last_pa": "/tipsa"
   },
   {
    "lan": "jamtland",
@@ -54,7 +54,7 @@
    "koncern": "Bonnier News Local",
    "vag": "e-post",
    "adress": "tips@ltz.se",
-   "last_pa": "https://www.ltz.se/kontakta-oss"
+   "last_pa": "/kontakta-oss"
   },
   {
    "lan": "jamtland",
@@ -63,7 +63,7 @@
    "koncern": "Bonnier News Local",
    "vag": "e-post",
    "adress": "tips@op.se",
-   "last_pa": "https://www.op.se/kontakt/"
+   "last_pa": "/kontakt/"
   },
   {
    "lan": "jamtland",
@@ -72,7 +72,7 @@
    "koncern": "fristående eller okänd",
    "vag": "e-post",
    "adress": "red@jamtlandstidning.se",
-   "last_pa": "https://www.jamtlandstidning.se/kontakt"
+   "last_pa": "/kontakt"
   },
   {
    "lan": "jamtland",
@@ -81,7 +81,7 @@
    "koncern": "Bonnier News Local",
    "vag": "e-post",
    "adress": "redaktion@tidningenharjedalen.se",
-   "last_pa": "https://www.tidningenharjedalen.se/"
+   "last_pa": "/"
   },
   {
    "lan": "norrbotten",
@@ -90,7 +90,7 @@
    "koncern": "NTM",
    "vag": "e-post",
    "adress": "redaktion@nsd.se",
-   "last_pa": "https://www.nsd.se/kontakta"
+   "last_pa": "/kontakta"
   },
   {
    "lan": "norrbotten",
@@ -99,7 +99,7 @@
    "koncern": "NTM",
    "vag": "e-post",
    "adress": "tips@kuriren.com",
-   "last_pa": "https://www.kuriren.nu/kontakta"
+   "last_pa": "/kontakta"
   },
   {
    "lan": "norrbotten",
@@ -107,8 +107,8 @@
    "sajt": "pt.se",
    "koncern": "NTM",
    "vag": "formulär",
-   "adress": "https://www.pt.se/tipsa",
-   "last_pa": "https://www.pt.se/kontakta"
+   "adress": "/tipsa",
+   "last_pa": "/kontakta"
   },
   {
    "lan": "norrbotten",
@@ -117,7 +117,7 @@
    "koncern": "fristående eller okänd",
    "vag": "e-post",
    "adress": "redaktion@haparandabladet.se",
-   "last_pa": "https://www.haparandabladet.se/"
+   "last_pa": "/"
   },
   {
    "lan": "orebro",
@@ -126,7 +126,7 @@
    "koncern": "Bonnier News Local",
    "vag": "e-post",
    "adress": "nyhet@na.se",
-   "last_pa": "https://www.na.se/tipsa"
+   "last_pa": "/tipsa"
   },
   {
    "lan": "sodermanland",
@@ -135,7 +135,7 @@
    "koncern": "NTM",
    "vag": "e-post",
    "adress": "tips@ekuriren.se",
-   "last_pa": "https://www.ekuriren.se/ (sidfoten)"
+   "last_pa": "/ (sidfoten)"
   },
   {
    "lan": "sodermanland",
@@ -143,8 +143,8 @@
    "sajt": "sn.se",
    "koncern": "NTM",
    "vag": "formulär",
-   "adress": "https://www.sn.se/tipsa",
-   "last_pa": "https://www.sn.se/kontakta (redaktion/tips per telefon 0155-767 70)"
+   "adress": "/tipsa",
+   "last_pa": "/kontakta (redaktion/tips per telefon 0155-767 70)"
   },
   {
    "lan": "uppsala",
@@ -152,8 +152,8 @@
    "sajt": "unt.se",
    "koncern": "NTM",
    "vag": "formulär",
-   "adress": "https://www.unt.se/tipsa",
-   "last_pa": "https://www.unt.se/kontakta"
+   "adress": "/tipsa",
+   "last_pa": "/kontakta"
   },
   {
    "lan": "uppsala",
@@ -161,8 +161,8 @@
    "sajt": "eposten.se",
    "koncern": "NTM",
    "vag": "formulär",
-   "adress": "https://www.eposten.se/tipsa",
-   "last_pa": "https://www.eposten.se/kontakta"
+   "adress": "/tipsa",
+   "last_pa": "/kontakta"
   },
   {
    "lan": "varmland",
@@ -171,7 +171,7 @@
    "koncern": "fristående eller okänd",
    "vag": "e-post",
    "adress": "redaktion@nwt.se",
-   "last_pa": "https://www.nwt.se/tipsa"
+   "last_pa": "/tipsa"
   },
   {
    "lan": "varmland",
@@ -180,7 +180,7 @@
    "koncern": "fristående eller okänd",
    "vag": "e-post",
    "adress": "redaktion@vf.se",
-   "last_pa": "https://www.vf.se/tipsa"
+   "last_pa": "/tipsa"
   },
   {
    "lan": "vasterbotten",
@@ -189,7 +189,7 @@
    "koncern": "NTM",
    "vag": "e-post",
    "adress": "tipsa@norran.se",
-   "last_pa": "https://www.norran.se/kontakta"
+   "last_pa": "/kontakta"
   },
   {
    "lan": "vasterbotten",
@@ -198,7 +198,7 @@
    "koncern": "fristående eller okänd",
    "vag": "saknas",
    "adress": "",
-   "last_pa": "https://www.vk.se/ (nekar läsning, 403, 24/10)"
+   "last_pa": "/ (nekar läsning, 403, 24/10)"
   },
   {
    "lan": "vasterbotten",
@@ -207,7 +207,7 @@
    "koncern": "fristående eller okänd",
    "vag": "saknas",
    "adress": "",
-   "last_pa": "https://www.folkbladet.nu/ (nekar läsning, 403, 24/10)"
+   "last_pa": "/ (nekar läsning, 403, 24/10)"
   },
   {
    "lan": "vasternorrland",
@@ -216,7 +216,7 @@
    "koncern": "Bonnier News Local",
    "vag": "e-post",
    "adress": "tips@allehanda.se",
-   "last_pa": "https://www.allehanda.se/kontakt"
+   "last_pa": "/kontakt"
   },
   {
    "lan": "vasternorrland",
@@ -225,7 +225,7 @@
    "koncern": "Bonnier News Local",
    "vag": "e-post",
    "adress": "tips@st.nu",
-   "last_pa": "https://www.st.nu/kontakt/"
+   "last_pa": "/kontakt/"
   },
   {
    "lan": "vasternorrland",
@@ -234,7 +234,7 @@
    "koncern": "Bonnier News Local",
    "vag": "e-post",
    "adress": "tips@tidningenangermanland.se",
-   "last_pa": "https://www.tidningenangermanland.se/tipsa"
+   "last_pa": "/tipsa"
   },
   {
    "lan": "vastmanland",
@@ -243,7 +243,7 @@
    "koncern": "Bonnier News Local",
    "vag": "e-post",
    "adress": "tips@vlt.se",
-   "last_pa": "https://www.vlt.se/kontakt"
+   "last_pa": "/kontakt"
   },
   {
    "lan": "vastmanland",
@@ -252,7 +252,7 @@
    "koncern": "Bonnier News Local",
    "vag": "e-post",
    "adress": "redaktionen@salaallehanda.com",
-   "last_pa": "https://www.salaallehanda.com/tipsa"
+   "last_pa": "/tipsa"
   }
  ]
 }
