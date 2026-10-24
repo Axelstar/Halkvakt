@@ -520,6 +520,14 @@ export const KONTRAKT: Kontrakt[] = [
     golv: 2,
   },
   {
+    // DECISIONS #701: och minst så här många minuters körtid — samma i båda apparna.
+    namn: "Sparade rutter — kortaste resa som erbjuds, minuter",
+    varfor: "Med olika gräns frågar iPhone och Android efter olika resor; på tåget 24/10 kom frågan två gånger på en minut.",
+    former: [/(?:MINSTA_RESA_MIN|minstaResaMin)\s*=\s*(\d+)(?:\.0)?(?![\d.])/],
+    filer: /app\/Favoriter\.kt|Services\/Favoriter\.swift/,
+    golv: 2,
+  },
+  {
     namn: "Sparade rutter — timmar som frågan och vägen står kvar",
     varfor: "Den tillfälliga filen med en körd väg ska raderas lika snabbt på båda plattformarna (FAVORITER §6: ett dygn).",
     former: [/FRAGA_KVAR_MS\s*=\s*(\d+)\s*\*\s*3600\s*\*\s*1000L/, /fragaKvarS: TimeInterval\s*=\s*(\d+)\s*\*\s*3600/],

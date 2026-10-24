@@ -1,7 +1,7 @@
 # Tillägg till ersättningsregeln: den nya kandidaten får tala i appen enligt förregistreringen för 2026/27, §12
 
-**Status: UTKAST 24/10 2026** (DECISIONS #700). Signeras av Bengt och Axel 26/10, samma dag som förregistreringen för 2026/27
-(fristen `tillagg-bytet`). Skrivet **efter** att V2 föll (DECISIONS #699), och det står öppet här (§4).
+**Status: UTKAST 24/10 2026** (DECISIONS #703). Signeras av Bengt och Axel 26/10, samma dag som förregistreringen för 2026/27
+(fristen `tillagg-bytet`). Skrivet **efter** att V2 föll (DECISIONS #702), och det står öppet här (§4).
 
 Bengts ord 24/10:
 - *"alltså vi vill gå live med den här nu så att mätningarna inte bara ligger som beta utan som når ut till förarna"*;
@@ -11,7 +11,7 @@ Bengts ord 24/10:
 
 ## 1. Vad som har hänt
 
-Provningen och samman (kuvos-ny-kandidat 40024563991, DECISIONS #699):
+Provningen och samman (kuvos-ny-kandidat 40024563991, DECISIONS #702):
 - V2 föll på A2 totalt. Den nya hade 4,33 % mot den frystas 4,52 % på 2022/23, alltså −0,19 procentenheter, där kravet var −0,25
   (högst 4,27 %).
 - Norr, söder, A1 och A3 höll, liksom V1, V3 och V4.
@@ -30,7 +30,7 @@ Ersättningsregelns följd (§3): ingen skugga, den nya arkiveras, den frysta st
 
 ## 3. Vad tillägget inte ändrar
 
-- V1–V4, kravet 0,25 och utfallet. V2 föll och står som fallet, i #699 och här.
+- V1–V4, kravet 0,25 och utfallet. V2 föll och står som fallet, i #702 och här.
 - Den frystas identitet, regel, grindar och dom (FORREGISTRERING-2026-27 §1–§5 och §12 c).
 - Kraven i §4: paritet först (n exakt, ± 0,01 °C och ± 0,02 procentenheter), en egen logg, och att migrationen och deployen görs
   av Bengt.

@@ -308,9 +308,12 @@ object ResansRapport {
         }
         for (w in lage.smhi) if (polygonTraffar(w.polygoner, rutt))
             rader += RapportRad("smhi:${w.id}:${w.event ?: "undefined"}", RapportSlag.SMHI, "SMHI: ${w.event ?: "varning"}",
-                "nivå ${w.niva ?: "–"}", 0, 0, null, null)
+                smhiNiva(w.niva), 0, 0, null, null)
         return rader.sortedWith(radOrdning)
     }
+
+    /** SMHI:s nivåkod i klartext (rapport-core.ts smhiNiva; DECISIONS #701). Okänd kod ⇒ bara "Varning". */
+    fun smhiNiva(kod: String?): String = when (kod) { "YELLOW" -> "Gul varning"; "ORANGE" -> "Orange varning"; "RED" -> "Röd varning"; else -> "Varning" }
 
     /** Hem: samma väg åt andra hållet. */
     fun vand(rutt: List<DoubleArray>): List<DoubleArray> = rutt.reversed()

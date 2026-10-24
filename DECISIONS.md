@@ -17163,7 +17163,85 @@ regler och sikten som avgörs med tre villkor (§5). Fryst (§8).
 
 **Stomdokument:** KUV olycksläsaren byggd och inte körd
 
-## #699 (24/10 2026) Den nya kandidaten provad på sex vintrar: bättre än den frysta men inte med 0,25, V2 föll och ingen skugga
+## #699 (24/10 2026) Ägandet och licensen: Axel och Bengt äger gemensamt, koden Apache 2.0, dokumenten CC BY-SA 4.0
+
+**Bakgrund.** Repot hade ingen licens, och fyra artefakter bar fyra avsändare (repot på Axels konto, App Store "© 2026 Lagerlöf
+Labs", integritetssidan "Axel Lagerlöf under namnet Lagerlöf Labs", Skyltfondsansökan Bengt som privatperson, #404). Lagerlöf Labs
+är inget rättssubjekt. Inbäddningskortet (#588) kan inte erbjudas en redaktion förrän det står vem som äger och vad kortet får
+användas under. Underlaget lades fram för Axel 24/10.
+
+**Axels ord 24/10:** ägandet *"Du och Bengt gemensamt"*; licensen och resten *"Det du tycker är bäst"*; *"Gör det härifrån"*.
+
+**Beslut.**
+1. **Ägandet.** Axel Lagerlöf och Bengt Lagerlöf äger upphovsrätten till kod och dokument gemensamt och licensierar tillsammans.
+   Föreningen Halkvakt äger inget. Bengt bekräftar raden; till dess står den som Axels beslut.
+2. **Koden:** Apache License 2.0 (`LICENSE`, `NOTICE`, `"license": "Apache-2.0"` i package.json).
+3. **Dokumenten:** CC BY-SA 4.0 (`LICENSE-docs`), med docs/, besluts-, tavel- och statusfilerna och data som KALLOR.json kallar
+   "Halkvakts eget".
+4. **Data under data/:** oförändrat, licensen per fil i KALLOR.json.
+5. **Namnet och logotypen** är varumärken och ingår inte i någon licens.
+6. **Kartrepot** (`Axelstar/halkvakt-karta`, där widget.html och press.html ligger) har samma licens för sin kod: LICENSE, NOTICE
+   och en mening i press.html#redaktioner (karta 0755651, 24/10).
+
+**Alternativ.** (a) Upphovsrätten till Föreningen Halkvakt: avvisat av Axel 24/10; kan göras senare genom en överlåtelse från
+båda. (b) MIT: saknar patentklausulen. (c) En icke-kommersiell licens: stänger dörren till tidningarna, som är kommersiella bolag,
+och är inte öppen källkod.
+
+**Att veta.** Share-alike gäller texten och bearbetningar av den, inte idéerna eller talen i den: den som läser trösklarna och
+bygger egna med egna ord är inte skyldig att publicera något. Licensen skyddar alltså attributionen och texten, inte metoden.
+Samägd upphovsrätt utan avtal betyder att varje ny licens och varje överlåtelse kräver båda; ett kort samäganderättsavtal är det som
+fortfarande är värt en halvtimmes rådgivning.
+
+**Följd.** App Store-copyrighten och integritetssidans avsändare säger fortfarande Lagerlöf Labs; de rättas när nästa bygge och nästa
+kartdeploy görs. Kanalen till redaktionerna (#588) är inte längre hindrad av licensen.
+
+**Stomdokument:** inga — en licens och ett ägarbeslut, ingen stomtext ändrad
+
+## #700 (24/10 2026) Redaktionernas tipsvägar per län i marknadsforing/redaktioner.json, och vädermodulen som inte syns
+
+**Axels ord 24/10:** *"Okay ska vi göra det också?"* om adresslistan och frågan vem som levererar vädret till de regionala sajterna
+(dörr 1 och dörr 3 i underlaget om tidningarnas vädersidor, #699).
+
+**Byggt.** `marknadsforing/redaktioner.json`: de 28 tidningar som har en förslagssida i kartrepot, per län, med koncern, väg (e-post,
+formulär eller saknas), adress och sidan den lästes på. 21 har en funktionsadress, 4 bara tipsformulär (UNT, Enköpings-Posten, SN,
+Piteå-Tidningen) och 3 gick inte att läsa (DT, VK, Folkbladet). Bara redaktionernas egna adresser, inga namngivna personer: repot är
+publikt. Varje adress är läst i sidans egen text 24/10, inte ur en sammanfattning. Att den står där bevisar inte att den tar emot post.
+
+**Fynd, dörr 3.** Inget tecken på en vädermodul hos de regionala sajterna: förstasidorna hos 20 av dem länkar ingen vädersida och
+nämner ingen väderleverantör, och nwt.se/vader är en artikel från 2008. Läsningen är förstasidornas html och en sida i webbläsare,
+inte varje sajt renderad; *ingen modul hittad*, inte *ingen modul finns*. Följd: platsen *under vädermodulen* finns troligen inte hos
+lokaltidningarna, och dörr 3 har ingen leverantör att gå till. Pitchen till dörr 2 blir platsen i halkartiklarna och på förstasidan
+under halkvarningen.
+
+**Fynd, dörr 2.** 13 av de 28 hör till Bonnier News Local och 8 till NTM, enligt sidornas egen kod. Två produktfunktioner når 21
+tidningar; piloten kan därför väljas som en väg in i en koncern.
+
+**Stomdokument:** inga — marknadsföringen ligger utanför de åtta (#598)
+
+## #701 (24/10 2026) Rättelserna efter Axels prov på 0.3.13 (33): bygget som skickas in blir (34)
+
+**Axels ord 24/10:** *"Okej men jag gör en ny resa nu, ska vi fixa det det sett nu"* och *"Men du fixar allt så det är klart om en
+timme och jag kan ta nya bilder"*, efter provet på (33) i bil och på tåget Malmö–Ystad med skärmbilder.
+
+**Byggt.**
+1. **SMHI-nivån i klartext.** Rapporten Dit / Hem visade *SMHI: Vind · nivå YELLOW*: lägesfilen bär SMHI:s nivåkod (`level_code`).
+   Raden säger nu *Gul varning*, *Orange varning* eller *Röd varning*, och bara *Varning* för en okänd kod — `smhiNiva` i
+   `publish/rapport-core.ts`, `Rapport.swift` och `Rapport.kt`; facit `engine/fixtures/rapport.json` och buntarna omskrivna.
+2. **Spara resan? klipps inte.** Meningen stod som *"…så finn…"* på Redo. — texten får sin höjd (`fixedSize`).
+3. **Raden under Starta vakten.** *INGEN TUR ÄN* stod efter en tur utan varningar och sa emot frågan om resan; efter en sådan tur
+   står nu *INGA VARNINGAR SENASTE TUREN*. Bara iPhone; Android följer i nästa bygge.
+4. **Flikraden göms bakom tangentbordet** i stället för att flyta upp över innehållet när *Eget namn* skrivs (`RootView`).
+5. **Minsta resa 2 km och 5 minuter** (förut 1 km, #633): på tåget kom frågan två gånger på en minut. Samma i båda apparna, i
+   kontraktsgrinden, och provet `enResaUnderFemMinuterErbjudsInte`.
+
+Byggnumret 0.3.13 (34) och Android versionCode 34. Inskicket görs med (34), inte (33) (#686), och skärmbilderna till butiken tas på (34).
+Varningskortet som syntes på tåget var Axels eget, framtaget genom att hålla på PÅ VAKT — ingen falsk varning.
+
+**Kvar, inte i det här bygget:** att vakten inte ska varna på tåg (Axel 24/10: *"något vi måste lösa också … men det är senare"*).
+
+**Stomdokument:** APP, FAV
+
+## #702 (24/10 2026) Den nya kandidaten provad på sex vintrar: bättre än den frysta men inte med 0,25, V2 föll och ingen skugga
 
 **Körningarna, alla gröna, med tilläggen T1 och T2 (#694, #695):**
 - fyllningen 39998632234;
@@ -17225,7 +17303,7 @@ lättas efter utfallet (regel L, §7).
 
 **Stomdokument:** KUV den nya kandidaten provad och V2 föll så ingen skugga
 
-## #700 (24/10 2026) Bytet: den nya kandidaten får tala i appen enligt FORREGISTRERING-2026-27 §12, med ett tillägg till ersättningsregeln (utkast, signeras 26/10)
+## #703 (24/10 2026) Bytet: den nya kandidaten får tala i appen enligt FORREGISTRERING-2026-27 §12, med ett tillägg till ersättningsregeln (utkast, signeras 26/10)
 
 **Bengts ord 24/10:**
 - *"alltså vi vill gå live med den här nu så att mätningarna inte bara ligger som beta utan som når ut till förarna. Om vi ska gå ut
@@ -17271,11 +17349,11 @@ men det är ett avsteg från ersättningsregeln, och det står i tillägget §4.
 
 **Stomdokument:** KUV bytet till den nya kandidaten förregistrerat i §12 med tillägg till ersättningsregeln och signering 26/10
 
-## #701 (24/10 2026) Paritetsprovet för den nya kandidatens kedja klarat; en felstartad förberedning avbruten
+## #704 (24/10 2026) Paritetsprovet för den nya kandidatens kedja klarat; en felstartad förberedning avbruten
 
 **Bengts ord 24/10:**
 - *"Ja, kör paritetsprovet på grenen claude/ny-kandidat-kedja och rapportera bara aggregaten."*;
-- *"Ja, bokför paritetsprovet som DECISIONS #701 i #1179, med felstarten redovisad. Slå inte ihop."*
+- *"Ja, bokför paritetsprovet som DECISIONS #704 i #1179, med felstarten redovisad. Slå inte ihop."*
 
 **Körningen:** kuvos-ny-kandidat 40067785091 med steg=paritet, på `claude/ny-kandidat-kedja` (68d73313), 05:49:54–05:54:46 UTC.
 Bara jobbet `paritet` körde. Bara aggregaten är lästa, ur körningens sammanfattning.
