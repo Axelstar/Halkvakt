@@ -17180,8 +17180,8 @@ användas under. Underlaget lades fram för Axel 24/10.
    "Halkvakts eget".
 4. **Data under data/:** oförändrat, licensen per fil i KALLOR.json.
 5. **Namnet och logotypen** är varumärken och ingår inte i någon licens.
-6. **Kartrepot** (`Axelstar/halkvakt-karta`, där widget.html och press.html ligger) får samma licens för sin kod; görs när det repot
-   är kopplat.
+6. **Kartrepot** (`Axelstar/halkvakt-karta`, där widget.html och press.html ligger) har samma licens för sin kod: LICENSE, NOTICE
+   och en mening i press.html#redaktioner (karta 0755651, 24/10).
 
 **Alternativ.** (a) Upphovsrätten till Föreningen Halkvakt: avvisat av Axel 24/10; kan göras senare genom en överlåtelse från
 båda. (b) MIT: saknar patentklausulen. (c) En icke-kommersiell licens: stänger dörren till tidningarna, som är kommersiella bolag,

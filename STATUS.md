@@ -2727,3 +2727,5 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 23/10 (Claude; Bengt: *"ja skriv in de justerade rekommendationerna"*): **Olycksförregistreringen skärpt före signeringen** (DECISIONS #696): sikten kräver W-A3 med marginal, W-A4 och rätt riktning på dagtid; halk mot alla i (a). Stationstimmarna under 200 m är 12 175, så W-A4 är inget hinder. Ingen olycka läst.
 - 23/10 (Claude; Bengt: *"jag och axel signerar detta så du kan bygga läsaren"*): **Olycksförregistreringen signerad** (DECISIONS #697; sha256 d1a2b46d16cc… vid signeringen). Läsaren byggs nu. Fristen `olyckor-forregistrering` är borttagen (klar).
 - 23/10 (Claude): **Olycksläsaren byggd** (DECISIONS #698) efter den signerade förregistreringen. Inte körd. Avvikelse: driftens W-A räknar i praktiken på 10–14 km (ST_Expand 0,25°), inte 15 km.
+
+- **24/10 (Claude, webben):** licens och ägande (DECISIONS #699): LICENSE (Apache 2.0), NOTICE, LICENSE-docs (CC BY-SA 4.0), package.json, README och §4.2 i 81d8934; kartrepot 0755651. Väntar på Bengts bekräftelse av ägarraden.
