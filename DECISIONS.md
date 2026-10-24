@@ -17618,3 +17618,45 @@ A1 (0,52 °C mot 1,0) och A3 (0,30 % mot 10 %) ligger långt under sina tröskla
 Ingen dom och inget krav ändras (regel L). Det här är underlaget för valet mellan variant A och B i utkastet till §4b punkt 12.
 
 **Stomdokument:** KUV nivåernas ärliga intervall på 2022/23 inför valet av variant för domen
+
+## #709 (24/10 2026) Förarnas vikter byggda före signeringen: trafiken som varje station i grind A representerar
+
+**Bengts ord 24/10:** *"Ja, bygg stationsvikterna för förarnas mått som PR med självtest och kontrollsumma, så att de ligger i repot
+före signeringen. Slå inte ihop."*
+
+Underlag för utkastet till FORREGISTRERING-2026-27 §4b punkt 13 (förarnas mått, `Desktop/Halkvakt_Utkast_Domen_Fem_Punkter_2026-10-24.md`,
+inte i repot). **Vikterna gäller bara om den punkten signeras.**
+
+**Byggt:**
+- `fysik/vintrar/forarnas_vikter.py` räknar trafikarbetet, ÅDT × 2 km i fordonskilometer per dygn som i #490, för de väglagspunkter
+  som ligger närmast varje station (storcirkel; vid exakt lika avstånd vinner den första i ordningen).
+  - `--rakna` skriver vikterna.
+  - `--prova` räknar om ur indatan och kräver att filen är exakt densamma. Det körs i ci.
+  - `--sjalvtest` har nio prov, bland dem regeln i domen: en station utan mätningar tas bort, och dess punkter går till närmaste
+    kvarvarande station.
+- `kuvos/kandidatstationer-2026-27.json`: grind A:s 754 stationer. De lästes med DB-knappen i läsläge (dbknapp 40103476137,
+  `kandidat_station` de senaste två dygnen), och alla 754 har position i `data/vagdata/stationer.json`.
+- `kuvos/forarnas-vikter-2026-27.json`: vikterna och indatans kontrollsummor:
+  - `vaglagspunkter.json` 2cb7f738…;
+  - `stationer.json` d27e5390…;
+  - `kandidatstationer-2026-27.json` 350a3180….
+
+**Summering:**
+- 12960 väglagspunkter, varav 126 utan ÅDT, som bär 0.
+- Trafikarbetet är 106908028 fordonskilometer per dygn.
+- 705 stationer har vikt och 49 har ingen.
+- Avståndet från punkt till station är i median 6,75 km, 95 % ligger inom
+  19,27 km och det längsta är 40,62 km.
+- Trafikens andel norr om 62° är 10,8 %, och den största stationen bär
+  1,45 %.
+
+**Att lägga märke till:**
+- **49 stationer får ingen vikt.** Ingen väglagspunkt ligger närmast dem, eftersom en annan station ligger
+  närmare vägen. Deras fel räknas inte i förarnas mått men står kvar i det gamla måttet.
+- **Norr bär 10,8 % av trafiken** men ungefär 28 % av stationstimmarna (1 239 136 av 4 361 591 på 2022/23, #708). Det är skälet till
+  att förarnas mått väger norr lättare.
+- **Det effektiva antalet stationer är ungefär 377**, alltså 1 / Σ p². Viktningen gör därför det ärliga intervallet bredare, som
+  utkastets förväntan säger (§7).
+- Vikterna är räknade bara på indatan. Inga mätningar och inga modelltal är lästa.
+
+**Stomdokument:** KUV förarnas vikter byggda före signeringen för förarnas mått i utkastet
