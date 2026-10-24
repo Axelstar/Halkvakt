@@ -1,0 +1,8 @@
+{
+ "_om": "Flaggan för den nya kandidatens skugga (ersättningsregeln docs/FORREGISTRERING-ERSATTNING-2027-28.md §4, DECISIONS #692). AV från början. Den nya kedjan (ny-kandidat-fysik.yml, ny-kandidat-timme.yml) skriver till sina egna tabeller (sql/068) bara när skriv är true OCH paritetsprovet är klarat med körningens nummer (kuvos-ny-kandidat.yml steg=paritet). Bengt slår på den efter migrationen och paritetsprovet, i en egen commit med körningens nummer under paritet. Flaggan rör bara den nyas tabeller: appen, rösten, lägesfilen och den frystas dom läser dem aldrig. Läses av ingest/ny-kandidat-db.ts (lasFlagga).",
+ "skriv": false,
+ "paritet": {
+  "korning": null,
+  "klarat": false
+ }
+}
