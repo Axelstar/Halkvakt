@@ -17720,10 +17720,12 @@ kandidaten får stanna, och de två dokumenten skulle säga olika saker.
 **Signaturerna:** Bengts ok 24/10 gäller för Bengt och Axel (#659). Posten står före signeringen och före domfönstret, så inga data som
 lättnaderna gäller är lästa.
 
+**Avgjort 24/10: punkt 16 skärps inte** (Bengt: *"nej skärp inte p 16"*). Punkt 16 nämner bara grind A och står som den är. Läst
+som den står fortsätter kandidaten att tala 2027/28 när A är OAVGJORT och kandidaten tydligt bättre än RÅ, också om grind B faller
+eller underlaget (C) inte räcker. Så ska punkt 16 läsas i mars. TROSKLAR-SKUGGAN §4 (c), *"aldrig tal på tunn dom"*, står kvar för
+skuggans tal enligt (a) och (b). Skärpningen, att punkt 16 bara gäller när ingen annan grind faller, föreslogs och valdes bort.
+
 **Att avgöra före signeringen** (öppet, inte ändrat i texten):
-- **Punkt 16 nämner bara grind A.** Texten säger inte uttryckligen att punkt 16 upphör om grind B faller eller underlaget (C) inte
-  räcker. TROSKLAR-SKUGGAN §4 (c) säger *"aldrig tal på tunn dom"*. En rad om att punkt 16 bara gäller när ingen annan grind faller
-  vore en skärpning.
 - **Marginalvakten på förarnas mått.** Punkt 12 kräver att marginalvaktens intervall ligger under taket. Marginalvakten räknar oviktat,
   och det står inte hur den räknas på förarnas mått.
 - **Vinterläsningar** (1/12, 1/1, 1/2) är inte inskrivna, så ingenting läses före mars.
