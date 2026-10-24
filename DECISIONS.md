@@ -17162,3 +17162,111 @@ regler och sikten som avgörs med tre villkor (§5). Fryst (§8).
 **Inte gjort:** läsningen är inte körd. Den körs på Bengts ord, i `kuvos.yml` med mätningen ovan och `korflode = ingen`.
 
 **Stomdokument:** KUV olycksläsaren byggd och inte körd
+
+## #699 (24/10 2026) Den nya kandidaten provad på sex vintrar: bättre än den frysta men inte med 0,25, V2 föll och ingen skugga
+
+**Körningarna, alla gröna, med tilläggen T1 och T2 (#694, #695):**
+- fyllningen 39998632234;
+- förberedningen 40001731917;
+- träningen 40003362865, med 22 enheter;
+- provningen och samman 40024563991.
+
+Bara samman:s aggregat är lästa.
+
+**De sex proven, NIVÅ 2+BLANDNING A2 per utelämnad vinter (paret W 0,25 · L 40 km i alla):**
+
+| Utelämnad | RÅ A2 | NIVÅ 2 A2 | NIVÅ 2+BLANDNING A2 |
+| :-- | :-- | :-- | :-- |
+| 2018/19 | 8,42 % | 7,04 % | 4,30 % |
+| 2019/20 | 6,62 % | 4,51 % | 3,04 % |
+| 2020/21 | 8,42 % | 6,13 % | 3,95 % |
+| 2021/22 | 9,51 % | 13,41 % | 4,80 % |
+| 2022/23 | 8,66 % | 6,70 % | 4,33 % |
+| 2024/25 | 7,51 % | 6,46 % | 3,78 % |
+
+**Huvudtalet**, det enkla medlet över vintrarna, för NIVÅ 2+BLANDNING:
+
+| | A1 | A2 | A3 |
+| :-- | :-- | :-- | :-- |
+| totalt | 0,511 °C | 4,03 % | 0,21 % |
+| norr | 0,675 °C | 8,37 % | 0,22 % |
+| söder | 0,474 °C | 2,26 % | 0,20 % |
+| RÅ totalt, för jämförelse | 0,688 °C | 8,19 % | 0,48 % |
+
+**Jämförelsen med den frysta på 2022/23:** samma population (ersättningsregeln §2), alltså samma n 4 361 591 i varje cell.
+
+| NIVÅ 2+BLANDNING | Den frysta | Den nya | Skillnad |
+| :-- | :-- | :-- | :-- |
+| A2 totalt | 4,52 % | 4,33 % | −0,19 pe |
+| A2 norr | 9,01 % | 8,52 % | −0,49 pe |
+| A2 söder | 2,73 % | 2,68 % | −0,05 pe |
+| A1 totalt | 0,522 °C | 0,507 °C | −0,015 °C |
+| A3 totalt | 0,30 % | 0,27 % | −0,03 pe |
+
+**Ersättningsregeln §3:**
+
+| Villkor | Utfall |
+| :-- | :-- |
+| V1. Proven före läsningen, högst en vinter borttagen | **håller**: alla sex klarar proven med T1, ingen borttagen |
+| V2. A2 minst 0,25 pe lägre än den frysta (högst 4,27 %); norr och söder högst +0,25; A1 högst +0,01 °C; A3 högst +0,05 pe | **faller** på A2 totalt: 4,33 % mot kravet högst 4,27 %, alltså −0,19 pe och inte −0,25. Norr, söder, A1 och A3 håller. |
+| V3. Bättre än RÅ varje vinter | **håller**: alla sex |
+| V4. Bättre än RÅ i norr och söder | **håller**: 8,37 % mot 16,11 % i norr, 2,26 % mot 4,95 % i söder |
+
+**Följd enligt §3:** *"Faller något villkor körs ingen skugga."*
+- Den nya arkiveras med sina tal och sitt manifest. Villkoret som föll är V2, på A2 totalt.
+- Den frysta står ensam i vinter. I mars gäller dess egen dom.
+- Fristen `ny-kandidat-skugga` är klar på det sätt den säger, *"villkoren föll och skuggan är bortvald"*, och tas bort.
+- §6 förutsade det här: *"V2 är osäkert … Kravet på 0,25 kan alltså falla."*
+
+**Att lägga märke till:** den nya är bättre än den frysta på varje mått på 2022/23, bara inte med den marginal som krävdes. Ingenting
+lättas efter utfallet (regel L, §7).
+
+**Avvikelse:** NIVÅ 2 utan blandning är sämre än RÅ vintern 2021/22 (13,41 % mot 9,51 %). Blandningen tar ner den till 4,80 %.
+
+**Stomdokument:** KUV den nya kandidaten provad och V2 föll så ingen skugga
+
+## #700 (24/10 2026) Bytet: den nya kandidaten får tala i appen enligt FORREGISTRERING-2026-27 §12, med ett tillägg till ersättningsregeln (utkast, signeras 26/10)
+
+**Bengts ord 24/10:**
+- *"alltså vi vill gå live med den här nu så att mätningarna inte bara ligger som beta utan som når ut till förarna. Om vi ska gå ut
+  till förarna nu och döma i efterhand vilken metod skulle du säga är den bästa att gå ut med för att ge förarna bästa förutsättningar
+  att få tillförlitlig information från halkvakt"*;
+- *"då vill jag i så fall att du sätter igång med allt bygget så att vi har möjlighet att fatta beslut om det innan förregistreringen
+  den 26"*;
+- *"Ja, vi signerar med raden om bytet (§12). Pusha kedjan som PR, fyll kandidatfilen och förbered paritetsprovet. Kör inget i drift
+  förrän jag säger till."*
+
+**Claudes rekommendation, som bytet bygger på:** den frysta talar från signeringen, och den nya tar över när dess kedja har klarat
+paritetsprovet och loggar i drift. Skälet är att den nya hade färre grova fel på 2022/23 (4,33 mot 4,52 %, −0,49 pe i norr).
+
+**Förregistreringen för 2026/27:**
+- **§12, nytt**, står före §11 så att det är en del av den signerade texten. Den nya får tala i appen bara efter:
+  - klarat paritetsprov;
+  - kedjan i drift med färskheten i §3;
+  - ett daterat beslut av båda innan något av vinterns utfall är läst.
+
+  Den frysta döms som förut. Regeln är densamma för den som talar. Den nya döms bredvid. Saknas den nyas timme talar den frysta.
+  Valet inför 2027/28 görs i en egen förregistrering.
+- **§9:** *"talar i appen bara enligt §12"*, och skuggan enligt ersättningsregeln körs inte (V2 föll).
+- **§8:** villkoren för bytet (§12) fryses med resten. Det är en skärpning, inte i utkastet.
+- **§12 (a):** *n exakt* i paritetsprovet, som steget räknar (#680). Också det en skärpning mot utkastet.
+
+**Tillägget till ersättningsregeln:** `docs/FORREGISTRERING-ERSATTNING-TILLAGG-2026-10-24.md`.
+- §1:s *"Den nya talar aldrig i appen"* gäller inte längre.
+- Den nya arkiveras inte.
+- §4:s *"Ingenting når förarna"* gäller tills bytet.
+- Valet i mars sker enligt §12 (g).
+
+**Avvikelse, öppet:** tillägget ändrar en fryst följd efter ett sett utfall (V2 föll). Det lättar ingen dom och sänker inget krav,
+men det är ett avsteg från ersättningsregeln, och det står i tillägget §4.
+
+**Val vid signeringen:** §12 (g) eller alternativet, att den frysta ensam avgör inför 2027/28 (tillägget §5).
+
+**Kedjan:** PR #1179 (`claude/ny-kandidat-kedja`).
+- `kuvos/kandidat-2027-28.json` är ifylld ur samman (sha256 fb372d79…).
+- Paritetsprovet är förberett och inte kört.
+- sql/068 är inte migrerad, och flaggan är av.
+
+**Fristen** `tillagg-bytet` 26/10.
+
+**Stomdokument:** KUV bytet till den nya kandidaten förregistrerat i §12 med tillägg till ersättningsregeln och signering 26/10
