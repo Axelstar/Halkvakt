@@ -1,6 +1,6 @@
 # Förregistrering — kandidaten NIVÅ 2+BLANDNING, vintern 2026/27
 
-**Status: UTKAST 15/10 2026, §4b tillagt 21/10, §12 (bytet) tillagt 24/10 (#703), §4b punkt 12–16 (domens mått) tillagt 24/10 (#710). Kvar före signeringen: radarns tal 26/10 (§10 a). §4b fastställt 21/10 (#655, #656); omgång 1 avgjord 21/10
+**Status: UTKAST 15/10 2026, §4b tillagt 21/10, §12 (bytet) tillagt 24/10 (#703), §4b punkt 12–17 (domens mått) tillagt 24–25/10 (#710). Kvar före signeringen: radarns tal 26/10 (§10 a). §4b fastställt 21/10 (#655, #656); omgång 1 avgjord 21/10
 (#659: populationen i §4, förarsvaren i §4b punkt 4, kameran i punkt 5, Bengt signerar för båda); loggen sql/065 i drift sedan 21/10 (§10 e). Spridningen loggas i drift sedan 16/10 (§10 b).** Signeras av Bengt och Axel senast
 **31/10 2026** (DECISIONS #544, #547). Domfönstret börjar den dag förregistreringen är signerad och pushad; varje dygn utan signatur är
 ett dygn vinter utanför domen. Källorna är DECISIONS #544, #547, #552, #558–#573 och TROSKLAR-SKUGGAN §2–§4. Utkastet i #560 ersätts
@@ -128,8 +128,9 @@ de bekräftade halktillfällena där klassningen var rätt och punktmotorn tyst 
 **Flaggan mäter klassen, inte rösten:** dess tröskel (≤ +1 °C) är inte regelns i §3 (≤ 0 °C och fukt), och domen säger ingenting om
 när kandidaten talar.
 
-*Punkt 12–16 inskrivna 24/10, före signeringen (Bengt: *"ok för utkastet och posten med regel Ls formkrav"*, DECISIONS #710).
-Punkt 13, 14 och 16 är lättnader enligt regel L, med formkraven i #710; punkt 12 är en skärpning och punkt 15 en redovisning.*
+*Punkt 12–16 inskrivna 24/10 och punkt 17 25/10, före signeringen (Bengt: *"ok för utkastet och posten med regel Ls formkrav"*; 25/10
+*"Ja, skriv in båda"*, DECISIONS #710). Punkt 13, 14 och 16 är lättnader enligt regel L, med formkraven i #710; punkt 12 och 17 är
+skärpningar och punkt 15 en redovisning.*
 
 **12. Den ärliga osäkerheten.** Marginalvakten (`publish/marginal.ts`) räknar felet som om stationstimmarna vore oberoende, och vakten
 säger själv att det är en undre gräns. På 2022/23 var det ärliga intervallet för den låstas A2 3,79–5,28 %, mot marginalvaktens
@@ -139,6 +140,8 @@ säger själv att det är en undre gräns. På 2022/23 var det ärliga intervall
 - **Läsningen är ensidig**, eftersom frågan är om måttet ligger *under* taket. Den övre gränsen är 95 %-percentilen av omdragningarna.
 - **KLARAR** bara om både marginalvaktens intervall och omdragningens övre gräns ligger under tröskeln. **OAVGJORT** om punkttalet
   ligger under men omdragningens övre gräns över; grinden öppnar då inte. **FALLER** som förut.
+- **På förarnas mått** (punkt 13) räknar marginalvakten standardfelet för det vägda medlet, med punkterna som oberoende och samma
+  vikter, alltså med det effektiva antalet punkter (Σv)² / Σv². Den är fortfarande en undre gräns.
 - **Omfånget** är A1, A2 och A3, nationellt och i varje band som prövas (punkt 3), på det mått som avgör (punkt 14).
 - **Den kan aldrig öppna en stängd grind.** Den kan bara göra ett KLARAR till ett OAVGJORT.
 
@@ -194,6 +197,26 @@ får en vinter till i tystnad"* (TROSKLAR-SKUGGAN §4), precis som ett FALLER. F
 kandidat som säkert slår RÅ, men ännu inte säkert ligger under taket, ska inte tystna. Den ska få en vinter till med samma märkning och
 samma mätning.
 
+**17. Säkerhetsläsningen.** Kandidaten talar till förarna hela vintern, men domen fälls först i mars. Därför prövas den 1/12, 1/1 och
+1/2 om den **säkert är sämre än stationerna ensamma** (RÅ):
+- **Måttet** är ΔA2, kandidaten minus RÅ, på förarnas mått (punkt 13) och på samma punkter, för domfönstret från signeringen till och
+  med UTC-dygnet före läsningen. Intervallet räknas med omdragning av stationer och dygn som i punkt 12, ensidigt 95 %.
+- **Stopp** om den *undre* 95 %-gränsen för ΔA2 ligger över 0. Då stängs kandidatens betavarning av med nyckeln (TROSKLAR-SKUGGAN
+  §4 d) samma dag. Den talar sedan bara om Bengt och Axel beslutar det i en daterad DECISIONS-post.
+- **Vilken kandidat:** den låsta, och efter bytet (§12 b) också den nya, var och en på sin egen logg. Stoppas den nya talar den låsta
+  bara om den inte själv stoppades vid samma läsning.
+- **Bara *stopp* eller *inget stopp*** rapporteras. Talen, intervallen och underlaget visas inte före domen i mars. Claude kör
+  läsningen och rapporterar svaret till Bengt.
+- **Domen påverkas inte.** Den fälls i mars på hela fönstret som förut (L1). Ingen lättnad får efter en säkerhetsläsning gälla de dygn
+  den har läst (L2).
+- **Skriptet** är domskriptets räkning av ΔA2. Det fryses enligt inledningen till §4b före 1/12. Är det inte fryst den 1/12 görs
+  läsningen den dag det fryses, och förseningen redovisas.
+- **Den kan bara tysta**, aldrig öppna en grind eller lätta ett krav. Den är inte vinterläsningen av spridningsgrinden i KALENDERN
+  (#478).
+
+*Skäl:* förarna hör kandidaten nu. Är den säkert sämre än stationerna ensamma ska det inte vänta till mars. Måttstocken är RÅ av samma
+skäl som i punkt 16: förarnas alternativ är stationerna. En skärpning, skriven före signeringen.
+
 ## 5. Domfönstret
 
 Från signeringens dag till domen i mars 2027. Bara data som ingen sett räknas (regel L, #564: L1–L4).
@@ -212,7 +235,7 @@ en **reserv**, inte två chanser att klara grinden (#547).
 - Kandidaten har aldrig dömts på sträckor; grind B är ett mått utan tidigare mätning.
 - Fysiken är kalibrerad på 2024/25; ingen justering görs under vintern.
 
-*Tillagt 24/10 (#710), för §4b punkt 12–16:*
+*Tillagt 24–25/10 (#710), för §4b punkt 12–17:*
 - **Förarnas mått väntas ge lägre A2 än stationstimmarna.** På 2022/23, räknat efteråt med bandens trafikandelar i stället för
   stationsvikterna, gav den låsta ungefär 4,3 % mot 4,52 %, och den nya ungefär 3,7 % mot 4,33 %.
 - **Det ärliga intervallet väntas bli brett**, ungefär ± 0,8–1,0 procentenheter nationellt. Det är bredare än för stationstimmarna
@@ -225,10 +248,11 @@ en **reserv**, inte två chanser att klara grinden (#547).
 - **Kandidaten väntas vara tydligt bättre än RÅ** (punkt 16). På 2022/23 var skillnaden ungefär 4,1 procentenheter i A2 (4,52 mot
   8,66 %), mycket större än osäkerheten i en skillnad (± 0,2 procentenheter mellan två kandidater, #707). Väntat utfall om A blir
   OAVGJORT: kandidaten talar vidare en vinter till.
+- **Säkerhetsläsningen väntas inte stoppa** (punkt 17). På 2022/23 var kandidaten ungefär 4,1 procentenheter bättre än RÅ i A2.
 
 ## 8. Fryst vid signeringen
 
-Identiteten (§1), regeln med talen (§3), måtten och populationen (§4), läsningen (§4b, med punkt 12–16), domfönstret (§5) och villkoren för bytet (§12). Ändras något av det efteråt sker det bara
+Identiteten (§1), regeln med talen (§3), måtten och populationen (§4), läsningen (§4b, med punkt 12–17), domfönstret (§5) och villkoren för bytet (§12). Ändras något av det efteråt sker det bara
 genom en daterad post med båda signaturerna, och aldrig som en lättnad efter sett utfall (regel L).
 
 ## 9. Inte en del av domen

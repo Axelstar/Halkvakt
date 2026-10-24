@@ -220,6 +220,9 @@ lydelsen från 1/9, som lät prognosen tala på modellerade värden i strid med 
   OAVGJORT mot taket med den ärliga osäkerheten, men kandidaten tydligt bättre än RÅ, talar den som här en vinter till, 2027/28, enligt
   FORREGISTRERING-2026-27 §4b punkt 16. Det gäller en gång och bara domfönstret från signeringen.
 
+  *Ändrat 25/10 2026 (Bengt, DECISIONS #710; en skärpning enligt §5):* säkerhetsläsningen 1/12, 1/1 och 1/2 (FORREGISTRERING-2026-27
+  §4b punkt 17) stänger av kandidaten före domen om den säkert är sämre än RÅ.
+
 Bevisbördan ligger på skuggan. Vid tvekan: tystnad (produktinvarianten).
 
 ## 5. Ändringsregler
