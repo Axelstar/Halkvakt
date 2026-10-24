@@ -7,8 +7,8 @@ name: ny-kandidat-timme
 # FLAGGAN (kuvos/ny-kandidat-skugga.json) av ⇒ jobbet räknar inget och skriver inget; PH finns då inte heller i databasen.
 # SAKNAS PH för timmen hoppas den grönt med en notis, och loggen skriver timmen som tyst (som den frystas logg gör en timme utan
 # färskt värde). Den frystas reserv (scripts/kandidat-reserv.ts, som startar del A om en slott missats) är INTE byggd här.
-# KNAPP, INTE PULSKLOCKA: i drift sätts den av Bengt med en rad i scripts/pulsklocka.ts (förslaget: "47 * * * *", tre minuter före den
-# frystas logg :50, minuten ledig i databasens klocka). Ingenting här når appen, rösten, lägesfilen eller den frystas dom.
+# PULSKLOCKAN sedan 24/10 (DECISIONS #706): puls-ny-kandidat-timme "47 * * * *", tre minuter före den frystas logg :50. Knappen finns
+# kvar för en enskild timme. Ingenting här når appen, rösten, lägesfilen eller den frystas dom.
 # Ingen Trafikverksdata i någon fil eller logg: ankarna lämnar aldrig jobbet, bara kandidatens egna tal skrivs.
 on:
   workflow_dispatch:
