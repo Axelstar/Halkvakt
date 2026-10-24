@@ -17241,3 +17241,64 @@ Varningskortet som syntes på tåget var Axels eget, framtaget genom att hålla 
 
 **Stomdokument:** APP, FAV
 
+## #702 (24/10 2026) Den nya kandidaten provad på sex vintrar: bättre än den frysta men inte med 0,25, V2 föll och ingen skugga
+
+**Körningarna, alla gröna, med tilläggen T1 och T2 (#694, #695):**
+- fyllningen 39998632234;
+- förberedningen 40001731917;
+- träningen 40003362865, med 22 enheter;
+- provningen och samman 40024563991.
+
+Bara samman:s aggregat är lästa.
+
+**De sex proven, NIVÅ 2+BLANDNING A2 per utelämnad vinter (paret W 0,25 · L 40 km i alla):**
+
+| Utelämnad | RÅ A2 | NIVÅ 2 A2 | NIVÅ 2+BLANDNING A2 |
+| :-- | :-- | :-- | :-- |
+| 2018/19 | 8,42 % | 7,04 % | 4,30 % |
+| 2019/20 | 6,62 % | 4,51 % | 3,04 % |
+| 2020/21 | 8,42 % | 6,13 % | 3,95 % |
+| 2021/22 | 9,51 % | 13,41 % | 4,80 % |
+| 2022/23 | 8,66 % | 6,70 % | 4,33 % |
+| 2024/25 | 7,51 % | 6,46 % | 3,78 % |
+
+**Huvudtalet**, det enkla medlet över vintrarna, för NIVÅ 2+BLANDNING:
+
+| | A1 | A2 | A3 |
+| :-- | :-- | :-- | :-- |
+| totalt | 0,511 °C | 4,03 % | 0,21 % |
+| norr | 0,675 °C | 8,37 % | 0,22 % |
+| söder | 0,474 °C | 2,26 % | 0,20 % |
+| RÅ totalt, för jämförelse | 0,688 °C | 8,19 % | 0,48 % |
+
+**Jämförelsen med den frysta på 2022/23:** samma population (ersättningsregeln §2), alltså samma n 4 361 591 i varje cell.
+
+| NIVÅ 2+BLANDNING | Den frysta | Den nya | Skillnad |
+| :-- | :-- | :-- | :-- |
+| A2 totalt | 4,52 % | 4,33 % | −0,19 pe |
+| A2 norr | 9,01 % | 8,52 % | −0,49 pe |
+| A2 söder | 2,73 % | 2,68 % | −0,05 pe |
+| A1 totalt | 0,522 °C | 0,507 °C | −0,015 °C |
+| A3 totalt | 0,30 % | 0,27 % | −0,03 pe |
+
+**Ersättningsregeln §3:**
+
+| Villkor | Utfall |
+| :-- | :-- |
+| V1. Proven före läsningen, högst en vinter borttagen | **håller**: alla sex klarar proven med T1, ingen borttagen |
+| V2. A2 minst 0,25 pe lägre än den frysta (högst 4,27 %); norr och söder högst +0,25; A1 högst +0,01 °C; A3 högst +0,05 pe | **faller** på A2 totalt: 4,33 % mot kravet högst 4,27 %, alltså −0,19 pe och inte −0,25. Norr, söder, A1 och A3 håller. |
+| V3. Bättre än RÅ varje vinter | **håller**: alla sex |
+| V4. Bättre än RÅ i norr och söder | **håller**: 8,37 % mot 16,11 % i norr, 2,26 % mot 4,95 % i söder |
+
+**Följd enligt §3:** *"Faller något villkor körs ingen skugga."*
+- Den nya arkiveras med sina tal och sitt manifest. Villkoret som föll är V2, på A2 totalt.
+- Den frysta står ensam i vinter. I mars gäller dess egen dom.
+- Fristen `ny-kandidat-skugga` är klar på det sätt den säger, *"villkoren föll och skuggan är bortvald"*, och tas bort.
+- §6 förutsade det här: *"V2 är osäkert … Kravet på 0,25 kan alltså falla."*
+
+**Att lägga märke till:** den nya är bättre än den frysta på varje mått på 2022/23, bara inte med den marginal som krävdes. Ingenting
+lättas efter utfallet (regel L, §7).
+
+**Avvikelse:** NIVÅ 2 utan blandning är sämre än RÅ vintern 2021/22 (13,41 % mot 9,51 %). Blandningen tar ner den till 4,80 %.
+
+**Stomdokument:** KUV den nya kandidaten provad och V2 föll så ingen skugga
