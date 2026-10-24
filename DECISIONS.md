@@ -17302,3 +17302,49 @@ lättas efter utfallet (regel L, §7).
 **Avvikelse:** NIVÅ 2 utan blandning är sämre än RÅ vintern 2021/22 (13,41 % mot 9,51 %). Blandningen tar ner den till 4,80 %.
 
 **Stomdokument:** KUV den nya kandidaten provad och V2 föll så ingen skugga
+
+## #703 (24/10 2026) Bytet: den nya kandidaten får tala i appen enligt FORREGISTRERING-2026-27 §12, med ett tillägg till ersättningsregeln (utkast, signeras 26/10)
+
+**Bengts ord 24/10:**
+- *"alltså vi vill gå live med den här nu så att mätningarna inte bara ligger som beta utan som når ut till förarna. Om vi ska gå ut
+  till förarna nu och döma i efterhand vilken metod skulle du säga är den bästa att gå ut med för att ge förarna bästa förutsättningar
+  att få tillförlitlig information från halkvakt"*;
+- *"då vill jag i så fall att du sätter igång med allt bygget så att vi har möjlighet att fatta beslut om det innan förregistreringen
+  den 26"*;
+- *"Ja, vi signerar med raden om bytet (§12). Pusha kedjan som PR, fyll kandidatfilen och förbered paritetsprovet. Kör inget i drift
+  förrän jag säger till."*
+
+**Claudes rekommendation, som bytet bygger på:** den frysta talar från signeringen, och den nya tar över när dess kedja har klarat
+paritetsprovet och loggar i drift. Skälet är att den nya hade färre grova fel på 2022/23 (4,33 mot 4,52 %, −0,49 pe i norr).
+
+**Förregistreringen för 2026/27:**
+- **§12, nytt**, står före §11 så att det är en del av den signerade texten. Den nya får tala i appen bara efter:
+  - klarat paritetsprov;
+  - kedjan i drift med färskheten i §3;
+  - ett daterat beslut av båda innan något av vinterns utfall är läst.
+
+  Den frysta döms som förut. Regeln är densamma för den som talar. Den nya döms bredvid. Saknas den nyas timme talar den frysta.
+  Valet inför 2027/28 görs i en egen förregistrering.
+- **§9:** *"talar i appen bara enligt §12"*, och skuggan enligt ersättningsregeln körs inte (V2 föll).
+- **§8:** villkoren för bytet (§12) fryses med resten. Det är en skärpning, inte i utkastet.
+- **§12 (a):** *n exakt* i paritetsprovet, som steget räknar (#680). Också det en skärpning mot utkastet.
+
+**Tillägget till ersättningsregeln:** `docs/FORREGISTRERING-ERSATTNING-TILLAGG-2026-10-24.md`.
+- §1:s *"Den nya talar aldrig i appen"* gäller inte längre.
+- Den nya arkiveras inte.
+- §4:s *"Ingenting når förarna"* gäller tills bytet.
+- Valet i mars sker enligt §12 (g).
+
+**Avvikelse, öppet:** tillägget ändrar en fryst följd efter ett sett utfall (V2 föll). Det lättar ingen dom och sänker inget krav,
+men det är ett avsteg från ersättningsregeln, och det står i tillägget §4.
+
+**Val vid signeringen:** §12 (g) eller alternativet, att den frysta ensam avgör inför 2027/28 (tillägget §5).
+
+**Kedjan:** PR #1179 (`claude/ny-kandidat-kedja`).
+- `kuvos/kandidat-2027-28.json` är ifylld ur samman (sha256 fb372d79…).
+- Paritetsprovet är förberett och inte kört.
+- sql/068 är inte migrerad, och flaggan är av.
+
+**Fristen** `tillagg-bytet` 26/10.
+
+**Stomdokument:** KUV bytet till den nya kandidaten förregistrerat i §12 med tillägg till ersättningsregeln och signering 26/10
