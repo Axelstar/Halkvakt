@@ -17569,3 +17569,24 @@ ger ingen förbättring. Att lägga märke till:
 Ingen dom och inget krav ändras (regel L). V2 står som fallet. Talen är underlag för bytesbeslutet (§12 b) och valet inför 2027/28 (§12 g).
 
 **Stomdokument:** KUV osäkerheten på 2022/23 med omdragning och v4 med långvåg före 2022
+
+## #708 (24/10 2026) Nivåernas ärliga intervall på 2022/23, inför valet av variant för FORREGISTRERING-2026-27 §4b punkt 12 (metoden före körningen)
+
+**Bengts ord 24/10:** *"Räkna först intervallets bredd för den låstas A2 på 2022/23 med samma omdragning, bara aggregat, så väljer vi
+variant sedan."*
+
+Bakgrund: utkastet till §4b punkt 12 (`Desktop/Halkvakt_Utkast_ArligOsakerhet_2026-10-24.md`, inte i repot) har två varianter. I
+variant A räknas ett KLARAR i grind A bara om även intervallet med omdragning av stationer och dygn ligger under tröskeln. I variant B
+redovisas intervallet bara. #707 räknade intervallet för en *skillnad* mellan kandidaterna. För en *nivå* är det inte känt.
+
+**Metoden** (`fysik/vintrar/osakerhet.py`, samma körning som #707, steget `osakerhet`):
+- Samma celler (station × UTC-dygn), samma tre scheman (S, D, SD) och samma vikter (fröet 20261024), så att omdragningarna är
+  desamma som för skillnaden.
+- **Nivåerna** är A1, A2 och A3 för båda kandidaterna: totalt, i norr och i söder (A2), och per ankarband (grind A:s band ur
+  punktens ankaravstånd). Varje band dras om för sig, på sina egna stationer och dygn.
+- **Bredvid** står marginalvaktens intervall (punkttalet ± 1,96 · det naiva felet) och om SD-intervallet når över grind A:s tröskel
+  (A1 ≤ 1,0 °C, A2 ≤ 5 %, A3 ≤ 10 %).
+- **Diagnos.** Den låstas tal på 2022/23 är redan sedda (#680), och ingenting ändras av dem. Svaret är hur brett ett ärligt intervall för
+  en nivå blir, så att variant A och B kan väljas med kunskap om vad de betyder.
+
+**Stomdokument:** KUV nivåernas ärliga intervall på 2022/23 inför valet av variant för domen

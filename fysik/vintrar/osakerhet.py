@@ -19,6 +19,15 @@ Metoden är skriven före räkningen (#707):
     (punkterna som oberoende) och dess intervall ± 1,96 · fel.
   - LÄSNINGEN: förbättringen i A2 går att skilja från noll om hela SD-intervallet för ΔA2 totalt ligger under 0.
 
+NIVÅERNA (DECISIONS #708, skrivet före körningen, inför valet av variant för FORREGISTRERING-2026-27 §4b punkt 12):
+  - Samma celler, samma tre scheman och samma vikter (samma frö, så att omdragningarna är desamma som för skillnaden): A1, A2 och A3 för
+    var och en av kandidaterna, totalt, i norr och i söder, och per ankarband (grind A:s band ur matt.BANDS, punktens ank_km), där
+    varje band dras om för sig på sina egna stationer och dygn.
+  - Bredvid varje nivå står marginalvaktens intervall (punkttalet ± 1,96 · det naiva felet, som matt.stats), och om SD-intervallet når
+    över grind A:s tröskel (TROSKLAR-SKUGGAN §3: A1 ≤ 1,0 °C, A2 ≤ 5 %, A3 ≤ 10 %).
+  - Diagnos: den låstas tal på 2022/23 är redan sedda (#680), och ingenting ändras av dem. Svaret är hur brett ett ärligt intervall för en
+    nivå blir, så att variant A och B kan väljas med kunskap om vad de betyder.
+
   python fysik/vintrar/osakerhet.py --sjalvtest
   python fysik/vintrar/osakerhet.py <vinterkedja.py:s argument för 2022-23> --ny-ph <ph_utan-2022-23_2022-23.npz> --samman <samman.json>
 """
@@ -115,6 +124,69 @@ def naivt(meas, pb_f, pb_n):
     return {'dA2': m, 'fel': se, 'intervall': [m - Z * se, m + Z * se]}
 
 
+TROSKEL = {'A1': 1.0, 'A2': 0.05, 'A3': 0.10}                                      # TROSKLAR-SKUGGAN §3, grind A
+BANDS = [('0–7 km', 0, 7), ('7–15 km', 7, 15), ('15–20 km', 15, 20), ('>20 km', 20, math.inf)]   # matt.BANDS (grind-a.ts)
+
+
+def niva(X, ws, wd, kand, mask=None):
+    """Nivån för en kandidat ('f' den låsta, 'n' den nya) per omdragning: A2, A1, A3."""
+    ws = ws if mask is None else ws * mask[None, :]
+    s = lambda k: ((ws @ X[k]) * wd).sum(1)
+    n, nd = s('n'), s('nd')
+    with np.errstate(invalid='ignore', divide='ignore'):
+        return {'A2': s('g' + kand) / n, 'A1': s('a' + kand) / nd, 'A3': s('s' + kand) / n}
+
+
+def marginalvakt(X, kand, mask=None):
+    """Punkttalet och marginalvaktens intervall (± 1,96 · det naiva felet, som matt.stats och publish/marginal.ts)."""
+    m = np.ones(X['n'].shape[0]) if mask is None else mask.astype(float)
+    s = lambda k: float((m[:, None] * X[k]).sum())
+    n, nd = s('n'), s('nd')
+    ut = {}
+    for tal, (tal_k, nam) in {'A2': ('g', n), 'A3': ('s', n)}.items():
+        p = s(tal_k + kand) / nam if nam else math.nan
+        se = math.sqrt(max(p * (1 - p), 0.0) / nam) if nam else math.inf
+        ut[tal] = {'punkttal': p, 'marginalvakt': [p - Z * se, p + Z * se]}
+    mae = s('a' + kand) / nd if nd else math.nan
+    ut['A1'] = {'punkttal': mae, 'marginalvakt': None}       # A1:s fel kräver kvadratsumman per punkt; det naiva felet står i #680
+    return ut
+
+
+def nivaomdragning(X, norr_st, b=B, fro=FRO, delar=True):
+    """Nivåerna för båda kandidaterna i de tre schemana, med samma vikter som omdragning() (samma frö, samma ordning)."""
+    S, D = X['n'].shape
+    rng = np.random.default_rng(fro)
+    ws, wd = vikter(rng, S, b), vikter(rng, D, b)
+    ett_s, ett_d = np.ones((b, S)), np.ones((b, D))
+    del_ = [('totalt', None)] + ([('norr', norr_st.astype(float)), ('soder', (~norr_st).astype(float))] if delar else [])
+    ut = {}
+    for kand, k in (('lasta', 'f'), ('nya', 'n')):
+        ut[kand] = {}
+        for dn, mask in del_:
+            mv = marginalvakt(X, k, mask)
+            for tal in (('A2', 'A1', 'A3') if dn == 'totalt' else ('A2',)):
+                rad = {'punkttal': mv[tal]['punkttal'], 'marginalvakt': mv[tal]['marginalvakt'], 'troskel': TROSKEL[tal]}
+                for namn, (a, c) in {'S': (ws, ett_d), 'D': (ett_s, wd), 'SD': (ws, wd)}.items():
+                    v = niva(X, a, c, k, mask)[tal]; v = v[np.isfinite(v)]
+                    rad[namn] = [float(np.quantile(v, 0.025)), float(np.quantile(v, 0.975))]
+                rad['SD_nar_over_troskeln'] = bool(rad['SD'][1] > TROSKEL[tal])
+                rad['SD_helt_over_troskeln'] = bool(rad['SD'][0] > TROSKEL[tal])
+                ut[kand][f'{tal}_{dn}'] = rad
+    return ut
+
+
+def bandnivaer(m, b=B, fro=FRO):
+    """Nivåerna per ankarband: varje band dras om för sig, på sina egna stationer och dygn."""
+    ut = {}
+    for namn, lo, hi in BANDS:
+        sel = ((m.ank >= lo) & (m.ank < hi)).to_numpy()
+        if not sel.any():
+            continue
+        X, nst, st, dg = celler(m.sid[sel], m.b[sel], m.norr_f[sel], m.meas_f[sel], m.pb_f[sel], m.pb_n[sel])
+        ut[namn] = {'punkter': int(sel.sum()), 'stationer': len(st), 'dygn': len(dg), 'nivaer': nivaomdragning(X, nst, b, fro, delar=False)}
+    return ut
+
+
 def lasning(om):
     lo, hi = om['SD']['A2_totalt']['intervall']
     return {'regel': 'förbättringen i A2 går att skilja från noll om hela SD-intervallet för ΔA2 totalt ligger under 0',
@@ -127,7 +199,7 @@ def punkter(matt, provning, pop, pos_df, PH, idx, kedjans, par_=None):
     pos = pos_df.set_index('sid')
     st = sorted(pop.sid.unique())
     M, b0 = matt.matris(pop, st)
-    RA, _ = matt.ra_grind_a(M, pos.lon.reindex(st).to_numpy(float), pos.lat.reindex(st).to_numpy(float))
+    RA, ANK = matt.ra_grind_a(M, pos.lon.reindex(st).to_numpy(float), pos.lat.reindex(st).to_numpy(float))
     PH2 = np.round(matt.halvtimmar(PH, idx, b0, M.shape[0]), 2)
     kol = {s: i for i, s in enumerate(kedjans)}
     r, c = np.nonzero(np.isfinite(RA))
@@ -144,7 +216,8 @@ def punkter(matt, provning, pop, pos_df, PH, idx, kedjans, par_=None):
     med = np.isfinite(pb)
     r, c, pb = r[med], c[med], pb[med]
     lat = pos.lat.reindex(st).to_numpy(float)
-    return pd.DataFrame({'b': r + b0, 'sid': np.asarray(st, dtype=object)[c], 'meas': M[r, c], 'pb': pb, 'norr': lat[c] >= NORR_LAT}), (W, L)
+    return pd.DataFrame({'b': r + b0, 'sid': np.asarray(st, dtype=object)[c], 'meas': M[r, c], 'pb': pb, 'norr': lat[c] >= NORR_LAT,
+                         'ank': ANK[r, c]}), (W, L)
 
 
 def identitet(matt, df, vantad, namn):
@@ -197,10 +270,16 @@ def kor(a):
     s['naivt'] = naivt(m.meas_f, m.pb_f, m.pb_n)
     s['omdragning'] = {'B': B, 'fro': FRO, 'scheman': omdragning(X, norr_st)}
     s['lasning'] = lasning(s['omdragning']['scheman'])
+    if not np.array_equal(m.ank_f.to_numpy(), m.ank_n.to_numpy(), equal_nan=True):
+        raise SystemExit('ankaravstånden skiljer mellan kandidaterna — de ska komma ur samma population')
+    m = m.rename(columns={'ank_f': 'ank'})
+    logg('nivåerna (#708)')
+    s['nivaer'] = {'_om': 'DECISIONS #708: nivåerna för båda kandidaterna med samma omdragning, totalt och per ankarband. Diagnos.',
+                   'totalt': nivaomdragning(X, norr_st), 'band': bandnivaer(m)}
     os.makedirs(a.ut, exist_ok=True)
     json.dump(s, open(os.path.join(a.ut, f'osakerhet_{VINTER}.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
-    open(os.path.join(a.ut, f'osakerhet_{VINTER}.md'), 'w', encoding='utf-8').write(markdown(s))
-    logg(markdown(s))
+    open(os.path.join(a.ut, f'osakerhet_{VINTER}.md'), 'w', encoding='utf-8').write(markdown(s) + markdown_nivaer(s['nivaer']))
+    logg(markdown(s) + markdown_nivaer(s['nivaer']))
     return 0
 
 
@@ -224,6 +303,28 @@ def markdown(s):
         rad('A1 totalt', 'A1_totalt', gr), rad('A3 totalt', 'A3_totalt', pe), '',
         f"Naivt, med punkterna som oberoende: ΔA2 {pe(s['naivt']['dA2'])}, intervall {iv(s['naivt']['intervall'], pe)}.", '',
         f"Läsningen (skriven före räkningen): {L['regel']}.", ''])
+
+
+def markdown_nivaer(nv):
+    pct = lambda x: f'{100 * x:.2f} %'.replace('.', ',')
+    gr = lambda x: f'{x:.3f} °C'.replace('.', ',')
+    fm = lambda tal: gr if tal == 'A1' else pct
+    iv = lambda v, f: '—' if v is None else f'{f(v[0])} – {f(v[1])}'
+    def rader(tab, prefix=''):
+        ut = []
+        for kand, namn in (('lasta', 'den låsta'), ('nya', 'den nya')):
+            for k, r in tab[kand].items():
+                tal = k.split('_')[0]; f = fm(tal)
+                flagga = 'helt över' if r['SD_helt_over_troskeln'] else ('når över' if r['SD_nar_over_troskeln'] else 'under')
+                ut.append(f"| {prefix}{namn} | {k.replace('_', ' ')} | {f(r['punkttal'])} | {iv(r['marginalvakt'], f)} | {iv(r['SD'], f)} | "
+                          f"{iv(r['S'], f)} | {iv(r['D'], f)} | {f(r['troskel'])} | {flagga} |")
+        return ut
+    head = ['| Kandidat | Mått | Punkttal | Marginalvakten | 95 % SD | S | D | Tröskel | SD mot tröskeln |',
+            '| :-- | :-- | --: | --: | --: | --: | --: | --: | :-- |']
+    ut = ['', '## Nivåerna på 2022/23 med samma omdragning (DECISIONS #708, diagnos)', ''] + head + rader(nv['totalt']) + ['', '**Per ankarband**', ''] + head
+    for band, x in nv['band'].items():
+        ut += rader(x['nivaer'], f"{band} ({x['stationer']} st, {x['punkter']} p) · ")
+    return '\n'.join(ut + [''])
 
 
 # ── Självtestet ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -276,8 +377,31 @@ def sjalvtest():
     # tre grova fel av fyra; fel sida om noll vid −1 → 3 och 3 → −1.
     k(abs(p5['A1_totalt'] - (1 + 4 + 4) / 3) < 1e-12 and abs(p5['A3_totalt'] - 2 / 4) < 1e-12 and abs(p5['A2_totalt'] - 3 / 4) < 1e-12,
       f"A1 utan punkten under −5, A3 fel sida om noll, A2 grova fel: {p5}")
+    # 6. Nivåerna (#708): samma vikter som skillnaden, så att ny − låst per omdragning är exakt Δ.
+    X, nst, _, _ = celler(sid, b, norr, meas, pf, pn2)
+    rng6 = np.random.default_rng(FRO); ws6, wd6 = vikter(rng6, X['n'].shape[0], 50), vikter(rng6, X['n'].shape[1], 50)
+    d6 = deltan(X, ws6, wd6)['A2']
+    k(np.allclose(niva(X, ws6, wd6, 'n')['A2'] - niva(X, ws6, wd6, 'f')['A2'], d6),
+      'nivåerna: den nya minus den låsta per omdragning är exakt skillnaden')
+    # 7. En nivå nära taket med klumpar i dygn: punkttalet under 5 %, marginalvakten under, men SD-intervallet når över taket.
+    pf7 = meas + rng.normal(0, 0.45, sid.size)                               # få grova fel i grunden
+    for dd in (2, 11):                                                        # två dygn av 30 med många grova fel: A2 ≈ 3,5 %
+        m_ = dag == dd; pf7[m_] = meas[m_] + rng.normal(0, 3.2, int(m_.sum()))
+    X7, n7, _, _ = celler(sid, b, norr, meas, pf7, pf7)
+    nv7 = nivaomdragning(X7, n7, b=300)['lasta']['A2_totalt']
+    k(nv7['punkttal'] < 0.05 and nv7['marginalvakt'][1] < 0.05 and nv7['SD'][1] > 0.05 and nv7['SD_nar_over_troskeln']
+      and not nv7['SD_helt_over_troskeln'],
+      f"nära taket: punkttalet {nv7['punkttal']:.4f} och marginalvakten {nv7['marginalvakt'][1]:.4f} under 5 %, SD {nv7['SD'][1]:.4f} når över")
+    nv7b = nivaomdragning(X, nst, b=200)['lasta']['A1_totalt']
+    k(nv7b['marginalvakt'] is None and nv7b['SD'][0] <= nv7b['punkttal'] <= nv7b['SD'][1], 'A1:s nivå: punkttalet inne i SD-intervallet')
+    # 8. Banden: varje band dras om för sig och bär sina egna punkter.
+    ank8 = np.where(np.repeat(np.arange(S), D * per) % 2 == 0, 3.0, 25.0)
+    m8 = pd.DataFrame({'sid': sid, 'b': b, 'norr_f': norr, 'meas_f': meas, 'pb_f': pf, 'pb_n': pn, 'ank': ank8})
+    bn = bandnivaer(m8, b=100)
+    k(set(bn) == {'0–7 km', '>20 km'} and bn['0–7 km']['punkter'] + bn['>20 km']['punkter'] == sid.size
+      and bn['0–7 km']['stationer'] == S // 2, f"banden: {[(x, bn[x]['punkter'], bn[x]['stationer']) for x in bn]}")
     print(('✓ självtest' if not fel else f'✗ självtest: {len(fel)} fel') + ': cellerna, omdragningen i tre scheman, punkttalen, det naiva '
-          'felet, klumpning i dygn, fröet och måttens definitioner')
+          'felet, klumpning i dygn, fröet, måttens definitioner, nivåerna mot taket och banden (#708)')
     return 1 if fel else 0
 
 
