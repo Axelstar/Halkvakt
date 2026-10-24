@@ -27,9 +27,9 @@ on:
   workflow_dispatch:
     inputs:
       steg:
-        description: "indata (en äldre vinter) → fyll (T2) → forberedning → traning → provning (bakom spärren) → samman; paritet (§4, den levande kedjan)"
+        description: "indata (en äldre vinter) → fyll (T2) → forberedning → traning → provning (bakom spärren) → samman; paritet (§4, den levande kedjan); osakerhet (#707, omdragning på 2022/23)"
         type: choice
-        options: ["indata", "fyll", "forberedning", "traning", "provning", "samman", "paritet"]
+        options: ["indata", "fyll", "forberedning", "traning", "provning", "samman", "paritet", "osakerhet"]
         default: "forberedning"
       vinter:
         description: "bara för indata: vintern som hämtas"
@@ -798,3 +798,105 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with: { name: nykand-paritet, path: ut/, retention-days: 90, if-no-files-found: ignore }
+
+  # ── osakerhet (DECISIONS #707) ───────────────────────────────────────────────────────────────────────────────────────────────
+  # Osäkerheten i jämförelsen på 2022/23 (fysik/vintrar/osakerhet.py): den låsta räknas med sin egen vinterkedja oförändrad, som
+  # kuvos-vintrar.yml:s provning (identitetsprovet på 2024/25, tidszonen, vintern), och den nyas veck utan 2022/23 läses ur hinken.
+  # Båda kandidaternas summor ska vara exakt samman:s (nykand-samman) innan något dras om; sedan omdragning av stationer och dygn.
+  # Diagnos: ändrar ingen dom. Bara aggregat i artefakten nykand-osakerhet; Trafikverkets filer och skattningarna lämnar aldrig jobbet.
+  osakerhet:
+    if: ${{ inputs.steg == 'osakerhet' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions: { contents: read, actions: read }
+    env: { GH_TOKEN: "${{ github.token }}", VINTER: "2022-23" }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13", cache: pip, cache-dependency-path: fysik/requirements.txt }
+      - name: Beroendena, de frysta filerna och självtesten (påhittade data)
+        shell: bash
+        run: |
+          python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
+          (cd fysik && sha256sum -c --quiet SHA256SUMS)
+          python3 fysik/vintrar/sjalvtest.py | grep -v '^  '
+          python3 fysik/vintrar/osakerhet.py --sjalvtest | grep -v '^  '
+      - name: Samman (de två kandidaternas summor på 2022/23)
+        shell: bash
+        run: |
+          id=$(gh api "repos/${{ github.repository }}/actions/artifacts?name=nykand-samman&per_page=100" -q '[.artifacts[] | select(.expired | not)] | sort_by(.created_at) | last | .id // empty')
+          [ -n "$id" ] || { echo "::error::artefakten nykand-samman saknas"; exit 1; }
+          echo "nykand-samman: artefakt $id" | tee -a "$GITHUB_STEP_SUMMARY"
+          mkdir -p samman && gh api "repos/${{ github.repository }}/actions/artifacts/$id/zip" > a.zip && unzip -o -q a.zip -d samman && rm a.zip
+      # Hinken som i kuvos-vintrar.yml och paritetssteget: signerade adresser ur arkivdump, nyckeln ur pg_cron:s jobb, maskerad.
+      - name: Hinken — modell.pkl, den nyas skattning och Trafikverkets filer, kontrollsummorna mot manifesten
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          FILER=$(node -e '
+            const f = ["kuvos-kandidat-2026-27/modell.pkl", "kuvos-kandidat-2027-28/ph_utan-2022-23_2022-23.npz",
+                       ...require("./kuvos/leverans.json").filer.map((x) => "kuvos-trv-2024-25/" + x.packad),
+                       ...["Halkvakt_2022-2.csv.gz", "Halkvakt_2023-1.csv.gz"].map((x) => "kuvos-vvis-2018-24/" + x)];
+            console.log(JSON.stringify(f));')
+          curl -sS --fail-with-body -X POST "$FN?lage=kuvos_hamta" -H "x-halkvakt-key: $KEY" -H "Content-Type: application/json" -d "{\"filer\":$FILER}" > hamta.json
+          mkdir -p hink/v2425 hink/vinter hink/ph
+          node -e '
+            const { execFileSync } = require("child_process");
+            // execFileSync:s fel bär kommandoraden och därmed den signerade adressen: fångas, bara statusen skrivs ut.
+            for (const d of require("./hamta.json").filer) {
+              const n = d.fil.split("/").pop();
+              const ut = n === "modell.pkl" ? "modell.pkl" : n.endsWith(".npz") ? "hink/ph/" + n : (d.fil.startsWith("kuvos-trv-2024-25/") ? "hink/v2425/" : "hink/vinter/") + n;
+              try { execFileSync("curl", ["-sS", "--fail", "-o", ut, d.url], { stdio: ["ignore", "ignore", "ignore"] }); }
+              catch (e) { console.error(`hämtningen av ${d.fil} föll (curl ${e.status})`); process.exit(1); }
+            }'
+          rm hamta.json
+          node -e '
+            const c = require("crypto"), fs = require("fs"); let fel = 0;
+            const prova = (fil, sha, bytes) => { const b = fs.readFileSync(fil), h = c.createHash("sha256").update(b).digest("hex");
+              const ok = h === sha && (bytes === undefined || b.length === bytes); fel += !ok; console.log(`${fil}: ${b.length} byte, ${ok ? "sha256 lika manifestet" : "FEL " + h}`); };
+            const k = require("./kuvos/kandidat-2026-27.json").filer.find((f) => f.fil === "modell.pkl"); prova("modell.pkl", k.sha256, k.bytes);
+            const p = require("./kuvos/kandidat-2027-28.json").filer.find((f) => f.fil === "ph_utan-2022-23_2022-23.npz"); prova("hink/ph/" + p.fil, p.sha256, p.bytes);
+            for (const f of require("./kuvos/leverans.json").filer) prova("hink/v2425/" + f.packad, f.packad_sha256);
+            for (const f of require("./kuvos/vvis-2018-24-leverans.json").filer.filter((x) => ["Halkvakt_2022-2.csv.gz", "Halkvakt_2023-1.csv.gz"].includes(x.packad)))
+              prova("hink/vinter/" + f.packad, f.packad_sha256, f.packad_bytes);
+            process.exit(fel ? 1 : 0);' | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Releaserna — indatan, MET Nordic 2024/25 och vinterns indata 2022/23
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p indata mn2425 rel
+          gh release download kuvos-fysik-indata-2024-25 --dir indata
+          gh release download kuvos-metnordic-2024-25 --dir mn2425 --pattern 'metnordic_2024-25.csv.gz'
+          node -e '
+            const c = require("crypto"), fs = require("fs"); let fel = 0;
+            const prova = (fil, sha) => { const h = c.createHash("sha256").update(fs.readFileSync(fil)).digest("hex"); console.log(`${fil}: ${h === sha ? "ok" : "FEL " + h}`); if (h !== sha) fel++; };
+            for (const f of require("./kuvos/fysik-indata-leverans.json").filer) prova("indata/" + f.fil, f.sha256);
+            prova("mn2425/metnordic_2024-25.csv.gz", require("./kuvos/metnordic-leverans.json").filer.find((f) => f.fil === "metnordic_2024-25.csv.gz").sha256);
+            process.exit(fel ? 1 : 0);' | tee -a "$GITHUB_STEP_SUMMARY"
+          mkdir -p frusen && for f in indata/*.tar.gz; do tar -xzf "$f" -C frusen; done
+          if [ -d frusen/data ]; then mv frusen/data/* frusen/ && rmdir frusen/data; fi
+          gh release download kuvos-vintrar-2022-23 --dir rel
+          tar -xzf rel/ifs_2022-23.tar.gz -C rel
+          { echo '```'; (cd rel && sha256sum ./*.gz); echo "ECMWF: $(ls rel/ifs | wc -l) stationer"; echo '```'; } | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Osäkerheten — den låstas kedja, den nyas veck, identiteten och omdragningen
+        shell: bash
+        run: |
+          set -o pipefail
+          RC=0; python3 fysik/vintrar/osakerhet.py --vinter 2022-23 --kandidat kuvos/kandidat-2026-27.json --modell modell.pkl --indata frusen \
+            --urvalet-vvis hink/v2425 --urvalet-metnordic mn2425/metnordic_2024-25.csv.gz --vvis hink/vinter --ifs rel/ifs --smhi smhi \
+            --metnordic rel/metnordic_analys_*.csv.gz --arbete arbete --ut ut --ny-ph hink/ph/ph_utan-2022-23_2022-23.npz \
+            --samman samman/samman.json 2>&1 | tee osakerhet.txt || RC=$?
+          cat ut/osakerhet_2022-23.md >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
+          rm -rf arbete hink modell.pkl
+          exit "$RC"
+      - name: Osäkerheten (bara aggregat)
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with: { name: nykand-osakerhet, path: ut/, retention-days: 90, if-no-files-found: ignore }

@@ -17503,3 +17503,69 @@ ersättningsregeln). Det gäller oavsett om bytet görs.
   den först när tre pulsjobb har försvunnit, inte vid ett eller två.
 
 **Stomdokument:** KUV den nya kandidaten loggar bredvid den låsta och den låsta talar
+
+## #707 (24/10 2026) Osäkerheten i jämförelsen på 2022/23 räknas med omdragning av stationer och dygn (metoden före räkningen); MET:s v4 har långvågen före 2022
+
+**Bengts ord 24/10:** *"ta reda på om tidigare vintrar v4 har långvågen (v4) och gör detta Bättre hade varit att räkna osäkerheten med en metod som tar hänsyn till att punkterna hänger ihop …"*, efter frågan om varför den nya fick ett högre krav (#702: V2 föll på −0,19 pe mot kravet −0,25).
+
+**1. MET:s omräkning v4 har långvågen för de äldre vintrarna** (läst 24/10, inget kört):
+- `metpparchivev4` bär `integral_of_surface_downwelling_longwave_flux_in_air_wrt_time` den 15/11 2018, 15/1 2019, 15/2 2020,
+  15/1 2021 och 15/12 2021, med värden på 170–360 W/m² i stickproven.
+- Det vanliga arkivet `metpparchive` saknar fältet 15/1 2019 (#672).
+- Där båda finns, 15/12 2022, 15/2 2023 och 15/1 2025, är v4:s långvåg identisk med arkivets i alla nio punkterna i varje stickprov.
+- För åren före 2022 är v4 en omräkning med dagens metod. Luften skilde där 0,10–0,37 °C per timme i medel mot arkivet (#694).
+- **Följd:** den låsta kan provas på 2018/19–2021/22 med v4:s långvåg. Det kräver en egen förregistrering före körningen, och här
+  körs ingenting.
+
+**2. Osäkerheten på 2022/23 — metoden, skriven före räkningen** (`fysik/vintrar/osakerhet.py`, steget `osakerhet` i
+`kuvos-ny-kandidat.yml`):
+- **Kandidaterna:**
+  - Den låsta räknas med sin egen vinterkedja, oförändrad (`vinterkedja.py kor()`: identitetsprovet på 2024/25, tidszonen och
+    vintern). Skriptet fångar bara PH och populationen på vägen in i måtten. Ingen fil i `KODEN` eller i `fysik/SHA256SUMS` rörs.
+  - Den nya är vecket utan 2022/23 (`ph_utan-2022-23_2022-23.npz` ur hinken, summan mot `kuvos/kandidat-2027-28.json`) med paret
+    W 0,25 · L 40 km, på samma population.
+- **Identiteten:** båda kandidaternas summor (n, nDec, grova fel, fel sida, absoluta fel) ska vara exakt samman:s (40024563991), och
+  punktmängderna ska vara desamma. Annars stoppar skriptet innan något dras om.
+- **Cellerna** är station × UTC-dygn. Inga celler och inga punkter lämnar jobbet.
+- **Omdragningen:** B = 2000 per schema, fröet 20261024.
+  - (S) stationer med återläggning;
+  - (D) dygn med återläggning;
+  - (SD) båda oberoende, där cellens vikt är stationens antal gånger dygnets antal. **SD är huvudschemat.**
+- **Talen:** ΔA2 = A2(den nya) − A2(den låsta) totalt (huvudtalet), i norr och i söder, samt ΔA1 och ΔA3. Intervallet är
+  2,5–97,5 % av omdragningarna, och andelen omdragningar med Δ ≥ 0 skrivs ut. Bredvid står det naiva parade felet, med punkterna som
+  oberoende.
+- **Läsningen:** förbättringen i A2 går att skilja från noll om hela SD-intervallet för ΔA2 totalt ligger under 0.
+- **Diagnos:** ingen dom och inget krav ändras (regel L). Den underkända V2 står kvar. Talet är underlag för bytesbeslutet
+  (FORREGISTRERING-2026-27 §12 b) och valet inför 2027/28 (§12 g).
+
+**Att lägga märke till:** den exakta skillnaden på 2022/23 är −0,183 procentenheter (4,3349 mot 4,5179 %, samman 40024563991). "−0,19"
+i #702 är skillnaden mellan två avrundade tal. Ingenting ändras av det, eftersom V2 krävde −0,25.
+
+**3. Utfallet** (kuvos-ny-kandidat 40092007287, steget osakerhet på `claude/osakerhet-2022-23` 37f1011a, 11:58–12:30 UTC; bara
+aggregat):
+- **Identiteten höll.** Båda kandidaternas summor är exakt samman:s, och de har samma 4 361 591 punkter vid 711 stationer och 152 dygn
+  (99 487 celler med punkter).
+
+| Δ (den nya − den låsta) | På populationen | 95 %, stationer och dygn (SD) | Stationer (S) | Dygn (D) | Andel ≥ 0 (SD) |
+| :-- | --: | --: | --: | --: | --: |
+| A2 totalt | −0,183 pe | −0,417 till +0,039 | −0,394 till +0,017 | −0,247 till −0,118 | 0,051 |
+| A2 norr | −0,494 pe | −1,206 till +0,170 | −1,146 till +0,126 | −0,678 till −0,307 | 0,075 |
+| A2 söder | −0,060 pe | −0,224 till +0,085 | −0,213 till +0,068 | −0,100 till −0,018 | 0,230 |
+| A1 totalt | −0,0153 °C | −0,0236 till −0,0074 | −0,0233 till −0,0078 | −0,0175 till −0,0131 | 0,000 |
+| A3 totalt | −0,030 pe | −0,048 till −0,014 | −0,045 till −0,017 | −0,039 till −0,022 | 0,000 |
+
+Det naiva intervallet, med punkterna som oberoende, är för ΔA2 −0,198 till −0,168 pe.
+
+**Läsningen (regeln ovan): förbättringen i A2 går inte att skilja från noll.** SD-intervallet når +0,039, och 5,1 % av omdragningarna
+ger ingen förbättring. Att lägga märke till:
+- **Osäkerheten sitter i stationerna.** Stationsschemat är nästan lika brett som SD, medan dygnsschemat är smalt. Den nya är alltså
+  mycket bättre vid vissa stationer och sämre vid andra, och vilka stationer som råkar ingå avgör talet.
+- **Det verkliga intervallet är femton gånger bredare än det naiva** (0,456 mot 0,030 pe), och ± 0,02 i ersättningsregeln §3 var det
+  naiva talet. Kravet 0,25 ligger inne i intervallet. På 2022/23 går −0,183 alltså varken att skilja från noll eller från −0,25.
+- **A1 och A3 är förbättrade utom rimligt tvivel:** medelfelet −0,015 °C och fel sida om noll −0,030 pe, där inga omdragningar gav
+  noll eller sämre.
+- I norr är punkttalet −0,49 pe, men intervallet når +0,17.
+
+Ingen dom och inget krav ändras (regel L). V2 står som fallet. Talen är underlag för bytesbeslutet (§12 b) och valet inför 2027/28 (§12 g).
+
+**Stomdokument:** KUV osäkerheten på 2022/23 med omdragning och v4 med långvåg före 2022
