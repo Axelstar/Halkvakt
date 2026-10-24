@@ -17393,6 +17393,16 @@ Skillnaden är ett dygn. Filens tal kommer ur träningens slutliga enhet och är
 - Flaggan i `kuvos/ny-kandidat-skugga.json` är av. Körningens nummer för den är 40067785091.
 - sql/068 är inte migrerad, och inga pulsrader finns.
 
+**I drift 24/10** (Bengt: *"efter det gör du 2 och 3"*, och *"Ja, alla tre i ordning"*): #1177, #1180 och #1179 är sammanslagna (1931e8d0, dbf584f1, 5ac09fa0). sql/068 migrerades 10:14 UTC med DB-knappen (40085094164 på main 5ac09fa0), och transaktionen är bekräftad. Beviset efter filen:
+- 5 tabeller `ny_kandidat_*`, alla med radskydd;
+- 4 funktioner;
+- 0 rader;
+- inga rättigheter för anon eller authenticated;
+- `ny_kandidat_regel()` ger 0 rader;
+- den frystas senaste logg var 09:00 UTC.
+
+Flaggan är av och inga pulsrader finns, så ingenting skriver i tabellerna.
+
 **Stomdokument:** KUV den nya kandidatens kedja klarade paritetsprovet och en felstartad förberedning avbröts
 
 ## #705 (24/10 2026) Olycksläsningen 2024/25 bokförd: sikten stryks; olyckorna bekräftar varken kandidaten eller efterhalkan
