@@ -17174,7 +17174,8 @@ användas under. Underlaget lades fram för Axel 24/10.
 
 **Beslut.**
 1. **Ägandet.** Axel Lagerlöf och Bengt Lagerlöf äger upphovsrätten till kod och dokument gemensamt och licensierar tillsammans.
-   Föreningen Halkvakt äger inget. Bengt bekräftar raden; till dess står den som Axels beslut.
+   Föreningen Halkvakt äger inget. ✅ **Bengt bekräftade raden 24/10** (*"Jag bekräftar ägarraden"*), efter att ha läst licensfilerna
+   i båda repona; raden står därmed som Axels och Bengts gemensamma beslut, inte som Axels ensam.
 2. **Koden:** Apache License 2.0 (`LICENSE`, `NOTICE`, `"license": "Apache-2.0"` i package.json).
 3. **Dokumenten:** CC BY-SA 4.0 (`LICENSE-docs`), med docs/, besluts-, tavel- och statusfilerna och data som KALLOR.json kallar
    "Halkvakts eget".
