@@ -68,7 +68,7 @@ Under: *3 VARNINGAR · VISAS TILLS NÄSTA TUR*. En tur utan varningar ger tillba
 egen panel efter resan: *SPARA RESAN?* och *"Resan slutade 14:05. Spara vägen du körde, så finns den under Favoriter. Den
 stannar i telefonen."*, tre namnknappar — *Till jobbet*, *Hem* och *Resa 18/10* (dagens datum) — *EGET NAMN* för fritext och
 *NEJ TACK* (på Android två namnknappar per rad, som missraderna). Med fem sparade resor står i stället *"Du har redan fem resor. Ta bort en under Favoriter först."* Frågan kommer
-bara efter en resa på minst en kilometer, och utan svar försvinner den och vägen efter ett dygn (DECISIONS #616, #625).
+bara efter en resa på minst två kilometer och fem minuter (DECISIONS #701), och utan svar försvinner den och vägen efter ett dygn (DECISIONS #616, #625).
 
 **02 På vakt.** En panel med *● PÅ VAKT* i grönt, minuter och kilometer i stort, och tre räknare (varningar, halka,
 vilt). Under den en streckad ruta: *"Tyst så länge — Inget på din väg än. Du hör det direkt när något dyker upp."*,

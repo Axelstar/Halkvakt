@@ -17217,3 +17217,27 @@ under halkvarningen.
 tidningar; piloten kan därför väljas som en väg in i en koncern.
 
 **Stomdokument:** inga — marknadsföringen ligger utanför de åtta (#598)
+
+## #701 (24/10 2026) Rättelserna efter Axels prov på 0.3.13 (33): bygget som skickas in blir (34)
+
+**Axels ord 24/10:** *"Okej men jag gör en ny resa nu, ska vi fixa det det sett nu"* och *"Men du fixar allt så det är klart om en
+timme och jag kan ta nya bilder"*, efter provet på (33) i bil och på tåget Malmö–Ystad med skärmbilder.
+
+**Byggt.**
+1. **SMHI-nivån i klartext.** Rapporten Dit / Hem visade *SMHI: Vind · nivå YELLOW*: lägesfilen bär SMHI:s nivåkod (`level_code`).
+   Raden säger nu *Gul varning*, *Orange varning* eller *Röd varning*, och bara *Varning* för en okänd kod — `smhiNiva` i
+   `publish/rapport-core.ts`, `Rapport.swift` och `Rapport.kt`; facit `engine/fixtures/rapport.json` och buntarna omskrivna.
+2. **Spara resan? klipps inte.** Meningen stod som *"…så finn…"* på Redo. — texten får sin höjd (`fixedSize`).
+3. **Raden under Starta vakten.** *INGEN TUR ÄN* stod efter en tur utan varningar och sa emot frågan om resan; efter en sådan tur
+   står nu *INGA VARNINGAR SENASTE TUREN*. Bara iPhone; Android följer i nästa bygge.
+4. **Flikraden göms bakom tangentbordet** i stället för att flyta upp över innehållet när *Eget namn* skrivs (`RootView`).
+5. **Minsta resa 2 km och 5 minuter** (förut 1 km, #633): på tåget kom frågan två gånger på en minut. Samma i båda apparna, i
+   kontraktsgrinden, och provet `enResaUnderFemMinuterErbjudsInte`.
+
+Byggnumret 0.3.13 (34) och Android versionCode 34. Inskicket görs med (34), inte (33) (#686), och skärmbilderna till butiken tas på (34).
+Varningskortet som syntes på tåget var Axels eget, framtaget genom att hålla på PÅ VAKT — ingen falsk varning.
+
+**Kvar, inte i det här bygget:** att vakten inte ska varna på tåg (Axel 24/10: *"något vi måste lösa också … men det är senare"*).
+
+**Stomdokument:** APP, FAV
+

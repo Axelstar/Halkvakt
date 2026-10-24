@@ -19,6 +19,7 @@ struct SparaResanKort: View {
                 MonoLabel(text: "Spara resan?")
                 Text("Resan slutade \(resa.slut.klockslag). Spara vägen du körde, så finns den under Favoriter. Den stannar i telefonen.")
                     .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2)
+                    .fixedSize(horizontal: false, vertical: true)   // hela meningen, aldrig "så finn…" (Axels skärmbild 24/10)
             }
             .padding(.vertical, 16)
 

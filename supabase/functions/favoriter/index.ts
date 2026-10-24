@@ -988,8 +988,13 @@ export function favoritRapport(rutt: Linje, live: LiveDoc, stat: StaticDoc, snab
       vag: k.vag ?? null, start: k.start ?? null });
   }
   for (const w of live.smhi as any[]) if (polygonTraffar(w.geom, rutt)) rader.push({ id: `smhi:${w.id}:${w.event}`, slag: "smhi",
-    rubrik: `SMHI: ${w.event ?? "varning"}`, text: `nivå ${w.niva ?? "–"}`, avstandM: 0, langsM: 0, vag: null, start: null });
+    rubrik: `SMHI: ${w.event ?? "varning"}`, text: smhiNiva(w.niva), avstandM: 0, langsM: 0, vag: null, start: null });
   return rader.sort((a, b) => ORDNING.indexOf(a.slag) - ORDNING.indexOf(b.slag) || a.langsM - b.langsM || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+}
+
+/** SMHI:s nivåkod i klartext (DECISIONS #701): "nivå YELLOW" stod i rapporten 24/10. Okänd kod ⇒ bara "Varning". */
+export function smhiNiva(kod: string | null | undefined): string {
+  return kod === "YELLOW" ? "Gul varning" : kod === "ORANGE" ? "Orange varning" : kod === "RED" ? "Röd varning" : "Varning";
 }
 
 /** Det som är nytt sedan förra kollen: id som inte fanns då. Första kollen har inget nytt. */
