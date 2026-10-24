@@ -168,6 +168,7 @@ jobs:
           python3 fysik/live/paritet.py --sjalvtest          # pariteten: båda vägarna på en påhittad källa, två mutationer (kort #343, steg 5)
           python3 fysik/live/indata.py --sjalvtest           # kedjan live: indatan för alla punkter
           python3 fysik/vintrar/sjalvtest.py                 # fler vintrar: läsaren, vakterna, måtten mot grind-a.ts, blandningen, proven (DECISIONS #666–#668)
+          python3 fysik/vintrar/osakerhet.py --sjalvtest     # osäkerheten på 2022/23: cellerna, omdragningen i tre scheman (DECISIONS #707)
           python3 fysik/ny_kandidat/sjalvtest.py             # den nya kandidaten: reserven, vinden, vecken, spärren, måtten, hela kedjan (DECISIONS #670)
           python3 fysik/ny_kandidat/trana.py --help > /dev/null && python3 fysik/ny_kandidat/forbered.py --help > /dev/null && python3 fysik/ny_kandidat/provning.py --help > /dev/null
           python3 fysik/ny_kandidat/sjalvtest_levande.py     # den nyas levande kedja: reserven alla timmar, paret, pariteten, den frysta orörd (DECISIONS #692)
