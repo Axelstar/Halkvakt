@@ -1,7 +1,7 @@
 # Anmälan till Trafikverket: sju väderstationer rapporterar fysiskt omöjlig yttemperatur
 
 **Datum:** 2026-09-21
-**Avsändare:** Lagerlöf Labs (Halkvakt) — [kontaktuppgifter fylls i före utskick]
+**Avsändare:** Axel Lagerlöf och Bengt Lagerlöf (Halkvakt) — [kontaktuppgifter fylls i före utskick]
 **Gäller:** öppna data, `WeatherMeasurepoint` / `WeatherObservation`, fältet för vägytans temperatur
 (`Surface.Temperature`)
 **Observationsfönster:** 24 augusti–21 september 2026 (349 141 observationer med både yt- och lufttemperatur

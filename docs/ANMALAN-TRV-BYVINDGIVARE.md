@@ -1,7 +1,7 @@
 # Anmälan till Trafikverket: nio väderstationer rapporterar fysiskt omöjlig byvind
 
 **Datum:** 2026-09-13
-**Avsändare:** Lagerlöf Labs (Halkvakt) — [kontaktuppgifter fylls i före utskick]
+**Avsändare:** Axel Lagerlöf och Bengt Lagerlöf (Halkvakt) — [kontaktuppgifter fylls i före utskick]
 **Gäller:** öppna data, `WeatherMeasurepoint` / `WeatherObservation`, fältet
 `Aggregated30minutes.Wind.SpeedMax`
 **Observationsfönster:** 4–13 september 2026 (115 987 observationer med byvind från 751 stationer)

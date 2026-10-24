@@ -55,7 +55,7 @@ peka direkt på halkvakt.se.*
 - Åldersfrågorna: inget av det som räknas upp ⇒ 4+.
 - Pris: gratis. Inga köp i appen.
 - Tillgänglighet: **bara Sverige** (DECISIONS #432).
-- Upphovsrätt: © 2026 Lagerlöf Labs.
+- Upphovsrätt: © 2026 Axel Lagerlöf och Bengt Lagerlöf. *(Lagerlöf Labs utgår, DECISIONS #706 — namnet är inget rättssubjekt; lydelsen är densamma som i `NOTICE`. Säljaren visas ur Apple-kontot, som är Individual i Axels namn, och ändras inte här.)*
 - EU:s näringsidkarstatus: inte näringsidkare (DECISIONS #320).
 
 ## App Privacy (frågeformuläret) — ur DECISIONS #320, stämmer med manifestet i (19)

@@ -13,7 +13,7 @@
 | Nr | Fråga | Status | Stängd av |
 | :-- | :-- | :-- | :-- |
 | B6-01 | TestFlight-länken ligger öppet i det publika repot | **klar** — *"Behåll den publika länken"*: följden för KB-D4 och Kompisarna först är utskriven | #683 |
-| B6-02 | Integritetssidan anger Axel under Lagerlöf Labs som utgivare | **klar** — *"Låt stå som det är"* | #683 |
+| B6-02 | Integritetssidan anger Axel under Lagerlöf Labs som utgivare | ↪ **överspelad 24/10 (DECISIONS #706)** — Bengt: *"Ta Lagerlöf Labs och jag blir personuppgiftsansvarig"*. ~~**klar** — *"Låt stå som det är"*~~ | #683 → #706 |
 | B6-03 | Föreningen i texter som ska ut eller styr | **klar** — *"Rätta allt som ska ut eller styr"* | #683 |
 | B6-04 | Ingen frist för Skyltfondens besked 15/12 | **klar** — fristen `skyltfonden-besked`, med plan vid ja och vid nej (Bengt utan preferens) | #683 |
 | B6-05 | QR-koden och /app | **klar** — *"Vänta på Google Play"* | #683 |

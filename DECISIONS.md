@@ -17471,3 +17471,43 @@ Två av tre villkor föll, och ett räckte. Driftens fall 8/10 (#491) står där
 behövs.
 
 **Stomdokument:** KUV olycksläsningen bokförd och sikten stryks
+
+## #706 (24/10 2026) Lagerlöf Labs utgår som avsändare; Bengt är personuppgiftsansvarig
+
+**Bakgrund.** #699 gav Axel och Bengt ägandet gemensamt och Bengt bekräftade raden 24/10, men två publika ytor sa fortfarande
+*Lagerlöf Labs* — ett namn som inte är ett rättssubjekt: App Store-copyrighten och integritetssidan. Frågan låg i bedömningens
+§4.2 i två delar, texten och personuppgiftsansvaret, med motsägelsen att #683 punkt 2 beslöt 23/10 att integritetssidan
+*"står som den är"* medan #699:s Följd lade rättelsen till nästa kartdeploy.
+
+**Bengts ord 24/10:** *"Ta Lagerlöf Labs och jag blir personuppgiftsansvarig"*.
+
+**Beslut.**
+1. **Lagerlöf Labs utgår** som avsändare och upphovsrättsinnehavare överallt där vi själva styr texten. Där det står kvar är det
+   för att det är namnet på ett konto hos Apple eller Google, inte ett påstående om vem vi är.
+2. **Personuppgiftsansvarig är Bengt Lagerlöf.** Integritetssidan namnger honom, och kontaktvägen är fortsatt hej@halkvakt.se.
+3. **#683 punkt 2 är överspelad** (*"Integritetssidan står som den är"*): sidan rättas, med denna post som skäl. B6-02 i
+   `docs/ATGARDER-FORARNA-2026-10-23.md` märks överspelad.
+
+**Gjort i det här varvet (huvudrepot).**
+- `marknadsforing/butik/appstore-ios.md`: upphovsrätten är *© 2026 Axel Lagerlöf och Bengt Lagerlöf*, som NOTICE.
+- `docs/ANMALAN-TRV-BYVINDGIVARE.md` och `docs/ANMALAN-TRV-YTGIVARE.md`: avsändaren är Axel och Bengt Lagerlöf (Halkvakt). Båda är
+  oskickade utkast; samma invändning fälldes redan i Skyltfondsgranskningen 29/9 (*"ett firmanamn som inte finns någon annanstans,
+  i en ansökan från en privatperson"*).
+
+**Inte gjort, och av vem.** Sessionen har ingen skrivbehörighet till kartrepot (git-proxyn nekar: det ligger inte i sessionens
+källor), och en push dit publicerar sidan. Texten till `integritet.html` är färdigställd och lämnad till Bengt; den byter ut
+*"Halkvakt ges ut av Axel Lagerlöf, Malmö, under namnet Lagerlöf Labs"*. Två ytor kan bara ägaren ändra, och de ligger inte i
+repot: **App Store** visar säljaren ur Apple-kontot, som är Individual i Axels namn (copyrightfältet är fri text och är det vi
+rättar), och **Google Play** visar utvecklarnamnet *Lagerlöf Labs* ur det personliga kontot (#271) — det ändras i Play Console, av
+Axel. `ios/HalkvaktApp/project.yml` och `docs/SYSTEM.md` nämner namnet som Apples respektive Googles kontonamn och är därför
+oförändrade: de beskriver vad kontona heter, inte vem som står bakom appen.
+
+**Att veta — den invändning som står kvar.** Personuppgiftsansvarig är den som faktiskt bestämmer syftet med och medlen för
+behandlingen. #699 slog fast att Axel och Bengt äger och licensierar *gemensamt*, och besluten om vad appen samlar in fattas av
+båda; då är utgångspunkten **gemensamt personuppgiftsansvar** (GDPR art. 26), som kräver en överenskommelse mellan dem om vem som
+svarar för vad. Att namnge Bengt ensam medan Axel äger Apple- och Play-kontona och publicerar appen är möjligt, men bara om Bengt
+verkligen är den som bestämmer behandlingen. Detta prövas inte av något skript och är inte avgjort här: det hör till samma
+halvtimmes rådgivning som samäganderättsavtalet i #699. Dessutom namnger sidan en ansvarig utan att ange den registrerades
+rättigheter eller klagomålsvägen till IMY; båda saknas i dag och är inte uppfunna här.
+
+**Stomdokument:** APP avsändaren på butiksytorna och integritetssidan, BED §4.2
