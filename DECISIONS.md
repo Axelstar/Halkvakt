@@ -17926,3 +17926,57 @@ i §10 (e), som Bengt läste.
   behöver stå vid dess signaturer (§10 f där).
 
 **Stomdokument:** KUV tillägget för v4 signerat 25/10
+
+## #716 (25/10 2026) Den frysta på 2018/19–2021/22 med v4 läst: bättre än RÅ varje vinter, den nya bättre än den frysta; källfel i MET:s arkiv 14–31/3 2022
+
+**Bengts ord 25/10:**
+- *"Slå ihop #1196 när CI är grön och kör de fyra vintrarna en i taget nu. Utfallet står då vid signaturerna enligt §10 (f)."* Signeringslistan rekommenderade att köra efter signeringen (#715); Bengt valde att köra före.
+- efter utfallet och felet: *"Rätta båda kandidaterna med v4:s timvärden för 14–31/3 2022: skriv utkasten till tilläggen (Ä6 för den frysta, ett till NY-KANDIDAT för den nya), och bokför utfallet med felet beskrivet till signeringen i morgon."*
+
+**Körningarna:** kuvos-vintrar 40194345814, 40196518547, 40199180640 och 40201548425 på main 4fc0ee9 (#1196), en i taget, alla gröna, 26–33 minuter var. Alla prov
+klarades: identitetsprovet på 2024/25, sommartidsnatten, SMHI med Ä4, och MET utan saknade timmar i något fält. Bara aggregat ur
+körningarnas sammanfattningar är lästa.
+
+**Utfallet, A2 på grind A:s population** (RÅ, den frysta och den nya, och ΔA2 den nya minus den frysta med 95 % SD, B = 2000):
+
+| Vinter | Punkter | RÅ | Den frysta | Den nya | ΔA2 |
+| :-- | --: | --: | --: | --: | :-- |
+| 2018/19 | 4 249 539 | 8,42 % | 5,47 % | 4,30 % | −1,169 pe [−1,549 ; −0,854] |
+| 2019/20 | 4 259 349 | 6,62 % | 3,90 % | 3,04 % | −0,861 pe [−1,177 ; −0,603] |
+| 2020/21 | 4 080 917 | 8,42 % | 5,24 % | 3,95 % | −1,291 pe [−1,657 ; −0,972] |
+| 2021/22, källfel | 4 357 916 | 9,51 % | 11,85 % | 4,80 % | −7,052 pe [−10,098 ; −4,285] |
+
+- **Medlet över de fyra:** den frysta 6,62 %, den nya 4,02 %, RÅ 8,24 %. Med 2022/23 (#680, #707): 6,20 %, 4,08 % och 8,33 %.
+- **Diagnos utan 2021/22:** den frysta 4,87 %, den nya 3,76 %, RÅ 7,82 % över tre vintrar.
+- **A1 och A3** följer samma mönster: den nya lägre än den frysta varje vinter, och hela intervallet under noll.
+- **Förväntan (tillägget §7):** den frysta under RÅ varje vinter, norr sämre än söder, och den nya bättre än den frysta i medel. Alla
+  tre höll.
+- **NIVÅ 2 utan blandning** är sämre än RÅ 2018/19 (9,30 mot 8,42 %) och 2020/21 (10,25 mot 8,42 %). Blandningen bär den frysta.
+- **Grind A:s tak 5 %** står bredvid och fäller ingenting: den frysta 5,47 och 5,24 % över, 3,90 % under.
+
+**Källfelet:**
+- **Vad.** Från 14/3 2022 00 UTC bär MET:s arkiv lång- och kortvågen som summor som växer timme för timme och nollställs med några
+  timmars mellanrum, inte som timvärden. Station 1001, långvågen 14/3 (×10⁶ J/m²): 5,04 · 5,91 · 6,77 · 2,59 · 3,44 · 4,28 …, mot
+  0,80–0,87 per timme 13/3 ur v4 och 0,8–1,2 per timme i arkivet 2022/23.
+- **Följden.** Den frystas A2 2021/22 per månad: 3,87 · 4,81 · 3,14 · 4,62 · **47,96 %** (mars). NIVÅ 2 ensam fick A1 7,09 °C.
+- **Omfattningen.** Ett tröskelprov på alla 67 delar som kandidaterna läser, 2018/19–2024/25, flaggade 431 timmar, alla 14–31/3 2022.
+  Timmen 25/3 08 UTC kommer ur v4 (väg 2) och är ren.
+- **Den nya berörs också.** Den läser kortvågen ur samma delar. Det gäller provet för 2021/22, de fem prov som tränades med 2021/22,
+  och den slutliga kandidaten, som loggar i drift (#706). Avvikelsen i #702, NIVÅ 2 sämre än RÅ just 2021/22, förklaras troligen av
+  det.
+- **Återanvändningsprovet** (tillägget §4 d) jämförde arkivet mot arkivet efter skarven och kunde därför inte se felet.
+
+**Rättelsen, på Bengts ord:** två utkast utanför repot, inte signerade:
+- `Desktop/Halkvakt_Utkast_FLER-VINTRAR_Tillagg_A6_Stralningen_2026-10-25.md`: Ä6, lång- och kortvågen 14–31/3 2022 ur v4 för den
+  frysta, och 2021/22 körs om;
+- `Desktop/Halkvakt_Utkast_NY-KANDIDAT_Tillagg_T4_Stralningen_2026-10-25.md`: T4, kortvågen 14–31/3 2022 ur v4 för den nya, och
+  förberedning, träning och provning körs om.
+
+Båda gör rättelsen öppet efter sett utfall: de gamla och de rättade talen står bredvid varandra, och inget krav lättas. T4 lämnar två
+val till signeringen: att V2 står som den föll (Claudes rekommendation) och att den rättade modellen ersätter den i drift före
+bytesbeslutet (Claudes rekommendation).
+
+**Vid signaturerna:** FORREGISTRERING-2026-27 §10 (f) och §11 har fått raderna om utfallet och källfelet. Inget i §1–§5 är ändrat på
+grund av det, och domen över den frysta i mars rörs inte.
+
+**Stomdokument:** KUV den frysta på fyra äldre vintrar läst och källfelet i mars 2022

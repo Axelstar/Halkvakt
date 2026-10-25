@@ -291,6 +291,8 @@ mot godkänt på grund av det (regel L). Utfallet är det första mått som säg
 *Tillägg 23/10 (#689):* bara 2022/23 gick att köra, eftersom MET:s arkiv saknar långvågen före 14/3 2022 (#672). Utfallet lästes
 22/10 (kuvos-vintrar 39766761188, #680) och ska stå vid signaturerna. Den nya kandidaten på sex vintrar (#670–#672) prövas utanför
 den här domen, och dess provning trycks först när ersättningsregeln är signerad (#689).
+*Tillägg 25/10 (#715, #716):* med MET:s omräkning v4 kördes också 2018/19–2021/22, på Bengts ord före signeringen. Utfallet står
+vid signaturerna, med källfelet 14–31/3 2022.
 
 **(g) Förarnas vikter (§4b punkt 13; Bengt 24/10, DECISIONS #709).** ✅ I repot 24/10, före signeringen:
 `kuvos/forarnas-vikter-2026-27.json` (sha256 2817ccda…b994) med indatans kontrollsummor; `fysik/vintrar/forarnas_vikter.py --prova`
@@ -332,6 +334,12 @@ timmen. Andelen sådana timmar redovisas.
 *Läst före signeringen (§10 f): den frysta kandidaten på vintern 2022/23, 22/10 2026, körning 39766761188 (DECISIONS #680).
 NIVÅ 2+BLANDNING på grind A:s population, 4 361 591 punkter vid 718 stationer: A1 0,522 °C, A2 4,52 %, A3 0,30 % (RÅ 0,693 °C,
 8,66 %, 0,60 %). Inget i §1–§5 är ändrat på grund av det.*
+
+*Läst före signeringen (§10 f): den frysta kandidaten på vintrarna 2018/19–2021/22 med MET:s v4, 25/10 2026, enligt tillägget till
+FLER-VINTRAR (#715), körningar 40194345814, 40196518547, 40199180640 och 40201548425 (DECISIONS #716). NIVÅ 2+BLANDNING på grind A:s population, A2
+(RÅ inom parentes): 2018/19 5,47 % (8,42 %), 2019/20 3,90 % (6,62 %), 2020/21 5,24 % (8,42 %), 2021/22 11,85 % (9,51 %). 2021/22 bär
+ett källfel: MET:s arkiv har lång- och kortvågen som växande summor 14–31/3 2022, och den frystas A2 i mars blev 47,96 %. Rättelsen
+med v4:s timvärden är ett utkast till tillägg (Ä6) och ändrar inte den här domen. Inget i §1–§5 är ändrat på grund av det.*
 
 *Lättnader före signeringen enligt regel L (#564), skrivna efter läsningen ovan: §4b punkt 13, 14 och 16. Det sedda talet, skälet
 (L4 a), vilka data (domfönstret, L2) och svaret på L3 står i DECISIONS #710.*
