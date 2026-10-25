@@ -17789,3 +17789,36 @@ favoriterna följde med inskicket.
 **Ändrat:** delen *Spara en rutt* i projektkartan (det som saknas och steget *Prov*), och kort #357 med en ny Kvar-rad.
 
 **Stomdokument:** FAV proven på telefon 25/10 och (34) godkänd
+
+## #714 (25/10 2026) Tillägget för den frysta på 2018/19–2021/22 med v4 i repot som utkast, med långvågens 44 delar låsta
+
+**Bengts ord 25/10**, på frågan om tillägget ska läggas som PR med kontrollsummorna så fort hämtningen är klar: *"ja"*.
+
+**Hämtningen:** kuvos-vintrar 40164264875 (steget `langvag-v4` på grenen `claude/langvag-v4`, #711), klar 25/10 med 44 av 44 delar
+gröna.
+
+| Vinter | Delar | Timmar ur v4 | Timmar ur arkivet | Saknade timmar |
+| :-- | --: | --: | --: | --: |
+| 2018/19 | 11 | 3 648 | 0 | 0 |
+| 2019/20 | 11 | 3 672 | 0 | 0 |
+| 2020/21 | 11 | 3 648 | 0 | 0 |
+| 2021/22 | 11 | 3 216 | 431 | 1 |
+
+**Den saknade timmen** är 25/3 2022 08 UTC, efter skarven, i alla 754 rutor. Arkivet saknar timmen helt, och den nyas del har den ur
+v4 enligt T2, men långvågen tas efter skarven ur arkivet och står därför tom. Det är 0,03 % av vintern, under kravet högst 1 %. Valet
+står i tilläggets §10 (e): timmen står tom, eller långvågen tas ur v4 som Ä2 gör med de andra fälten (Claudes rekommendation).
+
+**Låst:**
+- `kuvos/langvag-v4-leverans.json` bär listans, utfilens och källdelens summa för varje del. Alla tre var lika med releasernas egna
+  sha256 för de 44 delarna, kontrollerat 25/10.
+- I PR #1196 läser vinterkedjan en vinter bara när varje del och lista har sin summa där och ingen låst del saknas (`lw4_leverans()`
+  och `lw4_prov()`, fem nya prov i självtestet, 15 för tillägget).
+
+**Tillägget:** `docs/FORREGISTRERING-FLER-VINTRAR-TILLAGG-2026-10-25.md`, status UTKAST. Det är utkastet från Desktop med hämtningens
+utfall i §2, låsningen i §4 (c) och §9, och valet (e) i §10.
+
+**Ordningen:** Bengt och Axel läser och signerar. Sedan slås #1196 ihop, och de fyra vintrarna körs en i taget. Signeringslistan för
+26/10 rekommenderar att de körs efter signeringen av FORREGISTRERING-2026-27, så att inget nytt sett tal behöver stå vid dess
+signaturer (§10 f där).
+
+**Stomdokument:** KUV tillägget för v4 i repot som utkast med de låsta summorna
