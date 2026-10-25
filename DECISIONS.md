@@ -17569,3 +17569,94 @@ ger ingen förbättring. Att lägga märke till:
 Ingen dom och inget krav ändras (regel L). V2 står som fallet. Talen är underlag för bytesbeslutet (§12 b) och valet inför 2027/28 (§12 g).
 
 **Stomdokument:** KUV osäkerheten på 2022/23 med omdragning och v4 med långvåg före 2022
+
+## #708 (24/10 2026) Nivåernas ärliga intervall på 2022/23, inför valet av variant för FORREGISTRERING-2026-27 §4b punkt 12 (metoden före körningen)
+
+**Bengts ord 24/10:** *"Räkna först intervallets bredd för den låstas A2 på 2022/23 med samma omdragning, bara aggregat, så väljer vi
+variant sedan."*
+
+Bakgrund: utkastet till §4b punkt 12 (`Desktop/Halkvakt_Utkast_ArligOsakerhet_2026-10-24.md`, inte i repot) har två varianter. I
+variant A räknas ett KLARAR i grind A bara om även intervallet med omdragning av stationer och dygn ligger under tröskeln. I variant B
+redovisas intervallet bara. #707 räknade intervallet för en *skillnad* mellan kandidaterna. För en *nivå* är det inte känt.
+
+**Metoden** (`fysik/vintrar/osakerhet.py`, samma körning som #707, steget `osakerhet`):
+- Samma celler (station × UTC-dygn), samma tre scheman (S, D, SD) och samma vikter (fröet 20261024), så att omdragningarna är
+  desamma som för skillnaden.
+- **Nivåerna** är A1, A2 och A3 för båda kandidaterna: totalt, i norr och i söder (A2), och per ankarband (grind A:s band ur
+  punktens ankaravstånd). Varje band dras om för sig, på sina egna stationer och dygn.
+- **Bredvid** står marginalvaktens intervall (punkttalet ± 1,96 · det naiva felet) och om SD-intervallet når över grind A:s tröskel
+  (A1 ≤ 1,0 °C, A2 ≤ 5 %, A3 ≤ 10 %).
+- **Diagnos.** Den låstas tal på 2022/23 är redan sedda (#680), och ingenting ändras av dem. Svaret är hur brett ett ärligt intervall för
+  en nivå blir, så att variant A och B kan väljas med kunskap om vad de betyder.
+
+**Utfallet** (kuvos-ny-kandidat 40097374211, `claude/osakerhet-nivaer` 538afb72, 13:15–13:48 UTC; bara aggregat). Identiteten mot
+samman höll igen. A2 med grind A:s tröskel 5 %:
+
+| | Punkttal | Marginalvakten | 95 % SD (stationer och dygn) | SD mot 5 % |
+| :-- | --: | --: | --: | :-- |
+| Den låsta, totalt | 4,52 % | 4,50–4,54 % | 3,79–5,28 % | når över |
+| Den nya, totalt | 4,33 % | 4,32–4,35 % | 3,65–5,07 % | når över |
+| Den låsta, norr | 9,01 % | 8,96–9,06 % | 7,49–10,66 % | helt över |
+| Den låsta, söder | 2,73 % | 2,72–2,75 % | 2,16–3,38 % | under |
+| Den låsta, 0–7 km (81 stationer) | 4,82 % | 4,76–4,88 % | 2,97–7,11 % | når över |
+| Den låsta, 7–15 km (377 stationer) | 2,78 % | 2,76–2,80 % | 2,22–3,41 % | under |
+| Den låsta, 15–20 km (238 stationer) | 4,61 % | 4,57–4,66 % | 3,52–5,87 % | når över |
+| Den låsta, över 20 km (256 stationer) | 7,97 % | 7,91–8,02 % | 6,51–9,55 % | helt över |
+
+A1 (0,52 °C mot 1,0) och A3 (0,30 % mot 10 %) ligger långt under sina trösklar i varje schema och band, för båda kandidaterna.
+
+**Att lägga märke till:**
+- **Bredden.** Det ärliga intervallet för en nivå är ungefär ± 0,75 procentenheter nationellt, mot marginalvaktens ± 0,02. I banden
+  med få stationer är det bredare: 0–7 km har ± 2 procentenheter.
+- **Variant A skulle på 2022/23 ha gett OAVGJORT nationellt** för båda kandidaterna, eftersom 4,52 % och 4,33 % ligger under taket men
+  intervallen når över det. Variant B hade gett KLARAR.
+- **Banden prövas inifrån** (punkt 3: 7–15 km bara om också 0–7 km klarar). Med variant A hade 0–7 km blivit OAVGJORT, på bara 81
+  stationer, och 7–15 km, som ligger klart under taket, hade aldrig prövats.
+- **Intervallet är tvåsidigt** (2,5–97,5 %). Påståendet "under taket" är ensidigt. En ensidig läsning skulle använda 95 %-gränsen och
+  ge en något lägre övre gräns. Den är inte räknad här.
+
+Ingen dom och inget krav ändras (regel L). Det här är underlaget för valet mellan variant A och B i utkastet till §4b punkt 12.
+
+**Stomdokument:** KUV nivåernas ärliga intervall på 2022/23 inför valet av variant för domen
+
+## #709 (24/10 2026) Förarnas vikter byggda före signeringen: trafiken som varje station i grind A representerar
+
+**Bengts ord 24/10:** *"Ja, bygg stationsvikterna för förarnas mått som PR med självtest och kontrollsumma, så att de ligger i repot
+före signeringen. Slå inte ihop."*
+
+Underlag för utkastet till FORREGISTRERING-2026-27 §4b punkt 13 (förarnas mått, `Desktop/Halkvakt_Utkast_Domen_Fem_Punkter_2026-10-24.md`,
+inte i repot). **Vikterna gäller bara om den punkten signeras.**
+
+**Byggt:**
+- `fysik/vintrar/forarnas_vikter.py` räknar trafikarbetet, ÅDT × 2 km i fordonskilometer per dygn som i #490, för de väglagspunkter
+  som ligger närmast varje station (storcirkel; vid exakt lika avstånd vinner den första i ordningen).
+  - `--rakna` skriver vikterna.
+  - `--prova` räknar om ur indatan och kräver att filen är exakt densamma. Det körs i ci.
+  - `--sjalvtest` har nio prov, bland dem regeln i domen: en station utan mätningar tas bort, och dess punkter går till närmaste
+    kvarvarande station.
+- `kuvos/kandidatstationer-2026-27.json`: grind A:s 754 stationer. De lästes med DB-knappen i läsläge (dbknapp 40103476137,
+  `kandidat_station` de senaste två dygnen), och alla 754 har position i `data/vagdata/stationer.json`.
+- `kuvos/forarnas-vikter-2026-27.json`: vikterna och indatans kontrollsummor:
+  - `vaglagspunkter.json` 2cb7f738…;
+  - `stationer.json` d27e5390…;
+  - `kandidatstationer-2026-27.json` 350a3180….
+
+**Summering:**
+- 12960 väglagspunkter, varav 126 utan ÅDT, som bär 0.
+- Trafikarbetet är 106908028 fordonskilometer per dygn.
+- 705 stationer har vikt och 49 har ingen.
+- Avståndet från punkt till station är i median 6,75 km, 95 % ligger inom
+  19,27 km och det längsta är 40,62 km.
+- Trafikens andel norr om 62° är 10,8 %, och den största stationen bär
+  1,45 %.
+
+**Att lägga märke till:**
+- **49 stationer får ingen vikt.** Ingen väglagspunkt ligger närmast dem, eftersom en annan station ligger
+  närmare vägen. Deras fel räknas inte i förarnas mått men står kvar i det gamla måttet.
+- **Norr bär 10,8 % av trafiken** men ungefär 28 % av stationstimmarna (1 239 136 av 4 361 591 på 2022/23, #708). Det är skälet till
+  att förarnas mått väger norr lättare.
+- **Det effektiva antalet stationer är ungefär 377**, alltså 1 / Σ p². Viktningen gör därför det ärliga intervallet bredare, som
+  utkastets förväntan säger (§7).
+- Vikterna är räknade bara på indatan. Inga mätningar och inga modelltal är lästa.
+
+**Stomdokument:** KUV förarnas vikter byggda före signeringen för förarnas mått i utkastet

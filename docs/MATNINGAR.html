@@ -149,7 +149,7 @@
 </style>
 
 <main class="blad">
-  <div class="etikett">Teknisk analys · intern · 29 september 2026 · uppdaterad 22 oktober</div>
+  <div class="etikett">Teknisk analys · intern · 29 september 2026 · uppdaterad 25 oktober</div>
   <h1>Vad Halkvakt mäter, hur det räknas och vad det visat</h1>
   <p class="ingress">Syskonsidan till Halkvaktens systembild: allt projektet mäter. Motorn som kör i apparna, vakterna och källorna som är i drift, reglerna som prövas i skuggan och facitkällorna, i 22 delområden. För varje del står vad den mäter, hur, vilka tal som finns och vad mätningen är till för. Talen kommer ur beslutsloggen (numren inom parentes), tröskeldokumenten, koden och körningarnas loggar. Utfall som är blindade till domarna visas bara som antal.</p>
   <div class="fakta">
@@ -307,7 +307,7 @@
       <li><span aria-hidden="true">✓</span> <b>Data i arkivet</b> <span style="color: var(--dampad, #4A5763)">klart · wind_gust_ms och visibility_m (sql/011_vind_sikt.sql:8–14), skrivs av ingest-live/skriv.ts:141–142</span></li>
       <li><span aria-hidden="true">○</span> <b>Publicerat i lägesfilen</b> <span style="color: var(--dampad, #4A5763)">saknas · Varken vind eller sikt i live.json (snapshot-core.ts:447–456)</span></li>
       <li><span aria-hidden="true">◐</span> <b>Mätt i skuggan</b> <span style="color: var(--dampad, #4A5763)">pågår · W-A: scripts/vindsikt-steg0.ts + vindsikt-steg0.yml, trycks av vakthund/index.ts:86; W-B byggs när W-A passerat (#363)</span></li>
-      <li><span aria-hidden="true">◐</span> <b>Dom</b> <span style="color: var(--dampad, #4A5763)">pågår · W-A 8/10 (37754429130, DECISIONS #491): B2 sikt FALLER (kvot 0,37, krav ≥ 1,5); B1 byvind OAVGJORT, 116 stationstimmar i högsta bandet mot 500; tidigare OAVGJORT 12/9 och 24/9 (#113, #331); trycks vid frost (#338)</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Dom</b> <span style="color: var(--dampad, #4A5763)">pågår · W-A 8/10 (37754429130, DECISIONS #491): B2 sikt FALLER (kvot 0,37, krav ≥ 1,5); B1 byvind OAVGJORT, 116 stationstimmar i högsta bandet mot 500; tidigare OAVGJORT 12/9 och 24/9 (#113, #331); trycks vid frost (#338); W-A:s andra serie med olyckorna 2024/25 (kuvos 40014153522, #705): sikten stryks, byvinden OAVGJORT (kvot 1,33, inte skild från 1,5)</span></li>
       <li><span aria-hidden="true">○</span> <b>Villkoret i motorn</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen vind- eller siktregel i engine.ts</span></li>
       <li><span aria-hidden="true">○</span> <b>Testfall i tre språk</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen vektor; ingen port läser vind eller sikt</span></li>
       <li><span aria-hidden="true">○</span> <b>I appen</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen text i texts.ts; röst efter W-C och Axels ja</span></li>
@@ -349,7 +349,7 @@
         <tr><td><a href="#d-nedtyp">7.2 Nederbördstypen</a></td><td>L2</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>dom tidigast 1/3 2027</td></tr>
         <tr><td><a href="#d-radar">7.3 Nederbördsradarn</a></td><td>L2</td><td><span class="lage drift">i drift</span></td><td>faktor 0,65, täckning 91 %</td></tr>
         <tr><td><a href="#d-vatten">7.4 Vattenplaning</a></td><td>L2</td><td><span class="lage nedlagd">stängd</span></td><td>V-B föll 19/10: 81 % falsklarm mot 20 % (#648); steg D struket 21/10 (#657)</td></tr>
-        <tr><td><a href="#d-vind">7.5 Vind och sikt</a></td><td>L2</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>W-A: sikten faller, byvinden oavgjord</td></tr>
+        <tr><td><a href="#d-vind">7.5 Vind och sikt</a></td><td>L2</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>W-A: sikten struken, byvinden oavgjord</td></tr>
         <tr><td><a href="#d-smhi">7.6 SMHI-förstärkaren</a></td><td>L2</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>0 vintervarningar i arkivet</td></tr>
         <tr><td><a href="#d-olja">7.7 Olja på vägen</a></td><td>L2</td><td><span class="lage skugga">körs i skuggan</span></td><td>i drift 1/10, 5 aktiva (alla vägskador)</td></tr>
         <tr><td><a href="#d-forsprang">8.1 Försprånget</a></td><td>L5</td><td><span class="lage skugga">körs i skuggan</span></td><td>alla 30 rutter sedan T0 22/10 (#664, #674); kod 3–4 i arkivet sedan 20–21/10</td></tr>
@@ -1362,7 +1362,7 @@
       <div><b>209 834</b><span>rader i senaste körningen (24/9, 14 dygn)</span></div>
       <div><b>11</b><span>stationer med fysiskt omöjliga byvindar</span></div>
       <div><b>2,23 ×</b><span>fler olyckor i bandet 10–15 m/s (12/9)</span></div>
-      <div><b>W-A</b><span>sikten faller 8/10 <span class="dom faller">faller</span>, byvinden oavgjord</span></div>
+      <div><b>W-A</b><span>sikten struken 24/10 <span class="dom faller">faller</span>, byvinden oavgjord</span></div>
     </div>
     <p><b>Nytta:</b> faller den första grinden läggs kortet ner utan en rad kod. Klarar rollen som förvärrare förlänger den försprånget men höjer aldrig prioriteten.</p>
     <details><summary>Hur den mäter</summary><div class="inne">
@@ -1380,6 +1380,7 @@
         <li>13/9: byvindvakten diskade 9 av 42 stationer, som bar 46 av 110 stationstimmar över 15 m/s, varav 45 omöjliga.</li>
         <li>24/9, 14 dygn, 209 834 rader: byvind i 99,3 % och sikt i 99,9 % av raderna, 11 stationer med omöjliga timmar, högsta byvind 87,7 m/s. 16 stationstimmar i högsta vindbandet och 243 i högsta siktbandet. Oavgjort (#331).</li>
         <li>8/10 (#491): 14 dygn (körning 37754429130): byvind i 92,1 % och sikt i 92,5 % av 694 048 rader. B1 byvind oavgjord (116 stationstimmar i högsta bandet, krav 500). B2 sikt faller: 41,1 olyckstimmar per 1 000 vid sikt över 1 000 m och 15,1 under 200 m, kvot 0,37 mot kravet 1,5. 27 stationer med trasig byvindgivare.</li>
+        <li>23–24/10 (#705): W-A:s andra serie, kuvösens vinter 2024/25 med Trafikverkets olyckor (körning 40014153522), 2 701 498 stationstimmar vid 754 stationer. Sikten: 8,84 olyckstimmar per 1 000 över 1 000 m och 6,76 under 200 m, kvot 0,76 [0,61–0,95], och på dagtid 0,85 [0,63–1,14]; W-A3 och riktningen på dagtid föll, så <b>sikten stryks</b>. Byvinden: kvoten 1,33 och W-A4 håller, men OAVGJORT eftersom den inte går att skilja från 1,5. Driftens W-A räknar i praktiken på 10–14 km (ST_Expand 0,25°), inte 15 km (#698). Ingen text eller kod som nämner siktgrinden är ändrad.</li>
       </ul>
     </div></details>
   </section>
@@ -1578,7 +1579,7 @@
   <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-p-grindarna">Grindarna och domkalendern</a> <span style="color: var(--dampad, #4A5763)">delvis, 93 % · kvar: Domlarmet i drift: måndagsserien 26/10 med domlarmet i grind A, hojd-prov, V-A och V-B (bokförda domar, ska tiga; fristen mandagsserien-26-10)</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">✓</span> <b>Tröskeldokument skrivna</b> <span style="color: var(--dampad, #4A5763)">klart · Tretton: TROSKLAR-SKUGGAN, -VATTENPLANING (#68), -TRENDEN, -RIMFROST, -FRYSKLASSNINGEN, -VIND-SIKT och -SMHI-FORSTARKAREN (fyra fastställda i #135), -NEDERBORDSTYPEN (#361, #362), -FORSPRANG, -KOMBINATIONEN, -OVERGANGAR, -TYSTNADSFEL och -VAGLAGETS-ALDER; regel L i alla tretton (#564)</span></li>
-      <li><span aria-hidden="true">✓</span> <b>Pulsklockan och frosttriggern</b> <span style="color: var(--dampad, #4A5763)">klart · Måndagsserien är sju jobb i scripts/pulsklocka.ts:53–59 (grind A, smhi-prov, cell-matning-v3, trv-bevakning, hojd-prov, V-A, V-B; kort #160); frosttriggern supabase/functions/vakthund/frosttryck.ts med flödena i vakthund/index.ts:82–86 (#338, #352); 19/10 startade måndagsserien inte (morgonavbrottet) och kördes om för hand 13:02–13:17 UTC; V-A och V-B körs vidare varje måndag fast domarna är bokförda, med flit (#648, #657, #662)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Pulsklockan och frosttriggern</b> <span style="color: var(--dampad, #4A5763)">klart · Måndagsserien är sju jobb i scripts/pulsklocka.ts:53–59 (grind A, smhi-prov, cell-matning-v3, trv-bevakning, hojd-prov, V-A, V-B; kort #160); frosttriggern supabase/functions/vakthund/frosttryck.ts med flödena i vakthund/index.ts:82–86 (#338, #352); 19/10 startade måndagsserien inte (morgonavbrottet) och kördes om för hand 13:02–13:17 UTC; V-A och V-B körs vidare varje måndag fast domarna är bokförda, med flit (#648, #657, #662); värdevakten ligger sedan 7a498d2 (#688) som jobbet puls-vardevakten, måndagar 08:00 UTC, i pulsklockans lista (PULS_GOLV och ANTAL_NYA 19)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Självtester i CI</b> <span style="color: var(--dampad, #4A5763)">klart · ci.yml:92–112: grindarna A, vägpunkten (hojd-prov), K-A, K-B, R-A, R-B, S-B, NT, V-B och kodgrinden, tystnadsfelet och uppspelning-facit, samt fristvakten och domlarmet (#649); T-A, V-A och W-A i egna flöden</span></li>
       <li><span aria-hidden="true">✓</span> <b>Domkalendern</b> <span style="color: var(--dampad, #4A5763)">klart · MATNINGAR.html §11, docs/KALENDERN.md (plikterna) och docs/fristerna.json (datumen som larmar, #649); domarna står i ämnesdelarnas Dom-steg, en ägare per grind (#649)</span></li>
       <li><span aria-hidden="true">✓</span> <b>A2:s population läst</b> <span style="color: var(--dampad, #4A5763)">klart · Körning 38510855935 på 2564f80 14/10 (DECISIONS #554, förregistrerad före knappen; utfallet inskrivet i 31d476e): 60 dygn, 737 stationer, 102 610 mätpunkter; A2 för OFFSET 4,1 % över alla rader mot 4,0 % i beslutsbandet −5…+5 och 4,1 % i −5…+3; de grova felen ligger i proportion till punkterna; läsningen ger inget stöd för att A2 fäller på rader som inte kan skada. Ingen tröskel och ingen dom rörd; frågan om A2:s population står i bedömningens §4.2; populationen avgjord 21/10: oförändrad för vintern 2026/27, skriven i förregistreringen §4 (Bengt, DECISIONS #659)</span></li>
