@@ -1056,7 +1056,7 @@ mätningar — R1–R16 nedan är strukna och står kvar bara som historik.**
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
 ## Öppna kort
 
-Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 23 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
+Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 19 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
 
 **§1 NU — före första frosten**
 
@@ -1070,16 +1070,12 @@ Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 23 kort
 
 **§4.2 Öppna**
 
-- #311 🔓 #311 PUBLIKT REPO — ACTIONS GRATIS, ELLER TAKET 35 USD SLÅS I (BESLUTSUNDERLAG 9/10 — Axel, exklusivt hans … — Axel, beslut
 - #214 PLAY-DEKLARATIONEN ÄR OSANN SEDAN 16/9 — Axel, beslut
-- #354 REMSAN PÅ HALKVAKT.SE — VILANDE TILLS AXELS KARTBYGGE ÄR KLART (PÅMINNELSE — Bengt 16/10) — Bengt
-- #303 VÄGDATALAGRET, STEG 3 — KUVÖSENS INLÄSNING OCH AXELS KOLUMNER — Bengt
 - #299 SPRIDNINGSGRINDEN OCH NATTBEGRÄNSNINGEN — TVÅ FÖRSLAG TILL TROSKLAR-SKUGGAN UR KUVÖSEN — Bengt
 - #298 PROGNOSLAGRET — ALLT PÅ BORDET: FEMTON VÄGAR, FYRA MÄTBARA I KUVÖSEN NU — Bengt
 - #297 MATEMATIKEN OCH FYSIKEN — EFTERHALKANS MÅTT STRAFFAR FÖRSPRÅNGET, OCH DAGGPUNKTEN SAKNAS — Bengt
 - #296 EFTER GRANSKNINGEN — TVÅ BESLUT FÖRE MARS-DOMEN: Ö-B1 "INOM RÄCKVIDD" OCH STARTBANDETS ÖVRE DEL — Bengt
 - #270 PROGNOSLAGRET EFTER PREMISSMÄTNINGARNA — BENGTS VAL a–h — Bengt
-- #218 BATTERIBUDGETEN HAR ALDRIG MÄTTS, OCH iOS KÖR FULL GAS — Bengt
 - #361 🧭 #361 BLOCK 4, MOTORN — ÅTGÄRDSLISTAN B4-01 TILL B4-60 (BESTÄLLD 21/10 — Claude, Bengts "jag vill åtgärda … — Claude
 - #342 VÄG B — ÄRLIGA TAL FÖRE FRYSNINGEN (BESLUTAT 13/10 — Claude, Bengts ja och Axels ja via Bengt, DECISIONS #544) — Claude
 - #344 🌡️ #344 FJÄRRYTORNA — EN PLATS GER TVÅ ANKARE I SKUGGANS RÅ (FYND 14/10, AVGJORT SAMMA KVÄLL: INGEN ÄNDRING … — Claude, låst
@@ -1089,9 +1085,5 @@ Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 23 kort
 - #276 OLJA PÅ VÄGEN — HALKA SOM RÖSTEN INTE SÄGER — Claude, låst
 - #153 ALLVAR SOM FÖRSPRÅNG + ETT SMALARE UNDANTAG — beslut 1 omformulerat 16/9 och väntar, beslut 2 öppet (Bengts) — Claude, låst
 - #316 UBUNTU-LATEST BLIR UBUNTU 26 DEN 19/10 — FLÖDENA PRÖVAS FÖRE (UPPTÄCKT 9/10 — Claude, GitHubs notis i … — pågår
-
-**§5 Integrationsläget — mätt mot kartan (24/9, Bengts fråga "hur långt i integrationen har vi kommit")**
-
-- #311 🔓 #311 PUBLIKT REPO — ACTIONS GRATIS, ELLER TAKET 35 USD SLÅS I (BESLUTSUNDERLAG 9/10 — Axel, exklusivt hans … — Axel, beslut
 
 <!-- /ÖPPNA KORT -->

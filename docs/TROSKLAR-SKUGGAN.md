@@ -216,6 +216,13 @@ lydelsen från 1/9, som lät prognosen tala på modellerade värden i strid med 
 
   **Taket byggt före läsningen (Bengt 17/10: *"taket nu"*, DECISIONS #606; en skärpning enligt §5):** kandidaten talar högst en gång per 10 minuter från bygge 0.3.13 (27), utan att vänta på läsningen 2/11. Underlaget: mellanläsningen 17/10 (DB-knappen 38992453770, underlaget 15/10 10:32 – 17/10 01:32 UTC): 226 körningar på 20 rutter, passager bara på E10 Luleå→Kiruna (5 körningar, 22 passager, 2 dygn), 17 följder, 3 inom 10 minuter = 17,6 %, tätast 334 s, median 1 047 s. Båda grenarna i regeln ovan pekade redan mot tak. Läsningen 2/11 körs ändå, som mätning och inte som beslut. Att ta bort taket efteråt vore en lättnad efter sett utfall och går bara genom regel L (#564).
 
+  *Ändrat 24/10 2026 (Bengts ok, DECISIONS #710; en lättnad enligt regel L, L2 och L4 a, med formkraven i posten):* blir grind A
+  OAVGJORT mot taket med den ärliga osäkerheten, men kandidaten tydligt bättre än RÅ, talar den som här en vinter till, 2027/28, enligt
+  FORREGISTRERING-2026-27 §4b punkt 16. Det gäller en gång och bara domfönstret från signeringen.
+
+  *Ändrat 25/10 2026 (Bengt, DECISIONS #710; en skärpning enligt §5):* säkerhetsläsningen 1/12, 1/1 och 1/2 (FORREGISTRERING-2026-27
+  §4b punkt 17) stänger av kandidaten före domen om den säkert är sämre än RÅ.
+
 Bevisbördan ligger på skuggan. Vid tvekan: tystnad (produktinvarianten).
 
 ## 5. Ändringsregler
