@@ -17660,3 +17660,25 @@ inte i repot). **Vikterna gäller bara om den punkten signeras.**
 - Vikterna är räknade bara på indatan. Inga mätningar och inga modelltal är lästa.
 
 **Stomdokument:** KUV förarnas vikter byggda före signeringen för förarnas mått i utkastet
+
+## #712 (25/10 2026) Kort #303, #311 och #354 stängda på Bengts ord
+
+**Bengts ord 25/10**, efter genomgången av projektkartans listor *Väntar på Bengt* och *Väntar på Axel*:
+- *"slå ihop 1189, stäng 354"*;
+- *"stäng 311 vi har gått över till Supabase pro"*;
+- *"stäng 303"*.
+
+**#303 Vägdatalagret, steg 3.** Punkt (1) är avskriven, som kortets Verify tillåter. Läsningarna läser filerna i `data/vagdata/`
+direkt, som förarnas vikter (#709) och osäkerheten (#707) redan gör, och tabellen `kuvos_ra.vagdata` behövs inte. Axels kolumner (2)
+och Lastkajen (3) var klara sedan 13–14/10.
+
+**#311 Publikt repo.** Repot är publikt sedan 9/10 (#503). Kvar-raden stryks utan att vara prövad: kassavakten för november och Axels
+bekräftelse av hemlighetsskanning och push-skydd.
+
+**#354 Remsan på halkvakt.se.** Kartbygget är klart och remsans text gällde till 19/10. PR Axelstar/halkvakt-karta#3 stängs med
+beslutet. Formen finns kvar i dess gren (439cfdc) och kan återanvändas vid nästa varning, med ny text och nytt slutdatum.
+
+**Samtidigt:** PR #1189 (inskicket av 0.3.13 (34), #701) är sammanslagen (cd96931). Main fördes in i grenen, och den kompilerade filen
+`marknadsforing/butik/appstore/__pycache__/alf.cpython-313.pyc`, som följt med av misstag, togs bort före sammanslagningen.
+
+**Stomdokument:** inga — tavlans kort och projektkartans listor

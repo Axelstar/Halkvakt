@@ -873,11 +873,10 @@ ingen läser en överspelad version någon annanstans.
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
 ## Öppna kort
 
-Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 4 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
+Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 3 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
 
 **§5 Fogarna — var en skuggdel kan greppa, och vad den kostar**
 
-- #303 VÄGDATALAGRET, STEG 3 — KUVÖSENS INLÄSNING OCH AXELS KOLUMNER — Bengt
 - #88 TRENDEN — vi mäter var minut men använder bara sista värdet — Claude, låst
 
 **§6 Var lagren står, mätt**
