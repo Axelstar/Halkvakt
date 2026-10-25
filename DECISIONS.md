@@ -17991,6 +17991,17 @@ och att v4 är timvärden. Båda talen, före och efter rättelsen, står bredvi
 
 **Stomdokument:** KUV utkastet Ä6 till FLER-VINTRAR i repot
 
+## #718 (25/10 2026) Utkastet T4 till NY-KANDIDAT i repot: kortvågen 14–31/3 2022 ur v4 för den nya
+
+**Bengts ord 25/10:** *"Ja, förbered signerings-PR:en med allt utom R, och lägg Ä6 och T4 i repot som utkast-PR:er i kväll."*
+
+`docs/FORREGISTRERING-NY-KANDIDAT-TILLAGG-T4-2026-10-25.md`, status UTKAST, ur utkastet från Desktop (#716). T4 tar kortvågen 14–31/3 2022 ur MET:s v4 i den nyas delar, och
+förberedningen, träningen (alla sex prov och den slutliga kandidaten), provningen och samman körs om. Två val vid signeringen:
+att V2 står som den föll (Claudes rekommendation) och att den rättade modellen ersätter den i drift före bytesbeslutet (Claudes
+rekommendation). Ingen kod är byggd och ingenting är kört.
+
+**Stomdokument:** KUV utkastet T4 till NY-KANDIDAT i repot
+
 ## #719 (25/10 2026) Ä6 till FLER-VINTRAR signerat: lång- och kortvågen 14–31/3 2022 ur v4 för den frysta
 
 **Bengts ord 25/10:** *"Ja, gör stickprovet på v4 för 14–31/3 2022. Visar det timvärden: signera Ä6 och T4 för mej och Axel med Claudes rekommendationer i T4 (V2 står, och den rättade modellen ersätter den i drift), och slå ihop när CI är grön."*
@@ -18009,3 +18020,26 @@ med trappformsprovet och de andra proven före läsningen. Jämförelsen med den
 efter rättelsen, står bredvid varandra.
 
 **Stomdokument:** KUV Ä6 till FLER-VINTRAR signerat
+
+## #720 (25/10 2026) T4 till NY-KANDIDAT signerat: kortvågen 14–31/3 2022 ur v4 för den nya; V2 står, och den rättade modellen ersätter den i drift
+
+**Bengts ord 25/10:** *"Ja, gör stickprovet på v4 för 14–31/3 2022. Visar det timvärden: signera Ä6 och T4 för mej och Axel med Claudes rekommendationer i T4 (V2 står, och den rättade modellen ersätter den i drift), och slå ihop när CI är grön."*
+
+**Signerat:** `docs/FORREGISTRERING-NY-KANDIDAT-TILLAGG-T4-2026-10-25.md`. Bengt för sig och för Axel via Bengt, som i #695 och #715. Dokumentets sha256 vid signeringen, före
+statusraden och signaturerna: `b4d6d31d0dd21714f2c12ceece27a77d31ae8cecee843100cf0bebf919ab9940`.
+
+Stickprovet 25/10, före signaturen: v4 hämtades för 48 timmar 14, 20 och 28/3 2022 vid station 1001 och 1004. Långvågen var
+0,84–1,17·10⁶ J/m² per timme och kortvågen hade vanlig dygnsform, alltså timvärden. Mot arkivets summor omräknade till
+timvärden var medianen av den relativa skillnaden 0,00 % för långvågen (46 par) och för kortvågen (34 par dagtid); kravet är
+högst 5 %. Störst var skillnaden 20/3 14 UTC vid station 1001: 4,7 % i långvågen och 17 % i kortvågen. Skriptet:
+`Desktop/Halkvakt_Signering_2026-10-26/skript/v4_stickprov.ts`.
+
+**Det som nu gäller:**
+- T4. Kortvågen 14/3 00 UTC – 31/3 23 UTC 2022 tas ur v4 i den nyas delar. Förberedningen, träningen (alla sex prov och den
+  slutliga kandidaten), provningen och samman körs om, och jämförelserna med den frysta därefter.
+- §3 (a): V2 står som den föll (#702). De rättade talen är underlag för bytet (FORREGISTRERING-2026-27 §12 b) och valet inför
+  2027/28 (§12 g), inte en ny prövning av ersättningsregeln. De gamla och de rättade talen står bredvid varandra.
+- §4 (a): den rättade modellen ersätter den som loggar i drift (#706) före bytesbeslutet, efter ett nytt paritetsprov (§12 a);
+  bytet loggas med datum och timme, och beslutet senast 30/11 fattas på den rättade modellens tal.
+
+**Stomdokument:** KUV T4 till NY-KANDIDAT signerat
