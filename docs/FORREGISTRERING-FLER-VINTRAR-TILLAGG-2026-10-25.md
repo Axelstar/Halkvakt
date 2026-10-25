@@ -8,7 +8,8 @@ Bengts ord 25/10:
   ingen kod och ingen körning."*;
 - *"ja vi gör det så har vi säkrat allt vi kan om bästa metod bygg så att du återanvänder allt som går att återanvända"*, på förslaget
   att hämta långvågen före signeringen;
-- *"ja"*, på frågan om tillägget ska läggas som PR med kontrollsummorna så fort hämtningen är klar.
+- *"ja"*, på frågan om tillägget ska läggas som PR med kontrollsummorna så fort hämtningen är klar;
+- *"Väg 2: ta långvågen ur v4 också för timmen 25/3 2022 08 UTC. Ändra langvag_v4.ts, ta bort delens två filer i releasen 2021-22, hämta om delen och byt summorna i manifestet i #1198."*, valet i §10 (e).
 
 Tillägget ändrar FORREGISTRERING-FLER-VINTRAR (signerad 22/10, #668) genom en daterad post med båda signaturerna, som dess §8 kräver.
 
@@ -33,11 +34,12 @@ Tillägget ändrar FORREGISTRERING-FLER-VINTRAR (signerad 22/10, #668) genom en 
   - stickproven av v4 (#694, #707).
 - **Inte sett:** inga tal för den frysta på 2018/19–2021/22, och ingen fysik är körd för den på de vintrarna.
 - **Gjort före signeringen, öppet** (#711, #714). Långvågen är hämtad ur v4 till releaserna `kuvos-vintrar-<vinter>`, i körningen
-  kuvos-vintrar 40164264875 med steget `langvag-v4`, klar 25/10 med 44 av 44 delar gröna.
+  kuvos-vintrar 40164264875 med steget `langvag-v4`, klar 25/10 med 44 av 44 delar gröna. Delen 15–29/3 2022 hämtades om samma dag
+  (40188743733) efter valet i §10 (e).
   - Det är bara MET:s öppna data. Inga VViS-data och inga modelltal är lästa.
   - För den nya kandidaten signerades T1 och T2 före fyllningen. Här är ordningen den omvända, och det står här.
 - **Delarna är låsta.** Summorna står i `kuvos/langvag-v4-leverans.json`, med sha256
-  `fab96f7af1215b3223b59c7395ade3efab3ac15f60313c1baa0a3b7ec1dead8c` när det här skrevs. För var och en av de 44 delarna är listans,
+  `c70dcc1064550cda5a5a9726026e8d1c0c931f2018a173388c850cec8154bf63` när det här skrevs. För var och en av de 44 delarna är listans,
   utfilens och källdelens summa lika med releasens egen sha256 (kontrollerat 25/10). Vinterkedjan läser en vinter bara när varje del
   och lista har sin summa där (§4 c).
 
@@ -46,18 +48,17 @@ Tillägget ändrar FORREGISTRERING-FLER-VINTRAR (signerad 22/10, #668) genom en 
 | 2018/19 | 11 | 3 648 | 0 | 0 | 2 750 592 |
 | 2019/20 | 11 | 3 672 | 0 | 0 | 2 768 688 |
 | 2020/21 | 11 | 3 648 | 0 | 0 | 2 750 592 |
-| 2021/22 | 11 | 3 216 | 431 | 1 | 2 750 592 |
+| 2021/22 | 11 | 3 217 | 431 | 0 | 2 750 592 |
 
-- **Den saknade timmen** är 25/3 2022 08 UTC, efter skarven, i alla 754 rutor.
-  - Arkivet saknar timmen helt. Den nyas del har den ur v4 enligt T2 (`fyllt_2022-03-15_2022-03-29.json` i releasen), men långvågen
-    tas efter skarven ur arkivet, så den står tom.
-  - Det är 1 av 3 648 timmar (0,03 %), och den räknas mot kravet högst 1 % (Ä2). Valet står i §10 (e).
+- **Timmen 25/3 2022 08 UTC**, efter skarven, saknas helt i arkivet. Den nyas del har den ur v4 enligt T2
+  (`fyllt_2022-03-15_2022-03-29.json` i releasen). Den första hämtningen tog långvågen efter skarven bara ur arkivet, så timmen stod
+  tom i alla 754 rutor. På Bengts val i §10 (e) tas också långvågen ur v4 för den, och delen är hämtad om. Ingen timme saknas nu.
 
 ## 3. Ändringarna
 
 Bara det arkivet saknar tas ur v4. Allt annat är den nya kandidatens redan hämtade data, återanvända.
 - **Ä1. Långvågen ur v4** för de timmar där arkivet saknar fältet, alltså 1/11 2018–13/3 2022. Från 14/3 2022 tas den ur arkivet som
-  förut. Den fylls i den nya kandidatens delar (`metnordic_fylld_<del>`, annars `metnordic_reserv_<del>`), där kolumnen är tom, och
+  förut, utom en timme som arkivet saknar helt; den tas ur v4, som Ä2 (§10 e). Den fylls i den nya kandidatens delar (`metnordic_fylld_<del>`, annars `metnordic_reserv_<del>`), där kolumnen är tom, och
   skrivs som `metnordic_lw4_<del>` med en lista `lw4_<del>.json` (`fysik/vintrar/langvag_v4.ts`). Inget annat fält ändras.
 - **Ä2. Saknade timmar ur v4.** Redan gjort i den nyas delar enligt T2: en timme som arkivet saknar helt är tagen ur v4. Kravet högst
   1 % per fält prövas i kedjan, och en timme utan långvåg räknas mot det.
@@ -80,7 +81,7 @@ Ingen av de fyra vintrarna läses förrän proven är klarade:
   med den nyas del fylld med långvågen (`langvag_v4.ts`): **18 096 av 18 096 rader var byte för byte lika i alla sju fälten.** Den
   återanvända vägen ger alltså exakt det som den frystas hämtning ger, där båda går att köra.
 - **(e) Självtest** i ci:
-  - långvågens fyllning, 16 prov;
+  - långvågens fyllning, 17 prov;
   - spärren, station 7, delarna och de låsta summorna, 15 prov;
   - jämförelsens frö och rubrik.
 
@@ -140,12 +141,12 @@ Den är byggd i PR #1196 (`claude/langvag-v4`) och inte ihopslagen:
 - **(b) Körningen:** vintrarna en i taget, enligt MET:s villkor om en förbindelse åt gången.
 - **(c) Kontrollprovet på 2022/23:** ersatt av återanvändningsprovet (§4 d), som är klarat.
 - **(d) Bytesbeslutet:** efter talen men senast 30/11, eftersom säkerhetsläsningen 1/12 är den första läsningen av vinterns data.
-- **(e) Timmen 25/3 2022 08 UTC** (§2). Två vägar:
-  1. Den står tom som nu, och räknas mot kravet högst 1 %.
-  2. Långvågen tas ur v4 också för en timme som arkivet saknar helt efter skarven, som Ä2 redan gör med de andra fälten. Då görs en
-     del om (2021/22, 15–29/3), och dess två summor byts i `kuvos/langvag-v4-leverans.json` före signeringen.
-
-  Claudes rekommendation är väg 2, eftersom den följer Ä2 och gör vintern hel. Inget tal är sett åt något håll.
+- **(e) Timmen 25/3 2022 08 UTC (§2): väg 2, vald av Bengt 25/10.** Långvågen tas ur v4 också för en timme som arkivet saknar helt
+  efter skarven, som Ä2 gör med de andra fälten. Bengts ord: *"Väg 2: ta långvågen ur v4 också för timmen 25/3 2022 08 UTC. Ändra langvag_v4.ts, ta bort delens två filer i releasen 2021-22, hämta om delen och byt summorna i manifestet i #1198."*
+  - `fysik/vintrar/langvag_v4.ts` hämtar en sådan timme ur v4 och listar den i `ur_v4_efter_skarven` (PR #1196).
+  - Delens två filer togs bort ur releasen `kuvos-vintrar-2021-22`, och delen hämtades om (40188743733).
+  - De nya summorna står i `kuvos/langvag-v4-leverans.json`, och de gamla står kvar under `omhamtad`.
+  - Den andra vägen var att låta timmen stå tom och räknas mot kravet högst 1 %. Inget tal var sett åt något håll.
 
 ## 11. Signaturer
 

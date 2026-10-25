@@ -17802,11 +17802,19 @@ gröna.
 | 2018/19 | 11 | 3 648 | 0 | 0 |
 | 2019/20 | 11 | 3 672 | 0 | 0 |
 | 2020/21 | 11 | 3 648 | 0 | 0 |
-| 2021/22 | 11 | 3 216 | 431 | 1 |
+| 2021/22 | 11 | 3 217 | 431 | 0 |
 
-**Den saknade timmen** är 25/3 2022 08 UTC, efter skarven, i alla 754 rutor. Arkivet saknar timmen helt, och den nyas del har den ur
-v4 enligt T2, men långvågen tas efter skarven ur arkivet och står därför tom. Det är 0,03 % av vintern, under kravet högst 1 %. Valet
-står i tilläggets §10 (e): timmen står tom, eller långvågen tas ur v4 som Ä2 gör med de andra fälten (Claudes rekommendation).
+**Timmen 25/3 2022 08 UTC** saknas helt i arkivet, efter skarven. Den nyas del har den ur v4 enligt T2, men den första hämtningen
+tog långvågen efter skarven bara ur arkivet, så den stod tom i alla 754 rutor.
+
+**Väg 2, Bengts val 25/10** (tilläggets §10 e): *"Väg 2: ta långvågen ur v4 också för timmen 25/3 2022 08 UTC. Ändra langvag_v4.ts, ta bort delens två filer i releasen 2021-22, hämta om delen och byt summorna i manifestet i #1198."*
+- `langvag_v4.ts` tar en timme som arkivet saknar helt efter skarven ur v4 och listar den i `ur_v4_efter_skarven`. Ett nytt prov i
+  självtestet (17). PR #1196.
+- Delens två filer togs bort ur releasen `kuvos-vintrar-2021-22`, och delen hämtades om (40188743733): 1 timme ur v4, 359 ur arkivet,
+  ingen saknad. Summorna är bytta i manifestet, och de gamla står kvar under `omhamtad`.
+- **Avvikelse i omhämtningen:** körningen slutade som *failure* på ett jobb, 2018/19 13–27/2 2019. Dess kontroll *Finns delen
+  redan i releasen?* hittade inte delen, så den hämtades om i onödan, och uppladdningen vägrade eftersom filerna redan fanns.
+  Releasen är orörd: alla 132 summor i manifestet (del, lista och källdel för 44 delar) var lika med releasernas egna efteråt.
 
 **Låst:**
 - `kuvos/langvag-v4-leverans.json` bär listans, utfilens och källdelens summa för varje del. Alla tre var lika med releasernas egna

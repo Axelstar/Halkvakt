@@ -1,5 +1,5 @@
 {
- "_om": "Långvågen ur MET:s omräkning v4 (metpparchivev4, MET Norway, NLOD / CC BY 4.0) för den frysta kandidaten på 2018/19–2021/22, tillägget till FORREGISTRERING-FLER-VINTRAR (Ä1, DECISIONS #711 och #714). Hämtad 25/10 av kuvos-vintrar 40164264875 (steget langvag-v4) till releaserna kuvos-vintrar-<vinter>: en del metnordic_lw4_<del>.csv.gz och en lista lw4_<del>.json per del, bredvid den nya kandidatens källdel. Summorna lästa ur listorna och kontrollerade mot releasernas egna sha256 25/10. Vinterkedjan läser en vinter bara när varje del och lista har sin summa här.",
+ "_om": "Långvågen ur MET:s omräkning v4 (metpparchivev4, MET Norway, NLOD / CC BY 4.0) för den frysta kandidaten på 2018/19–2021/22, tillägget till FORREGISTRERING-FLER-VINTRAR (Ä1, DECISIONS #711 och #714). Hämtad 25/10 av kuvos-vintrar 40164264875 (steget langvag-v4) till releaserna kuvos-vintrar-<vinter>: en del metnordic_lw4_<del>.csv.gz och en lista lw4_<del>.json per del, bredvid den nya kandidatens källdel. Summorna lästa ur listorna och kontrollerade mot releasernas egna sha256 25/10. Vinterkedjan läser en vinter bara när varje del och lista har sin summa här. Delen 2022-03-15_2022-03-29 hämtades om 25/10 av kuvos-vintrar 40188743733 på Bengts val i tilläggets §10 (e): timmen 25/3 2022 08 UTC, som arkivet saknar helt, har långvågen ur v4 (ur_v4_efter_skarven).",
  "korning": 40164264875,
  "skarv": "2022-03-14T00:00:00Z",
  "releaser": {
@@ -812,21 +812,22 @@
    "fran": "2022-03-15",
    "till": "2022-03-29",
    "lista": "lw4_2022-03-15_2022-03-29.json",
-   "lista_bytes": 530,
-   "lista_sha256": "ca484c9ea98405a0bb1e01f034f2821c86a71f7cb4f96419d8da49e5a837b6c8",
+   "lista_bytes": 556,
+   "lista_sha256": "3bfbe5c5068d37c950bedd1382890cfb97d81daee723acd43af3c5fc05e5ebd9",
    "fil": "metnordic_lw4_2022-03-15_2022-03-29.csv.gz",
-   "fil_bytes": 4927427,
-   "fil_sha256": "626b94c544939f89b985619d45f6efd0fbb5315b7a9d563250fd93e591e3b223",
+   "fil_bytes": 4929892,
+   "fil_sha256": "5729cd15184e28b231286523ed0d32d25d19791f32fbb7496c9e0cc7da187555",
    "kalla": "metnordic_fylld_2022-03-15_2022-03-29.csv.gz",
    "kalla_sha256": "f22ac25140825c1e771fc3b9b3d3649910a3baffb062796b519eb196e3207dbc",
-   "ur_v4": 0,
+   "ur_v4": 1,
    "ur_arkivet": 359,
-   "saknas": [
-    "2022-03-25T08:00:00Z"
-   ],
-   "tomma_varden": 754,
+   "saknas": [],
+   "tomma_varden": 0,
    "rader": 271440,
-   "stationer": 754
+   "stationer": 754,
+   "ur_v4_efter_skarven": [
+    "2022-03-25T08:00:00Z"
+   ]
   },
   {
    "vinter": "2021-22",
@@ -847,5 +848,13 @@
    "rader": 36192,
    "stationer": 754
   }
- ]
+ ],
+ "omhamtad": {
+  "del": "2022-03-15_2022-03-29",
+  "korning": 40188743733,
+  "forut": {
+   "lista_sha256": "ca484c9ea98405a0bb1e01f034f2821c86a71f7cb4f96419d8da49e5a837b6c8",
+   "fil_sha256": "626b94c544939f89b985619d45f6efd0fbb5315b7a9d563250fd93e591e3b223"
+  }
+ }
 }
