@@ -17789,3 +17789,69 @@ favoriterna följde med inskicket.
 **Ändrat:** delen *Spara en rutt* i projektkartan (det som saknas och steget *Prov*), och kort #357 med en ny Kvar-rad.
 
 **Stomdokument:** FAV proven på telefon 25/10 och (34) godkänd
+
+## #714 (25/10 2026) Tillägget för den frysta på 2018/19–2021/22 med v4 i repot som utkast, med långvågens 44 delar låsta
+
+**Bengts ord 25/10**, på frågan om tillägget ska läggas som PR med kontrollsummorna så fort hämtningen är klar: *"ja"*.
+
+**Hämtningen:** kuvos-vintrar 40164264875 (steget `langvag-v4` på grenen `claude/langvag-v4`, #711), klar 25/10 med 44 av 44 delar
+gröna.
+
+| Vinter | Delar | Timmar ur v4 | Timmar ur arkivet | Saknade timmar |
+| :-- | --: | --: | --: | --: |
+| 2018/19 | 11 | 3 648 | 0 | 0 |
+| 2019/20 | 11 | 3 672 | 0 | 0 |
+| 2020/21 | 11 | 3 648 | 0 | 0 |
+| 2021/22 | 11 | 3 217 | 431 | 0 |
+
+**Timmen 25/3 2022 08 UTC** saknas helt i arkivet, efter skarven. Den nyas del har den ur v4 enligt T2, men den första hämtningen
+tog långvågen efter skarven bara ur arkivet, så den stod tom i alla 754 rutor.
+
+**Väg 2, Bengts val 25/10** (tilläggets §10 e): *"Väg 2: ta långvågen ur v4 också för timmen 25/3 2022 08 UTC. Ändra langvag_v4.ts, ta bort delens två filer i releasen 2021-22, hämta om delen och byt summorna i manifestet i #1198."*
+- `langvag_v4.ts` tar en timme som arkivet saknar helt efter skarven ur v4 och listar den i `ur_v4_efter_skarven`. Ett nytt prov i
+  självtestet (17). PR #1196.
+- Delens två filer togs bort ur releasen `kuvos-vintrar-2021-22`, och delen hämtades om (40188743733): 1 timme ur v4, 359 ur arkivet,
+  ingen saknad. Summorna är bytta i manifestet, och de gamla står kvar under `omhamtad`.
+- **Avvikelse i omhämtningen:** körningen slutade som *failure* på ett jobb, 2018/19 13–27/2 2019. Dess kontroll *Finns delen
+  redan i releasen?* hittade inte delen, så den hämtades om i onödan, och uppladdningen vägrade eftersom filerna redan fanns.
+  Releasen är orörd: alla 132 summor i manifestet (del, lista och källdel för 44 delar) var lika med releasernas egna efteråt.
+
+**Låst:**
+- `kuvos/langvag-v4-leverans.json` bär listans, utfilens och källdelens summa för varje del. Alla tre var lika med releasernas egna
+  sha256 för de 44 delarna, kontrollerat 25/10.
+- I PR #1196 läser vinterkedjan en vinter bara när varje del och lista har sin summa där och ingen låst del saknas (`lw4_leverans()`
+  och `lw4_prov()`, fem nya prov i självtestet, 15 för tillägget).
+
+**Tillägget:** `docs/FORREGISTRERING-FLER-VINTRAR-TILLAGG-2026-10-25.md`, status UTKAST. Det är utkastet från Desktop med hämtningens
+utfall i §2, låsningen i §4 (c) och §9, och valet (e) i §10.
+
+**Ordningen:** Bengt och Axel läser och signerar. Sedan slås #1196 ihop, och de fyra vintrarna körs en i taget. Signeringslistan för
+26/10 rekommenderar att de körs efter signeringen av FORREGISTRERING-2026-27, så att inget nytt sett tal behöver stå vid dess
+signaturer (§10 f där).
+
+**Stomdokument:** KUV tillägget för v4 i repot som utkast med de låsta summorna
+
+## #715 (25/10 2026) Tillägget för den frysta på 2018/19–2021/22 med v4 signerat
+
+**Bengts ord 25/10:** *"Jag har läst #1198. Signera tillägget för v4 för mej och Axel och slå ihop när CI är grön."*
+
+**Signerat:** `docs/FORREGISTRERING-FLER-VINTRAR-TILLAGG-2026-10-25.md`. Bengt för sig och för Axel via Bengt, som i #671, #692 och #695.
+Dokumentets sha256 vid signeringen, före statusraden och signaturerna: `59cdab8706ca5c85a1c870307f9994c8e233ff8cba26a83b31f50bc5e7529d52`. Det är versionen i #1198 (2e9acaf1), med väg 2
+i §10 (e), som Bengt läste.
+
+**Det som nu gäller:**
+- Ä1–Ä5 för 2018/19–2021/22. Långvågens 44 delar är låsta i `kuvos/langvag-v4-leverans.json` (sha256 `c70dcc1064550cda5a5a9726026e8d1c0c931f2018a173388c850cec8154bf63`).
+- Valen i §10:
+  - fröet 20261025;
+  - vintrarna en i taget;
+  - återanvändningsprovet i stället för kontrollprovet på 2022/23;
+  - bytesbeslutet senast 30/11;
+  - timmen 25/3 2022 08 UTC ur v4 (väg 2).
+
+**Följd:**
+- Spärren i #1196 släpper de fyra vintrarna först när #1196 är ihopslagen, och den slås ihop på Bengts ord.
+- Inget modelltal för den frysta på de fyra vintrarna var läst vid signeringen.
+- Signeringslistan för 26/10 rekommenderar att vintrarna körs efter signeringen av FORREGISTRERING-2026-27, så att inget nytt sett tal
+  behöver stå vid dess signaturer (§10 f där).
+
+**Stomdokument:** KUV tillägget för v4 signerat 25/10
