@@ -4,9 +4,11 @@
 // valjDelar väljer dem) bär redan MET:s arkiv med sex fält i analysfilens form, tillägget T2:s timmar ur v4 och vinden ur x och y för
 // 2018/19 — allt utom långvågen, vars kolumn langvag_jm2 står tom. Här fylls BARA långvågen, timme för timme:
 //   - före 14/3 2022 ur v4 (metpparchivev4), eftersom arkivet saknar fältet från 2018 till 13/3 2022 (#670, #707);
-//   - från 14/3 2022 ur arkivet (metpparchive), som för 2022/23.
+//   - från 14/3 2022 ur arkivet (metpparchive), som för 2022/23;
+//   - en timme efter skarven som arkivet saknar helt (404) ur v4, som Ä2 tar timmens andra fält (Bengt 25/10, tilläggets §10 e:
+//     "Väg 2: ta långvågen ur v4 också för timmen 25/3 2022 08 UTC", DECISIONS #714). Timmarna listas i ur_v4_efter_skarven.
 // Inget annat fält ändras, och raderna och deras ordning är källdelens. Värdet skrivs som den frystas hämtning skriver det
-// (ingest/metnordic-historik.ts dygn(): varde('langvag_jm2', …), timvärdet rakt av). En timme som saknas i sin källa (404), eller ett
+// (ingest/metnordic-historik.ts dygn(): varde('langvag_jm2', …), timvärdet rakt av). En timme som saknas i båda källorna, eller ett
 // fyllnadsvärde, blir tomt och räknas mot kedjans krav på högst 1 % per fält (MAX_IFYLLT).
 // Utfilerna, bredvid källdelen i releasen, som står kvar: metnordic_lw4_<fran>_<till>.csv.gz och lw4_<fran>_<till>.json (källans namn
 // och summa, timmarna per källa, de saknade timmarna och utfilens summa). Bara öppna data (MET Norway, NLOD / CC BY 4.0) — inga
@@ -55,10 +57,10 @@ async function hamta(url: string): Promise<{ buf: Uint8Array; ms: number }> {
 /** Källan för en timme: v4 före skarven, arkivet från den. */
 export const kallaFor = (tid: string): "v4" | "arkivet" => (tid < SKARV ? "v4" : "arkivet");
 
-/** Timmens fil (DAP) i sin källa. */
-export function filFor(tid: string): string {
+/** Timmens fil (DAP) i sin källa, eller i den källa som anges. */
+export function filFor(tid: string, kalla: "v4" | "arkivet" = kallaFor(tid)): string {
   const dag = tid.slice(0, 10), t = Number(tid.slice(11, 13));
-  return kallaFor(tid) === "v4" ? filnamnV4(dag, t) : filnamnArkiv(dag, t);
+  return kalla === "v4" ? filnamnV4(dag, t) : filnamnArkiv(dag, t);
 }
 
 /** Matrisen: för varje vinter i tillägget den nya kandidatens delar i releasen, i delarnas ordning. */
@@ -72,12 +74,13 @@ export function plan(listor: Record<string, string[]>) {
 }
 
 /** Långvågen för en timme vid varje station i sin ruta; null när timmen saknas i källan (404). */
-async function timmensLangvag(tid: string, r: { id: string; y: number; x: number }[], box: ReturnType<typeof rutan>, h: Hamtare, paus: number) {
+async function timmensLangvag(tid: string, r: { id: string; y: number; x: number }[], box: ReturnType<typeof rutan>, h: Hamtare, paus: number,
+  kalla: "v4" | "arkivet" = kallaFor(tid)) {
   const urval = `${LANGVAG}.${LANGVAG}${encodeURIComponent(`[0:0][${box.y0}:${box.y1}][${box.x0}:${box.x1}]`)}`;
-  const svar = await hamtaTolkat(`${filFor(tid)}?${urval}`, tid, h, paus);
+  const svar = await hamtaTolkat(`${filFor(tid, kalla)}?${urval}`, tid, h, paus);
   if (!svar) return null;
   const f = svar.falt.find((x) => x.namn === LANGVAG);
-  if (!f) throw new Error(`${tid}: långvågen saknas i svaret ur ${kallaFor(tid)}`);
+  if (!f) throw new Error(`${tid}: långvågen saknas i svaret ur ${kalla}`);
   if (f.dims.join() !== `1,${box.by},${box.bx}`) throw new Error(`${tid}: långvågen har ${f.dims} — rutnätet har ändrats`);
   return new Map(r.map((p) => [p.id, varde("langvag_jm2", f.data[(p.y - box.y0) * box.bx + (p.x - box.x0)])]));
 }
@@ -100,13 +103,17 @@ export async function langvagDel(delFil: string, ut: string, rutorFil: string, h
   const box = rutan(r);
   const tider = [...new Set(k.map((x) => x[1]))].sort();
   const s = { fran, till, kalla: basename(delFil), kalla_sha256: createHash("sha256").update(b).digest("hex"), skarv: SKARV,
-    timmar: tider.length, ur_v4: 0, ur_arkivet: 0, saknas: [] as string[], tomma_varden: 0, rader: k.length, stationer: r.length,
-    sekunder: 0, fil: "", fil_sha256: "" };
+    timmar: tider.length, ur_v4: 0, ur_arkivet: 0, ur_v4_efter_skarven: [] as string[], saknas: [] as string[], tomma_varden: 0,
+    rader: k.length, stationer: r.length, sekunder: 0, fil: "", fil_sha256: "" };
   const t0 = Date.now(), per = new Map<string, Map<string, string>>();
   for (const tid of tider) {
-    const v = await timmensLangvag(tid, r, box, h, paus);
-    if (!v) { s.saknas.push(tid); console.log(`  saknas i ${kallaFor(tid)}: ${tid}`); continue; }
-    per.set(tid, v); if (kallaFor(tid) === "v4") s.ur_v4++; else s.ur_arkivet++;
+    let kalla = kallaFor(tid), v = await timmensLangvag(tid, r, box, h, paus, kalla);
+    if (!v && kalla === "arkivet") {                                   // arkivet saknar timmen helt: v4, som Ä2 (tillägget §10 e)
+      v = await timmensLangvag(tid, r, box, h, paus, "v4");
+      if (v) { kalla = "v4"; s.ur_v4_efter_skarven.push(tid); console.log(`  saknas i arkivet, ur v4: ${tid}`); }
+    }
+    if (!v) { s.saknas.push(tid); console.log(`  saknas i ${kalla === "arkivet" ? "arkivet och v4" : "v4"}: ${tid}`); continue; }
+    per.set(tid, v); if (kalla === "v4") s.ur_v4++; else s.ur_arkivet++;
   }
   s.sekunder = Math.round((Date.now() - t0) / 1000);
   const nya = k.map((x) => { const y = [...x]; y[LV] = per.get(x[1])?.get(x[0]) ?? ""; if (y[LV] === "") s.tomma_varden++; return y.join(","); });
@@ -131,9 +138,9 @@ async function sjalvtest() {
   writeFileSync(del, gzipSync(RUBRIK_ANALYS + "\n" + kalla.join("\n") + "\n"));
   const fore = createHash("sha256").update(readFileSync(del)).digest("hex");
   let urls: string[] = [];
-  const kallan = (o: { saknas?: string } = {}): Hamtare => async (u) => {
+  const kallan = (o: { saknas?: string; baraArkiv?: boolean } = {}): Hamtare => async (u) => {
     urls.push(u);
-    if (o.saknas && u.includes(o.saknas)) return { buf: new Uint8Array(0), ms: 1 };
+    if (o.saknas && u.includes(o.saknas) && !(o.baraArkiv && u.includes("/metpparchivev4/"))) return { buf: new Uint8Array(0), ms: 1 };
     const bas = u.includes("/metpparchivev4/") ? 1_000_000 : 2_000_000, t = Number(/T(\d{2})Z/u.exec(u)![1]);
     const begarda = decodeURIComponent(u.split("?")[1]).split(",").map((x) => x.split(".")[0]);
     return { buf: dapSvar(begarda.map((f) => ({ namn: f, dims: [1, 3, 4], data: Array.from({ length: 12 }, (_, i) => bas + t * 100 + i + 0.0004) }))), ms: 1 };
@@ -144,10 +151,12 @@ async function sjalvtest() {
   const s = await tyst(() => langvagDel(del, join(d, "ut"), join(d, "rutor.csv"), kallan({ saknas: "20220314T05Z" }), 0));
   const ut = gunzipSync(readFileSync(join(d, "ut", "metnordic_lw4_2022-03-13_2022-03-14.csv.gz"))).toString().trim().split("\n");
   k(s.timmar === 3 && s.ur_v4 === 1 && s.ur_arkivet === 1 && JSON.stringify(s.saknas) === JSON.stringify(["2022-03-14T05:00:00Z"]) && s.tomma_varden === 2
-    && s.rader === 6 && s.stationer === 2, `delen: en timme ur v4, en ur arkivet, en saknad med två tomma värden: ${JSON.stringify({ ...s, kalla_sha256: undefined, fil_sha256: undefined })}`);
-  k(urls.length === 3 && urls[0].includes("/metpparchivev4/2022/03/13/") && urls[0].includes("T23Z") && urls[1].includes("/metpparchive/2022/03/14/")
+    && s.ur_v4_efter_skarven.length === 0 && s.rader === 6 && s.stationer === 2,
+    `delen: en timme ur v4, en ur arkivet, en saknad i båda med två tomma värden: ${JSON.stringify({ ...s, kalla_sha256: undefined, fil_sha256: undefined })}`);
+  k(urls.length === 4 && urls[0].includes("/metpparchivev4/2022/03/13/") && urls[0].includes("T23Z") && urls[1].includes("/metpparchive/2022/03/14/")
+    && urls[2].includes("/metpparchive/2022/03/14/") && urls[2].includes("T05Z") && urls[3].includes("/metpparchivev4/2022/03/14/") && urls[3].includes("T05Z")
     && urls.every((u) => { const f = decodeURIComponent(u.split("?")[1]).split(",").map((x) => x.split(".")[0]); return f.length === 1 && f[0] === LANGVAG; }),
-    `bara långvågen begärs, en timme i taget ur sin källa: ${urls.map((u) => u.split("?")[0].split("/thredds/")[1] ?? u.split("?")[0]).join(" | ")}`);
+    `bara långvågen begärs, en timme i taget ur sin källa, och v4 efter arkivets lucka: ${urls.map((u) => u.split("?")[0].split("/thredds/")[1] ?? u.split("?")[0]).join(" | ")}`);
   k(ut[0] === RUBRIK_ANALYS && ut.length === 7, `utfilen: analysfilens rubrik och sex rader: ${ut.length}`);
   k(ut[1] === "1001,2022-03-13T23:00:00Z,-0.50,0.9,2.5,0.7,0,1002300,0" && ut[2] === "1003,2022-03-13T23:00:00Z,0.25,0.8,5,0.2,0.1,1002311,0",
     `v4:s värde i sin ruta (1001 i index 0, 1003 i index 11), avrundat som hämtningen: ${ut[1]} | ${ut[2]}`);
@@ -159,6 +168,12 @@ async function sjalvtest() {
   k(j.kalla === basename(del) && j.kalla_sha256 === fore && j.fil === "metnordic_lw4_2022-03-13_2022-03-14.csv.gz" && /^[0-9a-f]{64}$/u.test(j.fil_sha256) && j.skarv === SKARV,
     `lw4_<del>.json: källa, summor och skarven: ${JSON.stringify(j).slice(0, 180)}`);
   k(createHash("sha256").update(readFileSync(del)).digest("hex") === fore, "källdelen står kvar orörd");
+  // Arkivet saknar timmen helt efter skarven, v4 har den: långvågen ur v4, som Ä2 (tillägget §10 e).
+  const s2 = await tyst(() => langvagDel(del, join(d, "ut4"), join(d, "rutor.csv"), kallan({ saknas: "20220314T05Z", baraArkiv: true }), 0));
+  const ut4 = gunzipSync(readFileSync(join(d, "ut4", "metnordic_lw4_2022-03-13_2022-03-14.csv.gz"))).toString().trim().split("\n");
+  k(s2.ur_v4 === 2 && s2.ur_arkivet === 1 && s2.saknas.length === 0 && s2.tomma_varden === 0
+    && JSON.stringify(s2.ur_v4_efter_skarven) === JSON.stringify(["2022-03-14T05:00:00Z"]) && ut4[5] === "1001,2022-03-14T05:00:00Z,-2.50,0.9,2.5,0.7,0,1000500,2000",
+    `arkivets lucka efter skarven fylls ur v4: ${ut4[5]} ${JSON.stringify(s2.ur_v4_efter_skarven)}`);
   // En källa som redan har långvåg, och en station utan ruta, fälls.
   const med = join(d, "metnordic_fylld_2022-03-15_2022-03-15.csv.gz");
   writeFileSync(med, gzipSync(RUBRIK_ANALYS + "\n1001,2022-03-15T00:00:00Z,1.00,0.9,2.5,0.7,0,999,0\n"));
@@ -184,7 +199,7 @@ async function sjalvtest() {
   let e4 = ""; try { plan({ ...listor, "2020-21": listor["2020-21"].filter((x) => !x.includes("_2020-10-31_")) }); } catch (e) { e4 = (e as Error).message; }
   k(e4.includes("saknas"), `en saknad del fäller planen: ${e4}`);
   if (fel) process.exit(1);
-  console.log("✓ självtest: källan per timme (v4 före 14/3 2022, arkivet från den), bara långvågen begärd, värdet i sin ruta avrundat som hämtningen, en saknad timme tom, allt annat byte för byte källans, källan orörd, en källa med långvåg och en station utan ruta fälls, och planen (den fyllda delen först, de fyra vintrarna)");
+  console.log("✓ självtest: källan per timme (v4 före 14/3 2022, arkivet från den, v4 där arkivet saknar timmen), bara långvågen begärd, värdet i sin ruta avrundat som hämtningen, en timme som saknas i båda tom, allt annat byte för byte källans, källan orörd, en källa med långvåg och en station utan ruta fälls, och planen (den fyllda delen först, de fyra vintrarna)");
 }
 
 const korsSjalv = !!process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, "/").split("/").pop()!);
