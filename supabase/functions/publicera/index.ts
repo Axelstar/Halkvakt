@@ -877,6 +877,16 @@ function lsVagLage(nyckel: string, d: { vaglag: LanSegment[]; stationer: LanStat
   };
 }
 
+/** Sökträffens beskrivning med dagens siffror (25/10): klockslaget, halkan och kallaste stationen, sedan vad sidan visar. */
+const LS_SLUT = "Trafikverkets väglag, vägtemperatur och olyckor, uppdaterat var 30:e minut.";
+function lsBeskrivning(l: LanLage, plats: string, now: Date): string {
+  const halt = l.halt.length
+    ? `halka eller vinterväglag på ${l.halt.length} av ${l.vagavsnitt} vägavsnitt ${plats}`
+    : `ingen halka på ${l.vagavsnitt} vägavsnitt ${plats}`;
+  const kall = l.kalla.length ? `kallast ${lsGrad(l.kalla[0].yta)} vid ${l.kalla[0].name}` : "ingen mätstation under noll";
+  return `Kl. ${lsTid(now, false)}: ${halt}, ${kall}. ${LS_SLUT}`;
+}
+
 const lsLanKort = (kod: number | null) => LAN.find((l) => l.kod === kod)?.kort ?? null;
 const lsVagLankar = (rot: string) => VAGAR.map((v) => `<a href="${rot}vag/${v.slug}/">${lsEsc(v.namn)}</a>`).join(" · ");
 
@@ -905,8 +915,8 @@ ${l.olyckor.length ? `<ul>\n${olyckor}\n</ul>` : `<p>Trafikverket rapporterar in
 <p>Se hela landet på <a href="../../karta.html">livekartan</a>, eller <a href="../../lan/">läget i alla län</a>.</p>
 <nav><h2>Andra vägar</h2><p>${andra}</p></nav>`;
   return lsSkal({
-    titel: `Är det halt på ${vag.rubrik} just nu? Väglag och vägtemperatur längs vägen | Halkvakt`,
-    beskrivning: `Väglaget på ${vag.rubrik} just nu: Trafikverkets rapporter om halka, vägbanans temperatur vid mätstationerna längs vägen och pågående olyckor. Uppdateras var 30:e minut.`,
+    titel: `Halka och väglag på ${vag.rubrik} just nu | Halkvakt`,
+    beskrivning: lsBeskrivning(l, `på ${vag.rubrik}`, now),
     adress: `${SIDBAS}/vag/${vag.slug}/`, rot: "../../", innehall, now,
   });
 }
@@ -938,10 +948,18 @@ ${l.olyckor.length ? `<ul>\n${olyckor}\n</ul>` : "<p>Trafikverket rapporterar in
 <p>Hela landet på <a href="../../karta.html">livekartan</a>, eller <a href="../">läget i alla län</a>. Redaktioner kan <a href="../../press.html#redaktioner">bädda in läget i ${lsEsc(lan.kort)}</a> på sin egen sajt.</p>
 <nav><h2>Andra län</h2><p>${andra}</p><h2>Stora vägar</h2><p>${lsVagLankar("../../")}</p></nav>`;
   return lsSkal({
-    titel: `Är det halt i ${lan.kort} just nu? Väglag och vägtemperatur | Halkvakt`,
-    beskrivning: `Väglaget i ${lan.namn} just nu: Trafikverkets rapporter om halka, vägbanans temperatur vid mätstationerna och pågående olyckor. Uppdateras var 30:e minut.`,
+    titel: `Halka och väglag i ${lan.namn} just nu | Halkvakt`,
+    beskrivning: lsBeskrivning(l, `i ${lan.namn}`, now),
     adress: `${SIDBAS}/lan/${lan.slug}/`, rot: "../../", innehall, now,
   });
+}
+
+function lsOversiktBeskrivning(lagen: Map<number, LanLage>, now: Date): string {
+  const alla = [...lagen.values()];
+  const halt = alla.filter((l) => l.halt.length).length;
+  const kallast = alla.flatMap((l) => l.kalla.slice(0, 1)).sort((a, b) => a.yta - b.yta)[0];
+  const kall = kallast ? `kallast ${lsGrad(kallast.yta)} vid ${kallast.name}` : "ingen mätstation under noll";
+  return `Kl. ${lsTid(now, false)}: halka eller vinterväglag i ${halt} av ${alla.length} län, ${kall}. ${LS_SLUT}`;
 }
 
 function lsOversikt(lagen: Map<number, LanLage>, vagar: Map<string, LanLage>, now: Date): string {
@@ -970,8 +988,8 @@ ${vagrader}
 </table></div>
 <p>Se hela landet på <a href="../karta.html">livekartan</a>.</p>`;
   return lsSkal({
-    titel: "Är det halt i Sverige just nu? Läget per län | Halkvakt",
-    beskrivning: "Väglaget i alla 21 län just nu: Trafikverkets rapporter om halka, vägbanans temperatur och pågående olyckor. Uppdateras var 30:e minut.",
+    titel: "Halka och väglag i Sverige just nu, län för län | Halkvakt",
+    beskrivning: lsOversiktBeskrivning(lagen, now),
     adress: `${SIDBAS}/lan/`, rot: "../", innehall, now,
   });
 }

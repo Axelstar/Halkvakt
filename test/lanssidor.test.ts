@@ -42,7 +42,8 @@ test("länssidorna: 21 län och en översikt, svaret ur källorna, Trafikverkets
   assert.deepEqual(Object.keys(sidor).filter((p) => p !== "lan/index.html" && !p.startsWith("data/")).sort(),
     [...LAN.map((l) => `lan/${l.slug}/index.html`), ...VAGAR.map((v) => `vag/${v.slug}/index.html`)].sort());
   const skane = sidor["lan/skane/index.html"];
-  assert.ok(skane.includes("<title>Är det halt i Skåne just nu? Väglag och vägtemperatur | Halkvakt</title>"));
+  assert.ok(skane.includes("<title>Halka och väglag i Skåne län just nu | Halkvakt</title>"), "sökorden först (25/10)");
+  assert.ok(skane.includes(`<meta name="description" content="Kl. 07:30: halka eller vinterväglag på 1 av 2 vägavsnitt i Skåne län, kallast −1,5 °C vid Lund. Trafikverkets väglag, vägtemperatur och olyckor, uppdaterat var 30:e minut.">`), "dagens siffror i sökträffen");
   assert.ok(skane.includes(`<link rel="canonical" href="${SIDBAS}/lan/skane/">`));
   assert.ok(skane.includes("Kl. 07:30 rapporterar Trafikverket halka eller vinterväglag på 1 av länets 2 vägavsnitt."), "fläckvis Våt räknas inte");
   assert.ok(skane.includes("1 mätstation visar vägbana på 0 °C eller kallare, kallast −1,5 °C vid Lund."));
@@ -52,9 +53,12 @@ test("länssidorna: 21 län och en översikt, svaret ur källorna, Trafikverkets
   assert.ok(skane.includes("E22, sedan 20 nov. 06:10 (Stor påverkan)"), "svensk tid, vinter +1");
   assert.ok(skane.includes("Uppdaterad 20 nov. 07:30"));
   const sthlm = sidor["lan/stockholm/index.html"];
+  assert.ok(sthlm.includes(`content="Kl. 07:30: ingen halka på 1 vägavsnitt i Stockholms län, ingen mätstation under noll.`));
   assert.ok(sthlm.includes("Kl. 07:30 rapporterar Trafikverket ingen halka på länets 1 vägavsnitt just nu. Ingen mätstation i länet visar vägbana under noll."));
   assert.ok(sthlm.includes("Trafikverket rapporterar ingen pågående olycka i länet."));
   const oversikt = sidor["lan/index.html"];
+  assert.ok(oversikt.includes("<title>Halka och väglag i Sverige just nu, län för län | Halkvakt</title>"));
+  assert.ok(oversikt.includes(`content="Kl. 07:30: halka eller vinterväglag i 1 av 21 län, kallast −1,5 °C vid Lund.`));
   assert.ok(oversikt.includes(`<tr><td><a href="skane/">Skåne län</a></td><td>1 av 2</td><td>1</td><td>1</td><td><a class="lank-mono" href="../karta.html?lan=skane">Karta →</a></td></tr>`));
   const json = JSON.parse(sidor["data/lan.json"]);
   assert.equal(json.generated_at, NOW.toISOString());
@@ -79,7 +83,8 @@ test("vägsidorna: vägnumret utan form, vägens sträckor i alla län, statione
     now: NOW,
   });
   const e6 = sidor["vag/e6/index.html"];
-  assert.ok(e6.includes("<title>Är det halt på E6 just nu? Väglag och vägtemperatur längs vägen | Halkvakt</title>"));
+  assert.ok(e6.includes("<title>Halka och väglag på E6 just nu | Halkvakt</title>"));
+  assert.ok(e6.includes(`content="Kl. 07:30: halka eller vinterväglag på 1 av 2 vägavsnitt på E6, kallast −1,5 °C vid Lund.`));
   assert.ok(e6.includes("Kl. 07:30 rapporterar Trafikverket halka eller vinterväglag på 1 av E6:s 2 vägavsnitt. 1 mätstation visar vägbana på 0 °C eller kallare, kallast −1,5 °C vid Lund."));
   assert.ok(e6.includes("Skåne: E 6 Malmö - Lund: Mycket besvärligt, Is") && !e6.includes("Kungälv"), "bara det hala listas, med länet");
   assert.ok(e6.includes("Skåne: Lund: −1,5 °C") && !e6.includes("Kall men vid en annan väg"));
