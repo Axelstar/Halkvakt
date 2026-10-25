@@ -17980,3 +17980,14 @@ bytesbeslutet (Claudes rekommendation).
 grund av det, och domen över den frysta i mars rörs inte.
 
 **Stomdokument:** KUV den frysta på fyra äldre vintrar läst och källfelet i mars 2022
+
+## #718 (25/10 2026) Utkastet T4 till NY-KANDIDAT i repot: kortvågen 14–31/3 2022 ur v4 för den nya
+
+**Bengts ord 25/10:** *"Ja, förbered signerings-PR:en med allt utom R, och lägg Ä6 och T4 i repot som utkast-PR:er i kväll."*
+
+`docs/FORREGISTRERING-NY-KANDIDAT-TILLAGG-T4-2026-10-25.md`, status UTKAST, ur utkastet från Desktop (#716). T4 tar kortvågen 14–31/3 2022 ur MET:s v4 i den nyas delar, och
+förberedningen, träningen (alla sex prov och den slutliga kandidaten), provningen och samman körs om. Två val vid signeringen:
+att V2 står som den föll (Claudes rekommendation) och att den rättade modellen ersätter den i drift före bytesbeslutet (Claudes
+rekommendation). Ingen kod är byggd och ingenting är kört.
+
+**Stomdokument:** KUV utkastet T4 till NY-KANDIDAT i repot
