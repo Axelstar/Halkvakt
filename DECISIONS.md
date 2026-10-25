@@ -17685,3 +17685,28 @@ beslutet. Formen finns kvar i dess gren (439cfdc) och kan återanvändas vid nä
 `marknadsforing/butik/appstore/__pycache__/alf.cpython-313.pyc`, som följt med av misstag, togs bort före sammanslagningen.
 
 **Stomdokument:** inga — tavlans kort och projektkartans listor
+
+## #713 (25/10 2026) Favoriterna: fyra prov på telefonen gjorda, och (34) godkänd i App Review
+
+**Bengts ord 25/10:** *"jag har gjort nytt sedan förra kollen och ta bort resa och brytaren av och nej tack"*, och om inskicket: *"det skickats in till app store för godkännande och att det godkänts"*.
+
+**Provat på telefon av Bengt:**
+- *Nytt sedan förra kollen* i rapporten;
+- Ta bort en sparad resa;
+- brytaren av, med resorna kvar;
+- Nej tack på frågan *Spara resan?*.
+
+Byggnumret är inte bokfört.
+
+**App Review:** 0.3.13 (34) skickades in 24/10 (#701, PR #1189) och är godkänd enligt Bengt. Skärmbilderna och inspelningen av
+favoriterna följde med inskicket.
+
+**Kvar:**
+- samma väg tillbaka, alltså att resan hem känns igen och frågan inte kommer igen (80 % inom 100 m, #637);
+- Ta bort alla;
+- en sjätte resa, där listan ska hålla sig till högst fem;
+- texten om sparade resor i Play (åtgärdslistan B6-31).
+
+**Ändrat:** delen *Spara en rutt* i projektkartan (det som saknas och steget *Prov*), och kort #357 med en ny Kvar-rad.
+
+**Stomdokument:** FAV proven på telefon 25/10 och (34) godkänd
