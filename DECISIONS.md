@@ -17980,3 +17980,13 @@ bytesbeslutet (Claudes rekommendation).
 grund av det, och domen över den frysta i mars rörs inte.
 
 **Stomdokument:** KUV den frysta på fyra äldre vintrar läst och källfelet i mars 2022
+
+## #717 (25/10 2026) Utkastet Ä6 till FLER-VINTRAR i repot: lång- och kortvågen 14–31/3 2022 ur v4 för den frysta
+
+**Bengts ord 25/10:** *"Ja, förbered signerings-PR:en med allt utom R, och lägg Ä6 och T4 i repot som utkast-PR:er i kväll."*
+
+`docs/FORREGISTRERING-FLER-VINTRAR-TILLAGG-A6-2026-10-25.md`, status UTKAST, ur utkastet från Desktop (#716). Ä6 tar lång- och kortvågen 14–31/3 2022 ur MET:s v4 för den
+frysta och kör om 2021/22; jämförelsen med den nya väntar på T4. Prov före läsningen: trappformsprovet (tröskel och sågtand)
+och att v4 är timvärden. Båda talen, före och efter rättelsen, står bredvid varandra. Ingen kod är byggd och ingenting är kört.
+
+**Stomdokument:** KUV utkastet Ä6 till FLER-VINTRAR i repot
