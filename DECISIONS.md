@@ -17703,7 +17703,31 @@ stå i tillägget.
 - övriga kolumner lika källan;
 - 27 sekunder, alltså ungefär 1,1 sekund per timme och drygt en timme per vinter.
 
-**Inte byggt än:** läsningen. Den består av förprovet för v4, station 7 ur tidszonsprovet, att kedjan läser `metnordic_lw4_`, spärren
-mot ett osignerat tillägg och jämförelsen med den nya. Den byggs före signeringen och körs först efter den.
+**Läsningen, byggd men inte körd.** Den kan inte köras förrän tillägget är signerat.
+- **`fysik/vintrar/vinterkedja.py`:**
+  - **Spärren:** för 2018/19–2021/22 läses ingenting förrän `docs/FORREGISTRERING-FLER-VINTRAR-TILLAGG-2026-10-25.md` har statusraden
+    SIGNERAD eller SIGNERAT och datum och signatur på både Bengts och Axels rad. Raderna läses med den nya kandidatens
+    `sparren.signaturen`, laddad ur sin utpekade fil och aldrig via `sys.path`.
+  - **Ä4:** tidszonsprovet görs utan SMHI:s station 7, som `forbered.py`.
+  - **Ä1:** bara `metnordic_lw4_`-delar läses, med en lista per del, och listorna summeras.
+  - 2022/23 och 2024/25 räknas som förut.
+- **`fysik/vintrar/osakerhet.py`** tar också tilläggets vintrar:
+  - den frysta med sin kedja och den nyas veck utan vintern;
+  - identiteten mot den frystas egen sammanfattning och mot samman:s tal för vintern;
+  - samma population, som ersättningsregeln §2;
+  - fröet 20261025. 2022/23 räknas med 20261024 som förut.
+- **`kuvos-vintrar.yml`:**
+  - **Förprovet** kräver det signerade tillägget och långvågens 11 delar med listor i releasen.
+  - **MET** hämtas inte för de vintrarna.
+  - **Provningen** hämtar den nyas veckfil ur hinken, med summan mot `kuvos/kandidat-2027-28.json`, och samman:s tal, och kör jämförelsen
+    i samma jobb.
+- **Självtesten:**
+  - `fysik/vintrar/sjalvtest.py` har fått tio prov för tillägget: spärren i fyra fall och den signerade, de fyra vintrarna i båda
+    filerna, station 7 och långvågens delar.
+  - `osakerhet.py --sjalvtest` har fått prov för fröet och rubriken.
+
+**Första delen hämtad** (kuvos-vintrar 40164264875 på grenen):
+- 2018/19, 31/10–14/11: 360 timmar ur v4, ingen saknad, 754 stationer, 271 440 rader;
+- 711 sekunder, alltså ungefär 2 sekunder per timme i Actions och 12 minuter per del. De 44 delarna tar alltså ungefär 9 timmar.
 
 **Stomdokument:** KUV långvågen ur v4 hämtas för den frysta på fyra äldre vintrar före signeringen av tillägget

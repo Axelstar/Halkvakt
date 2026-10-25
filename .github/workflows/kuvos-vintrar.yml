@@ -11,6 +11,9 @@ name: kuvos-vintrar
 # Steget langvag-v4 (utkastet till tillägget till FLER-VINTRAR, Ä1, DECISIONS #711): bara långvågen ur MET:s omräkning v4 i den nya
 # kandidatens delar för 2018/19–2021/22 (fysik/vintrar/langvag_v4.ts), till samma releaser. Bara öppna data, aldrig VViS och aldrig
 # kandidaten: ingenting läses mot den frysta. Vintern ovan används inte; jobben för kedjan hoppas över.
+# Med tillägget läses 2018-19 … 2021-22 bara när tillägget är signerat (docs/FORREGISTRERING-FLER-VINTRAR-TILLAGG-2026-10-25.md):
+# förprovet kräver långvågens 11 delar i releasen i stället för arkivets fält, MET hämtas inte, och provningen kör
+# fysik/vintrar/osakerhet.py, som räknar den frysta med sin vinterkedja (spärren, station 7, långvågen) och jämför med den nyas veck.
 on:
   workflow_dispatch:
     inputs:
@@ -44,8 +47,24 @@ jobs:
       - name: Förprovet — MET Nordics sju fält i arkivet för vintern
         id: prov
         shell: bash
+        env: { GH_TOKEN: "${{ github.token }}" }
         run: |
           if [ "$VINTER" = "2024-25" ] || [ "$VINTER" = "samman" ]; then echo 'delar=[{"fran":"-","till":"-"}]' >> "$GITHUB_OUTPUT"; echo "$VINTER: ingen hämtning"; exit 0; fi
+          case "$VINTER" in 2018-19|2019-20|2020-21|2021-22)
+            # Tillägget (DECISIONS #711): signerat, och långvågens delar med listor i releasen; MET:s arkiv prövas inte och hämtas inte.
+            node -e '
+              const t = require("fs").existsSync(process.argv[1]) ? require("fs").readFileSync(process.argv[1], "utf8") : "";
+              const rad = (n) => { const m = new RegExp(`^\\|\\s*${n}\\s*\\|([^|]*)\\|([^|]*)\\|`, "m").exec(t); return !!(m && m[1].trim() && m[2].trim()); };
+              const ok = /^\*\*Status: SIGNERA[DT]\b/m.test(t) && rad("Bengt") && rad("Axel");
+              console.log(`tillägget: ${t ? (ok ? "signerat" : "INTE signerat") : "finns inte"}`);
+              if (!ok) { console.log("::error::2018/19–2021/22 läses bara efter det signerade tillägget (DECISIONS #711)"); process.exit(1); }' \
+              docs/FORREGISTRERING-FLER-VINTRAR-TILLAGG-2026-10-25.md | tee -a "$GITHUB_STEP_SUMMARY"
+            N=$(gh release view "kuvos-vintrar-$VINTER" --json assets -q '.assets[].name')
+            D=$(echo "$N" | grep -c '^metnordic_lw4_.*\.csv\.gz$' || true); L=$(echo "$N" | grep -c '^lw4_.*\.json$' || true)
+            echo "långvågens delar i kuvos-vintrar-$VINTER: $D delar, $L listor" | tee -a "$GITHUB_STEP_SUMMARY"
+            [ "$D" -eq 11 ] && [ "$L" -eq 11 ] || { echo "::error::långvågens delar saknas — kör steget langvag-v4 först"; exit 1; }
+            echo 'delar=[{"fran":"-","till":"-"}]' >> "$GITHUB_OUTPUT"; exit 0;;
+          esac
           node --experimental-strip-types fysik/vintrar/metnordic_vinter.ts --sjalvtest 2>&1 | grep -v ExperimentalWarning
           A="${VINTER%-*}"; B=$((A + 1)); RC=0
           node --experimental-strip-types fysik/vintrar/metnordic_vinter.ts --forprov "$A-10-31" "$B-03-31" > forprov.txt 2>&1 || RC=$?
@@ -105,7 +124,7 @@ jobs:
   # ligger i releasen hoppas över, en del tar vid ur sin senaste artefakt, och hämtningen stannar själv efter 320 min.
   metnordic:
     needs: forprov
-    if: ${{ inputs.vinter != '2024-25' && inputs.vinter != 'samman' }}
+    if: ${{ inputs.vinter != '2024-25' && inputs.vinter != 'samman' && !contains('2018-19 2019-20 2020-21 2021-22', inputs.vinter) }}
     runs-on: ubuntu-latest
     timeout-minutes: 350
     permissions: { contents: write, actions: read }
@@ -180,10 +199,11 @@ jobs:
 
   provning:
     needs: [forprov, ecmwf, metnordic]
-    if: ${{ !cancelled() && needs.forprov.result == 'success' && inputs.vinter != 'samman' && (inputs.vinter == '2024-25' || (needs.ecmwf.result == 'success' && needs.metnordic.result == 'success')) }}
+    if: ${{ !cancelled() && needs.forprov.result == 'success' && inputs.vinter != 'samman' && (inputs.vinter == '2024-25' || (needs.ecmwf.result == 'success' && (needs.metnordic.result == 'success' || (needs.metnordic.result == 'skipped' && contains('2018-19 2019-20 2020-21 2021-22', inputs.vinter))))) }}
     runs-on: ubuntu-latest
     timeout-minutes: 360
-    env: { GH_TOKEN: "${{ github.token }}", VINTER: "${{ inputs.vinter }}" }
+    permissions: { contents: read, actions: read }
+    env: { GH_TOKEN: "${{ github.token }}", VINTER: "${{ inputs.vinter }}", V4: "${{ contains('2018-19 2019-20 2020-21 2021-22', inputs.vinter) && '1' || '' }}" }
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -196,6 +216,7 @@ jobs:
           python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
           (cd fysik && sha256sum -c --quiet SHA256SUMS)
           python3 fysik/vintrar/sjalvtest.py | grep -v '^  '
+          python3 fysik/vintrar/osakerhet.py --sjalvtest | grep -v '^  '
       # Hinken som i kuvos.yml: signerade adresser ur arkivdump, nyckeln ur pg_cron:s jobb, maskerad. Rättelsen modell.pkl, leveransen
       # 2/10 (2024/25) och för en äldre vinter dess två filer ur leveransen 21/10; summorna mot manifesten.
       - name: Hinken — modell.pkl och Trafikverkets filer, kontrollsummorna mot manifesten
@@ -211,14 +232,16 @@ jobs:
             const v = process.env.VINTER, a = Number(v.slice(0, 4));
             const f = ["kuvos-kandidat-2026-27/modell.pkl", ...require("./kuvos/leverans.json").filer.map((x) => "kuvos-trv-2024-25/" + x.packad)];
             if (v !== "2024-25") f.push(...[`Halkvakt_${a}-2.csv.gz`, `Halkvakt_${a + 1}-1.csv.gz`].map((x) => "kuvos-vvis-2018-24/" + x));
+            if (process.env.V4) f.push(`kuvos-kandidat-2027-28/ph_utan-${v}_${v}.npz`);      // tillägget: den nyas veck utan vintern
             console.log(JSON.stringify(f));')
           curl -sS --fail-with-body -X POST "$FN?lage=kuvos_hamta" -H "x-halkvakt-key: $KEY" -H "Content-Type: application/json" -d "{\"filer\":$FILER}" > hamta.json
-          mkdir -p hink/v2425 hink/vinter
+          mkdir -p hink/v2425 hink/vinter hink/ph
           node -e '
             const { execFileSync } = require("child_process");
             // execFileSync:s fel bär kommandoraden och därmed den signerade adressen: fångas, bara statusen skrivs ut.
             for (const d of require("./hamta.json").filer) {
-              const ut = d.fil.endsWith("modell.pkl") ? "modell.pkl" : (d.fil.startsWith("kuvos-trv-2024-25/") ? "hink/v2425/" : "hink/vinter/") + d.fil.split("/").pop();
+              const ut = d.fil.endsWith("modell.pkl") ? "modell.pkl" : d.fil.endsWith(".npz") ? "hink/ph/" + d.fil.split("/").pop()
+                : (d.fil.startsWith("kuvos-trv-2024-25/") ? "hink/v2425/" : "hink/vinter/") + d.fil.split("/").pop();
               try { execFileSync("curl", ["-sS", "--fail", "-o", ut, d.url], { stdio: ["ignore", "ignore", "ignore"] }); }
               catch (e) { console.error(`hämtningen av ${d.fil} föll (curl ${e.status})`); process.exit(1); }
             }'
@@ -231,6 +254,8 @@ jobs:
             for (const f of require("./kuvos/leverans.json").filer) prova("hink/v2425/" + f.packad, f.packad_sha256);
             if (v !== "2024-25") { const a = Number(v.slice(0, 4)), beh = [`Halkvakt_${a}-2.csv.gz`, `Halkvakt_${a + 1}-1.csv.gz`];
               for (const f of require("./kuvos/vvis-2018-24-leverans.json").filer.filter((x) => beh.includes(x.packad))) prova("hink/vinter/" + f.packad, f.packad_sha256, f.packad_bytes); }
+            if (process.env.V4) { const p = require("./kuvos/kandidat-2027-28.json").filer.find((x) => x.fil === `ph_utan-${v}_${v}.npz`);
+              prova("hink/ph/" + p.fil, p.sha256, p.bytes); }
             process.exit(fel ? 1 : 0);' | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Releaserna — indatan, MET Nordic 2024/25 och vinterns indata
         shell: bash
@@ -252,12 +277,31 @@ jobs:
             tar -xzf "rel/ifs_$VINTER.tar.gz" -C rel
             { echo '```'; (cd rel && sha256sum ./*.gz); echo "ECMWF: $(ls rel/ifs | wc -l) stationer"; echo '```'; } | tee -a "$GITHUB_STEP_SUMMARY"
           fi
+      - name: Den nya kandidatens tal per vinter (nykand-samman), för tilläggets jämförelse
+        if: ${{ env.V4 == '1' }}
+        shell: bash
+        run: |
+          id=$(gh api "repos/${{ github.repository }}/actions/artifacts?name=nykand-samman&per_page=100" -q '[.artifacts[] | select(.expired | not)] | sort_by(.created_at) | last | .id // empty')
+          [ -n "$id" ] || { echo "::error::artefakten nykand-samman saknas"; exit 1; }
+          mkdir -p samman && gh api "repos/${{ github.repository }}/actions/artifacts/$id/zip" > a.zip && unzip -o -q a.zip -d samman && rm a.zip
+          echo "nykand-samman: artefakt $id" | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Kedjan — identitetsprovet, tidszonen och vintern
         shell: bash
         run: |
           set -o pipefail
           ARGS=(--vinter "$VINTER" --kandidat kuvos/kandidat-2026-27.json --modell modell.pkl --indata frusen
                 --urvalet-vvis hink/v2425 --urvalet-metnordic mn2425/metnordic_2024-25.csv.gz --arbete arbete --ut ut)
+          if [ "$V4" = "1" ]; then
+            # Tillägget: den frysta med sin vinterkedja (spärren, station 7, långvågen ur v4) och jämförelsen med den nyas veck.
+            ARGS+=(--vvis hink/vinter --ifs rel/ifs --smhi smhi --metnordic rel/metnordic_lw4_*.csv.gz --lw4 rel/lw4_*.json
+                   --ny-ph "hink/ph/ph_utan-${VINTER}_${VINTER}.npz" --samman samman/samman.json)
+            RC=0; python3 fysik/vintrar/osakerhet.py "${ARGS[@]}" 2>&1 | tee kedjan.txt || RC=$?
+            cp ut/fryst/kuvos-vintrar-"$VINTER".* ut/ 2>/dev/null || true
+            cat ut/osakerhet_*.md >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
+            cat ut/kuvos-vintrar-*.md >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
+            rm -rf arbete hink modell.pkl
+            exit "$RC"
+          fi
           if [ "$VINTER" != "2024-25" ]; then ARGS+=(--vvis hink/vinter --ifs rel/ifs --smhi smhi --metnordic rel/metnordic_analys_*.csv.gz); fi
           RC=0; python3 fysik/vintrar/vinterkedja.py "${ARGS[@]}" 2>&1 | tee kedjan.txt || RC=$?
           cat ut/*.md >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true

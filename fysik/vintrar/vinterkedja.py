@@ -24,8 +24,13 @@ Utdata (--ut): kuvos-vintrar-<vinter>.json och .md, bara aggregat. Trafikverkets
       --vvis <Halkvakt_ÅÅÅÅ-N.csv.gz> --ifs <vinterns ifs/> --metnordic <vinterns delar …> --smhi <cache> --arbete <mapp> --ut <mapp>
   python fysik/vintrar/vinterkedja.py --vinter 2024-25 …       bara (a) och 2024/25:s mått, märkta i urvalet
   python fysik/vintrar/vinterkedja.py --samman <json …> --ut <mapp>       de fem vintrarna ihop ur summorna
+
+TILLÄGGET för 2018/19–2021/22 (utkastet 25/10, DECISIONS #711), där MET:s arkiv saknar långvågen: vintern läses bara när tillägget
+(TILLAGG_V4) är signerat, ur den ifyllda långvågens delar (--metnordic metnordic_lw4_<del>, --lw4 lw4_<del>.json ur
+fysik/vintrar/langvag_v4.ts: Ä1 långvågen ur v4, Ä2/Ä3 den nya kandidatens MET-delar med T2:s timmar och vinden ur x och y), och med
+tidszonsprovet utan SMHI:s station 7 (Ä4, som tillägget T1 för den nya). 2022/23 och 2024/25 räknas som förut.
 """
-import argparse, gc, hashlib, json, math, os, pickle, platform, shutil, sys, time
+import argparse, gc, hashlib, importlib.util, json, math, os, pickle, platform, re, shutil, sys, time
 import numpy as np
 import pandas as pd
 
@@ -43,6 +48,50 @@ FASTA = ('stations.csv', 'elev.csv', 'geofeat.csv', 'geofeat2.csv', 'road_all.cs
 TOL_A1, TOL_A2 = 0.01, 0.0002                                                       # §3 a: ± 0,01 °C och ± 0,02 procentenheter
 T0 = time.time()
 _IDENTITET = {}                                                                     # identitetsprovet i den här processen
+
+VINTRAR_V4 = ('2018-19', '2019-20', '2020-21', '2021-22')                           # tillägget (DECISIONS #711)
+TILLAGG_V4 = os.path.join(os.path.dirname(FYS), 'docs', 'FORREGISTRERING-FLER-VINTRAR-TILLAGG-2026-10-25.md')
+STATUS_V4 = re.compile(r'^\*\*Status: SIGNERA[DT]\b', re.M)
+UTESLUTNA_SMHI = {'7': 'Gävle (Övriga stationer, 2017–2022): klockan en timme efter SMHI:s Gävle A och fyra VViS-stationer (T1, Ä4)'}
+# Signaturraderna läses med den nya kandidatens spärr, laddad ur sin utpekade fil (aldrig via sys.path, se CLAUDE.md).
+_spec = importlib.util.spec_from_file_location('sparren_ny_kandidat', os.path.join(FYS, 'ny_kandidat', 'sparren.py'))
+sparren = importlib.util.module_from_spec(_spec); _spec.loader.exec_module(sparren)
+
+
+def tillagg_v4(fil=None):
+    """Spärren för tilläggets vintrar: statusraden **Status: SIGNERAD/SIGNERAT och datum och signatur på både Bengts och Axels rad
+    (sparren.signaturen). Kastar SystemExit annars. Självtestet pekar ut en påhittad fil med V4_TILLAGG_SJALVTEST."""
+    fil = fil or os.environ.get('V4_TILLAGG_SJALVTEST') or TILLAGG_V4
+    try:
+        text = open(fil, encoding='utf-8').read()
+    except OSError:
+        raise SystemExit(f'vägrar: tillägget {os.path.basename(fil)} finns inte — 2018/19–2021/22 läses bara efter det signerade '
+                         'tillägget (DECISIONS #711)')
+    l = {'status_signerad': bool(STATUS_V4.search(text)), 'bengt': sparren.signaturen(text, 'Bengt'), 'axel': sparren.signaturen(text, 'Axel')}
+    if not all(l.values()):
+        raise SystemExit(f'vägrar: tillägget {os.path.basename(fil)} är inte signerat ({l}) — vintern läses inte (DECISIONS #711)')
+    return {**l, 'fil': os.path.basename(fil), 'sha256': hashlib.sha256(text.encode('utf-8')).hexdigest()}
+
+
+def smhi_lista_v4(cache):
+    """SMHI:s stationslista för parameter 1 (samma cache som tidszon.provet) utan UTESLUTNA_SMHI, som forbered.py:s smhi_lista() (T1)."""
+    os.makedirs(cache, exist_ok=True)
+    lista = json.load(open(tidszon.hamta_fil(tidszon.LISTA, os.path.join(cache, 'smhi_p1.json')), encoding='utf-8'))
+    return {**lista, 'station': [s for s in lista['station'] if str(s['key']) not in UTESLUTNA_SMHI]}
+
+
+def lw4_prov(metnordic, lw4):
+    """Ä1: tilläggets vintrar läser bara den ifyllda långvågens delar, en lista (lw4_<del>.json) per del, och listorna summeras."""
+    namn = sorted(os.path.basename(f) for f in metnordic)
+    s = dict(delar=len(namn), listor=0, ur_v4=0, ur_arkivet=0, saknade_timmar=0, tomma_varden=0,
+             fel=[n for n in namn if not n.startswith('metnordic_lw4_')])
+    for f in lw4 or []:
+        j = json.load(open(f, encoding='utf-8')); s['listor'] += 1
+        for x in ('ur_v4', 'ur_arkivet', 'tomma_varden'):
+            s[x] += int(j[x])
+        s['saknade_timmar'] += len(j['saknas'])
+    s['klarat'] = not s['fel'] and s['delar'] > 0 and s['listor'] == s['delar']
+    return s
 
 
 def logg(s):
@@ -204,11 +253,16 @@ def skriv(s, ut):
 
 def kor(a):
     namn = a.vinter; v = lasare.vinter(namn)
+    v4 = namn in VINTRAR_V4
+    tillagg = tillagg_v4() if v4 else None                     # spärren före allt annat (DECISIONS #711)
     kand, modell, msha = ladda(a.kandidat, a.modell)
     s = dict(_om='Förregistreringen FLER-VINTRAR (DECISIONS #666–#668): den frysta kandidaten i analysläget på en vinter. Bara aggregat.',
              vinter=namn, i_urvalet=v['i_urvalet'],
              kandidat=dict(beslut=kand['beslut'], fysik=kand['fysik'], par=kand['par'], modell_sha256=msha),
              versioner=dict(python=platform.python_version(), numpy=np.__version__, pandas=pd.__version__))
+    if v4:
+        s['tillagg_v4'] = {**tillagg, 'andringar': 'Ä1 långvågen ur v4, Ä2–Ä3 den nya kandidatens MET-delar (T2, vinden ur x och y), '
+                                                   'Ä4 tidszonsprovet utan SMHI:s station 7'}
     ident, (meta, idx, P), natt = identitetsprov(kand, modell, a.indata, a.urvalet_vvis, a.urvalet_metnordic, a.arbete)
     s['identitetsprov'] = ident
     if not ident['klarat']:
@@ -228,11 +282,20 @@ def kor(a):
         s['indata']['vvis']['timtabellen'] = ident['timtabellen']
     else:
         s['tidszon']['smhi'] = tidszon.provet(luft, pd.read_csv(os.path.join(a.indata, 'stations.csv'), dtype={'sid': str}),
-                                              v['fran'], v['till'], a.smhi)     # perioden i UTC, som 2/10: 1/11 00 – 1/4 00
+                                              v['fran'], v['till'], a.smhi,     # perioden i UTC, som 2/10: 1/11 00 – 1/4 00
+                                              lista=smhi_lista_v4(a.smhi) if v4 else None)
+        if v4:
+            s['tidszon']['smhi']['uteslutna'] = UTESLUTNA_SMHI
         if not (s['tidszon']['sommartid']['klarat'] and s['tidszon']['smhi']['klarat']):
             s['stopp'] = 'tidszonsprovet (b) visar något annat än svensk lokaltid — vintern läses inte, och frågan går till Bengt (§3).'
             skriv(s, a.ut); return 1
         timmar, s['indata']['vvis']['timtabellen'], _ = lasare.prep_tabell(filer, v['fran'], v['till'], sids)
+        if v4:
+            s['indata']['langvag_v4'] = lw4_prov(a.metnordic, getattr(a, 'lw4', None))
+            if not s['indata']['langvag_v4']['klarat']:
+                s['stopp'] = ('tillägget (Ä1): vintern läses bara ur metnordic_lw4_-delarna med en lw4-lista per del — '
+                              f"{s['indata']['langvag_v4']} — vintern läses inte.")
+                skriv(s, a.ut); return 1
         mn_fil = os.path.join(a.arbete, f'metnordic_{namn}.csv.gz')
         d = pd.concat([pd.read_csv(f, dtype={'station_id': str}) for f in sorted(a.metnordic)], ignore_index=True)
         d.drop_duplicates(['station_id', 'tid_utc']).sort_values(['station_id', 'tid_utc']).to_csv(mn_fil, index=False)
@@ -277,6 +340,7 @@ if __name__ == '__main__':
     ap.add_argument('--urvalet-vvis'); ap.add_argument('--urvalet-metnordic')
     ap.add_argument('--vvis'); ap.add_argument('--ifs'); ap.add_argument('--metnordic', nargs='+', default=[])
     ap.add_argument('--smhi'); ap.add_argument('--arbete'); ap.add_argument('--ut', required=True)
+    ap.add_argument('--lw4', nargs='+', default=[])
     ap.add_argument('--samman', nargs='+')
     a = ap.parse_args()
     if a.samman:
