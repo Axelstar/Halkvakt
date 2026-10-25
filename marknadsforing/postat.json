@@ -271,5 +271,18 @@
       "instagram": "18103060031038865",
       "x": "2114021845720817907"
     }
+  ],
+  "2026-10-25": [
+    {
+      "pass": "lunch",
+      "namn": "2026-10-25-lunch",
+      "typ": "lan",
+      "nyckel": "lan:25",
+      "tid": "2026-10-25T10:51:27.242Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-10-25-lunch.jpg",
+      "facebook": "1312515671952967_122105118291516187",
+      "instagram": "18106506215631224",
+      "x": "2114308917656465838"
+    }
   ]
 }
