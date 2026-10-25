@@ -17830,3 +17830,28 @@ utfall i §2, låsningen i §4 (c) och §9, och valet (e) i §10.
 signaturer (§10 f där).
 
 **Stomdokument:** KUV tillägget för v4 i repot som utkast med de låsta summorna
+
+## #715 (25/10 2026) Tillägget för den frysta på 2018/19–2021/22 med v4 signerat
+
+**Bengts ord 25/10:** *"Jag har läst #1198. Signera tillägget för v4 för mej och Axel och slå ihop när CI är grön."*
+
+**Signerat:** `docs/FORREGISTRERING-FLER-VINTRAR-TILLAGG-2026-10-25.md`. Bengt för sig och för Axel via Bengt, som i #671, #692 och #695.
+Dokumentets sha256 vid signeringen, före statusraden och signaturerna: `59cdab8706ca5c85a1c870307f9994c8e233ff8cba26a83b31f50bc5e7529d52`. Det är versionen i #1198 (2e9acaf1), med väg 2
+i §10 (e), som Bengt läste.
+
+**Det som nu gäller:**
+- Ä1–Ä5 för 2018/19–2021/22. Långvågens 44 delar är låsta i `kuvos/langvag-v4-leverans.json` (sha256 `c70dcc1064550cda5a5a9726026e8d1c0c931f2018a173388c850cec8154bf63`).
+- Valen i §10:
+  - fröet 20261025;
+  - vintrarna en i taget;
+  - återanvändningsprovet i stället för kontrollprovet på 2022/23;
+  - bytesbeslutet senast 30/11;
+  - timmen 25/3 2022 08 UTC ur v4 (väg 2).
+
+**Följd:**
+- Spärren i #1196 släpper de fyra vintrarna först när #1196 är ihopslagen, och den slås ihop på Bengts ord.
+- Inget modelltal för den frysta på de fyra vintrarna var läst vid signeringen.
+- Signeringslistan för 26/10 rekommenderar att vintrarna körs efter signeringen av FORREGISTRERING-2026-27, så att inget nytt sett tal
+  behöver stå vid dess signaturer (§10 f där).
+
+**Stomdokument:** KUV tillägget för v4 signerat 25/10

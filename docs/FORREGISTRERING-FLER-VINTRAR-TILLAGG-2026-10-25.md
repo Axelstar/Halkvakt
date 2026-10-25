@@ -1,7 +1,8 @@
 # Tillägg till FORREGISTRERING-FLER-VINTRAR: den frysta kandidaten på 2018/19–2021/22 med MET:s v4 där arkivet saknar data
 
-**Status: UTKAST 25/10 2026** (DECISIONS #711, #714). Signeras av Bengt och Axel. Spärren i koden (PR #1196) läser den här filen och
-släpper de fyra vintrarna först när statusraden säger SIGNERAT och båda signaturerna står i §11.
+**Status: SIGNERAT 25/10 2026** (Bengt, och Axel via Bengt, DECISIONS #715; dokumentets sha256 vid signeringen, före den här
+raden och signaturerna: `59cdab8706ca5c85a1c870307f9994c8e233ff8cba26a83b31f50bc5e7529d52`). Utkastet: DECISIONS #711 och #714. Signerat **innan** någon av de fyra vintrarna är räknad för den
+frysta: inget modelltal är läst. Spärren i koden (PR #1196) läser den här filen och släpper vintrarna när #1196 är ihopslagen.
 
 Bengts ord 25/10:
 - *"Ja, skriv utkastet till förregistreringen för den frysta på 2018/19–2021/22 med v4, med bara det arkivet saknar ur v4. Bara utkast,
@@ -152,5 +153,5 @@ Den är byggd i PR #1196 (`claude/langvag-v4`) och inte ihopslagen:
 
 | | Datum | Signatur |
 | :-- | :-- | :-- |
-| Bengt | | |
-| Axel | | |
+| Bengt | 2026-10-25 | Bengt i chatten: *"Jag har läst #1198. Signera tillägget för v4 för mej och Axel och slå ihop när CI är grön."* (DECISIONS #715) |
+| Axel | 2026-10-25 | Via Bengt i samma ord (DECISIONS #715) |
