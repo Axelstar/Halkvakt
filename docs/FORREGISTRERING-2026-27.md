@@ -268,7 +268,7 @@ grindarna eller den här domen över den frysta. Valet inför 2027/28 görs enli
 
 **(a) Radarns tal R.** Läses 26/10 enligt #568: visar alla tre kurvorna en majoritet i bandet 0,1–0,5 på `rate_mean` blir R = 0,1,
 annars 0,5. Claude för in talet samma dag. Saknas en kurva står R = 0,5 kvar, och bortfallet redovisas vid signaturerna (Bengt
-23/10, #689). Signeringen sker samma dag (#689). Läsningen är `scripts/radarns-tal.ts` (självtest i ci): den läser bandet 0,1–0,5 på `rate_mean_mmh` ur de tre körningarnas loggar och tillämpar regeln. Kurva 1 (38690393504, 8–15/10): 13 026 av 21 012 par, 62,0 %.
+23/10, #689). Signeringen sker samma dag (#689). Läsningen är `scripts/radarns-tal.ts` (självtest i ci): den läser bandet 0,1–0,5 på `rate_mean_mmh` ur de tre körningarnas loggar och tillämpar regeln. Kurva 1 (38690393504, 8–15/10): 13 026 av 21 012 par, 62,0 %. Kurva 2 (39257448840, 12–19/10, körd för hand 13:20 UTC efter morgonavbrottet): 4 015 av 7 082 par, 56,7 %.
 
 **(b) Spridningsgrinden — besvarad 15/10 (DECISIONS #574, #575).** Spridningen grindar där minst två ankare bidrar (#547 och #563
 lästa ihop), **samma grind gäller varningen i appen** (Bengts ja; regeln i §3 har villkoret), och loggningen är byggd: del B skriver
