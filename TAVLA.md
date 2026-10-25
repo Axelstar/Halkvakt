@@ -536,7 +536,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **Stängt 22/9 (DECISIONS #311, Bengt: *"ta upp våren 2027"*):** behövs först före dansk produktion, tidigast 2027/28. Står nu under Nordenprodukten i Ä7 (bedömningen §3): nyckeln registreras av Bengt och `ingest/dk.ts` läggs om före produktion.
 
 
-- [ ] 🔋 **#218 BATTERIBUDGETEN HAR ALDRIG MÄTTS, OCH iOS KÖR FULL GAS** (genomlysningen 20/9). `< 8 %/h` står som krav på tre
+- [x] 🔋 **#218 BATTERIBUDGETEN HAR ALDRIG MÄTTS, OCH iOS KÖR FULL GAS** ✅ **STÄNGT 25/10** (Bengt: *"det är mätt och kontrollerat"*, DECISIONS #712): Android-mätningen är gjord och kontrollerad, och iPhone höll kravet 27/9 (7 %/h, #382). Värdet för Android är inte bokfört. Ommätningen och fältprotokollet står kvar på Axels #262. (genomlysningen 20/9). `< 8 %/h` står som krav på tre
   ställen med **noll motprov**. iOS kör `BestForNavigation` med avstängd automatisk paus och saknar motsvarighet till Androids
   kadensreglering. Androids kadenstest är tautologiskt (sänk gränsen tiofalt och det passerar ändå). Dessutom: en
   snapshot-omladdningsloop i Androids vakttjänst kan ge **fyra HTTP-anrop per sekund utan tak** när nätet saknas och cachen är tom.

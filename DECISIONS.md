@@ -17661,12 +17661,15 @@ inte i repot). **Vikterna gäller bara om den punkten signeras.**
 
 **Stomdokument:** KUV förarnas vikter byggda före signeringen för förarnas mått i utkastet
 
-## #712 (25/10 2026) Kort #303, #311 och #354 stängda på Bengts ord
+## #712 (25/10 2026) Kort #218, #303, #311 och #354 stängda på Bengts ord
 
 **Bengts ord 25/10**, efter genomgången av projektkartans listor *Väntar på Bengt* och *Väntar på Axel*:
 - *"slå ihop 1189, stäng 354"*;
 - *"stäng 311 vi har gått över till Supabase pro"*;
-- *"stäng 303"*.
+- *"stäng 303"*;
+- om #218: *"det är mätt och kontrollerat"*.
+
+**#218 Batteribudgeten.** Android-mätningen är gjord och kontrollerad enligt Bengt, och iPhone höll kravet 27/9 (7 %/h, #382). Värdet för Android är inte bokfört. I projektkartan är steget *Android mätt* klart på Bengts ord; ommätningen och fältprotokollet står kvar på Axels #262.
 
 **#303 Vägdatalagret, steg 3.** Punkt (1) är avskriven, som kortets Verify tillåter. Läsningarna läser filerna i `data/vagdata/`
 direkt, som förarnas vikter (#709) och osäkerheten (#707) redan gör, och tabellen `kuvos_ra.vagdata` behövs inte. Axels kolumner (2)
