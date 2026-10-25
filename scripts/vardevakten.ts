@@ -256,6 +256,8 @@ const TID: Record<string, string> = {
   kandidat_ph: "tid", kandidat_live: "tid",
   // DECISIONS #573/#575: domloggen och stationsvärdena — de bär måtten i mars.
   kandidat_skugga: "observed_at", kandidat_station: "observed_at",
+  // Den nya kandidatens skugga (sql/068, DECISIONS #692): samma kolumner som den frystas, alltså samma spann — fött besiktigad.
+  ny_kandidat_ph: "tid", ny_kandidat_live: "tid", ny_kandidat_skugga: "observed_at", ny_kandidat_station: "observed_at",
 };
 
 console.log(`Värdevakten — besiktning av arkivets numeriska fält (${DAGAR} dygns fönster)\n`);

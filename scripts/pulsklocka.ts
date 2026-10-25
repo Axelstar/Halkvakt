@@ -74,13 +74,19 @@ const NYA: { namn: string; schema: string; fil: string }[] = [
   // var blind för del A i sex timmar 14/10 (DECISIONS #558, tillägg). Ett nytt schema prövas mot den funktionen först.
   { namn: "puls-kandidat-fysik", schema: "13 */6 * * *", fil: "kandidat-fysik.yml" },
   { namn: "puls-kandidat-timme", schema: "43 * * * *", fil: "kandidat-timme.yml" },
+  // DECISIONS #706 (Bengt 24/10): den nya kandidaten (sex vintrar, #702–#704) loggar bredvid den låsta i sina egna tabeller (sql/068);
+  // den låsta talar. Samma takt som den låstas: del A på :28, en kvart efter den låstas :13 (ny-kandidat-fysik.yml väntar ändå tills
+  // den låstas del A inte kör, MET:s villkor), och del B på :47, tre minuter före den låstas logg :50. Minuterna är lediga i
+  // databasens klocka. `*/6` av samma skäl som ovan.
+  { namn: "puls-ny-kandidat-fysik", schema: "28 */6 * * *", fil: "ny-kandidat-fysik.yml" },
+  { namn: "puls-ny-kandidat-timme", schema: "47 * * * *", fil: "ny-kandidat-timme.yml" },
 ];
 
 // Vakthundens check 6a bär samma tal som golv (kort #222, DECISIONS #255): ett puls-jobb som
 // avaktiveras eller raderas ska larma, inte tyst falla ur bevakningslistan. Vakthunden kör i Deno
 // hos Supabase och kan inte importera den här filen, så talet är en KOPIA — kontraktsgrinden vaktar
 // att kopiorna bär samma värde, och raden under vaktar att värdet stämmer med listan ovan.
-const ANTAL_NYA = 19;
+const ANTAL_NYA = 21;
 if (NYA.length !== ANTAL_NYA) {
   console.error(`NYA har ${NYA.length} jobb men ANTAL_NYA säger ${ANTAL_NYA} — uppdatera båda, och vakthundens PULS_GOLV.`);
   process.exit(1);

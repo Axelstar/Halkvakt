@@ -1,0 +1,258 @@
+{
+ "_om": "Redaktionernas tipsvägar för dörr 1 (en länk i artikeln när de skriver om halka), per län, för de tidningar som har en förslagssida i kartrepot. Bara redaktionernas egna funktionsadresser och formulär, aldrig en namngiven persons adress (repot är publikt). Varje adress är läst i sidans egen text på källsidan 24/10 2026, inte ur en sammanfattning; att den står där bevisar inte att den tar emot post, så första utskicket till en adress är provet (CLAUDE.md, läxan om datex@trafikverket.se). Koncernen är bara satt där sidan själv säger det (Bonnier News Locals eller NTM:s namn i sidans egen kod); annars 'fristående eller okänd'. DECISIONS #700. Adress och last_pa är sökvägar på tidningens sajt (fältet sajt), utan https-adress, så att beroendekartan inte läser dem som något koden hämtar.",
+ "last": "2026-10-24",
+ "redaktioner": [
+  {
+   "lan": "dalarna",
+   "tidning": "Dala-Demokraten",
+   "sajt": "dalademokraten.se",
+   "koncern": "Bonnier News Local",
+   "vag": "e-post",
+   "adress": "red@daladem.se",
+   "last_pa": "/kontakt/"
+  },
+  {
+   "lan": "dalarna",
+   "tidning": "DT",
+   "sajt": "dt.se",
+   "koncern": "fristående eller okänd",
+   "vag": "saknas",
+   "adress": "",
+   "last_pa": "/ (svarar inte på läsning, 24/10)"
+  },
+  {
+   "lan": "gavleborg",
+   "tidning": "Arbetarbladet",
+   "sajt": "arbetarbladet.se",
+   "koncern": "Bonnier News Local",
+   "vag": "e-post",
+   "adress": "tips@arbetarbladet.se",
+   "last_pa": "/kontakt/"
+  },
+  {
+   "lan": "gavleborg",
+   "tidning": "Gefle Dagblad",
+   "sajt": "gd.se",
+   "koncern": "Bonnier News Local",
+   "vag": "e-post",
+   "adress": "tips@gd.se",
+   "last_pa": "/tipsa"
+  },
+  {
+   "lan": "gavleborg",
+   "tidning": "Hälsinglands tidningar",
+   "sajt": "ht.se",
+   "koncern": "Bonnier News Local",
+   "vag": "e-post",
+   "adress": "redaktion@ht.se",
+   "last_pa": "/tipsa"
+  },
+  {
+   "lan": "jamtland",
+   "tidning": "Länstidningen Östersund",
+   "sajt": "ltz.se",
+   "koncern": "Bonnier News Local",
+   "vag": "e-post",
+   "adress": "tips@ltz.se",
+   "last_pa": "/kontakta-oss"
+  },
+  {
+   "lan": "jamtland",
+   "tidning": "Östersunds-Posten",
+   "sajt": "op.se",
+   "koncern": "Bonnier News Local",
+   "vag": "e-post",
+   "adress": "tips@op.se",
+   "last_pa": "/kontakt/"
+  },
+  {
+   "lan": "jamtland",
+   "tidning": "Jämtlands Tidning",
+   "sajt": "jamtlandstidning.se",
+   "koncern": "fristående eller okänd",
+   "vag": "e-post",
+   "adress": "red@jamtlandstidning.se",
+   "last_pa": "/kontakt"
+  },
+  {
+   "lan": "jamtland",
+   "tidning": "Tidningen Härjedalen",
+   "sajt": "tidningenharjedalen.se",
+   "koncern": "Bonnier News Local",
+   "vag": "e-post",
+   "adress": "redaktion@tidningenharjedalen.se",
+   "last_pa": "/"
+  },
+  {
+   "lan": "norrbotten",
+   "tidning": "Norrländska Socialdemokraten",
+   "sajt": "nsd.se",
+   "koncern": "NTM",
+   "vag": "e-post",
+   "adress": "redaktion@nsd.se",
+   "last_pa": "/kontakta"
+  },
+  {
+   "lan": "norrbotten",
+   "tidning": "Norrbottens-Kuriren",
+   "sajt": "kuriren.nu",
+   "koncern": "NTM",
+   "vag": "e-post",
+   "adress": "tips@kuriren.com",
+   "last_pa": "/kontakta"
+  },
+  {
+   "lan": "norrbotten",
+   "tidning": "Piteå-Tidningen",
+   "sajt": "pt.se",
+   "koncern": "NTM",
+   "vag": "formulär",
+   "adress": "/tipsa",
+   "last_pa": "/kontakta"
+  },
+  {
+   "lan": "norrbotten",
+   "tidning": "Haparandabladet",
+   "sajt": "haparandabladet.se",
+   "koncern": "fristående eller okänd",
+   "vag": "e-post",
+   "adress": "redaktion@haparandabladet.se",
+   "last_pa": "/"
+  },
+  {
+   "lan": "orebro",
+   "tidning": "Nerikes Allehanda",
+   "sajt": "na.se",
+   "koncern": "Bonnier News Local",
+   "vag": "e-post",
+   "adress": "nyhet@na.se",
+   "last_pa": "/tipsa"
+  },
+  {
+   "lan": "sodermanland",
+   "tidning": "Eskilstuna-Kuriren",
+   "sajt": "ekuriren.se",
+   "koncern": "NTM",
+   "vag": "e-post",
+   "adress": "tips@ekuriren.se",
+   "last_pa": "/ (sidfoten)"
+  },
+  {
+   "lan": "sodermanland",
+   "tidning": "Södermanlands Nyheter",
+   "sajt": "sn.se",
+   "koncern": "NTM",
+   "vag": "formulär",
+   "adress": "/tipsa",
+   "last_pa": "/kontakta (redaktion/tips per telefon 0155-767 70)"
+  },
+  {
+   "lan": "uppsala",
+   "tidning": "Upsala Nya Tidning",
+   "sajt": "unt.se",
+   "koncern": "NTM",
+   "vag": "formulär",
+   "adress": "/tipsa",
+   "last_pa": "/kontakta"
+  },
+  {
+   "lan": "uppsala",
+   "tidning": "Enköpings-Posten",
+   "sajt": "eposten.se",
+   "koncern": "NTM",
+   "vag": "formulär",
+   "adress": "/tipsa",
+   "last_pa": "/kontakta"
+  },
+  {
+   "lan": "varmland",
+   "tidning": "Nya Wermlands-Tidningen",
+   "sajt": "nwt.se",
+   "koncern": "fristående eller okänd",
+   "vag": "e-post",
+   "adress": "redaktion@nwt.se",
+   "last_pa": "/tipsa"
+  },
+  {
+   "lan": "varmland",
+   "tidning": "Värmlands Folkblad",
+   "sajt": "vf.se",
+   "koncern": "fristående eller okänd",
+   "vag": "e-post",
+   "adress": "redaktion@vf.se",
+   "last_pa": "/tipsa"
+  },
+  {
+   "lan": "vasterbotten",
+   "tidning": "Norran",
+   "sajt": "norran.se",
+   "koncern": "NTM",
+   "vag": "e-post",
+   "adress": "tipsa@norran.se",
+   "last_pa": "/kontakta"
+  },
+  {
+   "lan": "vasterbotten",
+   "tidning": "Västerbottens-Kuriren",
+   "sajt": "vk.se",
+   "koncern": "fristående eller okänd",
+   "vag": "saknas",
+   "adress": "",
+   "last_pa": "/ (nekar läsning, 403, 24/10)"
+  },
+  {
+   "lan": "vasterbotten",
+   "tidning": "Folkbladet",
+   "sajt": "folkbladet.nu",
+   "koncern": "fristående eller okänd",
+   "vag": "saknas",
+   "adress": "",
+   "last_pa": "/ (nekar läsning, 403, 24/10)"
+  },
+  {
+   "lan": "vasternorrland",
+   "tidning": "Allehanda",
+   "sajt": "allehanda.se",
+   "koncern": "Bonnier News Local",
+   "vag": "e-post",
+   "adress": "tips@allehanda.se",
+   "last_pa": "/kontakt"
+  },
+  {
+   "lan": "vasternorrland",
+   "tidning": "Sundsvalls Tidning",
+   "sajt": "st.nu",
+   "koncern": "Bonnier News Local",
+   "vag": "e-post",
+   "adress": "tips@st.nu",
+   "last_pa": "/kontakt/"
+  },
+  {
+   "lan": "vasternorrland",
+   "tidning": "Tidningen Ångermanland",
+   "sajt": "tidningenangermanland.se",
+   "koncern": "Bonnier News Local",
+   "vag": "e-post",
+   "adress": "tips@tidningenangermanland.se",
+   "last_pa": "/tipsa"
+  },
+  {
+   "lan": "vastmanland",
+   "tidning": "VLT",
+   "sajt": "vlt.se",
+   "koncern": "Bonnier News Local",
+   "vag": "e-post",
+   "adress": "tips@vlt.se",
+   "last_pa": "/kontakt"
+  },
+  {
+   "lan": "vastmanland",
+   "tidning": "Sala Allehanda",
+   "sajt": "salaallehanda.com",
+   "koncern": "Bonnier News Local",
+   "vag": "e-post",
+   "adress": "redaktionen@salaallehanda.com",
+   "last_pa": "/tipsa"
+  }
+ ]
+}

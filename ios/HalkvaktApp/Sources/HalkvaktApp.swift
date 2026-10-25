@@ -340,7 +340,11 @@ struct RootView: View {
             LinearGradient(colors: [Brand.bg.opacity(0), Brand.bg], startPoint: .top, endPoint: .init(x: 0.5, y: 0.6))
                 .frame(height: 130).allowsHitTesting(false)
                 .ignoresSafeArea(edges: .bottom)
+                .ignoresSafeArea(.keyboard, edges: .bottom)
+            // Flikraden står kvar längst ner när tangentbordet kommer upp (Eget namn i Spara resan?) och göms bakom det,
+            // i stället för att flyta upp över innehållet (Axels skärmbild 24/10).
             FloatingTabBar(tab: $tab).padding(.bottom, 8)
+                .ignoresSafeArea(.keyboard, edges: .bottom)
         }
         .background(Brand.bg)
         // Skärmens bakgrund bakom klockan: flikarna döljer navigeringsfältet, så texten rullade annars upp under statusfältet

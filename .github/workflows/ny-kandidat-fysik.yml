@@ -1,0 +1,129 @@
+name: ny-kandidat-fysik
+# DEN NYA KANDIDATENS SKUGGA, DEL A (ersättningsregeln docs/FORREGISTRERING-ERSATTNING-2027-28.md §4, DECISIONS #692). Samma steg som den
+# frystas kandidat-fysik.yml för körningen R (den senaste av 00/06/12/18 UTC som är minst sex timmar gammal, eller en given stämpel), med
+# den nyas kandidat och långvågen ur fysikens reserv (fysik/ny_kandidat/levande.py --del-a):
+#   1. MET Nordics historia och dagfiler LÄSES ur releasen metnordic-live-2026-27 men skrivs aldrig dit (den frystas del A äger dem); de
+#      timmar som saknas i går och i dag och körningens steg 0–17 hämtas till jobbet och stannar där;
+#   2. indatan för alla punkter som den frystas (fysik/live/indata.py, oförändrad);
+#   3. modell_alla.pkl, den slutliga enheten, ur hinken (kuvos/kuvos-kandidat-2027-28/), kontrollsumman mot kuvos/kandidat-2027-28.json —
+#      som måste vara ifylld ur samman-artefakten nykand-samman, annars stannar jobbet innan något hämtas;
+#   4. PH för R+6…R+11 → ny_kandidat_ph (sql/068) BARA med flaggan på (kuvos/ny-kandidat-skugga.json, ingest/ny-kandidat-db.ts);
+#      med flaggan av är artefakten enda utdatan.
+# PULSKLOCKAN sedan 24/10 (DECISIONS #706): puls-ny-kandidat-fysik "28 */6 * * *", en kvart efter den frystas :13, efter migrationen
+# sql/068, paritetsprovet (40067785091, #704) och flaggan. Knappen finns kvar för en enskild körning.
+# MET:s villkor är en förbindelse åt gången: jobbet väntar först tills den frystas del A inte kör. Egen concurrency-grupp med flit: i en
+# delad grupp hade en körning här kunnat ersätta en VÄNTANDE körning av den frystas del A (GitHub håller bara en väntande per grupp).
+# Ingen Trafikverksdata i någon fil eller logg: MET Nordic (NLOD / CC BY 4.0), öppna särdrag och kandidatens egna tal.
+on:
+  workflow_dispatch:
+    inputs:
+      stamp:
+        description: "körningen, t.ex. 20261115T06Z — tomt = den senaste som är minst sex timmar gammal"
+        required: false
+        default: ""
+concurrency: { group: ny-kandidat-fysik, cancel-in-progress: false }
+permissions:
+  contents: read
+  actions: read      # den frystas del A:s körningar, för väntan på MET
+jobs:
+  fysik:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      GH_TOKEN: "${{ github.token }}"
+      REL: metnordic-live-2026-27
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13", cache: pip, cache-dependency-path: fysik/requirements.txt }
+      - name: Självtesten, flaggan och kandidatfilen
+        shell: bash
+        run: |
+          set -o pipefail
+          node --experimental-strip-types ingest/metnordic-live.ts --sjalvtest 2>&1 | grep -v ExperimentalWarning | tail -1
+          node --experimental-strip-types ingest/ny-kandidat-db.ts --sjalvtest 2>&1 | grep -v ExperimentalWarning | tail -1
+          python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
+          (cd fysik && sha256sum -c --quiet SHA256SUMS)
+          python3 fysik/live/indata.py --sjalvtest | tail -1
+          python3 fysik/ny_kandidat/sjalvtest_levande.py | tail -1
+          F=$(node --experimental-strip-types ingest/ny-kandidat-db.ts --flagga 2>/dev/null); echo "flaggan: $F" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "FLAGGA=${F%%$'\t'*}" >> "$GITHUB_ENV"
+          python3 -c "import sys; sys.path.insert(0, 'fysik/ny_kandidat'); import levande; c = levande.ladda(); print(f\"kandidatfilen: paret W {c['W']:g} · L {c['L']:g} km, {len(c['names'])} särdrag\")" | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Väntan på den frystas del A (MET:s villkor, en förbindelse åt gången)
+        shell: bash
+        run: |
+          for i in $(seq 1 60); do
+            N=$(gh run list --workflow kandidat-fysik.yml --limit 10 --json status -q '[.[] | select(.status != "completed")] | length' 2>/dev/null || echo "?")
+            [ "$N" = 0 ] && { echo "den frystas del A kör inte — vidare"; exit 0; }
+            echo "den frystas del A kör eller väntar ($N) — väntar 30 s"; sleep 30
+          done
+          echo "::error::den frystas del A har kört i 30 minuter — den nya hämtar inte samtidigt (MET:s villkor)"; exit 1
+      - name: Historien och punkterna ur releasen (bara läsning)
+        shell: bash
+        run: |
+          mkdir -p mn/dagar
+          gh release download "$REL" --dir mn --pattern 'metnordic_punkter.csv' --pattern 'metnordic_analys_*.csv.gz'
+          gh release download "$REL" --dir mn/dagar --pattern 'metnordic_dygn_*.csv.gz' || true
+          for f in mn/dagar/metnordic_dygn_*.csv.gz; do [ -e "$f" ] && mv "$f" "mn/dagar/$(basename "$f" | sed 's/metnordic_dygn_//')"; done
+          echo "delar: $(ls mn/metnordic_analys_*.csv.gz | wc -l), levande dygn: $(ls mn/dagar | wc -l)"
+      - name: De levande timmar som saknas (i går och i dag) och körningen ur metpplatest, bara till jobbet
+        shell: bash
+        run: |
+          set -o pipefail
+          for dag in $(date -u -d yesterday +%F) $(date -u +%F); do
+            node --experimental-strip-types ingest/metnordic-live.ts --dygn "$dag" --punkter mn/metnordic_punkter.csv --ut mn 2>&1 | grep -v ExperimentalWarning
+          done
+          STAMP="${{ inputs.stamp }}"
+          node --experimental-strip-types ingest/metnordic-live.ts --korning ${STAMP:+--stamp "$STAMP"} --punkter mn/metnordic_punkter.csv --ut mn 2>&1 | grep -v ExperimentalWarning
+          echo "STAMP=$(cat mn/korning.txt)" >> "$GITHUB_ENV"
+      - name: Indatan för alla punkter (Axels frysta indata + data/vagdata), som den frystas
+        shell: bash
+        run: |
+          gh release download kuvos-fysik-indata-2024-25 --dir indata
+          node -e '
+            const m = require("./kuvos/fysik-indata-leverans.json"), c = require("crypto"), fs = require("fs");
+            let fel = 0;
+            for (const f of m.filer) { const h = c.createHash("sha256").update(fs.readFileSync("indata/" + f.fil)).digest("hex");
+              console.log(`${f.fil}: ${h === f.sha256 ? "ok" : "FEL " + h}`); if (h !== f.sha256) fel++; }
+            process.exit(fel ? 1 : 0);'
+          mkdir -p frusen && for f in indata/*.tar.gz; do tar -xzf "$f" -C frusen; done
+          if [ -d frusen/data ]; then mv frusen/data/* frusen/ && rmdir frusen/data; fi
+          python3 fysik/live/indata.py --frusen frusen --rot . --ut indata-live | tee -a "$GITHUB_STEP_SUMMARY"
+      # Modellen ur hinken som i den frystas flöde: adressen och nyckeln ur cron.job, maskade; bara statusen skrivs ut vid fel.
+      - name: modell_alla.pkl ur hinken, kontrollsumman mot kandidatfilen
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          curl -sS --fail-with-body -X POST "$FN?lage=kuvos_hamta" -H "x-halkvakt-key: $KEY" -H "Content-Type: application/json" -d '{"filer":["kuvos-kandidat-2027-28/modell_alla.pkl"]}' > hamta.json
+          node -e '
+            const k = require("./kuvos/kandidat-2027-28.json"), h = require("./hamta.json").filer, c = require("crypto"), { execFileSync } = require("child_process"), fs = require("fs");
+            const curl = (a) => { try { return execFileSync("curl", a, { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); } catch (e) { console.error(`hämtningen föll (curl ${e.status})`); process.exit(1); } };
+            const b = curl(["-sS", "--fail", h[0].url]); const f = k.filer.find((x) => (x.enhet ?? "alla") === "alla" && x.fil === "modell_alla.pkl");
+            const ok = !!f && c.createHash("sha256").update(b).digest("hex") === f.sha256 && b.length === f.bytes;
+            fs.writeFileSync("modell_alla.pkl", b); console.log(`modell_alla.pkl ur hinken: ${b.length} byte — ${ok ? "sha256 lika kandidatfilen" : "FEL"}`); process.exit(ok ? 0 : 1);'
+          rm hamta.json
+      - name: Del A — fysiken med reservens långvåg och rättelsen
+        shell: bash
+        run: |
+          set -o pipefail
+          { echo '```'; python3 fysik/ny_kandidat/levande.py --del-a --indata indata-live --analys mn/metnordic_analys_*.csv.gz mn/dagar/*.csv.gz \
+              --korning "mn/metnordic_korning_$STAMP.csv.gz" --modell modell_alla.pkl --kandidat kuvos/kandidat-2027-28.json --ut ut; echo '```'; } 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+          rm -f modell_alla.pkl
+      - name: Till tabellen ny_kandidat_ph (bara med flaggan på)
+        if: env.FLAGGA == 'på'
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: node --experimental-strip-types ingest/ny-kandidat-db.ts skriv-ph "ut/ny_kandidat_ph_$STAMP.csv.gz" 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Flaggan av — ingenting skrivs
+        if: env.FLAGGA != 'på'
+        run: echo "**Flaggan är av** (kuvos/ny-kandidat-skugga.json) — PH står bara i artefakten, ingenting är skrivet till databasen." | tee -a "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: "ny-kandidat-fysik-${{ github.run_id }}", path: ut/, retention-days: 3, if-no-files-found: ignore }

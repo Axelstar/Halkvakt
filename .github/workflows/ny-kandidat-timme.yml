@@ -1,0 +1,86 @@
+name: ny-kandidat-timme
+# DEN NYA KANDIDATENS SKUGGA, DEL B (ersättningsregeln docs/FORREGISTRERING-ERSATTNING-2027-28.md §4, DECISIONS #692). Samma steg som den
+# frystas kandidat-timme.yml: PH för timmen ur ny_kandidat_ph (den nyas del A, ny-kandidat-fysik.yml) och grind A:s ankare just nu (den
+# frystas `ingest/kandidat-db.ts ankare`, bara läsning: samma population som den frystas RÅ), grannarnas fel, RÅ och blandningen med den
+# nyas par ur kuvos/kandidat-2027-28.json (fysik/ny_kandidat/levande.py --del-b) → ny_kandidat_live, gallringen och domloggen
+# ny_kandidat_logga() (sql/068). Loggen anropas härifrån och inte av pg_cron, så att flaggan styr all skrivning.
+# FLAGGAN (kuvos/ny-kandidat-skugga.json) av ⇒ jobbet räknar inget och skriver inget; PH finns då inte heller i databasen.
+# SAKNAS PH för timmen hoppas den grönt med en notis, och loggen skriver timmen som tyst (som den frystas logg gör en timme utan
+# färskt värde). Den frystas reserv (scripts/kandidat-reserv.ts, som startar del A om en slott missats) är INTE byggd här.
+# PULSKLOCKAN sedan 24/10 (DECISIONS #706): puls-ny-kandidat-timme "47 * * * *", tre minuter före den frystas logg :50. Knappen finns
+# kvar för en enskild timme. Ingenting här når appen, rösten, lägesfilen eller den frystas dom.
+# Ingen Trafikverksdata i någon fil eller logg: ankarna lämnar aldrig jobbet, bara kandidatens egna tal skrivs.
+on:
+  workflow_dispatch:
+    inputs:
+      tid:
+        description: "timmen, t.ex. 2026-11-15T12:00:00Z — tomt = den timme som pågår just nu (UTC)"
+        required: false
+        default: ""
+concurrency: { group: ny-kandidat-timme, cancel-in-progress: false }
+permissions:
+  contents: read
+jobs:
+  timme:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: "${{ github.token }}"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13", cache: pip, cache-dependency-path: fysik/requirements.txt }
+      - name: Självtesten, flaggan och kandidatfilen
+        shell: bash
+        run: |
+          set -o pipefail
+          node --experimental-strip-types ingest/ny-kandidat-db.ts --sjalvtest 2>&1 | grep -v ExperimentalWarning | tail -1
+          node --experimental-strip-types ingest/kandidat-db.ts --sjalvtest 2>&1 | grep -v ExperimentalWarning | tail -1
+          python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
+          python3 fysik/live/kandidat_timme.py --sjalvtest | tail -1
+          F=$(node --experimental-strip-types ingest/ny-kandidat-db.ts --flagga 2>/dev/null); echo "flaggan: $F" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "FLAGGA=${F%%$'\t'*}" >> "$GITHUB_ENV"
+          python3 -c "import sys; sys.path.insert(0, 'fysik/ny_kandidat'); import levande; c = levande.ladda(); print(f\"kandidatfilen: paret W {c['W']:g} · L {c['L']:g} km\")" | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Flaggan av — ingenting räknas eller skrivs
+        if: env.FLAGGA != 'på'
+        run: echo "**Flaggan är av** (kuvos/ny-kandidat-skugga.json) — del B räknar inget och skriver inget." | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Timmen, PH och ankarna
+        if: env.FLAGGA == 'på'
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        shell: bash
+        run: |
+          TID="${{ inputs.tid }}"; [ -n "$TID" ] || TID=$(date -u +%Y-%m-%dT%H:00:00Z)
+          echo "TID=$TID" >> "$GITHUB_ENV"
+          set +e
+          node --experimental-strip-types ingest/ny-kandidat-db.ts ph "$TID" ph.csv 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+          KOD=${PIPESTATUS[0]}
+          set -e
+          if [ "$KOD" = 3 ]; then
+            echo "::notice title=HOPPAD::den nya kandidaten: ingen PH för $TID — timmen loggas som tyst"
+            echo "**HOPPAD:** ingen PH för $TID i ny_kandidat_ph — timmen loggas som tyst." >> "$GITHUB_STEP_SUMMARY"
+            node --experimental-strip-types ingest/ny-kandidat-db.ts logga 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+            echo "HOPPAD=1" >> "$GITHUB_ENV"
+            exit 0
+          fi
+          [ "$KOD" = 0 ] || exit "$KOD"
+          node --experimental-strip-types ingest/kandidat-db.ts ankare ankare.csv 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+          gh release download metnordic-live-2026-27 --pattern metnordic_punkter.csv --dir mn
+          sed 's/^station_id,/sid,/' mn/metnordic_punkter.csv > punkter.csv
+      - name: Del B — grannarna, RÅ och blandningen med den nyas par
+        if: env.FLAGGA == 'på' && env.HOPPAD != '1'
+        shell: bash
+        run: |
+          set -o pipefail
+          { echo '```'; python3 fysik/ny_kandidat/levande.py --del-b --ph ph.csv --punkter punkter.csv --ankare ankare.csv --tid "$TID" --ut live.csv; echo '```'; } 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+          rm -f ankare.csv
+      - name: Till ny_kandidat_live, gallringen och domloggen
+        if: env.FLAGGA == 'på' && env.HOPPAD != '1'
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        shell: bash
+        run: |
+          set -o pipefail
+          node --experimental-strip-types ingest/ny-kandidat-db.ts skriv-live live.csv 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types ingest/ny-kandidat-db.ts logga 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
