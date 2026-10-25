@@ -18058,3 +18058,33 @@ väglag, vägtemperatur och olyckor, uppdaterat var 30:e minut."* Rubriken (h1) 
 **Prov:** `test/lanssidor.test.ts` 8/8 med titel och beskrivning för län, väg och översikt, också när ingen halka rapporteras.
 
 **Stomdokument:** inga — sajtens sidor, inget stomdokument beskriver dem.
+
+## #722 (25/10 2026) Frostkalendern: första frostnatten per län hösten 2018–2022 ur VViS-leveransen, internt underlag för däckkedjorna
+
+**Axels ord 25/10 22:56:** *"Ja vi börjar internt"*, på förslaget att räkna en frostkalender ur leveransen 2018–2024 (#666) som
+underlag för en signal till däckkedjorna: när vägbanan första gången går under noll i ett län, så att deras sms om däckbyte går ut
+län för län och inte på ett fast datum.
+
+**Beräkningen.** Höstfilerna `Halkvakt_ÅÅÅÅ-2.csv.gz` för 2018–2022 (augusti/september–december, sha256 lika manifestet), hämtade ur
+hinken med `kuvos_hamta` till en arbetsyta utanför repot. Per station: första dag (svensk lokaltid, som `measuretime`, KUVOS-LEVERANSEN
+§3) från 1 augusti med `tyta` < 0,0 °C i minst två halvtimmar i följd. Platshållaren −99,9 och värden utanför ±45 räknas inte
+(VÄRDEVAKTEN; spannet ur KUVOS-LEVERANSEN §2). En station räknas en höst om den har mätningar i september, oktober och november.
+Länet ur närmaste väglagssträcka inom 20 km (`STATION_LAN_SQL` i publicera, #458). Per län och höst: **frostdagen = den dag då en
+fjärdedel av länets stationer hade haft sin första frostnatt**, och dessutom den första stationen och medianen. En fjärdedel i stället
+för den första stationen, eftersom en enda kall sänka annars bestämmer länets dag.
+
+**Vad som får lämna hinken.** Bara aggregat per län och höst (ett datum och antal stationer) — inga mätrader och inga värden per station
+(PUBLIKT REPO). Skriptet ligger i `scripts/matningar/frostkalendern-2026-10-25.py`; utfallet gick till Axel som fil och ligger inte i
+repot, tills Bengt sagt hur det får användas. **Utåt** (en kedja, en sida) visas ingenting förrän Bengt bestämt om VViS
+Förvaltning ska tillfrågas om att visa en sammanställning per län i ett erbjudande till däckbranschen (KONTAKTREGELN: Bengt väljer).
+
+**Utfallet 25/10** (777–749 stationer per höst, 73–95 utan län eftersom de inte längre finns i `weather_latest`): frostdagen föll
+20/9–12/10 i Norrbotten och 18/10–22/11 i Skåne. Samma län skiljer upp till 45 dygn mellan åren (Västra Götaland 5/10 2019 och
+19/11 2022). Stickprov mot raderna: i Skåne frös 4 stationer 20/10 2022 och 41 av 44 natten till 18/11, kalenderns dag.
+
+**Alternativ.**
+- Den första stationen per län: förkastat som huvudtal, en sänka eller en givare avgör.
+- Vårt eget arkiv ur det öppna API:t: bara från september 2026; reserv om leveransen inte får visas.
+- Hösten 2023 och 2024: saknas i leveransen (#666), 2024/25 börjar i november.
+
+**Stomdokument:** inga — ett marknadsunderlag, ingen mätning, grind eller kandidat; kuvösens prövningar rörs inte.
