@@ -29,6 +29,10 @@ TILLÄGGET för 2018/19–2021/22 (utkastet 25/10, DECISIONS #711), där MET:s a
 (TILLAGG_V4) är signerat, ur den ifyllda långvågens delar (--metnordic metnordic_lw4_<del>, --lw4 lw4_<del>.json ur
 fysik/vintrar/langvag_v4.ts: Ä1 långvågen ur v4, Ä2/Ä3 den nya kandidatens MET-delar med T2:s timmar och vinden ur x och y), och med
 tidszonsprovet utan SMHI:s station 7 (Ä4, som tillägget T1 för den nya). 2022/23 och 2024/25 räknas som förut.
+
+ANDRA TILLÄGGET (Ä6, signerat 25/10, DECISIONS #719): MET:s arkiv bar lång- och kortvågen 14–31/3 2022 som växande summor, inte
+timvärden; delarna för de timmarna bär båda ur v4 (langvag_v4.ts). Innan tilläggets delar läses körs trappformsprovet (§4 a,
+trappform()): tröskeln för lång- och kortvågen och sågtanden i kortvågen. En enda flaggad timme stoppar vintern.
 """
 import argparse, gc, hashlib, importlib.util, json, math, os, pickle, platform, re, shutil, sys, time
 import numpy as np
@@ -109,6 +113,68 @@ def lw4_prov(metnordic, lw4, summor=None):
                  saknas_i_kedjan=sorted(set(summor) - {os.path.basename(f) for f in filer}))
     s['klarat'] = (not s['fel'] and s['delar'] > 0 and s['listor'] == s['delar']
                    and not s.get('fel_summa') and not s.get('saknas_i_kedjan'))
+    return s
+
+
+TRAPP_LV, TRAPP_KV = 1.6e6, 3.3e6          # Ä6 §4 a: J/m² på en timme (444 och 917 W/m²); däröver är värdet en summa
+SAG_GOLV, SAG_FALL = 0.5e6, 0.5            # sågtanden: kortvågen över 0,5·10⁶ J/m² som faller till under hälften
+SAG_ANDEL, SAG_MIN = 0.25, 10              # och samma timme hos minst en fjärdedel av stationerna över golvet, minst tio
+
+
+def trappform(metnordic, exempel=5):
+    """Ä6 §4 a (DECISIONS #719): trappformsprovet på delarna innan de läses. MET:s arkiv bar lång- och kortvågen 14–31/3 2022 som
+    summor som växer timme för timme och nollställs med några timmars mellanrum, inte som timvärden. Delarna (csv.gz, kolumnerna
+    langvag_jm2 och kortvag_jm2) läses ihop, per station i tidsordning, och flaggar:
+      (a) tröskeln: långvåg över TRAPP_LV eller kortvåg över TRAPP_KV på en timme;
+      (b) sågtanden i kortvågen: en station har den en timme h när v[h] > SAG_GOLV, v[h+1] < SAG_FALL · v[h] och v[h+2] > v[h+1],
+          med h, h+1 och h+2 tre timmar i följd (ett fall följt av en ny ökning; ett timvärde avtar jämnt på eftermiddagen). Timmen
+          flaggas när minst SAG_ANDEL av stationerna med v[h] > SAG_GOLV har sågtanden samtidigt, och minst SAG_MIN stationer.
+          Skälet: en summa nollställs i hela rutnätet på en gång, medan ett moln som drar förbi tar några stationer. Regeln utan
+          andelen flaggade alla tre rena delarna i provet 25/10 (13, 69 och 72 timmar, största andelen 8,4 %: 50 av 595 stationer
+          6/3 2021 13 UTC). I de ackumulerade delarna hade nollställningen 14/3 2022 14 UTC alla 754 stationer, och 17 timmar
+          15–29/3 2022 hade en fjärdedel eller mer (högst 84,5 %); de timmarna fälls dessutom av tröskeln.
+          Stationerna under andelen räknas i sagtand_enskilda och flaggar inte.
+    Kravet är noll flaggade timmar (klarat). Per slag: timmarna (olika tid_utc), värdena (station och timme), första och sista
+    flaggade timmen, delarna och de första exemplen. Bara aggregat och några exempel; inga Trafikverksdata."""
+    kol = ['station_id', 'tid_utc', 'langvag_jm2', 'kortvag_jm2']
+    d = pd.concat([pd.read_csv(f, usecols=kol, dtype={'station_id': str}).assign(_del=os.path.basename(f)) for f in sorted(metnordic)],
+                  ignore_index=True)
+    d['tid_utc'] = pd.to_datetime(d.tid_utc, utc=True)
+    d = d.drop_duplicates(['station_id', 'tid_utc']).sort_values(['station_id', 'tid_utc'], ignore_index=True)
+    lv, kv = d.langvag_jm2.to_numpy(float), d.kortvag_jm2.to_numpy(float)
+    st, t = d.station_id.to_numpy(), d.tid_utc.to_numpy('datetime64[ns]')
+    over, sag = np.zeros(len(d), bool), np.zeros(len(d), bool)
+    if len(d) >= 3:
+        en = np.timedelta64(1, 'h')
+        foljd = (st[1:-1] == st[:-2]) & (st[2:] == st[:-2]) & (t[1:-1] - t[:-2] == en) & (t[2:] - t[1:-1] == en)
+        v0, v1, v2 = kv[:-2], kv[1:-1], kv[2:]
+        over[:-2] = foljd & (v0 > SAG_GOLV)
+        sag[:-2] = over[:-2] & (v1 < SAG_FALL * v0) & (v2 > v1)
+    # Per timme: n stationer över golvet, m av dem med sågtanden; timmen flaggas vid andelen m/n och minst SAG_MIN stationer.
+    per = pd.DataFrame({'n': over, 'm': sag}).groupby(t).sum()
+    per = per[per.m > 0]
+    andel = per.m / per.n
+    flaggad = (per.m >= SAG_MIN) & (andel >= SAG_ANDEL)
+    sag_f = sag & np.isin(t, per.index[flaggad].to_numpy('datetime64[ns]'))
+    tid = lambda v: v.strftime('%Y-%m-%dT%H:%M:%SZ')
+
+    def slag(m, varde):
+        x = d.loc[m].sort_values(['tid_utc', 'station_id'])
+        return dict(timmar=int(x.tid_utc.nunique()), varden=int(len(x)), forsta=tid(x.tid_utc.min()) if len(x) else None,
+                    sista=tid(x.tid_utc.max()) if len(x) else None, delar=sorted(x._del.unique())[:20],
+                    exempel=[{'station': r.station_id, 'tid_utc': tid(r.tid_utc), **varde(r.Index)} for r in x.head(exempel).itertuples()])
+    s = dict(delar=len(metnordic), varden=int(len(d)), stationer=int(d.station_id.nunique()),
+             granser=dict(langvag_jm2=TRAPP_LV, kortvag_jm2=TRAPP_KV, sagtand_golv=SAG_GOLV, sagtand_fall=SAG_FALL,
+                          sagtand_andel=SAG_ANDEL, sagtand_min_stationer=SAG_MIN),
+             troskel_langvag=slag(lv > TRAPP_LV, lambda i: {'langvag_jm2': float(lv[i])}),
+             troskel_kortvag=slag(kv > TRAPP_KV, lambda i: {'kortvag_jm2': float(kv[i])}),
+             sagtand_kortvag=slag(sag_f, lambda i: {'kortvag_jm2_h_h1_h2': [float(kv[i]), float(kv[i + 1]), float(kv[i + 2])]}),
+             sagtand_enskilda=dict(timmar=int((~flaggad).sum()), varden=int(sag.sum() - sag_f.sum()),
+                                   storsta_andel=round(float(andel[~flaggad].max()), 4) if (~flaggad).any() else 0.0))
+    s['sagtand_kortvag']['storsta_andel'] = round(float(andel[flaggad].max()), 4) if flaggad.any() else 0.0
+    alla = (lv > TRAPP_LV) | (kv > TRAPP_KV) | sag_f
+    s['flaggade_timmar'] = int(d.tid_utc[alla].nunique())
+    s['klarat'] = bool(s['flaggade_timmar'] == 0 and s['varden'] > 0)
     return s
 
 
@@ -280,7 +346,8 @@ def kor(a):
              versioner=dict(python=platform.python_version(), numpy=np.__version__, pandas=pd.__version__))
     if v4:
         s['tillagg_v4'] = {**tillagg, 'andringar': 'Ä1 långvågen ur v4, Ä2–Ä3 den nya kandidatens MET-delar (T2, vinden ur x och y), '
-                                                   'Ä4 tidszonsprovet utan SMHI:s station 7'}
+                                                   'Ä4 tidszonsprovet utan SMHI:s station 7, Ä6 lång- och kortvågen 14–31/3 2022 ur v4 '
+                                                   'och trappformsprovet före läsningen'}
     ident, (meta, idx, P), natt = identitetsprov(kand, modell, a.indata, a.urvalet_vvis, a.urvalet_metnordic, a.arbete)
     s['identitetsprov'] = ident
     if not ident['klarat']:
@@ -313,6 +380,13 @@ def kor(a):
             if not s['indata']['langvag_v4']['klarat']:
                 s['stopp'] = ('tillägget (Ä1): vintern läses bara ur metnordic_lw4_-delarna med en lw4-lista per del och de låsta summorna — '
                               f"{s['indata']['langvag_v4']} — vintern läses inte.")
+                skriv(s, a.ut); return 1
+            # Ä6 §4 a (DECISIONS #719): trappformsprovet innan delarna läses; kravet är noll flaggade timmar.
+            s['indata']['trappform'] = tf = trappform(a.metnordic)
+            if not tf['klarat']:
+                s['stopp'] = (f"tillägget (Ä6, §4 a): trappformsprovet flaggade {tf['flaggade_timmar']} timmar i delarna (långvåg över "
+                              f"tröskeln {tf['troskel_langvag']['timmar']}, kortvåg över tröskeln {tf['troskel_kortvag']['timmar']}, sågtand i "
+                              f"kortvågen {tf['sagtand_kortvag']['timmar']}); vintern läses inte, och frågan går till Bengt.")
                 skriv(s, a.ut); return 1
         mn_fil = os.path.join(a.arbete, f'metnordic_{namn}.csv.gz')
         d = pd.concat([pd.read_csv(f, dtype={'station_id': str}) for f in sorted(a.metnordic)], ignore_index=True)
