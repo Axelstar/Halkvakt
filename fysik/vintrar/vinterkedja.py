@@ -52,6 +52,7 @@ _IDENTITET = {}                                                                 
 VINTRAR_V4 = ('2018-19', '2019-20', '2020-21', '2021-22')                           # tillägget (DECISIONS #711)
 TILLAGG_V4 = os.path.join(os.path.dirname(FYS), 'docs', 'FORREGISTRERING-FLER-VINTRAR-TILLAGG-2026-10-25.md')
 STATUS_V4 = re.compile(r'^\*\*Status: SIGNERA[DT]\b', re.M)
+LEVERANS_V4 = os.path.join(os.path.dirname(FYS), 'kuvos', 'langvag-v4-leverans.json')   # delarnas låsta summor (DECISIONS #714)
 UTESLUTNA_SMHI = {'7': 'Gävle (Övriga stationer, 2017–2022): klockan en timme efter SMHI:s Gävle A och fyra VViS-stationer (T1, Ä4)'}
 # Signaturraderna läses med den nya kandidatens spärr, laddad ur sin utpekade fil (aldrig via sys.path, se CLAUDE.md).
 _spec = importlib.util.spec_from_file_location('sparren_ny_kandidat', os.path.join(FYS, 'ny_kandidat', 'sparren.py'))
@@ -80,8 +81,20 @@ def smhi_lista_v4(cache):
     return {**lista, 'station': [s for s in lista['station'] if str(s['key']) not in UTESLUTNA_SMHI]}
 
 
-def lw4_prov(metnordic, lw4):
-    """Ä1: tilläggets vintrar läser bara den ifyllda långvågens delar, en lista (lw4_<del>.json) per del, och listorna summeras."""
+def lw4_leverans(vinter, fil=None):
+    """Tilläggets låsta summor för vinterns delar och listor ur LEVERANS_V4 (DECISIONS #714), som {filnamn: sha256}. Kastar
+    SystemExit om filen saknas: utan låsta summor läses vintern inte."""
+    fil = fil or LEVERANS_V4
+    try:
+        m = json.load(open(fil, encoding='utf-8'))
+    except OSError:
+        raise SystemExit(f'vägrar: {os.path.basename(fil)} finns inte — långvågens delar är inte låsta (DECISIONS #714)')
+    return {n: h for d in m['delar'] if d['vinter'] == vinter for n, h in ((d['fil'], d['fil_sha256']), (d['lista'], d['lista_sha256']))}
+
+
+def lw4_prov(metnordic, lw4, summor=None):
+    """Ä1: tilläggets vintrar läser bara den ifyllda långvågens delar, en lista (lw4_<del>.json) per del, och listorna summeras.
+    Med summor (lw4_leverans) ska varje del och lista ha sin låsta sha256, och ingen låst fil får saknas."""
     namn = sorted(os.path.basename(f) for f in metnordic)
     s = dict(delar=len(namn), listor=0, ur_v4=0, ur_arkivet=0, saknade_timmar=0, tomma_varden=0,
              fel=[n for n in namn if not n.startswith('metnordic_lw4_')])
@@ -90,7 +103,12 @@ def lw4_prov(metnordic, lw4):
         for x in ('ur_v4', 'ur_arkivet', 'tomma_varden'):
             s[x] += int(j[x])
         s['saknade_timmar'] += len(j['saknas'])
-    s['klarat'] = not s['fel'] and s['delar'] > 0 and s['listor'] == s['delar']
+    if summor is not None:
+        filer = list(metnordic) + list(lw4 or [])
+        s.update(summor=len(summor), fel_summa=sorted(os.path.basename(f) for f in filer if summor.get(os.path.basename(f)) != sha(f)),
+                 saknas_i_kedjan=sorted(set(summor) - {os.path.basename(f) for f in filer}))
+    s['klarat'] = (not s['fel'] and s['delar'] > 0 and s['listor'] == s['delar']
+                   and not s.get('fel_summa') and not s.get('saknas_i_kedjan'))
     return s
 
 
@@ -291,9 +309,9 @@ def kor(a):
             skriv(s, a.ut); return 1
         timmar, s['indata']['vvis']['timtabellen'], _ = lasare.prep_tabell(filer, v['fran'], v['till'], sids)
         if v4:
-            s['indata']['langvag_v4'] = lw4_prov(a.metnordic, getattr(a, 'lw4', None))
+            s['indata']['langvag_v4'] = lw4_prov(a.metnordic, getattr(a, 'lw4', None), lw4_leverans(namn))
             if not s['indata']['langvag_v4']['klarat']:
-                s['stopp'] = ('tillägget (Ä1): vintern läses bara ur metnordic_lw4_-delarna med en lw4-lista per del — '
+                s['stopp'] = ('tillägget (Ä1): vintern läses bara ur metnordic_lw4_-delarna med en lw4-lista per del och de låsta summorna — '
                               f"{s['indata']['langvag_v4']} — vintern läses inte.")
                 skriv(s, a.ut); return 1
         mn_fil = os.path.join(a.arbete, f'metnordic_{namn}.csv.gz')

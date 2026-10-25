@@ -548,6 +548,30 @@ def tillagget(d):
     k(not s['klarat'] and s['fel'] == ['metnordic_reserv_2021-10-31_x.csv.gz'], f'tillägget (Ä1): en del utan långvågen fälls: {s}')
     s = vinterkedja.lw4_prov(delar, lw[:1])
     k(not s['klarat'], f'tillägget (Ä1): en del utan lista fälls: {s}')
+    # Låsningen (DECISIONS #714): varje del och lista mot sin summa i kuvos/langvag-v4-leverans.json.
+    rel = os.path.join(d, 'rel'); os.makedirs(rel, exist_ok=True); riktiga = []
+    for i in range(2):
+        p = os.path.join(rel, f'metnordic_lw4_2021-10-3{i}_x.csv.gz'); open(p, 'wb').write(b'del %d' % i); riktiga.append(p)
+    lev = os.path.join(d, 'leverans.json')
+    json.dump({'delar': [{'vinter': '2021-22', 'fil': os.path.basename(p), 'fil_sha256': vinterkedja.sha(p), 'lista': os.path.basename(l),
+                          'lista_sha256': vinterkedja.sha(l)} for p, l in zip(riktiga, lw)]
+                        + [{'vinter': '2020-21', 'fil': 'metnordic_lw4_2020-10-31_x.csv.gz', 'fil_sha256': '0' * 64, 'lista': 'lw4_9.json',
+                            'lista_sha256': '0' * 64}]}, open(lev, 'w'))
+    summor = vinterkedja.lw4_leverans('2021-22', lev)
+    k(sorted(summor) == sorted(os.path.basename(f) for f in riktiga + lw), f'tillägget (låsningen): bara vinterns delar och listor: {summor}')
+    s = vinterkedja.lw4_prov(riktiga, lw, summor)
+    k(s['klarat'] and s['summor'] == 4 and s['fel_summa'] == [] and s['saknas_i_kedjan'] == [],
+      f'tillägget (låsningen): delar och listor med sina låsta summor går igenom: {s}')
+    open(riktiga[1], 'ab').write(b'x')
+    s = vinterkedja.lw4_prov(riktiga, lw, summor)
+    k(not s['klarat'] and s['fel_summa'] == [os.path.basename(riktiga[1])], f'tillägget (låsningen): en ändrad del fälls: {s}')
+    s = vinterkedja.lw4_prov(riktiga[:1], lw[:1], summor)
+    k(not s['klarat'] and len(s['saknas_i_kedjan']) == 2, f'tillägget (låsningen): en låst del som saknas i kedjan fälls: {s}')
+    try:
+        r = vinterkedja.lw4_leverans('2021-22', os.path.join(d, 'ingen.json'))
+    except SystemExit as e:
+        r = str(e)
+    k(isinstance(r, str) and 'inte låsta' in r, f'tillägget (låsningen): utan leveransfilen läses vintern inte: {r}')
 
 
 def _tyst(f, *a):
@@ -571,4 +595,4 @@ if __name__ == '__main__':
     print(f'✓ självtest ({time.time() - T0:.0f} s): talen mot källorna, läsaren (prep.py:s timtabell, 12 kolumner, millisekunder, sidfoten, '
           'skarvens dubbletter, fönstret), vakterna vid gränserna, RÅ och måtten mot grind-a.ts, halvtimmen, blandningens leave-one-out '
           'och replikans urval, sammanslagningen, ECMWF-adressen, tidszonen mot SMHI, tillägget för 2018/19–2021/22 (spärren, station 7 '
-          'och långvågens delar), och hela körningen med fem motprov')
+          'och långvågens delar med de låsta summorna), och hela körningen med fem motprov')
