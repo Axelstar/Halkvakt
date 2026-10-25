@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { arHalt, byggLanssidor, sitemapMed, sidAdresser, vagNyckel, LAN, VAGAR, SIDBAS } from "../publish/lanssidor.ts";
+import { arHalt, byggLanssidor, sitemapMed, sidAdresser, vagNyckel, LAN, VAGAR, SIDBAS, PENDLING } from "../publish/lanssidor.ts";
 import { buildMapData } from "../publish/map-core.ts";
 import type { Q } from "../publish/snapshot-core.ts";
 
@@ -52,6 +52,13 @@ test("länssidorna: 21 län och en översikt, svaret ur källorna, Trafikverkets
   assert.ok(!skane.includes("—"), "inga långa tankstreck (varumärkesguiden)");
   assert.ok(skane.includes("E22, sedan 20 nov. 06:10 (Stor påverkan)"), "svensk tid, vinter +1");
   assert.ok(skane.includes("Uppdaterad 20 nov. 07:30"));
+  assert.ok(skane.includes(`<li><b>E6</b><span class="halt">Halka eller vinterväglag på 1 av 1 sträcka</span> · vägbanan −1,5 °C vid Lund<small>Malmö–Lund</small></li>`),
+    "stora vägar: vägens namn som folk skriver det, läget och sträckans orter (DECISIONS #722)");
+  assert.ok(!skane.includes("<li><b>väg 108</b>"), "en länsväg utan halka står inte i listan, bara E-vägar, riksvägar och vägar med halka");
+  assert.ok(skane.includes("<h2>Pendla i Skåne</h2>") && skane.includes("E6 går mellan Malmö, Lund och Helsingborg"));
+  assert.ok(skane.includes(`"@type":"FAQPage"`) && skane.includes("<h3>Hur ofta uppdateras väglaget i Skåne län?</h3>"), "frågorna syns och står som FAQPage");
+  assert.ok(skane.includes(`HALT=new Set(["E 6 Malmö - Lund"])`), "kartan får de hala sträckorna härifrån, samma regel som texten");
+  assert.ok(LAN.every((l) => PENDLING[l.slug]), "pendlingen är skriven för alla 21 län");
   const sthlm = sidor["lan/stockholm/index.html"];
   assert.ok(sthlm.includes(`content="Kl. 07:30: ingen halka på 1 vägavsnitt i Stockholms län, ingen mätstation under noll.`));
   assert.ok(sthlm.includes("Kl. 07:30 rapporterar Trafikverket ingen halka på länets 1 vägavsnitt just nu. Ingen mätstation i länet visar vägbana under noll."));
