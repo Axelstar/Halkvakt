@@ -18043,3 +18043,40 @@ högst 5 %. Störst var skillnaden 20/3 14 UTC vid station 1001: 4,7 % i långv�
   bytet loggas med datum och timme, och beslutet senast 30/11 fattas på den rättade modellens tal.
 
 **Stomdokument:** KUV T4 till NY-KANDIDAT signerat
+
+## #721 (25/10 2026) Bytet byggt med den frysta som talare; kriteriet för ett byte 26/10 låst före läsningen
+
+**Bengts ord 25/10:**
+- *"om vi får bra siffror så är mitt förslag att vi byter redan i morgon. Kan vi göra förberedesler för att byta i morgon"*;
+- *"Ja, bygg de tre PR:erna i kväll (T4, Ä6 och bytet med flaggan av). Kriteriet för bra siffror gäller som du skrev: proven klarade, bättre än RÅ varje vinter i norr och söder, i medel inte sämre än den frysta på A1, A2 eller A3, och paritetsprovet klarat."*;
+- *"vi pratar om byte till den nya nu och att den går live i morgon"*.
+
+**Kriteriet, låst 25/10 före läsningen.** Den nya kandidaten börjar tala 26/10 bara om den rättade nya (T4, #720) håller alla fyra:
+1. proven klarade på alla sex vintrarna;
+2. bättre än RÅ varje vinter, i norr och i söder;
+3. i medel inte sämre än den frysta på A1, A2 eller A3, på de vintrar där båda finns (2018/19–2022/23; den frystas 2021/22 enligt Ä6);
+4. paritetsprovet (FORREGISTRERING-2026-27 §12 a) klarat för den rättade modellen.
+
+Faller något byts inte kandidaten 26/10, och frågan går till Bengt. Kriteriet är ett beslut om vad förarna hör (§12 b), inte en dom,
+och V2 står som den föll (#702, T4 §3 a).
+
+**Bytet i koden (PR, inte ihopslagen):**
+- `sql/070_bytet.sql`: tabellen `kandidat_talar`, en rad per omställning med beslutet (en logg, som brytaren i sql/059); utan rader
+  talar den frysta. `talande_timme()` ger den nyas färska timme när den senaste raden säger ny, annars den frystas (§12 f), och
+  `talande_regel()` den talande kandidatens regel med `kandidat_regel()`:s kolumner och talaren. Den frystas funktioner och tabeller
+  rörs inte (§12 c). Andelen timmar där den frysta talade i den nyas ställe räknas ur `ny_kandidat_skugga_korning`.
+- Publiceringen (`publish/snapshot-core.ts`, och den genererade `supabase/functions/publicera/index.ts`) läser bytet och faller
+  tillbaka till `kandidat_timme()` och `kandidat_regel()` om bytet inte går att läsa, så att inget tystnar före migrationen.
+- Prov: `test/bytet.test.ts` (kolumnerna, den frysta som standard, §12 c, båda kopiorna) och tre nya i `test/snapshot-core.test.ts`.
+
+**Ordningen 26/10**, var steg på Bengts ord:
+1. Signeringen av förregistreringen (#1203), med radarns tal.
+2. T4: kortvågen 14–31/3 2022 ur v4 i den nyas delar, sedan förberedningen, träningen, provningen och samman under en egen plats i
+   hinken; Ä6: den frystas 2021/22 om.
+3. Talen läses mot kriteriet ovan.
+4. Håller det: paritetsprovet för den rättade modellen, modellen i drift, migrationen `sql/070` och deployen av publiceringen.
+5. Bytesbeslutet i en daterad post med båda signaturerna (§12 b), och en rad `ny` i `kandidat_talar` med beslutets nummer.
+
+**Inte gjort 25/10:** ingen migration, ingen deploy och ingen körning; den frysta talar.
+
+**Stomdokument:** KUV bytet byggt med den frysta som talare och kriteriet låst
