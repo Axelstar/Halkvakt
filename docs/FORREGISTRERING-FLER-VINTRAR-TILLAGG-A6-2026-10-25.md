@@ -1,6 +1,8 @@
 # Andra tillägget till FORREGISTRERING-FLER-VINTRAR: strålningen 14–31/3 2022 ur MET:s v4 (Ä6)
 
-**Status: UTKAST 25/10 2026** (DECISIONS #716, #717). Inte signerat. Det ändrar FORREGISTRERING-FLER-VINTRAR och dess första tillägg
+**Status: SIGNERAT 25/10 2026** (Bengt, och Axel via Bengt, DECISIONS #719; dokumentets sha256 vid signeringen, före den här
+raden och signaturerna: `da84af7cc5024844ec02be21e4c78d9d5e89a528d3a66f96c454d15b2ef871b2`). Utkastet: DECISIONS #716 och #717. Signerat **innan** koden byggs och något körs;
+stickprovet på v4 (§4 b) var klarat före signaturen. Det ändrar FORREGISTRERING-FLER-VINTRAR och dess första tillägg
 (Ä1–Ä5, signerat 25/10, #715) genom en daterad post med båda signaturerna, som FLER-VINTRAR §8 kräver.
 
 Bengts ord 25/10: *"Rätta båda kandidaterna med v4:s timvärden för 14–31/3 2022: skriv utkasten till tilläggen (Ä6 för den frysta,
@@ -79,5 +81,5 @@ samma rutor och med samma omräkning till J/m² per timme som Ä1. Övriga fält
 
 | | Datum | Signatur |
 | :-- | :-- | :-- |
-| Bengt | | |
-| Axel | | |
+| Bengt | 2026-10-25 | Bengt i chatten: *"Ja, gör stickprovet på v4 för 14–31/3 2022. Visar det timvärden: signera Ä6 och T4 för mej och Axel med Claudes rekommendationer i T4 (V2 står, och den rättade modellen ersätter den i drift), och slå ihop när CI är grön."* (DECISIONS #719) |
+| Axel | 2026-10-25 | Via Bengt i samma ord (DECISIONS #719) |

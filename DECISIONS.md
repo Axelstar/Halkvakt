@@ -17990,3 +17990,22 @@ frysta och kör om 2021/22; jämförelsen med den nya väntar på T4. Prov före
 och att v4 är timvärden. Båda talen, före och efter rättelsen, står bredvid varandra. Ingen kod är byggd och ingenting är kört.
 
 **Stomdokument:** KUV utkastet Ä6 till FLER-VINTRAR i repot
+
+## #719 (25/10 2026) Ä6 till FLER-VINTRAR signerat: lång- och kortvågen 14–31/3 2022 ur v4 för den frysta
+
+**Bengts ord 25/10:** *"Ja, gör stickprovet på v4 för 14–31/3 2022. Visar det timvärden: signera Ä6 och T4 för mej och Axel med Claudes rekommendationer i T4 (V2 står, och den rättade modellen ersätter den i drift), och slå ihop när CI är grön."*
+
+**Signerat:** `docs/FORREGISTRERING-FLER-VINTRAR-TILLAGG-A6-2026-10-25.md`. Bengt för sig och för Axel via Bengt, som i #695 och #715. Dokumentets sha256 vid signeringen, före
+statusraden och signaturerna: `da84af7cc5024844ec02be21e4c78d9d5e89a528d3a66f96c454d15b2ef871b2`.
+
+Stickprovet 25/10, före signaturen: v4 hämtades för 48 timmar 14, 20 och 28/3 2022 vid station 1001 och 1004. Långvågen var
+0,84–1,17·10⁶ J/m² per timme och kortvågen hade vanlig dygnsform, alltså timvärden. Mot arkivets summor omräknade till
+timvärden var medianen av den relativa skillnaden 0,00 % för långvågen (46 par) och för kortvågen (34 par dagtid); kravet är
+högst 5 %. Störst var skillnaden 20/3 14 UTC vid station 1001: 4,7 % i långvågen och 17 % i kortvågen. Skriptet:
+`Desktop/Halkvakt_Signering_2026-10-26/skript/v4_stickprov.ts`.
+
+**Det som nu gäller:** Ä6. Lång- och kortvågen 14/3 00 UTC – 31/3 23 UTC 2022 tas ur v4 för den frysta, och 2021/22 körs om
+med trappformsprovet och de andra proven före läsningen. Jämförelsen med den nya på 2021/22 väntar på T4. Båda talen, före och
+efter rättelsen, står bredvid varandra.
+
+**Stomdokument:** KUV Ä6 till FLER-VINTRAR signerat
