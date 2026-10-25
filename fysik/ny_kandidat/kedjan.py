@@ -41,8 +41,13 @@ import vagb
 from vagb import modell_utom
 
 VINTRAR = lasare.VINTRAR + (lasare.URVALET,)          # §2: 2018/19–2022/23 och 2024/25
-HINKMAPP = 'kuvos-kandidat-2027-28'                     # hinken arkiv: kuvos/kuvos-kandidat-2027-28/<fil>
-MANIFEST = os.path.join(ROT, 'kuvos', 'kandidat-2027-28.json')
+# Tillägget T4 (DECISIONS #720): den rättade kandidaten tränas under egen plats i hinken och med egen kandidatfil, så att den nu
+# prövade kandidatens filer står kvar orörda bredvid. NYKAND_VARIANT=t4 sätts av kuvos-ny-kandidat.yml (variant=t4).
+VARIANT = os.environ.get('NYKAND_VARIANT', '')
+if VARIANT not in ('', 't4'):
+    raise SystemExit(f'NYKAND_VARIANT={VARIANT!r}: väntat tomt eller t4')
+HINKMAPP = 'kuvos-kandidat-2027-28' + (f'-{VARIANT}' if VARIANT else '')   # hinken arkiv: kuvos/<HINKMAPP>/<fil>
+MANIFEST = os.path.join(ROT, 'kuvos', 'kandidat-2027-28' + (f'-{VARIANT}' if VARIANT else '') + '.json')
 HIMLEN = ('cloud_p', 'eps_ov', 'lapse')                 # allt reserven beror på utöver vädret
 LANGVAG = 'langvag_jm2'
 KODEN = ['fysik/common.py', 'fysik/physics.py', 'fysik/niva2/fysik_lw.py', 'fysik/niva2/kedja.py', 'fysik/niva2/metnordic.py',
