@@ -503,6 +503,77 @@ def hela(d):
         pass
 
 
+# ── Tillägget för 2018/19–2021/22 (DECISIONS #711) ───────────────────────────────────────────────────────────────────────────────
+def tillagget(d):
+    fil = os.path.join(d, 'tillagg.md')
+
+    def spärren(text, finns=True):
+        if finns:
+            open(fil, 'w', encoding='utf-8').write(text)
+        os.environ['V4_TILLAGG_SJALVTEST'] = fil if finns else os.path.join(d, 'saknas.md')
+        try:
+            return vinterkedja.tillagg_v4()
+        except SystemExit as e:
+            return str(e)
+        finally:
+            os.environ.pop('V4_TILLAGG_SJALVTEST', None)
+    tab = lambda b, a: f'| | Datum | Signatur |\n| :-- | :-- | :-- |\n| Bengt | {b} |\n| Axel | {a} |\n'
+    r = spärren('**Status: UTKAST 25/10 2026.**\n\n' + tab(' | ', ' | '))
+    k(isinstance(r, str) and 'inte signerat' in r, f'tillägget: ett utkast utan signaturer släpper inte vintern: {r}')
+    r = spärren('**Status: SIGNERAT 26/10 2026**\n\n' + tab('2026-10-26 | Bengt i chatten', ' | '))
+    k(isinstance(r, str) and 'inte signerat' in r, f'tillägget: bara Bengts signatur släpper inte vintern: {r}')
+    r = spärren('**Status: UTKAST 25/10 2026.**\n\n' + tab('2026-10-26 | Bengt', '2026-10-26 | Axel via Bengt'))
+    k(isinstance(r, str) and 'inte signerat' in r, f'tillägget: signaturerna utan statusraden släpper inte vintern: {r}')
+    r = spärren('', finns=False)
+    k(isinstance(r, str) and 'finns inte' in r, f'tillägget: ett saknat tillägg släpper inte vintern: {r}')
+    r = spärren('**Status: SIGNERAT 26/10 2026**\n\n' + tab('2026-10-26 | Bengt i chatten', '2026-10-26 | Axel via Bengt'))
+    k(isinstance(r, dict) and all(r[x] for x in ('status_signerad', 'bengt', 'axel')) and len(r['sha256']) == 64 and r['fil'] == 'tillagg.md',
+      f'tillägget: statusraden och båda signaturerna släpper vintern, med dokumentets summa: {r}')
+    k(vinterkedja.VINTRAR_V4 == ('2018-19', '2019-20', '2020-21', '2021-22')
+      and '["2018-19", "2019-20", "2020-21", "2021-22"]' in text('fysik/vintrar/langvag_v4.ts'),
+      'tillägget: samma fyra vintrar i kedjan och i långvågens fyllning')
+    cache = os.path.join(d, 'smhi_v4'); os.makedirs(cache, exist_ok=True)
+    json.dump({'key': 'p1', 'station': [{'key': 7, 'name': 'Gävle'}, {'key': 107420, 'name': 'Gävle A'}, {'key': '7', 'name': 'x'}]},
+              open(os.path.join(cache, 'smhi_p1.json'), 'w', encoding='utf-8'))
+    l = vinterkedja.smhi_lista_v4(cache)
+    k([s['key'] for s in l['station']] == [107420] and l['key'] == 'p1', f'tillägget (Ä4): station 7 ur SMHI:s lista, resten kvar: {l}')
+    lw = []
+    for i, (v4, ark, sak, tom) in enumerate(((360, 0, [], 0), (310, 48, ['2022-03-20T05:00:00Z'], 754))):
+        p = os.path.join(d, f'lw4_{i}.json'); json.dump({'ur_v4': v4, 'ur_arkivet': ark, 'saknas': sak, 'tomma_varden': tom}, open(p, 'w')); lw.append(p)
+    delar = [f'rel/metnordic_lw4_2021-10-3{i}_x.csv.gz' for i in range(2)]
+    s = vinterkedja.lw4_prov(delar, lw)
+    k(s['klarat'] and s['delar'] == 2 and s['listor'] == 2 and s['ur_v4'] == 670 and s['ur_arkivet'] == 48 and s['saknade_timmar'] == 1
+      and s['tomma_varden'] == 754, f'tillägget (Ä1): delarna och listorna summeras: {s}')
+    s = vinterkedja.lw4_prov(delar[:1] + ['rel/metnordic_reserv_2021-10-31_x.csv.gz'], lw)
+    k(not s['klarat'] and s['fel'] == ['metnordic_reserv_2021-10-31_x.csv.gz'], f'tillägget (Ä1): en del utan långvågen fälls: {s}')
+    s = vinterkedja.lw4_prov(delar, lw[:1])
+    k(not s['klarat'], f'tillägget (Ä1): en del utan lista fälls: {s}')
+    # Låsningen (DECISIONS #714): varje del och lista mot sin summa i kuvos/langvag-v4-leverans.json.
+    rel = os.path.join(d, 'rel'); os.makedirs(rel, exist_ok=True); riktiga = []
+    for i in range(2):
+        p = os.path.join(rel, f'metnordic_lw4_2021-10-3{i}_x.csv.gz'); open(p, 'wb').write(b'del %d' % i); riktiga.append(p)
+    lev = os.path.join(d, 'leverans.json')
+    json.dump({'delar': [{'vinter': '2021-22', 'fil': os.path.basename(p), 'fil_sha256': vinterkedja.sha(p), 'lista': os.path.basename(l),
+                          'lista_sha256': vinterkedja.sha(l)} for p, l in zip(riktiga, lw)]
+                        + [{'vinter': '2020-21', 'fil': 'metnordic_lw4_2020-10-31_x.csv.gz', 'fil_sha256': '0' * 64, 'lista': 'lw4_9.json',
+                            'lista_sha256': '0' * 64}]}, open(lev, 'w'))
+    summor = vinterkedja.lw4_leverans('2021-22', lev)
+    k(sorted(summor) == sorted(os.path.basename(f) for f in riktiga + lw), f'tillägget (låsningen): bara vinterns delar och listor: {summor}')
+    s = vinterkedja.lw4_prov(riktiga, lw, summor)
+    k(s['klarat'] and s['summor'] == 4 and s['fel_summa'] == [] and s['saknas_i_kedjan'] == [],
+      f'tillägget (låsningen): delar och listor med sina låsta summor går igenom: {s}')
+    open(riktiga[1], 'ab').write(b'x')
+    s = vinterkedja.lw4_prov(riktiga, lw, summor)
+    k(not s['klarat'] and s['fel_summa'] == [os.path.basename(riktiga[1])], f'tillägget (låsningen): en ändrad del fälls: {s}')
+    s = vinterkedja.lw4_prov(riktiga[:1], lw[:1], summor)
+    k(not s['klarat'] and len(s['saknas_i_kedjan']) == 2, f'tillägget (låsningen): en låst del som saknas i kedjan fälls: {s}')
+    try:
+        r = vinterkedja.lw4_leverans('2021-22', os.path.join(d, 'ingen.json'))
+    except SystemExit as e:
+        r = str(e)
+    k(isinstance(r, str) and 'inte låsta' in r, f'tillägget (låsningen): utan leveransfilen läses vintern inte: {r}')
+
+
 def _tyst(f, *a):
     import io, contextlib
     with contextlib.redirect_stdout(io.StringIO()):
@@ -515,11 +586,13 @@ if __name__ == '__main__':
         for namn, steg in (('läsaren', lambda: lasaren(os.path.join(d, 'l'))), ('vakterna', vakterna),
                            ('grind A', lambda: grind_a(d)), ('halvtimmen', halvtimmen), ('blandningen', blandningen),
                            ('sammanslagningen', sammanslagningen), ('ECMWF', lambda: ecmwf_hamtning(d)),
-                           ('tidszonen', lambda: tidszonen(d)), ('hela körningen', lambda: hela(os.path.join(d, 'h')))):
+                           ('tidszonen', lambda: tidszonen(d)), ('tillägget', lambda: tillagget(d)),
+                           ('hela körningen', lambda: hela(os.path.join(d, 'h')))):
             if namn in ('läsaren', 'hela körningen'): os.makedirs(os.path.join(d, 'l' if namn == 'läsaren' else 'h'), exist_ok=True)
             t = time.time(); steg(); print(f'  {namn}: {time.time() - t:.1f} s', flush=True)
     for f_ in fel: print('✗', f_)
     if fel: sys.exit(1)
     print(f'✓ självtest ({time.time() - T0:.0f} s): talen mot källorna, läsaren (prep.py:s timtabell, 12 kolumner, millisekunder, sidfoten, '
           'skarvens dubbletter, fönstret), vakterna vid gränserna, RÅ och måtten mot grind-a.ts, halvtimmen, blandningens leave-one-out '
-          'och replikans urval, sammanslagningen, ECMWF-adressen, tidszonen mot SMHI, och hela körningen med fem motprov')
+          'och replikans urval, sammanslagningen, ECMWF-adressen, tidszonen mot SMHI, tillägget för 2018/19–2021/22 (spärren, station 7 '
+          'och långvågens delar med de låsta summorna), och hela körningen med fem motprov')

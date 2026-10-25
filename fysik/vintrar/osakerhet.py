@@ -28,8 +28,16 @@ NIVÅERNA (DECISIONS #708, skrivet före körningen, inför valet av variant fö
   - Diagnos: den låstas tal på 2022/23 är redan sedda (#680), och ingenting ändras av dem. Svaret är hur brett ett ärligt intervall för en
     nivå blir, så att variant A och B kan väljas med kunskap om vad de betyder.
 
+TILLÄGGETS VINTRAR 2018/19–2021/22 (utkastet till tillägget till FLER-VINTRAR, DECISIONS #711), skrivet före körningen:
+  - Samma metod, med vintern som parameter: den låsta räknas med sin vinterkedja (med tillägget: spärren, långvågen ur v4 och
+    tidszonsprovet utan station 7, vinterkedja.py), och den nya är vecket utan vintern (ph_utan-<v>_<v>.npz) med vecket valda par.
+  - IDENTITETEN: den låstas punkter ska ge exakt de summor som dess egen kedja skrev i samma körning (fryst/kuvos-vintrar-<v>.json), och
+    den nyas exakt samman:s för vintern (per_vinter). Populationerna ska vara desamma (provning.skilda_populationer, ersättningsregeln
+    §2, som samman prövar 2022/23), och punktmängderna lika. Annars stoppar skriptet innan något dras om.
+  - FRÖET är 20261025 (utkastet till tillägget). 2022/23 räknas med 20261024 som förut, så att #707 och #708 går att räkna om.
+
   python fysik/vintrar/osakerhet.py --sjalvtest
-  python fysik/vintrar/osakerhet.py <vinterkedja.py:s argument för 2022-23> --ny-ph <ph_utan-2022-23_2022-23.npz> --samman <samman.json>
+  python fysik/vintrar/osakerhet.py <vinterkedja.py:s argument för vintern> --ny-ph <ph_utan-<v>_<v>.npz> --samman <samman.json>
 """
 import argparse, contextlib, json, math, os, sys
 import numpy as np
@@ -39,6 +47,17 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 FYS = os.path.dirname(HERE)
 VINTER = '2022-23'
 B, FRO, Z = 2000, 20261024, 1.96
+VINTRAR_V4 = ('2018-19', '2019-20', '2020-21', '2021-22')                       # tillägget till FLER-VINTRAR (DECISIONS #711)
+FRO_V4 = 20261025                                                                # fröet i utkastet till tillägget
+
+
+def fro_for(vinter):
+    """Fröet för vintern: 2022/23 som #707 och #708, tilläggets vintrar med tilläggets frö."""
+    if vinter == VINTER:
+        return FRO
+    if vinter in VINTRAR_V4:
+        return FRO_V4
+    raise ValueError(f'vintern {vinter}: väntat {VINTER} eller en av {", ".join(VINTRAR_V4)}')
 NORR_LAT = 62
 NY_PAR = (0.25, 40.0)
 SERIE = 'NIVÅ 2+BLANDNING'
@@ -235,9 +254,16 @@ def identitet(matt, df, vantad, namn):
 def kor(a):
     sys.path[:0] = [HERE, os.path.join(FYS, 'ny_kandidat')]
     import vinterkedja, matt, provning, kedjan                 # den frystas kedja och den nyas provning, importerade och orörda
-    sam = json.load(open(a.samman, encoding='utf-8'))['jamforelse_2022_23']
-    if not sam.get('samma_population'):
-        raise SystemExit('samman:s jämförelse på 2022/23 bär inte samma population — inget att dra om')
+    vinter = a.vinter; fro = fro_for(vinter); v4 = vinter in VINTRAR_V4
+    samman_json = json.load(open(a.samman, encoding='utf-8'))
+    if v4:
+        per = (samman_json.get('per_vinter') or {}).get(vinter)
+        if not per:
+            raise SystemExit(f'samman bär inte den nya kandidatens tal för {vinter} (per_vinter)')
+    else:
+        sam = samman_json['jamforelse_2022_23']
+        if not sam.get('samma_population'):
+            raise SystemExit('samman:s jämförelse på 2022/23 bär inte samma population — inget att dra om')
     fangat = {}
     orig = vinterkedja.mattet
     def fanga(pop, indata, meta, idx, P):
@@ -245,10 +271,17 @@ def kor(a):
         return orig(pop, indata, meta, idx, P)
     vinterkedja.mattet = fanga
     ns = argparse.Namespace(**{k: getattr(a, k) for k in ('vinter', 'kandidat', 'modell', 'indata', 'urvalet_vvis', 'urvalet_metnordic',
-                                                           'vvis', 'ifs', 'metnordic', 'smhi', 'arbete')}, ut=os.path.join(a.ut, 'fryst'))
+                                                           'vvis', 'ifs', 'metnordic', 'smhi', 'arbete')},
+                            lw4=getattr(a, 'lw4', None) or [], ut=os.path.join(a.ut, 'fryst'))
     if vinterkedja.kor(ns) != 0 or 'pop' not in fangat:
-        raise SystemExit('den låstas vinterkedja stannade (identitetsprovet, tidszonen eller MET) — se fryst/')
+        raise SystemExit('den låstas vinterkedja stannade (tillägget, identitetsprovet, tidszonen eller MET) — se fryst/')
     vinterkedja.mattet = orig
+    if v4:                                                     # den låstas summor ur dess egen kedja i samma körning
+        fr = json.load(open(os.path.join(a.ut, 'fryst', f'kuvos-vintrar-{vinter}.json'), encoding='utf-8'))
+        olika = provning.skilda_populationer(fr['matt'], per)
+        if olika:
+            raise SystemExit(f'populationerna skiljer på {vinter} (ersättningsregeln §2): {olika[:10]} — inget att dra om')
+        sam = {'frysta': {'serier': fr['matt']['serier']}, 'nya': {'serier': per['serier']}}
     pos = kedjan.stationer(a.indata)
     pop = fangat['pop']
     logg('den låsta: punkterna')
@@ -256,9 +289,9 @@ def kor(a):
     P_n, idx_n, sids_n = kedjan.las_ph(a.ny_ph)
     logg('den nya: punkterna')
     df_n, par_n = punkter(matt, provning, pop, pos, P_n, idx_n, sids_n, NY_PAR)
-    s = {'_om': ('DECISIONS #707: osäkerheten i jämförelsen på 2022/23, den låsta mot den nyas veck utan 2022/23, NIVÅ 2+BLANDNING, '
-                 'med omdragning av stationer och dygn. Diagnos: ändrar ingen dom. Bara aggregat.'),
-         'vinter': VINTER, 'par': {'lasta': {'W': par_f[0], 'L_km': par_f[1]}, 'nya': {'W': par_n[0], 'L_km': par_n[1]}},
+    s = {'_om': (f"DECISIONS {'#711' if v4 else '#707'}: osäkerheten i jämförelsen på {vinter}, den låsta mot den nyas veck utan {vinter}, "
+                 'NIVÅ 2+BLANDNING, med omdragning av stationer och dygn. Diagnos: ändrar ingen dom. Bara aggregat.'),
+         'vinter': vinter, 'par': {'lasta': {'W': par_f[0], 'L_km': par_f[1]}, 'nya': {'W': par_n[0], 'L_km': par_n[1]}},
          'identitet': {'lasta': identitet(matt, df_f, sam['frysta'], 'den låsta'), 'nya': identitet(matt, df_n, sam['nya'], 'den nya')}}
     m = df_f.merge(df_n, on=['b', 'sid'], suffixes=('_f', '_n'), how='inner', validate='one_to_one')
     if not (len(m) == len(df_f) == len(df_n) and np.array_equal(m.meas_f.to_numpy(), m.meas_n.to_numpy())):
@@ -268,18 +301,18 @@ def kor(a):
     s['celler'] = {'stationer': len(st), 'dygn': len(dg), 'celler_med_punkter': int((X['n'] > 0).sum()), 'norr_stationer': int(norr_st.sum())}
     s['punkttal'] = punkttal(X, norr_st)
     s['naivt'] = naivt(m.meas_f, m.pb_f, m.pb_n)
-    s['omdragning'] = {'B': B, 'fro': FRO, 'scheman': omdragning(X, norr_st)}
+    s['omdragning'] = {'B': B, 'fro': fro, 'scheman': omdragning(X, norr_st, fro=fro)}
     s['lasning'] = lasning(s['omdragning']['scheman'])
     if not np.array_equal(m.ank_f.to_numpy(), m.ank_n.to_numpy(), equal_nan=True):
         raise SystemExit('ankaravstånden skiljer mellan kandidaterna — de ska komma ur samma population')
     m = m.rename(columns={'ank_f': 'ank'})
     logg('nivåerna (#708)')
     s['nivaer'] = {'_om': 'DECISIONS #708: nivåerna för båda kandidaterna med samma omdragning, totalt och per ankarband. Diagnos.',
-                   'totalt': nivaomdragning(X, norr_st), 'band': bandnivaer(m)}
+                   'totalt': nivaomdragning(X, norr_st, fro=fro), 'band': bandnivaer(m, fro=fro)}
     os.makedirs(a.ut, exist_ok=True)
-    json.dump(s, open(os.path.join(a.ut, f'osakerhet_{VINTER}.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
-    open(os.path.join(a.ut, f'osakerhet_{VINTER}.md'), 'w', encoding='utf-8').write(markdown(s) + markdown_nivaer(s['nivaer']))
-    logg(markdown(s) + markdown_nivaer(s['nivaer']))
+    json.dump(s, open(os.path.join(a.ut, f'osakerhet_{vinter}.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+    open(os.path.join(a.ut, f'osakerhet_{vinter}.md'), 'w', encoding='utf-8').write(markdown(s) + markdown_nivaer(s['nivaer'], vinter))
+    logg(markdown(s) + markdown_nivaer(s['nivaer'], vinter))
     return 0
 
 
@@ -292,7 +325,8 @@ def markdown(s):
                               + f" | {sch['SD'][k]['andel_ge_0']:.3f} |".replace('.', ','))
     L = s['lasning']
     return '\n'.join([
-        f"## Osäkerheten på 2022/23: den nya mot den låsta, NIVÅ 2+BLANDNING (DECISIONS #707) → "
+        f"## Osäkerheten på {s['vinter'].replace('-', '/')}: den nya mot den låsta, NIVÅ 2+BLANDNING "
+        f"(DECISIONS {'#707' if s['vinter'] == VINTER else '#711'}) → "
         f"**{'går att skilja från noll' if L['skiljer_fran_noll'] else 'går inte att skilja från noll'}**", '',
         f"Identitet: båda kandidaternas summor lika samman:s, {s['identitet']['samma_punkter']} gemensamma punkter vid "
         f"{s['celler']['stationer']} stationer och {s['celler']['dygn']} dygn ({s['celler']['celler_med_punkter']} celler). "
@@ -305,7 +339,7 @@ def markdown(s):
         f"Läsningen (skriven före räkningen): {L['regel']}.", ''])
 
 
-def markdown_nivaer(nv):
+def markdown_nivaer(nv, vinter=VINTER):
     pct = lambda x: f'{100 * x:.2f} %'.replace('.', ',')
     gr = lambda x: f'{x:.3f} °C'.replace('.', ',')
     fm = lambda tal: gr if tal == 'A1' else pct
@@ -321,7 +355,8 @@ def markdown_nivaer(nv):
         return ut
     head = ['| Kandidat | Mått | Punkttal | Marginalvakten | 95 % SD | S | D | Tröskel | SD mot tröskeln |',
             '| :-- | :-- | --: | --: | --: | --: | --: | --: | :-- |']
-    ut = ['', '## Nivåerna på 2022/23 med samma omdragning (DECISIONS #708, diagnos)', ''] + head + rader(nv['totalt']) + ['', '**Per ankarband**', ''] + head
+    ut = ['', f"## Nivåerna på {vinter.replace('-', '/')} med samma omdragning (DECISIONS {'#708' if vinter == VINTER else '#711'}, diagnos)",
+          ''] + head + rader(nv['totalt']) + ['', '**Per ankarband**', ''] + head
     for band, x in nv['band'].items():
         ut += rader(x['nivaer'], f"{band} ({x['stationer']} st, {x['punkter']} p) · ")
     return '\n'.join(ut + [''])
@@ -400,8 +435,16 @@ def sjalvtest():
     bn = bandnivaer(m8, b=100)
     k(set(bn) == {'0–7 km', '>20 km'} and bn['0–7 km']['punkter'] + bn['>20 km']['punkter'] == sid.size
       and bn['0–7 km']['stationer'] == S // 2, f"banden: {[(x, bn[x]['punkter'], bn[x]['stationer']) for x in bn]}")
+    # 9. Tilläggets vintrar (#711): fröet per vinter, och en vinter utanför fälls.
+    k(fro_for('2022-23') == 20261024 and all(fro_for(v) == 20261025 for v in VINTRAR_V4), 'fröet: 2022/23 som förut, tilläggets vintrar 20261025')
+    try:
+        fro_for('2024-25'); k(False, 'en vinter utanför tillägget fick ett frö')
+    except ValueError:
+        pass
+    k(markdown_nivaer({'totalt': {'lasta': {}, 'nya': {}}, 'band': {}}, '2019-20').splitlines()[1].startswith('## Nivåerna på 2019/20')
+      and '(DECISIONS #711' in markdown_nivaer({'totalt': {'lasta': {}, 'nya': {}}, 'band': {}}, '2019-20'), 'rubriken bär vintern och beslutet')
     print(('✓ självtest' if not fel else f'✗ självtest: {len(fel)} fel') + ': cellerna, omdragningen i tre scheman, punkttalen, det naiva '
-          'felet, klumpning i dygn, fröet, måttens definitioner, nivåerna mot taket och banden (#708)')
+          'felet, klumpning i dygn, fröet, måttens definitioner, nivåerna mot taket och banden (#708), och tilläggets vintrar (#711)')
     return 1 if fel else 0
 
 
@@ -412,10 +455,10 @@ if __name__ == '__main__':
     ap.add_argument('--urvalet-vvis'); ap.add_argument('--urvalet-metnordic')
     ap.add_argument('--vvis'); ap.add_argument('--ifs'); ap.add_argument('--metnordic', nargs='+', default=[])
     ap.add_argument('--smhi'); ap.add_argument('--arbete'); ap.add_argument('--ut')
-    ap.add_argument('--ny-ph'); ap.add_argument('--samman')
+    ap.add_argument('--ny-ph'); ap.add_argument('--samman'); ap.add_argument('--lw4', nargs='+', default=[])
     a = ap.parse_args()
     if a.sjalvtest:
         sys.exit(sjalvtest())
-    if a.vinter != VINTER:
-        sys.exit(f'bara {VINTER}: det är den enda vintern där båda kandidaterna är jämförda (ersättningsregeln §2)')
+    if a.vinter != VINTER and a.vinter not in VINTRAR_V4:
+        sys.exit(f'bara {VINTER} och tilläggets vintrar {", ".join(VINTRAR_V4)} (DECISIONS #707, #711)')
     sys.exit(kor(a))
