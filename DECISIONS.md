@@ -17660,3 +17660,50 @@ inte i repot). **Vikterna gäller bara om den punkten signeras.**
 - Vikterna är räknade bara på indatan. Inga mätningar och inga modelltal är lästa.
 
 **Stomdokument:** KUV förarnas vikter byggda före signeringen för förarnas mått i utkastet
+
+## #711 (25/10 2026) Långvågen ur MET:s v4 hämtas före signeringen, för den frysta kandidaten på 2018/19–2021/22 (Ä1 i utkastet till tillägget till FLER-VINTRAR)
+
+**Bengts ord 25/10:**
+- *"Ja, skriv utkastet till förregistreringen för den frysta på 2018/19–2021/22 med v4, med bara det arkivet saknar ur v4. Bara utkast,
+  ingen kod och ingen körning."*;
+- *"kan du kolla om det går att återanvända met filerna och sen ge en uppskattning"*;
+- på förslaget att hämta långvågen före signeringen: *"ja vi gör det så har vi säkrat allt vi kan om bästa metod bygg så att du
+  återanvänder allt som går att återanvända"*.
+
+Utkastet till tillägget ligger utanför repot (`Desktop/Halkvakt_Utkast_FLER-VINTRAR_v4_2026-10-25.md`) och är inte signerat.
+
+**Varför före signeringen:**
+- Hämtningen ger bara MET:s öppna data. Inga VViS-data och inga modelltal läses, och ingenting räknas för den frysta, så regel L
+  berörs inte.
+- Tillägget kan då ange kontrollsummorna för de 44 delarna, så att indatan är låst när det signeras.
+
+**Avsteg, öppet:** för den nya kandidaten signerades T1 och T2 före fyllningen (#694, #695). Här är ordningen den omvända, och det ska
+stå i tillägget.
+
+**Återanvänt:**
+- **Den nya kandidatens delar** i releaserna `kuvos-vintrar-<vinter>`. De bär MET:s arkiv med sex fält i analysfilens form, med samma
+  rubrik, rutor och arkiv som den frystas hämtning, och bara långvågen tom. De bär också T2:s timmar ur v4 (`metnordic_fylld_`) och
+  vinden ur x och y för 2018/19. Det som utkastets Ä2 och Ä3 beskriver är alltså redan gjort.
+- **ECMWF** (`ifs_<vinter>.tar.gz`), samma fil som den frystas kedja skriver.
+- **Koden:** hämtfunktionerna ur `fysik/ny_kandidat/metnordic_reserv.ts` (`filnamnV4`, `valjDelar`, `LANGVAG`) och historikens tolkning
+  (`hamtaTolkat`, `varde`).
+
+**Byggt:**
+- `fysik/vintrar/langvag_v4.ts` fyller bara långvågen, timme för timme: ur v4 före 14/3 2022 och ur arkivet därefter.
+  - Allt annat är källdelens, byte för byte, och källdelen står kvar.
+  - Utfilerna är `metnordic_lw4_<del>` och `lw4_<del>.json`, med källans summa, timmarna per källa, de saknade timmarna och utfilens
+    summa.
+  - Självtestet har 16 prov och körs i ci.
+- `kuvos-vintrar.yml` har fått steget `langvag-v4`: först planen, sedan en del åt gången, enligt MET:s villkor. Steget `kedjan` är
+  oförändrat.
+
+**Provat lokalt mot MET** på ett dygn ur 2018/19 (31/10 2018, 754 stationer):
+- 24 timmar ur v4, ingen saknad;
+- långvågen i medel 312 W/m², mellan 233 och 365;
+- övriga kolumner lika källan;
+- 27 sekunder, alltså ungefär 1,1 sekund per timme och drygt en timme per vinter.
+
+**Inte byggt än:** läsningen. Den består av förprovet för v4, station 7 ur tidszonsprovet, att kedjan läser `metnordic_lw4_`, spärren
+mot ett osignerat tillägg och jämförelsen med den nya. Den byggs före signeringen och körs först efter den.
+
+**Stomdokument:** KUV långvågen ur v4 hämtas för den frysta på fyra äldre vintrar före signeringen av tillägget

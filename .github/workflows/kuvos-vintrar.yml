@@ -8,6 +8,9 @@ name: kuvos-vintrar
 #                      och vintern (fysik/vintrar/vinterkedja.py vägrar läsa vintern utan ett klarat identitetsprov i samma körning);
 #   samman             de äldre vintrarnas sammanfattningar (de senaste artefakterna) slagna ihop ur summorna, utan att något läses om.
 # Trafikverkets filer och modell.pkl hämtas ur hinken som i kuvos.yml och lämnar aldrig jobbet. Sammanfattningen bär bara aggregat.
+# Steget langvag-v4 (utkastet till tillägget till FLER-VINTRAR, Ä1, DECISIONS #711): bara långvågen ur MET:s omräkning v4 i den nya
+# kandidatens delar för 2018/19–2021/22 (fysik/vintrar/langvag_v4.ts), till samma releaser. Bara öppna data, aldrig VViS och aldrig
+# kandidaten: ingenting läses mot den frysta. Vintern ovan används inte; jobben för kedjan hoppas över.
 on:
   workflow_dispatch:
     inputs:
@@ -16,12 +19,18 @@ on:
         type: choice
         options: ["2024-25", "2018-19", "2019-20", "2020-21", "2021-22", "2022-23", "samman"]
         default: "2024-25"
+      steg:
+        description: "kedjan = som förut; langvag-v4 = bara långvågen ur MET:s v4 för 2018/19–2021/22 (tillägget Ä1), vintern ovan används inte"
+        type: choice
+        options: ["kedjan", "langvag-v4"]
+        default: "kedjan"
 concurrency: { group: kuvos-vintrar, cancel-in-progress: false }
 permissions:
   contents: read
 jobs:
   # Körs alltid, så att matrisen nedan alltid har en lista att läsa (för 2024-25 en tom del, och jobben efter hoppas över).
   forprov:
+    if: ${{ inputs.steg != 'langvag-v4' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     outputs:
@@ -261,7 +270,7 @@ jobs:
 
   # De äldre vintrarna ihop (§4): de senaste sammanfattningarna per vinter, ur summorna. 2024/25 står bredvid, i urvalet, och räknas inte in.
   samman:
-    if: ${{ inputs.vinter == 'samman' }}
+    if: ${{ inputs.vinter == 'samman' && inputs.steg != 'langvag-v4' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions: { contents: read, actions: read }
@@ -285,3 +294,84 @@ jobs:
           cat ut/kuvos-vintrar-samman.md >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
         with: { name: kuvos-vintrar-samman, path: ut/, retention-days: 90 }
+
+  # Steget langvag-v4 (Ä1, DECISIONS #711): de fyra vintrarnas delar ur releaserna (den fyllda delen före den egna), sedan långvågen
+  # del för del, EN åt gången (MET:s villkor). En del vars metnordic_lw4_ redan ligger i releasen hoppas över.
+  langvag-plan:
+    if: ${{ inputs.steg == 'langvag-v4' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      delar: ${{ steps.plan.outputs.delar }}
+    env: { GH_TOKEN: "${{ github.token }}" }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Självtestet och delarna ur releaserna
+        id: plan
+        shell: bash
+        run: |
+          set -o pipefail
+          node --experimental-strip-types fysik/vintrar/langvag_v4.ts --sjalvtest 2>&1 | grep -v ExperimentalWarning
+          mkdir -p listor
+          for V in 2018-19 2019-20 2020-21 2021-22; do gh release view "kuvos-vintrar-$V" --json assets -q '.assets[].name' > "listor/$V.txt"; done
+          P=$(node --experimental-strip-types fysik/vintrar/langvag_v4.ts --plan listor 2>/dev/null)
+          echo "delar=$P" >> "$GITHUB_OUTPUT"
+          echo "$P" | node -e 'const p = JSON.parse(require("fs").readFileSync(0, "utf8")); const v = [...new Set(p.map((x) => x.vinter))];
+            console.log(`${p.length} delar i ${v.length} vintrar (${v.join(", ")}); ${p.filter((x) => x.kalla.startsWith("metnordic_fylld_")).length} ur tillägget T2:s fyllda delar`);' | tee -a "$GITHUB_STEP_SUMMARY"
+
+  langvag:
+    needs: langvag-plan
+    if: ${{ inputs.steg == 'langvag-v4' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions: { contents: write }
+    strategy:
+      max-parallel: 1
+      fail-fast: false
+      matrix:
+        del: ${{ fromJSON(needs.langvag-plan.outputs.delar) }}
+    env:
+      GH_TOKEN: "${{ github.token }}"
+      REL: "kuvos-vintrar-${{ matrix.del.vinter }}"
+      KALLA: "${{ matrix.del.kalla }}"
+      FIL: "metnordic_lw4_${{ matrix.del.fran }}_${{ matrix.del.till }}.csv.gz"
+      LISTA: "lw4_${{ matrix.del.fran }}_${{ matrix.del.till }}.json"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Finns delen redan i releasen?
+        id: finns
+        shell: bash
+        run: |
+          if gh release view "$REL" --json assets -q '.assets[].name' | grep -qx "$FIL"; then
+            echo "ja=1" >> "$GITHUB_OUTPUT"; echo "$FIL finns redan i $REL — hoppas över"; fi
+      - uses: actions/setup-node@v4
+        if: ${{ steps.finns.outputs.ja != '1' }}
+        with: { node-version: 22 }
+      - name: Rutorna (kuvos-metnordic-2024-25), summan mot manifestet, och källdelen ur releasen
+        if: ${{ steps.finns.outputs.ja != '1' }}
+        shell: bash
+        run: |
+          mkdir -p mn rel && gh release download kuvos-metnordic-2024-25 --dir mn --pattern metnordic_stationer.csv
+          node -e '
+            const c = require("crypto"), fs = require("fs");
+            const h = c.createHash("sha256").update(fs.readFileSync("mn/metnordic_stationer.csv")).digest("hex");
+            const sha = require("./kuvos/metnordic-leverans.json").filer.find((f) => f.fil === "metnordic_stationer.csv").sha256;
+            console.log(`mn/metnordic_stationer.csv: ${h === sha ? "ok" : "FEL " + h}`); process.exit(h === sha ? 0 : 1);'
+          gh release download "$REL" --dir rel --pattern "$KALLA"
+          sha256sum "rel/$KALLA"
+      - name: Långvågen
+        if: ${{ steps.finns.outputs.ja != '1' }}
+        shell: bash
+        run: |
+          { echo '```'; node --experimental-strip-types fysik/vintrar/langvag_v4.ts --fyll "rel/$KALLA" ut --rutor mn/metnordic_stationer.csv; echo '```'; } 2>&1 \
+            | grep --line-buffered -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+          [ -f "ut/$FIL" ] && [ -f "ut/$LISTA" ] || { echo "::error::$FIL skrevs inte — tryck igen så görs delen om"; exit 1; }
+      - name: Till releasen
+        if: ${{ steps.finns.outputs.ja != '1' }}
+        shell: bash
+        run: |
+          gh release upload "$REL" "ut/$FIL" "ut/$LISTA"
+          { echo '```'; ls -l "ut/$FIL"; sha256sum "ut/$FIL"; node -e 'const j = require("./ut/" + process.env.LISTA);
+            console.log(JSON.stringify({ ...j, saknas: j.saknas.length > 20 ? j.saknas.slice(0, 20).concat("…") : j.saknas }, null, 1));'; echo '```'; } | tee -a "$GITHUB_STEP_SUMMARY"
