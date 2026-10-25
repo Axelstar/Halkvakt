@@ -17661,6 +17661,85 @@ inte i repot). **Vikterna gäller bara om den punkten signeras.**
 
 **Stomdokument:** KUV förarnas vikter byggda före signeringen för förarnas mått i utkastet
 
+## #710 (24/10 2026) Domens mått före signeringen: ärlig osäkerhet, förarnas mått avgör, det förarna fick, följden av OAVGJORT och säkerhetsläsningen (FORREGISTRERING-2026-27 §4b punkt 12–17), med regel L:s formkrav
+
+**Bengts ord 24/10:**
+- *"Ja, skriv det samlade utkastet till FORREGISTRERING-2026-27 med fem punkter: ärlig osäkerhet (variant A, ensidig 95 %), förarnas
+  mått avgör enligt L2/L4 med det gamla bredvid, vilket mått som avgör, förväntningarna i §7, och 'det förarna fick' timme för timme.
+  Utkast utanför repot."*;
+- *"Ja, lägg in en sjätte punkt i utkastet: OAVGJORT mot 5 % men tydligt bättre än RÅ med ärligt intervall ger att kandidaten
+  fortsätter tala som nu en vinter till, enligt L2 och L4 med formkraven. Bara utkast."*;
+- *"ok för utkastet och posten med regel Ls formkrav"*;
+- 25/10: *"Ja, skriv in båda i #1192: marginalvakten på förarnas mått i punkt 12 och stoppregeln som punkt 17 (säkerhetsläsningen). Slå inte ihop."*
+
+Utkastet låg utanför repot (`Desktop/Halkvakt_Utkast_Domen_Fem_Punkter_2026-10-24.md`). Underlaget är #490 (trafiken per band), #564
+(regel L), #680 (2022/23), #707 (osäkerheten i skillnaden), #708 (nivåernas intervall) och #709 (förarnas vikter).
+
+**Förregistreringen för 2026/27:**
+- **§4b punkt 12, den ärliga osäkerheten.** Varje A-mått prövas också mot omdragning av hela stationer och UTC-dygn (schemat SD,
+  B = 2000), ensidigt 95 %. KLARAR kräver att också omdragningens övre gräns ligger under taket, annars blir det OAVGJORT. En skärpning.
+- **Punkt 13, förarnas mått.** Grind A vägs med trafiken, med vikterna i #709 (`kuvos/forarnas-vikter-2026-27.json`, sha256
+  2817ccda…b994).
+- **Punkt 14.** Förarnas mått avgör grind A. Stationstimmarna redovisas bredvid och avgör ingenting.
+- **Punkt 15, det förarna fick.** Timme för timme från den kandidat som talade. En redovisning som avgör ingenting.
+- **Punkt 16, följden av OAVGJORT.** Blir A OAVGJORT men kandidaten är tydligt bättre än RÅ (den övre 95 %-gränsen för ΔA2 och ΔA3
+  under 0), talar den som nu en vinter till, 2027/28. Det gäller en gång.
+- **Punkt 17, säkerhetsläsningen (25/10).** Den 1/12, 1/1 och 1/2 prövas om kandidaten säkert är sämre än RÅ: den undre
+  95 %-gränsen för ΔA2 över 0, på förarnas mått, med omdragning. Stopp tystar den. Bara *stopp* eller *inget stopp* rapporteras, och
+  domen fälls i mars som förut. En skärpning.
+- **Punkt 12, tillägg 25/10.** På förarnas mått räknar marginalvakten det vägda medlets standardfel med samma vikter. Meningen fyller
+  en lucka före data och är varken en lättnad eller en skärpning.
+- **Övrigt:**
+  - §7 får förväntan för punkt 12–16.
+  - §8 fryser punkt 12–16 med §4b.
+  - §10 (g) anger att vikterna ligger i repot.
+  - §11 får raden om lättnaderna.
+  - Statusraden är uppdaterad.
+- **Utöver utkastet:** punkt 13 skriver in regeln ur #709, att en station utan mätningar i domens population tas bort och att dess
+  punkter går till närmaste kvarvarande station.
+
+**TROSKLAR-SKUGGAN §4 (d), utöver utkastet:** en daterad rad pekar på punkt 16. Utan den säger §4 (d) att domen (a)–(c) avgör om
+kandidaten får stanna, och de två dokumenten skulle säga olika saker. En andra rad 25/10 pekar på punkt 17.
+
+**Regel L:s formkrav (#564, TROSKLAR-SKUGGAN §5):**
+
+*Punkt 13 och 14* är en lättnad, eftersom de på sedda data flyttar A2 mot godkänt.
+- **Det sedda talet:** den låstas A2 på 2022/23 är 4,52 % per stationstimme (#680) och ungefär 4,3 % trafikviktat, räknat efteråt med
+  bandens andelar (#490, #708). Med stationsvikterna i #709 är talet inte räknat.
+- **Skälet, L4 (a):** följden för föraren. Förarna kör där trafiken går: 68,1 % av fordonskilometerna ligger inom 7 km från en
+  station och 3,6 % bortom 15 km (#490). Norr bär 10,8 % av trafiken men ungefär 28 % av stationstimmarna (#708, #709).
+- **Vilka data, L2:** vintern 2026/27 från signeringen. Inget av det är läst.
+- **Svaret på L3:** ja, en lättnad.
+- **Öppet:** att förarnas mått väntas ge lägre A2 var känt när måttet valdes, och det står i §7. Därför är det en lättnad, och därför
+  vilar skälet på (a) och inte på talet.
+
+*Punkt 16* är en lättnad, eftersom den ändrar följden av ett utfall mot det bättre. På 2022/23 hade variant A gett OAVGJORT
+(3,79–5,28 %, #708), och med punkt 16 hade kandidaten fått tala vidare i stället för att tystna.
+- **Det sedda talet:** kandidatens A2 4,52 % mot RÅ:s 8,66 % på 2022/23, per stationstimme (#680). Den ärliga osäkerheten för
+  skillnaden mot RÅ är inte räknad.
+- **Skälet, L4 (a):** följden för föraren, som annars bara har stationerna (RÅ).
+- **Vilka data, L2:** domfönstret.
+- **Svaret på L3:** ja, en lättnad.
+
+*Punkt 12 och 17* är skärpningar och *punkt 15* en redovisning. Meningen om marginalvakten fyller en lucka före data. Inget av det
+kräver formkraven.
+
+**Signaturerna:** Bengts ok 24/10 gäller för Bengt och Axel (#659). Posten står före signeringen och före domfönstret, så inga data som
+lättnaderna gäller är lästa.
+
+**Avgjort 24/10: punkt 16 skärps inte** (Bengt: *"nej skärp inte p 16"*). Punkt 16 nämner bara grind A och står som den är. Läst
+som den står fortsätter kandidaten att tala 2027/28 när A är OAVGJORT och kandidaten tydligt bättre än RÅ, också om grind B faller
+eller underlaget (C) inte räcker. Så ska punkt 16 läsas i mars. TROSKLAR-SKUGGAN §4 (c), *"aldrig tal på tunn dom"*, står kvar för
+skuggans tal enligt (a) och (b). Skärpningen, att punkt 16 bara gäller när ingen annan grind faller, föreslogs och valdes bort.
+
+**Avgjort 25/10: marginalvakten och vinterläsningarna** (Bengt: *"Ja, skriv in båda i #1192: marginalvakten på förarnas mått i punkt 12 och stoppregeln som punkt 17 (säkerhetsläsningen). Slå inte ihop."*).
+- **Marginalvakten** räknas på förarnas mått med vikterna (punkt 12). Den väntas inte påverka utfallet, eftersom omdragningen är 15–37
+  gånger bredare (#707). Det är inte räknat på vikterna.
+- **Vinterläsningar** ersätts av säkerhetsläsningen (punkt 17). Inga tal läses före mars, bara *stopp* eller *inget stopp*.
+- **Kvar före 1/12:** domskriptets räkning av ΔA2 byggs, provas på låtsasdata och fryses med sin sha256 (§4b inledningen).
+
+**Stomdokument:** KUV domens mått i FORREGISTRERING-2026-27 §4b punkt 12–17 med regel L:s formkrav och signering 26/10
+
 ## #712 (25/10 2026) Kort #218, #303, #311 och #354 stängda på Bengts ord
 
 **Bengts ord 25/10**, efter genomgången av projektkartans listor *Väntar på Bengt* och *Väntar på Axel*:
