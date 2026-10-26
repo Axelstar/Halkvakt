@@ -133,7 +133,7 @@ def trappform(metnordic, exempel=5):
           andelen flaggade alla tre rena delarna i provet 25/10 (13, 69 och 72 timmar, största andelen 8,4 %: 50 av 595 stationer
           6/3 2021 13 UTC). I de ackumulerade delarna hade nollställningen 14/3 2022 14 UTC alla 754 stationer, och 17 timmar
           15–29/3 2022 hade en fjärdedel eller mer (högst 84,5 %); de timmarna fälls dessutom av tröskeln.
-          Stationerna under andelen räknas i sagtand_enskilda och flaggar inte.
+          Stationerna under andelen räknas i sagtand_enskilda och flaggar inte. Preciseringen godkänd av Bengt 25/10 (DECISIONS #724).
     Kravet är noll flaggade timmar (klarat). Per slag: timmarna (olika tid_utc), värdena (station och timme), första och sista
     flaggade timmen, delarna och de första exemplen. Bara aggregat och några exempel; inga Trafikverksdata."""
     kol = ['station_id', 'tid_utc', 'langvag_jm2', 'kortvag_jm2']
