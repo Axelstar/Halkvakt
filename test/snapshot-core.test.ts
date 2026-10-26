@@ -20,8 +20,12 @@ function fakeDb(rows: Partial<Record<string, any[]>>) {
       if (rows.brytareKastar) throw new Error("relation \"kandidat_brytare\" does not exist");
       return rows.brytare ?? [{ pa: true }];
     }
+    if (text.includes("talande_timme()")) {   // bytet (sql/070, #723): den frysta talar om inget annat sägs
+      if (rows.bytetFel) throw new Error("function talande_timme() does not exist");
+      return (rows.kandidatTimme ?? [{ t: "2026-10-15T08:00:00Z" }]).map((x) => ({ ...x, talare: rows.talare?.[0] ?? "fryst" }));
+    }
     if (text.includes("kandidat_timme()")) return rows.kandidatTimme ?? [{ t: "2026-10-15T08:00:00Z" }];   // #576
-    if (text.includes("FROM kandidat_regel()")) return rows.kandidat ?? [];
+    if (text.includes("FROM kandidat_regel()") || text.includes("FROM talande_regel()")) return rows.kandidat ?? [];
     if (text.includes("AS radar_mmh")) return rows.radarStation ?? [];   // radarn per station (#459), före weather_latest-frågorna
     if (text.includes("= ANY($1::text[])")) { anyParams.push(params); return rows.regnSegs ?? []; }
     if (text.includes("weather_latest f")) {
@@ -350,7 +354,7 @@ test("#576 kandidaten: regelns varnande punkter blir en rad per sträcka i en eg
     { id: "S1", tid: "2026-10-15T08:00:00.000Z", punkter: [[20.12346, 67.65432], [20.2, 67.7]] },
     { id: "S7", tid: "2026-10-15T08:00:00.000Z", punkter: [[21, 66.5]] },
   ]);
-  assert.match(asked.find((t) => t.includes("FROM kandidat_regel()"))!, /WHERE utfall = 'varnar' ORDER BY segment_id, punkt/,
+  assert.match(asked.find((t) => t.includes("FROM talande_regel()"))!, /WHERE utfall = 'varnar' ORDER BY segment_id, punkt/,
     "bara utfallet varnar — inga egna tal i publiceringen");
   assert.ok(!notes.some((n) => n.startsWith("kandidat:")));
   assert.deepEqual(liveDoc.segments.map((s) => s.id), ["S1"], "väglaget är orört");
@@ -567,4 +571,29 @@ test("#245 bevisbäraren: väta och mängd ur skattaren bredvid fukt, radarn i s
   const hz = snapshotToHazards({ schema: 1, cameras: [] }, liveDoc).find((h) => h.id === "wx:B1") as any;
   assert.deepEqual(hz.meta, { surfaceTempC: 0.4, moisture: true, rainH: 0.4, fall30C: null },
     "motorns adapter läser inte bevis — bara regn_h och lutning30 sedan S3 (#524)");
+});
+
+// ── BYTET (FORREGISTRERING-2026-27 §12, sql/070, DECISIONS #723) ─────────────────────────────────────────────
+test("#723 bytet: beslutet säger ny och den nyas timme är färsk — den nyas regel publiceras, och noten säger det", async () => {
+  const { q, asked } = fakeDb({ talare: ["ny"], kandidat: [{ segment_id: "S1", lon: 20, lat: 67, tid: "2026-10-15T08:00:00Z" }] });
+  const { liveDoc, notes } = await buildSnapshot(q, [], NOW);
+  assert.equal(liveDoc.kandidat?.length, 1);
+  assert.ok(asked.some((t) => t.includes("FROM talande_regel()")) && !asked.some((t) => t.includes("FROM kandidat_regel()")));
+  assert.ok(notes.some((n) => n.startsWith("kandidat: den nya kandidaten talar")));
+});
+
+test("#723 bytet går inte att läsa (före migrationen): den frysta talar som förut, och noten säger det", async () => {
+  const { q, asked } = fakeDb({ bytetFel: [true], kandidat: [{ segment_id: "S1", lon: 20, lat: 67, tid: "2026-10-15T08:00:00Z" }] });
+  const { liveDoc, notes } = await buildSnapshot(q, [], NOW);
+  assert.equal(liveDoc.kandidat?.length, 1);
+  assert.ok(asked.some((t) => t.includes("SELECT kandidat_timme() AS t")) && asked.some((t) => t.includes("FROM kandidat_regel()")));
+  assert.ok(notes.some((n) => n.startsWith("kandidat: bytet ej läsbart")));
+});
+
+test("#723 utan beslut talar den frysta: talande_regel() frågas och ingen not om den nya", async () => {
+  const { q, asked } = fakeDb({ kandidat: [{ segment_id: "S1", lon: 20, lat: 67, tid: "2026-10-15T08:00:00Z" }] });
+  const { liveDoc, notes } = await buildSnapshot(q, [], NOW);
+  assert.equal(liveDoc.kandidat?.length, 1);
+  assert.ok(asked.some((t) => t.includes("FROM talande_regel()")));
+  assert.ok(!notes.some((n) => n.includes("den nya kandidaten talar") || n.includes("bytet ej läsbart")));
 });

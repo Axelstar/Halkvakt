@@ -80,6 +80,32 @@ export const VAGAR: { nyckel: string; namn: string; rubrik: string; slug: string
     stycke: "Riksväg 40 går från Göteborg via Borås och Jönköping till Västervik." },
 ];
 
+/** Pendlarstråken per län (25/10, DECISIONS #722). Skrivet för hand och säger bara var vägarna går och vilka orter de binder ihop;
+ *  läget på vägarna står i listan ovanför, ur Trafikverkets rapport. */
+export const PENDLING: Record<string, string> = {
+  stockholm: "De stora pendlarstråken in mot Stockholm är E4 från Södertälje i söder och från Arlanda och Märsta i norr, E18 från Norrtälje och från Bålsta, E20 från Södertälje och Strängnäs, väg 73 från Nynäshamn och Haninge och väg 222 från Värmdö.",
+  uppsala: "Från Uppsala pendlar många söderut på E4 mot Knivsta, Arlanda och Stockholm. Väg 55 går mot Enköping, riksväg 72 mot Sala och väg 288 mot Gimo och Östhammar. I söder går E18 förbi Bålsta mot Stockholm.",
+  sodermanland: "E4 binder ihop Nyköping med Stockholm och Norrköping, och E20 går från Eskilstuna via Strängnäs mot Stockholm. Väg 53 går mellan Nyköping och Eskilstuna, och väg 55 och väg 52 går genom Katrineholm.",
+  ostergotland: "E4 binder ihop Norrköping, Linköping och Mjölby. Riksväg 34 går från Linköping mot Motala, riksväg 50 från Mjölby mot Motala och Askersund, och riksväg 51 från Norrköping mot Finspång.",
+  jonkoping: "E4 går genom Jönköping och Huskvarna, norrut mot Gränna och söderut mot Värnamo. Riksväg 40 går mot Borås i väster och mot Nässjö och Eksjö i öster, riksväg 26 mot Värnamo och Halmstad, och riksväg 47 mot Falköping.",
+  kronoberg: "Från Växjö går riksväg 25 västerut mot Ljungby och österut mot Kalmar, riksväg 23 söderut mot Älmhult och Hässleholm, riksväg 27 mot Värnamo och Karlskrona, och riksväg 30 mot Jönköping. E4 går genom Ljungby.",
+  kalmar: "E22 går längs kusten mellan Kalmar, Oskarshamn och Västervik. Riksväg 25 går från Kalmar via Nybro mot Växjö, och Ölandsbron förbinder Kalmar med Öland.",
+  gotland: "På Gotland går de stora vägarna ut från Visby mot Slite, Hemse och Fårösund. Långa sträckor går över öppet land där blåsten kan göra väglaget sämre.",
+  blekinge: "E22 binder ihop Karlskrona, Ronneby, Karlshamn och Sölvesborg. Riksväg 27 går från Karlskrona mot Växjö och riksväg 29 från Karlshamn mot Växjö.",
+  skane: "E6 går mellan Malmö, Lund och Helsingborg, och E22 från Malmö och Lund via Hörby mot Kristianstad. E65 går mot Ystad, riksväg 11 mot Sjöbo och Tomelilla, riksväg 23 mot Höör och Hässleholm, och riksväg 21 mellan Helsingborg och Kristianstad.",
+  halland: "E6 binder ihop Kungsbacka, Varberg, Falkenberg och Halmstad. Riksväg 41 går från Varberg mot Borås, riksväg 26 från Halmstad mot Jönköping och riksväg 25 från Halmstad mot Ljungby.",
+  "vastra-gotaland": "Kring Göteborg går E6 norrut mot Kungälv och Uddevalla och söderut mot Kungsbacka. E20 går mot Alingsås och Skövde, riksväg 40 mot Borås och E45 mot Trollhättan och Vänersborg. Riksväg 44 går mellan Uddevalla, Trollhättan och Lidköping.",
+  varmland: "E18 går genom Karlstad, österut mot Kristinehamn och västerut mot Grums och Årjäng. Riksväg 61 går mot Kil och Arvika, riksväg 62 norrut längs Klarälven och riksväg 63 mot Filipstad. E45 går genom Torsby.",
+  orebro: "E18 och E20 går tillsammans från Örebro österut mot Arboga. E20 går söderut mot Hallsberg och E18 västerut mot Karlskoga. Riksväg 50 går norrut mot Lindesberg och riksväg 51 söderut mot Finspång.",
+  vastmanland: "E18 går genom Västerås, österut mot Enköping och Stockholm och västerut mot Köping och Arboga. Riksväg 56 går mot Sala och riksväg 66 norrut.",
+  dalarna: "E16 går mellan Falun och Borlänge och vidare mot Gävle och Malung. Riksväg 70 går från Borlänge mot Mora och söderut mot Avesta, och riksväg 50 går från Borlänge mot Ludvika.",
+  gavleborg: "E4 binder ihop Gävle, Söderhamn och Hudiksvall. Riksväg 80 går från Gävle mot Sandviken och Falun, riksväg 83 från Bollnäs mot Ljusdal och riksväg 84 från Hudiksvall mot Ljusdal.",
+  vasternorrland: "E4 binder ihop Sundsvall, Härnösand och Örnsköldsvik och går över Högakustenbron. E14 går från Sundsvall mot Östersund, och riksväg 90 går från Härnösand mot Kramfors och Sollefteå.",
+  jamtland: "Från Östersund går E14 västerut mot Åre och österut mot Sundsvall, och E45 går söderut mot Svenstavik. Fjällvägarna kan ha vinterväglag långt in på våren.",
+  vasterbotten: "E4 binder ihop Umeå och Skellefteå, och E12 går från Umeå inåt landet mot Lycksele.",
+  norrbotten: "E4 binder ihop Luleå, Piteå och Kalix. E10 går från Luleå via Boden mot Gällivare och Kiruna, och riksväg 97 går från Boden mot Jokkmokk.",
+};
+
 /** Vägnumret utan form: väglaget skriver "E 4" och "Väg 40", olyckorna "E4" och "Väg 274". */
 export const vagNyckel = (s: string | null) => (s ?? "").toLowerCase().replace(/\s+/g, "").replace(/^väg/, "");
 
@@ -98,7 +124,12 @@ const lsPlural = (n: number, en: string, flera: string) => `${n} ${n === 1 ? en 
 const LS_STIL = `.dok{max-width:760px}.svar{font:500 19px/1.5 var(--sans);color:var(--text);background:var(--panel);border:1px solid var(--kant);border-radius:18px;padding:18px 22px;margin:18px 0 8px}
 .dok nav p{line-height:2.1}.dok nav a{white-space:nowrap}.tabell{overflow-x:auto}.dok td+td,.dok th+th{white-space:nowrap;text-align:right}
 .ladda{display:grid;gap:12px;background:var(--panel);border:1px solid var(--kant);border-radius:18px;padding:22px 24px;margin-top:44px}
-.ladda b{font-size:19px}.ladda p{margin:0}.ladda .knapp{justify-self:start}`;
+.ladda b{font-size:19px}.ladda p{margin:0}.ladda .knapp{justify-self:start}
+.lankarta{position:relative;display:block;height:min(62vw,440px);margin:22px 0 6px;background:var(--panel);border:1px solid var(--kant);border-radius:18px;overflow:hidden}
+.lankarta canvas{position:absolute;inset:0;width:100%;height:100%}.lankarta span{position:absolute;left:16px;bottom:12px;font:500 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--dampad)}
+.vaglista{list-style:none;padding:0;margin:0}.vaglista li{padding:12px 0;border-top:1px dashed #253036}.vaglista li:first-child{border-top:0}
+.vaglista b{font:600 13px var(--mono);letter-spacing:.08em;margin-right:10px}.vaglista .halt{color:var(--gul)}.vaglista small{display:block;color:var(--dampad);font-size:14px;margin-top:2px}
+.fragor h3{font-size:17px;margin:20px 0 4px}.fragor p{margin:0}`;
 const LS_APP = "https://apps.apple.com/se/app/id6806939784";
 const LS_MARKE = `<svg viewBox="3 3 94 83" aria-hidden="true"><path fill-rule="evenodd" fill="#FFC94A" d="M55.196 6 L96.196 77 A6 6 0 0 1 91 86 L9 86 A6 6 0 0 1 3.804 77 L44.804 6 A6 6 0 0 1 55.196 6 Z M46.4 32 L53.6 32 L52 58 L48 58 Z M45.6 68 A4.4 4.4 0 1 0 54.4 68 A4.4 4.4 0 1 0 45.6 68 Z"/></svg>`;
 
@@ -112,7 +143,7 @@ function lsJsonLd(o: { titel: string; beskrivning: string; adress: string; now?:
   return `<script type="application/ld+json">${JSON.stringify(d).replace(/</g, "\\u003c")}</script>`;
 }
 
-function lsSkal(o: { titel: string; beskrivning: string; adress: string; rot: string; innehall: string; now?: Date }) {
+function lsSkal(o: { titel: string; beskrivning: string; adress: string; rot: string; innehall: string; now?: Date; extra?: string }) {
   return `<!doctype html>
 <html lang="sv">
 <head>
@@ -133,7 +164,7 @@ function lsSkal(o: { titel: string; beskrivning: string; adress: string; rot: st
 <link rel="stylesheet" href="${o.rot}assets/fonts/fonts.css">
 <link rel="stylesheet" href="${o.rot}assets/hv.css">
 <style>${LS_STIL}</style>
-${lsJsonLd(o)}
+${lsJsonLd(o)}${o.extra ?? ""}
 </head>
 <body>
 <header class="topp">
@@ -203,6 +234,16 @@ function lsVagLage(nyckel: string, d: { vaglag: LanSegment[]; stationer: LanStat
   };
 }
 
+/** Sökträffens beskrivning med dagens siffror (25/10): klockslaget, halkan och kallaste stationen, sedan vad sidan visar. */
+const LS_SLUT = "Trafikverkets väglag, vägtemperatur och olyckor, uppdaterat var 30:e minut.";
+function lsBeskrivning(l: LanLage, plats: string, now: Date): string {
+  const halt = l.halt.length
+    ? `halka eller vinterväglag på ${l.halt.length} av ${l.vagavsnitt} vägavsnitt ${plats}`
+    : `ingen halka på ${l.vagavsnitt} vägavsnitt ${plats}`;
+  const kall = l.kalla.length ? `kallast ${lsGrad(l.kalla[0].yta)} vid ${l.kalla[0].name}` : "ingen mätstation under noll";
+  return `Kl. ${lsTid(now, false)}: ${halt}, ${kall}. ${LS_SLUT}`;
+}
+
 const lsLanKort = (kod: number | null) => LAN.find((l) => l.kod === kod)?.kort ?? null;
 const lsVagLankar = (rot: string) => VAGAR.map((v) => `<a href="${rot}vag/${v.slug}/">${lsEsc(v.namn)}</a>`).join(" · ");
 
@@ -231,13 +272,81 @@ ${l.olyckor.length ? `<ul>\n${olyckor}\n</ul>` : `<p>Trafikverket rapporterar in
 <p>Se hela landet på <a href="../../karta.html">livekartan</a>, eller <a href="../../lan/">läget i alla län</a>.</p>
 <nav><h2>Andra vägar</h2><p>${andra}</p></nav>`;
   return lsSkal({
-    titel: `Är det halt på ${vag.rubrik} just nu? Väglag och vägtemperatur längs vägen | Halkvakt`,
-    beskrivning: `Väglaget på ${vag.rubrik} just nu: Trafikverkets rapporter om halka, vägbanans temperatur vid mätstationerna längs vägen och pågående olyckor. Uppdateras var 30:e minut.`,
+    titel: `Halka och väglag på ${vag.rubrik} just nu | Halkvakt`,
+    beskrivning: lsBeskrivning(l, `på ${vag.rubrik}`, now),
     adress: `${SIDBAS}/vag/${vag.slug}/`, rot: "../../", innehall, now,
   });
 }
 
-function lsLanssida(lan: (typeof LAN)[number], l: LanLage, now: Date): string {
+
+/** Vägen som folk skriver den: "E 4" → "E4", "Väg 55" → "väg 55". */
+const lsVagNamn = (r: string) => r.replace(/^E\s*(\d+)/, "E$1").replace(/^Väg\s*/, "väg ");
+/** Sträckans namn utan vägnumret och Trafikverkets löpnummer: "E 4 .25 Knivsta - Arlanda" → "Knivsta–Arlanda". */
+const lsStracka = (s: LanSegment) => (s.plats ?? "").replace(new RegExp("^" + (s.road ?? "").replace(/\s+/g, "\\s*") + "\\s*"), "")
+  .replace(/^\.?\d+\s+/, "").replace(/\s+-\s+/g, "–").trim();
+const lsVagOrdning = (r: string) => { const m = /^(E|Väg)\s*(\d+)/.exec(r); return m ? (m[1] === "E" ? 0 : 1000) + Number(m[2]) : 9999; };
+
+/** Länets stora vägar just nu (25/10, DECISIONS #722): E-vägarna och riksvägarna, och varje annan väg med halka. Text, så att
+ *  orterna i sträckornas namn går att söka på. */
+function lsVagarILanet(kod: number, d: { vaglag: LanSegment[]; stationer: LanStation[] }): string {
+  const segs = d.vaglag.filter((x) => x.lan === kod && x.road);
+  const vagar = [...new Set(segs.map((x) => x.road as string))].sort((a, b) => lsVagOrdning(a) - lsVagOrdning(b));
+  const rader = vagar.map((vag) => {
+    const sv = segs.filter((x) => x.road === vag);
+    const halt = sv.filter((x) => arHalt(x.code, x.info));
+    const stor = /^E\s*\d/.test(vag) || lsVagOrdning(vag) < 1100;
+    if (!stor && !halt.length) return "";
+    const namn = [...new Set((halt.length ? halt : sv).map(lsStracka).filter(Boolean))].slice(0, 5);
+    const st = d.stationer.filter((x) => x.lan === kod && vagNyckel(x.vag ?? null) === vagNyckel(vag)).sort((a, b) => a.yta - b.yta)[0];
+    const lage = halt.length
+      ? `<span class="halt">Halka eller vinterväglag på ${halt.length} av ${lsPlural(sv.length, "sträcka", "sträckor")}</span>`
+      : `Ingen halka rapporterad på ${lsPlural(sv.length, "sträcka", "sträckor")}`;
+    const temp = st ? ` · vägbanan ${lsGrad(st.yta)} vid ${lsEsc(st.name)}` : "";
+    return `<li><b>${lsEsc(lsVagNamn(vag))}</b>${lage}${temp}${namn.length ? `<small>${lsEsc(namn.join(" · "))}</small>` : ""}</li>`;
+  }).filter(Boolean).slice(0, 14);
+  return rader.length ? `<ul class="vaglista">\n${rader.join("\n")}\n</ul>` : "<p>Trafikverket rapporterar inget väglag för länets stora vägar just nu.</p>";
+}
+
+/** Vanliga frågor (25/10, DECISIONS #722): synliga på sidan och som FAQPage. Svaren säger bara vad sidan och appen gör. */
+function lsFragor(namn: string): { fraga: string; svar: string }[] {
+  return [
+    { fraga: `Hur ofta uppdateras väglaget i ${namn}?`, svar: "Sidan skrivs om var 30:e minut med Trafikverkets senaste väglagsrapport, vägbanans temperatur vid vägväderstationerna och pågående olyckor." },
+    { fraga: "Vad räknas som halka på sidan?", svar: "En sträcka räknas som hal när Trafikverkets väglagsrapport anger besvärligt väglag eller nämner is, snö, frost eller halka. Det är samma regel som får appen att varna." },
+    { fraga: "Var mäts vägbanans temperatur?", svar: "Vid Trafikverkets vägväderstationer längs de större vägarna. Mellan stationerna mäts ingenting, så vägen kan vara kallare eller varmare där." },
+    { fraga: "Kan jag få en varning medan jag kör?", svar: "Ja. Halkvakt för iPhone säger till med rösten när halka är rapporterad på vägen framför dig. Appen är gratis, och din position lämnar inte telefonen av sig själv." },
+  ];
+}
+const lsFragorHtml = (f: { fraga: string; svar: string }[]) =>
+  `<div class="fragor">\n${f.map((x) => `<h3>${lsEsc(x.fraga)}</h3><p>${lsEsc(x.svar)}</p>`).join("\n")}\n</div>`;
+const lsFragorLd = (f: { fraga: string; svar: string }[]) => `<script type="application/ld+json">${JSON.stringify({
+  "@context": "https://schema.org", "@type": "FAQPage",
+  mainEntity: f.map((x) => ({ "@type": "Question", name: x.fraga, acceptedAnswer: { "@type": "Answer", text: x.svar } })),
+}).replace(/</g, "\\u003c")}</script>`;
+
+/** Kartan över länet (25/10, DECISIONS #722): länets gräns, alla dess sträckor och de hala gula, ritad i webbläsaren ur sajtens egna
+ *  filer. Vilka sträckor som är hala bestäms här (arHalt) och skickas med, så att kartan och texten aldrig är oense. */
+function lsLanKarta(lan: { slug: string; kod: number; kort: string }, l: LanLage): string {
+  const halt = JSON.stringify([...new Set(l.halt.map((s) => s.plats ?? s.road ?? ""))]).replace(/</g, "\\u003c");
+  return `<a class="lankarta" href="../../karta.html?lan=${lan.slug}" aria-label="Öppna ${lsEsc(lan.kort)} på livekartan"><canvas id="lankarta" aria-hidden="true"></canvas><span>Öppna livekartan →</span></a>
+<script>(function(){var SLUG=${JSON.stringify(lan.slug)},KOD=${lan.kod},HALT=new Set(${halt});
+Promise.all([fetch('/assets/lan.geojson').then(function(r){return r.json()}),fetch('/data/vaglag.geojson').then(function(r){return r.json()}),fetch('/data/vader.geojson').then(function(r){return r.json()})]).then(function(d){
+var lan=d[0].features,mitt=lan.filter(function(f){return f.properties.slug===SLUG})[0];if(!mitt)return;
+var segs=d[1].features.filter(function(f){return f.properties.lan===KOD});
+var ringar=function(g){return g.type==='MultiPolygon'?[].concat.apply([],g.coordinates):g.coordinates};
+var b=[180,90,-180,-90];ringar(mitt.geometry).forEach(function(r){r.forEach(function(p){b[0]=Math.min(b[0],p[0]);b[1]=Math.min(b[1],p[1]);b[2]=Math.max(b[2],p[0]);b[3]=Math.max(b[3],p[1])})});
+function rita(){var cv=document.getElementById('lankarta'),bx=cv.getBoundingClientRect(),dpr=Math.min(2,devicePixelRatio||1);cv.width=bx.width*dpr;cv.height=bx.height*dpr;
+var c=cv.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);var k=Math.cos((b[1]+b[3])/2*Math.PI/180),pad=28,w=(b[2]-b[0])*k,h=b[3]-b[1],s=Math.min((bx.width-pad*2)/w,(bx.height-pad*2)/h),
+ox=(bx.width-w*s)/2,oy=(bx.height-h*s)/2,xy=function(p){return[ox+(p[0]-b[0])*k*s,oy+(b[3]-p[1])*s]};
+var yta=function(g,fyll,kant,lw){c.fillStyle=fyll;c.strokeStyle=kant;c.lineWidth=lw;ringar(g).forEach(function(r){c.beginPath();r.forEach(function(p,i){var q=xy(p);i?c.lineTo(q[0],q[1]):c.moveTo(q[0],q[1])});c.closePath();c.fill();c.stroke()})};
+lan.forEach(function(f){if(f!==mitt)yta(f.geometry,'#0B1013','#1E282D',1)});yta(mitt.geometry,'#162024','#FFC94A',1.5);
+var linje=function(f){var g=f.geometry,L=g.type==='MultiLineString'?g.coordinates:[g.coordinates];L.forEach(function(l){c.beginPath();l.forEach(function(p,i){var q=xy(p);i?c.lineTo(q[0],q[1]):c.moveTo(q[0],q[1])});c.stroke()})};
+c.lineCap='round';c.lineJoin='round';c.strokeStyle='#4A5A63';c.lineWidth=1.6;segs.forEach(function(f){if(!HALT.has(f.properties.plats||f.properties.road||''))linje(f)});
+c.strokeStyle='#FFC94A';c.lineWidth=3;c.shadowColor='rgba(255,201,74,.6)';c.shadowBlur=8;segs.forEach(function(f){if(HALT.has(f.properties.plats||f.properties.road||''))linje(f)});c.shadowBlur=0;
+d[2].features.forEach(function(f){var p=f.geometry.coordinates,y=f.properties.yta;if(f.properties.land!=='SE'||p[0]<b[0]||p[0]>b[2]||p[1]<b[1]||p[1]>b[3]||typeof y!=='number')return;var q=xy(p);c.fillStyle=y<0?'#E9EFF2':'#34424A';c.beginPath();c.arc(q[0],q[1],y<0?2.6:1.6,0,7);c.fill()})}
+rita();addEventListener('resize',rita)}).catch(function(){var a=document.querySelector('.lankarta');if(a)a.style.display='none'})})();</script>`;
+}
+
+function lsLanssida(lan: (typeof LAN)[number], l: LanLage, now: Date, d: { vaglag: LanSegment[]; stationer: LanStation[] }): string {
   const halt = l.halt.slice(0, 15).map((s) => {
     const vad = [s.text, ...s.info].filter(Boolean).join(", ");
     return `<li>${lsEsc(s.plats ?? s.road ?? "Vägavsnitt")}: ${lsEsc(vad)}</li>`;
@@ -250,7 +359,11 @@ function lsLanssida(lan: (typeof LAN)[number], l: LanLage, now: Date): string {
   const innehall = `<p class="dim">Uppdaterad ${lsTid(now)}</p>
 <h1>Är det halt i ${lsEsc(lan.kort)} just nu?</h1>
 <p class="svar">${lsEsc(lsSvar(l, "länets", "i länet", now))}</p>
-<p><a class="lank-mono" href="../../karta.html?lan=${lan.slug}">Se ${lsEsc(lan.kort)} på livekartan →</a></p>
+${lsLanKarta(lan, l)}
+<h2>Stora vägar i ${lsEsc(lan.kort)} just nu</h2>
+${lsVagarILanet(lan.kod, d)}
+<h2>Pendla i ${lsEsc(lan.kort)}</h2>
+<p>${lsEsc(PENDLING[lan.slug] ?? "")}</p>
 <h2>Väglaget enligt Trafikverket</h2>
 ${l.halt.length ? `<ul>\n${halt}\n</ul>${l.halt.length > 15 ? `\n<p class="dim">och ${l.halt.length - 15} till.</p>` : ""}`
     : `<p>Inget av länets ${l.vagavsnitt} vägavsnitt har halka eller vinterväglag i Trafikverkets rapport.</p>`}
@@ -262,12 +375,22 @@ ${l.olyckor.length ? `<ul>\n${olyckor}\n</ul>` : "<p>Trafikverket rapporterar in
 <h2>Vintern i ${lsEsc(lan.kort)}</h2>
 <p>${lsEsc(lan.stycke)}</p>
 <p>Hela landet på <a href="../../karta.html">livekartan</a>, eller <a href="../">läget i alla län</a>. Redaktioner kan <a href="../../press.html#redaktioner">bädda in läget i ${lsEsc(lan.kort)}</a> på sin egen sajt.</p>
+<h2>Vanliga frågor</h2>
+${lsFragorHtml(lsFragor(lan.namn))}
 <nav><h2>Andra län</h2><p>${andra}</p><h2>Stora vägar</h2><p>${lsVagLankar("../../")}</p></nav>`;
   return lsSkal({
-    titel: `Är det halt i ${lan.kort} just nu? Väglag och vägtemperatur | Halkvakt`,
-    beskrivning: `Väglaget i ${lan.namn} just nu: Trafikverkets rapporter om halka, vägbanans temperatur vid mätstationerna och pågående olyckor. Uppdateras var 30:e minut.`,
-    adress: `${SIDBAS}/lan/${lan.slug}/`, rot: "../../", innehall, now,
+    titel: `Halka och väglag i ${lan.namn} just nu | Halkvakt`,
+    beskrivning: lsBeskrivning(l, `i ${lan.namn}`, now),
+    adress: `${SIDBAS}/lan/${lan.slug}/`, rot: "../../", innehall, now, extra: lsFragorLd(lsFragor(lan.namn)),
   });
+}
+
+function lsOversiktBeskrivning(lagen: Map<number, LanLage>, now: Date): string {
+  const alla = [...lagen.values()];
+  const halt = alla.filter((l) => l.halt.length).length;
+  const kallast = alla.flatMap((l) => l.kalla.slice(0, 1)).sort((a, b) => a.yta - b.yta)[0];
+  const kall = kallast ? `kallast ${lsGrad(kallast.yta)} vid ${kallast.name}` : "ingen mätstation under noll";
+  return `Kl. ${lsTid(now, false)}: halka eller vinterväglag i ${halt} av ${alla.length} län, ${kall}. ${LS_SLUT}`;
 }
 
 function lsOversikt(lagen: Map<number, LanLage>, vagar: Map<string, LanLage>, now: Date): string {
@@ -296,8 +419,8 @@ ${vagrader}
 </table></div>
 <p>Se hela landet på <a href="../karta.html">livekartan</a>.</p>`;
   return lsSkal({
-    titel: "Är det halt i Sverige just nu? Läget per län | Halkvakt",
-    beskrivning: "Väglaget i alla 21 län just nu: Trafikverkets rapporter om halka, vägbanans temperatur och pågående olyckor. Uppdateras var 30:e minut.",
+    titel: "Halka och väglag i Sverige just nu, län för län | Halkvakt",
+    beskrivning: lsOversiktBeskrivning(lagen, now),
     adress: `${SIDBAS}/lan/`, rot: "../", innehall, now,
   });
 }
@@ -308,7 +431,7 @@ export function byggLanssidor(d: { vaglag: LanSegment[]; stationer: LanStation[]
   const vagar = new Map(VAGAR.map((v) => [v.slug, lsVagLage(v.nyckel, d)] as const));
   const ut: Record<string, string> = { "lan/index.html": lsOversikt(lagen, vagar, d.now), "data/lan.json": lsLanJson(lagen, vagar, d.now),
     "data/strackor.json": lsStrackorJson(d) };
-  for (const lan of LAN) ut[`lan/${lan.slug}/index.html`] = lsLanssida(lan, lagen.get(lan.kod)!, d.now);
+  for (const lan of LAN) ut[`lan/${lan.slug}/index.html`] = lsLanssida(lan, lagen.get(lan.kod)!, d.now, d);
   for (const v of VAGAR) ut[`vag/${v.slug}/index.html`] = lsVagsida(v, vagar.get(v.slug)!, d.now);
   return ut;
 }
