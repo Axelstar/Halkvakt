@@ -18268,3 +18268,53 @@ kandidatens filer står kvar orörda.
 signaturerna och en rad `ny` i `kandidat_talar`.
 
 **Stomdokument:** KUV, LIV den rättade nya i drift och kriteriet för bytet klarat
+
+## #729 (26/10 2026) Bytet: den nya kandidaten talar i appen i stället för den frysta (FORREGISTRERING-2026-27 §12 b)
+
+**Bengts ord 26/10, för sig och för Axel:** *"Vi kör båda o jag signerar för båda"* (svar på frågan om både deployen av publiceringen och bytet i kväll, med
+utkastet till den här posten framför sig). Bengt signerar för Bengt och Axel, som i #659, #692, #715 och #726.
+
+| | Datum | Signatur |
+| :-- | :-- | :-- |
+| Bengt | 2026-10-26 | Bengt i chatten: "Vi kör båda o jag signerar för båda" |
+| Axel | 2026-10-26 | Via Bengt i samma ord |
+
+**Beslutet.** Den nya kandidaten (sex vintrar, rättad enligt tillägget T4, #720) talar i appen, i rösten, i lägesfilen och på kartan
+i stället för den frysta (NIVÅ 2+BLANDNING, kandidat-2026-27). **Tidpunkten:** från den första publiceringen efter migrationen
+`sql/071_bytet_pa.sql`, som körs med DB-knappen i kväll 26/10 omkring 22.50 svensk tid (21.50 UTC); den exakta tiden står i
+`kandidat_talar` (kolumnen `tid`, raden med beslutet `DECISIONS #729`) och i DB-knappens körning. Det är ett beslut om **vad förarna
+hör**, inte en ändring av någon dom.
+
+**Öppet, som §12 (b) kräver:**
+- Ersättningsregelns V2 föll (#702): den nya var 0,19 procentenheter bättre än den frysta i A2 på 2022/23, och kravet var 0,25. V2 står
+  som den föll (T4 §3 a). Tillägget till ersättningsregeln (#726) ger den nya rätten att tala enligt §12 trots det.
+- Ingen timme av vinterns utfall för någon av kandidaterna är läst. Domfönstret började 26/10 (#726).
+
+**Villkoren i §12 (a):**
+- Paritetsprovet för den rättade modellen är klarat (#727): kuvos-ny-kandidat 40375155386, n 2 210 532 lika, A1 och A2 med skillnaden 0.
+- Den nyas kedja räknar och loggar i drift med den rättade modellen sedan 26/10 (#728): del A ny-kandidat-fysik 40398888429 och
+  timdelen 40399769561, 13 714 punkter. Den nyas logg för 20.00 UTC räknades med den förra modellen; den första helt rättade
+  loggtimmen är 21.00 UTC.
+- Färskheten är densamma som i §3: högst två timmar gammal och minst 95 % av punkterna.
+
+**Underlaget, kriteriet i #723 (läst 26/10, #728):** alla fyra delarna klarade. I medel över de fem vintrarna 2018/19–2022/23 har den
+rättade nya A1 0,505 °C, A2 4,00 % och A3 0,202 %, mot den frystas 0,541 °C, 4,84 % och 0,248 %, och den är bättre varje vinter för
+sig. Den är bättre än RÅ varje vinter, i norr och i söder.
+
+**Det som inte ändras:**
+- Den frysta räknas och loggas oförändrat hela vintern, och domen i §1–§5 fälls över den (§12 c).
+- Regeln, talen, grindarna, spridningen, vetot, färskheten och märkningen (BETA, *modellerat*) är desamma för den som talar (§12 d).
+- Den nya döms bredvid, i efterhand (§12 e).
+
+**Vägen tillbaka (§12 f).** Saknas den nyas timme, eller är den för gammal eller ofullständig, talar den frysta den timmen av sig
+själv; andelen sådana timmar redovisas. Ett beslut att gå tillbaka är en ny rad `fryst` i `kandidat_talar`, i samma form som sql/071.
+
+**Genomförandet:**
+1. Deployen av publiceringen: deploy-supabase 40403957980, 21.24 UTC från 23b13e36 (bara bytets kod sedan d191a86). Publiceringen
+   21.30 UTC gick igenom med den frysta som talare (kandidatens timme 20.00 UTC i lägesfilen).
+2. Migrationen `sql/071_bytet_pa.sql` med DB-knappen efter den här posten. Från nästa publicering talar den nya.
+3. Beviset: `talande_timme()` ger talaren `ny`, och lägesfilen bär den nyas timme.
+
+**Valet inför 2027/28** görs i en egen förregistrering, med båda domarna som underlag (§12 g, tillägget §5).
+
+**Stomdokument:** KUV, LIV, APP den nya kandidaten talar i appen
