@@ -18145,3 +18145,52 @@ Felet fälls alltså av båda halvorna av provet, och inga rena delar fälls. Ma
 **Det som nu gäller:** trappformsprovet före läsningen i Ä6 och i T4:s förberedning körs med preciseringen.
 
 **Stomdokument:** KUV sågtandens precisering i trappformsprovet
+
+## #725 (26/10 2026) Radarns tal R = 0,1 mm/h (FORREGISTRERING-2026-27 §10 a)
+
+**Bengts ord 26/10:** *"Ja, ta signeringen nu: läs kurva 3, för in R i #1203 och visa mej talen innan jag säger mina ord."*
+
+**Regeln, skriven 15/10 före läsningen (#568):** visar alla tre kurvorna en majoritet (över 50 %) i bandet 0,1–0,5 på `rate_mean_mmh`
+blir R = 0,1; annars står 0,5. Läst med `scripts/radarns-tal.ts`.
+
+| Kurva | Körning | Fönster | Par i bandet | Bekräftade | Andel |
+| :-- | :-- | :-- | --: | --: | --: |
+| 1 | 38690393504 | 8–15/10 | 21 012 | 13 026 | 62,0 % |
+| 2 | 39257448840 | 12–19/10 (för hand 13:20 UTC) | 7 082 | 4 015 | 56,7 % |
+| 3 | 40279196066 | 19–26/10, körd 06:20 UTC av pulsklockan | 16 539 | 10 959 | 66,3 % |
+
+Kurva 3:s fönster är 19/10 08:00 till 26/10 06:05 UTC och delar fyra timmar med kurva 2:s (som slutade 19/10 12:00), utöver de tre
+dygn som kurva 1 och 2 delar (#568). Alla tre ligger över 50 %; den lägsta, kurva 2, med 6,7 procentenheter.
+
+**Regeln i drift följer:** `sql/069_radarns_tal.sql` skapar om `kandidat_regel()` och `ny_kandidat_regel()` med 0,1 i stället för
+0,5, ord för ord i övrigt; kuvösens `RADAR_MMH` är 0,1; kontraktsgrinden vaktar gränsen i 069 och kuvösen; ett prov kräver att den
+nyas regel är den frystas. **Migrationen körs med DB-knappen på Bengts ord**, innan förregistreringen signeras.
+
+**Stomdokument:** KUV radarns tal infört i förregistreringen
+
+## #726 (26/10 2026) FORREGISTRERING-2026-27 och tillägget till ersättningsregeln signerade; domfönstret börjar
+
+**Bengts ord 26/10:** *"Ja: kör migrationen sql/069, signera förregistreringen och tillägget för mej och Axel med §12 (g), och slå ihop #1203 när CI är grön."*
+
+**Signerat:** Bengt för sig och för Axel via Bengt, som i #659, #692 och #715. Bengt sade först *"jag och axel signerar"*.
+- `docs/FORREGISTRERING-2026-27.md`, sha256 vid signeringen, före statusraden och signaturerna: `246df045014ace9baf75084968f6ad5e40116d6c572f1526afb5e2522bd2e80b`. R = 0,1 mm/h (§10 a).
+- `docs/FORREGISTRERING-ERSATTNING-TILLAGG-2026-10-24.md`, sha256 på samma sätt: `39852df086d71b9ff8814c55b808cce8d0ca5bcce9fb5c090a055fe3108cccc9`. I §5 gäller §12 (g): valet inför 2027/28
+  görs i en egen förregistrering med båda domarna som underlag.
+
+**Vid signaturerna** står det som lästs före (§10 f): den frysta på 2022/23 (#680) och på 2018/19–2021/22 med v4, med källfelet
+14–31/3 2022 (#716). Inget i §1–§5 är ändrat på grund av det. Rättelsen (Ä6, #719, och T4, #720) är signerad 25/10; inget av dess
+utfall är läst vid signaturen, och den rör inte den här domen.
+
+**Rättat före signeringen** på Bengts ord 26/10 (*"Rätta raderna"*): tre faktarader, inga regler. Förregistreringen §11 säger att Ä6
+är signerat (#719) och körs efter signeringen; tilläggets §6 står med läget för stegen (1–5 gjorda: #704, #706, #723).
+
+**Migrationen före signaturen:** `sql/069_radarns_tal.sql` körd 26/10 med DB-knappen från signeringsgrenen (40328516642, transaktionen
+bekräftad). Beviset: `kandidat_regel()` och `ny_kandidat_regel()` har gränsen 0,1 och inte längre 0,5; den frystas timme 12:00 UTC är färsk;
+`kandidat_talar` har inga rader, så den frysta talar. Regeln i drift är alltså den signerade från domfönstrets första dag.
+
+**Följd:**
+- Domfönstret börjar 26/10 2026 (§5). Bara data som ingen sett räknas (regel L).
+- Fristerna `radarns-tal`, `tillagg-bytet` och `forregistreringen-signerad` är klara och borttagna; deras ärenden stängs.
+- Ordningen efter signeringen följer tillägget §6.
+
+**Stomdokument:** KUV förregistreringen för 2026/27 signerad och domfönstret börjar

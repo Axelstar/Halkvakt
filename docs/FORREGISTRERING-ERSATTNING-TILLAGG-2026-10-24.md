@@ -1,7 +1,7 @@
 # Tillägg till ersättningsregeln: den nya kandidaten får tala i appen enligt förregistreringen för 2026/27, §12
 
-**Status: UTKAST 24/10 2026** (DECISIONS #703). Signeras av Bengt och Axel 26/10, samma dag som förregistreringen för 2026/27
-(fristen `tillagg-bytet`). Skrivet **efter** att V2 föll (DECISIONS #702), och det står öppet här (§4).
+**Status: SIGNERAT 26/10 2026** (Bengt, och Axel via Bengt, DECISIONS #726; dokumentets sha256 vid signeringen, före den här
+raden och signaturerna: `39852df086d71b9ff8814c55b808cce8d0ca5bcce9fb5c090a055fe3108cccc9`). Utkastet: DECISIONS #703. Signerat samma dag som förregistreringen för 2026/27; i §5 gäller §12 (g). Skrivet **efter** att V2 föll (DECISIONS #702), och det står öppet här (§4).
 
 Bengts ord 24/10:
 - *"alltså vi vill gå live med den här nu så att mätningarna inte bara ligger som beta utan som når ut till förarna"*;
@@ -53,19 +53,25 @@ Alternativet är att ersättningsregelns följd står kvar för valet. Då avgö
 vidare, annars RÅ som kontroll och reserv), även om den nya har talat i vinter. Väljs alternativet skrivs §12 (g) och raden om §5
 ovan om före signeringen.
 
-## 6. Ordningen efter signeringen
+## 6. Ordningen
 
-1. Paritetsprovet: `kuvos-ny-kandidat.yml` med steg=paritet, på Bengts ord. Kedjan och steget finns i PR #1179.
-2. sql/068 migreras av Bengt.
-3. Flaggan i `kuvos/ny-kandidat-skugga.json` slås på, i en egen commit med paritetskörningens nummer.
-4. Pulsraderna för `ny-kandidat-fysik` och `ny-kandidat-timme`. Kedjan räknar och loggar i drift.
-5. Bytet i koden: lägesfilen läser den nyas regelutfall, med vägen tillbaka (§12 f). Det byggs i en egen PR före beslutet och slås på
-   vid beslutets tidpunkt.
-6. Bytesbeslutet: en daterad DECISIONS-post med båda signaturerna, innan någon timme av vinterns utfall är läst (§12 b).
+Utkastet 24/10 ordnade stegen efter signeringen. Steg 1–5 gjordes före signeringen, på Bengts ord (DECISIONS #704, #706, #723);
+läget vid signeringen 26/10 står vid varje steg.
+
+1. ✅ Paritetsprovet: `kuvos-ny-kandidat.yml` med steg=paritet, körning 40067785091, klarat 24/10 (DECISIONS #704). Kedjan och steget
+   kom med PR #1179.
+2. ✅ sql/068 migrerad av Bengt 24/10 (#704).
+3. ✅ Flaggan i `kuvos/ny-kandidat-skugga.json` påslagen 24/10 med paritetskörningens nummer (#706).
+4. ✅ Pulsraderna för `ny-kandidat-fysik` och `ny-kandidat-timme` inlagda 24/10 (#706). Kedjan räknar och loggar i drift.
+5. ✅ Bytet i koden: publiceringen läser den talande kandidatens timme och regel, med vägen tillbaka (§12 f), i PR #1204 (DECISIONS
+   #723) och sql/070, migrerad 26/10. Ingen rad i `kandidat_talar`, så den frysta talar.
+6. Bytesbeslutet: en daterad DECISIONS-post med båda signaturerna, innan någon timme av vinterns utfall är läst (§12 b). Före beslutet
+   ersätter den rättade modellen ur tillägget T4 till NY-KANDIDAT (DECISIONS #720, §4 a) den som loggar i drift, efter ett nytt
+   paritetsprov.
 
 ## 7. Signaturer
 
 | | Datum | Signatur |
 | :-- | :-- | :-- |
-| Bengt | | |
-| Axel | | |
+| Bengt | 2026-10-26 | Bengt i chatten: *"Ja: kör migrationen sql/069, signera förregistreringen och tillägget för mej och Axel med §12 (g), och slå ihop #1203 när CI är grön."* (DECISIONS #726) |
+| Axel | 2026-10-26 | Via Bengt i samma ord (DECISIONS #726) |

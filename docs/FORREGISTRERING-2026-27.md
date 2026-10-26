@@ -1,8 +1,11 @@
 # Förregistrering — kandidaten NIVÅ 2+BLANDNING, vintern 2026/27
 
-**Status: UTKAST 15/10 2026, §4b tillagt 21/10, §12 (bytet) tillagt 24/10 (#703), §4b punkt 12–17 (domens mått) tillagt 24–25/10 (#710). Kvar före signeringen: radarns tal 26/10 (§10 a). §4b fastställt 21/10 (#655, #656); omgång 1 avgjord 21/10
-(#659: populationen i §4, förarsvaren i §4b punkt 4, kameran i punkt 5, Bengt signerar för båda); loggen sql/065 i drift sedan 21/10 (§10 e). Spridningen loggas i drift sedan 16/10 (§10 b).** Signeras av Bengt och Axel senast
-**31/10 2026** (DECISIONS #544, #547). Domfönstret börjar den dag förregistreringen är signerad och pushad; varje dygn utan signatur är
+**Status: SIGNERAD 26/10 2026** (Bengt, och Axel via Bengt, DECISIONS #726; dokumentets sha256 vid signeringen, före den här
+raden och signaturerna: `246df045014ace9baf75084968f6ad5e40116d6c572f1526afb5e2522bd2e80b`). Domfönstret börjar 26/10 2026. R = 0,1 mm/h (§10 a).
+
+*Före signeringen:* UTKAST 15/10 2026, §4b tillagt 21/10, §12 (bytet) tillagt 24/10 (#703), §4b punkt 12–17 (domens mått) tillagt 24–25/10 (#710). Radarns tal infört 26/10: R = 0,1 mm/h (§10 a, #725). §4b fastställt 21/10 (#655, #656); omgång 1 avgjord 21/10
+(#659: populationen i §4, förarsvaren i §4b punkt 4, kameran i punkt 5, Bengt signerar för båda); loggen sql/065 i drift sedan 21/10 (§10 e). Spridningen loggas i drift sedan 16/10 (§10 b). Signeras av Bengt och Axel senast
+31/10 2026 (DECISIONS #544, #547). Domfönstret börjar den dag förregistreringen är signerad och pushad; varje dygn utan signatur är
 ett dygn vinter utanför domen. Källorna är DECISIONS #544, #547, #552, #558–#573 och TROSKLAR-SKUGGAN §2–§4. Utkastet i #560 ersätts
 av det här dokumentet; frågorna (A) och (B) där är besvarade av #562.
 
@@ -43,7 +46,7 @@ En annan modell, ett annat par eller en annan fysik är en annan kandidat och en
 | Spridning | där minst två av RÅ:s ankare bidrar tiger kandidaten när deras spridning är **2,25 °C** eller mer; med färre ankare grindar spridningen inte (#547, #563, #575) |
 | Märkning | BETA och *modellerat*, aldrig *uppmätt* |
 
-**R** är 0,5 eller 0,1 enligt regeln i #568, läst på cellmätningens kurvor 15/10, 19/10 och 26/10 (§10 a). Kandidaten talar också långt
+**R** är 0,1 mm/h, läst 26/10 enligt regeln i #568 på cellmätningens kurvor 15/10, 19/10 och 26/10 (§10 a). Kandidaten talar också långt
 från ankare till domen i mars, som ett undantag från regel T (#563, TROSKLAR-SKUGGAN §4(d)).
 
 ## 4. Måtten — oförändrade
@@ -268,7 +271,7 @@ grindarna eller den här domen över den frysta. Valet inför 2027/28 görs enli
 
 **(a) Radarns tal R.** Läses 26/10 enligt #568: visar alla tre kurvorna en majoritet i bandet 0,1–0,5 på `rate_mean` blir R = 0,1,
 annars 0,5. Claude för in talet samma dag. Saknas en kurva står R = 0,5 kvar, och bortfallet redovisas vid signaturerna (Bengt
-23/10, #689). Signeringen sker samma dag (#689). Läsningen är `scripts/radarns-tal.ts` (självtest i ci): den läser bandet 0,1–0,5 på `rate_mean_mmh` ur de tre körningarnas loggar och tillämpar regeln. Kurva 1 (38690393504, 8–15/10): 13 026 av 21 012 par, 62,0 %.
+23/10, #689). Signeringen sker samma dag (#689). Läsningen är `scripts/radarns-tal.ts` (självtest i ci): den läser bandet 0,1–0,5 på `rate_mean_mmh` ur de tre körningarnas loggar och tillämpar regeln. Kurva 1 (38690393504, 8–15/10): 13 026 av 21 012 par, 62,0 %. Kurva 2 (39257448840, 12–19/10, körd för hand 13:20 UTC efter morgonavbrottet): 4 015 av 7 082 par, 56,7 %. Kurva 3 (40279196066, 19–26/10, körd 06:20 UTC av pulsklockan): 10 959 av 16 539 par, 66,3 %. **R = 0,1 mm/h**, infört 26/10 (DECISIONS #725). Regeln i drift följer med `sql/069_radarns_tal.sql`.
 
 **(b) Spridningsgrinden — besvarad 15/10 (DECISIONS #574, #575).** Spridningen grindar där minst två ankare bidrar (#547 och #563
 lästa ihop), **samma grind gäller varningen i appen** (Bengts ja; regeln i §3 har villkoret), och loggningen är byggd: del B skriver
@@ -339,12 +342,12 @@ NIVÅ 2+BLANDNING på grind A:s population, 4 361 591 punkter vid 718 stationer:
 FLER-VINTRAR (#715), körningar 40194345814, 40196518547, 40199180640 och 40201548425 (DECISIONS #716). NIVÅ 2+BLANDNING på grind A:s population, A2
 (RÅ inom parentes): 2018/19 5,47 % (8,42 %), 2019/20 3,90 % (6,62 %), 2020/21 5,24 % (8,42 %), 2021/22 11,85 % (9,51 %). 2021/22 bär
 ett källfel: MET:s arkiv har lång- och kortvågen som växande summor 14–31/3 2022, och den frystas A2 i mars blev 47,96 %. Rättelsen
-med v4:s timvärden är ett utkast till tillägg (Ä6) och ändrar inte den här domen. Inget i §1–§5 är ändrat på grund av det.*
+med v4:s timvärden är tillägget Ä6, signerat 25/10 (DECISIONS #719); den körs efter signeringen och ändrar inte den här domen. Inget i §1–§5 är ändrat på grund av det.*
 
 *Lättnader före signeringen enligt regel L (#564), skrivna efter läsningen ovan: §4b punkt 13, 14 och 16. Det sedda talet, skälet
 (L4 a), vilka data (domfönstret, L2) och svaret på L3 står i DECISIONS #710.*
 
 | | Datum | Signatur |
 | :-- | :-- | :-- |
-| Bengt | | |
-| Axel | | |
+| Bengt | 2026-10-26 | Bengt i chatten: *"Ja: kör migrationen sql/069, signera förregistreringen och tillägget för mej och Axel med §12 (g), och slå ihop #1203 när CI är grön."* (DECISIONS #726) |
+| Axel | 2026-10-26 | Via Bengt i samma ord (DECISIONS #726) |
