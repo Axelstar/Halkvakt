@@ -53,15 +53,21 @@ Alternativet är att ersättningsregelns följd står kvar för valet. Då avgö
 vidare, annars RÅ som kontroll och reserv), även om den nya har talat i vinter. Väljs alternativet skrivs §12 (g) och raden om §5
 ovan om före signeringen.
 
-## 6. Ordningen efter signeringen
+## 6. Ordningen
 
-1. Paritetsprovet: `kuvos-ny-kandidat.yml` med steg=paritet, på Bengts ord. Kedjan och steget finns i PR #1179.
-2. sql/068 migreras av Bengt.
-3. Flaggan i `kuvos/ny-kandidat-skugga.json` slås på, i en egen commit med paritetskörningens nummer.
-4. Pulsraderna för `ny-kandidat-fysik` och `ny-kandidat-timme`. Kedjan räknar och loggar i drift.
-5. Bytet i koden: lägesfilen läser den nyas regelutfall, med vägen tillbaka (§12 f). Det byggs i en egen PR före beslutet och slås på
-   vid beslutets tidpunkt.
-6. Bytesbeslutet: en daterad DECISIONS-post med båda signaturerna, innan någon timme av vinterns utfall är läst (§12 b).
+Utkastet 24/10 ordnade stegen efter signeringen. Steg 1–5 gjordes före signeringen, på Bengts ord (DECISIONS #704, #706, #723);
+läget vid signeringen 26/10 står vid varje steg.
+
+1. ✅ Paritetsprovet: `kuvos-ny-kandidat.yml` med steg=paritet, körning 40067785091, klarat 24/10 (DECISIONS #704). Kedjan och steget
+   kom med PR #1179.
+2. ✅ sql/068 migrerad av Bengt 24/10 (#704).
+3. ✅ Flaggan i `kuvos/ny-kandidat-skugga.json` påslagen 24/10 med paritetskörningens nummer (#706).
+4. ✅ Pulsraderna för `ny-kandidat-fysik` och `ny-kandidat-timme` inlagda 24/10 (#706). Kedjan räknar och loggar i drift.
+5. ✅ Bytet i koden: publiceringen läser den talande kandidatens timme och regel, med vägen tillbaka (§12 f), i PR #1204 (DECISIONS
+   #723) och sql/070, migrerad 26/10. Ingen rad i `kandidat_talar`, så den frysta talar.
+6. Bytesbeslutet: en daterad DECISIONS-post med båda signaturerna, innan någon timme av vinterns utfall är läst (§12 b). Före beslutet
+   ersätter den rättade modellen ur tillägget T4 till NY-KANDIDAT (DECISIONS #720, §4 a) den som loggar i drift, efter ett nytt
+   paritetsprov.
 
 ## 7. Signaturer
 

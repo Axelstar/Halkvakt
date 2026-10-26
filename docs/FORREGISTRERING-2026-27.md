@@ -339,7 +339,7 @@ NIVÅ 2+BLANDNING på grind A:s population, 4 361 591 punkter vid 718 stationer:
 FLER-VINTRAR (#715), körningar 40194345814, 40196518547, 40199180640 och 40201548425 (DECISIONS #716). NIVÅ 2+BLANDNING på grind A:s population, A2
 (RÅ inom parentes): 2018/19 5,47 % (8,42 %), 2019/20 3,90 % (6,62 %), 2020/21 5,24 % (8,42 %), 2021/22 11,85 % (9,51 %). 2021/22 bär
 ett källfel: MET:s arkiv har lång- och kortvågen som växande summor 14–31/3 2022, och den frystas A2 i mars blev 47,96 %. Rättelsen
-med v4:s timvärden är ett utkast till tillägg (Ä6) och ändrar inte den här domen. Inget i §1–§5 är ändrat på grund av det.*
+med v4:s timvärden är tillägget Ä6, signerat 25/10 (DECISIONS #719); den körs efter signeringen och ändrar inte den här domen. Inget i §1–§5 är ändrat på grund av det.*
 
 *Lättnader före signeringen enligt regel L (#564), skrivna efter läsningen ovan: §4b punkt 13, 14 och 16. Det sedda talet, skälet
 (L4 a), vilka data (domfönstret, L2) och svaret på L3 står i DECISIONS #710.*
