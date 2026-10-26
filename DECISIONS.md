@@ -17980,3 +17980,168 @@ bytesbeslutet (Claudes rekommendation).
 grund av det, och domen över den frysta i mars rörs inte.
 
 **Stomdokument:** KUV den frysta på fyra äldre vintrar läst och källfelet i mars 2022
+
+## #717 (25/10 2026) Utkastet Ä6 till FLER-VINTRAR i repot: lång- och kortvågen 14–31/3 2022 ur v4 för den frysta
+
+**Bengts ord 25/10:** *"Ja, förbered signerings-PR:en med allt utom R, och lägg Ä6 och T4 i repot som utkast-PR:er i kväll."*
+
+`docs/FORREGISTRERING-FLER-VINTRAR-TILLAGG-A6-2026-10-25.md`, status UTKAST, ur utkastet från Desktop (#716). Ä6 tar lång- och kortvågen 14–31/3 2022 ur MET:s v4 för den
+frysta och kör om 2021/22; jämförelsen med den nya väntar på T4. Prov före läsningen: trappformsprovet (tröskel och sågtand)
+och att v4 är timvärden. Båda talen, före och efter rättelsen, står bredvid varandra. Ingen kod är byggd och ingenting är kört.
+
+**Stomdokument:** KUV utkastet Ä6 till FLER-VINTRAR i repot
+
+## #718 (25/10 2026) Utkastet T4 till NY-KANDIDAT i repot: kortvågen 14–31/3 2022 ur v4 för den nya
+
+**Bengts ord 25/10:** *"Ja, förbered signerings-PR:en med allt utom R, och lägg Ä6 och T4 i repot som utkast-PR:er i kväll."*
+
+`docs/FORREGISTRERING-NY-KANDIDAT-TILLAGG-T4-2026-10-25.md`, status UTKAST, ur utkastet från Desktop (#716). T4 tar kortvågen 14–31/3 2022 ur MET:s v4 i den nyas delar, och
+förberedningen, träningen (alla sex prov och den slutliga kandidaten), provningen och samman körs om. Två val vid signeringen:
+att V2 står som den föll (Claudes rekommendation) och att den rättade modellen ersätter den i drift före bytesbeslutet (Claudes
+rekommendation). Ingen kod är byggd och ingenting är kört.
+
+**Stomdokument:** KUV utkastet T4 till NY-KANDIDAT i repot
+
+## #719 (25/10 2026) Ä6 till FLER-VINTRAR signerat: lång- och kortvågen 14–31/3 2022 ur v4 för den frysta
+
+**Bengts ord 25/10:** *"Ja, gör stickprovet på v4 för 14–31/3 2022. Visar det timvärden: signera Ä6 och T4 för mej och Axel med Claudes rekommendationer i T4 (V2 står, och den rättade modellen ersätter den i drift), och slå ihop när CI är grön."*
+
+**Signerat:** `docs/FORREGISTRERING-FLER-VINTRAR-TILLAGG-A6-2026-10-25.md`. Bengt för sig och för Axel via Bengt, som i #695 och #715. Dokumentets sha256 vid signeringen, före
+statusraden och signaturerna: `da84af7cc5024844ec02be21e4c78d9d5e89a528d3a66f96c454d15b2ef871b2`.
+
+Stickprovet 25/10, före signaturen: v4 hämtades för 48 timmar 14, 20 och 28/3 2022 vid station 1001 och 1004. Långvågen var
+0,84–1,17·10⁶ J/m² per timme och kortvågen hade vanlig dygnsform, alltså timvärden. Mot arkivets summor omräknade till
+timvärden var medianen av den relativa skillnaden 0,00 % för långvågen (46 par) och för kortvågen (34 par dagtid); kravet är
+högst 5 %. Störst var skillnaden 20/3 14 UTC vid station 1001: 4,7 % i långvågen och 17 % i kortvågen. Skriptet:
+`Desktop/Halkvakt_Signering_2026-10-26/skript/v4_stickprov.ts`.
+
+**Det som nu gäller:** Ä6. Lång- och kortvågen 14/3 00 UTC – 31/3 23 UTC 2022 tas ur v4 för den frysta, och 2021/22 körs om
+med trappformsprovet och de andra proven före läsningen. Jämförelsen med den nya på 2021/22 väntar på T4. Båda talen, före och
+efter rättelsen, står bredvid varandra.
+
+**Stomdokument:** KUV Ä6 till FLER-VINTRAR signerat
+
+## #720 (25/10 2026) T4 till NY-KANDIDAT signerat: kortvågen 14–31/3 2022 ur v4 för den nya; V2 står, och den rättade modellen ersätter den i drift
+
+**Bengts ord 25/10:** *"Ja, gör stickprovet på v4 för 14–31/3 2022. Visar det timvärden: signera Ä6 och T4 för mej och Axel med Claudes rekommendationer i T4 (V2 står, och den rättade modellen ersätter den i drift), och slå ihop när CI är grön."*
+
+**Signerat:** `docs/FORREGISTRERING-NY-KANDIDAT-TILLAGG-T4-2026-10-25.md`. Bengt för sig och för Axel via Bengt, som i #695 och #715. Dokumentets sha256 vid signeringen, före
+statusraden och signaturerna: `b4d6d31d0dd21714f2c12ceece27a77d31ae8cecee843100cf0bebf919ab9940`.
+
+Stickprovet 25/10, före signaturen: v4 hämtades för 48 timmar 14, 20 och 28/3 2022 vid station 1001 och 1004. Långvågen var
+0,84–1,17·10⁶ J/m² per timme och kortvågen hade vanlig dygnsform, alltså timvärden. Mot arkivets summor omräknade till
+timvärden var medianen av den relativa skillnaden 0,00 % för långvågen (46 par) och för kortvågen (34 par dagtid); kravet är
+högst 5 %. Störst var skillnaden 20/3 14 UTC vid station 1001: 4,7 % i långvågen och 17 % i kortvågen. Skriptet:
+`Desktop/Halkvakt_Signering_2026-10-26/skript/v4_stickprov.ts`.
+
+**Det som nu gäller:**
+- T4. Kortvågen 14/3 00 UTC – 31/3 23 UTC 2022 tas ur v4 i den nyas delar. Förberedningen, träningen (alla sex prov och den
+  slutliga kandidaten), provningen och samman körs om, och jämförelserna med den frysta därefter.
+- §3 (a): V2 står som den föll (#702). De rättade talen är underlag för bytet (FORREGISTRERING-2026-27 §12 b) och valet inför
+  2027/28 (§12 g), inte en ny prövning av ersättningsregeln. De gamla och de rättade talen står bredvid varandra.
+- §4 (a): den rättade modellen ersätter den som loggar i drift (#706) före bytesbeslutet, efter ett nytt paritetsprov (§12 a);
+  bytet loggas med datum och timme, och beslutet senast 30/11 fattas på den rättade modellens tal.
+
+**Stomdokument:** KUV T4 till NY-KANDIDAT signerat
+
+## #721 (25/10 2026) Läns- och vägsidornas sökträff: sökorden först i titeln, dagens siffror i beskrivningen
+
+**Beslut.** Axel 25/10 22:10, efter Search Console 7 dygn (422 exponeringar, 11 klick, snittposition 16,1; Uppsala län 108
+exponeringar och 0 klick). Sökorden är *halka uppsala*, *väglag skåne*, *trafikinformation gävleborg*. Titeln blir *"Halka och väglag
+i Uppsala län just nu | Halkvakt"* (tidigare *"Är det halt i Uppsala län just nu? Väglag och vägtemperatur | Halkvakt"*), vägsidorna
+*"Halka och väglag på E6 just nu"* och översikten *"… i Sverige just nu, län för län"*. Beskrivningen byggs med siffrorna vid varje
+körning: *"Kl. 21:30: halka eller vinterväglag på 6 av 112 vägavsnitt i Uppsala län, kallast −1,2 °C vid Märsta. Trafikverkets
+väglag, vägtemperatur och olyckor, uppdaterat var 30:e minut."* Rubriken (h1) och svarsmeningen (#629) är orörda.
+
+**Alternativ.** Behålla frågeformen i titeln: förkastat, den klipps i sökträffen och börjar inte med orden folk skriver.
+
+**Prov:** `test/lanssidor.test.ts` 8/8 med titel och beskrivning för län, väg och översikt, också när ingen halka rapporteras.
+
+**Stomdokument:** inga — sajtens sidor, inget stomdokument beskriver dem.
+
+## #722 (25/10 2026) Länssidorna byggs ut: kartan över länet, stora vägar just nu, pendling och vanliga frågor
+
+**Beslut.** Axel 25/10 23:04: *"bygg detta nu så dessa sidorna blir bra"*, efter att ha sett att sidan säger lite utöver svaret.
+Varje länssida får, under svarsmeningen: (1) en karta över länet med dess gräns, alla sträckor och de hala gula, ritad i webbläsaren
+ur sajtens egna filer; vilka sträckor som är hala skickas med från publicera (arHalt), så kartan och texten aldrig är oense; (2) *Stora
+vägar i länet just nu*: E-vägarna, riksvägarna och varje annan väg med halka, med läget och sträckornas orter i text; (3) *Pendla i
+länet*: ett handskrivet stycke per län om de stora stråken och orterna (`PENDLING`), läses igenom av Axel eller Bengt; (4) fyra
+vanliga frågor, synliga och som FAQPage. Sökningarna i Search Console gäller orter och vägar (*halka uppsala*, *trafikläget örebro*),
+och de orden står nu i sidans text.
+
+**Alternativ.** En inbäddad livekarta (iframe): förkastad, tung och läses inte av sökmotorer. Egna sidor per stad: senare, och bara
+om länssidorna lyfter (#721).
+
+**Prov:** `test/lanssidor.test.ts` 8/8 med vägraden, länsvägen som inte listas, pendlingen för alla 21 län, frågorna och kartans hala
+sträckor. Förhandsvisad med dagens data för Uppsala och Västra Götaland.
+
+**Stomdokument:** inga — sajtens sidor, inget stomdokument beskriver dem.
+
+## #723 (25/10 2026) Bytet byggt med den frysta som talare; kriteriet för ett byte 26/10 låst före läsningen
+
+**Bengts ord 25/10:**
+- *"om vi får bra siffror så är mitt förslag att vi byter redan i morgon. Kan vi göra förberedesler för att byta i morgon"*;
+- *"Ja, bygg de tre PR:erna i kväll (T4, Ä6 och bytet med flaggan av). Kriteriet för bra siffror gäller som du skrev: proven klarade, bättre än RÅ varje vinter i norr och söder, i medel inte sämre än den frysta på A1, A2 eller A3, och paritetsprovet klarat."*;
+- *"vi pratar om byte till den nya nu och att den går live i morgon"*.
+
+**Kriteriet, låst 25/10 före läsningen.** Den nya kandidaten börjar tala 26/10 bara om den rättade nya (T4, #720) håller alla fyra:
+1. proven klarade på alla sex vintrarna;
+2. bättre än RÅ varje vinter, i norr och i söder;
+3. i medel inte sämre än den frysta på A1, A2 eller A3, på de vintrar där båda finns (2018/19–2022/23; den frystas 2021/22 enligt Ä6);
+4. paritetsprovet (FORREGISTRERING-2026-27 §12 a) klarat för den rättade modellen.
+
+Faller något byts inte kandidaten 26/10, och frågan går till Bengt. Kriteriet är ett beslut om vad förarna hör (§12 b), inte en dom,
+och V2 står som den föll (#702, T4 §3 a).
+
+**Bytet i koden (PR, inte ihopslagen):**
+- `sql/070_bytet.sql`: tabellen `kandidat_talar`, en rad per omställning med beslutet (en logg, som brytaren i sql/059); utan rader
+  talar den frysta. `talande_timme()` ger den nyas färska timme när den senaste raden säger ny, annars den frystas (§12 f), och
+  `talande_regel()` den talande kandidatens regel med `kandidat_regel()`:s kolumner och talaren. Den frystas funktioner och tabeller
+  rörs inte (§12 c). Andelen timmar där den frysta talade i den nyas ställe räknas ur `ny_kandidat_skugga_korning`.
+- Publiceringen (`publish/snapshot-core.ts`, och den genererade `supabase/functions/publicera/index.ts`) läser bytet och faller
+  tillbaka till `kandidat_timme()` och `kandidat_regel()` om bytet inte går att läsa, så att inget tystnar före migrationen.
+- Prov: `test/bytet.test.ts` (kolumnerna, den frysta som standard, §12 c, båda kopiorna) och tre nya i `test/snapshot-core.test.ts`.
+
+**Ordningen 26/10**, var steg på Bengts ord:
+1. Signeringen av förregistreringen (#1203), med radarns tal.
+2. T4: kortvågen 14–31/3 2022 ur v4 i den nyas delar, sedan förberedningen, träningen, provningen och samman under en egen plats i
+   hinken; Ä6: den frystas 2021/22 om.
+3. Talen läses mot kriteriet ovan.
+4. Håller det: paritetsprovet för den rättade modellen, modellen i drift, migrationen `sql/070` och deployen av publiceringen.
+5. Bytesbeslutet i en daterad post med båda signaturerna (§12 b), och en rad `ny` i `kandidat_talar` med beslutets nummer.
+
+**Inte gjort 25/10:** ingen migration, ingen deploy och ingen körning; den frysta talar.
+
+**Stomdokument:** KUV bytet byggt med den frysta som talare och kriteriet låst
+
+## #724 (25/10 2026) Sågtanden i trappformsprovet preciserad: minst en fjärdedel av stationerna och minst tio samma timme (Ä6 §4 a, T4 §5 a)
+
+**Bengts ord 25/10:** *"Ja, sågtandens precisering godkänns: minst en fjärdedel av stationerna över golvet och minst tio samma timme."*
+
+**Skälet.** Ä6 §4 (a) beskriver sågtanden per station: en timme dagtid som faller till under hälften av den föregående. Så räknad
+flaggade den molntimmar i rena delar: 13, 69 och 72 timmar i provet 25/10, som mest 8,4 % av stationerna samma timme (50 av 595,
+6/3 2021 13 UTC). En summa i MET:s arkiv nollställs i hela rutnätet på en gång, medan ett moln som drar förbi tar några stationer.
+Tröskeln och kravet (noll flaggade timmar) ändras inte. Preciseringen är kalibrerad bara på strålningsdata, inte på utfall, och gäller
+båda kandidaterna, eftersom T4 §5 (a) hänvisar till Ä6 §4 (a). De signerade dokumenten ändras inte; preciseringen står här.
+
+**Regeln** (`fysik/vintrar/vinterkedja.py`, `trappform()`): en station har sågtanden en timme h när kortvågen v[h] > 0,5·10⁶ J/m²,
+v[h+1] < 0,5·v[h] och v[h+2] > v[h+1], tre timmar i följd. Timmen flaggas när minst en fjärdedel av stationerna med v[h] över golvet
+har sågtanden samtidigt, och minst tio. Stationerna under andelen räknas för sig (`sagtand_enskilda`) och flaggar inte.
+
+**Provet 25/10 kväll** med preciseringen, på alla delar som kandidaterna läser (skriptet
+`Desktop/Halkvakt_Signering_2026-10-26/skript/trappform_alla.py`):
+
+| Delarna | Flaggade timmar | Sågtand (timmar) |
+| :-- | --: | --: |
+| Den frysta, lw4 2018/19, 2019/20 och 2020/21 | 0, 0, 0 | 0, 0, 0 |
+| Den nya, 2018/19, 2019/20, 2020/21 och 2022/23 | 0, 0, 0, 0 | 0, 0, 0, 0 |
+| 2024/25 | 0 | 0 |
+| Den frysta, lw4 2021/22 (ackumulerad, inte omhämtad än) | 431 | 21 (14/3 14 – 31/3 14 UTC) |
+| Den nya, 2021/22 (kortvågen ackumulerad, T4:s delar finns inte än) | 159 | 21 (samma) |
+
+Felet fälls alltså av båda halvorna av provet, och inga rena delar fälls. Marginalen bland timmar med minst tio stationer över golvet
+är inte räknad för alla vintrar; i provet 25/10 på tre delar var den största andelen 8,4 %.
+
+**Det som nu gäller:** trappformsprovet före läsningen i Ä6 och i T4:s förberedning körs med preciseringen.
+
+**Stomdokument:** KUV sågtandens precisering i trappformsprovet

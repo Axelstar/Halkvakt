@@ -13,7 +13,9 @@ Prövar:
   8. ECMWF-adressen mot fetch_ifs.py:s text, och filerna;
   9. tidszonsprovet mot SMHI (toppen vid 0 h; en timmes förskjutning fälls);
  10. hela körningen för en äldre vinter, och motproven: identitetsprovet som faller (A2, n), tidszonen (SMHI, sommartiden) och MET
-     Nordic utan långvåg stoppar alla läsningen, och ingen äldre vinter läses utan ett klarat identitetsprov i samma körning.
+     Nordic utan långvåg stoppar alla läsningen, och ingen äldre vinter läses utan ett klarat identitetsprov i samma körning;
+ 11. tillägget för 2018/19–2021/22: spärren, station 7, långvågens delar med de låsta summorna, och trappformsprovet (Ä6 §4 a):
+     en ren del passerar, ackumulerad långvåg fälls av tröskeln, sågtand i kortvågen fälls (också över en delgräns).
 """
 import gzip, hashlib, json, math, os, pickle, re, shutil, subprocess, sys, tempfile, time, types
 import numpy as np
@@ -572,6 +574,64 @@ def tillagget(d):
     except SystemExit as e:
         r = str(e)
     k(isinstance(r, str) and 'inte låsta' in r, f'tillägget (låsningen): utan leveransfilen läses vintern inte: {r}')
+    trappformen(d)
+
+
+def trappformen(d):
+    """Ä6 §4 a (DECISIONS #719): trappformsprovet på påhittade delar, 40 stationer och tre dygn i mars."""
+    print(f'  tillägget: vinterkedja ur {vinterkedja.__file__}', flush=True)
+    k(os.path.samefile(vinterkedja.__file__, os.path.join(HERE, 'vinterkedja.py')),
+      f'trappformen: vinterkedja är den här mappens fil, inte en annan på sökvägen: {vinterkedja.__file__}')
+    tp = os.path.join(d, 'trapp'); os.makedirs(tp, exist_ok=True)
+    sids = [str(2001 + i) for i in range(40)]
+    tider = pd.date_range('2022-03-14', periods=72, freq='h', tz='UTC')
+    timvarde = lambda j: max(0.0, 2.0e6 * math.sin(math.pi * (j % 24 - 5) / 14))   # timvärdet 05–19 UTC, högst 2·10⁶ J/m²
+
+    def trappdel(namn, lv, kv):
+        p = os.path.join(tp, f'metnordic_lw4_{namn}.csv.gz')
+        rader = [f'{s},{t:%Y-%m-%dT%H:%M:%SZ},0.50,0.9,2,0.5,0,{lv(i, j)},{kv(i, j)}' for j, t in enumerate(tider) for i, s in enumerate(sids)]
+        with gzip.open(p, 'wt', newline='') as fh:
+            fh.write('station_id,tid_utc,' + ','.join(FALT) + '\n' + '\n'.join(rader) + '\n')
+        return p
+    ren_lv = lambda i, j: round(0.95e6 + 0.004e6 * i + 0.02e6 * math.sin(j / 7), 3)
+    # Den rena delen: timvärden, och ett moln hos tre stationer 15/3 11–12 UTC (fall till under hälften och ny ökning): enskilda,
+    # under andelen och under tio stationer, så det flaggar inte.
+    moln = lambda i, j: round(timvarde(j) * (0.3 if i < 3 and j == 35 else 1), 3)
+    s = vinterkedja.trappform([trappdel('2022-03-14_ren', ren_lv, moln)])
+    k(s['klarat'] and s['flaggade_timmar'] == 0 and s['varden'] == 40 * 72 and s['stationer'] == 40
+      and s['sagtand_enskilda']['varden'] == 3 and s['sagtand_enskilda']['timmar'] == 1 and s['sagtand_kortvag']['timmar'] == 0,
+      f"trappformen: en ren del med ett moln hos tre stationer passerar: {s}")
+    # Ackumulerad långvåg som arkivet 14/3 2022: växer 0,85·10⁶ per timme och nollställs var sjätte timme; kortvågen är ren.
+    s = vinterkedja.trappform([trappdel('2022-03-14_lv', lambda i, j: round(0.85e6 * (1 + j % 6), 3), lambda i, j: round(timvarde(j), 3))])
+    k(not s['klarat'] and s['troskel_langvag']['timmar'] == 60 and s['troskel_kortvag']['timmar'] == 0 and s['sagtand_kortvag']['timmar'] == 0
+      and s['troskel_langvag']['varden'] == 60 * 40 and s['troskel_langvag']['forsta'] == '2022-03-14T01:00:00Z' and s['flaggade_timmar'] == 60
+      and len(s['troskel_langvag']['exempel']) == 5 and s['troskel_langvag']['exempel'][0]['langvag_jm2'] == 1.7e6,
+      f"trappformen: en del med ackumulerad långvåg fälls av tröskeln: {s['troskel_langvag']}")
+    # Sågtand i kortvågen under tröskeln, som en svag vintersol: summan av timvärden på högst 0,4·10⁶ växer från 08 UTC och
+    # nollställs 13 UTC i hela rutnätet; ingen timme når 3,3·10⁶, och långvågen är ren.
+    def summa(i, j):
+        h = j % 24
+        tv = lambda x: max(0.0, 0.4e6 * math.sin(math.pi * (x - 7) / 9))
+        return round(sum(tv(x) for x in range(13 if h >= 13 else 0, h + 1)), 3)
+    s = vinterkedja.trappform([trappdel('2022-03-14_kv', ren_lv, summa)])
+    k(not s['klarat'] and s['troskel_langvag']['timmar'] == 0 and s['troskel_kortvag']['timmar'] == 0
+      and s['sagtand_kortvag']['timmar'] == 3 and s['sagtand_kortvag']['varden'] == 3 * 40 and s['sagtand_kortvag']['storsta_andel'] == 1.0
+      and s['sagtand_kortvag']['forsta'] == '2022-03-14T12:00:00Z' and s['flaggade_timmar'] == 3,
+      f"trappformen: en del med sågtand i kortvågen fälls: {s['sagtand_kortvag']}")
+    # Sågtanden över en delgräns: två delar läses ihop per station i tidsordning.
+    halv = [trappdel(f'2022-03-1{x}_halv', ren_lv, summa) for x in (5, 6)]
+    for p, behall in zip(halv, (lambda t: t < '2022-03-14T13', lambda t: t >= '2022-03-14T13')):     # h = 12 i den första, h + 1 i den andra
+        x = pd.read_csv(p, dtype={'station_id': str}); x = x[x.tid_utc.map(behall)]
+        with gzip.open(p, 'wt', newline='') as fh: x.to_csv(fh, index=False)
+    s = vinterkedja.trappform(halv)
+    k(not s['klarat'] and s['delar'] == 2 and s['sagtand_kortvag']['timmar'] == 3 and s['varden'] == 40 * 72,
+      f"trappformen: sågtanden syns också över delgränsen: {s['sagtand_kortvag']}")
+    # I kor(): provet körs för tilläggets vintrar efter lw4-provet och innan delarna läses, och stoppar vintern.
+    import inspect
+    kod = inspect.getsource(vinterkedja.kor)
+    i_lw4, i_tf, i_las = kod.find('lw4_prov(a.metnordic'), kod.find('trappform(a.metnordic)'), kod.find('pd.read_csv(f, dtype')
+    k(0 < i_lw4 < i_tf < i_las and "s['indata']['trappform']" in kod and "tf['klarat']" in kod,
+      f'trappformen: i kor() efter lw4-provet och före läsningen ({i_lw4}, {i_tf}, {i_las})')
 
 
 def _tyst(f, *a):
@@ -595,4 +655,4 @@ if __name__ == '__main__':
     print(f'✓ självtest ({time.time() - T0:.0f} s): talen mot källorna, läsaren (prep.py:s timtabell, 12 kolumner, millisekunder, sidfoten, '
           'skarvens dubbletter, fönstret), vakterna vid gränserna, RÅ och måtten mot grind-a.ts, halvtimmen, blandningens leave-one-out '
           'och replikans urval, sammanslagningen, ECMWF-adressen, tidszonen mot SMHI, tillägget för 2018/19–2021/22 (spärren, station 7 '
-          'och långvågens delar med de låsta summorna), och hela körningen med fem motprov')
+          'och långvågens delar med de låsta summorna, trappformsprovet Ä6), och hela körningen med fem motprov')

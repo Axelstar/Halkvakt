@@ -17,6 +17,8 @@
 //                --rutor <metnordic_stationer.csv> --stationer <stations.csv>
 //           node --experimental-strip-types fysik/ny_kandidat/metnordic_reserv.ts --fyll <del.csv.gz> <utmapp> --vinter <vinter>
 //                --rutor <metnordic_stationer.csv> --stationer <stations.csv>     tillägget T2: saknade timmar ur arkivet igen, annars v4
+//           node --experimental-strip-types fysik/ny_kandidat/metnordic_reserv.ts --t4 <del.csv.gz> <utmapp> --rutor <metnordic_stationer.csv>
+//                tillägget T4: kortvågen 14–31/3 2022 ur v4 (DECISIONS #720)
 // Självtest: node --experimental-strip-types fysik/ny_kandidat/metnordic_reserv.ts --sjalvtest        (i ci.yml)
 // Källa: MET Norway, MET Nordic (NLOD / CC BY 4.0), https://thredds.met.no/thredds/catalog/metpparchive/catalog.html
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, renameSync, writeFileSync } from "node:fs";
@@ -211,7 +213,57 @@ export async function fyllDel(delFil: string, ut: string, vinter: string, rutorF
   return s;
 }
 
-/** Delarnas filer i en mapp (en release): metnordic_fylld_<del> (T2) före metnordic_reserv_<del>, eller för en vinter med
+/** Tillägget T4 (docs/FORREGISTRERING-NY-KANDIDAT-TILLAGG-T4-2026-10-25.md, DECISIONS #720): MET:s arkiv bär kortvågen som en
+ *  växande summa 14/3 2022 00 UTC – 31/3 2022 23 UTC, inte som timvärden (stickprovet 25/10 i #719). För varje timme i delen inom
+ *  [T4_FRAN, T4_TILL) skrivs kortvågen ur MET:s omräkning v4 i samma rutor; allt annat är delens, rad för rad och i samma ordning.
+ *  En timme som saknas i v4 får tom kortvåg och listas. Delen skrivs som metnordic_t4_<del> bredvid källdelen, som står kvar;
+ *  t4_<del>.json listar källans namn och summa, timmarna och utfilens summa. */
+export const T4_FRAN = "2022-03-14T00:00:00Z", T4_TILL = "2022-04-01T00:00:00Z";
+export const KORTVAG = "integral_of_surface_downwelling_shortwave_flux_in_air_wrt_time";
+export async function t4Del(delFil: string, ut: string, rutorFil: string, h: Hamtare = hamta, paus = 5000) {
+  const m = /_(\d{4}-\d\d-\d\d)_(\d{4}-\d\d-\d\d)\.csv\.gz$/u.exec(basename(delFil));
+  if (!m) throw new Error(`${basename(delFil)}: väntat <namn>_<fran>_<till>.csv.gz`);
+  const [, fran, till] = m;
+  const b = readFileSync(delFil);
+  const [rubrik, ...rader] = gunzipSync(b).toString().trim().split("\n");
+  if (rubrik !== RUBRIK_ANALYS) throw new Error(`${basename(delFil)}: rubriken är inte analysfilens: ${rubrik}`);
+  const kv = RUBRIK_ANALYS.split(",").indexOf("kortvag_jm2");
+  const k = rader.map((x) => x.split(","));
+  const ids = [...new Set(k.map((x) => x[0]))];
+  const alla = rutorUrFil(rutorFil).rutor, r = alla.filter((x) => ids.includes(x.id));
+  const utan = ids.filter((s) => !alla.some((x) => x.id === s));
+  if (utan.length) throw new Error(`${utan.length} av delens stationer saknar ruta i ${rutorFil}: ${utan.slice(0, 5).join(", ")}`);
+  const box = rutan(r);
+  const inom = (t: string) => t >= T4_FRAN && t < T4_TILL;
+  const tider = [...new Set(k.map((x) => x[1]))].filter(inom).sort();
+  const s = { fran, till, kalla: basename(delFil), kalla_sha256: createHash("sha256").update(b).digest("hex"), t4_fran: T4_FRAN, t4_till: T4_TILL,
+    timmar: tider.length, ur_v4: 0, saknas: [] as string[], tomma_varden: 0, rader: k.length, stationer: r.length, fil: "", fil_sha256: "" };
+  const per = new Map<string, Map<string, string>>();
+  for (const tid of tider) {
+    const urval = `${KORTVAG}.${KORTVAG}${encodeURIComponent(`[0:0][${box.y0}:${box.y1}][${box.x0}:${box.x1}]`)}`;
+    const svar = await hamtaTolkat(`${filnamnV4(tid.slice(0, 10), Number(tid.slice(11, 13)))}?${urval}`, tid, h, paus);
+    if (!svar) { s.saknas.push(tid); console.log(`  saknas i v4: ${tid}`); continue; }
+    const f = svar.falt.find((x) => x.namn === KORTVAG);
+    if (!f) throw new Error(`${tid}: kortvågen saknas i svaret ur v4`);
+    if (f.dims.join() !== `1,${box.by},${box.bx}`) throw new Error(`${tid}: kortvågen har ${f.dims} — rutnätet har ändrats`);
+    per.set(tid, new Map(r.map((p) => [p.id, varde("kortvag_jm2", f.data[(p.y - box.y0) * box.bx + (p.x - box.x0)])])));
+    s.ur_v4++;
+  }
+  const nya = k.map((x) => {
+    if (!inom(x[1])) return x.join(",");
+    const y = [...x]; y[kv] = per.get(x[1])?.get(x[0]) ?? ""; if (y[kv] === "") s.tomma_varden++; return y.join(",");
+  });
+  mkdirSync(ut, { recursive: true });
+  const fil = join(ut, `metnordic_t4_${fran}_${till}.csv.gz`);
+  writeFileSync(fil, gzipSync(RUBRIK_ANALYS + "\n" + nya.join("\n") + (nya.length ? "\n" : "")));
+  s.fil = basename(fil); s.fil_sha256 = createHash("sha256").update(readFileSync(fil)).digest("hex");
+  writeFileSync(join(ut, `t4_${fran}_${till}.json`), JSON.stringify(s, null, 1));
+  console.log(`${s.kalla}: ${s.timmar} timmar i T4, ${s.ur_v4} ur v4, ${s.saknas.length} saknas, ${s.tomma_varden} tomma värden av ${s.rader} rader → ` +
+    `${s.fil} (${s.fil_sha256.slice(0, 12)}…)`);
+  return s;
+}
+
+/** Delarnas filer i en mapp (en release): metnordic_t4_<del> (T4) före metnordic_fylld_<del> (T2) före metnordic_reserv_<del>, eller för en vinter med
  *  vindhastigheten den frysta kedjans metnordic_analys_<del> (kuvos-vintrar.yml, samma rutor och samma sex fält; långvågen töms vid
  *  läsningen). Saknas en del kastas ett fel. */
 export function valjDelar(vinter: string, filer: string[], n = 15) {
@@ -219,7 +271,8 @@ export function valjDelar(vinter: string, filer: string[], n = 15) {
   const har = new Set(filer);
   return delar(fran, till, n).map((d) => {
     const egen = `metnordic_reserv_${d.fran}_${d.till}.csv.gz`, frysta = `metnordic_analys_${d.fran}_${d.till}.csv.gz`;
-    const fylld = `metnordic_fylld_${d.fran}_${d.till}.csv.gz`;
+    const fylld = `metnordic_fylld_${d.fran}_${d.till}.csv.gz`, t4 = `metnordic_t4_${d.fran}_${d.till}.csv.gz`;
+    if (har.has(t4)) return t4;
     if (har.has(fylld)) return fylld;
     if (har.has(egen)) return egen;
     if (lage === "fart" && har.has(frysta)) return frysta;
@@ -336,6 +389,32 @@ async function sjalvtest() {
   const dl2 = delar("2018-10-31", "2019-03-31", 15).map((x) => `metnordic_reserv_${x.fran}_${x.till}.csv.gz`);
   const fylld0 = dl2[0].replace("reserv", "fylld");
   k(JSON.stringify(valjDelar("2018-19", [...dl2, fylld0])) === JSON.stringify([fylld0, ...dl2.slice(1)]), "delarna: den fyllda före den egna");
+  const t40 = dl2[0].replace("reserv", "t4");
+  k(JSON.stringify(valjDelar("2018-19", [...dl2, fylld0, t40])) === JSON.stringify([t40, ...dl2.slice(1)]), "delarna: T4:s del före den fyllda och den egna");
+  // Tillägget T4: kortvågen ur v4 för timmarna i [T4_FRAN, T4_TILL), allt annat orört.
+  const t4kalla = join(d, "metnordic_fylld_2022-03-13_2022-03-14.csv.gz");
+  const t4rader = ["2022-03-13T23:00:00Z", "2022-03-14T05:00:00Z", "2022-03-14T12:00:00Z"].flatMap((t) =>
+    [`1001,${t},0.50,0.9,2.5,0.7,0,,9999`, `1003,${t},1.25,0.8,5,0.2,0.1,,8888`]);
+  writeFileSync(t4kalla, gzipSync(RUBRIK_ANALYS + "\n" + t4rader.join("\n") + "\n"));
+  const t4fore = createHash("sha256").update(readFileSync(t4kalla)).digest("hex");
+  const t4h = (o: { saknas?: string } = {}): Hamtare => async (u) => { urls.push(u); if (o.saknas && u.includes(o.saknas)) return { buf: new Uint8Array(0), ms: 1 }; return dapFor(u); };
+  urls = [];
+  const g1 = await tyst(() => t4Del(t4kalla, join(d, "t4a"), join(d, "rutor.csv"), t4h(), 0));
+  const g1r = gunzipSync(readFileSync(join(d, "t4a", "metnordic_t4_2022-03-13_2022-03-14.csv.gz"))).toString().trim().split("\n");
+  k(g1.timmar === 2 && g1.ur_v4 === 2 && g1.saknas.length === 0 && g1.tomma_varden === 0 && g1r[0] === RUBRIK_ANALYS
+    && g1r[1] === t4rader[0] && g1r[2] === t4rader[1] && g1r[3] === "1001,2022-03-14T05:00:00Z,0.50,0.9,2.5,0.7,0,,3600" && g1r[6].endsWith(",3600"),
+    `T4: kortvågen ur v4 från 14/3, timmen före orörd: ${g1r.slice(1, 4).join(" | ")}`);
+  k(g1r.slice(1).every((x, i) => { const a = x.split(","), c = t4rader[i].split(","); a[8] = c[8] = ""; return a.join(",") === c.join(","); }),
+    "T4: alla andra kolumner och radordningen är källdelens");
+  k(urls.length === 2 && urls.every((u) => u.includes("/metpparchivev4/") && decodeURIComponent(u.split("?")[1]).split(",").map((x) => x.split(".")[0]).join() === KORTVAG),
+    `T4: bara kortvågen begärs, bara ur v4: ${urls.map((u) => u.split("?")[0].split("/thredds/")[1] ?? u.split("?")[0]).join(" | ")}`);
+  const g1j = JSON.parse(readFileSync(join(d, "t4a", "t4_2022-03-13_2022-03-14.json"), "utf8"));
+  k(g1j.kalla === basename(t4kalla) && g1j.kalla_sha256 === t4fore && /^[0-9a-f]{64}$/u.test(g1j.fil_sha256) && g1j.t4_fran === T4_FRAN
+    && createHash("sha256").update(readFileSync(t4kalla)).digest("hex") === t4fore, "T4: listan bär källans och utfilens summor, och källdelen står kvar orörd");
+  const g2 = await tyst(() => t4Del(t4kalla, join(d, "t4b"), join(d, "rutor.csv"), t4h({ saknas: "20220314T12Z" }), 0));
+  const g2r = gunzipSync(readFileSync(join(d, "t4b", "metnordic_t4_2022-03-13_2022-03-14.csv.gz"))).toString().trim().split("\n");
+  k(JSON.stringify(g2.saknas) === JSON.stringify(["2022-03-14T12:00:00Z"]) && g2.tomma_varden === 2 && g2r[5].endsWith(",,") && g2r[6].endsWith(",,"),
+    `T4: en timme som saknas i v4 får tom kortvåg: ${g2r.slice(5).join(" | ")}`);
   if (fel) process.exit(1);
   console.log("✓ självtest: fälten utan långvåg, vinden ur x och y (√(x² + y²)) och som hastighet, förprovet (premissen för 2018/19, en saknad vindhastighet), hämtningen i analysfilens form med tom långvåg, återupptagningen, delarnas filer och fyllningen (T2: arkivet först, sedan v4, saknad i båda förblir saknad, originalet orört)");
 }
@@ -358,5 +437,6 @@ if (korsSjalv) {
     await hamtaVinter(v("--rutor"), v("--stationer"), arg[1], arg[2], arg[3], v("--vinter"));
   else if (arg[0] === "--fyll" && arg[1] && arg[2] && v("--vinter") && v("--rutor") && v("--stationer"))
     await fyllDel(arg[1], arg[2], v("--vinter"), v("--rutor"), v("--stationer"));
+  else if (arg[0] === "--t4" && arg[1] && arg[2] && v("--rutor")) await t4Del(arg[1], arg[2], v("--rutor"));
   else { console.error("kör: metnordic_reserv.ts --forprov <vinter> | --delar <vinter> <n> | --valj <vinter> <mapp> | --hamta <ut> <fran> <till> --vinter <v> --rutor <fil> --stationer <fil> | --fyll <del> <ut> --vinter <v> --rutor <fil> --stationer <fil> | --sjalvtest"); process.exit(2); }
 }

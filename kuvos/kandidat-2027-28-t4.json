@@ -1,0 +1,110 @@
+{
+ "_om": "Den rättade nya kandidaten för vintern 2027/28 (tillägget T4 till NY-KANDIDAT-2027-28, DECISIONS #720): samma procedur som kuvos/kandidat-2027-28.json, med kortvågen 14–31/3 2022 ur MET:s v4 i 2021/22:s delar (metnordic_t4_<del>). Före träningen står bara proceduren här. Parametrarna, paret, summorna för hinkens filer (arkiv, kuvos/kuvos-kandidat-2027-28-t4/) och talen i urvalet skrivs in ur samman-artefakten nykand-t4-samman efter prövningen. Den nu prövade kandidatens fil och filer i hinken står kvar orörda.",
+ "beslut": "#720",
+ "procedur": {
+  "vintrar": [
+   "2018-19",
+   "2019-20",
+   "2020-21",
+   "2021-22",
+   "2022-23",
+   "2024-25"
+  ],
+  "langvag": "fysikens reserv alla år och alla timmar (physics.sky_emissivity, som fysik_lw.run_lw); MET:s uppmätta långvåg används inte",
+  "vind_2018_19": "√(x_wind_10m² + y_wind_10m²)",
+  "kalibrering": {
+   "metod": "Nelder–Mead",
+   "mal": "A1 + 5·A2",
+   "maxfev": 120,
+   "start": "physics.DEFAULT (vagb.DEFAULT)",
+   "parametrar": [
+    "albedo",
+    "ch",
+    "hmin",
+    "q_traffic",
+    "deep_off",
+    "sw_fac",
+    "r_snow",
+    "alb_snow",
+    "cover_swe",
+    "cover_t"
+   ]
+  },
+  "rattelse": {
+   "max_rows": 1400000,
+   "iters": 900,
+   "lr": 0.05,
+   "leaves": 95,
+   "msl": 200
+  },
+  "par": [
+   [
+    0.0,
+    40.0
+   ],
+   [
+    0.0,
+    80.0
+   ],
+   [
+    0.0,
+    160.0
+   ],
+   [
+    0.25,
+    40.0
+   ],
+   [
+    0.25,
+    80.0
+   ],
+   [
+    0.25,
+    160.0
+   ],
+   [
+    0.5,
+    40.0
+   ],
+   [
+    0.5,
+    80.0
+   ],
+   [
+    0.5,
+    160.0
+   ],
+   [
+    0.75,
+    40.0
+   ],
+   [
+    0.75,
+    80.0
+   ],
+   [
+    0.75,
+    160.0
+   ],
+   [
+    1.0,
+    40.0
+   ],
+   [
+    1.0,
+    80.0
+   ],
+   [
+    1.0,
+    160.0
+   ]
+  ],
+  "parvalet": "minst andel grova fel (> 2 °C) på grind A:s population över träningsvintrarna, med den levande kedjans blandning (kandidat_timme.timme); varje träningsvinter skattad av en modell som varken sett den eller den utelämnade",
+  "hinken": "kuvos/kuvos-kandidat-2027-28-t4/"
+ },
+ "par": null,
+ "parametrar": null,
+ "sardrag": null,
+ "i_urvalet": null,
+ "filer": []
+}

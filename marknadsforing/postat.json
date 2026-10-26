@@ -283,6 +283,30 @@
       "facebook": "1312515671952967_122105118291516187",
       "instagram": "18106506215631224",
       "x": "2114308917656465838"
+    },
+    {
+      "pass": "kvall",
+      "namn": "2026-10-25-kvall",
+      "typ": "vecka",
+      "nyckel": "vecka",
+      "tid": "2026-10-25T15:51:27.410Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-10-25-kvall.jpg",
+      "facebook": "1312515671952967_122105426871516187",
+      "instagram": "17974635114170772",
+      "x": "2114384423789449620"
+    }
+  ],
+  "2026-10-26": [
+    {
+      "pass": "morgon",
+      "namn": "2026-10-26-morgon",
+      "typ": "forandring",
+      "nyckel": "forandring",
+      "tid": "2026-10-26T04:54:18.752Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-10-26-morgon.jpg",
+      "facebook": "1312515671952967_122105716005516187",
+      "instagram": "18158299987518905",
+      "x": "2114581428939968799"
     }
   ]
 }
