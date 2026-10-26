@@ -307,6 +307,28 @@
       "facebook": "1312515671952967_122105716005516187",
       "instagram": "18158299987518905",
       "x": "2114581428939968799"
+    },
+    {
+      "pass": "lunch",
+      "namn": "2026-10-26-lunch",
+      "typ": "lan",
+      "nyckel": "lan:25",
+      "tid": "2026-10-26T10:50:39.763Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-10-26-lunch.jpg",
+      "facebook": "1312515671952967_122105846901516187",
+      "instagram": "17968883178206675",
+      "x": "2114671109899472928"
+    },
+    {
+      "pass": "live",
+      "namn": "2026-10-26-live-1237",
+      "typ": "forsta",
+      "nyckel": "forsta:5",
+      "tid": "2026-10-26T11:37:35.195Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-10-26-live-1237.jpg",
+      "facebook": "1312515671952967_122105863089516187",
+      "instagram": "18148199170568944",
+      "x": "2114682908690542983"
     }
   ]
 }
