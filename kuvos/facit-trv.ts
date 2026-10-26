@@ -26,7 +26,7 @@ export const ATGARD_FONSTER_H: [number, number] = [-6, 6];
 export const ATGARD_TYPER = new Set([20, 50]);
 // Hela regeln (§4 a, DECISIONS #562–#575, #593), som driftens kandidat_regel() i sql/058 — kontraktsgrinden vaktar kopiorna.
 export const VAT = new Set([20]);      // Våt i kod 1 eller kod 2; fläckvis (21) räknas inte (#573: "nej till fläckvis")
-export const RADAR_MMH = 0.5;          // fukt: radarns medel på någon av stationens sträckor (#565)
+export const RADAR_MMH = 0.1;          // fukt: radarns medel på någon av stationens sträckor (#565)
 export const RADAR_MIN = 60;
 export const VETO_M = 15000;           // veto: en station inom 15 km, stationen själv medräknad (#566)
 export const VETO_MIN = 45;

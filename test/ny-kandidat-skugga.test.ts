@@ -117,3 +117,14 @@ test("provets egna verktyg: namnbytet och kolumnläsaren på en känd text", () 
   assert.equal(definition("x\nCREATE OR REPLACE FUNCTION f() RETURNS int\nLANGUAGE sql AS $$\n  SELECT 1\n$$;\nrest", "f"),
     "CREATE OR REPLACE FUNCTION f() RETURNS int\nLANGUAGE sql AS $$\n  SELECT 1\n$$;");
 });
+
+// R = 0,1 (sql/069, DECISIONS #725): en senare migration som skapar om den frystas regel skapar om den nyas i samma fil, ord för ord.
+test("efter 068: varje migration som skapar om kandidat_regel skapar om ny_kandidat_regel likadant", () => {
+  for (const f of filer.filter((x) => x > NY)) {
+    const d = definition(las(f), "kandidat_regel");
+    if (!d) continue;
+    const n = definition(las(f), "ny_kandidat_regel");
+    assert.ok(n, `${f} skapar om kandidat_regel men inte ny_kandidat_regel`);
+    assert.equal(n, byt(d), `ny_kandidat_regel i ${f} ska vara kandidat_regel med bytta namn`);
+  }
+});

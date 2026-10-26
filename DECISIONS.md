@@ -18145,3 +18145,25 @@ Felet fälls alltså av båda halvorna av provet, och inga rena delar fälls. Ma
 **Det som nu gäller:** trappformsprovet före läsningen i Ä6 och i T4:s förberedning körs med preciseringen.
 
 **Stomdokument:** KUV sågtandens precisering i trappformsprovet
+
+## #725 (26/10 2026) Radarns tal R = 0,1 mm/h (FORREGISTRERING-2026-27 §10 a)
+
+**Bengts ord 26/10:** *"Ja, ta signeringen nu: läs kurva 3, för in R i #1203 och visa mej talen innan jag säger mina ord."*
+
+**Regeln, skriven 15/10 före läsningen (#568):** visar alla tre kurvorna en majoritet (över 50 %) i bandet 0,1–0,5 på `rate_mean_mmh`
+blir R = 0,1; annars står 0,5. Läst med `scripts/radarns-tal.ts`.
+
+| Kurva | Körning | Fönster | Par i bandet | Bekräftade | Andel |
+| :-- | :-- | :-- | --: | --: | --: |
+| 1 | 38690393504 | 8–15/10 | 21 012 | 13 026 | 62,0 % |
+| 2 | 39257448840 | 12–19/10 (för hand 13:20 UTC) | 7 082 | 4 015 | 56,7 % |
+| 3 | 40279196066 | 19–26/10, körd 06:20 UTC av pulsklockan | 16 539 | 10 959 | 66,3 % |
+
+Kurva 3:s fönster är 19/10 08:00 till 26/10 06:05 UTC och delar fyra timmar med kurva 2:s (som slutade 19/10 12:00), utöver de tre
+dygn som kurva 1 och 2 delar (#568). Alla tre ligger över 50 %; den lägsta, kurva 2, med 6,7 procentenheter.
+
+**Regeln i drift följer:** `sql/069_radarns_tal.sql` skapar om `kandidat_regel()` och `ny_kandidat_regel()` med 0,1 i stället för
+0,5, ord för ord i övrigt; kuvösens `RADAR_MMH` är 0,1; kontraktsgrinden vaktar gränsen i 069 och kuvösen; ett prov kräver att den
+nyas regel är den frystas. **Migrationen körs med DB-knappen på Bengts ord**, innan förregistreringen signeras.
+
+**Stomdokument:** KUV radarns tal infört i förregistreringen
