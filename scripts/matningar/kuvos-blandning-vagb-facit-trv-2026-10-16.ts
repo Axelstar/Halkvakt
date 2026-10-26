@@ -116,8 +116,8 @@ function sjalvtest() {
     "timmens nederbörd: regn går före uppehåll, Dry och no är torrt, snö är nederbörd");
   k(timklass(["yes", "freezing_rain"]) === null, "ord som motorn inte känner (yes, freezing_rain) ger okänd, aldrig torrt");
   k(VARMA_SQL.includes("surface_temp_c > 2 AND (air_temp_c IS NULL OR surface_temp_c >= air_temp_c - 12)") && VARMA_SQL.includes("2700 AS l")
-    && RADAR_SQL.includes("rate_mean_mmh >= 0.5") && RADAR_SQL.includes("3600 AS l") && YTA_TIMME_SQL.includes("WHERE b % 2 = 0"),
-    "hela regelns frågor: vetot över +2 °C på 45 min med driftens vakter, radarn ≥ 0,5 på 60 min, ytan vid timmen");
+    && RADAR_SQL.includes(`rate_mean_mmh >= ${RADAR_MMH}`) && RADAR_SQL.includes("3600 AS l") && YTA_TIMME_SQL.includes("WHERE b % 2 = 0"),
+    `hela regelns frågor: vetot över +2 °C på 45 min med driftens vakter, radarn ≥ RADAR_MMH (${RADAR_MMH}, #725) på 60 min, ytan vid timmen`);
   k(EGEN_YTA_SQL.includes("surface_temp_c >= air_temp_c - 12") && EGEN_YTA_SQL.includes(RADVAKT_SQL) && EGEN_YTA_SQL.includes(karantanSql("weather_observations"))
     && EGEN_YTA_SQL.includes("ORDER BY station_id, b, sample_time DESC"), "egen yta: grind A:s vakter och senaste raden per halvtimme, som korBlandning");
   const utskr = (fyra: string) => ["[350 s] veck 0 (174 stationer): kalibrerat på de andra fyra", ...[0, 1, 2, 3].map((i) =>
