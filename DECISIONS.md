@@ -18113,3 +18113,35 @@ och V2 står som den föll (#702, T4 §3 a).
 **Inte gjort 25/10:** ingen migration, ingen deploy och ingen körning; den frysta talar.
 
 **Stomdokument:** KUV bytet byggt med den frysta som talare och kriteriet låst
+
+## #724 (25/10 2026) Sågtanden i trappformsprovet preciserad: minst en fjärdedel av stationerna och minst tio samma timme (Ä6 §4 a, T4 §5 a)
+
+**Bengts ord 25/10:** *"Ja, sågtandens precisering godkänns: minst en fjärdedel av stationerna över golvet och minst tio samma timme."*
+
+**Skälet.** Ä6 §4 (a) beskriver sågtanden per station: en timme dagtid som faller till under hälften av den föregående. Så räknad
+flaggade den molntimmar i rena delar: 13, 69 och 72 timmar i provet 25/10, som mest 8,4 % av stationerna samma timme (50 av 595,
+6/3 2021 13 UTC). En summa i MET:s arkiv nollställs i hela rutnätet på en gång, medan ett moln som drar förbi tar några stationer.
+Tröskeln och kravet (noll flaggade timmar) ändras inte. Preciseringen är kalibrerad bara på strålningsdata, inte på utfall, och gäller
+båda kandidaterna, eftersom T4 §5 (a) hänvisar till Ä6 §4 (a). De signerade dokumenten ändras inte; preciseringen står här.
+
+**Regeln** (`fysik/vintrar/vinterkedja.py`, `trappform()`): en station har sågtanden en timme h när kortvågen v[h] > 0,5·10⁶ J/m²,
+v[h+1] < 0,5·v[h] och v[h+2] > v[h+1], tre timmar i följd. Timmen flaggas när minst en fjärdedel av stationerna med v[h] över golvet
+har sågtanden samtidigt, och minst tio. Stationerna under andelen räknas för sig (`sagtand_enskilda`) och flaggar inte.
+
+**Provet 25/10 kväll** med preciseringen, på alla delar som kandidaterna läser (skriptet
+`Desktop/Halkvakt_Signering_2026-10-26/skript/trappform_alla.py`):
+
+| Delarna | Flaggade timmar | Sågtand (timmar) |
+| :-- | --: | --: |
+| Den frysta, lw4 2018/19, 2019/20 och 2020/21 | 0, 0, 0 | 0, 0, 0 |
+| Den nya, 2018/19, 2019/20, 2020/21 och 2022/23 | 0, 0, 0, 0 | 0, 0, 0, 0 |
+| 2024/25 | 0 | 0 |
+| Den frysta, lw4 2021/22 (ackumulerad, inte omhämtad än) | 431 | 21 (14/3 14 – 31/3 14 UTC) |
+| Den nya, 2021/22 (kortvågen ackumulerad, T4:s delar finns inte än) | 159 | 21 (samma) |
+
+Felet fälls alltså av båda halvorna av provet, och inga rena delar fälls. Marginalen bland timmar med minst tio stationer över golvet
+är inte räknad för alla vintrar; i provet 25/10 på tre delar var den största andelen 8,4 %.
+
+**Det som nu gäller:** trappformsprovet före läsningen i Ä6 och i T4:s förberedning körs med preciseringen.
+
+**Stomdokument:** KUV sågtandens precisering i trappformsprovet
