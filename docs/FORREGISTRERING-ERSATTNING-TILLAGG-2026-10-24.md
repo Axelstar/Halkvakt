@@ -1,7 +1,7 @@
 # Tillägg till ersättningsregeln: den nya kandidaten får tala i appen enligt förregistreringen för 2026/27, §12
 
-**Status: UTKAST 24/10 2026** (DECISIONS #703). Signeras av Bengt och Axel 26/10, samma dag som förregistreringen för 2026/27
-(fristen `tillagg-bytet`). Skrivet **efter** att V2 föll (DECISIONS #702), och det står öppet här (§4).
+**Status: SIGNERAT 26/10 2026** (Bengt, och Axel via Bengt, DECISIONS #726; dokumentets sha256 vid signeringen, före den här
+raden och signaturerna: `39852df086d71b9ff8814c55b808cce8d0ca5bcce9fb5c090a055fe3108cccc9`). Utkastet: DECISIONS #703. Signerat samma dag som förregistreringen för 2026/27; i §5 gäller §12 (g). Skrivet **efter** att V2 föll (DECISIONS #702), och det står öppet här (§4).
 
 Bengts ord 24/10:
 - *"alltså vi vill gå live med den här nu så att mätningarna inte bara ligger som beta utan som når ut till förarna"*;
@@ -73,5 +73,5 @@ läget vid signeringen 26/10 står vid varje steg.
 
 | | Datum | Signatur |
 | :-- | :-- | :-- |
-| Bengt | | |
-| Axel | | |
+| Bengt | 2026-10-26 | Bengt i chatten: *"Ja: kör migrationen sql/069, signera förregistreringen och tillägget för mej och Axel med §12 (g), och slå ihop #1203 när CI är grön."* (DECISIONS #726) |
+| Axel | 2026-10-26 | Via Bengt i samma ord (DECISIONS #726) |

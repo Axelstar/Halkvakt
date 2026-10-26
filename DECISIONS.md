@@ -18167,3 +18167,30 @@ dygn som kurva 1 och 2 delar (#568). Alla tre ligger över 50 %; den lägsta, ku
 nyas regel är den frystas. **Migrationen körs med DB-knappen på Bengts ord**, innan förregistreringen signeras.
 
 **Stomdokument:** KUV radarns tal infört i förregistreringen
+
+## #726 (26/10 2026) FORREGISTRERING-2026-27 och tillägget till ersättningsregeln signerade; domfönstret börjar
+
+**Bengts ord 26/10:** *"Ja: kör migrationen sql/069, signera förregistreringen och tillägget för mej och Axel med §12 (g), och slå ihop #1203 när CI är grön."*
+
+**Signerat:** Bengt för sig och för Axel via Bengt, som i #659, #692 och #715. Bengt sade först *"jag och axel signerar"*.
+- `docs/FORREGISTRERING-2026-27.md`, sha256 vid signeringen, före statusraden och signaturerna: `246df045014ace9baf75084968f6ad5e40116d6c572f1526afb5e2522bd2e80b`. R = 0,1 mm/h (§10 a).
+- `docs/FORREGISTRERING-ERSATTNING-TILLAGG-2026-10-24.md`, sha256 på samma sätt: `39852df086d71b9ff8814c55b808cce8d0ca5bcce9fb5c090a055fe3108cccc9`. I §5 gäller §12 (g): valet inför 2027/28
+  görs i en egen förregistrering med båda domarna som underlag.
+
+**Vid signaturerna** står det som lästs före (§10 f): den frysta på 2022/23 (#680) och på 2018/19–2021/22 med v4, med källfelet
+14–31/3 2022 (#716). Inget i §1–§5 är ändrat på grund av det. Rättelsen (Ä6, #719, och T4, #720) är signerad 25/10; inget av dess
+utfall är läst vid signaturen, och den rör inte den här domen.
+
+**Rättat före signeringen** på Bengts ord 26/10 (*"Rätta raderna"*): tre faktarader, inga regler. Förregistreringen §11 säger att Ä6
+är signerat (#719) och körs efter signeringen; tilläggets §6 står med läget för stegen (1–5 gjorda: #704, #706, #723).
+
+**Migrationen före signaturen:** `sql/069_radarns_tal.sql` körd 26/10 med DB-knappen från signeringsgrenen (40328516642, transaktionen
+bekräftad). Beviset: `kandidat_regel()` och `ny_kandidat_regel()` har gränsen 0,1 och inte längre 0,5; den frystas timme 12:00 UTC är färsk;
+`kandidat_talar` har inga rader, så den frysta talar. Regeln i drift är alltså den signerade från domfönstrets första dag.
+
+**Följd:**
+- Domfönstret börjar 26/10 2026 (§5). Bara data som ingen sett räknas (regel L).
+- Fristerna `radarns-tal`, `tillagg-bytet` och `forregistreringen-signerad` är klara och borttagna; deras ärenden stängs.
+- Ordningen efter signeringen följer tillägget §6.
+
+**Stomdokument:** KUV förregistreringen för 2026/27 signerad och domfönstret börjar

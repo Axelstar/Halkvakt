@@ -1,8 +1,11 @@
 # Förregistrering — kandidaten NIVÅ 2+BLANDNING, vintern 2026/27
 
-**Status: UTKAST 15/10 2026, §4b tillagt 21/10, §12 (bytet) tillagt 24/10 (#703), §4b punkt 12–17 (domens mått) tillagt 24–25/10 (#710). Radarns tal infört 26/10: R = 0,1 mm/h (§10 a, #725). §4b fastställt 21/10 (#655, #656); omgång 1 avgjord 21/10
-(#659: populationen i §4, förarsvaren i §4b punkt 4, kameran i punkt 5, Bengt signerar för båda); loggen sql/065 i drift sedan 21/10 (§10 e). Spridningen loggas i drift sedan 16/10 (§10 b).** Signeras av Bengt och Axel senast
-**31/10 2026** (DECISIONS #544, #547). Domfönstret börjar den dag förregistreringen är signerad och pushad; varje dygn utan signatur är
+**Status: SIGNERAD 26/10 2026** (Bengt, och Axel via Bengt, DECISIONS #726; dokumentets sha256 vid signeringen, före den här
+raden och signaturerna: `246df045014ace9baf75084968f6ad5e40116d6c572f1526afb5e2522bd2e80b`). Domfönstret börjar 26/10 2026. R = 0,1 mm/h (§10 a).
+
+*Före signeringen:* UTKAST 15/10 2026, §4b tillagt 21/10, §12 (bytet) tillagt 24/10 (#703), §4b punkt 12–17 (domens mått) tillagt 24–25/10 (#710). Radarns tal infört 26/10: R = 0,1 mm/h (§10 a, #725). §4b fastställt 21/10 (#655, #656); omgång 1 avgjord 21/10
+(#659: populationen i §4, förarsvaren i §4b punkt 4, kameran i punkt 5, Bengt signerar för båda); loggen sql/065 i drift sedan 21/10 (§10 e). Spridningen loggas i drift sedan 16/10 (§10 b). Signeras av Bengt och Axel senast
+31/10 2026 (DECISIONS #544, #547). Domfönstret börjar den dag förregistreringen är signerad och pushad; varje dygn utan signatur är
 ett dygn vinter utanför domen. Källorna är DECISIONS #544, #547, #552, #558–#573 och TROSKLAR-SKUGGAN §2–§4. Utkastet i #560 ersätts
 av det här dokumentet; frågorna (A) och (B) där är besvarade av #562.
 
@@ -346,5 +349,5 @@ med v4:s timvärden är tillägget Ä6, signerat 25/10 (DECISIONS #719); den kö
 
 | | Datum | Signatur |
 | :-- | :-- | :-- |
-| Bengt | | |
-| Axel | | |
+| Bengt | 2026-10-26 | Bengt i chatten: *"Ja: kör migrationen sql/069, signera förregistreringen och tillägget för mej och Axel med §12 (g), och slå ihop #1203 när CI är grön."* (DECISIONS #726) |
+| Axel | 2026-10-26 | Via Bengt i samma ord (DECISIONS #726) |
