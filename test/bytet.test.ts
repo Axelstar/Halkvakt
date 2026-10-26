@@ -1,4 +1,4 @@
-// Bytet (FORREGISTRERING-2026-27 §12, sql/070, DECISIONS #721): den nya kandidaten talar bara efter ett beslut, och faller tillbaka
+// Bytet (FORREGISTRERING-2026-27 §12, sql/070, DECISIONS #723): den nya kandidaten talar bara efter ett beslut, och faller tillbaka
 // till den frysta timme för timme. Proven läser filerna, utan databas:
 //   1. talande_regel() har kandidat_regel():s kolumner (den senaste definitionen) och talaren, så publiceringen läser samma rader;
 //   2. utan beslut talar den frysta, och den nyas timme används bara när beslutet säger ny (§12 f);

@@ -18044,7 +18044,40 @@ högst 5 %. Störst var skillnaden 20/3 14 UTC vid station 1001: 4,7 % i långv�
 
 **Stomdokument:** KUV T4 till NY-KANDIDAT signerat
 
-## #721 (25/10 2026) Bytet byggt med den frysta som talare; kriteriet för ett byte 26/10 låst före läsningen
+## #721 (25/10 2026) Läns- och vägsidornas sökträff: sökorden först i titeln, dagens siffror i beskrivningen
+
+**Beslut.** Axel 25/10 22:10, efter Search Console 7 dygn (422 exponeringar, 11 klick, snittposition 16,1; Uppsala län 108
+exponeringar och 0 klick). Sökorden är *halka uppsala*, *väglag skåne*, *trafikinformation gävleborg*. Titeln blir *"Halka och väglag
+i Uppsala län just nu | Halkvakt"* (tidigare *"Är det halt i Uppsala län just nu? Väglag och vägtemperatur | Halkvakt"*), vägsidorna
+*"Halka och väglag på E6 just nu"* och översikten *"… i Sverige just nu, län för län"*. Beskrivningen byggs med siffrorna vid varje
+körning: *"Kl. 21:30: halka eller vinterväglag på 6 av 112 vägavsnitt i Uppsala län, kallast −1,2 °C vid Märsta. Trafikverkets
+väglag, vägtemperatur och olyckor, uppdaterat var 30:e minut."* Rubriken (h1) och svarsmeningen (#629) är orörda.
+
+**Alternativ.** Behålla frågeformen i titeln: förkastat, den klipps i sökträffen och börjar inte med orden folk skriver.
+
+**Prov:** `test/lanssidor.test.ts` 8/8 med titel och beskrivning för län, väg och översikt, också när ingen halka rapporteras.
+
+**Stomdokument:** inga — sajtens sidor, inget stomdokument beskriver dem.
+
+## #722 (25/10 2026) Länssidorna byggs ut: kartan över länet, stora vägar just nu, pendling och vanliga frågor
+
+**Beslut.** Axel 25/10 23:04: *"bygg detta nu så dessa sidorna blir bra"*, efter att ha sett att sidan säger lite utöver svaret.
+Varje länssida får, under svarsmeningen: (1) en karta över länet med dess gräns, alla sträckor och de hala gula, ritad i webbläsaren
+ur sajtens egna filer; vilka sträckor som är hala skickas med från publicera (arHalt), så kartan och texten aldrig är oense; (2) *Stora
+vägar i länet just nu*: E-vägarna, riksvägarna och varje annan väg med halka, med läget och sträckornas orter i text; (3) *Pendla i
+länet*: ett handskrivet stycke per län om de stora stråken och orterna (`PENDLING`), läses igenom av Axel eller Bengt; (4) fyra
+vanliga frågor, synliga och som FAQPage. Sökningarna i Search Console gäller orter och vägar (*halka uppsala*, *trafikläget örebro*),
+och de orden står nu i sidans text.
+
+**Alternativ.** En inbäddad livekarta (iframe): förkastad, tung och läses inte av sökmotorer. Egna sidor per stad: senare, och bara
+om länssidorna lyfter (#721).
+
+**Prov:** `test/lanssidor.test.ts` 8/8 med vägraden, länsvägen som inte listas, pendlingen för alla 21 län, frågorna och kartans hala
+sträckor. Förhandsvisad med dagens data för Uppsala och Västra Götaland.
+
+**Stomdokument:** inga — sajtens sidor, inget stomdokument beskriver dem.
+
+## #723 (25/10 2026) Bytet byggt med den frysta som talare; kriteriet för ett byte 26/10 låst före läsningen
 
 **Bengts ord 25/10:**
 - *"om vi får bra siffror så är mitt förslag att vi byter redan i morgon. Kan vi göra förberedesler för att byta i morgon"*;

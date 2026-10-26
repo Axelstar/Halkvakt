@@ -1,4 +1,4 @@
--- 070: BYTET (FORREGISTRERING-2026-27 §12, tillägget till ersättningsregeln §6 punkt 5, DECISIONS #703, #721). Den nya kandidaten
+-- 070: BYTET (FORREGISTRERING-2026-27 §12, tillägget till ersättningsregeln §6 punkt 5, DECISIONS #703, #723). Den nya kandidaten
 -- får tala i appen i stället för den frysta först när Bengt och Axel har beslutat det (§12 b). Byggt 25/10 med den frysta som talare:
 -- så länge ingen rad finns i kandidat_talar talar den frysta, och publiceringen ger exakt det den ger i dag.
 -- En logg, inte en flagga (som brytaren, sql/059): varje omställning är en rad med beslutet och körningen, och den senaste raden
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS kandidat_talar (
   beslut text NOT NULL,
   korning text
 );
-COMMENT ON TABLE kandidat_talar IS 'Bytet (FORREGISTRERING-2026-27 §12, DECISIONS #721): en rad per omställning med beslutet. Utan rader talar den frysta.';
+COMMENT ON TABLE kandidat_talar IS 'Bytet (FORREGISTRERING-2026-27 §12, DECISIONS #723): en rad per omställning med beslutet. Utan rader talar den frysta.';
 
 -- Ordningen räknas på id, som brytaren.
 CREATE OR REPLACE FUNCTION kandidat_talar_nu() RETURNS text

@@ -20,7 +20,7 @@ function fakeDb(rows: Partial<Record<string, any[]>>) {
       if (rows.brytareKastar) throw new Error("relation \"kandidat_brytare\" does not exist");
       return rows.brytare ?? [{ pa: true }];
     }
-    if (text.includes("talande_timme()")) {   // bytet (sql/070, #721): den frysta talar om inget annat sägs
+    if (text.includes("talande_timme()")) {   // bytet (sql/070, #723): den frysta talar om inget annat sägs
       if (rows.bytetFel) throw new Error("function talande_timme() does not exist");
       return (rows.kandidatTimme ?? [{ t: "2026-10-15T08:00:00Z" }]).map((x) => ({ ...x, talare: rows.talare?.[0] ?? "fryst" }));
     }
@@ -573,8 +573,8 @@ test("#245 bevisbäraren: väta och mängd ur skattaren bredvid fukt, radarn i s
     "motorns adapter läser inte bevis — bara regn_h och lutning30 sedan S3 (#524)");
 });
 
-// ── BYTET (FORREGISTRERING-2026-27 §12, sql/070, DECISIONS #721) ─────────────────────────────────────────────
-test("#721 bytet: beslutet säger ny och den nyas timme är färsk — den nyas regel publiceras, och noten säger det", async () => {
+// ── BYTET (FORREGISTRERING-2026-27 §12, sql/070, DECISIONS #723) ─────────────────────────────────────────────
+test("#723 bytet: beslutet säger ny och den nyas timme är färsk — den nyas regel publiceras, och noten säger det", async () => {
   const { q, asked } = fakeDb({ talare: ["ny"], kandidat: [{ segment_id: "S1", lon: 20, lat: 67, tid: "2026-10-15T08:00:00Z" }] });
   const { liveDoc, notes } = await buildSnapshot(q, [], NOW);
   assert.equal(liveDoc.kandidat?.length, 1);
@@ -582,7 +582,7 @@ test("#721 bytet: beslutet säger ny och den nyas timme är färsk — den nyas 
   assert.ok(notes.some((n) => n.startsWith("kandidat: den nya kandidaten talar")));
 });
 
-test("#721 bytet går inte att läsa (före migrationen): den frysta talar som förut, och noten säger det", async () => {
+test("#723 bytet går inte att läsa (före migrationen): den frysta talar som förut, och noten säger det", async () => {
   const { q, asked } = fakeDb({ bytetFel: [true], kandidat: [{ segment_id: "S1", lon: 20, lat: 67, tid: "2026-10-15T08:00:00Z" }] });
   const { liveDoc, notes } = await buildSnapshot(q, [], NOW);
   assert.equal(liveDoc.kandidat?.length, 1);
@@ -590,7 +590,7 @@ test("#721 bytet går inte att läsa (före migrationen): den frysta talar som f
   assert.ok(notes.some((n) => n.startsWith("kandidat: bytet ej läsbart")));
 });
 
-test("#721 utan beslut talar den frysta: talande_regel() frågas och ingen not om den nya", async () => {
+test("#723 utan beslut talar den frysta: talande_regel() frågas och ingen not om den nya", async () => {
   const { q, asked } = fakeDb({ kandidat: [{ segment_id: "S1", lon: 20, lat: 67, tid: "2026-10-15T08:00:00Z" }] });
   const { liveDoc, notes } = await buildSnapshot(q, [], NOW);
   assert.equal(liveDoc.kandidat?.length, 1);

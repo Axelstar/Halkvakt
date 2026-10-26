@@ -255,7 +255,7 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
   } catch (e) {
     notes.push(`kandidat: brytaren ej läsbar (${String((e as Error).message).slice(0, 80)}) — nyckeln utelämnas`);
   }
-  // BYTET (FORREGISTRERING-2026-27 §12, sql/070, DECISIONS #721): talande_timme() och talande_regel() ger den nya kandidatens timme
+  // BYTET (FORREGISTRERING-2026-27 §12, sql/070, DECISIONS #723): talande_timme() och talande_regel() ger den nya kandidatens timme
   // och regel när Bengts och Axels beslut säger ny och den nyas timme är färsk, annars den frystas (§12 f). Utan beslut talar den
   // frysta, som förut. Går bytet inte att läsa (före migrationen) frågas kandidat_timme() och kandidat_regel() som förut.
   const kandidat: { id: string; tid: string; punkter: [number, number][] }[] = [];
