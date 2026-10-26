@@ -18194,3 +18194,31 @@ bekräftad). Beviset: `kandidat_regel()` och `ny_kandidat_regel()` har gränsen 
 - Ordningen efter signeringen följer tillägget §6.
 
 **Stomdokument:** KUV förregistreringen för 2026/27 signerad och domfönstret börjar
+
+## #727 (26/10 2026) Ä6 körd för den frysta: de tre delarna i mars 2022 med lång- och kortvågen ur v4, summorna låsta; paritetsprovet för T4 klarat
+
+**Bengts ord 26/10:** *"Ja: kör paritetsprovet med variant=t4, och Ä6 för den frystas 2021/22 (ta bort de tre lw4-delarna i releasen, kör langvag-v4, PR med summorna som du slår ihop när CI är grön, och kör kuvos-vintrar för 2021-22)."*
+
+**Ä6 (#719).** De tre delarna 2022-02-28_2022-03-14, 2022-03-15_2022-03-29 och 2022-03-30_2022-03-31 togs bort ur releasen
+`kuvos-vintrar-2021-22` med sina listor (sex filer) och hämtades om av kuvos-vintrar 40375393673 (steget `langvag-v4`):
+
+| Delen | Timmar ur v4 | Kortvågen ur v4 (Ä6) | Ur arkivet | Saknas | Tomma värden |
+| :-- | --: | --: | --: | --: | --: |
+| 28/2–14/3 2022 | 360 | 24 | 0 | 0 | 0 |
+| 15–29/3 2022 | 360 | 360 | 0 | 0 | 0 |
+| 30–31/3 2022 | 48 | 48 | 0 | 0 | 0 |
+
+Alla 432 timmar 14/3 00 till 31/3 23 UTC har lång- och kortvågen ur v4. Timmen 25/3 08 UTC (väg 2, #715) kommer nu ur v4 som alla
+andra Ä6-timmar. `kuvos/langvag-v4-leverans.json` har de nya summorna; de gamla står under `omhamtad_a6`.
+
+**Avvikelse:** steget valde den nya kandidatens T4-del (`metnordic_t4_`) som källdel, eftersom den väljs före den fyllda. Värdena blir
+desamma: T4-delen är den fyllda delen orörd utanför 14–31/3, och i de timmarna skrivs både lång- och kortvågen ur v4. Källans namn
+och summa i manifestet är T4-delens.
+
+**Paritetsprovet för T4 (kriteriet i #723, del 4; T4 §4 a).** kuvos-ny-kandidat 40375155386, steget paritet med variant t4: KLARAT.
+Den rättade kandidatens levande kedja på 2024/25 i analysläget mot den slutliga enhetens tal: n 2 210 532 lika, A1 0,60826 °C och
+A2 4,6445 %, skillnaden 0. Paret W 0,25 · L 40 km. Kandidatfilen i repot är inte ifylld än (steget *T4 i drift*).
+
+**Nästa:** kuvos-vintrar för 2021-22 läser den frysta med Ä6-delarna. Utfallet står bredvid det gamla (#716).
+
+**Stomdokument:** KUV Ä6 körd med summorna låsta och paritetsprovet för T4 klarat
