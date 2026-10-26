@@ -380,14 +380,26 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
   } catch (e) {
     notes.push(`kandidat: brytaren ej läsbar (${String((e as Error).message).slice(0, 80)}) — nyckeln utelämnas`);
   }
+  // BYTET (FORREGISTRERING-2026-27 §12, sql/070, DECISIONS #723): talande_timme() och talande_regel() ger den nya kandidatens timme
+  // och regel när Bengts och Axels beslut säger ny och den nyas timme är färsk, annars den frystas (§12 f). Utan beslut talar den
+  // frysta, som förut. Går bytet inte att läsa (före migrationen) frågas kandidat_timme() och kandidat_regel() som förut.
   const kandidat: { id: string; tid: string; punkter: [number, number][] }[] = [];
   if (kandidatPa) try {
-    const [timme] = await q(`SELECT kandidat_timme() AS t`);
+    let timme: Record<string, any> | undefined, regel = "kandidat_regel()";
+    try {
+      [timme] = await q(`SELECT tid AS t, talare FROM talande_timme()`);
+      if (!timme) throw new Error("talande_timme() gav ingen rad");
+      regel = "talande_regel()";
+      if (timme?.talare === "ny") notes.push("kandidat: den nya kandidaten talar (FORREGISTRERING-2026-27 §12, talande_regel)");
+    } catch (e) {
+      notes.push(`kandidat: bytet ej läsbart (${String((e as Error).message).slice(0, 80)}) — den frysta talar`);
+      [timme] = await q(`SELECT kandidat_timme() AS t`);
+    }
     if (timme?.t == null) {
       notes.push("kandidat: regeln tiger — kandidatens timme är gammal eller ofullständig (kandidat_timme)");
     } else {
       const rader = await q(`
-        SELECT segment_id, lon, lat, tid FROM kandidat_regel()
+        SELECT segment_id, lon, lat, tid FROM ${regel}
         WHERE utfall = 'varnar' ORDER BY segment_id, punkt`);
       for (const r of rader) {
         const id = String(r.segment_id), sist = kandidat[kandidat.length - 1];

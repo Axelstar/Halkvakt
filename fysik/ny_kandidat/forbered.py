@@ -104,11 +104,13 @@ def forbered(a):
     mn = kedjan.metnordic_fil(namn, a.metnordic, a.arbete)
     prov['metnordic'] = dict(delar=len(a.metnordic), **kedjan.mn_prov(mn, sids, *v['metnordic']))
     prov['metnordic']['fyllt'] = fyllt_summa(getattr(a, 'fyllt', None))
+    # Tillägget T4 §5 (a) (DECISIONS #720): inga ackumulerade summor i stället för timvärden (vinterkedja.trappform, som Ä6 §4 a).
+    prov['metnordic']['trappform'] = vinterkedja.trappform(a.metnordic)
     os.remove(mn)
     prov['ecmwf'] = ecmwf_prov(a.ifs, sids, *v['ifs'])
     s['prov'] = prov
     s['tidszon_klarat'] = bool(prov['sommartid']['klarat'] and prov['smhi']['klarat'])
-    s['data_klarat'] = bool(prov['metnordic']['klarat'] and prov['ecmwf']['klarat'])
+    s['data_klarat'] = bool(prov['metnordic']['klarat'] and prov['metnordic']['trappform']['klarat'] and prov['ecmwf']['klarat'])
     s['klarat'] = bool(s['tidszon_klarat'] and s['data_klarat'] and (namn != lasare.URVALET or prov['identitetsprov']['klarat']))
     stopp = []
     if namn == lasare.URVALET and not prov['identitetsprov']['klarat']:
@@ -116,7 +118,7 @@ def forbered(a):
     if not s['tidszon_klarat']:
         stopp.append(f'tidszonsprovet föll för {namn}: vintern tas bort ur alla prov (§4)')
     if not s['data_klarat']:
-        stopp.append(f'indatan för {namn} räcker inte (MET Nordic eller ECMWF): planen stannar, och frågan går till Bengt')
+        stopp.append(f'indatan för {namn} räcker inte (MET Nordic, trappformen eller ECMWF): planen stannar, och frågan går till Bengt')
     if stopp:
         s['stopp'] = '; '.join(stopp)
     skriv(s, a.ut)
@@ -144,6 +146,9 @@ def markdown(s):
               f"{json.dumps(mn['andel_saknad'], ensure_ascii=False)} → **{'KLARAT' if mn['klarat'] else 'FALLER'}** (långvågen: {mn['langvag']})"
               + (f"; fyllt (T2): {fy['saknade_fore']} timmar saknades i arkivet, {fy['ur_arkivet']} fanns där vid omhämtningen, {fy['ur_v4']} ur v4, "
                  f"{fy['saknas_i_bada']} saknas i båda" if fy.get('delar') else '') + '.')
+    tf = mn.get('trappform')
+    if tf:
+        ut.append(f"- **Trappformen** (T4 §5 a): {tf['flaggade_timmar']} flaggade timmar → **{'KLARAT' if tf['klarat'] else 'FALLER'}**.")
     ec = p['ecmwf']
     ut.append(f"- **ECMWF**: {ec['stationer']} stationer, {ec['saknas']} saknas, {ec['andra_timmar']} med andra timmar än vinterns {ec['timmar']} "
               f"→ **{'KLARAT' if ec['klarat'] else 'FALLER'}**.")

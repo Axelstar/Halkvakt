@@ -18076,3 +18076,72 @@ om länssidorna lyfter (#721).
 sträckor. Förhandsvisad med dagens data för Uppsala och Västra Götaland.
 
 **Stomdokument:** inga — sajtens sidor, inget stomdokument beskriver dem.
+
+## #723 (25/10 2026) Bytet byggt med den frysta som talare; kriteriet för ett byte 26/10 låst före läsningen
+
+**Bengts ord 25/10:**
+- *"om vi får bra siffror så är mitt förslag att vi byter redan i morgon. Kan vi göra förberedesler för att byta i morgon"*;
+- *"Ja, bygg de tre PR:erna i kväll (T4, Ä6 och bytet med flaggan av). Kriteriet för bra siffror gäller som du skrev: proven klarade, bättre än RÅ varje vinter i norr och söder, i medel inte sämre än den frysta på A1, A2 eller A3, och paritetsprovet klarat."*;
+- *"vi pratar om byte till den nya nu och att den går live i morgon"*.
+
+**Kriteriet, låst 25/10 före läsningen.** Den nya kandidaten börjar tala 26/10 bara om den rättade nya (T4, #720) håller alla fyra:
+1. proven klarade på alla sex vintrarna;
+2. bättre än RÅ varje vinter, i norr och i söder;
+3. i medel inte sämre än den frysta på A1, A2 eller A3, på de vintrar där båda finns (2018/19–2022/23; den frystas 2021/22 enligt Ä6);
+4. paritetsprovet (FORREGISTRERING-2026-27 §12 a) klarat för den rättade modellen.
+
+Faller något byts inte kandidaten 26/10, och frågan går till Bengt. Kriteriet är ett beslut om vad förarna hör (§12 b), inte en dom,
+och V2 står som den föll (#702, T4 §3 a).
+
+**Bytet i koden (PR, inte ihopslagen):**
+- `sql/070_bytet.sql`: tabellen `kandidat_talar`, en rad per omställning med beslutet (en logg, som brytaren i sql/059); utan rader
+  talar den frysta. `talande_timme()` ger den nyas färska timme när den senaste raden säger ny, annars den frystas (§12 f), och
+  `talande_regel()` den talande kandidatens regel med `kandidat_regel()`:s kolumner och talaren. Den frystas funktioner och tabeller
+  rörs inte (§12 c). Andelen timmar där den frysta talade i den nyas ställe räknas ur `ny_kandidat_skugga_korning`.
+- Publiceringen (`publish/snapshot-core.ts`, och den genererade `supabase/functions/publicera/index.ts`) läser bytet och faller
+  tillbaka till `kandidat_timme()` och `kandidat_regel()` om bytet inte går att läsa, så att inget tystnar före migrationen.
+- Prov: `test/bytet.test.ts` (kolumnerna, den frysta som standard, §12 c, båda kopiorna) och tre nya i `test/snapshot-core.test.ts`.
+
+**Ordningen 26/10**, var steg på Bengts ord:
+1. Signeringen av förregistreringen (#1203), med radarns tal.
+2. T4: kortvågen 14–31/3 2022 ur v4 i den nyas delar, sedan förberedningen, träningen, provningen och samman under en egen plats i
+   hinken; Ä6: den frystas 2021/22 om.
+3. Talen läses mot kriteriet ovan.
+4. Håller det: paritetsprovet för den rättade modellen, modellen i drift, migrationen `sql/070` och deployen av publiceringen.
+5. Bytesbeslutet i en daterad post med båda signaturerna (§12 b), och en rad `ny` i `kandidat_talar` med beslutets nummer.
+
+**Inte gjort 25/10:** ingen migration, ingen deploy och ingen körning; den frysta talar.
+
+**Stomdokument:** KUV bytet byggt med den frysta som talare och kriteriet låst
+
+## #724 (25/10 2026) Sågtanden i trappformsprovet preciserad: minst en fjärdedel av stationerna och minst tio samma timme (Ä6 §4 a, T4 §5 a)
+
+**Bengts ord 25/10:** *"Ja, sågtandens precisering godkänns: minst en fjärdedel av stationerna över golvet och minst tio samma timme."*
+
+**Skälet.** Ä6 §4 (a) beskriver sågtanden per station: en timme dagtid som faller till under hälften av den föregående. Så räknad
+flaggade den molntimmar i rena delar: 13, 69 och 72 timmar i provet 25/10, som mest 8,4 % av stationerna samma timme (50 av 595,
+6/3 2021 13 UTC). En summa i MET:s arkiv nollställs i hela rutnätet på en gång, medan ett moln som drar förbi tar några stationer.
+Tröskeln och kravet (noll flaggade timmar) ändras inte. Preciseringen är kalibrerad bara på strålningsdata, inte på utfall, och gäller
+båda kandidaterna, eftersom T4 §5 (a) hänvisar till Ä6 §4 (a). De signerade dokumenten ändras inte; preciseringen står här.
+
+**Regeln** (`fysik/vintrar/vinterkedja.py`, `trappform()`): en station har sågtanden en timme h när kortvågen v[h] > 0,5·10⁶ J/m²,
+v[h+1] < 0,5·v[h] och v[h+2] > v[h+1], tre timmar i följd. Timmen flaggas när minst en fjärdedel av stationerna med v[h] över golvet
+har sågtanden samtidigt, och minst tio. Stationerna under andelen räknas för sig (`sagtand_enskilda`) och flaggar inte.
+
+**Provet 25/10 kväll** med preciseringen, på alla delar som kandidaterna läser (skriptet
+`Desktop/Halkvakt_Signering_2026-10-26/skript/trappform_alla.py`):
+
+| Delarna | Flaggade timmar | Sågtand (timmar) |
+| :-- | --: | --: |
+| Den frysta, lw4 2018/19, 2019/20 och 2020/21 | 0, 0, 0 | 0, 0, 0 |
+| Den nya, 2018/19, 2019/20, 2020/21 och 2022/23 | 0, 0, 0, 0 | 0, 0, 0, 0 |
+| 2024/25 | 0 | 0 |
+| Den frysta, lw4 2021/22 (ackumulerad, inte omhämtad än) | 431 | 21 (14/3 14 – 31/3 14 UTC) |
+| Den nya, 2021/22 (kortvågen ackumulerad, T4:s delar finns inte än) | 159 | 21 (samma) |
+
+Felet fälls alltså av båda halvorna av provet, och inga rena delar fälls. Marginalen bland timmar med minst tio stationer över golvet
+är inte räknad för alla vintrar; i provet 25/10 på tre delar var den största andelen 8,4 %.
+
+**Det som nu gäller:** trappformsprovet före läsningen i Ä6 och i T4:s förberedning körs med preciseringen.
+
+**Stomdokument:** KUV sågtandens precisering i trappformsprovet
