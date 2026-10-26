@@ -18222,3 +18222,49 @@ A2 4,6445 %, skillnaden 0. Paret W 0,25 · L 40 km. Kandidatfilen i repot är in
 **Nästa:** kuvos-vintrar för 2021-22 läser den frysta med Ä6-delarna. Utfallet står bredvid det gamla (#716).
 
 **Stomdokument:** KUV Ä6 körd med summorna låsta och paritetsprovet för T4 klarat
+
+## #728 (26/10 2026) Den frystas 2021/22 enligt Ä6 läst; T4 klarar kriteriet för bytet; den rättade modellen i drift (T4 §4 a)
+
+**Bengts ord 26/10:** *"Ja: ladda ner kandidatfilen ur samman-artefakten (nykand-t4-samman i 40350714069), bygg PR:en T4 i drift med t4_i_drift.py, bokför den frystas 2021/22 enligt Ä6 och kriteriet i samma PR, och visa mej innan något slås ihop."*
+
+**Den frysta på 2021/22 enligt Ä6** (kuvos-vintrar 40385342079, läst 26/10 efter signeringen). NIVÅ 2+BLANDNING på grind A:s
+population, 4 357 916 punkter: A1 0,592 °C, A2 5,07 %, A3 0,31 % (RÅ 0,790 °C, 9,51 %, 0,69 %). Norr A2 10,54 % (RÅ 17,75 %),
+söder 2,90 % (RÅ 6,23 %). Mars 2022 A2 9,53 % (RÅ 16,68 %). Före rättelsen (#716): 0,913 °C, 11,85 % och 1,83 %, mars 47,96 %. Båda
+talen står bredvid varandra (Ä6). Utfallet lästes efter signeringen (#726), så det står inte vid signaturerna (§10 f) och rör inte
+domen över 2026/27.
+
+**T4 mot kriteriet i #723.** Den rättade nya: förberedningen kuvos-ny-kandidat 40323586604, träningen 40325281680, provningen och
+samman 40350714069 och paritetsprovet 40375155386, alla med variant t4.
+
+| Del | Utfall |
+| :-- | :-- |
+| 1. Proven klarade på alla sex vintrarna | Klarat. Trappformsprovet 0 flaggade timmar; 2021/22 läser T4-delarna (före rättelsen 159 timmar) |
+| 2. Bättre än RÅ varje vinter, i norr och i söder | Klarat på A1, A2 och A3, alla sex vintrarna |
+| 3. I medel inte sämre än den frysta på A1, A2 eller A3, 2018/19–2022/23 | Klarat: bättre på alla tre, och varje vinter för sig |
+| 4. Paritetsprovet för den rättade modellen | Klarat (#727): n 2 210 532 lika, A1 och A2 med skillnaden 0 |
+
+| Vinter | Frysta A1 | T4 A1 | Frysta A2 | T4 A2 | Frysta A3 | T4 A3 |
+| :-- | --: | --: | --: | --: | --: | --: |
+| 2018/19 | 0,546 °C | 0,500 °C | 5,47 % | 4,29 % | 0,21 % | 0,16 % |
+| 2019/20 | 0,513 °C | 0,472 °C | 3,90 % | 3,06 % | 0,22 % | 0,17 % |
+| 2020/21 | 0,534 °C | 0,483 °C | 5,24 % | 3,94 % | 0,20 % | 0,14 % |
+| 2021/22 (Ä6) | 0,592 °C | 0,564 °C | 5,07 % | 4,38 % | 0,31 % | 0,27 % |
+| 2022/23 | 0,522 °C | 0,505 °C | 4,52 % | 4,31 % | 0,30 % | 0,27 % |
+| **Medel** | **0,541 °C** | **0,505 °C** | **4,84 %** | **4,00 %** | **0,248 %** | **0,202 %** |
+
+T4 på 2024/25: A1 0,516 °C, A2 3,76 %, A3 0,15 % (RÅ 0,678 °C, 7,51 %, 0,39 %). I medel över de sex vintrarna: norr A2 8,22 %
+(RÅ 16,11 %), söder 2,22 % (RÅ 4,95 %). Den slutliga kandidaten, tränad på alla sex: paret W 0,25 · L 40 km.
+
+**Kriteriet håller på alla fyra delarna.** Det är inget bytesbeslut: §12 (b) kräver en egen daterad post med båda signaturerna och
+tidpunkten, innan någon timme av vinterns utfall är läst.
+
+**Den rättade modellen i drift (T4 §4 a, #720).** `kuvos/kandidat-2027-28-t4.json` fylls ur samman-artefakten nykand-t4-samman
+(sha256 4c82ea2b2c59… på artefakten, lika GitHubs digest): `modell_alla.pkl` 9 755 819 byte, sha256 0713520975753a34…, hinken
+`kuvos/kuvos-kandidat-2027-28-t4/`. `ny-kandidat-fysik.yml` och `ny-kandidat-timme.yml` kör med `NYKAND_VARIANT=t4`; självtestet i
+vanligt läge. Den nyas logg byter modell från första del A efter sammanslagningen; timmen skrivs i bytesbeslutet. Den prövade
+kandidatens filer står kvar orörda.
+
+**Nästa, varje steg på Bengts ord:** en levande timme av den rättade modellen, deployen av publiceringen, bytesbeslutet med båda
+signaturerna och en rad `ny` i `kandidat_talar`.
+
+**Stomdokument:** KUV, LIV den rättade nya i drift och kriteriet för bytet klarat

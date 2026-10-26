@@ -26,6 +26,7 @@ jobs:
     timeout-minutes: 15
     env:
       GH_TOKEN: "${{ github.token }}"
+      NYKAND_VARIANT: t4                     # T4 §4 a (DECISIONS #720): den rättade kandidatens par och kandidatfil
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

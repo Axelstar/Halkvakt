@@ -32,6 +32,7 @@ jobs:
     env:
       GH_TOKEN: "${{ github.token }}"
       REL: metnordic-live-2026-27
+      NYKAND_VARIANT: t4                     # T4 §4 a (DECISIONS #720): den rättade modellen i drift
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -48,7 +49,7 @@ jobs:
           python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
           (cd fysik && sha256sum -c --quiet SHA256SUMS)
           python3 fysik/live/indata.py --sjalvtest | tail -1
-          python3 fysik/ny_kandidat/sjalvtest_levande.py | tail -1
+          NYKAND_VARIANT= python3 fysik/ny_kandidat/sjalvtest_levande.py | tail -1
           F=$(node --experimental-strip-types ingest/ny-kandidat-db.ts --flagga 2>/dev/null); echo "flaggan: $F" | tee -a "$GITHUB_STEP_SUMMARY"
           echo "FLAGGA=${F%%$'\t'*}" >> "$GITHUB_ENV"
           python3 -c "import sys; sys.path.insert(0, 'fysik/ny_kandidat'); import levande; c = levande.ladda(); print(f\"kandidatfilen: paret W {c['W']:g} · L {c['L']:g} km, {len(c['names'])} särdrag\")" | tee -a "$GITHUB_STEP_SUMMARY"
@@ -102,9 +103,9 @@ jobs:
           read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
           [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
           echo "::add-mask::$KEY"
-          curl -sS --fail-with-body -X POST "$FN?lage=kuvos_hamta" -H "x-halkvakt-key: $KEY" -H "Content-Type: application/json" -d '{"filer":["kuvos-kandidat-2027-28/modell_alla.pkl"]}' > hamta.json
+          curl -sS --fail-with-body -X POST "$FN?lage=kuvos_hamta" -H "x-halkvakt-key: $KEY" -H "Content-Type: application/json" -d '{"filer":["kuvos-kandidat-2027-28-t4/modell_alla.pkl"]}' > hamta.json
           node -e '
-            const k = require("./kuvos/kandidat-2027-28.json"), h = require("./hamta.json").filer, c = require("crypto"), { execFileSync } = require("child_process"), fs = require("fs");
+            const k = require("./kuvos/kandidat-2027-28-t4.json"), h = require("./hamta.json").filer, c = require("crypto"), { execFileSync } = require("child_process"), fs = require("fs");
             const curl = (a) => { try { return execFileSync("curl", a, { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); } catch (e) { console.error(`hämtningen föll (curl ${e.status})`); process.exit(1); } };
             const b = curl(["-sS", "--fail", h[0].url]); const f = k.filer.find((x) => (x.enhet ?? "alla") === "alla" && x.fil === "modell_alla.pkl");
             const ok = !!f && c.createHash("sha256").update(b).digest("hex") === f.sha256 && b.length === f.bytes;
@@ -115,7 +116,7 @@ jobs:
         run: |
           set -o pipefail
           { echo '```'; python3 fysik/ny_kandidat/levande.py --del-a --indata indata-live --analys mn/metnordic_analys_*.csv.gz mn/dagar/*.csv.gz \
-              --korning "mn/metnordic_korning_$STAMP.csv.gz" --modell modell_alla.pkl --kandidat kuvos/kandidat-2027-28.json --ut ut; echo '```'; } 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+              --korning "mn/metnordic_korning_$STAMP.csv.gz" --modell modell_alla.pkl --kandidat kuvos/kandidat-2027-28-t4.json --ut ut; echo '```'; } 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
           rm -f modell_alla.pkl
       - name: Till tabellen ny_kandidat_ph (bara med flaggan på)
         if: env.FLAGGA == 'på'

@@ -1,6 +1,10 @@
 {
- "_om": "Den rättade nya kandidaten för vintern 2027/28 (tillägget T4 till NY-KANDIDAT-2027-28, DECISIONS #720): samma procedur som kuvos/kandidat-2027-28.json, med kortvågen 14–31/3 2022 ur MET:s v4 i 2021/22:s delar (metnordic_t4_<del>). Före träningen står bara proceduren här. Parametrarna, paret, summorna för hinkens filer (arkiv, kuvos/kuvos-kandidat-2027-28-t4/) och talen i urvalet skrivs in ur samman-artefakten nykand-t4-samman efter prövningen. Den nu prövade kandidatens fil och filer i hinken står kvar orörda.",
- "beslut": "#720",
+ "_om": "Den nya kandidaten för vintern 2027/28 (förregistreringen NY-KANDIDAT-2027-28, DECISIONS #670), skriven av fysik/ny_kandidat/provning.py --samman. Modellerna och skattningarna ligger i hinken arkiv under kuvos/kuvos-kandidat-2027-28-t4/ och aldrig i repot; den slutliga är modell_alla.pkl. Talen under i_urvalet är räknade på vintrarna proceduren tränade på och är inte kandidatens väntade fel; det är de sex proven en vinter i taget utanför.",
+ "beslut": "#670",
+ "forregistrering": {
+  "fil": "docs/FORREGISTRERING-NY-KANDIDAT-2027-28.md",
+  "sha256": "f729787caf985bcecdaff5059e05602349c038e2c8c19c3722acede14757528f"
+ },
  "procedur": {
   "vintrar": [
    "2018-19",
@@ -102,9 +106,589 @@
   "parvalet": "minst andel grova fel (> 2 °C) på grind A:s population över träningsvintrarna, med den levande kedjans blandning (kandidat_timme.timme); varje träningsvinter skattad av en modell som varken sett den eller den utelämnade",
   "hinken": "kuvos/kuvos-kandidat-2027-28-t4/"
  },
- "par": null,
- "parametrar": null,
- "sardrag": null,
- "i_urvalet": null,
- "filer": []
+ "fysik": "lw med långvågen ur fysikens reserv",
+ "vintrar": [
+  "2018-19",
+  "2019-20",
+  "2020-21",
+  "2021-22",
+  "2022-23",
+  "2024-25"
+ ],
+ "borttagna": {},
+ "par": {
+  "W": 0.25,
+  "L_km": 40.0
+ },
+ "parametrar": {
+  "albedo": 0.2014853095827122,
+  "eps_s": 0.94,
+  "eps_ov": 0.97,
+  "cloud_p": 2.0,
+  "ch": 0.0002,
+  "hmin": 15.02133619281348,
+  "q_traffic": 1.8668184022226697,
+  "deep_off": 2.2962620633302526,
+  "lapse": 0.0045,
+  "sw_fac": 0.5503152963868307,
+  "ce_fac": 1.0,
+  "r_snow": 0.0,
+  "alb_snow": 0.8637819446512778,
+  "cover_swe": 19.89640638401518,
+  "cover_t": -1.0815195659641064
+ },
+ "kalibrering": {
+  "utvarderingar": 120,
+  "maxfev": 120,
+  "start": "physics.DEFAULT (vagb.DEFAULT)",
+  "n": 13020768
+ },
+ "sardrag": [
+  "ts",
+  "ta",
+  "td",
+  "wind",
+  "cloud",
+  "sw",
+  "ts_ta",
+  "ta_td",
+  "cloud6",
+  "cloud24",
+  "sw24",
+  "pr6",
+  "pr24",
+  "sn24",
+  "sn72",
+  "dta3",
+  "dts3",
+  "ta24",
+  "ta72",
+  "tdeep",
+  "hs",
+  "hc",
+  "elev_ifs",
+  "elev",
+  "elev_diff",
+  "tpi1",
+  "tpi3",
+  "tpi3_clear_calm",
+  "snowd",
+  "soil0",
+  "cloudlow",
+  "cloudlow6",
+  "adt_log",
+  "heavy_share",
+  "uh_klass",
+  "funk_klass",
+  "e_road",
+  "tpi2km",
+  "tpi5km",
+  "tpi10km",
+  "tpi20km",
+  "vdepth5km",
+  "vdepth10km",
+  "svf",
+  "horizon_south",
+  "tree100",
+  "chm30",
+  "water1000",
+  "built300",
+  "tpi5km_cc",
+  "adt_cold",
+  "swe",
+  "ts_min24",
+  "ts_max24",
+  "ts_min72",
+  "ts_max72",
+  "ta_min24",
+  "ta_max72",
+  "fdh72",
+  "tdh72",
+  "h_since_thaw",
+  "h_since_frost",
+  "h_since_precip",
+  "h_since_snow",
+  "sn168",
+  "pr72",
+  "rain_on_frozen",
+  "snowd_x_cold",
+  "sw_x_snowd",
+  "clear_calm_night"
+ ],
+ "rattelse": {
+  "max_rows": 1400000,
+  "iters": 900,
+  "lr": 0.05,
+  "leaves": 95,
+  "msl": 200
+ },
+ "stationer": {
+  "2018-19": 754,
+  "2019-20": 754,
+  "2020-21": 754,
+  "2021-22": 754,
+  "2022-23": 754,
+  "2024-25": 754
+ },
+ "timmar": 4176,
+ "i_urvalet": {
+  "_om": "Kedjans egna tal (common.gates, timvis) på vintrarna proceduren tränade på — i urvalet, inte det väntade felet.",
+  "alla": {
+   "fysik": {
+    "n": 13020768,
+    "A1": 1.0420148662624276,
+    "A2": 0.20030715546118324,
+    "A3": 0.011933320676629828
+   },
+   "fysik_rattelse": {
+    "n": 13020768,
+    "A1": 0.5778425083477348,
+    "A2": 0.04453101383881504,
+    "A3": 0.0016138064974354814
+   }
+  },
+  "per_vinter": {
+   "2018-19": {
+    "fysik": {
+     "n": 2159842,
+     "A1": 0.9893503712035898,
+     "A2": 0.1896796154533526,
+     "A3": 0.010128518660161253
+    },
+    "fysik_rattelse": {
+     "n": 2159842,
+     "A1": 0.5681537454889183,
+     "A2": 0.047473379997240536,
+     "A3": 0.0011496211296937462
+    }
+   },
+   "2019-20": {
+    "fysik": {
+     "n": 2159169,
+     "A1": 0.9929930907339621,
+     "A2": 0.16537843957559598,
+     "A3": 0.012765096201362654
+    },
+    "fysik_rattelse": {
+     "n": 2159169,
+     "A1": 0.53972208914981,
+     "A2": 0.03412331318206217,
+     "A3": 0.0013472775868864364
+    }
+   },
+   "2020-21": {
+    "fysik": {
+     "n": 2066766,
+     "A1": 0.9544497177691079,
+     "A2": 0.19139176858918716,
+     "A3": 0.008197831781633722
+    },
+    "fysik_rattelse": {
+     "n": 2066766,
+     "A1": 0.5608970003535305,
+     "A2": 0.04302228699330258,
+     "A3": 0.0012425209239942984
+    }
+   },
+   "2021-22": {
+    "fysik": {
+     "n": 2210200,
+     "A1": 1.1698192306029431,
+     "A2": 0.23072074925346123,
+     "A3": 0.014766536964980545
+    },
+    "fysik_rattelse": {
+     "n": 2210200,
+     "A1": 0.6117016171086337,
+     "A2": 0.04714098271649624,
+     "A3": 0.0021106687177630985
+    }
+   },
+   "2022-23": {
+    "fysik": {
+     "n": 2214259,
+     "A1": 1.0567757997990275,
+     "A2": 0.21783901521908683,
+     "A3": 0.010887163606425445
+    },
+    "fysik_rattelse": {
+     "n": 2214259,
+     "A1": 0.5811340142289745,
+     "A2": 0.04870207143789412,
+     "A3": 0.0017820860161345173
+    }
+   },
+   "2024-25": {
+    "fysik": {
+     "n": 2210532,
+     "A1": 1.0900597284702556,
+     "A2": 0.2051732343164451,
+     "A3": 0.014591962477810772
+    },
+    "fysik_rattelse": {
+     "n": 2210532,
+     "A1": 0.6082638200978813,
+     "A2": 0.04644492818923227,
+     "A3": 0.0020094710232649877
+    }
+   }
+  }
+ },
+ "versioner": {
+  "python": "3.13.16",
+  "numpy": "2.5.3",
+  "pandas": "3.0.5",
+  "scipy": "1.18.1",
+  "scikit-learn": "1.9.1"
+ },
+ "filer": [
+  {
+   "enhet": "alla",
+   "fil": "modell_alla.pkl",
+   "bytes": 9755819,
+   "sha256": "0713520975753a343d85953169243e977c222e78ab57e5bb6a1bd5f773b179a8"
+  },
+  {
+   "enhet": "utan-2018-19",
+   "fil": "modell_utan-2018-19.pkl",
+   "bytes": 9755835,
+   "sha256": "3c8192cd4d125a732aee042bada565099e7cd38f2ad521747abaf2b8ba65929b"
+  },
+  {
+   "enhet": "utan-2018-19",
+   "fil": "ph_utan-2018-19_2018-19.npz",
+   "bytes": 24040315,
+   "sha256": "b5a58f502ff823b71074fc9e780f7c0c4cb633d076017fe1e9e9bd3b271532a4"
+  },
+  {
+   "enhet": "utan-2019-20",
+   "fil": "modell_utan-2019-20.pkl",
+   "bytes": 9756323,
+   "sha256": "824c938f755fb035459bbd59730a8be001bb30aedb241c0c214df619943cc006"
+  },
+  {
+   "enhet": "utan-2019-20",
+   "fil": "ph_utan-2019-20_2019-20.npz",
+   "bytes": 24232920,
+   "sha256": "ca713184f7e41ab45f0ce0326970448ead729308020a0061fb2ff73bc6157aeb"
+  },
+  {
+   "enhet": "utan-2020-21",
+   "fil": "modell_utan-2020-21.pkl",
+   "bytes": 9755859,
+   "sha256": "484a647364278914d6673b6189394ce5ddf3235436abdd1ee058f1e6cabf8fcc"
+  },
+  {
+   "enhet": "utan-2020-21",
+   "fil": "ph_utan-2020-21_2020-21.npz",
+   "bytes": 23976875,
+   "sha256": "66ed9becc46fb5e6278ed8b970d0f791f577276887512b268f05564b34e1208f"
+  },
+  {
+   "enhet": "utan-2021-22",
+   "fil": "modell_utan-2021-22.pkl",
+   "bytes": 9755531,
+   "sha256": "fdd4236df46fdcfb4b13623cddbb3b086d79c118ef2f1ae7fea91f44ee2527ad"
+  },
+  {
+   "enhet": "utan-2021-22",
+   "fil": "ph_utan-2021-22_2021-22.npz",
+   "bytes": 24029651,
+   "sha256": "18893884e9c96302d27700f710740b9c781bb431464aba2a2020dd87374e0923"
+  },
+  {
+   "enhet": "utan-2022-23",
+   "fil": "modell_utan-2022-23.pkl",
+   "bytes": 9755691,
+   "sha256": "53a2d87a20b3f406984373dbcde2eeda58e1db194588cb60fe09a0822a0a47aa"
+  },
+  {
+   "enhet": "utan-2022-23",
+   "fil": "ph_utan-2022-23_2022-23.npz",
+   "bytes": 24032795,
+   "sha256": "932d845b50337b53c62d713b687b55f5622ae4caf52599b7fad2d3f6127d56c1"
+  },
+  {
+   "enhet": "utan-2024-25",
+   "fil": "modell_utan-2024-25.pkl",
+   "bytes": 9755851,
+   "sha256": "b0119cc394f4d97bb59fa0a990906b5107558ac8aa6e0706637dd7b684a61e3c"
+  },
+  {
+   "enhet": "utan-2024-25",
+   "fil": "ph_utan-2024-25_2024-25.npz",
+   "bytes": 24026584,
+   "sha256": "538526eba22c65b30d415f504ccefbce05d0218643de4bfdbf0c988c8c9754e1"
+  },
+  {
+   "enhet": "utan-2018-19_2019-20",
+   "fil": "modell_utan-2018-19_2019-20.pkl",
+   "bytes": 9756547,
+   "sha256": "820d44596cedbce03862ad908ad6e25414811086c2a244e2fa0d8a057cd9bbfa"
+  },
+  {
+   "enhet": "utan-2018-19_2019-20",
+   "fil": "ph_utan-2018-19_2019-20_2018-19.npz",
+   "bytes": 24040282,
+   "sha256": "9b69fd0105a43e48dab8510b826fbe8193cb0505abdab7419f714d99f42f2cbb"
+  },
+  {
+   "enhet": "utan-2018-19_2019-20",
+   "fil": "ph_utan-2018-19_2019-20_2019-20.npz",
+   "bytes": 24235644,
+   "sha256": "549fd49da892191805d8b4037ee03c40cf5ad67181d106fae3bf97bf418d68d3"
+  },
+  {
+   "enhet": "utan-2018-19_2020-21",
+   "fil": "modell_utan-2018-19_2020-21.pkl",
+   "bytes": 9755899,
+   "sha256": "c24f1c959e9fa618855a83cbe0e6c9c79fac19f575314cb7e2d4109c63ab827b"
+  },
+  {
+   "enhet": "utan-2018-19_2020-21",
+   "fil": "ph_utan-2018-19_2020-21_2018-19.npz",
+   "bytes": 24039666,
+   "sha256": "7f1fff3004ebbdf4233a02c3610ae57fd26e805f7a30fecf1e6fb5b36567d190"
+  },
+  {
+   "enhet": "utan-2018-19_2020-21",
+   "fil": "ph_utan-2018-19_2020-21_2020-21.npz",
+   "bytes": 23976154,
+   "sha256": "fab6839ab80f8cc5b827124f1b3f9e20059a114d765b6c083e84ce337c35cd92"
+  },
+  {
+   "enhet": "utan-2018-19_2021-22",
+   "fil": "modell_utan-2018-19_2021-22.pkl",
+   "bytes": 9755475,
+   "sha256": "7965145247060a7be5fe470b256c018ff2dc6be3de3303d3ea00151d4e680bee"
+  },
+  {
+   "enhet": "utan-2018-19_2021-22",
+   "fil": "ph_utan-2018-19_2021-22_2018-19.npz",
+   "bytes": 24040823,
+   "sha256": "38dcd790e921969d8ca659c4a7e6551eef92d5d29b0c8f2b1545c1cd127d74cf"
+  },
+  {
+   "enhet": "utan-2018-19_2021-22",
+   "fil": "ph_utan-2018-19_2021-22_2021-22.npz",
+   "bytes": 24030874,
+   "sha256": "21dd238825fe194141d88a55065a8b988f8018adf2fd86bda82ffc4c7f39bdce"
+  },
+  {
+   "enhet": "utan-2018-19_2022-23",
+   "fil": "modell_utan-2018-19_2022-23.pkl",
+   "bytes": 9755467,
+   "sha256": "a4c5e33b77ed84be5d732366ef65130d90bda7ec9e24bbc82419e3ccc4f61c41"
+  },
+  {
+   "enhet": "utan-2018-19_2022-23",
+   "fil": "ph_utan-2018-19_2022-23_2018-19.npz",
+   "bytes": 24039205,
+   "sha256": "8237185738136c09eea7a8da3fb0e5111ad61606c152a235b97c566352cdaaf6"
+  },
+  {
+   "enhet": "utan-2018-19_2022-23",
+   "fil": "ph_utan-2018-19_2022-23_2022-23.npz",
+   "bytes": 24032302,
+   "sha256": "2d6d8b55879123f8a9a070bb94e81e6b3fd83f9e02f1f4184772f06155e40f33"
+  },
+  {
+   "enhet": "utan-2018-19_2024-25",
+   "fil": "modell_utan-2018-19_2024-25.pkl",
+   "bytes": 9755739,
+   "sha256": "bcdb9d13a02c41693fed965ce2a0ffbab2d1e311b08942589af61def19dc418b"
+  },
+  {
+   "enhet": "utan-2018-19_2024-25",
+   "fil": "ph_utan-2018-19_2024-25_2018-19.npz",
+   "bytes": 24038742,
+   "sha256": "fdfe19d9605ccdcb65146197b2931875ff1bcf8147a48eff8c5caac416562b6e"
+  },
+  {
+   "enhet": "utan-2018-19_2024-25",
+   "fil": "ph_utan-2018-19_2024-25_2024-25.npz",
+   "bytes": 24026266,
+   "sha256": "b1736b2023159ec49213676a411cdac7a3837547d6542ef6339c950ded8c6cff"
+  },
+  {
+   "enhet": "utan-2019-20_2020-21",
+   "fil": "modell_utan-2019-20_2020-21.pkl",
+   "bytes": 9756619,
+   "sha256": "0606bcc02368ce7059a04d8246d6af2d33b1e768bceaccd6b5fe627b7bee9f7a"
+  },
+  {
+   "enhet": "utan-2019-20_2020-21",
+   "fil": "ph_utan-2019-20_2020-21_2019-20.npz",
+   "bytes": 24233505,
+   "sha256": "1590cd43b6083b87f26f4c1d9bd2816538dcf741c600410910362be4dd17d1a1"
+  },
+  {
+   "enhet": "utan-2019-20_2020-21",
+   "fil": "ph_utan-2019-20_2020-21_2020-21.npz",
+   "bytes": 23975986,
+   "sha256": "ec2d9191f6f5e6581f95ecefc9f3c0e391cd3803ab7cf2cf02cbe361ffe129cc"
+  },
+  {
+   "enhet": "utan-2019-20_2021-22",
+   "fil": "modell_utan-2019-20_2021-22.pkl",
+   "bytes": 9756307,
+   "sha256": "0788efec276534c415f4378cfd2c3bb46bff5b54bc7204ebcb9fc88d57261938"
+  },
+  {
+   "enhet": "utan-2019-20_2021-22",
+   "fil": "ph_utan-2019-20_2021-22_2019-20.npz",
+   "bytes": 24231024,
+   "sha256": "3d73ae7b1daa8c1d5f4d0dd2c5356878193edf7d762cec9fc731a6226aa5dc6d"
+  },
+  {
+   "enhet": "utan-2019-20_2021-22",
+   "fil": "ph_utan-2019-20_2021-22_2021-22.npz",
+   "bytes": 24029033,
+   "sha256": "dbb86ad523c47c8ecbf7b3e6012ed8d4b50d1cf2985d53eb81dfef84bc456dbb"
+  },
+  {
+   "enhet": "utan-2019-20_2022-23",
+   "fil": "modell_utan-2019-20_2022-23.pkl",
+   "bytes": 9756283,
+   "sha256": "dde82a815c5bb8159ff74bbb3391b2e3aa89e6f9b442bc4b8cb6192093dc40cb"
+  },
+  {
+   "enhet": "utan-2019-20_2022-23",
+   "fil": "ph_utan-2019-20_2022-23_2019-20.npz",
+   "bytes": 24232915,
+   "sha256": "96a7a207b6b71982a38d5fef1908018edd3590bb2e7df67c0fe1c278f1fbe983"
+  },
+  {
+   "enhet": "utan-2019-20_2022-23",
+   "fil": "ph_utan-2019-20_2022-23_2022-23.npz",
+   "bytes": 24031978,
+   "sha256": "4b910fd3e0b3488ee00552a6da623e73b347730f0fb378d09b5b40a23c7d5eef"
+  },
+  {
+   "enhet": "utan-2019-20_2024-25",
+   "fil": "modell_utan-2019-20_2024-25.pkl",
+   "bytes": 9756587,
+   "sha256": "3f6f97d3a3599619608f252e2301fc93cf71ddfefd2935e0b94727d706e00185"
+  },
+  {
+   "enhet": "utan-2019-20_2024-25",
+   "fil": "ph_utan-2019-20_2024-25_2019-20.npz",
+   "bytes": 24231734,
+   "sha256": "e9734657e95080323ca68bc5cf89bd19bd3a4d9c919388dc68adbf42a6b61e7f"
+  },
+  {
+   "enhet": "utan-2019-20_2024-25",
+   "fil": "ph_utan-2019-20_2024-25_2024-25.npz",
+   "bytes": 24024621,
+   "sha256": "f9d8d920a598def7124bafcf70f6549acc3e3557315225536a5568713d1ef298"
+  },
+  {
+   "enhet": "utan-2020-21_2021-22",
+   "fil": "modell_utan-2020-21_2021-22.pkl",
+   "bytes": 9755547,
+   "sha256": "b5860f14751860674e314a75bfcf145ffcdf570fc54464d8d707b332f2983be2"
+  },
+  {
+   "enhet": "utan-2020-21_2021-22",
+   "fil": "ph_utan-2020-21_2021-22_2020-21.npz",
+   "bytes": 23978834,
+   "sha256": "0110005d371a4c6dbb3e48ead762a763212639069bfee2e9f9bec01aaca627da"
+  },
+  {
+   "enhet": "utan-2020-21_2021-22",
+   "fil": "ph_utan-2020-21_2021-22_2021-22.npz",
+   "bytes": 24031645,
+   "sha256": "d1c497b32110415ae98bdc2ef4b7e72699e0d3ddb7c6f4bea64c2d6443afe1da"
+  },
+  {
+   "enhet": "utan-2020-21_2022-23",
+   "fil": "modell_utan-2020-21_2022-23.pkl",
+   "bytes": 9755627,
+   "sha256": "ebf346d0e44c031bdb8afa43434f9d404c6d92889abeab233a6c2354d8641acc"
+  },
+  {
+   "enhet": "utan-2020-21_2022-23",
+   "fil": "ph_utan-2020-21_2022-23_2020-21.npz",
+   "bytes": 23977158,
+   "sha256": "c19041468a5443d9c306c9fba4c2967c244bb9063ac06b3fbcf9c1caf2761367"
+  },
+  {
+   "enhet": "utan-2020-21_2022-23",
+   "fil": "ph_utan-2020-21_2022-23_2022-23.npz",
+   "bytes": 24032626,
+   "sha256": "e97ba19c1239da2bae0ebfa959b4be648258b43be467059368790bb6f9baf8f1"
+  },
+  {
+   "enhet": "utan-2020-21_2024-25",
+   "fil": "modell_utan-2020-21_2024-25.pkl",
+   "bytes": 9755979,
+   "sha256": "5591b8fabeff25e131d20de571ff4b201e090d2566367d1940dd585f75d02e82"
+  },
+  {
+   "enhet": "utan-2020-21_2024-25",
+   "fil": "ph_utan-2020-21_2024-25_2020-21.npz",
+   "bytes": 23975472,
+   "sha256": "ef98ea5a5152540437cee176b768bbeb58a47e8209d6b1d412438402ebeb976a"
+  },
+  {
+   "enhet": "utan-2020-21_2024-25",
+   "fil": "ph_utan-2020-21_2024-25_2024-25.npz",
+   "bytes": 24025722,
+   "sha256": "846ffba6b1fe7bea07948ee6fac71f055da3205e8398f7ac18745f49bb659d9a"
+  },
+  {
+   "enhet": "utan-2021-22_2022-23",
+   "fil": "modell_utan-2021-22_2022-23.pkl",
+   "bytes": 9755299,
+   "sha256": "15e9899e1f98a9fbe74916d7e49e5ef4f6322b16c1588d02b47c55697ca3c98a"
+  },
+  {
+   "enhet": "utan-2021-22_2022-23",
+   "fil": "ph_utan-2021-22_2022-23_2021-22.npz",
+   "bytes": 24027844,
+   "sha256": "14cb9c8634e8e3c8e48550056ea58c8bc7b46ac490583707f75323da4cc81bdb"
+  },
+  {
+   "enhet": "utan-2021-22_2022-23",
+   "fil": "ph_utan-2021-22_2022-23_2022-23.npz",
+   "bytes": 24030960,
+   "sha256": "291bd197618daeb445f585bc979adfbda200ec66a6e4745bed2621d815804669"
+  },
+  {
+   "enhet": "utan-2021-22_2024-25",
+   "fil": "modell_utan-2021-22_2024-25.pkl",
+   "bytes": 9755507,
+   "sha256": "54fee714bc61a2462a825cd608442bfe5f8312f50ebc1f6483b763401947b284"
+  },
+  {
+   "enhet": "utan-2021-22_2024-25",
+   "fil": "ph_utan-2021-22_2024-25_2021-22.npz",
+   "bytes": 24030391,
+   "sha256": "ebd817550e68e046a3ca09d4f5fd2867b3243941e3c31545ff7e20af110fed12"
+  },
+  {
+   "enhet": "utan-2021-22_2024-25",
+   "fil": "ph_utan-2021-22_2024-25_2024-25.npz",
+   "bytes": 24025683,
+   "sha256": "728753eb2a5d584a475041528a69c41b0e79af1b340674b93667bbaa5402f7a7"
+  },
+  {
+   "enhet": "utan-2022-23_2024-25",
+   "fil": "modell_utan-2022-23_2024-25.pkl",
+   "bytes": 9755555,
+   "sha256": "32c8fa00dc337a1a8c3d073c9d1a5b05b267148af736543a7ab47734a3a4cd7a"
+  },
+  {
+   "enhet": "utan-2022-23_2024-25",
+   "fil": "ph_utan-2022-23_2024-25_2022-23.npz",
+   "bytes": 24032197,
+   "sha256": "ddeb1c8f9b83d3944d2d35376c6bc88f2faa379bb2b2a00af9699f1c56f77c2b"
+  },
+  {
+   "enhet": "utan-2022-23_2024-25",
+   "fil": "ph_utan-2022-23_2024-25_2024-25.npz",
+   "bytes": 24025419,
+   "sha256": "92b5c32688c0fb698b309dc312ce3fd3964ee5e442fe5e5715005c155ccab572"
+  }
+ ]
 }
