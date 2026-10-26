@@ -1,5 +1,5 @@
 {
- "_om": "Långvågen ur MET:s omräkning v4 (metpparchivev4, MET Norway, NLOD / CC BY 4.0) för den frysta kandidaten på 2018/19–2021/22, tillägget till FORREGISTRERING-FLER-VINTRAR (Ä1, DECISIONS #711 och #714). Hämtad 25/10 av kuvos-vintrar 40164264875 (steget langvag-v4) till releaserna kuvos-vintrar-<vinter>: en del metnordic_lw4_<del>.csv.gz och en lista lw4_<del>.json per del, bredvid den nya kandidatens källdel. Summorna lästa ur listorna och kontrollerade mot releasernas egna sha256 25/10. Vinterkedjan läser en vinter bara när varje del och lista har sin summa här. Delen 2022-03-15_2022-03-29 hämtades om 25/10 av kuvos-vintrar 40188743733 på Bengts val i tilläggets §10 (e): timmen 25/3 2022 08 UTC, som arkivet saknar helt, har långvågen ur v4 (ur_v4_efter_skarven).",
+ "_om": "Långvågen ur MET:s omräkning v4 (metpparchivev4, MET Norway, NLOD / CC BY 4.0) för den frysta kandidaten på 2018/19–2021/22, tillägget till FORREGISTRERING-FLER-VINTRAR (Ä1, DECISIONS #711 och #714). Hämtad 25/10 av kuvos-vintrar 40164264875 (steget langvag-v4) till releaserna kuvos-vintrar-<vinter>: en del metnordic_lw4_<del>.csv.gz och en lista lw4_<del>.json per del, bredvid den nya kandidatens källdel. Summorna lästa ur listorna och kontrollerade mot releasernas egna sha256 25/10. Vinterkedjan läser en vinter bara när varje del och lista har sin summa här. Delen 2022-03-15_2022-03-29 hämtades om 25/10 av kuvos-vintrar 40188743733 på Bengts val i tilläggets §10 (e): timmen 25/3 2022 08 UTC, som arkivet saknar helt, har långvågen ur v4 (ur_v4_efter_skarven). Ä6 (DECISIONS #719): de tre delarna 2022-02-28_2022-03-14, 2022-03-15_2022-03-29 och 2022-03-30_2022-03-31 hämtades om 26/10 av kuvos-vintrar 40375393673 med lång- och kortvågen ur v4 för timmarna 14/3 00 till 31/3 23 UTC 2022; de gamla summorna står under omhamtad_a6. Källdelen är den nya kandidatens T4-del (metnordic_t4_), som är den fyllda delen orörd utanför de timmarna.",
  "korning": 40164264875,
  "skarv": "2022-03-14T00:00:00Z",
  "releaser": {
@@ -793,60 +793,66 @@
    "fran": "2022-02-28",
    "till": "2022-03-14",
    "lista": "lw4_2022-02-28_2022-03-14.json",
-   "lista_bytes": 502,
-   "lista_sha256": "96d3546e51402fe8d5fd14bc241aa3d2eed06450a6f8439445cc6a1327fd979b",
+   "lista_bytes": 561,
+   "lista_sha256": "64dd678ba89c920b5b5b8994be07be537405db35e23a8c65219175251fd1e141",
    "fil": "metnordic_lw4_2022-02-28_2022-03-14.csv.gz",
-   "fil_bytes": 4592407,
-   "fil_sha256": "b5eadcd4bf4c9cdcc46ec0912b5676061eb8ec6867406e4e1d1c4f1ae969844e",
-   "kalla": "metnordic_fylld_2022-02-28_2022-03-14.csv.gz",
-   "kalla_sha256": "addb6a2089b4e4da1e8ecb7f1077e3d5238c0adde4ba19778b680d7b3f38c1b8",
-   "ur_v4": 336,
-   "ur_arkivet": 24,
+   "fil_bytes": 4572682,
+   "fil_sha256": "f89531362be5f2616553cfc079daa37ab650d7ca79a33d28860ed26c71300496",
+   "kalla": "metnordic_t4_2022-02-28_2022-03-14.csv.gz",
+   "kalla_sha256": "b256c33b5d3c1f7c4bf62344beb70d8d17f01869bb1770af3c77007e8ba3a78f",
+   "ur_v4": 360,
+   "ur_arkivet": 0,
    "saknas": [],
    "tomma_varden": 0,
    "rader": 271440,
-   "stationer": 754
+   "stationer": 754,
+   "ur_v4_efter_skarven": [],
+   "kortvag_ur_v4": 24,
+   "a6": true
   },
   {
    "vinter": "2021-22",
    "fran": "2022-03-15",
    "till": "2022-03-29",
    "lista": "lw4_2022-03-15_2022-03-29.json",
-   "lista_bytes": 556,
-   "lista_sha256": "3bfbe5c5068d37c950bedd1382890cfb97d81daee723acd43af3c5fc05e5ebd9",
+   "lista_bytes": 563,
+   "lista_sha256": "0294d9d62054006e8807348701f5e221bdaf9c388dafbcdae5dcd18883877345",
    "fil": "metnordic_lw4_2022-03-15_2022-03-29.csv.gz",
-   "fil_bytes": 4929892,
-   "fil_sha256": "5729cd15184e28b231286523ed0d32d25d19791f32fbb7496c9e0cc7da187555",
-   "kalla": "metnordic_fylld_2022-03-15_2022-03-29.csv.gz",
-   "kalla_sha256": "f22ac25140825c1e771fc3b9b3d3649910a3baffb062796b519eb196e3207dbc",
-   "ur_v4": 1,
-   "ur_arkivet": 359,
+   "fil_bytes": 4674985,
+   "fil_sha256": "b7748d62e8b5f21c3cfa5834d792ce6cb4597939074ab03c720370df9cf43ea2",
+   "kalla": "metnordic_t4_2022-03-15_2022-03-29.csv.gz",
+   "kalla_sha256": "bba1b26fa4b3129a2c081e838208be0e95be45204952966157dbf9663f6c0d3a",
+   "ur_v4": 360,
+   "ur_arkivet": 0,
    "saknas": [],
    "tomma_varden": 0,
    "rader": 271440,
    "stationer": 754,
-   "ur_v4_efter_skarven": [
-    "2022-03-25T08:00:00Z"
-   ]
+   "ur_v4_efter_skarven": [],
+   "kortvag_ur_v4": 360,
+   "a6": true
   },
   {
    "vinter": "2021-22",
    "fran": "2022-03-30",
    "till": "2022-03-31",
    "lista": "lw4_2022-03-30_2022-03-31.json",
-   "lista_bytes": 497,
-   "lista_sha256": "d53ee561642ac4b27ea141dc1d9eb35378c9e55abeff44e25c4721ace48279ce",
+   "lista_bytes": 558,
+   "lista_sha256": "f2a8d94d5726a83598e5b332f4a435ae30fb14b8c114fc0d5e068b5488882ba1",
    "fil": "metnordic_lw4_2022-03-30_2022-03-31.csv.gz",
-   "fil_bytes": 678975,
-   "fil_sha256": "a27db5c01d67002a98f48d7c1ec2689830035574707aa1c75844c9710918463e",
-   "kalla": "metnordic_fylld_2022-03-30_2022-03-31.csv.gz",
-   "kalla_sha256": "30b904286778d8a95c2ecd3f3e0ce50a24e0d3c61309022433dcfee4453a66cc",
-   "ur_v4": 0,
-   "ur_arkivet": 48,
+   "fil_bytes": 638397,
+   "fil_sha256": "111126cc201d629ce15a54a2ae98ca656dfd211cf01bd2c96c0f2e5ce08dbcb2",
+   "kalla": "metnordic_t4_2022-03-30_2022-03-31.csv.gz",
+   "kalla_sha256": "de837e95e2aee5c247ac75f1ce4244bc1b1f01d4ebfdaf9553074161fc81aa42",
+   "ur_v4": 48,
+   "ur_arkivet": 0,
    "saknas": [],
    "tomma_varden": 0,
    "rader": 36192,
-   "stationer": 754
+   "stationer": 754,
+   "ur_v4_efter_skarven": [],
+   "kortvag_ur_v4": 48,
+   "a6": true
   }
  ],
  "omhamtad": {
@@ -856,5 +862,41 @@
    "lista_sha256": "ca484c9ea98405a0bb1e01f034f2821c86a71f7cb4f96419d8da49e5a837b6c8",
    "fil_sha256": "626b94c544939f89b985619d45f6efd0fbb5315b7a9d563250fd93e591e3b223"
   }
+ },
+ "omhamtad_a6": {
+  "korning": 40375393673,
+  "beslut": "#727",
+  "delar": [
+   {
+    "del": "2022-02-28_2022-03-14",
+    "forut": {
+     "lista_sha256": "96d3546e51402fe8d5fd14bc241aa3d2eed06450a6f8439445cc6a1327fd979b",
+     "fil_sha256": "b5eadcd4bf4c9cdcc46ec0912b5676061eb8ec6867406e4e1d1c4f1ae969844e",
+     "kalla": "metnordic_fylld_2022-02-28_2022-03-14.csv.gz",
+     "ur_v4": 336,
+     "ur_arkivet": 24
+    }
+   },
+   {
+    "del": "2022-03-15_2022-03-29",
+    "forut": {
+     "lista_sha256": "3bfbe5c5068d37c950bedd1382890cfb97d81daee723acd43af3c5fc05e5ebd9",
+     "fil_sha256": "5729cd15184e28b231286523ed0d32d25d19791f32fbb7496c9e0cc7da187555",
+     "kalla": "metnordic_fylld_2022-03-15_2022-03-29.csv.gz",
+     "ur_v4": 1,
+     "ur_arkivet": 359
+    }
+   },
+   {
+    "del": "2022-03-30_2022-03-31",
+    "forut": {
+     "lista_sha256": "d53ee561642ac4b27ea141dc1d9eb35378c9e55abeff44e25c4721ace48279ce",
+     "fil_sha256": "a27db5c01d67002a98f48d7c1ec2689830035574707aa1c75844c9710918463e",
+     "kalla": "metnordic_fylld_2022-03-30_2022-03-31.csv.gz",
+     "ur_v4": 0,
+     "ur_arkivet": 48
+    }
+   }
+  ]
  }
 }
