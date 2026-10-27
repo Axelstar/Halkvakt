@@ -13,7 +13,7 @@ CarPlay-app gör det inte), motorns `run()`, filstorlekarna och Android-schemal�
 *Omskrivet samma kväll efter Bengts förtydligande. Första utgåvan gjorde pendlingen till hela idén och en notis om frysrisk till
 huvudsaken. Bengts tanke är bredare: favoritrutter, där pendlingen är ett av flera fall, och en rapport om allt längs rutten.*
 
-*Som läsbart dokument 2/10 kväll, på Bengts begäran: **Halkvaktens favoriter**, https://claude.ai/artifact/EJYcQFCyKYd9BgGcYkCMyT, källa `docs/FAVORITER.html`. Där finns
+*Som läsbart dokument 2/10 kväll, på Bengts begäran: **Halkvaktens favoriter**, https://axelstar.github.io/Halkvakt/FAVORITER.html, källa `docs/FAVORITER.html`. Där finns
 skärmarna ritade i appens skinn och hur färsk rapporten kan vara tio minuter före avresan.*
 
 ## Idén

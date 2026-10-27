@@ -96,6 +96,8 @@ jobs:
         run: node --experimental-strip-types scripts/stomvakten.ts --sjalvtest
       - name: Synk-ihops självtest — synkens PR slås ihop när allt är grönt (#731)
         run: node --experimental-strip-types scripts/synk-ihop.ts --sjalvtest
+      - name: Sidornas självtest — GitHub Pages och genomsökningen (#731)
+        run: node --experimental-strip-types scripts/sidorna.ts --sjalvtest
       - name: Fristvakten och domlarmet — självtester och fristlistan (#649)
         run: |
           node --experimental-strip-types scripts/fristvakten.ts --sjalvtest

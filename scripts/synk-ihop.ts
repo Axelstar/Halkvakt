@@ -145,6 +145,9 @@ async function en(pr: Pr, torr: boolean): Promise<Lage> {
     if (gar("push", "-q", "origin", "HEAD:main")) {
       const sha = git("rev-parse", "HEAD");
       await kommentera(pr, "ihop", `Ihopslagen automatiskt av synk-ihop som ${sha.slice(0, 7)}: ${lage.skal}, ${l.skal} (DECISIONS #731).`);
+      // En push med GITHUB_TOKEN startar inga flöden, men en workflow_dispatch gör det: sidorna på GitHub Pages byggs om direkt.
+      try { await api("/actions/workflows/sidorna.yml/dispatches", { method: "POST", body: { ref: "main" } }); }
+      catch (e) { console.error(`⚠ sidorna startades inte (${e instanceof Error ? e.message : e}); dygnets körning 05.30 UTC tar dem`); }
       return { lage: "gron", skal: `ihopslagen som ${sha.slice(0, 7)}; ${lage.skal}; ${l.skal}` };
     }
   }
