@@ -18502,8 +18502,10 @@ körning via pulsklockan, med beslutet. Slå inte ihop förrän jag säger till.
 
 **Beslut.**
 1. `puls-kodgrinden` med schemat `16 9 * * *` läggs i pulsklockans lista (`scripts/pulsklocka.ts`). 09:16 UTC ligger efter
-   morgonavbrottens fönster (03:28–07:39 UTC, 19 och 20/10), och minuten :16 är ledig i databasens klocka. GitHub-cronen
-   används inte (kort #160, #688).
+   morgonavbrottens fönster (03:28–07:39 UTC, 19 och 20/10), och inget annat pulsjobb startar på minuten :16. GitHub-cronen
+   används inte (kort #160, #688). *Rättat 27/10:* här stod först att minuten :16 är ledig i databasens klocka. Det stämmer
+   inte. Pulsklockans skarpa körning (40582683193) visade att databasens egna jobb `halkvakt-ingest-live` (varje minut) och
+   `halkvakt-favoriter` (var tionde minut från :06) också går då. Ledig är minuten bara bland pulsjobben.
 2. Vakthundens `PULS_GOLV` och pulsklockans `ANTAL_NYA` blir 22. Kontraktsgrinden vaktar att de två är lika. Mätvakten får
    kodgrinden i sin lista med kadensen 24 h.
 3. Jobbet går tills C är avgjord. Signalen är domlarmets första ärende för *Kodgrinden C*. Då avgör Bengt om jobbet tas bort
