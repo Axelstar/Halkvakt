@@ -18415,3 +18415,24 @@ maskin), `.github/workflows/ci.yml` (självtesten), länkarna till de sju sidorn
 (sessionsprotokollet steg 1, STOMREGELN, KORTKARTAN, PROJEKTKARTAN, kartsynken och DOKUMENTSYNKEN steg 6–8).
 
 **Stomdokument:** BED §4.2 synkens PR slås ihop av synk-ihop och sidorna läses på GitHub Pages
+
+## #732 (27/10 2026) halkvakt.se får en ny ram: Vad är Halkvakt? först, en meny, ett nedladdningsställe och spårkod per knapp
+
+**Beslut.** Axel 27/10: *"Vi kör på detta! Kan du implementera det?"*, efter skisserna på designytan och Bengts två genomgångar.
+Sajtens fokus är *kolla halkan innan du kör*; appen följer av det. Förstasidan börjar med rubriken, rutan *Vad är Halkvakt?* (hemsidan
+visar läget, appen säger till med rösten) och länsvalet, som öppnar länets sida. Sedan hela landet, Favoriter i appen, och appdelen med
+QR-kod för datorn och löftet *Din position lämnar inte telefonen av sig själv* (appens ord, oförändrat). Ny sida *Om Halkvakt*
+(`om-halkvakt.html`, Bengts text); `om.html` blir *Vanliga frågor* med FAQPage. Samma meny överallt: Livekartan, Länen, Appen, Om
+Halkvakt, och knappen *Hämta appen*. Sidfoten bär alla 21 län. Läns- och vägsidorna (publicera, `publish/lanssidor.ts`) får samma ram,
+rutan *Kör du här ofta? → Få varningar i appen*, och på ett län med halka en rad under svaret med samma knapp. Varje App Store-länk
+bär `ct=` (huvud, ruta, appen, appen-qr, om, lan, lan-halt, vag, lanen, sida-<sida>), så App Store Connect kan räkna per knapp när
+leverantörs-id:t (`pt`) läggs till.
+
+**Alternativ.** Behålla förstasidan och bara byta texter: valt bort, menyn pekade på en rubrik (*Så funkar det*) som skissen tar bort,
+och nedladdningen låg på tre ställen med tre ord. En rullgardin för länen utan länkar: valt bort för sökmotorerna; länen står som
+länkar i sidfoten och under *Halka just nu*.
+
+**Kvar.** `pt` i länkarna (Axel hämtar det i App Store Connect). *Android kommer i vinter* står kvar på sidorna tills Bengt eller
+Axel säger annat.
+
+**Stomdokument:** inga — sajtens sidor beskrivs inte i stomdokumenten, de bor i kartrepot
