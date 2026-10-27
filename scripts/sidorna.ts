@@ -2,12 +2,14 @@
 // för som artefakter på claude.ai som någon måste republicera. Pages kräver adminrätt i det här repot, så sidorna byggs och publiceras
 // i Bengts repo 895845/halkvakt-sidor (#733): dess flöde hämtar main härifrån en gång per dygn 05.30 UTC och kör --bygg. Flödet
 // .github/workflows/sidorna.yml här kör genomsökningen 06.00 UTC, så att ärendet står i det här repot.
-//   node --experimental-strip-types scripts/sidorna.ts --bygg <mapp>          webbplatsen: varje sida i ett HTML-skal med noindex, och en förstasida
+//   node --experimental-strip-types scripts/sidorna.ts --bygg <mapp>          webbplatsen: varje sida i ett HTML-skal med noindex, en förstasida
+//                                                                             och filerna sidorna pekar på (APPEN:s skärmbilder)
 //   node --experimental-strip-types scripts/sidorna.ts --genomsok <bas-url>   genomsökningen nedan; GH_TOKEN för ärendet, DYGN=true för punkt 3
 //   node --experimental-strip-types scripts/sidorna.ts --sjalvtest
 // Genomsökningen (Bengt 27/10: "kan man be github göra en genomsökning också så att allt är aktuellt"):
-//  1. Varje publicerad sida är byte för byte lika det som byggdes ur commiten som förstasidan anger (Pages cache väntas ut, högst fem
-//     minuter), och ingen ändring av en sida har legat på main längre än FORDROJNING_H timmar utan att komma med i ett bygge.
+//  1. Varje publicerad sida och varje fil som sidorna pekar på är byte för byte lika det som byggdes ur commiten som förstasidan anger
+//     (Pages cache väntas ut, högst fem minuter), och ingen ändring av en sida eller en sådan fil har legat på main längre än
+//     FORDROJNING_H timmar utan att komma med i ett bygge.
 //  2. De skriptskrivna delarna är aktuella på main: projektkartan.ts --check och kortkartan.ts --check.
 //  3. Bara i dygnets körning: dagens dokumentsynk finns på main (raden "Dokumentsynk <datum>" i STATUS.md) och ingen synk-PR står öppen.
 //  4. Ingen fil på main länkar till sidornas gamla adresser, på claude.ai eller på Pages i det här repot, utom DECISIONS och STATUS,
@@ -16,8 +18,8 @@
 // stängs ett öppet sådant ärende.
 import { execFileSync, spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { basename, join } from "node:path";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { basename, dirname, join, posix } from "node:path";
 
 export type Sida = { fil: string; namn: string };
 /** Repot sidorna byggs ur. Fast, eftersom --bygg körs i 895845/halkvakt-sidor, där GITHUB_REPOSITORY är det repot (#733). */
@@ -67,6 +69,21 @@ export function webbplats(las: (fil: string) => string, sha: string): Map<string
   return m;
 }
 
+export type Resurs = { namn: string; fil: string; sida: string };
+/** Filerna som sidorna pekar på med en relativ sökväg (src eller href), till exempel APPEN:s skärmbilder i docs/produktbok/. De
+ *  publiceras på samma relativa sökväg bredvid sidorna. Länkar till andra sidor (.html) räknas inte, och inte heller sökvägar som
+ *  börjar med . eller /, som ../ ut ur webbplatsen. `sida` är den första sidan som pekar på filen. */
+export function resurser(sidor: Sida[], las: (fil: string) => string): Resurs[] {
+  const ut = new Map<string, Resurs>();
+  for (const s of sidor) {
+    for (const [, namn] of las(s.fil).matchAll(/\b(?:src|href)="([A-Za-z0-9_][A-Za-z0-9._\/-]*)"/g)) {
+      if (namn.endsWith(".html") || namn.includes("..") || ut.has(namn)) continue;
+      ut.set(namn, { namn, fil: posix.join(posix.dirname(s.fil), namn), sida: basename(s.fil) });
+    }
+  }
+  return [...ut.values()].sort((a, b) => a.namn.localeCompare(b.namn));
+}
+
 /** Punkt 3: dagens synk ska stå i STATUS.md. Raderna börjar "Dokumentsynk 2026-10-27" eller "Dokumentsynk: 2026-10-27". */
 export const synkIdag = (status: string, datum: string) => new RegExp(`Dokumentsynk:? ${datum}`, "u").test(status);
 export const idag = (nu: Date) =>
@@ -83,7 +100,7 @@ export function forsenad(tider: number[], nu: number): number | null {
   const aldst = Math.min(...tider);
   return nu - aldst > FORDROJNING_H * 3600 ? aldst : null;
 }
-const sha256 = (s: string) => createHash("sha256").update(s, "utf8").digest("hex");
+const sha256 = (s: string | Buffer) => createHash("sha256").update(s).digest("hex");
 
 async function api(vag: string, init: { method?: string; body?: unknown } = {}): Promise<any> {
   const r = await fetch(`https://api.github.com/repos/${REPO}${vag}`, {
@@ -99,13 +116,16 @@ async function genomsok(bas: string): Promise<string[]> {
   const fel: string[] = [];
   const las = (f: string) => readFileSync(f, "utf8");
   const head = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
-  const hamta = async (namn: string): Promise<{ ok: boolean; text: string }> => {
+  // Bytena som de är, så att också bilderna kan jämföras; text är för förstasidan och felmeddelandet.
+  const hamta = async (namn: string): Promise<{ ok: boolean; data: Buffer; text: string }> => {
     try {
       const r = await fetch(`${bas}${namn}?t=${Date.now()}`, { headers: { "cache-control": "no-cache" } });
-      return r.ok ? { ok: true, text: await r.text() } : { ok: false, text: `HTTP ${r.status}` };
-    } catch (e) { return { ok: false, text: e instanceof Error ? e.message : String(e) }; }
+      if (!r.ok) return { ok: false, data: Buffer.alloc(0), text: `HTTP ${r.status}` };
+      const data = Buffer.from(await r.arrayBuffer());
+      return { ok: true, data, text: data.toString("utf8") };
+    } catch (e) { return { ok: false, data: Buffer.alloc(0), text: e instanceof Error ? e.message : String(e) }; }
   };
-  // 1. Varje sida lika bygget som förstasidan anger, och bygget inte äldre än FORDROJNING_H mot main.
+  // 1. Varje sida och fil lika bygget som förstasidan anger, och bygget inte äldre än FORDROJNING_H mot main.
   const index = await hamta("index.html");
   const kort = index.ok ? byggsha(index.text) : null;
   const byggd = kort ? (spawnSync("git", ["rev-parse", "--verify", "--quiet", `${kort}^{commit}`], { encoding: "utf8" }).stdout ?? "").trim() : "";
@@ -114,19 +134,24 @@ async function genomsok(bas: string): Promise<string[]> {
   else if (spawnSync("git", ["merge-base", "--is-ancestor", byggd, head]).status !== 0) fel.push(`sidorna på ${bas} är byggda ur ${byggd.slice(0, 7)}, som inte finns på main`);
   else {
     const vid = (f: string) => execFileSync("git", ["show", `${byggd}:${f}`], { encoding: "utf8", maxBuffer: 1 << 26 });
-    const kvar = new Map([...webbplats(vid, byggd)].filter(([namn]) => namn !== "index.html"));
+    const kvar = new Map<string, string | Buffer>([...webbplats(vid, byggd)].filter(([namn]) => namn !== "index.html"));
+    for (const r of resurser(sidlista(JSON.parse(vid("docs/kortkartan.json"))), vid)) {
+      if (spawnSync("git", ["cat-file", "-e", `${byggd}:${r.fil}`]).status !== 0) fel.push(`${r.sida} pekar på ${r.namn}, som inte fanns i bygget ur ${byggd.slice(0, 7)} (${r.fil} saknas)`);
+      else kvar.set(r.namn, execFileSync("git", ["show", `${byggd}:${r.fil}`], { maxBuffer: 1 << 26 }));
+    }
     const senast = new Map<string, string>();
     for (let f = 0; f < 10 && kvar.size; f++) {
       if (f) await new Promise((r) => setTimeout(r, 30_000));
-      for (const [namn, text] of [...kvar]) {
+      for (const [namn, innehall] of [...kvar]) {
         const h = await hamta(namn);
-        if (h.ok && sha256(h.text) === sha256(text)) kvar.delete(namn);
+        if (h.ok && sha256(h.data) === sha256(innehall)) kvar.delete(namn);
         else senast.set(namn, h.ok ? "olika" : h.text);
       }
     }
     for (const namn of kvar.keys()) fel.push(`${namn} på ${bas} är inte lika bygget ur ${byggd.slice(0, 7)} (${senast.get(namn)})`);
-    // Ändringar efter bygget i sidornas källor och kortkartan, med tiden de kom till main (första föräldern).
-    const kallor = [...sidlista(JSON.parse(las("docs/kortkartan.json"))).map((s) => s.fil), "docs/kortkartan.json"];
+    // Ändringar efter bygget i sidornas källor, filerna de pekar på och kortkartan, med tiden de kom till main (första föräldern).
+    const sidor = sidlista(JSON.parse(las("docs/kortkartan.json")));
+    const kallor = [...sidor.map((s) => s.fil), ...resurser(sidor, las).map((r) => r.fil), "docs/kortkartan.json"];
     const tider = execFileSync("git", ["log", "--first-parent", "--format=%ct", `${byggd}..${head}`, "--", ...kallor], { encoding: "utf8" })
       .split("\n").filter(Boolean).map(Number);
     const t = forsenad(tider, Date.now() / 1000);
@@ -190,9 +215,16 @@ function sjalvtest(): void {
   // Adressen delad i två, så att den här raden inte träffas av punkt 4.
   const ok8 = p.test("se https://axelstar.github.io/" + "Halkvakt/APPEN.html") && !p.test("https://axelstar.github.io/halkvakt-karta/data/vaglag.geojson")
     && !p.test("https://895845.github.io/halkvakt-sidor/APPEN.html");
-  if (!(ok1 && ok2 && ok3 && ok4 && ok5 && ok6 && ok7 && ok8)) { console.error("✗ sidorna självtest", { ok1, ok2, ok3, ok4, ok5, ok6, ok7, ok8 }); process.exit(1); }
+  // Bara de relativa filerna, var och en en gång; inte webbadresser, data:, ankare, rotsökvägar, ../ eller länkar till andra sidor.
+  const app: Record<string, string> = { "docs/APPEN.html": '<img src="produktbok/a.png"><img src="produktbok/a.png"><a href="bilder/b.pdf">b</a>' +
+    '<img src="https://x.se/c.png"><img src="data:image/png;base64,AA"><a href="#topp">t</a><img src="/d.png"><img src="../e.png">' +
+    '<a href="MATNINGAR.html">m</a><img src="${bild}">', "docs/PROJEKTKARTAN.html": '<img src="produktbok/a.png">' };
+  const r = resurser([{ fil: "docs/APPEN.html", namn: "A" }, { fil: "docs/PROJEKTKARTAN.html", namn: "P" }], (f) => app[f]);
+  const ok9 = JSON.stringify(r) === JSON.stringify([{ namn: "bilder/b.pdf", fil: "docs/bilder/b.pdf", sida: "APPEN.html" },
+    { namn: "produktbok/a.png", fil: "docs/produktbok/a.png", sida: "APPEN.html" }]);
+  if (!(ok1 && ok2 && ok3 && ok4 && ok5 && ok6 && ok7 && ok8 && ok9)) { console.error("✗ sidorna självtest", { ok1, ok2, ok3, ok4, ok5, ok6, ok7, ok8, ok9 }); process.exit(1); }
   console.log("✓ sidorna självtest: sidlistan, skalet med noindex, förstasidan med byggets sha, dagens synk i STATUS, datumet i svensk tid, " +
-    "fördröjningen mot main och den gamla Pages-adressen");
+    "fördröjningen mot main, den gamla Pages-adressen och filerna sidorna pekar på");
 }
 
 async function main(): Promise<void> {
@@ -203,9 +235,18 @@ async function main(): Promise<void> {
     const mapp = arg[b + 1];
     if (!mapp) { console.error("✗ ange --bygg <mapp>"); process.exit(2); }
     const sha = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
+    const las = (f: string) => readFileSync(f, "utf8");
     mkdirSync(mapp, { recursive: true });
-    for (const [namn, text] of webbplats((f) => readFileSync(f, "utf8"), sha)) writeFileSync(join(mapp, namn), text);
-    console.log(`✓ sidorna byggda i ${mapp} ur ${sha.slice(0, 7)}`);
+    for (const [namn, text] of webbplats(las, sha)) writeFileSync(join(mapp, namn), text);
+    // En fil som saknas stoppar inte bygget, så att resten av sidorna ändå kommer ut; genomsökningen larmar om den.
+    let n = 0;
+    for (const r of resurser(sidlista(JSON.parse(las("docs/kortkartan.json"))), las)) {
+      if (!existsSync(r.fil)) { console.error(`obs ${r.sida} pekar på ${r.namn}, men ${r.fil} saknas`); continue; }
+      mkdirSync(dirname(join(mapp, r.namn)), { recursive: true });
+      copyFileSync(r.fil, join(mapp, r.namn));
+      n++;
+    }
+    console.log(`✓ sidorna byggda i ${mapp} ur ${sha.slice(0, 7)}, med ${n} filer som sidorna pekar på`);
     return;
   }
   const g = arg.indexOf("--genomsok");
@@ -217,7 +258,8 @@ async function main(): Promise<void> {
     if (process.env.GH_TOKEN) await arende(fel);
     if (process.env.GITHUB_STEP_SUMMARY) writeFileSync(process.env.GITHUB_STEP_SUMMARY, fel.length ? fel.map((f) => `- ✗ ${f}`).join("\n") + "\n" : "✓ Allt aktuellt.\n", { flag: "a" });
     if (fel.length) process.exit(1);
-    console.log(`✓ genomsökningen: sidorna på ${bas} lika bygget ur main och inte för gamla, de skriptskrivna delarna aktuella${process.env.DYGN === "true" ? ", dagens synk på main" : ""}, inga gamla adresser`);
+    console.log(`✓ genomsökningen: sidorna och filerna de pekar på, på ${bas}, lika bygget ur main och inte för gamla,` +
+      ` de skriptskrivna delarna aktuella${process.env.DYGN === "true" ? ", dagens synk på main" : ""}, inga gamla adresser`);
     return;
   }
   console.error("✗ ange --bygg <mapp>, --genomsok <bas-url> eller --sjalvtest"); process.exit(2);
