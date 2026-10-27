@@ -80,13 +80,16 @@ const NYA: { namn: string; schema: string; fil: string }[] = [
   // databasens klocka. `*/6` av samma skäl som ovan.
   { namn: "puls-ny-kandidat-fysik", schema: "28 */6 * * *", fil: "ny-kandidat-fysik.yml" },
   { namn: "puls-ny-kandidat-timme", schema: "47 * * * *", fil: "ny-kandidat-timme.yml" },
+  // DECISIONS #734 (Bengt 27/10): kodgrinden varje dygn tills C är avgjord; domlarmet tiger på SPÄRRAD och säger till vid
+  // KLARAR eller FALLER. 09:16, efter morgonavbrottens fönster (03:28–07:39), och :16 är ledig i databasens klocka. ~16 s per körning.
+  { namn: "puls-kodgrinden", schema: "16 9 * * *", fil: "kodgrinden.yml" },
 ];
 
 // Vakthundens check 6a bär samma tal som golv (kort #222, DECISIONS #255): ett puls-jobb som
 // avaktiveras eller raderas ska larma, inte tyst falla ur bevakningslistan. Vakthunden kör i Deno
 // hos Supabase och kan inte importera den här filen, så talet är en KOPIA — kontraktsgrinden vaktar
 // att kopiorna bär samma värde, och raden under vaktar att värdet stämmer med listan ovan.
-const ANTAL_NYA = 21;
+const ANTAL_NYA = 22;
 if (NYA.length !== ANTAL_NYA) {
   console.error(`NYA har ${NYA.length} jobb men ANTAL_NYA säger ${ANTAL_NYA} — uppdatera båda, och vakthundens PULS_GOLV.`);
   process.exit(1);

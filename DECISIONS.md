@@ -18483,3 +18483,37 @@ egen infrastruktur i beroendekartan), länkarna (bland dem `docs/kortkartan.json
 `docs/projektkartan.json`) och CLAUDE.md (sessionsprotokollet steg 1, STOMREGELN, KORTKARTAN, PROJEKTKARTAN och DOKUMENTSYNKEN steg 8).
 
 **Stomdokument:** BED §4.2 sidorna byggs i 895845/halkvakt-sidor en gång per dygn
+
+## #734 (27/10 2026) Kodgrinden körs varje dygn av pulsklockan, 09:16 UTC, tills C är avgjord
+
+**Bengts ord 27/10:** *"kan man inte automatisera körning av kodgrinden c"* och *"Ja, gör PR:en för kodgrindens dagliga
+körning via pulsklockan, med beslutet. Slå inte ihop förrän jag säger till."*
+
+**Bakgrund.**
+- C-raden får skriva ett utfall först när arkivet bär minst 30 kod 1-rader med vinterord från minst 3 län (#510). Annars blir
+  den OAVGJORT eller SPÄRRAD.
+- Knappen har tryckts för hand tre gånger: 20/10 OAVGJORT (39401059236), 21/10 SPÄRRAD (39617620449) och 27/10 SPÄRRAD
+  (40556180344). Båda de senare hade 0 rader från 0 län. Varje gång krävdes en frist och ett ärende (#1219), och när snön ger
+  tillräckligt underlag går inte att förutse.
+- Flödet sa *"Knapp, inte cron — kadensen beslutas när första avläsningen finns"*. Avläsningarna finns nu. En körning tar 16 s
+  och är gratis i Actions, eftersom repot är publikt.
+- Domlarmet (#649) skriver ett ärende med etiketten `dom` för KLARAR, FALLER och LÄS, en gång per grind och utfall, och tiger på
+  SPÄRRAD och OAVGJORT. En daglig körning säger alltså till första gången C blir avgjord, och tiger dessförinnan.
+
+**Beslut.**
+1. `puls-kodgrinden` med schemat `16 9 * * *` läggs i pulsklockans lista (`scripts/pulsklocka.ts`). 09:16 UTC ligger efter
+   morgonavbrottens fönster (03:28–07:39 UTC, 19 och 20/10), och minuten :16 är ledig i databasens klocka. GitHub-cronen
+   används inte (kort #160, #688).
+2. Vakthundens `PULS_GOLV` och pulsklockans `ANTAL_NYA` blir 22. Kontraktsgrinden vaktar att de två är lika. Mätvakten får
+   kodgrinden i sin lista med kadensen 24 h.
+3. Jobbet går tills C är avgjord. Signalen är domlarmets första ärende för *Kodgrinden C*. Då avgör Bengt om jobbet tas bort
+   eller får gå vidare som vakt på premissen. En FALLER fäller också jobbet, så mätvakten larmar då samtidigt.
+4. Ingen ny frist för C behövs.
+
+**Följd** (som #627 och #688): efter sammanslagningen kör Bengt `pulsklocka` i läget skarp, så att jobbet läggs in i pg_cron,
+och deployar sedan vakthunden. Fram till dess körs kodgrinden bara för hand. Deployas vakthunden före pulsklockan larmar den på
+det saknade jobbet.
+
+**Vad som inte ändras.** Underlagsspärren (30 från 3), skriptet, domlarmet och knappen.
+
+**Stomdokument:** MAT §11 domkalendern med kodgrinden C varje dygn, SYS kodgrinden i pulsklockan
