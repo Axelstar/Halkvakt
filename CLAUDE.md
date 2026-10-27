@@ -273,9 +273,12 @@ en körning skrev nådde aldrig synken, som läser beslut och commits, inte utsk
 6. En rad i STATUS.md: *Dokumentsynk <datum>:* vad som rättades per dokument, eller *inget att stämma av* — en tyst morgon ska inte
    se ut som en lyckad — och *Att republicera:* med de artefakter vars källa ändrades. Raden och rapporten listar också de öppna
    ärendena med etiketterna `frist` och `dom` (#649); ett dom-ärende bokförs på Bengts ord, aldrig av rutinen.
-7. Commit (märk den aldrig så att CI hoppas över), push, PR med rubriken *Dokumentsynk: <datum>*. Rutinen slår aldrig ihop: PR:en
-   väntar på Bengts *slå ihop*, och rapporten säger om ci och md-vakt är gröna på exakt huvudet och om `--tillatna` är grön (Bengts
-   val (b) 8/10, DECISIONS #488: auto-läget nekade sammanslagningen första morgonen, och (d) i #484 är struken).
+7. Commit (märk den aldrig så att CI hoppas över), push, PR med rubriken *Dokumentsynk: <datum>*. **Rutinen slår ihop sin egen PR**
+   (Bengt 27/10, DECISIONS #730, som ersätter (b) i #488) när alla tre håller: `stomvakten.ts --tillatna` är grön (grenen rör bara
+   dokumenten), ci och md-vakt är gröna på exakt huvudet, och PR:en går att slå ihop utan konflikt. Sammanslagningen görs med
+   huvudets sha (`PUT /pulls/<nr>/merge` med `sha`), så att inget som kom efter provet följer med. Håller något av de tre inte, eller
+   nekas sammanslagningen (auto-läget nekade den 8/10), väntar PR:en på Bengts *slå ihop*, och rapporten säger vilket villkor som föll.
+   Rapporten säger alltid om PR:en slogs ihop, med nummer och huvud.
 8. Republicera de artefakter vars källa ändrades, till sina adresser. Når rutinen inte artefakterna gör dagens första session det
    (sessionsprotokollet steg 1).
 Rutinen fattar inga beslut, ändrar inga trösklar, rör ingen kod och inga hemligheter och kör inga flöden. Det som kräver ett

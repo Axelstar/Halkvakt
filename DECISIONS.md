@@ -18318,3 +18318,22 @@ själv; andelen sådana timmar redovisas. Ett beslut att gå tillbaka är en ny 
 **Valet inför 2027/28** görs i en egen förregistrering, med båda domarna som underlag (§12 g, tillägget §5).
 
 **Stomdokument:** KUV, LIV, APP den nya kandidaten talar i appen
+
+## #730 (27/10 2026) Dokumentsynken slår ihop sin egen PR på grön CI
+
+**Bengts ord 27/10:** *"Slå ihop och kan du inte programmera om så att den alltid slår ihop sig själv"* (efter morgonens PR #1224,
+som slogs ihop som 019b2d2 på ci och md-vakt gröna på 94c59e0).
+
+**Beslutet.** Morgonrutinens dokumentsynk slår ihop sin egen PR *Dokumentsynk: <datum>* när alla tre håller: (1) `stomvakten.ts
+--tillatna` är grön, alltså rör grenen bara dokumenten; (2) ci och md-vakt är gröna på exakt huvudet; (3) PR:en går att slå ihop utan
+konflikt. Sammanslagningen görs med huvudets sha, så att inget som pushats efter provet följer med. Håller något villkor inte, eller
+nekas sammanslagningen, väntar PR:en på Bengts *slå ihop* som förut, och rapporten säger vilket villkor som föll. Det ersätter (b) i
+#488 (*rutinen slår aldrig ihop*) och tar tillbaka (d) i #484 i den formen. Regeln står i CLAUDE.md, DOKUMENTSYNKEN steg 7.
+
+**Det som inte ändras:** rutinen fattar inga beslut, ändrar inga trösklar, rör ingen kod och inga hemligheter och kör inga flöden; en
+gren som rör något annat än dokumenten fälls av `--tillatna` och väntar på Bengt. Republiceringen i steg 8 sker efter sammanslagningen.
+
+**Alternativ:** som förut, att varje morgon vänta på Bengts ord (#488) — bortvalt av Bengt. Skälet till #488 var att auto-läget nekade
+sammanslagningen första morgonen 8/10; nekas den igen faller rutinen tillbaka på Bengts ord i stället för att stanna.
+
+**Stomdokument:** inga — regeln gäller rutinens arbetsgång och står i CLAUDE.md; inget av de åtta beskriver den
