@@ -217,7 +217,7 @@ function sjalvtest(): void {
     && !p.test("https://895845.github.io/halkvakt-sidor/APPEN.html");
   // Bara de relativa filerna, var och en en gång; inte webbadresser, data:, ankare, rotsökvägar, ../ eller länkar till andra sidor.
   const app: Record<string, string> = { "docs/APPEN.html": '<img src="produktbok/a.png"><img src="produktbok/a.png"><a href="bilder/b.pdf">b</a>' +
-    '<img src="https://x.se/c.png"><img src="data:image/png;base64,AA"><a href="#topp">t</a><img src="/d.png"><img src="../e.png">' +
+    '<img src="https://895845.github.io/halkvakt-sidor/c.png"><img src="data:image/png;base64,AA"><a href="#topp">t</a><img src="/d.png"><img src="../e.png">' +
     '<a href="MATNINGAR.html">m</a><img src="${bild}">', "docs/PROJEKTKARTAN.html": '<img src="produktbok/a.png">' };
   const r = resurser([{ fil: "docs/APPEN.html", namn: "A" }, { fil: "docs/PROJEKTKARTAN.html", namn: "P" }], (f) => app[f]);
   const ok9 = JSON.stringify(r) === JSON.stringify([{ namn: "bilder/b.pdf", fil: "docs/bilder/b.pdf", sida: "APPEN.html" },
