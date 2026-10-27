@@ -82,16 +82,16 @@ ligger på +1…+3 °C, har fallit minst 0,8 °C på 30 minuter och mätaren set
 <!-- LÄGESRADER §4: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 *Läget i projektkartan:*
 
-- [Trafikverkets väderstationer](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-vader): delvis, 89 % · kvar: Mätpunkter utan lufttemperatur vaktas inte (kort #344, #345): avgjort 14/10, ingen ändring nu, frågan tas upp inför 2027/28 (bedömningen §4.2). Mätt mot kandidatens veto 20/10: tre fjärrytor vetade 16 punkter på 9 sträcktimmar 17–20/10 och tystade ingen fuktig sträcka (DB-knappen 39415616056)
-- [Trafikverkets väglag (RoadCondition)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-vaglag): klar
-- [Trafikverkets olyckor, djur och hinder](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-situation): klar
-- [Publiceringen var tionde minut](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-l-publicera): klar
-- [Motorn i tre språk](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-motorn): klar
-- [Olyckor (A3), med olycksläget](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-olyckor): klar
-- [Rapporterad halka (A1)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-halka): klar
-- [Frysrisk vid stationer och broar (A2)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-frysrisk): klar
-- [Djur på vägen (A4)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-vilt): klar
-- [Fartkameror (A5)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-kameror): klar
+- [Trafikverkets väderstationer](https://axelstar.github.io/Halkvakt/PROJEKTKARTAN.html#del-k-vader): delvis, 89 % · kvar: Mätpunkter utan lufttemperatur vaktas inte (kort #344, #345): avgjort 14/10, ingen ändring nu, frågan tas upp inför 2027/28 (bedömningen §4.2). Mätt mot kandidatens veto 20/10: tre fjärrytor vetade 16 punkter på 9 sträcktimmar 17–20/10 och tystade ingen fuktig sträcka (DB-knappen 39415616056)
+- [Trafikverkets väglag (RoadCondition)](https://axelstar.github.io/Halkvakt/PROJEKTKARTAN.html#del-k-vaglag): klar
+- [Trafikverkets olyckor, djur och hinder](https://axelstar.github.io/Halkvakt/PROJEKTKARTAN.html#del-k-situation): klar
+- [Publiceringen var tionde minut](https://axelstar.github.io/Halkvakt/PROJEKTKARTAN.html#del-l-publicera): klar
+- [Motorn i tre språk](https://axelstar.github.io/Halkvakt/PROJEKTKARTAN.html#del-m-motorn): klar
+- [Olyckor (A3), med olycksläget](https://axelstar.github.io/Halkvakt/PROJEKTKARTAN.html#del-m-olyckor): klar
+- [Rapporterad halka (A1)](https://axelstar.github.io/Halkvakt/PROJEKTKARTAN.html#del-m-halka): klar
+- [Frysrisk vid stationer och broar (A2)](https://axelstar.github.io/Halkvakt/PROJEKTKARTAN.html#del-m-frysrisk): klar
+- [Djur på vägen (A4)](https://axelstar.github.io/Halkvakt/PROJEKTKARTAN.html#del-m-vilt): klar
+- [Fartkameror (A5)](https://axelstar.github.io/Halkvakt/PROJEKTKARTAN.html#del-m-kameror): klar
 
 <!-- /LÄGESRADER -->
 
@@ -189,14 +189,14 @@ bredvid som kontroll och reserv (§6). Förväntan är skriven före vintern: 5,
 <!-- LÄGESRADER §5: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 *Läget i projektkartan:*
 
-- [SMHI:s varningar](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-smhi-varningar): delvis, 92 % · kvar: Ingen läsare i motorn: efter F-A (de första vintervarningarna) och F-B (en vintermånad)
-- [SMHI:s nederbördsradar](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-radar): delvis, 88 % · kvar: Radarns tal R i förregistreringen §10 (a), läses 26/10 (#568)
-- [Vägdatalagret (NVDB)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-vagdata): delvis, 92 % · kvar: Kuvösens inläsning till kuvos_ra.vagdata (kort #303)
-- [Lägesfilens fält för skuggdelarna](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-l-falten): klar
-- [L3 trenden](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-trenden): delvis, 44 % · kvar: T-B vilar till 2027/28 (#675); trendens värden prövas inom efterhalkan
-- [Rimfrosten](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-rimfrost): väntar, 44 % · En frostmånad för R-B; uppspelningen ur arkivet är byggd (#510), domen läses 9/11 (frist r-b-dom).
-- [Nederbördstypen (snö, slask)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-nederbord): väntar, 44 % · Domen tidigast 1/3 2027 när vintern gett ≥100 snö- och ≥40 slaskepisoder (NT-D).
-- [Kallplatserna](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-kallplatser): stängd · Kortet #91 stängt 25/9; vårlistans Ä6 struken 22/10 (#675): idén lever i kandidatens terrängsärdrag och kort #321
+- [SMHI:s varningar](https://axelstar.github.io/Halkvakt/PROJEKTKARTAN.html#del-k-smhi-varningar): delvis, 92 % · kvar: Ingen läsare i motorn: efter F-A (de första vintervarningarna) och F-B (en vintermånad)
+- [SMHI:s nederbördsradar](https://axelstar.github.io/Halkvakt/PROJEKTKARTAN.html#del-k-radar): delvis, 88 % · kvar: Radarns tal R i förregistreringen §10 (a), läses 26/10 (#568)
+- [Vägdatalagret (NVDB)](https://axelstar.github.io/Halkvakt/PROJEKTKARTAN.html#del-k-vagdata): delvis, 92 % · kvar: Kuvösens inläsning till kuvos_ra.vagdata (kort #303)
+- [Lägesfilens fält för skuggdelarna](https://axelstar.github.io/Halkvakt/PROJEKTKARTAN.html#del-l-falten): klar
+- [L3 trenden](https://axelstar.github.io/Halkvakt/PROJEKTKARTAN.html#del-m-trenden): delvis, 44 % · kvar: T-B vilar till 2027/28 (#675); trendens värden prövas inom efterhalkan
+- [Rimfrosten](https://axelstar.github.io/Halkvakt/PROJEKTKARTAN.html#del-m-rimfrost): väntar, 44 % · En frostmånad för R-B; uppspelningen ur arkivet är byggd (#510), domen läses 9/11 (frist r-b-dom).
+- [Nederbördstypen (snö, slask)](https://axelstar.github.io/Halkvakt/PROJEKTKARTAN.html#del-m-nederbord): väntar, 44 % · Domen tidigast 1/3 2027 när vintern gett ≥100 snö- och ≥40 slaskepisoder (NT-D).
+- [Kallplatserna](https://axelstar.github.io/Halkvakt/PROJEKTKARTAN.html#del-m-kallplatser): stängd · Kortet #91 stängt 25/9; vårlistans Ä6 struken 22/10 (#675): idén lever i kandidatens terrängsärdrag och kort #321
 
 <!-- /LÄGESRADER -->
 
@@ -360,10 +360,10 @@ till tre (v42–v44, #577). Taket var i båda fallen långt över kostnaden.
 <!-- LÄGESRADER §6: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 *Läget i projektkartan:*
 
-- [L2 tillståndet (skattaren S1–S3)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-tillstand): delvis, 100 % · kvar: Skattarens träffsäkerhet mot operatörens klasser, dömbar först med vinterfacit
-- [L4 räckvidden: segmentprognosen](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-segmentprognos): väntar, 74 % · Domen i mars 2027 (grind A–C) på kandidaten NIVÅ 2+BLANDNING som ny fråga, RÅ kontroll och reserv (#547), val d på kort #270 struket 21/10, domslut (b) döms per band (#655).
-- [L5 allvar som försprång](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-forsprang): delvis, 56 % · kvar: FS-A: nivå 2-fall i vinter (kod 3–4, eller yta ≤ 0 °C med väta ≥ 3); kod 3 och 4 finns i arkivet sedan 20–21/10 (kodgrinden 39617620449: 75 och 5 rader), andelen döms i mars
-- [RÅ: kontroll och reserv](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-prognoslagret): väntar, 88 % · Premissläsningen tisdag 24/11 (DECISIONS #435), som kunskap om RÅ; RÅ:s dom i mars redovisas bredvid kandidatens som kontroll och reserv (#547).
+- [L2 tillståndet (skattaren S1–S3)](https://axelstar.github.io/Halkvakt/PROJEKTKARTAN.html#del-m-tillstand): delvis, 100 % · kvar: Skattarens träffsäkerhet mot operatörens klasser, dömbar först med vinterfacit
+- [L4 räckvidden: segmentprognosen](https://axelstar.github.io/Halkvakt/PROJEKTKARTAN.html#del-m-segmentprognos): väntar, 74 % · Domen i mars 2027 (grind A–C) på kandidaten NIVÅ 2+BLANDNING som ny fråga, RÅ kontroll och reserv (#547), val d på kort #270 struket 21/10, domslut (b) döms per band (#655).
+- [L5 allvar som försprång](https://axelstar.github.io/Halkvakt/PROJEKTKARTAN.html#del-m-forsprang): delvis, 56 % · kvar: FS-A: nivå 2-fall i vinter (kod 3–4, eller yta ≤ 0 °C med väta ≥ 3); kod 3 och 4 finns i arkivet sedan 20–21/10 (kodgrinden 39617620449: 75 och 5 rader), andelen döms i mars
+- [RÅ: kontroll och reserv](https://axelstar.github.io/Halkvakt/PROJEKTKARTAN.html#del-m-prognoslagret): väntar, 88 % · Premissläsningen tisdag 24/11 (DECISIONS #435), som kunskap om RÅ; RÅ:s dom i mars redovisas bredvid kandidatens som kontroll och reserv (#547).
 
 <!-- /LÄGESRADER -->
 

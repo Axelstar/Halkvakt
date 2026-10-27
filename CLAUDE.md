@@ -100,8 +100,9 @@ Allt i repot är publikt och går inte att ta tillbaka: filerna, historiken, är
 ## Session protocol (self-steering)
 Every session, in order:
 1. Run the kartsynk first (`node --experimental-strip-types scripts/kartsynk.ts`) and book what it lists (PROJEKTKARTAN →
-   Kartsynken below). Read the morning's dokumentsynk (DOKUMENTSYNKEN below): its STATUS line, its PR, and republish every artifact its line lists under
-   *Att republicera* that this machine can reach. Then the open issues labelled `frist` and `dom` (DECISIONS #649): a frist due
+   Kartsynken below). Read the morning's dokumentsynk (DOKUMENTSYNKEN below): its STATUS line and its PR (merged by the flow `synk-ihop`, DECISIONS #731;
+   if it is still open, the flow's comment says why). The pages are published on GitHub Pages by the flow `sidorna` (#731): an open
+   issue *Genomsökningen av sidorna hittade fel* is raised with Bengt like a frist. Then the open issues labelled `frist` and `dom` (DECISIONS #649): a frist due
    today or overdue, and a dom waiting to be booked, are raised with Bengt before anything else. Then orient per SESSIONSREGELN below: the project map (`docs/PROJEKTKARTAN.html`, PROJEKTKARTAN below) for where every part stands, the latest `docs/BEDOMNING-*.md` in full, `docs/INTEGRATIONSKARTAN.md` when it
    changed or a new grepp starts, TAVLA.md's 🟡 section, DECISIONS added since last session, latest CI runs. Search
    TAVLA, STATUS and DECISIONS — don't read them whole (halved 26/9; the older half is in TAVLA-ARKIV.md and
@@ -111,7 +112,7 @@ Every session, in order:
 3. Prove it: tests/CI/logs — never claim done without evidence.
 4. Commit with a message explaining what + why. Update the bedömning (läget överst,
    §4.2) and TAVLA; a session-log line in STATUS.md. Log decisions in DECISIONS.md, each with its **Stomdokument:** line —
-   the seven stomdokument's hand text is reconciled once a day by the morning dokumentsynk, not in each round (STOMREGELN,
+   the eight stomdokument's hand text is reconciled once a day by the morning dokumentsynk, not in each round (STOMREGELN,
    DECISIONS #522). Run the card review (`scripts/kortkartan.ts
    --genomgang`) and close every card whose Verify is met, in the same commit (TAVELREGELN 5).
 5. End by telling Axel: what shipped, what's next, and ONLY the questions that
@@ -159,7 +160,7 @@ Varje arbetsvarv AVSLUTAS med att TAVLA.md synkas mot verkligheten:
 3. Verkligheten bevisar något (commit, kvitto, skärmbild) → kortet flyttas
    utan att fråga.
 4. Finns det inte på tavlan finns det inte. Idéer utan kort = tappade idéer.
-5. **Kortgenomgången (Bengts krav 3/10, DECISIONS #451) — ett krav, som kartan och artefakterna:** varje varv avslutas, och varje
+5. **Kortgenomgången (Bengts krav 3/10, DECISIONS #451) — ett krav, som kartan och sidorna:** varje varv avslutas, och varje
    kartsynk körs, med `node --experimental-strip-types scripts/kortkartan.ts --genomgang`, som listar varje öppet kort med dess
    Verify-rad och "Kvar". Vart och ett prövas mot beviset: ett kort vars Verify är uppfylld med ett bevis som går att följa flyttas
    till 🟢 med beviset på raden **i samma commit** (kortkartan.json och delens `kort` i projektkartan.json följer med), och ett kort
@@ -167,30 +168,33 @@ Varje arbetsvarv AVSLUTAS med att TAVLA.md synkas mot verkligheten:
 Tavlan är människolagret; bedömningen, STATUS och DECISIONS är djuplagren.
 
 ## STOMREGELN (Bengts order 2026-10-01 — åtta stomdokument, DECISIONS #415, #425, #445, #557)
-Åtta dokument är Bengts facit och kontrollpunkter för var vi är, och stommen för det fortsatta bygget:
-1. *Halkvaktens mätningar* — artefakt https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc, källa `docs/MATNINGAR.html`
-2. *Halkvaktens app* — https://claude.ai/artifact/FThC1PqVqEMqWxofrCv1GT, källa `docs/APPEN.html`
-3. *Halkvaktens systembild* — https://claude.ai/artifact/6hHX4LeXQUrJSbaNthNY9i, källa `docs/SYSTEMBILDEN.html`
+Åtta dokument är Bengts facit och kontrollpunkter för var vi är, och stommen för det fortsatta bygget. Sidorna läses på GitHub Pages,
+https://axelstar.github.io/Halkvakt/, som byggs ur main (Bengt 27/10, DECISIONS #731); deras adresser på claude.ai uppdateras inte längre:
+1. *Halkvaktens mätningar* — https://axelstar.github.io/Halkvakt/MATNINGAR.html, källa `docs/MATNINGAR.html`
+2. *Halkvaktens app* — https://axelstar.github.io/Halkvakt/APPEN.html, källa `docs/APPEN.html`
+3. *Halkvaktens systembild* — https://axelstar.github.io/Halkvakt/SYSTEMBILDEN.html, källa `docs/SYSTEMBILDEN.html`
 4. Bedömningen — den senaste `docs/BEDOMNING-*.md`
 5. Integrationskartan — `docs/INTEGRATIONSKARTAN.md` (inte längre fryst sedan 22/10, DECISIONS #678)
-6. *Halkvaktens kuvös* — https://claude.ai/artifact/1xvv4hydYbfpF5eXFgLcxh, källa `docs/KUVOSEN.html` (tillagd 1/10 på Bengts order, DECISIONS #425)
-7. *Halkvaktens favoriter* — https://claude.ai/artifact/EJYcQFCyKYd9BgGcYkCMyT, källa `docs/FAVORITER.html` (tillagd 3/10 på Bengts order, DECISIONS #445)
-8. *Nivå 2+blandning live* — https://claude.ai/artifact/Wsuxr3UTG7d7axekXireqg, källa `docs/NIVA2-LIVE.html` (tillagd 14/10 på Bengts order, DECISIONS #557): stegen till kandidaten i appen, kort #343
+6. *Halkvaktens kuvös* — https://axelstar.github.io/Halkvakt/KUVOSEN.html, källa `docs/KUVOSEN.html` (tillagd 1/10 på Bengts order, DECISIONS #425)
+7. *Halkvaktens favoriter* — https://axelstar.github.io/Halkvakt/FAVORITER.html, källa `docs/FAVORITER.html` (tillagd 3/10 på Bengts order, DECISIONS #445)
+8. *Nivå 2+blandning live* — https://axelstar.github.io/Halkvakt/NIVA2-LIVE.html, källa `docs/NIVA2-LIVE.html` (tillagd 14/10 på Bengts order, DECISIONS #557): stegen till kandidaten i appen, kort #343
 **En gång per dygn (Bengts order 11/10, DECISIONS #522).** De åtta stäms av EN gång per dygn, av morgonens dokumentsynk (DOKUMENTSYNKEN
-nedan): den läser allt som hänt sedan förra synken och rättar handtexten, och artefakterna republiceras då — når rutinen dem inte,
-gör dagens första session det. I varje varv förs bara in det som maskinerna prövar: beslutet med sin rad `**Stomdokument:**` (som
+nedan): den läser allt som hänt sedan förra synken och rättar handtexten. Flödet `synk-ihop` slår ihop synkens PR när kontrollerna
+är gröna, och flödet `sidorna` publicerar sidorna på GitHub Pages ur main, vid varje ändring och en gång per dygn med en genomsökning
+av att allt är aktuellt (Bengt 27/10, DECISIONS #731). I varje varv förs bara in det som maskinerna prövar: beslutet med sin rad `**Stomdokument:**` (som
 säger vad synken ska stämma av), tavlan, projektkartan och kortkartan (skripten skriver lägesraderna och korten i sidorna) och en
 rad i STATUS. Skälet: 107 av 118 commits 4–11/10 rörde dokument, och varje ändring rättade två till tre sidor och republicerade dem
-efter sammanslagningen. En artefakt får ligga högst ett dygn efter sin repokopia. Integrationskartans frysregel är hävd
+efter sammanslagningen. Sidorna på GitHub Pages är lika main inom några minuter; löptexten ligger högst ett dygn efter
+(Bengt 27/10: *"det räcker med en gång per dygn"*). Integrationskartans frysregel är hävd
 sedan 22/10 (Bengt, DECISIONS #678): den rättas av synken som de andra. Kontrollen att inget
 beslut glömts är `stomvakten.ts --lage` i synken: varje dokuments senaste handtextändring och besluten sedan dess som namnger det.
 **KORTKARTAN (Bengts order 3/10, DECISIONS #445).** Varje öppet kort på tavlan hör till ett eller flera avsnitt i stomdokumenten,
 och varje stomdokument visar sina öppna kort under rubriken *Öppna kort*. Kopplingen bor på ETT ställe, `docs/kortkartan.json`;
 listorna skrivs av `node --experimental-strip-types scripts/kortkartan.ts` och ändras aldrig för hand. Ett nytt kort, ett stängt kort
-eller en ny rubrik på ett kort ⇒ kortkartan.json och skriptet i SAMMA commit som tavlan; republiceringen sker i dygnets synk (#522). `--check` (i ci.yml, och i md-vakt.yml för commits som bara ändrar .md) fäller på okopplade kort, kopplingar till stängda kort, okända avsnitt och listor som inte är aktuella.
+eller en ny rubrik på ett kort ⇒ kortkartan.json och skriptet i SAMMA commit som tavlan; sidorna på GitHub Pages byggs om av flödet `sidorna` (#731). `--check` (i ci.yml, och i md-vakt.yml för commits som bara ändrar .md) fäller på okopplade kort, kopplingar till stängda kort, okända avsnitt och listor som inte är aktuella.
 
 ## PROJEKTKARTAN (Bengts ja 2026-10-03 — navet över bygget, DECISIONS #446)
-*Halkvaktens projektkarta* — https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8, källa `docs/PROJEKTKARTAN.html`, skriven ur `docs/projektkartan.json` av
+*Halkvaktens projektkarta* — https://axelstar.github.io/Halkvakt/PROJEKTKARTAN.html, källa `docs/PROJEKTKARTAN.html`, skriven ur `docs/projektkartan.json` av
 `node --experimental-strip-types scripts/projektkartan.ts` (ändras aldrig för hand). Den är navet OVANFÖR de åtta stomdokumenten:
 varje del av projektet med block, läge, bevis eller nyckel, vad som saknas, beroenden, kort, beslut och var delen beskrivs.
 - **Kartan äger LÄGET per del** och är vägen in i bygget. Den är **underordnad BEVISET**: grönt kräver ett bevis som går att följa
@@ -198,7 +202,7 @@ varje del av projektet med block, läge, bevis eller nyckel, vad som saknas, ber
   koden eller ett prov något annat är kartan fel, inte koden. Besluten stannar i DECISIONS, ordningen och kalendern i bedömningen,
   arbetet på tavlan och reglerna i tröskeldokumenten.
 - **Samma commit:** byggs, mäts, stängs eller öppnas något ⇒ delens rad i projektkartan.json och skriptet i SAMMA commit som ändringen;
-  republiceringen till samma URL sker i dygnets synk (#522). Ett nytt kort ska hänga på en del. `--check` i ci.yml (och i md-vakt.yml för commits som bara ändrar .md) fäller en del som bär ett öppet kort fast den är grön eller dess Verify-steg är klart (kortvakten, DECISIONS #449), grönt utan bevis, blått utan nyckel,
+  sidan på GitHub Pages byggs om av flödet `sidorna` (#731). Ett nytt kort ska hänga på en del. `--check` i ci.yml (och i md-vakt.yml för commits som bara ändrar .md) fäller en del som bär ett öppet kort fast den är grön eller dess Verify-steg är klart (kortvakten, DECISIONS #449), grönt utan bevis, blått utan nyckel,
   orange och rött utan lista, okända beroenden och avsnitt, öppna kort utan del och en sida som inte är aktuell.
 - **Mätt mot koden 3/10** (kort #286): varje del har byggsteg med bevis, och procenten räknas ur stegen, viktad 1–3. En ny del får byggsteg
   från början; ett steg är klart bara med bevis.
@@ -217,8 +221,8 @@ varje del av projektet med block, läge, bevis eller nyckel, vad som saknas, ber
   skriptet listar varje commit på main sedan `synk.till` som inte rörde kartan (utom Marknadsmotorns och Halkvakt lives, trv-bevakningens och
   kartsynkens egna). Sessionen bokför var och en på sin del — steget och kort sha som bevis — eller konstaterar att den inte rör
   någon del, och kör sedan `--bokford`. Grenen heter `kartsynk/<datum>`, PR-rubriken börjar med "Kartsynk:", och en gren där
-  `--tillatna` är grön (den rör bara kartan och det kartan skriver) slås ihop på grön CI på exakt huvudet utan "slå ihop" och
-  republiceras; allt annat väntar på Bengts ord. Regeln *samma commit* ovan gäller fortfarande — kartsynken är nätet under den.
+  `--tillatna` är grön (den rör bara kartan och det kartan skriver) slås ihop på grön CI på exakt huvudet utan "slå ihop";
+  allt annat väntar på Bengts ord. Regeln *samma commit* ovan gäller fortfarande — kartsynken är nätet under den.
   En session utan GitHub-API (webben, mobilen) gör bokföringsvägen; signalerna tar nästa session som når dem. Kartsynken listar
   också **öppna PR:er** (6/10): en PR som väntar lyfts i rapporten till Bengt, och kartgrenar slås ihop av sessionen, aldrig av CI.
 
@@ -271,13 +275,15 @@ en körning skrev nådde aldrig synken, som läser beslut och commits, inte utsk
 5. `projektkartan.ts` och `kortkartan.ts`, sedan `--check` på båda, `kartsynk.ts --check`, `fristvakten.ts --check` och
    `stomvakten.ts --tillatna`.
 6. En rad i STATUS.md: *Dokumentsynk <datum>:* vad som rättades per dokument, eller *inget att stämma av* — en tyst morgon ska inte
-   se ut som en lyckad — och *Att republicera:* med de artefakter vars källa ändrades. Raden och rapporten listar också de öppna
+   se ut som en lyckad. Raden och rapporten listar också de öppna
    ärendena med etiketterna `frist` och `dom` (#649); ett dom-ärende bokförs på Bengts ord, aldrig av rutinen.
-7. Commit (märk den aldrig så att CI hoppas över), push, PR med rubriken *Dokumentsynk: <datum>*. Rutinen slår aldrig ihop: PR:en
-   väntar på Bengts *slå ihop*, och rapporten säger om ci och md-vakt är gröna på exakt huvudet och om `--tillatna` är grön (Bengts
-   val (b) 8/10, DECISIONS #488: auto-läget nekade sammanslagningen första morgonen, och (d) i #484 är struken).
-8. Republicera de artefakter vars källa ändrades, till sina adresser. Når rutinen inte artefakterna gör dagens första session det
-   (sessionsprotokollet steg 1).
+7. Commit (märk den aldrig så att CI hoppas över), push, PR med rubriken *Dokumentsynk: <datum>*. Rutinen slår inte ihop själv (auto-läget
+   nekade det 8/10, DECISIONS #488). Flödet `synk-ihop` (`.github/workflows/synk-ihop.yml`, `scripts/synk-ihop.ts`) slår ihop PR:en
+   när grenen bara rör dokumenten (`--tillatna`), ci och md-vakt är gröna på exakt huvudet och dokumentkontrollerna är gröna på det
+   ihopslagna trädet; annars står den kvar med en kommentar, och nästa synk bär innehållet (Bengt 27/10, DECISIONS #731). Rapporten
+   säger PR:ens nummer och om `--tillatna` är grön.
+8. Rutinen publicerar ingenting själv. Sidorna på GitHub Pages byggs om av flödet `sidorna` när synk-ihop har slagit ihop PR:en,
+   och dygnets genomsökning 05.30 UTC prövar att dagens synk finns på main (DECISIONS #731).
 Rutinen fattar inga beslut, ändrar inga trösklar, rör ingen kod och inga hemligheter och kör inga flöden. Det som kräver ett
 beslut skrivs som en fråga i §4.2 och står i rapporten.
 
