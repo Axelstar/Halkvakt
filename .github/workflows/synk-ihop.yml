@@ -5,8 +5,8 @@ name: synk-ihop
 # "slå ihop". Flödet startar när ci eller md-vakt blivit klart på en gren claude/dokumentsynk-*; det första som blir klart ser oftast
 # att det andra pågår och väntar, och det andra slår ihop.
 # En push med GITHUB_TOKEN startar inga nya flöden, så ci och md-vakt körs inte om på main efter sammanslagningen. Samma
-# dokumentkontroller har just körts här, på exakt det träd som pushas. Flödet sidorna startas med en workflow_dispatch efter
-# pushen, så att sidorna på GitHub Pages byggs om direkt (därav actions: write).
+# dokumentkontroller har just körts här, på exakt det träd som pushas. Sidorna byggs om 05.30 UTC i 895845/halkvakt-sidor, efter
+# sammanslagningen (DECISIONS #733); därför startar flödet inget annat flöde längre.
 on:
   workflow_run:
     workflows: [ci, md-vakt]
@@ -25,7 +25,6 @@ permissions:
   contents: write
   pull-requests: write
   issues: write
-  actions: write
 concurrency:
   group: synk-ihop
   cancel-in-progress: false

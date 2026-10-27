@@ -18436,3 +18436,49 @@ länkar i sidfoten och under *Halka just nu*.
 Axel säger annat.
 
 **Stomdokument:** inga — sajtens sidor beskrivs inte i stomdokumenten, de bor i kartrepot
+
+## #733 (27/10 2026) Sidorna byggs och publiceras i Bengts repo 895845/halkvakt-sidor, eftersom Pages här kräver adminrätt
+
+**Bengts ord 27/10:** *"kan du starta pages också"*; när det visade sig kräva adminrätt: *"Axel kan inte just nu. Visa hur sidorna kan publiceras från mitt eget konto i stället."*; och efter förslaget: *"Ja. Skapa det publika repot 895845/halkvakt-sidor och slå på Pages (Source: GitHub Actions) i Chrome, lägg in flödet, kör det och kontrollera sidorna live. Gör sedan PR:en i Halkvakt med länkarna, genomsökningen och #733. Slå inte ihop förrän jag säger till."*
+
+**Bakgrund.** #731 publicerade sidorna med GitHub Pages i det här repot. Pages slås på under Settings → Pages, och det kräver
+adminrätt, som bara Axel har; Bengts konto har skrivrätt. Flödet `sidorna` föll därför på main 27/10 i steget configure-pages
+(*Get Pages site failed*), och länkarna i repot pekade på en adress som inte svarade.
+
+**Beslut.**
+1. **Bygget och publiceringen** görs i Bengts publika repo 895845/halkvakt-sidor, där Bengt är admin och Pages är påslaget med
+   GitHub Actions som källa (skapat 27/10). Dess flöde hämtar main i Axelstar/Halkvakt en gång per dygn 05.30 UTC, bygger sidorna
+   med `scripts/sidorna.ts --bygg` och publicerar dem på https://895845.github.io/halkvakt-sidor/. Det här repot är publikt, så
+   hämtningen kräver ingen nyckel eller hemlighet. Run workflow där bygger om direkt. Efter varje bygge checkar flödet in
+   `byggd.txt` med commiten sidorna byggdes ur, eftersom GitHub stänger av scheman i ett publikt repo efter 60 dagar utan aktivitet.
+2. **Länkarna** till sidorna i alla filer utom DECISIONS och STATUS pekar på den nya adressen (353 ställen i 15 filer).
+3. **Genomsökningen** blir kvar här, i flödet `sidorna`, 06.00 UTC efter bygget, så att ärendet står i det här repot. Punkt 1
+   jämför nu varje sida med det som byggdes ur commiten förstasidan anger (`data-sha`), och larmar om en ändring av en sida har
+   legat på main mer än 26 timmar utan att komma med i ett bygge. Punkt 4 räknar också den tidigare Pages-adressen i det här repot
+   som gammal.
+4. **synk-ihop startar inte `sidorna`** efter sammanslagningen; genomsökningen skulle då jämföra mot sidor som ännu inte byggts om.
+   `actions: write` tas bort ur synk-ihop.yml.
+5. **Förstasidan** anger källrepot fast (Axelstar/Halkvakt). Den läste det ur `GITHUB_REPOSITORY`, som i Bengts repo är det repot,
+   så det första bygget 27/10 länkade till fel repo.
+
+**Det som ges upp jämfört med #731.** Sidorna byggs inte om direkt när main ändras, utan en gång per dygn; både sidorna och
+löptexten ligger högst ett dygn efter main, vilket Bengt har sagt räcker. Adressen ligger på Bengts konto och inte på projektets.
+
+**Alternativ.**
+- Att Axel slår på Pages här: Axel kan inte just nu. Det kan göras senare; då flyttar sidorna en gång till, med samma byte av länkarna.
+- En personlig åtkomstnyckel i det här repot som låter `sidorna` skriva till Bengts repo: ger ett bygge vid varje ändring, men en
+  hemlighet som ska skapas, förvaras och förnyas. Valt bort.
+- Sidorna under halkvakt.se, med ett flöde i Axelstar/halkvakt-karta där Pages redan är på: kräver ingen adminrätt, men lägger
+  interna projektdokument på samma domän som sajten tidningarna och pressen läser. Valt bort.
+
+**Kända gränser.**
+- Halkvakts skript körs i Bengts repo vid varje bygge. Byggjobbet har bara läsrätt; skrivrätten (för `byggd.txt`) och rätten att
+  publicera ligger i egna jobb som inte kör Halkvakts kod.
+- Faller bygget 05.30 jämför genomsökningen med det förra bygget, och larmar först när en ändring legat 26 timmar. GitHub meddelar
+  Bengt när ett schemalagt flöde i hans repo faller.
+
+**Följdändringarna i samma PR:** `scripts/sidorna.ts`, `.github/workflows/sidorna.yml`, `scripts/synk-ihop.ts`,
+`.github/workflows/synk-ihop.yml`, `.github/workflows/ci.yml` (stegets namn), länkarna (bland dem `docs/kortkartan.json` och
+`docs/projektkartan.json`) och CLAUDE.md (sessionsprotokollet steg 1, STOMREGELN, KORTKARTAN, PROJEKTKARTAN och DOKUMENTSYNKEN steg 8).
+
+**Stomdokument:** BED §4.2 sidorna byggs i 895845/halkvakt-sidor en gång per dygn
