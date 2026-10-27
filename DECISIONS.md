@@ -18318,3 +18318,47 @@ själv; andelen sådana timmar redovisas. Ett beslut att gå tillbaka är en ny 
 **Valet inför 2027/28** görs i en egen förregistrering, med båda domarna som underlag (§12 g, tillägget §5).
 
 **Stomdokument:** KUV, LIV, APP den nya kandidaten talar i appen
+
+## #730 (27/10 2026) Övergångarna, tillståndet och försprånget i kuvösen väljs bort med skäl; fristen kuvos-tif-lasningarna klar
+
+**Bengts ord 27/10:** *"Ja, jag har läst utkastet. Lägg in #730 med följdändringarna (fristen, projektkartan, B8-20 och STATUS) som en PR och slå ihop när CI är grön."* (svar på utkastet, efter frågan *"är det meningsfullt att göra nu"*).
+
+**Frågan.** #689 punkt 9 sa att övergångarna och försprånget i kuvösen körs med okorrigerad tif eller väljs bort med skäl senast
+15/11 (fristen `kuvos-tif-lasningarna`).
+
+**Beslut.** Båda väljs bort. Stegen blir *gäller inte* med hänvisning hit. Inget i driften ändras. Inget utfall är läst: delarna har
+aldrig körts i kuvösen.
+
+**Skälen för övergångarna och tillståndet:**
+1. **Kärnan är redan prövad.** Det övergångarna i första hand dömer är efterhalkan (TROSKLAR-OVERGANGAR §1 a). Efterhalkan är körd i
+   kuvösen med stationens regnmätare: nettonytt 175 (0,2 %) till priset 45,1 % (#467), och kalibreringen behöll startvärdena (#468).
+   Den döms i driften i januari (bedömningens S6), där också Ö-B:s golv lever vidare (#658).
+2. **Det nya vore radarns väta, och kuvösens radar är skev.** Den är tif, ungefär 3,4 dBZ över driftens h5 och omkring 1,6 gånger
+   regnet (#441 punkt 3, #689 punkt 9). Ett tal byggt på den säger lite om regeln med driftens radar.
+3. **Driften låter inte radarn höja vätan** (#459). Att göra det ändrar en pågående skuggmätning och är ett eget beslut med båda
+   signaturerna. En kuvösläsning med radarns väta prövar alltså något som driften inte kör.
+4. **Ö-B saknar instrument** (#658) och kan inte prövas i kuvösen i något fall.
+
+**Skälen för försprånget:**
+1. **Det mäts redan i driften,** på alla 30 rutter sedan 22/10 kl. 11.12 UTC (#674). Räkneregeln fastställdes före första lästa andel
+   (#664), och domknappen byggs senast 15/12 (#661, fristen `fs-domknappen`). Driftens mätning är på riktiga data och driftens radar.
+2. **I kuvösen krävs ett nytt bygge.** Väglagshistoriken (levererad 16/10, KUVOS-LEVERANSEN §5h) måste läsas in först, och talet skulle
+   ändå bära den okorrigerade tif-radarn (#689).
+
+**Det som ges upp.** Kuvösen har en hel vinter med kalla nätter, som driften får först efter jul. En kuvösläsning hade gett ett tidigare
+svar, men på skev radar. Efterhalkans dom i januari och försprångets domknapp i december ger svaret på driftens egna data.
+
+**Alternativ.**
+- Köra övergångarna med okorrigerad tif och skillnaden mot h5 utskriven vid varje tal: valt bort av skälen ovan.
+- Köra båda: valt bort. Försprånget kräver dessutom inläsningen av väglagshistoriken.
+
+**Följdändringarna i samma PR:**
+- `docs/fristerna.json`: fristen `kuvos-tif-lasningarna` borttagen (klar).
+- `docs/projektkartan.json`, delen `kv-delarna`: stegen *Övergångarna och tillståndet* och *Försprånget* har status `ej` med
+  hänvisning hit, och raden om dem i `saknas` är borttagen. Steget *Vind och sikt* har fått sitt bevis rättat efter #705 (sikten
+  struken 24/10, byvinden döms i driften). Det är en rättelse, inget nytt beslut.
+- `docs/ATGARDER-KUVOSEN-2026-10-23.md`: B8-20 klar.
+- Sidorna som projektkartan skriver är omskrivna med `scripts/projektkartan.ts`. Kuvösens och bedömningens egna tabeller rättas av
+  morgonens dokumentsynk.
+
+**Stomdokument:** KUV, BED övergångarna och försprånget i kuvösen bortvalda

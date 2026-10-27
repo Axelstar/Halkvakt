@@ -985,7 +985,7 @@ Inget av detta bygger något nytt i motorn, och inget av det rör en tröskel. D
 <!-- LÄGESRADER §7: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 *Läget i projektkartan:*
 
-- [Systemets delar på vintern](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-kv-delarna): delvis, 67 % · kvar: Övergångarna och försprånget i kuvösen med okorrigerad tif, eller bortvalda med skäl, senast 15/11 (DECISIONS #441, #658, #689; fristen kuvos-tif-lasningarna); Ö-B saknar instrument (#658)
+- [Systemets delar på vintern](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-kv-delarna): delvis, 86 % · kvar: Vind och sikt: startvärden; sikten struken 24/10 efter W-A-serien på vintern 2024/25 med olyckorna (#705), byvinden OAVGJORT
 
 <!-- /LÄGESRADER -->
 
