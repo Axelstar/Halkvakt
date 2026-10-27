@@ -962,7 +962,7 @@ ${l.olyckor.length ? `<ul>\n${olyckor}\n</ul>` : `<p>Trafikverket rapporterar in
 <p>Se hela landet på <a href="../../karta.html">livekartan</a>, eller <a href="../../lan/">läget i alla län</a>.</p>
 <nav><h2>Andra vägar</h2><p>${andra}</p></nav>`;
   return lsSkal({
-    titel: `Halka och väglag på ${vag.rubrik} just nu | Halkvakt`,
+    titel: `Väglag ${vag.rubrik} idag: halka och trafikläget just nu | Halkvakt`,
     beskrivning: lsBeskrivning(l, `på ${vag.rubrik}`, now),
     adress: `${SIDBAS}/vag/${vag.slug}/`, rot: "../../", innehall, now, ct: "vag",
   });
@@ -1036,6 +1036,12 @@ d[2].features.forEach(function(f){var p=f.geometry.coordinates,y=f.properties.yt
 rita();addEventListener('resize',rita)}).catch(function(){var a=document.querySelector('.lankarta');if(a)a.style.display='none'})})();</script>`;
 }
 
+/** Länet som folk skriver det i sökrutan (28/10, Search Console: "halka uppsala", "trafikläget örebro"): utan "län" och utan
+ *  genitiv-s. "Uppsala län" -> "Uppsala", "Stockholms län" -> "Stockholm"; kortnamn utan "län" (Skåne, Värmland) lämnas orörda. */
+function lsSoknamn(kort: string): string {
+  return / län$/.test(kort) ? kort.replace(/ län$/, "").replace(/s$/, "") : kort;
+}
+
 function lsLanssida(lan: (typeof LAN)[number], l: LanLage, now: Date, d: { vaglag: LanSegment[]; stationer: LanStation[] }): string {
   const halt = l.halt.slice(0, 15).map((s) => {
     const vad = [s.text, ...s.info].filter(Boolean).join(", ");
@@ -1049,6 +1055,7 @@ function lsLanssida(lan: (typeof LAN)[number], l: LanLage, now: Date, d: { vagla
   const innehall = `<p class="dim">Uppdaterad ${lsTid(now)}</p>
 <h1>Är det halt i ${lsEsc(lan.kort)} just nu?</h1>
 <p class="svar">${lsEsc(lsSvar(l, "länets", "i länet", now))}</p>
+<p class="dim">Väglaget och trafikläget i ${lsEsc(lsSoknamn(lan.kort))} idag: halka, vägbanans temperatur och pågående olyckor enligt Trafikverket, uppdaterat var 30:e minut.</p>
 ${l.halt.length ? `<div class="svar-app"><p>Kör du i ${lsEsc(lan.kort)} idag? Appen säger till med rösten innan du är framme vid halkan.</p><a class="knapp" href="${lsApp("lan-halt")}">Få varningar i appen</a></div>
 ` : ""}${lsLanKarta(lan, l)}
 <h2>Stora vägar i ${lsEsc(lan.kort)} just nu</h2>
@@ -1070,7 +1077,7 @@ ${l.olyckor.length ? `<ul>\n${olyckor}\n</ul>` : "<p>Trafikverket rapporterar in
 ${lsFragorHtml(lsFragor(lan.namn))}
 <nav><h2>Andra län</h2><p>${andra}</p><h2>Stora vägar</h2><p>${lsVagLankar("../../")}</p></nav>`;
   return lsSkal({
-    titel: `Halka och väglag i ${lan.namn} just nu | Halkvakt`,
+    titel: `Halka i ${lsSoknamn(lan.kort)} idag: väglag och trafikläget just nu | Halkvakt`,
     beskrivning: lsBeskrivning(l, `i ${lan.namn}`, now),
     adress: `${SIDBAS}/lan/${lan.slug}/`, rot: "../../", innehall, now, ct: "lan", aktiv: "lanen", extra: lsFragorLd(lsFragor(lan.namn)),
   });
