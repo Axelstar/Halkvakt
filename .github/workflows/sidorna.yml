@@ -1,62 +1,35 @@
 name: sidorna
-# SIDORNA (Bengt 27/10, DECISIONS #731): "bygger om så att det hämtar via github" och "kan man be github göra en genomsökning också så
-# att allt är aktuellt". Stomdokumentens sidor och projektkartan publiceras på GitHub Pages, https://axelstar.github.io/Halkvakt/, ur
-# main: vid varje ändring av en sida på main, när synk-ihop slagit ihop morgonens synk (synk-ihop startar flödet, eftersom en push med
-# GITHUB_TOKEN inte gör det), och en gång per dygn 05.30 UTC med hela genomsökningen i scripts/sidorna.ts. Kräver att Pages källa i
-# Settings → Pages är GitHub Actions. Kostar inga Actions-minuter mot någon kvot, eftersom repot är publikt.
+# SIDORNA (Bengt 27/10, DECISIONS #731 och #733): "bygger om så att det hämtar via github" och "kan man be github göra en genomsökning
+# också så att allt är aktuellt". Stomdokumentens sidor och projektkartan publiceras på https://895845.github.io/halkvakt-sidor/. Pages
+# kräver adminrätt i det här repot, så bygget och publiceringen görs i Bengts repo 895845/halkvakt-sidor, som hämtar main härifrån en
+# gång per dygn 05.30 UTC (Bengt 27/10: "Axel kan inte just nu. Visa hur sidorna kan publiceras från mitt eget konto i stället.").
+# Här körs bara genomsökningen i scripts/sidorna.ts, 06.00 UTC efter bygget, så att ärendet står i det här repot. Kostar inga
+# Actions-minuter mot någon kvot, eftersom repot är publikt.
 on:
-  push:
-    branches: [main]
-    paths: ["docs/*.html", "docs/kortkartan.json", "docs/projektkartan.json", "scripts/sidorna.ts", ".github/workflows/sidorna.yml"]
   schedule:
-    - cron: "30 5 * * *"
+    - cron: "0 6 * * *"
   workflow_dispatch: {}
 permissions:
   contents: read
-  pages: write
-  id-token: write
   issues: write
   pull-requests: read
 concurrency:
   group: sidorna
   cancel-in-progress: false
 jobs:
-  bygg:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v4
-        with: { persist-credentials: false }
-      - uses: actions/setup-node@v4
-        with: { node-version: 22 }
-      - run: node --experimental-strip-types scripts/sidorna.ts --bygg _site
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
-        with: { path: _site }
-  publicera:
-    needs: bygg
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    environment:
-      name: github-pages
-      url: ${{ steps.d.outputs.page_url }}
-    steps:
-      - id: d
-        uses: actions/deploy-pages@v4
   genomsok:
-    needs: publicera
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      # Hela historiken: genomsökningen läser sidorna ur commiten de byggdes ur och ändringarna efter den.
       - uses: actions/checkout@v4
-        with: { persist-credentials: false }
+        with: { persist-credentials: false, fetch-depth: 0 }
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
-      - name: Genomsökningen, sidorna lika main och allt aktuellt (#731)
+      - name: Genomsökningen, sidorna lika bygget och allt aktuellt (#731, #733)
         env:
           GH_TOKEN: ${{ github.token }}
-          # Punkt 3 (dagens synk på main) bara när flödet inte startats av en vanlig push under dagen.
-          DYGN: ${{ github.event_name != 'push' }}
+          DYGN: "true"
         run: |
           node --experimental-strip-types scripts/sidorna.ts --sjalvtest
-          node --experimental-strip-types scripts/sidorna.ts --genomsok https://axelstar.github.io/Halkvakt/
+          node --experimental-strip-types scripts/sidorna.ts --genomsok https://895845.github.io/halkvakt-sidor/

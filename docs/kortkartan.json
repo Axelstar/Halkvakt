@@ -1,14 +1,14 @@
 {
   "_om": "Kortkartan (Bengts order 3/10, DECISIONS #445): varje öppet kort på TAVLA.md kopplas till det eller de avsnitt i stomdokumenten det hör till. Nyckel = kortets nummer, eller rubriken för kort utan nummer. Värde = 'SIDA avsnitt', där avsnittet är numret på sidans egen rubrik. Listorna i sidorna skrivs av scripts/kortkartan.ts; ändra här, kör skriptet, republicera artefakterna.",
   "sidor": {
-    "MAT": { "fil": "docs/MATNINGAR.html", "namn": "Halkvaktens mätningar", "url": "https://axelstar.github.io/Halkvakt/MATNINGAR.html" },
-    "APP": { "fil": "docs/APPEN.html", "namn": "Halkvaktens app", "url": "https://axelstar.github.io/Halkvakt/APPEN.html" },
-    "SYS": { "fil": "docs/SYSTEMBILDEN.html", "namn": "Halkvaktens systembild", "url": "https://axelstar.github.io/Halkvakt/SYSTEMBILDEN.html" },
+    "MAT": { "fil": "docs/MATNINGAR.html", "namn": "Halkvaktens mätningar", "url": "https://895845.github.io/halkvakt-sidor/MATNINGAR.html" },
+    "APP": { "fil": "docs/APPEN.html", "namn": "Halkvaktens app", "url": "https://895845.github.io/halkvakt-sidor/APPEN.html" },
+    "SYS": { "fil": "docs/SYSTEMBILDEN.html", "namn": "Halkvaktens systembild", "url": "https://895845.github.io/halkvakt-sidor/SYSTEMBILDEN.html" },
     "BED": { "fil": "docs/BEDOMNING-2026-09-15.md", "namn": "Bedömningen" },
     "KAR": { "fil": "docs/INTEGRATIONSKARTAN.md", "namn": "Integrationskartan" },
-    "KUV": { "fil": "docs/KUVOSEN.html", "namn": "Halkvaktens kuvös", "url": "https://axelstar.github.io/Halkvakt/KUVOSEN.html" },
-    "FAV": { "fil": "docs/FAVORITER.html", "namn": "Halkvaktens favoriter", "url": "https://axelstar.github.io/Halkvakt/FAVORITER.html" },
-    "LIV": {"fil": "docs/NIVA2-LIVE.html", "namn": "Nivå 2+blandning live", "url": "https://axelstar.github.io/Halkvakt/NIVA2-LIVE.html"}
+    "KUV": { "fil": "docs/KUVOSEN.html", "namn": "Halkvaktens kuvös", "url": "https://895845.github.io/halkvakt-sidor/KUVOSEN.html" },
+    "FAV": { "fil": "docs/FAVORITER.html", "namn": "Halkvaktens favoriter", "url": "https://895845.github.io/halkvakt-sidor/FAVORITER.html" },
+    "LIV": {"fil": "docs/NIVA2-LIVE.html", "namn": "Nivå 2+blandning live", "url": "https://895845.github.io/halkvakt-sidor/NIVA2-LIVE.html"}
   },
   "kort": {
     "#361": ["BED 4.2"],
