@@ -18478,7 +18478,8 @@ löptexten ligger högst ett dygn efter main, vilket Bengt har sagt räcker. Adr
   Bengt när ett schemalagt flöde i hans repo faller.
 
 **Följdändringarna i samma PR:** `scripts/sidorna.ts`, `.github/workflows/sidorna.yml`, `scripts/synk-ihop.ts`,
-`.github/workflows/synk-ihop.yml`, `.github/workflows/ci.yml` (stegets namn), länkarna (bland dem `docs/kortkartan.json` och
+`.github/workflows/synk-ihop.yml`, `.github/workflows/ci.yml` (stegets namn), `publish/beroenden.ts` (895845.github.io räknas som
+egen infrastruktur i beroendekartan), länkarna (bland dem `docs/kortkartan.json` och
 `docs/projektkartan.json`) och CLAUDE.md (sessionsprotokollet steg 1, STOMREGELN, KORTKARTAN, PROJEKTKARTAN och DOKUMENTSYNKEN steg 8).
 
 **Stomdokument:** BED §4.2 sidorna byggs i 895845/halkvakt-sidor en gång per dygn

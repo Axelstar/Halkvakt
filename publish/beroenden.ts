@@ -228,8 +228,9 @@ export const KARTAN: Beroende[] = [
 ];
 
 // Värdar som är vår EGEN infrastruktur eller allmän verktygsinfrastruktur — inte beroenden
-// i den mening kartan handlar om, och ska inte kräva en rad.
-export const EGEN = /github\.com|githubusercontent|axelstar\.github\.io|halkvakt\.se|deno\.land|supabase\.co|npmjs|nodejs\.org|schemas?\.|w3\.org|json-schema|localhost|example\.com/i;
+// i den mening kartan handlar om, och ska inte kräva en rad. 895845.github.io är stomdokumentens sidor i Bengts repo
+// 895845/halkvakt-sidor (DECISIONS #733).
+export const EGEN = /github\.com|githubusercontent|axelstar\.github\.io|895845\.github\.io|halkvakt\.se|deno\.land|supabase\.co|npmjs|nodejs\.org|schemas?\.|w3\.org|json-schema|localhost|example\.com/i;
 
 export type Granskning = { okanda: string[]; doda: string[]; obevakade: Beroende[] };
 
