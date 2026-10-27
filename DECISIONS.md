@@ -18325,7 +18325,7 @@ själv; andelen sådana timmar redovisas. Ett beslut att gå tillbaka är en ny 
 som slogs ihop som 019b2d2 på ci och md-vakt gröna på 94c59e0).
 
 **Beslutet.** Morgonrutinens dokumentsynk slår ihop sin egen PR *Dokumentsynk: <datum>* när alla tre håller: (1) `stomvakten.ts
---tillatna` är grön, alltså rör grenen bara dokumenten; (2) ci och md-vakt är gröna på exakt huvudet; (3) PR:en går att slå ihop utan
+--tillatna` är grön, alltså rör grenen bara dokumenten; (2) alla körningar på exakt huvudet är gröna och md-vakt är en av dem (ci hoppar över en PR som bara ändrar .md, så en tyst morgon har bara md-vakt); (3) PR:en går att slå ihop utan
 konflikt. Sammanslagningen görs med huvudets sha, så att inget som pushats efter provet följer med. Håller något villkor inte, eller
 nekas sammanslagningen, väntar PR:en på Bengts *slå ihop* som förut, och rapporten säger vilket villkor som föll. Det ersätter (b) i
 #488 (*rutinen slår aldrig ihop*) och tar tillbaka (d) i #484 i den formen. Regeln står i CLAUDE.md, DOKUMENTSYNKEN steg 7.
