@@ -811,12 +811,14 @@ const LS_STIL = `.dok{max-width:760px}.svar{font:500 19px/1.5 var(--sans);color:
 .dok nav p{line-height:2.1}.dok nav a{white-space:nowrap}.tabell{overflow-x:auto}.dok td+td,.dok th+th{white-space:nowrap;text-align:right}
 .ladda{display:grid;gap:12px;background:var(--panel);border:1px solid var(--kant);border-radius:18px;padding:22px 24px;margin-top:44px}
 .ladda b{font-size:19px}.ladda p{margin:0}.ladda .knapp{justify-self:start}
+.svar-app{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;margin:0 0 8px}.svar-app p{margin:0;color:var(--text2);flex:1 1 280px}
 .lankarta{position:relative;display:block;height:min(62vw,440px);margin:22px 0 6px;background:var(--panel);border:1px solid var(--kant);border-radius:18px;overflow:hidden}
 .lankarta canvas{position:absolute;inset:0;width:100%;height:100%}.lankarta span{position:absolute;left:16px;bottom:12px;font:500 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--dampad)}
 .vaglista{list-style:none;padding:0;margin:0}.vaglista li{padding:12px 0;border-top:1px dashed #253036}.vaglista li:first-child{border-top:0}
 .vaglista b{font:600 13px var(--mono);letter-spacing:.08em;margin-right:10px}.vaglista .halt{color:var(--gul)}.vaglista small{display:block;color:var(--dampad);font-size:14px;margin-top:2px}
 .fragor h3{font-size:17px;margin:20px 0 4px}.fragor p{margin:0}`;
-const LS_APP = "https://apps.apple.com/se/app/id6806939784";
+// App Store med kampanjkod per knapp (27/10, DECISIONS #731), samma som sajtens övriga sidor.
+const lsApp = (ct: string) => `https://apps.apple.com/se/app/halkvakt/id6806939784?ct=${ct}`;
 const LS_MARKE = `<svg viewBox="3 3 94 83" aria-hidden="true"><path fill-rule="evenodd" fill="#FFC94A" d="M55.196 6 L96.196 77 A6 6 0 0 1 91 86 L9 86 A6 6 0 0 1 3.804 77 L44.804 6 A6 6 0 0 1 55.196 6 Z M46.4 32 L53.6 32 L52 58 L48 58 Z M45.6 68 A4.4 4.4 0 1 0 54.4 68 A4.4 4.4 0 1 0 45.6 68 Z"/></svg>`;
 
 // Strukturerad data (17/10, DECISIONS #629): vad sidan är, när den skrevs och vilken data den bygger på, så att sökmotorer och
@@ -829,7 +831,7 @@ function lsJsonLd(o: { titel: string; beskrivning: string; adress: string; now?:
   return `<script type="application/ld+json">${JSON.stringify(d).replace(/</g, "\\u003c")}</script>`;
 }
 
-function lsSkal(o: { titel: string; beskrivning: string; adress: string; rot: string; innehall: string; now?: Date; extra?: string }) {
+function lsSkal(o: { titel: string; beskrivning: string; adress: string; rot: string; innehall: string; ct: string; aktiv?: "lanen"; now?: Date; extra?: string }) {
   return `<!doctype html>
 <html lang="sv">
 <head>
@@ -848,7 +850,7 @@ function lsSkal(o: { titel: string; beskrivning: string; adress: string; rot: st
 <meta name="apple-itunes-app" content="app-id=6806939784">
 <link rel="icon" type="image/png" href="${o.rot}favicon.png">
 <link rel="stylesheet" href="${o.rot}assets/fonts/fonts.css">
-<link rel="stylesheet" href="${o.rot}assets/hv.css">
+<link rel="stylesheet" href="${o.rot}assets/hv.css?v=20261027">
 <style>${LS_STIL}</style>
 ${lsJsonLd(o)}${o.extra ?? ""}
 </head>
@@ -857,26 +859,27 @@ ${lsJsonLd(o)}${o.extra ?? ""}
   <div class="wrap">
     <a class="logo" href="${o.rot}" aria-label="Halkvakt, till startsidan">${LS_MARKE}<b>HALKVAKT</b></a>
     <nav class="meny" aria-label="Huvudmeny">
-      <a href="${o.rot}#appen">Appen</a>
-      <a href="${o.rot}#sa-funkar">Så funkar det</a>
       <a href="${o.rot}karta.html">Livekartan</a>
-      <a href="${o.rot}lan/" aria-current="page">Länen</a>
+      <a href="${o.rot}lan/"${o.aktiv === "lanen" ? ' aria-current="page"' : ""}>Länen</a>
+      <a href="${o.rot}#appen">Appen</a>
+      <a href="${o.rot}om-halkvakt.html">Om Halkvakt</a>
     </nav>
-    <a class="knapp" href="${LS_APP}">Ladda ner för iPhone</a>
+    <a class="knapp" href="${lsApp("huvud")}">Hämta appen</a>
   </div>
 </header>
 <main class="wrap">
 <div class="dok">
 ${o.innehall}
-<div class="ladda"><b>Hör det här medan du kör.</b><p>Halkvakt säger till med rösten när det är halt på vägen framför dig. Samma data som på den här sidan. Gratis för iPhone.</p><a class="knapp" href="${LS_APP}">Ladda ner i App Store</a></div>
+<div class="ladda"><b>Kör du här ofta?</b><p>Appen säger till med rösten innan du är framme vid halkan. Samma data som på den här sidan. Gratis för iPhone.</p><a class="knapp" href="${lsApp(o.ct)}">Få varningar i appen</a></div>
 </div>
 </main>
 <footer class="fot">
   <div class="wrap">
     <a class="logo" href="${o.rot}">${LS_MARKE}<b>HALKVAKT</b></a>
     <p class="kallor">Källa: Trafikverkets öppna data (CC0): väglag, vägväderstationer och olyckor. Sidan skrivs om var 30:e minut. Fristående från myndigheterna.</p>
-    <nav aria-label="Sidfot"><a href="${o.rot}karta.html">Livekartan</a><a href="${o.rot}lan/">Länen</a><a href="${o.rot}om.html">Om appen</a><a href="${o.rot}press.html">Press</a><a href="${o.rot}integritet.html">Integritet</a></nav>
+    <nav aria-label="Sidfot"><a href="${o.rot}lan/">Länen</a><a href="${o.rot}om-halkvakt.html">Om Halkvakt</a><a href="${o.rot}karta.html">Livekartan</a><a href="${o.rot}om.html">Vanliga frågor</a><a href="${o.rot}lan/#vagar">Stora vägar</a><a href="${o.rot}support.html">Hjälp och kontakt</a><a href="${o.rot}press.html">Press</a><a href="${o.rot}integritet.html">Integritet</a></nav>
   </div>
+  <nav class="wrap lanrad" aria-label="Halka per län"><span>Halka i</span>${LAN.map((x) => `<a href="${o.rot}lan/${x.slug}/">${lsEsc(x.kort)}</a>`).join("")}</nav>
 </footer>
 <script src="/assets/besok.js" defer></script>
 </body>
@@ -960,7 +963,7 @@ ${l.olyckor.length ? `<ul>\n${olyckor}\n</ul>` : `<p>Trafikverket rapporterar in
   return lsSkal({
     titel: `Halka och väglag på ${vag.rubrik} just nu | Halkvakt`,
     beskrivning: lsBeskrivning(l, `på ${vag.rubrik}`, now),
-    adress: `${SIDBAS}/vag/${vag.slug}/`, rot: "../../", innehall, now,
+    adress: `${SIDBAS}/vag/${vag.slug}/`, rot: "../../", innehall, now, ct: "vag",
   });
 }
 
@@ -1045,7 +1048,8 @@ function lsLanssida(lan: (typeof LAN)[number], l: LanLage, now: Date, d: { vagla
   const innehall = `<p class="dim">Uppdaterad ${lsTid(now)}</p>
 <h1>Är det halt i ${lsEsc(lan.kort)} just nu?</h1>
 <p class="svar">${lsEsc(lsSvar(l, "länets", "i länet", now))}</p>
-${lsLanKarta(lan, l)}
+${l.halt.length ? `<div class="svar-app"><p>Kör du i ${lsEsc(lan.kort)} idag? Appen säger till med rösten innan du är framme vid halkan.</p><a class="knapp" href="${lsApp("lan-halt")}">Få varningar i appen</a></div>
+` : ""}${lsLanKarta(lan, l)}
 <h2>Stora vägar i ${lsEsc(lan.kort)} just nu</h2>
 ${lsVagarILanet(lan.kod, d)}
 <h2>Pendla i ${lsEsc(lan.kort)}</h2>
@@ -1067,7 +1071,7 @@ ${lsFragorHtml(lsFragor(lan.namn))}
   return lsSkal({
     titel: `Halka och väglag i ${lan.namn} just nu | Halkvakt`,
     beskrivning: lsBeskrivning(l, `i ${lan.namn}`, now),
-    adress: `${SIDBAS}/lan/${lan.slug}/`, rot: "../../", innehall, now, extra: lsFragorLd(lsFragor(lan.namn)),
+    adress: `${SIDBAS}/lan/${lan.slug}/`, rot: "../../", innehall, now, ct: "lan", aktiv: "lanen", extra: lsFragorLd(lsFragor(lan.namn)),
   });
 }
 
@@ -1096,7 +1100,7 @@ ${rader}
 </table></div>
 <p class="dim">¹ Vägavsnitt med halka eller vinterväglag i Trafikverkets rapport, av länets alla. ² Vägväderstationer som visar vägbana på
 0 °C eller kallare. Olyckor: pågående, enligt Trafikverket.</p>
-<h2>Stora vägar</h2>
+<h2 id="vagar">Stora vägar</h2>
 <div class="tabell"><table>
 <thead><tr><th>Väg</th><th>Halka¹</th><th>≤ 0 °C²</th><th>Olyckor</th><th></th></tr></thead>
 <tbody>
@@ -1107,7 +1111,7 @@ ${vagrader}
   return lsSkal({
     titel: "Halka och väglag i Sverige just nu, län för län | Halkvakt",
     beskrivning: lsOversiktBeskrivning(lagen, now),
-    adress: `${SIDBAS}/lan/`, rot: "../", innehall, now,
+    adress: `${SIDBAS}/lan/`, rot: "../", innehall, now, ct: "lanen", aktiv: "lanen",
   });
 }
 

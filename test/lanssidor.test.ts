@@ -189,3 +189,21 @@ test("läns- och vägsidorna bär tiden och källan som strukturerad data (DECIS
   }
   assert.ok(sidor["lan/skane/index.html"].includes("rapporterar Trafikverket ingen halka"), "noll halka sägs som noll, aldrig som halka");
 });
+
+test("läns- och vägsidorna bär sajtens ram: samma meny, spårkod per knapp, appraden bara där det är halt (DECISIONS #731)", () => {
+  const sidor = byggLanssidor({
+    vaglag: [{ code: 3, text: "Mycket besvärligt", info: ["Is"], road: "E 6", plats: "E 6 Malmö - Lund", lan: 12 }],
+    stationer: [], olyckor: [], now: NOW,
+  });
+  for (const [namn, ct] of [["lan/skane/index.html", "lan"], ["vag/e6/index.html", "vag"], ["lan/index.html", "lanen"]]) {
+    const s = sidor[namn];
+    assert.ok(!s.includes("#sa-funkar"), `${namn}: ingen länk till en rubrik som inte finns`);
+    assert.match(s, /Livekartan<\/a>\s*<a [^>]*>Länen<\/a>\s*<a [^>]*>Appen<\/a>\s*<a [^>]*>Om Halkvakt<\/a>/, namn);
+    assert.ok(s.includes("?ct=huvud\">Hämta appen</a>"), namn);
+    assert.ok(s.includes(`?ct=${ct}">Få varningar i appen</a>`), namn);
+    assert.equal((s.match(/aria-label="Halka per län"/g) ?? []).length, 1, namn);
+  }
+  assert.ok(sidor["lan/skane/index.html"].includes("?ct=lan-halt"), "halt i länet ⇒ appraden under svaret");
+  assert.ok(!sidor["lan/uppsala/index.html"].includes("?ct=lan-halt"), "ingen halka ⇒ ingen apprad");
+  assert.ok(sidor["lan/index.html"].includes('<h2 id="vagar">Stora vägar</h2>'), "sidfotens Stora vägar har ett mål");
+});
