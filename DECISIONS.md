@@ -18533,7 +18533,7 @@ Mallen för bilden är designens (`marknadsforing/meta-mall/halkvakt-meta-feed.h
 1. `marknadsforing/annonsstyrning.mjs` med två steg. `uppsattning` skapar en gång kampanjen *Halkvakt · län* (trafik, 2 000 kr
    för hela kampanjen, 30 dygn), en annonsuppsättning *Län · <län>* per län i lan.json och en reservannons utan datum i varje,
    allt pausat. Länen: bor i eller var nyligen i länet, 18 år och äldre (hård gräns), iPhone, Facebook och Instagram,
-   visning 06:30–09:00 och 15:00–18:00, förmånstagare Halkvakt och betalare Axel Lagerlöf (EU:s fält). `styr` körs varje morgon.
+   visning 06:00–09:00 och 15:00–18:00 (Meta tar bara hela timmar; 06:30 avvisades 27/10), förmånstagare Halkvakt och betalare Axel Lagerlöf (EU:s fält). `styr` körs varje morgon.
 2. Ett län räknas med Halkvakt lives regel (minst ett halt vägavsnitt eller minst tre stationer under noll). Regeln är en kopia
    av posta.mjs, eftersom posta.mjs kör sina steg ur argv när den importeras; kontraktsgrinden vaktar talen och läser nu också
    `.mjs`.
