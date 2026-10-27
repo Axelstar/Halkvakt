@@ -205,7 +205,7 @@ async function uppsattning() {
         optimization_goal: "LINK_CLICKS", billing_event: "IMPRESSIONS", destination_type: "WEBSITE",
         start_time: start.toISOString(), end_time: slut.toISOString(),
         pacing_type: ["day_parting"],
-        adset_schedule: [{ start_minute: 390, end_minute: 540, days: [0, 1, 2, 3, 4, 5, 6] },
+        adset_schedule: [{ start_minute: 360, end_minute: 540, days: [0, 1, 2, 3, 4, 5, 6] },
                          { start_minute: 900, end_minute: 1080, days: [0, 1, 2, 3, 4, 5, 6] }],
         targeting: { geo_locations: { regions: [{ key: traff[0].key }], location_types: ["home", "recent"] },
                      age_min: 18, user_os: ["iOS"], device_platforms: ["mobile"], publisher_platforms: ["facebook", "instagram"],
