@@ -1,9 +1,11 @@
 # Kodgrinden (kort #52): håller Trafikverkets ConditionCode som grind, så att ordlistan kan
 # delas i farlighetsord (larmar alltid) och ytord (larmar bara på kod >= 2)? Mäter kodhålet,
 # ordförrådet per kod, premissen "kod 1 bär aldrig farlighetsord" och hur länge en klassning står.
-# Helt läsande. Knapp, inte cron — kadensen beslutas när första avläsningen finns (minutdieten).
+# Helt läsande. Knappen finns kvar för hand.
 name: kodgrinden
 on:
+  # Startas av pulsklockan (Supabase pg_cron, puls-kodgrinden "16 9 * * *" UTC, DECISIONS #734) varje dygn tills C är avgjord.
+  # Inte GitHub-cronen: kort #160 och #688. En körning tar ~16 s och är gratis i Actions, eftersom repot är publikt.
   workflow_dispatch:
 # Domlarmet (DECISIONS #649) skriver ärenden; inget annat behöver token.
 permissions:
