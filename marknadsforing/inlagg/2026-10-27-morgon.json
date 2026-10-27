@@ -1,0 +1,21 @@
+{
+  "typ": "forandring",
+  "nyckel": "forandring",
+  "etikett": "Sedan i går",
+  "rubrik": "Halkan sprider sig",
+  "underrad": "vägavsnitt med halka, mot samma tid i går",
+  "lyft": {
+    "stort": "13 → 17",
+    "liten": "ny halka i Jämtland och Västerbotten"
+  },
+  "text": "Trafikverket rapporterar halka på 17 vägavsnitt, mot 13 vid samma tid i går.\nNy halka sedan i går: Jämtland och Västerbotten.\n\nJämtland: halka på 8 av 17 vägavsnitt, 14 stationer under noll, kallast −1,3 °C vid Trillevallen.\nVästernorrland: halka på 6 av 22 vägavsnitt, 1 station under noll, kallast −0,3 °C vid Norrhög.\nVästerbotten: halka på 3 av 44 vägavsnitt.\n\nLäget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Jämtland #Västernorrland #Västerbotten #halkvakt",
+  "textIg": "Trafikverket rapporterar halka på 17 vägavsnitt, mot 13 vid samma tid i går.\nNy halka sedan i går: Jämtland och Västerbotten.\n\nJämtland: halka på 8 av 17 vägavsnitt, 14 stationer under noll, kallast −1,3 °C vid Trillevallen.\nVästernorrland: halka på 6 av 22 vägavsnitt, 1 station under noll, kallast −0,3 °C vid Norrhög.\nVästerbotten: halka på 3 av 44 vägavsnitt.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone, länken finns i vår profil.\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Jämtland #Västernorrland #Västerbotten #halkvakt",
+  "pass": "morgon",
+  "datum": "2026-10-27",
+  "generated_at": "2026-10-27T04:30:41.113Z",
+  "lan": [
+    "jamtland",
+    "vasternorrland",
+    "vasterbotten"
+  ]
+}
