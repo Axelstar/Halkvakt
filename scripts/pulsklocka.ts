@@ -81,7 +81,8 @@ const NYA: { namn: string; schema: string; fil: string }[] = [
   { namn: "puls-ny-kandidat-fysik", schema: "28 */6 * * *", fil: "ny-kandidat-fysik.yml" },
   { namn: "puls-ny-kandidat-timme", schema: "47 * * * *", fil: "ny-kandidat-timme.yml" },
   // DECISIONS #734 (Bengt 27/10): kodgrinden varje dygn tills C är avgjord; domlarmet tiger på SPÄRRAD och säger till vid
-  // KLARAR eller FALLER. 09:16, efter morgonavbrottens fönster (03:28–07:39), och :16 är ledig i databasens klocka. ~16 s per körning.
+  // KLARAR eller FALLER. 09:16, efter morgonavbrottens fönster (03:28–07:39), och inget annat pulsjobb startar på :16 (databasens
+  // egna halkvakt-ingest-live och halkvakt-favoriter går ändå då, rättat 27/10). ~16 s per körning.
   { namn: "puls-kodgrinden", schema: "16 9 * * *", fil: "kodgrinden.yml" },
   // DECISIONS #735 (Axel 27/10): Meta-annonserna per län. Natten lägger upp dagens annonser så att Metas granskning hinner före
   // visningen 06:30 svensk tid; gryningen och morgonen tar med nya hala län och byter reservannonsen mot dagens när den är godkänd.
