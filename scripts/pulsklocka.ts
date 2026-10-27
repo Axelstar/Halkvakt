@@ -83,13 +83,19 @@ const NYA: { namn: string; schema: string; fil: string }[] = [
   // DECISIONS #734 (Bengt 27/10): kodgrinden varje dygn tills C är avgjord; domlarmet tiger på SPÄRRAD och säger till vid
   // KLARAR eller FALLER. 09:16, efter morgonavbrottens fönster (03:28–07:39), och :16 är ledig i databasens klocka. ~16 s per körning.
   { namn: "puls-kodgrinden", schema: "16 9 * * *", fil: "kodgrinden.yml" },
+  // DECISIONS #735 (Axel 27/10): Meta-annonserna per län. Natten lägger upp dagens annonser så att Metas granskning hinner före
+  // visningen 06:30 svensk tid; gryningen och morgonen tar med nya hala län och byter reservannonsen mot dagens när den är godkänd.
+  // Tre jobb och inte ett schema med en timlista (kadensTimmar, #558). :01 och :31 är lediga i databasens klocka. ~1 min per körning.
+  { namn: "puls-meta-natt", schema: "1 2 * * *", fil: "meta-annonser.yml" },
+  { namn: "puls-meta-gry", schema: "31 4 * * *", fil: "meta-annonser.yml" },
+  { namn: "puls-meta-morgon", schema: "1 6 * * *", fil: "meta-annonser.yml" },
 ];
 
 // Vakthundens check 6a bär samma tal som golv (kort #222, DECISIONS #255): ett puls-jobb som
 // avaktiveras eller raderas ska larma, inte tyst falla ur bevakningslistan. Vakthunden kör i Deno
 // hos Supabase och kan inte importera den här filen, så talet är en KOPIA — kontraktsgrinden vaktar
 // att kopiorna bär samma värde, och raden under vaktar att värdet stämmer med listan ovan.
-const ANTAL_NYA = 22;
+const ANTAL_NYA = 25;
 if (NYA.length !== ANTAL_NYA) {
   console.error(`NYA har ${NYA.length} jobb men ANTAL_NYA säger ${ANTAL_NYA} — uppdatera båda, och vakthundens PULS_GOLV.`);
   process.exit(1);

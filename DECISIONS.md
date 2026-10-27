@@ -18517,3 +18517,44 @@ det saknade jobbet.
 **Vad som inte ändras.** Underlagsspärren (30 från 3), skriptet, domlarmet och knappen.
 
 **Stomdokument:** MAT §11 domkalendern med kodgrinden C varje dygn, SYS kodgrinden i pulsklockan
+
+## #735 (27/10 2026) Meta-annonserna per län: en annons med morgonens riktiga läge, styrd av halkan
+
+**Axels ord 27/10:** *"the more 'real' the data and images can be the better ... 1. Add a date 2. Add something specific for the
+'Län' that we target that morning"*, *"We can trigger the automation at 03.00 and then we hope its approved by meta by 06.30"* och
+*"let's build it"*.
+
+**Bakgrund.** En testmånad på Meta (Facebook och Instagram) för 2 000 kr, bara iPhone. Meta Ads MCP är avstängd för kontot
+(Metas utrullning), så styrningen går via Marketing API med en systemanvändares nyckel (`META_ADS_TOKEN`, appen Halkvakt Ads).
+Mallen för bilden är designens (`marknadsforing/meta-mall/halkvakt-meta-feed.html`, 1080×1350) med Apples svenska märke
+*Hämta i App Store*.
+
+**Beslut.**
+1. `marknadsforing/annonsstyrning.mjs` med två steg. `uppsattning` skapar en gång kampanjen *Halkvakt · län* (trafik, 2 000 kr
+   för hela kampanjen, 30 dygn), en annonsuppsättning *Län · <län>* per län i lan.json och en reservannons utan datum i varje,
+   allt pausat. Länen: bor i eller var nyligen i länet, 18 år och äldre (hård gräns), iPhone, Facebook och Instagram,
+   visning 06:30–09:00 och 15:00–18:00, förmånstagare Halkvakt och betalare Axel Lagerlöf (EU:s fält). `styr` körs varje morgon.
+2. Ett län räknas med Halkvakt lives regel (minst ett halt vägavsnitt eller minst tre stationer under noll). Regeln är en kopia
+   av posta.mjs, eftersom posta.mjs kör sina steg ur argv när den importeras; kontraktsgrinden vaktar talen och läser nu också
+   `.mjs`.
+3. Län som räknas får dagens annons: bilden ritas ur mallen med datum, länet, Trafikverkets ord, upp till tre vägar med sträcka,
+   kallaste vägbanan och klockslaget, och texten säger samma sak med källan. Ordet blir aldrig starkare än Trafikverkets:
+   *Risk för halka* när texten säger risk eller när ordet är okänt, *Fläckvis is*, *Halka*, och *Frysrisk* när bara stationerna
+   är under noll. Gårdagens annons pausas. Reservannonsen går tills dagens annons är granskad; avvisar Meta den står reserven kvar
+   och raden kommer i körningens sammanfattning. Län som inte räknas pausas.
+4. lan.json äldre än två timmar ⇒ alla län pausas och ingen dagsannons görs.
+5. Kampanjens status rör skriptet aldrig. Axel slår på den i Ads Manager; budgettaket sitter i kampanjen.
+6. Tre pulsjobb kör `meta-annonser.yml`: `puls-meta-natt` 02:01, `puls-meta-gry` 04:31 och `puls-meta-morgon` 06:01 UTC
+   (03:01, 05:31 och 07:01 vintertid). Natten lägger upp så att Metas granskning hinner före 06:30. Körningarna är idempotenta.
+   `ANTAL_NYA` och `PULS_GOLV` blir 25. Ingen GitHub-cron (#734).
+
+**Alternativ.** Bara slå på och av färdiga annonser (första utkastet): enklare, men bilden blir densamma varje dag och säger
+inget om morgonen. Meta Ads MCP: samma sak interaktivt, men avstängd för kontot och inget schema. En story-bild (1080×1920):
+mallen finns hos designen, men flödesbilden visas i alla placeringar och en till format kräver Metas asset_feed_spec; tas när
+första veckan visar att storyn bär.
+
+**Följd.** Efter sammanslagningen: Bengt kör `pulsklocka` skarpt och deployar vakthunden (ordningen i #734). Axel kör
+`meta-annonser` med lage = *uppsattning*, läser sammanfattningen i Ads Manager och slår på kampanjen. Utkastet i Ads Manager
+(*Halkvakt test nov 2026*, opublicerat) tas bort. Kampanjlänken i App Store Connect byter `APP` när den finns.
+
+**Stomdokument:** inga — marknadsföringen ligger utanför appen, motorn och mätningarna; ingen data lämnar appen.

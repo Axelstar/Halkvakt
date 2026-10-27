@@ -670,6 +670,21 @@ export const KONTRAKT: Kontrakt[] = [
     golv: 2,
   },
   {
+    // Meta-annonserna (DECISIONS #735) räknar ett län som Halkvakt live gör; annonsstyrningen kan inte importera posta.mjs.
+    namn: "Länets halkregel — minsta antal hala vägavsnitt (Halkvakt live och Meta-annonserna)",
+    varfor: "Driver de isär annonserar Meta ett län som inlägget samma morgon säger är fritt, eller tvärtom.",
+    former: [/const MIN_HALT = (\d+)/],
+    filer: /marknadsforing\//,
+    golv: 2,
+  },
+  {
+    namn: "Länets halkregel — minsta antal stationer under noll (Halkvakt live och Meta-annonserna)",
+    varfor: "Driver de isär annonserar Meta ett län som inlägget samma morgon säger är fritt, eller tvärtom.",
+    former: [/MIN_HALT = \d+, MIN_KALLA = (\d+)/],
+    filer: /marknadsforing\//,
+    golv: 2,
+  },
+  {
     // Vakthunden kan inte importera pulsklockans TypeScript — den kör i Deno hos Supabase. Talet är
     // därför en kopia, och en kopia som glider isär gör vakten blind för exakt det den ska se.
     namn: "Pulsjobbens antal — golvet i vakthunden mot pulsklockans egen lista (kort #222)",
@@ -918,7 +933,7 @@ const { readFileSync } = await import("node:fs");
 const { fileURLToPath } = await import("node:url");
 
 const SJALV = "scripts/kontraktsgrinden.ts";   // grinden bär formerna själv och räknar inte sig
-const ANDELSER = /\.(ts|tsx|sql|kt|swift)$/;
+const ANDELSER = /\.(ts|tsx|sql|kt|swift|mjs)$/;
 
 // Roten läses ur git, inte ur process.cwd(): grinden ska ge samma svar oavsett varifrån den
 // körs. Utan det fäller den falskt på "under golvet" så fort någon kör den ur scripts/.
