@@ -18363,7 +18363,60 @@ svar, men på skev radar. Efterhalkans dom i januari och försprångets domknapp
 
 **Stomdokument:** KUV, BED övergångarna och försprånget i kuvösen bortvalda
 
-## #731 (27/10 2026) halkvakt.se får en ny ram: Vad är Halkvakt? först, en meny, ett nedladdningsställe och spårkod per knapp
+## #731 (27/10 2026) Dokumentsynkens PR slås ihop automatiskt, och sidorna publiceras på GitHub Pages ur main
+
+**Bengts ord 27/10:** *"ja och gör så att republicera från main sker automatiskt och att jag slipper att slå ihop själv det kan väl också göras automatiskt"*; efter kostnaden för att republicera på claude.ai: *"då tycker jag att vi bygger om så att det hämtar via github"*; och *"bygg om och det räcker med en gång per dygn. kan man be github göra en genomsökning också så att allt är aktuellt"*.
+
+**Bakgrund.** Synkens PR väntade på Bengts ord, två av de åtta senaste synkarna slogs aldrig ihop för sig, och två publicerade sidor
+låg efter main: favoriterna två dygn (synken 26/10 listade dem, men de republicerades aldrig) och mätningarna ett kort (kort #303,
+stängt 25/10, kom aldrig på någon lista). En schemalagd republicering på claude.ai räknades fram 27/10: artefaktverktyget kräver att
+varje sida läses i sin helhet före en publicering, två sidor kostade 390 000 tokens, och sidorna ändras nästan varje dygn eftersom
+lägesraderna skrivs om (14–27/10: 6 sidor per dygn med en körning, 9,6 med två). Det blir 1–2 miljoner tokens per dygn.
+
+**Beslut.**
+1. **Ihopslagningen.** Flödet `synk-ihop` (`.github/workflows/synk-ihop.yml`, `scripts/synk-ihop.ts`) startar när ci eller md-vakt
+   blivit klart på en gren `claude/dokumentsynk-*` och slår ihop synkens PR när allt detta håller: PR:en är öppen, från repots egen
+   gren och heter *Dokumentsynk*; grenen rör bara dokumenten (stomvaktens lista, läst ur main); ci och md-vakt är gröna på exakt
+   huvudet; sammanslagningen med main går utan krock; och beslutsnumren, kortkartan, projektkartan, kartsynken, fristvakten och
+   stomvakten är gröna på det ihopslagna trädet. Är bara de skriptskrivna sidorna inaktuella skrivs de om, som i synkens steg 5.
+   Det provade trädet pushas till main. Håller något inte står PR:en kvar med en kommentar, och nästa morgons synk bär innehållet.
+   Ersätter val (b) i #488; rutinen slår fortfarande inte ihop själv.
+2. **Sidorna på GitHub Pages.** Flödet `sidorna` (`.github/workflows/sidorna.yml`, `scripts/sidorna.ts`) publicerar de sex
+   stomdokumenten med HTML-källa och projektkartan på https://axelstar.github.io/Halkvakt/ ur main: vid varje ändring av en sida, när synk-ihop har slagit
+   ihop morgonens synk, och en gång per dygn kl. 05.30 UTC. Sidorna märks noindex. Länkarna i repot pekar dit. Sidorna på claude.ai
+   får en flyttlapp och uppdateras inte längre. Det kostar inga tokens och, eftersom repot är publikt, inga Actions-minuter.
+3. **Genomsökningen.** Varje körning prövar att varje publicerad sida är lika main, att de skriptskrivna delarna är aktuella
+   (`projektkartan.ts --check` och `kortkartan.ts --check`) och att inga länkar till sidornas gamla adresser finns kvar. Dygnets
+   körning prövar också att dagens dokumentsynk finns på main och att ingen synk-PR står öppen. Ett fel öppnar ärendet
+   *Genomsökningen av sidorna hittade fel*, eller kommenterar det om det redan är öppet; det stängs när allt är grönt igen.
+4. **Löptexten** stäms av en gång per dygn av morgonens synk, som förut (#522).
+5. `docs/fristerna.json` hör till filerna synkens gren får röra. Synkens steg 4 rättar fristerna (#649), och 25/10 föll `--tillatna`
+   på den.
+
+**Det som ges upp.** Bengts läsning före sammanslagningen. Synkens gren får bara röra dokumenten: DECISIONS.md, koden och trösklarna
+ligger utanför, så ett beslut kräver fortfarande Bengts ord i ett eget inlägg. Sidornas adresser på claude.ai leder till en flyttlapp.
+
+**Alternativ.**
+- En schemalagd uppgift på Bengts dator som republicerar sidorna på claude.ai: byggd och prövad 27/10 (skapandet stoppades av
+  auto-läget), men 1–2 miljoner tokens per dygn och bara när appen är öppen. Valt bort.
+- GitHubs inbyggda auto-merge: kräver grenskydd med obligatoriska kontroller, och ci kan inte bli obligatorisk så länge
+  `paths-ignore` gäller (ci.yml, kort #152). Valt bort.
+- Att rutinen slår ihop själv: auto-läget nekade det 8/10 (#488). Valt bort.
+
+**Kända gränser.**
+- En push med GITHUB_TOKEN startar inga nya flöden. ci och md-vakt körs alltså inte om på main efter synk-ihops sammanslagning (samma
+  dokumentkontroller har körts på exakt det trädet), och synk-ihop startar `sidorna` med en workflow_dispatch.
+- Sidorna ligger på en öppen adress. Innehållet finns redan i det publika repot; noindex håller adressen utanför sökmotorerna.
+- Pages källa måste vara GitHub Actions (Settings → Pages), en engångsinställning.
+
+**Följdändringarna i samma PR:** `scripts/stomvakten.ts` (fristerna.json och texterna), `scripts/kartsynk.ts` (synk-ihop räknas som
+maskin), `.github/workflows/ci.yml` (självtesten), länkarna till de sju sidorna i alla filer utom DECISIONS och STATUS (bland dem
+`docs/kortkartan.json` och `docs/projektkartan.json`), sidorna omskrivna med `projektkartan.ts` och `kortkartan.ts`, och CLAUDE.md
+(sessionsprotokollet steg 1, STOMREGELN, KORTKARTAN, PROJEKTKARTAN, kartsynken och DOKUMENTSYNKEN steg 6–8).
+
+**Stomdokument:** BED §4.2 synkens PR slås ihop av synk-ihop och sidorna läses på GitHub Pages
+
+## #732 (27/10 2026) halkvakt.se får en ny ram: Vad är Halkvakt? först, en meny, ett nedladdningsställe och spårkod per knapp
 
 **Beslut.** Axel 27/10: *"Vi kör på detta! Kan du implementera det?"*, efter skisserna på designytan och Bengts två genomgångar.
 Sajtens fokus är *kolla halkan innan du kör*; appen följer av det. Förstasidan börjar med rubriken, rutan *Vad är Halkvakt?* (hemsidan

@@ -1,0 +1,54 @@
+name: synk-ihop
+# SYNK-IHOP (Bengt 27/10, DECISIONS #731): "gör så att ... jag slipper att slå ihop själv". Morgonens dokumentsynk-PR slås ihop
+# när grenen bara rör dokumenten, ci och md-vakt är gröna på exakt huvudet och dokumentkontrollerna är gröna på det ihopslagna
+# trädet; villkoren och vad som händer annars står i scripts/synk-ihop.ts. Ersätter val (b) i #488, där PR:en väntade på Bengts
+# "slå ihop". Flödet startar när ci eller md-vakt blivit klart på en gren claude/dokumentsynk-*; det första som blir klart ser oftast
+# att det andra pågår och väntar, och det andra slår ihop.
+# En push med GITHUB_TOKEN startar inga nya flöden, så ci och md-vakt körs inte om på main efter sammanslagningen. Samma
+# dokumentkontroller har just körts här, på exakt det träd som pushas. Flödet sidorna startas med en workflow_dispatch efter
+# pushen, så att sidorna på GitHub Pages byggs om direkt (därav actions: write).
+on:
+  workflow_run:
+    workflows: [ci, md-vakt]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: "PR-numret (tomt = alla öppna synk-PR:er)"
+        required: false
+      torr:
+        description: "true = pröva allt men pusha inte"
+        type: choice
+        options: ["false", "true"]
+        default: "false"
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  actions: write
+concurrency:
+  group: synk-ihop
+  cancel-in-progress: false
+jobs:
+  ihop:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.event == 'pull_request' && startsWith(github.event.workflow_run.head_branch, 'claude/dokumentsynk-'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        # Hela historiken: stomvakten läser DECISIONS.md i basen och projektkartan.ts skriver takten ur historiken.
+        with: { ref: main, fetch-depth: 0 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Synkens PR slås ihop när allt är grönt (#731)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ inputs.pr }}
+          TORR: ${{ inputs.torr }}
+        run: |
+          git config user.name "synk-ihop"
+          git config user.email "motor@halkvakt.dev"
+          node --experimental-strip-types scripts/synk-ihop.ts --sjalvtest
+          node --experimental-strip-types scripts/synk-ihop.ts

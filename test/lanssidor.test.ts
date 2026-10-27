@@ -190,7 +190,7 @@ test("läns- och vägsidorna bär tiden och källan som strukturerad data (DECIS
   assert.ok(sidor["lan/skane/index.html"].includes("rapporterar Trafikverket ingen halka"), "noll halka sägs som noll, aldrig som halka");
 });
 
-test("läns- och vägsidorna bär sajtens ram: samma meny, spårkod per knapp, appraden bara där det är halt (DECISIONS #731)", () => {
+test("läns- och vägsidorna bär sajtens ram: samma meny, spårkod per knapp, appraden bara där det är halt (DECISIONS #732)", () => {
   const sidor = byggLanssidor({
     vaglag: [{ code: 3, text: "Mycket besvärligt", info: ["Is"], road: "E 6", plats: "E 6 Malmö - Lund", lan: 12 }],
     stationer: [], olyckor: [], now: NOW,

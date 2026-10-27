@@ -18,8 +18,9 @@ import { type Lagrad, ISSUE_MARK, lasKropp } from "../supabase/functions/byggsig
 const FIL = "docs/projektkartan.json";
 const REPO = "Axelstar/Halkvakt";
 /** Commits som inte är arbete att bokföra: dagens halkläge, källvakten, och Halkvakt live — marknadsmotorns inlägg, larm och kvitton
- *  under eget namn sedan 17/10 04:50 (Marknadsmotorns sista 04:45); kartsynken 18/10 listade 21 sådana som arbete. */
-const MASKINER = new Set(["Marknadsmotorn", "trv-bevakning", "Halkvakt live"]);
+ *  under eget namn sedan 17/10 04:50 (Marknadsmotorns sista 04:45); kartsynken 18/10 listade 21 sådana som arbete. synk-ihop slår ihop
+ *  dokumentsynkens PR (DECISIONS #731): synken själv är redan bokförd. */
+const MASKINER = new Set(["Marknadsmotorn", "trv-bevakning", "Halkvakt live", "synk-ihop"]);
 const RANG: Record<Steg["status"], number> = { ej: -1, saknas: 0, pagar: 1, klar: 2 };
 const REGLER = ["ios-uppladdad", "ios-installerad", "ios-extern", "appstore", "inlamnad", "testare", "facit"] as const;
 /** App Store-tillstånd från och med inlämningen (Apples appStoreVersions.appVersionState). */
