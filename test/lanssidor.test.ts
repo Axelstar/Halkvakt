@@ -41,8 +41,10 @@ test("länssidorna: 21 län och en översikt, svaret ur källorna, Trafikverkets
   assert.equal(Object.keys(sidor).length, 30, "översikten, 21 län, 6 vägar, widgetens datafil och vägrutans");
   assert.deepEqual(Object.keys(sidor).filter((p) => p !== "lan/index.html" && !p.startsWith("data/")).sort(),
     [...LAN.map((l) => `lan/${l.slug}/index.html`), ...VAGAR.map((v) => `vag/${v.slug}/index.html`)].sort());
+  assert.ok(sidor["lan/uppsala/index.html"].includes("<title>Halka i Uppsala idag:"), "utan län, som i sökrutan");
+  assert.ok(sidor["lan/stockholm/index.html"].includes("<title>Halka i Stockholm idag:"), "utan genitiv-s");
   const skane = sidor["lan/skane/index.html"];
-  assert.ok(skane.includes("<title>Halka och väglag i Skåne län just nu | Halkvakt</title>"), "sökorden först (25/10)");
+  assert.ok(skane.includes("<title>Halka i Skåne idag: väglag och trafikläget just nu | Halkvakt</title>"), "sökorden först, som folk skriver dem (28/10)");
   assert.ok(skane.includes(`<meta name="description" content="Kl. 07:30: halka eller vinterväglag på 1 av 2 vägavsnitt i Skåne län, kallast −1,5 °C vid Lund. Trafikverkets väglag, vägtemperatur och olyckor, uppdaterat var 30:e minut.">`), "dagens siffror i sökträffen");
   assert.ok(skane.includes(`<link rel="canonical" href="${SIDBAS}/lan/skane/">`));
   assert.ok(skane.includes("Kl. 07:30 rapporterar Trafikverket halka eller vinterväglag på 1 av länets 2 vägavsnitt."), "fläckvis Våt räknas inte");
@@ -90,7 +92,7 @@ test("vägsidorna: vägnumret utan form, vägens sträckor i alla län, statione
     now: NOW,
   });
   const e6 = sidor["vag/e6/index.html"];
-  assert.ok(e6.includes("<title>Halka och väglag på E6 just nu | Halkvakt</title>"));
+  assert.ok(e6.includes("<title>Väglag E6 idag: halka och trafikläget just nu | Halkvakt</title>"));
   assert.ok(e6.includes(`content="Kl. 07:30: halka eller vinterväglag på 1 av 2 vägavsnitt på E6, kallast −1,5 °C vid Lund.`));
   assert.ok(e6.includes("Kl. 07:30 rapporterar Trafikverket halka eller vinterväglag på 1 av E6:s 2 vägavsnitt. 1 mätstation visar vägbana på 0 °C eller kallare, kallast −1,5 °C vid Lund."));
   assert.ok(e6.includes("Skåne: E 6 Malmö - Lund: Mycket besvärligt, Is") && !e6.includes("Kungälv"), "bara det hala listas, med länet");
