@@ -6,7 +6,7 @@
 // Vakten ser bara inlägg som läggs till, aldrig gamla. Ett "inga" kan den inte pröva; det gör morgonens dokumentsynk.
 //   node --experimental-strip-types scripts/stomvakten.ts --bas <sha>   prövar besluten som lagts till sedan <sha> (md-vakt.yml)
 //   node --experimental-strip-types scripts/stomvakten.ts --lage        varje stomdokuments senaste handtextändring och besluten sedan dess
-//   node --experimental-strip-types scripts/stomvakten.ts --tillatna    rör grenen bara dokumenten? (dokumentsynkens PR, i rapporten till Bengt, #488)
+//   node --experimental-strip-types scripts/stomvakten.ts --tillatna    rör grenen bara dokumenten? (dokumentsynkens PR; samma lista prövar synk-ihop, #731)
 //   node --experimental-strip-types scripts/stomvakten.ts --sjalvtest
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
@@ -18,8 +18,10 @@ type Inlagg = { id: string; text: string };
 type Rad = { inga: true; skal: string } | { inga: false; koder: string[] };
 
 /** Filer som dokumentsynkens gren får röra utöver stomdokumenten (#484 (d)). DECISIONS.md hör inte hit: ett beslut väntar på Bengts ord.
- *  docs/takten.json skrivs av projektkartan.ts ur git-historiken (#515) och ändras när main flyttat (Bengt 11/10, #518). */
-const OCKSA = ["docs/KALENDERN.md", "TAVLA.md", "STATUS.md", "docs/projektkartan.json", "docs/PROJEKTKARTAN.html", "docs/kortkartan.json", "docs/takten.json"];
+ *  docs/takten.json skrivs av projektkartan.ts ur git-historiken (#515) och ändras när main flyttat (Bengt 11/10, #518).
+ *  docs/fristerna.json rättas i synkens steg 4 (#649); 25/10 föll --tillatna på den (DECISIONS #731). */
+const OCKSA = ["docs/KALENDERN.md", "TAVLA.md", "STATUS.md", "docs/projektkartan.json", "docs/PROJEKTKARTAN.html", "docs/kortkartan.json", "docs/takten.json",
+  "docs/fristerna.json"];
 const RUBRIK = /^## #(\d+[a-z]?(?:-[a-zåäö]+)?)(?![\w-])/gmu;   // samma som scripts/beslutsnumren.ts
 const RADEN = /^\*\*Stomdokument:\*\*[ \t]*(.*)$/gmu;
 
@@ -111,7 +113,7 @@ function sjalvtest(): void {
   const ok3 = fel.length === 3 && fel[0].startsWith("#11 saknar") && fel[1].startsWith("#14:") && fel[2].includes('okänt stomdokument "KAL"');
   const L = (x: string) => `a<!-- LÄGESRADER §1: s -->\n${x}\n<!-- /LÄGESRADER -->b`;
   const ok4 = prova([nya[1]], sidor).length === 0 && handtext(L("gammal")) === handtext(L("ny"));
-  const ok5 = tillatna(["m.html", "STATUS.md", "docs/takten.json", "DECISIONS.md", "scripts/x.ts"], sidor).join(",") === "DECISIONS.md,scripts/x.ts";
+  const ok5 = tillatna(["m.html", "STATUS.md", "docs/takten.json", "docs/fristerna.json", "DECISIONS.md", "scripts/x.ts"], sidor).join(",") === "DECISIONS.md,scripts/x.ts";
   const ok6 = handtext("a\r\nb") === "a\nb";
   // Kuvösregeln (#489): kuvösfil + nytt beslut utan KUV fälls; med KUV, utan kuvösfil eller utan nytt beslut släpps det.
   const kuv: Inlagg = { id: "16", text: "## #16 (2/1) Kuvös\n**Stomdokument:** KUV §5, BED §4.2\n" };
@@ -133,8 +135,8 @@ function main(): void {
     const filer = git("diff", "--name-only", "origin/main...HEAD").split("\n").filter(Boolean);
     const fel = tillatna(filer, sidor);
     if (!filer.length) { console.error("✗ grenen ändrar ingenting"); process.exit(1); }
-    if (fel.length) { console.error(`✗ grenen rör mer än dokumenten: ${fel.join(", ")} — vänta på Bengts "slå ihop"`); process.exit(1); }
-    console.log(`✓ grenen rör bara dokumenten (${filer.length} filer) — säg det i rapporten; PR:en väntar på Bengts "slå ihop" (DECISIONS #488)`);
+    if (fel.length) { console.error(`✗ grenen rör mer än dokumenten: ${fel.join(", ")} — synk-ihop slår inte ihop den (DECISIONS #731)`); process.exit(1); }
+    console.log(`✓ grenen rör bara dokumenten (${filer.length} filer) — synk-ihop slår ihop PR:en när ci och md-vakt är gröna (DECISIONS #731)`);
     return;
   }
 

@@ -94,6 +94,8 @@ jobs:
       # Själva vakten kör i md-vakt.yml, som ser varje ändring i DECISIONS.md; här prövas skriptet när koden ändras.
       - name: Stomvaktens självtest (#484)
         run: node --experimental-strip-types scripts/stomvakten.ts --sjalvtest
+      - name: Synk-ihops självtest — synkens PR slås ihop när allt är grönt (#731)
+        run: node --experimental-strip-types scripts/synk-ihop.ts --sjalvtest
       - name: Fristvakten och domlarmet — självtester och fristlistan (#649)
         run: |
           node --experimental-strip-types scripts/fristvakten.ts --sjalvtest

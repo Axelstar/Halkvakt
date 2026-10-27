@@ -100,8 +100,9 @@ Allt i repot är publikt och går inte att ta tillbaka: filerna, historiken, är
 ## Session protocol (self-steering)
 Every session, in order:
 1. Run the kartsynk first (`node --experimental-strip-types scripts/kartsynk.ts`) and book what it lists (PROJEKTKARTAN →
-   Kartsynken below). Read the morning's dokumentsynk (DOKUMENTSYNKEN below): its STATUS line, its PR, and republish every artifact its line lists under
-   *Att republicera* that this machine can reach. Then the open issues labelled `frist` and `dom` (DECISIONS #649): a frist due
+   Kartsynken below). Read the morning's dokumentsynk (DOKUMENTSYNKEN below): its STATUS line and its PR (merged by the flow `synk-ihop`, DECISIONS #731;
+   if it is still open, the flow's comment says why), and the latest run of the scheduled task *Halkvakt: republicera stomdokumenten* on Bengt's
+   computer, which republishes every page whose source on main differs. Only if that run failed or did not run: republish by hand. Then the open issues labelled `frist` and `dom` (DECISIONS #649): a frist due
    today or overdue, and a dom waiting to be booked, are raised with Bengt before anything else. Then orient per SESSIONSREGELN below: the project map (`docs/PROJEKTKARTAN.html`, PROJEKTKARTAN below) for where every part stands, the latest `docs/BEDOMNING-*.md` in full, `docs/INTEGRATIONSKARTAN.md` when it
    changed or a new grepp starts, TAVLA.md's 🟡 section, DECISIONS added since last session, latest CI runs. Search
    TAVLA, STATUS and DECISIONS — don't read them whole (halved 26/9; the older half is in TAVLA-ARKIV.md and
@@ -111,7 +112,7 @@ Every session, in order:
 3. Prove it: tests/CI/logs — never claim done without evidence.
 4. Commit with a message explaining what + why. Update the bedömning (läget överst,
    §4.2) and TAVLA; a session-log line in STATUS.md. Log decisions in DECISIONS.md, each with its **Stomdokument:** line —
-   the seven stomdokument's hand text is reconciled once a day by the morning dokumentsynk, not in each round (STOMREGELN,
+   the eight stomdokument's hand text is reconciled once a day by the morning dokumentsynk, not in each round (STOMREGELN,
    DECISIONS #522). Run the card review (`scripts/kortkartan.ts
    --genomgang`) and close every card whose Verify is met, in the same commit (TAVELREGELN 5).
 5. End by telling Axel: what shipped, what's next, and ONLY the questions that
@@ -177,8 +178,9 @@ Tavlan är människolagret; bedömningen, STATUS och DECISIONS är djuplagren.
 7. *Halkvaktens favoriter* — https://claude.ai/artifact/EJYcQFCyKYd9BgGcYkCMyT, källa `docs/FAVORITER.html` (tillagd 3/10 på Bengts order, DECISIONS #445)
 8. *Nivå 2+blandning live* — https://claude.ai/artifact/Wsuxr3UTG7d7axekXireqg, källa `docs/NIVA2-LIVE.html` (tillagd 14/10 på Bengts order, DECISIONS #557): stegen till kandidaten i appen, kort #343
 **En gång per dygn (Bengts order 11/10, DECISIONS #522).** De åtta stäms av EN gång per dygn, av morgonens dokumentsynk (DOKUMENTSYNKEN
-nedan): den läser allt som hänt sedan förra synken och rättar handtexten, och artefakterna republiceras då — når rutinen dem inte,
-gör dagens första session det. I varje varv förs bara in det som maskinerna prövar: beslutet med sin rad `**Stomdokument:**` (som
+nedan): den läser allt som hänt sedan förra synken och rättar handtexten. Flödet `synk-ihop` slår ihop synkens PR när kontrollerna
+är gröna, och den schemalagda uppgiften *Halkvakt: republicera stomdokumenten* republicerar varje sida vars källa på main skiljer sig från den
+publicerade, kl. 06.15 och 18.15 (Bengt 27/10, DECISIONS #731); har uppgiften inte gått gör dagens första session det. I varje varv förs bara in det som maskinerna prövar: beslutet med sin rad `**Stomdokument:**` (som
 säger vad synken ska stämma av), tavlan, projektkartan och kortkartan (skripten skriver lägesraderna och korten i sidorna) och en
 rad i STATUS. Skälet: 107 av 118 commits 4–11/10 rörde dokument, och varje ändring rättade två till tre sidor och republicerade dem
 efter sammanslagningen. En artefakt får ligga högst ett dygn efter sin repokopia. Integrationskartans frysregel är hävd
@@ -273,11 +275,14 @@ en körning skrev nådde aldrig synken, som läser beslut och commits, inte utsk
 6. En rad i STATUS.md: *Dokumentsynk <datum>:* vad som rättades per dokument, eller *inget att stämma av* — en tyst morgon ska inte
    se ut som en lyckad — och *Att republicera:* med de artefakter vars källa ändrades. Raden och rapporten listar också de öppna
    ärendena med etiketterna `frist` och `dom` (#649); ett dom-ärende bokförs på Bengts ord, aldrig av rutinen.
-7. Commit (märk den aldrig så att CI hoppas över), push, PR med rubriken *Dokumentsynk: <datum>*. Rutinen slår aldrig ihop: PR:en
-   väntar på Bengts *slå ihop*, och rapporten säger om ci och md-vakt är gröna på exakt huvudet och om `--tillatna` är grön (Bengts
-   val (b) 8/10, DECISIONS #488: auto-läget nekade sammanslagningen första morgonen, och (d) i #484 är struken).
-8. Republicera de artefakter vars källa ändrades, till sina adresser. Når rutinen inte artefakterna gör dagens första session det
-   (sessionsprotokollet steg 1).
+7. Commit (märk den aldrig så att CI hoppas över), push, PR med rubriken *Dokumentsynk: <datum>*. Rutinen slår inte ihop själv (auto-läget
+   nekade det 8/10, DECISIONS #488). Flödet `synk-ihop` (`.github/workflows/synk-ihop.yml`, `scripts/synk-ihop.ts`) slår ihop PR:en
+   när grenen bara rör dokumenten (`--tillatna`), ci och md-vakt är gröna på exakt huvudet och dokumentkontrollerna är gröna på det
+   ihopslagna trädet; annars står den kvar med en kommentar, och nästa synk bär innehållet (Bengt 27/10, DECISIONS #731). Rapporten
+   säger PR:ens nummer och om `--tillatna` är grön.
+8. Rutinen når inte artefakterna (den har inget artefaktverktyg). Raden *Att republicera* är underlag: den schemalagda uppgiften
+   *Halkvakt: republicera stomdokumenten* på Bengts dator jämför varje publicerad sida med källan på main kl. 06.15 och 18.15 och republicerar
+   de som skiljer (DECISIONS #731). Har den inte gått gör dagens första session det (sessionsprotokollet steg 1).
 Rutinen fattar inga beslut, ändrar inga trösklar, rör ingen kod och inga hemligheter och kör inga flöden. Det som kräver ett
 beslut skrivs som en fråga i §4.2 och står i rapporten.
 

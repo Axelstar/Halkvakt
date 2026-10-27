@@ -18362,3 +18362,45 @@ svar, men på skev radar. Efterhalkans dom i januari och försprångets domknapp
   morgonens dokumentsynk.
 
 **Stomdokument:** KUV, BED övergångarna och försprånget i kuvösen bortvalda
+
+## #731 (27/10 2026) Dokumentsynkens PR slås ihop automatiskt, och stomdokumenten republiceras automatiskt ur main
+
+**Bengts ord 27/10:** *"ja och gör så att republicera från main sker automatiskt och att jag slipper att slå ihop själv det kan väl också göras automatiskt"* (efter genomgången av varför stomdokumenten inte följer med: synkens PR väntade på hans ord, två av
+de åtta senaste synkarna slogs aldrig ihop för sig, och två publicerade sidor låg efter main, favoriterna två dygn).
+
+**Beslut.**
+1. **Ihopslagningen.** Flödet `synk-ihop` (`.github/workflows/synk-ihop.yml`, `scripts/synk-ihop.ts`) startar när ci eller md-vakt
+   blivit klart på en gren `claude/dokumentsynk-*` och slår ihop synkens PR när allt detta håller: PR:en är öppen, från repots egen
+   gren och heter *Dokumentsynk*; grenen rör bara dokumenten (stomvaktens lista, läst ur main); ci och md-vakt är gröna på exakt
+   huvudet; sammanslagningen med main går utan krock; och beslutsnumren, kortkartan, projektkartan, kartsynken, fristvakten och
+   stomvakten är gröna på det ihopslagna trädet. Är bara de skriptskrivna sidorna inaktuella skrivs de om, som i synkens steg 5.
+   Det provade trädet pushas till main. Håller något inte står PR:en kvar med en kommentar, och nästa morgons synk bär innehållet.
+   Ersätter val (b) i #488; rutinen slår fortfarande inte ihop själv.
+2. **Republiceringen.** Den schemalagda uppgiften *Halkvakt: republicera stomdokumenten* på Bengts dator kör kl. 06.15 och 18.15. Den
+   jämför varje publicerad sida (de sex med adress i kortkartans `sidor` och projektkartan) med källan på main och republicerar de som
+   skiljer. En publicerad sida som inte är lika någon version av källan i git publiceras inte över; den rapporteras. Molnrutinen har
+   inget artefaktverktyg och kan inte republicera. Ersätter #522 punkt 1:s *når rutinen inte artefakterna gör dagens första session
+   det*: en session republicerar för hand bara när uppgiften inte har gått.
+3. `docs/fristerna.json` hör till filerna synkens gren får röra. Synkens steg 4 rättar fristerna (#649), och 25/10 föll `--tillatna`
+   på den.
+
+**Det som ges upp.** Bengts läsning före sammanslagningen. Synkens gren får bara röra dokumenten: DECISIONS.md, koden och trösklarna
+ligger utanför, så ett beslut kräver fortfarande Bengts ord i ett eget inlägg.
+
+**Alternativ.**
+- GitHubs inbyggda auto-merge: kräver grenskydd med obligatoriska kontroller, och ci kan inte bli obligatorisk så länge
+  `paths-ignore` gäller (ci.yml, kort #152). Valt bort.
+- Att rutinen slår ihop själv: auto-läget nekade det 8/10 (#488). Valt bort.
+- Att molnrutinen republicerar: den når inte artefakterna.
+
+**Kända gränser.**
+- Uppgiften kör bara när Claude-appen är öppen på Bengts dator; en missad körning görs när appen startas.
+- Artefaktverktyget kräver att varje sida läses i sin helhet före en republicering, så en körning med flera ändrade sidor tar en
+  märkbar del av användningen. Uppgiften läser bara sidor vars källa ändrats sedan dess förra publicering.
+- En push med GITHUB_TOKEN startar inga nya flöden, så ci och md-vakt körs inte om på main efter sammanslagningen. Samma
+  dokumentkontroller har körts på exakt det trädet i flödet.
+
+**Följdändringarna i samma PR:** `scripts/stomvakten.ts` (fristerna.json och texterna), `scripts/kartsynk.ts` (synk-ihop räknas som
+maskin), `.github/workflows/ci.yml` (självtestet) och CLAUDE.md (sessionsprotokollet steg 1, STOMREGELN, DOKUMENTSYNKEN steg 7 och 8).
+
+**Stomdokument:** BED §4.2 synkens PR slås ihop av synk-ihop
