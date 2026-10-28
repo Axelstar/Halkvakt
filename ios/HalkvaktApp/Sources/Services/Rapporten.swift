@@ -18,6 +18,10 @@ final class Rapporten {
     struct Resa {
         let dit: [RapportRad]
         let hem: [RapportRad]
+        /// Rutan Halkvakt tror (DECISIONS #739): kandidatens rader åt varje håll, nil när kandidaten är avstängd. Aldrig med i
+        /// förra kollen eller radens läge — `ids` och `radlage` läser bara `dit` och `hem`.
+        let kandidatDit: [KandidatRad]?
+        let kandidatHem: [KandidatRad]?
     }
 
     private(set) var resor: [String: Resa] = [:]
@@ -103,7 +107,9 @@ final class Rapporten {
             if Task.isCancelled { return nil }
             let dit = ResansRapport.resansRapport(r.punkter, hem: false, lage: lage, kameror: kameror, snabb: fil, linjer: linjer)
             let hem = ResansRapport.resansRapport(r.punkter, hem: true, lage: lage, kameror: kameror, snabb: fil, linjer: linjer)
-            resor[r.id] = Resa(dit: grind(dit), hem: grind(hem))
+            resor[r.id] = Resa(dit: grind(dit), hem: grind(hem),
+                               kandidatDit: ResansRapport.kandidatRader(r.punkter, hem: false, lage: lage),
+                               kandidatHem: ResansRapport.kandidatRader(r.punkter, hem: true, lage: lage))
         }
         return Utfall(resor: resor, lagesfil: lagesTid, gammaltVaglag: gammaltVaglag, gamlaOlyckor: gamlaOlyckor)
     }
