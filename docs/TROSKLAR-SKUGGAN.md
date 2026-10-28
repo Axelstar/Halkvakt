@@ -223,6 +223,10 @@ lydelsen från 1/9, som lät prognosen tala på modellerade värden i strid med 
   *Ändrat 25/10 2026 (Bengt, DECISIONS #710; en skärpning enligt §5):* säkerhetsläsningen 1/12, 1/1 och 1/2 (FORREGISTRERING-2026-27
   §4b punkt 17) stänger av kandidaten före domen om den säkert är sämre än RÅ.
 
+  *Ändrat 28/10 2026 (Bengt för båda, DECISIONS #739; ingen lättnad: inget tal, ingen population och ingen grind flyttas):* samma
+  betavarning får också **visas** i rapporten i Favoriter, i en egen ruta märkt BETA och *modellerat*, en rad per väg utan avstånd och
+  aldrig som notis. Den följer nyckeln: avstängd här är avstängd där.
+
 Bevisbördan ligger på skuggan. Vid tvekan: tystnad (produktinvarianten).
 
 ## 5. Ändringsregler
