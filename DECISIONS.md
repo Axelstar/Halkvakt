@@ -18615,3 +18615,15 @@ Blir den grön släpper mätvakten (#1210) trv-bevakning.
   inte prövat. Valt bort tills vidare.
 
 **Stomdokument:** inga, källvaktens källor står i beroendekartan och i skriptet, inte i något av de åtta stomdokumenten.
+
+## #738 (28/10 2026) Underkylt regn parkeras till efter våren 2027
+
+Bengt 28/10: *"vi parkerar hela den här punkten till efter våren 2027"*.
+
+1. Inget arbete på underkylt regn före sommaren 2027: ingen vakt, ingen egen varning och ingen täckningskoll.
+2. Skälen: givarens kod 3 (`freezing_rain`) gav 909 av 5 358 760 rader vintern 2024/25 (#467). Att koden betyder underkylt
+   regn är obekräftat (`kuvos/oversattning.sql`). En egen varning skulle dessutom kräva ett tröskeldokument och Axels beslut.
+3. Ordet står kvar som okänt (#689 punkt 10). Nederbördstypens marsdom (grind NT) påverkas inte.
+4. När frågan tas upp igen är första steget täckningskollen: varnade motorn redan under raderna med kod 3?
+
+**Stomdokument:** inga, beslutet parkerar ett spår och ändrar inget i driften eller i tröskeldokumenten.
