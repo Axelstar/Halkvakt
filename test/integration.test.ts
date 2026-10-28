@@ -1727,10 +1727,12 @@ test("#575 spridningsgrinden: regeln, gränsen, glesa punkter och domloggens fä
     const utfall = Object.fromEntries((await q("SELECT punkt, utfall FROM kandidat_regel() WHERE punkt LIKE 'vT%'")).rows.map((r) => [r.punkt, r.utfall]));
     assert.deepEqual(utfall, Object.fromEntries(P.map(([p, , , , u]) => [p, u])));
     // NIVA2-LIVE steg 6 (#576): publiceringen tar regelns `varnar` och inget annat — de tystade punkterna kommer inte med.
+    // #739: vägnumret ur road_conditions i en egen fråga — en sträcka med nummer, de andra null.
+    await q("UPDATE road_conditions SET road_number = '45' WHERE segment_id = '99921'");
     const { buildSnapshot } = await import("../publish/snapshot-core.ts");
     const { liveDoc } = await buildSnapshot(async (t, p) => (await pool.query(t, p as any[])).rows, []);
     assert.deepEqual(liveDoc.kandidat.filter((r) => r.id.startsWith("9992")),
-      ["99921", "99922", "99923", "99924"].map((id) => ({ id, tid: tid.toISOString(), punkter: [[32, 70]] })));
+      ["99921", "99922", "99923", "99924"].map((id) => ({ id, tid: tid.toISOString(), punkter: [[32, 70]], vag: id === "99921" ? "45" : null })));
     assert.match((await q("SELECT kandidat_logga() AS m")).rows[0].m, /5 sträckor, 4 varnande punkter, 0 vetade, 1 torra, 2 tystade av spridningen/);
     const rad = Object.fromEntries((await q("SELECT segment_id, varnar, spridning, fukt_glest, fukt_spr_min FROM kandidat_skugga WHERE segment_id LIKE '9992%'"))
       .rows.map((r) => [r.segment_id, [r.varnar, r.spridning, r.fukt_glest, r.fukt_spr_min]]));
