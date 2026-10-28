@@ -1042,6 +1042,73 @@ function lsSoknamn(kort: string): string {
   return / län$/.test(kort) ? kort.replace(/ län$/, "").replace(/s$/, "") : kort;
 }
 
+/** ORTSSIDORNA (28/10): de orter folk skriver i sökrutan ("halka karlstad", "väglag umeå"). En ort är med när minst två av
+ *  Trafikverkets vägavsnitt i dess eget län bär ortens namn ("E 18 Karlstad - Kristinehamn"); sidan visar just de avsnitten, med
+ *  Trafikverkets ord, och länets läge. Inga koordinater behövs och inget påstås om vägen mellan avsnitten. Uppmätt 28/10: 2–14
+ *  avsnitt per ort. */
+export const ORTER: { namn: string; lan: number }[] = [
+  { namn: "Stockholm", lan: 1 }, { namn: "Södertälje", lan: 1 }, { namn: "Uppsala", lan: 3 }, { namn: "Eskilstuna", lan: 4 },
+  { namn: "Nyköping", lan: 4 }, { namn: "Linköping", lan: 5 }, { namn: "Norrköping", lan: 5 }, { namn: "Motala", lan: 5 },
+  { namn: "Jönköping", lan: 6 }, { namn: "Växjö", lan: 7 }, { namn: "Kalmar", lan: 8 }, { namn: "Visby", lan: 9 },
+  { namn: "Karlskrona", lan: 10 }, { namn: "Malmö", lan: 12 }, { namn: "Helsingborg", lan: 12 }, { namn: "Lund", lan: 12 },
+  { namn: "Kristianstad", lan: 12 }, { namn: "Halmstad", lan: 13 }, { namn: "Varberg", lan: 13 }, { namn: "Göteborg", lan: 14 },
+  { namn: "Borås", lan: 14 }, { namn: "Trollhättan", lan: 14 }, { namn: "Skövde", lan: 14 }, { namn: "Uddevalla", lan: 14 },
+  { namn: "Karlstad", lan: 17 }, { namn: "Arvika", lan: 17 }, { namn: "Örebro", lan: 18 }, { namn: "Västerås", lan: 19 },
+  { namn: "Falun", lan: 20 }, { namn: "Borlänge", lan: 20 }, { namn: "Mora", lan: 20 }, { namn: "Sälen", lan: 20 },
+  { namn: "Älvdalen", lan: 20 }, { namn: "Gävle", lan: 21 }, { namn: "Hudiksvall", lan: 21 }, { namn: "Sundsvall", lan: 22 },
+  { namn: "Örnsköldsvik", lan: 22 }, { namn: "Härnösand", lan: 22 }, { namn: "Sollefteå", lan: 22 }, { namn: "Östersund", lan: 23 },
+  { namn: "Umeå", lan: 24 }, { namn: "Skellefteå", lan: 24 }, { namn: "Lycksele", lan: 24 }, { namn: "Vilhelmina", lan: 24 },
+  { namn: "Luleå", lan: 25 }, { namn: "Piteå", lan: 25 }, { namn: "Kiruna", lan: 25 },
+];
+export const ortSlug = (namn: string) => namn.toLowerCase().replace(/[åä]/g, "a").replace(/ö/g, "o");
+
+/** Avsnitten som bär ortens namn, i ortens län. "Länsgräns Värmland/Örebro" är ett län, inte orten, och räknas inte. */
+function lsOrtAvsnitt(ort: { namn: string; lan: number }, vaglag: LanSegment[]): LanSegment[] {
+  const rx = new RegExp(`(^|[^\\p{L}])${ort.namn}($|[^\\p{L}])`, "u");
+  return vaglag.filter((s) => s.lan === ort.lan && rx.test((s.plats ?? "").replace(/Länsgräns[^-]*/g, "")));
+}
+
+function lsOrtsida(ort: { namn: string; lan: number }, lan: (typeof LAN)[number], lanLage: LanLage, now: Date,
+  d: { vaglag: LanSegment[]; olyckor: LanOlycka[] }): string {
+  const avsnitt = lsOrtAvsnitt(ort, d.vaglag);
+  const halt = avsnitt.filter((s) => arHalt(s.code, s.info));
+  const vagar = new Set(avsnitt.map((s) => vagNyckel(s.road)));
+  const olyckor = d.olyckor.filter((o) => o.lan === ort.lan && vagar.has(vagNyckel(o.road)));
+  const n = lsEsc(ort.namn), lk = lsEsc(lsSoknamn(lan.kort));
+  const svar = `Kl. ${lsTid(now, false)} rapporterar Trafikverket ${halt.length
+    ? `halka eller vinterväglag på ${halt.length} av ${avsnitt.length} vägavsnitt till och från ${ort.namn}`
+    : `ingen halka på ${avsnitt.length} vägavsnitt till och från ${ort.namn}`}. ${lanLage.kalla.length
+    ? `I ${lsSoknamn(lan.kort)} ${lanLage.kalla.length === 1 ? "visar 1 mätstation" : `visar ${lanLage.kalla.length} mätstationer`} vägbana på 0 °C eller kallare, kallast ${lsGrad(lanLage.kalla[0].yta)} vid ${lanLage.kalla[0].name}.`
+    : `Ingen mätstation i ${lsSoknamn(lan.kort)} visar vägbana under noll.`}`;
+  const rader = [...avsnitt].sort((a, b) => Number(arHalt(b.code, b.info)) - Number(arHalt(a.code, a.info))).map((s) => {
+    const h = arHalt(s.code, s.info);
+    const vad = [s.text, ...s.info].filter(Boolean).join(", ");
+    return `<li><b>${lsEsc(lsVagNamn(s.road ?? ""))}</b>${h ? '<span class="halt">Halka eller vinterväglag</span>' : "Ingen halka rapporterad"}` +
+      `<small>${lsEsc(lsStracka(s))}${vad ? ` · ${lsEsc(vad)}` : ""}</small></li>`;
+  }).join("\n");
+  const grannar = ORTER.filter((o) => o.lan === ort.lan && o.namn !== ort.namn).map((o) => `<a href="../${ortSlug(o.namn)}/">${lsEsc(o.namn)}</a>`).join(" · ");
+  const innehall = `<p class="dim">Uppdaterad ${lsTid(now)}</p>
+<h1>Är det halt i ${n} just nu?</h1>
+<p class="svar">${lsEsc(svar)}</p>
+<p class="dim">Väglaget och trafikläget i ${n} idag: vägarna till och från orten enligt Trafikverket, uppdaterat var 30:e minut.</p>
+${halt.length ? `<div class="svar-app"><p>Kör du i ${n} idag? Appen säger till med rösten innan du är framme vid halkan.</p><a class="knapp" href="${lsApp("ort-halt")}">Få varningar i appen</a></div>\n` : ""}<h2>Vägarna till och från ${n}</h2>
+<ul class="vaglista">\n${rader}\n</ul>
+<h2>Pågående olyckor</h2>
+${olyckor.length ? `<ul>\n${olyckor.slice(0, 10).map((o) => `<li>${lsEsc(lsVagNamn(o.road ?? "Väg"))}${o.start ? `, sedan ${lsTid(new Date(o.start))}` : ""}${o.allvar ? ` (${lsEsc(o.allvar)})` : ""}</li>`).join("\n")}\n</ul>`
+    : `<p>Trafikverket rapporterar ingen pågående olycka på vägarna genom ${n} i ${lk}.</p>`}
+<h2>Hela ${lk}</h2>
+<p>${lsEsc(lsSvar(lanLage, "länets", "i länet", now))} Mer på <a href="../../lan/${lan.slug}/">halka och väglag i ${lk}</a>.</p>
+<p>Undrar du när vägen blir hal? Läs <a href="../../nar-blir-det-halt.html">när det blir halt på vägarna</a>.</p>
+<h2>Vanliga frågor</h2>
+${lsFragorHtml(lsFragor(ort.namn))}
+<nav>${grannar ? `<h2>Fler orter i ${lk}</h2><p>${grannar}</p>` : ""}<h2>Stora vägar</h2><p>${lsVagLankar("../../")}</p></nav>`;
+  const beskrivning = `Kl. ${lsTid(now, false)}: ${halt.length ? `halka eller vinterväglag på ${halt.length} av ${avsnitt.length}` : `ingen halka på ${avsnitt.length}`} vägavsnitt till och från ${ort.namn}. ${LS_SLUT}`;
+  return lsSkal({
+    titel: `Halka i ${ort.namn} idag: väglag och trafikläget just nu | Halkvakt`,
+    beskrivning, adress: `${SIDBAS}/ort/${ortSlug(ort.namn)}/`, rot: "../../", innehall, now, ct: "ort", extra: lsFragorLd(lsFragor(ort.namn)),
+  });
+}
+
 function lsLanssida(lan: (typeof LAN)[number], l: LanLage, now: Date, d: { vaglag: LanSegment[]; stationer: LanStation[] }): string {
   const halt = l.halt.slice(0, 15).map((s) => {
     const vad = [s.text, ...s.info].filter(Boolean).join(", ");
@@ -1075,7 +1142,8 @@ ${l.olyckor.length ? `<ul>\n${olyckor}\n</ul>` : "<p>Trafikverket rapporterar in
 <p>Hela landet på <a href="../../karta.html">livekartan</a>, eller <a href="../">läget i alla län</a>. Redaktioner kan <a href="../../press.html#redaktioner">bädda in läget i ${lsEsc(lan.kort)}</a> på sin egen sajt.</p>
 <h2>Vanliga frågor</h2>
 ${lsFragorHtml(lsFragor(lan.namn))}
-<nav><h2>Andra län</h2><p>${andra}</p><h2>Stora vägar</h2><p>${lsVagLankar("../../")}</p></nav>`;
+<p>Undrar du när vägen blir hal? Läs <a href="../../nar-blir-det-halt.html">när det blir halt på vägarna</a>.</p>
+<nav>${ORTER.some((o) => o.lan === lan.kod) ? `<h2>Orter i ${lsEsc(lsSoknamn(lan.kort))}</h2><p>${ORTER.filter((o) => o.lan === lan.kod).map((o) => `<a href="../../ort/${ortSlug(o.namn)}/">${lsEsc(o.namn)}</a>`).join(" · ")}</p>` : ""}<h2>Andra län</h2><p>${andra}</p><h2>Stora vägar</h2><p>${lsVagLankar("../../")}</p></nav>`;
   return lsSkal({
     titel: `Halka i ${lsSoknamn(lan.kort)} idag: väglag och trafikläget just nu | Halkvakt`,
     beskrivning: lsBeskrivning(l, `i ${lan.namn}`, now),
@@ -1131,6 +1199,7 @@ export function byggLanssidor(d: { vaglag: LanSegment[]; stationer: LanStation[]
     "data/strackor.json": lsStrackorJson(d) };
   for (const lan of LAN) ut[`lan/${lan.slug}/index.html`] = lsLanssida(lan, lagen.get(lan.kod)!, d.now, d);
   for (const v of VAGAR) ut[`vag/${v.slug}/index.html`] = lsVagsida(v, vagar.get(v.slug)!, d.now);
+  for (const o of ORTER) ut[`ort/${ortSlug(o.namn)}/index.html`] = lsOrtsida(o, LAN.find((l) => l.kod === o.lan)!, lagen.get(o.lan)!, d.now, d);
   return ut;
 }
 
@@ -1173,7 +1242,7 @@ function lsStrackorJson(d: { vaglag: LanSegment[]; stationer: LanStation[]; now:
 }
 
 export const sidAdresser = () => [`${SIDBAS}/lan/`, ...LAN.map((l) => `${SIDBAS}/lan/${l.slug}/`),
-  ...VAGAR.map((v) => `${SIDBAS}/vag/${v.slug}/`)];
+  ...VAGAR.map((v) => `${SIDBAS}/vag/${v.slug}/`), ...ORTER.map((o) => `${SIDBAS}/ort/${ortSlug(o.namn)}/`)];
 
 /** Axels sitemap med de adresser som saknas infogade före </urlset>; null när inget saknas eller filen inte går att läsa. */
 export function sitemapMed(xml: string, adresser: string[]): string | null {
