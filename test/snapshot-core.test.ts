@@ -613,3 +613,13 @@ test("#723 utan beslut talar den frysta: talande_regel() frågas och ingen not o
   assert.ok(asked.some((t) => t.includes("FROM talande_regel()")));
   assert.ok(!notes.some((n) => n.includes("den nya kandidaten talar") || n.includes("bytet ej läsbart")));
 });
+
+// ── TIDEN PER AVSNITT (DECISIONS #741 punkt 1) ─────────────────────────────────────────────────────────────────────────
+// Broarna frågar bara när det finns broar, så de står inte med här.
+test("#741 bygget räknar sin tid per avsnitt: varje fråga på sitt avsnitt, och bara tal", async () => {
+  const { q } = fakeDb({});
+  const { delar } = await buildSnapshot(q, [], NOW);
+  for (const a of ["static", "vaglag", "radar", "kandidat", "karantan", "langsam", "vader", "skattaren", "avvikelser", "radar_station"])
+    assert.ok(a in delar, `avsnittet ${a} finns`);
+  assert.ok(Object.values(delar).every((ms) => Number.isInteger(ms) && ms >= 0), JSON.stringify(delar));
+});
