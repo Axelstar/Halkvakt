@@ -6,7 +6,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
-import { buildSnapshot, manifestFor, bridgesFromGeoJSON, WX_SANE, REGN_UTLOSARE_MMH, GIVARFEL_LUFT_MIN_C, GIVARFEL_GAP_C, KARANTAN_DYGN, KARANTAN_BROTT, RADVAKT_SQL, brottSql, karantanSql, givarfelSql, LANGSAM_FRIST_H, buildGrannSnapshot, GRANNAR, type Q } from "../publish/snapshot-core.ts";
+import { buildSnapshot, manifestFor, bridgesFromGeoJSON, WX_SANE, BORDER_M, BORDER_DEG, REGN_UTLOSARE_MMH, GIVARFEL_LUFT_MIN_C, GIVARFEL_GAP_C, KARANTAN_DYGN, KARANTAN_BROTT, RADVAKT_SQL, brottSql, karantanSql, givarfelSql, LANGSAM_FRIST_H, buildGrannSnapshot, GRANNAR, type Q } from "../publish/snapshot-core.ts";
 import { snapshotToHazards } from "../engine/src/snapshot.ts";
 
 /** Låtsasdatabas: svarar på frågorna efter vilken tabell de läser, och loggar frågetexten. */
@@ -30,7 +30,7 @@ function fakeDb(rows: Partial<Record<string, any[]>>) {
     if (text.includes("= ANY($1::text[])")) { anyParams.push(params); return rows.regnSegs ?? []; }
     if (text.includes("weather_latest f")) {
       if (rows.borderThrows) throw new Error(`schema "${text.includes("fi.") ? "fi" : "no"}" does not exist`);
-      assert.deepEqual(params, [40_000]);
+      assert.deepEqual(params, [BORDER_M, BORDER_DEG]);
       return text.includes("fi.") ? rows.fi ?? [] : rows.no ?? [];
     }
     if (text.includes("road_number IS NOT NULL")) {   // kandidatens vägnummer (#739), samma tabell som väglaget

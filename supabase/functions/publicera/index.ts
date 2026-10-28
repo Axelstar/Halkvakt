@@ -200,7 +200,12 @@ export const WX_SANE =
   " AND (air_temp_c IS NULL OR surface_temp_c >= air_temp_c - 12)" +
   ` AND ${RADVAKT_SQL}`;
 
-const BORDER_M = 40_000;
+export const BORDER_M = 40_000;
+/** Lådan runt grannstationen som gränsfrågan sållar vägarna med på vägindexet innan avståndet mäts (DECISIONS #742). Den
+ *  måste rymma varje vägpunkt inom BORDER_M. En longitudgrad är 111,32 km × cos(latitud), och 72° N ligger norr om varje
+ *  punkt inom 40 km från en svensk väg (de nordligaste går under 69,1° N), så lådan är 1,16° åt varje håll; latituden
+ *  behöver bara 0,36°. */
+export const BORDER_DEG = BORDER_M / (111_320 * Math.cos((72 * Math.PI) / 180));
 const BORDER_LANDS = ["fi", "no"] as const;
 
 /** RADARN I SNAPSHOTEN (kort #81 steg C, TROSKLAR-VATTENPLANING §3.4, DECISIONS #153–#156).
@@ -479,13 +484,16 @@ export async function buildSnapshot(qIn: Q, bridgesIn: Bridge[], now: Date = new
   const border: Record<string, { reach: number; cold: number }> = {};
   for (const land of BORDER_LANDS) {
     try {
+      // Vägindexet först (DECISIONS #742): lådan sållar bort vägarna som ligger för långt bort, och samma ST_DWithin som
+      // förut avgör. Förut slogs alla vägar ihop med ST_Collect och mättes utan index: 37,9 av byggets 39,9 s 28/10.
       const b = await q(`
-        WITH se AS (SELECT ST_Collect(geom) g FROM road_conditions WHERE NOT deleted AND geom IS NOT NULL)
         SELECT f.station_id, f.surface_temp_c, f.rain, f.snow, f.precipitation,
                ST_X(f.geom) AS lon, ST_Y(f.geom) AS lat
-        FROM ${land}.weather_latest f, se
+        FROM ${land}.weather_latest f
         WHERE ${WX_SANE}
-          AND ST_DWithin(f.geom::geography, se.g::geography, $1)`, [BORDER_M]);
+          AND EXISTS (SELECT 1 FROM road_conditions r
+                      WHERE NOT r.deleted AND r.geom IS NOT NULL AND r.geom && ST_Expand(f.geom, $2)
+                        AND ST_DWithin(f.geom::geography, r.geom::geography, $1))`, [BORDER_M, BORDER_DEG]);
       const cold = b.filter((r) => Number(r.surface_temp_c) <= 3 || r.snow);
       border[land] = { reach: b.length, cold: cold.length };
       wx.push(...cold);

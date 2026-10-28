@@ -795,6 +795,47 @@ test("#85 writeFi/writeNo/writeDk: batchat, upsert på latest, DO NOTHING i arki
   } finally { await pool.end(); }
 });
 
+// DECISIONS #742: gränsfrågan sållar vägarna med vägindexet (lådan BORDER_DEG) innan avståndet mäts. Den ska välja exakt de
+// stationer som den gamla frågan valde (alla vägar i en ST_Collect, inget index) — också vid Riksgränsen, där en longitudgrad
+// är kortast. Varje station ligger 1–3,4 km från gränsen på 40 km; NO-IN behöver en låda på minst 0,95°.
+test("#742 gränsfrågan på vägindexet väljer samma grannstationer som ST_Collect-frågan", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const { buildSnapshot, WX_SANE, BORDER_M } = await import("../publish/snapshot-core.ts");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const sql = (f: string) => readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8");
+  try {
+    for (const f of ["004_fi_schema.sql", "006_no_schema.sql"]) await pool.query(sql(f));
+    await pool.query(`
+      INSERT INTO road_conditions (segment_id, condition_code, condition_text, geom) VALUES
+        ('G742-HAP', 1, 'Haparanda, 65,85° N', ST_SetSRID(ST_MakeLine(ST_MakePoint(23.90, 65.85), ST_MakePoint(24.00, 65.85)), 4326)),
+        ('G742-RIK', 1, 'E10 vid Riksgränsen, 68,43° N', ST_SetSRID(ST_MakeLine(ST_MakePoint(18.10, 68.43), ST_MakePoint(18.12, 68.43)), 4326))
+      ON CONFLICT (segment_id) DO NOTHING`);
+    const station = (land: string, id: string, namn: string, lon: number, lat: number) => pool.query(`
+      INSERT INTO ${land}.weather_latest (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, precipitation, rain, snow)
+      VALUES ($1, $2, ST_SetSRID(ST_MakePoint($3, $4), 4326), now() - interval '5 minutes', -1.0, 0.0, 'no', false, false)
+      ON CONFLICT (station_id) DO UPDATE SET sample_time = EXCLUDED.sample_time`, [id, namn, lon, lat]);
+    await station("fi", "G742-FI-IN", "0,85° öster om vägen: 38,8 km", 24.85, 65.85);
+    await station("fi", "G742-FI-UT", "0,95° öster om vägen: 43,4 km", 24.95, 65.85);
+    await station("no", "G742-NO-IN", "0,95° väster om vägen: 39,0 km", 17.15, 68.43);
+    await station("no", "G742-NO-UT", "1,05° väster om vägen: 43,1 km", 17.05, 68.43);
+    const { liveDoc, border, notes } = await buildSnapshot(async (t, p) => (await pool.query(t, p as any[])).rows, []);
+    const ids = new Set(liveDoc.weather.map((w) => w.id));
+    assert.deepEqual(["G742-FI-IN", "G742-FI-UT", "G742-NO-IN", "G742-NO-UT"].filter((id) => ids.has(id)), ["G742-FI-IN", "G742-NO-IN"], notes.join(" | "));
+    for (const land of ["fi", "no"]) {
+      const gammal = await pool.query(`
+        WITH se AS (SELECT ST_Collect(geom) g FROM road_conditions WHERE NOT deleted AND geom IS NOT NULL)
+        SELECT f.station_id FROM ${land}.weather_latest f, se
+        WHERE ${WX_SANE} AND ST_DWithin(f.geom::geography, se.g::geography, $1)`, [BORDER_M]);
+      assert.equal(border[land]?.reach, gammal.rows.length, `${land}: den nya frågan och ST_Collect-frågan räknar olika`);
+    }
+  } finally {
+    await pool.query(`DELETE FROM road_conditions WHERE segment_id LIKE 'G742-%'`);
+    for (const land of ["fi", "no"]) await pool.query(`DELETE FROM ${land}.weather_latest WHERE station_id LIKE 'G742-%'`);
+    await pool.end();
+  }
+});
+
 // Kort #234 i drifträkningen (sql/018, DECISIONS #299): radvakten och karantänen räknas PER RAD mot riktig PostGIS, med
 // sql/029:s delindex på plats. Fyra stationer med samma vackra fall i bandet (3,0 → 1,8 °C på en halvtimme): KAR_A är
 // frisk och blir kandidat; KAR_B har luften 12 ° över ytan (Ö Ljungby-felet — #75 släpper, gapet är exakt 12) och tas
