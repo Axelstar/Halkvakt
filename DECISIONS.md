@@ -18581,3 +18581,37 @@ och om ortssidorna *"let's do it"*).
 Avstånd från stationer och avsnitt till orten: kräver geometri i sidbyggaren och säger inte mer än avsnittens namn.
 
 **Stomdokument:** inga — sajtens sidor och sökord, inte appen, motorn eller mätningarna; ingen data lämnar appen.
+
+## #737 (28/10 2026) Källvakten bevakar DMI:s API, och DMI:s webbplats räknas som spärrad i stället för fel
+
+**Bengts ord 28/10:** *"A: gör en PR där dk-dmi bevakar DMI:s API och webbsidan räknas som spärrad i stället för fel. Slå
+inte ihop förrän jag säger till."*
+
+**Bakgrund.** Källvakten (`scripts/trv-bevakning.ts`, kort #31) bevakar DMI genom sidan www.dmi.dk/frie-data (`dk-dmi`, #148).
+Sedan oktober svarar sidan 403 *"Access from your location is not allowed"* till GitHubs körmaskiner, medan den svarar 200 från
+Sverige. trv-bevakning blir därför röd varje måndag (senast körning 40281157546, 26/10), och mätvakten (#1210) står öppen för
+det. DMI:s API, opendataapi.dmi.dk, svarar GitHub som vanligt: insamlingen `ingest/dk.ts` hämtar därifrån.
+
+**Beslut.**
+1. En ny hash-källa, `dk-dmi-api`, bevakar https://opendataapi.dmi.dk/v2/metObs/collections, samma adress som `ingest/dk.ts`
+   hämtar. Den hämtades två gånger 28/10 med samma hash (1 586 tecken efter normaliseringen). Första körningen sätter
+   grundvärdet utan larm.
+2. `dk-dmi` behålls. Svarar sidan 403 med texten *"Access from your location is not allowed"* räknas källan som SPÄRRAD: raden
+   skrivs i loggen, grundvärdet står kvar och jobbet blir inte rött. En annan 403, en annan felkod eller samma text från en
+   annan källa är fortfarande ett fel. Regeln har ett självtest (`scripts/trv-bevakning.ts --sjalvtest`) som körs i ci.
+3. Beroendekartan (`publish/beroenden.ts`) säger att DMI:s produktionsberoende bevakas av `dk-dmi-api + dk-dmi`, och att
+   webbplatsen är spärrad från GitHub.
+
+**Det som ges upp.** Så länge spärren gäller ser vakten inte ändringar på DMI:s webbplats, där nyheter om de öppna data
+publiceras. API:ets lista över samlingar ändras när en samling läggs till, tas bort eller byter namn, och det är det som bryter
+insamlingen.
+
+**Följd.** Den nya källan prövas skarpt av nästa körning av trv-bevakning: måndag 2/11 06:40 UTC ur pulsklockan, eller för hand.
+Blir den grön släpper mätvakten (#1210) trv-bevakning.
+
+**Alternativ.**
+- Bara undantaget: jobbet blir grönt, men DMI blir obevakat. Valt bort.
+- DMI-kontrollen på en annan plats, till exempel i en edge-funktion i Supabase: mer att bygga, och om spärren gäller också där är
+  inte prövat. Valt bort tills vidare.
+
+**Stomdokument:** inga, källvaktens källor står i beroendekartan och i skriptet, inte i något av de åtta stomdokumenten.

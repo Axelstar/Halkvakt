@@ -98,6 +98,8 @@ jobs:
         run: node --experimental-strip-types scripts/synk-ihop.ts --sjalvtest
       - name: Sidornas självtest — förstasidan och genomsökningen (#731, #733)
         run: node --experimental-strip-types scripts/sidorna.ts --sjalvtest
+      - name: Källvaktens självtest, spärregeln för DMI:s webbplats (#737)
+        run: node --experimental-strip-types scripts/trv-bevakning.ts --sjalvtest
       - name: Fristvakten och domlarmet — självtester och fristlistan (#649)
         run: |
           node --experimental-strip-types scripts/fristvakten.ts --sjalvtest
