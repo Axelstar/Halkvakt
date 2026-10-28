@@ -72,7 +72,7 @@ datamodell och räknat i deras API 2/10 (DECISIONS #442).
 | **Färjor**: avgångar och störningar | *FerryAnnouncement* | Vägfärjorna, 36 leder | Används inte |
 | Fartkameror | *TrafficSafetyCamera* | Hela landet | I rösten |
 | SMHI:s varningar | SMHI | Hela landet | I lägesfilen, visas inte |
-| *Halkvakt tror*, prognosen längs vägen | Prognoslagret | — | Först efter domen i mars, och bara om det klarar sina grindar |
+| *Halkvakt tror*, prognosen längs vägen | Prognoslagret | — | Först efter domen i mars, och bara om det klarar sina grindar. *Rättat 28/10 (DECISIONS #739):* kandidatens betavarningar, som rösten redan säger sedan #556, visas i en egen BETA-ruta i rapporten före domen |
 
 **Det som inte går att få öppet:** realtidstrafik från Google, Waze, TomTom eller HERE kostar pengar eller kräver avtal, och gratisnivån
 är ett krav i projektet. Bilarnas egna halkvarningar finns inte i något öppet dataset (DECISIONS #282). Utanför Stockholm och Göteborg
@@ -148,7 +148,8 @@ Ingenting byggs nu; idén är på experimentstadiet (Bengt 2/10).
 1. **Formen** bestämmer Axel: var rutterna bor i appen, hur rapporten ser ut, och om tiderna och notisen ska finnas i första versionen.
 2. **Innehållet** i första versionen: det som redan finns i rösten, plus vägarbeten, hastighetsnedsättningar, omledningar och färjor i
    hela landet, och köer och restider där de finns.
-3. **Prognosen** i rapporten först efter domen i mars, och bara om prognoslagret klarar sina grindar.
+3. **Prognosen** i rapporten först efter domen i mars, och bara om prognoslagret klarar sina grindar. *Rättat 28/10 (DECISIONS #739):*
+   kandidatens betavarningar visas före domen, i en egen ruta märkt BETA, aldrig som notis; prognosen för när föraren kommer fram väntar.
 
 **Öppna frågor till Bengt och Axel:** hur många rutter man får spara; om rapporten ska ha en egen flik eller ligga på *Redo.*-skärmen; om
 notisen ska finnas i första versionen och vad som i så fall räknas som nytt; om tio minuters publicering räcker för kollen före avresan; om den sparade

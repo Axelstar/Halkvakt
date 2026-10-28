@@ -31,10 +31,20 @@ public struct RapportLage {
     public struct Bro { public let id: String; public let lon: Double, lat: Double; public let road: String?; public let yta: Double?
         public let fukt: Bool }
     public struct Smhi { public let id: String; public let event: String?; public let niva: String?; public let polygoner: [[[[Double]]]] }
+    /// En post under `kandidat` (#576), med vägnumret sedan #739 (nil i äldre filer och där Trafikverket inte satt något).
+    public struct Kandidat { public let id: String; public let tid: String; public let vag: String?; public let punkter: [[Double]] }
     public let segments: [Strecka], weather: [Station], bridges: [Bro], smhi: [Smhi]
+    /// nil när lägesfilen saknar nyckeln, alltså när kandidaten är avstängd (#578).
+    public var kandidat: [Kandidat]? = nil
 }
 
 public struct RapportKamera { public let id: String; public let lon: Double, lat: Double; public let road: String? }
+
+/// En rad i rutan Halkvakt tror (DECISIONS #739): en väg, utan avstånd. Inte en RapportRad, så den når aldrig Nytt eller radens läge.
+public struct KandidatRad: Equatable {
+    public let id: String, rubrik: String, text: String
+    public let antal: Int, ids: [String], langsM: Int
+}
 
 public struct RapportRad: Equatable {
     public let id: String, slag: RapportSlag, rubrik: String, text: String
@@ -103,7 +113,7 @@ public enum ResansRapport {
     public static func utanEfterhalka(_ l: RapportLage) -> RapportLage {
         RapportLage(segments: l.segments, weather: l.weather.map {
             RapportLage.Station(id: $0.id, lon: $0.lon, lat: $0.lat, yta: $0.yta, fukt: $0.fukt, regnH: nil, lutning30: $0.lutning30)
-        }, bridges: l.bridges, smhi: l.smhi)
+        }, bridges: l.bridges, smhi: l.smhi, kandidat: l.kandidat)
     }
 
     public static func lasLage(_ o: [String: Any]) -> RapportLage {
@@ -128,7 +138,10 @@ public enum ResansRapport {
                 guard let lon = dbl(b, "lon"), let lat = dbl(b, "lat") else { return nil }
                 return RapportLage.Bro(id: "\(b["id"] ?? "")", lon: lon, lat: lat, road: str(b, "road"), yta: dbl(b, "yta"), fukt: (b["fukt"] as? Bool) ?? false)
             },
-            smhi: smhi)
+            smhi: smhi,
+            kandidat: (o["kandidat"] as? [[String: Any]]).map { $0.map { k in
+                RapportLage.Kandidat(id: "\(k["id"] ?? "")", tid: str(k, "tid") ?? "", vag: str(k, "vag"), punkter: punkter(k["punkter"]))
+            } })
     }
 
     public static func lasKameror(_ o: [String: Any]) -> [RapportKamera] {
@@ -522,5 +535,65 @@ public enum ResansRapport {
         }
         if t.koerMatsInte { ut += (ut.isEmpty ? "" : " ") + "Köer mäts inte längs den här vägen." }
         return ut.isEmpty ? nil : ut
+    }
+
+    // MARK: - Halkvakt tror (DECISIONS #739, kort #363), som rapport-app.ts kandidatRader och kandidatTomt
+
+    /// En sträcka räknas när minst kandidatMinstPunkter av dess varnande punkter ligger inom kandidatMarginalM från resan: olyckornas
+    /// marginal, och två punkter så att en tvärväg inte räknas för att en punkt råkar ligga i korsningen (#739 punkt 4).
+    public static let kandidatMarginalM = 150.0
+    public static let kandidatMinstPunkter = 2
+    public static let kandidatFot = "Halkvakts egen beräkning, inte uppmätt. Rösten säger till under resan."
+    public static let kandidatTomtText = "Halkvakts beräkning varnar inte längs rutten just nu. Den räknar bara på vägar där Trafikverket rapporterar väglag."
+    public static let kandidatAv = "Halkvakts egen beräkning visas inte just nu."
+
+    /// Rutans rader för resan, eller den vända för Hem, i körordning: en rad per väg, utan avstånd. En sträcka som redan är
+    /// halksträcka i `segments` står bara där (#739 punkt 3). nil när lägesfilen saknar nyckeln (kandidaten avstängd).
+    public static func kandidatRader(_ rutt: [[Double]], hem: Bool, lage: RapportLage) -> [KandidatRad]? {
+        guard let kandidat = lage.kandidat else { return nil }
+        let r = hem ? vand(rutt) : rutt
+        let halka = Set(lage.segments.map(\.id))
+        let strackor = kandidat.filter { !halka.contains($0.id) }
+        var prov: [Hazard] = []
+        for k in strackor {
+            for (i, p) in k.punkter.enumerated() {
+                prov.append(.point(id: "\(k.id)#\(i)", kind: .accident, lon: p[0], lat: p[1], bearing: nil, meta: PointMeta()))
+            }
+        }
+        var traffar: [String: [Double]] = [:]
+        for t in RouteFilter.alongRoute(prov, r, marginM: kandidatMarginalM) {
+            let hid = t.hazard.id
+            guard let brytning = hid.lastIndex(of: "#") else { continue }
+            traffar[String(hid[..<brytning]), default: []].append(t.alongM)
+        }
+        var nycklar: [String] = []
+        var perVag: [String: (ids: [String], langsM: Double, tid: String)] = [:]
+        for k in strackor {
+            guard let t = traffar[k.id], t.count >= kandidatMinstPunkter, let langsM = t.min() else { continue }
+            let v = vagNamn(k.vag) ?? ""
+            if var g = perVag[v] {
+                g.ids.append(k.id); g.langsM = min(g.langsM, langsM)
+                if k.tid < g.tid { g.tid = k.tid }
+                perVag[v] = g
+            } else {
+                nycklar.append(v); perVag[v] = ([k.id], langsM, k.tid)
+            }
+        }
+        let rader = nycklar.compactMap { v -> KandidatRad? in
+            guard let g = perVag[v] else { return nil }
+            let n = g.ids.count
+            let antal = n > 1 ? ", \(n < tal.count ? tal[n] : "\(n)") sträckor" : ""
+            return KandidatRad(id: "kand:\(v)", rubrik: "Halka\(v.isEmpty ? "" : " på \(v)")\(antal)",
+                               text: klocka(g.tid).map { "Modellerat för kl. \($0)" } ?? "Modellerat",
+                               antal: n, ids: g.ids, langsM: Int(g.langsM.rounded()))
+        }
+        return rader.sorted { $0.langsM != $1.langsM ? $0.langsM < $1.langsM : $0.id.utf16.lexicographicallyPrecedes($1.id.utf16) }
+    }
+
+    /// Texten i rutan när den inte visar rader: avstängd eller för gammal lägesfil (samma åldersgräns som halkan), eller inget längs
+    /// resan. nil när det finns rader.
+    public static func kandidatTomt(_ rader: [KandidatRad]?, gammaltVaglag: Bool) -> String? {
+        guard let rader, !gammaltVaglag else { return kandidatAv }
+        return rader.isEmpty ? kandidatTomtText : nil
     }
 }

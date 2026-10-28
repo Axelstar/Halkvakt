@@ -35,15 +35,22 @@ data class RapportStation(val namn: String, val luft: Double?)
 data class Rapportfil(val generatedAt: String, val poster: List<RapportPost>, val stationer: Map<String, RapportStation>)
 
 /** Lägesfilens fält som rapporten läser — fler än motorns läsare tar ut (vägen på sträckorna, broarna, SMHI:s områden). */
-data class RapportLage(val segments: List<Strecka>, val weather: List<Station>, val bridges: List<Bro>, val smhi: List<Smhi>) {
+/** [kandidat] är null när lägesfilen saknar nyckeln, alltså när kandidaten är avstängd (#578). */
+data class RapportLage(val segments: List<Strecka>, val weather: List<Station>, val bridges: List<Bro>, val smhi: List<Smhi>,
+                       val kandidat: List<Kandidat>? = null) {
     data class Strecka(val id: String, val line: List<DoubleArray>, val info: List<String>, val road: String?)
     data class Station(val id: String, val lon: Double, val lat: Double, val yta: Double?, val fukt: Boolean, val regnH: Double?,
                        val lutning30: Double?)
     data class Bro(val id: String, val lon: Double, val lat: Double, val road: String?, val yta: Double?, val fukt: Boolean)
     /** [polygoner]: varje polygon är en lista ringar, den första yttre och resten hål. */
     data class Smhi(val id: String, val event: String?, val niva: String?, val polygoner: List<List<List<DoubleArray>>>)
+    /** En post under `kandidat` (#576), med vägnumret sedan #739 (null i äldre filer och där Trafikverket inte satt något). */
+    data class Kandidat(val id: String, val tid: String, val vag: String?, val punkter: List<DoubleArray>)
 }
 data class RapportKamera(val id: String, val lon: Double, val lat: Double, val road: String?)
+
+/** En rad i rutan Halkvakt tror (DECISIONS #739): en väg, utan avstånd. Inte en RapportRad, så den når aldrig Nytt eller radens läge. */
+data class KandidatRad(val id: String, val rubrik: String, val text: String, val antal: Int, val ids: List<String>, val langsM: Int)
 
 data class RapportRad(val id: String, val slag: RapportSlag, val rubrik: String, val text: String, val avstandM: Int, val langsM: Int,
                       val vag: String?, val start: String?)
@@ -133,6 +140,9 @@ object ResansRapport {
                 RapportLage.Bro(idText(b["id"]), lon, lat, str(b, "road"), dbl(b, "yta"), b["fukt"] == true)
             },
             smhi = smhi,
+            kandidat = if (o["kandidat"] is List<*>) objekt(o["kandidat"]).map { k ->
+                RapportLage.Kandidat(idText(k["id"]), str(k, "tid") ?: "", str(k, "vag"), punkter(k["punkter"]))
+            } else null,
         )
     }
 
@@ -469,5 +479,55 @@ object ResansRapport {
         var ut = if (n.isEmpty()) "" else "Inget rapporterat: " + (if (n.size == 1) n[0] else n.dropLast(1).joinToString(", ") + " och " + n.last()) + "."
         if (t.koerMatsInte) ut += (if (ut.isEmpty()) "" else " ") + "Köer mäts inte längs den här vägen."
         return ut.ifEmpty { null }
+    }
+
+    // ── Halkvakt tror (DECISIONS #739, kort #363), som rapport-app.ts kandidatRader och kandidatTomt ──────────────────────────
+
+    /** En sträcka räknas när minst [KANDIDAT_MINST_PUNKTER] av dess varnande punkter ligger inom [KANDIDAT_MARGINAL_M] från resan:
+     *  olyckornas marginal, och två punkter så att en tvärväg inte räknas för att en punkt råkar ligga i korsningen (#739 punkt 4). */
+    const val KANDIDAT_MARGINAL_M = 150.0
+    const val KANDIDAT_MINST_PUNKTER = 2
+    const val KANDIDAT_FOT = "Halkvakts egen beräkning, inte uppmätt. Rösten säger till under resan."
+    const val KANDIDAT_TOMT = "Halkvakts beräkning varnar inte längs rutten just nu. Den räknar bara på vägar där Trafikverket rapporterar väglag."
+    const val KANDIDAT_AV = "Halkvakts egen beräkning visas inte just nu."
+
+    /** Rutans rader för resan, eller den vända för Hem, i körordning: en rad per väg, utan avstånd. En sträcka som redan är
+     *  halksträcka i `segments` står bara där (#739 punkt 3). null när lägesfilen saknar nyckeln (kandidaten avstängd). */
+    fun kandidatRader(rutt: List<DoubleArray>, hem: Boolean, lage: RapportLage): List<KandidatRad>? {
+        val kandidat = lage.kandidat ?: return null
+        val r = if (hem) vand(rutt) else rutt
+        val halka = lage.segments.map { it.id }.toSet()
+        val strackor = kandidat.filter { it.id !in halka }
+        val prov = strackor.flatMap { k -> k.punkter.mapIndexed { i, p -> PointHazard("${k.id}#$i", HazardKind.ACCIDENT, p[0], p[1]) } }
+        val traffar = HashMap<String, MutableList<Double>>()
+        for (t in RouteFilter.alongRoute(prov, r, KANDIDAT_MARGINAL_M)) {
+            val hid = t.hazard.id
+            traffar.getOrPut(hid.substring(0, hid.lastIndexOf('#'))) { mutableListOf() } += t.alongM
+        }
+        class Grupp(val ids: MutableList<String>, var langsM: Double, var tid: String)
+        val perVag = LinkedHashMap<String, Grupp>()
+        for (k in strackor) {
+            val t = traffar[k.id] ?: continue
+            if (t.size < KANDIDAT_MINST_PUNKTER) continue
+            val v = vagNamn(k.vag) ?: ""
+            val langsM = t.min()
+            val g = perVag[v]
+            if (g == null) perVag[v] = Grupp(mutableListOf(k.id), langsM, k.tid)
+            else { g.ids += k.id; g.langsM = minOf(g.langsM, langsM); if (k.tid < g.tid) g.tid = k.tid }
+        }
+        return perVag.map { (v, g) ->
+            val n = g.ids.size
+            val antal = if (n > 1) ", ${if (n < TAL.size) TAL[n] else n.toString()} sträckor" else ""
+            KandidatRad("kand:$v", "Halka${if (v.isEmpty()) "" else " på $v"}$antal",
+                klocka(g.tid)?.let { "Modellerat för kl. $it" } ?: "Modellerat", n, g.ids.toList(), Math.round(g.langsM).toInt())
+        }.sortedWith(compareBy<KandidatRad> { it.langsM }.thenBy { it.id })
+    }
+
+    /** Texten i rutan när den inte visar rader: avstängd eller för gammal lägesfil (samma åldersgräns som halkan), eller inget
+     *  längs resan. null när det finns rader. */
+    fun kandidatTomt(rader: List<KandidatRad>?, gammaltVaglag: Boolean): String? = when {
+        rader == null || gammaltVaglag -> KANDIDAT_AV
+        rader.isEmpty() -> KANDIDAT_TOMT
+        else -> null
     }
 }

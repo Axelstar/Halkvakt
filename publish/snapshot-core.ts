@@ -258,7 +258,9 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
   // BYTET (FORREGISTRERING-2026-27 §12, sql/070, DECISIONS #723): talande_timme() och talande_regel() ger den nya kandidatens timme
   // och regel när Bengts och Axels beslut säger ny och den nyas timme är färsk, annars den frystas (§12 f). Utan beslut talar den
   // frysta, som förut. Går bytet inte att läsa (före migrationen) frågas kandidat_timme() och kandidat_regel() som förut.
-  const kandidat: { id: string; tid: string; punkter: [number, number][] }[] = [];
+  // `vag` (DECISIONS #739): sträckans vägnummer ur road_conditions, samma kolumn som halksträckornas `road`, så att rapporten i
+  // Favoriter kan skriva "Halka på E4". Läggs till, ersätter inget; null när Trafikverket inte satt något nummer.
+  const kandidat: { id: string; tid: string; punkter: [number, number][]; vag: string | null }[] = [];
   if (kandidatPa) try {
     let timme: Record<string, any> | undefined, regel = "kandidat_regel()";
     try {
@@ -280,12 +282,22 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
         const id = String(r.segment_id), sist = kandidat[kandidat.length - 1];
         const p: [number, number] = [Math.round(Number(r.lon) * 1e5) / 1e5, Math.round(Number(r.lat) * 1e5) / 1e5];
         if (sist?.id === id) sist.punkter.push(p);
-        else kandidat.push({ id, tid: new Date(r.tid).toISOString(), punkter: [p] });
+        else kandidat.push({ id, tid: new Date(r.tid).toISOString(), punkter: [p], vag: null });
       }
     }
   } catch (e) {
     kandidat.length = 0;
     notes.push(`kandidat: regeln ej läsbar (${String((e as Error).message).slice(0, 80)}) — kandidat blir tom`);
+  }
+  // Vägnumren (DECISIONS #739) i en egen fråga: går de inte att läsa blir `vag` null och kandidaten står kvar som förut — en
+  // trasig etikett får aldrig tysta rösten.
+  if (kandidat.length) try {
+    const vagar = new Map<string, string>();
+    for (const r of await q(`SELECT segment_id, road_number FROM road_conditions WHERE road_number IS NOT NULL`))
+      vagar.set(String(r.segment_id), String(r.road_number));
+    for (const k of kandidat) k.vag = vagar.get(k.id) ?? null;
+  } catch (e) {
+    notes.push(`kandidat: vägnumren ej läsbara (${String((e as Error).message).slice(0, 80)}) — vag blir null`);
   }
 
   // ---- karantänen (kort #234): svenska stationer som nyligen brutit grovt mot #75 ----

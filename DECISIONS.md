@@ -18628,6 +18628,55 @@ Bengt 28/10: *"vi parkerar hela den här punkten till efter våren 2027"*.
 
 **Stomdokument:** inga, beslutet parkerar ett spår och ändrar inget i driften eller i tröskeldokumenten.
 
+## #739 (28/10 2026) Kandidatens varningar i rapporten i Favoriter: en egen BETA-ruta med vägnamn, före domen (kort #363)
+
+**Beslut.** Bengt 28/10, för båda: *"jag vill att vi kör och Axel godkänner"*, på Claudes utkast i chatten samma dag. Utkastet skrevs
+efter Bengts fråga om rutan *Prognosen · kommer senare* (*"Om vi vill snabba på detta och typ göra det nu vad är det vi behöver göra"*),
+och formen valdes av Bengt: *"Ja, skriv om utkastet till #739 med vägnamnen, en rad per väg och att en redan rapporterad sträcka bara
+visas en gång."*
+
+1. **Rutan.** Kandidaten visas i rapporten före resan i en egen ruta, *Halkvakt tror · BETA*, under *Längs vägen just nu*. Den ersätter
+   *Prognosen · kommer senare*, som skrevs 2/10, före #556. Villkoren är röstens (TROSKLAR-SKUGGAN §4(d), #562, #563): märkt BETA och
+   *modellerat*, till domen i mars 2027, och för alla som rösten, inte bara med Betatest (efterhalkan S3 står kvar som testarnas, #676,
+   #679). Saknas nyckeln `kandidat`, är lägesfilen äldre än 45 minuter eller är kandidaten avstängd vid säkerhetsläsningarna 1/12, 1/1
+   och 1/2 (#710), visas inga rader.
+2. **En rad per väg, med vägnamn.** Raden heter *Halka på E4*, märkt BETA, med undertexten *Modellerat för kl. HH* (kandidatens timme).
+   Flera sträckor på samma väg blir en rad: *Halka på E4, två sträckor*. En sträcka utan vägnummer heter bara *Halka*. Raderna står i
+   körordning inom rutan och vänds med Dit och Hem. Inga avstånd och inga kilometer in på rutten (produktinvarianten, #577 punkt 5).
+   Under rutan: *Halkvakts egen beräkning, inte uppmätt. Rösten säger till under resan.*
+3. **Det rapporterade går först.** En sträcka som finns bland halksträckorna i lägesfilen (`segments`, samma sträcka som kandidatens
+   `seg:<id>`, #581) visas bara som *Halt väglag* under *Längs vägen just nu*, inte en gång till i rutan. Rösten kan fortfarande säga
+   båda (#577 punkt 6); rapporten säger samma sak en gång.
+4. **Matchningen mot rutten.** En sträcka räknas när minst **två** av dess varnande punkter ligger inom **150 m** från rutten, olyckornas
+   marginal. Två punkter, så att en tvärväg inte räknas för att en punkt råkar ligga i korsningen. Båda talen är nya trösklar i tre
+   språk och förs in i kontraktsgrinden i samma commit som den andra kopian. De mäts på favoritprovets rutter innan de fryses.
+5. **Aldrig en notis** (T6, FORE-RESAN). Rutans rader kommer inte med under *Nytt*, inte i radens läge i fliken (Nytt, Inget nytt,
+   Lugnt), inte i resans Halka-siffra och inte i raden om det tomma.
+6. **När inget visas.** Kandidaten på men inget längs rutten: *Halkvakts beräkning varnar inte längs rutten just nu. Den räknar bara på
+   vägar där Trafikverket rapporterar väglag.* Avstängd eller för gammal: *Halkvakts egen beräkning visas inte just nu.*
+7. **Lägesfilen får vägnumret.** `publicera` lägger fältet `vag` på varje post under `kandidat`, ur `road_conditions.road_number` för
+   sträckan (samma kolumn som halksträckorna). Fältet läggs till och ersätter inget (#556), så appar som redan finns påverkas inte.
+   Deployen görs på Bengts ord; beviset är en rad i `live.json` med fältet ifyllt, inte deploy-kvittot.
+
+**Vad som inte ändras.** Rösten, regeln i databasen, taket, prioriteten och domen. Domen läser skuggloggen och facit, och *det förarna
+fick* (#710 punkt 15) räknas från den kandidat som talade. Inget tal, ingen population och ingen grind flyttas: beslutet är ingen lättnad
+enligt regel L, och anspråket är mindre än röstens (raden visas, den talar inte). Den äkta prognosen, läget när föraren *kommer fram*,
+väntar fortfarande på domen i mars.
+
+**Byggt så här.** (1) `publicera` med fältet `vag`, prov, bunten och deploy. (2) Referensen i `publish/rapport-app.ts`, som inte buntas in
+i serverns funktioner, och facit i `engine/fixtures/rapport.json`. (3) `Rapport.swift` och `Rapport.kt` mot samma facit, tecken för
+tecken (#637). (4) Rutan i båda apparna. (5) Produktboken med skärmbilder ur fotostudion (PRODUKTBOKSREGELN). (6) Nytt bygge för båda
+plattformarna, byggnumret i samma commit som den sista ändringen.
+
+**Risk, skriven före.** Fler förare ser kandidatens falsklarm, nu också före resan. Rutan kan komma och gå om säkerhetsläsningen stänger
+av kandidaten. En sträcka med bara en varnande punkt syns aldrig i rapporten; hur många det är är inte mätt. Hur många av de 818
+sträckorna som saknar vägnummer, och hur en sträcka med två vägnummer skrivs, är inte läst.
+
+**Alternativ.** Allt i en lista i körordning: valt bort, eftersom ordningen blir ett påstående om var och det uppmätta blandas med det
+beräknade. En samlad rad utan vägnamn: valt bort för vägnamnen. Vänta till domen: valt bort, eftersom kandidaten redan talar.
+
+**Stomdokument:** FAV §3 — rapportens femte del; LIV — kandidaten i rapporten; APP — rapportskärmen; SYS — fältet `vag` i lägesfilen; BED §4.2.
+
 ## #740 (28/10 2026) Tre gallringar tillbaka efter Supabase Pro: full upplösning i sju dygn, trendtabellerna och radarn i fjorton, kandidatens loggar i tre (kort #364)
 
 **Bengts ord 28/10:** *"Ta tillbaka de tre billiga: full upplösning i 7 dygn, trendtabellerna och radarn 14 dygn och kandidatens

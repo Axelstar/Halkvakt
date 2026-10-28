@@ -113,3 +113,55 @@ export function tomtRad(rader: Rad[], gammaltVaglag: boolean, gamlaOlyckor: bool
   if (t.koerMatsInte) ut += `${ut ? " " : ""}Köer mäts inte längs den här vägen.`;
   return ut || null;
 }
+
+// ── Halkvakt tror (DECISIONS #739, kort #363): kandidatens betavarningar i en egen ruta under Längs vägen just nu. En rad per väg,
+//    utan avstånd (en modells punkt bär inget avstånd, #577 punkt 5). Raderna är inte Rad: de når aldrig Nytt, radens läge,
+//    kollensIds eller en notis. En sträcka som redan är halksträcka i `segments` står bara där (#739 punkt 3).
+
+/** En sträcka räknas när minst KANDIDAT_MINST_PUNKTER av dess varnande punkter ligger inom KANDIDAT_MARGINAL_M från resan: olyckornas
+ *  marginal, och två punkter så att en tvärväg inte räknas för att en punkt råkar ligga i korsningen (#739 punkt 4). */
+export const KANDIDAT_MARGINAL_M = 150, KANDIDAT_MINST_PUNKTER = 2;
+export const KANDIDAT_FOT = "Halkvakts egen beräkning, inte uppmätt. Rösten säger till under resan.";
+export const KANDIDAT_TOMT = "Halkvakts beräkning varnar inte längs rutten just nu. Den räknar bara på vägar där Trafikverket rapporterar väglag.";
+export const KANDIDAT_AV = "Halkvakts egen beräkning visas inte just nu.";
+
+export type KandidatRad = { id: string; rubrik: string; text: string; antal: number; ids: string[]; langsM: number };
+/** Lägesfilens post under `kandidat`, med vägnumret som publicera lägger till sedan #739 (äldre filer saknar det). */
+type Kandidat = NonNullable<LiveDoc["kandidat"]>[number] & { vag?: string | null };
+const TAL = ["noll", "en", "två", "tre", "fyra", "fem", "sex", "sju", "åtta", "nio", "tio", "elva", "tolv"];
+const KL = new Intl.DateTimeFormat("sv-SE", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Stockholm" });
+
+/** Rutans rader för resan, eller den vända för Hem, i körordning: "Halka på E4, två sträckor" · "Modellerat för kl. 07:00".
+ *  null när lägesfilen saknar nyckeln, alltså när kandidaten är avstängd (#578). */
+export function kandidatRader(rutt: Linje, hem: boolean, live: LiveDoc): KandidatRad[] | null {
+  if (!live.kandidat) return null;
+  const r = hem ? vand(rutt) : rutt;
+  const halka = new Set(live.segments.map((s) => String(s.id)));
+  const strackor = (live.kandidat as Kandidat[]).filter((k) => !halka.has(k.id));
+  const prov = strackor.flatMap((k) => k.punkter.map(([lon, lat], i) => ({ id: `${k.id}#${i}`, kind: "accident", lon, lat } as Hazard)));
+  const traffar = new Map<string, number[]>();
+  for (const t of farorLangsRutten(prov, r, KANDIDAT_MARGINAL_M)) {
+    const id = t.hazard.id.slice(0, t.hazard.id.lastIndexOf("#"));
+    traffar.set(id, [...(traffar.get(id) ?? []), t.langsM]);
+  }
+  const perVag = new Map<string, { ids: string[]; langsM: number; tid: string }>();
+  for (const k of strackor) {
+    const t = traffar.get(k.id) ?? [];
+    if (t.length < KANDIDAT_MINST_PUNKTER) continue;
+    const v = vagNamn(k.vag) ?? "", g = perVag.get(v), langsM = Math.min(...t);
+    if (!g) perVag.set(v, { ids: [k.id], langsM, tid: k.tid });
+    else { g.ids.push(k.id); g.langsM = Math.min(g.langsM, langsM); if (k.tid < g.tid) g.tid = k.tid; }
+  }
+  const tid = (iso: string) => { const d = new Date(iso); return Number.isNaN(d.getTime()) ? null : KL.format(d); };
+  return [...perVag].map(([v, g]) => {
+    const n = g.ids.length, kl = tid(g.tid);
+    return { id: `kand:${v}`, rubrik: `Halka${v ? ` på ${v}` : ""}${n > 1 ? `, ${n < TAL.length ? TAL[n] : n} sträckor` : ""}`,
+      text: kl ? `Modellerat för kl. ${kl}` : "Modellerat", antal: n, ids: g.ids, langsM: Math.round(g.langsM) };
+  }).sort((a, b) => a.langsM - b.langsM || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+}
+
+/** Texten i rutan när den inte visar rader: avstängd eller för gammal lägesfil (samma åldersgräns som halkan), eller inget längs
+ *  resan. null när det finns rader. */
+export function kandidatTomt(rader: KandidatRad[] | null, gammaltVaglag: boolean): string | null {
+  return rader === null || gammaltVaglag ? KANDIDAT_AV : rader.length ? null : KANDIDAT_TOMT;
+}
