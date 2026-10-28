@@ -476,47 +476,49 @@ test("grepp 3 gallra_arkiv: Finland behåller kalla rader i 60 dygn, Norge och D
 });
 
 // Kort #322 (sql/044, DECISIONS #511): nattjobben ur migrationen själv, inte avskrivna. Jobbkommandona plockas ur filen och
-// körs här, så att det som schemaläggs är det som prövas.
+// körs här, så att det som schemaläggs är det som prövas. Sedan #740 (28/10) sätter sql/072 gallringens jobb; raderingens står
+// kvar i sql/044. sql/044 laddas ändå, för gallra_vader med brottsundantaget.
 const JOBB_044 = async () => {
   const { readFileSync } = await import("node:fs");
-  const text = readFileSync(new URL("../sql/044_gallring_tre_dygn.sql", import.meta.url), "utf8");
-  const jobb = (namn: string) => {
-    const m = text.match(new RegExp(`'(SELECT ${namn}[^']*)'`));
-    assert.ok(m, `sql/044 bär ett jobbkommando för ${namn}`);
+  const las = (fil: string) => readFileSync(new URL(`../sql/${fil}`, import.meta.url), "utf8");
+  const text = las("044_gallring_tre_dygn.sql"), sql072 = las("072_gallringen_tillbaka.sql");
+  const jobb = (kalla: string, fil: string, namn: string) => {
+    const m = kalla.match(new RegExp(`'(SELECT ${namn}[^']*)'`));
+    assert.ok(m, `sql/${fil} bär ett jobbkommando för ${namn}`);
     return m![1];
   };
-  return { text, gallring: jobb("gallra_arkiv"), radering: jobb("arkiv_radera_exporterat") };
+  return { text, gallring: jobb(sql072, "072", "gallra_arkiv"), radering: jobb(text, "044", "arkiv_radera_exporterat") };
 };
 
-// Gallringen efter tre dygn behåller brotten mot #75 (ytan mer än 12 °C under luften): karantänen i snapshoten räknar dem
-// över sju dygn. En rad utan yta är inget brott och gallras som förut. Dygn yngre än tre rörs inte.
-test("#322 gallringen efter tre dygn: brotten mot #75 står kvar, ytlösa rader gallras, yngre dygn orörda, idempotent", { skip: !url }, async () => {
+// Gallringen efter sju dygn (tre 10/10–28/10, #511, #740) behåller brotten mot #75 (ytan mer än 12 °C under luften): karantänen i
+// snapshoten räknar dem över sju dygn. En rad utan yta är inget brott och gallras som förut. Dygn yngre än sju rörs inte.
+test("#322 gallringen efter sju dygn: brotten mot #75 står kvar, ytlösa rader gallras, yngre dygn orörda, idempotent", { skip: !url }, async () => {
   const { default: pg } = await import("pg");
   const { readFileSync } = await import("node:fs");
   const pool = new pg.Pool({ connectionString: url, max: 1 });
   try {
     const { text, gallring } = await JOBB_044();
-    assert.equal(gallring, "SELECT gallra_arkiv(3)");
+    assert.equal(gallring, "SELECT gallra_arkiv(7)");
     for (const f of ["014_gallring.sql", "004_fi_schema.sql", "006_no_schema.sql", "007_dk_schema.sql", "026_gallring_grannar.sql", "031_gallring_dk_gravstenar_tid.sql"])
       await pool.query(readFileSync(new URL("../sql/" + f, import.meta.url), "utf8"));
     await pool.query(text);
     await pool.query(`DELETE FROM weather_observations WHERE station_id IN ('B11', 'B12')`);
-    // B11: ett helt dygn var tionde minut för fem dygn sedan. 00:00 och 00:10 är brott (yta −15, luft 1), 00:30 saknar yta
-    // men har luft. B12: ett helt dygn för två dygn sedan, under fristen.
+    // B11: ett helt dygn var tionde minut för nio dygn sedan. 00:00 och 00:10 är brott (yta −15, luft 1), 00:30 saknar yta
+    // men har luft. B12: ett helt dygn för fem dygn sedan, under fristen — det hade gallrats med tre dygn.
     await pool.query(`
       INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c)
-      SELECT 'B11', 'Brott', ST_SetSRID(ST_MakePoint(15, 60), 4326), date_trunc('day', now() - interval '5 days') + i * interval '10 min',
+      SELECT 'B11', 'Brott', ST_SetSRID(ST_MakePoint(15, 60), 4326), date_trunc('day', now() - interval '9 days') + i * interval '10 min',
              CASE WHEN i IN (0, 1) THEN -15 WHEN i = 3 THEN NULL ELSE 0 END, CASE WHEN i = 3 THEN 2 ELSE 1 END
       FROM generate_series(0, 143) i
       UNION ALL
-      SELECT 'B12', 'Färsk', ST_SetSRID(ST_MakePoint(16, 61), 4326), date_trunc('day', now() - interval '2 days') + i * interval '10 min', 0, 1
+      SELECT 'B12', 'Färsk', ST_SetSRID(ST_MakePoint(16, 61), 4326), date_trunc('day', now() - interval '5 days') + i * interval '10 min', 0, 1
       FROM generate_series(0, 143) i`);
     await pool.query(gallring);
     const n = async (villkor: string) => (await pool.query(`SELECT count(*)::int AS n FROM weather_observations WHERE ${villkor}`)).rows[0].n;
     assert.equal(await n(`station_id = 'B11'`), 48 + 2, "en rad per halvtimme, plus de två brotten som inte var sista i sin hink");
     assert.equal(await n(`station_id = 'B11' AND surface_temp_c < air_temp_c - 12`), 2, "brotten står kvar");
     assert.equal(await n(`station_id = 'B11' AND surface_temp_c IS NULL`), 0, "raden utan yta är inget brott och gallras");
-    assert.equal(await n(`station_id = 'B12'`), 144, "två dygn gamla rader rörs inte");
+    assert.equal(await n(`station_id = 'B12'`), 144, "fem dygn gamla rader rörs inte");
     await pool.query(gallring);
     assert.equal(await n(`station_id IN ('B11', 'B12')`), 50 + 144, "andra körningen tar inget");
   } finally {
@@ -1620,7 +1622,7 @@ test("#573 del 2: domloggen per sträcka, stationsvärdena, körningsloggen och 
     await q("CREATE TABLE IF NOT EXISTS shadow_log (id bigserial PRIMARY KEY, run_at timestamptz NOT NULL DEFAULT now(), alerts jsonb NOT NULL DEFAULT '[]'::jsonb)");
     for (const f of ["001_init.sql", "008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql", "018_trend_berakna.sql",
                      "029_brott_index.sql", "030_langsam_vakt.sql", "050_kandidat_live.sql", "053_arkiv_tabeller.sql", "055_vagpunkter.sql",
-                     "056_kandidat_regel.sql", "057_kandidat_skugga.sql", "062_kortare_forvaring.sql"])
+                     "056_kandidat_regel.sql", "057_kandidat_skugga.sql", "062_kortare_forvaring.sql", "072_gallringen_tillbaka.sql"])
       await q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
     await stad();
     const P: [string, string, number, number][] = [
@@ -1658,7 +1660,7 @@ test("#573 del 2: domloggen per sträcka, stationsvärdena, körningsloggen och 
     assert.match((await q("SELECT kandidat_logga() AS m")).rows[0].m, /tyst/);
     assert.equal((await q("SELECT status FROM kandidat_skugga_korning ORDER BY korning DESC LIMIT 1")).rows[0].status, "tyst");
 
-    // Hinken: dygnet efter exporteras, golvet är ett dygn (sql/062, DECISIONS #618; tre dygn till 17/10, #573).
+    // Hinken: dygnet efter exporteras, golvet är tre dygn (sql/072, DECISIONS #740; ett dygn 17/10–28/10, #618; tre till 17/10, #573).
     const dag = (n: number) => q("SELECT ((now() - $1 * interval '1 day') AT TIME ZONE 'UTC')::date::text AS d", [n]).then((r) => r.rows[0].d as string);
     const [d1, d2, d5, idag] = [await dag(1), await dag(2), await dag(5), await dag(0)];
     for (const d of [d1, d2, d5])
@@ -1671,9 +1673,9 @@ test("#573 del 2: domloggen per sträcka, stationsvärdena, körningsloggen och 
     assert.equal(JSON.parse(text.split("\n")[0])[0], "segment_id");
     for (const d of [d1, d2, d5]) await q("SELECT arkiv2_export_klar('kandidat_skugga', $1::date, 1, 10, 'x', 'v')", [d]);
     assert.match((await q("SELECT arkiv2_radera_exporterat(0, 14) AS s")).rows[0].s, /kandidat_skugga: raderade 1 rader/, "fem dygn gammalt raderas");
-    assert.match((await q("SELECT arkiv2_radera_exporterat(0, 14) AS s")).rows[0].s, /kandidat_skugga: raderade 1 rader/, "två dygn gammalt raderas");
-    assert.match((await q("SELECT arkiv2_radera_exporterat(0, 14) AS s")).rows[0].s, /inget exporterat tabelldygn äldre än golvet \(14 dygn, kandidatens loggar 1\)/,
-      "ett dygn gammalt står kvar");
+    assert.match((await q("SELECT arkiv2_radera_exporterat(0, 14) AS s")).rows[0].s, /inget exporterat tabelldygn äldre än golvet \(14 dygn, kandidatens loggar 3\)/,
+      "två och ett dygn gamla står kvar");
+    assert.equal((await q("SELECT count(*)::int AS n FROM kandidat_skugga WHERE segment_id = '99919'")).rows[0].n, 2, "två dygn kvar i databasen");
     await assert.rejects(q("SELECT arkiv2_dygn('shadow_log', $1::date)", [d5]), /okänd tabell/);
   } finally {
     await stad().catch(() => {});
@@ -1857,7 +1859,7 @@ test("#618 (ii): skuggloggen, väglaget, händelserna och SMHI exporteras på si
       for (const f of ["008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql", "018_trend_berakna.sql", "029_brott_index.sql",
                        "030_langsam_vakt.sql", "050_kandidat_live.sql", "053_arkiv_tabeller.sql", "055_vagpunkter.sql", "056_kandidat_regel.sql",
                        "057_kandidat_skugga.sql"]) await las(f);
-    for (const f of ["062_kortare_forvaring.sql", "063_arkiv_fyra_tabeller.sql"]) await las(f);
+    for (const f of ["062_kortare_forvaring.sql", "063_arkiv_fyra_tabeller.sql", "072_gallringen_tillbaka.sql"]) await las(f);
     await stad();
     const d = (await q("SELECT ((now() - interval '30 days') AT TIME ZONE 'UTC')::date::text AS d")).rows[0].d as string;
     const kl = (h: number) => `${d}T${String(h).padStart(2, "0")}:00:00Z`;

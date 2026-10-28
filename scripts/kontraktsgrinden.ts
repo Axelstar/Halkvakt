@@ -795,11 +795,12 @@ export const KONTRAKT: Kontrakt[] = [
   {
     // Kort #322, DECISIONS #511 (10/10): gallringen tunnar efter tre dygn i stället för sju. Talet står i nattjobbet och i
     // de tre läsare som måste hinna före den. Gränsen stod som lös siffra i elva filer utan vakt till 10/10. sql/014 och
-    // sql/026 bär det gamla jobbet (7) som historik och ingår inte.
+    // sql/026 bär det gamla jobbet (7) som historik och ingår inte. DECISIONS #740 (28/10): sju dygn igen efter Supabase Pro;
+    // nattjobbet sätts nu av sql/072, och sql/044 (3) är historik som 014 och 026.
     namn: "Gallringens dygn — minutupplösningen finns bara så länge",
     varfor: "Läser trenden eller frostflödena längre bakåt än gallringen lämnar, räknar de på halvtimmesrader och blir OAVGJORT.",
     former: [/GALLRING_DYGN = (\d+)/, /'SELECT gallra_arkiv\((\d+)\)'/],
-    filer: /frosttryck\.ts$|trendarkivet\.ts$|grind-t-a\.ts$|sql\/044_/,
+    filer: /frosttryck\.ts$|trendarkivet\.ts$|grind-t-a\.ts$|sql\/072_/,
     golv: 4,
   },
   {

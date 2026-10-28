@@ -9,11 +9,12 @@
 
 /** Tryckningens timme i UTC. Vakthunden går :07 varje timme, så 09:07 UTC — efter den lokala morgonen året runt. */
 export const TRYCK_TIMME_UTC = 9;
-/** Gallringen tunnar allt äldre än så många dygn till en rad per halvtimme (sql/044, DECISIONS #511; sju dygn till 10/10).
+/** Gallringen tunnar allt äldre än så många dygn till en rad per halvtimme (sql/072, DECISIONS #740; tre dygn 10/10–28/10, #511).
  *  Frostläsningarna behöver minutupplösningen och måste alltså ske inom dem. Kontraktsgrinden vaktar kopiorna. */
-export const GALLRING_DYGN = 3;
+export const GALLRING_DYGN = 7;
 /** Högst en tryckning per så många dygn. Kortare än gallringen, så att varje natt hinner läsas ogallrad medan frosten
- *  varar (DECISIONS #511). När frosten upphör trycks inget mer — de sista nätterna kan då gallras olästa, som förut. */
+ *  varar (DECISIONS #511). Står kvar på två när gallringen fick sju dygn igen (#740): en missad tryckning tål då två missar
+ *  i rad. När frosten upphör trycks inget mer — de sista nätterna kan då gallras olästa, som förut. */
 export const TRYCK_INTERVALL_D = 2;
 /** Varvet kan landa några sekunder före förra veckans klockslag; två timmars slack gör att veckan inte hoppas över. */
 const SLACK_MS = 2 * 3600_000;

@@ -434,6 +434,19 @@
 <!-- LÄGESRADER §9: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 <div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
   <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html">projektkartan</a></div>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-l-takten">Kedjans takt: lägesfilen i hinken och appen synkad</a> <span style="color: var(--dampad, #4A5763)">delvis, 22 % · kvar: publicera delar upp sin tid i svaret (bygget, GitHub, kartan, hinken) (DECISIONS #741 punkt 1)</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Underlag och mätning</b> <span style="color: var(--dampad, #4A5763)">klart · docs/KEDJANS-TAKT-2026-10-28.md (PR #1246); publiceringens körtid 28/10 11:00–16:50 UTC, 36 körningar: median 44,0 s utan kartan, 52,6 s med (DB-knappen 40730903539)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Beslut</b> <span style="color: var(--dampad, #4A5763)">klart · Bengt 28/10 (DECISIONS #741): hela paketet i tre faser, steg 0 utgår, mätningen av färskhet och batteri bara i telefonen</span></li>
+      <li><span aria-hidden="true">○</span> <b>Tiden uppdelad i publicera</b> <span style="color: var(--dampad, #4A5763)">saknas</span></li>
+      <li><span aria-hidden="true">○</span> <b>Lägesfilen i hinken</b> <span style="color: var(--dampad, #4A5763)">saknas</span></li>
+      <li><span aria-hidden="true">○</span> <b>Publicering varannan minut</b> <span style="color: var(--dampad, #4A5763)">saknas</span></li>
+      <li><span aria-hidden="true">○</span> <b>Appen hämtar synkat ur hinken, båda apparna</b> <span style="color: var(--dampad, #4A5763)">saknas</span></li>
+      <li><span aria-hidden="true">○</span> <b>Mätningen i telefonen</b> <span style="color: var(--dampad, #4A5763)">saknas</span></li>
+      <li><span aria-hidden="true">○</span> <b>Batteriprovet</b> <span style="color: var(--dampad, #4A5763)">saknas</span></li>
+      <li><span aria-hidden="true">○</span> <b>Mätningen läst efter fem resor</b> <span style="color: var(--dampad, #4A5763)">saknas</span></li>
+    </ul>
+  </details>
   <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-a-ios">iPhone-appen</a> <span style="color: var(--dampad, #4A5763)">delvis, 75 % · kvar: Inskicket med 0.3.13 (34), inte (33) (DECISIONS #701): rättelserna efter Axels prov på (33) i 7c76a95, byggnumret 34; inskicket och skärmbilderna på (34) i PR #1189, som väntar; Axel klistrar in och skickar in</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">✓</span> <b>Byggd i koden</b> <span style="color: var(--dampad, #4A5763)">klart · ios/HalkvaktApp/Sources: HalkvaktApp.swift, Services/GuardManager.swift, Views/ (14 filer), Intents/ (5); project.yml:23–24 0.3.13 (33), byggnumret höjt 23/10 efter Axels PR #1029 (acb5f13, PR #1165, DECISIONS #681, #685); (32) uppladdat 19/10 (TestFlight-flödet 39271856967 på e83e56c, DECISIONS #643); uppladdningen av (33) är inte bokförd; App Review-rättelsen 5/10 (#758, effd2d1): Fortsätt före platsfrågan och Testa i bakgrunden (DECISIONS #460); 0.3.11 (23) byggt i Axels Xcode 6/10 efter 81d1a0b (#768: @discardableResult på enum MissUtfall togs bort), uppladdad 6/10 07:25 (App Store Connect); 0.3.13 (34) i project.yml efter Axels prov på (33) (7c76a95, PR #1182, DECISIONS #701)</span></li>
@@ -660,7 +673,7 @@
 
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
   <h2 id="oppna-kort">Öppna kort</h2>
-  <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 21 kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>
+  <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 22 kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>
   <h3><a href="#avsnitt-2">2. En körning</a></h3>
   <ul>
     <li>#258 iOS LADDAR ALDRIG OM VÄGDATAN UNDER RESAN <span class="litet">· Axel</span></li>
@@ -702,6 +715,7 @@
     <li>Tolv testare till Play-perioden <span class="litet">· Axel</span></li>
     <li>Välkomsttext + testinstruktion till kompisarna <span class="litet">· Axel</span></li>
     <li>#219 ANDROIDS VÄG TILL PLAY — enhetsverifiering, första uppladdning, slutet test <span class="litet">· Axel</span></li>
+    <li>#365 ⏱️ #365 KEDJANS TAKT — LÄGESFILEN I HINKEN VARANNAN MINUT OCH APPEN SYNKAD, MED MÄTNINGEN I TELEFONEN … <span class="litet">· Claude</span></li>
     <li>#326 LANSERINGSLOOPEN — SEX SEKUNDER BIL OCH RÖST, BILDRUTA FÖR BILDRUTA (BESTÄLLD 10/10 — Claude; Axels ja 10/10 … <span class="litet">· Claude</span></li>
     <li>#277 QR-KOD TILL APPEN — en kod för båda plattformarna, via halkvakt.se <span class="litet">· Claude, låst</span></li>
   </ul>

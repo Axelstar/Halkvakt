@@ -75,7 +75,7 @@ async function gh(path: string, method = "GET", body?: unknown): Promise<any> {
 
 /** FROSTTRIGGERN (DECISIONS #338, Bengts ja 24/9; omtryckningen #352, 25/9): mätningarna som frostnätterna ger trycks av
  *  vakthunden själv — kl 09 UTC, efter morgonen, ett dygn då frosten når tröskeln, och sedan högst var TRYCK_INTERVALL_D:e
- *  dygn så länge den varar (frosttryck.ts; varannan dag sedan gallringen tunnar efter tre dygn, DECISIONS #511). Före 25/9 trycktes de EN gång, mitt i första frostnatten, och stod sedan stilla. I stället för
+ *  dygn så länge den varar (frosttryck.ts; varannan dag sedan #511, och kvar så när gallringen fick sju dygn igen, #740). Före 25/9 trycktes de EN gång, mitt i första frostnatten, och stod sedan stilla. I stället för
  *  en veckoklocka i Actions (regeln 22/9) och i stället för att hänga på att någon läser issuen. Dispatch svarar 204 utan kropp, därför egen fetch.
  *  Utfallet per flöde skrivs i issuen: ett nekat anrop (PAT:en saknar actions:write) ska synas, inte tiga. */
 const FROSTFLODEN: { fil: string; inputs: Record<string, string> }[] = [
@@ -267,7 +267,7 @@ Deno.serve(async (req) => {
   // 5. HAR FROSTEN KOMMIT? Samma sort som 4: en HÄNDELSE, egen etikett, egen issue, EN gång,
   //    och den får aldrig färga vakthunden röd. Bengts order 11/9 efter steg 0 (kort #89).
   //    Varför den måste larma i stället för att stå i en issue: steg 0:s frysfråga (0c) gav
-  //    3–4 fall och behöver ~30, och avläsningen har en HÅRD deadline på GALLRING_DYGN (tre) dygn — gallringen
+  //    3–4 fall och behöver ~30, och avläsningen har en HÅRD deadline på GALLRING_DYGN (sju; tre 10/10–28/10, #511, #740) dygn — gallringen
   //    (#83, sql/044) tunnar allt äldre än så till en rad per halvtimme, och då kan arkivet
   //    inte längre säga NÄR regnet slutade (DECISIONS #97). En passiv påminnelse som ingen
   //    läser på tio dagar är i praktiken ingen påminnelse.
