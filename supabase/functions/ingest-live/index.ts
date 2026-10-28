@@ -5,6 +5,7 @@
 // (idempotenta upserts).
 import postgres from "https://deno.land/x/postgresjs@v3.4.4/mod.js";
 import { skrivSituationer, skrivVader, skrivVaglag } from "./skriv.ts";
+import { leveranstid, type Leverans } from "./leverans.ts";
 import { nyckelGiltig } from "../_shared/nyckel.ts";
 
 const ENDPOINT = "https://api.trafikinfo.trafikverket.se/v2/data.json";
@@ -52,8 +53,11 @@ async function roadconditions() {
 
 /** Svarets rad om arkivpolicyn (DECISIONS #353): hur många varma halvtimmesrader, eller att frågan fallerade. */
 let arkivpolicy = "";
+/** Leveranstiden för körningens nya mätningar (DECISIONS #741, tillägg 28/10); räknas före skrivningen, så att den bara mäter Trafikverket och hämtningen. */
+let leverans: Leverans | null = null;
 async function weather() {
   const { items, lastChangeId } = await tv("WeatherMeasurepoint", "2.1", await cursor("weather"));
+  leverans = leveranstid(items, Date.now());
   const r = await skrivVader(sql, items);
   arkivpolicy = r.arkivpolicy;
   await saveCursor("weather", lastChangeId);
@@ -98,7 +102,7 @@ Deno.serve(async (req) => {
     // Efter vädret, aldrig parallellt med det: trenden räknar på raderna weather() nyss skrev.
     const tr = await trend();
     const lv = await langsamVakt();
-    return new Response(JSON.stringify({ ok: true, situations: s, roadconditions: r, weather: w, arkivpolicy, trend: tr, langsam_vakt: lv }), {
+    return new Response(JSON.stringify({ ok: true, situations: s, roadconditions: r, weather: w, arkivpolicy, leverans, trend: tr, langsam_vakt: lv }), {
       headers: { "Content-Type": "application/json" } });
   } catch (e) {
     return new Response(JSON.stringify({ ok: false, error: String(e) }), { status: 500 });
