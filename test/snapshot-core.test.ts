@@ -33,6 +33,10 @@ function fakeDb(rows: Partial<Record<string, any[]>>) {
       assert.deepEqual(params, [40_000]);
       return text.includes("fi.") ? rows.fi ?? [] : rows.no ?? [];
     }
+    if (text.includes("road_number IS NOT NULL")) {   // kandidatens vägnummer (#739), samma tabell som väglaget
+      if (rows.vagarKastar) throw new Error("canceling statement due to statement timeout");
+      return rows.segments ?? [];
+    }
     if (text.includes("FROM road_conditions")) return rows.segments ?? [];
     if (text.includes("FROM radar_precip")) return rows.radar ?? [];
     if (text.includes("FROM weather_latest") && text.includes("surface_temp_c <= 3")) return rows.wx ?? [];
@@ -351,9 +355,9 @@ test("#576 kandidaten: regelns varnande punkter blir en rad per sträcka i en eg
   });
   const { staticDoc, liveDoc, notes } = await buildSnapshot(q, [], NOW);
   assert.deepEqual(liveDoc.kandidat, [
-    { id: "S1", tid: "2026-10-15T08:00:00.000Z", punkter: [[20.12346, 67.65432], [20.2, 67.7]] },
-    { id: "S7", tid: "2026-10-15T08:00:00.000Z", punkter: [[21, 66.5]] },
-  ]);
+    { id: "S1", tid: "2026-10-15T08:00:00.000Z", punkter: [[20.12346, 67.65432], [20.2, 67.7]], vag: "E4" },
+    { id: "S7", tid: "2026-10-15T08:00:00.000Z", punkter: [[21, 66.5]], vag: null },
+  ], "vägnumret ur road_conditions (#739); null där sträckan inte har något");
   assert.match(asked.find((t) => t.includes("FROM talande_regel()"))!, /WHERE utfall = 'varnar' ORDER BY segment_id, punkt/,
     "bara utfallet varnar — inga egna tal i publiceringen");
   assert.ok(!notes.some((n) => n.startsWith("kandidat:")));
@@ -409,8 +413,20 @@ test("#578 brytaren oläsbar: nyckeln utelämnas — tyst är det säkra hållet
 test("#578 brytaren på: nyckeln finns som förut", async () => {
   const { q } = fakeDb({ brytare: [{ pa: true }], kandidat: [{ segment_id: "S1", lon: 20, lat: 67, tid: "2026-10-15T08:00:00Z" }] });
   const { liveDoc, notes } = await buildSnapshot(q, [], NOW);
-  assert.deepEqual(liveDoc.kandidat, [{ id: "S1", tid: "2026-10-15T08:00:00.000Z", punkter: [[20, 67]] }]);
+  assert.deepEqual(liveDoc.kandidat, [{ id: "S1", tid: "2026-10-15T08:00:00.000Z", punkter: [[20, 67]], vag: null }]);
   assert.ok(!notes.some((n) => n.startsWith("kandidat:")));
+});
+
+test("#739 en fallen fråga om vägnumren tystar inte kandidaten — vag blir null och noten säger det", async () => {
+  const { q } = fakeDb({
+    vagarKastar: true,
+    segments: [{ segment_id: "S1", condition_code: 3, condition_info: ["Is"], road_number: "E4", g: { coordinates: [[15, 60], [15.1, 60.1]] } }],
+    kandidat: [{ segment_id: "S1", lon: 20, lat: 67, tid: "2026-10-15T08:00:00Z" }],
+  });
+  const { liveDoc, notes } = await buildSnapshot(q, [], NOW);
+  assert.deepEqual(liveDoc.kandidat, [{ id: "S1", tid: "2026-10-15T08:00:00.000Z", punkter: [[20, 67]], vag: null }]);
+  assert.ok(notes.some((n) => n.startsWith("kandidat: vägnumren ej läsbara")));
+  assert.ok(!notes.some((n) => n.startsWith("kandidat: regeln")), "regeln och nyckeln står kvar");
 });
 
 // ── F1: SKATTARENS RÅA INDATA (kort #187, bedömning v3 N4, DECISIONS #188) ─────────────────

@@ -18628,6 +18628,102 @@ Bengt 28/10: *"vi parkerar hela den här punkten till efter våren 2027"*.
 
 **Stomdokument:** inga, beslutet parkerar ett spår och ändrar inget i driften eller i tröskeldokumenten.
 
+## #739 (28/10 2026) Kandidatens varningar i rapporten i Favoriter: en egen BETA-ruta med vägnamn, före domen (kort #363)
+
+**Beslut.** Bengt 28/10, för båda: *"jag vill att vi kör och Axel godkänner"*, på Claudes utkast i chatten samma dag. Utkastet skrevs
+efter Bengts fråga om rutan *Prognosen · kommer senare* (*"Om vi vill snabba på detta och typ göra det nu vad är det vi behöver göra"*),
+och formen valdes av Bengt: *"Ja, skriv om utkastet till #739 med vägnamnen, en rad per väg och att en redan rapporterad sträcka bara
+visas en gång."*
+
+1. **Rutan.** Kandidaten visas i rapporten före resan i en egen ruta, *Halkvakt tror · BETA*, under *Längs vägen just nu*. Den ersätter
+   *Prognosen · kommer senare*, som skrevs 2/10, före #556. Villkoren är röstens (TROSKLAR-SKUGGAN §4(d), #562, #563): märkt BETA och
+   *modellerat*, till domen i mars 2027, och för alla som rösten, inte bara med Betatest (efterhalkan S3 står kvar som testarnas, #676,
+   #679). Saknas nyckeln `kandidat`, är lägesfilen äldre än 45 minuter eller är kandidaten avstängd vid säkerhetsläsningarna 1/12, 1/1
+   och 1/2 (#710), visas inga rader.
+2. **En rad per väg, med vägnamn.** Raden heter *Halka på E4*, märkt BETA, med undertexten *Modellerat för kl. HH* (kandidatens timme).
+   Flera sträckor på samma väg blir en rad: *Halka på E4, två sträckor*. En sträcka utan vägnummer heter bara *Halka*. Raderna står i
+   körordning inom rutan och vänds med Dit och Hem. Inga avstånd och inga kilometer in på rutten (produktinvarianten, #577 punkt 5).
+   Under rutan: *Halkvakts egen beräkning, inte uppmätt. Rösten säger till under resan.*
+3. **Det rapporterade går först.** En sträcka som finns bland halksträckorna i lägesfilen (`segments`, samma sträcka som kandidatens
+   `seg:<id>`, #581) visas bara som *Halt väglag* under *Längs vägen just nu*, inte en gång till i rutan. Rösten kan fortfarande säga
+   båda (#577 punkt 6); rapporten säger samma sak en gång.
+4. **Matchningen mot rutten.** En sträcka räknas när minst **två** av dess varnande punkter ligger inom **150 m** från rutten, olyckornas
+   marginal. Två punkter, så att en tvärväg inte räknas för att en punkt råkar ligga i korsningen. Båda talen är nya trösklar i tre
+   språk och förs in i kontraktsgrinden i samma commit som den andra kopian. De mäts på favoritprovets rutter innan de fryses.
+5. **Aldrig en notis** (T6, FORE-RESAN). Rutans rader kommer inte med under *Nytt*, inte i radens läge i fliken (Nytt, Inget nytt,
+   Lugnt), inte i resans Halka-siffra och inte i raden om det tomma.
+6. **När inget visas.** Kandidaten på men inget längs rutten: *Halkvakts beräkning varnar inte längs rutten just nu. Den räknar bara på
+   vägar där Trafikverket rapporterar väglag.* Avstängd eller för gammal: *Halkvakts egen beräkning visas inte just nu.*
+7. **Lägesfilen får vägnumret.** `publicera` lägger fältet `vag` på varje post under `kandidat`, ur `road_conditions.road_number` för
+   sträckan (samma kolumn som halksträckorna). Fältet läggs till och ersätter inget (#556), så appar som redan finns påverkas inte.
+   Deployen görs på Bengts ord; beviset är en rad i `live.json` med fältet ifyllt, inte deploy-kvittot.
+
+**Vad som inte ändras.** Rösten, regeln i databasen, taket, prioriteten och domen. Domen läser skuggloggen och facit, och *det förarna
+fick* (#710 punkt 15) räknas från den kandidat som talade. Inget tal, ingen population och ingen grind flyttas: beslutet är ingen lättnad
+enligt regel L, och anspråket är mindre än röstens (raden visas, den talar inte). Den äkta prognosen, läget när föraren *kommer fram*,
+väntar fortfarande på domen i mars.
+
+**Byggt så här.** (1) `publicera` med fältet `vag`, prov, bunten och deploy. (2) Referensen i `publish/rapport-app.ts`, som inte buntas in
+i serverns funktioner, och facit i `engine/fixtures/rapport.json`. (3) `Rapport.swift` och `Rapport.kt` mot samma facit, tecken för
+tecken (#637). (4) Rutan i båda apparna. (5) Produktboken med skärmbilder ur fotostudion (PRODUKTBOKSREGELN). (6) Nytt bygge för båda
+plattformarna, byggnumret i samma commit som den sista ändringen.
+
+**Risk, skriven före.** Fler förare ser kandidatens falsklarm, nu också före resan. Rutan kan komma och gå om säkerhetsläsningen stänger
+av kandidaten. En sträcka med bara en varnande punkt syns aldrig i rapporten; hur många det är är inte mätt. Hur många av de 818
+sträckorna som saknar vägnummer, och hur en sträcka med två vägnummer skrivs, är inte läst.
+
+**Alternativ.** Allt i en lista i körordning: valt bort, eftersom ordningen blir ett påstående om var och det uppmätta blandas med det
+beräknade. En samlad rad utan vägnamn: valt bort för vägnamnen. Vänta till domen: valt bort, eftersom kandidaten redan talar.
+
+**Stomdokument:** FAV §3 — rapportens femte del; LIV — kandidaten i rapporten; APP — rapportskärmen; SYS — fältet `vag` i lägesfilen; BED §4.2.
+
+## #740 (28/10 2026) Tre gallringar tillbaka efter Supabase Pro: full upplösning i sju dygn, trendtabellerna och radarn i fjorton, kandidatens loggar i tre (kort #364)
+
+**Bengts ord 28/10:** *"Ta tillbaka de tre billiga: full upplösning i 7 dygn, trendtabellerna och radarn 14 dygn och kandidatens
+loggar 3 dygn. Golvet för vädret står kvar på 14. Skriv beslutet och migrationen som en PR."* Numret är #740 eftersom #739 står i
+den öppna PR #1245.
+
+**Underlaget** (DB-knappen *las* 28/10 15:48 UTC, körningarna 40719575626 och 40719923034):
+- Databasen 513 MB av 8 GB som Supabase räknar kvoten (huvuddatabasen 498,7 MB), mot 504 MB 20/10 22:07 (#652): cirka 1,2 MB per
+  dygn. `weather_observations` 247,5 MB och 807 167 rader, cirka 307 byte per rad.
+- Hinken 3 473 MB av 100 GB: `arkiv` 3 362 MB (542 filer), `facit` 110 MB (5 453 filer). Rutinen fyller cirka 5 MB per dygn
+  (exporten 1,5–2, kamerabilderna 2,5–4); därtill engångsladdningarna 22/10, 23/10 och 26/10 på 950–1 033 MB vardera.
+- Gallringarna gjordes för gratisnivåns 500 MB (#511 10/10, #618 17/10). Med Pro (#644) är taket 8 GB.
+
+**Beslut.** `sql/072_gallringen_tillbaka.sql`:
+1. **Full upplösning i sju dygn** (#511 punkt 1 tillbaka). Nattjobbet `halkvakt-gallring` kör `gallra_arkiv(7)`. Brotten mot #75 sparas
+   som förut. Frostläsningarna (steg 0, T-A, trendarkivet, tillståndets steg 2) får sju dygn på sig: `GALLRING_DYGN = 7` i
+   `frosttryck.ts`, `grind-t-a.ts` och `trendarkivet.ts`, och standardvärdet 7 i deras tre flöden. Kontraktsgrinden vaktar talet i
+   `sql/072` i stället för `sql/044`, som blir historik. Uppskattad kostnad cirka 75 MB en gång.
+   **Samma tal gäller grannländerna och pg_crons logg** (`gallra_arkiv` i sql/031): Finlands varma rader (yta över +3 °C eller
+   saknad; de kalla sparas 60 dygn som förut), Norges och Danmarks rader och `cron.job_run_details` sparas sju dygn i stället för
+   tre. Mätt 28/10 med DB-knappen *las* (40728016868): Finland 24,8 MB och 87 425 rader, varav 19 373 varma de senaste tre dygnen;
+   Norge 7,8 MB och 26 443 rader; Danmark 0,8 MB och 1 268 rader; körloggen 6,5 MB och 8 904 rader sedan 25/10 03:15. Fyra dygn
+   till kostar cirka 7 MB för Finland, 10 för Norge, 1 för Danmark och 7 för körloggen, alltså cirka 26 MB. *Tillagt 28/10 på
+   Bengts ord ("rätta beslut #740 … så att det säger att gallra_arkiv(7) också gäller grannländerna och pg_crons logg, med
+   kostnaden"); utkastet nämnde bara de svenska raderna.*
+2. **Trendtabellerna och radarn i fjorton dygn** (#618 c tillbaka): `halkvakt-arkivradering-tabeller` kör
+   `arkiv2_radera_exporterat(350, 14)`. Steg 0 läser radarn fjorton dygn bakåt. Cirka 28 MB.
+3. **Kandidatens loggar i tre dygn** (#618 b tillbaka, som #573): `arkiv2_golv` ger 3 för `kandidat_skugga` och `kandidat_station`, så
+   att varför kandidaten tiger går att läsa några dygn bakåt i databasen (28/10 gick det bara till i går eftermiddag). Cirka 5 MB.
+
+**Står kvar.** Väderobservationernas raderingsgolv (14 dygn, `halkvakt-arkivradering`): grindarna läser dygnen äldre än 14 ur hinken
+sedan 12/10 (kort #323), och 30 dygn hade kostat cirka 190 MB för lite. Frosttryckets intervall (`TRYCK_INTERVALL_D = 2`): provet kräver
+att tryckningarna kommer tätare än gallringen, och med sju dygn tål en missad tryckning två missar i rad. De fyra tabeller som aldrig
+raderas (#618 ii), exportens ålder per tabell och #580:s autovacuum.
+
+**Följden.** Fönstren fylls framåt; det som redan har gallrats eller raderats kommer inte tillbaka. Sammanlagt cirka 135 MB en gång
+(75 + 26 + 28 + 5), så databasen väntas landa omkring 650 MB av 8 GB när fönstren är fulla, sedan som förut cirka 1,2 MB per dygn.
+Hinken bär fortfarande bara halvtimmesvärdena för väder. KEDJANS-TAKT §5 räknar pg_crons logg på tre dygn; den blir sju.
+
+**Kvar efter sammanslagningen** (på Bengts ord): `sql/072` med DB-knappen *migrera* och jobben lästa i `cron.job`; vakthunden deployad
+(`GALLRING_DYGN` styr frosttryckets fönster och frostärendets rubrik); nattjobben 03:15 och 03:50 lästa morgonen efter.
+
+**Alternativ.** Alla fyra (med golvet 30 dygn): valt bort av Bengt. Inga: valt bort. Frosttryck var sjätte dag i stället för vartannat:
+inte föreslaget, eftersom en enda missad tryckning då hade kostat en frostnatt.
+
+**Stomdokument:** SYS databasen och arkivet — förvaringen efter Pro, MAT steg 0 och T-A läser sju dygn, BED §5.
+
 ## #741 (28/10 2026) Kedjans takt: hela uppsnabbningen för motorn och kandidaten, publiceringen i hinken varannan minut och appen synkad med en mätning i telefonen (kort #365)
 
 **Bengts ord 28/10:** *"jag menar att vi börjar och genomför hela uppsnabbningspaketet av motorn och kandidaten inklusive paketet

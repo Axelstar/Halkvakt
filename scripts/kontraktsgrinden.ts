@@ -580,6 +580,21 @@ export const KONTRAKT: Kontrakt[] = [
     filer: RAPPORTEN,
     golv: 5,
   },
+  // Halkvakt tror (DECISIONS #739, kort #363): rutan räknas i rapport-app.ts (inte i serverns buntar), Swift och Kotlin.
+  {
+    namn: "Halkvakt tror — avståndet från resan för kandidatens punkter, m",
+    varfor: "Med olika avstånd visar iPhone och Android olika sträckor i rutan för samma resa (DECISIONS #739 punkt 4).",
+    former: [/(?:KANDIDAT_MARGINAL_M|kandidatMarginalM)\s*=\s*(\d+)(?:\.0)?(?![\d.])/],
+    filer: /publish\/rapport-app\.ts$|HalkvaktEngine\/Rapport\.swift$|engine\/Rapport\.kt$/,
+    golv: 3,
+  },
+  {
+    namn: "Halkvakt tror — punkter inom avståndet som krävs för en sträcka",
+    varfor: "Samma som ovan: kravet håller tvärvägarna borta, och med olika krav gör det det bara på den ena telefonen.",
+    former: [/(?:KANDIDAT_MINST_PUNKTER|kandidatMinstPunkter)\s*=\s*(\d+)(?![\d.])/],
+    filer: /publish\/rapport-app\.ts$|HalkvaktEngine\/Rapport\.swift$|engine\/Rapport\.kt$/,
+    golv: 3,
+  },
   {
     // DECISIONS #637: vägen hem känns igen som samma resa, så frågan Spara resan? kommer inte en gång till.
     namn: "Igenkänningen — meter mellan två resor som räknas som samma väg",
@@ -780,11 +795,12 @@ export const KONTRAKT: Kontrakt[] = [
   {
     // Kort #322, DECISIONS #511 (10/10): gallringen tunnar efter tre dygn i stället för sju. Talet står i nattjobbet och i
     // de tre läsare som måste hinna före den. Gränsen stod som lös siffra i elva filer utan vakt till 10/10. sql/014 och
-    // sql/026 bär det gamla jobbet (7) som historik och ingår inte.
+    // sql/026 bär det gamla jobbet (7) som historik och ingår inte. DECISIONS #740 (28/10): sju dygn igen efter Supabase Pro;
+    // nattjobbet sätts nu av sql/072, och sql/044 (3) är historik som 014 och 026.
     namn: "Gallringens dygn — minutupplösningen finns bara så länge",
     varfor: "Läser trenden eller frostflödena längre bakåt än gallringen lämnar, räknar de på halvtimmesrader och blir OAVGJORT.",
     former: [/GALLRING_DYGN = (\d+)/, /'SELECT gallra_arkiv\((\d+)\)'/],
-    filer: /frosttryck\.ts$|trendarkivet\.ts$|grind-t-a\.ts$|sql\/044_/,
+    filer: /frosttryck\.ts$|trendarkivet\.ts$|grind-t-a\.ts$|sql\/072_/,
     golv: 4,
   },
   {

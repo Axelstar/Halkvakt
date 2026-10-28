@@ -349,6 +349,15 @@
       <li><span aria-hidden="true">◐</span> <b>Prov</b> <span style="color: var(--dampad, #4A5763)">pågår · Bengt 18/10 på iPhone, 0.3.13 (31): två resor sparade (Till jobbet 2,3 km, Hem 2,2 km), fliken visar Lugnt på båda, rapporten med Dit / Hem, Just nu · kollat 16:57, Läget från 16:50, Inget rapporterat längs rutten och raden om det tomma (Köer mäts inte längs den här vägen); igenkänningen inte prövad än — hemvägen gick delvis en annan väg, så frågan kom igen som regeln säger (80 % inom 100 m); kvar: Nytt sedan förra kollen och samma väg tillbaka</span></li>
     </ul>
   </details>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-f-kandidat">Halkvakt tror i rapporten</a> <span style="color: var(--dampad, #4A5763)">delvis, 50 % · kvar: publicera med fältet vag under kandidat, deployad på Bengts ord, och en rad i live.json med vag ifyllt (DECISIONS #739 punkt 7)</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Beslut om formen</b> <span style="color: var(--dampad, #4A5763)">klart · Bengt 28/10 för båda (DECISIONS #739): egen BETA-ruta under Längs vägen just nu, en rad per väg med vägnamn, det rapporterade går först, minst två punkter inom 150 m, aldrig notis; TROSKLAR-SKUGGAN §4(d) och FORE-RESAN rättade samma commit</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Vägnumret i lägesfilen (publicera, deploy)</b> <span style="color: var(--dampad, #4A5763)">pågår · Koden på grenen claude/kandidaten-i-rapporten (38dd0be8): snapshot-core.ts lägger vag ur road_conditions i en egen fråga, en fallen fråga ger vag null och tystar inte kandidaten; bunten i synk; prov i test/snapshot-core.test.ts (37 gröna). Kvar: sammanslagning, deploy på Bengts ord och en rad i live.json med vag ifyllt</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Rapporten i motorn, tre språk, mot delat facit</b> <span style="color: var(--dampad, #4A5763)">pågår · 38dd0be8: kandidatRader och kandidatTomt i publish/rapport-app.ts, Rapport.swift och Rapport.kt; facit engine/fixtures/rapport.json med fyra fall som inte ska med; TypeScript-provet grönt (test/rapport-app.test.ts 7/7); kontraktsgrinden på 150 och 2, motprov på Kotlin fällt på rätt kontrakt. Kvar: ios-engine och android gröna på samma facit</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Rutan i båda apparna</b> <span style="color: var(--dampad, #4A5763)">pågår · Rutan Halkvakt tror · beta i RapportView.swift och RapportSkarm.kt i stället för Prognosen · kommer senare, raderna ur Rapporten (iOS och Android). Kvar: ett bygge av appen, fotostudions rapportbild och produktboken</span></li>
+      <li><span aria-hidden="true">○</span> <b>Prov på telefon</b> <span style="color: var(--dampad, #4A5763)">saknas</span></li>
+    </ul>
+  </details>
 </div>
 <!-- /LÄGESRADER -->
   <p>Rapporten är det föraren läser innan bilen startar. Den ska gå att läsa på några sekunder och säga allt som gäller längs rutten just nu.</p>
@@ -894,7 +903,7 @@
 
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
   <h2 id="oppna-kort">Öppna kort</h2>
-  <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 12 kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>
+  <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 13 kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>
   <h3><a href="#avsnitt-2">2. Fliken Favoriter</a></h3>
   <ul>
     <li>#357 FAVORITERNA VERSION 1 — FLIKEN, RAPPORTEN OCH SPARADE RUTTER I BÅDA APPARNA (BESTÄLLT 17/10 — Claude, … <span class="litet">· Claude</span></li>
@@ -903,6 +912,7 @@
   <h3><a href="#avsnitt-3">3. Rapporten</a></h3>
   <ul>
     <li>#270 PROGNOSLAGRET EFTER PREMISSMÄTNINGARNA — BENGTS VAL a–h <span class="litet">· Bengt</span></li>
+    <li>#363 🔮 #363 HALKVAKT TROR I RAPPORTEN — KANDIDATENS BETAVARNINGAR I FAVORITER FÖRE DOMEN (BESLUTAT 28/10 — … <span class="litet">· Claude</span></li>
     <li>#357 FAVORITERNA VERSION 1 — FLIKEN, RAPPORTEN OCH SPARADE RUTTER I BÅDA APPARNA (BESTÄLLT 17/10 — Claude, … <span class="litet">· Claude</span></li>
     <li>#356 📷 #356 KAMERALARM FÖR KAMEROR PÅ EN ANNAN VÄG — PRÖVA RÖSTEN (BESTÄLLT 17/10 — Claude, DECISIONS #615, … <span class="litet">· Claude</span></li>
     <li>#276 OLJA PÅ VÄGEN — HALKA SOM RÖSTEN INTE SÄGER <span class="litet">· Claude, låst</span></li>

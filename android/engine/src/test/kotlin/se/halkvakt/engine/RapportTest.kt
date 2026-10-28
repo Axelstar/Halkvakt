@@ -96,6 +96,34 @@ class RapportTest {
         assertTrue(betarader > 0, "facit bär en betarad (S3), annars prövar provet ingenting")
     }
 
+    /** Halkvakt tror (DECISIONS #739): rutans rader Dit och Hem, null utan nyckeln, och rutans texter, som TypeScript. */
+    @Test fun kandidatenSomTypeScript() {
+        val f = facit(); val i = indata(f); val k = obj(f["kandidat"])
+        assertEquals((k["marginalM"] as Number).toDouble(), ResansRapport.KANDIDAT_MARGINAL_M)
+        assertEquals((k["minstPunkter"] as Number).toInt(), ResansRapport.KANDIDAT_MINST_PUNKTER)
+        assertEquals(k["fot"], ResansRapport.KANDIDAT_FOT)
+        for ((hem, nyckel) in listOf(false to "dit", true to "hem")) {
+            val rader = ResansRapport.kandidatRader(i.rutt, hem, i.lage)!!
+            val v = lista(k[nyckel]).map(::obj)
+            assertEquals(v.map { it["id"] }, rader.map { it.id }, "$nyckel: samma rader i samma ordning")
+            for ((r, w) in rader.zip(v)) {
+                assertEquals(w["rubrik"], r.rubrik, "$nyckel ${r.id}: rubriken")
+                assertEquals(w["text"], r.text, "$nyckel ${r.id}: texten")
+                assertEquals((w["antal"] as Number).toInt(), r.antal, "$nyckel ${r.id}: antalet")
+                assertEquals(lista(w["ids"]), r.ids, "$nyckel ${r.id}: sträckorna")
+                assertTrue(abs(r.langsM - (w["langsM"] as Number).toInt()) <= 1, "$nyckel ${r.id}: platsen ${r.langsM} mot ${w["langsM"]}")
+            }
+        }
+        val utan = obj(obj(f["in"])["live"]) - "kandidat"
+        assertEquals(null, k["avstangd"])
+        assertEquals(null, ResansRapport.kandidatRader(i.rutt, false, ResansRapport.lasLage(utan)), "utan nyckeln: avstängd")
+        val dit = ResansRapport.kandidatRader(i.rutt, false, i.lage)!!
+        for (t in lista(k["texter"]).map(::obj)) {
+            val rader = when (t["rader"]) { null -> null; true -> dit; else -> emptyList() }
+            assertEquals(t["svar"], ResansRapport.kandidatTomt(rader, t["gammal"] == true), t["namn"] as String)
+        }
+    }
+
     @Test fun riktningenSomTypeScript() {
         val f = facit(); val i = indata(f)
         val fall = lista(f["riktning"]).map(::obj)

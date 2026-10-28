@@ -1,7 +1,7 @@
 // RAPPORTEN FÖR EN SPARAD RESA (favoriterna steg 3c, kort #357; FAVORITER §3, DECISIONS #636, #637) — spegel av iOS RapportView.swift,
 // samma ord. Dit och Hem är samma sparade väg; Hem är den vända, så farorna kommer i körordning och köerna gäller förarens håll. Överst
-// när läget är från, sedan det nya sedan förra kollen, allt längs vägen i viktordning, det tomma på en rad, prognosens plats och
-// vakten. Inga avstånd på raderna: en station ligger vid en plats och får aldrig ett avstånd som mätningen inte bär. Android har
+// när läget är från, sedan det nya sedan förra kollen, allt längs vägen i viktordning, det tomma på en rad, rutan Halkvakt tror
+// (kandidatens betavarningar, DECISIONS #739) och vakten. Inga avstånd på raderna: en station ligger vid en plats och får aldrig ett avstånd som mätningen inte bär. Android har
 // ingen dra-för-att-uppdatera i den här Compose-versionen; KOLLA IGEN gör samma sak.
 package se.halkvakt.app.ui
 
@@ -31,6 +31,7 @@ import se.halkvakt.app.Favoriter
 import se.halkvakt.app.MainActivity
 import se.halkvakt.app.Rapporten
 import se.halkvakt.app.RuttLager
+import se.halkvakt.engine.KandidatRad
 import se.halkvakt.engine.RapportRad
 import se.halkvakt.engine.ResansRapport
 import java.time.Instant
@@ -70,7 +71,7 @@ fun RapportSkarm(ruttId: String, activity: MainActivity, back: () -> Unit) {
                 Text(if (rapport.gickInte) "Läget kunde inte hämtas. Tryck på Kolla igen." else "Kollar läget …", color = Brand.text2,
                     fontFamily = Typo.sans, fontSize = 15.sp, modifier = Modifier.padding(top = 28.dp))
             } else {
-                RapportInnehall(if (hem) resa.hem else resa.dit, fore, rapport)
+                RapportInnehall(if (hem) resa.hem else resa.dit, if (hem) resa.kandidatHem else resa.kandidatDit, fore, rapport)
             }
             Box(Modifier.fillMaxWidth().padding(top = 32.dp), contentAlignment = Alignment.Center) {
                 YellowPill("Starta vakten", play = true) { activity.onToggle() }
@@ -93,7 +94,7 @@ private fun RiktningsVal(hem: Boolean, valj: (Boolean) -> Unit) {
 }
 
 @Composable
-private fun RapportInnehall(rader: List<RapportRad>, fore: RuttLager.Koll?, l: Rapporten.Lage) {
+private fun RapportInnehall(rader: List<RapportRad>, kandidat: List<KandidatRad>?, fore: RuttLager.Koll?, l: Rapporten.Lage) {
     val nya = ResansRapport.nyttSedanKollen(rader, fore?.ids)
     val nyaIds = nya.map { it.id }.toSet()
     val ovriga = rader.filter { it.id !in nyaIds }
@@ -130,9 +131,16 @@ private fun RapportInnehall(rader: List<RapportRad>, fore: RuttLager.Koll?, l: R
         Text(it, color = Brand.dim, fontFamily = Typo.sans, fontSize = 14.sp, lineHeight = 21.sp, modifier = Modifier.padding(top = 14.dp, start = 4.dp))
     }
 
-    Column(Modifier.padding(top = 24.dp, start = 4.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        MonoLabel("Prognosen · kommer senare")
-        Text("Prognosen längs vägen visas här tidigast efter domen i mars.", color = Brand.text2, fontFamily = Typo.sans, fontSize = 14.sp, lineHeight = 21.sp)
+    // Halkvakt tror (DECISIONS #739): kandidatens betavarningar i en egen ruta, en rad per väg, utan avstånd och aldrig i Nytt.
+    MonoLabel("Halkvakt tror · beta", modifier = Modifier.padding(top = 24.dp, bottom = 10.dp, start = 4.dp))
+    val tomt = ResansRapport.kandidatTomt(kandidat, l.gammaltVaglag)
+    if (tomt != null || kandidat == null) {
+        Text(tomt ?: ResansRapport.KANDIDAT_AV, color = Brand.text2, fontFamily = Typo.sans, fontSize = 14.sp, lineHeight = 21.sp,
+            modifier = Modifier.padding(start = 4.dp))
+    } else {
+        RowPanel { kandidat.forEachIndexed { i, r -> RapportRadVy(r.rubrik, r.text, divider = i < kandidat.size - 1) } }
+        Text(ResansRapport.KANDIDAT_FOT, color = Brand.dim, fontFamily = Typo.sans, fontSize = 14.sp, lineHeight = 21.sp,
+            modifier = Modifier.padding(top = 14.dp, start = 4.dp))
     }
 }
 
