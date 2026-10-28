@@ -81,7 +81,7 @@ Deno.serve(async (req) => {
     // bara hinken ryms varannan minut. Svarets `ms` är summan som förut.
     const tider: Record<string, number> = {};
     let tDel = Date.now();
-    const { staticDoc, liveDoc, border, notes } = await buildSnapshot(
+    const { staticDoc, liveDoc, border, notes, delar } = await buildSnapshot(
       (text, params) => sql.unsafe(text, (params ?? []) as any[]) as unknown as Promise<Record<string, any>[]>,
       BRIDGES);
     const sStatic = JSON.stringify(staticDoc), sLive = JSON.stringify(liveDoc);
@@ -126,7 +126,7 @@ Deno.serve(async (req) => {
       bridges: liveDoc.bridges.length, smhi: liveDoc.smhi.length,
       cameras: staticDoc.cameras.length, border, notes,
       live_gz_bytes: manifest.files.live.gz_bytes,
-      karta: kartaStats, lanssidor: Object.keys(inline).length, tider, ms: Date.now() - t0 }), { headers: { "Content-Type": "application/json" } });
+      karta: kartaStats, lanssidor: Object.keys(inline).length, tider, bygget_delar: delar, ms: Date.now() - t0 }), { headers: { "Content-Type": "application/json" } });
   } catch (e) {
     return new Response(JSON.stringify({ ok: false, error: String(e) }), { status: 500 });
   }

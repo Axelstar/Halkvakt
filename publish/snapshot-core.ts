@@ -143,8 +143,16 @@ export function bridgesFromGeoJSON(fc: { features: any[] }): Bridge[] {
   }));
 }
 
-export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new Date()) {
+export async function buildSnapshot(qIn: Q, bridgesIn: Bridge[], now: Date = new Date()) {
   const notes: string[] = [];
+  // Tiden per avsnitt (DECISIONS #741 punkt 1): bygget tog 40,9 s 28/10 18:00 utan att det syntes vilka frågor. Varje fråga räknas
+  // på avsnittet den ställs i; det som inte är frågor (JSON, beräkningar) ingår inte. Publiceringen lägger talen i sitt svar.
+  const delar: Record<string, number> = {};
+  let avsnitt = "static";
+  const q: Q = async (text, params) => {
+    const t0 = Date.now();
+    try { return await qIn(text, params); } finally { delar[avsnitt] = (delar[avsnitt] ?? 0) + Date.now() - t0; }
+  };
 
   // ---- static: kameror ----
   const cams = await q(`
@@ -164,6 +172,7 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
   };
 
   // ---- live: väglag ----
+  avsnitt = "vaglag";
   const segs = await q(`
     SELECT segment_id, condition_code, condition_info, road_number,
            ST_AsGeoJSON(ST_SimplifyPreserveTopology(geom, 0.0005))::json AS g
@@ -180,6 +189,7 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
         SELECT 1 FROM unnest(condition_info) i WHERE i ~* '(^|[^a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt)|snö|frost'))`);
 
   // ---- live: radarns regn per segment (kort #81 steg C) ----
+  avsnitt = "radar";
   // EN SKRIVARE: ingen annan sätter `regn`. Senaste raden per segment inom giltighetsfönstret.
   //
   // FRÅNVARO ÄR INTE TORRT, och det är hela finessen. radar_precip skrivs bara när ett segment
@@ -214,6 +224,7 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
   }
 
   // ---- live: regnsegmenten (kort #154 → DECISIONS #187, bedömning v3 N2) ----
+  avsnitt = "regnsegment";
   // Väglagsfrågan ovan släpper bara HALKKLASSADE segment, så radarns `regn` nådde aldrig de segment
   // vattenplaningen sitter på. De läggs INTE i `segments`: motorn och båda portarna gör varje rad
   // där till en slippery_segment-varning (engine/src/snapshot.ts, SnapshotRepo.kt/.swift), så en
@@ -238,6 +249,7 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
   }
 
   // ---- live: kandidatens varningar (kort #343, NIVA2-LIVE steg 6, DECISIONS #562 punkt 3, #576) ----
+  avsnitt = "kandidat";
   // Regeln bor på ETT ställe, kandidat_regel() i databasen — samma funktion som domloggen (kandidat_logga) och skuggmotorns
   // takt läser, så det som publiceras är det som döms. Här står inga tal: publiceringen tar bara utfallet `varnar`. Egen nyckel,
   // aldrig `segments` — varje rad där blir en halkvarning i tre portar (LÄGG TILL, ERSÄTT ALDRIG, som rain_segments). En rad per
@@ -301,6 +313,7 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
   }
 
   // ---- karantänen (kort #234): svenska stationer som nyligen brutit grovt mot #75 ----
+  avsnitt = "karantan";
   // Fail-soft som arkivfrågorna nedan: går historiken inte att läsa publiceras stationerna som förut, och det noteras.
   const karantan = new Set<string>();
   try {
@@ -315,6 +328,7 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
     notes.push(`karantän: weather_observations ej läsbar (${String((e as Error).message).slice(0, 80)}) — ingen station i karantän`);
   }
   // ---- den långsamma vakten (kort #236, DECISIONS #300): stationer med ett färskt dygn i felet, ur sql/030:s tabell ----
+  avsnitt = "langsam";
   // Samma tystnad som karantänen (väderpunkt och broarnas källa), samma fail-soft. Regeln själv står inte här.
   try {
     const l = await q(`SELECT station_id FROM givarfel_dygn WHERE senast > now() - interval '${LANGSAM_FRIST_H} hours'`);
@@ -326,6 +340,7 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
   }
 
   // ---- live: väderpunkter (svenska), med givarvakten ----
+  avsnitt = "vader";
   // Karantänen gäller bara de svenska raderna: gränsstationerna nedan har egna id-rymder som kan krocka.
   const wx = (await q(`
     SELECT station_id, surface_temp_c, rain, snow, precipitation, ST_X(geom) AS lon, ST_Y(geom) AS lat
@@ -333,6 +348,7 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
     WHERE ${WX_SANE} AND (surface_temp_c <= 3 OR snow)`)).filter((r) => !karantan.has(String(r.station_id)));
 
   // ---- #49 gränssnapshoten: grannländernas stationer inom 40 km av svenska vägar ----
+  avsnitt = "grans";
   const border: Record<string, { reach: number; cold: number }> = {};
   for (const land of BORDER_LANDS) {
     try {
@@ -352,6 +368,7 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
   }
 
   // ---- live: skattarens råa indata per station (F1, kort #187, DECISIONS #188) ----
+  avsnitt = "skattaren";
   // Bredvid `fukt`, utan tolkning: `regn_h` = timmar sedan arkivet senast såg regn på stationen,
   // `lutning15/30/60` = ytans fall per fönster ur trendkandidaterna (positivt = faller). Motorn
   // och apparna läser regn_h och lutning30 sedan S3 (DECISIONS #524); lutning15/60 läser bara skuggan.
@@ -385,6 +402,7 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
   }
 
   // ---- #38 broarna: OSM-broar vars närmaste kalla+våta station ligger ≤ 15 km bort ----
+  avsnitt = "broar";
   // Motorn kollar regeln igen (tröskel +3 för bro); här förfiltreras så att inte
   // 3 000 broar skickas till varje telefon i juli. Samma givarvakt som ovan.
   const bridges: { id: string; lon: number; lat: number; road: string | null; yta: number | null; fukt: boolean }[] = [];
@@ -407,6 +425,7 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
   }
 
   // ---- live: avvikelser, vilt, SMHI ----
+  avsnitt = "avvikelser";
   const devs = await q(`
     SELECT deviation_id, message_type, message_type_value, road_number, severity_code, end_time,
            ST_X(COALESCE(geom, ST_Centroid(line_geom))) AS lon,
@@ -440,6 +459,7 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
   // VÄTAN RÄKNAR BARA STATIONEN, med flit: `timmarSedanRadarregn` står kvar som null. Försprångets A2 läser `vata`
   // (TROSKLAR-FORSPRANG §2, §7: "radarn … räknas inte"), och att låta radarn höja vätan vore att ändra en mätning medan den
   // pågår. Det kräver båda signaturerna (§8). Radarn syns i sitt eget fält, där ingen läser den än.
+  avsnitt = "radar_station";
   const radarMmh = new Map<string, number>();
   try {
     for (const r of await q(RADAR_PER_STATION_SQL)) {
@@ -497,7 +517,7 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
     })),
     bridges,
   };
-  return { staticDoc, liveDoc, border, notes };
+  return { staticDoc, liveDoc, border, notes, delar };
 }
 
 /** Djurslaget ur Trafikverkets fritext ("Älg i vägområdet …"), grundform eller null. Samma artlista som
