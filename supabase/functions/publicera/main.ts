@@ -77,11 +77,16 @@ Deno.serve(async (req) => {
       const sha = await publicera(files);
       return new Response(JSON.stringify({ ok: true, land, sha, ...ut, ms: Date.now() - t0 }), { headers: { "Content-Type": "application/json" } });
     }
+    // Tiden per del (DECISIONS #741 punkt 1): bygget av lägesfilen, kartan och GitHub var för sig, så att det syns om en körning med
+    // bara hinken ryms varannan minut. Svarets `ms` är summan som förut.
+    const tider: Record<string, number> = {};
+    let tDel = Date.now();
     const { staticDoc, liveDoc, border, notes } = await buildSnapshot(
       (text, params) => sql.unsafe(text, (params ?? []) as any[]) as unknown as Promise<Record<string, any>[]>,
       BRIDGES);
     const sStatic = JSON.stringify(staticDoc), sLive = JSON.stringify(liveDoc);
     const manifest = await manifestFor(liveDoc.generated_at, { static: sStatic, live: sLive });
+    tider.bygget = Date.now() - tDel;
     const files: Record<string, string> = {
       "data/app/v1/static.json": sStatic,
       "data/app/v1/live.json": sLive,
@@ -92,6 +97,7 @@ Deno.serve(async (req) => {
     let kartaStats: unknown = null;
     const inline: Record<string, string> = {};
     if (karta) {
+      tDel = Date.now();
       const m = await buildMapData(
         (text, params) => sql.unsafe(text, (params ?? []) as any[]) as unknown as Promise<Record<string, any>[]>,
         { trvKey: Deno.env.get("TRAFIKVERKET_API_KEY"), appVader: liveDoc.weather, appKandidat: liveDoc.kandidat });
@@ -109,15 +115,18 @@ Deno.serve(async (req) => {
           if (ny) inline["sitemap.xml"] = ny;
         } catch (e) { notes.push(`sitemap: ej läsbar (${String((e as Error).message).slice(0, 120)}) — länssidorna skrivs ändå`); }
       }
+      tider.kartan = Date.now() - tDel;
     }
+    tDel = Date.now();
     const sha = await publicera(files, inline);
+    tider.github = Date.now() - tDel;
     return new Response(JSON.stringify({ ok: true, sha, generated_at: liveDoc.generated_at,
       segments: liveDoc.segments.length, kandidat: liveDoc.kandidat?.length ?? null, weather: liveDoc.weather.length,
       deviations: liveDoc.deviations.length, wildlife: liveDoc.wildlife.length,
       bridges: liveDoc.bridges.length, smhi: liveDoc.smhi.length,
       cameras: staticDoc.cameras.length, border, notes,
       live_gz_bytes: manifest.files.live.gz_bytes,
-      karta: kartaStats, lanssidor: Object.keys(inline).length, ms: Date.now() - t0 }), { headers: { "Content-Type": "application/json" } });
+      karta: kartaStats, lanssidor: Object.keys(inline).length, tider, ms: Date.now() - t0 }), { headers: { "Content-Type": "application/json" } });
   } catch (e) {
     return new Response(JSON.stringify({ ok: false, error: String(e) }), { status: 500 });
   }
