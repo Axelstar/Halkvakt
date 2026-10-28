@@ -18560,3 +18560,24 @@ första veckan visar att storyn bär.
 (*Halkvakt test nov 2026*, opublicerat) tas bort. Kampanjlänken i App Store Connect byter `APP` när den finns.
 
 **Stomdokument:** inga — marknadsföringen ligger utanför appen, motorn och mätningarna; ingen data lämnar appen.
+
+## #736 (28/10 2026) Ortssidor på halkvakt.se och sökordens titlar, efter Search Console
+**Bakgrund.** Search Console 28/10 (data från 15/10): 481 visningar, 14 klick, 51 sökfrågor. Folk skriver orten och dagen:
+*"halka uppsala"* (16), *"väglag"*, *"halt väglag idag"*, *"läget på vägarna"*, *"trafikläget örebro"*, *"trafikinformation
+gävleborg"*. Alla med 0 klick. 24 av 34 adresser låg som "Upptäckt, inte indexerad".
+
+**Beslut** (Axel 28/10: *"help us set this up so it come as good as possible and we rank high without spending money on it"*,
+och om ortssidorna *"let's do it"*).
+1. Läns- och vägsidornas titlar (PR #1236, sammanslagen 28/10): *Halka i Uppsala idag: väglag och trafikläget just nu*,
+   *Väglag E4 idag: halka och trafikläget just nu*. Länet skrivs utan "län" och genitiv-s (`lsSoknamn`).
+2. 47 ortssidor, `ort/<ort>/`, skrivna av publicera i samma varv som länssidorna. En ort är med när minst två av Trafikverkets
+   vägavsnitt i dess eget län bär ortens namn (uppmätt 28/10: 2–14 per ort). Sidan visar just de avsnitten med Trafikverkets
+   ord, olyckorna på de vägarna i länet och länets läge. Inga koordinater och inget påstående om vägen mellan avsnitten.
+   "Länsgräns Värmland/Örebro" är ett län och räknas inte som orten. Länssidan länkar till sina orter.
+3. Orterna står i `sidAdresser`, så `sitemapMed` för in dem i kartrepots sitemap.
+4. Läns- och ortssidorna länkar till guiden `nar-blir-det-halt.html` i kartrepot.
+
+**Alternativ.** Alla 290 kommuner: många skulle få noll eller ett avsnitt, och tunna sidor drar ner hela sajten hos Google.
+Avstånd från stationer och avsnitt till orten: kräver geometri i sidbyggaren och säger inte mer än avsnittens namn.
+
+**Stomdokument:** inga — sajtens sidor och sökord, inte appen, motorn eller mätningarna; ingen data lämnar appen.

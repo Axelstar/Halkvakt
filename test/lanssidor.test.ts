@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { arHalt, byggLanssidor, sitemapMed, sidAdresser, vagNyckel, LAN, VAGAR, SIDBAS, PENDLING } from "../publish/lanssidor.ts";
+import { arHalt, byggLanssidor, sitemapMed, sidAdresser, vagNyckel, LAN, VAGAR, ORTER, ortSlug, SIDBAS, PENDLING } from "../publish/lanssidor.ts";
 import { buildMapData } from "../publish/map-core.ts";
 import type { Q } from "../publish/snapshot-core.ts";
 
@@ -38,9 +38,10 @@ test("länssidorna: 21 län och en översikt, svaret ur källorna, Trafikverkets
     olyckor: [{ road: "E22", start: "2026-11-20T05:10:00Z", allvar: "Stor påverkan", lan: 12 }],   // olyckornas form: utan mellanslag
     now: NOW,
   });
-  assert.equal(Object.keys(sidor).length, 30, "översikten, 21 län, 6 vägar, widgetens datafil och vägrutans");
+  assert.equal(Object.keys(sidor).length, 30 + ORTER.length, "översikten, 21 län, 6 vägar, orterna, widgetens datafil och vägrutans");
   assert.deepEqual(Object.keys(sidor).filter((p) => p !== "lan/index.html" && !p.startsWith("data/")).sort(),
-    [...LAN.map((l) => `lan/${l.slug}/index.html`), ...VAGAR.map((v) => `vag/${v.slug}/index.html`)].sort());
+    [...LAN.map((l) => `lan/${l.slug}/index.html`), ...VAGAR.map((v) => `vag/${v.slug}/index.html`),
+      ...ORTER.map((o) => `ort/${ortSlug(o.namn)}/index.html`)].sort());
   assert.ok(sidor["lan/uppsala/index.html"].includes("<title>Halka i Uppsala idag:"), "utan län, som i sökrutan");
   assert.ok(sidor["lan/stockholm/index.html"].includes("<title>Halka i Stockholm idag:"), "utan genitiv-s");
   const skane = sidor["lan/skane/index.html"];
@@ -110,7 +111,7 @@ test("länssidorna: sitemapen får de adresser som saknas, en gång, och Axels r
   // Utan namnrymdens adress: beroendekartan läser varje värd i koden, och sitemapMed bryr sig inte om den.
   const axel = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset>\n  <url><loc>${SIDBAS}/</loc></url>\n</urlset>\n`;
   const ny = sitemapMed(axel, sidAdresser())!;
-  assert.equal((ny.match(/<url>/g) ?? []).length, 29, "Axels 1 + översikten + 21 län + 6 vägar");
+  assert.equal((ny.match(/<url>/g) ?? []).length, 29 + ORTER.length, "Axels 1 + översikten + 21 län + 6 vägar + orterna");
   assert.ok(ny.startsWith(axel.slice(0, axel.lastIndexOf("</urlset>"))) && ny.endsWith("</urlset>\n"), "Axels del orörd, slutet kvar");
   assert.equal(sitemapMed(ny, sidAdresser()), null, "andra varvet: inget att skriva");
   assert.equal(sitemapMed("<html>inte en sitemap</html>", sidAdresser()), null, "en fil utan </urlset> rörs inte");
@@ -208,4 +209,34 @@ test("läns- och vägsidorna bär sajtens ram: samma meny, spårkod per knapp, a
   assert.ok(sidor["lan/skane/index.html"].includes("?ct=lan-halt"), "halt i länet ⇒ appraden under svaret");
   assert.ok(!sidor["lan/uppsala/index.html"].includes("?ct=lan-halt"), "ingen halka ⇒ ingen apprad");
   assert.ok(sidor["lan/index.html"].includes('<h2 id="vagar">Stora vägar</h2>'), "sidfotens Stora vägar har ett mål");
+});
+
+test("ortssidorna (28/10): ortens egna avsnitt i dess län, ett län i Länsgräns räknas inte, titeln som sökrutan", () => {
+  assert.equal(ortSlug("Örnsköldsvik"), "ornskoldsvik");
+  assert.equal(ortSlug("Älvdalen"), "alvdalen");
+  assert.equal(new Set(ORTER.map((o) => ortSlug(o.namn))).size, ORTER.length, "unika adresser");
+  for (const o of ORTER) assert.ok(LAN.some((l) => l.kod === o.lan), `${o.namn}: länet finns`);
+  const sidor = byggLanssidor({
+    vaglag: [
+      { code: 3, text: "Mycket besvärligt", info: ["Is"], road: "E 6", plats: "E 6 Malmö - Lund", lan: 12 },
+      { code: 1, text: "Normalt", info: ["Torrt"], road: "E 65", plats: "E 65 Svedala - Malmö", lan: 12 },
+      { code: 1, text: "Normalt", info: ["Torrt"], road: "Väg 108", plats: "Väg 108 Malmöhus - Staffanstorp", lan: 12 },
+      { code: 3, text: "Mycket besvärligt", info: ["Is"], road: "E 18", plats: "E 18 Länsgräns Värmland/Örebro - Lekhyttan", lan: 18 },
+      { code: 1, text: "Normalt", info: ["Torrt"], road: "E 20", plats: "E 20 Örebro - Laxå", lan: 18 },
+    ],
+    stationer: [{ name: "Lund", yta: -1.5, fukt: true, lan: 12, vag: "E 6" }],
+    olyckor: [{ road: "E6", start: "2026-11-20T05:10:00Z", allvar: null, lan: 12 }, { road: "E4", start: null, allvar: null, lan: 12 }],
+    now: NOW,
+  });
+  const malmo = sidor["ort/malmo/index.html"];
+  assert.ok(malmo.includes("<title>Halka i Malmö idag: väglag och trafikläget just nu | Halkvakt</title>"));
+  assert.ok(malmo.includes(`<link rel="canonical" href="${SIDBAS}/ort/malmo/">`));
+  assert.ok(malmo.includes("halka eller vinterväglag på 1 av 2 vägavsnitt till och från Malmö"), "Malmöhus är inte Malmö");
+  assert.ok(malmo.includes("kallast −1,5 °C vid Lund"), "länets kallaste station");
+  assert.ok(malmo.includes("E6, sedan"), "olyckan på en väg genom orten");
+  assert.ok(!malmo.includes("<li>E4</li>"), "olyckan på en annan väg hör inte hit");
+  assert.ok(malmo.includes('href="../lund/"'), "grannorten i länet");
+  assert.ok(sidor["ort/orebro/index.html"].includes("ingen halka på 1 vägavsnitt till och från Örebro"), "Länsgräns Värmland/Örebro är länet");
+  assert.ok(sidor["lan/skane/index.html"].includes('href="../../ort/malmo/"'), "länssidan länkar till sina orter");
+  assert.ok(sidAdresser().includes(`${SIDBAS}/ort/malmo/`), "orterna i sitemapen");
 });
