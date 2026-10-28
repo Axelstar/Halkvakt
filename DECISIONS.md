@@ -18615,3 +18615,29 @@ Blir den grön släpper mätvakten (#1210) trv-bevakning.
   inte prövat. Valt bort tills vidare.
 
 **Stomdokument:** inga, källvaktens källor står i beroendekartan och i skriptet, inte i något av de åtta stomdokumenten.
+
+## #738 (28/10 2026) Meta-annonserna blir appinstallationer: kampanjen *Halkvakt · installationer*, rakt till App Store
+
+**Axels ord 28/10:** *"The goal is to get downloads off the app"*.
+
+**Bakgrund.** Nattens tre körningar av `meta-annonser` (27/10, 40595232194, 40596105397, 40597373548) föll på nyckeln, på
+visningstiderna och till sist på att appen Halkvakt Ads var i utvecklingsläge. Bakom det låg ett fel i #735: en trafikkampanj
+(`OUTCOME_TRAFFIC`) med en länk till App Store, som Meta avvisar (*"App Url is only supported by App Installs objective"*,
+#1487810, sett i Ads Manager 28/10). Axel lade samma morgon till iOS-plattformen i Halkvakt Ads (bundle `se.halkvakt.app`,
+App Store-id 6806939784, automatisk händelseloggning av) och ska slå appen till Live.
+
+**Beslut.**
+1. `annonsstyrning.mjs` skapar kampanjen *Halkvakt · installationer* med målet `OUTCOME_APP_PROMOTION`. Ett mål går inte att
+   byta på en befintlig kampanj, så namnet är nytt; *Halkvakt · län* (trafik, pausad, utan annonser) lämnas och tas bort i Ads Manager.
+2. Annonsuppsättningarna optimerar på `APP_INSTALLS` med `promoted_object` = Halkvakt Ads (28619019301133859) och App Store-länken.
+   Allt annat i #735 står: länen, iPhone, 18+, visningstiderna, budgeten, reserven och regeln för ett län.
+3. Knappen blir *Installera* (`INSTALL_MOBILE_APP`) och går rakt till App Store. Bilden och texten är oförändrade.
+
+**Alternativ.** Behålla trafik och länka till halkvakt.se: går igenom Metas kontroll, men lägger ett steg mellan annonsen och
+nedladdningen, och målet är nedladdningar. Den räknas inte i Metas installationssiffror heller.
+
+**Följd.** Metas rapport om installationer på iPhone är gles och sen (Apples regler); nedladdningarna läses per dag i App Store
+Connect. Pulsjobben `puls-meta-*` finns inte i databasen 28/10 (läst i `cron.job`): det är därför inga morgonkörningar startade.
+Bengt kör `pulsklocka` skarpt (följden i #735). Ingen data lämnar appen; appen får ingen Meta-kod.
+
+**Stomdokument:** inga — marknadsföringen ligger utanför appen, motorn och mätningarna; ingen data lämnar appen.
