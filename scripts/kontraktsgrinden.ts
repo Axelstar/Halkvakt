@@ -580,6 +580,21 @@ export const KONTRAKT: Kontrakt[] = [
     filer: RAPPORTEN,
     golv: 5,
   },
+  // Halkvakt tror (DECISIONS #739, kort #363): rutan räknas i rapport-app.ts (inte i serverns buntar), Swift och Kotlin.
+  {
+    namn: "Halkvakt tror — avståndet från resan för kandidatens punkter, m",
+    varfor: "Med olika avstånd visar iPhone och Android olika sträckor i rutan för samma resa (DECISIONS #739 punkt 4).",
+    former: [/(?:KANDIDAT_MARGINAL_M|kandidatMarginalM)\s*=\s*(\d+)(?:\.0)?(?![\d.])/],
+    filer: /publish\/rapport-app\.ts$|HalkvaktEngine\/Rapport\.swift$|engine\/Rapport\.kt$/,
+    golv: 3,
+  },
+  {
+    namn: "Halkvakt tror — punkter inom avståndet som krävs för en sträcka",
+    varfor: "Samma som ovan: kravet håller tvärvägarna borta, och med olika krav gör det det bara på den ena telefonen.",
+    former: [/(?:KANDIDAT_MINST_PUNKTER|kandidatMinstPunkter)\s*=\s*(\d+)(?![\d.])/],
+    filer: /publish\/rapport-app\.ts$|HalkvaktEngine\/Rapport\.swift$|engine\/Rapport\.kt$/,
+    golv: 3,
+  },
   {
     // DECISIONS #637: vägen hem känns igen som samma resa, så frågan Spara resan? kommer inte en gång till.
     namn: "Igenkänningen — meter mellan två resor som räknas som samma väg",
