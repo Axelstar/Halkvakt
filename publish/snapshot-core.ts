@@ -147,11 +147,13 @@ export async function buildSnapshot(qIn: Q, bridgesIn: Bridge[], now: Date = new
   const notes: string[] = [];
   // Tiden per avsnitt (DECISIONS #741 punkt 1): bygget tog 40,9 s 28/10 18:00 utan att det syntes vilka frågor. Varje fråga räknas
   // på avsnittet den ställs i; det som inte är frågor (JSON, beräkningar) ingår inte. Publiceringen lägger talen i sitt svar.
+  // performance.now() och inte väggklockan, som kuvösens klocka (test/kuvos.test.ts) förbjuder här; en tidmätning påverkar inte
+  // lägesfilen.
   const delar: Record<string, number> = {};
   let avsnitt = "static";
   const q: Q = async (text, params) => {
-    const t0 = Date.now();
-    try { return await qIn(text, params); } finally { delar[avsnitt] = (delar[avsnitt] ?? 0) + Date.now() - t0; }
+    const t0 = performance.now();
+    try { return await qIn(text, params); } finally { delar[avsnitt] = (delar[avsnitt] ?? 0) + Math.round(performance.now() - t0); }
   };
 
   // ---- static: kameror ----
