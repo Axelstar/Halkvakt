@@ -18627,3 +18627,61 @@ Bengt 28/10: *"vi parkerar hela den här punkten till efter våren 2027"*.
 4. När frågan tas upp igen är första steget täckningskollen: varnade motorn redan under raderna med kod 3?
 
 **Stomdokument:** inga, beslutet parkerar ett spår och ändrar inget i driften eller i tröskeldokumenten.
+
+## #741 (28/10 2026) Kedjans takt: hela uppsnabbningen för motorn och kandidaten, publiceringen i hinken varannan minut och appen synkad med en mätning i telefonen (kort #365)
+
+**Bengts ord 28/10:** *"jag menar att vi börjar och genomför hela uppsnabbningspaketet av motorn och kandidaten inklusive paketet
+som innebär att vi låter mobilen mäta när det kommer signalen"*, och på planen i chatten: *"Ja, börja med fas 1: läs publiceringens
+körtid med DB-knappen och skriv beslutet för hela paketet enligt planen, med mätningen av färskhet och batteri i telefonen."* Numret
+är #741 eftersom #739 och #740 står i de öppna PR #1245 och #1247.
+
+**Underlaget.** `docs/KEDJANS-TAKT-2026-10-28.md` (PR #1246): motorn och kandidaten går ut på samma väg, lägesfilen publiceras var
+tionde minut och appen hämtar den var 30:e under resan. Från en förändring på vägen till förarens telefon är det i dag omkring 31
+minuter i snitt och 51 i värsta fall för stationerna, och omkring 21 och 41 för väglag, olyckor och kandidaten. **Publiceringens körtid,
+mätt 28/10** (DB-knappen *las* 40730903539, pg_net:s svar 11:00–16:50 UTC, 36 körningar, inga fel): median **44,0 s** och högst 45,0 s
+utan kartan, median 52,6 s och högst 53,6 s med kartan (var 30:e minut). Svaret säger inte hur tiden fördelar sig på bygget, GitHub och
+kartan. Samma läsning visar att kandidatens timme är färsk: enda noten är *"den nya kandidaten talar"*, ingen *"regeln tiger"*.
+
+**Beslut.** Hela paketet, i tre faser. Steg 0 i KEDJANS-TAKT (flytta publiceringens minut) **utgår**: med publicering varannan minut
+kommer stationernas nya mätning med inom två minuter ändå.
+
+*Fas 1, servern* (ingen appändring):
+1. **Tiden delas upp.** `publicera` skriver i sitt svar hur många millisekunder bygget av lägesfilen, GitHub, kartan och hinken tog.
+2. **Lägesfilen i hinken.** `publicera` skriver appens tre filer (`static.json`, `live.json`, `manifest.json`) till en publik hink i
+   Supabase Storage vid varje körning, som `favoriter` redan gör (#617): filerna först och manifestet sist, så att manifestet aldrig
+   pekar på en fil som inte finns. GitHub och Pages fortsätter som i dag, så kartan och de appar som redan är installerade påverkas inte.
+   Beviset är filerna i hinken med samma sha256 som manifestet.
+3. **Varannan minut.** pg_cron kör `publicera` varannan minut. Hinken skrivs varje körning, GitHub bara var tionde minut (och kartan som
+   förut var 30:e), så att Pages inte får fler byggen och kartrepot inte växer fortare. **Villkor före bytet:** en körning med bara
+   hinken tar under 60 s i median och under 90 s som mest, mätt med punkt 1. Annars väntar bytet och tiden utreds först.
+
+*Fas 2, appen* (nytt bygge för iPhone och Android):
+4. **Hämtningen.** Appen hämtar från hinken och använder Pages som reserv när hinken inte svarar; kontrollen av sha256 är densamma.
+   Under resan räknar appen ut när nästa fil väntas (`generated_at` plus två minuter, med en halv minuts marginal) och kollar strax
+   efter; har filen inte bytts kollar den en gång till efter en halv minut, annars väntar den till nästa. Omkring 30 kollar i timmen
+   i stället för två. Utanför resan som i dag.
+5. **Mätningen i telefonen, bara lokalt** (produktinvarianten: ingenting lämnar telefonen av sig självt). Per resa sparar appen antal
+   kollar, antal nya filer, hur gammal varje ny fil var när den kom (nu minus `generated_at`, median och största), det äldsta
+   stationsvärdet i filen, och batterinivån vid start och slut med resans längd (%/h). De senaste resorna visas under *Betatest* i
+   Inställningar. Android läser batteriet i hela procent, iPhone i steg om 5 %, så på iPhone krävs en längre resa för en tydlig siffra.
+   Inga koordinater sparas i mätningen.
+6. **Batteriprovet före inskicket.** I bil, skärmen av, som 27/9 (#382): under 8 %/h. Faller provet prövas en glesare takt eller
+   en koll per publicering bara när telefonen laddar, innan något skickas in. Inskicket är Axels.
+
+*Fas 3:* mätningen läses efter minst fem resor på minst en halvtimme. Därefter avgörs om takten står kvar.
+
+**Väntat utfall** (räknat ur KEDJANS-TAKT, inte mätt): stationerna från cirka 31 till cirka 8 minuter i snitt och från 51 till 16 i
+värsta fall; väglag, olyckor och kandidaten från cirka 21 till cirka 2 i snitt och från 41 till 4 i värsta fall.
+
+**Kostnad.** Databasen: några MB med fast tak (KEDJANS-TAKT §5), men regelns och urvalets frågor fem gånger så ofta, därav villkoret i
+punkt 3. Hinkens trafik: omkring 150 kB i timmen per förare under resan, inom Pro-planen (#644; kvoten inte läst i panelen). Batteriet:
+omkring 0,25–0,75 %/h med 30 kollar i timmen när radion annars sover (uppskattat, inte mätt), därför punkt 5 och 6.
+
+**Inte avgjort här.** Stationernas tre timmar (`WX_SANE`, KEDJANS-TAKT §6) är ett eget beslut och står kvar i fristen `kedjans-takt-1-11`.
+Rösten, motorns trösklar och kandidatens regel ändras inte.
+
+**Alternativ.** Appen varje minut: valt bort, nio av tio kollar hittar inget nytt när publiceringen går var tionde minut och fyra av
+fem när den går varannan. Bara steg 1 utan servern: valt bort av Bengt (*"hela uppsnabbningspaketet"*). En knuff från servern i stället
+för att appen frågar: inte föreslagen nu; mer att bygga, och iPhone begränsar tysta knuffar.
+
+**Stomdokument:** SYS lägesfilen och publiceringen, APP hämtningen och Betatest, BED §4.2.
