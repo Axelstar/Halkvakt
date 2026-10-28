@@ -136,6 +136,10 @@ Gör uppsnabbningen för båda i en ordning:
 
 ## 9. Det som hör ihop med detta men avgörs för sig
 
-- Rapporten i Favoriter läser inte nyckeln `kandidat` (`publish/rapport-core.ts` tar sträckorna, broarna, stationerna och SMHI ur
-  lägesfilen); rutan *Prognosen · kommer senare* i apparna är från 2/10, före #556. Ett eget beslut av Bengt och Axel.
+- Rapporten i Favoriter räknas i telefonen (`Rapport.swift`, `Rapport.kt`) ur samma `live.json` som rösten, plus rapportfilen
+  från funktionen `favoriter` för Trafikverkets övriga slag (vägarbeten, köer, färjor och liknande); funktionen känner inte till de
+  sparade resorna. På main 28/10 läser rapporten inte nyckeln `kandidat`. PR #1245 (beslut #739, inte sammanslagen när detta
+  skrivs) lägger till den. Därefter snabbar uppsnabbningen ovan upp också rapportens BETA-ruta; rapportfilens egen takt på tio
+  minuter gäller bara de övriga slagen. *Rättat 28/10 efter påpekande från sessionen Prognoser i favoriter: den första versionen
+  sade att rapporten byggs i `publish/rapport-core.ts` på servern.*
 - Underkylt regn är parkerat till efter våren 2027 (DECISIONS #738).
