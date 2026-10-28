@@ -18685,3 +18685,15 @@ fem när den går varannan. Bara steg 1 utan servern: valt bort av Bengt (*"hela
 för att appen frågar: inte föreslagen nu; mer att bygga, och iPhone begränsar tysta knuffar.
 
 **Stomdokument:** SYS lägesfilen och publiceringen, APP hämtningen och Betatest, BED §4.2.
+
+**Tillägg 28/10: Trafikverkets leveranstid mäts i fas 1** (Bengt: *"Ja, lägg till mätningen av Trafikverkets leveranstid i fas 1 och
+skriv in den i beslutet."*). Efter paketet är ungefär 3 av stationernas 8 minuter i snitt våra; resten är stationernas mättakt (högst
+tio minuter) och Trafikverkets leverans, som inte är mätt. Den avgör hur mycket en händelsestyrd kedja (en öppen kanal till telefonerna
+under resan) kan ge, och om den ska föreslås.
+- **Punkt 1b.** `ingest-live` räknar för varje körning hur gamla de nya väderobservationerna är när de kommer in (hämtningen minus
+  `Observation.Sample`: median, 95:e percentilen och största) och Trafikverkets egen del (`ModifiedTime` minus mättiden) när fältet
+  finns, och lägger talen i sitt svar under `leverans` (`supabase/functions/ingest-live/leverans.ts`, prov i `test/leverans.test.ts`).
+  pg_net sparar svaren i sex timmar; de läses med DB-knappen. Inget nytt lagras i databasen. Livemotorn går varje minut, så åldern är
+  Trafikverkets leverans plus högst en minuts väntan hos oss.
+- **Läsningen:** en gång på dagen och en gång på natten efter deployen, var och en över pg_net:s sex timmar. Talen skrivs in här och i
+  KEDJANS-TAKT §2 och §8, där leveranstiden står som inte mätt.
