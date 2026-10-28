@@ -18793,3 +18793,30 @@ under resan) kan ge, och om den ska föreslås.
   Trafikverkets leverans plus högst en minuts väntan hos oss.
 - **Läsningen:** en gång på dagen och en gång på natten efter deployen, var och en över pg_net:s sex timmar. Talen skrivs in här och i
   KEDJANS-TAKT §2 och §8, där leveranstiden står som inte mätt.
+
+## #742 (28/10 2026) Gränsfrågan i publiceringen använder vägindexet: bygget från 39,9 s till omkring 2 s, samma stationer (kort #365)
+
+**Beslut** (Bengt 28/10: *"Ja, skriv om"*). Gränssnapshoten (#49) väljer de finska och norska stationerna inom 40 km från en svensk väg.
+Frågan slog ihop alla vägsträckor i `road_conditions` till en geometri med `ST_Collect` och mätte avståndet geografiskt från varje
+grannstation, så vägindexet (`road_conditions_geom_idx`) användes inte. Nu sållar en låda runt stationen (`r.geom && ST_Expand(f.geom,
+BORDER_DEG)`) vägarna på indexet först, och samma `ST_DWithin` på 40 km avgör som förut. `BORDER_DEG` räknas ur `BORDER_M` i
+`publish/snapshot-core.ts`: en longitudgrad vid 72° N, norr om varje punkt inom 40 km från en svensk väg, ger 1,16°.
+
+**Mätt.** Publiceringen 22:20 UTC, den första med `bygget_delar` (#741 punkt 1, DB-knappen 40779359496): bygget 39,9 s, varav gränsen
+37,9 s (95 %); GitHub 3,5 s; summa 43,4 s. Jämförelsen i en läsning utan skrivning (40779907589): 818 vägsträckor, 1 008 grannstationer
+(fi 530, no 478), samma 66 inom 40 km i båda frågorna (fi 21, no 45; 0 bara i den ena, 0 bara i den andra), 0,33 s mot 44,5 s.
+
+**Följd.** Publiceringen väntas gå från omkring 43 s till omkring 6 s, och från 51–52 s till omkring 14 s med kartan (räknat ur delarna,
+inte mätt). Varje lägesfil blir omkring 38 s färskare, och databasen slipper 38 s tung räkning var tionde minut, vilket väger mer när
+publiceringen går varannan minut (#741 punkt 3). Lägesfilen ändras inte.
+
+**Prov.** `test/snapshot-core.test.ts` (parametrarna) och `test/integration.test.ts` mot PostGIS: fyra grannstationer 1–3,4 km från
+gränsen på 40 km, två vid Haparanda och två vid Riksgränsen, där lådan behöver minst 0,95°; den nya frågan väljer de två inom och räknar
+lika många som `ST_Collect`-frågan i samma databas. **Verify:** efter deployen visar nästa publiceringssvar `grans` under en sekund i
+`bygget_delar` och samma `border.reach` som före (fi och no).
+
+**Alternativ.** En förberäknad lista över gränsstationerna, uppdaterad varje natt: valt bort, en tabell och ett cron-jobb till och en
+lista som kan vara ett dygn gammal, när frågan med index ger samma svar på en tredjedels sekund. Ett geografiskt index på vägarna: valt
+bort, en migration för samma vinst.
+
+**Stomdokument:** SYS lägesfilen och publiceringen, BED §4.2.
