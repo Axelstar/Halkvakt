@@ -18646,6 +18646,13 @@ den öppna PR #1245.
    som förut. Frostläsningarna (steg 0, T-A, trendarkivet, tillståndets steg 2) får sju dygn på sig: `GALLRING_DYGN = 7` i
    `frosttryck.ts`, `grind-t-a.ts` och `trendarkivet.ts`, och standardvärdet 7 i deras tre flöden. Kontraktsgrinden vaktar talet i
    `sql/072` i stället för `sql/044`, som blir historik. Uppskattad kostnad cirka 75 MB en gång.
+   **Samma tal gäller grannländerna och pg_crons logg** (`gallra_arkiv` i sql/031): Finlands varma rader (yta över +3 °C eller
+   saknad; de kalla sparas 60 dygn som förut), Norges och Danmarks rader och `cron.job_run_details` sparas sju dygn i stället för
+   tre. Mätt 28/10 med DB-knappen *las* (40728016868): Finland 24,8 MB och 87 425 rader, varav 19 373 varma de senaste tre dygnen;
+   Norge 7,8 MB och 26 443 rader; Danmark 0,8 MB och 1 268 rader; körloggen 6,5 MB och 8 904 rader sedan 25/10 03:15. Fyra dygn
+   till kostar cirka 7 MB för Finland, 10 för Norge, 1 för Danmark och 7 för körloggen, alltså cirka 26 MB. *Tillagt 28/10 på
+   Bengts ord ("rätta beslut #740 … så att det säger att gallra_arkiv(7) också gäller grannländerna och pg_crons logg, med
+   kostnaden"); utkastet nämnde bara de svenska raderna.*
 2. **Trendtabellerna och radarn i fjorton dygn** (#618 c tillbaka): `halkvakt-arkivradering-tabeller` kör
    `arkiv2_radera_exporterat(350, 14)`. Steg 0 läser radarn fjorton dygn bakåt. Cirka 28 MB.
 3. **Kandidatens loggar i tre dygn** (#618 b tillbaka, som #573): `arkiv2_golv` ger 3 för `kandidat_skugga` och `kandidat_station`, så
@@ -18656,8 +18663,9 @@ sedan 12/10 (kort #323), och 30 dygn hade kostat cirka 190 MB för lite. Frosttr
 att tryckningarna kommer tätare än gallringen, och med sju dygn tål en missad tryckning två missar i rad. De fyra tabeller som aldrig
 raderas (#618 ii), exportens ålder per tabell och #580:s autovacuum.
 
-**Följden.** Fönstren fylls framåt; det som redan har gallrats eller raderats kommer inte tillbaka. Databasen väntas landa omkring
-620 MB när de tre fönstren är fulla, sedan som förut cirka 1,2 MB per dygn. Hinken bär fortfarande bara halvtimmesvärdena för väder.
+**Följden.** Fönstren fylls framåt; det som redan har gallrats eller raderats kommer inte tillbaka. Sammanlagt cirka 135 MB en gång
+(75 + 26 + 28 + 5), så databasen väntas landa omkring 650 MB av 8 GB när fönstren är fulla, sedan som förut cirka 1,2 MB per dygn.
+Hinken bär fortfarande bara halvtimmesvärdena för väder. KEDJANS-TAKT §5 räknar pg_crons logg på tre dygn; den blir sju.
 
 **Kvar efter sammanslagningen** (på Bengts ord): `sql/072` med DB-knappen *migrera* och jobben lästa i `cron.job`; vakthunden deployad
 (`GALLRING_DYGN` styr frosttryckets fönster och frostärendets rubrik); nattjobben 03:15 och 03:50 lästa morgonen efter.
