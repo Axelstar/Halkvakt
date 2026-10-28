@@ -1061,7 +1061,7 @@ mätningar — R1–R16 nedan är strukna och står kvar bara som historik.**
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
 ## Öppna kort
 
-Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 18 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
+Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 19 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
 
 **§1 NU — före första frosten**
 
@@ -1089,5 +1089,9 @@ Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 18 kort
 - #276 OLJA PÅ VÄGEN — HALKA SOM RÖSTEN INTE SÄGER — Claude, låst
 - #153 ALLVAR SOM FÖRSPRÅNG + ETT SMALARE UNDANTAG — beslut 1 omformulerat 16/9 och väntar, beslut 2 öppet (Bengts) — Claude, låst
 - #316 UBUNTU-LATEST BLIR UBUNTU 26 DEN 19/10 — FLÖDENA PRÖVAS FÖRE (UPPTÄCKT 9/10 — Claude, GitHubs notis i … — pågår
+
+**§5 Integrationsläget — mätt mot kartan (24/9, Bengts fråga "hur långt i integrationen har vi kommit")**
+
+- #364 🗄️ #364 TRE GALLRINGAR TILLBAKA EFTER SUPABASE PRO (BESLUTAT 28/10 — Claude, DECISIONS #740, Bengt: "Ta … — Claude
 
 <!-- /ÖPPNA KORT -->

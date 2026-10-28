@@ -18627,3 +18627,42 @@ Bengt 28/10: *"vi parkerar hela den här punkten till efter våren 2027"*.
 4. När frågan tas upp igen är första steget täckningskollen: varnade motorn redan under raderna med kod 3?
 
 **Stomdokument:** inga, beslutet parkerar ett spår och ändrar inget i driften eller i tröskeldokumenten.
+
+## #740 (28/10 2026) Tre gallringar tillbaka efter Supabase Pro: full upplösning i sju dygn, trendtabellerna och radarn i fjorton, kandidatens loggar i tre (kort #364)
+
+**Bengts ord 28/10:** *"Ta tillbaka de tre billiga: full upplösning i 7 dygn, trendtabellerna och radarn 14 dygn och kandidatens
+loggar 3 dygn. Golvet för vädret står kvar på 14. Skriv beslutet och migrationen som en PR."* Numret är #740 eftersom #739 står i
+den öppna PR #1245.
+
+**Underlaget** (DB-knappen *las* 28/10 15:48 UTC, körningarna 40719575626 och 40719923034):
+- Databasen 513 MB av 8 GB som Supabase räknar kvoten (huvuddatabasen 498,7 MB), mot 504 MB 20/10 22:07 (#652): cirka 1,2 MB per
+  dygn. `weather_observations` 247,5 MB och 807 167 rader, cirka 307 byte per rad.
+- Hinken 3 473 MB av 100 GB: `arkiv` 3 362 MB (542 filer), `facit` 110 MB (5 453 filer). Rutinen fyller cirka 5 MB per dygn
+  (exporten 1,5–2, kamerabilderna 2,5–4); därtill engångsladdningarna 22/10, 23/10 och 26/10 på 950–1 033 MB vardera.
+- Gallringarna gjordes för gratisnivåns 500 MB (#511 10/10, #618 17/10). Med Pro (#644) är taket 8 GB.
+
+**Beslut.** `sql/072_gallringen_tillbaka.sql`:
+1. **Full upplösning i sju dygn** (#511 punkt 1 tillbaka). Nattjobbet `halkvakt-gallring` kör `gallra_arkiv(7)`. Brotten mot #75 sparas
+   som förut. Frostläsningarna (steg 0, T-A, trendarkivet, tillståndets steg 2) får sju dygn på sig: `GALLRING_DYGN = 7` i
+   `frosttryck.ts`, `grind-t-a.ts` och `trendarkivet.ts`, och standardvärdet 7 i deras tre flöden. Kontraktsgrinden vaktar talet i
+   `sql/072` i stället för `sql/044`, som blir historik. Uppskattad kostnad cirka 75 MB en gång.
+2. **Trendtabellerna och radarn i fjorton dygn** (#618 c tillbaka): `halkvakt-arkivradering-tabeller` kör
+   `arkiv2_radera_exporterat(350, 14)`. Steg 0 läser radarn fjorton dygn bakåt. Cirka 28 MB.
+3. **Kandidatens loggar i tre dygn** (#618 b tillbaka, som #573): `arkiv2_golv` ger 3 för `kandidat_skugga` och `kandidat_station`, så
+   att varför kandidaten tiger går att läsa några dygn bakåt i databasen (28/10 gick det bara till i går eftermiddag). Cirka 5 MB.
+
+**Står kvar.** Väderobservationernas raderingsgolv (14 dygn, `halkvakt-arkivradering`): grindarna läser dygnen äldre än 14 ur hinken
+sedan 12/10 (kort #323), och 30 dygn hade kostat cirka 190 MB för lite. Frosttryckets intervall (`TRYCK_INTERVALL_D = 2`): provet kräver
+att tryckningarna kommer tätare än gallringen, och med sju dygn tål en missad tryckning två missar i rad. De fyra tabeller som aldrig
+raderas (#618 ii), exportens ålder per tabell och #580:s autovacuum.
+
+**Följden.** Fönstren fylls framåt; det som redan har gallrats eller raderats kommer inte tillbaka. Databasen väntas landa omkring
+620 MB när de tre fönstren är fulla, sedan som förut cirka 1,2 MB per dygn. Hinken bär fortfarande bara halvtimmesvärdena för väder.
+
+**Kvar efter sammanslagningen** (på Bengts ord): `sql/072` med DB-knappen *migrera* och jobben lästa i `cron.job`; vakthunden deployad
+(`GALLRING_DYGN` styr frosttryckets fönster och frostärendets rubrik); nattjobben 03:15 och 03:50 lästa morgonen efter.
+
+**Alternativ.** Alla fyra (med golvet 30 dygn): valt bort av Bengt. Inga: valt bort. Frosttryck var sjätte dag i stället för vartannat:
+inte föreslaget, eftersom en enda missad tryckning då hade kostat en frostnatt.
+
+**Stomdokument:** SYS databasen och arkivet — förvaringen efter Pro, MAT steg 0 och T-A läser sju dygn, BED §5.
