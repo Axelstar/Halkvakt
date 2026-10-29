@@ -22,7 +22,14 @@ const env = (n) => (process.env[n] ?? "").trim();
 const CLIENT_ID = env("APPLE_ADS_CLIENT_ID");
 const KEY_ID = env("APPLE_ADS_KEY_ID");
 const ORG_ID = env("APPLE_ADS_ORG_ID");
-const NYCKEL = env("APPLE_ADS_PRIVATE_KEY");
+// The key is pasted by hand into GitHub, which can flatten its newlines; rebuild the PEM from the base64 body.
+export function pem(text) {
+  const kropp = text.replace(/-----(BEGIN|END)[^-]*-----/g, "").replace(/[^A-Za-z0-9+/=]/g, "");
+  const typ = /BEGIN PRIVATE KEY/.test(text) ? "PRIVATE KEY" : "EC PRIVATE KEY";
+  return kropp ? `-----BEGIN ${typ}-----\n${kropp.match(/.{1,64}/g).join("\n")}\n-----END ${typ}-----\n` : "";
+}
+const RA = env("APPLE_ADS_PRIVATE_KEY");
+const NYCKEL = pem(RA);
 
 const b64 = (b) => Buffer.from(b).toString("base64url");
 
@@ -89,6 +96,12 @@ async function main() {
   if (!NYCKEL || !CLIENT_ID || !KEY_ID || !ORG_ID) {
     console.log("APPLE_ADS_* saknas: torrkörning, inget hämtat.");
     return;
+  }
+  try { createPrivateKey(NYCKEL); } catch {
+    // Shape only, never the key: tells whether the secret holds a PEM at all.
+    console.error(`APPLE_ADS_PRIVATE_KEY går inte att läsa: BEGIN-rad ${/-----BEGIN/.test(RA) ? "finns" : "saknas"}, ` +
+      `${RA.length} tecken, ${NYCKEL.length} efter städning (väntat ungefär 230).`);
+    process.exit(1);
   }
   const at = await token();
   const slut = new Date();
