@@ -29,9 +29,10 @@ test("olasbar och tystade läser notens form", () => {
 test(`datavakter: en enstaka oläsbar publicering larmar inte, ${I_RAD} i rad gör det`, () => {
   const en = datavakter([[KARANTAN_FEL], [KARANTAN], [KARANTAN]]);
   assert.deepEqual([en.olasbara, en.ihallande], [["karantän"], []], "en miss är fail-soft");
-  const tre = datavakter([[KARANTAN_FEL, RADAR_FEL], [KARANTAN_FEL], [KARANTAN_FEL, LANGSAM]]);
-  assert.deepEqual(tre.ihallande, ["karantän"], "karantänen tre i rad larmar; radarn bara i den nyaste");
-  assert.deepEqual(datavakter([[KARANTAN_FEL], [KARANTAN_FEL]]).ihallande, [], "färre publiceringar än I_RAD larmar aldrig");
+  // I_RAD publiceringar, nyast först: radarn oläsbar bara i den nyaste, karantänen i alla (#741 punkt 3: 15 = en halvtimme).
+  const iRad = Array.from({ length: I_RAD }, (_, i) => (i === 0 ? [KARANTAN_FEL, RADAR_FEL] : i === I_RAD - 1 ? [KARANTAN_FEL, LANGSAM] : [KARANTAN_FEL]));
+  assert.deepEqual(datavakter(iRad).ihallande, ["karantän"], `karantänen ${I_RAD} i rad larmar; radarn bara i den nyaste`);
+  assert.deepEqual(datavakter(iRad.slice(0, I_RAD - 1)).ihallande, [], "färre publiceringar än I_RAD larmar aldrig");
 });
 
 test("rad: de tystade stationerna per vakt, och det som inte gick att läsa nu", () => {

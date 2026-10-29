@@ -1568,6 +1568,9 @@ const REPO = "Axelstar/halkvakt-karta";
 const token = Deno.env.get("PUBLISH_TOKEN")!;
 const SB = Deno.env.get("SUPABASE_URL")!;
 const SRK = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+/** pg_cron:s takt för halkvakt-publicera i minuter (sql/074, DECISIONS #741 punkt 3). GitHub och kartan väljs på minuten med den som
+ *  fönster, så att de skrivs var tionde och var 30:e minut som förut; kontraktsgrinden vaktar att sql/074 bär samma tal. */
+const PUBLICERA_TAKT_MIN = 2;
 
 async function gh(path: string, method = "GET", body?: unknown): Promise<any> {
   const r = await fetch(`https://api.github.com/repos/${REPO}${path}`, {
@@ -1658,8 +1661,11 @@ Deno.serve(async (req) => {
     let hinken = "ok";
     try { await skrivHinken(files); } catch (e) { hinken = String((e as Error).message ?? e); }
     tider.hinken = Date.now() - tDel;
-    // Kartlagren var 30:e minut (#77). Minuten läses vid start; pg_cron fyrar :00,:10,…
-    const karta = new URL(req.url).searchParams.get("karta") === "1" || new Date().getUTCMinutes() % 30 < 10;
+    // Kartlagren var 30:e minut (#77) och GitHub var tionde (#741 punkt 3), ur minuten när körningen startade; pg_cron fyrar varannan
+    // minut (:00, :02 …). Hinken ovan skrivs varje körning. `?karta=1` tvingar båda.
+    const minut = new Date(t0).getUTCMinutes();
+    const karta = new URL(req.url).searchParams.get("karta") === "1" || minut % 30 < PUBLICERA_TAKT_MIN;
+    const github = karta || minut % 10 < PUBLICERA_TAKT_MIN;
     let kartaStats: unknown = null;
     const inline: Record<string, string> = {};
     if (karta) {
@@ -1683,16 +1689,19 @@ Deno.serve(async (req) => {
       }
       tider.kartan = Date.now() - tDel;
     }
-    tDel = Date.now();
-    const sha = await publicera(files, inline);
-    tider.github = Date.now() - tDel;
+    let sha: string | null = null;
+    if (github) {
+      tDel = Date.now();
+      sha = await publicera(files, inline);
+      tider.github = Date.now() - tDel;
+    }
     return new Response(JSON.stringify({ ok: true, sha, generated_at: liveDoc.generated_at,
       segments: liveDoc.segments.length, kandidat: liveDoc.kandidat?.length ?? null, weather: liveDoc.weather.length,
       deviations: liveDoc.deviations.length, wildlife: liveDoc.wildlife.length,
       bridges: liveDoc.bridges.length, smhi: liveDoc.smhi.length,
       cameras: staticDoc.cameras.length, border, notes,
       live_gz_bytes: manifest.files.live.gz_bytes,
-      karta: kartaStats, lanssidor: Object.keys(inline).length, hinken, tider, bygget_delar: delar, ms: Date.now() - t0 }), { headers: { "Content-Type": "application/json" } });
+      karta: kartaStats, lanssidor: Object.keys(inline).length, github, hinken, tider, bygget_delar: delar, ms: Date.now() - t0 }), { headers: { "Content-Type": "application/json" } });
   } catch (e) {
     return new Response(JSON.stringify({ ok: false, error: String(e) }), { status: 500 });
   }
