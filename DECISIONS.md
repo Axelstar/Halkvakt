@@ -18799,6 +18799,15 @@ under resan) kan ge, och om den ska föreslås.
   (`ModifiedTime` minus mättiden, som alla mätningar bar) 4,1 min i median (247 s) och 6,0 i 95:e percentilen (361 s); skillnaden,
   omkring en minut, är vår hämtning. Dagen läses för sig.
 
+**Tillägg 29/10: appens koll 60 s efter den väntade publiceringen, inte 30 s** (Bengt: *"kör 60 sek"*). Punkt 4 sa *"generated_at
+plus två minuter, med en halv minuts marginal"*. Mätt 29/10 när hinken kom i drift: hinkens publika adress går genom Cloudflare och
+cachas trots `no-cache`, och en ny fil syntes där 40–60 s efter skrivningen (STATUS 29/10, tre tillfällen). Med 30 s missar den första
+kollen nästan alltid och omkollen 30 s senare tar filen; med 60 s tar den första kollen filen oftast. Filen kommer alltså fram ungefär
+lika fort, omkring tre minuter efter den förra, men med hälften så många kollar (omkring 30 i timmen i stället för 60), och det är
+radions väckningar som batteriprovet i punkt 6 prövar. Byggt så i fas 2 (PR #1260; `Kolltakten.swift` och `SnapshotSchedule.kt`, i
+kontraktsgrinden). Förhållandet mellan nya filer och kollar i mätningen under Betatest visar efter fas 3 hur ofta den första kollen
+träffar; talet ändras då med en rad i varje app.
+
 ## #742 (28/10 2026) Gränsfrågan i publiceringen använder vägindexet: bygget från 39,9 s till omkring 2 s, samma stationer (kort #365)
 
 **Beslut** (Bengt 28/10: *"Ja, skriv om"*). Gränssnapshoten (#49) väljer de finska och norska stationerna inom 40 km från en svensk väg.
