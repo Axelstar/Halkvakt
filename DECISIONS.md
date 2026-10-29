@@ -18955,3 +18955,25 @@ Ortssidan byter namn i stället för länet: orten är det folk skriver ("halka 
 avsnitt om var vägen brukar bli hal: påståenden utan källa (CLAUDE.md, rösten får aldrig säga mer än datan), så vägsidorna växer med data.
 
 **Stomdokument:** inga — sajtens sidor och sökordning; appen, motorn och mätningarna är orörda.
+
+## #748 (30/10 2026) Apple Ads-rapporten varje dygn till statistiken, genom Apples API
+
+**Beslut** (Axel 30/10: *"Lets do this"* om förslaget att läsa och styra Apple Ads genom Apples Campaign Management API). Det finns
+ingen färdig koppling till Apple Ads, så Halkvakt läser kampanjen själv:
+1. **API-användaren** är hej@halkvakt.se (ett eget Apple-konto, inbjudet 27/10, aktiverat 30/10), med rollen *API Account Manager* så
+   att ändringar kan göras på Axels begäran. Nyckelparet skapades i sessionen; den publika nyckeln ligger hos Apple och den privata bara
+   i GitHub-hemligheterna (`APPLE_ADS_PRIVATE_KEY`, `APPLE_ADS_CLIENT_ID`, `APPLE_ADS_KEY_ID`, `APPLE_ADS_ORG_ID`).
+2. **`marknadsforing/appleannonser.mjs`** hämtar varje kampanjs sökordsrapport (searchterms, per dygn) för de senaste 14 dygnen och skriver
+   om fönstret i `apple_ads_sokord` (sql/076), så att Apples sena justeringar kommer med och en omkörning inte dubblar. `apple-annonser.yml`
+   kör 06:23 och 18:23 UTC med GitHub-cronen, inte pulsklockan: rapporten brådskar inte, och nästa körning tar igen en som uteblir.
+3. **statistik.html** får talen genom `besok_stat`, som bär nyckeln `apple_ads` (`apple_ads_stat`: summor för perioden och sju dygn, per
+   dygn, per nyckelord och de största söktermerna). Edge-funktionen `besok` är orörd.
+4. **Ändringar i kampanjen** (bud, pausa, nyckelord) görs bara på Axels ord i chatten, med samma inloggning; inget flöde ändrar kampanjen.
+
+Bara annonsplattformens egna aggregat lagras: inga användare, ingen position, inget från appen.
+
+**Alternativ.** Klicka i Apple Ads webbsida via webbläsaren: fungerar utan nycklar, men ger ingen historik och inga tal på statistiksidan.
+Exportera CSV för hand varje vecka: det Axel gjort hittills, och det som gjorde att trafikverket-ordet stod pausat i fyra dygn (26–29/10)
+utan att någon såg att installationerna föll från 10 till 2. Läs-rollen *API Account Read Only*: räcker för rapporten men inte för ändringar.
+
+**Stomdokument:** inga — marknadsföringen ligger utanför appen, motorn och mätningarna; ingen data lämnar appen.
