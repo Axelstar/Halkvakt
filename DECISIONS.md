@@ -18904,3 +18904,37 @@ App Store (Axel ville ha installationen). Optimera på installationer: kräver M
 löftet och App Store-etiketten *Data Not Collected*; görs inte. Installationerna läses i App Store Connect.
 
 **Stomdokument:** inga — marknadsföringen ligger utanför appen, motorn och mätningarna; ingen data lämnar appen.
+
+## #746 (29/10 2026) Appstatistik på iPhone: antal per avslutat dygn, utan id — FÖRSLAG, väntar på Bengts ja
+**Bakgrund.** Axel 28/10: *"My friend also talked about analytics on the app so we know how they use it etc, please implement"*,
+och 29/10 om omfånget: *"We only want it for iOS"*. I dag skickar appen bara betatestets facitsvar, så vi vet inte hur många som
+använder den, hur vakten startar eller vilka varningar som faktiskt läses upp.
+
+**Förslag** (byggt i PR:en, sammanslås först på Bengts ja; inget deployat).
+1. iPhone-appen räknar i telefonen, per svenskt dygn, räknare ur en fast lista i `ios/HalkvaktEngine/Sources/HalkvaktEngine/Bruket.swift`:
+   `oppnad`; vakten startad `vakt_hand`, `vakt_siri` (intentets kvitto yngre än 10 s), `vakt_sjalv`; ny `resa`; upplästa varningar per
+   sort (`varning_halka` …, bara sorten); och dygnets läge som 1: `lage_alltid`, `lage_sjalvstart`, `lage_intro_klar`, `av_<sort>`.
+   Inget annat namn går igenom (`BruketTests`).
+2. Ett AVSLUTAT dygn skickas en gång, när appen öppnas eller vakten stannar (som facitsvaren): `{dag, kanal, ver, r}`. Kanalen är
+   `appstore`, `testflight` eller `debug`, så att våra egna byggen räknas för sig och statistiksidan visar App Store. Inget enhets-id,
+   ingen position, inget klockslag, inget varnings- eller stations-id, ingen resas längd. En telefon offline sparar högst 14 dygn.
+3. Edge-funktionen `appbruk` sparar en rad per telefon och dygn i `app_bruk` (sql/076) och kastar allt med fel form (`test/appbruk.test.ts`).
+   IP:n sparas inte. `appbruk_stat` och panelen *Appen på iPhone* på statistik.html (kartrepot, grenen `appstatistik`) läser med
+   besöksnyckeln.
+4. Brytaren *Dela anonym statistik* under Inställningar → Integritet, med kvittot *Skickas / När / Aldrig*. Av ⇒ inget räknas och det
+   räknade tas bort. `Bruk.standard` är `true` (på från början) i förslaget; se den öppna frågan nedan.
+5. Samma ändring: invarianten i CLAUDE.md, integritetspolicyn (kartrepot, grenen `appstatistik`), produktboken, platsfrågans text
+   (`project.yml`: *"det enda som skickas är betatestets facitsvar"* stryks, den blev osann), en rad i PLAY-DATASAFETY.md
+   (Android oförändrad). App Stores sekretessetikett ändras för hand av Axel samma dag som versionen skickas in: *Usage Data →
+   Product Interaction*, inte kopplad till användaren, ingen spårning, ändamål *Analytics*.
+
+**Öppen fråga (§4.2).** Att räkna i telefonen och skicka är att lagra och läsa information i användarens utrustning (LEK 9 kap. 28 §),
+som kräver samtycke om det inte är nödvändigt för tjänsten. Antal utan identifierare är den mildaste formen, men vi är inte jurister.
+Antingen brytaren på från början (förslaget nu) eller en fråga i introduktionen (*Hjälp oss göra appen bättre — dela anonym statistik?*),
+som är det säkra. Bengt och Axel väljer före sammanslagningen.
+
+**Alternativ.** Firebase, TelemetryDeck eller App Store Connects egen analys: tredje part eller bara för den som delar med
+utvecklare, och de två första bär ett id. Per händelse med tidsstämpel: mer att läsa ur men säger när någon körde. Resans längd i
+intervall: avstått, det är rörelsedata och invarianten undantar det inte. Android samtidigt: Axel vill bara iOS.
+
+**Stomdokument:** APP, SYS — appen skickar något nytt och invarianten ändras.

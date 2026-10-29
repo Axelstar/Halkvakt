@@ -45,8 +45,7 @@ targets:
         NSLocationWhenInUseUsageDescription: >-
           Halkvakt jämför din position med vägfaror lokalt i telefonen och varnar
           med rösten, även med släckt skärm under körning. Ingen position lämnar
-          telefonen av sig själv — det enda som skickas är betatestets facitsvar,
-          som du själv slår på.
+          telefonen av sig själv.
         NSLocationAlwaysAndWhenInUseUsageDescription: >-
           Med "Alltid" startar vakten av sig själv när du börjar köra. Matchningen
           sker lokalt i telefonen — ingen position lämnar den av sig själv.

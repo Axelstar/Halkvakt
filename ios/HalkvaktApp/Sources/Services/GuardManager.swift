@@ -218,6 +218,9 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         guard !running else { return }
         print("[Vakten] startar")
         running = true
+        // #746: how it started. The intent writes its receipt just before it calls in, so a fresh one means Siri or an automation.
+        let viaIntent = Prefs.shared.lastIntentStartAt.map { Date.now.timeIntervalSince($0) < 10 } ?? false
+        Bruk.rakna(autoWoke ? "vakt_sjalv" : viaIntent ? "vakt_siri" : "vakt_hand")
         // Kort #359: startas vakten för hand medan självväckningens fartkoll pågår måste kollen ta slut här. Annars gick varje
         // position till kollen, och när den gav upp efter 90 s stängde den positionen under en vakt som stod igång.
         fartkoll.end()
@@ -230,6 +233,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
             distanceKm = 0; alertCount = 0; lastSaid = nil
             tripPausedSeconds = 0
             startedAt = .now
+            Bruk.rakna("resa")   // #746
             // Kort #203: NY resa ⇒ nytt facitfönster. Fortsätter samma resa efter ett mackstopp
             // behålls det gamla — annars hade varningarna före macken fallit utanför "alla".
             Prefs.shared.tripStart = startedAt
@@ -280,6 +284,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
     func stop() {
         let korde = running
         Task { _ = await FacitSender.flush() }   // S4: resan är slut — osända svar går iväg
+        Task { await BruketSender.flush() }   // #746: finished days only
         if running, autoWoke, let t0 = startedAt {
             Prefs.shared.lastAutoWakeMinutes = max(1, Int(Date.now.timeIntervalSince(t0) / 60))
         }
@@ -399,6 +404,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
                       headingDeg: loc.course >= 0 ? loc.course : nil)
         guard let alert = engine.step(fix) else { return }
         guard Prefs.shared.enabled(alert.kind) else { return }  // munnen tiger, minnet består
+        Bruk.rakna(Bruket.namn(alert.kind))   // #746: the kind only, counted on the phone
 
         alertCount += 1
         lastSaid = alert.text
