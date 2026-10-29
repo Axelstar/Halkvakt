@@ -25,6 +25,9 @@ Roller och ägarskap: `docs/BESLUTSGANGEN.md` (31/8). Tavlan är sanningen — e
 står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett kort direkt.
 ### AXELS NÄSTA STEG — i den här ordningen (uppdaterad 1/10)
 
+- [ ] 🔐 **#366 TESTFLIGHT-FLÖDET STOPPAR PÅ APPLES CERTIFIKATTAK — ÅTERKALLA DE GAMLA (NYTT 29/10 — Axel; Bengts ord: *"skriv ett meddelande till Axel vad han behöver göra"*; DECISIONS #582)**: testflight i läget `ladda-upp` från main (c7353e19, körning 40858634684) föll efter 55 s med `** ARCHIVE FAILED **`: *"Your account has reached the maximum number of certificates"* och *"No profiles for 'se.halkvakt.app' were found"*. Varje bygge i Actions körs på en ny Mac och skapar ett eget Apple Development-certifikat, som reservationen i #582 förutsåg. Ingenting laddades upp; 0.3.14 (35) med fas 2 (#741, kort #365) väntar. (1) Nu: återkalla de Development-certifikat som Actions-byggena skapat, på developer.apple.com → Certificates i Safari (behåll certifikatet för Axels egen Mac och alla Distribution); sedan körs flödet om. (2) På sikt: flödet signerar med ett sparat distributionscertifikat i stället för att skapa ett nytt varje gång.
+  *Verify:* 0.3.14 (35) uppladdat av flödet (`Upload succeeded`), och för (2) en plan eller ett beslut att låta den vänta.
+  **Kvar:** återkallandet av de gamla certifikaten.
 - [ ] 🔋 **#262 BATTERIPAKETET — SJU ÅTGÄRDER EFTER FÄLTRAPPORTEN 27/9** (Bengts beställning 27/9: *"föreslå ett åtgärdspaket
   … jag vill att Axel gör det"*. DECISIONS #386, #387). 🚨 **Släppblockerare** — batteribudgeten är ett krav i CLAUDE.md.
   📱 **Vad testaren rapporterade:** 42 % efter en baddag, telefonen knappt använd. 27/9: **11 h 39 m** bakgrund, **0 m** skärm,
