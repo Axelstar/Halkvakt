@@ -124,6 +124,15 @@ final class Prefs {
     /// Kvitto för självväckningen (DECISIONS #46): när vaknade vakten själv senast, och hur länge körde den.
     var lastAutoWakeAt: Date? { didSet { d.set(lastAutoWakeAt, forKey: "k.lastAutoWakeAt") } }
     var lastAutoWakeMinutes: Int { didSet { d.set(lastAutoWakeMinutes, forKey: "k.lastAutoWakeMinutes") } }
+    /// App usage counts, iOS only (DECISIONS #746): per day, kept here until the day is over. Pure logic in HalkvaktEngine/Bruket.swift.
+    var bruket: Bruket.Dagar { didSet { d.set(try? JSONEncoder().encode(bruket), forKey: "k.bruket") } }
+    /// "Dela anonym statistik" under Integritet. Off ⇒ nothing is counted and what was counted is dropped.
+    var bruketPa: Bool {
+        didSet {
+            d.set(bruketPa, forKey: "k.bruketPa")
+            if !bruketPa { bruket = [:] }
+        }
+    }
     var autoWake: Bool {
         didSet {
             d.set(autoWake, forKey: "k.autoWake")
@@ -154,6 +163,8 @@ final class Prefs {
         onboardingDone = d.bool(forKey: "k.onboardingDone")
         lastIntentStartAt = d.object(forKey: "k.lastIntentStartAt") as? Date
         autoWake = d.object(forKey: "k.autoWake") as? Bool ?? true
+        bruket = d.data(forKey: "k.bruket").flatMap { try? JSONDecoder().decode(Bruket.Dagar.self, from: $0) } ?? [:]
+        bruketPa = d.object(forKey: "k.bruketPa") as? Bool ?? Bruk.standard
         lastAutoWakeAt = d.object(forKey: "k.lastAutoWakeAt") as? Date
         lastAutoWakeMinutes = d.integer(forKey: "k.lastAutoWakeMinutes")
     }

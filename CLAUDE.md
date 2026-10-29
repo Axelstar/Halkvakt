@@ -32,7 +32,10 @@ Define success criteria. Loop until verified.
   facit answer the driver presses themselves — warning id + timestamp, i.e. roughly where and when —
   or a miss the driver marks themselves ("appen missade": nearest station id + timestamp + what it was,
   chosen after the trip; DECISIONS #267/#379) — and only for beta testers who turned the switch on (off by
-  default). Rewritten 20/9 by Axel
+  default). Plus, on iOS only, the anonymous usage counts (DECISIONS #746): one body per FINISHED day with the day,
+  the build channel, the app version and counters from the fixed list in `HalkvaktEngine/Bruket.swift` — no device id,
+  no position, no time of day, no warning or station id — sent when the app opens or the guard stops, and switched off
+  under Integritet. Rewritten 20/9 by Axel
   (DECISIONS #264) because the old wording ("Full stop") became untrue on 16/9 when S4 shipped, and
   stayed in four documents for four days. Change what the app sends ⇒ this line, the Play Data Safety
   file, integritet.html in the map repo and the product book change in the SAME commit.

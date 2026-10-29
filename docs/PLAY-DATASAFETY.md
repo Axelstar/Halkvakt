@@ -11,6 +11,10 @@ Syfte: den dag kontot är godkänt ska formuläret kunna fyllas i på fem minute
 > Matchningen sker på telefonen mot nedladdade snapshots. Det enda som någonsin skickas är ett facitsvar
 > som föraren själv trycker på — och det bär varnings-id och klockslag, alltså ungefär var och när.*
 
+> **29/10 (DECISIONS #746): appstatistiken finns bara i iOS-appen.** Android skickar ingenting nytt, så svaren här är
+> oförändrade. Kommer statistiken till Android ska formuläret få *App activity → App interactions*, inte kopplat till
+> användaren, ändamål *Analytics*, och raden nedan.
+
 ## Vad appen faktiskt skickar (läst ur koden 20/9, inte ur minnet)
 
 | Utgående anrop | När | Innehåll | Sker för |

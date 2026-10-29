@@ -151,6 +151,11 @@ och *fartkamera* (en låda på stolpe med blixtlinjer). Svarta på kortet, ljusa
   resor under Favoriter sparas vägarna du väljer, bara i telefonen och aldrig i en säkerhetskopia. Du tar bort dem där."*
   (18/10; *"ingen spårning"* ströks, för en sparad resa är ett spår, även om det bara finns hos föraren, #616),
   raden till Betatest och Integritetspolicyn.
+  **Från appstatistiken (iOS, DECISIONS #746):** raden blir *"All matchning mot vägdata sker lokalt i appen. Inget konto. Det enda
+  som skickas är den anonyma statistiken nedan, och du kan stänga av den."* (i testbyggen: *"Undantagen är den anonyma statistiken
+  nedan och betatestet — bara om du själv slår på det."*). Under panelen brytaren *Dela anonym statistik* — *"Hur appen används,
+  räknat per dag"* — och kvittot: *SKICKAS — Antal per dag: öppnad, start, resor, varningar per sort, inställningar*, *NÄR —
+  Dagen efter, när bilen står still*, *ALDRIG — Position, resa, klockslag, id*. Skärmbild ur fotostudion när bygget finns.
 - *Visa introduktionen igen* (iOS).
 - *Om Halkvakt* — Livekartan, Om appen & vanliga frågor, Press & material, ärlighetsraden och attributionen
   (oförändrade), och versionen.
@@ -197,8 +202,8 @@ Fyra sidor med punkter längst ner, *HOPPA ÖVER* till vänster och *NÄSTA* / *
    ligger framför dig."* och *Öppna Inställningar*.
    **iOS egen ruta** säger (ordagrant, `project.yml`): *"Halkvakt jämför din position med
    vägfaror lokalt i telefonen och varnar med rösten, även med släckt skärm under körning.
-   Ingen position lämnar telefonen av sig själv — det enda som skickas är betatestets
-   facitsvar, som du själv slår på."* Och vid *Alltid*: *"Med "Alltid" startar vakten av sig
+   Ingen position lämnar telefonen av sig själv."* (Till 29/10 följde *"— det enda som skickas är betatestets facitsvar, som du
+   själv slår på."*, som blev osant med appstatistiken, DECISIONS #746.) Och vid *Alltid*: *"Med "Alltid" startar vakten av sig
    själv när du börjar köra. Matchningen sker lokalt i telefonen — ingen position lämnar den
    av sig själv."*
 3. **Bannern** — *"Bannern över kartappen"*, *"Kör du med Google Maps eller Kartor visas rösten som en banner i åtta
@@ -466,7 +471,8 @@ i stället för att det *fungerade*. Instrumenten är byggda. Vintern är facit.
 
 Ingen prognos (varnar på uppmätt läge, inte gissningar), tyst mellan
 mätstationerna, ingen ködetektion ännu. Skickar ingenting om
-dig — med ett enda undantag som du själv slår på: betatestets facitsvar (se Om). Vägar du kört sparas bara om du slår på
+dig — med två undantag: betatestets facitsvar, som du själv slår på (se Om), och på iOS den anonyma statistiken
+(antal per dag, aldrig position, resa, klockslag eller id), som du kan stänga av under Integritet (DECISIONS #746). Vägar du kört sparas bara om du slår på
 det under Favoriter, och bara i telefonen. Hela ärliga
 listan: [SYSTEM.md §4](SYSTEM.md).
 

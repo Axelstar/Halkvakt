@@ -177,8 +177,8 @@ struct InstallningarView: View {
                 // Kort #357 (DECISIONS #616, #625): "ingen spårning" blev osant när resor kan sparas — en sparad resa är ett spår,
                 // även om det bara finns hos föraren. Texten säger var de ligger och hur de tas bort.
                 Text(Prefs.betatestTillaten
-                     ? "All matchning mot vägdata sker lokalt i appen. Inget konto. Undantaget är betatestet — bara om du själv slår på det."
-                     : "All matchning mot vägdata sker lokalt i appen. Inget konto, och inget skickas.")
+                     ? "All matchning mot vägdata sker lokalt i appen. Inget konto. Undantagen är den anonyma statistiken nedan och betatestet — bara om du själv slår på det."
+                     : "All matchning mot vägdata sker lokalt i appen. Inget konto. Det enda som skickas är den anonyma statistiken nedan, och du kan stänga av den.")
                     .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2)
                 Text("Slår du på Erbjud att spara resor under Favoriter sparas vägarna du väljer, bara i telefonen och aldrig i en säkerhetskopia. Du tar bort dem där.")
                     .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2)
@@ -187,6 +187,17 @@ struct InstallningarView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(Brand.panel, in: RoundedRectangle(cornerRadius: 18))
             .padding(.top, 24)
+            // #746: the switch and exactly what it sends — the same words as Bruket.swift and integritet.html.
+            RowPanel {
+                GreenToggleRow(title: "Dela anonym statistik", sub: "Hur appen används, räknat per dag", isOn: $prefs.bruketPa)
+            }
+            .padding(.top, 10)
+            RowPanel {
+                ReceiptRow(label: "Skickas", value: "Antal per dag: öppnad, start, resor, varningar per sort, inställningar")
+                ReceiptRow(label: "När", value: "Dagen efter, när bilen står still")
+                ReceiptRow(label: "Aldrig", value: "Position, resa, klockslag, id", divider: false)
+            }
+            .padding(.top, 10)
             RowPanel {
                 if Prefs.betatestTillaten {
                     NavigationLink(value: Sida.betatest) { NavRowLabel(title: "Betatest", value: prefs.facitOn ? "På" : "Av") }
@@ -442,7 +453,11 @@ struct HalkvaktApp: App {
             .preferredColorScheme(.dark)
             // S4: osända facitsvar går iväg när appen blir aktiv — bilen står stilla då.
             .onChange(of: scenePhase) { _, phase in
-                if phase == .active { Task { _ = await FacitSender.flush() } }
+                if phase == .active {
+                    Task { _ = await FacitSender.flush() }
+                    Bruk.oppnad(alltid: GuardManager.shared.authStatus == .authorizedAlways)   // #746
+                    Task { await BruketSender.flush() }
+                }
             }
             // DECISIONS #36: introduktionen är det första man ser, en gång.
             .fullScreenCover(isPresented: Binding(
