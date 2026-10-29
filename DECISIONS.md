@@ -18866,3 +18866,8 @@ finnas."*
 till punkter utan frys och sänka andelen farliga fel marginellt, inte från 1,3 % till 1 %.
 
 **Stomdokument:** MAT frysklassningen och domkalendern (K-B 16/11 borta), BED §4.2.
+
+**Tillägg 29/10: grind-k-a ur frosttrycket** (Bengt: *"Ja, ta bort"*, på frågan i bedömningen §4.2). Vakthundens frosttryck
+(`FROSTFLODEN` i `supabase/functions/vakthund/index.ts`) trycker fyra flöden i stället för fem: grind-k-a (60 dygn, omkring 4 min i
+Actions varannan dag under frost) bar inget beslut längre. Flödet och `scripts/grind-k-a.ts` står kvar och kan tryckas för hand;
+kandidatens frysflagga döms i mars av domskriptet. Gäller när vakthunden är deployad.

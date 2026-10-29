@@ -82,7 +82,7 @@ const FROSTFLODEN: { fil: string; inputs: Record<string, string> }[] = [
   { fil: "overgangar-steg0.yml", inputs: { dagar: String(GALLRING_DYGN) } },   // #89 0c
   { fil: "grind-t-a.yml", inputs: { dagar: String(GALLRING_DYGN) } },          // #88 trenden, inom gallringens dygn
   { fil: "grind-r-a.yml", inputs: { dagar: "30", land: "se" } }, // #46 rimfrosten, svensk körning (R-A4 molnkontrollen)
-  { fil: "grind-k-a.yml", inputs: { dagar: "60" } },         // #103 frysklassningen
+  // grind-k-a (#103) trycks inte längre: K-A fälld 29/10 och frysklassningen lagd ned (DECISIONS #743).
   { fil: "vindsikt-steg0.yml", inputs: { dagar: "14" } },    // #90 W-A
 ];
 async function utlos(floden: { fil: string; inputs: Record<string, string> }[]): Promise<string[]> {
@@ -138,7 +138,7 @@ Deno.serve(async (req) => {
   const problem: string[] = [];
   if (new URL(req.url).searchParams.get("larmprov") === "1") problem.push("**LARMPROV** — medvetet framkallat fel för att bevisa larmvägen. Ska stängas automatiskt vid nästa gröna körning.");
   // UTLÖSARPROVET (DECISIONS #338): bevisar att PAT:en får trycka ett flöde, innan frosten kommer och det inte går att ta om.
-  // Trycker bara det billigaste av de fem (vindsikt-steg0, ett dygn) och svarar med utfallet — skriver ingen issue.
+  // Trycker bara det billigaste av de fyra (vindsikt-steg0, ett dygn) och svarar med utfallet — skriver ingen issue.
   if (new URL(req.url).searchParams.get("utlosarprov") === "1") {
     const ut = await utlos([{ fil: "vindsikt-steg0.yml", inputs: { dagar: "1" } }]);
     return new Response(JSON.stringify({ ok: ut.every((x) => x.startsWith("✅")), utlosarprov: ut }), { headers: { "Content-Type": "application/json" } });
