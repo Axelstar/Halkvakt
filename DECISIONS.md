@@ -18889,3 +18889,18 @@ till punkter utan frys och sänka andelen farliga fel marginellt, inte från 1,3
 (`FROSTFLODEN` i `supabase/functions/vakthund/index.ts`) trycker fyra flöden i stället för fem: grind-k-a (60 dygn, omkring 4 min i
 Actions varannan dag under frost) bar inget beslut längre. Flödet och `scripts/grind-k-a.ts` står kvar och kan tryckas för hand;
 kandidatens frysflagga döms i mars av domskriptet. Gäller när vakthunden är deployad.
+
+## #744 (29/10 2026) Meta-annonserna blir en appkampanj, utan Meta-SDK i appen
+
+**Beslut** (Axel 29/10: *"we want them to instal the app"*). Uppsättningen 29/10 (körning 40944831137) skapade elva län rätt och
+stannade vid Västra Götaland: Meta avvisar en App Store-länk i en trafikkampanj (*"App-url stöds enbart av målsättningen
+Appinstallationer"*, subcode 1487810). Kampanjen byter därför mål till appinstallationer (`OUTCOME_APP_PROMOTION`) med Halkvakt i
+App Store som främjat objekt (Meta-appen Halkvakt Ads, iOS-plattformen med bundle-id och App Store-id). Meta låter inte ett mål
+ändras, så skriptet skapar den nya kampanjen *Halkvakt · län · app*; trafikkampanjen *Halkvakt · län* från #735 står pausad och tas
+bort i Ads Manager. Ad set optimerar på klick till App Store (`LINK_CLICKS`); allt annat i #735 gäller (län, regel, tider, budget).
+
+**Alternativ.** Länka till länssidan på halkvakt.se med den gamla trafikkampanjen: fungerar direkt men lägger ett steg före
+App Store (Axel ville ha installationen). Optimera på installationer: kräver Meta-SDK i appen, som skickar enhetsdata och bryter
+löftet och App Store-etiketten *Data Not Collected*; görs inte. Installationerna läses i App Store Connect.
+
+**Stomdokument:** inga — marknadsföringen ligger utanför appen, motorn och mätningarna; ingen data lämnar appen.
