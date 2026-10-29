@@ -50,6 +50,9 @@ const TOKEN = process.env.META_ADS_TOKEN;
 const nu = () => new Date(process.env.HV_NU ?? Date.now());
 const tid = iso => new Date(iso).toLocaleTimeString("sv-SE", { timeZone: TZ, hour: "2-digit", minute: "2-digit" });
 const dag = d => d.toLocaleDateString("sv-SE", { timeZone: TZ });
+// The afternoon runs (DECISIONS #746) draw a fresh ad for the drive home; the ad name carries the half of the day so a
+// morning ad is never reused in the afternoon. Before noon in Stockholm is the morning, everything after the afternoon.
+export const dagdel = d => Number(d.toLocaleString("sv-SE", { timeZone: TZ, hour: "2-digit", hour12: false })) < 12 ? "morgon" : "eftermiddag";
 const lista = ord => ord.length < 2 ? ord.join("") : ord.slice(0, -1).join(", ") + " och " + ord.at(-1);
 
 // ---- Data → annons (rena funktioner, prövade i test/annonsstyrning.test.ts) ----
@@ -229,14 +232,14 @@ async function uppsattning() {
 
 async function styr() {
   const { lan, str, alder } = await hamta();
-  const datum = dag(nu());
+  const datum = dag(nu()), del = dagdel(nu());
   const annonser = new Map(lan.lan.map(l => [PREFIX + l.kort, annons(l, str.lan.find(x => x.kort === l.kort), lan.generated_at, datum)]));
   const gammal = alder > MAX_ALDER_H;
   if (gammal) skriv(`lan.json är ${alder.toFixed(1)} h gammal (${lan.generated_at}). Alla län pausas, ingen dagsannons.`);
   else skriv(`Län med halka kl. ${tid(lan.generated_at)}: ${[...annonser].filter(([, a]) => a).map(([n]) => n.slice(PREFIX.length)).join(", ") || "inga"}.`);
 
   if (!TOKEN) {
-    if (!gammal) for (const [namn, a] of annonser) if (a) await rita(a.data, `Dag · ${namn.slice(PREFIX.length)} · ${datum}`);
+    if (!gammal) for (const [namn, a] of annonser) if (a) await rita(a.data, `Dag · ${namn.slice(PREFIX.length)} · ${datum} · ${del}`);
     skriv("Torrkörning: META_ADS_TOKEN saknas. Bilderna ritade till meta-ut/, inget ändrat hos Meta.");
     return;
   }
@@ -252,7 +255,7 @@ async function styr() {
       continue;
     }
     const lanNamn = s.name.slice(PREFIX.length);
-    const idag = `Dag · ${lanNamn} · ${datum}`;
+    const idag = `Dag · ${lanNamn} · ${datum} · ${del}`;
     let dagens = ads.find(x => x.name === idag);
     if (!dagens) {
       const id = await laggUpp(a, idag, s.id);

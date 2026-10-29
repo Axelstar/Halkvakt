@@ -18922,3 +18922,17 @@ ingen IP och kunde därför inte skilja tio personer från en.
 Google Analytics: tredje part och samtyckesbanner, avvisat redan i #684.
 
 **Stomdokument:** inga — sajtens besöksräknare; appen skickar ingenting nytt.
+
+## #746 (29/10 2026) Meta-annonserna får en eftermiddagsannons för hemresan
+
+**Beslut** (Axel 29/10: *"would it not make sense to have a afternoon run as well"*). Två pulsjobb till kör `meta-annonser.yml`:
+`puls-meta-middag` 12:01 och `puls-meta-eftermiddag` 13:31 UTC (13:01 och 14:31 vintertid). Middagen ritar en ny annons ur
+läget då, så att Metas granskning hinner före visningen 15:00; 14:31 tar med nya hala län och byter reservannonsen mot den
+godkända. Annonsens namn bär dagdelen (`Dag · <län> · <datum> · morgon|eftermiddag`, `dagdel()` i annonsstyrningen, före
+klockan 12 svensk tid är morgon), så att morgonens annons aldrig återanvänds på eftermiddagen. Län utan halka vid middagen
+pausas för eftermiddagen. `ANTAL_NYA` och `PULS_GOLV` blir 27.
+
+**Alternativ.** Morgonens annons hela dagen (som #735): enklare, men 15:00–18:00 visar läget kl. 03 med det klockslaget. En
+körning i stället för två: ingen byter reservannonsen mot eftermiddagens när den godkänts.
+
+**Stomdokument:** inga — marknadsföringen ligger utanför appen, motorn och mätningarna; ingen data lämnar appen.

@@ -90,13 +90,17 @@ const NYA: { namn: string; schema: string; fil: string }[] = [
   { namn: "puls-meta-natt", schema: "1 2 * * *", fil: "meta-annonser.yml" },
   { namn: "puls-meta-gry", schema: "31 4 * * *", fil: "meta-annonser.yml" },
   { namn: "puls-meta-morgon", schema: "1 6 * * *", fil: "meta-annonser.yml" },
+  // DECISIONS #746 (Axel 29/10): eftermiddagen får en egen annons för hemresan. 13:01 lägger upp den så att Metas granskning hinner
+  // före visningen 15:00 svensk tid, 14:31 tar med nya hala län och byter reservannonsen mot den godkända. Vintertid (UTC+1).
+  { namn: "puls-meta-middag", schema: "1 12 * * *", fil: "meta-annonser.yml" },
+  { namn: "puls-meta-eftermiddag", schema: "31 13 * * *", fil: "meta-annonser.yml" },
 ];
 
 // Vakthundens check 6a bär samma tal som golv (kort #222, DECISIONS #255): ett puls-jobb som
 // avaktiveras eller raderas ska larma, inte tyst falla ur bevakningslistan. Vakthunden kör i Deno
 // hos Supabase och kan inte importera den här filen, så talet är en KOPIA — kontraktsgrinden vaktar
 // att kopiorna bär samma värde, och raden under vaktar att värdet stämmer med listan ovan.
-const ANTAL_NYA = 25;
+const ANTAL_NYA = 27;
 if (NYA.length !== ANTAL_NYA) {
   console.error(`NYA har ${NYA.length} jobb men ANTAL_NYA säger ${ANTAL_NYA} — uppdatera båda, och vakthundens PULS_GOLV.`);
   process.exit(1);
