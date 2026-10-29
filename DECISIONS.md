@@ -18904,3 +18904,21 @@ App Store (Axel ville ha installationen). Optimera på installationer: kräver M
 löftet och App Store-etiketten *Data Not Collected*; görs inte. Installationerna läses i App Store Connect.
 
 **Stomdokument:** inga — marknadsföringen ligger utanför appen, motorn och mätningarna; ingen data lämnar appen.
+
+## #745 (28/10 2026) Besöksräknaren: anonym dagsbesökare, appklick och våra egna enheter
+**Bakgrund.** Axel 28/10, om 88 sidvisningar på ett dygn: *"we do need to know if its from the same ip address as i think a lot of
+clicks are from my father but i am not certain"*, och *"lets build this so we can get some useful data"*. Räknaren (#684) sparade
+ingen IP och kunde därför inte skilja tio personer från en.
+
+**Beslut** (kört 28/10 00:35–00:40 direkt i Halkvakt-projektet; inskrivet i repot 29/10 som sql/075 och funktionen `besok` v2).
+1. Anonym dagsbesökare: `besok` hashar IP + webbläsare med ett salt som slumpas varje dygn (`besok_salt`, `besok_dagssalt`) och raderas
+   nästa dygn. Bara 16 tecken av hashen sparas, aldrig IP:n; den går inte att koppla över dygn eller tillbaka till en IP. Integritetssidan
+   på halkvakt.se säger det.
+2. Appklick: klick på App Store- och Play-länkar på sajten och i tidningsrutorna räknas, med källan där besökaren kom in samma dygn.
+3. Våra egna enheter: `?oss=1` på sajten, eller nyckeln på statistik.html, märker webbläsaren lokalt; dess visningar räknas inte.
+4. statistik.html visar besökare, appklick och de flitigaste besökarna per dygn.
+
+**Alternativ.** Spara IP: personuppgift och bryter sajtens löfte. Kaka eller enhets-id i webbläsaren: kräver samtycke (ePrivacy).
+Google Analytics: tredje part och samtyckesbanner, avvisat redan i #684.
+
+**Stomdokument:** inga — sajtens besöksräknare; appen skickar ingenting nytt.

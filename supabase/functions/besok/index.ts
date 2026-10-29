@@ -1,5 +1,8 @@
-// besok — räknar sidvisningar på halkvakt.se utan kakor, IP eller användar-id.
-// POST (från /assets/besok.js via sendBeacon): {p: sida, r: hänvisande domän, k: kod (?r=), m: "m"|"d"}
+// besok — räknar sidvisningar på halkvakt.se utan kakor och utan att spara IP eller användar-id.
+// POST (från /assets/besok.js via sendBeacon):
+//   {p: sida, r: hänvisande domän, k: kod (?r=), m: "m"|"d", t?: "k" (appklick), g?: "ios"|"android", o?: 1 (vår egen enhet)}
+// Anonym dagsbesökare (28/10): sha256(dagens salt + IP + webbläsare), 16 tecken. Saltet slumpas varje dygn i
+// besok_salt och gårdagens raderas, så hashen kan inte kopplas över dygn eller tillbaka till en IP. IP:n sparas aldrig.
 // GET ?nyckel=… : sammanställning för statistik.html (nyckeln jämförs mot sha256 i besok_nyckel).
 const SB = Deno.env.get("SUPABASE_URL")!;
 const SRK = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -17,6 +20,24 @@ async function sha256(s: string) {
   return [...new Uint8Array(b)].map((x) => x.toString(16).padStart(2, "0")).join("");
 }
 
+let salt = { dag: "", s: "" };
+async function dagssalt() {
+  const dag = new Date().toLocaleDateString("sv-SE", { timeZone: "Europe/Stockholm" });
+  if (salt.dag === dag && salt.s) return salt.s;
+  const r = await fetch(`${SB}/rest/v1/rpc/besok_dagssalt`, { method: "POST", headers: H, body: "{}" });
+  if (!r.ok) return "";
+  salt = { dag, s: String(await r.json()) };
+  return salt.s;
+}
+
+async function besokare(req: Request, ua: string) {
+  const ip = (req.headers.get("cf-connecting-ip") || req.headers.get("x-forwarded-for")?.split(",")[0] || "").trim();
+  if (!ip) return "";
+  const s = await dagssalt();
+  if (!s) return "";
+  return (await sha256(`${s}|${ip}|${ua}`)).slice(0, 16);
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: CORS });
   try {
@@ -32,11 +53,16 @@ Deno.serve(async (req) => {
       const d = JSON.parse((await req.text()).slice(0, 2000) || "{}");
       const sida = ren(d.p, 200) || "/";
       if (!sida.startsWith("/")) return new Response(null, { status: 204, headers: CORS });
+      const klick = d.t === "k";
       const rad = {
         sida,
         kalla: ren(d.r, 100).toLowerCase(),
         kod: ren(d.k, 40).toLowerCase(),
         enhet: d.m === "m" ? "mobil" : "dator",
+        typ: klick ? "appklick" : "visning",
+        mal: klick ? (d.g === "android" ? "android" : "ios") : "",
+        oss: d.o === 1 || d.o === "1",
+        besokare: await besokare(req, ua),
       };
       await fetch(`${SB}/rest/v1/besok`, {
         method: "POST",
