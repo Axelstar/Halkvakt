@@ -1,0 +1,18 @@
+{
+  "typ": "lista",
+  "nyckel": "lista",
+  "etikett": "Halkläget kl. 05:30",
+  "rubrik": "Halt i morse",
+  "underrad": "torsdag 29 oktober",
+  "text": "God morgon. Så här ser vägarna ut kl. 05:50.\n\nVästerbotten: halka på 27 av 44 vägavsnitt, 23 stationer under noll, kallast −2,0 °C vid Missenträsk.\nNorrbotten: halka på 16 av 58 vägavsnitt, 16 stationer under noll, kallast −1,9 °C vid Leipojärvi.\nVästernorrland: halka på 6 av 22 vägavsnitt, 2 stationer under noll, kallast −0,6 °C vid Långvattnet.\nJämtland: halka på 4 av 17 vägavsnitt, 8 stationer under noll, kallast −0,5 °C vid Åre.\n\nLäget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Västerbotten #Norrbotten #Västernorrland #Jämtland #halkvakt",
+  "textIg": "God morgon. Så här ser vägarna ut kl. 05:50.\n\nVästerbotten: halka på 27 av 44 vägavsnitt, 23 stationer under noll, kallast −2,0 °C vid Missenträsk.\nNorrbotten: halka på 16 av 58 vägavsnitt, 16 stationer under noll, kallast −1,9 °C vid Leipojärvi.\nVästernorrland: halka på 6 av 22 vägavsnitt, 2 stationer under noll, kallast −0,6 °C vid Långvattnet.\nJämtland: halka på 4 av 17 vägavsnitt, 8 stationer under noll, kallast −0,5 °C vid Åre.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone, länken finns i vår profil.\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Västerbotten #Norrbotten #Västernorrland #Jämtland #halkvakt",
+  "pass": "morgon",
+  "datum": "2026-10-29",
+  "generated_at": "2026-10-29T04:30:05.539Z",
+  "lan": [
+    "vasterbotten",
+    "norrbotten",
+    "vasternorrland",
+    "jamtland"
+  ]
+}
