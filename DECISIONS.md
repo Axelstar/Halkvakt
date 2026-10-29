@@ -18770,7 +18770,7 @@ kommer stationernas nya mätning med inom två minuter ändå.
 värsta fall; väglag, olyckor och kandidaten från cirka 21 till cirka 2 i snitt och från 41 till 4 i värsta fall.
 
 **Kostnad.** Databasen: några MB med fast tak (KEDJANS-TAKT §5), men regelns och urvalets frågor fem gånger så ofta, därav villkoret i
-punkt 3. Hinkens trafik: omkring 150 kB i timmen per förare under resan, inom Pro-planen (#644; kvoten inte läst i panelen). Batteriet:
+punkt 3. Hinkens trafik: omkring 150 kB i timmen per förare under resan (rättat 29/10 till omkring 0,9 MB, se tillägget nedan), inom Pro-planen (#644; kvoten inte läst i panelen). Batteriet:
 omkring 0,25–0,75 %/h med 30 kollar i timmen när radion annars sover (uppskattat, inte mätt), därför punkt 5 och 6.
 
 **Inte avgjort här.** Stationernas tre timmar (`WX_SANE`, KEDJANS-TAKT §6) är ett eget beslut och står kvar i fristen `kedjans-takt-1-11`.
@@ -18816,6 +18816,15 @@ lika fort, omkring tre minuter efter den förra, men med hälften så många kol
 radions väckningar som batteriprovet i punkt 6 prövar. Byggt så i fas 2 (PR #1260; `Kolltakten.swift` och `SnapshotSchedule.kt`, i
 kontraktsgrinden). Förhållandet mellan nya filer och kollar i mätningen under Betatest visar efter fas 3 hur ofta den första kollen
 träffar; talet ändras då med en rad i varje app.
+
+**Tillägg 29/10: batteriet skattat och hinkens trafik rättad** (Bengt: *"kan man inte göra någon form av beräkning hur mycket
+appen egentligen kan dra"* och *"Ja, checka in"*). `docs/BATTERISKATTNINGEN-2026-10-29.md`, räknat av
+`scripts/matningar/batteriskattningen-2026-10-29.ts`: förankrat i mätningen 27/9 (#382, 7 %/h, sant värde 6–8) och med fas 2:s
+omkring 30 kollar i timmen lagda ovanpå drar iPhone troligast omkring 7,2 %/h under en resa. Fas 2 lägger till 0–1,1 %/h beroende
+på radion och batteriet, och det sämsta fallet är drygt 9 %/h. Skattningen ersätter inte punkt 6, eftersom osäkerheten i mätningen
+27/9 är lika stor som marginalen. Provet kan göras på iPhone med 0.3.14 (35) från TestFlight, utan laddsladd och gärna i två timmar.
+Rättelse av *Kostnad*: hinkens trafik är omkring **0,9 MB** i timmen per förare, inte 150 kB, eftersom `live.json` bär
+`generated_at` och hämtas vid nästan varje koll (30 × 31,7 kB med gzip, uppmätt i hinken 29/10).
 
 ## #742 (28/10 2026) Gränsfrågan i publiceringen använder vägindexet: bygget från 39,9 s till omkring 2 s, samma stationer (kort #365)
 
