@@ -18797,7 +18797,16 @@ under resan) kan ge, och om den ska föreslås.
   34 556 mätningar): stationerna kommer i omgångar var tredje minut i median, längst 9,0 min emellan. Mätningens ålder vid ankomst
   5,0 min i median av omgångarnas medianer (302 s), 7,0 i 95:e percentilen (418 s) och 7,0 som mest (421 s). Trafikverkets egen del
   (`ModifiedTime` minus mättiden, som alla mätningar bar) 4,1 min i median (247 s) och 6,0 i 95:e percentilen (361 s); skillnaden,
-  omkring en minut, är vår hämtning. Dagen läses för sig.
+  omkring en minut, är vår hämtning.
+- **Dagen 29/10, 09:08–15:08 UTC** (DB-knappen *las* 40898596085; 352 svar från livemotorn med `leverans`, 117 med nya mätningar,
+  51 979 mätningar): som natten. Omgångar var tredje minut i median, längst 6,9 min emellan. Mätningens ålder vid ankomst 5,0 min i
+  median av omgångarnas medianer (300 s; timmarna 09–14 299–302,5 s) och 7,0 i 95:e percentilen (421 s). Trafikverkets egen del (som
+  alla mätningar bar) 4,1 min i median (246 s) och 6,0 i 95:e percentilen (362 s). Av omkring fem minuter vid ankomst är alltså fyra
+  Trafikverkets och en vår hämtning, natt som dag; punkt 1b är mätt. Den största åldern var däremot 28,0 dygn (2 419 199 s), och i
+  sex av dagens sju timmar låg den största mellan 4,2 timmar och 28,0 dygn (natten: högst 421 s): enstaka objekt som Trafikverket
+  ändrat under dagen men vars mätning är gammal (`WeatherMeasurepoint` bär bara stationens senaste mätning), troligen stationer som
+  står still; vilka är inte läst. De rör inte medianerna, och publiceringen tar inte med dem: hinkens `live.json` 15:12 UTC hade
+  `weather_oldest_at` 15:05:03.
 
 **Tillägg 29/10: appens koll 60 s efter den väntade publiceringen, inte 30 s** (Bengt: *"kör 60 sek"*). Punkt 4 sa *"generated_at
 plus två minuter, med en halv minuts marginal"*. Mätt 29/10 när hinken kom i drift: hinkens publika adress går genom Cloudflare och
