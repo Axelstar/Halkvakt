@@ -42,8 +42,12 @@ test("länssidorna: 21 län och en översikt, svaret ur källorna, Trafikverkets
   assert.deepEqual(Object.keys(sidor).filter((p) => p !== "lan/index.html" && !p.startsWith("data/")).sort(),
     [...LAN.map((l) => `lan/${l.slug}/index.html`), ...VAGAR.map((v) => `vag/${v.slug}/index.html`),
       ...ORTER.map((o) => `ort/${ortSlug(o.namn)}/index.html`)].sort());
-  assert.ok(sidor["lan/uppsala/index.html"].includes("<title>Halka i Uppsala idag:"), "utan län, som i sökrutan");
-  assert.ok(sidor["lan/stockholm/index.html"].includes("<title>Halka i Stockholm idag:"), "utan genitiv-s");
+  // 29/10: orten Uppsala har egen sida med titeln "Halka i Uppsala idag", så länssidan säger "län" — två sidor, två titlar.
+  assert.ok(sidor["lan/uppsala/index.html"].includes("<title>Halka i Uppsala län idag:"), "länet när en ort bär namnet");
+  assert.ok(sidor["lan/stockholm/index.html"].includes("<title>Halka i Stockholms län idag:"), "länet när en ort bär namnet");
+  assert.ok(sidor["lan/sodermanland/index.html"].includes("<title>Halka i Södermanland idag:"), "utan län när ingen ort bär namnet");
+  const titlar = Object.entries(sidor).filter(([p]) => p.endsWith(".html")).map(([, h]) => h.match(/<title>(.*?)<\/title>/)![1]);
+  assert.equal(new Set(titlar).size, titlar.length, "ingen titel används av två sidor");
   const skane = sidor["lan/skane/index.html"];
   assert.ok(skane.includes("<title>Halka i Skåne idag: väglag och trafikläget just nu | Halkvakt</title>"), "sökorden först, som folk skriver dem (28/10)");
   assert.ok(skane.includes(`<meta name="description" content="Kl. 07:30: halka eller vinterväglag på 1 av 2 vägavsnitt i Skåne län, kallast −1,5 °C vid Lund. Trafikverkets väglag, vägtemperatur och olyckor, uppdaterat var 30:e minut.">`), "dagens siffror i sökträffen");
@@ -96,7 +100,13 @@ test("vägsidorna: vägnumret utan form, vägens sträckor i alla län, statione
   assert.ok(e6.includes("<title>Väglag E6 idag: halka och trafikläget just nu | Halkvakt</title>"));
   assert.ok(e6.includes(`content="Kl. 07:30: halka eller vinterväglag på 1 av 2 vägavsnitt på E6, kallast −1,5 °C vid Lund.`));
   assert.ok(e6.includes("Kl. 07:30 rapporterar Trafikverket halka eller vinterväglag på 1 av E6:s 2 vägavsnitt. 1 mätstation visar vägbana på 0 °C eller kallare, kallast −1,5 °C vid Lund."));
-  assert.ok(e6.includes("Skåne: E 6 Malmö - Lund: Mycket besvärligt, Is") && !e6.includes("Kungälv"), "bara det hala listas, med länet");
+  assert.ok(e6.includes("Skåne: E 6 Malmö - Lund: Mycket besvärligt, Is") && !e6.includes("E 6 Kungälv - Uddevalla"), "bara det hala listas, med länet");
+  // Vägen län för län (29/10): varje län med sina sträckor och länken dit, orterna längs vägen och frågorna.
+  assert.ok(e6.includes(`<h2>E6 län för län</h2>`));
+  assert.ok(e6.includes(`<li><b><a href="../../lan/skane/">Skåne</a></b><span class="halt">Halka eller vinterväglag på 1 av 1 sträcka</span> · vägbanan −1,5 °C vid Lund<small>Malmö–Lund</small></li>`));
+  assert.ok(e6.includes(`<li><b><a href="../../lan/vastra-gotaland/">Västra Götaland</a></b>Ingen halka rapporterad på 1 sträcka<small>Kungälv–Uddevalla</small></li>`));
+  assert.ok(e6.includes(`<h2>Orter längs E6</h2>`) && e6.includes(`<a href="../../ort/malmo/">Malmö</a>`) && e6.includes(`<a href="../../ort/uddevalla/">Uddevalla</a>`));
+  assert.ok(e6.includes("Hur ofta uppdateras väglaget på E6?") && e6.includes(`"@type":"FAQPage"`));
   assert.ok(e6.includes("Skåne: Lund: −1,5 °C") && !e6.includes("Kall men vid en annan väg"));
   assert.ok(e6.includes("Västra Götaland: sedan 20 nov. 06:10"), "olyckan 'E6' möter väglagets 'E 6'");
   const rv40 = sidor["vag/rv40/index.html"];
@@ -105,6 +115,11 @@ test("vägsidorna: vägnumret utan form, vägens sträckor i alla län, statione
   assert.ok(sidor["lan/index.html"].includes(`<tr><td><a href="../vag/e6/">E6</a></td><td>1 av 2</td><td>1</td><td>1</td><td></td></tr>`));
   assert.ok(sidor["lan/skane/index.html"].includes(`<a href="../../vag/e4/">E4</a>`), "länssidorna länkar till vägarna");
   for (const [p, html] of Object.entries(sidor)) if (!p.startsWith("data/")) assert.ok(!/undefined|NaN|null/.test(html), `${p}: inget tomt läckte ut`);
+  // Datamängden bär description och creator (29/10): Search Console fällde sidorna utan dem.
+  const ld = JSON.parse(e6.match(/<script type="application\/ld\+json">(\{"@context":"https:\/\/schema.org","@type":"WebPage".*?)<\/script>/)![1]);
+  assert.equal(ld.isBasedOn["@type"], "Dataset");
+  assert.ok(ld.isBasedOn.description.length > 50);
+  assert.deepEqual(ld.isBasedOn.creator, { "@type": "GovernmentOrganization", name: "Trafikverket", url: "https://www.trafikverket.se/" });
 });
 
 test("länssidorna: sitemapen får de adresser som saknas, en gång, och Axels rader står kvar", () => {

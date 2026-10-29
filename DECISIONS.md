@@ -18936,3 +18936,22 @@ pausas för eftermiddagen. `ANTAL_NYA` och `PULS_GOLV` blir 27.
 körning i stället för två: ingen byter reservannonsen mot eftermiddagens när den godkänts.
 
 **Stomdokument:** inga — marknadsföringen ligger utanför appen, motorn och mätningarna; ingen data lämnar appen.
+
+## #747 (29/10 2026) Sidornas strukturerade data, länens titlar och vägsidorna, efter Search Console
+
+**Beslut** (Axel 29/10: *"Yes please fix it all, we need to get this prepared for the real winter"*). Tre ändringar i `publish/lanssidor.ts`,
+alla ur Search Console och en genomgång av sajtens 83 adresser samma kväll:
+1. **Datamängden i `isBasedOn`** får `description` och `creator` (Trafikverket, `GovernmentOrganization`). Search Console meddelade 28/10
+   att sidorna fälls i rapporten Datasets: *description* saknas (kritiskt, sidan kan inte visas som datamängd) och *creator* saknas.
+2. **Länssidans titel säger "län" när en ortssida bär samma namn** (`lsLanTitelnamn`). Sedan ortssidorna (#736) hade fem par samma titel:
+   Stockholm, Uppsala, Jönköping, Kalmar och Örebro ("Halka i Uppsala idag" både på /lan/uppsala/ och /ort/uppsala/), och "halka uppsala"
+   är sajtens största sökning. Nu "Halka i Uppsala län idag"; övriga län som förut. Provet kräver att ingen titel används av två sidor.
+3. **Vägsidorna** (≈175 ord, tunnast på sajten) får *E6 län för län* (varje län vägen går genom: sträckorna i Trafikverkets ord, halkan,
+   kallaste stationen vid vägen, länk till länet), *Orter längs E6* (orterna vars avsnitt ligger på vägen), länken till guiden och de
+   vanliga frågorna med FAQPage, som läns- och ortssidorna. Bara rapporterat läge; inget påstås om vägen mellan sträckorna.
+
+**Alternativ.** Ta bort `Dataset` och ange Trafikverket som vanlig källa: fungerar, men tappar licensen och källan i den strukturerade datan.
+Ortssidan byter namn i stället för länet: orten är det folk skriver ("halka uppsala"), så orten behåller det korta namnet. Handskrivna
+avsnitt om var vägen brukar bli hal: påståenden utan källa (CLAUDE.md, rösten får aldrig säga mer än datan), så vägsidorna växer med data.
+
+**Stomdokument:** inga — sajtens sidor och sökordning; appen, motorn och mätningarna är orörda.
