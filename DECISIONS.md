@@ -18793,6 +18793,11 @@ under resan) kan ge, och om den ska föreslås.
   Trafikverkets leverans plus högst en minuts väntan hos oss.
 - **Läsningen:** en gång på dagen och en gång på natten efter deployen, var och en över pg_net:s sex timmar. Talen skrivs in här och i
   KEDJANS-TAKT §2 och §8, där leveranstiden står som inte mätt.
+- **Natten 29/10, 00:06–06:04 UTC** (DB-knappen *las* 40827100796; 325 svar från livemotorn med `leverans`, 94 med nya mätningar,
+  34 556 mätningar): stationerna kommer i omgångar var tredje minut i median, längst 9,0 min emellan. Mätningens ålder vid ankomst
+  5,0 min i median av omgångarnas medianer (302 s), 7,0 i 95:e percentilen (418 s) och 7,0 som mest (421 s). Trafikverkets egen del
+  (`ModifiedTime` minus mättiden, som alla mätningar bar) 4,1 min i median (247 s) och 6,0 i 95:e percentilen (361 s); skillnaden,
+  omkring en minut, är vår hämtning. Dagen läses för sig.
 
 ## #742 (28/10 2026) Gränsfrågan i publiceringen använder vägindexet: bygget från 39,9 s till omkring 2 s, samma stationer (kort #365)
 

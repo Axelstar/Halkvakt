@@ -21,6 +21,8 @@ import { nyckelGiltig } from "../_shared/nyckel.ts";
 const sql = postgres(Deno.env.get("SUPABASE_DB_URL")!, { max: 1, prepare: false });
 const REPO = "Axelstar/halkvakt-karta";
 const token = Deno.env.get("PUBLISH_TOKEN")!;
+const SB = Deno.env.get("SUPABASE_URL")!;
+const SRK = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
 async function gh(path: string, method = "GET", body?: unknown): Promise<any> {
   const r = await fetch(`https://api.github.com/repos/${REPO}${path}`, {
@@ -49,6 +51,19 @@ async function publicera(files: Record<string, string>, inline: Record<string, s
     message: `data: ${new Date().toISOString()} (Supabase)`, tree: tree.sha, parents: [baseCommit] });
   await gh("/git/refs/heads/main", "PATCH", { sha: commit.sha });
   return commit.sha.slice(0, 7);
+}
+
+/** Appens tre filer i den publika hinken `app` (DECISIONS #741 punkt 2, sql/073): static och live först och manifestet sist, så att
+ *  manifestet aldrig pekar på en fil som inte är skriven. `v1/…` i hinken ger manifestets `app/v1/…` under storage/v1/object/public/.
+ *  no-cache: appen prövar filen mot manifestets sha256, och en fil som legat kvar i en cache från förra körningen fäller provet. */
+async function skrivHinken(files: Record<string, string>) {
+  const skriv = async (namn: string) => {
+    const r = await fetch(`${SB}/storage/v1/object/app/v1/${namn}`, { method: "POST", body: files[`data/app/v1/${namn}`],
+      headers: { Authorization: `Bearer ${SRK}`, apikey: SRK, "Content-Type": "application/json", "x-upsert": "true", "cache-control": "no-cache" } });
+    if (!r.ok) throw new Error(`hinken ${namn} ${r.status}: ${(await r.text()).slice(0, 200)}`);
+  };
+  await Promise.all([skriv("static.json"), skriv("live.json")]);
+  await skriv("manifest.json");
 }
 
 Deno.serve(async (req) => {
@@ -92,6 +107,12 @@ Deno.serve(async (req) => {
       "data/app/v1/live.json": sLive,
       "data/app/v1/manifest.json": JSON.stringify(manifest),
     };
+    // Hinken före GitHub (#741 punkt 2), så att filerna ligger där så fort de är byggda. Ett fel stoppar inte GitHub, som kartan och de
+    // installerade apparna läser; det står i svaret med Storage-svarets kropp.
+    tDel = Date.now();
+    let hinken = "ok";
+    try { await skrivHinken(files); } catch (e) { hinken = String((e as Error).message ?? e); }
+    tider.hinken = Date.now() - tDel;
     // Kartlagren var 30:e minut (#77). Minuten läses vid start; pg_cron fyrar :00,:10,…
     const karta = new URL(req.url).searchParams.get("karta") === "1" || new Date().getUTCMinutes() % 30 < 10;
     let kartaStats: unknown = null;
@@ -126,7 +147,7 @@ Deno.serve(async (req) => {
       bridges: liveDoc.bridges.length, smhi: liveDoc.smhi.length,
       cameras: staticDoc.cameras.length, border, notes,
       live_gz_bytes: manifest.files.live.gz_bytes,
-      karta: kartaStats, lanssidor: Object.keys(inline).length, tider, bygget_delar: delar, ms: Date.now() - t0 }), { headers: { "Content-Type": "application/json" } });
+      karta: kartaStats, lanssidor: Object.keys(inline).length, hinken, tider, bygget_delar: delar, ms: Date.now() - t0 }), { headers: { "Content-Type": "application/json" } });
   } catch (e) {
     return new Response(JSON.stringify({ ok: false, error: String(e) }), { status: 500 });
   }

@@ -41,7 +41,7 @@ stannar i databasen.
 | Länk | Motorn | Kandidaten |
 | :-- | :-- | :-- |
 | Från förändring på vägen till mätning | Upp till 10 min (stationernas mättakt) | Ytan räknas en gång i timmen; fukt och veto läses färska vid varje publicering |
-| Från mätning till databasen | Trafikverkets leverans (inte mätt) + högst 1 min | – |
+| Från mätning till databasen | Trafikverkets leverans, natten 29/10 4,1 min i median och 6,0 i 95:e percentilen (DECISIONS #741), + högst 1 min: mätningen 5,0 min gammal i median vid ankomst och 7,0 som mest | – |
 | Mätningens ålder när publiceringen går | **10 min** (se §3) | Timmen högst 2 h gammal, annars tiger regeln |
 | Väntan på publicering | Ingår ovan | Upp till 10 min |
 | GitHub Pages | Omkring 1 min (inte mätt) | Omkring 1 min |
@@ -126,11 +126,11 @@ Gör uppsnabbningen för båda i en ordning:
 ## 8. Reservationer
 
 - Åldrarna är mätta i ett enda ögonblick, publiceringen 16:00 28/10, ur kartans publika filer.
-- Trafikverkets leveranstid för en mätning är inte mätt; steg 0:s vinst beror på den.
+- Trafikverkets leveranstid är mätt på natten 29/10 (DECISIONS #741: 4,1 min i median, 6,0 i 95:e percentilen); dagen är inte läst. Steg 0 utgick i #741.
 - Pages-byggets tid är inte mätt.
 - GitHubs gräns på 10 byggen i timmen och Supabase-planens kvoter är ur minnet av deras dokumentation, inte kontrollerade 28/10.
   Hur kartrepot publiceras syns inte utan inloggning.
-- Hur lång tid `publicera` tar per körning är inte mätt; det behövs före steg 2.
+- `publicera`s tid per körning är mätt 28/10 (DECISIONS #741 och #742): 13,7 s med kartan efter gränsfrågans omskrivning.
 - Radstorleken i körloggen är uppskattad.
 - Androids takt är läst i en kommentar i iOS-koden, inte i Android-koden.
 
