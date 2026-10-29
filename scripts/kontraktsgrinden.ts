@@ -804,6 +804,14 @@ export const KONTRAKT: Kontrakt[] = [
     golv: 4,
   },
   {
+    // DECISIONS #741 punkt 3 (29/10): publicera går varannan minut och väljer GitHub och kartan på minuten med takten som fönster.
+    namn: "Publiceringens takt — pg_cron:s schema och fönstret för GitHub och kartan",
+    varfor: "Driver schemat från fönstret hoppar GitHub och kartan över körningar eller tar dem flera gånger, och Pages kan stå still utan ett fel.",
+    former: [/const PUBLICERA_TAKT_MIN = (\d+);/, /schedule := '\*\/(\d+) \* \* \* \*'.*-- PUBLICERA_TAKT_MIN/],
+    filer: /supabase\/functions\/publicera\/main\.ts$|sql\/074_/,
+    golv: 2,
+  },
+  {
     namn: "Spridningsgrindens X — domen och kandidatens regel tiger vid samma spridning",
     varfor: "Driver X i regeln (sql/058) från X i domen (grind-s-b.ts) dömer domen andra varningar än appen gav (DECISIONS #475, #477, #575).",
     former: [/const SPRIDNING_X: number \| null = ([\d.]+);/, /k\.spr >= ([\d.]+) THEN 'spridning'/, /export const SPRIDNING_X_C = ([\d.]+);/],

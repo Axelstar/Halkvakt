@@ -5,8 +5,9 @@
 // prövad i test/datavakter.test.ts. En enstaka oläsbar publicering är fail-soft med flit; samma källa oläsbar i I_RAD
 // publiceringar i rad är ett fel.
 
-/** Så många publiceringar i rad (var 10:e minut, alltså en halvtimme) innan en oläsbar källa larmar. */
-export const I_RAD = 3;
+/** Så många publiceringar i rad (varannan minut sedan sql/074, DECISIONS #741 punkt 3, alltså en halvtimme som förut) innan en oläsbar
+ *  källa larmar. */
+export const I_RAD = 15;
 
 export type Tystade = { vakt: string; antal: number; stationer: string[] };
 
