@@ -141,7 +141,11 @@ const LS_MARKE = `<svg viewBox="3 3 94 83" aria-hidden="true"><path fill-rule="e
 function lsJsonLd(o: { titel: string; beskrivning: string; adress: string; now?: Date }): string {
   const d = { "@context": "https://schema.org", "@type": "WebPage", name: o.titel, description: o.beskrivning, url: o.adress, inLanguage: "sv-SE",
     ...(o.now ? { dateModified: o.now.toISOString() } : {}),
-    isBasedOn: { "@type": "Dataset", name: "Trafikverkets öppna data: väglag, vägväderstationer och olyckor", license: "https://creativecommons.org/publicdomain/zero/1.0/" },
+    // description och creator (29/10, Search Console): Google läser isBasedOn som en datamängd och kräver description, vill ha creator.
+    isBasedOn: { "@type": "Dataset", name: "Trafikverkets öppna data: väglag, vägväderstationer och olyckor",
+      description: "Trafikverkets öppna API: rapporterat väglag per vägavsnitt, vägbanans temperatur vid vägväderstationerna och pågående olyckor.",
+      creator: { "@type": "GovernmentOrganization", name: "Trafikverket", url: "https://www.trafikverket.se/" },
+      license: "https://creativecommons.org/publicdomain/zero/1.0/" },
     publisher: { "@type": "Organization", name: "Halkvakt", url: `${SIDBAS}/` } };
   return `<script type="application/ld+json">${JSON.stringify(d).replace(/</g, "\\u003c")}</script>`;
 }
@@ -251,7 +255,27 @@ function lsBeskrivning(l: LanLage, plats: string, now: Date): string {
 const lsLanKort = (kod: number | null) => LAN.find((l) => l.kod === kod)?.kort ?? null;
 const lsVagLankar = (rot: string) => VAGAR.map((v) => `<a href="${rot}vag/${v.slug}/">${lsEsc(v.namn)}</a>`).join(" · ");
 
-function lsVagsida(vag: (typeof VAGAR)[number], l: LanLage, now: Date): string {
+/** Vägen län för län (29/10, Search Console: vägsidorna var tunnast, ~175 ord): varje län vägen går genom, med dess sträckor
+ *  i Trafikverkets ord, halkan och kallaste stationen vid vägen, och orterna längs vägen. Bara rapporterat läge, inga påståenden. */
+function lsVagLanForLan(vag: (typeof VAGAR)[number], d: { vaglag: LanSegment[]; stationer: LanStation[] }): string {
+  const segs = d.vaglag.filter((s) => vagNyckel(s.road) === vag.nyckel);
+  const rader = LAN.filter((lan) => segs.some((s) => s.lan === lan.kod)).map((lan) => {
+    const sv = segs.filter((s) => s.lan === lan.kod);
+    const halt = sv.filter((s) => arHalt(s.code, s.info));
+    const st = d.stationer.filter((x) => x.lan === lan.kod && vagNyckel(x.vag ?? null) === vag.nyckel).sort((a, b) => a.yta - b.yta)[0];
+    const lage = halt.length
+      ? `<span class="halt">Halka eller vinterväglag på ${halt.length} av ${lsPlural(sv.length, "sträcka", "sträckor")}</span>`
+      : `Ingen halka rapporterad på ${lsPlural(sv.length, "sträcka", "sträckor")}`;
+    const temp = st ? ` · vägbanan ${lsGrad(st.yta)} vid ${lsEsc(st.name)}` : "";
+    const namn = [...new Set((halt.length ? halt : sv).map(lsStracka).filter(Boolean))].slice(0, 6);
+    return `<li><b><a href="../../lan/${lan.slug}/">${lsEsc(lan.kort)}</a></b>${lage}${temp}${namn.length ? `<small>${lsEsc(namn.join(" · "))}</small>` : ""}</li>`;
+  });
+  const orter = ORTER.filter((o) => lsOrtAvsnitt(o, segs).length).map((o) => `<a href="../../ort/${ortSlug(o.namn)}/">${lsEsc(o.namn)}</a>`);
+  return (rader.length ? `<h2>${lsEsc(vag.namn)} län för län</h2>\n<ul class="vaglista">\n${rader.join("\n")}\n</ul>` : "") +
+    (orter.length ? `\n<h2>Orter längs ${lsEsc(vag.rubrik)}</h2>\n<p>${orter.join(" · ")}</p>` : "");
+}
+
+function lsVagsida(vag: (typeof VAGAR)[number], l: LanLage, now: Date, d: { vaglag: LanSegment[]; stationer: LanStation[] }): string {
   const med = (lan: number | null, text: string) => { const k = lsLanKort(lan); return k ? `${lsEsc(k)}: ${text}` : text; };
   const halt = l.halt.slice(0, 20).map((s) =>
     `<li>${med(s.lan, `${lsEsc(s.plats ?? s.road ?? "Vägavsnitt")}: ${lsEsc([s.text, ...s.info].filter(Boolean).join(", "))}`)}</li>`).join("\n");
@@ -271,14 +295,17 @@ ${l.kalla.length ? `<p>Kallast just nu, vid de vägväderstationer som ligger n�
     : "<p>Ingen av vägväderstationerna vid vägen visar vägbana på 0 °C eller kallare.</p>"}
 <h2>Pågående olyckor</h2>
 ${l.olyckor.length ? `<ul>\n${olyckor}\n</ul>` : `<p>Trafikverket rapporterar ingen pågående olycka på ${lsEsc(vag.rubrik)}.</p>`}
+${lsVagLanForLan(vag, d)}
 <h2>Om vägen</h2>
 <p>${lsEsc(vag.stycke)}</p>
-<p>Se hela landet på <a href="../../karta.html">livekartan</a>, eller <a href="../../lan/">läget i alla län</a>.</p>
+<p>Se hela landet på <a href="../../karta.html">livekartan</a>, eller <a href="../../lan/">läget i alla län</a>. Undrar du när vägen blir hal? Läs <a href="../../nar-blir-det-halt.html">när det blir halt på vägarna</a>.</p>
+<h2>Vanliga frågor</h2>
+${lsFragorHtml(lsFragor(vag.namn, `på ${vag.rubrik}`))}
 <nav><h2>Andra vägar</h2><p>${andra}</p></nav>`;
   return lsSkal({
     titel: `Väglag ${vag.rubrik} idag: halka och trafikläget just nu | Halkvakt`,
     beskrivning: lsBeskrivning(l, `på ${vag.rubrik}`, now),
-    adress: `${SIDBAS}/vag/${vag.slug}/`, rot: "../../", innehall, now, ct: "vag",
+    adress: `${SIDBAS}/vag/${vag.slug}/`, rot: "../../", innehall, now, ct: "vag", extra: lsFragorLd(lsFragor(vag.namn, `på ${vag.rubrik}`)),
   });
 }
 
@@ -312,9 +339,9 @@ function lsVagarILanet(kod: number, d: { vaglag: LanSegment[]; stationer: LanSta
 }
 
 /** Vanliga frågor (25/10, DECISIONS #722): synliga på sidan och som FAQPage. Svaren säger bara vad sidan och appen gör. */
-function lsFragor(namn: string): { fraga: string; svar: string }[] {
+function lsFragor(namn: string, var_ = `i ${namn}`): { fraga: string; svar: string }[] {
   return [
-    { fraga: `Hur ofta uppdateras väglaget i ${namn}?`, svar: "Sidan skrivs om var 30:e minut med Trafikverkets senaste väglagsrapport, vägbanans temperatur vid vägväderstationerna och pågående olyckor." },
+    { fraga: `Hur ofta uppdateras väglaget ${var_}?`, svar: "Sidan skrivs om var 30:e minut med Trafikverkets senaste väglagsrapport, vägbanans temperatur vid vägväderstationerna och pågående olyckor." },
     { fraga: "Vad räknas som halka på sidan?", svar: "En sträcka räknas som hal när Trafikverkets väglagsrapport anger besvärligt väglag eller nämner is, snö, frost eller halka. Det är samma regel som får appen att varna." },
     { fraga: "Var mäts vägbanans temperatur?", svar: "Vid Trafikverkets vägväderstationer längs de större vägarna. Mellan stationerna mäts ingenting, så vägen kan vara kallare eller varmare där." },
     { fraga: "Kan jag få en varning medan jag kör?", svar: "Ja. Halkvakt för iPhone säger till med rösten när halka är rapporterad på vägen framför dig. Appen är gratis, och din position lämnar inte telefonen av sig själv." },
@@ -355,6 +382,11 @@ rita();addEventListener('resize',rita)}).catch(function(){var a=document.querySe
 function lsSoknamn(kort: string): string {
   return / län$/.test(kort) ? kort.replace(/ län$/, "").replace(/s$/, "") : kort;
 }
+
+/** Länets namn i titeln (29/10, Search Console): sökordet utan "län", utom när en ortssida bär samma namn ("Halka i Uppsala idag")
+ *  — då heter länssidan "Uppsala län", så att de två sidorna inte tävlar om samma sökning med samma titel. */
+const lsLanTitelnamn = (lan: (typeof LAN)[number]) =>
+  ORTER.some((o) => o.namn === lsSoknamn(lan.kort)) ? lan.kort : lsSoknamn(lan.kort);
 
 /** ORTSSIDORNA (28/10): de orter folk skriver i sökrutan ("halka karlstad", "väglag umeå"). En ort är med när minst två av
  *  Trafikverkets vägavsnitt i dess eget län bär ortens namn ("E 18 Karlstad - Kristinehamn"); sidan visar just de avsnitten, med
@@ -459,7 +491,7 @@ ${lsFragorHtml(lsFragor(lan.namn))}
 <p>Undrar du när vägen blir hal? Läs <a href="../../nar-blir-det-halt.html">när det blir halt på vägarna</a>.</p>
 <nav>${ORTER.some((o) => o.lan === lan.kod) ? `<h2>Orter i ${lsEsc(lsSoknamn(lan.kort))}</h2><p>${ORTER.filter((o) => o.lan === lan.kod).map((o) => `<a href="../../ort/${ortSlug(o.namn)}/">${lsEsc(o.namn)}</a>`).join(" · ")}</p>` : ""}<h2>Andra län</h2><p>${andra}</p><h2>Stora vägar</h2><p>${lsVagLankar("../../")}</p></nav>`;
   return lsSkal({
-    titel: `Halka i ${lsSoknamn(lan.kort)} idag: väglag och trafikläget just nu | Halkvakt`,
+    titel: `Halka i ${lsLanTitelnamn(lan)} idag: väglag och trafikläget just nu | Halkvakt`,
     beskrivning: lsBeskrivning(l, `i ${lan.namn}`, now),
     adress: `${SIDBAS}/lan/${lan.slug}/`, rot: "../../", innehall, now, ct: "lan", aktiv: "lanen", extra: lsFragorLd(lsFragor(lan.namn)),
   });
@@ -512,7 +544,7 @@ export function byggLanssidor(d: { vaglag: LanSegment[]; stationer: LanStation[]
   const ut: Record<string, string> = { "lan/index.html": lsOversikt(lagen, vagar, d.now), "data/lan.json": lsLanJson(lagen, vagar, d.now),
     "data/strackor.json": lsStrackorJson(d) };
   for (const lan of LAN) ut[`lan/${lan.slug}/index.html`] = lsLanssida(lan, lagen.get(lan.kod)!, d.now, d);
-  for (const v of VAGAR) ut[`vag/${v.slug}/index.html`] = lsVagsida(v, vagar.get(v.slug)!, d.now);
+  for (const v of VAGAR) ut[`vag/${v.slug}/index.html`] = lsVagsida(v, vagar.get(v.slug)!, d.now, d);
   for (const o of ORTER) ut[`ort/${ortSlug(o.namn)}/index.html`] = lsOrtsida(o, LAN.find((l) => l.kod === o.lan)!, lagen.get(o.lan)!, d.now, d);
   return ut;
 }
