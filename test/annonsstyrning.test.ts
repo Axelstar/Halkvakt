@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 // @ts-ignore — .mjs utan typer
-import { fara, annons, stracka, vagBild, vagText } from "../marknadsforing/annonsstyrning.mjs";
+import { fara, annons, stracka, vagBild, vagText, dagdel } from "../marknadsforing/annonsstyrning.mjs";
 
 const l = (kort: string, halt: number, kalla: number, extra = {}) =>
   ({ kod: 1, kort, slug: kort.toLowerCase(), halt, vagavsnitt: 40, kalla, kallast: null, olyckor: 0, ...extra });
@@ -63,4 +63,11 @@ test("vägnamn och sträckor i bildens och textens form", () => {
 test("inget utropstecken och inget långt tankstreck i någon text", () => {
   const a = annons(l("Dalarna", 0, 3), { vagar: [] }, TID, "2026-11-10");
   assert.doesNotMatch(a.text + a.rubrik, /[!—]/);
+});
+
+test("dagdel: before noon in Stockholm is the morning, the rest the afternoon (DECISIONS #746)", () => {
+  assert.equal(dagdel(new Date("2026-11-10T02:01:00Z")), "morgon");      // 03:01 svensk tid
+  assert.equal(dagdel(new Date("2026-11-10T10:59:00Z")), "morgon");      // 11:59
+  assert.equal(dagdel(new Date("2026-11-10T12:01:00Z")), "eftermiddag"); // 13:01
+  assert.equal(dagdel(new Date("2026-11-10T13:31:00Z")), "eftermiddag"); // 14:31
 });
