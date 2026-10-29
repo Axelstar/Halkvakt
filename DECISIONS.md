@@ -18834,3 +18834,35 @@ lista som kan vara ett dygn gammal, när frågan med index ger samma svar på en
 bort, en migration för samma vinst.
 
 **Stomdokument:** SYS lägesfilen och publiceringen, BED §4.2.
+
+## #743 (29/10 2026) K-A fälld på frostens data: frysklassningen läggs ned och K-B utgår (kort #103, #309)
+
+**Bengts ord 29/10:** *"kan du kontrollera om K-B nämner den gamla modellen och ändra om det behövs sen bokför du som fälld och
+lägger ned (#309)"*.
+
+**Domen.** Grinden K-A (`docs/TROSKLAR-FRYSKLASSNINGEN.md`, grind-k-a på 60 dygn) trycktes av frosttrycket 29/10 09:07 UTC (körning
+40847122232, domlarmet #1261): **FALLER i alla 27 kombinationer.** Underlaget är 743 stationer och 1 320 402 bucketade avläsningar efter
+#75:s givarvakt, fönstret 23/8–29/10. Ingen kombination klarar K-A2 (farliga fel ≤ 1 %): lägst 1,3 % (K3 50 km, K1 0,0 °C, K2 ±1,0:
+täckning 80,1 %, träff 98,3 %, 200 007 uttalade punkter); bäst på 15 och 20 km 1,5 %; utan osäkerhetszon 4,1–5,8 %.
+
+**Varför domen 8/10 är överspelad.** K-A PASSERADE 8/10 (#491, körning 37754426571) i 13 av 27 kombinationer, med farliga fel 0,5 % i
+den bästa, på 649 976 avläsningar i ett fönster som mest var september och där frosten just hade börjat. Dokumentets §7 punkt 3 säger
+*"Vid första frostperioden: K-A om, skarpt"*, och 29/10 är den första körningen med tre veckors frost i fönstret (frostärendet #804
+sedan 8/10; 96 stationer ≤ 0 °C senaste dygnet 29/10). Med den frosten missar modellen frysande vägar oftare än taket tillåter. §5
+punkt 1, skriven före mätningen: *"K-A2 över 1 % — modellen missar frysande vägar. Kortet läggs ner; det är felet som inte får
+finnas."*
+
+**Följd.**
+- Frysklassningen på offsetmodellen läggs ned: projektkartans del *Frysklassningen* stängd (grå), och kort #103:s stängning 8/10 är
+  överspelad.
+- K-B (kort #309, #510) utgår, eftersom den förutsätter att K-A klarar (§7 punkt 4). Fristen `k-b-dom` 16/11 tas bort. Uppspelningen
+  `grind-k-b` står kvar i koden men döms inte.
+- Kandidatens frysflagga berörs inte. Förregistreringen (signerad 26/10, #726) dömer i §4b punkt 11 kandidatens egen flagga i mars mot
+  K-A:s krav och K-B1; offsetmodellen redovisas där bara bredvid som kontroll. Dokumentet ändras inte: det är signerat, och inget i
+  det vilar på den fällda modellen.
+- grind-k-a trycks fortfarande av vakthundens frosttryck. Om den ska stå kvar där är en fråga i bedömningen §4.2.
+
+**Reservation.** Tre dygn saknas i fönstret (23/8, 6/9 och 7/9; körningen varnar för två av dem). De är frostfria: de kan bara lägga
+till punkter utan frys och sänka andelen farliga fel marginellt, inte från 1,3 % till 1 %.
+
+**Stomdokument:** MAT frysklassningen och domkalendern (K-B 16/11 borta), BED §4.2.
