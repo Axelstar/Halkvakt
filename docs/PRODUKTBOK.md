@@ -142,6 +142,9 @@ och *fartkamera* (en låda på stolpe med blixtlinjer). Svarta på kortet, ljusa
   kostade i batteri. Stannar i telefonen."* De tio senaste resorna, nyast först: datum och längd, kollar, nya filer och hur många
   som kom ur reserven, filens ålder vid ankomst (median och högst), det äldsta stationsvärdet och batteriet med %/h. Utan resor:
   *Inga resor mätta än.*
+
+  ![Mätningen under Betatest](produktbok/shot-6b-matningen.png)
+
 - *Integritet* — löftet: *"Din position lämnar inte telefonen av sig själv."* och *"All matchning mot vägdata sker lokalt
   i appen. Inget konto. Undantaget är betatestet — bara om du själv slår på det."* (i App Store-versionen från (33): *"Inget
   konto, och inget skickas."*, #681), sedan *"Slår du på Erbjud att spara
