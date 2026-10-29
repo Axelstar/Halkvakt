@@ -22,11 +22,16 @@ const LAN_URL = process.env.HV_LAN_URL ?? "https://halkvakt.se/data/lan.json";
 const STRACKOR_URL = process.env.HV_STRACKOR_URL ?? "https://halkvakt.se/data/strackor.json";
 const GRAPH = "https://graph.facebook.com/v23.0";
 const KONTO = "act_1760320565448083";
-const KAMPANJ = "Halkvakt · län";
+// Appkampanj (DECISIONS #744): Meta tar en App Store-länk bara under målet appinstallationer. Trafikkampanjen
+// "Halkvakt · län" från 27/10 avvisade länken och står kvar pausad; den tas bort i Ads Manager.
+const KAMPANJ = "Halkvakt · län · app";
 const PREFIX = "Län · ";
 const BUDGET_ORE = 200000;                       // 2 000 kr för hela kampanjen
 const DAGAR = 30;
 const APP = "https://apps.apple.com/se/app/halkvakt/id6806939784";
+// Meta-appen Halkvakt Ads, med Halkvakts bundle-id och App Store-id under plattformen iOS. Ingen Meta-SDK i appen:
+// den skulle skicka enhetsdata och bryta löftet, så kampanjen optimerar på klick till App Store, inte på installationer.
+const META_APP_ID = "28619019301133859";
 const MAX_ALDER_H = 2;
 const MIN_HALT = 1, MIN_KALLA = 3;
 const raknas = l => l.halt >= MIN_HALT || l.kalla >= MIN_KALLA;
@@ -188,7 +193,7 @@ async function uppsattning() {
   let k = await kampanjen();
   if (k) skriv(`Kampanjen "${KAMPANJ}" finns redan (${k.id}).`);
   else {
-    k = await graph(`${KONTO}/campaigns`, { name: KAMPANJ, objective: "OUTCOME_TRAFFIC", status: "PAUSED",
+    k = await graph(`${KONTO}/campaigns`, { name: KAMPANJ, objective: "OUTCOME_APP_PROMOTION", status: "PAUSED",
       special_ad_categories: [], lifetime_budget: String(BUDGET_ORE), bid_strategy: "LOWEST_COST_WITHOUT_CAP" }, "POST");
     skriv(`Kampanjen "${KAMPANJ}" skapad, pausad (${k.id}).`);
   }
@@ -202,7 +207,8 @@ async function uppsattning() {
       if (traff.length !== 1) { skriv(`${namn}: Meta gav ${traff.length} träffar på "${META_LAN[l.kod]}", hoppas över.`); continue; }
       s = await graph(`${KONTO}/adsets`, {
         name: namn, campaign_id: k.id, status: "PAUSED",
-        optimization_goal: "LINK_CLICKS", billing_event: "IMPRESSIONS", destination_type: "WEBSITE",
+        optimization_goal: "LINK_CLICKS", billing_event: "IMPRESSIONS",
+        promoted_object: { application_id: META_APP_ID, object_store_url: APP },
         start_time: start.toISOString(), end_time: slut.toISOString(),
         pacing_type: ["day_parting"],
         adset_schedule: [{ start_minute: 360, end_minute: 540, days: [0, 1, 2, 3, 4, 5, 6] },
