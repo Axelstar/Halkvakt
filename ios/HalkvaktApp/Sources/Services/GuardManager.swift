@@ -97,28 +97,35 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
 
     // MARK: - Snapshot
 
-    // Kort #258 (DECISIONS #371): under resan laddas vägdatan om var 30:e minut, som på Android (SnapshotSchedule) —
-    // en laddning i taget, och efter ett fel väntar nästa försök en minut. Förut laddades den bara vid start och när
-    // Vakten-vyn visades, så åldersvakten prövades aldrig igen under en lång resa.
-    private static let refreshEvery: TimeInterval = 30 * 60
-    private static let retryAfter: TimeInterval = 60
-    private var loading = false
-    private var nextLoadAt = Date.distantPast
+    // Kort #258 (DECISIONS #371): under resan laddas vägdatan om, en laddning i taget, och efter ett fel väntar nästa försök
+    // en minut. Förut laddades den bara vid start och när Vakten-vyn visades, så åldersvakten prövades aldrig igen under en
+    // lång resa. Fas 2 (DECISIONS #741 punkt 4): kollen följer publiceringen varannan minut i stället för var 30:e minut —
+    // takten bor i motorpaketet (Kolltakten), prövad där, som Androids SnapshotSchedule. Inga timers: kollen åker på positionen.
+    private var takten = Kolltakten()
 
     /// `fresh`: vakten startar — ny motor, nytt minne. Annars behåller en körande vakt minnet (v14: aldrig säga om).
+    /// Start och Vakten-vyn kollar direkt; positionerna när takten säger att det är dags (handle).
     func refreshSnapshot(fresh: Bool = false) async {
-        guard !loading else { return }
-        loading = true
-        defer { loading = false }
+        guard takten.borja(nu: Date.now.timeIntervalSince1970, force: true) else { return }
+        await koll(fresh: fresh)
+    }
+
+    /// Ett varv. Takten får besked om utfallet också när laddningen föll.
+    private func koll(fresh: Bool) async {
+        var utfall = Kolltakten.Utfall.fel
+        var gen: Date?
+        defer { takten.klar(nu: Date.now.timeIntervalSince1970, utfall: utfall, gen: gen?.timeIntervalSince1970) }
         do {
             let snap = try await SnapshotRepo.loadSnapshot()
+            utfall = snap.utfall
+            if snap.generatedAt > .distantPast { gen = snap.generatedAt }
+            Matningen.shared.koll(snap)   // räknas bara medan vakten går
             let gate = AgeGate.filter(snap.hazards, generatedAt: snap.generatedAt, now: .now)
             hazards = gate.hazards
             if !snap.stations.isEmpty { stations = snap.stations }
             if !fresh, running, let engine { engine.updateHazards(gate.hazards) }
             else { engine = AlertEngine(gate.hazards, EngineConfig.withPrefs()) }
-            // Gammal sparad fil: nytt försök om en minut, inte om 30.
-            nextLoadAt = .now.addingTimeInterval(gate.stale && snap.fromCache ? Self.retryAfter : Self.refreshEvery)
+            // En gammal sparad fil efter ett fel prövas igen om en minut: det är takten för FEL.
             dataStale = gate.stale
             let df = DateFormatter(); df.dateFormat = "HH:mm"
             let tid = snap.generatedAt > .distantPast ? df.string(from: snap.generatedAt) : "okänd tid"
@@ -126,7 +133,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
             recomputeNearby()
         } catch {
             // Behåll förra snapshoten; UI visar gammal info-rad tills nästa lyckade.
-            nextLoadAt = .now.addingTimeInterval(Self.retryAfter)
+            Matningen.shared.koll(nil)
         }
     }
 
@@ -228,6 +235,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
             Prefs.shared.tripStart = startedAt
         }
         Favoriter.shared.resanBorjar(ny: !sameTrip)   // kort #357: bara med brytaren på
+        Matningen.shared.resanBorjar()   // fas 2: en mätning per körning, start → stopp
         tripEndedAt = nil
         prevLoc = nil
         // ALLTID sant när vakten startas av föraren (#273). Apple: "When the value of this property is
@@ -285,6 +293,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         Prefs.shared.lastTripEnd = tripEndedAt
         Prefs.shared.lastTripKm = distanceKm
         if korde { Favoriter.shared.resanSlutar(km: distanceKm, minuter: drivingSeconds / 60) }   // kort #357: frågan på Redo., bara med brytaren på
+        if korde { Matningen.shared.resanSlutar() }   // fas 2: sparas när resan slutar, stannar i telefonen
         headsUpTask?.cancel()
         manager.stopUpdatingLocation()
         dismissTask?.cancel()
@@ -364,7 +373,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
 
         guard running else { return }
         if loc.horizontalAccuracy >= 0 { Favoriter.shared.fix(lon: loc.coordinate.longitude, lat: loc.coordinate.latitude) }   // #357
-        if !loading, Date.now >= nextLoadAt { Task { await refreshSnapshot() } }   // #258: också när första laddningen föll
+        if takten.borja(nu: Date.now.timeIntervalSince1970) { Task { await koll(fresh: false) } }   // #258: också när första laddningen föll
         guard let engine else { return }
 
         let kmh = loc.speed >= 0 ? loc.speed * 3.6 : 0

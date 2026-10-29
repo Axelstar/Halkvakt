@@ -811,6 +811,15 @@ export const KONTRAKT: Kontrakt[] = [
     filer: /supabase\/functions\/publicera\/main\.ts$|sql\/074_/,
     golv: 2,
   },
+  // DECISIONS #741 punkt 4 (fas 2, 29/10): appens kolltakt, samma regel i Swift (sekunder) och Kotlin (millisekunder). Publiceringen
+  // (120 s) ska följa PUBLICERA_TAKT_MIN ovan; olika enheter, så den kopplingen vaktas inte här.
+  ...([["publicering", "PUBLICERING"], ["marginal", "MARGINAL"], ["omkoll", "OMKOLL"], ["fel", "FEL"]] as const).map(([s, k]) => ({
+    namn: `Appens kolltakt — ${s} i iOS och Android`,
+    varfor: "Driver talen isär kollar iPhone och Android olika ofta, och mätningen i fas 3 jämför två olika appar.",
+    former: [new RegExp(`static let ${s}S: TimeInterval = (\\d+)$`), new RegExp(`const val ${k}_MS = (\\d+)_000L`)],
+    filer: /Kolltakten\.swift$|SnapshotSchedule\.kt$/,
+    golv: 2,
+  })),
   {
     namn: "Spridningsgrindens X — domen och kandidatens regel tiger vid samma spridning",
     varfor: "Driver X i regeln (sql/058) från X i domen (grind-s-b.ts) dömer domen andra varningar än appen gav (DECISIONS #475, #477, #575).",

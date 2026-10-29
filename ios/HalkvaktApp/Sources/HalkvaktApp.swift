@@ -6,6 +6,7 @@ import HalkvaktEngine
 struct InstallningarView: View {
     @State private var prefs = Prefs.shared
     @State private var guardM = GuardManager.shared
+    @State private var matningen = Matningen.shared
 
     enum Sida: Hashable { case varnaFor, forvarning, start, rosten, betatest, integritet, om }
 
@@ -153,6 +154,21 @@ struct InstallningarView: View {
             Text("Ett varnings-id pekar på en fara på kartan, så vi ser ungefär var du var just då. Appens namn och version följer med. Bara för betatestare. Betatest slår också på betavarningen efter regn (*Halkvakt tror: frysrisk framöver*), som prövas bland testarna först.")
                 .font(Typo.sans(13)).lineSpacing(3).foregroundStyle(Brand.dim)
                 .padding(.top, 14).padding(.horizontal, 4)
+            // Fas 2 (DECISIONS #741 punkt 5): mätningen per resa, bara i telefonen (Matningen.swift).
+            MonoLabel(text: "Mätningen").padding(.top, 28).padding(.bottom, 6).padding(.horizontal, 4)
+            Text("Hur färska varningarna var när de kom fram, och vad det kostade i batteri. Stannar i telefonen.")
+                .font(Typo.sans(13)).lineSpacing(3).foregroundStyle(Brand.dim)
+                .padding(.bottom, 10).padding(.horizontal, 4)
+            RowPanel {
+                if matningen.resor.isEmpty {
+                    Text("Inga resor mätta än.").font(Typo.sans(15)).foregroundStyle(Brand.dim)
+                        .padding(.vertical, 15).frame(maxWidth: .infinity, alignment: .leading)
+                } else {
+                    ForEach(matningen.resor) { resa in
+                        MatningRad(resa: resa, divider: resa.id != matningen.resor.last?.id)
+                    }
+                }
+            }
         case .integritet:
             Rubrik(titel: "Integritet", text: nil)
             VStack(alignment: .leading, spacing: 12) {
@@ -257,6 +273,26 @@ private struct KallRuta: View {
         }
         .buttonStyle(PressScale())
         .accessibilityValue(pa ? "På" : "Av")
+    }
+}
+
+/// En mätt resa under Betatest (fas 2): dag, klockslag och längd, raderna under i dämpad text.
+private struct MatningRad: View {
+    let resa: Matningen.Resa
+    var divider = true
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(resa.rubrik).font(Typo.sans(15, .medium)).foregroundStyle(Brand.text)
+                ForEach(resa.rader, id: \.self) { rad in
+                    Text(rad).font(Typo.sans(13)).foregroundStyle(Brand.dim)
+                }
+            }
+            .padding(.vertical, 15)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .accessibilityElement(children: .combine)
+            if divider { DashedDivider() }
+        }
     }
 }
 

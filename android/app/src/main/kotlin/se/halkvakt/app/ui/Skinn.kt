@@ -56,12 +56,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import se.halkvakt.app.AlertEntry
 import se.halkvakt.app.Favoriter
 import se.halkvakt.app.GuardService
 import se.halkvakt.app.MainActivity
+import se.halkvakt.app.Matningen
+import se.halkvakt.app.MattResa
 import se.halkvakt.app.Missar
 import se.halkvakt.app.Nearby
 import se.halkvakt.app.NearbyItem
@@ -596,6 +600,23 @@ private fun Undersida(sida: Sida, activity: MainActivity, open: (Sida) -> Unit, 
                 }
                 Text("Ett varnings-id pekar på en fara på kartan, så vi ser ungefär var du var just då. Appens namn och version följer med. Bara för betatestare. Betatest slår också på betavarningen efter regn (Halkvakt tror: frysrisk framöver), som prövas bland testarna först.",
                     color = Brand.dim, fontFamily = Typo.sans, fontSize = 13.sp, lineHeight = 19.sp, modifier = Modifier.padding(top = 14.dp, start = 4.dp))
+                // Mätningen (DECISIONS #741 punkt 5): filen i telefonen, läst när sidan öppnas.
+                val matt by produceState<List<MattResa>?>(null) { value = withContext(Dispatchers.IO) { Matningen.las(Matningen.fil(ctx)) } }
+                MonoLabel("Mätningen", modifier = Modifier.padding(top = 28.dp, bottom = 10.dp, start = 4.dp))
+                Text("Hur färska varningarna var när de kom fram, och vad det kostade i batteri. Stannar i telefonen.",
+                    color = Brand.dim, fontFamily = Typo.sans, fontSize = 13.sp, lineHeight = 19.sp, modifier = Modifier.padding(start = 4.dp, bottom = 10.dp))
+                matt?.let { resor -> RowPanel {
+                    if (resor.isEmpty()) Text("Inga resor mätta än.", color = Text2, fontFamily = Typo.sans, fontSize = 15.sp,
+                        modifier = Modifier.padding(vertical = 15.dp))
+                    resor.forEachIndexed { i, r ->   // nyast först, som filen
+                        if (i > 0) DashedDivider()
+                        val (huvud, rader) = Matningen.rader(r)
+                        Column(Modifier.padding(vertical = 14.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            Text(huvud, color = Brand.text, fontFamily = Typo.mono, fontWeight = FontWeight.Medium, fontSize = 12.sp)
+                            rader.forEach { Text(it, color = Text2, fontFamily = Typo.sans, fontSize = 13.sp, lineHeight = 19.sp) }
+                        }
+                    }
+                } }
             }
             Sida.INTEGRITET -> {
                 val facitOn by Prefs.facitEnabled(ctx).collectAsStateWithLifecycle(initialValue = false)

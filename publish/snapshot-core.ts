@@ -350,7 +350,7 @@ export async function buildSnapshot(qIn: Q, bridgesIn: Bridge[], now: Date = new
   avsnitt = "vader";
   // Karantänen gäller bara de svenska raderna: gränsstationerna nedan har egna id-rymder som kan krocka.
   const wx = (await q(`
-    SELECT station_id, surface_temp_c, rain, snow, precipitation, ST_X(geom) AS lon, ST_Y(geom) AS lat
+    SELECT station_id, surface_temp_c, rain, snow, precipitation, sample_time, ST_X(geom) AS lon, ST_Y(geom) AS lat
     FROM weather_latest
     WHERE ${WX_SANE} AND (surface_temp_c <= 3 OR snow)`)).filter((r) => !karantan.has(String(r.station_id)));
 
@@ -490,9 +490,13 @@ export async function buildSnapshot(qIn: Q, bridgesIn: Bridge[], now: Date = new
     // mm/h i stationens skala, eller null när radarn inte har något att säga om segmentet.
     regn: regnPerSegment.get(String(r.segment_id)) ?? null,
   });
+  // Den äldsta mättiden bland de svenska väderpunkterna (DECISIONS #741 punkt 5): appens mätning räknar hur gammal den är vid
+  // ankomsten. null när ingen station publiceras eller ingen bär en tid.
+  const tider = wx.map((r) => (r.sample_time == null ? NaN : new Date(r.sample_time).getTime())).filter((t) => Number.isFinite(t));
   const liveDoc = {
     schema: 1,
     generated_at: now.toISOString(),
+    weather_oldest_at: tider.length ? new Date(Math.min(...tider)).toISOString() : null,
     segments: segs.map(segRow),
     // Regnsegmenten (#154): normalklassade segment med råradar ≥ utlösaren. Ingen port läser nyckeln.
     rain_segments: regnSegs.map(segRow),

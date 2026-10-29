@@ -206,6 +206,17 @@ test("#75 fukt: \"no\" och \"Dry\" är torrt — bara regn, snö eller en våt k
     { TORR: false, DRY: false, TOM: false, REGN: true, FLAGGA: true, OKAND: true });
 });
 
+test("#741 weather_oldest_at: den äldsta mättiden bland de publicerade svenska stationerna, null utan tider", async () => {
+  const { q } = fakeDb({ wx: [
+    { station_id: "NY",     surface_temp_c: "-1", rain: false, snow: true, precipitation: "snow", sample_time: "2026-11-20T06:20:00Z", lon: 15, lat: 58 },
+    { station_id: "GAMMAL", surface_temp_c: "-2", rain: false, snow: true, precipitation: "snow", sample_time: new Date("2026-11-20T06:05:00Z"), lon: 15.1, lat: 58 },
+    { station_id: "UTAN",   surface_temp_c: "-2", rain: false, snow: true, precipitation: "snow", sample_time: null, lon: 15.2, lat: 58 },
+  ] });
+  assert.equal((await buildSnapshot(q, [], NOW)).liveDoc.weather_oldest_at, "2026-11-20T06:05:00.000Z");
+  const { q: utan } = fakeDb({ wx: [{ station_id: "UTAN", surface_temp_c: "-2", rain: false, snow: true, precipitation: "snow", lon: 15, lat: 58 }] });
+  assert.equal((await buildSnapshot(utan, [], NOW)).liveDoc.weather_oldest_at, null);
+});
+
 test("#49 saknat grannschema fäller inte snapshoten — noteras och hoppas", async () => {
   const { q } = fakeDb({ borderThrows: [true], wx: [{ station_id: "W1", surface_temp_c: "-1", rain: true, snow: false, precipitation: "rain", lon: 15, lat: 58 }] });
   const { liveDoc, notes, border } = await buildSnapshot(q, [], NOW);
