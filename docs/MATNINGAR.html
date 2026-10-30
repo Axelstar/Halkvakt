@@ -339,7 +339,7 @@
         <tr><td><a href="#d-tystnad">3.4 Tystnadsfelet</a></td><td>facit</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>2 av 20 tillfällen</td></tr>
         <tr><td><a href="#d-vakter">4.1 Vakterna</a></td><td>L1</td><td><span class="lage drift">i drift</span></td><td>706 av 811 felrader tagna</td></tr>
         <tr><td><a href="#d-prognos">5.1 Prognoslagret</a></td><td>L4</td><td><span class="lage skugga">körs i skuggan</span></td><td>föll 28/9 (#399); premissmätningarna 30/9 räddar ingen kandidat (#405–#408); föll för alla kandidater på vintern 2024/25 (#467); spridningsgrinden i skuggan sedan 7/10, X = 2,25 °C (#474–#478); läses igen 24/11 (#435)</td></tr>
-        <tr><td><a href="#d-frysklass">5.2 Frysklassningen</a></td><td>L4</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>K-A passerad 8/10; K-B:s uppspelning byggd 10/10, spärrad (#510); döms efter en vintermånad</td></tr>
+        <tr><td><a href="#d-frysklass">5.2 Frysklassningen</a></td><td>L4</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>K-A fälld 29/10 på frostens data, nedlagd; K-B utgår (#743)</td></tr>
         <tr><td><a href="#d-tathet">5.3 Stationstätheten</a></td><td>L4</td><td><span class="lage arkiv">mätt</span></td><td>median 6,8 km till station</td></tr>
         <tr><td><a href="#d-trend">6.1 Trenden</a></td><td>L3</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>T-A: domspärren släppt 8/10, 169 frostnätter</td></tr>
         <tr><td><a href="#d-efterhalka">6.2 Efterhalkan</a></td><td>L3</td><td><span class="lage skugga">körs i skuggan</span></td><td>S1 läst 11/10: ense på 1 349 ögonblick (#521); S3 i byggena sedan 0.3.12 (24), 0.3.13 (32) uppladdat, inskicket till App Review återstår (#643); Kompisarna först, med spärren för Betatest (#676, #677); dom i januari</td></tr>
@@ -901,10 +901,10 @@
   </section>
 
   <section class="del" id="d-frysklass">
-    <div class="del-huvud"><span class="nr">5.2</span><h3>Frysklassningen</h3><span class="lage arkiv">mäts i arkivet</span><span class="lager">kort #103</span></div>
+    <div class="del-huvud"><span class="nr">5.2</span><h3>Frysklassningen</h3><span class="lage nedlagd">nedlagd 29/10</span><span class="lager">kort #103</span></div>
     <p><b>Mäter:</b> om modellen kan säga <i>fryser</i> eller <i>fryser inte</i> rätt även när den inte kan ange graderna exakt.</p>
     <div class="nyckel">
-      <div><b>K-A</b><span>passerad 8/10 <span class="dom klarar">klarar</span></span></div>
+      <div><b>K-A</b><span>fälld 29/10 <span class="dom faller">faller</span></span></div>
       <div><b>1 099</b><span>punkter över 44 stationer</span></div>
       <div><b>27</b><span>kombinationer i svepet</span></div>
       <div><b>≤ 1 %</b><span>farliga fel tillåtna</span></div>
@@ -914,9 +914,9 @@
       <ul>
         <li>Svepet: klassgräns 0 · +0,5 · +1,0 °C, osäkerhetszon ±0 · ±0,5 · ±1,0 °C och längsta ankaravstånd 15 · 20 · 50 km, alltså 27 kombinationer.</li>
         <li>Inom zonen avstår modellen. Ett <i>farligt fel</i> är när modellen säger "fryser inte" och mätningen ligger på eller under gränsen.</li>
-        <li>K-B spelas upp ur arkivet, inte i en skuggkolumn (DECISIONS #363, #510; <span class="mono">scripts/grind-k-b.ts</span>): vid varje bekräftat halktillfälle, en omklassning till halka inom 5 km från stationen, frågas om klassningen sade "fryser" och var rätt, och om dagens punktmotor var tyst (nettonytt) eller mer än 30 min senare (tidsvinst). Knappen är spärrad och skriver bara räkningar tills en vintermånad med frost i tre regioner finns och Bengt säger dom.</li>
+        <li>K-B skulle spelas upp ur arkivet, inte i en skuggkolumn (DECISIONS #363, #510; <span class="mono">scripts/grind-k-b.ts</span>; utgår efter att K-A fälldes, #743, och uppspelningen står kvar i koden utan att dömas): vid varje bekräftat halktillfälle, en omklassning till halka inom 5 km från stationen, frågas om klassningen sade "fryser" och var rätt, och om dagens punktmotor var tyst (nettonytt) eller mer än 30 min senare (tidsvinst). Knappen är spärrad och dömer inte.</li>
         <li>Krav: träff ≥ 95 %, farliga fel ≤ 1 %, täckning ≥ 70 %, minst 500 punkter över 20 stationer varav minst 100 med uppmätt frys, och ±1,96 SE.</li>
-        <li>Körs av sig själv när minst 50 stationer haft ytan ≤ 0 °C, högst vartannat dygn (var sjunde till 10/10, #511).</li>
+        <li>Frostflödet tryckte K-A när minst 50 stationer haft ytan ≤ 0 °C, högst vartannat dygn (var sjunde till 10/10, #511); Bengt har sagt ja till att ta bort grinden ur frosttrycket (#743 tillägg), vilket gäller när vakthunden är deployad.</li>
       </ul>
     </div></details>
     <details><summary>Siffror och beräkningar</summary><div class="inne">
@@ -925,7 +925,8 @@
         <li>24/9: 712 stationer, 207 647 avläsningar, 1 099 punkter över 44 stationer, 0 med frys vid 0 °C. Ingen dom (#331).</li>
         <li>Frysklassningen prövar grind A:s offsetmodell, medan skuggan kör rå viktning. En dom skulle alltså gälla en modell som inte körs, om inte frågan i 5.1 avgörs först.</li>
         <li>2/10: måttstocken och marginalerna lånas till kuvösens mätning av frysflaggan för de råa vägpunktskandidaterna (mätt 6/10, #467: bara offset med marginalen 1 °C når alla tre måtten, och RÅ når farliga fel ≤ 1 % bara bortom 20 km), på vintern 2024/25. Det är en läsning och ingen dom, och den här delens egen grind döms inte av den (#437).</li>
-        <li>8/10 (#491): K-A, 60 dygn (körning 37754426571): 736 stationer, 649 976 avläsningar. Passerad i 13 av 27 kombinationer; bäst täckning K1 0 °C · K2 ±0,5 · K3 20 km med täckning 97,8 % ±0,2, träff 99,3 % och farliga fel 0,5 %. Värdena är mätningens förslag, inte satta trösklar. K-B:s uppspelning är kort #309.</li>
+        <li>8/10 (#491): K-A, 60 dygn (körning 37754426571): 736 stationer, 649 976 avläsningar. Passerad i 13 av 27 kombinationer; bäst täckning K1 0 °C · K2 ±0,5 · K3 20 km med täckning 97,8 % ±0,2, träff 99,3 % och farliga fel 0,5 %. Värdena var mätningens förslag, inte satta trösklar. K-B:s uppspelning var kort #309.</li>
+        <li>29/10 (#743): K-A om med tre veckors frost i fönstret (23/8–29/10, körning 40847122232): 743 stationer, 1 320 402 avläsningar efter #75:s givarvakt. <b>Faller i alla 27 kombinationer</b>: lägst 1,3 % farliga fel (K3 50 km, K1 0,0 °C, K2 ±1,0; täckning 80,1 %, träff 98,3 %), bäst på 15 och 20 km 1,5 %, utan osäkerhetszon 4,1–5,8 % (taket är 1 %). Domen 8/10 är överspelad: den vilade på 649 976 avläsningar i ett fönster som mest var september. Tre dygn saknas i fönstret (23/8, 6/9, 7/9); de är frostfria och kan inte flytta talet från 1,3 % till 1 %. Frysklassningen på offsetmodellen läggs ned; kandidatens egen frysflagga döms i mars mot förregistreringen §4b punkt 11 och berörs inte.</li>
       </ul>
     </div></details>
   </section>
@@ -1612,7 +1613,7 @@
         <tr><td>1/11</td><td>försprångets 30 rutter driftsatta (skuggmotorn och sql/066, T0); räkneregeln fastställd 21/10 (#664)</td></tr>
         <tr><td>2/11</td><td>takläsningen: kandidatens takt längs rutterna, som mätning (#584, #606)</td></tr>
         <tr><td>9/11</td><td>R-B: giltigheten R-C1–C2, sedan domen</td></tr>
-        <tr><td>16/11</td><td>K-B: giltigheten K-C1, sedan domen</td></tr>
+        <tr><td><s>16/11</s></td><td><s>K-B: giltigheten K-C1, sedan domen</s> — utgår, K-A fälld 29/10 (#743)</td></tr>
         <tr><td>24/11</td><td>premissmätningen läses, en gång, på en egen körning; den finska körs samma dag som stöd (#435, #436)</td></tr>
         <tr><td>30/11</td><td>domskriptet för kandidaten byggt och fryst med sha256 (förregistreringen §4b)</td></tr>
         <tr><td><s>November–december</s></td><td>vattenplaningens radarspår, när underlaget räcker — ✅ dömt redan 19/10: V-B FALLER (#648)</td></tr>
@@ -1627,7 +1628,7 @@
     </table>
   </div>
   <p>Datumen i tabellen larmar sedan 20/10 (#649): de står i <span class="mono">docs/fristerna.json</span>, och fristvakten gör ett ärende till ägaren före varje datum. En grind som fäller en dom i en körning gör själv ett ärende (domlarmet), och domen bokförs i ämnesdelens domsteg i projektkartan, en ägare per grind.</p>
-  <p>Det första vinterunderlaget kom med frosten 6–8/10 (#491): K-A passerad, T-A:s domspärr släppt på 169 frostnätter vid 119 stationer, och väglagsarkivet gav noll omklassningar till halka också under frostnätterna (omkörningen 20/10 gav 624). Förarsvaren har 32 riktiga svar (6/10; 41 enligt vakthunden 21/10, innehållet oläst) men inget om halka, missarna inga riktiga poster, och kamerafacit har ingen halka. Mätningarna hittills prövar metoden. Vintern prövar produkten.</p>
+  <p>Det första vinterunderlaget kom med frosten 6–8/10 (#491): K-A passerad (fälld 29/10 på tre veckors frost, #743), T-A:s domspärr släppt på 169 frostnätter vid 119 stationer, och väglagsarkivet gav noll omklassningar till halka också under frostnätterna (omkörningen 20/10 gav 624). Förarsvaren har 32 riktiga svar (6/10; 41 enligt vakthunden 21/10, innehållet oläst) men inget om halka, missarna inga riktiga poster, och kamerafacit har ingen halka. Mätningarna hittills prövar metoden. Vintern prövar produkten.</p>
   <hr>
   <p class="litet">Källor: beslutsloggen (DECISIONS), tröskeldokumenten, systembeskrivningen, koden och körningarnas loggar till 22/10. Samma underlag som bilaga 3–8 till Skyltfondsansökan, men sidan är intern och innehåller opublicerade regelvärden. Alla tidpunkter avser 2026 om inget annat står.</p>
 
