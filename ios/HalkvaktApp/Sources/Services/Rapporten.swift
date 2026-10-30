@@ -27,6 +27,8 @@ final class Rapporten {
     private(set) var resor: [String: Resa] = [:]
     private(set) var kollat: Date?
     private(set) var lagesfil: Date?
+    /// Rapportfilens tid: olyckor, vägarbeten, hinder, köer, restider och färjor kommer ur den (DECISIONS #686 punkt 5, B7-05).
+    private(set) var rapportfil: Date?
     private(set) var gammaltVaglag = false
     private(set) var gamlaOlyckor = false
     private(set) var gickInte = false
@@ -59,6 +61,7 @@ final class Rapporten {
             }
             resor = u.resor
             lagesfil = u.lagesfil
+            rapportfil = u.rapportfil
             gammaltVaglag = u.gammaltVaglag
             gamlaOlyckor = u.gamlaOlyckor
             kollat = .now
@@ -86,6 +89,7 @@ final class Rapporten {
     private struct Utfall {
         let resor: [String: Resa]
         let lagesfil: Date?
+        let rapportfil: Date?
         let gammaltVaglag: Bool
         let gamlaOlyckor: Bool
     }
@@ -111,6 +115,6 @@ final class Rapporten {
                                kandidatDit: ResansRapport.kandidatRader(r.punkter, hem: false, lage: lage),
                                kandidatHem: ResansRapport.kandidatRader(r.punkter, hem: true, lage: lage))
         }
-        return Utfall(resor: resor, lagesfil: lagesTid, gammaltVaglag: gammaltVaglag, gamlaOlyckor: gamlaOlyckor)
+        return Utfall(resor: resor, lagesfil: lagesTid, rapportfil: rapportTid, gammaltVaglag: gammaltVaglag, gamlaOlyckor: gamlaOlyckor)
     }
 }

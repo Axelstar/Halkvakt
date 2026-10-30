@@ -47,10 +47,12 @@ fun RapportSkarm(ruttId: String, activity: MainActivity, back: () -> Unit) {
     val rapport by Rapporten.lage.collectAsStateWithLifecycle()
     var hem by rememberSaveable(ruttId) { mutableStateOf(false) }
     val fore = remember(ruttId) { lager.kollar.value[ruttId] }   // före den här kollen: grunden för Nytt
-    // Hämtar om, och det som nu visas åt båda hållen blir förra kollen till nästa gång.
+    // Hämtar om, och det som nu visas åt båda hållen blir förra kollen till nästa gång — bara när hämtningen lyckades. Annars ligger
+    // den förra rapporten kvar, och förra kollen hade fått en tid då ingenting hämtades (B7-24).
     val uppdatera: suspend () -> Unit = {
         Rapporten.uppdatera(ctx)
-        Rapporten.lage.value.resor[ruttId]?.let { lager.kollad(ruttId, ResansRapport.kollensIds(it.dit, it.hem)) }
+        val l = Rapporten.lage.value
+        if (!l.gickInte) l.resor[ruttId]?.let { lager.kollad(ruttId, ResansRapport.kollensIds(it.dit, it.hem)) }
     }
     LaunchedEffect(ruttId) { uppdatera() }
 
@@ -103,6 +105,8 @@ private fun RapportInnehall(rader: List<RapportRad>, kandidat: List<KandidatRad>
     MonoLabel("Just nu · kollat ${l.kollat?.let(::klockslag) ?: "–"}", modifier = Modifier.padding(top = 28.dp, bottom = 10.dp, start = 4.dp))
     Column(Modifier.fillMaxWidth().background(Brand.panel, RoundedCornerShape(18.dp)).padding(20.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Text("Läget från ${l.lagesfil?.let(::klockslag) ?: "okänd tid"}", color = Brand.text, fontFamily = Typo.sans, fontWeight = FontWeight.SemiBold, fontSize = 17.sp)
+        // B7-05 (DECISIONS #686 punkt 5): olyckor, vägarbeten, hinder, köer, restider och färjor kommer ur rapportfilen.
+        Text("Rapporten från ${l.rapportfil?.let(::klockslag) ?: "okänd tid"}", color = Brand.text, fontFamily = Typo.sans, fontWeight = FontWeight.SemiBold, fontSize = 17.sp)
         Text("Läget kan ändras under resan, och då säger rösten till.", color = Brand.text2, fontFamily = Typo.sans, fontSize = 14.sp, lineHeight = 21.sp)
         if (l.gammaltVaglag) Text("Väglaget är äldre än 45 minuter och visas inte som läget just nu.", color = Brand.yellow, fontFamily = Typo.sans, fontSize = 14.sp)
         if (l.gamlaOlyckor) Text("Olyckorna är äldre än två timmar och visas inte som läget just nu.", color = Brand.yellow, fontFamily = Typo.sans, fontSize = 14.sp)
