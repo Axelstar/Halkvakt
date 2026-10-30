@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 // @ts-ignore — .mjs utan typer
-import { fara, annons, stracka, vagBild, vagText, dagdel, VISNING, GRANSKODER } from "../marknadsforing/annonsstyrning.mjs";
+import { fara, annons, stracka, vagBild, vagText, dagdel, VISNING, GRANSKODER, sammaSchema } from "../marknadsforing/annonsstyrning.mjs";
 
 const l = (kort: string, halt: number, kalla: number, extra = {}) =>
   ({ kod: 1, kort, slug: kort.toLowerCase(), halt, vagavsnitt: 40, kalla, kallast: null, olyckor: 0, ...extra });
@@ -82,4 +82,12 @@ test("visning: 05:00–10:00 and 14:00–19:00 every day, whole hours (DECISIONS
 
 test("rate limit: Meta's code 17 from 30/10 is among the codes we wait on (DECISIONS #750)", () => {
   assert.ok(GRANSKODER.includes(17));
+});
+
+test("sammaSchema: an ad set that already has the windows is left alone (DECISIONS #754)", () => {
+  const dagar = [0, 1, 2, 3, 4, 5, 6];
+  assert.equal(sammaSchema([{ start_minute: 840, end_minute: 1140, days: dagar, timezone_type: "USER" },
+                            { start_minute: 300, end_minute: 600, days: [...dagar].reverse() }]), true);
+  assert.equal(sammaSchema([{ start_minute: 360, end_minute: 540, days: dagar }, { start_minute: 900, end_minute: 1080, days: dagar }]), false);
+  assert.equal(sammaSchema(undefined), false);
 });

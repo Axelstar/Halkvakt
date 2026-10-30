@@ -57,6 +57,12 @@ export const dagdel = d => Number(d.toLocaleString("sv-SE", { timeZone: TZ, hour
 const DAGAR_ALLA = [0, 1, 2, 3, 4, 5, 6];
 export const VISNING = [{ start_minute: 300, end_minute: 600, days: DAGAR_ALLA },
                         { start_minute: 840, end_minute: 1140, days: DAGAR_ALLA }];
+/** True when Meta's schedule already has exactly the windows in VISNING (start and end minute, every day). */
+export function sammaSchema(schema) {
+  const nyckel = v => `${v.start_minute}-${v.end_minute}-${[...(v.days ?? [])].sort().join("")}`;
+  const har = (schema ?? []).map(nyckel).sort().join("|");
+  return har === VISNING.map(nyckel).sort().join("|");
+}
 const lista = ord => ord.length < 2 ? ord.join("") : ord.slice(0, -1).join(", ") + " och " + ord.at(-1);
 
 // ---- Data → annons (rena funktioner, prövade i test/annonsstyrning.test.ts) ----
@@ -194,7 +200,7 @@ async function kampanjen() {
 }
 
 async function satserna(kampanjId) {
-  return (await alla(`${kampanjId}/adsets`, { fields: "id,name,status,effective_status,ads.limit(50){id,name,status,effective_status}" }))
+  return (await alla(`${kampanjId}/adsets`, { fields: "id,name,status,effective_status,adset_schedule,ads.limit(50){id,name,status,effective_status}" }))
     .filter(s => s.name.startsWith(PREFIX) && !["DELETED", "ARCHIVED"].includes(s.effective_status));
 }
 
@@ -241,10 +247,13 @@ async function uppsattning() {
       skriv(`${namn}: skapad, pausad, regionen ${traff[0].name} (${s.id}).`);
     }
     else {
-      // Existing ad sets get the current windows; setting the same schedule again changes nothing.
-      // The pacing goes along: alone, the schedule is read as standard pacing and refused (subcode 1487675, 30/10).
-      await graph(s.id, { pacing_type: ["day_parting"], adset_schedule: VISNING }, "POST");
-      skriv(`${namn}: visning 05–10 och 14–19.`);
+      // Existing ad sets get the current windows, but only when they differ: Meta treats a schedule edit as a significant
+      // edit and re-matches the ad set for up to 12 hours (Meta support 30/10, DECISIONS #754).
+      if (!sammaSchema(s.adset_schedule)) {
+        // The pacing goes along: alone, the schedule is read as standard pacing and refused (subcode 1487675, 30/10).
+        await graph(s.id, { pacing_type: ["day_parting"], adset_schedule: VISNING }, "POST");
+        skriv(`${namn}: visning 05–10 och 14–19.`);
+      }
     }
     if ((s.ads?.data ?? []).some(a => a.name.startsWith("Reserv · "))) continue;
     const id = await laggUpp(RESERV, `Reserv · ${l.kort}`, s.id);
