@@ -1,0 +1,19 @@
+{
+  "typ": "lista",
+  "nyckel": "lista",
+  "etikett": "Halkläget kl. 05:30",
+  "rubrik": "Halt i morse",
+  "underrad": "fredag 30 oktober",
+  "text": "Innan du kör i dag: läget kl. 05:50, fredag 30 oktober.\n\nNorrbotten: halka på 27 av 58 vägavsnitt, 18 stationer under noll, kallast −2,8 °C vid Kiruna.\nVästerbotten: halka på 12 av 44 vägavsnitt, 9 stationer under noll, kallast −1,2 °C vid Missenträsk.\nVästernorrland: halka på 6 av 22 vägavsnitt.\nVärmland: 3 stationer under noll, kallast −0,5 °C vid Gumhöjden.\nDalarna: 3 stationer under noll, kallast −0,8 °C vid Ryggen.\n\nLäget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Västernorrland #Värmland #Dalarna #halkvakt",
+  "textIg": "Innan du kör i dag: läget kl. 05:50, fredag 30 oktober.\n\nNorrbotten: halka på 27 av 58 vägavsnitt, 18 stationer under noll, kallast −2,8 °C vid Kiruna.\nVästerbotten: halka på 12 av 44 vägavsnitt, 9 stationer under noll, kallast −1,2 °C vid Missenträsk.\nVästernorrland: halka på 6 av 22 vägavsnitt.\nVärmland: 3 stationer under noll, kallast −0,5 °C vid Gumhöjden.\nDalarna: 3 stationer under noll, kallast −0,8 °C vid Ryggen.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone, länken finns i vår profil.\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Västernorrland #Värmland #Dalarna #halkvakt",
+  "pass": "morgon",
+  "datum": "2026-10-30",
+  "generated_at": "2026-10-30T04:30:23.780Z",
+  "lan": [
+    "norrbotten",
+    "vasterbotten",
+    "vasternorrland",
+    "varmland",
+    "dalarna"
+  ]
+}
