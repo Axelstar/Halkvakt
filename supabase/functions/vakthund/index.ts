@@ -7,7 +7,7 @@
 // Kollar tre led, i den ordning de kan gå sönder:
 //   1. Hämtar vi?      sync_state per källa
 //   2. Sparar vi?      nyaste väderobservationen
-//   3. Når det appen?  live.json på CDN — det led som faktiskt fallerade
+//   3. Når det appen?  live.json i hinken (appens väg) och på Pages (reserven) — det led som faktiskt fallerade
 // Larmar via GitHub-issue (API-anrop, inga Actions-minuter). En issue åt gången: öppnas när
 // något är fel, kommenteras när fyndet FÖRÄNDRAS, stängs när allt är grönt igen. (Förut
 // kommenterades den varje varv medan felet bestod — se mätvakten, 28/9, DECISIONS #384.)
@@ -55,7 +55,15 @@ import { nyckelGiltig } from "../_shared/nyckel.ts";
 const sql = postgres(Deno.env.get("SUPABASE_DB_URL")!, { max: 1, prepare: false });
 const REPO = "Axelstar/Halkvakt";
 const token = Deno.env.get("PUBLISH_TOKEN")!;
-const CDN = "https://axelstar.github.io/halkvakt-karta/data/app/v1/live.json";
+// Appens lägesfil (DECISIONS #752): appen läser hinken först och Pages bara när hinken inte svarar (SnapshotRepo), så hinken prövas
+// som appens väg, med samma publika adress som appen, och Pages som reserven och kartsajtens källa.
+const HINK_APP = `${Deno.env.get("SUPABASE_URL")}/storage/v1/object/public/app/v1/`;
+const CDN = "https://axelstar.github.io/halkvakt-karta/data/app/v1/";
+/** Hinkens manifest får vara högst så här många minuter gammalt (DECISIONS #752). publicera skriver varannan minut, så tio minuter
+ *  är fyra uteblivna körningar i rad; vakthunden kör :07, och appens åldersspärr tystar appen efter 45 minuter. */
+const HINK_MAX_MIN = 10;
+/** Pages skrivs var tionde minut (#741 punkt 3); gränsen är den gamla. */
+const RESERV_MAX_MIN = 45;
 const MARK = "<!-- vakthund -->";   // hittar vår egen issue igen
 // Veckodumpen (arkivbackup.yml) kör söndagar; 8 dygn = en missad söndag + ett dygns marginal (kort #223).
 const ARKIVBACKUP_MAX_DYGN = 8;
@@ -181,24 +189,31 @@ Deno.serve(async (req) => {
     //    första publicera-versionen ingen manifest.json alls: CDN såg färsk ut, telefonerna
     //    stod kvar på 5/9-snapshoten, och en vakthund som bara mätte live.json:s ålder sa
     //    grönt. Bengts granskning fångade det (#76). Mät det appen faktiskt gör.
-    const [mRes, lRes] = await Promise.all([
-      fetch(CDN.replace("live.json", "manifest.json"), { cache: "no-store" }),
-      fetch(CDN, { cache: "no-store" }),
-    ]);
-    if (!mRes.ok) problem.push(`**manifest.json svarar ${mRes.status}** — apparna kan inte verifiera och behåller gammal data`);
-    else if (!lRes.ok) problem.push(`**live.json svarar ${lRes.status}** — appen får ingen snapshot`);
-    else {
+    //    Sedan fas 1 två källor (DECISIONS #752): hinken, som appen läser, och Pages, som appen tar när hinken inte svarar.
+    //    Bevisbäraren prövas i hinkens fil.
+    const prova = async (kalla: string, bas: string, maxMin: number, rubrik: string, takt: string, utanSvar: string): Promise<Response | null> => {
+      const [mRes, lRes] = await Promise.all([
+        fetch(bas + "manifest.json", { cache: "no-store" }),
+        fetch(bas + "live.json", { cache: "no-store" }),
+      ]);
+      if (!mRes.ok) { problem.push(`**${kalla}: manifest.json svarar ${mRes.status}** — ${utanSvar}`); return null; }
+      if (!lRes.ok) { problem.push(`**${kalla}: live.json svarar ${lRes.status}** — ${utanSvar}`); return null; }
       const manifest = await mRes.json();
       const rå = new Uint8Array(await lRes.clone().arrayBuffer());
       const sum = [...new Uint8Array(await crypto.subtle.digest("SHA-256", rå))]
         .map((b) => b.toString(16).padStart(2, "0")).join("");
       const väntad = manifest?.files?.live?.sha256;
-      const cdnMin = (Date.now() - new Date(manifest.generated_at).getTime()) / 60000;
-      rad.push(`manifest: ${cdnMin.toFixed(0)} min | sha ${sum === väntad ? "stämmer" : "MISMATCH"}`);
+      const min = (Date.now() - new Date(manifest.generated_at).getTime()) / 60000;
+      rad.push(`${kalla}: manifest ${min.toFixed(0)} min | sha ${sum === väntad ? "stämmer" : "MISMATCH"}`);
       if (sum !== väntad)
-        problem.push(`**Manifestets sha256 stämmer inte med live.json** — apparna förkastar filen och kör vidare på förra snapshoten. Det här är felet som INTE syns på CDN.`);
-      if (cdnMin > 45)
-        problem.push(`**Appen får gammal data**: manifestet ${cdnMin.toFixed(0)} min gammalt (publiceras var 10:e min)`);
+        problem.push(`**${kalla}: manifestets sha256 stämmer inte med live.json** — apparna förkastar filen och kör vidare på förra snapshoten. Det här är felet som INTE syns på CDN.`);
+      if (min > maxMin) problem.push(`**${rubrik}**: manifestet i ${kalla} ${min.toFixed(0)} min gammalt (${takt})`);
+      return lRes;
+    };
+    const lRes = await prova("hinken", HINK_APP, HINK_MAX_MIN, "Appen får gammal data",
+      "publiceras varannan minut; appen tystnar efter 45 min", "appen går på reserven, som skrivs var tionde minut");
+    await prova("reserven (Pages)", CDN, RESERV_MAX_MIN, "Reserven får gammal data", "publiceras var tionde minut", "appen har ingen reserv");
+    if (lRes) {
       // BEVISBÄRAREN (kort #245, DECISIONS #342): bär varje väderpunkt fältet bredvid fukt? Noll punkter (varm dag) är inget
       // att mäta — raden säger det i stället för att tiga. Larm bara när punkter finns och någon saknar fältet.
       try {

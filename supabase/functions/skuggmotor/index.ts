@@ -1124,15 +1124,26 @@ const RUTTER_VAG: Record<string, [number, number][]> = {"E10 Luleå→Kiruna":[[
 // kamerabild (facit-hinken, dedupe per station & 3 h). Rör aldrig användare.
 // Land (#34): ?land=fi kör de finska rutterna mot den finska snapshoten. Samma motor,
 // samma logg (kolumnen land), samma rapport. Sverige är standard.
+const SB = Deno.env.get("SUPABASE_URL")!;
+const SRK = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const TRV = Deno.env.get("TRAFIKVERKET_API_KEY")!;
+// Sverige ur hinken, som appen läser först (DECISIONS #752): med servicenyckeln inifrån Supabase och utan CDN:ens cache, som
+// funktionen favoriter (#741 tillägget 30/10). Grannländerna finns bara på Pages.
 const CDN_BY_LAND: Record<string, string> = {
-  se: "https://axelstar.github.io/halkvakt-karta/data/app/v1/",
+  se: `${SB}/storage/v1/object/app/v1/`,
   fi: "https://axelstar.github.io/halkvakt-karta/data/app/fi/v1/",
   no: "https://axelstar.github.io/halkvakt-karta/data/app/no/v1/",   // #35, publiceras när Vegvesen-kontot finns
   dk: "https://axelstar.github.io/halkvakt-karta/data/app/dk/v1/",   // #36
 };
-const SB = Deno.env.get("SUPABASE_URL")!;
-const SRK = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const TRV = Deno.env.get("TRAFIKVERKET_API_KEY")!;
+/** Ett lands static.json och live.json. Ett fel bär svarets status och kropp. */
+function snapshot(land: string): Promise<[any, any]> {
+  const hamta = (namn: string) => fetch(CDN_BY_LAND[land] + namn + (land === "se" ? "" : `?t=${Date.now()}`),
+    land === "se" ? { headers: { Authorization: `Bearer ${SRK}`, apikey: SRK } } : undefined).then(async (r) => {
+      if (!r.ok) throw new Error(`${land} ${namn} ${r.status}: ${(await r.text()).slice(0, 200)}`);
+      return r.json();
+    });
+  return Promise.all([hamta("static.json"), hamta("live.json")]);
+}
 
 // Grova men FASTA referenslinjer (jämförbarhet över tid slår metern):
 // Finland (#34): tre referenslinjer, samma grovhet som de svenska. Fejkresorna.
@@ -1481,12 +1492,7 @@ async function forsprangVarv(prov: boolean, c = false, slot: number | null = nul
     const trace = traceAlong([[15.0, 59.0], [15.1, 59.0]]);
     return svar({ ok: true, prov: "forsprang", svep_s: svepS, bas: kor(hazards, trace, nivaer, false), variant: kor(hazards, trace, nivaer, true) });
   }
-  const CDN = CDN_BY_LAND["se"];
-  const bust = `?t=${Date.now()}`;
-  const [st, lv] = await Promise.all([
-    fetch(CDN + "static.json" + bust).then((r) => r.json()),
-    fetch(CDN + "live.json" + bust).then((r) => r.json()),
-  ]);
+  const [st, lv] = await snapshot("se");
   // Kandidaten (K, DECISIONS #577) hålls utanför skuggans motorkörningar: deras domar är förregistrerade utan den, och sist i
   // prioriteten ändrar den ingen annan varning i appen. Kandidatens egen takt loggas för sig (kandidatVarnar, #573).
   const hazards = snapshotToHazards(st, lv).filter((h) => h.kind !== "kandidat");
@@ -1584,17 +1590,13 @@ Deno.serve(async (req) => {
         { headers: { "Content-Type": "application/json" } });
     }
     const land = (new URL(req.url).searchParams.get("land") ?? "se").toLowerCase();
-    const CDN = CDN_BY_LAND[land]; if (!CDN) return new Response("okänt land", { status: 400 });
+    if (!CDN_BY_LAND[land]) return new Response("okänt land", { status: 400 });
     // VÄG C (DECISIONS #527): `?grupp=c` kör ROUTES_C i ett eget anrop på :22/:52 och skriver till shadow_log_c — bara larmen.
     const grupp = new URL(req.url).searchParams.get("grupp");
     if (grupp !== null && (grupp !== "c" || land !== "se")) return new Response("okänd grupp", { status: 400 });
     const c = grupp === "c";
     const routes = c ? ROUTES_C : land === "fi" ? ROUTES_FI : land === "no" ? ROUTES_NO : land === "dk" ? ROUTES_DK : ROUTES;
-    const bust = `?t=${Date.now()}`;
-    const [st, lv] = await Promise.all([
-      fetch(CDN + "static.json" + bust).then((r) => r.json()),
-      fetch(CDN + "live.json" + bust).then((r) => r.json()),
-    ]);
+    const [st, lv] = await snapshot(land);
     // Utan kandidaten, som ovan (DECISIONS #577).
     const hazards = snapshotToHazards(st, lv).filter((h) => h.kind !== "kandidat");
     // Ankarna hämtas en gång per anrop, inte per rutt. Bara Sverige: funktionen läser det svenska arkivet.

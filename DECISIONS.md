@@ -19054,3 +19054,41 @@ stund varje timme. Tre timmar kvar: en station som stannat ger frysrisk på ett 
 DB-knappen först: valt bort av Bengt.
 
 **Stomdokument:** SYS urvalet till lägesfilen, MAT stationernas färskhet i mätningarnas text, KUV uppspelningen följer med, KAR lägesfilen.
+
+## #752 (30/10 2026) Vakthunden, skuggmotorn, favoritprovet och kamerafacit läser lägesfilen ur hinken (kort #365)
+
+**Frågan.** Bedömningen §4.2 (ny 30/10, efter #741 tillägget 30/10): ska funktionerna som läser lägesfilen ur kartans fil på
+Pages läsa den ur hinken, som appen och funktionen `favoriter`? Läst i koden 30/10 (underlaget
+`Halkvakt_hinken_for_funktionerna_2026-10-30.md` på Skrivbordet): appen tar Pages bara när hinken inte svarar (`SnapshotRepo`),
+men vakthundens kontroll 3 läste Pages. En hink som svarar men har stannat syntes alltså inte, och appen tystnar då efter 45
+minuter medan Pages är färsk.
+
+**Beslut** (Bengt 30/10: *"Ja, bygg flytten"*, på frågan *"Ska jag bygga flytten till hinken, med vakthunden först?"*).
+- **Vakthunden** (kontroll 3) prövar hinken som appens väg, med samma publika adress som appen: svar, sha256 mot manifestet,
+  bevisbäraren och ålder högst **10 minuter** (`HINK_MAX_MIN`). Pages prövas efteråt som reserv med de gamla 45 minuterna
+  (`RESERV_MAX_MIN`). Tio minuter är Claudes val: publicera skriver varannan minut, så det är fyra uteblivna körningar i rad,
+  och vakthunden kör en gång i timmen (:07), så en låg gräns gör att ett stopp syns vid nästa :07 i stället för timmen efter.
+- **Skuggmotorn** läser Sveriges `static.json` och `live.json` ur hinken; Finland, Norge och Danmark finns bara på Pages och
+  stannar där.
+- **Favoritprovet** läser hinken, som `favoriter`: provmiljön läser samma källa som driften.
+- **Kamerafacit** väljer V2:s bilder ur hinkens `live.json`. V3 (tystnadsstickprovet) tar kalla stationer högst **60 minuter**
+  gamla, som publiceringen sedan #751, i stället för tre timmar: en äldre station är tyst för appen därför att värdet saknas,
+  och V3 ska pröva den tystnad motorn väljer. #751:s följder nämnde inte den kopian, och min grep inför #751 tog inte med den.
+
+Skuggmotorn, favoritprovet och kamerafacit läser med servicenyckeln inifrån Supabase och utan CDN:ens cache, som `favoriter`
+(#741 tillägget 30/10), och ett fel bär svarets status och kropp. Ingen reserv mot Pages: funktionerna och hinken ligger i samma
+Supabase. Prov: `test/hinken.test.ts`, och kontraktet *Svenska stationers färskhet* i kontraktsgrinden binder V3 till `WX_SANE`.
+
+**Följder.**
+- **Försprånget** (`forsprang_log`, T0 22/10) räknas från deployen av skuggmotorn på hinkens fil i stället för Pages, som skrivs
+  var tionde minut: deployens klockslag bokförs i STATUS, som för #751.
+- `shadow_log.snapshot_generated_at` visar hur gammal filen var vid varje körning, före och efter.
+- Trafiken mot hinken ökar med omkring 1 MB i timmen, ungefär som en förare till (BATTERISKATTNINGEN §Hinkens trafik).
+- Vakthundens issue får nya rader för kontroll 3 (*hinken:* och *reserven (Pages):*), så fyndraderna ändras en gång vid deployen.
+- Kräver deploy av fyra funktioner: vakthund, skuggmotor, favoritprov, kamerafacit.
+
+**Alternativ.** Bara vakthunden: skuggmotorn och försprånget mäter då en annan fil än appen. Pages kvar överallt: vakthunden
+vaktar reserven, inte appens väg. Hinkens gräns 45 minuter som Pages: ett stopp syns då först när appen redan tystnat, och
+med vakthunden en gång i timmen upp till två timmar efter stoppet. 5 minuter: två uteblivna körningar räcker för ett larm.
+
+**Stomdokument:** SYS vakthundens kontroll och funktionernas källa, MAT försprånget och kamerafacits V3, KAR vem som läser lägesfilen.

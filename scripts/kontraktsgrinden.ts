@@ -180,6 +180,15 @@ export const KONTRAKT: Kontrakt[] = [
     filer: /healthcheck\.ts|functions\/vakthund\/index\.ts|publish\/snapshot-core\.ts|functions\/publicera\/index\.ts/,
     golv: 4,
   },
+  // De svenska stationernas färskhet (DECISIONS #751, #752): kamerafacits V3 tar kalla stationer som är tysta i appen, och en
+  // station äldre än publiceringens gräns är tyst därför att värdet saknas, inte därför att motorn valt tystnad.
+  {
+    namn: "Svenska stationers färskhet — publiceringen och kamerafacits tystnadsstickprov",
+    varfor: "Driver de isär tar V3 stationer som appen aldrig såg, eller missar stationer som appen var tyst om.",
+    former: [/WX_SANE = wxSane\("([^"]+)"\)/, /sample_time > now\(\) - interval '(\d[^']*)'`/],
+    filer: /publish\/snapshot-core\.ts|functions\/publicera\/index\.ts|functions\/kamerafacit\/index\.ts/,
+    golv: 3,
+  },
   // Grind A:s trösklar och domspärr (TROSKLAR-SKUGGAN §3) fick en andra kopia 23/9 när vägpunkts-
   // grinden lades i hojd-prov.ts (DECISIONS #323). Två grindar som dömer mot OLIKA tal vore två
   // sanningar om samma dokument.
