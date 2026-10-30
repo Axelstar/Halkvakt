@@ -53,6 +53,10 @@ const dag = d => d.toLocaleDateString("sv-SE", { timeZone: TZ });
 // The afternoon runs (DECISIONS #746) draw a fresh ad for the drive home; the ad name carries the half of the day so a
 // morning ad is never reused in the afternoon. Before noon in Stockholm is the morning, everything after the afternoon.
 export const dagdel = d => Number(d.toLocaleString("sv-SE", { timeZone: TZ, hour: "2-digit", hour12: false })) < 12 ? "morgon" : "eftermiddag";
+// Showing windows in Stockholm time, minutes after midnight (DECISIONS #749): 05:00–10:00 and 14:00–19:00.
+const DAGAR_ALLA = [0, 1, 2, 3, 4, 5, 6];
+export const VISNING = [{ start_minute: 300, end_minute: 600, days: DAGAR_ALLA },
+                        { start_minute: 840, end_minute: 1140, days: DAGAR_ALLA }];
 const lista = ord => ord.length < 2 ? ord.join("") : ord.slice(0, -1).join(", ") + " och " + ord.at(-1);
 
 // ---- Data → annons (rena funktioner, prövade i test/annonsstyrning.test.ts) ----
@@ -214,8 +218,7 @@ async function uppsattning() {
         promoted_object: { application_id: META_APP_ID, object_store_url: APP },
         start_time: start.toISOString(), end_time: slut.toISOString(),
         pacing_type: ["day_parting"],
-        adset_schedule: [{ start_minute: 360, end_minute: 540, days: [0, 1, 2, 3, 4, 5, 6] },
-                         { start_minute: 900, end_minute: 1080, days: [0, 1, 2, 3, 4, 5, 6] }],
+        adset_schedule: VISNING,
         targeting: { geo_locations: { regions: [{ key: traff[0].key }], location_types: ["home", "recent"] },
                      age_min: 18, user_os: ["iOS"], device_platforms: ["mobile"], publisher_platforms: ["facebook", "instagram"],
                      targeting_automation: { advantage_audience: 1 } },
@@ -223,6 +226,11 @@ async function uppsattning() {
       }, "POST");
       s.ads = { data: [] };
       skriv(`${namn}: skapad, pausad, regionen ${traff[0].name} (${s.id}).`);
+    }
+    else {
+      // Existing ad sets get the current windows; setting the same schedule again changes nothing.
+      await graph(s.id, { adset_schedule: VISNING }, "POST");
+      skriv(`${namn}: visning 05–10 och 14–19.`);
     }
     if ((s.ads?.data ?? []).some(a => a.name.startsWith("Reserv · "))) continue;
     const id = await laggUpp(RESERV, `Reserv · ${l.kort}`, s.id);
