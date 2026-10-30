@@ -18996,6 +18996,8 @@ Budgeten ändras inte; taket är fortfarande 2 000 kr för kampanjen, och fler t
 fönstren även på län som redan finns, så en körning flyttar alla 21. Eftermiddagens pulsjobb flyttas en timme tidigare,
 `puls-meta-middag` 11:01 och `puls-meta-eftermiddag` 12:31 UTC (12:01 och 13:31 vintertid), så att Metas granskning hinner före
 14:00. Antalet pulsjobb är oförändrat (27).
+*Tillägg 30/10:* första uppsättningen avvisades vid första länet (subcode 1487675, *Spridningstypen är inte kompatibel med
+dygnsindelning*, inget ändrat): schemat skickas nu med `pacing_type: ["day_parting"]`, som när länet skapas.
 
 **Alternativ.** Hela dagen eller sen kväll: bilden bär morgonens eller middagens klockslag och blir gammal, och mitt på dagen är
 få på väg att köra. Behålla 06–09 och 15–18: första morgonen gav 31 klick för 38,61 kr, så det finns utrymme för fler klick.

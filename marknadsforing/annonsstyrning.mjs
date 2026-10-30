@@ -229,7 +229,8 @@ async function uppsattning() {
     }
     else {
       // Existing ad sets get the current windows; setting the same schedule again changes nothing.
-      await graph(s.id, { adset_schedule: VISNING }, "POST");
+      // The pacing goes along: alone, the schedule is read as standard pacing and refused (subcode 1487675, 30/10).
+      await graph(s.id, { pacing_type: ["day_parting"], adset_schedule: VISNING }, "POST");
       skriv(`${namn}: visning 05–10 och 14–19.`);
     }
     if ((s.ads?.data ?? []).some(a => a.name.startsWith("Reserv · "))) continue;
