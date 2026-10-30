@@ -151,7 +151,7 @@ test("#75 givarvakten: frusen, orimlig och gammal station publiceras inte", { sk
     await pool.query(rf(new URL("../sql/009_radar_precip.sql", import.meta.url), "utf8"));
     const { liveDoc } = await buildSnapshot(async (t, p) => (await pool.query(t, p as any[])).rows, []);
     // W1 från writeAll-testet ovan har sample_time 2026-08-24 ⇒ gammal ⇒ tyst. Storvik: 22,7°
-    // under luften ⇒ orimlig ⇒ tyst. GAMMAL: 5 h ⇒ tyst. STANNAD: 90 min ⇒ tyst sedan 30/10 (DECISIONS #750; talade med
+    // under luften ⇒ orimlig ⇒ tyst. GAMMAL: 5 h ⇒ tyst. STANNAD: 90 min ⇒ tyst sedan 30/10 (DECISIONS #751; talade med
     // tre timmar). Kvar: den färska, FJARRYTA på 50 min (glest men levande, som fjärrytorna på 33–38 min 30/10) och den vi
     // inte kan döma (luft saknas — vakten fäller bara på bevisad orimlighet, aldrig på okunskap).
     assert.deepEqual(liveDoc.weather.map((w) => w.id).sort(), ["FARSK", "FJARRYTA", "OKANDLUFT"]);

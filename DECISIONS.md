@@ -19015,7 +19015,7 @@ hade stått på tills nästa morgon.
 
 **Stomdokument:** inga — marknadsföringen ligger utanför appen, motorn och mätningarna; ingen data lämnar appen.
 
-## #750 (30/10 2026) Stationernas ålder: en svensk station får vara högst 60 minuter gammal, grannländernas tre timmar (kort #365)
+## #751 (30/10 2026) Stationernas ålder: en svensk station får vara högst 60 minuter gammal, grannländernas tre timmar (kort #365)
 
 **Frågan.** Fristen `kedjans-takt-1-11` (KEDJANS-TAKT §6; #741 lämnade den: *Inte avgjort här*). Urvalet till lägesfilen tog
 stationer vars senaste värde var högst tre timmar gammalt (`WX_SANE`), och appens åldersspärr på 45 minuter prövar bara filens

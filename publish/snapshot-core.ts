@@ -69,7 +69,7 @@ export function karantanSql(rad: string, tabell = "weather_observations"): strin
 }
 
 /** Givarvakten (#75) och radvakten (#234). Gäller VARJE fråga mot weather_latest — svensk, gräns och bro. Färskheten skiljer
- *  sig: en svensk station får vara högst 60 minuter gammal (DECISIONS #750; tre timmar till 30/10), så att en station som
+ *  sig: en svensk station får vara högst 60 minuter gammal (DECISIONS #751; tre timmar till 30/10), så att en station som
  *  stannat inte ger frysrisk på ett gammalt värde. Grannländernas har kvar tre timmar, eftersom de hämtas en gång i timmen
  *  (DECISIONS #83); hälsokontrollen och vakthunden räknar de nåbara grannstationerna med samma tre timmar. */
 const wxSane = (farsk: string) =>

@@ -170,7 +170,7 @@ export const KONTRAKT: Kontrakt[] = [
     filer: /healthcheck\.ts|functions\/vakthund\//,
     golv: 2,
   },
-  // Grannstationernas färskhet (DECISIONS #750): publiceringen tar grannländernas stationer upp till tre timmar gamla, eftersom
+  // Grannstationernas färskhet (DECISIONS #751): publiceringen tar grannländernas stationer upp till tre timmar gamla, eftersom
   // de hämtas en gång i timmen (#83), och de två kontrollerna av nåbara grannstationer ska räkna samma population. De svenska
   // stationernas 60 minuter (WX_SANE) gäller inte här.
   {

@@ -126,7 +126,7 @@ test("#75 givarvakten sitter i VARJE väderfråga: svensk, gräns (fi/no) och br
   assert.equal(positioner.filter((t) => t.includes("AS radar_mmh")).length, 1, "det andra undantaget är radarfrågan och ingen annan");
   const wxQueries = asked.filter((t) => t.includes("weather_latest") && !positioner.includes(t));
   assert.equal(wxQueries.length, 4, "svensk + fi + no + bro");
-  // Färskheten (DECISIONS #750): svenska stationer och broarnas källor 60 minuter, grannländerna tre timmar (en hämtning i timmen, #83).
+  // Färskheten (DECISIONS #751): svenska stationer och broarnas källor 60 minuter, grannländerna tre timmar (en hämtning i timmen, #83).
   const grans = wxQueries.filter((t) => /\b(fi|no)\.weather_latest/.test(t));
   assert.equal(grans.length, 2, "fi + no");
   for (const t of wxQueries) assert.ok(t.includes(grans.includes(t) ? WX_SANE_GRANS : WX_SANE), "givarvakten saknas i: " + t.slice(0, 80));
