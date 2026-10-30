@@ -19121,3 +19121,18 @@ punkt 6 (en glesare takt, eller kollar bara när telefonen laddar) är vägen di
 valt bort.
 
 **Stomdokument:** APP batteriet före inskicket, BED §4.2 och läget.
+
+## #754 (30/10 2026) Tre län görs om rena efter fastnad "Preparing", och uppsättningen rör bara schemat när det skiljer
+
+**Beslut** (Axel 30/10). Norrbotten, Västerbotten och Västernorrland stod i *Preparing* från schemaändringen 11:58 (#749) och
+levererade inget 14–19, fast annonserna var godkända. Metas support: en schemaändring är en betydande ändring som matchas om i upp
+till 12 timmar, och efter 12 timmar rådde de att skapa nya annonsuppsättningar. De tre raderas i Ads Manager och `uppsattning`
+skapar dem på nytt (namnen kvar, så styrningen känner igen dem). `uppsattning` skickar nu schemat till ett befintligt län bara när
+det skiljer från `VISNING` (`sammaSchema()`), så att en körning aldrig sätter de andra arton i ny omprövning. Regel: ändra inte
+ett läns inställningar mitt i kampanjen; nya annonser och på/av går bra.
+
+**Alternativ.** Metas förslag att göra en liten ändring och publicera om: samma slags ändring som fastnade. Duplicera: kopiorna
+får namn som styrningen inte känner igen och skulle gå okontrollerat. Vänta till 05:00: Metas leveranssystem visar länen som
+aktiva, men de levererade inget hela eftermiddagen.
+
+**Stomdokument:** inga — marknadsföringen ligger utanför appen, motorn och mätningarna; ingen data lämnar appen.
