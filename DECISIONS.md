@@ -19092,3 +19092,32 @@ vaktar reserven, inte appens väg. Hinkens gräns 45 minuter som Pages: ett stop
 med vakthunden en gång i timmen upp till två timmar efter stoppet. 5 minuter: två uteblivna körningar räcker för ett larm.
 
 **Stomdokument:** SYS vakthundens kontroll och funktionernas källa, MAT försprånget och kamerafacits V3, KAR vem som läser lägesfilen.
+
+## #753 (30/10 2026) Batteriprovet: inskicket görs på skattningen, utan provresa (kort #365, #741 punkt 6)
+
+**Frågan.** Bedömningen §4.2 (ny 29/10, Bengt och Axel): batteriprovet före inskicket (#741 punkt 6), en resa på iPhone eller
+inskick på skattningen?
+
+**Beslut** (Bengt 30/10: *"vi skickar in punkten 6 baserat på skattning"*). Inskicket väntar inte på en provresa. Underlaget är skattningen 29/10
+(`docs/BATTERISKATTNINGEN-2026-10-29.md`): troligast 7,2 %/h för iPhone med fas 2, mot gränsen 8. Budgeten under 8 %/h med
+skärmen av (CLAUDE.md) står kvar: visar en senare mätning mer än 8 %/h är det ett hinder för nästa bygge, och spakarna i #741
+punkt 6 (en glesare takt, eller kollar bara när telefonen laddar) är vägen dit.
+
+**Underlaget.**
+- Skattningen: fas 2 lägger 0–1,1 %/h på mätningen 27/9 (#382: 7 %/h, sant värde 6–8); troligast 7,2 %/h, i det sämsta fallet
+  drygt 9. Marginalen, omkring 0,8 %/h, är lika stor som osäkerheten i mätningen 27/9.
+- Android 30/10: en testförare säger att telefonen drar cirka 5–6 %/h med appen igång (fältrapport; bygget, skärmen och
+  laddsladden okända).
+- iPhone 30/10, tre resor med 0.3.14 under *Betatest → Mätningen* (14, 21 och 15 minuter): 85 → 85, 80 → 75 och 75 → 75 %.
+  iPhone ger nivån i steg om 5 %, så korta resor mäter inte batteriet.
+
+**Följder.**
+- Steget *Batteriprovet* i projektkartan (delen *Kedjans takt*) gäller inte längre; det bokförs inte som mätt.
+- Mätningen i telefonen visar batteriet per resa även fortsättningsvis, och fas 3 (fem resor) läser det med stegen på 5 % som
+  förbehåll.
+- Risken att appen ligger över gränsen är inte noll: i det sämsta fallet drygt 9 %/h.
+
+**Alternativ.** En resa på iPhone utan laddsladd och med skärmen av, gärna två timmar, före inskicket (skattningens förslag):
+valt bort.
+
+**Stomdokument:** APP batteriet före inskicket, BED §4.2 och läget.
