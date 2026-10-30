@@ -170,6 +170,16 @@ export const KONTRAKT: Kontrakt[] = [
     filer: /healthcheck\.ts|functions\/vakthund\//,
     golv: 2,
   },
+  // Grannstationernas färskhet (DECISIONS #751): publiceringen tar grannländernas stationer upp till tre timmar gamla, eftersom
+  // de hämtas en gång i timmen (#83), och de två kontrollerna av nåbara grannstationer ska räkna samma population. De svenska
+  // stationernas 60 minuter (WX_SANE) gäller inte här.
+  {
+    namn: "Grannstationernas färskhet — publiceringen och kontrollerna",
+    varfor: "Sänks en kopia till de svenska 60 minuterna kallar kontrollen gränsen frisk medan publiceringen tystar den, eller tvärtom.",
+    former: [/f\.sample_time > now\(\) - interval '([^']+)'/, /WX_SANE_GRANS = wxSane\("([^"]+)"\)/],
+    filer: /healthcheck\.ts|functions\/vakthund\/index\.ts|publish\/snapshot-core\.ts|functions\/publicera\/index\.ts/,
+    golv: 4,
+  },
   // Grind A:s trösklar och domspärr (TROSKLAR-SKUGGAN §3) fick en andra kopia 23/9 när vägpunkts-
   // grinden lades i hojd-prov.ts (DECISIONS #323). Två grindar som dömer mot OLIKA tal vore två
   // sanningar om samma dokument.

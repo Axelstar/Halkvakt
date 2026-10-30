@@ -193,12 +193,17 @@ export function karantanSql(rad: string, tabell = "weather_observations"): strin
   return `${brottSql(rad, tabell)} < ${KARANTAN_BROTT}` + (tabell === "weather_observations" ? ` AND NOT ${givarfelSql(rad)}` : "");
 }
 
-/** Givarvakten (#75) och radvakten (#234). Gäller VARJE fråga mot weather_latest — svensk, gräns och bro. */
-export const WX_SANE =
+/** Givarvakten (#75) och radvakten (#234). Gäller VARJE fråga mot weather_latest — svensk, gräns och bro. Färskheten skiljer
+ *  sig: en svensk station får vara högst 60 minuter gammal (DECISIONS #751; tre timmar till 30/10), så att en station som
+ *  stannat inte ger frysrisk på ett gammalt värde. Grannländernas har kvar tre timmar, eftersom de hämtas en gång i timmen
+ *  (DECISIONS #83); hälsokontrollen och vakthunden räknar de nåbara grannstationerna med samma tre timmar. */
+const wxSane = (farsk: string) =>
   "surface_temp_c IS NOT NULL" +
-  " AND sample_time > now() - interval '3 hours'" +
+  ` AND sample_time > now() - interval '${farsk}'` +
   " AND (air_temp_c IS NULL OR surface_temp_c >= air_temp_c - 12)" +
   ` AND ${RADVAKT_SQL}`;
+export const WX_SANE = wxSane("60 minutes");
+export const WX_SANE_GRANS = wxSane("3 hours");
 
 export const BORDER_M = 40_000;
 /** Lådan runt grannstationen som gränsfrågan sållar vägarna med på vägindexet innan avståndet mäts (DECISIONS #742). Den
@@ -490,7 +495,7 @@ export async function buildSnapshot(qIn: Q, bridgesIn: Bridge[], now: Date = new
         SELECT f.station_id, f.surface_temp_c, f.rain, f.snow, f.precipitation,
                ST_X(f.geom) AS lon, ST_Y(f.geom) AS lat
         FROM ${land}.weather_latest f
-        WHERE ${WX_SANE}
+        WHERE ${WX_SANE_GRANS}
           AND EXISTS (SELECT 1 FROM road_conditions r
                       WHERE NOT r.deleted AND r.geom IS NOT NULL AND r.geom && ST_Expand(f.geom, $2)
                         AND ST_DWithin(f.geom::geography, r.geom::geography, $1))`, [BORDER_M, BORDER_DEG]);

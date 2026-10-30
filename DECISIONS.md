@@ -19014,3 +19014,43 @@ Metas gränskoder (4, 17, 32, 613, 80004) innan den ger upp; det ryms inom flöd
 hade stått på tills nästa morgon.
 
 **Stomdokument:** inga — marknadsföringen ligger utanför appen, motorn och mätningarna; ingen data lämnar appen.
+
+## #751 (30/10 2026) Stationernas ålder: en svensk station får vara högst 60 minuter gammal, grannländernas tre timmar (kort #365)
+
+**Frågan.** Fristen `kedjans-takt-1-11` (KEDJANS-TAKT §6; #741 lämnade den: *Inte avgjort här*). Urvalet till lägesfilen tog
+stationer vars senaste värde var högst tre timmar gammalt (`WX_SANE`), och appens åldersspärr på 45 minuter prövar bara filens
+ålder. En station som stannat kunde därför ge frysrisk på ett värde upp till tre timmar gammalt.
+
+**Beslut** (Bengt 30/10: *"Beslut utan läsning"* och *"Sverige 60, grannar 3 h"*, på Claudes rekommendation). `WX_SANE` delas i två i `publish/snapshot-core.ts`: svenska stationer, alltså väderpunkterna och
+broarnas källor, högst **60 minuter**; grannländernas (`WX_SANE_GRANS`, Finland och Norge) kvar på **tre timmar**. Givarvakten,
+radvakten och karantänen är oförändrade. Ingen läsning med DB-knappen före beslutet (Bengts val).
+
+**Underlaget.**
+- Normal ålder 10–20 minuter: stationerna mäter var tionde minut och kommer in 5,0 minuter efter mätningen i median, 7,0 i 95:e
+  percentilen (#741 punkt 1b), och publiceringen går varannan minut.
+- Kartans `vader.geojson` 30/10, mättider till 10:20 UTC (läst av Claude): 812 av 857 svenska stationer under 20 minuter, 11
+  mellan 20 och 45 (de tre äldsta, 33–38 minuter, *Fjärryta*-givare), **0** mellan 45 minuter och tre timmar, 34 över tre timmar.
+  28/10 16:00 UTC: 16 mellan 20 och 60 minuter och **1** mellan en och tre timmar (KEDJANS-TAKT §3).
+- 60 och inte 45 (appens åldersspärr och kandidatens veto): fjärrytorna låg på 33–38 minuter, och 45 lämnar bara en sen leverans
+  i marginal. Inte 30: det tystar fjärrytorna.
+- Grannländerna hämtas en gång i timmen (`puls-ingest-grannar` kl. :24, #83, som själv säger att tre timmar håller dem vid liv).
+  Med 60 minuter hade de tystnat före varje hämtning och en hel timme när ett pulsjobb missar.
+
+**Följder.**
+- Ändringen kan bara tysta: varma stationer var redan bortfiltrerade.
+- Skuggmotorn och försprångsmätningen läser de publicerade väderpunkterna, så frysriskens population i `forsprang_log` (T0
+  22/10, TROSKLAR-FORSPRANG §4) ändras från deployen; uppmätt 0–1 station åt gången. Deployens tid bokförs i STATUS, så att
+  domen i mars kan dela perioden.
+- Segmentprognosens ankare (`vagpunkt_ankare()`, sql/032) har en egen gräns på tre timmar och rörs inte: RÅ:s population står
+  kvar (samma skäl som #344).
+- Kuvösens uppspelning bygger lägesfilen med samma kärna och följer med.
+- Hälsokontrollen och vakthunden räknar de nåbara grannstationerna med tre timmar, som publiceringen; kontraktet
+  *Grannstationernas färskhet* i kontraktsgrinden binder de fyra kopiorna.
+- Vid ett avbrott hos Trafikverket tystnar frysrisken efter 60 minuter i stället för tre timmar.
+- Kräver deploy av `publicera` (Bengt). Vakthunden ändras inte.
+
+**Alternativ.** 45 minuter: för nära fjärrytorna. 30 minuter: tystar fjärrytorna. 60 minuter för alla: grannländerna tystnar en
+stund varje timme. Tre timmar kvar: en station som stannat ger frysrisk på ett värde från i morse. En veckas läsning med
+DB-knappen först: valt bort av Bengt.
+
+**Stomdokument:** SYS urvalet till lägesfilen, MAT stationernas färskhet i mätningarnas text, KUV uppspelningen följer med, KAR lägesfilen.
