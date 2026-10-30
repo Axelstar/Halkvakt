@@ -114,13 +114,26 @@ export const RESERV = {
 
 // ---- Meta ----
 
+// Meta's rate limits (code 17 hit the 12:01 run on 30/10 after two setup runs, DECISIONS #750): wait and try again
+// instead of giving up. 1 + 3 + 5 minutes fits inside the workflow's 20 minutes.
+export const GRANSKODER = [4, 17, 32, 613, 80004];
+const VANTA_S = [60, 180, 300];
+const sov = s => new Promise(r => setTimeout(r, s * 1000));
+
 async function graph(path, params = {}, method = "GET") {
   const q = new URLSearchParams({ access_token: TOKEN });
   for (const [k, v] of Object.entries(params)) q.set(k, typeof v === "string" ? v : JSON.stringify(v));
-  const r = method === "GET" ? await fetch(`${GRAPH}/${path}?${q}`) : await fetch(`${GRAPH}/${path}`, { method, body: q });
-  const body = await r.json();
-  if (!r.ok || body.error) throw new Error(`${method} ${path}: ${r.status} ${JSON.stringify(body.error ?? body)}`);
-  return body;
+  for (let forsok = 0; ; forsok++) {
+    const r = method === "GET" ? await fetch(`${GRAPH}/${path}?${q}`) : await fetch(`${GRAPH}/${path}`, { method, body: q });
+    const body = await r.json();
+    if (body.error && GRANSKODER.includes(body.error.code) && forsok < VANTA_S.length) {
+      console.log(`Meta: för många anrop (kod ${body.error.code}). Väntar ${VANTA_S[forsok]} s och försöker igen.`);
+      await sov(VANTA_S[forsok]);
+      continue;
+    }
+    if (!r.ok || body.error) throw new Error(`${method} ${path}: ${r.status} ${JSON.stringify(body.error ?? body)}`);
+    return body;
+  }
 }
 
 async function alla(path, params) {
