@@ -18987,3 +18987,17 @@ Exportera CSV för hand varje vecka: det Axel gjort hittills, och det som gjorde
 utan att någon såg att installationerna föll från 10 till 2. Läs-rollen *API Account Read Only*: räcker för rapporten men inte för ändringar.
 
 **Stomdokument:** inga — marknadsföringen ligger utanför appen, motorn och mätningarna; ingen data lämnar appen.
+
+## #749 (30/10 2026) Meta-annonserna visas 05–10 och 14–19 i stället för 06–09 och 15–18
+
+**Beslut** (Axel 30/10: *"Yes i agree with you"*, på förslaget att vidga fönstren). Visningen blir 05:00–10:00 och 14:00–19:00
+svensk tid (`VISNING` i annonsstyrningen): de tidiga pendlarna, kaffet på jobbet, fredagarnas tidigare hemresa och timmen efter 18.
+Budgeten ändras inte; taket är fortfarande 2 000 kr för kampanjen, och fler timmar sprider samma pengar. `uppsattning` sätter
+fönstren även på län som redan finns, så en körning flyttar alla 21. Eftermiddagens pulsjobb flyttas en timme tidigare,
+`puls-meta-middag` 11:01 och `puls-meta-eftermiddag` 12:31 UTC (12:01 och 13:31 vintertid), så att Metas granskning hinner före
+14:00. Antalet pulsjobb är oförändrat (27).
+
+**Alternativ.** Hela dagen eller sen kväll: bilden bär morgonens eller middagens klockslag och blir gammal, och mitt på dagen är
+få på väg att köra. Behålla 06–09 och 15–18: första morgonen gav 31 klick för 38,61 kr, så det finns utrymme för fler klick.
+
+**Stomdokument:** inga — marknadsföringen ligger utanför appen, motorn och mätningarna; ingen data lämnar appen.

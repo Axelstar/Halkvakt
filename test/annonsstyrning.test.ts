@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 // @ts-ignore — .mjs utan typer
-import { fara, annons, stracka, vagBild, vagText, dagdel } from "../marknadsforing/annonsstyrning.mjs";
+import { fara, annons, stracka, vagBild, vagText, dagdel, VISNING } from "../marknadsforing/annonsstyrning.mjs";
 
 const l = (kort: string, halt: number, kalla: number, extra = {}) =>
   ({ kod: 1, kort, slug: kort.toLowerCase(), halt, vagavsnitt: 40, kalla, kallast: null, olyckor: 0, ...extra });
@@ -70,4 +70,12 @@ test("dagdel: before noon in Stockholm is the morning, the rest the afternoon (D
   assert.equal(dagdel(new Date("2026-11-10T10:59:00Z")), "morgon");      // 11:59
   assert.equal(dagdel(new Date("2026-11-10T12:01:00Z")), "eftermiddag"); // 13:01
   assert.equal(dagdel(new Date("2026-11-10T13:31:00Z")), "eftermiddag"); // 14:31
+});
+
+test("visning: 05:00–10:00 and 14:00–19:00 every day, whole hours (DECISIONS #749)", () => {
+  assert.deepEqual(VISNING.map(v => [v.start_minute / 60, v.end_minute / 60]), [[5, 10], [14, 19]]);
+  for (const v of VISNING) {
+    assert.equal(v.start_minute % 60, 0);   // Meta takes whole hours only (#735)
+    assert.deepEqual(v.days, [0, 1, 2, 3, 4, 5, 6]);
+  }
 });
