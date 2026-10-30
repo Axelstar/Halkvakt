@@ -25,7 +25,8 @@ struct RapportView: View {
                     if let resa = rapporten.resor[ruttId] {
                         RapportInnehall(rader: hem ? resa.hem : resa.dit, kandidat: hem ? resa.kandidatHem : resa.kandidatDit,
                                         fore: fore, kollat: rapporten.kollat,
-                                        lagesfil: rapporten.lagesfil, gammaltVaglag: rapporten.gammaltVaglag,
+                                        lagesfil: rapporten.lagesfil, rapportfil: rapporten.rapportfil,
+                                        gammaltVaglag: rapporten.gammaltVaglag,
                                         gamlaOlyckor: rapporten.gamlaOlyckor)
                     } else {
                         Text(rapporten.gickInte ? "Läget kunde inte hämtas. Dra nedåt för att försöka igen." : "Kollar läget …")
@@ -52,10 +53,11 @@ struct RapportView: View {
         }
     }
 
-    /// Hämtar om, och det som nu visas åt båda hållen blir förra kollen till nästa gång.
+    /// Hämtar om, och det som nu visas åt båda hållen blir förra kollen till nästa gång — bara när hämtningen lyckades. Annars ligger
+    /// den förra rapporten kvar i minnet, och förra kollen hade fått en tid då ingenting hämtades (B7-24).
     private func uppdatera() async {
         await rapporten.uppdatera()
-        if rapporten.resor[ruttId] != nil { fav.kollad(rutt: ruttId, ids: rapporten.ids(ruttId)) }
+        if rapporten.resor[ruttId] != nil, !rapporten.gickInte { fav.kollad(rutt: ruttId, ids: rapporten.ids(ruttId)) }
     }
 
     private func startaVakten() { GuardManager.shared.requestPermissionAndStart() }
@@ -89,6 +91,7 @@ private struct RapportInnehall: View {
     let fore: Favoriter.Koll?
     let kollat: Date?
     let lagesfil: Date?
+    let rapportfil: Date?
     let gammaltVaglag: Bool
     let gamlaOlyckor: Bool
 
@@ -101,6 +104,8 @@ private struct RapportInnehall: View {
             MonoLabel(text: "Just nu · kollat \(kollat?.klockslag ?? "–")").padding(.top, 28).padding(.bottom, 10).padding(.horizontal, 4)
             VStack(alignment: .leading, spacing: 6) {
                 Text("Läget från \(lagesfil?.klockslag ?? "okänd tid")").font(Typo.sans(17, .semibold)).foregroundStyle(Brand.text)
+                // B7-05 (DECISIONS #686 punkt 5): olyckor, vägarbeten, hinder, köer, restider och färjor kommer ur rapportfilen.
+                Text("Rapporten från \(rapportfil?.klockslag ?? "okänd tid")").font(Typo.sans(17, .semibold)).foregroundStyle(Brand.text)
                 Text("Läget kan ändras under resan, och då säger rösten till.").font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2)
                 if gammaltVaglag {
                     Text("Väglaget är äldre än 45 minuter och visas inte som läget just nu.").font(Typo.sans(14)).foregroundStyle(Brand.yellow)

@@ -35,6 +35,8 @@ object Rapporten {
         val resor: Map<String, Resa> = emptyMap(),
         val kollat: Long? = null,
         val lagesfil: Long? = null,
+        /** Rapportfilens tid: olyckor, vägarbeten, hinder, köer, restider och färjor kommer ur den (DECISIONS #686 punkt 5, B7-05). */
+        val rapportfil: Long? = null,
         val gammaltVaglag: Boolean = false,
         val gamlaOlyckor: Boolean = false,
         val laddar: Boolean = false,
@@ -69,13 +71,14 @@ object Rapporten {
             }
             _lage.update {
                 if (u == null) it.copy(laddar = false, gickInte = true)
-                else it.copy(resor = u.resor, kollat = System.currentTimeMillis(), lagesfil = u.lagesfil, gammaltVaglag = u.gammaltVaglag,
-                    gamlaOlyckor = u.gamlaOlyckor, laddar = false, gickInte = false)
+                else it.copy(resor = u.resor, kollat = System.currentTimeMillis(), lagesfil = u.lagesfil, rapportfil = u.rapportfil,
+                    gammaltVaglag = u.gammaltVaglag, gamlaOlyckor = u.gamlaOlyckor, laddar = false, gickInte = false)
             }
         }
     }
 
-    private class Utfall(val resor: Map<String, Resa>, val lagesfil: Long?, val gammaltVaglag: Boolean, val gamlaOlyckor: Boolean)
+    private class Utfall(val resor: Map<String, Resa>, val lagesfil: Long?, val rapportfil: Long?, val gammaltVaglag: Boolean,
+                         val gamlaOlyckor: Boolean)
 
     private fun rakna(rutter: List<SparadRutt>, stat: Map<String, Any?>, live: Map<String, Any?>, snabb: Map<String, Any?>,
                       lang: Map<String, Any?>, nu: Long, betatest: Boolean): Utfall? {
@@ -93,7 +96,7 @@ object Rapporten {
                 grind(ResansRapport.resansRapport(r.punkter, true, lage, kameror, fil, linjer)),
                 ResansRapport.kandidatRader(r.punkter, false, lage), ResansRapport.kandidatRader(r.punkter, true, lage))
         }
-        return Utfall(resor, lagesTid, gammaltVaglag, gamlaOlyckor)
+        return Utfall(resor, lagesTid, rapportTid, gammaltVaglag, gamlaOlyckor)
     }
 
     private fun tid(s: String?): Long? = s?.let { runCatching { Instant.parse(it).toEpochMilli() }.getOrNull() }
