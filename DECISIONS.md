@@ -18826,6 +18826,16 @@ på radion och batteriet, och det sämsta fallet är drygt 9 %/h. Skattningen er
 Rättelse av *Kostnad*: hinkens trafik är omkring **0,9 MB** i timmen per förare, inte 150 kB, eftersom `live.json` bär
 `generated_at` och hämtas vid nästan varje koll (30 × 31,7 kB med gzip, uppmätt i hinken 29/10).
 
+**Tillägg 30/10: favoritfunktionen läser lägesfilen ur hinken** (Bengt: *"Gör det nu"*). Fas 1 flyttade appen till hinken
+men inte funktionen `favoriter`, som sedan 17/10 (#617) läste lägesfilen ur kartans fil på GitHub Pages, skriven var tionde
+minut. Den använder filen bara för att välja vilka stationers namn och lufttemperatur rapportfilen bär (de som kan stå som
+frysrisk). Körningen 22:56 UTC 29/10 fick kartans fil från 22:50, när hinken hade 22:56 (favoriternas manifest, `lagesfil`), så
+en station som nyss blivit kall kunde stå utan ortnamn och lufttemperatur i favoritrapporten (`Rapport.swift`), och funktionen
+föll om Pages slutade svara. Nu läser den `app/v1/live.json` i hinken med servicenyckeln, inifrån Supabase och utan Cloudflares
+cache, och ett fel bär svarets status och kropp. Ingen reserv mot Pages: funktionen kör och skriver i samma Supabase, så en
+reserv gör den inte säkrare. Skuggmotorn, kamerafacit, vakthunden och favoritprovet läser fortfarande kartans fil och rörs inte
+här (frågan i bedömningen §4.2).
+
 ## #742 (28/10 2026) Gränsfrågan i publiceringen använder vägindexet: bygget från 39,9 s till omkring 2 s, samma stationer (kort #365)
 
 **Beslut** (Bengt 28/10: *"Ja, skriv om"*). Gränssnapshoten (#49) väljer de finska och norska stationerna inom 40 km från en svensk väg.
