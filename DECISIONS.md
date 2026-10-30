@@ -19136,3 +19136,41 @@ får namn som styrningen inte känner igen och skulle gå okontrollerat. Vänta 
 aktiva, men de levererade inget hela eftermiddagen.
 
 **Stomdokument:** inga — marknadsföringen ligger utanför appen, motorn och mätningarna; ingen data lämnar appen.
+
+## #755 (31/10 2026) Småvägarna som Trafikverket inte bedömer: frågan tas upp i mars 2027, med Hednoret som exempel
+
+**Beslut** (Bengt 31/10: *"jag vill att du sparar hednoret som en fråga att ta upp i mars 2027 ska vi även göra uppskattningar på småvägar som inte trafikverket bedömer. ta med hur stor trafikmängd som är där"*). Frågan om kandidaten också ska räkna på vägar utanför Trafikverkets 818
+väglagssträckor tas upp **1/3 2027**, med marsdomarna (fristen `smavagarna-mars-2027`, förvarning 14 dygn). Ingenting byggs före
+det. Kalenderns villkorsrad för vägdatalagret (c) står kvar; frågan tas upp i mars oavsett om något av dess tre villkor är uppfyllt.
+
+**Exemplet: Hednoret (Bodens kommun), länsväg BD 676**, läst 30–31/10:
+- **Trafikmängden: ÅDT 623 fordon per dygn** (Trafikverkets osäkerhetsfält 19). Lätta fordon 473 kl. 06–18, 99 kl. 18–22 och 37
+  kl. 22–06; tunga fordon 14 per dygn. Posten gäller från 1/1 2024. Källa: NVDB i Trafikverkets öppna karttjänst NetInfo (lagren
+  `ADT_total` och `ADT_tungtrafik`), punkten 65,8247 N 21,5403 E.
+- Statlig väg (Trafikverket), 70 km/h, 6,5 m bred, belagd. Den ingår inte i det funktionellt prioriterade vägnätet.
+- Ingen av de 818 väglagssträckorna ligger på BD 676 (`halkvakt.se/data/vaglag.geojson`, 30/10 17:00 UTC). Närmast ligger väg 356
+  (2,5 km från byn) och väg 97 (2,8 km).
+- Närmaste VViS-station ligger 12,8 km bort (2509), i avståndsbandet 7–15 km. Stationsvarningen når inte dit: ledavståndet är 583 m
+  vid 70 km/h.
+- Appen kan i dag bara varna för olyckor och vilt där.
+
+**Vad som kan väntas, ur det som redan är mätt** (på stationer och huvudvägnätet; på småvägarna finns inget facit):
+- **Temperaturen.** Kandidatens andel grova fel (> 2 °C) är 5,02 % i analysläget och 5,12 % vid +6 h, på stationer den inte tränats
+  på (#544, #552). RÅ per band 0–7 · 7–15 · 15–20 · över 20 km: 5,2 · 5,3 · 7,2 · 13,6 % (#480). Kandidaten i bandet 7–15 km: 2,8 % på
+  2022/23 (FORREGISTRERING-2026-27 §7).
+- **Trafiken.** Mot vädret går vägar under 1 000 fordon per dygn 0,62 °C kallare och vägar med 1 000–20 000 fordon 0,25 °C varmare
+  (#480). Rättelsen har vägdata bland sina särdrag (#552), och restfelet per ÅDT-klass var −0,13 · −0,04 · +0,24 °C (#486; 136 av
+  736 stationer ligger under 1 000). BD 676 hör till den lägsta klassen.
+- **Fukten.** Regelns fukt kommer ur *Våt* på punktens sträcka eller ur radarn (FORREGISTRERING-2026-27 §3). I facitläsningen
+  2024/25 kom den ur bara *Våt* i 88 % av de varnande timmarna, ur bara radarn i 9 % och ur båda i 3 % (#607). Utan en väglagssträcka
+  finns bara radarn kvar: ungefär 12 % av timmarna, allt annat lika. Varningarna på bara radarn bekräftades i 34,5 % (söder 9,5 %,
+  norr 71,3 %), lyft 0,96.
+- **Omfattningen** (KALENDERN): ungefär 98 500 km statlig väg, alltså ungefär 49 000 punkter var 2 km mot 12 960 i dag.
+
+**Underlaget före mars** (Claudes förslag): (1) avståndsfördelningen från småvägarnas punkter till närmaste station; (2) kandidatens
+marsdom på huvudvägnätet; (3) en fuktkälla som inte kräver väglag, om frågan gäller varningar och inte bara skattningen.
+
+**Alternativ.** Bara kalenderns villkorsrad, som prövas vid varje ny facitkälla eller kuvösläsning: den har inget datum och hade inte
+tagit upp frågan av sig själv i mars.
+
+**Stomdokument:** BED §4.2 frågan till mars 2027.
