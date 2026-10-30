@@ -19003,3 +19003,14 @@ dygnsindelning*, inget ändrat): schemat skickas nu med `pacing_type: ["day_part
 få på väg att köra. Behålla 06–09 och 15–18: första morgonen gav 31 klick för 38,61 kr, så det finns utrymme för fler klick.
 
 **Stomdokument:** inga — marknadsföringen ligger utanför appen, motorn och mätningarna; ingen data lämnar appen.
+
+## #750 (30/10 2026) Annonsstyrningen väntar och försöker igen när Meta säger för många anrop
+
+**Beslut** (Axel 30/10: *"we really need to make it come today"*). Middagens körning 12:01 30/10 föll på Metas gräns för anrop
+(kod 17, *User request limit reached*) efter två uppsättningar i rad. `graph()` väntar nu 1, 3 och 5 minuter och försöker igen på
+Metas gränskoder (4, 17, 32, 613, 80004) innan den ger upp; det ryms inom flödets 20 minuter.
+
+**Alternativ.** Låta nästa schemalagda körning ta det: eftermiddagen hade då kunnat gå utan dagens annons, och länen utan halka
+hade stått på tills nästa morgon.
+
+**Stomdokument:** inga — marknadsföringen ligger utanför appen, motorn och mätningarna; ingen data lämnar appen.
