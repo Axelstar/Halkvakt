@@ -31,7 +31,7 @@ CREATE VIEW kuvos.weather_observations AS
 
 -- Produktionens weather_latest hålls av ingesten: varje stations senaste rad. Här härleds den ur arkivet vid klockan. Fönstret
 -- 24 h håller frågan billig (index på sample_time); en station som tigit längre än så finns inte i vyn, medan produktionens
--- tabell behåller den. Det rör bara stationslistan i static.json — allt som varnar kräver ändå en rad yngre än 3 h (WX_SANE).
+-- tabell behåller den. Det rör bara stationslistan i static.json — allt som varnar kräver ändå en rad yngre än 60 min (WX_SANE, DECISIONS #750).
 CREATE VIEW kuvos.weather_latest AS
   SELECT DISTINCT ON (station_id) *
   FROM public.weather_observations

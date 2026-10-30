@@ -6,7 +6,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
-import { buildSnapshot, manifestFor, bridgesFromGeoJSON, WX_SANE, BORDER_M, BORDER_DEG, REGN_UTLOSARE_MMH, GIVARFEL_LUFT_MIN_C, GIVARFEL_GAP_C, KARANTAN_DYGN, KARANTAN_BROTT, RADVAKT_SQL, brottSql, karantanSql, givarfelSql, LANGSAM_FRIST_H, buildGrannSnapshot, GRANNAR, type Q } from "../publish/snapshot-core.ts";
+import { buildSnapshot, manifestFor, bridgesFromGeoJSON, WX_SANE, WX_SANE_GRANS, BORDER_M, BORDER_DEG, REGN_UTLOSARE_MMH, GIVARFEL_LUFT_MIN_C, GIVARFEL_GAP_C, KARANTAN_DYGN, KARANTAN_BROTT, RADVAKT_SQL, brottSql, karantanSql, givarfelSql, LANGSAM_FRIST_H, buildGrannSnapshot, GRANNAR, type Q } from "../publish/snapshot-core.ts";
 import { snapshotToHazards } from "../engine/src/snapshot.ts";
 
 /** Låtsasdatabas: svarar på frågorna efter vilken tabell de läser, och loggar frågetexten. */
@@ -126,8 +126,12 @@ test("#75 givarvakten sitter i VARJE väderfråga: svensk, gräns (fi/no) och br
   assert.equal(positioner.filter((t) => t.includes("AS radar_mmh")).length, 1, "det andra undantaget är radarfrågan och ingen annan");
   const wxQueries = asked.filter((t) => t.includes("weather_latest") && !positioner.includes(t));
   assert.equal(wxQueries.length, 4, "svensk + fi + no + bro");
-  for (const t of wxQueries) assert.ok(t.includes(WX_SANE), "givarvakten saknas i: " + t.slice(0, 80));
-  assert.ok(WX_SANE.includes("interval '3 hours'"), "färskhetskravet");
+  // Färskheten (DECISIONS #750): svenska stationer och broarnas källor 60 minuter, grannländerna tre timmar (en hämtning i timmen, #83).
+  const grans = wxQueries.filter((t) => /\b(fi|no)\.weather_latest/.test(t));
+  assert.equal(grans.length, 2, "fi + no");
+  for (const t of wxQueries) assert.ok(t.includes(grans.includes(t) ? WX_SANE_GRANS : WX_SANE), "givarvakten saknas i: " + t.slice(0, 80));
+  assert.ok(WX_SANE.includes("interval '60 minutes'"), "färskhetskravet för svenska stationer");
+  assert.ok(WX_SANE_GRANS.includes("interval '3 hours'"), "grannländernas färskhet");
   assert.ok(WX_SANE.includes("surface_temp_c >= air_temp_c - 12"), "rimlighetskravet");
   // Gränsstationen hamnar bland väderpunkterna, källmärkt i border-räkningen.
   assert.deepEqual(liveDoc.weather.map((w) => w.id), ["FI1"]);

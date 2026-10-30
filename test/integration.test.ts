@@ -140,6 +140,8 @@ test("#75 givarvakten: frusen, orimlig och gammal station publiceras inte", { sk
         ('STORVIK',  'Storvik-liknande', ST_SetSRID(ST_MakePoint(16.54, 60.58), 4326), now() - interval '5 minutes', -10.7, 12.0, 'rain', true,  false),
         ('GAMMAL',   'Tystnad sedan 5 h', ST_SetSRID(ST_MakePoint(15.00, 59.00), 4326), now() - interval '5 hours',   -2.0, -1.0, 'snow', false, true),
         ('FARSK',    'Rimlig och färsk',  ST_SetSRID(ST_MakePoint(15.10, 59.10), 4326), now() - interval '10 minutes', -1.5,  0.0, 'rain', true,  false),
+        ('STANNAD',  'Tyst sedan 90 min', ST_SetSRID(ST_MakePoint(15.30, 59.30), 4326), now() - interval '90 minutes', -1.0,  0.0, 'rain', true,  false),
+        ('FJARRYTA', 'Glest men levande', ST_SetSRID(ST_MakePoint(15.40, 59.40), 4326), now() - interval '50 minutes', -1.0,  0.0, 'rain', true,  false),
         ('OKANDLUFT','Utan lufttemp',     ST_SetSRID(ST_MakePoint(15.20, 59.20), 4326), now() - interval '10 minutes', -3.0, NULL, 'no',   false, false)
       ON CONFLICT (station_id) DO UPDATE SET sample_time = EXCLUDED.sample_time, surface_temp_c = EXCLUDED.surface_temp_c,
         air_temp_c = EXCLUDED.air_temp_c, precipitation = EXCLUDED.precipitation, rain = EXCLUDED.rain, snow = EXCLUDED.snow`);
@@ -149,9 +151,10 @@ test("#75 givarvakten: frusen, orimlig och gammal station publiceras inte", { sk
     await pool.query(rf(new URL("../sql/009_radar_precip.sql", import.meta.url), "utf8"));
     const { liveDoc } = await buildSnapshot(async (t, p) => (await pool.query(t, p as any[])).rows, []);
     // W1 från writeAll-testet ovan har sample_time 2026-08-24 ⇒ gammal ⇒ tyst. Storvik: 22,7°
-    // under luften ⇒ orimlig ⇒ tyst. GAMMAL: 5 h ⇒ tyst. Kvar: den färska och den vi inte
-    // kan döma (luft saknas — vakten fäller bara på bevisad orimlighet, aldrig på okunskap).
-    assert.deepEqual(liveDoc.weather.map((w) => w.id).sort(), ["FARSK", "OKANDLUFT"]);
+    // under luften ⇒ orimlig ⇒ tyst. GAMMAL: 5 h ⇒ tyst. STANNAD: 90 min ⇒ tyst sedan 30/10 (DECISIONS #750; talade med
+    // tre timmar). Kvar: den färska, FJARRYTA på 50 min (glest men levande, som fjärrytorna på 33–38 min 30/10) och den vi
+    // inte kan döma (luft saknas — vakten fäller bara på bevisad orimlighet, aldrig på okunskap).
+    assert.deepEqual(liveDoc.weather.map((w) => w.id).sort(), ["FARSK", "FJARRYTA", "OKANDLUFT"]);
     assert.deepEqual(liveDoc.weather.find((w) => w.id === "FARSK"), { id: "FARSK", lon: 15.1, lat: 59.1, yta: -1.5, fukt: true, regn_h: null, lutning15: null, lutning30: null, lutning60: null,
       bevis: { vata: 0, mangd: null, radar: null } });   // #245: inget arkiverat regn ⇒ väta 0, mängden okänd (inte noll)
   } finally { await pool.end(); }
@@ -801,7 +804,7 @@ test("#85 writeFi/writeNo/writeDk: batchat, upsert på latest, DO NOTHING i arki
 test("#742 gränsfrågan på vägindexet väljer samma grannstationer som ST_Collect-frågan", { skip: !url }, async () => {
   const { default: pg } = await import("pg");
   const { readFileSync } = await import("node:fs");
-  const { buildSnapshot, WX_SANE, BORDER_M } = await import("../publish/snapshot-core.ts");
+  const { buildSnapshot, WX_SANE_GRANS, BORDER_M } = await import("../publish/snapshot-core.ts");
   const pool = new pg.Pool({ connectionString: url, max: 1 });
   const sql = (f: string) => readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8");
   try {
@@ -826,7 +829,7 @@ test("#742 gränsfrågan på vägindexet väljer samma grannstationer som ST_Col
       const gammal = await pool.query(`
         WITH se AS (SELECT ST_Collect(geom) g FROM road_conditions WHERE NOT deleted AND geom IS NOT NULL)
         SELECT f.station_id FROM ${land}.weather_latest f, se
-        WHERE ${WX_SANE} AND ST_DWithin(f.geom::geography, se.g::geography, $1)`, [BORDER_M]);
+        WHERE ${WX_SANE_GRANS} AND ST_DWithin(f.geom::geography, se.g::geography, $1)`, [BORDER_M]);
       assert.equal(border[land]?.reach, gammal.rows.length, `${land}: den nya frågan och ST_Collect-frågan räknar olika`);
     }
   } finally {
