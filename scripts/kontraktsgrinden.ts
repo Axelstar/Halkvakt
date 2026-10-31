@@ -981,7 +981,7 @@ if (process.argv.includes("--sjalvtest")) {
 // Fillistan läses ur git, inte ur en handskriven lista — samma husregel som mätvakten (#105)
 // och ruttberedskapen (#124): listan som ska vara komplett läses från källan, inte från minnet.
 const { execSync } = await import("node:child_process");
-const { readFileSync } = await import("node:fs");
+const { readFileSync, existsSync } = await import("node:fs");
 const { fileURLToPath } = await import("node:url");
 
 const SJALV = "scripts/kontraktsgrinden.ts";   // grinden bär formerna själv och räknar inte sig
@@ -993,7 +993,10 @@ const ANDELSER = /\.(ts|tsx|sql|kt|swift|mjs)$/;
 const har = { encoding: "utf-8" as const, cwd: fileURLToPath(new URL(".", import.meta.url)) };
 const rot = execSync("git rev-parse --show-toplevel", har).trim();
 
-const spar = execSync("git ls-files", { ...har, cwd: rot }).split("\n")
+// Kuvösens och fysikens filer ligger i det privata repot halkvakt-kuvos sedan 31/10 (DECISIONS #768) och läggs ovanpå utcheckningen
+// i ci, ospårade. Därför läses också ospårade filer som inte är ignorerade: utan dem saknas kuvösens kopior av kontrakten.
+if (!existsSync(`${rot}/kuvos`)) console.log("OBS: kuvos/ saknas — kör med halkvakt-kuvos ovanpå (se dess README), annars saknas kuvösens kopior.\n");
+const spar = execSync("git ls-files --cached --others --exclude-standard", { ...har, cwd: rot }).split("\n")
   .map((s) => s.trim()).filter((s) => s && ANDELSER.test(s) && s !== SJALV && !s.startsWith("node_modules/"));
 
 const filer = spar.map((fil) => ({ fil, text: readFileSync(`${rot}/${fil}`, "utf-8") }));

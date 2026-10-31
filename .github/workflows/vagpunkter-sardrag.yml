@@ -62,7 +62,7 @@ jobs:
       - uses: actions/checkout@v4
         with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
       - name: Koden ur det privata repot ovanpå
-        run: rsync -a --exclude .git .kuvos-privat/ ./ && rm -rf .kuvos-privat
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
       - uses: actions/setup-python@v5
         with: { python-version: "3.13" }
       - name: Axels frysta skript (${{ inputs.lage }}, del ${{ matrix.del }})
@@ -156,7 +156,7 @@ jobs:
       - uses: actions/checkout@v4
         with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
       - name: Koden ur det privata repot ovanpå
-        run: rsync -a --exclude .git .kuvos-privat/ ./ && rm -rf .kuvos-privat
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
       - uses: actions/setup-python@v5
         with: { python-version: "3.13" }
       - uses: actions/download-artifact@v4

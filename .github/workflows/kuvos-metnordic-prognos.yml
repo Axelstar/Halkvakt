@@ -43,7 +43,7 @@ jobs:
       - uses: actions/checkout@v4
         with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
       - name: Koden ur det privata repot ovanpå
-        run: rsync -a --exclude .git .kuvos-privat/ ./ && rm -rf .kuvos-privat
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
       - name: Finns delen redan i releasen?
         id: finns
         shell: bash
