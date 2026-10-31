@@ -66,6 +66,11 @@ jobs:
     env: { VINTER: "${{ inputs.vinter }}" }
     steps:
       - uses: actions/checkout@v4
+      # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos (DECISIONS #768): koden läggs ovanpå utcheckningen.
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       # Provtimmarna 31/10, den första i varje månad och 31/3: vinterns fält på rutnätet 2321 × 1796 (långvågen behövs inte), och för
@@ -91,6 +96,11 @@ jobs:
     env: { GH_TOKEN: "${{ github.token }}", VINTER: "${{ inputs.vinter }}", REL: "kuvos-vintrar-${{ inputs.vinter }}" }
     steps:
       - uses: actions/checkout@v4
+      # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos (DECISIONS #768): koden läggs ovanpå utcheckningen.
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
       - name: Finns ECMWF redan i releasen?
         id: finns
         shell: bash
@@ -148,6 +158,11 @@ jobs:
       FRYST: "metnordic_analys_${{ matrix.del.fran }}_${{ matrix.del.till }}.csv.gz"
     steps:
       - uses: actions/checkout@v4
+      # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos (DECISIONS #768): koden läggs ovanpå utcheckningen.
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
       - name: Finns delen redan i releasen?
         id: finns
         shell: bash
@@ -223,6 +238,11 @@ jobs:
     env: { GH_TOKEN: "${{ github.token }}", VINTER: "${{ matrix.vinter }}", REL: "kuvos-vintrar-${{ matrix.vinter }}" }
     steps:
       - uses: actions/checkout@v4
+      # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos (DECISIONS #768): koden läggs ovanpå utcheckningen.
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       - name: Självtestet, rutorna (kuvos-metnordic-2024-25) och stationerna (kuvos-fysik-indata-2024-25), summorna mot manifesten
@@ -269,6 +289,11 @@ jobs:
     env: { GH_TOKEN: "${{ github.token }}", VINTER: "2021-22", REL: "kuvos-vintrar-2021-22" }
     steps:
       - uses: actions/checkout@v4
+      # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos (DECISIONS #768): koden läggs ovanpå utcheckningen.
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       - name: Självtestet och rutorna (kuvos-metnordic-2024-25), summan mot manifestet
@@ -315,6 +340,11 @@ jobs:
     env: { GH_TOKEN: "${{ github.token }}", VINTER: "${{ matrix.vinter }}" }
     steps:
       - uses: actions/checkout@v4
+      # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos (DECISIONS #768): koden läggs ovanpå utcheckningen.
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       - uses: actions/setup-python@v5
@@ -420,6 +450,11 @@ jobs:
     env: { GH_TOKEN: "${{ github.token }}" }
     steps:
       - uses: actions/checkout@v4
+      # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos (DECISIONS #768): koden läggs ovanpå utcheckningen.
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       - uses: actions/setup-python@v5
@@ -459,6 +494,11 @@ jobs:
       UTAN: "${{ join(matrix.enhet.utan, ' ') }}"
     steps:
       - uses: actions/checkout@v4
+      # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos (DECISIONS #768): koden läggs ovanpå utcheckningen.
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       - uses: actions/setup-python@v5
@@ -593,6 +633,11 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
+      # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos (DECISIONS #768): koden läggs ovanpå utcheckningen.
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
       # Som kuvos/facit-trv.ts: utan statusraden **Status: SIGNERAD och båda signaturerna i §9 körs ingenting (utgångskod 2).
       - name: Spärren — förregistreringen signerad av båda
         shell: bash
@@ -609,6 +654,11 @@ jobs:
     env: { GH_TOKEN: "${{ github.token }}" }
     steps:
       - uses: actions/checkout@v4
+      # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos (DECISIONS #768): koden läggs ovanpå utcheckningen.
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       - uses: actions/setup-python@v5
@@ -645,6 +695,11 @@ jobs:
     env: { GH_TOKEN: "${{ github.token }}", VECK: "${{ matrix.veck }}" }
     steps:
       - uses: actions/checkout@v4
+      # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos (DECISIONS #768): koden läggs ovanpå utcheckningen.
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       - uses: actions/setup-python@v5
@@ -740,6 +795,11 @@ jobs:
     env: { GH_TOKEN: "${{ github.token }}" }
     steps:
       - uses: actions/checkout@v4
+      # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos (DECISIONS #768): koden läggs ovanpå utcheckningen.
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
       - uses: actions/setup-python@v5
         with: { python-version: "3.13", cache: pip, cache-dependency-path: fysik/requirements.txt }
       - name: Enheterna, vecken och den frystas 2022/23, ihop
@@ -775,6 +835,11 @@ jobs:
     env: { GH_TOKEN: "${{ github.token }}" }
     steps:
       - uses: actions/checkout@v4
+      # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos (DECISIONS #768): koden läggs ovanpå utcheckningen.
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       - uses: actions/setup-python@v5
@@ -872,6 +937,11 @@ jobs:
     env: { GH_TOKEN: "${{ github.token }}", VINTER: "2022-23" }
     steps:
       - uses: actions/checkout@v4
+      # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos (DECISIONS #768): koden läggs ovanpå utcheckningen.
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       - uses: actions/setup-python@v5
