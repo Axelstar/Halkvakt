@@ -19451,3 +19451,107 @@ innan länen slås på, så att inget påslaget län ändras efteråt (#749).
 **Alternativ.** 4 000 kr (omkring 13 län samtidigt), eller behålla 2 000 kr med prioriteringen ensam.
 
 **Stomdokument:** inga — marknadsföringen ligger utanför appen, motorn och mätningarna; ingen data lämnar appen.
+
+## #764 (31/10 2026) Småvägarnas förregistrering: utkastet skrivet, med fyra öppna val före signeringen
+
+**Beslut** (Bengt 31/10: *"Ja, börja"*, om utkasten i kort #367). Utkastet är `docs/FORREGISTRERING-SMAVAGAR-2027-28.md`. Det är inte signerat, och inget
+utfall är läst för P1, P2, P3 eller storstäderna. Bengt och Axel signerar före 28/2 2027 (fristen `smavagarna-forregistrering`).
+
+**Innehållet i korthet:**
+- **Huvudfrågan:** håller kandidaten på en ny plats ett nytt år? Den nya kandidatens procedur (NY-KANDIDAT §1) prövas i sex prov.
+  Varje prov håller ute en vinter, och dessutom alla stationer i P1, P3 och storstäderna.
+- **Huvudtalet:** A2 för NIVÅ 2+BLANDNING på P1. Varje station väger lika (minst 100 halvtimmar per vinter), och sedan tas det enkla
+  medlet över de sex vintrarna. Den ärliga osäkerheten följer FORREGISTRERING-2026-27 §4b punkt 12.
+- **Domen:** KLARAR, OAVGJORT eller FALLER mot taket 5 %. Klarar provet får skattningen i kartan byggas för 2027/28 (#759). Rösten
+  avgörs inte (#757).
+- **Fukten 2024/25**, redovisas: F1 är hur stor del av stationernas frosttimmar regelns fukt täcker, med och utan *Våt*. F2 är regeln
+  med och utan *Våt* vid väglagspunkterna under 1 000 fordon/dygn, mot väglaget.
+- **P3 och storstäderna**, redovisas: station för station, med medelfelet som mått på stadsvärmen. Storstäderna visas i tre kolumner
+  (#760).
+- **Fyra prov före läsningen:** identiteten, tidszonen, populationen och att ingen utelämnad station läcker in.
+- **Förväntan:** A2 för P1 omkring 5,7 %, alltså troligen FALLER eller OAVGJORT.
+
+**Ett fynd ur populationsräkningen** (inga mätvärden): 5 av P1:s 77 stationer i grind A har ingen annan station inom 50 km och saknar
+därför RÅ. Med grind A:s population skulle de falla bort, och det är just de mest isolerade småvägarna. Utkastet föreslår därför att
+kravet på RÅ tas bort för P1 och P3.
+
+**Öppna val före signeringen** (bedömningen §4.2):
+- (a) RÅ-kravet;
+- (b) storstädernas område, 15 km från centrum eller kommungränsen;
+- (c) minsta antal halvtimmar per station;
+- (d) storstädernas statliga stationer utanför träningen.
+
+**Stomdokument:** KUV §9 småvägsprovet som kommande läsning; BED §4.2 de öppna valen och signeringen.
+
+## #765 (31/10 2026) Småvägarnas förregistrering: de fyra valen avgjorda, och domen öppen för diskussion
+
+**Beslut** (Bengt 31/10: *"jag tar de 4 valen på din rekommendation"*). Valen i utkastet (#764, `docs/FORREGISTRERING-SMAVAGAR-2027-28.md` §11):
+- **(a)** Kravet på att RÅ finns tas bort för P1 och P3. Annars föll de 5 P1-stationerna utan granne inom 50 km bort.
+- **(b)** Storstäderna avgränsas med 15 km från centrum.
+- **(c)** Minst 100 halvtimmar per station och vinter.
+- **(d)** Storstädernas statliga stationer hålls utanför träningen, så att alla stadstal avser en ny plats.
+
+**Öppet** (Bengt samma meddelande: *"Jag vill dock att vi har en diskussion innan om domen. Du säger att taket ska vara 5 % och det är ett lika hårt krav som vi hade på de statliga vägarna där mätmetoderna var klart mer utvecklade. Är inte det ett lite för strängt krav"*). Taket för domen diskuteras före signeringen och står i bedömningen §4.2.
+Inget utfall för P1 är läst. Ett nytt tak får därför sättas nu, men det ska grundas på vad kartan påstår och på jämförelsen med RÅ.
+Det får inte grundas på förväntan 5,7 %: ett tak strax över förväntan vore att flytta ribban efter sett tal (regel L3).
+
+**Stomdokument:** BED §4.2 valen avgjorda och domen öppen.
+
+## #766 (31/10 2026) Småvägarnas dom: frysklassen med vet inte, täckning ≥ 50 % och zonen vald i träningen
+
+**Beslut** (Bengt 31/10: *"50 %, zon ur träningen"*, efter diskussionen om taket i #765). Domen i `docs/FORREGISTRERING-SMAVAGAR-2027-28.md` §4 byts:
+- **Förut:** A2 ≤ 5 % (#764).
+- **Nu:** kartans eget påstående, frysklassen *fryser / fryser inte / vet inte*.
+  - Klassen räknas på PB kring kandidatens frysgräns +1 °C, med osäkerhetszonen ±z (FORREGISTRERING-2026-27 §4b punkt 11).
+  - Kraven: farliga fel ≤ 1 % (K-A2, oförändrat), rätt klass ≥ 95 % bland de klassade och **täckning ≥ 50 %** (huvudvägarnas K-A3 är
+    70 %). Underlaget som K-A4.
+  - **Zonen väljs i träningen.** I varje prov är z den smalaste zonen i rutnätet 0, 0,25 … 3,0 °C där de farliga felen är högst 1 % på
+    träningsstationernas ärliga skattningar. Den prövas sedan oförändrad på P1. Klarar ingen zon träningen, FALLER provet utan att P1
+    läses.
+  - Varje station väger lika, och måtten tas som medel över de sex vintrarna. Den ärliga osäkerheten (§4b punkt 12) läses för farliga
+    fel (övre gräns) och rätt klass (undre gräns): KLARAR, OAVGJORT eller FALLER.
+  - A2 redovisas bredvid, med det tidigare taket 5 %.
+
+**Skälet.** Det farliga felet, att kartan säger *fryser inte* när det fryser, är lika strängt begränsat som på huvudvägarna. Friheten
+ligger bara i hur ofta kartan säger *vet inte*. Det följer *Silence is a feature* och regeln om att text aldrig får säga mer än datan
+bär. Med en zon vald i träningen prövas en enda zon på P1, och inget väljs efter P1-tal. TROSKLAR-FRYSKLASSNINGEN kallar K-A2:s tak
+inte förhandlingsbart, och det står kvar; täckningen är det enda som lättas.
+
+**Priset**, sagt till Bengt före valet: den bredare zonen gör att kartan säger *vet inte* just nära noll grader, när halkrisken är
+störst.
+
+**Förväntan** (utkastet §9): osäker. Zonen väntas bli ±1,5 °C eller bredare och täckningen 50–70 %. Det är räknat ur offsetmodellens
+K-A-dom (#743: 1,3 % farliga fel vid ±1,0 °C och 80 % täckning), en annan modell på andra stationer, och inte mätt.
+
+**Regel L.** Domen ändras före signeringen, och inget utfall för P1 är läst. Lättnaden gäller täckningen (70 → 50 %). Den grundas på
+vad kartan påstår, inte på förväntan, och den sänker inget säkerhetskrav.
+
+**Alternativ.**
+- (1) A2 ≤ 5 % kvar.
+- (2) Ett högre A2-tak, cirka 8 % som RÅ på stationerna (#702), tillsammans med kravet att vara bättre än RÅ.
+- Täckningen 70 % som på huvudvägarna.
+- Flera zoner prövade på P1, som K-A:s 27 kombinationer: avvisat, eftersom det ger flera chanser.
+
+**Stomdokument:** BED §4.2 domen avgjord; KUV §9 småvägsprovets dom.
+
+## #767 (31/10 2026) Småvägarnas förregistrering signerad, för Bengt och Axel
+
+**Beslut** (Bengt 31/10: *"slå ihop 1297 ochsignera för mej och axel"*). `docs/FORREGISTRERING-SMAVAGAR-2027-28.md` är signerad av Bengt, och av Axel via Bengt i samma ord, som
+FLER-VINTRAR och NY-KANDIDAT (#668, #671). Dokumentets sha256 vid signeringen, före signeringsraden och signaturerna, är
+`dd09a53d3d485355bb491d36e2192291a7573b45684aa062d2959df1e8183903`.
+
+**Vad som fryses** (dokumentet §12):
+- populationerna;
+- kandidaten och de sex proven, som håller ute en vinter och alla stationer i P1, P3 och storstäderna;
+- måtten och domen: frysklassen med farliga fel ≤ 1 %, rätt klass ≥ 95 % och täckning ≥ 50 %, med zonen vald i träningen (#766);
+- följden, fukten F1 och F2, gatorna med storstäderna, och de fyra proven före läsningen.
+
+Ändras något efteråt sker det bara genom en daterad post med båda signaturerna, och aldrig som en lättnad efter sett utfall (regel L).
+
+**Inget utfall är läst** för P1, P2, P3 eller storstäderna. Signeringen sker fyra månader före fristen. Fristen
+`smavagarna-forregistrering` (28/2 2027) tas bort, eftersom dess *klart när* är uppfyllt.
+
+**Nästa steg** (kort #367): koden som håller ute stationerna i den nya kandidatens kedja, med identitetsprovet och läckageprovet (§8), och
+fuktläsningen F1 och F2 på 2024/25. Inget av det är byggt.
+
+**Stomdokument:** KUV §9 småvägsprovet signerat och väntar på bygget.
