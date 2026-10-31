@@ -3088,55 +3088,9 @@ förslag, inte ett beslut. Läsningen av bildfacit är Bengts och Axels gemensam
 **Axel 21/9, via Bengt:** *"Axel har inte några synpunkter"*. Beslutet står därmed hos båda. Definitionen av vädertyperna
 fastställs som planerat i samband med #209, före den första bilden.
 
-## #292 (21/9 2026) Kuvösen: hela systemet bakåtprövat på en gången vinter — möjligt, och det hänger på ett datauttag från Trafikverket (kort #232)
+## #292 (21/9 2026) Kuvösen: flyttad till halkvakt-kuvos
 
-**Bengts idé 21/9:** en testbädd där allt i motorn och allt i skuggmotorn körs tillsammans, *"i kuvös … långt från bilar och
-appar och människor"*, mot historiska dygn — *"säg 50 vinterdygn 2025"* — som ett prov på *"om det är på rätt väg eller fel
-väg"*. Skälet: *"Om vi inte gör det kommer vi ju bara få bevis för en efter en och inte sammantaget."*
-
-**Idén är kartans egen brist, uttalad.** Integrationskartan §7.3: *"Varje grind dömer sin del ENSAM. Det finns ingen grind för
-kombinationen … Vi riskerar att underkänna produktens ingredienser en och en."* TROSKLAR-KOMBINATIONEN täcker EN kombination
-(efterhalkan: blöt + faller + startband). Ingen mätning svarar i dag på vad helheten ger.
-
-**Delarna finns redan:** grindarnas skript (A, T-A, R-A, K-A, V-A, V-B), uppspelningen ur arkiven (sql/028), och kedjan
-`snapshot-core` → `snapshotToHazards` → `AlertEngine` längs skuggmotorns 20 rutter. Kuvösen är att mata dem med en annan vinter.
-Den körs i en slit-och-släng-databas som CI:s — aldrig i Supabase, där en vinter inte ryms (177 av 500 MB i dag).
-
-**Vad det hänger på — kontrollerat 21/9, på källorna och inte i sammanfattningar:**
-
-| Källa | Historik | Läst |
-| :-- | :-- | :-- |
-| Trafikverkets API (WeatherObservation) | sju dygn | källkartläggningen 26/8 (Trafiklabs notis 26/10 2023 säger detsamma enligt en söksammanfattning — notisen är inte läst) |
-| Lastkajen | vägnät och järnväg — inga mätvärden | trafikverket.se *Hämta öppen data* (en söksammanfattning påstod *"historiska data finns på Lastkajen"*; sidan säger det inte) |
-| Vintersidan | *"historisk väderdata från VViS och MESAN"* — bara Trafikverkets anställda och entreprenörer | bransch.trafikverket.se (#284) |
-| Finland, Digitraffic | *"Sensor history for the last 24 hours"* | digitraffic.fi |
-| Finland, FMI öppna data | vägväderfrågorna (`livi::observations::road`) finns inte längre | `listStoredQueries`: 151 frågor, ingen för väg |
-| Norge, Statens vegvesen | realtid, kräver konto | dataut.vegvesen.no |
-| Norge, MET Frost | arkiv, kräver konto — **inte kontrollerat** om vägbanetemperaturen finns | — |
-
-**Slutsats:** vägen till vintern 2024/25 är en förfrågan till Trafikverket. Forskare får sådana uttag; om vi får det vet
-ingen förrän vi frågat. Utkast och mottagare på kort #232. **Kartrepots historik** bär 2 606 versioner av `live.json` sedan
-24/8 (144 per dygn) — exakt det apparna såg — och blir kuvösens källa för ÅRETS vinter, om svaret blir nej.
-
-**Facit bakåt i tiden är lika gott som facit framåt — för det som stationen kan se.** Stationens egen yta efter varningen
-säger att det BLEV kallt, inte att vägen blev hal (sql/028:s egen reservation), och den ser inte saltet (#290). För
-övergångsreglerna — efterhalkan, trenden, rimfrosten — räcker det långt som riktningsprov. Väglag och olyckor för samma
-period stärker facit, om Trafikverket ger dem.
-
-**Blindningen:** vintern 2024/25 ligger utanför säsongens kalibrerings- och domnätter, så D3 bryts inte av ett riktningsprov
-med låsta startvärden. Två saker gäller ändå: upplägget skrivs i DECISIONS före körningen, och hela vintern körs — inga
-handplockade dygn. **Vill Bengt och Axel i stället låta den gångna vintern bli KALIBRERINGSDATA** — vilket uppfyller D3
-(*kalibrering och dom på skilda nätter*) bättre än att dela årets vinter i två — är det en ändring av planen (kalibreringen
-står i dag på 1/2) och ett eget beslut, taget före körningen.
-
-**Bonus:** en hel vinter avgör grind A:s oavgjorda A2 (#131: *"A2 kan inte avgöras på septemberdata, och vinterdata kommer
-efter november"*) — alltså novemberbeslutet om segmentmotorn.
-
-**Tillägg 21/9 — SMHI för samma vinter (Bengts fråga *"behöver vi mer smhi data för den perioden också"*).** Prövat mot SMHI:s
-tre öppna tjänster: **molnmängd, lufttemperatur och nederbörd** finns i metobs `corrected-archive` (parameter 16: 2010-03-01
-till 2026-06-01, 24 timvärden för 15/1 2025) · **radarn** finns med 288 kompositer per dygn för 15/11 2024, 15/1 2025 och
-15/3 2025 · **varningarna har inget öppet arkiv** — API:t bär bara de aktiva. SMHI-förstärkaren (#95 d) och N_varning kräver
-därför en egen fråga till SMHI, eller körs inte i kuvösen. Ingen ny förfrågan behövs för det övriga; det hämtas vid bygget.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #293 (21/9 2026) Kuvösens två förfrågningar: mottagarna lästa på källan — och läxan om datex-adressen rättad
 
@@ -5261,48 +5215,9 @@ procent per timme.
 **Kortet står kvar öppet.** Verify-raden kräver båda plattformarna; **Android-mätningen** återstår och körs på
 testtelefonen (DECISIONS #271/#272), utan köp.
 
-## #383 (27/9 2026) Kuvösens norska sond: DATEX bär ingen historik — och fyra 200-svar var fällan
+## #383 (27/9 2026) Kandidaten: flyttad till halkvakt-kuvos
 
-**Bengts ja 27/9** till att bygga sonden som ett Actions-jobb. Körning **36344233168**, grön, en minut.
-
-### Vad som är bevisat
-
-**Vegvesens DATEX-server — den vi redan har konto till — bär ingen historik.** Sonden frågade efter fyra rimliga
-ändpunkter: `pulldeltadata`, `pullhistoricdata`, `pullhistorydata`, `pullarchivedata`. **Alla fyra svarade HTTP 200.**
-
-Läser man bara statuskoden ser det ut som fyra historiska ingångar. Läser man kroppen bär var och en
-`<ns17:pullSnapshotDataOutput>` — servern struntar i sökvägen och lämnar samma ögonblicksbild varje gång. Kontrollen
-(`pullsnapshotdata`) bekräftade att kontot fungerar, så det är inte ett behörighetsfel.
-
-**Fyra 200 är här sämre än ett 404**, för de ljuger om sin form. Ett 404 hade avslutat frågan på en sekund.
-
-### Vad som INTE är bevisat — och där jag antog fel
-
-**MET Frost står oprövad.** Spår B var byggt på antagandet att elementlistan är öppen referensdata, så att den billiga
-frågan — *har MET alls ett yttemperatur-element?* — kunde ställas före kontofrågan. `elements/v0.jsonld` gav **401**.
-Antagandet var fel, och spårets hela poäng föll. (`observations` utan nyckel gav 400, inte 401: servern validerar
-frågan före behörigheten.)
-
-Kriteriets punkt 1 — yttemperatur per station — står alltså oprövad för Norge. **Norge är varken en öppen eller en
-stängd dörr; den är obesvarad.**
-
-**Spår C:** `api.vegvesen.no` och `datainn.vegvesen.no` gick inte att slå upp (fetch failed) — kandidatnamnen var fel,
-inte idén. `www.vegvesen.no/trafikkdata/api/` gav 404; trafikproxyn i kort #42 steg 4b behöver rätt sökväg.
-
-### Instrumentet gick på samma fälla som det skulle avslöja
-
-Sonden räknade `r.ok` som "svar" och redovisade **6 svar lästa** med grönt jobb — fast fyra av dem var samma snapshot i
-förklädnad och inget av dem svarade på frågan. Hade jag läst sammanfattningsraden i stället för kroppen hade jag
-rapporterat att Norge bär historik. Läxan är införd i CLAUDE.md: **en sond som provar kandidat-ändpunkter räknar på
-svarets rotelement eller en annan innehållsmarkör, aldrig på statuskoden — och skriver ut markören den räknade på.**
-
-### Nästa steg, litet och gratis
-
-Registrera ett client-id på frost.met.no (självbetjäning, kostnadsfritt för icke-kommersiellt bruk), lägg det i GitHub
-Secrets som `FROST_CLIENT_ID`, tryck knappen igen. Då svarar spår B på riktigt. Kostnad: en minut Actions.
-
-**Vad det betyder för kuvösen:** en av två kända sidodörrar är nu definitivt stängd. Trafikverkets tystnad väger
-därmed tyngre, och hållbarhetstiden (omkring 1 december, DECISIONS-raden i kort #232) står oförändrad.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #384 (28/9 2026) Larma vid förändring, inte vid tillstånd — och ett rött jobb ska inte kosta det som lästes
 
@@ -5526,26 +5441,9 @@ skriven. Å2 och Å3 bär trösklar och går därför till Bengt + Axel i bedöm
 `scripts/vardevakten.ts` innan de bär ett beteende. Båda är säkerhetsnära åt samma håll: **en vakt som tystnar i en kö är
 silence när det gällde.**
 
-## #388 (28/9 2026) Kuvösen: Bengt avvaktar Trafikverkets beslut om utlämnande — inget annat. All eskalering stängd
+## #388 (28/9 2026) Kuvösen: flyttad till halkvakt-kuvos
 
-**Bengts order 28/9:** *"allt om klaga hos trafikverket etc kan du stänga. Jag undrade bara hur långt kuvösen kommit. Jag
-avvaktar beslut om utlämnande från Trafikverket inget annat."*
-
-**Stängt:** reservformuläret *Frågor till Trafikverket*, kravet på ett skriftligt avslagsbeslut (PR #631), överklagande,
-de färdiga texterna på kort #232 (#397/#398) och frågan om hur uttaget ska kapas. Inget av det skickas.
-
-**Läget, som det nu står:** begäran om utlämnande av allmän handling är inskickad och obesvarad (Bengts besked 27/9, #631).
-Kortet väntar på Trafikverkets beslut och på ingenting annat. **Öppen väntan är valet** — PR #631:s förslag om ett
-beslutsdatum är därmed besvarat. Hållbarhetstiden (omkring 1 december) står kvar som fakta, inte som utlösare.
-
-**Kvar som fakta, inte som åtgärder:** vid ett ja är elektronisk form ingen rättighet och ett uttag som kräver programmering
-ingen rutinbetonad åtgärd (#631, #398); kostnadsregimerna i #398 gäller om beslutet kommer med en avgift, och ingen
-kostnad accepteras utan Axels godkännande. Norge: DATEX bär ingen historik (#383); MET Frost är oprövad och inget prov är
-beställt.
-
-**Läxa, min egen:** 27/9 skrev jag in *"besvarad: förfrågan 21/9 är den som avses"* som om det var Bengts svar. Han hade
-inte sagt det; han hade frågat något annat, och jag läste frågan som ett svar. Samma kväll sa han motsatsen till en
-parallell session. En tolkning av vad någon menar skrivs som en fråga i §4.2, aldrig som ett ✅.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #389 (28/9 2026) Kort #244 läst: rent i 134 av 134 skuggvarv — och Verify:ns mått rymmer bara sex timmar. Plus en fälla i DB-knappen (kort #263)
 
@@ -5789,75 +5687,9 @@ Skatteverket och banken.
 är därför lästa genom sökresultat och äldre blankettkopior. Två frågor är öppna: om Trafikverket godtar att mottagaren byts till
 föreningen, och om budgetens 700 kr/h rymmer arbetsgivaravgifter ifall föreningen betalar ut ersättning.
 
-## #397 (27/9 2026) Kuvösens tystnad: sex dygn är kanalens takt, inte ett nej — och offentlighetsprincipen är en svagare nyckel för ett UTTAG än för en HANDLING
+## #397 (27/9 2026) Kuvösen: flyttad till halkvakt-kuvos
 
-*(Numrerat om från #384 vid sammanslagningen med main 29/9: main hade redan tagit #384 för ett annat beslut.)*
-
-> ⚠️ **Överspelat, se #388.** Tillägget längre ned säger att Bengt menade formuläret från 21/9 och att steg 3 inte
-> var taget. Det var min tolkning, inte hans svar: samma kväll gav han en parallell session beskedet att begäran om
-> allmänna handlingar är inskickad och obesvarad (PR #631). Trappan och all eskalering är stängda på Bengts order 28/9.
-
-**Bengts fråga 27/9:** *"jag har ännu inte fått svar från trafikverket på begäran om allmänna handlingar. Vad betyder det för kuvösen"*
-
-**Först en skillnad som avgör svaret, och som repot inte kan lösa åt oss.** Bokföringen säger att det som skickades 21/9
-var **Datautbytesportalens kontaktformulär, ärendetyp *API Öppna Data*** (kort #232, DECISIONS #294) — **inte** en begäran
-om allmänna handlingar. Den senare är trappans TREDJE steg och har enligt repot aldrig lämnats. De två skiljer sig i
-precis det avseende frågan gäller:
-
-| | Kontaktformuläret (skickat 21/9) | Begäran om utlämnande av allmän handling (ej skickad) |
-| :-- | :-- | :-- |
-| Vad det är | en fråga till en dataägare | en rättighet enligt tryckfrihetsförordningen |
-| Svarsplikt | ingen | ja — skyndsamt |
-| Vid nej | tystnad är ett möjligt utfall | avslag ska på begäran ges som ett överklagbart beslut |
-| Vad sex dygns tystnad betyder | ingenting ovanligt | ett dröjsmål som går att driva |
-
-**Därför en fråga till Bengt (§4.2):** lämnades en formell begäran om utlämnande vid sidan av formuläret? Om ja är den
-inte bokförd, och tystnaden är allvarligare än raden säger. Om nej gäller svaret nedan.
-
-**Tystnaden bär ingen information ännu.** Fyra ärenden ligger hos Trafikverket, alla obesvarade: fordonsdata/Datex II
-17/9 (tio dygn), kuvösens uttag 21/9 (sex), byvindgivarna 22/9 (fem), ytgivarna 22/9 (fem). Sex dygn är kortare än det
-ärende som redan väntat tio. **Men fyra av fyra är ett mönster:** vi har inget kvitto på att något av dem nått en
-människa. Det är skälet att byta kanal — inte otålighet, utan att gå dit någon är skyldig att svara.
-
-**Vad tystnaden kostar, mätt.** Kuvösen är enligt §6.1 den enda kända vägen runt vintern: kommer VViS-observationerna
-1/11 2024–31/3 2025 mäts **hög C:s tolv rader i november i stället för i mars**, och grind A:s oavgjorda A2 avgörs —
-alltså novemberbeslutet om segmentmotorn (#131). Priset räknas i månader, inte i om produkten går att bygga.
-
-**Vad den INTE kostar.** Kuvösens steg 2 är inte blockerat av datan för att BYGGAS — bara för att köras på en vinter.
-Delarna finns (grindarnas skript, uppspelningen `sql/028`, `snapshot-core` → `snapshotToHazards` → `AlertEngine` längs de
-20 rutterna). Ställningen kan resas mot vårt eget arkiv (24/8 och framåt) så att *datan kommer* blir *ladda och kör*.
-Höstarkivet har ingen is: det blir ett rörprov, inte ett vinterprov. **Erbjudet, inte påbörjat** — kortet säger att steg 2
-körs på årets arkiv först om svaret blir nej.
-
-**Offentlighetsprincipens verkliga räckvidd — varför trappans sista steg är svagare än det låter.** Rättigheten gäller en
-handling som FINNS. Ett fem månader långt uttag ur en databas är en sammanställning, och den är en allmän handling bara om
-den kan tas fram med **rutinbetonade åtgärder**. *"Kör den här frågan åt oss över fem månader och alla stationer"* är lätt
-att avvisa på den grunden; *"lämna ut de uttag och exportfiler som redan finns"* är det inte. Trappans sista steg ska
-alltså fråga efter det som finns — och kapa uttaget.
-
-**Hur uttaget kapas utan att bryta blindningen.** Kortets egen regel är *hela vintern, inga handplockade dygn* — tiden får
-inte kapas. Rummet får det. Kortets parentes säger *"ett urval län"*, men de 20 skuggrutterna går Helsingborg–Kiruna (E4
-hela vägen, E6, Rv40, E10, E14), så ett län skär av provet. **Rätt kapning är stationerna LÄNGS de 20 rutterna, hela
-vintern** — det är ändå dem motorkedjan kör på. Grindarnas statistik (A, T-A, R-A) vill ha alla stationer; motorkedjan och
-marginalnyttetabellen klarar sig på rutternas. Alltså: fråga efter alla, erbjud rutturvalet i samma mening. Antalet
-stationer längs rutterna mäts ur arkivet innan texten skickas.
-
-**Vad jag INTE kunde läsa på källan.** Containerns nätpolicy blockerar `trafikverket.se` och `riksdagen.se`. E-tjänstens
-namn och adress — *Begäran om utlämnande av allmän handling*,
-`trafikverket.se/e-tjanster/begaran-om-utlamnande-av-allman-handling/` — kommer ur en **sökträff, inte en läst sida**.
-Samma sökning påstod samtidigt att historiska data hämtas från Lastkajen, vilket #292 motbevisade genom att läsa sidan.
-Läxan från #294 gäller alltså oförändrat: **Bengt öppnar sidan innan något skickas.** Paragrafhänvisningar utelämnas ur
-texterna på kortet; en begäran behöver inga.
-
-**Tillägg samma dag — ledet utrett, och en läxa om vad frågan var.** Bengt syftade på förfrågan 21/9; *begäran om allmänna
-handlingar* var hans ord för samma utskick. **Steg 3 är alltså inte taget**, och trappan står kvar precis som raden säger.
-Hans verkliga fråga var enklare än den jag svarade på: *vad menar du med att trappan utlöses i morgon?* Svaret: **trappan är
-vår egen frist, inte Trafikverkets.** Ingenting utlöses av sig självt — inget skript, ingen påminnelse, ingen bevakning. Den
-28/9 upphör bara skälet att vänta på en kanal utan svarsplikt, och steg 2 blir tio minuters arbete för Bengt: öppna
-`etjanster.trafikverket.se/kundfragor-trafikverket`, klistra in texten från kort #232, skicka. Gör ingen det händer ingenting
-alls — raden ligger kvar. **Läxa:** när en fråga innehåller ett ord som inte stämmer med bokföringen är det oftast ett löst
-ordval, inte ett nytt sakförhållande. Fråga vad som menas i en mening, svara på det som faktiskt frågades, och gör inte
-ordvalet till huvudsaken.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #398 (27/9 2026) Kostnaden för kuvösens uttag: tre avgiftsregimer, och det är VÅR formulering som avgör vilken vi hamnar i
 
@@ -6472,24 +6304,9 @@ stoppas, och det görs inte för ett bevis.
 
 **Alternativ:** vänta till 15:09Z med #243 — förkastat, gluggmätningen är starkare än en frånvaro av issues och täcker fönstret.
 
-## #418 (1/10 2026) En extern projektsida, *Halkvakt och kuvösen*, för Trafikverkets handläggare — skriven utan opublicerade tröskelvärden (kort #274)
+## #418 (1/10 2026) Kuvösen: flyttad till halkvakt-kuvos
 
-**Bengts idé 1/10**, sedan VViS Förvaltning svarat på kuvösens uttag: en pedagogisk sida om vad Halkvakt är och vad kuvösen ska göra i
-jämförelse med dagens tröskelmätningar, *"det kanske gynnar vår ansökan till skyltfonden"*.
-
-**Beslut om innehållet.** Sidan säger bara det som redan står i systembeskrivningen, mätningssidan och ansökan: dataflödet och de fyra
-principerna (tyst som standard, en vinnare per steg, löftet följer källan, ingen position lämnar telefonen), tretton tröskeldokument daterade
-före koden, 37 gemensamma testfall, skuggan och arkivet, domkalendern, kuvösens regler (startvärden som de står, hela vintern, varje del ensam
-och ovanpå de andra, facit = stationens egen yta, ändrar ingen tröskel, tillfällig databas), uttagets fält och period, och vilka vi är.
-**Inga regelvärden** — mätningssidan är intern just för att den bär opublicerade trösklar; projektsidan är extern. Novembersvaret är skrivet som
-villkorat: *om uttaget kommer i oktober*. Appens exempelrop är motorns egen text (*Isrisk framöver, vägbanan nära noll grader*), inte påhittad.
-
-**Vad sidan inte lovar:** ingen tidplan för kuvösen utöver villkoret, ingen partner, inget om kostnad för uttaget (det står i svaret till Trafikverkets
-kontakt, #398 styr), och inget om vad Trafikverket ska göra med sina givare (anmälningarna står för sig).
-
-**Delning:** artefakten är privat tills Bengt delar den. Han avgör om länken går till Trafikverket (Trafikverkets kontakt) och om den nämns för
-Skyltfonden. Källa `docs/HALKVAKT-OCH-KUVOSEN.html`, artefakt https://claude.ai/artifact/CrrMKX7vcRcXHiqqYGjs9S; ändringar görs i repokopian och
-republiceras till samma URL i samma commit (samma regel som stomdokumenten, #415, utan att sidan är ett stomdokument).
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #419 (26/9 2026, bokfört 1/10) Kort #275 väg (a): försprånget kläms till motorns tak, reglaget tar bara grundvarningen · systembilden
 
@@ -6591,121 +6408,17 @@ säger nu vad som återstår, Play-vägen, med den gamla lydelsen kvar i parente
 Inget kort stängt eller struket; tavlan 35 → 36 med #277. Stomavstämningen: bedömningen (§4.2, läget); de fyra andra orörda —
 inget användaren ser, hör eller gör ändras, och ingen mätning.
 
-## #424 (1/10 2026) Kuvösen: besluten, förregistreringen före första filen, och klockan som döljer framtiden (kort #232)
+## #424 (1/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Beslut (Bengt 1/10 kväll).** (1) Svaret till Trafikverket är redan skickat: *"jag har redan sagt ja till Micke och filen kommer att
-komma. Vi får se vad den innehåller när den kommer."* Frågorna i planens utkast (tidszon, station-id, kolumnbeskrivning) ställdes alltså
-inte i förväg — de besvaras av inventeringen när filen finns, och tidszonen avgörs med mätning. (2) *"vi kör både riktningsprov och
-kalibreringsdata"* — i den ordningen. (3) *"ja till actions som körplats"* (kassavakten 1/10: 0,00 av 35 USD, prognos 17). (4) *"ja till
-att bygga steg 1–2 nu"*. Planen: `docs/PLAN-KUVOSEN-2026-10-01.md` (PR #663).
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Kalibreringen kräver en signatur till.** Regel D i TROSKLAR-KOMBINATIONEN säger en kalibrering per säsong, vid en tidpunkt som står i
-DECISIONS innan den inträffar (D3), och aldrig två på samma domfönster (D7); i dag står den på 1/2 2027 på data från november–januari.
-Att kalibrera på vintern 2024/25 i stället ändrar den regeln, och tröskeldokument ändras bara med båda signaturerna. **Riktningsprovet
-väntar inte på det** — det väljer ingenting. Kalibreringen görs först när ändringen av regel D är skriven och Axel har signerat (§4.2).
+## #425 (1/10 2026) Kuvösen: flyttad till halkvakt-kuvos
 
-**Oljefilmen (Bengts fråga: *"kommer oljefilm att ingå?"*): nej.** *Oljefilmen* — första regnet efter torka — ströks av Bengt 12/9
-(#110: byggs inte, mäts inte, skuggas inte), den är ett sommar- och höstfenomen medan uttaget är november–mars, och dess facit är
-olyckor, som inte ingår i ett stationsuttag. *Oljan på vägen* (utsläpp, kort #276) kommer ur Trafikverkets händelser (Situation) och
-ingår bara om historiken för dem också levereras. Vill Bengt öppna oljefilmen igen är det ett eget beslut, och då på en sommar.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**FÖRREGISTRERINGEN — skriven innan någon fil är öppnad** (reglerna ur #292, samlade):
-- **Frågan:** är vi på rätt väg, och vad tillför varje del ensam och ovanpå de andra (kartan §7.3)? Ett riktningsprov, ingen dom.
-- **Underlaget:** alla stationer och hela perioden i leveransen, efter driftens vakter (#75, radvakten, karantänen, den långsamma
-  vakten). Inga dygn och inga stationer väljs bort för hand. Halvtimmessteg; motorns del längs de 20 svenska skuggrutterna. ↪ *Ändrat före filen, 1/10 (#426): rösten i två serier — de 20 rutterna och hela väglagsnätet.*
-- **Delarna:** frysrisken och broarna, efterhalkan, trenden, rimfrosten, övergångarna, tillståndsskattaren, nederbördstypen, vind och
-  sikt, prognoslagret (grind A, vägpunktsgrinden, höjden), försprångets nivå 2 för frysrisken. Utanför utan mer data: väglagssträckorna,
-  olyckorna, SMHI-förstärkaren, kamera- och förarfacit.
-- **Värdena:** startvärdena som de står i tröskeldokumenten och DECISIONS. Inget svep och inget val i riktningsprovet (D2, D6, D7). ↪ *Tillägg före filen, 2/10 (#437): prognoslagrets frysflagga redovisas med tre marginaler (0 · 0,5 · 1,0 °C); alla skrivs ut, ingen väljs.*
-- **Facit:** stationens egen yta efter varningen, i varje dels eget utfallsfönster — *det blev kallt*, inte *det blev halt*; saltet syns
-  inte. Väglag och olyckor räknas bara om Trafikverket levererar dem.
-- **Redovisningen:** varje del ensam OCH ovanpå de andra, som antal och andelar; alla tal skrivs ut, också de som talar emot.
-- **Följden:** utfallet ändrar ingen tröskel och ingen kod. Tidszonen avgörs med mätning mot SMHI:s öppna serier före första körningen.
-- **Ordningen:** inventering (bara läsning) → vakterna → riktningsprovet → kalibreringen, den sista först efter Axels signatur.
+## #426 (1/10 2026) Kuvösen: flyttad till halkvakt-kuvos
 
-**Fyndet under bygget: det räcker inte att flytta klockan.** Planen sade att `now()` byts i kuvösens frågefunktion. Men produktionens
-frågor säger bara *nyare än X*, aldrig *äldre än nu* — i driften finns ingen framtid. I kuvösen ligger hela vintern i tabellerna, så
-med bara en flyttad klocka ser karantänen brott som inte hänt än, `regn_h` blir negativ och lutningen hämtas ur nästa timme.
-
-**Byggt, steg 1 — klockan (`kuvos/klocka.sql`, `kuvos/klocka.ts`).** Ett eget schema `kuvos` med (a) `kuvos.now()`, som svarar med
-inställningen `kuvos.nu`; en anslutning med sökvägen `kuvos, public, pg_catalog` får den för varje okvalificerat `now()` — i frågetext
-och inuti databasens funktioner — och (b) vyer som visar varje tidsindexerad tabell som den såg ut vid klockan: `weather_observations`,
-`weather_latest` (härledd ur arkivet), `radar_precip`, `trend_kandidater`, `givarfel_dygn`. **Produktionskoden är orörd**, och ingen
-frågetext skrivs om. Provet (mot PostGIS i CI): sex stationer med var sin fälla — fel yta, negativ `regn_h`, nästa timmes lutning, en
-karantän och ett dygn i felet som inte hänt än, en station som bara finns i framtiden — och en motkontroll: samma byggare utan klockan
-ser ingen av dem. Ett andra prov vaktar att snapshotbyggaren och rekonstruktionen inte har tidskällor som klockan inte når
-(`CURRENT_TIMESTAMP`, `clock_timestamp()`, `Date.now()`).
-
-**Bevis 1/10:** `ci` grön på PR #664 (36888627590) — klockans prov kördes mot PostGIS, 230 prov, 0 hoppade. **Fyra motprov, en vy i taget fick se framtiden, och varje gren föll på sin egen fälla:** `weather_observations` ⇒ KUV_KARANTAN borta (36888904314) · `givarfel_dygn` ⇒ KUV_LANGSAM borta (36888922612) · `trend_kandidater` ⇒ lutningen 5,5 i stället för 0,9 (36888942418) · `weather_latest` ⇒ KUV_FRAMTID synlig vid T (36888962569); 229 av 230 gröna i varje. Utkast-PR #665–#668 stängda och grenarna raderade. Fällan *negativ regn_h* är inte fälld för sig — den ligger bakom samma vy som karantänen och nås inte när stationslistan redan fallit.
-
-**Byggt, steg 2 — inventeringen (`kuvos/inventering.ts`).** Läser en okänd CSV utan att tolka den: avgränsare, kodning (UTF-8 eller
-latin1), rader, och per kolumn tomma, tal med spann (decimalkomma), tider med spann, och de vanligaste textvärdena. Prov lokalt.
-**Kolumnöversättningen till arkivets schema byggs först när filens inventering är läst** — formatet är okänt, och ett fält får inte
-bära en tröskel förrän det besiktigats (VÄRDEVAKTEN).
-
-**Kvar före körningen (steg 3–5):** kolumnöversättningen och inläsningen · de härledda tabellerna för vintern (`trend_kandidater`,
-`givarfel_dygn`) · vyer för tillståndstabellerna om väglag och händelser levereras · SMHI:s radar och moln · körflödet i Actions.
-
-## #425 (1/10 2026) Kalibreringen flyttas till kuvösen (Axels ok) · kuvösen blir sjätte stomdokumentet · genomlysning 3
-
-**Beslut 1 — kalibreringen (Bengt 1/10: *"Axel säger ok till kalibreringen"*; Bengt samma dag: *"vi kör både riktningsprov och
-kalibreringsdata"*).** Säsongens enda gemensamma kalibrering görs i kuvösen på vintern 2024/25, efter riktningsprovet, i stället för
-1 februari 2027 på data från november–januari. Ändringen är skriven i TROSKLAR-KOMBINATIONEN §5 (regel D) och §7 med båda signaturerna.
-D1–D7 gäller oförändrade; 1/2-kalibreringen utgår (D7: aldrig två). **Följden:** dom 2 i mars får hela vintern 2026/27 som domdata.
-Dom 1 i januari rörs inte — betan släpps och döms på startvärdena (D2). **Alternativ som valdes bort:** att låta 2024/25 bara vara
-riktningsprov (#292:s utgångsläge) — då hade årets vinter fortfarande behövt delas i kalibrerings- och domnätter. **Förbehåll:** kuvösens
-facit är *det blev kallt*, tunnare än årets; håller vinnaren inte i båda halvorna behålls startvärdena (D4). Inget ur 2024/25 var läst när
-ändringen skrevs. **Öppet (§4.2):** ska betan i november starta på startvärdena eller på kalibrerade värden — ett eget beslut före betan.
-Datumet 1 februari rättat i mätningssidan, bedömningen, KALENDERN, SYSTEM och MALET.
-
-**Beslut 2 — kuvösen blir en stomregel (Bengt 1/10: *"ja kuvösen bör bli en stomregel"*; *"vi ska skapa en artifact för kuvösen också
-där vi beskriver nuläget och framtidsläget, vad som kommer härnäst och hur det kan påverka projektet i sin helhet"*).** Ny sida
-*Halkvaktens kuvös*: källa `docs/KUVOSEN.html`, artefakt https://claude.ai/artifact/1xvv4hydYbfpF5eXFgLcxh (privat tills Bengt delar den). STOMREGELN i CLAUDE.md
-säger nu **sex** stomdokument. Sidan är skild från *Halkvakt och kuvösen* (kort #274), som är skriven för Trafikverkets handläggare.
-
-**Genomlysning 3 (Bengts fråga: *"Har du uppdaterat de 5 filerna med det här"*). Svaret var nej:** efter #424 bar bara bedömningen
-kuvösen, och bara på grenen. Nu: **mätningssidan** — kuvösen under *Andra mätningar* med länk, domkalendern (vecka 41–42 in, 1 februari
-ut), 8.2 och blindningsraden med den nya kalibreringen · **systembilden** — raden *K Kuvösen* i skuggtabellen · **appsidan** — orörd, och
-det är rätt: kuvösen når ingen förare och ändrar inget appen gör · **bedömningen** — §4.2, läget, kalendern · **kartan** — läge-raderna
-§13.6 och §14, innehållet orört · **kuvössidan** — ny. Artefakterna republiceras från main efter sammanslagningen.
-
-## #426 (1/10 2026) Kuvösen: rösten prövas i två serier — de 20 skuggrutterna och hela väglagsnätet (ändring av förregistreringen, före filen)
-
-**Bengts fråga 1/10:** Trafikverket levererar alla stationer — *"borde vi bredda antalet testrutter så att vi täcker in hela Sverige.
-skulle det göra resultatet bättre och stabilare eller tänker jag fel"*. **Mätt samma dag:** de 20 svenska skuggrutterna (3 107 km) når
-97 av 854 stationer inom 2 km (11 %) och 190 inom 5 km (22 %); norr om 62° 23 av 205. Väglagsnätet — Trafikverkets 818
-bedömningssträckor — är 23 681 km, och 769 stationer (90 %) ligger inom 2 km från en sträcka
-(`scripts/matningar/rutternas-tackning-2026-10-01.ts`, `vaglagsnatet-2026-10-01.sql`; dbknapp 36893189091, 36893534243).
-
-**Svaret, i två delar.** Stationsreglerna — efterhalkan, trenden, rimfrosten, övergångarna, prognoslagret, vakterna — räknas per station
-och använder redan hela leveransen; fler rutter ändrar ingenting för dem. Rutterna styr bara *vad rösten skulle ha sagt till en förare*:
-takten, undanträngningen, försprånget. Där är 20 rutter 13 % av nätet och nästan inget av Norrlands inland.
-
-**Beslut (Bengt 1/10: *"vi gör b nu"*).** Rösten prövas i kuvösen i två serier, som redovisas var för sig och aldrig slås ihop:
-- **Serie A — de 20 svenska skuggrutterna**, alla tjugo i varje halvtimmessteg (driften hinner tre per halvtimme, varje rutt var 3,5:e
-  timme). Samma rutter som årets skugga, alltså jämförbar med vintern 2026/27.
-- **Serie B — hela väglagsnätet:** varje bedömningssträcka körd som en egen resa i geometrins riktning, samma fart och punkttäthet som
-  skuggan (80 km/h, en punkt var femte sekund), **var tredje timme** från 00:00 UTC. Riktiga vägar, inget handplockat. Geometrin är
-  dagens (`road_conditions` 1/10 2026), inte 2024/25 års.
-
-**Alternativen:** (a) bara de 20, som #424 registrerade — jämförbart men smalt; (c) fler handritade rutter — bredare, men vi hade valt
-var. **Skälet till att det avgörs nu:** att lägga till rutter sedan utfallet är sett är att välja underlag efter svaret. Filen är inte
-levererad och ingenting är läst.
-
-**Sagt före körningen.** (1) Serie B:s resor är korta (median 25,8 km): regeln att samma fara inte upprepas inom 10 min och 5 km, och
-allt annat som rör långa resor, syns bara i serie A. (2) Serie B är ungefär åtta gånger mer körning per steg, därav var tredje timme;
-kostnaden är inte mätt. **Visar körtiden på vinterns första sju dygn att serien inte ryms i ett Actions-jobb glesas den till var sjätte
-timme — avgjort på körtiden, innan något utfall är läst.** (3) Sträckornas egen halkklassning finns inte för 2024/25, så varken serie A
-eller B prövar väglagsvarningen (A1). (4) Kassan läses före varje tung körning (#424).
-
-**Gäller bara kuvösen.** Skuggan i drift kör sina 20 rutter oförändrat: den ryms inte i mer (tre rutter per halvtimme är taket på
-datorkraft, kort #244), och dess rutter ändras inte mitt i en säsong som ska dömas. Vintern 2026/27 kan spelas upp i kuvösen i efterhand,
-ur vårt eget arkiv, med samma två serier. **Fynd i förbigående:** skuggans S1-logg (efterhalkans råa fält) täcker bara stationer nära
-rutterna, ungefär en femtedel — domarna påverkas inte, eftersom uppspelningen ur arkivet läser alla stationer.
-
-**Stomavstämningen:** kuvössidan (två serier i kedjan, reglerna, gränserna), mätningssidan (3.1 rutternas täckning, kuvös-rutan),
-systembilden (raden K), bedömningen (§4.2, läget), kartan (läge-raden §13.6, §14); appsidan orörd. Sidan till Trafikverket (*Halkvakt
-och kuvösen*) nämner bara skuggans rutter och står.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #427 (1/10 2026) Betan: båda värdeparen följs i skuggan, ett av dem hörs (kort #278)
 
@@ -6897,224 +6610,30 @@ bedömningen, på mätningssidan och i rapporten. Det **dömer inte** det svensk
 kort #271 (termisk kartering) är öppna. **Alternativ:** låta Finland döma (avvisat: annan terräng), eller inte nämna det (avvisat: det är
 det enda underlag med kraft som finns för bandet).
 
-## #437 (2/10 2026) Kort #270 (g): flaggmarginalen mäts i kuvösen med frysklassningens måttstock — tillägg till förregistreringen, före filen
+## #437 (2/10 2026) Kandidaten: flyttad till halkvakt-kuvos
 
-**Beslut (Bengt 2/10).** Premissmätningen visade att frysflaggan vid 1 °C missas i 57 % [41–75] inom 7 km (Finland, 49 stationsflaggor),
-och i 6 % om flaggan sätts redan vid 2 °C. Priset i falska flaggor mättes inte (#407). Det mäts nu på data som ingen har läst: **vintern
-2024/25 i kuvösen**, som ett tillägg till förregistreringen i #424. Skrivet innan Trafikverkets fil har kommit.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Vad som mäts.** Leave-one-out vid stationerna, som i vägpunktsgrinden: varje station skattas ur sina grannar och jämförs med sin egen
-mätta yta i samma halvtimme, efter driftens vakter.
+## #438 (2/10 2026) Kuvösen: flyttad till halkvakt-kuvos
 
-- **Kandidater:** RÅ och RÅ+HÖJD. OFFSET står bredvid som taket. ANOM mäts inte (föll i båda länderna, #405, #407).
-- **Klassgränsen:** K1 = +1,0 °C — motorns frysgräns och flaggans gräns i skuggan (#325).
-- **Marginalen:** K2 = 0 · 0,5 · 1,0 °C, de tre värdena i TROSKLAR-FRYSKLASSNINGEN §2 (fastställd 12/9, före alla tal här). Modellen säger
-  *fryser* vid skattning ≤ K1 − K2, *fryser inte* vid skattning > K1 + K2 och *vet inte* däremellan. K2 = 0 är dagens flagga. K2 = 1,0
-  är *flagga vid ≤ 2 °C*: allt som inte är *fryser inte* räknas som flaggat.
-- **Tal per kandidat, marginal och band** (0–7, 7–15, 15–20, > 20 km), alltid med antal:
-  1. *Farliga fel:* stationen ≤ K1 och modellen säger *fryser inte*. Skrivs med två nämnare: andel av stationens frysningar (som i
-     #407) och andel av de punkter modellen uttalar sig om (som i K-A2).
-  2. *Falska flaggor:* flaggat (skattning ≤ K1 + K2) fast stationen > K1, som andel av flaggorna; *klart falska* när stationen > K1 + 1.
-  3. *Rätt klass* bland de punkter modellen uttalar sig om, och *täckningen*, andelen punkter utanför *vet inte*.
-- **Måttstock:** läses mot K-A1–K-A5 i TROSKLAR-FRYSKLASSNINGEN §4 (≥ 95 % rätt klass · ≤ 1 % farliga fel · ≥ 70 % täckning · underlag
-  ≥ 500 punkter över ≥ 20 stationer och ≥ 100 med uppmätt frys · marginalvakten). **Som läsning, inte dom:** K-A gäller offsetmodellen,
-  och här lånas måttstocken till de råa kandidaterna. Frysklassningens dokument ändras inte, och dess egen grind döms inte av detta.
-- **Inget val.** Alla tre marginalerna redovisas, ingen väljs. Det avviker från förregistreringens *"inget svep"* och står därför här,
-  före filen. Ett val av marginal vore en kalibrering och följer regel D.
-- **Ärligt om ordningen:** marginalen 1,0 °C väcktes av ett sett tal (6 % i Finland, september 2026). Den ligger i svepet från 12/9
-  och prövas på en annan vinter och i ett annat land än där talet sågs.
-- **Följden:** som riktningsprovet i övrigt. Utfallet ändrar ingen tröskel och ingen kod, och prognosen får fortfarande bara stärka
-  och visa, aldrig utlösa (regel T6).
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Inte i årets arkiv:** september–november har för få frysningar nära stationerna (2 och 11 flaggor i banden 0–15 km, #405).
-Premissmätningen (#435) skriver redan ut missad och grovt missad flagga och ändras inte. **Alternativ:** mäta *flagga vid ≤ 2 °C* som
-enda punkt (avvisat: vald efter utfallet, och utan priskurvan), eller vänta till årets vinter (avvisat: kuvösen ger en hel vinter i
-oktober).
+## #439 (2/10 2026) Kuvösen: flyttad till halkvakt-kuvos
 
-## #438 (2/10 2026) Kuvösen: Trafikverkets leverans mottagen, besiktigad och i en privat release — stämplarna är svensk lokaltid (mätt)
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Underlag (Bengt 2/10: *"filerna är nedladdade på min dator … Vilket är nästa steg"*, sedan *"fortsätt"*).** Fem filer från VViS
-Förvaltning, november 2024–mars 2025, nedladdade 16:04–16:05: **5 496 270 rader, 777 stationer**, en rad per station och halvtimme
-(medianen 1 440 i november = 30 × 48), inga dubbletter. Fullständigt: `docs/KUVOS-LEVERANSEN-2026-10-02.md`.
+## #440 (2/10 2026) Kuvösen: flyttad till halkvakt-kuvos
 
-**Beslut, i PLAN-KUVOSEN steg 3:s ordning:**
-1. **Förvaringen.** Packade (85 MB) och lagda i den privata releasen `kuvos-trv-2024-25`, sha256 före och efter packning; varje
-   tillgång nedladdad igen och jämförd, lika. Manifestet i `kuvos/leverans.json`. Aldrig i repot, aldrig i Supabase. Taggen börjar inte
-   med `arkiv-`, så arkivbackupens gallring rör den inte.
-2. **Tidszonen är svensk lokaltid (Europe/Stockholm), mätt.** Timmen 02 saknas helt natten till 30/3 2025 (1 522 rader i varje annan
-   timme), och lufttemperaturens timförändring vid tio stationer mot närmaste SMHI-station har sin topp vid 0 h i tio av tio
-   (korrelation 0,55–0,85, mot 0,28–0,57 vid −1 h). Stämplarna görs om till UTC vid inläsningen.
-3. **Formatet:** semikolon, decimalkomma, BOM, SSMS-sidfot. −99,9 är saknat värde i varje talfält och blir NULL; −100 i sikten blir NULL;
-   sikten 20 000 behålls som i driften och tas av värdevakten.
-4. **Nederbördstypen, mängden och vindfälten översätts inte förrän Trafikverkets kodlista finns.** Koderna 1, 2, 3, 4, 6 och 9 ser ut
-   som uppehåll, regn, snö och snöblandat, men det är en gissning. Mängden har en okänd kod −99,8 (35 420 rader) och fem rader över 100.
-   Motorns fukt bygger på nederbörden, så frysrisken kan inte spelas upp utan koderna. Frågorna står i dokumentets §5; Bengt skickar.
-5. **Stationerna:** 754 av 777 har läge i dagens stationslista. **De 23 utan läge används inte** förrän Trafikverket ger det. 100
-   stationer i dagens lista saknas i leveransen och redovisas som saknade.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Förregistreringen.** #424 och tilläggen #426 och #437 är incheckade innan filen öppnades (#437 kl. 07:13 2/10, filen 16:04). Från och
-med 2/10 16:04 är filen öppnad: ett nytt tillägg kan bara kallas *före riktningsprovet*, inte *före filen*, och ska säga det. Inventeringen
-och besiktningen läste fältens innehåll; ingen regel är körd och inget utfall är läst.
+## #441 (2/10 2026) Kuvösen: flyttad till halkvakt-kuvos
 
-**Alternativ som valdes bort:** gissa koderna ur temperaturmönstret (avvisat: VÄRDEVAKTEN, och en felöversatt nederbörd förfalskar varje
-frysrisk); läsa in nu utan nederbörden (avvisat: halva motorn skulle köras tom och se frisk ut — *"det svarar" är inte "det bär"*).
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-## #439 (2/10 2026) Kuvösen: nederbördskoderna 1, 2, 4 och 6 lästa på Trafikverkets källa och vintern inläst — ändrar #438 punkt 4 (kort #232)
+## #442 (2/10 2026) Kuvösen: flyttad till halkvakt-kuvos
 
-**Underlag (Axel 2/10 17:12–17:13).** Axel hittade Trafikverkets *Ersättningsmodell VädErs 2019 — vägklass 4, 5 och GC*
-(bransch.trafikverket.se) och frågade *"kan vi göra något med detta nu?"*; på frågan hur långt: *"Läs in vintern nu"*. Listan han
-klistrade in, ur en söksammanfattning, hade sex koder. **Dokumentet, läst på källan, har fyra** (s. 6–7): *"Nederbörd anges i fyra typer:
-Ingen nederbörd (kod 1), regn (kod 2), snö (kod 4) samt både snö och regn (kod 6)."* *3 = underkylt regn* och *9 = okänd* stod bara i
-sammanfattningen — samma fälla som den påhittade adressen 17/9 (CLAUDE.md). Koderna är MESAN:s; att VViS-filen delar numreringen stämmer
-med datan kod för kod (luften per kod, `docs/KUVOS-LEVERANSEN-2026-10-02.md` §2) men är obekräftat.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Beslut:**
-1. **#438 punkt 4 ändras för de koder som har en källa:** 1 → `no`, 2 → `rain`, 4 → `snow`, 6 → `sleet` — driftens ord, så produktionens
-   kod läser vintern oförändrad. `rain`/`snow` sätts ur samma kod (2 och 6, 4 och 6). **3, 9 och −9 blir NULL**: 13 893 av 5 391 599
-   rader (0,26 %). Mängden och vindstyrkan förblir NULL tills Micke svarat.
-2. **Inläsningen i två steg:** den råa tabellen `kuvos_ra.trv_obs` (värdena som i filen) och översättningen på ett ställe,
-   `kuvos/oversattning.sql`, som körs om när svaret kommer utan att filerna läses igen. Alla rader läses in, inte arkivpolicyns urval:
-   kuvösens `weather_latest` härleds ur arkivet (klocka.sql) och behöver varje station.
-3. **Körplatsen enligt #424:** knappen `kuvos` (Actions) hämtar releasen, kontrollerar sha256 mot `kuvos/leverans.json`, kör migrationerna
-   och klockan, inläsningen, vakterna och värdevakten. Bevisad lokalt 2/10 på PostgreSQL 16 + PostGIS 3.
-4. **Fråga 1 till Micke skrivs om:** bekräfta MESAN-numreringen och förklara 3, 9 och −9.
-
-**Antal (inget utfall):** arkivet 5 391 599 rader och 754 stationer (23 utan läge, 104 671 rader, inte inlästa). Vakterna: #75 922 rader
-(41 stationer), radvakten 543 (78), karantänen 15 272 (29), den långsamma vakten 16 263 (86; 340 stationsdygn), utan yta 132 950 —
-**5 229 352 rader (97,0 %) får tala**. Värdevakten: fem fält rimliga, inget obesiktigat; sikten 20 000 flaggad som i driften. Talen är knappens körning i Actions
-(37027706480, 5 min 22 s, sha256 ok för alla fem filerna); den lokala körningen gav 20 karantänrader färre — sessionens zon var svensk tid,
-och `interval '7 days'` på timestamptz blir en timme kortare över sommartiden 30/3. **Kuvösens anslutningar sätter nu UTC** som
-Supabase (`kuvos/klocka.ts`, `kuvos/vakterna.ts`); lokalt efteråt: samma tal som Actions.
-
-**Vad det öppnar och inte:** frysrisken, broarna och trenden kan spelas upp. **Efterhalkan (S1, S2) kan inte** — `regn_h` läser mängden.
-Förregistreringen (#424) står: ingen regel körd, ingen yta efter en tidpunkt läst, och översättningen valdes på källan. Tillägget är
-*före riktningsprovet*, inte *före filen* (#438).
-
-**Alternativ som valdes bort:** vänta på hela kodlistan (#438:s väg — Axel valde bort den: fyra av sex koder och 99,7 % av raderna har nu
-en källa, och kuvösens värde sjunker varje vecka före 1/12); ta sammanfattningens *3 = underkylt regn* (ingen källa, och den farligaste
-klassen får inte vila på en gissning); skriva 3 och 9 som en egen okänd sträng (snapshotens `fukt` gör varje okänd sträng blöt — 1 420
-falska fuktrader).
-
-## #440 (2/10 2026) Snöflingan mäts på kuvösens vinter — förregistrerad innan körningen (kort #233)
-
-**Beställning (Bengt 2/10: *"är snöflingan något att satsa på. gör en körning och se hur det skulle falla ut"*).** Kort #233 del (2)
-mättes 21/9 på september (#297) och gav för lite: 7 äkta episoder. Den körs nu på kuvösens vinter 2024/25 (#438, #439), som har kyla.
-
-**Frågan, ordagrant som 21/9:** hur stor andel av stationsregelns fyrningar (yta ≤ +1 °C och fukt) sker när luften ligger över +3 °C
-respektive +4 °C, alltså när bilens egen snöflinga är släckt och bara stationen ser faran?
-
-**Skrivet innan körningen:**
-- **Skriptet:** `scripts/matningar/snoflingan-kuvos-2026-10-02.ts`, i knappen `kuvos` (ny inmatning `matning`) efter inläsningen och vakterna.
-- **Huvudtalet (B):** episoder med alla fyra vakterna som snapshoten bär (#75, radvakten, karantänen, den långsamma vakten); andelen
-  med luft > +3 °C och > +4 °C. **A** räknas som 21/9, bara med #75, så att talen kan jämföras. Därtill stationstimmar, per månad, per
-  breddgrad, och sammanhanget utan fuktkravet (frost med yta ≤ 0 °C) — som 21/9:s sats 5.
-- **Fukten** ur nederbördskoderna 2/4/6 (#439); 3, 9 och −9 räknas som torrt. Broregeln är inte med. Sessionen i UTC.
-- **Läsningen, bestämd före talen** (ingen grind, inget som ändrar en tröskel eller appen): under 5 % — bilens snöflinga täcker nästan
-  allt stationsregeln ser, och snöflingan är inget säljargument; 5–20 % — ett tillägg i en nisch (klara nätter med kall yta och mild
-  luft), värt att nämna men inte att bygga produkten på; över 20 % — ett argument som bär. Med +4 °C som jämförelse bredvid.
-- **Vad den inte säger:** om varningarna var rätt. Det är facit, och det läses inte här (blindningen och riktningsprovet). Den säger
-  inte heller vad en viss bil visar: snöflingan mäts av bilens egen givare nära vägen, VViS-luften på cirka 2 m.
-
-**Kuvösens förregistrering (#424) berörs inte:** mätningen räknar fyrningar, inte utfall, och den väljer inget värde. Filen är öppnad
-sedan 2/10 16:04; inget utfall är läst.
-
-**Utfall (körning 37029386466 på grenen `snoflingan-kuvos`, 5fda573, kl. 17:52 — efter att posten ovan checkades in 17:46):**
-
-| | Episoder | Stationer | Luft > +3 °C | Luft > +4 °C |
-| :-- | --: | --: | --: | --: |
-| **B. Alla fyra vakterna (huvudtalet)** | **46 858** | 734 | **1 427 (3,0 %)** | **539 (1,2 %)** |
-| A. Bara #75, som 21/9 | 47 127 | 734 | 1 470 (3,1 %) | 563 (1,2 %) |
-| C. Stationstimmar (B) | 354 296 | | 2,0 % | 0,8 % |
-
-Luften när regeln slår till: median −1,4 °C; över 0 °C i 31 %, över +1 i 16 %, över +2 i 7,8 %. Per månad (B, över +3): november 4,6 %,
-december 2,9 %, januari 2,8 %, februari 1,7 %, mars 4,5 %. Per breddgrad: under 58 °N 1,9 %, 58–62 °N 2,7 %, över 62 °N 3,9 %.
-Sammanhanget utan fuktkravet: av 74 346 frostepisoder med yta ≤ 0 °C hade 6,7 % luft över +3 °C och 35,6 % luft över noll.
-
-**Läsningen, som den bestämdes före talen:** under 5 %. **Bilens snöflinga lyser i 97 av 100 fall när stationsregeln slår till, och
-att stationen ser det bilen inte ser är inget säljargument.** Ingen månad och inget band når 5 %. Talen stämmer med 21/9 (alla sju
-äkta episoder under +0,4 °C). Ingen tröskel, ingen kod och ingen text i appen ändras.
-
-**Vad mätningen inte avgör — och som inte ska läsas in i den i efterhand:** om Halkvakts varning är *bättre* än snöflingan, alltså
-mer träffsäker om var och när. Snöflingan lyser vid omkring +3 °C överallt och hela kvällar; frågan här var bara om stationen ser
-fall bilen missar. Den andra frågan är facit och riktningsprovets, och den förregistrerades inte här. Det enda sakförhållandet som
-pekar vidare: sammanhangets 6,7 % — kall yta under mild luft finns, men utan nederbörd, och det är rimfrostens kort (#46), inte
-stationsregelns.
-## #441 (2/10 2026) Kuvösen steg 4: SMHI för vintern 2024/25 hämtat en gång — radarn finns bara som tif, och tif ligger ≈ 3,4 dBZ över h5 (kort #232)
-
-**Underlag (Axel 2/10 17:51: *"Okej dra igång steg 4"*).** PLAN-KUVOSEN steg 4: radar, molnmängd, lufttemperatur och nederbörd ur SMHI:s
-öppna arkiv, hämtade en gång och lagda bredvid; *Verify:* täckningen per månad. Fullständigt: `docs/KUVOS-LEVERANSEN-2026-10-02.md` §8.
-
-**Beslut:**
-1. **Metobs:** parametrarna 1 (lufttemperatur), 7 (nederbördsmängd 1 h), 13 (rådande väder) och 16 (molnmängd) ur `corrected-archive`,
-   bara vinterns rader, värdet och kvalitetskoden som SMHI skrev dem (`kuvos/smhi-vinter.ts`) → `kuvos_ra.smhi_obs`. Täckning: 243 · 181 ·
-   162 · 108 stationer, alla fem månaderna; molnet når 680 av 754 VViS-stationer inom 50 km (driftens #114: 91 %).
-2. **Radarn ur tif**, eftersom arkivet saknar h5 (404, mätt 2/10 — kontrollen 21/9 räknade kompositer, inte format). Egen tif-läsare
-   (`kuvos/tif.ts`, lika Pillow pixel för pixel, vakter på varje formatantagande) och SMHI:s dokumenterade kodning (0,4 · p − 30).
-   **Samplingen är driftens:** Z–R, provpunkterna och händelsegränsen flyttade oförändrade från `ingest/radar.ts` till
-   `ingest/radar-karna.ts`, som båda läser. Halvtimmar (kuvösens takt), 7 240 av 7 252 kompositer, 646 278 segmentrader → `radar_precip`.
-3. **Ingen korrektion av tif mot h5.** Mätt samma tidpunkt i båda: tif 8–10 enheter (≈ 3,4 dBZ, ≈ 1,6 × regn) över h5 i varje band, fler
-   svaga eko. Att dra av en förskjutning vore att välja ett tal efter en jämförelse; kuvösens radar redovisas som tif-produkten och
-   skillnaden står i §8. Frågan till Bengt i bedömningen §4.2.
-4. **Förvaringen:** releasen `kuvos-smhi-2024-25` (den här sessionen får inte skapa releaser). Hämtningen i Actions (37034624104) nådde
-   90-minuterstaket utan en rad i loggen — `grep -v` buffrade den — så filerna som hämtades i Claudes session lades på en engångsgren och
-   releasen skapades därifrån (37044952426). Grenen `kuvos-smhi-filer` (12 MB) kan inte tas bort härifrån — Bengt tar bort den. `kuvos/smhi-leverans.json` bär summorna och knappen `kuvos` kontrollerar dem.
-
-**Vad steg 5 behöver:** `moln.ts` och grind NT hämtar vid körning ur `latest-months` och måste i kuvösen läsa `kuvos_ra.smhi_obs`.
-Snapshoten läser `radar_precip` genom klockans vy och behöver inget. SMHI:s varningar har inget arkiv (21/9) — SMHI-förstärkaren och
-N_varning körs inte, och det sägs.
-
-**Inget utfall är läst:** hämtning, täckning och formatjämförelse; ingen regel körd.
-
-**Alternativ som valdes bort:** driftens timtakt för radarn (kuvösen stegar i halvtimmar, och fönstret 70 min täcker båda);
-korrigera tif med −3,4 dBZ (se 3); bara de 40 närmaste molnstationerna per körning, som `moln.ts` gör (en gång för hela vintern är billigare
-än per körning); en GeoTIFF-modul från npm (åtta beroenden för ett fast format med tre taggar som spelar roll).
-
-## #442 (2/10 2026) Före resan räknas, inte byggs: källorna i Trafikverkets API och pendlarens notis på kuvösens vinter (kort #233)
-
-**Beställning (Bengt 2/10: *"ja räkna på allt men bara som information inte något bygge alls (det här är bara på
-experimentstadiet)"*).** Två läsande mätningar för underlaget `docs/FORE-RESAN-2026-10-02.md`. **Inget byggs i appen, i motorn eller i
-driften.** Två mätknappar får en inmatning för att kunna köra en annan läsande fil; det är allt som ändras.
-
-**Skrivet innan körningarna:**
-1. **Källorna** (`scripts/matningar/fore-resan-kallor-2026-10-02.ts`, knappen `vagarbeten-matning` med inmatningen `skript`): Trafikverkets
-   öppna API just nu — aktiva avvikelser per typ, vägarbetena (påverkan, avstängda körfält, varaktighet, geometri, hur många som är nya
-   eller kortare än en vecka), köer (*AbnormalTraffic*), restidssträckorna (*TravelTimeRoute*: antal, län, längd, status, ålder),
-   detektorerna (*TrafficFlow*: antal platser, län, ålder), färjorna (*FerryAnnouncement*), och storleken på en gemensam fil för hela
-   landet med vägarbetena och restiderna, rå och packad.
-2. **Pendlarens notis** (`scripts/matningar/pendling-kuvos-2026-10-02.ts`, knappen `kuvos` med inmatningen `matning`): på kuvösens vinter
-   2024/25, de första och sista 30 km av de 20 svenska skuggrutterna som 40 pendlingsvägar, vardagar kl. 06:45 och 16:00 svensk tid. Vid
-   varje koll: varje stations senaste rad inom tre timmar, med snapshotens fyra vakter, som frysriskpunkter; motorn kör vägen i 80 km/h.
-   Två tal: **(A)** notis när motorn säger något alls, **(B)** bara när något är nytt sedan vägens förra koll. Per månad, breddgrad och väg.
-   Kuvösen har bara stationerna — väglaget, olyckorna och vägarbetena saknas, så talet är frysrisken ensam, ett golv.
-
-**Ingen gräns är satt** för hur ofta en notis får komma, och mätningen väljer inget värde. Talen är information. Ska en gräns sättas senare
-ska beslutet säga att talen var sedda när den sattes. Fyrningar, inga utfall: ingen yta efter en koll läses, inget facit.
-
-**Utfall 1 — källorna** (körning 37034630809 18:32, och 37034747221 18:36 med en rad tillagd, se nedan): 1 876 aktiva vägarbeten, 87 %
-längre än en månad, 50 nya eller kortare än en vecka; 0 kömeddelanden just då (kväll). **198 restidssträckor, 213 km, 191 av dem i
-Stockholms län**, 5 i Västra Götaland och 2 i Skåne; mätvärdet 1,6 min gammalt. **3 125 detektorplatser**, 2 400 i Stockholm, 715 i Västra
-Götaland, 10 i Skåne; 0,6 min gamla. Färjornas svar nådde taket 20 000 avgångar på 36 leder och är inte räknat färdigt. **En gemensam fil:**
-vägarbetena som punkter 48,5 kB packad (som linjer 93,2 kB), restiderna med linjer 71,2 kB, bara status 2,1 kB — tillsammans 120 kB, mot
-lägesbildens 83 kB i dag.
-**Tillagt efter första körningen, med skäl:** mätningen 26/9 (#420) räknade 5 280 aktiva vägarbeten; den här räknade 1 876, eftersom den
-hoppar över de vilande (`Suspended`). Raden som räknar de vilande för sig gav **3 262 vilande inom sin tid** — tillsammans 5 138. **#420:s
-5 280 och dess 151 rop per skuggvarv räknade alltså med de vilande**; de aktiva är omkring en tredjedel. Det ändrar inget beslut (vägarbeten
-står på vårlistan, Ä3), men talet ska läsas så när frågan tas upp.
-
-**Utfall 2 — pendlarens notis på kuvösens vinter** (körning 37034679400 18:38, och 37035476406 18:58 med del C): **(A, B) längs de 40
-ruttbitarna: 0,7 % av 8 560 koller gav en notis, 0 % norr om 58 °N.** Det mäter linjernas grovhet mer än vintern: bitarna har i median två
-punkter, 28 av 40 har ingen station inom 1 km, och motorn ser en station bara inom ungefär en halv kilometer från linjen. **Del C, tillagd
-efter den första körningen av det skälet** och skriven i skriptet innan den kördes, räknar en väg som passerar k stationer:
-
-| Stationer längs vägen | (A) notis | (B) bara nytt | Notiser per vecka (A · B) | Under 58 °N · 58–62 · över 62 (A) |
-| --: | --: | --: | :-- | :-- |
-| 1 | 12,1 % | 7,1 % | 1,2 · 0,7 | 5,4 % · 10,1 % · 23,3 % |
-| 2 | 14,0 % | 9,1 % | 1,4 · 0,9 | 7,0 % · 12,6 % · 27,2 % |
-| 3 | 14,5 % | 10,2 % | 1,5 · 1,0 | 8,2 % · 14,1 % · 28,4 % |
-
-Andelen stationer med frysrisk vid kollen: november 9,4 %, december 10,7 %, januari 22,7 %, februari 10,5 %, mars 6,2 %. **Läsning, inte
-dom:** med bara frysrisken skulle en pendlare med två eller tre stationer längs vägen få ungefär en och en halv notis i veckan, i norr nära
-tre; bara det nya halverar det inte. Väglaget, olyckorna och vägarbetena kommer ovanpå. Ingen gräns är satt.
 ## #443 (2/10 2026) Motorn bär olycksläget ut: `Alert.step` (early · reminder · late) för allvarliga olyckor — kort #284
 
 **Underlag (Axel 2/10 18:46: *"Okay, lets start"*, på designöverlämningen v2).** Det nya varningskortet visar en lägesetikett för
@@ -7281,148 +6800,21 @@ slår ihop (att stänga ett kort är en bedömning av beviset, inte en räkning)
 **Alternativ som valdes bort:** att publiceringen själv larmar (den kör var tionde minut och har ingen larmväg; vakthunden har en);
 att räkna om vakterna i vakthunden (regeln skulle då stå på två ställen — läxan bakom kontraktsgrinden).
 
-## #453 (3/10 2026) Kuvösens körflöde, steg 5a: körningen byggd, och vad "ryms i ett Actions-jobb" betyder — satt före tidskörningen (kort #232)
+## #453 (3/10 2026) Kandidaten: flyttad till halkvakt-kuvos
 
-**Bakgrund.** Steg 5 är beslutat (#424, #426, #437). #426 säger: *visar körtiden på vinterns första sju dygn att serie B inte ryms i ett
-Actions-jobb glesas den till var sjätte timme — avgjort på körtiden, innan något utfall är läst.* Bengt 3/10: *"slå ihop 730 och kör på"*.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Byggt (`kuvos/korning.ts`).** Klockan ställs på varje halvtimme, produktionens snapshotbyggare körs oförändrad, och motorn kör rösten i
-två serier: (A) de 20 skuggrutterna i varje steg, (B) varje väglagssträcka var tredje timme från 00:00 UTC. Spåret är skuggmotorns
-(80 km/h, en fix var femte sekund). `--tid` skriver bara körtiden och stegen, inga varningar. Utan `--tid` sparas varje varning som en
-rad för facitsteget, och körningen själv läser inget utfall. Knappen är `kuvos` med `korflode = tid-sju-dygn`.
+## #454 (3/10 2026) Kuvösen: flyttad till halkvakt-kuvos
 
-**Regeln, satt nu, före tidskörningen (Claudes val, Bengt kan ändra det före knappen).** *Ryms* betyder att den beräknade tiden för hela
-vintern är högst **90 % av jobbets 360 minuter (324 min)**. Tiden räknas som de sju dygnens snitt per steg uppräknat till vinterns alla
-halvtimmar, plus jobbets egen tid före körflödet (hämtning och inläsning). Ryms B var tredje timme körs den så. Annars glesas B till var
-sjätte timme, och ryms inte ens det skrivs det ut. Skälet till marginalen är att sju dygn är ett stickprov: november är lugnare än
-januari, och snapshoten tar längre tid när fler stationer är kalla.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Prov.** I `test/kuvos.test.ts` ligger halvtimmarna, schemat för serie B och tidsdomen. Spåret jämförs fix för fix med skuggmotorns
-egen `traceAlong`, utläst ur källan. Kontraktsgrinden vaktar farten och punkttätheten mellan skuggmotorn och kuvösen. Motproven gjordes
-lokalt 3/10: farten 90 fälls av grinden och av provet, och `round` → `floor` är osynlig för grinden men fälls av provet.
+## #455 (3/10 2026) Kandidaten: flyttad till halkvakt-kuvos
 
-**Utfallet av tidskörningen 3/10 (kuvos 37141247592 på 235f355, inga varningar lästa):** vintern har 7 245 halvtimmar. De sju första
-dygnen gav 336 steg, varav 56 B-steg, och 0 tomma steg. Per steg tog snapshoten 207 ms och serie A 114 ms, och serie B tog 166 ms per
-B-steg. Hela vintern beräknas till 44 min utan B, 47 min med B var tredje timme och 45 min med B var sjätte timme, med jobbets 5 min före
-körflödet inräknade. **⇒ B körs var tredje timme, som #426 registrerade.** Marginalen mot gränsen (324 min) är sjufaldig, så valet av
-gräns avgjorde inget. Väglagsnätet hade sha256 `ac52f6c3…6ad5bb` och var dagens geometri.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Inte byggt än (5b–5d).** Facit (stationens egen yta i varje dels utfallsfönster), stationsreglerna och grindarna på kuvösens klocka
-(`moln.ts` och grind NT ska läsa `kuvos_ra.smhi_obs`, och `trend_kandidater` ska beräknas för vintern), samt tabellen *del × ensam ×
-ovanpå*. Efterhalkan och vinden väntar på Trafikverkets svar om mängden och vindstyrkan (#439).
+## #456 (3/10 2026) Kuvösen: flyttad till halkvakt-kuvos
 
-## #454 (3/10 2026) Kuvösen: hur många rader 60-minutersfönstret tappar på sekunderna i tidsstämplarna — förregistrerad mätning (kort #232)
-
-**Bengts fråga 3/10:** *"hur många rader menar du att vi förlorar på totalen och har det någon verklig betydelse"*. Den gäller
-PLAN-KUVOSEN §10 fråga 3. Trendens lutning (`sql/018`) kräver minst tre rader i ramen 60 minuter bakåt. Kuvösens rader är stämplade
-hh:00:ss och hh:30:ss med sekunder 03–06, så raden en timme bakåt kommer med bara om dess sekunder är minst lika många. Är sekunderna
-samma för en station varje gång tappas inget. Är de slumpvisa tappas ungefär 37 %.
-
-**Mätningen, bestämd före körningen** (`scripts/matningar/sekunderna-kuvos-2026-10-03.ts`, knappen `kuvos`):
-(1) sekundernas fördelning och antalet stationer med samma sekund varje gång; (2) andelen rader där 60-minutersramen har minst tre
-rader, mot samma ram vidgad till 62 minuter (där sekunderna inte spelar roll) — skillnaden är det som tappas — och 30-minutersramen;
-(3) samma för trendens bredaste startband (yta +1…+6 °C). **Läser bara tidsstämplar och antal:** ingen lutning, ingen yta efter
-något, inget utfall. Mätningen ändrar ingenting; om något ska rättas (t.ex. tidsstämplarna avrundade till halvtimmen i kuvösens
-översättning) är det ett eget beslut.
-
-**Utfallet (kuvos 37150889692, 3/10):**
-- Sekunderna: 99,6 % av raderna har sekund 03, och 298 av 736 stationer har samma sekund varje gång.
-- 60-minutersramen tappar **21 519 av 5 256 028 rader, 0,4 %**. Inom trendens startband är det 7 277 av 1 622 826, också 0,4 %.
-- 30-minutersramen har tre rader i **0** rader av 5,26 miljoner.
-
-**Slutsats:** sekunderna saknar betydelse, och inget rättas. Problemet är upplösningen (en rad per halvtimme räcker inte för ett fönster
-på 30 minuter), inte tidsstämplarna. Frågan i PLAN-KUVOSEN §10 punkt 3 gäller därför bara 30-minutersfönstret.
-
-## #455 (3/10 2026) Kuvösen: fyra tillägg till förregistreringen före riktningsprovet — ovanpå, baslinjen, 30-minutersfallet, ej prövade (kort #232)
-
-**Beslut (Bengt 3/10):** *"ja till A"* och *"vi kör på dina rekommendationer för 1, 2 och 4"* — på PLAN-KUVOSEN §10 och bedömningen §4.2.
-Skrivet efter att filen öppnats men **innan någon regel körts och något utfall lästs** (#438:s regel: från filen räknas tillägg som
-*före riktningsprovet*).
-
-1. **"Ovanpå de andra" räknas i kombinationsgrindens form (KB-B, TROSKLAR-KOMBINATIONEN §4).** För varje del P jämförs *alla andra delar*
-   med *alla andra plus P*:
-   - *Nettonytt* är de facittillfällen inom 5 km från stationen som bara P fångar.
-   - *Pris* är de fyrningar P lägger till och som blev falsklarm.
-   - Allt räknas per episod, en stationsnatt från middag till middag i svensk tid (#246).
-   - En nära miss är inte ett falsklarm, och tidsvinsten redovisas bredvid men räknas aldrig som nettonytt.
-   - **Inga golv**: det är ett riktningsprov, ingen dom. "Ensam" är varje dels eget mått i sitt tröskeldokument.
-2. **Frysrisken (dagens `icing_point` och broarna) är baslinjen** som de andra delarna läggs ovanpå, som "dagens motor" i KB-B. Den
-   redovisas med antal fyrningar och episoder men döms inte på egen yta: utlösaren är stationens egen yta, och egen-yta-facit vore
-   nästan cirkulär.
-3. **Väg A — 30-minutersfallet ur två halvtimmesrader, bara i kuvösen.**
-   - Driftens `lutning30` är värdet 30 minuter bakåt minus värdet nu (`sql/018`). Driften mäter var femte minut (dbknapp 37151681447), och
-     leveransens stämplar :00:03 och :30:03 är två av samma serie (dbknapp 37152138197).
-   - Kuvösen räknar därför trenden med en variant av driftens funktion, **härledd ur `sql/018` vid körning** och aldrig kopierad. Den enda
-     skillnaden är att 30-minutersramen kräver två rader i stället för tre.
-   - Hoppvakten (≤ 3 °C) ser då bara ändpunkterna, och givarvakterna står kvar. Driftens kod är orörd. 15 minuter går inte att räkna.
-   - **Kalibreringen i kuvösen (#425) sveper därför 30 och 60 minuter**, inte 15. Att 15 inte prövades står här, så att ingen läser
-     det som att 15 prövades och föll.
-   - Premissen att ytan är ögonblicksvärdet är starkt trolig men inte bekräftad av Trafikverket (Bengt: ingen fråga till Micke om detta).
-4. **Delar utan startvärden** — rimfrostens R-B (R1–R5 osatta), sikten och daggpunktsgapet — **redovisas som *ej prövade: inga
-   startvärden***. Inga värden skrivs nu för att fylla tabellen. Rimfrostens R-A, som är signalkontrollen, körs.
-
-**Bevis för väg A:**
-- Integrationsprovet är grönt i ci 37152543161 och har sin egen motkontroll: driften ger tom 30-minuterslutning, varianten 0,80.
-- Motprovet blev rött på just det provet i ci 37152660669 (utkast #736, stängt).
-- Kuvösen 37152660384 räknade trenden över hela vintern på 1,0 min: 363 508 fallande kandidater, varav 363 453 med 30-minuterslutning,
-  363 056 med 60 och 0 med 15. Bara antal, inga utfall.
-
-**Rättelse samma kväll (Claude, före varje körning):** punkt 4:s mening *"Rimfrostens R-A, som är signalkontrollen, körs"* var fel.
-- **R-A är ett svep:** den räknar R1 × R2 × R3 och redovisar *"bästa kombinationen"* (`scripts/grind-r-a.ts:250–282`).
-- **T-A är också ett svep:** den rangordnar svepet och väljer en vinnare (`scripts/grind-t-a.ts:229–262`), och TROSKLAR-TRENDEN §2 säger
-  att värdena *"gissas inte … T-A väljer värdet"*. Trenden har alltså inga egna startvärden.
-- Enligt *inget svep* (#424) och punkt 4 är **T-A och R-A *ej prövade*** i riktningsprovet.
-- Trendens parametrar prövas ändå **inom efterhalkan**, med betans startvärden (30 min, 0,8 °C, +1…+3 °C, #222), när regnmängden finns.
-- Molnkällan ur kuvösens arkiv (`kuvos/moln.ts`) behövs för kombinationens fysikkontroll (KB-C3).
-- **Bengt 3/10, efter rättelsen:** *"behåll ej prövade"*. T-A och R-A körs inte i riktningsprovet, och inga startvärden skrivs för dem.
-
-**Alternativ som valdes bort:** att fråga Trafikverket om 5-minutersvärden (väg B: renast, men Bengt vill inte lägga en femte fråga);
-bara 60 minuter (väg C: betans eget fönster hade aldrig kunnat vinna); att flytta tillbaka kalibreringen till 1/2 2027 (halva domvintern
-förlorad). **Axel** bör få veta punkt 3, eftersom kalibreringen i kuvösen var hans ok (#425).
-
-## #456 (3/10 2026) Kuvösen: riktningsprovet väntar på Trafikverkets svar, längst till vecka 42 — och vad som gäller utan svar (kort #232)
-
-**Beslut (Bengt 3/10):** *"vi väntar till vecka 42"*, efter hans fråga *"ska vi inte vänta in [svaren från Micke] innan vi gör detta?"*.
-**Skälet:** två av de fyra frågorna från 2/10 rör delarna i riktningsprovet. Den ena är nederbördskoderna 3, 9 och −9, som rör motorns
-fukt och nederbördstypens facit (1 423 och 55 318 rader av 5,5 miljoner). Den andra är läget för 23 av 777 stationer. Översättningen av
-en kod är ett val, och det ska göras innan utfallet läses. Planen sa vecka 42, och höjdläsningen 23/10 hinns ändå.
-
-**Förregistrerat nu, före körningen:**
-- **Kommer svaret senast fredag 16/10:** koderna och stationerna förs in enligt Trafikverkets besked, skrivet i DECISIONS innan knappen
-  trycks. Sedan körs riktningsprovet.
-- **Kommer inget svar:** riktningsprovet körs ändå senast fredag 16/10. Koderna 3, 9 och −9 räknas som saknade (NULL, som i dag), och de
-  23 stationerna står utanför. Det skrivs i körningens rubrik och i redovisningen.
-- Regnmängden, sikten och vinden rör inte delarna som körs nu. Efterhalkan, övergångarna, tillståndet, försprånget och vinden körs när
-  regnmängden och vindstyrkan finns.
-
-**"Ovanpå" gjort räknebart för kuvösen (#455 punkt 1), ur redan skrivna värden och utan nya tal.** Skrivet nu, före regnmängden och
-före något utfall. Bengt kan invända innan efterhalkan körs.
-- **Facittillfälle:** en stationsnatt (middag till middag i svensk tid, #246) där stationens yta når ≤ +1,0 °C. Det är uppspelningens
-  *föll ut* (`sql/028`) och T-A:s träffgräns.
-- **En del fångar** tillfället om den fyrat för stationen den natten inom 90 minuter före det första ögonblick ytan når ≤ +1,0 °C, alltså
-  uppspelningens utfallsfönster (t, t + 90 min]. Baslinjen, dagens `icing_point`, fångar om den fyrat för stationen den natten senast
-  i det ögonblicket.
-- **Nettonytt för P** är de facittillfällen som bara P fångar, varken baslinjen eller någon annan del, som andel av alla facittillfällen
-  vid stationer som klarar vakterna den natten. Det är räckviddsvillkoret i KB-B: en miss räknas bara där någon kunde tala.
-- **Pris för P:** P:s tillkomna fyrningsepisoder är nätter där ingen annan del fyrat för stationen. Pris är de av dem där ytan inte når
-  ≤ +1,5 °C inom 90 minuter (*uteblev*), som andel av de tillkomna episoderna. *Nära*, inom nära-miss-bandet +0,5 °C, är inte falsklarm.
-- **Tidsvinsten** är minuterna mellan P:s första fyrning och baslinjens på tillfällen som båda fångar. Den redovisas bredvid och räknas
-  aldrig som nettonytt.
-
-**Byggt 4/10 (Bengt: *"ja, bygg efterhalkans uppspelning och kör på"*), före regnmängden och utan något utfall läst.**
-`kuvos/efterhalkan.ts` kör `uppspelning_efterhalka` (sql/028) med betans startvärden. Ögonblicken tar den ur en variant som härleds ur
-samma källa vid körning och aldrig kopieras, som väg A. `kuvos/ovanpa.ts` räknar tabellen ovan, och båda går i riktningsprovets knapp.
-Utan regnmängden skriver efterhalkan bara att underlaget saknas. Fyra läsningar av texten ovan är nu kod, och Bengt kan invända innan
-något körs:
-- **Fönstret** är (t, t + 90 min] och samma natt. En fyrning i själva facitögonblicket har inget försprång och fångar inget.
-- **Baslinjen** är stationens egen `icing_point`, alltså motorns villkor yta ≤ 1 och fukt (engine.ts). Broarna räknas inte, eftersom de
-  är egna faror och inte "för stationen". Baslinjen kan tidigast tala i facitögonblicket, så tidsvinsten blir facit minus P:s första
-  fyrning i fönstret.
-- **Tillkommen** betyder att varken en annan del eller baslinjen talat för stationen den natten. En natt där stationens röst redan
-  hörts är inte en ny varning.
-- **Facit och baslinjen** räknas bara på rader som klarar vakterna: #75, radvakten, karantänen och den långsamma vakten. Fukten och
-  vakterna importeras, och kontraktsgrinden vaktar natten, fönstret och nära-bandet (nytt kontrakt, två kopior).
-**Bevis (PR #739):** ci 37182523731 grön på a4d3504 (259 prov, PostGIS-provet kört, 0 hoppade); motprovet i CI, fukten i facit ersatt med true, rött i 37182562056 på just facitraden (258 av 259, kontraktsgrinden grön; utkast #740 stängt).
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #457 (3/10 2026) Projektkartan visar också "av det som går att göra före vinterns domar" (kort #286)
 
@@ -7664,39 +7056,9 @@ startvärdena och prognoslagrets trösklar är ute sedan ansökan, och sidan til
 
 **Tillägg till #447, 6/10: schemat avstängt** (Bengt: *"stäng av schemat"*): den schemalagda kartsynken i Claude-appen hängde två gånger i rad på sitt första PowerShell-anrop (4/10 07:26 och 6/10 03:45, den senare startad av schemat i samma sekund som den förra stoppades), och 6/10 07:26 startade aldrig. Orsaken syns inte i loggen; troligen ett godkännande som ingen besvarar när ingen sitter vid datorn. Uppgiften är avstängd (inte raderad) och körningen stoppad. Kartsynken är fortfarande första steget i varje session, och sedan 6/10 listar den öppna PR:er; det var vad schemat skulle ge. Slås på igen när orsaken är känd och en körning med *Kör nu* gått igenom med Bengt vid datorn.
 
-## #464 (6/10 2026) Kuvösen: vinden, mängden och koderna 3/9/−9 översätts ur dokumentationen, och riktningsprovet körs nu — tillägg till #456
+## #464 (6/10 2026) Kuvösen: flyttad till halkvakt-kuvos
 
-**Bengts order 6/10:** *"gör en ordentlig sökning på internet"* och sedan *"ja till riktningsprovet, ja till begäran"*. Läsningen står i
-`docs/KUVOS-LEVERANSEN-2026-10-02.md` §5c med källorna; begäran om facit i §5d (Bengt skickar).
-
-**Beslut, skrivna före körningen och före något utfall (#424, #438):**
-1. **Vinden:** `vimed` → `wind_speed_ms` (API:t: *medelvärde över tiominutersperiod t.o.m. tidpunkten*), `vimax` → `wind_gust_ms`
-   (*högst uppmätt 3-sekundersmedelvärde under perioden*). −99,9 ⇒ NULL. `vind30` är 30-minutersmedlet och läses inte in; VädErs
-   räknar VViS-vind så (VTI notat 39-2003, 38-2013).
-2. **Mängden:** mm per 30 minuter. Kolumnen läggs där typen säger: `rain_sum_mm` = mängden vid regn, frusen regn och snöblandat
-   (2, 3, 6), 0 vid ingen nederbörd och snö (1, 4); `snow_wateq_mm` = mängden vid snö (4), 0 vid 1, 2, 3; snöblandat läggs helt på
-   regn. Okänd typ (9, −9) ⇒ NULL. −99,9 och −99,8 ⇒ NULL; skillnaden är inte läst. Fem rader över 100 mm lämnas åt värdevakten.
-   Skälet till att det räcker: efterhalkan läser regn, och på regnkodade rader är mängden regn vilken definition kolumnen än har.
-3. **Koderna:** 3 = `freezing_rain` (rain), 9 = `yes` (nederbörd av okänd typ, varken rain eller snow; motorn räknar `yes` som
-   nederbörd), −9 ⇒ NULL. Härledning: API:t dokumenterar exakt sex typer och filen har sex koder; 1/2/4/6 är kända ur VädErs 2019, och
-   PWD22 rapporterar just *freezing rain* och *precipitation (unknown type)*. 914 + 506 rader.
-4. **De 23 stationerna utan läge** står utanför, som #456 sa. Vägen till deras läge är Lastkajens dataprodukt *VViS* (konto krävs).
-5. **Sikten:** oförändrad (20 000 = PWD22:s tak, −100 = ingen sensor), som redan översatt.
-6. **Riktningsprovet körs i veckan** på knappen `kuvos` med `riktningsprov`, i stället för att vänta till 16/10 (#456). Väntan gällde
-   koderna och stationerna, och båda har nu ett skrivet val. Kommer Trafikverkets svar och säger annat ändras tabellen i
-   `kuvos/oversattning.sql`, filen körs om, och provet körs om; körningen är deterministisk.
-
-**Prov:** integrationstestet för översättningen bär de nya fallen (3, 9, −9, mängden per typ, vinden, platshållarna).
-
-**Alternativ:** vänta på Trafikverket (förkastat 6/10: tre av fem frågor är besvarade av dokumentation, och resten kan inte vända en
-riktning); läsa koderna empiriskt först (förkastat: översättningen är ett val som ska göras före utfallet, och härledningen räcker;
-stickprovet redovisas i stället bredvid körningen).
-
-**Tillägg till #447, 6/10 (Bengt: *"C"*):** projektkartan skrivs inte om varje natt; kartsynken körs av varje session vid start, och
-maskinvägen får fler regelsteg. Första: regeln `inlamnad:<version>` i `scripts/kartsynk.ts` (klar när en App Store-version ≥ den
-angivna nått *Waiting for Review* eller ett senare tillstånd), satt på App Store-delens *Inskickat*. Skälet mot en nattlig skrivare:
-kartan är bokföring med bevis, inte nattens siffror, och en skrivare utan republicering ger varje morgon en artefakt som skiljer sig
-från sin repokopia (STOMREGELN).
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #465 (6/10 2026) Ytstatusfälten in i arkivet: Surface.Water, Ice, Snow och Grip från stationerna med givare (kort #294)
 
@@ -7728,461 +7090,29 @@ halka, SMHI, stationernas yta) hade ingen rad som sa *is*. Från deployen finns 
 
 **#465 läst 10/10 (kort #294 stängt, kort #324 öppnat; Bengt: *"gör 294 och 316"*):** värdevakten 38046557111 dömer `surface_grip` OK — 26 379 rader från 59 stationer 6/10 08:20–10/10 10:50 UTC, 0,18–0,82, 41 distinkta. Läsningarna 38046558230 och 38046716085 (DB-knappen, bara summor): 0,82 är givarens tak för torr väg — alla 11 841 rader utan vatten, is och snö bär exakt 0,82, inget värde ligger över, och andelen var 51 % (92 % 6/10, i torrt väder). Is- och snöflaggan: 942 rader med is sann, 873 av dem (93 %) med vägytan över +5 °C från 35 stationer, ingen av 718 rader med ytan ≤ 0 °C; is och snö satta tillsammans på 763 av de 873. Inläsningen tar bara äkta sanningsvärden ur API:t, så flaggan är Trafikverkets. Punkt 4 håller: inget läser fälten, och regeln för när flaggorna får döma skrivs i TROSKLAR-KOMBINATIONEN innan de används (kort #324).
 
-## #466 (6/10 2026) Riktningsprovet, första körningen: grind A läst på vintern 2024/25, höjdprovet föll på minnet, omkörning (kort #232)
+## #466 (6/10 2026) Kuvösen: flyttad till halkvakt-kuvos
 
-**Körningen** 37435099300 (`kuvos` med `riktningsprov`, main 31860c2, startad 08:17Z på Bengts ja 6/10 i #464). Inläsningen, vakterna
-och värdevakten gick igenom (08:17–08:25Z). Riktningsprovet körde 08:25–09:47Z och föll i `scripts/hojd-prov.ts`: *JavaScript heap out
-of memory* på Nodes standardheap över 152 dygn. Grind NT och efterhalkan kördes aldrig.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Talen som hann skrivas, ordagrant ur loggen (en läsning enligt #424: alla tal skrivs ut, inget är en dom):**
-- **Motorn över vintern** (`kuvos/korning.ts`): 7 245 steg 2024-10-31T23:30Z – 2025-03-31T21:30Z, serie A 20 rutter, serie B 818
-  sträckor var tredje timme, 2 476 broar; **675 178 varningar** sparade.
-- **Baslinjen** (dagens frysrisk och broarna, #455 punkt 2, antal utan dom): serie A 114 923 fyrningar, 98 faror, 8 402 episoder
-  (stationer 610, broar 7 792); serie B 560 255 fyrningar, 2 850 faror, 179 805 episoder (stationer 30 532, broar 149 273).
-  Per månad i serie A: okt 191/12, nov 14 534/1 194, dec 23 660/1 832, jan 38 685/2 316, feb 26 054/2 012, mar 11 799/1 036
-  (fyrningar/episoder).
-- **Grind A** (`publish/grind-a.ts 152`, korsvalidering vid stationerna, TROSKLAR-SKUGGAN): A1 MAE i beslutsbandet 0,60 °C på
-  3 364 122 punkter → KLARAR; **A2 grova fel > 2 °C: 5,5 % mot kravet ≤ 5 % → FALLER**; A3 frysklassningsfel 0,3 % → KLARAR.
-  Skriptets egen rad: *DOM: GRIND A FALLEN*. Lapse 0,65 °C/100 m.
+## #467 (6/10 2026) Kandidaten: flyttad till halkvakt-kuvos
 
-**Vad talet betyder, och inte.** Riktningsprovet fäller ingen dom (#424). Driftens grind A står kvar som klarad (23/9 och 28/9 på
-60 dygn, A2 3,7 %, DECISIONS #321, #399). Vintern 2024/25 säger att andelen grova fel ligger över fem procent på en hel vinter, med
-mer kyla och större spridning än hösten. Det är precis den fråga vinterns grindar i mars ska svara på, och talet skrivs här så att
-ingen senare kan säga att det var okänt. Ingen tröskel ändras.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Åtgärd:** `kuvos.yml`: riktningsprovets steg får `NODE_OPTIONS=--max-old-space-size=10240` (runnern har 16 GB) och 300 minuter
-i stället för 180 (82 minuter gick till kraschen, NT och efterhalkan återstod). Omkörningen är deterministisk; grind A:s tal ska
-komma igen, och de jämförs.
+## #468 (6/10 2026) Kandidaten: flyttad till halkvakt-kuvos
 
-**Alternativ:** läsa höjdprovet i delar (förkastat nu: ändrar skriptet mitt i provet; kan göras om heapen inte räcker).
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-## #467 (6/10 2026) Riktningsprovet på vintern 2024/25 är kört och läst: varje del ensam och ovanpå de andra, alla tal, ingen dom (kort #232)
+## #469 (6/10 2026) Kandidaten: flyttad till halkvakt-kuvos
 
-**Körningen** 37447617038 (`kuvos` med `riktningsprov`, main 9f09dfe, 10:07–11:26Z; riktningsprovets steg 72 minuter med 10 GB heap,
-#466). Inläsningen 5 391 599 rader från 754 stationer, vakterna som i driften (#75, radvakten, karantänen, den långsamma vakten: 97 %
-talar), värdevakten gick igenom. Varningarna ligger som artefakt `kuvos-varningar` på körningen (7,9 MB, 90 dagar). Startvärdena som
-de står (#424); inget svep, inget val. Grind A:s tal är identiska med första körningens (#466), som väntat av en deterministisk körning.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**1. Motorn över vintern** (`kuvos/korning.ts`): 7 245 steg, serie A 20 rutter, serie B 818 sträckor var tredje timme, 2 476 broar,
-tomma steg 0; snapshotens noter: långsam vakt 2 191 steg, karantän 5 116; **675 178 varningar**.
+## #470 (6/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**2. Baslinjen** (dagens frysrisk och broarna, #455 punkt 2; antal, ingen dom): serie A 114 923 fyrningar, 98 faror, 8 402 episoder
-(stationer 610, broar 7 792); serie B 560 255 fyrningar, 2 850 faror, 179 805 episoder (stationer 30 532, broar 149 273). Per månad,
-serie A (fyrningar/episoder): okt 191/12 · nov 14 534/1 194 · dec 23 660/1 832 · jan 38 685/2 316 · feb 26 054/2 012 · mar 11 799/1 036;
-serie B: okt 1 332/528 · nov 77 551/25 809 · dec 120 020/40 780 · jan 187 534/51 040 · feb 116 993/42 024 · mar 56 825/19 624.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**3. Grind A** (korsvalidering vid stationerna, offsetmodellen, 736 stationer, 5 229 252 bucketade avläsningar): per band
-0–7 km 0,52 °C · 3,6 % · 0,2 % (491 220 punkter); 7–15 km 0,55 · 3,7 · 0,2 (1 985 336); 15–20 km 0,61 · 5,4 · 0,3 (907 357);
-> 20 km 0,79 · 10,3 · 0,4 (969 293); totalt 0,60 °C · 5,5 % · 0,3 % (4 353 206). **A1 0,60 °C klarar · A2 5,5 % faller · A3 0,3 %
-klarar ⇒ grind A fallen på vintern.** Driftens grind A står (höstens 60 dygn, A2 3,7 %, #321, #399); vinterns tal säger att en hel
-vinter har fler grova fel, och felet sitter bortom 15 km (5,4 % och 10,3 %).
+## #471 (6/10 2026) Kandidaten: flyttad till halkvakt-kuvos
 
-**4. Höjdprovet** (lapse 0,65 °C/100 m som antagande; empirisk lapse ur 3 431 par 0,18 °C/100 m): MAE i beslutsbandet, alla band,
-rå 0,68 °C · interp 0,67 · rå+höjd 0,69 · offset (taket) 0,60; > 20 km rå 0,83 · interp 0,82 · rå+höjd 0,91 · offset 0,79. Höjden
-återvinner ingenting på den här vintern: rå+höjd är sämre än rå i varje band utom 7–15 km, och den empiriska lapsen är långt under
-standard, så annat än höjden dominerar (kust, dalgångar). 729 av 736 stationer fick EU-DEM-höjd.
-
-**5. Vägpunktsgrinden** (grind A:s mått utan målets egen historik, #323): RÅ A1 0,68 °C klarar · A2 7,5 % faller · A3 0,4 % klarar;
-INTERP 0,67 · 7,2 % · 0,4 %; RÅ+HÖJD 0,69 · 8,8 % · 0,4 %. Per band, grova fel RÅ: 5,2 · 5,3 · 7,2 · 13,6 %. **Fallen för alla tre
-kandidaterna**, som 28/9 (#399). Det som saknas är data om vägen, inte kod.
-
-**6. Frysflaggan med tre marginaler** (#437; K1 +1 °C, K2 0 · 0,5 · 1 °C; måttstocken lånad av K-A: rätt klass ≥ 95 %, farliga fel ≤ 1 %,
-täckning ≥ 70 %), alla band, 4 353 206 punkter, 729 stationer, 3 015 970 frysningar:
-| kandidat | K2 | farliga fel av frysningarna | av uttalade | falska flaggor | rätt klass | täckning |
-| :-- | --: | --: | --: | --: | --: | --: |
-| RÅ | 0 | 4,9 % | 3,4 % | 3,7 % | 94,1 % | 100 % |
-| RÅ | 0,5 | 2,4 % | 1,8 % | 7,1 % | 97,0 % | 91,0 % |
-| RÅ | 1 | 1,2 % | 1,0 % | 11,2 % | 98,5 % | 81,8 % |
-| RÅ+HÖJD | 0 | 4,9 % | 3,4 % | 3,5 % | 94,2 % | 100 % |
-| RÅ+HÖJD | 0,5 | 2,3 % | 1,7 % | 7,0 % | 97,1 % | 90,9 % |
-| RÅ+HÖJD | 1 | 1,1 % | 1,0 % | 11,1 % | 98,5 % | 81,6 % |
-| OFFSET (taket) | 0 | 4,2 % | 2,9 % | 3,1 % | 95,0 % | 100 % |
-| OFFSET (taket) | 0,5 | 1,8 % | 1,3 % | 6,7 % | 97,8 % | 90,9 % |
-| OFFSET (taket) | 1 | 0,8 % | 0,7 % | 11,0 % | 98,9 % | 81,6 % |
-Läsning: bara offset med K2 = 1 °C når alla tre måtten i den lånade måttstocken (0,8 % farliga, 98,9 % rätt, 81,6 % täckning), och
-offset finns bara där stationen har egen historik. Vid > 20 km klarar även RÅ K2 1 farliga fel (0,9 %) med täckning 89,4 %.
-
-**7. Grind NT** (nederbördstypen, startvärdet L 0 · U +1,5): givarens ordlista no 4 388 124 · rain 402 283 · sleet 23 335 · snow 531 766
-· yes 502 · freezing_rain 909 · null 11 841. NT-A täckning 0,9987 · mot SMHI 0,9336 · farligt 0,0386 ⇒ klarar; NT-D klarar (snöepisoder
-68 349, slaskepisoder 17 954, 751 stationer, 4 band, 151 slaskdygn, 12 476 SMHI-partimmar vid 37 par inom 5 km); **NT-B träff 0,7203 ·
-farligt 0,0082 · slask 0,4171 · månader 0/3 ⇒ faller; NT-C träff 0,7103 · farligt 0,0134 · slask 0,3981 ⇒ faller.** Bara startvärdet
-är räknat (#424). Fynd: skriptets ordlista (§7 punkt 5) känner inte `yes` och `freezing_rain` ur #464 och larmar; de 1 411 raderna
-räknas som okända. Ordlistan rättas i samma varv som nästa körning, inte nu.
-
-**8. Efterhalkan** (betans startvärden, uppspelningen ur sql/028): ENSAM 983 episoder, 983 med utfall: föll ut 527 · nära 178 · uteblev
-278. OVANPÅ (#456): 82 985 facittillfällen (stationsnätter med yta ≤ +1 °C, vakterna klarade); baslinjen fångar 16 826 (20,3 %);
-efterhalkan 1 109 fyrningar i 983 episoder, fångar 461, **nettonytt 175 (0,2 % av facit)**; tillkomna episoder 406 med utfall: föll ut
-147 · nära 76 · uteblev 183 ⇒ **pris 45,1 %**; tidsvinst mot baslinjen 30 min (median, 286 tillfällen), inte nettonytt. Inga golv (#455).
-
-**Vad som inte kördes:** T-A, R-A, W-A (#455), övergångarna, tillståndet, försprånget (radarn ur tif, #441); kalibreringen (regel D,
-efter Axels signatur, #425).
-
-**Fynd på vägen:** (a) grind A och höjdprovet skriver *SAKNADE DYGN* för 2026-05-07–2026-10-06, eftersom `saknadeDygn` räknar fönstret
-från riktig tid och inte från klockan; harmlöst (de dygnen räknas inte) men vilseledande i en kuvöskörning. (b) NT:s ordlista, ovan.
-
-**Följd:** ingen tröskel och ingen kod ändras av utfallet (#424). Tabellen del × ensam × ovanpå står i bedömningen §7, som kort #232:s
-Verify kräver. Nästa steg enligt planen är kalibreringen på samma vinter, som ändrar regel D och kräver Axels signatur (#425).
-
-## #468 (6/10 2026) Kalibreringen i kuvösen — förregistrerad före körningen: tidpunkten, rutnätet, måttet, regeln (regel D3–D5, kort #232)
-
-**Bengts ord 6/10: *"gör kalibreringen"*,** efter riktningsprovet (#467). Signaturerna finns sedan 1/10: Bengt och Axel flyttade
-säsongens enda gemensamma kalibrering till kuvösen (#425, TROSKLAR-KOMBINATIONEN §5), och betan hörs på de kalibrerade värdena om
-vinnaren håller i båda halvorna, annars på startvärdena (#427, #428). Det här är tidpunkten regel D3 kräver i DECISIONS innan
-kalibreringen inträffar. Inget tal ur kalibreringen var läst när posten skrevs.
-
-**Tidpunkten (D3):** 6/10 2026, på vintern 2024/25 i kuvösen — all data ligger före tidpunkten, och ingen natt ur vintern 2026/27
-läses. Domdata är hela vintern 2026/27 (#425).
-
-**Rutnätet (D1, §3, #219):** N 1 · 2 · 3 · 4 h × trendfönster 15 · 30 · 60 min × fall 0,4 · 0,6 · 0,8 · 1,2 °C = **48 punkter**, med
-minsta regn > 0, startband +1…+3, radar av, N_varning av — de 48 betan kan köra. Svepen och startvärdena härleds ur sql/028 vid körning
-(D1-vaktens listor och funktionens standardvärden), aldrig kopierade; ett värde utanför svepen avvisas av funktionen själv.
-15-minutersfönstret går inte att räkna i kuvösen (en rad per halvtimme, väg A, #455): de 16 punkterna redovisas som *ej räknebara*,
-aldrig som noll. Räknebara: 32.
-
-**Måttet (#456, kuvos/ovanpa.ts):** per punkt över hela vintern — nettonytt = facittillfällen (stationsnätter med yta ≤ +1 °C, vakterna
-klarade) som bara punkten fångar och inte baslinjen; pris = *uteblev* av punktens tillkomna episoder med utfall. Samma facit som
-riktningsprovet: det blev kallt, inte det blev halt (förbehållet i #425).
-
-**Regeln (D4), skriven nu:**
-- **Kandidat** = räknebar punkt med pris ≤ 25 % (Ö-B2, TROSKLAR-OVERGANGAR §4) räknat på **minst 20 tillkomna episoder med utfall**,
-  och nettonytt > 0. Golvet 20 är nytt och mitt: ett pris på en handfull episoder är brus, och utan golv vinner en tyst punkt på 0 av 3.
-- **Vinnare** = kandidaten med störst nettonytt över hela vintern; lika ⇒ lägst pris ⇒ färst ändrade dimensioner mot startvärdena ⇒
-  rutnätets ordning.
-- **Håller** = vinnaren är kandidat på samma villkor i **båda halvorna** av vintern, delade vid facitnätternas mittnatt (som grind T-A:s
-  tidsdelning). Håller den inte, eller finns ingen kandidat, står startvärdena (N 2 h · 30 min · fall 0,8).
-- Startvärdenas tal skrivs bredvid, och nettonytt som andel av facit mot Ö-B1 (≥ 5 %) som läsning — Ö-B1 döms i januari och mars, inte här.
-
-**Redovisningen (D5):** alla 48 punkter med hela vintern och båda halvorna, antalet prövade och räknebara bredvid vinnaren.
-**Frysningen (D6):** skriptet föreslår; Bengt fryser med sitt ord, och värdena, antalet punkter och datumet skrivs här som utfall.
-Därefter ändras ingen tröskel; dom 2 i mars läser vintern 2026/27.
-
-**Byggt:** `kuvos/kalibrering.ts` (härledning ur sql/028, 32 anrop av ögonblicksvarianten ur #456, ovanpå per halva, regeln som ren
-funktion), proven i `test/kuvos.test.ts` (nätet 48, startvärdena i nätet, D1-vakten fäller, D4 räknat för hand: taket, golvet, halvorna,
-lika-reglerna, ej räknebar deltar aldrig), knappen `kuvos` med `korflode: kalibrering` (300 min, 10 GB heap), som vägrar utanför kuvösen
-(`kuvos.now()` saknas ⇒ stopp). Ö-B2:s 25 % är första kopian i kod; dokumentet är källan.
-
-**Vad som inte görs:** inga andra dimensioner (regnmängd, startband, radar — mars-varianter, #223/#225), inga golv ur Ö-B som urval,
-ingen tröskel i någon del rörs (D1), ingen andra kalibrering (D7).
-
-**UTFALL 6/10 (körning 37464971791 på b838d30, 12:41–12:46Z; kalibreringssteget 31 s, ett anrop per punkt ≈ 1 s).** Facit 82 985
-stationsnätter över 152 nätter, halvorna delade vid 2025-01-15 (A: 31/10–14/1, B: 15/1–31/3). 15-minuterslutningar i trendarkivet: 0 ⇒
-16 punkter ej räknebara, 32 räknade. Startvärdena gav exakt riktningsprovets tal (1 109 · 983 · 461 · 175 · 45,1 %, #467) — samma
-räkning, samma svar.
-
-**D4: ingen punkt är kandidat.** Ingen av de 32 räknebara punkterna har priset under taket 25 %, över hela vintern eller i någon halva.
-Lägst pris över vintern **40,4 %** (N 4 h · 60 min · fall 1,2; nettonytt 458), därefter 41,0 % (N 4 h · 30 · 0,8) och 41,7 % (N 3 h · 30 ·
-0,8); lägst i en halva 29,2 % (N 4 h · 30 · 1,2, halva B). Startvärdena 45,1 % (A 54,2 %, B 33,5 %). Största nettonytt 1 292 (1,6 % av
-facit) vid 68,0 % (N 4 h · 60 · 0,4). Ingen punkt når Ö-B1:s 5 % (läsning, döms inte här). **Startvärdena står (D4).**
-
-**FRYST (D6) med Bengts ord — PR #780 *"slå ihop"*:** N 2 h · trendfönster 30 min · fall ≥ 0,8 °C · minsta regn > 0 · startband +1…+3 ·
-radar av · N_varning av (DECISIONS #222 oförändrade); 48 punkter prövade, 32 räknebara; vintern 2024/25; 6/10 2026. Därefter ändras ingen
-tröskel; dom 2 i mars läser vintern 2026/27 (#425). **Följder:** betan hörs på startvärdena (#428: vinnaren höll inte — det fanns ingen);
-kort #278 (båda värdeparen i skuggan) är överspelat, de två paren är ett; TROSKLAR-KOMBINATIONEN §7 *ingen kalibrering före* gäller
-som det står; betaguidens lydelse (#429) stämmer.
-
-**Läsning, ingen dom:** priset sjunker med större fall och längre N, nettonytt stiger med längre N och lägre fall — hela rutnätet ligger
-på samma kurva, 15 procentenheter över taket som närmast. Det är inte brus: halva B är genomgående billigare än A (start 33,5 mot
-54,2 %), men ingen halva når taket. Facit är stationens egen yta inom 90 min — *uteblev* betyder att ytan inte nådde +1,5 °C vid
-stationen, inte att vägen var torr. Om priset är orättvist mot efterhalkan avgörs av Trafikverkets ytstatus och åtgärder (begäran §5d,
-#463), inte av fler punkter.
-
-**Alla prövade punkter (D5)** — hela vintern, och nettonytt · pris per halva; de 16 punkterna med 15-minutersfönstret är ej räknebara:
-
-| N | fönster | fall | fyrningar | episoder | nettonytt | tillkomna | uteblev | pris | halva A: netto · pris | halva B: netto · pris |
-| --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- | :-- |
-| 1 h | 30 min | 0,4 | 2 675 | 2 063 | 222 | 883 | 553 | 62,6 % | 89 · 70,3 % | 133 · 54,6 % |
-| 1 h | 30 min | 0,6 | 1 220 | 1 082 | 111 | 424 | 261 | 61,6 % | 41 · 71,8 % | 70 · 48,9 % |
-| 1 h | 30 min | 0,8 | 641 | 597 | 60 | 218 | 129 | 59,2 % | 21 · 69,0 % | 39 · 45,7 % |
-| 1 h | 30 min | 1,2 | 230 | 224 | 16 | 59 | 37 | 62,7 % | 5 · 66,7 % | 11 · 57,7 % |
-| 1 h | 60 min | 0,4 | 4 638 | 2 765 | 276 | 1 246 | 848 | 68,1 % | 107 · 75,8 % | 169 · 60,9 % |
-| 1 h | 60 min | 0,6 | 2 478 | 1 728 | 188 | 679 | 429 | 63,2 % | 68 · 72,2 % | 120 · 54,4 % |
-| 1 h | 60 min | 0,8 | 1 462 | 1 102 | 115 | 405 | 246 | 60,7 % | 40 · 69,6 % | 75 · 50,8 % |
-| 1 h | 60 min | 1,2 | 580 | 498 | 46 | 150 | 91 | 60,7 % | 12 · 66,7 % | 34 · 53,0 % |
-| 2 h | 30 min | 0,4 | 4 549 | 2 974 | 445 | 1 403 | 845 | 60,2 % | 203 · 66,4 % | 242 · 52,4 % |
-| 2 h | 30 min | 0,6 | 2 156 | 1 707 | 291 | 760 | 393 | 51,7 % | 119 · 59,8 % | 172 · 41,5 % |
-| 2 h | 30 min | 0,8 **(start)** | 1 109 | 983 | 175 | 406 | 183 | 45,1 % | 71 · 54,2 % | 104 · 33,5 % |
-| 2 h | 30 min | 1,2 | 343 | 327 | 39 | 94 | 49 | 52,1 % | 11 · 62,0 % | 28 · 40,9 % |
-| 2 h | 60 min | 0,4 | 8 394 | 3 987 | 589 | 1 984 | 1 329 | 67,0 % | 265 · 74,0 % | 324 · 59,1 % |
-| 2 h | 60 min | 0,6 | 4 895 | 2 744 | 444 | 1 295 | 758 | 58,5 % | 194 · 65,3 % | 250 · 49,8 % |
-| 2 h | 60 min | 0,8 | 3 063 | 1 910 | 326 | 871 | 463 | 53,2 % | 132 · 61,3 % | 194 · 42,4 % |
-| 2 h | 60 min | 1,2 | 1 292 | 945 | 166 | 377 | 179 | 47,5 % | 61 · 56,8 % | 105 · 36,3 % |
-| 3 h | 30 min | 0,4 | 6 455 | 3 870 | 765 | 1 962 | 1 153 | 58,8 % | 395 · 64,3 % | 370 · 51,5 % |
-| 3 h | 30 min | 0,6 | 3 044 | 2 297 | 496 | 1 132 | 545 | 48,1 % | 250 · 54,0 % | 246 · 40,2 % |
-| 3 h | 30 min | 0,8 | 1 493 | 1 290 | 292 | 602 | 251 | 41,7 % | 137 · 48,0 % | 155 · 32,9 % |
-| 3 h | 30 min | 1,2 | 400 | 381 | 57 | 123 | 59 | 48,0 % | 15 · 59,1 % | 42 · 35,1 % |
-| 3 h | 60 min | 0,4 | 11 783 | 4 965 | 951 | 2 593 | 1 728 | 66,6 % | 491 · 72,9 % | 460 · 59,1 % |
-| 3 h | 60 min | 0,6 | 7 123 | 3 591 | 751 | 1 842 | 1 082 | 58,7 % | 385 · 64,3 % | 366 · 51,2 % |
-| 3 h | 60 min | 0,8 | 4 463 | 2 592 | 575 | 1 312 | 677 | 51,6 % | 289 · 57,9 % | 286 · 42,6 % |
-| 3 h | 60 min | 1,2 | 1 816 | 1 285 | 298 | 600 | 256 | 42,7 % | 133 · 48,7 % | 165 · 34,9 % |
-| 4 h | 30 min | 0,4 | 8 195 | 4 570 | 1 050 | 2 450 | 1 471 | 60,0 % | 563 · 66,1 % | 487 · 52,2 % |
-| 4 h | 30 min | 0,6 | 3 834 | 2 778 | 698 | 1 458 | 708 | 48,6 % | 358 · 54,7 % | 340 · 40,8 % |
-| 4 h | 30 min | 0,8 | 1 817 | 1 537 | 403 | 761 | 312 | 41,0 % | 190 · 47,4 % | 213 · 32,7 % |
-| 4 h | 30 min | 1,2 | 452 | 426 | 84 | 150 | 67 | 44,7 % | 24 · 59,0 % | 60 · 29,2 % |
-| 4 h | 60 min | 0,4 | 15 064 | 5 788 | 1 292 | 3 159 | 2 148 | 68,0 % | 688 · 74,5 % | 604 · 60,3 % |
-| 4 h | 60 min | 0,6 | 9 284 | 4 318 | 1 055 | 2 351 | 1 409 | 59,9 % | 553 · 66,1 % | 502 · 51,6 % |
-| 4 h | 60 min | 0,8 | 5 861 | 3 192 | 844 | 1 745 | 917 | 52,6 % | 432 · 60,2 % | 412 · 42,4 % |
-| 4 h | 60 min | 1,2 | 2 340 | 1 618 | 458 | 832 | 336 | 40,4 % | 214 · 46,3 % | 244 · 33,1 % |
-
-## #469 (6/10 2026) Kuvösens granskning: tre läsningar förregistrerade före körningen — grind A på 60 dygn, efterhalkans pris per fönster, inom räckvidd (kort #295)
-
-**Bengts ja 6/10 (*"ja till 295"*)** till de tre läsningarna i `docs/KUVOS-GRANSKNING-2026-10-06.md` §4. **Ingen dom, ingen tröskel rörs:**
-grind A:s driftdom (#321, #399) står, startvärdena står frysta (#468), vägpunktsgrindens fall står. Skriptet
-`scripts/matningar/kuvos-granskning-2026-10-06.ts` körs på knappen `kuvos` (`matning`), efter inläsningen, vakterna och trenden.
-Inget tal var läst när posten skrevs.
-
-- **F1 — grind A på 60-dygnsfönster.** `publish/grind-a.ts` körs oförändrad, tre gånger, med kuvösens klocka ställd på 1/1 2025,
-  1/3 2025 och vinterns slut (31/3 21:30Z), `DAYS` = 60 som i driften. Frågan: är vinterns A2 5,5 % (#467, 152 dygn) en hårdare vinter
-  eller ett längre offsetfönster? **Läsning i förväg:** ligger A2 under 5 % i alla tre fönstren var vinterläsningen ett fönsterfel och
-  driftens dom står obestridd; ligger den över i alla tre är vintern hårdare än hösten; blandat ⇒ vintern varierar och redovisas per
-  fönster. Grind A:s egna "DOM"-rader är läsning här.
-- **F2 — efterhalkans pris per fönster och band.** Startvärdenas fyrningar (ögonblicksvarianten, #456), de tillkomna episoderna som i
-  ovanpå; lägsta ytan efter fyrningen tas direkt ur `weather_observations` i utfallsfönstren 60 · 90 · 120 min och klassas med
-  nära-banden 0,3 · 0,5 · 1,0 °C — båda svepen härledda ur sql/028:s D1-vakt (TROSKLAR-TRENDEN §2). 90 min · 0,5 ska ge 183 av 406 =
-  45,1 % (kontroll mot #467). Dessutom priset vid 90 min · 0,5 delat på startytan vid fyrningen (+1…+2 och +2…+3 °C): fönstrets
-  aritmetik mot de långsamma fallen. Sampling-skevheten (tre rader mot arton) går inte att mäta i kuvösen; den sägs, inte räknas.
-- **F3 — inom räckvidd för Ö-B1.** Facittillfällen (stationsnätter ≤ +1 °C, vakterna klarade) med regn (`rain_sum_mm > 0`) vid
-  stationen inom N h före facitögonblicket, N = startvärdet 2 h och svepets vidaste 4 h, var och en också med utfallsfönstret 90 min
-  tillagt så att en fyrning före facit ryms. Riktningsprovets nettonytt 175 som andel av dem, bredvid 0,2 % av alla. Definitionen är ett
-  **förslag** till TROSKLAR-OVERGANGAR §4 (Ö-B1 *inom räckvidd*) före mars-domen — den fastställs av Bengt och Axel, inte här.
-
-**Vad som inte görs:** ingen kandidat, ingen tröskel, ingen omkörning av kalibreringen (D7), inget val av fönster eller band.
-**Kostnad:** en knapptryckning (inläsningen ≈ 5 min, grind A tre gånger på 60 dygn, F2/F3 sekunder). Timeouten för en mätning höjd
-till 300 min och heapen till 10 GB i `kuvos.yml`.
-
-**UTFALL 6/10 (körning 37517980895 på fe7c472, 19:18–19:28Z; inläsningen 7 min, mätningen 1 min 46 s).** Alla tal, ingen dom.
-
-**F1 — grind A på 60 dygn, tre fönster** (`publish/grind-a.ts` oförändrad, klockan i anslutningen):
-| Fönster (60 dygn) | stationer · punkter | 0–7 km | 7–15 km | 15–20 km | > 20 km | TOTALT MAE · A2 · A3 | Läsning |
-| :-- | :-- | :-- | :-- | :-- | :-- | :-- | :-- |
-| 2/11–31/12 (klockan 1/1) | 729 · 1 680 540 | 0,42 °C · 2,0 % | 0,46 · 2,0 % | 0,52 · 3,1 % | 0,68 · 6,8 % | 0,51 °C · **3,4 %** · 0,1 % | klarar |
-| 31/12–28/2 (klockan 1/3) | 735 · 1 990 534 | 0,47 · 3,8 % | 0,49 · 3,6 % | 0,54 · 5,4 % | 0,75 · 10,4 % | 0,53 °C · **5,4 %** · 0,2 % | faller |
-| 30/1–31/3 (klockan 31/3) | 736 · 1 658 283 | 0,67 · 5,3 % | 0,70 · 5,3 % | 0,75 · 7,1 % | 0,91 · 11,6 % | 0,74 °C · **7,1 %** · 0,5 % | faller |
-
-**Läsning enligt förregistreringen: blandat ⇒ vintern varierar.** Det var inget fönsterfel: förvintern klarar (3,4 %, som höstens 3,7 %,
-#399), midvintern faller (5,4 %) och vårvintern faller tydligt (7,1 %); 152-dygnstalet 5,5 % (#467) är ett medel av tre olika säsonger.
-Driftens dom står obestridd. Felet växer mot våren i **alla** band, också 0–7 km (2,0 → 3,8 → 5,3 %), och mest bortom 20 km (6,8 → 11,6 %).
-Det pekar på dagsljuset — en konstant offset lär inte hur stationerna skiljer sig i sol och skugga när dagarna blir långa — snarare än
-på höjden (som höjdprovet redan avfärdat, #467). Hypotes, inte mätt; den hör till kort #91 (kallplatslagret/skuggning) och till
-regimgrindens blåsigt/klart-spår (#408, molnmängd). Följd för produkten: prognoslagrets svaga tid är februari–mars, inte vintern som helhet.
-
-**F2 — efterhalkans pris på de 406 tillkomna episoderna** (uteblev av 406 med utfall; kontrollen stämmer: 90 min · 0,5 = 183 = 45,1 %):
-| Utfallsfönster | band 0,3 | band 0,5 | band 1,0 |
-| :-- | --: | --: | --: |
-| 60 min | 58,9 % (239) | 52,0 % (211) | 31,5 % (128) |
-| 90 min | 52,5 % (213) | **45,1 % (183)** — riktningsprovets tal | 25,6 % (104) |
-| 120 min | 47,5 % (193) | 38,9 % (158) | 22,4 % (91) |
-
-Föll ut växer med fönstret (117 → 147 → 168 av 406): ytan fortsätter falla efter 90 minuter. **Per startyta vid fyrningen (90 min · 0,5):
-+1…+2 °C 168 episoder, pris 19,0 % (uteblev 32) · +2…+3 °C 238 episoder, pris 63,4 % (uteblev 151).** Priset sitter i bandets övre del:
-därifrån hinner ytan sällan till +1,5 på 90 minuter. Svepet vidgar bara startbandet uppåt (+1…+3 · +1…+4 · +1…+6, D1), så ingen
-kalibreringspunkt kunde nå det smalare bandet — det är ett nytt svepvärde i TROSKLAR-OVERGANGAR §2, med båda signaturerna, och prövas i
-så fall tidigast som mars-variant (som radarn och regnmängden, #223/#225), aldrig i betan (D6). Fönstret och nära-bandet är T-A:s
-utvärderingsparametrar (§3: *väljs i T-A och ärvs*) och väljs inte här. Sampling-skevheten (tre rader mot arton) är sagd, inte mätt.
-
-**F3 — inom räckvidd för Ö-B1** (facit 82 985; riktningsprovets nettonytt 175 = 0,2 % av alla):
-| Definition | tillfällen | andel av facit | nettonytt inom räckvidd |
-| :-- | --: | --: | --: |
-| regn inom 2 h före facit | 2 836 | 3,4 % | **6,2 %** |
-| regn inom 2 h + utfallsfönstret 90 min | 4 113 | 5,0 % | 4,3 % |
-| regn inom 4 h | 4 512 | 5,4 % | 3,9 % |
-| regn inom 4 h + 90 min | 5 873 | 7,1 % | 3,0 % |
-Definitionen avgör om efterhalkan ligger över eller under Ö-B1:s 5 % — den måste fastställas i TROSKLAR-OVERGANGAR §4 före mars-domen,
-av Bengt och Axel. Mitt förslag: *regn inom N h + utfallsfönstret*, eftersom en fyrning annars inte ryms före facit (4,3 % vid N = 2 h).
-
-**Följd:** ingen tröskel och ingen kod ändras. Kort #295 stängs (Verify uppfylld: läsningarna bokförda här, F1:s svar i bedömningen §7).
-Två beslut före mars läggs på kort #296 (Bengt och Axel): Ö-B1:s *inom räckvidd*, och det smalare startbandet som mars-variant eller inte.
-Kartan: m-efterhalkans saknas-rader om kort #278 och kalibreringen strukna (#468); p-grindarnas grind A bär de tre fönstren.
-
-## #470 (6/10 2026) Efterhalkans mått och daggpunkt: två läsningar förregistrerade före körningen (kort #297, Bengts ja)
-
-**Bengts ja 6/10 kväll (*"ja till 297"*)** till de två läsningarna i `docs/KUVOS-GRANSKNING-2026-10-06.md` §6 (med rättelsen i §6.2).
-**Ingen dom, ingen tröskel rörs, ingen ny kalibrering (D7):** startvärdena står frysta (#468). Skriptet
-`scripts/matningar/kuvos-mattet-2026-10-06.ts` körs på knappen `kuvos` (`matning`). Inget tal var läst när posten skrevs.
-
-- **M1 — priset per fyrning.** Dagens ovanpå-mått (#456) dömer nattens första fyrning: *uteblev* om ytan inte nått +1,5 °C inom 90 min
-  efter den. Ö-B2:s ord är *"av tillkomna fyrningar"*. Här räknas **varje fyrning** i de tillkomna nätterna (nätter utan baslinje) med sitt
-  eget 90-minutersfönster och T-B:s klasser — samma horisont som föraren har — för startvärdena och de 32 räknebara punkterna, hela
-  vintern och båda halvorna (mittnatten som T-A). Per episod (dagens mått) och per natt (nådde stationen +1,5 någon gång senare samma
-  natt) skrivs bredvid: det ena som kontroll (90 min · 0,5 på startvärdena ska ge 45,1 %), det andra som övre gräns, aldrig som mått.
-  **Läsning i förväg:** har någon punkt pris per fyrning ≤ 25 % på ≥ 20 fyrningar med utfall, hela vintern och i båda halvorna, är
-  kalibreringens *ingen vinnare* (#468) måttets artefakt — då är frågan om en kalibrering på rätt mått Bengts och Axels (D3/D7); har ingen
-  punkt det, ändrar måttet inte kalibreringens utfall. Inget väljs här.
-- **M2 — daggpunkten vid fyrningen.** Startvärdenas fyrningar delas på `dewpoint_c` vid fyrningen (≤ +1 °C mot > +1 °C) och på yta − dagg
-  (≤ 0 · 0–1 · 1–2 · > 2 °C); för varje klass utfallet per episod (90 min · 0,5), per fyrning och per natt, samt nettonyttan per klass
-  (daggklassen hos den fyrning som fångade facit, som ovanpå räknar). Daggpunkten är Trafikverkets levererade, inte räknad.
-  **Förutsägelse, skriven före talen:** episoder med dagg ≤ +1 °C faller ut i klar majoritet, de över +1 °C uteblir i majoritet — fysiken i
-  §6.3 (ytan stannar vid daggpunkten). Håller den, är ett daggpunktsvillkor en ny dimension i TROSKLAR-OVERGANGAR §2 med båda signaturerna,
-  tidigast som mars-variant (D1); håller den inte, står fysiken i §6.3 som motbevisad för den här regeln.
-
-**Vad som inte görs:** inget fönster, band eller villkor väljs; inga golv ur Ö-B som urval; inget rörs i betan. **Kostnad:** en
-knapptryckning, sekunder efter inläsningen.
-
-**UTFALL 6/10 (körning 37524718907 på e98a4c8, 20:12–20:20Z; mätningen 1 min 53 s). Första försöket 37522992220 skrev "0 av 0" för per natt
-och M2 — nycklarna byggdes av Postgres numeric-sträng, uppslagningen av talet; rättat med vakter som stoppar vid tomt, förregistreringen
-orörd.** Facit 82 985 stationsnätter, baslinjenätter 46 860, halvorna delade 15/1. Kontrollen stämmer: startvärdena per episod 183 av 406 =
-45,1 % (#467).
-
-**M1 — priset per fyrning: måttet ändrar inte kalibreringens utfall.** Startvärdena **43,4 %** per fyrning (195 av 449; A 52,4 %, B 32,3 %)
-mot 45,1 % per episod; lägst **35,0 %** (N 4 h · 60 min · fall 1,2), 36,8 % (N 4 h · 30 · 0,8), 37,5 % (N 3 h · 60 · 1,2). **0 av 32 punkter
-har pris per fyrning ≤ 25 %** på ≥ 20 fyrningar, hela vintern eller i någon halva. Måttet per episod överskattar priset med 1–7
-procentenheter — inte mer. Kalibreringens *ingen vinnare* (#468) står, och ingen kalibrering på annat mått behövs (D7 orörd).
-**Per natt, övre gränsen:** startvärdena **16,7 %** (67 av 401), lägst 15,1 % (N 4 h · 30 · 0,8); 21 av 32 punkter under 25 %. Av
-startvärdenas 183 *uteblev* inom 90 minuter frös stationen senare samma natt i 116 fall (63 %). Det är inte måttet (föraren passerar
-nu), men det är talet som avgör hur Ö-B2:s *"tillfällen som inte blev hala"* ska läsas i januari — kort #296/#297, Bengt och Axel.
-
-| Punkt | per fyrning: uteblev av n ⇒ pris | halva A | halva B | per episod (dagens mått) | per natt (övre gräns) |
-| :-- | :-- | --: | --: | --: | --: |
-| N 1 h · 30 min · fall 0,4 | 668 av 1087 ⇒ **61,5 %** | 68,5 % | 53,7 % | 62,6 % | 256 av 863 ⇒ 29,7 % |
-| N 1 h · 30 min · fall 0,6 | 278 av 466 ⇒ **59,7 %** | 68,8 % | 48,1 % | 61,6 % | 123 av 409 ⇒ 30,1 % |
-| N 1 h · 30 min · fall 0,8 | 134 av 233 ⇒ **57,5 %** | 66,4 % | 45,5 % | 59,2 % | 56 av 213 ⇒ 26,3 % |
-| N 1 h · 30 min · fall 1,2 | 37 av 61 ⇒ **60,7 %** | 66,7 % | 53,6 % | 62,7 % | 14 av 57 ⇒ 24,6 % |
-| N 1 h · 60 min · fall 0,4 | 1287 av 1919 ⇒ **67,1 %** | 73,5 % | 61,4 % | 68,1 % | 386 av 1225 ⇒ 31,5 % |
-| N 1 h · 60 min · fall 0,6 | 543 av 882 ⇒ **61,6 %** | 69,6 % | 53,9 % | 63,2 % | 184 av 665 ⇒ 27,7 % |
-| N 1 h · 60 min · fall 0,8 | 284 av 488 ⇒ **58,2 %** | 66,4 % | 49,1 % | 60,7 % | 107 av 395 ⇒ 27,1 % |
-| N 1 h · 60 min · fall 1,2 | 97 av 166 ⇒ **58,4 %** | 64,5 % | 50,7 % | 60,7 % | 33 av 144 ⇒ 22,9 % |
-| N 2 h · 30 min · fall 0,4 | 1124 av 2076 ⇒ **54,1 %** | 61,0 % | 45,4 % | 60,2 % | 372 av 1382 ⇒ 26,9 % |
-| N 2 h · 30 min · fall 0,6 | 441 av 928 ⇒ **47,5 %** | 56,2 % | 36,9 % | 51,7 % | 172 av 744 ⇒ 23,1 % |
-| N 2 h · 30 min · fall 0,8 **(start)** | 195 av 449 ⇒ **43,4 %** | 52,4 % | 32,3 % | 45,1 % | 67 av 401 ⇒ 16,7 % |
-| N 2 h · 30 min · fall 1,2 | 50 av 100 ⇒ **50,0 %** | 61,5 % | 37,5 % | 52,1 % | 17 av 92 ⇒ 18,5 % |
-| N 2 h · 60 min · fall 0,4 | 2405 av 3965 ⇒ **60,7 %** | 66,3 % | 54,3 % | 67,0 % | 587 av 1959 ⇒ 30,0 % |
-| N 2 h · 60 min · fall 0,6 | 1161 av 2155 ⇒ **53,9 %** | 61,0 % | 44,9 % | 58,5 % | 317 av 1280 ⇒ 24,8 % |
-| N 2 h · 60 min · fall 0,8 | 628 av 1275 ⇒ **49,3 %** | 58,1 % | 37,8 % | 53,2 % | 200 av 861 ⇒ 23,2 % |
-| N 2 h · 60 min · fall 1,2 | 211 av 478 ⇒ **44,1 %** | 55,3 % | 31,6 % | 47,5 % | 68 av 370 ⇒ 18,4 % |
-| N 3 h · 30 min · fall 0,4 | 1598 av 3233 ⇒ **49,4 %** | 54,5 % | 42,4 % | 58,8 % | 493 av 1939 ⇒ 25,4 % |
-| N 3 h · 30 min · fall 0,6 | 625 av 1483 ⇒ **42,1 %** | 48,0 % | 34,4 % | 48,1 % | 230 av 1114 ⇒ 20,6 % |
-| N 3 h · 30 min · fall 0,8 | 267 av 689 ⇒ **38,8 %** | 44,8 % | 30,6 % | 41,7 % | 94 av 597 ⇒ 15,7 % |
-| N 3 h · 30 min · fall 1,2 | 60 av 129 ⇒ **46,5 %** | 58,8 % | 32,8 % | 48,0 % | 25 av 121 ⇒ 20,7 % |
-| N 3 h · 60 min · fall 0,4 | 3417 av 6034 ⇒ **56,6 %** | 60,6 % | 51,4 % | 66,6 % | 737 av 2566 ⇒ 28,7 % |
-| N 3 h · 60 min · fall 0,6 | 1733 av 3505 ⇒ **49,4 %** | 54,4 % | 42,3 % | 58,7 % | 446 av 1825 ⇒ 24,4 % |
-| N 3 h · 60 min · fall 0,8 | 938 av 2119 ⇒ **44,3 %** | 50,5 % | 35,4 % | 51,6 % | 282 av 1302 ⇒ 21,7 % |
-| N 3 h · 60 min · fall 1,2 | 301 av 803 ⇒ **37,5 %** | 45,8 % | 27,8 % | 42,7 % | 103 av 593 ⇒ 17,4 % |
-| N 4 h · 30 min · fall 0,4 | 2110 av 4416 ⇒ **47,8 %** | 52,4 % | 41,2 % | 60,0 % | 606 av 2426 ⇒ 25,0 % |
-| N 4 h · 30 min · fall 0,6 | 815 av 2021 ⇒ **40,3 %** | 45,9 % | 33,2 % | 48,6 % | 283 av 1440 ⇒ 19,7 % |
-| N 4 h · 30 min · fall 0,8 | 329 av 893 ⇒ **36,8 %** | 43,4 % | 28,9 % | 41,0 % | 114 av 756 ⇒ 15,1 % |
-| N 4 h · 30 min · fall 1,2 | 68 av 158 ⇒ **43,0 %** | 58,8 % | 26,9 % | 44,7 % | 28 av 148 ⇒ 18,9 % |
-| N 4 h · 60 min · fall 0,4 | 4513 av 8231 ⇒ **54,8 %** | 58,3 % | 50,0 % | 68,0 % | 880 av 3131 ⇒ 28,1 % |
-| N 4 h · 60 min · fall 0,6 | 2391 av 4959 ⇒ **48,2 %** | 53,1 % | 40,9 % | 59,9 % | 555 av 2334 ⇒ 23,8 % |
-| N 4 h · 60 min · fall 0,8 | 1342 av 3088 ⇒ **43,5 %** | 49,8 % | 34,6 % | 52,6 % | 362 av 1733 ⇒ 20,9 % |
-| N 4 h · 60 min · fall 1,2 | 408 av 1166 ⇒ **35,0 %** | 43,1 % | 25,7 % | 40,4 % | 130 av 825 ⇒ 15,8 % |
-
-**M2 — daggpunkten vid fyrningen: riktningen bekräftad, den starka formen inte.** Alla 1 109 fyrningar fick väderrad och daggpunkt.
-| Daggpunkten vid fyrningen | episoder | föll ut · nära · uteblev (90 min) | pris per episod | per fyrning | per natt | fångar · nettonytt |
-| :-- | --: | :-- | --: | --: | --: | :-- |
-| dagg ≤ +1 °C | 198 | 97 · 37 · 64 | **32,3 %** | 30,9 % | **10,9 %** | 387 · **118** |
-| dagg > +1 °C | 213 | 51 · 41 · 121 | **56,8 %** | 55,2 % | 22,5 % | 74 · 57 |
-
-| Yta − dagg vid fyrningen | episoder | pris per episod | per natt |
-| :-- | --: | --: | --: |
-| ≤ 0 (kondensation pågår) | 129 | **48,8 %** | 22,5 % |
-| 0–1 | 124 | 44,4 % | 14,9 % |
-| 1–2 | 97 | **38,1 %** | 10,3 % |
-| > 2 | 72 | 44,4 % | 15,7 % |
-
-Förutsägelsen (#470) sade *dagg ≤ +1 faller ut i klar majoritet, dagg > +1 uteblir i majoritet*. Utfall: dagg ≤ +1 faller ut i **49 %** inom
-90 minuter (97 av 198) och **78 %** under natten (151 av 193); dagg > +1 uteblir i **57 %** inom 90 minuter (121 av 213) men bara 22,5 % under
-natten. Riktningen håller tydligt — **daggpunkten nästan halverar priset** (32,3 mot 56,8 % per episod, 10,9 mot 22,5 % per natt) **och bär 118
-av 175 nettonytt** — men "klar majoritet inom 90 minuter" håller inte; fallet tar längre tid än förarens horisont också när det fortsätter.
-Yta − dagg ≤ 0 (kondensationen pågår redan) är den dyraste klassen, 48,8 %: det är fysiken i §6.3 — vid daggpunkten bromsar
-kondensationsvärmet fallet. Episoderna är räknade per klass; en natt kan ge en episod i varje klass (411 mot 406).
-
-**Följd:** ingen tröskel, ingen kod, ingen kalibrering. Till kort #297 (Bengt och Axel, före mars): (1) Ö-B2:s mått i januari — per fyrning
-(43,4 %) eller per natt (16,7 %); (2) daggpunkten som mars-variant (D1 stänger den för betan) — riktningen är bekräftad, kostnaden är
-täckning (198 av 411 episoder) och advektion (daggpunkten vid fyrningen är inte daggpunkten två timmar senare); (3) ingen kalibrering om — M1
-visar att måttet inte var felet. Granskningen §7 bär samma tal; bedömningen §7 två rader.
-
-## #471 (6/10 2026) Prognoslagret: fyra läsningar i kuvösen förregistrerade före körningen — ankarspridningen, natt/säsong, regimstyrd offset, kovariatmodellen (kort #298, Bengts val a)
-
-**Bengts val 6/10 kväll (*"a"*: alla fyra)** ur `docs/PROGNOSLAGRET-VAGAR-2026-10-06.md` §4. **Ingen dom, ingen tröskel rörs:** grind A:s
-driftdom (#321, #399) och vägpunktsgrindens fall står; inga kandidater väljs. Skriptet `scripts/matningar/kuvos-prognoslagret-2026-10-06.ts`
-körs på knappen `kuvos` (`matning`), på hela vintern 2024/25, med grind A:s modell och vakter (#75, radvakten, karantänen). Inget tal var
-läst när posten skrevs.
-
-**Modellen är grind A:s egen, importerad.** `publish/grind-a.ts` har fått två beteendeneutrala tillägg: `evaluate` tar en valfri
-`Variant` (regimklass per station och hink som offseten lärs inom; rå viktning utan offset på samma punkter) och varje punkt bär
-hinken `t` och `spridning` (störst minus minst offsetkorrigerat ankarvärde); huvudvarvet och självtestet körs bara när filen körs själv.
-Självtestet vaktar att en konstant regimklass ger exakt grind A, att rå viktning på samma punkter bär de sanna offseten som fel, och att
-spridningen är noll när ankarna är eniga. Driftens grind A är oförändrad (självtest grönt, samma tal).
-
-- **L1 — ankarspridningen.** A1/A2/A3 och täckning per spridningsband 0–0,5 · 0,5–1 · 1–2 · 2–4 · > 4 °C, för OFFSET och RÅ.
-  *Läsning i förväg:* växer de grova felen monotont med spridningen, och ligger A2 under 5 % i de täta banden med rimlig täckning, kan
-  lagret tiga rätt utan molndata — en grind på spridningen blir då ett förslag till TROSKLAR-SKUGGAN (nytt beslut, båda signaturerna).
-- **L2 — natt och säsong.** A2 för OFFSET per solhöjdsband (natt < −6°, skymning −6…0°, dag > 0°; USNO som regimgrinden #408) × månad.
-  *Läsning i förväg:* sitter vårens fel (#469: 7,1 % i vårvintern) i dagsljuset är nattbegränsningen en väg; är natten lika dålig är
-  det inte solen utan markens säsong (snöfri mark, tjäle) som skiljer.
-- **L4 — regimstyrd offset.** Klasser vid målstationen: *klar stilla natt* (molnmängd ≤ 25 % ur SMHI p16 vid närmaste station ≤ 50 km,
-  medelvind ≤ 2 m/s, sol < −6°), *natt övrigt*, *dag* (sol ≥ −6°), *okänd* (moln eller vind saknas). OFFSET-REGIM mot OFFSET per band och
-  per klass, samma punkter. *Läsning i förväg:* vinner regimdelningen i klar stilla natt men inte annars är särarten en per regim och
-  molnmängd i drift (§4.2 h) får ett mätt värde; vinner den inte var en konstant offset nog.
-- **L8 — kovariatmodellen.** Stationens särart = medel(mätt − RÅ) över ≥ 100 punkter. Kovariater som går att hämta i kväll: höjd (EU-DEM
-  via opentopodata), relief 1 km och 3 km (stationen minus medelhöjden av 8 punkter runt om), kust (andel av 16 punkter på 5 och 10 km
-  utan höjd — EU-DEM saknar hav), lat, lon, stationer inom 20 km. Ridge (λ = 1, standardiserade), leave-one-out över stationerna ⇒ R² och
-  MAE av särarten mot MAE utan modell; kandidaten RÅ+KOVARIAT = RÅ + särart_LOO per band mot RÅ och OFFSET på samma punkter. Räcker inte
-  höjderna (< 90 % av stationerna) hoppas L8 över och sägs. *Läsning i förväg:* förklarar kovariaterna en rimlig del av särarten (R² tydligt
-  över noll, MAE under utan-modell) är platsmodellen värd skog, trafik och himmelsfaktor på riktigt (kort #271:s kovariatspår) — en
-  kandidat med egen DECISIONS-post, aldrig vald här. Skog, ÅDT, bro och himmelsfaktor saknas i den här första versionen; det sägs.
-
-**Vad som inte görs:** ingen kandidat väljs, inga trösklar, ingen ändring i skuggmotorn. **Kostnad:** en knapptryckning; opentopodata
-≈ 250 anrop (publika gränsen 1 000 per dygn).
-
-**UTFALL 6/10 (körning 37530898977 på a393ca8, 21:02–21:20Z; mätningen 10,5 min varav höjdhämtningen 8,8).** 736 stationer, 5 229 252
-avläsningar, 4 353 206 punkter; OFFSET ger exakt riktningsprovets tal (0,60 °C · 5,5 % · 0,3 %, #467) och RÅ vägpunktens (0,68 · 7,5 · 0,4) —
-modellen är densamma. SMHI-molnstationer 108; 663 av 736 VViS-stationer har en inom 50 km.
-
-**L1 — ankarspridningen skiljer de grova felen från de fina.** Läsningen i förväg höll:
-| Spridning (°C) | OFFSET: täckning · A2 · MAE | RÅ: täckning · A2 · MAE |
-| :-- | :-- | :-- |
-| 0–0,5 (inkl. ett enda ankare: 89 232 resp. 92 739 punkter) | 6,7 % · 7,6 % · 0,50 | 4,9 % · 11,5 % · 0,61 |
-| 0,5–1 | 19,9 % · **1,1 %** · 0,41 | 13,3 % · **1,8 %** · 0,43 |
-| 1–2 | 39,5 % · **2,2 %** · 0,52 | 36,1 % · **2,8 %** · 0,55 |
-| 2–4 | 27,1 % · 7,4 % · 0,77 | 34,8 % · 7,8 % · 0,78 |
-| > 4 | 6,8 % · **28,4 %** · 1,81 | 10,8 % · **27,3 %** · 1,62 |
-
-Med spridning 0,5–2 °C (59 % av punkterna) är OFFSET:s grova fel **1,8 %**; med 0–2 °C (66 %) **2,4 %**. För RÅ: 0,5–2 °C (49 %) **2,5 %**. Över 4 °C
-(7–11 % av punkterna) ligger mer än var fjärde punkt grovt fel. Bandet 0–0,5 bär punkterna med ett enda ankare (spridning 0 av konstruktion)
-och är därför sämre än 0,5–1 — en spridningsgrind måste kräva minst två ankare. **Lagret kan tiga rätt utan molndata.**
-
-**L2 — vårens fel sitter i dagsljuset.** Läsningen i förväg höll:
-| Solhöjd | okt | nov | dec | jan | feb | mar | alla (n · MAE · A2) |
-| :-- | --: | --: | --: | --: | --: | --: | :-- |
-| natt (< −6°) | 4,2 % | 3,7 % | 4,0 % | 5,7 % | 3,7 % | **3,1 %** | 2 742 593 · 0,52 °C · **4,2 %** |
-| skymning (−6…0°) | — | 4,1 % | 4,5 % | 6,7 % | 4,6 % | 5,8 % | 379 660 · 0,55 · 5,2 % |
-| dag (> 0°) | — | 5,3 % | 2,3 % | 4,1 % | **11,1 %** | **17,9 %** | 1 230 953 · 0,76 · 8,6 % |
-
-Natten är under 5 % varje månad utom januari (5,7 %) och bäst i mars (3,1 %); dagen går från 2,3 % i december till 17,9 % i mars. Vinterns
-7,1 % i vårvintern (#469) är solen, inte marken. **Nattbegränsat håller OFFSET 4,2 % på 63 % av punkterna** — hela vintern, alla band
-sammantaget. Januarinatten (5,7 %) är den mörka vinterns klara, stilla nätter (L4).
-
-**L4 — regimstyrd offset hjälper där fysiken sade, och lite.**
-| Klass | täckning | OFFSET-REGIM: MAE · A2 | OFFSET: MAE · A2 |
-| :-- | --: | :-- | :-- |
-| klar stilla natt | 15,4 % | 0,61 · **5,1 %** | 0,64 · **6,6 %** |
-| natt övrigt | 38,7 % | 0,44 · 2,5 % | 0,48 · 2,6 % |
-| dag | 37,0 % | 0,75 · 7,9 % | 0,71 · 7,8 % |
-| okänd (moln eller vind saknas) | 8,8 % | 0,60 · 6,3 % | 0,62 · 6,9 % |
-| **alla** | 100 % | 0,59 · **5,2 %** (band 3,4 · 3,4 · 5,2 · 9,9 %) | 0,60 · **5,5 %** (3,6 · 3,7 · 5,4 · 10,3 %) |
-
-Vinsten sitter nästan helt i klar stilla natt (6,6 → 5,1 %) och är noll på dagen; totalt 5,5 → 5,2 %. En konstant offset är nästan nog; det
-som fattas i klara stilla nätter är inte offsetens regim utan det lokala köldhålet som ingen granne ser. Molnmängd i drift (§4.2 h) köper
-0,3 procentenheter — inte mer.
-
-**L8 — de grova kovariaterna förklarar ingenting av särarten.** 729 stationer med ≥ 100 punkter, särartens spridning sd 0,55 °C; 722 fick
-EU-DEM-höjd (24 057 punkter frågade). Leave-one-out: **R² 0,010**, MAE 0,43 °C mot 0,43 utan modell. Effekt per standardavvikelse: kust
-0,10 °C, lat 0,06, relief 0,02–0,03, höjd 0,00. Kandidaten:
-| Kandidat (samma 4 312 216 punkter) | MAE | A2 | per band 0–7 · 7–15 · 15–20 · > 20 km |
-| :-- | --: | --: | :-- |
-| RÅ+KOVARIAT | 0,68 °C | 7,3 % | 5,2 · 4,9 · 7,0 · 13,5 % |
-| RÅ | 0,67 | 7,4 % | 5,2 · 5,1 · 7,1 · 13,6 % |
-| OFFSET (taket) | 0,59 | 5,5 % | 3,6 · 3,6 · 5,4 · 10,3 % |
-
-Läsningen i förväg gick åt andra hållet: höjd, relief på 1–3 km, kustnärhet, läge och stationstäthet bär inte särarten. **Särarten är
-mikroskala** — himmelsfaktor, skugga, vägkropp, vatten intill — eller regim gånger plats. Metoden (stationerna som facit för en platsmodell)
-står och gav ett rent svar; det är kovariaterna som måste bli de rätta (laserdata för himmelsfaktor, NMD för skog, NVDB för trafik), eller
-karteringen (#271). Tills dess är kovariatspåret inte en genväg.
-
-**Följd:** ingen tröskel, ingen kod, ingen kandidat. Två förslag till TROSKLAR-SKUGGAN, Bengts och Axels beslut (kort #299): en
-**spridningsgrind** (tig när ankarna är oense över X °C, minst två ankare — X läses ur tabellen, 2 °C är bandgränsen som mätts, inget
-val gjort) och en **nattbegränsning** (tala bara när solen är under −6°). Molnmängd i drift (§4.2 h) kan strykas som lager för prognosen
-(0,3 pe); kovariatspåret (#271) behöver riktiga kovariater. Bedömningen §7 fyra rader; PROGNOSLAGRET-VAGAR §5.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #472 (7/10 2026) Vägdatalagret — ett statiskt lager med vägens egenskaper för åtta användare, och rekognoseringen av öppna API:ets NVDB-data (kort #301, Bengts order)
 
@@ -8379,91 +7309,9 @@ punkt med spridning 3 ⇒ halkan där blir MISS, den varma holdouten försvinner
 med X tiger, och X-spärren och C-spärren prövas var för sig. Fyra motprov fällde provet på rätt rad: flaggad utan grinden; täckt MED
 grinden — lättnaden, missen försvann; gränsen som ≤ X; gamla varv med i grinden.
 
-## #476 (7/10 2026) Spridningen och natten korsade — en läsning i kuvösen, förregistrerad före körningen (kort #299, Bengts ja)
+## #476 (7/10 2026) Kuvösen: flyttad till halkvakt-kuvos
 
-**Beslut.** Bengt 7/10: *"ja till korsade läsningen"*. En läsning, ingen dom: underlaget för X (#474) och för nattbegränsningen
-(kort #299 förslag 2), som Bengt och Axel beslutar ur tabellerna. Skript `scripts/matningar/kuvos-spridning-natt-2026-10-07.ts` på
-knappen `kuvos` (`matning`). Förregistrerad här, i samma commit som skriptet, före körningen.
-
-**Population och modell.** Vintern 2024/25 i kuvösen, grind A:s underlag och vakter (#75, radvakten, karantänen) som L1/L2 (#471),
-och grind A:s RÅ utan offset — driftens modell; L2 mätte OFFSET. Grind A:s `evaluate` bär nu antalet bidragande ankare
-(beteendeneutralt, självtestet grönt), så att ett ensamt ankare skiljs från två eniga: L1 räknade spridning 0 som ett ankare.
-Spridningen avrundas till tre decimaler före bandningen, så att 2,0 aldrig hamnar under 2 av flyttalsskäl.
-
-**Läsningarna.**
-- **K1 X-kurvan:** per spridningsband bland punkter med minst två ankare (0–0,5 · 0,5–1 · steg om 0,25 °C från 1 till 4 · > 4) och
-  ett ankare för sig: täckning, MAE, A2, A3. Grinden vid X = 0,5; 1; 1,25 … 4: täckning av alla punkter och felen bland dem som talar.
-- **K2 natten för RÅ:** A2 per solhöjdsband (natt < −6°, skymning −6…0°, dag > 0°) och månad.
-- **K3 korsat:** K2 bland punkter grinden släpper fram vid X = 2, 3 och 4; och reglerna bara grind, grind + natt, grind + sol under 0°,
-  bara natt och ingen regel sida vid sida — täckning, MAE, A2, A3 hela vintern, i februari och i mars.
-- **K4 morgonen:** punkter 05–08 UTC (06–09 normaltid) i februari och mars — andel per solhöjdsband och A2 med och utan grind.
-
-**Läsningen i förväg.** (1) A2 stiger med spridningen, och grinden vid 3 °C håller under 5 % med ungefär 70 % täckning. (2) Ett ensamt
-ankare har grova fel långt över två eniga. (3) RÅ följer L2:s mönster en till två procentenheter sämre, och dagen i mars ligger över
-15 %. (4) Grinden tar en del av dagsljusets fel men inte allt: med grinden vid 2 ligger dagen i mars minst två procentenheter över
-natten. (5) Morgonen 06–09 i mars är mest skymning och dag.
-
-**Kontroll.** Utan grind ska RÅ ge samma tal som L1/L2 6/10 — 4 353 206 punkter, 7,5 % grova fel. Avviker det är underlaget inte
-detsamma, och läsningen läses inte förrän skälet är känt.
-
-**Vad som INTE görs.** Inga trösklar, inget X, ingen nattregel.
-
-**UTFALL #476, 7/10 — körd och läst** (kuvos 37651865384 på 465b1a7, läsningen 1,2 min). **Kontrollen höll:** RÅ utan grind gav
-4 353 206 punkter och 7,5 % grova fel, samma som L1/L2 6/10.
-
-*K1 — X-kurvan.* Grinden vid X, täckning av alla punkter och felen bland dem som talar:
-
-| X | täckning | grova fel (A2) | frysklassfel (A3) | MAE |
-| :-- | --: | --: | --: | --: |
-| 1 °C | 15,8 % | 1,9 % | 0,1 % | 0,43 °C |
-| 1,5 °C | 34,5 % | 2,1 % | 0,1 % | 0,47 °C |
-| 2 °C | 52,0 % | 2,5 % | 0,1 % | 0,51 °C |
-| **2,25 °C** | **60,6 %** | **2,8 %** | **0,1 %** | **0,53 °C** |
-| 2,5 °C | 65,6 % | 3,0 % | 0,1 % | 0,54 °C |
-| 3 °C | 75,5 % | 3,6 % | 0,2 % | 0,57 °C |
-| 3,5 °C | 82,3 % | 4,1 % | 0,2 % | 0,59 °C |
-| 4 °C | 87,0 % | 4,6 % | 0,2 % | 0,60 °C |
-| ingen grind | 100 % | 7,5 % | 0,4 % | 0,68 °C |
-
-Banden var för sig: 0–0,5 °C 2,6 % · 0,5–1 1,8 % · 1–1,25 2,1 % · 1,25–1,5 2,5 % · 1,5–1,75 3,0 % · 1,75–2 3,8 % · **2–2,25 4,7 % ·
-2,25–2,5 5,6 %** · 2,5–2,75 6,7 % · 2,75–3 8,2 % · 3–3,25 9,7 % · 3,25–3,5 11,2 % · 3,5–3,75 12,8 % · 3,75–4 14,3 % · över 4 27,2 %;
-ett ensamt ankare 24,2 % på 2,0 % av punkterna.
-
-*K2–K3 — natten och grinden.* Täckning · grova fel:
-
-| Regel | hela vintern | februari | mars |
-| :-- | :-- | :-- | :-- |
-| ingen regel | 100 % · 7,5 % | 100 % · 9,2 % | 100 % · 10,5 % |
-| bara natt (sol < −6°) | 63,0 % · 6,0 % | 57,7 % · 6,1 % | 56,6 % · 5,4 % |
-| grind 2 | 52,0 % · 2,5 % | 48,7 % · 2,7 % | 45,4 % · 4,0 % |
-| grind 2 + natt | 34,2 % · 2,3 % | 30,8 % · 2,3 % | 28,9 % · 3,4 % |
-| grind 3 | 75,5 % · 3,6 % | 71,6 % · 4,0 % | 71,4 % · 5,1 % |
-| grind 3 + natt | 49,3 % · 3,3 % | 44,8 % · 3,3 % | 44,9 % · 4,2 % |
-| grind 4 | 87,0 % · 4,6 % | 83,8 % · 5,3 % | 84,6 % · 6,2 % |
-| grind 4 + natt | 56,2 % · 4,1 % | 51,4 % · 4,2 % | 52,1 % · 4,7 % |
-
-RÅ per solhöjdsband utan grind: natt 6,0 % (5,3–7,3 % varje månad), skymning 7,3 %, dag 10,9 % (februari 14,6 %, mars 19,2 %). Med
-grinden vid 2: natt 2,3 %, skymning 2,6 %, dag 3,0 % (mars 5,4 %).
-
-*K4 — morgonen 06–09 normaltid.* Februari: natt 29 %, skymning 29 %, dag 42 % av punkterna. Mars: **dag 86,8 %**, skymning 12,4 %,
-natt 0,8 %. Dagsljuset på marsmorgonen har 6,0 % grova fel utan grind, **2,9 % med grinden vid 2** (50 % täckning) och 3,9 % vid 3.
-
-**Mot läsningen i förväg.** (1) *Höll:* felen stiger med spridningen, från 1,8 % i 0,5–1 till 27,2 % över 4, och grinden vid 3 ger
-3,6 % på 75,5 %. Bandet 0–0,5 (2,6 %) ligger över 0,5–1. (2) *Höll:* ett ensamt ankare 24,2 % mot två eniga 2,6 %. (3) *Höll till
-hälften:* RÅ ligger 1,8–2,3 procentenheter över L2:s OFFSET och dagen i mars på 19,2 % — men natten för RÅ ligger över 5 % i varje
-månad; L2:s "natten under 5 %" gällde bara OFFSET. (4) *Höll på gränsen:* med grinden vid 2 ligger dagen i mars 5,4 % mot nattens
-3,4 %, exakt 2,0 procentenheter. (5) *Höll:* marsmorgonen är till 87 % dagsljus.
-
-**Läsning.** Grinden gör det jobb natten var tänkt för: ovanpå grinden köper natten 0,2–0,5 procentenheter över vintern och 0,6–1,5 i mars och kostar en tredjedel av
-täckningen, och ensam räddar den inte RÅ (6,0 %). Den skulle tysta marsmorgnarna, där grinden vid 2 ger 2,9 %. Det som återstår är
-vårens eftermiddag — dagen i mars med grinden ligger på 5,4 % mot morgonens 2,9 % — och den är omätt som egen regel. Varje band upp
-till 2,25 °C klarar grind A:s 5 % på egen hand; nästa band gör det inte. Med mätvärden på en tiondels grad betyder X = 2,25 att
-ankarna får skilja högst 2,2 °C. Täckningens sicksack mellan banden (11,1 · 7,6 · 10,8 · 6,6 %) är den upplösningen: ett band om
-0,25 °C rymmer tre eller två tiondelar. Ett ensamt ankare gäller 89 232 punkter, inte 92 739 som L1 räknade — 3 507 punkter hade två
-eniga ankare.
-
-**Följd:** ingen tröskel, inget X, ingen nattregel — Bengts och Axels val (bedömningen §4.2). Claudes förslag: **X = 2,25 °C**, och
-**natten avstås** (förslag 2 nej), med vårens eftermiddag som möjlig egen läsning.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #477 (7/10 2026) Spridningsgrindens X = 2,25 °C, och nattbegränsningen avstås (kort #299; Bengts beslut ur den korsade läsningen)
 
@@ -8519,301 +7367,21 @@ uppfyllda — på Bengts order, och beställningen 7/10 står — eller senast v
 **Alternativ:** (a) grova fel per band nu, i domläget — förkastat, C1 och C2 är inte uppfyllda och andelarna är blindade (#352);
 (b) lyfta blindningen för spridningens grova fel — förkastat utan eget beslut, eftersom holdout-raderna är samma rader som B1 dömer.
 
-## #479 (7/10 2026) C8 med vägdata — kovariatmodellen tränad på stationernas särart, nu med vägens egenskaper, förregistrerad före körningen (kort #298, Bengts "kör c8")
+## #479 (7/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Beslut.** Bengt 7/10: *"kör c8"*. En läsning i kuvösen, ingen dom. Skript `scripts/matningar/kuvos-c8-vagdata-2026-10-07.ts` på
-knappen `kuvos` (`matning`), förregistrerat här i samma commit som skriptet, före körningen.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Varför nu, och vad som redan är sett.** L8 (#471) prövade terräng och fick R² 0,01. Axels fysikspår (7/10, utanför repot, inte
-förregistrerat) fann att trafikmängd och vägklass förklarar 23 % av stationernas avvikelse — mot hans fysikmodell, inte mot RÅ; ÅDT
-under 1 000 gav −0,58 °C och över 20 000 +1,14 °C. Den här läsningen är utformad **efter** att det fyndet lästs, och efter L1–L8, den
-korsade läsningen (#476) och Axels nattkörning på samma vinter. Den riktiga prövningen av en rättelse ur vägdata är vintern 2026/27,
-förregistrerad före den vintern. Vägdatan är NVDB i dag (`data/vagdata/stationer.json`, #473), vintern är 2024/25; ÅDT:ns mätår
-spänner 2014–2026.
+## #480 (7/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Målet, som L8:** stationens särart = medel(mätt − RÅ) över dess punkter, för stationer med minst 100 punkter. Grind A:s RÅ och
-vakter, samma underlag som K1 (#476).
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Tre modeller, ridge** (λ = 1 på standardiserade kolumner, som L8):
-- **VÄG:** log ÅDT, andel lastbilar, andel lätta fordon 22–06, funktionell vägklass, hastighet, bredd, grus, kommunal väghållare,
-  och flaggor för saknad ÅDT och saknad nattrafik. Saknade värden fylls med medianen över stationerna; målet fylls aldrig.
-- **REL:** de sex talen minus grannarnas viktade medel — samma grannar som RÅ, fem närmaste inom 50 km, vikt 1/max(km, 1). RÅ är ett
-  grannmedel, så det som syns i särarten borde vara skillnaden mot grannarna.
-- **BAS:** L8:s billiga variabler — latitud, longitud, stationer inom 20 km. Höjderna hoppas över; de bar ingenting i L8.
+## #481 (6/10 2026, flyttad till main 7/10) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Valideringen:** (1) **hela regioner gömda** — rutor om 1° latitud × 2° longitud; varje station förutsägs av en modell tränad på
-stationerna utanför dess ruta. Det är huvudtalet. (2) Leave-one-out, som L8, bredvid.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Måtten:** R² och MAE för särarten; kandidaterna RÅ+VÄG, RÅ+REL och RÅ+BAS — RÅ plus den regionsgömda särarten — per band med A1,
-A2 och A3 mot RÅ och OFFSET på samma punkter; samma sak under spridningsgrinden vid 2,25 °C (#477), som nu är baslinjen; effekt per
-standardavvikelse för VÄG och REL; särarten per ÅDT-klass (under 1 000 · 1 000–20 000 · över 20 000) som kontroll mot Axels tal.
+## #482 (6/10 2026, flyttad till main 7/10) Kuvösen: flyttad till halkvakt-kuvos
 
-**Läsningen i förväg.** (1) Den bästa av VÄG och REL förklarar 0,10–0,25 av särarten med regionerna gömda. (2) REL slår VÄG. (3) BAS
-förklarar nära noll, som i L8. (4) Den bästa kandidaten tar de grova felen från 7,5 % till 6,5–7,0 %. (5) Särarten stiger med
-ÅDT-klassen: negativ under 1 000, positiv över 20 000.
-
-**Kontroll:** RÅ ska ge 4 353 206 punkter och 7,5 % grova fel som 6/10 och K1; avviker det läses inte resten förrän skälet är känt.
-
-**Prov före körningen:** självtestet räknar hela läsningen på 160 syntetiska stationer där särarten är 0,9 · (log ÅDT − 3,5) — VÄG
-hittar den med R² över 0,9, BAS inte. Läckvakten: en särart som är rent brus ger R² under 0 korsvaliderat. Tre motprov fällde provet:
-målet med i sin egen träning (R² 0,058 på bruset), ÅDT utan logaritm, REL utan grannarna.
-
-**Vad som INTE görs.** Inga trösklar, ingen ändring i driften, ingen förregistrering av fysikspåret.
-
-**UTFALL #479, 7/10 — körd och läst** (kuvos 37659713953 på 49484f5, läsningen 1,7 min). **Kontrollen höll:** RÅ gav 4 353 206 punkter och
-7,5 % grova fel. Alla 729 stationer med punkter fick vägdata; ingen saknades.
-
-| Modell | R², regioner gömda (55 rutor) | R², leave-one-out | MAE för särarten (utan modell 0,43 °C) |
-| :-- | --: | --: | --: |
-| VÄG | 0,034 | 0,033 | 0,42 °C |
-| REL | 0,042 | 0,046 | 0,42 °C |
-| BAS | −0,005 | −0,011 | 0,43 °C |
-
-Kandidaterna, grova fel hela vintern: RÅ 7,5 % · RÅ+VÄG 7,5 % · RÅ+REL 7,5 % · RÅ+BAS 7,5 % · OFFSET 5,5 %. Per band för RÅ+REL: 0–7 km
-5,2 → 5,0 %, 7–15 km 5,3 → 5,1 %, 15–20 km 7,2 → 7,1 %, över 20 km 13,6 → 13,8 %. Under spridningsgrinden vid 2,25 °C: 2,8 % för alla,
-täckning 60,6 %. Effekt per standardavvikelse i VÄG: vägklass −0,09 °C, hastighet +0,05, bredd +0,03, övriga högst ±0,03. Särarten per
-ÅDT-klass: under 1 000 −0,10 °C (136 stationer), 1 000–20 000 −0,08 (570), över 20 000 +0,20 (22). Särartens spridning sd 0,55 °C.
-
-**Mot läsningen i förväg.** (1) *Föll:* den bästa modellen förklarar 0,042, inte 0,10–0,25. (2) *Höll, knappt:* REL 0,042 mot VÄG 0,034.
-(3) *Höll:* BAS −0,005. (4) *Föll:* de grova felen står kvar på 7,5 %. (5) *Höll i riktningen, inte i storleken:* −0,10 / −0,08 /
-+0,20 °C mot Axels −0,58 / +1,14.
-
-**Läsning.** Vägens egenskaper förklarar nästan ingenting av en stations avvikelse från sina grannar. Stationerna står på samma slags
-vägar som grannarna, så trafikens och saltets värme finns redan i RÅ:s medel. Axels 23 % mäter avvikelsen från en vädermodell som
-inte vet något om vägen, och där bär vägdatan. Särarten mot grannarna, sd 0,55 °C, är mikroskala — skugga, placering, lokala
-kallhål — och lärs bara ur stationens egen historik (OFFSET 5,5 %), ur en lokal karta eller ur mätningar längs vägen.
-
-**Följd.** Ingen kandidat: C8 med vägdata ger ingen rättelse ovanpå RÅ på huvudvägnätet. För fysikspåret betyder det att vägdatan hör
-hemma i en modell som börjar från vädret, inte från grannarna, vilket stöder Axels uppdelning med RÅ nära stationerna och modellen
-längre bort. För småvägar utanför de 818 segmenten (vägdatalagret c) säger läsningen ingenting, eftersom stationerna inte står där.
-
-## #480 (7/10 2026) C8 mot vädret — vägdatan mot en väderbaslinje ur MET Nordic, förregistrerad före körningen (kort #298, Bengts ord)
-
-**Beslut.** Bengt 7/10: *"mät mot met nordic. jag är i alla fall nyfiken på resultatet"* — efter att Bengt själv påpekat att MET
-Nordic inte är vad Axels mätning gjordes mot. En läsning, ingen dom. Skript `scripts/matningar/kuvos-c8-metnordic-2026-10-07.ts` på
-knappen `kuvos` (`matning`), förregistrerat här i samma commit som skriptet, före körningen.
-
-**Vad det är och inte är.** C8 (#479) mätte stationens särart mot grannarna (RÅ): vägdatan förklarade 4 %. Axel mätte mot sin
-fysikmodell, driven av ECMWF och utanför repot: 23 %. Det här är en **tredje** baslinje — MET Nordics väderrutnät — och därför ingen
-upprepning av Axels mätning. Frågan: vet vägdatan något som väderrutnätet inte vet? Indata och idén att bygga på rutnätet kommer från
-Axels gren `kuvos/rutnatet-469` (PR #783, där DECISIONS #470); grenen är inte ihopslagen och läsningen hämtar releasen direkt.
-
-**Indata.** Releasen `kuvos-metnordic-2024-25` (MET Norway, NLOD / CC BY 4.0): sju fält per timme i rutan närmast var och en av 854
-stationer, 31/10 2024 – 31/3 2025, 3 115 392 rader. Summorna lästa ur releasens manifest och kontrollerade mot nedladdade filer 7/10;
-de står nu i `kuvos/metnordic-leverans.json`, och kuvösknappen jämför mot dem. **Värdevakten:** spannen för de sju fälten är införda i
-`scripts/vardevakten.ts` före körningen; läsningen fäller vid ett värde utanför. Hela vintern ligger inom spannen (kortvågens 30 541
-små negativa värden, ned till −222 J/m² per timme, är beräkningsbrus och ryms). En halvtimmeshink läser analysen vid sin början.
-
-**Baslinjerna** (ingen station går in): **LUFT** — ytan skattas som MET Nordics lufttemperatur 2 m. **VÄDER** — linjär regression av
-ytan på de sju fälten (luft, fukt, vind, moln, nederbörd, lång- och kortvåg i W/m²), tränad med stationens hela region gömd (rutor
-1° × 2°, som C8) på grind A:s population; koefficienterna skrivs ut.
-
-**C8 på varje baslinje.** Stationens särart = medel(mätt − baslinje) för stationer med minst 100 punkter. VÄG och BAS ur C8-skriptet
-— importerade, samma kolumner, samma ridge (λ = 1) — med regionerna gömda och leave-one-out. R², MAE, effekt per standardavvikelse och
-särarten per ÅDT-klass. **Kandidaterna** per punkt: LUFT, LUFT+VÄG, VÄDER, VÄDER+VÄG och VÄDER+BAS mot RÅ och OFFSET på samma
-punkter, per band (bandet är RÅ:s närmaste ankare).
-
-**Läsningen i förväg.** (1) VÄG förklarar mer av särarten mot VÄDER än mot RÅ (0,034): mellan 0,05 och 0,25. (2) ÅDT-klasserna spänner
-bredare än mot RÅ: mer än 0,5 °C mellan över 20 000 och under 1 000, mot 0,30 °C i C8. (3) BAS förklarar mer mot vädret än mot RÅ,
-R² över 0,05, eftersom latitud och kust syns mot en vädermodell. (4) VÄDER ensam har fler grova fel än RÅ i banden 0–20 km. (5)
-VÄDER+VÄG har färre grova fel än VÄDER.
-
-**Kontroll.** RÅ ska ge 4 353 206 punkter och 7,5 % grova fel som i C8. Avviker det läses inte resten.
-
-**Prov före körningen.** Självtestet: timindexet (06:00 och 06:30 läser 06-analysen), lösaren, måtten lika med grind A:s `stats()`,
-spannkontrollen, vädermodellen med regionen gömd (en region 10 °C varmare än luften behåller hela resten), hela läsningen på syntetiska
-stationer, och att RÅ och OFFSET måste vara radlika. Tre motprov fällde provet: regionen med i vädermodellen (resten 4,32 i stället för
-10), en senare analys, och frysklassfelet fel definierat. Inläsningen och spannkontrollen
-kördes lokalt mot den riktiga filen: 3 115 392 rader, 854 stationer, inga fel. C8-skriptet fick en vakt så att ett import inte startar
-dess läsning (beteendeneutralt).
-
-**Vad som INTE görs.** Inga trösklar, ingen ändring i driften, ingen förregistrering av fysikspåret eller av PR #783:s RN-kandidater.
-
-**UTFALL #480, 7/10 — körd och läst** (kuvos 37663768575 på 0d496e5, läsningen 1,4 min). MET Nordic-filen godkänd mot summorna, och
-värdevakten höll för alla sju fälten. **Kontrollen höll:** RÅ gav 4 353 206 punkter och 7,5 % grova fel. Alla punkter hade väder och
-vägdata; 729 stationer.
-
-| Baslinje | särartens sd | VÄG R², regioner gömda (LOO) | BAS R², regioner gömda (LOO) | ÅDT under 1 000 · 1 000–20 000 · över 20 000 |
-| :-- | --: | --: | --: | :-- |
-| RÅ (C8, #479) | 0,55 °C | 0,034 (0,033) | −0,005 (−0,011) | −0,10 · −0,08 · +0,20 °C |
-| LUFT | 0,66 °C | 0,080 (0,115) | 0,202 (0,226) | −0,94 · −0,59 · −0,17 °C |
-| VÄDER | 0,89 °C | **0,298** (0,334) | **0,596** (0,608) | **−0,62 · +0,25 · +1,04 °C** |
-| Axel, mot sin fysikmodell | — | 23 % (hans mått) | — | −0,58 · — · +1,14 °C |
-
-Effekt per standardavvikelse mot VÄDER: log ÅDT +0,68 °C, vägklass +0,28, andel nattrafik −0,13, bredd −0,11, övriga högst ±0,06.
-
-Kandidaterna, grova fel hela vintern och per band (0–7 · 7–15 · 15–20 · över 20 km): RÅ 7,5 % (5,2 · 5,3 · 7,2 · 13,6) · LUFT 30,1 %
-(22,1 · 23,7 · 31,3 · 46,2) · LUFT+VÄG 27,0 % · VÄDER 21,8 % (17,3 · 17,4 · 20,9 · 33,9) · VÄDER+VÄG 20,1 % (15,5 · 15,9 · 19,7 ·
-31,1) · VÄDER+BAS 18,1 % (14,0 · 13,9 · 18,1 · 28,8) · OFFSET 5,5 %. Vädermodellens koefficienter på hela landet: konstant −5,93,
-luft 0,76, fukt 1,13, vind −0,14 per m/s, moln −0,14, nederbörd −0,16 per mm/h, långvåg 0,016 och kortvåg 0,006 per W/m².
-
-**Mot läsningen i förväg.** (1) *Höll i riktningen, över spannet:* VÄG förklarar 0,298 mot VÄDER, mot förväntade 0,05–0,25 och 0,034
-mot RÅ. (2) *Höll:* ÅDT-klasserna spänner 1,66 °C mot VÄDER och 0,77 mot LUFT, mot 0,30 i C8. (3) *Höll, mer än väntat:* BAS 0,596 mot
-VÄDER och 0,202 mot LUFT. (4) *Höll:* VÄDER har 17–21 % grova fel i banden 0–20 km mot RÅ:s 5–7 %. (5) *Höll:* VÄDER+VÄG 20,1 % mot
-VÄDER 21,8 %.
-
-**Läsning.** Axels fynd står sig i sak, med öppen vägdata och en annan vädermodell. Mot vädret förklarar vägdatan 30 % av stationernas
-särart (Axel 23 %), och små vägar går 0,62 °C kallare och stora 1,04 °C varmare än vädermodellen säger (Axel −0,58 / +1,14). Vägens
-effekt är alltså verklig, ungefär 1,7 °C mellan de minsta och de största vägarna. Mot grannarna syns den inte (C8, #479), eftersom
-stationerna står på samma slags vägar som sina grannar. Den linjära vädermodellen duger inte som prognos: 21,8 % grova fel, långt efter
-RÅ:s 7,5 % och efter Axels fysik med inlärd rättelse utan stationer (10,2 %, hans tal), och mycket av dess fel är geografiskt (BAS 0,60).
-En vädergrundad modell behöver fysik eller inlärning för att bära, och vägdatan är en av dess ingredienser.
-
-**Följd.** Ingen kandidat. Två saker följer. (a) Vägdatan i `data/vagdata/` är ett prövat underlag för fysikspåret, och en
-förregistrering av det kan använda den i stället för Lastkajen. (b) För småvägarna (vägdatalagret c, `docs/KALENDERN.md`) säger
-mätningen att vägar under 1 000 fordon per dygn går ungefär 0,9 °C kallare relativt vädret än vägar med 1 000–20 000. Skulle produkten
-tala där, kan RÅ från stationer på större vägar ligga för varmt. Det är en hypotes, omätt mot facit, eftersom inga stationer står
-utanför de 818 segmenten. *(Rättat 31/10, DECISIONS #756: 84 av 761 stationer står mer än 2 km från de 818 sträckorna.)*
-
-## #481 (6/10 2026, flyttad till main 7/10) Rutnätsmodellen i kuvösen — Axels beslut att pröva, och förregistreringen före något utfall: MET Nordic som bakgrund, vägens skillnad mot luften ur grannarna, hela stationer gömda (kort #302)
-
-**Flyttad till main 7/10** (Bengt: *"kör RN"*). Posten skrevs 6/10 som #470 på grenen `kuvos/rutnatet-469` (PR #783), som aldrig slogs ihop; under tiden togs #470, #471 och kort #298 på main. Texten nedan är grenens, oförändrad utom rubriken och hänvisningarna till rutnätsmodellen (#481), kallkartan (#482) och kortet (#302).
-
-**Axels ord 6/10 kväll (chatten, efter genomgången av riktningsprovet #467):** *"Okej jag tycker vi testar"* — om förslaget att
-bygga prognosen mellan stationerna på ett väderrutnät i stället för på stationerna ensamma, med en satellitkarta över kalla nätter
-som nästa byggsten. Ordningen är hans: rutnätet först (*"jag tycker nästan vi börjar med 3"*). Hämtningen av indata görs på det
-ordet; **provet mot facit körs först på Bengts ord** (#424, bedömningen §4.2). Inget tal ur provet är läst när posten skrivs.
-
-**Numreringen:** posten skrevs först som #469 och kortet som #296, samtidigt som en annan session tog båda numren (PR #782). De
-byttes till #470 och #298 före sammanslagningen; commit-meddelandena på grenen och kommentarerna i `kuvos-metnordic.yml` och
-`kuvos-modis.yml` säger #469/#470/#296 till rättelsen samma kväll; commit-meddelandena står kvar.
-
-**Skälet, ur #467.** Grind A per band med stationens egen historik (OFFSET) mot utan (RÅ, vägpunktsgrinden): grova fel 3,6 mot
-5,2 % inom 7 km, 3,7 mot 5,3 · 5,4 mot 7,2 · 10,3 mot 13,6 %. Vädret är detsamma i båda; skillnaden är platsens särart, som en
-vägpunkt saknar historik för. Höjden återvann ingenting (empirisk lapse 0,18 °C/100 m). Frågan för provet: **tar ett rutnät som
-bär vädret mellan stationerna igen en del av glappet mellan RÅ och OFFSET?** Talet 2,5 % inom 7 km som citerats i chatten kommer
-från premissmätningen 30/9 (15 stationer, under spärren, #405–#406), inte från vintern; vinterns RÅ är 5,2 %.
-
-**Indata (hämtas en gång, som SMHI-filerna #441):** MET Nordic Analysis (MET Norway, NLOD / CC BY 4.0), 1 km, timvis, ur det
-operativa arkivet `metpparchive` — samma produkt som går att läsa i drift, inte omkörningen `metpparchivev4` (som finns, men inte
-löper vidare efter 31/10 2025). Fälten: lufttemperatur 2 m, relativ fukt, vind 10 m, molnmängd, nederbörd, inkommande lång- och
-kortvågsstrålning; rutans höjd och landandel. Samplat i rutan närmast var och en av de 854 stationerna i `static.json` 6/10 (längst
-0,70 km från rutmitten). Skriptet `kuvos/metnordic.ts` (självtest), en förbindelse åt gången enligt tjänstens villkor; piloten
-15/1 2025: 24 timmar på 56 s, alla fält inom rimliga spann. Filen och manifestet läggs i den privata releasen
-`kuvos-metnordic-2024-25` och `kuvos/metnordic-leverans.json` bär summorna. **Läckaget:** analysens lufttemperatur rättas mot
-SMHI:s, FMI:s och MET:s stationer och Netatmo, inte mot Trafikverkets (MET Nordic-dokumentationen, läst 6/10) — en gömd
-Trafikverksstation är gömd helt. **Värdevakten** får spannen för de nya fälten innan något av dem används i en mätning; källans
-kortvågsstrålning har små negativa värden (−64 J/m² i piloten), som spannet ska rymma och värdevakten skriva ut.
-
-**Kandidaterna (fasta nu, inget svep, inget val efter talen):**
-- **RN (rutnätet + grannarnas skillnad):** yta(p,t) = luft_rutnät(p,t) + Δ̂(p,t), där Δ̂ är det invers-distansviktade medlet av
-  Δ_N = yta_N(t) − luft_rutnät(N,t) över samma grannar som RÅ (K = 5, ≤ 50 km, vikt 1/km, målet uteslutet). Vägens skillnad mot
-  luften sprids ut, inte vägens temperatur.
-- **RN+R (som RN, med Δ:s beroende av vädret):** Δ̂ = en linjär regression av Δ på molnmängd, vind, långvåg, kortvåg och fukt i
-  rutan, anpassad på alla stationer **utom målet**, plus det invers-distansviktade medlet av grannarnas residualer. Regressionens
-  koefficienter skrivs ut.
-- **Bredvid som referens, oförändrade:** RÅ, RÅ+HÖJD och OFFSET (taket) på samma rader.
-Kriging med variogram och ett osäkerhetsmått per punkt är **steg 2**, i en egen post innan det körs; satellitkartan (nedan) är
-**steg 3**, också med egen post.
-
-**Valideringen:** som vägpunktsgrinden (#323) — **hela stationen gömd**: målets egen serie används varken till grannmedlet,
-regressionen eller något annat. Populationen och vakterna kopieras från höjdprovets WHERE-sats (#75, radvakten, karantänen;
-CLAUDE.md om lånade grindar), halvtimmeshinkar med vägyta ≤ +5 °C. Analysen gäller hel timme; en hink använder **senaste analys
-vid eller före** hinkens tid (det som finns i drift), aldrig en senare.
-
-**Måtten:** grind A:s A1 (MAE i beslutsbandet), A2 (grova fel > 2 °C), A3 (frysklassfel) per band (närmaste bidragande granne,
-som RÅ) och totalt, och frysflaggan med tre marginaler (0 · 0,5 · 1,0 °C) mot K-A:s måttstock (#437). Alla tal skrivs ut.
-
-**Vad utfallet är:** ett riktningsprov, ingen dom (#424). Vintern 2024/25 är redan läst för RÅ (#467), så ett bra tal här kan inte
-frikänna något; domen läses på vintern 2026/27 i mars, förregistrerad i en egen post före den vintern. Ingen tröskel ändras
-(TROSKLAR-SKUGGAN; Skyltfondens bilaga 7: en tröskel skärps men lättas aldrig när utfallet är sett).
-
-**Satellitkartan (steg 3, inte förregistrerad här):** MODIS natt-LST (MOD11A1/MYD11A1, 1 km), klara nätter oktober–april över
-flera vintrar, till en karta över var det blir kallast; prövas som egenskap i Δ-regressionen. Kräver ett gratiskonto hos NASA
-Earthdata (Axel). Google Earth Engine väljs bort: fritt bara för icke-kommersiellt bruk. Google Earths datalager (WorldCover,
-skogstäckning, ytvatten, höjdmodell GLO-30) bygger på öppna källor (ESA, JRC, Copernicus) och hämtas därifrån om de behövs.
-
-**Alternativ:** SMHI:s MESAN (bara 24 timmar historik i API:t, läst 6/10 — används i drift och för ett eget arkiv framåt, egen
-post); omkörningen v4 (konsekventare bakåt, men inte samma produkt som drift); att vänta på termisk kartering (Axel 6/10: görs inte).
-
-**Tillägg 7/10, före körningen** (Bengt: *"kör RN"*) **— genomförandet och vad som redan är sett.**
-- *Sett före körningen:* MET Nordic har lästs en gång, i #480: luften ensam (30,1 % grova fel) och en linjär vädermodell (21,8 %), båda
-  utan stationer. RN:s och RN+R:s egna tal har ingen sett. Kandidaterna står som de skrevs 6/10.
-- *Genomförandet:* alla kandidater räknas av grind A:s `evaluate()` med `utanOffset` och en justering per granne — en ny krok,
-  beteendeneutral och prövad i grind A:s självtest. RN lägger luft(mål) − luft(granne) på varje grannes yta, vilket är detsamma som
-  luft(mål) plus grannarnas viktade Δ. RN+R lägger dessutom på g(mål) − g(granne) med målets g. RÅ+HÖJD räknas med samma krok:
-  −0,0065 °C/m gånger höjdskillnaden, med höjder ur EU-DEM via opentopodata som i höjdprovet. Därmed är "samma grannar som RÅ" exakt:
-  fem närmaste inom 50 km, vikt 1/max(km, 1), och RÅ:s krav på gemensam historik.
-- *g:* linjär med konstant på moln, vind, lång- och kortvåg i W/m² och fukt, anpassad på alla stationers hinkar med yta ≤ +5 °C och
-  väder — för varje mål utan målets egna hinkar.
-- *Punkterna:* kandidaterna jämförs på de punkter där alla har ett värde, och antalet per kandidat skrivs ut. Bandet är närmaste
-  bidragande granne.
-- *Måtten:* grind A:s A1, A2 och A3 per band och totalt; frysflaggan med `publish/frysflagga.ts`, samma kod som riktningsprovet (#437).
-- *Indata:* releasen med summorna i `kuvos/metnordic-leverans.json` och värdevaktens spann (#480).
-- *Läsningen i förväg* (ny, skriven 7/10 före körningen; posten från 6/10 hade ingen): (1) RN slår RÅ bortom 20 km, där RÅ har 13,6 %
-  grova fel, med minst en procentenhet. (2) Inom 15 km skiljer RN och RÅ mindre än en halv procentenhet. (3) RN+R är bättre än RN, men
-  med högst en procentenhet totalt. (4) RÅ+HÖJD ligger nära RÅ, som i #467.
-- *Kontroll:* RÅ ska ge 7,5 % grova fel som i C8 (#479). Avviker det läses inte resten.
-- *Prov före körningen:* självtestet — g återfinner en känd väderdel och tränas utan målet; linjeringen mot RÅ; RN och RN+R på en
-  syntetisk väg där luften bär skillnaden mellan stationerna; RÅ+HÖJD:s tecken; hela utskriften med frysflaggan. Fyra motprov fällde
-  provet på rätt rad: RN med fel tecken, g tränad med målet, RÅ+HÖJD med fel tecken och RN+R med en senare analys.
-- Skript: `scripts/matningar/kuvos-rn-2026-10-07.ts` på knappen `kuvos` (`matning`).
-
-**UTFALL #481, 7/10 — körd och läst** (kuvos 37669854795 på 75b9b27, läsningen 3,5 min; en första körning, 37669737670, avbröts innan
-den läste något, eftersom hämtsteget för MET Nordic inte kände igen skriptets namn). MET Nordic godkänd mot summorna, värdevakten höll.
-736 stationer; 729 fick höjd ur EU-DEM. **Kontrollen:** RÅ gav samma 4 353 206 punkter som i C8; på de 4 312 216 punkter där alla
-kandidater har ett värde, utan de sju stationerna utan höjd, är RÅ:s grova fel 7,4 %.
-
-| Kandidat | grova fel, alla | 0–7 km | 7–15 km | 15–20 km | över 20 km | MAE |
-| :-- | --: | --: | --: | --: | --: | --: |
-| RÅ | 7,4 % | 5,2 % | 5,1 % | 7,1 % | 13,6 % | 0,67 °C |
-| RÅ+HÖJD | 8,8 % | 5,8 % | 5,6 % | 8,6 % | 16,8 % | 0,69 °C |
-| RN | 9,3 % | 6,0 % | 5,9 % | 8,9 % | 18,1 % | 0,70 °C |
-| RN+R | 9,3 % | 5,9 % | 5,9 % | 8,8 % | 18,4 % | 0,71 °C |
-| OFFSET (taket) | 5,5 % | 3,6 % | 3,6 % | 5,4 % | 10,3 % | 0,59 °C |
-
-Frysflaggan, alla band, farliga fel av frysningarna vid marginal 0 · 0,5 · 1,0 °C: RÅ 4,9 · 2,3 · 1,2 % · RÅ+HÖJD 4,9 · 2,3 · 1,1 % · RN
-5,0 · 2,4 · 1,2 % · RN+R 5,1 · 2,5 · 1,3 % · OFFSET 4,2 · 1,7 · 0,8 %. Bortom 20 km vid marginal 0: RÅ 2,8 %, RN 3,4 %. Rätt klass och
-täckning skiljer högst 0,2 procentenheter mellan RÅ och RN. RN+R:s g på hela landet: konstant 1,38, moln 1,28, vind −0,24 per m/s,
-långvåg −0,014 och kortvåg 0,001 per W/m², fukt 1,51; 4 405 373 hinkar.
-
-**Mot läsningen i förväg.** (1) *Föll:* RN slår inte RÅ bortom 20 km, utan är 4,5 procentenheter sämre (18,1 mot 13,6 %). (2) *Föll:*
-inom 15 km är RN 0,8 procentenheter sämre (6,0 mot 5,2 och 5,9 mot 5,1 %). (3) *Föll:* RN+R är inte bättre än RN (9,3 mot 9,3 %; bortom
-20 km 18,4 mot 18,1). (4) *Föll:* RÅ+HÖJD är 1,4 procentenheter sämre än RÅ.
-
-**Läsning.** Att sprida vägens skillnad mot MET Nordics luft är sämre än att sprida vägens temperatur, i alla band och mest där RÅ är
-svagast. Rutnätets luftskillnader mellan stationerna slår alltså inte igenom ett till ett i vägytan. Samma sak syns i RÅ+HÖJD, som
-överför standardatmosfärens 0,65 °C per 100 m fullt och blir sämre, och i #480:s vädermodell, där ytan följer luften med koefficienten
-0,76, inte 1. *Iakttagelse, inte kandidat:* en delvis överföring av luftskillnaden vore en ny parameter, vald efter att detta utfall är
-sett — den får i så fall förregistreras och prövas på en annan vinter.
-
-**Följd.** Ingen kandidat. Rutnätsmodellen i den form den låstes 6/10 bär inte. Steg 2 (kriging) och kallkartans prov (#482) bygger på
-rutnätet och väntar på Bengts och Axels ord (bedömningen §4.2). PR #783 stängs när #481 och #482 är på main.
-
-## #482 (6/10 2026, flyttad till main 7/10) Kallkartan ur satelliten — hämtningen och receptet, fasta innan något körs (kort #302 steg 3)
-
-**Flyttad till main 7/10** (Bengt: *"kör RN"*). Posten skrevs 6/10 som #471 på grenen `kuvos/rutnatet-469` (PR #783), som aldrig slogs ihop; under tiden togs #470, #471 och kort #298 på main. Texten nedan är grenens, oförändrad utom rubriken och hänvisningarna till rutnätsmodellen (#481), kallkartan (#482) och kortet (#302).
-
-**Axels ord 6/10:** pröva satellitkartan nu; han har skapat kontot hos NASA Earthdata och lagt nyckeln som GitHub-hemligheten
-`EARTHDATA_TOKEN` (*"Lets just do it for now as a test and then we update it at a later stage"* — nyckeln ska bytas senare, den har
-synts i chatten). Hämtningen och kartan byggs nu; **kartan prövas mot stationerna först i en egen förregistrering**, som
-egenskap i RN+R:s regression (#481), och den körningen sker på Bengts ord.
-
-**Källan:** MODIS natt-LST, MOD11A1 (Terra, ~22–23 lokal tid) och MYD11A1 (Aqua, ~01–02), version 061, 1 km, NASA LP DAAC. Sverige
-täcks av rutorna h18v02, h19v02, h18v03, h19v03 (CMR 6/10; ~12 MB per natt och satellit). Vintrarna 2022/23, 2023/24 och 2024/25,
-oktober–april. Granulerna listas publikt i CMR; filerna läses och kastas, bara summorna sparas.
-
-**Receptet (fast nu):** (1) bara pixlar med QC_Night bit 0–1 = 00 — framställd, god kvalitet, i praktiken klar himmel; (2) de fyra
-rutorna till en mosaik per natt och satellit; (3) lokal avvikelse = pixelns LST minus medlet av giltiga pixlar i 51 × 51 px
-(±25 km), bara där minst 200 grannar är giltiga — nattens väder tas bort, platsens egenhet står kvar; (4) kartan = summa, kvadratsumma
-och antal nätter per pixel. Ingen station och ingen vägdata läses när kartan byggs. Ut: `kallkartan_modis.npz` och en rad per station
-i `static.json` (6/10) med pixelns medelavvikelse, i den privata releasen `kuvos-modis-2022-25` med manifest.
-
-**Förbehåll som följer med kartan:** satelliten mäter markens yta (skog, mark, snö, sjö), inte asfalten; sjöar och hav får egna
-avvikelser (varma på hösten). Vintern 2024/25 ingår både i kartan och i riktningsprovet — kartan läser ingen facit, men det skrivs
-ut i provet. Domen på vintern 2026/27 läser en karta som är fryst innan den vintern börjar.
-
-**Kostnad:** NASA:s data är fri; Actions-jobbet tar uppskattningsvis 30–90 minuter en gång (kontot har spärren $0, inga pengar).
-
-**Alternativ:** Google Earth Engine (fritt bara för icke-kommersiellt bruk, #481), Sentinel-3 SLSTR (1 km, kortare arkiv, eget
-konto), Landsat/ECOSTRESS (70–100 m men sällan på natten). AppEEARS (LP DAAC:s utsnittstjänst) kräver lösenordsinloggning, inte nyckel.
-
-**UTFALL 6/10 (körning 37527407004, 14 min):** releasen `kuvos-modis-2022-25` finns (kallkartan_modis.npz, sha256 6a2a586b…, samma
-som i den första körningen 37524112922, vars release nekades med HTTP 403 från grenpushen). 1 262 nätter över de två satelliterna,
-4 utan en enda klar pixel; 3 813 571 pixlar med minst en natt, median 207 klara nätter per pixel. Avvikelsen över rutor med fler än
-30 nätter: 5/50/95-percentil −1,18 / −0,01 / +1,19 K. Inget facit läst. **Iakttagelse för förregistreringen av provet:** pixeln
-vid stationen i Vietas ger +3,51 K, troligen för att den ligger mot Akkajaure — en 1 km-pixel vid en sjö bär sjöns värme. Provet
-behöver därför en regel för pixlar med vatten (rutans landandel, eller närmaste rena landpixel), skriven före körningen.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #483 (7/10 2026) Styrdokumenten genomgångna mot läget 7/10, projektkartan rättad, och integrationskartan öppnad för R27–R34 och fryst igen
 
@@ -8883,144 +7451,13 @@ körningen 8/10. Kort #304 stängs efter sju morgnar i rad.
 
 **Stomdokument:** BED §4.2 och läget 7/10 — frågan om dokumentsynken avgjord
 
-## #485 (8/10 2026) Fysikspåret i kuvösen — Axels ECMWF-drivna fysikmodell förregistrerad som kandidat FYSIK: en fryst fil med hash, kuvösens egna regler, förväntningarna skrivna före knappen (kort #305)
+## #485 (8/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Beslut.** Axel 7/10 kväll: *"lets set it all up as much as we can and then i take the decisions that we run it"*. Förregistreringen
-skrivs nu; knappen trycks på Bengts ord. Kandidaten heter **FYSIK** och prövas i kuvösen med grind A:s egen modell och vakter, bredvid
-RÅ och OFFSET, på hela vintern 2024/25. Inga trösklar rörs, inget i driften ändras, ingen kod ur fysikspåret går in i repot — bara
-dess UTDATA som fil, så som DECISIONS #480 och #481 redan skilde på modell och underlag.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Vad kandidaten är** (`docs/FYSIKSPARET-SVAR-2026-10-07.md`, Axels svar på kuvössessionens sex frågor 7/10). En skattning av ytans
-temperatur per station och halvtimme, räknad utanför repot i Axels fysiksession: ECMWF IFS ur Open-Meteos arkiv (timvis per
-stationsläge) → 1-D värmekolumn med energibalans vid ytan, 11 lager, 12 parametrar → inlärd rättelse (gradientboostning på uppmätt
-yta − fysik, 55+ särdrag ur väder, terräng och NVDB:s vägdata) där **varje station förutsägs med hela sin region utesluten ur
-träningen** (25 lägeskluster, 5 veck). Ingen station används vid målet; målets egna mätningar är aldrig indata. Grannarnas uppmätta
-fel (FYSIK+GRANNAR) och blandningen med RÅ (FYSIK+BLANDNING) är INTE med i den här förregistreringen — de kräver grannlagret i
-TypeScript och är ett eget beslut.
+## #486 (7/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Vad som är fryst, med hash.** Pipelinen frystes 7/10 22:45 innan dess kuvösreplika kördes (`docs/FYSIKSPARET-FRYS-2026-10-07.md`):
-modellens utdata `oof_A2.npy` sha256 `9268c6c7…2a2f3f`, fysikens parametrar `65a431c4…515bc`, koden (`physics.py`, `common.py`,
-`layers.py`, `v4.py`, `expA.py`), replikan `kuvos_replica.py` `c640619d…ce262`. Filen till kuvösen, `fysik-2024-25.csv.gz`
-(5 464 238 rader, 754 stationer, 1/11 2024 00:00 – 31/3 2025 23:00 UTC; på halvtimmen medlet av de två omgivande timmarna), sha256
-`84d13f93…ffd1c`, 26 709 268 byte, står i `kuvos/fysik-leverans.json` och läggs i releasen `kuvos-fysik-2024-25` av Axel; knappen
-kontrollerar summan och mätningen fäller en fil som inte stämmer. `fysik_c` har spann i värdevakten (−60…+60 °C; läst −25,5…+17,4).
-
-**Genomförandet** (`scripts/matningar/kuvos-fysik-2026-10-08.ts`, självtest i ci.yml, filen hämtas i kuvos.yml när mätningens namn
-innehåller `kuvos-fysik`). Underlaget exakt som prognoslagret 6/10: grind A:s WHERE (#75, radvakten, karantänen, den långsamma vakten),
-senaste avläsning per halvtimmeshink, yta ≤ +5 °C. RÅ = `evaluate()` med `utanOffset` som kontroll, OFFSET som tak. FYSIK = filens
-värde på RÅ:s punkt; bandet = RÅ:s närmaste bidragande granne, så att banden är jämförbara. Måtten: A1/A2/A3 per band och totalt på de
-punkter där alla tre har ett värde, frysflaggan (#437) på samma punkter, norr/söder om 62°; dessutom FYSIK på ALLA hinkar ≤ +5 °C utan
-krav på ankare — kandidatens egentliga population, den behöver ingen granne.
-
-**Vad som är blint och vad som inte är det** (SVAR §4). Blint: ingen station vid målet; regionen gömd i rättelsen; replikan 7/10 körd
-av en separat agent med hashar före och efter, RÅ som kontroll (7,50 % mot kuvösens 7,4 %). Inte blint: fysikens tolv parametrar
-kalibrerades på hälften av stationerna; hyperparametrarna valdes på dev-vecken med bekräftelsevecken lästa en handfull gånger; och
-förväntningarna nedan skrevs efter att replikan lästs. **Därför är det här en kontroll av att filen och kuvösen räknar på samma
-population — inte ett bevis för modellen.** Ett tal som träffar förväntan frikänner inget; domen läses på vintern 2026/27 (#481, #424).
-
-**Förväntningar, skrivna före knappen** (replikan 7/10 i FRYS §UTFALL, med 736 stationer):
-
-| | RÅ (kontroll) | FYSIK på RÅ:s punkter | FYSIK alla hinkar |
-| :-- | --: | --: | --: |
-| A2 grova fel totalt | 7,4–7,6 % | 9,5–10,2 % | 9,7–10,4 % |
-| band 0–7 · 7–15 · 15–20 · > 20 km | 5,2 · 5,2 · 7,1 · 13,6 | 7,5–8,5 · 7,5–8,5 · 8–9,5 · 14,5–16,5 | — |
-| A1 (≥ −5 °C) | ~0,68 °C | 0,75–0,85 °C | — |
-| A3 frysklassfel | ~0,4 % | ≤ 0,5 % | — |
-| norr om 62° / söder | ~14,1 / 4,8 % | 16,5–18,5 / 6,5–7,5 % | — |
-| farliga fel, K2 = 1,0 | ~1,2 % | ≤ 1,6 % | — |
-| dom A1 · A2 · A3 | KLARAR · FALLER · KLARAR | KLARAR · FALLER · KLARAR | — |
-
-Landar RÅ utanför 7,4–7,6 % läses inget annat: då skiljer populationen (vakterna, MIN_SHARED, hinkarna), och det förstås först.
-FYSIK ensam väntas vara SÄMRE än RÅ i alla band — det är redan sett och är inte frågan; frågan är om kuvösen får samma tal som
-replikan på samma data, så att en kandidat utanför repot alls går att döma där. Ett FYSIK-tal mer än en procentenhet från spannet
-är ett fel i filen, i tidsupplösningen eller i populationen, och läses som det.
-
-**Alternativ som valdes bort.** (a) Porta modellen till TypeScript i repot — en vecka, och en port ändrar talen; filen är ärligare.
-(b) Vänta med allt till 2026/27 — då saknas beviset att kuvösen kan döma en extern kandidat, och det beviset ska finnas före vintern.
-(c) Förregistrera FYSIK+BLANDNING (5,97 % i replikan, 10,9 % bortom 20 km — den enda som slår RÅ där) samtidigt — kräver grannlagret i
-TypeScript; tas som eget beslut efter den här körningen.
-
-**Vad som INTE görs.** Inga trösklar, ingen drift, ingen kod ur fysikspåret i repot, inget utfall läst förrän Bengt sagt kör. Open-Meteo
-är icke-kommersiell: en driftsatt version körs på SMHI/MET, och den är en ny förregistrering med egen prognoshorisont (analysläge är
-det som mätts, inte +1…+6 h).
-
-**Följd.** Kort #305 på tavlan under Bengt; raden *Axels fingeravtryck per station* i bedömningen §4.2 är levererad
-(`data/fysik/fingeravtryck-2024-25.csv`, 754 stationer × 2 modeller × 2 perioder, SVAR §6) och väntar bara på Bengts C8-körning mot
-den; kuvösens §6 får raden 8/10. **Utfall** skrivs under den här posten när knappen körts.
-
-**Stomdokument:** KUV §6, BED §4.2
-
-**Utfall (8/10 00:08, knappen 37693105481 på 2a43651, Axels ord i Bengts ställe — DECISIONS #486). TRÄFF på varje rad.** Filen
-hämtad ur releasen, summan = manifestet; `fysik_c` −25,48…+17,36 inom spannet; 736 stationer, 5 229 252 hinkar, ingen station i
-arkivet utan rad i filen. Gemensamma punkter 4 352 753 (FYSIK saknar 453 av RÅ:s 4 353 206).
-
-| | RÅ (kontroll) | FYSIK på RÅ:s punkter | FYSIK alla hinkar | förväntan FYSIK |
-| :-- | --: | --: | --: | :-- |
-| A2 grova fel totalt | **7,51 %** | **9,85 %** | **10,04 %** | 9,5–10,2 · 9,7–10,4 ✓ |
-| band 0–7 · 7–15 · 15–20 · > 20 km | 5,23 · 5,26 · 7,16 · 13,59 | 8,09 · 7,99 · 8,79 · 15,54 | — | ✓ alla fyra |
-| MAE | 0,68 °C | 0,79 °C | 0,79 °C | 0,75–0,85 ✓ |
-| A3 frysklassfel | 0,39 % | 0,39 % | 0,39 % | ≤ 0,5 ✓ |
-| norr om 62° / söder | 14,13 / 4,82 % | 17,07 / 6,92 % | 17,44 / 6,95 % | 16,5–18,5 / 6,5–7,5 ✓ |
-| farliga fel K2 = 1,0 (av frysningarna) | 1,2 % | 1,4 % | — | ≤ 1,6 ✓ |
-| OFFSET (taket) | 5,52 % | | | |
-
-**Läsningen.** RÅ-kontrollen 7,51 % ligger i 7,4–7,6 %, så populationen är kuvösens, och resten fick läsas. FYSIK landar inom spannet på
-varje rad och inom 0,1 procentenhet av replikan 7/10 (9,81 %, band 8,0 · 7,9 · 8,7 · 15,5; alla hinkar 10,01 %). **Det som är bevisat:**
-kuvösen räknar samma tal som replikan på samma fil, alltså kan en kandidat utanför repot dömas i kuvösen. **Det som inte är bevisat:**
-något om modellen — förväntningarna skrevs efter replikan, och FYSIK ensam är sämre än RÅ i varje band (dom A2 FALLER, som RÅ).
-Domen läses på vintern 2026/27. Två beslut står kvar för Bengt i bedömningen §4.2: FYSIK+BLANDNING som andra kandidat, och
-förregistreringen för 2026/27 på SMHI/MET.
-
-## #486 (7/10 2026) Axels ord i Bengts ställe för kort #305: slå ihop PR #802, kör FYSIK på knappen och C8 mot fingeravtrycken — C8-läsningen förregistrerad före körningen
-
-**Beslut.** Axel 7/10 23:54, i projektchatten: *"I say that we run it"*, och på frågan om det är hans ord eller Bengts: *"Yes please built
-c8 before and then we do a run"*. Axel är produktägare med fullt beslutsmandat; hans ord står här i Bengts ställe för tre saker och bara
-dem: **(1)** slå ihop PR #802 (förregistreringen i DECISIONS #485, oförändrad), **(2)** kör knappen `kuvos` med
-`scripts/matningar/kuvos-fysik-2026-10-08.ts`, **(3)** kör C8 mot fingeravtrycksfilen (§4.2, Bengts begäran 7/10). Inga trösklar, ingen
-drift, inget av FYSIK+BLANDNING eller vintern 2026/27 — de två besluten står kvar i §4.2 för Bengt. Bengt ser detta i morgonrapporten.
-Releasen `kuvos-fysik-2024-25` skapades av Axel 7/10 23:49 på main (864ecb2); GitHubs sha256 för filen = `kuvos/fysik-leverans.json`.
-
-**C8 mot fingeravtrycken — vad det är.** Bengts C8 (#479), oförändrad: VÄG, REL och BAS importerade ur
-`scripts/matningar/kuvos-c8-vagdata-2026-10-07.ts`, ridge λ = 1, regioner gömda (rutor 1° × 2°) som huvudtal och leave-one-out, minst
-100 timmar per station, särarten per ÅDT-klass. Målet är Axels `fingeravtryck_c` (medel uppmätt − modell; `data/fysik/fingeravtryck-2024-25.csv`,
-summan i manifestet) i stället för särarten mot RÅ. Fyra mål: modell **Bsp** (den tidigare utan vägdata — modellen bakom 23 %) och
-**A2** (den frysta, med vägdata inne) × **novdec** (Axels inlärningsfönster) och **vinter**. Skript
-`scripts/matningar/kuvos-c8-fingeravtryck-2026-10-08.ts`, självtest i ci.yml (två motprov 7/10: MIN_TIMMAR 0 och fel kolumn fälls).
-Ingen databas: allt ligger i repot, så läsningen körs lokalt och utskriften står under Utfall.
-
-**Det är inte en upprepning av Axels 23 %.** Axel räknade på 165 stationer i mellanregionen, med Vägunderhållsklass och Driftområde,
-och 15 lägeskluster som regioner (SVAR §5). Här är det alla stationer med vägdata, C8:s tio kolumner och C8:s rutor. Frågan är om
-vägdatan förklarar fysikmodellens särart också med Bengts verktyg.
-
-**Kontroll först** (SVAR §6): A2 vinter 736 stationer med värde och spridning 0,52 °C, Bsp vinter spridning 0,64 °C, ±0,01. Stämmer
-det inte läses inget annat.
-
-**Läsningen i förväg.** (1) **Bsp novdec, VÄG, regioner gömda: R² mellan 0,05 och 0,30** — över C8 mot RÅ (0,034), runt Axels 0,227.
-(2) **A2 novdec, VÄG: R² ≤ 0,05** — vägdatan är redan förbrukad inne i A2 (Axel −0,11). (3) **ÅDT-spannet** (> 20 000 minus < 1 000)
-**över 0,9 °C för Bsp vinter** (Axel −0,58 / +1,14) och **under 0,6 °C för A2 vinter**. REL och BAS skrivs ut utan förväntan.
-Träff i (1) och (2): Axels slutsats håller med Bengts kolumner. Under 0,05 i (1): de 23 % hänger på Axels kolumner eller regioner.
-
-**Stomdokument:** BED §4.2 (raden om fingeravtrycken: skriptet nu och utfallet efter körningen)
-
-**Utfall (7–8/10 natten, lokalt på 2a43651 — ingen databas; summan = manifestet).** Kontrollen höll: A2 vinter 736 stationer, spridning
-0,523 °C; Bsp vinter 0,643 °C. 729 stationer i novdec, 735 i vinter (≥ 100 timmar, med vägdata), 55 rutor.
-
-| mål | VÄG R² regioner gömda (LOO) | REL | BAS | ÅDT-klasser < 1 000 · 1 000–20 000 · > 20 000 | spann |
-| :-- | --: | --: | --: | :-- | --: |
-| Bsp novdec | **0,0499** (0,065) | 0,013 | 0,147 | −0,20 · −0,05 · +0,93 °C | 1,13 °C |
-| A2 novdec | −0,019 (−0,010) | −0,017 | 0,015 | −0,09 · −0,04 · +0,31 °C | 0,39 °C |
-| Bsp vinter | 0,054 (0,066) | 0,028 | 0,101 | −0,21 · −0,04 · +0,82 °C | 1,03 °C |
-| A2 vinter | −0,022 (−0,013) | −0,018 | 0,003 | −0,13 · −0,04 · +0,24 °C | 0,36 °C |
-
-**Mot förväntan.** (1) **MISS, på gränsen:** Bsp novdec VÄG 0,0499 mot golvet 0,05. (2) **Träff:** A2 novdec −0,019 ≤ 0,05.
-(3) **Träff:** ÅDT-spannet 1,03 °C för Bsp vinter (> 0,9), 0,36 °C för A2 vinter (< 0,6).
-**Läsningen.** Med Bengts kolumner och rutor förklarar vägdatan ungefär 5 % av särarten mot Bsp — mer än mot RÅ (0,034, #479), men
-långt från Axels 23 %. Enligt läsningen i förväg hänger de 23 % alltså på Axels kolumner (Vägunderhållsklass, Driftområde) eller hans
-165 stationer och regioner, inte på vägdatan i sig. Signalen finns, men den sitter i de få största vägarna: 21–22 stationer över
-20 000 fordon ligger +0,8–0,9 °C varmare än Bsp, medan resten skiljer under 0,2 °C — ett linjärt mått över 729 stationer ser lite av
-det. BAS (läget) förklarar mer än VÄG mot Bsp (0,147), alltså är Bsp:s särart mer regional än väggiven. Mot den frysta A2 förklarar
-ingenting något (alla R² ≤ 0,015), och ÅDT-spannet krymper till 0,36 °C: A2 har redan tagit upp vägdatan, som Axel fann (R² −0,11).
-Ingen tröskel och ingen kandidat följer; raden i §4.2 stryks.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #487 (8/10 2026) Kartsynken går till GitHub med `gh api` först — molnets GH_TOKEN och GITHUB_TOKEN är en platshållare (kort #306)
 
@@ -9065,216 +7502,13 @@ om klassaren släpper igenom anropet med en sådan regel i molnet, och regeln ha
 
 **Stomdokument:** BED §4.2 (raden om dokumentsynkens sammanslagning avgjord)
 
-## #489 (8/10 2026) Kuvösen blir ett eget block i projektkartan, och kuvössidan följer blockets fem delar
+## #489 (8/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Beslut.** Bengt 8/10: *"ja till eget block, räkna in det i totalen"* — på frågan om kuvösen ska brytas ut i projektkartan som
-favoriterna. Frågan kom ur hans iakttagelse samma morgon: *"vårt kuvösarbete har blivit stort … Jag vet inte om jag tycker att
-kuvösarbetet är tillräckligt bra beskrivet i projektkartan och i halkvaktens kuvös"*.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Vad analysen visade.** Kuvösen hade 37 beslut sedan 21/9 och tolv läsningsskript, men bara en del i kartan, med 14 byggsteg för
-testbädden. Läsningarna stod som bevis på ämnesdelar (prognoslagret, segmentprognosen, vägdatalagret) och som dagboksstycken i
-kuvössidans §6, som hette *Vad som kommer härnäst* men var historik 2/10–8/10. Prognoslagrets kandidater stod aldrig sida vid sida, och
-RÅ stod som 7,4, 7,5 och 7,51 % utan att populationen sades. #486, en kuvösläsning, namngav bara bedömningen.
+## #490 (8/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Vad som byggdes.**
-- *Blocket Kuvösen* (plats sida, räknas i totalen) med fem delar: **Testbädden** (`p-kuvosen`, grön: datan, klockan, körflödet, SMHI,
-  MET Nordic, kandidater utifrån som fil), **Systemets delar på vintern** (`kv-delarna`: riktningsprovet, kalibreringen, granskningen,
-  måttet och daggpunkten klara; nederbördstypen pågår; övergångarna, försprånget och vind och sikt saknas), **Prognoslagrets kandidater**
-  (`kv-prognoslagret`: sju läsningar klara, kriging och FYSIK+BLANDNING väntar på beslut), **Före resan på vintern** (`kv-fore-resan`,
-  grön) och **Facit från Trafikverket** (`kv-facit`, blå: Bengt skickar begäran §5d; kort #232 flyttat hit). Byggstegen här är äkta:
-  i ett kuvösblock är provet leveransen. Produktens delar rörs inte, så felet från 7/10 (läsningar som byggsteg på prognoslagret, #483)
-  upprepas inte. Totalen 65 % före och efter.
-- *Kuvössidan* omgjord efter delarna: §2 en handskriven lägesruta och delarna, §3–§7 en del var med sina lägesrader ur kartan, §5 en
-  jämförelsetabell för prognoslagret med populationen angiven, §8 reglerna, §9 bara framtid (kön med vad varje läsning väntar på),
-  §10–§11 som förut och §12 dagboken hopfälld. Kortkartan följer: #232 → KUV 7, #270 → KUV 5, #282 → KUV 8.
-- *Stomvakten* fäller en ändring som rör `kuvos/` eller `scripts/matningar/kuvos-*` och lägger till beslut utan att något av dem
-  namnger KUV; självtest och motprov.
-- *CLAUDE.md* DOKUMENTSYNKEN: en ny kuvösläsning är ett byggsteg på sin del, och en kandidat för prognoslagret får en rad i tabellen.
-
-**Vad som följer med automatiskt, utan ändring.** Kartskriptet skriver blocket och lägesraderna på kuvössidan, kartsynken bokför
-commits på kuvösens delar, kortkartan och kortvakten gäller som förut, och morgonrutinen läser CLAUDE.md. Jämförelsetabellen är
-handskriven och stäms av av morgonrutinen.
-
-**Alternativ som valdes bort.** Ett register ur en egen datafil (förslag 2 i analysen) — kartan bär redan datum, körning, beslut och
-utfall per byggsteg. Att visa blocket utanför totalen — skuggan och grindarna räknas redan, och kuvösen är samma sorts arbete.
-
-**Stomdokument:** KUV hela sidan, BED §4.2 och läget 7/10
-
-## #490 (8/10 2026) Prognoslagret bortom 15 km — tre läsningar förregistrerade på Bengts ja: FYSIK+BLANDNING i kuvösen som fil från Axel, samma kandidat med prognosväder, och trafiken per avståndsband (kort #308)
-
-**Beslut.** Bengt 8/10: *"ja till 1, 2 och 3"* — på förslagen efter hans fråga samma förmiddag: *"Det system som förordas är alltså
-fysik med blandning där banden till 15 km ligger rätt och det som vi ska lägga extrem kraft på är bandet 15-20 och över 20 km. Har du
-några bra förslag här?"* Svaret rättade premissen: det antagna är RÅ med spridningsgrinden (#474–#478), FYSIK+BLANDNING är en kandidat
-som aldrig körts i kuvösen, och talen 4,1 · 4,3 · 5,3 · 10,9 % gäller vädrets analys, inte en prognos (#485). De tre förslagen han sa
-ja till avgör om bandet bortom 15 km alls är rätt mål, innan kraft läggs där:
-1. **FYSIK+BLANDNING i kuvösen**, som en fil från Axel på samma sätt som FYSIK (#485) — det beslut som (c) i #485 sköt upp.
-2. **Samma kandidat med prognosväder**, så som den skulle köra i drift.
-3. **Andelen trafik per avståndsband**, ur vägdatalagrets väglagspunkter med ÅDT.
-Förslagen 4–7 (tystnad bortom 15 km, vägens tillstånd, grannländerna och termisk kartering i norr, MESAN) står kvar i bedömningen §4.2.
-
-**Läsning 1 och 2 — filerna Axel lämnar** (`kuvos/blandning-leverans.json`, releasen `kuvos-blandning-2024-25`). Samma form som FYSIK:
-`station_id,t_utc,fysik_c`, halvtimmar, vintern 2024/25 som `fysik-2024-25.csv.gz`, gzip, en fil per kandidat och läge. Kandidaterna är
-FYSIK+GRANNAR och FYSIK+BLANDNING ur hans replika 7/10 (`docs/FYSIKSPARET-FRYS-2026-10-07.md`): grannarnas uppmätta fel och blandningen
-räknas i hans kedja, inte i TypeScript, så att kuvösen bara läser en fil — det som gör (c) i #485 billigt. Två lägen:
-- **analys** — som FYSIK: ECMWF:s analys vid t.
-- **operativt** — bara den prognos som fanns utfärdad vid t, med ledtiden i filens läge (t.ex. `operativt +6 h`). Minst en fil med
-  ledtid +6 h eller mer. Grannarnas mätningar vid t får användas: de finns i realtid i driften. Rättelsen får läras om på prognosväder,
-  med samma utelämnade region.
-Målstationens egna mätningar är aldrig indata, vid målet eller i blandningen. Varje fil fryses med sha256, rader och stationer i
-manifestet innan knappen trycks; mätningen fäller en fil som inte stämmer. `fysik_c` har redan spann i värdevakten (−60…+60 °C).
-
-**Genomförandet.** `scripts/matningar/kuvos-blandning-2026-10-08.ts` (självtest i ci.yml; kuvos.yml hämtar releasen och kontrollerar
-summorna när mätningens namn innehåller `kuvos-blandning`). Underlaget exakt som FYSIK i #485: grind A:s WHERE med vakterna, senaste
-avläsning per halvtimmeshink, yta ≤ +5 °C, RÅ som kontroll, OFFSET som tak, bandet = RÅ:s närmaste bidragande granne. Varje fil blir
-kandidaten *namn (läge)*; måtten A1/A2/A3 per band och totalt på gemensamma punkter, frysflaggan, norr/söder om 62°.
-
-**Läsning 3 — trafiken per band** (`scripts/matningar/kuvos-trafik-per-band-2026-10-08.ts`, självtest i ci.yml). Ingen databas: de
-12 960 väglagspunkterna i `data/vagdata/vaglagspunkter.json` (var 2 km längs väglagsnätet, med NVDB:s ÅDT och lätta fordon 22–06) mot de
-854 stationerna i `data/vagdata/stationer.json`. Bandet är avståndet till närmaste station; väglängden räknas som 2 km per punkt och
-trafiken som ÅDT × 2 km (fordonskilometer per dygn). Banden 0–7 · 7–15 · 15–20 · 20–50 · > 50 km, hela landet och norr/söder om 62°.
-Körs lokalt efter att den här posten checkats in.
-
-**Förväntningar, skrivna före körningarna.**
-
-| | förväntan |
-| :-- | :-- |
-| 1 · RÅ (kontroll) | 7,4–7,6 % grova fel; annars läses inget annat |
-| 1 · FYSIK+GRANNAR, analys | 6,35–6,95 %; banden inom ±0,3 av 4,5 · 4,9 · 5,7 · 12,2 |
-| 1 · FYSIK+BLANDNING, analys | 5,7–6,3 %; banden inom ±0,3 av 4,1 · 4,3 · 5,3 · 10,9 |
-| 2 · FYSIK+BLANDNING, operativt ≥ +6 h | sämre än analysläget i varje band; totalt 6,5–9 %; banden 0–7 och 7–15 km över 5 % |
-| 3 · trafiken 0–7 km | 50–75 % av fordonskilometerna |
-| 3 · 7–15 km | 15–35 % |
-| 3 · 15–20 km | 2–10 % |
-| 3 · > 20 km (20–50 och > 50) | 2–10 %, mest norr om 62°; dess andel av väglängden större än dess andel av trafiken |
-
-Läsning 1 är som FYSIK en kontroll av att filen och kuvösen räknar på samma population, inget bevis för modellen: förväntningarna
-skrevs efter replikan. Ett tal mer än en procentenhet utanför spannet är ett fel i filen eller populationen och läses som det.
-Läsning 2 och 3 har inget facit i förväg.
-
-**Hur läsningarna läses — en läsning, inte en dom; beslutet är Bengts.**
-- Håller operativt läge banden 0–7 och 7–15 km på RÅ:s nivå eller bättre (≤ 5,2 %) och ligger bortom 20 km minst en procentenhet under
-  RÅ:s 13,6 %, är förregistreringen för vintern 2026/27 på SMHI/MET (#485) värd kraften bortom 15 km.
-- Tappar operativt läge fördelen i de närmaste banden är bandet bortom 15 km fel mål för den här modellen; kraften går då till
-  tystnaden bortom 15 km och vägens tillstånd (förslag 4 och 5 i §4.2).
-- Går under 5 % av trafiken bortom 20 km läggs kraften bortom 15 km i första hand på bandet 15–20 km och på tystnad bortom 20 km; går
-  över 10 % där är bandet ett mål i sig.
-
-**Alternativ som valdes bort.** (a) Grannlagret och blandningen i TypeScript i repot — en port ändrar talen och tar en vecka; filen är
-ärligare (samma skäl som #485 (a)). (b) Bara analysläget — då vet vi inte om fördelen överlever en prognos, och det är prognosen som
-körs i drift. (c) Trafiken ur shadow_log — den mäter bara betatestarnas resor; ÅDT täcker hela nätet.
-
-**Vad som INTE görs.** Inga trösklar, ingen drift, ingen kod ur fysikspåret i repot. Knappen för läsning 1 och 2 trycks på Bengts ord
-när Axels filer ligger i releasen med summorna i manifestet. Open-Meteo är icke-kommersiell också i operativt läge; läsning 2 mäter
-modellens känslighet för prognosfel, inte en driftsatt källa.
-
-**Följd.** Kort #308 på tavlan under Axel; prognoslagrets del i projektkartan får stegen *FYSIK+BLANDNING i kuvösen*, *Operativt läge* och
-*Trafiken per band*; kuvössidans §9 och bedömningens §4.2 följer. **Utfall** skrivs under den här posten.
-
-**Stomdokument:** KUV §5 och §9, BED §4.2
-
-**Utfall läsning 3 (8/10 09:52, lokalt på 9b1e93c, vägdatalagret 7/10 04:49 UTC). Tre av fyra rader inom förväntan; bortom 20 km
-under.** 12 960 punkter, 25 920 km väg, 854 stationer. Ingen punkt ligger mer än 50 km från en
-station. 126 punkter saknar ÅDT, 100 av dem i 0–7 km.
-
-| band | väglängd | trafiken | nattrafiken 22–06 | förväntan, trafiken |
-| :-- | --: | --: | --: | :-- |
-| 0–7 km | 52,1 % | **68,1 %** | 65,8 % | 50–75 ✓ |
-| 7–15 km | 37,1 % | **28,4 %** | 30,4 % | 15–35 ✓ |
-| 15–20 km | 6,5 % | **2,3 %** | 2,4 % | 2–10 ✓ (nedre kanten) |
-| > 20 km (alla 20–50) | 4,3 % | **1,3 %** | 1,4 % | 2–10 ✗ under |
-| norr om 62°, bortom 15 km | 26,9 % | 17,5 % | 17,7 % | — |
-
-Bortom 20 km går 76,8 % av trafiken norr om 62° ✓, och bandets andel av vägen är större än dess andel av trafiken ✓ (4,3 mot 1,3 %).
-Bortom 15 km ligger 10,8 % av vägen och 3,6 % av trafiken (3,8 % av nattrafiken); 53,7 % av den trafiken går norr om 62°. (Andelarna norr
-om 62° skrivs av skriptet sedan en rad som lades till efter körningen; talen i tabellen är körningens.)
-
-**Läsningen.** Under 5 % av trafiken bortom 20 km, så regeln ovan säger: kraften bortom 15 km i första hand på 15–20 km och tystnad
-bortom 20 km. Men 15–20 km bär själv bara 2,3 %. Räknat på hela landet ligger trafiken i banden under 15 km.
-*Räknat efteråt, inte förregistrerat* (andelarna här, banden ur RÅ i #485 och ur replikan): trafikviktat har RÅ 5,4 % grova fel
-(0,681 · 5,23 + 0,284 · 5,26 + 0,023 · 7,16 + 0,013 · 13,59); felfria band bortom 15 km skulle ge 5,05 %, alltså högst 0,34
-procentenheter. FYSIK+BLANDNING ger trafikviktat 4,3 %, och 93 % av vinsten (1,04 av 1,12 procentenheter) kommer ur banden under
-15 km. I norr är bilden en annan: där går 17,5 % av trafiken bortom 15 km.
-
-**Mot #406.** Huvudvägnätet mot arkivets stationer gav 49,8 · 37,6 · 7,3 · 5,2 % av vägen; här mot dagens 854 stationer
-52,1 · 37,1 · 6,5 · 4,3 %, samma bild. Trafikarbetet stod där som INTE MÄTT; det är mätt nu.
-
-**Reservationer.** Dagens stationsnät, inte vinterns 736 med data; grindens bandregel (närmaste bidragande ankare) flyttar ungefär
-2,6 % av punkterna utåt (#406), så andelarna bortom 15 km är något för låga. Bandens felandelar är mätta på stationer; att de gäller vägen i samma band är ett
-antagande i den trafikviktade räkningen. ÅDT är årsmedel, inte vinter. Väglagsnätet är riks- och
-länsvägarna; kommunernas gator, som skulle göra det inre bandet ännu större, ingår inte. Grindens krav och dom räknas per punkt, oviktat
-(#406): läsningen ändrar ingen tröskel och ingen dom. Beslutet om var kraften läggs är Bengts.
-
-**Ändrat 11/10 (DECISIONS #516, Bengts ja):** FYSIK+GRANNAR och FYSIK+BLANDNING räknas i kuvösjobbet av Axels frysta `fysik/kuvos_replica.py` och lämnar aldrig jobbet, i stället för filer från Axel i en release; förväntningarna för läsning 1 står kvar. Läsning 2 körs på +24–48 h med Axels förväntan, skriven under #516 före knappen.
-
-**Utfall läsning 1 (11/10 03:56 UTC, körning 38108320301 på 0ee247a; ändringen #516 pushad i 84d7721 före knappen; jobbet 31
-min).** Filerna räknades i jobbet av Axels frysta replika på kontrollens FYSIK (#516) och lämnade det aldrig: FYSIK+GRANNAR och
-FYSIK+BLANDNING, vardera 5 332 320 rader från 736 stationer, sha256 lika manifestet (`83b7111d…`, `3a63e6cc…`). Kontrollens `oof_A2`
-blev den här gången inte byte för byte den frysta (`8a6239bb…` mot `9268c6c7…`; i nivå 2:s körning samma natt var den lika), men
-kedjans tal var desamma (fysik + rättelse A2 10,22 %), och replikan gav sina tal från 7/10: GRANNAR 6,65 %, BLANDNING 5,97 %.
-4 352 575 gemensamma punkter.
-
-| grova fel > 2 °C på RÅ:s punkter | utfall | förväntan |
-| :-- | --: | :-- |
-| RÅ (kontroll) | 7,51 % | 7,4–7,6 ✓ |
-| FYSIK+GRANNAR, analys | 6,67 % | 6,35–6,95 ✓ |
-| — banden 0–7 · 7–15 · 15–20 · > 20 km | 4,57 · 4,91 · 5,75 · 12,21 | ±0,3 av 4,5 · 4,9 · 5,7 · 12,2 ✓ |
-| FYSIK+BLANDNING, analys | 6,00 % | 5,7–6,3 ✓ |
-| — banden | 4,14 · 4,35 · 5,30 · 10,98 | ±0,3 av 4,1 · 4,3 · 5,3 · 10,9 ✓ |
-| norr / söder om 62° | GRANNAR 13,44 / 3,93 · BLANDNING 11,88 / 3,62 · RÅ 14,13 / 4,83 · OFFSET 10,71 / 3,41 | — |
-| frysflaggan K2 = 1 °C, farliga fel av frysningarna | GRANNAR 0,9 · BLANDNING 0,9 · RÅ 1,2 · OFFSET 0,8 % | — |
-
-**Läsningen.** Läsning 1 är en kontroll av att filen och kuvösen räknar på samma population (se ovan), och den höll: varje tal inom
-sitt spann. Kuvösen har nu själv kört kandidater som slår RÅ i alla band. Mot nivå 2 samma natt (#509 utfall): FYSIK+BLANDNING på
-ECMWF 6,00 % och NIVÅ 2 på MET Nordic, utan grannar och blandning, 6,10 % ligger nästan lika; blandningen är bättre bortom 20 km
-(10,98 mot 11,81), nivå 2 i 7–15 km (4,21 mot 4,35). Ingen dom. Läsning 2, prognosläget, väntar på Axels fil och förväntan (#516).
-
-**Utfall läsning 2 — prognosläget (13/10 05:23–06:28 UTC, körning 38351107743 på 59936e3; tryckt av Claude på Axels godkännande via Bengt; jobbet 65
-min).** Nivå 2 på MET Nordics analys och i prognosläget (omstart vid varje körning, #519), och replikan på de tre skattningarna. Nio
-filer om 5 332 320 rader (+24 h: 5 330 848) från 736 stationer, sha256 lika manifestet. Prognoserna: 608 av 608 körningar (#904).
-4 352 122 gemensamma punkter.
-
-| grova fel > 2 °C på RÅ:s punkter | utfall | förväntan |
-| :-- | --: | :-- |
-| RÅ (kontroll) | 7,51 % | 7,4–7,6 ✓ |
-| NIVÅ 2+BLANDNING, analys (kontroll) | 5,02 % | 4,9–5,15 ✓ (#517: 5,02) |
-| NIVÅ 2+BLANDNING, +6 h | 5,24 % | 5,1–5,6 ✓ |
-| — banden 0–7 · 7–15 · 15–20 · > 20 km | 3,82 · 3,67 · 4,83 · 9,55 | under RÅ:s 5,23 · 5,27 · 7,16 · 13,60 ✓ |
-| — norr · söder · vägt med trafik | 10,31 · 3,19 · 3,6 | under RÅ:s 14,13 · 4,83 · 5,1 ✓ |
-| NIVÅ 2+BLANDNING, +24 h | 5,43 % | 5,3–6,2 ✓ |
-| NIVÅ 2+GRANNAR, +6 h · +24 h | 5,47 · 5,71 % | — |
-| NIVÅ 2 utan grannar, +6 h · +24 h | 9,11 · 12,40 % | — |
-| OFFSET (taket) | 5,52 % | — |
-
-**Tilläggen (#536)**, frysflaggan räknad som farliga fel av frysningarna.
-
-| tillägg | utfall | förväntan |
-| :-- | :-- | :-- |
-| 1. andel av de grova felen i +3…+5 °C | RÅ 8,9 · BLANDNING analys 9,3 · +6 h 9,1 · +24 h 8,8 % | 25–45 % ✗ (under) |
-| — andel i ≤ −3 °C | RÅ 61,5 · BLANDNING 62,5 · 62,7 · 63,6 % | — |
-| 2. frysflaggan K2 = 1 °C, +6 h | 0,8 % farliga fel, 99,0 % rätt klass, 81,7 % täckning | 0,8–1,0 % och ≥ 98,7 % ✓ |
-| 2. frysflaggan K2 = 1 °C, +24 h | 0,8 %, 98,9 %, 81,6 % | 0,9–1,2 % och ≥ 98,5 % (farliga fel under spannet) |
-| 2. kontrollerna RÅ · analys | 1,2 % och 98,5 % · 0,8 % och 99,0 % | lika #517 ✓ |
-| 3. klara stilla nätter (15,44 % av punkterna), RÅ | 9,64 % | 8–11 % ✓ |
-| 3. klara stilla nätter, BLANDNING analys · +6 h · +24 h | 6,33 · 6,67 · 6,94 % | 5,5–8 % ✓; +6 h 1–2 enheter sämre → 0,34 (under spannet) |
-| 3. klara stilla nätter, OFFSET | 6,59 % | — |
-
-**Läsningen.** Ingen dom.
-- Kontrollerna höll (RÅ 7,51 %, analysen 5,02 % som #517), så resten läses.
-- Prognosläget håller fördelen. +6 h ligger under RÅ i varje band, i norr och söder och vägt med trafiken, och under taket OFFSET.
-  +24 h gör det också. Båda ligger inom Axels spann.
-- Det är grannarnas fel som bär. Nivå 2 utan grannar blir sämre än RÅ med prognosväder.
-- Talen gäller läget mellan stationerna nu med en prognos som är 6 eller 24 h gammal (#519). De säger inte hur det blir om 6 eller
-  24 h.
-- Frysflaggan med 1 °C marginal klarar K-A:s måttstock (≤ 1 % farliga fel, ≥ 95 % rätt klass, ≥ 70 % täckning) vid både +6 och
-  +24 h. RÅ gör det inte (1,2 %), och hittills hade bara OFFSET klarat den.
-- Tillägg 1 hamnade utanför spannet. Skälet: de grova felen ligger i kylan, inte i värmen. ≤ −3 °C bär 34 % av punkterna men 61–64 %
-  av de grova felen, och RÅ har 13,7 % grova fel där mot 4,7 % i +3…+5. Förväntan byggde på att dagens fel dominerar (#476), men
-  vinterdagarna ligger också under −3. Fel i ≤ −3 °C rör sällan frysbeslutet; det mäter frysflaggan.
-- Tillägg 3: på klara stilla nätter ligger kandidaten under RÅ också vid +6 h, så fördelen sitter inte bara i de mindre kritiska
-  lägena. Försämringen från analysen var mindre än väntat.
-- Norr är fortfarande svagast: 10,3 % vid +6 h mot 3,2 % i söder.
-
-Kort #308 och #329 är stängda med utfallet som bevis.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #491 (8/10 2026) Frostens första läsningar: steg 0 för övergångarna, T-A, R-A, K-A och W-A, bildfacitets omklassningar och efterhalkans uppspelning — K-A passerad, T-A:s domspärr släppt (kort #89, #88, #46, #103, #90, #209)
 
@@ -9345,76 +7579,9 @@ kurvan räknas ändå över hela svepet.
 
 **Stomdokument:** MAT §6.1, BED §4.2
 
-## #493 (8/10 2026) Fysiken som givarvakt — en läsning i kuvösen på FYSIK-filen som finns: pekar oenigheten mellan mätt yta och fysik ut de rader vakterna tar, och vilka stationer de missar?
+## #493 (8/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Beslut.** Bengt 8/10: *"ja till givarvakten"* — på förslaget efter hans invändning mot ordningen för fysikregeln (*"varför ska vi
-då binda in den inom en barriär av mätningar som i sig ger eventuellt sämre resultat"*, bedömningen §4.2). Där mätningen kan vara
-fel — en trasig givare — kan fysiken få en roll som vakt: den är ett oberoende vittne vid stationen, eftersom varje station är
-förutsagd med hela sin region utesluten ur träningen (#485). Läsningen kräver inget från Axel; filen `fysik-2024-25.csv.gz` ligger i
-releasen med summan i manifestet. Ingen dom, ingen tröskel, ingenting i driften.
-
-**Genomförandet** (`scripts/matningar/kuvos-fysik-givarvakt-2026-10-08.ts`, självtest i ci.yml; namnet bär `kuvos-fysik`, så kuvos.yml
-hämtar filen och prövar summan). Senaste avläsning per station och halvtimmeshink med yta, *före* vakterna. Vakterna — #75, radvakten,
-karantänen och den långsamma vakten, samma uttryck som grind A (`publish/snapshot-core.ts`) — blir flaggor per rad. D = uppmätt yta −
-FYSIK på samma hink. Grupperna: raderna vakterna tar (alla och per vakt), raderna de behåller med luft, och de behållna utan luft (som
-#75 och radvakten inte kan pröva). Per grupp: MAE, andelen |D| > 2, 3, 5 och 8 °C, och median D. Stationerna som vakterna behåller men
-fysiken är oense med: |D| > 5 °C i minst 20 % av minst 100 hinkar, med median D och antalet rader vakterna tog hos dem.
-
-**Kontrollen först.** De behållna raderna med luft och yta ≤ +5 °C är FYSIK-mätningens egen population (#485, 10,04 % med |D| > 2 °C
-på alla hinkar). Landar den utanför 9,8–10,3 % skiljer populationen, och inget annat läses förrän det är förstått. Kategoriseringen
-efter hinkens senaste rad, i stället för efter vakterna, kan flytta talet något.
-
-**Förväntningar, skrivna före knappen.**
-
-| | förväntan |
-| :-- | :-- |
-| kontrollen, \|D\| > 2 °C | 9,8–10,3 %; MAE 0,75–0,85 °C |
-| rader vakterna tar, \|D\| > 5 °C | 30–80 % |
-| — #75 | ≥ 80 %, median D ≤ −8 °C |
-| — radvakten · den långsamma vakten | ≥ 50 % vardera |
-| — karantänen (alla stationens rader i karantänen, också de friska) | 15–60 % |
-| behållna med luft, \|D\| > 5 °C | 0,5–3 % |
-| behållna utan luft, \|D\| > 5 °C | 0,5–6 % |
-| stationer vakterna behåller, oense i ≥ 20 % | 0–20 |
-
-**Hur läsningen läses — en läsning, inte en dom.** Fysiken är en användbar kandidat till givarvakt om \|D\| > 5 °C fångar minst hälften
-av det vakterna tar och flaggar högst 2 % av det de behåller. Stationslistan läses för hand, som septemberlistan där en människa
-hittade Ö Ljungby (#300): ett konstant D är en givare, ett D som växlar med vädret är troligen fysikens eget fel (snö, salt och vatten,
-Axels dygnsstora block). Ingen station anmäls på den här läsningen, eftersom vintern är 2024/25 och givarna kan vara lagade.
-
-**Vad som INTE görs.** Inga trösklar, inga vakter i driften, ingen kod ur fysikspåret. En givarvakt i driften kräver fysiken i drift
-(SMHI/MET-väder, #485) och ett eget beslut. Regel T rörs inte: en vakt tystar, den utlöser ingenting.
-
-**Stomdokument:** KUV §4 och §9, BED §4.2
-
-**Utfall (8/10 11:51, knappen 37759452234 på b3fecd8, Bengts ja). Kontrollen träffar; fysiken håller med #75 men inte med radvakten
-och den långsamma vakten, och den hittar ingen station vakterna missar.** Filen hämtad ur releasen, summan = manifestet; 5 258 649
-hinkar ur arkivet, 736 stationer, 1 434 hinkar utan värde i filen.
-
-| grupp | hinkar | \|D\| > 2 | \|D\| > 5 | median D | förväntan |
-| :-- | --: | --: | --: | --: | :-- |
-| kontrollen (behålls, luft, yta ≤ +5) | 4 404 906 | **10,04 %** | 0,38 % | 0,00 °C | 9,8–10,3 % ✓ · MAE 0,91 °C ✗ (se nedan) |
-| tas av vakterna | 29 297 | 32,76 % | **10,43 %** | −0,97 °C | 30–80 % ✗ |
-| — #75 | 922 | 95,66 % | **82,21 %** | **−8,67 °C** | ≥ 80 %, ≤ −8 °C ✓ |
-| — radvakten | 543 | 46,22 % | **14,18 %** | −1,70 °C | ≥ 50 % ✗ |
-| — karantänen | 15 272 | 42,76 % | **16,08 %** | −1,33 °C | 15–60 % ✓ |
-| — den långsamma vakten | 16 263 | 30,44 % | **12,86 %** | −0,94 °C | ≥ 50 % ✗ |
-| behålls, luft | 5 227 818 | 11,59 % | **1,30 %** | 0,09 °C | 0,5–3 % ✓ |
-| behålls, utan luft | 100 | 12,00 % | 0,00 % | −0,04 °C | 0,5–6 % ✗ (100 hinkar) |
-| stationer vakterna behåller, oense i ≥ 20 % | — | — | **0** | — | 0–20 ✓ |
-
-**Läsningen, enligt regeln ovan.** Fysiken fångar 10,4 % av det vakterna tar (krav minst hälften) och flaggar 1,3 % av det de behåller
-(tak 2 %). **Den är alltså inte en användbar kandidat till givarvakt** på den här läsningen. Den håller med om de grova felen: #75:s rader
-ligger i median 8,7 °C under fysiken, och 82 % av dem är mer än 5 °C fel. Den hittar ingen station som vakterna släpper igenom och den är
-oense med. **Det oväntade är radvakten och den långsamma vakten:** på de raderna ligger den uppmätta ytan i median bara 1–2 °C under
-fysiken, och två tredjedelar ligger inom 2 °C. Fysiken, som aldrig sett stationens egna mätningar, tror alltså på de flesta av de
-värden vakterna kastar. Två förklaringar går inte att skilja här: att vakterna i vinterluft också tar verkligt kalla ytor — en snö- eller
-istäckt givare en solig dag, och fysiken har snödjupet som indata — eller att fysiken bär samma fel som givarna. Det är en fråga om
-vakterna, inte om fysiken, och den står i bedömningen §4.2.
-
-**Två förväntningar föll på mätningen, inte på populationen.** MAE 0,91 °C mot väntade 0,75–0,85: #485:s 0,79 °C är grind A:s A1, som
-bara räknar ytor −5…+5 °C, medan kontrollen här räknar alla ytor ≤ +5 °C — andelen grova fel, som har samma definition, träffar exakt
-(10,04 %). Raderna utan luft är 100 hinkar och bär ingenting.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #494 (8/10 2026) Ingen egen läsning av raderna radvakten och den långsamma vakten tar — Bengts nej
 
@@ -9457,126 +7624,13 @@ releaserna och inte göra repot publikt — det är Axels beslut på kort #311, 
 
 **Rättelse 9/10 05:20 (Claude).** Flytten tog inte vakten med sig. Vakthundens kontroll 9j (`supabase/functions/vakthund`, kort #223) frågade fortfarande GitHub efter releaser med taggen `arkiv-`, och när Bengt raderat dem larmade den 05:08 UTC *"Arkivet saknar färsk backup"* (issue #825) — fast kopian låg i hinken och var bevisad samma morgon. Larmet var falskt, men värre: kontrollen vaktade inte längre den riktiga kopian. Rättat på grenen `claude/kallkartan-at-sidan-2026-10-09 (PR #826)`: 9j räknar dumparna i hinken `arkiv` och läser den nyaste delens tid ur `storage.objects`, som facit-kontrollen gör. En fullständig sökning i repot fann inget annat ställe som läser `arkiv-`-releaserna. Kort #314; beviset är vakthundens rad efter deployen. **Läxa:** när en sak flyttas, sök efter allt som vaktar den gamla platsen i samma varv — vakterna är skrivna mot platsen, inte mot saken.
 
-## #496 (9/10 2026) Kallkartan i kuvösen — RÅ rättad med MODIS-kartans lokala avvikelse, förregistrerad före körningen (kort #313)
+## #496 (9/10 2026) Kandidaten: flyttad till halkvakt-kuvos
 
-**Beslut.** Bengt 9/10: *"ja, kör kallkartan nu"* — på svaret på hans fråga om prognoslagrets steg *Kriging och kallkartan* kan göras
-oberoende av när Axel kommer med sina filer: kallkartans prov kan köras nu, på kartan som finns sedan 6/10 (#482) och stationerna i
-kuvösen; kriging väntar på kallkartans utfall, och förregistreringen för vintern 2026/27 på Bengts beslut (#485). Inget av det beror
-på kort #308.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Frågan.** Bär kartan stationens särart mot grannarna? RÅ skattar en station ur grannarnas yta. Ligger en granne i ett köldhål och
-målet på en varmare plats har RÅ fel på ett sätt kartan känner till. Kandidaterna rättar därför varje grannes värde med skillnaden i
-kartans avvikelse mellan målet och grannen.
+## #497 (9/10 2026) Kandidaten: flyttad till halkvakt-kuvos
 
-**Underlaget.** `data/kallkartan/kallkartan_stationer.csv` ur releasen `kuvos-modis-2022-25` (sha256 9f356ee8…, samma som releasens
-manifest; mätningen fäller en annan fil), incheckad i repot (45 kB) så att mätningen inte hämtar releasen. 854 stationer: 11 utan
-avvikelse, 18 med färre än 30 klara nätter (räknas inte), 2 tagna av vattenregeln, 823 kvar. Fältet `medelavvikelse_k` är deklarerat
-i värdevakten (−15…+15 K) innan det används; kartan läst vid stationerna −2,74…+3,51 K, 1/99-percentil −1,78 / +1,46 K.
-
-**Vattenregeln** (#482 krävde den före körningen). Releasen har ingen landandel. En pixel varmare än +2,0 K räknas som vatten — en
-sjö bär sin värme in i nätterna oktober–april — och stationen står utanför KALL-kandidaterna. Det tar två: 2534 Vietas (+3,51 K, mot
-Akkajaure) och 2580 vid Kiruna (+2,47 K). Kalla avvikelser behålls, för köldhålen är det kartan ska hitta; den kallaste är 1633
-(−2,31 K). Regeln är satt på kartans egen fördelning, utan facit.
-
-**Kandidaterna.** Alla räknas av grind A:s `evaluate()` med `utanOffset` och en justering per granne, som RN i #481:
-- **RÅ** — kontrollen.
-- **KALL** — grannens värde + 1 · (a_mål − a_granne), alla timmar.
-- **KALL-NATT** — samma när solen vid målet står under −6° (regimgrindens gräns, #408), annars ingen rättelse. Kartan är byggd av klara
-  nätter.
-- **KALL-½** — k = 0,5, alla timmar: markens avvikelse är inte asfaltens, och halva är en försiktigare tro på kartan.
-- **OFFSET** — taket, som förut.
-En granne utan avvikelse bidrar inte till KALL-kandidaterna, och en station utan avvikelse skattas inte. Måtten läses på de punkter där
-alla kandidater har ett värde, så RÅ räknas på samma population. Skriptet: `scripts/matningar/kuvos-kallkartan-2026-10-09.ts`
-(självtest i ci.yml, motprovat: vänt tecken i justeringen och avstängd vattenregel fäller var sin rad).
-
-**Måtten.** Grind A:s A1 (MAE i beslutsbandet), A2 (grova fel > 2 °C) och A3 (frysklassfel) per band (närmaste bidragande granne) och
-totalt; natten (sol < −6°) mot dag och skymning; norr och söder om 62°; frysflaggan med tre marginaler (#437).
-
-**Förväntningar, skrivna före körningen.**
-
-| | förväntan |
-| :-- | :-- |
-| RÅ (kontroll) | 7,2–7,7 % grova fel på de gemensamma punkterna, bortom 20 km 12,5–14,5 %; annars läses inget annat |
-| KALL | 7,3–8,5 % — rättelsen gäller också dag och mulna nätter, där kartan inte säger något; RÅ+HÖJD, också en fast rättelse per plats, gav 8,8 % (#481) |
-| KALL-NATT | 7,0–7,8 %; natten 0–0,5 procentenheter under RÅ:s natt |
-| KALL-½ | 7,1–8,0 % |
-| KALL-NATT bortom 20 km | 12,5–14,5 % |
-
-Spannen är breda med avsikt: kartans spridning mellan stationerna (sd 0,66 K) är en tredjedel av gränsen för ett grovt fel, så
-rättelsen kan flytta några procent av punkterna över eller under 2 °C, åt båda hållen.
-
-**Hur läsningen läses — en läsning, inte en dom; beslutet är Bengts.**
-- Ligger någon KALL-kandidat minst 0,3 procentenheter under RÅ totalt och minst 0,5 bortom 20 km, utan att frysflaggans farliga fel
-  (K2 0, alla band) ökar, är kallkartan värd en egen förregistrering för vintern 2026/27, på Bengts ord. Tre kandidater prövas, så en
-  vinst på gränsen läses försiktigt.
-- Annars bär kallkartan inte i den här formen. Förslaget blir då att lägga den åt sidan och att kriging (steg 2 i #481) prövas ensamt
-  eller läggs ned — en fråga i bedömningens §4.2.
-
-**Reservationer, med i läsningen.** (1) Kartan är byggd av vintrarna 2022–25, och 2024/25 är också kuvösens vinter. Den läser ingen
-station och inget facit, men samma nätter står på båda sidor; en vinst bekräftas först på 2026/27 med kartan fryst. (2) Satelliten
-mäter markens yta — skog, mark, snö, sjö — inte asfalten. (3) Vattenregeln och KALL-NATT:s solgräns är satta före körningen och
-ändras inte efter den.
-
-**Alternativ som valdes bort.** (a) Kartan som egenskap i RN+R:s regression, som #482 skrev — RN+R föll i #481, så kartan prövas på
-RÅ, det antagna. (b) Ett k anpassat på stationerna — ett bättre tal men en sämre läsning; k = 1 och 0,5 är fysiken och en halvering av
-den, fasta före körningen. (c) Landandel eller närmaste rena landpixel för vattnet — releasen har ingen landmask, och den kräver en ny
-hämtning. (d) Vänta på Axels filer — kallkartan beror inte på dem.
-
-**Vad som INTE görs.** Inga trösklar, ingen drift, ingen ändring av appen eller static.json. Kostnad: en körning av kuvos.yml, omkring
-tio minuter (RN 11, FYSIK 9), ungefär 0,08 USD.
-
-**Följd.** Kort #313 på tavlan; prognoslagrets steg *Kriging och kallkartan* delas i *Kallkartan* och *Kriging*; kuvössidans §9 och
-bedömningens §4.2 följer. **Utfall** skrivs under den här posten.
-
-**Stomdokument:** KUV §5 och §9, BED §4.2
-
-**Utfall (9/10 05:02 UTC, körning 37885821554 på 28926d7; jobbet 10,4 min, mätningen 2,7).** Kartan läst med releasens sha256
-(9f356ee8…); 823 stationer i kartan, vattenregeln tog 2534 (+3,51 K) och 2580 (+2,47 K). I kuvösen 737 stationer, 713 med avvikelse;
-4 216 946 gemensamma punkter (RÅ ensam 4 359 014, 706 stationer i frysflaggan).
-
-| Kandidat | grova fel | 0–7 · 7–15 · 15–20 · > 20 km | MAE | natt | dag och skymning | farliga fel, K2 0 |
-| :-- | --: | --: | --: | --: | --: | --: |
-| RÅ | 7,26 % | 5,32 · 4,99 · 7,12 · 13,13 | 0,67 °C | 5,73 % | 9,86 % | 4,9 % |
-| KALL | 9,76 % | 5,86 · 7,50 · 9,66 · 16,56 | 0,83 °C | 8,14 % | 12,51 % | 6,1 % |
-| KALL-NATT | 8,79 % | 5,69 · 6,49 · 8,68 · 15,32 | 0,77 °C | 8,14 % | 9,91 % | 5,6 % |
-| KALL-½ | 7,63 % | 5,37 · 5,51 · 7,54 · 13,31 | 0,72 °C | 6,03 % | 10,34 % | 5,2 % |
-| OFFSET (taket) | 5,31 % | 3,68 · 3,52 · 5,35 · 9,84 | 0,59 °C | 3,96 % | 7,60 % | 4,2 % |
-
-Norr om 62° RÅ 13,76 % mot KALL 18,05, KALL-NATT 16,45 och KALL-½ 14,26 %; söder om 62° RÅ 4,73 % mot 6,53 · 5,82 · 5,05 %.
-
-**Mot förväntningarna.** RÅ 7,26 % och bortom 20 km 13,13 % ligger inom spannen — populationen håller. KALL-½ 7,63 % ligger inom
-7,1–8,0. KALL 9,76 % ligger över 7,3–8,5, KALL-NATT 8,79 % över 7,0–7,8 och bortom 20 km 15,32 % över 12,5–14,5. Det tydligaste
-felet i förväntningarna gäller natten: KALL-NATT skulle ligga 0–0,5 procentenheter under RÅ där och ligger 2,41 över.
-
-**Mot läsregeln.** Ingen KALL-kandidat ligger under RÅ — inte totalt, inte bortom 20 km, inte på natten, inte i norr eller söder — och
-frysflaggans farliga fel ökar för alla tre (4,9 → 5,2–6,1 %). Kallkartan bär inte i den här formen.
-
-**Läsningen.** Rättelsen skadar på natten ungefär lika mycket som på dagen (KALL +2,41 mot +2,65 procentenheter), fast kartan är byggd
-av klara nätter, och den halva rättelsen skadar minst. Det är vad en karta utan samband med vägytans avvikelse ger: rättelsen blir
-brus, och halva bruset skadar mindre. Möjliga skäl, inte prövade: vägen är plogad, saltad och trafikerad asfalt, ofta på bank, medan
-satelliten ser snö, skog och mark, och en pixel blandar en kvadratkilometer. Inget tal i den här körningen skiljer skälen åt.
-
-**Följd.** Förslaget enligt läsregeln: kallkartan läggs åt sidan som rättelse på RÅ — Bengts ord. Releasen och filen i repot står kvar,
-inget raderas. Kriging (steg 2 i #481) står nu ensam: prövas eller läggs ned, en fråga till Bengt och Axel i bedömningens §4.2.
-Kort #313 klart.
-
-## #497 (9/10 2026) Kallkartan läggs åt sidan som rättelse på RÅ — Bengts ja
-
-**Beslut.** Bengt 9/10: *"slå ihop 824 och ja till att lägga kallkartan åt sidan"* — på förslaget enligt läsregeln i #496, efter
-körningen 37885821554 där alla tre KALL-kandidaterna var sämre än RÅ på samma punkter, också på natten: KALL 9,76 %, KALL-NATT
-8,79 % och KALL-½ 7,63 % grova fel mot RÅ:s 7,26 %.
-
-**Vad det betyder.** Kallkartan används inte som rättelse på RÅ — inte i prognoslagret och inte i förregistreringen för vintern
-2026/27. Releasen `kuvos-modis-2022-25`, filen i `data/kallkartan/` och skriptet med sitt självtest står kvar; inget raderas. Varför
-kartan inte bär är inte prövat (#496). En ny användning av den, till exempel som egenskap i en annan modell eller för att välja var
-termisk kartering görs, kräver en egen förregistrering.
-
-**Alternativ som valdes bort.** (a) Ett mindre k eller ett k ur en regression — det vore att anpassa efter facit på samma vinter,
-och redan KALL-½ var sämre än RÅ. (b) Låta kartan stå öppen i §4.2 — en rad till utan en väg framåt.
-
-**Följd.** Prognoslagrets steg *Kallkartan* bär beslutet; kriging står ensam som fråga till Bengt och Axel i bedömningens §4.2.
-
-**Stomdokument:** KUV §5 och §9, MAT §1 och §5 och §9, BED §4.2
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #498 (9/10 2026) Testarvakten i DB-knappen: rader ur testartabellerna skrivs aldrig ut i Actions (kort #315)
 
@@ -9759,121 +7813,13 @@ kassavakten visar 0 USD debiterat för november. Oktobers minuter före bytet st
 
 **Stomdokument:** BED §4.2
 
-## #504 (9/10 2026) Väderkällan för fysikspåret, nivå 1 — MET Nordic ligger närmare SMHI:s mätningar än ECMWF via Open-Meteo
+## #504 (9/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Läsning, inget val.** Axel 9/10: *"gör du inte en utvärdering analys först av vilken vi ska ta hem"* — och *"gör nivå 1 först"*.
-Fysikspåret är kalibrerat på ECMWF IFS ur Open-Meteos arkiv (#485), som #485 säger inte får bära driften. Innan en ersättare väljs:
-vilken källa ligger närmast verkligheten? Nivå 1 jämför källorna mot SMHI:s egna mätningar; nivå 2 är Axels modell omkalibrerad på
-den valda källan i kuvösen.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Upplägg.** De 70 VViS-stationer som har en SMHI-station inom 5 km (18 norr, 52 söder om 62°). MET Nordic Analysis i rutan närmast
-(`kuvos-metnordic-2024-25`, #480) och ECMWF IFS ur Open-Meteos arkiv i samma punkt (hämtad 9/10, `data/vaderkallan/`), mot SMHI:s
-mätning samma timme (`kuvos-smhi-2024-25`, #441): lufttemperatur, total molnmängd (113 utesluten), nederbörd 1 h; bara timmar där
-alla tre finns. Skript `scripts/matningar/vaderkallan-{par,hamta-ecmwf,jamforelse}-2026-10-09.py`; rapport
-`docs/VADERKALLAN-JAMFORELSE-2026-10-09.md`.
+## #505 (9/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Utfall (grova fel i luften, > 2 °C).** Alla timmar ECMWF 16,0 %, MET Nordic 8,7 %; frost 25,8 mot 15,2 %; nära noll (−3…+2 °C)
-11,6 mot 4,5 %; norr 28,4 mot 20,4 %; söder 11,1 mot 4,1 %; sträng kyla (≤ −15 °C) 67,0 mot 64,6 % — båda för varma, +3,5 och
-+2,9 °C. Molnen: medelfel 26,2 mot 23,8 pe, falskt klar 15,1 mot 11,5 %, klara timmar i norr hittade 24,2 mot 37,7 %. Nederbörden:
-hittad 77,6 mot 71,7 %, falsklarm 45,4 mot 31,3 %.
-
-**Förbehåll.** MET Nordic läser in SMHI:s stationer i analysen, så facit är inte helt oberoende för den; försprånget krymper inte med
-avståndet till stationen (0–2 km 18,2 mot 13,4 %, 3,5–5 km 17,1 mot 8,9 %), men inläsningen går inte att utesluta. Ett oberoende
-facit är VViS-stationernas egen luft och daggpunkt i kuvösen. Måttet är fysikens indata, inte vägytan; analys, inte prognos
-(+1…+6 h omätt, #490); daggpunkt och vind saknar SMHI-facit och är inte jämförda.
-
-**Vad som INTE görs.** Ingen källa väljs, ingen förregistrering, ingen omkalibrering. Valet är Axels och står i bedömningens §4.2,
-med frågan till Bengt om en körning mot VViS-facit i kuvösen. Data: ECMWF-filen ligger i `data/vaderkallan/` (2,4 MB, sha256 i
-`manifest.json`) eftersom releaser inte kunde skapas från sessionen; källa Open-Meteo.com / ECMWF, CC BY 4.0.
-
-**Stomdokument:** BED §4.2
-
-## #505 (9/10 2026) Väderkällan nivå 1b — MET Nordic och ECMWF mot vägstationernas egen luft och daggpunkt, förregistrerad (kort #318)
-
-**Beslut.** Bengt 9/10: *"slå ihop 837 och kör nivå 1b nu"* — efter *"men då måste vi väl göra den breda mätningen för att få rättvisa
-jämförelsetal eller?"*. Nivå 1 (#504) jämförde källorna mot SMHI:s luft vid 70 punkter, 18 i norr. Nivå 1b gör samma jämförelse vid
-**alla vägstationer med data i kuvösen** — samma stationer som FYSIK prövades på (#485) — mot **vägstationernas egen luft och
-daggpunkt**. MET Norways dokumentation (läst 9/10, kort #318) nämner inte vägstationerna bland det MET Nordic korrigerar mot, så facit
-är oberoende för MET Nordic; MET Nordics fukt är modellens (MEPS) utan korrigering.
-
-**Underlaget.** MET Nordic Analysis i rutan närmast varje station (release `kuvos-metnordic-2024-25`, #480). ECMWF IFS ur Open-Meteos
-arkiv i varje stations koordinat, hämtad 9/10 för alla 854 stationer (`scripts/matningar/vaderkallan-1b-hamta-ecmwf-2026-10-09.py`,
-samma anrop som nivå 1 men bara luft och fukt): 3 115 392 rader, luft −32,4…+17,7 °C, fukt 18–100 %, i den öppna releasen
-`kuvos-ecmwf-2024-25` (sha256 7a247017…, `kuvos/ecmwf-leverans.json`; källa Open-Meteo.com och ECMWF, CC BY 4.0). Fältet `rh_pct`
-deklarerat i värdevakten. Daggpunkten räknas ur luft och fukt med Magnus formel för båda källorna. Facit: vägstationens `air_temp_c`
-och `dewpoint_c` i avläsningen närmast hela timmen (±15 min), stationer i karantän utelämnade (#299, med givarvakten #75), värdevaktens
-spann hållna. Bara timmar där facit och båda källorna finns.
-
-**Måtten.** Grova fel (> 2 °C), MAE och medelfel i luft och daggpunkt: alla timmar, nära noll (facit −3…+2 °C), frost (≤ 0 °C), norr
-och söder om 62° (#502), avståndsband (stationens avstånd till närmaste andra station) och **vägt med trafiken** — varje väglagspunkt
-(#490) räknas till närmaste station med sin ÅDT × 2 km. Skriptet `scripts/matningar/kuvos-metnordic-ecmwf-1b-2026-10-09.ts`, självtest i
-ci.yml, motprovat: ECMWF räknad med MET Nordics värden fäller; att tidsfönstrets gräns tas bort fäller inte, eftersom en timme utanför
-fönstret saknar källvärde och ändå hoppas över — skyddet finns två gånger.
-
-**Förväntningar, skrivna före knappen.**
-
-| | MET Nordic | ECMWF |
-| :-- | --: | --: |
-| underlaget | 700–760 stationer, minst 2,0 miljoner timmar med luft | samma |
-| luft, grova fel, alla timmar | 9–16 % | 15–24 % |
-| luft, norr om 62° | 18–30 % | 25–38 % |
-| luft, söder om 62° | 6–12 % | 11–19 % |
-| luft, nära noll | 4–10 % | 9–16 % |
-| luft, vägt med trafiken | 6–12 % | 11–19 % |
-| daggpunkt, grova fel, alla timmar | 10–22 % | 12–26 % |
-
-Vägstationernas givare sitter vid vägen, ofta i svackor och skärningar, så felen väntas bli större än mot SMHI:s stationer för båda
-källorna. MET Nordics försprång i daggpunkten väntas vara högst hälften av försprånget i luften, eftersom dess fukt inte korrigeras.
-
-**Hur läsningen läses — en läsning, inget val av källa (Axels, #504).**
-- MET Nordic är det bättre underlaget för fysiken om dess grova fel i luften är färre än ECMWF:s **vägt med trafiken och i både norr
-  och söder**, och dess daggpunkt inte är mer än en procentenhet sämre.
-- Vinner MET Nordic luften men förlorar daggpunkten med mer än en procentenhet, noteras att fukten bör tas från en annan källa (MEPS).
-- Är ECMWF lika bra eller bättre i luften håller inte nivå 1:s slutsats på vägnätet, och frågan går tillbaka till Axel med båda
-  tabellerna.
-
-**Reservationer, med i läsningen.** Luft och daggpunkt, inte vägytan — nivå 2 (fysiken omkalibrerad på MET Nordic, mot FYSIK:s 9,85 %)
-avgör. Analys, inte prognos: MET Nordics prognoser arkiveras sedan 2018 och kan prövas senare. En vinter.
-
-**Kostnad.** En körning av kuvos.yml, omkring tio minuter, gratis sedan repot blev publikt (#503).
-
-**Utfall (9/10 12:15 UTC, körning 37927729663 på 6ab24e0; mätningen 0,4 min).** ECMWF-filen = manifestet (sha256 7a247017…).
-Vägstationernas timmar 2 683 984 från 754 stationer, daggpunkt i nästan alla; 753 stationer med facit och båda källorna.
-
-| grova fel (> 2 °C) | MET Nordic | ECMWF | förväntan MET / ECMWF |
-| :-- | --: | --: | :-- |
-| luft, alla timmar | **9,0 %** | 16,2 % | 9–16 ✓ / 15–24 ✓ |
-| luft, nära noll (−3…+2 °C) | **4,4 %** | 12,0 % | 4–10 ✓ / 9–16 ✓ |
-| luft, frost (≤ 0 °C) | **16,0 %** | 26,5 % | — |
-| luft, norr om 62° | **20,1 %** | 27,2 % | 18–30 ✓ / 25–38 ✓ |
-| luft, söder om 62° | **5,1 %** | 12,3 % | 6–12 ✗ (bättre) / 11–19 ✓ |
-| luft, vägt med trafiken | **5,6 %** | 13,2 % | 6–12 ✗ (bättre) / 11–19 ✓ |
-| luft, trafikvägt norr / söder | **18,4 / 4,0 %** | 27,2 / 11,5 % | — |
-| luft, band 0–7 · 7–15 · 15–20 · > 20 km | **4,7 · 6,1 · 9,3 · 19,8** | 12,9 · 13,6 · 16,4 · 25,4 | — |
-| daggpunkt, alla timmar | 14,8 % | 14,7 % | 10–22 ✓ / 12–26 ✓ |
-| daggpunkt, nära noll · frost | **9,9 · 20,2 %** | 11,8 · 24,8 % | — |
-| daggpunkt, norr · söder | 24,1 · 11,6 % | 24,2 · 11,3 % | — |
-| daggpunkt, vägt med trafiken | 12,5 % | 12,0 % | — |
-
-**Mot förväntningarna.** Underlaget och nio av elva tal inom spannen. Två utanför, båda åt det bättre hållet för MET Nordic: söder om
-62° 5,1 % (förväntat 6–12) och vägt med trafiken 5,6 % (6–12). MET Nordics försprång i daggpunkten blev noll, inom förväntan *högst
-hälften av försprånget i luften*.
-
-**Mot läsregeln.** MET Nordic har färre grova fel i luften än ECMWF vägt med trafiken, i norr och i söder, och dess daggpunkt är 0,1
-procentenheter sämre totalt och 0,5 vägt med trafiken — under gränsen på en. **Enligt läsregeln är MET Nordic det bättre underlaget för
-fysiken.** Valet är Axels (#504).
-
-**Läsningen.** Talen ligger nästan exakt på nivå 1:s (8,7 och 16,0 % mot SMHI), fast facit nu är vägstationernas egna givare och
-oberoende av MET Nordic: oron för att MET Nordic läser in SMHI:s stationer förklarade inte försprånget. Försprånget i luften är störst
-nära noll (4,4 mot 12,0 %), där halkan uppstår. Båda källorna blir sämre ju längre en station ligger från andra (MET Nordic 4,7 % inom
-7 km, 19,8 % bortom 20 km) — det är norr och glesbygden, samma bild som #502. Daggpunkten skiljer inte källorna åt: MET Nordics fukt är
-modellens, utan korrigering, och dess daggpunkt ligger 0,43 °C för högt i medel; i frost och nära noll är den ändå bättre (20,2 mot 24,8
-och 9,9 mot 11,8 %). Båda källorna ligger för varmt i frost (+0,57 och +0,72 °C).
-
-**Följd.** Rapporten `docs/VADERKALLAN-JAMFORELSE-2026-10-09.md` har ett avsnitt om nivå 1b. Kort #318 klart. Nästa steg är nivå 2 —
-Axels fysikmodell omkalibrerad på MET Nordic, i kuvösen mot FYSIK:s 9,85 % — och Axels val av källa.
-
-**Stomdokument:** KUV §9, BED §4.2
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #506 (9/10 2026) Regeln PUBLIKT REPO i CLAUDE.md, ett register över datafilerna och en publikvakt i ci (kort #320)
 
@@ -9900,205 +7846,17 @@ inte; då gäller regeln. Releaserna står i #499 och loggarna i #498.
 
 **Stomdokument:** inga — regeln står i CLAUDE.md och vakten i ci; läget på kort #311 och #320 och i projektkartan (g-kassan)
 
-## #507 (9/10 2026) Norr och söder per band och vägt med trafiken — den gemensamma redovisningen, och RÅ, FYSIK och OFFSET som utgångsläge (kort #317 (a))
+## #507 (9/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Beslut.** Bengt 9/10: *"ja till a nu, b väntar"* — på genomgången av kort #317 och #502. Principen i #502 (norr och söder var för
-sig, per band och vägt med trafiken) följdes fullt ut bara i nivå 1b (#505); RN (#481), FYSIK (#485) och kallkartan (#496) har bara
-totaler. (a) görs nu, som utgångsläge i samma form som det som kommer efter — nivå 2 (kort #319) och FYSIK+BLANDNING (kort #308).
-(b), frågan om norr mitt i vintern, väntar till november med skuggans vinter i norr som underlag.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Vad som byggs.**
-1. **Den gemensamma redovisningen** `scripts/matningar/regioner.ts`: grind A:s grova fel (> 2 °C) på gemensamma punkter, för alla, norr
-   och söder om 62°, per band (grind A:s ankKm) och vägt med trafiken (varje stations andel grova fel vägd med ÅDT × 2 km på
-   väglagspunkterna närmast stationen, #490). Varje kommande läsning av prognoslagret importerar den, så att principen följer med
-   av sig själv. Självtest i ci, motprovat tre gånger (regionfiltret av, trafikvikten som en etta — båda fäller; första versionen av
-   självtestet fångade inte regionfiltret, och fick ett prov till).
-2. **Läsningen** `scripts/matningar/kuvos-fysik-regioner-2026-10-09.ts`: underlaget och kandidaterna exakt som FYSIK i kuvösen (#485)
-   — grind A:s WHERE med vakterna, RÅ (utanOffset), FYSIK på RÅ:s punkter ur den frysta filen (sha256 mot manifestet), OFFSET som tak —
-   och redovisningen ur regioner.ts. Självtest i ci.
+## #508 (9/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Förväntningar, skrivna före knappen.** Kontrollen är #485:s tal på samma punkter; ett tal mer än en halv procentenhet därifrån är ett
-fel i underlaget.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-| | RÅ | FYSIK | OFFSET |
-| :-- | --: | --: | --: |
-| alla, alla band (kontroll #485) | 7,51 % ± 0,5 | 9,85 % ± 0,5 | 5,5 % ± 0,5 |
-| norr / söder, alla band (kontroll #485) | 14,13 / 4,82 % ± 0,5 | 17,07 / 6,92 % ± 0,5 | — |
-| norr · 0–7 km / >20 km | 7–12 / 18–28 % | — / 18–30 % | — |
-| söder · 0–7 km / >20 km | 4–6 / 8–16 % | — | — |
-| vägt med trafiken: alla / norr / söder | 4,5–6,5 / 10–15 / 4–5,5 % | 6–8,5 % (alla) | 3,5–5 % (alla) |
+## #509 (9/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Hur läsningen läses.** Ingen dom och inget val: talen är utgångsläget som nivå 2 och FYSIK+BLANDNING jämförs mot, per region och
-vägt med trafiken.
-
-**Kostnad.** En körning av kuvos.yml, omkring tio minuter, gratis (#503).
-
-**Utfall 9/10** (körning 37932248631 på add4113; förväntningarna i samma commit, pushad före knappen). 737 stationer och 4 352 753
-gemensamma punkter, FYSIK:s sha256 lika med manifestet; 729 stationer med trafik närmast sig, 183 i norr och 546 i söder.
-
-| | RÅ | FYSIK | OFFSET (taket) |
-| :-- | --: | --: | --: |
-| alla, alla band | 7,5 % | 9,8 % | 5,5 % |
-| alla · 0–7 · 7–15 · 15–20 · >20 km | 5,2 · 5,3 · 7,2 · 13,6 | 8,1 · 8,0 · 8,8 · 15,5 | 3,6 · 3,7 · 5,4 · 10,3 |
-| alla · vägt med trafiken | 5,1 % | 7,6 % | 3,6 % |
-| **norr**, alla band (1 255 431 punkter) | 14,1 % | 17,1 % | 10,7 % |
-| norr · 0–7 · 7–15 · 15–20 · >20 km | 14,3 · 11,0 · 12,3 · 16,0 | 16,9 · 16,6 · 15,4 · 17,9 | 9,5 · 7,7 · 10,2 · 12,2 |
-| norr · vägt med trafiken | 12,6 % | 16,0 % | 9,5 % |
-| **söder**, alla band (3 097 322 punkter) | 4,8 % | 6,9 % | 3,4 % |
-| söder · 0–7 · 7–15 · 15–20 · >20 km | 3,2 · 4,5 · 5,2 · 8,4 | 6,1 · 6,8 · 6,2 · 10,4 | 2,3 · 3,1 · 3,6 · 6,1 |
-| söder · vägt med trafiken | 4,1 % | 6,6 % | 2,9 % |
-
-**Mot förväntningarna.** Kontrollerna träffar: totalerna och norr och söder för RÅ och FYSIK ligger inom 0,05 procentenheter av #485,
-så underlaget är kuvösens. De trafikvägda talen ligger inom sina spann. Fyra bandförväntningar missade: RÅ norr 0–7 km 14,3 % (väntat
-7–12), RÅ norr >20 km 16,0 % (18–28), FYSIK norr >20 km 17,9 % (18–30) och RÅ söder 0–7 km 3,2 % (4–6). Förväntningarna antog att norr
-följer söderns avståndstrappa, och det gör den inte.
-
-**Vad talen visar** (ingen dom):
-1. I söder följer felet avståndet: 3,2 % nära en station och 8,4 % bortom 20 km. I norr gör det inte: 14,3 % nära och 16,0 % långt
-   bort, och bandet 7–15 km är bäst (11,0 %). Det som felar i norr sitter alltså inte främst i luckorna mellan stationerna.
-2. FYSIK är sämre än RÅ i alla tio cellerna, också bortom 20 km i norr (17,9 mot 16,0 %).
-3. Taket OFFSET, stationens egen historik, lämnar 10,7 % grova fel i norr (vägt 9,5 %), alltså mer än dubbla vägpunktsgrindens 5 % fast
-   en station står på platsen. I söder lämnar det 3,4 %.
-4. Vägt med trafiken får RÅ 5,1 %, inte 5,4 % som i #490. #490 vägde banden med trafikens andel, medan regioner.ts väger varje
-   station med trafiken närmast den. Båda räkningarna är riktiga; framåt gäller regioner.ts.
-5. Norrs 0–7 km-band har 90 004 punkter. Varför det är sämre än 7–15 km är inte utrett.
-
-Punkt 1 och 3 är underlag för (b) i november.
-
-**Stomdokument:** KUV §8 och §9, BED §4.2
-
-## #508 (9/10 2026) Fysikkoden i repot — publik på Bengts beslut, fryst med samma sha256 som FYSIKSPARET-SVAR §1, utan data (kort #319)
-
-**Beslut.** Bengt 9/10, väg (b) för nivå 2 av väderkällan (*"vi måste be axel skicka fysikmodellens kod från molnet"*): koden
-läggs i repot och körs här. Axel lämnade valet till Bengt 9/10. Det ersätter Axels önskan 7/10 i #485 att hålla koden utanför repot
-och bara leverera dess utdata som fil — den stod när repot var privat och koden bara fanns i molnsessionen; sedan 9/10 är repot
-publikt (#503) och publik kod är rätt, så länge ingen data följer med (#506). PR:en kommer från Axels fysiksession, där koden skrevs.
-
-**Vad som ligger i `fysik/`.** De tolv Bengt bad om — `prep.py`, `fetch_ifs.py`, `fetch_ifs2.py`, `physics.py`, `calib2.py`,
-`common.py`, `layers.py`, `v4.py`, `expA.py`, `kuvos_replica.py`, `roadtest.py`, `fingeravtryck.py` — och `params_v2.json`, plus
-sex filer som kedjan inte går att köra utan och som därför följer med: `prep_raw.py` (råuttaget kuvösreplikan läser), `fetch_elev.py`,
-`geofeat.py`, `geofeat2.py`, `roadjoin.py` (höjd, terräng, skog, vägdata — `v4.py` läser deras filer) och `utdata_fysik.py` (FYSIK som
-fil till releasen). `README.md` med ordning, tider, minne och sökvägar; `requirements.txt` med exakta versioner (Python 3.13.16,
-numpy 2.5.3, pandas 3.0.5, scipy 1.18.1, scikit-learn 1.9.1, pyarrow 25.0.1; rasterio 1.5.2, geopandas 1.2.0, pyogrio 0.13.0,
-shapely 2.1.2 bara för terräng och vägdata); `.gitignore` som spärrar data; `SHA256SUMS`.
-
-**Kontrollen.** Filerna är byte för byte de som kördes: `physics.py 32972b71…`, `params_v2.json 65a431c4…`, `common.py a76d799c…`,
-`layers.py 14619655…`, `v4.py 2bf71bf5…` — samma som FYSIKSPARET-SVAR §1 — och `expA.py 81a8085c…`, `kuvos_replica.py c640619d…`.
-`cd fysik && sha256sum -c SHA256SUMS` körs i ci.yml: en ändring i de frysta filerna är en ny modell och fäller bygget tills den fått
-ett nytt frysdokument och ett nytt beslut. Nivå 2 görs som nya filer, inte som ändringar i dessa. Priset: de frysta filerna bär sina
-absoluta sökvägar (`/home/claude/fys`), så kedjan körs genom en länk (README).
-
-**Vad som INTE följer med** (CLAUDE.md *PUBLIKT REPO*): inga VViS-filer, ingen ECMWF-cache, inga `.npy`, inga `oof`-filer, inga
-parquet, inga loggar; publikvakten går grön (926 filer). Trafikverkets leverans ligger i hinken; det som räknats ur den rad för rad
-(`oof_A2.npy`, `B_sp.npy`, `fysik-2024-25.csv.gz`) är releaser eller hinken.
-
-**De tre fälten MET Nordic saknar — svaret** (README, avsnittet om fälten). Fysiken (`physics.py`) läser inget av dem; bara den
-inlärda rättelsen gör det, som 6 av 70 särdrag. Uppmätt 7/10 (`ablate.py`, A1-konfigurationen): ensamma värda 0,7 procentenheter
-(12,9 → 12,2 %); bidraget ovanpå väg och terräng inte mätt separat. Rekommendation, Axels: **snödjup** ersätts av kolumnens eget
-snötäcke `swe` (finns redan som särdrag; snöfallet härleds ur nederbörd vid luft ≤ +1 °C, MET Nordic har ingen snöfallskolumn);
-**låga moln** ersätts av MET Nordics uppmätta långvåg — effektiv himmelsemissivitet som särdrag, och i fysiken `Lsky` direkt ur
-långvågen i stället för Brutsaert-skattningen, den största vinsten med bytet; **marktemperatur** ersätts av kolumnens eget 5 cm-lager
-(räknas redan, lämnas inte ut — en rads ändring i nivå 2:s kopia) eller stryks. Daggpunkten härleds ur fukten (Magnus). Allt är en
-omkalibrering: `calib2.py` på MET Nordic ger nya parametrar och `expA.py` en ny rättelse, och den förregistreras som egen kandidat
-före knappen (kort #319). Vad det kostar att stryka de tre helt är inte mätt: 0,7 procentenheter är deras värde ensamma, och bidraget ovanpå väg och terräng mättes inte.
-
-**Körning** (README): hela kedjan från tomt ~3–4 h klocktid, det mesta väntan på Open-Meteo och rastrarna; med cachen ~50 min, varav
-`expA.py` 45 min. Minne uppmätt 9/10: 2,6 GB RSS till och med första veckets designmatris; 4 GB räcker.
-
-**Alternativ som valdes bort.** (a) Bara de tolv filerna — kedjan stannar på `v4.py` utan höjd, terräng och vägdata; de sex följer
-med och är märkta i README, Bengt kan stryka dem. (b) Byta sökvägarna till relativa — hade ändrat hasharna; länken är billigare.
-(c) Lägga `final.py` (B_sp bakom de 23 %) med — talet är återräknat i `fingeravtryck.py` mot båda modellerna (SVAR §5), så
-`roadtest.py` står som källa utan att vara ett steg.
-
-**Vad som INTE görs.** Ingen omkalibrering i den här PR:en, inget utfall, inga trösklar. Nivå 2 är kort #319: nya filer, egen
-förregistrering, knappen på Bengts ord.
-
-**Rättelse 9/10 kväll (granskningen i Bengts session, Bengts ja).** Två rader rättade efter sammanslagningen (a10c9fa): (1) posten sade *"högst 0,7 procentenheter"* för att stryka de tre fälten — talet är deras värde ensamma, och bidraget ovanpå väg och terräng mättes inte, så kostnaden är okänd; (2) stomdokumentraden pekade på KUV §6, men ändringen på kuvössidan gjordes i §12 (loggen). Samtidigt flyttades kort #319 från Axel till Claude: nyckeln är levererad, nivå 2 byggs i Bengts session som nya filer, med förregistrering och knappen på Bengts ord; Axels val av källa står kvar. I projektkartan sade raden för nivå 2 både att koden bara fanns i Axels session och att den låg i repot — rättad, och ett byggsteg *Fysikkoden i repot* med a10c9fa som bevis. Kuvössidans kö (§9) sade *Axels fil* — rättad.
-
-**Stomdokument:** KUV §12, BED §4.2
-
-## #509 (9/10 2026) Väderkällan nivå 2 förregistrerad — fysikkedjan omkörd i kuvösen på ECMWF som kontroll och på MET Nordic som kandidat, förväntningarna före knappen (kort #319)
-
-**Beslut.** Bengt 9/10 kväll: *"kör nivå 2"*. Nivå 2 är fysikspåret (värmekolumnen och den inlärda rättelsen, #485, #508) med vädret
-bytt från ECMWF till MET Nordic, prövat i kuvösen mot samma facit som FYSIK. Bara vädret får skilja: därför körs först den frysta
-kedjan om i kuvösen som **KONTROLL** (ska ge FYSIK:s 9,85 %), och sedan samma kedja på MET Nordic som **NIVÅ 2**. Ingen dom; utfallet
-är underlag för Axels val av källa (kort #319). Trösklar, drift och de frysta filerna rörs inte.
-
-**Vad som byggs** (`fysik/niva2/`, README där; `scripts/matningar/kuvos-fysik-niva2-metnordic-2026-10-09.ts`; steg i kuvos.yml).
-1. **Kontrollen:** `v4.py` och expA:s A2-konfiguration körs som de frystes, på Trafikverkets filer ur hinken och Axels indata
-   (höjd, terräng, vägdata, ECMWF-cachen). oof_A2:s sha256 skrivs ut bredvid den frysta (`9268c6c7…`); byte för byte lika bevisar
-   återskapandet, annars avgör talen (gradientboostningens trådar kan ge sista decimalen olika).
-2. **Nivå 2, samma kedja med vädret bytt** (fysik/README.md, Axels rekommendation, #508): daggpunkt ur fukten (Magnus, som 1b);
-   snöfall ur nederbörd vid luft ≤ +1 °C i Open-Meteos enhet (7 cm per mm) så att snötäcket räknas som förut; strålningen i W/m²;
-   **uppmätt långvåg i fysiken** i stället för Brutsaert-skattningen; höjdskillnaden 0 (1 km-rutan står vid stationen). De tre
-   ECMWF-fälten ersatta i rättelsen: snödjup → kolumnens eget snötäcke, marktemperatur → kolumnens 5,5 cm-lager, låga moln →
-   effektiv himmelsemissivitet ur långvågen. Fysiken **omkalibreras** med calib2.py:s protokoll (Nelder–Mead, A1 + 5·A2, vecken
-   0/2/4, läses på 1/3) på tio parametrar — `cloud_p` och `lapse` är overksamma med uppmätt långvåg och höjdskillnad 0. Rättelsen
-   med samma 25 kluster, fem veck, samma radurval (samma frö, samma rader) och konfiguration som A2.
-3. **Uppvärmningen:** MET Nordic-releasen börjar 31/10; timmarna 10/10–30/10 tas ur ECMWF-cachen så att timindex, 45-dygns- och
-   72-timmarsfönstren och radurvalet är identiska med kontrollen. Den dömda vintern (1/11–) är helt MET Nordic-driven.
-4. **Läsningen:** RÅ, FYSIK (den frysta filen), KONTROLL, NIVÅ 2, fysiken ensam på ECMWF och på MET Nordic (vädrets egen skillnad,
-   utan rättelsen) och OFFSET på RÅ:s punkter, per band, frysflaggan, norr och söder per band och vägt med trafiken (#507); och
-   andelen punkter där KONTROLL = FYSIK.
-
-**Förväntningar, skrivna före knappen** (grova fel > 2 °C på RÅ:s punkter; FYSIK:s tal ur #485/#507).
-
-| | väntat | skälet |
-| :-- | --: | :-- |
-| RÅ (kontrollen på populationen) | 7,4–7,6 % | #485 |
-| KONTROLL | 9,85 % ± 0,3; lika FYSIK inom 0,005 °C på ≥ 95 % av punkterna om sha256 stämmer, annars inom 0,1 °C på ≥ 90 % | återskapandet |
-| ECMWF ensam (frysta parametrar) | 20–27 % | Axel: fysiken ensam 24,6 % timvis på sin population |
-| MET N. ensam (omkalibrerad, långvåg) | 15–24 %, lägre än ECMWF ensam | luften hälften så många grova fel (#505), långvågen uppmätt |
-| NIVÅ 2 | 8,8–10,2 % (FYSIK 9,85); norr 15,5–17,5, söder 6,0–7,2; vägt med trafiken 6,8–8,0 (FYSIK 7,6) | rättelsen tar det mesta av vädrets fel — *"atmosfären är inte huvudproblemet"* |
-| Kalibreringen på andra halvan | A2 ≤ de frysta parametrarnas A2 på samma halva | annars hittade Nelder–Mead ett sämre läge, och nivå 2 läses med det förbehållet |
-
-**Hur läsningen läses.** Ingen dom. Ligger NIVÅ 2 mer än 0,5 procentenheter under FYSIK stöder kedjan MET Nordic som källa; mer än
-0,5 över stöder den inte bytet; däremellan visar läsningen ingen skillnad. Fysiken ensam visar vädrets egen skillnad utan rättelsen.
-Landar RÅ utanför 7,4–7,6 % eller KONTROLL utanför sitt spann läses inget annat: då skiljer populationen eller kedjan, och det förstås
-först.
-
-**Vad som krävs före knappen.** Axels indata-release `kuvos-fysik-indata-2024-25` (bedömningen §4.2, kort #319 nyckel 2) med
-manifest i `kuvos/fysik-indata-leverans.json` — öppna källor per station, aldrig VViS. Kostnad: en körning, ~3 timmar, gratis (#503);
-jobbets tak höjt till GitHubs 360 minuter för den här mätningen.
-
-**Alternativ som valdes bort.** (a) Bara fysiken ensam på MET Nordic — billigt men svarar inte på frågan: kandidaten är fysik +
-rättelse. (b) Återskapa höjd, terräng och vägdata här — Lastkajens vägdata beställdes för hand och terrängen läses ur rastrar över
-nätet; en annan version gör jämförelsen oren. (c) Väg (a) i #319, Axel kör i sin session och lämnar en fil — Bengt valde väg (b) i
-#508, och kontrollen i kuvösen är beviset att kedjan är densamma.
-
-**Stomdokument:** KUV §9, BED §4.2
-**Axels tips, skrivet före knappen (11/10, DECISIONS #516):** *"FYSIK-MET tydligt under FYSIK:s 9,85 %, men fortfarande över RÅ:s 7,51 % ensam"*. Spannet ovan rörs inte; tipset läses bredvid. Indata-releasen inkopplad i PR #860.
-
-**Utfall (11/10 03:23 UTC, körning 38106214849 på 0ee247a; förregistreringen och Axels tips pushade i 84d7721 före knappen;
-jobbet 37 min, kedjan 31, mätningen 1,5).** Första knappen (38105675193 på 84d7721) föll efter 7 minuter på starten: `kedja.py`
-hittade inte de frysta modulerna (*No module named 'common'*); inget tal ur kedjan lästes, och 0ee247a rättade sökvägen utan att
-ändra något kedjan räknar. 737 stationer, 4 352 753 gemensamma punkter, samma som FYSIK:s. Kontrollen: `oof_A2` omräknad med
-sha256 `9268c6c7…` — **lika den frysta byte för byte** — och KONTROLL lika FYSIK inom 0,005 °C på 100,00 % av punkterna.
-
-| grova fel > 2 °C på RÅ:s punkter | utfall | förväntan |
-| :-- | --: | :-- |
-| RÅ (kontrollen på populationen) | 7,51 % | 7,4–7,6 ✓ |
-| KONTROLL | 9,85 % | 9,85 ± 0,3 ✓; lika FYSIK på 100 % ✓ |
-| ECMWF ensam (frysta parametrar) | 24,01 % | 20–27 ✓ |
-| MET N. ensam (omkalibrerad, långvåg) | 14,23 % | 15–24 ✗ (bättre); lägre än ECMWF ✓ |
-| **NIVÅ 2** | **6,10 %** | 8,8–10,2 ✗ (2,7 procentenheter bättre än spannet) |
-| NIVÅ 2, banden 0–7 · 7–15 · 15–20 · > 20 km | 4,34 · 4,21 · 5,08 · 11,81 | — (RÅ 5,23 · 5,27 · 7,16 · 13,59; FYSIK 8,09 · 7,99 · 8,79 · 15,54) |
-| NIVÅ 2, norr / söder om 62° | 12,3 / 3,6 % | 15,5–17,5 ✗ / 6,0–7,2 ✗ (bättre); RÅ 14,1 / 4,8 |
-| NIVÅ 2, vägt med trafiken | 4,0 % | 6,8–8,0 ✗ (bättre); FYSIK 7,6, RÅ 5,1 |
-| OFFSET (taket) | 5,52 % | — |
-| Kalibreringen på andra halvan | A2 13,73 % mot de frysta parametrarnas 24,40 % | ≤ ✓ |
-
-Frysflaggan med K2 = 1 °C, alla band: NIVÅ 2 farliga fel 0,9 % av frysningarna, rätt klass 98,7 %, täckning 81,5 %; RÅ 1,2 · 98,5 ·
-81,8; FYSIK 1,4 · 98,1 · 81,0. Kalibreringen gick sina 120 utvärderingar; parametrarna i `params_mn.json` i körningens artefakt.
-
-**Läsningen enligt #509.** NIVÅ 2 ligger 3,75 procentenheter under FYSIK: **kedjan stöder MET Nordic som källa**. Den ligger dessutom
-under RÅ i alla fyra banden, i norr och i söder och vägt med trafiken — första modellen som kuvösen själv kört som slår RÅ. Alla
-spann för nivå 2 missade åt det bättre hållet, och Axels tips likaså (*"över RÅ:s 7,51 %"*). Ett utfall som slår förväntan så tydligt
-är skäl att läsa populationen innan det används (CLAUDE.md, 23/9): RÅ och KONTROLL ligger i sina spann på exakt samma punkter som
-FYSIK, så populationen och kedjan är desamma, och bara vädret skiljer. **Förbehållet från 1b står kvar:** MET Norways dokumentation
-nämner inte Trafikverkets vägstationer bland det MET Nordics luft rättas mot (läst 9/10), men det är inte prövat på annat sätt. Läste
-MET Nordic vägstationernas egen luft vore målets luft indata. Vädret är en analys och inte en prognos, som för FYSIK. Ingen dom;
-valet av källa är Axels (kort #319).
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #510 (10/10 2026) K-B:s och R-B:s uppspelningar byggda ur arkivet, spärrade som grind NT — och kodgrindens underlagsspärr förregistrerad (kort #309, #46, ärende #815)
 
@@ -10341,241 +8099,25 @@ repot, och rubriken och länken räcker för att hitta arbetet.
 
 **Stomdokument:** BED §4.2
 
-## #516 (11/10 2026) Nivå 2 och kort #308 efter Axels besked 10/10: hans tips bredvid #509, grannarna och blandningen räknade i kuvösjobbet ur hans frysta kod, och prognosläget på +24–48 h (kort #319, #308)
+## #516 (11/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Beslut.** Bengt 11/10: *"slå ihop 860 och ja till 2,3,4a,4b"* — på rekommendationerna samma natt efter Axels besked från
-fysiksessionen 10/10, som Bengt klistrade in (indata-releasen finns, steg 1–4, ett tips om utfallet och två frågor om kort #308).
-Indata-releasen kopplades in i PR #860 (b20ae1e).
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-1. **Axels tips står bredvid #509, spannet rörs inte.** Skrivet före knappen: *"FYSIK-MET tydligt under FYSIK:s 9,85 %, men
-   fortfarande över RÅ:s 7,51 % ensam — vinsten syns först i blandningen bortom 15 km."* #509:s förväntan för NIVÅ 2 är
-   fortfarande 8,8–10,2 %, och dess läsregel gäller: mer än 0,5 procentenheter under FYSIK stöder MET Nordic. Tipset är Axels
-   egen förväntan och läses bredvid, inte i stället.
-2. **Knappen för nivå 2** trycks på Bengts ord, på grenen med den här posten, efter att den pushats.
-3. **(a) FYSIK+GRANNAR och FYSIK+BLANDNING räknas i kuvösjobbet, av Axels frysta `fysik/kuvos_replica.py`.** Filerna bär
-   grannarnas uppmätta yttemperaturer per halvtimme, räknade ur leveransen rad för rad, och får inte ligga i en publik release
-   (#506). Axels förslag var en port till TypeScript; den valdes bort i #490 (a) eftersom en port ändrar talen och tar en vecka,
-   och det skälet står kvar. Replikan räknar redan båda (8 grannar inom 300 km, vikt e^(−d/100 km), krympning 0,5, målet uteslutet;
-   w = 0,5·e^(−d/80 km) på RÅ), och den ligger i repot med sin sha256 i `fysik/SHA256SUMS` (#508). Ett tunt skript bredvid de
-   frysta lägger kontrollens FYSIK där replikan läser den, kör replikan oförändrad och skriver de två filerna i FYSIK-filens form
-   (`station_id,t_utc,fysik_c`, halvtimmar, två decimaler) med en förteckning, **bara på jobbets disk** — aldrig som artefakt,
-   release eller rad i loggen. `kuvos-blandning-2026-10-08.ts` läser dem som förut. Det som ändras i #490: filerna fryses inte
-   med sha256 före knappen, eftersom de skapas i jobbet. I stället bär koden sin frysta summa, och FYSIK in i replikan är
-   kontrollens omräkning, vars sha256 skrivs ut mot den frysta `9268c6c7…` (#509). Filernas summor, rader och stationer skrivs ut
-   i loggen. Förväntningarna i #490 för läsning 1 står kvar oförändrade. **Ordningen:** knappen för läsning 1 trycks först när
-   nivå 2:s kontroll visat att FYSIK återskapas inom #509:s spann; faller kontrollen läses ingen av dem förrän felet är förstått.
-4. **(b) Prognosläget på +24–48 h.** ECMWF via Open-Meteo ger enligt Axel bara föregående dags körning, alltså +24–48 h. Axel
-   lämnar en FYSIK-prognosfil på +24–48 h (modellens utdata i FYSIK-filens form, får ligga publikt som FYSIK), och grannarna och
-   blandningen räknas på den i jobbet på samma sätt som i (a). Filen uppfyller #490:s *minst +6 h*, men förväntan 6,5–9 % skrevs
-   för +6 h, och provet är hårdare. Därför: **Axel skriver förväntan för +24–48 h under den här posten före knappen**, och knappen
-   väntar på den. **Läsregeln:** håller +24–48 h #490:s villkor (banden 0–7 och 7–15 km på högst 5,2 %, bortom 20 km minst en
-   procentenhet under RÅ:s 13,6 %) är det ett starkare stöd än +6 h hade gett; faller det är frågan om +6 h fortfarande öppen.
-   Riktiga +6 h på MET Nordics arkiverade körningar är en egen läsning med egen förregistrering. Open-Meteo är icke-kommersiell,
-   som #490 redan säger; läsningen mäter modellens känslighet för prognosfel, inte en källa i drift.
+## #517 (11/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Alternativ som valdes bort.** (a) Axels port till TypeScript: ändrar talen (#490 (a)). (b) Axel räknar filerna och lägger dem i
-den privata hinken i stället för en release: kräver att hans session når hinken, och jobbet har redan allt som behövs. (c) Ändra
-#509:s spann efter Axels tips: en förregistrering ändras inte för att en kollega gissar annorlunda; båda står och läses.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Vad som INTE görs.** Inga trösklar, ingen drift, de frysta filerna rörs inte. Inga filer med grannarnas fel lämnar jobbet.
+## #518 (11/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Stomdokument:** KUV §5 och §9, BED §4.2
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-## #517 (11/10 2026) Nivå 2 med grannarna och blandningen förregistrerad — Axels frysta replika på nivå 2:s skattning i kuvösjobbet; frågan till MET Norway ställs inte igen (kort #327)
+## #519 (11/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Beslut.** Bengt 11/10: *"slå ihop 861 nej till frågan om MET (har ställts tidigare) och ja till nivå 2 med grannar och
-blandningen"* och *"och ja till 3"* — på rekommendationerna efter utfallen samma natt (#509, #490).
-1. **Frågan till MET Norway** om MET Nordics luft rättas mot Trafikverkets vägstationer ställs inte igen: den har ställts tidigare
-   (Bengt). I repot finns bara läsningen av MET Norways dokumentation 9/10 (bedömningen, raden om väderkällan), där vägstationerna
-   inte nämns. Förbehållet i #509:s utfall står kvar tills svaret finns i repot.
-2. **Nivå 2 med grannarna och blandningen** körs i kuvösen. Samma frysta replika och samma skript som i #516, men på nivå 2:s
-   skattning i stället för kontrollens FYSIK. Frågan: lägger grannarnas fel och blandningen med RÅ något till ovanpå MET Nordic, när
-   nivå 2 ensam (6,10 %) redan ligger nästan lika med FYSIK+BLANDNING på ECMWF (6,00 %)?
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Vad som byggs.** `fysik/niva2/kedja.py` sparar nivå 2:s timvisa skattning (`oof_niva2.npy`; inget annat i kedjan ändras).
-`fysik/blandning/grannar_blandning.py` tar kandidatens namn och skriver tre filer: indatan som replikan ser den, +GRANNAR och
-+BLANDNING. Kuvösens steg kör kedjan på MET Nordic och sedan replikan när mätningen heter `kuvos-blandning-niva2`, utan kontrollen:
-NIVÅ 2 i replikans halvtimmar är kontrollen mot #509. Mätningen `scripts/matningar/kuvos-blandning-niva2-2026-10-11.ts` kör samma
-läsning som `kuvos-blandning-2026-10-08.ts`, som nu också redovisar norr och söder per band och vägt med trafiken (#502). Filerna
-lämnar aldrig jobbet (#506, #516).
+## #520 (11/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Förväntningarna, skrivna före knappen** (grova fel > 2 °C på RÅ:s punkter; jämförelsetalen ur #509 och #490 utfall).
-
-| | väntat | skälet |
-| :-- | --: | :-- |
-| RÅ (kontrollen på populationen) | 7,4–7,6 % | #485 |
-| NIVÅ 2 i replikans halvtimmar (kontrollen) | 6,0–6,2 % | #509: 6,10 %; gradientboostningen räknar inte byte för byte lika mellan körningar |
-| NIVÅ 2+GRANNAR | 5,3–6,0 % | grannarnas fel tog 3,2 procentenheter av FYSIK:s fel; MET Nordic har redan tagit det mesta av det storskaliga felet, så mindre återstår |
-| NIVÅ 2+BLANDNING | 5,0–5,8 %, inte över NIVÅ 2+GRANNAR | blandningen tog 0,7 procentenheter till på ECMWF |
-| NIVÅ 2+BLANDNING bortom 20 km | 10,0–11,5 % | nivå 2 11,81, FYSIK+BLANDNING 10,98 |
-| NIVÅ 2+BLANDNING i norr | 10,5–12,3 % | nivå 2 12,3, FYSIK+BLANDNING 11,88 |
-
-**Hur läsningen läses.** Ingen dom. Ligger NIVÅ 2+BLANDNING mer än 0,3 procentenheter under både NIVÅ 2 och FYSIK+BLANDNING (6,00 %)
-lägger grannarna och blandningen något till ovanpå MET Nordic, och kandidaten är den bästa kuvösen har kört; inom 0,3 har vädret tagit
-vinsten och blandningen lägger lite till. Landar RÅ eller NIVÅ 2 (kontrollen) utanför sina spann läses inget annat förrän skälet är
-förstått. Norr och söder per band och vägt med trafiken redovisas för varje kandidat (#502). Förbehållet om MET Nordic och
-vägstationerna gäller också här. Valet av källa är Axels; förregistreringen för vintern 2026/27 är Bengts beslut (#485).
-
-**Alternativ som valdes bort.** (a) Ställa frågan till MET Norway först: Bengts nej, den är ställd. (b) Köra kontrollen igen i samma
-jobb: den bevisades i #509 och #516, och NIVÅ 2 i replikan är kontrollen här. (c) Blanda nivå 2 i TypeScript: #490 (a), #516.
-
-**Stomdokument:** KUV §5 och §9, BED §4.2
-
-**Utfall (11/10 05:09 UTC, körning 38112552084 på ca79cc9; förväntningarna pushade i samma commit före knappen; jobbet 25 min).**
-Nivå 2 omräknad på MET Nordic (kalibreringen samma tal som i #509: andra halvan A2 13,73 % mot de frysta parametrarnas 24,40 %), dess
-timvisa skattning (`oof_niva2.npy`, sha256 `e33582ec…`) in i Axels frysta replika i jobbet, tre filer à 5 332 320 rader från 736
-stationer, summorna lika förteckningen, ingen fil utanför jobbet. 4 352 575 gemensamma punkter.
-
-| grova fel > 2 °C på RÅ:s punkter | utfall | förväntan |
-| :-- | --: | :-- |
-| RÅ (kontrollen på populationen) | 7,51 % | 7,4–7,6 ✓ |
-| NIVÅ 2 i replikans halvtimmar (kontrollen) | 6,10 % | 6,0–6,2 ✓ |
-| NIVÅ 2+GRANNAR | 5,10 % | 5,3–6,0 ✗ (bättre) |
-| **NIVÅ 2+BLANDNING** | **5,02 %** | 5,0–5,8 ✓, inte över NIVÅ 2+GRANNAR ✓ |
-| — banden 0–7 · 7–15 · 15–20 · > 20 km | 3,69 · 3,50 · 4,59 · 9,20 | — (GRANNAR 3,61 · 3,46 · 4,45 · 9,84; RÅ 5,23 · 5,27 · 7,16 · 13,59) |
-| NIVÅ 2+BLANDNING bortom 20 km | 9,20 % | 10,0–11,5 ✗ (bättre) |
-| NIVÅ 2+BLANDNING norr / söder om 62° | 9,9 / 3,0 % | norr 10,5–12,3 ✗ (bättre); RÅ 14,1 / 4,8 |
-| NIVÅ 2+BLANDNING vägt med trafiken (norr / söder) | 3,4 % (9,3 / 2,6) | — (RÅ 5,1; OFFSET 3,6) |
-| OFFSET (taket) | 5,52 % | — |
-
-A1 0,57 °C för båda (RÅ 0,68, OFFSET 0,60). Frysflaggan med K2 = 1 °C, alla band: farliga fel GRANNAR 0,7 %, BLANDNING 0,8 %, RÅ 1,2 %,
-rätt klass 99,0 % för båda. Replikans egen grind A på sin population: NIVÅ 2+BLANDNING A2 5,00 % ± 0,02, OAVGJORT mot gränsen 5 %.
-
-**Läsningen enligt regeln ovan.** NIVÅ 2+BLANDNING ligger 1,08 procentenheter under NIVÅ 2 och 0,98 under FYSIK+BLANDNING (6,00 %):
-**grannarna och blandningen lägger till ovanpå MET Nordic, och kandidaten är den bästa kuvösen har kört** — under taket OFFSET totalt,
-bortom 20 km, i norr och vägt med trafiken, och under RÅ i varje band och region. Nästan hela vinsten kommer från grannarnas fel
-(6,10 → 5,10); blandningen med RÅ tar 0,08 till totalt, och den tar dem bortom 20 km (9,84 → 9,20) medan den kostar lite närmast
-stationerna (3,61 → 3,69). Två spann missade åt det bättre hållet, som i #509. Förbehållen står kvar: vädret är en analys och inte en
-prognos, och frågan om MET Nordics luft och vägstationerna (punkt 1 ovan). Ingen dom: valet av källa är Axels, och förregistreringen
-för vintern 2026/27 är Bengts beslut (#485).
-
-## #518 (11/10 2026) MET Nordic vald som väderkälla för fysikspåret; prognosläget prövas på MET Nordics egna prognoser, hämtade härifrån; takten på dokumentsynkens lista (kort #308)
-
-**Beslut.** Bengt 11/10: *"Axel och jag väljer Met Nordic"*, *"kan inte vi göra denna hämtning härifrån"* (om MET Nordics
-arkiverade prognoser) och *"lägg till takten på listan"*.
-1. **MET Nordic är fysikspårets väderkälla**, valt av Bengt och Axel efter #509 och #517: nivå 2 6,10 % grova fel mot FYSIK:s 9,85 %,
-   och nivå 2 med grannarna och blandningen 5,02 % mot RÅ:s 7,51 % och taket OFFSET:s 5,52 %. MET Nordic är fri att använda också
-   kommersiellt (MET Norway, CC BY 4.0). Förbehållen står kvar: det prövade är analysen, inte prognosen, och frågan om MET Nordics luft
-   rättas mot Trafikverkets vägstationer har ställts men svaret finns inte i repot (#517).
-2. **ECMWF-filen på +24–48 h i #516 punkt 4 stryks.** Prognosläget prövas i stället på MET Nordics egna arkiverade prognoser, och de
-   hämtas härifrån. Arkivet `metpparchive` har `met_forecast_1_0km_nordic` fyra körningar per dygn (00, 06, 12 och 18 UTC) med 59
-   timsteg (+0…+58 h), samma sju fält och samma rutnät 1796 × 2321 som analysen (läst i arkivets katalog och filbeskrivning 11/10 för
-   1/12 2024 och 15/1 2025). Hämtningen byggs ur analysens (`kuvos/metnordic.ts` på grenen `kuvos/rutnatet-469`), en förbindelse åt
-   gången enligt tjänstens villkor, i rutan närmast varje station. Varje rad bär körningens starttid och ledtiden. Kostnaden, räknad ur
-   analysens pilot (ungefär 26 MB och 2–5 s per timsteg för rutan över stationerna): ungefär 95 GB och 2,5–5 timmar per ledtidsklass
-   (de sex timstegen från varje körning som täcker varje timme, till exempel +6…+11 h), alltså ungefär 190 GB för +6 och +24 h.
-   Förregistreringen skrivs innan läsningens knapp, med Axels förväntan.
-3. **`docs/takten.json` får röras av dokumentsynkens gren** (`scripts/stomvakten.ts`, listan `OCKSA`): filen skrivs av
-   `projektkartan.ts` ur git-historiken (#515) och ändras när main har flyttat, vilket fällde `--tillatna` för PR #862 11/10.
-
-**Öppet före prognosläsningens knapp (bedömningen §4.2).** (a) Hur fysikens tillstånd bärs i prognosläget — Axels val: antingen körs
-kolumnen hela vintern på prognosvädret vid en fast ledtid (enkelt, men vägens tillstånd driver iväg på prognosens fel, så provet blir
-strängare än driften), eller startar den om från analysens tillstånd vid varje körning och räknar framåt på prognosen (som driften,
-men det kräver att fysiken kan starta från ett sparat tillstånd). **Valet styr också hämtningen:** den fasta ledtiden behöver bara
-klassens sex timsteg per körning (ungefär 95 GB per klass), medan omstarten behöver varje timsteg från körningen till ledtiden, för
-+24 h ungefär 30 timsteg per körning och ungefär 475 GB. (b) Ledtidsklasserna: +6 och +24 h, och +48 h om kostnaden godtas.
-(c) Axels förväntan. Rättelsen lärs på analysen och används på prognosvädret, om inget annat sägs.
-
-**Avgjort 11/10 (Bengt: *"2 gör som du föreslår"*):** ledtiderna +6 och +24 h först; +48 h väntar. **Mätt 11/10** mot arkivet (körningen
-15/1 2025 06 UTC): ett anrop kostar omkring 10 s också för en enda ruta över 30 timsteg, och en ruta på 100 × 100 km lika mycket, så
-kostnaden sitter i antalet anrop och timsteg och inte i rutans storlek. Hela rutan över stationerna (1 477 × 627 rutor, 25,9 MB per
-timsteg för de sju fälten) tog 2,4 s för ett timsteg och 12,3 s för sex. En ruta per körning är alltså billigast, och mindre rutor blir
-dyrare. Med 608 körningar: den fasta ledtiden (12 timsteg per körning) ungefär 189 GB och 4–5 timmar, omstarten (30 timsteg per
-körning) ungefär 473 GB och 10–11 timmar. Det som sparas är bara stationernas egna rutor (767 av rutans 926 079): ungefär 50 MB packat
-per ledtidsklass för den fasta ledtiden, ungefär 250 MB för omstarten.
-
-**Alternativ som valdes bort.** (a) Behålla ECMWF som källa: sämre i varje band och region (#509), och Open-Meteo är
-icke-kommersiell. (b) ECMWF-prognoser på +24–48 h ur Open-Meteo: ett prov på en källa vi lämnar. (c) Låta Axel hämta prognoserna i
-sin session: hämtningen finns redan för analysen här, och Actions är gratis för det publika repot (#503).
-
-**Stomdokument:** KUV §5 och §9, BED §4.2
-
-## #519 (11/10 2026) Prognosläget på MET Nordic förregistrerat — omstart från analysens tillstånd, timstegen 0–29, ledtiderna +6 och +24 h, Axels förväntan (kort #308)
-
-**Beslut.** Bengt 11/10: *"ja till b och hämtning timsteg 0-29 och axels förväntan överensstämmer med tabellen ovan"* — på
-rekommendationen samma morgon (#518 punkt (a)–(c)).
-1. **Omstart (B).** För var och en av vinterns 608 körningar (00, 06, 12 och 18 UTC) startar fysikkolumnen från det tillstånd som
-   nivå 2 på MET Nordics analys har vid körningens starttid, och räknar framåt på körningens prognos till +29 h. Rättelsen lärs på
-   analysen som i #517 och används på särdrag ur prognosvädret; rättelsens fönster (72 timmar, 45 dygn) byggs av analysen före
-   körningen och prognosen efter. Grannarnas uppmätta fel och blandningen med RÅ använder mätningarna vid giltighetstiden, som #490:s
-   operativa läge säger. Omstarten byggs i nivå 2:s egen kopia av fysiken (`fysik/niva2/fysik_lw.py`), aldrig i de frysta filerna.
-2. **Ledtiderna** +6 h (timstegen 6–11) och +24 h (24–29): för varje timme den senaste körningen som ger en ledtid i klassen.
-3. **Hämtningen**, timstegen 0–29: `kuvos/metnordic-prognos.ts` (självtest i ci) och flödet `kuvos-metnordic-prognos.yml`, åtta delar
-   om högst 20 dygn, en åt gången, till den öppna releasen `kuvos-metnordic-prognos-2024-25`. **Piloten 11/10** (körningen 15/1 2025
-   06 UTC): 2 minuter, 25 620 rader (854 stationer × 30 timsteg), 394 kB packat; strålningen är i prognosen summerad från körningens
-   start och räknas om till timvärden, och för station 1001 blev timvärdena de två första timmarna exakt analysens (872 806,25 och
-   859 370,25 J/m² långvåg, 39 248 J/m² kortvåg). Nederbörden saknar värde i timsteg 0 och har små negativa värden: 1 033 av 24 766, ned
-   till −0,008 mm. **I kedjan räknas nederbörd i [−0,01, 0) som 0, och antalet skrivs ut; ett värde under −0,01 mm fäller läsningen.**
-   Spannet i värdevakten rörs inte.
-4. **Driftens fördröjning, läst 11/10 06:03 UTC** i MET Norways realtidskatalog `metpplatest`: analysen för 05 UTC publicerad 05:15,
-   prognoskörningen 05 UTC 05:26, och prognoserna körs varje timme i realtid men arkiveras bara fyra gånger per dygn. I drift är vädret
-   alltså högst ungefär en timme gammalt; +6 och +24 h är pessimistiska marginaler för läget mellan stationerna nu. Hur långt i förväg
-   appen kan varna (grannarnas mätningar bara fram till prognosens utgivning) är en annan läsning, som hör till försprånget.
-
-**Förväntningarna — Axels (Bengt 11/10), skrivna före knappen** (grova fel > 2 °C på RÅ:s punkter).
-
-| | väntat | skälet |
-| :-- | --: | :-- |
-| RÅ (kontrollen på populationen) | 7,4–7,6 % | #485 |
-| NIVÅ 2+BLANDNING på analysen, i samma jobb (kontrollen) | 4,9–5,15 % | #517: 5,02 % |
-| NIVÅ 2+BLANDNING, +6 h | 5,1–5,6 % | grannarnas fel tar bort mest av vädrets storskaliga fel (FYSIK 9,85 → 6,67, #490), och prognosfel på några timmar är mest storskaliga |
-| NIVÅ 2+BLANDNING, +24 h | 5,3–6,2 % | som ovan, med större prognosfel |
-
-**Hur läsningen läses.** Ingen dom. Ligger +6 h under RÅ i varje band, i norr och söder och vägt med trafiken, håller fördelen med
-prognosväder; ligger den över 5,6 % försämrar prognosen mer än väntat, och läsningen visar var (band, region). Landar RÅ eller
-kontrollen utanför sina spann läses inget annat förrän skälet är förstått. Norr och söder per band och vägt med trafiken redovisas
-(#502). Förregistreringen för vintern 2026/27 är fortfarande Bengts beslut (#485).
-
-**Alternativ som valdes bort.** (a) Fast ledtid (A): kolumnens minne byggs bara av prognoser, vilket aldrig händer i drift; ett
-utfall som faller avgör inte driften. (b) Bara timstegen 6–11 och 24–29 (ungefär 189 GB): räcker inte för omstarten. (c) Grannarnas
-mätningar bara fram till utgivningen: en annan fråga (punkt 4).
-
-**Stomdokument:** KUV §9, BED §4.2
-
-**Byggt 11/10 eftermiddag (Claude; Axel: *"pappa behövs inte"*, han trycker knappen).** Omstarten och läsningen, medan hämtningen
-pågår:
-- `fysik/niva2/prognos.py`: nivå 2 på analysen som `kedja.py niva2` (samma kalibrering, särdrag och rättelse; `fit_modeller` är
-  `fit_oof` rad för rad och lämnar också de fem modellerna). Kolumnens hela tillstånd sparas i slutet av timmen före varje körning
-  (`fysik_lw.run_lw`, nya `T_init` och `spara`; utan dem oförändrad). För varje körning: vädret i fönstret [körningen − 45 dygn,
-  +29 h] är analysen före körningen och prognosen från den, tdeep, ta72 och snötäcket räknas om på den skarvade serien, kolumnen
-  startar ur det sparade tillståndet, särdragen byggs på fönstret och veckets modell (stationens region gömd) läggs på timstegen
-  6–11 och 24–29. Prognosens tomma värden i timsteg 0 (strålning, nederbörd) tas ur analysen för samma timme, som i drift (punkt 4).
-- Självtestet (ci): omstart ur sparat tillstånd på samma väder ger samma yta (< 1e-9); en "prognos" som är analysen själv ger
-  analysens skattning (100 % lika, max 7e-7); prognosens luft 3 °C varmare i en körning höjer den körningens yta och rör inte nästa;
-  bruset räknas som 0 och −0,02 mm fäller.
-- Läst på den riktiga del 3 (10–29/12): 80 körningar, 2 049 600 rader, 854 stationer, strålning och nederbörd tomma precis i
-  timsteg 0 (68 320 = 80 × 854), 38 300 nederbördsvärden i [−0,01, 0), inget under.
-- `grannar_blandning.py` tar `--lage`, `--kod` och `--lagg-till`, så att replikan körs på analysen, +6 h och +24 h in i samma
-  manifest; mätningen `kuvos-blandning-prognos-2026-10-11.ts` läser alla nio filer med RÅ och OFFSET bredvid. `kuvos.yml` hämtar
-  prognosdelarna med summorna mot `kuvos/metnordic-prognos-leverans.json`, som skrivs när hämtningen är klar.
-
-**A2 per ytband i samma körning (kort #329, DECISIONS #520), förregistrerat före knappen.** Varje kandidat redovisar de grova felen
-per uppmätt yta (≤ −3 · −3…+1 · +1…+3 · +3…+5 °C) och hur stor del av alla grova fel som ligger i varje band. **Granskarens förväntan:
-25–45 % av de grova felen ligger i +3…+5 °C**, för RÅ och för NIVÅ 2+BLANDNING. Ingen grind och ingen population ändras av den (regel L,
-kort #282).
-
-**Utfall 13/10:** under DECISIONS #490 (utfall läsning 2). +6 h gav 5,24 % och +24 h 5,43 %, båda inom förväntan. Kontrollerna höll (RÅ 7,51 %, analysen 5,02 %).
-
-## #520 (11/10 2026) Tre punkter ur en granskning: A2 per ytband i varje läsning, kvantil och fysiken som vittne som låsta kort (kort #329, #330, #331)
-
-**Beslut.** Bengt 11/10: *"2 ja"* — på rekommendationen i bedömningen §4.2 om tre outforskade punkter ur en granskning han klistrade
-in samma dag (telefonen blev kort #328).
-1. **A2 per ytband (kort #329).** Varje läsning av prognoslagret redovisar de grova felen per uppmätt yttemperatur, ≤ −3 · −3…+1 ·
-   +1…+3 · +3…+5 °C, bredvid norr och söder (#502), så att det syns hur stor del av felen som ligger där appen ändå inte kan varna.
-   Redovisningen byggs in i läsningarnas gemensamma kod och följer med i prognosläsningens körning (#519); den förregistreras före
-   den knappen, med granskarens förväntan (25–45 % av de grova felen över +3 °C) som hans. **Ingen grind ändras av redovisningen:**
-   nivå 2 med blandningen står på 5,02 % mot grind A:s 5 % (#517), och att flytta populationen nu vore att flytta målet efter utfallet
-   (regel L, kort #282). En ändring av grind A:s population är ett eget beslut enligt regel L.
-2. **Kvantil i stället för medelvärde (kort #330, låst).** Rättelsen förutsäger ett band per rad i stället för ett tal, och grinden
-   kan läsa bandet. Nyckeln: kandidaten för vintern 2026/27 är vald, eftersom hur grinden läser bandet är en tröskelfråga.
-3. **Fysiken som vittne (kort #331, låst).** De grova fel fysiken hittar tar #75 redan (#493); det nya är den 1,3 % av raderna som
-   vakterna behåller men fysiken flaggar. De läses på nivå 2:s skattning, som har ungefär halva felen. Nyckeln: en senare kuvöskörning,
-   efter prognosläsningen.
-
-**Alternativ som valdes bort.** (a) Ändra grind A:s population till det band där appen kan varna: regel L. (b) Allt som en egen
-körning nu: punkt 1 kostar ingenting i prognosläsningens körning, och punkt 2 och 3 avgör inget före vintern 2026/27.
-
-**Stomdokument:** KUV §5, BED §4.2
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #521 (11/10 2026) S1-grinden läst i Axels ställe: skuggloggen och arkivet ense på alla 1 349 ögonblick, och det första positiva fallet (kort #89)
 
@@ -11064,57 +8606,9 @@ den nya funktionen, så dess beteende är detsamma.
 
 **Stomdokument:** MAT §3, SYS §2, BED §4.2
 
-## #536 (12/10 2026) Prognosläsningens tre tillägg och Axels förväntan förregistrerade före knappen (kort #308)
+## #536 (12/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Beslut.** Bengt 12/10: *"Axel godkänner"*, om utkastet i bedömningen §4.2 och på kort #308 (PR #896, fa88089). Förväntan nedan
-är därmed Axels och står före knappen. Ett tillägg till förregistreringen av prognosläget (#519, PR #867).
-
-**Skälet** (Bengts fråga 12/10, *"kan vi med någon form av säkerhet uttala oss om hur det ser ut längre fram på vägen"*): måttet
-grova fel säger hur ofta temperaturen blir mer än 2 °C fel, inte hur ofta en varning stämmer, och kuvösen saknar facit för halka.
-Grind B (falsklarm, missar, mervärde) döms i skuggan i mars. Tilläggen ger frågan tal redan i kuvösen. Inget av dem ger prognosen
-rätt att tala (TROSKLAR-SKUGGAN, T3 och T6), och ingen tröskel, grind eller population ändras (regel L, kort #282).
-
-**De tre tilläggen**, för RÅ och NIVÅ 2+BLANDNING i analysläget, +6 h och +24 h, norr och söder:
-1. **Felen per uppmätt yttemperatur** (≤ −3 · −3…+1 · +1…+3 · +3…+5 °C) och hur stor del av alla grova fel som ligger i varje band
-   (kort #329, #520).
-2. **Frysflaggan vid +1 °C** (#437), marginal 0 · 0,5 · 1 °C: farliga fel av frysningarna, falska flaggor, rätt klass och täckning,
-   läst mot K-A:s måttstock (≤ 1 % farliga fel, ≥ 95 % rätt klass, ≥ 70 % täckning).
-3. **Klara, stilla nätter för sig**, med #471:s definition: molnmängd ≤ 25 % ur SMHI vid närmaste station inom 50 km, medelvind
-   ≤ 2 m/s och solen under −6°, satt efter hur det faktiskt var vid t.
-
-**Förväntan — Axels (via Bengt 12/10), skriven före knappen:**
-
-| Tillägg | Förväntan | Skälet |
-| :-- | :-- | :-- |
-| 1. Felen per yttemperatur | 25–45 % av de grova felen i +3…+5 °C, för RÅ och NIVÅ 2+BLANDNING | Granskarens förväntan (#519); dagens fel dominerar (RÅ 10,9 % dag mot 6,0 % natt, #476) |
-| 2. Frysflaggan, marginal 1 °C, +6 h | farliga fel 0,8–1,0 %, rätt klass ≥ 98,7 % | Analysläget 0,8 % och 99,0 %, RÅ 1,2 % och 98,5 % (#517); Axels A2-förväntan i #519 (5,1–5,6 %) |
-| 2. Frysflaggan, marginal 1 °C, +24 h | farliga fel 0,9–1,2 %, rätt klass ≥ 98,5 % | Som ovan med #519:s 5,3–6,2 % |
-| 3. Klara stilla nätter, RÅ | 8–11 % grova fel | OFFSET 6,6 % där (#471) gånger RÅ:s nattfel genom OFFSET:s, 6,0 / 4,2 ≈ 1,4 (#476, #471) |
-| 3. Klara stilla nätter, NIVÅ 2+BLANDNING | 5,5–8 % i analysläget; 1–2 procentenheter sämre vid +6 h | Som ovan; molnprognosen är svagast just då |
-
-Spannet för nätterna är det svagast underbyggda: det bygger på en kvot mellan två läsningar på olika populationer. Ungefär 15 % av
-punkterna är klara stilla nätter (#471).
-
-**Hur det läses.** Ingen dom. Håller frysflaggan högst 1,0 % farliga fel vid +6 h klarar kandidaten K-A:s måttstock, som RÅ inte
-gör (1,2 %) och som hittills bara OFFSET klarat. Ligger kandidaten inte under RÅ på klara stilla nätter vid +6 h, sitter fysikens
-fördel i de mindre kritiska lägena. Utfall utanför spannen läses med skälet innan något annat läses.
-
-**Vad som byggs före knappen.** Tillägg 1 och 2 finns redan i läsningens kod på #519-grenen (`ytbandsrad`, `skrivFrysflaggan`).
-Tillägg 3 finns bara i kuvösens läsning 6/10 (`scripts/matningar/kuvos-prognoslagret-2026-10-06.ts`, #471) och byggs in i
-prognosläsningen, med självtest, innan Axel trycker.
-
-**Byggt 12/10 kväll (Claude; Bengt: *"bygg in nattdelningen"*), PR #867, 8e2009a.** Läsningen skriver nu en rad per kandidat med
-klassen, de grova felen, klassens andel av punkterna och norr och söder. Klasserna är klar stilla natt, natt övrigt, dag och okänd.
-Definitionen är #471:s, kopierad ur läsningen 6/10. Molnen hämtas ur `kuvos_ra.smhi_obs` (p16), vinden ur samma arkivrad som ytan.
-Prognosläsningen slår på delningen. Analysläsningarna 8/10 och 11/10 är oförändrade.
-Läsningen räknar molnvärden utanför 0–100 %. Koden 113 (himlen skymd) räknas som inte klar.
-Saknas molnen fälls jobbet först efter läsningen, så att de andra måtten inte går förlorade.
-Självtestet prövar klassningen med rader i databasens form. Motproven fällde alla åtta: molngränsen, vindgränsen, solgränsen,
-bortkopplad nattrad, förväxlat norr och söder, timnyckeln, avståndet och vindens hink.
-
-**Stomdokument:** KUV §5, BED §4.2
-
-**Utfall 13/10:** under DECISIONS #490 (utfall läsning 2). Tillägg 1 hamnade utanför spannet: 8,8–9,3 % av de grova felen i +3…+5 °C, medan 61–64 % ligger i ≤ −3 °C. Tillägg 2 och 3 hamnade inom eller bättre än spannen. Frysflaggan med 1 °C marginal klarar K-A:s måttstock vid +6 och +24 h.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #537 (12/10 2026) Ingen fråga till Trafikverket om is- och snöflaggan; flaggorna dömer inget, och friktionen blir frågan (kort #324)
 
@@ -11279,120 +8773,9 @@ namn. (b) Jobbet gissat ur klockslaget: ingest-live går varje minut. (c) En utl
 
 **Stomdokument:** SYS
 
-## #544 (13/10 2026) Väg B: ärliga tal före frysningen, och förregistreringen av den ärliga körningen (kort #342)
+## #544 (13/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Beslut.** Bengt 13/10: *"slå ihop 911 och kör väg B"*. Axel säger ja via Bengt (*"säg till när förregistreringen är klar och axel säger
-ja"*). Det är läst som Axels ja till att blandningens vikter och fysikens kalibrering väljs om i vecken; rättas om det är fel. Väg B
-enligt bedömningen §4.2 (Claudes bedömning 13/10):
-- Kandidaten NIVÅ 2+BLANDNING får ärliga tal före frysningen. Varje stations tal räknas med en kedja som aldrig sett stationens veck.
-- Ledtiden för domen om *läget längs vägen nu* är +6 h. +24 h (kvällen före) är en annan funktion och ingår inte i den domen.
-- Kandidaten fryses och förregistreras för vintern 2026/27 senast 31/10, och domen räknas från förregistreringens dag.
-- Hur kandidaten räknas i vinter (uppspelning efter vintern eller i drift) är fortfarande Axels fråga (§4.2).
-
-**Varför: läckaget** (kartan 13/10).
-- Fysikens tio parametrar kalibreras en gång, på veck 0, 2 och 4, och används på alla stationer (`fysik/niva2/kedja.py:56–78`).
-- Startpunkten `params_v2.json` är kalibrerad på samma veck (`fysik/calib2.py`).
-- Blandningens vikter valdes på dev-vecken 6–7/10 (`docs/FYSIKSPARET-FRYS-2026-10-07.md:47–48`).
-- Rättelsens inställningar valdes på veck 0–2 (`fysik/expA.py`, `fysik/v4.py`).
-- Rättelsen själv är redan räknad ur vecket.
-
-**Förregistreringen av den ärliga körningen** (skriven före bygget, och inget utfall är läst):
-1. Vecken är kedjans egna: KMeans(25) % 5 på [lon·0,55, lat] (`kedja.py:41–44`), oförändrade.
-2. För varje veck f = 0…4, bara med de andra fyra vecken:
-   - (a) Fysikens tio parametrar (`KAL_NAMN`) kalibreras med kedjans protokoll: Nelder–Mead, målet A1 + 5·A2, maxfev 120. De startar
-     från litteraturvärdena i `fysik/physics.py` (`DEFAULT`) i stället för `params_v2.json`.
-   - (b) Rättelsen tränas på de fyra vecken, med fysiken från (a) och de frysta inställningarna (`A2_KONFIG`), och förutsäger veck f.
-   - (c) Grannarnas fel räknas som i replikan, med konstanterna orörda (100 km, K = 8, 300 km, 0,5).
-   - (d) Blandningens vikt väljs på de fyra vecken ur rutnätet W ∈ {0; 0,25; 0,5; 0,75; 1} och L ∈ {40; 80; 160} km. Det är 15 par,
-     och Axels 0,5 och 80 km ingår. Målet är andelen grova fel.
-   - (e) Veck f:s stationer får sina värden ur (a)–(d).
-3. Resultatet är en fil i FYSIK-filens form, i analysläget och vid +6 h, där varje stations värden är räknade utanför dess veck. Summan
-   står i manifestet. Kuvösens läsning (`kuvos-blandning-2026-10-08.ts`) läser den bredvid RÅ, den frysta kandidaten och OFFSET, på
-   samma punkter.
-4. Den byggs som nya filer, och de frysta filerna (`fysik/SHA256SUMS`, #508) rörs inte. Ett självtest visar att den nya
-   blandningskoden ger replikans tal byte för byte med Axels konstanter.
-5. Ryms körningen inte i jobbets tak (360 min) delas den i två jobb: analysläget först och +6 h sedan, under samma förregistrering.
-6. Kandidaten som fryses för 2026/27 är proceduren räknad om på alla stationer: parametrarna kalibreras och vikten väljs på alla veck.
-   Dess väntade fel är det ärliga talet.
-
-**Kvarstående läckage.** Rättelsens inställningar och grannlagrets konstanter väljs inte om. En kapslad sökning kostar för mycket tid
-före 31/10. Det redovisas tillsammans med talet.
-
-**Förväntan.** Claudes utkast, som Axel godkänner eller ändrar före knappen. Måttet är grova fel > 2 °C på RÅ:s punkter.
-
-| | väntat | frusen kandidat |
-| :-- | --: | --: |
-| RÅ (kontroll) | 7,4–7,6 % | 7,51 % |
-| ärlig, analysläget | 5,05–5,45 % | 5,02 % |
-| ärlig, +6 h | 5,25–5,70 % | 5,24 % |
-
-Skälet är att rättelsen redan räknas ur vecket och bär det mesta av förbättringen: FYSIK 9,85 % → NIVÅ 2 6,09 % → BLANDNING 5,02 %.
-Läckaget sitter i tio parametrar för hälften av stationerna och i två vikter, och sådant flyttar oftast tiondelar. Att det ärliga talet
-vid +6 h hamnar under grind A:s 5 % bedöms som osannolikt.
-
-**Hur det läses.** Ingen dom.
-- Under 5,0 % vid +6 h: förregistrera med de ärliga talen.
-- Mellan 5,0 och 5,7 %: Bengt väljer med talen i hand mellan att förregistrera ändå (bättre än RÅ, men troligen underkänd mot grind A)
-  och ett varv till.
-- Över 5,7 %: läckaget var större än väntat, och skälet läses innan något annat.
-- Landar RÅ utanför sitt spann läses inget annat förrän skälet är förstått.
-
-**Alternativ som valdes bort.**
-- (a) Två halvor, alltså en kalibrering till på veck 1 och 3. Billigare, men rättelsen för ett veck tränas då på fysik som är
-  kalibrerad på vecket.
-- (b) En kapslad sökning av rättelsens inställningar. För dyr före 31/10.
-- (c) Frysa i dag som den är (väg A).
-
-**Stomdokument:** KUV §5, BED §4.2
-
-**Axels godkännande och byggets detaljer (13/10, före knappen).**
-- Axel godkänner förväntan, via Bengt 13/10 (*"slå ihop 912 och Axel godkänner"*).
-- Alla fysikens parametrar tas ur litteraturvärdena (`physics.DEFAULT`), också de som inte kalibreras. Bland dem är `cloud_p` 2,0 i
-  stället för `params_v2`:s 0,3; den verkar bara när den uppmätta långvågen saknas (uppvärmningen på ECMWF).
-- Rättelsens urval dras med frö 0 för varje veck.
-- Omstarterna körs bara för veckets egna stationer, med veckets parametrar och modell, eftersom fysiken och särdragen räknas per
-  station.
-- Bara +6 h räknas, förregistreringens ledtid; +24 h räknas inte.
-- Den frysta kandidaten räknas inte om i samma jobb. Dess tal på samma population står i #490 (läsning 2, körning 38351107743), och
-  RÅ (7,51 %) är kontrollen att populationen är densamma. Det håller jobbet inom taket.
-- **Byggt:** `fysik/niva2/vagb.py` och `fysik/blandning/vagb_blandning.py` (nya filer; de frysta är orörda), flödets gren
-  `kuvos-blandning-vagb` och läsningen `scripts/matningar/kuvos-blandning-vagb-2026-10-13.ts`.
-- **Prövat:**
-  - `sjalvtest.py`: veck 0:s parametrar och skattningar står helt still, i analysen och vid +6 h, när veck 0:s mätningar höjs
-    4 °C. Veck 1:s parametrar och de andra veckens skattningar rör sig.
-  - Omstarterna för veckets stationer ger analysens skattning när prognosen är analysen själv.
-  - Motproven fälldes alla tre: kalibreringen på veck 0/2/4, rättelsen tränad på alla veck och blandningens val på alla veck.
-  - `vagb_blandning.py --sjalvtest` prövar blandningen och valet per veck.
-  - I jobbet skrivs ingenting om Axels par (0,5 och 80 km) inte ger replikans tal byte för byte.
-
-**Utfall (13/10 08:18–09:48 UTC, körning 38368369876 på a6245a3; tryckt på Bengts ord; jobbet 90 min).**
-- Kalibreringen gick sina 120 steg i varje veck, med fysiken ensam 12,8–21,4 % grova fel i vecket.
-- Axels par gav replikans tal byte för byte i båda lägena.
-- Paret som valdes på de andra fyra vecken blev W 0,25 · L 160 km i nio av tio fall och W 0,25 · L 80 km i ett (veck 4, analysen).
-  Valt på alla veck blev det W 0,25 · L 160 km.
-- 4 352 575 gemensamma punkter.
-
-| grova fel > 2 °C på RÅ:s punkter | ärlig | fryst (#490, läsning 2) | förväntan |
-| :-- | --: | --: | :-- |
-| RÅ (kontroll) | 7,51 % | 7,51 % | 7,4–7,6 ✓ |
-| NIVÅ 2 utan grannar, analys | 6,06 % | 6,09 % | — |
-| NIVÅ 2+BLANDNING, analys | 4,84 % | 5,02 % | 5,05–5,45 (bättre än spannet) |
-| NIVÅ 2+BLANDNING, +6 h | 5,12 % | 5,24 % | 5,25–5,70 (bättre än spannet) |
-| — banden 0–7 · 7–15 · 15–20 · > 20 km, +6 h | 3,62 · 3,59 · 4,62 · 9,48 | 3,82 · 3,67 · 4,83 · 9,55 | — |
-| — norr · söder · vägt med trafik, +6 h | 10,29 · 3,03 · 3,5 | 10,31 · 3,19 · 3,6 | — |
-| frysflaggan K2 = 1 °C, +6 h | 0,8 % farliga fel, 99,0 % rätt klass, 81,7 % täckning | 0,8 %, 99,0 %, 81,7 % | K-A:s måttstock ✓ |
-
-**Läsningen.** Ingen dom.
-- Kontrollen höll (RÅ 7,51 %), så resten läses.
-- **Talen hamnade utanför förväntan, åt det bättre hållet, och skälet läses först.** Läckan från kalibreringen var försumbar: nivå
-  2 utan grannar ger 6,06 % ärligt mot 6,09 % fryst. Förbättringen kommer från blandningens vikt. W 0,25 valdes i alla fem vecken i
-  stället för Axels 0,5, och på träningsvecken var paret 0,1–0,2 enheter bättre än Axels. Förväntan byggde på att läckan skulle dra
-  uppåt, och det gjorde den inte.
-- **L = 160 km är rutnätets ytterkant** och valdes i nio av tio fall. Det bästa värdet kan ligga längre bort.
-- **+6 h på 5,12 % ligger i förregistreringens mellanband (5,0–5,7 %).** Bengt väljer med talen i hand mellan att förregistrera och
-  ett varv till (bedömningen §4.2).
-- Den frysta kandidaten för 2026/27 är proceduren räknad om på alla stationer (punkt 6): vikten W 0,25 · L 160 km och fysiken
-  kalibrerad på alla veck. Det kräver en körning till före 31/10.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #545 (13/10 2026) Dokumentsynken för hand 12/10 räknas i serien om sju morgnar (kort #304)
 
@@ -11437,674 +8820,38 @@ redan vad som ska läsas.
 
 **Stomdokument:** SYS
 
-## #547 (13/10 2026) Domen i mars för segmentprognosen gäller NIVÅ 2+BLANDNING som en ny fråga; RÅ blir kontroll och reserv
+## #547 (13/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Beslut.** Bengt 13/10: *"1 ja"*. Frågan var: ska domen i mars för L4 gälla NIVÅ 2+BLANDNING, med RÅ som kontroll och reserv? Två
-spår ledde mot samma dom. Skuggan kör RÅ med spridningsgrinden (TROSKLAR-SKUGGAN §3, #324, #328), och förregistreringen #544 gäller
-kandidaten.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
+**För appen:** domen i mars gäller kandidaten nivå 2+blandning; RÅ står kvar som kontroll och reserv.
 
-**Hur, inom tröskeldokumentets §5** (dokumentet ändras bara genom en post från Bengt, och lättnad är utesluten när utfallet är sett):
-- Kandidaten döms som en **ny fråga**, i den form väg B fryser den och förregistreras senast 31/10 (#544).
-- Den döms mot samma trösklar i grind A–C, med samma spridningsgrind (X = 2,25 °C) och samma regel att tystnad på ett täckt segment
-  är en miss (#475, #477). Inget krav sänks.
-- Domfönstret börjar på förregistreringens dag, så bara data som ingen sett räknas. Det är så förslaget till regel L (#282, L2 och
-  L3) behandlar ett kandidatbyte.
-- RÅ:s dom fälls som förut och redovisas bredvid, som kontroll. Domslutet (a)–(c) gäller kandidaten. **Reserv** betyder: kan
-  kandidaten inte räknas för vintern (data saknas, eller frågan (a)/(b) i §4.2 ger ingen väg), fälls domslutet på RÅ som förut.
-  Det blir inte två chanser att klara grinden.
-- Texten står i TROSKLAR-SKUGGAN §3, efter spridningsgrinden.
+## #548 (13/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Följder.**
-- **Höjden i terrängen (#96):** höjden förs inte in i `segment.ts`. Höjd och terräng är redan särdrag i kandidatens rättelse.
-  Måndagsserien och läsningarna 23/10 (#357) och 24/11 (#435) står kvar som kunskap om RÅ, kontrollen och reserven.
-- **Kort #270, val (b)** (grinden preciserad med RÅ+HÖJD) stryks: RÅ+HÖJD är inte längre kandidaten.
-- **Spridningsgrinden** gäller kandidaten oförändrad. En annan gräns för kandidaten vore en ny fråga och måste skrivas före 31/10.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Alternativ som valdes bort.** (a) Döma RÅ i mars och kandidaten först vintern 2027/28: ett år senare. (b) Döma båda och välja den
-som klarar: två chanser, alltså en lättnad.
+## #549 (13/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Stomdokument:** SYS, KUV §5, BED §4.2
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-## #548 (13/10 2026) Kriging läggs ned
+## #550 (13/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Beslut.** Bengt 13/10: *"lägg ned kriging"*. Frågan stod sedan 9/10 i bedömningen §4.2 (rutnätsraden): ska kriging prövas ensam
-eller läggas ned, efter att kallkartan lagts åt sidan (#481, #496, #497)? Raden namngav Bengt och Axel. Bengt beslutade, och Axel
-får beskedet.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Varför.** NIVÅ 2+BLANDNING slår allt kuvösen kört: 5,02 % i analysläget och 5,24 % med en sex timmar gammal prognos, mot RÅ:s
-7,51 % och OFFSET:s 5,52 % (#490, läsning 2). Grannarnas fel i kandidaten, exp(−d/100 km) över åtta grannar med krympning, är redan
-en interpolation av felen mellan stationerna, och det är vad kriging hade gett.
+## #551 (13/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Följd.** Prognoslagrets steg *Kriging* blir *ej*, och raden i kuvössidans kö (§9) stryks i dygnets synk.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Stomdokument:** KUV §9, BED §4.2
+## #552 (13/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-## #549 (13/10 2026) Väg B varv 2 förregistrerat: blandningens rutnät utvidgat, och terrängen och trafiken i energibalansen (kort #321, #342)
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Beslut.** Bengt 13/10: *"slå ihop 916 och kör c"*. Frågan stod i bedömningen §4.2. Väg B gav ärligt 5,12 % vid +6 h (#544), och
-blandningens L = 160 km låg vid rutnätets kant. Varv 2 görs före frysningen 31/10.
+## #553 (13/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Två körningar i kuvösen**, båda med väg B:s ärliga procedur (#544: varje veck räknas bara med de andra fyra), i analysläget och vid
-+6 h.
-1. **Bara rutnätet.** Fysiken som i varv 1. Blandningens vikt väljs ur W ∈ {0,1; 0,15; 0,2; 0,25; 0,3; 0,35; 0,5} × L ∈ {80; 120;
-   160; 240; 320; 480} km. Det är 42 par, och varv 1:s 0,25 · 160 och Axels 0,5 · 80 ingår.
-2. **Terrängen och trafiken i energibalansen** (kort #321), med samma rutnät:
-   - **Långvågen in:** L_in = svf · L_himmel + (1 − svf) · σ · T_luft⁴. Terrängen och träden runt vägen strålar med luftens
-     temperatur. svf är stationens himmelsfaktor ur `geofeat.csv` (16 riktningar ut till 1,5 km, Copernicus DEM, `fysik/geofeat.py`).
-   - **Kortvågen in:** SW_in = SW · (k_d · svf + (1 − k_d) · s). k_d är den diffusa andelen enligt Erbs ur klarhetsindex, alltså
-     strålningen mot solens strålning vid atmosfärens topp. s = 0 när solens höjd mitt i timmen ligger under `horizon_south`,
-     annars 1.
-   - **Trafiken:** q_trafik = q_traffic + q_trafik_ådt · log10(ÅDT / 1 000). ÅDT är stationens fordon per dygn ur vägdatalagret
-     (NVDB, `data/vagdata/stationer.json`, #301). q_trafik_ådt kalibreras med de tio, alltså elva parametrar, och startar i 0.
-   - **Broar** är inte med. Ingen station är kopplad till en bro i underlaget; de tas med väglagspunkterna (kort #321).
-   - Saknar en station ett värde blir svf 1 och horisonten 0, och utan ÅDT faller trafiktermen bort. Antalet redovisas.
-   - Byggs som nya filer, och de frysta rörs inte. Ett självtest visar att den nya energibalansen ger dagens yta exakt när svf är 1,
-     horisonten 0 och q_trafik_ådt 0.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Hur kandidaten väljs, bestämt före körningarna.** Den kandidat som fryses är körning 2 om dess ärliga tal vid +6 h ligger minst 0,05
-enheter under körning 1:s, annars körning 1. Varv 1 (5,12 %) är golvet: ligger båda över det fryses varv 1. Sedan räknas den valda
-proceduren om på alla stationer (#544 punkt 6) och förregistreras för vintern 2026/27 senast 31/10.
+## #554 (14/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Förväntan.** Claudes utkast, som Axel godkänner eller ändrar före knappen. Måttet är grova fel > 2 °C på RÅ:s punkter.
-
-| | analys | +6 h |
-| :-- | --: | --: |
-| varv 1 (utfallet, #544) | 4,84 % | 5,12 % |
-| körning 1, rutnätet | 4,75–4,84 % | 5,02–5,12 % |
-| körning 2, terrängen och trafiken | 4,65–4,90 % | 4,90–5,15 % |
-
-Skälet till körning 1:s spann är att vikten låg vid kanten och att varv 1:s par var 0,1–0,2 enheter bättre än Axels; en längre L kan
-ge några hundradelar till. Körning 2 har ett bredare spann. Stationerna står där terrängen varierar lite (kort #321), så verkan vid
-stationerna blir liten. Trafiken förklarar däremot 23 % av stationernas särart (kuvössidan §5), och den finns i rättelsen redan som
-särdrag.
-
-**Hur det läses.** Ingen dom. RÅ ska ligga i 7,4–7,6 %, annars läses inget annat. Utfall utanför spannen läses med skälet först.
-Valregeln ovan gäller utan undantag.
-
-**Vad som inte görs nu.** Kort #321:s Verify kräver också att terrängen och trafiken räknas för alla 12 960 väglagspunkter och att
-mönstret prövas mot kallkartan (MODIS). Det är ett eget steg efter frysningen och hindrar inte den.
-
-**Stomdokument:** KUV §5, BED §4.2
-
-**Tillägg 13/10: Axels godkännande och bygget.**
-- **Axel godkänner förväntan**, via Bengt 13/10 (*"slå ihop 917 och Axel godkänner"*). Spannen i tabellen ovan gäller oförändrade.
-- **Körning 1** kör `fysik/niva2/vagb.py` oförändrad och `fysik/blandning/vagb_blandning.py --rutnat varv2`, med de 42 paren.
-  - Jobbets logg skriver andelen grova fel för alla 42 par på alla veck, så att det syns om bästa paret ligger vid en ny kant.
-  - Utan flaggan är rutnätet varv 1:s 15 par; självtestet prövar båda.
-- **Körning 2** kör `fysik/niva2/terrang.py`, en kopia av `run_lw` med de tre ändringarna markerade.
-  - `fysik/niva2/vagb_terrang.py` kopplar `vagb.arlig` till den nya fysiken och de elva parametrarna; `vagb.py` och `kedja.py` ändras inte.
-  - Blandningen är samma som i körning 1, och kandidaten heter NIVÅ 2 TERRÄNG ÄRLIG.
-- **Bestämt i bygget, inte i förregistreringen:**
-  - **Timmen är den som slutar vid tidsstämpeln.** MET Nordic summerar strålningen över timmen före; prognoshämtaren tar steg t minus
-    steg t − 1. Open-Meteos kortvåg i uppvärmningen är medlet för föregående timme. *Mitt i timmen* är alltså tidsstämpeln minus 30
-    minuter. Ett tidsprov i jobbet jämför kortvågen med solen i timmen före och i timmen efter, och fäller körningen om timmen efter
-    stämmer bättre.
-  - **Erbs med pvlib:s konventioner** (`irradiance.erbs`): cos z minst 0,065 i nämnaren, k_t högst 1, och k_d = 1 när zenit ligger
-    bortom 87°. Solens läge räknas med NOAA:s formler, solkonstanten är 1 366,1 W/m² och avståndet till solen ges av Spencer.
-  - **Kortvågens faktor skrivs s + k_d · (svf − s).** Det är samma uttryck som i förregistreringen, men så ger svf 1 och horisonten 0
-    exakt dagens strålning.
-  - **q_trafik_ådt** startar i 0 med steget 5 W/m² per tiopotens i simplexen. maxfev är 120 som i varv 1, nu för elva parametrar.
-  - **ÅDT under 10 fordon sätts till 10**, som särdraget `adt_log`. Ingen station i vägdatalagret ligger under: den lägsta har 13.
-    Tio av 854 saknar ÅDT.
-  - **svf och horizon_south har fått spann i värdevakten**, 0–1 respektive 0–90°. `terrang.py` läser spannen därifrån och fäller vid
-    brott; ÅDT har sitt spann sedan #473.
-  - **Loggen jämför ÅDT ur vägdatalagret med kedjans `road_all.csv`** (korrelationen och medianskillnaden i log10), så att en
-    felkoppling av stations-id syns.
-- **Självtestet** (`fysik/niva2/sjalvtest.py`, i ci) prövar följande:
-  - Neutral terräng (svf 1, horisonten 0, q_trafik_ådt 0) ger `run_lw`:s yta, 5 cm-lager och tillstånd byte för byte, också vid
-    omstart.
-  - svf 0,6 värmer ytan om natten, horisonten 90° kyler den om dagen, och mer trafik än 1 000 fordon värmer. 1 000 fordon och okänd
-    ÅDT rör inte ytan.
-  - Solen i Stockholm vid solstånden stämmer, Erbs stämmer, och tidsprovet vänder när timmen förskjuts.
-  - Ett fält utan spann fäller, och svf 1,2 fäller.
-  - Kopplingen når kalibreringen, analysen och omstarten.
-  - Veck 0 står still när veck 0:s mätningar ändras.
-- **Motproven** gjordes med en mutation per vakt i en egen kopia, med självtestet kört och raden som föll avläst:
-- Nio mutationer, alla fällda. Sex fälldes av sin närmaste vakt: långvågen inte neutral vid svf 1 och det vända horisontvillkoret
-    av neutralprovet, solen i timmen efter av tidsprovet för terrängens sol, en trafikterm för okänd ÅDT av provet för det saknade,
-    och kopplingen utan omstart eller med tio namn av kopplingsprovet.
-  - Tre ser neutralprovet inte, eftersom svf 1, horisonten 0 och q_trafik_ådt 0 ger samma yta. Var och en fälldes av sitt
-    riktningsprov: horisonten som aldrig skymmer (0,000 °C om dagen), terrängen som strålar som himlen (−0,02 °C om natten) och
-    trafiktermens tecken vänt.
-- **Knapparna**, på Bengts ord, `korflode` ingen; de två kan köras samtidigt:
-  - körning 1: `matning` = `scripts/matningar/kuvos-blandning-vagb2-rutnat-2026-10-13.ts`;
-  - körning 2: `matning` = `scripts/matningar/kuvos-blandning-vagb2-terrang-2026-10-13.ts`.
-
-**Utfall (13/10 11:00–12:30 UTC, körning 1 38387172993 och körning 2 38387177803 på f0235f4; tryckta på Bengts ord; 90 minuter var).**
-- **Kontrollerna höll.** RÅ låg på 7,51 % på 4 352 575 gemensamma punkter, och Axels par gav replikans tal byte för byte i alla fyra
-  blandningarna.
-- **Körning 2:s underlag** (754 stationer):
-  - svf saknades för 0 stationer, horisonten för 0 och ÅDT för 10;
-  - svf hade medianen 0,996 (lägst 0,931), och södra horisonten medianen 4,26° (högst 29,08°);
-  - ÅDT mot kedjans `road_all.csv`: korrelation 0,861 på 743 stationer, median skillnad 0,000 i log10;
-  - tidsprovet: r = 0,848 för timmen före mot 0,794 för timmen efter.
-- **Kalibreringen** gick sina 120 steg i varje veck. q_trafik_ådt blev positiv i alla fem vecken, +2,45 till +6,74 W/m² per tiopotens
-  trafik.
-
-| grova fel > 2 °C på RÅ:s punkter | körning 1, rutnätet | körning 2, terrängen | förväntan (1 · 2) |
-| :-- | --: | --: | :-- |
-| RÅ (kontroll) | 7,51 % | 7,51 % | 7,4–7,6 ✓ |
-| NIVÅ 2 utan grannar, analys | 6,06 % | 6,08 % | — |
-| +BLANDNING, analys | 4,84 % | 4,81 % | 4,75–4,84 ✓ · 4,65–4,90 ✓ |
-| +BLANDNING, +6 h | 5,13 % | 5,09 % | 5,02–5,12 (0,01 över) · 4,90–5,15 ✓ |
-| — banden 0–7 · 7–15 · 15–20 · > 20 km, +6 h | 3,62 · 3,59 · 4,64 · 9,49 | 3,58 · 3,56 · 4,67 · 9,39 | — |
-| — norr · söder · vägt med trafiken, +6 h | 10,27 · 3,04 · 3,5 | 10,15 · 3,04 · 3,5 | — |
-| frysflaggan K2 = 1 °C, +6 h | 0,8 % farliga fel, 99,0 % rätt klass, 81,7 % täckning | samma | — |
-| fysiken ensam, timvis, kedjans population | 14,98 % | 14,70 % | — |
-| paret valt på alla veck: analys · +6 h | W 0,2 · L 480 · W 0,3 · L 240 | W 0,25 · L 160 · W 0,3 · L 120 | — |
-
-**Läsningen.** Ingen dom.
-- Kontrollen höll, så resten läses.
-- **Körning 1 ligger vid +6 h 0,01 över sitt spann, och skälet läses först.**
-  - Rutnätet innehåller varv 1:s par, men att välja bland 42 par per veck är brusigare än bland 15.
-  - Valt på alla veck är det nya paret bättre på replikans population (5,094 mot 5,102 %), men det ärliga talet blev 0,01 sämre.
-- **Kanten.** Vid +6 h ligger optimum inne i rutnätet. I analysläget ligger körning 1:s bästa par fortfarande vid L 480 km.
-- **Terrängen och trafiken förbättrade fysiken ensam** med 0,28 enheter. Rättelsen tog bort vinsten: efter den låg körningarna på 6,46
-  mot 6,45 % i timmarna. Stationerna står öppet, som förväntan sa.
-- **Valregeln, som den står.**
-  - Körning 2 ligger 0,04 under körning 1 vid +6 h, och med avrundningen ligger skillnaden mellan 0,03 och 0,05. Det är under
-    marginalen 0,05, så regeln ger körning 1.
-  - Golvsatsen slår inte till, eftersom bara körning 1 ligger över 5,12 %.
-  - Regeln täckte inte det fallet, och Bengts val står i #552.
-
-## #550 (13/10 2026) Den frysta kandidaten byggs före valet, och rättelsen ligger i hinken (kort #342)
-
-**Beslut.** Bengt 13/10: *"1 ja, i hinken"*. Förslaget kom från Claude medan varv 2 körs (#549): bygg den frysta kandidaten (#544 punkt 6)
-nu, för båda fysikerna, så att den kan köras samma dag som valregeln pekat ut vinnaren. Rättelsemodellen läggs i den privata hinken
-`arkiv`.
-
-**Vad som byggs.**
-- `fysik/niva2/frysta.py` läser valet ur `kuvos/kandidat-2026-27-val.json`: fysiken (`lw` eller `terrang`), blandningsparet valt på
-  alla veck, den ärliga körningen och beslutet. Valfilen skrivs i repot efter valregeln och före knappen. Saknas den fäller jobbet, och
-  ett par utanför varv 1:s eller varv 2:s rutnät fäller också.
-- På alla stationer på en gång:
-  - parametrarna kalibreras med kedjans protokoll från litteraturvärdena;
-  - rättelsen tränas på alla stationer med `A2_KONFIG`;
-  - paret och replikans sha256 skrivs bredvid.
-- `modell.pkl` (rättelsen) går till hinken under `kuvos/kuvos-kandidat-2026-27/`, hämtas tillbaka och jämförs med manifestets sha256.
-  - En signerad uppladdning skriver inte över en fil som redan finns, så det som frysts står kvar.
-  - Felmeddelandena bär bara curls status, aldrig den signerade adressen.
-- `kandidat.json` skrivs ut i kvittot och förs in i repot som `kuvos/kandidat-2026-27.json`. Det är aggregat: parametrarna, paret,
-  särdragens ordning, versionerna och modellens storlek och sha256.
-- Talen på stationerna som proceduren tränade på skrivs ut, men de är inte kandidatens väntade fel. Det väntade felet är det ärliga
-  talet (#544 punkt 6).
-- Knappen: `matning` = `scripts/matningar/kuvos-blandning-frysta-2026-10-13.ts`, på Bengts ord, efter att valfilen är incheckad.
-
-**Varför hinken.** Modellen är tränad på Trafikverkets rader. Den är inte rad för rad men ligger nära gränsen i PUBLIKT REPO, och en
-release är publik med repot. Parametrarna och paret är aggregat och får stå i repot.
-
-**Inte avgjort här.**
-- Hur kandidaten räknas i vinter, som uppspelning efter vintern eller i drift, är fortfarande Axels fråga i §4.2 (#544).
-- Förregistreringen för 2026/27 skrivs när valet är gjort, senast 31/10.
-
-**Alternativ som valdes bort.**
-- (a) Bygga efter valet: det kostar en dag före 31/10.
-- (b) Modellen i en release: den blir publik med repot.
-
-**Stomdokument:** KUV §5, BED §4.2
-
-**Utfall (13/10 12:48–13:10 UTC, körning 38400052837 på f4d209b; tryckt på Bengts ord; 22 minuter).**
-- Valet lästes ur valfilen: fysiken `lw`, paret W 0,25 · L 160 km, ur körning 38368369876 (#552).
-- Kalibreringen gick 120 steg på alla 754 stationer, i 4 152 timmar.
-- `modell.pkl` (9 757 699 byte, sha256 `c96c4072f4ecc6a9…`) laddades upp till hinken, hämtades tillbaka med summan lika och lästes om i
-  jobbet med samma rättelse som modellen i minnet.
-- Versionerna är de låsta i `fysik/requirements.txt`: Python 3.13.16, numpy 2.5.3, pandas 3.0.5, scipy 1.18.1, scikit-learn 1.9.1.
-- Manifestet står i `kuvos/kandidat-2026-27.json`, med de 70 särdragen ur fysikstegets rad. Det stämmer fält för fält med kvittot.
-- Loggen bär ingen signerad adress och ingen nyckel; det är kontrollerat.
-- På stationerna som proceduren tränade på gav fysiken 14,78 % grova fel och fysiken med rättelsen 1,44 % (timvis, kedjans
-  population). Det är **inte** det väntade felet. Det väntade felet vid +6 h är det ärliga talet 5,12 % (#544, #552).
-- `r_snow` (snöns isolering) blev 0, vid sin undre gräns. Det blev den också i alla fem ärliga vecken i varv 2, så det ärliga talet
-  räknar redan med det.
-
-## #551 (13/10 2026) Fysiken som vittne läses i kategorier med antal, aldrig rad för rad (kort #331)
-
-**Beslut.** Bengt 13/10: *"a på 331"*, på frågan i bedömningen §4.2.
-- Kort #331 läser de rader som vakterna behåller men fysiken flaggar (#520). Raderna beskrivs i kategorier med antal i jobbets logg,
-  till exempel per ytband, månad och avvikelsens storlek och tecken.
-- Ingen rad med station och tid står i loggen. Kategorierna bestäms i förregistreringen, före knappen.
-- Ett aggregat per station är inte rad för rad (PUBLIKT REPO) och får ingå.
-
-**Varför.** Kortets Verify från 11/10 krävde raderna beskrivna med station, tid, yta, luft och avvikelse. Det är Trafikverkets data rad
-för rad, och den får inte stå i en publik Actions-logg. Kortet skrevs två dagar efter att repot blev publikt (9/10, #499–#503).
-Kategorierna räcker för att se vad raderna är, och inget behöver läsas utanför jobbet.
-
-**Alternativ som valdes bort.**
-- (b) Raderna till hinken och läsning där: det kräver en läsning utanför jobbet.
-- (c) Båda: (a) räcker.
-
-**Oförändrat.** Kortet avgör inget före vintern 2026/27 (#520), och nyckeln är uppfylld sedan 13/10.
-
-**Stomdokument:** KUV §5, BED §4.2
-
-## #552 (13/10 2026) Den frysta kandidaten är varv 1: golvets mening, när valregeln inte täckte utfallet (kort #342)
-
-**Beslut.** Bengt 13/10: *"b"*, efter frågan *"är b det bästa valet"*, som Claude besvarade med ja.
-- Kandidaten som fryses för vintern 2026/27 är varv 1:s procedur (#544): fysiken utan terräng (`lw`) och blandningens par W 0,25 ·
-  L 160 km. Paret valdes på alla veck både i analysläget och vid +6 h (körning 38368369876).
-- Dess väntade fel vid +6 h är det ärliga talet 5,12 %.
-
-**Varför, och att det är en tolkning.**
-- Valregeln i #549 gav ordagrant körning 1 (5,13 %), som är sämre än golvet 5,12 %. Golvsatsen täckte bara fallet att båda låg över.
-- Bengt valde golvets mening: inget som är sämre än varv 1 fryses. Det är en tolkning gjord efter utfallet, och den redovisas som en
-  sådan.
-- Skälen:
-  - Skillnaderna mellan de tre är 0,01–0,04 enheter, och det är brus.
-  - Körning 2 är 0,03 bättre än varv 1. Det är under marginalen 0,05, som sattes före knappen för att mer fysik skulle behöva vinna
-    tydligt. Att välja den nu vore att flytta målet efter utfallet (regel L).
-  - Varv 1 valde samma par i båda lägena. Körning 1 och 2 valde olika par, och för dem hade ett nytt oregistrerat val krävts.
-
-**Vad som följer.**
-- `kuvos/kandidat-2026-27-val.json`: fysiken `lw`, W 0,25, L 160 km, körning 38368369876 och beslut #552.
-- Knappen för den frysta kandidaten (`kuvos-blandning-frysta-2026-10-13.ts`, #550) trycks på Bengts ord. Därefter skrivs
-  förregistreringen för 2026/27, senast 31/10.
-- Terrängen och trafiken är inte bortvalda för alltid. Kort #321 fortsätter med väglagspunkterna och kallkartan. Gör de skillnad
-  mellan stationerna prövas en kandidat med dem för vintern 2027/28.
-
-**Alternativ som valdes bort.**
-- (a) Körning 1 enligt bokstaven: sämre än golvet, och paret skiljer mellan lägena.
-- (c) Körning 2: under marginalen mot båda.
-
-**Stomdokument:** KUV §5, BED §4.2
-
-## #553 (13/10 2026) Vägpunkternas fasta särdrag räknas med Axels frysta skript, först som reproduktion på stationerna (kort #303, #342)
-
-**Beslut.** Bengt 13/10: *"slå ihop 921 och 922 och börja med 1"*. Punkt 1 är det Claude föreslog efter Bengts fråga om kandidaten
-borde köras redan nu: rättelsens fasta särdrag för vägpunkterna. De behövs vare sig kandidaten räknas som uppspelning eller i drift.
-
-**Varför.**
-- Rättelsen i den frysta kandidaten läser ett 25-tal fasta särdrag per plats (`kedja.base_features_mn`):
-  - höjd och terräng: elev, tpi1/3, tpi2–20 km, dalens djup, svf, södra horisonten;
-  - skog, vatten och bebyggelse;
-  - ECMWF-cellens höjd;
-  - vägdata: ÅDT, andelen tunga fordon, funktionell klass, vinterväghållningsklass och Europaväg.
-- De finns bara för stationerna, i Axels indata-release. Kandidaten har därför aldrig räknats på en vägpunkt, och grind B och C döms på
-  vägsegment.
-- Kort #303 väntade på *"Axels underlag för kolumnerna (källa och proveniens)"*. Det är hans frysta skript i `fysik/` (#508).
-
-**Hur (bestämt före knappen).**
-1. **Reproduktion först.**
-   - Axels `fetch_elev.py`, `geofeat.py` och `geofeat2.py` körs oförändrade, med sha256 prövad mot `fysik/SHA256SUMS`, på
-     stationerna i indata-releasen.
-   - Resultatet jämförs kolumn för kolumn med releasens `elev.csv`, `geofeat.csv` och `geofeat2.csv`. Loggen visar andelen lika
-     (inom 1e-6), största skillnaden och om det saknade är lika. Den visar bara aggregat.
-   - Tiden per skript mäts, så att vägpunkternas körning kan delas rätt.
-   - Reproducerar en kolumn som rättelsen läser inte, körs inga vägpunkter förrän skälet är läst.
-2. **Sedan vägpunkterna.**
-   - Samma skript, oförändrade, på de 12 960 väglagspunkterna i `data/vagdata/vaglagspunkter.json`, i parallella delar.
-   - Resultatet blir en fil i `data/vagdata/` med källa och licens i `data/KALLOR.json` och spann i värdevakten för varje kolumn som
-     rättelsen läser. Det är öppna data: Copernicus DEM, ESA WorldCover, Meta/WRI:s trädhöjd, Open-Meteo och OSM:s broar.
-3. **ECMWF-cellens höjd** hämtas ur Open-Meteos arkiv med samma anrop som `fetch_ifs.py` (modell, avrundning, tio platser per
-   anrop), men för ett dygn och en variabel. `fetch_ifs.py` själv hämtar hela vintern i sju variabler, och för 12 960 punkter går det
-   över Open-Meteos fria tak. Reproduktionen jämför höjden med releasens `ifs/<sid>.csv`.
-4. **Vägdatan.**
-   - ÅDT, tunga fordon och funktionell klass finns redan per vägpunkt i vägdatalagret (#473).
-   - Vinterväghållningsklassen och Europaväg finns inte i det öppna API:et. De tas ur Lastkajen enligt kort #303 (3), eftersom en
-     förregistrerad mätning nu behöver dem, eller också redovisas luckan.
-   - Vid stationerna kommer vägdatan ur Axels `roadjoin.py` mot NVDB:s geopaket. Vägdatalagrets ÅDT korrelerar 0,861 med den där
-     (utfallet under #549). Skillnaden mellan källorna redovisas innan vägpunkternas fil används.
-- Byggt i `fysik/vagpunkter/vagpunkter.py` (punkterna som `stations.csv`, ECMWF-höjden, reproduktionens jämförelse och
-  sammanställningen, med självtest i ci) och `.github/workflows/vagpunkter-sardrag.yml` (knapp, läge `reproduktion` eller
-  `vagpunkter`).
-
-**Fynd i bygget.**
-- **21 id i väglagspunkterna förekommer två gånger**, på olika platser 1–46 m isär (median 21 m), till exempel `122005@30`. Det är
-  42 rader av 12 960.
-- Axels skript nycklar på `sid`, så nyckeln här är radnumret, och id, lon och lat följer med i filen.
-- Om skuggan eller lägesfilen nycklar på samma id är en egen fråga. Den läses innan vägpunkternas fil används.
-
-**Inte avgjort här.** Om kandidaten räknas som uppspelning eller i drift är fortfarande Axels fråga i §4.2. Claudes rekommendation är
-ändrad till (b), levande i skuggan; skälen står där.
-
-**Stomdokument:** KUV §5, BED §4.2, KAR §13.6
-
-**Utfall, reproduktionen (13/10 15:12–17:29 UTC, körning 38420010573 på 91493e4; tryckt på Bengts ord).** Releasens summa stämde, och Axels filer stämde
-mot `SHA256SUMS`.
-
-| kolumner rättelsen läser | skript | lika med releasen | tid för 754 stationer |
-| :-- | :-- | --: | --: |
-| svf, horizon_south, tree100, chm30, water1000, built300 (och alla 31 övriga i filen) | geofeat.py | 100,00 %, största skillnad 0 | 137 s |
-| tpi2km, tpi5km, tpi10km, tpi20km, vdepth5km, vdepth10km | geofeat2.py | 100,00 %, största skillnad 0 | 33 s |
-| elev_ifs | vagpunkter.py elev-ifs | 100,00 %, största skillnad 0 | 741 s |
-| **elev, tpi1, tpi3** | **fetch_elev.py** | **78,12 · 77,98 · 77,85 %, största skillnad 548 · 214 · 298 m** | **7 281 s** |
-
-**Läsningen.**
-- 13 av rättelsens 16 terrängkolumner reproducerar byte för byte, och ECMWF-höjden med det förkortade anropet gör det också.
-- De tre ur `fetch_elev.py` gör det inte. Enligt beslutet körs inga vägpunkter förrän skälet är läst.
-- **Skälet, ur koden (`fysik/fetch_elev.py`, raderna 15–18).**
-  - Skriptet försöker 20 gånger per anrop med 100 punkter. Misslyckas alla, används listan `e` från *förra* anropet.
-  - Då får 100 punkter en annan stations höjder, tyst och utan fel.
-  - Körningen tog 7 281 s mot geofeat.py:s 137, alltså med många omförsök när Open-Meteo strypte.
-  - 21,9 % olika motsvarar ungefär 28 av 129 anrop.
-- **Vilken sida som bär de förskjutna höjderna är inte läst.** Det kan vara Axels release, körningen här eller båda.
-  - Provet: jämför `elev` med `elev_ifs` på båda sidor. Båda är Open-Meteos 90 m-höjd i samma punkt, och `elev_ifs` reproducerade
-    exakt.
-  - Bär releasen förskjutna höjder, tränades den frysta kandidaten på dem (`elev`, `elev_diff`, `tpi1`, `tpi3`), och Axel ska få veta det.
-- **För vägpunkterna fungerar inte `fetch_elev.py`.** De kräver 2 204 anrop, och i samma takt blir det omkring 35 timmar med samma tysta
-  fel. Frågan om vägen står i bedömningen §4.2.
-
-**Tillägg 13/10: releasen läst, och höjden tas ur Copernicus DEM** (Bengt: *"1 slå ihop 924, läs axels release, 3 a"*).
-- **Releasen är frisk.** Axels `kuvos-fysik-indata-2024-25.tar.gz` (sha256 lika med manifestet) lästes lokalt. Höjden jämfördes med
-  två friska höjder:
-  - `elev − elev_ifs` (Open-Meteos 90 m-höjd i samma punkt): median 0, p99 6, högst 16 m, och 723 av 754 exakt 0;
-  - `elev − z` (geofeat.py:s GLO-30) är lika stor som skillnaden mellan de två friska höjderna: median 1,3 och högst 21,8 m.
-  - Ingen station avviker mer än 20 m.
-  - De förskjutna höjderna uppstod alltså i reproduktionens körning, när Open-Meteo strypte. Den frysta kandidaten tränades på
-    riktiga höjder, och Axel behöver inget besked om releasen.
-- **Väg (a).** `fysik/vagpunkter/hojd.py` räknar elev, tpi1 och tpi3 i fetch_elev.py:s 17 punkter direkt ur Copernicus DEM, med fyra
-  sätt:
-  - GLO-90 bilinjärt (Open-Meteos DEM);
-  - GLO-90 närmaste pixel;
-  - GLO-30 bilinjärt;
-  - GLO-30 med 3 × 3-medlet (geofeat.py:s z).
-- **Regeln, skriven före körningen:** det sätt som har minst 99:e percentil av |elev − releasen| vid stationerna vinner. Ligger två
-  inom 0,1 m skiljer samma tal för tpi3.
-  - Vinnaren och dess fel skrivs in här innan vägpunkterna körs. Knappen tar den som `hojdmetod` och vägrar utan.
-  - `elev − elev_ifs` redovisas för varje sätt, eftersom den är 0 vid 96 % av stationerna i releasen och inte får flyttas av en ny
-    höjdkälla.
-- **Hav och nätfel hålls isär.** En ruta som saknas i hinkens `tileList.txt` är öppet hav och ger 0 m, räknat. En listad ruta som inte
-  går att läsa stoppar körningen, så att ett nätfel aldrig blir en höjd. Läxan är fetch_elev.py:s tysta återanvändning.
-- Läget `hojdprov` i `vagpunkter-sardrag.yml` gör jämförelsen och releasekontrollen i Actions. Läget `vagpunkter` använder `hojd.py`
-  med den valda metoden i stället för fetch_elev.py. geofeat.py och geofeat2.py körs fortfarande oförändrade.
-
-**Utfall, hojdprovet (13/10 18:13–18:20 UTC, körning 38444962715 på 290dccd; tryckt på Bengts ord).**
-- Releasekontrollen gav samma svar i Actions som lokalt: releasen är frisk.
-- Inga punkter föll på rutor som saknas i listan, alltså på öppet hav.
-
-| sätt (754 stationer, mot releasen) | p99 \|Δelev\| | p99 \|Δtpi1\| | p99 \|Δtpi3\| | elev − elev_ifs exakt 0 | tid |
-| :-- | --: | --: | --: | --: | --: |
-| **glo90-bilinjar** (vinnaren) | **12,7 m** | 13,2 m | 13,3 m | 0,7 % | 65 s |
-| glo90-narmast | 15,7 m | 15,2 m | 16,9 m | 0,8 % | 63 s |
-| glo30-bilinjar | 14,7 m | 15,2 m | 16,0 m | 0,7 % | 135 s |
-| glo30-3x3 | 13,9 m | 15,0 m | 15,1 m | 0,7 % | 133 s |
-| releasen (referens) | — | — | — | 95,9 % | — |
-
-**Läsningen.**
-- Vinnaren enligt regeln är **glo90-bilinjar**: median 1,3 och högst 20,7 m från releasens höjd.
-- Inget sätt når Open-Meteos värden exakt. Open-Meteo har en egen omsampling av sitt DEM.
-- **elev_diff flyttar sig.** I releasen är elev − elev_ifs exakt 0 vid 95,9 % av stationerna, eftersom båda är Open-Meteos höjd i
-  samma punkt. Med höjden ur Copernicus och elev_ifs ur Open-Meteo blir den det vid 0,7 % (median 1,4, p99 13,4 m). Det är ett läge
-  rättelsen nästan aldrig har sett.
-- Hur elev_ifs ska räknas vid vägpunkterna är därför en fråga i bedömningen §4.2, och vägpunkternas knapp väntar på svaret.
-
-**Tillägg 13/10: val (i)** (Bengt: *"slå ihop 926 och i"*).
-- Vid vägpunkterna sätts elev_ifs till höjden ur Copernicus (`vagpunkter.py elev-ifs-ur-hojd`). Då blir elev − elev_ifs 0, som vid
-  95,9 % av stationerna. Inga anrop till Open-Meteo görs.
-- I den här kedjan betyder elev_diff nästan alltid 0, eftersom höjden och ECMWF-höjden är samma DEM. Felet som återstår är det
-  uppmätta: höjd och tpi har p99 omkring 13 m mot Open-Meteos värden, med vinnaren glo90-bilinjar.
-- Läget `vagpunkter` i `vagpunkter-sardrag.yml`:
-  - höjden: `hojd.py` med `hojdmetod` = glo90-bilinjar;
-  - terrängen: geofeat.py och geofeat2.py oförändrade;
-  - ECMWF-höjden: elev_ifs ur höjden.
-- Reproduktionen behåller Open-Meteos elev_ifs, som är det den jämför.
-- Knappen: `lage` = vagpunkter, `delar` = 12, `hojdmetod` = glo90-bilinjar, på Bengts ord. Därefter checkas filen in i
-  `data/vagdata/` med källa och licens och med spann i värdevakten.
-
-**Utfall, vägpunkterna (13/10 18:37–18:43 UTC, körning 38448230889 på 0352a75; tryckt på Bengts ord).**
-- Alla tolv delar och sammanställningen var gröna. Varje del tog 4–5 minuter: höjden 19–32 s, geofeat.py 135–219 s och geofeat2.py
-  40–60 s för 1 080 punkter.
-- **12 960 platser och inget saknas i någon av de 16 kolumnerna.** Inga punkter föll på öppet hav, och 42 rader bär de 21 id som
-  förekommer två gånger.
-- Filen är `data/vagdata/vaglagspunkter-sardrag.json`, med proveniens i huvudet, källa och licens i `data/KALLOR.json` och varje
-  kolumn inom värdevaktens nya spann. ci prövar spannen.
-- Artefaktens CSV har sha256 `a9673b5e57deef5fd91b16c4492a8d6fdece10208da947d407958c830c34a814` och står i huvudet.
-- **Vägpunkterna sträcker sig utanför stationernas spann.** Det gäller 692 av 12 960 platser
-  (5.3 %) i minst en kolumn: chm30 599, tpi3 40, vdepth10km 25, svf 22, tpi5km 20, tpi1 13, tpi10km 8, vdepth5km 8, water1000 5, horizon_south 4, elev 1, tpi2km 1, elev_ifs 1.
-  - Nästan allt är trädhöjden: vägar genom skog har högre träd intill sig (median 1,2 m, högst 21 m) än någon station (högst 10,5 m).
-  - En trädmodell sträcker sig inte ut över det den sett. Där håller rättelsen värdet vid kanten, och det redovisas när kandidaten
-    räknas på vägpunkterna.
-
-**Tillägg 13/10: Lastkajen undersökt** (Bengt: *"slå ihop och undersök lastkajen"*). Bara läsning, och inget hämtades.
-- **Rättelse: Europaväg finns troligen i det öppna API:et.** Datautbytesportalens datamodell (data.trafikverket.se, läst 13/10) har
-  73 datamängder, varav 45 i Vägdata.NVDB_DK_O 1.2.
-  - Bland dem finns **Vägnummer**, och i NVDB bär Vägnummer Europaväg (`Vagnummer_Europavag` i Axels `roadjoin.py`).
-  - Påståendet ovan om att Europaväg inte finns i det öppna API:et var aldrig prövat; vägdatalagret har bara frågat sex
-    objekttyper (#472, #473).
-  - Fältets namn och värden läses i ett prov mot API:et innan något bygger på dem. Läxan *HTTP 200 är ingen katalog* gäller: provet
-    räknar på svarets innehåll.
-- **Vinterväghållningsklassen finns inte bland de 73.** Axel tog den ur lagret `VIS_DK_O_95_Vagunderhallsklass` i Lastkajens
-  geopaket, och ingen VIS-datamängd finns i det öppna API:et.
-- **Lastkajen kräver inloggning.**
-  - `lastkajen.trafikverket.se` går direkt till inloggningssidan.
-  - Trafikverkets sida säger att färdiga datapaket och egna beställningar kräver registrering med e-postadress och ett godkänt
-    licensavtal.
-  - Kontot är gratis (#472), men Claude skapar inga konton och loggar inte in. Det är Bengts handgrepp, som tidigare (#65).
-  - Licensen för VIS-lagret står bakom inloggningen och är inte läst.
-- **`roadjoin.py` kan inte köras oförändrad på vägpunkterna**, eftersom den läser sina punkter ur geopaketets stationslager
-  (`VIS_DK_O_17_VVIS`). Med ett geopaket behövs ett litet skript med samma koppling, närmaste väg inom 150 m, som först visar att det
-  återger Axels värden vid stationerna.
-- Frågan om vägen står i bedömningen §4.2.
-
-**Tillägg 13/10: vinterväghållningsklassen skattad (b) och Europavägsprovet byggt** (Bengt: *"slå ihop 929, 2 ja och 3 b"*).
-- **(b), utfallet.** `fysik/vagpunkter/uh_klass.py` skattar klassen ur vägdatalagrets vägklass, ÅDT, hastighet, bredd och väghållare
-  med ett beslutsträd i femfaldig korsvalidering. Regeln var incheckad och pushad före körningen (9d99b1c).
-  - 744 stationer med Axels klass.
-  - **Exakt rätt 71,5 % mot kravet 90 %. Högst en klass fel 98,8 % mot kravet 99 %.** Den vanligaste klassen ensam ger 44,5 %.
-  - Felen ligger mest mellan klass 1 och 2 och mellan 2 och 3. Av Axels klass 2 skattas 37 som 1 och 41 som 3.
-  - **Det räcker inte, så vinterväghållningsklassen kräver Lastkajen (a).** Det är Bengts inloggning (kort #303).
-- **(2), Europavägsprovet.** `scripts/vagdata-vagnummer.ts` med knappen `vagdata-vagnummer.yml`.
-  - Läget `prov` läser Vägnummers fält med ett anrop och frågar var tolfte station. Fältet för Europaväg är det enda namn som
-    innehåller "europa", annars fäller körningen.
-  - Läget `alla` frågar alla 12 960 väglagspunkter och stationerna på den väg som vägdatalagret valde, alltså samma element och samma
-    radie.
-  - Vid stationerna jämförs med Axels road_all.csv. Överensstämmelsen ska vara minst 95 %, annars används filen inte förrän skälet är
-    läst.
-  - Rotelementet räknas och felkroppen skrivs ut.
-
-**Tillägg 13/10: vinterväghållningsklassen ur Lastkajen, och Europavägsprovets första utfall** (Bengt: *"slå ihop 930 och tryck
-provet"*; paketet hämtat av Bengt 13/10).
-- **Paketet.** *Sverigepaket Drift och underhåll* (GeoPackage, 2,0 GB, daterat 3/10 2026), uppackat utanför repot.
-  - Lagret `SverigePaket_DoU` har 4,3 miljoner vägsegment i SWEREF99 TM.
-  - `Vagkl_564` är *Vägunderhållsklass/Vägklass*, 1–5, på 679 238 statliga segment.
-  - `Europ_16` (*Vägnummer/Europaväg*) är tom på varje rad.
-- **Kopplingen.** `fysik/vagpunkter/vinterklass.py` följer regeln i roadjoin.py: närmaste segment med klass, inom 150 m. Regeln
-  pushades före körningen (d7f8bf4, grenen claude/vinterklass-lastkajen).
-- **Reproduktionen.** 743 stationer har klass både i paketet och i Axels road_all.csv, och **99,3 % får samma klass** mot kravet 95 %.
-  Bara 5 skiljer sig.
-- **Vägpunkterna.**
-  - 12 847 av 12 960 har en klass inom 150 m, och 113 saknar.
-  - Avståndet har medianen 11,5 m och p90 46 m (vid stationerna median 8,6 m).
-  - Klasserna fördelar sig 1: 9,7 · 2: 13,2 · 3: 53,5 · 4: 22,0 · 5: 1,6 %, mot stationernas 16,4 · 18,1 · 44,5 · 15,7 · 5,2 %.
-  - Filen ligger utanför repot tills paketets licens är läst (fråga i §4.2).
-- **Europavägsprovet** (körning 38472503088 på 0cb7b68): Vägnummer har fältet `Europaväg`, men det är ett **tal**, inte Ja/Nej.
-  - Av 72 stationer fick 50 värdet 0 och 22 inget läsbart värde. Tolkningen kände bara igen 0 och 1, så E-vägens nummer föll bort.
-  - Jämförelsen *"47 av 47 lika"* var ett falskt grönt. Den räknade bort de saknade värdena, och Europavägarna var just de saknade.
-  - **Rättat i provet:**
-    - ett positivt heltal är Europaväg;
-    - ett element utan Vägnummer är en onumrerad väg och ger 0;
-    - ett saknat värde räknas som fel i jämförelsen;
-    - råvärdena skrivs ut;
-    - road_all.csv läses som riktig CSV. Fyra av 753 rader har kommatecken i ett namn och hamnade fel med den naiva uppdelningen.
-  - Provet körs om innan något hämtas.
-
-**Tillägg 13/10: Europaväg är −1 för Ja** (Bengt: *"slå ihop 931 och tryck provet"*).
-- Det rättade provet (körning 38473909973 på 8206261) föll, som det skulle: 47 av 65 lika, alltså 72,3 % mot kravet 95 %.
-- Råvärdena vid 72 stationer var `Europaväg` 0 (50), **−1 (21)** och ett element utan Vägnummer (1).
-- **−1 är Esris och Access sanningsvärde för Ja.** Talet är inte E-vägens nummer; den gissningen i förra tillägget var fel.
-- De 18 som räknades som fel är troligen de med −1.
-- Tolkningen är nu −1 → 1 och 0 → 0, och allt annat ger null, som räknas som fel. Provet körs om, och vid minst 95 % följer läget alla.
-- Läxan (VÄRDEVAKTEN): ett fält som heter som en flagga kan bära ett tal med en egen kodning, och bara råvärdena visar vilken.
-
-**Tillägg 14/10: licensen är CC0, och vinterklassen ligger i repot** (Bengt: *"vad menar du med licensen för sverigepaketet"*).
-- **Licensen lästes på Lastkajens användarvillkor,** som visas vid registreringen. Claude registrerade inget.
-  - Villkoren säger att den som öppnar och använder datat godkänner licensen i helhet.
-  - Licenslänken går till **CC0 1.0** (creativecommons.org/publicdomain/zero/1.0), samma som Trafikverkets öppna API.
-- Villkoren gäller i enlighet med PUBLIKT REPO, så klassen läggs i repot:
-  - filen `data/vagdata/vaglagspunkter-vinterklass.json`;
-  - 12847 platser med klass och 113 utan;
-  - källa och licens i huvudet och i `data/KALLOR.json`;
-  - spannet `uh_klass` 1–5 i värdevakten.
-- Paketet själv ligger kvar utanför repot. Det är 2,0 GB och behövs inte där.
-- **Europavägsprovet igen** (körning 38474910120 på 86586cf): 65 av 65 stationer lika med Axel (100 %), och inga saknade värden.
-  Läget `alla` väntar på Bengts ord.
-
-**Tillägg 14/10: Europaväg vid alla väglagspunkter** (Bengt: *"slå ihop 933 och kör alla"*; körning 38476648546 på 216099d, 1 h 57 min).
-- 854 stationer frågades och inga anrop föll. Råvärdena var 0 (536), −1 (309) och ett element utan Vägnummer (9).
-- **Mot Axels road_all.csv: 733 av 745 lika, 98,4 %**, mot kravet 95 %.
-- 12 960 väglagspunkter: **3 718 på Europaväg**, 9 242 inte och 0 utan värde.
-- Filen är `data/vagdata/vaglagspunkter-europavag.json`. Tolkningen och jämförelsen står i huvudet, källan och licensen (CC0) i
-  `data/KALLOR.json`, och spannet `europavag` 0–1 i värdevakten.
-- **De fasta särdragen för vägpunkterna är därmed klara:**
-  - terrängen och skogen med Axels skript;
-  - höjden ur Copernicus;
-  - vinterväghållningsklassen ur Lastkajen;
-  - Europaväg ur API:et;
-  - ÅDT, tunga fordon och vägklass ur vägdatalagret.
-- Vägdatalagrets ÅDT korrelerar 0,861 med Axels vid stationerna (utfallet under #549). Den skillnaden är inte prövad i rättelsen.
-
-**Tillägg 14/10: ÅDT och vägklass ur Lastkajens paket — regeln före körningen** (Bengt: *"slå ihop 934 och 2 ja"*, på frågan i
-bedömningen §4.2).
-- Vid stationerna kommer rättelsens vägdata ur Axels `roadjoin.py` mot NVDB:s geopaket (`road_all.csv`). Vid vägpunkterna kom de ur
-  vägdatalagret, vars ÅDT korrelerar 0,861 med Axels.
-- Sverigepaketet Drift och underhåll bär `ADT_f_117` (ÅDT, alla fordon) och `Klass_181` (funktionell vägklass 0–9), men inga tunga
-  fordon. Varje fält kopplas som `roadjoin.py` kopplar varje lager: närmaste segment som bär fältet, inom 150 m
-  (`fysik/vagpunkter/trafik_klass.py`).
-- **Regeln, skriven och pushad före körningen:**
-  - först stationerna mot `road_all.csv`;
-  - klassen ska vara lika vid minst 95 % av stationerna med klass i båda;
-  - ÅDT ska ligga inom ±10 % av Axels vid minst 90 % av stationerna med ÅDT i båda, och minst lika ofta som vägdatalagret på
-    stationerna med ÅDT i alla tre;
-  - vägpunkterna får ett fält ur paketet bara om det fältet klarar sitt krav, annars läses skälet först.
-- Tunga fordon stannar i vägdatalagret. Andelen tunga vid vägpunkterna räknas ur vägdatalagrets egna två tal, så att kvoten inte
-  blandar källor.
-
-**Tillägg 14/10: utfallet — ÅDT ur paketet, vägklassen stannar i vägdatalagret** (körd lokalt på 65238f1, regeln ovan).
-- **ÅDT klarar regeln.** Vid 726 stationer med ÅDT i båda ligger paketet inom ±10 % av Axels till **95,7 %** (kravet 90 %), och
-  vägdatalagret till 90,8 % på samma stationer. Korrelationen i log10 är 0,893 mot 0,857.
-- **Vägklassen klarar inte regeln:** 744 stationer, **92,2 %** lika (kravet 95 %). Skälet är att närmaste segment ofta är en mindre
-  väg bredvid stationen. 38 av de 58 avvikelserna har paketets klass 7–9 (28 av dem klass 9) där Axel har 0–5. Vägdatalagret väljer
-  lägsta klass inom radien och är lika med Axel vid **95,0 %** av samma 744 stationer. Vägpunkternas klass stannar därför i
-  vägdatalagret, enligt regeln.
-- **Vägpunkterna:** ÅDT ur paketet vid **12 626 av 12 960** (`data/vagdata/vaglagspunkter-adt.json`, CC0, spannet `adt_fordon`).
-  - De 334 utan ÅDT inom 150 m: 213 har ÅDT i vägdatalagret, 121 saknar i båda. Luckorna står tomma i filen.
-  - Mot vägdatalagret vid de 12 621 med ÅDT i båda: 88,0 % inom ±10 % och 77,1 % exakt lika.
-- **Avvikelsen sitter i korsningarna.** Vid de 818 punkterna med km 0 (`…@0`, väglagssegmentets början; 786 med ÅDT i båda) stämmer paketet bara till
-  42,5 % med vägdatalagret, mot 91,0 % vid de övriga 11 835. Där de skiljer sig är paketets ÅDT lägre i 1 408 av 1 520 fall (median
-  hälften). Närmaste segment i en korsning är ofta en annan väg än den väglagssegmentet ligger på.
-  - Att välja största ÅDT bland segmenten inom närmaste + 2 m höjer bara km 0 till 51,7 %. Det är prövat som underlag, inte som regel.
-- Frågan om korsningspunkterna står i bedömningen §4.2.
-
-**Tillägg 14/10: vägvalet — klassen ur ÅDT-segmentet, luckorna ur vägdatalagret, korsningarna som regeln** (Bengt: *"slå ihop 937,
-a och ja till båda"*, på frågorna i bedömningen §4.2).
-- Underlaget: paketets `ROUTE_ID` är vägdatalagrets `element_id`, och på samma element bär källorna samma ÅDT (98,6 % exakt). Skillnaden
-  är alltså vägvalet. Klassen ur närmaste segment som bär ÅDT var lika med Axel vid 97,1 % av 726 stationer (vägdatalagret 94,9 %).
-- **(a) för korsningspunkterna:** de 818 punkterna med km 0 får paketets ÅDT som alla andra. Inget vägval där var mätbart bättre mot
-  segmentets nästa punkt (närmaste 39,3 %, vägdatalagret 32,7 %).
-- **Regeln, skriven och pushad före körningen** (`fysik/vagpunkter/trafik_klass.py`):
-  - ÅDT och klass ur ETT segment, det närmaste som bär ÅDT, inom 150 m;
-  - där paketet lämnar ett fält tomt fylls det ur vägdatalagret, och kolumnen `<fält>_kalla` säger varifrån värdet kom;
-  - vid stationerna ska klassen (med vägdatalagrets där paketet saknar) vara lika med Axels vid minst 95 %, och ÅDT (paketets ensamt)
-    som förut: inom ±10 % vid minst 90 % och minst lika ofta som vägdatalagret;
-  - vägpunkterna får fälten bara om båda klarar; annars läses skälet först.
-- Reservation: klassregeln hittades på samma 726 stationer som den prövas på. Den har ingen parameter att trimma.
-
-**Tillägg 14/10: utfallet med vägvalet** (körd lokalt på 601d952, regeln ovan).
-- **Stationerna klarar båda kraven.** Klassen är lika med Axels vid **97,2 %** av 744 stationer (kravet 95 %); 27 av dem har
-  vägdatalagrets klass. ÅDT är oförändrad: 95,7 % inom ±10 % vid 726 stationer, mot vägdatalagrets 90,8 %.
-- **Vägpunkterna:** filen heter nu `data/vagdata/vaglagspunkter-adt-klass.json` (tidigare `vaglagspunkter-adt.json`).
-  - ÅDT ur paketet vid 12 626 (samma tal som förut vid alla), ur vägdatalagret vid 213, och 121 saknar i båda.
-  - Klassen ur paketet vid 12 626 och ur vägdatalagret vid 334; ingen saknas.
-  - Klass 7–9 finns vid 4 punkter, mot 676 klass 9 med den första regeln. Klassen är lika med vägdatalagrets vid 94,4 %.
-- Källan står per rad i `adt_kalla` och `klass_kalla`.
-
-## #554 (14/10 2026) A2:s population läses: var på yttemperaturskalan de grova felen ligger — förregistrerad läsning, ingen dom
-
-**Beslut.** Bengt 14/10: *"Läs a 2 population"* — på fyndet att grind A:s två mått räknar över olika populationer.
-
-**Fyndet som utlöste det.** En rad i `publish/grind-a.ts`:
-
-```ts
-const dec = rows.filter((r) => r.measured >= -5);   // decision band −5…+5
-```
-
-**A1 räknas i beslutsbandet −5…+5 °C. A2 och A3 räknas över ALLA rader** i populationen (uppmätt yta ≤ +5 °C),
-alltså också under −5 °C — där koden själv säger att vi är utanför beslutsbandet. Vid −15 °C är ett tvågradersfel
-ofarligt: vägen är frusen hur som helst. Och i det varma hörnet, +3…+5 °C, kan ingenting fyra — frysriskbetan kräver
-att ytan ligger mellan +1 och +3 °C och har fallit minst 0,8 °C på 30 minuter (#186, #222).
-
-Frågan är därför inte om modellen är bra. Den är om **A2 — det mått som FALLER för vägpunktsgrinden (6,9 %, #399)
-och för FYSIK (#485) — räknar fel i rader som inte kan skada någon.**
-
-**Genomförandet** (`scripts/matningar/a2-populationen-2026-10-14.ts`, självtest i ci.yml). Underlaget är grind A:s
-fråga rad för rad, med dess fyra vakter **importerade, inte kopierade** (#75, radvakten, karantänen, den långsamma
-vakten ur `publish/snapshot-core.ts`), och modellen är grind A:s `evaluate()` — läsningen kan alltså inte mäta en
-annan modell än grinden. Två kandidater: OFFSET (grind A själv) och RÅ (`utanOffset`). Per band redovisas antal,
-andel av populationen, A2 i bandet och bandets andel av alla grova fel; sedan samma mått över tre populationer.
-
-**Banden är inte valda efter utfall.** Varje gräns fanns före körningen:
-
-| band | varifrån gränsen kommer |
-| :-- | :-- |
-| < −5 °C | utanför A1:s eget beslutsband (`grind-a.ts`, raden ovan) |
-| −5…−1 °C | fruset, inom beslutsbandet |
-| −1…+1 °C | frysklassens avgörande (A3 mäter 2 °C tvärs över gränsen) |
-| +1…+3 °C | där frysriskbetan KAN fyra (#186, #222) |
-| +3…+5 °C | i populationen, men ingenting kan fyra där |
-
-**Förväntningar, skrivna före knappen.**
-
-| | förväntan |
-| :-- | :-- |
-| andel av populationen i +3…+5 °C | 25–50 % |
-| andel av de grova felen i +3…+5 °C | 15–40 % |
-| andel av de grova felen under −5 °C | 0–8 % |
-| A2 i beslutsbandet −5…+5 mot A2 alla | 0,2–2,0 pe lägre |
-| A2 i −5…+3 mot A2 alla | 0,5–3,0 pe lägre |
-
-Faller ett tal utanför sitt spann läses **populationen** först, inte slutsatsen.
-
-**Driftvakten.** Självtestet läser beslutsbandets gräns (−5), grovfelströskeln (> 2 °C), A2:s tak (0,05) och
-populationens tak (+5) ur grind A:s egen källa. **Motprov körts:** `DEC_LO` ändrad till −4 ⇒ självtestet faller på
-raden *"beslutsbandets gräns = grind A:s — fick -4, väntade -5"*, och de funktionella testerna såg ingenting. Det är
-skälet att vakten finns: en ändring i grind A som banden inte märker fångas av att källan läses.
-
-**Vad som INTE görs.** Inga trösklar rörs, ingen kod i driften ändras, ingen dom skrivs om. TROSKLAR-SKUGGAN §3
-gäller oförändrat, och vägpunktsgrindens dom (FALLEN, #399) står. Läsningen fäller ingenting och friar ingenting.
-
-**Vad den är till för.** En fråga till Bengt och Axel, införd i bedömningen §4.2: **vilken population ska A2 ha?**
-Visar läsningen att A2:s fall till stor del ligger utanför beslutsbandet är det ett skäl att ta upp måttet — men
-valet är deras. En population som väljs efter ett utfall är ingen population, och den regeln gäller också här:
-därför står banden, förväntningarna och läsregeln ovan skrivna före körningen.
-
-**Stomdokument:** MAT (måtten), BED §4.2.
-
-**Utfall 14/10** (körning 38510855935 på 2564f80, 04:20 UTC; Bengt: *"1 ja"* om att skriva in det). Underlaget var 60 dygn
-bakåt med 737 stationer, varav 536 med mätpunkter, och 102 610 mätpunkter.
-
-| uppmätt yta | punkter | av populationen | A2 OFFSET | av de grova, OFFSET | A2 RÅ | av de grova, RÅ |
-| :-- | --: | --: | --: | --: | --: | --: |
-| < −5 °C | 1 297 | 1,3 % | 7,7 % | 2,4 % | 12,2 % | 1,8 % |
-| −5…−1 °C | 7 550 | 7,4 % | 5,5 % | 10,0 % | 8,9 % | 7,9 % |
-| −1…+1 °C | 17 981 | 17,5 % | 4,0 % | 17,1 % | 9,7 % | 20,3 % |
-| +1…+3 °C | 26 221 | 25,6 % | 3,8 % | 24,1 % | 9,4 % | 28,7 % |
-| +3…+5 °C | 49 561 | 48,3 % | 3,9 % | 46,4 % | 7,2 % | 41,3 % |
-
-| A2 räknat över | punkter | OFFSET | RÅ |
-| :-- | --: | --: | --: |
-| alla rader (dagens tal) | 102 610 | 4,1 % | 8,4 % |
-| beslutsbandet −5…+5 (A1:s) | 101 313 | 4,0 % | 8,3 % |
-| −5…+3 (där något kan fyra) | 51 752 | 4,1 % | 9,4 % |
-
-**Mot förväntningarna** — tre av fem utanför spannet:
-
-| förväntan | utfall (OFFSET / RÅ) | |
-| :-- | :-- | :-- |
-| andel av populationen i +3…+5: 25–50 % | 48,3 % | inom |
-| andel av de grova felen i +3…+5: 15–40 % | 46,4 % / 41,3 % | **över** |
-| andel av de grova felen under −5: 0–8 % | 2,4 % / 1,8 % | inom |
-| A2 i −5…+5 mot alla: 0,2–2,0 pe lägre | 0,05 / 0,05 pe lägre | **under** |
-| A2 i −5…+3 mot alla: 0,5–3,0 pe lägre | 0,06 / 1,06 pe **högre** | **åt andra hållet** |
-
-**Läsregeln gäller:** när tal faller utanför sina spann läses populationen först, inte slutsatsen. Det första som syns är
-årstiden. Fönstret 60 dygn bakåt från 14/10 täcker mitten av augusti till mitten av oktober: bara 1,3 % av punkterna ligger
-under −5 °C, och 48 % ligger i +3…+5 °C. Förväntningarna nämnde inte fönstrets årstid. Populationen är inte läst längre än så.
-
-**Vad talen visar i det här fönstret, utan dom:**
-- De grova felen ligger ungefär i proportion till punkterna i varje band.
-- För OFFSET flyttar en smalare population A2 högst 0,06 pe.
-- För RÅ blir A2 högre i −5…+3 (9,4 %) än över alla rader (8,4 %), eftersom RÅ:s fel är störst kring nollan.
-- Läsningen ger alltså inget stöd för att A2 fäller på rader som inte kan skada någon.
-
-Frågan i bedömningen §4.2 (*vilken population ska A2 ha?*) står kvar för Bengt och Axel. Ingen tröskel och ingen dom är rörd.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #555 (14/10 2026) Kort #304 stängt: dokumentsynken har gått sju morgnar i rad, och Verify är omskriven efter #522
 
@@ -12125,717 +8872,40 @@ artefakterna, republicerar dygnets första session dem (DOKUMENTSYNKEN steg 8), 
 
 **Stomdokument:** BED §4.2.
 
-## #556 (14/10 2026) NIVÅ 2+BLANDNING går live i appen före domen, och alla spår mäts hela vintern
+## #556 (14/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Beslut.** Bengt 14/10, gemensamt med Axel: *"vi måste gå live i appen med nivå2 + blandning för att ha en halkvarning uppe och
-running samtidigt som vi mäter och utvärderar under hela vintern och att mätningarna sker för alla aktuella spår som finns och att
-utvärderingen sker då men vi måste ha ut något live nu."* Samma dag: appen är live i App Store (Bengt).
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
+**För appen:** kandidatens prognos går ut i appen som betavarning före domen i mars.
 
-**Vad det ändrar.**
-- Den frysta kandidaten (#552) når användarna före domen i mars. Hittills gällde att en godkänd prognos först når kartan och aldrig
-  rösten ensam (TROSKLAR-SKUGGAN §4(a)), och först efter domen (#547). Ändringen i tröskeldokumentet skrivs när formen är vald.
-- Domen i mars står kvar som en ny fråga (#547), med förregistreringen senast 31/10 och samma trösklar. Den avgör om kandidaten får
-  stanna, inte om den får börja.
-- Alla aktuella spår mäts i skuggan hela vintern och utvärderas då: RÅ, kandidaten, efterhalkan och de övriga.
+## #557 (14/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Inte avgjort** (frågor i bedömningen §4.2, kort #343):
-- formen i appen;
-- regeln som utlöser varningen;
-- körplatsen för Python-kedjan;
-- avstängningen utan nytt bygge.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Vägen, kartlagd 14/10.** Appen har ingen karta: kartan är webbsidan `karta.html`, och appen talar varningar och visar kortet.
-- Kandidaten är Axels Python: fysiken, en trädmodell (`modell.pkl`, 9,8 MB i hinken) och grannarnas fel med RÅ och blandningen.
-  Fysiken bär ett tillstånd och behöver upp till 45 dygns väderhistorik per punkt.
-- MET Nordic hämtas i dag bara ur arkivet (`kuvos/metnordic-prognos.ts`); ingen levande hämtning finns.
-- Edge-funktionerna kör inte Python och når redan sina resursgränser. Actions är gratis sedan #503, och pulsklockan startar redan
-  Actions-flöden (`ingest.yml`, favoritprovet #534).
-- Data till appen går genom `publicera` (pg_cron var tionde minut) och en ny nyckel i live.json, efter `rain_segments`. Regeln är
-  *lägg till, ersätt aldrig*, eftersom varje rad i `segments` blir en halkvarning.
-- S3 visar resten: fältet, adaptern i tre språk, regeln i tre språk, vektorerna, `beta`, texten, BETA-kortet och ett gemensamt
-  byggnummer (#526).
+## #558 (14/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Risk, skriven före bygget.**
-- Kandidatens väntade andel grova fel vid +6 h är 5,12 % (#552), mot grind A:s tak 5 %.
-- Den har aldrig räknats på en vägpunkt, och mot vägpunktsgrinden är den inte prövad.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Stomdokument:** BED §4.2, SYS, APP, MAT.
+## #559 (14/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Tillägg 14/10 (Bengts fråga *"är det här en bra plan"*): tre brister i planen, rättade samma dag.**
-- **Tiden.** Planen sade inget om när. Räknat steg för steg (MET Nordic levande, uppstarten, kedjan på körplatsen, paritetsprovet,
-  publiceringen, motorn i tre språk, bygget och App Review) är kandidaten i appen tidigast i december. *Nu* finns redan: appen varnar
-  för halka ur Trafikverkets väglag och väderstationerna, och efterhalkans beta (S3, 0.3.12) är ett App Review från App Store.
-- **Steg 1 och 2 väntar inte på valen.** Bara körplatsen (val 3) styr steg 3, och formen och regeln (val 1–2) styr motorn. Den
-  levande hämtningen från MET, som är planens största okända (volym och villkor), kan börja i dag.
-- **Tre regler som planen hoppade över:** rösten får en plats i prioriteten A3 > A1 > A2 > A4 > A5 (produktinvariant); takten läses i
-  skuggan per rutt INNAN rösten byggs (DECISIONS #200: taket kommer ur mätningen, inte ur antagandet); och regeln fryses vid
-  förregistreringen — ändras den sedan, bara genom en daterad post, aldrig en lättnad, annars är marsdomen förorenad.
-- **Ett val till (5), i §4.2:** om kandidaten räknas levande först vid de 754 stationerna, där dess fel är känt (5,12 %), och vid
-  vägpunkterna i steg två, när paritetsprovet och vägpunktsläsningen finns. Snabbare och säkrare som första bygge, men det prövar inte
-  räckvidden mellan stationerna, som är kandidatens mening (#547).
-- **En förenkling:** tröskeln bor på ETT ställe, i publiceringen; motorn får bara en ny farotyp med text, prioritet och vektorer.
-  Då kopieras inga tal till tre språk.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Steg 1 påbörjat 14/10 — MET Nordic levande, mätningen förregistrerad före knappen** (Bengt: *"slå ihop 940 och 941 och börja med
-steg 1"*).
-- **Källan, läst 14/10 06 UTC:** katalogen `metpplatest` på thredds.met.no bär tre rullande dygn med en analys och en prognoskörning
-  VARJE timme (72 av varje), senaste 05Z när klockan var 06Z. Två skillnader mot arkivet som kuvösen läste: körningar varje timme (inte
-  00, 06, 12, 18) med 57 timsteg (inte 30), och prognosfilen har `probability_of_snow_phase`. Pariteten med kuvösen (steg 4) kräver
-  kuvösens regler oförändrade: snö är nederbörd vid luft ≤ +1 °C, och +6 h-klassen är stegen 6–11 (#519).
-- **Bygget:** `ingest/metnordic-live.ts` (`--mat`), knappen `metnordic-live.yml` (bara på Bengts ord, inget schema), självtestet i
-  ci.yml. Samma DAP-tolkning och samma rader som kuvösens arkivfiler (`kuvos/metnordic-prognos.ts`), samma rutsökning som analysens
-  hämtning (`kuvos/metnordic.ts`, ec30eff), en förbindelse åt gången. Spannen för de sju fälten importeras ur värdevakten, aldrig
-  egna kopior.
-- **Vad mätningen läser:** katalogens ålder; rutnätet och rutan över stationerna och väglagspunkterna; punkternas avstånd till
-  rutmitten; varje anrops byte och sekunder (lat och lon en gång, analysen ett steg, körningens steg 0–17 i tre anrop om sex); volymen
-  uppräknad till timme, dygn och månad; värdenas spann mot värdevakten. Raderna blir en artefakt i ett dygn, inget lagras.
-- **Förväntan, skriven före knappen:** analysen och körningen högst 2 h gamla; rutan som stationernas (vägpunkterna spänner
-  11,19–24,14° E, 55,34–68,44° N mot stationernas 11,24–23,99 / 55,34–68,43); ett anrop om sex steg omkring 156 MB och 10–15 s som
-  kuvösen mätte 11/10, alltså 0,4–0,6 GB per timme och 10–15 GB per dygn om allt hämtas varje timme; punkterna inom 0,8 km från
-  rutmitten; inga värden utanför värdevaktens spann utom nederbördens brus strax under 0. Faller ett tal utanför läses källan först.
-- **Vad talet används till:** volymen avgör körplatsen (val 3 i §4.2) och om varje timme är rätt takt, eller om körningarna var sjätte
-  timme räcker som i kuvösen. Ingen kedja körs, inget schema läggs, ingen tabell skrivs.
+## #560 (14/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Första tryckningen 14/10 06:21 UTC (körning 38521765994 på f7f68dc; Bengt: *"slå ihop 942 och tryck knappen"*) föll efter 25 s,
-och tre av talen lästes ändå:**
-- katalogen: analysen 06Z var 22 min gammal och körningen 05Z 82 min gammal — inom förväntans 2 h;
-- rutnätet 2321×1796; rutan över de 13 814 punkterna y 251–1728, x 678–1313 (1478×636, 940 008 rutor), som kuvösens;
-- längst från rutmitten 0,70 km, ingen punkt över 1,5 km — inom förväntans 0,8 km.
-- **Fallet:** analysens svar (sju fält, ett steg; väntat 26,3 MB) kom med 200 men avkortat, 3 752 935 byte. Kuvösens hämtare såg
-  samma sak 6/10 och hämtar om upp till sex gånger; mätningen saknade den omhämtningen. Rättat samma timme: `hamtaTolkat()` hämtar om,
-  varje kapat svar räknas och redovisas (`avkortade_svar` i sammanfattningen), och självtestet prövar två kapade och sedan ett helt,
-  och sex kapade i rad. Volymen, tiderna och spannen är inte lästa än — knappen trycks om.
-- **Andra tryckningen 06:46 UTC (körning 38524173138 på fda3ef4; Bengt: *"slå ihop 943 och 944 och tryck knappen"*):** katalogen
-  bar analysen och körningen 06Z, båda 46 min gamla; rutan och avstånden som förut. Alla anrop gick igenom — inga avkortade svar den här
-  gången — men mätningen föll på sammanfattningens sista rad: en kvarglömd `a.buf` efter rättelsens namnbyte, i den enda kodväg som
-  inget prov körde. Raderna skrevs till artefakten innan fallet; byte och sekunder per anrop gick förlorade. Rättat samma timme, och
-  självtestet kör nu HELA mätningen mot en fejkad källa (ett rutnät 4×5, en station och en vägpunkt, analysen och tre prognosanrop)
-  och prövar sammanfattningen, volymen, spannen och filerna; tre motprov på den vägen fångade. Repot har `tsconfig.json` men ingen
-  typkontroll i ci, som hade fångat raden — det står som en avvikelse, inte som ett bygge.
-- **Provet hittade ett andra fel som ingen tryckning visat:** analysens strålning skrevs tom, eftersom analysens rad byggdes som en
-  prognos (timvärdet som skillnad mot förra steget) fast analysens värden redan är timvärden (kuvösens analysfil skriver dem rakt av).
-  Rättat: analysens rad byggs direkt, prognosens som förut. Knappen trycks en tredje gång.
-- **Tredje tryckningen 07:05 UTC (körning 38526162017 på 7e5e049; Bengt: *"slå ihop 945 och tryck knappen"*) gick igenom. Utfallet mot
-  förväntningarna:**
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-  | förväntan | utfall | |
-  | :-- | :-- | :-- |
-  | analysen och körningen högst 2 h gamla | 06Z, 66 min gamla kl. 07:06 (07Z fanns inte än) | inom |
-  | rutan som stationernas | y 251–1728, x 678–1313 (1478×636 rutor), 13 814 punkter | inom |
-  | ett anrop om sex steg ~156 MB, 10–15 s | 157,9 MB; **9,6, 9,4 och 144,9 s** — analysen (26,3 MB) 58,3 s efter en timeout (180 s) och omhämtning | storleken inom, tiden spretar 15× |
-  | 0,4–0,6 GB per timme, 10–15 GB per dygn | **500 MB per timme, 12,0 GB per dygn, 360 GB per månad** om allt hämtas varje timme | inom |
-  | punkterna inom 0,8 km från rutmitten | 0,70 km, ingen över 1,5 km | inom |
-  | inga värden utanför värdevaktens spann | luft −3,89…+15,05 °C, fukt 0,52–1, vind 0,06–12,8 m/s, moln 0–1, nederbörd 0–3,3 mm/h, långvåg 0,80–1,31 MJ/m², kortvåg −223…1,49 MJ/m²; **0 utanför**; saknas 13 814 per fält för nederbörd och strålning = prognosens steg 0, som kuvösen beskrev | inom |
+## #561 (14/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-  Inga avkortade svar; en timeout. Hela mätsteget tog 7 min 15 s. Raderna (262 466 = 13 814 punkter × 19 timsteg) ligger i körningens
-  artefakt ett dygn.
-- **Vad talen säger.** (1) Tiden per anrop är det som spretar, inte storleken: 9 s eller 145 s för samma 158 MB, och ett anrop
-  som hänger kostar 180 s innan det hämtas om. En timkörning behöver därför en tidsbudget och ett läge där förra timmens rader
-  duger. (2) **Takten följer av pariteten, inte av volymen:** kuvösen prövade kandidaten på körningarna 00, 06, 12 och 18 UTC
-  (prognos.py startar om fysiken vid varje körning, #519), så samma körningar i drift är det som paritetsprovet (steg 4) kan jämföra.
-  Analysen varje timme och körningarna var sjätte ger **24 × 26 MB + 4 × 474 MB ≈ 2,5 GB per dygn**, en femtedel av 12 GB. Tätare
-  körningar är en ny fråga efter pariteten. (3) Volymen ryms i Actions (gratis i det publika repot, #503); MET:s villkor om en
-  förbindelse åt gången följs. Villkoren om volym läses i steg 2 innan något går på schema.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Steg 2 påbörjat 14/10 — historien för uppstarten, förregistrerad före knappen** (Bengt: *"slå ihop 946 och börja med steg 2"*).
-- **Vad kedjan behöver bakåt, läst i koden:** det längsta fönstret är 45 dygn (`prognos.py` FONSTER = 24 · 45: `tdeep`, fysikens
-  djupgräns, är ett 45-dygns medel av luften); de övriga är högst 168 h. Fysikens tillstånd (`run_lw(…, spara=)`) sparas vid timmen
-  före varje körning och är kedjans sak (steg 3). Steg 2 ger historien och punkterna.
-- **Arkivet täcker fönstret:** metpparchive bar 24 analysfiler för 30/8 (45 dygn bakåt), 11/10, 12/10 och 13/10 (läst 14/10 07:30).
-- **Bygget:** `ingest/metnordic-historik.ts --hamta` hämtar 45 dygns timvis analys (30/8–13/10) för de 13 814 punkterna, i kuvösens
-  analysform (`station_id,tid_utc` + sju fält, strålningen rakt av), ett dygn i taget, återupptagbart, med tidsbudget. Knappen
-  `metnordic-historik.yml`: fem delar om nio dygn, en åt gången, artefakt först och sedan den öppna releasen `metnordic-live-2026-27`
-  (MET Norway, NLOD / CC BY 4.0), efter mallen `kuvos-metnordic-prognos.yml`. Punkternas rutor skrivs till `metnordic_punkter.csv`
-  i releasen. Självtestet kör hela hämtningen mot en fejkad källa (två dygn, en saknad timme, återupptagningen).
-- **Förväntan, skriven före knappen:** 1 080 timmar, 0 saknade; 26,3 MB per anrop (rutan 1478×636 som mätningen) ⇒ 28 GB
-  sammanlagt, 5,7 GB per del; 30–60 s per anrop ⇒ 2–4 h per del, inom tidsbudgeten 320 min (annars återupptagning); 331 536 rader
-  per dygn (13 814 × 24), 14,9 miljoner i allt, omkring 150 MB packat per del; punkterna inom 0,70 km som förut; spannen inom
-  värdevaktens. Faller ett tal utanför läses källan först.
-- **Historiken klar 14/10 11:11 UTC** (körning 38530312850 på 7a51a59, startad 07:44 på Bengts *"slå ihop 947 och tryck knappen"*). Fem delar,
-  en åt gången, alla i den öppna releasen `metnordic-live-2026-27` med `metnordic_punkter.csv`:
+## #562 (15/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-  | del | timmar | saknade | MB | tid | avkortade svar | packad fil |
-  | :-- | --: | --: | --: | --: | --: | --: |
-  | 30/8–7/9 | 216 | 0 | 5 685 | 22 min | 0 | 47,8 MB |
-  | 8/9–16/9 | 216 | 0 | 5 685 | 57 min | 0 | 46,9 MB |
-  | 17/9–25/9 | 216 | 0 | 5 685 | 13 min | 0 | 46,6 MB |
-  | 26/9–4/10 | 216 | 0 | 5 685 | 30 min | 0 | 45,4 MB |
-  | 5/10–13/10 | 216 | 0 | 5 685 | 79 min | 1, hämtat om | 46,1 MB |
-  | **alla** | **1 080** | **0** | **28 424** | **3 h 21 min** | **1** | **233 MB** |
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
+**För appen:** kandidaten blir en egen betavarning, alltid sist i prioriteten.
 
-  Mot förväntan: 1 080 timmar och 0 saknade — inom; 26,3 MB per anrop och 28 GB i allt — inom; 2–4 h per del — **snabbare**, 13–79
-  min, och dygnen tog 44–937 s, alltså spretade arkivets svarstid tjugo gånger utan att något föll; 331 536 rader per dygn — inom;
-  packat 150 MB per del — **46 MB**, tre gånger mindre; 0,70 km — inom. Ett avkortat svar (12/10 13Z, nederbörden) hämtades om
-  och räknades, som rättelsen efter mätningen var tänkt. Inga värden utanför värdevaktens spann rapporterade.
-- **Steg 2 är därmed klart.** Kedjans 45 dygn bakåt finns för alla 13 814 punkter fram till 13/10 23Z; de levande dygnen från 14/10
-  fyller `kandidat-fysik.yml` på med `--dygn` vid varje körning.
-- **Vad som inte görs:** inget schema, ingen kedja, inget tillstånd, ingen levande hämtning på schema — den kommer med körplatsen
-  (val 3). MET:s förstasida med villkoren svarade inte 14/10; det kända villkoret, en förbindelse åt gången, följs, och sidan läses
-  innan något går på schema.
+## #563 (15/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Stomdokument:** inga — ett byggsteg på kort #343; beslutet #556 och frågorna i §4.2 är oförändrade.
-
-## #557 (14/10 2026) Nivå 2+blandning live blir åttonde stomdokumentet, kopplat som kuvösen
-
-**Beslut.** Bengt 14/10: *"kan du lägga den till stomdokument och koppla en uppdatering till sidan på samma sätt som kuvösen etc"*,
-om sidan med stegen till kandidaten i appen, skriven samma dag för att skickas till Axel.
-- ***Nivå 2+blandning live*** (https://claude.ai/artifact/Wsuxr3UTG7d7axekXireqg, källa `docs/NIVA2-LIVE.html`) är det åttonde stomdokumentet under STOMREGELN, med samma krav
-  som de andra sju: handtexten stäms av en gång per dygn av morgonens dokumentsynk (#522), och artefakten republiceras ur repokopian.
-- Koden är **LIV** i `docs/kortkartan.json`. Korten #343, #342 och #333 kopplas till dess §3 (stegen). Delarna L4 segmentprognosen,
-  prognoslagrets kandidater och App Store beskrivs i sidan, så `projektkartan.ts` skriver lägesraderna under §3 och §1, och
-  `kortkartan.ts` skriver *Öppna kort* sist i sidan. Inget av det ändras för hand.
-- Sidan bär inga tal som inte står i DECISIONS, kort #343 eller projektkartan. Läget per steg bokförs på kortet och i kartan, och
-  gäller före sidan om de skiljer sig åt.
-
-**Varför.** Listan är det Bengt och Axel styr vinterns bygge efter. Står den bara i en chatt eller en privat sida glider den
-(SESSIONSREGELN); som stomdokument prövas den varje morgon mot besluten och korten, som kuvösen och favoriterna (#425, #445).
-
-**Stomdokument:** LIV — sidan själv. De övriga sju rörs inte av beslutet.
-
-## #558 (14/10 2026) Körplatsen för kandidaten är GitHub Actions, startad av pulsklockan (val 3 på kort #343)
-
-**Beslut.** Bengt 14/10: *"val 3 är actions"*, på frågan i bedömningen §4.2 (DECISIONS #556). Python-kedjan — fysiken med de frysta
-parametrarna, rättelsen ur hinken, grannarna, RÅ och blandningen — körs i ett Actions-flöde som pulsklockan startar (pg_cron →
-`workflow_dispatch`), som `ingest.yml` och favoritprovets synk (#534). Kedjan portas inte till TypeScript.
-
-**Varför.**
-- Mätningen 14/10 (#556): 2,5 GB per dygn från MET med körningarna var sjätte timme, och omkring 7 minuter per hämtning med tider som
-  spretar 15×. Det ryms i Actions, som är gratis i det publika repot (#503), inte i en edge-funktion, som inte kör Python och redan
-  når sina resursgränser (sql/036).
-- Axels kod körs oförändrad. Pariteten med kuvösen (steg 4) är då en jämförelse av samma kod på samma indata, inte av två
-  implementationer.
-- Det är ett undantag från regeln att återkommande körningar bor i Supabase (Bengt 22/9), med samma skäl som #534: det som inte kan
-  köras där körs i Actions, startat av pulsklockan så att klockan är en.
-
-**Vad som följer (steg 3 på kort #343).** Ett flöde `kandidat-live.yml`: hämtar MET Nordic (analysen varje timme, körningen var
-sjätte), läser historien och fysikens sparade tillstånd ur releasen `metnordic-live-2026-27`, kör kedjan med `modell.pkl` ur hinken
-(kontrollsumman bekräftad, nyckeln ur Actions secrets, aldrig i loggen), skriver tillståndet tillbaka och utfallet per punkt till en
-tabell. Pulsklockans rad och pg_cron-jobbet i en migration. Tidsbudget och ett läge där förra timmens rader duger. Byggs med
-förregistrering före första körningen.
-
-**Tillägg 14/10: steg 3 förregistrerat, del A byggd** (Bengt: *"börja med steg 3"*).
-- **Vad kandidaten ger, läst i #490 och #519 innan något byggdes:** det operativa läget använder grannarnas mätningar *vid
-  giltighetstiden*. Kandidaten "+6 h" är därför ett **nuläge** mellan stationerna — ytan vid timmen t, räknad på den körning som var
-  6–11 timmar gammal (körningarna 00, 06, 12 och 18 UTC) och på stationernas mätningar vid t — inte en varning sex timmar framåt. En
-  varning framåt, med grannarna bara fram till utgivningen, är en annan läsning som hör till försprånget (#519). Det ändrar val 2 i
-  §4.2: regeln ska beskriva ett nuläge (som A1 gör för väglaget), inte en prognos; raden är rättad.
-- **Kedjan live i två delar, som replikan räknar:**
-  - **Del A, var sjätte timme** (`fysik/live/kandidat_fysik.py`, byggd 14/10): för körningen R räknas analysens kolumn om från början
-    över [R − 45 dygn, R) — kedjans eget uppstartsfönster, utan sparat tillstånd som kan glida — och startas om vid R på körningens
-    steg 0–17 (`prognos.skarv`, `fysik_lw.run_lw`, kedjans särdrag, oförändrade). Rättelsen `modell.pkl` (kontrollsumman mot
-    `kuvos/kandidat-2026-27.json`, annars stopp) ger PH för timmarna R+6…R+11 vid alla punkter, stationerna inräknade. Körningar vid
-    andra klockslag avvisas, liksom en analys som slutar före R. Ut: `kandidat_ph_<körning>.csv.gz` (punkt, körning, timme, fysikens
-    yta, PH) och en sammanfattning.
-  - **Del B, varje timme** (nästa bygge): stationernas mätningar vid t (med grind A:s vakter), grannarnas fel mot PH vid stationerna
-    (åtta närmaste inom 300 km, vikt exp(−d/100 km), krympning 0,5), RÅ ur de fem närmaste inom 50 km (vikt 1/max(d, 1)) och
-    blandningen W 0,25 · exp(−ankaravstånd/160 km), replikans tal oförändrade, vid varje punkt ⇒ PB, kandidatens värde, till en
-    tabell som skuggan och publiceringen läser.
-  - Den levande hämtningen (analysen varje timme, körningarna var sjätte) och pulsklockans rader byggs med del B.
-- **Självtestet** kör del A på syntetiska data: 12 punkter, 50 dygns analys i dagfiler, en körning 06Z; prövar klassen R+6…R+11,
-  45-dygnsfönstret, kontrollsumman, körningens klockslag och analysens slut. Kör i ci med fysikens övriga.
-- **Förväntan för första skarpa körningen (på historiken och en arkiverad körning, före schemat):** fysiken över 1 080 timmar ×
-  13 814 punkter inom 10 min på en Actions-runner, PH vid alla punkter utan luckor, PH inom −30…+20 °C, och vid stationerna en
-  fördelning som liknar kuvösens analysläge. Inget tal är en dom; pariteten (steg 4) är provet.
-
-**Tillägg 14/10: rörledningen byggd, förregistrerad före första körningen** (Bengt: *"fortsätt med rörledningen"*).
-- **Indatan för alla punkter** (`fysik/live/indata.py`): stationerna ur Axels frysta indata-release (`elev_ifs` ur ECMWF, som
-  modellen såg), väglagspunkterna ur `data/vagdata/` (`elev_ifs` = höjden, #553 val i; Lastkajens ÅDT och klass, tunga ur
-  vägdatalagret, vinterklassen, Europaväg), i kedjans egna filformer. Tomma värden stannar tomma.
-- **Den levande hämtningen** (`ingest/metnordic-live.ts --dygn`, `--korning`): analysens timmar för i går och i dag ur `metpplatest`,
-  bara de som saknas i dagfilen, till releasen `metnordic-live-2026-27` som `metnordic_dygn_<dag>.csv.gz`; körningen R = den senaste
-  av 00/06/12/18 som är minst sex timmar gammal (+6 h-klassen), stegen 0–17, samma rutor som historien ur `metnordic_punkter.csv`.
-- **Tabellerna** (`sql/050_kandidat_live.sql`): `kandidat_ph` (del A: fysikens yta och PH per punkt och timme, två dygn) och
-  `kandidat_live` (del B: PH, PG, RÅ, ankaravståndet och PB, tre dygn), bara service-rollen; `gallra_kandidat()` körs av timjobbet.
-  Gallringen är kort eftersom 13 814 punkter i timmen är 330 000 rader om dygnet och gratisnivån går i skrivskydd vid 500 MB (#511);
-  vinterns facit bor i skuggloggen (steg 7).
-- **Flödena** (`kandidat-fysik.yml` var sjätte timme, `kandidat-timme.yml` varje timme; båda på knapp tills pulsklockans rader finns):
-  del A hämtar de levande timmarna och körningen, bygger indatan, hämtar `modell.pkl` ur hinken med kontrollsumman mot kandidatfilen
-  (som kuvos.yml), räknar och skriver `kandidat_ph`; del B läser PH för timmen och grind A:s ankare just nu (sql/032
-  `vagpunkt_ankare`, samma population som skuggans RÅ), räknar med replikans tal och skriver `kandidat_live`. Ankarna lämnar aldrig
-  jobbet. `ingest/kandidat-db.ts` är databasens in- och utgång, batchad som `ingest/db.ts`.
-- **Förväntan för första körningen av del A (på knapp, efter historiken):** indatan 754 stationer + 12 960 vägpunkter; de levande
-  dygnen fyllda till senaste katalogtimme; del A inom 10 min; PH vid alla punkter utan luckor, inom −30…+20 °C; `kandidat_ph`
-  83 000 rader per körning. **Del B:** 700–850 ankare (grind A:s population just nu), RÅ vid de flesta punkter (inom 50 km), PB inom
-  −30…+20 °C, timmen inom 2 min. Faller ett tal utanför läses källan först. Inget är en dom.
-- **Vakten i del A (steg 5), lagd 14/10 innan första körningen:** saknade timmar fylls framåt, men är mer än 1 % av fönstrets punkttimmar
-  ifyllda räknas inget — fysiken får inte drivas 45 dygn på ett väder som står still. Självtestet fäller ett saknat dygn (2,2 %) och
-  släpper en saknad timme; MAX_IFYLLT 0,01 är ett tal valt före körningen, inte mätt.
-- **Vad som inte görs än:** migrationen 050 körs med DB-knappen på Bengts ord innan första körningen; pulsklockans rader
-  (`scripts/pulsklocka.ts` och ett pg_cron-jobb som sql/048) läggs när första körningarna är bokförda; skuggans logg (steg 7) och
-  publiceringen (steg 6) rör inte tabellerna än.
-
-**Tillägg 14/10: första skarpa körningen av del A** (körning 38599945843 på 048f3c6, 16:39–16:59 UTC; Bengt: *"slå ihop 951 och tryck
-kandidat-fysik"*).
-
-| förväntan | utfall | |
-| :-- | :-- | :-- |
-| indatan 754 stationer + 12 960 vägpunkter | 754 + 12 960 = **13 714 punkter** | inom |
-| de levande dygnen fyllda till senaste katalogtimme | 13/10: 24 timmar, 14/10: 17 (7 fanns inte i katalogen än) | inom |
-| PH vid alla punkter utan luckor | **0 saknas**, och 0 ifyllda punkttimmar i 45-dygnsfönstret | inom |
-| PH inom −30…+20 °C | **−3,2…+14,1 °C** | inom |
-| `kandidat_ph` omkring 83 000 rader | **82 284** (13 714 punkter × 6 timmar) | inom |
-| del A inom 10 min | kedjan **50 s**; hela flödet 19 min 35 s, varav hämtningen 17,6 | se nedan |
-
-- Timmarna är 14/10 12–17 UTC, räknade på körningen 06Z; analysen 30/8 06Z–14/10 05Z (1 080 timmar). `modell.pkl` hämtades ur
-  hinken med sha256 lika `kuvos/kandidat-2026-27.json`.
-- **100 av de 854 stationerna är inte med:** de saknar ECMWF-fil i Axels frysta indata, och kedjan tar bara de 754 den tränades på,
-  som `common.load`. De har mätningar och blir ankare för RÅ i del B, men ger inget grannfel — fallet självtestet täcker.
-- **Hämtningen tog 17,6 av 19,5 minuter** eftersom första körningen hämtade två hela dygns analys plus körningen, omkring 1,5 GB.
-  Nästa körning hämtar bara de nya timmarna. Kedjan själv tog 50 s för 13 714 punkter och 1 080 timmar, långt under förväntan.
-- 132 punkter saknar ÅDT och 137 tunga fordon i vägdatan; kända luckor som modellen tar som NaN, inte något nytt.
-- Ingen dom: talen säger att rörledningen bär, inte att kandidaten är bra. Pariteten (steg 4) är provet.
-
-**Tillägg 14/10: första skarpa körningen av del B, och pulsklockans rader** (körning 38604051356 på 470d791, 17:08 UTC; Bengt:
-*"slå ihop 952 och tryck db-knappen las och tryck kandidat timme"*).
-
-| förväntan (lagd före körningen) | utfall | |
-| :-- | :-- | :-- |
-| 700–850 ankare (grind A:s population just nu) | **765** | inom |
-| RÅ vid de flesta punkter (inom 50 km) | **13 705 av 13 714** (99,93 %) | inom |
-| PB inom −30…+20 °C | **−2,3…+13,5 °C** | inom |
-| timmen inom 2 min | **31 s** totalt, varav aritmetiken 2 s | inom |
-| `kandidat_live` en rad per punkt | **13 714** skrivna; gallringen tog 0 rader (inget är äldre än tre dygn än) | inom |
-
-- Timmen var 2026-10-14T17:00:00Z; PH kom ur `kandidat_ph` som del A skrev 16:59. Grannfelets medel var **+0,42 °C** —
-  fysiken låg alltså i snitt 0,42 °C under det mätarna visade vid ankarna, och rättelsen drar PB uppåt med den vikten.
-- De 9 punkter som inte fick RÅ saknar ankare inom 50 km. De behåller PG (fysik + grannarnas fel), som blandningen ger
-  full vikt när ankaravståndet är stort — samma väg som kuvösen.
-- **Pulsklockans rader** (del av steg 3): `puls-kandidat-fysik` på **:13 efter 00, 06, 12 och 18 UTC** och `puls-kandidat-timme` på
-  **:43 varje timme**. Takten följer +6 h-klassen (#519): vid :13 är körningen just sex timmar gammal, och del A skriver då
-  precis de sex timmar som följer (R+6…R+11, dvs. 06–11 för körningen 00Z), så täckningen blir obruten dygnet runt. Del B
-  ligger en halvtimme efter del A, när PH för timmen finns. Minuterna är lediga i databasens klocka. `ANTAL_NYA` och
-  vakthundens `PULS_GOLV` går 12 → 14 i samma commit (kontraktsgrinden kräver det); **vakthunden deployas först efter att
-  knappen skapat jobben**, annars larmar check 6a på två jobb som inte finns än.
-- Ingen dom. Talen säger att rörledningen bär timme för timme, inte att kandidaten är bra. Pariteten (steg 5) är provet.
-
-**Tillägg 14/10: pulsklockans två jobb skapade** (Bengt: *"tryck pulsklocka"*).
-
-- **Före:** inventeringen (körning 38621359990, 19:10 UTC) läste **12 puls-jobb** i `cron.job` — exakt det gamla golvet — och de två
-  nya fanns inte.
-- **Efter:** skarpa körningen (38621796578, 19:13 UTC) skrev dem och läste tillbaka var och en: `puls-kandidat-fysik`
-  → `kandidat-fysik.yml`, schema **`13 0,6,12,18 * * *`**, aktiv, token finns; `puls-kandidat-timme` → `kandidat-timme.yml`,
-  schema **`43 * * * *`**, aktiv, token finns. Skriptets egen sammanfattning: *"Alla 14 pulsjobben på plats."*
-- **Vakthunden är INTE deployad än.** Den kör fortfarande med `PULS_GOLV = 12` i drift, och 14 ≥ 12, så den larmar inte — men den
-  vaktar heller inte de två nya jobben förrän funktionen deployas. Det är nästa steg, på Bengts ord, och beviset är en mätning efter
-  deployen (vakthundens egen rad *pulsjobb: 14 aktiva (golv 14)*), inte commit-hashen.
-- **Ett hål i natt, 18:00–23:00 UTC, som självläker.** Takten är `13 0,6,12,18`, och körningen 18:13 hade redan passerat när jobben
-  skapades 19:13. Del A:s senaste körning (manuell, 16:59) skrev PH för 12–17 UTC, och nästa schemalagda del A är 00:13, som skriver
-  00–05. Timmarna 18–23 saknar därför PH. Del B stannar då med vilje: `kandidat-db.ts ph` avslutar med kod 3 när timmen inte har
-  någon PH, och steget kör under `pipefail`, så **körningen blir RÖD** — fem röda timkörningar (19:43–23:43) innan den gröna 00:43.
-  Det är en hög­ljudd och korrekt stopp, inte ett fel i data, men en röd körning ser ut som ett verkligt fel. **En tryckning på
-  `kandidat-fysik` nu stänger hålet:** klockan 19:13 är den senaste körningen som är minst sex timmar gammal 12Z, och den skriver
-  precis 18–23 UTC. Väntar på Bengts ord.
-
-**Tillägg 14/10 kväll: rättelser till tillägget ovan, och vad deployen och natten visade** (Bengt: *"gör 1,2,3"*, efter sin
-granskning av punkt 4–6).
-
-- **Vakthunden är deployad och golvet 14 är bevisat i drift** (deploy 38622870543 från 75e761a, 19:21 UTC). DB-knappen `las`
-  (38632391098) läste vakthundens egna svar ur `net._http_response`: `pulsjobb: 12 aktiva (golv 12)` 18:07 och 19:07, före
-  deployen; `pulsjobb: 14 aktiva (golv 14)` 19:23 och 20:07, efter den; alla med HTTP 200. Tillägget ovan sade att vakthunden inte
-  var deployad — det var sant när det skrevs och är inte längre det.
-- **Schemat `13 0,6,12,18` gjorde mätvakten blind för del A.** Det första `matvaktprov` efter deployen (38623247150, issue #892)
-  skrev *"kandidat-fysik: cron-uttrycket går inte att tolka — kadensen okänd, vakten blind"*. Vakthundens `kadensTimmar()` läser
-  inga listor i timfältet, och mätvakten läser kadensen även ur puls-jobbets schema i `cron.job`. Med `null` hoppar mätvakten över
-  flödet helt — också kontrollen av misslyckade körningar — så två fallna körningar av del A i kväll syntes inte. **Rättat genom att
-  byta uttrycket, inte vakthunden:** `13 */6 * * *` avfyrar samma tider (00:13, 06:13, 12:13, 18:13), och driftens egen
-  `kadensTimmar()` — utskuren ur main och körd — ger `null` för listan och **6** för `*/6`. PR #956, som skrev om funktionen, är
-  stängd: den var den krångligare vägen och öppnades utan att vara beställd.
-- **Hålet 18–23 UTC stängdes inte.** Tillägget ovan sade att en tryckning på `kandidat-fysik` stänger hålet. Två tryckningar
-  (38622811046 och 38625265567) föll båda på samma sätt: MET:s server gav timeouts (180 s) på
-  `met_forecast_1_0km_nordic_20261014T12Z`, åtta försök totalt. Filen är hel — dess metadata läses på 0,44 s — det är
-  överföringen av 158 MB per anrop som inte hinner, samma långsamma ände som #556 mätte (144,9 s, och analysen slog i taket en
-  gång). Ingen rad skrevs (stegen efter hämtningen hoppades över). Del B:s första schemalagda timme, 19:43 (38626004476), blev
-  röd eftersom PH saknas; det fortsätter till nästa lyckade del A. **Två frågor står i bedömningens §4.2:** ska en saknad PH vara
-  en tyst, räknad överhoppning eller rött, och ska körningens 18 steg hämtas i fler och mindre anrop.
-- **Utanför kortet:** samma utskrift visade att `cell-matning-v3` föll 12/10 06:20 och att issue #892 stått öppen sedan 12/10
-  07:07 — mätvakten har larmat i två dygn utan att någon agerat.
-
-**Tillägg 14/10 kväll: granskningens rättelser** (Bengt, efter granskningen av NIVA2-LIVE och stegen: *"så då gör vi alla steg som
-rättar till det här i tur och ordning"*).
-
-- **Stegnumren:** dokumentets numrering (NIVA2-LIVE §3, steg 1–14, den Axel fått) gäller överallt. Pulsklockan är en del av steg 3,
-  pariteten steg 4, förregistreringen steg 8. Rättat i #559, #560, projektkartan och kort #343. Tidigare STATUS-rader skrivs inte om.
-- **PR #957 sammanslagen** (c5504ee): main bär `13 */6 * * *`, som driften. **Mätvaktens bevis:** körningen 21:07 skrev
-  *"kandidat-fysik: senaste körningen failure (2026-10-14T19:37)"* i stället för *"kadensen okänd, vakten blind"*. Mätvakten ser del A
-  igen och ser rätt: den har fallit.
-- **MET:s villkor lästa** på källsidan (thredds.met.no, *Terms of Service*, 14/10 21:0x UTC): *"Please avoid spawning multiple
-  parallel sessions for OPeNDAP access or file downloads"*; IP-adresser med *"excessive load"* kan blockeras; licensen NLOD och CC BY
-  4.0. Vår hämtning väntar in varje anrop innan nästa, och det enda schemalagda flödet som når MET är del A var sjätte timme. Villkoren
-  följs. Två samtidiga sessioner kan uppstå bara om en kuvös- eller MET-knapp trycks medan del A kör. Villkoret i #556 (*"sidan läses
-  innan något går på schema"*) uppfylldes alltså först efter att schemat startat; det redovisas som en avvikelse.
-- **Värdevakten** (38637169663): kandidatens sju fält inom spann — `kandidat_live` ph, pg, ra, pb −3,18…13,6 °C och ank_km 0…49,6 km
-  (13 714 rader, en timme), `kandidat_ph` ts_fysik och ph −3,18…17,14 °C (82 284 rader).
-- **`cell-matning-v3`** (fallen 12/10 06:20 på *"canceling statement due to statement timeout"*, taket 300 s): omkörd 14/10 21:06 (38637605788) och föll igen på samma tak efter 6,5 minuter, medan självtestet gick igenom. Felet är alltså bestående, inte tillfälligt: sjudygnsfrågan ryms inte längre i 300 s. Det lagas inte i kväll; kort #346 är lagt, och mätvakten larmar med rätta tills det är gjort.
-
-**Stomdokument:** LIV, BED §4.2, SYS.
-
-## #559 (14/10 2026) Pariteten, förslaget till förregistrering: den levande kedjan mot kuvösens frysta procedur på samma körning (kort #343, steg 4)
-
-**Förslag.** Claude 14/10, inför Bengts och Axels läsning. Steg 4 i planen för att gå live (NIVA2-LIVE §3, #556) är provet som säger om det som
-*går live* räknar samma sak som det som *mättes* i kuvösen. Regeln och förväntan skrivs här, före knappen.
-
-**Varför ett prov och inte ett resonemang.** Del A (`fysik/live/kandidat_fysik.py`) LÅNAR `run_lw`, `skarv`, `las_prognos`,
-`vader`, `base_features_mn` och `state_features_mn` ur kuvösens frysta moduler — de kan inte glida isär. Men den bygger SJÄLV två
-saker: (a) kraften ur MET Nordic (`bygg_F`) där kuvösen använder `metnordic.load_mn`, och (b) fönstret och omstarten för EN körning,
-45 dygn bakåt utan sparat tillstånd, där kuvösens `prognoslage` kör kolumnen från vinterns första timme. Två sidor som räknar samma
-sak på två sätt är exakt det som ska mätas.
-
-**Hur det mäts** (`fysik/live/paritet.py`, självtest i ci):
-- **Väg A (fryst):** `metnordic.load_mn(analysen)` → `run_lw` över analysen → kuvösens EGEN `prognoslage()` för den ena körningen,
-  med kandidatens frysta parametrar och kandidatens ENA modell i alla fem folds. Fold-maskineriet blir därmed en nulloperation, och
-  väg A är kuvösens egen funktion — ingen avskrift av den.
-- **Väg B (levande):** `kandidat_fysik.kor()` på samma analys, samma körningsfil och samma modell (sha256 mot
-  `kuvos/kandidat-2026-27.json`).
-- Provet bygger väg B:s indata ur samma frysta filer, med `elev_ifs.csv` skrivet som `indata.py` gör för stationer — `elev_ifs` är
-  ett av de 70 särdragen, och utan det hade provet mätt rörmokeriet i stället för kedjan. Metan jämförs kolumn för kolumn och
-  redovisas.
-- **Tre förregistrerade körningar i vintern 24/25:** 2024-12-15T00Z, 2025-01-15T00Z, 2025-02-15T00Z — en per månad, mitt i
-  säsongen, där snötäcket finns och därmed kan tappas.
-
-**Förväntan, skriven före körningen.** `ts_fysik` (fysikkolumnen före rättelsen) och `ph` (efter den), per punkt och timme:
-**median ≤ 0,10 °C och p95 ≤ 0,30 °C**. Talen är valda mot vad de ska skydda: kandidatens egna mått dömer på grova fel vid ±2,5 °C
-och spridningsgrinden vid X = 2,25 °C, så en skillnad mellan kodvägarna på 0,10 °C är fyra procent av domens egen upplösning.
-Toleransen bor på ETT ställe, `TOLERANS` i `scripts/matningar/kuvos-paritet-2026-10-14.ts`; paritetsskriptet mäter och dömer inte.
-
-**Två skillnader som är KÄNDA och redovisas för sig, inte gömda i ett totaltal:**
-1. Där MET Nordic saknar en timme faller väg A tillbaka på ECMWF (`load_mn`: `G[k] = where(isfinite(mn), mn, ec)`) medan väg B
-   fyller framåt och RÄKNAR cellen (`MAX_IFYLLT`, #558 steg 5). Antalet ifyllda punkttimmar skrivs ut; en parität mätt på ett
-   fönster med luckor mäter den skillnaden och inte kedjan.
-2. **Snön.** Väg A:s kolumn har drivits sedan vinterns första timme; väg B:s sedan R − 45 dygn. Det djupa randvillkoret (`tdeep`) är
-   ett 45-dygnsmedel och nollställer sig, men snötäcket ackumulerar utan gräns — och `swe`, `snowd`, `sn72`, `h_since_snow`,
-   `snowd_x_cold` och `sw_x_snowd` är **sex av kandidatens 70 särdrag**. Snöfälten redovisas som andel av väg A:s egen nivå (ett
-   snötäcke på 200 mm vatten som skiljer 10 mm är en annan sak än ett på 10 mm), och domen larmar över 10 %.
-
-**Faller provet mjukas toleransen INTE upp.** Svaret är ett beslut av Bengt och Axel, och de två vägarna är kända: höj `FONSTER`
-(längre analysfönster per körning, dyrare hämtning och längre kedja), eller låt den levande kedjan spara tillstånd mellan
-körningarna (billigare, men då måste ett tappat dygn kunna läka). Ett tredje svar — att gå live ändå och notera skillnaden — är
-möjligt bara om domen visar att den är liten där det räknas, och det är då ett skrivet beslut, inte en tystnad.
-
-**Knappen.** `kuvos.yml` med `matning` = `scripts/matningar/kuvos-paritet-2026-10-14.ts`, på Bengts ord. Flödet hämtar `modell.pkl`
-ur hinken (sha256 mot kandidatfilen), plockar de tre körningarna ur prognosarkivet och kör provet; mätfilen läser utfallen och
-skriver domen. Radfilen med de två vägarnas skattningar lämnar aldrig jobbet — bara aggregat går till sammanfattningen.
-
-**Självtestet, och varför det inte är en formalitet.** Provet körs i ci på en påhittad källa där ECMWF-fönstret och MET Nordic täcker
-samma timmar, så att vägarna startar i samma timme och bara koden kan skilja dem: max-skillnaden ska då vara ≤ 0,02 °C. Sedan
-muteras **bara den levande sidan**, två gånger, och båda måste fällas: `ta + 0,5 °C` (ts_fysik och ph ska röra sig) och `swe = 0`
-(snöraderna ska röra sig). Den första mutationen jag försökte, `CM_PER_MM × 1,5`, gav INGEN skillnad alls — ett djupt snötäcke
-mättar täckningsgraden, så mer snö per millimeter rör ingen yttemperatur. Ett motprov som inte fälls bevisar ingenting om provet,
-bara om mutationen (samma lärdom som #207 20/9).
-
-**Ett fynd på vägen: kandidatens tabeller var obesiktigade.** `kandidat_ph` och `kandidat_live` (sql/050) stod inte i värdevaktens
-`TIDSKOLUMN`, så deras fält skannades aldrig — inte ens som OBESIKTIGADE. Samma fälla som `trend_kandidater` gick i 15/9. Spannen är
-nu skrivna (`ts_fysik`, `ph`, `pg`, `ra`, `pb` −60…+80 °C, `ank_km` 0…300 km) och tabellerna står i listan; besiktningen körs med
-DB-knappen `las`. Spannet är fysikens yttergräns för en vägyta, inte ett väntat intervall — ett värde utanför är ett räknefel.
-
-**Alternativ som förkastades.** Att jämföra mot kuvösens sparade `oof_prognos6.npy`: den skattningen gjordes med **fold-vis**
-modeller (stationens egen region utelämnad), medan den levande kedjan kör den ENA frysta modellen tränad på alla stationer. De två
-är inte jämförbara, och en jämförelse mellan dem hade mätt utelämningen och inte kodvägen.
-
-**Tillägg 14/10 kväll: första tryckningen nådde aldrig pariteten** (Bengt: *"slå ihop 959 och tryck kuvos-paritet"*; körning
-38642319392 på dd24703). Den föll efter 50 sekunder i kuvösens eget inläsningssteg: `kuvos/inlasning.ts:92` fick HTML där den väntade
-JSON. Orsaken är inte pariteten. Kartrepots GitHub Pages fick egen domän 13/10 21:15 UTC (commit *"Koppla domänen halkvakt.se till
-GitHub Pages"*, en annan Claude-session, inte bokförd här), så `axelstar.github.io/halkvakt-karta/…` svarar nu **301** till
-`halkvakt.se`. `curl -sSf` utan `-L` följer inte omdirigeringen och sparade omdirigeringssidan som `static.json`. Åtta `curl`-rader i
-fyra flöden (kuvos, kuvos-smhi, vagdata-hamta, vagdata-rekognosering) har fått `-L`; provat lokalt: static.json ger 855 stationer och
-vaglag.geojson 818 sträckor. Ingen tyst skada: kvällens körning är den enda av de fyra flödena sedan bytet, och den föll högljutt.
-Apparna hämtar sina snapshots från samma gamla adress men följer omdirigeringen (`URLSession.shared` på iOS, `HttpURLConnection` på
-Android, https → https); manifestet ger 200 efter en omdirigering. Pariteten trycks om när rättelsen ligger på main.
-
-**Tillägg 15/10 natt: andra tryckningen föll på mitt eget kopplingsfel** (körning 38643878687 på 15ca49c). Inläsningen gick igenom
-(6 min), modellen hämtades, och kedjesteget föll på `cp: cannot stat 'metnordic/static_2026-10-06.json'`. Stegen som hämtar vinterns
-MET Nordic-analys (`kuvos-metnordic-2024-25`) och prognoser (`kuvos-metnordic-prognos-2024-25`) har egna villkor, och när valet
-`kuvos-paritet` lades till i #954 kom det in i kedjesteget men inte i dem — pariteten fick ingen data. CI:s självtest kan inte se det:
-felet sitter i flödets kopplingar, inte i koden. Rättat: båda villkoren bär nu `kuvos-paritet`, och varje indata pariteten läser är
-spårad till sitt steg (leveransen, indatan, modellen, kandidatfilen, analysen, prognoserna).
-
-**Tillägg 15/10 natt: tredje tryckningen föll på ett andra fel av mig** (körning 38645429144 på 74b67eb). Datan hämtades nu, men
-utplockningen av körningen ur prognosarkivet föll på *"gzip: stdout: Broken pipe"*: raden `zcat "$FORST" | head -1` dör på SIGPIPE
-under `set -euo pipefail`. Jag hade övervägt just den risken när grenen skrevs och avfärdat den med ett resonemang om hur bash hanterar
-`-e` i en rörlednings vänstra led — resonemanget var fel. Rättat: en enda läsning utan `head`
-(`awk 'NR==1 || $2==ts'`). Provat lokalt under `set -euo pipefail` mot två påhittade arkivfiler om 240 000 rader: den gamla raden ger
-kod 141 som i CI, den nya plockar ut alla tre körningarna (120 000 rader var, rubriken en gång, inga rader från fel körning). Mitt
-första lokala prov hade samma fel i sig (`zcat | head -1` för att läsa rubriken) och fick skrivas om. Den största kvarvarande risken,
-att väg B läser analysfilen efter kolumnposition, är kontrollerad: den frysta `las_metnordic` kastar ett fel om kolumnerna inte är
-exakt `station_id, tid_utc` plus de sju fälten, och alla tidigare kuvöskörningar på samma fil har gått igenom.
-
-**Tillägg 15/10 natt: DOMEN — 1 av 3 körningar utanför toleransen** (körning 38647529726 på 38626e8; fjärde tryckningen, efter rättelserna
-ovan). Toleransen är den förregistrerade och godkända (#561), och den mjukas inte upp.
-
-| körning | kolumnen bakåt A / B | `ts_fysik` median / p95 / max | `ph` median / p95 / max | dom |
-| :-- | --: | --: | --: | :-- |
-| 2024-12-15 00Z | 1 584 / 1 080 h | 0,065 / 0,099 / 0,140 | 0,067 / 0,132 / 0,716 | inom |
-| 2025-01-15 00Z | 2 328 / 1 080 h | 0,018 / 0,035 / 0,068 | 0,020 / 0,113 / 0,499 | inom |
-| 2025-02-15 00Z | 3 072 / 1 080 h | 0,051 / 0,089 / 0,159 | 0,063 / **0,436** / 2,177 | **utanför: p95 0,436 > 0,30** |
-
-754 punkter × 6 timmar per körning. **Metan lika** i alla gemensamma kolumner, **0 ifyllda punkttimmar** på väg B — kodvägarna räknar
-samma sak på samma indata. **Orsaken är snön, som förregistrerades:** snötäcket (`swe`, `snowd`, `snowd_x_cold`) skilde i median **0 %**
-av väg A:s nivå i december och januari men **20 %** i februari (median 61,7 mot väg A:s 316 mm; max 3 575). Fysikens yta (`ts_fysik`)
-håller toleransen i alla tre; det är rättelsen, som har snötäcket bland sina särdrag, som glider.
-
-**Varför, läst i koden efter domen:** fysikkolumnen (`fysik_lw.run_lw`) bär inget snötäcke. Snötäcket är en ackumulering av snöfall och
-luft som `bygg_F` (`fysik/live/kandidat_fysik.py:73–75`) startar på **noll** vid fönstrets början, R − 45 dygn. Den frysta proceduren
-ackumulerar från arkivets första timme. I februari ligger snö kvar som föll före fönstret, och den saknas i den levande kedjan.
-
-**Vägarna** — de två som förregistrerades och en smalare som läsningen visade; valet är Bengts och Axels (bedömningen §4.2):
-1. **Hela kolumnen från säsongens början** (30/8, releasens första dag). Exakt som den frysta proceduren. Kostar läsningen av hela
-   säsongens dygnsfiler varje körning (cirka 5 MB per dygn, 0,9 GB i februari) och omkring fyra gånger minnet och tiden i del A, vilket
-   måste mätas mot Actions-maskinens 16 GB.
-2. **Spara tillstånd mellan körningarna.** Billigast per körning, men nya felsätt: ett tappat eller trasigt tillstånd måste kunna läka,
-   och pariteten måste bevisas på nytt.
-3. **Bara snötäcket från säsongens början.** Ackumuleringen av två fält (luft och snöfall) från 30/8 ger snötäcket vid fönstrets början;
-   resten av kolumnen stannar på 45 dygn, där pariteten redan håller. Den smalaste rättelsen, riktad mot exakt det som föll.
-   Rekommendation: **3**, och pariteten körs om på samma tre körningar med samma tolerans. Håller februari inte då blir det väg 1.
-
-Det brådskar inte för vägarna i oktober — det finns ingen snö att tappa — men rättelsen måste vara på plats före snön i norr och före
-signeringen av #560, vars punkt 2 säger att det som går live räknar samma sak som det som mättes.
-
-**Rättat 14/10 kväll (Bengt: *"gör 1,2,3"*):** posten stod som *"Beslut. Claude"*. Claude fattar inga beslut; det här är ett **förslag** som väntar på Bengts och Axels ja, och toleransen 0,10 / 0,30 °C gäller inte förrän det givits.
-
-**Stomdokument:** LIV, MAT, KAR, KUV §9.
-
-## #560 (14/10 2026) Förregistreringen för vintern 2026/27 — utkastet, med allt utom regeln och skuggloggen fastskrivet (kort #343, steg 8)
-
-**Förslag.** Claude 14/10, inför Bengts och Axels signaturer. #544 punkt 6 och #547 säger att kandidaten döms i mars som en **ny
-fråga**, i den form väg B fryste den, och att förregistreringen skrivs **senast 31/10**. Domfönstret börjar på förregistreringens
-dag, så varje dygn utkastet ligger osignerat är ett dygn vinter som faller utanför domen. Därför skrivs allt som går att skriva nu,
-och det som saknas namnges som exakt två frågor.
-
-**1. Vad som döms.** Den frysta kandidaten ur #552, ingenting annat:
-- fysiken `lw` (utan terräng), blandningens par **W 0,25 · L 160 km**, valda på alla veck i både analysläget och +6 h (körning
-  38368369876);
-- rättelsen `modell.pkl`, 9,8 MB, i hinken `arkiv` under `kuvos-kandidat-2026-27/`, identifierad av sin **sha256 i
-  `kuvos/kandidat-2026-27.json`** — samma summa som varje körning av den levande kedjan prövar innan den räknar;
-- de 70 särdragen och de femton parametrarna i samma manifest.
-En annan modell, ett annat par eller en annan fysik är en **annan kandidat** och en annan fråga.
-
-**2. Hur den räknas under vintern.** Den levande kedjan ur #558: del A var sjätte timme (fysiken och rättelsen ⇒ PH för
-R+6…R+11), del B varje timme (grannarnas fel, RÅ och blandningen ⇒ PB), i Actions, startade av pulsklockan. Domen fälls på **det
-kedjan räknade vid timmen**, som det står i `kandidat_live` — inte på en omräkning i efterhand. Att de två räknar samma sak som
-kuvösens frysta procedur är paritetsprovet (#559); faller det är identiteten i punkt 1 inte bevisad, och förregistreringen kan inte
-signeras förrän svaret är skrivet.
-
-**3. Måtten, oförändrade.** Grind A mäts på de **754 stationer** där kandidaten kan räknas, av populationens ~761 (99,1 %; se rättelsen nedan). Grind A–C med samma trösklar, spridningsgrinden **X = 2,25 °C**, och regeln att **tystnad på ett täckt
-segment är en miss** (#475, #477). Inget krav sänks, och spridningsgrinden gäller kandidaten oförändrad (#547). Grind A:s
-population bärs av samma vakter som i dag: #75, radvakten, karantänen och den långsamma vakten, och mätningar yngre än tre timmar.
-
-**4. Domfönstret.** Börjar den dag förregistreringen är signerad och pushad, och löper till domen i mars. Bara data som ingen sett
-räknas, som förslaget till regel L behandlar ett kandidatbyte (#282, L2 och L3).
-
-**5. RÅ bredvid.** RÅ:s dom fälls som förut och redovisas vid sidan som **kontroll**. Blir kandidaten inte räknad för vintern
-(data saknas, eller en av frågorna nedan ger ingen väg) fälls domslutet (a)–(c) på RÅ i stället. Det är en **reserv**, inte två
-chanser att klara grinden (#547).
-
-**6. Det väntade felet, skrivet före vintern och utan uppmjukning.**
-- Kandidatens väntade andel grova fel vid +6 h är **5,12 %** (#552) mot grind A:s tak **5 %**. Kandidaten väntas alltså **inte**
-  klara A2 på det talet. Det är registrerat som förväntan, inte som ett mål att jämföra bort: slår utfallet in är domen ett nej på
-  A2, och det är ett giltigt utfall av en ärlig fråga.
-- Kandidaten har **aldrig räknats på en vägpunkt** och är inte prövad mot vägpunktsgrinden. Vid vägpunkterna kan den bara dömas i
-  grind B, på segment (rättelsen nedan), och där är det ett mått utan tidigare mätning.
-- **Grind A vid stationerna prövar en annan fråga än 5,12 %.** `modell.pkl` är tränad på alla 754 stationer (#550). Grind A
-  vid samma stationer 2026/27 prövar alltså *samma stationer, nytt år*. Talet 5,12 % kommer från fold-vis modeller där stationens
-  egen region hölls utanför: *andra stationer, samma år* (#544, väg B). Grannarnas fel och RÅ räknas utan stationens egen mätning
-  (del B förankrar aldrig en punkt i sig själv), men rättelsen har sett stationen. Förväntningsraden ovan ställer alltså två olika
-  mått mot varandra. Vad det betyder för förväntan — bättre, sämre eller oförändrat — är inte mätt, och ska skrivas av Bengt och
-  Axel före signeringen (tillagt 14/10 kväll efter Bengts granskning).
-- Fysiken är kalibrerad på vintern 24/25. 2026/27 är ett annat år; ingen justering görs under vintern.
-
-**7. Vad som är fryst vid signeringen.** Måtten (punkt 3), domfönstret (punkt 4), kandidatens identitet (punkt 1), regeln som
-utlöser varningen och populationen (frågorna nedan). Ändras något av det efteråt sker det **bara genom en daterad post med båda
-signaturerna** — aldrig som en lättnad efter sett utfall, annars är marsdomen förorenad (#558 tillägg).
-
-**8. Vad som INTE är en del av domen.** Formen i appen (val 1) och avstängningen (val 4). Hur varningen talas, märks eller stängs
-av rör användaren, inte måttet; de kan ändras utan att domen rörs. Därför väntar förregistreringen inte på dem.
-
-**Två frågor måste besvaras före signeringen, båda i bedömningens §4.2 sedan 14/10:**
-- **(A) Regeln** (val 2). Vad utlöser varningen, skrivet i tröskeldokumentet före koden. #558:s tillägg rättade formen: kandidaten
-  ger ett **nuläge** mellan stationerna — ytan vid timmen t räknad på en 6–11 timmar gammal körning, med stationernas mätningar vid
-  t — inte en prognos framåt. Regeln ska därför beskriva ytan och fukten **nu**, som A1 gör för väglaget. Claudes förslag står kvar
-  (kandidatens yta ≤ 0 °C och fukt vid punkten, där ingen station säger annat); talen är Axels. Regeln måste vara skriven för att
-  domen ska kunna räkna missar och falsklarm.
-- **(B) Skuggloggen** — *frågan omformulerad 14/10 på Bengts ord "rätta b"; se rättelsen nedan.* Kommer kandidatens
-  segmentvarningar in i skuggloggen i vinter, bredvid RÅ? Gör de inte det kan grind B och C inte mätas på kandidaten, och #547:s
-  reservklausul fäller marsdomen på **RÅ** i stället — kandidaten vore live i appen utan att vara dömd den vintern. Det är kortets
-  steg *skuggan loggar kandidaten bredvid RÅ*, och det är ett eget krav, inte en följd av val 5.
-
-**Varför utkastet skrivs nu och inte 31/10.** Varje dygn förskjuter domfönstrets början, och november–mars är allt vi har. Två
-frågor är billigare att svara på än ett helt dokument, och allt annat är redan bestämt i #544, #547, #552 och #558 — utkastet
-samlar det så att signeringen blir ett ja eller ett nej, inte ett skrivarbete.
-
-**Rättelse 14/10 (Bengt: *"rätta b"*): domens population är inte ett öppet val, och punkt (B) frågade om något som inte finns.**
-
-Utkastets första lydelse frågade om kandidaten döms på de 754 stationerna eller på vägpunkterna. Den frågan går inte att ställa.
-**Grind A är definierad som leave-one-out per station** (TROSKLAR-SKUGGAN §3: *"prognostisera varje stations yttemp ur grannarnas
-offsetmodell, jämför med **mätt**"*), och en vägpunkt har ingen uppmätt yta att jämföra med. Grind B räknas på **segment**, mot
-facit ur station, kamera, RoadCondition, situationsarkivet eller testarlogg (§2). Populationen är alltså redan låst av
-tröskeldokumentet, och den delen av förregistreringen är därmed skriven utan att någon behöver svara:
-
-| grind | population | kandidaten där |
-| :-- | :-- | :-- |
-| A1–A3 | stationerna, mot mätt yta | **754 av ~761** riktiga stationer (99,1 %) |
-| B1–B3 | segmenten, mot facit | kräver att skuggan loggar kandidaten — annars omätbar |
-| C1–C3 | ≥ 20 facithändelser på täckta segment i ≥ 3 halkperioder, ≥ 30 skuggvarningar | följer av B |
-
-- **Varför 754 av ~761.** De 854 mätpunkterna är 761 stationer + 93 fjärrytor (#344). Fjärrytorna faller ur grind A av sig själva,
-  eftersom grinden kräver `air_temp_c IS NOT NULL` och de saknar luft helt. Kandidaten räknas vid 754; de 7 som fattas saknar
-  ECMWF-fil i Axels frysta indata. **Förregistreringen säger därför att grind A mäts på 99,1 % av populationen, inte på hela** —
-  det är ett tal som ska stå före vintern, inte upptäckas i mars.
-- **En följdfråga, ingen tröskeländring.** Tröskeldokumentet säger *"nationellt över alla 845 stationer"*. 845 ligger nära 854
-  **mätpunkter** och långt från 761 **stationer**, så talet är nästan säkert en mätpunktsräkning från tiden före #344. Ingen tröskel
-  rörs; men en dom som säger "845 stationer" beskriver något annat än den mäter, och raden bör rättas i samma post som §4(a)
-  (frågan i §4.2).
-- **Vad som ersatte punkt (B).** Skuggloggen, ovan. Val 5 (*var först*) står kvar som en byggordningsfråga för appen och styr inte
-  domen: kedjan räknar redan alla 13 714 punkterna, både stationer och vägpunkter.
-
-**Fuktfyndet för (A), som planen i #556 hoppade över.** Kandidaten levererar en **temperatur**, inte en varning: `kandidat_live` bär
-`ph, pg, ra, ank_km, pb` och **ingen fukt alls**. Punktmotorns villkor är `yta ≤ 1 °C (bro 3) OCH moisture === true`
-(`engine/src/engine.ts`), där `moisture` är stationens egna mätning (`publish/rekonstruktion.ts`: `rain OR snow OR precipitation
-NOT IN ('no','dry')`). Kandidaten fyller alltså halva villkoret, och regeln i (A) måste säga varifrån den andra halvan kommer vid en
-punkt mellan stationerna. Fem källor finns redan byggda:
-
-| källa | mätt | täcker punkten | hinder |
-| :-- | :-- | :-- | :-- |
-| radarn (`radar_precip.rate_mean_mmh`, utlösare 2,0 mm/h) | ja | ja, areatäckande | tyst över 70 min (#81 regel 7); mäter fallande nederbörd, inte blöt yta |
-| Trafikverkets RoadCondition på sträckan | operatörsbedömt | ja, segmentkälla | får bekräfta, aldrig fälla (asymmetriregeln §2) |
-| närmaste stations fuktflagga | ja | nej, upp till tiotals km bort | samma glapp som #75 finns för |
-| MET Nordics `nederbord_mm` vid punkten | nej, modellerat | ja | `Boolean(precipitation)` är en falsklarmsmaskin |
-| `regn_h` (timmar sedan nederbörd, 48 h) | ja | per station | används redan av efterhalkans S3 |
-
-**Asymmetrin är det bärande.** Ingen källa kan visa att en punkt är **torr** — radarn ser inte en blöt väg efter regnet, kameran ser
-inte svartis, och RoadConditions tystnad är inget torrt vägbesked. Regeln måste kräva ett **positivt** fuktbesked och får aldrig
-läsa tystnad som torrt (produktinvarianten *Silence is a feature*, och samma skäl som gör kamerabilden oförmögen att fälla ett
-falsklarm). Claudes lydelse till Axel: **pb ≤ 0 °C** (strängare än punktmotorns +1, eftersom pb är en skattning och inte en
-mätning) **och** ett positivt fuktbesked (radarn ≥ 2,0 mm/h inom 70 min **eller** RoadCondition med ett halkord på sträckan) **och**
-att ingen station inom ankaravståndet mätte > +2 °C inom ±45 min (samma gräns som falsklarmsdefinitionen i §2) **och** märkningen
-`modellerat`, aldrig `uppmätt`. Talen är Axels.
-
-**Två hinder före koden, oavsett vilken lydelse som väljs.** (1) TROSKLAR-SKUGGAN §4(a) säger i dag att segmentprognosen *"utlöser
-aldrig röst ensam"*; #556 ändrade beslutet men **texten är inte skriven**, och den kräver båda signaturerna. (2) Trenivåprincipen
-(§1): kandidaten vid en vägpunkt är `modellerat`, vilket får dömas men enligt §4(a):s nuvarande lydelse inte tala. Samma post rättar
-båda, och 845-raden ovan.
-
-**Stegnumreringen har glidit isär (fråga i §4.2).** Kort #343 räknar pariteten som steg 3, publiceringen 4, skuggloggen 5, motorn 6
-och bygget 7; den här sessionen har byggt med pariteten som steg 5, sedan historikhämtningen och pulsklockan blev egna steg; #556
-skriver "paritetsprovet (steg 4)" och #558 "publiceringen (steg 6)". Fyra numreringar på fem dokument. Claudes förslag: **namnge
-stegen och sluta numrera dem** — ett nummer som betyder olika saker i olika dokument är samma fälla som en rad döpt efter ett
-klockslag den inte bär.
-
-**Rättat 14/10 kväll (Bengt: *"gör 1,2,3"*):** posten stod som *"Beslut. Claude"*. Claude fattar inga beslut; det här är ett **förslag** som väntar på Bengts och Axels ja, och förregistreringen gäller inte förrän det givits.
-
-**Stomdokument:** KUV §5, SYS, BED §4.2, LIV.
-
-## #561 (14/10 2026) Paritetens tolerans godkänd, saknad PH hoppas tyst och räknat, och körningen hämtas i anrop om tre (kort #343, steg 1, 3 och 4)
-
-**Beslut.** Bengt 14/10: *"1 ja, 2 a, 3 ja"*, på de tre första frågorna efter granskningen av NIVA2-LIVE (bedömningen §4.2).
-
-1. **Paritetens tolerans (steg 4, #559) godkänd:** median ≤ 0,10 °C och p95 ≤ 0,30 °C för `ts_fysik` och `ph`, på de tre
-   förregistrerade körningarna. #559 är därmed inte längre bara ett förslag på den punkten. Knappen `kuvos-paritet` trycks på Bengts ord.
-   Axel ser beslutet i §4.2; det var hans och Bengts fråga, och Bengt svarade.
-2. **Saknad PH (steg 3) — (a), tyst och räknad.** `kandidat-timme.yml`: ger `kandidat-db.ts ph` kod 3 (ingen PH för timmen) läser
-   flödet del A:s senaste körning. **Har den fallit eller pågår förklarar den luckan:** timmen hoppas över grönt, med en notis
-   `HOPPAD` och en rad i sammanfattningen, och stegen efter (del B, skrivningen, gallringen) hoppas över. **Har den lyckats och PH ändå
-   saknas är kedjan trasig, och jobbet blir rött.** Det andra villet lades till av Claude i samma varv: utan det kunde del B tiga för
-   alltid medan allt såg grönt ut — mätvakten vaktar att del A går, men inte att del A:s lyckade körning faktiskt skrivit timmen. Kan
-   flödet inte läsa del A:s läge räknas det som förklarat (tyst), och notisen säger *okänd*. Provat lokalt i sex fall med låtsade
-   `node` och `gh` (föll, lyckades, pågår, gh svarar inte, PH finns, läsningen föll av annat skäl): utfallet rätt i alla sex. Flödet
-   behöver nu rättigheten `actions: read`. Räkningen: antalet körningar med notisen `HOPPAD`.
-3. **Hämtningen (steg 1) — ja, anrop om tre.** `PER_ANROP_LIVE = 3` i `ingest/metnordic-live.ts` (78 MB per anrop i stället för
-   158), körningens 18 steg i sex anrop. Kuvösens `PER_ANROP = 6` i `kuvos/metnordic-prognos.ts` är orörd, så pariteten rörs inte —
-   samma data hämtas, bara i mindre bitar. Självtestets facit är skrivet som tal (8 anrop i mätningen, 6 prognosanrop, 6 i
-   körningen), inte ur konstanten; motprovet med sex steg per anrop fälls på tre punkter.
-
-**Vad det inte ändrar.** Timeouten (180 s), omhämtningarna (tre), och att hämtningen väntar in varje anrop innan nästa (MET:s villkor).
-En server som stannar helt botas inte av mindre anrop; den syns nu som en fallen del A, som mätvakten larmar på, och en tyst timme i
-del B.
-
-**Bevis som återstår:** nästa lyckade del A på de mindre anropen, och nästa timkörning av del B som antingen hoppar med notisen eller
-skriver `kandidat_live`.
-
-**Stomdokument:** LIV, BED §4.2.
-
-## #562 (15/10 2026) Kandidaten blir en egen betavarning inom regel T; regeln, skuggloggen, grind A och avstängningen enligt Claudes rekommendation; snötäcket från säsongens början (kort #343)
-
-**Beslut.** Bengt 15/10, efter underlaget *Fyra beslut för kandidaten*: *"ja, (a) direkt och slå ihop 961, de övriga enligt din
-rekommendation och rätta snöfelet enligt din rekommendation"*. Bengt talade för båda (*"vi tror stenhårt på den här"*).
-
-1. **Formen (val 1): en egen betavarning, direkt** — utan webbkartan som villkor. Villkoret som står kvar är Bengts egen regel från
-   16/9 (#200): taket för hur ofta varningen får tala kommer ur uppmätt takt i skuggan, och den läses **innan bygget skickas till App
-   Review**. Skuggan loggar samtidigt som rösten byggs, så villkoret kostar ingen kalendertid.
-2. **Regeln (fråga 1):** kandidatens yta ≤ **0 °C** (Claudes föreslagna tal, antaget) **och** ett mätt fuktbesked — Trafikverkets
-   väglag *Våt* på punktens sträcka, eller radarn visar nederbörd över punkten senaste timmen — **och** ingen station inom ankarbandet
-   mätte yta över +2 °C inom ±45 minuter; märkt *modellerat*, aldrig *uppmätt*. Saknas fuktbesked tiger kandidaten. Radarns tröskel och
-   ankarbandet är Axels tal och står öppna (§4.2); radarns tröskel passerar värdevakten innan den bär något.
-3. **Skuggloggen (fråga 2): (c), sedan (a).** Regeln läggs på ett ställe, en funktion i databasen som både skuggan och publiceringen
-   anropar. Skuggan loggar kandidaten så fort regeln finns som utkast; domen räknar från signeringen; loggen är ett villkor för att
-   signera #560.
-4. **Grind A (fråga 3): (c).** Domen gäller den modell som är live, med samma tak. Förregistreringen säger att grind A vid stationerna är
-   en **övre gräns** för kvaliteten mellan stationerna (samma stationer, nytt år). En kontroll med regionmodeller körs i mars på vinterns
-   data och redovisas bredvid, inte som grind. Frågan om kandidaten fungerar mellan stationerna avgörs av grind B.
-5. **Avstängningen (val 4):** nyckeln tas bort ur publiceringen, inte hela publiceringen; kandidaten tystnar också av sig själv när vädret
-   är gammalt eller ofullständigt; att tysta kräver en av Bengt och Axel, att starta igen kräver båda. Provas i drift före App Review.
-6. **Snöfelet: väg 3** — bara snötäcket ackumuleras från säsongens början; resten av kolumnen stannar på 45 dygn. Byggt i
-   `fysik/live/kandidat_fysik.py` (`snotacke_fore`, `bygg_F(..., swe0=)`), med självtest mot ett oberoende facit och motprov.
-
-**Regel T — ett hinder som Claude hittade i samma varv och som ingen signatur tar bort.** TROSKLAR-KOMBINATIONEN §6 (Axels lydelse,
-fastställd av Bengt 16/9, #220): *"En storhet som inte kan motbevisas av en mätning får inte utlösa en varning. Extrapolation faller."*
-§10: regeln *"får skärpas men aldrig mjukas upp — **oavsett signaturer** … Regeln har inga förbehållna öppningar."* Kandidatens yta långt
-från en station är just det T3 och T5 förbjuder: ett värde där ingen mätt, som ingen mätning på platsen kan fälla. **Claude skrev fel i
-underlaget och i NIVA2-LIVE §5** när ändringen av TROSKLAR-SKUGGAN §4(a) kallades en formalitet med två signaturer — regel T, som §4(a)
-vilar på, lästes inte. Inom regel T finns formen redan: TROSKLAR-SKUGGAN §4(b), *talar nära ankare* — kandidaten talar bara där en
-station inom ett godkänt avstånd kan fälla ytans tillstånd och en mätning på sträckan visar fukten (T1, T2). Enligt #490 går **68,1 % av
-trafiken inom 7 km** från ett ankare och **96,5 % inom 15 km**; bortom 15 km (3,6 %) tiger kandidaten. **Därför skrivs ändringen av
-TROSKLAR-SKUGGAN inte i det här varvet:** den ska säga att den egna betavarningen talar i form (b), inom ett band som Axel väljer, och
-det är en fråga till Bengt och Axel i §4.2 — inte en tolkning Claude gör åt dem. *Överspelat samma dag av #563 (Bengt och Axel):
-låset i #220 är hävt, och kandidaten får tala också långt från ankare till domen i mars.*
-
-**Pariteten körd om med snötäcket från säsongens början** (körning 38651194568 på 3921b79; samma tre körningar, samma tolerans):
-
-| körning | `ts_fysik` median / p95 / max | `ph` median / p95 / max | dom |
-| :-- | --: | --: | :-- |
-| 2024-12-15 00Z | 0,065 / 0,099 / 0,140 | 0,067 / 0,132 / 0,716 | inom |
-| 2025-01-15 00Z | 0,018 / 0,035 / 0,068 | 0,018 / 0,053 / 0,379 | inom (förut p95 0,113) |
-| 2025-02-15 00Z | 0,051 / 0,089 / 0,159 | 0,048 / **0,120** / 0,593 | **inom** (förut p95 0,436) |
-
-**alla 3 körningar inom toleransen — det som går live räknar samma sak som kuvösens frysta kandidat; februari ph p95 0,120 (förut 0,436), snötäcket 0 % ifrån i median i alla tre**
-
-**Stomdokument:** LIV, BED §4.2, SYS.
-
-## #563 (15/10 2026) Låset i #220 hävs: regel T blir en vanlig tröskelregel, och kandidaten får tala utan vittne på platsen till domen i mars (kort #343)
-
-**Beslut.** Bengt och Axel 15/10. Bengt: *"men vi ändrar oss nu jag och axel. det spelar ingen roll vad den tidigare regeln säger den
-kan inte få binda upp oss i utvecklingen av det här"*, och *"ja"* på Claudes förslag till hur.
-
-1. **Låset hävs.** Meningen i #220, *"regel T i sin helhet får skärpas men aldrig mjukas upp, oavsett signaturer"*, och motsvarande
-   rader i TROSKLAR-KOMBINATIONEN §10 och TROSKLAR-FRYSKLASSNINGEN §7 gäller inte längre. Regel T ändras från i dag som
-   tröskeldokumenten: genom en daterad DECISIONS-post med båda signaturerna, aldrig som en lättnad efter att utfallet är sett. Lydelsen
-   och T1–T6 står kvar som huvudregel.
-2. **Undantaget för kandidaten, till domen i mars 2027.** Kandidaten NIVÅ 2+BLANDNING får utlösa en **egen betavarning utan vittne på
-   platsen för ytans tillstånd** — T3 och T5 lyfts för kandidatens yta och för inget annat — när regeln i #562 är uppfylld: yta ≤ 0 °C;
-   fukten har ett **mätt** vittne på platsen (väglaget *Våt* på sträckan, eller radarn över punkten senaste timmen; T1 och T2 gäller
-   fullt för fukten); ingen station inom ankaravståndet mätte yta över +2 °C inom ±45 minuter; märkt BETA och *modellerat*; avstängningen
-   på plats. Domen i mars (#547) avgör om den får stanna.
-3. **Bandet faller som krav.** Kandidaten talar överallt där regeln slår till, också långt från stationerna. Avståndet till närmaste
-   ankare (`ank_km`) loggas redan i `kandidat_live`, och domen redovisas per ankarband (0–7, 7–15, 15–20 och över 20 km). Ett band kan
-   läggas in genom en daterad post om skuggan visar att felet långt från stationerna är för stort.
-
-**Vad som inte ändras.** Regel T gäller allt annat: SMHI:s varningar och prognoser, frysklassningen, trenderna och offsetmodellen utanför
-kandidaten. Frysklassningens egna lås (K-A2:s tak, §1:s avgränsning) står kvar. Produktinvarianterna, domen i mars med samma trösklar
-och regel D är orörda.
-
-**Varför den smala formen och inte en strykning.** En strykning av regel T hade också låtit SMHI:s varningar, frysklassningen och
-trenderna utlösa på egen hand, och det är inte beslutat. Med låset hävt är nästa ändring ett beslut bort, inte blockerad.
-
-**Risk, skriven före.** Bortom 15 km från en station går 3,6 % av trafiken (#490). Där kan ingen mätning fälla kandidaten, och där är
-felet störst: 9,20 % grova fel bortom 20 km mot 5,02 % totalt (#517). Det som bär varningen där är fuktkravet, BETA-märkningen och
-avstängningen.
-
-**Skyltfonden.** Bilaga 7 i ansökan (skickad 30/9) säger *"En tröskel får skärpas men aldrig lättas när utfallet väl är sett"*. Den här
-ändringen gäller en princip, före kandidatens utfall, och inte en tröskel efter ett sett utfall. Om fonden ska få veta är Bengts och
-Axels beslut.
-
-**Ändrat i samma commit:** TROSKLAR-KOMBINATIONEN §6.1 (daterad not) och §10, TROSKLAR-FRYSKLASSNINGEN §7, TROSKLAR-SKUGGAN §4(d),
-NIVA2-LIVE (§2 val 1, §5, §6), #562 (not om att regel T-stycket är överspelat), bedömningen §4.2 och kort #343.
-
-**Stomdokument:** LIV, BED §4.2, SYS.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
+**För appen:** kandidaten får tala utan vittne på platsen fram till domen i mars.
 
 ## #564 (15/10 2026) Regel L införd: en lättnad efter sett utfall prövas enligt L1–L4, i alla tretton tröskeldokument (kort #282)
 
@@ -12895,22 +8965,9 @@ förslag samma dag.
 
 **Stomdokument:** MAT, KUV, LIV, BED §4.2.
 
-## #566 (15/10 2026) Ankarbandet för kandidatens stationsveto: 15 km (kort #343)
+## #566 (15/10 2026) Kandidaten: flyttad till halkvakt-kuvos
 
-**Bengts ord 15/10:** *"slå ihop 965, ja till 15 km och bygg 346"*, på Claudes förslag i bedömningen §4.2 (DECISIONS #565 punkt 5).
-
-Kandidaten tiger när en station inom **15 km** från punkten mätte yta över +2 °C inom ±45 minuter. Stationerna är desamma som
-ankarna och bär samma vakter (`vagpunkt_ankare()`, sql/032: #75:s givarvakt, radvakten, karantänen), men vetot läser stationens
-mätning inom ±45 minuter, inte ankarnas färskhet på tre timmar. Underlaget är vägpunktsgrinden (#324): grannarnas avståndsviktade yta
-låg mer än 2 °C fel i 0,9 % av fallen med närmaste ankare 0–7 km bort, 1,1 % vid 7–15, 5,0 % vid 15–20 och 4,0 % bortom 20 km. Det
-största hoppet ligger vid 15 km, och 15 km är redan en bandgräns i domen. Talet är Axels enligt #562 och signeras i förregistreringen
-(#560, senast 31/10) tillsammans med radarns tröskel (#565).
-
-**Reservation:** underlaget är från sensommar och höst utan frostnätter, och det gäller grannarnas viktade medel, inte en enskild
-station. Vinterns skugglogg visar hur ofta vetot biter per ankarband. **Öppet** (bedömningen §4.2): ska skuggloggen spara de vetade
-fallen (station, avstånd, yta)?
-
-**Stomdokument:** KUV, LIV, BED §4.2.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #567 (15/10 2026) Cellmätningen lagas och mäts om på båda radarfälten — regeln och förväntan före knappen (kort #346)
 
@@ -13146,131 +9203,17 @@ radantal som databasen, läst tillbaka ur hinken, och gallringen som bara tar ex
 
 **Stomdokument:** KUV, LIV, BED §4.2.
 
-## #573 (15/10 2026) Kandidatens regel byggs i databasen, skuggan loggar också de tystade fallen, texten godkänd (kort #343)
+## #573 (15/10 2026) Kandidaten: flyttad till halkvakt-kuvos
 
-**Bengts ord 15/10:** *"ja 1, ja 2, texten ok"*, på Claudes förslag samma dag:
-1. **Regeln och skuggloggen börjar nu** (NIVA2-LIVE: regeln före steg 6 och 7). Takten behöver mätas två till tre veckor före App Review.
-2. **Skuggan loggar också de fall som stationsvetot tystar** (station, avstånd, yta), som följdfrågan i #566 — bredvid de fall där
-   fukten fäller med radarvärdet (#565).
-3. **Texten godkänd:** *"Halkvakt tror: halka framöver."* — i samma form som efterhalkans *"Halkvakt tror: frysrisk framöver."* (motorns
-   röst är svensk). En engelsk text har inte visats; Claudes förslag *"Halkvakt thinks: slippery ahead."* står i bedömningen §4.2.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Del 1 byggd** (regeln; del 2, skuggloggen, följer):
-- `sql/055_vagpunkter.sql`, GENERERAD av `scripts/vagpunkter-sql.ts` ur `data/vagdata/vaglagspunkter.json` (`--check` i ci): de
-  12 960 vägpunkterna med kandidatens namn (`v` + radnumret), sträckan (id:t före `@`, samma `segment_id` som `road_conditions` och
-  `radar_precip` — 818 sträckor, kontrollerat i databasen 15/10) och läget.
-- `sql/056_kandidat_regel.sql`: `kandidat_regel()`, talen på ett ställe — yta ≤ 0 °C; fukt = `Våt` i väglagets `condition_info`
-  (exakt) eller radarn `rate_mean_mmh` ≥ 0,5 mm/h någon gång de senaste 60 minuterna; veto = en station inom 15 km som mätt yta över
-  +2 °C de senaste 45 minuterna, med vagpunkt_ankare():s vakter (#75, karantänen, den långsamma vakten); färskhet = kandidatens
-  senaste timme högst två timmar gammal och med minst 95 % av vägpunkterna, annars tiger regeln helt (#562 punkt 5, steg 5:s
-  färskhetsregel). Varje kall vägpunkt får utfallet `varnar`, `veto` eller `torr`, med radarvärdet, vetostationen och flaggan
-  *fläckvis Våt*. `varma` är MATERIALIZED (läxan i #567).
-- Integrationsprovet prövar ett fall per gräns: Våt varnar, fläckvis Våt inte; radarn 0,6 varnar, 0,4 inte, 0,7 för 90 minuter sedan
-  inte; en varm station på 10 km vetar, på 20 km inte, en station i karantän räknas inte; en yta över 0 kommer inte med; regeln tiger
-  när timmen är ofullständig eller tre timmar gammal.
+## #574 (15/10 2026) Kandidaten: flyttad till halkvakt-kuvos
 
-**Fynd i databasen 15/10, före bygget:** `condition_text` bär bara *Normalt* (737) och *Besvärligt (risk för)* (81); *Våt* står i
-`condition_info` (173 sträckor, och *fläckvis Våt* på 418). Regeln läser `condition_info`. Att *fläckvis Våt* inte räknas är #562:s
-lydelse; frågan om den ska räknas står i §4.2, och skuggan bär flaggan så att vintern visar skillnaden.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Driftordning efter *slå ihop*:** DB-knappen `migrera sql/055` och `migrera sql/056`, med bevisrader som ger antal per utfall — inga
-värden.
+## #575 (15/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Bengts svar 15/10:** *"nej till fläckvis, engelska texten ok"* — *fläckvis Våt* räknas inte som fukt (regeln står som byggd;
-skuggan bär flaggan), och den engelska texten är *"Halkvakt thinks: slippery ahead."*
-
-**I drift 15/10** (PR #976 som 15dc5b2): DB-knappen 38713056832 `migrera sql/055` — 12 960 punkter, 818 sträckor, alla 818 i
-väglaget, anon utan rätt; 38713334591 `migrera sql/056` — på kandidatens timme 08:00 UTC 316 kalla vägpunkter: 152 `varnar`,
-164 `torr`, inget veto; anon kan inte köra funktionen. Läsningen 38713689134: alla 152 på 8 sträckor i Norrbotten och Lappland
-(66,4–68,4° N), alla med *Våt*, kandidatens yta i snitt −0,43 °C; närmaste station i snitt 14,9 km bort mätte −0,6…+0,8 °C
-(snitt +0,1), och 53 av 151 stationer frös själva — våta vägar kring nollan, det regeln ska fånga.
-
-**Del 2 byggd** (Bengt 15/10: *"ja, bygg del 2 enligt A och B"*, på Claudes förslag med tre dygn i databasen):
-- **A. Domloggen** (`sql/057_kandidat_skugga.sql`): `kandidat_logga()` körs av pg_cron på :50, efter del B. Den skriver en rad per
-  sträcka med kall yta i `kandidat_skugga` (antal punkter som varnar, vetas och är torra, Våt, fläckvis Våt, radarns högsta värde,
-  kandidatens kallaste värde, närmaste vetostation med avstånd och yta), kandidatens stationsvärden i `kandidat_station` (kort #349;
-  allt i `kandidat_live` som inte redan sparats, så att en missad körning tas igen) och en rad per körning i
-  `kandidat_skugga_korning` med status *räknad*, *redan räknad* eller *tyst* — en varm timme skiljs från en tyst. Båda tabellerna
-  går till hinken med sql/053:s väg, dygnet efter (`arkiv2_alder`) och raderas efter tre dygn (`arkiv2_golv`); trendtabellerna och
-  radarn behåller åtta respektive fjorton.
-- **Färskheten** flyttas till `kandidat_timme()` (två timmar, 95 % av vägpunkterna), som både regeln och loggen läser; `kandidat_regel()`
-  skrivs om med samma innehåll i övrigt.
-- **B. Takten**: skuggmotorn hämtar regelns varnande punkter en gång per anrop (`rpc/kandidat_regel?utfall=eq.varnar`) och loggar
-  per rutt de sträckor rutten passerar inom 2 km (`kandidatLangsRutten` i engine/src/segment.ts): `[t, sträcka, km längs rutten,
-  avstånd, punkter]`, i `shadow_log.kandidat` med regelns timme, antalet varnande punkter i landet och skälet när regeln tiger.
-- Prov: `kandidatLangsRutten` i test/segment.test.ts; integrationsprovet för loggen (en rad per sträcka med rätt antal, stationerna
-  utan dubbletter, räknad/redan räknad/tyst, ett dygns ålder och tre dygns golv i hinken).
-**Driftordning efter *slå ihop*:** `migrera sql/057` (bevis: jobbet finns, regeln ger samma antal som före), deploy av skuggmotorn och
-arkivexporten; beviset är körningsloggens första rad efter :50, skuggloggens kolumn efter :02/:32 och exporten dygnet efter.
-
-**Del 2 i drift 15/10** (Bengt: *"slå ihop 977"*; PR #977 som 5be1d6f): DB-knappen 38717145069 `migrera sql/057` — jobbet
-`halkvakt-kandidat-logg` på :50, kolumnen i skuggloggen, anon utan rätt; skuggmotorn och arkivexporten deployade 10:03. Läsningen
-10:52 (38723295988): timmen 10:00 *räknad*, 9 sträckor, 53 varnande punkter, 0 vetade, 5 torra; 3 016 stationsrader (754 stationer
-× fyra timmar); skuggmotorn 10:32 loggade kandidaten på tre rutter med 127 varnande punkter i landet och **0 passager**.
-
-**Takten längs vägnätet** (Bengt: *"ja, räkna takten längs vägnätet"*). Nollan var sann men fel mätt: de 53 varnande punkterna låg
-som närmast 6,9 km från E10-ruttens raka linje mellan stationerna, men på 0,00 km från samma rutt längs vägnätet (OSRM,
-`data/favoritprov/rutter-osrm.json`, #531), som då gav en passage — och Nikkaluokta→Riksgränsen en till. Skuggmotorn räknar nu
-kandidatens passager längs vägnätet: `bundle-skuggmotor.ts` bäddar in huvudrutternas OSRM-geometri (`RUTTER_VAG`, 20 rutter) och
-fäller om en rutt saknar den; loggen bär `geo: "osrm"` eller `"linje"`. RÅ-prognosen och resten av skuggan rörs inte — deras
-domar är förregistrerade på de raka linjerna.
-
-**Stomdokument:** KUV, LIV, BED §4.2.
-
-## #574 (15/10 2026) Förregistreringen ifylld som eget dokument — fyra punkter före signeringen (kort #343, steg 8)
-
-**Bengts ord 15/10:** *"ja, börja med förregistreringen"*, efter Claudes förslag om nästa åtgärd. **Förslag** till Bengt och Axel, inte
-beslut: dokumentet blir förregistreringen först när båda signerat (senast 31/10, #544, #547).
-
-`docs/FORREGISTRERING-2026-27.md` ersätter utkastet i #560 och samlar allt som beslutats sedan dess: identiteten (#552, med
-modell.pkl:s sha256), den levande kedjan och pariteten (#558, #561, #562), regeln med talen (#562, #565, #566, #568, #573), måtten
-per grind och ankarband (#547, #563), grind A som övre gräns (#562 punkt 4), domfönstret och regel L (#564), RÅ som kontroll och
-reserv, förväntan (5,12 % mot taket 5 %), vad som fryses och vad som inte hör till domen.
-
-**Fyra punkter före signeringen (bedömningen §4.2):**
-- (a) **Radarns tal** läses 26/10 enligt #568; Claude för in det samma dag.
-- (b) **Spridningsgrinden för kandidaten.** #547 säger RÅ:s grind oförändrad — färre än två ankare *eller* spridning ≥ 2,25 °C ⇒
-  okänt — och #563 att kandidaten talar också långt från ankare; båda kan inte stå. Claudes förslag: bara spridningen grindar där minst
-  två ankare bidrar, och samma grind gäller varningen i appen. **Fynd samma varv:** TROSKLAR-SKUGGAN §3 säger *"bara varv med loggad
-  spridning räknas"*, och kandidatens logg bär varken antalet ankare eller spridningen — utan dem kan grind B inte räknas på
-  kandidaten, och domen faller på RÅ. Bygget (del B skriver dem, domloggen bär den minsta spridningen bland de varnande punkterna)
-  väntar på beslutet.
-- (c) **"845 stationer"** i TROSKLAR-SKUGGAN §3 rättas till *761 stationer (854 mätpunkter)* i samma post som signeringen.
-- (d) **Tysta timmar** (kandidaten gammal eller ofullständig) räknas som okänt, inte som miss — Claudes förslag.
-
-**Rättelse samma kväll (Bengt: *"var inte det här ett problem som uppstod igår och vi var tvungna att välja"*).** Punkt (b) var
-redan avgjord: #563 punkt 3 säger att kandidaten talar överallt där regeln slår till, också långt från stationerna, och #547 att
-spridningsgrinden gäller. Lästa ihop blir det väg 2 — spridningen grindar där minst två ankare bidrar, och med färre ankare grindar
-den inte. Claude ställde det som en ny fråga i stället för att läsa besluten tillsammans; väg 1 och 3 är strukna. Kvar under (b):
-om samma grind gäller varningen i appen (en ändring av #562:s regel, båda signaturerna), och bygget av loggningen.
-
-**Stomdokument:** KUV, LIV, BED §4.2.
-
-## #575 (15/10 2026) Spridningsgrinden i kandidatens regel och logg, "845 stationer" rättat, tysta timmar är okänt (kort #343)
-
-**Bengts ord 15/10:** *"ja till grinden i appen, bygg loggningen, ja c och d"*, på förregistreringens §10 (#574). Regeln i #562 ändras
-(villkoret läggs till) och tröskeldokumentet rättas: Bengts ja nu, Axels signatur med förregistreringen.
-
-1. **Grinden i appen.** Kandidatens regel tiger där minst två av RÅ:s ankare bidrar och deras spridning är **2,25 °C** eller mer
-   (#477); med färre ankare grindar spridningen inte (#563). Samma grind i appen som i domen — det som döms är det användaren hör.
-   `kandidat_regel()` får utfallet `spridning` (sql/058).
-2. **Loggningen byggd.** Del B (`fysik/live/kandidat_timme.py`) skriver RÅ:s bidragande ankare (`n_ank`, högst fem inom 50 km) och
-   deras spridning (`spr`, störst minus minst yta, en decimal) — facit för hand i självtestet; `kandidat-db.ts` för dem till
-   `kandidat_live`; `kandidat_station` bär dem; `kandidat_skugga` bär `spridning` (punkter grinden tystade), `fukt_glest` (fuktiga
-   punkter med färre än två ankare) och `fukt_spr_min` (minsta spridningen bland de fuktiga med minst två) — en sträcka varnar vid X om
-   `fukt_glest > 0` eller `fukt_spr_min < X`, så domen räknar grinden vid X = 1, 2, 2,25 och 4 °C som S-B gör för RÅ. Värdevaktens
-   spann deklarerade (`n_ank` 0–5, `spr` 0–60 °C, domloggens fält), och `kandidat_skugga`/`kandidat_station` står i TIDSKOLUMN.
-   Kontraktsgrinden: *Spridningsgrindens X* över `grind-s-b.ts` och sql/058, med motprov (2,5 i regeln fäller).
-3. **(c)** TROSKLAR-SKUGGAN §3: *"845 stationer"* → *761 stationer (854 mätpunkter, varav 93 fjärrytor)*. Ingen tröskel ändras.
-4. **(d)** En tyst timme (kandidaten gammal eller ofullständig) är *okänt*, inte täckt, och räknas inte som miss i B2; andelen
-   redovisas. Står i TROSKLAR-SKUGGAN §3.
-
-**Prov:** del B:s självtest (antal och spridning vid fyra punkter, med facit för hand); integrationsprovet för grinden (2,25 tystar,
-2,2 talar, ett och noll ankare grindas inte, domloggens tre fält och stationsvärdena). **Driftordning efter *slå ihop*:** `migrera
-sql/058` före del B:s nästa timme (:43), annars faller skrivningen av de nya kolumnerna; sedan värdevakten, och beviset är en timme i
-domloggen med spridningen ifylld. Kvar före signeringen: radarns tal 26/10.
-
-**Stomdokument:** KUV, LIV, BED §4.2.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #576 (15/10 2026) Kandidatens nyckel i live.json: regelns varnande punkter per sträcka, och mätningen efter driftsättningen (kort #343, NIVA2-LIVE steg 6)
 
@@ -13726,42 +9669,9 @@ Bengt och Axel, och bygget kommer från en commit som går att peka på.
 skapa ett utvecklingscertifikat för löparen; ett sådant syns under Certificates i Apple-kontot och kan återkallas.
 
 **Stomdokument:** APP §9 TestFlight, BED §4.2
-## #583 (16/10 2026) Kandidatens takt: läsningen byggd och provläst, och ett förslag till takregel som väntar på Bengts ja (kort #343, steg 7)
+## #583 (16/10 2026) Kandidaten: flyttad till halkvakt-kuvos
 
-**Beslut.** Bengt 16/10: *"Då kan vi göra de här så länge"* (punkt 1: bygg läsningen, skriv takregeln i förväg, provläs på det
-som finns). Läsningen är `scripts/matningar/kandidat-takten-2026-10-16.sql`: sex satser i DB-knappens läsläge över `shadow_log.kandidat`, bara aggregat.
-Provläsningen och huvudläsningen kör samma rader.
-
-**Provläsningen** (DB-knappen 38868581234; underlaget 15/10 10:32 – 16/10 07:32 UTC):
-- 123 körningar på alla 20 svenska rutter. Regeln varnade någonstans i alla 123, och ingen körning bar ett skäl (tyst regel).
-- 2 körningar hade passager, båda på E10 Luleå→Kiruna (7 körningar på rutten), 04 och 07 UTC 16/10: 7 och 3 passager på
-  7 olika sträckor.
-- 8 följder: den tätaste 334 s, ingen inom 2 eller 5 minuter, 3 inom 10 minuter (37,5 %), medianen 802 s.
-- Ingen passage låg inom 10 s eller 60 s från en annan varning i samma körning.
-- 2 av 10 passager låg på en sträcka med egen halkvarning i körningen, båda 2 172 s (36 min) efter den. Tvåminutersregeln (#581)
-  biter inte där, eftersom sträckan är lång.
-
-**Förslaget till takregeln.** Det är en tröskel och alltså Bengts. Den förregistreras när han sagt ja, före huvudläsningen:
-- **Underlaget:** alla svenska skuggkörningar med kandidatloggen från 15/10 10:32 UTC till läsdagen 2/11, med läsningens rader
-  oförändrade.
-- **Måttet:** följderna, alltså tiden mellan två kandidatpassager på olika sträckor i samma körning.
-- **Regeln:** ligger mer än 10 % av följderna inom 10 minuter, byggs ett tak före App Review. Kandidaten talar då högst en gång
-  per 10 minuter, vilken sträcka det än gäller (motorn i tre språk, vektorer). Annars byggs inget tak, och motorns spärrar räcker.
-- **Minsta underlag:** 30 följder på minst 3 rutter och 3 dygn. Saknas det byggs taket ändå: vid tvekan tystnad.
-- **Förväntan:** taket byggs. Provläsningen gav 37,5 %, men på en rutt en morgon.
-- **10 minuter** är motorns gräns för att upprepa en och samma fara, så kandidaten talar aldrig oftare än en fara får upprepas.
-
-**Alternativ.** Ett tak per körtimme, till exempel högst fyra, som räknar körtid i stället för följder. Eller inget tak: varje
-sträcka är en egen fara, och spärrarna gäller redan.
-
-**Varför.** Taket ska komma ur mätningen, inte ur antagandet (#200), och läsas före App Review (#562). Kandidaten är modellerad,
-så en upprepning är en gissning till, inte en bekräftelse.
-
-**Reservation.** Passagens tid är när rutten är närmast den varnande punkten; rösten kommer en ledtid tidigare (cirka 30 s), lika
-för alla, så följderna ändras knappt. Skuggan kör varje rutt var 3,5 timme, alltså ungefär sju körningar per rutt och dygn, och
-underlaget växer bara när det är kallt där rutterna går.
-
-**Stomdokument:** LIV steg 7, BED §4.2
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #584 (16/10 2026) Takregeln för kandidaten förregistrerad: högst en gång per 10 minuter om följderna är täta (kort #343, steg 7)
 
@@ -13862,209 +9772,25 @@ reglerna här: PR, grön CI och *slå ihop* före deploy.
 
 **Stomdokument:** inga — arbetsfördelning, inget av de åtta beskriver vem som gör vad
 
-## #591 (16/10 2026) Facitläsningen mot Trafikverkets väglag 2024/25 förregistrerad som utkast; filerna till hinken via panelen (kort #232)
+## #591 (16/10 2026) Kandidaten: flyttad till halkvakt-kuvos
 
-**Beslut.** Bengt 16/10: *"ja till alla tre"* — svaret om händelserna (skickat av Bengt), filerna till hinken och förregistreringen före läsningen.
-- **Förregistreringen** står i `docs/FORREGISTRERING-FACIT-TRV-2024-25.md` som utkast. Is är kod 60, 61, 70 och 71; snö och modd
-  redovisas för sig. Väglaget får bekräfta men aldrig fälla (TROSKLAR-SKUGGAN §2), och station och sträcka paras inom 2 km. Fönstren
-  är [t − 1, t + 2] h för kandidaten och [t, t + 6] h för efterhalkan; tidszonen mäts först. Läsningen är diagnos, ingen dom. Den
-  signeras av Bengt och Axel innan något läses.
-- **Hinken:** vägen 2/10 (en release som en knapp kopierade) är stängd sedan repot blev publikt. Axel lägger de två filerna i
-  `arkiv/kuvos/trv-2026-111808/` via Supabase-panelen, och kontrollsummorna står i `kuvos/trv-111808-leverans.json`. Hinken bär
-  301,6 MB och filerna 17 MB; databasen berörs inte, eftersom kuvösen läser i sin egen databas i Actions.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Alternativ.** Läsa direkt, som en undersökning; avvisat, eftersom väglaget är det första oberoende facitet för förra vintern och
-ska läsas med regeln skriven först (#463).
+## #592 (16/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Varför.** Utan facit säger kuvösen bara att det blev kallt (kuvössidan §7).
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Stomdokument:** KUV §7 facit, BED §4.2
+## #593 (16/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-## #592 (16/10 2026) Facitläsningens indata (del B): kandidaten ur väg B i jobbet, stationernas yta, fyrningarna och nederbörden — fyra luckor i del A täppta (kort #232)
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Beslut.** Bengt 16/10: *"slå ihop 1008, jag och axel signerar förregistreringen och ta del B själv"*. Claude bygger del B, alltså
-kuvösens indata till läsningen i #591, och skriver in dess definitioner i förregistreringens §4 (*Indata*) före signaturerna. Inget har
-lästs mot väglaget.
+## #594 (16/10 2026) Kuvösen: flyttad till halkvakt-kuvos
 
-**Byggt:**
-- `scripts/matningar/kuvos-blandning-vagb-facit-trv-2026-10-16.ts` är läsningen. Namnet ger jobbet väg B varv 1 (vagb.py och
-  vagb_blandning.py) och Trafikverkets filer med manifestets summor. Den vägrar utan båda signaturerna. Kandidatfilen
-  `niva2-arlig-blandning-analys-2024-25.csv.gz` måste ha samma sha256 som i körning 38368369876 (`dee13cd1…`), annars är det inte den
-  frysta kandidaten. Kedjan är deterministisk: `oof_vagb_analys.npy` hade samma summa (`2ac6b4b2…`) i 38368369876 och 38387172993.
-- `kuvos.yml`: steget *Förregistreringen signerad* står först i jobbet, så att fysikkedjans tre timmar inte körs förgäves.
-- `scripts/matningar/kuvos-facit-trv-indata-2026-10-16.ts` provar indatan utan facit och utan kandidaten (~15 minuter). Det läser
-  frågorna mot kuvösens databas, efterhalkans fyrningar med riktningsprovets 1 109 som kontroll, sträckorna och parningen. Trafikverkets
-  filer öppnas inte.
-- `kuvos/facit-trv.ts` (del A) fick fyra saker som §4 kräver men som saknades:
-  1. missarnas orsak (TROSKLAR-SKUGGAN §2);
-  2. basnivån för efterhalkans fönster;
-  3. perioden;
-  4. missarna och åtgärderna per månad och band, och lyftet A/B per grupp.
-  Missarna räknas nu bara på sträckor som har någon av kandidatens stationer.
-- Förregistreringen §1: kandidaten räknas vid **736** stationer i väg B, inte 754 (754 är driftens tal).
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Varför valen** (skrivna i §4 *Indata*):
-- *En kall timme* är en timme där något halvtimmesvärde är 0 °C eller kallare. Förregistreringen säger "per station och timme", och
-  kandidaten har halvtimmar. Samma regel gäller kandidaten och stationens egen yta, så att lyftet jämför lika med lika.
-- *Basnivån* räknas vid kandidatens stationer, så att A och B har samma stationer.
-- *Ord som motorn inte känner* (`yes`, `freezing_rain`) ger okänd orsak, aldrig torr. Hellre okänt än en gissning.
-- *Missarna* räknas bara vid kandidatens stationer. En sträcka med enbart andra stationer hade alltid blivit en miss.
+## #595 (16/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Alternativ som valdes bort:**
-- Bara värdet på hela timmen. Det tappar halvtimmen.
-- Basnivån vid alla 854 mätpunkter. Det ger en annan population än kandidatens.
-
-**Prov:**
-- Självtesten för läsaren och mätningen, i ci.
-- Fem motprov, som vart och ett fällde sitt prov:
-  - kall gräns 0,5;
-  - nederbördsfönstret ±2 h;
-  - okända ord som torra;
-  - perioden borttagen;
-  - första stationen i stället för närmaste.
-- Utan signaturer: exit 2.
-- Kontraktsgrinden (68 kontrakt) och beroendekartan håller.
-
-**Kvar:**
-- *Indataprovet* i kuvösen, på Bengts ord.
-- *Hela regeln* (del C: fukt, veto och spridning, #562–#575) i kuvösen, före knappen.
-- Signaturerna.
-
-**Stomdokument:** KUV §7 facit, BED §4.2
-
-## #593 (16/10 2026) Hela regeln i kuvösen (del C), som driftens sql/058; Våt är kod 20; indataprovet gick (kort #232)
-
-**Beslut.** Bengt 16/10: *"slå ihop 1009, kör indataprovet och ja till del C"*. Claude bygger hela regeln (#562–#575) i facitläsningen,
-som förregistreringen §4 (a) säger: den räknas bredvid kandidatens kalla timmar.
-
-**Hur regeln speglas** (skrivet i förregistreringen §4 *Indata*):
-- Regeln prövas vid varje kall timme t i slutet av timmen, e = t + 1 h, i driftens ordning (`kandidat_regel()` i sql/058):
-  1. *veto*: en station inom 15 km, stationen själv medräknad, mätte en yta över +2 °C under (e − 45 min, e], med driftens vakter
-     (#75, radvakten och karantänen);
-  2. *torr*: ingen av stationens sträckor hade Våt vid e, och radarns medel var under 0,5 mm/h på alla under (e − 60 min, e];
-  3. *spridning*: minst två av RÅ:s ankare skiljer 2,25 °C eller mer, avrundat till en decimal. Ankarna är de fem närmaste *andra*
-     stationerna inom 50 km med en yta vid timmen, som i `fysik/live/kandidat_timme.py`, där en station aldrig är sitt eget ankare;
-  4. annars *varnar*.
-- De varnande timmarna läses med samma mått som kandidaten: bekräftelsen, lyftet mot B, missarna och åtgärderna.
-- Stationen står för en vägpunkt vid stationen. I driften räknas regeln vid vägpunkterna; i kuvösen finns kandidaten bara vid väg B:s
-  736 stationer.
-- Radarn är kuvösens `radar_precip` (SMHI:s tif-komposit, #441). Våt tas ur Trafikverkets väglag.
-
-**Våt är kod 20, inte 20 och 21.** Förregistreringens §2 sa *20 och 21*. Kod 21 är *fläckvis* vått, och regeln räknar inte fläckvis
-Våt (Bengt 15/10: *"nej till fläckvis"*, #573). Utkastet stred alltså mot regeln det skulle spegla. §2 och §4 är rättade före
-signeringen.
-
-**Trösklarna i kontraktsgrinden.** Kuvösens kopia är den andra av varje tal, och den förs in i samma commit enligt husregeln. Sju
-kontrakt mot sql/058:
-- kall yta, radarns gräns, radarns fönster, vetots fönster, vetots yta och vetots avstånd i meter;
-- spridningens ankarantal, och dessutom X som tredje kopia i det befintliga kontraktet.
-
-Grinden håller med 75 kontrakt. Ändras driftens regel efter signeringen fäller grinden, och skillnaden blir ett daterat beslut med
-båda signaturerna i stället för en tyst drift.
-
-**Prov:**
-- Självtesten i ci, med varje gräns och ordningen.
-- Sex motprov, som vart och ett fällde:
-  - vetot på 20 km;
-  - X 2,35;
-  - Våt med 21;
-  - sex ankare;
-  - e = t;
-  - vetots yta 3 i ena kopian (kontraktsgrinden).
-
-**Indataprovet (del B) gick 16/10**, körning 38928753954 på 767e6ce; mätningen tog 0,8 minuter:
-- 1 366 734 egna kalla station-timmar vid 736 stationer;
-- 1 110 fyrningar vid 514 stationer;
-- nederbörden känd i 2 677 274 station-timmar vid 753 stationer, varav 560 376 med nederbörd. Ordlistan: no, snow, rain, sleet,
-  freezing_rain och yes;
-- vaglag.geojson: 818 sträckor (sha256 `d1edf121…`);
-- parningen: 769 av 854 stationer och 613 av 818 sträckor;
-- en station med kalla timmar och fyrningar saknar läge i stationer.json.
-
-**Avvikelse.** Riktningsprovet 6/10 (37447617038) hade 1 109 fyrningar, och indataprovet 16/10 gav 1 110. Efterhalkans egna filer är
-oförändrade sedan dess (sql/028, kuvos/efterhalkan.ts, trend, vakterna och inläsningen). 19 nya migrationer har kommit till
-(044–060), och orsaken är inte funnen. Det är en fyrning på 1 110, och den står i förregistreringen.
-
-**Kvar:**
-- Ett nytt indataprov med hela regelns tre frågor (varma stationer, radarn och ytan vid timmen), som är oprövade mot databasen.
-- Signaturerna.
-
-**Indataprovet 2 (16/10, Bengt: *"slå ihop 1010 och kör indataprovet igen"*):** körning 38934229806 på f341190; mätningen tog 1,5 min.
-- Regelns tre frågor fungerar:
-  - varma fönster: 900 884 vid 733 stationer;
-  - radarfönster med minst 0,5 mm/h: 103 350 på 816 sträckor;
-  - ytan vid timmen: 2 618 267 värden vid 737 stationer.
-- Resten var som i första provet: 1 366 734 kalla station-timmar, 1 110 fyrningar, nederbörden i 2 677 274 station-timmar och
-  769 av 854 stationer parade.
-- **Fynd:** vaglag.geojson fick en annan sha256 på 40 minuter (`d1edf121…` → `3a40f50b…`). Filen bär dagens väglag och publiceras om,
-  så summan bevisar inte att nätet är detsamma; parningen gav samma antal båda gångerna. Förslaget att skriva ut en summa över bara
-  geometrin står i bedömningen §4.2.
-
-**Stomdokument:** KUV §7 facit, BED §4.2
-
-## #594 (16/10 2026) Nätets summa i facitläsningen: sha256 över sträckornas id och geometri (kort #232)
-
-**Beslut.** Bengt 16/10: *"ja till summan över geometrin"*, på Claudes förslag i bedömningen §4.2.
-- Facitläsningen skriver ut *nätets summa*: en sha256 över sträckornas id och geometri, sorterade på id (`natsumma()` i
-  `kuvos/facit-trv.ts`).
-- Filens egen sha256 skrivs ut bredvid. Förregistreringen §4 *Indata* säger detsamma.
-
-**Varför.**
-- vaglag.geojson bytte sha256 på 40 minuter mellan de två indataproven (`d1edf121…` → `3a40f50b…`, #593). Filen bär också dagens
-  väglag och publiceras om, så filens summa bevisar inte att nätet är detsamma.
-- Med nätets summa går läsningen att upprepa på samma nät, som §3:s antagande om sträckornas geometri kräver.
-
-**Alternativ.**
-- Spara nätet i repot och läsa det därifrån. Avvisat: det är en fil till att hålla i fas, och §3 säger dagens nät.
-
-**Prov:** självtestet ger samma summa för annan ordning och annat väglag, och en ny summa när en koordinat flyttas. Två motprov
-fällde: utan sorteringen, och med väglaget i sträckans id. Ett tredje var verkningslöst: hela objektet i summan ändrar ingenting,
-eftersom `linjerUr` redan tar bort egenskaperna. Summan själv visas först i nästa körning i kuvösen.
-
-**Stomdokument:** KUV §7 facit, BED §4.2
-
-## #595 (16/10 2026) Förregistreringen av facitläsningen signerad — Bengt, och Axel via Bengt (kort #232)
-
-**Beslut.** Bengt 16/10: *"slå ihop 1012 och signera detta för mej och Axel"*. `docs/FORREGISTRERING-FACIT-TRV-2024-25.md` är signerad i §8 med det datumet. Dokumentets sha256 vid
-signeringen är `0b1d03a1a4f9e49484837ab6730a22067d9e3aa0c402e7a5e8ece067b1d39993`.
-- **Bengts signatur** är hans ord i chatten.
-- **Axels signatur** är Bengts ord för Axel. Den står som *via Bengt*, som Axels tidigare ja i #291 (21/9), #353, #359 och #362
-  (25/9). Axel har inte själv skrivit i repot.
-
-**Vad som nu är fryst** (§6): koderna (§2, Våt bara kod 20), avståndet och fönstren (§3, §4), måtten och indatan (§4 *Indata*):
-- kandidatens frysta summa;
-- de kalla timmarna;
-- basnivån vid kandidatens stationer;
-- fyrningarna;
-- perioden;
-- missarnas orsak;
-- hela regeln;
-- nätets summa.
-
-Ändras något efteråt sker det bara genom en daterad post med båda signaturerna, aldrig som en lättnad efter sett utfall (regel L).
-
-**Vad som följer.**
-- Läsningen trycks på Bengts ord: kuvösen med mätningen `scripts/matningar/kuvos-blandning-vagb-facit-trv-2026-10-16.ts`, ungefär tre
-  timmar.
-- Spärren i kuvos.yml släpper först när signaturerna ligger på main.
-- Utfallet är diagnos, ingen dom (§1).
-
-**Första körningen vägrade 16/10** (Bengt: *"slå ihop 1013 och kör läsningen"*; körning 38939248421 på e5a8fac, 17:22–18:28 UTC).
-Spärren gjorde det den var byggd för, och **inget lästes mot väglaget**.
-- Signaturerna släppte jobbet. Fysikkedjan körde väg B varv 1 på 58 minuter (13/10: 76).
-- Kandidatfilen fick sha256 `2251e3ae…` i stället för den frysta `dee13cd1…`, och läsningen vägrade innan Trafikverkets filer öppnades.
-- Redan kedjans mellanfil skiljer sig: `e6dd8c4d…` i stället för `2ac6b4b2…`, som 13/10 gav två gånger.
-- Kod, data och Python 3.13.16 med de fastlåsta paketen är desamma. Löparens avbild är ny (`ubuntu24/20261012.334` mot `20261004.327`
-  13/10), och kalibreringens optimering förstärker skillnader i sista decimalen. Det är den troliga orsaken, inte bevisad.
-- Skillnaderna i det som skrevs ut är i andra decimalen. Paren är desamma (W 0,25 · L 160 km på alla veck), men till exempel:
-  - veck 1: 4,91 mot 4,92 % grova fel;
-  - ett avståndsband: MAE 0,61 mot 0,62 °C;
-  - alla hinkar: A2 5,17 mot 5,16 %.
-- Läxan: en summa över kedjans utdata går att upprepa på samma löpare men inte mellan löparavbilder. Att kedjan var deterministisk
-  visades bara på samma avbild. Förslaget om ett nytt identitetsprov står i bedömningen §4.2 och kräver en daterad post med båda
-  signaturerna (§6).
-
-**Stomdokument:** KUV §7 facit, BED §4.2
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #596 (16/10 2026) Soffprovet ersätter bilprovet i steg 4 inför App Review — Android-emulatorn hos Bengt (kort #343, steg 13)
 
@@ -14104,39 +9830,9 @@ inom 500 m från rutten, och rutten blev 1 609 punkter på 80 minuter.
 
 **Stomdokument:** APP, LIV, BED §4.2
 
-## #597 (16/10 2026) Identitetsprovet ersätter summakravet för den frysta kandidaten i facitläsningen (kort #232)
+## #597 (16/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Beslut.** Bengt 16/10: *"slå ihop 1015 och ja till identitetsprovet för mej och Axel"*, på Claudes förslag i bedömningen §4.2 efter den vägrade körningen (#595). Det är en daterad post med
-båda signaturerna, Axel via Bengt, som förregistreringen §6 kräver. Den står i förregistreringens §9, och §4 är ändrad.
-- Läsningen räknar grind A:s mått för kandidatfilen med `korBlandning` (`kuvos-blandning-2026-10-08.ts`). Det är samma population som
-  13/10, med alla filer i manifestet, RÅ och taket.
-- Den kräver samma värden som körning 38368369876:
-  - n = 4 352 575 exakt;
-  - A1 0,56 ± 0,01 °C;
-  - A2 4,84 ± 0,02 procentenheter;
-  - A3 0,23 ± 0,02 procentenheter;
-  - samma par per veck i analysläget.
-- Paren läses ur fysikkedjans utskrift, som kuvos.yml nu också skriver till `fysik-utskrift.txt`.
-
-**Rättelse av förslaget.** Förslaget i §4.2 sa *"samma par på alla veck (W 0,25 · L 160 km)"*. I analysläget valde veck 4 i stället
-L 80 km 13/10, och i dag likaså. Provet kräver 13/10:s par veck för veck: 160, 160, 160, 160 och 80 km, och 160 km på alla veck.
-Avsikten var samma par som den frysta kandidaten. Det står i förregistreringen.
-
-**Varför toleransen.** Den vägrade körningen skilde sig från 13/10 med högst 0,01 i de utskrivna talen. Skillnaden mellan varv 1 och
-de andra kandidaterna var 0,01–0,04 (#552), men proceduren hålls dessutom fast av koden och av paren.
-
-**Prov:**
-- Självtestet ger inget fel för 13/10:s par och mått inom toleransen.
-- Paren läses ur det första blocket, analysläget.
-- Var och en fäller: n en för mycket, A2 4,865 %, A1 0,571 °C och A3 0,26 %.
-- Utan utskrift och utan mått fäller provet.
-- Tre motprov fällde: A2-toleransen 0,05, det sista blocket och n med spel.
-- **Fynd:** motproven visade först att de nya proven låg efter självtestets felkontroll och aldrig kunde fälla. De skrev ✗ men gav exit
-  0. Kontrollen flyttades sist, och därefter gav alla tre exit 1.
-
-Förregistreringens sha256 efter ändringen är `3b8e9a269e15…`.
-
-**Stomdokument:** KUV §7 facit, BED §4.2
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #598 (16/10 2026) Halkvakt live: morgoninlägget till Facebook-sidan och Instagram (kort #281)
 
@@ -14221,95 +9917,17 @@ där länkar i texten aldrig är klickbara, hänvisar till profilen, där App St
 
 **Stomdokument:** inga — marknadsföringen har inget stomdokument; planen bor i MARKNADSFORING-NOLLBUDGET.md.
 
-## #602 (16/10 2026) Facitläsningen mot Trafikverkets väglag 2024/25 — utfallet (kort #232)
+## #602 (16/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Läsningen.** Bengt 16/10: *"slå ihop 1016"*, på hans ja till körningen (#597). Körning 38958523766 på c156995, 19:56–21:25 UTC:
-inläsningen tog 6,4 min, fysikkedjan 77,6 min och mätningen 4,1 min.
-- **Identitetsprovet klarat:** paren per veck som 13/10, n 4 352 575, A1 0,562 °C, A2 4,836 % och A3 0,227 % (13/10: 0,56 · 4,84 ·
-  0,23).
-- Tidszonen var lokal tid.
-- Facit: 10 256 is-episoder på 721 sträckor.
-- 666 av kandidatens 736 stationer har en sträcka inom 2 km.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-Utskriften står i sin helhet, bara aggregat, i `docs/FACIT-TRV-2024-25-UTFALL.md`. **Diagnos, ingen dom.**
+## #603 (17/10 2026) Kandidaten: flyttad till halkvakt-kuvos
 
-| Mått | Söder 55–60 | Mitten 60–64 | Norr 64–69 | Totalt |
-| :-- | --: | --: | --: | --: |
-| (a) Basnivån B: stationens egna kalla timmar med is inom [t − 1, t + 2] h | 5,4 % | 47,2 % | 77,3 % | 35,9 % (429 913 av 1 196 207) |
-| (a) Kandidatens kalla timmar, bekräftade (A) | 5,6 % | 47,8 % | 77,6 % | 36,8 % (437 916 av 1 190 663) · lyftet **1,02** |
-| (a) Hela regeln, de varnande timmarna | 4,3 % | 23,6 % | 62,0 % | 14,8 % (33 552 av 227 143) · lyftet **0,41** |
-| (a) Missar, kandidaten (is-episoder utan kall timme 2 h före) | 248 av 1 739 | 219 av 3 821 | 101 av 2 743 | 568 av 8 303 (6,8 %): nederbörd 194 · utstrålning 323 · okänd 51 |
-| (a) Missar, hela regeln | 1 048 av 1 739 | 2 784 av 3 821 | 2 305 av 2 743 | 6 137 av 8 303 (73,9 %): nederbörd 2 015 · utstrålning 3 713 · okänd 409 |
-| (b) Basnivån: egna kalla timmar med is inom [t, t + 6] h | 6,3 % | 50,3 % | 80,0 % | 37,9 % |
-| (b) Efterhalkans fyrningar, bekräftade | 0,7 % (6 av 819) | 14,2 % (24 av 169) | 43,3 % (13 av 30) | 4,2 % (43 av 1 018) · lyftet **0,11** |
-| (c) Planerad halkbekämpning inom ±6 h: kandidaten · hela regeln · efterhalkan | | | | 37,4 % · **72,2 %** · 62,7 % |
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Förväntan (§5):**
-1. Lyftet över 1: **1,02**, alltså knappt. Kandidatens kalla timmar är i praktiken stationernas egna, så väglaget säger inte mer om
-   dem än om kylan.
-2. Söder mindre än norr: **ja**, men det är klimatet, eftersom basnivån skiljer lika mycket.
-3. Missarna vid nederbörd: **nej.** Utstrålningsdrivna missar är fler, 323 mot 194.
+## #604 (17/10 2026) Kuvösen: flyttad till halkvakt-kuvos
 
-**Det oväntade:**
-- **Hela regelns varningar bekräftas mer sällan än kylan i allmänhet:** 14,8 % mot 35,9 %, och under basnivån i varje band.
-  Sannolikt finns två skäl, och inget av dem är mätt:
-  - **Fuktvittnet tas ur samma fil som facit.** Väglagets Våt (kod 20) vid e betyder att Trafikverket i det ögonblicket inte sa is,
-    så regelns fukt väljer bort is i fönstret.
-  - **Trafikverket hade planerat halkbekämpning vid 72,2 %** av regelns varningar, mot 37,4 % vid kandidatens kalla timmar.
-    Saltad väg blir våt och inte isig. Åtgärderna är planerade, inte utförda (§5h), så de bekräftar ingenting.
-- **Efterhalkan bekräftas i 4,2 %** av fyrningarna (43 av 1 018), mot basnivån 37,9 %. 819 av fyrningarna ligger i söder, där
-  basnivån är 6,3 %. Där ligger också planerad halkbekämpning vid 62,7 %.
-- Månaden räknas i UTC, så periodens första timme (1/11 00:00 svensk tid) hamnar i gruppen 2024-10 med några tiotal timmar. Det
-  ändrar inga totaler.
-
-**Vad som följer.** Inget ändras av utfallet (§1). Om hela regelns fukt ska delas efter vittne (Våt eller radar), och efterhalkan
-efter åtgärd, är en ny läsning. Den förregistreras före körningen, och frågan står i bedömningen §4.2.
-
-**Stomdokument:** KUV §7 facit, BED §4.2
-
-## #603 (17/10 2026) Uppföljningen av facitläsningen: fuktvittnet och åtgärderna, förregistrerad som utkast (kort #232)
-
-**Beslut.** Bengt 17/10: *"slå ihop 1019 och ja till uppföljningen"*. Det svarar på Claudes förslag efter utfallet (#602). Uppföljningen är skriven som en egen
-förregistrering, `docs/FORREGISTRERING-FACIT-TRV-UPPFOLJNING.md`, och den signeras av Bengt och Axel före körningen.
-
-**Vad den läser:**
-- **(i) Fuktvittnet.** Hela regelns varnande timmar delas efter vad som gav fukten vid timmens slut: bara Våt, bara radarn eller båda.
-- **(ii) Åtgärderna.** Basnivån, kandidaten, hela regeln och efterhalkan delas efter om Trafikverket hade planerat halkbekämpning
-  inom ±6 h.
-
-Båda redovisas per band och totalt, med lyftet mot basnivån i samma del. Fönster, perioden, regeln och identitetsprovet är desamma som i
-läsningen. Inga nya tal.
-
-**Sagt högt:** utfallet är redan sett. Uppföljningen förklarar det och ändrar ingen tröskel och ingen regel (regel L). Förväntan står i
-förregistreringens §4: bara Våt bekräftas mer sällan än bara radarn, och för åtgärderna förväntas ingen riktning.
-
-**Byggt:**
-- `kuvos/facit-trv-uppfoljning.ts` med `fuktvittne()`, `medAtgard()` och `tabell()`.
-- Mätningen `scripts/matningar/kuvos-blandning-vagb-facit-trv-uppfoljning-2026-10-17.ts`. Den delar läsningens beredning, som nu är
-  `forbered()`: signaturerna, identitetsprovet och indatan.
-- `giltigaAtgarder()` delas med läsningen i stället för att kopieras, och `MAX_KM` exporteras, så kontraktsgrinden vaktar den
-  fortfarande.
-- Spärren i kuvos.yml prövar också uppföljningens signaturer när mätningen heter *uppfoljning*.
-
-**Prov:**
-- Självtest i ci.
-- Fuktvittnet och regeln är överens i varje fall.
-- Tre motprov fällde: radarn räknad som Våt, åtgärdsfönstret ±5 h och Våt vid t i stället för e.
-
-**Kostnad:** en körning som läsningen, ungefär 90 minuter.
-
-**Stomdokument:** KUV §7 facit, BED §4.2
-
-## #604 (17/10 2026) Uppföljningens förregistrering signerad — Bengt, och Axel via Bengt (kort #232)
-
-**Beslut.** Bengt 17/10: *"slå ihop 1023, signera för mej och Axel och kör uppföljningen"*. `docs/FORREGISTRERING-FACIT-TRV-UPPFOLJNING.md` är signerad i §6.
-- Bengts signatur är hans ord.
-- Axels signatur är Bengts ord för Axel, *via Bengt*, som i #595 och #597.
-- Dokumentets sha256 vid signeringen är `c29faea63835…`.
-- Signaturerna ligger i samma PR som uppföljningen (#1023), så de når main i samma sammanslagning.
-- Därefter trycks körningen på Bengts ord, med mätningen `scripts/matningar/kuvos-blandning-vagb-facit-trv-uppfoljning-2026-10-17.ts`.
-
-**Stomdokument:** KUV §7 facit, BED §4.2
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #605 (17/10 2026) Soffprovet kan också göras på iPhone via Xcode — rutten i Xcodes format (kort #343, steg 13)
 
@@ -14378,38 +9996,9 @@ Varje steg på Bengts ord.
 
 **Stomdokument:** APP kandidatens röst, LIV steg 7 och 12, BED §4.2
 
-## #607 (17/10 2026) Uppföljningen av facitläsningen — utfallet: fuktvittnet Våt förklarar hela regelns låga bekräftelse (kort #232)
+## #607 (17/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Läsningen.** Bengt 17/10: *"slå ihop 1023, signera för mej och Axel och kör uppföljningen"*. Körning 38990118718 på ee80d30,
-01:16–02:07 UTC. Identitetsprovet klarades. Diagnos, ingen dom. Ingen tröskel och ingen regel ändras (regel L).
-
-| Del | Söder 55–60 | Norr 64–69 | Totalt |
-| :-- | --: | --: | --: |
-| (i) Hela regeln, **bara Våt** | 3,8 % · lyft 0,70 | 57,6 % · lyft 0,75 | 12,7 % (25 464 av 200 183) · lyft **0,35** |
-| (i) Hela regeln, **bara radarn** | 9,5 % · lyft **1,74** | 71,3 % · lyft 0,92 | 34,5 % (6 963 av 20 161) · lyft **0,96** |
-| (i) Hela regeln, båda | 6,9 % · lyft 1,26 | 68,6 % · lyft 0,89 | 16,5 % (1 122 av 6 787) · lyft 0,46 |
-| (ii) Basnivån med / utan planerad åtgärd | 6,1 / 4,7 % | 70,1 / 78,1 % | 20,8 / 45,2 % |
-| (ii) Kandidaten med / utan åtgärd | lyft 1,01 / 1,03 | lyft 1,00 / 1,00 | lyft 1,03 / 1,02 |
-| (ii) Hela regeln med / utan åtgärd | lyft 0,72 / 0,77 | lyft 0,78 / 0,83 | lyft 0,53 / 0,55 |
-| (ii) Efterhalkan med / utan åtgärd | 4 av 552 / 2 av 267 | 6 av 10 / 7 av 20 | 2,5 % (16 av 638) / 7,1 % (27 av 380) |
-
-**Förväntan:**
-- **(i)** Bara Våt bekräftas mer sällan än bara radarn: **ja**. 12,7 % (lyft 0,35) mot 34,5 % (lyft 0,96). Bara Våt ligger under
-  basnivån i varje band (0,70–0,75), och bara radarn ligger över den i söder (1,74).
-- **(ii)** Ingen riktning för åtgärderna: **ja, inom banden**. Hela regelns lyft är under 1 med och utan åtgärd, så åtgärderna
-  förklarar inte det låga utfallet. Totalens 20,8 mot 45,2 % är mest geografi, eftersom Trafikverket planerar bekämpning i söder där is
-  är ovanlig.
-
-**Vad det betyder, som diagnos.** Facitläsningens låga tal för hela regeln (#602) är framför allt ett urvalsfel i läsningen. Fukten tas
-ur samma väglag som facit, och *Våt* betyder att Trafikverket i det ögonblicket inte sa is. Det säger inte att regelns varningar är
-fel. Ett väglag som säger Vått kan inte bekräfta is. Varningarna med bara radarn, som är oberoende av väglaget, bekräftas som kylan
-eller bättre.
-
-**Fynd.** Kandidatens kalla timmar blev 1 357 485 och regelns varnande timmar 227 131, mot 1 357 480 och 227 143 i läsningen (#602).
-Fysikkedjan är inte bytelik mellan löpare (#595, #597). Skillnaden ryms i identitetsprovets tolerans och ändrar inga tal i andra
-decimalen.
-
-**Stomdokument:** KUV §7 facit, BED §4.2
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #608 (17/10 2026) Vakthundens exportlarm för trendtabellerna och radarn: gränsen är antalet tabeller (kort #347)
 
@@ -15690,85 +11279,17 @@ i appen (m-tillstand, steget *I appen* gäller inte) och SMHI läses av favoritr
 
 **Stomdokument:** BED §5 — lägesfilens fält och fogarna F2–F4
 
-## #655 (21/10 2026) Paket A före signeringen: läsningen i förregistreringen, loggen för domen per band, val (d) ersatt och frysflaggan i utkastet
+## #655 (21/10 2026) Kandidaten: flyttad till halkvakt-kuvos
 
-**Bengts ord 21/10**, ur underlaget för paket A (Desktop/Halkvakt_PaketA_Underlag_2026-10-21.md, åtgärdslistan B4-01 till B4-03):
-*"Ja, skriv utkastet"*, *"Bygg PR:en"*, *"Stryk, dom per band"* och *"Ja, i utkastet"*. Bengts villkor för paket A: *"så att jag inte
-beslutar om något jag är osäker på"*.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Varför.** Förregistreringen fryser text, inte kod (§8), och lämnade räkneval öppna som annars hade tolkats i mars efter att utfallet
-setts. Domloggen sparade bara antal per sträcka, så domen per ankarband kunde inte räknas. Påståendet att bandet 0–7 km inte når
-grind A:s spärr (#406) gällde septembers urval av 236 stationer; i hela nätet har 103 av 761 stationer sin närmaste granne inom 7 km.
+## #656 (21/10 2026) Kandidaten: flyttad till halkvakt-kuvos
 
-**Beslut.**
-1. Förregistreringen får avsnittet §4b *Läsningen* — som utkast, med ett förslag och ett skäl per räkneval och tre punkter märkta
-   *Att välja*. Bengt och Axel läser det före signeringen 31/10; det fryses med §4.
-2. Loggen kompletteras: sql/065 (åtgärdslistan B4-36) ger `kandidat_skugga` punkterna, utfallet, ankaravståndet, ankarna,
-   spridningen och värdet för sträckans punkter som inte är torra. Regeln rörs inte. I drift med DB-knappen på Bengts ord.
-3. Val (d) på kort #270, en egen spärr för bandet 0–7 km, stryks. I stället döms domslut (b) per band med samma krav räknade inom
-   bandet (§4b punkt 3). En sänkt spärr hade varit en lättnad, eftersom bandens tal är sedda.
-4. Frysflaggan (#650) skrivs in i utkastet (§4b punkt 11), med meningen att flaggan mäter klassen (≤ +1 °C) och inte rösten (≤ 0 °C
-   och fukt).
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Inte beslutat här:** signeringen, de tre punkterna *Att välja* i §4b (väglaget som facit, B3 utanför skuggrutterna, gränserna för
-reserven) och B1-fällans redovisning (åtgärdslistan B4-37). Domskriptet byggs efter signeringen och fryses med sin sha256 innan det
-läser domfönstrets data.
+## #657 (21/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Alternativ.** Signera texten som den är: billigare nu, men valen blir osignerade. Skjuta signeringen: varje dygn är vinter utanför
-domen. Behålla (d): behövs inte, och en lägre spärr vore en lättnad.
-
-**Stomdokument:** BED §4.2 — val (d) ersatt och frysflaggan i utkastet
-
-**I drift 21/10 (punkt 2, Bengt: *"kör migrationen"*):** sql/065 migrerad 21/10 04:44 UTC med DB-knappen (39545613098, transaktionen bekräftad; alla sex kolumner och den nya loggfunktionen på plats); första timmen 04:50 UTC (DB-knappen *las* 39546397709): timmen 04:00 *räknad*, 85 sträckor, 23 med punkter, 330 punkter = 194 varnande + 133 tystade av spridningen + 3 vetade, 0 rader där listan och räknarna skiljer, ankaravstånd 0–42,3 km.
-
-## #656 (21/10 2026) Förregistreringens §4b fastställd: väglaget som redovisning, B1-fällan, B3 på skuggrutterna, reservens gränser och frysflaggan
-
-**Bengts ord 21/10, för Bengt och Axel:** *"Axel och jag säger ja till rekommendationer 5,6,7,10 och 11 så du kan göra dem klara nu"*.
-Rekommendationerna stod i Claudes lista över det som återstod i paket A samma dag (åtgärdslistan B4-01, B4-03, B4-37).
-
-**Beslut.** I förregistreringens §4b (#655):
-1. **Punkt 5, väglaget som facit:** B räknas som TROSKLAR-SKUGGAN §2 föreskriver; raden utan väglaget som facit är bara redovisning.
-2. **Punkt 6, B1-fällan:** att vetot gör B1 nära noll skrivs ut i domen, och B1 utan vetot redovisas utan att fälla domen.
-3. **Punkt 7, B3:** räknas på träffarna längs skuggrutterna; punktmotorns frysrisk räknas inte om för hela landet.
-4. **Punkt 10, reserven:** RÅ fäller domslutet bara om mindre än hälften av domfönstrets timmar är räknade eller om dygnsfilerna saknas
-   för mer än 30 dygn; ett otillräckligt underlag ger fortsatt skugga.
-5. **Punkt 11, frysflaggan:** står i förregistreringen, med meningen att den mäter klassen (≤ +1 °C) och inte rösten.
-
-**Följder.** Inga punkter *Att välja* återstår i §4b. Fristen `kb-frysflaggan` (28/10) tas bort innan den blivit ett ärende, eftersom
-beslutet är bokfört; en frist för läsningen av §4b behövs inte. Ny frist `domskriptet-kandidaten` 30/11 (Claude). Kvar före
-signeringen 31/10: radarns tal 26/10.
-
-**Alternativ.** (5b) döma utan väglaget: färre facithändelser, C1 kan bli ouppnåelig. (7b) räkna om punktmotorn för hela landet: en ny
-beräkning som själv måste provas och förregistreras före 31/10. (10) andra gränser: möjligt nu, inte efter att loggen setts.
-
-**Stomdokument:** BED §4.2 — frysflaggan avgjord
-
-## #657 (21/10 2026) Paket D, första omgången: vattenplaningens steg D stryks, höjden stängs, prognoslagrets val (c), (e) och (h) stryks, och prognoslagret blir "RÅ: kontroll och reserv"
-
-**Bengts ord 21/10** (åtgärdslistan för block 4, paket D, B4-38, B4-40, B4-42, B4-44): *"Stryk, för oss båda"*, *"Ja, stäng delen"*,
-*"Stryk alla tre"* och *"Döp om, sänk vikten"*. Vattenplaningens steg D var formellt Axels; Bengt svarade för dem båda.
-
-**Beslut.**
-1. **Vattenplaningen:** steg D, en egen varning med förvillkoret yta ≤ +4 °C, stryks. Båda spåren är fallna: V-A (#69, omkörd #104) och
-   V-B 19/10 (#648). Kort #42 stängs, och delen i projektkartan blir *Stängd*. Skuggan loggar vattenplaning vidare med flit (#648), så
-   frågan kan öppnas igen om ny data visar något.
-2. **Höjden:** delen stängs. Höjden avgjordes i #547 (den är ett särdrag i kandidaten), och läsningen 23/10 ströks i #650.
-   Premissläsningen 24/11 (#435) står kvar som förregistrerad, under RÅ-delen.
-3. **Prognoslagrets val (c), (e) och (h) stryks:** (c) *inget utöver skuggan* är överspelat av #556 (alla spår mäts hela vintern),
-   (e) ÅDT ur Lastkajen behövs inte (ÅDT kom ur öppna API:et, #472, och är ett särdrag i kandidaten), (h) molnmängden är besvarad
-   (#471: 0,3 procentenheter; kandidaten har molnet). Kort #270 har inga öppna val kvar; läsningen 24/11 står.
-4. **Prognoslagret** döps om till *RÅ: kontroll och reserv* med vikten 1. Vägpunktsgrinden (#649), läsningen 24/11 och korten #270,
-   #298 och #355 står kvar där. Stegen om lägesfilen, motorn, testfallen och appen gäller inte RÅ, eftersom kandidaten är den som
-   publiceras och talar (#547, #556).
-
-**Samma ändring, inga beslut (åtgärdslistans paket C):** vårlistans Ä1, raden om valen och raden om fysikregeln i bedömningen §4.2
-(avgjord för kandidaten i #563), PROGNOSLAGRET §4:s läge, MALET om S3 och vattenplaningen, NIVA2-LIVE om förregistreringen, och en not
-i TROSKLAR-SKUGGAN om att RÅ föll i vägpunktsgrinden (#399; ingen tröskel ändrad).
-
-**Alternativ.** Låta Axel avgöra steg D: delen hade stått kvar som *Väntar* utan stöd i någon dom. Slå ihop prognoslagret med
-segmentprognosen: vägpunktsgrinden hade behövt en ny ägare (#649).
-
-**Stomdokument:** BED §4.2 — valen och fysikregeln, MAT 2 — vattenplaningen stängd
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #658 (21/10 2026) Ö-B läses på senare frost och i kuvösen; frostnätterna 19 och 20/10 tunnas utan eget instrument
 
@@ -15786,35 +11307,9 @@ frost kommer. Ö-B:s golv (nettonytt ≥ 5 %, tillkomna falsklarm ≤ 25 %) leve
 
 **Stomdokument:** BED §4.2 — Ö-B avgjord för frostnätterna 19 och 20/10
 
-## #659 (21/10 2026) Omgång 1 före signeringen: A2:s population oförändrad, förarsvaren och kameran i §4b, Bengt signerar för båda
+## #659 (21/10 2026) Kandidaten: flyttad till halkvakt-kuvos
 
-**Bengts ord 21/10:** *"Oförändrad, stäng"*, *"Ja, en mening"*, *"Bara redovisning"* och *"Bengt för båda"* (åtgärdslistan B4-76–B4-79, underlaget `Halkvakt_Omgang1_Underlag_2026-10-21.md` på Bengts Skrivbord,
-Skuggan-genomgången 21/10).
-
-**Frågan.** Fyra saker i texten som fryses vid signeringen 31/10 (förregistreringen §8) stod öppna: A2:s population (bedömningen §4.2,
-#554), vad kamerabilderna kan säga om kandidaten, hur förarnas svar i appen på kandidatens varningar räknas, och hur förregistreringen
-signeras.
-
-**Beslut.**
-1. **A2:s population oförändrad för vintern 2026/27** (B4-76): A1 i beslutsbandet −5…+5 °C, A2 och A3 över alla stationstimmar med
-   mätt yta ≤ +5 °C, som `publish/grind-a.ts:125`. Läsningen 14/10 (#554, körning 38510855935) gav nästan samma A2 i bandet som över
-   alla rader (OFFSET 4,0 mot 4,1 %, RÅ 8,3 mot 8,4 %), och kuvösens tal per band är redan sedda. En ändrad population kan bara gälla
-   2027/28, med en daterad post i TROSKLAR-SKUGGAN §3 före den vinterns data. Skrivet i förregistreringen §4.
-2. **Kamerabilderna** (B4-77): en mening i §4b punkt 5 — bilderna väljs vid kalla stationer och skuggans larm, aldrig vid kandidatens
-   varningar (`kamerafacit/index.ts:52–55`, `skuggmotor/main.ts:367–369`), och kamerorna står vid stationerna; kamerakolumnen
-   redovisas per band och når i praktiken bara bandet närmast ankarna. Urvalet ändras inte för kandidaten.
-3. **Förarsvaren bara redovisning** (B4-78): appens *Stämde*/*Stämde inte* på kandidatens varningar är inte TROSKLAR-SKUGGAN §2:s
-   testarlogg (förare + tid + plats, som aktivt säger torr/bar väg); de bär varken förare eller ett uttryckligt torr/bar väg (sql/022).
-   De redovisas bredvid och varken fäller eller bekräftar. Skrivet i §4b punkt 4.
-4. **Signaturen** (B4-79): Bengt signerar förregistreringen för Bengt och Axel, som #564 och #656–#658. Skrivet i §11.
-
-**Alternativ.** (1) Smalna av A2 till −5…+5 före signeringen, eller låta frågan stå öppen till mars: valt bort, kuvösens tal per band är
-sedda och läsningen visade ingen skillnad. (2) Rikta kamerorna mot kandidatens varningar: valt bort, en källa som bara får bekräfta,
-tagen där kandidaten varnade, vore en lättnad i praktiken. (3) Räkna förarsvaren enligt §2: valt bort, svaren uppfyller inte §2:s krav
-på testarlogg och saknar identitet. Att ta bort en källa som kunde fälla är i sak en uppmjukning av B1; den görs före domfönstret,
-innan ett enda svar i fönstret finns. (4) Var och en signerar själv, eller Bengt med Axels citat: Bengt valde att signera för båda.
-
-**Stomdokument:** BED §4.2 — A2:s population avgjord (B4-76)
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #660 (21/10 2026) Bildfacitet (kort #209): (b) — omklassningarna bär januaridomen, bygget av bildläsningen beslutas före 1/2
 
@@ -15835,37 +11330,9 @@ bilderna får bara bekräfta, aldrig fälla (TROSKLAR-SKUGGAN §2).
 
 **Stomdokument:** BED §4.2 — bildfacitbeslutet: (b) avgjord
 
-## #661 (21/10 2026) Omgång 2: S1-grinden passerad som ordning, tystnadsfelet utan kandidaten, Å-A:s regel först och försprångets domknapp nu
+## #661 (21/10 2026) Kandidaten: flyttad till halkvakt-kuvos
 
-**Bengts ord 21/10:** *"Passerad, som ordning"*, *"Nej för i vinter"*, *"Regeln nu, skript 31/1"* och *"Bygg nu, 15/12"* (åtgärdslistan B4-47, B4-49, B4-50, B4-51; underlaget och förklaringen på Bengts Skrivbord,
-`Halkvakt_Omgang2_Underlag_2026-10-21.md` och `Halkvakt_Omgang2_Forklaring_2026-10-21.md`).
-
-**Beslut.**
-1. **S1-grinden passerad 11/10, som byggordning** (B4-47). #196 sa: *S1 (skuggjämförelsen) körs INNAN något mer byggs på `regn_h`*.
-   Jämförelsen lästes 8/10 (#491) och 11/10 (#521; 1 349 ögonblick, logg och arkiv ense) innan S3 byggdes (#523, #524). Grinden hade
-   inget tal; *"nätter, inte ögonblick"* (#198) och *"blöta frostnätter"* (#331) var senare formuleringar, inte Axels villkor. Den säger
-   inget om S3:s kvalitet, som döms i januari (KB-B, bedömningens S6) och syns i facit 2024/25 (#602). Frostnätterna läses som kontrollen
-   logg mot arkiv i januaridomen (#226 punkt 5).
-2. **Tystnadsfelet räknar inte kandidatens betavarning 2026/27** (B4-49; B4-56 bortvald). Måttet gäller punktmotorns trösklar
-   (TROSKLAR-TYSTNADSFEL §1, §3), och *tyst* avgörs i skuggvarvet, som körs utan kandidaten (#577). Där punktmotorn teg och kandidaten
-   varnade rätt räknas det i kandidatens B3 (förregistreringen §4b punkt 7). En rad som räknade kandidaten löpande skulle visa delar av
-   kandidatens utfall i domfönstret. S3 räknas som att systemet talade (den varnar som frysrisk), nu utskrivet i §6. Omprövas före
-   2027/28 om kandidaten klarar mars. Ingen tröskel ändras.
-3. **Å-A: räkneregeln först, skriptet senast 31/1** (B4-50). Data går inte förlorad (`road_condition_history` raderas aldrig, sql/063;
-   vädret finns i hinken). Räkneregeln (B4-89) läggs fram före något Å-A-tal; skriptet (B4-54) byggs efter försprångets knapp, med domrad
-   och domlarmets steg, och fryses med sha256 före första domläget (fristen `a-a-skriptet`).
-4. **Försprångets domknapp byggs nu, senast 15/12** (B4-51; #359: *"Dom-knappen byggs före mars"*). Underlagsläge med bara antal (FS-A2,
-   FS-C1–C2 per svepvärde) och spärrat domläge, domrad och domlarmets steg (#649). Räkneregeln (B4-90: FS-A1:s nämnare, län, halkperiod,
-   taktens andel) beslutas före första lästa andel och fryses med sha256. Underlagskörningar 15/12, 1/1 och 1/2; domen 1/3 (`mars-domar`).
-   En radräkning av `forsprang_log` med DB-knappen (*las*) görs direkt, så att vi vet att loggen fylls.
-
-**Alternativ.** (1) Överspelad, eller öppen med ett nytt villkor: valt bort — en öppen spärr framför S3, som redan finns i alla byggen, och
-ett villkor skrivet efter sett utfall. (2) Kandidaten som egen rad efter mars, eller i måttet: valt bort — kod för det B3 redan säger,
-respektive en lättnad (L3) som också visar kandidatens utfall. (3) Bygga Å-A nu, eller vänta till april: valt bort — tre stora byggen samma
-månad, respektive en eventuell tystnad ett år senare. (4) Domknappen i februari, eller bara en radräkning nu: valt bort — en tom logg eller
-en saknad nämnare upptäcks för sent.
-
-**Stomdokument:** BED §4.2 — omgång 2 avgjord; MAT §11 — 15/12 och 31/1 inlagda
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #662 (21/10 2026) Omgång 3: byvinden ur hinken, försprånget på 30 rutter, kartans ägare och beroenden, fallna spår med flit
 
@@ -15956,271 +11423,41 @@ risken att hela vintern blir en period. Alla rader i FS-B: valt bort — utspäd
 
 **Stomdokument:** BED §4.2 — försprångets räkneregel fastställd
 
-## #665 (22/10 2026) Olyckorna från Trafikverket: facit i kuvösen och en andra serie för W-A, en rensad kopia i hinken, förregistrering före läsningen
+## #665 (22/10 2026) Kandidaten: flyttad till halkvakt-kuvos
 
-**Bengts ord 22/10:** *"Vi har fått olyckstatistik från Trafikverket. Kan du läsa den och lägga in den på rätt ställe i statistiken"*, och på
-förslaget *"Kuvösens facit och W-A"*, *"Rensad kopia"* och *"Bengt för båda"* (underlaget på Bengts Skrivbord,
-`Halkvakt_Olyckor_TRV_Underlag_2026-10-22.md`).
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Leveransen.** Trafikverket kompletterade TRV 2026/111808 den 20/10 med olyckorna som Bengt valde bland händelserna 16/10 (KUVOS-LEVERANSEN
-§5h). Filen innehåller 7 269 olyckor från 1/11 2024 till 31/3 2025, med tid, koordinat (SWEREF 99 TM, X nordlig), påverkan och fritext,
-men ingen orsak. Formen och antalen står i KUVOS-LEVERANSEN §5i; filen ligger inte i repot. Fritexten bär regnummer, telefonnummer och
-minst ett namn.
+## #666 (22/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Beslut.**
-1. **Facit i kuvösen.** Olyckorna blir en andra bekräftelse för kandidaten och efterhalkan (frågorna (a) och (b) i
-   FORREGISTRERING-FACIT-TRV-2024-25). Regeln från #247 gäller: en olycka får bekräfta en varning men aldrig fälla den, och räknas för sig.
-2. **Byvindens W-A.** W-A får en andra serie ur vintern 2024/25: olyckorna mot kuvösens alla halvtimmar (`vimax`, `siktdjup`). Driftens
-   diet (#116) och 14-dygnsgräns (#511) gäller inte där. Driftens W-A står kvar som domen, med fristerna `w-a-byvind-1` och
-   `w-a-byvind-2` (#662). Serien ur 2024/25 är diagnos och redovisas bredvid.
-3. **Hinken.** En kopia läggs i hinken, med regnummer och telefonnummer maskade och resten orört, som
-   `trv-2026-111808/Olyckor24-25.xlsx`. Hinkens namnregel tillåter inte mellanslag. Bengt skickar kopian och Axel lägger in den via
-   Supabase-panelen (fristen `olyckor-hinken`). Manifestet får posten, med originalets och kopians sha256, först när filen ligger i
-   hinken. Publikvakten fäller sedan i dag utlämnandets filnamn (`RoadCondition…`, `Olyckor…`) var de än checkas in.
-4. **Förregistreringen.** Ingen olycka läses mot kuvösen eller vinden förrän ett tillägg är signerat med båda signaturerna. Bengt
-   signerar för båda (regel L, #564), med fristen `olyckor-forregistrering` 15/11. Tillägget bestämmer:
-   - vilka olyckor som räknas som halka;
-   - hur en olycka paras med station eller sträcka och tid;
-   - hur dubbletterna och de förskjutna raderna behandlas;
-   - tidszonen, som avgörs med ett prov;
-   - W-A-seriens band.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Regel L.**
-- L1: ingen dom ändras.
-- L2: väglagets utfall (#602) och driftens W-A (#491) är redan sedda. Därför kan tillägget kallas *före olyckorna*, men inte *före facit*,
-  och det ska stå så.
-- L3: nej.
-- L4: skälet är att leveransen kom, inte ett utfall.
+## #667 (22/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Alternativ.**
-- Bara facit, eller bara W-A: valt bort.
-- Originalet i hinken: valt bort, eftersom regnummer och telefonnummer sparas utan nytta.
-- Bara tid, plats och en halkflagga: valt bort, eftersom halkregeln då väljs före förregistreringen.
-- Axel signerar själv: Bengt valde att signera för båda.
-- Oljan på vägen ingår inte, eftersom leveransen bara har olyckor. V-C1, olycka i regn, hör till vattenplaningen.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Stomdokument:** KUV §7 — olyckorna levererade 20/10 och deras användning beslutad
+## #668 (22/10 2026) Kandidaten: flyttad till halkvakt-kuvos
 
-## #666 (22/10 2026) Fler vintrar från VViS: den frysta kandidaten prövas först, så fort kedjan är byggd, och filerna går via Axel till hinken
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Bengts ord 22/10:** *"jag har nu fått filer från trafikverket som ska användas för att träna fysikspåret"*, och på förslaget
-*"Pröva frysta kandidaten"*, *"Så fort den är byggd"* och *"Axel, med höjd gräns"* (underlaget på Bengts Skrivbord,
-`Halkvakt_VViS_Fler_Vintrar_Underlag_2026-10-22.md`).
+## #669 (22/10 2026) Kuvösen: flyttad till halkvakt-kuvos
 
-**Leveransen.** Bengt bad VViS Förvaltning 9/10 om tidigare vintrar för att träna på några och pröva på andra (kort #321). Leveransen
-21/10 har 14 filer för 2018–2024 och 75 418 775 rader, i samma form som 2/10. Den ger fem hela vintrar, 2018/19–2022/23, och dessutom
-januari–mars 2024 och januari–mars 2018. Hösten 2023 och oktober 2024 saknas, liksom `siktdjup`. Formen och antalen står i
-KUVOS-LEVERANSEN §9, och manifestet i `kuvos/vvis-2018-24-leverans.json`. Filerna ligger inte i repot.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Beslut.**
-1. **Först prövas den frysta kandidaten** NIVÅ 2+BLANDNING (#552) på de fem hela vintrarna, en i taget, utan omträning. Måtten är
-   kuvösens: A1, A2, norr och söder om 62° och banden. Prövningen mäter *samma stationer, nytt år*, som FORREGISTRERING-2026-27 säger
-   inte är mätt. Utfallet är diagnos och ändrar ingen tröskel och ingen kandidat.
-2. **Förregistreringen kommer först.** Ingen vinter läses mot kandidaten förrän prövningen är förregistrerad med båda signaturerna
-   (regel L, #564; fristen `vvis-forregistrering`). Kedjan byggs i nya filer under `fysik/`, och de frysta rörs inte. Vintern blir en
-   parameter, ECMWF hämtas per vinter (Open-Meteos arkiv har 2018), och tidszonen provas.
-3. **Körningen sker så fort kedjan är byggd**, alltså möjligen före signeringen av FORREGISTRERING-2026-27 den 31/10. Då står det vid
-   signaturerna att utfallet var sett, och ingenting i dess §1–§5 får ändras mot godkänt på grund av det (§10 f där).
-4. **Hinken.** Claude packar de 14 filerna lokalt, med sha256 före och efter packning. Axel höjer hinkens gräns per fil, eftersom en
-   packad fil blir upp till ungefär 90 MB och Pro tillåter det, och lägger filerna under `kuvos/kuvos-vvis-2018-24/` (fristen
-   `vvis-hinken`). Publikvakten fäller också `Halkvakt_ÅÅÅÅ-N.csv`.
-5. **Senare, var för sig:**
-   - en kandidat tränad på flera vintrar och prövad på den som hålls utanför; den blir en ny kandidat, för 2027/28;
-   - prognosfelet sex timmar fram med MET Nordics arkiv.
+## #670 (22/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Alternativ.**
-- Träna en ny kandidat först: valt bort, eftersom den frysta kandidatens beteende på nya år är den fråga som är öppen inför vintern.
-- Prognosfelet först: valt bort, eftersom det kräver en tung hämtning.
-- Köra efter 31/10: Bengt valde att köra så fort kedjan är byggd.
-- Dela filerna under 50 MB: valt bort, eftersom en fil per leveransfil håller manifestet enkelt.
-- Fråga Micke om hösten 2023: inte nu (#538, Bengt väljer noga när han frågar).
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Stomdokument:** KUV §5 — fler vintrar levererade och prövningen av den frysta kandidaten beslutad
+## #671 (22/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-## #667 (22/10 2026) Förregistreringen av prövningen på fem äldre vintrar, som utkast
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Bengts ord 22/10:** *"Slå ihop 1141 och skriv sedan förregistreringen för prövningen av den frysta kandidaten på de fem vintrarna."*
+## #672 (22/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Utkastet** står i `docs/FORREGISTRERING-FLER-VINTRAR.md`. Bengt och Axel signerar det innan någon av vintrarna 2018/19–2022/23
-läses mot kandidaten (#666; fristen `vvis-forregistrering`, 28/10). Huvuddragen:
-- **Kandidaten** är den frysta ur #552, med fysiken `lw`, `modell.pkl` c96c4072… och W 0,25 · L 160 km. Den körs i analysläget med
-  MET Nordics analys och ECMWF IFS per vinter, och den levande kedjans blandning med stationens egen mätning utesluten. Prognosläget
-  +6 h ingår inte.
-- **Två prov före läsningen:**
-  - identitetsprovet på 2024/25 ska ge modellens egna tal i urvalet, A1 0,46477 °C och A2 1,4449 % på n = 2 210 532, inom ± 0,01 °C
-    och ± 0,02 procentenheter (som #597);
-  - tidszonen provas per vinter, med sommartidsnatten och SMHI:s förskjutning.
-- **Måtten** är grind A:s A1, A2 och A3 på grind A:s population. De redovisas per vinter och för de fem tillsammans, för RÅ, NIVÅ 2 och
-  NIVÅ 2+BLANDNING, per band, norr och söder och månad. 2024/25 står bredvid, märkt *i urvalet*.
-- **Diagnos.** Ingen dom, ingen tröskel och ingen kandidat ändras. Väg B:s 4,84 och 5,12 % står bredvid, inte som prov.
-- **Förväntan** är skriven före läsningen (§6).
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Hittills sett:** bara leveransens form och att indatan finns. ECMWF har 1/11 2018, och MET Nordics analys har 24 filer per dygn i
-fyra stickprov 2018–2023. Inga mätvärden är lästa.
+## #673 (22/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Alternativ.**
-- Prognosläget +6 h: valt bort nu, eftersom MET Nordics prognoser saknas i stickprovet 1/11 2018 och hämtningen är tung (#666 punkt 5).
-- Kuvösens replika av blandningen (32 grannar, sedan 8): valt bort, eftersom kandidaten döms på den levande kedjans värden
-  (FORREGISTRERING-2026-27 §2).
-- Halvvintrarna 2017/18 och 2023/24: valt bort, eftersom deras höstar saknas.
-
-**Stomdokument:** KUV §5 — prövningen av den frysta kandidaten på fem äldre vintrar förregistrerad som utkast
-
-## #668 (22/10 2026) Förregistreringen av prövningen på fem äldre vintrar, signerad
-
-**Bengts ord 22/10, för Bengt och Axel:** *"gör alla de punkter som väntar som går att göra nu jag signerar för axel om mej själv"*.
-
-**Beslut.** `docs/FORREGISTRERING-FLER-VINTRAR.md` (utkastet #667) är signerat av Bengt och av Axel via Bengt, som #595 och #664.
-Dokumentets sha256 vid signeringen, före statusraden och signaturerna, är
-`7e457903c0bab37e1eb010df6e7e109f7e674c4449ca23dec2077c6892ce2c56`.
-
-Frysta från och med nu är kandidaten (§1), räkningen (§2), proven (§3) och måtten och populationen (§4). Ändringar efteråt kräver en
-daterad post med båda signaturerna, och aldrig som en lättnad efter sett utfall (regel L).
-
-**Vid signeringen** var ingen av vintrarna 2018/19–2022/23 läst mot kandidaten. Bara leveransens form och att indatan finns var sett
-(§7 där). Fristen `vvis-forregistrering` är stängd före sitt ärende och därför struken. Kvar före läsningen:
-- filerna i hinken (fristen `vvis-hinken`, Axel);
-- kedjan i nya filer;
-- identitetsprovet på 2024/25 och tidszonsprovet (§3 där).
-
-**Stomdokument:** KUV §5 — förregistreringen av prövningen på fem äldre vintrar signerad
-
-## #669 (22/10 2026) Förregistreringen av olyckorna 2024/25, som utkast
-
-**Bengts ord 22/10:** *"gör alla de punkter som väntar som går att göra nu"*. Förregistreringen av olyckorna (#665 punkt 4, fristen
-`olyckor-forregistrering` 15/11) är en av dem.
-
-**Utkastet** står i `docs/FORREGISTRERING-OLYCKOR-2024-25.md`. Bengt och Axel signerar det innan någon olycka läses. Förslagen bygger
-på regler som redan är frysta, så att inget val görs efter sett utfall:
-- **Urvalet:**
-  - alla olyckor, och halkolyckor ur skuggfacitets ordlista (`HANDELSE_SQL`), som inte väljs om;
-  - de förskjutna raderna lagade och dubbletterna räknade en gång;
-  - `X` nordlig.
-- **Tidszonen:** två prov, sommartidsnatten och rusningens toppar. Utan klart svar gäller svensk lokaltid som i väglagsfilen, och allt
-  redovisas också med en timmes förskjutning.
-- **(a) Facit:** väglagsläsningens populationer och fönster (#591–#594). Avståndet är 2 km och redovisas också vid 5 km. Bekräftelse,
-  basnivå och lyft räknas; en olycka bekräftar men fäller aldrig (#247).
-- **(b) W-A:** `vindsikt-steg0.ts` regler oförändrade (15 km, banden, G_TAK 30 m/s, stationsvakten, W-A1–W-A4) på kuvösens alla
-  stationstimmar. Diagnos bredvid driftens dom (#662).
-- **Hittills sett:** bara filens form.
-
-**Alternativ.**
-- `EventText` som urval: valt bort, eftersom påverkan inte säger om det var halt.
-- Ett större avstånd som primärt: valt bort, eftersom 2 km är väglagsläsningens avstånd. 5 km står bredvid.
-- Att låta läsningen välja ordlista: valt bort (regel L).
-
-**Stomdokument:** KUV §7 — olyckornas förregistrering skriven som utkast
-
-## #670 (22/10 2026) Bara 2022/23 räknas för den frysta kandidaten; en ny kandidat tränas på sex vintrar med fysikens långvåg
-
-**Bengts ord 22/10:** *"ok genomför allt som går att genomföra nu, kolla om axel lagt in filerna i hinken och träna en ny kandidat
-på alla vintrar"*, och på förslaget *"Fysikens reserv alla år"*, *"En vinter i taget utanför"* och *"Bengt för båda"*.
-
-**Det kedjan visade (#1144).** MET Nordics analysarkiv saknar långvågen före 14/3 2022, och 2018/19 saknar dessutom
-`wind_speed_10m`. Det är läst ur filernas beskrivning, inte ur värdena. Den frysta kandidaten räknar med uppmätt långvåg, så av de fem
-vintrarna i FORREGISTRERING-FLER-VINTRAR går **bara 2022/23** att räkna så som dess §2 säger. De fyra andra läses inte enligt den
-förregistreringen, och ingen metod i den ändras. Inget utfall var läst när detta upptäcktes.
-
-**Kedjans val där förregistreringen är tyst**, fastlagda i koden före all läsning:
-- MET Nordic-filen får sakna högst 1 % per fält (`MAX_IFYLLT`, den levande kedjans gräns);
-- månaden räknas i svensk tid;
-- i filskarven behålls raden ur `ÅÅÅÅ-2`;
-- PH avrundas till hundradelar, som den levande kedjans del A;
-- SMHI-provet kräver minst fem par, alla med förskjutningen 0 h.
-
-**Beslut.**
-1. **Identitetsprovet på 2024/25** är startat i `kuvos-vintrar`, efter att #1144 slogs ihop. 2022/23 körs när Axel har lagt in VViS-filerna.
-   Hinken hade dem inte 22/10: DB-knappen 39751928626 visade bara de två väglagsfilerna i `trv-2026-111808/`, ingen
-   `kuvos-vvis-2018-24/` och ingen olycksfil.
-2. **En ny kandidat för 2027/28** tränas på sex vintrar (2018/19–2022/23 och 2024/25) med den frysta kandidatens procedur. Långvågen
-   tas ur **fysikens reserv alla år**, så att indatan är densamma alla vintrar. Den prövas **en vinter i taget utanför**, med grind A:s
-   mått, och jämförs med den frysta bara på 2022/23. Utkastet står i `docs/FORREGISTRERING-NY-KANDIDAT-2027-28.md`. Bengt signerar för
-   båda innan något utfall läses. Den frysta kandidaten och vintern 2026/27 påverkas inte.
-
-**Alternativ.**
-- MET:s långvåg där den finns: valt bort, eftersom indatan då skiljer sig mellan vintrarna.
-- Bara de två vintrarna med uppmätt långvåg: valt bort, eftersom det blir för få vintrar.
-- Pröva bara på 2024/25: valt bort, eftersom det ger en enda provvinter.
-
-**Stomdokument:** KUV §5 — kedjan för flera vintrar byggd och den nya kandidatens förregistrering skriven som utkast
-
-## #671 (22/10 2026) Förregistreringen av den nya kandidaten på sex vintrar, signerad
-
-**Bengts ord 22/10, för Bengt och Axel:** *"Jag har läst utkastet i #1145. Signera förregistreringen för den nya kandidaten för mej och
-Axel och slå ihop."*
-
-**Beslut.** `docs/FORREGISTRERING-NY-KANDIDAT-2027-28.md` (utkastet #670) är signerat av Bengt och av Axel via Bengt. Dokumentets
-sha256 vid signeringen, före statusraden och signaturerna, är
-`8fe0818f772267763d63353ab5d60fff0c34968fd913a203db48bdbe3470e619`.
-
-Frysta från och med nu är procedurerna och indatan (§1), vintrarna (§2), prövningen och måtten (§3) och proven (§4). Det betyder
-bland annat att långvågen tas ur fysikens reserv alla år och att en vinter i taget hålls utanför. Ändringar efteråt kräver en daterad
-post med båda signaturerna, och aldrig som en lättnad efter sett utfall (regel L).
-
-**Vid signeringen** var ingen vinter läst mot någon kandidat. Bara identitetsprovet på 2024/25 var läst (körning 39752084226, klarat:
-n 2 210 532, A1 0,46477 °C, A2 1,4449 %), och det gäller den frysta kandidaten i urvalet. Kvar före träningen:
-- VViS-filerna i hinken (fristen `vvis-hinken`, Axel);
-- träningskoden, som byggs.
-
-**Stomdokument:** KUV §5 — förregistreringen av den nya kandidaten signerad
-
-## #672 (22/10 2026) Den nya kandidatens träning byggd; parvalet och huvudtalet preciserade efter signeringen
-
-**Bengts ord 22/10, för Bengt och Axel:** *"På ärliga skattningar"*, *"Enkelt medel"* och *"Bengt för båda"* (på frågan om luckorna i
-FORREGISTRERING-NY-KANDIDAT-2027-28 §3).
-
-**Koden.** Träningen och prövningen ligger i `fysik/ny_kandidat/` och `.github/workflows/kuvos-ny-kandidat.yml`, med en manifestmall i
-`kuvos/kandidat-2027-28.json`. Det blir 22 jobb:
-- den slutliga kandidaten;
-- sex veck, där en vinter i taget hålls utanför;
-- 15 parveck.
-
-Långvågen tas alltid ur fysikens reserv, och vinden för 2018/19 räknas ur x och y. Spärren vägrar räkna utfall utan statusen SIGNERAD och
-båda signaturerna. VViS-filerna läses bara i jobben och laddas aldrig upp; modellerna läggs i den privata hinken. De frysta filerna och
-`fysik/vintrar/` är orörda. Självtesten är gröna lokalt. Uppskattningen är omkring 8 timmar träning med sex jobb parallellt, efter
-hämtningen av MET Nordic.
-
-**Ändringen i förregistreringen (§10 där).** Preciseringar av det §3 inte sa, gjorda innan något utfall var läst:
-- **Parvalet** görs på ärliga skattningar: varje träningsvinter skattas av en modell som varken sett den eller den utelämnade, och paret
-  med minst andel grova fel över träningsvintrarna väljs, som i väg B (#544).
-- **Huvudtalet** är det enkla medlet över de sex vintrarna. Talen ur alla punkter ihop står bredvid.
-
-**Kedjans egna val**, fastlagda före läsningen:
-- en vinter tas bara bort när tidszonsprovet faller; saknas indata stannar planen i stället;
-- SMHI-provet körs också för 2024/25;
-- `cloud_p` påverkar fysiken när långvågen alltid tas ur reserven, men kalibreras inte, eftersom proceduren är oförändrad;
-- `A2_KONFIG` drar sina 1,4 miljoner rader ur alla träningsvintrar.
-
-**Alternativ.**
-- Paret valt på skattningar i urvalet: valt bort, eftersom de är för goda och drar mot W = 0.
-- Den frysta kandidatens par: valt bort, eftersom kandidaten ska väljas på sina egna data.
-- Alla punkter ihop som huvudtal: valt bort, eftersom förregistreringen säger medel och varje vinter är ett väderår.
-
-**Stomdokument:** KUV §5 — den nya kandidatens träning byggd och parvalet preciserat
-
-## #673 (22/10 2026) Filerna i hinken: VViS-vintrarna och olyckorna, kontrollerade; prövningen på 2022/23 startad
-
-**Bengts ord 22/10:** *"jag har fått besked om att alla filer ligger i hinken nu så att vi kan börja"*.
-
-**Hinken.** DB-knappen i läsläge (39766607745) visar:
-- alla 14 VViS-filerna under `kuvos/kuvos-vvis-2018-24/`, var och en med storleken i `kuvos/vvis-2018-24-leverans.json`;
-- `kuvos/trv-2026-111808/Olyckor24-25.xlsx`, 653 196 byte, samma storlek som den rensade kopian.
-
-Fristerna `vvis-hinken` och `olyckor-hinken` är klara före sina ärenden och därför strukna.
-
-**Manifestet.** Olyckorna får sin post i `kuvos/trv-111808-leverans.json` under en egen nyckel, `komplettering`, med kopians och
-originalets sha256 (#665). Den läggs inte under `filer`, eftersom kuvösens facit-trv-steg hämtar och kontrollerar varje fil där. Läsaren
-av olyckorna byggs efter att FORREGISTRERING-OLYCKOR-2024-25 är signerad.
-
-**Körningarna**, i den ordning som MET Norways villkor kräver, en hämtning åt gången:
-1. Prövningen av den frysta kandidaten på 2022/23 är startad (`kuvos-vintrar`, körning 39766761188). Den hämtar MET Nordic för vintern.
-2. Därefter den nya kandidatens indata, en vinter i taget (2018/19, 2019/20, 2020/21, 2021/22). 2022/23 återanvänder hämtningen från
-   steg 1.
-3. Sist förberedning, träning och prövning (`kuvos-ny-kandidat`).
-
-Bevakningen i sessionen startar nästa steg när det förra är klart.
-
-**Stomdokument:** KUV §5 — filerna för fler vintrar i hinken och prövningen på 2022/23 startad
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #674 (22/10 2026) Försprånget på alla 30 rutter i drift: T0 = 2026-10-22 11:12 UTC
 
@@ -16245,30 +11482,9 @@ Beviset är, som sammanfattningen säger, nästa commit i `halkvakt-karta` på :
 
 **Stomdokument:** BED §4.2 — försprånget i drift på 30 rutter och T0 bokförd
 
-## #675 (22/10 2026) Omgång 4: sikten avgörs av vinterserien, kallplatserna och Verify 2 stryks, T-B vilar
+## #675 (22/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Bengts ord 22/10:** *"Låt vinterserien avgöra"*, *"Stryk Ä6"*, *"Stryk"* och *"Vila till 2027/28"* (åtgärdslistan B4-39, B4-41,
-B4-43 och B4-48; förklaringen gavs i chatten).
-
-**Beslut.**
-1. **Sikten (B4-39).** Sikten föll i W-A 8/10, med kvoten 0,37 mot kravet ≥ 1,5 på 14 höstdygn (#491). Den stryks inte nu, utan avgörs
-   av W-A-serien på hela vintern 2024/25 med Trafikverkets olyckor och kuvösens `siktdjup` (FORREGISTRERING-OLYCKOR-2024-25 §5, W-A3).
-   Faller den där stryks den. Inget tal i TROSKLAR-VIND-SIKT ändras.
-2. **Kallplatserna (B4-41).** Kallplatslagret (#91) stryks ur vårlistans Ä6. Idén lever i kandidatens terrängsärdrag och i kort #321,
-   terrängen i fysikens energibalans, och RÅ, som Ä6 skulle stödja, är inte längre huvudspåret.
-3. **Verify 2 (B4-43).** Provet av SMHI:s lufttemperatur som reserv för vägytan stryks ur Ä4, och SMHI som reserv stryks ur Ä6. Luften
-   som vägyta ger fel på mer än 2 °C ungefär var tredje timme (Axels mätning, 33,5 %; inte kuvösens tal), och reserven är redan RÅ och
-   kandidaten.
-4. **Trenden (B4-48).** T-B, trendens skuggprov, byggs inte i vinter, och trendens egen röst vilar till 2027/28. Trendens värden prövas
-   inom efterhalkan. Tiden läggs i stället på domskriptet, W-A och försprångets domknapp före december.
-
-**Alternativ.**
-- Stryka sikten nu, eller pröva den i driftens W-A: valt bort, eftersom vinterserien ger en hel vinter med olyckor.
-- Behålla Ä6 till våren 2027: valt bort.
-- Pröva Verify 2 i mars ändå: valt bort.
-- Bygga T-B nu, eller fråga Axel först: valt bort. Axel kan öppna frågan inför 2027/28.
-
-**Stomdokument:** BED §4.2 — omgång 4 avgjord
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #676 (22/10 2026) Omgång 5: V2 får en dagsljuskvot, V3 behålls med ny text, efterhalkan till Kompisarna först
 
@@ -16320,55 +11536,9 @@ Betatest"*. Det följer av #676 punkt 3 (B4-46, Kompisarna först), där spärre
 
 **Stomdokument:** APP spärren för S3, MAT §7 efterhalkan
 
-## #678 (22/10 2026) Omgång 6: KB-D4 räknas på testarna, termisk kartering stängs, regel L:s lättnadsväg används inte, integrationskartan rättad och inte längre fryst
+## #678 (22/10 2026) Kandidaten: flyttad till halkvakt-kuvos
 
-**Bengts ord 22/10:** *"Räkna testarna, skriv öppet"* (B4-82), *"Stäng"* (B4-83), *"vi förklarar ingenting och kringgår regel L"*
-(B4-87) och om integrationskartan (B4-60) först *"stäng integrationskartan. Den här tjänat ut sitt syfte nu"*, samma dag ändrat till
-*"öppna den och uppdatera med kandidatens väg rätt allt och strunta i att frysa den"*. Förklaringen gavs i chatten. B4-82 och B4-83 var
-ställda till Bengt och Axel; Bengt svarade, och han har sagt i dag att han signerar för Axel.
-
-**Beslut.**
-1. **KB-D4 (B4-82).** Svaren bär ingen identitet (#378: inget id per telefon). Villkoret *≥ 5 förare* räknas därför som antalet
-   testare i gruppen, och domen skriver ut att *ingen förare > 25 %* inte kan prövas. Inget id införs. Inget KB-D-utfall är läst:
-   svarens innehåll har inte lästs sedan 6/10, och då gällde inget svar en halkvarning (#460). Antalet testare bokförs under
-   fristen `testforarna` 15/12. Texten står i TROSKLAR-KOMBINATIONEN §4.
-2. **Termisk kartering (B4-83).** Stängd, efter Axels *"görs inte"* 6/10 (#481). Ingen utrustning köps och ingen karteringsnatt
-   planeras. Kort #271 är stängt, delen p-termisk grå, och fristen `kartering-beslut` 15/12 är borttagen före sitt ärende. Kort #321
-   prövas mot satellitens kallkarta utan mätbilen. Utkasten till Skyltfondsansökan (`docs/skyltfonden-2026-09-28/`) nämner inte
-   karteringen. Den skickade versionen finns bara i Bengts Drive (#411). *(Rättat 23/10, #683: stod "Den skickade Skyltfondsansökan".)*
-3. **Regel L och Skyltfonden (B4-87).** Ansökan säger i bilaga 1 och 7 *"En tröskel får skärpas men aldrig lättas när utfallet väl är
-   sett"*. Den meningen hålls som den står: regel L:s lättnadsväg (L2 och L4) används inte, i något av de tretton tröskeldokumenten.
-   L1 och L3 gäller som förut, eftersom de bara stramar åt. Då stämmer ansökan med det som görs, och fonden behöver ingen förklaring.
-   Tolkningen bekräftades av Bengt i chatten 22/10 (*"stämmer"*). En lättnad efter sett utfall kräver ett nytt beslut, och då är
-   frågan om fonden öppen igen. Noten står i TROSKLAR-KOMBINATIONEN §5b, och regelns text står kvar.
-4. **Integrationskartan (B4-60).** Öppnad och rättad mot main, och **frysregeln hävd**: kartan stäms av i dokumentsynken som de andra
-   stomdokumenten (CLAUDE.md, STOMREGELN och DOKUMENTSYNKEN). Kandidatens väg in står i nya §4.4: nyckeln `kandidat`, eget slag
-   sist i prioriteten, BETA, spärrarna och domen i mars. §5.2 säger nu att motorn läser `regn_h`, `lutning30` och `kandidat`.
-   §4–§13 är rättade mot besluten och koden, med en ny rad i §14. Radhänvisningarna in i kartan i projektkartan är flyttade
-   (:189, :225, :229 → :237, :279, :283).
-
-**Det rättelsen visade.**
-- Kandidaten är inte publik: App Store-versionen 0.3.9 bär den inte. Den finns i byggena 0.3.13 (26)–(32), och inskicket av (32)
-  till App Review återstår (#643).
-- Rimfrostens gren beskrevs som gjord men finns inte i koden. Den står nu som beslutad, inte byggd.
-- Farslagskriteriet (#186) säger att Axel beslutar prioriteten för ett nytt slag. För kandidaten beslutade Bengt (#577), och ingen post
-  prövar kriteriet. Det står neutralt i kartans §7.
-
-**Alternativ.**
-- B4-82: ett slumpat id per telefon, som river #378 och butikernas dataskyddsuppgifter, eller att stryka KB-D4. Båda valdes bort.
-- B4-83: stå kvar till 2027/28 (Claudes förslag), eller pröva redan i vinter. Båda valdes bort.
-- B4-87: förklara regel L för fonden före 15/12 (Claudes förslag). Valdes bort.
-- B4-60: öppna, rätta och frysa igen (Claudes förslag), eller bara en not. Båda valdes bort, och stängningen ändrades samma dag.
-
-**Ändrat i samma PR:**
-- åtgärdslistan (B4-60, B4-82, B4-83, B4-87);
-- projektkartan (p-forarfacit, p-termisk, p-regel-l och radhänvisningarna);
-- kortkartan och tavlan (#271 stängt, #321);
-- fristerna och TROSKLAR-KOMBINATIONEN §4 och §5b;
-- INTEGRATIONSKARTAN;
-- CLAUDE.md (frysregeln; stomvaktens kodlista har fått LIV, som redan fanns i kortkartan).
-
-**Stomdokument:** KAR §4.4 kandidatens väg in, MAT §3 KB-D4 och kartering, SYS §3 kartering stängd, BED §4.2 omgång 6 avgjord
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #679 (22/10 2026) Efterhalkans spärr också i favoriternas rapport: utan Betatest räknas S3 inte fram där
 
@@ -16397,71 +11567,9 @@ favoriter) räknar inte S3. Favoritprovet i testmiljön (#529) gör det och rör
 
 **Stomdokument:** APP spärren också i rapporten, FAV rapportens frysrisk utan Betatest
 
-## #680 (22/10 2026) Den frysta kandidaten på vintern 2022/23: proven klarade, NIVÅ 2+BLANDNING A2 4,52 % mot RÅ 8,66 % — diagnos, ingen dom
+## #680 (22/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Körningen.** `kuvos-vintrar.yml` med vinter 2022-23, körning 39766761188 på main 64fd769, 22/10 10:56–17:23 UTC, grön. Förregistreringen
-är FORREGISTRERING-FLER-VINTRAR (signerad #668), och bara 2022/23 räknas för den frysta kandidaten (#670). Kandidaten är #552: fysiken
-`lw`, `modell.pkl` c96c4072…, paret W 0,25 · L 160 km, analysläget. Här står bara aggregaten ur körningens sammanfattning, och
-ingenting per station.
-
-**Proven före läsningen (§3), alla KLARADE.**
-- **(a) Identitetsprovet på 2024/25:** n 2 210 532, A1 0,46477 °C och A2 1,4449 %, lika kraven (± 0,01 °C, ± 0,02 pe). Fysiken ensam
-  ger A1 0,981 °C och A2 14,78 %, som kandidatfilen.
-- **(b) Sommartidsnatten 2023-03-26:** 1 536 rader i varje lokal timme 00–09 utom 02, som har 0.
-- **(b) SMHI:** 10 par räknade av 88 kandidater, alla med toppen vid +0 h.
-
-**Indata.**
-- MET Nordic: 11 delar, 3 648 timmar och 754 stationer, med 0,33 % saknat per fält.
-- ECMWF: 4 152 timmar, och höjden skiljer sig inte från 2024/25.
-- VViS: 11 227 174 rader och 0 dubbletter.
-- Vakterna: 5 104 663 rader med yta blir 5 063 508 efter vakterna, vid 718 stationer.
-
-**Måtten.** Grind A:s population är 4 361 591 punkter vid 718 stationer, varav norr 1 239 136 och söder 3 122 455. Talen nedan har
-felmarginalen 1,96 · standardfel.
-
-| | A1 | A2 | A3 |
-| :-- | :-- | :-- | :-- |
-| RÅ | 0,693 °C ± 0,001 | 8,66 % ± 0,03 | 0,60 % ± 0,01 |
-| NIVÅ 2 | 0,709 °C ± 0,001 | 8,10 % ± 0,03 | 0,26 % ± 0,00 |
-| **NIVÅ 2+BLANDNING** | **0,522 °C ± 0,001** | **4,52 % ± 0,02** | **0,30 % ± 0,01** |
-
-A2 per band, för RÅ · NIVÅ 2 · NIVÅ 2+BLANDNING:
-
-| Band | Punkter | RÅ | NIVÅ 2 | NIVÅ 2+BLANDNING |
-| :-- | :-- | :-- | :-- | :-- |
-| 0–7 km | 458 955 | 6,89 % | 7,36 % | 4,82 % |
-| 7–15 km | 2 032 560 | 5,73 % | 5,39 % | 2,78 % |
-| 15–20 km | 912 534 | 8,81 % | 7,98 % | 4,61 % |
-| > 20 km | 957 542 | 15,59 % | 14,33 % | 7,97 % |
-| norr ≥ 62° | 1 239 136 | 16,55 % | 14,74 % | 9,01 % |
-| söder | 3 122 455 | 5,53 % | 5,47 % | 2,73 % |
-
-A2 per månad för NIVÅ 2+BLANDNING (RÅ inom parentes):
-
-| Månad | A2 |
-| :-- | :-- |
-| november | 2,34 % (3,04) |
-| december | 4,09 % (8,90) |
-| januari | 2,33 % (5,44) |
-| februari | 3,75 % (8,80) |
-| mars | 9,92 % (16,02) |
-
-Kuvösens replika skiljer sig från den levande kedjan i 135 punkter, med största skillnaden 0,228 °C i grannfelet. Räknat med replikans
-urval blir talen desamma: A1 0,522 °C, A2 4,52 % och A3 0,30 %.
-
-**Bredvid, inte som prov.** Grind A:s tak för A2, 5 %, står bredvid och fäller ingenting. Väg B:s 4,84 % (analysläget) och 5,12 %
-(+6 h) gäller andra stationer samma år, 2024/25 (#544).
-
-**Mot förväntan, skriven före läsningen (§6).**
-- NIVÅ 2+BLANDNING har lägre A2 än RÅ: 4,52 mot 8,66 %. **Höll.**
-- A2 för NIVÅ 2 är högre än i urvalet 2024/25: 8,10 mot 1,44 %. **Höll.**
-- Norr är sämre än söder i alla tre: RÅ 16,55 mot 5,53 %, NIVÅ 2 14,74 mot 5,47 %, NIVÅ 2+BLANDNING 9,01 mot 2,73 %. **Höll.**
-- Att vintrarna skiljer sig mer i norr kan inte prövas med en vinter.
-
-**Diagnos, ingen dom (§5).** Ingen tröskel ändras. Eftersom utfallet är läst före signeringen av FORREGISTRERING-2026-27 står det vid
-dess signaturer med datum och körning (dess §10 f). Inget i dess §1–§5 är ändrat på grund av det.
-
-**Stomdokument:** KUV fler vintrar 2022/23, BED §4.2 utfallet före signeringen
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #681 (22/10 2026) Appen omgång 1: (33) till App Review, Axels #1029 när Axel bekräftat, Betatest dolt utanför TestFlight
 
@@ -16808,360 +11916,45 @@ före pulsklockan larmar den på det saknade jobbet.
 
 **Stomdokument:** SYS värdevakten i pulsklockan
 
-## #689 (23/10 2026) Kuvösen omgång 1: provningen väntar på en signerad ersättningsregel, 2026/27 signeras 26/10, sikten avgörs i olycksserien, tif och NT-orden står, kort #232 stängt och kontaktens namn bort
-
-**Bengts ord 23/10**, på genomgången av blocket Kuvösen (förklarad i chatten 23/10, läs-only, två hjälpagenter):
-- *"Kör när träningen är klar"*;
-- *"26/10, direkt efter R"*;
-- *"Ja, en kort regel först"*;
-- *"Håll isär, nytt kort"*;
-- *"0,5 står kvar"*;
-- *"Frist 15/11"*;
-- *"Skriv in #675"*;
-- *"Behåll som driften"*;
-- *"Låt stå, redovisa"*;
-- *"Låt stå som okända"*;
-- *"Stäng kortet"*;
-- *"Byt ut nu och framåt"*.
-
-**Beslut.**
-1. **Den nya kandidatens provning** (#670–#672) trycks när träningen är grön. Enligt punkt 3 måste ersättningsregeln då vara
-   signerad. Provningen väntar alltså på regeln, inte på signeringen av 2026/27. Spärren i `fysik/ny_kandidat/sparren.py` prövar
-   bara den nya kandidatens egen förregistrering, så ordningen hålls av den session som trycker. Ingen kod ändras: läskoden låses
-   vid förberedningen (#672).
-2. **Förregistreringen för 2026/27 signeras 26/10**, direkt när radarns tal R är infört i §3 och §10 a. Fristen 31/10 står kvar som
-   yttersta datum. Domfönstret blir fem dygn längre.
-3. **En ersättningsregel skrivs och signeras före provningen.** Den säger vilka tal och vilka vintrar som avgör om den nya
-   kandidaten ersätter den frysta, och att den levande kedjan då måste byggas om, eftersom den nya tar långvågen ur reserven och
-   den levande tar den ur MET. Utkastet skrivs av Claude, och Bengt och Axel signerar. Fristen är `ersattningsregel-ny-kandidat`.
-4. **De två kandidaterna för 2027/28 hålls isär.** Den nya kandidaten på sex vintrar får kort #362 med eget Verify, och kort #321
-   bär terrängen.
-5. **Saknas en kurva till R 26/10** står R = 0,5 kvar, enligt ordalydelsen i #568. Signeringen sker ändå, och bortfallet redovisas
-   vid signaturerna.
-6. **Norr om 62° mitt i vintern** (kort #317 b) får fristen `norr-62` 15/11. Underlaget är skuggans vinter i norr i november.
-7. **Sikten i olycksförregistreringen** skrivs in enligt #675. W-A3 på vintern 2024/25 avgör sikten. Faller den, stryks sikten.
-   Klarar den sig, står sikten kvar trots fallet i driftens W-A 8/10 (#491). Det är en lättnad, och därför gäller den bara med båda
-   signaturerna på förregistreringen (regel L, #564).
-8. **Sikt 20 000 m** räknas i bandet över 1 000 m, som i driften (`SIKTBAND` i `scripts/vindsikt-steg0.ts`) och i kuvösens
-   översättning (`kuvos/oversattning.sql`). Bara platshållaren −100 kastas. Serien mäter då samma sak som domen.
-9. **Radarns tif korrigeras inte** (#441 punkt 3, nu avgjort). Skillnaden mot h5, ungefär 3,4 dBZ och 1,6 gånger regnet, skrivs ut
-   vid varje tal som bygger på tif, också facitets *"bara radarn 34,5 %"* (#607). Övergångarna och försprånget i kuvösen körs med
-   okorrigerad tif eller väljs bort med skäl senast 15/11 (fristen `kuvos-tif-lasningarna`). Ö-B saknar dessutom instrument (#658).
-10. **Nederbördstypens ord `yes` och `freezing_rain`** (1 411 rader) står kvar som okända, och steget är läst. Marsdomens instrument,
-    grind NT med samma givarklass, ändras då inte efter ett sett utfall.
-11. **Kort #232 stängs.** Verify var uppfyllt 6/10. Det som återstår, olyckorna, bärs av kartans del kv-facit och fristen
-    `olyckor-forregistrering` 15/11.
-12. **Trafikverkskontaktens fullständiga namn** byts mot *Trafikverkets kontakt* i alla nuvarande filer i det publika repot (33
-    ställen i 11 filer) och skrivs inte framåt. Git-historiken behåller namnet. Publikvakten prövar bara filnamn, inte innehåll, och
-    ett innehållsprov som jämför med namnet skulle själv lägga namnet i repot. Ett prov på hashade ordpar står som en egen rad på
-    åtgärdslistan. Förnamnet ensamt står kvar på ett tiotal ställen, de flesta i Bengts egna citat.
-
-**Rättat i samma PR, utan beslut:**
-- **Kartans kuvösdelar:**
-  - två bevis som varit avhuggna sedan 3/10 (679e43d);
-  - försprångets hinder: väglagshistoriken är levererad sedan 16/10;
-  - ledet om åtgärder per tid och plats är borttaget, eftersom svaret 13/10 var nej;
-  - den nya kandidatens steg står som pågår;
-  - förregistreringen för 2026/27 har bara R kvar;
-  - besluten #568, #574, #655, #656, #659, #675 och #689 är införda.
-- **Förregistreringen för 2026/27 (utkast):**
-  - §1 anger körningen där den frysta modellen byggdes (38400052837);
-  - §10 a regeln för en saknad kurva;
-  - §10 f vad som blev av fler vintrar (#680) och den nya kandidaten.
-- **Olycksförregistreringen (utkast):** §1 och §5 följer #675 och punkt 8, och hänvisningen till W-A pekar på
-  TROSKLAR-VIND-SIKT §4.
-
-**Morgonsynken rättar KUV:s handtext (#522).** Detta hittades i genomgången:
-- *Etiketten (rad 100):* "läget 17 oktober". *§2:* "den senaste 13/10", fast det finns läsningar 16/10, 17/10 och 22/10.
-- *§2:* vind och sikt "väntar på startvärden". Sikten går nu genom #675.
-- *§3 och §7:* "händelser och åtgärder", fast bara olyckorna kom. "Väglagshistoriken är begärd", fast den är levererad 16/10.
-  "Saltning och plogning finns i begäran", fast svaret 13/10 var nej.
-- *§5:*
-  - inget om fler vintrar, utfallet 2022/23 (#680) eller den nya kandidaten;
-  - tabellen saknar raden 2022/23 på dess egen population;
-  - FYSIK "inte körda i kuvösen", fast de kördes 11/10 (#516);
-  - "valet är Axels" om väderkällan, fast valet gjordes i #518.
-- *§7:* W-A-serien kallas bara diagnos (#675). "Den rensade kopian" finns, och fristen 15/11 nämns inte.
-- *§9:* kort #349 står kvar, fast det stängdes 16/10. "Omkring 8 timmar" gäller bara träningen (#672).
-- *§10 och §11:* "ingen kandidat har slagit RÅ" stämmer inte sedan 11/10. "En vinter är en vinter" stämmer inte längre, eftersom
-  fler vintrar finns.
-- *§12:* loggen sammanfattas som "2/10–17/10" och saknar #607, #658, #665 och #675.
-- *BED §6.1:* beskriver testbädden som "väntar på Trafikverkets beslut", alltså läget 1/10.
-
-**Åtgärdslistan:** `docs/ATGARDER-KUVOSEN-2026-10-23.md` (B8-01 och framåt).
-
-**Stomdokument:** KUV §2 §3 §5 §7 §9–§12 efter genomgången, BED §6.1 testbädden och §4.2 tif och norr, LIV förregistreringen signeras 26/10
-
-## #690 (23/10 2026) Utkast: ersättningsregeln för den nya kandidaten inför 2027/28
-
-**Bengts ord 23/10:** *"skriv ett utkast till ersättningsregeln"* (#689 punkt 3).
-
-**Utkastet** är `docs/FORREGISTRERING-ERSATTNING-2027-28.md`. Bengt och Axel signerar innan den nya kandidatens provning trycks, och
-fristen är `ersattningsregel-ny-kandidat` 26/10. I korthet:
-- **Underlaget** är bara den nyas sex prov, med en vinter i taget utanför, och den frystas tal på 2022/23 (#680). Jämförelsen gäller
-  på samma punkter. Är populationerna olika räknas båda om på de gemensamma punkterna.
-- **Villkoren:** den nya tar platsen bara om alla fyra håller.
-  - V1: proven är klarade, och högst en vinter är borttagen.
-  - V2: den nya är bättre än den frysta på 2022/23. A2 ska vara minst X lägre totalt och inte X högre i norr eller söder. A1 får
-    vara högst 0,01 °C högre och A3 högst 0,05 procentenheter högre.
-  - V3: blandningen är bättre än RÅ varje utelämnad vinter.
-  - V4: blandningen är bättre än RÅ i norr och i söder i medel.
-- **Om villkoren håller:** kedjan byggs om till fysikens reserv, eftersom den levande tar långvågen ur MET. Ett paritetsprov körs
-  före deploy, och domen över 2027/28 får en egen förregistrering. Om något villkor inte håller står den frysta kvar, om den klarar
-  marsdomen, annars RÅ (#657).
-- **Bengts två val** görs före signeringen:
-  - X är (a) 0,25 procentenheter (förslag) eller (b) marginalen;
-  - marsdomen: (a) den nya tar platsen oavsett, eller (b) bara om den frysta faller, och annars går den nya i skugga 2027/28
-    (förslag).
-
-Inget utfall av den nya kandidaten finns. Indata för 2020-21 pågår, och 2021-22 återstår.
-
-**Stomdokument:** KUV §5 ersättningsregeln utkast
-
-## #691 (23/10 2026) Ersättningsregeln: den nya kandidaten i skugga från november om den klarar V1–V4, valet inför 2027/28 i mars, X = 0,25
-
-**Bengts ord 23/10:**
-- *"Ja, skriv in X = 0,25 procentenheter och marsdomen (b)"*.
-- Bengt stoppade sedan och frågade: *"är inte tanken att den nya ska ersätta den frysta redan från nu om den är bättre"*. Claude
-  svarade att förregistreringen som Bengt signerade 22/10 (#671) säger 2027/28 och *"ingen ändring för vintern 2026/27"*. Det kan
-  ändras före läsningen. Claude lade fram tre vägar och rekommenderade väg 2.
-- Bengt valde: *"Väg 2: den frysta signeras 26/10 och talar i vinter, och den nya körs i skugga från november om den klarar V1–V4.
-  Skriv om utkastet efter det."*
-
-**Beslut.**
-1. **Den frysta** signeras 26/10 (#689) och talar i appen hela vintern 2026/27. Ingenting i dess förregistrering ändras. §9 där
-   har fått en not om skuggan.
-2. **Den nya körs i skugga** från november om den klarar V1–V4, med X = 0,25 procentenheter i V2 (ERSATTNING-2027-28 §3).
-   - Den räknas i en egen kedja med fysikens reserv.
-   - Kedjan klarar först ett paritetsprov på 2024/25.
-   - Värdena loggas i en egen tabell bredvid `kandidat_skugga`.
-   - Fristen är `ny-kandidat-skugga` 15/11, och migrationen och deployen gör Bengt.
-   - Ingenting når förarna.
-3. **I mars 2027** döms båda med 2026/27 §4–§4b på det gemensamma fönstret, och den som klarar går vidare till 2027/28. Klarar
-   båda, tar den nya platsen bara om dess A2 är minst 0,25 procentenheter lägre. Klarar ingen, gäller RÅ (#657).
-4. **Marsdomens val (b)**, att den nya bara tar platsen om den frysta faller, ersätts av punkt 3. Valet görs nu på levande data för
-   båda, inte på den nyas historiska tal.
-5. **NY-KANDIDAT §10** har fått en daterad post. §5 punkt 1 ändras för skuggan från signeringen av ersättningsregeln.
-
-Inget utfall av den nya kandidaten är läst. Indata för 2020-21 pågår.
-
-**Stomdokument:** KUV §5 skuggan och valet inför 2027/28, LIV den nya kandidaten i skugga bredvid den frysta
-
-## #692 (23/10 2026) Ersättningsregeln signerad: den nya kandidaten i skugga från november om den klarar V1–V4, valet inför 2027/28 i mars
-
-**Bengts ord 23/10:** *"Jag har läst det omskrivna utkastet. Signera ersättningsregeln för mej och Axel och slå ihop #1170 när CI är grön."*
-
-**Signerad:** `docs/FORREGISTRERING-ERSATTNING-2027-28.md`. Bengt signerar för sig och för Axel via Bengt, som i #671. Dokumentets
-sha256 vid signeringen, före statusraden och signaturerna, är `15788047fc582f4fd8f06f5787d9900d4f17a574d02341e736fcffd9d6525214`. Det är versionen e7d96c30 i #1170, som Bengt läste.
-
-**Det som nu gäller:**
-- **V1–V4** (§3), med X = 0,25 procentenheter.
-- **Skuggan från november** (§4): egen kedja med fysikens reserv, paritet på 2024/25, egen logg och fristen `ny-kandidat-skugga`
-  15/11.
-- **Valet i mars** (§5), på levande data för båda.
-- **Ändringen av NY-KANDIDAT §5 punkt 1 för skuggan** (§8) gäller från och med i dag.
-
-**Följd:**
-- Den nya kandidatens provning får tryckas när träningen är grön (#689 punkt 1).
-- Fristen `ersattningsregel-ny-kandidat` är klar och borttagen.
-- Inget utfall av den nya kandidaten var läst vid signeringen. Indata för 2020-21 pågår.
-
-**Stomdokument:** KUV §5 ersättningsregeln signerad, LIV den nya kandidaten i skugga bredvid den frysta
-
-## #693 (23/10 2026) Samman kontrollerar att den nya och den frysta har samma population innan 2022/23 jämförs (B8-24)
-
-**Bengts ord 23/10:** *"Ja, bygg kontrollen av populationen i samman (B8-24) i en PR innan den nya kandidaten når dit"*.
-
-**Vad som byggts:** `skilda_populationer()` i `fysik/ny_kandidat/provning.py`.
-- **Varför:** ersättningsregeln §2 (#692) säger att jämförelsen på 2022/23 bara gäller på samma punkter. Populationen bokförs bara
-  som antal, så kontrollen jämför antalen: stationer, punkter, norr och söder, och n i varje cell av RÅ, alltså totalt, norr,
-  söder, banden och månaderna.
-- **Är antalen lika** skrivs jämförelsen ut med raden *"Samma population"*.
-- **Skiljer de sig** skrivs ingen jämförelsetabell. Sammanfattningen säger *"gäller inte"* och listar skillnaderna, och båda ska då
-  räknas om på de gemensamma punkterna innan något jämförs.
-- **Saknas den frystas fil** sägs det nu i sammanfattningen. Förut tystnade samman (B8-25).
-
-**Prov:** självtestet `fysik/ny_kandidat/sjalvtest.py`, grönt lokalt på 104 s.
-- Med samma population skrivs jämförelsen ut.
-- **Två motprov fälls:** en punkt för mycket i en månad, och en station för mycket.
-
-**Låset vid förberedningen:** filen ligger inte i `KODEN` (`kedjan.py`). Inget som räknar en vinter ändras, och ingen förberedning
-behöver köras om. Inga mått och ingen tröskel ändras.
-
-**Rättat i åtgärdslistan:** B8-24:s andra halva ("n skrivs inte ut") var fel. `matt.kort()` har alltid skrivit ut n i
-jämförelsetabellen.
-
-**Stomdokument:** inga — en kontroll i koden som ersättningsregeln redan kräver, ingen handtext
-
-## #694 (23/10 2026) Den nya kandidatens förberedning föll; tillägget T1 (SMHI:s station 7) och T2 (MET-timmar ur v4) som utkast, koden byggd
-
-**Bengts ord 23/10:**
-- *"men det kan vi ju inte acceptera vi måste hitta en väg runt det här så att materialet kan användas"*;
-- *"Ja, utred Gävleparet och v4 läsande och skriv ett utkast till tillägget. Starta inget och läs inga modelltal."*;
-- *"axel godkänner bygg"*.
+## #689 (23/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Förberedningen föll** (kuvos-ny-kandidat 39964156753, 23/10 13:47–13:58 UTC; bara provens aggregat är lästa):
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-| | 2018/19 | 2019/20 | 2020/21 | 2021/22 | 2022/23 | 2024/25 |
-| :-- | :-- | :-- | :-- | :-- | :-- | :-- |
-| Tidszonsprovet (SMHI) | klarat | faller | faller | faller | klarat | klarat |
-| MET Nordic, saknat (krav ≤ 1 %) | 3,07 % | 1,80 % | 0,36 % | 1,86 % | 0,33 % | 0,0 % |
-| Identitetsprovet | | | | | | klarat |
+## #690 (23/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-Utan tillägg tas 2019/20, 2020/21 och 2021/22 bort (NY-KANDIDAT §4), och ersättningsregelns V1 (#692) håller inte.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Utredningen (läsande, inga modelltal):**
-- **Tidszonen.** Det fallna paret är samma alla tre vintrarna: VViS 2138 mot SMHI:s station 7 ("Gävle", *Övriga stationer*,
-  2017–november 2022). Station 7 ligger en timme efter SMHI:s egen Gävle A (107420) 6 km bort och efter fyra VViS-stationer,
-  alla vintrar den finns. VViS 2138 har toppen vid 0 h mot Gävle A och mot sina VViS-grannar, med god marginal. Felet sitter i
-  referensen, inte i Trafikverkets data.
-- **MET.** Timmarna saknas i MET:s arkiv `metpparchive` (nio dygn i stickprov stämmer timme för timme mot katalogen; hämtningen räknar
-  bara HTTP 404 som saknat). MET:s omräkning v4 (`metpparchivev4`) har dem, på samma rutnät. v4 är dagens metod räknad bakåt:
-  15/2 2025 är den identisk med arkivet; för de äldre åren skiljer luften 0,10–0,37 °C i medel per timme vid stationerna, utan
-  systematisk förskjutning (−0,04 till +0,07 °C).
+## #691 (23/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Tillägget, utkast:** `docs/FORREGISTRERING-NY-KANDIDAT-TILLAGG-2026-10-23.md`.
-- **T1:** SMHI:s station 7 räknas inte i tidszonsprovet. Regeln, avståndet, banden och paren per band står kvar. `tidszon.py` är
-  orörd, så FLER-VINTRAR:s prov för den frysta är detsamma.
-- **T2:** timmar som arkivet saknar tas ur v4, med vinden som hastighet och långvågen som förut ur reserven. Kravet 1 % står kvar och
-  prövas efter fyllningen. Originaldelarna står kvar i releaserna.
-- **T3:** hamnar ett annat par fel, eller saknas fortfarande mer än 1 %, gäller förregistreringen som den står.
-- **Ingen lättnad efter sett utfall** (regel L, ersättningsregeln §7): inga krav sänks, inga modelltal är lästa, samma för alla
-  vintrar, och det redovisas öppet. Bengt och Axel signerar **före** fyllningen och förberedningen; målet är 26/10, fristen
-  `tillagg-ny-kandidat`.
-
-**Koden, byggd före signeringen:**
-- `forbered.py` (`UTESLUTNA_SMHI`, `smhi_lista()`, `fyllt_summa()`, `--fyllt`);
-- `metnordic_reserv.ts` (`fyllDel()`, `--fyll`, `filnamnV4`; `valjDelar()` tar den fyllda delen först; timmens rader utbrutna ur
-  `dygnReserv()` utan att hämtningen ändras);
-- `kuvos-ny-kandidat.yml` (steget `fyll`, och förberedningen läser listorna).
-
-**Prov:**
-- `metnordic_reserv.ts --sjalvtest` grönt, med T2:s tre fall: timmen ur v4, saknad i båda förblir saknad, finns i arkivet igen tas
-  därifrån; originalet orört.
-- `fysik/ny_kandidat/sjalvtest.py` med T1:s motprov: utan T1 tas paret mot station 7 (+1 h), med T1 mot Gävle A (0 h).
-
-**Låset:** `forbered.py` och `metnordic_reserv.ts` ligger inte i `KODEN`; ingen fil som räknar en vinter ändras. Förberedningen körs
-ändå om efter fyllningen.
-
-**Inte gjort:** ingenting är kört. Bevakningen av körningarna är pausad till signeringen.
-
-**Stomdokument:** KUV den nya kandidatens förberedning föll 23/10 och tillägget T1/T2 är ett utkast med signering 26/10
-
-## #695 (23/10 2026) Tillägget T1 och T2 till NY-KANDIDAT signerat: SMHI:s station 7 ur tidszonsprovet, MET-timmar ur v4
-
-**Bengts ord 23/10:** *"tillägget är signerat nu"*
-
-**Signerat:** `docs/FORREGISTRERING-NY-KANDIDAT-TILLAGG-2026-10-23.md`. Bengt för sig och för Axel via Bengt, som i #671 och #692.
-Dokumentets sha256 vid signeringen, före statusraden och signaturerna: `ed4ebb1f1845cd2f61960707900d80ce2f5f6b5ffc4c2804c21aa6a95d2159df`. Det är versionen i #1172 (#694), som Bengt och Axel
-läste, sammanslagen 23/10 17:50 UTC.
-
-**Det som nu gäller:**
-- **T1:** SMHI:s station 7 räknas inte i tidszonsprovet för den nya kandidaten.
-- **T2:** timmar som arkivet saknar tas ur v4; kravet 1 % prövas efter fyllningen.
-- **T3:** hamnar ett annat par fel eller saknas mer än 1 %, gäller förregistreringen som den står.
-
-**Följd:**
-- `steg=fyll` får köras, sedan förberedningen, träningen, provningen och samman.
-- Inget modelltal var läst vid signeringen.
-- Fristen `tillagg-ny-kandidat` är klar och borttagen.
-
-**Stomdokument:** KUV tillägget T1/T2 signerat 23/10
-
-## #696 (23/10 2026) Olycksförregistreringen skärpt före signeringen: sikten, halk mot alla, marginalen, orden och tidszonen
-
-**Bengts ord 23/10:** *"kan du ge rekommendationer på det här"*, *"är det här omöjliga krav att möta?"*, *"Ja, räkna kövösens
-stationstimmar per siktband vintern 2024/25, utan att röra olyckorna, och rapportera."* och *"ja skriv in de justerade
-rekommendationerna"*.
-
-**Skrivet in i `docs/FORREGISTRERING-OLYCKOR-2024-25.md`, fortfarande utkast:**
-- **§5 sikten.** Sikten står kvar bara om tre villkor håller:
-  1. W-A3 över hela vintern med driftens marginalvakt (`skiljbarKvot`, #128), där oavgjort räknas som fall;
-  2. W-A4 uttryckligen för sikten;
-  3. kvoten över 1 också på dagtid, som kontroll av riktningen.
-- **§4.** Huvudjämförelsen är halkolyckornas lyft mot alla olyckors, med marginal.
-- **§5.** Dagtid redovisas för båda serierna. Det står uttryckligen att samma olycka kan räknas vid flera stationer inom 15 km.
-- **§2.** Träffarna per ord i ordlistan redovisas, men ordlistan ändras inte.
-- **§3.** Regeln för tidszonen är mätbar: topptimmarna för förmiddag och eftermiddag.
-
-Inga krav är sänkta. Allt är skärpningar eller förtydliganden före signeringen (regel L).
-
-**Underlaget för W-A4, räknat utan olyckor:** kuvösens stationstimmar per siktband 2024/25 ur leveransfilerna, med samma sha256 som
-`kuvos/leverans.json`. Under 200 m finns 12 175 stationstimmar (4 042 på dagtid) mot kravet 500, från 675 stationer, där de fem
-största står för 10 %. W-A4 är alltså inget hinder i stationstimmar. Hur många olyckor som faller i bandet är inte läst.
-
-**Ingen olycka är läst.**
-
-**Stomdokument:** KUV olycksförregistreringen skärpt före signeringen
-
-## #697 (23/10 2026) Olycksförregistreringen signerad: facit i kuvösen och W-A:s andra serie, med sikten skärpt (#696)
-
-**Bengts ord 23/10:** *"jag och axel signerar detta så du kan bygga läsaren"*
-
-**Signerad:** `docs/FORREGISTRERING-OLYCKOR-2024-25.md`, versionen i #1174 med skärpningarna i #696, som Bengt och Axel läste.
-Dokumentets sha256 vid signeringen, före statusraden och signaturerna, är `d1a2b46d16ccf784c03a305206ff5a92fdee547dd19a863dbd3a5f57a61686e8`.
-
-**Det som nu gäller:** urvalet (§2), tidszonsproven (§3), fråga (a) med halk mot alla som huvudjämförelse (§4), och fråga (b) med W-A:s
-regler och sikten som avgörs med tre villkor (§5). Fryst (§8).
-
-**Följd:**
-- Läsaren byggs: inläsningen, urvalet och tidszonen, sedan (a) och (b), med fritexten och platsen aldrig i en logg.
-- Inget är läst vid signeringen; olycksfilen ligger orörd i hinken.
-- Fristen `olyckor-forregistrering` är klar och borttagen.
-
-**Stomdokument:** KUV olycksförregistreringen signerad
-
-## #698 (23/10 2026) Olycksläsaren byggd efter den signerade förregistreringen (#697); inte körd
-
-**Bengts ord 23/10:** *"jag och axel signerar detta så du kan bygga läsaren"*.
-
-**Byggt:**
-- `kuvos/olyckor-trv.ts`:
-  - §2: lagar de förskjutna raderna, räknar dubbletterna en gång och gör om SWEREF 99 TM till WGS 84;
-  - §2: ordlistan läses ordagrant ur `HANDELSE_SQL`, med träffar per ord och fördelningen av EventText;
-  - §3: tidszonsproven;
-  - §4: lyften med marginal och halk mot alla;
-  - §5: W-A och siktens dom med de tre villkoren.
-  - Bara aggregat skrivs ut. Läsaren vägrar köra utan båda signaturerna, med en annan ordlista, med en annan fil än manifestets
-    eller med ett annat radantal än 7 269.
-- `scripts/matningar/kuvos-blandning-vagb-olyckor-trv-2026-10-23.ts`: facitläsningens `forbered()` (väg B varv 1 och
-  identitetsprovet mot 38368369876) och stationstimmarna ur `weather_observations`, med timmens högsta byvind och lägsta sikt.
-- `kuvos.yml`:
-  - spärren först;
-  - olycksfilen ur hinken mot manifestets `komplettering`, med sha256 och storlek;
-  - artefakten `olyckor-2024-25` med bara aggregat;
-  - domlarmet, eftersom sikten döms här.
-- `ci.yml`: självtesterna.
-- `scripts/vindsikt-steg0.ts`: går att importera utan att något körs, och kvoten 1,5 är en namngiven konstant. Inget tal är ändrat.
-
-**Prov:**
-- Självtestet har 40 prov. 24 motprov med en mutation i taget fälls alla.
-- `npm test`: 351 godkända och 0 fel. Ordlistans prov mot Postgres körs i CI.
-- Koordinaterna stämmer med proj4 till 1e-11°.
-- Publikvakten och kontraktsgrinden är gröna.
-
-**Val där förregistreringen är otydlig, alla bokförda före läsningen:**
-- **Dagtid:** timmarna 07:00–18:00, alltså 07–17, som räkningen i #696.
-- **Känsligheten:** den flyttar tiden +1 h (UTC). Siktens dom fälls på den primära tolkningen, och känsligheten redovisas bara.
-- **Dubbletterna:** starttid plus koordinat. En grupp räknas som halkolycka om någon rad träffar.
-- **Marginalen i (a):** Katz på logaritmen.
-- **"Olyckor" i W-A:** stationstimmar med minst en olycka, som i driftens kod, också i W-A4:s krav på 20. Antalet olika olyckor står
-  bredvid.
-- **Avståndet:** haversine, 15 km i (b) och 2 eller 5 km i (a).
-- **Stationsvakten:** den tar en station ur byvinden men inte ur sikten.
-- **Tidszonsproven:** rusningen avgör. Natten till 30/3 kan bara fälla tolkningen som svensk tid.
-
-**Avvikelser:**
-- **Driftens W-A räknar i praktiken på kortare avstånd än 15 km.** `band()` i `vindsikt-steg0.ts` använder `ST_Expand(geom, 0.25)` i
-  grader, vilket blir ungefär 14 km vid 60° N och 10 km vid 68° N. Läsaren följer förregistreringens 15 km, och driften är inte rörd.
-  Det berör domen #491, och frågan går till Bengt.
-- **Den frysta ordlistan fångar inte alla böjningar:** "isigt", "isiga", "hala", "glashalt" och "ishalt" träffar inte. Listan ändras
-  inte (regel L), men räkningen per ord visar det.
-- **Ingen egen maskning:** kopian i hinken är redan maskad (manifestets `rensning`), och läsaren maskar inget själv.
-
-**Inte gjort:** läsningen är inte körd. Den körs på Bengts ord, i `kuvos.yml` med mätningen ovan och `korflode = ingen`.
-
-**Stomdokument:** KUV olycksläsaren byggd och inte körd
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
+
+## #692 (23/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
+
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
+
+## #693 (23/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
+
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
+
+## #694 (23/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
+
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
+
+## #695 (23/10 2026) Kandidaten: flyttad till halkvakt-kuvos
+
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
+
+## #696 (23/10 2026) Kuvösen: flyttad till halkvakt-kuvos
+
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
+
+## #697 (23/10 2026) Kuvösen: flyttad till halkvakt-kuvos
+
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
+
+## #698 (23/10 2026) Kuvösen: flyttad till halkvakt-kuvos
+
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #699 (24/10 2026) Ägandet och licensen: Axel och Bengt äger gemensamt, koden Apache 2.0, dokumenten CC BY-SA 4.0
 
@@ -17242,574 +12035,46 @@ Varningskortet som syntes på tåget var Axels eget, framtaget genom att hålla 
 
 **Stomdokument:** APP, FAV
 
-## #702 (24/10 2026) Den nya kandidaten provad på sex vintrar: bättre än den frysta men inte med 0,25, V2 föll och ingen skugga
+## #702 (24/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Körningarna, alla gröna, med tilläggen T1 och T2 (#694, #695):**
-- fyllningen 39998632234;
-- förberedningen 40001731917;
-- träningen 40003362865, med 22 enheter;
-- provningen och samman 40024563991.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-Bara samman:s aggregat är lästa.
+## #703 (24/10 2026) Kandidaten: flyttad till halkvakt-kuvos
 
-**De sex proven, NIVÅ 2+BLANDNING A2 per utelämnad vinter (paret W 0,25 · L 40 km i alla):**
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
+**För appen:** den nya kandidaten får ta över talet från den frysta när förregistreringens villkor är uppfyllda.
 
-| Utelämnad | RÅ A2 | NIVÅ 2 A2 | NIVÅ 2+BLANDNING A2 |
-| :-- | :-- | :-- | :-- |
-| 2018/19 | 8,42 % | 7,04 % | 4,30 % |
-| 2019/20 | 6,62 % | 4,51 % | 3,04 % |
-| 2020/21 | 8,42 % | 6,13 % | 3,95 % |
-| 2021/22 | 9,51 % | 13,41 % | 4,80 % |
-| 2022/23 | 8,66 % | 6,70 % | 4,33 % |
-| 2024/25 | 7,51 % | 6,46 % | 3,78 % |
+## #704 (24/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Huvudtalet**, det enkla medlet över vintrarna, för NIVÅ 2+BLANDNING:
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-| | A1 | A2 | A3 |
-| :-- | :-- | :-- | :-- |
-| totalt | 0,511 °C | 4,03 % | 0,21 % |
-| norr | 0,675 °C | 8,37 % | 0,22 % |
-| söder | 0,474 °C | 2,26 % | 0,20 % |
-| RÅ totalt, för jämförelse | 0,688 °C | 8,19 % | 0,48 % |
+## #705 (24/10 2026) Kandidaten: flyttad till halkvakt-kuvos
 
-**Jämförelsen med den frysta på 2022/23:** samma population (ersättningsregeln §2), alltså samma n 4 361 591 i varje cell.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-| NIVÅ 2+BLANDNING | Den frysta | Den nya | Skillnad |
-| :-- | :-- | :-- | :-- |
-| A2 totalt | 4,52 % | 4,33 % | −0,19 pe |
-| A2 norr | 9,01 % | 8,52 % | −0,49 pe |
-| A2 söder | 2,73 % | 2,68 % | −0,05 pe |
-| A1 totalt | 0,522 °C | 0,507 °C | −0,015 °C |
-| A3 totalt | 0,30 % | 0,27 % | −0,03 pe |
+## #706 (24/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Ersättningsregeln §3:**
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-| Villkor | Utfall |
-| :-- | :-- |
-| V1. Proven före läsningen, högst en vinter borttagen | **håller**: alla sex klarar proven med T1, ingen borttagen |
-| V2. A2 minst 0,25 pe lägre än den frysta (högst 4,27 %); norr och söder högst +0,25; A1 högst +0,01 °C; A3 högst +0,05 pe | **faller** på A2 totalt: 4,33 % mot kravet högst 4,27 %, alltså −0,19 pe och inte −0,25. Norr, söder, A1 och A3 håller. |
-| V3. Bättre än RÅ varje vinter | **håller**: alla sex |
-| V4. Bättre än RÅ i norr och söder | **håller**: 8,37 % mot 16,11 % i norr, 2,26 % mot 4,95 % i söder |
+## #707 (24/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Följd enligt §3:** *"Faller något villkor körs ingen skugga."*
-- Den nya arkiveras med sina tal och sitt manifest. Villkoret som föll är V2, på A2 totalt.
-- Den frysta står ensam i vinter. I mars gäller dess egen dom.
-- Fristen `ny-kandidat-skugga` är klar på det sätt den säger, *"villkoren föll och skuggan är bortvald"*, och tas bort.
-- §6 förutsade det här: *"V2 är osäkert … Kravet på 0,25 kan alltså falla."*
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Att lägga märke till:** den nya är bättre än den frysta på varje mått på 2022/23, bara inte med den marginal som krävdes. Ingenting
-lättas efter utfallet (regel L, §7).
+## #708 (24/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Avvikelse:** NIVÅ 2 utan blandning är sämre än RÅ vintern 2021/22 (13,41 % mot 9,51 %). Blandningen tar ner den till 4,80 %.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Stomdokument:** KUV den nya kandidaten provad och V2 föll så ingen skugga
+## #709 (24/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-## #703 (24/10 2026) Bytet: den nya kandidaten får tala i appen enligt FORREGISTRERING-2026-27 §12, med ett tillägg till ersättningsregeln (utkast, signeras 26/10)
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Bengts ord 24/10:**
-- *"alltså vi vill gå live med den här nu så att mätningarna inte bara ligger som beta utan som når ut till förarna. Om vi ska gå ut
-  till förarna nu och döma i efterhand vilken metod skulle du säga är den bästa att gå ut med för att ge förarna bästa förutsättningar
-  att få tillförlitlig information från halkvakt"*;
-- *"då vill jag i så fall att du sätter igång med allt bygget så att vi har möjlighet att fatta beslut om det innan förregistreringen
-  den 26"*;
-- *"Ja, vi signerar med raden om bytet (§12). Pusha kedjan som PR, fyll kandidatfilen och förbered paritetsprovet. Kör inget i drift
-  förrän jag säger till."*
+## #710 (24/10 2026) Kandidaten: flyttad till halkvakt-kuvos
 
-**Claudes rekommendation, som bytet bygger på:** den frysta talar från signeringen, och den nya tar över när dess kedja har klarat
-paritetsprovet och loggar i drift. Skälet är att den nya hade färre grova fel på 2022/23 (4,33 mot 4,52 %, −0,49 pe i norr).
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Förregistreringen för 2026/27:**
-- **§12, nytt**, står före §11 så att det är en del av den signerade texten. Den nya får tala i appen bara efter:
-  - klarat paritetsprov;
-  - kedjan i drift med färskheten i §3;
-  - ett daterat beslut av båda innan något av vinterns utfall är läst.
+## #711 (25/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-  Den frysta döms som förut. Regeln är densamma för den som talar. Den nya döms bredvid. Saknas den nyas timme talar den frysta.
-  Valet inför 2027/28 görs i en egen förregistrering.
-- **§9:** *"talar i appen bara enligt §12"*, och skuggan enligt ersättningsregeln körs inte (V2 föll).
-- **§8:** villkoren för bytet (§12) fryses med resten. Det är en skärpning, inte i utkastet.
-- **§12 (a):** *n exakt* i paritetsprovet, som steget räknar (#680). Också det en skärpning mot utkastet.
-
-**Tillägget till ersättningsregeln:** `docs/FORREGISTRERING-ERSATTNING-TILLAGG-2026-10-24.md`.
-- §1:s *"Den nya talar aldrig i appen"* gäller inte längre.
-- Den nya arkiveras inte.
-- §4:s *"Ingenting når förarna"* gäller tills bytet.
-- Valet i mars sker enligt §12 (g).
-
-**Avvikelse, öppet:** tillägget ändrar en fryst följd efter ett sett utfall (V2 föll). Det lättar ingen dom och sänker inget krav,
-men det är ett avsteg från ersättningsregeln, och det står i tillägget §4.
-
-**Val vid signeringen:** §12 (g) eller alternativet, att den frysta ensam avgör inför 2027/28 (tillägget §5).
-
-**Kedjan:** PR #1179 (`claude/ny-kandidat-kedja`).
-- `kuvos/kandidat-2027-28.json` är ifylld ur samman (sha256 fb372d79…).
-- Paritetsprovet är förberett och inte kört.
-- sql/068 är inte migrerad, och flaggan är av.
-
-**Fristen** `tillagg-bytet` 26/10.
-
-**Stomdokument:** KUV bytet till den nya kandidaten förregistrerat i §12 med tillägg till ersättningsregeln och signering 26/10
-
-## #704 (24/10 2026) Paritetsprovet för den nya kandidatens kedja klarat; en felstartad förberedning avbruten
-
-**Bengts ord 24/10:**
-- *"Ja, kör paritetsprovet på grenen claude/ny-kandidat-kedja och rapportera bara aggregaten."*;
-- *"Ja, bokför paritetsprovet som DECISIONS #704 i #1179, med felstarten redovisad. Slå inte ihop."*
-
-**Körningen:** kuvos-ny-kandidat 40067785091 med steg=paritet, på `claude/ny-kandidat-kedja` (68d73313), 05:49:54–05:54:46 UTC.
-Bara jobbet `paritet` körde. Bara aggregaten är lästa, ur körningens sammanfattning.
-
-**Utfallet: KLARAT.** Den levande kedjan i analysläget på 2024/25 mot den slutliga enhetens tal i urvalet
-(`i_urvalet.per_vinter['2024-25'].fysik_rattelse`):
-
-| | Kedjan | Kravet | Skillnad | Tolerans |
-| :-- | --: | --: | --: | :-- |
-| n | 2 210 532 | 2 210 532 | 0 | exakt |
-| A1 | 0,61053 °C | 0,61053 °C | +0,000000 °C | ± 0,01 °C |
-| A2 | 4,6640 % | 4,6640 % | +0,00000 pe | ± 0,02 pe |
-
-- **Långvågen:** reserven är bit för bit som träningens, och MET:s långvåg är tömd i filen kedjan läser.
-- **Fysiken ensam:** A1 1,12254 °C och A2 21,1079 %, samma som kandidatfilens tal i urvalet.
-- **Underlaget:** 754 stationer och 4 152 timmar.
-- **Kandidatfilen i repot** är lika samman:s i beslut, par, parametrar, särdrag, filer och versioner.
-- **Kontrollsummorna** för `modell_alla.pkl`, de fem VViS-filerna, indatan och MET 2024/25 är lika manifesten.
-
-**Vad det betyder:** ersättningsregelns *"Paritet först"* (§4) och första villkoret i FORREGISTRERING-2026-27 §12 (a) är uppfyllda
-för kandidatfilen fb372d79…. Skillnaden är exakt noll eftersom kedjan använder träningens kod och data. Provet prövar analysläget på
-en vinter som den slutliga enheten är tränad på. Prognosläget med MET:s levande prognos prövas först när kedjan loggar i drift.
-
-**Att lägga märke till:** kandidatfilens `timmar` är 4 176, men provet räknade 4 152 timmar för 2024/25, samma som den frystas (§1).
-Skillnaden är ett dygn. Filens tal kommer ur träningens slutliga enhet och är inte utrett. Antalet punkter stämmer exakt.
-
-**Felstarten, Claudes fel:**
-- Körning 40067556017 startade 05:46:17 UTC på main (78c0268b) med standardvalet steg=forberedning. Skriptet klickade på knappen som
-  startar körningen i stället för den som öppnar rutan.
-- Den avbröts direkt. Alla sex förberedningsjobb stoppades 05:46:47–05:48 UTC, och ingen artefakt skrevs.
-- Tre jobb (2018/19, 2019/20, 2020/21) hann hämta vinterns VViS-filer ur hinken och MET-releaserna till löparen, samma väg som en
-  vanlig förberedning. Ingenting skrevs någonstans, och den nya kandidatens underlag är orört.
-- **Läxa:** knapprutan har två knappar med samma text. Välj knappen på typ och läge, och kontrollera gren och steg innan något skickas.
-  Paritetsprovet startades därefter så.
-
-**Inte gjort:**
-- Flaggan i `kuvos/ny-kandidat-skugga.json` är av. Körningens nummer för den är 40067785091.
-- sql/068 är inte migrerad, och inga pulsrader finns.
-
-**I drift 24/10** (Bengt: *"efter det gör du 2 och 3"*, och *"Ja, alla tre i ordning"*): #1177, #1180 och #1179 är sammanslagna (1931e8d0, dbf584f1, 5ac09fa0). sql/068 migrerades 10:14 UTC med DB-knappen (40085094164 på main 5ac09fa0), och transaktionen är bekräftad. Beviset efter filen:
-- 5 tabeller `ny_kandidat_*`, alla med radskydd;
-- 4 funktioner;
-- 0 rader;
-- inga rättigheter för anon eller authenticated;
-- `ny_kandidat_regel()` ger 0 rader;
-- den frystas senaste logg var 09:00 UTC.
-
-Flaggan är av och inga pulsrader finns, så ingenting skriver i tabellerna.
-
-**Stomdokument:** KUV den nya kandidatens kedja klarade paritetsprovet och en felstartad förberedning avbröts
-
-## #705 (24/10 2026) Olycksläsningen 2024/25 bokförd: sikten stryks; olyckorna bekräftar varken kandidaten eller efterhalkan
-
-**Bengts ord 24/10:** *"du kan också registrera olycksfallskortet"*. Domlarmets ärende #1176 (*"W-A sikt 2024/25 (olyckorna) faller:
-sikten stryks"*) stängs med den här posten.
-
-**Körningen:** kuvos 40014153522 med mätningen `scripts/matningar/kuvos-blandning-vagb-olyckor-trv-2026-10-23.ts`, på main d3df55ec,
-23/10. Den följer FORREGISTRERING-OLYCKOR-2024-25 (#697) och läsaren (#698). Filen Olyckor24-25.xlsx (653 196 byte) hade sha256 lika
-manifestet. Bara aggregat är lästa. Ingen fritext och ingen plats är utskriven.
-
-**Inläsningen (§2):**
-- 7 269 rader i bladet. 22 förskjutna rader är lagade och 23 dubbletter räknade en gång, båda som formläsningen.
-- Det ger 7 246 olyckor, alla med giltig koordinat.
-- **18 halkolyckor** enligt ordlistan.
-
-**Tidszonen (§3):** svensk tid.
-- Natten till 30/3 kl. 02 har 0 olyckor.
-- Vardagarnas topptimmar är 07 och 16.
-
-**Fråga (a), facit (diagnos, §1):** lyft med 95 % marginal.
-
-| | Varningar | Med olycka | Lyft, alla | Lyft, halk | Halk mot alla |
-| :-- | :-- | :-- | :-- | :-- | :-- |
-| Kandidaten, 2 km (primärt) | 1 357 485 kalla timmar | 1 626 (0,12 %) | 1,04 [0,97–1,11] | 1,01 [0,40–2,53] | 0,97 [0,39–2,43] |
-| Kandidaten, 5 km | | 5 425 (0,40 %) | 1,01 [0,97–1,05] | 1,01 [0,57–1,77] | 1,00 [0,57–1,75] |
-| Efterhalkan, 2 km (primärt) | 1 109 fyrningar | 3 (0,27 %) | 1,20 [0,39–3,73] | 0 | 0 |
-| Efterhalkan, 5 km | | 19 (1,71 %) | 2,26 [1,45–3,53] | 0 | 0 |
-
-- **Förväntan (§6)** var att halkolyckornas lyft skulle vara över 1. Den slog **inte** in: kandidatens halklyft är 1,01 med marginalen
-  0,40–2,53, och efterhalkan har inga halkolyckor i sina fönster.
-- Med 18 halkolyckor på hela vintern säger frågan nästan ingenting åt något håll.
-- En olycka får bekräfta men aldrig fälla en varning (§1). Ingen tröskel och ingen dom ändras.
-
-**Fråga (b), W-A:s andra serie:** 2 701 498 stationstimmar vid 754 stationer.
-- **Byvinden** är diagnos och fäller inget. Alla olyckor över hela dygnet stiger monotont med kvoten 1,33. W-A4 håller, men utfallet
-  är OAVGJORT, eftersom kvoten inte går att skilja från 1,5. Halkolyckorna är för få.
-- **Sikten**, alla olyckor (primär serie), per 1 000 stationstimmar:
-
-| Band | Stationstimmar | Timmar med olycka | Per 1 000 | Kvot mot > 1000 m |
-| :-- | :-- | :-- | :-- | :-- |
-| > 1000 m | 2 574 742 | 22 768 | 8,84 | 1,00 |
-| 500–1000 m | 58 243 | 524 | 9,00 | 1,02 [0,93–1,11] |
-| 200–500 m | 55 317 | 387 | 7,00 | 0,79 [0,72–0,87] |
-| < 200 m | 11 839 | 80 | 6,76 | 0,76 [0,61–0,95] |
-
-**Domen (§5): sikten stryks.**
-
-| Villkor | Utfall |
-| :-- | :-- |
-| 1. W-A3 med marginalvakten | **nej**: kvoten är 0,76, alltså färre olyckor i dålig sikt |
-| 2. W-A4 | ja |
-| 3. Riktningen på dagtid | **nej**: kvoten är 0,85 [0,63–1,14] |
-
-Två av tre villkor föll, och ett räckte. Driftens fall 8/10 (#491) står därmed, nu med en riktig nämnare.
-
-**Att lägga märke till:**
-- Halkolyckornas siktkvot är 15,5 [4,8–50,1], men den bygger på 3 timmar med olycka under 200 m. Det är inte den primära serien, och
-  den ändrar ingenting (regel L).
-- Läsningens 11 839 stationstimmar under 200 m och 754 stationer är färre än räkningen utan olyckor 23/10 (#696), som gav 12 175
-  timmar och 762 stationer. Skillnaden är inte utredd. Den rör inte domen: W-A4 kräver 500.
-- Avvikelsen i #698 står kvar: driftens W-A räknar i praktiken på 10–14 km (ST_Expand 0,25°), inte på 15 km.
-
-**Inte gjort:** sikten är struken som fråga, men ingen text eller kod som nämner siktgrinden är ändrad här. Följer i egen PR om det
-behövs.
-
-**Stomdokument:** KUV olycksläsningen bokförd och sikten stryks
-
-## #706 (24/10 2026) Den nya kandidaten loggar bredvid den låsta: flaggan på och pulsraderna inlagda; den låsta talar
-
-**Bengts ord 24/10:** *"Ja, slå på flaggan med körningen 40067785091 och lägg in pulsraderna, så att den nya kandidaten börjar logga bredvid den låsta. Den låsta talar tills vidare."* Han frågade först: *"går det inte att drifta båda eller är det krav att en är driftad nu och vi efter
-vintern gör en bedömning av vem som för vintern 26/27 visade sig vara bäst"*.
-
-**Vad som slås på:**
-- **Flaggan** `kuvos/ny-kandidat-skugga.json`: `skriv` blir true, och paritetsprovet 40067785091 (#704) står som klarat. Med flaggan
-  på skriver den nya kedjan i sina egna tabeller (sql/068, migrerad 24/10, #704).
-- **Pulsklockan:**
-  - `puls-ny-kandidat-fysik` "28 */6 * * *" (del A);
-  - `puls-ny-kandidat-timme` "47 * * * *" (del B och loggen).
-  - Pulsjobben blir 21. Golvet `PULS_GOLV` i vakthunden och `ANTAL_NYA` i pulsklockan är båda 21, och kontraktsgrinden vaktar dem.
-
-**Vad som inte ändras:**
-- **Den låsta talar** i appen, rösten, lägesfilen och på kartan. Publiceringen läser `kandidat_regel()`, aldrig `ny_kandidat_regel()`
-  (sql/068).
-- Den låstas kedja, tabeller och dom är orörda (FORREGISTRERING-2026-27 §2 och §12 c).
-- Bytet enligt §12 är inte beslutat. Det kräver ett daterat beslut av båda (§12 b).
-
-**Varför nu:** varje dygn som den nya inte loggar är ett dygn mindre i jämförelsen efter vintern (§12 e, tillägget till
-ersättningsregeln). Det gäller oavsett om bytet görs.
-
-**Att väga:**
-- Den nya kedjan har ingen reserv för en missad del A. Den låsta har `scripts/kandidat-reserv.ts`. Missas en slott tiger den nya i sex
-  timmar, och timmarna redovisas som tysta.
-- Den nyas logg ligger kvar i databasen, cirka 2 MB per dygn, eftersom arkivexporten inte tar den (sql/068). Det blir cirka 300 MB över
-  vintern, inom Pro-kvoten.
-- Vakthunden i drift har golvet 19 tills den deployas med det nya talet (deploy-supabase.yml, funktion vakthund). Fram till dess larmar
-  den först när tre pulsjobb har försvunnit, inte vid ett eller två.
-
-**Stomdokument:** KUV den nya kandidaten loggar bredvid den låsta och den låsta talar
-
-## #707 (24/10 2026) Osäkerheten i jämförelsen på 2022/23 räknas med omdragning av stationer och dygn (metoden före räkningen); MET:s v4 har långvågen före 2022
-
-**Bengts ord 24/10:** *"ta reda på om tidigare vintrar v4 har långvågen (v4) och gör detta Bättre hade varit att räkna osäkerheten med en metod som tar hänsyn till att punkterna hänger ihop …"*, efter frågan om varför den nya fick ett högre krav (#702: V2 föll på −0,19 pe mot kravet −0,25).
-
-**1. MET:s omräkning v4 har långvågen för de äldre vintrarna** (läst 24/10, inget kört):
-- `metpparchivev4` bär `integral_of_surface_downwelling_longwave_flux_in_air_wrt_time` den 15/11 2018, 15/1 2019, 15/2 2020,
-  15/1 2021 och 15/12 2021, med värden på 170–360 W/m² i stickproven.
-- Det vanliga arkivet `metpparchive` saknar fältet 15/1 2019 (#672).
-- Där båda finns, 15/12 2022, 15/2 2023 och 15/1 2025, är v4:s långvåg identisk med arkivets i alla nio punkterna i varje stickprov.
-- För åren före 2022 är v4 en omräkning med dagens metod. Luften skilde där 0,10–0,37 °C per timme i medel mot arkivet (#694).
-- **Följd:** den låsta kan provas på 2018/19–2021/22 med v4:s långvåg. Det kräver en egen förregistrering före körningen, och här
-  körs ingenting.
-
-**2. Osäkerheten på 2022/23 — metoden, skriven före räkningen** (`fysik/vintrar/osakerhet.py`, steget `osakerhet` i
-`kuvos-ny-kandidat.yml`):
-- **Kandidaterna:**
-  - Den låsta räknas med sin egen vinterkedja, oförändrad (`vinterkedja.py kor()`: identitetsprovet på 2024/25, tidszonen och
-    vintern). Skriptet fångar bara PH och populationen på vägen in i måtten. Ingen fil i `KODEN` eller i `fysik/SHA256SUMS` rörs.
-  - Den nya är vecket utan 2022/23 (`ph_utan-2022-23_2022-23.npz` ur hinken, summan mot `kuvos/kandidat-2027-28.json`) med paret
-    W 0,25 · L 40 km, på samma population.
-- **Identiteten:** båda kandidaternas summor (n, nDec, grova fel, fel sida, absoluta fel) ska vara exakt samman:s (40024563991), och
-  punktmängderna ska vara desamma. Annars stoppar skriptet innan något dras om.
-- **Cellerna** är station × UTC-dygn. Inga celler och inga punkter lämnar jobbet.
-- **Omdragningen:** B = 2000 per schema, fröet 20261024.
-  - (S) stationer med återläggning;
-  - (D) dygn med återläggning;
-  - (SD) båda oberoende, där cellens vikt är stationens antal gånger dygnets antal. **SD är huvudschemat.**
-- **Talen:** ΔA2 = A2(den nya) − A2(den låsta) totalt (huvudtalet), i norr och i söder, samt ΔA1 och ΔA3. Intervallet är
-  2,5–97,5 % av omdragningarna, och andelen omdragningar med Δ ≥ 0 skrivs ut. Bredvid står det naiva parade felet, med punkterna som
-  oberoende.
-- **Läsningen:** förbättringen i A2 går att skilja från noll om hela SD-intervallet för ΔA2 totalt ligger under 0.
-- **Diagnos:** ingen dom och inget krav ändras (regel L). Den underkända V2 står kvar. Talet är underlag för bytesbeslutet
-  (FORREGISTRERING-2026-27 §12 b) och valet inför 2027/28 (§12 g).
-
-**Att lägga märke till:** den exakta skillnaden på 2022/23 är −0,183 procentenheter (4,3349 mot 4,5179 %, samman 40024563991). "−0,19"
-i #702 är skillnaden mellan två avrundade tal. Ingenting ändras av det, eftersom V2 krävde −0,25.
-
-**3. Utfallet** (kuvos-ny-kandidat 40092007287, steget osakerhet på `claude/osakerhet-2022-23` 37f1011a, 11:58–12:30 UTC; bara
-aggregat):
-- **Identiteten höll.** Båda kandidaternas summor är exakt samman:s, och de har samma 4 361 591 punkter vid 711 stationer och 152 dygn
-  (99 487 celler med punkter).
-
-| Δ (den nya − den låsta) | På populationen | 95 %, stationer och dygn (SD) | Stationer (S) | Dygn (D) | Andel ≥ 0 (SD) |
-| :-- | --: | --: | --: | --: | --: |
-| A2 totalt | −0,183 pe | −0,417 till +0,039 | −0,394 till +0,017 | −0,247 till −0,118 | 0,051 |
-| A2 norr | −0,494 pe | −1,206 till +0,170 | −1,146 till +0,126 | −0,678 till −0,307 | 0,075 |
-| A2 söder | −0,060 pe | −0,224 till +0,085 | −0,213 till +0,068 | −0,100 till −0,018 | 0,230 |
-| A1 totalt | −0,0153 °C | −0,0236 till −0,0074 | −0,0233 till −0,0078 | −0,0175 till −0,0131 | 0,000 |
-| A3 totalt | −0,030 pe | −0,048 till −0,014 | −0,045 till −0,017 | −0,039 till −0,022 | 0,000 |
-
-Det naiva intervallet, med punkterna som oberoende, är för ΔA2 −0,198 till −0,168 pe.
-
-**Läsningen (regeln ovan): förbättringen i A2 går inte att skilja från noll.** SD-intervallet når +0,039, och 5,1 % av omdragningarna
-ger ingen förbättring. Att lägga märke till:
-- **Osäkerheten sitter i stationerna.** Stationsschemat är nästan lika brett som SD, medan dygnsschemat är smalt. Den nya är alltså
-  mycket bättre vid vissa stationer och sämre vid andra, och vilka stationer som råkar ingå avgör talet.
-- **Det verkliga intervallet är femton gånger bredare än det naiva** (0,456 mot 0,030 pe), och ± 0,02 i ersättningsregeln §3 var det
-  naiva talet. Kravet 0,25 ligger inne i intervallet. På 2022/23 går −0,183 alltså varken att skilja från noll eller från −0,25.
-- **A1 och A3 är förbättrade utom rimligt tvivel:** medelfelet −0,015 °C och fel sida om noll −0,030 pe, där inga omdragningar gav
-  noll eller sämre.
-- I norr är punkttalet −0,49 pe, men intervallet når +0,17.
-
-Ingen dom och inget krav ändras (regel L). V2 står som fallet. Talen är underlag för bytesbeslutet (§12 b) och valet inför 2027/28 (§12 g).
-
-**Stomdokument:** KUV osäkerheten på 2022/23 med omdragning och v4 med långvåg före 2022
-
-## #708 (24/10 2026) Nivåernas ärliga intervall på 2022/23, inför valet av variant för FORREGISTRERING-2026-27 §4b punkt 12 (metoden före körningen)
-
-**Bengts ord 24/10:** *"Räkna först intervallets bredd för den låstas A2 på 2022/23 med samma omdragning, bara aggregat, så väljer vi
-variant sedan."*
-
-Bakgrund: utkastet till §4b punkt 12 (`Desktop/Halkvakt_Utkast_ArligOsakerhet_2026-10-24.md`, inte i repot) har två varianter. I
-variant A räknas ett KLARAR i grind A bara om även intervallet med omdragning av stationer och dygn ligger under tröskeln. I variant B
-redovisas intervallet bara. #707 räknade intervallet för en *skillnad* mellan kandidaterna. För en *nivå* är det inte känt.
-
-**Metoden** (`fysik/vintrar/osakerhet.py`, samma körning som #707, steget `osakerhet`):
-- Samma celler (station × UTC-dygn), samma tre scheman (S, D, SD) och samma vikter (fröet 20261024), så att omdragningarna är
-  desamma som för skillnaden.
-- **Nivåerna** är A1, A2 och A3 för båda kandidaterna: totalt, i norr och i söder (A2), och per ankarband (grind A:s band ur
-  punktens ankaravstånd). Varje band dras om för sig, på sina egna stationer och dygn.
-- **Bredvid** står marginalvaktens intervall (punkttalet ± 1,96 · det naiva felet) och om SD-intervallet når över grind A:s tröskel
-  (A1 ≤ 1,0 °C, A2 ≤ 5 %, A3 ≤ 10 %).
-- **Diagnos.** Den låstas tal på 2022/23 är redan sedda (#680), och ingenting ändras av dem. Svaret är hur brett ett ärligt intervall för
-  en nivå blir, så att variant A och B kan väljas med kunskap om vad de betyder.
-
-**Utfallet** (kuvos-ny-kandidat 40097374211, `claude/osakerhet-nivaer` 538afb72, 13:15–13:48 UTC; bara aggregat). Identiteten mot
-samman höll igen. A2 med grind A:s tröskel 5 %:
-
-| | Punkttal | Marginalvakten | 95 % SD (stationer och dygn) | SD mot 5 % |
-| :-- | --: | --: | --: | :-- |
-| Den låsta, totalt | 4,52 % | 4,50–4,54 % | 3,79–5,28 % | når över |
-| Den nya, totalt | 4,33 % | 4,32–4,35 % | 3,65–5,07 % | når över |
-| Den låsta, norr | 9,01 % | 8,96–9,06 % | 7,49–10,66 % | helt över |
-| Den låsta, söder | 2,73 % | 2,72–2,75 % | 2,16–3,38 % | under |
-| Den låsta, 0–7 km (81 stationer) | 4,82 % | 4,76–4,88 % | 2,97–7,11 % | når över |
-| Den låsta, 7–15 km (377 stationer) | 2,78 % | 2,76–2,80 % | 2,22–3,41 % | under |
-| Den låsta, 15–20 km (238 stationer) | 4,61 % | 4,57–4,66 % | 3,52–5,87 % | når över |
-| Den låsta, över 20 km (256 stationer) | 7,97 % | 7,91–8,02 % | 6,51–9,55 % | helt över |
-
-A1 (0,52 °C mot 1,0) och A3 (0,30 % mot 10 %) ligger långt under sina trösklar i varje schema och band, för båda kandidaterna.
-
-**Att lägga märke till:**
-- **Bredden.** Det ärliga intervallet för en nivå är ungefär ± 0,75 procentenheter nationellt, mot marginalvaktens ± 0,02. I banden
-  med få stationer är det bredare: 0–7 km har ± 2 procentenheter.
-- **Variant A skulle på 2022/23 ha gett OAVGJORT nationellt** för båda kandidaterna, eftersom 4,52 % och 4,33 % ligger under taket men
-  intervallen når över det. Variant B hade gett KLARAR.
-- **Banden prövas inifrån** (punkt 3: 7–15 km bara om också 0–7 km klarar). Med variant A hade 0–7 km blivit OAVGJORT, på bara 81
-  stationer, och 7–15 km, som ligger klart under taket, hade aldrig prövats.
-- **Intervallet är tvåsidigt** (2,5–97,5 %). Påståendet "under taket" är ensidigt. En ensidig läsning skulle använda 95 %-gränsen och
-  ge en något lägre övre gräns. Den är inte räknad här.
-
-Ingen dom och inget krav ändras (regel L). Det här är underlaget för valet mellan variant A och B i utkastet till §4b punkt 12.
-
-**Stomdokument:** KUV nivåernas ärliga intervall på 2022/23 inför valet av variant för domen
-
-## #709 (24/10 2026) Förarnas vikter byggda före signeringen: trafiken som varje station i grind A representerar
-
-**Bengts ord 24/10:** *"Ja, bygg stationsvikterna för förarnas mått som PR med självtest och kontrollsumma, så att de ligger i repot
-före signeringen. Slå inte ihop."*
-
-Underlag för utkastet till FORREGISTRERING-2026-27 §4b punkt 13 (förarnas mått, `Desktop/Halkvakt_Utkast_Domen_Fem_Punkter_2026-10-24.md`,
-inte i repot). **Vikterna gäller bara om den punkten signeras.**
-
-**Byggt:**
-- `fysik/vintrar/forarnas_vikter.py` räknar trafikarbetet, ÅDT × 2 km i fordonskilometer per dygn som i #490, för de väglagspunkter
-  som ligger närmast varje station (storcirkel; vid exakt lika avstånd vinner den första i ordningen).
-  - `--rakna` skriver vikterna.
-  - `--prova` räknar om ur indatan och kräver att filen är exakt densamma. Det körs i ci.
-  - `--sjalvtest` har nio prov, bland dem regeln i domen: en station utan mätningar tas bort, och dess punkter går till närmaste
-    kvarvarande station.
-- `kuvos/kandidatstationer-2026-27.json`: grind A:s 754 stationer. De lästes med DB-knappen i läsläge (dbknapp 40103476137,
-  `kandidat_station` de senaste två dygnen), och alla 754 har position i `data/vagdata/stationer.json`.
-- `kuvos/forarnas-vikter-2026-27.json`: vikterna och indatans kontrollsummor:
-  - `vaglagspunkter.json` 2cb7f738…;
-  - `stationer.json` d27e5390…;
-  - `kandidatstationer-2026-27.json` 350a3180….
-
-**Summering:**
-- 12960 väglagspunkter, varav 126 utan ÅDT, som bär 0.
-- Trafikarbetet är 106908028 fordonskilometer per dygn.
-- 705 stationer har vikt och 49 har ingen.
-- Avståndet från punkt till station är i median 6,75 km, 95 % ligger inom
-  19,27 km och det längsta är 40,62 km.
-- Trafikens andel norr om 62° är 10,8 %, och den största stationen bär
-  1,45 %.
-
-**Att lägga märke till:**
-- **49 stationer får ingen vikt.** Ingen väglagspunkt ligger närmast dem, eftersom en annan station ligger
-  närmare vägen. Deras fel räknas inte i förarnas mått men står kvar i det gamla måttet.
-- **Norr bär 10,8 % av trafiken** men ungefär 28 % av stationstimmarna (1 239 136 av 4 361 591 på 2022/23, #708). Det är skälet till
-  att förarnas mått väger norr lättare.
-- **Det effektiva antalet stationer är ungefär 377**, alltså 1 / Σ p². Viktningen gör därför det ärliga intervallet bredare, som
-  utkastets förväntan säger (§7).
-- Vikterna är räknade bara på indatan. Inga mätningar och inga modelltal är lästa.
-
-**Stomdokument:** KUV förarnas vikter byggda före signeringen för förarnas mått i utkastet
-
-## #710 (24/10 2026) Domens mått före signeringen: ärlig osäkerhet, förarnas mått avgör, det förarna fick, följden av OAVGJORT och säkerhetsläsningen (FORREGISTRERING-2026-27 §4b punkt 12–17), med regel L:s formkrav
-
-**Bengts ord 24/10:**
-- *"Ja, skriv det samlade utkastet till FORREGISTRERING-2026-27 med fem punkter: ärlig osäkerhet (variant A, ensidig 95 %), förarnas
-  mått avgör enligt L2/L4 med det gamla bredvid, vilket mått som avgör, förväntningarna i §7, och 'det förarna fick' timme för timme.
-  Utkast utanför repot."*;
-- *"Ja, lägg in en sjätte punkt i utkastet: OAVGJORT mot 5 % men tydligt bättre än RÅ med ärligt intervall ger att kandidaten
-  fortsätter tala som nu en vinter till, enligt L2 och L4 med formkraven. Bara utkast."*;
-- *"ok för utkastet och posten med regel Ls formkrav"*;
-- 25/10: *"Ja, skriv in båda i #1192: marginalvakten på förarnas mått i punkt 12 och stoppregeln som punkt 17 (säkerhetsläsningen). Slå inte ihop."*
-
-Utkastet låg utanför repot (`Desktop/Halkvakt_Utkast_Domen_Fem_Punkter_2026-10-24.md`). Underlaget är #490 (trafiken per band), #564
-(regel L), #680 (2022/23), #707 (osäkerheten i skillnaden), #708 (nivåernas intervall) och #709 (förarnas vikter).
-
-**Förregistreringen för 2026/27:**
-- **§4b punkt 12, den ärliga osäkerheten.** Varje A-mått prövas också mot omdragning av hela stationer och UTC-dygn (schemat SD,
-  B = 2000), ensidigt 95 %. KLARAR kräver att också omdragningens övre gräns ligger under taket, annars blir det OAVGJORT. En skärpning.
-- **Punkt 13, förarnas mått.** Grind A vägs med trafiken, med vikterna i #709 (`kuvos/forarnas-vikter-2026-27.json`, sha256
-  2817ccda…b994).
-- **Punkt 14.** Förarnas mått avgör grind A. Stationstimmarna redovisas bredvid och avgör ingenting.
-- **Punkt 15, det förarna fick.** Timme för timme från den kandidat som talade. En redovisning som avgör ingenting.
-- **Punkt 16, följden av OAVGJORT.** Blir A OAVGJORT men kandidaten är tydligt bättre än RÅ (den övre 95 %-gränsen för ΔA2 och ΔA3
-  under 0), talar den som nu en vinter till, 2027/28. Det gäller en gång.
-- **Punkt 17, säkerhetsläsningen (25/10).** Den 1/12, 1/1 och 1/2 prövas om kandidaten säkert är sämre än RÅ: den undre
-  95 %-gränsen för ΔA2 över 0, på förarnas mått, med omdragning. Stopp tystar den. Bara *stopp* eller *inget stopp* rapporteras, och
-  domen fälls i mars som förut. En skärpning.
-- **Punkt 12, tillägg 25/10.** På förarnas mått räknar marginalvakten det vägda medlets standardfel med samma vikter. Meningen fyller
-  en lucka före data och är varken en lättnad eller en skärpning.
-- **Övrigt:**
-  - §7 får förväntan för punkt 12–16.
-  - §8 fryser punkt 12–16 med §4b.
-  - §10 (g) anger att vikterna ligger i repot.
-  - §11 får raden om lättnaderna.
-  - Statusraden är uppdaterad.
-- **Utöver utkastet:** punkt 13 skriver in regeln ur #709, att en station utan mätningar i domens population tas bort och att dess
-  punkter går till närmaste kvarvarande station.
-
-**TROSKLAR-SKUGGAN §4 (d), utöver utkastet:** en daterad rad pekar på punkt 16. Utan den säger §4 (d) att domen (a)–(c) avgör om
-kandidaten får stanna, och de två dokumenten skulle säga olika saker. En andra rad 25/10 pekar på punkt 17.
-
-**Regel L:s formkrav (#564, TROSKLAR-SKUGGAN §5):**
-
-*Punkt 13 och 14* är en lättnad, eftersom de på sedda data flyttar A2 mot godkänt.
-- **Det sedda talet:** den låstas A2 på 2022/23 är 4,52 % per stationstimme (#680) och ungefär 4,3 % trafikviktat, räknat efteråt med
-  bandens andelar (#490, #708). Med stationsvikterna i #709 är talet inte räknat.
-- **Skälet, L4 (a):** följden för föraren. Förarna kör där trafiken går: 68,1 % av fordonskilometerna ligger inom 7 km från en
-  station och 3,6 % bortom 15 km (#490). Norr bär 10,8 % av trafiken men ungefär 28 % av stationstimmarna (#708, #709).
-- **Vilka data, L2:** vintern 2026/27 från signeringen. Inget av det är läst.
-- **Svaret på L3:** ja, en lättnad.
-- **Öppet:** att förarnas mått väntas ge lägre A2 var känt när måttet valdes, och det står i §7. Därför är det en lättnad, och därför
-  vilar skälet på (a) och inte på talet.
-
-*Punkt 16* är en lättnad, eftersom den ändrar följden av ett utfall mot det bättre. På 2022/23 hade variant A gett OAVGJORT
-(3,79–5,28 %, #708), och med punkt 16 hade kandidaten fått tala vidare i stället för att tystna.
-- **Det sedda talet:** kandidatens A2 4,52 % mot RÅ:s 8,66 % på 2022/23, per stationstimme (#680). Den ärliga osäkerheten för
-  skillnaden mot RÅ är inte räknad.
-- **Skälet, L4 (a):** följden för föraren, som annars bara har stationerna (RÅ).
-- **Vilka data, L2:** domfönstret.
-- **Svaret på L3:** ja, en lättnad.
-
-*Punkt 12 och 17* är skärpningar och *punkt 15* en redovisning. Meningen om marginalvakten fyller en lucka före data. Inget av det
-kräver formkraven.
-
-**Signaturerna:** Bengts ok 24/10 gäller för Bengt och Axel (#659). Posten står före signeringen och före domfönstret, så inga data som
-lättnaderna gäller är lästa.
-
-**Avgjort 24/10: punkt 16 skärps inte** (Bengt: *"nej skärp inte p 16"*). Punkt 16 nämner bara grind A och står som den är. Läst
-som den står fortsätter kandidaten att tala 2027/28 när A är OAVGJORT och kandidaten tydligt bättre än RÅ, också om grind B faller
-eller underlaget (C) inte räcker. Så ska punkt 16 läsas i mars. TROSKLAR-SKUGGAN §4 (c), *"aldrig tal på tunn dom"*, står kvar för
-skuggans tal enligt (a) och (b). Skärpningen, att punkt 16 bara gäller när ingen annan grind faller, föreslogs och valdes bort.
-
-**Avgjort 25/10: marginalvakten och vinterläsningarna** (Bengt: *"Ja, skriv in båda i #1192: marginalvakten på förarnas mått i punkt 12 och stoppregeln som punkt 17 (säkerhetsläsningen). Slå inte ihop."*).
-- **Marginalvakten** räknas på förarnas mått med vikterna (punkt 12). Den väntas inte påverka utfallet, eftersom omdragningen är 15–37
-  gånger bredare (#707). Det är inte räknat på vikterna.
-- **Vinterläsningar** ersätts av säkerhetsläsningen (punkt 17). Inga tal läses före mars, bara *stopp* eller *inget stopp*.
-- **Kvar före 1/12:** domskriptets räkning av ΔA2 byggs, provas på låtsasdata och fryses med sin sha256 (§4b inledningen).
-
-**Stomdokument:** KUV domens mått i FORREGISTRERING-2026-27 §4b punkt 12–17 med regel L:s formkrav och signering 26/10
-
-## #711 (25/10 2026) Långvågen ur MET:s v4 hämtas före signeringen, för den frysta kandidaten på 2018/19–2021/22 (Ä1 i utkastet till tillägget till FLER-VINTRAR)
-
-**Bengts ord 25/10:**
-- *"Ja, skriv utkastet till förregistreringen för den frysta på 2018/19–2021/22 med v4, med bara det arkivet saknar ur v4. Bara utkast,
-  ingen kod och ingen körning."*;
-- *"kan du kolla om det går att återanvända met filerna och sen ge en uppskattning"*;
-- på förslaget att hämta långvågen före signeringen: *"ja vi gör det så har vi säkrat allt vi kan om bästa metod bygg så att du
-  återanvänder allt som går att återanvända"*.
-
-Utkastet till tillägget ligger utanför repot (`Desktop/Halkvakt_Utkast_FLER-VINTRAR_v4_2026-10-25.md`) och är inte signerat.
-
-**Varför före signeringen:**
-- Hämtningen ger bara MET:s öppna data. Inga VViS-data och inga modelltal läses, och ingenting räknas för den frysta, så regel L
-  berörs inte.
-- Tillägget kan då ange kontrollsummorna för de 44 delarna, så att indatan är låst när det signeras.
-
-**Avsteg, öppet:** för den nya kandidaten signerades T1 och T2 före fyllningen (#694, #695). Här är ordningen den omvända, och det ska
-stå i tillägget.
-
-**Återanvänt:**
-- **Den nya kandidatens delar** i releaserna `kuvos-vintrar-<vinter>`. De bär MET:s arkiv med sex fält i analysfilens form, med samma
-  rubrik, rutor och arkiv som den frystas hämtning, och bara långvågen tom. De bär också T2:s timmar ur v4 (`metnordic_fylld_`) och
-  vinden ur x och y för 2018/19. Det som utkastets Ä2 och Ä3 beskriver är alltså redan gjort.
-- **ECMWF** (`ifs_<vinter>.tar.gz`), samma fil som den frystas kedja skriver.
-- **Koden:** hämtfunktionerna ur `fysik/ny_kandidat/metnordic_reserv.ts` (`filnamnV4`, `valjDelar`, `LANGVAG`) och historikens tolkning
-  (`hamtaTolkat`, `varde`).
-
-**Byggt:**
-- `fysik/vintrar/langvag_v4.ts` fyller bara långvågen, timme för timme: ur v4 före 14/3 2022 och ur arkivet därefter.
-  - Allt annat är källdelens, byte för byte, och källdelen står kvar.
-  - Utfilerna är `metnordic_lw4_<del>` och `lw4_<del>.json`, med källans summa, timmarna per källa, de saknade timmarna och utfilens
-    summa.
-  - Självtestet har 16 prov och körs i ci.
-- `kuvos-vintrar.yml` har fått steget `langvag-v4`: först planen, sedan en del åt gången, enligt MET:s villkor. Steget `kedjan` är
-  oförändrat.
-
-**Provat lokalt mot MET** på ett dygn ur 2018/19 (31/10 2018, 754 stationer):
-- 24 timmar ur v4, ingen saknad;
-- långvågen i medel 312 W/m², mellan 233 och 365;
-- övriga kolumner lika källan;
-- 27 sekunder, alltså ungefär 1,1 sekund per timme och drygt en timme per vinter.
-
-**Läsningen, byggd men inte körd.** Den kan inte köras förrän tillägget är signerat.
-- **`fysik/vintrar/vinterkedja.py`:**
-  - **Spärren:** för 2018/19–2021/22 läses ingenting förrän `docs/FORREGISTRERING-FLER-VINTRAR-TILLAGG-2026-10-25.md` har statusraden
-    SIGNERAD eller SIGNERAT och datum och signatur på både Bengts och Axels rad. Raderna läses med den nya kandidatens
-    `sparren.signaturen`, laddad ur sin utpekade fil och aldrig via `sys.path`.
-  - **Ä4:** tidszonsprovet görs utan SMHI:s station 7, som `forbered.py`.
-  - **Ä1:** bara `metnordic_lw4_`-delar läses, med en lista per del, och listorna summeras.
-  - 2022/23 och 2024/25 räknas som förut.
-- **`fysik/vintrar/osakerhet.py`** tar också tilläggets vintrar:
-  - den frysta med sin kedja och den nyas veck utan vintern;
-  - identiteten mot den frystas egen sammanfattning och mot samman:s tal för vintern;
-  - samma population, som ersättningsregeln §2;
-  - fröet 20261025. 2022/23 räknas med 20261024 som förut.
-- **`kuvos-vintrar.yml`:**
-  - **Förprovet** kräver det signerade tillägget och långvågens 11 delar med listor i releasen.
-  - **MET** hämtas inte för de vintrarna.
-  - **Provningen** hämtar den nyas veckfil ur hinken, med summan mot `kuvos/kandidat-2027-28.json`, och samman:s tal, och kör jämförelsen
-    i samma jobb.
-- **Självtesten:**
-  - `fysik/vintrar/sjalvtest.py` har fått tio prov för tillägget: spärren i fyra fall och den signerade, de fyra vintrarna i båda
-    filerna, station 7 och långvågens delar.
-  - `osakerhet.py --sjalvtest` har fått prov för fröet och rubriken.
-
-**Första delen hämtad** (kuvos-vintrar 40164264875 på grenen):
-- 2018/19, 31/10–14/11: 360 timmar ur v4, ingen saknad, 754 stationer, 271 440 rader;
-- 711 sekunder, alltså ungefär 2 sekunder per timme i Actions och 12 minuter per del. De 44 delarna tar alltså ungefär 9 timmar.
-
-**Stomdokument:** KUV långvågen ur v4 hämtas för den frysta på fyra äldre vintrar före signeringen av tillägget
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #712 (25/10 2026) Kort #218, #303, #311 och #354 stängda på Bengts ord
 
@@ -17861,188 +12126,33 @@ favoriterna följde med inskicket.
 
 **Stomdokument:** FAV proven på telefon 25/10 och (34) godkänd
 
-## #714 (25/10 2026) Tillägget för den frysta på 2018/19–2021/22 med v4 i repot som utkast, med långvågens 44 delar låsta
+## #714 (25/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Bengts ord 25/10**, på frågan om tillägget ska läggas som PR med kontrollsummorna så fort hämtningen är klar: *"ja"*.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Hämtningen:** kuvos-vintrar 40164264875 (steget `langvag-v4` på grenen `claude/langvag-v4`, #711), klar 25/10 med 44 av 44 delar
-gröna.
+## #715 (25/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-| Vinter | Delar | Timmar ur v4 | Timmar ur arkivet | Saknade timmar |
-| :-- | --: | --: | --: | --: |
-| 2018/19 | 11 | 3 648 | 0 | 0 |
-| 2019/20 | 11 | 3 672 | 0 | 0 |
-| 2020/21 | 11 | 3 648 | 0 | 0 |
-| 2021/22 | 11 | 3 217 | 431 | 0 |
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Timmen 25/3 2022 08 UTC** saknas helt i arkivet, efter skarven. Den nyas del har den ur v4 enligt T2, men den första hämtningen
-tog långvågen efter skarven bara ur arkivet, så den stod tom i alla 754 rutor.
+## #716 (25/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Väg 2, Bengts val 25/10** (tilläggets §10 e): *"Väg 2: ta långvågen ur v4 också för timmen 25/3 2022 08 UTC. Ändra langvag_v4.ts, ta bort delens två filer i releasen 2021-22, hämta om delen och byt summorna i manifestet i #1198."*
-- `langvag_v4.ts` tar en timme som arkivet saknar helt efter skarven ur v4 och listar den i `ur_v4_efter_skarven`. Ett nytt prov i
-  självtestet (17). PR #1196.
-- Delens två filer togs bort ur releasen `kuvos-vintrar-2021-22`, och delen hämtades om (40188743733): 1 timme ur v4, 359 ur arkivet,
-  ingen saknad. Summorna är bytta i manifestet, och de gamla står kvar under `omhamtad`.
-- **Avvikelse i omhämtningen:** körningen slutade som *failure* på ett jobb, 2018/19 13–27/2 2019. Dess kontroll *Finns delen
-  redan i releasen?* hittade inte delen, så den hämtades om i onödan, och uppladdningen vägrade eftersom filerna redan fanns.
-  Releasen är orörd: alla 132 summor i manifestet (del, lista och källdel för 44 delar) var lika med releasernas egna efteråt.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Låst:**
-- `kuvos/langvag-v4-leverans.json` bär listans, utfilens och källdelens summa för varje del. Alla tre var lika med releasernas egna
-  sha256 för de 44 delarna, kontrollerat 25/10.
-- I PR #1196 läser vinterkedjan en vinter bara när varje del och lista har sin summa där och ingen låst del saknas (`lw4_leverans()`
-  och `lw4_prov()`, fem nya prov i självtestet, 15 för tillägget).
+## #717 (25/10 2026) Kuvösen: flyttad till halkvakt-kuvos
 
-**Tillägget:** `docs/FORREGISTRERING-FLER-VINTRAR-TILLAGG-2026-10-25.md`, status UTKAST. Det är utkastet från Desktop med hämtningens
-utfall i §2, låsningen i §4 (c) och §9, och valet (e) i §10.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Ordningen:** Bengt och Axel läser och signerar. Sedan slås #1196 ihop, och de fyra vintrarna körs en i taget. Signeringslistan för
-26/10 rekommenderar att de körs efter signeringen av FORREGISTRERING-2026-27, så att inget nytt sett tal behöver stå vid dess
-signaturer (§10 f där).
+## #718 (25/10 2026) Kandidaten: flyttad till halkvakt-kuvos
 
-**Stomdokument:** KUV tillägget för v4 i repot som utkast med de låsta summorna
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-## #715 (25/10 2026) Tillägget för den frysta på 2018/19–2021/22 med v4 signerat
+## #719 (25/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Bengts ord 25/10:** *"Jag har läst #1198. Signera tillägget för v4 för mej och Axel och slå ihop när CI är grön."*
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Signerat:** `docs/FORREGISTRERING-FLER-VINTRAR-TILLAGG-2026-10-25.md`. Bengt för sig och för Axel via Bengt, som i #671, #692 och #695.
-Dokumentets sha256 vid signeringen, före statusraden och signaturerna: `59cdab8706ca5c85a1c870307f9994c8e233ff8cba26a83b31f50bc5e7529d52`. Det är versionen i #1198 (2e9acaf1), med väg 2
-i §10 (e), som Bengt läste.
+## #720 (25/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Det som nu gäller:**
-- Ä1–Ä5 för 2018/19–2021/22. Långvågens 44 delar är låsta i `kuvos/langvag-v4-leverans.json` (sha256 `c70dcc1064550cda5a5a9726026e8d1c0c931f2018a173388c850cec8154bf63`).
-- Valen i §10:
-  - fröet 20261025;
-  - vintrarna en i taget;
-  - återanvändningsprovet i stället för kontrollprovet på 2022/23;
-  - bytesbeslutet senast 30/11;
-  - timmen 25/3 2022 08 UTC ur v4 (väg 2).
-
-**Följd:**
-- Spärren i #1196 släpper de fyra vintrarna först när #1196 är ihopslagen, och den slås ihop på Bengts ord.
-- Inget modelltal för den frysta på de fyra vintrarna var läst vid signeringen.
-- Signeringslistan för 26/10 rekommenderar att vintrarna körs efter signeringen av FORREGISTRERING-2026-27, så att inget nytt sett tal
-  behöver stå vid dess signaturer (§10 f där).
-
-**Stomdokument:** KUV tillägget för v4 signerat 25/10
-
-## #716 (25/10 2026) Den frysta på 2018/19–2021/22 med v4 läst: bättre än RÅ varje vinter, den nya bättre än den frysta; källfel i MET:s arkiv 14–31/3 2022
-
-**Bengts ord 25/10:**
-- *"Slå ihop #1196 när CI är grön och kör de fyra vintrarna en i taget nu. Utfallet står då vid signaturerna enligt §10 (f)."* Signeringslistan rekommenderade att köra efter signeringen (#715); Bengt valde att köra före.
-- efter utfallet och felet: *"Rätta båda kandidaterna med v4:s timvärden för 14–31/3 2022: skriv utkasten till tilläggen (Ä6 för den frysta, ett till NY-KANDIDAT för den nya), och bokför utfallet med felet beskrivet till signeringen i morgon."*
-
-**Körningarna:** kuvos-vintrar 40194345814, 40196518547, 40199180640 och 40201548425 på main 4fc0ee9 (#1196), en i taget, alla gröna, 26–33 minuter var. Alla prov
-klarades: identitetsprovet på 2024/25, sommartidsnatten, SMHI med Ä4, och MET utan saknade timmar i något fält. Bara aggregat ur
-körningarnas sammanfattningar är lästa.
-
-**Utfallet, A2 på grind A:s population** (RÅ, den frysta och den nya, och ΔA2 den nya minus den frysta med 95 % SD, B = 2000):
-
-| Vinter | Punkter | RÅ | Den frysta | Den nya | ΔA2 |
-| :-- | --: | --: | --: | --: | :-- |
-| 2018/19 | 4 249 539 | 8,42 % | 5,47 % | 4,30 % | −1,169 pe [−1,549 ; −0,854] |
-| 2019/20 | 4 259 349 | 6,62 % | 3,90 % | 3,04 % | −0,861 pe [−1,177 ; −0,603] |
-| 2020/21 | 4 080 917 | 8,42 % | 5,24 % | 3,95 % | −1,291 pe [−1,657 ; −0,972] |
-| 2021/22, källfel | 4 357 916 | 9,51 % | 11,85 % | 4,80 % | −7,052 pe [−10,098 ; −4,285] |
-
-- **Medlet över de fyra:** den frysta 6,62 %, den nya 4,02 %, RÅ 8,24 %. Med 2022/23 (#680, #707): 6,20 %, 4,08 % och 8,33 %.
-- **Diagnos utan 2021/22:** den frysta 4,87 %, den nya 3,76 %, RÅ 7,82 % över tre vintrar.
-- **A1 och A3** följer samma mönster: den nya lägre än den frysta varje vinter, och hela intervallet under noll.
-- **Förväntan (tillägget §7):** den frysta under RÅ varje vinter, norr sämre än söder, och den nya bättre än den frysta i medel. Alla
-  tre höll.
-- **NIVÅ 2 utan blandning** är sämre än RÅ 2018/19 (9,30 mot 8,42 %) och 2020/21 (10,25 mot 8,42 %). Blandningen bär den frysta.
-- **Grind A:s tak 5 %** står bredvid och fäller ingenting: den frysta 5,47 och 5,24 % över, 3,90 % under.
-
-**Källfelet:**
-- **Vad.** Från 14/3 2022 00 UTC bär MET:s arkiv lång- och kortvågen som summor som växer timme för timme och nollställs med några
-  timmars mellanrum, inte som timvärden. Station 1001, långvågen 14/3 (×10⁶ J/m²): 5,04 · 5,91 · 6,77 · 2,59 · 3,44 · 4,28 …, mot
-  0,80–0,87 per timme 13/3 ur v4 och 0,8–1,2 per timme i arkivet 2022/23.
-- **Följden.** Den frystas A2 2021/22 per månad: 3,87 · 4,81 · 3,14 · 4,62 · **47,96 %** (mars). NIVÅ 2 ensam fick A1 7,09 °C.
-- **Omfattningen.** Ett tröskelprov på alla 67 delar som kandidaterna läser, 2018/19–2024/25, flaggade 431 timmar, alla 14–31/3 2022.
-  Timmen 25/3 08 UTC kommer ur v4 (väg 2) och är ren.
-- **Den nya berörs också.** Den läser kortvågen ur samma delar. Det gäller provet för 2021/22, de fem prov som tränades med 2021/22,
-  och den slutliga kandidaten, som loggar i drift (#706). Avvikelsen i #702, NIVÅ 2 sämre än RÅ just 2021/22, förklaras troligen av
-  det.
-- **Återanvändningsprovet** (tillägget §4 d) jämförde arkivet mot arkivet efter skarven och kunde därför inte se felet.
-
-**Rättelsen, på Bengts ord:** två utkast utanför repot, inte signerade:
-- `Desktop/Halkvakt_Utkast_FLER-VINTRAR_Tillagg_A6_Stralningen_2026-10-25.md`: Ä6, lång- och kortvågen 14–31/3 2022 ur v4 för den
-  frysta, och 2021/22 körs om;
-- `Desktop/Halkvakt_Utkast_NY-KANDIDAT_Tillagg_T4_Stralningen_2026-10-25.md`: T4, kortvågen 14–31/3 2022 ur v4 för den nya, och
-  förberedning, träning och provning körs om.
-
-Båda gör rättelsen öppet efter sett utfall: de gamla och de rättade talen står bredvid varandra, och inget krav lättas. T4 lämnar två
-val till signeringen: att V2 står som den föll (Claudes rekommendation) och att den rättade modellen ersätter den i drift före
-bytesbeslutet (Claudes rekommendation).
-
-**Vid signaturerna:** FORREGISTRERING-2026-27 §10 (f) och §11 har fått raderna om utfallet och källfelet. Inget i §1–§5 är ändrat på
-grund av det, och domen över den frysta i mars rörs inte.
-
-**Stomdokument:** KUV den frysta på fyra äldre vintrar läst och källfelet i mars 2022
-
-## #717 (25/10 2026) Utkastet Ä6 till FLER-VINTRAR i repot: lång- och kortvågen 14–31/3 2022 ur v4 för den frysta
-
-**Bengts ord 25/10:** *"Ja, förbered signerings-PR:en med allt utom R, och lägg Ä6 och T4 i repot som utkast-PR:er i kväll."*
-
-`docs/FORREGISTRERING-FLER-VINTRAR-TILLAGG-A6-2026-10-25.md`, status UTKAST, ur utkastet från Desktop (#716). Ä6 tar lång- och kortvågen 14–31/3 2022 ur MET:s v4 för den
-frysta och kör om 2021/22; jämförelsen med den nya väntar på T4. Prov före läsningen: trappformsprovet (tröskel och sågtand)
-och att v4 är timvärden. Båda talen, före och efter rättelsen, står bredvid varandra. Ingen kod är byggd och ingenting är kört.
-
-**Stomdokument:** KUV utkastet Ä6 till FLER-VINTRAR i repot
-
-## #718 (25/10 2026) Utkastet T4 till NY-KANDIDAT i repot: kortvågen 14–31/3 2022 ur v4 för den nya
-
-**Bengts ord 25/10:** *"Ja, förbered signerings-PR:en med allt utom R, och lägg Ä6 och T4 i repot som utkast-PR:er i kväll."*
-
-`docs/FORREGISTRERING-NY-KANDIDAT-TILLAGG-T4-2026-10-25.md`, status UTKAST, ur utkastet från Desktop (#716). T4 tar kortvågen 14–31/3 2022 ur MET:s v4 i den nyas delar, och
-förberedningen, träningen (alla sex prov och den slutliga kandidaten), provningen och samman körs om. Två val vid signeringen:
-att V2 står som den föll (Claudes rekommendation) och att den rättade modellen ersätter den i drift före bytesbeslutet (Claudes
-rekommendation). Ingen kod är byggd och ingenting är kört.
-
-**Stomdokument:** KUV utkastet T4 till NY-KANDIDAT i repot
-
-## #719 (25/10 2026) Ä6 till FLER-VINTRAR signerat: lång- och kortvågen 14–31/3 2022 ur v4 för den frysta
-
-**Bengts ord 25/10:** *"Ja, gör stickprovet på v4 för 14–31/3 2022. Visar det timvärden: signera Ä6 och T4 för mej och Axel med Claudes rekommendationer i T4 (V2 står, och den rättade modellen ersätter den i drift), och slå ihop när CI är grön."*
-
-**Signerat:** `docs/FORREGISTRERING-FLER-VINTRAR-TILLAGG-A6-2026-10-25.md`. Bengt för sig och för Axel via Bengt, som i #695 och #715. Dokumentets sha256 vid signeringen, före
-statusraden och signaturerna: `da84af7cc5024844ec02be21e4c78d9d5e89a528d3a66f96c454d15b2ef871b2`.
-
-Stickprovet 25/10, före signaturen: v4 hämtades för 48 timmar 14, 20 och 28/3 2022 vid station 1001 och 1004. Långvågen var
-0,84–1,17·10⁶ J/m² per timme och kortvågen hade vanlig dygnsform, alltså timvärden. Mot arkivets summor omräknade till
-timvärden var medianen av den relativa skillnaden 0,00 % för långvågen (46 par) och för kortvågen (34 par dagtid); kravet är
-högst 5 %. Störst var skillnaden 20/3 14 UTC vid station 1001: 4,7 % i långvågen och 17 % i kortvågen. Skriptet:
-`Desktop/Halkvakt_Signering_2026-10-26/skript/v4_stickprov.ts`.
-
-**Det som nu gäller:** Ä6. Lång- och kortvågen 14/3 00 UTC – 31/3 23 UTC 2022 tas ur v4 för den frysta, och 2021/22 körs om
-med trappformsprovet och de andra proven före läsningen. Jämförelsen med den nya på 2021/22 väntar på T4. Båda talen, före och
-efter rättelsen, står bredvid varandra.
-
-**Stomdokument:** KUV Ä6 till FLER-VINTRAR signerat
-
-## #720 (25/10 2026) T4 till NY-KANDIDAT signerat: kortvågen 14–31/3 2022 ur v4 för den nya; V2 står, och den rättade modellen ersätter den i drift
-
-**Bengts ord 25/10:** *"Ja, gör stickprovet på v4 för 14–31/3 2022. Visar det timvärden: signera Ä6 och T4 för mej och Axel med Claudes rekommendationer i T4 (V2 står, och den rättade modellen ersätter den i drift), och slå ihop när CI är grön."*
-
-**Signerat:** `docs/FORREGISTRERING-NY-KANDIDAT-TILLAGG-T4-2026-10-25.md`. Bengt för sig och för Axel via Bengt, som i #695 och #715. Dokumentets sha256 vid signeringen, före
-statusraden och signaturerna: `b4d6d31d0dd21714f2c12ceece27a77d31ae8cecee843100cf0bebf919ab9940`.
-
-Stickprovet 25/10, före signaturen: v4 hämtades för 48 timmar 14, 20 och 28/3 2022 vid station 1001 och 1004. Långvågen var
-0,84–1,17·10⁶ J/m² per timme och kortvågen hade vanlig dygnsform, alltså timvärden. Mot arkivets summor omräknade till
-timvärden var medianen av den relativa skillnaden 0,00 % för långvågen (46 par) och för kortvågen (34 par dagtid); kravet är
-högst 5 %. Störst var skillnaden 20/3 14 UTC vid station 1001: 4,7 % i långvågen och 17 % i kortvågen. Skriptet:
-`Desktop/Halkvakt_Signering_2026-10-26/skript/v4_stickprov.ts`.
-
-**Det som nu gäller:**
-- T4. Kortvågen 14/3 00 UTC – 31/3 23 UTC 2022 tas ur v4 i den nyas delar. Förberedningen, träningen (alla sex prov och den
-  slutliga kandidaten), provningen och samman körs om, och jämförelserna med den frysta därefter.
-- §3 (a): V2 står som den föll (#702). De rättade talen är underlag för bytet (FORREGISTRERING-2026-27 §12 b) och valet inför
-  2027/28 (§12 g), inte en ny prövning av ersättningsregeln. De gamla och de rättade talen står bredvid varandra.
-- §4 (a): den rättade modellen ersätter den som loggar i drift (#706) före bytesbeslutet, efter ett nytt paritetsprov (§12 a);
-  bytet loggas med datum och timme, och beslutet senast 30/11 fattas på den rättade modellens tal.
-
-**Stomdokument:** KUV T4 till NY-KANDIDAT signerat
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #721 (25/10 2026) Läns- och vägsidornas sökträff: sökorden först i titeln, dagens siffror i beskrivningen
 
@@ -18077,291 +12187,39 @@ sträckor. Förhandsvisad med dagens data för Uppsala och Västra Götaland.
 
 **Stomdokument:** inga — sajtens sidor, inget stomdokument beskriver dem.
 
-## #723 (25/10 2026) Bytet byggt med den frysta som talare; kriteriet för ett byte 26/10 låst före läsningen
+## #723 (25/10 2026) Kandidaten: flyttad till halkvakt-kuvos
 
-**Bengts ord 25/10:**
-- *"om vi får bra siffror så är mitt förslag att vi byter redan i morgon. Kan vi göra förberedesler för att byta i morgon"*;
-- *"Ja, bygg de tre PR:erna i kväll (T4, Ä6 och bytet med flaggan av). Kriteriet för bra siffror gäller som du skrev: proven klarade, bättre än RÅ varje vinter i norr och söder, i medel inte sämre än den frysta på A1, A2 eller A3, och paritetsprovet klarat."*;
-- *"vi pratar om byte till den nya nu och att den går live i morgon"*.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
+**För appen:** bytet mellan kandidaterna är byggt; den frysta talar tills vidare.
 
-**Kriteriet, låst 25/10 före läsningen.** Den nya kandidaten börjar tala 26/10 bara om den rättade nya (T4, #720) håller alla fyra:
-1. proven klarade på alla sex vintrarna;
-2. bättre än RÅ varje vinter, i norr och i söder;
-3. i medel inte sämre än den frysta på A1, A2 eller A3, på de vintrar där båda finns (2018/19–2022/23; den frystas 2021/22 enligt Ä6);
-4. paritetsprovet (FORREGISTRERING-2026-27 §12 a) klarat för den rättade modellen.
+## #724 (25/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-Faller något byts inte kandidaten 26/10, och frågan går till Bengt. Kriteriet är ett beslut om vad förarna hör (§12 b), inte en dom,
-och V2 står som den föll (#702, T4 §3 a).
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Bytet i koden (PR, inte ihopslagen):**
-- `sql/070_bytet.sql`: tabellen `kandidat_talar`, en rad per omställning med beslutet (en logg, som brytaren i sql/059); utan rader
-  talar den frysta. `talande_timme()` ger den nyas färska timme när den senaste raden säger ny, annars den frystas (§12 f), och
-  `talande_regel()` den talande kandidatens regel med `kandidat_regel()`:s kolumner och talaren. Den frystas funktioner och tabeller
-  rörs inte (§12 c). Andelen timmar där den frysta talade i den nyas ställe räknas ur `ny_kandidat_skugga_korning`.
-- Publiceringen (`publish/snapshot-core.ts`, och den genererade `supabase/functions/publicera/index.ts`) läser bytet och faller
-  tillbaka till `kandidat_timme()` och `kandidat_regel()` om bytet inte går att läsa, så att inget tystnar före migrationen.
-- Prov: `test/bytet.test.ts` (kolumnerna, den frysta som standard, §12 c, båda kopiorna) och tre nya i `test/snapshot-core.test.ts`.
+## #725 (26/10 2026) Kandidaten: flyttad till halkvakt-kuvos
 
-**Ordningen 26/10**, var steg på Bengts ord:
-1. Signeringen av förregistreringen (#1203), med radarns tal.
-2. T4: kortvågen 14–31/3 2022 ur v4 i den nyas delar, sedan förberedningen, träningen, provningen och samman under en egen plats i
-   hinken; Ä6: den frystas 2021/22 om.
-3. Talen läses mot kriteriet ovan.
-4. Håller det: paritetsprovet för den rättade modellen, modellen i drift, migrationen `sql/070` och deployen av publiceringen.
-5. Bytesbeslutet i en daterad post med båda signaturerna (§12 b), och en rad `ny` i `kandidat_talar` med beslutets nummer.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Inte gjort 25/10:** ingen migration, ingen deploy och ingen körning; den frysta talar.
+## #726 (26/10 2026) Kandidaten: flyttad till halkvakt-kuvos
 
-**Stomdokument:** KUV bytet byggt med den frysta som talare och kriteriet låst
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-## #724 (25/10 2026) Sågtanden i trappformsprovet preciserad: minst en fjärdedel av stationerna och minst tio samma timme (Ä6 §4 a, T4 §5 a)
+## #727 (26/10 2026) Kandidaten: flyttad till halkvakt-kuvos
 
-**Bengts ord 25/10:** *"Ja, sågtandens precisering godkänns: minst en fjärdedel av stationerna över golvet och minst tio samma timme."*
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Skälet.** Ä6 §4 (a) beskriver sågtanden per station: en timme dagtid som faller till under hälften av den föregående. Så räknad
-flaggade den molntimmar i rena delar: 13, 69 och 72 timmar i provet 25/10, som mest 8,4 % av stationerna samma timme (50 av 595,
-6/3 2021 13 UTC). En summa i MET:s arkiv nollställs i hela rutnätet på en gång, medan ett moln som drar förbi tar några stationer.
-Tröskeln och kravet (noll flaggade timmar) ändras inte. Preciseringen är kalibrerad bara på strålningsdata, inte på utfall, och gäller
-båda kandidaterna, eftersom T4 §5 (a) hänvisar till Ä6 §4 (a). De signerade dokumenten ändras inte; preciseringen står här.
+## #728 (26/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-**Regeln** (`fysik/vintrar/vinterkedja.py`, `trappform()`): en station har sågtanden en timme h när kortvågen v[h] > 0,5·10⁶ J/m²,
-v[h+1] < 0,5·v[h] och v[h+2] > v[h+1], tre timmar i följd. Timmen flaggas när minst en fjärdedel av stationerna med v[h] över golvet
-har sågtanden samtidigt, och minst tio. Stationerna under andelen räknas för sig (`sagtand_enskilda`) och flaggar inte.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Provet 25/10 kväll** med preciseringen, på alla delar som kandidaterna läser (skriptet
-`Desktop/Halkvakt_Signering_2026-10-26/skript/trappform_alla.py`):
+## #729 (26/10 2026) Fysikspåret: flyttad till halkvakt-kuvos
 
-| Delarna | Flaggade timmar | Sågtand (timmar) |
-| :-- | --: | --: |
-| Den frysta, lw4 2018/19, 2019/20 och 2020/21 | 0, 0, 0 | 0, 0, 0 |
-| Den nya, 2018/19, 2019/20, 2020/21 och 2022/23 | 0, 0, 0, 0 | 0, 0, 0, 0 |
-| 2024/25 | 0 | 0 |
-| Den frysta, lw4 2021/22 (ackumulerad, inte omhämtad än) | 431 | 21 (14/3 14 – 31/3 14 UTC) |
-| Den nya, 2021/22 (kortvågen ackumulerad, T4:s delar finns inte än) | 159 | 21 (samma) |
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
+**För appen:** den nya kandidaten talar i appen i stället för den frysta från 26/10.
 
-Felet fälls alltså av båda halvorna av provet, och inga rena delar fälls. Marginalen bland timmar med minst tio stationer över golvet
-är inte räknad för alla vintrar; i provet 25/10 på tre delar var den största andelen 8,4 %.
+## #730 (27/10 2026) Kuvösen: flyttad till halkvakt-kuvos
 
-**Det som nu gäller:** trappformsprovet före läsningen i Ä6 och i T4:s förberedning körs med preciseringen.
-
-**Stomdokument:** KUV sågtandens precisering i trappformsprovet
-
-## #725 (26/10 2026) Radarns tal R = 0,1 mm/h (FORREGISTRERING-2026-27 §10 a)
-
-**Bengts ord 26/10:** *"Ja, ta signeringen nu: läs kurva 3, för in R i #1203 och visa mej talen innan jag säger mina ord."*
-
-**Regeln, skriven 15/10 före läsningen (#568):** visar alla tre kurvorna en majoritet (över 50 %) i bandet 0,1–0,5 på `rate_mean_mmh`
-blir R = 0,1; annars står 0,5. Läst med `scripts/radarns-tal.ts`.
-
-| Kurva | Körning | Fönster | Par i bandet | Bekräftade | Andel |
-| :-- | :-- | :-- | --: | --: | --: |
-| 1 | 38690393504 | 8–15/10 | 21 012 | 13 026 | 62,0 % |
-| 2 | 39257448840 | 12–19/10 (för hand 13:20 UTC) | 7 082 | 4 015 | 56,7 % |
-| 3 | 40279196066 | 19–26/10, körd 06:20 UTC av pulsklockan | 16 539 | 10 959 | 66,3 % |
-
-Kurva 3:s fönster är 19/10 08:00 till 26/10 06:05 UTC och delar fyra timmar med kurva 2:s (som slutade 19/10 12:00), utöver de tre
-dygn som kurva 1 och 2 delar (#568). Alla tre ligger över 50 %; den lägsta, kurva 2, med 6,7 procentenheter.
-
-**Regeln i drift följer:** `sql/069_radarns_tal.sql` skapar om `kandidat_regel()` och `ny_kandidat_regel()` med 0,1 i stället för
-0,5, ord för ord i övrigt; kuvösens `RADAR_MMH` är 0,1; kontraktsgrinden vaktar gränsen i 069 och kuvösen; ett prov kräver att den
-nyas regel är den frystas. **Migrationen körs med DB-knappen på Bengts ord**, innan förregistreringen signeras.
-
-**Stomdokument:** KUV radarns tal infört i förregistreringen
-
-## #726 (26/10 2026) FORREGISTRERING-2026-27 och tillägget till ersättningsregeln signerade; domfönstret börjar
-
-**Bengts ord 26/10:** *"Ja: kör migrationen sql/069, signera förregistreringen och tillägget för mej och Axel med §12 (g), och slå ihop #1203 när CI är grön."*
-
-**Signerat:** Bengt för sig och för Axel via Bengt, som i #659, #692 och #715. Bengt sade först *"jag och axel signerar"*.
-- `docs/FORREGISTRERING-2026-27.md`, sha256 vid signeringen, före statusraden och signaturerna: `246df045014ace9baf75084968f6ad5e40116d6c572f1526afb5e2522bd2e80b`. R = 0,1 mm/h (§10 a).
-- `docs/FORREGISTRERING-ERSATTNING-TILLAGG-2026-10-24.md`, sha256 på samma sätt: `39852df086d71b9ff8814c55b808cce8d0ca5bcce9fb5c090a055fe3108cccc9`. I §5 gäller §12 (g): valet inför 2027/28
-  görs i en egen förregistrering med båda domarna som underlag.
-
-**Vid signaturerna** står det som lästs före (§10 f): den frysta på 2022/23 (#680) och på 2018/19–2021/22 med v4, med källfelet
-14–31/3 2022 (#716). Inget i §1–§5 är ändrat på grund av det. Rättelsen (Ä6, #719, och T4, #720) är signerad 25/10; inget av dess
-utfall är läst vid signaturen, och den rör inte den här domen.
-
-**Rättat före signeringen** på Bengts ord 26/10 (*"Rätta raderna"*): tre faktarader, inga regler. Förregistreringen §11 säger att Ä6
-är signerat (#719) och körs efter signeringen; tilläggets §6 står med läget för stegen (1–5 gjorda: #704, #706, #723).
-
-**Migrationen före signaturen:** `sql/069_radarns_tal.sql` körd 26/10 med DB-knappen från signeringsgrenen (40328516642, transaktionen
-bekräftad). Beviset: `kandidat_regel()` och `ny_kandidat_regel()` har gränsen 0,1 och inte längre 0,5; den frystas timme 12:00 UTC är färsk;
-`kandidat_talar` har inga rader, så den frysta talar. Regeln i drift är alltså den signerade från domfönstrets första dag.
-
-**Följd:**
-- Domfönstret börjar 26/10 2026 (§5). Bara data som ingen sett räknas (regel L).
-- Fristerna `radarns-tal`, `tillagg-bytet` och `forregistreringen-signerad` är klara och borttagna; deras ärenden stängs.
-- Ordningen efter signeringen följer tillägget §6.
-
-**Stomdokument:** KUV förregistreringen för 2026/27 signerad och domfönstret börjar
-
-## #727 (26/10 2026) Ä6 körd för den frysta: de tre delarna i mars 2022 med lång- och kortvågen ur v4, summorna låsta; paritetsprovet för T4 klarat
-
-**Bengts ord 26/10:** *"Ja: kör paritetsprovet med variant=t4, och Ä6 för den frystas 2021/22 (ta bort de tre lw4-delarna i releasen, kör langvag-v4, PR med summorna som du slår ihop när CI är grön, och kör kuvos-vintrar för 2021-22)."*
-
-**Ä6 (#719).** De tre delarna 2022-02-28_2022-03-14, 2022-03-15_2022-03-29 och 2022-03-30_2022-03-31 togs bort ur releasen
-`kuvos-vintrar-2021-22` med sina listor (sex filer) och hämtades om av kuvos-vintrar 40375393673 (steget `langvag-v4`):
-
-| Delen | Timmar ur v4 | Kortvågen ur v4 (Ä6) | Ur arkivet | Saknas | Tomma värden |
-| :-- | --: | --: | --: | --: | --: |
-| 28/2–14/3 2022 | 360 | 24 | 0 | 0 | 0 |
-| 15–29/3 2022 | 360 | 360 | 0 | 0 | 0 |
-| 30–31/3 2022 | 48 | 48 | 0 | 0 | 0 |
-
-Alla 432 timmar 14/3 00 till 31/3 23 UTC har lång- och kortvågen ur v4. Timmen 25/3 08 UTC (väg 2, #715) kommer nu ur v4 som alla
-andra Ä6-timmar. `kuvos/langvag-v4-leverans.json` har de nya summorna; de gamla står under `omhamtad_a6`.
-
-**Avvikelse:** steget valde den nya kandidatens T4-del (`metnordic_t4_`) som källdel, eftersom den väljs före den fyllda. Värdena blir
-desamma: T4-delen är den fyllda delen orörd utanför 14–31/3, och i de timmarna skrivs både lång- och kortvågen ur v4. Källans namn
-och summa i manifestet är T4-delens.
-
-**Paritetsprovet för T4 (kriteriet i #723, del 4; T4 §4 a).** kuvos-ny-kandidat 40375155386, steget paritet med variant t4: KLARAT.
-Den rättade kandidatens levande kedja på 2024/25 i analysläget mot den slutliga enhetens tal: n 2 210 532 lika, A1 0,60826 °C och
-A2 4,6445 %, skillnaden 0. Paret W 0,25 · L 40 km. Kandidatfilen i repot är inte ifylld än (steget *T4 i drift*).
-
-**Nästa:** kuvos-vintrar för 2021-22 läser den frysta med Ä6-delarna. Utfallet står bredvid det gamla (#716).
-
-**Stomdokument:** KUV Ä6 körd med summorna låsta och paritetsprovet för T4 klarat
-
-## #728 (26/10 2026) Den frystas 2021/22 enligt Ä6 läst; T4 klarar kriteriet för bytet; den rättade modellen i drift (T4 §4 a)
-
-**Bengts ord 26/10:** *"Ja: ladda ner kandidatfilen ur samman-artefakten (nykand-t4-samman i 40350714069), bygg PR:en T4 i drift med t4_i_drift.py, bokför den frystas 2021/22 enligt Ä6 och kriteriet i samma PR, och visa mej innan något slås ihop."*
-
-**Den frysta på 2021/22 enligt Ä6** (kuvos-vintrar 40385342079, läst 26/10 efter signeringen). NIVÅ 2+BLANDNING på grind A:s
-population, 4 357 916 punkter: A1 0,592 °C, A2 5,07 %, A3 0,31 % (RÅ 0,790 °C, 9,51 %, 0,69 %). Norr A2 10,54 % (RÅ 17,75 %),
-söder 2,90 % (RÅ 6,23 %). Mars 2022 A2 9,53 % (RÅ 16,68 %). Före rättelsen (#716): 0,913 °C, 11,85 % och 1,83 %, mars 47,96 %. Båda
-talen står bredvid varandra (Ä6). Utfallet lästes efter signeringen (#726), så det står inte vid signaturerna (§10 f) och rör inte
-domen över 2026/27.
-
-**T4 mot kriteriet i #723.** Den rättade nya: förberedningen kuvos-ny-kandidat 40323586604, träningen 40325281680, provningen och
-samman 40350714069 och paritetsprovet 40375155386, alla med variant t4.
-
-| Del | Utfall |
-| :-- | :-- |
-| 1. Proven klarade på alla sex vintrarna | Klarat. Trappformsprovet 0 flaggade timmar; 2021/22 läser T4-delarna (före rättelsen 159 timmar) |
-| 2. Bättre än RÅ varje vinter, i norr och i söder | Klarat på A1, A2 och A3, alla sex vintrarna |
-| 3. I medel inte sämre än den frysta på A1, A2 eller A3, 2018/19–2022/23 | Klarat: bättre på alla tre, och varje vinter för sig |
-| 4. Paritetsprovet för den rättade modellen | Klarat (#727): n 2 210 532 lika, A1 och A2 med skillnaden 0 |
-
-| Vinter | Frysta A1 | T4 A1 | Frysta A2 | T4 A2 | Frysta A3 | T4 A3 |
-| :-- | --: | --: | --: | --: | --: | --: |
-| 2018/19 | 0,546 °C | 0,500 °C | 5,47 % | 4,29 % | 0,21 % | 0,16 % |
-| 2019/20 | 0,513 °C | 0,472 °C | 3,90 % | 3,06 % | 0,22 % | 0,17 % |
-| 2020/21 | 0,534 °C | 0,483 °C | 5,24 % | 3,94 % | 0,20 % | 0,14 % |
-| 2021/22 (Ä6) | 0,592 °C | 0,564 °C | 5,07 % | 4,38 % | 0,31 % | 0,27 % |
-| 2022/23 | 0,522 °C | 0,505 °C | 4,52 % | 4,31 % | 0,30 % | 0,27 % |
-| **Medel** | **0,541 °C** | **0,505 °C** | **4,84 %** | **4,00 %** | **0,248 %** | **0,202 %** |
-
-T4 på 2024/25: A1 0,516 °C, A2 3,76 %, A3 0,15 % (RÅ 0,678 °C, 7,51 %, 0,39 %). I medel över de sex vintrarna: norr A2 8,22 %
-(RÅ 16,11 %), söder 2,22 % (RÅ 4,95 %). Den slutliga kandidaten, tränad på alla sex: paret W 0,25 · L 40 km.
-
-**Kriteriet håller på alla fyra delarna.** Det är inget bytesbeslut: §12 (b) kräver en egen daterad post med båda signaturerna och
-tidpunkten, innan någon timme av vinterns utfall är läst.
-
-**Den rättade modellen i drift (T4 §4 a, #720).** `kuvos/kandidat-2027-28-t4.json` fylls ur samman-artefakten nykand-t4-samman
-(sha256 4c82ea2b2c59… på artefakten, lika GitHubs digest): `modell_alla.pkl` 9 755 819 byte, sha256 0713520975753a34…, hinken
-`kuvos/kuvos-kandidat-2027-28-t4/`. `ny-kandidat-fysik.yml` och `ny-kandidat-timme.yml` kör med `NYKAND_VARIANT=t4`; självtestet i
-vanligt läge. Den nyas logg byter modell från första del A efter sammanslagningen; timmen skrivs i bytesbeslutet. Den prövade
-kandidatens filer står kvar orörda.
-
-**Nästa, varje steg på Bengts ord:** en levande timme av den rättade modellen, deployen av publiceringen, bytesbeslutet med båda
-signaturerna och en rad `ny` i `kandidat_talar`.
-
-**Stomdokument:** KUV, LIV den rättade nya i drift och kriteriet för bytet klarat
-
-## #729 (26/10 2026) Bytet: den nya kandidaten talar i appen i stället för den frysta (FORREGISTRERING-2026-27 §12 b)
-
-**Bengts ord 26/10, för sig och för Axel:** *"Vi kör båda o jag signerar för båda"* (svar på frågan om både deployen av publiceringen och bytet i kväll, med
-utkastet till den här posten framför sig). Bengt signerar för Bengt och Axel, som i #659, #692, #715 och #726.
-
-| | Datum | Signatur |
-| :-- | :-- | :-- |
-| Bengt | 2026-10-26 | Bengt i chatten: "Vi kör båda o jag signerar för båda" |
-| Axel | 2026-10-26 | Via Bengt i samma ord |
-
-**Beslutet.** Den nya kandidaten (sex vintrar, rättad enligt tillägget T4, #720) talar i appen, i rösten, i lägesfilen och på kartan
-i stället för den frysta (NIVÅ 2+BLANDNING, kandidat-2026-27). **Tidpunkten:** från den första publiceringen efter migrationen
-`sql/071_bytet_pa.sql`, som körs med DB-knappen i kväll 26/10 omkring 22.50 svensk tid (21.50 UTC); den exakta tiden står i
-`kandidat_talar` (kolumnen `tid`, raden med beslutet `DECISIONS #729`) och i DB-knappens körning. Det är ett beslut om **vad förarna
-hör**, inte en ändring av någon dom.
-
-**Öppet, som §12 (b) kräver:**
-- Ersättningsregelns V2 föll (#702): den nya var 0,19 procentenheter bättre än den frysta i A2 på 2022/23, och kravet var 0,25. V2 står
-  som den föll (T4 §3 a). Tillägget till ersättningsregeln (#726) ger den nya rätten att tala enligt §12 trots det.
-- Ingen timme av vinterns utfall för någon av kandidaterna är läst. Domfönstret började 26/10 (#726).
-
-**Villkoren i §12 (a):**
-- Paritetsprovet för den rättade modellen är klarat (#727): kuvos-ny-kandidat 40375155386, n 2 210 532 lika, A1 och A2 med skillnaden 0.
-- Den nyas kedja räknar och loggar i drift med den rättade modellen sedan 26/10 (#728): del A ny-kandidat-fysik 40398888429 och
-  timdelen 40399769561, 13 714 punkter. Den nyas logg för 20.00 UTC räknades med den förra modellen; den första helt rättade
-  loggtimmen är 21.00 UTC.
-- Färskheten är densamma som i §3: högst två timmar gammal och minst 95 % av punkterna.
-
-**Underlaget, kriteriet i #723 (läst 26/10, #728):** alla fyra delarna klarade. I medel över de fem vintrarna 2018/19–2022/23 har den
-rättade nya A1 0,505 °C, A2 4,00 % och A3 0,202 %, mot den frystas 0,541 °C, 4,84 % och 0,248 %, och den är bättre varje vinter för
-sig. Den är bättre än RÅ varje vinter, i norr och i söder.
-
-**Det som inte ändras:**
-- Den frysta räknas och loggas oförändrat hela vintern, och domen i §1–§5 fälls över den (§12 c).
-- Regeln, talen, grindarna, spridningen, vetot, färskheten och märkningen (BETA, *modellerat*) är desamma för den som talar (§12 d).
-- Den nya döms bredvid, i efterhand (§12 e).
-
-**Vägen tillbaka (§12 f).** Saknas den nyas timme, eller är den för gammal eller ofullständig, talar den frysta den timmen av sig
-själv; andelen sådana timmar redovisas. Ett beslut att gå tillbaka är en ny rad `fryst` i `kandidat_talar`, i samma form som sql/071.
-
-**Genomförandet:**
-1. Deployen av publiceringen: deploy-supabase 40403957980, 21.24 UTC från 23b13e36 (bara bytets kod sedan d191a86). Publiceringen
-   21.30 UTC gick igenom med den frysta som talare (kandidatens timme 20.00 UTC i lägesfilen).
-2. Migrationen `sql/071_bytet_pa.sql` med DB-knappen efter den här posten. Från nästa publicering talar den nya.
-3. Beviset: `talande_timme()` ger talaren `ny`, och lägesfilen bär den nyas timme.
-
-**Valet inför 2027/28** görs i en egen förregistrering, med båda domarna som underlag (§12 g, tillägget §5).
-
-**Stomdokument:** KUV, LIV, APP den nya kandidaten talar i appen
-
-## #730 (27/10 2026) Övergångarna, tillståndet och försprånget i kuvösen väljs bort med skäl; fristen kuvos-tif-lasningarna klar
-
-**Bengts ord 27/10:** *"Ja, jag har läst utkastet. Lägg in #730 med följdändringarna (fristen, projektkartan, B8-20 och STATUS) som en PR och slå ihop när CI är grön."* (svar på utkastet, efter frågan *"är det meningsfullt att göra nu"*).
-
-**Frågan.** #689 punkt 9 sa att övergångarna och försprånget i kuvösen körs med okorrigerad tif eller väljs bort med skäl senast
-15/11 (fristen `kuvos-tif-lasningarna`).
-
-**Beslut.** Båda väljs bort. Stegen blir *gäller inte* med hänvisning hit. Inget i driften ändras. Inget utfall är läst: delarna har
-aldrig körts i kuvösen.
-
-**Skälen för övergångarna och tillståndet:**
-1. **Kärnan är redan prövad.** Det övergångarna i första hand dömer är efterhalkan (TROSKLAR-OVERGANGAR §1 a). Efterhalkan är körd i
-   kuvösen med stationens regnmätare: nettonytt 175 (0,2 %) till priset 45,1 % (#467), och kalibreringen behöll startvärdena (#468).
-   Den döms i driften i januari (bedömningens S6), där också Ö-B:s golv lever vidare (#658).
-2. **Det nya vore radarns väta, och kuvösens radar är skev.** Den är tif, ungefär 3,4 dBZ över driftens h5 och omkring 1,6 gånger
-   regnet (#441 punkt 3, #689 punkt 9). Ett tal byggt på den säger lite om regeln med driftens radar.
-3. **Driften låter inte radarn höja vätan** (#459). Att göra det ändrar en pågående skuggmätning och är ett eget beslut med båda
-   signaturerna. En kuvösläsning med radarns väta prövar alltså något som driften inte kör.
-4. **Ö-B saknar instrument** (#658) och kan inte prövas i kuvösen i något fall.
-
-**Skälen för försprånget:**
-1. **Det mäts redan i driften,** på alla 30 rutter sedan 22/10 kl. 11.12 UTC (#674). Räkneregeln fastställdes före första lästa andel
-   (#664), och domknappen byggs senast 15/12 (#661, fristen `fs-domknappen`). Driftens mätning är på riktiga data och driftens radar.
-2. **I kuvösen krävs ett nytt bygge.** Väglagshistoriken (levererad 16/10, KUVOS-LEVERANSEN §5h) måste läsas in först, och talet skulle
-   ändå bära den okorrigerade tif-radarn (#689).
-
-**Det som ges upp.** Kuvösen har en hel vinter med kalla nätter, som driften får först efter jul. En kuvösläsning hade gett ett tidigare
-svar, men på skev radar. Efterhalkans dom i januari och försprångets domknapp i december ger svaret på driftens egna data.
-
-**Alternativ.**
-- Köra övergångarna med okorrigerad tif och skillnaden mot h5 utskriven vid varje tal: valt bort av skälen ovan.
-- Köra båda: valt bort. Försprånget kräver dessutom inläsningen av väglagshistoriken.
-
-**Följdändringarna i samma PR:**
-- `docs/fristerna.json`: fristen `kuvos-tif-lasningarna` borttagen (klar).
-- `docs/projektkartan.json`, delen `kv-delarna`: stegen *Övergångarna och tillståndet* och *Försprånget* har status `ej` med
-  hänvisning hit, och raden om dem i `saknas` är borttagen. Steget *Vind och sikt* har fått sitt bevis rättat efter #705 (sikten
-  struken 24/10, byvinden döms i driften). Det är en rättelse, inget nytt beslut.
-- `docs/ATGARDER-KUVOSEN-2026-10-23.md`: B8-20 klar.
-- Sidorna som projektkartan skriver är omskrivna med `scripts/projektkartan.ts`. Kuvösens och bedömningens egna tabeller rättas av
-  morgonens dokumentsynk.
-
-**Stomdokument:** KUV, BED övergångarna och försprånget i kuvösen bortvalda
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #731 (27/10 2026) Dokumentsynkens PR slås ihop automatiskt, och sidorna publiceras på GitHub Pages ur main
 
@@ -19140,288 +12998,33 @@ aktiva, men de levererade inget hela eftermiddagen.
 
 **Stomdokument:** inga — marknadsföringen ligger utanför appen, motorn och mätningarna; ingen data lämnar appen.
 
-## #755 (31/10 2026) Småvägarna som Trafikverket inte bedömer: frågan tas upp i mars 2027, med Hednoret som exempel
+## #755 (31/10 2026) Småvägarna: flyttad till halkvakt-kuvos
 
-**Beslut** (Bengt 31/10: *"jag vill att du sparar hednoret som en fråga att ta upp i mars 2027 ska vi även göra uppskattningar på småvägar som inte trafikverket bedömer. ta med hur stor trafikmängd som är där"*). Frågan om kandidaten också ska räkna på vägar utanför Trafikverkets 818
-väglagssträckor tas upp **1/3 2027**, med marsdomarna (fristen `smavagarna-mars-2027`, förvarning 14 dygn). Ingenting byggs före
-det. Kalenderns villkorsrad för vägdatalagret (c) står kvar; frågan tas upp i mars oavsett om något av dess tre villkor är uppfyllt.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Exemplet: Hednoret (Bodens kommun), länsväg BD 676**, läst 30–31/10:
-- **Trafikmängden: ÅDT 623 fordon per dygn** (Trafikverkets osäkerhetsfält 19). Lätta fordon 473 kl. 06–18, 99 kl. 18–22 och 37
-  kl. 22–06; tunga fordon 14 per dygn. Posten gäller från 1/1 2024. Källa: NVDB i Trafikverkets öppna karttjänst NetInfo (lagren
-  `ADT_total` och `ADT_tungtrafik`), punkten 65,8247 N 21,5403 E.
-- Statlig väg (Trafikverket), 70 km/h, 6,5 m bred, belagd. Den ingår inte i det funktionellt prioriterade vägnätet.
-- Ingen av de 818 väglagssträckorna ligger på BD 676 (`halkvakt.se/data/vaglag.geojson`, 30/10 17:00 UTC). Närmast ligger väg 356
-  (2,5 km från byn) och väg 97 (2,8 km).
-- Närmaste VViS-station ligger 12,8 km bort (2509), i avståndsbandet 7–15 km. Stationsvarningen når inte dit: ledavståndet är 583 m
-  vid 70 km/h.
-- Appen kan i dag bara varna för olyckor och vilt där.
+## #756 (31/10 2026) Småvägarna: flyttad till halkvakt-kuvos
 
-**Vad som kan väntas, ur det som redan är mätt** (på stationer och huvudvägnätet; på småvägarna finns inget facit):
-- **Temperaturen.** Kandidatens andel grova fel (> 2 °C) är 5,02 % i analysläget och 5,12 % vid +6 h, på stationer den inte tränats
-  på (#544, #552). RÅ per band 0–7 · 7–15 · 15–20 · över 20 km: 5,2 · 5,3 · 7,2 · 13,6 % (#480). Kandidaten i bandet 7–15 km: 2,8 % på
-  2022/23 (FORREGISTRERING-2026-27 §7).
-- **Trafiken.** Mot vädret går vägar under 1 000 fordon per dygn 0,62 °C kallare och vägar med 1 000–20 000 fordon 0,25 °C varmare
-  (#480). Rättelsen har vägdata bland sina särdrag (#552), och restfelet per ÅDT-klass var −0,13 · −0,04 · +0,24 °C (#486; 136 av
-  736 stationer ligger under 1 000; *rättat 31/10, DECISIONS #756: #486 räknade på 736 stationer, och 136 under 1 000 är talet ur #479:s 728*). BD 676 hör till den lägsta klassen.
-- **Fukten.** Regelns fukt kommer ur *Våt* på punktens sträcka eller ur radarn (FORREGISTRERING-2026-27 §3). I facitläsningen
-  2024/25 kom den ur bara *Våt* i 88 % av de varnande timmarna, ur bara radarn i 9 % och ur båda i 3 % (#607). Utan en väglagssträcka
-  finns bara radarn kvar: ungefär 12 % av timmarna, allt annat lika. Varningarna på bara radarn bekräftades i 34,5 % (söder 9,5 %,
-  norr 71,3 %), lyft 0,96.
-- **Omfattningen** (KALENDERN): ungefär 98 500 km statlig väg, alltså ungefär 49 000 punkter var 2 km mot 12 960 i dag.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Underlaget före mars** (Claudes förslag): (1) avståndsfördelningen från småvägarnas punkter till närmaste station; (2) kandidatens
-marsdom på huvudvägnätet; (3) en fuktkälla som inte kräver väglag, om frågan gäller varningar och inte bara skattningen.
+## #757 (31/10 2026) Småvägarna: flyttad till halkvakt-kuvos
 
-**Alternativ.** Bara kalenderns villkorsrad, som prövas vid varje ny facitkälla eller kuvösläsning: den har inget datum och hade inte
-tagit upp frågan av sig själv i mars.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Stomdokument:** BED §4.2 frågan till mars 2027.
+## #758 (31/10 2026) Småvägarna: flyttad till halkvakt-kuvos
 
-## #756 (31/10 2026) Småvägarna: en mätmetod, förslaget v2 efter två fristående granskningar, och ingen termisk kartering i det här skedet
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Beslut** (Bengt 31/10). Två fristående granskare (Opus 5.5 och Fable 5.1, var för sig och utan tillgång till chatten) prövade
-förslaget till ett kuvösprov på småvägar (#755). Bengt frågade sedan: *"så vad gör vi nu. kör vi två mätmetoder eller slår vi ihop de två olika granskningarna och gör en till best practice där vi långar styrkorna från båda"*. Han tillade: *"Vi kommer inte att göra någon termisk kartering i det här skedet"*. På
-rekommendationen om en metod svarade han: *"Ja, skriv v2"*.
-1. **En mätmetod, inte två.** Två metoder sida vid sida ger två chanser att hitta ett tal som klarar sig (regel L3). Förslaget v2 har
-   ett huvudmått och en förväntan som skrivs före läsningen.
-2. **Termisk kartering (kort #271) är struken** för småvägsfrågan i det här skedet. Den har varit stängd sedan 22/10 (#678).
-3. Förslaget v2 är underlaget för frågan i #755. Inget är förregistrerat. Varje steg som läser ett utfall förregistreras och signeras
-   av Bengt och Axel före läsningen (regel L).
+## #759 (31/10 2026) Småvägarna: flyttad till halkvakt-kuvos
 
-**Vad granskningarna fann** (båda; talen prövade 31/10 mot `data/vagdata/` och `kuvos/kandidatstationer-2026-27.json`):
-- **Populationen var fel.** Under 1 000 fordon per dygn är inte samma sak som en väg Trafikverket inte bedömer. De 155 raderna är 153
-  stationer, eftersom två är fjärrytor, och 151 av dem finns i grind A. 95 av de 153 står på eller inom 2 km från en väglagspunkt, och
-  2 623 av de 12 960 väglagspunkterna ligger själva under 1 000. Påståendet att grind B och C inte går är därför fel för de flesta av
-  stationerna.
-- **Måttet som skulle avgöra är en övre gräns.** Grind A prövar "samma stationer, nytt år", och FORREGISTRERING-2026-27 §4 säger
-  själv att den är en övre gräns för kvaliteten mellan stationerna. En småväg utan station är en ny plats.
-- **Radarn som enda fuktkälla** ser varken rimfrost eller utstrålningsis. Varningar på bara radarn har lyftet 0,96 (#607).
-- **Ingen förväntan var skriven** före läsningen. Friktionen vid 59 stationer (#465, #540) saknades.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Förslaget v2** (i korthet):
-- **(0) Produktbeslutet först:** röst, eller bara skattning i kartan. Rekommendationen är kartan först.
-- **(1) Två populationer med var sin uppgift.**
-  - **P1 avgör:** de 84 av 761 stationer som står mer än 2 km från de 818 sträckorna, oavsett trafik (82 i grind A, 43 norr och 39
-    söder). De 58 under 1 000 fordon per dygn redovisas bredvid.
-  - **P2 är laboratoriet:** vägar med låg trafik på nätet, där väglaget finns.
-- **(2) Utan facit, före allt annat:** särdragens spann vid småvägspunkter (VÄRDEVAKTEN), och kostnaden i batteri, snapshot och
-  databas.
-- **(3) Fukten:**
-  - regelns täckning av stationernas egna frosttimmar 2018–2025 (yta ≤ 0 °C och ≤ daggpunkt);
-  - regeln med och utan *Våt* i P2, mot väglaget;
-  - räcker radarn inte, förregistreras en fuktkandidat ur daggpunkten som en ny kandidat.
-- **(4) Huvudprovet:** P1 hålls utanför träningen, och den nya kandidatens procedur körs över sex vintrar. Övrigt följer den
-  signerade metoden: A1–A3, vakterna, den ärliga osäkerheten och RÅ som måttstock.
-  - Huvudmåttet är A2 nationellt, med stationerna vägda lika.
-  - Bredvid redovisas norr och söder, viktningen efter småvägarnas fördelning och frysflaggan.
-  - Förväntan är omkring 5,5 % = (43 · 8,37 + 39 · 2,26) / 82, ur #702:s regionmedel. Det är en sammansättningsräkning och ingen
-    mätning: domen väntas falla mot taket 5 % (FORREGISTRERING-2026-27 rad 165) eller bli OAVGJORT.
-- **(5) Redovisas, fäller inget:** friktionen, kamerorna och testförarna.
-- **STRADA** väntar på (0).
+## #760 (31/10 2026) Småvägarna: flyttad till halkvakt-kuvos
 
-**Där granskarna skilde sig.**
-- **P1:s gräns:** Opus föreslog 56 stationer (utanför nätet, under 1 000 och i grind A), Fable 84. v2 väljer 84: frågan gäller nätet,
-  och trafiken är redan ett särdrag i modellen.
-- **Vikten:** Opus föreslog efterstratifiering mot småvägarnas fördelning, Fable stationerna lika. v2 låter stationerna lika avgöra,
-  eftersom 82 stationer fördelade på band och regioner ger ett tunt underlag. Efterstratifieringen redovisas bredvid.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Öppet** (bedömningen §4.2):
-- (a) Röst eller bara skattning i kartan.
-- (b) Tidpunkten. Valet inför 2027/28 ska vara signerat före mars (FORREGISTRERING-2026-27 §12 g, rad 331). Frågan i #755 är satt
-  till 1/3 2027. Antingen tas den i februari 2027, eller så väntar småvägarna till 2028/29.
+## #761 (31/10 2026) Småvägarna: flyttad till halkvakt-kuvos
 
-**Rättelser** (noter i texten):
-- **#480:** *"inga stationer står utanför de 818 segmenten"* stämmer inte; 84 av 761 står mer än 2 km från sträckorna.
-- **#755:** "136 av 736 (#486)" blandar två populationer. #486 räknade på 736 stationer, och 136 under 1 000 är talet ur #479:s 728
-  (rad 8575).
-
-**Alternativ.**
-- Två mätmetoder sida vid sida: avvisat, se punkt 1.
-- Förslaget som det stod, med populationen ÅDT under 1 000 och grind A i drift som dom: avvisat av båda granskarna.
-- Att vänta med allt till mars: steg 0–3 går att göra före.
-
-**Stomdokument:** BED §4.2 småvägsfrågan med förslaget v2.
-
-## #757 (31/10 2026) Småvägarna: skattning i kartan tills rösten är förtjänt, och arbetet börjar nu
-
-**Beslut** (Bengt 31/10: *"slå ihop 1292 och småvägarna får en röstvarning först om de förtjänar det så det blir en skattning i kartan så länge men det kan omprövas under vägens gång och tidpunkten är nu"*). De två öppna frågorna i #756 avgörs.
-1. **Röst eller karta (#756 a).** Småvägarna, alltså vägar utanför Trafikverkets 818 väglagssträckor, får en skattning i kartan
-   (*fryser / fryser inte / vet inte*, förslaget v2 steg 0). De får ingen röstvarning förrän de har förtjänat den. Vad som krävs för
-   att förtjäna rösten skrivs i förregistreringen, före läsningen: ett facit för varningar på småvägar och en dom som håller. Beslutet
-   kan omprövas under vägens gång.
-2. **Tidpunkten (#756 b): nu.** Arbetet med förslaget v2 börjar nu. Huvudprovets förregistrering skrivs och signeras av Bengt och
-   Axel före mars 2027, så att småvägarna kan vara med 2027/28 (FORREGISTRERING-2026-27 §12 g). Fristen `smavagarna-mars-2027`
-   ersätts av `smavagarna-forregistrering` (28/2 2027, förvarning 30 dygn).
-3. **Kort #367** på tavlan bär arbetet. Det hänger på vägdatalagret i projektkartan, eftersom småvägarna är dess del (c).
-   Ordningen följer v2:
-   - **(1)** särdragens spann vid ett slumpurval småvägspunkter, och kostnaden i batteri, snapshot och databas. Inget utfall läses.
-   - **(2)** fukten: regelns täckning av stationernas frosttimmar och regeln utan *Våt* i P2. Förregistreras.
-   - **(3)** huvudprovets förregistrering.
-
-**Öppet** (bedömningen §4.2): när skattningen i kartan byggs, före huvudprovets dom eller efter. Claudes rekommendation är efter domen.
-Före den vet ingen hur fel skattningen blir på en ny plats: förväntan är omkring 5,5 % grova fel, över taket 5 % (#756). Invarianten
-om text som inte får säga mer än datan bär gäller också kartan.
-
-**Alternativ.**
-- Röstvarning på småvägarna direkt: avvisat. Det finns inget facit för varningar där, och radarn som enda fuktkälla har lyftet 0,96
-  (#607).
-- Frågan i februari 2027 eller småvägarna först 2028/29 (#756 b): avvisat (*"tidpunkten är nu"*).
-
-**Stomdokument:** BED §4.2 småvägsfrågan avgjord och frågan om när skattningen byggs; APP produktbeslutet för småvägarna (skattning
-i kartan och ingen röst förrän den är förtjänt).
-
-## #758 (31/10 2026) De kommunala vägarna blir ett eget spår (P3), parallellt med småvägarna, med förhandlingen med kommunerna som syfte
-
-**Beslut** (Bengt 31/10). Bengt frågade först: *"om man skulle bestämma att man tar de kommunala som ett särskilt spår och inte integrerat i småvägar går de att köra paralellt med småvägar"*. Han lade till: *"jag tänker också att köra ett separat spår för mätningar på kommunala vägar skulle kunna användas i en framtida förhandling med kommun/kommuner"*. På förslaget att bokföra
-spåret svarade han *"ja gör det"*. Frågan (a) i bedömningen §4.2 är därmed avgjord.
-
-**Spåret:**
-1. **P3** är de tio VViS-stationer som står på kommunal väg enligt NVDB (`vaghallare` i `data/vagdata/stationer.json`): Varberg,
-   Helsingborg, Malmö, Trelleborg, Jönköping, Gävle, Borlänge, Västerås, Ånge och 7504. Alla tio finns i grind A, och en står norr om
-   62°. Kommunernas egna stationer läggs till om de blir tillgängliga.
-2. **P1 blir 79 statliga stationer** (#756 hade 84). De fem kommunala stationerna (1307, 7102, 7501, 7503 och 7504) lämnar P1. Av de 79
-   finns 77 i grind A, 43 norr och 34 söder. Förväntan för P1 blir omkring 5,7 % grova fel = (43 · 8,37 + 34 · 2,26) / 77, ur #702:s
-   regionmedel. Det är en sammansättningsräkning, ingen mätning.
-3. **Samma kandidat, regel och mått som P1:** A1–A3, vakterna, den ärliga osäkerheten och RÅ som måttstock. Tre saker anpassas för
-   gatorna:
-   - **Domen.** Tio stationer är under spärren 20, så P3 dömer inte. Talen redovisas mot en förväntan som skrivs före läsningen, tills
-     det finns minst 20 stationer i mer än en stad. Provet av en ny plats görs med en station i taget utanför träningen.
-   - **Trafikmängden** saknas för alla tio. Den prövas som saknad, eller hämtas ur kommunernas egna mätningar. Malmö publicerar
-     trafikmätningar för biltrafik som öppen data; licensfältet är tomt och oläst.
-   - **Stadsvärmen** får ett eget mått: medelfelet station för station, alltså om kandidaten ligger för varmt eller för kallt i staden.
-4. **Egen förregistrering, skriven bredvid P1:s.** Spåren delar inga stationer, och P3 läggs aldrig ihop med P1 i efterhand (regel L3).
-   Förregistreringen bestämmer en **redovisning station för station** som kan visas för en kommun, så att tabellen är bestämd före
-   läsningen och inte vald efteråt.
-5. **Röst eller karta:** samma regel som för småvägarna (#757): skattning i kartan, och röst först när den är förtjänt.
-6. **Syftet** är underlag i en framtida förhandling med kommuner: vi har mätt vid er station, så här blev det, och med era data kan
-   vi pröva hela gatunätet. Tre villkor:
-   - bara det som är mätt får lovas: en skattning av vägbanan, ingen prognos för staden och ingen effekt på trafiksäkerheten;
-   - en kommuns data som lämnas under avtal stannar i hinken, och bara aggregat får ligga i repot;
-   - ingen kommun nämns med namn i något material förrän den sagt ja.
-   Kontakten är Bengts val (KONTAKTREGELN).
-7. **Tidpunkt.** P3:s resultat finns tidigast efter vintern 2026/27. En påminnelse till Malmö före årsskiftet (bedömningen §4.2, fråga
-   (b), fortfarande öppen) kan därför säga att stadens station loggas, men inte visa något resultat.
-
-**Alternativ.**
-- De kommunala stationerna kvar i P1: avvisat, eftersom stadsgatorna är en annan population, längre från träningen.
-- De kommunala som bara redovisning i P1, utan eget spår: avvisat, eftersom spåret har ett eget syfte (förhandlingen) och ska växa med
-  kommunernas stationer.
-
-**Stomdokument:** BED §4.2 frågan (a) avgjord och det kommunala spåret P3.
-
-## #759 (31/10 2026) Skattningen i kartan på småvägarna byggs efter huvudprovets dom
-
-**Beslut** (Bengt 31/10: *"skattningen i kartan byggs efter huvudprovets dom (om du menar huvudprovet i den här testen)"*, samtidigt som PR #1293 slogs ihop).
-- **Ja, det är huvudprovet i det här provet:** steg 4 i förslaget v2 (#756, #758). Det avser P1, de 79 statliga stationerna utanför de
-  818 sträckorna, som hålls utanför träningen. Provet förregistreras och signeras före mars 2027 (fristen `smavagarna-forregistrering`).
-- **Skattningen i kartan på småvägarna byggs först när det provet är dömt.** Före domen vet ingen hur fel skattningen blir på en ny
-  plats. Förväntan är omkring 5,7 % grova fel, över taket 5 % (#758). Invarianten om text som inte får säga mer än datan bär gäller
-  också kartan.
-- **Vad domen ska visa för att kartan ska byggas** skrivs i förregistreringen, före läsningen.
-- **För P3, de kommunala vägarna (#758), gäller samma princip.** Kartan på kommunala vägar byggs först efter P3:s egen dom, och P3
-  dömer inte förrän det finns minst 20 stationer i mer än en stad. Det är Claudes läsning av beslutet, och Bengt kan ändra den.
-
-**Alternativ.** Att bygga kartan före domen avvisades, med skälet ovan.
-
-**Stomdokument:** BED §4.2 frågan om kartan avgjord; APP skattningen i kartan på småvägarna byggs efter huvudprovets dom.
-
-## #760 (31/10 2026) Storstäderna redovisas för sig i P3, och målet på sikt är varning i appen om skattningen håller
-
-**Beslut** (Bengt 31/10). Om städerna: *"när det gäller städerna så är väl tanken att man säger så här fungerar den statliga skattningen, vår modell ger detta utfall på andra vägar ge oss tillgång till mer data så kommer ni att få bättre koll"*. Om appen: *"På sikt ska detta även in i appen som varning om det blir bra men det vet vi inget om nu"*. Han gav också lov att läsa: *"du får kolla i report, i Github, i Supabase etc"*.
-Frågorna (a) och (b) i bedömningen §4.2 är därmed avgjorda.
-
-1. **Storstadsredovisningen** för Stockholm, Göteborg och Malmö ingår i P3:s förregistrering (#758). Den är inget eget spår.
-   - Varje stad redovisas i tre kolumner: alla stationer i staden, bara statliga och bara kommunala.
-   - Varje station hålls utanför träningen, så att talen avser en ny plats.
-   - Stadsområdet bestäms i förregistreringen.
-   - Redovisningen avgör inget.
-   - **Berättelsen mot en kommun:** *så här fungerar skattningen vid de statliga stationerna i er stad, och så här blev utfallet på
-     andra vägar (P1, P3). Med er data får ni bättre koll på era gator.*
-   - Inom 10 km från centrum (`data/vagdata/stationer.json`): Stockholm 5 statliga stationer, 1 utan känd väghållare och ingen
-     kommunal; Göteborg 4 statliga och ingen kommunal; Malmö 2 statliga och 1 kommunal (7102). Utan de statliga har Stockholm och
-     Göteborg ingen station.
-2. **Målet på sikt är varning i appen**, för småvägarna och gatorna, om skattningen håller. Det följer regeln i #757: röst först när
-   den är förtjänt. Om det blir så vet ingen i dag. Tills dess hålls punkterna utanför `live.json`, och då är appens batteri och
-   datatrafik oförändrade. När punkterna ska in i appen mäts batteriet och lägesfilens storlek på nytt.
-3. **Läst 31/10** (läs-only, på Bengts lov):
-   - **Databasen:** dbknapp #419 i läsläge (körning 41180041873, en READ ONLY-transaktion som rullades tillbaka) gav 546 MB.
-     Tabellerna per vägpunkt är `kandidat_live`, `ny_kandidat_live`, `kandidat_ph` och `ny_kandidat_ph`, med 82 284 rader var och
-     44,3 MB tillsammans; `vagpunkt` har 12 960 rader och 1,6 MB. Växer de i takt med punkterna, från 12 960 till omkring 71 000,
-     blir de omkring 240 MB, och databasen omkring 790 MB. Hur länge raderna sparas (fönstret) är inte läst.
-   - **Sverigepaketet** (#553) ligger uppackat på Bengts dator under `Documents/Lastkajen/drift-och-underhall/`.
-   - **Axels terrängskript** finns i repot: `fysik/fetch_elev.py`, `geofeat.py`, `geofeat2.py` och `roadjoin.py`, med summorna i
-     `fysik/SHA256SUMS` och flödet `vagpunkter-sardrag.yml` (#553). Claudes uppgift tidigare samma dag att skriptet inte låg i repot
-     var fel.
-   - **Mätpunkt 7201** finns i Trafikverkets leverans för november 2024, med 1 440 rader från 1/11 till 30/11. Den saknas i appens
-     stationslista (857 stationer 31/10), i `data/vagdata/` och i repots historik, och den har 0 rader i driftens
-     `weather_observations`. Den rapporterar alltså inte i dag. Var den står är inte känt.
-
-**Alternativ.** Storstäderna som ett eget spår med egen dom avvisades: för få stationer, och redovisningen räcker för förhandlingen.
-
-**Stomdokument:** BED §4.2 storstäderna och databasläsningen avgjorda; APP målet på sikt varning i appen om skattningen håller.
-
-## #761 (31/10 2026) Småvägarnas urval: 2 000 punkter ur Sverigepaketet, och flödet som räknar deras särdrag och spann
-
-**Beslut** (Bengt 31/10: *"Ja, förbered"*, om steg 1 i kort #367). Steg 1 läser inget utfall. Frågan är var punkter på vägar som
-Trafikverket inte bedömer ligger i rättelsens fasta särdrag, jämfört med stationerna som rättelsen tränats på.
-
-**Urvalet** (`fysik/vagpunkter/urval.py`, regeln skriven i skriptet före körningen; filen `data/vagdata/smavagspunkter-urval.json`):
-- **Källan** är Lastkajens *Sverigepaket Drift och underhåll* (CC0, paketet i #553), lagret `SverigePaket_DoU`, med sha256
-  `b56b097b764be1a32035cb6648e3ec1719bee93ce743a58339b375952185a0fe`.
-- **Bara bilvägar** (`Vagtr_474` = 1) och inga färjeleder.
-- **P1** är statliga vägar (`Vagha_6` = 1) som ligger längre än 2 km från varje väglagspunkt; **P3** är kommunala vägar (`Vagha_6` = 2),
-  var de än ligger (#758).
-- **Varje punkt** ligger likformigt över populationens vägkilometer: ett segment dras med sannolikhet i proportion till längden, och
-  punkten läggs på ett slumpat ställe längs det. 1 000 punkter per population, fröet 20261031. Samma paket ger samma fil.
-- **Utfall av dragningen:**
-  - Statlig bilväg är 106 491 km och kommunal 44 563 km enligt paketets längder.
-    Den officiella siffran är omkring 98 500 och 41 500 km; skillnaden är inte utredd.
-  - **För P1 krävdes 1 900 dragningar, och 900 föll inom 2 km från väglagsnätet.** Ungefär 47 % av de statliga vägkilometrarna ligger
-    alltså inom 2 km från de 818 sträckornas punkter.
-- **Kontrollen före dragningen:** koordinatomräkningen (SWEREF99 TM till WGS84, Lantmäteriets formler, självtestet inom en millimeter)
-  prövades mot sex stationer (7102, 7101, 7503, 1001, 1203, 216). Alla hamnade 5–18 m från en väg i rätt kommun, och väghållarkoden
-  stämde (1 statlig, 2 kommunal). Station 1001 fick samma ÅDT som i `data/vagdata/stationer.json`, 2 346.
-
-**Urvalets egna fält** (paketets väghållning, inget utfall):
-- **P1:** ÅDT-median 155, 87 % under 1 000, vägklass 5 i 64 % och klass 6 i 7 %, och 34 % norr om 62°.
-- **P3:** ÅDT och vinterklass saknas för alla 1 000. Vägklass 7 gäller 73 %, och klass 8 och 9 tillsammans 4,6 %.
-- **Stationerna** har vägklass 0–7: bara 25 har klass 5, en har klass 6 och fyra har klass 7. Gatorna ligger alltså vid kanten av det
-  rättelsen sett, eller utanför den.
-
-**Flödet:** `vagpunkter-sardrag.yml` har fått indata `punkter`; standard är de 12 960 väglagspunkterna.
-- För urvalet räknar Axels frysta skript särdragen som för väglagspunkterna (#553).
-- Sammanställningen jämför sedan särdragen med stationernas min–max i indata-releasen, per population och med bara aggregat
-  (`urval.py spann`). Det jämför också ÅDT och vägklass mot stationernas `road_all.csv`.
-- `vagpunkter.py stationer` och `sammanstall` tar `--punkter`. `urval.py --sjalvtest` körs i ci.
-
-**Knappen** körs på Bengts ord, med `lage` vagpunkter, `hojdmetod` glo90-bilinjar (#553), `punkter`
-data/vagdata/smavagspunkter-urval.json och `delar` 4. Spannet redovisas som läsning och avgör inget.
-
-**Alternativ.**
-- Punkter ur NVDB:s öppna API, som för väglagspunkterna: avvisat. Paketet bär väghållare, ÅDT, klass och vinterklass per segment och
-  ligger redan lokalt.
-- Ett urval viktat efter trafik: avvisat. Spannet frågar var vägarna ligger, inte var förarna kör.
-
-**Stomdokument:** MAT småvägarnas urval och spann (steg 1 i kort #367).
-
-**Utfall, spannet** (Bengt 31/10: *"Ja, och kör knappen"*; PR #1295 sammanslagen 8659249e; vagpunkter-sardrag #4 (körning 41182968284 på 8659249, 4 min 21 s)). Inget utfall om temperatur
-är läst, bara var punkterna ligger.
-- **Särdragen:** 2 000 punkter, och inget saknas i någon av de 16 kolumnerna. Den sammanställda CSV-filen har sha256
-  `6747cc932fef1beffae3a6da7ee5dca07da2ebb567d293664286900804b57377` och ligger som artefakt i körningen i 30 dygn; den är inte
-  incheckad.
-- **Terrängen ligger inom stationernas spann:**
-  - P1: 47 av 1 000 (4,7 %) ligger utanför i minst en kolumn, och nästan allt är trädhöjden (`chm30` 44, `svf` 2, `horizon_south` 1).
-  - P3: 7 av 1 000 (0,7 %), alla trädhöjd.
-  - Det är i nivå med väglagspunkterna, där 692 av 12 960 (5,3 %) låg utanför, mest trädhöjd (#553). Höjd, terrängläge, dalar,
-    himmelsfaktor, vatten och bebyggelse ligger helt inom stationernas min–max för båda populationerna.
-- **Vägdatan är luckan:**
-  - ÅDT saknas för alla 1 000 punkter i P3 och för 39 i P1; 5 i P1 ligger under stationernas lägsta (10).
-  - Vägklass ligger inom stationernas 0–9 i Axels `road_all.csv`. Men min–max säger inget om tätheten: 73 % av P3 har klass 7, och
-    i `data/vagdata/stationer.json` har bara fyra stationer klass 7.
-- **Läsningen:** för småvägarna och gatorna är det inte terrängen som tar modellen utanför det den lärt sig, utan trafikmängden, som
-  saknas på gatorna, och vägklasserna där få stationer finns. Det styr P3:s förregistrering (#758): trafikmängden prövas som saknad
-  eller hämtas ur kommunernas egna mätningar.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #762 (31/10 2026) Budgeten bär bara några län samtidigt: starkast halka först, svagast pausas för att ge plats
 
@@ -19452,109 +13055,21 @@ innan länen slås på, så att inget påslaget län ändras efteråt (#749).
 
 **Stomdokument:** inga — marknadsföringen ligger utanför appen, motorn och mätningarna; ingen data lämnar appen.
 
-## #764 (31/10 2026) Småvägarnas förregistrering: utkastet skrivet, med fyra öppna val före signeringen
+## #764 (31/10 2026) Småvägarna: flyttad till halkvakt-kuvos
 
-**Beslut** (Bengt 31/10: *"Ja, börja"*, om utkasten i kort #367). Utkastet är `docs/FORREGISTRERING-SMAVAGAR-2027-28.md`. Det är inte signerat, och inget
-utfall är läst för P1, P2, P3 eller storstäderna. Bengt och Axel signerar före 28/2 2027 (fristen `smavagarna-forregistrering`).
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Innehållet i korthet:**
-- **Huvudfrågan:** håller kandidaten på en ny plats ett nytt år? Den nya kandidatens procedur (NY-KANDIDAT §1) prövas i sex prov.
-  Varje prov håller ute en vinter, och dessutom alla stationer i P1, P3 och storstäderna.
-- **Huvudtalet:** A2 för NIVÅ 2+BLANDNING på P1. Varje station väger lika (minst 100 halvtimmar per vinter), och sedan tas det enkla
-  medlet över de sex vintrarna. Den ärliga osäkerheten följer FORREGISTRERING-2026-27 §4b punkt 12.
-- **Domen:** KLARAR, OAVGJORT eller FALLER mot taket 5 %. Klarar provet får skattningen i kartan byggas för 2027/28 (#759). Rösten
-  avgörs inte (#757).
-- **Fukten 2024/25**, redovisas: F1 är hur stor del av stationernas frosttimmar regelns fukt täcker, med och utan *Våt*. F2 är regeln
-  med och utan *Våt* vid väglagspunkterna under 1 000 fordon/dygn, mot väglaget.
-- **P3 och storstäderna**, redovisas: station för station, med medelfelet som mått på stadsvärmen. Storstäderna visas i tre kolumner
-  (#760).
-- **Fyra prov före läsningen:** identiteten, tidszonen, populationen och att ingen utelämnad station läcker in.
-- **Förväntan:** A2 för P1 omkring 5,7 %, alltså troligen FALLER eller OAVGJORT.
+## #765 (31/10 2026) Småvägarna: flyttad till halkvakt-kuvos
 
-**Ett fynd ur populationsräkningen** (inga mätvärden): 5 av P1:s 77 stationer i grind A har ingen annan station inom 50 km och saknar
-därför RÅ. Med grind A:s population skulle de falla bort, och det är just de mest isolerade småvägarna. Utkastet föreslår därför att
-kravet på RÅ tas bort för P1 och P3.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-**Öppna val före signeringen** (bedömningen §4.2):
-- (a) RÅ-kravet;
-- (b) storstädernas område, 15 km från centrum eller kommungränsen;
-- (c) minsta antal halvtimmar per station;
-- (d) storstädernas statliga stationer utanför träningen.
+## #766 (31/10 2026) Småvägarna: flyttad till halkvakt-kuvos
 
-**Stomdokument:** KUV §9 småvägsprovet som kommande läsning; BED §4.2 de öppna valen och signeringen.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
-## #765 (31/10 2026) Småvägarnas förregistrering: de fyra valen avgjorda, och domen öppen för diskussion
+## #767 (31/10 2026) Småvägarna: flyttad till halkvakt-kuvos
 
-**Beslut** (Bengt 31/10: *"jag tar de 4 valen på din rekommendation"*). Valen i utkastet (#764, `docs/FORREGISTRERING-SMAVAGAR-2027-28.md` §11):
-- **(a)** Kravet på att RÅ finns tas bort för P1 och P3. Annars föll de 5 P1-stationerna utan granne inom 50 km bort.
-- **(b)** Storstäderna avgränsas med 15 km från centrum.
-- **(c)** Minst 100 halvtimmar per station och vinter.
-- **(d)** Storstädernas statliga stationer hålls utanför träningen, så att alla stadstal avser en ny plats.
-
-**Öppet** (Bengt samma meddelande: *"Jag vill dock att vi har en diskussion innan om domen. Du säger att taket ska vara 5 % och det är ett lika hårt krav som vi hade på de statliga vägarna där mätmetoderna var klart mer utvecklade. Är inte det ett lite för strängt krav"*). Taket för domen diskuteras före signeringen och står i bedömningen §4.2.
-Inget utfall för P1 är läst. Ett nytt tak får därför sättas nu, men det ska grundas på vad kartan påstår och på jämförelsen med RÅ.
-Det får inte grundas på förväntan 5,7 %: ett tak strax över förväntan vore att flytta ribban efter sett tal (regel L3).
-
-**Stomdokument:** BED §4.2 valen avgjorda och domen öppen.
-
-## #766 (31/10 2026) Småvägarnas dom: frysklassen med vet inte, täckning ≥ 50 % och zonen vald i träningen
-
-**Beslut** (Bengt 31/10: *"50 %, zon ur träningen"*, efter diskussionen om taket i #765). Domen i `docs/FORREGISTRERING-SMAVAGAR-2027-28.md` §4 byts:
-- **Förut:** A2 ≤ 5 % (#764).
-- **Nu:** kartans eget påstående, frysklassen *fryser / fryser inte / vet inte*.
-  - Klassen räknas på PB kring kandidatens frysgräns +1 °C, med osäkerhetszonen ±z (FORREGISTRERING-2026-27 §4b punkt 11).
-  - Kraven: farliga fel ≤ 1 % (K-A2, oförändrat), rätt klass ≥ 95 % bland de klassade och **täckning ≥ 50 %** (huvudvägarnas K-A3 är
-    70 %). Underlaget som K-A4.
-  - **Zonen väljs i träningen.** I varje prov är z den smalaste zonen i rutnätet 0, 0,25 … 3,0 °C där de farliga felen är högst 1 % på
-    träningsstationernas ärliga skattningar. Den prövas sedan oförändrad på P1. Klarar ingen zon träningen, FALLER provet utan att P1
-    läses.
-  - Varje station väger lika, och måtten tas som medel över de sex vintrarna. Den ärliga osäkerheten (§4b punkt 12) läses för farliga
-    fel (övre gräns) och rätt klass (undre gräns): KLARAR, OAVGJORT eller FALLER.
-  - A2 redovisas bredvid, med det tidigare taket 5 %.
-
-**Skälet.** Det farliga felet, att kartan säger *fryser inte* när det fryser, är lika strängt begränsat som på huvudvägarna. Friheten
-ligger bara i hur ofta kartan säger *vet inte*. Det följer *Silence is a feature* och regeln om att text aldrig får säga mer än datan
-bär. Med en zon vald i träningen prövas en enda zon på P1, och inget väljs efter P1-tal. TROSKLAR-FRYSKLASSNINGEN kallar K-A2:s tak
-inte förhandlingsbart, och det står kvar; täckningen är det enda som lättas.
-
-**Priset**, sagt till Bengt före valet: den bredare zonen gör att kartan säger *vet inte* just nära noll grader, när halkrisken är
-störst.
-
-**Förväntan** (utkastet §9): osäker. Zonen väntas bli ±1,5 °C eller bredare och täckningen 50–70 %. Det är räknat ur offsetmodellens
-K-A-dom (#743: 1,3 % farliga fel vid ±1,0 °C och 80 % täckning), en annan modell på andra stationer, och inte mätt.
-
-**Regel L.** Domen ändras före signeringen, och inget utfall för P1 är läst. Lättnaden gäller täckningen (70 → 50 %). Den grundas på
-vad kartan påstår, inte på förväntan, och den sänker inget säkerhetskrav.
-
-**Alternativ.**
-- (1) A2 ≤ 5 % kvar.
-- (2) Ett högre A2-tak, cirka 8 % som RÅ på stationerna (#702), tillsammans med kravet att vara bättre än RÅ.
-- Täckningen 70 % som på huvudvägarna.
-- Flera zoner prövade på P1, som K-A:s 27 kombinationer: avvisat, eftersom det ger flera chanser.
-
-**Stomdokument:** BED §4.2 domen avgjord; KUV §9 småvägsprovets dom.
-
-## #767 (31/10 2026) Småvägarnas förregistrering signerad, för Bengt och Axel
-
-**Beslut** (Bengt 31/10: *"slå ihop 1297 ochsignera för mej och axel"*). `docs/FORREGISTRERING-SMAVAGAR-2027-28.md` är signerad av Bengt, och av Axel via Bengt i samma ord, som
-FLER-VINTRAR och NY-KANDIDAT (#668, #671). Dokumentets sha256 vid signeringen, före signeringsraden och signaturerna, är
-`dd09a53d3d485355bb491d36e2192291a7573b45684aa062d2959df1e8183903`.
-
-**Vad som fryses** (dokumentet §12):
-- populationerna;
-- kandidaten och de sex proven, som håller ute en vinter och alla stationer i P1, P3 och storstäderna;
-- måtten och domen: frysklassen med farliga fel ≤ 1 %, rätt klass ≥ 95 % och täckning ≥ 50 %, med zonen vald i träningen (#766);
-- följden, fukten F1 och F2, gatorna med storstäderna, och de fyra proven före läsningen.
-
-Ändras något efteråt sker det bara genom en daterad post med båda signaturerna, och aldrig som en lättnad efter sett utfall (regel L).
-
-**Inget utfall är läst** för P1, P2, P3 eller storstäderna. Signeringen sker fyra månader före fristen. Fristen
-`smavagarna-forregistrering` (28/2 2027) tas bort, eftersom dess *klart när* är uppfyllt.
-
-**Nästa steg** (kort #367): koden som håller ute stationerna i den nya kandidatens kedja, med identitetsprovet och läckageprovet (§8), och
-fuktläsningen F1 och F2 på 2024/25. Inget av det är byggt.
-
-**Stomdokument:** KUV §9 småvägsprovet signerat och väntar på bygget.
+Posten står i sin helhet i det privata repot Axelstar/halkvakt-kuvos, `arkiv/DECISIONS-kuvos.md` (DECISIONS #768).
 
 ## #768 (31/10 2026) Fysiken och kuvösen flyttas till det privata repot halkvakt-kuvos; de levande flödena hämtar koden därifrån
 
@@ -19597,3 +13112,19 @@ MAT, APP, SYS, BED, KAR och FAV.
 Det som redan har publicerats tas inte tillbaka, och historiken skrivs inte om.
 
 **Stomdokument:** MAT kuvösraderna utan tal; KAR stommen är sex dokument.
+
+## #770 (31/10 2026) Kuvösens, fysikspårets, kandidatens och småvägarnas poster flyttas ur DECISIONS, STATUS och TAVLA; Halkvakt förblir publikt
+
+**Beslut** (Axel 31/10). Halkvakt görs inte privat: det skulle kosta runt 1 100 kr i månaden i Actions-minuter (uppmätt 31/10,
+cirka 650 debiterbara minuter per dygn). Historiken sedan 9/10 ligger därför kvar publikt. Det som står på framsidan av repot
+flyttas i stället till Axelstar/halkvakt-kuvos:
+- **DECISIONS.md:** 143 beslut om kuvösen, fysikspåret, kandidatmodellen och småvägarna står nu i det repots `arkiv/DECISIONS-kuvos.md`.
+  Här står en rad per beslut med samma nummer och datum, så att alla hänvisningar håller. Sju av dem bär en rad *För appen* utan tal.
+- **STATUS.md:** loggposterna om samma saker står i `arkiv/STATUS-kuvos.md`; här står en rad per post.
+- **TAVLA.md:** 24 kort står i `arkiv/TAVLA-kuvos.md`; här står kortets nummer och status med en rad. Kortkartans och
+  projektkartans listor är omskrivna av sina skript.
+Det som stannar här: appen, motorn, driften, grind A och RÅ, och besluten #768–#770 om flytten. Gamla PR:er och historiken går inte
+att ta bort och ligger kvar.
+
+**Stomdokument:** inga — posterna flyttas, stomdokumentens handtext ändras inte; korten i listorna skrivs av skripten.
+
