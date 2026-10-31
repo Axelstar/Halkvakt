@@ -27,6 +27,12 @@ jobs:
       REL: metnordic-live-2026-27
     steps:
       - uses: actions/checkout@v4
+      # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos sedan 31/10 (DECISIONS #768, där F1): koden läggs ovanpå
+      # utcheckningen med läsnyckeln. Loggen och sammanfattningen här är publika: inga parametrar, särdrag eller modellutskrifter, bara klart eller fel.
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git .kuvos-privat/ ./ && rm -rf .kuvos-privat
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm }
       - run: npm ci
@@ -36,8 +42,8 @@ jobs:
         run: |
           node --experimental-strip-types ingest/metnordic-live.ts --sjalvtest 2>&1 | grep -v ExperimentalWarning | tail -1
           python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
-          python3 fysik/live/indata.py --sjalvtest | tail -1
-          python3 fysik/live/kandidat_fysik.py --sjalvtest | tail -1
+          python3 fysik/live/indata.py --sjalvtest > /dev/null; echo "självtest ok: indata.py"
+          python3 fysik/live/kandidat_fysik.py --sjalvtest > /dev/null; echo "självtest ok: kandidat_fysik.py"
       - name: Historien och punkterna ur releasen
         shell: bash
         run: |
@@ -91,8 +97,9 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          { echo '```'; python3 fysik/live/kandidat_fysik.py --indata indata-live --analys mn/metnordic_analys_*.csv.gz mn/dagar/*.csv.gz \
-              --korning "mn/metnordic_korning_$STAMP.csv.gz" --modell modell.pkl --kandidat kuvos/kandidat-2026-27.json --ut ut; echo '```'; } 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+          python3 fysik/live/kandidat_fysik.py --indata indata-live --analys mn/metnordic_analys_*.csv.gz mn/dagar/*.csv.gz \
+              --korning "mn/metnordic_korning_$STAMP.csv.gz" --modell modell.pkl --kandidat kuvos/kandidat-2026-27.json --ut ut > del-a.log 2>&1 || { echo "::error::Del A föll. Utskriften visas inte i den publika loggen; felsök i en session med halkvakt-kuvos."; tail -n 1 del-a.log; exit 1; }
+          echo "del A klar för $STAMP" | tee -a "$GITHUB_STEP_SUMMARY"
           rm -f modell.pkl
       - name: Till tabellen kandidat_ph
         env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }

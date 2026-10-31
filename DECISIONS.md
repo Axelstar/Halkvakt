@@ -19555,3 +19555,27 @@ FLER-VINTRAR och NY-KANDIDAT (#668, #671). Dokumentets sha256 vid signeringen, f
 fuktläsningen F1 och F2 på 2024/25. Inget av det är byggt.
 
 **Stomdokument:** KUV §9 småvägsprovet signerat och väntar på bygget.
+
+## #768 (31/10 2026) Fysiken och kuvösen flyttas till det privata repot halkvakt-kuvos; de levande flödena hämtar koden därifrån
+
+**Beslut** (Axel och Bengt 31/10). Fysikspåret, kuvösen och småvägarna flyttas från det här publika repot till det privata
+Axelstar/halkvakt-kuvos, så att arbetet från och med nu inte blir publikt. Besluten om dem loggas från i dag i det repots `BESLUT.md`
+(F1 och framåt); här står bara det som ändrar appen eller sajten, utan tal, med hänvisningen "halkvakt-kuvos F<nr>".
+
+**Vad som flyttas.** `fysik/`, `kuvos/`, kuvös- och fysikmätningarna i `scripts/matningar/`, förregistreringarna och dokumenten om kuvösen
+och prognosen i `docs/`, `data/fysik/`, `data/vaderkallan/`, särdragen i `data/vagdata/` och två tester. De ligger i det privata repot med sin
+historik sedan 1/10. Grind A och S-B med sina tröskeldokument stannar här: motorn räknar grannarna som grind A, och femton filer här vaktar det.
+
+**Det som redan är publicerat** (filerna, historiken, releaserna, loggarna, sidorna) går inte att ta tillbaka, och historiken skrivs inte om.
+
+**Körningarna stannar här**, där Actions är gratis. Ett privat repo har 2 000 minuter i månaden, och de levande flödenas timjobb ensamma
+skulle ta minst 1 440 (varje jobb räknas som en hel minut; jämför stoppet 5/9). De fyra levande flödena (kandidat-fysik, kandidat-timme,
+ny-kandidat-fysik, ny-kandidat-timme) checkar därför ut det privata repot med läsnyckeln `KUVOS_LASNYCKEL` (bara läsrätt på det repot) och
+lägger det ovanpå. Självtesten och modellkörningarna skriver inte längre sina utskrifter i loggen eller sammanfattningen, bara klart eller
+fel; paret och särdragslistan skrivs inte ut. Inga andra hemligheter flyttas.
+
+**Ordningen.** (1) Det privata repot med filerna och historiken (klart 31/10). (2) Läsnyckeln (klart 31/10). (3) De levande flödena hämtar
+koden därifrån (den här posten). (4) En levande körning bevisas, sedan tas filerna bort här, med kuvösens övriga flöden, ci:s självtest och
+sidorna KUV och LIV omställda. (5) Gamla körningar, releaser och grenar med kuvösinnehåll städas.
+
+**Stomdokument:** inga — posten ändrar var koden ligger, inte vad stomdokumenten säger; KUV och LIV ställs om i steg 4.

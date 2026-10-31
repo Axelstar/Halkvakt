@@ -93,6 +93,9 @@ Allt i repot är publikt och går inte att ta tillbaka: filerna, historiken, är
 - **Får aldrig ligga här** — varken i en fil, en release, en logg eller ett ärende: Trafikverkets leverans och allt som räknats ur den
   rad för rad (den ligger i hinken `arkiv`); testarnas svar och missar (DB-knappen spärrar dem, #498); hemligheter; personuppgifter
   (namn på privatpersoner, privata e-postadresser, telefonnummer). Ett aggregat per station är inte rad för rad.
+- **Fysik, kuvös och småvägar bor inte här** (Axel och Bengt 31/10, DECISIONS #768): ny kod, data, förregistreringar, mätningar och resultat
+  committas i det privata Axelstar/halkvakt-kuvos, aldrig här och inte heller på en gren här. Ett flöde här som kör den koden lägger den ovanpå
+  med `KUVOS_LASNYCKEL` och skriver bara klart eller fel: inga parametrar, särdrag, tal eller modellutskrifter i logg, sammanfattning eller ärende.
 - Varje fil under `data/` står i `data/KALLOR.json` med källa och licens; publikvakten (`scripts/publikvakt.ts`, i ci) fäller en fil som
   saknas där, en fil över 20 MB och kända mönster (Trafikverkets leveransfiler, `.npy`, `oof`, exporter av testarnas svar).
 - Osäker? Lägg det i hinken, inte i repot, och fråga.
