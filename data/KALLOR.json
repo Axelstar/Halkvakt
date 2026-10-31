@@ -3,18 +3,10 @@
  "filer": {
   "data/bridges.geojson": { "kalla": "OpenStreetMap, broar längs vägnätet (bridges.yml, kort #82)", "licens": "ODbL 1.0 — © OpenStreetMaps bidragsgivare" },
   "data/favoritprov/rutter-osrm.json": { "kalla": "OSRM (router.project-osrm.org) på OpenStreetMap: favoritprovets 30 rutter på vägnätet, en beräkning (scripts/favoritprov-rutter-osrm.ts, kort #338, DECISIONS #531)", "licens": "ODbL 1.0 — © OpenStreetMaps bidragsgivare" },
-  "data/fysik/fingeravtryck-2024-25.csv": { "kalla": "Axels fysikspår: medel och spridning av modellens fel per station, modell och period (FYSIKSPARET-SVAR §6) — aggregat per station ur Trafikverkets leverans, inte rad för rad", "licens": "Halkvakts eget aggregat" },
   "data/kallkartan/kallkartan_stationer.csv": { "kalla": "NASA MODIS natt-LST (MOD11A1/MYD11A1 v061, LP DAAC) i stationernas lägen ur Trafikverkets öppna API (#482)", "licens": "NASA-data utan begränsning; stationernas lägen CC0" },
-  "data/vaderkallan/ecmwf_2024-25.csv.gz": { "kalla": "ECMWF IFS ur Open-Meteos arkiv, 70 punkter (#504)", "licens": "CC BY 4.0 — Open-Meteo.com och ECMWF" },
-  "data/vaderkallan/manifest.json": { "kalla": "manifest med sha256 för väderkällans nivå 1 (#504)", "licens": "Halkvakts eget" },
-  "data/vaderkallan/stationspar_vviss_smhi.csv": { "kalla": "vägstationernas lägen (Trafikverkets öppna API) parade med SMHI:s stationer (#504)", "licens": "CC0 och CC BY 4.0 (SMHI)" },
   "data/vagdata/segment.json": { "kalla": "Trafikverkets öppna API och NVDB via Datautbytesportalen (#473)", "licens": "CC0" },
   "data/vagdata/stationer.json": { "kalla": "Trafikverkets öppna API och NVDB via Datautbytesportalen (#473)", "licens": "CC0" },
-  "data/vagdata/vaglagspunkter-adt-klass.json": { "kalla": "Trafikverket, Lastkajen: Sverigepaket Drift och underhåll (2026-10-03), ÅDT (ADT_f_117) och funktionell vägklass (Klass_181) vid de 12 960 väglagspunkterna, luckorna ur Trafikverkets öppna API (NVDB) (#553)", "licens": "CC0 1.0 enligt Lastkajens användarvillkor; öppna API:et CC0" },
   "data/vagdata/vaglagspunkter-europavag.json": { "kalla": "Trafikverkets öppna API, NVDB Vägnummer (Vägdata.NVDB_DK_O 1.2): Europaväg vid de 12 960 väglagspunkterna (#553)", "licens": "CC0" },
-  "data/vagdata/vaglagspunkter-sardrag.json": { "kalla": "Rättelsens fasta särdrag vid de 12 960 väglagspunkterna (#553): Copernicus DEM GLO-90 och GLO-30, ESA WorldCover 2021, Meta/WRI:s trädhöjd; platserna ur vaglagspunkter.json (Trafikverkets öppna API, NVDB)", "licens": "Copernicus DEM: fri licens med källhänvisning (© DLR e.V. 2010–2014, © Airbus Defence and Space GmbH 2014–2018, under COPERNICUS av EU och ESA); ESA WorldCover CC BY 4.0; Meta/WRI CC BY 4.0; platserna CC0" },
-  "data/vagdata/vaglagspunkter-vinterklass.json": { "kalla": "Trafikverket, Lastkajen: Sverigepaket Drift och underhåll (2026-10-03), Vägunderhållsklass vid de 12 960 väglagspunkterna (#553)", "licens": "CC0 1.0 enligt Lastkajens användarvillkor" },
-  "data/vagdata/smavagspunkter-urval.json": { "kalla": "Trafikverket, Lastkajen: Sverigepaket Drift och underhåll (2026-10-03), slumpurval av 2 000 punkter på statliga och kommunala bilvägar med väghållare, ÅDT, vägklass och vinterklass (fysik/vagpunkter/urval.py, #761)", "licens": "CC0 1.0 enligt Lastkajens användarvillkor" },
   "data/vagdata/vaglagspunkter.json": { "kalla": "Trafikverkets öppna API och NVDB via Datautbytesportalen (#473)", "licens": "CC0" },
   "data/vagdata/vagpunkter.json": { "kalla": "Trafikverkets öppna API och NVDB via Datautbytesportalen (#473)", "licens": "CC0" }
  }
