@@ -19419,3 +19419,34 @@ data/vagdata/smavagspunkter-urval.json och `delar` 4. Spannet redovisas som läs
 - **Läsningen:** för småvägarna och gatorna är det inte terrängen som tar modellen utanför det den lärt sig, utan trafikmängden, som
   saknas på gatorna, och vägklasserna där få stationer finns. Det styr P3:s förregistrering (#758): trafikmängden prövas som saknad
   eller hämtas ur kommunernas egna mätningar.
+
+## #762 (31/10 2026) Småvägarnas förregistrering: utkastet skrivet, med fyra öppna val före signeringen
+
+**Beslut** (Bengt 31/10: *"Ja, börja"*, om utkasten i kort #367). Utkastet är `docs/FORREGISTRERING-SMAVAGAR-2027-28.md`. Det är inte signerat, och inget
+utfall är läst för P1, P2, P3 eller storstäderna. Bengt och Axel signerar före 28/2 2027 (fristen `smavagarna-forregistrering`).
+
+**Innehållet i korthet:**
+- **Huvudfrågan:** håller kandidaten på en ny plats ett nytt år? Den nya kandidatens procedur (NY-KANDIDAT §1) prövas i sex prov.
+  Varje prov håller ute en vinter, och dessutom alla stationer i P1, P3 och storstäderna.
+- **Huvudtalet:** A2 för NIVÅ 2+BLANDNING på P1. Varje station väger lika (minst 100 halvtimmar per vinter), och sedan tas det enkla
+  medlet över de sex vintrarna. Den ärliga osäkerheten följer FORREGISTRERING-2026-27 §4b punkt 12.
+- **Domen:** KLARAR, OAVGJORT eller FALLER mot taket 5 %. Klarar provet får skattningen i kartan byggas för 2027/28 (#759). Rösten
+  avgörs inte (#757).
+- **Fukten 2024/25**, redovisas: F1 är hur stor del av stationernas frosttimmar regelns fukt täcker, med och utan *Våt*. F2 är regeln
+  med och utan *Våt* vid väglagspunkterna under 1 000 fordon/dygn, mot väglaget.
+- **P3 och storstäderna**, redovisas: station för station, med medelfelet som mått på stadsvärmen. Storstäderna visas i tre kolumner
+  (#760).
+- **Fyra prov före läsningen:** identiteten, tidszonen, populationen och att ingen utelämnad station läcker in.
+- **Förväntan:** A2 för P1 omkring 5,7 %, alltså troligen FALLER eller OAVGJORT.
+
+**Ett fynd ur populationsräkningen** (inga mätvärden): 5 av P1:s 77 stationer i grind A har ingen annan station inom 50 km och saknar
+därför RÅ. Med grind A:s population skulle de falla bort, och det är just de mest isolerade småvägarna. Utkastet föreslår därför att
+kravet på RÅ tas bort för P1 och P3.
+
+**Öppna val före signeringen** (bedömningen §4.2):
+- (a) RÅ-kravet;
+- (b) storstädernas område, 15 km från centrum eller kommungränsen;
+- (c) minsta antal halvtimmar per station;
+- (d) storstädernas statliga stationer utanför träningen.
+
+**Stomdokument:** KUV §9 småvägsprovet som kommande läsning; BED §4.2 de öppna valen och signeringen.
