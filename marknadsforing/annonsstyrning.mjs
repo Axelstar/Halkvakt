@@ -26,7 +26,7 @@ const KONTO = "act_1760320565448083";
 // "Halkvakt · län" från 27/10 avvisade länken och står kvar pausad; den tas bort i Ads Manager.
 const KAMPANJ = "Halkvakt · län · app";
 const PREFIX = "Län · ";
-const BUDGET_ORE = 200000;                       // 2 000 kr för hela kampanjen
+const BUDGET_ORE = 600000;                       // 6 000 kr för hela kampanjen (DECISIONS #763; 2 000 kr till 31/10)
 const DAGAR = 30;
 const APP = "https://apps.apple.com/se/app/halkvakt/id6806939784";
 // Meta-appen Halkvakt Ads, med Halkvakts bundle-id och App Store-id under plattformen iOS. Ingen Meta-SDK i appen:
