@@ -36,6 +36,11 @@ jobs:
     steps:
       - run: echo "JOBB_START=$(date +%s)" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
+      # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos (DECISIONS #768): koden läggs ovanpå utcheckningen.
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git .kuvos-privat/ ./ && rm -rf .kuvos-privat
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm }
       - run: npm ci
