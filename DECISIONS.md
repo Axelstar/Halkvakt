@@ -19306,3 +19306,19 @@ spåret svarade han *"ja gör det"*. Frågan (a) i bedömningen §4.2 är därme
   kommunernas stationer.
 
 **Stomdokument:** BED §4.2 frågan (a) avgjord och det kommunala spåret P3.
+
+## #759 (31/10 2026) Skattningen i kartan på småvägarna byggs efter huvudprovets dom
+
+**Beslut** (Bengt 31/10: *"skattningen i kartan byggs efter huvudprovets dom (om du menar huvudprovet i den här testen)"*, samtidigt som PR #1293 slogs ihop).
+- **Ja, det är huvudprovet i det här provet:** steg 4 i förslaget v2 (#756, #758). Det avser P1, de 79 statliga stationerna utanför de
+  818 sträckorna, som hålls utanför träningen. Provet förregistreras och signeras före mars 2027 (fristen `smavagarna-forregistrering`).
+- **Skattningen i kartan på småvägarna byggs först när det provet är dömt.** Före domen vet ingen hur fel skattningen blir på en ny
+  plats. Förväntan är omkring 5,7 % grova fel, över taket 5 % (#758). Invarianten om text som inte får säga mer än datan bär gäller
+  också kartan.
+- **Vad domen ska visa för att kartan ska byggas** skrivs i förregistreringen, före läsningen.
+- **För P3, de kommunala vägarna (#758), gäller samma princip.** Kartan på kommunala vägar byggs först efter P3:s egen dom, och P3
+  dömer inte förrän det finns minst 20 stationer i mer än en stad. Det är Claudes läsning av beslutet, och Bengt kan ändra den.
+
+**Alternativ.** Att bygga kartan före domen avvisades, med skälet ovan.
+
+**Stomdokument:** BED §4.2 frågan om kartan avgjord; APP skattningen i kartan på småvägarna byggs efter huvudprovets dom.
