@@ -2782,3 +2782,4 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 31/10: post om småvägarna flyttad till halkvakt-kuvos (`arkiv/STATUS-kuvos.md`, DECISIONS #768).
 - 31/10: post om småvägarna flyttad till halkvakt-kuvos (`arkiv/STATUS-kuvos.md`, DECISIONS #768).
 - 31/10: post om småvägarna flyttad till halkvakt-kuvos (`arkiv/STATUS-kuvos.md`, DECISIONS #768).
+- 31/10 (Claude; Bengt: *"kör steg 1"* och *"Ja, bokför"*): **bytet bevisat i drift**, den nya kandidaten talar i appen (DECISIONS #729, *För appen*). DB-knappen *las* 41239715669 (READ ONLY, inget skrivet): `kandidat_talar` har en enda rad, 26/10 21.40 UTC `ny`, och `kandidat_talar_nu()` och `talande_timme()` ger `ny`, den senare för timmen 31/10 19.00 UTC. Del (1) av raden i bedömningen §4.2 är struken; del (2), fristen `bytesbeslut`, väntar på Bengt.
