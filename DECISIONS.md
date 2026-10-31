@@ -19533,3 +19533,25 @@ vad kartan påstår, inte på förväntan, och den sänker inget säkerhetskrav.
 - Flera zoner prövade på P1, som K-A:s 27 kombinationer: avvisat, eftersom det ger flera chanser.
 
 **Stomdokument:** BED §4.2 domen avgjord; KUV §9 småvägsprovets dom.
+
+## #767 (31/10 2026) Småvägarnas förregistrering signerad, för Bengt och Axel
+
+**Beslut** (Bengt 31/10: *"slå ihop 1297 ochsignera för mej och axel"*). `docs/FORREGISTRERING-SMAVAGAR-2027-28.md` är signerad av Bengt, och av Axel via Bengt i samma ord, som
+FLER-VINTRAR och NY-KANDIDAT (#668, #671). Dokumentets sha256 vid signeringen, före signeringsraden och signaturerna, är
+`dd09a53d3d485355bb491d36e2192291a7573b45684aa062d2959df1e8183903`.
+
+**Vad som fryses** (dokumentet §12):
+- populationerna;
+- kandidaten och de sex proven, som håller ute en vinter och alla stationer i P1, P3 och storstäderna;
+- måtten och domen: frysklassen med farliga fel ≤ 1 %, rätt klass ≥ 95 % och täckning ≥ 50 %, med zonen vald i träningen (#766);
+- följden, fukten F1 och F2, gatorna med storstäderna, och de fyra proven före läsningen.
+
+Ändras något efteråt sker det bara genom en daterad post med båda signaturerna, och aldrig som en lättnad efter sett utfall (regel L).
+
+**Inget utfall är läst** för P1, P2, P3 eller storstäderna. Signeringen sker fyra månader före fristen. Fristen
+`smavagarna-forregistrering` (28/2 2027) tas bort, eftersom dess *klart när* är uppfyllt.
+
+**Nästa steg** (kort #367): koden som håller ute stationerna i den nya kandidatens kedja, med identitetsprovet och läckageprovet (§8), och
+fuktläsningen F1 och F2 på 2024/25. Inget av det är byggt.
+
+**Stomdokument:** KUV §9 småvägsprovet signerat och väntar på bygget.

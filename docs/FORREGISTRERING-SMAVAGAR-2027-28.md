@@ -1,8 +1,6 @@
 # Förregistrering — småvägarna och de kommunala gatorna, för vintern 2027/28
 
-**Status: UTKAST 31/10 2026, inte signerat.** Bengt 31/10: *"Ja, börja"* (kort #367, DECISIONS #764). Bengt och Axel signerar före
-28/2 2027, så att valet inför 2027/28 hinner göras före mars (FORREGISTRERING-2026-27 §12 g, fristen `smavagarna-forregistrering`).
-Inget utfall är läst för någon av populationerna nedan (§10).
+**Status: SIGNERAD 31/10 2026** (Bengt, och Axel via Bengt, DECISIONS #767). Dokumentets sha256 vid signeringen, före den här raden och signaturerna: `dd09a53d3d485355bb491d36e2192291a7573b45684aa062d2959df1e8183903`. Utkastet är DECISIONS #764, valen #765 och domen #766. Inget utfall för P1, P2, P3 eller storstäderna var läst vid signeringen.
 
 Källorna:
 - besluten om småvägarna, DECISIONS #755–#761;
@@ -176,5 +174,5 @@ utfall (regel L).
 
 | | Datum | Signatur |
 | :-- | :-- | :-- |
-| Bengt | | |
-| Axel | | |
+| Bengt | 2026-10-31 | Bengt i chatten: *"slå ihop 1297 ochsignera för mej och axel"* (DECISIONS #767) |
+| Axel | 2026-10-31 | Via Bengt i samma ord (DECISIONS #767) |
