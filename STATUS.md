@@ -2782,3 +2782,4 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 31/10: post om småvägarna flyttad till halkvakt-kuvos (`arkiv/STATUS-kuvos.md`, DECISIONS #768).
 - 31/10: post om småvägarna flyttad till halkvakt-kuvos (`arkiv/STATUS-kuvos.md`, DECISIONS #768).
 - 31/10: post om småvägarna flyttad till halkvakt-kuvos (`arkiv/STATUS-kuvos.md`, DECISIONS #768).
+- 31/10 (Claude; Axel): Meta-annonsernas kvällsrapport och morgonlarm till Axel via ett ärende (DECISIONS #771), 28 pulsjobb. Kvar: sammanslagning, pulsklockan skarpt, vakthunden deployad.

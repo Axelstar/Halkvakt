@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 // @ts-ignore — .mjs utan typer
-import { fara, annons, stracka, vagBild, vagText, dagdel, VISNING, GRANSKODER, sammaSchema, ordning, rang } from "../marknadsforing/annonsstyrning.mjs";
+import { fara, annons, stracka, vagBild, vagText, dagdel, VISNING, GRANSKODER, sammaSchema, ordning, rang, fastnade, rapporttext } from "../marknadsforing/annonsstyrning.mjs";
 
 const l = (kort: string, halt: number, kalla: number, extra = {}) =>
   ({ kod: 1, kort, slug: kort.toLowerCase(), halt, vagavsnitt: 40, kalla, kallast: null, olyckor: 0, ...extra });
@@ -100,4 +100,17 @@ test("ordning: pauses first, then the strongest hazard and most icy stretches (D
   assert.deepEqual(ordning(satser, n => annons[n] ?? null, n => lan[n]).map(s => s.name),
     ["Län · E", "Län · C", "Län · D", "Län · B", "Län · A"]);
   assert.equal(rang("Frysrisk"), 0);
+});
+
+test("fastnade and rapporttext: on but 0 impressions is flagged, rows sorted by clicks (DECISIONS #771)", () => {
+  const satser = [{ name: "Län · Norrbotten", status: "ACTIVE" }, { name: "Län · Dalarna", status: "ACTIVE" },
+                  { name: "Län · Skåne", status: "PAUSED" }, { name: "Län · Värmland", status: "PAUSED" }];
+  const idag = new Map([["Län · Norrbotten", { visningar: 289, klick: 9, kr: 19.45 }], ["Län · Värmland", { visningar: 40, klick: 1, kr: 3 }]]);
+  assert.deepEqual(fastnade(satser, idag), ["Län · Dalarna"]);
+  const t = rapporttext("2026-10-31", satser, idag, { kr: 45.54, klick: 50 });
+  assert.match(t, /\| Norrbotten \| 289 \| 9 \| 19,45 kr \| 2,16 kr \|/);
+  assert.ok(t.indexOf("Norrbotten") < t.indexOf("Värmland") && t.indexOf("Värmland") < t.indexOf("| Dalarna"));
+  assert.ok(!t.includes("Skåne"));
+  assert.match(t, /0 visningar i dag:\*\* Dalarna/);
+  assert.match(t, /\*\*Totalt\*\* \| \*\*329\*\* \| \*\*10\*\*/);
 });

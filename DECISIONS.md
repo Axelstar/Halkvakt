@@ -13128,3 +13128,18 @@ att ta bort och ligger kvar.
 
 **Stomdokument:** inga — posterna flyttas, stomdokumentens handtext ändras inte; korten i listorna skrivs av skripten.
 
+## #771 (31/10 2026) Meta-annonserna rapporterar till Axel: kvällsrapport och larm för län som fastnat
+
+**Beslut** (Axel 31/10: *"Yes it would be good if you could get me some reports"*). Två saker, båda som kommentarer i ett ärende
+*📊 Meta-annonserna: dagsrapport och larm*, tilldelat Axel så att GitHub mejlar honom:
+1. **Kvällsrapporten** (`annonsstyrning.mjs rapport`, flödet `meta-rapport.yml`, pulsjobbet `puls-meta-rapport` 18:31 UTC, 19:31
+   vintertid): per län som var på eller visades i dag visningar, klick, kostnad och pris per klick, totalen och kampanjens förbrukning
+   mot budgeten. Län som var på men hade 0 visningar flaggas.
+2. **Morgonlarmet** i `styr`: körningen 07:01, två timmar in i morgonfönstret, larmar för län som var på redan när körningen
+   började men har 0 visningar i dag (30–31/10 stod län i *Preparing* utan att leverera, och ingen såg det utan Ads Manager).
+Larmet ändrar inget i Meta: länet görs om för hand (DECISIONS #754). `ANTAL_NYA` och `PULS_GOLV` blir 28.
+
+**Alternativ.** E-post från hej@halkvakt.se: repot har ingen SMTP-väg och ingen hemlighet för det; ett ärende ger mejl utan nya
+nycklar. Göra om ett fastnat län automatiskt: skriptet skulle radera i annonskontot på egen hand; Axel vill hellre få larm och välja.
+
+**Stomdokument:** inga — marknadsföringen ligger utanför appen, motorn och mätningarna; ingen data lämnar appen.
