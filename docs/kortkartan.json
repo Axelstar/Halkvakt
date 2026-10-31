@@ -6,12 +6,10 @@
     "SYS": { "fil": "docs/SYSTEMBILDEN.html", "namn": "Halkvaktens systembild", "url": "https://895845.github.io/halkvakt-sidor/SYSTEMBILDEN.html" },
     "BED": { "fil": "docs/BEDOMNING-2026-09-15.md", "namn": "Bedömningen" },
     "KAR": { "fil": "docs/INTEGRATIONSKARTAN.md", "namn": "Integrationskartan" },
-    "KUV": { "fil": "docs/KUVOSEN.html", "namn": "Halkvaktens kuvös", "url": "https://895845.github.io/halkvakt-sidor/KUVOSEN.html" },
-    "FAV": { "fil": "docs/FAVORITER.html", "namn": "Halkvaktens favoriter", "url": "https://895845.github.io/halkvakt-sidor/FAVORITER.html" },
-    "LIV": {"fil": "docs/NIVA2-LIVE.html", "namn": "Nivå 2+blandning live", "url": "https://895845.github.io/halkvakt-sidor/NIVA2-LIVE.html"}
+    "FAV": { "fil": "docs/FAVORITER.html", "namn": "Halkvaktens favoriter", "url": "https://895845.github.io/halkvakt-sidor/FAVORITER.html" }
   },
   "kort": {
-    "#367": ["BED 4.2", "KUV 9"],
+    "#367": ["BED 4.2"],
     "#361": ["BED 4.2"],
     "#262": ["APP 8", "BED 2.1"],
     "#281": ["APP 9"],
@@ -26,10 +24,10 @@
     "#355": ["FAV 10"],
     "#356": ["APP 3", "FAV 3"],
     "#357": ["FAV 2", "FAV 3", "FAV 6"],
-    "#363": ["FAV 3", "LIV 3"],
+    "#363": ["FAV 3"],
     "#358": ["FAV 5"],
     "#365": ["SYS 1", "APP 9"],
-    "#270": ["MAT 6", "SYS 3", "KAR 6", "KUV 5", "FAV 3", "BED 4.2"],
+    "#270": ["MAT 6", "SYS 3", "KAR 6", "FAV 3", "BED 4.2"],
     "#296": ["BED 4.2", "MAT 7"],
     "#297": ["MAT 6", "MAT 8", "BED 4.2"],
     "#298": ["MAT 5", "BED 4.2"],
@@ -38,11 +36,11 @@
     "#226": ["APP 5"],
     "#203": ["APP 6", "MAT 3", "FAV 6"],
     "#328": ["APP 6"],
-    "#330": ["KUV 5"],
-    "#331": ["KUV 5"],
+    "#330": ["MAT 5"],
+    "#331": ["MAT 5"],
     "#345": ["MAT 5", "SYS 2"],
     "#344": ["MAT 5", "SYS 2", "BED 4.2"],
-    "#343": ["SYS 3", "APP 3", "BED 4.2", "LIV 3"],
+    "#343": ["SYS 3", "APP 3", "BED 4.2"],
     "#285": ["APP 7", "FAV 8", "BED 4.2"],
     "#277": ["APP 9"],
     "#276": ["MAT 2", "APP 10", "BED 4.2", "FAV 3"],
@@ -61,8 +59,8 @@
     "#284": ["APP 4", "FAV 2"],
     "#366": ["APP 9"],
     "#316": ["BED 4.2"],
-    "#317": ["KUV 8", "BED 4.2"],
-    "#321": ["KUV 5"],
+    "#317": ["BED 4.2"],
+    "#321": ["MAT 5"],
     "#326": ["APP 9"]
   }
 }

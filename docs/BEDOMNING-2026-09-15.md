@@ -999,7 +999,7 @@ Inget av detta bygger något nytt i motorn, och inget av det rör en tröskel. D
 <!-- LÄGESRADER §7: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 *Läget i projektkartan:*
 
-- [Systemets delar på vintern](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-kv-delarna): delvis, 86 % · kvar: Vind och sikt: startvärden; sikten struken 24/10 efter W-A-serien på vintern 2024/25 med olyckorna (#705), byvinden OAVGJORT
+- [Systemets delar på vintern](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-kv-delarna): delvis, 86 % · kvar: Kvar i halkvakt-kuvos (DECISIONS #768; #705)
 
 <!-- /LÄGESRADER -->
 

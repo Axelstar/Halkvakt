@@ -19579,3 +19579,21 @@ koden därifrån (den här posten). (4) En levande körning bevisas, sedan tas f
 sidorna KUV och LIV omställda. (5) Gamla körningar, releaser och grenar med kuvösinnehåll städas.
 
 **Stomdokument:** inga — posten ändrar var koden ligger, inte vad stomdokumenten säger; KUV och LIV ställs om i steg 4.
+
+## #769 (31/10 2026) Stomdokumenten för kuvösen och nivå 2-live ut ur Halkvakt (halkvakt-kuvos F1)
+
+**Beslut** (Axel och Bengt 31/10, punkt 8 i beslutet om flytten, #768; halkvakt-kuvos F1). Halkvakt har från i dag sex stomdokument:
+MAT, APP, SYS, BED, KAR och FAV.
+- **KUV och LIV** (`docs/KUVOSEN.html`, `docs/NIVA2-LIVE.html`) är borta ur `docs/kortkartan.json`, och de stäms av i halkvakt-kuvos.
+  Filerna står kvar här orörda tills flytten är klar.
+- **Sidorna.** 895845/halkvakt-sidor bygger sidorna ur kortkartans `sidor` med `scripts/sidorna.ts` och publicerar hela webbplatsen på
+  nytt vid varje bygge. De två sidorna slutar därför att publiceras från nästa bygge, utan någon ändring i det repot.
+- **Stomvaktens kuvösregel (#489) är borttagen.** CLAUDE.md:s STOMREGEL och DOKUMENTSYNK säger nu sex stomdokument, och att synken inte
+  skriver kuvös-, fysik- eller småvägstext i Halkvakt: varken i docs/, projektkartan, MATNINGAR eller STATUS.
+- **Kort** som bara pekade på KUV pekar nu på MAT §5.
+- **Tal, parametrar och resultat** i projektkartans kuvösblock, i vägdatalagrets steg om småvägarna och i kuvösraderna i MATNINGAR är
+  ersatta med hänvisningar till halkvakt-kuvos.
+
+Det som redan har publicerats tas inte tillbaka, och historiken skrivs inte om.
+
+**Stomdokument:** MAT kuvösraderna utan tal; KAR stommen är sex dokument.

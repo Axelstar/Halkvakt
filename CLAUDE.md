@@ -171,8 +171,8 @@ Varje arbetsvarv AVSLUTAS med att TAVLA.md synkas mot verkligheten:
    utan Verify-rad får en. Kortvakten i CI (#449) fäller det kartan själv vet; genomgången tar resten.
 Tavlan är människolagret; bedömningen, STATUS och DECISIONS är djuplagren.
 
-## STOMREGELN (Bengts order 2026-10-01 — åtta stomdokument, DECISIONS #415, #425, #445, #557)
-Åtta dokument är Bengts facit och kontrollpunkter för var vi är, och stommen för det fortsatta bygget. Sidorna läses på
+## STOMREGELN (Bengts order 2026-10-01 — sex stomdokument sedan 31/10, DECISIONS #415, #425, #445, #557, #768, #769)
+Sex dokument är Bengts facit och kontrollpunkter för var vi är, och stommen för det fortsatta bygget. Sidorna läses på
 https://895845.github.io/halkvakt-sidor/, som byggs ur main en gång per dygn i Bengts repo 895845/halkvakt-sidor (Bengt 27/10,
 DECISIONS #731 och #733; Pages kräver adminrätt här); deras adresser på claude.ai uppdateras inte längre:
 1. *Halkvaktens mätningar* — https://895845.github.io/halkvakt-sidor/MATNINGAR.html, källa `docs/MATNINGAR.html`
@@ -180,10 +180,10 @@ DECISIONS #731 och #733; Pages kräver adminrätt här); deras adresser på clau
 3. *Halkvaktens systembild* — https://895845.github.io/halkvakt-sidor/SYSTEMBILDEN.html, källa `docs/SYSTEMBILDEN.html`
 4. Bedömningen — den senaste `docs/BEDOMNING-*.md`
 5. Integrationskartan — `docs/INTEGRATIONSKARTAN.md` (inte längre fryst sedan 22/10, DECISIONS #678)
-6. *Halkvaktens kuvös* — https://895845.github.io/halkvakt-sidor/KUVOSEN.html, källa `docs/KUVOSEN.html` (tillagd 1/10 på Bengts order, DECISIONS #425)
-7. *Halkvaktens favoriter* — https://895845.github.io/halkvakt-sidor/FAVORITER.html, källa `docs/FAVORITER.html` (tillagd 3/10 på Bengts order, DECISIONS #445)
-8. *Nivå 2+blandning live* — https://895845.github.io/halkvakt-sidor/NIVA2-LIVE.html, källa `docs/NIVA2-LIVE.html` (tillagd 14/10 på Bengts order, DECISIONS #557): stegen till kandidaten i appen, kort #343
-**En gång per dygn (Bengts order 11/10, DECISIONS #522).** De åtta stäms av EN gång per dygn, av morgonens dokumentsynk (DOKUMENTSYNKEN
+6. *Halkvaktens favoriter* — https://895845.github.io/halkvakt-sidor/FAVORITER.html, källa `docs/FAVORITER.html` (tillagd 3/10 på Bengts order, DECISIONS #445)
+*Halkvaktens kuvös* (KUVOSEN.html) och *Nivå 2+blandning live* (NIVA2-LIVE.html) flyttade 31/10 till det privata
+halkvakt-kuvos och stäms av där (DECISIONS #768, #769); filerna här ändras inte och tas bort när flytten är klar.
+**En gång per dygn (Bengts order 11/10, DECISIONS #522).** De sex stäms av EN gång per dygn, av morgonens dokumentsynk (DOKUMENTSYNKEN
 nedan): den läser allt som hänt sedan förra synken och rättar handtexten. Flödet `synk-ihop` slår ihop synkens PR när kontrollerna
 är gröna, 895845/halkvakt-sidor bygger och publicerar sidorna ur main 05.30 UTC, och flödet `sidorna` här söker 06.00 UTC
 igenom att allt är aktuellt (Bengt 27/10, DECISIONS #731 och #733). I varje varv förs bara in det som maskinerna prövar: beslutet med sin rad `**Stomdokument:**` (som
@@ -200,7 +200,7 @@ eller en ny rubrik på ett kort ⇒ kortkartan.json och skriptet i SAMMA commit 
 
 ## PROJEKTKARTAN (Bengts ja 2026-10-03 — navet över bygget, DECISIONS #446)
 *Halkvaktens projektkarta* — https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html, källa `docs/PROJEKTKARTAN.html`, skriven ur `docs/projektkartan.json` av
-`node --experimental-strip-types scripts/projektkartan.ts` (ändras aldrig för hand). Den är navet OVANFÖR de åtta stomdokumenten:
+`node --experimental-strip-types scripts/projektkartan.ts` (ändras aldrig för hand). Den är navet OVANFÖR de sex stomdokumenten:
 varje del av projektet med block, läge, bevis eller nyckel, vad som saknas, beroenden, kort, beslut och var delen beskrivs.
 - **Kartan äger LÄGET per del** och är vägen in i bygget. Den är **underordnad BEVISET**: grönt kräver ett bevis som går att följa
   (commit, grön körning, mätning efter driftsättning, beslut), blått en nyckel, orange och rött en lista över vad som saknas. Säger
@@ -236,10 +236,9 @@ Genomgången 7/10 (DECISIONS #483) behövde ett sjuttiotal rättelser i handtext
 prövade bara det skripten skriver, och regeln *samma varv* hängde på minnet. Tre delar håller nu dokumenten i fas, för alla
 sessioner på alla enheter:
 - **Stomvakten (CI).** Varje nytt beslut slutar med `**Stomdokument:** MAT, SYS` (koderna ur `docs/kortkartan.json`: MAT APP SYS
-  BED KAR KUV FAV LIV; text efter koden är fri, t.ex. `BED §4.2`) eller `**Stomdokument:** inga — skälet`. `scripts/stomvakten.ts --bas
+  BED KAR FAV; text efter koden är fri, t.ex. `BED §4.2`) eller `**Stomdokument:** inga — skälet`. `scripts/stomvakten.ts --bas
   <sha>` i md-vakt.yml fäller ett nytt beslut utan raden, ett *inga* utan skäl och en okänd kod. Att det namngivna dokumentets
-  handtext ändras prövas inte längre i PR:en (#522): det gör morgonens synk. Gamla beslut prövas inte. En ändring som rör `kuvos/` eller
-  `scripts/matningar/kuvos-*` och lägger till beslut måste namnge KUV i minst ett av dem (DECISIONS #489).
+  handtext ändras prövas inte längre i PR:en (#522): det gör morgonens synk. Gamla beslut prövas inte. Kuvösregeln (#489) är borta sedan 31/10 (#769).
   `stomvakten.ts --lage` visar varje dokuments senaste handtextändring och besluten sedan dess som namnger det (⚠): det är synkens
   lista över vad som ska stämmas av, men den ersätter inte läsningen.
 - **Morgonrutinen** — claude.ai-rutinen *Halkvakt: dokumentsynken varje morgon* (`trig_015zMNvnicaHT1wFNk4ZWdaH`), kl. 03:30 UTC
@@ -268,15 +267,14 @@ en körning skrev nådde aldrig synken, som läser beslut och commits, inte utsk
    stå — 7/10 bockade regeln `inlamnad:0.3.9` en inlämning som App Review avvisat. Sedan `--bokford`.
 3. Kortgenomgången (TAVELREGELN 5): `kortkartan.ts --genomgang`; stäng varje kort vars Verify är uppfylld, med beviset.
 4. Stomgenomgången: `stomvakten.ts --lage`. Läs allt som hänt sedan förra dokumentsynken — commits på main från alla författare,
-   nya beslut, nya STATUS-rader, sammanslagna och öppna PR:er — och rätta handtexten i de åtta, `docs/KALENDERN.md` och TAVLA.md
+   nya beslut, nya STATUS-rader, sammanslagna och öppna PR:er — och rätta handtexten i de sex, `docs/KALENDERN.md` och TAVLA.md
    där den inte längre stämmer. **Fristerna** (#649): varje nytt datum som någon ska agera på — i ett beslut, en STATUS-rad,
    bedömningens §4.2, kalendern eller på tavlan — får en rad i `docs/fristerna.json`, ett flyttat datum rättas där, och en
    frist vars ärende är stängt tas bort. **En rad i ett skriptskrivet block (LÄGESRADER, Öppna kort) räknas inte som att handtexten
    stämmer** (Bengts ja 13/10, DECISIONS #546). Varje ⚠ i `--lage` blir antingen text i dokumentets handtext, i det avsnitt
    beslutets rad `**Stomdokument:**` namnger, eller en post i synkens STATUS-rad med skälet: *#NN: ingen handtext, skälet*. Ett tal förs bara in om det står i källan (DECISIONS, STATUS, koden, en körning) — aldrig ur minnet.
-   **Kuvösen** (eget block i projektkartan sedan 8/10, DECISIONS #489): en ny läsning är ett byggsteg på sin del i blocket — testbädden,
-   systemets delar, prognoslagrets kandidater, före resan eller facit — med körning, beslut och utfall som bevis, och en kandidat för
-   prognoslagret får en rad i jämförelsetabellen på kuvössidan (§5). Kön står i sidans §9, bara framtid; historiken i §12.
+   **Kuvösen, fysiken och småvägarna** (DECISIONS #768, #769): synken skriver ingen sådan text i Halkvakt, varken i docs/,
+   projektkartan, MATNINGAR eller STATUS. De stäms av i halkvakt-kuvos.
 5. `projektkartan.ts` och `kortkartan.ts`, sedan `--check` på båda, `kartsynk.ts --check`, `fristvakten.ts --check` och
    `stomvakten.ts --tillatna`.
 6. En rad i STATUS.md: *Dokumentsynk <datum>:* vad som rättades per dokument, eller *inget att stämma av* — en tyst morgon ska inte
