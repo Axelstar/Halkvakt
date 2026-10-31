@@ -54,30 +54,43 @@ Stationslistorna skrivs ut av domskriptet ur dessa regler, och de ska stämma me
 - **Definitionerna** av A1, A2 och A3 är grind A:s, som FLER-VINTRAR §4.
 - **Populationen** är grind A:s, med ett undantag: **kravet på att RÅ finns tas bort för P1 och P3.** Utan undantaget föll de 5
   P1-stationerna utan granne inom 50 km bort, och de är just frågans kärna. Jämförelsen med RÅ görs på de punkter där RÅ finns.
-- **Huvudtalet** är A2 för NIVÅ 2+BLANDNING på P1, räknat i två steg:
-  - för varje utelämnad vinter är det **stationernas medel**, där varje station väger lika (#756) och räknas med om den har minst 100
-    halvtimmar i populationen den vintern;
-  - huvudtalet är det **enkla medlet över de sex vintrarna**, som i NY-KANDIDAT (ändringen 22/10).
+- **Domen är kartans eget påstående: frysklassen** (Bengt 31/10, DECISIONS #766). Kartan visar *fryser / fryser inte / vet inte*, och
+  domen prövar just det. A2 avgör inte.
+  - **Klassen** räknas på NIVÅ 2+BLANDNING (PB) kring kandidatens frysgräns +1 °C (FORREGISTRERING-2026-27 §4b punkt 11), med
+    osäkerhetszonen ±z: *fryser* om PB ≤ 1 − z, *fryser inte* om PB > 1 + z, och annars *vet inte*. Vad mätningen säger, rätt
+    klass och farliga fel definieras som K-A i TROSKLAR-FRYSKLASSNINGEN §4.
+  - **Zonen väljs i träningen, aldrig på P1.** I varje prov är z den smalaste zonen i rutnätet 0, 0,25, 0,5 … 3,0 °C där de farliga
+    felen är högst 1 % på träningsstationernas ärliga skattningar. Det är skattningar av modeller som varken sett den vintern eller
+    den utelämnade, som parvalet i NY-KANDIDAT (ändringen 22/10). Zonen prövas sedan oförändrad på P1. Klarar ingen zon i rutnätet
+    1 % i träningen, FALLER provet utan att P1 läses.
+  - **Kraven på P1:** farliga fel ≤ 1 % (K-A2, oförändrat och inte förhandlingsbart), rätt klass ≥ 95 % bland de klassade punkterna
+    (K-A1) och **täckning ≥ 50 %** (K-A3 är 70 % på huvudvägarna). Underlaget ska vara som K-A4: minst 500 punkter över minst 20
+    stationer, och minst 100 punkter med uppmätt frys.
+  - **Räkningen:** för varje utelämnad vinter tas **stationernas medel**, där varje station väger lika (#756) och räknas med om den har
+    minst 100 halvtimmar i populationen den vintern. Måtten är sedan det **enkla medlet över de sex vintrarna**, som i NY-KANDIDAT
+    (ändringen 22/10).
 - **Den ärliga osäkerheten** följer FORREGISTRERING-2026-27 §4b punkt 12: omdragning av hela stationer och hela UTC-dygn, B = 2000,
-  ensidig 95 %. Fröet skrivs i domskriptet innan något läses.
-- **Domen**, med taket 5 %:
-  - **KLARAR** om punkttalet och omdragningens övre gräns båda ligger under 5 %;
-  - **OAVGJORT** om punkttalet ligger under men den övre gränsen över;
+  ensidig 95 %. Fröet skrivs i domskriptet innan något läses. Den läses för farliga fel (övre gräns) och rätt klass (undre gräns).
+- **Domen:**
+  - **KLARAR** om alla tre kraven klaras av punkttalen, och omdragningens övre gräns för farliga fel ligger under 1 % och den undre
+    gränsen för rätt klass över 95 %;
+  - **OAVGJORT** om punkttalen klarar men någon av gränserna inte gör det;
   - **FALLER** annars.
 - **Bredvid**, utan att avgöra:
-  - A1 och A3;
+  - A2, som FLER-VINTRAR §4, och dess tidigare tak 5 % (utkastet 31/10, #764); A1 och A3;
+  - zonen z och täckningen i varje prov;
   - RÅ och ΔA2 mot RÅ, där RÅ finns;
   - norr och söder om 62°, och per band;
   - de 58 stationerna under 1 000 fordon/dygn för sig, och de 5 utan granne för sig;
-  - frysflaggan mot K-A (FORREGISTRERING-2026-27 §4b punkt 11);
-  - huvudtalet viktat efter småvägarnas fördelning: P1-punkterna i urvalet ger andelen per band och norr/söder, och stationerna
-    vägs om till den fördelningen. Vikterna räknas ur urvalsfilen före läsningen.
+  - frysflaggan utan zon mot K-A (FORREGISTRERING-2026-27 §4b punkt 11);
+  - måtten viktade efter småvägarnas fördelning: P1-punkterna i urvalet ger andelen per band och norr/söder, och stationerna vägs
+    om till den fördelningen. Vikterna räknas ur urvalsfilen före läsningen.
 - Alla tal skrivs ut, också de som talar emot.
 
 ## 5. Följden av domen
 
 - **KLARAR:** skattningen i kartan på småvägarna får byggas för 2027/28 (#759), på ett eget kort. Den visar *fryser / fryser inte /
-  vet inte* och säger aldrig mer än skattningen bär.
+  vet inte* med zonen ur provet och säger aldrig mer än skattningen bär.
 - **OAVGJORT eller FALLER:** ingen karta på småvägarna 2027/28. Frågan prövas igen med fler vintrar eller med en ny kandidat, i en ny
   förregistrering.
 - **Rösten** avgörs inte här (#757).
@@ -121,8 +134,10 @@ Faller ett prov stannar läsningen, och felet söks innan något annat körs.
 
 ## 9. Förväntan, skriven före läsningen
 
-- **P1:** A2 omkring 5,7 % (#758), räknat ur #702:s regionmedel efter norr och söder och inte mätt. Domen väntas FALLA eller bli
-  OAVGJORT.
+- **P1, domen:** osäker. Zonen väntas bli ±1,5 °C eller bredare och täckningen 50–70 %. Det är räknat ur offsetmodellens K-A-dom
+  (#743: farliga fel 1,3 % vid ±1,0 °C och 80 % täckning), en annan modell på andra stationer, och inte mätt. Om domen klarar avgörs
+  av de farliga felen.
+- **P1, A2 bredvid:** omkring 5,7 % (#758), räknat ur #702:s regionmedel efter norr och söder och inte mätt.
 - **Norr och söder:** norr är sämre än söder.
 - **RÅ:** NIVÅ 2+BLANDNING har lägre A2 än RÅ där RÅ finns.
 - **F1:** radarn ensam ser en minoritet av frosttimmarna.
@@ -146,9 +161,10 @@ Inga tal för P1, P2, P3 eller storstäderna som egen population är lästa, och
 - **(c)** Minst 100 halvtimmar per station och vinter (§4).
 - **(d)** Storstädernas statliga stationer hålls utanför träningen (§3).
 
-**Öppet: domen (§4 och §5).** Bengt 31/10 vill diskutera om taket 5 % för A2 är för strängt för småvägarna, när skattningen där
-visas i kartan med *vet inte* och inte talar (#759). Diskussionen och valet bokförs i DECISIONS innan signeringen. Inget utfall är
-läst, och valet får inte grundas på förväntan i §9 (regel L3).
+**Domen avgjord 31/10** (Bengt: *"50 %, zon ur träningen"*, DECISIONS #766): frysklassen med *vet inte* i stället för A2 ≤ 5 %, med
+farliga fel ≤ 1 %, rätt klass ≥ 95 % och täckning ≥ 50 %, och osäkerhetszonen vald i träningen (§4). Skälet är vad kartan påstår:
+säkerhetskravet är detsamma som på huvudvägarna, och friheten ligger bara i hur ofta kartan säger *vet inte*. Inget utfall för P1 var
+läst, och valet grundas inte på förväntan i §9 (regel L3).
 
 ## 12. Fryst vid signeringen
 

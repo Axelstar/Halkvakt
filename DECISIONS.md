@@ -19496,3 +19496,40 @@ Inget utfall för P1 är läst. Ett nytt tak får därför sättas nu, men det s
 Det får inte grundas på förväntan 5,7 %: ett tak strax över förväntan vore att flytta ribban efter sett tal (regel L3).
 
 **Stomdokument:** BED §4.2 valen avgjorda och domen öppen.
+
+## #766 (31/10 2026) Småvägarnas dom: frysklassen med vet inte, täckning ≥ 50 % och zonen vald i träningen
+
+**Beslut** (Bengt 31/10: *"50 %, zon ur träningen"*, efter diskussionen om taket i #765). Domen i `docs/FORREGISTRERING-SMAVAGAR-2027-28.md` §4 byts:
+- **Förut:** A2 ≤ 5 % (#764).
+- **Nu:** kartans eget påstående, frysklassen *fryser / fryser inte / vet inte*.
+  - Klassen räknas på PB kring kandidatens frysgräns +1 °C, med osäkerhetszonen ±z (FORREGISTRERING-2026-27 §4b punkt 11).
+  - Kraven: farliga fel ≤ 1 % (K-A2, oförändrat), rätt klass ≥ 95 % bland de klassade och **täckning ≥ 50 %** (huvudvägarnas K-A3 är
+    70 %). Underlaget som K-A4.
+  - **Zonen väljs i träningen.** I varje prov är z den smalaste zonen i rutnätet 0, 0,25 … 3,0 °C där de farliga felen är högst 1 % på
+    träningsstationernas ärliga skattningar. Den prövas sedan oförändrad på P1. Klarar ingen zon träningen, FALLER provet utan att P1
+    läses.
+  - Varje station väger lika, och måtten tas som medel över de sex vintrarna. Den ärliga osäkerheten (§4b punkt 12) läses för farliga
+    fel (övre gräns) och rätt klass (undre gräns): KLARAR, OAVGJORT eller FALLER.
+  - A2 redovisas bredvid, med det tidigare taket 5 %.
+
+**Skälet.** Det farliga felet, att kartan säger *fryser inte* när det fryser, är lika strängt begränsat som på huvudvägarna. Friheten
+ligger bara i hur ofta kartan säger *vet inte*. Det följer *Silence is a feature* och regeln om att text aldrig får säga mer än datan
+bär. Med en zon vald i träningen prövas en enda zon på P1, och inget väljs efter P1-tal. TROSKLAR-FRYSKLASSNINGEN kallar K-A2:s tak
+inte förhandlingsbart, och det står kvar; täckningen är det enda som lättas.
+
+**Priset**, sagt till Bengt före valet: den bredare zonen gör att kartan säger *vet inte* just nära noll grader, när halkrisken är
+störst.
+
+**Förväntan** (utkastet §9): osäker. Zonen väntas bli ±1,5 °C eller bredare och täckningen 50–70 %. Det är räknat ur offsetmodellens
+K-A-dom (#743: 1,3 % farliga fel vid ±1,0 °C och 80 % täckning), en annan modell på andra stationer, och inte mätt.
+
+**Regel L.** Domen ändras före signeringen, och inget utfall för P1 är läst. Lättnaden gäller täckningen (70 → 50 %). Den grundas på
+vad kartan påstår, inte på förväntan, och den sänker inget säkerhetskrav.
+
+**Alternativ.**
+- (1) A2 ≤ 5 % kvar.
+- (2) Ett högre A2-tak, cirka 8 % som RÅ på stationerna (#702), tillsammans med kravet att vara bättre än RÅ.
+- Täckningen 70 % som på huvudvägarna.
+- Flera zoner prövade på P1, som K-A:s 27 kombinationer: avvisat, eftersom det ger flera chanser.
+
+**Stomdokument:** BED §4.2 domen avgjord; KUV §9 småvägsprovets dom.
