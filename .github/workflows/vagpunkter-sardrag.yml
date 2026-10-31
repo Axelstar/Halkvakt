@@ -9,6 +9,9 @@
 #   vagpunkter:   höjden med den valda metoden (hojdmetod), geofeat.py och geofeat2.py oförändrade och ECMWF-höjden på de 12 960
 #                 väglagspunkterna (data/vagdata/vaglagspunkter.json) i parallella delar, sammanställda till en fil som laddas upp som
 #                 artefakt och checkas in med källa och licens i data/KALLOR.json.
+#   punkter:      vilken punktfil vagpunkter-läget räknar på; standard de 12 960 väglagspunkterna. Småvägarnas urval
+#                 (data/vagdata/smavagspunkter-urval.json, fysik/vagpunkter/urval.py, kort #367, DECISIONS #761) räknas likadant, och
+#                 sammanställningen jämför då urvalets särdrag med stationernas spann i indata-releasen (bara aggregat).
 # Knapp, inte cron. Inga hemligheter och inga Trafikverkets rader: stationernas och punkternas lägen är öppna data.
 name: vagpunkter-sardrag
 on:
@@ -27,6 +30,9 @@ on:
         type: choice
         options: [ingen, glo90-bilinjar, glo90-narmast, glo30-bilinjar, glo30-3x3]
         default: ingen
+      punkter:
+        description: "punktfilen för vagpunkter-läget (data/vagdata/<namn>.json)"
+        default: "data/vagdata/vaglagspunkter.json"
 permissions:
   contents: read
 concurrency: vagpunkter-sardrag
@@ -56,11 +62,14 @@ jobs:
         with: { python-version: "3.13" }
       - name: Axels frysta skript (${{ inputs.lage }}, del ${{ matrix.del }})
         shell: bash
-        env: { GH_TOKEN: "${{ github.token }}", LAGE: "${{ inputs.lage }}", DEL: "${{ matrix.del }}", DELAR: "${{ inputs.delar }}", HOJDMETOD: "${{ inputs.hojdmetod }}" }
+        env: { GH_TOKEN: "${{ github.token }}", LAGE: "${{ inputs.lage }}", DEL: "${{ matrix.del }}", DELAR: "${{ inputs.delar }}", HOJDMETOD: "${{ inputs.hojdmetod }}", PUNKTER: "${{ inputs.punkter }}" }
         run: |
           set -euo pipefail
           if [ "$LAGE" = vagpunkter ] && [ "$HOJDMETOD" = ingen ]; then
             echo "::error::hojdmetod saknas: välj vinnaren ur hojdprovet, inskriven i DECISIONS #553 före knappen"; exit 1
+          fi
+          if [ "$LAGE" = vagpunkter ] && { ! [[ "$PUNKTER" =~ ^data/vagdata/[a-z0-9-]+\.json$ ]] || [ ! -f "$PUNKTER" ]; }; then
+            echo "::error::punkter ska vara en fil data/vagdata/<namn>.json i repot, fick $PUNKTER"; exit 1
           fi
           (cd fysik && sha256sum -c SHA256SUMS)
           python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|rasterio)==' fysik/requirements.txt)
@@ -82,7 +91,7 @@ jobs:
             if [ -d frusen/data ]; then mv frusen/data/* frusen/ && rmdir frusen/data; fi
             cp frusen/stations.csv fysik/data/stations.csv
           else
-            python3 fysik/vagpunkter/vagpunkter.py stationer --ut fysik/data/stations.csv --del "$DEL" --delar "$DELAR"
+            python3 fysik/vagpunkter/vagpunkter.py stationer --punkter "$PUNKTER" --ut fysik/data/stations.csv --del "$DEL" --delar "$DELAR"
           fi
           N=$(( $(wc -l < fysik/data/stations.csv) - 1 ))
           {
@@ -144,9 +153,23 @@ jobs:
         with: { pattern: "vagpunkter-del-*", path: delar }
       - name: Delarna sammanställda
         shell: bash
+        env: { GH_TOKEN: "${{ github.token }}", PUNKTER: "${{ inputs.punkter }}" }
         run: |
           set -euo pipefail
           python3 -m pip install -q $(grep -E '^(numpy|pandas)==' fysik/requirements.txt)
-          { echo '```'; python3 fysik/vagpunkter/vagpunkter.py sammanstall --delar delar --ut vagpunkter-sardrag.csv; echo '```'; } | tee -a "$GITHUB_STEP_SUMMARY"
+          { echo '```'; python3 fysik/vagpunkter/vagpunkter.py sammanstall --punkter "$PUNKTER" --delar delar --ut vagpunkter-sardrag.csv; echo '```'; } | tee -a "$GITHUB_STEP_SUMMARY"
+          if [ "$PUNKTER" != data/vagdata/vaglagspunkter.json ]; then
+            # Urvalets spann mot stationerna (kort #367, DECISIONS #761): stationernas värden ur indata-releasen, bara aggregat i loggen.
+            gh release download kuvos-fysik-indata-2024-25 --dir indata
+            node -e '
+              const m = require("./kuvos/fysik-indata-leverans.json"), c = require("crypto"), fs = require("fs");
+              let fel = 0;
+              for (const f of m.filer) { const h = c.createHash("sha256").update(fs.readFileSync("indata/" + f.fil)).digest("hex");
+                console.log(`${f.fil}: ${h === f.sha256 ? "ok" : "FEL " + h}`); if (h !== f.sha256) fel++; }
+              process.exit(fel ? 1 : 0);'
+            mkdir -p frusen && for f in indata/*.tar.gz; do tar -xzf "$f" -C frusen; done
+            if [ -d frusen/data ]; then mv frusen/data/* frusen/ && rmdir frusen/data; fi
+            { echo '```'; python3 fysik/vagpunkter/urval.py spann --punkter "$PUNKTER" --sardrag vagpunkter-sardrag.csv --frusen frusen --road-all frusen/road_all.csv; echo '```'; } | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
       - uses: actions/upload-artifact@v4
         with: { name: vagpunkter-sardrag, path: vagpunkter-sardrag.csv, retention-days: 30, if-no-files-found: error }

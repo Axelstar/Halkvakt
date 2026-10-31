@@ -119,7 +119,7 @@ def sammanstall(delar, ut, punkter=PUNKTER):
         d = d[['sid'] + RATTELSEN[fil]]
         tab = d if tab is None else tab.merge(d, on='sid', how='outer')
     p = punkter_tabell(punkter)
-    if not set(tab.sid) <= set(p.sid): raise ValueError('en del har punkter som inte finns bland väglagspunkterna')
+    if not set(tab.sid) <= set(p.sid): raise ValueError(f'en del har punkter som inte finns i {os.path.basename(punkter)}')
     tab = p.merge(tab, on='sid', how='right').sort_values('sid').reset_index(drop=True)
     tab.to_csv(ut, index=False, float_format='%.6g', lineterminator='\n')
     saknas = {k: int(tab[k].isna().sum()) for k in tab.columns if k not in ('sid', 'id', 'lon', 'lat')}
@@ -228,10 +228,12 @@ if __name__ == '__main__':
     ap = argparse.ArgumentParser()
     sp = ap.add_subparsers(dest='cmd', required=True)
     a1 = sp.add_parser('stationer'); a1.add_argument('--ut', required=True); a1.add_argument('--del', type=int, default=0); a1.add_argument('--delar', type=int, default=1)
+    a1.add_argument('--punkter', default=PUNKTER)
     a2 = sp.add_parser('elev-ifs'); a2.add_argument('--stationer', required=True); a2.add_argument('--ut', required=True)
     a5 = sp.add_parser('elev-ifs-ur-hojd'); a5.add_argument('--elev', required=True); a5.add_argument('--ut', required=True)
     a3 = sp.add_parser('jamfor'); a3.add_argument('--ny', required=True); a3.add_argument('--frusen', required=True)
     a4 = sp.add_parser('sammanstall'); a4.add_argument('--delar', required=True); a4.add_argument('--ut', required=True)
+    a4.add_argument('--punkter', default=PUNKTER)
     a6 = sp.add_parser('paketera'); a6.add_argument('--csv', required=True); a6.add_argument('--ut', required=True); a6.add_argument('--huvud', required=True)
     a7 = sp.add_parser('prova'); a7.add_argument('--fil', required=True)
     a = ap.parse_args()
@@ -244,7 +246,7 @@ if __name__ == '__main__':
         print(f'✓ {a.fil}: varje kolumn som rättelsen läser inom värdevaktens spann, inget saknas'); sys.exit(0)
     if a.cmd == 'stationer':
         d = getattr(a, 'del')
-        print(f'stations.csv: {stationer(PUNKTER, a.ut, d, a.delar)} punkter (del {d} av {a.delar})')
+        print(f'stations.csv: {stationer(a.punkter, a.ut, d, a.delar)} punkter ur {os.path.basename(a.punkter)} (del {d} av {a.delar})')
     elif a.cmd == 'elev-ifs':
         print(f'elev_ifs.csv: {elev_ifs(a.stationer, a.ut)} punkter')
     elif a.cmd == 'elev-ifs-ur-hojd':
@@ -256,5 +258,5 @@ if __name__ == '__main__':
         print('alla kolumner rättelsen läser reproducerade' if ok else 'INTE REPRODUCERAT: minst en kolumn som rättelsen läser skiljer sig')
         sys.exit(0 if ok else 1)
     else:
-        rad, sha, saknas, dubbl = sammanstall(a.delar, a.ut)
+        rad, sha, saknas, dubbl = sammanstall(a.delar, a.ut, a.punkter)
         print(f'{a.ut}: {rad} punkter, sha256 {sha}; saknas per kolumn: {saknas}; {dubbl} rader bär ett id som förekommer mer än en gång')

@@ -19357,3 +19357,47 @@ Frågorna (a) och (b) i bedömningen §4.2 är därmed avgjorda.
 **Alternativ.** Storstäderna som ett eget spår med egen dom avvisades: för få stationer, och redovisningen räcker för förhandlingen.
 
 **Stomdokument:** BED §4.2 storstäderna och databasläsningen avgjorda; APP målet på sikt varning i appen om skattningen håller.
+
+## #761 (31/10 2026) Småvägarnas urval: 2 000 punkter ur Sverigepaketet, och flödet som räknar deras särdrag och spann
+
+**Beslut** (Bengt 31/10: *"Ja, förbered"*, om steg 1 i kort #367). Steg 1 läser inget utfall. Frågan är var punkter på vägar som
+Trafikverket inte bedömer ligger i rättelsens fasta särdrag, jämfört med stationerna som rättelsen tränats på.
+
+**Urvalet** (`fysik/vagpunkter/urval.py`, regeln skriven i skriptet före körningen; filen `data/vagdata/smavagspunkter-urval.json`):
+- **Källan** är Lastkajens *Sverigepaket Drift och underhåll* (CC0, paketet i #553), lagret `SverigePaket_DoU`, med sha256
+  `b56b097b764be1a32035cb6648e3ec1719bee93ce743a58339b375952185a0fe`.
+- **Bara bilvägar** (`Vagtr_474` = 1) och inga färjeleder.
+- **P1** är statliga vägar (`Vagha_6` = 1) som ligger längre än 2 km från varje väglagspunkt; **P3** är kommunala vägar (`Vagha_6` = 2),
+  var de än ligger (#758).
+- **Varje punkt** ligger likformigt över populationens vägkilometer: ett segment dras med sannolikhet i proportion till längden, och
+  punkten läggs på ett slumpat ställe längs det. 1 000 punkter per population, fröet 20261031. Samma paket ger samma fil.
+- **Utfall av dragningen:**
+  - Statlig bilväg är 106 491 km och kommunal 44 563 km enligt paketets längder.
+    Den officiella siffran är omkring 98 500 och 41 500 km; skillnaden är inte utredd.
+  - **För P1 krävdes 1 900 dragningar, och 900 föll inom 2 km från väglagsnätet.** Ungefär 47 % av de statliga vägkilometrarna ligger
+    alltså inom 2 km från de 818 sträckornas punkter.
+- **Kontrollen före dragningen:** koordinatomräkningen (SWEREF99 TM till WGS84, Lantmäteriets formler, självtestet inom en millimeter)
+  prövades mot sex stationer (7102, 7101, 7503, 1001, 1203, 216). Alla hamnade 5–18 m från en väg i rätt kommun, och väghållarkoden
+  stämde (1 statlig, 2 kommunal). Station 1001 fick samma ÅDT som i `data/vagdata/stationer.json`, 2 346.
+
+**Urvalets egna fält** (paketets väghållning, inget utfall):
+- **P1:** ÅDT-median 155, 87 % under 1 000, vägklass 5 i 64 % och klass 6 i 7 %, och 34 % norr om 62°.
+- **P3:** ÅDT och vinterklass saknas för alla 1 000. Vägklass 7 gäller 73 %, och klass 8 och 9 tillsammans 4,6 %.
+- **Stationerna** har vägklass 0–7: bara 25 har klass 5, en har klass 6 och fyra har klass 7. Gatorna ligger alltså vid kanten av det
+  rättelsen sett, eller utanför den.
+
+**Flödet:** `vagpunkter-sardrag.yml` har fått indata `punkter`; standard är de 12 960 väglagspunkterna.
+- För urvalet räknar Axels frysta skript särdragen som för väglagspunkterna (#553).
+- Sammanställningen jämför sedan särdragen med stationernas min–max i indata-releasen, per population och med bara aggregat
+  (`urval.py spann`). Det jämför också ÅDT och vägklass mot stationernas `road_all.csv`.
+- `vagpunkter.py stationer` och `sammanstall` tar `--punkter`. `urval.py --sjalvtest` körs i ci.
+
+**Knappen** körs på Bengts ord, med `lage` vagpunkter, `hojdmetod` glo90-bilinjar (#553), `punkter`
+data/vagdata/smavagspunkter-urval.json och `delar` 4. Spannet redovisas som läsning och avgör inget.
+
+**Alternativ.**
+- Punkter ur NVDB:s öppna API, som för väglagspunkterna: avvisat. Paketet bär väghållare, ÅDT, klass och vinterklass per segment och
+  ligger redan lokalt.
+- Ett urval viktat efter trafik: avvisat. Spannet frågar var vägarna ligger, inte var förarna kör.
+
+**Stomdokument:** MAT småvägarnas urval och spann (steg 1 i kort #367).
