@@ -19555,3 +19555,32 @@ FLER-VINTRAR och NY-KANDIDAT (#668, #671). Dokumentets sha256 vid signeringen, f
 fuktläsningen F1 och F2 på 2024/25. Inget av det är byggt.
 
 **Stomdokument:** KUV §9 småvägsprovet signerat och väntar på bygget.
+
+## #768 (31/10 2026) Länssidan: kartan öppnas på plats, en lista över vägarna och prognosen i ett eget avsnitt; lagret heter Prognos
+
+**Beslut** (Axel 31/10, med Bengt vid hemsidan: *"Ja kör"* och *"litar vi på dig på det du skrev nyss"*). Fyra ändringar, tre av dem i
+`publish/lanssidor.ts` (och `publish/map-core.ts`, som lämnar över prognosens bitar):
+1. **Kartan öppnas på plats.** Ett klick på länsbilden byter den mot livekartan i dess inbäddade läge (`karta.html?lan=<slug>&inbaddad=1`,
+   kartrepot 31575aa): samma karta och samma kod, utan topp och panel, låst kring länet, och två fingrar flyttar kartan så att sidan går
+   att skrolla. Bilden står kvar tills klicket, så sidan laddar som förut; utan skript eller med Ctrl/⌘ går länken till stora kartan.
+   Länken *Stor karta →* står i hörnet.
+2. **En lista över vägarna.** *Väglaget enligt Trafikverket* tas bort från länssidan; varje hal sträcka står i stället under sin väg i
+   *Stora vägar* med Trafikverkets ord, liten bokstav och tankstreck mellan orterna (*Vuollerim–Boden: besvärligt (risk för), is med bart i
+   hjulspår, fläckvis våt*). Norrbottens sida hade samma 30 sträckor två gånger. Vägar med halka står alltid med; de andra fyller upp till 14.
+3. **Avsnittet Prognos.** Under listan, för de sträckor i länet där prognosen (kandidaten, DECISIONS #579) pekar på halka och Trafikverket
+   inte redan rapporterar det, med bitens längd och klockslaget. Märkt modellerat, med MET Norways licens. Det räknas aldrig in i svaret,
+   titeln, beskrivningen, `data/lan.json` eller vägrutans fil, och skrivs inte när brytaren är av (#578), när inget varnar eller när
+   bitarna inte går att läsa. Vägsidorna, ortssidorna och översikten är orörda. Svaret om var vägbanans temperatur mäts säger nu att
+   prognosen räknar också mellan stationerna.
+4. **Namnet.** Kartans lager *Halkvakt tror · beta* heter *Prognos*, utan beta (Axel och Bengt 31/10: varumärket ska inte stå på det enda
+   som inte är uppmätt, och beta tas bort eftersom de är säkra på modellen). Infört på halkvakt.se 31/10 (kartrepot c418163: kartan,
+   Vanliga frågor och Om Halkvakt). *Modellerat, inte uppmätt* står kvar.
+
+**Kvar.** Appen säger fortfarande *Halkvakt tror*: rösten (*"Halkvakt tror: halka framöver."*, `engine/src/texts.ts` och vektorerna),
+varningskortet, rapportens ruta och App Store-texten. Bytet där kräver en ny replik, som Axel väljer, och ett nytt bygge.
+
+**Alternativ.** En egen karta på länssidan: två kartor att hålla i fas. Länken till stora kartan som förut: det Axel ville bort från.
+Prognosen inräknad i talen överst: sidan skulle säga mer än Trafikverket, och tidningar citerar talen som Trafikverkets. Prognosen i
+tidningsrutan: väntar tills en tidning ber om den.
+
+**Stomdokument:** LIV steg 9: kandidaten syns som Prognos på kartan och länssidorna; APP: namnet i appen är kvar tills repliken är vald.

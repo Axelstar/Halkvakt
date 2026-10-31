@@ -738,7 +738,8 @@ export async function buildGrannSnapshot(q: Q, land: Granne, now: Date = new Dat
 // LÄNSSIDORNA (kort #281, DECISIONS #458) — "Halt väglag i Skåne just nu?" för de 21 länen, och "Halt väglag på E4 just nu?" för
 // de stora vägarna, skrivna av publicera i kartlagrens varv (var 30:e minut) till kartsajten. Allt här blir PUBLIKT och läses av Google, så sidan säger bara vad källorna säger:
 // Trafikverkets väglagsrapport med deras egna ord, vägbanans temperatur vid de stationer som klarar appens vakter, och pågående
-// olyckor. Sidan påstår aldrig själv att det är halt.
+// olyckor. Sidan påstår aldrig själv att det är halt. Länssidans enda undantag är avsnittet Prognos (31/10, DECISIONS #768): eget
+// avsnitt, märkt modellerat, aldrig i talen, titeln eller beskrivningen, och borta när brytaren är av.
 //
 // Ren och körtidsneutral som kartkärnan: inga importer, för scripts/bundle-publicera.ts klistrar in filen i publicera. Namnen får
 // därför inte krocka med snapshot-core.ts eller map-core.ts.
@@ -846,9 +847,11 @@ export const PENDLING: Record<string, string> = {
 /** Vägnumret utan form: väglaget skriver "E 4" och "Väg 40", olyckorna "E4" och "Väg 274". */
 export const vagNyckel = (s: string | null) => (s ?? "").toLowerCase().replace(/\s+/g, "").replace(/^väg/, "");
 
-export type LanSegment = { code: number | null; text: string | null; info: string[]; road: string | null; plats: string | null; lan: number | null };
+export type LanSegment = { id?: string; code: number | null; text: string | null; info: string[]; road: string | null; plats: string | null; lan: number | null };
 export type LanStation = { name: string; yta: number; fukt: boolean; lan: number; vag?: string | null };
 export type LanOlycka = { road: string | null; start: string | null; allvar: string | null; lan: number | null };
+/** Prognosen (kartans lager Prognos, #579): sträckorna med en beräknad bit halka och bitens längd. Saknas när brytaren är av (#578). */
+export type LanPrognos = { tid: string | null; strackor: { id: string; km: number }[] };
 
 const lsEsc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const lsGrad = (c: number) => `${c.toFixed(1).replace(".", ",").replace("-", "−")} °C`;
@@ -865,9 +868,11 @@ const LS_STIL = `.dok{max-width:760px}.svar{font:500 19px/1.5 var(--sans);color:
 .dok a.knapp{color:var(--mark);text-decoration:none}
 .svar-app{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;margin:0 0 8px}.svar-app p{margin:0;color:var(--text2);flex:1 1 280px}
 .lankarta{position:relative;display:block;height:min(62vw,440px);margin:22px 0 6px;background:var(--panel);border:1px solid var(--kant);border-radius:18px;overflow:hidden}
+.lankarta.oppen{height:min(75vh,560px)}.lankarta iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.lankarta .stor{position:absolute;left:12px;top:12px;font:500 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--text);text-decoration:none;background:rgba(15,21,24,.94);border:1px solid var(--kant);border-radius:14px;padding:7px 11px}
 .lankarta canvas{position:absolute;inset:0;width:100%;height:100%}.lankarta span{position:absolute;left:16px;bottom:12px;font:500 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--dampad)}
 .vaglista{list-style:none;padding:0;margin:0}.vaglista li{padding:12px 0;border-top:1px dashed #253036}.vaglista li:first-child{border-top:0}
-.vaglista b{font:600 13px var(--mono);letter-spacing:.08em;margin-right:10px}.vaglista .halt{color:var(--gul)}.vaglista small{display:block;color:var(--dampad);font-size:14px;margin-top:2px}
+.vaglista b{font:600 13px var(--mono);letter-spacing:.08em;margin-right:10px}.vaglista .halt{color:var(--gul)}.vaglista .prognos{color:#FF8F6B}.vaglista small{display:block;color:var(--dampad);font-size:14px;margin-top:2px}
 .fragor h3{font-size:17px;margin:20px 0 4px}.fragor p{margin:0}`;
 // App Store med kampanjkod per knapp (27/10, DECISIONS #732), samma som sajtens övriga sidor.
 const lsApp = (ct: string) => `https://apps.apple.com/se/app/halkvakt/id6806939784?ct=${ct}`;
@@ -1054,8 +1059,13 @@ const lsStracka = (s: LanSegment) => (s.plats ?? "").replace(new RegExp("^" + (s
   .replace(/^\.?\d+\s+/, "").replace(/\s+-\s+/g, "–").trim();
 const lsVagOrdning = (r: string) => { const m = /^(E|Väg)\s*(\d+)/.exec(r); return m ? (m[1] === "E" ? 0 : 1000) + Number(m[2]) : 9999; };
 
+/** Trafikverkets ord för en sträcka, med liten bokstav ("Besvärligt (risk för), fläckvis Våt" → "besvärligt (risk för), fläckvis våt").
+ *  Orden är deras; bara versalerna mitt i meningen tas bort. */
+const lsVad = (s: LanSegment) => [s.text, ...s.info].filter(Boolean).map((t) => (t as string).toLowerCase()).join(", ");
+
 /** Länets stora vägar just nu (25/10, DECISIONS #722): E-vägarna och riksvägarna, och varje annan väg med halka. Text, så att
- *  orterna i sträckornas namn går att söka på. */
+ *  orterna i sträckornas namn går att söka på. Sedan 31/10 (DECISIONS #768) den enda listan: varje hal sträcka står under sin väg med
+ *  Trafikverkets ord, i stället för en gång till i en egen lista. Vägar med halka står alltid med; de andra fyller upp till 14. */
 function lsVagarILanet(kod: number, d: { vaglag: LanSegment[]; stationer: LanStation[] }): string {
   const segs = d.vaglag.filter((x) => x.lan === kod && x.road);
   const vagar = [...new Set(segs.map((x) => x.road as string))].sort((a, b) => lsVagOrdning(a) - lsVagOrdning(b));
@@ -1063,16 +1073,21 @@ function lsVagarILanet(kod: number, d: { vaglag: LanSegment[]; stationer: LanSta
     const sv = segs.filter((x) => x.road === vag);
     const halt = sv.filter((x) => arHalt(x.code, x.info));
     const stor = /^E\s*\d/.test(vag) || lsVagOrdning(vag) < 1100;
-    if (!stor && !halt.length) return "";
-    const namn = [...new Set((halt.length ? halt : sv).map(lsStracka).filter(Boolean))].slice(0, 5);
+    if (!stor && !halt.length) return null;
+    const namn = [...new Set(sv.map(lsStracka).filter(Boolean))].slice(0, 5);
+    const smatt = halt.length
+      ? halt.map((x) => { const vad = lsVad(x); return `<small>${lsEsc(lsStracka(x) || lsVagNamn(vag))}${vad ? `: ${lsEsc(vad)}` : ""}</small>`; }).join("")
+      : namn.length ? `<small>${lsEsc(namn.join(" · "))}</small>` : "";
     const st = d.stationer.filter((x) => x.lan === kod && vagNyckel(x.vag ?? null) === vagNyckel(vag)).sort((a, b) => a.yta - b.yta)[0];
     const lage = halt.length
       ? `<span class="halt">Halka eller vinterväglag på ${halt.length} av ${lsPlural(sv.length, "sträcka", "sträckor")}</span>`
       : `Ingen halka rapporterad på ${lsPlural(sv.length, "sträcka", "sträckor")}`;
     const temp = st ? ` · vägbanan ${lsGrad(st.yta)} vid ${lsEsc(st.name)}` : "";
-    return `<li><b>${lsEsc(lsVagNamn(vag))}</b>${lage}${temp}${namn.length ? `<small>${lsEsc(namn.join(" · "))}</small>` : ""}</li>`;
-  }).filter(Boolean).slice(0, 14);
-  return rader.length ? `<ul class="vaglista">\n${rader.join("\n")}\n</ul>` : "<p>Trafikverket rapporterar inget väglag för länets stora vägar just nu.</p>";
+    return { halt: halt.length > 0, html: `<li><b>${lsEsc(lsVagNamn(vag))}</b>${lage}${temp}${smatt}</li>` };
+  }).filter((r) => r !== null);
+  let plats = 14 - rader.filter((r) => r.halt).length;
+  const visas = rader.filter((r) => r.halt || plats-- > 0).map((r) => r.html);
+  return visas.length ? `<ul class="vaglista">\n${visas.join("\n")}\n</ul>` : "<p>Trafikverket rapporterar inget väglag för länets stora vägar just nu.</p>";
 }
 
 /** Vanliga frågor (25/10, DECISIONS #722): synliga på sidan och som FAQPage. Svaren säger bara vad sidan och appen gör. */
@@ -1080,7 +1095,7 @@ function lsFragor(namn: string, var_ = `i ${namn}`): { fraga: string; svar: stri
   return [
     { fraga: `Hur ofta uppdateras väglaget ${var_}?`, svar: "Sidan skrivs om var 30:e minut med Trafikverkets senaste väglagsrapport, vägbanans temperatur vid vägväderstationerna och pågående olyckor." },
     { fraga: "Vad räknas som halka på sidan?", svar: "En sträcka räknas som hal när Trafikverkets väglagsrapport anger besvärligt väglag eller nämner is, snö, frost eller halka. Det är samma regel som får appen att varna." },
-    { fraga: "Var mäts vägbanans temperatur?", svar: "Vid Trafikverkets vägväderstationer längs de större vägarna. Mellan stationerna mäts ingenting, så vägen kan vara kallare eller varmare där." },
+    { fraga: "Var mäts vägbanans temperatur?", svar: "Vid Trafikverkets vägväderstationer längs de större vägarna. Mellan stationerna mäts ingenting, så vägen kan vara kallare eller varmare där. Halkvakts prognos räknar ut hur kall vägbanan troligen är också där, men det är en beräkning, inte en mätning." },
     { fraga: "Kan jag få en varning medan jag kör?", svar: "Ja. Halkvakt för iPhone säger till med rösten när halka är rapporterad på vägen framför dig. Appen är gratis, och din position lämnar inte telefonen av sig själv." },
   ];
 }
@@ -1092,17 +1107,25 @@ const lsFragorLd = (f: { fraga: string; svar: string }[]) => `<script type="appl
 }).replace(/</g, "\\u003c")}</script>`;
 
 /** Kartan över länet (25/10, DECISIONS #722): länets gräns, alla dess sträckor och de hala gula, ritad i webbläsaren ur sajtens egna
- *  filer. Vilka sträckor som är hala bestäms här (arHalt) och skickas med, så att kartan och texten aldrig är oense. */
+ *  filer. Vilka sträckor som är hala bestäms här (arHalt) och skickas med, så att kartan och texten aldrig är oense.
+ *  Ett klick (31/10, DECISIONS #768) byter bilden mot livekartan på samma plats, i dess inbäddade läge (karta.html?inbaddad=1 i
+ *  kartrepot): samma karta, låst kring länet. Bilden står kvar tills dess, så sidan laddar lika snabbt. Utan skript, eller med
+ *  Ctrl/⌘, går länken till stora kartan som förut. */
 function lsLanKarta(lan: { slug: string; kod: number; kort: string }, l: LanLage): string {
   const halt = JSON.stringify([...new Set(l.halt.map((s) => s.plats ?? s.road ?? ""))]).replace(/</g, "\\u003c");
   return `<a class="lankarta" href="../../karta.html?lan=${lan.slug}" aria-label="Öppna ${lsEsc(lan.kort)} på livekartan"><canvas id="lankarta" aria-hidden="true"></canvas><span>Öppna livekartan →</span></a>
-<script>(function(){var SLUG=${JSON.stringify(lan.slug)},KOD=${lan.kod},HALT=new Set(${halt});
+<script>(function(){var SLUG=${JSON.stringify(lan.slug)},KOD=${lan.kod},HALT=new Set(${halt}),NAMN=${JSON.stringify(lan.kort).replace(/</g, "\\u003c")},A=document.querySelector('a.lankarta');
+A.addEventListener('click',function(e){if(e.button||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;e.preventDefault();
+var box=document.createElement('div'),f=document.createElement('iframe'),stor=document.createElement('a');box.className='lankarta oppen';
+f.src='../../karta.html?lan='+SLUG+'&inbaddad=1';f.title='Livekartan, '+NAMN;f.allow='geolocation';
+stor.className='stor';stor.href='../../karta.html?lan='+SLUG;stor.textContent='Stor karta →';
+box.appendChild(f);box.appendChild(stor);A.replaceWith(box);f.focus()});
 Promise.all([fetch('/assets/lan.geojson').then(function(r){return r.json()}),fetch('/data/vaglag.geojson').then(function(r){return r.json()}),fetch('/data/vader.geojson').then(function(r){return r.json()})]).then(function(d){
 var lan=d[0].features,mitt=lan.filter(function(f){return f.properties.slug===SLUG})[0];if(!mitt)return;
 var segs=d[1].features.filter(function(f){return f.properties.lan===KOD});
 var ringar=function(g){return g.type==='MultiPolygon'?[].concat.apply([],g.coordinates):g.coordinates};
 var b=[180,90,-180,-90];ringar(mitt.geometry).forEach(function(r){r.forEach(function(p){b[0]=Math.min(b[0],p[0]);b[1]=Math.min(b[1],p[1]);b[2]=Math.max(b[2],p[0]);b[3]=Math.max(b[3],p[1])})});
-function rita(){var cv=document.getElementById('lankarta'),bx=cv.getBoundingClientRect(),dpr=Math.min(2,devicePixelRatio||1);cv.width=bx.width*dpr;cv.height=bx.height*dpr;
+function rita(){var cv=document.getElementById('lankarta');if(!cv)return;var bx=cv.getBoundingClientRect(),dpr=Math.min(2,devicePixelRatio||1);cv.width=bx.width*dpr;cv.height=bx.height*dpr;
 var c=cv.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);var k=Math.cos((b[1]+b[3])/2*Math.PI/180),pad=28,w=(b[2]-b[0])*k,h=b[3]-b[1],s=Math.min((bx.width-pad*2)/w,(bx.height-pad*2)/h),
 ox=(bx.width-w*s)/2,oy=(bx.height-h*s)/2,xy=function(p){return[ox+(p[0]-b[0])*k*s,oy+(b[3]-p[1])*s]};
 var yta=function(g,fyll,kant,lw){c.fillStyle=fyll;c.strokeStyle=kant;c.lineWidth=lw;ringar(g).forEach(function(r){c.beginPath();r.forEach(function(p,i){var q=xy(p);i?c.lineTo(q[0],q[1]):c.moveTo(q[0],q[1])});c.closePath();c.fill();c.stroke()})};
@@ -1111,7 +1134,31 @@ var linje=function(f){var g=f.geometry,L=g.type==='MultiLineString'?g.coordinate
 c.lineCap='round';c.lineJoin='round';c.strokeStyle='#4A5A63';c.lineWidth=1.6;segs.forEach(function(f){if(!HALT.has(f.properties.plats||f.properties.road||''))linje(f)});
 c.strokeStyle='#FFC94A';c.lineWidth=3;c.shadowColor='rgba(255,201,74,.6)';c.shadowBlur=8;segs.forEach(function(f){if(HALT.has(f.properties.plats||f.properties.road||''))linje(f)});c.shadowBlur=0;
 d[2].features.forEach(function(f){var p=f.geometry.coordinates,y=f.properties.yta;if(f.properties.land!=='SE'||p[0]<b[0]||p[0]>b[2]||p[1]<b[1]||p[1]>b[3]||typeof y!=='number')return;var q=xy(p);c.fillStyle=y<0?'#E9EFF2':'#34424A';c.beginPath();c.arc(q[0],q[1],y<0?2.6:1.6,0,7);c.fill()})}
-rita();addEventListener('resize',rita)}).catch(function(){var a=document.querySelector('.lankarta');if(a)a.style.display='none'})})();</script>`;
+rita();addEventListener('resize',rita)}).catch(function(){if(A.isConnected)A.style.display='none'})})();</script>`;
+}
+
+/** Prognosen på länssidan (31/10, DECISIONS #768): kartlagret Prognos som text, för de sträckor i länet där Trafikverket inte redan
+ *  rapporterar halka. Ett eget avsnitt under Trafikverkets lista, märkt modellerat; det räknas aldrig in i talen, titeln eller
+ *  beskrivningen. Ingenting skrivs när brytaren är av (prognos saknas) eller när prognosen inte har något utöver rapporten. */
+function lsPrognosAvsnitt(lan: { kod: number; kort: string }, l: LanLage, d: { vaglag: LanSegment[]; prognos?: LanPrognos }): string {
+  if (!d.prognos) return "";
+  const rapporterad = new Set(l.halt.map((s) => s.id));
+  const segment = new Map(d.vaglag.filter((s) => s.lan === lan.kod && s.id).map((s) => [s.id as string, s]));
+  const rader = d.prognos.strackor.flatMap((p) => {
+    const s = segment.get(p.id);
+    return s && !rapporterad.has(s.id) ? [{ s, km: p.km }] : [];
+  }).sort((a, b) => lsVagOrdning(a.s.road ?? "") - lsVagOrdning(b.s.road ?? ""));
+  if (!rader.length) return "";
+  // Som rösten säger avstånd (guiden 04): hela hundratal under en kilometer, annars hela kilometer.
+  const langd = (km: number) => km >= 1 ? `${Math.round(km)} km` : `${Math.max(100, Math.round(km * 10) * 100)} m`;
+  const tid = d.prognos.tid ? `, beräknat för kl. ${lsTid(new Date(d.prognos.tid), false)}` : "";
+  return `<h2>Prognos för vägarna i ${lsEsc(lan.kort)}</h2>
+<p>Utöver Trafikverkets rapport pekar Halkvakts prognos på halka på ${lsPlural(rader.length, "sträcka", "sträckor")} i länet${tid}.</p>
+<ul class="vaglista">
+${rader.map(({ s, km }) => `<li><b>${lsEsc(lsVagNamn(s.road ?? ""))}</b><span class="prognos">Halka enligt prognosen</span> · ${langd(km)} väg${lsStracka(s) ? `<small>${lsEsc(lsStracka(s))}</small>` : ""}</li>`).join("\n")}
+</ul>
+<p class="dim">Prognosen räknar ut vägbanans temperatur också mellan mätstationerna, ur MET Nordic (MET Norway, CC BY 4.0) och Trafikverkets vägväderstationer. Den är modellerad, inte uppmätt, och talen överst på sidan är bara Trafikverkets.</p>
+`;
 }
 
 /** Länet som folk skriver det i sökrutan (28/10, Search Console: "halka uppsala", "trafikläget örebro"): utan "län" och utan
@@ -1192,11 +1239,7 @@ ${lsFragorHtml(lsFragor(ort.namn))}
   });
 }
 
-function lsLanssida(lan: (typeof LAN)[number], l: LanLage, now: Date, d: { vaglag: LanSegment[]; stationer: LanStation[] }): string {
-  const halt = l.halt.slice(0, 15).map((s) => {
-    const vad = [s.text, ...s.info].filter(Boolean).join(", ");
-    return `<li>${lsEsc(s.plats ?? s.road ?? "Vägavsnitt")}: ${lsEsc(vad)}</li>`;
-  }).join("\n");
+function lsLanssida(lan: (typeof LAN)[number], l: LanLage, now: Date, d: { vaglag: LanSegment[]; stationer: LanStation[]; prognos?: LanPrognos }): string {
   const kalla = l.kalla.slice(0, 5).map((s) =>
     `<li>${lsEsc(s.name)}: ${lsGrad(s.yta)}${s.fukt ? ", nederbörd eller fukt rapporteras" : ""}</li>`).join("\n");
   const olyckor = l.olyckor.slice(0, 10).map((o) => `<li>${lsEsc(o.road ?? "Väg")}${o.start ? `, sedan ${lsTid(new Date(o.start))}` : ""}` +
@@ -1210,11 +1253,8 @@ ${l.halt.length ? `<div class="svar-app"><p>Kör du i ${lsEsc(lan.kort)} idag? A
 ` : ""}${lsLanKarta(lan, l)}
 <h2>Stora vägar i ${lsEsc(lan.kort)} just nu</h2>
 ${lsVagarILanet(lan.kod, d)}
-<h2>Pendla i ${lsEsc(lan.kort)}</h2>
+${lsPrognosAvsnitt(lan, l, d)}<h2>Pendla i ${lsEsc(lan.kort)}</h2>
 <p>${lsEsc(PENDLING[lan.slug] ?? "")}</p>
-<h2>Väglaget enligt Trafikverket</h2>
-${l.halt.length ? `<ul>\n${halt}\n</ul>${l.halt.length > 15 ? `\n<p class="dim">och ${l.halt.length - 15} till.</p>` : ""}`
-    : `<p>Inget av länets ${l.vagavsnitt} vägavsnitt har halka eller vinterväglag i Trafikverkets rapport.</p>`}
 <h2>Vägbanans temperatur</h2>
 ${l.kalla.length ? `<p>Kallast just nu, vid Trafikverkets vägväderstationer:</p>\n<ul>\n${kalla}\n</ul>`
     : "<p>Ingen av länets vägväderstationer visar vägbana på 0 °C eller kallare.</p>"}
@@ -1275,7 +1315,7 @@ ${vagrader}
 }
 
 /** Alla sidor, nyckel = sökvägen i kartsajten. */
-export function byggLanssidor(d: { vaglag: LanSegment[]; stationer: LanStation[]; olyckor: LanOlycka[]; now: Date }): Record<string, string> {
+export function byggLanssidor(d: { vaglag: LanSegment[]; stationer: LanStation[]; olyckor: LanOlycka[]; now: Date; prognos?: LanPrognos }): Record<string, string> {
   const lagen = new Map(LAN.map((lan) => [lan.kod, lsLage(lan.kod, d)] as const));
   const vagar = new Map(VAGAR.map((v) => [v.slug, lsVagLage(v.nyckel, d)] as const));
   const ut: Record<string, string> = { "lan/index.html": lsOversikt(lagen, vagar, d.now), "data/lan.json": lsLanJson(lagen, vagar, d.now),
@@ -1500,6 +1540,9 @@ export async function buildMapData(q: Q, opts: {
   // ritas inte (räknas som utanför). Brytaren av ⇒ appKandidat saknas ⇒ tom fil och meta.kandidat.pa = false. Fail-soft med not.
   const kandidatMeta = { pa: opts.appKandidat !== undefined, strackor: 0, punkter: 0, ritade: 0, km: 0, tid: null as string | null };
   let kandidatFeatures: unknown[] = [];
+  // Länssidornas avsnitt Prognos (#768) får samma bitar: sträcka och längd. Kvar som undefined när brytaren är av, när inget varnar
+  // eller när bitarna inte gick att läsa, så att sidorna aldrig visar en prognos som kartan inte visar.
+  let prognosStrackor: { id: string; km: number }[] | undefined;
   const kp = (opts.appKandidat ?? []).flatMap((k) => k.punkter.map(([lon, lat]) => ({ seg: k.id, lon, lat })));
   kandidatMeta.strackor = opts.appKandidat?.length ?? 0;
   kandidatMeta.punkter = kp.length;
@@ -1510,6 +1553,7 @@ export async function buildMapData(q: Q, opts: {
         [kp.map((x) => x.seg), kp.map((x) => x.lon), kp.map((x) => x.lat)]);
       kandidatFeatures = bitar.map((r) => ({ type: "Feature", geometry: r.g,
         properties: { segment_id: r.seg, punkter: Number(r.punkter), km: Number(r.km), tid: kandidatMeta.tid } }));
+      prognosStrackor = bitar.map((r) => ({ id: String(r.seg), km: Number(r.km) }));
       kandidatMeta.ritade = bitar.reduce((n, r) => n + Number(r.punkter), 0);
       kandidatMeta.km = Math.round(bitar.reduce((n, r) => n + Number(r.km), 0) * 10) / 10;
       if (kandidatMeta.ritade < kandidatMeta.punkter) {
@@ -1568,12 +1612,13 @@ export async function buildMapData(q: Q, opts: {
       return s && w.yta !== null ? [{ name: s.name, yta: w.yta, fukt: w.fukt, lan: s.lan, vag: s.vag }] : [];
     });
     sidor = byggLanssidor({
-      vaglag: vaglag.map((r) => ({ code: numOrNull(r.condition_code), text: r.condition_text ?? null, info: (r.condition_info ?? []) as string[],
+      vaglag: vaglag.map((r) => ({ id: String(r.segment_id), code: numOrNull(r.condition_code), text: r.condition_text ?? null, info: (r.condition_info ?? []) as string[],
         road: r.road_number ?? null, plats: r.location_text ?? null, lan: numOrNull(r.lan) })),
       stationer,
       olyckor: olyckor.filter((r) => r.land === "SE").map((r) => ({ road: r.road_number ?? null, start: r.start_time ? new Date(r.start_time).toISOString() : null,
         allvar: r.severity_text ?? null, lan: numOrNull(r.lan) })),
       now,
+      prognos: prognosStrackor && { tid: kandidatMeta.tid, strackor: prognosStrackor },
     });
   }
   return { files, stats, notes, sidor };
