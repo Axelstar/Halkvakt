@@ -1,0 +1,26 @@
+# Meta-annonsernas kvällsrapport (DECISIONS #771): efter eftermiddagens fönster skriver annonsstyrningen dagens visningar, klick och
+# kostnad per län som en kommentar i ärendet "📊 Meta-annonserna: dagsrapport och larm", tilldelat Axel, så att GitHub mejlar honom.
+# Länen som var på men inte visades i dag flaggas. Körs av pulsjobbet puls-meta-rapport (19:31 vintertid); ingen GitHub-cron (#734).
+name: meta-rapport
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency: { group: meta-annonser, cancel-in-progress: false }
+
+jobs:
+  rapport:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - name: Kvällsrapporten
+        env:
+          META_ADS_TOKEN: ${{ secrets.META_ADS_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node marknadsforing/annonsstyrning.mjs rapport

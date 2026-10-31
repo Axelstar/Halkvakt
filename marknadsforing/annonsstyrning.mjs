@@ -157,6 +157,37 @@ async function graph(path, params = {}, method = "GET") {
   }
 }
 
+/** Today's impressions, clicks and spend per ad set name (Stockholm day). */
+async function idagPerSats(kampanjId) {
+  const rader = await alla(`${kampanjId}/insights`, { level: "adset", date_preset: "today", fields: "adset_name,impressions,clicks,spend" });
+  return new Map(rader.map(r => [r.adset_name, { visningar: Number(r.impressions ?? 0), klick: Number(r.clicks ?? 0), kr: Number(r.spend ?? 0) }]));
+}
+
+// ---- Reports to Axel (DECISIONS #771): comments on one GitHub issue assigned to him, so GitHub mails him ----
+const GH_REPO = "Axelstar/Halkvakt";
+const RAPPORT_RUBRIK = "📊 Meta-annonserna: dagsrapport och larm";
+async function gh(path, body, method = "GET") {
+  const r = await fetch(`https://api.github.com/repos/${GH_REPO}/${path}`, {
+    method, headers: { authorization: `Bearer ${process.env.GITHUB_TOKEN}`, accept: "application/vnd.github+json" },
+    body: body ? JSON.stringify(body) : undefined });
+  if (!r.ok) throw new Error(`GitHub ${method} ${path}: ${r.status} ${await r.text()}`);
+  return r.json();
+}
+async function meddela(text) {
+  if (!process.env.GITHUB_TOKEN) { console.log(`(Inget GITHUB_TOKEN, inget meddelande.)\n${text}`); return; }
+  const oppna = await gh(`issues?state=open&creator=app%2Fgithub-actions&per_page=100`);
+  let nr = oppna.find(i => i.title === RAPPORT_RUBRIK)?.number;
+  if (!nr) nr = (await gh("issues", { title: RAPPORT_RUBRIK, assignees: ["Axelstar"],
+    body: "Annonsstyrningen skriver här: en dagsrapport efter kvällens fönster och ett larm när ett påslaget län inte visas (DECISIONS #771)." }, "POST")).number;
+  await gh(`issues/${nr}/comments`, { body: text }, "POST");
+  skriv(`Meddelande till Axel i ärende #${nr}.`);
+}
+
+/** Ad sets that are on but showed nothing today: "Län · X" names. */
+export function fastnade(satser, idag) {
+  return satser.filter(s => s.status === "ACTIVE" && !(idag.get(s.name)?.visningar > 0)).map(s => s.name);
+}
+
 async function alla(path, params) {
   const ut = [];
   let sida = await graph(path, { ...params, limit: "200" });
@@ -296,6 +327,9 @@ async function styr() {
   // Pauses first so they free budget, then the strongest hazard first (DECISIONS #762): the campaign budget only carries a
   // handful of counties at once, and Meta refuses the next one with subcode 2446149.
   const satser = ordning(await satserna(k.id), namn => gammal ? null : annonser.get(namn), namn => vikt.get(namn));
+  // The 07:01 run is two hours into the morning window: an ad set that was already on and has shown nothing may be stuck.
+  const timme = Number(nu().toLocaleString("sv-SE", { timeZone: TZ, hour: "2-digit", hour12: false }));
+  const fastPaMorgonen = timme >= 7 && timme < 10 ? fastnade(satser, await idagPerSats(k.id)) : [];
   for (const s of satser) {
     const a = gammal ? null : annonser.get(s.name);
     const ads = s.ads?.data ?? [];
@@ -338,10 +372,44 @@ async function styr() {
       if (r.status !== onskat) { await satt(r.id, onskat); skriv(`${s.name}: reservannonsen ${onskat === "ACTIVE" ? "på" : "pausad, dagens annons godkänd"}.`); }
     }
   }
+  if (fastPaMorgonen.length) await meddela(`⚠️ **Län som kan ha fastnat** (kl. ${tid(nu().toISOString())}): ` +
+    `${fastPaMorgonen.map(n => n.slice(PREFIX.length)).join(", ")} har varit på sedan före körningen men har 0 visningar i dag. ` +
+    "Rör inget i länet. Titta i Ads Manager med filtret Today; står det fortfarande 0 vid nästa fönster görs länet om.");
   const igar = (await graph(`${KONTO}/insights`, { date_preset: "yesterday", fields: "spend,impressions,clicks" })).data[0];
   const totalt = (await graph(`${KONTO}/insights`, { date_preset: "maximum", fields: "spend,clicks" })).data[0];
   skriv(`I går: ${igar?.spend ?? 0} kr, ${igar?.impressions ?? 0} visningar, ${igar?.clicks ?? 0} klick. ` +
         `Totalt: ${totalt?.spend ?? 0} av ${BUDGET_ORE / 100} kr, ${totalt?.clicks ?? 0} klick.`);
+}
+
+export const kr = x => x.toLocaleString("sv-SE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+/** The evening report as Markdown: one row per ad set that showed or was on today, then the totals. */
+export function rapporttext(datum, satser, idag, totalt) {
+  const rader = satser.filter(s => s.status === "ACTIVE" || idag.get(s.name)?.visningar > 0)
+    .map(s => ({ lan: s.name.slice(PREFIX.length), ...(idag.get(s.name) ?? { visningar: 0, klick: 0, kr: 0 }) }))
+    .sort((a, b) => b.klick - a.klick || b.visningar - a.visningar);
+  const sum = rader.reduce((a, r) => ({ visningar: a.visningar + r.visningar, klick: a.klick + r.klick, kr: a.kr + r.kr }), { visningar: 0, klick: 0, kr: 0 });
+  const perKlick = r => r.klick ? `${kr(r.kr / r.klick)} kr` : "–";
+  const tabell = rader.length ? ["| Län | Visningar | Klick | Kostnad | Per klick |", "|---|---:|---:|---:|---:|",
+    ...rader.map(r => `| ${r.lan} | ${r.visningar} | ${r.klick} | ${kr(r.kr)} kr | ${perKlick(r)} |`),
+    `| **Totalt** | **${sum.visningar}** | **${sum.klick}** | **${kr(sum.kr)} kr** | **${perKlick(sum)}** |`].join("\n")
+    : "Inga län visades i dag (ingen halka, eller alla pausade).";
+  const fast = fastnade(satser, idag);
+  return [`**Meta-annonserna ${datum}**`, "", tabell, "",
+    `Hela kampanjen: ${kr(totalt.kr)} av ${kr(BUDGET_ORE / 100)} kr, ${totalt.klick} klick.`,
+    fast.length ? `\n⚠️ **Påslagna men 0 visningar i dag:** ${fast.map(n => n.slice(PREFIX.length)).join(", ")}. Kan ha fastnat; rör inget i länet och titta i Ads Manager.` : "",
+    "\nInstallationerna syns i App Store Connect (Analytics, ett till två dygn efter)."].join("\n");
+}
+
+async function kvallsrapport() {
+  if (!TOKEN) { skriv("Torrkörning: META_ADS_TOKEN saknas, ingen rapport."); return; }
+  const k = await kampanjen();
+  if (!k) { skriv(`Kampanjen "${KAMPANJ}" finns inte.`); return; }
+  const [satser, idag] = await Promise.all([satserna(k.id), idagPerSats(k.id)]);
+  const t = (await graph(`${KONTO}/insights`, { date_preset: "maximum", fields: "spend,clicks" })).data[0];
+  const text = rapporttext(dag(nu()), satser, idag, { kr: Number(t?.spend ?? 0), klick: Number(t?.clicks ?? 0) });
+  console.log(text);
+  await meddela(text);
 }
 
 const steg = process.argv[2];
@@ -349,7 +417,8 @@ if (steg) {
   try {
     if (steg === "styr") await styr();
     else if (steg === "uppsattning") await uppsattning();
-    else { console.error(`Okänt steg "${steg}" — använd styr eller uppsattning.`); process.exitCode = 1; }
+    else if (steg === "rapport") await kvallsrapport();
+    else { console.error(`Okänt steg "${steg}" — använd styr, uppsattning eller rapport.`); process.exitCode = 1; }
   } finally {
     await browser?.close();
     if (process.env.GITHUB_STEP_SUMMARY && rapport.length)

@@ -17,6 +17,7 @@ on:
 
 permissions:
   contents: read
+  issues: write
 
 concurrency: { group: meta-annonser, cancel-in-progress: false }
 
@@ -39,6 +40,7 @@ jobs:
           META_ADS_TOKEN: ${{ secrets.META_ADS_TOKEN }}
           META_PAGE_ID: ${{ secrets.META_PAGE_ID }}
           META_IG_ID: ${{ secrets.META_IG_ID }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: node marknadsforing/annonsstyrning.mjs "${{ inputs.lage || 'styr' }}"
 
       - name: Dagens bilder
