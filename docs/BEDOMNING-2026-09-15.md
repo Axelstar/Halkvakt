@@ -834,6 +834,8 @@ bevisbart säker (vid 0 km/h går det inte att nå faran) och är rimligen stör
 | ✅ **LÄST 22/10 (DECISIONS #680, diagnos, ingen dom): den frysta kandidaten på vintern 2022/23 — proven klarade, NIVÅ 2+BLANDNING A2 4,52 % mot RÅ:s 8,66 % (A1 0,522 mot 0,693 °C), norr 9,01 mot 16,55 %.** Utfallet är läst före signeringen av FORREGISTRERING-2026-27 och står vid dess signaturer (§10 f). Ingen tröskel ändras. | Bengt + Axel | Vid signeringen senast 31/10 (fristen `forregistreringen-signerad`): läs §10 f och signera med utfallet känt. | #680 |
 | **Frågor från dokumentsynken 23/10 (handtexten stämd mot #670–#682; inget är beslutat av synken).** (1) **PR #1139 (dokumentsynken 22/10) ligger öppen och är omsprungen:** den bär BED §5 om lägesfilen (#654), tre stängda frister (#1098, #1099, #1101) och kartsynken till 4171d60, och allt detta ingår i 23/10-synkens PR. Ska #1139 stängas utan att slås ihop? (2) **Axels PR:er väntar utan ord:** #1056 (kort #281, 5 dygn), #1029 (targetSdk 36, 5 dygn) och #1088 (besöksräknare, 3 dygn). #1029 ska in i (33) när Axel bekräftat (#681). | Bengt (1), Axel (2) | (1) Stäng #1139 eller slå ihop den före dagens PR. (2) Bekräfta eller lägg åt sidan. | #1139 |
 | **Halkvakt tror i rapporten: marginalen och två vägnummer (fråga 28/10, DECISIONS #739, kort #363).** Rapporten räknar en kandidatsträcka när minst två varnande punkter ligger inom 150 m från rutten. Talen är Claudes förslag, antagna med beslutet men inte mätta. Inte heller läst: hur många av de 818 sträckorna som saknar vägnummer, och hur en sträcka med två vägnummer skrivs i `road_conditions.road_number`. | Bengt + Axel | Mät marginalen och tvåpunktskravet på favoritprovets rutter, och läs vägnumren med DB-knappen, innan talen fryses. | #363 |
+| **Dokumentsynken stoppades 31/10 efter 53 s (fråga 31/10).** Molnmiljön hade inget repo i arbetskatalogen, rutinen klonade Halkvakt själv, och auto-lägets klassificerare nekade sedan repots egna skript (`kartsynk.ts` m.fl.) som kod utifrån. Ingenting stämdes av och ingen PR öppnades; körningarna 22–30/10 tog minst nio minuter var. | Bengt | Peka ut Axelstar/Halkvakt som rutinens källa i claude.ai, eller tillåt `node --experimental-strip-types scripts/*.ts` i miljön, och läs körningen 1/11. Går den inte, görs synken för hand. | — |
+| **Tal om kuvösen utanför kuvösblocket (fråga 31/10, DECISIONS #769).** Punkt 8 i beslutet 31/10 gällde projektkartans kuvösblock och kuvösraderna i MATNINGAR, och där är talen borta. Bedömningen och några delar utanför blocket bär fortfarande sådana tal. | Bengt + Axel | Rensa dem i en egen PR, utan tal och med hänvisning till halkvakt-kuvos, eller låt dem stå tills filerna tas bort ur Halkvakt (steg 4 i halkvakt-kuvos F1). | — |
 ---
 
 ## 5. Integrationsläget — mätt mot kartan (24/9, Bengts fråga *"hur långt i integrationen har vi kommit"*)
@@ -999,7 +1001,7 @@ Inget av detta bygger något nytt i motorn, och inget av det rör en tröskel. D
 <!-- LÄGESRADER §7: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 *Läget i projektkartan:*
 
-- [Systemets delar på vintern](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-kv-delarna): delvis, 86 % · kvar: Vind och sikt: startvärden; sikten struken 24/10 efter W-A-serien på vintern 2024/25 med olyckorna (#705), byvinden OAVGJORT
+- [Systemets delar på vintern](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-kv-delarna): delvis, 86 % · kvar: Kvar i halkvakt-kuvos (DECISIONS #768; #705)
 
 <!-- /LÄGESRADER -->
 
