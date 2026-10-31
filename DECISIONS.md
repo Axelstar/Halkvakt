@@ -8663,7 +8663,7 @@ En vädergrundad modell behöver fysik eller inlärning för att bära, och väg
 förregistrering av det kan använda den i stället för Lastkajen. (b) För småvägarna (vägdatalagret c, `docs/KALENDERN.md`) säger
 mätningen att vägar under 1 000 fordon per dygn går ungefär 0,9 °C kallare relativt vädret än vägar med 1 000–20 000. Skulle produkten
 tala där, kan RÅ från stationer på större vägar ligga för varmt. Det är en hypotes, omätt mot facit, eftersom inga stationer står
-utanför de 818 segmenten.
+utanför de 818 segmenten. *(Rättat 31/10, DECISIONS #756: 84 av 761 stationer står mer än 2 km från de 818 sträckorna.)*
 
 ## #481 (6/10 2026, flyttad till main 7/10) Rutnätsmodellen i kuvösen — Axels beslut att pröva, och förregistreringen före något utfall: MET Nordic som bakgrund, vägens skillnad mot luften ur grannarna, hela stationer gömda (kort #302)
 
@@ -19160,7 +19160,7 @@ det. Kalenderns villkorsrad för vägdatalagret (c) står kvar; frågan tas upp 
   2022/23 (FORREGISTRERING-2026-27 §7).
 - **Trafiken.** Mot vädret går vägar under 1 000 fordon per dygn 0,62 °C kallare och vägar med 1 000–20 000 fordon 0,25 °C varmare
   (#480). Rättelsen har vägdata bland sina särdrag (#552), och restfelet per ÅDT-klass var −0,13 · −0,04 · +0,24 °C (#486; 136 av
-  736 stationer ligger under 1 000). BD 676 hör till den lägsta klassen.
+  736 stationer ligger under 1 000; *rättat 31/10, DECISIONS #756: #486 räknade på 736 stationer, och 136 under 1 000 är talet ur #479:s 728*). BD 676 hör till den lägsta klassen.
 - **Fukten.** Regelns fukt kommer ur *Våt* på punktens sträcka eller ur radarn (FORREGISTRERING-2026-27 §3). I facitläsningen
   2024/25 kom den ur bara *Våt* i 88 % av de varnande timmarna, ur bara radarn i 9 % och ur båda i 3 % (#607). Utan en väglagssträcka
   finns bara radarn kvar: ungefär 12 % av timmarna, allt annat lika. Varningarna på bara radarn bekräftades i 34,5 % (söder 9,5 %,
@@ -19174,3 +19174,68 @@ marsdom på huvudvägnätet; (3) en fuktkälla som inte kräver väglag, om frå
 tagit upp frågan av sig själv i mars.
 
 **Stomdokument:** BED §4.2 frågan till mars 2027.
+
+## #756 (31/10 2026) Småvägarna: en mätmetod, förslaget v2 efter två fristående granskningar, och ingen termisk kartering i det här skedet
+
+**Beslut** (Bengt 31/10). Två fristående granskare (Opus 5.5 och Fable 5.1, var för sig och utan tillgång till chatten) prövade
+förslaget till ett kuvösprov på småvägar (#755). Bengt frågade sedan: *"så vad gör vi nu. kör vi två mätmetoder eller slår vi ihop de två olika granskningarna och gör en till best practice där vi långar styrkorna från båda"*. Han tillade: *"Vi kommer inte att göra någon termisk kartering i det här skedet"*. På
+rekommendationen om en metod svarade han: *"Ja, skriv v2"*.
+1. **En mätmetod, inte två.** Två metoder sida vid sida ger två chanser att hitta ett tal som klarar sig (regel L3). Förslaget v2 har
+   ett huvudmått och en förväntan som skrivs före läsningen.
+2. **Termisk kartering (kort #271) är struken** för småvägsfrågan i det här skedet. Den har varit stängd sedan 22/10 (#678).
+3. Förslaget v2 är underlaget för frågan i #755. Inget är förregistrerat. Varje steg som läser ett utfall förregistreras och signeras
+   av Bengt och Axel före läsningen (regel L).
+
+**Vad granskningarna fann** (båda; talen prövade 31/10 mot `data/vagdata/` och `kuvos/kandidatstationer-2026-27.json`):
+- **Populationen var fel.** Under 1 000 fordon per dygn är inte samma sak som en väg Trafikverket inte bedömer. De 155 raderna är 153
+  stationer, eftersom två är fjärrytor, och 151 av dem finns i grind A. 95 av de 153 står på eller inom 2 km från en väglagspunkt, och
+  2 623 av de 12 960 väglagspunkterna ligger själva under 1 000. Påståendet att grind B och C inte går är därför fel för de flesta av
+  stationerna.
+- **Måttet som skulle avgöra är en övre gräns.** Grind A prövar "samma stationer, nytt år", och FORREGISTRERING-2026-27 §4 säger
+  själv att den är en övre gräns för kvaliteten mellan stationerna. En småväg utan station är en ny plats.
+- **Radarn som enda fuktkälla** ser varken rimfrost eller utstrålningsis. Varningar på bara radarn har lyftet 0,96 (#607).
+- **Ingen förväntan var skriven** före läsningen. Friktionen vid 59 stationer (#465, #540) saknades.
+
+**Förslaget v2** (i korthet):
+- **(0) Produktbeslutet först:** röst, eller bara skattning i kartan. Rekommendationen är kartan först.
+- **(1) Två populationer med var sin uppgift.**
+  - **P1 avgör:** de 84 av 761 stationer som står mer än 2 km från de 818 sträckorna, oavsett trafik (82 i grind A, 43 norr och 39
+    söder). De 58 under 1 000 fordon per dygn redovisas bredvid.
+  - **P2 är laboratoriet:** vägar med låg trafik på nätet, där väglaget finns.
+- **(2) Utan facit, före allt annat:** särdragens spann vid småvägspunkter (VÄRDEVAKTEN), och kostnaden i batteri, snapshot och
+  databas.
+- **(3) Fukten:**
+  - regelns täckning av stationernas egna frosttimmar 2018–2025 (yta ≤ 0 °C och ≤ daggpunkt);
+  - regeln med och utan *Våt* i P2, mot väglaget;
+  - räcker radarn inte, förregistreras en fuktkandidat ur daggpunkten som en ny kandidat.
+- **(4) Huvudprovet:** P1 hålls utanför träningen, och den nya kandidatens procedur körs över sex vintrar. Övrigt följer den
+  signerade metoden: A1–A3, vakterna, den ärliga osäkerheten och RÅ som måttstock.
+  - Huvudmåttet är A2 nationellt, med stationerna vägda lika.
+  - Bredvid redovisas norr och söder, viktningen efter småvägarnas fördelning och frysflaggan.
+  - Förväntan är omkring 5,5 % = (43 · 8,37 + 39 · 2,26) / 82, ur #702:s regionmedel. Det är en sammansättningsräkning och ingen
+    mätning: domen väntas falla mot taket 5 % (FORREGISTRERING-2026-27 rad 165) eller bli OAVGJORT.
+- **(5) Redovisas, fäller inget:** friktionen, kamerorna och testförarna.
+- **STRADA** väntar på (0).
+
+**Där granskarna skilde sig.**
+- **P1:s gräns:** Opus föreslog 56 stationer (utanför nätet, under 1 000 och i grind A), Fable 84. v2 väljer 84: frågan gäller nätet,
+  och trafiken är redan ett särdrag i modellen.
+- **Vikten:** Opus föreslog efterstratifiering mot småvägarnas fördelning, Fable stationerna lika. v2 låter stationerna lika avgöra,
+  eftersom 82 stationer fördelade på band och regioner ger ett tunt underlag. Efterstratifieringen redovisas bredvid.
+
+**Öppet** (bedömningen §4.2):
+- (a) Röst eller bara skattning i kartan.
+- (b) Tidpunkten. Valet inför 2027/28 ska vara signerat före mars (FORREGISTRERING-2026-27 §12 g, rad 331). Frågan i #755 är satt
+  till 1/3 2027. Antingen tas den i februari 2027, eller så väntar småvägarna till 2028/29.
+
+**Rättelser** (noter i texten):
+- **#480:** *"inga stationer står utanför de 818 segmenten"* stämmer inte; 84 av 761 står mer än 2 km från sträckorna.
+- **#755:** "136 av 736 (#486)" blandar två populationer. #486 räknade på 736 stationer, och 136 under 1 000 är talet ur #479:s 728
+  (rad 8575).
+
+**Alternativ.**
+- Två mätmetoder sida vid sida: avvisat, se punkt 1.
+- Förslaget som det stod, med populationen ÅDT under 1 000 och grind A i drift som dom: avvisat av båda granskarna.
+- Att vänta med allt till mars: steg 0–3 går att göra före.
+
+**Stomdokument:** BED §4.2 småvägsfrågan med förslaget v2.
