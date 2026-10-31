@@ -19401,3 +19401,21 @@ data/vagdata/smavagspunkter-urval.json och `delar` 4. Spannet redovisas som läs
 - Ett urval viktat efter trafik: avvisat. Spannet frågar var vägarna ligger, inte var förarna kör.
 
 **Stomdokument:** MAT småvägarnas urval och spann (steg 1 i kort #367).
+
+**Utfall, spannet** (Bengt 31/10: *"Ja, och kör knappen"*; PR #1295 sammanslagen 8659249e; vagpunkter-sardrag #4 (körning 41182968284 på 8659249, 4 min 21 s)). Inget utfall om temperatur
+är läst, bara var punkterna ligger.
+- **Särdragen:** 2 000 punkter, och inget saknas i någon av de 16 kolumnerna. Den sammanställda CSV-filen har sha256
+  `6747cc932fef1beffae3a6da7ee5dca07da2ebb567d293664286900804b57377` och ligger som artefakt i körningen i 30 dygn; den är inte
+  incheckad.
+- **Terrängen ligger inom stationernas spann:**
+  - P1: 47 av 1 000 (4,7 %) ligger utanför i minst en kolumn, och nästan allt är trädhöjden (`chm30` 44, `svf` 2, `horizon_south` 1).
+  - P3: 7 av 1 000 (0,7 %), alla trädhöjd.
+  - Det är i nivå med väglagspunkterna, där 692 av 12 960 (5,3 %) låg utanför, mest trädhöjd (#553). Höjd, terrängläge, dalar,
+    himmelsfaktor, vatten och bebyggelse ligger helt inom stationernas min–max för båda populationerna.
+- **Vägdatan är luckan:**
+  - ÅDT saknas för alla 1 000 punkter i P3 och för 39 i P1; 5 i P1 ligger under stationernas lägsta (10).
+  - Vägklass ligger inom stationernas 0–9 i Axels `road_all.csv`. Men min–max säger inget om tätheten: 73 % av P3 har klass 7, och
+    i `data/vagdata/stationer.json` har bara fyra stationer klass 7.
+- **Läsningen:** för småvägarna och gatorna är det inte terrängen som tar modellen utanför det den lärt sig, utan trafikmängden, som
+  saknas på gatorna, och vägklasserna där få stationer finns. Det styr P3:s förregistrering (#758): trafikmängden prövas som saknad
+  eller hämtas ur kommunernas egna mätningar.
