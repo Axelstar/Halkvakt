@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 // @ts-ignore — .mjs utan typer
-import { fara, annons, stracka, vagBild, vagText, dagdel, VISNING, GRANSKODER, sammaSchema } from "../marknadsforing/annonsstyrning.mjs";
+import { fara, annons, stracka, vagBild, vagText, dagdel, VISNING, GRANSKODER, sammaSchema, ordning, rang } from "../marknadsforing/annonsstyrning.mjs";
 
 const l = (kort: string, halt: number, kalla: number, extra = {}) =>
   ({ kod: 1, kort, slug: kort.toLowerCase(), halt, vagavsnitt: 40, kalla, kallast: null, olyckor: 0, ...extra });
@@ -90,4 +90,14 @@ test("sammaSchema: an ad set that already has the windows is left alone (DECISIO
                             { start_minute: 300, end_minute: 600, days: [...dagar].reverse() }]), true);
   assert.equal(sammaSchema([{ start_minute: 360, end_minute: 540, days: dagar }, { start_minute: 900, end_minute: 1080, days: dagar }]), false);
   assert.equal(sammaSchema(undefined), false);
+});
+
+test("ordning: pauses first, then the strongest hazard and most icy stretches (DECISIONS #762)", () => {
+  const ad = h => ({ data: { hazard: h } });
+  const annons = { "Län · A": ad("Frysrisk"), "Län · B": ad("Risk för halka"), "Län · C": ad("Halka"), "Län · D": ad("Risk för halka") };
+  const lan = { "Län · B": { halt: 3 }, "Län · D": { halt: 12 } };
+  const satser = ["Län · A", "Län · B", "Län · C", "Län · D", "Län · E"].map(name => ({ name }));
+  assert.deepEqual(ordning(satser, n => annons[n] ?? null, n => lan[n]).map(s => s.name),
+    ["Län · E", "Län · C", "Län · D", "Län · B", "Län · A"]);
+  assert.equal(rang("Frysrisk"), 0);
 });
