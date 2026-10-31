@@ -19322,3 +19322,38 @@ spåret svarade han *"ja gör det"*. Frågan (a) i bedömningen §4.2 är därme
 **Alternativ.** Att bygga kartan före domen avvisades, med skälet ovan.
 
 **Stomdokument:** BED §4.2 frågan om kartan avgjord; APP skattningen i kartan på småvägarna byggs efter huvudprovets dom.
+
+## #760 (31/10 2026) Storstäderna redovisas för sig i P3, och målet på sikt är varning i appen om skattningen håller
+
+**Beslut** (Bengt 31/10). Om städerna: *"när det gäller städerna så är väl tanken att man säger så här fungerar den statliga skattningen, vår modell ger detta utfall på andra vägar ge oss tillgång till mer data så kommer ni att få bättre koll"*. Om appen: *"På sikt ska detta även in i appen som varning om det blir bra men det vet vi inget om nu"*. Han gav också lov att läsa: *"du får kolla i report, i Github, i Supabase etc"*.
+Frågorna (a) och (b) i bedömningen §4.2 är därmed avgjorda.
+
+1. **Storstadsredovisningen** för Stockholm, Göteborg och Malmö ingår i P3:s förregistrering (#758). Den är inget eget spår.
+   - Varje stad redovisas i tre kolumner: alla stationer i staden, bara statliga och bara kommunala.
+   - Varje station hålls utanför träningen, så att talen avser en ny plats.
+   - Stadsområdet bestäms i förregistreringen.
+   - Redovisningen avgör inget.
+   - **Berättelsen mot en kommun:** *så här fungerar skattningen vid de statliga stationerna i er stad, och så här blev utfallet på
+     andra vägar (P1, P3). Med er data får ni bättre koll på era gator.*
+   - Inom 10 km från centrum (`data/vagdata/stationer.json`): Stockholm 5 statliga stationer, 1 utan känd väghållare och ingen
+     kommunal; Göteborg 4 statliga och ingen kommunal; Malmö 2 statliga och 1 kommunal (7102). Utan de statliga har Stockholm och
+     Göteborg ingen station.
+2. **Målet på sikt är varning i appen**, för småvägarna och gatorna, om skattningen håller. Det följer regeln i #757: röst först när
+   den är förtjänt. Om det blir så vet ingen i dag. Tills dess hålls punkterna utanför `live.json`, och då är appens batteri och
+   datatrafik oförändrade. När punkterna ska in i appen mäts batteriet och lägesfilens storlek på nytt.
+3. **Läst 31/10** (läs-only, på Bengts lov):
+   - **Databasen:** dbknapp #419 i läsläge (körning 41180041873, en READ ONLY-transaktion som rullades tillbaka) gav 546 MB.
+     Tabellerna per vägpunkt är `kandidat_live`, `ny_kandidat_live`, `kandidat_ph` och `ny_kandidat_ph`, med 82 284 rader var och
+     44,3 MB tillsammans; `vagpunkt` har 12 960 rader och 1,6 MB. Växer de i takt med punkterna, från 12 960 till omkring 71 000,
+     blir de omkring 240 MB, och databasen omkring 790 MB. Hur länge raderna sparas (fönstret) är inte läst.
+   - **Sverigepaketet** (#553) ligger uppackat på Bengts dator under `Documents/Lastkajen/drift-och-underhall/`.
+   - **Axels terrängskript** finns i repot: `fysik/fetch_elev.py`, `geofeat.py`, `geofeat2.py` och `roadjoin.py`, med summorna i
+     `fysik/SHA256SUMS` och flödet `vagpunkter-sardrag.yml` (#553). Claudes uppgift tidigare samma dag att skriptet inte låg i repot
+     var fel.
+   - **Mätpunkt 7201** finns i Trafikverkets leverans för november 2024, med 1 440 rader från 1/11 till 30/11. Den saknas i appens
+     stationslista (857 stationer 31/10), i `data/vagdata/` och i repots historik, och den har 0 rader i driftens
+     `weather_observations`. Den rapporterar alltså inte i dag. Var den står är inte känt.
+
+**Alternativ.** Storstäderna som ett eget spår med egen dom avvisades: för få stationer, och redovisningen räcker för förhandlingen.
+
+**Stomdokument:** BED §4.2 storstäderna och databasläsningen avgjorda; APP målet på sikt varning i appen om skattningen håller.
