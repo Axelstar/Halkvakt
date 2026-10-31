@@ -161,6 +161,9 @@ export async function buildMapData(q: Q, opts: {
   // ritas inte (räknas som utanför). Brytaren av ⇒ appKandidat saknas ⇒ tom fil och meta.kandidat.pa = false. Fail-soft med not.
   const kandidatMeta = { pa: opts.appKandidat !== undefined, strackor: 0, punkter: 0, ritade: 0, km: 0, tid: null as string | null };
   let kandidatFeatures: unknown[] = [];
+  // Länssidornas avsnitt Prognos (#768) får samma bitar: sträcka och längd. Kvar som undefined när brytaren är av, när inget varnar
+  // eller när bitarna inte gick att läsa, så att sidorna aldrig visar en prognos som kartan inte visar.
+  let prognosStrackor: { id: string; km: number }[] | undefined;
   const kp = (opts.appKandidat ?? []).flatMap((k) => k.punkter.map(([lon, lat]) => ({ seg: k.id, lon, lat })));
   kandidatMeta.strackor = opts.appKandidat?.length ?? 0;
   kandidatMeta.punkter = kp.length;
@@ -171,6 +174,7 @@ export async function buildMapData(q: Q, opts: {
         [kp.map((x) => x.seg), kp.map((x) => x.lon), kp.map((x) => x.lat)]);
       kandidatFeatures = bitar.map((r) => ({ type: "Feature", geometry: r.g,
         properties: { segment_id: r.seg, punkter: Number(r.punkter), km: Number(r.km), tid: kandidatMeta.tid } }));
+      prognosStrackor = bitar.map((r) => ({ id: String(r.seg), km: Number(r.km) }));
       kandidatMeta.ritade = bitar.reduce((n, r) => n + Number(r.punkter), 0);
       kandidatMeta.km = Math.round(bitar.reduce((n, r) => n + Number(r.km), 0) * 10) / 10;
       if (kandidatMeta.ritade < kandidatMeta.punkter) {
@@ -229,12 +233,13 @@ export async function buildMapData(q: Q, opts: {
       return s && w.yta !== null ? [{ name: s.name, yta: w.yta, fukt: w.fukt, lan: s.lan, vag: s.vag }] : [];
     });
     sidor = byggLanssidor({
-      vaglag: vaglag.map((r) => ({ code: numOrNull(r.condition_code), text: r.condition_text ?? null, info: (r.condition_info ?? []) as string[],
+      vaglag: vaglag.map((r) => ({ id: String(r.segment_id), code: numOrNull(r.condition_code), text: r.condition_text ?? null, info: (r.condition_info ?? []) as string[],
         road: r.road_number ?? null, plats: r.location_text ?? null, lan: numOrNull(r.lan) })),
       stationer,
       olyckor: olyckor.filter((r) => r.land === "SE").map((r) => ({ road: r.road_number ?? null, start: r.start_time ? new Date(r.start_time).toISOString() : null,
         allvar: r.severity_text ?? null, lan: numOrNull(r.lan) })),
       now,
+      prognos: prognosStrackor && { tid: kandidatMeta.tid, strackor: prognosStrackor },
     });
   }
   return { files, stats, notes, sidor };

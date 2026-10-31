@@ -54,13 +54,13 @@ test("länssidorna: 21 län och en översikt, svaret ur källorna, Trafikverkets
   assert.ok(skane.includes(`<link rel="canonical" href="${SIDBAS}/lan/skane/">`));
   assert.ok(skane.includes("Kl. 07:30 rapporterar Trafikverket halka eller vinterväglag på 1 av länets 2 vägavsnitt."), "fläckvis Våt räknas inte");
   assert.ok(skane.includes("1 mätstation visar vägbana på 0 °C eller kallare, kallast −1,5 °C vid Lund."));
-  assert.ok(skane.includes("E 6 Malmö - Lund: Mycket besvärligt, Is, &lt;b&gt;"), "Trafikverkets ord, escapade");
+  assert.ok(skane.includes("<small>Malmö–Lund: mycket besvärligt, is, &lt;b&gt;</small>"), "Trafikverkets ord under sin väg, escapade (#768)");
   assert.ok(skane.includes("Lund: −1,5 °C, nederbörd eller fukt rapporteras") && !skane.includes("Malmö: 0,4"));
   assert.ok(!skane.includes("—"), "inga långa tankstreck (varumärkesguiden)");
   assert.ok(skane.includes("E22, sedan 20 nov. 06:10 (Stor påverkan)"), "svensk tid, vinter +1");
   assert.ok(skane.includes("Uppdaterad 20 nov. 07:30"));
-  assert.ok(skane.includes(`<li><b>E6</b><span class="halt">Halka eller vinterväglag på 1 av 1 sträcka</span> · vägbanan −1,5 °C vid Lund<small>Malmö–Lund</small></li>`),
-    "stora vägar: vägens namn som folk skriver det, läget och sträckans orter (DECISIONS #722)");
+  assert.ok(skane.includes(`<li><b>E6</b><span class="halt">Halka eller vinterväglag på 1 av 1 sträcka</span> · vägbanan −1,5 °C vid Lund<small>Malmö–Lund: mycket besvärligt, is, &lt;b&gt;</small></li>`),
+    "stora vägar: vägens namn som folk skriver det, läget och sträckans orter (DECISIONS #722) med väglaget (#768)");
   assert.ok(!skane.includes("<li><b>väg 108</b>"), "en länsväg utan halka står inte i listan, bara E-vägar, riksvägar och vägar med halka");
   assert.ok(skane.includes("<h2>Pendla i Skåne</h2>") && skane.includes("E6 går mellan Malmö, Lund och Helsingborg"));
   assert.ok(skane.includes(`"@type":"FAQPage"`) && skane.includes("<h3>Hur ofta uppdateras väglaget i Skåne län?</h3>"), "frågorna syns och står som FAQPage");
@@ -254,4 +254,43 @@ test("ortssidorna (28/10): ortens egna avsnitt i dess län, ett län i Länsgrä
   assert.ok(sidor["ort/orebro/index.html"].includes("ingen halka på 1 vägavsnitt till och från Örebro"), "Länsgräns Värmland/Örebro är länet");
   assert.ok(sidor["lan/skane/index.html"].includes('href="../../ort/malmo/"'), "länssidan länkar till sina orter");
   assert.ok(sidAdresser().includes(`${SIDBAS}/ort/malmo/`), "orterna i sitemapen");
+});
+
+test("länssidan (31/10, DECISIONS #768): en lista, kartan öppnas på plats, och prognosen för sig, aldrig i talen", () => {
+  const vaglag = [
+    { id: "a", code: 3, text: "Besvärligt (risk för)", info: ["Is med bart i hjulspår", "fläckvis Våt"], road: "Väg 97", plats: "Väg 97 Vuollerim - Boden", lan: 25 },
+    { id: "b", code: 1, text: "Normalt", info: ["Torrt"], road: "Väg 95", plats: "Väg 95 Arjeplog - Allejaur", lan: 25 },
+    { id: "c", code: 1, text: "Normalt", info: ["Torrt"], road: "E 4", plats: "E 4 Töre - Luleå", lan: 25 },
+    { id: "d", code: 1, text: "Normalt", info: ["Torrt"], road: "E 6", plats: "E 6 Malmö - Lund", lan: 12 },
+  ];
+  const bas = { vaglag, stationer: [], olyckor: [], now: NOW };
+  const utan = byggLanssidor(bas);
+  const med = byggLanssidor({ ...bas, prognos: { tid: "2026-11-20T06:00:00Z", strackor: [{ id: "a", km: 3.6 }, { id: "b", km: 4.2 }, { id: "d", km: 0.44 }] } });
+  const nb = med["lan/norrbotten/index.html"];
+  // En lista: den hala sträckan står under sin väg med Trafikverkets ord, inte en gång till.
+  assert.ok(!nb.includes("<h2>Väglaget enligt Trafikverket</h2>"), "ingen andra lista");
+  assert.ok(nb.includes("<small>Vuollerim–Boden: besvärligt (risk för), is med bart i hjulspår, fläckvis våt</small>"), "tankstreck mellan orter, liten bokstav");
+  assert.equal((nb.match(/Vuollerim–Boden/g) ?? []).length, 1, "sträckan står en gång");
+  assert.ok(!nb.includes("Vuollerim - Boden:"), "inte i Trafikverkets form i en egen lista");
+  // Kartan: klicket byter bilden mot livekartan i inbäddat läge; länken till stora kartan finns kvar.
+  assert.ok(nb.includes(`f.src='../../karta.html?lan='+SLUG+'&inbaddad=1'`) && nb.includes(`<a class="lankarta" href="../../karta.html?lan=norrbotten"`));
+  // Prognosen: bara det rapporten inte redan säger, bara länets, med längd som rösten säger den och modellerat utskrivet.
+  assert.ok(nb.includes("<h2>Prognos för vägarna i Norrbotten</h2>"));
+  assert.ok(nb.includes("pekar Halkvakts prognos på halka på 1 sträcka i länet, beräknat för kl. 07:00."));
+  assert.ok(nb.includes(`<li><b>väg 95</b><span class="prognos">Halka enligt prognosen</span> · 4 km väg<small>Arjeplog–Allejaur</small></li>`));
+  assert.ok(!/<span class="prognos">[^<]*<\/span> · \d+ km väg<small>Vuollerim/.test(nb), "Trafikverket rapporterar redan halka där");
+  assert.ok(nb.includes("modellerad, inte uppmätt") && nb.includes("MET Norway, CC BY 4.0"));
+  assert.ok(med["lan/skane/index.html"].includes("<li><b>E6</b><span class=\"prognos\">Halka enligt prognosen</span> · 400 m väg"), "under en kilometer i hundratal");
+  assert.ok(!nb.includes("—"), "inga långa tankstreck");
+  // Aldrig i talen: svaret, titeln, beskrivningen och datafilerna är desamma med och utan prognos.
+  const rensa = (h: string) => h.replace(/<h2>Prognos[\s\S]*?<\/ul>\n<p class="dim">[^<]*<\/p>\n/, "");
+  assert.equal(rensa(nb), utan["lan/norrbotten/index.html"], "allt utom avsnittet är oförändrat");
+  assert.equal(med["data/lan.json"], utan["data/lan.json"]);
+  assert.equal(med["data/strackor.json"], utan["data/strackor.json"]);
+  for (const p of ["vag/e6/index.html", "ort/lulea/index.html", "lan/index.html"]) assert.equal(med[p], utan[p], `${p}: ingen prognos`);
+  // Brytaren av (prognos saknas) eller inget utöver rapporten: inget avsnitt.
+  assert.ok(!utan["lan/norrbotten/index.html"].includes("Prognos för vägarna"));
+  const bara = byggLanssidor({ ...bas, prognos: { tid: null, strackor: [{ id: "a", km: 2 }] } });
+  assert.ok(!bara["lan/norrbotten/index.html"].includes("Prognos för vägarna"), "bara det Trafikverket redan rapporterar");
+  for (const [p, html] of Object.entries(med)) if (!p.startsWith("data/")) assert.ok(!/undefined|NaN|null/.test(html), `${p}: inget tomt läckte ut`);
 });
