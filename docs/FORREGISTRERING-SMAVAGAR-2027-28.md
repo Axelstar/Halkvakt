@@ -1,6 +1,6 @@
 # Förregistrering — småvägarna och de kommunala gatorna, för vintern 2027/28
 
-**Status: UTKAST 31/10 2026, inte signerat.** Bengt 31/10: *"Ja, börja"* (kort #367, DECISIONS #762). Bengt och Axel signerar före
+**Status: UTKAST 31/10 2026, inte signerat.** Bengt 31/10: *"Ja, börja"* (kort #367, DECISIONS #764). Bengt och Axel signerar före
 28/2 2027, så att valet inför 2027/28 hinner göras före mars (FORREGISTRERING-2026-27 §12 g, fristen `smavagarna-forregistrering`).
 Inget utfall är läst för någon av populationerna nedan (§10).
 
@@ -140,7 +140,7 @@ Inga tal för P1, P2, P3 eller storstäderna som egen population är lästa, och
 
 ## 11. Valen före signeringen
 
-**Avgjorda 31/10** (Bengt: *"jag tar de 4 valen på din rekommendation"*, DECISIONS #763):
+**Avgjorda 31/10** (Bengt: *"jag tar de 4 valen på din rekommendation"*, DECISIONS #765):
 - **(a)** Kravet på att RÅ finns tas bort för P1 och P3 (§4).
 - **(b)** Storstäderna avgränsas med 15 km från centrum (§2).
 - **(c)** Minst 100 halvtimmar per station och vinter (§4).
