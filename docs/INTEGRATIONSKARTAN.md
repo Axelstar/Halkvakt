@@ -881,7 +881,7 @@ Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 3 kort.
 
 **§6 Var lagren står, mätt**
 
-- #270 PROGNOSLAGRET EFTER PREMISSMÄTNINGARNA — BENGTS VAL a–h — Bengt
+- #270 FYSIKSPÅRET: FLYTTAD TILL HALKVAKT-KUVOS — Bengt
 - #38b Stråket / skuggmotorn — ÅTERSTÄLLT 10/9 — Claude, låst
 
 <!-- /ÖPPNA KORT -->
