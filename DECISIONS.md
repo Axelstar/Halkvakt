@@ -19555,3 +19555,36 @@ FLER-VINTRAR och NY-KANDIDAT (#668, #671). Dokumentets sha256 vid signeringen, f
 fuktläsningen F1 och F2 på 2024/25. Inget av det är byggt.
 
 **Stomdokument:** KUV §9 småvägsprovet signerat och väntar på bygget.
+
+## #768 (31/10 2026) Småvägsprovets bygge: populationerna frysta, och planen för resten
+
+**Beslut** (Bengt 31/10: *"Ja, börja"*, efter signeringen i #767). Bygget börjar med det som resten vilar på.
+
+**Klart i den här ändringen:**
+- `fysik/ny_kandidat/smavagar.py`, med bara standardbiblioteket och självtestet i ci. Den räknar populationerna efter
+  förregistreringens §2 och fryser dem i `data/vagdata/smavagar-populationer.json`, med källfilernas sha256 i huvudet.
+- **Populationsprovet (§8 c)**, `smavagar.py --check`: filen är aktuell, och talen är §2:s. P1 har 79 stationer, varav 77 i grind A.
+  P3 har 10, alla i grind A, och P2 har 95. Storstäderna har Stockholm 11, Göteborg 9 och Malmö 3. **108 stationer hålls ute i
+  proven** (P1, P3 och storstäderna inom grind A).
+- **Läckageprovets funktion (§8 d)**, `lackage()`: den fäller och namnger ett utelämnat id bland träningens, parvalets eller
+  grannarnas stationer.
+- **Spärren**, `smavagar.py --sparren`: samma regel som `sparren.py`, mot småvägsförregistreringen. Den är signerad (#767).
+
+**Resten, i ordning** (kort #367):
+1. **Kedjan utan de 108.** Stationernas kolumner tas bort ur F, obs och meta före träningen. `trana.py` körs i en egen variant,
+   `smavagar`, med en egen hinkmapp. Den signerade kandidatens filer rörs inte. Läckageprovet körs mot varje enhets kolumner.
+2. **Parvalet och måtten.** Parvalet räknas utan de utelämnade. På den utelämnade vintern blandas varje utelämnad station bara med
+   grannar som inte är utelämnade, och läckageprovet körs mot grannarna.
+3. **Domskriptet för frysklassen.** Det omfattar:
+   - zonen ur träningsstationernas ärliga skattningar;
+   - K-A-måtten på P1 med stationerna lika och medel över vintrarna;
+   - den ärliga osäkerheten (`fysik/vintrar/osakerhet.py`) och domen;
+   - A2, P3 och storstäderna redovisade bredvid.
+4. **Identitetsprovet (§8 a)** i varianten, innan stationer hålls ute.
+5. **Flödet:** lägen för varianten i `kuvos-ny-kandidat.yml`. Förberedningen återanvänds, och enheterna (1 slutlig, 6 veck och 15
+   parveck) tränas om.
+6. **Fukten F1 och F2** på 2024/25.
+
+Inget utfall läses förrän steg 1–5 är klara och proven i §8 är klarade.
+
+**Stomdokument:** KUV §9 småvägsprovets bygge påbörjat.

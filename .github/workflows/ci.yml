@@ -180,6 +180,7 @@ jobs:
           python3 fysik/ny_kandidat/sjalvtest.py             # den nya kandidaten: reserven, vinden, vecken, spärren, måtten, hela kedjan (DECISIONS #670)
           python3 fysik/ny_kandidat/trana.py --help > /dev/null && python3 fysik/ny_kandidat/forbered.py --help > /dev/null && python3 fysik/ny_kandidat/provning.py --help > /dev/null
           python3 fysik/ny_kandidat/sjalvtest_levande.py     # den nyas levande kedja: reserven alla timmar, paret, pariteten, den frysta orörd (DECISIONS #692)
+          python3 fysik/ny_kandidat/smavagar.py --sjalvtest   # småvägsprovets populationer, läckageprovet och spärren (DECISIONS #768)
           python3 fysik/ny_kandidat/levande.py --help > /dev/null
           python3 fysik/niva2/vagb.py --help > /dev/null
           python3 fysik/niva2/vagb_terrang.py --help > /dev/null      # DECISIONS #549
