@@ -138,12 +138,17 @@ Faller ett prov stannar läsningen, och felet söks innan något annat körs.
 
 Inga tal för P1, P2, P3 eller storstäderna som egen population är lästa, och ingen station är prövad utanför träningen.
 
-## 11. Öppna val före signeringen
+## 11. Valen före signeringen
 
-- **(a) RÅ-kravet:** ska det tas bort för P1 och P3, som §4 föreslår?
-- **(b) Storstädernas område:** 15 km från centrum, som §2 föreslår, eller kommungränsen?
-- **(c) Minsta antal halvtimmar per station och vinter:** 100, som §4 föreslår?
-- **(d) Storstädernas statliga stationer:** ska de hållas utanför träningen, som §3 föreslår, så att alla stadstal avser en ny plats?
+**Avgjorda 31/10** (Bengt: *"jag tar de 4 valen på din rekommendation"*, DECISIONS #763):
+- **(a)** Kravet på att RÅ finns tas bort för P1 och P3 (§4).
+- **(b)** Storstäderna avgränsas med 15 km från centrum (§2).
+- **(c)** Minst 100 halvtimmar per station och vinter (§4).
+- **(d)** Storstädernas statliga stationer hålls utanför träningen (§3).
+
+**Öppet: domen (§4 och §5).** Bengt 31/10 vill diskutera om taket 5 % för A2 är för strängt för småvägarna, när skattningen där
+visas i kartan med *vet inte* och inte talar (#759). Diskussionen och valet bokförs i DECISIONS innan signeringen. Inget utfall är
+läst, och valet får inte grundas på förväntan i §9 (regel L3).
 
 ## 12. Fryst vid signeringen
 

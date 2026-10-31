@@ -19450,3 +19450,17 @@ kravet på RÅ tas bort för P1 och P3.
 - (d) storstädernas statliga stationer utanför träningen.
 
 **Stomdokument:** KUV §9 småvägsprovet som kommande läsning; BED §4.2 de öppna valen och signeringen.
+
+## #763 (31/10 2026) Småvägarnas förregistrering: de fyra valen avgjorda, och domen öppen för diskussion
+
+**Beslut** (Bengt 31/10: *"jag tar de 4 valen på din rekommendation"*). Valen i utkastet (#762, `docs/FORREGISTRERING-SMAVAGAR-2027-28.md` §11):
+- **(a)** Kravet på att RÅ finns tas bort för P1 och P3. Annars föll de 5 P1-stationerna utan granne inom 50 km bort.
+- **(b)** Storstäderna avgränsas med 15 km från centrum.
+- **(c)** Minst 100 halvtimmar per station och vinter.
+- **(d)** Storstädernas statliga stationer hålls utanför träningen, så att alla stadstal avser en ny plats.
+
+**Öppet** (Bengt samma meddelande: *"Jag vill dock att vi har en diskussion innan om domen. Du säger att taket ska vara 5 % och det är ett lika hårt krav som vi hade på de statliga vägarna där mätmetoderna var klart mer utvecklade. Är inte det ett lite för strängt krav"*). Taket för domen diskuteras före signeringen och står i bedömningen §4.2.
+Inget utfall för P1 är läst. Ett nytt tak får därför sättas nu, men det ska grundas på vad kartan påstår och på jämförelsen med RÅ.
+Det får inte grundas på förväntan 5,7 %: ett tak strax över förväntan vore att flytta ribban efter sett tal (regel L3).
+
+**Stomdokument:** BED §4.2 valen avgjorda och domen öppen.
