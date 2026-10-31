@@ -18998,6 +18998,9 @@ fönstren även på län som redan finns, så en körning flyttar alla 21. Efter
 14:00. Antalet pulsjobb är oförändrat (27).
 *Tillägg 30/10:* första uppsättningen avvisades vid första länet (subcode 1487675, *Spridningstypen är inte kompatibel med
 dygnsindelning*, inget ändrat): schemat skickas nu med `pacing_type: ["day_parting"]`, som när länet skapas.
+*Läxa 31/10 (Metas support 30/10):* ändra aldrig ett läns schema eller andra inställningar mitt i kampanjen. Meta tar
+schemaändringen som en betydande ändring och matchar om annonsuppsättningen i upp till 12 timmar; Norrbotten, Västerbotten och
+Västernorrland levererade inget 14–19 30/10 och fick göras om (DECISIONS #754). Nya annonser och på/av går bra.
 
 **Alternativ.** Hela dagen eller sen kväll: bilden bär morgonens eller middagens klockslag och blir gammal, och mitt på dagen är
 få på väg att köra. Behålla 06–09 och 15–18: första morgonen gav 31 klick för 38,61 kr, så det finns utrymme för fler klick.
@@ -19419,3 +19422,32 @@ data/vagdata/smavagspunkter-urval.json och `delar` 4. Spannet redovisas som läs
 - **Läsningen:** för småvägarna och gatorna är det inte terrängen som tar modellen utanför det den lärt sig, utan trafikmängden, som
   saknas på gatorna, och vägklasserna där få stationer finns. Det styr P3:s förregistrering (#758): trafikmängden prövas som saknad
   eller hämtas ur kommunernas egna mätningar.
+
+## #762 (31/10 2026) Budgeten bär bara några län samtidigt: starkast halka först, svagast pausas för att ge plats
+
+**Beslut** (Claude 31/10, att godkännas av Axel). Natten 31/10 rapporterade Trafikverket halka eller frysrisk i 14 län. Körningarna
+03:01 och 05:31 slog på sex län och föll sedan vid det sjunde: Meta kräver en minsta budget per aktiv annonsuppsättning, och
+kampanjens 2 000 kr räckte inte (*Budgeten är för låg*, subcode 2446149, minst 2 043,83 kr). Körningen stannade, så resten av
+länen behandlades inte. Nu tar `styr` länen i ordningen pauser först (frigör budget), sedan starkast ord (Halka, Fläckvis is,
+Risk för halka, Frysrisk sist), sedan flest hala vägavsnitt och flest kalla stationer (`ordning()`). Säger Meta att budgeten
+inte räcker pausas det svagaste påslagna länet som rankas lägre, och annars står länet av med en rad i loggen. Körningen faller inte
+längre på budgeten. Ingen dagsannons skapas för ett län som inte får plats.
+
+**Alternativ.** Höja budgeten så att fler län ryms samtidigt: Axels beslut, taket var 2 000 kr. Släppa Frysrisk helt: första dagens
+klick i Dalarna kostade 6 kr mot 0,8–1,4 kr i länen med halka, men det är ett klick.
+
+**Stomdokument:** inga — marknadsföringen ligger utanför appen, motorn och mätningarna; ingen data lämnar appen.
+
+## #763 (31/10 2026) Kampanjbudgeten höjs till 6 000 kr, och de arton gamla länen görs om rena
+
+**Beslut** (Axel 31/10: *"lets update it to 6000 and then we make this works"*). Meta kräver omkring 10 kr per dygn och påslaget
+län för de dygn som återstår (felen 31/10 räknade 2 043,83 kr för sju län), så 2 000 kr bar bara sex län samtidigt medan 15 län
+hade halka. 6 000 kr bär omkring 20 län i början och alla 21 när dagarna går, och prioriteringen i DECISIONS #762 tar resten. Meta
+försöker förbruka hela budgeten före kampanjens slut, så räkna med att omkring 6 000 kr går åt om kylan håller. Samtidigt raderas
+de arton län som fick schemaändringen 30/10 11:58: Jämtland, Gävleborg och Dalarna stod i *Preparing* 22 timmar efter ändringen,
+medan de tre som gjordes om 30/10 (DECISIONS #754) levererade. `uppsattning` skapar dem på nytt. Budgeten ändras i Ads Manager
+innan länen slås på, så att inget påslaget län ändras efteråt (#749).
+
+**Alternativ.** 4 000 kr (omkring 13 län samtidigt), eller behålla 2 000 kr med prioriteringen ensam.
+
+**Stomdokument:** inga — marknadsföringen ligger utanför appen, motorn och mätningarna; ingen data lämnar appen.

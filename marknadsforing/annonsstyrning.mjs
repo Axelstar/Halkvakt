@@ -26,7 +26,7 @@ const KONTO = "act_1760320565448083";
 // "Halkvakt · län" från 27/10 avvisade länken och står kvar pausad; den tas bort i Ads Manager.
 const KAMPANJ = "Halkvakt · län · app";
 const PREFIX = "Län · ";
-const BUDGET_ORE = 200000;                       // 2 000 kr för hela kampanjen
+const BUDGET_ORE = 600000;                       // 6 000 kr för hela kampanjen (DECISIONS #763; 2 000 kr till 31/10)
 const DAGAR = 30;
 const APP = "https://apps.apple.com/se/app/halkvakt/id6806939784";
 // Meta-appen Halkvakt Ads, med Halkvakts bundle-id och App Store-id under plattformen iOS. Ingen Meta-SDK i appen:
@@ -68,6 +68,21 @@ const lista = ord => ord.length < 2 ? ord.join("") : ord.slice(0, -1).join(", ")
 // ---- Data → annons (rena funktioner, prövade i test/annonsstyrning.test.ts) ----
 
 const RANG = { "Risk för halka": 1, "Fläckvis is": 2, "Halka": 3 };
+/** Strength of an ad's word for the budget order: Frysrisk (only stations below zero) is the weakest. */
+export const rang = hazard => RANG[hazard] ?? 0;
+/** Ad sets in the order styr() handles them: those without an ad first (they get paused), then strongest hazard,
+ *  then most icy stretches, then most cold stations (DECISIONS #762). */
+export function ordning(satser, annonsFor, lanFor) {
+  const nyckel = s => {
+    const a = annonsFor(s.name), l = lanFor(s.name) ?? {};
+    return a ? [1, -rang(a.data.hazard), -(l.halt ?? 0), -(l.kalla ?? 0)] : [0, 0, 0, 0];
+  };
+  return [...satser].sort((x, y) => {
+    const a = nyckel(x), b = nyckel(y);
+    for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return a[i] - b[i];
+    return 0;
+  });
+}
 
 /** Trafikverkets ord för en hal sträcka, aldrig starkare än texten. Okänt ⇒ det svagaste. */
 export function fara(s) {
@@ -276,14 +291,34 @@ async function styr() {
   }
   const k = await kampanjen();
   if (!k) { skriv(`Kampanjen "${KAMPANJ}" finns inte. Kör uppsattning först.`); return; }
-  for (const s of await satserna(k.id)) {
+  const satt = async (id, status) => graph(id, { status }, "POST");
+  const vikt = new Map(lan.lan.map(l => [PREFIX + l.kort, l]));
+  // Pauses first so they free budget, then the strongest hazard first (DECISIONS #762): the campaign budget only carries a
+  // handful of counties at once, and Meta refuses the next one with subcode 2446149.
+  const satser = ordning(await satserna(k.id), namn => gammal ? null : annonser.get(namn), namn => vikt.get(namn));
+  for (const s of satser) {
     const a = gammal ? null : annonser.get(s.name);
     const ads = s.ads?.data ?? [];
-    const satt = async (id, status) => graph(id, { status }, "POST");
     if (!annonser.has(s.name)) { skriv(`${s.name}: okänt län, lämnas orörd.`); continue; }
     if (!a) {
-      if (s.status !== "PAUSED") { await satt(s.id, "PAUSED"); skriv(`${s.name}: pausad.`); }
+      if (s.status !== "PAUSED") { await satt(s.id, "PAUSED"); s.status = "PAUSED"; skriv(`${s.name}: pausad.`); }
       continue;
+    }
+    if (s.status !== "ACTIVE") {
+      // Make room by pausing the weakest active county ranked below this one; give up when there is none.
+      for (;;) {
+        try { await satt(s.id, "ACTIVE"); s.status = "ACTIVE"; skriv(`${s.name}: på.`); break; }
+        catch (e) {
+          if (!String(e.message).includes('"error_subcode":2446149')) throw e;
+          const egen = rang(a.data.hazard);
+          const svagast = satser.filter(x => x.status === "ACTIVE" && annonser.get(x.name) &&
+            rang(annonser.get(x.name).data.hazard) < egen).at(-1);
+          if (!svagast) { skriv(`${s.name}: ${a.data.hazard}, men budgeten räcker inte för fler län. Står av.`); break; }
+          await satt(svagast.id, "PAUSED"); svagast.status = "PAUSED";
+          skriv(`${svagast.name}: pausad för att ge plats åt ${s.name} (budgeten räcker inte för båda).`);
+        }
+      }
+      if (s.status !== "ACTIVE") continue;
     }
     const lanNamn = s.name.slice(PREFIX.length);
     const idag = `Dag · ${lanNamn} · ${datum} · ${del}`;
@@ -302,7 +337,6 @@ async function styr() {
       const onskat = godkand ? "PAUSED" : "ACTIVE";
       if (r.status !== onskat) { await satt(r.id, onskat); skriv(`${s.name}: reservannonsen ${onskat === "ACTIVE" ? "på" : "pausad, dagens annons godkänd"}.`); }
     }
-    if (s.status !== "ACTIVE") { await satt(s.id, "ACTIVE"); skriv(`${s.name}: på.`); }
   }
   const igar = (await graph(`${KONTO}/insights`, { date_preset: "yesterday", fields: "spend,impressions,clicks" })).data[0];
   const totalt = (await graph(`${KONTO}/insights`, { date_preset: "maximum", fields: "spend,clicks" })).data[0];
