@@ -11,6 +11,7 @@
     "LIV": {"fil": "docs/NIVA2-LIVE.html", "namn": "Nivå 2+blandning live", "url": "https://895845.github.io/halkvakt-sidor/NIVA2-LIVE.html"}
   },
   "kort": {
+    "#367": ["BED 4.2", "KUV 9"],
     "#361": ["BED 4.2"],
     "#262": ["APP 8", "BED 2.1"],
     "#281": ["APP 9"],

@@ -19239,3 +19239,31 @@ rekommendationen om en metod svarade han: *"Ja, skriv v2"*.
 - Att vänta med allt till mars: steg 0–3 går att göra före.
 
 **Stomdokument:** BED §4.2 småvägsfrågan med förslaget v2.
+
+## #757 (31/10 2026) Småvägarna: skattning i kartan tills rösten är förtjänt, och arbetet börjar nu
+
+**Beslut** (Bengt 31/10: *"slå ihop 1292 och småvägarna får en röstvarning först om de förtjänar det så det blir en skattning i kartan så länge men det kan omprövas under vägens gång och tidpunkten är nu"*). De två öppna frågorna i #756 avgörs.
+1. **Röst eller karta (#756 a).** Småvägarna, alltså vägar utanför Trafikverkets 818 väglagssträckor, får en skattning i kartan
+   (*fryser / fryser inte / vet inte*, förslaget v2 steg 0). De får ingen röstvarning förrän de har förtjänat den. Vad som krävs för
+   att förtjäna rösten skrivs i förregistreringen, före läsningen: ett facit för varningar på småvägar och en dom som håller. Beslutet
+   kan omprövas under vägens gång.
+2. **Tidpunkten (#756 b): nu.** Arbetet med förslaget v2 börjar nu. Huvudprovets förregistrering skrivs och signeras av Bengt och
+   Axel före mars 2027, så att småvägarna kan vara med 2027/28 (FORREGISTRERING-2026-27 §12 g). Fristen `smavagarna-mars-2027`
+   ersätts av `smavagarna-forregistrering` (28/2 2027, förvarning 30 dygn).
+3. **Kort #367** på tavlan bär arbetet. Det hänger på vägdatalagret i projektkartan, eftersom småvägarna är dess del (c).
+   Ordningen följer v2:
+   - **(1)** särdragens spann vid ett slumpurval småvägspunkter, och kostnaden i batteri, snapshot och databas. Inget utfall läses.
+   - **(2)** fukten: regelns täckning av stationernas frosttimmar och regeln utan *Våt* i P2. Förregistreras.
+   - **(3)** huvudprovets förregistrering.
+
+**Öppet** (bedömningen §4.2): när skattningen i kartan byggs, före huvudprovets dom eller efter. Claudes rekommendation är efter domen.
+Före den vet ingen hur fel skattningen blir på en ny plats: förväntan är omkring 5,5 % grova fel, över taket 5 % (#756). Invarianten
+om text som inte får säga mer än datan bär gäller också kartan.
+
+**Alternativ.**
+- Röstvarning på småvägarna direkt: avvisat. Det finns inget facit för varningar där, och radarn som enda fuktkälla har lyftet 0,96
+  (#607).
+- Frågan i februari 2027 eller småvägarna först 2028/29 (#756 b): avvisat (*"tidpunkten är nu"*).
+
+**Stomdokument:** BED §4.2 småvägsfrågan avgjord och frågan om när skattningen byggs; APP produktbeslutet för småvägarna (skattning
+i kartan och ingen röst förrän den är förtjänt).
