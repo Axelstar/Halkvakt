@@ -634,8 +634,10 @@ jobs:
         run: |
           ID=(); if [ "$STEG" = identitet ]; then ID=(--identitet); fi
           RC=0; python3 fysik/ny_kandidat/smavagar_kedjan.py "${ID[@]}" --enhet "$ENHET" --prov in --indata frusen --vintrar v --arbete arbete --ut ut > traning.txt 2>&1 || RC=$?
+          # Vilket prov som föll: bara ordet ur kedjans sista rad, aldrig talen (halkvakt-kuvos BESLUT F3, rättat 1/11 kväll).
+          PROVET=$(sed -n 's/^SMÅVÄGSKEDJAN FÖLL I: \(identitetsprovet\|läckageprovet\|träningen\)$/\1/p' traning.txt | tail -1)
           rm -rf arbete v traning.txt
-          if [ "$RC" -eq 0 ]; then echo "$STEG, enheten $ENHET: klart"; else echo "::error::$STEG, enheten $ENHET: fel"; fi
+          if [ "$RC" -eq 0 ]; then echo "$STEG, enheten $ENHET: klart"; else echo "::error::$STEG, enheten $ENHET: fel i ${PROVET:-kedjan, utan besked (kod $RC)}"; fi
           exit "$RC"
       # Modellen och skattningarna är räknade ur Trafikverkets rader och går bara till den privata hinken, aldrig till en artefakt.
       # Signerad uppladdning skriver aldrig över: finns filerna redan (en omkörning) ska de vara byte för byte desamma, annars står det
