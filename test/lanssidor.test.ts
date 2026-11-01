@@ -119,7 +119,7 @@ test("vägsidorna: vägnumret utan form, vägens sträckor i alla län, statione
   const ld = JSON.parse(e6.match(/<script type="application\/ld\+json">(\{"@context":"https:\/\/schema.org","@type":"WebPage".*?)<\/script>/)![1]);
   assert.equal(ld.isBasedOn["@type"], "Dataset");
   assert.ok(ld.isBasedOn.description.length > 50);
-  assert.deepEqual(ld.isBasedOn.creator, { "@type": "GovernmentOrganization", name: "Trafikverket", url: "https://www.trafikverket.se/" });
+  assert.deepEqual(ld.isBasedOn.creator, { "@type": "Organization", name: "Trafikverket", url: "https://www.trafikverket.se/" });
 });
 
 test("länssidorna: sitemapen får de adresser som saknas, en gång, och Axels rader står kvar", () => {

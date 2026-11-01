@@ -13169,3 +13169,17 @@ emulatorn, Xcode-körningar och fotostudion inte. Ett debugbygge minns inte hell
 00c3407 är orört i release-grenen; läxan i skills/halkvakt-android §5.
 
 **Stomdokument:** APP §7, SYS §3
+
+## #774 (1/11 2026) Datamängdens creator är Organization, inte GovernmentOrganization
+
+**Beslut** (Axel 1/11: *"Detta måste vi fixa"*, om Search Consoles mejl 19:15 *New Datasets structured data issues detected for
+halkvakt.se*: *Invalid object type for field "creator"*). Rättelse av DECISIONS #747 punkt 1: Trafikverket i `isBasedOn.creator` på läns-,
+ort- och vägsidorna får typen `Organization`. Googles regler för Dataset godtar bara `Person` eller `Organization` som creator och
+läser inte undertyper; `GovernmentOrganization` (som #747 valde) fälldes därför av samma rapport som #747 skulle tysta. Ändringen är
+en rad i `publish/lanssidor.ts`, bunten och provet i `test/lanssidor.test.ts`, som nu kräver `Organization`.
+
+**Alternativ.** Båda typerna i en lista (`["Organization", "GovernmentOrganization"]`): säger mer om Trafikverket, men Google kan läsa
+listan lika fel, och ingenting på sidan vinner på det. Ta bort creator: tillåtet (den är rekommenderad, inte krävd), men Search Console
+klagade på att den saknades 28/10.
+
+**Stomdokument:** inga — sajtens strukturerade data; appen, motorn och mätningarna är orörda.

@@ -878,10 +878,10 @@ const LS_MARKE = `<svg viewBox="3 3 94 83" aria-hidden="true"><path fill-rule="e
 function lsJsonLd(o: { titel: string; beskrivning: string; adress: string; now?: Date }): string {
   const d = { "@context": "https://schema.org", "@type": "WebPage", name: o.titel, description: o.beskrivning, url: o.adress, inLanguage: "sv-SE",
     ...(o.now ? { dateModified: o.now.toISOString() } : {}),
-    // description och creator (29/10, Search Console): Google läser isBasedOn som en datamängd och kräver description, vill ha creator.
+    // description och creator (29/10, Search Console): Google läser isBasedOn som en datamängd och kräver description, vill ha creator. Organization, inte GovernmentOrganization: Datasets godtar bara Person eller Organization (1/11).
     isBasedOn: { "@type": "Dataset", name: "Trafikverkets öppna data: väglag, vägväderstationer och olyckor",
       description: "Trafikverkets öppna API: rapporterat väglag per vägavsnitt, vägbanans temperatur vid vägväderstationerna och pågående olyckor.",
-      creator: { "@type": "GovernmentOrganization", name: "Trafikverket", url: "https://www.trafikverket.se/" },
+      creator: { "@type": "Organization", name: "Trafikverket", url: "https://www.trafikverket.se/" },
       license: "https://creativecommons.org/publicdomain/zero/1.0/" },
     publisher: { "@type": "Organization", name: "Halkvakt", url: `${SIDBAS}/` } };
   return `<script type="application/ld+json">${JSON.stringify(d).replace(/</g, "\\u003c")}</script>`;
