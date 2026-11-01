@@ -76,6 +76,19 @@ Versionen i butiken är 0.3.9; listan gäller allt som kommit sedan dess (PRODUK
 • Musiken går tillbaka till full volym när rösten har sagt sitt, i CarPlay och över Bluetooth.
 • Ett kort nätavbrott ger inte längre raden om gammal väglagsdata.
 
+## Nyheter i 0.3.15 (What's New in This Version) — utkast 1/11, Axel godkänner (DECISIONS #772)
+Versionen i butiken är 0.3.13 (34); listan gäller allt som kommit sedan dess (PRODUKTBOK, *Versionerna*: (35), (36), (37)).
+
+• Väglaget kommer snabbare: appen hämtar läget direkt ur källan och kollar strax efter varje ny publicering.
+• Favoriternas rapport visar när den togs fram, och en kolla som inte gick fram skriver inte över den förra.
+• Appen räknar anonymt hur många som går igenom introduktionen, väljer platsbehörighet, startar vakten och får en första varning — ett ord per händelse, aldrig var du är eller vem du är. Det står i Integritet och i integritetspolicyn.
+
+*App Review Information → Notes:* behåll texten nedan och lägg till stycket NEW IN 0.3.15 efter NEW IN 0.3.13.
+
+> NEW IN 0.3.15: an anonymous counter. The app sends one word per event — onboarding completed, location permission became always / when in use / denied, guard started by hand or by itself, first warning spoken — to our own server, which keeps one row per day, app, event and value. No identifier, no version, no timestamp, no position and no IP address are sent or stored; the app's privacy screen and the privacy policy (halkvakt.se/integritet.html) say so. This is the Product Interaction entry already declared in App Privacy (not linked to the user, not used for tracking). Nothing else changed in what the app sends.
+
+*App Privacy:* oförändrat — *Coarse Location* och *Product Interaction*, inte kopplade, ingen spårning; räknaren är det som posten *Product Interaction* nu faktiskt bär.
+
 ## Granskarens anteckningar (App Review Information → Notes)
 Klistra in på engelska — granskarna läser engelska. Stycket om nyheterna i 0.3.13 är ett utkast 18/10 som Axel godkänner; meningarna om
 inspelningarna gäller först när de är bifogade (steg 2 nedan).
@@ -102,6 +115,14 @@ visade för Halkvakt 1/10; 0.3.9 godkändes med dem 12/10. Råbilderna tas på A
 in av skriptet, med statusraden (översta 150 px) ersatt av skärmens färg. `appstore/` har en reservserie i 1320 × 2868 (6,9 tum,
 `rama.py`) om App Store Connect kräver det facket. Nya bilder tas ur bygget som skickas in, 0.3.13 (32) (DECISIONS #643): de nuvarande
 är ur (19), före designen v2 och fliken Favoriter (2.3.3). Ordningen i butiken är filnamnens ordning.
+
+## Inskicket 0.3.15 (37) — 1/11
+Bygge 37 laddades upp av TestFlight-flödet 41329579362 (main 00c3407, 1/11 kväll); beviset att Apple läst in det är `bygge:37 … VALID` i
+byggsignalerna. Stegen är desamma som för (33)/(34) nedan, med tre skillnader: **(a)** versionsposten: *+* vid iOS-appen → **0.3.15** →
+bygge **37**; **(b)** *What's New* och granskarens tillägg ur avsnittet *Nyheter i 0.3.15* ovan; **(c)** skärmbilder och inspelningar
+är desamma som för (34) — inget på skärmen är nytt utom Integritet-texten. App Privacy oförändrat. Släpp manuellt, som förut.
+Beviset: `appstore:0.3.15:WAITING_FOR_REVIEW` i byggsignalerna inom en timme.
+Android: AAB:n ur android-flödet (betatest=false, main 00c3407) laddas upp till Play Consoles interna test som (36).
 
 ## Inskicket steg för steg — 0.3.13 (32)
 

@@ -41,12 +41,18 @@ object Raknare {
     suspend fun forstaVarningen(ctx: Context) = raknaEnGang(ctx, "forsta_varningen")
 
     private suspend fun raknaEnGang(ctx: Context, h: String, v: String = "") {
+        if (BuildConfig.DEBUG) return   // ett debugbygge får inte "minnas" ett ord det aldrig skickade
         val nyckel = if (v.isEmpty()) h else "$h:$v"
         if (!Prefs.raknareMarkera(ctx, nyckel)) return
         lagg(ctx, h, v)
     }
 
-    private suspend fun lagg(ctx: Context, h: String, v: String) = Prefs.raknareLagg(ctx, "$h $v", MAX_KO)
+    /** Utvecklarbyggen räknas inte: android.yml:s emulator (fotostudion, Skåneuppspelningen) kör debug-APK:n med platsen beviljad
+     *  och vakten startad, och gav tre rader innan någon telefon hade 0.3.15 (1/11). Butiksbygget är release. */
+    private suspend fun lagg(ctx: Context, h: String, v: String) {
+        if (BuildConfig.DEBUG) return
+        Prefs.raknareLagg(ctx, "$h $v", MAX_KO)
+    }
 
     /** Skickar kön, en händelse per anrop, och stannar vid första felet. Antalet som gick iväg. */
     suspend fun flush(ctx: Context): Int = lås.withLock {

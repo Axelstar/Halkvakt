@@ -71,6 +71,10 @@ Allt nedan är destillat av projektets beslut (DECISIONS.md) och Play-dossiern.
   `optString`. Utan testberoendet alls är `JSONObject` en stubbe som kastar "Method … not mocked".
 - android.yml körs bara vid push till main (och workflow_dispatch) — PR:ens CI (`ci.yml`) bygger inte Android alls. Beviset
   före sammanslagning tas med workflow_dispatch på grenen, och motprovet likadant på en egen gren (kort #218, 26/9).
+- Emulatorn i android.yml ÄR en telefon för allt som räknar eller skickar: den installerar debug-APK:n, beviljar platsen och
+  startar vakten för fotostudion och Skåneuppspelningen. Räknaren (DECISIONS #772) fick tre rader från CI innan någon telefon
+  hade 0.3.15 (1/11). Regel: allt som lämnar telefonen och räknas i drift stängs av med `BuildConfig.DEBUG` (och `#if DEBUG` på
+  iOS) — butiksbygget är release, emulatorn och Xcode är debug — och bevisas med en tom tabell efter en grön CI-körning.
 
 ## 6 · Innan du kodar
 1. Läs bedömningen (`docs/BEDOMNING-*.md`) + relevant kort på tavlan (BACKLOG avvecklad 26/9).
