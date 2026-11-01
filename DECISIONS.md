@@ -13183,3 +13183,29 @@ listan lika fel, och ingenting på sidan vinner på det. Ta bort creator: tillå
 klagade på att den saknades 28/10.
 
 **Stomdokument:** inga — sajtens strukturerade data; appen, motorn och mätningarna är orörda.
+
+## #775 (1/11 2026) Varningssidan: SMHI:s vägvarningar med Trafikverkets läge i varje varnat län, och en rad dit från läns-, orts- och vägsidorna
+
+**Beslut** (Axel 1/11: *"Yes please go ahead"*, efter utkastet på grenen `utkast/smhi-varningar` i halkvakt-karta och planen
+*Vägsökningarna Klart lämnar* i projektet, kort #370). `publish/lanssidor.ts` skriver en ny sida, `varningar/index.html`, i samma
+publicering som länssidorna (var 30:e minut): SMHI:s gällande vägvarningar med SMHI:s ord (nivå, händelse, område, SMHI:s
+beskrivning och ungefärliga giltighetstid) och under varje varning Trafikverkets läge i det varnade länet (halka eller vinterväglag
+av vägavsnitten, stationer under noll med den kallaste, olyckor), med länk till länssidan och kartan. Utan varning säger sidan det och
+listar länen med halka. Ingen egen prognos på sidan.
+1. **Vilka varningar.** Samma ord som kvällsförvarningen, Halkvakt live och MCP-tjänsten (`snö|underkyl|isbel|ishalk|halk`), bara gul,
+   orange och röd nivå (ett meddelande är ingen varning) och inget till havs. Regeln bor i `vagvarningar()` och prövas i
+   `test/lanssidor.test.ts`.
+2. **Länen** ur områdets namn och SMHI:s berörda områden: "Värmlands län" och "Norrbottens fjäll" hör till sina län; ett område utan
+   län visas för sig med länk till alla län.
+3. **Data.** `map-core.ts` läser alla rader i `smhi_warnings` (10–20 åt gången) i samma körning som länssidorna; `meta.json:s`
+   `smhi_vinter` (tre rader) är orörd.
+4. **Länkar dit.** En rad under svaret på länssidan, på ortssidan via dess län och på vägsidan när ett län längs vägen har en
+   vägvarning; *SMHI-varningar* i sidfoten på alla genererade sidor. Adressen står i `sidAdresser()`, så sitemapen får den vid
+   första publiceringen.
+5. **Strukturerad data:** WebPage med `isBasedOn` Trafikverkets och SMHI:s datamängder (creator Organization, #774) och FAQPage.
+
+**Alternativ.** Sidan ritad i webbläsaren ur `data/meta.json`, som utkastet i halkvakt-karta: ingen ändring här, men texten syns inte
+säkert för Google och `smhi_vinter` har bara tre rader utan SMHI:s beskrivning och tider. En sida per varning: tunna sidor som försvinner
+när varningen gör det.
+
+**Stomdokument:** APP 9 (sajtens sidor)

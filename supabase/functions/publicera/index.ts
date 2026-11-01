@@ -850,6 +850,30 @@ export type LanSegment = { code: number | null; text: string | null; info: strin
 export type LanStation = { name: string; yta: number; fukt: boolean; lan: number; vag?: string | null };
 export type LanOlycka = { road: string | null; start: string | null; allvar: string | null; lan: number | null };
 
+/** SMHI:s varning för ett område, som raden ligger i smhi_warnings (sql/001). */
+export type SmhiRad = { event_sv: string; level_sv: string; level_code: string; description_sv?: string | null; area_name: string | null;
+  affected_areas?: { id?: number; sv?: string }[] | null; approx_start?: string | Date | null; approx_end?: string | Date | null };
+export type Vagvarning = { event: string; niva: string; nivaKod: string; text: string | null; omrade: string; lan: number[]; start: string | null; slut: string | null };
+
+/** Vägvarningarna (1/11): samma ord som kvällsförvarningen, Halkvakt live och MCP-tjänsten (snö, underkylt regn, isbeläggning,
+ *  ishalka, halka), bara gul, orange och röd nivå (ett meddelande är ingen varning), inget till havs. Länen ur områdets namn och
+ *  SMHI:s berörda områden: "Värmlands län" och "Norrbottens fjäll" hör till sina län; ett område utan län visas för sig. */
+export const SMHI_VAG = /snö|underkyl|isbel|ishalk|halk/i;
+const LS_NIVAER = ["RED", "ORANGE", "YELLOW"];
+const lsLanStam = (namn: string) => namn.replace(/ län$/, "").replace(/s$/, "").toLowerCase();
+const lsIso = (x: string | Date | null | undefined) => (x ? new Date(x).toISOString() : null);
+export function vagvarningar(rader: SmhiRad[]): Vagvarning[] {
+  return rader
+    .filter((r) => SMHI_VAG.test(r.event_sv ?? "") && LS_NIVAER.includes(r.level_code) && !/havs?\b/i.test(`${r.event_sv} ${r.area_name ?? ""}`))
+    .map((r) => {
+      const namn = [r.area_name ?? "", ...(r.affected_areas ?? []).map((a) => a?.sv ?? "")].filter(Boolean);
+      const lan = LAN.filter((l) => namn.some((n) => n.toLowerCase().includes(lsLanStam(l.namn)))).map((l) => l.kod);
+      return { event: r.event_sv, niva: r.level_sv, nivaKod: r.level_code, text: r.description_sv ?? null,
+        omrade: r.area_name ?? namn.join(", "), lan, start: lsIso(r.approx_start), slut: lsIso(r.approx_end) };
+    })
+    .sort((a, b) => LS_NIVAER.indexOf(a.nivaKod) - LS_NIVAER.indexOf(b.nivaKod) || a.omrade.localeCompare(b.omrade, "sv"));
+}
+
 const lsEsc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const lsGrad = (c: number) => `${c.toFixed(1).replace(".", ",").replace("-", "−")} °C`;
 const lsTid = (d: Date, datum = true) => new Intl.DateTimeFormat("sv-SE", {
@@ -868,26 +892,34 @@ const LS_STIL = `.dok{max-width:760px}.svar{font:500 19px/1.5 var(--sans);color:
 .lankarta canvas{position:absolute;inset:0;width:100%;height:100%}.lankarta span{position:absolute;left:16px;bottom:12px;font:500 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--dampad)}
 .vaglista{list-style:none;padding:0;margin:0}.vaglista li{padding:12px 0;border-top:1px dashed #253036}.vaglista li:first-child{border-top:0}
 .vaglista b{font:600 13px var(--mono);letter-spacing:.08em;margin-right:10px}.vaglista .halt{color:var(--gul)}.vaglista small{display:block;color:var(--dampad);font-size:14px;margin-top:2px}
-.fragor h3{font-size:17px;margin:20px 0 4px}.fragor p{margin:0}`;
+.fragor h3{font-size:17px;margin:20px 0 4px}.fragor p{margin:0}
+.varnad{background:var(--panel);border:1px solid var(--kant);border-radius:14px;padding:12px 16px;margin:10px 0}`;
 // App Store med kampanjkod per knapp (27/10, DECISIONS #732), samma som sajtens övriga sidor.
 const lsApp = (ct: string) => `https://apps.apple.com/se/app/halkvakt/id6806939784?ct=${ct}`;
 const LS_MARKE = `<svg viewBox="3 3 94 83" aria-hidden="true"><path fill-rule="evenodd" fill="#FFC94A" d="M55.196 6 L96.196 77 A6 6 0 0 1 91 86 L9 86 A6 6 0 0 1 3.804 77 L44.804 6 A6 6 0 0 1 55.196 6 Z M46.4 32 L53.6 32 L52 58 L48 58 Z M45.6 68 A4.4 4.4 0 1 0 54.4 68 A4.4 4.4 0 1 0 45.6 68 Z"/></svg>`;
 
+const LS_TRV_DATA = { "@type": "Dataset", name: "Trafikverkets öppna data: väglag, vägväderstationer och olyckor",
+  description: "Trafikverkets öppna API: rapporterat väglag per vägavsnitt, vägbanans temperatur vid vägväderstationerna och pågående olyckor.",
+  creator: { "@type": "Organization", name: "Trafikverket", url: "https://www.trafikverket.se/" },
+  license: "https://creativecommons.org/publicdomain/zero/1.0/" };
+const LS_SMHI_DATA = { "@type": "Dataset", name: "SMHI:s vädervarningar",
+  description: "SMHI:s öppna data om gällande vädervarningar: händelse, nivå, område och ungefärlig giltighetstid.",
+  creator: { "@type": "Organization", name: "SMHI", url: "https://www.smhi.se/" } };
+
 // Strukturerad data (17/10, DECISIONS #629): vad sidan är, när den skrevs och vilken data den bygger på, så att sökmotorer och
 // AI-tjänster kan läsa tiden och källan utan att tolka texten.
-function lsJsonLd(o: { titel: string; beskrivning: string; adress: string; now?: Date }): string {
+function lsJsonLd(o: { titel: string; beskrivning: string; adress: string; now?: Date; smhi?: boolean }): string {
   const d = { "@context": "https://schema.org", "@type": "WebPage", name: o.titel, description: o.beskrivning, url: o.adress, inLanguage: "sv-SE",
     ...(o.now ? { dateModified: o.now.toISOString() } : {}),
     // description och creator (29/10, Search Console): Google läser isBasedOn som en datamängd och kräver description, vill ha creator. Organization, inte GovernmentOrganization: Datasets godtar bara Person eller Organization (1/11).
-    isBasedOn: { "@type": "Dataset", name: "Trafikverkets öppna data: väglag, vägväderstationer och olyckor",
-      description: "Trafikverkets öppna API: rapporterat väglag per vägavsnitt, vägbanans temperatur vid vägväderstationerna och pågående olyckor.",
-      creator: { "@type": "Organization", name: "Trafikverket", url: "https://www.trafikverket.se/" },
-      license: "https://creativecommons.org/publicdomain/zero/1.0/" },
+    isBasedOn: o.smhi ? [LS_TRV_DATA, LS_SMHI_DATA] : LS_TRV_DATA,
     publisher: { "@type": "Organization", name: "Halkvakt", url: `${SIDBAS}/` } };
   return `<script type="application/ld+json">${JSON.stringify(d).replace(/</g, "\\u003c")}</script>`;
 }
 
-function lsSkal(o: { titel: string; beskrivning: string; adress: string; rot: string; innehall: string; ct: string; aktiv?: "lanen"; now?: Date; extra?: string }) {
+const LS_KALLOR = "Källa: Trafikverkets öppna data (CC0): väglag, vägväderstationer och olyckor. Sidan skrivs om var 30:e minut. Fristående från myndigheterna.";
+function lsSkal(o: { titel: string; beskrivning: string; adress: string; rot: string; innehall: string; ct: string; aktiv?: "lanen"; now?: Date; extra?: string;
+  smhi?: boolean; kallor?: string; ladda?: { rubrik: string; text: string } }) {
   return `<!doctype html>
 <html lang="sv">
 <head>
@@ -926,14 +958,14 @@ ${lsJsonLd(o)}${o.extra ?? ""}
 <main class="wrap">
 <div class="dok">
 ${o.innehall}
-<div class="ladda"><b>Kör du här ofta?</b><p>Appen säger till med rösten innan du är framme vid halkan. Samma data som på den här sidan. Gratis för iPhone.</p><a class="knapp" href="${lsApp(o.ct)}">Få varningar i appen</a></div>
+<div class="ladda"><b>${lsEsc(o.ladda?.rubrik ?? "Kör du här ofta?")}</b><p>${lsEsc(o.ladda?.text ?? "Appen säger till med rösten innan du är framme vid halkan. Samma data som på den här sidan. Gratis för iPhone.")}</p><a class="knapp" href="${lsApp(o.ct)}">Få varningar i appen</a></div>
 </div>
 </main>
 <footer class="fot">
   <div class="wrap">
     <a class="logo" href="${o.rot}">${LS_MARKE}<b>HALKVAKT</b></a>
-    <p class="kallor">Källa: Trafikverkets öppna data (CC0): väglag, vägväderstationer och olyckor. Sidan skrivs om var 30:e minut. Fristående från myndigheterna.</p>
-    <nav aria-label="Sidfot"><a href="${o.rot}lan/">Länen</a><a href="${o.rot}om-halkvakt.html">Om Halkvakt</a><a href="${o.rot}karta.html">Livekartan</a><a href="${o.rot}om.html">Vanliga frågor</a><a href="${o.rot}lan/#vagar">Stora vägar</a><a href="${o.rot}support.html">Hjälp och kontakt</a><a href="${o.rot}press.html">Press</a><a href="${o.rot}integritet.html">Integritet</a></nav>
+    <p class="kallor">${lsEsc(o.kallor ?? LS_KALLOR)}</p>
+    <nav aria-label="Sidfot"><a href="${o.rot}lan/">Länen</a><a href="${o.rot}om-halkvakt.html">Om Halkvakt</a><a href="${o.rot}karta.html">Livekartan</a><a href="${o.rot}om.html">Vanliga frågor</a><a href="${o.rot}lan/#vagar">Stora vägar</a><a href="${o.rot}varningar/">SMHI-varningar</a><a href="${o.rot}support.html">Hjälp och kontakt</a><a href="${o.rot}press.html">Press</a><a href="${o.rot}integritet.html">Integritet</a></nav>
   </div>
   <nav class="wrap lanrad" aria-label="Halka per län"><span>Halka i</span>${LAN.map((x) => `<a href="${o.rot}lan/${x.slug}/">${lsEsc(x.kort)}</a>`).join("")}</nav>
 </footer>
@@ -1012,7 +1044,8 @@ function lsVagLanForLan(vag: (typeof VAGAR)[number], d: { vaglag: LanSegment[]; 
     (orter.length ? `\n<h2>Orter längs ${lsEsc(vag.rubrik)}</h2>\n<p>${orter.join(" · ")}</p>` : "");
 }
 
-function lsVagsida(vag: (typeof VAGAR)[number], l: LanLage, now: Date, d: { vaglag: LanSegment[]; stationer: LanStation[] }): string {
+function lsVagsida(vag: (typeof VAGAR)[number], l: LanLage, now: Date, d: { vaglag: LanSegment[]; stationer: LanStation[] }, varn: Vagvarning[] = []): string {
+  const langs = new Set(d.vaglag.filter((s) => vagNyckel(s.road) === vag.nyckel && s.lan !== null).map((s) => s.lan as number));
   const med = (lan: number | null, text: string) => { const k = lsLanKort(lan); return k ? `${lsEsc(k)}: ${text}` : text; };
   const halt = l.halt.slice(0, 20).map((s) =>
     `<li>${med(s.lan, `${lsEsc(s.plats ?? s.road ?? "Vägavsnitt")}: ${lsEsc([s.text, ...s.info].filter(Boolean).join(", "))}`)}</li>`).join("\n");
@@ -1024,7 +1057,7 @@ function lsVagsida(vag: (typeof VAGAR)[number], l: LanLage, now: Date, d: { vagl
   const innehall = `<p class="dim">Uppdaterad ${lsTid(now)}</p>
 <h1>Är det halt på ${lsEsc(vag.rubrik)} just nu?</h1>
 <p class="svar">${lsEsc(lsSvar(l, `${vag.namn}:s`, "vid vägen", now))}</p>
-<h2>Väglaget enligt Trafikverket</h2>
+${lsVarnadRad(varn.filter((v) => v.lan.some((k) => langs.has(k))), "längs vägen", "../../", true)}<h2>Väglaget enligt Trafikverket</h2>
 ${l.halt.length ? `<ul>\n${halt}\n</ul>${l.halt.length > 20 ? `\n<p class="dim">och ${l.halt.length - 20} till.</p>` : ""}`
     : `<p>Inget av vägens ${l.vagavsnitt} vägavsnitt har halka eller vinterväglag i Trafikverkets rapport.</p>`}
 <h2>Vägbanans temperatur</h2>
@@ -1151,8 +1184,94 @@ function lsOrtAvsnitt(ort: { namn: string; lan: number }, vaglag: LanSegment[]):
   return vaglag.filter((s) => s.lan === ort.lan && rx.test((s.plats ?? "").replace(/Länsgräns[^-]*/g, "")));
 }
 
+/** Raden under svaret på läns-, orts- och vägsidorna när SMHI har en vägvarning där (1/11): SMHI:s nivå och händelse, och länken. */
+function lsVarnadRad(v: Vagvarning[], var_: string, rot: string, medOmrade = false): string {
+  if (!v.length) return "";
+  const vad = [...new Set(v.map((x) => `${x.niva.toLowerCase()} varning, ${x.event.toLowerCase()}${medOmrade ? ` (${x.omrade})` : ""}`))].join("; ");
+  return `<p class="varnad">SMHI varnar ${lsEsc(var_)}: ${lsEsc(vad)}. <a href="${rot}varningar/">Varningen och vägarna i de varnade länen</a></p>\n`;
+}
+
+const lsOch = (xs: string[]) => (xs.length < 2 ? xs.join("") : `${xs.slice(0, -1).join(", ")} och ${xs[xs.length - 1]}`);
+const lsGaller = (v: Vagvarning) => v.start && v.slut ? `Gäller från ungefär ${lsTid(new Date(v.start))} till ungefär ${lsTid(new Date(v.slut))}, enligt SMHI.`
+  : v.start ? `Gäller från ungefär ${lsTid(new Date(v.start))}, enligt SMHI.` : "";
+
+const LS_VARN_STIL = `<style>.varnade{display:grid;gap:14px;margin:22px 0 0}.varn{background:var(--panel);border:1px solid var(--kant);border-radius:18px;padding:6px 20px}
+.varn .smhi{font:600 19px/1.3 var(--sans);letter-spacing:-.01em;padding:16px 0 6px}.varn .smhi small{display:block;font:500 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--dampad);margin-bottom:6px}
+.varn .smhitext{margin:0 0 10px;color:var(--text2)}.varn .rad{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:baseline;padding:13px 0;border-top:1px dashed var(--skilje)}
+.varn .k{font:500 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--dampad);min-width:0}.varn .v{font:500 15px var(--mono);text-align:right;font-variant-numeric:tabular-nums}.varn .v.halt{color:var(--gul)}
+.varn .lankar{padding:12px 0 14px;border-top:1px dashed var(--skilje);font-size:15px}.varn .lankar a{margin-right:18px}
+.nivaer{list-style:none;padding:0;margin:0}.nivaer li{padding:12px 0;border-top:1px dashed var(--skilje)}.nivaer li:first-child{border-top:0}
+.nivaer b{font:600 13px var(--mono);letter-spacing:.08em;margin-right:10px;text-transform:uppercase}</style>`;
+const LS_VARN_FRAGOR = [
+  { fraga: "Betyder en varning för snöfall att vägen är hal?", svar: "Inte alltid. SMHI varnar för vad vädret kan ställa till med i ett område under en period. Trafikverket rapporterar hur varje vägavsnitt är just nu. Därför visar sidan båda bredvid varandra." },
+  { fraga: "Var ser jag om det är halt där SMHI varnar?", svar: "Här på sidan, län för län: halka eller vinterväglag enligt Trafikverket och vägbanans temperatur vid mätstationerna. Varje län har också en egen sida med vägarna en och en." },
+  { fraga: "Gör Halkvakt en egen prognos på den här sidan?", svar: "Nej. Varningen är SMHI:s, med SMHI:s ord, och vägläget är Trafikverkets. Sidan skrivs om var 30:e minut." },
+];
+
+/** SMHI:s vägvarningar med Trafikverkets läge i varje varnat län (1/11, Klart-genomlysningen och marknad/vagsokningar.md i
+ *  projektet): varningen med SMHI:s ord, vägarna med Trafikverkets. Ingen egen prognos på sidan. */
+function lsVarningssida(varn: Vagvarning[], lagen: Map<number, LanLage>, now: Date): string {
+  const nar = `Kl. ${lsTid(now, false)}`;
+  const lanen = [...new Set(varn.flatMap((v) => v.lan))].map((kod) => LAN.find((l) => l.kod === kod)!);
+  const halt = lanen.reduce((n, l) => n + lagen.get(l.kod)!.halt.length, 0), avsnitt = lanen.reduce((n, l) => n + lagen.get(l.kod)!.vagavsnitt, 0);
+  // Varje område med sin nivå och händelse, med SMHI:s ord; fler än tre områden sägs som ett antal (korten visar dem).
+  const omraden = [...new Set(varn.map((v) => v.omrade))];
+  const var_ = omraden.length > 3 ? `${omraden.length} områden` : lsOch(omraden);
+  const vad = varn.length > 3 ? var_ : lsOch(varn.map((v) => `${v.omrade} (${v.niva.toLowerCase()} varning, ${v.event.toLowerCase()})`));
+  const ilan = lanen.length === 1 ? lsSoknamn(lanen[0].kort) : `de ${lanen.length} länen`;
+  const trv = !lanen.length ? "" : halt
+    ? `Trafikverket rapporterar halka eller vinterväglag på ${halt} av ${avsnitt} vägavsnitt i ${ilan}.`
+    : `Trafikverket rapporterar ingen halka på ${avsnitt} vägavsnitt i ${ilan} just nu.`;
+  const hala = LAN.filter((l) => lagen.get(l.kod)!.halt.length);
+  const svar = varn.length ? `${nar} varnar SMHI i ${vad}. ${trv}`.trim()
+    : `${nar} har SMHI ingen varning för snöfall, underkylt regn eller is. ${hala.length
+      ? `Trafikverket rapporterar halka eller vinterväglag i ${lsPlural(hala.length, "län", "län")}: ${hala.map((l) => l.kort).join(", ")}.`
+      : "Trafikverket rapporterar ingen halka i något län just nu."}`;
+  const beskrivning = varn.length
+    ? `${nar}: SMHI varnar i ${var_}.${lanen.length ? ` Trafikverket: ${halt ? `halka eller vinterväglag på ${halt} av ${avsnitt}` : `ingen halka på ${avsnitt}`} vägavsnitt där.` : ""} Uppdaterat var 30:e minut.`
+    : `${nar} har SMHI ingen varning för snöfall, underkylt regn eller is. Trafikverkets väglag län för län, uppdaterat var 30:e minut.`;
+  const kort = varn.map((v) => {
+    const huvud = `<div class="smhi"><small>SMHI · ${lsEsc(v.niva)} varning</small>${lsEsc(v.event)} · ${lsEsc(v.omrade)}</div>` +
+      (v.text && v.text !== v.event ? `<p class="smhitext">${lsEsc(v.text)}</p>` : "") + (lsGaller(v) ? `<p class="smhitext">${lsEsc(lsGaller(v))}</p>` : "");
+    const lan = v.lan.map((kod) => {
+      const l = LAN.find((x) => x.kod === kod)!, g = lagen.get(kod)!, namn = lsEsc(lsSoknamn(l.kort));
+      return `<div class="rad"><span class="k">${namn} · halka eller vinterväglag</span><span class="v${g.halt.length ? " halt" : ""}">${g.halt.length} av ${g.vagavsnitt} vägavsnitt</span></div>` +
+        `<div class="rad"><span class="k">${namn} · mätstationer under noll</span><span class="v">${g.kalla.length ? `${g.kalla.length}, kallast ${lsGrad(g.kalla[0].yta)} ${lsEsc(g.kalla[0].name)}` : "0"}</span></div>` +
+        `<div class="rad"><span class="k">${namn} · olyckor och hinder</span><span class="v">${g.olyckor.length}</span></div>` +
+        `<div class="lankar"><a href="../lan/${l.slug}/">Vägarna i ${namn}</a><a href="../karta.html?lan=${l.slug}">På kartan</a></div>`;
+    }).join("");
+    return `<article class="varn">${huvud}${lan || '<div class="lankar"><a href="../lan/">Läget i alla län</a></div>'}</article>`;
+  }).join("\n");
+  const innehall = `<p class="dim">Uppdaterad ${lsTid(now)} · SMHI och Trafikverket</p>
+<h1>Varning för snöfall och is: så är vägarna</h1>
+<p class="svar">${lsEsc(svar)}</p>
+<p class="dim">Varningen är SMHI:s, med SMHI:s ord. Vägläget och vägbanans temperatur är Trafikverkets. Halkvakt lägger inte till någon egen prognos här. Vägarna gäller hela länet.</p>
+${kort ? `<div class="varnade">\n${kort}\n</div>\n` : ""}<h2>Varningen och vägen är två olika saker</h2>
+<p>SMHI varnar för vad vädret kan ställa till med i ett område under en period, till exempel snöfall eller regn som fryser när det träffar marken. Trafikverket rapporterar något annat: hur varje vägavsnitt är just nu, och vägbanans egen temperatur vid vägväderstationerna.</p>
+<p>En varning betyder alltså inte att varje väg i länet är hal, och en väg kan vara hal utan att någon varning gäller. Därför står de bredvid varandra här, län för län.</p>
+<h2>Vad SMHI:s nivåer betyder</h2>
+<ul class="nivaer">
+<li><b>Gul</b>Vädret kan påverka samhället och innebära viss fara. Var uppmärksam och ta det försiktigt.</li>
+<li><b>Orange</b>Vädret kan få allvarliga följder och större fara. Överväg att skjuta upp sådant som är riskfyllt.</li>
+<li><b>Röd</b>Den allvarligaste nivån. Vädret kan få mycket allvarliga följder och stora störningar. Undvik det som är riskfyllt.</li>
+</ul>
+<p class="dim">Fritt efter SMHI:s beskrivning av varningsnivåerna. SMHI:s egen text står i varje varning på smhi.se.</p>
+<h2>Innan du kör</h2>
+<p>Titta på ditt län kvällen innan och samma morgon. Länssidan visar vägarna en och en, med Trafikverkets ord, och de kallaste mätstationerna. På <a href="../karta.html">livekartan</a> syns hela landet på en gång. Vill du veta när vägen brukar bli hal, läs <a href="../nar-blir-det-halt.html">när det blir halt på vägarna</a>.</p>
+<h2>Vanliga frågor</h2>
+${lsFragorHtml(LS_VARN_FRAGOR)}
+<nav><h2>Länen</h2><p>${LAN.map((l) => `<a href="../lan/${l.slug}/">${lsEsc(l.kort)}</a>`).join(" · ")}</p></nav>`;
+  return lsSkal({
+    titel: "Varning för snöfall och is: vägarna i de varnade länen just nu | Halkvakt",
+    beskrivning, adress: `${SIDBAS}/varningar/`, rot: "../", innehall, now, ct: "varningar", smhi: true,
+    extra: LS_VARN_STIL + lsFragorLd(LS_VARN_FRAGOR),
+    kallor: "Källor: SMHI:s öppna data om vädervarningar och Trafikverkets öppna data (CC0) om väglag, vägväderstationer och olyckor. Sidan skrivs om var 30:e minut. Fristående från myndigheterna.",
+    ladda: { rubrik: "Ska du ut på vägarna?", text: "Appen säger till med rösten innan du är framme vid halkan. Samma data från Trafikverket. Gratis för iPhone, och din position lämnar inte telefonen av sig själv." },
+  });
+}
+
 function lsOrtsida(ort: { namn: string; lan: number }, lan: (typeof LAN)[number], lanLage: LanLage, now: Date,
-  d: { vaglag: LanSegment[]; olyckor: LanOlycka[] }): string {
+  d: { vaglag: LanSegment[]; olyckor: LanOlycka[] }, varn: Vagvarning[] = []): string {
   const avsnitt = lsOrtAvsnitt(ort, d.vaglag);
   const halt = avsnitt.filter((s) => arHalt(s.code, s.info));
   const vagar = new Set(avsnitt.map((s) => vagNyckel(s.road)));
@@ -1173,7 +1292,7 @@ function lsOrtsida(ort: { namn: string; lan: number }, lan: (typeof LAN)[number]
   const innehall = `<p class="dim">Uppdaterad ${lsTid(now)}</p>
 <h1>Är det halt i ${n} just nu?</h1>
 <p class="svar">${lsEsc(svar)}</p>
-<p class="dim">Väglaget och trafikläget i ${n} idag: vägarna till och från orten enligt Trafikverket, uppdaterat var 30:e minut.</p>
+${lsVarnadRad(varn.filter((v) => v.lan.includes(ort.lan)), `i ${lsSoknamn(lan.kort)}`, "../../")}<p class="dim">Väglaget och trafikläget i ${n} idag: vägarna till och från orten enligt Trafikverket, uppdaterat var 30:e minut.</p>
 ${halt.length ? `<div class="svar-app"><p>Kör du i ${n} idag? Appen säger till med rösten innan du är framme vid halkan.</p><a class="knapp" href="${lsApp("ort-halt")}">Få varningar i appen</a></div>\n` : ""}<h2>Vägarna till och från ${n}</h2>
 <ul class="vaglista">\n${rader}\n</ul>
 <h2>Pågående olyckor</h2>
@@ -1192,7 +1311,7 @@ ${lsFragorHtml(lsFragor(ort.namn))}
   });
 }
 
-function lsLanssida(lan: (typeof LAN)[number], l: LanLage, now: Date, d: { vaglag: LanSegment[]; stationer: LanStation[] }): string {
+function lsLanssida(lan: (typeof LAN)[number], l: LanLage, now: Date, d: { vaglag: LanSegment[]; stationer: LanStation[] }, varn: Vagvarning[] = []): string {
   const halt = l.halt.slice(0, 15).map((s) => {
     const vad = [s.text, ...s.info].filter(Boolean).join(", ");
     return `<li>${lsEsc(s.plats ?? s.road ?? "Vägavsnitt")}: ${lsEsc(vad)}</li>`;
@@ -1205,7 +1324,7 @@ function lsLanssida(lan: (typeof LAN)[number], l: LanLage, now: Date, d: { vagla
   const innehall = `<p class="dim">Uppdaterad ${lsTid(now)}</p>
 <h1>Är det halt i ${lsEsc(lan.kort)} just nu?</h1>
 <p class="svar">${lsEsc(lsSvar(l, "länets", "i länet", now))}</p>
-<p class="dim">Väglaget och trafikläget i ${lsEsc(lsSoknamn(lan.kort))} idag: halka, vägbanans temperatur och pågående olyckor enligt Trafikverket, uppdaterat var 30:e minut.</p>
+${lsVarnadRad(varn.filter((v) => v.lan.includes(lan.kod)), "i länet", "../../")}<p class="dim">Väglaget och trafikläget i ${lsEsc(lsSoknamn(lan.kort))} idag: halka, vägbanans temperatur och pågående olyckor enligt Trafikverket, uppdaterat var 30:e minut.</p>
 ${l.halt.length ? `<div class="svar-app"><p>Kör du i ${lsEsc(lan.kort)} idag? Appen säger till med rösten innan du är framme vid halkan.</p><a class="knapp" href="${lsApp("lan-halt")}">Få varningar i appen</a></div>
 ` : ""}${lsLanKarta(lan, l)}
 <h2>Stora vägar i ${lsEsc(lan.kort)} just nu</h2>
@@ -1275,14 +1394,16 @@ ${vagrader}
 }
 
 /** Alla sidor, nyckel = sökvägen i kartsajten. */
-export function byggLanssidor(d: { vaglag: LanSegment[]; stationer: LanStation[]; olyckor: LanOlycka[]; now: Date }): Record<string, string> {
+export function byggLanssidor(d: { vaglag: LanSegment[]; stationer: LanStation[]; olyckor: LanOlycka[]; now: Date; smhi?: SmhiRad[] }): Record<string, string> {
   const lagen = new Map(LAN.map((lan) => [lan.kod, lsLage(lan.kod, d)] as const));
+  const varn = vagvarningar(d.smhi ?? []);
   const vagar = new Map(VAGAR.map((v) => [v.slug, lsVagLage(v.nyckel, d)] as const));
   const ut: Record<string, string> = { "lan/index.html": lsOversikt(lagen, vagar, d.now), "data/lan.json": lsLanJson(lagen, vagar, d.now),
     "data/strackor.json": lsStrackorJson(d) };
-  for (const lan of LAN) ut[`lan/${lan.slug}/index.html`] = lsLanssida(lan, lagen.get(lan.kod)!, d.now, d);
-  for (const v of VAGAR) ut[`vag/${v.slug}/index.html`] = lsVagsida(v, vagar.get(v.slug)!, d.now, d);
-  for (const o of ORTER) ut[`ort/${ortSlug(o.namn)}/index.html`] = lsOrtsida(o, LAN.find((l) => l.kod === o.lan)!, lagen.get(o.lan)!, d.now, d);
+  for (const lan of LAN) ut[`lan/${lan.slug}/index.html`] = lsLanssida(lan, lagen.get(lan.kod)!, d.now, d, varn);
+  for (const v of VAGAR) ut[`vag/${v.slug}/index.html`] = lsVagsida(v, vagar.get(v.slug)!, d.now, d, varn);
+  for (const o of ORTER) ut[`ort/${ortSlug(o.namn)}/index.html`] = lsOrtsida(o, LAN.find((l) => l.kod === o.lan)!, lagen.get(o.lan)!, d.now, d, varn);
+  ut["varningar/index.html"] = lsVarningssida(varn, lagen, d.now);
   return ut;
 }
 
@@ -1324,7 +1445,7 @@ function lsStrackorJson(d: { vaglag: LanSegment[]; stationer: LanStation[]; now:
   return JSON.stringify({ generated_at: d.now.toISOString(), lan });
 }
 
-export const sidAdresser = () => [`${SIDBAS}/lan/`, ...LAN.map((l) => `${SIDBAS}/lan/${l.slug}/`),
+export const sidAdresser = () => [`${SIDBAS}/lan/`, `${SIDBAS}/varningar/`, ...LAN.map((l) => `${SIDBAS}/lan/${l.slug}/`),
   ...VAGAR.map((v) => `${SIDBAS}/vag/${v.slug}/`), ...ORTER.map((o) => `${SIDBAS}/ort/${ortSlug(o.namn)}/`)];
 
 /** Axels sitemap med de adresser som saknas infogade före </urlset>; null när inget saknas eller filen inte går att läsa. */
@@ -1567,7 +1688,11 @@ export async function buildMapData(q: Q, opts: {
       const s = lanFor.get(w.id);
       return s && w.yta !== null ? [{ name: s.name, yta: w.yta, fukt: w.fukt, lan: s.lan, vag: s.vag }] : [];
     });
+    // SMHI:s alla gällande varningar (1/11): varningssidan och raden på läns-, orts- och vägsidorna väljer själva vägvarningarna
+    // (vagvarningar i lanssidor.ts), så att regeln bor på ett ställe och går att pröva.
+    const smhi = await q(`SELECT event_sv, level_sv, level_code, description_sv, area_name, affected_areas, approx_start, approx_end FROM smhi_warnings`);
     sidor = byggLanssidor({
+      smhi: smhi as unknown as SmhiRad[],
       vaglag: vaglag.map((r) => ({ code: numOrNull(r.condition_code), text: r.condition_text ?? null, info: (r.condition_info ?? []) as string[],
         road: r.road_number ?? null, plats: r.location_text ?? null, lan: numOrNull(r.lan) })),
       stationer,

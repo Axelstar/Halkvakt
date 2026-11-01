@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { arHalt, byggLanssidor, sitemapMed, sidAdresser, vagNyckel, LAN, VAGAR, ORTER, ortSlug, SIDBAS, PENDLING } from "../publish/lanssidor.ts";
+import { arHalt, byggLanssidor, sitemapMed, sidAdresser, vagNyckel, vagvarningar, LAN, VAGAR, ORTER, ortSlug, SIDBAS, PENDLING } from "../publish/lanssidor.ts";
 import { buildMapData } from "../publish/map-core.ts";
 import type { Q } from "../publish/snapshot-core.ts";
 
@@ -38,9 +38,9 @@ test("länssidorna: 21 län och en översikt, svaret ur källorna, Trafikverkets
     olyckor: [{ road: "E22", start: "2026-11-20T05:10:00Z", allvar: "Stor påverkan", lan: 12 }],   // olyckornas form: utan mellanslag
     now: NOW,
   });
-  assert.equal(Object.keys(sidor).length, 30 + ORTER.length, "översikten, 21 län, 6 vägar, orterna, widgetens datafil och vägrutans");
+  assert.equal(Object.keys(sidor).length, 31 + ORTER.length, "översikten, 21 län, 6 vägar, orterna, varningssidan, widgetens datafil och vägrutans");
   assert.deepEqual(Object.keys(sidor).filter((p) => p !== "lan/index.html" && !p.startsWith("data/")).sort(),
-    [...LAN.map((l) => `lan/${l.slug}/index.html`), ...VAGAR.map((v) => `vag/${v.slug}/index.html`),
+    ["varningar/index.html", ...LAN.map((l) => `lan/${l.slug}/index.html`), ...VAGAR.map((v) => `vag/${v.slug}/index.html`),
       ...ORTER.map((o) => `ort/${ortSlug(o.namn)}/index.html`)].sort());
   // 29/10: orten Uppsala har egen sida med titeln "Halka i Uppsala idag", så länssidan säger "län" — två sidor, två titlar.
   assert.ok(sidor["lan/uppsala/index.html"].includes("<title>Halka i Uppsala län idag:"), "länet när en ort bär namnet");
@@ -126,7 +126,7 @@ test("länssidorna: sitemapen får de adresser som saknas, en gång, och Axels r
   // Utan namnrymdens adress: beroendekartan läser varje värd i koden, och sitemapMed bryr sig inte om den.
   const axel = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset>\n  <url><loc>${SIDBAS}/</loc></url>\n</urlset>\n`;
   const ny = sitemapMed(axel, sidAdresser())!;
-  assert.equal((ny.match(/<url>/g) ?? []).length, 29 + ORTER.length, "Axels 1 + översikten + 21 län + 6 vägar + orterna");
+  assert.equal((ny.match(/<url>/g) ?? []).length, 30 + ORTER.length, "Axels 1 + översikten + varningssidan + 21 län + 6 vägar + orterna");
   assert.ok(ny.startsWith(axel.slice(0, axel.lastIndexOf("</urlset>"))) && ny.endsWith("</urlset>\n"), "Axels del orörd, slutet kvar");
   assert.equal(sitemapMed(ny, sidAdresser()), null, "andra varvet: inget att skriva");
   assert.equal(sitemapMed("<html>inte en sitemap</html>", sidAdresser()), null, "en fil utan </urlset> rörs inte");
@@ -254,4 +254,65 @@ test("ortssidorna (28/10): ortens egna avsnitt i dess län, ett län i Länsgrä
   assert.ok(sidor["ort/orebro/index.html"].includes("ingen halka på 1 vägavsnitt till och från Örebro"), "Länsgräns Värmland/Örebro är länet");
   assert.ok(sidor["lan/skane/index.html"].includes('href="../../ort/malmo/"'), "länssidan länkar till sina orter");
   assert.ok(sidAdresser().includes(`${SIDBAS}/ort/malmo/`), "orterna i sitemapen");
+});
+
+// Varningssidan (1/11): SMHI:s vägvarningar med SMHI:s ord, Trafikverkets läge i varje varnat län, ingen egen prognos.
+const SMHI = [
+  { event_sv: "Snöfall och ishalka", level_sv: "Gul", level_code: "YELLOW", description_sv: "Snöfall som kan ge besvärliga vägförhållanden",
+    area_name: "Värmlands län", affected_areas: [{ id: 17, sv: "Värmlands län" }], approx_start: "2026-11-20T16:00:00Z", approx_end: "2026-11-21T08:00:00Z" },
+  { event_sv: "Snöfall", level_sv: "Orange", level_code: "ORANGE", description_sv: null, area_name: "Norrbottens fjäll", affected_areas: [], approx_start: null, approx_end: null },
+  { event_sv: "Snöfall", level_sv: "Meddelande", level_code: "MESSAGE", area_name: "Skåne län" },
+  { event_sv: "Medelvind till havs", level_sv: "Gul", level_code: "YELLOW", area_name: "Norra Östersjön" },
+  { event_sv: "Risk för vattenbrist", level_sv: "Gul", level_code: "YELLOW", area_name: "Gotlands län" },
+  { event_sv: "Isbeläggning till havs", level_sv: "Gul", level_code: "YELLOW", area_name: "Bottenviken" },
+];
+
+test("varningssidan: bara vägvarningar på gul, orange och röd nivå, inget till havs, länen ur områdets namn", () => {
+  const v = vagvarningar(SMHI);
+  assert.deepEqual(v.map((x) => x.omrade), ["Norrbottens fjäll", "Värmlands län"], "orange före gul; meddelandet, vinden till havs och vattenbristen bort");
+  assert.deepEqual(v.map((x) => x.lan), [[25], [17]], "fjällen hör till Norrbotten, länet till sig självt");
+  assert.equal(v[1].start, "2026-11-20T16:00:00.000Z");
+  // Varje län känns igen ur sitt eget namn, och inget annat län följer med.
+  for (const l of LAN) assert.deepEqual(vagvarningar([{ event_sv: "Snöfall", level_sv: "Gul", level_code: "YELLOW", area_name: l.namn }])[0].lan, [l.kod], l.namn);
+});
+
+test("varningssidan: SMHI:s ord, vägarna i det varnade länet, länkar dit från läns-, orts- och vägsidorna", () => {
+  const d = {
+    vaglag: [
+      { code: 3, text: "Mycket besvärligt", info: ["Snö"], road: "E 18", plats: "E 18 Karlstad - Kristinehamn", lan: 17 },
+      { code: 1, text: "Normalt", info: ["Torrt"], road: "E 18", plats: "E 18 Örebro - Arboga", lan: 18 },
+      { code: 1, text: "Normalt", info: ["Torrt"], road: "E 4", plats: "E 4 Luleå - Piteå", lan: 25 },
+    ],
+    stationer: [{ name: "Torsby", yta: -4.2, fukt: true, lan: 17 }],
+    olyckor: [],
+    now: NOW,
+  };
+  const sidor = byggLanssidor({ ...d, smhi: SMHI });
+  const s = sidor["varningar/index.html"];
+  assert.ok(s.includes("<title>Varning för snöfall och is: vägarna i de varnade länen just nu | Halkvakt</title>"));
+  assert.ok(s.includes(`<link rel="canonical" href="${SIDBAS}/varningar/">`));
+  assert.ok(!s.includes('name="robots"'), "sidan ska kunna indexeras");
+  assert.ok(s.includes("Kl. 07:30 varnar SMHI i Norrbottens fjäll (orange varning, snöfall) och Värmlands län (gul varning, snöfall och ishalka)."), "SMHI:s händelser och områden");
+  assert.ok(s.includes('content="Kl. 07:30: SMHI varnar i Norrbottens fjäll och Värmlands län. Trafikverket: halka eller vinterväglag på 1 av 2 vägavsnitt där. Uppdaterat var 30:e minut."'), "dagens läge i sökträffen");
+  assert.ok(s.includes("Trafikverket rapporterar halka eller vinterväglag på 1 av 2 vägavsnitt i de 2 länen."), "Trafikverkets läge i de varnade länen");
+  assert.ok(s.includes("<small>SMHI · Gul varning</small>Snöfall och ishalka · Värmlands län"), "nivån och händelsen med SMHI:s ord");
+  assert.ok(s.includes("Snöfall som kan ge besvärliga vägförhållanden"), "SMHI:s egen beskrivning");
+  assert.ok(s.includes("Gäller från ungefär 20 nov. 17:00 till ungefär 21 nov. 09:00, enligt SMHI."), "giltighetstiden i svensk tid");
+  assert.ok(s.includes("1, kallast −4,2 °C Torsby"), "kallaste stationen i det varnade länet");
+  assert.ok(s.includes('href="../lan/varmland/"') && s.includes('href="../karta.html?lan=varmland"'));
+  assert.ok(s.includes('"@type":"FAQPage"') && s.includes('"name":"SMHI"'), "frågorna och SMHI som källa i den strukturerade datan");
+  assert.ok(!s.includes("Norra Östersjön") && !s.includes("Meddelande"), "inget till havs, inga meddelanden");
+  const text = s.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>|<!doctype html>/gi, "");
+  assert.ok(!text.includes("—") && !text.includes("!"), "inga långa tankstreck och inga utropstecken (varumärkesguiden)");
+  assert.ok(!/prognos visar|enligt halkvakt/i.test(text), "ingen egen prognos på sidan");
+  assert.ok(sidor["lan/varmland/index.html"].includes('<p class="varnad">SMHI varnar i länet: gul varning, snöfall och ishalka. <a href="../../varningar/">'), "länssidan");
+  assert.ok(!sidor["lan/skane/index.html"].includes('class="varnad"'), "ett meddelande ger ingen rad");
+  assert.ok(sidor["ort/karlstad/index.html"].includes('<p class="varnad">SMHI varnar i Värmland: gul varning, snöfall och ishalka.'), "ortssidan via sitt län");
+  assert.ok(sidor["vag/e18/index.html"].includes("SMHI varnar längs vägen: gul varning, snöfall och ishalka (Värmlands län)."), "vägsidan när ett län längs vägen är varnat");
+  assert.ok(!sidor["vag/e6/index.html"].includes('class="varnad"'), "ingen rad där vägen inte går");
+  assert.ok(sidor["lan/uppsala/index.html"].includes('href="../../varningar/">SMHI-varningar</a>'), "sidfoten länkar alltid dit");
+
+  const tom = byggLanssidor(d)["varningar/index.html"];
+  assert.ok(tom.includes("Kl. 07:30 har SMHI ingen varning för snöfall, underkylt regn eller is. Trafikverket rapporterar halka eller vinterväglag i 1 län: Värmland."));
+  assert.ok(!tom.includes('class="varnade"'), "inga kort utan varning");
 });
