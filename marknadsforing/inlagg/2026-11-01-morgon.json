@@ -1,0 +1,18 @@
+{
+  "typ": "lista",
+  "nyckel": "lista",
+  "etikett": "Halkläget kl. 05:30",
+  "rubrik": "Halt i morse",
+  "underrad": "söndag 1 november",
+  "text": "God morgon. Så här ser vägarna ut kl. 05:50.\n\nNorrbotten: halka på 21 av 58 vägavsnitt, 15 stationer under noll, kallast −0,9 °C vid Avvakko.\nVästernorrland: halka på 13 av 22 vägavsnitt.\nVästerbotten: halka på 3 av 44 vägavsnitt.\nÖstergötland: 3 stationer under noll, kallast −0,1 °C vid Braberg.\n\nLäget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västernorrland #Västerbotten #Östergötland #halkvakt",
+  "textIg": "God morgon. Så här ser vägarna ut kl. 05:50.\n\nNorrbotten: halka på 21 av 58 vägavsnitt, 15 stationer under noll, kallast −0,9 °C vid Avvakko.\nVästernorrland: halka på 13 av 22 vägavsnitt.\nVästerbotten: halka på 3 av 44 vägavsnitt.\nÖstergötland: 3 stationer under noll, kallast −0,1 °C vid Braberg.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone, länken finns i vår profil.\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västernorrland #Västerbotten #Östergötland #halkvakt",
+  "pass": "morgon",
+  "datum": "2026-11-01",
+  "generated_at": "2026-11-01T04:30:04.531Z",
+  "lan": [
+    "norrbotten",
+    "vasternorrland",
+    "vasterbotten",
+    "ostergotland"
+  ]
+}
