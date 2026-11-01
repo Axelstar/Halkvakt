@@ -17,9 +17,11 @@ Syfte: den dag kontot är godkänt ska formuläret kunna fyllas i på fem minute
 | :-- | :-- | :-- | :-- |
 | `GET` snapshot + `manifest.json` (GitHub Pages) | var tionde minut när vakten är på | inget — ingen query, ingen identifierare | alla |
 | `POST` facit-svar (Supabase edge function) | **bara** när föraren tryckt *Stämde/Stämde inte*, och bara när bilen står stilla eller appen öppnas | `{id, t, svar, app, ver}` — varningens id (`wx:2135`, `seg:16010`, `cam:…`), varningens klockslag, ja/nej, plattform, appversion | **bara betatestare som själva slagit på BETATEST** |
+| `POST` app-raknare (Supabase edge function) — **räknaren, 1/11 (DECISIONS #772)** | när introduktionen gått igenom (iOS), när platsbehörigheten blir alltid / när appen används / nekad (en gång per enhet och värde), varje gång vakten startar, och vid enhetens första varning — skickas när appen är öppen eller bilen står stilla, aldrig under körning | `{h, v, app}` — händelsens namn, dess värde och plattform. Inget id, ingen version, ingen tid, ingen position: servern räknar upp **en rad per dygn, app, händelse och värde** (`sql/077`) | **alla** — alltid på, står i integritetspolicyn och i appens Integritet (variant A, Axel och Bengt 1/11) |
 | `POST` facit-svar — **miss** (kort #203 lager 2) | **bara** när föraren markerat *Appen missade* (knapp eller Siri) OCH efter resan valt vad det var, och bara när bilen står stilla eller appen öppnas | `{miss, t, vad, station, segment, app, ver}` — klockslaget, förarens val (halka/vatten/vilt/olycka/annat), närmaste mätstation (`wx:2135`), närmaste halkavsnitt inom 2 km (`seg:16010` eller null), plattform, appversion | **bara betatestare som själva slagit på BETATEST** |
 
-`FacitSender.swift` / `FacitSender.kt`, `Facit.body()`, `supabase/functions/facit-svar/index.ts`, `sql/022`.
+`FacitSender.swift` / `FacitSender.kt`, `Facit.body()`, `supabase/functions/facit-svar/index.ts`, `sql/022`;
+räknaren: `Raknare.swift` / `Raknare.kt`, `supabase/functions/app-raknare/index.ts`, `sql/077`.
 **Ingen identitet, ingen kontonyckel, ingen resa, ingen koordinat.** Men ärligt: ett varnings-id pekar på en
 fara med koordinat och `t` säger när — **ett svar är alltså ungefär en plats och en tid.** Det står ordagrant
 i appens Om-avsnitt och i produktboken (Axels krav, DECISIONS #196), och knappen är AV tills testaren slår på
@@ -35,8 +37,8 @@ raden i Integritet, och en påslagen brytare gäller inte (`Prefs.betatestPa`). 
 
 | Fråga | Svar | Motivering |
 | :-- | :-- | :-- |
-| Does your app collect or share any of the required user data types? | **Yes** | Facitsvaret. Allt annat i appen samlar fortfarande ingenting. |
-| Is all of the user data collected by your app encrypted in transit? | **Yes** | HTTPS hela vägen (`https://…supabase.co/functions/v1/facit-svar`). |
+| Does your app collect or share any of the required user data types? | **Yes** | Facitsvaret, och sedan 1/11 räknaren (DECISIONS #772). Allt annat i appen samlar fortfarande ingenting. |
+| Is all of the user data collected by your app encrypted in transit? | **Yes** | HTTPS hela vägen (`https://…supabase.co/functions/v1/facit-svar` och `…/app-raknare`). |
 | Do you provide a way for users to request that their data is deleted? | **No** | Ingen identifierare finns, så ingens svar kan pekas ut. Beslutat 26/9 (DECISIONS #378) — se nedan. |
 
 ## Datatypen, rad för rad i formuläret
@@ -54,6 +56,23 @@ raden i Integritet, och en påslagen brytare gäller inte (`Prefs.betatestPa`). 
 
 **App version** (`ver`) skickas också. Den är inte en av Googles obligatoriska datatyper i sig och deklareras
 inte separat — den bär ingenting om användaren. Nämns här så att granskaren ser att den är känd, inte glömd.
+
+## Räknaren, rad för rad i formuläret (DECISIONS #772, 1/11)
+
+| Fält | Svar | Motivering |
+| :-- | :-- | :-- |
+| Data type | **App activity → App interactions** | Googles ord för "hur appen används": att introduktionen gick igenom, vilken platsbehörighet som valdes, att vakten startade, att en första varning sades. Ett ord per händelse, inget mer. |
+| Collected | **Ja** | Räknas upp i `app_raknare` — en rad per dygn, app, händelse och värde (`sql/077`). Det finns ingen rad per användare att samla. |
+| Shared | **Nej** | Lämnar aldrig vår databas; tabellen är dubbellåst (RLS utan policy + REVOKE, `sql/077`) och läses bara som sammanställning bakom statistiksidans nyckel. |
+| Processed ephemerally | **Nej** | Dygnssumman sparas. |
+| Required or optional | **Required** | Alltid på (variant A): ingen brytare, i stället en mening i integritetspolicyn och i appens Integritet. |
+| Purposes | **Analytics** | Hur många som kommer igenom introduktionen och väljer Alltid — det enda talen används till. |
+| Linked to the user's identity | **Nej** | Ingen identifierare skickas eller lagras — inget konto, inget enhets-id, ingen IP (funktionen läser den inte). |
+| Used for tracking | **Nej** | Ingen koppling till annonsering eller annan app. |
+
+iOS: samma sak ligger sedan 0.3.9 i `PrivacyInfo.xcprivacy` som *Product Interaction* (App Functionality + Analytics, inte kopplad,
+ingen spårning) och i App Store Connects integritetsetikett (`marknadsforing/butik/appstore-ios.md`); räknaren är första gången
+posten bär något för allmänheten.
 
 ## ✅ Radering — besvarad 26/9: Nej (väg 1, DECISIONS #378)
 

@@ -13128,3 +13128,37 @@ att ta bort och ligger kvar.
 
 **Stomdokument:** inga — posterna flyttas, stomdokumentens handtext ändras inte; korten i listorna skrivs av skripten.
 
+
+## #772 (1/11 2026) Räknaren: appen räknar anonymt introduktionen, platsbehörigheten, vaktens starter och första varningen — alltid på, sagt i integritetspolicyn (variant A)
+
+**Beslut** (Axel 1/11, Bengt 1/11: ja; Axel valde variant A). Axel frågade om vi kan se om användarna går igenom introduktionen och
+väljer *Alltid* — 33 nedladdningar 31/10 och 44 den 1/11 ur Meta-annonserna, och ingen aning om hur många som kommer igång. Appen
+får därför en **räknare**: ett ord per händelse — `{h, v, app}` — till edge-funktionen `app-raknare`, som räknar upp **en rad per
+dygn, app, händelse och värde** i `app_raknare` (`sql/077`). Fyra händelser, en gång per enhet och värde utom starterna:
+- `onboarding_klar` — introduktionen gick igenom (bara iOS; Android har ingen introduktion);
+- `behorighet` — platsbehörigheten blev `alltid`, `nar` (när appen används) eller `nekad`. Räknas när appen ser värdet första
+  gången på enheten, så de första dygnen efter 0.3.15 bär också de som redan hade appen (en folkräkning, inte nya val);
+- `vakt_startad` — `hand` (knappen, intentet, automationen) eller `sjalv` (självväckningen, autostarten); varje start, också en
+  omstart efter ett kvartsstopp;
+- `forsta_varningen` — första repliken någonsin på enheten.
+Inget id, ingen version, ingen tid, ingen position, ingen IP (funktionen läser den inte). Skickas när vakten inte kör —
+introduktionen, behörighetsrutan, appen öppnas — och annars när vakten stannar (iPhone) eller bilen står stilla (Android, samma
+stopp som facit): aldrig under körning, inga timers. Kön står kvar i telefonen tills nätet finns; högst 50 rader.
+**Alltid på** (variant A): ingen brytare, i stället en mening i integritet.html (GÄLLER FRÅN 2026-11-01) och i appens Integritet,
+där *"inget skickas"* stryks. Sammanställningen (`app_raknare_stat`) läses i statistik.html via `besok_stat` (nyckeln `appen`),
+bakom samma nyckel som besöken. Dygnstak 20 000 i funktionen; tabellen dubbellåst (RLS utan policy + REVOKE, GRANT till
+service_role, #653).
+
+**Alternativ.** (B) Brytare *Hjälp oss räkna* av som standard: ärligast men ger ingen bild av dem vi vill mäta — de som inte
+kommer igång slår aldrig på något. (C) Apples och Googles egna butiksmått: säger nedladdningar, inte vad som händer i appen.
+(D) Per-användar-händelser med enhets-id: hade gett tratten per person, men bryter löftet *inget om vem* och Play-formulärets
+*inte kopplad*. (E) Betygsfrågan (SKStoreReviewController) samtidigt: skjuten på framtiden (Axel 1/11: *"ganska jobbig när den
+kommer upp"*).
+
+**Skälet.** Löftet är orört: ingen position lämnar telefonen av sig själv, och det som skickas säger *hur många*, aldrig *vem* eller
+*var*. Talen ger det Axel behöver för att skriva *"Alltid är nyckeln"* på sociala medier med stöd i data, och för att se om
+introduktionen tappar folk. Produktinvarianten i CLAUDE.md, `docs/PLAY-DATASAFETY.md` (ny datatyp *App interactions*, Required,
+Analytics, inte kopplad), `docs/SYSTEM.md` §4, produktboken och integritet.html ändrade i samma commit (regeln från #264). Apples
+manifest bär redan *Product Interaction* (#433). Bygget: iOS 0.3.15 (37), Android versionCode 37. Kort #369.
+
+**Stomdokument:** APP §7, SYS §3

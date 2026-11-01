@@ -178,7 +178,10 @@ struct InstallningarView: View {
                 // även om det bara finns hos föraren. Texten säger var de ligger och hur de tas bort.
                 Text(Prefs.betatestTillaten
                      ? "All matchning mot vägdata sker lokalt i appen. Inget konto. Undantaget är betatestet — bara om du själv slår på det."
-                     : "All matchning mot vägdata sker lokalt i appen. Inget konto, och inget skickas.")
+                     : "All matchning mot vägdata sker lokalt i appen. Inget konto.")
+                    .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2)
+                // #772: räknaren är alltid på och står här — texten "inget skickas" var sann till 0.3.15.
+                Text("Appen räknar anonymt hur många som går igenom introduktionen, vilken platsbehörighet som väljs, att vakten startar och att en första varning sägs — ett ord per händelse, aldrig var du är eller vem du är.")
                     .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2)
                 Text("Slår du på Erbjud att spara resor under Favoriter sparas vägarna du väljer, bara i telefonen och aldrig i en säkerhetskopia. Du tar bort dem där.")
                     .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2)
@@ -440,14 +443,15 @@ struct HalkvaktApp: App {
             RootView()
             .tint(Brand.yellow)
             .preferredColorScheme(.dark)
-            // S4: osända facitsvar går iväg när appen blir aktiv — bilen står stilla då.
+            // S4: osända facitsvar går iväg när appen blir aktiv — bilen står stilla då. Räknarens kö likaså (#772).
             .onChange(of: scenePhase) { _, phase in
-                if phase == .active { Task { _ = await FacitSender.flush() } }
+                if phase == .active { Task { _ = await FacitSender.flush(); await Raknare.flush() } }
             }
             // DECISIONS #36: introduktionen är det första man ser, en gång.
+            // #772: räknas när föraren gick igenom den — inte när fotostudion hoppar över den (init ovan skriver fältet direkt).
             .fullScreenCover(isPresented: Binding(
                 get: { !prefs.onboardingDone },
-                set: { if !$0 { prefs.onboardingDone = true } }
+                set: { if !$0 { prefs.onboardingDone = true; Raknare.onboardingKlar() } }
             )) {
                 OnboardingView()
             }

@@ -118,6 +118,9 @@ final class Prefs {
     var facitStatusAt: Date? { didSet { d.set(facitStatusAt, forKey: "k.facitStatusAt") } }
     /// Introduktionen visad? (DECISIONS #36) Kan nollställas från Inställningar.
     var onboardingDone: Bool { didSet { d.set(onboardingDone, forKey: "k.onboardingDone") } }
+    /// Appens anonyma dagsräknare (DECISIONS #772): osända händelser, och vad enheten redan räknat en gång. Raknare.swift.
+    var raknareKo: [RaknadHandelse] { didSet { d.set(try? JSONEncoder().encode(raknareKo), forKey: "k.raknareKo") } }
+    var raknat: [String] { didSet { d.set(raknat, forKey: "k.raknat") } }
     /// Senaste gången vakten startades av intentet (automation eller Siri) — guidens kvitto.
     var lastIntentStartAt: Date? { didSet { d.set(lastIntentStartAt, forKey: "k.lastIntentStartAt") } }
     /// Vakna själv vid körning (kräver Alltid). Standard på. DECISIONS #40.
@@ -152,6 +155,8 @@ final class Prefs {
         lastTripEnd = d.object(forKey: "k.lastTripEnd") as? Date
         lastTripKm = d.double(forKey: "k.lastTripKm")
         onboardingDone = d.bool(forKey: "k.onboardingDone")
+        raknareKo = d.data(forKey: "k.raknareKo").flatMap { try? JSONDecoder().decode([RaknadHandelse].self, from: $0) } ?? []
+        raknat = d.stringArray(forKey: "k.raknat") ?? []
         lastIntentStartAt = d.object(forKey: "k.lastIntentStartAt") as? Date
         autoWake = d.object(forKey: "k.autoWake") as? Bool ?? true
         lastAutoWakeAt = d.object(forKey: "k.lastAutoWakeAt") as? Date

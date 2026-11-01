@@ -147,7 +147,9 @@ och *fartkamera* (en låda på stolpe med blixtlinjer). Svarta på kortet, ljusa
 
 - *Integritet* — löftet: *"Din position lämnar inte telefonen av sig själv."* och *"All matchning mot vägdata sker lokalt
   i appen. Inget konto. Undantaget är betatestet — bara om du själv slår på det."* (i App Store-versionen från (33): *"Inget
-  konto, och inget skickas."*, #681), sedan *"Slår du på Erbjud att spara
+  konto, och inget skickas."*, #681; från (37) *"Inget konto."* följt av räknarens mening: *"Appen räknar anonymt hur många som går
+  igenom introduktionen, vilken platsbehörighet som väljs, att vakten startar och att en första varning sägs — ett ord per
+  händelse, aldrig var du är eller vem du är."*, DECISIONS #772), sedan *"Slår du på Erbjud att spara
   resor under Favoriter sparas vägarna du väljer, bara i telefonen och aldrig i en säkerhetskopia. Du tar bort dem där."*
   (18/10; *"ingen spårning"* ströks, för en sparad resa är ett spår, även om det bara finns hos föraren, #616),
   raden till Betatest och Integritetspolicyn.
@@ -466,7 +468,11 @@ i stället för att det *fungerade*. Instrumenten är byggda. Vintern är facit.
 
 Ingen prognos (varnar på uppmätt läge, inte gissningar), tyst mellan
 mätstationerna, ingen ködetektion ännu. Skickar ingenting om
-dig — med ett enda undantag som du själv slår på: betatestets facitsvar (se Om). Vägar du kört sparas bara om du slår på
+dig — med ett enda undantag som du själv slår på: betatestets facitsvar (se Om) — och, sedan 0.3.15 (37), räknaren (DECISIONS #772):
+ett ord per händelse när introduktionen gått igenom, när platsbehörigheten blivit *Alltid*, *När appen används* eller nekad, när
+vakten startar (för hand eller av sig själv) och vid enhetens första varning. Servern räknar upp en rad per dygn och händelse; inget
+id, ingen version, ingen tid, ingen position — talen säger *hur många*, aldrig *vem*. Alltid på, och det står i Integritet och i
+integritetspolicyn. Vägar du kört sparas bara om du slår på
 det under Favoriter, och bara i telefonen. Hela ärliga
 listan: [SYSTEM.md §4](SYSTEM.md).
 
@@ -661,6 +667,7 @@ du var just då."* (Axels villkor för ja:et, DECISIONS #267.)
 | 0.3.13 (34) | 24/10 | Rättelserna efter Axels prov på (33): SMHI-nivån i klartext (*Gul varning*), *Spara resan?* klipps inte, *INGA VARNINGAR SENASTE TUREN* efter en tur utan varningar (bara iPhone), flikraden göms bakom tangentbordet och minsta resa 2 km och 5 minuter (DECISIONS #701). Skickad till App Review 24/10 och godkänd enligt Bengt (#713). |
 | 0.3.14 (35) | 29/10 | Fas 2 av kedjans takt: appen hämtar ur hinken med Pages som reserv, kollar strax efter varje väntad publicering och mäter varje resa under Betatest, avsnittet *Mätningen* (DECISIONS #741). Uppladdat 29/10 (TestFlight-flödet 40909018044). |
 | 0.3.14 (36) | 30/10 | Favoriternas rapport: *Rapporten från HH:MM* under *Läget från*, och förra kollen sparas bara när hämtningen lyckades (åtgärdslistan B7-05 och B7-24, DECISIONS #686, PR #1279). Uppladdat 30/10 (TestFlight-flödet 41026622176). |
+| 0.3.15 (37) | 1/11 | **Räknaren** (DECISIONS #772): appen räknar anonymt introduktionen, platsbehörigheten (*Alltid* / *När appen används* / nekad), vaktens starter och den första varningen — ett ord per händelse till `app-raknare`, en rad per dygn, inget om vem. Integritet säger det; *"inget skickas"* struken. Android versionCode 37 i takt. |
 | Android (CI) | 16/9 → | Facitknappen och betatest-brytaren (S4, DECISIONS #202), Efter resan (20/9), viltvarningen på Trafikverkets djur (22/9), omladdningsloopen lagad och reglaget (26/9), missarna (26/9). **0.3.9 (18)**, samma nummer som iOS (DECISIONS #377). |
 
 Android bar versionsnumret 0.3.1 (4) från 31/8 till 26/9, fast CI byggde den ur main med skinnet v3, facitknappen
