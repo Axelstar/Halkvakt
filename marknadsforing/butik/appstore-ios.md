@@ -117,6 +117,11 @@ in av skriptet, med statusraden (översta 150 px) ersatt av skärmens färg. `ap
 är ur (19), före designen v2 och fliken Favoriter (2.3.3). Ordningen i butiken är filnamnens ordning.
 
 ## Inskicket 0.3.15 (37) — 1/11
+
+**1/11 18:33: 0.3.15 (37) inskickat** (Axel; manuellt släpp). Versionsposten skapad med bygge 37, kampanjtexten *Nu kommer halkan …*,
+nyheterna och de omskrivna granskaranteckningarna nedan (räknaren som NEW IN 0.3.15, inspelningarna hänvisade till det godkända
+inskicket av (34)), filmen `halkvakt-0.3.13-app-review.mp4` från 24/10 som bilaga ändå, och Apples nya åldersfrågor besvarade
+(alla None/No ⇒ 4+) — utan dem gick *Add for Review* inte att trycka. Beviset är `appstore:0.3.15:WAITING_FOR_REVIEW` i byggsignalerna.
 Bygge 37 laddades upp av TestFlight-flödet 41329579362 (main 00c3407, 1/11 kväll); beviset att Apple läst in det är `bygge:37 … VALID` i
 byggsignalerna. Stegen är desamma som för (33)/(34) nedan, med tre skillnader: **(a)** versionsposten: *+* vid iOS-appen → **0.3.15** →
 bygge **37**; **(b)** *What's New* och granskarens tillägg ur avsnittet *Nyheter i 0.3.15* ovan; **(c)** skärmbilder och inspelningar
