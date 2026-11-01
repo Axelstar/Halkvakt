@@ -2,9 +2,10 @@
 -- Appen skickar ett ord per händelse till edge-funktionen app-raknare, som räknar upp EN rad per dygn, app, händelse och värde.
 -- Inget per användare: ingen position, ingen resa, inget enhets-id, ingen IP, ingen tid finare än dygnet. Fyra händelser:
 --   onboarding_klar   introduktionen gick igenom (bara iOS; Android har ingen introduktion)
---   behorighet        platsbehörigheten som appen ser den: alltid | nar (när appen används) | nekad — räknas när den ÄNDRAS
+--   behorighet        platsbehörigheten som appen ser den: alltid | nar (när appen används) | nekad
 --   vakt_startad      vakten startade: hand (knappen eller intentet) | sjalv (vaknade själv vid körning)
 --   forsta_varningen  första repliken någonsin på enheten
+-- En gång per enhet och värde (enheten minns vad den räknat), utom vakt_startad som räknas varje gång.
 -- statistik.html läser sammanställningen via besok_stat (nyckeln 'appen'), som läser app_raknare_stat, som Apple Ads (076).
 CREATE TABLE IF NOT EXISTS app_raknare (
   dag date NOT NULL,

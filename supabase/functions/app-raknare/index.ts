@@ -28,7 +28,7 @@ Deno.serve(async (req) => {
   if (text.length > MAX_BYTES) return svar(413, { fel: `mer än ${MAX_BYTES} byte` });
   let d: any;
   try { d = JSON.parse(text); } catch { return svar(400, { fel: "ogiltig JSON" }); }
-  const h = typeof d?.h === "string" && HANDELSER[d.h] ? d.h : null;
+  const h = typeof d?.h === "string" && Object.hasOwn(HANDELSER, d.h) ? d.h : null;   // hasOwn: "toString" är inte en händelse
   const v = typeof d?.v === "string" ? d.v : "";
   const app = d?.app === "android" || d?.app === "ios" ? d.app : null;
   if (!h || !app || !HANDELSER[h].has(v)) {
