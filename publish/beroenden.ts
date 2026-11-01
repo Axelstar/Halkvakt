@@ -106,8 +106,8 @@ export const KARTAN: Beroende[] = [
 
   // ── VERKTYG ──────────────────────────────────────────────────────────────────────────
   { vard: "api.appstoreconnect.apple.com", roll: "verktyg",
-    matar: "byggsignalerna: byggen, granskning, installationer per bygge och testarna (kort #288, DECISIONS #447)",
-    brister: "kartsynken bockar inte iPhone-stegen; kartan säger att App Store Connect inte läses", bevakad: "", signal: "OKÄND" },
+    matar: "byggsignalerna: byggen, granskning, installationer per bygge och testarna (kort #288, DECISIONS #447); App Store-nedladdningarna per dygn till statistiken (marknadsforing/appstore.mjs, DECISIONS #773)",
+    brister: "kartsynken bockar inte iPhone-stegen; kartan säger att App Store Connect inte läses; statistiken får inga nya nedladdningar", bevakad: "", signal: "OKÄND" },
   { vard: "thredds.met.no", roll: "verktyg",
     matar: "MET Nordics arkiverade prognoser för kuvösens prognosläge (kuvos/metnordic-prognos.ts, DECISIONS #519) — hämtas en gång, inte i drift",
     brister: "hämtningen av kuvos-metnordic-prognos-2024-25 står still", bevakad: "", signal: "OKÄND" },

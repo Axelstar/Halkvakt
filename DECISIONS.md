@@ -13169,3 +13169,27 @@ emulatorn, Xcode-körningar och fotostudion inte. Ett debugbygge minns inte hell
 00c3407 är orört i release-grenen; läxan i skills/halkvakt-android §5.
 
 **Stomdokument:** APP §7, SYS §3
+
+## #773 (1/11 2026) App Store-nedladdningarna varje dygn till statistiken, genom App Store Connects API
+
+**Beslut** (Axel 1/11: *"Yeah please"*, på frågan om ett jobb som hämtar gårdagens nedladdningar till statistiksidan). App Store
+Connect visar nedladdningar först dagen efter, och ingen läste dem automatiskt:
+1. **`marknadsforing/appstore.mjs`** hämtar den dagliga försäljningsrapporten (`/v1/salesReports`, SALES, SUMMARY, DAILY, version 1_0)
+   för de senaste sju dygnen och skriver en rad per dygn och land i `app_store_nedladdningar` (sql/078): nya nedladdningar
+   (produkttyp 1*), omladdningar (3*) och uppdateringar (7*); köp i appen räknas inte. Bara rader med Halkvakts Apple-id (6806939784).
+   Ett dygn skrivs om i sin helhet; ett dygn utan försäljning blir en nollrad, och ett dygn som Apple inte lagt ut än (404 utan
+   *no sales*) lämnas orört och tas av nästa körning.
+2. **Nyckeln** är TestFlight-flödets App Store Connect-nyckel (`ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_KEY_P8`). Rapporten kräver också
+   leverantörsnumret, som Axel lägger i hemligheten `ASC_VENDOR_NUMBER`. Utan den är körningen en torrkörning.
+3. **`appstore.yml`** kör 06:17 och 13:17 UTC med GitHub-cronen, som apple-annonser.yml (#748): inget brådskar, och fönstret på sju
+   dygn tar igen en utebliven körning.
+4. **statistik.html** får talen genom `besok_stat`, nyckeln `app_store` (`app_store_stat`: senaste dygnet, sju dygn, perioden, per
+   dygn och per land), inlagd med samma grepp som 076 och 077.
+
+Bara Apples egna aggregat lagras: inga användare, ingen enhet, ingen position, inget från appen.
+
+**Alternativ.** Läsa App Store Connect för hand varje morgon: det Axel gör i dag. Apples nyare Analytics Reports API: ger mer
+(sidvisningar, källor) men kräver en rapportbegäran som tar dygn att bli klar och en egen hämtning av segment; försäljningsrapporten
+räcker för antalet. Den nästan levande siffran är appens anonyma räknare (#772), som syns samma dag när 0.3.15 är ute.
+
+**Stomdokument:** inga — marknadsföringen ligger utanför appen, motorn och mätningarna; ingen data lämnar appen.
