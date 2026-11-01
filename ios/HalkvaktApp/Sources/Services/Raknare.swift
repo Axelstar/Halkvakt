@@ -40,12 +40,23 @@ enum Raknare {
 
     @MainActor private static func raknaEnGang(_ h: String, _ v: String = "") {
         let nyckel = v.isEmpty ? h : "\(h):\(v)"
-        guard !Prefs.shared.raknat.contains(nyckel) else { return }
+        guard aktiv, !Prefs.shared.raknat.contains(nyckel) else { return }   // ett debugbygge får inte "minnas" ett ord det aldrig skickade
         Prefs.shared.raknat.append(nyckel)
         lagg(h, v)
     }
 
+    /// Utvecklarbyggen räknas inte: Xcode-körningar och fotostudion (samma regel som Android, där emulatorn i CI gav rader 1/11).
+    /// TestFlight- och App Store-byggen är release.
+    static let aktiv: Bool = {
+        #if DEBUG
+        return false
+        #else
+        return true
+        #endif
+    }()
+
     @MainActor private static func lagg(_ h: String, _ v: String) {
+        guard aktiv else { return }
         let prefs = Prefs.shared
         prefs.raknareKo.append(RaknadHandelse(h: h, v: v))
         if prefs.raknareKo.count > maxKo { prefs.raknareKo = Array(prefs.raknareKo.suffix(maxKo)) }

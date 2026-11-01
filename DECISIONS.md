@@ -13161,4 +13161,11 @@ introduktionen tappar folk. Produktinvarianten i CLAUDE.md, `docs/PLAY-DATASAFET
 Analytics, inte kopplad), `docs/SYSTEM.md` §4, produktboken och integritet.html ändrade i samma commit (regeln från #264). Apples
 manifest bär redan *Product Interaction* (#433). Bygget: iOS 0.3.15 (37), Android versionCode 37. Kort #369.
 
+**Tillägg 1/11 kväll (Claude; Axel: *"You cannot do this?"* — merge, byggen och raderingen gjorda från sessionen).** Efter sammanslagningen stod
+tre Android-rader i `app_raknare` innan någon telefon hade 0.3.15: android.yml:s emulator installerar debug-APK:n, beviljar platsen
+och startar vakten för fotostudion och Skåneuppspelningen, och räknade sig själv. Räknaren är därför **av i utvecklarbyggen**
+(`BuildConfig.DEBUG` på Android, `#if DEBUG` på iOS — samma grepp som betatestet, #681): butiksbygget är release och räknar,
+emulatorn, Xcode-körningar och fotostudion inte. Ett debugbygge minns inte heller ett ord det aldrig skickade. 0.3.15 (37) ur
+00c3407 är orört i release-grenen; läxan i skills/halkvakt-android §5.
+
 **Stomdokument:** APP §7, SYS §3
