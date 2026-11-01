@@ -152,6 +152,10 @@ Uppmätt i den publicerade `live.json` 14/9 05:10: **28 väderstationer, 1 avvik
 kamerorna att arbeta med. 15/10 17:30 bar `live.json` 40 sträckor i `segments` och kandidatens 2 sträckor med 16 punkter,
 79 531 byte (#576).
 
+Läget 1/11: lägesfilen ligger sedan 28/10 också i den publika hinken, och sedan 30/10 läser vakthunden (kontroll 3), skuggmotorn,
+favoritprovet och kamerafacit den därifrån, som appen, med Pages som reserv bara för vakthunden (#752). I filen får en svensk station
+vara högst 60 minuter gammal och en grannlands tre timmar (#751).
+
 ### 4.4 Kandidaten: en egen väg in, sist i stegen
 
 Kandidaten NIVÅ 2+BLANDNING (den frysta, #552) går live i appen före domen (#556) som en egen betavarning (#562). Den har
