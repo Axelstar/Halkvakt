@@ -24,15 +24,21 @@ name: kuvos-ny-kandidat
 #   samman        bara sammanslagningen ur de senaste artefakterna, också bakom spärren.
 #   paritet       ersättningsregeln §4: den nya kandidatens levande kedja i analysläget på 2024/25 mot den slutliga enhetens tal i
 #                 urvalet (fysik/ny_kandidat/levande.py --paritet), krav som DECISIONS #680. Ingen spärr: det är talen i urvalet.
+# Småvägsprovet (variant smavagar, halkvakt-kuvos BESLUT F3): T4-kandidatens procedur med de utelämnade stationerna borta ur
+# träningen (fysik/ny_kandidat/smavagar_kedjan.py). Lägen: identitet → traning → provning → dom; förberedningen är T4:s. Jobben
+# skriver bara klart eller fel, och enhetsfilerna, punkterna, vecken och domen går bara till hinken — aldrig till en artefakt.
+#   identitet     identitetsprovet (§8 a): den slutliga enheten genom kedjan utan att någon station hålls ute ska ge T4-kandidatens
+#                 modell byte för byte. Ingenting laddas upp.
+#   dom           domskriptet (fysik/ny_kandidat/smavagar_dom.py) på de sex vecken ur hinken, bakom spärren; domfilen till hinken.
 # MET Norways villkor är en förbindelse åt gången: tryck inte indata här medan kuvos-vintrar.yml hämtar.
 # Trafikverkets filer, modellerna och skattningarna hämtas ur hinken som i kuvos-vintrar.yml och lämnar aldrig jobbet.
 on:
   workflow_dispatch:
     inputs:
       steg:
-        description: "indata (en äldre vinter) → fyll (T2) → forberedning → traning → provning (bakom spärren) → samman; paritet (§4, den levande kedjan); osakerhet (#707, omdragning på 2022/23)"
+        description: "indata (en äldre vinter) → fyll (T2) → forberedning → traning → provning (bakom spärren) → samman; paritet (§4, den levande kedjan); osakerhet (#707, omdragning på 2022/23); identitet och dom bara med variant smavagar"
         type: choice
-        options: ["indata", "fyll", "t4", "forberedning", "traning", "provning", "samman", "paritet", "osakerhet"]
+        options: ["indata", "fyll", "t4", "forberedning", "traning", "provning", "samman", "paritet", "osakerhet", "identitet", "dom"]
         default: "forberedning"
       vinter:
         description: "bara för indata: vintern som hämtas"
@@ -40,9 +46,9 @@ on:
         options: ["2018-19", "2019-20", "2020-21", "2021-22", "2022-23"]
         default: "2022-23"
       variant:
-        description: "vanlig = den prövade kandidaten (#702); t4 = den rättade (tillägget T4, #720), egen plats i hinken, egna artefakter och egen kandidatfil"
+        description: "vanlig = den prövade kandidaten (#702); t4 = den rättade (tillägget T4, #720), egen plats i hinken, egna artefakter och egen kandidatfil; smavagar = småvägsprovet på T4 (identitet, traning, provning, dom), bara till hinken"
         type: choice
-        options: ["vanlig", "t4"]
+        options: ["vanlig", "t4", "smavagar"]
         default: "vanlig"
 concurrency: { group: kuvos-ny-kandidat, cancel-in-progress: false }
 permissions:
@@ -50,10 +56,12 @@ permissions:
 # Varianten (tillägget T4, DECISIONS #720): den rättade kandidaten tränas under kuvos/kuvos-kandidat-2027-28-t4/ med artefakterna
 # nykand-t4-* och kandidatfilen kuvos/kandidat-2027-28-t4.json, så att den prövade kandidatens filer står kvar orörda bredvid.
 # fysik/ny_kandidat/kedjan.py läser NYKAND_VARIANT.
+# Småvägsprovet (variant smavagar) kör kedjan som T4 och läser T4:s förberedningar (nykand-t4-prov-*), men skriver bara till sin
+# egen mapp i hinken, smavagar_kedjan.till_varianten:s <kedjan.HINKMAPP>-smavagar (prövas mot HINK i jobben), aldrig en artefakt.
 env:
-  NYKAND_VARIANT: "${{ inputs.variant == 't4' && 't4' || '' }}"
-  HINK: "${{ inputs.variant == 't4' && 'kuvos-kandidat-2027-28-t4' || 'kuvos-kandidat-2027-28' }}"
-  ART: "${{ inputs.variant == 't4' && 'nykand-t4' || 'nykand' }}"
+  NYKAND_VARIANT: "${{ (inputs.variant == 't4' || inputs.variant == 'smavagar') && 't4' || '' }}"
+  HINK: "${{ inputs.variant == 'smavagar' && 'kuvos-kandidat-2027-28-t4-smavagar' || inputs.variant == 't4' && 'kuvos-kandidat-2027-28-t4' || 'kuvos-kandidat-2027-28' }}"
+  ART: "${{ (inputs.variant == 't4' || inputs.variant == 'smavagar') && 'nykand-t4' || 'nykand' }}"
   KANDFIL: "${{ inputs.variant == 't4' && 'kuvos/kandidat-2027-28-t4.json' || 'kuvos/kandidat-2027-28.json' }}"
 jobs:
   # ── indata ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -329,7 +337,7 @@ jobs:
 
   # ── forberedning ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
   forberedning:
-    if: ${{ inputs.steg == 'forberedning' }}
+    if: ${{ inputs.steg == 'forberedning' && inputs.variant != 'smavagar' }}
     runs-on: ubuntu-latest
     timeout-minutes: 120
     strategy:
@@ -441,12 +449,12 @@ jobs:
 
   # ── traning ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────
   traning-plan:
-    if: ${{ inputs.steg == 'traning' }}
+    if: ${{ inputs.steg == 'traning' || (inputs.steg == 'identitet' && inputs.variant == 'smavagar') }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions: { contents: read, actions: read }
     outputs:
-      enheter: ${{ steps.plan.outputs.enheter }}
+      enheter: ${{ steps.plan.outputs.enheter || steps.plan_smavagar.outputs.enheter }}
     env: { GH_TOKEN: "${{ github.token }}" }
     steps:
       - uses: actions/checkout@v4
@@ -467,6 +475,7 @@ jobs:
           NYKAND_VARIANT= python3 fysik/ny_kandidat/sjalvtest.py | grep -v '^  '   # koden provas i vanligt läge, också med variant=t4
       - name: Planen ur förberedningarna
         id: plan
+        if: ${{ inputs.variant != 'smavagar' }}
         shell: bash
         run: |
           mkdir -p in
@@ -476,6 +485,27 @@ jobs:
           done
           { echo '```'; python3 fysik/ny_kandidat/trana.py --plan --prov in --ut plan; echo '```'; } 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
           echo "enheter=$(cat plan/enheter.json)" >> "$GITHUB_OUTPUT"
+      # Småvägsprovet: samma plan ur T4:s förberedningar, självtesten och populationsprovet (§8 c) först. Identiteten tränar bara den
+      # slutliga. Bara klart eller fel i loggen.
+      - name: Planen ur förberedningarna (småvägsprovet)
+        id: plan_smavagar
+        if: ${{ inputs.variant == 'smavagar' }}
+        shell: bash
+        env: { STEG: "${{ inputs.steg }}" }
+        run: |
+          prov() { if "${@:2}" > /dev/null 2>&1; then echo "$1: klart"; else echo "::error::$1: fel"; return 1; fi; }
+          prov "självtesten (påhittade data)" bash -c 'python3 fysik/ny_kandidat/smavagar.py --sjalvtest && python3 fysik/ny_kandidat/smavagar_kedjan.py --sjalvtest'
+          prov "populationsprovet (§8 c)" python3 fysik/ny_kandidat/smavagar.py --check
+          mkdir -p in
+          for V in 2018-19 2019-20 2020-21 2021-22 2022-23 2024-25; do
+            id=$(gh api "repos/${{ github.repository }}/actions/artifacts?name=$ART-prov-$V&per_page=100" -q '[.artifacts[] | select(.expired | not)] | sort_by(.created_at) | last | .id // empty')
+            if [ -n "$id" ]; then gh api "repos/${{ github.repository }}/actions/artifacts/$id/zip" > a.zip && unzip -o -q a.zip -d in && rm a.zip; fi
+          done
+          prov "planen" python3 fysik/ny_kandidat/trana.py --plan --prov in --ut plan
+          if [ "$STEG" = identitet ]; then
+            E=$(python3 -c 'import json; print(json.dumps([e for e in json.load(open("plan/enheter.json", encoding="utf-8")) if e["namn"] == "alla"]))')
+          else E=$(cat plan/enheter.json); fi
+          echo "enheter=$E" >> "$GITHUB_OUTPUT"
 
   traning:
     needs: traning-plan
@@ -514,6 +544,14 @@ jobs:
             if [ -n "$id" ]; then gh api "repos/${{ github.repository }}/actions/artifacts/$id/zip" > a.zip && unzip -o -q a.zip -d in && rm a.zip; fi
           done
           echo "enheten $ENHET: tränar på $TRANA; förutsäger ${UTAN:-ingen}" | tee -a "$GITHUB_STEP_SUMMARY"
+      # Småvägsprovet: populationsprovet (§8 c) före träningen, och att flödets HINK är kedjans egen mapp för varianten.
+      - name: Populationsprovet och hinkmappen (småvägsprovet)
+        if: ${{ inputs.variant == 'smavagar' }}
+        shell: bash
+        run: |
+          prov() { if "${@:2}" > /dev/null 2>&1; then echo "$1: klart"; else echo "::error::$1: fel"; return 1; fi; }
+          prov "populationsprovet (§8 c)" python3 fysik/ny_kandidat/smavagar.py --check
+          prov "hinkmappen" python3 -c 'import os, sys; sys.path.insert(0, "fysik/ny_kandidat"); import kedjan, smavagar_kedjan as sk; sk.till_varianten(kedjan); sys.exit(kedjan.HINKMAPP != os.environ["HINK"])'
       # Bara träningsvintrarnas Trafikverksfiler: en utelämnad vinter läses utan mätningar, och trana.py vägrar om dess filer finns.
       - name: Hinken — träningsvintrarnas VViS-filer, kontrollsummorna mot manifesten
         shell: bash
@@ -578,6 +616,7 @@ jobs:
           rm -rf rel mn2425 indata
       # Summorna mot förberedningen prövas i trana.py (ECMWF, MET, VViS, de fasta filerna) innan något läses.
       - name: Träningen
+        if: ${{ inputs.variant != 'smavagar' }}
         shell: bash
         run: |
           set -o pipefail
@@ -585,10 +624,24 @@ jobs:
           { echo '```'; grep -E '^\[[0-9]+ s\] (enheten|enhet_|i urvalet|träningen:|kalibrerat|rättelsen)' traning.txt || true; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
           rm -rf arbete v
           exit "$RC"
+      # Småvägsprovet: samma enhet genom fysik/ny_kandidat/smavagar_kedjan.py, som håller ute de utelämnade stationerna ur
+      # träningsvintrarna och kör läckageprovet (§8 d); med steget identitet ingen station ute, och modellen ska vara T4-kandidatens
+      # (§8 a). Kedjans logg bär tal och stannar i jobbet: bara klart eller fel skrivs ut.
+      - name: Träningen utan de utelämnade stationerna (småvägsprovet)
+        if: ${{ inputs.variant == 'smavagar' }}
+        shell: bash
+        env: { STEG: "${{ inputs.steg }}" }
+        run: |
+          ID=(); if [ "$STEG" = identitet ]; then ID=(--identitet); fi
+          RC=0; python3 fysik/ny_kandidat/smavagar_kedjan.py "${ID[@]}" --enhet "$ENHET" --prov in --indata frusen --vintrar v --arbete arbete --ut ut > traning.txt 2>&1 || RC=$?
+          rm -rf arbete v traning.txt
+          if [ "$RC" -eq 0 ]; then echo "$STEG, enheten $ENHET: klart"; else echo "::error::$STEG, enheten $ENHET: fel"; fi
+          exit "$RC"
       # Modellen och skattningarna är räknade ur Trafikverkets rader och går bara till den privata hinken, aldrig till en artefakt.
       # Signerad uppladdning skriver aldrig över: finns filerna redan (en omkörning) ska de vara byte för byte desamma, annars står det
       # som ligger i hinken kvar och körningen faller. Beviset är filerna hämtade tillbaka med enhetsfilens sha256.
       - name: Till hinken, hämtat tillbaka och jämfört
+        if: ${{ inputs.variant != 'smavagar' }}
         shell: bash
         env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
         run: |
@@ -621,8 +674,47 @@ jobs:
           fi
           node -e "$JAMFOR" | tee -a "$GITHUB_STEP_SUMMARY"
           rm -f hamta.json ut/*.pkl ut/*.npz
+      # Småvägsprovet: modellen, skattningarna OCH enhetsfilen (provets vakt läser kedjans märke i den) till variantens mapp i hinken,
+      # aldrig till en artefakt. Som ovan skrivs ingenting över; det som ligger i hinken ska vara byte för byte det jobbet skrev.
+      # Identitetskörningen laddar inte upp något (samma filnamn som varianten, och vakten fäller dess enheter).
+      - name: Till hinken, hämtat tillbaka och jämfört (småvägsprovet)
+        if: ${{ inputs.variant == 'smavagar' && inputs.steg == 'traning' }}
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          export FN KEY
+          lagg() {   # lagg <fil …>: till $HINK/<filnamn>; skrivs aldrig över, och det som ligger i hinken ska vara byte för byte filen
+            node -e '
+              const { execFileSync } = require("child_process"), fs = require("fs"), c = require("crypto"), filer = process.argv.slice(1);
+              const sha = (b) => c.createHash("sha256").update(b).digest("hex"), namn = filer.map((f) => process.env.HINK + "/" + f.split("/").pop());
+              // execFileSync:s fel bär kommandoraden och därmed nyckeln eller den signerade adressen: fångas, bara statusen skrivs ut.
+              const curl = (a, vad) => { try { return execFileSync("curl", ["-sS", "--fail", ...a], { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); }
+                catch (e) { if (vad) { console.error(`${vad} föll (curl ${e.status})`); process.exit(1); } return null; } };
+              const anrop = (lage, vad) => { const b = curl(["-X", "POST", `${process.env.FN}?lage=${lage}`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
+                "-H", "Content-Type: application/json", "-d", JSON.stringify({ filer: namn })], vad); return b && JSON.parse(b); };
+              if (!filer.length || filer.length > 20) { console.error("lagg: 1–20 filer per anrop"); process.exit(1); }
+              let h = anrop("kuvos_hamta");
+              if (h) console.log("filerna finns redan i hinken (en omkörning): de jämförs, ingenting skrivs över");
+              else {
+                const u = anrop("kuvos_ladda_upp", "adresserna för uppladdningen").urls;
+                filer.forEach((f, i) => curl(["-X", "PUT", "-H", "Content-Type: application/octet-stream", "--data-binary", "@" + f, u[i]],
+                  `uppladdningen av ${namn[i]} (finns filen redan i hinken skrivs den inte över)`));
+                h = anrop("kuvos_hamta", "hämtningen tillbaka");
+              }
+              let fel = 0;
+              h.filer.forEach((d, i) => { const ok = sha(curl([d.url], `hämtningen av ${d.fil}`)) === sha(fs.readFileSync(filer[i])); fel += !ok;
+                console.log(`${d.fil}: ${ok ? "klart, i hinken byte för byte den skrivna" : "FEL: i hinken med annat innehåll"}`); });
+              process.exit(fel ? 1 : 0);' "$@"
+          }
+          mapfile -t F < <(node -e 'const e = require("./ut/enhet_" + process.env.ENHET + ".json"); for (const f of e.filer) console.log("ut/" + f.fil); console.log("ut/enhet_" + process.env.ENHET + ".json")')
+          lagg "${F[@]}"
+          rm -f ut/*.pkl ut/*.npz
       - name: Enhetsfilen (parametrar och summor, inga rader)
-        if: ${{ always() }}
+        if: ${{ always() && inputs.variant != 'smavagar' }}
         uses: actions/upload-artifact@v4
         with: { name: "${{ env.ART }}-enhet-${{ matrix.enhet.namn }}", path: "ut/enhet_*.json", retention-days: 90, if-no-files-found: ignore }
 
@@ -642,6 +734,14 @@ jobs:
       - name: Spärren — förregistreringen signerad av båda
         shell: bash
         run: python3 fysik/ny_kandidat/provning.py --sparren 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+      # Småvägsprovet: också småvägsförregistreringen signerad, och populationsprovet (§8 c). Bara standardbiblioteket.
+      - name: Spärren och populationsprovet (småvägsprovet)
+        if: ${{ inputs.variant == 'smavagar' }}
+        shell: bash
+        run: |
+          prov() { if "${@:2}" > /dev/null 2>&1; then echo "$1: klart"; else echo "::error::$1: fel"; return 1; fi; }
+          prov "spärren (småvägsförregistreringen signerad)" python3 fysik/ny_kandidat/smavagar.py --sparren
+          prov "populationsprovet (§8 c)" python3 fysik/ny_kandidat/smavagar.py --check
 
   provning-plan:
     needs: provning-sparr
@@ -650,7 +750,7 @@ jobs:
     timeout-minutes: 20
     permissions: { contents: read, actions: read }
     outputs:
-      veck: ${{ steps.plan.outputs.veck }}
+      veck: ${{ steps.plan.outputs.veck || steps.plan_smavagar.outputs.veck }}
     env: { GH_TOKEN: "${{ github.token }}" }
     steps:
       - uses: actions/checkout@v4
@@ -671,6 +771,7 @@ jobs:
           NYKAND_VARIANT= python3 fysik/ny_kandidat/sjalvtest.py | grep -v '^  '   # koden provas i vanligt läge, också med variant=t4
       - name: Enheterna ur träningen, vecken
         id: plan
+        if: ${{ inputs.variant != 'smavagar' }}
         shell: bash
         run: |
           hamta() { id=$(gh api "repos/${{ github.repository }}/actions/artifacts?name=$1&per_page=100" -q '[.artifacts[] | select(.expired | not)] | sort_by(.created_at) | last | .id // empty')
@@ -681,6 +782,45 @@ jobs:
             hamta "$ART-enhet-$E" enh
           done
           echo "veck=$(python3 fysik/ny_kandidat/provning.py --plan --enheter enh)" | tee -a "$GITHUB_OUTPUT" "$GITHUB_STEP_SUMMARY"
+      # Småvägsprovet: enhetsfilerna ligger i variantens mapp i hinken (träningen ovan), inte i artefakter. Vakten mellan träningen och
+      # provet (F1, smavagar_prov.las_enheterna) prövas redan här, så att inget veck startar på fel enheter. Bara klart eller fel.
+      - name: Enheterna ur hinken, vakten och vecken (småvägsprovet)
+        id: plan_smavagar
+        if: ${{ inputs.variant == 'smavagar' }}
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          prov() { if "${@:2}" > /dev/null 2>&1; then echo "$1: klart"; else echo "::error::$1: fel"; return 1; fi; }
+          prov "självtesten (påhittade data)" bash -c 'python3 fysik/ny_kandidat/smavagar_prov.py --sjalvtest && python3 fysik/ny_kandidat/smavagar_dom.py --sjalvtest'
+          prov "hinkmappen" python3 -c 'import os, sys; sys.path.insert(0, "fysik/ny_kandidat"); import kedjan, smavagar_kedjan as sk; sk.till_varianten(kedjan); sys.exit(kedjan.HINKMAPP != os.environ["HINK"])'
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          export FN KEY
+          hamta() {  # hamta <mapp> <hinknamn …>: ur hinken, högst 20 per anrop
+            node -e '
+              const { execFileSync } = require("child_process"), fs = require("fs"), [mapp, ...filer] = process.argv.slice(1);
+              // execFileSync:s fel bär kommandoraden och därmed nyckeln eller den signerade adressen: fångas, bara statusen skrivs ut.
+              const curl = (a, vad) => { try { return execFileSync("curl", ["-sS", "--fail", ...a], { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); }
+                catch (e) { console.error(`${vad} föll (curl ${e.status})`); process.exit(1); } };
+              if (!filer.length) { console.error("hamta: inga filer"); process.exit(1); }
+              fs.mkdirSync(mapp, { recursive: true });
+              for (let i = 0; i < filer.length; i += 20) {
+                const s = JSON.parse(curl(["-X", "POST", `${process.env.FN}?lage=kuvos_hamta`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
+                  "-H", "Content-Type: application/json", "-d", JSON.stringify({ filer: filer.slice(i, i + 20) })], "adresserna (finns filerna i hinken?)"));
+                for (const d of s.filer) curl(["-o", mapp + "/" + d.fil.split("/").pop(), d.url], `hämtningen av ${d.fil}`);
+              }' "$@"
+          }
+          hamta enh "$HINK/enhet_alla.json"
+          mapfile -t E < <(python3 -c 'import json, os, sys; sys.path.insert(0, "fysik/ny_kandidat"); import kedjan; v = json.load(open("enh/enhet_alla.json", encoding="utf-8"))["vintrar"]; print("\n".join(os.environ["HINK"] + "/enhet_" + e["namn"] + ".json" for e in kedjan.enheter(v) if e["namn"] != "alla"))')
+          hamta enh "${E[@]}"
+          echo "enheterna ur hinken: klart"
+          prov "vakten (F1)" python3 -c 'import sys; sys.path.insert(0, "fysik/ny_kandidat"); import smavagar_prov as sp; sp.las_enheterna(["enh"], sp.populationerna()["utelamnade"])'
+          V=$(python3 fysik/ny_kandidat/provning.py --plan --enheter enh 2>/dev/null) || { echo "::error::vecken: fel"; exit 1; }
+          echo "veck=$V" >> "$GITHUB_OUTPUT"
+          echo "vecken: klart"
 
   provning:
     needs: provning-plan
@@ -705,6 +845,7 @@ jobs:
       - uses: actions/setup-python@v5
         with: { python-version: "3.13", cache: pip, cache-dependency-path: fysik/requirements.txt }
       - name: Beroendena, de frysta filerna, spärren och enheterna
+        if: ${{ inputs.variant != 'smavagar' }}
         shell: bash
         run: |
           python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
@@ -717,6 +858,43 @@ jobs:
           for E in $(python3 -c "import json,sys; sys.path.insert(0, 'fysik/ny_kandidat'); import kedjan; print(' '.join(e['namn'] for e in kedjan.enheter(json.load(open('enh/enhet_alla.json', encoding='utf-8'))['vintrar'])))"); do
             hamta "$ART-enhet-$E" enh
           done
+      # Småvägsprovet: båda spärrarna och populationsprovet (§8 c), sedan enhetsfilerna ur variantens mapp i hinken.
+      - name: Beroendena, de frysta filerna, spärrarna och enheterna ur hinken (småvägsprovet)
+        if: ${{ inputs.variant == 'smavagar' }}
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
+          (cd fysik && sha256sum -c --quiet SHA256SUMS)
+          prov() { if "${@:2}" > /dev/null 2>&1; then echo "$1: klart"; else echo "::error::$1: fel"; return 1; fi; }
+          prov "spärren (NY-KANDIDAT)" python3 fysik/ny_kandidat/provning.py --sparren
+          prov "spärren (småvägsförregistreringen signerad)" python3 fysik/ny_kandidat/smavagar.py --sparren
+          prov "populationsprovet (§8 c)" python3 fysik/ny_kandidat/smavagar.py --check
+          prov "hinkmappen" python3 -c 'import os, sys; sys.path.insert(0, "fysik/ny_kandidat"); import kedjan, smavagar_kedjan as sk; sk.till_varianten(kedjan); sys.exit(kedjan.HINKMAPP != os.environ["HINK"])'
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          export FN KEY
+          hamta() {  # hamta <mapp> <hinknamn …>: ur hinken, högst 20 per anrop
+            node -e '
+              const { execFileSync } = require("child_process"), fs = require("fs"), [mapp, ...filer] = process.argv.slice(1);
+              // execFileSync:s fel bär kommandoraden och därmed nyckeln eller den signerade adressen: fångas, bara statusen skrivs ut.
+              const curl = (a, vad) => { try { return execFileSync("curl", ["-sS", "--fail", ...a], { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); }
+                catch (e) { console.error(`${vad} föll (curl ${e.status})`); process.exit(1); } };
+              if (!filer.length) { console.error("hamta: inga filer"); process.exit(1); }
+              fs.mkdirSync(mapp, { recursive: true });
+              for (let i = 0; i < filer.length; i += 20) {
+                const s = JSON.parse(curl(["-X", "POST", `${process.env.FN}?lage=kuvos_hamta`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
+                  "-H", "Content-Type: application/json", "-d", JSON.stringify({ filer: filer.slice(i, i + 20) })], "adresserna (finns filerna i hinken?)"));
+                for (const d of s.filer) curl(["-o", mapp + "/" + d.fil.split("/").pop(), d.url], `hämtningen av ${d.fil}`);
+              }' "$@"
+          }
+          hamta enh "$HINK/enhet_alla.json"
+          mapfile -t E < <(python3 -c 'import json, os, sys; sys.path.insert(0, "fysik/ny_kandidat"); import kedjan; v = json.load(open("enh/enhet_alla.json", encoding="utf-8"))["vintrar"]; print("\n".join(os.environ["HINK"] + "/enhet_" + e["namn"] + ".json" for e in kedjan.enheter(v) if e["namn"] != "alla"))')
+          hamta enh "${E[@]}"
+          echo "enheterna ur hinken: klart"
       # Vecket läser skattningarna ur hinken (summorna mot enhetsfilerna i provning.py) och alla vintrars VViS-filer: träningsvintrarna
       # för parvalet och den utelämnade för måtten. Summorna mot manifesten här, mot förberedningen i provning.py.
       - name: Hinken — skattningarna och VViS-filerna, kontrollsummorna mot manifesten
@@ -729,6 +907,8 @@ jobs:
           [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
           echo "::add-mask::$KEY"
           PH=$(python3 fysik/ny_kandidat/provning.py --behov "$VECK" --enheter enh)
+          # Småvägsprovet: skattningarna ur variantens mapp (smavagar_kedjan.till_varianten, som smavagar_prov.py), inte kedjan.HINKMAPP.
+          if [ "${{ inputs.variant }}" = smavagar ]; then PH=$(python3 -c 'import json, sys; sys.path.insert(0, "fysik/ny_kandidat"); import kedjan, smavagar_kedjan as sk; sk.till_varianten(kedjan); import provning; e = provning.las_enheter(["enh"]); print(json.dumps([kedjan.HINKMAPP + "/" + f for f in provning.behov(sys.argv[1], e["alla"]["vintrar"])]))' "$VECK"); fi
           export VINTRAR=$(python3 -c "import json; print(' '.join(json.load(open('enh/enhet_alla.json', encoding='utf-8'))['vintrar']))")
           VV=$(node -e '
             const f = [];
@@ -772,6 +952,7 @@ jobs:
           mkdir -p frusen && for f in indata/*.tar.gz; do tar -xzf "$f" -C frusen; done
           if [ -d frusen/data ]; then mv frusen/data/* frusen/ && rmdir frusen/data; fi
       - name: Prövningen — parvalet och måtten
+        if: ${{ inputs.variant != 'smavagar' }}
         shell: bash
         run: |
           set -o pipefail
@@ -779,8 +960,50 @@ jobs:
           cat ut/*.md >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
           rm -rf vv ph frusen indata
           exit "$RC"
+      # Småvägsprovet: parvalet och punkterna utan de utelämnade (fysik/ny_kandidat/smavagar_prov.py, med vakten F1 och läckageprovet
+      # §8 d). punkter_<veck>.npz och veck_<veck>.json går bara till variantens mapp i hinken och skrivs aldrig över; loggen bär bara
+      # filnamnen och klart eller fel.
+      - name: Prövningen — parvalet och punkterna (småvägsprovet), till hinken
+        if: ${{ inputs.variant == 'smavagar' }}
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          RC=0; python3 fysik/ny_kandidat/smavagar_prov.py --veck "$VECK" --enheter enh --ph ph --vvis vv --indata frusen --ut ut > provning.txt 2>&1 || RC=$?
+          rm -rf vv ph frusen indata provning.txt
+          if [ "$RC" -ne 0 ]; then echo "::error::vecket $VECK: fel"; exit "$RC"; fi
+          echo "vecket $VECK: klart"
+          set -euo pipefail
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          export FN KEY
+          lagg() {   # lagg <fil …>: till $HINK/<filnamn>; skrivs aldrig över, och det som ligger i hinken ska vara byte för byte filen
+            node -e '
+              const { execFileSync } = require("child_process"), fs = require("fs"), c = require("crypto"), filer = process.argv.slice(1);
+              const sha = (b) => c.createHash("sha256").update(b).digest("hex"), namn = filer.map((f) => process.env.HINK + "/" + f.split("/").pop());
+              // execFileSync:s fel bär kommandoraden och därmed nyckeln eller den signerade adressen: fångas, bara statusen skrivs ut.
+              const curl = (a, vad) => { try { return execFileSync("curl", ["-sS", "--fail", ...a], { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); }
+                catch (e) { if (vad) { console.error(`${vad} föll (curl ${e.status})`); process.exit(1); } return null; } };
+              const anrop = (lage, vad) => { const b = curl(["-X", "POST", `${process.env.FN}?lage=${lage}`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
+                "-H", "Content-Type: application/json", "-d", JSON.stringify({ filer: namn })], vad); return b && JSON.parse(b); };
+              if (!filer.length || filer.length > 20) { console.error("lagg: 1–20 filer per anrop"); process.exit(1); }
+              let h = anrop("kuvos_hamta");
+              if (h) console.log("filerna finns redan i hinken (en omkörning): de jämförs, ingenting skrivs över");
+              else {
+                const u = anrop("kuvos_ladda_upp", "adresserna för uppladdningen").urls;
+                filer.forEach((f, i) => curl(["-X", "PUT", "-H", "Content-Type: application/octet-stream", "--data-binary", "@" + f, u[i]],
+                  `uppladdningen av ${namn[i]} (finns filen redan i hinken skrivs den inte över)`));
+                h = anrop("kuvos_hamta", "hämtningen tillbaka");
+              }
+              let fel = 0;
+              h.filer.forEach((d, i) => { const ok = sha(curl([d.url], `hämtningen av ${d.fil}`)) === sha(fs.readFileSync(filer[i])); fel += !ok;
+                console.log(`${d.fil}: ${ok ? "klart, i hinken byte för byte den skrivna" : "FEL: i hinken med annat innehåll"}`); });
+              process.exit(fel ? 1 : 0);' "$@"
+          }
+          lagg "ut/punkter_$VECK.npz" "ut/veck_$VECK.json"
+          rm -rf ut
       - name: Vecket (bara aggregat)
-        if: ${{ always() }}
+        if: ${{ always() && inputs.variant != 'smavagar' }}
         uses: actions/upload-artifact@v4
         with: { name: "${{ env.ART }}-veck-${{ matrix.veck }}", path: ut/, retention-days: 90, if-no-files-found: ignore }
 
@@ -788,7 +1011,7 @@ jobs:
   # kuvos-vintrar.yml:s senaste artefakt för 2022-23), och kandidatfilen för kuvos/kandidat-2027-28.json.
   samman:
     needs: [provning-sparr, provning]
-    if: ${{ !cancelled() && needs.provning-sparr.result == 'success' && (inputs.steg == 'samman' || needs.provning.result == 'success') }}
+    if: ${{ !cancelled() && needs.provning-sparr.result == 'success' && (inputs.steg == 'samman' || needs.provning.result == 'success') && inputs.variant != 'smavagar' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions: { contents: read, actions: read }
@@ -828,7 +1051,7 @@ jobs:
   # förberedningen), indatan och MET Nordic 2024/25 ur kuvösens releaser. Bara aggregat i artefakten nykand-paritet. Skriver ingenting
   # någon annanstans; klarat är förutsättningen för flaggan i kuvos/ny-kandidat-skugga.json (körningens nummer skrivs där).
   paritet:
-    if: ${{ inputs.steg == 'paritet' }}
+    if: ${{ inputs.steg == 'paritet' && inputs.variant != 'smavagar' }}
     runs-on: ubuntu-latest
     timeout-minutes: 90
     permissions: { contents: read, actions: read }
@@ -930,7 +1153,7 @@ jobs:
   # Båda kandidaternas summor ska vara exakt samman:s (nykand-samman) innan något dras om; sedan omdragning av stationer och dygn.
   # Diagnos: ändrar ingen dom. Bara aggregat i artefakten nykand-osakerhet; Trafikverkets filer och skattningarna lämnar aldrig jobbet.
   osakerhet:
-    if: ${{ inputs.steg == 'osakerhet' }}
+    if: ${{ inputs.steg == 'osakerhet' && inputs.variant != 'smavagar' }}
     runs-on: ubuntu-latest
     timeout-minutes: 120
     permissions: { contents: read, actions: read }
@@ -1030,3 +1253,102 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with: { name: "${{ env.ART }}-osakerhet", path: ut/, retention-days: 90, if-no-files-found: ignore }
+
+  # ── dom (småvägsprovet, bara variant smavagar) ────────────────────────────────────────────────────────────────────────────────
+  # Domskriptet (fysik/ny_kandidat/smavagar_dom.py) på de sex vecken ur variantens mapp i hinken, bakom spärren: vakten (F1) och
+  # summorna prövas i skriptet. dom_smavagar.json går bara till hinken och skrivs aldrig över; loggen bär bara klart eller fel.
+  # Ingen domrad i den publika loggen, så domlarmet används inte (halkvakt-kuvos BESLUT F3, steg 3).
+  dom:
+    if: ${{ inputs.steg == 'dom' && inputs.variant == 'smavagar' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos (DECISIONS #768): koden läggs ovanpå utcheckningen.
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13", cache: pip, cache-dependency-path: fysik/requirements.txt }
+      - name: Beroendena, de frysta filerna, spärren, populationsprovet och självtestet
+        shell: bash
+        run: |
+          python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
+          (cd fysik && sha256sum -c --quiet SHA256SUMS)
+          prov() { if "${@:2}" > /dev/null 2>&1; then echo "$1: klart"; else echo "::error::$1: fel"; return 1; fi; }
+          prov "spärren (småvägsförregistreringen signerad)" python3 fysik/ny_kandidat/smavagar.py --sparren
+          prov "populationsprovet (§8 c)" python3 fysik/ny_kandidat/smavagar.py --check
+          prov "självtestet (påhittade data)" python3 fysik/ny_kandidat/smavagar_dom.py --sjalvtest
+          prov "hinkmappen" python3 -c 'import os, sys; sys.path.insert(0, "fysik/ny_kandidat"); import kedjan, smavagar_kedjan as sk; sk.till_varianten(kedjan); sys.exit(kedjan.HINKMAPP != os.environ["HINK"])'
+      - name: Vecken ur hinken, domen och domfilen till hinken
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          export FN KEY
+          hamta() {  # hamta <mapp> <hinknamn …>: ur hinken, högst 20 per anrop
+            node -e '
+              const { execFileSync } = require("child_process"), fs = require("fs"), [mapp, ...filer] = process.argv.slice(1);
+              // execFileSync:s fel bär kommandoraden och därmed nyckeln eller den signerade adressen: fångas, bara statusen skrivs ut.
+              const curl = (a, vad) => { try { return execFileSync("curl", ["-sS", "--fail", ...a], { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); }
+                catch (e) { console.error(`${vad} föll (curl ${e.status})`); process.exit(1); } };
+              if (!filer.length) { console.error("hamta: inga filer"); process.exit(1); }
+              fs.mkdirSync(mapp, { recursive: true });
+              for (let i = 0; i < filer.length; i += 20) {
+                const s = JSON.parse(curl(["-X", "POST", `${process.env.FN}?lage=kuvos_hamta`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
+                  "-H", "Content-Type: application/json", "-d", JSON.stringify({ filer: filer.slice(i, i + 20) })], "adresserna (finns filerna i hinken?)"));
+                for (const d of s.filer) curl(["-o", mapp + "/" + d.fil.split("/").pop(), d.url], `hämtningen av ${d.fil}`);
+              }' "$@"
+          }
+          lagg() {   # lagg <fil …>: till $HINK/<filnamn>; skrivs aldrig över, och det som ligger i hinken ska vara byte för byte filen
+            node -e '
+              const { execFileSync } = require("child_process"), fs = require("fs"), c = require("crypto"), filer = process.argv.slice(1);
+              const sha = (b) => c.createHash("sha256").update(b).digest("hex"), namn = filer.map((f) => process.env.HINK + "/" + f.split("/").pop());
+              // execFileSync:s fel bär kommandoraden och därmed nyckeln eller den signerade adressen: fångas, bara statusen skrivs ut.
+              const curl = (a, vad) => { try { return execFileSync("curl", ["-sS", "--fail", ...a], { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); }
+                catch (e) { if (vad) { console.error(`${vad} föll (curl ${e.status})`); process.exit(1); } return null; } };
+              const anrop = (lage, vad) => { const b = curl(["-X", "POST", `${process.env.FN}?lage=${lage}`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
+                "-H", "Content-Type: application/json", "-d", JSON.stringify({ filer: namn })], vad); return b && JSON.parse(b); };
+              if (!filer.length || filer.length > 20) { console.error("lagg: 1–20 filer per anrop"); process.exit(1); }
+              let h = anrop("kuvos_hamta");
+              if (h) console.log("filerna finns redan i hinken (en omkörning): de jämförs, ingenting skrivs över");
+              else {
+                const u = anrop("kuvos_ladda_upp", "adresserna för uppladdningen").urls;
+                filer.forEach((f, i) => curl(["-X", "PUT", "-H", "Content-Type: application/octet-stream", "--data-binary", "@" + f, u[i]],
+                  `uppladdningen av ${namn[i]} (finns filen redan i hinken skrivs den inte över)`));
+                h = anrop("kuvos_hamta", "hämtningen tillbaka");
+              }
+              let fel = 0;
+              h.filer.forEach((d, i) => { const ok = sha(curl([d.url], `hämtningen av ${d.fil}`)) === sha(fs.readFileSync(filer[i])); fel += !ok;
+                console.log(`${d.fil}: ${ok ? "klart, i hinken byte för byte den skrivna" : "FEL: i hinken med annat innehåll"}`); });
+              process.exit(fel ? 1 : 0);' "$@"
+          }
+          hamta enh "$HINK/enhet_alla.json"
+          mapfile -t F < <(python3 -c 'import json, os; [print(os.environ["HINK"] + "/" + f + "_" + v + e) for v in json.load(open("enh/enhet_alla.json", encoding="utf-8"))["vintrar"] for f, e in (("punkter", ".npz"), ("veck", ".json"))]')
+          hamta vk "${F[@]}"
+          echo "vecken ur hinken: klart"
+          RC=0; python3 fysik/ny_kandidat/smavagar_dom.py --veck vk --ut ut > dom.txt 2>&1 || RC=$?
+          rm -rf vk enh dom.txt
+          if [ "$RC" -ne 0 ]; then echo "::error::domskriptet: fel"; exit "$RC"; fi
+          echo "domskriptet: klart"
+          lagg ut/dom_smavagar.json
+          rm -rf ut
+
+  # Variant smavagar har bara lägena identitet, traning, provning och dom (indata, fyll och t4 är desamma för alla varianter), och
+  # identitet och dom bara varianten: ett annat par fäller här i stället för att körningen blir grön utan att något gjorts.
+  smavagar-valet:
+    if: ${{ (inputs.variant == 'smavagar' && (inputs.steg == 'forberedning' || inputs.steg == 'samman' || inputs.steg == 'paritet' || inputs.steg == 'osakerhet')) || (inputs.variant != 'smavagar' && (inputs.steg == 'identitet' || inputs.steg == 'dom')) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Steget och varianten hör inte ihop
+        run: |
+          echo "::error::steget ${{ inputs.steg }} går inte med variant ${{ inputs.variant }} (småvägsprovet: identitet, traning, provning och dom med variant smavagar; förberedningen är T4:s)"
+          exit 1
