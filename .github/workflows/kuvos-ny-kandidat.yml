@@ -28,7 +28,8 @@ name: kuvos-ny-kandidat
 # träningen (fysik/ny_kandidat/smavagar_kedjan.py). Lägen: identitet → traning → provning → dom; förberedningen är T4:s. Jobben
 # skriver bara klart eller fel, och enhetsfilerna, punkterna, vecken och domen går bara till hinken — aldrig till en artefakt.
 #   identitet     identitetsprovet (§8 a): den slutliga enheten genom kedjan utan att någon station hålls ute ska ge T4-kandidatens
-#                 modell byte för byte. Ingenting laddas upp.
+#                 tal i urvalet för 2024/25 inom toleranserna i FLER-VINTRAR §3 a, som paritetsprovet (#680); om modellfilen är
+#                 byte för byte densamma skrivs bara ut. Ingenting laddas upp.
 #   dom           domskriptet (fysik/ny_kandidat/smavagar_dom.py) på de sex vecken ur hinken, bakom spärren; domfilen till hinken.
 # MET Norways villkor är en förbindelse åt gången: tryck inte indata här medan kuvos-vintrar.yml hämtar.
 # Trafikverkets filer, modellerna och skattningarna hämtas ur hinken som i kuvos-vintrar.yml och lämnar aldrig jobbet.
