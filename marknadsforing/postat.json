@@ -459,5 +459,18 @@
       "instagram": "18122734861940032",
       "x": "2116030038848016468"
     }
+  ],
+  "2026-11-01": [
+    {
+      "pass": "kvall",
+      "namn": "2026-11-01-kvall",
+      "typ": "vecka",
+      "nyckel": "vecka",
+      "tid": "2026-11-01T17:01:10.982Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-11-01-kvall.jpg",
+      "facebook": "1312515671952967_122108592597516187",
+      "instagram": "18075619487767532",
+      "x": "2116938686864760850"
+    }
   ]
 }
