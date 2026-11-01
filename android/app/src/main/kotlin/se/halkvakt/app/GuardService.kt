@@ -104,6 +104,8 @@ class GuardService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startForeground(NOTIF_ID, buildNotification(IDLE_TEXT))
         running = true
+        val sjalv = AutostartManager.controller(this).isAutoStarted()
+        scope.launch { Raknare.vaktStartad(this@GuardService, sjalv) }   // #772: ett ord i kön, skickas vid nästa stopp
         prevLon = Double.NaN; prevLat = Double.NaN
         session.value = Session(startedAt = System.currentTimeMillis())
         matare = Matare(session.value.startedAt, batteri())
@@ -152,7 +154,8 @@ class GuardService : Service() {
                             counts = s.counts + (a.kind to (s.counts[a.kind] ?: 0) + 1),
                             lastSaid = a.text to System.currentTimeMillis()) }
                         scope.launch {
-                            Prefs.appendAlert(this@GuardService, AlertEntry((a.t * 1000).toLong(), a.kind.wire, a.text, a.hazardId)) } })
+                            Prefs.appendAlert(this@GuardService, AlertEntry((a.t * 1000).toLong(), a.kind.wire, a.text, a.hazardId))
+                            Raknare.forstaVarningen(this@GuardService) } })   // #772: en gång per enhet
                 AlertBus.post("Vägdata laddad: ${hazards.size} faror i landet. Kör försiktigt.")
                 snapshotInfo.value = "${hazards.size} faror · väglag $dataTid"
             } else {
@@ -211,7 +214,7 @@ class GuardService : Service() {
             else if (stillSinceMs == 0L) stillSinceMs = loc.time
             else if (!flushedThisStop && loc.time - stillSinceMs >= 30_000L) {
                 flushedThisStop = true
-                scope.launch(Dispatchers.IO) { runCatching { FacitSender.flush(this@GuardService) } }
+                scope.launch(Dispatchers.IO) { runCatching { FacitSender.flush(this@GuardService) }; runCatching { Raknare.flush(this@GuardService) } }   // #772: räknarens kö likaså
             }
         }
     }

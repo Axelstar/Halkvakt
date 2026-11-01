@@ -3,11 +3,13 @@
 package se.halkvakt.app
 
 import android.content.Context
+import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -132,5 +134,26 @@ object Prefs {
             p[KEY_HISTORY] = AlertHistory.encode(
                 AlertHistory.append(AlertHistory.decode(p[KEY_HISTORY] ?: ""), e))
         }
+    }
+
+    // ── Räknaren (DECISIONS #772, Raknare.kt): osända händelser ("h v" per rad) och vad enheten redan räknat en gång ──
+    private val KEY_RAKNARE_KO = stringPreferencesKey("raknare_ko")
+    private val KEY_RAKNARE_RAKNAT = stringSetPreferencesKey("raknare_raknat")
+    private fun ko(p: Preferences) = (p[KEY_RAKNARE_KO] ?: "").lines().filter { it.isNotBlank() }
+    fun raknareKo(ctx: Context): Flow<List<String>> = ctx.dataStore.data.map { ko(it) }
+    /** true om nyckeln inte var räknad förut — och nu är det. */
+    suspend fun raknareMarkera(ctx: Context, nyckel: String): Boolean {
+        var ny = false
+        ctx.dataStore.edit { p ->
+            val s = p[KEY_RAKNARE_RAKNAT] ?: emptySet()
+            if (nyckel !in s) { ny = true; p[KEY_RAKNARE_RAKNAT] = s + nyckel }
+        }
+        return ny
+    }
+    suspend fun raknareLagg(ctx: Context, rad: String, max: Int) {
+        ctx.dataStore.edit { p -> p[KEY_RAKNARE_KO] = (ko(p) + rad).takeLast(max).joinToString("\n") }
+    }
+    suspend fun raknareTaBort(ctx: Context, n: Int) {
+        ctx.dataStore.edit { p -> p[KEY_RAKNARE_KO] = ko(p).drop(n).joinToString("\n") }
     }
 }

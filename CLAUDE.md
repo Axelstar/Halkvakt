@@ -32,7 +32,10 @@ Define success criteria. Loop until verified.
   facit answer the driver presses themselves — warning id + timestamp, i.e. roughly where and when —
   or a miss the driver marks themselves ("appen missade": nearest station id + timestamp + what it was,
   chosen after the trip; DECISIONS #267/#379) — and only for beta testers who turned the switch on (off by
-  default). Rewritten 20/9 by Axel
+  default) — plus, since 1/11 (DECISIONS #772, Axel and Bengt), the anonymous counter: one word per event
+  (`{h, v, app}` to `app-raknare`: onboarding done, location permission became always/when-in-use/denied,
+  guard started by hand/by itself, first warning spoken), counted as one row per day, app, event and value —
+  no id, no version, no time, no position, always on and stated in integritet.html (variant A). Rewritten 20/9 by Axel
   (DECISIONS #264) because the old wording ("Full stop") became untrue on 16/9 when S4 shipped, and
   stayed in four documents for four days. Change what the app sends ⇒ this line, the Play Data Safety
   file, integritet.html in the map repo and the product book change in the SAME commit.

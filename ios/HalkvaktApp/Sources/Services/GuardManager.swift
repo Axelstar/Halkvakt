@@ -218,6 +218,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         guard !running else { return }
         print("[Vakten] startar")
         running = true
+        Raknare.vaktStartad(sjalv: autoWoke)   // #772: ett ord i kön, skickas när vakten stannar
         // Kort #359: startas vakten för hand medan självväckningens fartkoll pågår måste kollen ta slut här. Annars gick varje
         // position till kollen, och när den gav upp efter 90 s stängde den positionen under en vakt som stod igång.
         fartkoll.end()
@@ -279,7 +280,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
 
     func stop() {
         let korde = running
-        Task { _ = await FacitSender.flush() }   // S4: resan är slut — osända svar går iväg
+        Task { _ = await FacitSender.flush(); await Raknare.flush() }   // S4: resan är slut — osända svar går iväg; räknarens kö likaså (#772)
         if running, autoWoke, let t0 = startedAt {
             Prefs.shared.lastAutoWakeMinutes = max(1, Int(Date.now.timeIntervalSince(t0) / 60))
         }
@@ -335,6 +336,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         let status = manager.authorizationStatus
         Task { @MainActor in
             self.authStatus = status
+            Raknare.behorighet(status)   // #772: alltid | nar | nekad, en gång per enhet och värde
             if status == .authorizedAlways { self.armAutoWake() }
             if status == .authorizedWhenInUse || status == .authorizedAlways {
                 self.locationDenied = false
@@ -401,6 +403,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         guard Prefs.shared.enabled(alert.kind) else { return }  // munnen tiger, minnet består
 
         alertCount += 1
+        Raknare.forstaVarningen()   // #772: en gång per enhet
         lastSaid = alert.text
         // EN tidsstämpel för båda: facitsvaret nycklas på (id, t), och raden under "Senast sagt"
         // och raden i efter-resan-kortet måste peka på SAMMA svar. Två .now hade gett två rader.

@@ -246,6 +246,9 @@ class MainActivity : ComponentActivity() {
     override fun onRequestPermissionsResult(code: Int, perms: Array<String>, results: IntArray) {
         super.onRequestPermissionsResult(code, perms, results)
         val granted = results.isNotEmpty() && results.all { it == PackageManager.PERMISSION_GRANTED }
+        // #772: ett nej i platsrutan räknas här; ett ja räknas i onResume, som följer efter rutan.
+        if (Manifest.permission.ACCESS_FINE_LOCATION in perms && !hasPermissions())
+            lifecycleScope.launch(Dispatchers.IO) { runCatching { Raknare.behorighet(this@MainActivity, nekad = true) } }
         when (code) {
             1 -> if (hasPermissions()) onToggle()
                  else notice.value = if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
@@ -263,6 +266,8 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         autostartOn.value = AutostartManager.isEnabled(this)
+        // #772: behörigheten som den ser ut nu (en gång per enhet och värde), och räknarens kö går iväg — appen är öppen, bilen står.
+        lifecycleScope.launch(Dispatchers.IO) { runCatching { Raknare.behorighet(this@MainActivity); Raknare.flush(this@MainActivity) } }
         if (hasPermissions()) {
             val fused = LocationServices.getFusedLocationProviderClient(this)
             fused.lastLocation.addOnSuccessListener { l ->
