@@ -1,0 +1,40 @@
+# App Store-nedladdningarna (DECISIONS #773, Axel 1/11): App Store Connects dagliga försäljningsrapport för de senaste sju dygnen
+# till Supabase (app_store_nedladdningar, sql/078), som statistik.html läser via besok_stat. Apple lägger ut ett dygns rapport först
+# nästa dag; ett dygn som inte är klart lämnas orört och tas av nästa körning, som skriver om hela fönstret. GitHub-cronen och inte
+# pulsklockan, som apple-annonser.yml: inget brådskar, och två tider eftersom cronen kan utebli (#70).
+# Samma App Store Connect-nyckel som testflight.yml; leverantörsnumret i ASC_VENDOR_NUMBER. Utan dem är körningen en torrkörning.
+name: appstore
+on:
+  schedule:
+    - cron: "17 6 * * *"
+    - cron: "17 13 * * *"
+  workflow_dispatch:
+    inputs:
+      torr:
+        description: "Hämta och skriv ut, skriv inget i databasen"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency: { group: appstore, cancel-in-progress: false }
+
+jobs:
+  rapport:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - name: Nedladdningarna
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+          ASC_VENDOR_NUMBER: ${{ secrets.ASC_VENDOR_NUMBER }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: node marknadsforing/appstore.mjs ${{ inputs.torr && '--torr' || '' }}
