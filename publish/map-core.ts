@@ -11,7 +11,7 @@
 // Inga Node- eller Deno-importer. Namnen krockar inte med snapshot-core.ts: båda buntas
 // in i SAMMA modul i publicera/index.ts.
 import type { Q } from "./snapshot-core.ts";
-import { byggLanssidor, type LanStation } from "./lanssidor.ts";
+import { byggLanssidor, type LanStation, type SmhiRad } from "./lanssidor.ts";
 
 const featureCollection = (features: unknown[]) => ({ type: "FeatureCollection", features });
 const numOrNull = (x: unknown) => (x === null || x === undefined ? null : Number(x));
@@ -228,7 +228,11 @@ export async function buildMapData(q: Q, opts: {
       const s = lanFor.get(w.id);
       return s && w.yta !== null ? [{ name: s.name, yta: w.yta, fukt: w.fukt, lan: s.lan, vag: s.vag }] : [];
     });
+    // SMHI:s alla gällande varningar (1/11): varningssidan och raden på läns-, orts- och vägsidorna väljer själva vägvarningarna
+    // (vagvarningar i lanssidor.ts), så att regeln bor på ett ställe och går att pröva.
+    const smhi = await q(`SELECT event_sv, level_sv, level_code, description_sv, area_name, affected_areas, approx_start, approx_end FROM smhi_warnings`);
     sidor = byggLanssidor({
+      smhi: smhi as unknown as SmhiRad[],
       vaglag: vaglag.map((r) => ({ code: numOrNull(r.condition_code), text: r.condition_text ?? null, info: (r.condition_info ?? []) as string[],
         road: r.road_number ?? null, plats: r.location_text ?? null, lan: numOrNull(r.lan) })),
       stationer,
