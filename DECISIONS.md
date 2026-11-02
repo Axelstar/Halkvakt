@@ -13232,6 +13232,12 @@ vinterväglag* bär bara antalet (*2 av 4 sträckor*), som en gul etikett när d
 inline-stil i tabellceller; guiden 1.0: gult bara där en fara är live, signalgul #FFC94A, mark #080B0D, dämpad #6F7C83); kolumnen *Var* bär
 sträcknamnen bara för vägar med halka. Raderna, talen och meningen är desamma som länssidans; bara ordning och form är tabellens egna.
 
+**Rättelse 2/11 kväll (Claude, upptäckt i provet av pendlingstabellen).** Datawrapper gissar CSV:ns skiljetecken ur filen. Etikettens
+stil bar fem semikolon per rad mot tre kommatecken, och provtabellen lästes som en enda kolumn. Värmlands tabell klarade sig i kväll
+bara för att ingen väg var hal (den grå stilen har ett semikolon); första halkmorgonen hade den gått sönder. Stilens deklarationer
+skiljs nu med `&#59` (numerisk referens till semikolon, som webbläsaren avkodar i attributet, utan avslutande semikolon). Provet kräver
+att ingen tabellfil innehåller ett rått semikolon. Bekräftat i Datawrapper: samma fil utan semikolon gav fyra kolumner.
+
 **Stomdokument:** inga — sajtens datafiler; appen, motorn och mätningarna är orörda.
 
 ## #777 (2/11 2026) Halkvakt live: svepinlägget ersätter morgonlistan och länet, morgon, lunch och kväll

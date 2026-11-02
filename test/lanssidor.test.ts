@@ -272,9 +272,11 @@ test("Datawrapper-tabellen per län (2/11, NWT): samma rader och samma mening so
   const csv = sidor["data/datawrapper/varmland.csv"];
   assert.equal(csv, [
     '"Väg","Halka eller vinterväglag","Vägbanan","Var"',
-    '"E18","<span style=""background:#FFC94A;color:#080B0D;font-weight:600;padding:2px 8px;border-radius:10px;white-space:nowrap"">2 av 2 sträckor</span>","−2,4 °C vid Väse","Karlstad–Kristinehamn · Grums–Karlstad"',
-    '"Väg 61","<span style=""color:#6F7C83;white-space:nowrap"">0 av 1 sträcka</span>","",""',
+    '"E18","<span style=""background:#FFC94A&#59color:#080B0D&#59font-weight:600&#59padding:2px 8px&#59border-radius:10px&#59white-space:nowrap"">2 av 2 sträckor</span>","−2,4 °C vid Väse","Karlstad–Kristinehamn · Grums–Karlstad"',
+    '"Väg 61","<span style=""color:#6F7C83&#59white-space:nowrap"">0 av 1 sträcka</span>","",""',
   ].join("\n") + "\n", "småvägen utan halka står inte med, precis som på länssidan; sträcknamn bara där det är halt; gult bara där det är halt (guiden 1.0)");
+  // Inget rått semikolon: Datawrapper gissar skiljetecknet ur filen och läste en rad med fler ";" än "," som en kolumn (2/11).
+  for (const lan of LAN) assert.ok(!sidor[`data/datawrapper/${lan.slug}.csv`].includes(";"), lan.slug);
   // Halkan först, oavsett vägnummer.
   const halkaSist = byggLanssidor({ ...d, vaglag: [
     { code: 1, text: "Normalt", info: [], road: "E 18", plats: "E 18 Grums - Karlstad", lan: 17 },
