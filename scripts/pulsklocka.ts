@@ -95,8 +95,8 @@ const NYA: { namn: string; schema: string; fil: string }[] = [
   // mot den godkända. Vintertid (UTC+1).
   { namn: "puls-meta-middag", schema: "1 11 * * *", fil: "meta-annonser.yml" },
   { namn: "puls-meta-eftermiddag", schema: "31 12 * * *", fil: "meta-annonser.yml" },
-  // Reels (DECISIONS #780): en nationell reel per kväll, 18:50 UTC (19:50 vintertid, 20:50 sommartid).
-  { namn: "puls-reels", schema: "50 18 * * *", fil: "reels.yml" },
+  // Reels (DECISIONS #780): en nationell reel per kväll, 19:50 UTC (20:50 vintertid, 21:50 sommartid).
+  { namn: "puls-reels", schema: "50 19 * * *", fil: "reels.yml" },
 ];
 
 // Vakthundens check 6a bär samma tal som golv (kort #222, DECISIONS #255): ett puls-jobb som

@@ -1,4 +1,4 @@
-// Reels (DECISIONS #780, kort #281): one national reel per evening to Instagram and the Facebook page, nothing else.
+// Reels (DECISIONS #780, kort #281): one national reel per evening (20:50 winter time) to Instagram and the Facebook page, nothing else.
 // The type rotates between five films so we learn which one people watch; tonight's data decides which are allowed.
 //   python3 marknadsforing/reels/data.py      tonight's picture -> reels-ut/nat.js + sammanfattning.json
 //   node marknadsforing/reels.mjs rendera      chooses the type, films reel.html frame by frame, writes reels-ut/reel.mp4 + texts
