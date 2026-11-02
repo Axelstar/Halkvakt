@@ -13183,3 +13183,21 @@ listan lika fel, och ingenting på sidan vinner på det. Ta bort creator: tillå
 klagade på att den saknades 28/10.
 
 **Stomdokument:** inga — sajtens strukturerade data; appen, motorn och mätningarna är orörda.
+
+## #776 (2/11 2026) Datawrapper-tabellen per län: rutan når tidningar som bara bäddar in godkända tjänster
+
+**Beslut** (Axel 2/11: *"Vi bygger det självklart om de vill"* och *"Ja ska vi inte göra det?"*, efter Moa Haltorps svar från NWT: sajten
+har inte stöd för att bädda in rutan). nwt.se kör på Bonnier News Locals gemensamma plattform (static.bonniernews.se, temat jalla2),
+där en redaktör bara kan bädda in tjänster som Bonnier registrerat i samtyckesrutan (Didomi): omkring hundra, bland dem Datawrapper,
+Infogram, Everysport och Vackertväder.se, men inte halkvakt.se. Publiceringen skriver därför två filer till per län, var 30:e minut:
+`data/datawrapper/<län>.csv` (Väg, Läget, Vägbanan, Sträckor) och `data/datawrapper/<län>.json` (rubrik, ingress, källa och fotnot
+som Datawrappers externa metadata). En Datawrapper-tabell som läser båda uppdaterar sig själv, och redaktören bäddar in den som vilken
+Datawrapper-grafik som helst. Raderna är länssidans *Stora vägar just nu* (radlogiken bruten ut ur `lsVagarILanet` till `lsVagRader`,
+så att listan och tabellen aldrig säger olika saker) och ingressen är länssidans citerbara mening med klockslaget, ord för ord.
+halkvakt.se svarar med `access-control-allow-origin: *`, som Datawrapper kräver. Provet i `test/lanssidor.test.ts`.
+
+**Alternativ.** En bild som uppdateras av sig själv: osäkert om plattformen tar bilder från en extern adress. Att få halkvakt.se
+godkänt hos Bonnier: öppnar ett 60-tal tidningar på en gång, men är ett samtal med Bonnier News Local centralt och tar tid; frågan
+ställs i mejlet till Moa. Datawrapper först, eftersom det fungerar i dag utan att någon på Bonnier säger ja.
+
+**Stomdokument:** inga — sajtens datafiler; appen, motorn och mätningarna är orörda.

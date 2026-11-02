@@ -1054,25 +1054,52 @@ const lsStracka = (s: LanSegment) => (s.plats ?? "").replace(new RegExp("^" + (s
   .replace(/^\.?\d+\s+/, "").replace(/\s+-\s+/g, "–").trim();
 const lsVagOrdning = (r: string) => { const m = /^(E|Väg)\s*(\d+)/.exec(r); return m ? (m[1] === "E" ? 0 : 1000) + Number(m[2]) : 9999; };
 
-/** Länets stora vägar just nu (25/10, DECISIONS #722): E-vägarna och riksvägarna, och varje annan väg med halka. Text, så att
- *  orterna i sträckornas namn går att söka på. */
-function lsVagarILanet(kod: number, d: { vaglag: LanSegment[]; stationer: LanStation[] }): string {
+/** Länets stora vägar just nu (25/10, DECISIONS #722): E-vägarna och riksvägarna, och varje annan väg med halka. Raderna räknas
+ *  här en gång och visas både som lista på länssidan och som Datawrapper-tabell (2/11, NWT), så att de aldrig säger olika saker. */
+type VagRad = { vag: string; halt: number; strackor: number; namn: string[]; st: LanStation | undefined };
+function lsVagRader(kod: number, d: { vaglag: LanSegment[]; stationer: LanStation[] }): VagRad[] {
   const segs = d.vaglag.filter((x) => x.lan === kod && x.road);
   const vagar = [...new Set(segs.map((x) => x.road as string))].sort((a, b) => lsVagOrdning(a) - lsVagOrdning(b));
-  const rader = vagar.map((vag) => {
+  return vagar.flatMap((vag) => {
     const sv = segs.filter((x) => x.road === vag);
     const halt = sv.filter((x) => arHalt(x.code, x.info));
     const stor = /^E\s*\d/.test(vag) || lsVagOrdning(vag) < 1100;
-    if (!stor && !halt.length) return "";
+    if (!stor && !halt.length) return [];
     const namn = [...new Set((halt.length ? halt : sv).map(lsStracka).filter(Boolean))].slice(0, 5);
     const st = d.stationer.filter((x) => x.lan === kod && vagNyckel(x.vag ?? null) === vagNyckel(vag)).sort((a, b) => a.yta - b.yta)[0];
-    const lage = halt.length
-      ? `<span class="halt">Halka eller vinterväglag på ${halt.length} av ${lsPlural(sv.length, "sträcka", "sträckor")}</span>`
-      : `Ingen halka rapporterad på ${lsPlural(sv.length, "sträcka", "sträckor")}`;
-    const temp = st ? ` · vägbanan ${lsGrad(st.yta)} vid ${lsEsc(st.name)}` : "";
-    return `<li><b>${lsEsc(lsVagNamn(vag))}</b>${lage}${temp}${namn.length ? `<small>${lsEsc(namn.join(" · "))}</small>` : ""}</li>`;
-  }).filter(Boolean).slice(0, 14);
+    return [{ vag, halt: halt.length, strackor: sv.length, namn, st }];
+  }).slice(0, 14);
+}
+const lsVagLageText = (r: VagRad) => r.halt
+  ? `Halka eller vinterväglag på ${r.halt} av ${lsPlural(r.strackor, "sträcka", "sträckor")}`
+  : `Ingen halka rapporterad på ${lsPlural(r.strackor, "sträcka", "sträckor")}`;
+
+/** Text, så att orterna i sträckornas namn går att söka på. */
+function lsVagarILanet(kod: number, d: { vaglag: LanSegment[]; stationer: LanStation[] }): string {
+  const rader = lsVagRader(kod, d).map((r) => {
+    const lage = r.halt ? `<span class="halt">${lsVagLageText(r)}</span>` : lsVagLageText(r);
+    const temp = r.st ? ` · vägbanan ${lsGrad(r.st.yta)} vid ${lsEsc(r.st.name)}` : "";
+    return `<li><b>${lsEsc(lsVagNamn(r.vag))}</b>${lage}${temp}${r.namn.length ? `<small>${lsEsc(r.namn.join(" · "))}</small>` : ""}</li>`;
+  });
   return rader.length ? `<ul class="vaglista">\n${rader.join("\n")}\n</ul>` : "<p>Trafikverket rapporterar inget väglag för länets stora vägar just nu.</p>";
+}
+
+/** Datawrapper-tabellen per län (2/11, NWT): Bonnier News Locals sajter bäddar bara in godkända tjänster, och Datawrapper är en av
+ *  dem. Tabellen läser CSV:n som extern data och rubrik, ingress och källa ur JSON:en som extern metadata, så klockslaget följer med
+ *  siffrorna. Samma rader och samma mening som länssidan; inget tal som inte står där. */
+const lsCsvFalt = (s: string) => `"${s.replace(/"/g, '""')}"`;
+function lsDatawrapperCsv(kod: number, d: { vaglag: LanSegment[]; stationer: LanStation[] }): string {
+  const rader = lsVagRader(kod, d).map((r) => [lsVagNamn(r.vag).replace(/^väg /, "Väg "), lsVagLageText(r),
+    r.st ? `${lsGrad(r.st.yta)} vid ${r.st.name}` : "", r.namn.join(" · ")]);
+  if (!rader.length) rader.push(["", "Trafikverket rapporterar inget väglag för länets stora vägar just nu.", "", ""]);
+  return [["Väg", "Läget", "Vägbanan", "Sträckor"], ...rader].map((f) => f.map(lsCsvFalt).join(",")).join("\n") + "\n";
+}
+function lsDatawrapperMeta(lan: (typeof LAN)[number], l: LanLage, now: Date): string {
+  return JSON.stringify({
+    title: `Väglaget i ${lan.kort} just nu`,
+    describe: { intro: lsSvar(l, "länets", "i länet", now), "source-name": "Trafikverket via Halkvakt", "source-url": `${SIDBAS}/lan/${lan.slug}/` },
+    annotate: { notes: "Halka eller vinterväglag enligt Trafikverkets rapport. Vägbanan: kallaste vägväderstationen längs vägen." },
+  });
 }
 
 /** Vanliga frågor (25/10, DECISIONS #722): synliga på sidan och som FAQPage. Svaren säger bara vad sidan och appen gör. */
@@ -1280,7 +1307,11 @@ export function byggLanssidor(d: { vaglag: LanSegment[]; stationer: LanStation[]
   const vagar = new Map(VAGAR.map((v) => [v.slug, lsVagLage(v.nyckel, d)] as const));
   const ut: Record<string, string> = { "lan/index.html": lsOversikt(lagen, vagar, d.now), "data/lan.json": lsLanJson(lagen, vagar, d.now),
     "data/strackor.json": lsStrackorJson(d) };
-  for (const lan of LAN) ut[`lan/${lan.slug}/index.html`] = lsLanssida(lan, lagen.get(lan.kod)!, d.now, d);
+  for (const lan of LAN) {
+    ut[`lan/${lan.slug}/index.html`] = lsLanssida(lan, lagen.get(lan.kod)!, d.now, d);
+    ut[`data/datawrapper/${lan.slug}.csv`] = lsDatawrapperCsv(lan.kod, d);
+    ut[`data/datawrapper/${lan.slug}.json`] = lsDatawrapperMeta(lan, lagen.get(lan.kod)!, d.now);
+  }
   for (const v of VAGAR) ut[`vag/${v.slug}/index.html`] = lsVagsida(v, vagar.get(v.slug)!, d.now, d);
   for (const o of ORTER) ut[`ort/${ortSlug(o.namn)}/index.html`] = lsOrtsida(o, LAN.find((l) => l.kod === o.lan)!, lagen.get(o.lan)!, d.now, d);
   return ut;
