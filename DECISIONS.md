@@ -13201,3 +13201,32 @@ godkänt hos Bonnier: öppnar ett 60-tal tidningar på en gång, men är ett sam
 ställs i mejlet till Moa. Datawrapper först, eftersom det fungerar i dag utan att någon på Bonnier säger ja.
 
 **Stomdokument:** inga — sajtens datafiler; appen, motorn och mätningarna är orörda.
+
+## #778 (2/11 2026) Platsfrågorna vid installationen: ingen ändring förrän räknaren visat en veckas tal
+
+**Beslut** (Bengt 2/11: *"Vänta på räknaren"*). Bengt frågade om det blir krångligt för en ny användare att svara på två platsfrågor
+innan *Alltid* är på, och om det går att komma runt. På iPhone går det inte: sedan iOS 13 visar systemets första platsfråga aldrig
+*Alltid*, för någon app; först en andra fråga erbjuder att ändra till *Tillåt alltid*. Det som går att påverka är texten och när den
+andra frågan ställs. Fynd i koden: platssidan i introduktionen säger *"Välj Alltid så kan vakten starta själv när du kör."*
+(`OnboardingView.swift:119`), men den första rutan har bara *Tillåt en gång*, *Tillåt när appen används* och *Tillåt inte*, och vad
+appen gör efter *Tillåt en gång* är inte prövat. På Android är vägen längre (en egen förklaring, upp till fyra systemrutor, en andra
+förklaring och sist telefonens inställningssida, `MainActivity.kt:140–175`), men den går bara den som själv slår på Autostart, som är
+av från början. Ingenting ändras nu. När 0.3.15 (37) legat ute en vecka läses räknaren (#772) för iOS, och sedan väljs väg (a) eller
+(b) nedan. Kort #372.
+
+**Alternativ.** (a) Text som följer rutorna, först *Tillåt när appen används* och sedan *Ändra till Tillåt alltid*, i nästa bygge:
+billigt och rättar ett känt textfel, och en förklaring är det Apple bad om 5/10 (#460); Bengt valde att se talen först. (b) Bara den
+första frågan vid installationen och *Alltid* först efter första resan, när nyttan går att förstå: en ruta vid installationen, men
+första resan kräver knappen, och en del svarar aldrig på den senare frågan. (c) Be om Alltid direkt och låt iOS ställa den andra
+frågan när det vill: iOS väljer tidpunkten, kanske under körning; avråds. (d) Ingen Alltid alls: valt bort 31/8 (DECISIONS-ARKIV #38,
+#40).
+
+**Skälet.** Talen avgör om felet är stort nog för väg (b), som ändrar första resan, och en textändring kräver ändå ett nytt bygge, App
+Review och produktboken med nya skärmbilder. **Så läses räknaren:** varje värde räknas en gång per enhet, utan id
+(`Raknare.swift`, anropat ur `locationManagerDidChangeAuthorization`). En iPhone som går igenom introduktionen räknas först som `nar`
+och, om den tar andra steget, sedan som `alltid`; också *Tillåt en gång* räknas som `nar`. Kvoten `alltid`/`nar` för dygnen efter
+folkräkningen (de första dygnen efter 0.3.15 räknar också dem som redan hade appen) är därför ungefär andelen nya iPhone-användare som
+tog andra steget. Den som senare går ner från Alltid syns inte, eftersom enheten redan räknats som `nar`. Androids tal mäter något
+annat: där kräver `alltid` att Autostart slagits på.
+
+**Stomdokument:** APP §5
