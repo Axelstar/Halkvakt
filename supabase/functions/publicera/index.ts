@@ -1120,8 +1120,12 @@ function lsVagarILanet(kod: number, d: { vaglag: LanSegment[]; stationer: LanSta
 /** Datawrapper-tabellen per län (2/11, NWT): Bonnier News Locals sajter bäddar bara in godkända tjänster, och Datawrapper är en av
  *  dem. Tabellen läser CSV:n som extern data och rubrik, ingress och källa ur JSON:en som extern metadata, så klockslaget följer med
  *  siffrorna. Samma rader och samma mening som länssidan; inget tal som inte står där. */
-const LS_DW_GUL = "background:#FFC94A;color:#080B0D;font-weight:600;padding:2px 8px;border-radius:10px;white-space:nowrap";
-const LS_DW_DAMPAD = "color:#6F7C83;white-space:nowrap";
+// Declarations are joined with "&#59" (a numeric reference to ";" that the browser decodes inside the attribute), never a raw
+// semicolon: Datawrapper guesses the CSV delimiter from the file, and a row with more ";" than "," was read as one column
+// (prov 2/11 kväll, the pendling table). The reference has no trailing ";" for the same reason.
+const lsDwStil = (...d: string[]) => d.join("&#59");
+const LS_DW_GUL = lsDwStil("background:#FFC94A", "color:#080B0D", "font-weight:600", "padding:2px 8px", "border-radius:10px", "white-space:nowrap");
+const LS_DW_DAMPAD = lsDwStil("color:#6F7C83", "white-space:nowrap");
 const lsCsvFalt = (s: string) => `"${s.replace(/"/g, '""')}"`;
 function lsDatawrapperCsv(kod: number, d: { vaglag: LanSegment[]; stationer: LanStation[] }): string {
   // A table to read at a glance (Axel 2/11: "lite snyggare"): roads with ice first, the count as a yellow label (Datawrapper
