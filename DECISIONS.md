@@ -13254,4 +13254,14 @@ Förbehåll: räkningen förutsätter att vyn gäller dagen från midnatt och at
 andelar, inte procentenheter. Ett batteriprov med låst skärm, utan samtal och utan hotspot, görs på nästa längre resa (#741 punkt 6)
 och ger ett rent tal. Det är inget villkor för inskick eller bygge.
 
+**Tillägg 2/11 kväll (Bengt: *"Takten grön"*): delen *Kedjans takt* är grön och kort #365 är stängt, utan Android i bil.** J6:an,
+provets enda Android-telefon, har inget SIM-kort, så hämtningen under körning går inte att visa på en riktig Android-telefon. På
+Android är två saker visade:
+- mätningen under Betatest, med fyra resor 1/11–2/11, kollarna och batteriet;
+- hämtningen ur hinken med nät: favoritrapporten 2/11 visade läget en minut gammalt, och den hämtar med samma `koll()` i
+  `SnapshotRepo.kt` som vakten.
+
+Luckan är att vakten på Android inte är visad ta emot nya filer under en resa. Den förs till delen *Android-appen*: första
+Android-telefonen med mobildata (till exempel en testare i Play) visar det i *Mätningen* med nya och åldersrader.
+
 **Stomdokument:** SYS 1 (kedjans takt), APP 9, BED §4.2
