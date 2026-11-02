@@ -13241,4 +13241,17 @@ hotspot.
 **Alternativ.** Köra tills fem resor på minst en halvtimme finns: det ger samma bild av takten och dessutom ett läsbart batteri.
 Valt bort för takten (Bengt). Batteriet behöver längre resor ändå.
 
+**Tillägg 2/11 eftermiddag (Bengt: *"gör det"*): 30,9 %/h var inte Halkvakt, och resan är inget hinder enligt #753.**
+iPhonens batterivy för dagen (iOS 26 visar förbrukningen per dag, inte per timme) ger Halkvakt **13 %** av förbrukningen, med 16
+minuter på skärmen och en timme i bakgrunden, vilket stämmer med dagens två resor på sammanlagt 59 minuter. Dagens förbrukning var
+omkring 50 procentenheter, från full laddning till 49 % på eftermiddagen.
+- Halkvakts del blir därmed omkring **6–7 procentenheter** för båda resorna och skärmtiden, alltså **omkring 5–7 %/h**. Det är under
+  gränsen 8 %/h och i linje med skattningen 7,2 %/h (#753).
+- Resan med 30,9 %/h tappade 15 procentenheter. Även om Halkvakts hela dagsdel hade legat på den resan förklarar den knappt hälften.
+  Minst 8 procentenheter kom från annan användning.
+
+Förbehåll: räkningen förutsätter att vyn gäller dagen från midnatt och att telefonen inte laddades mellan resorna, och iOS ger
+andelar, inte procentenheter. Ett batteriprov med låst skärm, utan samtal och utan hotspot, görs på nästa längre resa (#741 punkt 6)
+och ger ett rent tal. Det är inget villkor för inskick eller bygge.
+
 **Stomdokument:** SYS 1 (kedjans takt), APP 9, BED §4.2
