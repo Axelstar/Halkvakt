@@ -1,0 +1,78 @@
+# Reels (DECISIONS #780, kort #281): en nationell reel per kväll till Instagram och Facebook-sidan, inget annat.
+# Startas av pulsklockan, puls-reels 18:50 UTC (19:50 vintertid, 20:50 sommartid). Typen roterar mellan fem filmer
+# (halt, natt, frost, kallast, e4) så att vi lär oss vilken folk tittar på; kvällens data avgör vilka som får gå, och
+# en kväll utan något sant att visa blir det ingen reel. Data äldre än två timmar: ingen reel.
+# Torrkörning tills Axel sätter repovariabeln REELS_SKARPT till ja: filmen och texterna läggs som artefakten *reel*
+# och syns i sammanfattningen, inget postas. Samma körning mäter reels äldre än ett dygn (räckvidd, visningar,
+# snittid, delningar, sparade) i marknadsforing/reels-historik.json.
+name: reels
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency: { group: reels, cancel-in-progress: false }
+
+jobs:
+  reel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+
+      - name: Verktygen
+        run: |
+          pip install --quiet numpy scikit-image matplotlib
+          npm i --no-save --no-audit --no-fund playwright@1.47.2
+          npx playwright install --with-deps chromium
+          command -v ffmpeg || { sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg; }
+
+      - name: Kvällens läge
+        run: python3 marknadsforing/reels/data.py
+
+      - name: Välj och filma
+        env:
+          REELS_SKARPT: ${{ vars.REELS_SKARPT }}
+        run: node marknadsforing/reels.mjs rendera
+
+      - name: Filmen och texterna
+        uses: actions/upload-artifact@v4
+        with:
+          name: reel
+          path: |
+            marknadsforing/reels-ut/reel.mp4
+            marknadsforing/reels-ut/text-*.txt
+            marknadsforing/reels-ut/val.json
+          if-no-files-found: ignore
+          retention-days: 14
+
+      # Kvittot committas även när en kanal faller, annars postar nästa körning samma kväll igen.
+      - name: Posta
+        env:
+          REELS_SKARPT: ${{ vars.REELS_SKARPT }}
+          META_PAGE_ID: ${{ secrets.META_PAGE_ID }}
+          META_PAGE_TOKEN: ${{ secrets.META_PAGE_TOKEN }}
+          META_IG_ID: ${{ secrets.META_IG_ID }}
+        run: |
+          fel=0; node marknadsforing/reels.mjs posta || fel=$?
+          git config user.name "Halkvakt reels"
+          git config user.email "motor@halkvakt.dev"
+          git add marknadsforing/reels-historik.json 2>/dev/null || true
+          git diff --cached --quiet || git commit -m "Reels: $(date -u +%F) [skip ci]"
+          git pull --rebase --autostash origin main && git push origin main || { git status --porcelain; exit 1; }
+          exit $fel
+
+      # Faller mätningen påverkar det inte kvällens reel.
+      - name: Mät reels äldre än ett dygn
+        if: always()
+        continue-on-error: true
+        env:
+          META_PAGE_TOKEN: ${{ secrets.META_PAGE_TOKEN }}
+        run: |
+          node marknadsforing/reels.mjs matt
+          git add marknadsforing/reels-historik.json 2>/dev/null || true
+          git diff --cached --quiet || git commit -m "Reels: mätning $(date -u +%F) [skip ci]"
+          git pull --rebase --autostash origin main && git push origin main || { git status --porcelain; exit 1; }

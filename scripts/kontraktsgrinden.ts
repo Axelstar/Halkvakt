@@ -719,6 +719,15 @@ export const KONTRAKT: Kontrakt[] = [
     golv: 2,
   },
   {
+    // Reels (DECISIONS #780) tiger på samma gamla data som Meta-annonserna; reels.mjs kan inte importera annonsstyrningen
+    // utan att dra in hela annonsflödet.
+    namn: "Marknadsföringens åldersgräns för datan i timmar (Meta-annonserna och kvällens reel)",
+    varfor: "Driver de isär visar kvällens reel ett läge som annonserna samma kväll redan kallat för gammalt.",
+    former: [/const MAX_ALDER_H = (\d+)/],
+    filer: /marknadsforing\//,
+    golv: 2,
+  },
+  {
     // Vakthunden kan inte importera pulsklockans TypeScript — den kör i Deno hos Supabase. Talet är
     // därför en kopia, och en kopia som glider isär gör vakten blind för exakt det den ska se.
     namn: "Pulsjobbens antal — golvet i vakthunden mot pulsklockans egen lista (kort #222)",
