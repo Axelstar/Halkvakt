@@ -13266,3 +13266,26 @@ egna inlägg: tre inlägg om dagen räcker inte till länen, och karusellen låt
 i det publika repot. Följs; går det för fort flyttas bilderna till hinken.
 
 **Stomdokument:** inga — marknadsföringen har inget stomdokument; appen, motorn och mätningarna är orörda.
+
+## #779 (2/11 2026) Datawrapper: pendlingstabellen per stråk och hela läget per län, där bara det hala syns
+
+**Beslut** (Axel 2/11 kväll, efter provet i Datawrapper: *"Ser bra ut"*, *"en separat också … då kan de välja att bara lägga in en"*,
+och om ordningen: pendlarna före vägarna, *"det som folk verkligen tittar på"*). Utöver vägtabellen (DECISIONS #776) skriver
+publiceringen två nya filpar:
+1. **Pendling** `data/datawrapper/pendling-<nyckel>.csv/.json` för var och en av rutans 35 stråkuppsättningar (156 stråk): tabellen
+   bär bara stråken med halka eller vinterväglag (*Halka på pendlarvägarna från Karlstad*), de andra ligger bakom en knapp
+   (`<details>` i fotnoten, som Datawrapper visar). Utan halka: en rad som säger det, och alla stråk bakom *Visa alla stråk*.
+2. **Hela läget** `data/datawrapper/hela-<län>.csv/.json` för alla 21 län: länets fyra tal (rutans flik Länet) i ingressen, sedan
+   pendlingen som tabell när länet har stråk under sin egen slug, och länets stora vägar som egen sektion med samma regel (de hala
+   synliga, resten bakom *Visa övriga vägar*). Utan stråk är vägarna tabellen.
+Stråken räknas som i rutan: Trafikverkets sträckor med namnen som i strackor.json, ett stråk med bara de delar som finns i
+rapporten. Stråken flyttades därför in i `publish/lanssidor.ts` (`STRAK`, läst ur ruta.html, inte avskriven) och publiceras som
+`data/strak.json`, så att rutan kan läsa samma lista; tills den gör det finns de på två ställen. Vägtabellen fick Axels godkända
+form 2/11: kolumnen heter *Halka*, och vägbanan står i fetstil på 0 °C eller kallare med stationen liten och grå efter. Allt i
+CSV:erna utan rått semikolon (rättelsen i #776). Provet i `test/lanssidor.test.ts`; kvällens data gav alla 156 stråk.
+
+**Alternativ.** En enda tabell med flikar: Datawrapper har inga; vår egen ruta har dem men kräver Bonniers godkännande (frågan går
+i mejlet till NWT). Tre separata tabeller utan utfällning: tar mer plats i en artikel, och Axel ville att det torra ska fällas in.
+
+**Stomdokument:** inga — sajtens datafiler; appen, motorn och mätningarna är orörda.
+
