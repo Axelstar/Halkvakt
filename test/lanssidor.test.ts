@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { arHalt, byggLanssidor, sitemapMed, sidAdresser, vagNyckel, vagvarningar, LAN, VAGAR, ORTER, ortSlug, SIDBAS, PENDLING } from "../publish/lanssidor.ts";
+import { arHalt, byggLanssidor, sitemapMed, sidAdresser, vagNyckel, vagvarningar, LAN, VAGAR, ORTER, ortSlug, SIDBAS, PENDLING, STRAK } from "../publish/lanssidor.ts";
 import { buildMapData } from "../publish/map-core.ts";
 import type { Q } from "../publish/snapshot-core.ts";
 
@@ -38,8 +38,8 @@ test("länssidorna: 21 län och en översikt, svaret ur källorna, Trafikverkets
     olyckor: [{ road: "E22", start: "2026-11-20T05:10:00Z", allvar: "Stor påverkan", lan: 12 }],   // olyckornas form: utan mellanslag
     now: NOW,
   });
-  assert.equal(Object.keys(sidor).length, 31 + ORTER.length + 2 * LAN.length,
-    "översikten, 21 län, 6 vägar, orterna, varningssidan, widgetens datafil, vägrutans och Datawrapper-tabellen per län (CSV och metadata)");
+  assert.equal(Object.keys(sidor).length, 31 + ORTER.length + 4 * LAN.length + 2 * Object.keys(STRAK).length + 1,
+    "översikten, 21 län, 6 vägar, orterna, varningssidan, widgetens datafil, vägrutans, Datawrapper-tabellerna (vägar och hela läget per län, pendling per stråk) och strak.json");
   assert.deepEqual(Object.keys(sidor).filter((p) => p !== "lan/index.html" && !p.startsWith("data/")).sort(),
     ["varningar/index.html", ...LAN.map((l) => `lan/${l.slug}/index.html`), ...VAGAR.map((v) => `vag/${v.slug}/index.html`),
       ...ORTER.map((o) => `ort/${ortSlug(o.namn)}/index.html`)].sort());
@@ -271,8 +271,8 @@ test("Datawrapper-tabellen per län (2/11, NWT): samma rader och samma mening so
   const sidor = byggLanssidor(d);
   const csv = sidor["data/datawrapper/varmland.csv"];
   assert.equal(csv, [
-    '"Väg","Halka eller vinterväglag","Vägbanan","Var"',
-    '"E18","<span style=""background:#FFC94A&#59color:#080B0D&#59font-weight:600&#59padding:2px 8px&#59border-radius:10px&#59white-space:nowrap"">2 av 2 sträckor</span>","−2,4 °C vid Väse","Karlstad–Kristinehamn · Grums–Karlstad"',
+    '"Väg","Halka","Vägbanan","Var"',
+    '"E18","<span style=""background:#FFC94A&#59color:#080B0D&#59font-weight:600&#59padding:2px 8px&#59border-radius:10px&#59white-space:nowrap"">2 av 2 sträckor</span>","<span style=""font-weight:600&#59color:#181818"">−2,4 °C</span> <span style=""color:#8FA0A9&#59font-size:12px"">Väse</span>","Karlstad–Kristinehamn · Grums–Karlstad"',
     '"Väg 61","<span style=""color:#6F7C83&#59white-space:nowrap"">0 av 1 sträcka</span>","",""',
   ].join("\n") + "\n", "småvägen utan halka står inte med, precis som på länssidan; sträcknamn bara där det är halt; gult bara där det är halt (guiden 1.0)");
   // Inget rått semikolon: Datawrapper gissar skiljetecknet ur filen och läste en rad med fler ";" än "," som en kolumn (2/11).
@@ -291,7 +291,7 @@ test("Datawrapper-tabellen per län (2/11, NWT): samma rader och samma mening so
   assert.ok(sidor["lan/varmland/index.html"].includes(intro), "ingressen är länssidans mening, ord för ord");
   assert.ok(!/[—!]/.test(csv + JSON.stringify(meta)), "inga långa tankstreck eller utropstecken (guiden 1.0)");
   // Ett län utan väglag får en rad som säger det, inte en tom tabell.
-  assert.match(sidor["data/datawrapper/gotland.csv"], /^"Väg","Halka eller vinterväglag","Vägbanan","Var"\n"","Trafikverket rapporterar inget väglag för länets stora vägar just nu.","",""\n$/);
+  assert.match(sidor["data/datawrapper/gotland.csv"], /^"Väg","Halka","Vägbanan","Var"\n"","Trafikverket rapporterar inget väglag för länets stora vägar just nu.","",""\n$/);
   for (const lan of LAN) {
     assert.ok(sidor[`data/datawrapper/${lan.slug}.csv`] && sidor[`data/datawrapper/${lan.slug}.json`], lan.slug);
   }
@@ -356,4 +356,34 @@ test("varningssidan: SMHI:s ord, vägarna i det varnade länet, länkar dit frå
   const tom = byggLanssidor(d)["varningar/index.html"];
   assert.ok(tom.includes("Kl. 07:30 har SMHI ingen varning för snöfall, underkylt regn eller is. Trafikverket rapporterar halka eller vinterväglag i 1 län: Värmland."));
   assert.ok(!tom.includes('class="varnade"'), "inga kort utan varning");
+});
+
+test("Datawrapper, pendling och hela läget (2/11, Axel): bara det som är halt syns, resten bakom en knapp, inga semikolon i CSV", () => {
+  const seg = (road: string, plats: string, halt: boolean) => ({ code: halt ? 3 : 1, text: halt ? "Mycket besvärligt" : "Normalt", info: [], road, plats: `${road} ${plats}`, lan: 17 });
+  const d = {
+    vaglag: [seg("E 18", "Karlstad - Kristinehamn", false), seg("E 45", "Torsby - Sunne", true), seg("E 18", "Grums - Karlstad", false),
+      seg("E 45", "Fagerås - Grums", false), seg("E 45", "Sunne - Fagerås", false), seg("Väg 63", "Molkom - Karlstad", false)],
+    stationer: [{ name: "Storberget", yta: -1.8, fukt: true, lan: 17, vag: "E 45" }], olyckor: [], now: NOW,
+  };
+  const sidor = byggLanssidor(d);
+  const pend = sidor["data/datawrapper/pendling-varmland.csv"].split("\n");
+  assert.equal(pend[0], '"Stråk","Väg","Halka","Var"');
+  assert.equal(pend.length - 2, 1, "bara det hala stråket i tabellen");
+  assert.match(pend[1], /Sunne och Torsby.*E18\/E45.*1 av 4 sträckor.*Torsby–Sunne/);
+  const meta = JSON.parse(sidor["data/datawrapper/pendling-varmland.json"]);
+  assert.equal(meta.title, "Halka på pendlarvägarna från Karlstad");
+  assert.match(meta.annotate.notes, /<details>.*Visa övriga stråk.*\(4\)/, "Kristinehamn, Säffle, Filipstad och Årjäng (de två sista via delen Grums–Karlstad) bakom knappen; Arvika saknar data och står inte med");
+  const hela = JSON.parse(sidor["data/datawrapper/hela-varmland.json"]);
+  assert.match(hela.describe.intro, /^Kl\. 07:30 enligt Trafikverket: <span[^>]*>halka på 1 av 6 vägavsnitt<\/span> · <b>1 station<\/b> på 0 °C eller kallare · kallast <b>−1,8 °C<\/b> vid Storberget · inga pågående olyckor/);
+  assert.match(hela.describe.intro, /Halka på pendlarvägarna från Karlstad<\/b>$/);
+  assert.match(hela.annotate.notes, /Halka på länets stora vägar.*E45.*1 av 3 sträckor.*Visa övriga vägar/);
+  // Utan halka: en rad som säger det, och allt bakom "Visa alla".
+  const torr = byggLanssidor({ ...d, vaglag: d.vaglag.map((x) => ({ ...x, code: 1, text: "Normalt" })) });
+  assert.equal(torr["data/datawrapper/pendling-varmland.csv"].split("\n")[1], '"Ingen halka på pendlarvägarna från Karlstad just nu.","","",""');
+  assert.equal(JSON.parse(torr["data/datawrapper/pendling-varmland.json"]).title, "Pendlarvägarna från Karlstad just nu");
+  assert.match(JSON.parse(torr["data/datawrapper/hela-varmland.json"]).annotate.notes, /Visa alla stråk.*Ingen halka på länets stora vägar just nu.*Visa alla vägar/);
+  // Ett län utan stråk: vägarna är tabellen.
+  assert.equal(sidor["data/datawrapper/hela-gotland.csv"].split("\n")[0], '"Väg","Halka","Vägbanan","Var"');
+  for (const [namn, fil] of Object.entries(sidor)) if (namn.startsWith("data/datawrapper/") && namn.endsWith(".csv")) assert.ok(!fil.includes(";"), namn);
+  assert.ok(!/[—!]/.test(Object.entries(sidor).filter(([n]) => n.startsWith("data/datawrapper/")).map(([, v]) => v).join("")), "inga långa tankstreck eller utropstecken");
 });
