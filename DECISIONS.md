@@ -13184,6 +13184,32 @@ klagade på att den saknades 28/10.
 
 **Stomdokument:** inga — sajtens strukturerade data; appen, motorn och mätningarna är orörda.
 
+## #775 (1/11 2026) Varningssidan: SMHI:s vägvarningar med Trafikverkets läge i varje varnat län, och en rad dit från läns-, orts- och vägsidorna
+
+**Beslut** (Axel 1/11: *"Yes please go ahead"*, efter utkastet på grenen `utkast/smhi-varningar` i halkvakt-karta och planen
+*Vägsökningarna Klart lämnar* i projektet, kort #370). `publish/lanssidor.ts` skriver en ny sida, `varningar/index.html`, i samma
+publicering som länssidorna (var 30:e minut): SMHI:s gällande vägvarningar med SMHI:s ord (nivå, händelse, område, SMHI:s
+beskrivning och ungefärliga giltighetstid) och under varje varning Trafikverkets läge i det varnade länet (halka eller vinterväglag
+av vägavsnitten, stationer under noll med den kallaste, olyckor), med länk till länssidan och kartan. Utan varning säger sidan det och
+listar länen med halka. Ingen egen prognos på sidan.
+1. **Vilka varningar.** Samma ord som kvällsförvarningen, Halkvakt live och MCP-tjänsten (`snö|underkyl|isbel|ishalk|halk`), bara gul,
+   orange och röd nivå (ett meddelande är ingen varning) och inget till havs. Regeln bor i `vagvarningar()` och prövas i
+   `test/lanssidor.test.ts`.
+2. **Länen** ur områdets namn och SMHI:s berörda områden: "Värmlands län" och "Norrbottens fjäll" hör till sina län; ett område utan
+   län visas för sig med länk till alla län.
+3. **Data.** `map-core.ts` läser alla rader i `smhi_warnings` (10–20 åt gången) i samma körning som länssidorna; `meta.json:s`
+   `smhi_vinter` (tre rader) är orörd.
+4. **Länkar dit.** En rad under svaret på länssidan, på ortssidan via dess län och på vägsidan när ett län längs vägen har en
+   vägvarning; *SMHI-varningar* i sidfoten på alla genererade sidor. Adressen står i `sidAdresser()`, så sitemapen får den vid
+   första publiceringen.
+5. **Strukturerad data:** WebPage med `isBasedOn` Trafikverkets och SMHI:s datamängder (creator Organization, #774) och FAQPage.
+
+**Alternativ.** Sidan ritad i webbläsaren ur `data/meta.json`, som utkastet i halkvakt-karta: ingen ändring här, men texten syns inte
+säkert för Google och `smhi_vinter` har bara tre rader utan SMHI:s beskrivning och tider. En sida per varning: tunna sidor som försvinner
+när varningen gör det.
+
+**Stomdokument:** APP 9 (sajtens sidor)
+
 ## #776 (2/11 2026) Datawrapper-tabellen per län: rutan når tidningar som bara bäddar in godkända tjänster
 
 **Beslut** (Axel 2/11: *"Vi bygger det självklart om de vill"* och *"Ja ska vi inte göra det?"*, efter Moa Haltorps svar från NWT: sajten
@@ -13208,7 +13234,33 @@ sträcknamnen bara för vägar med halka. Raderna, talen och meningen är desamm
 
 **Stomdokument:** inga — sajtens datafiler; appen, motorn och mätningarna är orörda.
 
-## #777 (2/11 2026) Kedjans takt: fas 3 avgjord på sju resor, och takten står kvar; batteriet läses för sig
+## #777 (2/11 2026) Halkvakt live: svepinlägget ersätter morgonlistan och länet, morgon, lunch och kväll
+
+**Axels ord 2/11:** *"Borde vi inte kunna skapa dessa som man slidar mellan så folk får fram dessa utan att se adsen?"*, *"Första bilden
+bör göra det tydligt att de ska slida för att se sitt län"*, och efter mockupen (Design-duken *Halkvakt svepinlägg*): *"Detta är grymt och
+detta måste vi lägga till och börja med redan imorgon … den kan gå ut på morgon, eftermiddag och kväll eftersom det är färsk data."*
+
+**Beslut.** Dagslägets pass (morgon, lunch, kväll i `halkvakt-live.yml`) postar ett karusellinlägg när ingen händelse vinner:
+omslaget (mörkt: *Halt i morse/i dag/i kväll*, länen med sina bildnummer och *Svep till ditt län*), ett gult länskort per län och appen
+sist. Länskortet är Meta-annonsens kort utan App Store-bandet: samma data ur `annonsstyrning.mjs` `annons()`, alltså samma vägar och
+samma ord ur Trafikverkets text (*Halka*, *Risk för halka*, *Fläckvis is*, *Frysrisk*). Högst åtta län (omslaget + 8 + appen = 10
+bilder, det säkra taket för en karusell); resten räknas på omslaget och i texten. Ordningen: stor förändring > höstens kallaste >
+veckan > svepinlägget. Ett svepinlägg per pass och dag (nyckeln `svep:<pass>`); spärrarna tre per dygn och fyra timmar isär gäller som förut.
+Morgonlistan (#600) och länet (#663) tas bort ur urvalet; larmen (#627) är orörda. Facebook får bilderna som ett inlägg med flera foton
+(opublicerade foton fästa med `attached_media`), Instagram en karusell, X de fyra första bilderna. Mallen: `marknadsforing/svep-mall/halkvakt-svep.html`.
+`annonsstyrning.mjs` kör bara sina steg när den startas som skript, så att posta.mjs kan importera `annons()`.
+
+**Gult.** Länskorten är gula eftersom varje kort visar en fara som Trafikverket rapporterar just nu (guiden 1.0, avsnitt 09); omslaget och
+appen är mörka. Titelvikten 700 följer Meta-annonsens kort, som Axel godkänt i mockupen.
+
+**Alternativ.** Bara morgonen som svepinlägg och länet kvar lunch och kväll: Axel ville ha svepinlägget alla tre passen. Länskorten som
+egna inlägg: tre inlägg om dagen räcker inte till länen, och karusellen låter var och en hitta sitt.
+
+**Kostnad i repot.** Tio bilder per inlägg (JPEG 85, cirka 60–140 kB) i `marknadsforing/inlagg/`, upp till tre om dagen: några MB per dygn
+i det publika repot. Följs; går det för fort flyttas bilderna till hinken.
+
+**Stomdokument:** inga — marknadsföringen har inget stomdokument; appen, motorn och mätningarna är orörda.
+## #778 (2/11 2026) Kedjans takt: fas 3 avgjord på sju resor, och takten står kvar; batteriet läses för sig
 
 **Beslut** (Bengt 2/11: *"Godta takten nu"*). Fas 3 i #741 säger *"mätningen läses efter minst fem resor på minst en halvtimme.
 Därefter avgörs om takten står kvar"*. Den avgörs för takten på de sju resor som finns, fast bara en av dem är minst en halvtimme

@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<title>Halkvakt live · svepinlägg · 1080×1350</title>
+<!--
+  HALKVAKT LIVE · SVEPINLÄGG (DECISIONS #777) · EN BILD 1080×1350
+
+  Data in: Playwright page.addInitScript(d => { window.HALKVAKT_SVEP = d }, data), eller ?example=omslag|lan|appen.
+  Vänta på: document.documentElement.dataset.ready === "1". Rendera: screenshot av #bild.
+
+  Fält (window.HALKVAKT_SVEP):
+    bild     "omslag" | "lan" | "appen"
+    nr, av   bildens nummer och antalet bilder (foten: "2 / 8")
+    omslag:  rubrik "Halt i morse", under "Halka på 121 vägavsnitt i 6 län.", tid "06:50", date "2026-11-02",
+             lan [{ nr, kort, halt, vagavsnitt, kalla }], fler (antal län som inte fick plats)
+    lan:     samma fält som Meta-annonsens daily (annonsstyrning.mjs annons().data): county, hazard, subtitle, roads, coldest, dataTime, date
+  Gult är bara länskorten, där en fara är rapporterad just nu. Omslaget och appen är mörka (Varumärkesguide 1.0).
+  Mallen skriver aldrig ut ett tal som inte finns i datan.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --mark:#080B0D; --panel:#0F1518; --delare:#253036; --text:#E9EFF2; --text2:#A9B5BB; --dampad:#8FA0A9; --dampad2:#6F7C83; --gul:#FFC94A; --gul2:#3A2E0B; --k:1; }
+  * { box-sizing:border-box; margin:0; }
+  html,body { background:var(--mark); }
+  #bild { position:relative; width:1080px; height:1350px; overflow:hidden; display:flex; flex-direction:column; font-family:'Instrument Sans',sans-serif; -webkit-font-smoothing:antialiased; }
+  .mono { font-family:'IBM Plex Mono',monospace; text-transform:uppercase; }
+  [hidden] { display:none !important; }
+
+  /* Mörka bilder: omslaget och appen */
+  .mork { background:var(--mark); color:var(--text); padding:72px 120px 60px 72px; }
+  .mork.appen { padding-right:88px; }
+  .meta { display:flex; justify-content:space-between; align-items:center; font-size:24px; font-weight:500; letter-spacing:.14em; color:var(--dampad); }
+  .meta .l { display:flex; align-items:center; gap:14px; }
+  .prick { width:12px; height:12px; border-radius:50%; background:var(--gul); }
+  .kant { position:absolute; top:0; right:0; bottom:0; width:40px; background:var(--gul); }
+  h1.stor { margin-top:56px; font-size:128px; font-weight:600; letter-spacing:-.04em; line-height:.95; }
+  .under { margin-top:22px; font-size:40px; font-weight:500; line-height:1.2; color:var(--text2); }
+  .index { margin-top:48px; background:var(--panel); border-radius:36px; padding:8px 40px 10px; }
+  .index .hd { display:flex; justify-content:space-between; padding:22px 0 18px; font-size:20px; font-weight:500; letter-spacing:.14em; color:var(--dampad); }
+  .index .r { display:grid; grid-template-columns:96px minmax(0,1fr) auto; align-items:center; gap:12px; padding:calc(18px * var(--k)) 0; border-top:2px dashed var(--delare); }
+  .index .nr { font-size:30px; font-weight:600; color:var(--dampad); }
+  .index .namn { font-size:calc(42px * var(--k)); font-weight:600; letter-spacing:-.015em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .index .v { font-size:calc(38px * var(--k)); font-weight:600; text-transform:none; }
+  .index .v small { font-size:24px; color:var(--dampad); }
+  .fler { margin-top:20px; font-size:24px; font-weight:500; letter-spacing:.06em; color:var(--text2); }
+  .svep { margin-top:auto; padding-top:40px; display:flex; align-items:center; justify-content:space-between; gap:32px; }
+  .svep span { font-size:60px; font-weight:600; letter-spacing:-.03em; line-height:1; }
+  .svep i { flex:none; width:112px; height:112px; border-radius:50%; background:var(--gul); display:flex; align-items:center; justify-content:center; }
+  .fot { margin-top:40px; display:flex; justify-content:space-between; align-items:center; gap:24px; font-size:20px; font-weight:500; letter-spacing:.12em; color:var(--dampad2); }
+  .logo { display:flex; align-items:center; gap:13px; font-size:22px; font-weight:600; color:var(--text); }
+  .appen h1 { margin-top:64px; font-size:104px; font-weight:600; letter-spacing:-.04em; line-height:.98; }
+  .appen .under { margin-top:32px; max-width:820px; font-size:38px; font-weight:400; line-height:1.3; }
+  .ruta { margin-top:28px; display:flex; align-items:center; gap:32px; padding:32px 40px; border-radius:36px; background:var(--panel); }
+  .ruta.rost { margin-top:56px; }
+  .vag { flex:none; display:flex; align-items:center; gap:8px; height:64px; }
+  .vag b { width:10px; border-radius:5px; background:var(--gul); }
+  .ruta q { quotes:"\201D" "\201D"; font-size:40px; font-weight:500; line-height:1.25; }
+  .ruta .lb { flex:none; font-size:22px; font-weight:500; letter-spacing:.14em; color:var(--dampad); }
+  .ruta .lv { margin-left:auto; font-size:34px; font-weight:500; text-align:right; }
+  .ladda { margin-top:auto; display:flex; justify-content:space-between; align-items:center; gap:32px; }
+  .badge { height:112px; width:auto; aspect-ratio:119.66407/40; }
+  .ladda .mono { font-size:24px; font-weight:500; letter-spacing:.14em; color:var(--dampad); text-align:right; }
+  .appen .fot { margin-top:44px; padding-top:28px; border-top:2px dashed var(--delare); }
+
+  /* Länskortet: Meta-annonsens kort (meta-mall/halkvakt-meta-feed.html) utan App Store-bandet */
+  .gul { background:var(--gul); color:var(--mark); padding:84px 88px 0; }
+  .head { display:flex; justify-content:space-between; align-items:center; gap:32px; font-size:26px; letter-spacing:.14em; font-weight:600; }
+  .head .l { display:flex; align-items:center; gap:14px; min-width:0; }
+  .head .l span { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .icon { margin-top:calc(64px * var(--k)); width:calc(150px * var(--k)); height:calc(150px * var(--k)); }
+  .icon svg { width:100%; height:100%; fill:none; stroke:var(--mark); stroke-width:3.5; stroke-linecap:round; stroke-linejoin:round; }
+  .title { margin-top:calc(24px * var(--k)); font-weight:700; letter-spacing:-0.05em; line-height:.9; font-size:calc(var(--ts) * var(--k)); text-wrap:balance; }
+  .sub { margin-top:calc(22px * var(--k)); font-size:calc(40px * var(--k)); font-weight:500; line-height:1.2; }
+  .rows { margin-top:calc(40px * var(--k)); }
+  .row { display:flex; justify-content:space-between; align-items:center; gap:40px; min-height:calc(88px * var(--k)); padding:calc(14px * var(--k)) 0; border-top:2px dashed rgba(8,11,13,.3); }
+  .row .k { flex:none; font-size:calc(30px * var(--k)); letter-spacing:.08em; font-weight:600; }
+  .row .v { min-width:0; font-size:calc(32px * var(--k)); line-height:1.25; text-align:right; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; overflow-wrap:anywhere; }
+  .temp { margin-top:calc(28px * var(--k)); display:flex; justify-content:space-between; align-items:center; gap:32px; padding:calc(26px * var(--k)) calc(32px * var(--k)); border-radius:28px; background:rgba(8,11,13,.08); }
+  .temp .k { display:flex; flex-direction:column; gap:8px; min-width:0; }
+  .temp .lbl { font-size:22px; letter-spacing:.14em; font-weight:600; }
+  .temp .st { font-size:calc(34px * var(--k)); font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .temp .t { flex:none; font-size:calc(64px * var(--k)); font-weight:600; letter-spacing:-0.02em; white-space:nowrap; }
+  .gulfot { margin-top:auto; padding:30px 0 52px; border-top:3px solid var(--mark); display:flex; justify-content:space-between; align-items:center; gap:24px; font-size:22px; font-weight:500; letter-spacing:.14em; color:var(--gul2); }
+  .gulfot .logo { font-size:26px; color:var(--mark); }
+</style>
+</head>
+<body>
+<div id="bild"></div>
+
+<script>
+const MARKE = 'M55.196 6 L96.196 77 A6 6 0 0 1 91 86 L9 86 A6 6 0 0 1 3.804 77 L44.804 6 A6 6 0 0 1 55.196 6 Z M46.4 32 L53.6 32 L52 58 L48 58 Z M45.6 68 A4.4 4.4 0 1 0 54.4 68 A4.4 4.4 0 1 0 45.6 68 Z';
+const TRIANGEL = 'M55.196 6 L96.196 77 A6 6 0 0 1 91 86 L9 86 A6 6 0 0 1 3.804 77 L44.804 6 A6 6 0 0 1 55.196 6 Z';
+const ICONS = {
+  halka: '<svg viewBox="0 0 48 48"><path d="M13 18 L16 9 H32 L35 18"/><rect x="8" y="17" width="32" height="10" rx="3"/><path d="M13 22 H16 M32 22 H35 M13 27 V31 M35 27 V31"/><path d="M5 38 q4.5 -4 9.5 0 t9.5 0 t9.5 0 t9.5 0"/><path d="M5 45 q4.5 -4 9.5 0 t9.5 0 t9.5 0 t9.5 0"/></svg>',
+  frys: '<svg viewBox="0 0 48 48"><g><path d="M24 5 V43 M19 8 L24 13 L29 8 M19 40 L24 35 L29 40"/></g><g transform="rotate(60 24 24)"><path d="M24 5 V43 M19 8 L24 13 L29 8 M19 40 L24 35 L29 40"/></g><g transform="rotate(-60 24 24)"><path d="M24 5 V43 M19 8 L24 13 L29 8 M19 40 L24 35 L29 40"/></g></svg>',
+};
+const HAZARD_ICON = { 'halka': 'halka', 'risk för halka': 'halka', 'fläckvis is': 'frys', 'frysrisk': 'frys' };
+const BADGE = '<svg class="badge" viewBox="0 0 119.66407 40" role="img" aria-label="Hämta i App Store"><path fill="#a6a6a6" d="M110.13477,0H9.53468c-.3667,0-.729,0-1.09473.002-.30615.002-.60986.00781-.91895.0127A13.21476,13.21476,0,0,0,5.5171.19141a6.66509,6.66509,0,0,0-1.90088.627A6.43779,6.43779,0,0,0,1.99757,1.99707,6.25844,6.25844,0,0,0,.81935,3.61816a6.60119,6.60119,0,0,0-.625,1.90332,12.993,12.993,0,0,0-.1792,2.002C.00587,7.83008.00489,8.1377,0,8.44434V31.5586c.00489.3105.00587.6113.01515.9219a12.99232,12.99232,0,0,0,.1792,2.0019,6.58756,6.58756,0,0,0,.625,1.9043A6.20778,6.20778,0,0,0,1.99757,38.001a6.27445,6.27445,0,0,0,1.61865,1.1787,6.70082,6.70082,0,0,0,1.90088.6308,13.45514,13.45514,0,0,0,2.0039.1768c.30909.0068.6128.0107.91895.0107C8.80567,40,9.168,40,9.53468,40H110.13477c.3594,0,.7246,0,1.084-.002.3047,0,.6172-.0039.9219-.0107a13.279,13.279,0,0,0,2-.1768,6.80432,6.80432,0,0,0,1.9082-.6308,6.27742,6.27742,0,0,0,1.6172-1.1787,6.39482,6.39482,0,0,0,1.1816-1.6143,6.60413,6.60413,0,0,0,.6191-1.9043,13.50643,13.50643,0,0,0,.1856-2.0019c.0039-.3106.0039-.6114.0039-.9219.0078-.3633.0078-.7246.0078-1.0938V9.53613c0-.36621,0-.72949-.0078-1.09179,0-.30664,0-.61426-.0039-.9209a13.5071,13.5071,0,0,0-.1856-2.002,6.6177,6.6177,0,0,0-.6191-1.90332,6.46619,6.46619,0,0,0-2.7988-2.7998,6.76754,6.76754,0,0,0-1.9082-.627,13.04394,13.04394,0,0,0-2-.17676c-.3047-.00488-.6172-.01074-.9219-.01269-.3594-.002-.7246-.002-1.084-.002Z"/><path fill="#000" d="M8.44483,39.125c-.30468,0-.602-.0039-.90429-.0107a12.68714,12.68714,0,0,1-1.86914-.1631,5.88381,5.88381,0,0,1-1.65674-.5479,5.40573,5.40573,0,0,1-1.397-1.0166,5.32082,5.32082,0,0,1-1.02051-1.3965,5.72186,5.72186,0,0,1-.543-1.6572,12.41351,12.41351,0,0,1-.1665-1.875c-.00634-.2109-.01464-.9131-.01464-.9131V8.44434S.88185,7.75293.8877,7.5498a12.37039,12.37039,0,0,1,.16553-1.87207,5.7555,5.7555,0,0,1,.54346-1.6621A5.37349,5.37349,0,0,1,2.61183,2.61768,5.56543,5.56543,0,0,1,4.01417,1.59521a5.82309,5.82309,0,0,1,1.65332-.54394A12.58589,12.58589,0,0,1,7.543.88721L8.44532.875H111.21387l.9131.0127a12.38493,12.38493,0,0,1,1.8584.16259,5.93833,5.93833,0,0,1,1.6709.54785,5.59374,5.59374,0,0,1,2.415,2.41993,5.76267,5.76267,0,0,1,.5352,1.64892,12.995,12.995,0,0,1,.1738,1.88721c.0029.2832.0029.5874.0029.89014.0079.375.0079.73193.0079,1.09179V30.4648c0,.3633,0,.7178-.0079,1.0752,0,.3252,0,.6231-.0039.9297a12.73126,12.73126,0,0,1-.1709,1.8535,5.739,5.739,0,0,1-.54,1.67,5.48029,5.48029,0,0,1-1.0156,1.3857,5.4129,5.4129,0,0,1-1.3994,1.0225,5.86168,5.86168,0,0,1-1.668.5498,12.54218,12.54218,0,0,1-1.8692.1631c-.2929.0068-.5996.0107-.8974.0107l-1.084.002Z"/><g fill="#fff"><path d="M24.76888,20.30068a4.94881,4.94881,0,0,1,2.35656-4.15206,5.06566,5.06566,0,0,0-3.99116-2.15768c-1.67924-.17626-3.30719,1.00483-4.1629,1.00483-.87227,0-2.18977-.98733-3.6085-.95814a5.31529,5.31529,0,0,0-4.47292,2.72787c-1.934,3.34842-.49141,8.26947,1.3612,10.97608.9269,1.32535,2.01018,2.8058,3.42763,2.7533,1.38706-.05753,1.9051-.88448,3.5794-.88448,1.65876,0,2.14479.88448,3.591.8511,1.48838-.02416,2.42613-1.33124,3.32051-2.66914a10.962,10.962,0,0,0,1.51842-3.09251A4.78205,4.78205,0,0,1,24.76888,20.30068Z"/><path d="M22.03725,12.21089a4.87248,4.87248,0,0,0,1.11452-3.49062,4.95746,4.95746,0,0,0-3.20758,1.65961,4.63634,4.63634,0,0,0-1.14371,3.36139A4.09905,4.09905,0,0,0,22.03725,12.21089Z"/><path d="M42.30227,27.13965h-4.7334l-1.13672,3.35645H34.42727l4.4834-12.418h2.083l4.4834,12.418H43.438ZM38.0591,25.59082h3.752l-1.84961-5.44727h-.05176Z"/><path d="M55.15969,25.96973c0,2.81348-1.50586,4.62109-3.77832,4.62109a3.0693,3.0693,0,0,1-2.84863-1.584h-.043v4.48438h-1.8584V21.44238H48.4302v1.50586h.03418a3.21162,3.21162,0,0,1,2.88281-1.60059C53.645,21.34766,55.15969,23.16406,55.15969,25.96973Zm-1.91016,0c0-1.833-.94727-3.03809-2.39258-3.03809-1.41992,0-2.375,1.23047-2.375,3.03809,0,1.82422.95508,3.0459,2.375,3.0459C52.30227,29.01563,53.24953,27.81934,53.24953,25.96973Z"/><path d="M65.12453,25.96973c0,2.81348-1.50586,4.62109-3.77832,4.62109a3.0693,3.0693,0,0,1-2.84863-1.584h-.043v4.48438h-1.8584V21.44238H58.395v1.50586h.03418A3.21162,3.21162,0,0,1,61.312,21.34766C63.60988,21.34766,65.12453,23.16406,65.12453,25.96973Zm-1.91016,0c0-1.833-.94727-3.03809-2.39258-3.03809-1.41992,0-2.375,1.23047-2.375,3.03809,0,1.82422.95508,3.0459,2.375,3.0459C62.26711,29.01563,63.21438,27.81934,63.21438,25.96973Z"/><path d="M71.71047,27.03613c.1377,1.23145,1.334,2.04,2.96875,2.04,1.56641,0,2.69336-.80859,2.69336-1.91895,0-.96387-.67969-1.541-2.28906-1.93652l-1.60937-.3877c-2.28027-.55078-3.33887-1.61719-3.33887-3.34766,0-2.14258,1.86719-3.61426,4.51855-3.61426,2.624,0,4.42285,1.47168,4.4834,3.61426h-1.876c-.1123-1.23926-1.13672-1.9873-2.63379-1.9873s-2.52148.75684-2.52148,1.8584c0,.87793.6543,1.39453,2.25488,1.79l1.36816.33594c2.54785.60254,3.60645,1.626,3.60645,3.44238,0,2.32324-1.85059,3.77832-4.79395,3.77832-2.75391,0-4.61328-1.4209-4.7334-3.667Z"/><path d="M83.34621,19.2998v2.14258h1.72168v1.47168H83.34621v4.99121c0,.77539.34473,1.13672,1.10156,1.13672a5.80752,5.80752,0,0,0,.61133-.043v1.46289a5.10351,5.10351,0,0,1-1.03223.08594c-1.833,0-2.54785-.68848-2.54785-2.44434V22.91406H80.16262V21.44238H81.479V19.2998Z"/><path d="M86.065,25.96973c0-2.84863,1.67773-4.63867,4.29395-4.63867,2.625,0,4.29492,1.79,4.29492,4.63867,0,2.85645-1.66113,4.63867-4.29492,4.63867C87.72609,30.6084,86.065,28.82617,86.065,25.96973Zm6.69531,0c0-1.9541-.89551-3.10742-2.40137-3.10742s-2.40039,1.16211-2.40039,3.10742c0,1.96191.89453,3.10645,2.40039,3.10645S92.76027,27.93164,92.76027,25.96973Z"/><path d="M96.18606,21.44238h1.77246v1.541h.043a2.1594,2.1594,0,0,1,2.17773-1.63574,2.86616,2.86616,0,0,1,.63672.06934v1.73828a2.59794,2.59794,0,0,0-.835-.1123,1.87264,1.87264,0,0,0-1.93652,2.083v5.37012h-1.8584Z"/><path d="M109.3843,27.83691c-.25,1.64355-1.85059,2.77148-3.89844,2.77148-2.63379,0-4.26855-1.76465-4.26855-4.5957,0-2.83984,1.64355-4.68164,4.19043-4.68164,2.50488,0,4.08008,1.7207,4.08008,4.46582v.63672h-6.39453v.1123a2.358,2.358,0,0,0,2.43555,2.56445,2.04834,2.04834,0,0,0,2.09082-1.27344Zm-6.28223-2.70215h4.52637a2.1773,2.1773,0,0,0-2.2207-2.29785A2.292,2.292,0,0,0,103.10207,25.13477Z"/><path d="M39.66213,14.69775V12.08008H36.59768v2.61768h-.92676V8.731h.92676v2.50586h3.06445V8.731H40.584v5.9668Z"/><path d="M41.8467,13.42432c0-.81055.60352-1.27783,1.6748-1.34424l1.21973-.07031v-.38867c0-.47559-.31445-.74414-.92187-.74414-.49609,0-.83984.18213-.93848.50049h-.86035c.09082-.77344.81836-1.26953,1.83984-1.26953,1.12891,0,1.76563.562,1.76563,1.51318v3.07666h-.85547v-.63281h-.07031a1.515,1.515,0,0,1-1.35254.707A1.36026,1.36026,0,0,1,41.8467,13.42432Zm.5791-4.3999a.55176.55176,0,1,1,.55371.5542A.54667.54667,0,0,1,42.4258,9.02441Zm2.31543,4.01514v-.37646l-1.09961.07031c-.62012.0415-.90137.25244-.90137.64941,0,.40527.35156.64111.835.64111A1.0615,1.0615,0,0,0,44.74123,13.03955Zm-.5498-4.01514a.55179.55179,0,1,1,1.10352,0,.55176.55176,0,1,1-1.10352,0Z"/><path d="M47.0176,10.19482h.85547v.72363h.06641a1.36385,1.36385,0,0,1,2.49316,0h.07031a1.46325,1.46325,0,0,1,1.36914-.81055,1.33821,1.33821,0,0,1,1.43848,1.48828v3.10156H52.4219V11.82813c0-.60791-.29-.90576-.873-.90576a.91167.91167,0,0,0-.9502.94287v2.83252h-.873V11.74121a.78468.78468,0,0,0-.86816-.81885.96854.96854,0,0,0-.95117,1.02148v2.75391H47.0176Z"/><path d="M55.88772,9.07373v1.1416h.97559v.74854h-.97559V13.2793c0,.47168.19434.67822.63672.67822a2.96657,2.96657,0,0,0,.33887-.02051v.74023a2.9155,2.9155,0,0,1-.4834.04541c-.98828,0-1.38184-.34766-1.38184-1.21582v-2.543h-.71484v-.74854h.71484V9.07373Z"/><path d="M57.77932,13.42432c0-.81055.60352-1.27783,1.6748-1.34424l1.21973-.07031v-.38867c0-.47559-.31445-.74414-.92187-.74414-.49609,0-.83984.18213-.93848.50049h-.86035c.09082-.77344.81836-1.26953,1.83984-1.26953,1.12891,0,1.76563.562,1.76563,1.51318v3.07666h-.85547v-.63281h-.07031a1.515,1.515,0,0,1-1.35254.707A1.36026,1.36026,0,0,1,57.77932,13.42432Zm2.89453-.38477v-.37646l-1.09961.07031c-.62012.0415-.90137.25244-.90137.64941,0,.40527.35156.64111.835.64111A1.0615,1.0615,0,0,0,60.67385,13.03955Z"/><path d="M65.27688,8.86328a.57572.57572,0,1,1,.5752.5415A.54735.54735,0,0,1,65.27688,8.86328Zm.13184,1.33154h.88574v4.50293h-.88574Z"/></g></svg>';
+const EXAMPLES = {
+  omslag: { bild: 'omslag', nr: 1, av: 5, rubrik: 'Halt i morse', under: 'Halka på 62 vägavsnitt i 3 län.', tid: '06:50', date: '2026-11-02',
+            lan: [{ nr: 2, kort: 'Norrbotten', halt: 46, vagavsnitt: 58, kalla: 21 }, { nr: 3, kort: 'Jämtland', halt: 14, vagavsnitt: 30, kalla: 9 },
+                  { nr: 4, kort: 'Dalarna', halt: 0, vagavsnitt: 31, kalla: 5 }], fler: 0 },
+  lan: { bild: 'lan', nr: 3, av: 5, date: '2026-11-02', county: 'Jämtland', hazard: 'Risk för halka', subtitle: '14 vägavsnitt i Jämtland',
+         roads: [{ road: 'E14', stretch: 'Gevsjön–Järpen' }, { road: 'E45', stretch: 'Åsarna–Ytterhogdal' }], coldest: { station: 'Lossendammen', surfaceTemp: -1.5 }, dataTime: '06:50' },
+  appen: { bild: 'appen', nr: 5, av: 5 },
+};
+const DAY = ['SÖN','MÅN','TIS','ONS','TOR','FRE','LÖR'], MON = ['JAN','FEB','MAR','APR','MAJ','JUN','JUL','AUG','SEP','OKT','NOV','DEC'];
+const clean = s => String(s ?? '').replace(/!/g, '').replace(/—/g, '–').replace(/\s+/g, ' ').trim();
+const esc = s => clean(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+const fmtDate = d => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(d || ''); if (!m) return esc(d).toUpperCase(); const x = new Date(+m[1], +m[2] - 1, +m[3]); return DAY[x.getDay()] + ' ' + x.getDate() + ' ' + MON[x.getMonth()]; };
+const fmtTemp = t => (t < 0 ? '−' : t > 0 ? '+' : '') + Math.abs(t).toFixed(1).replace('.', ',') + ' °C';
+const marke = (fill, w = 40.5, h = 35.8) => `<svg width="${w}" height="${h}" viewBox="3 3 94 83" aria-hidden="true"><path fill-rule="evenodd" fill="${fill}" d="${MARKE}"/></svg>`;
+const raknare = d => d.nr && d.av ? ` · ${d.nr} / ${d.av}` : '';
+
+function omslag(d) {
+  const lan = d.lan || [];
+  const rader = lan.map(l => `<div class="r"><span class="nr mono">${l.nr}</span><span class="namn">${esc(l.kort)}</span>` +
+    (l.halt ? `<span class="v mono">${l.halt} <small>av ${l.vagavsnitt}</small></span>` : `<span class="v mono">${l.kalla} <small>under 0°</small></span>`) + '</div>').join('');
+  return `<div id="bild" class="mork">
+    <div class="kant" aria-hidden="true"></div>
+    <div class="meta mono"><span class="l"><span class="prick"></span>Halkläget kl. ${esc(d.tid)}</span><span>${fmtDate(d.date)}</span></div>
+    <h1 class="stor">${esc(d.rubrik)}</h1>
+    <p class="under">${esc(d.under)}</p>
+    <div class="index"><div class="hd mono"><span>Bild · Län</span><span>Vägavsnitt med halka</span></div>${rader}</div>
+    ${d.fler ? `<p class="fler mono">+ ${d.fler} län till på halkvakt.se/lan</p>` : ''}
+    <div class="svep"><span>Svep till ditt län</span><i aria-hidden="true"><svg width="56" height="56" viewBox="0 0 48 48" fill="none" stroke="#080B0D" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 24 H38 M27 13 L38 24 L27 35"/></svg></i></div>
+    <div class="fot mono"><span class="logo">${marke('#FFC94A')}HALKVAKT</span><span>KÄLLA TRAFIKVERKET${raknare(d)}</span></div>
+  </div>`;
+}
+
+function lanskort(d) {
+  const hazard = clean(d.hazard) || 'Halka';
+  const roads = (d.roads || []).filter(r => r && (r.road || r.stretch)).slice(0, 3);
+  const c = d.coldest && d.coldest.station && typeof d.coldest.surfaceTemp === 'number' ? d.coldest : null;
+  return `<div id="bild" class="gul" style="--ts:${hazard.length <= 6 ? 240 : hazard.length <= 11 ? 164 : 140}px">
+    <div class="head mono"><span class="l"><svg width="30" height="26.5" viewBox="3 3 94 83" aria-hidden="true"><path fill="#080B0D" d="${TRIANGEL}"/></svg><span>Läget i ${esc(d.county)}</span></span><span>${[fmtDate(d.date), esc(d.dataTime)].filter(Boolean).join(' · ')}</span></div>
+    <div class="icon">${ICONS[HAZARD_ICON[hazard.toLowerCase()] || 'halka']}</div>
+    <div class="title">${esc(hazard)}</div>
+    ${d.subtitle ? `<div class="sub">${esc(d.subtitle)}</div>` : ''}
+    ${roads.length ? `<div class="rows">${roads.map(r => `<div class="row"><span class="k mono">${esc(r.road)}</span><span class="v">${esc(r.stretch)}</span></div>`).join('')}</div>` : ''}
+    ${c ? `<div class="temp"><div class="k"><span class="lbl mono">Kallast vägbana</span><span class="st">${esc(c.station)}</span></div><span class="t mono">${fmtTemp(c.surfaceTemp)}</span></div>` : ''}
+    <div class="gulfot mono"><span class="logo">${marke('#080B0D')}HALKVAKT</span><span>TRAFIKVERKETS DATA${raknare(d)}</span></div>
+  </div>`;
+}
+
+function appen(d) {
+  const staplar = [24, 46, 64, 34, 54, 26].map(h => `<b style="height:${h}px"></b>`).join('');
+  return `<div id="bild" class="mork appen">
+    <div class="meta mono"><span class="l"><span class="prick"></span>Appen</span><span>Gratis för iPhone</span></div>
+    <h1>Halkvakt varnar med rösten innan du är där.</h1>
+    <p class="under">Halka, olyckor, frysrisk, vilt och fartkameror från Trafikverket, i bilens högtalare.</p>
+    <div class="ruta rost"><span class="vag" aria-hidden="true">${staplar}</span><q>Varning: halka rapporterad på vägen framför dig.</q></div>
+    <div class="ruta"><span class="lb mono">Löftet</span><span class="lv">Din position lämnar inte telefonen av sig själv.</span></div>
+    <div class="ladda">${BADGE}<span class="mono">Länken finns<br>i profilen</span></div>
+    <div class="fot mono"><span class="logo">${marke('#FFC94A')}HALKVAKT</span><span>HALKVAKT.SE${raknare(d)}</span></div>
+  </div>`;
+}
+
+function getData() {
+  if (window.HALKVAKT_SVEP) return window.HALKVAKT_SVEP;
+  return EXAMPLES[new URLSearchParams(location.search).get('example') || 'omslag'] || EXAMPLES.omslag;
+}
+
+// Shrink rows and type until everything fits above the foot.
+function fit() {
+  const el = document.getElementById('bild');
+  let k = 1; el.style.setProperty('--k', k);
+  while (el.scrollHeight > el.clientHeight + 1 && k > 0.6) { k -= 0.04; el.style.setProperty('--k', k.toFixed(2)); }
+}
+
+const d = getData();
+document.getElementById('bild').outerHTML = (d.bild === 'lan' ? lanskort : d.bild === 'appen' ? appen : omslag)(d);
+document.fonts.ready.then(() => { fit(); requestAnimationFrame(() => { document.documentElement.dataset.ready = '1'; }); });
+</script>
+</body>
+</html>
