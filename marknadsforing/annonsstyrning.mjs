@@ -344,7 +344,8 @@ async function styr() {
         `Totalt: ${totalt?.spend ?? 0} av ${BUDGET_ORE / 100} kr, ${totalt?.clicks ?? 0} klick.`);
 }
 
-const steg = process.argv[2];
+// Only when run as the script: Halkvakt live imports annons() for its swipe post (DECISIONS #777) and must not start a step.
+const steg = import.meta.url === pathToFileURL(process.argv[1] ?? "").href ? process.argv[2] : null;
 if (steg) {
   try {
     if (steg === "styr") await styr();

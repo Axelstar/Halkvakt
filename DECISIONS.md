@@ -13233,3 +13233,30 @@ inline-stil i tabellceller; guiden 1.0: gult bara där en fara är live, signalg
 sträcknamnen bara för vägar med halka. Raderna, talen och meningen är desamma som länssidans; bara ordning och form är tabellens egna.
 
 **Stomdokument:** inga — sajtens datafiler; appen, motorn och mätningarna är orörda.
+
+## #777 (2/11 2026) Halkvakt live: svepinlägget ersätter morgonlistan och länet, morgon, lunch och kväll
+
+**Axels ord 2/11:** *"Borde vi inte kunna skapa dessa som man slidar mellan så folk får fram dessa utan att se adsen?"*, *"Första bilden
+bör göra det tydligt att de ska slida för att se sitt län"*, och efter mockupen (Design-duken *Halkvakt svepinlägg*): *"Detta är grymt och
+detta måste vi lägga till och börja med redan imorgon … den kan gå ut på morgon, eftermiddag och kväll eftersom det är färsk data."*
+
+**Beslut.** Dagslägets pass (morgon, lunch, kväll i `halkvakt-live.yml`) postar ett karusellinlägg när ingen händelse vinner:
+omslaget (mörkt: *Halt i morse/i dag/i kväll*, länen med sina bildnummer och *Svep till ditt län*), ett gult länskort per län och appen
+sist. Länskortet är Meta-annonsens kort utan App Store-bandet: samma data ur `annonsstyrning.mjs` `annons()`, alltså samma vägar och
+samma ord ur Trafikverkets text (*Halka*, *Risk för halka*, *Fläckvis is*, *Frysrisk*). Högst åtta län (omslaget + 8 + appen = 10
+bilder, det säkra taket för en karusell); resten räknas på omslaget och i texten. Ordningen: stor förändring > höstens kallaste >
+veckan > svepinlägget. Ett svepinlägg per pass och dag (nyckeln `svep:<pass>`); spärrarna tre per dygn och fyra timmar isär gäller som förut.
+Morgonlistan (#600) och länet (#663) tas bort ur urvalet; larmen (#627) är orörda. Facebook får bilderna som ett inlägg med flera foton
+(opublicerade foton fästa med `attached_media`), Instagram en karusell, X de fyra första bilderna. Mallen: `marknadsforing/svep-mall/halkvakt-svep.html`.
+`annonsstyrning.mjs` kör bara sina steg när den startas som skript, så att posta.mjs kan importera `annons()`.
+
+**Gult.** Länskorten är gula eftersom varje kort visar en fara som Trafikverket rapporterar just nu (guiden 1.0, avsnitt 09); omslaget och
+appen är mörka. Titelvikten 700 följer Meta-annonsens kort, som Axel godkänt i mockupen.
+
+**Alternativ.** Bara morgonen som svepinlägg och länet kvar lunch och kväll: Axel ville ha svepinlägget alla tre passen. Länskorten som
+egna inlägg: tre inlägg om dagen räcker inte till länen, och karusellen låter var och en hitta sitt.
+
+**Kostnad i repot.** Tio bilder per inlägg (JPEG 85, cirka 60–140 kB) i `marknadsforing/inlagg/`, upp till tre om dagen: några MB per dygn
+i det publika repot. Följs; går det för fort flyttas bilderna till hinken.
+
+**Stomdokument:** inga — marknadsföringen har inget stomdokument; appen, motorn och mätningarna är orörda.
