@@ -104,6 +104,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ett händelseinlägg står i `postat.json` med sin typ. 🔑 Kvar (Axel): länken https://halkvakt.se/lan i Instagram-profilen. X/Bluesky/Mastodon kvar.
   🔍 **Sök (Axels fråga 00:28, planens §6):** länssidor + vägsidor *"Halt väglag i Skåne just nu"* som publicera-flödet skriver om var 30:e minut —
   byggs i karta-repot i oktober (Google behöver veckor) · domänen före första pressomgången · widget + "Sveriges halaste vägar" som länkbeten · Search Console.
+  🔨 **Svepinlägget (Axel 2/11, DECISIONS #777):** morgon, lunch och kväll ett karusellinlägg i stället för morgonlistan och länet — omslaget med länens bildnummer, ett gult länskort per län (Meta-annonsens kort, högst åtta) och appen sist; X får de fyra första. Verify: första svepinlägget står i `postat.json` med typen `svep` och Facebook-, Instagram- och X-id.
   ✅ **VÄGSIDORNA I DRIFT 4/10 16:00Z** — deploy 37214328745 ur 45a07b4 · karta-repots commit 7f3b8c2 med `vag/` för alla sex · sitemapen 34 adresser · Pages svarar på `/vag/e4/`.
   🔨 **VÄGSIDORNA BYGGDA 4/10** (DECISIONS #458): `vag/e4/`, `e6`, `e18`, `e20`, `e22` och `rv40` med samma källor. Vägnumret jämförs utan
   form, och stationerna hör till vägen för sin närmaste sträcka. Översikten och länssidorna länkar dit. ~~🔑 Kvar: deploy på *slå ihop*.~~ ✅ (raden ovan).

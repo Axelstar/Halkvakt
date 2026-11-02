@@ -15,17 +15,20 @@
 // Urvalet är larmdisciplinen i appen överförd till flödet: EN vinnare per körning, i prioritetsordning.
 // LARMEN (gula, DECISIONS #627): SMHI-varning > höstens första. De prövas var 30:e minut av halkvakt-larm.yml
 // (`bild --live`), postas när det händer och räknas inte mot dagens tre; högst fyra larm per dygn.
-// DAGSLÄGET (mörka): stor förändring > höstens kallaste > veckosummering > morgonlistan > ett län, morgon, lunch och kväll.
-// Lunch och kväll utan händelse tar ett län med halka eller minusgrader (#663); är vägarna fria blir det inget inlägg. Högst tre per dygn, minst fyra timmar
+// DAGSLÄGET: stor förändring > höstens kallaste > veckosummering > svepinlägget, morgon, lunch och kväll (DECISIONS #777).
+// Svepinlägget tar varje pass utan händelse; är vägarna fria blir det inget inlägg. Högst tre per dygn, minst fyra timmar
 // isär. Samma sorts inlägg för samma län (eller samma varning) högst en gång per 20 timmar, larm som dagsläge.
 import { readFileSync, writeFileSync, appendFileSync, mkdirSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { createHmac, randomBytes } from "node:crypto";
+import { annons } from "./annonsstyrning.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const DATA = process.env.HV_LAN_URL ?? "https://halkvakt.se/data/lan.json";
 const META = process.env.HV_META_URL ?? "https://halkvakt.se/data/meta.json";
+const STRACKOR = process.env.HV_STRACKOR_URL ?? "https://halkvakt.se/data/strackor.json";
+const SVEPMALL = join(HERE, "svep-mall", "halkvakt-svep.html");
 const RAW = "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg";
 const GRAPH = "https://graph.facebook.com/v23.0";
 
@@ -104,16 +107,6 @@ function svans(kanal, kalla, lanen) {
   const taggar = ["#halka", "#väglag", ...lanen.map(lanTagg), "#halkvakt"];
   // Bengts förslag 17/10 (DECISIONS #610): säg att vi är oberoende, så att ingen tror att inlägget kommer från Trafikverket.
   return ["", LANK[kanal], APP[kanal], "", `Halkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från ${kalla}.`, "", [...new Set(taggar)].join(" ")];
-}
-
-// Morgonlistans inledning skiftar mellan dagarna så att inläggen inte ser likadana ut varje morgon.
-export function inledning(iso) {
-  const n = Math.floor(Date.parse(iso) / 864e5) % 3;
-  return [
-    `Halkläget kl. ${tid(iso)}, ${datumText(iso)}.`,
-    `God morgon. Så här ser vägarna ut kl. ${tid(iso)}.`,
-    `Innan du kör i dag: läget kl. ${tid(iso)}, ${datumText(iso)}.`,
-  ][n];
 }
 
 export function bildtext(alla, generatedAt, kanal = "facebook", forsta = `Halkläget kl. ${tid(generatedAt)}, ${datumText(generatedAt)}.`) {
@@ -320,41 +313,34 @@ function vecka(nu, lan, meta, historik, postat) {
   };
 }
 
-function morgonlista(nu, lan, meta, historik, postat) {
-  // En gång per dag, inte 20 h: gårdagens kvällsinlägg får aldrig tysta morgonlistan (17/10, DECISIONS #609).
-  if (pass(nu) !== "morgon" || inlaggIdag(postat, nu).some(p => p.nyckel === "lista")) return null;
+// Svepinlägget (Axel 2/11, DECISIONS #777): omslaget med länen och deras bildnummer, ett gult kort per län och appen sist.
+// Morgon, lunch och kväll när inget större har hänt, ett per pass. Ersätter morgonlistan (#600) och dagsläget för ett län (#663).
+// Omslaget + 8 län + appen är 10 bilder, det säkra taket för ett karusellinlägg på Instagram och Facebook.
+const MAX_SVEP = 8;
+function svep(nu, lan, meta, historik, postat) {
+  const nyckel = `svep:${pass(nu)}`;
+  if (inlaggIdag(postat, nu).some(p => p.nyckel === nyckel)) return null;
   const valda = valjLan(lan);
   if (!valda.length) return null;
-  return {
-    typ: "lista", nyckel: "lista",
-    etikett: `Halkläget kl. ${tid(lan.generatedAt)}`, rubrik: rubrik(lan.generatedAt), underrad: datumText(nu),
-    lan: valda,
-    text: bildtext(valda, lan.generatedAt, "facebook", inledning(nu)),
-    textIg: bildtext(valda, lan.generatedAt, "instagram", inledning(nu)),
-  };
-}
-
-// Dagsläget för ett län (Sociala mallar nr 2; Axel 21/10, DECISIONS #663): lunch och kväll utan händelse tar det län som
-// har mest halka och inte haft eget inlägg på 20 h, så att en kall dag ger tre inlägg i stället för ett. Bara län som räknas.
-function lanet(nu, lan, meta, historik, postat) {
-  if (pass(nu) === "morgon") return null;
-  const l = valjLan(lan).find(x => !nyligen(postat, nu, `lan:${x.kod}`));
-  if (!l) return null;
+  const visas = valda.slice(0, MAX_SVEP), fler = valda.length - visas.length;
+  const hala = valda.filter(l => l.halt), halt = hala.reduce((s, l) => s + l.halt, 0);
+  const lage = halt ? `halka på ${halt} vägavsnitt i ${hala.length} län` : `vägbanan under noll i ${valda.length} län`;
   const text = kanal => [
-    // Raden först: X behåller hela rader uppifrån och ska få siffrorna, inte bara klockslaget.
-    rad(l),
-    `Läget kl. ${tid(lan.generatedAt)}, ${datumText(nu)}.`,
-    ...svans(kanal, "Trafikverkets öppna data", [l]),
+    `Halkläget kl. ${tid(lan.generatedAt)}, ${datumText(nu)}: ${lage}. Svep för att se ditt län.`,
+    "",
+    ...visas.map(rad),
+    ...(fler ? [`Halka eller minusgrader även i ${fler} län till.`] : []),
+    ...svans(kanal, "Trafikverkets öppna data", visas.slice(0, MAX_LAN)),
   ].join("\n");
   return {
-    typ: "lan", nyckel: `lan:${l.kod}`,
-    etikett: `Dagsläget kl. ${tid(lan.generatedAt)}`, rubrik: l.kort, underrad: datumText(nu),
-    lan: [l], text: text("facebook"), textIg: text("instagram"),
+    typ: "svep", nyckel,
+    etikett: `Halkläget kl. ${tid(lan.generatedAt)}`, rubrik: rubrik(lan.generatedAt), underrad: lage.charAt(0).toUpperCase() + lage.slice(1) + ".",
+    lan: visas, fler, text: text("facebook"), textIg: text("instagram"),
   };
 }
 
 const LARM = [smhi, forstaGangen];
-const ORDNING = [forandring, kallaste, vecka, morgonlista, lanet];
+const ORDNING = [forandring, kallaste, vecka, svep];
 
 /** Ren funktion: körningens vinnare eller null. `lan` bär `generatedAt` som egenskap. `larm` prövar bara larmen (#627). */
 export function valjHandelse(nu, lan, meta, historik, postat, larm = false) {
@@ -467,6 +453,21 @@ const filnamn = (nu, larm) => larm ? `${dag(nu)}-live-${tid(nu).replace(":", "")
 // Steget efter läser namnet ur GITHUB_OUTPUT (HV_NAMN), så att det postar exakt den bild som ritades.
 const utdata = (nyckel, varde) => { if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, `${nyckel}=${varde}\n`); };
 
+// The swipe post's images, numbered 01, 02 … after the post's name.
+export const svepNamn = (namn, i) => `${namn}-${String(i + 1).padStart(2, "0")}`;
+const bildNamn = (namn, inlagg) => inlagg.antal ? Array.from({ length: inlagg.antal }, (_, i) => svepNamn(namn, i)) : [namn];
+
+/** The swipe post's slides: the cover with each county's slide number, one card per county, the app last. */
+export function svepBilder(h, lan, str, nu) {
+  const av = h.lan.length + 2, datum = dag(nu);
+  return [
+    { bild: "omslag", nr: 1, av, rubrik: h.rubrik, under: h.underrad, tid: tid(lan.generatedAt), date: datum, fler: h.fler,
+      lan: h.lan.map((l, i) => ({ nr: i + 2, kort: l.kort, halt: l.halt, vagavsnitt: l.vagavsnitt, kalla: l.kalla })) },
+    ...h.lan.map((l, i) => ({ ...annons(l, str.lan.find(x => x.kort === l.kort), lan.generatedAt, datum).data, bild: "lan", nr: i + 2, av })),
+    { bild: "appen", nr: av, av },
+  ];
+}
+
 async function bild(larm, bara_koll) {
   const nu = process.env.HV_NU || new Date().toISOString();
   const postat = lasJson(postatPath, {});
@@ -488,16 +489,31 @@ async function bild(larm, bara_koll) {
   if (bara_koll) return console.log(`Larm att posta: ${h.typ} (${h.nyckel}).`);
   const { chromium } = await import("playwright");
   const browser = await chromium.launch(process.env.HV_CHROMIUM ? { executablePath: process.env.HV_CHROMIUM } : {});
-  const page = await browser.newPage({ viewport: { width: 1080, height: 1350 } });
-  await page.setContent(html(h), { waitUntil: "networkidle" });
-  await page.evaluate(() => document.fonts.ready);
   mkdirSync(dir, { recursive: true });
   const namn = filnamn(nu, larm);
   utdata("namn", namn);
-  await page.screenshot({ path: join(dir, `${namn}.jpg`), type: "jpeg", quality: 90 });
+  if (h.typ === "svep") {
+    // Länskorten är Meta-annonsens kort (annonsstyrning.mjs annons()), med samma vägar och samma ord ur Trafikverkets text.
+    const str = await (await fetch(STRACKOR, { cache: "no-store" })).json();
+    h.bilder = svepBilder(h, lan, str, nu);
+    for (const [i, data] of h.bilder.entries()) {
+      const page = await browser.newPage({ viewport: { width: 1080, height: 1350 } });
+      await page.addInitScript(x => { window.HALKVAKT_SVEP = x; }, data);
+      await page.goto(pathToFileURL(SVEPMALL).href);
+      await page.waitForFunction(() => document.documentElement.dataset.ready === "1", null, { timeout: 30000 });
+      await page.locator("#bild").screenshot({ path: join(dir, `${svepNamn(namn, i)}.jpg`), type: "jpeg", quality: 85 });
+      await page.close();
+    }
+  } else {
+    const page = await browser.newPage({ viewport: { width: 1080, height: 1350 } });
+    await page.setContent(html(h), { waitUntil: "networkidle" });
+    await page.evaluate(() => document.fonts.ready);
+    await page.screenshot({ path: join(dir, `${namn}.jpg`), type: "jpeg", quality: 90 });
+  }
   await browser.close();
-  const { lan: valda, staplar, ...resten } = h;
-  writeFileSync(join(dir, `${namn}.json`), JSON.stringify({ ...resten, datum: dag(nu), generated_at: d.generated_at, lan: valda.map(l => l.slug) }, null, 2) + "\n");
+  const { lan: valda, staplar, bilder, ...resten } = h;
+  writeFileSync(join(dir, `${namn}.json`), JSON.stringify({ ...resten, ...(bilder ? { antal: bilder.length } : {}),
+    datum: dag(nu), generated_at: d.generated_at, lan: valda.map(l => l.slug) }, null, 2) + "\n");
   console.log(`Inlägg ${namn} (${h.typ}):\n\n${h.text}`);
 }
 
@@ -589,9 +605,12 @@ async function matningX() {
   console.log(`X vecka till ${dag(nu)}: ${rad.inlagg} inlägg, ${rad.visningar} visningar, ${rad.gillningar} gillningar, ${rad.delningar} delningar, ${rad.svar} svar.`);
 }
 
-async function postaX(jpg, text, k) {
-  const media = await xApi("https://api.x.com/2/media/upload", { media: readFileSync(jpg).toString("base64"), media_category: "tweet_image" }, k);
-  const ut = await xApi("https://api.x.com/2/tweets", { text, media: { media_ids: [media.id] } }, k);
+// X takes at most four images: the swipe post's cover and its first three counties.
+async function postaX(jpgs, text, k) {
+  const ids = [];
+  for (const jpg of [].concat(jpgs).slice(0, 4))
+    ids.push((await xApi("https://api.x.com/2/media/upload", { media: readFileSync(jpg).toString("base64"), media_category: "tweet_image" }, k)).id);
+  const ut = await xApi("https://api.x.com/2/tweets", { text, media: { media_ids: ids } }, k);
   console.log(`X: ${ut.id}`);
   return ut.id;
 }
@@ -602,6 +621,30 @@ async function postaIg(ig, url, caption, token) {
   const ut = await graph(`${ig}/media_publish`, { creation_id: media.id, access_token: token });
   console.log(`Instagram: ${ut.id}`);
   return ut.id;
+}
+
+// Svepinlägget på Instagram: en behållare per bild, sedan karusellen med dem som barn (DECISIONS #777).
+async function postaIgSvep(ig, urls, caption, token) {
+  const barn = [];
+  for (const url of urls) {
+    const m = await graph(`${ig}/media`, { image_url: url, is_carousel_item: "true", access_token: token });
+    await vantaPaIg(m.id, token);
+    barn.push(m.id);
+  }
+  const k = await graph(`${ig}/media`, { media_type: "CAROUSEL", children: barn.join(","), caption, access_token: token });
+  await vantaPaIg(k.id, token);
+  const ut = await graph(`${ig}/media_publish`, { creation_id: k.id, access_token: token });
+  console.log(`Instagram: ${ut.id}`);
+  return ut.id;
+}
+
+// Svepinlägget på Facebook: bilderna laddas upp opublicerade och fästs vid ett inlägg i flödet.
+async function postaFbSvep(page, urls, text, token) {
+  const ids = [];
+  for (const url of urls) ids.push((await graph(`${page}/photos`, { url, published: "false", access_token: token })).id);
+  const p = { message: text, access_token: token };
+  ids.forEach((id, i) => { p[`attached_media[${i}]`] = JSON.stringify({ media_fbid: id }); });
+  return (await graph(`${page}/feed`, p)).id;
 }
 
 // Ta igen Instagram för ett inlägg som nådde Facebook men inte Instagram (larmet 17/10 19:37). Facebook rörs inte.
@@ -615,7 +658,8 @@ async function ikapp() {
   const { META_PAGE_TOKEN: token, META_IG_ID: ig } = process.env;
   if (!token || !ig) return console.log(`TORRKÖRNING (META_PAGE_TOKEN/META_IG_ID saknas). Skulle posta ${huvud.bild} på Instagram.`);
   const inlagg = JSON.parse(readFileSync(join(dir, `${namn}.json`), "utf8"));
-  const id = await postaIg(ig, huvud.bild, inlagg.textIg ?? inlagg.text, token);
+  const id = inlagg.antal ? await postaIgSvep(ig, bildNamn(namn, inlagg).map(n => `${RAW}/${n}.jpg`), inlagg.textIg ?? inlagg.text, token)
+    : await postaIg(ig, huvud.bild, inlagg.textIg ?? inlagg.text, token);
   for (const k of kvitton) k.instagram = id;
   writeFileSync(postatPath, JSON.stringify(postat, null, 2) + "\n");
 }
@@ -631,7 +675,7 @@ async function ikappX() {
   const inlagg = JSON.parse(readFileSync(join(dir, `${namn}.json`), "utf8"));
   const text = textX(inlagg.textIg ?? inlagg.text);
   if (!["X_API_KEY", "X_API_SECRET", "X_ACCESS_TOKEN", "X_ACCESS_SECRET"].every(n => process.env[n])) return console.log(`TORRKÖRNING (X-nycklarna saknas). Skulle posta:\n\n${text}`);
-  const id = await postaX(join(dir, `${namn}.jpg`), text, process.env);
+  const id = await postaX(bildNamn(namn, inlagg).map(n => join(dir, `${n}.jpg`)), text, process.env);
   for (const k of kvitton) k.x = id;
   writeFileSync(postatPath, JSON.stringify(postat, null, 2) + "\n");
 }
@@ -659,13 +703,13 @@ async function skicka() {
   if (inlaggIdag(postat, nu).some(p => p.namn ? p.namn === namn : !larm && p.pass === inlagg.pass)) return console.log(`Redan postat ${namn}.`);
   const stopp = sparr(postat, nu, larm);
   if (stopp) return console.log(`Postar inte ${namn}: ${stopp}.`);
-  const url = `${RAW}/${namn}.jpg`;
+  const namnen = bildNamn(namn, inlagg), urls = namnen.map(n => `${RAW}/${n}.jpg`), url = urls[0];
   const { META_PAGE_ID: page, META_PAGE_TOKEN: token, META_IG_ID: ig } = process.env;
-  if (!page || !token) return console.log(`TORRKÖRNING (META_PAGE_ID/META_PAGE_TOKEN saknas). Skulle posta ${url}:\n\n${inlagg.text}`);
+  if (!page || !token) return console.log(`TORRKÖRNING (META_PAGE_ID/META_PAGE_TOKEN saknas). Skulle posta ${urls.join(", ")}:\n\n${inlagg.text}`);
 
   const kvitto = { pass: inlagg.pass, namn, typ: inlagg.typ, nyckel: inlagg.nyckel, tid: new Date().toISOString(), bild: url };
-  const fb = await graph(`${page}/photos`, { url, caption: inlagg.text, access_token: token });
-  kvitto.facebook = fb.post_id ?? fb.id;
+  if (inlagg.antal) kvitto.facebook = await postaFbSvep(page, urls, inlagg.text, token);
+  else { const fb = await graph(`${page}/photos`, { url, caption: inlagg.text, access_token: token }); kvitto.facebook = fb.post_id ?? fb.id; }
   console.log(`Facebook: ${kvitto.facebook}`);
   // Kvittot skrivs så fort Facebook har inlägget: faller Instagram sedan får nästa körning inte posta Facebook en gång till.
   const spara = () => {
@@ -676,8 +720,9 @@ async function skicka() {
   };
   const x = ["X_API_KEY", "X_API_SECRET", "X_ACCESS_TOKEN", "X_ACCESS_SECRET"].every(n => process.env[n]);
   try {
-    if (ig) kvitto.instagram = await postaIg(ig, url, inlagg.textIg ?? inlagg.text, token);
-    if (x) kvitto.x = await postaX(join(dir, `${namn}.jpg`), textX(inlagg.textIg ?? inlagg.text), process.env);
+    if (ig) kvitto.instagram = inlagg.antal ? await postaIgSvep(ig, urls, inlagg.textIg ?? inlagg.text, token)
+      : await postaIg(ig, url, inlagg.textIg ?? inlagg.text, token);
+    if (x) kvitto.x = await postaX(namnen.map(n => join(dir, `${n}.jpg`)), textX(inlagg.textIg ?? inlagg.text), process.env);
   } finally {
     spara();
   }
