@@ -1087,12 +1087,21 @@ function lsVagarILanet(kod: number, d: { vaglag: LanSegment[]; stationer: LanSta
 /** Datawrapper-tabellen per län (2/11, NWT): Bonnier News Locals sajter bäddar bara in godkända tjänster, och Datawrapper är en av
  *  dem. Tabellen läser CSV:n som extern data och rubrik, ingress och källa ur JSON:en som extern metadata, så klockslaget följer med
  *  siffrorna. Samma rader och samma mening som länssidan; inget tal som inte står där. */
+const LS_DW_GUL = "background:#FFC94A;color:#080B0D;font-weight:600;padding:2px 8px;border-radius:10px;white-space:nowrap";
+const LS_DW_DAMPAD = "color:#6F7C83;white-space:nowrap";
 const lsCsvFalt = (s: string) => `"${s.replace(/"/g, '""')}"`;
 function lsDatawrapperCsv(kod: number, d: { vaglag: LanSegment[]; stationer: LanStation[] }): string {
-  const rader = lsVagRader(kod, d).map((r) => [lsVagNamn(r.vag).replace(/^väg /, "Väg "), lsVagLageText(r),
-    r.st ? `${lsGrad(r.st.yta)} vid ${r.st.name}` : "", r.namn.join(" · ")]);
+  // A table to read at a glance (Axel 2/11: "lite snyggare"): roads with ice first, the count as a yellow label (Datawrapper
+  // renders inline-styled <span> in cells; the brand guide: yellow only where a hazard is live), the others muted, and stretch
+  // names only where it is slippery. Same rows and counts as the county page.
+  const vr = lsVagRader(kod, d);
+  const rader = [...vr.filter((r) => r.halt), ...vr.filter((r) => !r.halt)].map((r) => {
+    const antal = `${r.halt} av ${lsPlural(r.strackor, "sträcka", "sträckor")}`;
+    return [lsVagNamn(r.vag).replace(/^väg /, "Väg "), r.halt ? `<span style="${LS_DW_GUL}">${antal}</span>` : `<span style="${LS_DW_DAMPAD}">${antal}</span>`,
+      r.st ? `${lsGrad(r.st.yta)} vid ${r.st.name}` : "", r.halt ? r.namn.join(" · ") : ""];
+  });
   if (!rader.length) rader.push(["", "Trafikverket rapporterar inget väglag för länets stora vägar just nu.", "", ""]);
-  return [["Väg", "Läget", "Vägbanan", "Sträckor"], ...rader].map((f) => f.map(lsCsvFalt).join(",")).join("\n") + "\n";
+  return [["Väg", "Halka eller vinterväglag", "Vägbanan", "Var"], ...rader].map((f) => f.map(lsCsvFalt).join(",")).join("\n") + "\n";
 }
 function lsDatawrapperMeta(lan: (typeof LAN)[number], l: LanLage, now: Date): string {
   return JSON.stringify({
