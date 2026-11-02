@@ -38,7 +38,8 @@ test("länssidorna: 21 län och en översikt, svaret ur källorna, Trafikverkets
     olyckor: [{ road: "E22", start: "2026-11-20T05:10:00Z", allvar: "Stor påverkan", lan: 12 }],   // olyckornas form: utan mellanslag
     now: NOW,
   });
-  assert.equal(Object.keys(sidor).length, 30 + ORTER.length, "översikten, 21 län, 6 vägar, orterna, widgetens datafil och vägrutans");
+  assert.equal(Object.keys(sidor).length, 30 + ORTER.length + 2 * LAN.length,
+    "översikten, 21 län, 6 vägar, orterna, widgetens datafil, vägrutans och Datawrapper-tabellen per län (CSV och metadata)");
   assert.deepEqual(Object.keys(sidor).filter((p) => p !== "lan/index.html" && !p.startsWith("data/")).sort(),
     [...LAN.map((l) => `lan/${l.slug}/index.html`), ...VAGAR.map((v) => `vag/${v.slug}/index.html`),
       ...ORTER.map((o) => `ort/${ortSlug(o.namn)}/index.html`)].sort());
@@ -254,4 +255,36 @@ test("ortssidorna (28/10): ortens egna avsnitt i dess län, ett län i Länsgrä
   assert.ok(sidor["ort/orebro/index.html"].includes("ingen halka på 1 vägavsnitt till och från Örebro"), "Länsgräns Värmland/Örebro är länet");
   assert.ok(sidor["lan/skane/index.html"].includes('href="../../ort/malmo/"'), "länssidan länkar till sina orter");
   assert.ok(sidAdresser().includes(`${SIDBAS}/ort/malmo/`), "orterna i sitemapen");
+});
+
+test("Datawrapper-tabellen per län (2/11, NWT): samma rader och samma mening som länssidan, giltig CSV, inget annat tal", () => {
+  const d = {
+    vaglag: [
+      { code: 1, text: "Normalt", info: ["Våt"], road: "Väg 61", plats: "Väg 61 Kil - Karlstad", lan: 17 },
+      { code: 1, text: "Normalt", info: ["fläckvis Is"], road: "E 18", plats: "E 18 Karlstad - Kristinehamn", lan: 17 },
+      { code: 3, text: "Mycket besvärligt", info: [], road: "E 18", plats: "E 18 Grums - Karlstad", lan: 17 },
+      { code: 1, text: "Normalt", info: [], road: "Väg 1234", plats: "Väg 1234 \"Byn\" - Ån", lan: 17 },
+    ],
+    stationer: [{ name: "Väse", yta: -2.4, fukt: true, lan: 17, vag: "E 18" }],
+    olyckor: [], now: NOW,
+  };
+  const sidor = byggLanssidor(d);
+  const csv = sidor["data/datawrapper/varmland.csv"];
+  assert.equal(csv, [
+    '"Väg","Läget","Vägbanan","Sträckor"',
+    '"E18","Halka eller vinterväglag på 2 av 2 sträckor","−2,4 °C vid Väse","Karlstad–Kristinehamn · Grums–Karlstad"',
+    '"Väg 61","Ingen halka rapporterad på 1 sträcka","","Kil–Karlstad"',
+  ].join("\n") + "\n", "småvägen utan halka står inte med, precis som på länssidan");
+  const meta = JSON.parse(sidor["data/datawrapper/varmland.json"]);
+  assert.equal(meta.title, "Väglaget i Värmland just nu");
+  assert.equal(meta.describe["source-url"], `${SIDBAS}/lan/varmland/`);
+  const intro = "Kl. 07:30 rapporterar Trafikverket halka eller vinterväglag på 2 av länets 4 vägavsnitt.";
+  assert.ok(meta.describe.intro.startsWith(intro), meta.describe.intro);
+  assert.ok(sidor["lan/varmland/index.html"].includes(intro), "ingressen är länssidans mening, ord för ord");
+  assert.ok(!/[—!]/.test(csv + JSON.stringify(meta)), "inga långa tankstreck eller utropstecken (guiden 1.0)");
+  // Ett län utan väglag får en rad som säger det, inte en tom tabell.
+  assert.match(sidor["data/datawrapper/gotland.csv"], /^"Väg","Läget","Vägbanan","Sträckor"\n"","Trafikverket rapporterar inget väglag för länets stora vägar just nu.","",""\n$/);
+  for (const lan of LAN) {
+    assert.ok(sidor[`data/datawrapper/${lan.slug}.csv`] && sidor[`data/datawrapper/${lan.slug}.json`], lan.slug);
+  }
 });
