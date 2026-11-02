@@ -272,9 +272,9 @@ test("Datawrapper-tabellen per län (2/11, NWT): samma rader och samma mening so
   const csv = sidor["data/datawrapper/varmland.csv"];
   assert.equal(csv, [
     '"Väg","Halka eller vinterväglag","Vägbanan","Var"',
-    '"E18","**2 av 2 sträckor**","−2,4 °C vid Väse","Karlstad–Kristinehamn · Grums–Karlstad"',
-    '"Väg 61","0 av 1 sträcka","",""',
-  ].join("\n") + "\n", "småvägen utan halka står inte med, precis som på länssidan; sträcknamn bara där det är halt");
+    '"E18","<span style=""background:#FFC94A;color:#080B0D;font-weight:600;padding:2px 8px;border-radius:10px;white-space:nowrap"">2 av 2 sträckor</span>","−2,4 °C vid Väse","Karlstad–Kristinehamn · Grums–Karlstad"',
+    '"Väg 61","<span style=""color:#6F7C83;white-space:nowrap"">0 av 1 sträcka</span>","",""',
+  ].join("\n") + "\n", "småvägen utan halka står inte med, precis som på länssidan; sträcknamn bara där det är halt; gult bara där det är halt (guiden 1.0)");
   // Halkan först, oavsett vägnummer.
   const halkaSist = byggLanssidor({ ...d, vaglag: [
     { code: 1, text: "Normalt", info: [], road: "E 18", plats: "E 18 Grums - Karlstad", lan: 17 },

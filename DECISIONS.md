@@ -13202,7 +13202,8 @@ ställs i mejlet till Moa. Datawrapper först, eftersom det fungerar i dag utan 
 
 **Tillägg 2/11 kväll (Axel: *"Kan vi inte försöka göra det lite snyggare?"*, med den första tabellen publicerad i Datawrapper).**
 CSV:n läses nu med en blick: vägarna med halka eller vinterväglag först, sedan de andra i nummerordning; kolumnen *Halka eller
-vinterväglag* bär bara antalet (*2 av 4 sträckor*), i fetstil när det är halt (Datawrappers *Parse markdown*); kolumnen *Var* bär
+vinterväglag* bär bara antalet (*2 av 4 sträckor*), som en gul etikett när det är halt och i dämpad grå annars (Datawrapper visar `<span>` med
+inline-stil i tabellceller; guiden 1.0: gult bara där en fara är live, signalgul #FFC94A, mark #080B0D, dämpad #6F7C83); kolumnen *Var* bär
 sträcknamnen bara för vägar med halka. Raderna, talen och meningen är desamma som länssidans; bara ordning och form är tabellens egna.
 
 **Stomdokument:** inga — sajtens datafiler; appen, motorn och mätningarna är orörda.
