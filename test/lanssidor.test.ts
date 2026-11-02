@@ -271,10 +271,16 @@ test("Datawrapper-tabellen per län (2/11, NWT): samma rader och samma mening so
   const sidor = byggLanssidor(d);
   const csv = sidor["data/datawrapper/varmland.csv"];
   assert.equal(csv, [
-    '"Väg","Läget","Vägbanan","Sträckor"',
-    '"E18","Halka eller vinterväglag på 2 av 2 sträckor","−2,4 °C vid Väse","Karlstad–Kristinehamn · Grums–Karlstad"',
-    '"Väg 61","Ingen halka rapporterad på 1 sträcka","","Kil–Karlstad"',
-  ].join("\n") + "\n", "småvägen utan halka står inte med, precis som på länssidan");
+    '"Väg","Halka eller vinterväglag","Vägbanan","Var"',
+    '"E18","<span style=""background:#FFC94A;color:#080B0D;font-weight:600;padding:2px 8px;border-radius:10px;white-space:nowrap"">2 av 2 sträckor</span>","−2,4 °C vid Väse","Karlstad–Kristinehamn · Grums–Karlstad"',
+    '"Väg 61","<span style=""color:#6F7C83;white-space:nowrap"">0 av 1 sträcka</span>","",""',
+  ].join("\n") + "\n", "småvägen utan halka står inte med, precis som på länssidan; sträcknamn bara där det är halt; gult bara där det är halt (guiden 1.0)");
+  // Halkan först, oavsett vägnummer.
+  const halkaSist = byggLanssidor({ ...d, vaglag: [
+    { code: 1, text: "Normalt", info: [], road: "E 18", plats: "E 18 Grums - Karlstad", lan: 17 },
+    { code: 3, text: "Mycket besvärligt", info: [], road: "Väg 61", plats: "Väg 61 Kil - Karlstad", lan: 17 },
+  ] })["data/datawrapper/varmland.csv"];
+  assert.deepEqual(halkaSist.split("\n").slice(1, 3).map((r) => r.split(",")[0]), ['"Väg 61"', '"E18"']);
   const meta = JSON.parse(sidor["data/datawrapper/varmland.json"]);
   assert.equal(meta.title, "Väglaget i Värmland just nu");
   assert.equal(meta.describe["source-url"], `${SIDBAS}/lan/varmland/`);
@@ -283,7 +289,7 @@ test("Datawrapper-tabellen per län (2/11, NWT): samma rader och samma mening so
   assert.ok(sidor["lan/varmland/index.html"].includes(intro), "ingressen är länssidans mening, ord för ord");
   assert.ok(!/[—!]/.test(csv + JSON.stringify(meta)), "inga långa tankstreck eller utropstecken (guiden 1.0)");
   // Ett län utan väglag får en rad som säger det, inte en tom tabell.
-  assert.match(sidor["data/datawrapper/gotland.csv"], /^"Väg","Läget","Vägbanan","Sträckor"\n"","Trafikverket rapporterar inget väglag för länets stora vägar just nu.","",""\n$/);
+  assert.match(sidor["data/datawrapper/gotland.csv"], /^"Väg","Halka eller vinterväglag","Vägbanan","Var"\n"","Trafikverket rapporterar inget väglag för länets stora vägar just nu.","",""\n$/);
   for (const lan of LAN) {
     assert.ok(sidor[`data/datawrapper/${lan.slug}.csv`] && sidor[`data/datawrapper/${lan.slug}.json`], lan.slug);
   }
