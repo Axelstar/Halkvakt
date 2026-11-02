@@ -7,3 +7,6 @@ android/*/build/
 android/local.properties
 ios/HalkvaktEngine/.build/
 marknadsforing/meta-ut/
+
+# Reels (DECISIONS #780): kvällens data och film byggs i flödet och läggs som artefakt, aldrig i repot.
+marknadsforing/reels-ut/

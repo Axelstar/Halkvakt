@@ -13289,3 +13289,36 @@ i mejlet till NWT). Tre separata tabeller utan utfällning: tar mer plats i en a
 
 **Stomdokument:** inga — sajtens datafiler; appen, motorn och mätningarna är orörda.
 
+
+## #780 (2/11 2026) Reels: en nationell reel per kväll, fem filmer i rotation och mätningen avgör vilken som vinner
+
+**Axels ord 2/11:** *"hur ska vi göra om vi vill automatisera detta så att vi kan lägga ut lite reals på en daglig basis?"*, om länen:
+*"Kanske inte är så smart att göra en specifik för Norbotten typ"*, efter de fem exemplen: *"Bör vi inte slänga in en mix och se vad
+folk gillar?"* och *"Ja vi kör! Men det kommer bara komma som reals visst?"*
+
+**Beslut.** `reels.yml`, startad av pulsklockan (`puls-reels` 19:50 UTC, 20:50 vintertid), gör en reel per kväll till Instagram (som
+reel, även i rutnätet) och Facebook-sidans reels, inget annat: inga stories, inget på X, inga extra inlägg; Halkvakt live (#777) går
+som förut. Ramen är nationell, aldrig ett enskilt län, eftersom reels når den som tittar var den än bor.
+- **Fem filmer** i `marknadsforing/reels/reel.html`, 1080×1920, 14–16 s, ritade ur kvällens filer på halkvakt.se (`data.py`):
+  *halt* (vägarna med halkrisk), *natt* (Sverige i natt, stationerna och länet med mest halkrisk), *frost* (nollgradslinjen på vägbanan),
+  *kallast* (de fem kallaste stationerna) och *e4* (E4 söder till norr). Ljudet syntetiseras (`ljud.py`), ingen musiklicens.
+- **Rotation** (`valjTyp`): bland filmerna som kvällens data räcker till tar den med minst antal hittills, aldrig samma två kvällar i rad
+  när en annan går. Ingen film har något sant att visa: ingen reel. Data äldre än två timmar: ingen reel (samma gräns som
+  Meta-annonserna, i kontraktsgrinden).
+- **Orden** som i annonserna: *Halka*, *Fläckvis is* och *Risk för halka* räknas var för sig och blir aldrig starkare än Trafikverkets.
+- **Mätningen:** ett dygn efter posten hämtas räckvidd, visningar, snittid, delningar och sparade per reel till
+  `marknadsforing/reels-historik.json`, och sammanfattningen visar snittet per typ. Lika många av varje de första veckorna; sedan
+  väger vi mot vinnarna, som ett eget beslut.
+- **Torrkörning** tills Axel sätter repovariabeln `REELS_SKARPT` till `ja`: filmen och båda texterna läggs som artefakten *reel*
+  varje kväll och historiken räknar torrkörningarna för sig.
+
+**Tiden** (Axel 3/11, *"Okay lets do it"*): kvällen och inte morgonen. Halkan växer under natten, så kvällens bild underskattar
+natten men blir inte fel, medan en morgonbild blir fel när frosten släpper under dagen; en reel visas i ett till tre dygn ändå, och
+klockslaget står i filmen och texten. Reels tittas mest 19–22, morgonen har redan Meta-annonserna och svepinlägget, och appen
+laddas ner kvällen före resan. 20:50 i stället för 19:50: vägarna har svalnat mer. Morgon mot kväll kan prövas som ett eget
+prov när filmerna är jämförda, inte samtidigt.
+
+**Alternativ.** En reel per län: når mest folk utanför länet. En fast film varje kväll: vi vet inte vilken som fungerar. Stories och X
+också: Axel ville bara reels. Filmen som fil i repot för Meta att hämta: repot är publikt och växer; uppladdningen går direkt till Meta.
+
+**Stomdokument:** inga — marknadsföringen har inget stomdokument; appen, motorn och mätningarna är orörda.
