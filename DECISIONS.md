@@ -13200,4 +13200,9 @@ halkvakt.se svarar med `access-control-allow-origin: *`, som Datawrapper kräver
 godkänt hos Bonnier: öppnar ett 60-tal tidningar på en gång, men är ett samtal med Bonnier News Local centralt och tar tid; frågan
 ställs i mejlet till Moa. Datawrapper först, eftersom det fungerar i dag utan att någon på Bonnier säger ja.
 
+**Tillägg 2/11 kväll (Axel: *"Kan vi inte försöka göra det lite snyggare?"*, med den första tabellen publicerad i Datawrapper).**
+CSV:n läses nu med en blick: vägarna med halka eller vinterväglag först, sedan de andra i nummerordning; kolumnen *Halka eller
+vinterväglag* bär bara antalet (*2 av 4 sträckor*), i fetstil när det är halt (Datawrappers *Parse markdown*); kolumnen *Var* bär
+sträcknamnen bara för vägar med halka. Raderna, talen och meningen är desamma som länssidans; bara ordning och form är tabellens egna.
+
 **Stomdokument:** inga — sajtens datafiler; appen, motorn och mätningarna är orörda.

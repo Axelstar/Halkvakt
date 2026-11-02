@@ -352,10 +352,16 @@ function lsVagarILanet(kod: number, d: { vaglag: LanSegment[]; stationer: LanSta
  *  siffrorna. Samma rader och samma mening som länssidan; inget tal som inte står där. */
 const lsCsvFalt = (s: string) => `"${s.replace(/"/g, '""')}"`;
 function lsDatawrapperCsv(kod: number, d: { vaglag: LanSegment[]; stationer: LanStation[] }): string {
-  const rader = lsVagRader(kod, d).map((r) => [lsVagNamn(r.vag).replace(/^väg /, "Väg "), lsVagLageText(r),
-    r.st ? `${lsGrad(r.st.yta)} vid ${r.st.name}` : "", r.namn.join(" · ")]);
+  // A table to read at a glance (Axel 2/11: "lite snyggare"): roads with ice first, the count in bold (Datawrapper's
+  // "Parse markdown"), and stretch names only where it is slippery. Same rows and counts as the county page.
+  const vr = lsVagRader(kod, d);
+  const rader = [...vr.filter((r) => r.halt), ...vr.filter((r) => !r.halt)].map((r) => {
+    const antal = `${r.halt} av ${lsPlural(r.strackor, "sträcka", "sträckor")}`;
+    return [lsVagNamn(r.vag).replace(/^väg /, "Väg "), r.halt ? `**${antal}**` : antal,
+      r.st ? `${lsGrad(r.st.yta)} vid ${r.st.name}` : "", r.halt ? r.namn.join(" · ") : ""];
+  });
   if (!rader.length) rader.push(["", "Trafikverket rapporterar inget väglag för länets stora vägar just nu.", "", ""]);
-  return [["Väg", "Läget", "Vägbanan", "Sträckor"], ...rader].map((f) => f.map(lsCsvFalt).join(",")).join("\n") + "\n";
+  return [["Väg", "Halka eller vinterväglag", "Vägbanan", "Var"], ...rader].map((f) => f.map(lsCsvFalt).join(",")).join("\n") + "\n";
 }
 function lsDatawrapperMeta(lan: (typeof LAN)[number], l: LanLage, now: Date): string {
   return JSON.stringify({
