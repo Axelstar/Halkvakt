@@ -106,6 +106,48 @@ export const PENDLING: Record<string, string> = {
   norrbotten: "E4 binder ihop Luleå, Piteå och Kalix. E10 går från Luleå via Boden mot Gällivare och Kiruna, och riksväg 97 går från Boden mot Jokkmokk.",
 };
 
+/** Pendlarstråken (2/11: flyttade hit ur rutan, ruta.html i halkvakt-karta, så att Datawrapper-tabellerna kan räknas här; rutan
+ *  har kvar sin kopia tills den läser data/strak.json). Nyckeln är länets slug (länets standard) eller ortens; `lan` när den inte är
+ *  länets egen. Delarna är Trafikverkets sträckor med namnen som de står i strackor.json. */
+export type Strak = { lan?: string; fran?: string; rubrik?: string; strak: { fran?: string; till: string; delar: [string, string][] }[] };
+export const STRAK: Record<string, Strak> = {
+  "varmland": {"fran":"Karlstad","strak":[{"till":"Kristinehamn","delar":[["E 18","Karlstad - Kristinehamn"]]},{"till":"Arvika","delar":[["Väg 61","Kil - Karlstad"],["Väg 61","Högboda - Kil"],["Väg 61","Arvika - Högboda"]]},{"till":"Säffle","delar":[["E 18","Grums - Karlstad"],["E 18","Segmon - Grums"],["E 45","Segmon - Säffle"]]},{"till":"Sunne och Torsby","delar":[["E 18","Grums - Karlstad"],["E 45","Fagerås - Grums"],["E 45","Sunne - Fagerås"],["E 45","Torsby - Sunne"]]},{"till":"Filipstad","delar":[["Väg 63","Molkom - Karlstad"],["Väg 63","Filipstad - Molkom"]]},{"till":"Årjäng","delar":[["E 18","Grums - Karlstad"],["E 18","Segmon - Grums"],["E 18","Långserud - Segmon"],["E 18","Årjäng - Långserud"]]}]},
+  "halsingland": {"lan":"gavleborg","rubrik":"Stråken i Hälsingland just nu","strak":[{"fran":"Hudiksvall","till":"Söderhamn","delar":[["E 4","Hudiksvall - Enånger"],["E 4","Enånger - Söderhamn"]]},{"fran":"Söderhamn","till":"Gävle","delar":[["E 4","Söderhamn - Axmartavlan"],["E 4","Axmartavlan - Gävle"]]},{"fran":"Söderhamn","till":"Bollnäs","delar":[["Väg 50","Söderhamn - Bollnäs"]]},{"fran":"Bollnäs","till":"Ljusdal","delar":[["Väg 83","Undersvik - Bollnäs"],["Väg 83","Ljusdal - Undersvik"]]},{"fran":"Hudiksvall","till":"Ljusdal","delar":[["Väg 84","Delsbo - Hudiksvall"],["Väg 84","Ljusdal - Delsbo"]]},{"fran":"Bollnäs","till":"Alfta","delar":[["Väg 50","Bollnäs - Alfta"]]}]},
+  "ljusnan": {"lan":"gavleborg","fran":"Bollnäs","strak":[{"till":"Söderhamn","delar":[["Väg 50","Söderhamn - Bollnäs"]]},{"till":"Alfta och Edsbyn","delar":[["Väg 50","Bollnäs - Alfta"],["Väg 50","Alfta - Lamborn"]]},{"till":"Ljusdal","delar":[["Väg 83","Undersvik - Bollnäs"],["Väg 83","Ljusdal - Undersvik"]]},{"till":"Tönnebro och E4","delar":[["Väg 83","Bollnäs - Tönnebro"]]}]},
+  "soderhamn": {"lan":"gavleborg","fran":"Söderhamn","strak":[{"till":"Hudiksvall","delar":[["E 4","Enånger - Söderhamn"],["E 4","Hudiksvall - Enånger"]]},{"till":"Gävle","delar":[["E 4","Söderhamn - Axmartavlan"],["E 4","Axmartavlan - Gävle"]]},{"till":"Bollnäs","delar":[["Väg 50","Söderhamn - Bollnäs"]]}]},
+  "ljusdal": {"lan":"gavleborg","fran":"Ljusdal","strak":[{"till":"Bollnäs","delar":[["Väg 83","Ljusdal - Undersvik"],["Väg 83","Undersvik - Bollnäs"]]},{"till":"Hudiksvall","delar":[["Väg 84","Ljusdal - Delsbo"],["Väg 84","Delsbo - Hudiksvall"]]},{"till":"Kårböle","delar":[["Väg 84","Korskrogen - Ljusdal"],["Väg 84","Kårböle - Korskrogen"]]},{"till":"Ramsjö","delar":[["Väg 83","Tallåsen - Ljusdal"],["Väg 83","Ramsjö - Tallåsen"]]}]},
+  "vasteras": {"lan":"vastmanland","fran":"Västerås","strak":[{"till":"Köping","delar":[["E 18","Köping - Västerås"]]},{"till":"Arboga","delar":[["E 18","Köping - Västerås"],["E 18","Arboga - Köping"]]},{"till":"Sala","delar":[["Väg 56","Sala - Västerås"]]},{"till":"Fagersta","delar":[["Väg 66","Ramnäs - Västerås"],["Väg 66","Fagersta - Ramnäs"]]},{"till":"Enköping","delar":[["E 18","Västerås - Enköping"]]}]},
+  "sala": {"lan":"vastmanland","fran":"Sala","strak":[{"till":"Västerås","delar":[["Väg 56","Sala - Västerås"]]},{"till":"Avesta","delar":[["Väg 70","Avesta - Sala"]]},{"till":"Fjärdhundra","delar":[["Väg 70","Sala - Fjärdhundra"]]},{"till":"Norberg","delar":[["Väg 256","Salbohed - Sala (Kolbäcksbro)"],["Väg 256","Norberg - Salbohed"]]}]},
+  "orebro": {"lan":"orebro","fran":"Örebro","strak":[{"till":"Lindesberg","delar":[["Väg 50","Lindesberg - Örebro"]]},{"till":"Laxå","delar":[["E 20","Örebro - Laxå"]]},{"till":"Karlskoga","delar":[["E 18","Lekhyttan - Trafikplats Adolfsberg"]]},{"till":"Arboga","delar":[["E 18","Trafikplats Adolfsberg - Länsgräns Västmanland/Örebro län"]]},{"till":"Odensbacken","delar":[["Väg 207","Odensbacken - Örebro"]]}]},
+  "falun": {"lan":"dalarna","fran":"Falun","strak":[{"till":"Borlänge","delar":[["E 16","Falun - Borlänge"]]},{"till":"Rättvik","delar":[["Väg 69","Rättvik - Falun"]]},{"till":"Hedemora","delar":[["Väg 69","Falun - Hedemora"]]},{"till":"Hofors","delar":[["E 16","Hofors - Falun"]]},{"till":"Enviken","delar":[["Väg 50","Enviken - Falun"]]}]},
+  "gavle": {"lan":"gavleborg","fran":"Gävle","strak":[{"till":"Söderhamn","delar":[["E 4","Axmartavlan - Gävle"],["E 4","Söderhamn - Axmartavlan"]]},{"till":"Sandviken och Hofors","delar":[["E 16","Gävle - Hofors"]]},{"till":"Skutskär","delar":[["Väg 76","Gävle - Skutskär"]]},{"till":"Gysinge","delar":[["Väg 56","Valbo - Gysinge"]]},{"till":"Hyttön","delar":[["E 4","Gävle - Hyttön"]]}]},
+  "eskilstuna": {"lan":"sodermanland","fran":"Eskilstuna","strak":[{"till":"Strängnäs","delar":[["E 20","Strängnäs - Eskilstuna"]]},{"till":"Kungsör","delar":[["E 20","Eskilstuna - Kungsör"]]},{"till":"Malmköping","delar":[["Väg 53","Eskilstuna - Malmköping"]]},{"till":"Kvicksund","delar":[["Väg 56","Kvicksund - Eskilstuna"]]},{"till":"Katrineholm","delar":[["Väg 230","Eskilstuna - Stora Sundby"],["Väg 56","Stora Sundby - Katrineholm"]]}]},
+  "nykoping": {"lan":"sodermanland","fran":"Nyköping","strak":[{"till":"Kolmården","delar":[["E 4","Nyköping - Kolmården"]]},{"till":"Vagnhärad","delar":[["E 4","Vagnhärad - Nyköping"]]},{"till":"Oxelösund","delar":[["Väg 53","Nyköping - Oxelösund"]]},{"till":"Katrineholm","delar":[["Väg 52","Nyköping - Bettna"],["Väg 52","Bettna - Katrineholm"]]},{"till":"Malmköping","delar":[["Väg 53","Malmköping - Nyköping"]]}]},
+  "uppsala": {"lan":"uppsala","fran":"Uppsala","strak":[{"till":"Enköping","delar":[["Väg 55","Uppsala - Enköping"]]},{"till":"Knivsta","delar":[["E 4","Uppsala - Knivsta"]]},{"till":"Björklinge","delar":[["E 4","Björklinge - Uppsala"]]},{"till":"Östhammar","delar":[["Väg 288","Gimo - Uppsala"],["Väg 288","Östhammar - Gimo"]]},{"till":"Sala","delar":[["Väg 72","Uppsala - Vittinge"],["Väg 72","Vittinge - Sala"]]}]},
+  "enkoping": {"lan":"uppsala","fran":"Enköping","strak":[{"till":"Uppsala","delar":[["Väg 55","Uppsala - Enköping"]]},{"till":"Bålsta","delar":[["E 18","Enköping - Bålsta"]]},{"till":"Fjärdhundra","delar":[["Väg 70","Fjärdhundra - Enköping"]]},{"till":"Hjulstabron","delar":[["Väg 55","Enköping - Hjulstabron"]]}]},
+  "lulea": {"lan":"norrbotten","fran":"Luleå","strak":[{"till":"Boden","delar":[["Väg 97","Boden - Luleå"]]},{"till":"Piteå","delar":[["E 4","Luleå - Rosvik"],["E 4","Rosvik - Piteå"]]},{"till":"Kalix","delar":[["E 4","Töre - Luleå"],["E 4","Kalix - Töre"]]}]},
+  "pitea": {"lan":"norrbotten","fran":"Piteå","strak":[{"till":"Luleå","delar":[["E 4","Rosvik - Piteå"],["E 4","Luleå - Rosvik"]]},{"till":"Jävre","delar":[["E 4","Piteå - Jävre"]]},{"till":"Älvsbyn","delar":[["Väg 374","Älvsbyn - Piteå"]]}]},
+  "haparanda": {"lan":"norrbotten","fran":"Haparanda","strak":[{"till":"Kalix","delar":[["E 4","Haparanda - Kalix"]]},{"till":"Övertorneå","delar":[["Väg 99","Hedenäset - Haparanda"],["Väg 99","Övertorneå - Hedenäset"]]},{"till":"Pajala","delar":[["Väg 99","Hedenäset - Haparanda"],["Väg 99","Övertorneå - Hedenäset"],["Väg 99","Pello - Övertorneå"],["Väg 99","Pajala - Pello"]]},{"till":"Luleå","delar":[["E 4","Haparanda - Kalix"],["E 4","Kalix - Töre"],["E 4","Töre - Luleå"]]}]},
+  "umea": {"lan":"vasterbotten","fran":"Umeå","strak":[{"till":"Vännäs","delar":[["E 12","Vännäs - Umeå"]]},{"till":"Holmsund","delar":[["E 12","Umeå - Holmsund"]]},{"till":"Skellefteå","delar":[["E 4","Lövånger - Umeå"],["E 4","Skellefteå - Lövånger"]]},{"till":"Husum","delar":[["E 4","Umeå - Husum"]]},{"till":"Vindeln","delar":[["Väg 363","Långviksvallen - Umeå"],["Väg 363","Vindeln - Långviksvallen"]]}]},
+  "skelleftea": {"lan":"vasterbotten","fran":"Skellefteå","strak":[{"till":"Umeå","delar":[["E 4","Skellefteå - Lövånger"],["E 4","Lövånger - Umeå"]]},{"till":"Jävre","delar":[["E 4","Jävre - Skellefteå"]]},{"till":"Boliden","delar":[["Väg 95","Boliden - Skellefteå"]]},{"till":"Burträsk","delar":[["Väg 364","Skellefteå - Burträsk"]]},{"till":"Skelleftehamn","delar":[["Väg 372","Skelleftehamn - Skellefteå"]]}]},
+  "ostersund": {"lan":"jamtland","fran":"Östersund","strak":[{"till":"Krokom","delar":[["E 14","Krokom - Brunflo"]]},{"till":"Järpen","delar":[["E 14","Krokom - Brunflo"],["E 14","Järpen - Krokom"]]},{"till":"Bräcke","delar":[["E 14","Brunflo - Bräcke"]]},{"till":"Hallviken","delar":[["E 45","Hallviken - Östersund"]]},{"till":"Åsarna","delar":[["E 45","Brunflo - Åsarna"]]},{"till":"Stugun","delar":[["Väg 87","Östersund - Stugun"]]}]},
+  "sveg": {"lan":"jamtland","fran":"Sveg","strak":[{"till":"Hede","delar":[["Väg 84","Hede - Sveg"]]},{"till":"Ytterhogdal","delar":[["E 45","Ytterhogdal - Sveg"]]},{"till":"Kårböle","delar":[["Väg 84","Sveg - Kårböle"]]},{"till":"Åsarna","delar":[["E 45","Ytterhogdal - Sveg"],["E 45","Åsarna - Ytterhogdal"]]}]},
+  "sundsvall": {"lan":"vasternorrland","fran":"Sundsvall","strak":[{"till":"Härnösand","delar":[["E 4","Härnösand - Sundsvall"]]},{"till":"Gnarp","delar":[["E 4","Sundsvall Trafikplats Skönsmon - Gnarp"]]},{"till":"Ånge","delar":[["E 14","Matfors - Sundsvall"],["E 14","Stöde - Matfors"],["E 14","Ånge - Stöde"]]},{"till":"Indal","delar":[["Väg 86","Indal - Sundsvall"]]}]},
+  "ornskoldsvik": {"lan":"vasternorrland","fran":"Örnsköldsvik","strak":[{"till":"Husum","delar":[["E 4","Husum - Örnsköldsvik"]]},{"till":"Härnösand","delar":[["E 4","Örnsköldsvik - Docksta"],["E 4","Docksta - Gallsäter"],["E 4","Gallsäter - Härnösand"]]},{"till":"Sollefteå","delar":[["Väg 335","Örnsköldsvik - Grillom"],["Väg 335","Grillom - Sollefteå"]]}]},
+  "harnosand": {"lan":"vasternorrland","fran":"Härnösand","strak":[{"till":"Sundsvall","delar":[["E 4","Härnösand - Sundsvall"]]},{"till":"Gallsäter","delar":[["E 4","Gallsäter - Härnösand"]]},{"till":"Örnsköldsvik","delar":[["E 4","Gallsäter - Härnösand"],["E 4","Docksta - Gallsäter"],["E 4","Örnsköldsvik - Docksta"]]}]},
+  "kalmar": {"lan":"kalmar","fran":"Kalmar","strak":[{"till":"Oskarshamn","delar":[["E 22","Ålem - Kalmar"],["E 22","Oskarshamn - Ålem"]]},{"till":"Nybro","delar":[["Väg 25","Kalmar - Nybro"]]},{"till":"Brömsebro","delar":[["E 22","Kalmar - Brömsebro"]]},{"till":"Färjestaden","delar":[["Väg 137","Färjestaden - Kalmar / Ölandsbron"]]},{"till":"Högsby","delar":[["E 22","Ålem - Kalmar"],["Väg 34","Högsby - Ålem"]]}]},
+  "borgholm": {"lan":"kalmar","fran":"Borgholm","strak":[{"till":"Kalmar","delar":[["Väg 136","Borgholm - Färjestaden"],["Väg 137","Färjestaden - Kalmar / Ölandsbron"]]},{"till":"Mörbylånga","delar":[["Väg 136","Borgholm - Färjestaden"],["Väg 136","Färjestaden - Mörbylånga"]]},{"till":"Löttorp","delar":[["Väg 136","Löttorp - Borgholm"]]}]},
+  "vaxjo": {"lan":"kronoberg","fran":"Växjö","strak":[{"till":"Alvesta","delar":[["Väg 25","Växjö - Alvesta"]]},{"till":"Ljungby","delar":[["Väg 25","Växjö - Alvesta"],["Väg 25","Alvesta - Ljungby"]]},{"till":"Lammhult","delar":[["Väg 30","Lammhult - Växjö"]]},{"till":"Eriksmåla","delar":[["Väg 25","Eriksmåla - Växjö"]]},{"till":"Eneryda","delar":[["Väg 23","Växjö Trafikplats Helgevärma - Eneryda"]]},{"till":"Djuramåla","delar":[["Väg 27","Växjö Fagrabäcksrondellen - Ingelstad"],["Väg 27","Ingelstad - Djuramåla"]]}]},
+  "karlskrona": {"lan":"blekinge","fran":"Karlskrona","strak":[{"till":"Ronneby","delar":[["E 22","Karlskrona - Ronneby"]]},{"till":"Karlshamn","delar":[["E 22","Karlskrona - Ronneby"],["E 22","Ronneby - Karlshamn"]]},{"till":"Brömsebro","delar":[["E 22","Brömsebro - Karlskrona"]]},{"till":"Vissefjärda","delar":[["Väg 28","Vissefjärda - Karlskrona"]]}]},
+  "karlshamn": {"lan":"blekinge","fran":"Karlshamn","strak":[{"till":"Ronneby","delar":[["E 22","Ronneby - Karlshamn"]]},{"till":"Karlskrona","delar":[["E 22","Ronneby - Karlshamn"],["E 22","Karlskrona - Ronneby"]]},{"till":"Bromölla","delar":[["E 22","Karlshamn - Bromölla"]]},{"till":"Tingsryd","delar":[["Väg 29","Tingsryd - Karlshamn"]]},{"till":"Olofström","delar":[["Väg 126","Fridafors - Karlshamn"],["Väg 116","Fridafors - Olofström"]]}]},
+  "kristianstad": {"lan":"skane","fran":"Kristianstad","strak":[{"till":"Hässleholm","delar":[["Väg 21","Kristianstad - Hässleholm"]]},{"till":"Bromölla","delar":[["E 22","Bromölla - Kristianstad"]]},{"till":"Hörby","delar":[["E 22","Kristianstad - Tollarp"],["E 22","Tollarp - Hörby"]]},{"till":"Broby","delar":[["Väg 19","Broby - Kristianstad"]]}]},
+  "ystad": {"lan":"skane","fran":"Ystad","strak":[{"till":"Malmö","delar":[["E 65","Ystad Ringvägen - Svedala"],["E 65","Svedala - Malmö"]]},{"till":"Simrishamn","delar":[["Väg 9","Simrishamn - Ystad"]]},{"till":"Tomelilla","delar":[["Väg 19","Tomelilla - Ystad"]]},{"till":"Sjöbo","delar":[["Väg 13","Sjöbo - Ystad"]]},{"till":"Trelleborg","delar":[["Väg 9","Ystad - Trelleborg"]]}]},
+  "trelleborg": {"lan":"skane","fran":"Trelleborg","strak":[{"till":"Malmö","delar":[["E 6","Malmö Trafikplats Petersborg - Trelleborg"]]},{"till":"Svedala","delar":[["Väg 108","Svedala - Trelleborg"]]},{"till":"Ystad","delar":[["Väg 9","Ystad - Trelleborg"]]}]},
+  "hassleholm": {"lan":"skane","fran":"Hässleholm","strak":[{"till":"Kristianstad","delar":[["Väg 21","Kristianstad - Hässleholm"]]},{"till":"Osby","delar":[["Väg 23","Osby - Hässleholm"]]},{"till":"Höör","delar":[["Väg 23","Hässleholm - Höör"]]},{"till":"Perstorp","delar":[["Väg 21","Hässleholm - Perstorp"]]},{"till":"Örkelljunga","delar":[["Väg 24","Hässleholm - Örkelljunga"]]},{"till":"Markaryd","delar":[["Väg 117","Markaryd - Hässleholm"]]}]},
+  "boras": {"lan":"vastra-gotaland","fran":"Borås","strak":[{"till":"Göteborg","delar":[["Väg 40","Borås - Bollebygd"],["Väg 40","Bollebygd - Landvetter"],["Väg 40","Landvetter - Kallebäcksmotet Göteborg"]]},{"till":"Ulricehamn","delar":[["Väg 40","Getared - Borås"],["Väg 40","Ulricehamn - Getared"]]},{"till":"Kinna","delar":[["Väg 41","Borås - Kinna"]]},{"till":"Vårgårda","delar":[["Väg 42","Tämta - Borås"],["Väg 42","Vårgårda - Tämta"]]},{"till":"Kila","delar":[["Väg 27","Borås - Kila"]]}]},
+  "ulricehamn": {"lan":"vastra-gotaland","fran":"Ulricehamn","strak":[{"till":"Borås","delar":[["Väg 40","Ulricehamn - Getared"],["Väg 40","Getared - Borås"]]},{"till":"Bottnaryd","delar":[["Väg 40","Bottnaryd - Ulricehamn"]]},{"till":"Falköping","delar":[["Väg 46","Åsarp - Ulricehamn"],["Väg 46","Falköping - Åsarp"]]},{"till":"Limmared","delar":[["Väg 157","Ulricehamn - Gällstad"],["Väg 157","Gällstad - Limmared"]]}]},
+};
+
 /** Vägnumret utan form: väglaget skriver "E 4" och "Väg 40", olyckorna "E4" och "Väg 274". */
 export const vagNyckel = (s: string | null) => (s ?? "").toLowerCase().replace(/\s+/g, "").replace(/^väg/, "");
 
@@ -383,28 +425,136 @@ function lsVagarILanet(kod: number, d: { vaglag: LanSegment[]; stationer: LanSta
 /** Datawrapper-tabellen per län (2/11, NWT): Bonnier News Locals sajter bäddar bara in godkända tjänster, och Datawrapper är en av
  *  dem. Tabellen läser CSV:n som extern data och rubrik, ingress och källa ur JSON:en som extern metadata, så klockslaget följer med
  *  siffrorna. Samma rader och samma mening som länssidan; inget tal som inte står där. */
-const LS_DW_GUL = "background:#FFC94A;color:#080B0D;font-weight:600;padding:2px 8px;border-radius:10px;white-space:nowrap";
-const LS_DW_DAMPAD = "color:#6F7C83;white-space:nowrap";
+// Declarations are joined with "&#59" (a numeric reference to ";" that the browser decodes inside the attribute), never a raw
+// semicolon: Datawrapper guesses the CSV delimiter from the file, and a row with more ";" than "," was read as one column
+// (prov 2/11 kväll, the pendling table). The reference has no trailing ";" for the same reason.
+const lsDwStil = (...d: string[]) => d.join("&#59");
+const LS_DW_GUL = lsDwStil("background:#FFC94A", "color:#080B0D", "font-weight:600", "padding:2px 8px", "border-radius:10px", "white-space:nowrap");
+const LS_DW_DAMPAD = lsDwStil("color:#6F7C83", "white-space:nowrap");
 const lsCsvFalt = (s: string) => `"${s.replace(/"/g, '""')}"`;
+const LS_DW_GRA = "color:#6F7C83";
+const LS_DW_LITEN = lsDwStil("color:#8FA0A9", "font-size:12px");
+const LS_DW_FET = lsDwStil("font-weight:600", "color:#181818");
+const LS_DW_KNAPP = lsDwStil("display:flex", "justify-content:space-between", "align-items:center", "border:1px solid #C9CDD0",
+  "border-radius:8px", "padding:8px 12px", "margin-top:10px", "cursor:pointer", "font-style:normal", "font-weight:600", "font-size:14px", "color:#181818");
+const LS_DW_RAD = lsDwStil("display:flex", "flex-wrap:wrap", "gap:4px 10px", "align-items:center", "padding:8px 0",
+  "border-bottom:1px solid #E5E7E8", "font-style:normal", "font-size:14px", "color:#181818");
+const LS_DW_SEKTION = lsDwStil("display:block", "margin:16px 0 4px", "font-style:normal", "font-size:15px", "font-weight:600", "color:#181818");
+const LS_DW_NORMAL = lsDwStil("display:block", "font-style:normal");
+const lsDwEtikett = (h: number, n: number) => {
+  const t = `${h} av ${lsPlural(n, "sträcka", "sträckor")}`;
+  return `<span style="${h ? LS_DW_GUL : LS_DW_DAMPAD}">${t}</span>`;
+};
+const lsDwVag = (v: string) => lsVagNamn(v).replace(/^väg /, "Väg ");
+// Bold when the road surface is at or below 0 °C (Axel 2/11: "mycket bättre"); the station name small and grey after the number.
+const lsDwTemp = (st?: LanStation) => st
+  ? `<span style="${st.yta <= 0 ? LS_DW_FET : LS_DW_GRA}">${lsGrad(st.yta)}</span> <span style="${LS_DW_LITEN}">${lsEsc(st.name)}</span>` : "";
+const lsDwKnapp = (text: string, n: number, inne: string) => n
+  ? `<details><summary style="${LS_DW_KNAPP}"><span>${text} <span style="${LS_DW_GRA}">(${n})</span></span><span style="${LS_DW_GRA}">▾</span></summary>${inne}</details>` : "";
+const lsDwCsv = (rader: string[][]) => rader.map((f) => f.map(lsCsvFalt).join(",")).join("\n") + "\n";
+const LS_DW_FOT_HALKA = "Halka eller vinterväglag enligt Trafikverkets rapport.";
+const LS_DW_FOT_VAG = "Vägbanan: kallaste vägväderstationen längs vägen.";
+
+/** Vägtabellen per län (data/datawrapper/<län>.csv): alla länets stora vägar, halkan först. */
 function lsDatawrapperCsv(kod: number, d: { vaglag: LanSegment[]; stationer: LanStation[] }): string {
   // A table to read at a glance (Axel 2/11: "lite snyggare"): roads with ice first, the count as a yellow label (Datawrapper
   // renders inline-styled <span> in cells; the brand guide: yellow only where a hazard is live), the others muted, and stretch
   // names only where it is slippery. Same rows and counts as the county page.
   const vr = lsVagRader(kod, d);
-  const rader = [...vr.filter((r) => r.halt), ...vr.filter((r) => !r.halt)].map((r) => {
-    const antal = `${r.halt} av ${lsPlural(r.strackor, "sträcka", "sträckor")}`;
-    return [lsVagNamn(r.vag).replace(/^väg /, "Väg "), r.halt ? `<span style="${LS_DW_GUL}">${antal}</span>` : `<span style="${LS_DW_DAMPAD}">${antal}</span>`,
-      r.st ? `${lsGrad(r.st.yta)} vid ${r.st.name}` : "", r.halt ? r.namn.join(" · ") : ""];
-  });
+  const rader = [...vr.filter((r) => r.halt), ...vr.filter((r) => !r.halt)]
+    .map((r) => [lsDwVag(r.vag), lsDwEtikett(r.halt, r.strackor), lsDwTemp(r.st), r.halt ? lsEsc(r.namn.join(" · ")) : ""]);
   if (!rader.length) rader.push(["", "Trafikverket rapporterar inget väglag för länets stora vägar just nu.", "", ""]);
-  return [["Väg", "Halka eller vinterväglag", "Vägbanan", "Var"], ...rader].map((f) => f.map(lsCsvFalt).join(",")).join("\n") + "\n";
+  return lsDwCsv([["Väg", "Halka", "Vägbanan", "Var"], ...rader]);
 }
 function lsDatawrapperMeta(lan: (typeof LAN)[number], l: LanLage, now: Date): string {
   return JSON.stringify({
     title: `Väglaget i ${lan.kort} just nu`,
     describe: { intro: lsSvar(l, "länets", "i länet", now), "source-name": "Trafikverket via Halkvakt", "source-url": `${SIDBAS}/lan/${lan.slug}/` },
-    annotate: { notes: "Halka eller vinterväglag enligt Trafikverkets rapport. Vägbanan: kallaste vägväderstationen längs vägen." },
+    annotate: { notes: `${LS_DW_FOT_HALKA} ${LS_DW_FOT_VAG}` },
   });
+}
+
+/** Ett pendlarstråk just nu: samma regel som rutan (ruta.html), sträcka för sträcka, och bara de delar Trafikverket rapporterar. */
+type StrakRad = { fran: string; till: string; vagar: string; halt: number; delar: number; var_: string[] };
+const lsSegPlats = (x: LanSegment) => (x.plats ?? x.road ?? "").replace(new RegExp("^" + (x.road ?? "").replace(/\s+/g, "\\s*") + "\\s*"), "");
+function lsStrakRader(p: Strak, kod: number, d: { vaglag: LanSegment[] }): StrakRad[] {
+  const segs = d.vaglag.filter((x) => x.lan === kod && x.road);
+  return p.strak.flatMap((s) => {
+    const delar = s.delar.map(([vag, plats]) => segs.find((x) => x.road === vag && lsSegPlats(x) === plats)).filter((x): x is LanSegment => !!x);
+    if (!delar.length) return [];
+    const halt = delar.filter((x) => arHalt(x.code, x.info));
+    return [{ fran: s.fran ?? p.fran ?? "", till: s.till, vagar: [...new Set(s.delar.map(([v]) => lsDwVag(v)))].join("/"),
+      halt: halt.length, delar: delar.length, var_: halt.map((x) => lsSegPlats(x).replace(/ - /g, "–")) }];
+  });
+}
+const lsStrakBas = (p: Strak) => p.rubrik ? p.rubrik.replace(/ just nu$/, "").replace(/^Stråken/, "stråken") : `pendlarvägarna från ${p.fran}`;
+const lsStor = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
+const lsStrakNamn = (r: StrakRad) => `<span style="${LS_DW_GRA}">${lsEsc(r.fran)}–</span><b>${lsEsc(r.till)}</b>`;
+function lsStrakCsv(rader: StrakRad[], bas: string): string {
+  const hala = rader.filter((r) => r.halt);
+  const ut = hala.map((r) => [lsStrakNamn(r), lsEsc(r.vagar), lsDwEtikett(r.halt, r.delar), lsEsc(r.var_.join(" · "))]);
+  if (!ut.length) ut.push([`Ingen halka på ${bas} just nu.`, "", "", ""]);
+  return lsDwCsv([["Stråk", "Väg", "Halka", "Var"], ...ut]);
+}
+const lsStrakRad = (r: StrakRad) => `<span style="${LS_DW_RAD}"><span style="flex:1 1 46%">${lsStrakNamn(r)}</span>`
+  + `<span style="${lsDwStil("flex:0 0 18%", "color:#6F7C83")}">${lsEsc(r.vagar)}</span><span style="flex:1 1 26%">${lsDwEtikett(r.halt, r.delar)}</span></span>`;
+const lsStrakKnapp = (rader: StrakRad[]) => {
+  const ovr = rader.filter((r) => !r.halt);
+  return lsDwKnapp(ovr.length < rader.length ? "Visa övriga stråk" : "Visa alla stråk", ovr.length, ovr.map(lsStrakRad).join(""));
+};
+const lsVagRadDw = (r: VagRad) => `<span style="${LS_DW_RAD}"><span style="flex:0 0 16%"><b>${lsEsc(lsDwVag(r.vag))}</b></span>`
+  + `<span style="flex:0 0 30%">${lsDwEtikett(r.halt, r.strackor)}</span><span style="flex:1">${lsDwTemp(r.st)}</span>`
+  + (r.halt && r.namn.length ? `<span style="${lsDwStil("flex:0 0 100%", "font-size:12px", "color:#6F7C83")}">${lsEsc(r.namn.join(" · "))}</span>` : "") + "</span>";
+const lsVagKnapp = (vr: VagRad[]) => {
+  const ovr = vr.filter((r) => !r.halt);
+  return lsDwKnapp(ovr.length < vr.length ? "Visa övriga vägar" : "Visa alla vägar", ovr.length, ovr.map(lsVagRadDw).join(""));
+};
+/** Länets fyra tal på en rad (rutans flik Länet): halka, stationer på 0 °C eller kallare, kallast och pågående olyckor. */
+function lsDwFakta(l: LanLage, now: Date): string {
+  const halka = l.halt.length ? `<span style="${LS_DW_GUL}">halka på ${l.halt.length} av ${l.vagavsnitt} vägavsnitt</span>` : `ingen halka på länets ${l.vagavsnitt} vägavsnitt`;
+  const kalla = l.kalla.length ? `<b>${lsPlural(l.kalla.length, "station", "stationer")}</b> på 0 °C eller kallare · kallast <b>${lsGrad(l.kalla[0].yta)}</b> vid ${lsEsc(l.kalla[0].name)}`
+    : "ingen station på 0 °C eller kallare";
+  const olyckor = l.olyckor.length ? lsPlural(l.olyckor.length, "olycka eller hinder pågår", "olyckor eller hinder pågår") : "inga pågående olyckor";
+  return `Kl. ${lsTid(now, false)} enligt Trafikverket: ${halka} · ${kalla} · ${olyckor}`;
+}
+const lsDwMeta = (title: string, intro: string, notes: string, slug: string) => JSON.stringify({
+  title, describe: { intro, "source-name": "Trafikverket via Halkvakt", "source-url": `${SIDBAS}/lan/${slug}/` }, annotate: { notes },
+});
+const lsDwFot = (vag: boolean) => `<br>${LS_DW_FOT_HALKA}${vag ? " " + LS_DW_FOT_VAG : ""}`;
+
+/** Pendlingstabellen (data/datawrapper/pendling-<nyckel>.*, Axel 2/11): bara stråken med halka, de andra bakom en knapp. */
+function lsPendlingDw(nyckel: string, d: { vaglag: LanSegment[]; now: Date }): Record<string, string> {
+  const p = STRAK[nyckel], lan = LAN.find((l) => l.slug === (p.lan ?? nyckel))!, bas = lsStrakBas(p);
+  const rader = lsStrakRader(p, lan.kod, d), halt = rader.some((r) => r.halt);
+  return {
+    [`data/datawrapper/pendling-${nyckel}.csv`]: lsStrakCsv(rader, bas),
+    [`data/datawrapper/pendling-${nyckel}.json`]: lsDwMeta(halt ? `Halka på ${bas}` : `${lsStor(bas)} just nu`,
+      `Kl. ${lsTid(d.now, false)} enligt Trafikverket.`, `<span style="${LS_DW_NORMAL}">${lsStrakKnapp(rader)}</span>${lsDwFot(false)}`, lan.slug),
+  };
+}
+/** Hela läget (data/datawrapper/hela-<län>.*, Axel 2/11): länets tal i ingressen, pendlingen som tabell när länet har stråk, och
+ *  vägarna som egen sektion; varje sektion visar bara det som är halt och fäller in resten. Utan stråk är vägarna tabellen. */
+function lsHelaDw(lan: (typeof LAN)[number], l: LanLage, d: { vaglag: LanSegment[]; stationer: LanStation[]; now: Date }): Record<string, string> {
+  const vr = lsVagRader(lan.kod, d), haltV = vr.filter((r) => r.halt);
+  const vagRubrik = haltV.length ? "Halka på länets stora vägar" : "Länets stora vägar";
+  const p = STRAK[lan.slug] && (STRAK[lan.slug].lan ?? lan.slug) === lan.slug ? STRAK[lan.slug] : null;
+  const fakta = lsDwFakta(l, d.now), titel = `Väglaget i ${lan.kort} just nu`;
+  let csv: string, intro: string, notes: string;
+  if (p) {
+    const bas = lsStrakBas(p), rader = lsStrakRader(p, lan.kod, d), halt = rader.some((r) => r.halt);
+    csv = lsStrakCsv(rader, bas);
+    intro = `${fakta}<br><b style="${LS_DW_SEKTION}">${halt ? `Halka på ${bas}` : lsStor(bas)}</b>`;
+    notes = `<span style="${LS_DW_NORMAL}">${lsStrakKnapp(rader)}<b style="${LS_DW_SEKTION}">${vagRubrik}</b>`
+      + (haltV.length ? haltV.map(lsVagRadDw).join("") : `<span style="${LS_DW_RAD}">Ingen halka på länets stora vägar just nu.</span>`)
+      + `${lsVagKnapp(vr)}</span>${lsDwFot(true)}`;
+  } else {
+    const ut = haltV.map((r) => [lsDwVag(r.vag), lsDwEtikett(r.halt, r.strackor), lsDwTemp(r.st), lsEsc(r.namn.join(" · "))]);
+    if (!ut.length) ut.push(["", "Ingen halka på länets stora vägar just nu.", "", ""]);
+    csv = lsDwCsv([["Väg", "Halka", "Vägbanan", "Var"], ...ut]);
+    intro = `${fakta}<br><b style="${LS_DW_SEKTION}">${vagRubrik}</b>`;
+    notes = `<span style="${LS_DW_NORMAL}">${lsVagKnapp(vr)}</span>${lsDwFot(true)}`;
+  }
+  return { [`data/datawrapper/hela-${lan.slug}.csv`]: csv, [`data/datawrapper/hela-${lan.slug}.json`]: lsDwMeta(titel, intro, notes, lan.slug) };
 }
 
 /** Vanliga frågor (25/10, DECISIONS #722): synliga på sidan och som FAQPage. Svaren säger bara vad sidan och appen gör. */
@@ -703,7 +853,10 @@ export function byggLanssidor(d: { vaglag: LanSegment[]; stationer: LanStation[]
     ut[`lan/${lan.slug}/index.html`] = lsLanssida(lan, lagen.get(lan.kod)!, d.now, d, varn);
     ut[`data/datawrapper/${lan.slug}.csv`] = lsDatawrapperCsv(lan.kod, d);
     ut[`data/datawrapper/${lan.slug}.json`] = lsDatawrapperMeta(lan, lagen.get(lan.kod)!, d.now);
+    Object.assign(ut, lsHelaDw(lan, lagen.get(lan.kod)!, d));
   }
+  for (const nyckel of Object.keys(STRAK)) Object.assign(ut, lsPendlingDw(nyckel, d));
+  ut["data/strak.json"] = JSON.stringify(STRAK);
   for (const v of VAGAR) ut[`vag/${v.slug}/index.html`] = lsVagsida(v, vagar.get(v.slug)!, d.now, d, varn);
   for (const o of ORTER) ut[`ort/${ortSlug(o.namn)}/index.html`] = lsOrtsida(o, LAN.find((l) => l.kod === o.lan)!, lagen.get(o.lan)!, d.now, d, varn);
   ut["varningar/index.html"] = lsVarningssida(varn, lagen, d.now);

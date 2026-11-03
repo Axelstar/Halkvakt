@@ -166,7 +166,16 @@ export const KONTRAKT: Kontrakt[] = [
   {
     namn: "Gränsradien — hur nära svensk väg en grannstation räknas",
     varfor: "40 km är gränssnapshotens definition. Driver den mäter de två implementationerna olika populationer.",
-    former: [/se\.g::geography, (\d+)\)/],
+    former: [/r\.geom::geography, (\d+)\)/],
+    filer: /healthcheck\.ts|functions\/vakthund\//,
+    golv: 2,
+  },
+  // DECISIONS #781: de två räknas på vägindexet som publiceringen (#742). Lådan måste rymma 40 km; att den är minst
+  // BORDER_DEG prövas i test/integration.test.ts.
+  {
+    namn: "Gränslådan — vägindexets låda runt grannstationen",
+    varfor: "Krymper en kopia under BORDER_DEG tappar den stationer nära 40 km, och de två kontrollerna räknar olika populationer.",
+    former: [/ST_Expand\(f\.geom, ([\d.]+)\)/],
     filer: /healthcheck\.ts|functions\/vakthund\//,
     golv: 2,
   },
@@ -715,6 +724,15 @@ export const KONTRAKT: Kontrakt[] = [
     namn: "Länets halkregel — minsta antal stationer under noll (Halkvakt live och Meta-annonserna)",
     varfor: "Driver de isär annonserar Meta ett län som inlägget samma morgon säger är fritt, eller tvärtom.",
     former: [/MIN_HALT = \d+, MIN_KALLA = (\d+)/],
+    filer: /marknadsforing\//,
+    golv: 2,
+  },
+  {
+    // Reels (DECISIONS #780) tiger på samma gamla data som Meta-annonserna; reels.mjs kan inte importera annonsstyrningen
+    // utan att dra in hela annonsflödet.
+    namn: "Marknadsföringens åldersgräns för datan i timmar (Meta-annonserna och kvällens reel)",
+    varfor: "Driver de isär visar kvällens reel ett läge som annonserna samma kväll redan kallat för gammalt.",
+    former: [/const MAX_ALDER_H = (\d+)/],
     filer: /marknadsforing\//,
     golv: 2,
   },

@@ -365,7 +365,7 @@ till tre (v42–v44, #577). Taket var i båda fallen långt över kostnaden.
 *Läget i projektkartan:*
 
 - [L2 tillståndet (skattaren S1–S3)](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-tillstand): delvis, 100 % · kvar: Skattarens träffsäkerhet mot operatörens klasser, dömbar först med vinterfacit
-- [L4 räckvidden: segmentprognosen](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-segmentprognos): väntar, 74 % · Domen i mars 2027 (grind A–C) på kandidaten NIVÅ 2+BLANDNING som ny fråga, RÅ kontroll och reserv (#547), val d på kort #270 struket 21/10, domslut (b) döms per band (#655).
+- [L4 räckvidden: segmentprognosen](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-segmentprognos): väntar, 71 % · Domen i mars 2027 (grind A–C) på kandidaten NIVÅ 2+BLANDNING som ny fråga, RÅ kontroll och reserv (#547), val d på kort #270 struket 21/10, domslut (b) döms per band (#655).
 - [L5 allvar som försprång](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-forsprang): delvis, 56 % · kvar: FS-A: nivå 2-fall i vinter (kod 3–4, eller yta ≤ 0 °C med väta ≥ 3); kod 3 och 4 finns i arkivet sedan 20–21/10 (kodgrinden 39617620449: 75 och 5 rader), andelen döms i mars
 - [RÅ: kontroll och reserv](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-prognoslagret): väntar, 88 % · Premissläsningen tisdag 24/11 (DECISIONS #435), som kunskap om RÅ; RÅ:s dom i mars redovisas bredvid kandidatens som kontroll och reserv (#547).
 

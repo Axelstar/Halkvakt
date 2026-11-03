@@ -13232,6 +13232,12 @@ vinterväglag* bär bara antalet (*2 av 4 sträckor*), som en gul etikett när d
 inline-stil i tabellceller; guiden 1.0: gult bara där en fara är live, signalgul #FFC94A, mark #080B0D, dämpad #6F7C83); kolumnen *Var* bär
 sträcknamnen bara för vägar med halka. Raderna, talen och meningen är desamma som länssidans; bara ordning och form är tabellens egna.
 
+**Rättelse 2/11 kväll (Claude, upptäckt i provet av pendlingstabellen).** Datawrapper gissar CSV:ns skiljetecken ur filen. Etikettens
+stil bar fem semikolon per rad mot tre kommatecken, och provtabellen lästes som en enda kolumn. Värmlands tabell klarade sig i kväll
+bara för att ingen väg var hal (den grå stilen har ett semikolon); första halkmorgonen hade den gått sönder. Stilens deklarationer
+skiljs nu med `&#59` (numerisk referens till semikolon, som webbläsaren avkodar i attributet, utan avslutande semikolon). Provet kräver
+att ingen tabellfil innehåller ett rått semikolon. Bekräftat i Datawrapper: samma fil utan semikolon gav fyra kolumner.
+
 **Stomdokument:** inga — sajtens datafiler; appen, motorn och mätningarna är orörda.
 
 ## #777 (2/11 2026) Halkvakt live: svepinlägget ersätter morgonlistan och länet, morgon, lunch och kväll
@@ -13323,3 +13329,150 @@ Luckan är att vakten på Android inte är visad ta emot nya filer under en resa
 Android-telefonen med mobildata (till exempel en testare i Play) visar det i *Mätningen* med nya och åldersrader.
 
 **Stomdokument:** SYS 1 (kedjans takt), APP 9, BED §4.2
+
+## #779 (2/11 2026) Datawrapper: pendlingstabellen per stråk och hela läget per län, där bara det hala syns
+
+**Beslut** (Axel 2/11 kväll, efter provet i Datawrapper: *"Ser bra ut"*, *"en separat också … då kan de välja att bara lägga in en"*,
+och om ordningen: pendlarna före vägarna, *"det som folk verkligen tittar på"*). Utöver vägtabellen (DECISIONS #776) skriver
+publiceringen två nya filpar:
+1. **Pendling** `data/datawrapper/pendling-<nyckel>.csv/.json` för var och en av rutans 35 stråkuppsättningar (156 stråk): tabellen
+   bär bara stråken med halka eller vinterväglag (*Halka på pendlarvägarna från Karlstad*), de andra ligger bakom en knapp
+   (`<details>` i fotnoten, som Datawrapper visar). Utan halka: en rad som säger det, och alla stråk bakom *Visa alla stråk*.
+2. **Hela läget** `data/datawrapper/hela-<län>.csv/.json` för alla 21 län: länets fyra tal (rutans flik Länet) i ingressen, sedan
+   pendlingen som tabell när länet har stråk under sin egen slug, och länets stora vägar som egen sektion med samma regel (de hala
+   synliga, resten bakom *Visa övriga vägar*). Utan stråk är vägarna tabellen.
+Stråken räknas som i rutan: Trafikverkets sträckor med namnen som i strackor.json, ett stråk med bara de delar som finns i
+rapporten. Stråken flyttades därför in i `publish/lanssidor.ts` (`STRAK`, läst ur ruta.html, inte avskriven) och publiceras som
+`data/strak.json`, så att rutan kan läsa samma lista; tills den gör det finns de på två ställen. Vägtabellen fick Axels godkända
+form 2/11: kolumnen heter *Halka*, och vägbanan står i fetstil på 0 °C eller kallare med stationen liten och grå efter. Allt i
+CSV:erna utan rått semikolon (rättelsen i #776). Provet i `test/lanssidor.test.ts`; kvällens data gav alla 156 stråk.
+
+**Alternativ.** En enda tabell med flikar: Datawrapper har inga; vår egen ruta har dem men kräver Bonniers godkännande (frågan går
+i mejlet till NWT). Tre separata tabeller utan utfällning: tar mer plats i en artikel, och Axel ville att det torra ska fällas in.
+
+**Stomdokument:** inga — sajtens datafiler; appen, motorn och mätningarna är orörda.
+
+
+## #780 (2/11 2026) Reels: en nationell reel per kväll, fem filmer i rotation och mätningen avgör vilken som vinner
+
+**Axels ord 2/11:** *"hur ska vi göra om vi vill automatisera detta så att vi kan lägga ut lite reals på en daglig basis?"*, om länen:
+*"Kanske inte är så smart att göra en specifik för Norbotten typ"*, efter de fem exemplen: *"Bör vi inte slänga in en mix och se vad
+folk gillar?"* och *"Ja vi kör! Men det kommer bara komma som reals visst?"*
+
+**Beslut.** `reels.yml`, startad av pulsklockan (`puls-reels` 19:50 UTC, 20:50 vintertid), gör en reel per kväll till Instagram (som
+reel, även i rutnätet) och Facebook-sidans reels, inget annat: inga stories, inget på X, inga extra inlägg; Halkvakt live (#777) går
+som förut. Ramen är nationell, aldrig ett enskilt län, eftersom reels når den som tittar var den än bor.
+- **Fem filmer** i `marknadsforing/reels/reel.html`, 1080×1920, 14–16 s, ritade ur kvällens filer på halkvakt.se (`data.py`):
+  *halt* (vägarna med halkrisk), *natt* (Sverige i natt, stationerna och länet med mest halkrisk), *frost* (nollgradslinjen på vägbanan),
+  *kallast* (de fem kallaste stationerna) och *e4* (E4 söder till norr). Ljudet syntetiseras (`ljud.py`), ingen musiklicens.
+- **Rotation** (`valjTyp`): bland filmerna som kvällens data räcker till tar den med minst antal hittills, aldrig samma två kvällar i rad
+  när en annan går. Ingen film har något sant att visa: ingen reel. Data äldre än två timmar: ingen reel (samma gräns som
+  Meta-annonserna, i kontraktsgrinden).
+- **Orden** som i annonserna: *Halka*, *Fläckvis is* och *Risk för halka* räknas var för sig och blir aldrig starkare än Trafikverkets.
+- **Mätningen:** ett dygn efter posten hämtas räckvidd, visningar, snittid, delningar och sparade per reel till
+  `marknadsforing/reels-historik.json`, och sammanfattningen visar snittet per typ. Lika många av varje de första veckorna; sedan
+  väger vi mot vinnarna, som ett eget beslut.
+- **Torrkörning** tills Axel sätter repovariabeln `REELS_SKARPT` till `ja`: filmen och båda texterna läggs som artefakten *reel*
+  varje kväll och historiken räknar torrkörningarna för sig.
+
+**Tiden** (Axel 3/11, *"Okay lets do it"*): kvällen och inte morgonen. Halkan växer under natten, så kvällens bild underskattar
+natten men blir inte fel, medan en morgonbild blir fel när frosten släpper under dagen; en reel visas i ett till tre dygn ändå, och
+klockslaget står i filmen och texten. Reels tittas mest 19–22, morgonen har redan Meta-annonserna och svepinlägget, och appen
+laddas ner kvällen före resan. 20:50 i stället för 19:50: vägarna har svalnat mer. Morgon mot kväll kan prövas som ett eget
+prov när filmerna är jämförda, inte samtidigt.
+
+**Alternativ.** En reel per län: når mest folk utanför länet. En fast film varje kväll: vi vet inte vilken som fungerar. Stories och X
+också: Axel ville bara reels. Filmen som fil i repot för Meta att hämta: repot är publikt och växer; uppladdningen går direkt till Meta.
+
+**Stomdokument:** inga — marknadsföringen har inget stomdokument; appen, motorn och mätningarna är orörda.
+
+## #781 (3/11 2026) Gränsräkningen i vakthunden och healthchecken använder vägindexet, som publiceringen sedan #742
+
+**Beslut** (Bengt 3/11: *"Ja, skriv om"*). Vakthundens kontroll 9b och healthchecken räknar de finska och norska stationerna inom 40 km
+från en svensk väg (golven FI 10 och NO 20, kort #49). Båda frågorna slog fortfarande ihop alla vägsträckor med `ST_Collect`, den form
+som #742 tog bort ur publiceringen. Nu sållar samma låda som där vägarna på vägindexet (`r.geom && ST_Expand(f.geom, 1.17)`), och samma
+`ST_DWithin` på 40 km avgör. 1,17° är `BORDER_DEG` i `publish/snapshot-core.ts` (1,163°) avrundad uppåt: en större låda ändrar inte vilka
+stationer som räknas, bara hur många vägar som mäts. Golven, radien och färskheten (tre timmar, #751) är oförändrade.
+
+**Mätt** (Supabase-panelen, *Query Performance*, 2/11 kväll, bara läsning; summerat sedan den senaste nollställningen). Räkningen tog
+22,5 s i medel för fi (högst 103 s) och 20,5 s för no. Mellan 21:52 och 22:28 UTC ökade båda med två anrop (vakthunden 22:07 och
+healthchecken 22:23), tillsammans 88 s. Det blir omkring 66 s databastid i timmen, i klumpar om omkring 22 s, knappt en procentenhet av
+Small-instansen. Stationslistorna i den gamla formen (5 312 anrop à 18–19 s) stod still mellan läsningarna: de försvann med #742.
+
+**Prov.** `test/integration.test.ts` läser frågorna ur de två filerna. Utan databas: ingen `ST_Collect`, och lådan är minst `BORDER_DEG`.
+Mot PostGIS, med #742:s fyra grannstationer vid Haparanda och Riksgränsen (där lådan behöver minst 0,95°): båda räknar lika många som
+sin egen fråga före omskrivningen. Kontraktsgrinden: gränsradiens mönster följer den nya formen, och lådan är ett eget kontrakt med
+golvet 2. Motprov: lådan 0,9° i vakthunden fäller både provet och grinden.
+
+**Verify:** efter deployen av vakthunden visar timraden `gräns-wx FI` och `gräns-wx NO` samma antal som före, och i *Query Performance*
+växer inte räkningen i `ST_Collect`-formen längre (fi 2 117 och no 2 111 anrop vid läsningen 2/11 22:28 UTC). Healthchecken kör ur main
+från nästa körning efter sammanslagningen.
+
+**Alternativ.** Låta dem vara: 66 s i timmen är inte mycket, men det är databasens tyngsta enskilda anrop, med toppar på 103 s, och
+minnesåtagandet står på varning. Importera `BORDER_DEG`: vakthunden är en edge-funktion utan `publish/`, och kontraktsgrinden jämför
+talen i de två filerna, så talet står i båda och provet binder det till `BORDER_DEG`. Ta bort räkningen ur healthchecken: den är
+avsiktligt dubblerad, eftersom healthchecken är den enda kontroll som körs utanför Supabase (kort #87, Bengt 14/9).
+
+**Stomdokument:** BED §4.2.
+
+## #782 (3/11 2026) Kandidaten på en kvart: den nya kandidatens värde räknas också i databasen var femte minut för det förarna hör; domen fälls på timvärdena som förut
+
+**Beslut** (Bengt, och Axel via Bengt, 3/11). Bengts ord, i ordning:
+- *"ja skriv underlaget och vi kör den publika deployvägen"*;
+- *"Ja, rätta underlaget"*, när det visat sig att den privata vägen går;
+- *"Ja, skriv utkasten"*, på rekommendationerna;
+- *"Signera för båda"*.
+
+Den nya kandidaten (som talar sedan #729) räknas i dag en gång i timmen i Actions, och värdet i appen vilar på stationsmätningar som
+är 5–67 minuter gamla, i medel omkring 35. Från och med detta beslut:
+
+1. **En snabb väg för det förarna hör.** Kandidatens steg vid stationerna (grannarnas fel, RÅ och blandningen) räknas också i
+   databasen var femte minut, av en SQL-funktion som pg_cron startar (`4-59/5`, minuter som pulsklockans jobb inte använder).
+   Mätningarna bakom värdet blir omkring 7–14 minuter gamla (räknat ur schemat, inte mätt). Prognosdelen räknas som förut.
+2. **Räkningen är privat, rörledningen publik.** Funktionen ligger i Axelstar/halkvakt-kuvos och läggs in i databasen av ett
+   Halkvakt-flöde som hämtar koden därifrån, som kandidatens flöden redan gör (#768, #770). Här ligger tabellerna, schemat, vem som
+   talar och proven. Kandidatens tal står inte i den här posten och inte i koden här; räkningen och domens del står i halkvakt-kuvos F5.
+3. **Vem som talar.** `talande_timme()` och `talande_regel()` väljer i tre steg:
+   - den snabba, när den är högst 10 minuter gammal och har minst 95 % av vägpunkterna;
+   - annars den nyas timme, som i dag;
+   - annars den frysta (FORREGISTRERING-2026-27 §12 f).
+
+   Regeln, talen, vetot, spridningen och märkningen (§12 d) är desamma.
+4. **Domen rörs inte.**
+   - Den frysta och den nya räknas och loggas timvis i Actions som förut, och domarna fälls på det (§2, §12 c och e).
+   - Det snabba värdet loggas inte och är inte en del av domens underlag.
+   - Beslutet gäller vad förarna hör, inte någon dom. Det fattas innan någon timme av vinterns utfall är läst (regel L).
+5. **Skuggan före påslaget.** Byggt med flaggan av räknas den snabba utan att tala i minst sju dygn och minst tre nätter med frysrisk
+   i regeln.
+   - **Påslaget:** den snabba får tala om den ger högst 1,5 gånger så många utfallsbyten per sträcka och timme som timvärdet. Gränsen
+     bestäms här, före skuggan.
+   - **Annars:** ett utfall ska stå i 10 minuter innan det talar, prövat i en ny skugga.
+   - **Påslaget är en rad** i en logg som `kandidat_talar` (sql/070), med det här beslutets nummer.
+6. **Kartan samtidigt.** Publiceringen skriver kandidatens kartfil till hinken varje gång, och kartsidan läser den därifrån från
+   påslaget, så att appen och kartan visar samma sak. Kartans text säger klockslaget då värdet räknades.
+
+Arbetet står på kort #373. Underlaget är `Desktop/Kandidaten_pa_en_kvart_Beslutsunderlag_2026-11-03.md` på Bengts dator, och här är
+dess slutsatser. #373 och inte #372: #372 bärs redan av två grenar som inte är ihopslagna (`claude/kort-produktansvar` och
+`claude/platsfragorna-raknaren`).
+
+**Verify.**
+- Ci grön med pariteten mellan den snabba räkningen och timkedjans räkning (högst 0,01 °C på samma indata), och ett motprov som fäller
+  den.
+- Ett dygn i drift med flaggan av: körtiderna och CPU lästa i panelen, inga fel i Postgres-loggen.
+- Skuggans tal bokförda: utfallsbyten per sträcka och timme, snabbt mot timvis, och avvikelsen mot timvärdet vid :47 i median och p95.
+- Efter påslaget: lägesfilen bär den snabba tiden, appen visar den under Betatest → Mätningen, och kartans kandidattid är lika med
+  lägesfilens.
+
+**Alternativ.**
+- **Räkningen publik i Halkvakt:** enklare att granska, och den låg här till 31/10. Valdes bort, eftersom det bryter linjen i #770 och
+  ger ett prejudikat. Det var Bengts första ord; underlaget visade sedan att den privata vägen går med samma mönster som kandidatens
+  flöden.
+- **En edge-funktion i TypeScript:** flyttar cirka 26 000 rader per körning, och favoritprovet föll på Supabases resurstak.
+- **Varannan minut:** 7–11 minuter i stället för 7–14, men fler skrivningar medan databasens minne står på varning. Kan tas senare med
+  en rad i schemat.
+- **Prognosdelen varje timme:** liten väntad vinst och 24 körningar per dygn i Actions. Prövas först i kuvösen (halkvakt-kuvos F5).
+- **Att låta det vara:** värdet i appen vilar i medel på mätningar som är omkring 35 minuter gamla.
+
+**PRODUKTBOKEN** uppdateras i samma varv som påslaget, eftersom förarna hör ett färskare värde och kartan visar ett nytt klockslag.
+
+**Stomdokument:** SYS kandidatens kedja och databasen, APP kandidatens varning, BED §4.2.

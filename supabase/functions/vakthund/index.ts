@@ -408,7 +408,7 @@ Deno.serve(async (req) => {
     // Kort #222: ett puls-jobb som avaktiveras eller raderas föll TYST ur bevakningslistan — vakten
     // såg en sen körning, aldrig ett försvunnet schema. Golvet är pulsklockans egen NYA-lista
     // (scripts/pulsklocka.ts); kontraktsgrinden vaktar att de två talen inte glider isär.
-    const PULS_GOLV = 27;   // 27 sedan Meta-annonsernas eftermiddag (DECISIONS #746); 25 sedan Meta-annonserna (DECISIONS #735); 22 sedan kodgrinden (DECISIONS #734); 21 sedan den nya kandidatens kedja (DECISIONS #706); 19 sedan värdevakten (#1161, DECISIONS #688); 18 sedan larmen i Halkvakt live (kort #281, DECISIONS #627); 17 sedan Halkvakt live (kort #281, DECISIONS #600); 14 sedan kandidaten live (kort #343, DECISIONS #558); 12 sedan puls-favoritprov-synk (#534)
+    const PULS_GOLV = 28;   // 28 sedan kvällens reel (DECISIONS #780); 27 sedan Meta-annonsernas eftermiddag (DECISIONS #746); 25 sedan Meta-annonserna (DECISIONS #735); 22 sedan kodgrinden (DECISIONS #734); 21 sedan den nya kandidatens kedja (DECISIONS #706); 19 sedan värdevakten (#1161, DECISIONS #688); 18 sedan larmen i Halkvakt live (kort #281, DECISIONS #627); 17 sedan Halkvakt live (kort #281, DECISIONS #600); 14 sedan kandidaten live (kort #343, DECISIONS #558); 12 sedan puls-favoritprov-synk (#534)
     rad.push(`pulsjobb: ${puls.length} aktiva (golv ${PULS_GOLV})`);
     if (puls.length < PULS_GOLV) problem.push(
       `**Pulsklockan har tappat jobb**: ${puls.length} aktiva av ${PULS_GOLV} — ett schema har avaktiverats eller raderats och faller tyst ur bevakningslistan (kort #222)`);
@@ -905,13 +905,16 @@ Deno.serve(async (req) => {
     }
 
     // 9b. Gränssnapshoten (kort #49). Golven är MÄTTA, inte valda: FI 16–20, NO 42 vid mätningen.
+    //     Vägindexet först, som publiceringen (DECISIONS #742, #781): lådan 1,17° (BORDER_DEG i publish/snapshot-core.ts,
+    //     1,163°, avrundad uppåt) sållar vägarna, och samma ST_DWithin avgör. Med ST_Collect tog räkningen 20–23 s per land.
     for (const [land, golv] of [["fi", 10], ["no", 20]] as [string, number][]) {
       try {
         const r = await sql.unsafe(`
-          WITH se AS (SELECT ST_Collect(geom) g FROM road_conditions WHERE NOT deleted AND geom IS NOT NULL)
-          SELECT count(*)::int AS n FROM ${land}.weather_latest f, se
+          SELECT count(*)::int AS n FROM ${land}.weather_latest f
           WHERE f.sample_time > now() - interval '3 hours'
-            AND ST_DWithin(f.geom::geography, se.g::geography, 40000)`);
+            AND EXISTS (SELECT 1 FROM road_conditions r
+                        WHERE NOT r.deleted AND r.geom IS NOT NULL AND r.geom && ST_Expand(f.geom, 1.17)
+                          AND ST_DWithin(f.geom::geography, r.geom::geography, 40000))`);
         const n = Number(r[0].n);
         rad.push(`gräns-wx ${land.toUpperCase()}: ${n} nåbara inom 40 km (golv ${golv})`);
         if (n < golv) problem.push(`**Gränssnapshoten tunn**: bara ${n} ${land.toUpperCase()}-stationer nåbara (golv ${golv}) — ${land}-ingest eller gränslogiken?`);

@@ -89,12 +89,16 @@ try {
   // Gränssnapshoten (kort #49): FI-stationer nära svenska vägar ska förbli nåbara — annars
   // tystnar gränsområdena utan att någon ser det. Reachability (any temp), schema-vaktat.
   // Golv per land: FI 10 (mätt 16–20), NO 20 (mätt 42 i publicering #621, 4/9 15:47).
+  // Vägindexet först, som publiceringen och vakthunden (DECISIONS #742, #781): lådan 1,17° (BORDER_DEG, 1,163°, avrundad
+  // uppåt) sållar vägarna, och samma ST_DWithin avgör. Med ST_Collect tog räkningen 20–23 s per land.
   for (const [land, golv] of [["fi", 10], ["no", 20]] as const) {
     try {
       const gr = await pool.query(`
-        WITH se AS (SELECT ST_Collect(geom) g FROM road_conditions WHERE NOT deleted AND geom IS NOT NULL)
-        SELECT count(*)::int AS n FROM ${land}.weather_latest f, se
-        WHERE f.sample_time > now() - interval '3 hours' AND ST_DWithin(f.geom::geography, se.g::geography, 40000)`);
+        SELECT count(*)::int AS n FROM ${land}.weather_latest f
+        WHERE f.sample_time > now() - interval '3 hours'
+          AND EXISTS (SELECT 1 FROM road_conditions r
+                      WHERE NOT r.deleted AND r.geom IS NOT NULL AND r.geom && ST_Expand(f.geom, 1.17)
+                        AND ST_DWithin(f.geom::geography, r.geom::geography, 40000))`);
       const n = gr.rows[0].n;
       console.log(`gräns-wx: ${n} ${land.toUpperCase()}-stationer nåbara inom 40 km av svenska vägar`);
       if (golv !== null && Number(n) < golv) problems.push(`gränssnapshoten tunn: bara ${n} ${land.toUpperCase()}-stationer nåbara (<${golv}) — ${land}-ingest eller gränslogik trasig?`);
