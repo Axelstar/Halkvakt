@@ -5,7 +5,8 @@ name: kuvos-ny-kandidat
 #                 utan långvåg i delar om 15 dygn (fysik/ny_kandidat/metnordic_reserv.ts), till den öppna releasen kuvos-vintrar-<vinter>
 #                 — bara öppna data, aldrig VViS. En del som redan finns hoppas över, också den frysta kedjans metnordic_analys_-del för
 #                 en vinter med vindhastigheten (samma rutor och sex fält; långvågen töms vid läsningen). 2024/25 hämtas inte: kuvösens
-#                 releaser kuvos-fysik-indata-2024-25 och kuvos-metnordic-2024-25.
+#                 releaser kuvos-fysik-indata-2024-25 och kuvos-metnordic-2024-25. Marsprövningens halvvintrar 2017-18 och 2023-24
+#                 (halkvakt-kuvos BESLUT F8, §14) hämtas likadant, med vädret som en hel vinter; hösten 2017 bara ur MET:s v4.
 #   fyll          tillägget T2 (docs/FORREGISTRERING-NY-KANDIDAT-TILLAGG-2026-10-23.md): timmar som MET:s arkiv saknar i vinterns delar
 #                 frågas i arkivet igen och tas annars ur MET:s omräkning v4 (metpparchivev4); metnordic_fylld_<del> och fyllt_<del>.json
 #                 läggs bredvid originalen i releasen, som står kvar. En vinter i taget, en hämtning åt gången.
@@ -42,9 +43,9 @@ on:
         options: ["indata", "fyll", "t4", "forberedning", "traning", "provning", "samman", "paritet", "osakerhet", "identitet", "dom"]
         default: "forberedning"
       vinter:
-        description: "bara för indata: vintern som hämtas"
+        description: "bara för indata och fyll: vintern som hämtas (2017-18 och 2023-24 är marsprövningens halvvintrar, halkvakt-kuvos F8)"
         type: choice
-        options: ["2018-19", "2019-20", "2020-21", "2021-22", "2022-23"]
+        options: ["2017-18", "2018-19", "2019-20", "2020-21", "2021-22", "2022-23", "2023-24"]
         default: "2022-23"
       variant:
         description: "vanlig = den prövade kandidaten (#702); t4 = den rättade (tillägget T4, #720), egen plats i hinken, egna artefakter och egen kandidatfil; smavagar = småvägsprovet på T4 (identitet, traning, provning, dom), bara till hinken; okanda = huvudvägarna som okända platser (halkvakt-kuvos F7: traning, provning, dom), som smavagar med 180 utelämnade, bara till hinken"
