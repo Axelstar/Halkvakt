@@ -13372,7 +13372,7 @@ som förut. Ramen är nationell, aldrig ett enskilt län, eftersom reels når de
 - **Mätningen:** ett dygn efter posten hämtas räckvidd, visningar, snittid, delningar och sparade per reel till
   `marknadsforing/reels-historik.json`, och sammanfattningen visar snittet per typ. Lika många av varje de första veckorna; sedan
   väger vi mot vinnarna, som ett eget beslut.
-- **Torrkörning** tills Axel sätter repovariabeln `REELS_SKARPT` till `ja`: filmen och båda texterna läggs som artefakten *reel*
+- **Skarpt från 4/11** (Axel 4/11: *"Ja på riktigt"*); repovariabeln `REELS_SKARPT` = `nej` gör det till en torrkörning igen, där filmen och båda texterna läggs som artefakten *reel*
   varje kväll och historiken räknar torrkörningarna för sig.
 
 **Tiden** (Axel 3/11, *"Okay lets do it"*): kvällen och inte morgonen. Halkan växer under natten, så kvällens bild underskattar

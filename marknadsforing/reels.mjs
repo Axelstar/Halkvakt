@@ -4,7 +4,7 @@
 //   node marknadsforing/reels.mjs rendera      chooses the type, films reel.html frame by frame, writes reels-ut/reel.mp4 + texts
 //   node marknadsforing/reels.mjs posta        only when REELS_SKARPT=ja: uploads to Instagram and Facebook, books it in the history
 //   node marknadsforing/reels.mjs matt         reach, views, watch time, shares and saves for reels older than 24 h
-// Until Axel sets the repo variable REELS_SKARPT=ja everything is a dry run: the film and the texts land as an artifact.
+// Live since 4/11; the repo variable REELS_SKARPT=nej turns it back into a dry run (the film and the texts land as an artifact).
 import { readFileSync, writeFileSync, appendFileSync, existsSync, renameSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
