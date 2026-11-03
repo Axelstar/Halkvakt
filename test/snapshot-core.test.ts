@@ -33,6 +33,7 @@ function fakeDb(rows: Partial<Record<string, any[]>>) {
       assert.deepEqual(params, [BORDER_M, BORDER_DEG]);
       return text.includes("fi.") ? rows.fi ?? [] : rows.no ?? [];
     }
+    if (text.includes("FROM deviations d")) return rows.deviations ?? [];   // olyckorna: vägnumret ur närmaste sträcka (3/11)
     if (text.includes("road_number IS NOT NULL")) {   // kandidatens vägnummer (#739), samma tabell som väglaget
       if (rows.vagarKastar) throw new Error("canceling statement due to statement timeout");
       return rows.segments ?? [];
@@ -75,6 +76,9 @@ test("#74 format: olyckans gradering är gated på Accident, SMHI/vilt/kamera i 
   const { staticDoc, liveDoc } = await buildSnapshot(q, [], NOW);
   const olycksfragan = asked.find((t) => t.includes("FROM deviations") && !t.includes("AnimalPresenceObstruction"));
   assert.match(olycksfragan!, /message_type_value = 'Accident'/, "#318: ett djur i deviations får aldrig bli en olycka");
+  // 3/11: saknas Trafikverkets vägnummer tas det ur närmaste väglagssträcka, men bara inom 25 m (97 % rätt väg i 60 dygns olyckor).
+  assert.match(olycksfragan!, /COALESCE\(NULLIF\(d\.road_number, ''\), \(/, "Trafikverkets vägnummer går först");
+  assert.match(olycksfragan!, /ST_DWithin\(rc\.geom::geography, .*::geography, 25\)/, "sträckans väg bara inom 25 m");
 
   assert.equal(liveDoc.generated_at, "2026-11-20T06:30:00.000Z");
   assert.deepEqual(staticDoc.cameras, [{ id: "TV1", lon: 15, lat: 58.02, bearing: 180, road: "E4" }]);

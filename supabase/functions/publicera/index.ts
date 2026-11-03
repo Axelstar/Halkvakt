@@ -567,13 +567,20 @@ export async function buildSnapshot(qIn: Q, bridgesIn: Bridge[], now: Date = new
   // ---- live: avvikelser, vilt, SMHI ----
   avsnitt = "avvikelser";
   const devs = await q(`
-    SELECT deviation_id, message_type, message_type_value, road_number, severity_code, end_time,
-           ST_X(COALESCE(geom, ST_Centroid(line_geom))) AS lon,
-           ST_Y(COALESCE(geom, ST_Centroid(line_geom))) AS lat
-    FROM deviations
-    WHERE NOT deleted AND (geom IS NOT NULL OR line_geom IS NOT NULL)
-      AND (end_time IS NULL OR end_time > now())
-      AND message_type_value = 'Accident'`);
+    SELECT d.deviation_id, d.message_type, d.message_type_value, d.severity_code, d.end_time,
+           -- Vägnumret när Trafikverket saknar det (3/11): närmaste väglagssträcka, bara inom 25 m. Mätt på 60 dygns olyckor
+           -- med känd väg: inom 25 m bar sträckan samma väg i 1 758 av 1 813 fall (97 %), 25–50 m bara i 34 av 52.
+           COALESCE(NULLIF(d.road_number, ''), (
+             SELECT rc.road_number FROM road_conditions rc
+             WHERE NOT rc.deleted AND rc.road_number IS NOT NULL AND rc.geom IS NOT NULL
+               AND ST_DWithin(rc.geom::geography, COALESCE(d.geom, ST_Centroid(d.line_geom))::geography, 25)
+             ORDER BY rc.geom <-> COALESCE(d.geom, ST_Centroid(d.line_geom)) LIMIT 1)) AS road_number,
+           ST_X(COALESCE(d.geom, ST_Centroid(d.line_geom))) AS lon,
+           ST_Y(COALESCE(d.geom, ST_Centroid(d.line_geom))) AS lat
+    FROM deviations d
+    WHERE NOT d.deleted AND (d.geom IS NOT NULL OR d.line_geom IS NOT NULL)
+      AND (d.end_time IS NULL OR d.end_time > now())
+      AND d.message_type_value = 'Accident'`);
   // Djur på vägen (kort #241, DECISIONS #318): Trafikverkets AnimalPresenceObstruction ersätter polisens
   // länspunkter. Samma tabell som olyckorna, så en radering släcker djuret. Olycksfrågan ovan får bara
   // Accident — utan den raden hade rösten sagt "olycka" om en älg.
