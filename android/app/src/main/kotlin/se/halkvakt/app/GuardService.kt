@@ -135,6 +135,7 @@ class GuardService : Service() {
             val hazards = gate.hazards
             hazardsNow = hazards
             dataStale.value = gate.stale
+            if (gate.stale) scope.launch { Raknare.fel(this@GuardService, "gammal_data") }   // #787
             val dataTid = if (snap.generatedAtMs > 0)
                 android.text.format.DateFormat.format("HH:mm", snap.generatedAtMs) else "okänd tid"
             val g = guard
@@ -147,6 +148,8 @@ class GuardService : Service() {
                         // Kortet (DECISIONS #444) slår upp farans metadata: vägnummer, gräns, bro, röjningstid.
                         val meta = (hazardsNow.firstOrNull { it.id == a.hazardId } as? PointHazard)?.meta
                         val shown = ShownWarning(a, WarningCard.make(a, meta))
+                        val ersatte = currentWarning.value?.alert?.kind?.wire   // #787: ett kort som syntes byts ut
+                        val bannerOk = getSystemService(NotificationManager::class.java).areNotificationsEnabled()
                         currentWarning.value = shown
                         scope.launch { kotlinx.coroutines.delay(8000)
                             if (currentWarning.value === shown) currentWarning.value = null }
@@ -155,7 +158,9 @@ class GuardService : Service() {
                             lastSaid = a.text to System.currentTimeMillis()) }
                         scope.launch {
                             Prefs.appendAlert(this@GuardService, AlertEntry((a.t * 1000).toLong(), a.kind.wire, a.text, a.hazardId))
-                            Raknare.forstaVarningen(this@GuardService) } })   // #772: en gång per enhet
+                            Raknare.forstaVarningen(this@GuardService)   // #772: en gång per enhet
+                            Raknare.varning(this@GuardService, a.kind.wire, a.distanceM.toInt(), ersatte)   // #787
+                            Raknare.banner(this@GuardService, bannerOk) } })
                 AlertBus.post("Vägdata laddad: ${hazards.size} faror i landet. Kör försiktigt.")
                 snapshotInfo.value = "${hazards.size} faror · väglag $dataTid"
             } else {
@@ -167,6 +172,7 @@ class GuardService : Service() {
             utfall = snap.utfall; gen = snap.generatedAtMs   // takten (#741): FEL, och den sparade filen, prövas om efter en minut
         } catch (e: Exception) {
             AlertBus.post("Kunde inte ladda vägdata: ${e.message}")
+            scope.launch { Raknare.fel(this@GuardService, "hamtning_fel") }   // #787
         } finally {
             val nu = System.currentTimeMillis()
             matare?.varv(nu, laddad)   // null: laddningen kastade, ett varv utan källa
@@ -183,6 +189,11 @@ class GuardService : Service() {
     }.getOrNull()
 
     private val callback = object : LocationCallback() {
+        /** #787: positionen föll bort under passet (GPS av, ingen fix). Räknas en gång per pass. */
+        override fun onLocationAvailability(availability: com.google.android.gms.location.LocationAvailability) {
+            if (!availability.isLocationAvailable) scope.launch { Raknare.fel(this@GuardService, "plats_borta") }
+        }
+
         override fun onLocationResult(result: LocationResult) {
             val loc = result.lastLocation ?: return
             if (!prevLon.isNaN()) {
@@ -203,6 +214,7 @@ class GuardService : Service() {
             if (idleStop.onFix(loc.time, fix.lon, fix.lat)) {
                 AlertBus.post("Stillastående en kvart — vakten stoppar själv.")
                 AutostartManager.clearAutoStarted(this@GuardService)
+                stoppOrsak = "parkerad"   // #787
                 stopSelf()
                 return
             }
@@ -325,6 +337,9 @@ class GuardService : Service() {
 
     override fun onDestroy() {
         efterResan()          // FÖRE scope.cancel() — läser sitt eget, kortlivade scope
+        // #787: hur passet slutade, i ett eget kortlivat scope som efterResan. Nästa stopp eller öppning skickar det.
+        val app = applicationContext; val orsak = stoppOrsak; stoppOrsak = "hand"
+        CoroutineScope(Dispatchers.IO).launch { runCatching { Raknare.vaktStoppad(app, orsak) } }
         sparaTuren()
         sparaMatningen()
         Favoriter.lager(this).resanSlutar(session.value.km, (System.currentTimeMillis() - session.value.startedAt) / 60_000.0)   // kort #357: frågan på Redo., bara om insamlingen var på
@@ -412,6 +427,8 @@ class GuardService : Service() {
     }
 
     companion object {
+        /** #787: varför nästa onDestroy sker — parkerad (kvarten), sjalv (autostarten stängde), annars hand. */
+        @Volatile var stoppOrsak = "hand"
         private const val NOTIF_ID = 1
         private const val EFTER_CH = "efter_resan"
         private const val HEADS_UP_CH = "heads_up"

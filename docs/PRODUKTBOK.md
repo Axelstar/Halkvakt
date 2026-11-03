@@ -149,7 +149,10 @@ och *fartkamera* (en låda på stolpe med blixtlinjer). Svarta på kortet, ljusa
   i appen. Inget konto. Undantaget är betatestet — bara om du själv slår på det."* (i App Store-versionen från (33): *"Inget
   konto, och inget skickas."*, #681; från (37) *"Inget konto."* följt av räknarens mening: *"Appen räknar anonymt hur många som går
   igenom introduktionen, vilken platsbehörighet som väljs, att vakten startar och att en första varning sägs — ett ord per
-  händelse, aldrig var du är eller vem du är."*, DECISIONS #772), sedan *"Slår du på Erbjud att spara
+  händelse, aldrig var du är eller vem du är."*, DECISIONS #772; från nästa version, DECISIONS #787: *"Appen räknar anonymt hur
+  många som går igenom introduktionen, vilka behörigheter som väljs, hur ofta och ungefär hur länge vakten är på, vilka varningar som
+  sägs, vilka inställningar som ändras och vad som går fel. Ett ord per händelse, med appens version. Aldrig var du är, hur långt du
+  kör eller vem du är."*, på Android utan introduktionen), sedan *"Slår du på Erbjud att spara
   resor under Favoriter sparas vägarna du väljer, bara i telefonen och aldrig i en säkerhetskopia. Du tar bort dem där."*
   (18/10; *"ingen spårning"* ströks, för en sparad resa är ett spår, även om det bara finns hos föraren, #616),
   raden till Betatest och Integritetspolicyn.
@@ -470,8 +473,11 @@ Ingen prognos (varnar på uppmätt läge, inte gissningar), tyst mellan
 mätstationerna, ingen ködetektion ännu. Skickar ingenting om
 dig — med ett enda undantag som du själv slår på: betatestets facitsvar (se Om) — och, sedan 0.3.15 (37), räknaren (DECISIONS #772):
 ett ord per händelse när introduktionen gått igenom, när platsbehörigheten blivit *Alltid*, *När appen används* eller nekad, när
-vakten startar (för hand eller av sig själv) och vid enhetens första varning. Servern räknar upp en rad per dygn och händelse; inget
-id, ingen version, ingen tid, ingen position — talen säger *hur många*, aldrig *vem*. Alltid på, och det står i Integritet och i
+vakten startar (för hand eller av sig själv) och vid enhetens första varning. Från nästa version (DECISIONS #787) sex områden: vägen
+in (också notisbehörigheten och första starten), en gång per dygn som vakten gick, varje vaktpass med startsätt, längd i fyra hinkar
+och hur det slutade, varje varning med fara och avstånd i hinkar, ändrade inställningar och fel (positionen borta, gammal väglagsdata,
+misslyckad hämtning). Varje ord bär appens version och om installationen är ny eller fanns före räknaren. Servern räknar upp en rad per
+dygn, version, kohort och händelse; inget id, ingen tid, ingen position och ingen sträcka — talen säger *hur många*, aldrig *vem*. Alltid på, och det står i Integritet och i
 integritetspolicyn. Vägar du kört sparas bara om du slår på
 det under Favoriter, och bara i telefonen. Hela ärliga
 listan: [SYSTEM.md §4](SYSTEM.md).

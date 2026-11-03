@@ -180,8 +180,8 @@ struct InstallningarView: View {
                      ? "All matchning mot vägdata sker lokalt i appen. Inget konto. Undantaget är betatestet — bara om du själv slår på det."
                      : "All matchning mot vägdata sker lokalt i appen. Inget konto.")
                     .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2)
-                // #772: räknaren är alltid på och står här — texten "inget skickas" var sann till 0.3.15.
-                Text("Appen räknar anonymt hur många som går igenom introduktionen, vilken platsbehörighet som väljs, att vakten startar och att en första varning sägs — ett ord per händelse, aldrig var du är eller vem du är.")
+                // #772: räknaren är alltid på och står här — texten "inget skickas" var sann till 0.3.15. #787: de sex områdena.
+                Text("Appen räknar anonymt hur många som går igenom introduktionen, vilka behörigheter som väljs, hur ofta och ungefär hur länge vakten är på, vilka varningar som sägs, vilka inställningar som ändras och vad som går fel. Ett ord per händelse, med appens version. Aldrig var du är, hur långt du kör eller vem du är.")
                     .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2)
                 Text("Slår du på Erbjud att spara resor under Favoriter sparas vägarna du väljer, bara i telefonen och aldrig i en säkerhetskopia. Du tar bort dem där.")
                     .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2)
@@ -445,7 +445,10 @@ struct HalkvaktApp: App {
             .preferredColorScheme(.dark)
             // S4: osända facitsvar går iväg när appen blir aktiv — bilen står stilla då. Räknarens kö likaså (#772).
             .onChange(of: scenePhase) { _, phase in
-                if phase == .active { Task { _ = await FacitSender.flush(); await Raknare.flush() } }
+                if phase == .active { Task {
+                    Raknare.notiser(await HeadsUpService.shared.status())   // #787: en gång per enhet och värde
+                    _ = await FacitSender.flush(); await Raknare.flush()
+                } }
             }
             // DECISIONS #36: introduktionen är det första man ser, en gång.
             // #772: räknas när föraren gick igenom den — inte när fotostudion hoppar över den (init ovan skriver fältet direkt).

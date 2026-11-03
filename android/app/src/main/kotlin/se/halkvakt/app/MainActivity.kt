@@ -134,6 +134,7 @@ class MainActivity : ComponentActivity() {
         if (AutostartManager.isEnabled(this)) {
             AutostartManager.setEnabled(this, false)
             autostartOn.value = false
+            lifecycleScope.launch(Dispatchers.IO) { runCatching { Raknare.installning(this@MainActivity, "autostart:av") } }   // #787
             AppEvents.post("Autostart av.")
             return
         }
@@ -168,6 +169,7 @@ class MainActivity : ComponentActivity() {
         }
         AutostartManager.setEnabled(this, true)
         autostartOn.value = true
+        lifecycleScope.launch(Dispatchers.IO) { runCatching { Raknare.installning(this@MainActivity, "autostart:pa") } }   // #787
         notice.value = null
         AppEvents.post("Autostart på. Vakten lär sig bilens Bluetooth vid nästa körning.")
     }
@@ -267,7 +269,11 @@ class MainActivity : ComponentActivity() {
         super.onResume()
         autostartOn.value = AutostartManager.isEnabled(this)
         // #772: behörigheten som den ser ut nu (en gång per enhet och värde), och räknarens kö går iväg — appen är öppen, bilen står.
-        lifecycleScope.launch(Dispatchers.IO) { runCatching { Raknare.behorighet(this@MainActivity); Raknare.flush(this@MainActivity) } }
+        // #787: kohorten låses först (en ny telefon har inga spår än), sedan notiserna som de ser ut nu.
+        val notisPa = notificationsOk(); val notisFragat = askedNotifications
+        lifecycleScope.launch(Dispatchers.IO) { runCatching {
+            Prefs.raknareKohort(this@MainActivity)
+            Raknare.behorighet(this@MainActivity); Raknare.notiser(this@MainActivity, notisPa, notisFragat); Raknare.flush(this@MainActivity) } }
         if (hasPermissions()) {
             val fused = LocationServices.getFusedLocationProviderClient(this)
             fused.lastLocation.addOnSuccessListener { l ->
