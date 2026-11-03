@@ -13577,3 +13577,40 @@ längre bort nästan aldrig. Olyckor utan vägnummer: 139 av drygt 2 600 (5 %); 
 fel vägnummer är värre än inget. Tysta olyckor utan väg: ett produktbeslut, inte taget; mäts om när den här ändringen gått en tid.
 
 **Stomdokument:** APP, SYS — olyckans vägnummer i live.json kan nu komma från väglagssträckan.
+## #787 (3/11 2026) Räknaren i sex områden, med version och kohort: vägen in, aktiva dygn, vaktpasset, varningarna, inställningarna och felen
+
+**Beslut (Axel 3/11; Bengts ja 3/11 kväll, framfört av Axel 23:45: *"I hav coverd this with Dad, can you deploy it?"*).** Räknaren från #772 räcker inte för att veta om
+appen används. 0.3.15:s tal 3/11 gick inte att läsa: *Första varningen* gällde första varningen sedan uppdateringen, inte första
+någonsin, och starterna per telefon var fler än resorna kan förklara. Räknaren utvidgas, med samma form (ett ord per händelse, en rad per
+dygn) och två nya fält på varje ord:
+- `ver`, appens version: så att ett fel eller en falsk start kan knytas till ett bygge. Invarianten sa *ingen version*; den ändras.
+- `k`, kohorten: `ny` om telefonen började räkna med en tom app, `befintlig` om den bar spår av appen (introduktionen klar, 0.3.15:s
+  räknare, en varning eller en resa). Sätts en gång per telefon och ändras aldrig. Skiljer nya användare från gamla som uppdaterade.
+
+De sex områdena (värdelistan i `supabase/functions/app-raknare/index.ts`):
+1. **Vägen in**, en gång per enhet och värde: `onboarding_klar`, `behorighet`, nya `notiser` (pa | nekad) och `forsta_starten`,
+   `forsta_varningen`.
+2. **Aktiva förare:** `aktiv_dag`, en gång per dygn som vakten gick, med dagar sedan telefonen började räkna (0, 1–7, 8–30, över 30).
+3. **Vaktpasset:** `vakt_startad` som förut, och `resa_slut` med startsätt (sjalv | knapp | intent; Android sjalv | knapp), längd i
+   fyra hinkar (under 3, 3–15, 15–45, över 45 min; *okand* när appen dog mitt i) och slut (parkerad = kvarten | sjalv = Androids
+   autostart | hand | avbruten). **Ingen sträcka** (Axels val: sträckan är rörelsedata).
+4. **Varningarna:** `varning` med fara och avståndet till faran i hinkar, `varning_ersatt` (faran vars kort byttes ut inom 8 s) och
+   `banner` (visad | tyst, efter notisbehörigheten när varningen kom).
+5. **Inställningarna:** `installning` fara:pa|av, forvarning:400|800|1200, autostart:pa|av.
+6. **Fel**, en gång per vaktpass och sort: `fel` plats_borta, gammal_data, hamtning_fel. Appen som dör syns som `resa_slut … avbruten`.
+
+**Alternativ:** längd och sträcka i hinkar (avvisat av Axel: sträckan är rörelsedata), inget om passet alls (avvisat: falska starter
+syns inte), inget versionsfält (avvisat: felen kan inte knytas till ett bygge). Län: väntar (inte i detta beslut; automatiskt ur GPS
+avvisat, ett aktivt val i appen är kvar som förslag).
+
+**Byggt:** `sql/082` (kolumnerna `version` och `kohort`, ny primärnyckel, femställig `app_raknare_okna`, den treställiga kvar som
+omslag så att den driftsatta funktionen räknar rätt tills den deployas), `app-raknare`, `Raknare.swift`/`Raknare.kt` och anropen i
+GuardManager, GuardService, MainActivity, AutostartManager och Prefs. Allt utom release-byggen räknar inte (`#if DEBUG`,
+`BuildConfig.DEBUG`), som #772. Invarianten i CLAUDE.md, PLAY-DATASAFETY (Diagnostics tillagd), PrivacyInfo.xcprivacy
+(*Other Diagnostic Data*), appstore-ios.md, PRODUKTBOK och appens Integritet (iOS och Android) ändras i samma commit;
+integritet.html och statistiksidan i halkvakt-karta i en egen PR som slås ihop samtidigt.
+
+**Ordning i drift:** sql/082 först (dbknapp), sedan `app-raknare` deployas, sedan nästa bygge. 0.3.15 räknar vidare med '' i version
+och kohort.
+
+**Stomdokument:** APP räknaren, SYS app-raknare och sql/082

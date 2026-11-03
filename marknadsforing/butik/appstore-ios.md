@@ -89,6 +89,14 @@ Versionen i butiken är 0.3.13 (34); listan gäller allt som kommit sedan dess (
 
 *App Privacy:* oförändrat — *Coarse Location* och *Product Interaction*, inte kopplade, ingen spårning; räknaren är det som posten *Product Interaction* nu faktiskt bär.
 
+## Nästa version: räknarens sex områden (DECISIONS #787, utkast 3/11, Axel och Bengt)
+
+*What's New:* • Appen räknar anonymt lite mer om hur den används: hur ofta och ungefär hur länge vakten är på, vilka varningar som sägs, vilka inställningar som ändras och vad som går fel. Ett ord per händelse, med appens version. Aldrig var du är, hur långt du kör eller vem du är.
+
+> NEW IN THIS VERSION: the anonymous counter covers six areas instead of four events: the way in (onboarding, location and notification permission, first start, first warning), active days, each guard session (start method, length in four buckets, how it ended; never distance or place), each warning (hazard type and distance to it in buckets, whether the card was replaced, whether the banner was allowed), settings changed, and errors (location lost, stale road data, failed download). Each event also carries the app version and whether the install is new or existing. No identifier, no timestamp finer than the day, no position and no IP address are sent or stored.
+
+*App Privacy:* lägg till *Diagnostics → Other Diagnostic Data* (Analytics, inte kopplad, ingen spårning), som manifestet i bygget.
+
 ## Granskarens anteckningar (App Review Information → Notes)
 Klistra in på engelska — granskarna läser engelska. Stycket om nyheterna i 0.3.13 är ett utkast 18/10 som Axel godkänner; meningarna om
 inspelningarna gäller först när de är bifogade (steg 2 nedan).

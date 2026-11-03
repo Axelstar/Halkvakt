@@ -57,7 +57,7 @@ object AutostartManager {
         ctx.getSharedPreferences(PREFS, 0).edit().putBoolean(KEY_AUTO, c.isAutoStarted()).apply()
         when (cmd) {
             AutoCmd.START -> safeStartGuard(ctx)
-            AutoCmd.STOP -> ctx.stopService(Intent(ctx, GuardService::class.java))
+            AutoCmd.STOP -> { GuardService.stoppOrsak = "sjalv"; ctx.stopService(Intent(ctx, GuardService::class.java)) }   // #787
             AutoCmd.LEARN -> { persistCars(ctx, c); AlertBus.post("Bilens Bluetooth inlärd — vakten startar själv nästa gång.") }
             AutoCmd.NONE -> {}
         }

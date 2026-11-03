@@ -73,15 +73,15 @@ final class Prefs {
     static let shared = Prefs()
     private let d = UserDefaults.standard
 
-    var accident: Bool { didSet { d.set(accident, forKey: "k.accident") } }
-    var slippery: Bool { didSet { d.set(slippery, forKey: "k.slippery") } }
-    var icing: Bool { didSet { d.set(icing, forKey: "k.icing") } }
-    var wildlife: Bool { didSet { d.set(wildlife, forKey: "k.wildlife") } }
-    var camera: Bool { didSet { d.set(camera, forKey: "k.camera") } }
+    var accident: Bool { didSet { d.set(accident, forKey: "k.accident"); Raknare.installning("accident:\(accident ? "pa" : "av")") } }
+    var slippery: Bool { didSet { d.set(slippery, forKey: "k.slippery"); Raknare.installning("slippery_segment:\(slippery ? "pa" : "av")") } }
+    var icing: Bool { didSet { d.set(icing, forKey: "k.icing"); Raknare.installning("icing_point:\(icing ? "pa" : "av")") } }
+    var wildlife: Bool { didSet { d.set(wildlife, forKey: "k.wildlife"); Raknare.installning("wildlife:\(wildlife ? "pa" : "av")") } }
+    var camera: Bool { didSet { d.set(camera, forKey: "k.camera"); Raknare.installning("camera:\(camera ? "pa" : "av")") } }
     /// Längsta förvarning i meter (motorns leadMaxM) — ett tak. Kort #259: motorn talar vid fart × 30 s, så över 1 200 m
     /// (≈ 30 s i 140 km/h) gjorde reglaget ingenting. Äldre sparade värden upp till 3 000 läses som 1 200: samma beteende.
     static let leadRange: ClosedRange<Double> = 400...1200
-    var leadMaxM: Double { didSet { d.set(leadMaxM, forKey: "k.leadMaxM") } }
+    var leadMaxM: Double { didSet { d.set(leadMaxM, forKey: "k.leadMaxM"); Raknare.installning("forvarning:\(Int(leadMaxM))") } }
     /// #24: senaste repliken, överlever omstart — hemskärmens "Senast sagt".
     var lastSaidText: String? { didSet { d.set(lastSaidText, forKey: "k.lastSaidText") } }
     var lastSaidAt: Date? { didSet { d.set(lastSaidAt, forKey: "k.lastSaidAt") } }
@@ -121,6 +121,12 @@ final class Prefs {
     /// Appens anonyma dagsräknare (DECISIONS #772): osända händelser, och vad enheten redan räknat en gång. Raknare.swift.
     var raknareKo: [RaknadHandelse] { didSet { d.set(try? JSONEncoder().encode(raknareKo), forKey: "k.raknareKo") } }
     var raknat: [String] { didSet { d.set(raknat, forKey: "k.raknat") } }
+    /// #787: när telefonen började räkna, och om den hade appen redan då (kohorten). Sätts en gång, i init.
+    let raknareForst: Date
+    let raknareBefintlig: Bool
+    /// #787: det pågående vaktpasset ("metod|start"), så att ett pass som appen dog mitt i räknas som avbrutet; och senaste aktiva dygnet.
+    var raknarePass: String? { didSet { d.set(raknarePass, forKey: "k.raknarePass") } }
+    var raknareAktivDag: String? { didSet { d.set(raknareAktivDag, forKey: "k.raknareAktivDag") } }
     /// Senaste gången vakten startades av intentet (automation eller Siri) — guidens kvitto.
     var lastIntentStartAt: Date? { didSet { d.set(lastIntentStartAt, forKey: "k.lastIntentStartAt") } }
     /// Vakna själv vid körning (kräver Alltid). Standard på. DECISIONS #40.
@@ -130,6 +136,7 @@ final class Prefs {
     var autoWake: Bool {
         didSet {
             d.set(autoWake, forKey: "k.autoWake")
+            Raknare.installning("autostart:\(autoWake ? "pa" : "av")")   // #787
             Task { @MainActor in GuardManager.shared.armAutoWake() }   // MainActor-isolerad
         }
     }
@@ -157,6 +164,19 @@ final class Prefs {
         onboardingDone = d.bool(forKey: "k.onboardingDone")
         raknareKo = d.data(forKey: "k.raknareKo").flatMap { try? JSONDecoder().decode([RaknadHandelse].self, from: $0) } ?? []
         raknat = d.stringArray(forKey: "k.raknat") ?? []
+        // #787: en telefon som redan bar spår av appen (introduktionen, 0.3.15:s räknare, en resa) är befintlig, annars ny.
+        if let forst = d.object(forKey: "k.raknareForst") as? Date {
+            raknareForst = forst
+            raknareBefintlig = d.bool(forKey: "k.raknareBefintlig")
+        } else {
+            raknareForst = .now
+            raknareBefintlig = d.bool(forKey: "k.onboardingDone") || !(d.stringArray(forKey: "k.raknat") ?? []).isEmpty
+                || d.object(forKey: "k.lastTripEnd") != nil || d.data(forKey: "k.history") != nil
+            d.set(raknareForst, forKey: "k.raknareForst")
+            d.set(raknareBefintlig, forKey: "k.raknareBefintlig")
+        }
+        raknarePass = d.string(forKey: "k.raknarePass")
+        raknareAktivDag = d.string(forKey: "k.raknareAktivDag")
         lastIntentStartAt = d.object(forKey: "k.lastIntentStartAt") as? Date
         autoWake = d.object(forKey: "k.autoWake") as? Bool ?? true
         lastAutoWakeAt = d.object(forKey: "k.lastAutoWakeAt") as? Date

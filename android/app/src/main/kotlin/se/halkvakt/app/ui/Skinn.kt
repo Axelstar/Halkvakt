@@ -629,8 +629,8 @@ private fun Undersida(sida: Sida, activity: MainActivity, open: (Sida) -> Unit, 
                     Text(if (Prefs.betatestTillaten) "All matchning mot vägdata sker lokalt i appen. Inget konto. Undantaget är betatestet — bara om du själv slår på det."
                          else "All matchning mot vägdata sker lokalt i appen. Inget konto.",
                         color = Text2, fontFamily = Typo.sans, fontSize = 14.sp, lineHeight = 21.sp)
-                    // #772: räknaren är alltid på och står här — texten "inget skickas" var sann till 0.3.15.
-                    Text("Appen räknar anonymt vilken platsbehörighet som väljs, att vakten startar och att en första varning sägs — ett ord per händelse, aldrig var du är eller vem du är.",
+                    // #772: räknaren är alltid på och står här — texten "inget skickas" var sann till 0.3.15. #787: de sex områdena.
+                    Text("Appen räknar anonymt vilka behörigheter som väljs, hur ofta och ungefär hur länge vakten är på, vilka varningar som sägs, vilka inställningar som ändras och vad som går fel. Ett ord per händelse, med appens version. Aldrig var du är, hur långt du kör eller vem du är.",
                         color = Text2, fontFamily = Typo.sans, fontSize = 14.sp, lineHeight = 21.sp)
                     Text("Slår du på Erbjud att spara resor under Favoriter sparas vägarna du väljer, bara i telefonen och aldrig i en säkerhetskopia. Du tar bort dem där.",
                         color = Text2, fontFamily = Typo.sans, fontSize = 14.sp, lineHeight = 21.sp)
