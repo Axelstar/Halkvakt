@@ -129,6 +129,17 @@ jobs:
         if: env.FLAGGA == 'på'
         env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
         run: node --experimental-strip-types ingest/ny-kandidat-db.ts skriv-ph "ut/ny_kandidat_ph_$STAMP.csv.gz" 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+      # Kandidaten på en kvart (DECISIONS #782, kort #373): lägena och paret som kandidat_snabb() läser (sql/078). Paret skrivs aldrig ut.
+      # continue-on-error: del A och domkedjan får aldrig falla på visningens väg (till exempel före migrationen sql/078).
+      - name: Punkterna och paret till kandidaten på en kvart (bara med flaggan på)
+        if: env.FLAGGA == 'på'
+        continue-on-error: true
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        shell: bash
+        run: |
+          set -o pipefail
+          node --experimental-strip-types ingest/ny-kandidat-db.ts skriv-punkter mn/metnordic_punkter.csv 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types ingest/ny-kandidat-db.ts skriv-par kuvos/kandidat-2027-28.json 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Flaggan av — ingenting skrivs
         if: env.FLAGGA != 'på'
         run: echo "**Flaggan är av** (kuvos/ny-kandidat-skugga.json) — PH står bara i artefakten, ingenting är skrivet till databasen." | tee -a "$GITHUB_STEP_SUMMARY"

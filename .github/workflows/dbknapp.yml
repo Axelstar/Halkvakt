@@ -21,6 +21,14 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+      # En fil under fysik/live/ är halkvakt-kuvos räkning (DECISIONS #782): koden läggs ovanpå, som i kandidatens flöden, och
+      # dbknapp.ts skriver bara ut filens längd.
+      - uses: actions/checkout@v4
+        if: startsWith(inputs.fil, 'fysik/')
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        if: startsWith(inputs.fil, 'fysik/')
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm }
       - run: npm ci
