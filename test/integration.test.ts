@@ -2,6 +2,7 @@
 // Skips cleanly when TEST_DATABASE_URL is absent (local runs without Docker).
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { ingestAction, shouldArchive } from "../ingest/sources/situations.ts";
 
 const url = process.env.TEST_DATABASE_URL;
@@ -798,6 +799,24 @@ test("#85 writeFi/writeNo/writeDk: batchat, upsert på latest, DO NOTHING i arki
   } finally { await pool.end(); }
 });
 
+// DECISIONS #781: vakthundens kontroll 9b och healthchecken räknar grannstationerna inom 40 km med samma låda som publiceringen.
+// Frågorna läses ur filerna, så proven prövar det som körs.
+const gransrakningen = () => ["supabase/functions/vakthund/index.ts", "ingest/healthcheck.ts"].map((fil) => ({
+  fil,
+  fraga: readFileSync(new URL(`../${fil}`, import.meta.url), "utf8")
+    .match(/`(\s*SELECT count\(\*\)::int AS n FROM \$\{land\}\.weather_latest f\r?\n[\s\S]*?)`/)?.[1],
+}));
+
+test("#781 vakthundens och healthcheckens gränsräkning sållar på vägindexet med en låda på minst BORDER_DEG", async () => {
+  const { BORDER_DEG } = await import("../publish/snapshot-core.ts");
+  for (const { fil, fraga } of gransrakningen()) {
+    assert.ok(fraga, `${fil}: räknefrågan hittades inte`);
+    assert.doesNotMatch(fraga, /ST_Collect/, fil);
+    const lada = Number(fraga.match(/r\.geom && ST_Expand\(f\.geom, ([\d.]+)\)/)?.[1]);
+    assert.ok(lada >= BORDER_DEG, `${fil}: lådan ${lada}° är mindre än BORDER_DEG ${BORDER_DEG.toFixed(3)}°`);
+  }
+});
+
 // DECISIONS #742: gränsfrågan sållar vägarna med vägindexet (lådan BORDER_DEG) innan avståndet mäts. Den ska välja exakt de
 // stationer som den gamla frågan valde (alla vägar i en ST_Collect, inget index) — också vid Riksgränsen, där en longitudgrad
 // är kortast. Varje station ligger 1–3,4 km från gränsen på 40 km; NO-IN behöver en låda på minst 0,95°.
@@ -831,6 +850,16 @@ test("#742 gränsfrågan på vägindexet väljer samma grannstationer som ST_Col
         SELECT f.station_id FROM ${land}.weather_latest f, se
         WHERE ${WX_SANE_GRANS} AND ST_DWithin(f.geom::geography, se.g::geography, $1)`, [BORDER_M]);
       assert.equal(border[land]?.reach, gammal.rows.length, `${land}: den nya frågan och ST_Collect-frågan räknar olika`);
+      // #781: vakthundens kontroll 9b och healthchecken mot sin egen fråga före omskrivningen (bara färskheten, ingen radvakt).
+      const forut = (await pool.query(`
+        WITH se AS (SELECT ST_Collect(geom) g FROM road_conditions WHERE NOT deleted AND geom IS NOT NULL)
+        SELECT count(*)::int AS n FROM ${land}.weather_latest f, se
+        WHERE f.sample_time > now() - interval '3 hours' AND ST_DWithin(f.geom::geography, se.g::geography, 40000)`)).rows[0].n;
+      assert.ok(forut >= 1, `${land}: ingen grannstation inom 40 km i den gamla frågan`);
+      for (const { fil, fraga } of gransrakningen()) {
+        const n = (await pool.query(fraga!.replaceAll("${land}", land))).rows[0].n;
+        assert.equal(n, forut, `${fil} (${land}): räkningen på vägindexet och ST_Collect-frågan räknar olika`);
+      }
     }
   } finally {
     await pool.query(`DELETE FROM road_conditions WHERE segment_id LIKE 'G742-%'`);

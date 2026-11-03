@@ -13322,3 +13322,32 @@ prov när filmerna är jämförda, inte samtidigt.
 också: Axel ville bara reels. Filmen som fil i repot för Meta att hämta: repot är publikt och växer; uppladdningen går direkt till Meta.
 
 **Stomdokument:** inga — marknadsföringen har inget stomdokument; appen, motorn och mätningarna är orörda.
+
+## #781 (3/11 2026) Gränsräkningen i vakthunden och healthchecken använder vägindexet, som publiceringen sedan #742
+
+**Beslut** (Bengt 3/11: *"Ja, skriv om"*). Vakthundens kontroll 9b och healthchecken räknar de finska och norska stationerna inom 40 km
+från en svensk väg (golven FI 10 och NO 20, kort #49). Båda frågorna slog fortfarande ihop alla vägsträckor med `ST_Collect`, den form
+som #742 tog bort ur publiceringen. Nu sållar samma låda som där vägarna på vägindexet (`r.geom && ST_Expand(f.geom, 1.17)`), och samma
+`ST_DWithin` på 40 km avgör. 1,17° är `BORDER_DEG` i `publish/snapshot-core.ts` (1,163°) avrundad uppåt: en större låda ändrar inte vilka
+stationer som räknas, bara hur många vägar som mäts. Golven, radien och färskheten (tre timmar, #751) är oförändrade.
+
+**Mätt** (Supabase-panelen, *Query Performance*, 2/11 kväll, bara läsning; summerat sedan den senaste nollställningen). Räkningen tog
+22,5 s i medel för fi (högst 103 s) och 20,5 s för no. Mellan 21:52 och 22:28 UTC ökade båda med två anrop (vakthunden 22:07 och
+healthchecken 22:23), tillsammans 88 s. Det blir omkring 66 s databastid i timmen, i klumpar om omkring 22 s, knappt en procentenhet av
+Small-instansen. Stationslistorna i den gamla formen (5 312 anrop à 18–19 s) stod still mellan läsningarna: de försvann med #742.
+
+**Prov.** `test/integration.test.ts` läser frågorna ur de två filerna. Utan databas: ingen `ST_Collect`, och lådan är minst `BORDER_DEG`.
+Mot PostGIS, med #742:s fyra grannstationer vid Haparanda och Riksgränsen (där lådan behöver minst 0,95°): båda räknar lika många som
+sin egen fråga före omskrivningen. Kontraktsgrinden: gränsradiens mönster följer den nya formen, och lådan är ett eget kontrakt med
+golvet 2. Motprov: lådan 0,9° i vakthunden fäller både provet och grinden.
+
+**Verify:** efter deployen av vakthunden visar timraden `gräns-wx FI` och `gräns-wx NO` samma antal som före, och i *Query Performance*
+växer inte räkningen i `ST_Collect`-formen längre (fi 2 117 och no 2 111 anrop vid läsningen 2/11 22:28 UTC). Healthchecken kör ur main
+från nästa körning efter sammanslagningen.
+
+**Alternativ.** Låta dem vara: 66 s i timmen är inte mycket, men det är databasens tyngsta enskilda anrop, med toppar på 103 s, och
+minnesåtagandet står på varning. Importera `BORDER_DEG`: vakthunden är en edge-funktion utan `publish/`, och kontraktsgrinden jämför
+talen i de två filerna, så talet står i båda och provet binder det till `BORDER_DEG`. Ta bort räkningen ur healthchecken: den är
+avsiktligt dubblerad, eftersom healthchecken är den enda kontroll som körs utanför Supabase (kort #87, Bengt 14/9).
+
+**Stomdokument:** BED §4.2.
