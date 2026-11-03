@@ -13,6 +13,8 @@ import { spawn, execFileSync } from "node:child_process";
 const HAR = dirname(fileURLToPath(import.meta.url));
 const UT = join(HAR, "reels-ut");
 const HISTORIK = join(HAR, "reels-historik.json");
+// A film picked by hand for one evening ({dag, typ}); it wins over the rotation that day if the data allows it.
+const VALD = join(HAR, "reels-vald.json");
 const GRAPH = "https://graph.facebook.com/v23.0";
 const TZ = "Europe/Stockholm";
 const FPS = 30;
@@ -116,6 +118,11 @@ async function filma(typ, ut) {
   renameSync(ut + ".part.mp4", ut);
 }
 
+const handval = (idag, sam) => {
+  const v = existsSync(VALD) ? JSON.parse(readFileSync(VALD, "utf8")) : null;
+  return v?.dag === idag && behorig(sam)[v.typ] ? v.typ : null;
+};
+
 async function rendera() {
   const sam = JSON.parse(readFileSync(join(UT, "sammanfattning.json"), "utf8"));
   const alder = (Date.now() - new Date(sam.gen)) / 36e5;
@@ -124,6 +131,7 @@ async function rendera() {
   else {
     const historik = lasHistorik();
     if (historik.some(h => h.dag === val.dag && !h.torr === skarpt())) val.skal = `Kvällens reel är redan gjord (${val.dag}).`;
+    else if (handval(val.dag, sam)) val.typ = handval(val.dag, sam);
     else if (!(val.typ = valjTyp(sam, historik, skarpt()))) val.skal = "Ingen av filmerna har något sant att visa i kväll. Ingen reel.";
   }
   writeFileSync(join(UT, "val.json"), JSON.stringify(val, null, 1) + "\n");
