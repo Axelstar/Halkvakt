@@ -1,0 +1,39 @@
+name: engangsprov-snabb-minne
+# ENGÅNGSPROV 3/11 2026 (DECISIONS #783, kort #373): varför kandidaten på en kvart fyllde databasens minne. Körs bara på grenen
+# claude/snabb-minne-prov, aldrig mot produktionen och aldrig på main: Supabases egen Postgres i en container med produktionens minne
+# (Small), påhittade data i full storlek. Kuvösens räkning hämtas ur det privata repot och skrivs aldrig ut; loggen bär bara tider,
+# minne och tilläggens namn (scripts/engangsprov-snabb-minne.mjs).
+on:
+  push:
+    branches: [claude/snabb-minne-prov]
+    paths: [".github/workflows/engangsprov-snabb-minne.yml", "scripts/engangsprov-snabb-minne.mjs"]
+permissions:
+  contents: read
+jobs:
+  prov:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Bara räkningen ur det privata repot
+        run: cp .kuvos-privat/fysik/live/kandidat_snabb.sql "$RUNNER_TEMP/snabb.sql" && rm -rf .kuvos-privat
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Supabases Postgres med produktionens minne
+        run: |
+          PW=$(openssl rand -hex 16); JW=$(openssl rand -hex 32)
+          echo "::add-mask::$PW"; echo "::add-mask::$JW"
+          echo "PGPASSWORD=$PW" >> "$GITHUB_ENV"
+          docker run -d --name pg --memory=1800m --memory-swap=1800m -p 5432:5432 -e POSTGRES_PASSWORD="$PW" -e JWT_SECRET="$JW" \
+            supabase/postgres:17.6.1.178 > /dev/null
+          mkdir -p "$RUNNER_TEMP/pgm" && cd "$RUNNER_TEMP/pgm" && echo '{"private":true}' > package.json
+          npm install --no-save --no-audit --no-fund pg@8.13.1 > /dev/null
+      - name: Provet
+        env: { PGMOD: "${{ runner.temp }}/pgm", ROR: sql/078_kandidat_snabb.sql, SNABB: "${{ runner.temp }}/snabb.sql" }
+        run: node scripts/engangsprov-snabb-minne.mjs
+      # Bara raderna om processer som dött, aldrig satserna.
+      - name: Containerns logg vid fel
+        if: failure()
+        run: docker logs pg 2>&1 | grep -E "terminated by signal|out of memory|database system is" | tail -20 || true
