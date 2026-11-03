@@ -1,6 +1,6 @@
 # Reels (DECISIONS #780): the sound bed for one reel, synthesized, so no music licence is ever involved.
 #   python3 marknadsforing/reels/ljud.py <typ> <ut.wav>
-# The cues follow reel.html's timeline per type: ticks as stations light, a sweep while the camera moves, a chime on the
+# The cues follow reel.html's timeline per type: a soft swell as stations light, rising notes as list rows come in, a sweep while the camera moves, a chime on the
 # headline, and the closing chord as the end card comes in.
 import sys, wave
 import numpy as np
@@ -22,8 +22,18 @@ def ton(f, langd, a=.2, decay=6.0):
     return a * np.exp(-decay * t) * (np.sin(2 * np.pi * f * t) + .3 * np.sin(4 * np.pi * f * t)) * np.minimum(1, t / .004)
 
 
-def tick(f=2200):
-    return ton(f, .06, .12, 60)
+def mjuk(f, a=.09):
+    """A soft mallet note: pure sine, a gentle attack and a slow fade, so a run of them never clicks."""
+    t = np.arange(int(1.6 * SR)) / SR
+    return a * np.exp(-3.5 * t) * np.sin(2 * np.pi * f * t) * np.minimum(1, t / .015)
+
+
+def blom(langd, a=.035):
+    """Stations lighting up: a low, filtered swell instead of a run of ticks (Axel 3/11: the ticks sounded odd)."""
+    n = int(langd * SR); t = np.arange(n) / SR
+    brus = np.convolve(np.random.default_rng(3).standard_normal(n), np.ones(240) / 240, 'same') * 6
+    ton_ = .5 * np.sin(2 * np.pi * 330 * t) + .3 * np.sin(2 * np.pi * 495 * t)
+    return a * np.sin(np.pi * np.minimum(1, t / langd)) ** 2 * (brus + ton_)
 
 
 def sweep(langd, f0=180, f1=900, a=.05):
@@ -50,25 +60,26 @@ def lagg(buf, ljud, vid):
     i = int(vid * SR); j = min(len(buf), i + len(ljud)); buf[i:j] += ljud[:j - i]
 
 
-def ticks(buf, start, antal, steg=.12, f=2200):
-    for k in range(antal): lagg(buf, tick(f + 40 * (k % 3)), start + k * steg)
+def rader(buf, start, steg=.25, toner=(523.3, 659.3, 784.0)):
+    """The list rows sliding in: one soft note per step, rising."""
+    for k, f in enumerate(toner): lagg(buf, mjuk(f), start + k * steg)
 
 
 def bygg(typ):
     buf = drone(LANGD[typ] * SR)
     if typ == 'halt':
-        ticks(buf, .8, 10); lagg(buf, sweep(3.4), 1.8); lagg(buf, chime(), 4.9); ticks(buf, 6.4, 5, .18); lagg(buf, slut(), 11.7)
+        lagg(buf, blom(2.4), .6); lagg(buf, sweep(3.4), 1.8); lagg(buf, chime(), 4.9); rader(buf, 6.4); lagg(buf, slut(), 11.7)
     elif typ == 'frost':
-        ticks(buf, .8, 14, .1); lagg(buf, sweep(2.4), 2.6); lagg(buf, ton(1046.5, 1.4), 5.4); lagg(buf, ton(880, 1.4), 7.0)
+        lagg(buf, blom(2.4), .6); lagg(buf, sweep(2.4), 2.6); lagg(buf, ton(1046.5, 1.4), 5.4); lagg(buf, ton(880, 1.4), 7.0)
         lagg(buf, slut(), 11.7)
     elif typ == 'kallast':
-        ticks(buf, .8, 10)
+        lagg(buf, blom(2.2), .6)
         for k, f in enumerate((784, 698.5, 659.3, 587.3)): lagg(buf, ton(f, 1.2), 2.6 + k * 1.1)
         lagg(buf, chime(), 7.0); lagg(buf, slut(), 11.7)
     elif typ == 'e4':
         lagg(buf, sweep(6.6, 140, 700, .045), 1.4); lagg(buf, ton(1046.5, 1.4), 8.2); lagg(buf, slut(), 11.7)
     elif typ == 'natt':
-        ticks(buf, .4, 24, .1); ticks(buf, 3.6, 9, .14); lagg(buf, whoosh(1.8), 6.4); ticks(buf, 8.0, 8, .12)
+        lagg(buf, blom(3.0), .3); lagg(buf, blom(1.6, .025), 3.5); lagg(buf, whoosh(1.8), 6.4); rader(buf, 8.0)
         lagg(buf, chime(), 9.6); lagg(buf, slut(), 13.7)
     return np.clip(buf / max(1, np.abs(buf).max() / .7), -1, 1)
 

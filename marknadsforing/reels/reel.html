@@ -138,7 +138,7 @@ const end = el(`<div class="abs" style="inset:0">
   <div class="abs e1" style="left:${M}px;top:640px">${lockup(48, 30, C.text)}</div>
   <div class="abs e2 h1" style="left:${M - 4}px;top:744px;width:${1080 - 2 * M}px;font-size:104px">Hör det innan<br>du är där.</div>
   <div class="abs e3" style="left:${M}px;top:1000px">
-    <div style="display:inline-flex;height:80px;padding:0 44px;border-radius:40px;background:${C.text};color:${C.ground};align-items:center;font:600 32px IS,sans-serif;letter-spacing:-.01em">Hämta i App Store</div>
+    <div style="display:inline-flex;height:80px;padding:0 44px;border-radius:40px;background:${C.text};color:${C.ground};align-items:center;font:600 32px IS,sans-serif;letter-spacing:-.01em">Hämta i App Store</div><span style="margin-left:36px;font:500 34px IS,sans-serif;letter-spacing:-.01em;color:${C.text};vertical-align:middle">halkvakt.se</span>
     <div class="meta" style="margin-top:40px;line-height:1.8;color:${C.muted}">Gratis · Din position lämnar inte telefonen<br>Källa: Trafikverket · ${DAY} ${HHMM}</div></div></div>`);
 const [e1, e2, e3] = ['.e1', '.e2', '.e3'].map(s => end.querySelector(s));
 function block(nd, t, a, b, d = 40) {

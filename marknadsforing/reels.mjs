@@ -50,7 +50,7 @@ export function valjTyp(sam, historik, skarpt) {
 
 const LANK = {
   facebook: "Läget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan",
-  instagram: "Läget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.",
+  instagram: "Läget i ditt län uppdateras var 30:e minut: halkvakt.se/lan (länken finns i vår profil).",
 };
 const APP = {
   facebook: "Halkvakt säger till med rösten innan det blir halt. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784?ct=reels",
