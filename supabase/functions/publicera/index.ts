@@ -1429,7 +1429,7 @@ function lsVarningssida(varn: Vagvarning[], lagen: Map<number, LanLage>, now: Da
     return `<article class="varn">${huvud}${lan || '<div class="lankar"><a href="../lan/">Läget i alla län</a></div>'}</article>`;
   }).join("\n");
   const innehall = `<p class="dim">Uppdaterad ${lsTid(now)} · SMHI och Trafikverket</p>
-<h1>Varning för snöfall och is: så är vägarna</h1>
+<h1>Halkvarning just nu</h1>
 <p class="svar">${lsEsc(svar)}</p>
 <p class="dim">Varningen är SMHI:s, med SMHI:s ord. Vägläget och vägbanans temperatur är Trafikverkets. Halkvakt lägger inte till någon egen prognos här. Vägarna gäller hela länet.</p>
 ${kort ? `<div class="varnade">\n${kort}\n</div>\n` : ""}<h2>Varningen och vägen är två olika saker</h2>
@@ -1448,7 +1448,7 @@ ${kort ? `<div class="varnade">\n${kort}\n</div>\n` : ""}<h2>Varningen och väge
 ${lsFragorHtml(LS_VARN_FRAGOR)}
 <nav><h2>Länen</h2><p>${LAN.map((l) => `<a href="../lan/${l.slug}/">${lsEsc(l.kort)}</a>`).join(" · ")}</p></nav>`;
   return lsSkal({
-    titel: "Varning för snöfall och is: vägarna i de varnade länen just nu | Halkvakt",
+    titel: "Halkvarning idag: SMHI:s varningar för snöfall och is och väglaget län för län | Halkvakt",
     beskrivning, adress: `${SIDBAS}/varningar/`, rot: "../", innehall, now, ct: "varningar", smhi: true,
     extra: LS_VARN_STIL + lsFragorLd(LS_VARN_FRAGOR),
     kallor: "Källor: SMHI:s öppna data om vädervarningar och Trafikverkets öppna data (CC0) om väglag, vägväderstationer och olyckor. Sidan skrivs om var 30:e minut. Fristående från myndigheterna.",
@@ -1571,12 +1571,35 @@ ${rader}
 ${vagrader}
 </tbody>
 </table></div>
-<p>Se hela landet på <a href="../karta.html">livekartan</a>.</p>`;
+<p>Se hela landet på <a href="../karta.html">livekartan</a>.</p>
+<h2 id="orter">Län, orter och vägar</h2>
+${lsLankar("../")}`;
   return lsSkal({
     titel: "Halka och väglag i Sverige just nu, län för län | Halkvakt",
     beskrivning: lsOversiktBeskrivning(lagen, now),
     adress: `${SIDBAS}/lan/`, rot: "../", innehall, now, ct: "lanen", aktiv: "lanen",
   });
+}
+
+/** Länkarna till varje län, ort och väg (3/11, treg-rapporten): en ortssida nåddes bara från sitt län. Står på /lan/ och, via
+ *  publicera, mellan markörerna <!-- hv:lankar --> på startsidan. `rot` är vägen till sajtens rot från sidan. */
+export function lsLankar(rot: string): string {
+  const lan = LAN.map((l) => {
+    const orter = ORTER.filter((o) => o.lan === l.kod).map((o) => `<a href="${rot}ort/${ortSlug(o.namn)}/">${lsEsc(o.namn)}</a>`);
+    return `<li><a href="${rot}lan/${l.slug}/"><b>${lsEsc(l.kort)}</b></a>${orter.length ? ` · ${orter.join(" · ")}` : ""}</li>`;
+  }).join("\n");
+  return `<ul class="hv-lankar">\n${lan}\n</ul>
+<p class="hv-lankar-vagar"><b>Stora vägar:</b> ${lsVagLankar(rot)}</p>
+<p class="hv-lankar-vagar"><a href="${rot}varningar/">Halkvarning idag: SMHI:s varningar</a> · <a href="${rot}nar-blir-det-halt.html">När blir det halt?</a> · <a href="${rot}app-som-varnar-for-halka.html">App som varnar för halka</a></p>`;
+}
+
+/** Byter innehållet mellan <!-- hv:namn --> och <!-- /hv:namn --> i en handskriven sida; null när markörerna saknas eller inget ändras. */
+export function medBlock(html: string, namn: string, innehall: string): string | null {
+  const start = `<!-- hv:${namn} -->`, slut = `<!-- /hv:${namn} -->`;
+  const a = html.indexOf(start), b = html.indexOf(slut);
+  if (a < 0 || b < a) return null;
+  const ny = html.slice(0, a + start.length) + "\n" + innehall + "\n" + html.slice(b);
+  return ny === html ? null : ny;
 }
 
 /** Alla sidor, nyckel = sökvägen i kartsajten. */
@@ -1640,6 +1663,29 @@ function lsStrackorJson(d: { vaglag: LanSegment[]; stationer: LanStation[]; now:
 
 export const sidAdresser = () => [`${SIDBAS}/lan/`, `${SIDBAS}/varningar/`, ...LAN.map((l) => `${SIDBAS}/lan/${l.slug}/`),
   ...VAGAR.map((v) => `${SIDBAS}/vag/${v.slug}/`), ...ORTER.map((o) => `${SIDBAS}/ort/${ortSlug(o.namn)}/`)];
+
+export type SidAndring = { lage: string; andrad: string };
+
+/** Sant lastmod (3/11, treg-rapporten): en genererad sidas datum flyttas bara när dess läge ändras, inte vid varje omskrivning var
+ *  30:e minut. Läget är sökbeskrivningen utan klockslaget, alltså svarsmeningen: antalet hala avsnitt, kallaste stationen, varningen.
+ *  `forra` är förra körningens läge per adress (data/sidor-andrade.json i kartrepot). Adresser utan byggd sida behåller sitt datum. */
+export function sitemapDatum(xml: string, sidor: Record<string, string>, forra: Record<string, SidAndring>, now: Date):
+  { xml: string; andrade: Record<string, SidAndring> } {
+  const nu = now.toISOString().replace(/\.\d{3}Z$/, "+00:00");
+  const andrade: Record<string, SidAndring> = { ...forra };
+  for (const url of sidAdresser()) {
+    const html = sidor[`${url.slice(SIDBAS.length + 1)}index.html`];
+    const besk = html?.match(/<meta name="description" content="([^"]*)"/)?.[1];
+    if (!besk) continue;
+    const lage = besk.replace(/^Kl\. \d{1,2}:\d{2}:? ?/, "");
+    const andrad = forra[url]?.lage === lage ? forra[url].andrad : nu;
+    andrade[url] = { lage, andrad };
+    const loc = `<loc>${url}</loc>`;
+    xml = xml.replace(new RegExp(`<url>\\s*${loc.replace(/[.*+?^${}()|[\]\\/]/g, "\\$&")}[\\s\\S]*?</url>`),
+      (rad) => rad.replace(/<lastmod>[^<]*<\/lastmod>/, "").replace(loc, `${loc}<lastmod>${andrad}</lastmod>`));
+  }
+  return { xml, andrade };
+}
 
 /** Axels sitemap med de adresser som saknas infogade före </urlset>; null när inget saknas eller filen inte går att läsa. */
 export function sitemapMed(xml: string, adresser: string[]): string | null {
@@ -2039,12 +2085,23 @@ Deno.serve(async (req) => {
       // läsa skrivs sidorna ändå, och noten säger varför.
       if (m.sidor) {
         Object.assign(inline, m.sidor);
+        const las = async (fil: string) => new TextDecoder().decode(Uint8Array.from(atob(String((await gh(`/contents/${fil}`)).content)
+          .replace(/\n/g, "")), (c) => c.charCodeAt(0)));
         try {
-          const sm = await gh("/contents/sitemap.xml");
-          const xml = new TextDecoder().decode(Uint8Array.from(atob(String(sm.content).replace(/\n/g, "")), (c) => c.charCodeAt(0)));
-          const ny = sitemapMed(xml, sidAdresser());
-          if (ny) inline["sitemap.xml"] = ny;
+          const xml = await las("sitemap.xml");
+          // Sant lastmod (3/11): förra körningens läge per sida; saknas filen (första gången) får alla sidor dagens datum.
+          let forra: Record<string, SidAndring> = {};
+          try { forra = JSON.parse(await las("data/sidor-andrade.json")); } catch { notes.push("sitemap: inget förra läge, alla sidor får dagens datum"); }
+          const d = sitemapDatum(sitemapMed(xml, sidAdresser()) ?? xml, m.sidor, forra, new Date(t0));
+          if (d.xml !== xml) inline["sitemap.xml"] = d.xml;
+          const andrade = JSON.stringify(d.andrade, null, 1);
+          if (andrade !== JSON.stringify(forra, null, 1)) inline["data/sidor-andrade.json"] = andrade;
         } catch (e) { notes.push(`sitemap: ej läsbar (${String((e as Error).message).slice(0, 120)}) — länssidorna skrivs ändå`); }
+        // Startsidans länkar till varje län, ort och väg (3/11), mellan markörerna; skrivs bara när listan ändras.
+        try {
+          const ny = medBlock(await las("index.html"), "lankar", lsLankar(""));
+          if (ny) inline["index.html"] = ny;
+        } catch (e) { notes.push(`startsidan: ej läsbar (${String((e as Error).message).slice(0, 120)})`); }
       }
       tider.kartan = Date.now() - tDel;
     }

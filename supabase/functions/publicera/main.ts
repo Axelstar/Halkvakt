@@ -135,12 +135,23 @@ Deno.serve(async (req) => {
       // läsa skrivs sidorna ändå, och noten säger varför.
       if (m.sidor) {
         Object.assign(inline, m.sidor);
+        const las = async (fil: string) => new TextDecoder().decode(Uint8Array.from(atob(String((await gh(`/contents/${fil}`)).content)
+          .replace(/\n/g, "")), (c) => c.charCodeAt(0)));
         try {
-          const sm = await gh("/contents/sitemap.xml");
-          const xml = new TextDecoder().decode(Uint8Array.from(atob(String(sm.content).replace(/\n/g, "")), (c) => c.charCodeAt(0)));
-          const ny = sitemapMed(xml, sidAdresser());
-          if (ny) inline["sitemap.xml"] = ny;
+          const xml = await las("sitemap.xml");
+          // Sant lastmod (3/11): förra körningens läge per sida; saknas filen (första gången) får alla sidor dagens datum.
+          let forra: Record<string, SidAndring> = {};
+          try { forra = JSON.parse(await las("data/sidor-andrade.json")); } catch { notes.push("sitemap: inget förra läge, alla sidor får dagens datum"); }
+          const d = sitemapDatum(sitemapMed(xml, sidAdresser()) ?? xml, m.sidor, forra, new Date(t0));
+          if (d.xml !== xml) inline["sitemap.xml"] = d.xml;
+          const andrade = JSON.stringify(d.andrade, null, 1);
+          if (andrade !== JSON.stringify(forra, null, 1)) inline["data/sidor-andrade.json"] = andrade;
         } catch (e) { notes.push(`sitemap: ej läsbar (${String((e as Error).message).slice(0, 120)}) — länssidorna skrivs ändå`); }
+        // Startsidans länkar till varje län, ort och väg (3/11), mellan markörerna; skrivs bara när listan ändras.
+        try {
+          const ny = medBlock(await las("index.html"), "lankar", lsLankar(""));
+          if (ny) inline["index.html"] = ny;
+        } catch (e) { notes.push(`startsidan: ej läsbar (${String((e as Error).message).slice(0, 120)})`); }
       }
       tider.kartan = Date.now() - tDel;
     }
