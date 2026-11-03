@@ -13476,3 +13476,40 @@ dess slutsatser. #373 och inte #372: #372 bärs redan av två grenar som inte ä
 **PRODUKTBOKEN** uppdateras i samma varv som påslaget, eftersom förarna hör ett färskare värde och kartan visar ett nytt klockslag.
 
 **Stomdokument:** SYS kandidatens kedja och databasen, APP kandidatens varning, BED §4.2.
+
+## #783 (3/11 2026) Kandidaten på en kvart pausad: den första riktiga körningen fällde databasen tre gånger; pg_nets räknare flyttad fram
+
+**Beslut (Bengt, 3/11).** *"Ja, gör båda"*, på frågan om två rättelser i produktionen. Båda gjordes i SQL-redigeraren kl. 12.47–12.49 UTC:
+1. jobbet `halkvakt-kandidat-snabb` pausades (`cron.alter_job(…, active := false)`);
+2. pg_nets räknare `net.http_request_queue_id_seq` sattes till `max(public.anrop.id)` + 1000 (149 780).
+
+**Vad som hände** (läst i `cron.job_run_details`, `ny_kandidat_snabb_korning` och `pg_postmaster_start_time()`):
+- Del A (ny-kandidat-fysik 41635934379, start 12.28 UTC, grön) skrev punkterna och paret kl. 12.32. `kandidat_punkter` har 13 814 rader
+  och `kandidat_par` 1 rad. Paret skrivs inte ut här.
+- Alla körningar av den snabba räkningen fram till 12.29 loggade *paret saknas*, som väntat.
+- **De tre första körningarna med paret, 12.34, 12.39 och 12.44, slutade med *server restarted*.** Databasen startade om 12.41.09 och
+  12.46.18, båda cirka två minuter efter en körnings start. Ingen körning hann logga någon tid (`ms`), och tabellen `ny_kandidat_snabb` är
+  tom. Den troliga orsaken är första körningens bygge av grannlistorna i full skala (13 814 punkter). Det är inte prövat.
+  Proven i ci gick på påhittade data i liten skala (2 500 punkter, 220 stationer).
+- **Efter omstarten föll alla driftjobb som anropar en funktion** (ingesten, publiceringen, skuggmotorerna och pulsklockan) varje minut,
+  kl. 12.42–12.48, med *duplicate key … anrop_pkey*. Mekanismen:
+  - pg_nets räknare för anropens id är olagrad (unlogged) och började om på 1 vid omstarten;
+  - `public.anrop` har pg_nets id som primärnyckel och hade id upp till 148 780.
+  Efter rättelsen gick ingesten 12.49, och publiceringen, kandidatloggen och skuggmotorn 12.50. Svaren är 200 sedan 12.50.
+- **Följden för appen:** publiceringen stod still cirka 8 minuter (12.42–12.50). Inga data gick förlorade: ingesten är delta-baserad och
+  tar igen det som missades.
+
+**Vad som inte ändras:**
+- Den talande kandidaten, rösten och appen. Den snabba räkningen talar inte (#782).
+- Del A fortsätter skriva punkterna och paret.
+- Skuggmätningen (sql/080) har ingen körning att mäta så länge jobbet är pausat. Fristen för skuggans läsning (#782 punkt 5) skjuts
+  därför tills jobbet går igen.
+
+**Kvar** (på Bengts ord):
+- orsaken prövas i full skala utanför produktionen, först minnet och tiden för grannlistorna;
+- rättelsen;
+- jobbet återstartas.
+
+Läxa i CLAUDE.md: en omstart nollställer pg_nets räknare.
+
+**Stomdokument:** SYS kandidaten på en kvart pausad och pg_nets räknare efter driftstörningen 3/11
