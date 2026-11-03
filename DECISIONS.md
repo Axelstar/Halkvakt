@@ -13266,6 +13266,69 @@ egna inlägg: tre inlägg om dagen räcker inte till länen, och karusellen låt
 i det publika repot. Följs; går det för fort flyttas bilderna till hinken.
 
 **Stomdokument:** inga — marknadsföringen har inget stomdokument; appen, motorn och mätningarna är orörda.
+## #778 (2/11 2026) Kedjans takt: fas 3 avgjord på sju resor, och takten står kvar; batteriet läses för sig
+
+**Beslut** (Bengt 2/11: *"Godta takten nu"*). Fas 3 i #741 säger *"mätningen läses efter minst fem resor på minst en halvtimme.
+Därefter avgörs om takten står kvar"*. Den avgörs för takten på de sju resor som finns, fast bara en av dem är minst en halvtimme
+lång: **takten står kvar** (hinken varannan minut, appens koll 60 s efter den väntade publiceringen, #741 tillägg 29/10). Kravet på en
+halvtimme fanns för batteriets skull, eftersom iPhonen visar nivån i steg om 5 % och korta resor inte ger någon läsbar procent. För
+takten räcker resorna. Batteriet avgörs inte här.
+
+**Underlaget** (iPhone 0.3.14, Bengts skärmbilder av *Betatest → Mätningen* 30/10 och 2/11):
+
+| Resa | Längd | Nya av kollar | Ålder vid ankomst, median (högst) | Äldsta station, median | Batteri |
+| :-- | --: | --: | :-- | --: | :-- |
+| 30/10 | 14 min | 6 av 8 | 1:03 (1:05) | 9 min | 85 → 85 % |
+| 30/10 | 21 min | 11 av 11 | 1:01 (1:08) | 8 min | 80 → 75 % |
+| 30/10 | 15 min | 8 av 8 | 1:12 (1:36) | 9 min | 75 → 75 % |
+| 1/11 | 13 min | 8 av 8 | utanför bilden | – | – |
+| 1/11 | 17 min | 9 av 9 | 1:01 (1:03) | 9 min | 95 → 95 % |
+| 2/11 | 30 min | 14 av 16 | 1:01 (1:06) | 16 min | 95 → 90 % (10,1 %/h) |
+| 2/11 | 29 min | 16 av 16 | 1:02 (1:59) | 13 min | 65 → 50 % (30,9 %/h) |
+
+Summa: 72 nya av 76 kollar, inget ur reserven. Den äldsta stationen ligger inom det normala enligt #751 (10–20 minuter).
+
+**Batteriet.** Enligt #753 står budgeten under 8 %/h med skärmen av kvar, och en senare mätning över 8 %/h hindrar nästa bygge. Två
+resor går att läsa:
+- 10,1 %/h; med stegen på 5 % kan det sanna värdet ligga mellan 0 och 20 %/h;
+- **30,9 %/h**; med stegen mellan 21 och 41 %/h, alltså över gränsen hur stegen än faller.
+
+Skärmen, navigeringen och hotspot på de två resorna är inte kända, så resorna är inte batteriprovet i #741 punkt 6 (i bil, skärmen
+av). **30,9 %/h förklaras innan nästa bygge.** iPhonens *Inställningar → Batteri* visar Halkvakts andel och skärmtiden. Visar det
+att Halkvakt med skärmen av drog över 8 %/h, är det hindret i #753, och spakarna i #741 punkt 6 är vägen vidare. Android (Galaxy J6):
+4,2, 6,7, 8,2 och 8,1 %/h i hela procent, utan nät under resorna.
+
+**Android står öppen.** J6:ans fyra resor 1/11–2/11 hade 0 nya och 0 ur reserven, eftersom telefonen saknar nät i bilen. Hemma med
+nät 2/11 visade favoritrapporten läget en minut gammalt. Punkt 4 och 5 på Android kräver en resa med nät, till exempel via iPhonens
+hotspot.
+
+**Alternativ.** Köra tills fem resor på minst en halvtimme finns: det ger samma bild av takten och dessutom ett läsbart batteri.
+Valt bort för takten (Bengt). Batteriet behöver längre resor ändå.
+
+**Tillägg 2/11 eftermiddag (Bengt: *"gör det"*): 30,9 %/h var inte Halkvakt, och resan är inget hinder enligt #753.**
+iPhonens batterivy för dagen (iOS 26 visar förbrukningen per dag, inte per timme) ger Halkvakt **13 %** av förbrukningen, med 16
+minuter på skärmen och en timme i bakgrunden, vilket stämmer med dagens två resor på sammanlagt 59 minuter. Dagens förbrukning var
+omkring 50 procentenheter, från full laddning till 49 % på eftermiddagen.
+- Halkvakts del blir därmed omkring **6–7 procentenheter** för båda resorna och skärmtiden, alltså **omkring 5–7 %/h**. Det är under
+  gränsen 8 %/h och i linje med skattningen 7,2 %/h (#753).
+- Resan med 30,9 %/h tappade 15 procentenheter. Även om Halkvakts hela dagsdel hade legat på den resan förklarar den knappt hälften.
+  Minst 8 procentenheter kom från annan användning.
+
+Förbehåll: räkningen förutsätter att vyn gäller dagen från midnatt och att telefonen inte laddades mellan resorna, och iOS ger
+andelar, inte procentenheter. Ett batteriprov med låst skärm, utan samtal och utan hotspot, görs på nästa längre resa (#741 punkt 6)
+och ger ett rent tal. Det är inget villkor för inskick eller bygge.
+
+**Tillägg 2/11 kväll (Bengt: *"Takten grön"*): delen *Kedjans takt* är grön och kort #365 är stängt, utan Android i bil.** J6:an,
+provets enda Android-telefon, har inget SIM-kort, så hämtningen under körning går inte att visa på en riktig Android-telefon. På
+Android är två saker visade:
+- mätningen under Betatest, med fyra resor 1/11–2/11, kollarna och batteriet;
+- hämtningen ur hinken med nät: favoritrapporten 2/11 visade läget en minut gammalt, och den hämtar med samma `koll()` i
+  `SnapshotRepo.kt` som vakten.
+
+Luckan är att vakten på Android inte är visad ta emot nya filer under en resa. Den förs till delen *Android-appen*: första
+Android-telefonen med mobildata (till exempel en testare i Play) visar det i *Mätningen* med nya och åldersrader.
+
+**Stomdokument:** SYS 1 (kedjans takt), APP 9, BED §4.2
 
 ## #779 (2/11 2026) Datawrapper: pendlingstabellen per stråk och hela läget per län, där bara det hala syns
 
