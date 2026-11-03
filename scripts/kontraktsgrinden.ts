@@ -166,7 +166,16 @@ export const KONTRAKT: Kontrakt[] = [
   {
     namn: "Gränsradien — hur nära svensk väg en grannstation räknas",
     varfor: "40 km är gränssnapshotens definition. Driver den mäter de två implementationerna olika populationer.",
-    former: [/se\.g::geography, (\d+)\)/],
+    former: [/r\.geom::geography, (\d+)\)/],
+    filer: /healthcheck\.ts|functions\/vakthund\//,
+    golv: 2,
+  },
+  // DECISIONS #781: de två räknas på vägindexet som publiceringen (#742). Lådan måste rymma 40 km; att den är minst
+  // BORDER_DEG prövas i test/integration.test.ts.
+  {
+    namn: "Gränslådan — vägindexets låda runt grannstationen",
+    varfor: "Krymper en kopia under BORDER_DEG tappar den stationer nära 40 km, och de två kontrollerna räknar olika populationer.",
+    former: [/ST_Expand\(f\.geom, ([\d.]+)\)/],
     filer: /healthcheck\.ts|functions\/vakthund\//,
     golv: 2,
   },

@@ -905,13 +905,16 @@ Deno.serve(async (req) => {
     }
 
     // 9b. Gränssnapshoten (kort #49). Golven är MÄTTA, inte valda: FI 16–20, NO 42 vid mätningen.
+    //     Vägindexet först, som publiceringen (DECISIONS #742, #781): lådan 1,17° (BORDER_DEG i publish/snapshot-core.ts,
+    //     1,163°, avrundad uppåt) sållar vägarna, och samma ST_DWithin avgör. Med ST_Collect tog räkningen 20–23 s per land.
     for (const [land, golv] of [["fi", 10], ["no", 20]] as [string, number][]) {
       try {
         const r = await sql.unsafe(`
-          WITH se AS (SELECT ST_Collect(geom) g FROM road_conditions WHERE NOT deleted AND geom IS NOT NULL)
-          SELECT count(*)::int AS n FROM ${land}.weather_latest f, se
+          SELECT count(*)::int AS n FROM ${land}.weather_latest f
           WHERE f.sample_time > now() - interval '3 hours'
-            AND ST_DWithin(f.geom::geography, se.g::geography, 40000)`);
+            AND EXISTS (SELECT 1 FROM road_conditions r
+                        WHERE NOT r.deleted AND r.geom IS NOT NULL AND r.geom && ST_Expand(f.geom, 1.17)
+                          AND ST_DWithin(f.geom::geography, r.geom::geography, 40000))`);
         const n = Number(r[0].n);
         rad.push(`gräns-wx ${land.toUpperCase()}: ${n} nåbara inom 40 km (golv ${golv})`);
         if (n < golv) problem.push(`**Gränssnapshoten tunn**: bara ${n} ${land.toUpperCase()}-stationer nåbara (golv ${golv}) — ${land}-ingest eller gränslogiken?`);
