@@ -1,0 +1,24 @@
+{
+  "typ": "svep",
+  "nyckel": "svep:lunch",
+  "etikett": "Halkläget kl. 11:30",
+  "rubrik": "Halt i dag",
+  "underrad": "Halka på 166 vägavsnitt i 9 län.",
+  "fler": 2,
+  "text": "Halkläget kl. 11:30, tisdag 3 november: halka på 166 vägavsnitt i 9 län. Svep för att se ditt län.\n\nNorrbotten: halka på 51 av 58 vägavsnitt, 48 stationer under noll, kallast −3,7 °C vid Kätkesuando.\nVästerbotten: halka på 39 av 44 vägavsnitt, 11 stationer under noll, kallast −0,9 °C vid Renström.\nVästmanland: halka på 18 av 24 vägavsnitt.\nVästra Götaland: halka på 14 av 133 vägavsnitt, 1 station under noll, kallast −0,2 °C vid Skattebacka.\nGävleborg: halka på 14 av 27 vägavsnitt, 1 station under noll, kallast −0,3 °C vid Simeå.\nVästernorrland: halka på 13 av 22 vägavsnitt.\nDalarna: halka på 6 av 38 vägavsnitt, 3 stationer under noll, kallast −3,2 °C vid Ryggen.\nJämtland: halka på 6 av 17 vägavsnitt.\nHalka eller minusgrader även i 2 län till.\n\nLäget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Västmanland #VästraGötaland #Gävleborg #halkvakt",
+  "textIg": "Halkläget kl. 11:30, tisdag 3 november: halka på 166 vägavsnitt i 9 län. Svep för att se ditt län.\n\nNorrbotten: halka på 51 av 58 vägavsnitt, 48 stationer under noll, kallast −3,7 °C vid Kätkesuando.\nVästerbotten: halka på 39 av 44 vägavsnitt, 11 stationer under noll, kallast −0,9 °C vid Renström.\nVästmanland: halka på 18 av 24 vägavsnitt.\nVästra Götaland: halka på 14 av 133 vägavsnitt, 1 station under noll, kallast −0,2 °C vid Skattebacka.\nGävleborg: halka på 14 av 27 vägavsnitt, 1 station under noll, kallast −0,3 °C vid Simeå.\nVästernorrland: halka på 13 av 22 vägavsnitt.\nDalarna: halka på 6 av 38 vägavsnitt, 3 stationer under noll, kallast −3,2 °C vid Ryggen.\nJämtland: halka på 6 av 17 vägavsnitt.\nHalka eller minusgrader även i 2 län till.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone, länken finns i vår profil.\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Västmanland #VästraGötaland #Gävleborg #halkvakt",
+  "pass": "lunch",
+  "antal": 10,
+  "datum": "2026-11-03",
+  "generated_at": "2026-11-03T10:30:07.155Z",
+  "lan": [
+    "norrbotten",
+    "vasterbotten",
+    "vastmanland",
+    "vastra-gotaland",
+    "gavleborg",
+    "vasternorrland",
+    "dalarna",
+    "jamtland"
+  ]
+}
