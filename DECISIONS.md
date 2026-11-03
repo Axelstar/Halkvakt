@@ -13513,3 +13513,31 @@ dess slutsatser. #373 och inte #372: #372 bärs redan av två grenar som inte ä
 Läxa i CLAUDE.md: en omstart nollställer pg_nets räknare.
 
 **Stomdokument:** SYS kandidaten på en kvart pausad och pg_nets räknare efter driftstörningen 3/11
+
+## #784 (3/11 2026) Fast search_path på våra 22 PL/pgSQL-funktioner i public (sql/081); spatial_ref_sys väntar på Supabase
+
+**Beslut (Axel, 3/11).** *"Yes please do that"*, på frågan om att rätta Supabases säkerhetsvarningar som en migration i repot.
+
+**Vad granskningen sa** (Supabase Security Advisor 3/11 20:08 UTC):
+- **Ett fel:** `rls_disabled_in_public` på `public.spatial_ref_sys`, Postgis koordinatsystem (8 500 rader, inga data om oss). Anon-nyckeln
+  kan skriva i tabellen (provat i en återrullad transaktion). Tabellen och rättigheterna ägs av `supabase_admin`: en REVOKE som `postgres`
+  går igenom utan fel men ändrar ingenting, och RLS kan bara ägaren slå på. Axel skickade en supportbegäran till Supabase 3/11 om att
+  dra in INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES och TRIGGER för anon och authenticated. Ingen fil här, eftersom den inte går att
+  köra som postgres. (Migrationen `spatial_ref_sys_revoke_public_writes` i Supabases migrationslista är det försöket; den gjorde inget.)
+- **45 varningar `function_search_path_mutable`.** sql/081 sätter `search_path = public, extensions` på de 22 som är plpgsql. Värdet är det
+  som redan gäller för postgres-rollen (`"$user", public, extensions`, och inget schema heter postgres), så inget uppslag ändras.
+  Provat i en återrullad transaktion mot produktionen 3/11: 22 funktioner.
+- **De 23 sql-funktionerna lämnas med flit.** En sql-funktion med en SET-klausul inlinas inte längre av planeraren, och reglerna,
+  `kandidat_hav` och vägpunktsankaret körs per rad i kandidatens jobb. Varningen står kvar för dem.
+- **Övrigt, inte åtgärdat:** postgis och pg_net i public (en flytt kräver ominstallation under levande data), `st_estimatedextent` som
+  anon kan anropa (postgis egen, ägd av supabase_admin, ger bara en uppskattad utbredning), och 69 *RLS på utan policy*, som är så
+  tabellerna ska vara stängda.
+
+**Alternativ:** pinna alla 45 (prestandarisken ovan); skriva om sql-funktionerna med fullt kvalificerade namn (stort ingrepp i kuvösens
+regler, som bor i halkvakt-kuvos); flytta postgis ur public (nej, se ovan).
+
+**Obs:** `CREATE OR REPLACE FUNCTION` utan SET nollställer inställningen. sql/081 är idempotent och tar bara funktioner som saknar
+search_path, så den körs om efter varje fil som skriver om en plpgsql-funktion. Läxa i CLAUDE.md.
+
+**Stomdokument:** SYS databasens säkerhetsgranskning 3/11 och spatial_ref_sys hos Supabase
+

@@ -351,6 +351,9 @@ i samma commit när de överlappar.
   migration som skapar en tabell i `public` ger `service_role` sina rättigheter i SAMMA fil (`GRANT ALL ON TABLE x TO service_role`,
   och `GRANT USAGE, SELECT, UPDATE ON SEQUENCE x_id_seq TO service_role` för en serial-kolumn), vaktat på `pg_roles` som ovan.
   `anon` och `authenticated` får fortfarande ingenting utan ett beslut. `test/rattigheter.test.ts` fäller en fil från 064 som saknar det.
+- `CREATE OR REPLACE FUNCTION` utan `SET search_path` nollställer den fasta sökvägen som sql/081 satte (3/11, DECISIONS #784). En ny
+  eller omskriven plpgsql-funktion i public skriver `SET search_path = public, extensions` i definitionen, annars körs 081 om efteråt.
+  sql-funktioner får ingen SET-klausul: då inlinas de inte, och reglerna körs per rad.
 - SwiftUI TabView(.page) lägger sidprickarna OVANPÅ innehållet, inte under det. Sista
   elementet på varje sida måste ha ≥ 56 pt fri höjd under sig, annars täcks knappar.
   Fångat på Axels telefon 31/8: "Byt bilkoppling" låg under prickarna och gick inte att träffa.
