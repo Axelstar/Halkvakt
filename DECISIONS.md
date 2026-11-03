@@ -13559,3 +13559,21 @@ search_path, så den körs om efter varje fil som skriver om en plpgsql-funktion
 klockslag och olyckornas tider ändrar den varje varv. Startsidans länkar för hand: en ny ort i `ORTER` skulle saknas där tills någon minns det.
 
 **Stomdokument:** inga — sajtens sökordning och sitemap; appen, motorn och mätningarna är orörda.
+
+
+## #786 (3/11 2026) Olyckans vägnummer ur närmaste väglagssträcka när Trafikverket saknar det
+
+**Beslut** (Axel 3/11: *"Ska vi inte börja med detta? Detta är väl det viktigaste just nu"*, efter en tur där rösten sa
+"Olycka rapporterad 3 kilometer framför dig." utan väg). `publicera` fyller i `road` för en olycka som saknar vägnummer med
+närmaste väglagssträckans vägnummer ur `road_conditions`, men bara när sträckan ligger inom 25 m från olyckspunkten. Annars
+står vägen tom som förr. Appen och motorn är orörda: repliken blir "Olycka rapporterad på väg X …" i alla appar som är ute, och
+vägskylten på varningskortet följer med.
+
+**Mätt** på olyckorna i `situation_archive` de senaste 60 dygnen, mot dagens väglagssträckor. Olyckor med känt vägnummer, som
+prov på metoden: inom 25 m bar närmaste sträcka samma väg i 1 758 av 1 813 fall (97 %), 25–50 m i 34 av 52, 50–100 m i 16 av 26,
+längre bort nästan aldrig. Olyckor utan vägnummer: 139 av drygt 2 600 (5 %); 56 av dem ligger inom 25 m och får nu en väg.
+
+**Alternativ.** NVDB: rätt väg även där väglagsdata saknas, men finns inte i flödet. 50 m: fler ifyllda men en av tre fel, och ett
+fel vägnummer är värre än inget. Tysta olyckor utan väg: ett produktbeslut, inte taget; mäts om när den här ändringen gått en tid.
+
+**Stomdokument:** APP, SYS — olyckans vägnummer i live.json kan nu komma från väglagssträckan.
