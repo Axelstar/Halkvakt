@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { arHalt, byggLanssidor, sitemapMed, sidAdresser, vagNyckel, vagvarningar, LAN, VAGAR, ORTER, ortSlug, SIDBAS, PENDLING, STRAK } from "../publish/lanssidor.ts";
+import { arHalt, byggLanssidor, sitemapMed, sitemapDatum, medBlock, lsLankar, sidAdresser, vagNyckel, vagvarningar, LAN, VAGAR, ORTER, ortSlug, SIDBAS, PENDLING, STRAK } from "../publish/lanssidor.ts";
 import { buildMapData } from "../publish/map-core.ts";
 import type { Q } from "../publish/snapshot-core.ts";
 
@@ -121,6 +121,48 @@ test("vägsidorna: vägnumret utan form, vägens sträckor i alla län, statione
   assert.equal(ld.isBasedOn["@type"], "Dataset");
   assert.ok(ld.isBasedOn.description.length > 50);
   assert.deepEqual(ld.isBasedOn.creator, { "@type": "Organization", name: "Trafikverket", url: "https://www.trafikverket.se/" });
+});
+
+test("sitemapen (3/11): lastmod flyttas bara när sidans läge ändras, inte vid varje omskrivning", () => {
+  const data = (yta: number) => ({ vaglag: [{ code: 3, text: "Mycket besvärligt", info: ["Is"], road: "E 6", plats: "E 6 Malmö - Lund", lan: 12 }],
+    stationer: [{ name: "Lund", yta, fukt: false, lan: 12, vag: "E 6" }], olyckor: [] });
+  const t1 = new Date("2026-11-20T06:30:00Z"), t2 = new Date("2026-11-20T07:00:00Z"), t3 = new Date("2026-11-20T07:30:00Z");
+  const axel = `<urlset>\n  <url><loc>${SIDBAS}/</loc><lastmod>2026-10-28</lastmod></url>\n  <url><loc>${SIDBAS}/lan/skane/</loc><lastmod>2026-10-28</lastmod><changefreq>hourly</changefreq></url>\n</urlset>\n`;
+  const xml0 = sitemapMed(axel, sidAdresser())!;
+  const a = sitemapDatum(xml0, byggLanssidor({ ...data(-1.5), now: t1 }), {}, t1);
+  const urls = a.xml.match(/<url>[\s\S]*?<\/url>/g)!;
+  assert.equal(urls.filter((u) => /<lastmod>/.test(u)).length, urls.length, "varje adress har ett datum");
+  assert.ok(a.xml.includes(`<loc>${SIDBAS}/</loc><lastmod>2026-10-28</lastmod>`), "Axels handskrivna sidor orörda");
+  assert.ok(a.xml.includes(`<loc>${SIDBAS}/lan/skane/</loc><lastmod>2026-11-20T06:30:00+00:00</lastmod><changefreq>hourly</changefreq>`), "det gamla datumet ersatt, resten av raden kvar");
+  assert.equal((a.xml.match(new RegExp(`${SIDBAS}/lan/skane/</loc><lastmod>`, "g")) ?? []).length, 1, "ett datum per adress");
+  // Samma läge en halvtimme senare: inget datum flyttas, fast klockslaget i sidan är nytt.
+  const b = sitemapDatum(a.xml, byggLanssidor({ ...data(-1.5), now: t2 }), a.andrade, t2);
+  assert.equal(b.xml, a.xml);
+  // Kallaste stationen ändras: Skåne, Malmö, Lund, E6 och översikten flyttas; Norrbotten står kvar.
+  const c = sitemapDatum(b.xml, byggLanssidor({ ...data(-2.1), now: t3 }), b.andrade, t3);
+  const datum = (x: string, sida: string) => x.match(new RegExp(`${SIDBAS}/${sida}</loc><lastmod>([^<]*)`))![1];
+  assert.equal(datum(c.xml, "lan/skane/"), "2026-11-20T07:30:00+00:00");
+  assert.equal(datum(c.xml, "vag/e6/"), "2026-11-20T07:30:00+00:00");
+  assert.equal(datum(c.xml, "lan/norrbotten/"), "2026-11-20T06:30:00+00:00");
+  // En sida som inte byggdes den här gången behåller sitt datum och sitt läge.
+  const d = sitemapDatum(c.xml, {}, c.andrade, t3);
+  assert.equal(d.xml, c.xml);
+  assert.deepEqual(d.andrade, c.andrade);
+});
+
+test("länkarna (3/11): /lan/ och startsidans block når varje län, ort och väg, varningarna och guiden", () => {
+  const sidor = byggLanssidor({ vaglag: [], stationer: [], olyckor: [], now: NOW });
+  for (const [html, rot] of [[sidor["lan/index.html"], "../"], [lsLankar(""), ""]] as const) {
+    for (const o of ORTER) assert.ok(html.includes(`href="${rot}ort/${ortSlug(o.namn)}/"`), `${rot || "start"}: ${o.namn}`);
+    for (const l of LAN) assert.ok(html.includes(`href="${rot}lan/${l.slug}/"`), `${rot || "start"}: ${l.kort}`);
+    for (const v of VAGAR) assert.ok(html.includes(`href="${rot}vag/${v.slug}/"`), `${rot || "start"}: ${v.namn}`);
+    for (const x of ["varningar/", "nar-blir-det-halt.html", "app-som-varnar-for-halka.html"]) assert.ok(html.includes(`href="${rot}${x}"`));
+  }
+  const start = "<main>\n<!-- hv:lankar -->\ngammalt\n<!-- /hv:lankar -->\n</main>";
+  const ny = medBlock(start, "lankar", lsLankar(""))!;
+  assert.ok(ny.startsWith("<main>\n<!-- hv:lankar -->\n<ul") && ny.endsWith("<!-- /hv:lankar -->\n</main>") && !ny.includes("gammalt"));
+  assert.equal(medBlock(ny, "lankar", lsLankar("")), null, "oförändrat: inget att skriva");
+  assert.equal(medBlock("<main></main>", "lankar", "x"), null, "utan markörer rörs sidan inte");
 });
 
 test("länssidorna: sitemapen får de adresser som saknas, en gång, och Axels rader står kvar", () => {
@@ -330,7 +372,9 @@ test("varningssidan: SMHI:s ord, vägarna i det varnade länet, länkar dit frå
   };
   const sidor = byggLanssidor({ ...d, smhi: SMHI });
   const s = sidor["varningar/index.html"];
-  assert.ok(s.includes("<title>Varning för snöfall och is: vägarna i de varnade länen just nu | Halkvakt</title>"));
+  // 3/11: "halkvarning" först (den öppnaste sökningen), "varning för snöfall och is" kvar (Klarts största vägsökning).
+  assert.ok(s.includes("<title>Halkvarning idag: SMHI:s varningar för snöfall och is och väglaget län för län | Halkvakt</title>"));
+  assert.ok(s.includes("<h1>Halkvarning just nu</h1>"));
   assert.ok(s.includes(`<link rel="canonical" href="${SIDBAS}/varningar/">`));
   assert.ok(!s.includes('name="robots"'), "sidan ska kunna indexeras");
   assert.ok(s.includes("Kl. 07:30 varnar SMHI i Norrbottens fjäll (orange varning, snöfall) och Värmlands län (gul varning, snöfall och ishalka)."), "SMHI:s händelser och områden");

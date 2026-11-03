@@ -13541,3 +13541,21 @@ search_path, så den körs om efter varje fil som skriver om en plpgsql-funktion
 
 **Stomdokument:** SYS databasens säkerhetsgranskning 3/11 och spatial_ref_sys hos Supabase
 
+
+## #785 (3/11 2026) Sanna datum i sitemapen, länkar till varje ort och väg, halkvarning på varningssidan
+
+**Beslut** (Axel 3/11: *"Okay yes lets do it"*, efter en granskning av sajten med treg). Tre ändringar i `publish/lanssidor.ts` och
+`publicera`, och handsidorna i kartrepot samma kväll:
+1. **lastmod flyttas bara när sidans läge ändras** (`sitemapDatum`). Läget är sökbeskrivningen utan klockslaget: antalet hala avsnitt,
+   kallaste stationen, varningen. Förra körningens läge per adress ligger i kartrepots `data/sidor-andrade.json`. Före: 48 av 85 adresser
+   saknade datum (alla orter och varningssidan), resten stod på 28/10, fast sidorna skrivs om var 30:e minut.
+2. **/lan/ och startsidan länkar varje län, ort och väg**, varningssidan, guiden och appsidan (`lsLankar`). Startsidan är handskriven:
+   publicera byter bara blocket mellan `<!-- hv:lankar -->` och `<!-- /hv:lankar -->` (`medBlock`), och skriver bara när listan ändras.
+   Före: en ortssida nåddes bara från sitt län, och startsidan länkade ingen ort och ingen väg.
+3. **Varningssidan heter "Halkvarning idag: SMHI:s varningar för snöfall och is och väglaget län för län"**, H1 "Halkvarning just nu".
+   "Halkvarning" var den öppnaste av de tolv sökningarna; "varning för snöfall och is" står kvar i titeln (Klarts största vägsökning).
+
+**Alternativ.** lastmod = varje omskrivning: Google lär sig att datumet ljuger och slutar läsa det. lastmod ur en hash av hela sidan:
+klockslag och olyckornas tider ändrar den varje varv. Startsidans länkar för hand: en ny ort i `ORTER` skulle saknas där tills någon minns det.
+
+**Stomdokument:** inga — sajtens sökordning och sitemap; appen, motorn och mätningarna är orörda.
