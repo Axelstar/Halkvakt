@@ -13351,3 +13351,65 @@ talen i de två filerna, så talet står i båda och provet binder det till `BOR
 avsiktligt dubblerad, eftersom healthchecken är den enda kontroll som körs utanför Supabase (kort #87, Bengt 14/9).
 
 **Stomdokument:** BED §4.2.
+
+## #782 (3/11 2026) Kandidaten på en kvart: den nya kandidatens värde räknas också i databasen var femte minut för det förarna hör; domen fälls på timvärdena som förut
+
+**Beslut** (Bengt, och Axel via Bengt, 3/11). Bengts ord, i ordning:
+- *"ja skriv underlaget och vi kör den publika deployvägen"*;
+- *"Ja, rätta underlaget"*, när det visat sig att den privata vägen går;
+- *"Ja, skriv utkasten"*, på rekommendationerna;
+- *"Signera för båda"*.
+
+Den nya kandidaten (som talar sedan #729) räknas i dag en gång i timmen i Actions, och värdet i appen vilar på stationsmätningar som
+är 5–67 minuter gamla, i medel omkring 35. Från och med detta beslut:
+
+1. **En snabb väg för det förarna hör.** Kandidatens steg vid stationerna (grannarnas fel, RÅ och blandningen) räknas också i
+   databasen var femte minut, av en SQL-funktion som pg_cron startar (`4-59/5`, minuter som pulsklockans jobb inte använder).
+   Mätningarna bakom värdet blir omkring 7–14 minuter gamla (räknat ur schemat, inte mätt). Prognosdelen räknas som förut.
+2. **Räkningen är privat, rörledningen publik.** Funktionen ligger i Axelstar/halkvakt-kuvos och läggs in i databasen av ett
+   Halkvakt-flöde som hämtar koden därifrån, som kandidatens flöden redan gör (#768, #770). Här ligger tabellerna, schemat, vem som
+   talar och proven. Kandidatens tal står inte i den här posten och inte i koden här; räkningen och domens del står i halkvakt-kuvos F5.
+3. **Vem som talar.** `talande_timme()` och `talande_regel()` väljer i tre steg:
+   - den snabba, när den är högst 10 minuter gammal och har minst 95 % av vägpunkterna;
+   - annars den nyas timme, som i dag;
+   - annars den frysta (FORREGISTRERING-2026-27 §12 f).
+
+   Regeln, talen, vetot, spridningen och märkningen (§12 d) är desamma.
+4. **Domen rörs inte.**
+   - Den frysta och den nya räknas och loggas timvis i Actions som förut, och domarna fälls på det (§2, §12 c och e).
+   - Det snabba värdet loggas inte och är inte en del av domens underlag.
+   - Beslutet gäller vad förarna hör, inte någon dom. Det fattas innan någon timme av vinterns utfall är läst (regel L).
+5. **Skuggan före påslaget.** Byggt med flaggan av räknas den snabba utan att tala i minst sju dygn och minst tre nätter med frysrisk
+   i regeln.
+   - **Påslaget:** den snabba får tala om den ger högst 1,5 gånger så många utfallsbyten per sträcka och timme som timvärdet. Gränsen
+     bestäms här, före skuggan.
+   - **Annars:** ett utfall ska stå i 10 minuter innan det talar, prövat i en ny skugga.
+   - **Påslaget är en rad** i en logg som `kandidat_talar` (sql/070), med det här beslutets nummer.
+6. **Kartan samtidigt.** Publiceringen skriver kandidatens kartfil till hinken varje gång, och kartsidan läser den därifrån från
+   påslaget, så att appen och kartan visar samma sak. Kartans text säger klockslaget då värdet räknades.
+
+Arbetet står på kort #373. Underlaget är `Desktop/Kandidaten_pa_en_kvart_Beslutsunderlag_2026-11-03.md` på Bengts dator, och här är
+dess slutsatser. #373 och inte #372: #372 bärs redan av två grenar som inte är ihopslagna (`claude/kort-produktansvar` och
+`claude/platsfragorna-raknaren`).
+
+**Verify.**
+- Ci grön med pariteten mellan den snabba räkningen och timkedjans räkning (högst 0,01 °C på samma indata), och ett motprov som fäller
+  den.
+- Ett dygn i drift med flaggan av: körtiderna och CPU lästa i panelen, inga fel i Postgres-loggen.
+- Skuggans tal bokförda: utfallsbyten per sträcka och timme, snabbt mot timvis, och avvikelsen mot timvärdet vid :47 i median och p95.
+- Efter påslaget: lägesfilen bär den snabba tiden, appen visar den under Betatest → Mätningen, och kartans kandidattid är lika med
+  lägesfilens.
+
+**Alternativ.**
+- **Räkningen publik i Halkvakt:** enklare att granska, och den låg här till 31/10. Valdes bort, eftersom det bryter linjen i #770 och
+  ger ett prejudikat. Det var Bengts första ord; underlaget visade sedan att den privata vägen går med samma mönster som kandidatens
+  flöden.
+- **En edge-funktion i TypeScript:** flyttar cirka 26 000 rader per körning, och favoritprovet föll på Supabases resurstak.
+- **Varannan minut:** 7–11 minuter i stället för 7–14, men fler skrivningar medan databasens minne står på varning. Kan tas senare med
+  en rad i schemat.
+- **Prognosdelen varje timme:** liten väntad vinst och 24 körningar per dygn i Actions. Prövas först i kuvösen (halkvakt-kuvos F5).
+- **Att låta det vara:** värdet i appen vilar i medel på mätningar som är omkring 35 minuter gamla.
+
+**PRODUKTBOKEN** uppdateras i samma varv som påslaget, eftersom förarna hör ett färskare värde och kartan visar ett nytt klockslag.
+
+**Stomdokument:** SYS kandidatens kedja och databasen, APP kandidatens varning, BED §4.2.
