@@ -59,7 +59,12 @@ on:
         type: choice
         options: ["vanlig", "t4", "smavagar", "okanda"]
         default: "vanlig"
-concurrency: { group: kuvos-ny-kandidat, cancel-in-progress: false }
+# Två köer (Bengt 4/11, halkvakt-kuvos F9): stegen som hämtar ur MET (indata, fyll, t4) delar en kö, eftersom MET tar en förbindelse
+# åt gången; fyllningen hämtar ur arkivet och v4 när timmar saknas. De andra stegen läser bara färdiga releaser och hinken och väntar
+# inte bakom en hämtning på åtta timmar. Ett steg som läser en vinter vars hämtning pågår läser det som hunnit laddas upp.
+concurrency:
+  group: kuvos-ny-kandidat-${{ (inputs.steg == 'indata' || inputs.steg == 'fyll' || inputs.steg == 't4') && 'met' || 'ovrigt' }}
+  cancel-in-progress: false
 permissions:
   contents: read
 # Varianten (tillägget T4, DECISIONS #720): den rättade kandidaten tränas under kuvos/kuvos-kandidat-2027-28-t4/ med artefakterna
