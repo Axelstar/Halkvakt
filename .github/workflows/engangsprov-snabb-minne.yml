@@ -1,8 +1,9 @@
 name: engangsprov-snabb-minne
-# ENGÅNGSPROV 3/11 2026 (DECISIONS #783, kort #373): varför kandidaten på en kvart fyllde databasens minne. Körs bara på grenen
-# claude/snabb-minne-prov, aldrig mot produktionen och aldrig på main: Supabases egen Postgres i en container med produktionens minne
-# (Small), påhittade data i full storlek. Kuvösens räkning hämtas ur det privata repot och skrivs aldrig ut; loggen bär bara tider,
-# minne och tilläggens namn (scripts/engangsprov-snabb-minne.mjs).
+# ENGÅNGSPROV 3–4/11 2026 (DECISIONS #783, kort #373): kandidaten på en kvart i Supabases egen Postgres, i en container med
+# produktionens minne (Small) och påhittade data i full storlek. Körs bara på grenen claude/snabb-minne-prov, aldrig mot produktionen
+# och aldrig på main. 3/11 orsaken (df33ff59); 4/11 rättelsen på kuvos-grenen claude/kandidat-hav-inline: minnet i kedjans fem steg
+# och pariteten mot kandidat_timme.timme. Kuvösens kod skrivs aldrig ut; loggen bär bara tider, minne och antal
+# (scripts/engangsprov-snabb-minne.mjs, och kuvos test/kandidat-snabb.test.ts, som är skrivet för en publik logg).
 on:
   push:
     branches: [claude/snabb-minne-prov]
@@ -16,11 +17,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
-        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
-      - name: Bara räkningen ur det privata repot
-        run: cp .kuvos-privat/fysik/live/kandidat_snabb.sql "$RUNNER_TEMP/snabb.sql" && rm -rf .kuvos-privat
+        with: { repository: Axelstar/halkvakt-kuvos, ref: claude/kandidat-hav-inline, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Räkningen ur kuvos-grenen
+        run: cp .kuvos-privat/fysik/live/kandidat_snabb.sql "$RUNNER_TEMP/snabb.sql" && git -C .kuvos-privat log --oneline -1
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13" }
       - name: Supabases Postgres med produktionens minne
         run: |
           PW=$(openssl rand -hex 16); JW=$(openssl rand -hex 32)
@@ -30,9 +33,17 @@ jobs:
             supabase/postgres:17.6.1.178 > /dev/null
           mkdir -p "$RUNNER_TEMP/pgm" && cd "$RUNNER_TEMP/pgm" && echo '{"private":true}' > package.json
           npm install --no-save --no-audit --no-fund pg@8.13.1 > /dev/null
-      - name: Provet
+      - name: Minnet i kedjans fem steg, med kontrollen
         env: { PGMOD: "${{ runner.temp }}/pgm", ROR: sql/078_kandidat_snabb.sql, SNABB: "${{ runner.temp }}/snabb.sql" }
         run: node scripts/engangsprov-snabb-minne.mjs
+      # Kuvösens paritetsprov som i ci, med kuvos-grenen ovanpå, mot avbildens Postgres (eget schema i provet).
+      - name: Pariteten mot kandidat_timme.timme
+        if: ${{ !cancelled() }}
+        run: |
+          rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
+          python3 -m pip install -q $(grep -E '^(numpy|pandas)==' fysik/requirements.txt)
+          ln -s "$RUNNER_TEMP/pgm/node_modules" node_modules
+          TEST_DATABASE_URL="postgres://postgres:$PGPASSWORD@127.0.0.1:5432/postgres" node --experimental-strip-types --test test/kandidat-snabb.test.ts
       # Bara raderna om processer som dött, aldrig satserna.
       - name: Containerns logg vid fel
         if: failure()
