@@ -375,6 +375,10 @@ test("varningssidan: SMHI:s ord, vägarna i det varnade länet, länkar dit frå
   // 3/11: "halkvarning" först (den öppnaste sökningen), "varning för snöfall och is" kvar (Klarts största vägsökning).
   assert.ok(s.includes("<title>Halkvarning idag: SMHI:s varningar för snöfall och is och väglaget län för län | Halkvakt</title>"));
   assert.ok(s.includes("<h1>Halkvarning just nu</h1>"));
+  // Varje datamängd bär licensen (Search Console 4/11: "Missing field license" på SMHI:s).
+  const ld = JSON.parse(s.match(/<script type="application\/ld\+json">(\{"@context":"https:\/\/schema.org","@type":"WebPage".*?)<\/script>/)![1]);
+  assert.deepEqual(ld.isBasedOn.map((x: { license?: string }) => x.license),
+    ["https://creativecommons.org/publicdomain/zero/1.0/", "https://creativecommons.org/licenses/by/4.0/"]);
   assert.ok(s.includes(`<link rel="canonical" href="${SIDBAS}/varningar/">`));
   assert.ok(!s.includes('name="robots"'), "sidan ska kunna indexeras");
   assert.ok(s.includes("Kl. 07:30 varnar SMHI i Norrbottens fjäll (orange varning, snöfall) och Värmlands län (gul varning, snöfall och ishalka)."), "SMHI:s händelser och områden");
