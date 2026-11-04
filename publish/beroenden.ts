@@ -71,7 +71,7 @@ export const KARTAN: Beroende[] = [
     // bara säger "observationer" blir VET INTE, vilket LARMAR. Inget tystas, en dom rättas.
     nyckelord: ["metobs", "meteorologiska observationer", "parameter 16", "molnmängd", "latest-months"] },
   { vard: "tie.digitraffic.fi", roll: "produktion",
-    matar: "finska vägstationer (ingest/fi.ts): /weather/v1/stations och /stations/data",
+    matar: "finska vägstationer och trafikmeddelanden (ingest/fi.ts): /weather/v2/stations och /stations/data, /traffic-message/v2/traffic-announcements (v2 sedan 4/11, ärende #1327)",
     brister: "gränssnapshoten mot Finland och grind R-A --land=fi",
     bevakad: "fi-digitraffic",
     signal: "www.digitraffic.fi/en/news/ — hash, 20 857 tecken, stabil. API-changes-sidan är JS-renderad och ger bara skal (#148)",

@@ -13707,3 +13707,27 @@ favoritprov 41856248658 (15:18:12) och favoriter 41856346946 (15:18:48), varje l
 `skuggmotor-546-2026-11-07`).
 
 **Stomdokument:** SYS 2 skuggmotorn
+
+## #791 (4/11 2026) Finland läses ur Digitraffics v2: vädret rakt av, trafikmeddelandena med filter på sluttiden (ärende #1327)
+
+**Beslut (Bengt, 4/11).** *"Bygg nu"*, på källvaktens post i ärende #1327: Digitraffic har förklarat v1 av väderdatan och
+trafikmeddelandena föråldrade.
+
+**Vad som hittades.** Svaren på `/weather/v1/…` och `/traffic-message/v1/messages` bär `Deprecation: true` och `Sunset: 13 Apr 2027`.
+API-beskrivningen säger *"Will be removed after 2027-04-13"*. Väder v2 är v1 byte för byte: samma form och fält, och alla 32 969
+kombinationer av station och sensor är lika (läst 4/11). Trafikmeddelandenas ersättare, `/traffic-message/v2/traffic-announcements`,
+tar inte `inactiveHours` och lämnar också avslutade meddelanden. 4/11 gav den 11 poster, varav 3 avslutade samma dag.
+
+**Ändringen.** `ingest/fi.ts` hämtar `/weather/v2/stations`, `/weather/v2/stations/data` och
+`/traffic-message/v2/traffic-announcements`. `ingest/fi-aktiva.ts` släpper bara de meddelanden vars första annons saknar sluttid eller
+slutar efter nu, och det är samma annons som fi.ts läser. `publish/beroenden.ts` säger vad källan matar.
+
+**Bevis, före sammanslagningen:**
+- `test/fi-aktiva.test.ts` är grönt, och två motprov fäller det: `>=` i stället för `>`, och inget filter.
+- `test/nyhetsbedomning.test.ts`: 37 av 37.
+- Torrkörningen mot Digitraffic 4/11 kväll: v1 gav 9 aktiva och v2 12, som efter filtret blev samma 9, utan skillnad åt något håll.
+  Väder v2 gav 532 stationer med data.
+
+**Kvar:** beviset i drift, nästa körning av `ingest-grannar` efter sammanslagningen (loggraden `fi: latest …, deviations …`).
+
+**Stomdokument:** SYS källorna — Finlands vägstationer och trafikmeddelanden
