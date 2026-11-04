@@ -194,13 +194,14 @@ async function posta() {
   if (fel.length) throw new Error(fel.join("\n"));
 }
 
-// After a day the numbers have settled enough to compare the types. Fetched once per reel.
+// After a day the numbers have settled enough to compare the types. Fetched once per reel, by the next evening's run:
+// 20 h and not 24, because that run starts about 24 h after the post and would otherwise miss it by seconds.
 async function matt() {
   const token = process.env.META_PAGE_TOKEN, historik = lasHistorik();
   if (!token) return console.log("META_PAGE_TOKEN saknas, ingen mätning.");
   let n = 0;
   for (const h of historik) {
-    if (h.torr || h.stats || !h.ig || Date.now() - new Date(h.tid) < 24 * 36e5) continue;
+    if (h.torr || h.stats || !h.ig || Date.now() - new Date(h.tid) < 20 * 36e5) continue;
     const varden = async m => (await api(`${h.ig}/insights`, { metric: m, access_token: token }, "GET")).data;
     let data;
     try { data = await varden("reach,views,saved,shares,ig_reels_avg_watch_time"); }
