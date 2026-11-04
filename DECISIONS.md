@@ -13666,3 +13666,31 @@ nästa publicering; ingen app behöver byggas om.
 - broar bara på den väg man kör, inte i konen.
 
 **Stomdokument:** SYS broarnas frysrisk pausad i publiceringen
+
+## #789 (4/11 2026) Motorn hoppar över en hal sträcka vars ruta ligger längre bort än försprånget (kort #375)
+
+**Beslut (Bengt, 4/11).** *"jag vill läsa marsdomen men först gör vi 1,2 och 3"* — punkt 3: laga kort #375 för skuggans skull.
+
+**Varför.** Skuggvarven har fått 546 WORKER_RESOURCE_LIMIT sedan 1/11. Försprånget fick felet 141 gånger 3/11, omkring 27 % av dess
+anrop. `evaluateSegment` gick vid varje GPS-punkt igenom alla samplade punkter (var 100:e meter) på varje hal sträcka, fast bara en
+punkt inom försprånget (högst 3 000 m) kan tala. Kostnaden följer därför längden på de hala sträckorna nära rutterna, som skiftar
+från dag till dag, och inte antalet faror. Mätt lokalt mot lägesfiler ur halkvakt-kartas historik.
+
+**Ändringen.** Varje sträcka får en ruta (`boxOf`). `minDistToBoxM` i `engine/src/geo.ts` ger en undre gräns för avståndet till
+varje punkt i rutan. Ligger rutan längre bort än försprånget + 1 m, går motorn inte igenom sträckans punkter. Utfallet ändras inte:
+gränsen är aldrig större än det verkliga avståndet, och en punkt längre bort än försprånget kan aldrig vara den som talar.
+
+**Bevis, lokalt och före deployen:**
+- 54 motorprov och vektorerna är gröna. Buntarna för skuggmotor, favoritprov och favoriter är omgjorda, och `--check` är grön.
+- Fyra lägesfiler (31/10 12:00, 1/11 16:00, 3/11 00:30, 4/11 14:30) och alla elva försprångsanrop: varningarna och de undanträngda
+  är byte för byte lika före och efter (samma sha256).
+- Dyraste anropet: 1,8 → 0,25 s, 5,5 → 1,8 s, 11,0 → 1,7 s och 9,7 → 1,0 s.
+- Alla elva anropen: 8,0 → 1,7 s, 12,5 → 5,5 s, 41,7 → 7,3 s och 28,8 → 4,9 s.
+
+**Vad som inte ändras:** reglerna, rösten och vektorerna. Kotlin- och Swift-motorerna i apparna rörs inte. Ingest-lives
+tidsgränser, som står i samma kort, är inte rörda.
+
+**Kvar:** deployen av skuggmotor, favoritprov och favoriter på Bengts ord (`deploy-supabase.yml`). Sedan kortets Verify: tre dygn i
+följd utan 546 från skuggmotorns jobb i `public.anrop`.
+
+**Stomdokument:** SYS 2 skuggmotorn
