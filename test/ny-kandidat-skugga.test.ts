@@ -99,10 +99,16 @@ function* genom(dir: string): Generator<string> {
   }
 }
 
+// Arkivexporten läser den nyas domlogg bara för att lägga den i hinken `arkiv`, som ingen app läser (sql/083, DECISIONS #792).
+const UNDANTAG = new Set(["supabase/functions/arkivexport/index.ts"]);
+
 test("ingenting i appen, motorn, publiceringen eller edge-funktionerna läser den nyas tabeller (§4: ingenting når förarna)", () => {
   const traff: string[] = [];
   for (const d of ["publish", "engine", "supabase", "android", "ios"]) {
-    for (const p of genom(join(ROT, d))) if (/ny_kandidat|gallra_ny_kandidat/.test(readFileSync(p, "utf8"))) traff.push(p.slice(ROT.length));
+    for (const p of genom(join(ROT, d))) {
+      const rel = p.slice(ROT.length).replace(/\\/g, "/").replace(/^\//, "");
+      if (!UNDANTAG.has(rel) && /ny_kandidat|gallra_ny_kandidat/.test(readFileSync(p, "utf8"))) traff.push(rel);
+    }
   }
   assert.deepEqual(traff, [], "den nya kandidaten loggas bara; publiceringen läser kandidat_regel()");
 });

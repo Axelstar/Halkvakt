@@ -17,7 +17,9 @@ const HINK = "arkiv";
 const MAX_DYGN = 2;
 const TABELLER = ["trend_kandidater", "trend_stigande", "radar_precip", "kandidat_skugga", "kandidat_station",
   // De fyra som aldrig rensas: exporteras men raderas inte (sql/063, DECISIONS #618, Bengts val ii).
-  "shadow_log", "road_condition_history", "situation_archive", "smhi_warnings_history"];  // sql/053, 057 och 063:s vitlista
+  "shadow_log", "road_condition_history", "situation_archive", "smhi_warnings_history",
+  // Den nya kandidatens domlogg, raderad efter 14 dygn (sql/083, DECISIONS #792).
+  "ny_kandidat_skugga", "ny_kandidat_station"];  // sql/053, 057, 063 och 083:s vitlista
 
 async function rpc(fn: string, args: Record<string, unknown>): Promise<any> {
   const r = await fetch(`${SB}/rest/v1/rpc/${fn}`, { method: "POST", headers: { ...H, "Content-Type": "application/json" }, body: JSON.stringify(args) });

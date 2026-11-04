@@ -13731,3 +13731,32 @@ slutar efter nu, och det är samma annons som fi.ts läser. `publish/beroenden.t
 **Kvar:** beviset i drift, nästa körning av `ingest-grannar` efter sammanslagningen (loggraden `fi: latest …, deviations …`).
 
 **Stomdokument:** SYS källorna — Finlands vägstationer och trafikmeddelanden
+
+## #792 (4/11 2026) Den nya kandidatens domlogg exporteras till hinken och raderas efter 14 dygn
+
+**Beslut (Bengt, 4/11).** *"Ja, bygg båda"*, på utredningen av databasens tillväxt (`Desktop/Databasens_tillvaxt_2026-11-04.md`,
+punkt a).
+
+**Varför.** `ny_kandidat_skugga` och `ny_kandidat_station` (sql/068) låg kvar i databasen *"tills exporten utökas med ett eget
+beslut"*. 4/11 bar de 28,9 MB sedan 24/10, cirka 2,6 MB per dygn, och inget raderade dem.
+
+**Ändringen.**
+- sql/083 lägger tabellerna i arkiv2-vitlistan, i villkoret på `arkiv_export_tabell` och i efterslapet.
+- `arkiv2_alder` blir 1, så att ett dygn exporteras när det är färdigt, som den gamla kandidatens.
+- Golvet för raderingen blir nattjobbets 14 dygn (`arkiv2_golv` ger dem `min_dygn`), inte den gamla kandidatens 3 (sql/072). Då har
+  värdevakten och skuggmätningen sina dygn kvar i databasen.
+- `TABELLER` i `supabase/functions/arkivexport/index.ts` följer i samma commit, eftersom listan finns på två ställen.
+
+**Inte byggt: städningen av pg_cron:s körlogg.** Den fanns redan. `gallra_arkiv(7)` (sql/031) raderar varje natt körningar som är
+äldre än 7 dygn, och 4/11 var den äldsta raden från 28/10 03:15. De 15,2 MB är loggens storlek med 7 dygn. Utredningen hade fel på
+den punkten.
+
+**Bevis före sammanslagningen:** integrationsprovet i ci:s PostGIS. 083 körs två gånger, och provet prövar vitlistan, åldern,
+golvet och villkoret, och att den gamla kandidatens golv och de andra tabellernas ålder är orörda.
+
+**Kvar:**
+- migrationen med DB-knappen och deployen av arkivexport, på Bengts ord;
+- exporten av dygnen sedan 24/10, två dygn per tabell och timme. Vakthundens efterslap ligger över gränsen 9 i några timmar;
+- den första raderingen, efter 14 dygn.
+
+**Stomdokument:** SYS arkivet — den nya kandidatens domlogg i hinken

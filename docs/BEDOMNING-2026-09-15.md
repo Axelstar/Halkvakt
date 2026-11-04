@@ -850,7 +850,7 @@ bevisbart säker (vid 0 km/h går det inte att nå faran) och är rimligen stör
 <!-- LÄGESRADER §5: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 *Läget i projektkartan:*
 
-- [Arkivexporten och säkerhetskopian](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-i-export): klar
+- [Arkivexporten och säkerhetskopian](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-i-export): delvis, 93 % · kvar: Migrationen sql/083 med DB-knappen och deployen av arkivexport på Bengts ord, och den första exporten av den nya kandidatens domlogg (DECISIONS #792)
 - [Datavakterna (givarvakten, radvakten, karantänen)](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-i-vakterna): klar
 - [Lägesfilens fält för skuggdelarna](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-l-falten): klar
 - [L2 tillståndet (skattaren S1–S3)](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-tillstand): delvis, 100 % · kvar: Skattarens träffsäkerhet mot operatörens klasser, dömbar först med vinterfacit
