@@ -1,0 +1,24 @@
+{
+  "typ": "svep",
+  "nyckel": "svep:lunch",
+  "etikett": "Halkläget kl. 10:30",
+  "rubrik": "Halt i morse",
+  "underrad": "Halka på 61 vägavsnitt i 8 län.",
+  "fler": 0,
+  "text": "Halkläget kl. 10:30, onsdag 4 november: halka på 61 vägavsnitt i 8 län. Svep för att se ditt län.\n\nNorrbotten: halka på 32 av 58 vägavsnitt, 12 stationer under noll, kallast −1,7 °C vid Kätkesuando.\nVästerbotten: halka på 13 av 44 vägavsnitt.\nVästernorrland: halka på 6 av 22 vägavsnitt.\nDalarna: halka på 4 av 38 vägavsnitt, 5 stationer under noll, kallast −1,5 °C vid Ryggen.\nJämtland: halka på 3 av 17 vägavsnitt.\nVärmland: halka på 1 av 52 vägavsnitt, 16 stationer under noll, kallast −1,4 °C vid Storberget.\nVästra Götaland: halka på 1 av 133 vägavsnitt, 7 stationer under noll, kallast −0,7 °C vid 1502 Kila Fjärryta.\nGävleborg: halka på 1 av 27 vägavsnitt.\n\nLäget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Västernorrland #Dalarna #Jämtland #halkvakt",
+  "textIg": "Halkläget kl. 10:30, onsdag 4 november: halka på 61 vägavsnitt i 8 län. Svep för att se ditt län.\n\nNorrbotten: halka på 32 av 58 vägavsnitt, 12 stationer under noll, kallast −1,7 °C vid Kätkesuando.\nVästerbotten: halka på 13 av 44 vägavsnitt.\nVästernorrland: halka på 6 av 22 vägavsnitt.\nDalarna: halka på 4 av 38 vägavsnitt, 5 stationer under noll, kallast −1,5 °C vid Ryggen.\nJämtland: halka på 3 av 17 vägavsnitt.\nVärmland: halka på 1 av 52 vägavsnitt, 16 stationer under noll, kallast −1,4 °C vid Storberget.\nVästra Götaland: halka på 1 av 133 vägavsnitt, 7 stationer under noll, kallast −0,7 °C vid 1502 Kila Fjärryta.\nGävleborg: halka på 1 av 27 vägavsnitt.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone, länken finns i vår profil.\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Västernorrland #Dalarna #Jämtland #halkvakt",
+  "pass": "lunch",
+  "antal": 10,
+  "datum": "2026-11-04",
+  "generated_at": "2026-11-04T09:30:24.877Z",
+  "lan": [
+    "norrbotten",
+    "vasterbotten",
+    "vasternorrland",
+    "dalarna",
+    "jamtland",
+    "varmland",
+    "vastra-gotaland",
+    "gavleborg"
+  ]
+}
