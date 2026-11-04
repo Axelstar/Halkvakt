@@ -13514,6 +13514,36 @@ Läxa i CLAUDE.md: en omstart nollställer pg_nets räknare.
 
 **Stomdokument:** SYS kandidaten på en kvart pausad och pg_nets räknare efter driftstörningen 3/11
 
+**Tillägg 4/11 (Bengt: *"Ja, pröva den"* 3/11, *"Ja, bygg rättelsen"* och *"kör 1, 2 och 3"* 4/11): orsaken funnen, rättelsen i drift
+och jobbet igång igen.**
+- **Orsaken** (prövad 3/11 kväll i engångsprovet 41686274376 på grenen `claude/snabb-minne-prov`, som aldrig slås ihop): grannlistornas
+  avståndsfunktion hade en delfråga med `FROM` och kunde därför inte inlinas. Varje anrop blev en egen exekvering, och i Supabases
+  Postgres läcker varje sådan omkring 230 byte till satsens slut, varav pgaudit omkring 138 byte trots `pgaudit.log = none`. Bygget gör
+  omkring 10,6 miljoner anrop i en sats, alltså omkring 2,4 GB på en maskin med 1,79 GB. Listornas storlek var inte orsaken. En lokal
+  Postgres utan Supabases tillägg läcker inte, och där tog bygget 6 MB.
+- **Rättelsen** (halkvakt-kuvos F5, tillägg 4/11, sammanslagen som 8fa36f8): funktionen är ett enda uttryck med samma ordning på
+  operationerna, och planeraren inlinar den. Lokalt, med påhittade data i full storlek, gav den samma tal bit för bit som den gamla: en
+  miljon par, grannlistorna (414 420 rader) och räkningen med och utan stationernas PH.
+- **Provet i Supabases avbild 17.6.1.178** med produktionens minne (41782203139, grön):
+  - kontrollen, en funktion som inte kan inlinas, läcker fortfarande 228 byte per anrop, så mätningen ser en läcka;
+  - kedjans fem steg i full skala håller sig vid högst +28 MB;
+  - grannbygget tar 5,2 s och +1 MB (3/11 avbröts det vid 1 301 MB);
+  - pariteten mot timkedjans räkning är grön.
+- **Driftsatt 4/11 06.09 UTC** med DB-knappen (41783615293). Funktionskroppens md5 i databasen är filens, kroppen har ingen `FROM`, och
+  jobbet stod fortfarande pausat.
+- **Återstartat 06.15 UTC** i SQL-redigeraren (`cron.alter_job(…, active := true)`). Första körningen gick 06.19: klar på 8,5 s, med
+  grannlistorna ombyggda (414 420 rader). Databasen har inte startat om (`pg_postmaster_start_time()` är fortfarande 3/11 12.46). Den
+  körningen räknade inget, eftersom timvärdena för kl. 06 kommer med Del A 06.28 (*ingen PH för timmen*). Den första räkningen med
+  timvärden gick 06.49, efter att Del A blivit klar 06.44: 13 714 punkter på 6,2 s, ingen genom reserven och ingen omstart. Panelens
+  minnesdiagram stod still: använt minne 447 MB kl. 06.18 och 06.20 och 455 MB kl. 06.49. 3/11 steg det från 0,3 till 1,4 GB på två
+  minuter.
+- **Skuggan** (#782 punkt 5) har nu körningar att mäta. Fristen för läsningen räknas från återstarten: sju dygn med minst tre nätter
+  med frysrisk, alltså tidigast 11/11.
+
+Läxa i CLAUDE.md: en SQL-funktion som inte kan inlinas läcker i Supabases Postgres, och bara Supabases egen avbild visar det.
+
+**Stomdokument:** SYS kandidaten på en kvart igång igen efter rättelsen av avståndsfunktionen
+
 ## #784 (3/11 2026) Fast search_path på våra 22 PL/pgSQL-funktioner i public (sql/081); spatial_ref_sys väntar på Supabase
 
 **Beslut (Axel, 3/11).** *"Yes please do that"*, på frågan om att rätta Supabases säkerhetsvarningar som en migration i repot.
