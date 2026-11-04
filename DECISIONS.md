@@ -13699,7 +13699,11 @@ gränsen är aldrig större än det verkliga avståndet, och en punkt längre bo
 **Vad som inte ändras:** reglerna, rösten och vektorerna. Kotlin- och Swift-motorerna i apparna rörs inte. Ingest-lives
 tidsgränser, som står i samma kort, är inte rörda.
 
-**Kvar:** deployen av skuggmotor, favoritprov och favoriter på Bengts ord (`deploy-supabase.yml`). Sedan kortets Verify: tre dygn i
-följd utan 546 från skuggmotorns jobb i `public.anrop`.
+**I drift 4/11 15:17–15:19 UTC** (Bengt: *"Ja, allt"*): deploy-supabase ur main 153d9448, skuggmotor 41856022176 (15:17:01),
+favoritprov 41856248658 (15:18:12) och favoriter 41856346946 (15:18:48), varje logg med *Deployed Functions*. Mätt efter deployen:
+30 av 30 rader i `forsprang_log` i första försprångsvarvet efter deployen (15:42), mot 11–27 i varje varv 09:12–15:12 samma dag; i `net._http_response` 15:17–15:47 noll 546 av 73 svar (12:00–15:17: 44 av 485), och de två svaren utan 2xx var tidsgränser utan kod.
+
+**Kvar:** kortets Verify, tre dygn i följd utan 546 från skuggmotorns jobb i `public.anrop`, läses 7/11 (fristen
+`skuggmotor-546-2026-11-07`).
 
 **Stomdokument:** SYS 2 skuggmotorn
