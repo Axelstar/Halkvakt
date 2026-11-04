@@ -9,7 +9,8 @@ name: kuvos-ny-kandidat
 #                 (halkvakt-kuvos BESLUT F8, §14) hämtas likadant, med vädret som en hel vinter; hösten 2017 bara ur MET:s v4.
 #   fyll          tillägget T2 (docs/FORREGISTRERING-NY-KANDIDAT-TILLAGG-2026-10-23.md): timmar som MET:s arkiv saknar i vinterns delar
 #                 frågas i arkivet igen och tas annars ur MET:s omräkning v4 (metpparchivev4); metnordic_fylld_<del> och fyllt_<del>.json
-#                 läggs bredvid originalen i releasen, som står kvar. En vinter i taget, en hämtning åt gången.
+#                 läggs bredvid originalen i releasen, som står kvar. En vinter i taget, en hämtning åt gången. Med en halvvinter som
+#                 vinter fylls bara den; med en träningsvinter de fem.
 #   t4            tillägget T4 (docs/FORREGISTRERING-NY-KANDIDAT-TILLAGG-T4-2026-10-25.md, DECISIONS #720): kortvågen 14–31/3 2022 ur
 #                 MET:s v4 i 2021/22:s delar (metnordic_reserv.ts --t4); metnordic_t4_<del> och t4_<del>.json läggs bredvid källdelarna
 #                 i releasen och väljs före dem. Kör sedan forberedning → traning → provning → samman → paritet med variant=t4.
@@ -254,7 +255,8 @@ jobs:
       max-parallel: 1
       fail-fast: false
       matrix:
-        vinter: ["2018-19", "2019-20", "2020-21", "2021-22", "2022-23"]
+        # En halvvinter i valet (2017-18, 2023-24; halkvakt-kuvos F8) fylls för sig; annars de fem träningsvintrarna som förut.
+        vinter: ${{ fromJSON(inputs.vinter == '2017-18' && '["2017-18"]' || inputs.vinter == '2023-24' && '["2023-24"]' || '["2018-19", "2019-20", "2020-21", "2021-22", "2022-23"]') }}
     env: { GH_TOKEN: "${{ github.token }}", VINTER: "${{ matrix.vinter }}", REL: "kuvos-vintrar-${{ matrix.vinter }}" }
     steps:
       - uses: actions/checkout@v4
