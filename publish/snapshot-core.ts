@@ -109,6 +109,10 @@ export const REGN_H_FONSTER_H = 48;
 /** F1 (kort #187): en lutning äldre än sitt längsta fönster säger inget om nu. */
 export const LUTNING_MAX_ALDER_MIN = 60;
 const BRIDGE_M = 15_000;
+/** BROARNA PAUSADE (DECISIONS #788, 4/11). Vellinge visade regn vid +2,0 °C kl. 08 och regeln "närmaste våta station ≤ +3 inom
+ *  15 km" gjorde alla 30 broar i södra Malmö till frysrisk; Bengt fick fem rop på åtta minuter på Yttre Ringvägen. Snapshoten
+ *  skickar inga broar förrän regeln är omgjord. Motorn och vektorerna är orörda: utan broar i filen finns inget att säga. */
+export const BROAR_PAUSADE = true;
 
 /** RADARN PER STATION (DECISIONS #459): radarns högsta RÅA `rate_mean_mmh` över väglagssträckorna inom 5 km från stationen
  *  (kopplingen station–väg, Bengt 17/9, DECISIONS #225 — samma som uppspelningens radarvariant) de senaste N timmarna, där N är
@@ -153,7 +157,7 @@ export function bridgesFromGeoJSON(fc: { features: any[] }): Bridge[] {
   }));
 }
 
-export async function buildSnapshot(qIn: Q, bridgesIn: Bridge[], now: Date = new Date()) {
+export async function buildSnapshot(qIn: Q, bridgesIn: Bridge[], now: Date = new Date(), broar = !BROAR_PAUSADE) {
   const notes: string[] = [];
   // Tiden per avsnitt (DECISIONS #741 punkt 1): bygget tog 40,9 s 28/10 18:00 utan att det syntes vilka frågor. Varje fråga räknas
   // på avsnittet den ställs i; det som inte är frågor (JSON, beräkningar) ingår inte. Publiceringen lägger talen i sitt svar.
@@ -421,7 +425,8 @@ export async function buildSnapshot(qIn: Q, bridgesIn: Bridge[], now: Date = new
   // Motorn kollar regeln igen (tröskel +3 för bro); här förfiltreras så att inte
   // 3 000 broar skickas till varje telefon i juli. Samma givarvakt som ovan.
   const bridges: { id: string; lon: number; lat: number; road: string | null; yta: number | null; fukt: boolean }[] = [];
-  if (bridgesIn.length) {
+  if (!broar && bridgesIn.length) notes.push(`broarna pausade (DECISIONS #788): ${bridgesIn.length} broar skickas inte`);
+  if (broar && bridgesIn.length) {
     const allWx = await q(`
       SELECT station_id, surface_temp_c, rain, snow, precipitation, ST_X(geom) AS lon, ST_Y(geom) AS lat
       FROM weather_latest WHERE ${WX_SANE}`);

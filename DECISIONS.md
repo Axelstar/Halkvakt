@@ -13614,3 +13614,25 @@ integritet.html och statistiksidan i halkvakt-karta i en egen PR som slås ihop 
 och kohort.
 
 **Stomdokument:** APP räknaren, SYS app-raknare och sql/082
+
+## #788 (4/11 2026) Broarnas frysrisk pausad i snapshoten: 30 broar i södra Malmö talade på ett regnskur vid +2 °C
+
+**Beslut (Axel, 4/11 08:25).** *"Detta måste fixas nu."* Bengt fick fem rop *Frysrisk framöver, bro om 700/800 meter* på åtta minuter
+(08:00–08:08) på Yttre Ringvägen till golfen. Publiceringen skickar inga broar (`BROAR_PAUSADE` i `publish/snapshot-core.ts`) från
+nästa publicering; ingen app behöver byggas om.
+
+**Vad som hände** (läst i `weather_observations` och `data/bridges.geojson`):
+- Vellinge (1234) visade regn 06:40–07:10 UTC vid vägyta +1,9…+2,0 °C och luft +1,7 °C. Alla andra stationer runt Malmö var torra.
+- Regeln (#38): en bro får frysrisk när närmaste kalla och våta station ligger inom 15 km med vägyta ≤ +3 °C. 30 broar ligger inom 15 km
+  från Vellinge, de flesta korta motorvägsbroar på Yttre Ringvägen (E 6/E 20) med en till två km mellan.
+- Varje bro har eget id, så upprepningsspärren (10 min och 5 km per fara) höll inte ihop dem. Konen ±35° och förvarningen 1 200 m tar
+  också broar på andra vägar.
+
+**Vad som inte ändras:** motorn, rösten och vektorerna (v18, v19). Stationernas frysrisk talar som förut.
+
+**Kvar** (innan broarna slås på igen):
+- en tröskel för broar som är mätt, inte gissad (+3 °C med regn är för generöst), Bengts;
+- broar i följd som en fara för upprepningsregeln, som halkzonen (kort #360);
+- broar bara på den väg man kör, inte i konen.
+
+**Stomdokument:** SYS broarnas frysrisk pausad i publiceringen
