@@ -110,7 +110,7 @@ test("#38 broarna: bara broar med en kall+våt station inom 15 km, med stationen
     { geometry: { coordinates: [15.0, 58.06] }, properties: { id: "B1", road: "E4" } },   // ~1,1 km från den våta
     { geometry: { coordinates: [15.0, 58.31] }, properties: { id: "B2", road: "E45" } },  // ~1 km från den torra, 29 km från den våta
   ] });
-  const { liveDoc } = await buildSnapshot(q, bridges, NOW);
+  const { liveDoc } = await buildSnapshot(q, bridges, NOW, true);
   assert.deepEqual(liveDoc.bridges, [{ id: "B1", lon: 15, lat: 58.06, road: "E4", yta: 0.5, fukt: true }]);
   // Motorn ser bron som icing_point med bridge-flaggan.
   const bro = snapshotToHazards({ schema: 1, cameras: [] }, liveDoc).find((h) => h.id === "bro:B1");
@@ -120,7 +120,7 @@ test("#38 broarna: bara broar med en kall+våt station inom 15 km, med stationen
 
 test("#75 givarvakten sitter i VARJE väderfråga: svensk, gräns (fi/no) och bro", async () => {
   const { q, asked } = fakeDb({ fi: [{ station_id: "FI1", surface_temp_c: "-2", rain: false, snow: false, precipitation: null, lon: 24.1, lat: 65.9 }] });
-  const { liveDoc, border } = await buildSnapshot(q, [{ id: "B", lon: 15, lat: 58, road: null }], NOW);
+  const { liveDoc, border } = await buildSnapshot(q, [{ id: "B", lon: 15, lat: 58, road: null }], NOW, true);
   // Kort #203 (A): stationslistan i static.json läser bara id och position — inga mätvärden, alltså ingen väderfråga och ingen
   // givarvakt. Undantaget är namngivet och smalt: läser en fråga mot weather_latest EN ENDA mätkolumn räknas den som väderfråga.
   // Andra undantaget (DECISIONS #459): radarn per station läser stationens position och radarns regn, aldrig stationens mätvärden;
@@ -170,7 +170,7 @@ test("#234 karantänen: en station med brott mot #75 tystas — som väderpunkt 
     { geometry: { coordinates: [15.0, 58.06] }, properties: { id: "B-FRISK", road: "E4" } },
     { geometry: { coordinates: [13.0, 56.19] }, properties: { id: "B-TRASIG", road: "E4" } },   // ~1 km från den trasiga
   ] });
-  const { liveDoc, notes } = await buildSnapshot(q, bridges, NOW);
+  const { liveDoc, notes } = await buildSnapshot(q, bridges, NOW, true);
   assert.deepEqual(liveDoc.weather.map((w) => w.id), ["FRISK"]);
   assert.deepEqual(liveDoc.bridges.map((b) => b.id), ["B-FRISK"], "bron vid den trasiga givaren får ingen frysrisk");
   assert.ok(notes.some((n) => n.startsWith("karantän:") && n.includes("TRASIG")), "vem som tystats ska stå i noterna");
@@ -513,7 +513,7 @@ test("#236 den långsamma vakten: en station med ett färskt dygn i felet tystas
     { geometry: { coordinates: [15.0, 58.06] }, properties: { id: "B-FRISK", road: "E4" } },
     { geometry: { coordinates: [13.0, 56.19] }, properties: { id: "B-LJUNGBY", road: "E4" } },
   ] });
-  const { liveDoc, notes } = await buildSnapshot(q, bridges, NOW);
+  const { liveDoc, notes } = await buildSnapshot(q, bridges, NOW, true);
   assert.deepEqual(liveDoc.weather.map((w) => w.id), ["FRISK"], "gap under 12 och sval luft: bara den långsamma vakten tar den");
   assert.deepEqual(liveDoc.bridges.map((b) => b.id), ["B-FRISK"], "broarna vid den trasiga givaren får ingen frysrisk");
   assert.ok(notes.some((n) => n.startsWith("långsam vakt:") && n.includes("LJUNGBY")), "vem som tystats ska stå i noterna");
@@ -641,4 +641,13 @@ test("#741 bygget räknar sin tid per avsnitt: varje fråga på sitt avsnitt, oc
   for (const a of ["static", "vaglag", "radar", "kandidat", "karantan", "langsam", "vader", "skattaren", "avvikelser", "radar_station"])
     assert.ok(a in delar, `avsnittet ${a} finns`);
   assert.ok(Object.values(delar).every((ms) => Number.isInteger(ms) && ms >= 0), JSON.stringify(delar));
+});
+
+test("broarna pausade (DECISIONS #788): standardläget skickar inga broar och säger det i noterna", async () => {
+  const q: Q = async (text) => /FROM weather_latest/.test(text)
+    ? [{ station_id: "S1", surface_temp_c: "2.0", rain: true, snow: false, precipitation: "rain", lon: 13.0, lat: 55.45 }] : [];
+  const bridges = bridgesFromGeoJSON({ features: [{ geometry: { coordinates: [13.0, 55.55] }, properties: { id: "B1", road: "E 20" } }] });
+  const { liveDoc, notes } = await buildSnapshot(q, bridges, NOW);
+  assert.deepEqual(liveDoc.bridges, []);
+  assert.ok(notes.some((n) => n.includes("broarna pausade")));
 });
