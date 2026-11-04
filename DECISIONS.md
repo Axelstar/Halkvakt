@@ -13743,7 +13743,7 @@ beslut"*. 4/11 bar de 28,9 MB sedan 24/10, cirka 2,6 MB per dygn, och inget rade
 **Ändringen.**
 - sql/083 lägger tabellerna i arkiv2-vitlistan, i villkoret på `arkiv_export_tabell` och i efterslapet.
 - `arkiv2_alder` blir 1, så att ett dygn exporteras när det är färdigt, som den gamla kandidatens.
-- Golvet för raderingen blir nattjobbets 14 dygn (`arkiv2_golv` ger dem `min_dygn`), inte den gamla kandidatens 1. Då har
+- Golvet för raderingen blir nattjobbets 14 dygn (`arkiv2_golv` ger dem `min_dygn`), inte den gamla kandidatens 3 (sql/072). Då har
   värdevakten och skuggmätningen sina dygn kvar i databasen.
 - `TABELLER` i `supabase/functions/arkivexport/index.ts` följer i samma commit, eftersom listan finns på två ställen.
 

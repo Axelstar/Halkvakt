@@ -1936,14 +1936,14 @@ test("#618 (ii): skuggloggen, väglaget, händelserna och SMHI exporteras på si
                      "083_ny_kandidat_arkiv.sql", "083_ny_kandidat_arkiv.sql"]) await las(f);
     await stad();
     // sql/083 (DECISIONS #792): den nya kandidatens domlogg står i vitlistan, exporteras när dygnet är färdigt som den gamlas, men
-    // raderas efter nattjobbets 14 dygn och inte de gamlas ett. Filen tål att köras två gånger (ovan).
+    // raderas efter nattjobbets 14 dygn och inte de gamlas tre (sql/072). Filen tål att köras två gånger (ovan).
     for (const tab of ["ny_kandidat_skugga", "ny_kandidat_station"]) {
       assert.equal((await q("SELECT arkiv2_tabell($1) AS t", [tab])).rows[0].t, tab, `${tab} i vitlistan`);
       assert.equal((await q("SELECT arkiv2_alder($1) AS n", [tab])).rows[0].n, 1, `${tab} exporteras dygnet efter`);
       assert.equal((await q("SELECT arkiv2_golv($1, 14) AS n", [tab])).rows[0].n, 14, `${tab} raderas efter 14 dygn`);
       await q("INSERT INTO arkiv_export_tabell (tabell, dag, rader, bytes, sha256, sokvag) VALUES ($1, '2026-10-24', 0, 0, 'x', 'v')", [tab]);
     }
-    assert.equal((await q("SELECT arkiv2_golv('kandidat_skugga', 14) AS n")).rows[0].n, 1, "den gamla kandidatens golv är orört");
+    assert.equal((await q("SELECT arkiv2_golv('kandidat_skugga', 14) AS n")).rows[0].n, 3, "den gamla kandidatens golv (sql/072) är orört");
     assert.equal((await q("SELECT arkiv2_alder('shadow_log') AS n")).rows[0].n, 8, "de andras ålder är orörd");
     await stad();
     const d = (await q("SELECT ((now() - interval '30 days') AT TIME ZONE 'UTC')::date::text AS d")).rows[0].d as string;

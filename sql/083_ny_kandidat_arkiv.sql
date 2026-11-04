@@ -4,7 +4,7 @@
 --
 -- Samma väg som den gamla kandidatens loggar (sql/057, 062, 063): ett dygn exporteras när det är färdigt (arkiv2_alder 1, sista timmen
 -- skrivs 23:50), läses tillbaka och bokförs av funktionen arkivexport. Golvet för raderingen är däremot nattjobbets 14 dygn (sql/072),
--- inte de gamlas ett (arkiv2_golv ger dem min_dygn), så att värdevakten och skuggmätningen har sina dygn kvar i databasen. Den som
+-- inte de gamlas tre (sql/072; arkiv2_golv ger de nya min_dygn), så att värdevakten och skuggmätningen har sina dygn kvar. Den som
 -- bygger den nya kandidatens dom läser de äldre dygnen ur hinken, som den gamla kandidatens.
 --
 -- Listan finns på två ställen: TABELLER i supabase/functions/arkivexport/index.ts ändras i samma commit. Idempotent; inget raderas av
