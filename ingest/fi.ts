@@ -1,16 +1,19 @@
 // Finskt skuggarkiv (BACKLOG #34): Fintraffic/Digitraffic → schema `fi`. Ingen app, ingen
 // röst, inga användare — bara arkivet, så att Finland har en vinter av facit i mars 2027.
 // Källor (CC BY 4.0, kräver Digitraffic-User-header, alltid gzip):
-//   /api/weather/v1/stations         526 vägväderstationer (metadata + position)
-//   /api/weather/v1/stations/data    TIE_1 (vägyta °C), ILMA (luft), SADE, KELI_1 (väglagskod
+//   /api/weather/v2/stations         526 vägväderstationer (metadata + position)
+//   /api/weather/v2/stations/data    TIE_1 (vägyta °C), ILMA (luft), SADE, KELI_1 (väglagskod
 //                                    med engelsk beskrivning: Dry/Moist/Wet/Snow/Ice/Frost)
-//   /api/traffic-message/v1/messages trafikmeddelanden med geometri (olyckor, hinder)
+//   /api/traffic-message/v2/traffic-announcements  trafikmeddelanden med geometri (olyckor, hinder)
+// v2 sedan 4/11 2026 (ärende #1327): v1 stängs 13/4 2027. Vädret i v2 är v1 byte för byte (läst 4/11, alla 32 969 station × sensor
+// lika); trafikmeddelandena i v2 tar med avslutade, så de filtreras på sluttiden (fi-aktiva.ts).
 // Samma arkivpolicy som Sverige (DECISIONS #4): vägyta ≤ 5 °C, nederbörd eller Δ ≥ 0,5 °C
 // ⇒ spara; annars bara "latest". Körs ur ingest-grannar.yml (pulsklockan, en gång i timmen).
 // Skrivningen är BATCHAD (kort #85): 526 × 2 enradiga INSERT tog 2 min 51 s per körning.
 import pg from "pg";
 import { readFileSync } from "node:fs";
 import { writeFi, type FiRow } from "./grannar-db.ts";
+import { aktiva } from "./fi-aktiva.ts";
 
 const UA = { "Digitraffic-User": "Halkvakt/0.3 (axelstar.github.io/halkvakt-karta)" };
 const BASE = "https://tie.digitraffic.fi/api";
@@ -32,13 +35,13 @@ try {
   await client.query(readFileSync(new URL("../sql/016_fi_humidity_latest.sql", import.meta.url), "utf8"));
   // Auto-migrering (sql/012, kort #48): FI-breddningen — frostpunkt, fryspunkt, salt, vind, sikt, form, ytstatus.
   await client.query(readFileSync(new URL("../sql/012_fi_falt.sql", import.meta.url), "utf8"));
-  const stations = await get<any>("/weather/v1/stations");
+  const stations = await get<any>("/weather/v2/stations");
   const meta = new Map<number, { name: string; lon: number; lat: number }>();
   for (const f of stations.features) {
     meta.set(f.id, { name: f.properties.name, lon: f.geometry.coordinates[0], lat: f.geometry.coordinates[1] });
   }
 
-  const data = await get<any>("/weather/v1/stations/data");
+  const data = await get<any>("/weather/v2/stations/data");
   const lastTemps = new Map<string, number | null>();
   const lt = await client.query(`SELECT DISTINCT ON (station_id) station_id, surface_temp_c
                                  FROM fi.weather_observations ORDER BY station_id, sample_time DESC`);
@@ -101,10 +104,10 @@ try {
   await writeFi(client, latestRows, archiveRows);
 
   // Trafikmeddelanden: aktiva, med geometri. Olyckor och hinder — vägarbeten stängs ute som i Sverige.
-  const msgs = await get<any>("/traffic-message/v1/messages?inactiveHours=0&includeAreaGeometry=false&situationType=TRAFFIC_ANNOUNCEMENT");
+  const msgs = await get<any>("/traffic-message/v2/traffic-announcements");
   let devs = 0;
   const seen: string[] = [];
-  for (const f of msgs.features ?? []) {
+  for (const f of aktiva(msgs.features ?? [], new Date())) {
     const p = f.properties; const a = p.announcements?.[0]; if (!a) continue;
     const text = [a.title, ...(a.features ?? []).map((x: any) => x.name)].filter(Boolean).join(" · ");
     if (/tietyö|tietyöt|päällystys/i.test(text)) continue;   // vägarbete = brus, DECISIONS #5
