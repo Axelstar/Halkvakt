@@ -303,6 +303,14 @@ i samma commit när de överlappar.
 - Supabase-gatewayen TVÅNGSSTÄMPLAR funktions-HTML till text/plain + nosniff på GET (HEAD ljuger och visar text/html — verifiera alltid med GET!). Regel: funktioner serverar JSON-API, människosidor bor på Pages (karta-repot).
 - /tmp/karta kan sakna git-identitet i färsk container: git config user.email/name lokalt före commit.
 - En omstart av databasen nollställer pg_nets räknare för anropens id (`net.http_request_queue_id_seq`, olagrad), och `public.anrop` har pg_nets id som primärnyckel. Efter en omstart faller därför varje jobb som anropar en funktion med *duplicate key … anrop_pkey*, tills räknaren flyttas förbi tabellen: `select setval('net.http_request_queue_id_seq', (select max(id) from public.anrop) + 1000)` (3/11, DECISIONS #783). Omstarten kom av ett nytt tungt SQL-jobb vars prov bara gått i liten skala. Ett jobb som bygger något i full skala i produktionen prövas först i full skala utanför den.
+- En SQL-funktion (`LANGUAGE sql`) som inte kan inlinas läcker minne i Supabases Postgres: omkring 230 byte per anrop, som frigörs
+  först när satsen är klar (pgaudit står för drygt hälften, trots `pgaudit.log = none`). Planeraren inlinar bara en kropp som är ett
+  enda uttryck: en `FROM`, en delfråga, `SET`, `SECURITY DEFINER` eller ett dyrt argument som används två gånger stoppar det. Den
+  snabba kandidatens avståndsfunktion hade `FROM (SELECT …)` och anropades omkring tio miljoner gånger i en sats, och databasen
+  föll (3/11, DECISIONS #783). **En lokal Postgres läcker inte**, så ett prov på datorn frikände koden; bara Supabases egen avbild
+  (`supabase/postgres:<version>` i en container med produktionens minne) visade det. Regel: en funktion som anropas per rad i en stor
+  sats skrivs som ett enda uttryck, och beviset är `EXPLAIN (VERBOSE)` där funktionens namn inte står kvar (en kuvösfunktions plan bär dess kropp: skriv bara ut
+  ja eller nej i en publik logg).
 - Apple Developer-inskrivning: Developer-APPEN kan låsa ID-steget till körkort; WEBBEN (developer.apple.com/enroll) gick igenom utan ID-fråga och gav omedelbar beställning (31/8 2026, Sverige). Individual visar juridiskt namn som säljare; migrering till organisation möjlig senare.
 - iOS-uppladdning kräver AppIcon i Assets.xcassets (1024 px universal räcker sedan Xcode 14) + ASSETCATALOG_COMPILER_APPICON_NAME — utan ikon vägrar App Store Connect bygget.
 - xcodegen-genererad Info.plist får 1.0 (1) som standard — koppla CFBundleShortVersionString/CFBundleVersion till $(MARKETING_VERSION)/$(CURRENT_PROJECT_VERSION) i info.properties, ANNARS låser första uppladdningen versionsspåret (Apple tillåter aldrig lägre version än uppladdad). Fångat i Organizer 31/8 sekunder före upload.
