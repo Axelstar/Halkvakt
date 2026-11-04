@@ -13667,7 +13667,16 @@ nästa publicering; ingen app behöver byggas om.
 
 **Stomdokument:** SYS broarnas frysrisk pausad i publiceringen
 
-## #789 (4/11 2026) Motorn hoppar över en hal sträcka vars ruta ligger längre bort än försprånget (kort #375)
+## #789 (4/11 2026) SMHI:s datamängd får licensen i den strukturerade datan
+
+**Beslut** (Axel 4/11, Search Console-mejlet *"Missing field license"*). `LS_SMHI_DATA` på varningssidan och de varnade länens sidor får
+`license: https://creativecommons.org/licenses/by/4.0/`: SMHI:s öppna data är Creative Commons Erkännande 4.0 SE (smhi.se, Villkor för
+användning, läst 4/11). Trafikverkets datamängd hade redan CC0. Provet kräver licensen på båda.
+
+**Alternativ.** Ta bort SMHI ur `isBasedOn`: tappar källan som varningen bygger på.
+
+**Stomdokument:** inga — sajtens strukturerade data; appen, motorn och mätningarna är orörda.
+## #790 (4/11 2026) Motorn hoppar över en hal sträcka vars ruta ligger längre bort än försprånget (kort #375)
 
 **Beslut (Bengt, 4/11).** *"jag vill läsa marsdomen men först gör vi 1,2 och 3"* — punkt 3: laga kort #375 för skuggans skull.
 

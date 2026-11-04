@@ -209,7 +209,9 @@ const LS_TRV_DATA = { "@type": "Dataset", name: "Trafikverkets öppna data: väg
   license: "https://creativecommons.org/publicdomain/zero/1.0/" };
 const LS_SMHI_DATA = { "@type": "Dataset", name: "SMHI:s vädervarningar",
   description: "SMHI:s öppna data om gällande vädervarningar: händelse, nivå, område och ungefärlig giltighetstid.",
-  creator: { "@type": "Organization", name: "SMHI", url: "https://www.smhi.se/" } };
+  creator: { "@type": "Organization", name: "SMHI", url: "https://www.smhi.se/" },
+  // Search Console 4/11: "Missing field license". SMHI:s öppna data är CC BY 4.0 (smhi.se, Villkor för användning).
+  license: "https://creativecommons.org/licenses/by/4.0/" };
 
 // Strukturerad data (17/10, DECISIONS #629): vad sidan är, när den skrevs och vilken data den bygger på, så att sökmotorer och
 // AI-tjänster kan läsa tiden och källan utan att tolka texten.
