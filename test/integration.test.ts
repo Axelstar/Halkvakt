@@ -1932,7 +1932,19 @@ test("#618 (ii): skuggloggen, väglaget, händelserna och SMHI exporteras på si
       for (const f of ["008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql", "018_trend_berakna.sql", "029_brott_index.sql",
                        "030_langsam_vakt.sql", "050_kandidat_live.sql", "053_arkiv_tabeller.sql", "055_vagpunkter.sql", "056_kandidat_regel.sql",
                        "057_kandidat_skugga.sql"]) await las(f);
-    for (const f of ["062_kortare_forvaring.sql", "063_arkiv_fyra_tabeller.sql", "072_gallringen_tillbaka.sql"]) await las(f);
+    for (const f of ["062_kortare_forvaring.sql", "063_arkiv_fyra_tabeller.sql", "072_gallringen_tillbaka.sql",
+                     "083_ny_kandidat_arkiv.sql", "083_ny_kandidat_arkiv.sql"]) await las(f);
+    await stad();
+    // sql/083 (DECISIONS #792): den nya kandidatens domlogg står i vitlistan, exporteras när dygnet är färdigt som den gamlas, men
+    // raderas efter nattjobbets 14 dygn och inte de gamlas ett. Filen tål att köras två gånger (ovan).
+    for (const tab of ["ny_kandidat_skugga", "ny_kandidat_station"]) {
+      assert.equal((await q("SELECT arkiv2_tabell($1) AS t", [tab])).rows[0].t, tab, `${tab} i vitlistan`);
+      assert.equal((await q("SELECT arkiv2_alder($1) AS n", [tab])).rows[0].n, 1, `${tab} exporteras dygnet efter`);
+      assert.equal((await q("SELECT arkiv2_golv($1, 14) AS n", [tab])).rows[0].n, 14, `${tab} raderas efter 14 dygn`);
+      await q("INSERT INTO arkiv_export_tabell (tabell, dag, rader, bytes, sha256, sokvag) VALUES ($1, '2026-10-24', 0, 0, 'x', 'v')", [tab]);
+    }
+    assert.equal((await q("SELECT arkiv2_golv('kandidat_skugga', 14) AS n")).rows[0].n, 1, "den gamla kandidatens golv är orört");
+    assert.equal((await q("SELECT arkiv2_alder('shadow_log') AS n")).rows[0].n, 8, "de andras ålder är orörd");
     await stad();
     const d = (await q("SELECT ((now() - interval '30 days') AT TIME ZONE 'UTC')::date::text AS d")).rows[0].d as string;
     const kl = (h: number) => `${d}T${String(h).padStart(2, "0")}:00:00Z`;
