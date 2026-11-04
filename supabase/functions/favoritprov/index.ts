@@ -239,6 +239,33 @@ export function isAhead(
   return { ahead, distM };
 }
 
+export interface Box { minLon: number; maxLon: number; minLat: number; maxLat: number; }
+
+/** The smallest lon/lat box around the points (an empty list gives an infinitely distant box). */
+export function boxOf(pts: LonLat[]): Box {
+  const b = { minLon: Infinity, maxLon: -Infinity, minLat: Infinity, maxLat: -Infinity };
+  for (const p of pts) {
+    if (p.lon < b.minLon) b.minLon = p.lon;
+    if (p.lon > b.maxLon) b.maxLon = p.lon;
+    if (p.lat < b.minLat) b.minLat = p.lat;
+    if (p.lat > b.maxLat) b.maxLat = p.lat;
+  }
+  return b;
+}
+
+/**
+ * A lower bound on haversineM(p, q) for every q in the box — never more than the true distance (kort #375). The larger of two
+ * bounds: the latitude gap alone (s ≥ sin²(Δφ/2)), and the longitude gap at the most poleward latitude involved
+ * (s ≥ cos φ₁ cos φ₂ sin²(Δλ/2) ≥ cos² φmax sin²(Δλ/2)).
+ */
+export function minDistToBoxM(p: LonLat, b: Box): number {
+  const dLat = p.lat < b.minLat ? b.minLat - p.lat : p.lat > b.maxLat ? p.lat - b.maxLat : 0;
+  const dLon = p.lon < b.minLon ? b.minLon - p.lon : p.lon > b.maxLon ? p.lon - b.maxLon : 0;
+  const latMax = Math.max(Math.abs(p.lat), Math.abs(b.minLat), Math.abs(b.maxLat));
+  const lonM = 2 * R * Math.asin(Math.min(1, Math.cos(latMax * D2R) * Math.sin(Math.min(Math.PI, dLon * D2R) / 2)));
+  return Math.max(R * dLat * D2R, lonM);
+}
+
 /** Resample a polyline to points at most stepM apart (vertices always included). */
 export function samplePolyline(line: [number, number][], stepM: number): LonLat[] {
   const out: LonLat[] = [];

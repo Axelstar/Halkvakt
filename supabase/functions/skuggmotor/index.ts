@@ -239,6 +239,33 @@ export function isAhead(
   return { ahead, distM };
 }
 
+export interface Box { minLon: number; maxLon: number; minLat: number; maxLat: number; }
+
+/** The smallest lon/lat box around the points (an empty list gives an infinitely distant box). */
+export function boxOf(pts: LonLat[]): Box {
+  const b = { minLon: Infinity, maxLon: -Infinity, minLat: Infinity, maxLat: -Infinity };
+  for (const p of pts) {
+    if (p.lon < b.minLon) b.minLon = p.lon;
+    if (p.lon > b.maxLon) b.maxLon = p.lon;
+    if (p.lat < b.minLat) b.minLat = p.lat;
+    if (p.lat > b.maxLat) b.maxLat = p.lat;
+  }
+  return b;
+}
+
+/**
+ * A lower bound on haversineM(p, q) for every q in the box — never more than the true distance (kort #375). The larger of two
+ * bounds: the latitude gap alone (s ≥ sin²(Δφ/2)), and the longitude gap at the most poleward latitude involved
+ * (s ≥ cos φ₁ cos φ₂ sin²(Δλ/2) ≥ cos² φmax sin²(Δλ/2)).
+ */
+export function minDistToBoxM(p: LonLat, b: Box): number {
+  const dLat = p.lat < b.minLat ? b.minLat - p.lat : p.lat > b.maxLat ? p.lat - b.maxLat : 0;
+  const dLon = p.lon < b.minLon ? b.minLon - p.lon : p.lon > b.maxLon ? p.lon - b.maxLon : 0;
+  const latMax = Math.max(Math.abs(p.lat), Math.abs(b.minLat), Math.abs(b.maxLat));
+  const lonM = 2 * R * Math.asin(Math.min(1, Math.cos(latMax * D2R) * Math.sin(Math.min(Math.PI, dLon * D2R) / 2)));
+  return Math.max(R * dLat * D2R, lonM);
+}
+
 /** Resample a polyline to points at most stepM apart (vertices always included). */
 export function samplePolyline(line: [number, number][], stepM: number): LonLat[] {
   const out: LonLat[] = [];
@@ -541,7 +568,7 @@ const SLIPPERY_STAM = /(snö|frost)/i;
 export class AlertEngine {
   private readonly cfg: EngineConfig;
   private points: PointHazard[] = [];
-  private segments: { h: SegmentHazard; samples: LonLat[] }[] = [];
+  private segments: { h: SegmentHazard; samples: LonLat[]; box: Box }[] = [];
   private kandidater: { h: KandidatHazard; samples: LonLat[] }[] = [];
 
   private prevFix: Fix | null = null;
@@ -575,7 +602,8 @@ export class AlertEngine {
     this.kandidater = [];
     for (const h of hazards) {
       if (h.kind === "slippery_segment") {
-        this.segments.push({ h, samples: samplePolyline(h.line, this.cfg.segmentSampleM) });
+        const samples = samplePolyline(h.line, this.cfg.segmentSampleM);
+        this.segments.push({ h, samples, box: boxOf(samples) });
       } else if (h.kind === "kandidat") {
         this.kandidater.push({ h, samples: h.points.map(([lon, lat]) => ({ lon, lat })) });
       } else {
@@ -812,13 +840,17 @@ export class AlertEngine {
   }
 
   private evaluateSegment(
-    fix: Fix, heading: number, s: { h: SegmentHazard; samples: LonLat[] }, leadM: number,
+    fix: Fix, heading: number, s: { h: SegmentHazard; samples: LonLat[]; box: Box }, leadM: number,
   ): Candidate | null {
     const meta = s.h.meta ?? {};
     const slippery =
       (meta.code != null && meta.code >= 2) ||
       (meta.info ?? []).some((i) => SLIPPERY_INFO.test(i) || SLIPPERY_STAM.test(i));
     if (!slippery) return null; // "Normalt"/"Våt" segments make no sound — silence is default
+    // Kort #375: a stretch whose box lies farther away than the lead holds no sample within it, and only a sample within the lead
+    // can speak (best > leadM ⇒ null below), so the samples are not walked. Exact: the bound never exceeds the true distance, and
+    // 1 m covers rounding. Walking every sample of long stretches at every fix ran the skugga's försprång out of compute (546).
+    if (minDistToBoxM(fix, s.box) > leadM + 1) return null;
 
     let best: number | null = null;
     for (const pt of s.samples) {
