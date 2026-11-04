@@ -21,7 +21,7 @@ import type {
   Alert, EngineConfig, Fix, Hazard, HazardKind, KandidatHazard, PointHazard, SegmentHazard,
 } from "./types.ts";
 import { DEFAULT_CONFIG, PRIORITY } from "./types.ts";
-import { angDiffDeg, bearingDeg, haversineM, isAhead, samplePolyline, type LonLat } from "./geo.ts";
+import { angDiffDeg, bearingDeg, boxOf, haversineM, isAhead, minDistToBoxM, samplePolyline, type Box, type LonLat } from "./geo.ts";
 import { alertText, EFTERHALKA_TEXT, type AccidentStep } from "./texts.ts";
 import { farorLangsRutten } from "./rutfilter.ts";
 
@@ -56,7 +56,7 @@ const SLIPPERY_STAM = /(snö|frost)/i;
 export class AlertEngine {
   private readonly cfg: EngineConfig;
   private points: PointHazard[] = [];
-  private segments: { h: SegmentHazard; samples: LonLat[] }[] = [];
+  private segments: { h: SegmentHazard; samples: LonLat[]; box: Box }[] = [];
   private kandidater: { h: KandidatHazard; samples: LonLat[] }[] = [];
 
   private prevFix: Fix | null = null;
@@ -90,7 +90,8 @@ export class AlertEngine {
     this.kandidater = [];
     for (const h of hazards) {
       if (h.kind === "slippery_segment") {
-        this.segments.push({ h, samples: samplePolyline(h.line, this.cfg.segmentSampleM) });
+        const samples = samplePolyline(h.line, this.cfg.segmentSampleM);
+        this.segments.push({ h, samples, box: boxOf(samples) });
       } else if (h.kind === "kandidat") {
         this.kandidater.push({ h, samples: h.points.map(([lon, lat]) => ({ lon, lat })) });
       } else {
@@ -327,13 +328,17 @@ export class AlertEngine {
   }
 
   private evaluateSegment(
-    fix: Fix, heading: number, s: { h: SegmentHazard; samples: LonLat[] }, leadM: number,
+    fix: Fix, heading: number, s: { h: SegmentHazard; samples: LonLat[]; box: Box }, leadM: number,
   ): Candidate | null {
     const meta = s.h.meta ?? {};
     const slippery =
       (meta.code != null && meta.code >= 2) ||
       (meta.info ?? []).some((i) => SLIPPERY_INFO.test(i) || SLIPPERY_STAM.test(i));
     if (!slippery) return null; // "Normalt"/"Våt" segments make no sound — silence is default
+    // Kort #375: a stretch whose box lies farther away than the lead holds no sample within it, and only a sample within the lead
+    // can speak (best > leadM ⇒ null below), so the samples are not walked. Exact: the bound never exceeds the true distance, and
+    // 1 m covers rounding. Walking every sample of long stretches at every fix ran the skugga's försprång out of compute (546).
+    if (minDistToBoxM(fix, s.box) > leadM + 1) return null;
 
     let best: number | null = null;
     for (const pt of s.samples) {
