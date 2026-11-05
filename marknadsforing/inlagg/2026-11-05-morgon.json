@@ -1,0 +1,24 @@
+{
+  "typ": "svep",
+  "nyckel": "svep:morgon",
+  "etikett": "Halkläget kl. 05:30",
+  "rubrik": "Halt i morse",
+  "underrad": "Halka på 131 vägavsnitt i 7 län.",
+  "fler": 6,
+  "text": "Halkläget kl. 05:30, torsdag 5 november: halka på 131 vägavsnitt i 7 län. Svep för att se ditt län.\n\nVästerbotten: halka på 29 av 44 vägavsnitt, 36 stationer under noll, kallast −1,5 °C vid Hjuken/Hällnäs.\nNorrbotten: halka på 27 av 58 vägavsnitt, 49 stationer under noll, kallast −4,0 °C vid Tärendö.\nVärmland: halka på 25 av 52 vägavsnitt, 44 stationer under noll, kallast −3,6 °C vid Storberget.\nDalarna: halka på 25 av 38 vägavsnitt, 19 stationer under noll, kallast −4,5 °C vid Limskogen.\nVästmanland: halka på 13 av 24 vägavsnitt, 5 stationer under noll, kallast −1,1 °C vid Surahammar, 1 olycka.\nJämtland: halka på 6 av 17 vägavsnitt, 3 stationer under noll, kallast −0,8 °C vid Överhogdal.\nVästernorrland: halka på 6 av 22 vägavsnitt, 2 stationer under noll, kallast −1,4 °C vid Långvattnet.\nVästra Götaland: 8 stationer under noll, kallast −1,6 °C vid 1552 Gustavsfors Fjärryta.\nHalka eller minusgrader även i 6 län till.\n\nLäget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Västerbotten #Norrbotten #Värmland #Dalarna #Västmanland #halkvakt",
+  "textIg": "Halkläget kl. 05:30, torsdag 5 november: halka på 131 vägavsnitt i 7 län. Svep för att se ditt län.\n\nVästerbotten: halka på 29 av 44 vägavsnitt, 36 stationer under noll, kallast −1,5 °C vid Hjuken/Hällnäs.\nNorrbotten: halka på 27 av 58 vägavsnitt, 49 stationer under noll, kallast −4,0 °C vid Tärendö.\nVärmland: halka på 25 av 52 vägavsnitt, 44 stationer under noll, kallast −3,6 °C vid Storberget.\nDalarna: halka på 25 av 38 vägavsnitt, 19 stationer under noll, kallast −4,5 °C vid Limskogen.\nVästmanland: halka på 13 av 24 vägavsnitt, 5 stationer under noll, kallast −1,1 °C vid Surahammar, 1 olycka.\nJämtland: halka på 6 av 17 vägavsnitt, 3 stationer under noll, kallast −0,8 °C vid Överhogdal.\nVästernorrland: halka på 6 av 22 vägavsnitt, 2 stationer under noll, kallast −1,4 °C vid Långvattnet.\nVästra Götaland: 8 stationer under noll, kallast −1,6 °C vid 1552 Gustavsfors Fjärryta.\nHalka eller minusgrader även i 6 län till.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone, länken finns i vår profil.\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Västerbotten #Norrbotten #Värmland #Dalarna #Västmanland #halkvakt",
+  "pass": "morgon",
+  "antal": 10,
+  "datum": "2026-11-05",
+  "generated_at": "2026-11-05T04:30:06.379Z",
+  "lan": [
+    "vasterbotten",
+    "norrbotten",
+    "varmland",
+    "dalarna",
+    "vastmanland",
+    "jamtland",
+    "vasternorrland",
+    "vastra-gotaland"
+  ]
+}
