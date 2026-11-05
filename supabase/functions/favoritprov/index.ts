@@ -266,6 +266,37 @@ export function minDistToBoxM(p: LonLat, b: Box): number {
   return Math.max(R * dLat * D2R, lonM);
 }
 
+/**
+ * Half-widths in degrees of a lat/lon window around the points that holds every position within distM of one of them — the
+ * engine's grid (DECISIONS #795). Exact for a position with latitude in [−90, 90] and longitude in [−180, 180], from the haversine
+ * sum s = sin²(Δφ/2) + cos φ₁ cos φ₂ sin²(Δλ/2) and d = 2R·asin √s with d ≤ distM < πR:
+ *   · s ≥ sin²(Δφ/2) gives d ≥ R|Δφ|, so |Δφ| ≤ distM / R = dLat;
+ *   · both latitudes then lie in the window, where cos φ ≥ cos φmax > 0, so |sin(Δλ/2)| ≤ sin(distM / 2R) / cos φmax = k;
+ *   · k < 1 leaves |Δλ| ≤ 2·asin k = dLon or |Δλ| ≥ 360° − dLon, and the second needs a longitude outside [−180, 180] when every
+ *     point's |lon| + dLon < 180 (no way round the back of the antimeridian).
+ * null when no window proves anything — distM not in [0, πR), the window reaching a pole (φmax ≥ 90° or k ≥ 1) or the
+ * antimeridian, or no finite point — and the caller must then treat the points as reachable from everywhere. A point with a
+ * non-finite coordinate is skipped: haversineM is NaN for it, and NaN is never within a distance.
+ */
+export function reachWindow(pts: LonLat[], distM: number): { dLat: number; dLon: number } | null {
+  if (!(distM >= 0 && distM < Math.PI * R)) return null;
+  let minLat = Infinity, maxLat = -Infinity, maxAbsLon = -Infinity;
+  for (const p of pts) {
+    if (!Number.isFinite(p.lat) || !Number.isFinite(p.lon)) continue;
+    if (p.lat < minLat) minLat = p.lat;
+    if (p.lat > maxLat) maxLat = p.lat;
+    if (Math.abs(p.lon) > maxAbsLon) maxAbsLon = Math.abs(p.lon);
+  }
+  const dLat = distM / R / D2R;
+  const latMax = Math.max(Math.abs(minLat - dLat), Math.abs(maxLat + dLat));
+  if (!(latMax < 90)) return null;
+  const k = Math.sin(distM / (2 * R)) / Math.cos(latMax * D2R);
+  if (!(k < 1)) return null;
+  const dLon = (2 * Math.asin(k)) / D2R;
+  if (!(maxAbsLon + dLon < 180)) return null;
+  return { dLat, dLon };
+}
+
 /** Resample a polyline to points at most stepM apart (vertices always included). */
 export function samplePolyline(line: [number, number][], stepM: number): LonLat[] {
   const out: LonLat[] = [];

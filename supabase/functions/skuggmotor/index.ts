@@ -266,6 +266,37 @@ export function minDistToBoxM(p: LonLat, b: Box): number {
   return Math.max(R * dLat * D2R, lonM);
 }
 
+/**
+ * Half-widths in degrees of a lat/lon window around the points that holds every position within distM of one of them — the
+ * engine's grid (DECISIONS #795). Exact for a position with latitude in [−90, 90] and longitude in [−180, 180], from the haversine
+ * sum s = sin²(Δφ/2) + cos φ₁ cos φ₂ sin²(Δλ/2) and d = 2R·asin √s with d ≤ distM < πR:
+ *   · s ≥ sin²(Δφ/2) gives d ≥ R|Δφ|, so |Δφ| ≤ distM / R = dLat;
+ *   · both latitudes then lie in the window, where cos φ ≥ cos φmax > 0, so |sin(Δλ/2)| ≤ sin(distM / 2R) / cos φmax = k;
+ *   · k < 1 leaves |Δλ| ≤ 2·asin k = dLon or |Δλ| ≥ 360° − dLon, and the second needs a longitude outside [−180, 180] when every
+ *     point's |lon| + dLon < 180 (no way round the back of the antimeridian).
+ * null when no window proves anything — distM not in [0, πR), the window reaching a pole (φmax ≥ 90° or k ≥ 1) or the
+ * antimeridian, or no finite point — and the caller must then treat the points as reachable from everywhere. A point with a
+ * non-finite coordinate is skipped: haversineM is NaN for it, and NaN is never within a distance.
+ */
+export function reachWindow(pts: LonLat[], distM: number): { dLat: number; dLon: number } | null {
+  if (!(distM >= 0 && distM < Math.PI * R)) return null;
+  let minLat = Infinity, maxLat = -Infinity, maxAbsLon = -Infinity;
+  for (const p of pts) {
+    if (!Number.isFinite(p.lat) || !Number.isFinite(p.lon)) continue;
+    if (p.lat < minLat) minLat = p.lat;
+    if (p.lat > maxLat) maxLat = p.lat;
+    if (Math.abs(p.lon) > maxAbsLon) maxAbsLon = Math.abs(p.lon);
+  }
+  const dLat = distM / R / D2R;
+  const latMax = Math.max(Math.abs(minLat - dLat), Math.abs(maxLat + dLat));
+  if (!(latMax < 90)) return null;
+  const k = Math.sin(distM / (2 * R)) / Math.cos(latMax * D2R);
+  if (!(k < 1)) return null;
+  const dLon = (2 * Math.asin(k)) / D2R;
+  if (!(maxAbsLon + dLon < 180)) return null;
+  return { dLat, dLon };
+}
+
 /** Resample a polyline to points at most stepM apart (vertices always included). */
 export function samplePolyline(line: [number, number][], stepM: number): LonLat[] {
   const out: LonLat[] = [];
@@ -565,11 +596,86 @@ const SLIPPERY_INFO = /(?<![a-zåäö])(is|halka|halkrisk|halkig|halt|mycket bes
 // so only halka/halkrisk/halkig are listed above. Vector v24 locks all of it in three ports.
 const SLIPPERY_STAM = /(snö|frost)/i;
 
+// THE GRID (DECISIONS #795). Until 5/11 every fix evaluated every hazard; 16 000 more kandidat points made step() seven times
+// slower. Every candidate needs its distance within a reach the configuration bounds (reachOf below), so a hazard is listed in
+// every grid cell that holds a position within that reach of one of its points (reachWindow in geo.ts), and a fix evaluates only
+// its own cell's lists. A hazard left out would have returned null in the full scan, and the lists keep the hazards' order, so
+// the candidates — and everything after them — are the full scan's, byte for byte. The halka zone's loop over all stretches
+// (#360) is a rule, not a scan, and is untouched.
+/** Cell size in degrees, latitude and longitude alike (5.6 km north–south, 2.8 km east–west at 60° N). Only speed depends on it.
+ *  Samma tal i Engine.kt och Engine.swift (kontraktsgrinden). */
+const GRID_CELL_DEG = 0.05;
+/** Metres added to every reach before its window is drawn: rounding in reachWindow and haversineM is far below a millimetre.
+ *  Samma tal i Engine.kt och Engine.swift (kontraktsgrinden). */
+const GRID_MARGIN_M = 100;
+/** A window wider than this many cells per point (near a pole, or an odd configuration's reach) is not listed: the hazard goes to
+ *  the always-list instead, which is exact and keeps the build small. Samma tal i Engine.kt och Engine.swift (kontraktsgrinden). */
+const GRID_MAX_CELLS = 4096;
+
+/** The hazards of one list (points, stretches or kandidat stretches) by grid cell, each list ascending as the hazards came. */
+class HazardGrid {
+  /** Every hazard, ascending: what a fix outside the grid, and the test's full scan, evaluate. */
+  readonly all: number[] = [];
+  private readonly cells = new Map<number, number[]>();
+  /** Hazards no window bounds (reachWindow gave null): evaluated on every fix, as before the grid. */
+  private readonly always: number[] = [];
+
+  /** Hazard i — added in ascending order — produces a candidate only within reachM of one of pts. */
+  add(i: number, pts: LonLat[], reachM: number): void {
+    this.all.push(i);
+    const w = reachWindow(pts, reachM + GRID_MARGIN_M);
+    if (w === null || (2 * w.dLat / GRID_CELL_DEG + 2) * (2 * w.dLon / GRID_CELL_DEG + 2) > GRID_MAX_CELLS) {
+      this.always.push(i);
+      return;
+    }
+    let r0p = NaN, r1p = NaN, c0p = NaN, c1p = NaN;
+    for (const p of pts) {
+      if (!Number.isFinite(p.lat) || !Number.isFinite(p.lon)) continue;   // never within reach (reachWindow)
+      const r0 = Math.floor((p.lat - w.dLat) / GRID_CELL_DEG), r1 = Math.floor((p.lat + w.dLat) / GRID_CELL_DEG);
+      const c0 = Math.floor((p.lon - w.dLon) / GRID_CELL_DEG), c1 = Math.floor((p.lon + w.dLon) / GRID_CELL_DEG);
+      if (r0 === r0p && r1 === r1p && c0 === c0p && c1 === c1p) continue;   // same cells as the previous point
+      r0p = r0; r1p = r1; c0p = c0; c1p = c1;
+      for (let r = r0; r <= r1; r++) {
+        for (let c = c0; c <= c1; c++) {
+          const key = cellKey(r, c);
+          const list = this.cells.get(key);
+          if (list === undefined) this.cells.set(key, [i]);
+          else if (list[list.length - 1] !== i) list.push(i);
+        }
+      }
+    }
+  }
+
+  /** The hazards that can produce a candidate at the fix, ascending. A fix outside [−90, 90] × [−180, 180] gets all of them:
+   *  reachWindow's bound holds only inside. */
+  near(fix: LonLat): readonly number[] {
+    if (!(Math.abs(fix.lat) <= 90 && Math.abs(fix.lon) <= 180)) return this.all;
+    const cell = this.cells.get(cellKey(Math.floor(fix.lat / GRID_CELL_DEG), Math.floor(fix.lon / GRID_CELL_DEG)));
+    if (this.always.length === 0) return cell ?? this.always;
+    if (cell === undefined) return this.always;
+    const out: number[] = [];   // two ascending lists without common members (a hazard is in cells or in always)
+    let a = 0, b = 0;
+    while (a < cell.length || b < this.always.length) {
+      out.push(b >= this.always.length || (a < cell.length && cell[a] < this.always[b]) ? cell[a++] : this.always[b++]);
+    }
+    return out;
+  }
+}
+
+/** One number per cell: rows and columns stay within ±3 600 at 0.05°, so 65 536 keeps them apart (a clash would only add). */
+function cellKey(r: number, c: number): number { return r * 65536 + c; }
+
 export class AlertEngine {
   private readonly cfg: EngineConfig;
   private points: PointHazard[] = [];
   private segments: { h: SegmentHazard; samples: LonLat[]; box: Box }[] = [];
   private kandidater: { h: KandidatHazard; samples: LonLat[] }[] = [];
+  private pointGrid = new HazardGrid();
+  private segmentGrid = new HazardGrid();
+  private kandidatGrid = new HazardGrid();
+  /** Test only (DECISIONS #795): evaluate every hazard on every fix, as before the grid. The differential test runs both paths
+   *  side by side; their answers are the same by construction, so nothing else sets it. */
+  bruteForce = false;
 
   private prevFix: Fix | null = null;
   private lastHeadingDeg: number | null = null;
@@ -600,15 +706,40 @@ export class AlertEngine {
     this.points = [];
     this.segments = [];
     this.kandidater = [];
+    this.pointGrid = new HazardGrid();
+    this.segmentGrid = new HazardGrid();
+    this.kandidatGrid = new HazardGrid();
     for (const h of hazards) {
       if (h.kind === "slippery_segment") {
         const samples = samplePolyline(h.line, this.cfg.segmentSampleM);
+        this.segmentGrid.add(this.segments.length, samples, this.reachOf(h.kind));
         this.segments.push({ h, samples, box: boxOf(samples) });
       } else if (h.kind === "kandidat") {
-        this.kandidater.push({ h, samples: h.points.map(([lon, lat]) => ({ lon, lat })) });
+        const samples = h.points.map(([lon, lat]) => ({ lon, lat }));
+        this.kandidatGrid.add(this.kandidater.length, samples, this.reachOf(h.kind));
+        this.kandidater.push({ h, samples });
       } else {
+        this.pointGrid.add(this.points.length, [h], this.reachOf(h.kind));
         this.points.push(h);
       }
+    }
+  }
+
+  /**
+   * The grid's reach (DECISIONS #795): no candidate of this kind lies farther from the fix than this. Read off the evaluators:
+   * a camera needs distM ≤ cameraTriggerM, an accident distM ≤ accidentMaxAheadM, and icing, wildlife, a stretch's nearest sample
+   * and a kandidat's nearest point distM ≤ the lead — at most cfg.leadMaxM, and DEFAULT_CONFIG.leadMaxM under leadFor (TS only;
+   * the ports keep the same bound so the three stay one algorithm), or NaN, which step() handles. The 30 m near zone of isAhead
+   * only widens the angle, never a distance. NaN (Math.max keeps it), ∞ and an unknown kind give a reach no window bounds: always
+   * evaluated.
+   */
+  private reachOf(kind: HazardKind): number {
+    switch (kind) {
+      case "camera": return this.cfg.cameraTriggerM;
+      case "accident": return this.cfg.accidentMaxAheadM;
+      case "icing_point": case "wildlife": case "slippery_segment": case "kandidat":
+        return Math.max(this.cfg.leadMaxM, DEFAULT_CONFIG.leadMaxM);
+      default: return Infinity;
     }
   }
 
@@ -644,16 +775,26 @@ export class AlertEngine {
     const lead = (h: Hazard) => this.leadFor
       ? Math.min(DEFAULT_CONFIG.leadMaxM, Math.max(this.cfg.leadMinM, this.leadFor(h, leadM, speedMps)))
       : leadM;
+    // The grid (DECISIONS #795): only the hazards whose reach holds the fix, in the full scan's order. A stretch (segment or
+    // kandidat) tests `best > lead`, so a NaN lead lets it speak at ANY distance — the points test `distM <= lead` and stay silent.
+    // The reach bounds a number only: with a NaN lead (a NaN speed or setting), or leadFor's lead per hazard, the stretches take
+    // the full scan.
+    const points = this.bruteForce ? this.pointGrid.all : this.pointGrid.near(fix);
+    const allStretches = this.bruteForce || this.leadFor !== undefined || Number.isNaN(leadM);
+    const stretches = (g: HazardGrid) => allStretches ? g.all : g.near(fix);
     const candidates: Candidate[] = [];
-    for (const p of this.points) {
+    for (const i of points) {
+      const p = this.points[i];
       const c = this.evaluatePoint(fix, heading, p, lead(p));
       if (c) candidates.push(c);
     }
-    for (const s of this.segments) {
+    for (const i of stretches(this.segmentGrid)) {
+      const s = this.segments[i];
       const c = this.evaluateSegment(fix, heading, s, lead(s.h));
       if (c) candidates.push(c);
     }
-    for (const k of this.kandidater) {
+    for (const i of stretches(this.kandidatGrid)) {
+      const k = this.kandidater[i];
       const c = this.evaluateKandidat(fix, heading, k, lead(k.h));
       if (c) candidates.push(c);
     }

@@ -522,6 +522,30 @@ export const KONTRAKT: Kontrakt[] = [
     filer: /engine\/src\/types\.ts|engine\/Types\.kt|HalkvaktEngine\/Engine\.swift/,
     golv: 3,
   },
+  // MOTORNS RUTNÄT (DECISIONS #795). Talen ändrar inget beteende i någon port — varje port är exakt för sig, och det differentiella
+  // provet i alla tre visar det — men portarna ska vara en algoritm, och en port med annan ruta eller marginal mäter en annan takt
+  // än de två andra. Bunten i skuggmotorn bär samma rader och vaktas av bundle-skuggmotor --check, så den räknas inte här.
+  {
+    namn: "Motorns rutnät — cellens storlek i grader",
+    varfor: "Motorns tre portar ska bygga samma rutnät (DECISIONS #795); en port med annan cell gör samma urval på annan tid.",
+    former: [/(?:GRID_CELL_DEG|static let cellDeg)\s*=\s*(\d+(?:\.\d+)?)(?![\d.])/],
+    filer: /engine\/src\/engine\.ts$|engine\/Engine\.kt$|HalkvaktEngine\/Engine\.swift$/,
+    golv: 3,
+  },
+  {
+    namn: "Motorns rutnät — marginalen i meter på varje räckvidd",
+    varfor: "Marginalen täcker avrundningen mellan fönstret och haversineM (DECISIONS #795); en port som krymper den kan tappa en varning vid gränsen.",
+    former: [/(?:GRID_MARGIN_M|static let marginM)\s*=\s*(\d+)(?:\.0)?(?![\d.])/],
+    filer: /engine\/src\/engine\.ts$|engine\/Engine\.kt$|HalkvaktEngine\/Engine\.swift$/,
+    golv: 3,
+  },
+  {
+    namn: "Motorns rutnät — högst så här många celler per punkt, annars alltid prövad",
+    varfor: "Taket håller bygget litet nära polerna (DECISIONS #795); olika tak ger olika bygg- och stegtider i portarna.",
+    former: [/(?:GRID_MAX_CELLS|static let maxCells)\s*=\s*(\d+)(?:\.0)?(?![\d.])/],
+    filer: /engine\/src\/engine\.ts$|engine\/Engine\.kt$|HalkvaktEngine\/Engine\.swift$/,
+    golv: 3,
+  },
   {
     // Favoriterna steg 2 (kort #357, DECISIONS #616, #625): de sparade rutterna glesas lika i alla tre språk, och facit
     // engine/fixtures/rutter.json prövar utfallet. `(?![\d.])` gör att en kopia som blivit 75.5 faller på golvet i stället
