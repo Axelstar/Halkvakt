@@ -632,5 +632,29 @@
       "instagram": "18111851081227363",
       "x": "2118008259428696439"
     }
+  ],
+  "2026-11-05": [
+    {
+      "pass": "live",
+      "namn": "2026-11-05-live-0507",
+      "typ": "forsta",
+      "nyckel": "forsta:10",
+      "tid": "2026-11-05T04:07:42.868Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-11-05-live-0507.jpg",
+      "facebook": "1312515671952967_122109840387516187",
+      "instagram": "17943509802099893",
+      "x": "2118193574361915701"
+    },
+    {
+      "pass": "morgon",
+      "namn": "2026-11-05-morgon",
+      "typ": "svep",
+      "nyckel": "svep:morgon",
+      "tid": "2026-11-05T04:50:48.417Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-11-05-morgon-01.jpg",
+      "facebook": "1312515671952967_122109853023516187",
+      "instagram": "18114842051601675",
+      "x": "2118204778966597771"
+    }
   ]
 }
