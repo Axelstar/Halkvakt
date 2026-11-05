@@ -45,9 +45,9 @@ on:
   workflow_dispatch:
     inputs:
       steg:
-        description: "indata (en äldre vinter) → fyll (T2) → forberedning → traning → provning (bakom spärren) → samman; paritet (§4, den levande kedjan); osakerhet (#707, omdragning på 2022/23); identitet och dom bara med variant smavagar eller okanda; mars (marsprövningen, halkvakt-kuvos F8: prov (b), halvvintrarna och domen, bara till hinken)"
+        description: "indata (en äldre vinter) → fyll (T2) → forberedning → traning → provning (bakom spärren) → samman; paritet (§4, den levande kedjan); osakerhet (#707, omdragning på 2022/23); identitet och dom bara med variant smavagar eller okanda; mars (marsprövningen, halkvakt-kuvos F8: prov (b), halvvintrarna och domen, bara till hinken); trafikmangd (halkvakt-kuvos F21, trafikmängdens betydelse, bara med variant okanda, bara till hinken)"
         type: choice
-        options: ["indata", "fyll", "t4", "forberedning", "traning", "provning", "samman", "paritet", "osakerhet", "identitet", "dom", "mars"]
+        options: ["indata", "fyll", "t4", "forberedning", "traning", "provning", "samman", "paritet", "osakerhet", "identitet", "dom", "mars", "trafikmangd"]
         default: "forberedning"
       vinter:
         description: "bara för indata och fyll: vintern som hämtas (2017-18 och 2023-24 är marsprövningens halvvintrar, halkvakt-kuvos F8)"
@@ -1387,6 +1387,215 @@ jobs:
           lagg ut/dom_smavagar.json
           rm -rf ut
 
+  # ── trafikmangd (trafikmängdens betydelse för kandidaten, halkvakt-kuvos F21) ───────────────────────────────────────────────────
+  # Bara med variant okanda. Ett jobb per utelämnad vinter läser vintern som träningen läste den (utan Trafikverkets filer) och F7:s
+  # modell, skattning och punkter ur hinken, och räknar PB för H1 och P1 med sju varianter av vägdragen (fysik/ny_kandidat/
+  # trafikmangd.py --veck, med identiteten mot F7:s skattning och PB). Domjobbet räknar F7:s mått per variant och skillnaden mot V0
+  # (--dom, med identiteten mot okanda.json). Allt utom koden är räknat ur Trafikverkets rader och går bara till hinken, i en egen
+  # mapp per körning som aldrig skrivs över; loggen bär bara klart eller fel.
+  trafikmangd-veck:
+    if: ${{ inputs.steg == 'trafikmangd' && inputs.variant == 'okanda' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    strategy:
+      fail-fast: false
+      matrix:
+        vinter: ["2018-19", "2019-20", "2020-21", "2021-22", "2022-23", "2024-25"]
+    env:
+      GH_TOKEN: "${{ github.token }}"
+      V: "${{ matrix.vinter }}"
+      UT_HINK: "kuvos-trafikmangd-2026-11-${{ github.run_number }}"
+    steps:
+      - uses: actions/checkout@v4
+      # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos (DECISIONS #768): koden läggs ovanpå utcheckningen.
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13", cache: pip, cache-dependency-path: fysik/requirements.txt }
+      - name: Beroendena, de frysta filerna, spärrarna, populationsprovet och självtestet
+        shell: bash
+        run: |
+          python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
+          (cd fysik && sha256sum -c --quiet SHA256SUMS)
+          prov() { if "${@:2}" > /dev/null 2>&1; then echo "$1: klart"; else echo "::error::$1: fel"; return 1; fi; }
+          prov "spärren (F21, förregistreringen signerad)" python3 fysik/ny_kandidat/sparren.py docs/FORREGISTRERING-TRAFIKMANGDEN-2026-11.md
+          prov "spärren (F7, förregistreringen signerad)" python3 fysik/ny_kandidat/okanda.py --sparren
+          prov "populationsprovet (F7 §6 c)" python3 fysik/ny_kandidat/okanda.py --check
+          prov "självtestet (F21, påhittade data)" python3 fysik/ny_kandidat/trafikmangd.py --sjalvtest
+          prov "hinkmappen" python3 -c 'import os, sys; sys.path.insert(0, "fysik/ny_kandidat"); import kedjan, smavagar_kedjan as sk; sk.till_varianten(kedjan); sys.exit(kedjan.HINKMAPP != os.environ["HINK"])'
+      - name: Releaserna — indatan och vinterns ECMWF och MET Nordic
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p indata && gh release download kuvos-fysik-indata-2024-25 --dir indata
+          node -e '
+            const c = require("crypto"), fs = require("fs"); let fel = 0;
+            for (const f of require("./kuvos/fysik-indata-leverans.json").filer) { const h = c.createHash("sha256").update(fs.readFileSync("indata/" + f.fil)).digest("hex");
+              console.log(`${f.fil}: ${h === f.sha256 ? "ok" : "FEL " + h}`); if (h !== f.sha256) fel++; }
+            process.exit(fel ? 1 : 0);'
+          mkdir -p frusen && for f in indata/*.tar.gz; do tar -xzf "$f" -C frusen; done
+          if [ -d frusen/data ]; then mv frusen/data/* frusen/ && rmdir frusen/data; fi
+          mkdir -p "v/$V/metnordic"
+          if [ "$V" = "2024-25" ]; then
+            gh release download kuvos-metnordic-2024-25 --dir mn2425 --pattern 'metnordic_2024-25.csv.gz' --clobber
+            cp -r frusen/ifs "v/$V/ifs"; cp mn2425/metnordic_2024-25.csv.gz "v/$V/metnordic/"
+          else
+            rm -rf rel && gh release download "kuvos-vintrar-$V" --dir rel --pattern "ifs_$V.tar.gz" --pattern 'metnordic_*.csv.gz'
+            tar -xzf "rel/ifs_$V.tar.gz" -C "v/$V"
+            node --experimental-strip-types fysik/ny_kandidat/metnordic_reserv.ts --valj "$V" rel | while read -r f; do cp "$f" "v/$V/metnordic/"; done
+          fi
+          echo "$V: ECMWF $(ls "v/$V/ifs" | wc -l) stationer, MET Nordic $(ls "v/$V/metnordic" | wc -l) delar"
+          rm -rf rel mn2425 indata
+      - name: F7:s filer ur hinken, varianterna och filen till hinken
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          export FN KEY
+          hamta() {  # hamta <mapp> <hinknamn …>: ur hinken, högst 20 per anrop
+            node -e '
+              const { execFileSync } = require("child_process"), fs = require("fs"), [mapp, ...filer] = process.argv.slice(1);
+              // execFileSync:s fel bär kommandoraden och därmed nyckeln eller den signerade adressen: fångas, bara statusen skrivs ut.
+              const curl = (a, vad) => { try { return execFileSync("curl", ["-sS", "--fail", ...a], { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); }
+                catch (e) { console.error(`${vad} föll (curl ${e.status})`); process.exit(1); } };
+              if (!filer.length) { console.error("hamta: inga filer"); process.exit(1); }
+              fs.mkdirSync(mapp, { recursive: true });
+              for (let i = 0; i < filer.length; i += 20) {
+                const s = JSON.parse(curl(["-X", "POST", `${process.env.FN}?lage=kuvos_hamta`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
+                  "-H", "Content-Type: application/json", "-d", JSON.stringify({ filer: filer.slice(i, i + 20) })], "adresserna (finns filerna i hinken?)"));
+                for (const d of s.filer) curl(["-o", mapp + "/" + d.fil.split("/").pop(), d.url], `hämtningen av ${d.fil}`);
+              }' "$@"
+          }
+          lagg() {   # lagg <fil …>: till $UT_HINK/<filnamn>; skrivs aldrig över, och det som ligger i hinken ska vara byte för byte filen
+            node -e '
+              const { execFileSync } = require("child_process"), fs = require("fs"), c = require("crypto"), filer = process.argv.slice(1);
+              const sha = (b) => c.createHash("sha256").update(b).digest("hex"), namn = filer.map((f) => process.env.UT_HINK + "/" + f.split("/").pop());
+              // execFileSync:s fel bär kommandoraden och därmed nyckeln eller den signerade adressen: fångas, bara statusen skrivs ut.
+              const curl = (a, vad) => { try { return execFileSync("curl", ["-sS", "--fail", ...a], { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); }
+                catch (e) { if (vad) { console.error(`${vad} föll (curl ${e.status})`); process.exit(1); } return null; } };
+              const anrop = (lage, vad) => { const b = curl(["-X", "POST", `${process.env.FN}?lage=${lage}`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
+                "-H", "Content-Type: application/json", "-d", JSON.stringify({ filer: namn })], vad); return b && JSON.parse(b); };
+              if (!filer.length || filer.length > 20) { console.error("lagg: 1–20 filer per anrop"); process.exit(1); }
+              let h = anrop("kuvos_hamta");
+              if (h) console.log("filerna finns redan i hinken (en omkörning): de jämförs, ingenting skrivs över");
+              else {
+                const u = anrop("kuvos_ladda_upp", "adresserna för uppladdningen").urls;
+                filer.forEach((f, i) => curl(["-X", "PUT", "-H", "Content-Type: application/octet-stream", "--data-binary", "@" + f, u[i]],
+                  `uppladdningen av ${namn[i]} (finns filen redan i hinken skrivs den inte över)`));
+                h = anrop("kuvos_hamta", "hämtningen tillbaka");
+              }
+              let fel = 0;
+              h.filer.forEach((d, i) => { const ok = sha(curl([d.url], `hämtningen av ${d.fil}`)) === sha(fs.readFileSync(filer[i])); fel += !ok;
+                console.log(`${d.fil}: ${ok ? "klart, i hinken byte för byte den skrivna" : "FEL: i hinken med annat innehåll"}`); });
+              process.exit(fel ? 1 : 0);' "$@"
+          }
+          E="utan-$V"
+          hamta okd "$HINK/enhet_$E.json" "$HINK/modell_$E.pkl" "$HINK/ph_${E}_$V.npz" "$HINK/veck_$V.json" "$HINK/punkter_$V.npz"
+          echo "F7:s filer för $V ur hinken: klart"
+          RC=0; python3 fysik/ny_kandidat/trafikmangd.py --veck "$V" --okanda okd --indata frusen --vintrar v --arbete arbete --ut ut > tm.txt 2>&1 || RC=$?
+          # Vilket prov som föll: bara ordet ur skriptets sista rad, aldrig talen.
+          PROVET=$(sed -n 's/^TRAFIKMÄNGDEN FÖLL: \(identiteten\|vakten (F1)\|modellen\|skattningen\|punkterna\)$/\1/p' tm.txt | tail -1)
+          rm -rf okd frusen v arbete tm.txt
+          if [ "$RC" -ne 0 ]; then echo "::error::trafikmängden, vintern $V: fel i ${PROVET:-skriptet, utan besked (kod $RC)}"; exit "$RC"; fi
+          echo "trafikmängden, vintern $V: klart"
+          lagg "ut/trafikmangd_$V.npz"
+          rm -rf ut
+
+  trafikmangd-dom:
+    needs: trafikmangd-veck
+    if: ${{ inputs.steg == 'trafikmangd' && inputs.variant == 'okanda' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      UT_HINK: "kuvos-trafikmangd-2026-11-${{ github.run_number }}"
+    steps:
+      - uses: actions/checkout@v4
+      # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos (DECISIONS #768): koden läggs ovanpå utcheckningen.
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13", cache: pip, cache-dependency-path: fysik/requirements.txt }
+      - name: Beroendena, de frysta filerna, spärrarna, populationsprovet och självtestet
+        shell: bash
+        run: |
+          python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
+          (cd fysik && sha256sum -c --quiet SHA256SUMS)
+          prov() { if "${@:2}" > /dev/null 2>&1; then echo "$1: klart"; else echo "::error::$1: fel"; return 1; fi; }
+          prov "spärren (F21, förregistreringen signerad)" python3 fysik/ny_kandidat/sparren.py docs/FORREGISTRERING-TRAFIKMANGDEN-2026-11.md
+          prov "spärren (F7, förregistreringen signerad)" python3 fysik/ny_kandidat/okanda.py --sparren
+          prov "populationsprovet (F7 §6 c)" python3 fysik/ny_kandidat/okanda.py --check
+          prov "självtestet (F21, påhittade data)" python3 fysik/ny_kandidat/trafikmangd.py --sjalvtest
+          prov "hinkmappen" python3 -c 'import os, sys; sys.path.insert(0, "fysik/ny_kandidat"); import kedjan, smavagar_kedjan as sk; sk.till_varianten(kedjan); sys.exit(kedjan.HINKMAPP != os.environ["HINK"])'
+      - name: Varianterna och F7:s domfil ur hinken, domens räkning och filen till hinken
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          export FN KEY
+          hamta() {  # hamta <mapp> <hinknamn …>: ur hinken, högst 20 per anrop
+            node -e '
+              const { execFileSync } = require("child_process"), fs = require("fs"), [mapp, ...filer] = process.argv.slice(1);
+              // execFileSync:s fel bär kommandoraden och därmed nyckeln eller den signerade adressen: fångas, bara statusen skrivs ut.
+              const curl = (a, vad) => { try { return execFileSync("curl", ["-sS", "--fail", ...a], { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); }
+                catch (e) { console.error(`${vad} föll (curl ${e.status})`); process.exit(1); } };
+              if (!filer.length) { console.error("hamta: inga filer"); process.exit(1); }
+              fs.mkdirSync(mapp, { recursive: true });
+              for (let i = 0; i < filer.length; i += 20) {
+                const s = JSON.parse(curl(["-X", "POST", `${process.env.FN}?lage=kuvos_hamta`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
+                  "-H", "Content-Type: application/json", "-d", JSON.stringify({ filer: filer.slice(i, i + 20) })], "adresserna (finns filerna i hinken?)"));
+                for (const d of s.filer) curl(["-o", mapp + "/" + d.fil.split("/").pop(), d.url], `hämtningen av ${d.fil}`);
+              }' "$@"
+          }
+          lagg() {   # lagg <fil …>: till $UT_HINK/<filnamn>; skrivs aldrig över, och det som ligger i hinken ska vara byte för byte filen
+            node -e '
+              const { execFileSync } = require("child_process"), fs = require("fs"), c = require("crypto"), filer = process.argv.slice(1);
+              const sha = (b) => c.createHash("sha256").update(b).digest("hex"), namn = filer.map((f) => process.env.UT_HINK + "/" + f.split("/").pop());
+              // execFileSync:s fel bär kommandoraden och därmed nyckeln eller den signerade adressen: fångas, bara statusen skrivs ut.
+              const curl = (a, vad) => { try { return execFileSync("curl", ["-sS", "--fail", ...a], { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); }
+                catch (e) { if (vad) { console.error(`${vad} föll (curl ${e.status})`); process.exit(1); } return null; } };
+              const anrop = (lage, vad) => { const b = curl(["-X", "POST", `${process.env.FN}?lage=${lage}`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
+                "-H", "Content-Type: application/json", "-d", JSON.stringify({ filer: namn })], vad); return b && JSON.parse(b); };
+              if (!filer.length || filer.length > 20) { console.error("lagg: 1–20 filer per anrop"); process.exit(1); }
+              let h = anrop("kuvos_hamta");
+              if (h) console.log("filerna finns redan i hinken (en omkörning): de jämförs, ingenting skrivs över");
+              else {
+                const u = anrop("kuvos_ladda_upp", "adresserna för uppladdningen").urls;
+                filer.forEach((f, i) => curl(["-X", "PUT", "-H", "Content-Type: application/octet-stream", "--data-binary", "@" + f, u[i]],
+                  `uppladdningen av ${namn[i]} (finns filen redan i hinken skrivs den inte över)`));
+                h = anrop("kuvos_hamta", "hämtningen tillbaka");
+              }
+              let fel = 0;
+              h.filer.forEach((d, i) => { const ok = sha(curl([d.url], `hämtningen av ${d.fil}`)) === sha(fs.readFileSync(filer[i])); fel += !ok;
+                console.log(`${d.fil}: ${ok ? "klart, i hinken byte för byte den skrivna" : "FEL: i hinken med annat innehåll"}`); });
+              process.exit(fel ? 1 : 0);' "$@"
+          }
+          hamta tm $(for V in 2018-19 2019-20 2020-21 2021-22 2022-23 2024-25; do echo "$UT_HINK/trafikmangd_$V.npz"; done)
+          hamta o "$HINK/okanda.json"
+          echo "varianterna och F7:s domfil ur hinken: klart"
+          RC=0; python3 fysik/ny_kandidat/trafikmangd.py --dom tm o/okanda.json ut > dom.txt 2>&1 || RC=$?
+          PROVET=$(sed -n 's/^TRAFIKMÄNGDEN FÖLL: \(identiteten (§7)\)$/\1/p' dom.txt | tail -1)
+          rm -rf tm o dom.txt
+          if [ "$RC" -ne 0 ]; then echo "::error::trafikmängden, domens räkning: fel i ${PROVET:-skriptet, utan besked (kod $RC)}"; exit "$RC"; fi
+          echo "trafikmängden, domens räkning: klart"
+          lagg ut/trafikmangd.json
+          rm -rf ut
+
   # ── mars (marsprövningen, halkvakt-kuvos BESLUT F8) ─────────────────────────────────────────────────────────────────────────────
   # Ett jobb per enhet. Prov (b) först (§7 b): faller det läses ingen halvvinter, och Trafikverkets filer för 2018 och 2024 hämtas
   # inte ens till jobbet; halvvinter.py vägrar dessutom P-I utan ett klarat prov (b) räknat med samma kod. Kedjan, modellerna och
@@ -1656,11 +1865,11 @@ jobs:
   # Variant smavagar har bara lägena identitet, traning, provning och dom (indata, fyll och t4 är desamma för alla varianter), och
   # identitet och dom bara varianten: ett annat par fäller här i stället för att körningen blir grön utan att något gjorts.
   smavagar-valet:
-    if: ${{ ((inputs.variant == 'smavagar' || inputs.variant == 'okanda') && (inputs.steg == 'forberedning' || inputs.steg == 'samman' || inputs.steg == 'paritet' || inputs.steg == 'osakerhet')) || ((inputs.variant != 'smavagar' && inputs.variant != 'okanda') && (inputs.steg == 'identitet' || inputs.steg == 'dom')) }}
+    if: ${{ ((inputs.variant == 'smavagar' || inputs.variant == 'okanda') && (inputs.steg == 'forberedning' || inputs.steg == 'samman' || inputs.steg == 'paritet' || inputs.steg == 'osakerhet')) || ((inputs.variant != 'smavagar' && inputs.variant != 'okanda') && (inputs.steg == 'identitet' || inputs.steg == 'dom')) || (inputs.steg == 'trafikmangd' && inputs.variant != 'okanda') }}
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
       - name: Steget och varianten hör inte ihop
         run: |
-          echo "::error::steget ${{ inputs.steg }} går inte med variant ${{ inputs.variant }} (småvägsprovet: identitet, traning, provning och dom med variant smavagar eller okanda; förberedningen är T4:s)"
+          echo "::error::steget ${{ inputs.steg }} går inte med variant ${{ inputs.variant }} (småvägsprovet: identitet, traning, provning och dom med variant smavagar eller okanda; förberedningen är T4:s; trafikmangd bara med variant okanda)"
           exit 1
