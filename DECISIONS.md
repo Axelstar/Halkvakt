@@ -13880,4 +13880,6 @@ samma svar.
 **Kvar.** Buntarna för skuggmotorn, favoritprovet och favoriterna är omgjorda men inte deployade; favoritprovet och favoriterna får
 bara `reachWindow`, som de inte anropar. Kotlin och Swift bevisas av android.yml och ios-engine.yml på grenen.
 
+**Tillägg 5/11 (Bengt: *"slå ihop 1391 och deploya skuggmotorn"*, och *"Ja, bokför"*).** PR #1391 sammanslagen (e9f84a96). Skuggmotorn deployad 17:54:39 UTC från e9f84a96 (deploy-supabase 42079129595, *Deployed Functions … skuggmotor*). Beviset efter deployen: skuggmotorns körningar 17:55 och 18:02 lyckades (pg_cron *succeeded*) och skrev loggrader i samma storlek som före — 18:02: 3 rutter, 10 323 faror, 1 varning, mot 17:32: 3 rutter, 10 248 faror, 3 varningar. Exakt likhet bevisas av jämförelseprovet i ci, inte av driften: driften visar att inget gått sönder. Favoritprovets och favoriternas buntar är omgjorda men inte deployade; de anropar inte rutnätet. Apparna får det i nästa bygge, efter ett par dygns skuggrapport. Kvar som eget ärende: Swift-portens krasch på `Int(NaN)` i `samplePolyline` när ett hörn saknar koordinat (TS och Kotlin hoppar över hörnet). Felet är äldre än rutnätet och nås knappast ur en lägesfil, eftersom JSON inte kan bära NaN.
+
 **Stomdokument:** SYS motorn — rutnätet i motorns tre portar
