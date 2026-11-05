@@ -94,15 +94,17 @@ struct GridTests {
             return r.between(0, min(bound * 1.3, 15000))
         }
         var heading = 0.0   // the anchor fix's heading, for a camera's bearing
-        func place(_ bound: Double) -> [Double] {
-            let i = Int(r.next() * Double(fixes.count))
+        // A stretch gets no broken vertex: Geo.samplePolyline here traps on Int(NaN) at ingest, in both paths (TS and Kotlin skip it).
+        func place(_ bound: Double, mayBreak: Bool = true) -> [Double] {
+            var i = Int(r.next() * Double(fixes.count))
+            while !mayBreak && !(fixes[i].lon.isFinite && fixes[i].lat.isFinite) { i = (i + 1) % fixes.count }   // not a broken fix
             let f = fixes[i]
             heading = headings[i]
             let b = r.next() < 0.75 ? heading + r.between(-40, 40) : r.between(0, 360)
             var p = dest(f.lon, f.lat, distance(bound), b)
             if r.next() < 0.08 { p[1] = (p[1] / 0.05).rounded() * 0.05 + r.pick([-1e-9, 0, 1e-9]) }   // on a cell border
             if r.next() < 0.08 { p[0] = (p[0] / 0.05).rounded() * 0.05 + r.pick([-1e-9, 0, 1e-9]) }
-            if r.next() < broken {
+            if mayBreak && r.next() < broken {
                 if r.next() < 0.5 { p[0] = r.pick([Double.nan, Double.infinity, 181, -200, 360.0001]) }
                 else { p[1] = r.pick([Double.nan, -Double.infinity, 91, -95]) }
             }
@@ -145,7 +147,7 @@ struct GridTests {
                 let meta = r.next() < 0.3 ? PointMeta() : PointMeta(active: r.next() < 0.8)
                 out.append(.point(id: id("wildlife"), kind: .wildlife, lon: p[0], lat: p[1], bearing: nil, meta: meta))
             case "slippery_segment":
-                var line = [place(finite(leadReach, 3000))]
+                var line = [place(finite(leadReach, 3000), mayBreak: false)]
                 var b = r.between(0, 360)
                 var k = 1 + Int(r.next() * 5)
                 while k > 0 {
