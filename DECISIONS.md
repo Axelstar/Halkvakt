@@ -13783,3 +13783,41 @@ nära en station; mellan stationerna krävs en daggpunktsväg i kandidatens varn
 som redan lästs.
 
 **Stomdokument:** MAT rimfrostens grind R-B och kandidatens daggpunktsväg.
+
+## #794 (5/11 2026) Rimfrostens R-B läst i domläget: R-B1 klarar och R-B2 faller i alla tolv kombinationer; domslutet väntar på Bengt
+
+**Beslut** (Bengt 5/11: *"jag väntar med att fälla tills vi sett var daggpunktsvägen tar oss"* och *"vi gör de tre stegen"*). Tabellen
+bokförs nu med sitt datum. Domslutet fälls av Bengt när kandidatens daggpunktsväg (#793) är läst, med fristen flyttad dit. Talen nedan
+är lästa och trösklarna låsta (TROSKLAR-RIMFROST §9); regel L gäller: domen på lästa data står, och ingen lättnad prövas på dem.
+
+**Körningen.** grind-r-b i domläget, 42015152610, 30 dygn 2026-10-06 → 2026-11-05 11:01 UTC, efter underlagsläget 42013307913 och
+efter #793 (incheckat 10:58 UTC, före domläget). Giltigheten: frostdygn 29 av 15, regioner med frost 4 av 3. Underlag 742 stationer,
+1 027 669 halvtimmar efter #75, radvakten och karantänen; R-C3 täckning 61,0 % av halvtimmarna med daggpunkt. Facit: 2 094 bekräftade
+halktillfällen (omklassning till halka inom 5 km) vid 195 stationer, 28 nätter, 3 regioner och 9 län.
+
+| R1 / R2 / R3 | Episoder | Netto | R-B1 (golv 5 %) | R-B2 (tak 25 %) |
+| :-- | --: | --: | :-- | :-- |
+| 0 / 0 / 30 | 2 749 | 194 | 9,3 % klarar | 94,0 % faller |
+| 0 / 0 / 60 | 1 979 | 169 | 8,2 % klarar | 93,7 % faller |
+| 0 / 1 / 30 | 3 978 | 199 | 9,6 % klarar | 95,8 % faller |
+| 0 / 1 / 60 | 2 885 | 173 | 8,4 % klarar | 95,3 % faller |
+| 0,5 / 0 / 30 | 3 179 | 211 | 10,1 % klarar | 94,2 % faller |
+| 0,5 / 0 / 60 | 2 348 | 189 | 9,1 % klarar | 94,0 % faller |
+| 0,5 / 1 / 30 | 4 686 | 220 | 10,6 % klarar | 96,0 % faller |
+| 0,5 / 1 / 60 | 3 481 | 200 | 9,7 % klarar | 95,4 % faller |
+| 1 / 0 / 30 | 3 651 | 215 | 10,3 % klarar | 95,0 % faller |
+| 1 / 0 / 60 | 2 729 | 187 | 9,0 % klarar | 94,7 % faller |
+| 1 / 1 / 30 | 5 347 | 217 | 10,4 % klarar | 96,5 % faller |
+| 1 / 1 / 60 | 4 055 | 189 | 9,1 % klarar | 96,2 % faller |
+
+R5 på 1 / 1 / 30: bara klara nätter 2 057 episoder, R-B1 4,3 % (oavgjort), R-B2 96,5 % (faller); klar och mellan 2 266, 4,7 % och 96,5 %.
+Intervallen är ±0,5–1,3 procentenheter. R-B3 fäller inte (#103).
+
+**Läsningen.** Grenen fångar omkring 200 bekräftade halktillfällen på en månad där punktmotorn tiger, men omkring 19 av 20 av dess
+episoder följs inte av en omklassning inom 90 minuter. R-B2:s facit är Trafikverkets omklassning och kan missa rimfrost (E18 Grums 5/11:
+*Torrt* sedan 02:47); för att 95 % ska vara under 25 % skulle facit behöva missa omkring tre av fyra verkliga tillfällen. Enligt §4 krävs
+båda kraven.
+
+**Följden.** Ingen röst och ingen motorkod för stationernas gren. Ärende #1384 står öppet tills domslutet är bokfört.
+
+**Stomdokument:** MAT rimfrostens grind R-B; BED §4.2 domslutet som väntar.
