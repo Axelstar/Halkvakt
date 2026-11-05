@@ -100,7 +100,10 @@ function* genom(dir: string): Generator<string> {
 }
 
 // Arkivexporten läser den nyas domlogg bara för att lägga den i hinken `arkiv`, som ingen app läser (sql/083, DECISIONS #792).
-const UNDANTAG = new Set(["supabase/functions/arkivexport/index.ts"]);
+// Arkivdumpen signerar bara en hämtningsadress till samma dygnsfiler i hinken, åt Actions med funktionsnyckeln (5/11, PR #1385):
+// den läser ingen tabell och ingen app når den.
+const UNDANTAG = new Set(["supabase/functions/arkivexport/index.ts", "supabase/functions/arkivdump/delar.ts",
+  "supabase/functions/arkivdump/index.ts"]);
 
 test("ingenting i appen, motorn, publiceringen eller edge-funktionerna läser den nyas tabeller (§4: ingenting når förarna)", () => {
   const traff: string[] = [];
