@@ -201,23 +201,88 @@ jobs:
             fs.writeFileSync("modell_alla.pkl", b); console.log(`modell_alla.pkl ur hinken: ${b.length} byte — ${ok ? "sha256 lika kandidatfilen" : "FEL"}`); process.exit(ok ? 0 : 1);'
           rm hamta.json
       # Del A:s och del B:s utskrift visas inte i den publika loggen; bara tiden, minnet, filens storlek och sista raden vid fel.
+      # Minnet mäts var femte sekund under del A, så att det syns om maskinen tar slut på minne: totalt, använt och ledigt i MB,
+      # swappen och den största python-processens RSS. Bara minnestal, inga modellvärden. Första körningen 5/11 avbröts utifrån
+      # (kod 143) efter 2,5 minuter i del A, utan felrad.
       - name: Del A för alla punkter, med tid och minne
         shell: bash
         run: |
           [ -x /usr/bin/time ] || sudo apt-get -qq install -y time
-          /usr/bin/time -v -o del-a.tid python3 fysik/ny_kandidat/levande.py --del-a --indata indata-live \
-              --analys mn/metnordic_analys_*.csv.gz mn/dagar/*.csv.gz mnp/dagar/*.csv.gz mnp-live/dagar/*.csv.gz \
-              --korning "mn/metnordic_korning_$STAMP.csv.gz" --modell modell_alla.pkl --kandidat kuvos/kandidat-2027-28-t4.json --ut ut > del-a.log 2>&1 \
-            || { echo "::error::Del A föll: $(tail -1 del-a.log | cut -c1-300)"; exit 1; }
+          # Proven skrivs både i loggen och i filen, så att de syns också om steget dödas utifrån (körningen 42005697887 gav ingen fil).
+          echo "minnet: tid UTC, totalt MB, använt MB, ledigt MB, swap MB, största python KB"
+          ( while :; do echo "minne $(date -u +%T) $(free -m | awk '/^Mem:/{printf "%s %s %s ", $2, $3, $7} /^Swap:/{printf "%s ", $3}') $(ps -C python3 -o rss= 2>/dev/null | sort -n | tail -1)"; sleep 10; done ) 2>/dev/null | tee minne.log &
+          echo $! > minne.pid
+          # Del A i två omgångar (Bengt 5/11): körningen 42008786613 visade att en omgång med alla 23 814 punkter tar slut på
+          # maskinens 16 GB (största python 15 GB, 442 MB ledigt, sedan avbruten). Del A räknar varje punkt för sig (fyllningen
+          # framåt och bakåt i tiden, fysiken och rättelsen är per punkt), så två halvor ger samma PH som en omgång. Halvorna delar
+          # indatans filer; bara punktlistan stations.csv delas.
+          python3 - <<'PY'
+          import csv, os
+          src = "indata-live"
+          rader = list(csv.reader(open(f"{src}/stations.csv", newline="", encoding="utf-8")))
+          huvud, kropp = rader[0], rader[1:]
+          halv = (len(kropp) + 1) // 2
+          for i, delen in enumerate((kropp[:halv], kropp[halv:]), 1):
+              d = f"indata-del{i}"
+              os.makedirs(d, exist_ok=True)
+              for f in os.listdir(src):
+                  if f != "stations.csv":
+                      os.symlink(os.path.abspath(f"{src}/{f}"), f"{d}/{f}")
+              with open(f"{d}/stations.csv", "w", newline="", encoding="utf-8") as fh:
+                  w = csv.writer(fh)
+                  w.writerow(huvud)
+                  w.writerows(delen)
+              print(f"omgång {i}: {len(delen)} punkter")
+          PY
+          for i in 1 2; do
+            /usr/bin/time -v -o "del-a-$i.tid" python3 fysik/ny_kandidat/levande.py --del-a --indata "indata-del$i" \
+                --analys mn/metnordic_analys_*.csv.gz mn/dagar/*.csv.gz mnp/dagar/*.csv.gz mnp-live/dagar/*.csv.gz \
+                --korning "mn/metnordic_korning_$STAMP.csv.gz" --modell modell_alla.pkl --kandidat kuvos/kandidat-2027-28-t4.json --ut "ut-del$i" > "del-a-$i.log" 2>&1 \
+              || { echo "::error::Del A, omgång $i, föll: $(tail -1 "del-a-$i.log" | cut -c1-300)"; exit 1; }
+            grep -E "Elapsed|Maximum resident" "del-a-$i.tid" | sed "s/^/omgång $i: /"
+          done
+          kill "$(cat minne.pid)" 2>/dev/null || true
           rm -f modell_alla.pkl
-          grep -E "Elapsed|Maximum resident" del-a.tid
           python3 -c '
-          import json, glob, os, re
-          s = json.load(open(glob.glob("ut/sammanfattning_*.json")[0], encoding="utf-8")); t = open("del-a.tid").read()
-          rss = int(re.search(r"Maximum resident set size \(kbytes\): (\d+)", t).group(1))
-          m = {"s_del_a": s["sekunder"], "maxrss_del_a_mb": round(rss / 1024), "punkter_del_a": s["punkter"], "rader_del_a": s["rader"],
-               "ifyllda_punkttimmar": s["saknade_punkttimmar_ifyllda"], "ph_fil_mb": round(os.path.getsize(s["fil"]) / 1e6, 1)}
+          import json, glob, gzip, os, re
+          s = [json.load(open(glob.glob(f"ut-del{i}/sammanfattning_*.json")[0], encoding="utf-8")) for i in (1, 2)]
+          os.makedirs("ut", exist_ok=True)
+          fil = "ut/" + os.path.basename(s[0]["fil"])
+          assert os.path.basename(s[1]["fil"]) == os.path.basename(fil), "omgångarna räknade olika körningar"
+          with gzip.open(fil, "wt", newline="\n") as ut:
+              for i, x in enumerate(s):
+                  with gzip.open(x["fil"], "rt") as fh:
+                      for j, rad in enumerate(fh):
+                          if i and not j: continue
+                          ut.write(rad)
+          sam = {**s[0], "punkter": s[0]["punkter"] + s[1]["punkter"], "rader": s[0]["rader"] + s[1]["rader"],
+                 "sekunder": round(s[0]["sekunder"] + s[1]["sekunder"], 1), "ph_min": min(x["ph_min"] for x in s), "ph_max": max(x["ph_max"] for x in s),
+                 "saknade_punkttimmar_ifyllda": s[0]["saknade_punkttimmar_ifyllda"] + s[1]["saknade_punkttimmar_ifyllda"], "fil": fil, "omgangar": 2}
+          json.dump(sam, open(fil.replace("ny_kandidat_ph_", "sammanfattning_").replace(".csv.gz", ".json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+          rss = [int(re.search(r"Maximum resident set size \(kbytes\): (\d+)", open(f"del-a-{i}.tid").read()).group(1)) for i in (1, 2)]
+          m = {"s_del_a": sam["sekunder"], "s_del_a_omgangar": [x["sekunder"] for x in s], "maxrss_del_a_mb": round(max(rss) / 1024),
+               "maxrss_del_a_omgangar_mb": [round(r / 1024) for r in rss], "punkter_del_a": sam["punkter"], "rader_del_a": sam["rader"],
+               "ifyllda_punkttimmar": sam["saknade_punkttimmar_ifyllda"], "ph_fil_mb": round(os.path.getsize(fil) / 1e6, 1)}
           json.dump(m, open("matning_del_a.json", "w")); print(json.dumps(m))' | tee -a "$GITHUB_STEP_SUMMARY"
+      # Också när del A faller: minnets största och minsta värden, de sista proven och kärnans rader om slut på minne.
+      - name: Minnet under del A
+        if: always()
+        shell: bash
+        run: |
+          kill "$(cat minne.pid 2>/dev/null)" 2>/dev/null || true
+          [ -s minne.log ] || { echo "minnet: ingen minneslogg"; ls -la minne.* 2>&1 || true; exit 0; }
+          python3 - <<'PY' | tee -a "$GITHUB_STEP_SUMMARY"
+          rader = [r.split()[1:] for r in open("minne.log") if len(r.split()) >= 6]
+          if not rader:
+              print("minnet: inga prov"); raise SystemExit
+          tal = lambda i: [int(r[i]) for r in rader if len(r) > i and r[i].isdigit()]
+          tot, anv, ledigt, swap, rss = tal(1), tal(2), tal(3), tal(4), tal(5)
+          print(f"minnet under del A: {len(rader)} prov {rader[0][0]}-{rader[-1][0]} UTC, totalt {max(tot)} MB, mest använt {max(anv)} MB, "
+                f"minst ledigt {min(ledigt)} MB, swap högst {max(swap or [0])} MB, största python {round(max(rss or [0]) / 1024)} MB")
+          for r in rader[-3:]: print("  " + " ".join(r))
+          PY
+          sudo dmesg -T 2>/dev/null | grep -i -E "out of memory|oom-kill|killed process" | tail -5 || true
+          journalctl --no-pager -q -u systemd-oomd 2>/dev/null | tail -5 || true
       - name: Del B för timmen och beskeden
         shell: bash
         env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
