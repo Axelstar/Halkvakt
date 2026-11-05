@@ -27,7 +27,9 @@ jobs:
         run: |
           pip install --quiet numpy scikit-image matplotlib
           npm i --no-save --no-audit --no-fund playwright@1.47.2
-          npx playwright install --with-deps chromium
+          # Utan --with-deps: löparen har biblioteken, och typsnittspaketen den annars hämtar behövs inte (reel.html bär egna
+          # typsnitt). 5/11 gav Ubuntus spegel 25 kB/s och körningen hann aldrig filma.
+          npx playwright install chromium
           command -v ffmpeg || { sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg; }
 
       - name: Kvällens läge
