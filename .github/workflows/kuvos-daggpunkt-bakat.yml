@@ -3,7 +3,8 @@ name: kuvos-daggpunkt-bakat
 # PB-steget (fysik/ny_kandidat/daggpunkt_pb.py) och läsaren (kuvos/daggpunktsvagen-bakat.ts) på vintrarna 2018/19–2022/23 och
 # 2024/25. Diagnos, ingen dom. Trafikverkets filer, kandidatens skattningar och mellanfilerna stannar i jobbet; de bär rader ur
 # leveransen och får aldrig bli en artefakt, en release eller en loggrad (PUBLIKT REPO). Bara utskriftens aggregat går till hinken,
-# kuvos/kuvos-daggpunkt-bakat-2026-11/, och loggen bär bara filnamn, summornas utfall och klart eller fel. Körs för hand.
+# kuvos/kuvos-daggpunkt-bakat-2026-11-<körningens nummer>/, och loggen bär bara filnamn, summornas utfall och klart eller fel.
+# Körs för hand.
 on:
   workflow_dispatch:
 
@@ -17,7 +18,8 @@ jobs:
     timeout-minutes: 240
     env:
       GH_TOKEN: "${{ github.token }}"
-      HINK: kuvos-daggpunkt-bakat-2026-11
+      # En mapp per körning: hinken skriver aldrig över, så en omkörning i samma mapp hade fällts av den förra körningens filer.
+      HINK: "kuvos-daggpunkt-bakat-2026-11-${{ github.run_number }}"
       VINTRAR: "2018-19 2019-20 2020-21 2021-22 2022-23 2024-25"
       FORREG: docs/FORREGISTRERING-DAGGPUNKTSVAGEN-BAKATPROV.md
     steps:
@@ -124,7 +126,13 @@ jobs:
           for V in $VINTRAR; do
             id=$(gh api "repos/${{ github.repository }}/actions/artifacts?name=nykand-t4-veck-$V&per_page=100" -q '[.artifacts[] | select(.expired | not)] | sort_by(.created_at) | last | .id // empty')
             [ -n "$id" ] || { echo "::error::artefakten nykand-t4-veck-$V saknas"; exit 1; }
-            gh api "repos/${{ github.repository }}/actions/artifacts/$id/zip" > a.zip && unzip -o -q a.zip "veck_$V.json" -d "veck/$V" && rm a.zip
+            # Varje kommando för sig, så att set -e fäller steget: i en &&-kedja tystades unzip:s fel (körning 42049604519, där
+            # unzip -d inte skapade mellanmappen veck/), och PB-steget fann ingen parfil.
+            gh api "repos/${{ github.repository }}/actions/artifacts/$id/zip" > a.zip
+            mkdir -p "veck/$V"
+            unzip -o -q a.zip "veck_$V.json" -d "veck/$V"
+            rm a.zip
+            test -s "veck/$V/veck_$V.json" || { echo "::error::parfilen veck_$V.json saknas efter uppackningen"; exit 1; }
             echo "vecket $V: parfilen hämtad"
           done
       - name: PB-steget per vinter (mellanfilerna stannar i jobbet)
