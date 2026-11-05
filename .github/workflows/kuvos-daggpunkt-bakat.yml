@@ -151,7 +151,10 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          curl -sS --fail -o vaglag.geojson https://axelstar.github.io/halkvakt-karta/data/vaglag.geojson
+          # -L: adressen omdirigeras (301) till halkvakt.se. Utan -L sparade curl omdirigeringens HTML-sida, eftersom --fail bara
+          # slår till från 400 (körning 42054133374). Filen prövas också: en geojson börjar med {.
+          curl -sSfL -o vaglag.geojson https://axelstar.github.io/halkvakt-karta/data/vaglag.geojson
+          [ "$(head -c 1 vaglag.geojson)" = "{" ] || { echo "::error::vaglag.geojson är inte JSON"; exit 1; }
           export NODE_OPTIONS=--max-old-space-size=12288
           B=(); for V in $VINTRAR; do [ "$V" = 2024-25 ] || B+=("arbete/timmar_$V.csv.gz"); done
           if node --experimental-strip-types kuvos/daggpunktsvagen-bakat.ts --del-a --timmar arbete/timmar_2024-25.csv.gz --xlsx trv \
