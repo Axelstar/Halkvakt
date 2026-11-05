@@ -201,14 +201,20 @@ jobs:
             fs.writeFileSync("modell_alla.pkl", b); console.log(`modell_alla.pkl ur hinken: ${b.length} byte — ${ok ? "sha256 lika kandidatfilen" : "FEL"}`); process.exit(ok ? 0 : 1);'
           rm hamta.json
       # Del A:s och del B:s utskrift visas inte i den publika loggen; bara tiden, minnet, filens storlek och sista raden vid fel.
+      # Minnet mäts var femte sekund under del A, så att det syns om maskinen tar slut på minne: totalt, använt och ledigt i MB,
+      # swappen och den största python-processens RSS. Bara minnestal, inga modellvärden. Första körningen 5/11 avbröts utifrån
+      # (kod 143) efter 2,5 minuter i del A, utan felrad.
       - name: Del A för alla punkter, med tid och minne
         shell: bash
         run: |
           [ -x /usr/bin/time ] || sudo apt-get -qq install -y time
+          ( while :; do echo "$(date -u +%T) $(free -m | awk '/^Mem:/{printf "%s %s %s ", $2, $3, $7} /^Swap:/{printf "%s ", $3}') $(ps -C python3 -o rss= 2>/dev/null | sort -n | tail -1)"; sleep 5; done ) > minne.log 2>/dev/null &
+          echo $! > minne.pid
           /usr/bin/time -v -o del-a.tid python3 fysik/ny_kandidat/levande.py --del-a --indata indata-live \
               --analys mn/metnordic_analys_*.csv.gz mn/dagar/*.csv.gz mnp/dagar/*.csv.gz mnp-live/dagar/*.csv.gz \
               --korning "mn/metnordic_korning_$STAMP.csv.gz" --modell modell_alla.pkl --kandidat kuvos/kandidat-2027-28-t4.json --ut ut > del-a.log 2>&1 \
             || { echo "::error::Del A föll: $(tail -1 del-a.log | cut -c1-300)"; exit 1; }
+          kill "$(cat minne.pid)" 2>/dev/null || true
           rm -f modell_alla.pkl
           grep -E "Elapsed|Maximum resident" del-a.tid
           python3 -c '
@@ -218,6 +224,24 @@ jobs:
           m = {"s_del_a": s["sekunder"], "maxrss_del_a_mb": round(rss / 1024), "punkter_del_a": s["punkter"], "rader_del_a": s["rader"],
                "ifyllda_punkttimmar": s["saknade_punkttimmar_ifyllda"], "ph_fil_mb": round(os.path.getsize(s["fil"]) / 1e6, 1)}
           json.dump(m, open("matning_del_a.json", "w")); print(json.dumps(m))' | tee -a "$GITHUB_STEP_SUMMARY"
+      # Också när del A faller: minnets största och minsta värden, de sista proven och kärnans rader om slut på minne.
+      - name: Minnet under del A
+        if: always() && hashFiles('minne.log') != ''
+        shell: bash
+        run: |
+          kill "$(cat minne.pid 2>/dev/null)" 2>/dev/null || true
+          python3 - <<'PY' | tee -a "$GITHUB_STEP_SUMMARY"
+          rader = [r.split() for r in open("minne.log") if len(r.split()) >= 5]
+          if not rader:
+              print("minnet: inga prov"); raise SystemExit
+          tal = lambda i: [int(r[i]) for r in rader if len(r) > i and r[i].isdigit()]
+          tot, anv, ledigt, swap, rss = tal(1), tal(2), tal(3), tal(4), tal(5)
+          print(f"minnet under del A: {len(rader)} prov {rader[0][0]}-{rader[-1][0]} UTC, totalt {max(tot)} MB, mest använt {max(anv)} MB, "
+                f"minst ledigt {min(ledigt)} MB, swap högst {max(swap or [0])} MB, största python {round(max(rss or [0]) / 1024)} MB")
+          for r in rader[-3:]: print("  " + " ".join(r))
+          PY
+          sudo dmesg -T 2>/dev/null | grep -i -E "out of memory|oom-kill|killed process" | tail -5 || true
+          journalctl --no-pager -q -u systemd-oomd 2>/dev/null | tail -5 || true
       - name: Del B för timmen och beskeden
         shell: bash
         env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
