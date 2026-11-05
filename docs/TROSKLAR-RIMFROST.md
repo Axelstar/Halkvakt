@@ -268,6 +268,8 @@ TROSKLAR-TRENDEN §8 och TROSKLAR-OVERGANGAR §10.
 
 **Ankaret flyttat 25/9 (DECISIONS #363):** B döms genom uppspelning ur arkivet, inte i en skuggkolumn, så "första skuggkörningen" inträffar aldrig. Ankaret är i stället **den första körning som läser ett B-utfall** — fram till dess gäller lättnaden ovan, därefter ändras ingen tröskel.
 
+**Låsets räckvidd och daggpunktsvägen** (5/11 2026, DECISIONS #793; skrivet innan R-B:s domläge körts första gången). Låset ovan, den första körning som läser ett B-utfall, gäller bara den här grenen: stationernas `icing_point` och dess parametrar R1–R6. Kandidatens daggpunktsväg binds inte av det. Den har samma kondensationsvillkor (`yta ≤ daggpunkt + M`), men med modellens vägyta och MET Nordics daggpunkt längs sträckorna mellan stationerna, och får egen marginal M med eget svep (0 · +0,5 · +1,0 °C), egen prövning och ett eget fönster som börjar 6/11 2026. Perioden R-B läser (6/10–5/11) används alltså inte för att välja dess parametrar. Gemensamt är givarvakten i §3 och partitionen mot efterhalkan (§1.1). Morgonen vid E18 Grums 5/11 (stationen Mon med ytan under daggpunkten 06:30–08:00 UTC utan nederbörd, Trafikverkets väglag *Torrt* sedan 02:47, en olycka 08:41) ligger i R-B:s fönster: den får stå som exempel, men ingår inte i daggpunktsvägens dom.
+
 **Givarvakten i §3 är undantagen från all lättnad.** Den får skärpas men aldrig mjukas upp, oavsett
 signaturer. Skälet står i §3 och heter Ollsta, Storvik och Bolhyttan.
 

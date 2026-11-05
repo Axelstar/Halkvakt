@@ -13760,3 +13760,26 @@ golvet och villkoret, och att den gamla kandidatens golv och de andra tabellerna
 - den första raderingen, efter 14 dygn.
 
 **Stomdokument:** SYS arkivet — den nya kandidatens domlogg i hinken
+
+## #793 (5/11 2026) Rimfrostens R-B: låset gäller bara stationernas gren; kandidatens daggpunktsväg får egen marginal och ett eget fönster från 6/11
+
+**Beslut** (Bengt 5/11: *"jag följer din rekommendation här"*, på Claudes förslag före R-B:s domläge). Skrivet och incheckat innan
+domläget körs, så att det inte kan läsas som en följd av utfallet.
+
+**Bakgrund.** R-B:s underlagsläge 5/11 (körning 42013307913, 30 dygn 6/10–5/11): giltigt fönster, frostdygn 29 av 15 och regioner
+med frost 4 av 3, ärende #1384. Samma morgon låg E18 vid Grums utan varning: stationen Mon hade ytan under daggpunkten 06:30–08:00
+UTC utan nederbörd, Trafikverkets väglag sa *Torrt* sedan 02:47, och en personbil fick sladd 08:41. Rimfrostens gren gäller bara
+nära en station; mellan stationerna krävs en daggpunktsväg i kandidatens varning, som inte finns.
+
+**Vad som gäller.**
+1. **Låset i R-B** (TROSKLAR-RIMFROST §9: den första körning som läser ett B-utfall) gäller bara stationernas gren i `icing_point`
+   och dess parametrar R1–R6.
+2. **Kandidatens daggpunktsväg** binds inte: egen marginal M med eget svep (0 · +0,5 · +1,0 °C), egen prövning och ett eget fönster
+   från 6/11 2026. Modellens vägyta och MET Nordics daggpunkt har andra fel än stationernas givare.
+3. **Gemensamt** är givarvakten i §3 och partitionen mot efterhalkan (§1.1).
+4. **Grums** ligger i R-B:s fönster och får stå som exempel, men ingår inte i daggpunktsvägens dom.
+
+**Alternativ.** En gemensam marginal för båda grenarna: avvisat, eftersom R-B:s dom då skulle välja daggpunktsvägens tal på en period
+som redan lästs.
+
+**Stomdokument:** MAT rimfrostens grind R-B och kandidatens daggpunktsväg.
