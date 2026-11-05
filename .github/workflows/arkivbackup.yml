@@ -72,6 +72,10 @@ jobs:
             'tiger','tiger_data','topology')")
           [ -n "$SCHEMAS" ] || { echo "::error::inga scheman att dumpa"; exit 1; }
           echo "scheman: $SCHEMAS"; echo "SCHEMAS=$SCHEMAS" >> "$GITHUB_ENV"
+          # Var PostGIS bor i källan: provet nedan installerar den i samma schema, annars pekar dumpens typer fel (3/11, DECISIONS #784).
+          POSTGIS_SCHEMA=$(psql "$DUMP_URL" -Atc "select extnamespace::regnamespace from pg_extension where extname = 'postgis'")
+          [ -n "$POSTGIS_SCHEMA" ] || { echo "::error::postgis saknas i källan"; exit 1; }
+          echo "postgis i: $POSTGIS_SCHEMA"; echo "POSTGIS_SCHEMA=$POSTGIS_SCHEMA" >> "$GITHUB_ENV"
           cat > rakna.sql <<'SQL'
           select n.nspname || '.' || c.relname as tabell,
                  (xpath('/row/c/text()', query_to_xml(format('select count(*) as c from %I.%I', n.nspname, c.relname), false, true, '')))[1]::text::bigint as rader
@@ -99,10 +103,11 @@ jobs:
       - name: Läs tillbaka och jämför
         shell: bash
         run: |
-          # Tom databas från template0, PostGIS i public — där bor den i arkivet (sql/001 utan schema),
-          # och dumpen refererar public.geometry. UPPMÄTT 20/9: med PostGIS i `extensions` föll 19 tabeller.
+          # Tom databas från template0, PostGIS i SAMMA schema som i källan: dumpen refererar <schema>.geometry.
+          # UPPMÄTT 20/9: med PostGIS i fel schema föll 19 tabeller. Schemat läses i dumpsteget (POSTGIS_SCHEMA), så provet
+          # håller både med PostGIS i public och efter en flytt till extensions.
           psql "${PROV_URL%/prov}/postgres" -v ON_ERROR_STOP=1 -q -c "create database prov template template0"
-          psql "$PROV_URL" -v ON_ERROR_STOP=1 -q -c "create extension postgis"
+          psql "$PROV_URL" -v ON_ERROR_STOP=1 -q -c "create schema if not exists \"$POSTGIS_SCHEMA\"" -c "create extension postgis schema \"$POSTGIS_SCHEMA\""
           set +e
           pg_restore --dbname "$PROV_URL" --no-owner --no-privileges --jobs 2 "$FIL" 2> restore.err
           RC=$?
