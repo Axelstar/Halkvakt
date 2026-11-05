@@ -208,7 +208,9 @@ jobs:
         shell: bash
         run: |
           [ -x /usr/bin/time ] || sudo apt-get -qq install -y time
-          ( while :; do echo "$(date -u +%T) $(free -m | awk '/^Mem:/{printf "%s %s %s ", $2, $3, $7} /^Swap:/{printf "%s ", $3}') $(ps -C python3 -o rss= 2>/dev/null | sort -n | tail -1)"; sleep 5; done ) > minne.log 2>/dev/null &
+          # Proven skrivs både i loggen och i filen, så att de syns också om steget dödas utifrån (körningen 42005697887 gav ingen fil).
+          echo "minnet: tid UTC, totalt MB, använt MB, ledigt MB, swap MB, största python KB"
+          ( while :; do echo "minne $(date -u +%T) $(free -m | awk '/^Mem:/{printf "%s %s %s ", $2, $3, $7} /^Swap:/{printf "%s ", $3}') $(ps -C python3 -o rss= 2>/dev/null | sort -n | tail -1)"; sleep 10; done ) 2>/dev/null | tee minne.log &
           echo $! > minne.pid
           /usr/bin/time -v -o del-a.tid python3 fysik/ny_kandidat/levande.py --del-a --indata indata-live \
               --analys mn/metnordic_analys_*.csv.gz mn/dagar/*.csv.gz mnp/dagar/*.csv.gz mnp-live/dagar/*.csv.gz \
@@ -226,12 +228,13 @@ jobs:
           json.dump(m, open("matning_del_a.json", "w")); print(json.dumps(m))' | tee -a "$GITHUB_STEP_SUMMARY"
       # Också när del A faller: minnets största och minsta värden, de sista proven och kärnans rader om slut på minne.
       - name: Minnet under del A
-        if: always() && hashFiles('minne.log') != ''
+        if: always()
         shell: bash
         run: |
           kill "$(cat minne.pid 2>/dev/null)" 2>/dev/null || true
+          [ -s minne.log ] || { echo "minnet: ingen minneslogg"; ls -la minne.* 2>&1 || true; exit 0; }
           python3 - <<'PY' | tee -a "$GITHUB_STEP_SUMMARY"
-          rader = [r.split() for r in open("minne.log") if len(r.split()) >= 5]
+          rader = [r.split()[1:] for r in open("minne.log") if len(r.split()) >= 6]
           if not rader:
               print("minnet: inga prov"); raise SystemExit
           tal = lambda i: [int(r[i]) for r in rader if len(r) > i and r[i].isdigit()]
