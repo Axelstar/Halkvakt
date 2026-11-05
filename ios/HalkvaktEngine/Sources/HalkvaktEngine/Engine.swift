@@ -143,6 +143,31 @@ enum Geo {
         return d > 180 ? 360 - d : d
     }
 
+    /// Mirror of reachWindow in geo.ts (DECISIONS #795): half-widths in degrees of a window around the points that holds every
+    /// position within distM of one of them, for a position inside [−90, 90] × [−180, 180] — the proof is in geo.ts. nil when no
+    /// window proves anything (distM not in [0, πR), the window reaching a pole or the antimeridian, no finite point), and for a
+    /// point shorter than [lon, lat]: the full scan reads it on every fix and fails there, as before the grid.
+    static func reachWindow(_ pts: [[Double]], _ distM: Double) -> (dLat: Double, dLon: Double)? {
+        guard distM >= 0, distM < Double.pi * R else { return nil }
+        var minLat = Double.infinity, maxLat = -Double.infinity, maxAbsLon = -Double.infinity
+        for p in pts {
+            if p.count < 2 { return nil }
+            let lon = p[0], lat = p[1]
+            if !lat.isFinite || !lon.isFinite { continue }
+            if lat < minLat { minLat = lat }
+            if lat > maxLat { maxLat = lat }
+            if abs(lon) > maxAbsLon { maxAbsLon = abs(lon) }
+        }
+        let dLat = distM / R / D2R
+        let latMax = max(abs(minLat - dLat), abs(maxLat + dLat))
+        guard latMax < 90 else { return nil }
+        let k = sin(distM / (2 * R)) / cos(latMax * D2R)
+        guard k < 1 else { return nil }
+        let dLon = 2 * asin(k) / D2R
+        guard maxAbsLon + dLon < 180 else { return nil }
+        return (dLat, dLon)
+    }
+
     static func samplePolyline(_ line: [[Double]], _ stepM: Double) -> [[Double]] {
         var out: [[Double]] = []
         for i in 0..<line.count {
@@ -220,6 +245,66 @@ enum Texts {
     }
 }
 
+// MARK: - The grid (mirror of HazardGrid in engine.ts, DECISIONS #795)
+
+/// One hazard list by grid cell, each cell's list ascending as the hazards came. A fix evaluates only its own cell's hazards.
+struct HazardGrid {
+    /// Cell size in degrees, latitude and longitude alike. Samma tal i engine.ts och Engine.kt (kontraktsgrinden).
+    static let cellDeg = 0.05
+    /// Metres added to every reach before its window is drawn. Samma tal i engine.ts och Engine.kt (kontraktsgrinden).
+    static let marginM = 100.0
+    /// A window wider than this many cells per point goes to the always-list. Samma tal i engine.ts och Engine.kt (kontraktsgrinden).
+    static let maxCells = 4096.0
+    /// Every hazard, ascending: what a fix outside the grid, and the test's full scan, evaluate.
+    private(set) var all: [Int] = []
+    private var cells: [Int: [Int]] = [:]
+    private var always: [Int] = []
+
+    /// Hazard i — added in ascending order — produces a candidate only within reachM of one of pts.
+    mutating func add(_ i: Int, _ pts: [[Double]], _ reachM: Double) {
+        all.append(i)
+        guard let w = Geo.reachWindow(pts, reachM + HazardGrid.marginM),
+              (2 * w.dLat / HazardGrid.cellDeg + 2) * (2 * w.dLon / HazardGrid.cellDeg + 2) <= HazardGrid.maxCells else {
+            always.append(i)
+            return
+        }
+        var prev: (Int, Int, Int, Int)? = nil
+        for p in pts {
+            let lon = p[0], lat = p[1]
+            if !lat.isFinite || !lon.isFinite { continue }   // never within reach (reachWindow)
+            let r0 = HazardGrid.index(lat - w.dLat), r1 = HazardGrid.index(lat + w.dLat)
+            let c0 = HazardGrid.index(lon - w.dLon), c1 = HazardGrid.index(lon + w.dLon)
+            if let q = prev, q == (r0, r1, c0, c1) { continue }   // same cells as the previous point
+            prev = (r0, r1, c0, c1)
+            for r in stride(from: r0, through: r1, by: 1) {
+                for c in stride(from: c0, through: c1, by: 1) {
+                    let key = HazardGrid.key(r, c)
+                    if cells[key]?.last != i { cells[key, default: []].append(i) }
+                }
+            }
+        }
+    }
+
+    /// The hazards that can produce a candidate at the fix, ascending; a fix outside [−90, 90] × [−180, 180] gets all of them.
+    func near(_ lon: Double, _ lat: Double) -> [Int] {
+        guard abs(lat) <= 90, abs(lon) <= 180 else { return all }
+        let found = cells[HazardGrid.key(HazardGrid.index(lat), HazardGrid.index(lon))]
+        if always.isEmpty { return found ?? always }
+        guard let cell = found else { return always }
+        var out: [Int] = []   // two ascending lists without common members
+        out.reserveCapacity(cell.count + always.count)
+        var a = 0, b = 0
+        while a < cell.count || b < always.count {
+            if b >= always.count || (a < cell.count && cell[a] < always[b]) { out.append(cell[a]); a += 1 } else { out.append(always[b]); b += 1 }
+        }
+        return out
+    }
+
+    private static func index(_ deg: Double) -> Int { Int((deg / cellDeg).rounded(.down)) }
+    /// One number per cell, as in engine.ts (a clash would only add hazards to a cell).
+    private static func key(_ r: Int, _ c: Int) -> Int { r * 65536 + c }
+}
+
 // MARK: - Engine (mirror of engine.ts state machine)
 
 public final class AlertEngine {
@@ -230,6 +315,12 @@ public final class AlertEngine {
     private var points: [Point] = []
     private var segments: [Segment] = []
     private var kandidater: [Kandidat] = []
+    private var pointGrid = HazardGrid()
+    private var segmentGrid = HazardGrid()
+    private var kandidatGrid = HazardGrid()
+    /// Test only (DECISIONS #795): evaluate every hazard on every fix, as before the grid. GridTests runs both paths side by side;
+    /// their answers are the same by construction, so nothing else sets it.
+    var bruteForce = false
 
     private var prevFix: Fix?
     private var lastHeadingDeg: Double?
@@ -258,15 +349,32 @@ public final class AlertEngine {
         points = []
         segments = []
         kandidater = []
+        pointGrid = HazardGrid()
+        segmentGrid = HazardGrid()
+        kandidatGrid = HazardGrid()
         for h in hazards {
             switch h {
             case .point(let id, let kind, let lon, let lat, let bearing, let meta):
+                pointGrid.add(points.count, [[lon, lat]], reachOf(kind))
                 points.append(Point(id: id, kind: kind, lon: lon, lat: lat, bearing: bearing, meta: meta))
             case .segment(let id, let line, let meta):
-                segments.append(Segment(id: id, meta: meta, samples: Geo.samplePolyline(line, cfg.segmentSampleM), line: line))
+                let samples = Geo.samplePolyline(line, cfg.segmentSampleM)
+                segmentGrid.add(segments.count, samples, reachOf(.slippery_segment))
+                segments.append(Segment(id: id, meta: meta, samples: samples, line: line))
             case .kandidat(let id, let pts, let seg):
+                kandidatGrid.add(kandidater.count, pts, reachOf(.kandidat))
                 kandidater.append(Kandidat(id: id, points: pts, segmentHazardId: seg))
             }
+        }
+    }
+
+    /// The grid's reach (DECISIONS #795), mirror of reachOf in engine.ts — the derivation is there. max(NaN, x) is NaN here (the
+    /// NaN stands first), and NaN or infinity gives a reach no window bounds: always evaluated.
+    private func reachOf(_ kind: HazardKind) -> Double {
+        switch kind {
+        case .camera: return cfg.cameraTriggerM
+        case .accident: return cfg.accidentMaxAheadM
+        case .icing_point, .wildlife, .slippery_segment, .kandidat: return max(cfg.leadMaxM, EngineConfig().leadMaxM)
         }
     }
 
@@ -311,7 +419,12 @@ public final class AlertEngine {
         }
         var candidates: [Candidate] = []
 
-        for p in points {
+        // The grid (DECISIONS #795), mirror of step in engine.ts: only the hazards whose reach holds the fix, in the full scan's order.
+        // There a NaN lead lets a stretch speak at any distance and sends the stretches to the full scan; here a stretch tests
+        // `b <= leadM`, which NaN never passes, but the rule is kept so the three ports stay one algorithm.
+        let allStretches = bruteForce || leadM.isNaN
+        for i in (bruteForce ? pointGrid.all : pointGrid.near(fix.lon, fix.lat)) {
+            let p = points[i]
             let (ahead, distM) = isAhead(fix, heading, p.lon, p.lat)
             if !ahead { continue }
             switch p.kind {
@@ -370,7 +483,8 @@ public final class AlertEngine {
                 continue
             }
         }
-        for s in segments {
+        for i in (allStretches ? segmentGrid.all : segmentGrid.near(fix.lon, fix.lat)) {
+            let s = segments[i]
             let slippery = (s.meta.code ?? 0) >= 2 || s.meta.info.contains { info in
                 let r = NSRange(info.startIndex..., in: info)
                 return slipperyInfo.firstMatch(in: info, range: r) != nil || slipperyStam.firstMatch(in: info, range: r) != nil
@@ -387,7 +501,8 @@ public final class AlertEngine {
         }
         // Kandidaten (DECISIONS #562, #577), spegel av evaluateKandidat i engine.ts: the rule lives in the database, so no
         // threshold here — only the corridor and the lead over the stretch's points. One key per stretch.
-        for k in kandidater {
+        for i in (allStretches ? kandidatGrid.all : kandidatGrid.near(fix.lon, fix.lat)) {
+            let k = kandidater[i]
             var best: Double?
             for pt in k.points {
                 let (ahead, distM) = isAhead(fix, heading, pt[0], pt[1])

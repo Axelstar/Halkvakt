@@ -2,11 +2,91 @@
 // same tie-breaking — proven equal by the shared vectors in VectorTest.
 package se.halkvakt.engine
 
+import kotlin.math.abs
+import kotlin.math.floor
+
+/** The grid (DECISIONS #795), mirror of engine.ts: cell size in degrees, latitude and longitude alike. Only speed depends on it.
+ *  Samma tal i engine.ts och Engine.swift (kontraktsgrinden). */
+private const val GRID_CELL_DEG = 0.05
+/** Metres added to every reach before its window is drawn. Samma tal i engine.ts och Engine.swift (kontraktsgrinden). */
+private const val GRID_MARGIN_M = 100.0
+/** A window wider than this many cells per point goes to the always-list. Samma tal i engine.ts och Engine.swift (kontraktsgrinden). */
+private const val GRID_MAX_CELLS = 4096.0
+
+/** Mirror of HazardGrid in engine.ts: one hazard list by grid cell, each cell's list ascending as the hazards came. */
+private class HazardGrid {
+    private val building = HashMap<Long, ArrayList<Int>>()
+    private val alwaysBuilding = ArrayList<Int>()
+    private var count = 0
+    private var cells: Map<Long, IntArray> = emptyMap()
+    private var always = IntArray(0)
+    /** Every hazard, ascending: what a fix outside the grid, and the test's full scan, evaluate. */
+    var all = IntArray(0)
+        private set
+
+    /** Hazard i — added in ascending order from 0 — produces a candidate only within reachM of one of pts. */
+    fun add(i: Int, pts: List<DoubleArray>, reachM: Double) {
+        count = i + 1
+        val w = Geo.reachWindow(pts, reachM + GRID_MARGIN_M)
+        if (w == null || (2 * w[0] / GRID_CELL_DEG + 2) * (2 * w[1] / GRID_CELL_DEG + 2) > GRID_MAX_CELLS) {
+            alwaysBuilding.add(i)
+            return
+        }
+        var r0p = Int.MIN_VALUE; var r1p = 0; var c0p = 0; var c1p = 0
+        for (p in pts) {
+            val lon = p[0]; val lat = p[1]
+            if (!lat.isFinite() || !lon.isFinite()) continue   // never within reach (reachWindow)
+            val r0 = floor((lat - w[0]) / GRID_CELL_DEG).toInt(); val r1 = floor((lat + w[0]) / GRID_CELL_DEG).toInt()
+            val c0 = floor((lon - w[1]) / GRID_CELL_DEG).toInt(); val c1 = floor((lon + w[1]) / GRID_CELL_DEG).toInt()
+            if (r0 == r0p && r1 == r1p && c0 == c0p && c1 == c1p) continue   // same cells as the previous point
+            r0p = r0; r1p = r1; c0p = c0; c1p = c1
+            for (r in r0..r1) {
+                for (c in c0..c1) {
+                    val list = building.getOrPut(cellKey(r, c)) { ArrayList() }
+                    if (list.isEmpty() || list[list.size - 1] != i) list.add(i)
+                }
+            }
+        }
+    }
+
+    /** After the last add: the lists as arrays, and the building lists let go. */
+    fun freeze() {
+        cells = building.mapValues { it.value.toIntArray() }
+        always = alwaysBuilding.toIntArray()
+        all = IntArray(count) { it }
+        building.clear()
+        alwaysBuilding.clear()
+    }
+
+    /** The hazards that can produce a candidate at the fix, ascending; a fix outside [−90, 90] × [−180, 180] gets all of them. */
+    fun near(lon: Double, lat: Double): IntArray {
+        if (!(abs(lat) <= 90.0 && abs(lon) <= 180.0)) return all
+        val cell = cells[cellKey(floor(lat / GRID_CELL_DEG).toInt(), floor(lon / GRID_CELL_DEG).toInt())]
+        if (always.isEmpty()) return cell ?: always
+        if (cell == null) return always
+        val out = IntArray(cell.size + always.size)   // two ascending lists without common members
+        var a = 0; var b = 0
+        for (k in out.indices) out[k] = if (b >= always.size || (a < cell.size && cell[a] < always[b])) cell[a++] else always[b++]
+        return out
+    }
+}
+
+/** One number per cell, as in engine.ts (a clash would only add hazards to a cell). */
+private fun cellKey(r: Int, c: Int): Long = r.toLong() * 65536L + c
+
 class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineConfig()) {
 
     private var points: List<PointHazard> = emptyList()
     private var segments: List<Pair<SegmentHazard, List<DoubleArray>>> = emptyList()
     private var kandidater: List<KandidatHazard> = emptyList()
+    // Declared before init: an initializer below it would run after ingest and empty the grids again.
+    private var pointGrid = HazardGrid()
+    private var segmentGrid = HazardGrid()
+    private var kandidatGrid = HazardGrid()
+
+    /** Test only (DECISIONS #795): evaluate every hazard on every fix, as before the grid. GridTest runs both paths side by side;
+     *  their answers are the same by construction, so nothing else sets it. */
+    internal var bruteForce = false
 
     init { ingest(hazards) }
 
@@ -15,6 +95,28 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
         segments = hazards.filterIsInstance<SegmentHazard>()
             .map { it to Geo.samplePolyline(it.line, cfg.segmentSampleM) }
         kandidater = hazards.filterIsInstance<KandidatHazard>()
+        // The grid (DECISIONS #795), mirror of ingest in engine.ts.
+        pointGrid = HazardGrid().apply {
+            points.forEachIndexed { i, p -> add(i, listOf(doubleArrayOf(p.lon, p.lat)), reachOf(p.kind)) }
+            freeze()
+        }
+        segmentGrid = HazardGrid().apply {
+            segments.forEachIndexed { i, (_, samples) -> add(i, samples, reachOf(HazardKind.SLIPPERY_SEGMENT)) }
+            freeze()
+        }
+        kandidatGrid = HazardGrid().apply {
+            kandidater.forEachIndexed { i, k -> add(i, k.points, reachOf(HazardKind.KANDIDAT)) }
+            freeze()
+        }
+    }
+
+    /** The grid's reach (DECISIONS #795), mirror of reachOf in engine.ts — the derivation is there. maxOf keeps a NaN, and NaN or
+     *  infinity gives a reach no window bounds: always evaluated. */
+    private fun reachOf(kind: HazardKind): Double = when (kind) {
+        HazardKind.CAMERA -> cfg.cameraTriggerM
+        HazardKind.ACCIDENT -> cfg.accidentMaxAheadM
+        HazardKind.ICING_POINT, HazardKind.WILDLIFE, HazardKind.SLIPPERY_SEGMENT, HazardKind.KANDIDAT ->
+            maxOf(cfg.leadMaxM, EngineConfig().leadMaxM)
     }
 
     /**
@@ -76,10 +178,21 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
         val speedMps = speedKmh * 1000.0 / 3600.0
         val leadM = minOf(cfg.leadMaxM, maxOf(cfg.leadMinM, speedMps * cfg.warnLeadS))
 
+        // The grid (DECISIONS #795), mirror of step in engine.ts: only the hazards whose reach holds the fix, in the full scan's
+        // order. A stretch tests `b > leadM`, so a NaN lead (a NaN speed or setting) lets it speak at any distance: then the
+        // stretches take the full scan.
+        val allStretches = bruteForce || leadM.isNaN()
         val candidates = ArrayList<Candidate>()
-        for (p in points) evaluatePoint(fix, heading, p, leadM)?.let { candidates.add(it) }
-        for ((s, samples) in segments) evaluateSegment(fix, heading, s, samples, leadM)?.let { candidates.add(it) }
-        for (k in kandidater) evaluateKandidat(fix, heading, k, leadM)?.let { candidates.add(it) }
+        for (i in if (bruteForce) pointGrid.all else pointGrid.near(fix.lon, fix.lat)) {
+            evaluatePoint(fix, heading, points[i], leadM)?.let { candidates.add(it) }
+        }
+        for (i in if (allStretches) segmentGrid.all else segmentGrid.near(fix.lon, fix.lat)) {
+            val (s, samples) = segments[i]
+            evaluateSegment(fix, heading, s, samples, leadM)?.let { candidates.add(it) }
+        }
+        for (i in if (allStretches) kandidatGrid.all else kandidatGrid.near(fix.lon, fix.lat)) {
+            evaluateKandidat(fix, heading, kandidater[i], leadM)?.let { candidates.add(it) }
+        }
         if (candidates.isEmpty()) return null
 
         val rearmed = { f: Pair<Double, Double> -> fix.t - f.first >= cfg.repeatMinS && odometerM - f.second >= cfg.repeatMinM }

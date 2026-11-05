@@ -131,6 +131,35 @@ object Geo {
         return if (d > 180.0) 360.0 - d else d
     }
 
+    /**
+     * Mirror of reachWindow in geo.ts (DECISIONS #795): half-widths [dLat, dLon] in degrees of a window around the points that holds
+     * every position within distM of one of them, for a position inside [−90, 90] × [−180, 180] — the proof is in geo.ts. null when
+     * no window proves anything (distM not in [0, πR), the window reaching a pole or the antimeridian, no finite point), and for a
+     * point shorter than [lon, lat]: the full scan reads it on every fix and fails there, as before the grid.
+     */
+    fun reachWindow(pts: List<DoubleArray>, distM: Double): DoubleArray? {
+        if (!(distM >= 0.0 && distM < PI * R)) return null
+        var minLat = Double.POSITIVE_INFINITY
+        var maxLat = Double.NEGATIVE_INFINITY
+        var maxAbsLon = Double.NEGATIVE_INFINITY
+        for (p in pts) {
+            if (p.size < 2) return null
+            val lon = p[0]; val lat = p[1]
+            if (!lat.isFinite() || !lon.isFinite()) continue
+            if (lat < minLat) minLat = lat
+            if (lat > maxLat) maxLat = lat
+            if (abs(lon) > maxAbsLon) maxAbsLon = abs(lon)
+        }
+        val dLat = distM / R / D2R
+        val latMax = max(abs(minLat - dLat), abs(maxLat + dLat))
+        if (!(latMax < 90.0)) return null
+        val k = sin(distM / (2 * R)) / cos(latMax * D2R)
+        if (!(k < 1.0)) return null
+        val dLon = 2 * asin(k) / D2R
+        if (!(maxAbsLon + dLon < 180.0)) return null
+        return doubleArrayOf(dLat, dLon)
+    }
+
     fun samplePolyline(line: List<DoubleArray>, stepM: Double): List<DoubleArray> {
         val out = ArrayList<DoubleArray>()
         for (i in line.indices) {
