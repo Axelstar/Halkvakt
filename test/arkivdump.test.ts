@@ -50,3 +50,12 @@ test("dygnsfilerna hamnar under weather_observations/, och bara ett riktigt datu
   for (const fel of ["2026-02-30", "2026-9-01", "2026-09-01/../../dump/x", "../2026-09-01", "2026-09-01.ndjson.gz", "", "kuvos-trv-2024-25/a.csv"])
     assert.throws(() => dygnnamn(fel), fel);
 });
+
+// 5/11: radarn och den nya kandidatens stationslogg hämtas samma väg för kuvösens daggpunktsprov — inga andra tabeller.
+test("dygnsfilerna för radarn och stationsloggen, och en okänd tabell avvisas", () => {
+  assert.equal(dygnnamn("2026-11-06", "radar_precip"), "radar_precip/2026-11-06.ndjson.gz");
+  assert.equal(dygnnamn("2026-11-06", "ny_kandidat_station"), "ny_kandidat_station/2026-11-06.ndjson.gz");
+  assert.equal(dygnnamn("2026-11-06", undefined), "weather_observations/2026-11-06.ndjson.gz");
+  for (const fel of ["dump", "kuvos", "../weather_observations", "ny_kandidat_skugga", "kandidat_station", "radar_precip/..", ""])
+    assert.throws(() => dygnnamn("2026-11-06", fel), fel);
+});
