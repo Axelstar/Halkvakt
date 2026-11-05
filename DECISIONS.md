@@ -13821,3 +13821,63 @@ båda kraven.
 **Följden.** Ingen röst och ingen motorkod för stationernas gren. Ärende #1384 står öppet tills domslutet är bokfört.
 
 **Stomdokument:** MAT rimfrostens grind R-B; BED §4.2 domslutet som väntar.
+
+## #795 (5/11 2026) Motorns rutnät: varje GPS-punkt prövar bara farorna i sin egen ruta, med samma svar som hela svepet
+
+**Beslut (Bengt, 5/11).** *"rutnätet måste byggas gör det"*.
+
+**Varför.** Motorn prövade varje fara vid varje GPS-punkt, i alla tre portar. Med 3 000 punktfaror tog `step()` omkring 0,8 ms per
+punkt på en dator, och med 16 000 kandidatpunkter till 4,9–5,3 ms, linjärt i antalet. Kartlagren som planeras lägger till omkring
+16 000 punkter. Lådkontrollen i DECISIONS #790 (kort #375) gäller bara de hala sträckorna och är fortfarande en prövning per fara.
+
+**Ändringen** (`engine/src/engine.ts`, `geo.ts`, `Engine.kt`, `Types.kt`, `Engine.swift`). Vid ingest och `updateHazards` listas varje
+fara i varje ruta om 0,05° × 0,05° som rymmer en position inom farans räckvidd, och en GPS-punkt prövar bara sin egen rutas listor, i
+farornas ordning. Räckvidden läses ur utvärderarna: kameran `cameraTriggerM`, olyckan `accidentMaxAheadM`, och isrisk, vilt, hal
+sträcka och kandidat ledningen, som är högst `max(cfg.leadMaxM, DEFAULT_CONFIG.leadMaxM)` (leadFor kläms till standardens 3 000 m).
+30-metersnärheten i `isAhead` vidgar bara vinkeln, aldrig ett avstånd. Fönstret (`reachWindow`) är härlett ur haversinen:
+|Δφ| ≤ d/R, och |sin(Δλ/2)| ≤ sin(d/2R)/cos φmax när ingen väg går runt datumlinjen; till räckvidden läggs 100 m. Saknas ett fönster
+(räckvidd NaN eller oändlig, fönstret når polen eller datumlinjen, fler än 4 096 rutor per punkt, inga hela koordinater) prövas faran
+vid varje GPS-punkt som förut, och en GPS-punkt utanför [−90, 90] × [−180, 180] prövar alla. Halkzonens slinga över alla sträckor
+(kort #360) är en regel, inte ett svep, och är orörd.
+
+**Fyndet under bygget.** En sträcka (hal sträcka och kandidat) prövar `best > lead`, så en NaN-ledning släpper igenom den på vilket
+avstånd som helst; punkterna prövar `distM <= lead` och tiger. Det differentiella provet hittade det med en leadFor som svarar NaN.
+Därför tar sträckorna hela svepet när ledningen är NaN (NaN-fart eller NaN-inställning) och när leadFor är satt (bara skuggans
+försprång, där farorna redan är urvalda längs rutten och kandidaten inte är med). Swift prövar `b <= leadM` och berörs inte, men har
+samma regel så att portarna är en algoritm.
+
+**Bevis.**
+- Det differentiella provet (`test/motorns-rutnat.test.ts`, `GridTest.kt`, `GridTests.swift`) kör rutnätet och hela svepet
+  (`bruteForce`, bara för proven) sida vid sida och kräver samma varning vid varje steg, i TS även samma undanträngningar: 300 seedade
+  scenarier i TS och Kotlin, 100 i Swift. Farorna ligger på räckviddens kant och strax utanför, på rutgränser, vid datumlinjen och
+  polen; trasiga koordinater och GPS-punkter, NaN-fart, dubbla id:n, snapshotbyten, udda inställningar och (TS) leadFor. Därtill
+  vektorerna och Skåne-fixturen genom båda vägarna, fixturen med 2 000 kandidatpunkter och 3 000 viltpunkter, och fönstrets norra och
+  södra kant i steg om 2,2 m över rutgränserna med en GPS-punkt 0,5 m innanför räckvidden.
+- Motprovet, 14 mutationer i en kopia av motorn: marginalen krympt till −60, −5 och −2 m, cos φ borttagen ur fönstret, ledningens
+  räckvidd bara ur cfg, NaN-regeln borttagen (båda delarna var för sig), datumlinje-, pol- och fixvakten borttagna, alltid-listan
+  borttagen, kamerans räckvidd 200 m kortare, olyckans 10 % kortare och rutans ordning vänd (fälls av undanträngningarnas ordning).
+  Varje mutation fäller provet. Marginal 0 klarar, eftersom fönstret är exakt.
+- Vektorerna och fixturerna är orörda; `engine.test.ts`, vektorgeneratorn och `npm test` är gröna lokalt.
+
+**Mätningen** (`scripts/matningar/motorns-rutnat-2026-11-05.ts`, Skåne-fixturens spår om 488 punkter, 3 000 punktfaror över
+Sverige, kandidatsträckor om tio punkter, två körningar):
+
+| Extra kandidatpunkter | Hela svepet, µs per punkt | Rutnätet, µs per punkt |
+| --: | --: | --: |
+| 0 | 779–824 | 1,9–2,7 |
+| 4 000 | 1 773–1 866 | 1,5 |
+| 8 000 | 2 800–2 906 | 1,6–1,7 |
+| 16 000 | 4 868–5 255 | 1,7–1,8 |
+| 32 000 | 9 129–9 521 | 3,8–4,0 |
+
+Bygget kostar mer: 2,7 → omkring 19 ms vid 16 000 punkter och 5,4 → 32 ms vid 32 000, en gång per snapshot. Rutan 0,02° gav
+något snabbare steg men omkring fem gånger dyrare bygge.
+
+**Alternativ.** (a) Fråga runt GPS-punkten i stället för att lista varje fara i sina rutor: kräver sortering och avdubblering vid varje
+punkt. (b) Lådkontroll per fara, som DECISIONS #790: fortfarande en prövning per fara och punkt. (c) Ett kd-träd: mer kod i tre språk för
+samma svar.
+
+**Kvar.** Buntarna för skuggmotorn, favoritprovet och favoriterna är omgjorda men inte deployade; favoritprovet och favoriterna får
+bara `reachWindow`, som de inte anropar. Kotlin och Swift bevisas av android.yml och ios-engine.yml på grenen.
+
+**Stomdokument:** SYS motorn — rutnätet i motorns tre portar
