@@ -42,27 +42,51 @@ CREATE TABLE IF NOT EXISTS kandidat_skugga_meta (
 );
 
 -- Den snabba regeln, härledd ur den gällande.
+-- F1 (sql/087, DECISIONS #800) läser frys_min, som ny_kandidat_snabb inte har. Den snabba lånar därför måttet ur timvärdet som talar
+-- (ny_kandidat_live vid ny_kandidat_timme(), samma punkt), så att fladdret mäts med timmens spärr (väg (a), DECISIONS #808).
+-- Storstädernas gren (sql/091) läser också ny_kandidat_snabb och lånar måttet likadant; kandidat_punkter har inga stadspunkter, så
+-- grenen är tom här. Raderna för F1 och stadsgrenen byts bara när de finns, så att en regel utan dem härleds som förut.
 DO $$
 DECLARE
   d text;
   a text := 'FROM ny_kandidat_live l JOIN vagpunkt v ON v.punkt = l.punkt';
   b text := 'WHERE l.tid = ny_kandidat_timme() AND l.pb <= 0';
+  f text := 'l.frys_min, v.geom';                                                     -- sql/087
+  s text := 'FROM ny_kandidat_live l JOIN stadspunkt s ON s.punkt = l.punkt';         -- sql/091
+  fs text := 'l.frys_min, s.geom';
+  ts text := 'WHERE l.tid = ny_kandidat_timme()';                                     -- finns också i b
+  lan text := ' LEFT JOIN ny_kandidat_live h ON h.punkt = l.punkt AND h.tid = (SELECT ny_kandidat_timme())';
   n_a integer;
   n_b integer;
+  n_f integer;
+  n_s integer;
+  n_fs integer;
+  n_ts integer;
 BEGIN
   IF to_regprocedure('ny_kandidat_regel()') IS NULL THEN RAISE EXCEPTION 'ny_kandidat_regel() saknas (sql/068, 069)'; END IF;
   d := pg_get_functiondef('ny_kandidat_regel()'::regprocedure);
   n_a := (length(d) - length(replace(d, a, ''))) / length(a);
   n_b := (length(d) - length(replace(d, b, ''))) / length(b);
-  IF n_a <> 1 OR n_b <> 1 THEN
-    RAISE EXCEPTION 'ny_kandidat_regel() har ändrats: raderna som byts ska finnas exakt en gång (% och %)', n_a, n_b;
+  n_f := (length(d) - length(replace(d, f, ''))) / length(f);
+  n_s := (length(d) - length(replace(d, s, ''))) / length(s);
+  n_fs := (length(d) - length(replace(d, fs, ''))) / length(fs);
+  n_ts := (length(d) - length(replace(d, ts, ''))) / length(ts);
+  IF n_a <> 1 OR n_b <> 1 OR n_f > 1 OR n_s > 1 OR n_fs <> n_s OR (n_s = 1 AND n_f <> 1) OR n_ts <> 1 + n_s THEN
+    RAISE EXCEPTION 'ny_kandidat_regel() har ändrats: raderna som byts ska finnas exakt en gång (a % b % f % s % fs % ts %)',
+      n_a, n_b, n_f, n_s, n_fs, n_ts;
   END IF;
   INSERT INTO kandidat_skugga_meta (id, regel_md5) VALUES (1, md5(d))
   ON CONFLICT (id) DO UPDATE SET regel_md5 = EXCLUDED.regel_md5, har_tillstand = false;
-  d := replace(d, a, 'FROM ny_kandidat_snabb l JOIN vagpunkt v ON v.punkt = l.punkt');
+  d := replace(d, a, 'FROM ny_kandidat_snabb l JOIN vagpunkt v ON v.punkt = l.punkt' || CASE WHEN n_f = 1 THEN lan ELSE '' END);
   d := replace(d, b, 'WHERE l.pb <= 0');
+  d := replace(d, f, 'h.frys_min, v.geom');
+  d := replace(d, s, 'FROM ny_kandidat_snabb l JOIN stadspunkt s ON s.punkt = l.punkt' || lan);
+  d := replace(d, fs, 'h.frys_min, s.geom');
+  d := replace(d, ts, 'WHERE true');
   d := regexp_replace(d, 'FUNCTION ((\S+\.)?)ny_kandidat_regel\(\)', 'FUNCTION \1ny_kandidat_regel_snabb()');
-  IF position('ny_kandidat_live' IN d) > 0 OR position('ny_kandidat_timme' IN d) > 0 OR position('ny_kandidat_regel_snabb()' IN d) = 0 THEN
+  -- Timmens tabell och dess timme får bara stå kvar i lånet av frys_min.
+  IF position('ny_kandidat_live' IN replace(d, lan, '')) > 0 OR position('ny_kandidat_timme' IN replace(d, lan, '')) > 0
+     OR position('ny_kandidat_regel_snabb()' IN d) = 0 THEN
     RAISE EXCEPTION 'härledningen av ny_kandidat_regel_snabb() blev fel';
   END IF;
   EXECUTE d;
