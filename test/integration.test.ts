@@ -2425,3 +2425,122 @@ test("#804 radar_stad: tabellen för storstädernas radar", { skip: !url }, asyn
     await pool.end();
   }
 });
+
+// STORSTÄDERNAS REGEL (sql/091, DECISIONS #804, kort #378; halkvakt-kuvos F33): stadspunkterna i kandidatens regel, mot riktig PostGIS.
+//   SR1  filen går att köra två gånger; den frystas och den nyas regel ger samma rader; vägpunkten varnar som förut
+//   SR2  brytaren: B på talar med gruppen som sträcka, C av ger ingen rad, C på talar
+//   SR3  fukten ur radar_stad på 60 minuter (utan rad torr, en rad 70 minuter gammal torr); ytan över noll ger ingen rad; F1 per punkt
+//   SR4  marsfönstret, med provets klocka i mars och april 2027 (now() ur ett eget schema först i sökvägen): kl. 10–15 svensk tid
+//        söder om 62° tyst, kl. 09 och 16 talar, norr om 62° talar, sommartiden räknas (29/3 08 UTC är 10 svensk tid), april talar
+//   SR5  domloggen tar varken stadspunkterna bland stationerna eller deras grupper bland sträckorna, och har fast sökväg (#784)
+test("#804 stadsregeln: brytarna, radarn, marsfönstret och domloggen", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const las = (f: string) => q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+  const LIVE = ["kandidat_live", "ny_kandidat_live"];
+  // [UTC-timmen i provets klocka, väntat för punkten söder om 62°]: svensk tid är UTC+1 till 28/3 2027 och UTC+2 efter.
+  const MARS: [string, string | undefined][] = [
+    ["2027-03-10T08:00:00Z", "varnar"],    // 09 svensk tid
+    ["2027-03-10T09:00:00Z", undefined],   // 10: fönstret börjar
+    ["2027-03-10T14:00:00Z", undefined],   // 15: sista timmen i fönstret
+    ["2027-03-10T15:00:00Z", "varnar"],    // 16: fönstret är slut
+    ["2027-03-29T08:00:00Z", undefined],   // 10 sommartid; med UTC+1 hade det varit 09 och talat
+    ["2027-04-01T09:00:00Z", "varnar"],    // 11 i april
+  ];
+  const PUNKTER = ["B99911", "B99912", "B99913", "B99914", "B99915", "C99911", "B99921", "B99922"];
+  const GRUPPER = ["B-991-911", "B-991-912", "B-991-913", "C-991-911", "B-992-921", "B-992-922"];
+  const brytare = (lager: string, pa: boolean) => q("UPDATE stadsbrytare SET pa = $2 WHERE omrade = 'Stor-Stockholm' AND lager = $1", [lager, pa]);
+  const stad = async () => {
+    await q("RESET search_path");
+    await q("DROP SCHEMA IF EXISTS provtid CASCADE");
+    for (const t of LIVE) await q(`DELETE FROM ${t} WHERE punkt = ANY($1) OR punkt LIKE 'vS%' OR tid = ANY($2::timestamptz[])`,
+      [PUNKTER, MARS.map(([h]) => h)]).catch(() => {});
+    await q("DELETE FROM ny_kandidat_station WHERE station_id = ANY($1)", [PUNKTER]).catch(() => {});
+    await q("DELETE FROM ny_kandidat_skugga WHERE segment_id = ANY($1) OR segment_id LIKE '9995%'", [GRUPPER]).catch(() => {});
+    await q("DELETE FROM radar_stad WHERE grupp = ANY($1)", [GRUPPER]).catch(() => {});
+    await q("DELETE FROM stadspunkt WHERE punkt = ANY($1)", [PUNKTER]).catch(() => {});
+    await q("UPDATE stadsbrytare SET pa = false").catch(() => {});
+    await q("DELETE FROM vagpunkt WHERE punkt LIKE 'vS%'");
+    await q("DELETE FROM road_conditions WHERE segment_id LIKE '9995%'");
+  };
+  const utfall = async (fn: string) => Object.fromEntries((await q(
+    `SELECT punkt, segment_id, utfall FROM ${fn}() WHERE punkt = ANY($1) OR punkt LIKE 'vS%'`, [PUNKTER])).rows
+    .map((r: any) => [r.punkt, `${r.utfall}@${r.segment_id}`]));
+  try {
+    await q("CREATE TABLE IF NOT EXISTS shadow_log (id bigserial PRIMARY KEY, run_at timestamptz NOT NULL DEFAULT now(), alerts jsonb NOT NULL DEFAULT '[]'::jsonb)");
+    await q("DROP FUNCTION IF EXISTS kandidat_regel()");   // sql/056 har den äldre returtypen (som provet #800)
+    for (const f of ["001_init.sql", "008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql", "018_trend_berakna.sql",
+                     "029_brott_index.sql", "030_langsam_vakt.sql", "050_kandidat_live.sql", "053_arkiv_tabeller.sql", "055_vagpunkter.sql",
+                     "056_kandidat_regel.sql", "057_kandidat_skugga.sql", "058_kandidat_spridning.sql", "059_kandidat_brytare.sql",
+                     "065_kandidat_domlogg_punkter.sql", "068_ny_kandidat_skugga.sql", "069_radarns_tal.sql",
+                     "086_spridningsparren_frys_min.sql", "087_spridningsparren_f1.sql", "089_stadspunkter.sql", "090_radar_stad.sql",
+                     "091_stadsregeln.sql", "091_stadsregeln.sql"]) await las(f);
+    await stad();
+    await q("DELETE FROM ny_kandidat_skugga_korning");   // som provet #692: domloggen räknar en timme en gång
+    // Stadspunkterna: [punkt, grupp, lager, lat]. Långt från provens stationer (34° Ö).
+    for (const [p, g, lager, lat] of [["B99911", "B-991-911", "B", 70], ["B99912", "B-991-912", "B", 70], ["B99913", "B-991-913", "B", 70],
+                                      ["B99914", "B-991-911", "B", 70], ["B99915", "B-991-911", "B", 70], ["C99911", "C-991-911", "C", 70],
+                                      ["B99921", "B-992-921", "B", 60], ["B99922", "B-992-922", "B", 70]] as const)
+      await q("INSERT INTO stadspunkt (punkt, grupp, lager, omrade, lon, lat) VALUES ($1, $2, $3, 'Stor-Stockholm', 34, $4)", [p, g, lager, lat]);
+    await q("INSERT INTO vagpunkt (punkt, segment_id, lon, lat) VALUES ('vS01', '99951', 34, 70)");
+    await q("INSERT INTO road_conditions (segment_id, condition_code, condition_text, condition_info) VALUES ('99951', 1, 'Normalt', '{Våt}')");
+    await q(`INSERT INTO radar_stad (grupp, observed_at, rate_max_mmh, rate_mean_mmh) VALUES
+      ('B-991-911', now() - interval '10 minutes', 0.8, 0.5), ('C-991-911', now() - interval '10 minutes', 0.8, 0.5),
+      ('B-991-913', now() - interval '70 minutes', 0.8, 0.5)`);
+    const tid: Date = (await q("SELECT date_trunc('hour', now()) AS t")).rows[0].t;
+    // [punkt, pb, n_ank, frys_min]
+    const V: [string, number, number, number | null][] = [["vS01", -1, 1, 0], ["B99911", -1, 1, 0], ["B99912", -1, 1, 0], ["B99913", -1, 1, 0],
+      ["B99914", 0.5, 1, 0], ["B99915", -1, 2, 0.5], ["C99911", -1, 1, 0]];
+    for (const t of LIVE) {
+      await q(`INSERT INTO ${t} (tid, punkt, pb) SELECT $1, v.punkt, 5 FROM vagpunkt v WHERE v.punkt NOT LIKE 'vS%' ON CONFLICT DO NOTHING`, [tid]);
+      for (const [p, pb, n, fm] of V) await q(`INSERT INTO ${t} (tid, punkt, pb, n_ank, spr, frys_min, ank_km) VALUES ($1, $2, $3, $4, 1, $5, 4)`, [tid, p, pb, n, fm]);
+    }
+    const AV = { vS01: "varnar@99951" };
+    assert.deepEqual(await utfall("ny_kandidat_regel"), AV, "SR2: brytarna av ⇒ bara vägpunkten");
+    await brytare("B", true);
+    const BPA = { ...AV, B99911: "varnar@B-991-911", B99912: "torr@B-991-912", B99913: "torr@B-991-913", B99915: "spridning@B-991-911" };
+    assert.deepEqual(await utfall("ny_kandidat_regel"), BPA, "SR2/SR3: B på talar; utan radar och med 70 minuter gammal radar torr; pb > 0 ingen rad; F1 tystar");
+    await brytare("C", true);
+    const ALLA = { ...BPA, C99911: "varnar@C-991-911" };
+    assert.deepEqual(await utfall("ny_kandidat_regel"), ALLA, "SR2: C på talar");
+    assert.deepEqual(await utfall("kandidat_regel"), ALLA, "SR1: den frystas regel ger samma");
+    const hela = (fn: string) => q(`SELECT * FROM ${fn}() WHERE punkt = ANY($1) OR punkt LIKE 'vS%' ORDER BY punkt`, [PUNKTER]).then((r) => r.rows);
+    assert.deepEqual(await hela("ny_kandidat_regel"), await hela("kandidat_regel"), "SR1: samma rader, fält för fält");
+
+    // SR5 (provets klocka är den riktiga här): domloggen.
+    assert.match((await q("SELECT ny_kandidat_logga() AS m")).rows[0].m, /^kandidatens timme /);
+    assert.equal((await q("SELECT count(*)::int AS n FROM ny_kandidat_station WHERE station_id = ANY($1)", [PUNKTER])).rows[0].n, 0,
+      "SR5: inga stadspunkter bland stationerna");
+    assert.deepEqual((await q("SELECT segment_id, varnar FROM ny_kandidat_skugga WHERE observed_at = $1 AND (segment_id = ANY($2) OR segment_id = '99951')",
+      [tid, GRUPPER])).rows, [{ segment_id: "99951", varnar: 1 }], "SR5: vägpunktens sträcka loggas, stadsgrupperna inte");
+    assert.deepEqual((await q("SELECT proconfig FROM pg_proc WHERE proname = 'ny_kandidat_logga'")).rows[0].proconfig,
+      ["search_path=public, extensions"], "SR5: fast sökväg i definitionen (DECISIONS #784)");
+
+    // SR4: marsfönstret. Varje timme får fullständiga vägpunkter (95 %-kravet) och de två stadspunkterna, med radar 20 minuter in.
+    for (const [h] of MARS) {
+      for (const t of LIVE) {
+        await q(`INSERT INTO ${t} (tid, punkt, pb) SELECT $1, v.punkt, 5 FROM vagpunkt v ON CONFLICT DO NOTHING`, [h]);
+        for (const p of ["B99921", "B99922"]) await q(`INSERT INTO ${t} (tid, punkt, pb, n_ank, spr, frys_min, ank_km) VALUES ($1, $2, -1, 1, 1, 0, 4)`, [h, p]);
+      }
+      await q(`INSERT INTO radar_stad (grupp, observed_at, rate_max_mmh, rate_mean_mmh) SELECT g, $1::timestamptz + interval '20 minutes', 0.8, 0.5
+        FROM unnest(ARRAY['B-992-921', 'B-992-922']) g`, [h]);
+    }
+    await q("CREATE SCHEMA provtid");
+    await q("CREATE FUNCTION provtid.now() RETURNS timestamptz LANGUAGE sql STABLE AS $$ SELECT current_setting('provtid.nu')::timestamptz $$");
+    await q("SET search_path = provtid, pg_catalog, public");
+    for (const [h, soder] of MARS) {
+      const nu = new Date(Date.parse(h) + 30 * 60 * 1000).toISOString();
+      await q("SELECT set_config('provtid.nu', $1, false)", [nu]);
+      assert.equal((await q("SELECT now() AS t")).rows[0].t.toISOString(), nu, `SR4: provets klocka står på ${nu}`);
+      const vantat: Record<string, string> = { B99922: "varnar@B-992-922" };
+      if (soder) vantat.B99921 = `${soder}@B-992-921`;
+      const fa = async (fn: string) => Object.fromEntries(Object.entries(await utfall(fn)).filter(([p]) => p === "B99921" || p === "B99922"));
+      assert.deepEqual(await fa("ny_kandidat_regel"), vantat, `SR4: ${h}`);
+      assert.deepEqual(await fa("kandidat_regel"), vantat, `SR4: ${h}, den frystas regel`);
+    }
+  } finally {
+    await stad().catch(() => {});
+    await pool.end();
+  }
+});
