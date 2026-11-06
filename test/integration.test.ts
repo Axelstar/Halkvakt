@@ -2362,3 +2362,43 @@ test("#800 spridningsspärren F1: frys_min ≥ 0,45 tystar, spridningen gör det
     await pool.end();
   }
 });
+
+// STORSTÄDERNAS PUNKTER (sql/089, DECISIONS #804, kort #378): tabellen och brytarna, och laddarens satser, mot riktig PostGIS.
+//   SP1  filen går att köra två gånger; RLS på båda tabellerna; fyra brytare, alla av
+//   SP2  laddarens skriv tar två punkter; en andra skrivning med samma värden ändrar inget; ett ändrat läge skrivs
+//   SP3  ett v-id, ett id som inte börjar med lagret och en grupp utan lagret vägras av tabellen
+//   SP4  ta_bort tar punkten som inte längre står i listan och rör inte vagpunkt
+test("#804 stadspunkterna: tabellen, brytarna av och laddarens satser", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { SATS } = await import("../ingest/stadspunkter-db.ts");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const las = (f: string) => q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+  const skriv = (r: [string, string, string, string, number, number][]) =>
+    q(SATS.skriv, [r.map((x) => x[0]), r.map((x) => x[1]), r.map((x) => x[2]), r.map((x) => x[3]), r.map((x) => x[4]), r.map((x) => x[5])]);
+  try {
+    await las("055_vagpunkter.sql");
+    const vp = Number((await q("SELECT count(*) AS n FROM vagpunkt")).rows[0].n);
+    await las("089_stadspunkter.sql"); await las("089_stadspunkter.sql");
+    await q("DELETE FROM stadspunkt WHERE punkt IN ('B99901', 'B99902', 'C99901')");
+    assert.deepEqual((await q("SELECT relname, relrowsecurity FROM pg_class WHERE relname IN ('stadspunkt', 'stadsbrytare') ORDER BY 1")).rows,
+      [{ relname: "stadsbrytare", relrowsecurity: true }, { relname: "stadspunkt", relrowsecurity: true }], "SP1: RLS");
+    assert.deepEqual((await q("SELECT omrade, lager, pa FROM stadsbrytare ORDER BY omrade, lager")).rows,
+      [{ omrade: "Stor-Göteborg", lager: "B", pa: false }, { omrade: "Stor-Malmö", lager: "B", pa: false },
+       { omrade: "Stor-Stockholm", lager: "B", pa: false }, { omrade: "Stor-Stockholm", lager: "C", pa: false }], "SP1: fyra brytare, alla av");
+    await skriv([["B99901", "B-1-1", "B", "Stor-Stockholm", 18.0, 59.3], ["C99901", "C-2-2", "C", "Stor-Stockholm", 18.05, 59.33]]);
+    assert.equal((await skriv([["B99901", "B-1-1", "B", "Stor-Stockholm", 18.0, 59.3]])).rowCount, 0, "SP2: samma värden ändrar inget");
+    assert.equal((await skriv([["B99901", "B-1-1", "B", "Stor-Stockholm", 18.001, 59.3]])).rowCount, 1, "SP2: ett ändrat läge skrivs");
+    const g = await q("SELECT ST_X(geom) AS x FROM stadspunkt WHERE punkt = 'B99901'");
+    assert.ok(Math.abs(g.rows[0].x - 18.001) < 1e-9, "SP2: geom följer läget");
+    for (const [namn, rad] of [["v-id", ["v99901", "B-1-1", "B", "Stor-Stockholm", 18, 59]], ["fel lager i id:t", ["C99902", "B-1-1", "B", "Stor-Stockholm", 18, 59]],
+                               ["grupp utan lagret", ["B99902", "12345", "B", "Stor-Stockholm", 18, 59]]] as const)
+      await assert.rejects(skriv([rad as unknown as [string, string, string, string, number, number]]), undefined, `SP3: ${namn}`);
+    await q(SATS.ta_bort, [["B99901"]]);
+    assert.deepEqual((await q("SELECT punkt FROM stadspunkt ORDER BY punkt")).rows, [{ punkt: "B99901" }], "SP4: C99901 togs bort");
+    assert.equal(Number((await q("SELECT count(*) AS n FROM vagpunkt")).rows[0].n), vp, "SP4: vagpunkt orörd");
+  } finally {
+    await q("DELETE FROM stadspunkt WHERE punkt IN ('B99901', 'B99902', 'C99901')").catch(() => {});
+    await pool.end();
+  }
+});
