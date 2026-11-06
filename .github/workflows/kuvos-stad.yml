@@ -8,6 +8,7 @@ name: kuvos-stad
 #             med knappen. De dygn som saknas läggs till i cachen, sedan de senaste timmarna och körningen ur metpplatest, del A för alla
 #             punkter i DELAR delar (F22: en halva om 11 857 punkter tog 11,8 GB), del B för timmen och beskeden. Loggen visar tider,
 #             minne, storlekar och antal punkter. Beskeden går bara till hinken (kuvos-stad-2026-27/), aldrig till en artefakt.
+#             Sist stadsmiljön (kuvösens BESLUT F31): de utelämnade stationerna i storstädernas tätorter, se steget.
 # MET-kön: samma grupp som kuvos-ny-kandidat:s och kuvos-pilot:s hämtningar, så att två av våra hämtningar aldrig går samtidigt.
 # Källa: MET Norway, MET Nordic (NLOD / CC BY 4.0).
 on:
@@ -369,3 +370,69 @@ jobs:
               console.log(`${d.fil}: ${ok ? "i hinken, byte för byte den skrivna" : "FEL: i hinken med annat innehåll"}`); });
             process.exit(fel ? 1 : 0);' besked/*
           rm -rf besked
+      # STADSMILJÖN (halkvakt-kuvos FORREGISTRERING-STADSMILJON-2026-27, BESLUT F27 och F31): de utelämnade stationerna i
+      # storstädernas tätorter skattas med F7:s enhet och den levande kandidaten bredvid, och varje passerat UTC-dygn bedöms i efterhand
+      # med halvtimmarnas mätningar. Koden ligger i det privata repot (fysik/ny_kandidat/stadsmiljon_kedjan.py, stadsmiljon_db.ts och
+      # stadsmiljon_hinken.ts); här står bara stegen. Loggen säger bara klart eller fel, och allt räknat går bara till hinken.
+      - name: Stadsmiljön — enheten, del A för stationerna, PH, identiteten och de passerade dygnen
+        if: ${{ steps.h.outputs.klar == 'ja' }}
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}", F7MAPP: kuvos-kandidat-2027-28-t4-okanda }
+        run: |
+          set -euo pipefail
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          export FN KEY
+          N() { node --experimental-strip-types "$@" 2>&1 | { grep -v ExperimentalWarning || true; }; }
+          S=fysik/ny_kandidat/stadsmiljon_kedjan.py; H=fysik/ny_kandidat/stadsmiljon_hinken.ts; D=fysik/ny_kandidat/stadsmiljon_db.ts
+          N "$D" --sjalvtest
+          python3 "$S" --sjalvtest | tail -1
+          # F7:s enhet ur hinken, med vakten (§6 a), populationsprovet (§6 c) och spärren (§6 f), och en kandidatfil för del A.
+          N "$H" hamta "$F7MAPP" f7 enhet_alla.json modell_alla.pkl veck_alla.json
+          python3 "$S" enheten --enhet f7/enhet_alla.json --modell f7/modell_alla.pkl --veck f7/veck_alla.json --ut f7/kandidat_f7.json
+          # Del A med F7:s enhet för stationerna runt de utelämnade, på samma analys och körning som T4.
+          python3 "$S" stationer --indata indata-live --ut indata-f7
+          python3 fysik/ny_kandidat/levande.py --del-a --indata indata-f7 \
+              --analys mn/metnordic_analys_*.csv.gz mn/dagar/*.csv.gz mnp/dagar/*.csv.gz mnp-live/dagar/*.csv.gz \
+              --korning "mn/metnordic_korning_$STAMP.csv.gz" --modell f7/modell_alla.pkl --kandidat f7/kandidat_f7.json --ut ut-f7 > del-a-f7.log 2>&1 \
+            || { echo "::error::Del A för stadsmiljön föll: $(tail -1 del-a-f7.log | cut -c1-300)"; exit 1; }
+          rm -f f7/modell_alla.pkl
+          # Stationernas PH för båda modellerna, en fil per MET-körning.
+          mkdir -p stad stad-ph
+          python3 "$S" spara --t4 "ut/ny_kandidat_ph_$STAMP.csv.gz" --f7 "ut-f7/ny_kandidat_ph_$STAMP.csv.gz" --stationer indata-f7 --ut stad
+          N "$H" ladda-upp "$HINK" "stad/stadsmiljon_ph_$STAMP.csv.gz"
+          cp "stad/stadsmiljon_ph_$STAMP.csv.gz" stad-ph/
+          # Identiteten (§6 d): förra körningens T4-PH mot driftens ny_kandidat_live, för timmarna som finns kvar där.
+          R=$(date -u -d "${STAMP:0:4}-${STAMP:4:2}-${STAMP:6:2} ${STAMP:9:2}:00" +%s)
+          FORRA=$(date -u -d "@$((R - 21600))" +%Y%m%dT%HZ)
+          N "$H" hamta "$HINK" stad-ph "stadsmiljon_ph_$FORRA.csv.gz"
+          if [ -f "stad-ph/stadsmiljon_ph_$FORRA.csv.gz" ]; then
+            N "$D" live indata-f7/stations.csv live_ph.csv
+            set +e; python3 "$S" identitet --ph "stad-ph/stadsmiljon_ph_$FORRA.csv.gz" --live live_ph.csv --ut stad; IDENT=$?; set -e
+            rm -f live_ph.csv
+            N "$H" ladda-upp "$HINK" "stad/stadsmiljon_identitet_$FORRA.json"
+          else
+            echo "identiteten: förra körningens PH finns inte i hinken (första körningen eller en hoppad)"; IDENT=0
+          fi
+          # De passerade dygnen: ett UTC-dygn bedöms när dess fem körningar har PH (den sista är dygnets 18), en gång.
+          for k in 2 1 0; do
+            DAG=$(date -u -d "@$((R - k * 86400))" +%F)
+            [ "$(date -u -d "$DAG 18:00" +%s)" -le "$R" ] || continue
+            N "$H" hamta "$HINK" stad-finns "stadsmiljon_$DAG.csv.gz"
+            if [ -f "stad-finns/stadsmiljon_$DAG.csv.gz" ]; then echo "dygnet $DAG: redan bedömt"; continue; fi
+            B=$(date -u -d "$DAG" +%s)
+            NAMN=(); for h in -6 0 6 12 18; do NAMN+=("stadsmiljon_ph_$(date -u -d "@$((B + h * 3600))" +%Y%m%dT%HZ).csv.gz"); done
+            N "$H" hamta "$HINK" stad-ph "${NAMN[@]}"
+            read -r FRAN TILL < <(python3 "$S" fonster --dag "$DAG")
+            N "$D" pop "$FRAN" "$TILL" "pop_$DAG.csv"
+            set +e; python3 "$S" dag --dag "$DAG" --ph stad-ph --pop "pop_$DAG.csv" --stationer indata-f7 --veck f7/veck_alla.json --ut stad-dag; RC=$?; set -e
+            rm -f "pop_$DAG.csv"
+            case "$RC" in
+              0) N "$H" ladda-upp "$HINK" "stad-dag/stadsmiljon_$DAG.csv.gz" "stad-dag/stadsmiljon_sammanfattning_$DAG.json" ;;
+              3) ;;
+              *) echo "::error::stadsmiljön: dygnet $DAG föll"; exit 1 ;;
+            esac
+          done
+          rm -rf stad stad-ph stad-dag stad-finns ut-f7 indata-f7 f7
+          [ "$IDENT" -eq 0 ] || { echo "::error::stadsmiljön: identiteten (§6 d) föll"; exit 1; }
