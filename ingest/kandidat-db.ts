@@ -40,7 +40,7 @@ export const SATS = {
   ph: `SELECT punkt, ph FROM kandidat_ph WHERE tid = $1::timestamptz AND ph IS NOT NULL ORDER BY punkt`,
   ankare: `SELECT id AS punkt, yta, lon, lat FROM vagpunkt_ankare() ORDER BY id`,
   skrivLive: `INSERT INTO kandidat_live (tid, punkt, ph, pg, ra, ank_km, pb, n_ank, spr, frys_min)
-    SELECT * FROM UNNEST($1::timestamptz[], $2::text[], $3::real[], $4::real[], $5::real[], $6::real[], $7::real[], $8::smallint[], $9::real[], $10::real[])
+    SELECT * FROM UNNEST($1::timestamptz[], $2::text[], $3::real[], $4::real[], $5::real[], $6::real[], $7::real[], $8::smallint[], $9::real[], $10::float8[])
     ON CONFLICT (tid, punkt) DO UPDATE SET ph = EXCLUDED.ph, pg = EXCLUDED.pg, ra = EXCLUDED.ra, ank_km = EXCLUDED.ank_km, pb = EXCLUDED.pb,
       n_ank = EXCLUDED.n_ank, spr = EXCLUDED.spr, frys_min = EXCLUDED.frys_min`,
   gallra: `SELECT gallra_kandidat() AS n`,

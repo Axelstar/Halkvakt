@@ -14002,3 +14002,30 @@ Appen behöver ingen ny version. Publiceringen läser regeln varannan minut.
 och det här är ett beslut om att tala oftare där vägen fryser.
 
 **Stomdokument:** MAT segmentprognosen — spridningsspärren byts till F1, SYS kandidaten — skuggkolumnen frys_min
+
+## #800 (6/11 2026) Spridningsspärren byts till F1 vid 0,45: Axel signerar, och bytet byggs för båda kandidaterna
+
+**Beslut.** Bengt 6/11, för Axel: *"axel signerar spärrbytet"*. Med Bengts val *"F1 vid 0,45"* (#799) har bytet båda signaturerna, som
+kuvösens förregistrering F26 §5 kräver.
+
+**Vad som byggs:**
+- **Regeln:** `sql/087` skapar om `kandidat_regel()` och `ny_kandidat_regel()` ur `sql/069`, ord för ord, med två ändringar:
+  - `kall` läser `frys_min`;
+  - spärren tystar där minst två ankare bidrar och `frys_min ≥ 0,45`, i stället för spridningen ≥ 2,25 °C.
+- **Utfallet heter fortfarande `spridning`.** Domloggen, skuggan, publiceringen och olycksfacit läser som förut.
+- **Den frysta kandidaten får samma regel.** Ett nytt steg i `kandidat-timme.yml` lägger `frys_min` i dess `live.csv` med kuvösens `frysmin.py`, efter den frystas del B, som rörs inte.
+  - Faller steget skrivs timmen utan kolumnen. En rad utan `frys_min` spärras inte.
+  - Kandidatens förregistrering 2026–27 §12 (d) säger att regeln är densamma för den som talar.
+- **Flyttalet:** `sql/087` gör `frys_min` till double precision före regeln, och ingesterna skickar den som `float8[]`. Som real blev 0,45 talet 0,44999998…, och gränsfallet talade; integrationsprovet fångade det i ci. Nu jämförs samma tal på samma sätt i spärrprovet (Python, float64) och i regeln.
+- **Provet:** integrationsprovet #800 kör F1:s fall på båda funktionerna, och sedan vägen tillbaka med `sql/069`. `test/ny-kandidat-skugga.test.ts` prövar att de två funktionerna är samma regel, och kontraktsgrinden vaktar gränsen 0,45.
+
+**Ordningen:**
+1. Kuvösens `frysmin.py` och den frystas steg slås ihop, så att `frys_min` fylls i båda tabellerna.
+2. Tillägget till kandidatens förregistrering för marsdomen signeras. Domen räknar varje timme med den spärr som gällde då.
+3. `sql/087` migreras med DB-knappen. Nästa publicering ger appen K med F1.
+4. Tillbaka är `sql/069`.
+
+**Kvar efter bytet:** vinterläsningen (#478, `publish/grind-s-b.ts`) räknar med F1 från bytet. Den ändringen görs före läsningen, med
+`spr` kvar bredvid.
+
+**Stomdokument:** MAT segmentprognosen — spridningsspärren F1 i regeln, SYS kandidaten — regeln och den frystas steg

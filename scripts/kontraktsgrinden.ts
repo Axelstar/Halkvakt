@@ -889,6 +889,13 @@ export const KONTRAKT: Kontrakt[] = [
     filer: /grind-s-b\.ts$|sql\/058_|sql\/068_|sql\/069_|kuvos\/facit-trv\.ts$/,
     golv: 4,
   },
+  {
+    namn: "Spridningsspärrens F1 — minoritetens viktandel kring noll som tystar kandidaten",
+    varfor: "Den frystas och den nyas regel ska tystas av samma gräns (sql/087, DECISIONS #800). Driver den talar appen olika i den frystas och den nyas timmar.",
+    former: [/k\.frys_min >= ([\d.]+) THEN 'spridning'/],
+    filer: /sql\/087_/,
+    golv: 2,
+  },
   // Den nya kandidatens skugga (sql/068, DECISIONS #692) bär regelns tal en gång till: samma regel på den nyas värden, så att domen i
   // ersättningsregeln §5 räknas likadant för båda. Den kopian vaktas här med de andra (golven höjda med ett).
   // KANDIDATENS REGEL I KUVÖSEN (DECISIONS #593). Facitläsningen räknar driftens regel (sql/058) vid stationerna vintern 2024/25,
