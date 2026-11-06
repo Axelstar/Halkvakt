@@ -370,6 +370,7 @@ private struct GenvagarGuide: View {
 struct RootView: View {
     @State private var tab = 0
     @State private var guardM = GuardManager.shared
+    @State private var fav = Favoriter.shared
     var body: some View {
         ZStack(alignment: .bottom) {
             // Flikarna lever hela tiden, som i TabView: ingen omladdning och ingen tappad undersida vid flikbyte.
@@ -391,6 +392,8 @@ struct RootView: View {
         .safeAreaInset(edge: .top, spacing: 0) { Color.clear.frame(height: 0).background(Brand.bg) }
         // Här och inte i VaktenView: vakten kan starta (Siri, Genvägar, självväckning) medan Inställningar visas.
         .fullScreenCover(isPresented: $guardM.running) { KorlageView() }
+        // Favoriter 2a (#806): notisen och raden på Redo öppnar fliken med dagens resor överst.
+        .onChange(of: fav.visaFliken) { _, visa in if visa { tab = 1; fav.visaFliken = false } }
     }
 }
 

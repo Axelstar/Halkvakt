@@ -51,9 +51,10 @@ export function taBort(r: Rutter, id: string): Rutter {
   return { schema: 1, rutter: r.rutter.filter((x) => x.id !== id) };
 }
 
-/** The name suggestions after a trip (DECISIONS #625): fixed ones and the date. Free text is always possible in the apps. */
+/** The name suggestions after a trip (DECISIONS #625, #806): one that fits both directions, and the date, which is also what an empty
+ *  name saves as. "Till jobbet" and "Hem" are gone: the way home is the same trip (#637), so the second question never came. */
 export function namnforslag(dag: number, manad: number): string[] {
-  return ["Till jobbet", "Hem", `Resa ${dag}/${manad}`];
+  return ["Pendlingen", `Resa ${dag}/${manad}`];
 }
 
 /** Recognising the way home (DECISIONS #637): a new trip that lies along a saved one, in either direction, is the same trip and gets
@@ -70,4 +71,25 @@ function andelNara(a: Punkt[], b: Punkt[]): number {
 /** Is b the same trip as a, in either direction? At least SAMMA_RESA_ANDEL of each lies within SAMMA_RESA_M of the other. */
 export function sammaResa(a: Punkt[], b: Punkt[]): boolean {
   return a.length >= 2 && b.length >= 2 && andelNara(a, b) >= SAMMA_RESA_ANDEL && andelNara(b, a) >= SAMMA_RESA_ANDEL;
+}
+
+/** TODAY'S TRIPS (Favoriter 2a, DECISIONS #806): the trips waiting for a name, at most VANTANDE_MAX, each for VANTANDE_KVAR_S from its
+ *  end. `id` is the guard session, so a session that ends twice (the car stood still, then drove on) updates its own trip. */
+export const VANTANDE_MAX = 3;
+export const VANTANDE_KVAR_S = 24 * 3600;
+export type Vantande = { id: string; slutS: number; km: number; punkter: Punkt[]; dithem: boolean };
+
+/** The list after a trip ends: expired trips go; the same session replaces its own trip; a trip that is the same as one already
+ *  waiting (there and back, DECISIONS #637) joins it as one trip marked dithem; otherwise it is added last and the oldest goes
+ *  when there are more than VANTANDE_MAX. */
+export function dagensResor(lista: Vantande[], ny: Vantande, nuS: number): Vantande[] {
+  const kvar = lista.filter((v) => nuS - v.slutS < VANTANDE_KVAR_S);
+  const egen = kvar.findIndex((v) => v.id === ny.id);
+  if (egen >= 0) return kvar.map((v, i) => (i === egen ? { ...ny, dithem: v.dithem } : v));
+  const samma = kvar.findIndex((v) => sammaResa(v.punkter, ny.punkter));
+  if (samma >= 0) {
+    const v = kvar[samma];
+    return kvar.map((x, i) => (i === samma ? { ...v, slutS: ny.slutS, km: Math.max(v.km, ny.km), dithem: true } : x));
+  }
+  return [...kvar, ny].slice(-VANTANDE_MAX);
 }

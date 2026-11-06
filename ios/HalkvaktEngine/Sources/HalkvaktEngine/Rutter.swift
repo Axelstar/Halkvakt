@@ -59,9 +59,10 @@ public struct Rutter: Codable, Equatable {
         Rutter(rutter: rutter.filter { $0.id != id })
     }
 
-    /// The name suggestions after a trip (DECISIONS #625): fixed ones and the date. Free text is always possible in the app.
+    /// The name suggestions after a trip (DECISIONS #625, #806): one that fits both directions, and the date, which is also what an
+    /// empty name saves as. Free text is always possible in the app.
     public static func namnforslag(dag: Int, manad: Int) -> [String] {
-        ["Till jobbet", "Hem", "Resa \(dag)/\(manad)"]
+        ["Pendlingen", "Resa \(dag)/\(manad)"]
     }
 
     /// Recognising the way home (DECISIONS #637): at least `sammaAndel` of each trip within `sammaM` of the other, in either direction.
@@ -78,5 +79,40 @@ public struct Rutter: Codable, Equatable {
     /// Is b the same trip as a, in either direction?
     public static func sammaResa(_ a: [[Double]], _ b: [[Double]]) -> Bool {
         a.count >= 2 && b.count >= 2 && andelNara(a, b) >= sammaAndel && andelNara(b, a) >= sammaAndel
+    }
+}
+
+/// A trip waiting for a name (Favoriter 2a, DECISIONS #806). `id` is the guard session; `slutS` is the trip's end in epoch seconds.
+public struct Vantande: Codable, Equatable {
+    public let id: String
+    public let slutS: Double
+    public let km: Double
+    public let punkter: [[Double]]
+    public let dithem: Bool
+
+    public init(id: String, slutS: Double, km: Double, punkter: [[Double]], dithem: Bool = false) {
+        self.id = id; self.slutS = slutS; self.km = km; self.punkter = punkter; self.dithem = dithem
+    }
+
+    public static let vantandeMax = 3
+    public static let vantandeKvarS: Double = 24 * 3600
+
+    /// Today's trips after a trip ends — twin of `dagensResor` in engine/src/rutter.ts. Expired trips go; the same session replaces
+    /// its own trip; a trip that is the same as one waiting (there and back) joins it, marked `dithem`; otherwise it is added last and
+    /// the oldest goes when there are more than `vantandeMax`.
+    public static func dagensResor(_ lista: [Vantande], _ ny: Vantande, nuS: Double) -> [Vantande] {
+        let kvar = lista.filter { nuS - $0.slutS < vantandeKvarS }
+        if let egen = kvar.firstIndex(where: { $0.id == ny.id }) {
+            var ut = kvar
+            ut[egen] = Vantande(id: ny.id, slutS: ny.slutS, km: ny.km, punkter: ny.punkter, dithem: kvar[egen].dithem)
+            return ut
+        }
+        if let samma = kvar.firstIndex(where: { Rutter.sammaResa($0.punkter, ny.punkter) }) {
+            let v = kvar[samma]
+            var ut = kvar
+            ut[samma] = Vantande(id: v.id, slutS: ny.slutS, km: Swift.max(v.km, ny.km), punkter: v.punkter, dithem: true)
+            return ut
+        }
+        return Array((kvar + [ny]).suffix(vantandeMax))
     }
 }

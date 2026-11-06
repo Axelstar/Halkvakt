@@ -2,6 +2,7 @@
 // Spegel av Androids GuardService-beteende: tystad kategori behåller
 // motorminnet (gaten sitter vid munnen), körlägesstatistik, 8 s-varningskort.
 import Foundation
+import AVFoundation
 import CoreLocation
 import Observation
 import HalkvaktEngine
@@ -56,6 +57,11 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
     // S4: facit skickas när bilen står stilla — en gång per stopp.
     private var stillSince: Date?
     private var flushedThisStop = false
+    // Favoriter 2a (DECISIONS #806): resan räknas som slut för frågan Spara resan? när bilens CarPlay eller Bluetooth kopplas
+    // bort, eller när bilen stått still i tio minuter — före vaktens eget stopp efter en kvart, och aldrig medan bilen rullar.
+    private static let favoritStillaS: TimeInterval = 10 * 60
+    private var favoritFragadThisStop = false
+    private var lastKmh = 0.0
 
     // Vakna själv (DECISIONS #40): med "Alltid" ber vi iOS väcka appen vid betydande
     // förflyttning (~500 m, även när appen är stängd — iOS startar om oss i bakgrunden).
@@ -93,6 +99,26 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         manager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
         manager.activityType = .automotiveNavigation
         manager.pausesLocationUpdatesAutomatically = false
+        NotificationCenter.default.addObserver(forName: AVAudioSession.routeChangeNotification, object: nil, queue: .main) { n in
+            let bort = Self.bilenKoppladesBort(n)
+            Task { @MainActor in if bort { self.favoritResanSlut() } }
+        }
+    }
+
+    /// Bilens ljud försvann: CarPlay eller Bluetooth fanns i förra vägen och finns inte i den nya.
+    nonisolated private static func bilenKoppladesBort(_ n: Notification) -> Bool {
+        guard let raw = n.userInfo?[AVAudioSessionRouteChangeReasonKey] as? UInt,
+              AVAudioSession.RouteChangeReason(rawValue: raw) == .oldDeviceUnavailable,
+              let fore = n.userInfo?[AVAudioSessionRouteChangePreviousRouteKey] as? AVAudioSessionRouteDescription else { return false }
+        let bil: Set<AVAudioSession.Port> = [.carAudio, .bluetoothA2DP, .bluetoothHFP, .bluetoothLE]
+        let nu = AVAudioSession.sharedInstance().currentRoute.outputs.map(\.portType)
+        return fore.outputs.contains { bil.contains($0.portType) } && !nu.contains { bil.contains($0) }
+    }
+
+    /// Frågan Spara resan? för resan så långt, när bilen står. Vakten fortsätter; kör bilen vidare uppdaterar nästa stopp samma rad.
+    private func favoritResanSlut() {
+        guard running, lastKmh < 5 else { return }
+        Favoriter.shared.resanSlutar(km: distanceKm, minuter: drivingSeconds / 60)
     }
 
     // MARK: - Snapshot
@@ -392,12 +418,17 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         guard let engine else { return }
 
         let kmh = loc.speed >= 0 ? loc.speed * 3.6 : 0
+        lastKmh = kmh
         // S4: facit skickas när bilen står stilla (≥ 30 s under 3 km/h), en gång per stopp — aldrig under körning.
-        if kmh >= 3 { stillSince = nil; flushedThisStop = false }
+        if kmh >= 3 { stillSince = nil; flushedThisStop = false; favoritFragadThisStop = false }
         else if stillSince == nil { stillSince = loc.timestamp }
         else if !flushedThisStop, let s = stillSince, loc.timestamp.timeIntervalSince(s) >= 30 {
             flushedThisStop = true
             Task { _ = await FacitSender.flush() }
+        }
+        if !favoritFragadThisStop, let s = stillSince, loc.timestamp.timeIntervalSince(s) >= Self.favoritStillaS {
+            favoritFragadThisStop = true
+            favoritResanSlut()
         }
         // Självstopp: en kvart utan att bilen kört (förflyttning, inte ett mätvärde) är slutet på resan.
         if idleStop.onFix(t: loc.timestamp.timeIntervalSince1970, lon: loc.coordinate.longitude, lat: loc.coordinate.latitude) {

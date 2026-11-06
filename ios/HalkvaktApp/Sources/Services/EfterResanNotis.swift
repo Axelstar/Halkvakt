@@ -34,9 +34,13 @@ final class EfterResanNotis: NSObject, UNUserNotificationCenterDelegate {
         let ja = UNNotificationAction(identifier: Self.actionJa, title: "Ja, alla stämde", options: [])
         let avvikelse = UNNotificationAction(identifier: Self.actionAvvikelse, title: "Något stämde inte",
                                              options: [.foreground])
+        // Alla appens kategorier registreras här, en gång: setNotificationCategories ersätter hela mängden.
+        // Favoriter 2a (#806) har sin egen; heads-up-bannern får visas i CarPlay (allowInCarPlay, iOS 18.4 för Driving Task-appar).
         center.setNotificationCategories([
             UNNotificationCategory(identifier: Self.categoryId, actions: [ja, avvikelse],
-                                   intentIdentifiers: [], options: [])
+                                   intentIdentifiers: [], options: []),
+            FavoritNotis.kategorin,
+            UNNotificationCategory(identifier: HeadsUpService.kategori, actions: [], intentIdentifiers: [], options: [.allowInCarPlay]),
         ])
         center.delegate = self
     }
@@ -67,6 +71,16 @@ final class EfterResanNotis: NSObject, UNUserNotificationCenterDelegate {
 
     nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter,
                                             didReceive response: UNNotificationResponse) async {
+        let n = response.notification.request.content
+        if n.categoryIdentifier == FavoritNotis.kategori || n.threadIdentifier == "halkvakt.favorit.notis" {
+            let id = n.userInfo[FavoritNotis.resaNyckel] as? String
+            let text = (response as? UNTextInputNotificationResponse)?.userText
+            let action = response.actionIdentifier
+            await MainActor.run {
+                if let id { FavoritNotis.svar(action: action, id: id, text: text) } else { Favoriter.shared.visaFliken = true }
+            }
+            return
+        }
         guard response.actionIdentifier == Self.actionJa else { return }   // avvikelse ⇒ appen öppnas, kortet tar vid
         await Self.svaraAlla()
     }

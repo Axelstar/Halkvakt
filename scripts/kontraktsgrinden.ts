@@ -564,6 +564,14 @@ export const KONTRAKT: Kontrakt[] = [
     golv: 3,
   },
   {
+    // Favoriter 2a (DECISIONS #806): dagens resor, högst så här många i väntan på namn — lika i alla tre språk, prövat mot rutter.json.
+    namn: "Dagens resor — högst så här många väntar på namn",
+    varfor: "Med olika tak släpper iPhone och Android olika resor, och samma dag ser olika ut i de två apparna.",
+    former: [/(?:VANTANDE_MAX|static let vantandeMax)\s*=\s*(\d+)(?![\d.])/],
+    filer: /engine\/src\/rutter\.ts|engine\/Rutter\.kt|HalkvaktEngine\/Rutter\.swift/,
+    golv: 3,
+  },
+  {
     // DECISIONS #633: frågan Spara resan? kommer bara efter en resa på minst så här många km — samma i båda apparna.
     namn: "Sparade rutter — kortaste resa som erbjuds, km",
     varfor: "Med olika gräns frågar iPhone och Android efter olika resor, och produktbokens 'minst en kilometer' blir fel på en av dem.",
@@ -581,10 +589,11 @@ export const KONTRAKT: Kontrakt[] = [
   },
   {
     namn: "Sparade rutter — timmar som frågan och vägen står kvar",
-    varfor: "Den tillfälliga filen med en körd väg ska raderas lika snabbt på båda plattformarna (FAVORITER §6: ett dygn).",
-    former: [/FRAGA_KVAR_MS\s*=\s*(\d+)\s*\*\s*3600\s*\*\s*1000L/, /fragaKvarS: TimeInterval\s*=\s*(\d+)\s*\*\s*3600/],
-    filer: /app\/Favoriter\.kt|Services\/Favoriter\.swift/,
-    golv: 2,
+    varfor: "Den tillfälliga filen med en körd väg ska raderas lika snabbt på båda plattformarna (FAVORITER §6: ett dygn). Sedan " +
+      "Favoriter 2a (DECISIONS #806) bor dygnet i motorns dagens resor, i tre språk.",
+    former: [/(?:VANTANDE_KVAR_S|vantandeKvarS)(?::\s*Double)?\s*=\s*(\d+)\s*\*\s*3600/],
+    filer: /engine\/src\/rutter\.ts|engine\/Rutter\.kt|HalkvaktEngine\/Rutter\.swift/,
+    golv: 3,
   },
   // Favoriterna steg 3a (kort #357, DECISIONS #637): provmiljöns avstånd per slag är appens trösklar, i TypeScript (rapport-core.ts
   // och dess två buntar), Swift och Kotlin. Facit engine/fixtures/rapport.json prövar utfallet i alla tre, men telefonernas prov körs

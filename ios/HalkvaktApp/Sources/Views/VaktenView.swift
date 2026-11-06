@@ -46,11 +46,14 @@ struct VaktenView: View {
                     .padding(.top, 14)
             }
 
-            // Kort #357 (DECISIONS #625): frågan om resan ska sparas, bara med brytaren Erbjud att spara resor på.
-            let spara = fav.erbjud ? fav.vantande : nil
-            if let spara { SparaResanKort(resa: spara).padding(.top, 14) }
+            // Favoriter 2a (DECISIONS #806): dagens resor pekar till Favoriter, där namnet skrivs; med brytaren av erbjuds den
+            // efter en lång resa, en gång.
+            let spara = fav.erbjud && !fav.dagens.isEmpty
+            let erbjud = fav.erbjudRaden(senasteKm: prefs.lastTripKm, senasteSlut: prefs.lastTripEnd)
+            if spara { attSpara.padding(.top, 14) }
+            if erbjud { erbjudKort.padding(.top, 14) }
 
-            if tur == nil && resa == nil && spara == nil {
+            if tur == nil && resa == nil && !spara && !erbjud {
                 Spacer(minLength: 12)
                 Plinth(name: "plinth-logo").frame(height: 220)
             } else {
@@ -92,6 +95,44 @@ struct VaktenView: View {
                 FacitRow(id: id, at: at).padding(.top, 10)
             }
         }
+    }
+
+    /// "1 RESA ATT SPARA · 34 km. Ge den ett namn i Favoriter." — ett tryck byter flik.
+    private var attSpara: some View {
+        Button { fav.visaFliken = true } label: {
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 6) {
+                    MonoLabel(text: fav.dagens.count == 1 ? "1 resa att spara" : "\(fav.dagens.count) resor att spara")
+                    Text("\(FavoritNotis.kmText(fav.dagens.last?.km ?? 0)). Ge den ett namn i Favoriter.")
+                        .font(Typo.sans(14)).foregroundStyle(Brand.text2)
+                }
+                Spacer(minLength: 0)
+                Image(systemName: "chevron.right").font(.system(size: 13, weight: .semibold)).foregroundStyle(Brand.dim)
+            }
+            .padding(.horizontal, 20).padding(.vertical, 16)
+            .background(Brand.panel, in: RoundedRectangle(cornerRadius: 18))
+        }
+        .buttonStyle(.plain)
+        .accessibilityHint("Öppnar Favoriter")
+    }
+
+    /// Brytaren av efter en lång resa: ett tryck slår på Spara resor. Resan som slutade samlades inte in och kan inte sparas.
+    private var erbjudKort: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: 6) {
+                MonoLabel(text: "Resan slutade · \(String(format: "%.0f", prefs.lastTripKm)) km")
+                Text("Kör du den här ofta? Slå på Spara resor.").font(Typo.sans(16, .medium)).foregroundStyle(Brand.text)
+                Text("Den här resan sparades inte, eftersom Spara resor var av. Nästa gång du kör frågar appen efteråt.")
+                    .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(.vertical, 16)
+            YellowPill(title: "Slå på Spara resor") { fav.erbjud = true }
+            MonoLink(title: "Inte nu") { fav.erbjudDold = .now }
+                .frame(maxWidth: .infinity).padding(.vertical, 6)
+        }
+        .padding(.horizontal, 20)
+        .background(Brand.panel, in: RoundedRectangle(cornerRadius: 18))
     }
 
     /// Kvittot över senaste turen (designen 01b): klockslag, ikon, rubrik och det rösten sa, en rad per varning.
