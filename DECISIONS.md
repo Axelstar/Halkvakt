@@ -13965,3 +13965,40 @@ Från och med nu gäller dokumentets §7: fram till den första klassningen änd
 **Deployen och migrationen** gjordes inte i samma varv. Claude Codes säkerhetsspärr stoppade deployen, eftersom "1,2 och 3" inte lästes som ett uttryckligt ord för en produktionsändring. De väntar på Bengts ord i klartext.
 
 **Stomdokument:** MAT provningen — olycksfacits klassning fastställd
+
+## #799 (6/11 2026) Spridningsspärren ska bytas till F1 vid 0,45: skuggkolumnen frys_min förbereds
+
+**Beslut.** Bengt 6/11: *"bokför och förbered för direkt implementering i systemet"*, *"och når ut till förarna direkt"*, och sedan
+valet *"F1 vid 0,45"*. Underlaget är kuvösens spärrprov på den kandidat som talar i appen (halkvakt-kuvos F26, domen F28):
+- en vinter i taget med vintern utanför träningen, fem vintrar;
+- alla fyra prövade spärrar gav fler riktiga frysvarningar än dagens, utan fler falska;
+- F1 gav flest riktiga.
+
+Talen står i kuvösen.
+
+**Vad F1 är.** Dagens spärr (#475, #477) tystar en punkt med minst två ankare när ankarnas yta skiljer 2,25 °C eller mer. F1 tystar i
+stället när minoritetens andel av vikten 1/max(km, 1) på andra sidan noll är minst 0,45, alltså bara när ankarna är nästan jämnt
+delade om frysningen.
+
+**Det som görs nu: förberedelsen.** Regeln ändras inte.
+- `sql/086` lägger kolumnen `frys_min` i `ny_kandidat_live` och `kandidat_live`.
+- Den nya kandidatens del B räknar måttet (halkvakt-kuvos `levande.frys_min`), ur samma ankare som `timme()`.
+- `ingest/ny-kandidat-db.ts` och `ingest/kandidat-db.ts` skriver kolumnen. Den frystas rader får NULL.
+
+**Ordningen:**
+1. migrationen `sql/086`, före ihopslagningen, eftersom timjobben annars inte kan skriva;
+2. kuvösens del B och ingesten;
+3. ett par timmar senare: att kolumnen fylls och att F1 räknad på den ger spärrprovets klass.
+
+**Bytet** (kort #377) är en egen migration som byter regeln i `ny_kandidat_regel()`. S0:s utfall loggas vidare bredvid för jämförelsen. Det
+kräver:
+- Axels ja, eftersom F26 §5 säger att Bengt och Axel beslutar;
+- ett tillägg till kandidatens förregistrering för marsdomen, som räknar missar med 2,25 (#475);
+- att vinterläsningen (#478, `grind-s-b.ts`) och kontraktsgrinden följer med.
+
+Appen behöver ingen ny version. Publiceringen läser regeln varannan minut.
+
+**Risk.** K talar oftare med F1. I driften varnar K bara där det finns fukt, så ökningen blir mindre än i provet. Tystnad är en funktion,
+och det här är ett beslut om att tala oftare där vägen fryser.
+
+**Stomdokument:** MAT segmentprognosen — spridningsspärren byts till F1, SYS kandidaten — skuggkolumnen frys_min

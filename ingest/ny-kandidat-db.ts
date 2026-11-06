@@ -38,10 +38,10 @@ export const SATS = {
     SELECT * FROM UNNEST($1::timestamptz[], $2::timestamptz[], $3::text[], $4::real[], $5::real[])
     ON CONFLICT (tid, punkt) DO UPDATE SET korning = EXCLUDED.korning, ts_fysik = EXCLUDED.ts_fysik, ph = EXCLUDED.ph`,
   ph: `SELECT punkt, ph FROM ${TABELLER.ph} WHERE tid = $1::timestamptz AND ph IS NOT NULL ORDER BY punkt`,
-  skrivLive: `INSERT INTO ${TABELLER.live} (tid, punkt, ph, pg, ra, ank_km, pb, n_ank, spr)
-    SELECT * FROM UNNEST($1::timestamptz[], $2::text[], $3::real[], $4::real[], $5::real[], $6::real[], $7::real[], $8::smallint[], $9::real[])
+  skrivLive: `INSERT INTO ${TABELLER.live} (tid, punkt, ph, pg, ra, ank_km, pb, n_ank, spr, frys_min)
+    SELECT * FROM UNNEST($1::timestamptz[], $2::text[], $3::real[], $4::real[], $5::real[], $6::real[], $7::real[], $8::smallint[], $9::real[], $10::real[])
     ON CONFLICT (tid, punkt) DO UPDATE SET ph = EXCLUDED.ph, pg = EXCLUDED.pg, ra = EXCLUDED.ra, ank_km = EXCLUDED.ank_km, pb = EXCLUDED.pb,
-      n_ank = EXCLUDED.n_ank, spr = EXCLUDED.spr`,
+      n_ank = EXCLUDED.n_ank, spr = EXCLUDED.spr, frys_min = EXCLUDED.frys_min`,
   gallra: `SELECT ${TABELLER.gallra}() AS n`,
   logga: `SELECT ${TABELLER.logga}() AS m`,
 };
@@ -143,7 +143,7 @@ export async function main(arg: string[], flaggfil: string = FLAGGA): Promise<st
       let n = 0;
       for (const d of delar(rader)) {
         await p.query(SATS.skrivLive, [d.map((r) => r.tid_utc), d.map((r) => r.punkt), d.map((r) => r.ph), d.map((r) => r.pg), d.map((r) => r.ra),
-          d.map((r) => r.ank_km), d.map((r) => r.pb), d.map((r) => r.n_ank), d.map((r) => r.spr)]);
+          d.map((r) => r.ank_km), d.map((r) => r.pb), d.map((r) => r.n_ank), d.map((r) => r.spr), d.map((r) => r.frys_min ?? null)]);   // frys_min: F1 (kort #377)
         n += d.length;
       }
       const g = await p.query(SATS.gallra);
