@@ -147,11 +147,18 @@ Deno.serve(async (req) => {
           const andrade = JSON.stringify(d.andrade, null, 1);
           if (andrade !== JSON.stringify(forra, null, 1)) inline["data/sidor-andrade.json"] = andrade;
         } catch (e) { notes.push(`sitemap: ej läsbar (${String((e as Error).message).slice(0, 120)}) — länssidorna skrivs ändå`); }
-        // Startsidans länkar till varje län, ort och väg (3/11), mellan markörerna; skrivs bara när listan ändras.
-        try {
-          const ny = medBlock(await las("index.html"), "lankar", lsLankar(""));
-          if (ny) inline["index.html"] = ny;
-        } catch (e) { notes.push(`startsidan: ej läsbar (${String((e as Error).message).slice(0, 120)})`); }
+        // Startsidans länkar till varje län, ort och väg (3/11), mellan markörerna, och dagens tal i de element sidans skript fyller
+        // (6/11, DECISIONS #806), så att HTML:en bär läget utan JavaScript. Samma för karta.html. Skrivs bara när något ändras.
+        const handsida = async (fil: string, block: [string, string] | null, ids: Record<string, string> | null) => {
+          try {
+            const html = await las(fil);
+            let ny = (block ? medBlock(html, block[0], block[1]) : null) ?? html;
+            for (const [id, inner] of Object.entries(ids ?? {})) ny = medId(ny, id, inner) ?? ny;
+            if (ny !== html) inline[fil] = ny;
+          } catch (e) { notes.push(`${fil}: ej läsbar (${String((e as Error).message).slice(0, 120)})`); }
+        };
+        await handsida("index.html", ["lankar", lsLankar("")], m.start);
+        await handsida("karta.html", null, m.kartaText);
       }
       tider.kartan = Date.now() - tDel;
     }

@@ -14161,3 +14161,35 @@ dom och arkivet räknar alltså på samma takt som förut, och ingen tröskel ä
 **Ordningen efter sammanslagningen:** pulsklockan körs skarpt, så att jobbet skapas, och sedan deployas vakthunden med golvet 29.
 
 **Stomdokument:** SYS radarn — stadsradarn var 15:e minut, MAT segmentprognosen — storstädernas punkter (kort #378)
+
+## #806 (6/11 2026) Startsidans och kartans tal i HTML, och vägväderstationerna runt varje ort på ortssidorna
+
+**Beslut** (Axel 6/11 kväll: *"we really need to keep working on our SEO so we become a go to place for looking up where the road is
+cold in sweden"*, och *"1 and 2"* till de två första förslagen). Två ändringar i `publish/lanssidor.ts`, `publish/map-core.ts` och
+`publicera`, och en rad i kartrepots `index.html`:
+
+1. **Startsidan och karta.html bär dagens tal i HTML:en.** Båda räknade sina tal i webbläsaren ur `data/vader.geojson`,
+   `data/vaglag.geojson` och `data/lan.json`, och HTML:en bar "–" i varje ruta och en allmän mening under *Hela landet* tills skriptet
+   gått. Google, ChatGPT och Perplexity kör inte skriptet; mätningen 3/11 (`marknad/aeo.md` i projektet) gav halkvakt.se 0 citeringar av
+   17 frågor, medan aggregatorsajter med Trafikverkets text citerades. Nu räknar `lsStartsida` och `lsKartsida` samma tal med samma
+   regler som sidornas egna skript (startsidan: `rimlig`, yta under noll, `arHalt`; kartan: kod över 1) och `publicera` skriver in dem
+   i samma element (`medId`, på id) i kartrepots `index.html` och `karta.html` i kartlagrens varv, bara när något ändrats. Skriptet
+   skriver sedan samma sak en gång till; i `index.html` tar det först bort länen det själv la in (`.lan-halt`, `.lugnt`), annars
+   dubblas de. Provat torrt mot sajtens filer 21:30: 13 av 13 element byts, och talen är desamma som sidan visade i webbläsaren
+   (274 sträckor, 596 av 793 stationer under noll, kallast −5,9 °C vid Sörsjön).
+2. **Ortssidorna visar vägväderstationerna inom 30 km från orten,** kallast först, i svaret överst, i avsnittet *Vägbanan runt
+   {Ort} just nu* och i sökträffens beskrivning (*"vägbanan −3,4 °C vid Kila"*). Fallet: Borås 6/11, då Trafikverkets sex sträckor sa
+   *Normalt, fläckvis Våt* hela dagen medan alla 13 stationer inom 30 km låg under noll, och fem personer googlade Borås ändå. Orterna
+   får en koordinat (tätortens punkt i Wikidata, P625, CC0, läst 6/11, tre decimaler) som bara används till urvalet; stationerna får
+   `lon`/`lat` ur lägesfilens väderpunkter. Punktkällor säger fortfarande bara vad stationen visar, aldrig vad vägen mellan dem är.
+   Utan station inom 30 km står länets mening som förut. Länets egen mening under *Hela {län}* är oförändrad.
+
+**Alternativ som förkastades:** (a) rendera hela startsidan ur publicera: då skulle Hemsida 1b:s uppmärkning ligga i TypeScript och
+skrivas över vid varje ändring i kartrepot; (b) `<noscript>` med samma tal: dubbla texter för samma sak; (c) orternas stationer ur
+sträckorna som bär ortens namn, utan koordinat: *Göteborg–Borås* är 6 mil lång och säger inget om var orten är.
+
+**Verify:** deploy av publicera; efter nästa :00/:30 har `index.html` i kartrepot talen i HTML (`curl` utan JavaScript visar inte "–"),
+`karta.html` bär *Uppdaterad hh:mm* och landets mening, och `ort/boras/` bär *Vägbanan runt Borås just nu* med stationer under
+noll när det är kallt. Sedan mätningen av de 17 frågorna i början av december (aeo.md).
+
+**Stomdokument:** APP 9 — sajten i sökmotorerna och AI-tjänsterna (startsidans tal i HTML och ortssidornas stationer)
