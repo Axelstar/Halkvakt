@@ -6,6 +6,9 @@ skrivet i #797). Texten som signerades är filen på main 947d180f, sha256 `e255
 Reglerna i §4 är skrivna innan någon olycka har klassats, och ingen av dem kommer ur ett utfall. Efterkontrollen (`sql/085`) migreras
 först när dokumentet är signerat.
 
+**§9 (steg 4: bedömningen per olycka, veckan och säsongen) tillades 6/11, före den första klassningen, och väntar på Bengts och Axels
+signaturer** (DECISIONS #802). §1–§8 gäller som de signerades.
+
 **Varifrån det kommer.** Bengt 6/11: *"Analys av olyckor är ett av de mest effektiva metoderna för att se om varningssystemen fungerar.
 Olyckan fungerar som facit."*
 - Steg 1 (DECISIONS #796) fryser vad varje varningslager sa när olyckan började.
@@ -77,7 +80,7 @@ Utan station är ytan okänd. Då kan bara regel 1 och regel 5 ge en klass. Regl
   - Ett dygn utan sådana olyckor får ett ärende som stängs direkt.
   - Ett öppet ärende påminns var sjunde dygn.
   - Öppna `olycka`-ärenden tas upp med Bengt först i varje session, som `frist` och `dom` (CLAUDE.md).
-- **Veckans sammanställning** (steg 4) gör återkommande orsaker till kort och frågor. Den byggs efter de första veckorna.
+- **Veckans sammanställning** (steg 4) gör återkommande orsaker till kort och frågor. Reglerna står i §9 (tillagt 6/11).
 
 ## 6. Valen
 
@@ -120,6 +123,103 @@ Claude rekommenderar. Bengt och Axel väljer, och valen förs in här före sign
 | :-- | :-- | :-- |
 | Bengt | 2026-11-06 | i chatten: *"när det gäller olyckorna så signerar axel och jag 1,2 och 3"*, på listan där steg 1 var signeringen med Claudes fem rekommendationer i §6 |
 | Axel | 2026-11-06 | via Bengt i chatten, samma rad |
+
+## 9. Steg 4: bedömningen per olycka, veckan och säsongen (tillagt 6/11 2026)
+
+**Status:** väntar på Bengts och Axels signaturer. Skrivet före den första klassningen (6/11 21:07 UTC): ingen olycka är klassad,
+och ingen regel här kommer ur ett utfall. Bengt 6/11: *"bygg steg 4"*, och *"en bedömning om halkvakt hade varnat vid olycka (för att
+ev visa vid diskussion med försäkringsbolag o liknande i ett sälj) o alternativt varför halkvakt inte varnade och om det behövs någon
+förbättring i systemet"*.
+
+### 9.1 Vad *varnade* betyder
+
+- Fångsten (`sql/084`, `sql/085`) fryser vad lagren sa **när olyckan började**:
+  - A1: väglaget som gällde vid starten;
+  - K: kandidatens senaste timme som var skriven före starten;
+  - A2: stationernas värden timmen före starten.
+- **VARNADE** betyder att minst ett av appens lager hade en aktiv varning på platsen när olyckan började.
+- Det säger inte att någon förare med appen var där, och inte att olyckan hade undvikits. Ingen förardata läses (förslaget §4).
+
+### 9.2 Bedömningen per olycka
+
+Varje klassad olycka utom dubbletterna får en bedömning. Den första raden som stämmer gäller.
+
+| Bedömning | Villkor | Vad den betyder |
+| :-- | :-- | :-- |
+| **RÄTT VARNING** | VARNADE, och TYDLIG eller TROLIG | Halkvakt hade en varning på platsen när en olycka med koppling till halka började |
+| **VARNING, HALKA INTE BEKRÄFTAD** | VARNADE, och OKLAR eller INTE | Bokförs. Ingen slutsats |
+| **MISS** | Tyst (täckt eller otäckt), och TYDLIG eller TROLIG | Ska ha en åtgärd (§5) och får ett förbättringsområde (§9.3) |
+| **OKLAR TYSTNAD** | Tyst, och OKLAR | Ingen slutsats |
+| **RÄTT TYSTNAD** | Tyst, och INTE | Tystnaden är en funktion |
+
+### 9.3 Förbättringsområdet för en miss
+
+Området läses ur fångstens orsaker. Den första raden som stämmer gäller.
+
+| # | Område | Villkor |
+| :-- | :-- | :-- |
+| 1 | **Täckningen** | Otäckt, eller *K: ingen vägpunkt* |
+| 2 | **Spridningsspärren** | *K: spridningsspärren* |
+| 3 | **Vetot** | *K: veto* |
+| 4 | **Ytan i modellen** | *K: yta över 0* |
+| 5 | **Rimfrosten** | *K: fukt saknades*, och rimfrost vid stationen |
+| 6 | **Fukten syntes inte** | *K: fukt saknades* |
+| 7 | **Kandidatens drift** | *K: ingen timme* eller *K: inget värde* |
+| 8 | **Övrigt** | Allt annat. En människa läser fallet |
+
+- K står i villkoren eftersom kandidaten är det lager Halkvakt själv bygger.
+- A1:s och A2:s orsaker följer med i raden, men de styr inte området.
+
+### 9.4 Dagens ärende
+
+Två tillägg i ärendet från §5:
+- Varje rad under *Att åtgärda* bär missens förbättringsområde.
+- En lista *Rätt varning* tar upp varje RÄTT VARNING med tid, väg, läge, klass och lagren som varnade.
+
+### 9.5 Veckans ärende
+
+- **Rubriken** är *Olycksfacit vecka ÅÅÅÅ-Vnn*. Veckan är ISO-veckan, måndag till söndag i svensk tid, och etiketten är `olycka`.
+- **Det skrivs** av samma funktion och samma jobb som dagens ärende (05:17 UTC). Det görs den första morgonen då veckans söndag ligger minst två dygn bort och alla veckans olyckor är kontrollerade, normalt på tisdagen.
+- **Den första veckan** är 2026-V45, från 6/11.
+- **Ärendet bär:**
+  1. bedömningarna i §9.2, med antal;
+  2. vid de halkkopplade olyckorna (TYDLIG och TROLIG): hur många gånger A1, K och A2 varnade;
+  3. missarna per förbättringsområde;
+  4. veckans RÄTT VARNING fall för fall: tid, väg, läge, klass och lager;
+  5. säsongen sedan 6/11: halkkopplade olyckor, RÄTT VARNING i antal och andel, och missarna per område.
+- **Förslagen.** Ett område med minst **två** missar under veckan är återkommande. Det står som en rad att åtgärda, med ett kort på tavlan, en fråga i bedömningens §4.2 eller *ingen åtgärd* med skälet.
+- **Stängning.** Ärendet stängs när varje rad har sin åtgärd. Utan ett återkommande område stängs det direkt. Ett öppet ärende påminns var sjunde dygn, som dagens.
+- **Publikt.** Som i §5 bär ärendet bara väg, tid, läge, koder och antal.
+
+### 9.6 Säljregeln: vad som får sägas utåt
+
+- **Bara RÄTT VARNING** får anföras som att Halkvakt varnade, med orden *"Halkvakt hade en aktiv varning på platsen när olyckan
+  började"*. Lagret skrivs ut: Trafikverkets väglag (A1), stationerna (A2) eller kandidatens betavarning (K).
+- **Aldrig** att en förare varnades eller att en olycka hade undvikits.
+- **Aldrig ett enskilt fall utan säsongens andel bredvid**: RÄTT VARNING av de halkkopplade olyckorna.
+- Missarna redovisas lika öppet, eftersom ärendena är publika.
+
+### 9.7 Säsongsfacit för vinterläsningarna
+
+- Förslagets säsongsfacit är andelen missar vägd på olyckor per variant: spridningsspärren, daggpunktsvägen och P1.
+- Det byggs inte nu. Varje variant måste räknas om per olycka, och den räkningen skrivs som ett eget tillägg före marsdomen.
+- Veckans säsongstal (§9.5 punkt 5) är grunden.
+
+### 9.8 Valen
+
+Claude rekommenderar. Bengt och Axel väljer, och valen förs in här före signeringen.
+
+| # | Val | Claudes rekommendation | Alternativet | Valt |
+| :-- | :-- | :-- | :-- | :-- |
+| 6 | När ett område är återkommande | **Två missar samma vecka.** Varje miss har redan en åtgärd i dagens ärende, så veckan söker mönster, och två är det minsta mönstret | Tre i veckan, eller räknat över säsongen | — |
+| 7 | Säljregelns ord | **Som §9.6**: *"aktiv varning på platsen när olyckan började"*, med lagret och säsongens andel | Kortare: *"Halkvakt varnade"* | — |
+| 8 | Trafikverkets olyckstext i ärendena | **Nej.** Ärendet bär bara koder (§5). Texten hämtas ur databasen när ett fall ska visas utåt | Ja, för RÄTT VARNING | — |
+| 9 | Säsongsfacit per variant (§9.7) | **Inför marsdomen**, som eget tillägg | Nu | — |
+
+| Vem | Datum | Hur |
+| :-- | :-- | :-- |
+| Bengt | — | väntar |
+| Axel | — | väntar |
 
 ---
 

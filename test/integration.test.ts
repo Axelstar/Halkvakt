@@ -2210,7 +2210,9 @@ test("#797 olycksfacit: efterkontrollen klassar en gång, med vakterna, och K l�
                        "065_kandidat_domlogg_punkter.sql"]) await las(f);
     }
     for (const f of ["003_situation_archive.sql", "068_ny_kandidat_skugga.sql", "084_olycksfacit.sql", "085_olycksfacit_klassning.sql",
-                     "085_olycksfacit_klassning.sql"]) await las(f);
+                     "085_olycksfacit_klassning.sql", "088_olycksfacit_veckor.sql", "088_olycksfacit_veckor.sql"]) await las(f);
+    // Steg 4 (sql/088, DECISIONS #802): veckornas tabell finns, med RLS på, och filen går att köra två gånger.
+    assert.deepEqual((await q("SELECT relrowsecurity FROM pg_class WHERE relname = 'olycksfacit_veckor'")).rows, [{ relrowsecurity: true }]);
     for (const f of ["olycksfacit_fanga", "olycksfacit_efterkontroll"])
       assert.deepEqual((await q("SELECT proconfig FROM pg_proc WHERE proname = $1", [f])).rows[0].proconfig,
         ["search_path=public, extensions"], `${f}: fast sökväg i definitionen (DECISIONS #784)`);
