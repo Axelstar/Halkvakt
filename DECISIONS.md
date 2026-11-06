@@ -14081,3 +14081,19 @@ ord. Beviset är den första veckans ärende, 2026-V45, väntat tisdag 10/11.
 ärende — förkastat, Bengt bad om en bedömning per olycka, och dagens ärende är där varje miss får sin åtgärd.
 
 **Stomdokument:** MAT provningen — olycksfacits steg 4, BED §4.2 — signaturerna och valen i TROSKLAR-OLYCKSFACIT §9.8
+
+## #803 (6/11 2026) TROSKLAR-OLYCKSFACIT §9 fastställd av Bengt och Axel, med valen som rekommenderat
+
+**Beslut.** Bengt 6/11, för sig och Axel: *"Vi signerar"*, på frågan om §9 med valen 6–9 som rekommenderat (#802).
+- Texten som signerades är `docs/TROSKLAR-OLYCKSFACIT.md` på grenen `claude/olycksfacit-steg4` vid 62c58f4a, sha256 `4ad7dc77…8c0f` (LF).
+- **Valen:**
+  - (6) ett område är återkommande vid två missar samma vecka;
+  - (7) säljregelns ord *"Halkvakt hade en aktiv varning på platsen när olyckan började"*, med lagret och säsongens andel;
+  - (8) ingen olyckstext från Trafikverket i ärendena;
+  - (9) säsongsfacit per variant inför marsdomen, som eget tillägg.
+- Signerat före den första klassningen (6/11 21:07 UTC). Fram till den får §9 ändras av Bengt eller Axel med en rad här; därefter gäller regel L (§7).
+
+**Kvar:** sammanslagningen av PR #1410, deployen av `olycksfacit` och migrationen av sql/088, på Bengts ord. Beviset är den första veckans
+ärende (2026-V45, väntat 10/11).
+
+**Stomdokument:** MAT provningen — olycksfacits steg 4 fastställt, BED §4.2 — frågan avgjord

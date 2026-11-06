@@ -6,8 +6,8 @@ skrivet i #797). Texten som signerades är filen på main 947d180f, sha256 `e255
 Reglerna i §4 är skrivna innan någon olycka har klassats, och ingen av dem kommer ur ett utfall. Efterkontrollen (`sql/085`) migreras
 först när dokumentet är signerat.
 
-**§9 (steg 4: bedömningen per olycka, veckan och säsongen) tillades 6/11, före den första klassningen, och väntar på Bengts och Axels
-signaturer** (DECISIONS #802). §1–§8 gäller som de signerades.
+**§9 (steg 4: bedömningen per olycka, veckan och säsongen) tillades 6/11, före den första klassningen, och FASTSTÄLLDES samma dag av
+Bengt och Axel** (DECISIONS #802, #803), med valen i §9.8 som rekommenderat. §1–§8 gäller som de signerades.
 
 **Varifrån det kommer.** Bengt 6/11: *"Analys av olyckor är ett av de mest effektiva metoderna för att se om varningssystemen fungerar.
 Olyckan fungerar som facit."*
@@ -126,8 +126,9 @@ Claude rekommenderar. Bengt och Axel väljer, och valen förs in här före sign
 
 ## 9. Steg 4: bedömningen per olycka, veckan och säsongen (tillagt 6/11 2026)
 
-**Status:** väntar på Bengts och Axels signaturer. Skrivet före den första klassningen (6/11 21:07 UTC): ingen olycka är klassad,
-och ingen regel här kommer ur ett utfall. Bengt 6/11: *"bygg steg 4"*, och *"en bedömning om halkvakt hade varnat vid olycka (för att
+**Status:** ✅ **FASTSTÄLLT 2026-11-06 av Bengt och Axel** (DECISIONS #803). Texten som signerades är filen på grenen
+`claude/olycksfacit-steg4` vid 62c58f4a, sha256 `4ad7dc7783ee25388a7d058dccb552e9ffd596019b2c56a52d38fe7f262c8c0f` med radsluten som LF. Skrivet före den första klassningen
+(6/11 21:07 UTC): ingen olycka är klassad, och ingen regel här kommer ur ett utfall. Bengt 6/11: *"bygg steg 4"*, och *"en bedömning om halkvakt hade varnat vid olycka (för att
 ev visa vid diskussion med försäkringsbolag o liknande i ett sälj) o alternativt varför halkvakt inte varnade och om det behövs någon
 förbättring i systemet"*.
 
@@ -211,15 +212,15 @@ Claude rekommenderar. Bengt och Axel väljer, och valen förs in här före sign
 
 | # | Val | Claudes rekommendation | Alternativet | Valt |
 | :-- | :-- | :-- | :-- | :-- |
-| 6 | När ett område är återkommande | **Två missar samma vecka.** Varje miss har redan en åtgärd i dagens ärende, så veckan söker mönster, och två är det minsta mönstret | Tre i veckan, eller räknat över säsongen | — |
-| 7 | Säljregelns ord | **Som §9.6**: *"aktiv varning på platsen när olyckan började"*, med lagret och säsongens andel | Kortare: *"Halkvakt varnade"* | — |
-| 8 | Trafikverkets olyckstext i ärendena | **Nej.** Ärendet bär bara koder (§5). Texten hämtas ur databasen när ett fall ska visas utåt | Ja, för RÄTT VARNING | — |
-| 9 | Säsongsfacit per variant (§9.7) | **Inför marsdomen**, som eget tillägg | Nu | — |
+| 6 | När ett område är återkommande | **Två missar samma vecka.** Varje miss har redan en åtgärd i dagens ärende, så veckan söker mönster, och två är det minsta mönstret | Tre i veckan, eller räknat över säsongen | Som rekommenderat |
+| 7 | Säljregelns ord | **Som §9.6**: *"aktiv varning på platsen när olyckan började"*, med lagret och säsongens andel | Kortare: *"Halkvakt varnade"* | Som rekommenderat |
+| 8 | Trafikverkets olyckstext i ärendena | **Nej.** Ärendet bär bara koder (§5). Texten hämtas ur databasen när ett fall ska visas utåt | Ja, för RÄTT VARNING | Som rekommenderat |
+| 9 | Säsongsfacit per variant (§9.7) | **Inför marsdomen**, som eget tillägg | Nu | Som rekommenderat |
 
 | Vem | Datum | Hur |
 | :-- | :-- | :-- |
-| Bengt | — | väntar |
-| Axel | — | väntar |
+| Bengt | 2026-11-06 | i chatten: *"Vi signerar"*, på frågan om §9 med valen 6–9 som rekommenderat |
+| Axel | 2026-11-06 | via Bengt i chatten, samma rad |
 
 ---
 
