@@ -14161,3 +14161,27 @@ dom och arkivet räknar alltså på samma takt som förut, och ingen tröskel ä
 **Ordningen efter sammanslagningen:** pulsklockan körs skarpt, så att jobbet skapas, och sedan deployas vakthunden med golvet 29.
 
 **Stomdokument:** SYS radarn — stadsradarn var 15:e minut, MAT segmentprognosen — storstädernas punkter (kort #378)
+
+## #806 (6/11 2026) PostGIS flyttad från public till extensions av Supabase; felet på spatial_ref_sys borta
+
+**Beslut (Axel, 5–6/11).** Supabase support (ärende SU-537379) drar inte in rättigheterna på `spatial_ref_sys`, utan erbjöd att flytta
+PostGIS till schemat `extensions` på plats: inget drop, inga data eller index förlorade, ingen omstart. Axel godkände skriftligt 5/11.
+Supabases egen kontroll 6/11 hittade sex osäkrade sql-funktioner med PostGIS-namn (`arkiv_jamfor`, `kandidat_regel`, `ny_kandidat_regel`,
+`ny_kandidat_regel_snabb`, `olja_aktiva`, `vagpunkt_ankare`). Varje anropare spårades: de låsta plpgsql-funktionerna har `public, extensions`
+(sql/081), edge-funktionerna `publicera` och `arkivexport` och flödena i Actions ansluter som postgres (sökvägen har `extensions`), och
+skuggmotorn går via Data API som service_role. Flyttad 6/11 kl. 17.19 UTC.
+
+**Bevis efter flytten (6/11 20.04 UTC):** postgis och `spatial_ref_sys` ligger i `extensions`; säkerhetsgranskningen har inget fel
+(`rls_disabled_in_public` borta), och `extension_in_public` gäller bara pg_net och `st_estimatedextent`-varningarna är borta; 452 cron-körningar
+sedan 17.00 UTC, alla lyckade; skuggmotorns körning 20.02 UTC fick prognosankarna (`vagpunkt_ankare`) och kandidatens träffar
+(`kandidat_regel`) via Data API, alltså når även den vägen PostGIS. `anrop` visar inga nya feltyper: tidsgränserna på ingest-live (omkring
+tio i timmen) fanns redan 5/11 och har ingenting med flytten att göra.
+
+**Förberett:** återläsningsprovet i arkivbackupen installerar PostGIS i källans schema (PR #1394), annars hade det tappat tabellerna med
+geometrikolumner (uppmätt 20/9). `halkvakt-kuvos` lästes igenom: kuvösens klocka (`kuvos, public, pg_catalog`) körs bara mot provdatabasen
+i flödet. DECISIONS #784:s "postgis i public lämnas" är överspelad.
+
+**Kvar, inte åtgärdat:** pg_net i public (Supabase erbjöd bara PostGIS) och de 23 osäkrade sql-funktionerna (med flit, #784).
+
+**Stomdokument:** SYS PostGIS i extensions och säkerhetsgranskningen 6/11
+
