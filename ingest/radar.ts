@@ -14,6 +14,8 @@
 //
 // Run:  DATABASE_URL=... node --experimental-strip-types ingest/radar.ts        (skarp)
 //       node --experimental-strip-types ingest/radar.ts --prov                  (diagnos, ingen DB)
+//       DATABASE_URL=... node --experimental-strip-types ingest/radar.ts --bara-stad   (bara radar_stad, var 15:e minut: radar-stad.yml,
+//                                        DECISIONS #805; Trafikverkets sträckor och radar_precip rörs inte)
 // Källa: SMHI öppna data (CC BY 4.0). User-Agent: repo-URL, inga personuppgifter.
 
 import { readFileSync } from "node:fs";
@@ -24,6 +26,9 @@ import { MIN_RATE_MMH, gruppRader, rateFromRaw, segmentRader } from "./radar-kar
 const UA = "Halkvakt-radarpilot/0.1 (+https://github.com/Axelstar/Halkvakt)";
 const API = "https://opendata-download-radar.smhi.se/api/version/latest/area/sweden/product/comp";
 const PROV = process.argv.includes("--prov");
+// Storstädernas radar var 15:e minut (DECISIONS #805): bara radar_stad. radar_precip skrivs bara av den vanliga körningen en gång i
+// timmen, så att K:s fukt på vägpunkterna, kandidatens dom och arkivet räknar på samma takt som förut.
+const BARA_STAD = process.argv.includes("--bara-stad");
 
 // ── 1. Senaste filen ur dagens (eller gårdagens, runt midnatt) listning.
 async function latestFile(): Promise<{ link: string; validIso: string }> {
@@ -111,6 +116,7 @@ let segments: { id: string; line: [number, number][] }[] = [];
 if (url) {
   const pg = (await import("pg")).default;
   const pool = new pg.Pool({ connectionString: url, max: 1, ssl: url.includes("localhost") ? undefined : { rejectUnauthorized: false } });
+  if (!BARA_STAD) {
   const res = await pool.query(`SELECT segment_id, ST_AsGeoJSON(geom)::json AS g FROM road_conditions WHERE NOT deleted AND geom IS NOT NULL`);
   segments = res.rows.map((r: any) => ({ id: r.segment_id, line: r.g.coordinates }));
 
@@ -131,6 +137,7 @@ if (url) {
   if (!PROV) {
     const fr = await pool.query(`SELECT count(*) AS n, count(DISTINCT observed_at) AS filer, max(observed_at) AS senaste FROM radar_precip WHERE observed_at > now() - interval '24 hours'`);
     console.log(`radar_precip senaste dygnet: ${fr.rows[0].n} rader över ${fr.rows[0].filer} kompositer, senaste ${fr.rows[0].senaste ?? "—"}`);
+  }
   }
   // STORSTÄDERNAS PUNKTER (sql/089, sql/090; DECISIONS #804, kort #378): radarn i varje stadspunkt i samma komposit, max och medel per
   // grupp, till radar_stad — aldrig radar_precip. Efter radar_precip, så att den alltid är skriven. Loggen säger bara klart eller fel
