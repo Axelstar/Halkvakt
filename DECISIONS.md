@@ -14161,3 +14161,27 @@ dom och arkivet räknar alltså på samma takt som förut, och ingen tröskel ä
 **Ordningen efter sammanslagningen:** pulsklockan körs skarpt, så att jobbet skapas, och sedan deployas vakthunden med golvet 29.
 
 **Stomdokument:** SYS radarn — stadsradarn var 15:e minut, MAT segmentprognosen — storstädernas punkter (kort #378)
+
+## #806 (6/11 2026) Reels: ny rotation som talar till en förare, och en reel till varje morgon
+
+**Axels ord 6/11:** om de nationella reelsen, *"right now we try to talk to everyone but im not sure if that is working"*; om
+utkastet *Ska du köra i morgon bitti?*: *"This one is pretty good and i do like it"*; om förslaget: *"Jag gillar dina förslag
+'Föreslagen rotation'. Är det dumt att göra fler än en per dag?"*, och på förslaget om två om dagen: *"Japp vi kör :)"*.
+
+**Beslut.** Två reels om dagen, samma flöde (`reels.yml`), som läser av klockan i Stockholm vilken plats det är.
+- **Kvällen, 20:50** (puls-reels 19:50 UTC) roterar mellan *Ska du köra i morgon bitti?* (Sverige i tre delar), *Bilen säger plus.
+  Vägen säger minus.* (udda veckor) och *Gissa temperaturen* (jämna veckor), *Pendlar du mellan … och …?* (den av åtta sträckor med
+  flest stationer under noll), *Har frosten nått din stad?* (tolv städer, närmaste station; bara när några men inte alla har minus)
+  samt *Var är det halt i kväll?* och *Sverige i natt* som jämförelse. *Kallast*, *E4* och *frosten* går ur rotationen men kan
+  väljas för hand.
+- **Morgonen, 06:45** (puls-reels-morgon 05:45 UTC) roterar mellan *Ska du köra nu?* och *Bilen säger plus*. Torrkörning tills
+  repovariabeln `REELS_MORGON_SKARPT` är `ja`; kvällen är fortsatt skarp.
+- Varje plats räknar sina filmer för sig, med lika många av varje först och aldrig samma två gånger i rad. Orden som förut:
+  aldrig starkare än Trafikverkets. Bilen säger plus visar två mätningar från samma station, luft och vägbana.
+- Tanken (Axel): reelsen värmer upp, så att länsannonserna möter folk som redan känner igen namnet och formen.
+
+**Alternativ.** Fortsätta med de nationella filmerna: de talar till ett Sverige där de flesta tittarna inte har halka. Tre eller
+fler om dagen: filmerna liknar varandra, följarna tröttnar, och utan statistiknyckeln mäter vi ändå inget. Vägkamerornas bilder:
+väntar tills villkoren för bilderna i reklam är lästa.
+
+**Stomdokument:** inga — marknadsföringen har inget stomdokument; appen, motorn och mätningarna är orörda.
