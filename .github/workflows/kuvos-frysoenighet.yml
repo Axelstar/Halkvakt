@@ -69,7 +69,10 @@ jobs:
               console.log(`${f.packad}: ${h === f.packad_sha256 ? "ok" : "FEL " + h}`); if (h !== f.packad_sha256) fel++;
             }
             process.exit(fel ? 1 : 0);'
-          curl -sSfL -o static.json https://axelstar.github.io/halkvakt-karta/data/app/v1/static.json
+          # Stationernas lägen ur kartans static.json i den version som gällde när #476 kördes (kartrepots commit c8c0a2d),
+          # inte dagens: inläsningen stryker rader för stationer utan läge, och dagens fil har fler stationer.
+          curl -sSfL -o static.json https://raw.githubusercontent.com/Axelstar/halkvakt-karta/c8c0a2d935891938e1b3e6ed59ece4acffec5dce/data/app/v1/static.json
+          echo "static.json: kartans version c8c0a2d (stationslistan när #476 kördes)"
       - name: SMHI ur releasen, kontrollsummorna mot manifestet
         if: ${{ hashFiles('kuvos/smhi-leverans.json') != '' }}
         shell: bash
