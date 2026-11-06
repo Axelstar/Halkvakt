@@ -59,6 +59,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
+          mkdir -p mnp/dagar                 # första gången finns ingen cache och därmed ingen mapp (körningen 42166460480)
           gh release download "$REL" --dir rel --pattern metnordic_punkter.csv
           if [ -f mnp/pilot_punkter.csv ]; then echo "rutorna finns från en tidigare körning"; exit 0; fi
           node --experimental-strip-types fysik/ny_kandidat/smavagar_pilot.ts --rutor mnp/pilot_punkter.csv --punkter "$PUNKTER" \
