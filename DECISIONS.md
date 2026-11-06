@@ -13883,3 +13883,34 @@ bara `reachWindow`, som de inte anropar. Kotlin och Swift bevisas av android.yml
 **Tillägg 5/11 (Bengt: *"slå ihop 1391 och deploya skuggmotorn"*, och *"Ja, bokför"*).** PR #1391 sammanslagen (e9f84a96). Skuggmotorn deployad 17:54:39 UTC från e9f84a96 (deploy-supabase 42079129595, *Deployed Functions … skuggmotor*). Beviset efter deployen: skuggmotorns körningar 17:55 och 18:02 lyckades (pg_cron *succeeded*) och skrev loggrader i samma storlek som före — 18:02: 3 rutter, 10 323 faror, 1 varning, mot 17:32: 3 rutter, 10 248 faror, 3 varningar. Exakt likhet bevisas av jämförelseprovet i ci, inte av driften: driften visar att inget gått sönder. Favoritprovets och favoriternas buntar är omgjorda men inte deployade; de anropar inte rutnätet. Apparna får det i nästa bygge, efter ett par dygns skuggrapport. Kvar som eget ärende: Swift-portens krasch på `Int(NaN)` i `samplePolyline` när ett hörn saknar koordinat (TS och Kotlin hoppar över hörnet). Felet är äldre än rutnätet och nås knappast ur en lägesfil, eftersom JSON inte kan bära NaN.
 
 **Stomdokument:** SYS motorn — rutnätet i motorns tre portar
+
+## #796 (6/11 2026) Olycksfacit, steg 1: varje olycka fångas inom 15 minuter med vad varje varningslager sa på platsen
+
+**Beslut.** Bengt 6/11: *"Bygg olycksfacit"*, på förslaget `Desktop/Olyckorna_2026-11-06/OLYCKSFACIT_RUTINEN_FORSLAG_2026-11-06.md`.
+
+**Bakgrunden:** Bengt 6/11, *"Analys av olyckor är ett av de mest effektiva metoderna för att se om varningssystemen fungerar.
+Olyckan fungerar som facit."* Förslaget skrevs efter morgonens olyckor 6/11. Vid E18 Åkersberga varnade A1 och kandidaten. Kisa och E4
+var täckta men tysta, eftersom fukten inte syntes. Väg 686 och 700 saknade täckning.
+
+**Principen:** olyckan är facit för varningssystemen, inte för vägen. En olycka visar att något hände, inte att det var halt (#247).
+Kopplingen till halka klassas därför i steg 2, efter en egen förregistrering. Steg 1 fryser bara läget, i tid.
+
+**Steg 1** (`sql/084_olycksfacit.sql`):
+- **Fångsten.** `olycksfacit_fanga()` körs av pg_cron var 15:e minut (`halkvakt-olycksfacit`, `*/15`). Den tar varje olycka i `situation_archive` som börjat de senaste tolv timmarna och inte fångats.
+- **Varför direkt.** Kandidatens tal per punkt gallras efter sex timmar.
+- **Raden per olycka** i `olycksfacit`: läget, texten, dubbletten (en tidigare rad inom 300 m och 30 minuter) och utfallet. Utfallet är VARNADE, TYST_TACKT eller TYST_OTACKT, med orsakerna till tystnaden.
+- **Raden per lager** i `olycksfacit_lager`:
+  - **A1:** väglaget vid starten på närmaste sträcka inom 100 m, med motorns halkord.
+  - **K:** kandidatens senaste skrivna timme på sträckan, varnande punkt inom 2 km, och den närmaste punktens utfall.
+  - **A2:** station inom 5 km (#245) med yta ≤ +1 °C och fukt. Rimfrosten står i detaljerna.
+  - **Radarn och täckningen.**
+- **Tabellerna** gallras inte. Raderna läses inte av något som når appen, och ingen förardata läses.
+- **Provet:** integrationsprovet (`test/integration.test.ts`, #796) kör fångsten mot PostGIS med fyra olyckor. Det prövar de tre utfallen, dubbletten, orsakerna, att viltolyckor äldre än tolv timmar och andra typer inte fångas, och att en andra körning inte fångar något.
+
+**Kvar, kort #376:**
+- migrationen via DB-knappen på Bengts ord, och beviset efter den: rader för nya olyckor;
+- steg 2: förregistreringen för klassningen och efterkontrollen;
+- steg 3: dagens ärende med etiketten `olycka`, stängningsregeln, påminnelsen och raden i sessionsprotokollet;
+- steg 4: veckosammanställningen och säsongsfacit.
+
+**Stomdokument:** MAT provningen — olycksfacits fångst

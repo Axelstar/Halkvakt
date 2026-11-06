@@ -2077,3 +2077,96 @@ test("#692 den nya kandidatens skugga (sql/068): samma regel och logg som den fr
     await pool.end();
   }
 });
+
+// OLYCKSFACIT, STEG 1 (sql/084, DECISIONS #796): fångsten mot riktig PostGIS. Fyra olyckor kring 71° N: en på en sträcka med
+// Besvärligt/Våt och en varnande kandidatpunkt (VARNADE), dess dubblett 100 m och fem minuter senare, en på en sträcka med Normalt
+// där kandidatens närmaste punkt är torr (TYST_TACKT med orsakerna), och en långt från allt (TYST_OTACKT). En viltolycka äldre än tolv
+// timmar och en annan typ fångas inte. En andra körning fångar ingenting (idempotent).
+test("#796 olycksfacit: varje olycka fångas en gång, med vad lagren sa vid starten", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const las = (f: string) => q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+  const nord = (km: number) => 71 + km / 111.2;
+  const stad = async () => {
+    await q("DELETE FROM olycksfacit WHERE deviation_id LIKE 'OF%'").catch(() => {});
+    await q("DELETE FROM situation_archive WHERE deviation_id LIKE 'OF%'");
+    await q("DELETE FROM ny_kandidat_skugga WHERE segment_id LIKE '9995%'");
+    await q("DELETE FROM ny_kandidat_live WHERE punkt LIKE 'vF%'");
+    await q("DELETE FROM vagpunkt WHERE punkt LIKE 'vF%'");
+    await q("DELETE FROM road_condition_history WHERE segment_id LIKE '9995%'");
+    await q("DELETE FROM road_conditions WHERE segment_id LIKE '9995%'");
+    await q("DELETE FROM weather_observations WHERE station_id LIKE 'OF%'");
+  };
+  try {
+    await q("CREATE TABLE IF NOT EXISTS shadow_log (id bigserial PRIMARY KEY, run_at timestamptz NOT NULL DEFAULT now(), alerts jsonb NOT NULL DEFAULT '[]'::jsonb)");
+    // Kandidatens kedja som provet ovan: den frystas bara när den saknas, sedan 068, arkivet och 084 två gånger (idempotent).
+    if (!(await q("SELECT 1 FROM information_schema.columns WHERE table_name = 'kandidat_skugga' AND column_name = 'fukt_pb'")).rowCount) {
+      await q("DROP FUNCTION IF EXISTS kandidat_regel()");
+      for (const f of ["001_init.sql", "008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql", "018_trend_berakna.sql",
+                       "029_brott_index.sql", "030_langsam_vakt.sql", "050_kandidat_live.sql", "052_kandidat_gallring_kort.sql", "053_arkiv_tabeller.sql",
+                       "055_vagpunkter.sql", "056_kandidat_regel.sql", "057_kandidat_skugga.sql", "058_kandidat_spridning.sql",
+                       "065_kandidat_domlogg_punkter.sql"]) await las(f);
+    }
+    for (const f of ["003_situation_archive.sql", "068_ny_kandidat_skugga.sql", "084_olycksfacit.sql", "084_olycksfacit.sql"]) await las(f);
+    await stad();
+    // Sträckorna: 99951 Besvärligt/Våt sedan tre timmar, 99952 Normalt/Torrt.
+    await q(`INSERT INTO road_conditions (segment_id, condition_code, condition_text, condition_info, road_number, geom, modified_time) VALUES
+      ('99951', 2, 'Besvärligt (risk för)', '{Våt}', 'E 18', ST_SetSRID(ST_MakeLine(ST_MakePoint(31, $1), ST_MakePoint(31, $2)), 4326), now() - interval '3 hours'),
+      ('99952', 1, 'Normalt', '{Torrt}', 'Väg 134', ST_SetSRID(ST_MakeLine(ST_MakePoint(32, $1), ST_MakePoint(32, $2)), 4326), now() - interval '3 hours')`,
+      [nord(0), nord(5)]);
+    await q(`INSERT INTO road_condition_history (segment_id, condition_code, condition_text, condition_info, modified_time) VALUES
+      ('99951', 2, 'Besvärligt (risk för)', '{Våt}', now() - interval '3 hours'), ('99952', 1, 'Normalt', '{Torrt}', now() - interval '3 hours')`);
+    for (const [p, s, lon, km] of [["vF01", "99951", 31, 1], ["vF02", "99951", 31, 3], ["vF03", "99952", 32, 1]] as const)
+      await q("INSERT INTO vagpunkt (punkt, segment_id, lon, lat) VALUES ($1, $2, $3, $4)", [p, s, lon, nord(km)]);
+    // Kandidatens timme, skriven 90 minuter före olyckorna: på 99951 tystar spridningen vF01 och vF02 varnar; på 99952 är vF03 torr.
+    await q(`INSERT INTO ny_kandidat_skugga (segment_id, observed_at, skriven_at, punkter, varnar, veto, torr, vat, flackvis_vat, pb_min,
+               spridning, fukt_punkter, fukt_utfall) VALUES
+      ('99951', date_trunc('hour', now()) - interval '2 hours', now() - interval '2 hours', 2, 1, 0, 0, true, false, -1.0, 1, '{vF01,vF02}', '{spridning,varnar}'),
+      ('99952', date_trunc('hour', now()) - interval '2 hours', now() - interval '2 hours', 1, 0, 0, 1, false, false, -1.2, 0, '{}', '{}')`);
+    await q(`INSERT INTO ny_kandidat_live (tid, punkt, pb) VALUES (date_trunc('hour', now()) - interval '2 hours', 'vF01', -0.7),
+               (date_trunc('hour', now()) - interval '2 hours', 'vF03', -1.2)`);
+    // En station 0,6 km från den första olyckan: frusen, torr och under daggpunkten (rimfrost).
+    await q(`INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, dewpoint_c, humidity_pct, precipitation)
+             VALUES ('OF1', 'Provstation', ST_SetSRID(ST_MakePoint(31.01, $1), 4326), now() - interval '40 minutes', -1.0, -1.5, -0.5, 99, 'no')`, [nord(1.6)]);
+    await q(`INSERT INTO situation_archive (deviation_id, message_type_value, message, severity_code, road_number, geom, start_time) VALUES
+      ('OF1', 'Accident', 'Singelolycka', 4, 'E18', ST_SetSRID(ST_MakePoint(31, $1), 4326), now() - interval '30 minutes'),
+      ('OF2', 'Accident', 'Singelolycka', 4, 'E18', ST_SetSRID(ST_MakePoint(31, $2), 4326), now() - interval '25 minutes'),
+      ('OF3', 'Accident', 'Singelolycka', 4, 'Väg 134', ST_SetSRID(ST_MakePoint(32, $3), 4326), now() - interval '30 minutes'),
+      ('OF4', 'Accident', 'Singelolycka', 2, NULL, ST_SetSRID(ST_MakePoint(33.5, 71.5), 4326), now() - interval '30 minutes'),
+      ('OF5', 'Accident', 'Viltolycka', 2, NULL, ST_SetSRID(ST_MakePoint(31, $1), 4326), now() - interval '13 hours'),
+      ('OF6', 'AnimalPresenceObstruction', 'Djur på vägen', 2, NULL, ST_SetSRID(ST_MakePoint(31, $1), 4326), now() - interval '30 minutes')`,
+      [nord(1.2), nord(1.29), nord(1.1)]);
+
+    await q("SELECT olycksfacit_fanga()");
+    const rad = async (id: string) => (await q("SELECT * FROM olycksfacit WHERE deviation_id = $1", [id])).rows[0];
+    const lager = async (id: string) => Object.fromEntries((await q("SELECT lager, talar, orsak, detalj FROM olycksfacit_lager WHERE deviation_id = $1", [id])).rows
+      .map((r: any) => [r.lager, r]));
+    assert.equal((await q("SELECT count(*)::int AS n FROM olycksfacit WHERE deviation_id LIKE 'OF%'")).rows[0].n, 4, "OF1–OF4, inte OF5 eller OF6");
+
+    const o1 = await rad("OF1"), l1 = await lager("OF1");
+    assert.equal(o1.utfall, "VARNADE");
+    assert.deepEqual(o1.orsaker, []);
+    assert.equal(l1.A1.talar, true); assert.equal(l1.A1.orsak, "väglag Besvärligt (risk för)");
+    assert.equal(l1.K.talar, true, "vF02 varnar 1,8 km bort");
+    assert.equal(l1.K.detalj.narmaste_utfall, "spridning"); assert.equal(l1.K.detalj.narmaste_pb, -0.7);
+    assert.equal(l1.A2.talar, false); assert.equal(l1.A2.orsak, "ingen fukt vid stationen"); assert.equal(l1.A2.detalj.rimfrost, true);
+    assert.equal(Object.keys(l1).length, 5);
+
+    assert.equal((await rad("OF2")).dubblett_av, "OF1", "samma olycka 100 m och fem minuter senare");
+
+    const o3 = await rad("OF3"), l3 = await lager("OF3");
+    assert.equal(o3.utfall, "TYST_TACKT");
+    assert.deepEqual(o3.orsaker, ["A1: väglaget Normalt", "K: fukt saknades", "A2: ingen station inom 5 km"]);
+    assert.equal(l3.K.detalj.narmaste_utfall, "torr"); assert.equal(l3.tackning.orsak, "täckt");
+
+    const o4 = await rad("OF4"), l4 = await lager("OF4");
+    assert.equal(o4.utfall, "TYST_OTACKT");
+    assert.equal(l4.A1.orsak, "ingen sträcka"); assert.equal(l4.K.orsak, "ingen vägpunkt");
+
+    assert.equal((await q("SELECT olycksfacit_fanga() AS n")).rows[0].n, 0, "en andra körning fångar ingenting");
+  } finally {
+    await stad().catch(() => {});
+    await pool.end();
+  }
+});
