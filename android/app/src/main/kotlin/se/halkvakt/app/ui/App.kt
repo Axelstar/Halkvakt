@@ -101,6 +101,9 @@ fun HazardIcon(k: HazardKind, size: Dp = 24.dp, tint: Color = Brand.yellow) {
 fun HalkvaktApp(activity: MainActivity) {
     MaterialTheme(colorScheme = Scheme) {
         var tab by rememberSaveable { mutableStateOf(0) }
+        // Favoriter 2a (#806): notisen och raden på Redo öppnar fliken med dagens resor överst.
+        val visaFavoriter by se.halkvakt.app.Favoriter.visaFliken.collectAsStateWithLifecycle()
+        LaunchedEffect(visaFavoriter) { if (visaFavoriter) { tab = 1; se.halkvakt.app.Favoriter.visaFliken.value = false } }
         val warning by GuardService.currentWarning.collectAsStateWithLifecycle()
         val running by GuardService.runningFlow.collectAsStateWithLifecycle()
         DisposableEffect(running) {

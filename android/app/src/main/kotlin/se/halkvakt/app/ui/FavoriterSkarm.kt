@@ -1,6 +1,7 @@
-// FLIKEN FAVORITER och frågan SPARA RESAN? (kort #357; DECISIONS #616, #625, #633, #637) — spegel av iOS FavoriterView.swift och
-// SparaResanKort.swift, samma ord. Varje resa har sitt läge (Nytt, Inget nytt, Lugnt; FAVORITER §2) och sin rapport (RapportSkarm.kt,
-// steg 3c); läget räknas om när fliken visas.
+// FLIKEN FAVORITER (kort #357; DECISIONS #616, #625, #633, #637, #806) — spegel av iOS FavoriterView.swift, samma ord. Överst
+// dagens resor i väntan på namn (Favoriter 2a: fältet är sparknappen, förslagen väljer namn, Släng för sig, taket synligt), sedan
+// de sparade resorna, var och en med sitt läge (Nytt, Inget nytt, Lugnt; FAVORITER §2), sin rapport (RapportSkarm.kt, steg 3c),
+// Byt namn och Ta bort; läget räknas om när fliken visas.
 // Ingen karta bakom linjen: ingen kartserver får veta var en resa går (#616, 6.2). Namnförslagen är fasta, med datum
 // (Rutter.namnforslag); inget slås upp om platsen.
 package se.halkvakt.app.ui
@@ -44,12 +45,13 @@ import se.halkvakt.app.Favoriter
 import se.halkvakt.app.MainActivity
 import se.halkvakt.app.Prefs
 import se.halkvakt.app.Rapporten
+import se.halkvakt.app.FavoritNotis
 import se.halkvakt.app.RuttLager
-import se.halkvakt.app.VantandeResa
 import se.halkvakt.engine.Geo
 import se.halkvakt.engine.ResansRapport
 import se.halkvakt.engine.Rutter
 import se.halkvakt.engine.SparadRutt
+import se.halkvakt.engine.Vantande
 import java.time.Instant
 import java.time.ZoneId
 import java.util.Calendar
@@ -75,20 +77,28 @@ private fun FavoriterLista(oppna: (String) -> Unit) {
     val lager = remember { Favoriter.lager(ctx) }
     val erbjud by remember { Prefs.favErbjud(ctx) }.collectAsStateWithLifecycle(initialValue = false)
     val rutter by lager.rutter.collectAsStateWithLifecycle()
+    val dagens by lager.dagens.collectAsStateWithLifecycle()
     val kollar by lager.kollar.collectAsStateWithLifecycle()
     val rapport by Rapporten.lage.collectAsStateWithLifecycle()
     var fragaTaBortAlla by remember { mutableStateOf(false) }
+    var byterNamn by remember { mutableStateOf<SparadRutt?>(null) }
     // När fliken visas, och när en resa sparas eller tas bort medan den visas.
-    LaunchedEffect(rutter.map { it.id }) { Rapporten.uppdatera(ctx) }
+    LaunchedEffect(rutter.map { it.id }) { lager.rensaGamla(); Rapporten.uppdatera(ctx) }
 
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp).padding(top = 24.dp, bottom = 150.dp)) {
         Text("Favoriter", color = Brand.text, fontFamily = Typo.sans, fontWeight = FontWeight.SemiBold, fontSize = 32.sp, letterSpacing = (-0.025).em)
-        Text("Vägar du kör ofta, sparade efter en resa.", color = Brand.text2, fontFamily = Typo.sans, fontSize = 15.sp, modifier = Modifier.padding(top = 10.dp))
+        Text("Vägar du kör ofta. Båda hållen räknas som en.", color = Brand.text2, fontFamily = Typo.sans, fontSize = 15.sp, modifier = Modifier.padding(top = 10.dp))
         Spacer(Modifier.height(28.dp))
         RowPanel {
             GreenToggleRow("Erbjud att spara resor", "Appen frågar efter resan", erbjud) { on ->
                 scope.launch { Prefs.setFavErbjud(ctx, on) }
-                if (!on) lager.avsta()   // av ⇒ den väntande vägen raderas; de sparade står kvar (#633)
+                if (!on) { lager.slangAlla(); FavoritNotis.taBort(ctx) }   // av ⇒ dagens resor raderas; de sparade står kvar (#633)
+            }
+        }
+        if (erbjud && dagens.isNotEmpty()) {
+            MonoLabel("Dagens resor · ${dagens.size} att spara", modifier = Modifier.padding(top = 28.dp, bottom = 10.dp, start = 4.dp))
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                dagens.forEach { v -> key(v.id) { DagensRad(lager, v, full = rutter.size >= Rutter.MAX_RUTTER) } }
             }
         }
         if (rutter.isEmpty()) {
@@ -96,11 +106,13 @@ private fun FavoriterLista(oppna: (String) -> Unit) {
                  else "Slå på, så frågar appen efter en resa om du vill spara vägen du körde. Högst fem resor.",
                 color = Brand.text2, fontFamily = Typo.sans, fontSize = 14.sp, lineHeight = 21.sp, modifier = Modifier.padding(top = 14.dp, start = 4.dp))
         } else {
-            MonoLabel("Dina resor · ${rutter.size} av ${Rutter.MAX_RUTTER}", modifier = Modifier.padding(top = 28.dp, bottom = 10.dp, start = 4.dp))
+            MonoLabel(if (rutter.size >= Rutter.MAX_RUTTER) "${Rutter.MAX_RUTTER} av ${Rutter.MAX_RUTTER} · listan är full"
+                      else "Dina resor · ${rutter.size} av ${Rutter.MAX_RUTTER}", modifier = Modifier.padding(top = 28.dp, bottom = 10.dp, start = 4.dp))
             RowPanel {
                 rutter.forEachIndexed { i, r ->
                     val lage = rapport.resor[r.id]?.let { ResansRapport.radlage(it.dit, it.hem, kollar[r.id]?.ids) }
-                    ResaRad(r, lage, rapport.laddar, rapport.gickInte, divider = i < rutter.size - 1, onOppna = { oppna(r.id) }) { lager.taBort(r.id) }
+                    ResaRad(r, lage, rapport.laddar, rapport.gickInte, divider = i < rutter.size - 1, onOppna = { oppna(r.id) },
+                        onBytNamn = { byterNamn = r }) { lager.taBort(r.id) }
                 }
             }
             Box(Modifier.fillMaxWidth().padding(top = 12.dp), contentAlignment = androidx.compose.ui.Alignment.Center) {
@@ -120,22 +132,80 @@ private fun FavoriterLista(oppna: (String) -> Unit) {
         dismissButton = { TextButton({ fragaTaBortAlla = false }) { Text("Avbryt", color = Brand.text) } },
         containerColor = Brand.panel, titleContentColor = Brand.text,
     )
+    byterNamn?.let { r ->
+        var namn by remember(r.id) { mutableStateOf(r.namn) }
+        AlertDialog(
+            onDismissRequest = { byterNamn = null },
+            title = { Text("Byt namn") },
+            text = { OutlinedTextField(namn, { namn = it }, singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(focusedTextColor = Brand.text, unfocusedTextColor = Brand.text,
+                    focusedBorderColor = Brand.yellow, cursorColor = Brand.yellow)) },
+            confirmButton = { TextButton({ lager.bytNamn(r.id, namn); byterNamn = null }) { Text("Spara", color = Brand.yellow) } },
+            dismissButton = { TextButton({ byterNamn = null }) { Text("Avbryt", color = Brand.text) } },
+            containerColor = Brand.panel, titleContentColor = Brand.text,
+        )
+    }
+}
+
+/** En av dagens resor (Favoriter 2a, DECISIONS #806): fältet först, förslagen under (de väljer namn, sparar inte), Spara och Släng
+ *  för sig. Är listan full står taket i raden i stället för fältet. */
+@Composable
+private fun DagensRad(lager: RuttLager, v: Vantande, full: Boolean) {
+    val ctx = LocalContext.current
+    var namn by remember { mutableStateOf("") }
+    var gickInte by remember { mutableStateOf(false) }
+    val spara = { gickInte = lager.spara(v.id, namn) != RuttLager.Svar.SPARAD; if (!gickInte) FavoritNotis.taBort(ctx) }
+    Column(Modifier.fillMaxWidth().background(Brand.panel, RoundedCornerShape(18.dp)).padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+            val tid = Instant.ofEpochMilli((v.slutS * 1000).toLong()).atZone(ZoneId.systemDefault()).let { "%02d:%02d".format(it.hour, it.minute) }
+            Text(if (v.dithem) "${FavoritNotis.km(v.km)} · dit och hem" else "${FavoritNotis.km(v.km)} · slutade $tid",
+                color = Brand.text, fontFamily = Typo.mono, fontWeight = FontWeight.Medium, fontSize = 12.sp, letterSpacing = 0.05.em,
+                modifier = Modifier.weight(1f))
+            MonoLink("Släng") { lager.slang(v.id) }
+        }
+        if (full) {
+            Text("Listan är full. Ta bort en resa nedan för att spara den här.", color = Brand.text2, fontFamily = Typo.sans, fontSize = 14.sp)
+        } else {
+            Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                OutlinedTextField(namn, { namn = it }, placeholder = { Text("t.ex. Jobbet") }, singleLine = true,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(onDone = { spara() }),
+                    colors = OutlinedTextFieldDefaults.colors(focusedTextColor = Brand.text, unfocusedTextColor = Brand.text,
+                        focusedBorderColor = Brand.yellow, cursorColor = Brand.yellow),
+                    modifier = Modifier.weight(1f))
+                Text("Spara", color = Brand.yellow, fontFamily = Typo.sans, fontWeight = FontWeight.SemiBold, fontSize = 15.sp,
+                    modifier = Modifier.heightIn(min = 48.dp).clickable(role = Role.Button) { spara() }.wrapContentHeight().padding(start = 12.dp))
+            }
+            val d = Instant.ofEpochMilli((v.slutS * 1000).toLong()).atZone(ZoneId.systemDefault())
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                Text("Förslag:", color = Brand.dim, fontFamily = Typo.sans, fontSize = 13.sp)
+                Rutter.namnforslag(d.dayOfMonth, d.monthValue).dropLast(1).forEach { f ->   // datumet är det tomma fältets namn
+                    Text(f, color = Brand.text, fontFamily = Typo.sans, fontWeight = FontWeight.Medium, fontSize = 14.sp,
+                        modifier = Modifier.heightIn(min = 36.dp).background(Raised2, RoundedCornerShape(18.dp))
+                            .clickable(role = Role.Button, onClickLabel = "Väljer namnet, sparar inte") { namn = f }
+                            .wrapContentHeight().padding(horizontal = 12.dp))
+                }
+            }
+            Text(if (gickInte) "Resan kunde inte sparas. Försök igen." else "Tomt namn sparar som ${se.halkvakt.app.Favoriter.datumnamn(v)}.",
+                color = if (gickInte) Brand.yellow else Brand.dim, fontFamily = Typo.sans, fontSize = 12.sp)
+        }
+    }
 }
 
 @Composable
 private fun ResaRad(r: SparadRutt, lage: ResansRapport.Radlage?, laddar: Boolean, gickInte: Boolean, divider: Boolean,
-                    onOppna: () -> Unit, onTaBort: () -> Unit) {
+                    onOppna: () -> Unit, onBytNamn: () -> Unit, onTaBort: () -> Unit) {
     Column {
-        Row(Modifier.fillMaxWidth().padding(vertical = 10.dp), verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-            Column(Modifier.weight(1f).clickable(role = Role.Button, onClickLabel = "Öppnar rapporten för resan", onClick = onOppna),
-                verticalArrangement = Arrangement.spacedBy(3.dp)) {
-                Text(r.namn, color = Brand.text, fontFamily = Typo.sans, fontWeight = FontWeight.Medium, fontSize = 16.sp)
-                Text(under(r), color = Brand.dim, fontFamily = Typo.mono, fontSize = 11.sp, letterSpacing = 0.1.em)
-                RadLageText(lage, laddar, gickInte)
-            }
-            Text("Ta bort", color = Brand.text2, fontFamily = Typo.sans, fontWeight = FontWeight.Medium, fontSize = 14.sp,
-                modifier = Modifier.heightIn(min = 44.dp).clickable(role = Role.Button, onClick = onTaBort)
-                    .semantics { contentDescription = "Ta bort ${r.namn}" }.wrapContentHeight().padding(horizontal = 4.dp))
+        Column(Modifier.fillMaxWidth().padding(top = 10.dp).clickable(role = Role.Button, onClickLabel = "Öppnar rapporten för resan", onClick = onOppna),
+            verticalArrangement = Arrangement.spacedBy(3.dp)) {
+            Text(r.namn, color = Brand.text, fontFamily = Typo.sans, fontWeight = FontWeight.Medium, fontSize = 16.sp)
+            Text(under(r), color = Brand.dim, fontFamily = Typo.mono, fontSize = 11.sp, letterSpacing = 0.1.em)
+            RadLageText(lage, laddar, gickInte)
+        }
+        // Dämpade länkar (gult bara för det som gör något, DECISIONS #806): Byt namn och Ta bort på samma ställe på varje rad.
+        Row(horizontalArrangement = Arrangement.spacedBy(18.dp), modifier = Modifier.padding(bottom = 4.dp)) {
+            Box(Modifier.semantics { contentDescription = "Byt namn på ${r.namn}" }) { MonoLink("Byt namn", onBytNamn) }
+            Box(Modifier.semantics { contentDescription = "Ta bort ${r.namn}" }) { MonoLink("Ta bort", onTaBort) }
         }
         if (divider) DashedDivider()
     }
@@ -168,55 +238,6 @@ private fun under(r: SparadRutt): String {
     val km = if (m >= 10_000) "%.0f".format(m / 1000) else "%.1f".format(m / 1000).replace('.', ',')
     val datum = runCatching { Instant.parse(r.sparad).atZone(ZoneId.systemDefault()).let { "${it.dayOfMonth}/${it.monthValue}" } }.getOrDefault("")
     return "$km KM · SPARAD $datum"
-}
-
-/** Frågan efter resan på Redo. — bara med brytaren på och en väntande väg. */
-@Composable
-fun SparaResanKort(lager: RuttLager, resa: VantandeResa) {
-    val rutter by lager.rutter.collectAsStateWithLifecycle()
-    var eget by remember { mutableStateOf("") }
-    var skriverEget by remember { mutableStateOf(false) }
-    var gickInte by remember { mutableStateOf(false) }
-    val spara = { namn: String -> gickInte = lager.spara(namn) != RuttLager.Svar.SPARAD }
-
-    Column(Modifier.fillMaxWidth().background(Brand.panel, RoundedCornerShape(18.dp)).padding(horizontal = 20.dp)) {
-        Column(Modifier.padding(vertical = 16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            MonoLabel("Spara resan?")
-            Text("Resan slutade ${klockslag(resa.slut)}. Spara vägen du körde, så finns den under Favoriter. Den stannar i telefonen.",
-                color = Brand.text2, fontFamily = Typo.sans, fontSize = 14.sp, lineHeight = 21.sp)
-        }
-        if (rutter.size >= Rutter.MAX_RUTTER) {
-            Text("Du har redan fem resor. Ta bort en under Favoriter först.", color = Brand.yellow, fontFamily = Typo.sans, fontSize = 14.sp,
-                modifier = Modifier.padding(bottom = 12.dp))
-        } else {
-            val c = Calendar.getInstance().apply { timeInMillis = resa.slut }
-            // Två per rad: tre fick inte plats på en smal telefon, samma skäl som missraderna i Efter resan (fotostudion 26/9).
-            Rutter.namnforslag(c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.MONTH) + 1).chunked(2).forEach { rad ->
-                Row(Modifier.padding(bottom = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    rad.forEach { namn ->
-                        Text(namn, color = Brand.text, fontFamily = Typo.sans, fontWeight = FontWeight.Medium, fontSize = 15.sp,
-                            modifier = Modifier.heightIn(min = 44.dp).background(Raised2, RoundedCornerShape(22.dp))
-                                .clickable(role = Role.Button) { spara(namn) }.wrapContentHeight().padding(horizontal = 14.dp))
-                    }
-                }
-            }
-            if (skriverEget) {
-                OutlinedTextField(eget, { eget = it }, placeholder = { Text("Eget namn") }, singleLine = true,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                    keyboardActions = KeyboardActions(onDone = { if (eget.isNotBlank()) spara(eget) }),
-                    colors = OutlinedTextFieldDefaults.colors(focusedTextColor = Brand.text, unfocusedTextColor = Brand.text,
-                        focusedBorderColor = Brand.yellow, cursorColor = Brand.yellow),
-                    modifier = Modifier.fillMaxWidth().padding(top = 10.dp))
-                Box(Modifier.fillMaxWidth(), contentAlignment = androidx.compose.ui.Alignment.CenterEnd) {
-                    MonoLink("Spara") { if (eget.isNotBlank()) spara(eget) }
-                }
-            } else MonoLink("Eget namn") { skriverEget = true }
-            if (gickInte) Text("Resan kunde inte sparas. Försök igen.", color = Brand.yellow, fontFamily = Typo.sans, fontSize = 13.sp,
-                modifier = Modifier.padding(top = 6.dp))
-        }
-        DashedDivider(modifier = Modifier.padding(top = 6.dp))
-        MonoLink("Nej tack") { lager.avsta() }
-    }
 }
 
 /** Upphöjda chips — samma ton som iOS Brand.raisedSolid. */

@@ -55,6 +55,8 @@ class GuardService : Service() {
     /** Skill-regel: asynkront arbete har en explicit ägare och livstid = tjänstens. */
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private var stillSinceMs = 0L
+    /** Favoriter 2a (DECISIONS #806): frågan Spara resan? efter tio minuter stilla, en gång per stopp, före kvartens självstopp. */
+    private var favoritFragadThisStop = false
     private var flushedThisStop = false
     @Volatile private var disabledKinds: Set<HazardKind> = emptySet()
     private var prevLon = Double.NaN; private var prevLat = Double.NaN
@@ -222,11 +224,15 @@ class GuardService : Service() {
             retuneCadence(fix.lon, fix.lat, fix.speedKmh)
             // S4: facit skickas när bilen står stilla (≥ 30 s under 3 km/h), en gång per stopp — aldrig under körning.
             val still = (fix.speedKmh ?: 99.0) < 3.0
-            if (!still) { stillSinceMs = 0L; flushedThisStop = false }
+            if (!still) { stillSinceMs = 0L; flushedThisStop = false; favoritFragadThisStop = false }
             else if (stillSinceMs == 0L) stillSinceMs = loc.time
             else if (!flushedThisStop && loc.time - stillSinceMs >= 30_000L) {
                 flushedThisStop = true
                 scope.launch(Dispatchers.IO) { runCatching { FacitSender.flush(this@GuardService) }; runCatching { Raknare.flush(this@GuardService) } }   // #772: räknarens kö likaså
+            }
+            if (still && !favoritFragadThisStop && stillSinceMs > 0L && loc.time - stillSinceMs >= FAVORIT_STILLA_MS) {
+                favoritFragadThisStop = true
+                favoritResanSlut(this@GuardService)
             }
         }
     }
@@ -342,7 +348,7 @@ class GuardService : Service() {
         CoroutineScope(Dispatchers.IO).launch { runCatching { Raknare.vaktStoppad(app, orsak) } }
         sparaTuren()
         sparaMatningen()
-        Favoriter.lager(this).resanSlutar(session.value.km, (System.currentTimeMillis() - session.value.startedAt) / 60_000.0)   // kort #357: frågan på Redo., bara om insamlingen var på
+        favoritResanSlut(this)   // kort #357, #806: dagens resor och notisen, bara om insamlingen var på
         scope.cancel()
         running = false
         fused.removeLocationUpdates(callback)
@@ -361,6 +367,13 @@ class GuardService : Service() {
      * är en läsning plus en notis. Ingen notis alls om betatestet är av — knappen finns bara för
      * den som själv slagit på den (#186).
      */
+    /** Favoriter 2a (DECISIONS #806): resan så långt läggs i dagens resor; en ny resa ger dagens notis. */
+    private fun favoritResanSlut(ctx: Context) {
+        val lager = Favoriter.lager(ctx)
+        val ny = lager.resanSlutar(session.value.km, (System.currentTimeMillis() - session.value.startedAt) / 60_000.0) ?: return
+        runCatching { FavoritNotis.fraga(ctx.applicationContext, ny, lager.dagens.value.size) }
+    }
+
     /** Redo efter tur (designen 01b): turens slut och sträcka till kvittot. Egen kortlivad scope, som efterResan. */
     private fun sparaTuren() {
         if (session.value.startedAt <= 0L) return
@@ -434,6 +447,7 @@ class GuardService : Service() {
         private const val HEADS_UP_CH = "heads_up"
         private const val HEADS_UP_ID = 2
         private const val HEADS_UP_MS = 8_000L  // samma 8 s som helskärmskortet
+        private const val FAVORIT_STILLA_MS = 10 * 60 * 1000L   // Favoriter 2a (#806), samma tio minuter som iOS
         private const val IDLE_TEXT = "Halkvakt vaktar — inga varningar just nu"
         /** Null = rösten fungerar. Annars raden som visas på Redo och under Rösten. */
         val voiceProblem = MutableStateFlow<String?>(null)
