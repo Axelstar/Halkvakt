@@ -2138,6 +2138,8 @@ test("#796 olycksfacit: varje olycka fångas en gång, med vad lagren sa vid sta
       ('OF6', 'AnimalPresenceObstruction', 'Djur på vägen', 2, NULL, ST_SetSRID(ST_MakePoint(31, $1), 4326), now() - interval '30 minutes')`,
       [nord(1.2), nord(1.29), nord(1.1)]);
 
+    assert.deepEqual((await q("SELECT proconfig FROM pg_proc WHERE proname = 'olycksfacit_fanga'")).rows[0].proconfig,
+      ["search_path=public, extensions"], "fast sökväg i definitionen (DECISIONS #784)");
     await q("SELECT olycksfacit_fanga()");
     const rad = async (id: string) => (await q("SELECT * FROM olycksfacit WHERE deviation_id = $1", [id])).rows[0];
     const lager = async (id: string) => Object.fromEntries((await q("SELECT lager, talar, orsak, detalj FROM olycksfacit_lager WHERE deviation_id = $1", [id])).rows

@@ -66,8 +66,9 @@ BEGIN
   END IF;
 END $$;
 
+-- Fast sökväg i definitionen (DECISIONS #784): CREATE OR REPLACE utan SET nollställer den som sql/081 satte.
 CREATE OR REPLACE FUNCTION olycksfacit_fanga() RETURNS int
-LANGUAGE plpgsql AS $$
+LANGUAGE plpgsql SET search_path = public, extensions AS $$
 DECLARE
   o record; t timestamptz; n int := 0; dubb text;
   s_seg text; s_vag text; s_km real;                                            -- närmaste väglagssträcka
