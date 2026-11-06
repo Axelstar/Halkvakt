@@ -14185,3 +14185,31 @@ fler om dagen: filmerna liknar varandra, följarna tröttnar, och utan statistik
 väntar tills villkoren för bilderna i reklam är lästa.
 
 **Stomdokument:** inga — marknadsföringen har inget stomdokument; appen, motorn och mätningarna är orörda.
+
+## #807 (6/11 2026) Den snabba kandidatens skugga lånar timvärdets frys_min (väg (a))
+
+**Bengts ord 6/11:** på frågan om vägen för den snabba skuggan, med (a) som Claudes rekommendation: *"och din rekommendation"*.
+
+**Bakgrund.** `sql/087` (F1, DECISIONS #800) ändrade `ny_kandidat_regel()` 12.31 UTC. Skuggmätningen (`sql/080`, #782 punkt 5) stannade
+vid nästa körning 12.44 UTC med skälet *regeln har ändrats sedan sql/080 kördes; kör om filen* (83 körningar till 20.04 UTC, läst i
+SQL-redigeraren). Filen gick inte att köra om: härledningen behöll `l.frys_min`, och `ny_kandidat_snabb` har ingen sådan kolumn. Sedan
+`sql/091` har regeln också en gren för storstädernas punkter, som härledningen inte bytte. Mätt hittills 4/11 06.15 – 6/11 11.59 UTC.
+Bygget av F1 missade det; ingen vakt larmar när skälet står i `ny_kandidat_snabb_korning`.
+
+**Beslut.**
+- Härledningen i `sql/080` byter också raden med `frys_min`. Den snabba regeln lånar måttet ur timvärdet som talar (`ny_kandidat_live`
+  vid `ny_kandidat_timme()`, samma punkt). Fladdret mäts alltså med timmens spärr, och skillnaden mot timvärdet kommer bara av ytan.
+- Stadsgrenen byts likadant och läser `ny_kandidat_snabb`. `kandidat_punkter` har inga stadspunkter, så grenen är tom.
+- Raderna för F1 och stadsgrenen byts bara när de finns, så att en regel utan dem härleds som förut (provets stubbe).
+- De sju dygnen börjar om när `sql/080` körts om, med `sql/081` efteråt för den fasta sökvägen.
+- Före påslaget prövas om den snabba ska räkna `frys_min` själv (väg (b)).
+
+**Alternativ.** (b) Kuvösens räkning räknar `frys_min` var femte minut. Det är rätt mått för påslaget, men det är fysik i kuvösen och ett
+längre bygge, och skuggan hade stått still under tiden. (c) Den snabba utan F1. Då hade jämförelsen med timvärdet blivit skev, eftersom
+timvärdet bär F1.
+
+**Vakten.** Provet *#807* i `test/kandidat-snabb-skugga.test.ts` läser den senaste migrationen som skapar `ny_kandidat_regel()` och fäller
+när den inte är `091_stadsregeln.sql`. En ny regelfil måste alltså föra in sig där, och då körs `sql/080` om i samma varv. Integrationsprovet
+*#807* kör härledningen på den gällande regeln mot PostGIS.
+
+**Stomdokument:** SYS kandidaten på en kvart — skuggan lånar timvärdets frys_min
