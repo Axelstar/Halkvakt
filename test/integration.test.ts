@@ -2319,6 +2319,8 @@ test("#800 spridningsspärren F1: frys_min ≥ 0,45 tystar, spridningen gör det
   };
   try {
     await q("CREATE TABLE IF NOT EXISTS shadow_log (id bigserial PRIMARY KEY, run_at timestamptz NOT NULL DEFAULT now(), alerts jsonb NOT NULL DEFAULT '[]'::jsonb)");
+    // sql/056 skapar kandidat_regel() med den äldre returtypen (som provet #796): den tas bort först, och 058 och 069 skapar den igen.
+    await q("DROP FUNCTION IF EXISTS kandidat_regel()");
     for (const f of ["001_init.sql", "008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql", "018_trend_berakna.sql",
                      "029_brott_index.sql", "030_langsam_vakt.sql", "050_kandidat_live.sql", "053_arkiv_tabeller.sql", "055_vagpunkter.sql",
                      "056_kandidat_regel.sql", "057_kandidat_skugga.sql", "058_kandidat_spridning.sql", "059_kandidat_brytare.sql",
