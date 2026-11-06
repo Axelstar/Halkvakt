@@ -13950,3 +13950,18 @@ Kopplingen till halka klassas därför i steg 2, efter en egen förregistrering.
 Beviset blir den första klassningen och det första ärendet med etiketten `olycka`. Steg 4, veckosammanställningen, byggs efter de första veckorna.
 
 **Stomdokument:** MAT provningen — olycksfacits klassning och dagens ärende, SYS edge-funktionerna — olycksfacit
+
+## #798 (6/11 2026) Tröskeldokumentet för olycksfacits klassning fastställt av Bengt och Axel
+
+**Beslut.** Bengt 6/11, för sig och Axel: *"när det gäller olyckorna så signerar axel och jag 1,2 och 3"*. Det gällde listan där steg 1 var signeringen av `docs/TROSKLAR-OLYCKSFACIT.md`
+med Claudes fem rekommendationer i §6, steg 2 deployen av `olycksfacit` och steg 3 migrationen av `sql/085`.
+
+**Fastställt:**
+- `docs/TROSKLAR-OLYCKSFACIT.md` som det stod på main 947d180f, sha256 `e2558045706e48ce525e03dc74a33a609750b05110738ac0ddf98b9b8323a3e3`;
+- valen i §6 som Claude rekommenderade: *hindersfri* stryks som INTE-regel, stationens räckvidd är 15 km, en olycka utan station blir OKLAR, och radarn och väglaget efteråt bokförs men klassar inte.
+
+Från och med nu gäller dokumentets §7: fram till den första klassningen ändras §4 och §6 med en rad i DECISIONS, därefter enligt regel L.
+
+**Deployen och migrationen** gjordes inte i samma varv. Claude Codes säkerhetsspärr stoppade deployen, eftersom "1,2 och 3" inte lästes som ett uttryckligt ord för en produktionsändring. De väntar på Bengts ord i klartext.
+
+**Stomdokument:** MAT provningen — olycksfacits klassning fastställd

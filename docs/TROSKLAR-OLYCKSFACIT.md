@@ -1,7 +1,7 @@
 # TROSKLAR-OLYCKSFACIT
 
-**Kort:** #376 OLYCKSFACIT — vilka olyckor hör ihop med halka? **Status:** ⏳ **SKRIVET 2026-11-06, väntar på Bengts och Axels
-signaturer** (DECISIONS #797).
+**Kort:** #376 OLYCKSFACIT — vilka olyckor hör ihop med halka? **Status:** ✅ **FASTSTÄLLT 2026-11-06 av Bengt och Axel** (DECISIONS #798;
+skrivet i #797). Texten som signerades är filen på main 947d180f, sha256 `e2558045706e48ce525e03dc74a33a609750b05110738ac0ddf98b9b8323a3e3`.
 
 Reglerna i §4 är skrivna innan någon olycka har klassats, och ingen av dem kommer ur ett utfall. Efterkontrollen (`sql/085`) migreras
 först när dokumentet är signerat.
@@ -88,11 +88,11 @@ Claude rekommenderar. Bengt och Axel väljer, och valen förs in här före sign
 
 | # | Val | Claudes rekommendation | Alternativet | Valt |
 | :-- | :-- | :-- | :-- | :-- |
-| 1 | *Hindersfri* som INTE (förslaget §2 B) | **Stryks.** Trafikverket skriver över texten med *"Vägen är hindersfri"* när vägen är röjd. Väg 700 vid Kinnared 6/11 bar redan den texten vid fångsten, tre timmar efter olyckan. Regeln hade gjort de flesta olyckor till INTE | Behåll den |  |
-| 2 | Stationens räckvidd | **15 km.** Kisa och E4 vid Linköping 6/11 hade ingen station inom 5 km | 5 km, A2:s räckvidd (DECISIONS #245) |  |
-| 3 | Utan station inom 15 km | **OKLAR.** Texten ensam räcker inte för TYDLIG | TYDLIG på halkordet ensamt |  |
-| 4 | Radarn | **Bokförs i fångsten, klassar inte** | Radarregn räknas som nederbörd i TROLIG |  |
-| 5 | Väglaget efteråt | **Bokförs (`halka_efter`), klassar inte.** Trafikverkets klassning efter olyckan kan vara en följd av olyckan | Halka efteråt räcker för TYDLIG |  |
+| 1 | *Hindersfri* som INTE (förslaget §2 B) | **Stryks.** Trafikverket skriver över texten med *"Vägen är hindersfri"* när vägen är röjd. Väg 700 vid Kinnared 6/11 bar redan den texten vid fångsten, tre timmar efter olyckan. Regeln hade gjort de flesta olyckor till INTE | Behåll den | Som rekommenderat |
+| 2 | Stationens räckvidd | **15 km.** Kisa och E4 vid Linköping 6/11 hade ingen station inom 5 km | 5 km, A2:s räckvidd (DECISIONS #245) | Som rekommenderat |
+| 3 | Utan station inom 15 km | **OKLAR.** Texten ensam räcker inte för TYDLIG | TYDLIG på halkordet ensamt | Som rekommenderat |
+| 4 | Radarn | **Bokförs i fångsten, klassar inte** | Radarregn räknas som nederbörd i TROLIG | Som rekommenderat |
+| 5 | Väglaget efteråt | **Bokförs (`halka_efter`), klassar inte.** Trafikverkets klassning efter olyckan kan vara en följd av olyckan | Halka efteråt räcker för TYDLIG | Som rekommenderat |
 
 ## 7. Ordning och ändring
 
@@ -118,8 +118,8 @@ Claude rekommenderar. Bengt och Axel väljer, och valen förs in här före sign
 
 | Vem | Datum | Hur |
 | :-- | :-- | :-- |
-| Bengt | | |
-| Axel | | |
+| Bengt | 2026-11-06 | i chatten: *"när det gäller olyckorna så signerar axel och jag 1,2 och 3"*, på listan där steg 1 var signeringen med Claudes fem rekommendationer i §6 |
+| Axel | 2026-11-06 | via Bengt i chatten, samma rad |
 
 ---
 
