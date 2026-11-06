@@ -1,0 +1,24 @@
+name: radar-stad
+# STORSTÄDERNAS RADAR VAR 15:E MINUT (DECISIONS #804, #805; kort #378). Stadspunkterna (sql/089) har bara radarn som fukt i kandidatens
+# regel, och den vanliga radarn i ingest.yml går en gång i timmen: utan det här flödet hade deras fukt fallit bort några minuter varje
+# timme. Kör ingest/radar.ts --bara-stad: samma komposit och samma kärna (radar-karna.ts gruppRader), bara radar_stad (sql/090);
+# radar_precip och Trafikverkets sträckor rörs inte. Startas av pulsklockan (Supabase pg_cron, puls-radar-stad "1,16,31,46 * * * *"
+# UTC); GitHub-cronen levererade för glest (#70). Actions är gratis i det publika repot (DECISIONS #805). Loggen säger bara klart eller fel.
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency: { group: radar-stad, cancel-in-progress: false }
+jobs:
+  radar-stad:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - name: Radarn i storstädernas punkter
+        run: node --experimental-strip-types ingest/radar.ts --bara-stad
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}

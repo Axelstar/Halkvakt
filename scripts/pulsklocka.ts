@@ -28,6 +28,9 @@ const NYA: { namn: string; schema: string; fil: string }[] = [
   // Kort #80: svenska GitHub-ingesten tillbaka EN gång i timmen — med --skip=weather,deviations
   // i ingest.yml bär den bara det livemotorn inte gör (kamerorna, moaten, polisen, SMHI).
   { namn: "puls-ingest", schema: "11 * * * *", fil: "ingest.yml" },
+  // Storstädernas radar var 15:e minut (DECISIONS #804, #805, kort #378): bara radar_stad, så att stadspunkternas fukt inte faller bort
+  // mellan timmens kompositer. :01, :16, :31 och :46: inte på den snabba kandidatens minuter (:04, :09 …, sql/079) eller klockans andra.
+  { namn: "puls-radar-stad", schema: "1,16,31,46 * * * *", fil: "radar-stad.yml" },
   // Kort #50 (Bengts beslut 9/9 "gör den som en bro", DECISIONS #91): puls-healthcheck tillbaka.
   // Axel stängde den 8/9 när vakthunden i Supabase tog över, men vakthunden ser bara livekedjan
   // och manifestet — healthchecken är ensam om grannländerna, gränsstationerna, kamerorna,
@@ -103,7 +106,7 @@ const NYA: { namn: string; schema: string; fil: string }[] = [
 // avaktiveras eller raderas ska larma, inte tyst falla ur bevakningslistan. Vakthunden kör i Deno
 // hos Supabase och kan inte importera den här filen, så talet är en KOPIA — kontraktsgrinden vaktar
 // att kopiorna bär samma värde, och raden under vaktar att värdet stämmer med listan ovan.
-const ANTAL_NYA = 28;
+const ANTAL_NYA = 29;
 if (NYA.length !== ANTAL_NYA) {
   console.error(`NYA har ${NYA.length} jobb men ANTAL_NYA säger ${ANTAL_NYA} — uppdatera båda, och vakthundens PULS_GOLV.`);
   process.exit(1);

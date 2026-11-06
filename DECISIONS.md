@@ -14132,3 +14132,32 @@ Brytarna är av tills dess. Stadsmiljöns dom efter 31/3 2027 avgör om B stanna
 publiceringen redan är driftens kod här, och en kopia i kuvösen skulle glida isär från dem.
 
 **Stomdokument:** MAT segmentprognosen — storstädernas punkter i driften (kort #378), SYS kandidaten — stadspunkterna i regeln, BED §4.2 — undantaget
+
+## #805 (6/11 2026) Actions i det publika repot kostar inget: storstädernas radar går var 15:e minut i ett eget flöde
+
+**Beslut.** Bengt 6/11: *"går actions på det publika spelar det väl ingen roll"* och *"Ja"*, på frågan om stadsradarn ska gå var 15:e minut i
+ett eget flöde. Bakgrunden: stadspunkterna (kort #378) har bara radarn som fukt i kandidatens regel. Den vanliga radarn i `ingest.yml`
+går en gång i timmen, så deras fukt hade fallit bort några minuter varje timme.
+
+**Regeln från 22/9** (återkommande körningar i Supabase med pg_cron och en edge function, aldrig Actions-minuter) hade ett kostnadsskäl.
+Sedan repot blev publikt 9/10 (#499–#503) är GitHubs vanliga körare gratis här. Skälet faller för det publika repot, och en återkommande
+körning får gå i Actions när pulsklockan startar den. Gränsen gäller fortfarande: bara vanliga körare och bara det publika repot. Kuvösen
+är privat och har ingen Actions.
+
+**Vad som byggs:**
+- `ingest/radar.ts --bara-stad`: samma komposit och samma kärna (`gruppRader`), bara `radar_stad`.
+- Det nya flödet `radar-stad.yml`.
+- Raden `puls-radar-stad` i pulsklockan, kl. `1,16,31,46 * * * *` UTC. De minuterna ligger inte på den snabba kandidatens (sql/079).
+- Pulsjobbens antal blir 29 i `scripts/pulsklocka.ts` och i vakthundens golv, och kontraktsgrinden vaktar att de är lika.
+
+**Vad som inte ändras:** `radar_precip` skrivs bara av den vanliga körningen en gång i timmen. K:s fukt på vägpunkterna, kandidatens
+dom och arkivet räknar alltså på samma takt som förut, och ingen tröskel ändras (stadspunkterna läser också de senaste 60 minuterna).
+
+**Alternativen:**
+- (a) ett fönster på 75 minuter för stadspunkterna, utan fler körningar. Förkastat, eftersom det ger äldre fukt och en ny tröskel.
+- (b) radarn i en edge function. Förkastat tills vidare, eftersom HDF5-läsningen kanske inte ryms i gränserna för beräkningstid (skuggmotorns 546).
+- (c) `radar_precip` var 15:e minut. Förkastat, eftersom det ändrar K:s fukt i hela landet.
+
+**Ordningen efter sammanslagningen:** pulsklockan körs skarpt, så att jobbet skapas, och sedan deployas vakthunden med golvet 29.
+
+**Stomdokument:** SYS radarn — stadsradarn var 15:e minut, MAT segmentprognosen — storstädernas punkter (kort #378)
