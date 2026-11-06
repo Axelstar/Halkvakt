@@ -14097,3 +14097,38 @@ ord. Beviset är den första veckans ärende, 2026-V45, väntat tisdag 10/11.
 ärende (2026-V45, väntat 10/11).
 
 **Stomdokument:** MAT provningen — olycksfacits steg 4 fastställt, BED §4.2 — frågan avgjord
+
+## #804 (6/11 2026) Undantag från #768: storstädernas punkter går ut i driften som kandidatens betavarning
+
+**Beslut.** Bengt 6/11, för sig och Axel: *"Vi signerar båda"*, på frågan *"Signerar du och Axel F33 och ger undantaget från #768?"*.
+Kuvösen beslutade samma dag att punkterna i storstäderna ska ut i appen nu, som kandidatens betavarning (K), i stället för vintern 2027/28.
+Det står i halkvakt-kuvos F33, och Bengt sade: *"Nej nej det är alldeles för sent. Jag vet inte varför vi ska vänta överhuvudtaget"*.
+De punkterna är B, statliga vägar utanför dagens täckning i Stockholms, Göteborgs och Malmös områden, och C, kommunala gator i
+Stockholms stad. #768 säger att ny kod om småvägar varken får ligga här eller på en gren här. Det här beslutet gör ett undantag för
+just storstädernas punkter i driften.
+
+**Vad som får ligga här:**
+- **Driftens rörarbete:**
+  - en tabell för stadspunkterna, med en brytare per område och lager;
+  - laddaren, som läser punkterna ur kuvösens överlägg;
+  - radarn per stadspunkt;
+  - kandidatens regel med stadspunkterna och marsfönstret för dem;
+  - kedjans steg;
+  - skuggans läsning;
+  - appens text.
+- **Varningarnas koordinater** i `live.json`, i hinken och i kartrepot, som K:s varningar i dag.
+
+**Vad som fortfarande bor i kuvösen** (#768):
+- punkterna med deras särdrag och historik, som läses genom överlägget (`KUVOS_LASNYCKEL`) eller ur hinken;
+- fysiken;
+- förregistreringarna, proven och talen.
+
+Loggar, sammanfattningar och ärenden här säger bara klart eller fel om dem.
+
+**Villkoren före påslaget** (kuvösen F33): telefonturen, eftersom batteribudgeten är ett släppstopp, och att varje del är provad.
+Brytarna är av tills dess. Stadsmiljöns dom efter 31/3 2027 avgör om B stannar i varje område.
+
+**Alternativet:** att hela bygget ligger i kuvösen och att driften läser allt därifrån. Det förkastades, eftersom regeln, radarn och
+publiceringen redan är driftens kod här, och en kopia i kuvösen skulle glida isär från dem.
+
+**Stomdokument:** MAT segmentprognosen — storstädernas punkter i driften (kort #378), SYS kandidaten — stadspunkterna i regeln, BED §4.2 — undantaget

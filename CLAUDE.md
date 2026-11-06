@@ -101,6 +101,8 @@ Allt i repot är publikt och går inte att ta tillbaka: filerna, historiken, är
 - **Fysik, kuvös och småvägar bor inte här** (Axel och Bengt 31/10, DECISIONS #768): ny kod, data, förregistreringar, mätningar och resultat
   committas i det privata Axelstar/halkvakt-kuvos, aldrig här och inte heller på en gren här. Ett flöde här som kör den koden lägger den ovanpå
   med `KUVOS_LASNYCKEL` och skriver bara klart eller fel: inga parametrar, särdrag, tal eller modellutskrifter i logg, sammanfattning eller ärende.
+  *Undantag* (Bengt och Axel 6/11, DECISIONS #804): driftens rörarbete för storstädernas punkter (B och C som K) får ligga här — tabellen,
+  laddaren, radarn, regeln, kedjans steg — och deras varningar står i `live.json` som K:s. Punkterna, särdragen, historiken och fysiken bor kvar i kuvösen.
 - Varje fil under `data/` står i `data/KALLOR.json` med källa och licens; publikvakten (`scripts/publikvakt.ts`, i ci) fäller en fil som
   saknas där, en fil över 20 MB och kända mönster (Trafikverkets leveransfiler, `.npy`, `oof`, exporter av testarnas svar).
 - Osäker? Lägg det i hinken, inte i repot, och fråga.
