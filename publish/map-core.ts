@@ -11,7 +11,7 @@
 // Inga Node- eller Deno-importer. Namnen krockar inte med snapshot-core.ts: båda buntas
 // in i SAMMA modul i publicera/index.ts.
 import type { Q } from "./snapshot-core.ts";
-import { byggLanssidor, type LanStation, type SmhiRad } from "./lanssidor.ts";
+import { byggLanssidor, lsStartsida, lsKartsida, type LanStation, type SmhiRad } from "./lanssidor.ts";
 
 const featureCollection = (features: unknown[]) => ({ type: "FeatureCollection", features });
 const numOrNull = (x: unknown) => (x === null || x === undefined ? null : Number(x));
@@ -59,7 +59,7 @@ export const KANDIDAT_BITAR_SQL = `
  *  `appKandidat` = lägesfilens nyckel `kandidat` (#576), eller undefined när brytaren är av (#578) — kartan visar aldrig något annat
  *  än appen får. */
 export async function buildMapData(q: Q, opts: {
-  trvKey?: string; fetchFn?: typeof fetch; now?: Date; appVader?: { id: string; yta: number | null; fukt: boolean }[];
+  trvKey?: string; fetchFn?: typeof fetch; now?: Date; appVader?: { id: string; yta: number | null; fukt: boolean; lon?: number; lat?: number }[];
   appKandidat?: { id: string; tid: string; punkter: [number, number][] }[];
 } = {}) {
   const now = opts.now ?? new Date();
@@ -221,12 +221,13 @@ export async function buildMapData(q: Q, opts: {
   // väglagssträckan inom 20 km. Bara de stationer appen själv talar om (appVader) räknas — en trasig givare blir aldrig
   // "minusgrader i länet".
   let sidor: Record<string, string> | null = null;
+  let start: Record<string, string> | null = null, kartaText: Record<string, string> | null = null;
   if (opts.appVader) {
     const stLan = await q(STATION_LAN_SQL);
     const lanFor = new Map(stLan.map((r) => [String(r.station_id), { name: String(r.name), lan: Number(r.lan), vag: r.vag ?? null }]));
     const stationer: LanStation[] = opts.appVader.flatMap((w) => {
       const s = lanFor.get(w.id);
-      return s && w.yta !== null ? [{ name: s.name, yta: w.yta, fukt: w.fukt, lan: s.lan, vag: s.vag }] : [];
+      return s && w.yta !== null ? [{ name: s.name, yta: w.yta, fukt: w.fukt, lan: s.lan, vag: s.vag, lon: w.lon, lat: w.lat }] : [];
     });
     // SMHI:s alla gällande varningar (1/11): varningssidan och raden på läns-, orts- och vägsidorna väljer själva vägvarningarna
     // (vagvarningar i lanssidor.ts), så att regeln bor på ett ställe och går att pröva.
@@ -240,6 +241,14 @@ export async function buildMapData(q: Q, opts: {
         allvar: r.severity_text ?? null, lan: numOrNull(r.lan) })),
       now,
     });
+    // Startsidans och kartans tal i HTML (6/11, DECISIONS #807): samma rader som lagren ovan och lan.json ur sidorna, räknade som
+    // sidornas egna skript räknar dem. publicera skriver in dem i index.html och karta.html i kartrepot.
+    const vaglagTal = vaglag.map((r) => ({ code: numOrNull(r.condition_code), info: (r.condition_info ?? []) as string[] }));
+    start = lsStartsida({
+      vader: vader.map((r) => ({ land: String(r.land), name: String(r.name ?? ""), yta: numOrNull(r.surface_temp_c), luft: numOrNull(r.air_temp_c) })),
+      vaglag: vaglagTal, lan: (JSON.parse(sidor["data/lan.json"]) as { lan: { kort: string; slug: string; halt: number; vagavsnitt: number }[] }).lan, now,
+    });
+    kartaText = lsKartsida({ vaglag: vaglagTal, now });
   }
-  return { files, stats, notes, sidor };
+  return { files, stats, notes, sidor, start, kartaText };
 }
