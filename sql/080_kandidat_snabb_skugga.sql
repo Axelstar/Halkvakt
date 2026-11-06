@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS kandidat_skugga_meta (
 
 -- Den snabba regeln, härledd ur den gällande.
 -- F1 (sql/087, DECISIONS #800) läser frys_min, som ny_kandidat_snabb inte har. Den snabba lånar därför måttet ur timvärdet som talar
--- (ny_kandidat_live vid ny_kandidat_timme(), samma punkt), så att fladdret mäts med timmens spärr (väg (a), DECISIONS #807).
+-- (ny_kandidat_live vid ny_kandidat_timme(), samma punkt), så att fladdret mäts med timmens spärr (väg (a), DECISIONS #808).
 -- Storstädernas gren (sql/091) läser också ny_kandidat_snabb och lånar måttet likadant; kandidat_punkter har inga stadspunkter, så
 -- grenen är tom här. Raderna för F1 och stadsgrenen byts bara när de finns, så att en regel utan dem härleds som förut.
 DO $$

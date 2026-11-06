@@ -2545,13 +2545,13 @@ test("#804 stadsregeln: brytarna, radarn, marsfönstret och domloggen", { skip: 
   }
 });
 
-// DEN SNABBA SKUGGAN PÅ DEN GÄLLANDE REGELN (sql/080 efter sql/087 och sql/091; väg (a), DECISIONS #807, kort #373): härledningen
+// DEN SNABBA SKUGGAN PÅ DEN GÄLLANDE REGELN (sql/080 efter sql/087 och sql/091; väg (a), DECISIONS #808, kort #373): härledningen
 // går igenom på regeln med F1 och stadsgrenen, den snabba lånar timvärdets frys_min för samma punkt, och mätningen går igen.
 //   SN1  sql/080 går att köra två gånger efter sql/091, och den härledda regeln läser ny_kandidat_snabb i båda grenarna
 //   SN2  timmens tabell står bara kvar i lånet av frys_min
 //   SN3  samma kalla och våta punkter: frys_min 0,5 i timvärdet tystar den snabba (spridning), 0 gör det inte; stadsgrenen likadant
 //   SN4  kandidat_snabb_skugga() mäter (kontrollsumman stämmer)
-test("#807 den snabba skuggan: härledningen på regeln med F1 och stadsgrenen", { skip: !url }, async () => {
+test("#808 den snabba skuggan: härledningen på regeln med F1 och stadsgrenen", { skip: !url }, async () => {
   const { default: pg } = await import("pg");
   const pool = new pg.Pool({ connectionString: url, max: 1 });
   const q = (s: string, p: unknown[] = []) => pool.query(s, p);

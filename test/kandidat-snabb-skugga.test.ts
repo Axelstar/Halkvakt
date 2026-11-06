@@ -23,10 +23,10 @@ test("#782 skuggan: raderna som byts finns exakt en gång i den gällande regeln
     "talande_timme() och talande_regel() läser inte den snabba före påslaget");
 });
 
-// Väg (a), DECISIONS #807: sedan sql/087 läser regeln frys_min och sedan sql/091 har den en stadsgren. sql/080 byter också de
+// Väg (a), DECISIONS #808: sedan sql/087 läser regeln frys_min och sedan sql/091 har den en stadsgren. sql/080 byter också de
 // raderna, och de ska finnas exakt så många gånger som härledningen kräver i den gällande regeln: den SENASTE migrationen som skapar
 // ny_kandidat_regel(). En ny regelfil som ändrar raderna fäller provet, innan den stoppar skuggan i drift (som sql/087 gjorde 6/11).
-test("#807 skuggan: raderna för F1 och stadsgrenen finns som härledningen kräver i den gällande regeln och byts i sql/080", () => {
+test("#808 skuggan: raderna för F1 och stadsgrenen finns som härledningen kräver i den gällande regeln och byts i sql/080", () => {
   const fil = readdirSync(new URL("../sql/", import.meta.url)).filter((f) => /^\d{3}_.*\.sql$/.test(f)).sort()
     .filter((f) => sql(f).includes("CREATE OR REPLACE FUNCTION ny_kandidat_regel()")).pop()!;
   const regel = sql(fil);
