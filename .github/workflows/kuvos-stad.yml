@@ -387,7 +387,7 @@ jobs:
           N() { node --experimental-strip-types "$@" 2>&1 | { grep -v ExperimentalWarning || true; }; }
           S=fysik/ny_kandidat/stadsmiljon_kedjan.py; H=fysik/ny_kandidat/stadsmiljon_hinken.ts; D=fysik/ny_kandidat/stadsmiljon_db.ts
           N "$D" --sjalvtest
-          python3 "$S" --sjalvtest | tail -1
+          python3 "$S" --sjalvtest 2>&1 | tail -1          # bara slutraden: provet med en osignerad förregistrering skriver en vägran
           # F7:s enhet ur hinken, med vakten (§6 a), populationsprovet (§6 c) och spärren (§6 f), och en kandidatfil för del A.
           N "$H" hamta "$F7MAPP" f7 enhet_alla.json modell_alla.pkl veck_alla.json
           python3 "$S" enheten --enhet f7/enhet_alla.json --modell f7/modell_alla.pkl --veck f7/veck_alla.json --ut f7/kandidat_f7.json
@@ -424,6 +424,9 @@ jobs:
             B=$(date -u -d "$DAG" +%s)
             NAMN=(); for h in -6 0 6 12 18; do NAMN+=("stadsmiljon_ph_$(date -u -d "@$((B + h * 3600))" +%Y%m%dT%HZ).csv.gz"); done
             N "$H" hamta "$HINK" stad-ph "${NAMN[@]}"
+            SAKNAS=0; for f in "${NAMN[@]}"; do [ -f "stad-ph/$f" ] || SAKNAS=$((SAKNAS + 1)); done
+            # Utan alla fem körningars PH väntar dygnet, och populationen hämtas inte ur databasen i onödan.
+            if [ "$SAKNAS" -gt 0 ]; then echo "dygnet $DAG väntar: $SAKNAS av ${#NAMN[@]} körningars PH saknas"; continue; fi
             read -r FRAN TILL < <(python3 "$S" fonster --dag "$DAG")
             N "$D" pop "$FRAN" "$TILL" "pop_$DAG.csv"
             set +e; python3 "$S" dag --dag "$DAG" --ph stad-ph --pop "pop_$DAG.csv" --stationer indata-f7 --veck f7/veck_alla.json --ut stad-dag; RC=$?; set -e
