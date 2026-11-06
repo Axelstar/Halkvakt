@@ -94,7 +94,14 @@ jobs:
           set -o pipefail
           python3 fysik/live/kandidat_timme.py --ph ph.csv --punkter punkter.csv --ankare ankare.csv --tid "$TID" --ut live.csv > del-b.log 2>&1 || { echo "::error::Del B föll. Utskriften visas inte i den publika loggen; felsök i en session med halkvakt-kuvos."; tail -n 1 del-b.log; exit 1; }
           echo "del B klar för $TID" | tee -a "$GITHUB_STEP_SUMMARY"
-          rm -f ankare.csv
+          # Spridningsspärrens F1 (DECISIONS #799, #800): frys_min läggs i live.csv ur samma ankare (fysik/ny_kandidat/frysmin.py).
+          # Faller steget skrivs timmen utan kolumnen, och F1 tystar då ingenting i den här timmen; den frystas timme stoppas aldrig av det.
+          if python3 fysik/ny_kandidat/frysmin.py --live live.csv --ph ph.csv --punkter punkter.csv --ankare ankare.csv > frysmin.log 2>&1; then
+            echo "frys_min: klart" | tee -a "$GITHUB_STEP_SUMMARY"
+          else
+            echo "::warning::frys_min föll; timmen skrivs utan kolumnen. Utskriften visas inte i den publika loggen."
+          fi
+          rm -f ankare.csv frysmin.log
       - name: Till tabellen kandidat_live, sedan gallringen
         if: env.HOPPAD != '1'
         env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }

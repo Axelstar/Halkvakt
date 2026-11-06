@@ -2302,3 +2302,59 @@ test("#797 olycksfacit: efterkontrollen klassar en gång, med vakterna, och K l�
     await pool.end();
   }
 });
+
+// SPRIDNINGSSPÄRREN F1 (sql/086 och sql/087, DECISIONS #799, #800): båda regelfunktionerna tystar där minst två ankare bidrar och
+// minoritetens viktandel kring noll (frys_min) är minst 0,45 — inte längre på spridningen 2,25 °C. Sedan TILLBAKA med sql/069, som
+// ger dagens spärr igen; det lämnar också databasen som provet fann den.
+test("#800 spridningsspärren F1: frys_min ≥ 0,45 tystar, spridningen gör det inte, och sql/069 tar tillbaka S0", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const las = (f: string) => q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+  const stad = async () => {
+    await q("DELETE FROM kandidat_live WHERE punkt LIKE 'vX4%'");
+    await q("DELETE FROM ny_kandidat_live WHERE punkt LIKE 'vX4%'").catch(() => {});
+    await q("DELETE FROM vagpunkt WHERE punkt LIKE 'vX4%'");
+    await q("DELETE FROM road_conditions WHERE segment_id LIKE '9994%'");
+  };
+  try {
+    await q("CREATE TABLE IF NOT EXISTS shadow_log (id bigserial PRIMARY KEY, run_at timestamptz NOT NULL DEFAULT now(), alerts jsonb NOT NULL DEFAULT '[]'::jsonb)");
+    for (const f of ["001_init.sql", "008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql", "018_trend_berakna.sql",
+                     "029_brott_index.sql", "030_langsam_vakt.sql", "050_kandidat_live.sql", "053_arkiv_tabeller.sql", "055_vagpunkter.sql",
+                     "056_kandidat_regel.sql", "057_kandidat_skugga.sql", "058_kandidat_spridning.sql", "059_kandidat_brytare.sql",
+                     "065_kandidat_domlogg_punkter.sql", "068_ny_kandidat_skugga.sql", "069_radarns_tal.sql",
+                     "086_spridningsparren_frys_min.sql", "087_spridningsparren_f1.sql", "087_spridningsparren_f1.sql"]) await las(f);
+    await stad();
+    // [punkt, sträcka, n_ank, spr, frys_min, väntat med F1, väntat med S0] — alla Våt och kalla, långt från provens stationer (70° N, 33° Ö)
+    const P: [string, string, number, number | null, number | null, string, string][] = [
+      ["vX41", "99941", 3, 3.0, 0.0, "varnar", "spridning"],     // stor spridning men alla på samma sida: F1 talar, S0 tystade
+      ["vX42", "99941", 2, 1.0, 0.5, "spridning", "varnar"],     // jämnt delade om noll trots liten spridning: F1 tystar
+      ["vX43", "99942", 2, 1.0, 0.45, "spridning", "varnar"],    // exakt på gränsen ⇒ tyst (≥ 0,45)
+      ["vX44", "99942", 2, 1.0, 0.44, "varnar", "varnar"],       // under gränsen ⇒ talar
+      ["vX45", "99943", 1, 0.0, 0.0, "varnar", "varnar"],        // ett ankare: grindas inte
+      ["vX46", "99943", 2, 3.0, null, "varnar", "spridning"],    // utan frys_min (före bytet, eller ett fallet steg): F1 tystar inte
+    ];
+    for (const [p, s] of P) await q("INSERT INTO vagpunkt (punkt, segment_id, lon, lat) VALUES ($1, $2, 33, 70)", [p, s]);
+    await q(`INSERT INTO road_conditions (segment_id, condition_code, condition_text, condition_info) VALUES
+      ('99941', 1, 'Normalt', '{Våt}'), ('99942', 1, 'Normalt', '{Våt}'), ('99943', 1, 'Normalt', '{Våt}')`);
+    const tid: Date = (await q("SELECT date_trunc('hour', now()) AS t")).rows[0].t;
+    for (const tab of ["kandidat_live", "ny_kandidat_live"]) {
+      await q(`INSERT INTO ${tab} (tid, punkt, pb) SELECT $1, v.punkt, 5 FROM vagpunkt v WHERE v.punkt NOT LIKE 'vX4%' ON CONFLICT DO NOTHING`, [tid]);
+      for (const [p, , n, spr, fm] of P)
+        await q(`INSERT INTO ${tab} (tid, punkt, pb, n_ank, spr, frys_min, ank_km) VALUES ($1, $2, -1, $3, $4, $5, 4)`, [tid, p, n, spr, fm]);
+    }
+    const utfall = async (fn: string) => Object.fromEntries((await q(`SELECT punkt, utfall FROM ${fn}() WHERE punkt LIKE 'vX4%'`)).rows
+      .map((r: any) => [r.punkt, r.utfall]));
+    const vantatF1 = Object.fromEntries(P.map(([p, , , , , f1]) => [p, f1]));
+    assert.deepEqual(await utfall("kandidat_regel"), vantatF1, "den frystas regel med F1");
+    assert.deepEqual(await utfall("ny_kandidat_regel"), vantatF1, "den nyas regel med F1, samma som den frystas");
+    // TILLBAKA: sql/069 ger dagens spärr på spridningen igen.
+    await las("069_radarns_tal.sql");
+    const vantatS0 = Object.fromEntries(P.map(([p, , , , , , s0]) => [p, s0]));
+    assert.deepEqual(await utfall("kandidat_regel"), vantatS0, "sql/069 tar tillbaka S0");
+    assert.deepEqual(await utfall("ny_kandidat_regel"), vantatS0, "sql/069 tar tillbaka S0 också för den nya");
+  } finally {
+    await stad().catch(() => {});
+    await pool.end();
+  }
+});
