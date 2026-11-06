@@ -2402,3 +2402,26 @@ test("#804 stadspunkterna: tabellen, brytarna av och laddarens satser", { skip: 
     await pool.end();
   }
 });
+
+// RADARN FÖR STORSTÄDERNAS PUNKTER (sql/090, DECISIONS #804, kort #378): tabellen, mot riktig PostGIS.
+//   RS1  filen går att köra två gånger; RLS på       RS2  en grupp-rad skrivs, samma komposit en gång till ändrar inget
+//   RS3  en numerisk grupp (Trafikverkets sträckor) vägras, så radar_stad och radar_precip kan aldrig blandas ihop
+test("#804 radar_stad: tabellen för storstädernas radar", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const las = (f: string) => q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+  const skriv = (g: string) => q(`INSERT INTO radar_stad (grupp, observed_at, rate_max_mmh, rate_mean_mmh) VALUES ($1, '2026-11-06T12:00Z', 0.5, 0.2)
+    ON CONFLICT (grupp, observed_at) DO NOTHING`, [g]);
+  try {
+    await las("090_radar_stad.sql"); await las("090_radar_stad.sql");
+    await q("DELETE FROM radar_stad WHERE grupp IN ('B-990-990', '4045')");
+    assert.equal((await q("SELECT relrowsecurity FROM pg_class WHERE relname = 'radar_stad'")).rows[0].relrowsecurity, true, "RS1: RLS");
+    assert.equal((await skriv("B-990-990")).rowCount, 1, "RS2: raden skrivs");
+    assert.equal((await skriv("B-990-990")).rowCount, 0, "RS2: samma komposit en gång till ändrar inget");
+    await assert.rejects(skriv("4045"), undefined, "RS3: en numerisk grupp vägras");
+  } finally {
+    await q("DELETE FROM radar_stad WHERE grupp IN ('B-990-990', '4045')").catch(() => {});
+    await pool.end();
+  }
+});
