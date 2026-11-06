@@ -14198,4 +14198,4 @@ Review då stoppar Favoriter; (c) frågan bara på Redo som förut: det var bris
 
 **Löftet:** inget nytt lämnar telefonen. Notiserna är lokala; vägarna stannar i filerna utanför säkerhetskopian (ruttspärren grön).
 
-**Stomdokument:** FAV §6 — dagens resor, notisen och namnen; APP — CarPlay och Redo-raderna
+**Stomdokument:** FAV §6 — dagens resor och notisen efter resan, APP — CarPlay och raderna på Redo
