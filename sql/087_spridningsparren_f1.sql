@@ -10,7 +10,14 @@
 -- Returtypen är densamma, så CREATE OR REPLACE räcker och rättigheterna står kvar. test/ny-kandidat-skugga.test.ts prövar att de två
 -- regelfunktionerna är samma regel med bytta namn; kontraktsgrinden vaktar gränsen 0,45.
 -- ORDNINGEN: migreras efter att frys_min fylls i båda tabellerna (sql/086, ingesten, kuvösens del B och den frystas steg i
--- kandidat-timme.yml) och efter att tillägget för marsdomen är signerat. TILLBAKA: kör om sql/069.
+-- kandidat-timme.yml) och efter att tillägget för marsdomen är signerat. TILLBAKA: kör om sql/069 (kolumnen får stå kvar som
+-- double precision).
+--
+-- FLYTTALET. frys_min blir double precision före regeln. Som real (sql/086) blir 0,45 talet 0,44999998…, och gränsen hade då släppt
+-- igenom just gränsfallet; integrationsprovet #800 fångade det. Kuvösen räknar måttet i float64, och ingesterna skickar det som
+-- float8[], så att samma tal jämförs på samma sätt i Python (spärrprovet) och här: 0,45 som double på båda sidor.
+ALTER TABLE ny_kandidat_live ALTER COLUMN frys_min TYPE double precision;
+ALTER TABLE kandidat_live ALTER COLUMN frys_min TYPE double precision;
 
 CREATE OR REPLACE FUNCTION kandidat_regel()
 RETURNS TABLE (punkt text, segment_id text, lon double precision, lat double precision, tid timestamptz, pb real,

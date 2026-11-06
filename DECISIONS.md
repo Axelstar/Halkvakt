@@ -14016,6 +14016,7 @@ kuvösens förregistrering F26 §5 kräver.
 - **Den frysta kandidaten får samma regel.** Ett nytt steg i `kandidat-timme.yml` lägger `frys_min` i dess `live.csv` med kuvösens `frysmin.py`, efter den frystas del B, som rörs inte.
   - Faller steget skrivs timmen utan kolumnen. En rad utan `frys_min` spärras inte.
   - Kandidatens förregistrering 2026–27 §12 (d) säger att regeln är densamma för den som talar.
+- **Flyttalet:** `sql/087` gör `frys_min` till double precision före regeln, och ingesterna skickar den som `float8[]`. Som real blev 0,45 talet 0,44999998…, och gränsfallet talade; integrationsprovet fångade det i ci. Nu jämförs samma tal på samma sätt i spärrprovet (Python, float64) och i regeln.
 - **Provet:** integrationsprovet #800 kör F1:s fall på båda funktionerna, och sedan vägen tillbaka med `sql/069`. `test/ny-kandidat-skugga.test.ts` prövar att de två funktionerna är samma regel, och kontraktsgrinden vaktar gränsen 0,45.
 
 **Ordningen:**
