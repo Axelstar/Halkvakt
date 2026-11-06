@@ -14244,3 +14244,38 @@ när den inte är `091_stadsregeln.sql`. En ny regelfil måste alltså föra in 
 *#808* kör härledningen på den gällande regeln mot PostGIS.
 
 **Stomdokument:** SYS kandidaten på en kvart — skuggan lånar timvärdets frys_min
+
+## #809 (6/11 2026) Storstädernas punkter i kandidatens kedja: efter dagens punkter, i egna steg, med historiken ur två cacher
+
+**Bengts ord 6/11:** *"Gör kedjan"* (kort #378, DECISIONS #804).
+
+**Beslut.** Kuvösens del A och del B körs oförändrade (`fysik/ny_kandidat/levande.py`) för B och C. De körs i egna steg EFTER dagens
+punkter, i samma flöden: `ny-kandidat-fysik.yml` och `ny-kandidat-timme.yml`. Rörarbetet ligger i `ingest/stadskedjan.ts`.
+- **Del A.** Dagens punkter räknas och skrivs först, som förut. Sedan kommer laddningen av `stadspunkt` och stadspunkternas dygn och
+  körning ur MET. Därefter indatan (kuvos-stads `smavagar_pilot.py indata`) och del A i två delar. Sist översätts pilotens id (s00000 …)
+  till driftens (B00001 …), och PH skrivs till `ny_kandidat_ph`. Punktfilen måste ha samma kontrollsumma som driftens lista.
+- **Del B.** En egen omgång efter dagens punkter, med samma timme, PH och ankare. Stationernas rader och lägen följer med, eftersom RÅ:s
+  rester räknas ur stationernas eget PH. Bara B och C skrivs till `ny_kandidat_live`.
+- **Inget av stegen fäller jobbet** (continue-on-error). Faller ett har stadspunkterna inget värde den körningen eller timmen. Dagens K är
+  då redan skrivet, och kuvos-stad, som startar när del A är klar, går som förut.
+- **Historiken** kommer ur två källor:
+  - kuvos-stads cache, med MET:s arkiv från 47 till 3 dygn bakåt (145 MB);
+  - kedjans egen cache med de levande dygnen, som fylls på i varje körning, eftersom `metnordic-live.ts --dygn` bara hämtar de timmar
+    som saknas. De tio senaste dygnen sparas.
+
+  Per dygn används filen med flest timmar, och arkivet går först vid lika. Utan den egna cachen saknar körningen 00.28 dygnet för tre
+  dagar sedan, eftersom kuvos-stad sparar det först efter. Del A vägrar då, med mer än 1 % ifyllt, och B och C hade tigit 01–07 svensk
+  tid varje natt.
+- **Inga tal, lägen eller antal i loggen**, bara klart eller fel (#768). Stadspunkternas PH läggs inte i artefakten.
+
+**Alternativ.**
+- (a) Alla punkter i en del A om tre delar, som kuvos-stad. Förkastat: då hade dagens K hängt på stadspunkternas tid och minne.
+- (b) Att kuvos-stad skriver stadspunkternas PH. Förkastat: kuvos-stad väntar ut driftens MET-fönster till :50 och blir klar efter del B
+  kl. :47, så timmen R+6 hade fallit bort i varje körning. Domkedjan hade dessutom burit driften.
+- (c) Historiken i hinken. Det blir aktuellt om cachen visar sig opålitlig. Cachen läses var sjätte timme, och lagret använder 0,24 av
+  10 GB.
+
+**Risk.** Om kuvos-stad stannar blir historiken äldre än tio dygn gammal. Del A vägrar då för B och C, som tystnar, medan dagens K inte
+påverkas.
+
+**Stomdokument:** SYS kandidaten — storstädernas punkter i kedjan, MAT segmentprognosen — storstädernas punkter (kort #378)

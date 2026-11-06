@@ -2606,3 +2606,61 @@ test("#808 den snabba skuggan: härledningen på regeln med F1 och stadsgrenen",
     await pool.end();
   }
 });
+
+// STORSTÄDERNAS PUNKTER I KEDJAN (ingest/stadskedjan.ts, DECISIONS #804, kort #378), mot riktig PostGIS:
+//   SK1  ph: del A:s rader med pilotens id (s00000 …) står i ny_kandidat_ph med driftens id, och en andra skrivning uppdaterar dem
+//   SK2  ph med flaggan av skriver ingenting
+//   SK3  lagen: stadspunkternas lägen ur stadspunkt, i del B:s form (sid, lat, lon)
+test("#804 stadskedjan: PH med driftens id och lägena för del B", { skip: !url }, async () => {
+  process.env.DATABASE_URL = url;
+  const { default: pg } = await import("pg");
+  const { createHash } = await import("node:crypto");
+  const { mkdtempSync, writeFileSync, rmSync } = await import("node:fs");
+  const { gzipSync } = await import("node:zlib");
+  const { join } = await import("node:path");
+  const { tmpdir } = await import("node:os");
+  const { skrivPh, lagen } = await import("../ingest/stadskedjan.ts");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const las = (f: string) => q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+  const rot = mkdtempSync(join(tmpdir(), "stadskedjan-"));
+  const T = ["2031-01-01T06:00:00Z", "2031-01-01T07:00:00Z"];
+  const stad = async () => {
+    await q("DELETE FROM ny_kandidat_ph WHERE punkt IN ('B99941', 'C99941')").catch(() => {});
+    await q("DELETE FROM stadspunkt WHERE punkt IN ('B99941', 'C99941')").catch(() => {});
+  };
+  try {
+    if (!(await q("SELECT to_regclass('ny_kandidat_ph') AS t")).rows[0].t) await las("068_ny_kandidat_skugga.sql");
+    await las("089_stadspunkter.sql");
+    await stad();
+    const pilot = JSON.stringify({ rader: [{ id: "B99941" }, { id: "C99941" }] });
+    const fil = (n: string, s: string) => { const f = join(rot, n); writeFileSync(f, s); return f; };
+    const pilotFil = fil("pilot.json", pilot);
+    const listaFil = fil("lista.json", JSON.stringify({ kalla: { sha256: createHash("sha256").update(pilot).digest("hex") },
+      rader: [{ punkt: "B99941" }, { punkt: "C99941" }] }));
+    const pa = fil("pa.json", JSON.stringify({ skriv: true, paritet: { klarat: true, korning: "123456" } }));
+    const av = fil("av.json", JSON.stringify({ skriv: false }));
+    const ph = (n: string, tid: string, a: number, b: number) => {
+      const f = join(rot, n);
+      writeFileSync(f, gzipSync(`punkt,korning_utc,tid_utc,ts_fysik,ph\ns00000,2031-01-01T00:00:00Z,${tid},0,${a}\ns00001,2031-01-01T00:00:00Z,${tid},0,${b}\n`));
+      return f;
+    };
+    const rader = async (tid: string) => (await q("SELECT punkt, ph FROM ny_kandidat_ph WHERE tid = $1 AND punkt IN ('B99941', 'C99941') ORDER BY punkt", [tid])).rows;
+    await skrivPh([ph("a.csv.gz", T[0], -1.5, 2)], pilotFil, listaFil, pa);
+    assert.deepEqual(await rader(T[0]), [{ punkt: "B99941", ph: -1.5 }, { punkt: "C99941", ph: 2 }], "SK1: driftens id");
+    await skrivPh([ph("b.csv.gz", T[0], -2.5, 2)], pilotFil, listaFil, pa);
+    assert.equal((await rader(T[0]))[0].ph, -2.5, "SK1: en andra skrivning uppdaterar");
+    await skrivPh([ph("c.csv.gz", T[1], -1, -1)], pilotFil, listaFil, av);
+    assert.deepEqual(await rader(T[1]), [], "SK2: flaggan av skriver ingenting");
+    await q("INSERT INTO stadspunkt (punkt, grupp, lager, omrade, lon, lat) VALUES ('B99941', 'B-994-941', 'B', 'Stor-Stockholm', 18.05, 59.33)");
+    const ut = join(rot, "punkter.csv");
+    await lagen(ut);
+    const t = readFileSync(ut, "utf8").split("\n");
+    assert.equal(t[0], "sid,lat,lon", "SK3: del B:s rubrik");
+    assert.ok(t.includes("B99941,59.33,18.05"), "SK3: stadspunktens läge");
+  } finally {
+    await stad().catch(() => {});
+    await pool.end();
+    rmSync(rot, { recursive: true, force: true });
+  }
+});
