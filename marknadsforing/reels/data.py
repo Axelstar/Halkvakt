@@ -97,5 +97,20 @@ sam = {'gen': summ['generated_at'], 'stationer': len(st), 'under': len(under), '
        'top': [{'n': namn(s), 'yta': s['yta']} for s in nat['top']],
        'front': nat['front'] and {'n': namn(nat['front']), 'yta': nat['front']['yta']},
        'e4': {'stationer': len(e4st), 'risk': len(nat['e4']['risk']), 'forstaKall': e4kall and namn(e4kall)}}
+# The new films (DECISIONS #806). Same picks as reel.html makes, so the caption names what the film shows.
+fj = lambda s: 'Fjärryta' in s['n']
+pm = [s for s in st if not fj(s) and s['luft'] is not None and s['luft'] > 0 and s['yta'] < 0]
+tp = lambda s: s and {'n': namn(s), 'luft': s['luft'], 'yta': s['yta']}
+plus = sorted([s for s in pm if s['luft'] - s['yta'] >= 3], key=lambda s: -s['y'])
+gissa = sorted(pm, key=lambda s: abs((s['luft'] - s['yta']) - 4))
+pp = sorted([dict(p, s=[st[i] for i in p['st'] if not fj(st[i])]) for p in pend], key=lambda p: -sum(x['yta'] < 0 for x in p['s']))
+pp = [p for p in pp if len(p['s']) >= 3]
+std = [{'n': c['n'], 's': next((st[i] for i in c['st'] if not fj(st[i])), st[c['st'][0]])} for c in stader]
+REG = {'Norra Sverige': [21, 22, 23, 24, 25], 'Mellersta Sverige': [1, 3, 4, 17, 18, 19, 20], 'Södra Sverige': [5, 6, 7, 8, 9, 10, 12, 13, 14]}
+sam.update({
+    'plusMinus': len(pm), 'plus': tp(plus[0] if plus else (pm[0] if pm else None)), 'gissa': tp(gissa[0] if gissa else None),
+    'pendling': pp and {'fran': pp[0]['fran'], 'till': pp[0]['till'], 'stationer': len(pp[0]['s']), 'under': sum(x['yta'] < 0 for x in pp[0]['s'])},
+    'stader': {'antal': len(std), 'minus': [c['n'] for c in std if c['s']['yta'] < 0]},
+    'regioner': [{'namn': n, 'halt': sum(r['lan'] in k for r in roads)} for n, k in REG.items()]})
 json.dump(sam, open(os.path.join(UT, 'sammanfattning.json'), 'w'), ensure_ascii=False, indent=1)
 print(f"Reels-data {sam['gen']}: {sam['stationer']} stationer, {sam['under']} under noll, {sam['vagar']} vägavsnitt med halkrisk.")

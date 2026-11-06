@@ -6,7 +6,7 @@ import sys, wave
 import numpy as np
 
 SR = 48000
-LANGD = {'halt': 14, 'frost': 14, 'kallast': 14, 'e4': 14, 'natt': 16}
+LANGD = {'halt': 14, 'frost': 14, 'kallast': 14, 'e4': 14, 'natt': 16, 'du': 14, 'nu': 14, 'plus': 14, 'gissa': 14, 'pendling': 14, 'stad': 14}
 
 
 def drone(n):
@@ -81,6 +81,24 @@ def bygg(typ):
     elif typ == 'natt':
         lagg(buf, blom(3.0), .3); lagg(buf, blom(1.6, .025), 3.5); lagg(buf, whoosh(1.8), 6.4); rader(buf, 8.0)
         lagg(buf, chime(), 9.6); lagg(buf, slut(), 13.7)
+    elif typ in ('du', 'nu'):
+        lagg(buf, blom(2.0, .03), .3); lagg(buf, chime(659.3), 2.4)
+        for k, t0 in enumerate((2.4, 5.0, 7.6)):
+            lagg(buf, sweep(1.0, 200, 600, .025), t0 - 0.3); rader(buf, t0 + 0.3, .3, ((392, 523.3, 659.3), (440, 587.3, 698.5), (523.3, 659.3, 784))[k])
+        lagg(buf, chime(784), 10.2); lagg(buf, slut(), 11.7)
+    elif typ == 'plus':
+        lagg(buf, blom(1.6, .03), .2); lagg(buf, mjuk(523.3, .12), .4); lagg(buf, whoosh(.8), 2.8); lagg(buf, mjuk(392, .14), 3.3)
+        lagg(buf, blom(2.4, .03), 6.4); lagg(buf, chime(659.3), 10.0); lagg(buf, slut(), 11.7)
+    elif typ == 'gissa':
+        rader(buf, 1.0, .2)
+        for t0 in (3.3, 4.3, 5.3): lagg(buf, mjuk(880, .07), t0)
+        lagg(buf, chime(784), 6.3); lagg(buf, chime(659.3), 10.0); lagg(buf, slut(), 11.7)
+    elif typ == 'pendling':
+        lagg(buf, blom(2.0, .03), .3); lagg(buf, sweep(1.2, 200, 600, .03), 1.3); rader(buf, 2.8, .3, (392, 440, 523.3, 587.3, 659.3, 784))
+        lagg(buf, chime(), 5.9); lagg(buf, mjuk(523.3), 10.0); lagg(buf, slut(), 11.7)
+    elif typ == 'stad':
+        lagg(buf, blom(2.0, .03), .3); rader(buf, 2.4, .56, (392, 440, 523.3, 587.3, 659.3, 784)); lagg(buf, chime(), 6.4)
+        lagg(buf, mjuk(523.3), 10.0); lagg(buf, slut(), 11.7)
     return np.clip(buf / max(1, np.abs(buf).max() / .7), -1, 1)
 
 
