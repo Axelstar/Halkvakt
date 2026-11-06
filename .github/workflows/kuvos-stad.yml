@@ -1,0 +1,370 @@
+name: kuvos-stad
+# KUVÖSENS LAGER B OCH C I STOCKHOLMS STAD (halkvakt-kuvos BESLUT F24; Bengt 6/11). Pilotens kedja (kuvos-pilot.yml, F10, F22) körs hela
+# vintern på kuvösens stadspunkter (data/vagdata/stadspunkter-2026-27.json i det privata repot). Punkterna, koden och reglerna ligger
+# där (fysik/ny_kandidat/smavagar_pilot.ts och smavagar_pilot.py); här står bara stegen. Ingenting skrivs till databasen eller når appen.
+#   historik  45 dygns MET Nordic-analys bakåt för stadspunkterna, ur MET:s arkiv, till Actions-cachen kuvos-stad-historik-<dygn>.
+#             Pausar runt de levande körningarna. Tar tiden slut, tar nästa körning vid där den slutade.
+#   kedjan    startar av sig själv när den levande fysiken (ny-kandidat-fysik) har kört klart (workflow_run, F24: inte pulsklockan), eller
+#             med knappen. De dygn som saknas läggs till i cachen, sedan de senaste timmarna och körningen ur metpplatest, del A för alla
+#             punkter i DELAR delar (F22: en halva om 11 857 punkter tog 11,8 GB), del B för timmen och beskeden. Loggen visar tider,
+#             minne, storlekar och antal punkter. Beskeden går bara till hinken (kuvos-stad-2026-27/), aldrig till en artefakt.
+# MET-kön: samma grupp som kuvos-ny-kandidat:s och kuvos-pilot:s hämtningar, så att två av våra hämtningar aldrig går samtidigt.
+# Källa: MET Norway, MET Nordic (NLOD / CC BY 4.0).
+on:
+  workflow_run:
+    workflows: [ny-kandidat-fysik]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      steg:
+        description: "historik (en gång, cirka 3,5 h) → kedjan (startar sedan själv efter ny-kandidat-fysik)"
+        type: choice
+        options: [historik, kedjan]
+        default: historik
+concurrency: { group: kuvos-ny-kandidat-met, cancel-in-progress: false }
+permissions:
+  contents: read
+  actions: read      # de levande körningarna för väntan på MET
+env:
+  PUNKTER: data/vagdata/stadspunkter-2026-27.json
+  SARDRAG: data/vagdata/stadspunkter-2026-27-sardrag.csv
+  CACHE: kuvos-stad-historik-
+jobs:
+  historik:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.steg == 'historik' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    env: { GH_TOKEN: "${{ github.token }}", REL: metnordic-live-2026-27 }
+    steps:
+      - uses: actions/checkout@v4
+      # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos (DECISIONS #768): koden läggs ovanpå utcheckningen.
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Självtestet och fönstret
+        id: f
+        shell: bash
+        run: |
+          set -o pipefail
+          node --experimental-strip-types fysik/ny_kandidat/smavagar_pilot.ts --sjalvtest 2>&1 | grep -v ExperimentalWarning
+          echo "fran=$(date -u -d '47 days ago' +%F)" >> "$GITHUB_OUTPUT"; echo "till=$(date -u -d '3 days ago' +%F)" >> "$GITHUB_OUTPUT"
+      - name: Dygnen ur cachen (återupptagningen)
+        id: c
+        uses: actions/cache/restore@v4
+        with: { path: mnp, key: "${{ env.CACHE }}${{ steps.f.outputs.till }}", restore-keys: "${{ env.CACHE }}" }
+      - name: Rutorna (första gången), mot releasens ruta
+        shell: bash
+        run: |
+          set -o pipefail
+          gh release download "$REL" --dir rel --pattern metnordic_punkter.csv
+          if [ -f mnp/pilot_punkter.csv ]; then echo "rutorna finns från en tidigare körning"; exit 0; fi
+          node --experimental-strip-types fysik/ny_kandidat/smavagar_pilot.ts --rutor mnp/pilot_punkter.csv --punkter "$PUNKTER" \
+            --release rel/metnordic_punkter.csv 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Hämtningen
+        id: h
+        shell: bash
+        env: { MNP_MINUTER: "320", FRAN: "${{ steps.f.outputs.fran }}", TILL: "${{ steps.f.outputs.till }}" }
+        run: |
+          mkdir -p mnp/dagar
+          for f in mnp/dagar/*.csv.gz; do [ -e "$f" ] || continue; [[ "$(basename "$f" .csv.gz)" < "$FRAN" ]] && rm -f "$f"; done
+          echo "klara dygn i cachen: $(ls mnp/dagar | grep -c 'csv.gz$' || true)"
+          set +e
+          node --experimental-strip-types fysik/ny_kandidat/smavagar_pilot.ts --historik mnp "$FRAN" "$TILL" 2>&1 | grep --line-buffered -v ExperimentalWarning
+          KOD=${PIPESTATUS[0]}
+          set -e
+          [ "$KOD" = 3 ] && { echo "::warning::tidsbudgeten tog slut — tryck historik igen, den tar vid där"; echo "klar=nej" >> "$GITHUB_OUTPUT"; exit 0; }
+          [ "$KOD" = 0 ] || exit "$KOD"
+          echo "klar=ja" >> "$GITHUB_OUTPUT"
+          cat mnp/historik_*.json | tee -a "$GITHUB_STEP_SUMMARY"
+      # MET Nordic är öppna data. Cachen bär punkternas rutor och analysens värden, inga kandidattal. En ny post bara när dygnen ändrats:
+      # nyckeln är fönstrets sista dygn, och en ofullständig hämtning sparas under körningens id så att nästa tar vid.
+      - name: Dygnen till cachen
+        if: ${{ always() && steps.c.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v4
+        with: { path: mnp, key: "${{ env.CACHE }}${{ steps.h.outputs.klar == 'ja' && steps.f.outputs.till || format('ofullstandig-{0}', github.run_id) }}" }
+
+  kedjan:
+    if: >-
+      ${{ (github.event_name == 'workflow_dispatch' && inputs.steg == 'kedjan')
+       || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    env:
+      GH_TOKEN: "${{ github.token }}"
+      REL: metnordic-live-2026-27
+      NYKAND_VARIANT: t4                     # T4 §4 a (DECISIONS #720): den rättade modellen, som i drift
+      HINK: kuvos-stad-2026-27
+      DELAR: "3"                             # F22: en del om högst cirka 12 000 punkter; 13 714 + 15 786 ger tre
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13", cache: pip, cache-dependency-path: fysik/requirements.txt }
+      - name: Självtesten, kandidatfilen och fönstret
+        id: f
+        shell: bash
+        run: |
+          set -o pipefail
+          node --experimental-strip-types fysik/ny_kandidat/smavagar_pilot.ts --sjalvtest 2>&1 | grep -v ExperimentalWarning
+          node --experimental-strip-types ingest/metnordic-live.ts --sjalvtest 2>&1 | grep -v ExperimentalWarning | tail -1
+          python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
+          (cd fysik && sha256sum -c --quiet SHA256SUMS)
+          python3 fysik/live/indata.py --sjalvtest > /dev/null; echo "självtest ok: indata.py"
+          python3 fysik/ny_kandidat/smavagar_pilot.py --sjalvtest > /dev/null; echo "självtest ok: smavagar_pilot.py"
+          python3 -c "import sys; sys.path.insert(0, 'fysik/ny_kandidat'); import levande; c = levande.ladda()" > /dev/null; echo "kandidatfilen läst"
+          [ -f "$PUNKTER" ] && [ -f "$SARDRAG" ] || { echo "::error::punktfilen eller platsdragen saknas i kuvos"; exit 1; }
+          echo "fran=$(date -u -d '47 days ago' +%F)" >> "$GITHUB_OUTPUT"; echo "till=$(date -u -d '3 days ago' +%F)" >> "$GITHUB_OUTPUT"
+      - name: Stadspunkternas historik ur cachen
+        id: c
+        uses: actions/cache/restore@v4
+        with: { path: mnp, key: "${{ env.CACHE }}${{ steps.f.outputs.till }}", restore-keys: "${{ env.CACHE }}" }
+      - name: Historiken finns?
+        id: finns
+        shell: bash
+        run: |
+          if [ ! -f mnp/pilot_punkter.csv ]; then
+            echo "::notice::ingen historik i cachen ännu — tryck kuvos-stad med steget historik först; kedjan räknar inget den här gången"
+            echo "ja=nej" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          echo "ja=ja" >> "$GITHUB_OUTPUT"
+          echo "stadspunkter: $(($(wc -l < mnp/pilot_punkter.csv) - 1)), dygn i cachen: $(ls mnp/dagar | grep -c 'csv.gz$' || true)"
+      - name: Väntan på MET (de levande körningarna)
+        if: ${{ steps.finns.outputs.ja == 'ja' }}
+        shell: bash
+        run: |
+          for i in $(seq 1 90); do
+            node --experimental-strip-types fysik/ny_kandidat/smavagar_pilot.ts --vanta 2>&1 | grep -v ExperimentalWarning
+            N=$(gh run list --workflow kandidat-fysik.yml --limit 10 --json status -q '[.[] | select(.status != "completed")] | length' 2>/dev/null || echo "?")
+            M=$(gh run list --workflow ny-kandidat-fysik.yml --limit 10 --json status -q '[.[] | select(.status != "completed")] | length' 2>/dev/null || echo "?")
+            [ "$N" = 0 ] && [ "$M" = 0 ] && { echo "de levande körningarna kör inte — vidare"; exit 0; }
+            echo "en levande körning kör eller väntar ($N, $M) — väntar 30 s"; sleep 30
+          done
+          echo "::error::de levande körningarna har kört i 45 minuter — stadens kedja hämtar inte samtidigt"; exit 1
+      - name: Dygnen som saknas, till cachen
+        id: h
+        if: ${{ steps.finns.outputs.ja == 'ja' }}
+        shell: bash
+        env: { MNP_MINUTER: "40", FRAN: "${{ steps.f.outputs.fran }}", TILL: "${{ steps.f.outputs.till }}" }
+        run: |
+          for f in mnp/dagar/*.csv.gz; do [ -e "$f" ] || continue; [[ "$(basename "$f" .csv.gz)" < "$FRAN" ]] && rm -f "$f"; done
+          set +e
+          node --experimental-strip-types fysik/ny_kandidat/smavagar_pilot.ts --historik mnp "$FRAN" "$TILL" 2>&1 | grep --line-buffered -v ExperimentalWarning
+          KOD=${PIPESTATUS[0]}
+          set -e
+          [ "$KOD" = 3 ] && { echo "::warning::historiken är inte komplett efter tidsbudgeten — nästa körning tar vid; kedjan räknar inget nu"; echo "klar=nej" >> "$GITHUB_OUTPUT"; exit 0; }
+          [ "$KOD" = 0 ] || exit "$KOD"
+          echo "klar=ja" >> "$GITHUB_OUTPUT"
+      - name: Dygnen till cachen
+        if: ${{ always() && steps.finns.outputs.ja == 'ja' && steps.c.outputs.cache-hit != 'true' && steps.h.outcome == 'success' }}
+        uses: actions/cache/save@v4
+        with: { path: mnp, key: "${{ env.CACHE }}${{ steps.h.outputs.klar == 'ja' && steps.f.outputs.till || format('ofullstandig-{0}', github.run_id) }}" }
+      - name: Historien för de befintliga punkterna ur releasen (bara läsning)
+        if: ${{ steps.h.outputs.klar == 'ja' }}
+        shell: bash
+        run: |
+          mkdir -p mn/dagar
+          gh release download "$REL" --dir mn --pattern 'metnordic_punkter.csv' --pattern 'metnordic_analys_*.csv.gz'
+          gh release download "$REL" --dir mn/dagar --pattern 'metnordic_dygn_*.csv.gz' || true
+          for f in mn/dagar/metnordic_dygn_*.csv.gz; do [ -e "$f" ] && mv "$f" "mn/dagar/$(basename "$f" | sed 's/metnordic_dygn_//')"; done
+          echo "delar: $(ls mn/metnordic_analys_*.csv.gz | wc -l), levande dygn: $(ls mn/dagar | wc -l)"
+      - name: Hämtningarna ur MET, med tider
+        if: ${{ steps.h.outputs.klar == 'ja' }}
+        shell: bash
+        run: |
+          set -o pipefail
+          sek() { echo $(( $(date +%s) - $1 )); }
+          T=$(date +%s)
+          for dag in $(date -u -d yesterday +%F) $(date -u +%F); do
+            node --experimental-strip-types ingest/metnordic-live.ts --dygn "$dag" --punkter mn/metnordic_punkter.csv --ut mn 2>&1 | grep -v ExperimentalWarning
+          done
+          S_DYGN_BEF=$(sek $T); T=$(date +%s)
+          for dag in $(date -u -d '2 days ago' +%F) $(date -u -d yesterday +%F) $(date -u +%F); do
+            node --experimental-strip-types ingest/metnordic-live.ts --dygn "$dag" --punkter mnp/pilot_punkter.csv --ut mnp-live 2>&1 | grep -v ExperimentalWarning
+          done
+          S_DYGN_STAD=$(sek $T)
+          { cat mn/metnordic_punkter.csv; tail -n +2 mnp/pilot_punkter.csv; } > alla_punkter.csv
+          TID=$(date -u +%Y-%m-%dT%H:00:00Z); T=$(date +%s)
+          node --experimental-strip-types ingest/metnordic-live.ts --korning --punkter alla_punkter.csv --ut mn 2>&1 | grep -v ExperimentalWarning | tee korning.txt
+          S_KORNING=$(sek $T)
+          STAMP=$(cat mn/korning.txt)
+          { echo "STAMP=$STAMP"; echo "TID=$TID"; } >> "$GITHUB_ENV"
+          printf '{"punkter_alla": %s, "punkter_stad": %s, "s_dygn_befintliga": %s, "s_dygn_stad": %s, "s_korning": %s, "korning_rad": "%s", "startad_av": "%s"}\n' \
+            "$(($(wc -l < alla_punkter.csv) - 1))" "$(($(wc -l < mnp/pilot_punkter.csv) - 1))" "$S_DYGN_BEF" "$S_DYGN_STAD" "$S_KORNING" \
+            "$(tail -1 korning.txt | sed 's/"//g')" "${{ github.event_name }}" > matning_hamta.json
+          cat matning_hamta.json | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Indatan för alla punkter, med stadspunkterna
+        if: ${{ steps.h.outputs.klar == 'ja' }}
+        shell: bash
+        run: |
+          set -o pipefail
+          gh release download kuvos-fysik-indata-2024-25 --dir indata
+          node -e '
+            const m = require("./kuvos/fysik-indata-leverans.json"), c = require("crypto"), fs = require("fs");
+            let fel = 0;
+            for (const f of m.filer) { const h = c.createHash("sha256").update(fs.readFileSync("indata/" + f.fil)).digest("hex");
+              console.log(`${f.fil}: ${h === f.sha256 ? "ok" : "FEL " + h}`); if (h !== f.sha256) fel++; }
+            process.exit(fel ? 1 : 0);'
+          mkdir -p frusen && for f in indata/*.tar.gz; do tar -xzf "$f" -C frusen; done
+          if [ -d frusen/data ]; then mv frusen/data/* frusen/ && rmdir frusen/data; fi
+          python3 fysik/live/indata.py --frusen frusen --rot . --ut indata-live
+          python3 fysik/ny_kandidat/smavagar_pilot.py indata --indata indata-live --punkter "$PUNKTER" --sardrag "$SARDRAG"
+      # Modellen ur hinken som i ny-kandidat-fysik.yml: adressen och nyckeln ur cron.job, maskade; bara statusen skrivs ut vid fel.
+      - name: modell_alla.pkl ur hinken, kontrollsumman mot kandidatfilen
+        if: ${{ steps.h.outputs.klar == 'ja' }}
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          curl -sS --fail-with-body -X POST "$FN?lage=kuvos_hamta" -H "x-halkvakt-key: $KEY" -H "Content-Type: application/json" -d '{"filer":["kuvos-kandidat-2027-28-t4/modell_alla.pkl"]}' > hamta.json
+          node -e '
+            const k = require("./kuvos/kandidat-2027-28-t4.json"), h = require("./hamta.json").filer, c = require("crypto"), { execFileSync } = require("child_process"), fs = require("fs");
+            const curl = (a) => { try { return execFileSync("curl", a, { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); } catch (e) { console.error(`hämtningen föll (curl ${e.status})`); process.exit(1); } };
+            const b = curl(["-sS", "--fail", h[0].url]); const f = k.filer.find((x) => (x.enhet ?? "alla") === "alla" && x.fil === "modell_alla.pkl");
+            const ok = !!f && c.createHash("sha256").update(b).digest("hex") === f.sha256 && b.length === f.bytes;
+            fs.writeFileSync("modell_alla.pkl", b); console.log(`modell_alla.pkl ur hinken: ${b.length} byte — ${ok ? "sha256 lika kandidatfilen" : "FEL"}`); process.exit(ok ? 0 : 1);'
+          rm hamta.json
+      # Del A:s och del B:s utskrift visas inte i den publika loggen; bara tiden, minnet, filens storlek och sista raden vid fel.
+      - name: Del A för alla punkter i delar, med tid och minne
+        if: ${{ steps.h.outputs.klar == 'ja' }}
+        shell: bash
+        run: |
+          [ -x /usr/bin/time ] || sudo apt-get -qq install -y time
+          echo "minnet: tid UTC, totalt MB, använt MB, ledigt MB, swap MB, största python KB"
+          ( while :; do echo "minne $(date -u +%T) $(free -m | awk '/^Mem:/{printf "%s %s %s ", $2, $3, $7} /^Swap:/{printf "%s ", $3}') $(ps -C python3 -o rss= 2>/dev/null | sort -n | tail -1)"; sleep 10; done ) 2>/dev/null | tee minne.log &
+          echo $! > minne.pid
+          # Del A räknar varje punkt för sig, så delarna ger samma PH som en omgång (F22). Delarna delar indatans filer; bara punktlistan
+          # stations.csv delas.
+          python3 - <<'PY'
+          import csv, math, os
+          src, n = "indata-live", int(os.environ["DELAR"])
+          rader = list(csv.reader(open(f"{src}/stations.csv", newline="", encoding="utf-8")))
+          huvud, kropp = rader[0], rader[1:]
+          stor = math.ceil(len(kropp) / n)
+          for i in range(n):
+              d, delen = f"indata-del{i + 1}", kropp[i * stor:(i + 1) * stor]
+              os.makedirs(d, exist_ok=True)
+              for f in os.listdir(src):
+                  if f != "stations.csv":
+                      os.symlink(os.path.abspath(f"{src}/{f}"), f"{d}/{f}")
+              with open(f"{d}/stations.csv", "w", newline="", encoding="utf-8") as fh:
+                  w = csv.writer(fh)
+                  w.writerow(huvud)
+                  w.writerows(delen)
+              print(f"del {i + 1}: {len(delen)} punkter")
+          PY
+          for i in $(seq 1 "$DELAR"); do
+            /usr/bin/time -v -o "del-a-$i.tid" python3 fysik/ny_kandidat/levande.py --del-a --indata "indata-del$i" \
+                --analys mn/metnordic_analys_*.csv.gz mn/dagar/*.csv.gz mnp/dagar/*.csv.gz mnp-live/dagar/*.csv.gz \
+                --korning "mn/metnordic_korning_$STAMP.csv.gz" --modell modell_alla.pkl --kandidat kuvos/kandidat-2027-28-t4.json --ut "ut-del$i" > "del-a-$i.log" 2>&1 \
+              || { echo "::error::Del A, del $i, föll: $(tail -1 "del-a-$i.log" | cut -c1-300)"; exit 1; }
+            grep -E "Elapsed|Maximum resident" "del-a-$i.tid" | sed "s/^/del $i: /"
+          done
+          kill "$(cat minne.pid)" 2>/dev/null || true
+          rm -f modell_alla.pkl
+          python3 -c '
+          import json, glob, gzip, os, re
+          n = int(os.environ["DELAR"])
+          s = [json.load(open(glob.glob(f"ut-del{i}/sammanfattning_*.json")[0], encoding="utf-8")) for i in range(1, n + 1)]
+          os.makedirs("ut", exist_ok=True)
+          fil = "ut/" + os.path.basename(s[0]["fil"])
+          assert all(os.path.basename(x["fil"]) == os.path.basename(fil) for x in s), "delarna räknade olika körningar"
+          with gzip.open(fil, "wt", newline="\n") as ut:
+              for i, x in enumerate(s):
+                  with gzip.open(x["fil"], "rt") as fh:
+                      for j, rad in enumerate(fh):
+                          if i and not j: continue
+                          ut.write(rad)
+          sam = {**s[0], "punkter": sum(x["punkter"] for x in s), "rader": sum(x["rader"] for x in s),
+                 "sekunder": round(sum(x["sekunder"] for x in s), 1), "ph_min": min(x["ph_min"] for x in s), "ph_max": max(x["ph_max"] for x in s),
+                 "saknade_punkttimmar_ifyllda": sum(x["saknade_punkttimmar_ifyllda"] for x in s), "fil": fil, "omgangar": n}
+          json.dump(sam, open(fil.replace("ny_kandidat_ph_", "sammanfattning_").replace(".csv.gz", ".json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+          rss = [int(re.search(r"Maximum resident set size \(kbytes\): (\d+)", open(f"del-a-{i}.tid").read()).group(1)) for i in range(1, n + 1)]
+          m = {"s_del_a": sam["sekunder"], "s_del_a_delar": [x["sekunder"] for x in s], "maxrss_del_a_mb": round(max(rss) / 1024),
+               "maxrss_del_a_delar_mb": [round(r / 1024) for r in rss], "punkter_del_a": sam["punkter"], "rader_del_a": sam["rader"],
+               "ifyllda_punkttimmar": sam["saknade_punkttimmar_ifyllda"], "ph_fil_mb": round(os.path.getsize(fil) / 1e6, 1)}
+          json.dump(m, open("matning_del_a.json", "w")); print(json.dumps(m))' | tee -a "$GITHUB_STEP_SUMMARY"
+      # Också när del A faller: minnets största och minsta värden, de sista proven och kärnans rader om slut på minne.
+      - name: Minnet under del A
+        if: ${{ always() && steps.h.outputs.klar == 'ja' }}
+        shell: bash
+        run: |
+          kill "$(cat minne.pid 2>/dev/null)" 2>/dev/null || true
+          [ -s minne.log ] || { echo "minnet: ingen minneslogg"; exit 0; }
+          python3 - <<'PY' | tee -a "$GITHUB_STEP_SUMMARY"
+          rader = [r.split()[1:] for r in open("minne.log") if len(r.split()) >= 6]
+          if not rader:
+              print("minnet: inga prov"); raise SystemExit
+          tal = lambda i: [int(r[i]) for r in rader if len(r) > i and r[i].isdigit()]
+          tot, anv, ledigt, swap, rss = tal(1), tal(2), tal(3), tal(4), tal(5)
+          print(f"minnet under del A: {len(rader)} prov {rader[0][0]}-{rader[-1][0]} UTC, totalt {max(tot)} MB, mest använt {max(anv)} MB, "
+                f"minst ledigt {min(ledigt)} MB, swap högst {max(swap or [0])} MB, största python {round(max(rss or [0]) / 1024)} MB")
+          PY
+          sudo dmesg -T 2>/dev/null | grep -i -E "out of memory|oom-kill|killed process" | tail -5 || true
+      - name: Del B för timmen och beskeden
+        if: ${{ steps.h.outputs.klar == 'ja' }}
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -o pipefail
+          python3 fysik/ny_kandidat/smavagar_pilot.py ph --del-a "ut/ny_kandidat_ph_$STAMP.csv.gz" --tid "$TID" --ut ph.csv
+          node --experimental-strip-types ingest/kandidat-db.ts ankare ankare.csv 2>&1 | grep -v ExperimentalWarning
+          sed 's/^station_id,/sid,/' alla_punkter.csv > punkter.csv
+          /usr/bin/time -v -o del-b.tid python3 fysik/ny_kandidat/levande.py --del-b --ph ph.csv --punkter punkter.csv --ankare ankare.csv --tid "$TID" --ut live.csv > del-b.log 2>&1 \
+            || { echo "::error::Del B föll: $(tail -1 del-b.log | cut -c1-300)"; rm -f ankare.csv; exit 1; }
+          rm -f ankare.csv
+          python3 -c '
+          import json, re
+          t = open("del-b.tid").read(); e = re.search(r"Elapsed \(wall clock\) time \(h:mm:ss or m:ss\): ([\d:.]+)", t).group(1).split(":")
+          m = {**json.load(open("matning_hamta.json")), **json.load(open("matning_del_a.json")), "stamp": "'"$STAMP"'", "tid": "'"$TID"'",
+               "s_del_b": round(sum(float(x) * 60 ** i for i, x in enumerate(reversed(e))), 1),
+               "maxrss_del_b_mb": round(int(re.search(r"Maximum resident set size \(kbytes\): (\d+)", t).group(1)) / 1024),
+               "korning": "${{ github.run_id }}"}
+          json.dump(m, open("matning.json", "w"), indent=1)'
+          python3 fysik/ny_kandidat/smavagar_pilot.py besked --live live.csv --tid "$TID" --ut besked --punkter "$PUNKTER" --matning matning.json
+          rm -f live.csv ph.csv
+          { echo '```'; cat matning.json; echo '```'; } | tee -a "$GITHUB_STEP_SUMMARY"
+      # Beskeden är räknade med stationernas mätningar och går bara till den privata hinken, aldrig till en artefakt. Som i
+      # kuvos-pilot.yml skrivs ingenting över, och det som ligger i hinken ska vara byte för byte det jobbet skrev.
+      - name: Beskeden till hinken, hämtade tillbaka och jämförda
+        if: ${{ steps.h.outputs.klar == 'ja' }}
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          export FN KEY
+          for f in besked/*; do mv "$f" "besked/${GITHUB_RUN_ID}_$(basename "$f")"; done
+          node -e '
+            const { execFileSync } = require("child_process"), fs = require("fs"), c = require("crypto"), filer = process.argv.slice(1);
+            const sha = (b) => c.createHash("sha256").update(b).digest("hex"), namn = filer.map((f) => process.env.HINK + "/" + f.split("/").pop());
+            // execFileSync:s fel bär kommandoraden och därmed nyckeln eller den signerade adressen: fångas, bara statusen skrivs ut.
+            const curl = (a, vad) => { try { return execFileSync("curl", ["-sS", "--fail", ...a], { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); }
+              catch (e) { if (vad) { console.error(`${vad} föll (curl ${e.status})`); process.exit(1); } return null; } };
+            const anrop = (lage, vad) => { const b = curl(["-X", "POST", `${process.env.FN}?lage=${lage}`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
+              "-H", "Content-Type: application/json", "-d", JSON.stringify({ filer: namn })], vad); return b && JSON.parse(b); };
+            if (!filer.length || filer.length > 20) { console.error("1–20 filer per anrop"); process.exit(1); }
+            let h = anrop("kuvos_hamta");
+            if (h) { console.error("filerna finns redan i hinken — ingenting skrivs över"); process.exit(1); }
+            const u = anrop("kuvos_ladda_upp", "adresserna för uppladdningen").urls;
+            filer.forEach((f, i) => curl(["-X", "PUT", "-H", "Content-Type: application/octet-stream", "--data-binary", "@" + f, u[i]], `uppladdningen av ${namn[i]}`));
+            h = anrop("kuvos_hamta", "hämtningen tillbaka");
+            let fel = 0;
+            h.filer.forEach((d, i) => { const ok = sha(curl([d.url], `hämtningen av ${d.fil}`)) === sha(fs.readFileSync(filer[i])); fel += !ok;
+              console.log(`${d.fil}: ${ok ? "i hinken, byte för byte den skrivna" : "FEL: i hinken med annat innehåll"}`); });
+            process.exit(fel ? 1 : 0);' besked/*
+          rm -rf besked
