@@ -13914,3 +13914,39 @@ Kopplingen till halka klassas därför i steg 2, efter en egen förregistrering.
 - steg 4: veckosammanställningen och säsongsfacit.
 
 **Stomdokument:** MAT provningen — olycksfacits fångst
+
+## #797 (6/11 2026) Olycksfacit, steg 2 och 3: klassningen efter ett dygn och dagens ärende med etiketten `olycka`
+
+**Beslut.** Bengt 6/11: *"Ja, bygg steg 2 och 3"*, på förslaget som #796 bygger på (`Desktop/Olyckorna_2026-11-06/OLYCKSFACIT_RUTINEN_FORSLAG_2026-11-06.md` §2 B–C, §3).
+
+**Steg 2, klassningen.**
+- **Reglerna** står i tröskeldokumentet `docs/TROSKLAR-OLYCKSFACIT.md`. Det är skrivet före första klassningen och gäller först när Bengt och Axel har signerat det.
+- **Klasserna**, i ordning: INTE (vilt), TYDLIG (halkord i texten och yta ≤ +1 °C), TROLIG (singelolycka, yta ≤ 0 °C och fukt eller rimfrost), INTE (yta över +3 °C) och OKLAR (allt annat).
+- **Ytan** kommer från den närmaste vaktade stationen inom 15 km, två timmar före till två timmar efter starten.
+- **Fem val i §6** väntar på signaturerna. Claude rekommenderar att *hindersfri* stryks som INTE-regel, eftersom Trafikverket skriver över texten med *"Vägen är hindersfri"* när vägen är röjd.
+- **Efterkontrollen** är `olycksfacit_efterkontroll()` i `sql/085`. Den körs varje timme på minut 7 och klassar varje olycka en gång, när olyckan är ett dygn gammal.
+
+**Steg 3, dagens ärende.**
+- **Funktionen** `supabase/functions/olycksfacit` anropas av pg_cron varje morgon 05:17 UTC.
+- **Ärendet** heter *Olycksfacit <dygn>* och har etiketten `olycka`. Det skrivs för varje svenskt dygn från 6/11 till i förrgår vars olyckor alla är kontrollerade.
+- **Innehållet** är en tabell per klass och utfall, orsakerna till tystnaden, och en lista *Att åtgärda* med de tysta TYDLIG- och TROLIG-olyckorna. Ärendet är publikt och bär bara väg, tid, läge, koder och antal, aldrig kandidatens tal.
+- **Stängningsregeln:** ärendet stängs först när varje rad har ett kort eller *ingen åtgärd* med skälet. Ett dygn utan sådana rader stängs av funktionen. Ett öppet ärende påminns var sjunde dygn, och Bengt tilldelas det.
+- **CLAUDE.md:** sessionsprotokollets steg 1 och dokumentsynkens steg 6 tar `olycka` bredvid `frist` och `dom`.
+
+**Två rättelser i fångsten** (`olycksfacit_fanga()` skrivs om i `sql/085`; redan fångade rader räknas inte om):
+- K tar kandidatens punkt på A1:s sträcka när den har en inom 2 km. Vid E18 6/11 05:23 läste K annars en grannvägs punkt.
+- A2 läser stationerna med driftens vakter: #75, radvakten, karantänen och den långsamma vakten.
+
+**Proven:**
+- `test/olycksfacit-arende.test.ts` prövar ärendets text.
+- Integrationsprovet #797 prövar varje klassregel, #75 och karantänen med en fälla var, K:s sträcka, att en olycka kontrolleras en gång, och att båda funktionerna har fast sökväg (#784).
+- Kontraktsgrinden räknar de nya kopiorna av halkorden och vakterna.
+
+**I drift först efter:**
+1. signaturerna;
+2. deploy av `olycksfacit` (deploy-supabase, alternativet `olycksfacit`);
+3. migrationen av `sql/085` med DB-knappen, efter deployen, eftersom jobbet anropar funktionen.
+
+Beviset blir den första klassningen och det första ärendet med etiketten `olycka`. Steg 4, veckosammanställningen, byggs efter de första veckorna.
+
+**Stomdokument:** MAT provningen — olycksfacits klassning och dagens ärende, SYS edge-funktionerna — olycksfacit

@@ -2172,3 +2172,133 @@ test("#796 olycksfacit: varje olycka fångas en gång, med vad lagren sa vid sta
     await pool.end();
   }
 });
+
+// OLYCKSFACIT, STEG 2 OCH 3 (sql/085, DECISIONS #797): efterkontrollen och klassningen, och fångstens två rättelser, mot riktig
+// PostGIS. Varje fixtur är en fälla som ger ett annat svar om regeln eller vakten saknas:
+//   EK1  texten efteråt säger "halt" och ytan är +0,5 → TYDLIG; Trafikverket satte halka en timme efter → halka_efter
+//   EK2  singelolycka, en trasig givare (−14 under luft 0, #75) 0,5 km bort med snö, en frisk +2,0 3 km bort → OKLAR, inte TROLIG
+//   EK3  singelolycka, yta −1,0 under daggpunkten −0,5 → TROLIG genom rimfrosten; halka först efter sju timmar → inte halka_efter
+//   EK4  viltolycka på −1 → INTE, vilt         EK5  flera fordon på +4,5 → INTE, yta över +3
+//   EK6  singelolycka utan station inom 15 km → OKLAR       EK7  två timmar gammal → inte kontrollerad än
+//   KF1  på E18:s sträcka; närmaste vägpunkt (69 m) ligger på grannsträckan, E18:s egen 0,9 km bort tystades av spridningen
+//        → K läser E18:s punkt och säger "spridningsspärren", inte grannens "fukt saknades"
+//   KF2  en station 0,5 km bort på −2 med snö, men i karantän (tre brott mot #75 i veckan) → A2 tiger, olyckan är otäckt
+test("#797 olycksfacit: efterkontrollen klassar en gång, med vakterna, och K läser A1:s sträcka", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const las = (f: string) => q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+  const nord = (km: number) => 72 + km / 111.2;
+  const ost = (lon: number, km: number) => lon + km / (111.2 * Math.cos((72 * Math.PI) / 180));
+  const stad = async () => {
+    await q("DELETE FROM olycksfacit WHERE deviation_id LIKE 'EK%' OR deviation_id LIKE 'KF%'").catch(() => {});
+    await q("DELETE FROM situation_archive WHERE deviation_id LIKE 'EK%' OR deviation_id LIKE 'KF%'");
+    await q("DELETE FROM ny_kandidat_skugga WHERE segment_id LIKE '9996%' OR segment_id LIKE '9997%'");
+    await q("DELETE FROM ny_kandidat_live WHERE punkt LIKE 'vK%'");
+    await q("DELETE FROM vagpunkt WHERE punkt LIKE 'vK%'");
+    await q("DELETE FROM road_condition_history WHERE segment_id LIKE '9996%' OR segment_id LIKE '9997%'");
+    await q("DELETE FROM road_conditions WHERE segment_id LIKE '9996%' OR segment_id LIKE '9997%'");
+    await q("DELETE FROM weather_observations WHERE station_id LIKE 'EKS%' OR station_id LIKE 'KFQ%'");
+  };
+  try {
+    await q("CREATE TABLE IF NOT EXISTS shadow_log (id bigserial PRIMARY KEY, run_at timestamptz NOT NULL DEFAULT now(), alerts jsonb NOT NULL DEFAULT '[]'::jsonb)");
+    if (!(await q("SELECT 1 FROM information_schema.columns WHERE table_name = 'kandidat_skugga' AND column_name = 'fukt_pb'")).rowCount) {
+      await q("DROP FUNCTION IF EXISTS kandidat_regel()");
+      for (const f of ["001_init.sql", "008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql", "018_trend_berakna.sql",
+                       "029_brott_index.sql", "030_langsam_vakt.sql", "050_kandidat_live.sql", "052_kandidat_gallring_kort.sql", "053_arkiv_tabeller.sql",
+                       "055_vagpunkter.sql", "056_kandidat_regel.sql", "057_kandidat_skugga.sql", "058_kandidat_spridning.sql",
+                       "065_kandidat_domlogg_punkter.sql"]) await las(f);
+    }
+    for (const f of ["003_situation_archive.sql", "068_ny_kandidat_skugga.sql", "084_olycksfacit.sql", "085_olycksfacit_klassning.sql",
+                     "085_olycksfacit_klassning.sql"]) await las(f);
+    for (const f of ["olycksfacit_fanga", "olycksfacit_efterkontroll"])
+      assert.deepEqual((await q("SELECT proconfig FROM pg_proc WHERE proname = $1", [f])).rows[0].proconfig,
+        ["search_path=public, extensions"], `${f}: fast sökväg i definitionen (DECISIONS #784)`);
+    await stad();
+
+    // Efterkontrollen: olyckorna 26 timmar gamla, skrivna direkt i olycksfacit (fångsten tar bara tolv timmar bakåt).
+    const t = "now() - interval '26 hours'";
+    const olycka = (id: string, lon: number, text: string, alder = t) => q(`INSERT INTO olycksfacit (deviation_id, start_time, message,
+      road_number, severity_code, geom, utfall, orsaker) VALUES ($1, ${alder}, $2, 'Väg 1', 4, ST_SetSRID(ST_MakePoint($3, 72), 4326),
+      'TYST_TACKT', '{"A1: väglaget Normalt"}')`, [id, text, lon]);
+    const station = (id: string, lon: number, km: number, tid: string, yta: number, luft: number, dagg: number | null, nb: string) =>
+      q(`INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, dewpoint_c, precipitation)
+         VALUES ($1, 'Provstation', ST_SetSRID(ST_MakePoint($2, 72), 4326), ${tid}, $3, $4, $5, $6)`, [id, ost(lon, km), yta, luft, dagg, nb]);
+    await olycka("EK1", 41, "Singelolycka");
+    await q(`INSERT INTO situation_archive (deviation_id, message_type_value, message, severity_code, geom, start_time) VALUES
+      ('EK1', 'Accident', 'Singelolycka. Mycket halt på platsen.', 4, ST_SetSRID(ST_MakePoint(41, 72), 4326), ${t})`);
+    await station("EKS1", 41, 2, t, 0.5, 0, -1, "no");
+    await olycka("EK2", 42, "Singelolycka med personbil");
+    await station("EKS2B", 42, 0.5, t, -14, 0, -15, "Snow");
+    await station("EKS2", 42, 3, t, 2.0, 1, -1, "no");
+    await olycka("EK3", 43, "Singelolycka");
+    await station("EKS3", 43, 1, t, -1.0, -0.5, -0.5, "no");
+    await olycka("EK4", 44, "Viltolycka, rådjur");
+    await station("EKS4", 44, 1, t, -1.0, 0, -2, "no");
+    await olycka("EK5", 45, "Trafikolycka flera fordon");
+    await station("EKS5", 45, 1, t, 4.5, 5, 1, "no");
+    await olycka("EK6", 39, "Singelolycka");
+    await olycka("EK7", 38, "Singelolycka, halt", "now() - interval '2 hours'");
+    for (const [id, seg] of [["EK1", "99961"], ["EK3", "99963"]])
+      await q("INSERT INTO olycksfacit_lager (deviation_id, lager, talar, orsak, detalj) VALUES ($1, 'A1', false, 'väglaget Normalt', $2)",
+        [id, { segment: seg, km: 0.02 }]);
+    await q(`INSERT INTO road_condition_history (segment_id, condition_code, condition_text, condition_info, modified_time) VALUES
+      ('99961', 2, 'Besvärligt (risk för)', '{Is}', ${t} + interval '1 hour'),
+      ('99963', 2, 'Besvärligt (risk för)', '{Is}', ${t} + interval '7 hours')`);
+
+    assert.equal((await q("SELECT olycksfacit_efterkontroll() AS n")).rows[0].n >= 6, true);
+    const k = async (id: string) => (await q("SELECT * FROM olycksfacit WHERE deviation_id = $1", [id])).rows[0];
+    const ek1 = await k("EK1");
+    assert.equal(ek1.klass, "TYDLIG"); assert.equal(ek1.klass_skal, "halkord i texten och yta ≤ +1 °C");
+    assert.equal(ek1.text_efter, "Singelolycka. Mycket halt på platsen."); assert.equal(ek1.halka_efter, true);
+    assert.equal(ek1.yta_station, "EKS1"); assert.equal(ek1.yta_min, 0.5);
+    const ek2 = await k("EK2");
+    assert.equal(ek2.klass, "OKLAR", "den trasiga givaren (#75) får inte göra olyckan TROLIG");
+    assert.equal(ek2.yta_station, "EKS2"); assert.equal(ek2.klass_skal, "övrigt i kallt väder");
+    const ek3 = await k("EK3");
+    assert.equal(ek3.klass, "TROLIG"); assert.equal(ek3.klass_skal, "singelolycka, yta ≤ 0 °C och rimfrost");
+    assert.equal(ek3.rimfrost_efter, true); assert.equal(ek3.fukt_efter, false); assert.equal(ek3.halka_efter, false);
+    assert.equal((await k("EK4")).klass_skal, "vilt"); assert.equal((await k("EK4")).klass, "INTE");
+    assert.equal((await k("EK5")).klass_skal, "yta över +3 °C"); assert.equal((await k("EK5")).klass, "INTE");
+    const ek6 = await k("EK6");
+    assert.equal(ek6.klass, "OKLAR"); assert.equal(ek6.klass_skal, "ingen vaktad station inom 15 km"); assert.equal(ek6.yta_min, null);
+    assert.equal(ek6.halka_efter, null, "ingen sträcka inom 100 m: inget att läsa");
+    assert.equal((await k("EK7")).kontrollerad_at, null, "yngre än ett dygn");
+    assert.equal((await q("SELECT olycksfacit_efterkontroll() AS n")).rows[0].n, 0, "en olycka kontrolleras en gång");
+
+    // Fångsten: K på A1:s sträcka, och A2 med karantänen.
+    await q(`INSERT INTO road_conditions (segment_id, condition_code, condition_text, condition_info, road_number, geom, modified_time) VALUES
+      ('99971', 1, 'Normalt', '{Torrt}', 'E 18', ST_SetSRID(ST_MakeLine(ST_MakePoint(48, 72), ST_MakePoint(48, 72.05)), 4326), now() - interval '3 hours'),
+      ('99972', 1, 'Normalt', '{Torrt}', 'Väg 9', ST_SetSRID(ST_MakeLine(ST_MakePoint(48.01, 72), ST_MakePoint(48.01, 72.05)), 4326), now() - interval '3 hours')`);
+    await q(`INSERT INTO road_condition_history (segment_id, condition_code, condition_text, condition_info, modified_time) VALUES
+      ('99971', 1, 'Normalt', '{Torrt}', now() - interval '3 hours'), ('99972', 1, 'Normalt', '{Torrt}', now() - interval '3 hours')`);
+    await q("INSERT INTO vagpunkt (punkt, segment_id, lon, lat) VALUES ('vK01', '99972', $1, $2), ('vK02', '99971', 48, $3)",
+      [ost(48, 0.069), nord(1.1), nord(2)]);
+    await q(`INSERT INTO ny_kandidat_skugga (segment_id, observed_at, skriven_at, punkter, varnar, veto, torr, vat, flackvis_vat, pb_min,
+               spridning, fukt_punkter, fukt_utfall) VALUES
+      ('99971', date_trunc('hour', now()) - interval '2 hours', now() - interval '2 hours', 1, 0, 0, 0, true, false, -0.7, 1, '{vK02}', '{spridning}'),
+      ('99972', date_trunc('hour', now()) - interval '2 hours', now() - interval '2 hours', 1, 0, 0, 1, false, false, -1.0, 0, '{}', '{}')`);
+    await q(`INSERT INTO ny_kandidat_live (tid, punkt, pb) VALUES (date_trunc('hour', now()) - interval '2 hours', 'vK02', -0.7),
+               (date_trunc('hour', now()) - interval '2 hours', 'vK01', -1.0)`);
+    await station("KFQ1", 49, 0.5, "now() - interval '30 minutes'", -2.0, -1, -3, "Snow");
+    for (const d of [2, 3, 4]) await station("KFQ1", 49, 0.5, `now() - interval '${d} days'`, -20, 0, -21, "no");
+    await q(`INSERT INTO situation_archive (deviation_id, message_type_value, message, severity_code, road_number, geom, start_time) VALUES
+      ('KF1', 'Accident', 'Singelolycka', 4, 'E18', ST_SetSRID(ST_MakePoint(48, $1), 4326), now() - interval '20 minutes'),
+      ('KF2', 'Accident', 'Singelolycka', 4, NULL, ST_SetSRID(ST_MakePoint(49, $1), 4326), now() - interval '20 minutes')`, [nord(1.1)]);
+    await q("SELECT olycksfacit_fanga()");
+    const lager = async (id: string) => Object.fromEntries((await q("SELECT lager, talar, orsak, detalj FROM olycksfacit_lager WHERE deviation_id = $1", [id])).rows
+      .map((r: any) => [r.lager, r]));
+    const kf1 = await lager("KF1");
+    assert.equal(kf1.A1.detalj.segment, "99971");
+    assert.equal(kf1.K.detalj.punkt, "vK02", "E18:s egen punkt, inte grannsträckans 69 m bort");
+    assert.equal(kf1.K.orsak, "spridningsspärren");
+    assert.deepEqual((await k("KF1")).orsaker, ["A1: väglaget Normalt", "K: spridningsspärren", "A2: ingen station inom 5 km"]);
+    const kf2 = await lager("KF2");
+    assert.equal(kf2.A2.talar, false, "stationen är i karantän (tre brott mot #75)");
+    assert.equal(kf2.A2.orsak, "ingen station inom 5 km");
+    assert.equal((await k("KF2")).utfall, "TYST_OTACKT");
+  } finally {
+    await stad().catch(() => {});
+    await pool.end();
+  }
+});

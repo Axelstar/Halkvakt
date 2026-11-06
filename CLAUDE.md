@@ -111,8 +111,9 @@ Every session, in order:
    Kartsynken below). Read the morning's dokumentsynk (DOKUMENTSYNKEN below): its STATUS line and its PR (merged by the flow `synk-ihop`, DECISIONS #731;
    if it is still open, the flow's comment says why). The pages are built and published once a day by Bengt's repo
    895845/halkvakt-sidor, and the flow `sidorna` here scans them (#731, #733): an open
-   issue *Genomsökningen av sidorna hittade fel* is raised with Bengt like a frist. Then the open issues labelled `frist` and `dom` (DECISIONS #649): a frist due
-   today or overdue, and a dom waiting to be booked, are raised with Bengt before anything else. Then orient per SESSIONSREGELN below: the project map (`docs/PROJEKTKARTAN.html`, PROJEKTKARTAN below) for where every part stands, the latest `docs/BEDOMNING-*.md` in full, `docs/INTEGRATIONSKARTAN.md` when it
+   issue *Genomsökningen av sidorna hittade fel* is raised with Bengt like a frist. Then the open issues labelled `frist`, `dom` (DECISIONS #649) and `olycka`
+   (DECISIONS #797): a frist due today or overdue, a dom waiting to be booked, and an olycksfacit day whose silent slippery accidents
+   still lack an action (a card or *ingen åtgärd* with the reason), are raised with Bengt before anything else. Then orient per SESSIONSREGELN below: the project map (`docs/PROJEKTKARTAN.html`, PROJEKTKARTAN below) for where every part stands, the latest `docs/BEDOMNING-*.md` in full, `docs/INTEGRATIONSKARTAN.md` when it
    changed or a new grepp starts, TAVLA.md's 🟡 section, DECISIONS added since last session, latest CI runs. Search
    TAVLA, STATUS and DECISIONS — don't read them whole (halved 26/9; the older half is in TAVLA-ARKIV.md and
    DECISIONS-ARKIV.md — search there too).
@@ -284,7 +285,8 @@ en körning skrev nådde aldrig synken, som läser beslut och commits, inte utsk
    `stomvakten.ts --tillatna`.
 6. En rad i STATUS.md: *Dokumentsynk <datum>:* vad som rättades per dokument, eller *inget att stämma av* — en tyst morgon ska inte
    se ut som en lyckad. Raden och rapporten listar också de öppna
-   ärendena med etiketterna `frist` och `dom` (#649); ett dom-ärende bokförs på Bengts ord, aldrig av rutinen.
+   ärendena med etiketterna `frist`, `dom` (#649) och `olycka` (#797); ett dom-ärende bokförs på Bengts ord, aldrig av rutinen,
+   och ett olycksfacit-ärende stängs först när varje rad under *Att åtgärda* har en åtgärd.
 7. Commit (märk den aldrig så att CI hoppas över), push, PR med rubriken *Dokumentsynk: <datum>*. Rutinen slår inte ihop själv (auto-läget
    nekade det 8/10, DECISIONS #488). Flödet `synk-ihop` (`.github/workflows/synk-ihop.yml`, `scripts/synk-ihop.ts`) slår ihop PR:en
    när grenen bara rör dokumenten (`--tillatna`), ci och md-vakt är gröna på exakt huvudet och dokumentkontrollerna är gröna på det
