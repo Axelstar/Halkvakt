@@ -14043,7 +14043,7 @@ kuvösens förregistrering F26 §5 kräver.
 - **RÅ:s vinterläsning** (1/12, 1/1, 1/2) räknar RÅ:s grind med X = 2,25 °C som förut. `grind-s-b.ts` ändras inte.
 - **Kandidatens domskript** (projektkartans steg *Domskriptet*, fristen 30/11) räknar spärren som den gällde varje timme: X = 2,25 °C före bytet 6/11 12:31 UTC och F1 från bytet, med X = 2,25 °C över hela fönstret bredvid.
 - Raden *Kvar efter bytet* i #800 ersätts av detta.
-- Rättelsen av tilläggets §4 står i kuvösen (F30, tilläggets §7) och gäller med Axels signatur, som väntar. Ingen kod ändras av den före 1/12.
+- Rättelsen av tilläggets §4 står i kuvösen (F30, tilläggets §7). Axel signerade den 6/11 via Bengt: *"Axel signerar"*. Ingen kod ändras av den.
 
 **Alternativet (b):** skuggmotorn loggar också `frys_min` för RÅ:s ankare, och `grind-s-b.ts` räknar F1. Förkastat: det byter spärr på RÅ, som kuvösens spärrprov aldrig prövade. RÅ talar inte till förarna, och i marsdomen är den kontroll och reserv (#547). Det hade också krävt en ändring och en deploy i skuggmotorn.
 
