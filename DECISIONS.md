@@ -14029,3 +14029,22 @@ kuvösens förregistrering F26 §5 kräver.
 `spr` kvar bredvid.
 
 **Stomdokument:** MAT segmentprognosen — spridningsspärren F1 i regeln, SYS kandidaten — regeln och den frystas steg
+
+## #801 (6/11 2026) Vinterläsningen av spridningsgrinden gäller RÅ och står med X = 2,25 °C; kandidatens F1 räknas i dess domskript
+
+**Beslut.** Bengt 6/11: *"Ja, väg (a)"*.
+
+**Bakgrunden.**
+- #800 sa att vinterläsningen (#478, `publish/grind-s-b.ts`) räknar med F1 från bytet, och kuvösens tillägg för kandidatens marsdom (F29 §4) sa detsamma.
+- Men `grind-s-b.ts` läser inte kandidatens regel. Det räknar RÅ:s spridningsgrind (#474–#477) på skuggmotorns provpunkter (`shadow_log.prognos`, ankarna ur `vagpunkt_ankare`, spridningen som sjunde fält i loggen).
+- Kandidatens spärr ärvde gränsen 2,25 °C från RÅ:s grind, och de två blandades ihop.
+
+**Vad som gäller:**
+- **RÅ:s vinterläsning** (1/12, 1/1, 1/2) räknar RÅ:s grind med X = 2,25 °C som förut. `grind-s-b.ts` ändras inte.
+- **Kandidatens domskript** (projektkartans steg *Domskriptet*, fristen 30/11) räknar spärren som den gällde varje timme: X = 2,25 °C före bytet 6/11 12:31 UTC och F1 från bytet, med X = 2,25 °C över hela fönstret bredvid.
+- Raden *Kvar efter bytet* i #800 ersätts av detta.
+- Rättelsen av tilläggets §4 står i kuvösen (F30, tilläggets §7) och gäller med Axels signatur, som väntar. Ingen kod ändras av den före 1/12.
+
+**Alternativet (b):** skuggmotorn loggar också `frys_min` för RÅ:s ankare, och `grind-s-b.ts` räknar F1. Förkastat: det byter spärr på RÅ, som kuvösens spärrprov aldrig prövade. RÅ talar inte till förarna, och i marsdomen är den kontroll och reserv (#547). Det hade också krävt en ändring och en deploy i skuggmotorn.
+
+**Stomdokument:** MAT segmentprognosen — vinterläsningen gäller RÅ och domskriptet räknar F1, BED §4.2 — frågan avgjord
