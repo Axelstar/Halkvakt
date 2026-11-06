@@ -14048,3 +14048,52 @@ kuvösens förregistrering F26 §5 kräver.
 **Alternativet (b):** skuggmotorn loggar också `frys_min` för RÅ:s ankare, och `grind-s-b.ts` räknar F1. Förkastat: det byter spärr på RÅ, som kuvösens spärrprov aldrig prövade. RÅ talar inte till förarna, och i marsdomen är den kontroll och reserv (#547). Det hade också krävt en ändring och en deploy i skuggmotorn.
 
 **Stomdokument:** MAT segmentprognosen — vinterläsningen gäller RÅ och domskriptet räknar F1, BED §4.2 — frågan avgjord
+
+## #802 (6/11 2026) Olycksfacit, steg 4: bedömningen per olycka, veckans ärende och säsongen — byggt, väntar på signaturerna
+
+**Beställningen.** Bengt 6/11: *"Slå ihop o bygg steg 4"*, och samma meddelande: *"en bedömning om halkvakt hade varnat vid olycka
+(för att ev visa vid diskussion med försäkringsbolag o liknande i ett sälj) o alternativt varför halkvakt inte varnade och om det behövs
+någon förbättring i systemet"*. #797 sa att steg 4 skulle byggas efter de första veckorna. Bengts ord flyttar det till nu.
+
+**Reglerna** står i `docs/TROSKLAR-OLYCKSFACIT.md` §9. Den delen är skriven före den första klassningen (6/11 21:07 UTC) och gäller först
+när Bengt och Axel har signerat den och valt i §9.8.
+- **Vad *varnade* betyder:** minst ett av appens lager hade en aktiv varning på platsen när olyckan började. Fångsten fryser lagren vid
+  starten. Det säger inte att någon förare med appen var där.
+- **Bedömningen per olycka:** RÄTT VARNING, VARNING HALKA INTE BEKRÄFTAD, MISS, OKLAR TYSTNAD eller RÄTT TYSTNAD, ur utfallet och klassen.
+- **Förbättringsområdet för en miss**, ur fångstens orsaker: täckningen, spridningsspärren, vetot, ytan i modellen, rimfrosten, fukten
+  syntes inte, kandidatens drift eller övrigt.
+- **Dagens ärende** får området på varje rad att åtgärda och listan *Rätt varning*.
+- **Veckans ärende**, *Olycksfacit vecka ÅÅÅÅ-Vnn*, skrivs av samma funktion och samma jobb, normalt på tisdagen. Det bär
+  bedömningarna, lagren, missarna per område, veckans fall med rätt varning och säsongen sedan 6/11. Ett område med minst två missar under
+  veckan blir en rad att åtgärda.
+- **Säljregeln:** bara RÄTT VARNING får anföras utåt, med orden *"Halkvakt hade en aktiv varning på platsen när olyckan började"*, lagret
+  och säsongens andel. Aldrig att en förare varnades eller att en olycka hade undvikits.
+- **Säsongsfacit per variant** (spärren, daggpunktsvägen, P1) byggs inför marsdomen, som eget tillägg.
+
+**Byggt:** `supabase/functions/olycksfacit/arende.ts` (bedömningen, området, veckan), `index.ts` (veckorna och deras påminnelse),
+`sql/088_olycksfacit_veckor.sql` (veckornas tabell, inget nytt jobb), `test/olycksfacit-arende.test.ts` (åtta prov, sju motprov fällda)
+och integrationsprovet #797 med sql/088. Frågorna i `index.ts` är provkörda som SELECT mot driftens tabeller i SQL-redigeraren 6/11.
+
+**Ordningen:** signaturerna och valen i §9.8, sedan deploy av `olycksfacit` och migrationen av sql/088 med DB-knappen, båda på Bengts
+ord. Beviset är den första veckans ärende, 2026-V45, väntat tisdag 10/11.
+
+**Alternativ:** (a) vänta med steg 4 till efter de första veckorna, som #797 sa — förkastat av Bengt; (b) bedömningen bara i veckans
+ärende — förkastat, Bengt bad om en bedömning per olycka, och dagens ärende är där varje miss får sin åtgärd.
+
+**Stomdokument:** MAT provningen — olycksfacits steg 4, BED §4.2 — signaturerna och valen i TROSKLAR-OLYCKSFACIT §9.8
+
+## #803 (6/11 2026) TROSKLAR-OLYCKSFACIT §9 fastställd av Bengt och Axel, med valen som rekommenderat
+
+**Beslut.** Bengt 6/11, för sig och Axel: *"Vi signerar"*, på frågan om §9 med valen 6–9 som rekommenderat (#802).
+- Texten som signerades är `docs/TROSKLAR-OLYCKSFACIT.md` på grenen `claude/olycksfacit-steg4` vid 62c58f4a, sha256 `4ad7dc77…8c0f` (LF).
+- **Valen:**
+  - (6) ett område är återkommande vid två missar samma vecka;
+  - (7) säljregelns ord *"Halkvakt hade en aktiv varning på platsen när olyckan började"*, med lagret och säsongens andel;
+  - (8) ingen olyckstext från Trafikverket i ärendena;
+  - (9) säsongsfacit per variant inför marsdomen, som eget tillägg.
+- Signerat före den första klassningen (6/11 21:07 UTC). Fram till den får §9 ändras av Bengt eller Axel med en rad här; därefter gäller regel L (§7).
+
+**Kvar:** sammanslagningen av PR #1410, deployen av `olycksfacit` och migrationen av sql/088, på Bengts ord. Beviset är den första veckans
+ärende (2026-V45, väntat 10/11).
+
+**Stomdokument:** MAT provningen — olycksfacits steg 4 fastställt, BED §4.2 — frågan avgjord
