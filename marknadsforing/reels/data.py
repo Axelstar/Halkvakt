@@ -33,8 +33,9 @@ def linjer(g):
     return ''.join('M' + ' L'.join(f'{a},{b}' for a, b in (T(*p) for p in c)) for c in cs)
 
 lans = [{'kod': int(f['properties']['kod']), 'd': ''.join(D(p[0]) for p in polys(f['geometry']))} for f in lan['features']]
-st = [dict(zip(('x', 'y'), T(*f['geometry']['coordinates'])), yta=f['properties']['yta'], n=f['properties']['name'])
-      for f in vader if f['properties'].get('land') == 'SE' and f['properties'].get('yta') is not None]
+sv = [f for f in vader if f['properties'].get('land') == 'SE' and f['properties'].get('yta') is not None]
+st = [dict(zip(('x', 'y'), T(*f['geometry']['coordinates'])), yta=f['properties']['yta'], luft=f['properties'].get('luft'), n=f['properties']['name'])
+      for f in sv]
 roads = []
 for g in vag:
     p = g['properties']
@@ -62,7 +63,27 @@ under = [s for s in st if s['yta'] < 0]
 e4 = [g for g in vag if g['properties']['road'] == 'E 4']
 seg = np.array([T(*c) for g in e4 for c in (g['geometry']['coordinates'] if g['geometry']['type'] == 'LineString' else [c for l in g['geometry']['coordinates'] for c in l])])
 e4st = sorted([s for s in st if len(seg) and np.min(np.hypot(seg[:, 0] - s['x'], seg[:, 1] - s['y'])) < 1.6], key=lambda s: -s['y'])
-nat = {'gen': summ['generated_at'], 'W': round(W), 'lan': lans, 'st': st, 'roads': roads, 'counties': counties, 'iso': iso,
+# Commuter stretches and cities (Axel 6/11): the stations within reach of a straight line between two towns, south to north,
+# and the three stations nearest a city centre. Distances in km on a local flat projection.
+km = lambda a, b: math.hypot((a[0] - b[0]) * 111.32 * math.cos(math.radians((a[1] + b[1]) / 2)), (a[1] - b[1]) * 110.57)
+LL = [tuple(f['geometry']['coordinates']) for f in sv]
+def langs(a, b, bredd=6):
+    ut = []
+    for i, p in enumerate(LL):
+        ax, ay, bx, by = 0, 0, km(a, b), 0
+        da, db = km(p, a), km(p, b)
+        if da + db - km(a, b) < bredd * 0.5: ut.append((da, i))
+    return [i for _, i in sorted(ut)]
+PEND = [('Malmö', 'Lund', (13.00, 55.605), (13.19, 55.705)), ('Göteborg', 'Borås', (11.97, 57.71), (12.94, 57.72)),
+        ('Uppsala', 'Stockholm', (17.64, 59.86), (18.07, 59.33)), ('Norrköping', 'Linköping', (16.19, 58.59), (15.62, 58.41)),
+        ('Gävle', 'Sandviken', (17.14, 60.67), (16.78, 60.62)), ('Umeå', 'Skellefteå', (20.26, 63.83), (20.95, 64.75)),
+        ('Jönköping', 'Värnamo', (14.16, 57.78), (14.04, 57.18)), ('Västerås', 'Enköping', (16.54, 59.61), (17.08, 59.64))]
+pend = [{'fran': a, 'till': b, 'a': T(*pa), 'b': T(*pb), 'st': langs(pa, pb)} for a, b, pa, pb in PEND]
+STAD = [('Malmö', (13.00, 55.605)), ('Göteborg', (11.97, 57.71)), ('Stockholm', (18.07, 59.33)), ('Uppsala', (17.64, 59.86)),
+        ('Linköping', (15.62, 58.41)), ('Örebro', (15.21, 59.27)), ('Karlstad', (13.50, 59.38)), ('Sundsvall', (17.31, 62.39)),
+        ('Umeå', (20.26, 63.83)), ('Luleå', (22.15, 65.58)), ('Jönköping', (14.16, 57.78)), ('Växjö', (14.81, 56.88))]
+stader = [{'n': n, 'xy': T(*p), 'st': sorted(range(len(LL)), key=lambda i: km(LL[i], p))[:3]} for n, p in STAD]
+nat = {'pend': pend, 'stader': stader, 'gen': summ['generated_at'], 'W': round(W), 'lan': lans, 'st': st, 'roads': roads, 'counties': counties, 'iso': iso,
        'front': max(under, key=lambda s: s['y']) if under else None, 'top': sorted(under, key=lambda s: s['yta'])[:5],
        'e4': {'d': [linjer(g) for g in e4], 'st': e4st, 'risk': [r for r in roads if r['road'] == 'E4']}}
 open(os.path.join(UT, 'nat.js'), 'w').write('window.NAT=' + json.dumps(nat, ensure_ascii=False) + ';')

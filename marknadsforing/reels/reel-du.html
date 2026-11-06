@@ -375,5 +375,120 @@ if (MODE === 'du') {
     endCard(t, 11.6);
   };
 }
+
+// ---------- shared for the new films (Axel 6/11) ----------
+const WD = when.toLocaleDateString('sv-SE', { weekday: 'long', timeZone: 'Europe/Stockholm' });
+const fjarr = (s) => /Fjärryta/.test(s.n);
+const deg = (x) => fmtT(x) + '°';
+const plusMinus = N.st.filter(s => !fjarr(s) && s.luft != null && s.luft > 0 && s.yta < 0);
+const readout = (lbl) => el(`<div class="abs" style="left:${M}px;top:700px;width:${1080 - 2 * M}px;height:440px;border-radius:44px;background:${C.panel};border:2px solid ${C.line};box-sizing:border-box;padding:56px 64px">
+  <div class="lbl ro-l">${lbl}</div><div class="ro-v" style="margin-top:28px;font:600 240px/1 PM,monospace;letter-spacing:-.04em;color:${C.text}"></div>
+  <div class="meta ro-m" style="margin-top:34px;color:${C.muted}"></div></div>`);
+
+// ---------- 7 · Bilen säger plus. Vägen säger minus. ----------
+if (MODE === 'plus') {
+  const s0 = [...plusMinus].filter(s => s.luft - s.yta >= 3).sort((a, b) => b.y - a.y)[0] || plusMinus[0];   // southernmost with a clear gap: closest to most viewers
+  tt.textContent = `${clean(s0.n)} · ${WD} · ${HHMM}`; lt.style.background = C.yellow;
+  const h0 = H('Bilen säger plus.'), h1 = H('Vägen säger minus.'), h2 = H(`${plusMinus.length} sådana platser<br>i kväll.`), h3 = H('Därför läser Halkvakt<br>vägbanan.');
+  const l2 = Ld(`Plus i luften, minus på vägbanan. Trafikverkets mätstationer kl. ${HHMM}.`);
+  const ro = readout('Luften'), roL = ro.querySelector('.ro-l'), roV = ro.querySelector('.ro-v'), roM = ro.querySelector('.ro-m');
+  const dots = N.st.map(s => ({ s, hit: plusMinus.includes(s), c: mk('circle', { cx: s.x, cy: s.y, r: 2, fill: C.muted3 }, G('dots')) }));
+  const C0 = fit(SWE, { x: M, y: 640, w: 1080 - 2 * M, h: BOT - 640 - 20 });
+  seek = (t) => {
+    setCam({ ...C0, s: C0.s * (1 + 0.004 * t) });
+    const road = t >= 3.2, km = easeInOut(prog(t, 3.0, 3.4));
+    roL.textContent = road ? 'Vägbanan, samma plats' : 'Luften'; roV.textContent = deg(road ? s0.yta : s0.luft);
+    roM.textContent = `${clean(s0.n)} · Trafikverket ${HHMM}`;
+    set(roV, { s: 1 - 0.08 * Math.sin(Math.PI * km), o: 1 - 0.7 * Math.sin(Math.PI * km) });
+    const mapK = easeHand(prog(t, 6.2, 7.0));
+    lanEls.forEach(l => l.setAttribute('opacity', mapK * (1 - 0.6 * easeInOut(prog(t, 10.0, 10.6)))));
+    dots.forEach(({ s, hit, c }) => { const k = hit ? appear(t, s, 6.6, 1.6) : mapK * 0.5; c.setAttribute('opacity', k); c.setAttribute('fill', hit ? C.text : C.muted3); c.setAttribute('r', (hit ? 3.6 : 1.8) / C0.s); });
+    block(tag, t, 0.1, 11.4, 16);
+    block(ro, t, 0.3, 5.9, 40);
+    block(h0, t, 0.2, 2.9); block(h1, t, 3.3, 5.9); block(h2, t, 6.2, 9.8); block(l2, t, 6.5, 9.8, 24); block(h3, t, 10.0, 11.4);
+    endCard(t, 11.6);
+  };
+}
+
+// ---------- 8 · Gissa temperaturen ----------
+if (MODE === 'gissa') {
+  const s0 = [...plusMinus].sort((a, b) => Math.abs((a.luft - a.yta) - 4) - Math.abs((b.luft - b.yta) - 4))[0];
+  const alt = [Math.round((s0.luft - 1.4) * 10) / 10, s0.yta, 0.4];
+  tt.textContent = `Gissa · ${clean(s0.n)} · ${HHMM}`; lt.style.background = C.yellow;
+  const h0 = H(`Luften: ${deg(s0.luft)}`), l0 = Ld(`${clean(s0.n)} i kväll. Vad visar vägbanan?`);
+  const h1 = H(`${deg(s0.yta)}`), l1 = Ld('Vägbanan kan vara flera grader kallare än luften. Bilens termometer mäter luften.');
+  const h2 = H('Halkvakt läser<br>vägbanan.');
+  const opts = el(`<div class="abs" style="left:${M}px;top:700px;width:${1080 - 2 * M}px">${alt.map((v, i) => `<div class="opt" style="display:flex;align-items:center;gap:36px;height:150px;margin-bottom:28px;border-radius:30px;border:2px solid ${C.divider};padding:0 48px;box-sizing:border-box">
+    <span style="font:500 30px/1 PM,monospace;color:${C.muted}">${'ABC'[i]}</span><span style="font:600 88px/1 PM,monospace;letter-spacing:-.03em;color:${C.text}">${deg(v)}</span></div>`).join('')}
+    <div class="meta cd" style="margin-top:20px;color:${C.muted};font-size:28px"></div></div>`);
+  const optEls = [...opts.querySelectorAll('.opt')], cd = opts.querySelector('.cd');
+  lanEls.forEach(l => l.setAttribute('opacity', 0));
+  seek = (t) => {
+    optEls.forEach((o, i) => { const k = easeHand(prog(t, 1.0 + i * 0.2, 1.6 + i * 0.2)); const rv = easeInOut(prog(t, 6.3, 6.8)), right = i === 1;
+      set(o, { x: (1 - k) * 40, o: k * (right ? 1 : 1 - 0.75 * rv) }); o.style.background = right && rv > 0.5 ? C.text : 'transparent';
+      o.querySelectorAll('span').forEach(sp => sp.style.color = right && rv > 0.5 ? C.ground : ''); });
+    cd.textContent = t > 3.3 && t < 6.3 ? `Svar om ${Math.ceil(6.3 - t)}` : '';
+    block(tag, t, 0.1, 11.4, 16);
+    block(h0, t, 0.2, 6.1); block(l0, t, 0.4, 6.1, 24); block(h1, t, 6.4, 9.8); block(l1, t, 6.7, 9.8, 24);
+    block(opts, t, 0.8, 9.8, 0); block(h2, t, 10.0, 11.4);
+    endCard(t, 11.6);
+  };
+}
+
+// ---------- 9 · Pendlar du ...? ----------
+if (MODE === 'pendling') {
+  const P = N.pend.map(p => ({ ...p, s: p.st.map(i => N.st[i]).filter(s => !fjarr(s)) })).filter(p => p.s.length >= 3)
+    .sort((a, b) => b.s.filter(s => s.yta < 0).length - a.s.filter(s => s.yta < 0).length)[0];
+  const cold = P.s.filter(s => s.yta < 0).length;
+  tt.textContent = `${P.fran}–${P.till} · ${WD} · ${HHMM}`; lt.style.background = C.yellow;
+  const h0 = H(`Pendlar du<br>${P.fran}–${P.till}?`), l0 = Ld('Så kall är vägbanan längs vägen i kväll.');
+  const h1 = H(`${cold} av ${P.s.length} under noll.`), l1 = Ld(`Trafikverkets mätstationer mellan ${P.fran} och ${P.till}, kl. ${HHMM}.`);
+  const h2 = H('Kör du en annan<br>sträcka?'), l2 = Ld('Se ditt län på halkvakt.se/lan');
+  const xs = [P.a[0], P.b[0], ...P.s.map(s => s.x)], ys = [P.a[1], P.b[1], ...P.s.map(s => s.y)];
+  const bb = { x: Math.min(...xs), y: Math.min(...ys), w: Math.max(...xs) - Math.min(...xs), h: Math.max(...ys) - Math.min(...ys) };
+  const ZONE = { x: M, y: 600, w: 1080 - 2 * M, h: 380 };
+  const C1 = fit({ x: bb.x - 4, y: bb.y - 4, w: bb.w + 8, h: bb.h + 8 }, ZONE);
+  const line = mk('line', { x1: P.a[0], y1: P.a[1], x2: P.b[0], y2: P.b[1], stroke: C.muted2, 'stroke-width': 2, 'stroke-dasharray': '6 8', 'vector-effect': 'non-scaling-stroke' }, G('lines'));
+  const sd = P.s.map(s => mk('circle', { cx: s.x, cy: s.y, r: 9 / C1.s, fill: s.yta < 0 ? C.text : C.muted3, stroke: C.ground, 'stroke-width': 3, 'vector-effect': 'non-scaling-stroke' }, G('dots')));
+  const ends = [[P.fran, P.a], [P.till, P.b]].map(([n, xy]) => el(`<div class="abs meta" style="color:${C.text2};font-size:22px">${n}</div>`));
+  const pick = P.s.length <= 6 ? P.s : [0, 1, 2, 3, 4, 5].map(i => P.s[Math.round(i * (P.s.length - 1) / 5)]);
+  const list = el(`<div class="abs" style="left:${M}px;top:1030px;width:${1080 - 2 * M}px">${pick.map(s => `<div class="row"><span class="rn">${clean(s.n)}</span><span class="rv" style="color:${s.yta < 0 ? C.text : C.muted}">${deg(s.yta)}</span></div>`).join('')}</div>`);
+  const rows = [...list.querySelectorAll('.row')];
+  seek = (t) => {
+    const c = C1; setCam(c);
+    lanEls.forEach(l => l.setAttribute('opacity', 0.9 * easeHand(prog(t, 0.6, 1.4))));
+    line.setAttribute('opacity', easeHand(prog(t, 1.4, 2.0)));
+    sd.forEach((d, i) => d.setAttribute('opacity', easeHand(prog(t, 2.4 + i * 0.12, 2.8 + i * 0.12))));
+    [P.a, P.b].forEach((xy, i) => { const e = ends[i]; e.style.left = (c.x + xy[0] * c.s - (i ? 0 : 60)) + 'px'; e.style.top = (c.y + xy[1] * c.s - 52) + 'px'; e.style.opacity = easeHand(prog(t, 1.6, 2.2)) * (1 - easeInOut(prog(t, 10.0, 10.5))); });
+    rows.forEach((r, i) => { const k = easeHand(prog(t, 2.8 + i * 0.3, 3.3 + i * 0.3)); set(r, { o: k, x: (1 - k) * 24 }); });
+    block(list, t, 2.6, 9.8, 0);
+    block(tag, t, 0.1, 11.4, 16);
+    block(h0, t, 0.2, 5.6); block(l0, t, 0.5, 5.6, 24); block(h1, t, 5.9, 9.8); block(l1, t, 6.2, 9.8, 24); block(h2, t, 10.0, 11.4); block(l2, t, 10.2, 11.4, 24);
+    endCard(t, 11.6);
+  };
+}
+
+// ---------- 10 · Har frosten nått din stad? ----------
+if (MODE === 'stad') {
+  const S0 = N.stader.map(c => { const s = c.st.map(i => N.st[i]).find(s => !fjarr(s)) || N.st[c.st[0]]; return { ...c, s }; }).sort((a, b) => a.xy[1] - b.xy[1]);
+  const minus = S0.filter(c => c.s.yta < 0).length;
+  tt.textContent = `${WD} · ${HHMM}`; lt.style.background = C.yellow;
+  const h0 = H('Har frosten nått<br>din stad?'), l0 = Ld(`Vägbanan vid närmaste mätstation, kl. ${HHMM}.`);
+  const h1 = H(`Minus i ${minus} av ${S0.length}<br>städer i kväll.`), l1 = Ld('Trafikverkets mätstationer närmast stadens centrum.');
+  const h2 = H('Var kör du<br>i morgon?'), l2 = Ld('Se ditt län på halkvakt.se/lan');
+  const list = side(S0.map(c => `<div class="row" style="height:64px"><span class="rn" style="font-size:32px">${c.n}</span><span class="rv" style="font-size:32px;color:${c.s.yta < 0 ? C.text : C.muted}">${deg(c.s.yta)}</span></div>`).join(''), 660);
+  const rows = [...list.querySelectorAll('.row')];
+  const C0 = fit(SWE, LEFT);
+  const pts = S0.map(c => mk('circle', { cx: c.xy[0], cy: c.xy[1], r: 7 / C0.s, fill: c.s.yta < 0 ? C.text : C.muted3, stroke: C.ground, 'stroke-width': 3, 'vector-effect': 'non-scaling-stroke' }, G('dots')));
+  seek = (t) => {
+    setCam({ ...C0, s: C0.s * (1 + 0.004 * t) });
+    lanEls.forEach(l => l.setAttribute('opacity', easeHand(prog(t, 0.6, 1.4))));
+    S0.forEach((c, i) => { const k = easeHand(prog(t, 2.4 + i * 0.28, 2.9 + i * 0.28)); set(rows[i], { o: k, x: (1 - k) * 24 }); pts[i].setAttribute('opacity', k); });
+    block(list, t, 2.2, 9.8, 0);
+    block(tag, t, 0.1, 11.4, 16);
+    block(h0, t, 0.2, 6.1); block(l0, t, 0.5, 6.1, 24); block(h1, t, 6.4, 9.8); block(l1, t, 6.7, 9.8, 24); block(h2, t, 10.0, 11.4); block(l2, t, 10.2, 11.4, 24);
+    endCard(t, 11.6);
+  };
+}
 window.seek = (t) => { const p = pulse(t); lt.style.opacity = p.o; lt.style.transform = `scale(${p.s})`; seek(t); };
 </script></body></html>
