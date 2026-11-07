@@ -29,13 +29,13 @@ object Prefs {
     private val KEY_TRIP_KM = floatPreferencesKey("trip_km")
     private val KEY_MISSAR = stringPreferencesKey("missar")
     private val KEY_FAV_ERBJUD = booleanPreferencesKey("fav_erbjud")   // kort #357: brytaren, aldrig vägarna (Favoriter.kt)
-    private val KEY_FAV_ERBJUD_DOLD = longPreferencesKey("fav_erbjud_dold")   // #806: Inte nu, en tidpunkt
+    private val KEY_FAV_ERBJUD_DOLD = longPreferencesKey("fav_erbjud_dold")   // #817: Inte nu, en tidpunkt
     private fun kindKey(k: HazardKind) = booleanPreferencesKey("warn_${k.wire}")
 
     /** Favoriterna (kort #357, DECISIONS #616): "Erbjud att spara resor", AV tills föraren själv slår på den. */
     fun favErbjud(ctx: Context): Flow<Boolean> = ctx.dataStore.data.map { it[KEY_FAV_ERBJUD] ?: false }
     suspend fun setFavErbjud(ctx: Context, on: Boolean) { ctx.dataStore.edit { it[KEY_FAV_ERBJUD] = on } }
-    /** När föraren tryckte Inte nu på raden Kör du den här ofta? (DECISIONS #806) — en tidpunkt, ingen väg. */
+    /** När föraren tryckte Inte nu på raden Kör du den här ofta? (DECISIONS #817) — en tidpunkt, ingen väg. */
     fun favErbjudDold(ctx: Context): Flow<Long> = ctx.dataStore.data.map { it[KEY_FAV_ERBJUD_DOLD] ?: 0L }
     suspend fun setFavErbjudDold(ctx: Context, ms: Long) { ctx.dataStore.edit { it[KEY_FAV_ERBJUD_DOLD] = ms } }
 

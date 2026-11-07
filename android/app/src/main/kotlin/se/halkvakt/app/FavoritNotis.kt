@@ -1,4 +1,4 @@
-// SPARA RESAN? SOM NOTIS (Favoriter 2a, DECISIONS #806) — spegel av FavoritNotis i iOS Services/Favoriter.swift. Svarsfältet syns
+// SPARA RESAN? SOM NOTIS (Favoriter 2a, DECISIONS #817) — spegel av FavoritNotis i iOS Services/Favoriter.swift. Svarsfältet syns
 // direkt i notisen (RemoteInput), så att föraren kan döpa resan utan att öppna appen; Släng raderar vägen; ett vanligt tryck öppnar
 // Favoriter med dagens resor överst. Högst en notis per dag, för den första nya resan. Texten bär bara längden och antalet, inga
 // klockslag och ingen plats: notisen syns på låsskärmen. Inget här når nätet (ruttspärren, scripts/rutterspar.ts).

@@ -42,12 +42,12 @@ test("igenkänningen: samma väg åt något håll, men inte en del av den eller 
   for (const c of facit.samma.fall) assert.equal(sammaResa(c.b, facit.samma.a), c.svar, `${c.namn}, åt andra hållet`);
 });
 
-test("namnförslagen: ett för båda hållen och datumet (DECISIONS #625, #806)", () => {
+test("namnförslagen: ett för båda hållen och datumet (DECISIONS #625, #817)", () => {
   assert.deepEqual(namnforslag(17, 10), ["Pendlingen", "Resa 17/10"]);
   assert.deepEqual(facit.namnforslag.svar, namnforslag(facit.namnforslag.dag, facit.namnforslag.manad));
 });
 
-test("dagens resor: samma pass ersätter, dit och hem blir en, högst tre, ett dygn (DECISIONS #806)", () => {
+test("dagens resor: samma pass ersätter, dit och hem blir en, högst tre, ett dygn (DECISIONS #817)", () => {
   let l: Vantande[] = [];
   for (const f of facit.dagens.fall) {
     l = dagensResor(l, f.ny, f.nuS);

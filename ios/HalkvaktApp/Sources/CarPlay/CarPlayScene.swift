@@ -1,4 +1,4 @@
-// CARPLAY (DECISIONS #806): Halkvakt på bilens skärm, som en Driving Task-app (Apples tillstånd 1/11). Det viktigaste är inte
+// CARPLAY (DECISIONS #817): Halkvakt på bilens skärm, som en Driving Task-app (Apples tillstånd 1/11). Det viktigaste är inte
 // den här skärmen utan bannern: varningen visas över kartan i CarPlay som en notis (kategorin med allowInCarPlay i
 // EfterResanNotis, sedan iOS 18.4), och Apple kräver att appens ikon ligger på CarPlay-hemskärmen för det. Skärmen här är
 // därför liten och bara Apples mallar: vakten på eller av, det rösten sa senast och läget längs de sparade resorna.

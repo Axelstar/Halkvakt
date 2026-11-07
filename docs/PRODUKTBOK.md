@@ -64,7 +64,7 @@ under den *INGEN TUR ÄN*.
 sträckan (*16:58–17:34 · 36 MIN · 31 KM*) och en rad per varning — klockslag, ikon, rubrik och exakt vad rösten sa.
 Under: *3 VARNINGAR · VISAS TILLS NÄSTA TUR*. En tur utan varningar ger tillbaka 01.
 **Betatestare** ser dessutom kortet *Efter resan* överst, som förut (kort #203) — designen visar det inte, men det står kvar.
-**Spara resan?** (0.4.0, 6/11, kort #379, DECISIONS #806 — ersätter panelen från 18/10). Frågan kommer som **notis** efter
+**Spara resan?** (0.4.0, 6/11, kort #379, DECISIONS #817 — ersätter panelen från 18/10). Frågan kommer som **notis** efter
 resan, inte längre som panel på Redo: *Spara resan?* och *"34 km, 1 resa i dag. Dra ut notisen och skriv vad det var för resa."*
 (Android: *Skriv vad det var för resa.*). På iPhone syns fältet när notisen dras ut eller hålls; *Spara* sparar utan att appen öppnas
 och *Släng* raderar vägen. På Android står svarsfältet direkt i notisen. Kvittot *Sparad som Jobbet* — *"Du ser läget längs den under
@@ -682,10 +682,11 @@ du var just då."* (Axels villkor för ja:et, DECISIONS #267.)
 | 0.3.13 (33) | 23/10 | Spärren för efterhalkan (S3) också i favoriternas rapport (#677, #679), Betatest bara i testbyggen: i App Store-versionen syns varken brytaren eller frågan efter resan, och integritetsraden säger *"Inget konto, och inget skickas."* (#681), Android-lagningarna och targetSdk 36 (#1029). Uppladdat 23/10 (TestFlight-flödet 39905409183 på d240c1b); inskicket till App Review görs med (33) (#681). |
 | 0.3.13 (34) | 24/10 | Rättelserna efter Axels prov på (33): SMHI-nivån i klartext (*Gul varning*), *Spara resan?* klipps inte, *INGA VARNINGAR SENASTE TUREN* efter en tur utan varningar (bara iPhone), flikraden göms bakom tangentbordet och minsta resa 2 km och 5 minuter (DECISIONS #701). Skickad till App Review 24/10 och godkänd enligt Bengt (#713). |
 | 0.3.14 (35) | 29/10 | Fas 2 av kedjans takt: appen hämtar ur hinken med Pages som reserv, kollar strax efter varje väntad publicering och mäter varje resa under Betatest, avsnittet *Mätningen* (DECISIONS #741). Uppladdat 29/10 (TestFlight-flödet 40909018044). |
-| 0.4.0 (39) | 6/11 | Favoriter 2a: frågan efter resan som notis med namnfält, dagens resor (högst tre, dit och hem som en), Byt namn, taket synligt och raderna på Redo i båda apparna; CarPlay på iPhone: listan på bilens skärm och varningsbannern i bilen (DECISIONS #806). |
+| 0.4.0 (40) | 6/11 | Favoriter 2a: frågan efter resan som notis med namnfält, dagens resor (högst tre, dit och hem som en), Byt namn, taket synligt och raderna på Redo i båda apparna; CarPlay på iPhone: listan på bilens skärm och varningsbannern i bilen (DECISIONS #817). |
 | 0.3.14 (36) | 30/10 | Favoriternas rapport: *Rapporten från HH:MM* under *Läget från*, och förra kollen sparas bara när hämtningen lyckades (åtgärdslistan B7-05 och B7-24, DECISIONS #686, PR #1279). Uppladdat 30/10 (TestFlight-flödet 41026622176). |
 | 0.3.15 (37) | 1/11 | **Räknaren** (DECISIONS #772): appen räknar anonymt introduktionen, platsbehörigheten (*Alltid* / *När appen används* / nekad), vaktens starter och den första varningen — ett ord per händelse till `app-raknare`, en rad per dygn, inget om vem. Integritet säger det; *"inget skickas"* struken. Android versionCode 37 i takt. |
 | 0.3.16 (38) | 4/11 | **Räknarens sex områden** (DECISIONS #787): version och kohort på varje ord, notiserna och första starten, aktiva dygn, vaktpasset (startsätt, längd i fyra hinkar, slut; ingen sträcka), varningarna, ändrade inställningar och fel. Integritet säger det med ny mening. Android versionCode 38 i takt. |
+| 0.3.17 (39) | 7/11 | **Motorns rutnät** (DECISIONS #795, #816): varje GPS-punkt prövar bara farorna i sin egen ruta, med samma svar som hela svepet, och en hal sträcka hoppas över när dess ruta ligger längre bort än försprånget (#789). Inget som föraren ser eller hör ändras. Bygget behövs innan storstädernas punkter slås på (kort #378). |
 | Android (CI) | 16/9 → | Facitknappen och betatest-brytaren (S4, DECISIONS #202), Efter resan (20/9), viltvarningen på Trafikverkets djur (22/9), omladdningsloopen lagad och reglaget (26/9), missarna (26/9). **0.3.9 (18)**, samma nummer som iOS (DECISIONS #377). |
 
 Android bar versionsnumret 0.3.1 (4) från 31/8 till 26/9, fast CI byggde den ur main med skinnet v3, facitknappen

@@ -35,7 +35,7 @@ final class EfterResanNotis: NSObject, UNUserNotificationCenterDelegate {
         let avvikelse = UNNotificationAction(identifier: Self.actionAvvikelse, title: "Något stämde inte",
                                              options: [.foreground])
         // Alla appens kategorier registreras här, en gång: setNotificationCategories ersätter hela mängden.
-        // Favoriter 2a (#806) har sin egen; heads-up-bannern får visas i CarPlay (allowInCarPlay, iOS 18.4 för Driving Task-appar).
+        // Favoriter 2a (#817) har sin egen; heads-up-bannern får visas i CarPlay (allowInCarPlay, iOS 18.4 för Driving Task-appar).
         center.setNotificationCategories([
             UNNotificationCategory(identifier: Self.categoryId, actions: [ja, avvikelse],
                                    intentIdentifiers: [], options: []),

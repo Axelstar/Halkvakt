@@ -1,4 +1,4 @@
-// Favoriterna (kort #357; DECISIONS #616, #625, #633, #806): RuttLager mot en tillfällig katalog. Att katalogen i appen är
+// Favoriterna (kort #357; DECISIONS #616, #625, #633, #817): RuttLager mot en tillfällig katalog. Att katalogen i appen är
 // noBackupFilesDir och att flytten till en ny telefon stänger ute den prövar ruttspärren (scripts/rutterspar.ts) i ci.
 package se.halkvakt.app
 

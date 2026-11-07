@@ -3,7 +3,7 @@
 // fladdret (byten per källa), avvikelsen vid :47 och vakten mot en ändrad regel. Eget schema: provfilerna körs samtidigt.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 
 const url = process.env.TEST_DATABASE_URL;
 const sql = (f: string) => readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8");
@@ -21,6 +21,26 @@ test("#782 skuggan: raderna som byts finns exakt en gång i den gällande regeln
   assert.ok(skugga.includes(`'${A}'`) && skugga.includes(`'${B}'`), "sql/080 byter exakt de raderna");
   assert.ok(!sql("070_bytet.sql").includes("ny_kandidat_snabb") && !sql("071_bytet_pa.sql").includes("ny_kandidat_snabb"),
     "talande_timme() och talande_regel() läser inte den snabba före påslaget");
+});
+
+// Väg (a), DECISIONS #808: sedan sql/087 läser regeln frys_min och sedan sql/091 har den en stadsgren. sql/080 byter också de
+// raderna, och de ska finnas exakt så många gånger som härledningen kräver i den gällande regeln: den SENASTE migrationen som skapar
+// ny_kandidat_regel(). En ny regelfil som ändrar raderna fäller provet, innan den stoppar skuggan i drift (som sql/087 gjorde 6/11).
+test("#808 skuggan: raderna för F1 och stadsgrenen finns som härledningen kräver i den gällande regeln och byts i sql/080", () => {
+  const fil = readdirSync(new URL("../sql/", import.meta.url)).filter((f) => /^\d{3}_.*\.sql$/.test(f)).sort()
+    .filter((f) => sql(f).includes("CREATE OR REPLACE FUNCTION ny_kandidat_regel()")).pop()!;
+  const regel = sql(fil);
+  const start = regel.indexOf("CREATE OR REPLACE FUNCTION ny_kandidat_regel()");
+  const kropp = regel.slice(start, regel.indexOf("$$;", start));
+  const antal = (x: string) => kropp.split(x).length - 1;
+  const F = "l.frys_min, v.geom", S = "FROM ny_kandidat_live l JOIN stadspunkt s ON s.punkt = l.punkt", FS = "l.frys_min, s.geom",
+    TS = "WHERE l.tid = ny_kandidat_timme()", TSS = "WHERE l.tid = (SELECT ny_kandidat_timme())";
+  assert.equal(fil, "094_stadsgrenens_timme.sql", "den gällande regeln (byt namnet här när en ny regelfil kommer, efter att ha kört om sql/080)");
+  // Sedan sql/094 (#813) läser stadsgrenen timmen i en underfråga: timmens villkor står en gång i b och en gång som underfråga.
+  assert.deepEqual([antal(A), antal(B), antal(F), antal(S), antal(FS), antal(TS), antal(TSS)], [1, 1, 1, 1, 1, 1, 1],
+    "a, b, frys_min, stadsgrenen, dess frys_min, timmens villkor i b och stadsgrenens timme som underfråga");
+  const skugga = sql("080_kandidat_snabb_skugga.sql");
+  for (const x of [F, S, FS, TS, TSS]) assert.ok(skugga.includes(`'${x}'`), `sql/080 byter ${x}`);
 });
 
 test("#782 skuggan: härledd regel, fladdret per källa, avvikelsen vid :47 och vakten mot en ändrad regel", { skip: !url }, async () => {

@@ -47,7 +47,7 @@ data class Rutter(val rutter: List<SparadRutt> = emptyList()) {
         /** At most this many saved routes (DECISIONS #616, 5.2). */
         const val MAX_RUTTER = 5
 
-        /** The name suggestions after a trip (DECISIONS #625, #806): one that fits both directions, and the date, which is also what an
+        /** The name suggestions after a trip (DECISIONS #625, #817): one that fits both directions, and the date, which is also what an
          *  empty name saves as. Free text is always possible in the app. */
         fun namnforslag(dag: Int, manad: Int): List<String> = listOf("Pendlingen", "Resa $dag/$manad")
 
@@ -66,7 +66,7 @@ data class Rutter(val rutter: List<SparadRutt> = emptyList()) {
     }
 }
 
-/** A trip waiting for a name (Favoriter 2a, DECISIONS #806). [id] is the guard session; [slutS] is the trip's end in epoch seconds. */
+/** A trip waiting for a name (Favoriter 2a, DECISIONS #817). [id] is the guard session; [slutS] is the trip's end in epoch seconds. */
 data class Vantande(val id: String, val slutS: Double, val km: Double, val punkter: List<DoubleArray>, val dithem: Boolean = false) {
     companion object {
         const val VANTANDE_MAX = 3

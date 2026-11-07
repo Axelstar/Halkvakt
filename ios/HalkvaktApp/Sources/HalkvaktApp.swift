@@ -392,7 +392,7 @@ struct RootView: View {
         .safeAreaInset(edge: .top, spacing: 0) { Color.clear.frame(height: 0).background(Brand.bg) }
         // Här och inte i VaktenView: vakten kan starta (Siri, Genvägar, självväckning) medan Inställningar visas.
         .fullScreenCover(isPresented: $guardM.running) { KorlageView() }
-        // Favoriter 2a (#806): notisen och raden på Redo öppnar fliken med dagens resor överst.
+        // Favoriter 2a (#817): notisen och raden på Redo öppnar fliken med dagens resor överst.
         .onChange(of: fav.visaFliken) { _, visa in if visa { tab = 1; fav.visaFliken = false } }
     }
 }

@@ -1,4 +1,4 @@
-// FLIKEN FAVORITER (kort #357; DECISIONS #616, #625, #637, #806): brytaren, dagens resor i väntan på namn (Favoriter 2a: fältet är
+// FLIKEN FAVORITER (kort #357; DECISIONS #616, #625, #637, #817): brytaren, dagens resor i väntan på namn (Favoriter 2a: fältet är
 // sparknappen, Släng för sig, taket synligt) och de sparade resorna, var och en med sitt läge (Nytt,
 // Inget nytt, Lugnt; FAVORITER §2) och sin rapport (RapportView, steg 3b). Läget räknas om när fliken visas och när föraren drar
 // nedåt. Ingen karta bakom linjen: ingen kartserver får veta var en resa går (#616, 6.2).
@@ -112,7 +112,7 @@ struct FavoriterView: View {
                 .accessibilityHint("Öppnar rapporten för resan")
             }
             .padding(.top, 10)
-            // Dämpade länkar (Gult bara för det som gör något, DECISIONS #806): Byt namn och Ta bort på samma ställe på varje rad.
+            // Dämpade länkar (Gult bara för det som gör något, DECISIONS #817): Byt namn och Ta bort på samma ställe på varje rad.
             HStack(spacing: 18) {
                 MonoLink(title: "Byt namn") { nyttNamn = r.namn; byterNamn = r }
                     .accessibilityLabel("Byt namn på \(r.namn)")
@@ -163,7 +163,7 @@ private struct RadLageText: View {
     }
 }
 
-/// En av dagens resor (Favoriter 2a, DECISIONS #806): fältet först, förslagen under det (de väljer namn, sparar inte), Spara och
+/// En av dagens resor (Favoriter 2a, DECISIONS #817): fältet först, förslagen under det (de väljer namn, sparar inte), Spara och
 /// Släng för sig. Är listan full står taket i raden i stället för Spara.
 private struct DagensRad: View {
     let resa: Vantande

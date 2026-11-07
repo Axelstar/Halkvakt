@@ -1,10 +1,10 @@
-// FAVORITERNA (kort #357; DECISIONS #616, #625, #806): körda vägar sparas bara på förarens begäran, bara i telefonen och
+// FAVORITERNA (kort #357; DECISIONS #616, #625, #817): körda vägar sparas bara på förarens begäran, bara i telefonen och
 // aldrig i en säkerhetskopia. Brytaren "Erbjud att spara resor" i fliken Favoriter är av från början; av ⇒ ingen väg samlas
 // in och ingen fil skrivs. Glesningen (en punkt per 75 m), listans regler (högst fem, den sjätte nekas) och dagens resor (högst
 // tre i väntan på namn, ett dygn, dit och hem som en) bor i motorpaketet, HalkvaktEngine/Rutter.swift, prövade mot
 // engine/fixtures/rutter.json i tre språk.
 //
-// Favoriter 2a (DECISIONS #806): frågan kommer som notis efter resan, där föraren kan skriva namnet utan att öppna appen.
+// Favoriter 2a (DECISIONS #817): frågan kommer som notis efter resan, där föraren kan skriva namnet utan att öppna appen.
 // Resan räknas som slut när bilens CarPlay eller Bluetooth kopplas bort, när bilen stått still i tio minuter eller när vakten
 // stannar — aldrig medan bilen rullar. Högst en notis per dag, för den första resan som inte liknar en sparad; senare resor
 // samlas tyst i Dagens resor. Notisen bär bara längden och antalet, inga klockslag och ingen plats.
@@ -31,7 +31,7 @@ final class Favoriter {
     static let minstaResaKm = 2.0
     static let minstaResaMin = 5.0
     /// Raden Kör du den här ofta? på Redo: efter en resa på minst så här många km med brytaren av, och igen tidigast en vecka
-    /// efter Inte nu (DECISIONS #806).
+    /// efter Inte nu (DECISIONS #817).
     static let erbjudEfterKm = 10.0
     static let erbjudIgenEfterS: TimeInterval = 7 * 24 * 3600
 
@@ -229,7 +229,7 @@ final class Favoriter {
     }
 }
 
-/// Notisen Spara resan? och kvittot (Favoriter 2a, DECISIONS #806). Kategorin och svaren tas emot av EfterResanNotis, som är
+/// Notisen Spara resan? och kvittot (Favoriter 2a, DECISIONS #817). Kategorin och svaren tas emot av EfterResanNotis, som är
 /// notiscentralens delegat. Ingen plats och inga klockslag i texten: notisen syns på låsskärmen.
 @MainActor
 enum FavoritNotis {

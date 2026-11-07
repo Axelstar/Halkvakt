@@ -1,10 +1,10 @@
-// FAVORITERNA (kort #357; DECISIONS #616, #625, #633, #806) — spegel av iOS Services/Favoriter.swift. Körda vägar sparas bara
+// FAVORITERNA (kort #357; DECISIONS #616, #625, #633, #817) — spegel av iOS Services/Favoriter.swift. Körda vägar sparas bara
 // på förarens begäran, bara i telefonen och aldrig i en säkerhetskopia. Brytaren "Erbjud att spara resor" (Prefs.favErbjud) är
 // av från början; av ⇒ ingen väg samlas in och ingen fil skrivs. Glesningen (en punkt per 75 m) och listans regler (högst fem,
 // den sjätte nekas) och dagens resor (högst tre i väntan på namn, ett dygn, dit och hem som en; se.halkvakt.engine.Vantande) bor i
 // motorn, prövade mot engine/fixtures/rutter.json i tre språk.
 //
-// Favoriter 2a (DECISIONS #806): frågan kommer som notis efter resan (FavoritNotis.kt), med svarsfält i notisen. Resan räknas som
+// Favoriter 2a (DECISIONS #817): frågan kommer som notis efter resan (FavoritNotis.kt), med svarsfält i notisen. Resan räknas som
 // slut när vakten stannar (bilens Bluetooth bort eller rörelseigenkänningen) eller när bilen stått still i tio minuter — aldrig
 // medan bilen rullar. Högst en notis per dag; senare resor samlas tyst i Dagens resor.
 //
@@ -38,7 +38,7 @@ object Favoriter {
     // Minst 2 km och 5 minuters körtid (DECISIONS #701): på tåget 24/10 kom frågan två gånger på en minut.
     const val MINSTA_RESA_KM = 2.0
     const val MINSTA_RESA_MIN = 5.0
-    /** Raden Kör du den här ofta? på Redo (DECISIONS #806): efter en resa på minst så här många km med brytaren av, igen
+    /** Raden Kör du den här ofta? på Redo (DECISIONS #817): efter en resa på minst så här många km med brytaren av, igen
      *  tidigast en vecka efter Inte nu. */
     const val ERBJUD_EFTER_KM = 10.0
     const val ERBJUD_IGEN_EFTER_MS = 7 * 24 * 3600 * 1000L

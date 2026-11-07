@@ -57,7 +57,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
     // S4: facit skickas när bilen står stilla — en gång per stopp.
     private var stillSince: Date?
     private var flushedThisStop = false
-    // Favoriter 2a (DECISIONS #806): resan räknas som slut för frågan Spara resan? när bilens CarPlay eller Bluetooth kopplas
+    // Favoriter 2a (DECISIONS #817): resan räknas som slut för frågan Spara resan? när bilens CarPlay eller Bluetooth kopplas
     // bort, eller när bilen stått still i tio minuter — före vaktens eget stopp efter en kvart, och aldrig medan bilen rullar.
     private static let favoritStillaS: TimeInterval = 10 * 60
     private var favoritFragadThisStop = false

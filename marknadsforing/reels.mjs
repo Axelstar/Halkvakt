@@ -1,10 +1,12 @@
-// Reels (DECISIONS #780, kort #281): one national reel per evening (20:50 winter time) to Instagram and the Facebook page, nothing else.
-// The type rotates between five films so we learn which one people watch; tonight's data decides which are allowed.
+// Reels (DECISIONS #780, #806, kort #281): two reels a day to Instagram and the Facebook page, nothing else. Evening 20:50 (winter
+// time) rotates between the films below; morning 06:45 is the morning cut. The slot follows the clock in Stockholm. The data decides
+// which films are allowed, and the rotation gives each the same number of turns so we learn which one people watch.
 //   python3 marknadsforing/reels/data.py      tonight's picture -> reels-ut/nat.js + sammanfattning.json
 //   node marknadsforing/reels.mjs rendera      chooses the type, films reel.html frame by frame, writes reels-ut/reel.mp4 + texts
-//   node marknadsforing/reels.mjs posta        only when REELS_SKARPT=ja: uploads to Instagram and Facebook, books it in the history
+//   node marknadsforing/reels.mjs posta        only when the slot is live: uploads to Instagram and Facebook, books it in the history
 //   node marknadsforing/reels.mjs matt         reach, views, watch time, shares and saves for reels older than 24 h
-// Live since 4/11; the repo variable REELS_SKARPT=nej turns it back into a dry run (the film and the texts land as an artifact).
+// The evening is live since 4/11 (REELS_SKARPT=nej stops it); the morning is a dry run until REELS_MORGON_SKARPT=ja. A dry run
+// leaves the film and the texts as an artifact.
 import { readFileSync, writeFileSync, appendFileSync, existsSync, renameSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -20,13 +22,21 @@ const TZ = "Europe/Stockholm";
 const FPS = 30;
 const MAX_ALDER_H = 2;
 
-// Order is the tie-break when counts are equal. Length in seconds matches ljud.py.
-export const TYPER = { halt: 14, natt: 16, frost: 14, kallast: 14, e4: 14 };
+// Length in seconds, as in ljud.py. frost, kallast and e4 are left out of the rotation (Axel 6/11) but can still be picked by hand.
+export const TYPER = { du: 14, nu: 14, plus: 14, gissa: 14, pendling: 14, stad: 14, halt: 14, natt: 16, frost: 14, kallast: 14, e4: 14 };
+// Each slot's rotation. Order is the tie-break when counts are equal. In the evening plus runs odd weeks and gissa even weeks.
+export const PLATS = { kvall: ["du", "plus", "gissa", "pendling", "stad", "halt", "natt"], morgon: ["nu", "plus"] };
 
 const tid = iso => new Date(iso).toLocaleTimeString("sv-SE", { timeZone: TZ, hour: "2-digit", minute: "2-digit" });
 const dag = iso => new Date(iso).toLocaleDateString("sv-SE", { timeZone: TZ });
 const grad = x => (x < 0 ? "−" : "+") + Math.abs(x).toFixed(1).replace(".", ",") + " °C";
 const kort = l => l.replace(/s? län$/, "");
+const lista = a => (a.length > 1 ? `${a.slice(0, -1).join(", ")} och ${a.at(-1)}` : a[0] ?? "");
+export const plats = (d = new Date()) => (+d.toLocaleTimeString("sv-SE", { timeZone: TZ, hour: "2-digit" }) < 12 ? "morgon" : "kvall");
+export function vecka(isoDag) {   // ISO week number of a yyyy-mm-dd day
+  const d = new Date(isoDag + "T12:00:00Z"); d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+  return Math.ceil(((d - new Date(Date.UTC(d.getUTCFullYear(), 0, 1))) / 864e5 + 1) / 7);
+}
 
 // What each film needs to say something true. A film without its data is not made.
 export function behorig(sam) {
@@ -36,15 +46,22 @@ export function behorig(sam) {
     frost: sam.under >= 3 && sam.iso >= 1 && !!sam.front,
     kallast: sam.under >= 5 && sam.top.length >= 3,
     e4: sam.e4.risk >= 1 || !!sam.e4.forstaKall,
+    du: sam.vagar >= 1,
+    nu: sam.vagar >= 1,
+    plus: sam.plusMinus >= 5 && !!sam.plus,
+    gissa: sam.plusMinus >= 5 && !!sam.gissa,
+    pendling: !!sam.pendling && sam.pendling.under >= 1,
+    stad: sam.stader.minus.length >= 1 && sam.stader.minus.length < sam.stader.antal,
   };
 }
 
-// Equal turns first: the allowed type with the fewest reels so far in this mode (dry runs and real posts are counted apart),
-// and never the same type two evenings in a row when another one is allowed.
-export function valjTyp(sam, historik, skarpt) {
-  const ok = behorig(sam), mojliga = Object.keys(TYPER).filter(t => ok[t]);
+// Equal turns first: the allowed type with the fewest reels so far in this slot and mode (dry runs and real posts are counted
+// apart), and never the same type twice in a row in the slot when another one is allowed.
+export function valjTyp(sam, historik, skarpt, plats = "kvall", isoDag = dag(sam.gen)) {
+  const ok = behorig(sam), jamn = vecka(isoDag) % 2 === 0;
+  const mojliga = PLATS[plats].filter(t => ok[t] && !(plats === "kvall" && t === (jamn ? "plus" : "gissa")));
   if (!mojliga.length) return null;
-  const egna = historik.filter(h => !h.torr === skarpt), sist = egna.at(-1)?.typ;
+  const egna = historik.filter(h => !h.torr === skarpt && (h.plats ?? "kvall") === plats), sist = egna.at(-1)?.typ;
   const antal = t => egna.filter(h => h.typ === t).length;
   const urval = mojliga.length > 1 ? mojliga.filter(t => t !== sist) : mojliga;
   return urval.reduce((a, b) => (antal(b) < antal(a) ? b : a));
@@ -68,7 +85,19 @@ function ordText(o) {
 
 export function bildtext(typ, sam, kanal = "instagram") {
   const kl = tid(sam.gen), lanen = sam.lan.slice(0, 3).map(l => kort(l.kort));
+  const KV = plats(new Date(sam.gen)) === "morgon" ? "i morse" : "i kväll", P = sam.pendling, S = sam.stader;
+  const regioner = () => sam.regioner.map(r => `${r.namn}: ${r.halt ? `${r.halt} vägavsnitt med halkrisk` : "inga rapporter om halka"}.`).join("\n");
   const forsta = {
+    du: ["Ska du köra i morgon bitti?", `Så ser vägarna ut ${KV} enligt Trafikverket kl. ${kl}:`, regioner()],
+    nu: ["Ska du köra nu?", `Så ser vägarna ut just nu enligt Trafikverket kl. ${kl}:`, regioner()],
+    plus: ["Bilen säger plus. Vägen säger minus.", sam.plus && `${sam.plus.n} ${KV} kl. ${kl}: luften ${grad(sam.plus.luft)}, vägbanan ${grad(sam.plus.yta)}.`,
+      `${sam.plusMinus} av Trafikverkets mätstationer visade plus i luften och minus på vägbanan. Bilens termometer mäter luften. Halkvakt läser vägbanan.`],
+    gissa: [sam.gissa && `Luften vid ${sam.gissa.n} ${KV} kl. ${kl}: ${grad(sam.gissa.luft)}. Vad visar vägbanan?`,
+      "Svaret finns i filmen. Bilens termometer mäter luften. Halkvakt läser vägbanan."],
+    pendling: [P && `Pendlar du mellan ${P.fran} och ${P.till}?`,
+      P && `${KV === "i morse" ? "I morse" : "I kväll"} kl. ${kl} visade ${P.under} av ${P.stationer} mätstationer längs vägen minusgrader på vägbanan.`],
+    stad: ["Har frosten nått din stad?", `Minus på vägbanan ${KV} kl. ${kl} vid närmaste mätstation i ${lista(S.minus)}.`,
+      `${S.antal - S.minus.length} av ${S.antal} städer hade fortfarande plus.`],
     halt: [`Var är det halt i kväll? Kl. ${kl} rapporterade Trafikverket ${sam.vagar} vägavsnitt: ${ordText(sam.ord)}.`,
       lanen.length && `Flest i ${lanen.length > 1 ? `${lanen.slice(0, -1).join(", ")} och ${lanen.at(-1)}` : lanen[0]}.`],
     natt: [`Sverige i kväll kl. ${kl}. ${sam.under} av ${sam.stationer} mätstationer längs vägarna visade minusgrader på vägbanan.`,
@@ -88,7 +117,7 @@ export function bildtext(typ, sam, kanal = "instagram") {
 
 const lasHistorik = () => (existsSync(HISTORIK) ? JSON.parse(readFileSync(HISTORIK, "utf8")) : []);
 const sparaHistorik = h => writeFileSync(HISTORIK, JSON.stringify(h, null, 1) + "\n");
-const skarpt = () => process.env.REELS_SKARPT === "ja";
+const skarpt = (p = plats()) => (p === "morgon" ? process.env.REELS_MORGON_SKARPT : process.env.REELS_SKARPT) === "ja";
 const sammanfattning = msg => { console.log(msg); if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, msg + "\n\n"); };
 
 function kor(cmd, args) { execFileSync(cmd, args, { stdio: "inherit" }); }
@@ -118,27 +147,27 @@ async function filma(typ, ut) {
   renameSync(ut + ".part.mp4", ut);
 }
 
-const handval = (idag, sam) => {
+const handval = (idag, sam, p) => {
   const v = existsSync(VALD) ? JSON.parse(readFileSync(VALD, "utf8")) : null;
-  return v?.dag === idag && behorig(sam)[v.typ] ? v.typ : null;
+  return v?.dag === idag && (v.plats ?? "kvall") === p && behorig(sam)[v.typ] ? v.typ : null;
 };
 
 async function rendera() {
   const sam = JSON.parse(readFileSync(join(UT, "sammanfattning.json"), "utf8"));
   const alder = (Date.now() - new Date(sam.gen)) / 36e5;
-  const val = { dag: dag(new Date().toISOString()), gen: sam.gen, torr: !skarpt(), typ: null };
-  if (alder > MAX_ALDER_H) val.skal = `Datan är ${alder.toFixed(1)} timmar gammal (gränsen är ${MAX_ALDER_H}). Ingen reel i kväll.`;
+  const p = plats(), val = { dag: dag(new Date().toISOString()), plats: p, gen: sam.gen, torr: !skarpt(p), typ: null };
+  if (alder > MAX_ALDER_H) val.skal = `Datan är ${alder.toFixed(1)} timmar gammal (gränsen är ${MAX_ALDER_H}). Ingen reel.`;
   else {
     const historik = lasHistorik();
-    if (historik.some(h => h.dag === val.dag && !h.torr === skarpt())) val.skal = `Kvällens reel är redan gjord (${val.dag}).`;
-    else if (handval(val.dag, sam)) val.typ = handval(val.dag, sam);
-    else if (!(val.typ = valjTyp(sam, historik, skarpt()))) val.skal = "Ingen av filmerna har något sant att visa i kväll. Ingen reel.";
+    if (historik.some(h => h.dag === val.dag && (h.plats ?? "kvall") === p && !h.torr === skarpt(p))) val.skal = `Reeln för ${p} är redan gjord (${val.dag}).`;
+    else if (handval(val.dag, sam, p)) val.typ = handval(val.dag, sam, p);
+    else if (!(val.typ = valjTyp(sam, historik, skarpt(p), p, val.dag))) val.skal = "Ingen av filmerna har något sant att visa. Ingen reel.";
   }
   writeFileSync(join(UT, "val.json"), JSON.stringify(val, null, 1) + "\n");
   if (!val.typ) return sammanfattning(`### Reels\n\n${val.skal}`);
   await filma(val.typ, join(UT, "reel.mp4"));
   for (const k of ["instagram", "facebook"]) writeFileSync(join(UT, `text-${k}.txt`), bildtext(val.typ, sam, k) + "\n");
-  sammanfattning(`### Reels ${val.dag}: ${val.typ}${val.torr ? " (torrkörning, inget postat)" : ""}\n\nData kl. ${tid(sam.gen)}. ` +
+  sammanfattning(`### Reels ${val.dag} ${p}: ${val.typ}${val.torr ? " (torrkörning, inget postat)" : ""}\n\nData kl. ${tid(sam.gen)}. ` +
     `Filmen och texterna ligger i artefakten *reel*.\n\n**Instagram**\n\n\`\`\`\n${bildtext(val.typ, sam, "instagram")}\n\`\`\``);
 }
 
@@ -179,7 +208,7 @@ async function facebook(page, token, buf, description) {
 async function posta() {
   const val = JSON.parse(readFileSync(join(UT, "val.json"), "utf8"));
   if (!val.typ) return console.log("Ingen reel i kväll.");
-  const historik = lasHistorik(), post = { dag: val.dag, typ: val.typ, gen: val.gen, torr: val.torr };
+  const historik = lasHistorik(), post = { dag: val.dag, plats: val.plats, typ: val.typ, gen: val.gen, torr: val.torr };
   const { META_PAGE_ID: page, META_PAGE_TOKEN: token, META_IG_ID: ig } = process.env;
   if (val.torr || !page || !token || !ig) {
     historik.push({ ...post, torr: true }); sparaHistorik(historik);

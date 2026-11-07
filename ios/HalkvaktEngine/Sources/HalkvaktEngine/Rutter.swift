@@ -59,7 +59,7 @@ public struct Rutter: Codable, Equatable {
         Rutter(rutter: rutter.filter { $0.id != id })
     }
 
-    /// The name suggestions after a trip (DECISIONS #625, #806): one that fits both directions, and the date, which is also what an
+    /// The name suggestions after a trip (DECISIONS #625, #817): one that fits both directions, and the date, which is also what an
     /// empty name saves as. Free text is always possible in the app.
     public static func namnforslag(dag: Int, manad: Int) -> [String] {
         ["Pendlingen", "Resa \(dag)/\(manad)"]
@@ -82,7 +82,7 @@ public struct Rutter: Codable, Equatable {
     }
 }
 
-/// A trip waiting for a name (Favoriter 2a, DECISIONS #806). `id` is the guard session; `slutS` is the trip's end in epoch seconds.
+/// A trip waiting for a name (Favoriter 2a, DECISIONS #817). `id` is the guard session; `slutS` is the trip's end in epoch seconds.
 public struct Vantande: Codable, Equatable {
     public let id: String
     public let slutS: Double

@@ -55,7 +55,7 @@ class GuardService : Service() {
     /** Skill-regel: asynkront arbete har en explicit ägare och livstid = tjänstens. */
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private var stillSinceMs = 0L
-    /** Favoriter 2a (DECISIONS #806): frågan Spara resan? efter tio minuter stilla, en gång per stopp, före kvartens självstopp. */
+    /** Favoriter 2a (DECISIONS #817): frågan Spara resan? efter tio minuter stilla, en gång per stopp, före kvartens självstopp. */
     private var favoritFragadThisStop = false
     private var flushedThisStop = false
     @Volatile private var disabledKinds: Set<HazardKind> = emptySet()
@@ -348,7 +348,7 @@ class GuardService : Service() {
         CoroutineScope(Dispatchers.IO).launch { runCatching { Raknare.vaktStoppad(app, orsak) } }
         sparaTuren()
         sparaMatningen()
-        favoritResanSlut(this)   // kort #357, #806: dagens resor och notisen, bara om insamlingen var på
+        favoritResanSlut(this)   // kort #357, #817: dagens resor och notisen, bara om insamlingen var på
         scope.cancel()
         running = false
         fused.removeLocationUpdates(callback)
@@ -367,7 +367,7 @@ class GuardService : Service() {
      * är en läsning plus en notis. Ingen notis alls om betatestet är av — knappen finns bara för
      * den som själv slagit på den (#186).
      */
-    /** Favoriter 2a (DECISIONS #806): resan så långt läggs i dagens resor; en ny resa ger dagens notis. */
+    /** Favoriter 2a (DECISIONS #817): resan så långt läggs i dagens resor; en ny resa ger dagens notis. */
     private fun favoritResanSlut(ctx: Context) {
         val lager = Favoriter.lager(ctx)
         val ny = lager.resanSlutar(session.value.km, (System.currentTimeMillis() - session.value.startedAt) / 60_000.0) ?: return
@@ -447,7 +447,7 @@ class GuardService : Service() {
         private const val HEADS_UP_CH = "heads_up"
         private const val HEADS_UP_ID = 2
         private const val HEADS_UP_MS = 8_000L  // samma 8 s som helskärmskortet
-        private const val FAVORIT_STILLA_MS = 10 * 60 * 1000L   // Favoriter 2a (#806), samma tio minuter som iOS
+        private const val FAVORIT_STILLA_MS = 10 * 60 * 1000L   // Favoriter 2a (#817), samma tio minuter som iOS
         private const val IDLE_TEXT = "Halkvakt vaktar — inga varningar just nu"
         /** Null = rösten fungerar. Annars raden som visas på Redo och under Rösten. */
         val voiceProblem = MutableStateFlow<String?>(null)

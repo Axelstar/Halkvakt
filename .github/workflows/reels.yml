@@ -1,10 +1,11 @@
-# Reels (DECISIONS #780, kort #281): en nationell reel per kväll till Instagram och Facebook-sidan, inget annat.
-# Startas av pulsklockan, puls-reels 19:50 UTC (20:50 vintertid, 21:50 sommartid; Axel 3/11: vägarna har svalnat mer och Reels tittas mest 19–22). Typen roterar mellan fem filmer
-# (halt, natt, frost, kallast, e4) så att vi lär oss vilken folk tittar på; kvällens data avgör vilka som får gå, och
-# en kväll utan något sant att visa blir det ingen reel. Data äldre än två timmar: ingen reel.
-# Skarpt sedan 4/11 (Axel 4/11: "Ja på riktigt"). Repovariabeln REELS_SKARPT=nej gör det till en torrkörning igen: filmen och
-# texterna läggs som artefakten *reel* och syns i sammanfattningen, inget postas. Samma körning mäter reels äldre än ett dygn (räckvidd, visningar,
-# snittid, delningar, sparade) i marknadsforing/reels-historik.json.
+# Reels (DECISIONS #780, #806, kort #281): två reels om dagen till Instagram och Facebook-sidan, inget annat.
+# Startas av pulsklockan: puls-reels 19:50 UTC (kvällen, 20:50 vintertid) och puls-reels-morgon 05:45 UTC (morgonen, 06:45
+# vintertid). reels.mjs läser av klockan i Stockholm vilken plats det är. Kvällen roterar mellan Ska du köra i morgon bitti?,
+# Bilen säger plus / Gissa temperaturen (varannan vecka), Pendlar du, Har frosten nått din stad, Var är det halt och Sverige i
+# natt; morgonen mellan Ska du köra nu? och Bilen säger plus. Kvällens data avgör vilka som får gå; data äldre än två timmar
+# eller ingen film med något sant att visa: ingen reel.
+# Kvällen är skarp sedan 4/11 (REELS_SKARPT=nej stoppar). Morgonen är torrkörning tills REELS_MORGON_SKARPT=ja: filmen och
+# texterna läggs som artefakten *reel* och syns i sammanfattningen. Samma körning mäter reels äldre än 20 timmar.
 name: reels
 on:
   workflow_dispatch:
@@ -38,6 +39,7 @@ jobs:
       - name: Välj och filma
         env:
           REELS_SKARPT: ${{ vars.REELS_SKARPT || 'ja' }}
+          REELS_MORGON_SKARPT: ${{ vars.REELS_MORGON_SKARPT || 'nej' }}
         run: node marknadsforing/reels.mjs rendera
 
       - name: Filmen och texterna
@@ -55,6 +57,7 @@ jobs:
       - name: Posta
         env:
           REELS_SKARPT: ${{ vars.REELS_SKARPT || 'ja' }}
+          REELS_MORGON_SKARPT: ${{ vars.REELS_MORGON_SKARPT || 'nej' }}
           META_PAGE_ID: ${{ secrets.META_PAGE_ID }}
           META_PAGE_TOKEN: ${{ secrets.META_PAGE_TOKEN }}
           META_IG_ID: ${{ secrets.META_IG_ID }}

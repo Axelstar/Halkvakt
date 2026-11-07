@@ -44,7 +44,7 @@ const rutt = (id: string) => ({ id, namn: id, sparad: "2026-10-17T18:00:00Z", pu
 let full: Rutter = { schema: 1, rutter: [] };
 for (let i = 1; i <= MAX_RUTTER; i++) full = laggTill(full, rutt(`r${i}`))!;
 
-// Dagens resor (DECISIONS #806): en lista som byggs resa för resa. Klockan i sekunder från 0; dygnet räknas från resans slut.
+// Dagens resor (DECISIONS #817): en lista som byggs resa för resa. Klockan i sekunder från 0; dygnet räknas från resans slut.
 const V = (id: string, slutS: number, punkter: Punkt[], km = 6): Vantande => ({ id, slutS, km, punkter, dithem: false });
 const DAGENS: { namn: string; ny: Vantande; nuS: number }[] = [
   { namn: "första resan", ny: V("s1", 1000, RESA), nuS: 1000 },

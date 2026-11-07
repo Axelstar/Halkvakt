@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { arHalt, byggLanssidor, sitemapMed, sitemapDatum, medBlock, lsLankar, sidAdresser, vagNyckel, vagvarningar, LAN, VAGAR, ORTER, ortSlug, SIDBAS, PENDLING, STRAK } from "../publish/lanssidor.ts";
+import { arHalt, byggLanssidor, sitemapMed, sitemapDatum, medBlock, medId, lsLankar, lsStartsida, lsKartsida, lsNaraStationer, LS_NARA_KM, sidAdresser, vagNyckel, vagvarningar, LAN, VAGAR, ORTER, ortSlug, SIDBAS, PENDLING, STRAK } from "../publish/lanssidor.ts";
 import { buildMapData } from "../publish/map-core.ts";
 import type { Q } from "../publish/snapshot-core.ts";
 
@@ -202,6 +202,12 @@ test("kartkärnan: med appens väderpunkter skrivs länssidorna; stationen får 
   assert.ok(!Object.values(med.sidor!).some((h) => h.includes("−9,0")), "W2 saknar län (ingen sträcka inom 20 km) och står inte på någon sida");
   assert.ok(nb.includes("E10, sedan 20 nov. 06:00"), "olyckan ur Date, i svensk tid");
   assert.equal((med.sidor!["lan/index.html"].match(/<td>1<\/td><td>1<\/td><td>[^<]*(<a[^>]*>[^<]*<\/a>)?<\/td><\/tr>/g) ?? []).length, 1, "bara Norrbottens rad bär olyckan; den finska räknas inte");
+  // Startsidans och kartans tal följer med sidorna (6/11, DECISIONS #807); utan sidor inga tal.
+  assert.equal(utan.start, null);
+  assert.equal(med.start!["h-tid"], "Just nu · fredag 20 nov · 07:30");
+  assert.equal(med.start!["halt-lista"], '<a class="lan-halt" href="lan/norrbotten/" title="Halka eller vinterväglag på 1 av 1 vägavsnitt">Norrbotten · 1</a><a class="lank-mono" href="lan/">Alla 21 län →</a>');
+  assert.equal(med.start!["t-kallast"], "–", "inga stationer i vader.geojson i provet");
+  assert.deepEqual(med.kartaText, { tid: "Uppdaterad 07:30", rader: "1 av 1 sträckor med halka eller vinterväglag." });
 });
 
 test("vägrutans fil: länets vägar i ordning E före väg, sträckan utan vägnamnet, halt som sidorna, kallast vid vägen", () => {
@@ -434,4 +440,76 @@ test("Datawrapper, pendling och hela läget (2/11, Axel): bara det som är halt 
   assert.equal(sidor["data/datawrapper/hela-gotland.csv"].split("\n")[0], '"Väg","Halka","Vägbanan","Var"');
   for (const [namn, fil] of Object.entries(sidor)) if (namn.startsWith("data/datawrapper/") && namn.endsWith(".csv")) assert.ok(!fil.includes(";"), namn);
   assert.ok(!/[—!]/.test(Object.entries(sidor).filter(([n]) => n.startsWith("data/datawrapper/")).map(([, v]) => v).join("")), "inga långa tankstreck eller utropstecken");
+});
+
+test("ortssidorna (6/11, DECISIONS #807): stationerna inom 30 km från orten, kallast först, i svaret, i en egen lista och i beskrivningen", () => {
+  for (const o of ORTER) assert.ok(o.lat > 55 && o.lat < 70 && o.lon > 10 && o.lon < 25, `${o.namn}: koordinaten i Sverige`);
+  const boras = ORTER.find((o) => o.namn === "Borås")!;
+  const stationer = [
+    { name: "Kila", yta: -3.4, fukt: false, lan: 14, vag: "Väg 40", lon: 13.05, lat: 57.75 },          // ~7 km
+    { name: "Viared", yta: -1.3, fukt: true, lan: 14, vag: "Väg 40", lon: 12.85, lat: 57.70 },         // ~6 km
+    { name: "Ulricehamn", yta: 0.8, fukt: false, lan: 14, vag: "Väg 40", lon: 13.4, lat: 57.79 },       // ~28 km
+    { name: "Nysäter", yta: -3.0, fukt: false, lan: 14, vag: "E 20", lon: 13.0, lat: 58.4 },            // ~76 km: länets kallaste, inte ortens
+    { name: "Utan plats", yta: -9, fukt: false, lan: 14, vag: null },                                    // ingen koordinat: räknas inte
+  ];
+  const nara = lsNaraStationer(boras, stationer);
+  assert.deepEqual(nara.map((s) => s.name), ["Kila", "Viared", "Ulricehamn"], "inom 30 km, kallast först, utan koordinat utanför");
+  assert.equal(lsNaraStationer(boras, stationer, 5).length, 0, "radien räknas");
+  const vaglag = [
+    { code: 1, text: "Normalt", info: ["fläckvis Våt"], road: "Väg 40", plats: "Väg 40 Borås - Bollebygd", lan: 14 },
+    { code: 1, text: "Normalt", info: ["fläckvis Våt"], road: "Väg 41", plats: "Väg 41 Borås - Kinna", lan: 14 },
+    { code: 1, text: "Normalt", info: [], road: "E 20", plats: "E 20 Alingsås - Vårgårda", lan: 14 },
+  ];
+  const sidor = byggLanssidor({ vaglag, stationer, olyckor: [], now: NOW });
+  const sida = sidor["ort/boras/index.html"];
+  assert.ok(sida.includes("Kl. 07:30 rapporterar Trafikverket ingen halka på 2 vägavsnitt till och från Borås. Men 2 vägväderstationer inom 30 km från Borås visar vägbana på 0 °C eller kallare, kallast −3,4 °C vid Kila."), "svaret: Trafikverkets ord, sedan stationerna runt orten");
+  assert.ok(sida.includes("<h2>Vägbanan runt Borås just nu</h2>"));
+  assert.match(sida, /<li>Kila: −3,4 °C<\/li>\n<li>Viared: −1,3 °C, nederbörd eller fukt rapporteras<\/li>\n<li>Ulricehamn: 0,8 °C<\/li>/, "listan kallast först, bara inom 30 km");
+  assert.ok(!sida.includes("<li>Nysäter"), "länets kallaste 76 km bort står inte i ortens lista");
+  assert.ok(sida.includes("4 mätstationer visar vägbana på 0 °C eller kallare, kallast −9,0 °C vid Utan plats. Mer på"), "länets mening under Hela Västra Götaland räknar som förut: alla länets stationer, även utan koordinat");
+  assert.ok(sida.includes('content="Kl. 07:30: ingen halka på 2 vägavsnitt till och från Borås, vägbanan −3,4 °C vid Kila. '), "beskrivningen bär stationen");
+  // Halka rapporterad: ingen "Men". Inga stationer under noll: den kallaste nämns. Ingen station inom 30 km: länets mening som förut.
+  const halt = byggLanssidor({ vaglag: vaglag.map((v) => ({ ...v, code: 2, text: "Besvärligt", info: ["Is"] })), stationer, olyckor: [], now: NOW })["ort/boras/index.html"];
+  assert.ok(halt.includes("till och från Borås. 2 vägväderstationer inom 30 km från Borås visar"));
+  const varm = byggLanssidor({ vaglag, stationer: stationer.map((s) => ({ ...s, yta: Math.abs(s.yta) })), olyckor: [], now: NOW })["ort/boras/index.html"];
+  assert.ok(varm.includes("Ingen av de 3 vägväderstationerna inom 30 km från Borås visar vägbana på 0 °C eller kallare; den kallaste, Ulricehamn, visar 0,8 °C."));
+  assert.ok(varm.includes('content="Kl. 07:30: ingen halka på 2 vägavsnitt till och från Borås. '), "ingen station i beskrivningen när ingen ligger under noll");
+  const ensam = byggLanssidor({ vaglag, stationer: stationer.slice(2, 3), olyckor: [], now: NOW })["ort/boras/index.html"];
+  assert.ok(ensam.includes("Vägväderstationen inom 30 km från Borås, Ulricehamn, visar vägbana på 0,8 °C."));
+  const utan = byggLanssidor({ vaglag, stationer: stationer.slice(3), olyckor: [], now: NOW })["ort/boras/index.html"];
+  assert.ok(utan.includes("till och från Borås. I Västra Götaland visar 2 mätstationer vägbana på 0 °C eller kallare, kallast −9,0 °C vid Utan plats."), "utan stationer inom 30 km: länets mening");
+  assert.ok(utan.includes(`Ingen av Trafikverkets vägväderstationer ligger inom ${LS_NARA_KM} km från Borås.`));
+});
+
+test("startsidan och kartan i HTML (6/11, DECISIONS #807): samma tal som sidornas skript, i samma element, bara det som ändras", () => {
+  const vader = [
+    { land: "SE", name: "1234 Kila Yta", yta: -3.4, luft: -2 }, { land: "SE", name: "Viared", yta: -1.3, luft: null },
+    { land: "SE", name: "Varm", yta: 2.5, luft: 3 }, { land: "SE", name: "Trasig", yta: -49, luft: 1 },   // rimlig: skillnad ≥ 15 °C
+    { land: "FI", name: "Rovaniemi", yta: -20, luft: -19 }, { land: "SE", name: "Tom", yta: null, luft: null },
+  ];
+  const vaglag = [{ code: 2, info: ["Is"] }, { code: 1, info: ["fläckvis Våt"] }, { code: 1, info: ["Nysnö"] }, { code: null, info: [] }];
+  const lan = [{ kort: "Skåne", slug: "skane", halt: 1, vagavsnitt: 9 }, { kort: "Värmland", slug: "varmland", halt: 3, vagavsnitt: 4 }, { kort: "Gotland", slug: "gotland", halt: 0, vagavsnitt: 2 }];
+  const t = lsStartsida({ vader, vaglag, lan, now: NOW });
+  assert.equal(t["h-tid"], "Just nu · fredag 20 nov · 07:30");
+  assert.equal(t["t-tid"], "Hela landet · 07:30");
+  assert.equal(t["k-tid"], "Livekartan · uppdaterad 07:30");
+  assert.equal(t["l-mening"], "Halka eller vinterväglag på 4 sträckor, i Värmland och Skåne. 2 stationer under noll. Kallast vid Kila.");
+  assert.equal(t["halt-lista"], '<a class="lan-halt" href="lan/varmland/" title="Halka eller vinterväglag på 3 av 4 vägavsnitt">Värmland · 3</a>' +
+    '<a class="lan-halt" href="lan/skane/" title="Halka eller vinterväglag på 1 av 9 vägavsnitt">Skåne · 1</a><a class="lank-mono" href="lan/">Alla 21 län →</a>');
+  assert.equal(t["t-halka"], "2", "arHalt som startsidan: kod 2 och Nysnö, inte fläckvis Våt");
+  assert.equal(t["t-kalla"], "2"); assert.equal(t["t-av"], "av 3 stationer", "SE, rimlig och med yta: Trasig, Rovaniemi och Tom räknas inte");
+  assert.equal(t["k-varma"], "1"); assert.equal(t["t-kallast"], "−3,4 °C"); assert.equal(t["t-plats"], "vid Kila");
+  const lugn = lsStartsida({ vader: vader.slice(2, 3), vaglag: [{ code: 1, info: [] }], lan: lan.map((l) => ({ ...l, halt: 0 })), now: NOW });
+  assert.equal(lugn["l-mening"], "Trafikverket rapporterar ingen halka just nu. Ingen station under noll. Kallast vid Varm, 2,5 °C.");
+  assert.ok(lugn["halt-lista"].startsWith('<span class="lugnt">Ingen halka rapporterad just nu.</span>'));
+  const k = lsKartsida({ vaglag, now: NOW });
+  assert.deepEqual(k, { tid: "Uppdaterad 07:30", rader: "1 av 4 sträckor med halka eller vinterväglag." }, "kartan räknar kod över 1, som sidans halkMening");
+  assert.deepEqual(lsKartsida({ vaglag: [], now: NOW }), { tid: "Uppdaterad 07:30" }, "utan sträckor rörs inte meningen");
+  // medId: elementet med id:t, oavsett tagg och övriga attribut; samma innehåll ger null; okänt id ger null.
+  const html = '<p class="etikett"><span class="ljus"></span><span id="h-tid">Just nu</span></p>\n<dd><b id="t-halka">–</b><span>sträckor</span></dd>';
+  const ny = medId(html, "h-tid", t["h-tid"])!;
+  assert.ok(ny.includes('<span id="h-tid">Just nu · fredag 20 nov · 07:30</span></p>'));
+  assert.ok(medId(ny, "t-halka", "2")!.includes('<b id="t-halka">2</b><span>sträckor</span>'));
+  assert.equal(medId(ny, "h-tid", t["h-tid"]), null);
+  assert.equal(medId(html, "finns-inte", "x"), null);
 });

@@ -250,7 +250,7 @@ fun RedoScreen(activity: MainActivity, overst: @Composable () -> Unit) {
     val disabled by remember { Prefs.disabledKinds(ctx) }.collectAsStateWithLifecycle(initialValue = emptySet())
     val autostart by activity.autostartOn.collectAsStateWithLifecycle()
     val snapshot by GuardService.snapshotInfo.collectAsStateWithLifecycle()
-    // Favoriter 2a (DECISIONS #806): dagens resor pekar till Favoriter, där namnet skrivs; med brytaren av erbjuds den efter en
+    // Favoriter 2a (DECISIONS #817): dagens resor pekar till Favoriter, där namnet skrivs; med brytaren av erbjuds den efter en
     // lång resa, en gång.
     val lager = remember { Favoriter.lager(ctx) }
     val erbjud by remember { Prefs.favErbjud(ctx) }.collectAsStateWithLifecycle(initialValue = false)

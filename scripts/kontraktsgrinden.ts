@@ -564,7 +564,7 @@ export const KONTRAKT: Kontrakt[] = [
     golv: 3,
   },
   {
-    // Favoriter 2a (DECISIONS #806): dagens resor, högst så här många i väntan på namn — lika i alla tre språk, prövat mot rutter.json.
+    // Favoriter 2a (DECISIONS #817): dagens resor, högst så här många i väntan på namn — lika i alla tre språk, prövat mot rutter.json.
     namn: "Dagens resor — högst så här många väntar på namn",
     varfor: "Med olika tak släpper iPhone och Android olika resor, och samma dag ser olika ut i de två apparna.",
     former: [/(?:VANTANDE_MAX|static let vantandeMax)\s*=\s*(\d+)(?![\d.])/],
@@ -590,7 +590,7 @@ export const KONTRAKT: Kontrakt[] = [
   {
     namn: "Sparade rutter — timmar som frågan och vägen står kvar",
     varfor: "Den tillfälliga filen med en körd väg ska raderas lika snabbt på båda plattformarna (FAVORITER §6: ett dygn). Sedan " +
-      "Favoriter 2a (DECISIONS #806) bor dygnet i motorns dagens resor, i tre språk.",
+      "Favoriter 2a (DECISIONS #817) bor dygnet i motorns dagens resor, i tre språk.",
     former: [/(?:VANTANDE_KVAR_S|vantandeKvarS)(?::\s*Double)?\s*=\s*(\d+)\s*\*\s*3600/],
     filer: /engine\/src\/rutter\.ts|engine\/Rutter\.kt|HalkvaktEngine\/Rutter\.swift/,
     golv: 3,
@@ -902,8 +902,8 @@ export const KONTRAKT: Kontrakt[] = [
     namn: "Spridningsspärrens F1 — minoritetens viktandel kring noll som tystar kandidaten",
     varfor: "Den frystas och den nyas regel ska tystas av samma gräns (sql/087, DECISIONS #800). Driver den talar appen olika i den frystas och den nyas timmar.",
     former: [/k\.frys_min >= ([\d.]+) THEN 'spridning'/],
-    filer: /sql\/087_/,
-    golv: 2,
+    filer: /sql\/087_|sql\/091_|sql\/094_/,  // sql/091 (#804) skapar om båda regelfunktionerna med stadspunkterna
+    golv: 6,
   },
   // Den nya kandidatens skugga (sql/068, DECISIONS #692) bär regelns tal en gång till: samma regel på den nyas värden, så att domen i
   // ersättningsregeln §5 räknas likadant för båda. Den kopian vaktas här med de andra (golven höjda med ett).
@@ -915,43 +915,43 @@ export const KONTRAKT: Kontrakt[] = [
     namn: "Kandidatens kalla yta — regeln och facitläsningen",
     varfor: "Driver gränsen läser kuvösen andra kalla timmar än regeln varnar på (DECISIONS #562, #593).",
     former: [/l\.pb <= ([\d.]+)\s+-- YTA_GRANS_C/, /export const KALL_C = ([\d.]+);/],
-    filer: /sql\/058_|sql\/068_|sql\/069_|kuvos\/facit-trv\.ts$/,
-    golv: 3,
+    filer: /sql\/058_|sql\/068_|sql\/069_|sql\/091_|sql\/094_|kuvos\/facit-trv\.ts$/,
+    golv: 11,
   },
   {
     namn: "Kandidatens radargräns för fukt — regeln och facitläsningen",
     varfor: "Driver gränsen räknar kuvösen fukt där regeln ser torrt (DECISIONS #565, #593).",
     former: [/coalesce\(r\.mmh, 0\) >= ([\d.]+)\) THEN 'torr'/, /export const RADAR_MMH = ([\d.]+);/],
-    filer: /sql\/069_|kuvos\/facit-trv\.ts$/,  // R = 0,1 sedan 26/10 (#725): 069 bär driftens gräns
-    golv: 3,
+    filer: /sql\/069_|sql\/091_|sql\/094_|kuvos\/facit-trv\.ts$/,  // R = 0,1 sedan 26/10 (#725): 069 bär driftens gräns; 091 är driftens regel sedan #804
+    golv: 7,
   },
   {
     namn: "Kandidatens radarfönster — regeln och facitläsningen",
     varfor: "Driver fönstret läser kuvösen radarn längre eller kortare bakåt än regeln (DECISIONS #573, #593).",
     former: [/r\.observed_at > now\(\) - interval '(\d+) minutes'/, /export const RADAR_MIN = (\d+);/],
-    filer: /sql\/058_|sql\/068_|sql\/069_|kuvos\/facit-trv\.ts$/,
-    golv: 3,
+    filer: /sql\/058_|sql\/068_|sql\/069_|sql\/091_|sql\/094_|kuvos\/facit-trv\.ts$/,
+    golv: 11,
   },
   {
     namn: "Kandidatens vetofönster — regeln och facitläsningen",
     varfor: "Driver fönstret vetar kuvösen andra timmar än regeln (DECISIONS #566, #593).",
     former: [/w\.sample_time > now\(\) - interval '(\d+) minutes' AND w\.surface_temp_c >/, /export const VETO_MIN = (\d+);/],
-    filer: /sql\/058_|sql\/068_|sql\/069_|kuvos\/facit-trv\.ts$/,
-    golv: 3,
+    filer: /sql\/058_|sql\/068_|sql\/069_|sql\/091_|sql\/094_|kuvos\/facit-trv\.ts$/,
+    golv: 7,
   },
   {
     namn: "Kandidatens vetoyta — regeln och facitläsningen",
     varfor: "Driver gränsen vetar kuvösen på andra stationer än regeln (DECISIONS #566, #593).",
     former: [/AND w\.surface_temp_c > (\d+)\s+-- VETO_MIN/, /export const VETO_YTA_C = (\d+);/],
-    filer: /sql\/058_|sql\/068_|sql\/069_|kuvos\/facit-trv\.ts$/,
-    golv: 3,
+    filer: /sql\/058_|sql\/068_|sql\/069_|sql\/091_|sql\/094_|kuvos\/facit-trv\.ts$/,
+    golv: 7,
   },
   {
     namn: "Kandidatens vetoavstånd i meter — regeln och facitläsningen",
     varfor: "Driver avståndet vetar kuvösen med fler eller färre stationer än regeln (DECISIONS #566, #593).",
     former: [/k\.geom::geography, (\d+)\)\s+-- VETO_KM/, /export const VETO_M = (\d+);/],
-    filer: /sql\/058_|sql\/068_|sql\/069_|kuvos\/facit-trv\.ts$/,
-    golv: 3,
+    filer: /sql\/058_|sql\/068_|sql\/069_|sql\/091_|sql\/094_|kuvos\/facit-trv\.ts$/,
+    golv: 7,
   },
   {
     namn: "Spridningsgrindens ankarantal — regeln och facitläsningen",
@@ -960,6 +960,15 @@ export const KONTRAKT: Kontrakt[] = [
     filer: /sql\/058_|sql\/068_|sql\/069_|kuvos\/facit-trv\.ts$/,
     golv: 3,
   },
+  // STORSTÄDERNAS MARSFÖNSTER (sql/091, DECISIONS #804; halkvakt-kuvos F33, regel B): stadspunkterna tiger kl. 10–16 svensk tid i
+  // mars söder om 62°. Två kopior, den frystas och den nyas regel. Kuvösens dom får sin kopia när regel B förs in där (före 1/3 2027).
+  ...([["månaden", "MANAD"], ["första timmen", "FRAN"], ["timmen då fönstret slutar", "TILL"], ["breddgraden", "LAT"]] as const).map(([s, k]) => ({
+    namn: `Storstädernas marsfönster — ${s}`,
+    varfor: "Den frystas och den nyas regel ska tiga i samma timmar och på samma breddgrader. Driver de isär talar storstädernas K olika beroende på vilken kandidat som talar.",
+    former: [new RegExp(`(\\d+)\\)?\\s+-- STAD_MARS_${k}\\b`)],
+    filer: /sql\/091_|sql\/094_/,   // sql/094 (#813) skapar om båda regelfunktionerna med stadsgrenens timme som underfråga
+    golv: 4,
+  })),
 ];
 
 // ── SJÄLVTEST mot känd sanning, utan disk ──────────────────────────────────────────────

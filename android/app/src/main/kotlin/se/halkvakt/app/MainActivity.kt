@@ -56,7 +56,7 @@ class MainActivity : ComponentActivity() {
         AlertBus.onEvent = AppEvents::post
         autostartOn.value = AutostartManager.isEnabled(this)
         setContent { HalkvaktApp(this) }
-        if (intent?.getBooleanExtra(FavoritNotis.EXTRA_FAVORITER, false) == true) Favoriter.visaFliken.value = true   // #806
+        if (intent?.getBooleanExtra(FavoritNotis.EXTRA_FAVORITER, false) == true) Favoriter.visaFliken.value = true   // #817
         lifecycleScope.launch(Dispatchers.IO) {
             runCatching { SnapshotRepo.loadSnapshot(this@MainActivity) }
                 .onSuccess { snap ->
@@ -111,7 +111,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onNewIntent(intent: android.content.Intent) {
         super.onNewIntent(intent)
-        if (intent.getBooleanExtra(FavoritNotis.EXTRA_FAVORITER, false)) Favoriter.visaFliken.value = true   // #806: notisens tryck
+        if (intent.getBooleanExtra(FavoritNotis.EXTRA_FAVORITER, false)) Favoriter.visaFliken.value = true   // #817: notisens tryck
         handleAutoStart(intent)   // the "Kör du?" notification while the app is already open
     }
 

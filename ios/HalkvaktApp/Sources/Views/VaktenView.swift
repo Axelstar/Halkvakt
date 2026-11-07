@@ -46,7 +46,7 @@ struct VaktenView: View {
                     .padding(.top, 14)
             }
 
-            // Favoriter 2a (DECISIONS #806): dagens resor pekar till Favoriter, där namnet skrivs; med brytaren av erbjuds den
+            // Favoriter 2a (DECISIONS #817): dagens resor pekar till Favoriter, där namnet skrivs; med brytaren av erbjuds den
             // efter en lång resa, en gång.
             let spara = fav.erbjud && !fav.dagens.isEmpty
             let erbjud = fav.erbjudRaden(senasteKm: prefs.lastTripKm, senasteSlut: prefs.lastTripEnd)

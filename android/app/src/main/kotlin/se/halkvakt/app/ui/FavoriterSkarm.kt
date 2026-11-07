@@ -1,4 +1,4 @@
-// FLIKEN FAVORITER (kort #357; DECISIONS #616, #625, #633, #637, #806) — spegel av iOS FavoriterView.swift, samma ord. Överst
+// FLIKEN FAVORITER (kort #357; DECISIONS #616, #625, #633, #637, #817) — spegel av iOS FavoriterView.swift, samma ord. Överst
 // dagens resor i väntan på namn (Favoriter 2a: fältet är sparknappen, förslagen väljer namn, Släng för sig, taket synligt), sedan
 // de sparade resorna, var och en med sitt läge (Nytt, Inget nytt, Lugnt; FAVORITER §2), sin rapport (RapportSkarm.kt, steg 3c),
 // Byt namn och Ta bort; läget räknas om när fliken visas.
@@ -147,7 +147,7 @@ private fun FavoriterLista(oppna: (String) -> Unit) {
     }
 }
 
-/** En av dagens resor (Favoriter 2a, DECISIONS #806): fältet först, förslagen under (de väljer namn, sparar inte), Spara och Släng
+/** En av dagens resor (Favoriter 2a, DECISIONS #817): fältet först, förslagen under (de väljer namn, sparar inte), Spara och Släng
  *  för sig. Är listan full står taket i raden i stället för fältet. */
 @Composable
 private fun DagensRad(lager: RuttLager, v: Vantande, full: Boolean) {
@@ -202,7 +202,7 @@ private fun ResaRad(r: SparadRutt, lage: ResansRapport.Radlage?, laddar: Boolean
             Text(under(r), color = Brand.dim, fontFamily = Typo.mono, fontSize = 11.sp, letterSpacing = 0.1.em)
             RadLageText(lage, laddar, gickInte)
         }
-        // Dämpade länkar (gult bara för det som gör något, DECISIONS #806): Byt namn och Ta bort på samma ställe på varje rad.
+        // Dämpade länkar (gult bara för det som gör något, DECISIONS #817): Byt namn och Ta bort på samma ställe på varje rad.
         Row(horizontalArrangement = Arrangement.spacedBy(18.dp), modifier = Modifier.padding(bottom = 4.dp)) {
             Box(Modifier.semantics { contentDescription = "Byt namn på ${r.namn}" }) { MonoLink("Byt namn", onBytNamn) }
             Box(Modifier.semantics { contentDescription = "Ta bort ${r.namn}" }) { MonoLink("Ta bort", onTaBort) }

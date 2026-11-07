@@ -16,14 +16,14 @@ final class HeadsUpService {
     static let shared = HeadsUpService()
     private let center = UNUserNotificationCenter.current()
     private let identifier = "halkvakt.headsup"
-    /// Kategorin med allowInCarPlay (registrerad i EfterResanNotis): bannern syns över kartan också i CarPlay (DECISIONS #806).
+    /// Kategorin med allowInCarPlay (registrerad i EfterResanNotis): bannern syns över kartan också i CarPlay (DECISIONS #817).
     static let kategori = "halkvakt.headsup"
     private static let visibleFor: TimeInterval = 8   // samma 8 s som varningskortet
 
     private init() {}
 
     /// Be om tillstånd en gång, tyst om det redan är avgjort. Anropas när vakten startar.
-    /// .carPlay ber om att få visa bannern i bilens skärm (DECISIONS #806). En förare som redan svarat får ingen ny fråga: iOS
+    /// .carPlay ber om att få visa bannern i bilens skärm (DECISIONS #817). En förare som redan svarat får ingen ny fråga: iOS
     /// lägger då till CarPlay-valet under Inställningar → Notiser → Halkvakt utan att visa något.
     func requestAuthorizationIfNeeded() async {
         let settings = await center.notificationSettings()

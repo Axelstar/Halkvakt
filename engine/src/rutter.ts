@@ -51,7 +51,7 @@ export function taBort(r: Rutter, id: string): Rutter {
   return { schema: 1, rutter: r.rutter.filter((x) => x.id !== id) };
 }
 
-/** The name suggestions after a trip (DECISIONS #625, #806): one that fits both directions, and the date, which is also what an empty
+/** The name suggestions after a trip (DECISIONS #625, #817): one that fits both directions, and the date, which is also what an empty
  *  name saves as. "Till jobbet" and "Hem" are gone: the way home is the same trip (#637), so the second question never came. */
 export function namnforslag(dag: number, manad: number): string[] {
   return ["Pendlingen", `Resa ${dag}/${manad}`];
@@ -73,7 +73,7 @@ export function sammaResa(a: Punkt[], b: Punkt[]): boolean {
   return a.length >= 2 && b.length >= 2 && andelNara(a, b) >= SAMMA_RESA_ANDEL && andelNara(b, a) >= SAMMA_RESA_ANDEL;
 }
 
-/** TODAY'S TRIPS (Favoriter 2a, DECISIONS #806): the trips waiting for a name, at most VANTANDE_MAX, each for VANTANDE_KVAR_S from its
+/** TODAY'S TRIPS (Favoriter 2a, DECISIONS #817): the trips waiting for a name, at most VANTANDE_MAX, each for VANTANDE_KVAR_S from its
  *  end. `id` is the guard session, so a session that ends twice (the car stood still, then drove on) updates its own trip. */
 export const VANTANDE_MAX = 3;
 export const VANTANDE_KVAR_S = 24 * 3600;
