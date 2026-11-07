@@ -14836,3 +14836,21 @@ stationerna, vägen på kartan län för län), sökningen på alla tätorter me
 mobilen; A och B1 är lika för SEO, och Axel valde B1.
 
 **Stomdokument:** SYS — webben
+
+## #821 (7/11 2026) Ortssidorna får en karta runt orten
+
+**Axels ord 7/11:** *"Det är ingen karta i stockholm, bör det inte vara det på de större städerna?"*, efter att startsidan B1 gått live
+(#820). Kartan fanns i mockupen och stod i kort #382.
+
+**Beslut.**
+- Alla 47 ortssidor får en karta direkt under svaret: omkring 40 km åt varje håll från orten, med länen i bakgrunden, vägarna, de hala
+  sträckorna gula, stationerna (vita på 0 °C eller kallare, samma gräns som sidans text), Prognos streckad (#819) och orten utmärkt med namn.
+  Kartan länkar till livekartan för länet.
+- Den ritas i webbläsaren ur sajtens egna filer, som länskartan (#722). De hala sträckorna har samma regel som startsidans skript (kod 2
+  eller ett halkord), så att kartan och texten är eniga.
+- Gäller alla orter, inte bara storstäderna: sidorna byggs ur samma mall, och en karta hjälper i Borlänge lika mycket som i Stockholm.
+
+**Alternativ.** (a) Bara Stockholm, Göteborg och Malmö. Förkastat: samma mall, och de mindre orterna har mer halka i dag. (b) Livekartan
+inbäddad (MapLibre). Förkastat för ortssidorna: tyngre att ladda för en sida som ska svara snabbt.
+
+**Stomdokument:** SYS — webbens ortssidor
