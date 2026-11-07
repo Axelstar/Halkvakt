@@ -11,7 +11,7 @@
 // Inga Node- eller Deno-importer. Namnen krockar inte med snapshot-core.ts: båda buntas
 // in i SAMMA modul i publicera/index.ts.
 import type { Q } from "./snapshot-core.ts";
-import { byggLanssidor, lsStartsida, lsKartsida, type LanStation, type SmhiRad } from "./lanssidor.ts";
+import { byggLanssidor, lsStartsida, lsKartsida, type LanStation, type SmhiRad, type StartTal } from "./lanssidor.ts";
 
 const featureCollection = (features: unknown[]) => ({ type: "FeatureCollection", features });
 const numOrNull = (x: unknown) => (x === null || x === undefined ? null : Number(x));
@@ -246,7 +246,7 @@ export async function buildMapData(q: Q, opts: {
     const vaglagTal = vaglag.map((r) => ({ code: numOrNull(r.condition_code), info: (r.condition_info ?? []) as string[] }));
     start = lsStartsida({
       vader: vader.map((r) => ({ land: String(r.land), name: String(r.name ?? ""), yta: numOrNull(r.surface_temp_c), luft: numOrNull(r.air_temp_c) })),
-      vaglag: vaglagTal, lan: (JSON.parse(sidor["data/lan.json"]) as { lan: { kort: string; slug: string; halt: number; vagavsnitt: number }[] }).lan, now,
+      vaglag: vaglagTal, ...(JSON.parse(sidor["data/lan.json"]) as Pick<StartTal, "lan" | "vag">), now,
     });
     kartaText = lsKartsida({ vaglag: vaglagTal, now });
   }
