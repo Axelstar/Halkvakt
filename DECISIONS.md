@@ -14449,3 +14449,49 @@ före dem. Därför rekommenderas att 094 migreras **efter läsningen 14/11**, o
   blir en minut per körning.
 
 **Stomdokument:** SYS kandidaten — stadsgrenens timme räknas en gång, BED §4.2 — när 094 migreras
+
+## #814 (7/11 2026) Olycksfacits K-lager läser den timme kandidaten talade med vid olyckan, och de fångade raderna räknas om
+
+**Signerat 7/11:** Bengt, för sig och Axel: *"Ja, vi signerar"*. Frågan gällde ändringen av TROSKLAR-OLYCKSFACIT §9.1 till två
+timmar, med omräkning bakåt. Före det frågade Bengt vad olycksfacit är: en efterkontroll av varningssystemet, inte en del av det.
+Ändringen rör bara vad kontrollen bokför om K, aldrig vad föraren hör.
+
+**Felet.**
+- **Vad §9.1 sa:** K-lagret var *"kandidatens senaste timme som var skriven före starten"*, och fångsten (sql/084, sql/085) gjorde just
+  det, utan åldersgräns. Samma paragraf säger att VARNADE är *"en aktiv varning på platsen när olyckan började"*.
+- **Varför de krockar:** kandidatens domlogg har bara sträckor med kalla punkter. Efter några varma timmar var *den senaste timmen* den
+  sista kalla, upp till 62 timmar gammal.
+- **Läst 7/11 06.40 UTC:** av 50 olyckor med en K-timme var 21 äldre än två timmar, 18 av dem bland de 52 som fångades medan de hände.
+- **Ett falskt VARNADE:** väg 193 6/11 15.00 UTC bokfördes som VARNADE genom K ur timmen 08.00, sju timmar tidigare. Vid olyckan teg K.
+- **Felaktiga skäl:** väg 55 6/11 15.05 UTC bokfördes som *"K: spridningsspärren"* ur samma gamla timme. Sträckan var i själva verket
+  varm 09–14 UTC.
+
+**Beslut.**
+- **K-lagret läser den timme kandidaten talade med vid starten.** Det är domloggens senaste körning före starten
+  (`ny_kandidat_skugga_korning`, räknad), högst två timmar gammal, alltså samma färskhet som regeln.
+  - Sträckans rad i den timmen ger skälet, som förut.
+  - Saknas sträckan i timmen hade den ingen kall punkt. Då är K tyst, med skälet *"yta över 0"*.
+  - Var körningen tyst, eller är timmen äldre än två timmar, är skälet *"ingen timme"*.
+- **`sql/095`:**
+  - lägger K-blocket i `olycksfacit_k()`;
+  - skriver om `olycksfacit_fanga()` ur sql/085, ord för ord utom K-blocket;
+  - räknar om varje fångad K-rad som saknar märket `timregel`. Det fångsten skrev före står kvar i raden under `fore`, och olyckans
+    utfall och orsaker byggs om. Klassningen rörs inte.
+- **Läst före bygget** (samma regel som en läsning på alla 82 rader):
+  - K varnade i 7 rader före och i 6 efter. Väg 193 blir tyst, med *"yta över 0"*.
+  - Ingen tyst rad blir varnande.
+  - *"ingen timme"* går från 22 till 0, eftersom körningsloggen går tillbaka till 24/10.
+  - E4 Nyköping 7/11 står kvar som VARNADE, med timmen 04.00.
+- **Ordningen:** sammanslagning, sedan `sql/095` med DB-knappen före första ärendet 8/11 05.17 UTC. Hittills är inget ärende och
+  ingen vecka skriven (`olycksfacit_arenden` och `olycksfacit_veckor` är tomma), så det första ärendet bygger på den rättade regeln.
+- **Proven:** integrationsproven #796 och #797 kör nu på den fångst som kör, sql/095, med timmen som talade och körningsloggen. Det nya
+  provet #814 har fyra fällor som ger ett annat svar med den gamla regeln.
+
+**Regel L.** 20 olyckor var redan klassade, så §7 och regel L gäller. Ändringen gör aldrig fler olyckor varnade, bara färre. Den gör
+alltså inte fler olyckor TYDLIG eller TROLIG, och den flyttar inget sett tal mot godkänt. Den är en skärpning och har båda signaturerna.
+
+**Alternativ.**
+- (a) Lämna regeln. Förkastat: K:s andel rätta varningar blir för hög, och skälen till tystnaderna blir missvisande.
+- (c) Exakt den timme regeln talade med vid olyckans minut. Förkastat: i praktiken samma svar, utom när en timberäkning blir sen.
+
+**Stomdokument:** MAT §9 olycksfacit — K-lagret läser timmen som talade, BED §4.2 — avgjort

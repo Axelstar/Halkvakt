@@ -136,7 +136,10 @@ förbättring i systemet"*.
 
 - Fångsten (`sql/084`, `sql/085`) fryser vad lagren sa **när olyckan började**:
   - A1: väglaget som gällde vid starten;
-  - K: kandidatens senaste timme som var skriven före starten;
+  - K: den timme kandidaten talade med vid starten. Det är domloggens senaste körning före starten, räknad och högst två timmar
+    gammal, som regelns färskhet. Saknas sträckan i den timmen hade den ingen kall punkt (*yta över 0*). Var körningen tyst, eller
+    är timmen äldre, är skälet *ingen timme*. (Ändrat 7/11, DECISIONS #814. Förut: *kandidatens senaste timme som var skriven före
+    starten*, utan åldersgräns. Den regeln räknade in varningar som var släckta sedan flera timmar.)
   - A2: stationernas värden timmen före starten.
 - **VARNADE** betyder att minst ett av appens lager hade en aktiv varning på platsen när olyckan började.
 - Det säger inte att någon förare med appen var där, och inte att olyckan hade undvikits. Ingen förardata läses (förslaget §4).
@@ -221,6 +224,8 @@ Claude rekommenderar. Bengt och Axel väljer, och valen förs in här före sign
 | :-- | :-- | :-- |
 | Bengt | 2026-11-06 | i chatten: *"Vi signerar"*, på frågan om §9 med valen 6–9 som rekommenderat |
 | Axel | 2026-11-06 | via Bengt i chatten, samma rad |
+| Bengt | 2026-11-07 | §9.1, K-lagrets timme (DECISIONS #814): i chatten *"Ja, vi signerar"*, på frågan om ändringen till två timmar med omräkning bakåt |
+| Axel | 2026-11-07 | via Bengt i chatten, samma rad |
 
 ---
 
