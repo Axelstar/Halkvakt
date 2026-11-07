@@ -133,7 +133,7 @@ nedan med rättelserna under *Övrigt sedan 29/9*, om inte §0, §0b eller §4.2
   `VACUUM FULL`, kördes inte — toppen hade passerat 500 MB (§4.2).
 - **Ytstatusen och Ubuntu 26 (10/10):** värdevakten dömer friktionen OK, och 0,82 är givarens tak för torr väg (kort #294 stängt);
   is- och snöflaggan är satt på varm väg och dömer inget förrän regeln är skriven (kort #324, frågan i §4.2). Flödena som installerar
-  något är gröna på Ubuntu 26.04 (körning 38046826233); kort #316 läser de riktiga körningarna efter 19/10.
+  något är gröna på Ubuntu 26.04 (körning 38046826233); de riktiga körningarna efter bytet är gröna (ci 7/11 och arkivbackup 1/11 på `ubuntu-26.04`), och kort #316 är stängt 7/11.
 - **Kuvösen:** Trafikverkets data kom 2/10 (#438); riktningsprovet och kalibreringen kördes 6/10 (#467, #468).
 - **Styrdokumenten:** genomgångna mot läget 7/10 (#483). Sedan 7/10 kväll stäms de av varje morgon av en rutin i molnet, och en vakt i
   CI fäller ett nytt beslut vars stomdokument inte rättas i samma ändring (#484). *Väntar på Bengt* och *Väntar på Axel* står överst
@@ -1149,7 +1149,7 @@ mätningar — R1–R16 nedan är strukna och står kvar bara som historik.**
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
 ## Öppna kort
 
-Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 19 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
+Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 18 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
 
 **§1 NU — före första frosten**
 
@@ -1177,6 +1177,5 @@ Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 19 kort
 - #285 iCLOUD-KOPIAN BÄR UNGEFÄR VAR OCH NÄR — Claude, låst
 - #276 OLJA PÅ VÄGEN — HALKA SOM RÖSTEN INTE SÄGER — Claude, låst
 - #153 ALLVAR SOM FÖRSPRÅNG + ETT SMALARE UNDANTAG — beslut 1 omformulerat 16/9 och väntar, beslut 2 öppet (Bengts) — Claude, låst
-- #316 UBUNTU-LATEST BLIR UBUNTU 26 DEN 19/10 — FLÖDENA PRÖVAS FÖRE (UPPTÄCKT 9/10 — Claude, GitHubs notis i … — pågår
 
 <!-- /ÖPPNA KORT -->
