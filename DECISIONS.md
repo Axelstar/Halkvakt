@@ -14279,3 +14279,43 @@ punkter, i samma flöden: `ny-kandidat-fysik.yml` och `ny-kandidat-timme.yml`. R
 påverkas.
 
 **Stomdokument:** SYS kandidaten — storstädernas punkter i kedjan, MAT segmentprognosen — storstädernas punkter (kort #378)
+
+## #810 (7/11 2026) Stomdokumenten beskriver driftens rörarbete för kandidaten och storstäderna; ett nytt flöde, en ny källa eller en ny extern tjänst namnger integrationskartan
+
+**Bengts ord 7/11:** *"skriv beslutet o gör genomgång o slå ihop"*. Det var svaret på frågan om storstädernas och F1-regelns
+rörarbete ska stå i SYSTEMBILDEN och MATNINGAR, och därmed också på dokumentsynkens fråga i bedömningen §4.2 samma morgon.
+
+**Bakgrund.**
+- Dokumentsynken 7/11 bokförde #799–#801, #804, #805, #808 och #809 som *"ingen handtext … hör till halkvakt-kuvos"*.
+- Därför stod storstädernas punkter, stadsradarn, kandidatens spärr F1 och kandidaten på en kvart inte i handtexten i MATNINGAR och
+  SYSTEMBILDEN. Allt det är ändå driftens kod här, och #804 säger vad som får ligga här.
+- Stomvakten såg inte luckan. Den räknar beslut sedan dokumentets senaste handtextändring, och synken ändrade samma sidor för
+  olycksfacit samma morgon.
+- Integrationskartans handtext stod orörd sedan 1/11, eftersom inget beslut sedan dess hade namngett den.
+- Bedömningens läge var från 20/10.
+- SYSTEMBILDEN sade fortfarande att den nya kandidaten *"når ingen förare"*, fast den talar sedan 26/10 (#729).
+
+**Beslut.**
+1. **Stomdokumenten följer samma gräns som #804.** Det som kör i Halkvakt beskrivs i Halkvakts stomdokument:
+   - tabellerna, flödena, regeln och brytarna;
+   - vad publiceringen läser;
+   - vad appen och föraren får.
+
+   Texten tar inte med punkterna och deras lägen, särdragen, kuvösens tal, modellen, paret eller fysiken, som bor i halkvakt-kuvos (#768).
+   Domar och mätningar som kuvösen fäller står där; här står bara att de finns och var.
+2. **Ett beslut som lägger till ett flöde, en källa eller en extern tjänst namnger integrationskartan.** Koden `KAR` står då på beslutets
+   rad `**Stomdokument:**`, så att morgonens synk stämmer av kartan.
+3. **Genomgången 7/11** för in det som släpat:
+   - SYSTEMBILDEN §3: kandidatens spärr F1, kandidaten på en kvart, storstädernas punkter och att den nya kandidaten talar (#729);
+   - MATNINGAR §5.1: en ruta om kandidatens spärr och storstädernas punkter, utan kuvösens tal;
+   - integrationskartan §4.3 och §4.4: lägen för ledningen och kandidaten 7/11;
+   - bedömningen: ett nytt läge 7/11, ett rättat rubrikstycke (frysregeln hävdes 22/10, #678) och §4.2.
+
+   Favoriterna och appens sida får ingen text än. Storstäderna når ingen förare förrän brytarna slås på, och texten hör till kort #378.
+
+**Alternativ.**
+- (a) Allt om storstäderna och F1 i kuvösen. Förkastat: då hade Halkvakts stomdokument inte beskrivit det som körs här och snart talar
+  i appen. #804 förkastade redan samma delning för koden.
+- (b) Att stomvakten räknar per beslut i stället för per handtextändring. Det är en kodändring, som föreslås för sig i bedömningen §4.2.
+
+**Stomdokument:** SYS §3, MAT §5.1, KAR §4.3 och §4.4, BED läget 7/11 och §4.2 — genomgången samma dag
