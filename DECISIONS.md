@@ -14495,3 +14495,141 @@ alltså inte fler olyckor TYDLIG eller TROLIG, och den flyttar inget sett tal mo
 - (c) Exakt den timme regeln talade med vid olyckans minut. Förkastat: i praktiken samma svar, utom när en timberäkning blir sen.
 
 **Stomdokument:** MAT §9 olycksfacit — K-lagret läser timmen som talade, BED §4.2 — avgjort
+
+## #815 (7/11 2026) Olycksfacit ser storstädernas punkter: en stadslogg per timme, och K-lagret läser den vid närmaste stadspunkt
+
+**Bengts ord 7/11:** *"Ja, bygg det"*. Frågan gällde olycksfacit för B och C, punkt 3 i listan över vad som är kvar för storstäderna (kort #378).
+
+**Bakgrund.**
+- Kandidatens domlogg (`ny_kandidat_skugga`) tar inte storstädernas grupper (#804, sql/091): stadspunkternas dom räknas i kuvösen.
+- Olycksfacit läste K bara ur domloggen och vid vägpunkterna. En olycka i en storstad hade därför bokförts som att K teg, också när B
+  eller C varnade.
+- Med brytarna av spelar det ingen roll i dag, eftersom B och C inte kan varna. Men det måste finnas innan brytarna slås på.
+
+**Beslut.**
+- **`sql/096`:**
+  - `ny_kandidat_skugga_stad` sparar per grupp och timme vad regeln sa om stadspunkterna: kalla punkter, varnande, veto, torra,
+    spärrade och de icke torra punkterna med utfall. Det är olycksfacits underlag och ingen dom.
+  - `ny_kandidat_skugga_stad_korning` sparar en rad per körning, med de brytare som var på. Olycksfacit vet då om en stadspunkt var
+    påslagen vid olyckans timme, inte bara i dag.
+  - `ny_kandidat_logga_stad()` skriver dem för den nyas timme. Med alla brytare av räknas inte regeln, och körningen loggas som av.
+  - Raderna gallras efter 14 dygn.
+- **Del B** (`ny-kandidat-timme.yml`) anropar loggen sist i stadsomgången, efter att stadspunkternas värden är skrivna
+  (`ny-kandidat-db.ts logga-stad`). Utskriften visas inte (#768).
+- **`olycksfacit_k_stad()`** ger K vid närmaste stadspunkt inom 2 km:
+  - brytaren av vid timmen ger *"brytaren av"*;
+  - annars gäller timregeln från #814: körningen före starten, räknad och högst två timmar gammal, och gruppens rad i den timmen;
+  - en grupp som saknas i timmen ger *"yta över 0"*.
+- **Fångsten** (`olycksfacit_fanga()`, sql/095 ord för ord, utom stadspunkten):
+  - K varnar också när stadspunkten varnar;
+  - utan vägpunkt inom 2 km och med brytaren på är det stadspunktens skäl som gäller;
+  - täckningen räknar en påslagen stadspunkt inom 2 km;
+  - detaljen (K:s *stad*) skrivs alltid, också med brytaren av.
+
+  Med brytarna av ändras alltså ingenting utom detaljen, och K:s skäl använder samma ord som ärendet redan känner (§9.3).
+- **Fångade rader räknas inte om.** Brytarna har varit av sedan sql/089, så ingen rad hade fått ett annat utfall.
+- **Proven:**
+  - stadsregelns prov SR6: stadsloggen ger regelns utfall med B och C på;
+  - #796 och #797 kör på sql/096;
+  - det nya provet #815 har fyra fall: brytaren av, en varnande grupp, en grupp som saknas i timmen och stadsloggen med alla brytare av.
+
+**Ordningen:**
+1. Bengts och Axels signaturer på tillägget till TROSKLAR-OLYCKSFACIT §9.1. K-lagret omfattar då storstädernas punkter när deras
+   brytare är på. Signaturerna kommer före sammanslagningen.
+2. Sammanslagningen och `sql/096` med DB-knappen. Migrationen måste komma före nästa Del B; annars faller stadsloggens steg med en
+   varning, utan att något annat stannar.
+3. Beviset: en rad i `ny_kandidat_skugga_stad_korning` per timme, med status *av* så länge brytarna är av.
+
+**Alternativ.**
+- (a) Att räkna stadsgrenens utfall i olycksfacit vid olyckan, ur `ny_kandidat_live`, radarn och vetot. Förkastat: det hade varit en
+  andra kopia av regeln som kan glida isär från den.
+- (b) Att låta stadspunkterna gå in i domloggen. Förkastat: domloggen är kandidatens domunderlag, och #804 håller stadspunkterna utanför
+  den.
+- (c) Ett eget lager för B och C i olycksfacit. Förkastat: B och C är kandidatens betavarning (#804), alltså K, och säljregeln nämner K.
+
+**Stomdokument:** SYS kandidaten — stadsloggen för olycksfacit, MAT §9 olycksfacit — K vid storstädernas punkter, BED §4.2 — signaturerna
+
+## #816 (7/11 2026) Storstädernas punkter på till måndagsrusningen 9/11: tidsplanen och villkoren
+
+**Bengts ord 7/11:** *"min ambition är att storstadsspåret ska gå live innan helgen är slut; alltså till måndagsrusningen på måndag
+den 9 november. uppdatera planeringen så att det går att genomföra"* (kort #378).
+
+**Läget 7/11 på förmiddagen:**
+- I drift med brytarna av: tabellen, radarn, regeln, kedjan och skuggan (#804, #805, #809, #812).
+- Byggt men inte i drift:
+  - `sql/094`, regelns tid (#813), sammanslagen men inte migrerad;
+  - olycksfacit för B och C, `sql/096` i PR #1442 (#815).
+- Inte byggt:
+  - en väg att slå på brytarna. Den enda vägen är en migration, och det finns ingen sådan fil.
+  - en app med motorns rutnät.
+
+**Fyndet vid planeringen: rutnätet finns inte i någon app.**
+- Motorns rutnät (#795) kom på main 5/11. 0.3.16 (38) byggdes 4/11, före det.
+- Motorn i telefonerna prövar alltså varje fara vid varje GPS-punkt, och varje stadspunkt som varnar blir en fara till i den slingan.
+- Mätningen i #795, med 16 000 extra kandidatpunkter:
+  - hela svepet: 4,9–5,3 ms per GPS-punkt på en dator, mot 0,8 ms utan dem;
+  - rutnätet: 1,7–1,8 µs.
+- Sedan 0.3.16 har main bara motorändringar som når apparna (#789, #795), inget som föraren ser.
+
+**Beslut: tidsplanen** (svensk tid). Varje steg har sitt bevis, och ett steg som inte är klart flyttar påslaget, inte villkoret.
+
+*Lördag 7/11*
+
+| Steg | Vem | Bevis |
+| :-- | :-- | :-- |
+| Olycksfacit för B och C: signaturerna för TROSKLAR-OLYCKSFACIT §9.1, sammanslagningen av PR #1442 och `sql/096` med DB-knappen (#815) | Bengt och Axel; Claude kör | en körningsrad med status *av* vid nästa del B |
+| `sql/094` med DB-knappen, sedan `sql/080` och `sql/081` (#813) | Bengt; Claude kör | regeln räknad som om brytarna vore på tar några sekunder (#813:s mätning, bara läsning); publiceringen svarar 200; den snabba skuggan skriver igen |
+| 0.3.17 (39) med rutnätet: höjningen på main, ci, ios-engine och android gröna; TestFlight-flödet *ladda-upp* från main; AAB:n till Plays interna test; inskicket till App Review | Claude bygger; Bengt slår ihop och trycker; Bengt eller Axel i konsolerna | *Upload succeeded* och bygget i TestFlight |
+| `sql/097` (brytarna på) och `sql/098` (brytarna av), med integrationsprov; sammanslagna, inte körda | Claude; Bengt slår ihop | ci grön |
+
+*Söndag 8/11*
+
+| Steg | Vem | Bevis |
+| :-- | :-- | :-- |
+| Nattens läsning: del A och varje del B; ingen förlorad K-timme för dagens punkter; stadsstegen *klart* | Claude | det andra dygnet i drift |
+| Telefonturen dagtid, minst en timme, med 0.3.17 och *Mätningen* | Bengt eller Axel | batteriet per timme mot budgeten under 8 % (i dag omkring 7 %) |
+| Avstämningen kl. 18: varje del provad (#804), `sql/094` i drift, telefonturen inom budgeten och ingen förlorad K-timme | Bengt och Axel, på Claudes läsning | Bengts och Axels ord |
+| Brytarna på kl. 19–20: `sql/097` med DB-knappen | Claude kör | nästa del B räknar stadspunkterna, publiceringen svarar 200, olycksfacits körningsrad är *räknad* med brytarna, och skuggan läser dem |
+
+*Måndag 9/11*
+
+| Steg | Vem | Bevis |
+| :-- | :-- | :-- |
+| Natten | vakthunden och pulsklockan, som vanligt | inga larm |
+| Morgonläsningen kl. 5.30, före rusningen | Claude, när sessionen startar | nattens del A med stadspunkterna, varje del B, publiceringen och K-timmarna |
+
+Kandidatens varningar vid stadspunkterna står i `live.json` bara där regeln varnar: kallt, och nederbörd i radarn.
+
+**Avbrottet.** Brytarna slås av med `sql/098` om:
+- publiceringen faller eller lägesfilen står still;
+- en K-timme försvinner för dagens punkter;
+- stadssteget i del B faller två timmar i rad;
+- en förare rapporterar att batteriet eller värmen är fel.
+
+Om Claude får göra det utan att fråga avgör Bengt (§4.2).
+
+**Det som inte ändras.**
+- Villkoren från kuvösen F33 före påslaget: telefonturen och att varje del är provad.
+- `sql/094` före brytarna (#813).
+- Bengts och Axels ord på påslaget (#804).
+
+**Kvarvarande risk.** En app som inte uppdaterats till 0.3.17 bär hela svepet tills den uppdateras. App Review styr när 0.3.17 når
+App Store, och det kan bli efter måndag.
+
+**Den snabba skuggans läsning.** Om `sql/094` migreras 7/11 börjar skuggans sju dygn om (#808), och läsningen flyttas från 14/11 till
+15/11. Fristen flyttas när migrationen är gjord.
+
+**Öppna val** (bedömningen §4.2):
+- 094 i dag;
+- 0.3.17;
+- vad telefonturen mäter;
+- alla fyra brytare eller B först, och avbrottet utan att fråga;
+- Favoriternas text.
+
+**Alternativ.**
+- (a) Att hålla planen från 6/11, med 094 efter 14/11 och påslaget därefter. Förkastat: målet är 9/11.
+- (b) Att slå på brytarna utan en app med rutnätet. Inte förkastat, men inte rekommenderat: det är kvarvarande risk i full skala, och
+  telefonturen skulle mäta något annat än det som körs.
+- (c) Att stryka telefonturen. Förkastat: den är ett villkor i F33.
+
+**Stomdokument:** BED läget 7/11 — tidsplanen till 9/11 och §4.2 — valen, MAT segmentprognosen — storstädernas punkter (kort #378), APP versionerna — 0.3.17 (39) när den är byggd

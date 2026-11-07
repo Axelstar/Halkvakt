@@ -140,6 +140,9 @@ förbättring i systemet"*.
     gammal, som regelns färskhet. Saknas sträckan i den timmen hade den ingen kall punkt (*yta över 0*). Var körningen tyst, eller
     är timmen äldre, är skälet *ingen timme*. (Ändrat 7/11, DECISIONS #814. Förut: *kandidatens senaste timme som var skriven före
     starten*, utan åldersgräns. Den regeln räknade in varningar som var släckta sedan flera timmar.)
+    **Storstädernas punkter (B och C, DECISIONS #815; signeras av Bengt och Axel före sammanslagningen):** K omfattar också närmaste
+    stadspunkt inom 2 km, när dess brytare var på vid timmen. Den läses ur stadsloggen med samma timregel. Med brytaren av gäller K som
+    för vägpunkterna, och stadspunkten bokförs med *brytaren av*.
   - A2: stationernas värden timmen före starten.
 - **VARNADE** betyder att minst ett av appens lager hade en aktiv varning på platsen när olyckan började.
 - Det säger inte att någon förare med appen var där, och inte att olyckan hade undvikits. Ingen förardata läses (förslaget §4).
