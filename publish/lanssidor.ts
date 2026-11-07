@@ -194,6 +194,7 @@ const LS_STIL = `.dok{max-width:760px}.svar{font:500 19px/1.5 var(--sans);color:
 .dok a.knapp{color:var(--mark);text-decoration:none}
 .svar-app{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;margin:0 0 8px}.svar-app p{margin:0;color:var(--text2);flex:1 1 280px}
 .lankarta{position:relative;display:block;height:min(62vw,440px);margin:22px 0 6px;background:var(--panel);border:1px solid var(--kant);border-radius:18px;overflow:hidden}
+.kartforklaring{font-size:13px;margin:4px 0 0}.kartforklaring .gul{color:#FFC94A}.kartforklaring .prognos{color:#FF8F6B}
 .lankarta canvas{position:absolute;inset:0;width:100%;height:100%}.lankarta span{position:absolute;left:16px;bottom:12px;font:500 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--dampad)}
 .vaglista{list-style:none;padding:0;margin:0}.vaglista li{padding:12px 0;border-top:1px dashed #253036}.vaglista li:first-child{border-top:0}
 .vaglista b{font:600 13px var(--mono);letter-spacing:.08em;margin-right:10px}.vaglista .halt{color:var(--gul)}.vaglista small{display:block;color:var(--dampad);font-size:14px;margin-top:2px}
@@ -749,6 +750,34 @@ ${lsFragorHtml(LS_VARN_FRAGOR)}
   });
 }
 
+/** Kartan runt orten (7/11, Axel: *"Det är ingen karta i stockholm"*; DECISIONS #821): omkring 40 km åt varje håll, ritad i
+ *  webbläsaren ur sajtens egna filer som länskartan. Hala sträckor med samma regel som startsidans skript (kod 2 eller ett halkord), stationerna
+ *  vita på 0 °C eller kallare som sidans text, Prognos streckad (#819) och orten utmärkt. */
+function lsOrtKarta(ort: (typeof ORTER)[number], lan: { slug: string; kort: string }): string {
+  return `<a class="lankarta" href="../../karta.html?lan=${lan.slug}" aria-label="Öppna ${lsEsc(ort.namn)} på livekartan"><canvas id="lankarta" aria-hidden="true"></canvas><span>Öppna livekartan →</span></a>
+<script>(function(){var LON=${ort.lon},LAT=${ort.lat},NAMN=${JSON.stringify(ort.namn).replace(/</g, "\\u003c")},R=0.36,KX=Math.cos(LAT*Math.PI/180);
+var HALKORD=/(?<![a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt)/i,STAM=/(snö|frost)/i;
+var arHalt=function(p){var info=[];try{info=typeof p.info==='string'?JSON.parse(p.info):(p.info||[])}catch(e){}return p.code>=2||info.some(function(i){return HALKORD.test(i)||STAM.test(i)})};
+var j=function(u){return fetch(u).then(function(r){return r.json()})};
+Promise.all([j('/assets/lan.geojson'),j('/data/vaglag.geojson'),j('/data/vader.geojson'),j('/data/kandidat.geojson').catch(function(){return{features:[]}})]).then(function(d){
+var b=[LON-R/KX,LAT-R,LON+R/KX,LAT+R];
+function rita(){var cv=document.getElementById('lankarta'),bx=cv.getBoundingClientRect(),dpr=Math.min(2,devicePixelRatio||1);cv.width=bx.width*dpr;cv.height=bx.height*dpr;
+var c=cv.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);var w=(b[2]-b[0])*KX,h=b[3]-b[1],s=Math.max(bx.width/w,bx.height/h),
+ox=(bx.width-w*s)/2,oy=(bx.height-h*s)/2,xy=function(p){return[ox+(p[0]-b[0])*KX*s,oy+(b[3]-p[1])*s]};
+var ringar=function(g){return g.type==='MultiPolygon'?[].concat.apply([],g.coordinates):g.coordinates};
+c.fillStyle='#0B1013';c.fillRect(0,0,bx.width,bx.height);
+d[0].features.forEach(function(f){c.fillStyle=f.properties.slug===${JSON.stringify(lan.slug)}?'#162024':'#10171A';c.strokeStyle='#253036';c.lineWidth=1;ringar(f.geometry).forEach(function(r){c.beginPath();r.forEach(function(p,i){var q=xy(p);i?c.lineTo(q[0],q[1]):c.moveTo(q[0],q[1])});c.closePath();c.fill();c.stroke()})});
+var linje=function(f){var g=f.geometry;if(!g)return;var L=g.type==='MultiLineString'?g.coordinates:[g.coordinates];L.forEach(function(l){c.beginPath();l.forEach(function(p,i){var q=xy(p);i?c.lineTo(q[0],q[1]):c.moveTo(q[0],q[1])});c.stroke()})};
+c.lineCap='round';c.lineJoin='round';c.strokeStyle='#4A5A63';c.lineWidth=1.8;d[1].features.forEach(function(f){if(!arHalt(f.properties))linje(f)});
+c.strokeStyle='#FFC94A';c.lineWidth=3.2;c.shadowColor='rgba(255,201,74,.6)';c.shadowBlur=8;d[1].features.forEach(function(f){if(arHalt(f.properties))linje(f)});c.shadowBlur=0;
+c.strokeStyle='#FF8F6B';c.lineWidth=2.4;c.setLineDash([5,4]);(d[3].features||[]).forEach(linje);c.setLineDash([]);
+d[2].features.forEach(function(f){var p=f.geometry.coordinates,y=f.properties.yta;if(f.properties.land!=='SE'||typeof y!=='number'||p[0]<b[0]||p[0]>b[2]||p[1]<b[1]||p[1]>b[3])return;var q=xy(p);c.fillStyle=y<=0?'#E9EFF2':'#4A5A63';c.beginPath();c.arc(q[0],q[1],y<=0?3.2:2.2,0,7);c.fill()});
+var o=xy([LON,LAT]);c.fillStyle='#FFC94A';c.beginPath();c.arc(o[0],o[1],6,0,7);c.fill();c.strokeStyle='#080B0D';c.lineWidth=2;c.stroke();
+c.font='600 13px "IBM Plex Mono",monospace';c.fillStyle='#E9EFF2';c.fillText(NAMN.toUpperCase(),o[0]+11,o[1]+4)}
+rita();addEventListener('resize',rita)}).catch(function(){var a=document.querySelector('.lankarta');if(a)a.style.display='none'})})();</script>
+<p class="dim kartforklaring"><span class="gul">━</span> Halka rapporterad · <span>●</span> Vägbana 0 °C eller kallare · <span class="prognos">┅</span> Prognos, modellerad</p>`;
+}
+
 function lsOrtsida(ort: (typeof ORTER)[number], lan: (typeof LAN)[number], lanLage: LanLage, now: Date,
   d: { vaglag: LanSegment[]; olyckor: LanOlycka[]; stationer: LanStation[] }, varn: Vagvarning[] = []): string {
   const avsnitt = lsOrtAvsnitt(ort, d.vaglag);
@@ -785,6 +814,7 @@ function lsOrtsida(ort: (typeof ORTER)[number], lan: (typeof LAN)[number], lanLa
   const innehall = `<p class="dim">Uppdaterad ${lsTid(now)}</p>
 <h1>Är det halt i ${n} just nu?</h1>
 <p class="svar">${lsEsc(svar)}</p>
+${lsOrtKarta(ort, lan)}
 ${lsVarnadRad(varn.filter((v) => v.lan.includes(ort.lan)), `i ${lsSoknamn(lan.kort)}`, "../../")}<p class="dim">Väglaget och trafikläget i ${n} idag: vägarna till och från orten enligt Trafikverket, uppdaterat var 30:e minut.</p>
 ${halt.length ? `<div class="svar-app"><p>Kör du i ${n} idag? Appen säger till med rösten innan du är framme vid halkan.</p><a class="knapp" href="${lsApp("ort-halt")}">Få varningar i appen</a></div>\n` : ""}<h2>Vägarna till och från ${n}</h2>
 <ul class="vaglista">\n${rader}\n</ul>
