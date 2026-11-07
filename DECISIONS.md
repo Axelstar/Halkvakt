@@ -14790,3 +14790,49 @@ ord. Dokumentet gäller när båda har signerat (fristen `sasongsfacit-signeras`
   timmar. J1 och J2 gick därför att räkna från 1/11. Dygnsräkningen står kvar, så att ingen gallring hinner före.
 
 **Stomdokument:** MAT §9 — säsongsfacit som redovisning, BED §4.2 — fastställt
+
+## #819 (7/11 2026) Prognos syns från början på alla kartor
+
+**Axels ord 7/11:** *"jag och pappa bestämt att vår prognos ska visas på alla kartor automatiskt och inte så att folk behöver klick i dem."*
+
+**Beslut.**
+- Prognos (kandidatens bitar av vägen, DECISIONS #579) är påslagen när en karta öppnas: livekartan (`karta.html`, chippet tryckt och lagren
+  synliga), startsidans karta och länssidornas karta (`lsLanKarta`). Den ritas streckad i sin egen färg (#FF8F6B), så att den inte förväxlas
+  med Trafikverkets rapporterade halka, och står i förklaringen som *Prognos · halka framöver, modellerad*.
+- Brytaren (#578) gäller som förut: när kandidaten är av är filen tom, och på livekartan säger chippet *Prognos · avstängd*.
+- Det som förklarar Prognos står kvar oförändrat: rutan på livekartan (*Modellerat, inte uppmätt*) och frågan *Vad betyder Prognos på kartan?*
+  på startsidan.
+
+**Alternativ.** (a) Avslaget som förut, med ett tryck för att se den. Förkastat av Axel och Bengt: få trycker, och prognosen är det
+Halkvakt har som ingen annan visar.
+
+**Stomdokument:** SYS — webbens kartor
+
+## #820 (7/11 2026) Startsidan B1: sök först, sedan storstäderna, livekartan med länen och de stora vägarna
+
+**Axels ord 7/11:** *"Okej, har har bestämt oss för B1"*, efter mockuperna med tre riktningar (svaret först, sök först, kartan först), och
+*"Sedan tycker jag vi gör alla ändringar"*.
+
+**Beslut.**
+- **Startsidan** (`index.html` i kartrepot): H1 *Är det halt där du ska köra?*, svarsmeningen, sökrutan (ort, län eller väg), snabbval och en
+  mening om vad Halkvakt är; sedan Stockholm, Göteborg och Malmö; livekartan med Prognos (#819), talen och länsraderna (hala vägavsnitt av
+  alla i länet, med stapel, och de lugna länen på en rad); de sex stora vägarna; Favoriter och appen; vanliga frågor med synliga svar
+  (FAQPage); länkblocket. Title: *Halka idag och väglaget just nu i hela Sverige | Halkvakt*. En nedladdningsknapp överst (huvudet).
+- **Svarsmeningen** börjar med datum och klockslag och bär temperaturen: *Lördag 7 november kl. 13:00 rapporterar Trafikverket halka eller
+  vinterväglag på 204 vägavsnitt i 13 län. Vägbanan är under noll vid 93 av 793 stationer, kallast −5,5 °C vid Storberget.* En dag utan halka:
+  *… rapporterar Trafikverket ingen halka på Sveriges vägar.* Skälet: ett citat i ett AI-svar en annan dag ska inte se ut som läget nu, och
+  temperaturen är talet som citeras. Länsnamnen står i raderna, inte i meningen.
+- **Talen står i HTML:en** som förut (#807): `lsStartsida` skriver meningen, länsraderna, storstadskortens länsrad (`s-stockholm`,
+  `s-goteborg`, `s-malmo`) och vägkortens tal (`v-e4` … `v-rv40`) i samma element som sidans skript, och provet i
+  `test/lanssidor.test.ts` håller dem lika.
+- **Sökrutan** söker i webbläsaren i sidans egna länkar (blocket `hv:lankar`, som publicera skriver), så att listan alltid är sajtens sidor.
+  Inget skickas. Utan skript går formuläret till `sok/`, som är noindex och skickar vidare till listan. En ort utan egen sida får en rad om
+  det; orter utanför de 47 (som Boden) kommer med kort #382.
+
+**Inte gjort än (kort #382).** Ortssidornas, länssidornas och vägsidornas nya utseende ur mockupen (kartan inzoomad med vägarna och
+stationerna, vägen på kartan län för län), sökningen på alla tätorter med närmaste sida, och att sökningar utan egen sida räknas.
+
+**Alternativ.** A (svaret först) och C (kartan först) i samma mockup. C förkastades för SEO (texten under en helsideskarta) och vikten på
+mobilen; A och B1 är lika för SEO, och Axel valde B1.
+
+**Stomdokument:** SYS — webben

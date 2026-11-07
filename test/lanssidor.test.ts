@@ -205,7 +205,9 @@ test("kartkärnan: med appens väderpunkter skrivs länssidorna; stationen får 
   // Startsidans och kartans tal följer med sidorna (6/11, DECISIONS #807); utan sidor inga tal.
   assert.equal(utan.start, null);
   assert.equal(med.start!["h-tid"], "Just nu · fredag 20 nov · 07:30");
-  assert.equal(med.start!["halt-lista"], '<a class="lan-halt" href="lan/norrbotten/" title="Halka eller vinterväglag på 1 av 1 vägavsnitt">Norrbotten · 1</a><a class="lank-mono" href="lan/">Alla 21 län →</a>');
+  assert.ok(med.start!["halt-lista"].startsWith('<a class="lan-halt" href="lan/norrbotten/" title="Halka eller vinterväglag på 1 av 1 vägavsnitt"><span>Norrbotten</span><em>1 av 1</em>'), "länsraden (DECISIONS #820)");
+  assert.ok(med.start!["halt-lista"].includes('<a href="lan/vasterbotten/">Västerbotten</a>.</p>'), "de lugna länen på en rad");
+  assert.equal(typeof med.start!["v-e4"], "string", "vägarna följer med ur lan.json");
   assert.equal(med.start!["t-kallast"], "–", "inga stationer i vader.geojson i provet");
   assert.deepEqual(med.kartaText, { tid: "Uppdaterad 07:30", rader: "1 av 1 sträckor med halka eller vinterväglag." });
 });
@@ -489,19 +491,24 @@ test("startsidan och kartan i HTML (6/11, DECISIONS #807): samma tal som sidorna
   ];
   const vaglag = [{ code: 2, info: ["Is"] }, { code: 1, info: ["fläckvis Våt"] }, { code: 1, info: ["Nysnö"] }, { code: null, info: [] }];
   const lan = [{ kort: "Skåne", slug: "skane", halt: 1, vagavsnitt: 9 }, { kort: "Värmland", slug: "varmland", halt: 3, vagavsnitt: 4 }, { kort: "Gotland", slug: "gotland", halt: 0, vagavsnitt: 2 }];
-  const t = lsStartsida({ vader, vaglag, lan, now: NOW });
+  const t = lsStartsida({ vader, vaglag, lan, vag: [{ slug: "e4", halt: 2, vagavsnitt: 5 }, { slug: "e22", halt: 0, vagavsnitt: 3 }], now: NOW });
   assert.equal(t["h-tid"], "Just nu · fredag 20 nov · 07:30");
   assert.equal(t["t-tid"], "Hela landet · 07:30");
   assert.equal(t["k-tid"], "Livekartan · uppdaterad 07:30");
-  assert.equal(t["l-mening"], "Halka eller vinterväglag på 4 sträckor, i Värmland och Skåne. 2 stationer under noll. Kallast vid Kila.");
-  assert.equal(t["halt-lista"], '<a class="lan-halt" href="lan/varmland/" title="Halka eller vinterväglag på 3 av 4 vägavsnitt">Värmland · 3</a>' +
-    '<a class="lan-halt" href="lan/skane/" title="Halka eller vinterväglag på 1 av 9 vägavsnitt">Skåne · 1</a><a class="lank-mono" href="lan/">Alla 21 län →</a>');
+  // Svarsmeningen och länsraderna i nya startsidan (7/11, DECISIONS #820): datum och klockslag först, temperaturen med.
+  assert.equal(t["l-mening"], "Fredag 20 november kl. 07:30 rapporterar Trafikverket halka eller vinterväglag på 4 vägavsnitt i 2 län. Vägbanan är under noll vid 2 av 3 stationer, kallast −3,4 °C vid Kila.");
+  assert.equal(t["halt-lista"], '<a class="lan-halt" href="lan/varmland/" title="Halka eller vinterväglag på 3 av 4 vägavsnitt"><span>Värmland</span><em>3 av 4</em><s><u style="width:75%"></u></s></a>' +
+    '<a class="lan-halt" href="lan/skane/" title="Halka eller vinterväglag på 1 av 9 vägavsnitt"><span>Skåne</span><em>1 av 9</em><s><u style="width:11%"></u></s></a>' +
+    '<p class="lugnt">Ingen halka rapporterad i <a href="lan/gotland/">Gotland</a>.</p><a class="lank-mono" href="lan/">Alla 21 län →</a>');
+  assert.equal(t["s-malmo"], "Skåne: halka på 1 av 9 vägavsnitt", "storstadskortet bär länets tal");
+  assert.equal(t["s-stockholm"], undefined, "ett län som saknas i filen ger inget id");
+  assert.equal(t["v-e4"], "2 av 5 hala"); assert.equal(t["v-e22"], "0 av 3 hala");
   assert.equal(t["t-halka"], "2", "arHalt som startsidan: kod 2 och Nysnö, inte fläckvis Våt");
   assert.equal(t["t-kalla"], "2"); assert.equal(t["t-av"], "av 3 stationer", "SE, rimlig och med yta: Trasig, Rovaniemi och Tom räknas inte");
   assert.equal(t["k-varma"], "1"); assert.equal(t["t-kallast"], "−3,4 °C"); assert.equal(t["t-plats"], "vid Kila");
   const lugn = lsStartsida({ vader: vader.slice(2, 3), vaglag: [{ code: 1, info: [] }], lan: lan.map((l) => ({ ...l, halt: 0 })), now: NOW });
-  assert.equal(lugn["l-mening"], "Trafikverket rapporterar ingen halka just nu. Ingen station under noll. Kallast vid Varm, 2,5 °C.");
-  assert.ok(lugn["halt-lista"].startsWith('<span class="lugnt">Ingen halka rapporterad just nu.</span>'));
+  assert.equal(lugn["l-mening"], "Fredag 20 november kl. 07:30 rapporterar Trafikverket ingen halka på Sveriges vägar. Ingen station visar vägbana under noll. Kallast 2,5 °C vid Varm.");
+  assert.ok(lugn["halt-lista"].startsWith('<p class="lugnt">Ingen halka rapporterad just nu i något län. </p>'));
   const k = lsKartsida({ vaglag, now: NOW });
   assert.deepEqual(k, { tid: "Uppdaterad 07:30", rader: "1 av 4 sträckor med halka eller vinterväglag." }, "kartan räknar kod över 1, som sidans halkMening");
   assert.deepEqual(lsKartsida({ vaglag: [], now: NOW }), { tid: "Uppdaterad 07:30" }, "utan sträckor rörs inte meningen");

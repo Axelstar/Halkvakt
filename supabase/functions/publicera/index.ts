@@ -1325,12 +1325,12 @@ const lsFragorLd = (f: { fraga: string; svar: string }[]) => `<script type="appl
 }).replace(/</g, "\\u003c")}</script>`;
 
 /** Kartan över länet (25/10, DECISIONS #722): länets gräns, alla dess sträckor och de hala gula, ritad i webbläsaren ur sajtens egna
- *  filer. Vilka sträckor som är hala bestäms här (arHalt) och skickas med, så att kartan och texten aldrig är oense. */
+ *  filer. Prognos streckad i egen färg sedan 7/11 (DECISIONS #819): syns från början, tom när brytaren är av (#578). Vilka sträckor som är hala bestäms här (arHalt) och skickas med, så att kartan och texten aldrig är oense. */
 function lsLanKarta(lan: { slug: string; kod: number; kort: string }, l: LanLage): string {
   const halt = JSON.stringify([...new Set(l.halt.map((s) => s.plats ?? s.road ?? ""))]).replace(/</g, "\\u003c");
   return `<a class="lankarta" href="../../karta.html?lan=${lan.slug}" aria-label="Öppna ${lsEsc(lan.kort)} på livekartan"><canvas id="lankarta" aria-hidden="true"></canvas><span>Öppna livekartan →</span></a>
 <script>(function(){var SLUG=${JSON.stringify(lan.slug)},KOD=${lan.kod},HALT=new Set(${halt});
-Promise.all([fetch('/assets/lan.geojson').then(function(r){return r.json()}),fetch('/data/vaglag.geojson').then(function(r){return r.json()}),fetch('/data/vader.geojson').then(function(r){return r.json()})]).then(function(d){
+Promise.all([fetch('/assets/lan.geojson').then(function(r){return r.json()}),fetch('/data/vaglag.geojson').then(function(r){return r.json()}),fetch('/data/vader.geojson').then(function(r){return r.json()}),fetch('/data/kandidat.geojson').then(function(r){return r.json()}).catch(function(){return{features:[]}})]).then(function(d){
 var lan=d[0].features,mitt=lan.filter(function(f){return f.properties.slug===SLUG})[0];if(!mitt)return;
 var segs=d[1].features.filter(function(f){return f.properties.lan===KOD});
 var ringar=function(g){return g.type==='MultiPolygon'?[].concat.apply([],g.coordinates):g.coordinates};
@@ -1343,6 +1343,7 @@ lan.forEach(function(f){if(f!==mitt)yta(f.geometry,'#0B1013','#1E282D',1)});yta(
 var linje=function(f){var g=f.geometry,L=g.type==='MultiLineString'?g.coordinates:[g.coordinates];L.forEach(function(l){c.beginPath();l.forEach(function(p,i){var q=xy(p);i?c.lineTo(q[0],q[1]):c.moveTo(q[0],q[1])});c.stroke()})};
 c.lineCap='round';c.lineJoin='round';c.strokeStyle='#4A5A63';c.lineWidth=1.6;segs.forEach(function(f){if(!HALT.has(f.properties.plats||f.properties.road||''))linje(f)});
 c.strokeStyle='#FFC94A';c.lineWidth=3;c.shadowColor='rgba(255,201,74,.6)';c.shadowBlur=8;segs.forEach(function(f){if(HALT.has(f.properties.plats||f.properties.road||''))linje(f)});c.shadowBlur=0;
+c.strokeStyle='#FF8F6B';c.lineWidth=2.4;c.setLineDash([5,4]);(d[3].features||[]).forEach(function(f){if(f.geometry)linje(f)});c.setLineDash([]);
 d[2].features.forEach(function(f){var p=f.geometry.coordinates,y=f.properties.yta;if(f.properties.land!=='SE'||p[0]<b[0]||p[0]>b[2]||p[1]<b[1]||p[1]>b[3]||typeof y!=='number')return;var q=xy(p);c.fillStyle=y<0?'#E9EFF2':'#34424A';c.beginPath();c.arc(q[0],q[1],y<0?2.6:1.6,0,7);c.fill()})}
 rita();addEventListener('resize',rita)}).catch(function(){var a=document.querySelector('.lankarta');if(a)a.style.display='none'})})();</script>`;
 }
@@ -1680,7 +1681,8 @@ export function medId(html: string, id: string, innehall: string): string | null
  *  arHalt; karta.html: kod över 1), och skrivs in i samma element, så att skriptet sedan bara skriver samma sak en gång till.
  *  Ändras en regel i sidan ändras den här, och provet i test/lanssidor.test.ts läser sidans skript. */
 export type StartTal = { vader: { land: string; name: string; yta: number | null; luft: number | null }[];
-  vaglag: { code: number | null; info: string[] }[]; lan: { kort: string; slug: string; halt: number; vagavsnitt: number }[]; now: Date };
+  vaglag: { code: number | null; info: string[] }[]; lan: { kort: string; slug: string; halt: number; vagavsnitt: number }[];
+  vag?: { slug: string; halt: number; vagavsnitt: number }[]; now: Date };
 export function lsStartsida(d: StartTal): Record<string, string> {
   const rimlig = (p: { yta: number | null; luft: number | null }) => p.yta != null && p.yta > -40 && p.yta < 60 && (p.luft == null || Math.abs(p.yta - p.luft) < 15);
   const ren = (n: string) => n.replace(/^\d+\s*/, "").replace(/\s+(Fjärryta|Yta|Vägyta)$/i, "").trim();
@@ -1692,24 +1694,39 @@ export function lsStartsida(d: StartTal): Record<string, string> {
   const p = Object.fromEntries(new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Stockholm", weekday: "long", day: "numeric",
     month: "numeric", hour: "2-digit", minute: "2-digit", hour12: false }).formatToParts(d.now).map((x) => [x.type, x.value]));
   const MAN = ["jan", "feb", "mar", "apr", "maj", "jun", "jul", "aug", "sep", "okt", "nov", "dec"];
+  const MANAD = ["januari", "februari", "mars", "april", "maj", "juni", "juli", "augusti", "september", "oktober", "november", "december"];
   const tid = `${p.hour}:${p.minute}`;
+  // Svarsmeningen (7/11, DECISIONS #820): datum och klockslag först, så att ett citat en annan dag inte ser ut som läget nu, och
+  // temperaturen med, eftersom det är talet AI-svaren citerar. Länsnamnen står i raderna under kartan, inte i meningen.
+  const nar = `${p.weekday.charAt(0).toUpperCase()}${p.weekday.slice(1)} ${p.day} ${MANAD[Number(p.month) - 1]} kl. ${tid}`;
   const hala = d.lan.filter((l) => l.halt > 0).sort((a, b) => b.halt - a.halt);
-  const namn = hala.map((l) => l.kort);
-  const lanText = hala.length
-    ? `Halka eller vinterväglag på ${lsPlural(hala.reduce((s, l) => s + l.halt, 0), "sträcka", "sträckor")}, i ${namn.length > 1 ? `${namn.slice(0, -1).join(", ")} och ${namn[namn.length - 1]}` : namn[0]}.`
-    : "Trafikverket rapporterar ingen halka just nu.";
+  const lugna = d.lan.filter((l) => !l.halt);
+  const lanDel = hala.length
+    ? `halka eller vinterväglag på ${hala.reduce((s, l) => s + l.halt, 0)} vägavsnitt i ${hala.length} län.`
+    : "ingen halka på Sveriges vägar.";
   const stationer = !kallast ? "" : kalla.length
-    ? `${lsPlural(kalla.length, "station", "stationer")} under noll. Kallast vid ${plats}.`
-    : `Ingen station under noll. Kallast vid ${plats}, ${lsGrad(kallast.yta)}.`;
-  const lista = (hala.length
-    ? hala.map((l) => `<a class="lan-halt" href="lan/${l.slug}/" title="Halka eller vinterväglag på ${l.halt} av ${l.vagavsnitt} vägavsnitt">${lsEsc(l.kort)} · ${l.halt}</a>`)
-    : ['<span class="lugnt">Ingen halka rapporterad just nu.</span>']).concat('<a class="lank-mono" href="lan/">Alla 21 län →</a>').join("");
+    ? `Vägbanan är under noll vid ${kalla.length} av ${stat.length} stationer, kallast ${lsGrad(kallast.yta)} vid ${plats}.`
+    : `Ingen station visar vägbana under noll. Kallast ${lsGrad(kallast.yta)} vid ${plats}.`;
+  // Länsraderna (DECISIONS #820): hala vägavsnitt av alla i länet, med stapel, och de lugna länen på en rad. Samma som sidans skript.
+  const rad = (l: { kort: string; slug: string; halt: number; vagavsnitt: number }) =>
+    `<a class="lan-halt" href="lan/${l.slug}/" title="Halka eller vinterväglag på ${l.halt} av ${l.vagavsnitt} vägavsnitt"><span>${lsEsc(l.kort)}</span><em>${l.halt} av ${l.vagavsnitt}</em><s><u style="width:${Math.max(3, Math.round(100 * l.halt / Math.max(1, l.vagavsnitt)))}%"></u></s></a>`;
+  const lugnText = !lugna.length ? "" : hala.length
+    ? `<p class="lugnt">Ingen halka rapporterad i ${lugna.map((l, i) => `<a href="lan/${l.slug}/">${lsEsc(l.kort)}</a>${i < lugna.length - 2 ? ", " : i === lugna.length - 2 ? " och " : "."}`).join("")}</p>`
+    : '<p class="lugnt">Ingen halka rapporterad just nu i något län. </p>';
+  const lista = hala.map(rad).join("") + lugnText + '<a class="lank-mono" href="lan/">Alla 21 län →</a>';
+  const avsnitt = (h: number, n: number) => (h ? `halka på ${h} av ${n} vägavsnitt` : `ingen halka på ${n} vägavsnitt`);
+  const stader: Record<string, string> = {};
+  for (const [stad, slug] of [["stockholm", "stockholm"], ["goteborg", "vastra-gotaland"], ["malmo", "skane"]]) {
+    const l = d.lan.find((x) => x.slug === slug);
+    if (l) stader[`s-${stad}`] = lsEsc(`${l.kort}: ${avsnitt(l.halt, l.vagavsnitt)}`);
+  }
+  const vagar = Object.fromEntries((d.vag ?? []).map((v) => [`v-${v.slug}`, v.vagavsnitt ? `${v.halt} av ${v.vagavsnitt} hala` : "–"]));
   return {
     "h-tid": `Just nu · ${p.weekday} ${p.day} ${MAN[Number(p.month) - 1]} · ${tid}`,
     "k-tid": `Livekartan · uppdaterad ${tid}`,
     "t-tid": `Hela landet · ${tid}`,
-    "l-mening": lsEsc([lanText, stationer].filter(Boolean).join(" ")),
-    "halt-lista": lista,
+    "l-mening": lsEsc([`${nar} rapporterar Trafikverket ${lanDel}`, stationer].filter(Boolean).join(" ")),
+    "halt-lista": lista, ...stader, ...vagar,
     "t-halka": String(halt), "k-halka": String(halt),
     "t-kalla": String(kalla.length), "k-kalla": String(kalla.length),
     "t-av": `av ${stat.length} stationer`, "k-varma": String(stat.length - kalla.length),
@@ -2068,7 +2085,7 @@ export async function buildMapData(q: Q, opts: {
     const vaglagTal = vaglag.map((r) => ({ code: numOrNull(r.condition_code), info: (r.condition_info ?? []) as string[] }));
     start = lsStartsida({
       vader: vader.map((r) => ({ land: String(r.land), name: String(r.name ?? ""), yta: numOrNull(r.surface_temp_c), luft: numOrNull(r.air_temp_c) })),
-      vaglag: vaglagTal, lan: (JSON.parse(sidor["data/lan.json"]) as { lan: { kort: string; slug: string; halt: number; vagavsnitt: number }[] }).lan, now,
+      vaglag: vaglagTal, ...(JSON.parse(sidor["data/lan.json"]) as Pick<StartTal, "lan" | "vag">), now,
     });
     kartaText = lsKartsida({ vaglag: vaglagTal, now });
   }
