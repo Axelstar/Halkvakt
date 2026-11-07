@@ -14721,3 +14721,42 @@ körde deras avslut på en bakgrundstråd, och UIKit kraschar där. Rättelsen: 
 huvudtråden. Favoriter 2a lägger till fler notiser att trycka på, så rättelsen följer med 0.4.0 (40).
 
 **Stomdokument:** FAV §6 — dagens resor och notisen efter resan, APP — CarPlay och raderna på Redo
+
+## #818 (7/11 2026) Säsongsfacit: en redovisning av halkvarningarna hela vintern, med valen 1–5 signerade av Bengt
+
+**Bengts ord 7/11:** *"kör på allt detta"*, på Claudes rekommendationer till de fem valen i `docs/TROSKLAR-SASONGSFACIT.md`, med ändringen i
+val 2 (kort #381). Utkastet skrevs samma dag på Bengts *"Ja, skriv utkastet"*.
+
+**Bakgrund.**
+- Bengt 7/11 ville kunna visa i efterhand hur Halkvakt presterade, mot olika jämförelser, och få uppdateringar under vintern.
+- Om resultatet är bra kan det läggas på hemsidan, annars används det internt.
+- Mätningarna i dag är domar per lager, alltså om ett lager får tala. Det finns ingen samlad redovisning per plats och tid.
+
+**Beslut.**
+- Säsongsfacit är en **redovisning, ingen grind**. Den har två delar:
+  - *leveransen* (A1 och A2): fördröjningen från Trafikverket och täckningen;
+  - *prognosen* (K): per sträcka och timme ur domloggen, mot facit F1, F3 och F4 och mot jämförelserna J1–J3, uppdelat per län, månad,
+    tid på dygnet och ledtid.
+- **De fem valen:**
+  1. Facitfönstret är från en timme före varningen till två timmar efter. Huvudtalen räknas bara med det, och de andra fönstren står i en
+     bilaga.
+  2. F2, stationens uppmätta yta, ingår inte i huvudmåtten. Den redovisas för sig, märkt *inte oberoende*, och den oberoende prövningen
+     görs i kuvösens marsdom.
+  3. En andel visas först vid 20 händelser, och antalet står alltid bredvid.
+  4. Publiceringen följer (a): metoden publiceras när dokumentet är fastställt, och resultatet efter slutrapporten, vad det än blir.
+  5. Räkningen görs varje måndag internt, månadsläsningarna 1/12, 1/1, 1/2 och 1/3 bokförs, och slutrapporten kommer senast 15/4.
+- **Bygget:**
+  - Tabellen `sasongsfacit` och måndagsräkningen (pg_cron, en sats per vecka) byggs veckan efter storstädernas påslag. Räkningen prövas
+    i full skala utanför produktionen först (#783).
+  - Första räkningen görs i efterhand från 1/11. Underlaget sparas redan, och ingen vecka går förlorad.
+  - Talen skrivs aldrig i repot.
+
+**Signaturerna.** Bengt har signerat. Axels signatur väntar: Bengt skrev inte att han signerade för Axel, och det kräver uttryckliga
+ord. Dokumentet gäller när båda har signerat (fristen `sasongsfacit-signeras`, 30/11).
+
+**Alternativ.**
+- (a) Att logga K:s ankare per punkt och timme, så att F2 kan vara oberoende. Förkastat: det blir flera hundra MB på en vinter, och
+  marsdomen gör prövningen.
+- (b) Att publicera bara om resultatet är bra. Förkastat: ett urval i efterhand håller inte som belägg.
+
+**Stomdokument:** MAT §9 — säsongsfacit som redovisning, BED §4.2 — Axels signatur

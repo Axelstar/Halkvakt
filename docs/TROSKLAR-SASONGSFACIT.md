@@ -1,14 +1,15 @@
 # TROSKLAR — säsongsfacit: hur väl Halkvakts halkvarningar slog in vintern 2026/27
 
-**UTKAST 7/11 2026** (Claude, på Bengts *"Ja, skriv utkastet"*; kort #381). Inte fastställt. Dokumentet gäller när Bengt och Axel har
-signerat det (§10), och senast före första läsningen 1/12. Efter första läsningen ändras inget mått, facit eller krav utan ett nytt
+**SIGNERAT AV BENGT 7/11 2026** (*"kör på allt detta"*, på Claudes rekommendationer till valen 1–5 med ändringen i val 2; DECISIONS
+#818). Utkastet skrevs av Claude 7/11 på Bengts *"Ja, skriv utkastet"* (kort #381). **Axels signatur** väntar (§10). Dokumentet gäller
+när båda har signerat, och senast före första läsningen. Efter första läsningen ändras inget mått, facit eller krav utan ett nytt
 beslut, med skälet bokfört (regel L).
 
 ## 1. Vad säsongsfacit är, och vad det inte är
 
-- **Säsongsfacit är en redovisning.** Den visar hur väl Halkvakts halkvarningar slog in under vintern, uppdelat per plats och tid. Varje
-  mått mäts mot facit och jämförelser som är bestämda i förväg.
-- **Säsongsfacit uppdateras hela vintern.** Varje måndag räknas veckan och säsongen hittills om (§6).
+- **Säsongsfacit är en redovisning.** Den visar hur väl Halkvakts halkvarningar slog in under vintern, per plats och tid, mot facit och
+  jämförelser som är bestämda i förväg.
+- **Säsongsfacit uppdateras löpande hela vintern.** Varje måndag räknas veckan och säsongen hittills (§6).
 - **Säsongsfacit är ingen grind.** Det avgör inte vad som får tala. Kandidatens marsdom (kuvösen, DECISIONS #768), prognoslagrets grindar,
   olycksfacit (TROSKLAR-OLYCKSFACIT) och domkalendern gäller som förut. Säsongsfacit använder deras underlag, men ändrar dem inte.
 - **Säsongsfacit omfattar inte allt.** B och C, alltså storstädernas punkter, ingår inte i den här versionen. Deras dom fälls i kuvösen
@@ -34,42 +35,47 @@ Halkvakt bra* avgörs.
 
 ## 3. Facit för prognosen
 
-Facitkällorna, i ordning efter hur starka de är:
+Facit är det som faktiskt hände. Huvudmåtten räknas på F1, F3 och F4, som K inte bygger på:
 
 | | Facit | Ur | Vad det bevisar |
 |---|---|---|---|
-| F1 | Trafikverkets väglag på sträckan, med klasserna halka, is, snö och slask | `road_condition_history` | Att Trafikverket bedömde vägen som hal |
-| F2 | Uppmätt yta ≤ 0 °C med fukt vid en vägväderstation på sträckan, **som inte var ankare för K där** | arkivet för `weather_observations` | Fysisk frysrisk, mätt oberoende av K |
+| F1 | Trafikverkets väglag på sträckan, med klasserna halka, is, snö och slask | `road_condition_history` | Att Trafikverket bedömde vägen som hal. K läser bara Trafikverkets *Våt* som fukt, och facit är andra klasser |
 | F3 | Kamerabild med is, snö eller slask, eller med bar väg | `kamerafacit` | Ett synligt väglag. Svartis syns inte |
 | F4 | Olycka, klassad TYDLIG eller TROLIG | olycksfacit | Att något hände. Inte att det var halt (#247) |
+
+**F2, uppmätt yta vid stationen, ingår inte i huvudmåtten (val 2).** K bygger på stationerna, så en station kan vara både ankare och
+facit, och då mäter vi oss själva. F2 redovisas därför för sig, märkt *inte oberoende*: ytan ≤ 0 °C med fukt vid stationen på
+sträckan, när K varnade och när den teg. Den oberoende prövningen mot stationer görs i kuvösens marsdom, där förregistreringen
+hanterar ankarna.
 
 Förarfacit (*stämde det?* och *appen missade*) redovisas för sig och bara som antal. Svaren är testarnas egna och lämnar aldrig
 databasen rad för rad (#498).
 
-**Fällan i F2.** K bygger på stationerna. En station som är ankare för en punkt får därför inte vara facit för samma punkt, eftersom vi
-då mäter oss själva. Det kräver att K:s ankare per punkt och timme går att läsa ut (val 2 i §9).
-
 ## 4. Jämförelserna
 
-Ett *bra* måste vara bättre än något. De tre jämförelserna räknas på samma sträckor och timmar som K:
+Jämförelserna visar vad föraren har utan Halkvakt, eller med ett enkelt verktyg. De räknas på samma sträckor och timmar som K:
 
-| | Jämförelse | Regel |
-|---|---|---|
-| J1 | Bilens snöflinga | Luften under +3 °C vid närmaste station, som bilens egen varning (MATNINGAR §9) |
-| J2 | En enkel regel | Luften ≤ +1 °C och nederbörd i radarn på sträckan |
-| J3 | Det föraren redan får | Trafikverkets väglag (A1) på sträckan, utan Halkvakts prognos |
+| | Jämförelse | Regel | Vad den visar om oss |
+|---|---|---|---|
+| J1 | Bilens snöflinga | Luften under +3 °C vid närmaste station, som bilens egen varning (MATNINGAR §9) | Om vi varnar lika träffsäkert med färre falsklarm än det föraren redan har på instrumentbrädan |
+| J2 | En enkel väderregel | Luften ≤ +1 °C och nederbörd i radarn på sträckan | Om K:s fysik tillför något utöver vanligt väder |
+| J3 | Det föraren redan får | Trafikverkets väglag (A1) på sträckan, utan Halkvakts prognos | Om vi varnar tidigare än Trafikverket, och där de inte rapporterar |
 
-## 5. Måtten och indelningen
+## 5. Måtten, indelningen och tolkningen
 
 **Måtten**, för K och för varje jämförelse:
 
 | Mått | Definition |
 |---|---|
-| Träffsäkerhet | Andelen varnande sträcktimmar där facit fanns inom facitfönstret (val 1 i §9) |
-| Täckning | Andelen facithändelser (F1–F3) där varningen kom före händelsen eller under den |
+| Träffsäkerhet | Andelen varnande sträcktimmar där facit (F1, F3 eller F4) fanns inom facitfönstret |
+| Täckning | Andelen facithändelser (F1, F3 och F4) där varningen kom före händelsen eller under den |
 | Ledtid | Tiden från K:s första varning till F1:s första halkklass på samma sträcka. Median och kvartiler |
 | Falsklarm per 100 km | Varningar utan facit, längs skuggans 80 rutter (`shadow_log`) |
 | Takten | Tätaste följd och följder inom 60 s, som i skuggrapporten (#200) |
+
+**Facitfönstret (val 1)** sträcker sig från en timme före varningen till två timmar efter. Huvudtalen räknas bara med det fönstret. Ett
+smalare fönster (0–1 h) och ett bredare (−1 till +4 h) visas i en bilaga, så att man ser hur känsligt resultatet är, men de ersätter
+aldrig huvudtalet.
 
 **Indelningen:**
 - län;
@@ -79,7 +85,15 @@ Ett *bra* måste vara bättre än något. De tre jämförelserna räknas på sam
 
 **Osäkerheten:**
 - Varje andel redovisas med ett 95-procentigt intervall, bootstrappat per dygn, eftersom timmarna inom ett dygn hänger ihop.
-- En cell med färre händelser än gränsen redovisas inte som andel, bara som antal (val 3 i §9).
+- Antalet händelser står alltid bredvid andelen.
+- En cell med färre än 20 händelser redovisas bara som antal (val 3).
+
+**Tolkningen: vad *bra* betyder.**
+- K har högre träffsäkerhet än J1 och J2 vid jämförbar täckning.
+- K kommer före J3 på de sträckor där Trafikverket senare rapporterar halka.
+
+Träffsäkerheten och täckningen visas alltid tillsammans, och falsklarmen per 100 km bredvid. Snöflingan varnar nästan hela tiden och
+träffar därför ofta, men den ropar också varg hela vintern.
 
 ## 6. Löpande uppdatering
 
@@ -89,22 +103,24 @@ Bengt 7/11: *"det hade varit bra om man kunde få uppdateringar på säsongsfaci
   lager, mått, län och tid på dygnet. Tabellen har RLS och inga rättigheter för `anon` och `authenticated`.
   - Räkningen sker med pg_cron, som olycksfacits vecka. Den läser bara arkiven, skriver bara aggregat, och kör en sats per vecka och
     inte per rad (lärdomen från 3/11, #783).
+  - Innan räkningen går i produktionen prövas den i full skala utanför den (CLAUDE.md, #783).
   - Tillväxten är omkring 1 000 rader per vecka, alltså under 5 MB för vintern.
+- **Första räkningen** görs i efterhand från 1/11, eftersom allt underlag redan sparas (§8). Ingen vecka går förlorad av att bygget
+  väntar.
 - **Läsningen:** Claude läser tabellen i varje session efter måndagen och skriver en intern lägesrapport till Bengt och Axel, med
   veckans tal och säsongen hittills. Ingenting av det skrivs i repot, i ärenden eller i Actions-loggar, eftersom repot är publikt.
 - **Månadsläsningarna 1/12, 1/1, 1/2 och 1/3** bokförs på kort #381 med vad som har förändrats. Talen står inte i bokföringen.
-- **Slutet** räknas efter 31/3, på samma underlag.
+- **Slutrapporten** kommer senast 15/4, så att Trafikverkets sena rapporter och olycksfacits klassning hinner med (val 5).
 
-## 7. Publiceringen
+## 7. Publiceringen (val 4: (a))
 
 Bengt 7/11: *"om vi är bra hade man kunnat tänka sig att lägga upp den på hemsidan och annars bara för internt ändamål"*.
 
-- Om man publicerar bara när resultatet blir bra, och bestämmer det efteråt, blir det ett urval som inte håller. Påståenden om
-  träffsäkerhet är dessutom marknadsföring och måste gå att belägga (produktansvaret, kort #372). Därför avgörs publiceringen i förväg
-  (val 4 i §9):
-  - **(a)** Metoden publiceras när dokumentet är fastställt, och resultatet efter 31/3, vad det än blir.
-  - **(b)** Ett krav på *bra* bestäms i förväg, till exempel att K slår J1 och J2 i träffsäkerhet med intervallen åtskilda. Resultatet
-    publiceras om kravet är uppfyllt, och annars bara internt.
+- **Vad som publiceras och när:** metoden, alltså det här dokumentet, publiceras på halkvakt.se när det är fastställt. Resultatet
+  publiceras efter slutrapporten, **vad det än blir**.
+- **Skälet:** om man publicerar bara när resultatet blir bra, och bestämmer det efteråt, blir det ett urval som inte håller. Påståenden om
+  träffsäkerhet är dessutom marknadsföring och måste gå att belägga (produktansvaret, kort #372). K är märkt BETA, så ett ärligt
+  resultat från första vintern, med jämförelser och reservationer, går att visa.
 - **Publikt visas bara aggregat:** per län och månad, och Trafikverkets data aldrig rad för rad. Kuvösens tal visas inte utan ett beslut
   (#768).
 
@@ -119,7 +135,7 @@ Bengt 7/11: *"om vi är bra hade man kunnat tänka sig att lägga upp den på he
 - `shadow_log`;
 - `driver_facit`.
 
-Inget nytt underlag behöver sparas för den här versionen.
+Inget nytt underlag behöver sparas.
 
 **Det som inte sparas:**
 - Lägesfilen skrivs över vid varje publicering. Domloggen ersätter den för K, och A1 och A2 räknas ur arkiven.
@@ -131,18 +147,19 @@ Inget nytt underlag behöver sparas för den här versionen.
 - Trafikverket bedömer väglaget där de har observationer, och det ger en slagsida mot de statliga vägarna.
 - Facitfönstret avgör mycket. Därför bestäms det i förväg och ändras inte efter att utfallet har setts.
 
-## 9. Valen
+## 9. Valen (signerade av Bengt 7/11)
 
-| # | Val | Förslag |
+| # | Val | Beslut |
 |---|---|---|
-| 1 | Facitfönstret för träffsäkerhet och täckning | F1 och F3 från timmen före varningen till två timmar efter, F2 samma timme |
-| 2 | Hur F2 hålls oberoende av K | Logga K:s ankare per punkt och timme, som en liten tabell eller kolumn. Annars räknas F2 bara på stationer som inte är ankare inom 20 km |
-| 3 | Minsta antal händelser för att visa en andel | 20 |
-| 4 | Publiceringen (§7) | (a) |
-| 5 | Läsdatum | Varje måndag internt, 1/12, 1/1, 1/2 och 1/3 bokförda, och slutet efter 31/3 |
+| 1 | Facitfönstret | Från en timme före varningen till två timmar efter. Huvudtalen räknas bara med det, och 0–1 h och −1 till +4 h står i bilagan (§5) |
+| 2 | Hur stationerna hanteras | F2 ingår inte i huvudmåtten. Den redovisas för sig, märkt *inte oberoende*. Den oberoende prövningen görs i kuvösens marsdom (§3) |
+| 3 | Minsta antal händelser för att visa en andel | 20, och antalet står alltid bredvid andelen |
+| 4 | Publiceringen | (a): metoden när dokumentet är fastställt, och resultatet efter slutrapporten, vad det än blir (§7) |
+| 5 | Läsdatum | Varje måndag internt. 1/12, 1/1, 1/2 och 1/3 bokförs, och slutrapporten kommer senast 15/4 |
 
 ## 10. Signaturer
 
 | Vem | Datum | Hur |
 | :-- | :-- | :-- |
-| | | |
+| Bengt | 2026-11-07 | i chatten *"kör på allt detta"*, på Claudes rekommendationer till valen 1–5 med ändringen i val 2 (DECISIONS #818) |
+| Axel | | väntar |
