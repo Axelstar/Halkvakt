@@ -14654,4 +14654,14 @@ App Store, och det kan bli efter måndag.
   rad i STATUS och ett besked till Bengt.
 - **Favoriternas text** rättas i 0.4.0.
 
+**Tillägg 7/11, brytarfilerna** (lördagens fjärde steg):
+- **`sql/097` slår på alla fyra brytarna.** Filen vägrar och ändrar ingenting om regeln saknar 094:s timme (#813) eller om
+  olycksfacit saknar 096:s stadslogg (#815). Den körs med DB-knappen på Bengts och Axels ord efter avstämningen, aldrig av ett
+  flöde.
+- **`sql/098` slår av alla fyra.** Det är avbrottet, som Claude får köra utan att fråga vid avbrottsvillkoren.
+- **Stadsregelns integrationsprov SR7:**
+  - 098 slår av, och bara vägpunkten varnar;
+  - med regeln ur 091 vägrar 097 och ändrar ingenting;
+  - med 094 slår 097 på alla fyra, också vid en andra körning, och B och C talar i båda regelfunktionerna.
+
 **Stomdokument:** BED läget 7/11 — tidsplanen till 9/11 och §4.2 — valen, MAT segmentprognosen — storstädernas punkter (kort #378), APP versionerna — 0.3.17 (39) när den är byggd
