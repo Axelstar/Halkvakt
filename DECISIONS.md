@@ -14346,7 +14346,7 @@ Ett beslut försvann alltså ur listan för att något annat skrevs i samma doku
   - ⚠ #810 i MATNINGAR (rättat här);
   - ⚠ #778 i APPEN och SYSTEMBILDEN;
   - bokförda #782 (APP) samt #793 och #794 (MAT).
-- **Motprov:** två mutationer i en egen commit, och självtestet fäller båda.
+- **Motprov:** två mutationer mot den incheckade koden (28f4ff5f), utan egen commit, och självtestet fäller båda (kod 1).
   - Utan provet att numret nämns i handtexten fäller självtestet.
   - Med posten giltig för alla koder fäller självtestet också.
 - **CLAUDE.md** (DOKUMENTSYNKEN) beskriver det nya. Där står också att driftens rörarbete för kandidaten och storstäderna inte är
