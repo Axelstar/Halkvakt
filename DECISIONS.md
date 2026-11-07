@@ -14547,6 +14547,12 @@ alltså inte fler olyckor TYDLIG eller TROLIG, och den flyttar inget sett tal mo
   den.
 - (c) Ett eget lager för B och C i olycksfacit. Förkastat: B och C är kandidatens betavarning (#804), alltså K, och säljregeln nämner K.
 
+**Tillägg 7/11 (Bengt: *"ja till alla fem. Axel och jag signerar"* och *"slå ihop 1442"*).**
+- §9.1 är signerat av Bengt och Axel (TROSKLAR-OLYCKSFACIT §8).
+- PR #1442 är sammanslagen som a159c48a på exakt huvudet 466898fd, med ci, md-vakt och fristvakten gröna.
+- `sql/096` migrerades 07.53 UTC med DB-knappen 42353119984. Båda tabellerna och båda funktionerna finns, och ingen brytare är på.
+- Beviset i drift, den första körningsraden med status *av*, väntas vid del B 08.47 UTC.
+
 **Stomdokument:** SYS kandidaten — stadsloggen för olycksfacit, MAT §9 olycksfacit — K vid storstädernas punkter, BED §4.2 — signaturerna
 
 ## #816 (7/11 2026) Storstädernas punkter på till måndagsrusningen 9/11: tidsplanen och villkoren
@@ -14631,5 +14637,21 @@ App Store, och det kan bli efter måndag.
 - (b) Att slå på brytarna utan en app med rutnätet. Inte förkastat, men inte rekommenderat: det är kvarvarande risk i full skala, och
   telefonturen skulle mäta något annat än det som körs.
 - (c) Att stryka telefonturen. Förkastat: den är ett villkor i F33.
+
+**Tillägg 7/11 (Bengt: *"ja till alla fem. Axel och jag signerar"*).** De fem valen i §4.2 enligt rekommendationen:
+- **Migrationerna med DB-knappen:**
+  - `sql/094` 07.54 UTC (42353185528);
+  - `sql/080` 07.55 (42353240136): den snabba regeln är härledd ur 094;
+  - `sql/081` 07.55 (42353281559): ingen plpgsql-funktion i public saknar fast sökväg.
+- **Bevisraden för 094** visade *false* för den frysta regeln. Felet satt i frågan: den frysta regeln läser `kandidat_timme()`,
+  inte `ny_kandidat_timme()`. Rätt fråga, i 080:s körning, visade *true* för båda.
+- **Mätningen efter migrationen** gjordes i SQL-redigeraren med EXPLAIN ANALYZE, bara läsning och med en gräns på 20 s. Regeln
+  med alla fyra brytarna räknade som på tog 3,3 s (#813: mer än 80 s utan rättelsen, 3,0 s i provet).
+- **Den snabba skuggan:** de sju dygnen började om 07.55 UTC, och läsningen flyttas till 15/11 (fristen).
+- **0.3.17 (39)** byggs med rutnätet. PR #1423 får 0.4.0 (40).
+- **Telefonturen** är (a): minst en timme med 0.3.17 ur TestFlight och *Mätningen*, söndag dagtid.
+- **Brytarna:** alla fyra slås på söndag kväll. Claude slår av dem med `sql/098` utan att fråga vid avbrottsvillkoren, med en
+  rad i STATUS och ett besked till Bengt.
+- **Favoriternas text** rättas i 0.4.0.
 
 **Stomdokument:** BED läget 7/11 — tidsplanen till 9/11 och §4.2 — valen, MAT segmentprognosen — storstädernas punkter (kort #378), APP versionerna — 0.3.17 (39) när den är byggd
