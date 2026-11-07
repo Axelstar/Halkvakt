@@ -148,7 +148,9 @@ BEGIN
          count(*) FILTER (WHERE m.v), count(*) FILTER (WHERE m.v AND r.f1_fonster),
          count(*) FILTER (WHERE r.f1), count(*) FILTER (WHERE r.f1 AND m.fore), jamf OR m.metod = 'K'
   FROM sf_rut r
-  CROSS JOIN LATERAL (VALUES ('K', r.k, r.k_fore), ('J1', r.j1, r.j1_fore), ('J2', r.j2, r.j2_fore)) m(metod, v, fore)
+  -- Utan dygnets stationsrader räknas J1 och J2 inte alls: annars blir de ett stickprov ur de stationer som råkar ha rader kvar.
+  CROSS JOIN LATERAL (VALUES ('K', r.k, r.k_fore), ('J1', r.j1 AND jamf, r.j1_fore AND jamf),
+                             ('J2', r.j2 AND jamf, r.j2_fore AND jamf)) m(metod, v, fore)
   WHERE r.i_pop AND r.h >= fran AND r.h < till
   GROUP BY 1, 2, 3, 4;
   GET DIAGNOSTICS n_dag = ROW_COUNT;
