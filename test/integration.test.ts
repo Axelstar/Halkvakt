@@ -2110,7 +2110,8 @@ test("#796 olycksfacit: varje olycka fångas en gång, med vad lagren sa vid sta
                        "065_kandidat_domlogg_punkter.sql"]) await las(f);
     }
     for (const f of ["003_situation_archive.sql", "068_ny_kandidat_skugga.sql", "084_olycksfacit.sql", "084_olycksfacit.sql",
-                     "085_olycksfacit_klassning.sql", "095_olycksfacit_k_timmen.sql"]) await las(f);   // den fångst som kör (#814)
+                     "085_olycksfacit_klassning.sql", "095_olycksfacit_k_timmen.sql", "089_stadspunkter.sql",
+                     "096_olycksfacit_stad.sql"]) await las(f);   // den fångst som kör (#814, #815)
     await stad();
     // Sträckorna: 99951 Besvärligt/Våt sedan tre timmar, 99952 Normalt/Torrt.
     await q(`INSERT INTO road_conditions (segment_id, condition_code, condition_text, condition_info, road_number, geom, modified_time) VALUES
@@ -2215,7 +2216,7 @@ test("#797 olycksfacit: efterkontrollen klassar en gång, med vakterna, och K l�
     }
     for (const f of ["003_situation_archive.sql", "068_ny_kandidat_skugga.sql", "084_olycksfacit.sql", "085_olycksfacit_klassning.sql",
                      "085_olycksfacit_klassning.sql", "088_olycksfacit_veckor.sql", "088_olycksfacit_veckor.sql",
-                     "095_olycksfacit_k_timmen.sql"]) await las(f);   // den fångst som kör (#814)
+                     "095_olycksfacit_k_timmen.sql", "089_stadspunkter.sql", "096_olycksfacit_stad.sql"]) await las(f);   // den fångst som kör (#814, #815)
     // Steg 4 (sql/088, DECISIONS #802): veckornas tabell finns, med RLS på, och filen går att köra två gånger.
     assert.deepEqual((await q("SELECT relrowsecurity FROM pg_class WHERE relname = 'olycksfacit_veckor'")).rows, [{ relrowsecurity: true }]);
     for (const f of ["olycksfacit_fanga", "olycksfacit_efterkontroll"])
@@ -2465,6 +2466,8 @@ test("#804 stadsregeln: brytarna, radarn, marsfönstret och domloggen", { skip: 
     await q("DELETE FROM ny_kandidat_station WHERE station_id = ANY($1)", [PUNKTER]).catch(() => {});
     await q("DELETE FROM ny_kandidat_skugga WHERE segment_id = ANY($1) OR segment_id LIKE '9995%'", [GRUPPER]).catch(() => {});
     await q("DELETE FROM radar_stad WHERE grupp = ANY($1)", [GRUPPER]).catch(() => {});
+    await q("DELETE FROM ny_kandidat_skugga_stad WHERE grupp = ANY($1)", [GRUPPER]).catch(() => {});
+    await q("DELETE FROM ny_kandidat_skugga_stad_korning WHERE korning > now() - interval '3 hours'").catch(() => {});
     await q("DELETE FROM stadspunkt WHERE punkt = ANY($1)", [PUNKTER]).catch(() => {});
     await q("UPDATE stadsbrytare SET pa = false").catch(() => {});
     await q("DELETE FROM vagpunkt WHERE punkt LIKE 'vS%'");
@@ -2482,7 +2485,8 @@ test("#804 stadsregeln: brytarna, radarn, marsfönstret och domloggen", { skip: 
                      "065_kandidat_domlogg_punkter.sql", "068_ny_kandidat_skugga.sql", "069_radarns_tal.sql",
                      "086_spridningsparren_frys_min.sql", "087_spridningsparren_f1.sql", "089_stadspunkter.sql", "090_radar_stad.sql",
                      "091_stadsregeln.sql", "091_stadsregeln.sql",
-                     "094_stadsgrenens_timme.sql", "094_stadsgrenens_timme.sql"]) await las(f);   // stadsgrenens timme som underfråga (#813)
+                     "094_stadsgrenens_timme.sql", "094_stadsgrenens_timme.sql",   // stadsgrenens timme som underfråga (#813)
+                     "096_olycksfacit_stad.sql", "096_olycksfacit_stad.sql"]) await las(f);   // stadsloggen för olycksfacit (#815)
     await stad();
     await q("DELETE FROM ny_kandidat_skugga_korning");   // som provet #692: domloggen räknar en timme en gång
     // Stadspunkterna: [punkt, grupp, lager, lat]. Långt från provens stationer (34° Ö).
@@ -2514,6 +2518,18 @@ test("#804 stadsregeln: brytarna, radarn, marsfönstret och domloggen", { skip: 
     assert.deepEqual(await utfall("kandidat_regel"), ALLA, "SR1: den frystas regel ger samma");
     const hela = (fn: string) => q(`SELECT * FROM ${fn}() WHERE punkt = ANY($1) OR punkt LIKE 'vS%' ORDER BY punkt`, [PUNKTER]).then((r) => r.rows);
     assert.deepEqual(await hela("ny_kandidat_regel"), await hela("kandidat_regel"), "SR1: samma rader, fält för fält");
+
+    // SR6 (#815): stadsloggen för olycksfacit. Med B och C på skrivs varje grupp med kalla punkter, med regelns utfall, och körningen
+    // med brytarna som var på.
+    assert.equal((await q("SELECT ny_kandidat_logga_stad() AS m")).rows[0].m, "klart");
+    const sl = Object.fromEntries((await q(`SELECT grupp, punkter, varnar, spridning, torr, fukt_punkter, fukt_utfall FROM ny_kandidat_skugga_stad
+      WHERE observed_at = $1 AND grupp = ANY($2)`, [tid, GRUPPER])).rows.map((r: any) => [r.grupp, r]));
+    assert.deepEqual([sl["B-991-911"].punkter, sl["B-991-911"].varnar, sl["B-991-911"].spridning], [2, 1, 1], "SR6: B99911 varnar, B99915 tystas av F1");
+    assert.deepEqual(sl["B-991-911"].fukt_punkter, ["B99911", "B99915"]);
+    assert.equal(sl["B-991-912"].torr, 1, "SR6: utan radar torr");
+    assert.equal(sl["C-991-911"].varnar, 1, "SR6: C på");
+    assert.deepEqual((await q("SELECT status, brytare FROM ny_kandidat_skugga_stad_korning ORDER BY korning DESC LIMIT 1")).rows[0],
+      { status: "räknad", brytare: ["Stor-Stockholm/B", "Stor-Stockholm/C"] }, "SR6: körningen bär brytarna");
 
     // SR5 (provets klocka är den riktiga här): domloggen.
     assert.match((await q("SELECT ny_kandidat_logga() AS m")).rows[0].m, /^kandidatens timme /);
@@ -2824,6 +2840,87 @@ test("#814 olycksfacit: K-lagret läser timmen som talade vid olyckan, och omrä
     await las("095_olycksfacit_k_timmen.sql");
     assert.equal((await lager("KT4")).K.detalj.omraknad, omraknad, "KT4: en andra körning räknar inte om");
     assert.equal((await lager("KT1")).K.detalj.omraknad, undefined, "fångster med den nya regeln räknas inte om");
+  } finally {
+    await stad().catch(() => {});
+    await pool.end();
+  }
+});
+
+// OLYCKSFACIT FÖR STORSTÄDERNAS PUNKTER (sql/096, DECISIONS #815). Domloggen tar inte storstädernas grupper (#804), så K-lagret läser
+// stadsloggen vid närmaste stadspunkt inom 2 km, med samma timregel som #814. Fallen ligger kring 74° N, långt från alla vägpunkter:
+//   OS1  brytaren var av vid olyckan → K "ingen vägpunkt" som förut, stadsdetaljen "brytaren av", otäckt
+//   OS2  brytaren på och gruppen varnar i timmen som talade → K varnar, VARNADE och täckt
+//   OS3  brytaren på och gruppen saknas i timmen → K "yta över 0", tyst men täckt
+//   OS4  alla brytare av → stadsloggen räknar inte regeln, och körningen loggas som av
+test("#815 olycksfacit för storstäderna: K-lagret läser stadsloggen vid närmaste stadspunkt", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const las = (f: string) => q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+  const nord = (km: number) => 74 + km / 111.2;
+  const stad = async () => {
+    await q("DELETE FROM olycksfacit WHERE deviation_id LIKE 'OS%'").catch(() => {});
+    await q("DELETE FROM situation_archive WHERE deviation_id LIKE 'OS%'");
+    await q("DELETE FROM ny_kandidat_skugga_stad WHERE grupp LIKE 'B-996-%'").catch(() => {});
+    await q("DELETE FROM ny_kandidat_skugga_stad_korning WHERE korning > now() - interval '12 hours'").catch(() => {});
+    await q("DELETE FROM stadspunkt WHERE punkt LIKE 'B9996%'").catch(() => {});
+    await q("UPDATE stadsbrytare SET pa = false").catch(() => {});
+  };
+  try {
+    await q("CREATE TABLE IF NOT EXISTS shadow_log (id bigserial PRIMARY KEY, run_at timestamptz NOT NULL DEFAULT now(), alerts jsonb NOT NULL DEFAULT '[]'::jsonb)");
+    if (!(await q("SELECT 1 FROM information_schema.columns WHERE table_name = 'kandidat_skugga' AND column_name = 'fukt_pb'")).rowCount) {
+      await q("DROP FUNCTION IF EXISTS kandidat_regel()");
+      for (const f of ["001_init.sql", "008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql", "018_trend_berakna.sql",
+                       "029_brott_index.sql", "030_langsam_vakt.sql", "050_kandidat_live.sql", "052_kandidat_gallring_kort.sql", "053_arkiv_tabeller.sql",
+                       "055_vagpunkter.sql", "056_kandidat_regel.sql", "057_kandidat_skugga.sql", "058_kandidat_spridning.sql",
+                       "065_kandidat_domlogg_punkter.sql"]) await las(f);
+    }
+    for (const f of ["003_situation_archive.sql", "068_ny_kandidat_skugga.sql", "084_olycksfacit.sql", "085_olycksfacit_klassning.sql",
+                     "095_olycksfacit_k_timmen.sql", "089_stadspunkter.sql", "096_olycksfacit_stad.sql", "096_olycksfacit_stad.sql"]) await las(f);
+    await stad();
+    for (const f of ["olycksfacit_k_stad", "ny_kandidat_logga_stad"])
+      assert.deepEqual((await q("SELECT proconfig FROM pg_proc WHERE proname = $1", [f])).rows[0].proconfig,
+        ["search_path=public, extensions"], `${f}: fast sökväg i definitionen (DECISIONS #784)`);
+    assert.deepEqual((await q("SELECT relname, relrowsecurity FROM pg_class WHERE relname IN ('ny_kandidat_skugga_stad', 'ny_kandidat_skugga_stad_korning') ORDER BY relname")).rows,
+      [{ relname: "ny_kandidat_skugga_stad", relrowsecurity: true }, { relname: "ny_kandidat_skugga_stad_korning", relrowsecurity: true }]);
+    // Tre stadspunkter i var sin grupp, 0,5 km från sin olycka.
+    for (const [p, lon] of [["B99961", 55], ["B99962", 56], ["B99963", 57]] as const)
+      await q("INSERT INTO stadspunkt (punkt, grupp, lager, omrade, lon, lat) VALUES ($1, $2, 'B', 'Stor-Stockholm', $3, $4)",
+        [p, `B-996-${p.slice(-3)}`, lon, nord(1.5)]);
+    // Körningarna: av för 50 minuter sedan, sedan räknad med B på i timmen som talar nu. Bara gruppen 962 är kall och varnar.
+    await q(`INSERT INTO ny_kandidat_skugga_stad_korning (korning, observed_at, status, brytare) VALUES
+      (now() - interval '50 minutes', date_trunc('hour', now() - interval '60 minutes'), 'av', '[]'),
+      (now() - interval '32 minutes', date_trunc('hour', now() - interval '35 minutes'), 'räknad', '["Stor-Stockholm/B"]')`);
+    await q(`INSERT INTO ny_kandidat_skugga_stad (grupp, observed_at, skriven_at, omrade, lager, punkter, varnar, veto, torr, spridning, pb_min,
+      fukt_punkter, fukt_utfall) VALUES ('B-996-962', date_trunc('hour', now() - interval '35 minutes'), now() - interval '32 minutes', 'Stor-Stockholm', 'B', 1, 1, 0, 0, 0, -1.2, '{B99962}', '{varnar}')`);
+    await q(`INSERT INTO situation_archive (deviation_id, message_type_value, message, severity_code, road_number, geom, start_time) VALUES
+      ('OS1', 'Accident', 'Singelolycka', 4, NULL, ST_SetSRID(ST_MakePoint(55, $1), 4326), now() - interval '45 minutes'),
+      ('OS2', 'Accident', 'Singelolycka', 4, NULL, ST_SetSRID(ST_MakePoint(56, $1), 4326), now() - interval '20 minutes'),
+      ('OS3', 'Accident', 'Singelolycka', 4, NULL, ST_SetSRID(ST_MakePoint(57, $1), 4326), now() - interval '20 minutes')`, [nord(1.0)]);
+    await q("SELECT olycksfacit_fanga()");
+    const lager = async (id: string) => Object.fromEntries((await q("SELECT lager, talar, orsak, detalj FROM olycksfacit_lager WHERE deviation_id = $1", [id])).rows
+      .map((r: any) => [r.lager, r]));
+    const olycka = async (id: string) => (await q("SELECT utfall, orsaker FROM olycksfacit WHERE deviation_id = $1", [id])).rows[0];
+
+    const l1 = await lager("OS1");
+    assert.equal(l1.K.talar, false); assert.equal(l1.K.orsak, "ingen vägpunkt", "OS1: med brytaren av gäller K som förut");
+    assert.equal(l1.K.detalj.stad.orsak, "brytaren av"); assert.equal(l1.K.detalj.stad.punkt, "B99961");
+    assert.equal((await olycka("OS1")).utfall, "TYST_OTACKT", "OS1: en avslagen stadspunkt täcker inte");
+
+    const l2 = await lager("OS2");
+    assert.equal(l2.K.talar, true, "OS2: gruppen varnar 0,5 km bort"); assert.equal(l2.K.orsak, "varnar");
+    assert.equal(l2.K.detalj.stad.aktiv, true); assert.equal(l2.tackning.orsak, "täckt");
+    assert.equal((await olycka("OS2")).utfall, "VARNADE");
+
+    const l3 = await lager("OS3");
+    assert.equal(l3.K.talar, false); assert.equal(l3.K.orsak, "yta över 0", "OS3: gruppen saknas i timmen som talade");
+    assert.deepEqual(await olycka("OS3"), { utfall: "TYST_TACKT", orsaker: ["A1: ingen sträcka", "K: yta över 0", "A2: ingen station inom 5 km"] });
+
+    // OS4: med alla brytare av räknar stadsloggen inte regeln.
+    await q("UPDATE stadsbrytare SET pa = false");
+    assert.equal((await q("SELECT ny_kandidat_logga_stad() AS m")).rows[0].m, "brytarna av");
+    assert.deepEqual((await q("SELECT status, brytare FROM ny_kandidat_skugga_stad_korning ORDER BY korning DESC LIMIT 1")).rows[0],
+      { status: "av", brytare: [] });
   } finally {
     await stad().catch(() => {});
     await pool.end();

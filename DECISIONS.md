@@ -14495,3 +14495,56 @@ alltså inte fler olyckor TYDLIG eller TROLIG, och den flyttar inget sett tal mo
 - (c) Exakt den timme regeln talade med vid olyckans minut. Förkastat: i praktiken samma svar, utom när en timberäkning blir sen.
 
 **Stomdokument:** MAT §9 olycksfacit — K-lagret läser timmen som talade, BED §4.2 — avgjort
+
+## #815 (7/11 2026) Olycksfacit ser storstädernas punkter: en stadslogg per timme, och K-lagret läser den vid närmaste stadspunkt
+
+**Bengts ord 7/11:** *"Ja, bygg det"*. Frågan gällde olycksfacit för B och C, punkt 3 i listan över vad som är kvar för storstäderna (kort #378).
+
+**Bakgrund.**
+- Kandidatens domlogg (`ny_kandidat_skugga`) tar inte storstädernas grupper (#804, sql/091): stadspunkternas dom räknas i kuvösen.
+- Olycksfacit läste K bara ur domloggen och vid vägpunkterna. En olycka i en storstad hade därför bokförts som att K teg, också när B
+  eller C varnade.
+- Med brytarna av spelar det ingen roll i dag, eftersom B och C inte kan varna. Men det måste finnas innan brytarna slås på.
+
+**Beslut.**
+- **`sql/096`:**
+  - `ny_kandidat_skugga_stad` sparar per grupp och timme vad regeln sa om stadspunkterna: kalla punkter, varnande, veto, torra,
+    spärrade och de icke torra punkterna med utfall. Det är olycksfacits underlag och ingen dom.
+  - `ny_kandidat_skugga_stad_korning` sparar en rad per körning, med de brytare som var på. Olycksfacit vet då om en stadspunkt var
+    påslagen vid olyckans timme, inte bara i dag.
+  - `ny_kandidat_logga_stad()` skriver dem för den nyas timme. Med alla brytare av räknas inte regeln, och körningen loggas som av.
+  - Raderna gallras efter 14 dygn.
+- **Del B** (`ny-kandidat-timme.yml`) anropar loggen sist i stadsomgången, efter att stadspunkternas värden är skrivna
+  (`ny-kandidat-db.ts logga-stad`). Utskriften visas inte (#768).
+- **`olycksfacit_k_stad()`** ger K vid närmaste stadspunkt inom 2 km:
+  - brytaren av vid timmen ger *"brytaren av"*;
+  - annars gäller timregeln från #814: körningen före starten, räknad och högst två timmar gammal, och gruppens rad i den timmen;
+  - en grupp som saknas i timmen ger *"yta över 0"*.
+- **Fångsten** (`olycksfacit_fanga()`, sql/095 ord för ord, utom stadspunkten):
+  - K varnar också när stadspunkten varnar;
+  - utan vägpunkt inom 2 km och med brytaren på är det stadspunktens skäl som gäller;
+  - täckningen räknar en påslagen stadspunkt inom 2 km;
+  - detaljen (K:s *stad*) skrivs alltid, också med brytaren av.
+
+  Med brytarna av ändras alltså ingenting utom detaljen, och K:s skäl använder samma ord som ärendet redan känner (§9.3).
+- **Fångade rader räknas inte om.** Brytarna har varit av sedan sql/089, så ingen rad hade fått ett annat utfall.
+- **Proven:**
+  - stadsregelns prov SR6: stadsloggen ger regelns utfall med B och C på;
+  - #796 och #797 kör på sql/096;
+  - det nya provet #815 har fyra fall: brytaren av, en varnande grupp, en grupp som saknas i timmen och stadsloggen med alla brytare av.
+
+**Ordningen:**
+1. Bengts och Axels signaturer på tillägget till TROSKLAR-OLYCKSFACIT §9.1. K-lagret omfattar då storstädernas punkter när deras
+   brytare är på. Signaturerna kommer före sammanslagningen.
+2. Sammanslagningen och `sql/096` med DB-knappen. Migrationen måste komma före nästa Del B; annars faller stadsloggens steg med en
+   varning, utan att något annat stannar.
+3. Beviset: en rad i `ny_kandidat_skugga_stad_korning` per timme, med status *av* så länge brytarna är av.
+
+**Alternativ.**
+- (a) Att räkna stadsgrenens utfall i olycksfacit vid olyckan, ur `ny_kandidat_live`, radarn och vetot. Förkastat: det hade varit en
+  andra kopia av regeln som kan glida isär från den.
+- (b) Att låta stadspunkterna gå in i domloggen. Förkastat: domloggen är kandidatens domunderlag, och #804 håller stadspunkterna utanför
+  den.
+- (c) Ett eget lager för B och C i olycksfacit. Förkastat: B och C är kandidatens betavarning (#804), alltså K, och säljregeln nämner K.
+
+**Stomdokument:** SYS kandidaten — stadsloggen för olycksfacit, MAT §9 olycksfacit — K vid storstädernas punkter, BED §4.2 — signaturerna
