@@ -102,7 +102,7 @@ Allt i repot är publikt och går inte att ta tillbaka: filerna, historiken, är
   committas i det privata Axelstar/halkvakt-kuvos, aldrig här och inte heller på en gren här. Ett flöde här som kör den koden lägger den ovanpå
   med `KUVOS_LASNYCKEL` och skriver bara klart eller fel: inga parametrar, särdrag, tal eller modellutskrifter i logg, sammanfattning eller ärende.
   *Undantag* (Bengt och Axel 6/11, DECISIONS #804): driftens rörarbete för storstädernas punkter (B och C som K) får ligga här — tabellen,
-  laddaren, radarn, regeln, kedjans steg — och deras varningar står i `live.json` som K:s. Punkterna, särdragen, historiken och fysiken bor kvar i kuvösen.
+  laddaren, radarn, regeln, kedjans steg — och deras varningar står i `live.json` som K:s. Punkterna, särdragen, historiken och fysiken bor kvar i kuvösen. Stomdokumenten beskriver samma rörarbete, utan punkter, särdrag, kuvösens tal och fysik (DECISIONS #810).
 - Varje fil under `data/` står i `data/KALLOR.json` med källa och licens; publikvakten (`scripts/publikvakt.ts`, i ci) fäller en fil som
   saknas där, en fil över 20 MB och kända mönster (Trafikverkets leveransfiler, `.npy`, `oof`, exporter av testarnas svar).
 - Osäker? Lägg det i hinken, inte i repot, och fråga.
@@ -200,7 +200,8 @@ rad i STATUS. Skälet: 107 av 118 commits 4–11/10 rörde dokument, och varje �
 efter sammanslagningen. Sidorna och löptexten ligger högst ett dygn efter main (Bengt 27/10: *"det räcker med en gång per
 dygn"*); Run workflow i 895845/halkvakt-sidor bygger om direkt. Integrationskartans frysregel är hävd
 sedan 22/10 (Bengt, DECISIONS #678): den rättas av synken som de andra. Kontrollen att inget
-beslut glömts är `stomvakten.ts --lage` i synken: varje dokuments senaste handtextändring och besluten sedan dess som namnger det.
+beslut glömts är `stomvakten.ts --lage` i synken. För varje dokument visar den varje beslut från #772 som namnger dokumentet men inte
+nämns med sitt nummer i handtexten. Beslutet är öppet (⚠) tills synken bokför det, och står sedan som bokfört utan handtext (DECISIONS #811).
 **KORTKARTAN (Bengts order 3/10, DECISIONS #445).** Varje öppet kort på tavlan hör till ett eller flera avsnitt i stomdokumenten,
 och varje stomdokument visar sina öppna kort under rubriken *Öppna kort*. Kopplingen bor på ETT ställe, `docs/kortkartan.json`;
 listorna skrivs av `node --experimental-strip-types scripts/kortkartan.ts` och ändras aldrig för hand. Ett nytt kort, ett stängt kort
@@ -247,8 +248,11 @@ sessioner på alla enheter:
   BED KAR FAV; text efter koden är fri, t.ex. `BED §4.2`) eller `**Stomdokument:** inga — skälet`. `scripts/stomvakten.ts --bas
   <sha>` i md-vakt.yml fäller ett nytt beslut utan raden, ett *inga* utan skäl och en okänd kod. Att det namngivna dokumentets
   handtext ändras prövas inte längre i PR:en (#522): det gör morgonens synk. Gamla beslut prövas inte. Kuvösregeln (#489) är borta sedan 31/10 (#769).
-  `stomvakten.ts --lage` visar varje dokuments senaste handtextändring och besluten sedan dess som namnger det (⚠): det är synkens
-  lista över vad som ska stämmas av, men den ersätter inte läsningen.
+  `stomvakten.ts --lage` visar per dokument varje beslut från #772 som namnger dokumentet men inte nämns med sitt nummer i handtexten.
+  Beslutet är öppet (⚠) tills synken bokför det. Sedan står det som *bokfört utan handtext*, och där står det kvar (DECISIONS #811).
+  Det beror inte på när handtexten senast ändrades. Den gamla listan räknade från den senaste handtextändringen, och 7/11 försvann
+  #804 och #809 ur den när synken rättade samma sidor för olycksfacit. Listan är synkens lista över vad som ska stämmas av, men den
+  ersätter inte läsningen.
 - **Morgonrutinen** — claude.ai-rutinen *Halkvakt: dokumentsynken varje morgon* (`trig_015zMNvnicaHT1wFNk4ZWdaH`), kl. 03:30 UTC
   (05:30 sommartid, 04:30 vintertid), i molnet och inte bunden till någon dator. Den gör stegen nedan.
 - **Väntar på Bengt / Väntar på Axel** överst i projektkartan, skrivna av `projektkartan.ts` ur tavlans avsnitt för Bengt och Axel
@@ -280,9 +284,13 @@ en körning skrev nådde aldrig synken, som läser beslut och commits, inte utsk
    bedömningens §4.2, kalendern eller på tavlan — får en rad i `docs/fristerna.json`, ett flyttat datum rättas där, och en
    frist vars ärende är stängt tas bort. **En rad i ett skriptskrivet block (LÄGESRADER, Öppna kort) räknas inte som att handtexten
    stämmer** (Bengts ja 13/10, DECISIONS #546). Varje ⚠ i `--lage` blir antingen text i dokumentets handtext, i det avsnitt
-   beslutets rad `**Stomdokument:**` namnger, eller en post i synkens STATUS-rad med skälet: *#NN: ingen handtext, skälet*. Ett tal förs bara in om det står i källan (DECISIONS, STATUS, koden, en körning) — aldrig ur minnet.
+   beslutets rad `**Stomdokument:**` namnger, eller en post i synkens STATUS-rad med skälet: *#NN: ingen handtext, skälet*. När beslutet namnger flera dokument och bara
+   några blir utan text, står koden med: *#NN (SYS): ingen handtext, skälet* (#811). En post flyttar beslutet till *bokförda utan
+   handtext* i `--lage`, och där står det kvar. Läs den listan också, och skriv texten när skälet inte längre håller. Ett tal förs bara in om det står i källan (DECISIONS, STATUS, koden, en körning) — aldrig ur minnet.
    **Kuvösen, fysiken och småvägarna** (DECISIONS #768, #769): synken skriver ingen sådan text i Halkvakt, varken i docs/,
-   projektkartan, MATNINGAR eller STATUS. De stäms av i halkvakt-kuvos.
+   projektkartan, MATNINGAR eller STATUS. De stäms av i halkvakt-kuvos. Driftens rörarbete är inte kuvös: tabellerna, flödena,
+   regeln och brytarna för kandidaten och storstäderna skrivs i Halkvakts stomdokument, utan punkter, särdrag, kuvösens tal och
+   fysik (DECISIONS #804, #810).
 5. `projektkartan.ts` och `kortkartan.ts`, sedan `--check` på båda, `kartsynk.ts --check`, `fristvakten.ts --check` och
    `stomvakten.ts --tillatna`.
 6. En rad i STATUS.md: *Dokumentsynk <datum>:* vad som rättades per dokument, eller *inget att stämma av* — en tyst morgon ska inte

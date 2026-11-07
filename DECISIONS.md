@@ -14319,3 +14319,42 @@ rörarbete ska stå i SYSTEMBILDEN och MATNINGAR, och därmed också på dokumen
 - (b) Att stomvakten räknar per beslut i stället för per handtextändring. Det är en kodändring, som föreslås för sig i bedömningen §4.2.
 
 **Stomdokument:** SYS §3, MAT §5.1, KAR §4.3 och §4.4, BED läget 7/11 och §4.2 — genomgången samma dag
+
+## #811 (7/11 2026) Stomvaktens läge räknas per beslut: öppet tills handtexten nämner numret, och synkens bokförda poster står kvar
+
+**Bengts ord 7/11:** *"Stomvaktens lucka"*. Frågan gällde vilket av fynden i bedömningen §4.2 (raden *NY 7/11, stomgenomgången*) som
+skulle tas först.
+
+**Luckan.** `stomvakten.ts --lage` listade besluten sedan dokumentets senaste handtextändring.
+- Synken 7/11 bokförde #799–#801, #804, #805, #808 och #809 som *ingen handtext*.
+- Samma morgon rättade den MATNINGAR och SYSTEMBILDEN för olycksfacit.
+- Därefter sa vakten *"inga beslut sedan dess"* för båda sidorna, fast inget av besluten hade fått text (#810).
+
+Ett beslut försvann alltså ur listan för att något annat skrevs i samma dokument.
+
+**Beslut.**
+- **`--lage` räknar per beslut, från #772.** Ett beslut som namnger ett dokument är **öppet (⚠)** tills dokumentets handtext nämner
+  dess nummer. Ett intervall räknas, till exempel #799–#801. Lägesrader och listor över öppna kort räknas inte, som förut.
+- **Synkens post i STATUS flyttar beslutet till de bokförda.** Posten skrivs *#NN: ingen handtext, skälet*, eller med koden
+  *#NN (KOD): ingen handtext, skälet*. Beslutet flyttas till **bokförda utan handtext** för de koder posten nämner; utan kod gäller
+  posten alla. Där står det kvar varje morgon, så att ett skäl som inte längre håller syns.
+- **Mätt före bygget.** Av besluten #772–#810 som namnger ett dokument nämns 71–100 % med nummer i dokumentets handtext: MAT 11 av 14,
+  APP 5 av 7, SYS 19 av 20, BED 9 av 9 och KAR 1 av 1. Ingen av de sex sidorna låter bli att nämna sina beslut, så ingen ger en lång
+  lista med öppna beslut.
+- **Provat på läget före genomgången** (main 09829000). Den nya vakten visar de sju bokförda besluten i MATNINGAR och SYSTEMBILDEN,
+  där den gamla sa *"inga beslut sedan dess"*. På main efter genomgången visar den:
+  - ⚠ #810 i MATNINGAR (rättat här);
+  - ⚠ #778 i APPEN och SYSTEMBILDEN;
+  - bokförda #782 (APP) samt #793 och #794 (MAT).
+- **Motprov:** två mutationer i en egen commit, och självtestet fäller båda.
+  - Utan provet att numret nämns i handtexten fäller självtestet.
+  - Med posten giltig för alla koder fäller självtestet också.
+- **CLAUDE.md** (DOKUMENTSYNKEN) beskriver det nya. Där står också att driftens rörarbete för kandidaten och storstäderna inte är
+  kuvös (#804, #810).
+
+**Alternativ.**
+- (a) Att räkna handtextändringen per avsnitt i stället för per dokument. Förkastat: synken rättar ofta samma avsnitt, så felet hade
+  bara blivit mindre.
+- (b) En egen fil med undantag. Förkastat: STATUS-posten finns redan och skrivs av synken varje morgon.
+
+**Stomdokument:** BED §4.2 — stomvaktens lucka stängd
