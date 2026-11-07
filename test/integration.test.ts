@@ -2440,6 +2440,8 @@ test("#804 radar_stad: tabellen för storstädernas radar", { skip: !url }, asyn
 //   SR4  marsfönstret, med provets klocka i mars och april 2027 (now() ur ett eget schema först i sökvägen): kl. 10–15 svensk tid
 //        söder om 62° tyst, kl. 09 och 16 talar, norr om 62° talar, sommartiden räknas (29/3 08 UTC är 10 svensk tid), april talar
 //   SR5  domloggen tar varken stadspunkterna bland stationerna eller deras grupper bland sträckorna, och har fast sökväg (#784)
+//   SR6  stadsloggen för olycksfacit (#815)
+//   SR7  brytarfilerna (#816): 098 slår av alla fyra; 097 vägrar utan 094:s timme i regeln och slår sedan på alla fyra, två gånger
 test("#804 stadsregeln: brytarna, radarn, marsfönstret och domloggen", { skip: !url }, async () => {
   const { default: pg } = await import("pg");
   const pool = new pg.Pool({ connectionString: url, max: 1 });
@@ -2530,6 +2532,22 @@ test("#804 stadsregeln: brytarna, radarn, marsfönstret och domloggen", { skip: 
     assert.equal(sl["C-991-911"].varnar, 1, "SR6: C på");
     assert.deepEqual((await q("SELECT status, brytare FROM ny_kandidat_skugga_stad_korning ORDER BY korning DESC LIMIT 1")).rows[0],
       { status: "räknad", brytare: ["Stor-Stockholm/B", "Stor-Stockholm/C"] }, "SR6: körningen bär brytarna");
+
+    // SR7 (#816): brytarfilerna. 098 slår av alla fyra, och bara vägpunkten varnar. Med regeln ur 091 (utan 094:s timme) vägrar 097
+    // och ändrar ingenting; med 094 slår den på alla fyra, och B och C talar som i SR2.
+    const paSlagna = async () => (await q("SELECT count(*)::int AS n FROM stadsbrytare WHERE pa")).rows[0].n;
+    await las("098_brytarna_av.sql");
+    assert.equal(await paSlagna(), 0, "SR7: 098 slår av alla");
+    assert.deepEqual(await utfall("ny_kandidat_regel"), AV, "SR7: 098 ⇒ bara vägpunkten");
+    await las("091_stadsregeln.sql");
+    await assert.rejects(las("097_brytarna_pa.sql"), /saknar sql\/094/, "SR7: 097 vägrar utan 094");
+    assert.equal(await paSlagna(), 0, "SR7: vägran ändrar ingenting");
+    await las("094_stadsgrenens_timme.sql");
+    await las("097_brytarna_pa.sql");
+    await las("097_brytarna_pa.sql");
+    assert.equal(await paSlagna(), 4, "SR7: 097 slår på alla fyra, och en andra körning ändrar ingenting");
+    assert.deepEqual(await utfall("ny_kandidat_regel"), ALLA, "SR7: 097 ⇒ B och C talar");
+    assert.deepEqual(await utfall("kandidat_regel"), ALLA, "SR7: den frystas regel ger samma");
 
     // SR5 (provets klocka är den riktiga här): domloggen.
     assert.match((await q("SELECT ny_kandidat_logga() AS m")).rows[0].m, /^kandidatens timme /);

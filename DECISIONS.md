@@ -14524,7 +14524,7 @@ alltså inte fler olyckor TYDLIG eller TROLIG, och den flyttar inget sett tal mo
   - K varnar också när stadspunkten varnar;
   - utan vägpunkt inom 2 km och med brytaren på är det stadspunktens skäl som gäller;
   - täckningen räknar en påslagen stadspunkt inom 2 km;
-  - detaljen (K:s *stad*) skrivs alltid, också med brytaren av.
+  - detaljen (K:s *stad*) skrivs vid varje olycka inom 2 km från en stadspunkt, också med brytaren av (rättat 7/11: först stod *alltid*, men utan en stadspunkt inom 2 km skrivs ingen detalj).
 
   Med brytarna av ändras alltså ingenting utom detaljen, och K:s skäl använder samma ord som ärendet redan känner (§9.3).
 - **Fångade rader räknas inte om.** Brytarna har varit av sedan sql/089, så ingen rad hade fått ett annat utfall.
@@ -14551,7 +14551,9 @@ alltså inte fler olyckor TYDLIG eller TROLIG, och den flyttar inget sett tal mo
 - §9.1 är signerat av Bengt och Axel (TROSKLAR-OLYCKSFACIT §8).
 - PR #1442 är sammanslagen som a159c48a på exakt huvudet 466898fd, med ci, md-vakt och fristvakten gröna.
 - `sql/096` migrerades 07.53 UTC med DB-knappen 42353119984. Båda tabellerna och båda funktionerna finns, och ingen brytare är på.
-- Beviset i drift, den första körningsraden med status *av*, väntas vid del B 08.47 UTC.
+- Beviset i drift: del B 42356931161 skrev 08.47.59 UTC den första körningsraden i `ny_kandidat_skugga_stad_korning`, med status
+  *av*, inga brytare, timmen 08.00 och stadssteget *klart*. Kandidatens timme för dagens punkter fanns (SQL-redigeraren 08.49).
+- Fångsten 08.00 gick igenom med 096:s fångst.
 
 **Stomdokument:** SYS kandidaten — stadsloggen för olycksfacit, MAT §9 olycksfacit — K vid storstädernas punkter, BED §4.2 — signaturerna
 
@@ -14653,6 +14655,26 @@ App Store, och det kan bli efter måndag.
 - **Brytarna:** alla fyra slås på söndag kväll. Claude slår av dem med `sql/098` utan att fråga vid avbrottsvillkoren, med en
   rad i STATUS och ett besked till Bengt.
 - **Favoriternas text** rättas i 0.4.0.
+
+**Tillägg 7/11, brytarfilerna** (lördagens fjärde steg):
+- **`sql/097` slår på alla fyra brytarna.** Filen vägrar och ändrar ingenting om regeln saknar 094:s timme (#813) eller om
+  olycksfacit saknar 096:s stadslogg (#815). Den körs med DB-knappen på Bengts och Axels ord efter avstämningen, aldrig av ett
+  flöde.
+- **`sql/098` slår av alla fyra.** Det är avbrottet, som Claude får köra utan att fråga vid avbrottsvillkoren.
+- **Stadsregelns integrationsprov SR7:**
+  - 098 slår av, och bara vägpunkten varnar;
+  - med regeln ur 091 vägrar 097 och ändrar ingenting;
+  - med 094 slår 097 på alla fyra, också vid en andra körning, och B och C talar i båda regelfunktionerna.
+
+**Tillägg 7/11, bygget och släppet:**
+- **TestFlight:** 0.3.17 (39) laddades upp 08.33 UTC, i testflight-körningen 42355683754 från main 3c21f4d1. ci, android och
+  ios-engine var gröna på samma commit.
+- **Android:** AAB:n byggdes i körningen 42355685674, med `betatest=false`.
+- **Släppet** (Bengt: *"Ja, automatiskt"*): App Store släpper 0.3.17 när Apple har godkänt den. Tidigare versioner släpptes
+  manuellt.
+- **App Store:** butiken har 0.3.15 (37), och 0.3.16 (38) skickades aldrig in. Inskicket tar därför också med räknarens sex
+  områden, i texterna och i App Privacy.
+- **Stegen** för Play och App Review står i `marknadsforing/butik/appstore-ios.md`, under *Inskicket 0.3.17 (39)*.
 
 **Stomdokument:** BED läget 7/11 — tidsplanen till 9/11 och §4.2 — valen, MAT segmentprognosen — storstädernas punkter (kort #378), APP versionerna — 0.3.17 (39) när den är byggd
 ## #817 (6/11 2026) Favoriter 2a och CarPlay i samma version, 0.4.0: frågan efter resan som notis, dagens resor och CarPlay-skärmen
