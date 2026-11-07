@@ -2475,7 +2475,8 @@ test("#804 stadsregeln: brytarna, radarn, marsfönstret och domloggen", { skip: 
                      "056_kandidat_regel.sql", "057_kandidat_skugga.sql", "058_kandidat_spridning.sql", "059_kandidat_brytare.sql",
                      "065_kandidat_domlogg_punkter.sql", "068_ny_kandidat_skugga.sql", "069_radarns_tal.sql",
                      "086_spridningsparren_frys_min.sql", "087_spridningsparren_f1.sql", "089_stadspunkter.sql", "090_radar_stad.sql",
-                     "091_stadsregeln.sql", "091_stadsregeln.sql"]) await las(f);
+                     "091_stadsregeln.sql", "091_stadsregeln.sql",
+                     "094_stadsgrenens_timme.sql", "094_stadsgrenens_timme.sql"]) await las(f);   // stadsgrenens timme som underfråga (#813)
     await stad();
     await q("DELETE FROM ny_kandidat_skugga_korning");   // som provet #692: domloggen räknar en timme en gång
     // Stadspunkterna: [punkt, grupp, lager, lat]. Långt från provens stationer (34° Ö).
@@ -2574,7 +2575,8 @@ test("#808 den snabba skuggan: härledningen på regeln med F1 och stadsgrenen",
                      "056_kandidat_regel.sql", "057_kandidat_skugga.sql", "058_kandidat_spridning.sql", "059_kandidat_brytare.sql",
                      "065_kandidat_domlogg_punkter.sql", "068_ny_kandidat_skugga.sql", "069_radarns_tal.sql",
                      "086_spridningsparren_frys_min.sql", "087_spridningsparren_f1.sql", "089_stadspunkter.sql", "090_radar_stad.sql",
-                     "091_stadsregeln.sql", "078_kandidat_snabb.sql", "080_kandidat_snabb_skugga.sql", "080_kandidat_snabb_skugga.sql"]) await las(f);
+                     "091_stadsregeln.sql", "078_kandidat_snabb.sql", "080_kandidat_snabb_skugga.sql",   // 080 på 091:s text, sedan på 094 (#813)
+                     "094_stadsgrenens_timme.sql", "080_kandidat_snabb_skugga.sql", "080_kandidat_snabb_skugga.sql"]) await las(f);
     await stad();
     const def = (await q("SELECT pg_get_functiondef('ny_kandidat_regel_snabb()'::regprocedure) AS d")).rows[0].d as string;
     assert.ok(def.includes(`FROM ny_kandidat_snabb l JOIN vagpunkt v ON v.punkt = l.punkt ${LAN}`), "SN1: vägpunkterna ur den snabba, med lånet");
