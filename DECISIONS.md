@@ -14761,4 +14761,21 @@ ord. Dokumentet gäller när båda har signerat (fristen `sasongsfacit-signeras`
 
 **Tillägg 7/11 (Bengt: *"jag signerar för axel och vi bygger det nu"*).** Axels signatur via Bengt: dokumentet är fastställt. Bygget börjar nu, inte veckan efter påslaget. Bengt skrev *"när inget annat speciellt går mot dej"*, och storstädernas påslag och provkörningens varv går före.
 
+**Tillägg 7/11, första delen byggd (sql/099).**
+- **Dygnsräkningen** `sasongsfacit_rakna(dag)` körs med pg_cron 12.23 UTC och räknar gårdagen. Den skriver tre interna tabeller per län och
+  tid på dygnet:
+  - `sasongsfacit_dag`: K, J1 och J2 mot F1, med träffar och täckta;
+  - `sasongsfacit_ledtid`: ledtiden före varje början på F1;
+  - `sasongsfacit_olyckor`: F4.
+- **Varför varje dygn och inte varje måndag:** stationernas rader gallras efter tre dygn. Rapporten till Bengt och Axel kommer
+  fortfarande varje måndag.
+- **Räkningen i efterhand** från 1/11 görs i migrationen. J1 och J2 kan bara räknas för dygnen som fortfarande har stationsrader.
+- **Kostnaden:** kärnan prövades som läsning i full skala i produktionen 7/11, på dygnet 6/11: 818 sträckor × 32 timmar på 4,1 s.
+  Den körs som en sats per dygn, utan någon funktion per rad (#783). Det är en prövning *i* produktionen, som läsning, och inte
+  *utanför* den, som CLAUDE.md skriver. Det står här så att Bengt kan väga det.
+- **A1:s fördröjning framåt:** `road_condition_history.ingested_at` (default `now()`) läggs till; äldre rader saknar tiden.
+- **Integrationsprovet #818** har tre fall: morgonrusningen räknad för K, J1 och J2; ledtiden och olyckan; en ny räkning utan
+  dubbletter, och utan stationsrader.
+- **Nästa del:** A1:s fördröjning, A2, F3, falsklarmen per 100 km, takten och rapportskriptet med intervallen.
+
 **Stomdokument:** MAT §9 — säsongsfacit som redovisning, BED §4.2 — fastställt

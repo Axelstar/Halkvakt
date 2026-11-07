@@ -22,7 +22,7 @@ med röst. Att uppgifterna är rätt är Trafikverkets förtjänst, inte vår.
 
 | Lager | Vad som mäts |
 |---|---|
-| A1, hal sträcka | **Fördröjningen:** från Trafikverkets tidsstämpel på väglagsändringen till att ändringen finns i vårt arkiv (`road_condition_history`). Till det läggs publiceringens takt, varannan minut. Redovisas som median och 95:e percentil. **Täckningen:** hur stor andel av sträckorna med halka som nådde lägesfilen. |
+| A1, hal sträcka | **Fördröjningen:** från Trafikverkets tidsstämpel på väglagsändringen till att ändringen finns i vårt arkiv (`road_condition_history`). Till det läggs publiceringens takt, varannan minut. Redovisas som median och 95:e percentil. Tiden när raden kom in sparas från och med migrationen av sql/099 (`ingested_at`); äldre rader saknar den. **Täckningen:** hur stor andel av sträckorna med halka som nådde lägesfilen. |
 | A2, frysrisk vid station | **Andelen stationstimmar** med uppmätt isrisk, alltså yta ≤ 0 °C och fukt, som gav frysrisk i lägesfilen. **Tystnaderna** från vakterna, som stoppar trasiga givare, och hur stor andel av dem som var befogade. |
 
 **Del 2, prognosen (K, kandidatens betavarning).** Det här är Halkvakts egen bedömning mellan stationerna. Det är här frågan *är
@@ -98,15 +98,21 @@ träffar därför ofta, men den ropar också varg hela vintern.
 
 Bengt 7/11: *"det hade varit bra om man kunde få uppdateringar på säsongsfacitet kontinuerligt"*.
 
-- **Varje måndag** räknas förra veckan och säsongen hittills. Resultatet hamnar i en intern tabell, `sasongsfacit`, med en rad per vecka,
-  lager, mått, län och tid på dygnet. Tabellen har RLS och inga rättigheter för `anon` och `authenticated`.
-  - Räkningen sker med pg_cron, som olycksfacits vecka. Den läser bara arkiven, skriver bara aggregat, och kör en sats per vecka och
-    inte per rad (lärdomen från 3/11, #783).
-  - Innan räkningen går i produktionen prövas den i full skala utanför den (CLAUDE.md, #783).
-  - Tillväxten är omkring 1 000 rader per vecka, alltså under 5 MB för vintern.
-- **Första räkningen** görs i efterhand från 1/11, eftersom allt underlag redan sparas (§8). Ingen vecka går förlorad av att bygget
-  väntar.
-- **Läsningen:** Claude läser tabellen i varje session efter måndagen och skriver en intern lägesrapport till Bengt och Axel, med
+- **Varje dygn kl. 12.23 UTC** räknas gårdagen (sql/099). Resultatet hamnar i tre interna tabeller, per län och tid på dygnet:
+  - `sasongsfacit_dag`: sträcktimmarna, de varnande, träffarna, F1-timmarna och de täckta, för K, J1 och J2;
+  - `sasongsfacit_ledtid`: varje början på F1 och hur långt före K varnade;
+  - `sasongsfacit_olyckor`: F4, olyckorna och de där K varnade.
+
+  Räkningen görs varje dygn, eftersom stationernas rader gallras efter tre dygn. Tabellerna har RLS och inga rättigheter för `anon` och `authenticated`.
+  - Räkningen sker med pg_cron, som olycksfacit. Den läser bara arkiven, skriver bara aggregat, och kör en sats per dygn utan någon
+    funktion per rad (lärdomen från 3/11, #783).
+  - Kärnan prövades som läsning i full skala i produktionen 7/11, på dygnet 6/11: 818 sträckor × 32 timmar på 4,1 s.
+  - Tillväxten är omkring 400 rader per dygn, alltså under 10 MB för vintern.
+- **Första räkningen** görs i efterhand från 1/11, när sql/099 migreras. K mot F1 och F4 och ledtiden räknas för varje dygn. J1 och J2
+  kräver stationsrader, så de räknas bara för dygnen som fortfarande har dem, från omkring 4/11. Övriga dygn märks `jamforelser = false`.
+- **Första delen** innehåller K, J1 och J2 mot F1 och F4, och ledtiden. **Nästa del** innehåller A1:s fördröjning, A2:s leverans, F3,
+  falsklarmen per 100 km, takten och rapportskriptet med intervallen.
+- **Läsningen:** Claude läser tabellerna i varje session efter måndagen och skriver en intern lägesrapport till Bengt och Axel, med
   veckans tal och säsongen hittills. Ingenting av det skrivs i repot, i ärenden eller i Actions-loggar, eftersom repot är publikt.
 - **Månadsläsningarna 1/12, 1/1, 1/2 och 1/3** bokförs på kort #381 med vad som har förändrats. Talen står inte i bokföringen.
 - **Slutrapporten** kommer senast 15/4, så att Trafikverkets sena rapporter och olycksfacits klassning hinner med (val 5).

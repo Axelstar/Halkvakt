@@ -2944,3 +2944,94 @@ test("#815 olycksfacit för storstäderna: K-lagret läser stadsloggen vid närm
     await pool.end();
   }
 });
+
+// SÄSONGSFACIT (sql/099, docs/TROSKLAR-SASONGSFACIT.md, DECISIONS #818): dygnsräkningen mot riktig PostGIS, ett påhittat dygn
+// 15/1 2026 (svensk tid = UTC+1) på sträckan SF1 vid 75° N, i det påhittade länet 99. K varnar 06 och 07, Trafikverket säger hal
+// 07–09 (kod 2 från 07.30, kod 1 från 10.30), luften är 2 °C 06–09 och 0,5 °C kl. 08 med radar 0,5 mm/h, annars 5 °C, och en olycka
+// klassad TROLIG kl. 08.15 där K varnade.
+//   SF1  morgonrusningen: K 4 timmar, 2 varnar, 2 träffar, 3 F1-timmar, 3 täckta; J1 4/4/3/3; J2 1/1/3/2; övriga delar utan F1
+//   SF2  ledtiden: en början på F1 kl. 07, och K varnade 06, alltså 1–3 h; olyckan räknas med K som varnade
+//   SF3  räkningen går att köra om utan att något dubbleras, och utan stationsrader märks J1 och J2 som oräknade
+test("#818 säsongsfacit: dygnsräkningen per län och tid på dygnet, ledtiden och olyckorna", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const las = (f: string) => q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+  const DAG = "2026-01-15";
+  const utc = (lokal: number, min = 0) => new Date(Date.UTC(2026, 0, 15, lokal - 1, min));
+  const stad = async () => {
+    for (const tb of ["sasongsfacit_dag", "sasongsfacit_ledtid", "sasongsfacit_olyckor"])
+      await q(`DELETE FROM ${tb} WHERE dag = $1`, [DAG]).catch(() => {});
+    await q("DELETE FROM olycksfacit WHERE deviation_id = 'SF-OLYCKA'").catch(() => {});
+    await q("DELETE FROM ny_kandidat_skugga WHERE segment_id = 'SF1'").catch(() => {});
+    await q("DELETE FROM ny_kandidat_skugga_korning WHERE observed_at >= $1 AND observed_at < $2", [utc(-6), utc(26)]).catch(() => {});
+    await q("DELETE FROM road_condition_history WHERE segment_id = 'SF1'").catch(() => {});
+    await q("DELETE FROM road_conditions WHERE segment_id = 'SF1'").catch(() => {});
+    await q("DELETE FROM radar_precip WHERE segment_id = 'SF1'").catch(() => {});
+    await q("DELETE FROM weather_observations WHERE station_id = 'SFS1'").catch(() => {});
+    await q("DELETE FROM vagpunkt WHERE punkt = 'SF1-1'").catch(() => {});
+  };
+  try {
+    await q("CREATE TABLE IF NOT EXISTS shadow_log (id bigserial PRIMARY KEY, run_at timestamptz NOT NULL DEFAULT now(), alerts jsonb NOT NULL DEFAULT '[]'::jsonb)");
+    if (!(await q("SELECT 1 FROM information_schema.columns WHERE table_name = 'kandidat_skugga' AND column_name = 'fukt_pb'")).rowCount) {
+      await q("DROP FUNCTION IF EXISTS kandidat_regel()");
+      for (const f of ["001_init.sql", "008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql", "018_trend_berakna.sql",
+                       "029_brott_index.sql", "030_langsam_vakt.sql", "050_kandidat_live.sql", "052_kandidat_gallring_kort.sql", "053_arkiv_tabeller.sql",
+                       "055_vagpunkter.sql", "056_kandidat_regel.sql", "057_kandidat_skugga.sql", "058_kandidat_spridning.sql",
+                       "065_kandidat_domlogg_punkter.sql"]) await las(f);
+    }
+    for (const f of ["003_situation_archive.sql", "068_ny_kandidat_skugga.sql", "084_olycksfacit.sql", "085_olycksfacit_klassning.sql",
+                     "099_sasongsfacit.sql", "099_sasongsfacit.sql"]) await las(f);
+    await stad();
+    await q("INSERT INTO vagpunkt (punkt, segment_id, lon, lat) VALUES ('SF1-1', 'SF1', 34, 75)");
+    await q(`INSERT INTO road_conditions (segment_id, condition_code, condition_text, condition_info, county_nos, road_number, geom)
+             VALUES ('SF1', 1, 'Normalt', '{}', '{99}', 'E99', ST_GeomFromText('LINESTRING(33.99 75, 34.01 75)', 4326))`);
+    for (const [tid, kod, text] of [[utc(-2), 1, "Normalt"], [utc(7, 30), 2, "Besvärligt"], [utc(10, 30), 1, "Normalt"]] as const)
+      await q(`INSERT INTO road_condition_history (segment_id, condition_code, condition_text, condition_info, modified_time, deleted)
+               VALUES ('SF1', $1, $2, '{}', $3, false)`, [kod, text, tid]);
+    for (let h = 0; h < 24; h++)
+      await q("INSERT INTO ny_kandidat_skugga_korning (korning, observed_at, status) VALUES ($1, $2, 'räknad')", [utc(h, 47), utc(h)]);
+    for (const [h, v] of [[6, 1], [7, 1], [12, 0]])
+      await q(`INSERT INTO ny_kandidat_skugga (segment_id, observed_at, punkter, varnar, veto, torr, vat, flackvis_vat, pb_min)
+               VALUES ('SF1', $1, 1, $2, 0, $3, false, false, -1)`, [utc(h), v, 1 - v]);
+    for (let h = -6; h <= 25; h++) {
+      const luft = h === 8 ? 0.5 : h >= 6 && h <= 9 ? 2.0 : 5.0;
+      await q(`INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c)
+               VALUES ('SFS1', 'SF-station', ST_SetSRID(ST_MakePoint(34, 75), 4326), $1, 1, $2)`, [utc(h, 10), luft]);
+    }
+    await q("INSERT INTO radar_precip (segment_id, observed_at, rate_max_mmh, rate_mean_mmh) VALUES ('SF1', $1, 0.8, 0.5)", [utc(8, 15)]);
+    await q(`INSERT INTO olycksfacit (deviation_id, start_time, geom, utfall, klass) VALUES
+             ('SF-OLYCKA', $1, ST_SetSRID(ST_MakePoint(34, 75), 4326), 'VARNADE', 'TROLIG')`, [utc(8, 15)]);
+    await q("INSERT INTO olycksfacit_lager (deviation_id, lager, talar, orsak) VALUES ('SF-OLYCKA', 'K', true, 'varnar')");
+
+    const dag = async () => Object.fromEntries((await q(`SELECT dygnsdel || '/' || metod AS n, timmar, varnar, traff, f1, tackt, jamforelser
+      FROM sasongsfacit_dag WHERE dag = $1 AND lan = 99`, [DAG])).rows.map((r: any) => [r.n, r]));
+    assert.match((await q("SELECT sasongsfacit_rakna($1::date) AS m", [DAG])).rows[0].m, /^klart: /);
+    const d = await dag();
+    const fem = (r: any) => [r.timmar, r.varnar, r.traff, r.f1, r.tackt];
+    assert.deepEqual(fem(d["morgonrusning/K"]), [4, 2, 2, 3, 3], "SF1: K i morgonrusningen");
+    assert.deepEqual(fem(d["morgonrusning/J1"]), [4, 4, 4, 3, 3], "SF1: snöflingan i morgonrusningen");
+    assert.deepEqual(fem(d["morgonrusning/J2"]), [4, 1, 1, 3, 2], "SF1: den enkla regeln i morgonrusningen");
+    assert.deepEqual(["natt", "dag", "kvällsrusning", "kväll"].map((x) => fem(d[`${x}/K`])), [[8, 0, 0, 0, 0], [6, 0, 0, 0, 0], [3, 0, 0, 0, 0], [3, 0, 0, 0, 0]],
+      "SF1: övriga delar av dygnet, 24 timmar i populationen, utan F1 och utan att K varnade");
+    assert.equal(d["dag/J1"].varnar, 0, "SF1: 5 °C är ingen snöflinga");
+    assert.equal(d["morgonrusning/J1"].jamforelser, true);
+    assert.deepEqual((await q("SELECT dygnsdel, band, n FROM sasongsfacit_ledtid WHERE dag = $1 AND lan = 99", [DAG])).rows,
+      [{ dygnsdel: "morgonrusning", band: "1–3 h", n: 1 }], "SF2: F1 börjar 07 och K varnade 06");
+    assert.deepEqual((await q("SELECT dygnsdel, olyckor, k_varnade FROM sasongsfacit_olyckor WHERE dag = $1 AND lan = 99", [DAG])).rows,
+      [{ dygnsdel: "morgonrusning", olyckor: 1, k_varnade: 1 }], "SF2: olyckan 08.15 där K varnade");
+
+    assert.match((await q("SELECT sasongsfacit_rakna($1::date) AS m", [DAG])).rows[0].m, /^klart: /);
+    assert.deepEqual(await dag(), d, "SF3: en andra räkning ger samma rader");
+    await q("DELETE FROM weather_observations WHERE station_id = 'SFS1'");
+    assert.match((await q("SELECT sasongsfacit_rakna($1::date) AS m", [DAG])).rows[0].m, /utan stationsrader/);
+    const u = await dag();
+    assert.deepEqual([u["morgonrusning/J1"].varnar, u["morgonrusning/J1"].jamforelser, u["morgonrusning/K"].jamforelser, fem(u["morgonrusning/K"])],
+      [0, false, true, [4, 2, 2, 3, 3]], "SF3: utan stationsrader räknas K som förut, och J1 märks oräknad");
+    assert.equal((await q("SELECT count(*)::int AS n FROM information_schema.columns WHERE table_name = 'road_condition_history' AND column_name = 'ingested_at'")).rows[0].n, 1,
+      "A1:s fördröjning framåt: ingested_at finns");
+  } finally {
+    await stad().catch(() => {});
+    await pool.end();
+  }
+});
