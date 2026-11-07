@@ -14677,3 +14677,40 @@ App Store, och det kan bli efter måndag.
 - **Stegen** för Play och App Review står i `marknadsforing/butik/appstore-ios.md`, under *Inskicket 0.3.17 (39)*.
 
 **Stomdokument:** BED läget 7/11 — tidsplanen till 9/11 och §4.2 — valen, MAT segmentprognosen — storstädernas punkter (kort #378), APP versionerna — 0.3.17 (39) när den är byggd
+## #817 (6/11 2026) Favoriter 2a och CarPlay i samma version, 0.4.0: frågan efter resan som notis, dagens resor och CarPlay-skärmen
+
+**Beslut.** Axel 6/11: *"Can we make the favoriter and carplay in one release?"* och *"lets build it and then we release it to testflight"*,
+på förslaget att bygga båda i en version med CarPlay bakom en egen brytare i bygget. Flödet är Claude Designs *Favoriter: namnge i notisen*
+(variant 2a, https://claude.ai/artifact/EVcET9rsjP46UTF8bDsiiE), godkänt av Axel 3/11. Axel tog också ändringarna av FAVORITER §6 (flera
+väntande resor, notisen efter resan, ihopslagningen av dit och hem) med sitt *"bygg det"*; Bengt läser dem på tavlan (kort #379).
+
+**Favoriter 2a, i båda apparna:**
+- **Dagens resor:** högst tre resor väntar på namn, var och en ett dygn från sin slut. Samma vaktpass som slutar igen uppdaterar sin rad;
+  en resa som är samma som en väntande (dit och hem, #637) slås ihop till en, märkt *dit och hem*. Regeln bor i motorn (`dagensResor` i
+  engine/src/rutter.ts, `Vantande` i Rutter.swift och Rutter.kt) med sju fall i engine/fixtures/rutter.json; kontraktsgrinden vaktar 3
+  och 24 timmar i tre språk.
+- **Notisen:** *Spara resan?* med längden och antalet, aldrig klockslag eller plats. iPhone: textfältet i den utdragna notisen; Android:
+  svarsfältet direkt (RemoteInput). Kvittot *Sparad som …* ersätter frågan och pekar vidare. Högst en notis per dag, för den första nya
+  resan; senare resor samlas tyst. Ett vanligt tryck öppnar Favoriter.
+- **När resan räknas som slut:** iPhone: bilens CarPlay eller Bluetooth försvinner ur ljudvägen medan bilen står (under 5 km/h), tio
+  minuter stilla, eller vaktens stopp. Android: vaktens stopp (som redan kommer av bilens Bluetooth eller rörelseigenkänningen) eller tio
+  minuter stilla. Aldrig medan bilen rullar. Vakten fortsätter; samma pass uppdaterar sin rad.
+- **Namnen:** förslagen är *Pendlingen* och datumet (*Till jobbet* och *Hem* borta: hemvägen är samma resa, så den andra frågan kom aldrig);
+  ett tomt namn sparar som datumet. Fältet är öppet från början, ett förslag väljer namn men sparar inte, och Släng är en egen knapp.
+- **Fliken:** dagens resor överst, *x av 5* alltid synligt, *Listan är full* i raden när taket nåtts, Byt namn och Ta bort som dämpade
+  länkar på varje sparad rad.
+- **Redo:** *1 resa att spara* leder till Favoriter. Med brytaren av efter en resa på minst 10 km: *Kör du den här ofta? Slå på Spara
+  resor.* med Inte nu, som döljer raden i minst en vecka. Resan som slutade sparas inte, eftersom den inte samlades in.
+
+**CarPlay, bara iPhone:** Apples Driving Task-tillstånd (beviljat 1/11) och en CarPlay-scen med en lista: vakten på eller av (ett tryck
+startar eller stoppar), det rösten sa senast och läget längs de sparade resorna, omritad högst var tionde sekund. Varningsbannern får
+kategorin med `allowInCarPlay` och behörigheten `.carPlay`, så att den syns över kartan i bilen (Apple, iOS 18.4 och senare; appens ikon
+måste ligga på CarPlay-hemskärmen). **Brytaren:** tillståndet och `UIApplicationSceneManifest` i project.yml; tas de bort går bygget ut
+utan CarPlay.
+
+**Alternativen:** (a) två versioner, Favoriter först: förkastat av Axel; (b) CarPlay utan brytare: förkastat, eftersom en avvisning i App
+Review då stoppar Favoriter; (c) frågan bara på Redo som förut: det var bristen (resan syntes inte för den som inte öppnar appen).
+
+**Löftet:** inget nytt lämnar telefonen. Notiserna är lokala; vägarna stannar i filerna utanför säkerhetskopian (ruttspärren grön).
+
+**Stomdokument:** FAV §6 — dagens resor och notisen efter resan, APP — CarPlay och raderna på Redo

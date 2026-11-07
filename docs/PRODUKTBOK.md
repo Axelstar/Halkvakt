@@ -64,11 +64,17 @@ under den *INGEN TUR ÄN*.
 sträckan (*16:58–17:34 · 36 MIN · 31 KM*) och en rad per varning — klockslag, ikon, rubrik och exakt vad rösten sa.
 Under: *3 VARNINGAR · VISAS TILLS NÄSTA TUR*. En tur utan varningar ger tillbaka 01.
 **Betatestare** ser dessutom kortet *Efter resan* överst, som förut (kort #203) — designen visar det inte, men det står kvar.
-**Spara resan?** (18/10, kort #357) Har föraren slagit på *Erbjud att spara resor* under Favoriter står frågan som en
-egen panel efter resan: *SPARA RESAN?* och *"Resan slutade 14:05. Spara vägen du körde, så finns den under Favoriter. Den
-stannar i telefonen."*, tre namnknappar — *Till jobbet*, *Hem* och *Resa 18/10* (dagens datum) — *EGET NAMN* för fritext och
-*NEJ TACK* (på Android två namnknappar per rad, som missraderna). Med fem sparade resor står i stället *"Du har redan fem resor. Ta bort en under Favoriter först."* Frågan kommer
-bara efter en resa på minst två kilometer och fem minuter (DECISIONS #701), och utan svar försvinner den och vägen efter ett dygn (DECISIONS #616, #625).
+**Spara resan?** (0.4.0, 6/11, kort #379, DECISIONS #817 — ersätter panelen från 18/10). Frågan kommer som **notis** efter
+resan, inte längre som panel på Redo: *Spara resan?* och *"34 km, 1 resa i dag. Dra ut notisen och skriv vad det var för resa."*
+(Android: *Skriv vad det var för resa.*). På iPhone syns fältet när notisen dras ut eller hålls; *Spara* sparar utan att appen öppnas
+och *Släng* raderar vägen. På Android står svarsfältet direkt i notisen. Kvittot *Sparad som Jobbet* — *"Du ser läget längs den under
+Favoriter."*, och *"1 resa till i dag att spara."* om fler väntar — ersätter frågan. Högst en notis per dag; senare resor samlas tyst
+under *Dagens resor*. Resan räknas som slut när bilens CarPlay eller Bluetooth kopplas bort, när bilen stått still i tio minuter eller
+när vakten stannar, aldrig medan bilen rullar; minst två kilometer och fem minuter (DECISIONS #701). Hemresan samma väg samma dag slås
+ihop med ditresan och ger ingen ny fråga. Redo visar *1 RESA ATT SPARA* · *"34 km. Ge den ett namn i Favoriter."*, som leder till fliken.
+Med brytaren av, efter en resa på minst 10 km: *RESAN SLUTADE · 34 KM*, *"Kör du den här ofta? Slå på Spara resor."*, *"Den här resan
+sparades inte, eftersom Spara resor var av. Nästa gång du kör frågar appen efteråt."*, knappen *Slå på Spara resor* och *INTE NU*, som
+döljer raden i minst en vecka. *Skärmbilderna nedan är från 18/10 och byts när 0.4.0 fotograferas.*
 
 **02 På vakt.** En panel med *● PÅ VAKT* i grönt, minuter och kilometer i stort, och tre räknare (varningar, halka,
 vilt). Under den en streckad ruta: *"Tyst så länge — Inget på din väg än. Du hör det direkt när något dyker upp."*,
@@ -168,11 +174,15 @@ Under panelerna: *LÖFTET — Din position lämnar inte telefonen av sig själv.
 
 *Fotostudion (Android-emulatorn) med påhittade vägar ur kroken `fotostudio_favoriter`; läget och rapporten ur den riktiga rapportfilen och lägesfilen när bilden togs (android 39113957298). Klockslagen är emulatorns, i UTC.*
 
-Den mittersta fliken. Överst *"Favoriter — Vägar du kör ofta, sparade efter en resa."* och vippan **Erbjud att spara resor**
+Den mittersta fliken. Överst *"Favoriter — Vägar du kör ofta. Båda hållen räknas som en."* (0.4.0) och vippan **Erbjud att spara resor**
 (*Appen frågar efter resan*), **av från början**. Av: ingen väg samlas in och ingen fil skrivs — appen är som förut, och
 texten säger *"Slå på, så frågar appen efter en resa om du vill spara vägen du körde. Högst fem resor."* På och inga resor:
 *"Kör en resa, så frågar appen efteråt om du vill spara den."* Med resor: *DINA RESOR · 2 AV 5* och en rad per resa med
-namnet och *34 KM · SPARAD 18/10*, knappen *Ta bort* på varje rad och *TA BORT ALLA* under, som frågar en gång till. Sist
+namnet och *34 KM · SPARAD 18/10*, länkarna *BYT NAMN* och *TA BORT* på varje rad (0.4.0) och *TA BORT ALLA* under, som frågar en
+gång till. Med fem resor står *5 AV 5 · LISTAN ÄR FULL*. Överst, när resor väntar: *DAGENS RESOR · 2 ATT SPARA* och en panel per resa
+med *34 KM · SLUTADE 07:58* (eller *DIT OCH HEM*), *SLÄNG*, fältet *t.ex. Jobbet* med *Spara*, *Förslag: Pendlingen* (väljer namnet,
+sparar inte) och *"Tomt namn sparar som Resa 6/11."*; är listan full står *"Listan är full. Ta bort en resa nedan för att spara den
+här."* i stället för fältet. Sist
 *BARA I TELEFONEN — "Resorna sparas bara i telefonen och följer inte med i säkerhetskopian. De försvinner när du tar bort
 dem eller appen."* Sparade resor står kvar i listan också om vippan slås av; den som vill bli av med dem tar bort dem.
 
@@ -672,6 +682,7 @@ du var just då."* (Axels villkor för ja:et, DECISIONS #267.)
 | 0.3.13 (33) | 23/10 | Spärren för efterhalkan (S3) också i favoriternas rapport (#677, #679), Betatest bara i testbyggen: i App Store-versionen syns varken brytaren eller frågan efter resan, och integritetsraden säger *"Inget konto, och inget skickas."* (#681), Android-lagningarna och targetSdk 36 (#1029). Uppladdat 23/10 (TestFlight-flödet 39905409183 på d240c1b); inskicket till App Review görs med (33) (#681). |
 | 0.3.13 (34) | 24/10 | Rättelserna efter Axels prov på (33): SMHI-nivån i klartext (*Gul varning*), *Spara resan?* klipps inte, *INGA VARNINGAR SENASTE TUREN* efter en tur utan varningar (bara iPhone), flikraden göms bakom tangentbordet och minsta resa 2 km och 5 minuter (DECISIONS #701). Skickad till App Review 24/10 och godkänd enligt Bengt (#713). |
 | 0.3.14 (35) | 29/10 | Fas 2 av kedjans takt: appen hämtar ur hinken med Pages som reserv, kollar strax efter varje väntad publicering och mäter varje resa under Betatest, avsnittet *Mätningen* (DECISIONS #741). Uppladdat 29/10 (TestFlight-flödet 40909018044). |
+| 0.4.0 (40) | 6/11 | Favoriter 2a: frågan efter resan som notis med namnfält, dagens resor (högst tre, dit och hem som en), Byt namn, taket synligt och raderna på Redo i båda apparna; CarPlay på iPhone: listan på bilens skärm och varningsbannern i bilen (DECISIONS #817). |
 | 0.3.14 (36) | 30/10 | Favoriternas rapport: *Rapporten från HH:MM* under *Läget från*, och förra kollen sparas bara när hämtningen lyckades (åtgärdslistan B7-05 och B7-24, DECISIONS #686, PR #1279). Uppladdat 30/10 (TestFlight-flödet 41026622176). |
 | 0.3.15 (37) | 1/11 | **Räknaren** (DECISIONS #772): appen räknar anonymt introduktionen, platsbehörigheten (*Alltid* / *När appen används* / nekad), vaktens starter och den första varningen — ett ord per händelse till `app-raknare`, en rad per dygn, inget om vem. Integritet säger det; *"inget skickas"* struken. Android versionCode 37 i takt. |
 | 0.3.16 (38) | 4/11 | **Räknarens sex områden** (DECISIONS #787): version och kohort på varje ord, notiserna och första starten, aktiva dygn, vaktpasset (startsätt, längd i fyra hinkar, slut; ingen sträcka), varningarna, ändrade inställningar och fel. Integritet säger det med ny mening. Android versionCode 38 i takt. |

@@ -47,8 +47,9 @@ data class Rutter(val rutter: List<SparadRutt> = emptyList()) {
         /** At most this many saved routes (DECISIONS #616, 5.2). */
         const val MAX_RUTTER = 5
 
-        /** The name suggestions after a trip (DECISIONS #625): fixed ones and the date. Free text is always possible in the app. */
-        fun namnforslag(dag: Int, manad: Int): List<String> = listOf("Till jobbet", "Hem", "Resa $dag/$manad")
+        /** The name suggestions after a trip (DECISIONS #625, #817): one that fits both directions, and the date, which is also what an
+         *  empty name saves as. Free text is always possible in the app. */
+        fun namnforslag(dag: Int, manad: Int): List<String> = listOf("Pendlingen", "Resa $dag/$manad")
 
         /** Recognising the way home (DECISIONS #637): at least [SAMMA_RESA_ANDEL] of each trip within [SAMMA_RESA_M] of the other, in either direction. */
         const val SAMMA_RESA_M = 100.0
@@ -62,5 +63,27 @@ data class Rutter(val rutter: List<SparadRutt> = emptyList()) {
         /** Is b the same trip as a, in either direction? */
         fun sammaResa(a: List<DoubleArray>, b: List<DoubleArray>): Boolean =
             a.size >= 2 && b.size >= 2 && andelNara(a, b) >= SAMMA_RESA_ANDEL && andelNara(b, a) >= SAMMA_RESA_ANDEL
+    }
+}
+
+/** A trip waiting for a name (Favoriter 2a, DECISIONS #817). [id] is the guard session; [slutS] is the trip's end in epoch seconds. */
+data class Vantande(val id: String, val slutS: Double, val km: Double, val punkter: List<DoubleArray>, val dithem: Boolean = false) {
+    companion object {
+        const val VANTANDE_MAX = 3
+        const val VANTANDE_KVAR_S = 24 * 3600.0
+
+        /** Today's trips after a trip ends — twin of `dagensResor` in engine/src/rutter.ts. Expired trips go; the same session replaces
+         *  its own trip; a trip that is the same as one waiting (there and back) joins it, marked [dithem]; otherwise it is added last
+         *  and the oldest goes when there are more than [VANTANDE_MAX]. */
+        fun dagensResor(lista: List<Vantande>, ny: Vantande, nuS: Double): List<Vantande> {
+            val kvar = lista.filter { nuS - it.slutS < VANTANDE_KVAR_S }
+            val egen = kvar.indexOfFirst { it.id == ny.id }
+            if (egen >= 0) return kvar.mapIndexed { i, v -> if (i == egen) ny.copy(dithem = v.dithem) else v }
+            val samma = kvar.indexOfFirst { Rutter.sammaResa(it.punkter, ny.punkter) }
+            if (samma >= 0) return kvar.mapIndexed { i, v ->
+                if (i == samma) v.copy(slutS = ny.slutS, km = maxOf(v.km, ny.km), dithem = true) else v
+            }
+            return (kvar + ny).takeLast(VANTANDE_MAX)
+        }
     }
 }

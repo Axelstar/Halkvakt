@@ -62,6 +62,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import se.halkvakt.app.AlertEntry
 import se.halkvakt.app.Favoriter
+import se.halkvakt.app.FavoritNotis
 import se.halkvakt.app.GuardService
 import se.halkvakt.app.MainActivity
 import se.halkvakt.app.Matningen
@@ -249,12 +250,16 @@ fun RedoScreen(activity: MainActivity, overst: @Composable () -> Unit) {
     val disabled by remember { Prefs.disabledKinds(ctx) }.collectAsStateWithLifecycle(initialValue = emptySet())
     val autostart by activity.autostartOn.collectAsStateWithLifecycle()
     val snapshot by GuardService.snapshotInfo.collectAsStateWithLifecycle()
-    // Kort #357 (DECISIONS #625): frågan om resan ska sparas, bara med brytaren Erbjud att spara resor på.
+    // Favoriter 2a (DECISIONS #817): dagens resor pekar till Favoriter, där namnet skrivs; med brytaren av erbjuds den efter en
+    // lång resa, en gång.
     val lager = remember { Favoriter.lager(ctx) }
     val erbjud by remember { Prefs.favErbjud(ctx) }.collectAsStateWithLifecycle(initialValue = false)
-    val vantande by lager.vantande.collectAsStateWithLifecycle()
-    val spara = if (erbjud) vantande else null
+    val dold by remember { Prefs.favErbjudDold(ctx) }.collectAsStateWithLifecycle(initialValue = 0L)
+    val dagens by lager.dagens.collectAsStateWithLifecycle()
     val (slutMs, km) = slut
+    val spara = erbjud && dagens.isNotEmpty()
+    val erbjudRad = Favoriter.erbjudRaden(erbjud, km.toDouble(), slutMs, dold, System.currentTimeMillis())
+    val scope = rememberCoroutineScope()
     val tur = remember(historik, start, slutMs) {
         if (start <= 0L || slutMs < start) emptyList() else historik.filter { it.t in start..slutMs }.sortedBy { it.t }
     }
@@ -263,8 +268,31 @@ fun RedoScreen(activity: MainActivity, overst: @Composable () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally) {
         DesignTopBar(if (snapshot == null) "Hämtar" else "Live", if (snapshot == null) Muted2 else Brand.yellow)
         overst()
-        spara?.let { Box(Modifier.padding(top = 14.dp)) { SparaResanKort(lager, it) } }
-        if (tur.isEmpty() && spara == null) Plinth(R.drawable.plinth_logo) else Spacer(Modifier.height(24.dp))
+        if (spara) Box(Modifier.padding(top = 14.dp)) {
+            Row(Modifier.fillMaxWidth().background(Brand.panel, RoundedCornerShape(18.dp))
+                .clickable(role = Role.Button, onClickLabel = "Öppnar Favoriter") { Favoriter.visaFliken.value = true }
+                .padding(horizontal = 20.dp, vertical = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    MonoLabel(if (dagens.size == 1) "1 resa att spara" else "${dagens.size} resor att spara")
+                    Text("${FavoritNotis.km(dagens.last().km)}. Ge den ett namn i Favoriter.", color = Text2, fontFamily = Typo.sans, fontSize = 14.sp)
+                }
+                Text("›", color = Brand.dim, fontFamily = Typo.sans, fontSize = 20.sp)
+            }
+        }
+        if (erbjudRad) Box(Modifier.padding(top = 14.dp)) {
+            Column(Modifier.fillMaxWidth().background(Brand.panel, RoundedCornerShape(18.dp)).padding(horizontal = 20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(Modifier.fillMaxWidth().padding(vertical = 16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    MonoLabel("Resan slutade · ${"%.0f".format(km)} km")
+                    Text("Kör du den här ofta? Slå på Spara resor.", color = Brand.text, fontFamily = Typo.sans, fontWeight = FontWeight.Medium, fontSize = 16.sp)
+                    Text("Den här resan sparades inte, eftersom Spara resor var av. Nästa gång du kör frågar appen efteråt.",
+                        color = Text2, fontFamily = Typo.sans, fontSize = 14.sp, lineHeight = 21.sp)
+                }
+                YellowPill("Slå på Spara resor") { scope.launch { Prefs.setFavErbjud(ctx, true) } }
+                MonoLink("Inte nu") { scope.launch { Prefs.setFavErbjudDold(ctx, System.currentTimeMillis()) } }
+            }
+        }
+        if (tur.isEmpty() && !spara && !erbjudRad) Plinth(R.drawable.plinth_logo) else Spacer(Modifier.height(24.dp))
         Text("Redo.", color = Brand.text, fontFamily = Typo.sans, fontWeight = FontWeight.SemiBold, fontSize = 44.sp,
             letterSpacing = (-0.03).em, modifier = Modifier.padding(top = 12.dp))
         val vaknar = if (autostart) "Vakten vaknar själv när du kör. " else ""
