@@ -103,13 +103,13 @@ Bengt 7/11: *"det hade varit bra om man kunde få uppdateringar på säsongsfaci
   - `sasongsfacit_ledtid`: varje början på F1 och hur långt före K varnade;
   - `sasongsfacit_olyckor`: F4, olyckorna och de där K varnade.
 
-  Räkningen görs varje dygn, eftersom stationernas rader gallras efter tre dygn. Tabellerna har RLS och inga rättigheter för `anon` och `authenticated`.
+  Räkningen görs varje dygn, så att ingen gallring av stationernas rader hinner före. 7/11 fanns rader från 29/9, och fullständiga dygn från 30/10. Tabellerna har RLS och inga rättigheter för `anon` och `authenticated`.
   - Räkningen sker med pg_cron, som olycksfacit. Den läser bara arkiven, skriver bara aggregat, och kör en sats per dygn utan någon
     funktion per rad (lärdomen från 3/11, #783).
   - Kärnan prövades som läsning i full skala i produktionen 7/11, på dygnet 6/11: 818 sträckor × 32 timmar på 4,1 s.
   - Tillväxten är omkring 400 rader per dygn, alltså under 10 MB för vintern.
-- **Första räkningen** görs i efterhand från 1/11, när sql/099 migreras. K mot F1 och F4 och ledtiden räknas för varje dygn. J1 och J2
-  kräver stationsrader, så de räknas bara för dygnen som fortfarande har dem, från omkring 4/11. Övriga dygn märks `jamforelser = false`.
+- **Första räkningen** gjordes i efterhand från 1/11, när sql/099 migrerades 7/11 (DB-knappen 42364677211). Alla sex dygnen 1/11–6/11
+  räknades med J1 och J2. Ett dygn utan stationsrader märks `jamforelser = false`, och då räknas J1 och J2 inte.
 - **Första delen** innehåller K, J1 och J2 mot F1 och F4, och ledtiden. **Nästa del** innehåller A1:s fördröjning, A2:s leverans, F3,
   falsklarmen per 100 km, takten och rapportskriptet med intervallen.
 - **Läsningen:** Claude läser tabellerna i varje session efter måndagen och skriver en intern lägesrapport till Bengt och Axel, med

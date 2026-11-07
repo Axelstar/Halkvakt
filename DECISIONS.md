@@ -14778,4 +14778,15 @@ ord. Dokumentet gäller när båda har signerat (fristen `sasongsfacit-signeras`
   dubbletter, och utan stationsrader.
 - **Nästa del:** A1:s fördröjning, A2, F3, falsklarmen per 100 km, takten och rapportskriptet med intervallen.
 
+**Tillägg 7/11, i drift (Bengt: *"slå ihop 1447"* och *"Migrera nu"*).**
+- **Sammanslagningen:** PR #1447 slogs ihop som 5ea94e2a. Integrationsprovet #818 föll först i fallet SF3: utan dygnets
+  stationsrader räknade J1 ur en annan stations rader. Koden rättades så att J1 och J2 tvingas till noll när raderna saknas,
+  vilket dokumentet redan sa. Sammanslagningen gjordes därför på rättelsen 481b07f4, där ci var grön, och inte på b446f29a, som
+  Bengts ord gällde.
+- **Migrationen:** `sql/099` migrerades 10.37 UTC med DB-knappen 42364677211. Bevisraden visade sex dygn räknade i efterhand
+  (1/11–6/11), alla med J1 och J2, 2 077 rader i de tre tabellerna, jobbet `halkvakt-sasongsfacit` schemalagt och
+  `ingested_at` på plats.
+- **Rättelse:** stationsraderna gallras inte efter tre dygn. 7/11 fanns rader från 29/9, och varje dygn från 30/10 hade alla 24
+  timmar. J1 och J2 gick därför att räkna från 1/11. Dygnsräkningen står kvar, så att ingen gallring hinner före.
+
 **Stomdokument:** MAT §9 — säsongsfacit som redovisning, BED §4.2 — fastställt
