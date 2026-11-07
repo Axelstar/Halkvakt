@@ -1,0 +1,38 @@
+{
+  "typ": "forandring",
+  "nyckel": "forandring",
+  "etikett": "Sedan i går",
+  "rubrik": "Halkan sprider sig",
+  "underrad": "vägavsnitt med halka, mot samma tid i går",
+  "lyft": {
+    "stort": "193 → 282",
+    "liten": "ny halka i Uppsala län, Jönköpings län, Gotland, Halland och Örebro län"
+  },
+  "text": "Trafikverket rapporterar halka på 282 vägavsnitt, mot 193 vid samma tid i går.\nNy halka sedan i går: Uppsala län, Jönköpings län, Gotland, Halland och Örebro län.\n\nNorrbotten: halka på 34 av 58 vägavsnitt, 51 stationer under noll, kallast −4,5 °C vid Töre.\nDalarna: halka på 31 av 38 vägavsnitt, 28 stationer under noll, kallast −7,5 °C vid Limskogen.\nVästerbotten: halka på 28 av 44 vägavsnitt, 41 stationer under noll, kallast −3,8 °C vid Lillsele.\nVärmland: halka på 26 av 52 vägavsnitt, 39 stationer under noll, kallast −6,2 °C vid Ruskåsen.\nVästmanland: halka på 24 av 24 vägavsnitt, 18 stationer under noll, kallast −4,1 °C vid Surahammar.\nHalka eller minusgrader även i 15 län till.\n\nLäget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Dalarna #Västerbotten #Värmland #Västmanland #halkvakt",
+  "textIg": "Trafikverket rapporterar halka på 282 vägavsnitt, mot 193 vid samma tid i går.\nNy halka sedan i går: Uppsala län, Jönköpings län, Gotland, Halland och Örebro län.\n\nNorrbotten: halka på 34 av 58 vägavsnitt, 51 stationer under noll, kallast −4,5 °C vid Töre.\nDalarna: halka på 31 av 38 vägavsnitt, 28 stationer under noll, kallast −7,5 °C vid Limskogen.\nVästerbotten: halka på 28 av 44 vägavsnitt, 41 stationer under noll, kallast −3,8 °C vid Lillsele.\nVärmland: halka på 26 av 52 vägavsnitt, 39 stationer under noll, kallast −6,2 °C vid Ruskåsen.\nVästmanland: halka på 24 av 24 vägavsnitt, 18 stationer under noll, kallast −4,1 °C vid Surahammar.\nHalka eller minusgrader även i 15 län till.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone, länken finns i vår profil.\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Dalarna #Västerbotten #Värmland #Västmanland #halkvakt",
+  "pass": "morgon",
+  "datum": "2026-11-07",
+  "generated_at": "2026-11-07T04:30:25.706Z",
+  "lan": [
+    "norrbotten",
+    "dalarna",
+    "vasterbotten",
+    "varmland",
+    "vastmanland",
+    "stockholm",
+    "vastra-gotaland",
+    "jonkoping",
+    "gavleborg",
+    "vasternorrland",
+    "sodermanland",
+    "jamtland",
+    "orebro",
+    "uppsala",
+    "kalmar",
+    "gotland",
+    "halland",
+    "kronoberg",
+    "ostergotland",
+    "skane"
+  ]
+}

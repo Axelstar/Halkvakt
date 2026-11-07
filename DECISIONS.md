@@ -14358,3 +14358,94 @@ Ett beslut försvann alltså ur listan för att något annat skrevs i samma doku
 - (b) En egen fil med undantag. Förkastat: STATUS-posten finns redan och skrivs av synken varje morgon.
 
 **Stomdokument:** BED §4.2 — stomvaktens lucka stängd
+
+## #812 (7/11 2026) Skuggan läser den talande kandidaten i ett enda värde: sql/093 skuggans_kandidat(), utan REST:s radtak
+
+**Bengts ord 7/11:** *"vi tar dem allt eftersom så att vi betar av allt vi kan göra med storstäderna. Börja med skuggan"* (kort #374,
+som kort #378 räknar som en del av storstädernas bygge).
+
+**Läget före** (läst i SQL-redigeraren 7/11 05.04 UTC):
+- **Takets följd.** Skuggmotorn hämtade `kandidat_regel()` via REST, och Supabases REST lämnar högst 1000 rader per svar.
+  `shadow_log.kandidat->>'n'` stod på exakt 1000 i 265 körningar 31/10–7/11, varav 113 av 137 på 6/11. Samma stund varnade 3 311
+  punkter, så skuggan såg 30 % av dem och räknade kandidatens takt längs rutterna på en avskuren lista.
+- **Fel kandidat.** Skuggan läste den frysta kandidaten, som inte talar sedan 26/10 (#729).
+- **Regelns kostnad.** `talande_regel()` tar 2,2 s för en körning (EXPLAIN ANALYZE, 3 311 varnande punkter). Att hämta i sidor
+  hade kört den en gång per sida.
+- **De två andra anropen** ligger under taket: `olja_aktiva` 2 rader och `vagpunkt_ankare` 792.
+
+**Beslut.**
+- **`sql/093` skapar `skuggans_kandidat()`.** Den lämnar den talande regelns varnande punkter som en enda json:
+  `{tid, talare, n, p: [{segment_id, lon, lat}]}`. Ett ensamt värde har inget radtak, och regeln räknas en gång per anrop. Funktionen
+  är en sql-funktion utan SET (#784), låst till service-rollen som sql/070.
+- **Skuggmotorn läser den** och skriver talaren i `shadow_log.kandidat`. Skuggan mäter alltså det föraren hör: den nya kandidaten
+  sedan 26/10, och storstädernas punkter när deras brytare är på (#804). TROSKLAR-SKUGGAN §4 (d) säger att det som döms är det
+  användaren hör.
+- **Skälet säger när taket nås.** `olja_aktiva` och `vagpunkt_ankare` skriver i loggen när ett svar har 1000 rader, i stället för att
+  en avskuren lista ser hel ut.
+- **Provet.** Integrationsprovet *#812* lägger in 1 200 varnande punkter och prövar att alla kommer med, i regelns antal, och att
+  timmen och talaren står med.
+
+**Ordningen:**
+1. Sammanslagningen.
+2. `sql/093` med DB-knappen, före deployen, eftersom skuggmotorn annars får 404 och skriver det som skäl.
+3. Deployen av skuggmotorn, följd av funktionens prov.
+4. En timme med fler än 1000 varnande punkter, där `n` i skuggan är lika med antalet `varnar` ur `talande_regel()` (kortets Verify,
+   rättad).
+
+**Vad som inte ändras:** appen, publiceringen (som läser regeln med SQL) och den frysta kandidatens domlogg. Takten i skuggan före
+deployen är räknad på den frysta kandidaten och den avskurna listan. Läsningen 3/11 (DB-knappen 41644103987) står med den
+reservationen.
+
+**Alternativ.**
+- (a) Hämtning i sidor via REST. Förkastat:
+  - regeln körs en gång per sida, 2,2 s var, i dag fyra gånger per varv;
+  - sidorna kan glida isär när stadsradarn skriver kl. :01 och :31, strax före skuggans varv kl. :02 och :32.
+- (b) Att höja REST:s radtak i projektets inställningar. Förkastat: det rör alla funktioner och är en inställning, inte kod i repot.
+- (c) Att behålla den frysta kandidaten. Förkastat: den talar inte, och takten ska komma ur det föraren hör (Bengt 16/9, #200).
+
+**Stomdokument:** SYS skuggmotorn — kandidatens punkter ur sql/093 och den talande regeln
+
+## #813 (7/11 2026) Stadsgrenens timme räknas en gång: sql/094, före brytarna
+
+**Bengts ord 7/11:** *"Börja med skuggan och ta sen regelns tid med stadsgrenen"* (kort #378).
+
+**Mätt 7/11** (SQL-redigeraren, bara läsning). Måttet är `ny_kandidat_regel()` ur `sql/091` ord för ord, utan villkoret `b.pa`, så att
+storstädernas punkter räknas som om alla fyra brytarna vore på:
+- **Utan rättelsen:** frågan var inte klar efter 80 s. Den avbröts med `pg_cancel_backend` på sin egen process. Databasen startade
+  inte om, och publiceringen svarade 200 med *hinken: ok* hela tiden.
+- **Orsaken, ur planen (EXPLAIN utan körning):**
+  - Stadsgrenen blir en nästlad slinga: ett indexuppslag i `ny_kandidat_live` per stadspunkt.
+  - `ny_kandidat_timme()` står i uppslagets villkor. Den räknar timmens rader mot hela `vagpunkt`, så den räknades en gång per
+    stadspunkt.
+  - Planeraren väljer slingan eftersom den väntar sig 241 rader ur grenen. `stadsbrytare` har aldrig analyserats och skattas till 610
+    rader, fast den har 4.
+  - Vägpunkternas gren läser timmen genom indexet på `tid`, så där räknas den en gång.
+- **Med rättelsen:** samma fråga med `(SELECT ny_kandidat_timme())` i stadsgrenen tar **3,0 s** (EXPLAIN ANALYZE). Planen räknar
+  timmen en gång (`InitPlan`), och uppslagen använder värdet. Regeln med brytarna av tar 2,2 s.
+
+Publiceringen läser regeln varannan minut. Med brytarna på och `sql/091` hade lägesfilen stannat.
+
+**Beslut.**
+- **`sql/094`** skapar om `kandidat_regel()` och `ny_kandidat_regel()` ur `sql/091` ord för ord, med en ändring i var och en:
+  stadsgrenens villkor på timmen är en underfråga. En underfråga utan koppling till raden räknas en gång per körning, vilken plan
+  planeraren än väljer.
+- **Den snabba regeln** (`sql/080`) känner igen båda formerna av stadsgrenens rad, så att den kan härledas om både på 091 och på 094.
+- **Proven följer med:**
+  - snabbskuggans statiska prov pekar på 094;
+  - stadsregelns och snabbskuggans integrationsprov kör på 094;
+  - kontraktsgrinden tar med 094:s kopior, och golven är höjda med dem;
+  - paritetsprovet prövar att de två regelfunktionerna är samma regel.
+- **Brytarna slås inte på förrän `sql/094` är migrerad** (kortets Verify).
+
+**Ordningen.** Regeln ändras, så den snabba skuggan stannar tills `sql/080` och `sql/081` har körts om, och dess sju dygn börjar om
+(#808). Läsningen av den snabba skuggan har fristen 14/11. Migrationen av 094 behövs bara före brytarna, och telefonturen ligger
+före dem. Därför rekommenderas att 094 migreras **efter läsningen 14/11**, och därefter 080 och 081 i samma varv. Bengt väljer
+(bedömningen §4.2).
+
+**Alternativ.**
+- (a) `ANALYZE stadsbrytare`, så att planeraren skattar grenen rätt. Förkastat: när en brytare slås på säger statistiken fortfarande
+  att alla är av, och slingan kommer tillbaka just när brytaren slås på.
+- (b) Att göra `ny_kandidat_timme()` billig. Förkastat: den räknar timmens fullständighet, och även ett snabbt anrop per stadspunkt
+  blir en minut per körning.
+
+**Stomdokument:** SYS kandidaten — stadsgrenens timme räknas en gång, BED §4.2 — när 094 migreras

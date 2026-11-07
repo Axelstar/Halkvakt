@@ -724,5 +724,18 @@
       "instagram": "18117190352125999",
       "x": "2118733110971953601"
     }
+  ],
+  "2026-11-07": [
+    {
+      "pass": "morgon",
+      "namn": "2026-11-07-morgon",
+      "typ": "forandring",
+      "nyckel": "forandring",
+      "tid": "2026-11-07T04:50:39.045Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-11-07-morgon.jpg",
+      "facebook": "1312515671952967_122110556841516187",
+      "instagram": "18032986928687213",
+      "x": "2118929170180829669"
+    }
   ]
 }
