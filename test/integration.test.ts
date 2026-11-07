@@ -2664,3 +2664,58 @@ test("#804 stadskedjan: PH med driftens id och lägena för del B", { skip: !url
     rmSync(rot, { recursive: true, force: true });
   }
 });
+
+// SKUGGANS KANDIDATPUNKTER I ETT ENDA VÄRDE (sql/093, kort #374, DECISIONS #812): REST lämnar högst 1000 rader per svar, och skuggans
+// lista stod på exakt 1000 i 265 körningar 31/10–7/11. skuggans_kandidat() lämnar den talande regelns varnande punkter som en json.
+//   KS1  fler än 1000 varnande punkter kommer alla med, i samma antal som talande_regel() ger, och filen går att köra två gånger
+//   KS2  timmen och talaren står med, och funktionen har ingen SET-klausul (en sql-funktion, CLAUDE.md och #784)
+test("#812 skuggans kandidat: alla varnande punkter i ett värde", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const las = (f: string) => q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+  const LIVE = ["kandidat_live", "ny_kandidat_live"];
+  const N = 1200;
+  const stada = async () => {
+    for (const t of LIVE) await q(`DELETE FROM ${t} WHERE punkt LIKE 'vK%'`).catch(() => {});
+    await q("DELETE FROM vagpunkt WHERE punkt LIKE 'vK%'").catch(() => {});
+    await q("DELETE FROM road_conditions WHERE segment_id = '99961'").catch(() => {});
+  };
+  try {
+    await q("RESET search_path");
+    await q("CREATE TABLE IF NOT EXISTS shadow_log (id bigserial PRIMARY KEY, run_at timestamptz NOT NULL DEFAULT now(), alerts jsonb NOT NULL DEFAULT '[]'::jsonb)");
+    await q("DROP FUNCTION IF EXISTS kandidat_regel()");   // sql/056 har den äldre returtypen (som proven #800 och #804)
+    for (const f of ["001_init.sql", "008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql", "018_trend_berakna.sql",
+                     "029_brott_index.sql", "030_langsam_vakt.sql", "050_kandidat_live.sql", "053_arkiv_tabeller.sql", "055_vagpunkter.sql",
+                     "056_kandidat_regel.sql", "057_kandidat_skugga.sql", "058_kandidat_spridning.sql", "059_kandidat_brytare.sql",
+                     "065_kandidat_domlogg_punkter.sql", "068_ny_kandidat_skugga.sql", "069_radarns_tal.sql",
+                     "086_spridningsparren_frys_min.sql", "087_spridningsparren_f1.sql", "089_stadspunkter.sql", "090_radar_stad.sql",
+                     "091_stadsregeln.sql", "070_bytet.sql", "093_skuggans_kandidat.sql", "093_skuggans_kandidat.sql"]) await las(f);
+    await stada();
+    // N vägpunkter på en våt sträcka långt från provens stationer (34° Ö), alla kalla: alla varnar.
+    await q(`INSERT INTO vagpunkt (punkt, segment_id, lon, lat) SELECT 'vK' || lpad(g::text, 4, '0'), '99961', 34 + g * 0.0001, 70
+      FROM generate_series(1, $1::int) g`, [N]);
+    await q("INSERT INTO road_conditions (segment_id, condition_code, condition_text, condition_info) VALUES ('99961', 1, 'Normalt', '{Våt}')");
+    const tid: Date = (await q("SELECT date_trunc('hour', now()) AS t")).rows[0].t;
+    for (const t of LIVE) {
+      await q(`INSERT INTO ${t} (tid, punkt, pb) SELECT $1, v.punkt, 5 FROM vagpunkt v WHERE v.punkt NOT LIKE 'vK%' ON CONFLICT DO NOTHING`, [tid]);
+      await q(`INSERT INTO ${t} (tid, punkt, pb, n_ank, spr, frys_min, ank_km)
+        SELECT $1, v.punkt, -1, 1, 1, 0, 4 FROM vagpunkt v WHERE v.punkt LIKE 'vK%'`, [tid]);
+    }
+    const vk = (await q("SELECT count(*)::int AS n FROM talande_regel() WHERE utfall = 'varnar' AND punkt LIKE 'vK%'")).rows[0].n;
+    assert.equal(vk, N, "KS1: provets punkter varnar i den talande regeln");
+    const n = (await q("SELECT count(*)::int AS n FROM talande_regel() WHERE utfall = 'varnar'")).rows[0].n;
+    const j = (await q("SELECT skuggans_kandidat() AS j")).rows[0].j;
+    assert.equal(j.n, n, "KS1: antalet är regelns");
+    assert.equal(j.p.length, n, "KS1: alla punkter med, fler än REST:s 1000");
+    assert.equal(j.p.filter((p: any) => p.segment_id === "99961").length, N, "KS1: provets sträcka med alla sina punkter");
+    assert.ok(typeof j.p[0].lon === "number" && typeof j.p[0].lat === "number", "KS1: lägena är tal");
+    assert.equal(new Date(j.tid).getTime(), tid.getTime(), "KS2: timmen");
+    assert.ok(["ny", "fryst"].includes(j.talare), "KS2: talaren");
+    assert.equal((await q("SELECT proconfig FROM pg_proc WHERE proname = 'skuggans_kandidat'")).rows[0].proconfig, null,
+      "KS2: ingen SET-klausul");
+  } finally {
+    await stada();
+    await pool.end();
+  }
+});
