@@ -1,8 +1,7 @@
 # TROSKLAR — säsongsfacit: hur väl Halkvakts halkvarningar slog in vintern 2026/27
 
-**SIGNERAT AV BENGT 7/11 2026** (*"kör på allt detta"*, på Claudes rekommendationer till valen 1–5 med ändringen i val 2; DECISIONS
-#818). Utkastet skrevs av Claude 7/11 på Bengts *"Ja, skriv utkastet"* (kort #381). **Axels signatur** väntar (§10). Dokumentet gäller
-när båda har signerat, och senast före första läsningen. Efter första läsningen ändras inget mått, facit eller krav utan ett nytt
+**FASTSTÄLLT 7/11 2026 av Bengt och Axel** (Bengt: *"kör på allt detta"*, på Claudes rekommendationer till valen 1–5 med ändringen i
+val 2; för Axel: *"jag signerar för axel och vi bygger det nu"*; DECISIONS #818). Utkastet skrevs av Claude 7/11 på Bengts *"Ja, skriv utkastet"* (kort #381). Dokumentet gäller från fastställandet. Efter första läsningen ändras inget mått, facit eller krav utan ett nytt
 beslut, med skälet bokfört (regel L).
 
 ## 1. Vad säsongsfacit är, och vad det inte är
@@ -147,7 +146,7 @@ Inget nytt underlag behöver sparas.
 - Trafikverket bedömer väglaget där de har observationer, och det ger en slagsida mot de statliga vägarna.
 - Facitfönstret avgör mycket. Därför bestäms det i förväg och ändras inte efter att utfallet har setts.
 
-## 9. Valen (signerade av Bengt 7/11)
+## 9. Valen (fastställda 7/11)
 
 | # | Val | Beslut |
 |---|---|---|
@@ -162,4 +161,4 @@ Inget nytt underlag behöver sparas.
 | Vem | Datum | Hur |
 | :-- | :-- | :-- |
 | Bengt | 2026-11-07 | i chatten *"kör på allt detta"*, på Claudes rekommendationer till valen 1–5 med ändringen i val 2 (DECISIONS #818) |
-| Axel | | väntar |
+| Axel | 2026-11-07 | via Bengt i chatten: *"jag signerar för axel och vi bygger det nu"* |

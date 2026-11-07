@@ -14759,4 +14759,6 @@ ord. Dokumentet gäller när båda har signerat (fristen `sasongsfacit-signeras`
   marsdomen gör prövningen.
 - (b) Att publicera bara om resultatet är bra. Förkastat: ett urval i efterhand håller inte som belägg.
 
-**Stomdokument:** MAT §9 — säsongsfacit som redovisning, BED §4.2 — Axels signatur
+**Tillägg 7/11 (Bengt: *"jag signerar för axel och vi bygger det nu"*).** Axels signatur via Bengt: dokumentet är fastställt. Bygget börjar nu, inte veckan efter påslaget. Bengt skrev *"när inget annat speciellt går mot dej"*, och storstädernas påslag och provkörningens varv går före.
+
+**Stomdokument:** MAT §9 — säsongsfacit som redovisning, BED §4.2 — fastställt
