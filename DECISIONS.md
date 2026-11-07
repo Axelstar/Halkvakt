@@ -14691,4 +14691,11 @@ Review då stoppar Favoriter; (c) frågan bara på Redo som förut: det var bris
 
 **Löftet:** inget nytt lämnar telefonen. Notiserna är lokala; vägarna stannar i filerna utanför säkerhetskopian (ruttspärren grön).
 
+**Tillägg 7/11 — kraschen vid ett tryck på en notis rättas i samma bygge.** App Store Connect visade 13 krascher i 0.3.15 3–5/11
+(Axel). Xcodes Organizer (Axels skärmbild 7/11 09:55): iPhone 15, iOS 27.0.1, tråd 5, `UIApplication
+_updateSnapshotAndStateRestorationWithAction` anropat från `EfterResanNotis.userNotificationCenter(_:didReceive:)` via
+`completeTaskWithClosure` i Swift concurrency; samma krasch i 0.3.13. Orsak: delegatens async-varianter var `nonisolated`, så iOS
+körde deras avslut på en bakgrundstråd, och UIKit kraschar där. Rättelsen: varianterna med completionHandler, som anropas på
+huvudtråden. Favoriter 2a lägger till fler notiser att trycka på, så rättelsen följer med 0.4.0 (40).
+
 **Stomdokument:** FAV §6 — dagens resor och notisen efter resan, APP — CarPlay och raderna på Redo

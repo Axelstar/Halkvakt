@@ -65,24 +65,32 @@ final class EfterResanNotis: NSObject, UNUserNotificationCenterDelegate {
 
     /// I förgrunden visas ingen banner — exakt som innan appen fick en delegat alls. Heads-up-bannern
     /// (#23) är till för när Halkvakt ligger BAKOM kartan; står föraren i appen säger skärmen redan allt.
-    nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter,
-                                            willPresent notification: UNNotification) async
-        -> UNNotificationPresentationOptions { [] }
+    ///
+    /// KRASCHEN I 0.3.13–0.3.15 (Xcode Organizer 7/11, DECISIONS #817): delegatens async-varianter är nonisolated, och iOS kör då
+    /// deras avslut på en bakgrundstråd i Swift concurrency. UIKit uppdaterar ögonblicksbilden för bakgrunden i samma avslut
+    /// (`_updateSnapshotAndStateRestorationWithAction`) och kraschar utanför huvudtråden — vid ett tryck på en notis. Därför
+    /// varianterna med completionHandler, som alltid anropas på huvudtråden.
+    nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification,
+                                            withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        DispatchQueue.main.async { completionHandler([]) }
+    }
 
-    nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter,
-                                            didReceive response: UNNotificationResponse) async {
+    nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse,
+                                            withCompletionHandler completionHandler: @escaping () -> Void) {
+        // Läs allt ur svaret här: det är inte Sendable och får inte följa med till huvudtråden.
         let n = response.notification.request.content
-        if n.categoryIdentifier == FavoritNotis.kategori || n.threadIdentifier == "halkvakt.favorit.notis" {
-            let id = n.userInfo[FavoritNotis.resaNyckel] as? String
-            let text = (response as? UNTextInputNotificationResponse)?.userText
-            let action = response.actionIdentifier
-            await MainActor.run {
+        let favorit = n.categoryIdentifier == FavoritNotis.kategori || n.threadIdentifier == "halkvakt.favorit.notis"
+        let id = n.userInfo[FavoritNotis.resaNyckel] as? String
+        let text = (response as? UNTextInputNotificationResponse)?.userText
+        let action = response.actionIdentifier
+        Task { @MainActor in
+            if favorit {
                 if let id { FavoritNotis.svar(action: action, id: id, text: text) } else { Favoriter.shared.visaFliken = true }
+            } else if action == Self.actionJa {   // avvikelse ⇒ appen öppnas, kortet tar vid
+                await Self.svaraAlla()
             }
-            return
+            completionHandler()   // på huvudtråden
         }
-        guard response.actionIdentifier == Self.actionJa else { return }   // avvikelse ⇒ appen öppnas, kortet tar vid
-        await Self.svaraAlla()
     }
 
     /// Ett tryck, hela resan. Läser fönstret ur Prefs — utan starttid vet vi inte vad "alla" betyder.
