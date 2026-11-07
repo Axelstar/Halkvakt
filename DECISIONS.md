@@ -14676,6 +14676,13 @@ App Store, och det kan bli efter måndag.
   områden, i texterna och i App Privacy.
 - **Stegen** för Play och App Review står i `marknadsforing/butik/appstore-ios.md`, under *Inskicket 0.3.17 (39)*.
 
+**Tillägg 7/11, telefonturens bygge** (Bengt: *"Ja, 0.4.0 (41)"*):
+- **Telefonturen görs med 0.4.0 (41)**, inte med 0.3.17 (39). Axel laddade upp 0.4.0 (41) till TestFlight 09.46 UTC
+  (testflight-körningen 42360939502 från main 855367e8), och TestFlight installerar det senaste bygget. Turen ska mäta det
+  bygge som skeppas.
+- **Vilket bygge som går till App Review** är inte avgjort. Stegen i `marknadsforing/butik/appstore-ios.md` gäller 0.3.17 (39).
+  Frågan står i bedömningens §4.2.
+
 **Stomdokument:** BED läget 7/11 — tidsplanen till 9/11 och §4.2 — valen, MAT segmentprognosen — storstädernas punkter (kort #378), APP versionerna — 0.3.17 (39) när den är byggd
 ## #817 (6/11 2026) Favoriter 2a och CarPlay i samma version, 0.4.0: frågan efter resan som notis, dagens resor och CarPlay-skärmen
 
