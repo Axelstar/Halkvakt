@@ -524,7 +524,7 @@ Fem rader. Inget annat är "nu". **17/9: fyra klara — kvar är N3, nycklarna (
 <!-- LÄGESRADER §4: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 *Läget i projektkartan:*
 
-- [Grindarna och domkalendern](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-p-grindarna): delvis, 93 % · kvar: Domlarmet i drift: måndagsserien 26/10 med domlarmet i grind A, hojd-prov, V-A och V-B (bokförda domar, ska tiga; fristärendet #1218 stängt 27/10, utfallet inte läst ur repot)
+- [Grindarna och domkalendern](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-p-grindarna): delvis, 88 % · kvar: Domlarmet i drift: måndagsserien 26/10 med domlarmet i grind A, hojd-prov, V-A och V-B (bokförda domar, ska tiga; fristärendet #1218 stängt 27/10, utfallet inte läst ur repot)
 - [Termisk kartering](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-p-termisk): stängd · Inget: stängd 22/10 (#678). Ingen utrustning köps och ingen karteringsnatt planeras; kort #271 stängt; kort #321 prövas mot satellitens kallkarta utan mätbilen
 - [Regel L: ändra en tröskel efter sett utfall](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-p-regel-l): klar
 
@@ -604,6 +604,7 @@ Fem rader. Inget annat är "nu". **17/9: fyra klara — kvar är N3, nycklarna (
 | Beslut | Vem | Rekommendation | Kort |
 | :-- | :-- | :-- | :-- |
 | ✅ **AVGJORT 7/11 (Bengt, för sig och Axel: *"Ja, vi signerar"*, DECISIONS #814): olycksfacits K-lager läser den timme kandidaten talade med vid olyckan, högst två timmar gammal, och de fångade raderna räknas om.** TROSKLAR-OLYCKSFACIT §9.1 ändrad. Väg 193 6/11 var felaktigt bokförd som VARNADE genom en sju timmar gammal timme. `sql/095` ska migreras före första ärendet 8/11 05.17 UTC. | Bengt, Axel | — | #376 |
+| ❓ **NY 7/11 (Claude, kort #381): signerar Bengt och Axel säsongsfacit (`docs/TROSKLAR-SASONGSFACIT.md`), med de fem valen i §9?** Det är en redovisning, inte en grind. Leveransen (A1, A2) och prognosen (K) mäts mot facit och tre jämförelser, uppdelat per län, månad, tid på dygnet och ledtid, och räknas varje måndag i en intern tabell. Valen gäller facitfönstret, hur F2 hålls oberoende av K:s ankare, minsta antal per cell, publiceringen och läsdatumen. | Bengt, Axel | Signera före 30/11 med valen som föreslaget. Publiceringen (a): metoden nu och resultatet efter 31/3 vad det än blir, eftersom ett urval i efterhand inte håller. | #381 |
 | ✅ **AVGJORT 7/11 (Bengt, för sig och Axel: *"ja till alla fem. Axel och jag signerar"*, DECISIONS #815): K-lagret omfattar storstädernas punkter när deras brytare är på.** TROSKLAR-OLYCKSFACIT §9.1 är signerat. PR #1442 är sammanslagen (a159c48a), och `sql/096` är migrerad med DB-knappen 42353119984. | Bengt, Axel | Signerat. | #378, #376 |
 | ✅ **AVGJORT 7/11 (Bengt: *"ja till alla fem. Axel och jag signerar"*, DECISIONS #816): 0.3.17 (39) med rutnätet byggs och skickas i dag till TestFlight, Play och App Review.** Bygget innehåller bara motorn (#789, #795). PR #1423 får 0.4.0 (40). | Bengt, Axel | Ja. | #378 |
 | ✅ **AVGJORT 7/11 (Bengt: *"ja till alla fem. Axel och jag signerar"*, #816): telefonturen är (a), minst en timme med 0.3.17 ur TestFlight och *Mätningen*, söndag dagtid.** Den mäter bygget som skeppas. Stadspunkterna står inte i lägesfilen förrän brytarna är på. | Bengt, Axel | (a). | #378 |
@@ -924,7 +925,7 @@ bevisbart säker (vid 0 km/h går det inte att nå faran) och är rimligen stör
 - [Vattenplaningen](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-vattenplaning): stängd
 - [L4 räckvidden: segmentprognosen](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-segmentprognos): väntar, 76 % · Domen i mars 2027 (grind A–C) på kandidaten NIVÅ 2+BLANDNING som ny fråga, RÅ kontroll och reserv (#547), val d på kort #270 struket 21/10, domslut (b) döms per band (#655).
 - [L5 allvar som försprång](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-forsprang): delvis, 56 % · kvar: FS-A: nivå 2-fall i vinter (kod 3–4, eller yta ≤ 0 °C med väta ≥ 3); kod 3 och 4 finns i arkivet sedan 20–21/10 (kodgrinden 39617620449: 75 och 5 rader), andelen döms i mars
-- [Grindarna och domkalendern](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-p-grindarna): delvis, 93 % · kvar: Domlarmet i drift: måndagsserien 26/10 med domlarmet i grind A, hojd-prov, V-A och V-B (bokförda domar, ska tiga; fristärendet #1218 stängt 27/10, utfallet inte läst ur repot)
+- [Grindarna och domkalendern](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-p-grindarna): delvis, 88 % · kvar: Domlarmet i drift: måndagsserien 26/10 med domlarmet i grind A, hojd-prov, V-A och V-B (bokförda domar, ska tiga; fristärendet #1218 stängt 27/10, utfallet inte läst ur repot)
 - [Projektkartan](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-g-projektkartan): klar
 - [Actions-taket och kassavakten](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-g-kassan): delvis, 100 % · kvar: 0 USD debiterat för november i kassavakten (kort #311:s Verify)
 
