@@ -3042,6 +3042,8 @@ test("#822 olycksfacit: rättelsen av omräkningen och den gallrade timmen", { s
                spridning, fukt_punkter, fukt_utfall) VALUES ('99992', ${H}, now() - interval '32 minutes', 1, 0, 0, 1, false, false, -1.0, 0, '{}', '{}')`);
     const k = async () => (await q("SELECT orsak FROM olycksfacit_k(now() - interval '20 minutes', 'vR9', '99992', ST_SetSRID(ST_MakePoint(61, $1), 4326))",
       [nord(1)])).rows[0].orsak;
+    // Andra prov skriver ny_kandidat_live för samma timme; provets timme ska sakna rader helt (ci 8/11 föll på det).
+    await q(`DELETE FROM ny_kandidat_live WHERE tid = ${H}`);
     assert.equal(await k(), "gallrad", "timmen saknas helt i ny_kandidat_live");
     await q(`INSERT INTO ny_kandidat_live (tid, punkt, pb) VALUES (${H}, 'vR8', -1.0)`);
     assert.equal(await k(), "inget värde", "timmen finns, men inte punkten");
