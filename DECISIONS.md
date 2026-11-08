@@ -14728,6 +14728,26 @@ App Store, och det kan bli efter måndag.
   områden, i texterna och i App Privacy.
 - **Stegen** för Play och App Review står i `marknadsforing/butik/appstore-ios.md`, under *Inskicket 0.3.17 (39)*.
 
+**Tillägg 8/11, avstämningen och brytarna på** (Bengt, för sig och Axel: *"Ja, båda säger ja"*). Avstämningen lästes 17.00–17.30 UTC, bara
+läsning:
+- **Ingen förlorad K-timme:** 41 av 41 timmar *räknad* i `ny_kandidat_skugga_korning`, 7/11 00 till 8/11 16 UTC.
+- **Del A och del B:** `ny-kandidat-fysik.yml` 8 körningar sedan 7/11, `ny-kandidat-timme.yml` 41, alla gröna. Stadssteget skrev
+  inget för en timme, 7/11 18 UTC (*ingen PH*, del A:s stadsdel var inte klar), och aldrig två timmar i rad.
+- **`sql/094` och `sql/096` i drift:** 097:s båda vakter släppte, och stadsloggen skrev 32 körningsrader *av* 7/11–8/11.
+- **Telefonturen:** inom budgeten (#778, tilläggen 8/11).
+- **0.3.17 (39):** App Store Connect *IN_REVIEW* 8/11 01.23 och *READY_FOR_DISTRIBUTION* 02.23 UTC (byggsignalerna), alltså
+  godkänd och släppt automatiskt.
+- **Provkörningen** av storstädernas punkter med brytarna räknade som på lästes utanför repot (#768).
+
+**Brytarna på 8/11 17.35.53 UTC:** `sql/097` med DB-knappen 42505745364 från main 42be68ae, *transaktionen bekräftad*; alla fyra
+`pa = true` med skälet *på med sql/097 (DECISIONS #816)*. Efter påslaget:
+- **Publiceringen:** svarade varannan minut från 17.36.04 UTC, och publiceringen 17.48.20 bar kandidatens timme 17:00 med manifestets sha lika med `live.json`. Inga stadspunkter varnade: det var torrt.
+- **Del B:** körningen 42506670937 (17.47 UTC) grön: *storstädernas punkter: klart för 2026-11-08T17:00:00Z*, och varje stadspunkt har ett värde för timmen 17:00 i `ny_kandidat_live`.
+- **Olycksfacits stadslogg:** 17.48.15 UTC *räknad* för timmen 17:00 med alla fyra brytarna (`Stor-Göteborg/B`, `Stor-Malmö/B`, `Stor-Stockholm/B`, `Stor-Stockholm/C`) och en rad per grupp i `ny_kandidat_skugga_stad`; timmen före stod *av*.
+- **Skuggan:** huvudvarvet 18.02 UTC läste den talande regeln med brytarna på: talaren *ny*, timmen 17:00, utan skäl, och samma antal punkter som `skuggans_kandidat()` gav i SQL-redigeraren direkt efter.
+
+Avbrottet (`sql/098` utan att fråga) gäller från påslaget. Morgonläsningen 9/11 kl. 5.30 svensk tid står kvar.
+
 **Stomdokument:** BED läget 7/11 — tidsplanen till 9/11 och §4.2 — valen, MAT segmentprognosen — storstädernas punkter (kort #378), APP versionerna — 0.3.17 (39) när den är byggd
 ## #817 (6/11 2026) Favoriter 2a och CarPlay i samma version, 0.4.0: frågan efter resan som notis, dagens resor och CarPlay-skärmen
 
