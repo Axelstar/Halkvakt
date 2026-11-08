@@ -267,7 +267,8 @@ test("läns- och vägsidorna bär sajtens ram: samma meny, spårkod per knapp, a
   for (const [namn, ct] of [["lan/skane/index.html", "lan"], ["vag/e6/index.html", "vag"], ["lan/index.html", "lanen"]]) {
     const s = sidor[namn];
     assert.ok(!s.includes("#sa-funkar"), `${namn}: ingen länk till en rubrik som inte finns`);
-    assert.match(s, /Livekartan<\/a>\s*<a [^>]*>Länen<\/a>\s*<a [^>]*>Appen<\/a>\s*<a [^>]*>Om Halkvakt<\/a>/, namn);
+    // 8/11: samma meny som startsidan, med Storstäderna och Vägar (Axel: "storstäderna fliken i toppen inte alltid är där").
+    assert.match(s, /Livekartan<\/a>\s*<a [^>]*#storstader">Storstäderna<\/a>\s*<a [^>]*>Länen<\/a>\s*<a [^>]*#vagar">Vägar<\/a>\s*<a [^>]*>Appen<\/a>\s*<a [^>]*>Om Halkvakt<\/a>/, namn);
     assert.ok(s.includes("?ct=huvud\">Hämta appen</a>"), namn);
     assert.ok(s.includes(`?ct=${ct}">Få varningar i appen</a>`), namn);
     assert.equal((s.match(/aria-label="Halka per län"/g) ?? []).length, 1, namn);
@@ -519,4 +520,17 @@ test("startsidan och kartan i HTML (6/11, DECISIONS #807): samma tal som sidorna
   assert.ok(medId(ny, "t-halka", "2")!.includes('<b id="t-halka">2</b><span>sträckor</span>'));
   assert.equal(medId(ny, "h-tid", t["h-tid"]), null);
   assert.equal(medId(html, "finns-inte", "x"), null);
+});
+
+test("kartorna (8/11): länsgränsen är aldrig gul och står i förklaringen; orten har livekartan inbäddad", () => {
+  const sidor = byggLanssidor({
+    vaglag: [{ code: 3, text: "Mycket besvärligt", info: ["Is"], road: "E 4", plats: "E 4 Stockholm - Södertälje", lan: 1 }],
+    stationer: [], olyckor: [], now: NOW,
+  });
+  const lan = sidor["lan/stockholm/index.html"], ort = sidor["ort/stockholm/index.html"];
+  assert.ok(!lan.includes("yta(mitt.geometry,'#162024','#FFC94A'"), "valda länets kant är inte halkans gula");
+  assert.ok(lan.includes("Länsgräns"), "länskartans förklaring nämner länsgränsen");
+  assert.ok(ort, "Stockholms ortssida byggs");
+  assert.match(ort, /<iframe src="\.\.\/\.\.\/karta\.html\?lan=stockholm&amp;punkt=18\.046,59\.31&amp;namn=Stockholm&amp;inbaddad=1"/);
+  assert.ok(ort.includes("Länsgräns") && ort.includes("Öppna i helskärm"), "förklaring och länk till hela kartan");
 });

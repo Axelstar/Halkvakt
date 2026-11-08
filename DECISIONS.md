@@ -14890,3 +14890,21 @@ TROSKLAR-OLYCKSFACIT ändras inte, eftersom *gallrad* faller under §9.3 rad 8, 
 efteråt. Den ska visa att ingen omräknad K-rad har *inget värde* utan punktens värde, och att ingen har punkten bortom 2 km.
 
 **Stomdokument:** MAT §9 olycksfacit, SYS §3 olycksfacit
+
+## #823 (8/11 2026) Menyn lika överallt, livekartan på ortssidorna och länsgränsen aldrig gul
+
+**Axels ord 8/11:** *"Det ser ut som storstäderna fliken i toppen inte alltid är där. Då man går in i storstäderna bör detta också vara
+en live karta så man inte måste gå till länen. Sedan tycker både jag och pappa att länslinjerna är lite svåra och ibland tror man det är
+halt."*
+
+**Beslut.**
+- **Menyn:** alla sidor får startsidans meny: Livekartan · Storstäderna · Länen · Vägar · Appen · Om Halkvakt. De byggda sidorna
+  (`lsSkal`) här, de handskrivna sidorna i halkvakt-karta i samma veva.
+- **Ortssidorna:** den ritade kartan (#821) byts mot livekartan själv, `karta.html?lan=…&punkt=lon,lat&namn=…&inbaddad=1` i en iframe.
+  `punkt` (nytt i karta.html) zoomar till orten, ungefär 40 km åt varje håll, och sätter ut namnet. Man kan dra, zooma och trycka på
+  vägarna utan att gå via länet. Detta ändrar #821:s alternativ (b): Axel vill ha livekartan, och iframen laddas `lazy`.
+- **Länsgränsen:** gult betyder bara halka. Gränsen ritas prickad och grå, som på en vanlig karta, på livekartan, länskartan och
+  ortskartan. Ett valt län på livekartan syns genom att resten av kartan dämpas, inte genom en gul kant. Länsgränsen står i
+  förklaringen under kartorna, och på livekartan som en egen knapp (*Länsgräns*) som också stänger av den.
+
+**Alternativ.** Behålla gul kant men tunnare: förkastat, det var just gult som lästes som halka.
