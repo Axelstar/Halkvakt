@@ -13359,6 +13359,27 @@ svensk tid (94 minuter), är telefonturen i #816: dagtid, minst en timme, med *M
 Förbehåll: iOS ger andelar i hela procent, inte procentenheter; 40 % förutsätter att telefonen inte laddades under dagen; 5,4 %/h
 lägger hela dagsdelen på resan; om navigering pågick under resan är inte känt.
 
+**Tillägg 8/11 kväll (Bengt: *"Den gick samma resa dit"* och *"Ja, bokför"*): de 84 minuterna var utresan, och vakten dog under den.** Vakten gick också på
+utresan, men *Mätningen* saknar den. Mätningen ligger i minnet tills vakten stoppas, så ett pass försvinner om appen dör medan
+vakten går. Räknaren (#787) bär spåret. iPhone 0.4.0 den 8/11 (dagens rader, bara läsning):
+
+| Händelse | Värde | Antal |
+| :-- | :-- | --: |
+| `vakt_startad` | hand / själv | 1 / 3 |
+| `resa_slut` | knapp:okand:avbruten | 1 |
+| `resa_slut` | sjalv:over45:hand | 1 |
+| `resa_slut` | sjalv:15-45:parkerad | 2 |
+
+- **Utresan slutade som avbruten.** Ett pass som startats med knappen fick aldrig sitt slut, och räknaren bokför det vid nästa
+  start. Hemresan startade av sig själv (självstartad, över 45 minuter, stoppad för hand), alltså väckte parkeringsstaketet en
+  app som hade dött. Räknaren bär inget id, så raderna kan också komma från en annan testare med 0.4.0, men mönstret stämmer med
+  Bengts dag.
+- **Batteriet:** Halkvakts 8,4 procentenheter fördelade på båda resorna (omkring 2 h 58 min i bakgrunden) blir **omkring 2,8 %/h**.
+  Det är den bättre skattningen; 5,4 %/h ovan står kvar som övre gräns.
+- **När appen dog syns inte.** Bakgrundstiden talar för att den levde större delen av utresan. Dör vakten mitt i en körning tystnar
+  varningarna utan att föraren märker det. Orsaken kan vara att appen sveptes bort, att TestFlight uppdaterade den, en krasch eller
+  iOS:s minnesstopp (jetsam). Kort #643; frågan om Analysdata står i bedömningen §4.2.
+
 **Stomdokument:** SYS 1 (kedjans takt), APP 9, BED §4.2
 
 ## #779 (2/11 2026) Datawrapper: pendlingstabellen per stråk och hela läget per län, där bara det hala syns
