@@ -55,7 +55,10 @@ STATUS. Det som inte nämns står som i läget 20/10 nedan och i besluten därem
   - startsidans tal i HTML (#807).
 - **Rimfrostens R-B:** R-B1 klarar och R-B2 faller (#794). Domslutet väntar på Bengt, med fristen 10/12.
 - **Databasen:** driftstörningen 3/11 (#783) och den fasta sökvägen (#784).
-- **Väntar på Bengts ord:** tretton PR:er (§4.2, dokumentsynken 7/11).
+- **Säsongsfacit** (#818): en redovisning och ingen grind, fastställd 7/11; dygnsräkningen (`sql/099`) är i drift och räknade 1/11–6/11 i efterhand.
+- **Webben** (#819–#821): Prognos är påslagen på alla kartor, startsidan B1 och en karta runt varje ortssida.
+- **Appen:** 0.4.0 (41) med Favoriter 2a och CarPlay är i koden (#817); 0.3.17 (39) med rutnätet är uppladdad till TestFlight (#816). Telefonturen med (41) har PR #1452.
+- **Väntar på Bengts ord:** tolv PR:er (§4.2, dokumentsynken 8/11).
 
 **Vart vi är på väg.**
 - 8/11 och 10/11: olycksfacits första ärende för dagen och för veckan (fristen `olycksfacit-v45`).
@@ -603,6 +606,7 @@ Fem rader. Inget annat är "nu". **17/9: fyra klara — kvar är N3, nycklarna (
 
 | Beslut | Vem | Rekommendation | Kort |
 | :-- | :-- | :-- | :-- |
+| ❓ **NY 8/11 (dokumentsynken): tolv PR:er väntar på Bengts ord, den äldsta i 22 dygn (#1056).** Ny sedan 7/11: #1452 (telefonturen med 0.4.0 (41), och PR #1449 i drift). #1423 och #1241 är inte längre öppna. Väntar: #1056, #1208, #1271, #1300 (hör till halkvakt-kuvos), #1302, #1307, #1320, #1333, #1360, #1421, #1427 och #1452. Öppna ärenden: `frist` #1451 (skuggmotorns 546, fristen 7/11, läses av Claude), `dom` #1384 (R-B, öppnat 5/11) väntar på Bengts ord, `olycka` inga. Rättat i dag: handtexten för #778, #812–#821 i MATNINGAR §9, SYSTEMBILDEN §3, APPEN §9 och FAVORITER §6; nya frister för säsongsfacits månadsläsningar och slutrapport (#818). | Bengt | Ingen rekommendation här: det är beslut, inte rättningar. | #1056, #1208, #1271, #1302, #1307, #1320, #1333, #1360, #1421, #1427, #1452 |
 | ✅ **AVGJORT 7/11 (Bengt, för sig och Axel: *"Ja, vi signerar"*, DECISIONS #814): olycksfacits K-lager läser den timme kandidaten talade med vid olyckan, högst två timmar gammal, och de fångade raderna räknas om.** TROSKLAR-OLYCKSFACIT §9.1 ändrad. Väg 193 6/11 var felaktigt bokförd som VARNADE genom en sju timmar gammal timme. `sql/095` ska migreras före första ärendet 8/11 05.17 UTC. | Bengt, Axel | — | #376 |
 | ✅ **AVGJORT 7/11 (Bengt, för sig och Axel: *"kör på allt detta"* och *"jag signerar för axel och vi bygger det nu"*, DECISIONS #818): säsongsfacit är fastställt med valen 1–5 som rekommenderat.** F2 ingår inte i huvudmåtten, och publiceringen följer (a). Bygget börjar 7/11. | Bengt, Axel | Fastställt. | #381 |
 | ✅ **AVGJORT 7/11 (Bengt, för sig och Axel: *"ja till alla fem. Axel och jag signerar"*, DECISIONS #815): K-lagret omfattar storstädernas punkter när deras brytare är på.** TROSKLAR-OLYCKSFACIT §9.1 är signerat. PR #1442 är sammanslagen (a159c48a), och `sql/096` är migrerad med DB-knappen 42353119984. | Bengt, Axel | Signerat. | #378, #376 |
