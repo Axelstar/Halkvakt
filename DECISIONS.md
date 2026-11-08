@@ -13328,6 +13328,37 @@ Android är två saker visade:
 Luckan är att vakten på Android inte är visad ta emot nya filer under en resa. Den förs till delen *Android-appen*: första
 Android-telefonen med mobildata (till exempel en testare i Play) visar det i *Mätningen* med nya och åldersrader.
 
+**Tillägg 8/11 (Bengt: *"Ja, bokför"*): telefonturen i #816, och batteriet inom budgeten.** Bengts resa söndag 8/11, vakten 15:17–16:51
+svensk tid (94 minuter), är telefonturen i #816: dagtid, minst en timme, med *Mätningen*. Bygget lästes inte i telefonen; enligt PR
+#1452 (inte sammanslagen) görs turen med 0.4.0 (41). Underlaget är Bengts skärmbilder av *Inställningar → Mätningen* och
+*Inställningar → Batteri* (i dag till 17:05).
+
+| Mått | 8/11 |
+| :-- | :-- |
+| Kollar | 48, alla nya, inget ur reserven |
+| Filens ålder vid ankomst | median 1:02, högst 1:31 |
+| Äldsta station | median 40 min |
+| Telefonen under resan | 80 → 65 %, 9,5 %/h; med stegen om 5 % mellan 6,4 och 12,8 %/h |
+| Telefonens förbrukning i dag till 17:05 | 40 % (genomsnittet för en hel dag 105 %) |
+| Halkvakts andel | 21 %, omkring 8,4 procentenheter; 9 minuter på skärmen, 2 h 58 min i bakgrunden |
+
+- **Batteriet är inom budgeten.** Halkvakts hela dagsdel lagd på vaktens 94 minuter ger högst omkring **5,4 %/h**, under gränsen
+  8 %/h i #753; fördelad på all aktiv tid (3 h 7 min) omkring 2,7 %/h. Inget hinder. Minst omkring 6,6 av resans 15
+  procentenheter var annan förbrukning (Kartor 6 % av dagen, skärm, nät och system). Det stämmer med 2/11 (5–7 %/h) och med
+  skattningen 7,2 %/h, nu på en resa som är tre gånger så lång. Resan ligger nära provets villkor i tillägget 2/11: Halkvakt var
+  9 minuter på skärmen. Samtal och hotspot är inte kända.
+- **Takten** är som i fas 3: en koll ungefär varannan minut, och filen drygt en minut gammal.
+- **Äldsta station 38–40 minuter** (4/11 och 8/11) mot 8–16 i fas 3. Måttet är den äldsta av de kalla stationerna i lägesfilen
+  (yta högst 3 °C eller snö). Hinkens `live.json` bar 109 sådana 29/10 och 484 den 8/11 15:58 UTC, med den äldsta 48 minuter
+  gammal. Fler kalla stationer tar med de långsamma, som fjärrytorna på 33–38 minuter (#751), och allt ligger under taket 60
+  minuter. Vilken station som var äldst är inte läst: filen bär ingen mättid per station.
+- **Öppet: 2 h 58 min i bakgrunden mot vaktens 94 minuter**, alltså omkring 84 minuter som inte förklaras. Självväckningens
+  fartkoll (högst 90 s, minst fem minuter emellan) räcker inte till det. Antingen gick vakten tidigare under dagen utan att
+  stoppas, och då sparas ingen mätning, eller så var appen vaken utan vakt. Frågan står i bedömningen §4.2.
+
+Förbehåll: iOS ger andelar i hela procent, inte procentenheter; 40 % förutsätter att telefonen inte laddades under dagen; 5,4 %/h
+lägger hela dagsdelen på resan; om navigering pågick under resan är inte känt.
+
 **Stomdokument:** SYS 1 (kedjans takt), APP 9, BED §4.2
 
 ## #779 (2/11 2026) Datawrapper: pendlingstabellen per stråk och hela läget per län, där bara det hala syns
