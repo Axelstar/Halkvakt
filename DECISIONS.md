@@ -14854,3 +14854,39 @@ mobilen; A och B1 är lika för SEO, och Axel valde B1.
 inbäddad (MapLibre). Förkastat för ortssidorna: tyngre att ladda för en sida som ska svara snabbt.
 
 **Stomdokument:** SYS — webbens ortssidor
+
+## #822 (8/11 2026) Olycksfacits omräkning rättas: fångstens besked där punkten var gallrad, och 2-kilometersregeln (kort #642)
+
+**Beslut.** Bengt 8/11: *"gör rättelsen och skriv ett förslag på direkt driftlarm"*. Det kom efter analysen av dygnets missar 6/11
+(ärende #1454).
+
+**Felet.** Omräkningen i `sql/095` (#814) räknade 7/11 07.13 UTC om K-lagret för 82 olyckor 5–7/11, och gjorde två fel:
+- **Gallrade punkter.** Kandidatens tal per punkt (`ny_kandidat_live`) gallras efter sex timmar. En punkt utan rad bland
+  domloggens fuktpunkter fick därför inget värde och orsaken *inget värde*, som ger området *Kandidatens drift*
+  (TROSKLAR-OLYCKSFACIT §9.3).
+- **2-kilometersregeln.** Fångsten sparar punkten också när orsaken är *ingen vägpunkt*, och omräkningen prövade inte avståndet.
+
+Följden:
+- fyra av åtta missar 6/11 stod som *Kandidatens drift*;
+- väg 134 och 31 var i själva verket *fukt saknades*, och E20 och väg 859 *yta över 0*;
+- veckans ärende hade fått ett falskt återkommande område.
+
+**Rättelsen** (`sql/100`, integrationsprovet #822):
+- punkten mer än 2 km bort ⇒ *ingen vägpunkt*, som i fångsten;
+- *inget värde* utan punktens värde, i samma timme som fångsten läste ⇒ fångstens besked;
+- annars *gallrad*;
+- olyckans utfall och orsaker byggs om ur lagren, och det omräkningen skrev står kvar under `omrakningen`.
+
+Läst i driften före bygget:
+- 41 rader ändras: 19 blir *fukt saknades*, 8 *yta över 0* och 14 *ingen vägpunkt*;
+- ingen rad som talar ändras, och ingen olycka byter mellan varnade och tyst;
+- ingen rad blir *gallrad*.
+
+**Framåt.** `olycksfacit_k()` och `olycksfacit_k_stad()` skriver *gallrad* när kandidatens timme inte längre finns i
+`ny_kandidat_live`. En olycka som fångas sent får annars samma falska drift. Villkoret läser datan: timmen saknas helt i tabellen.
+TROSKLAR-OLYCKSFACIT ändras inte, eftersom *gallrad* faller under §9.3 rad 8, *Övrigt*.
+
+**Drift.** `sql/100` migreras med DB-knappen på Bengts ord, före veckans ärende 2026-V45 (10/11 05:17 UTC). Beviset är en läsning
+efteråt. Den ska visa att ingen omräknad K-rad har *inget värde* utan punktens värde, och att ingen har punkten bortom 2 km.
+
+**Stomdokument:** MAT §9 olycksfacit, SYS §3 olycksfacit

@@ -2945,6 +2945,116 @@ test("#815 olycksfacit för storstäderna: K-lagret läser stadsloggen vid närm
   }
 });
 
+// RÄTTELSEN AV OLYCKSFACITS OMRÄKNING (sql/100, DECISIONS #822). Raderna står som omräkningen #814 skrev dem, kring 75° N:
+//   RT1  "inget värde" utan punktens värde, och fångstens timme är omräkningens → fångstens "fukt saknades", tyst och täckt
+//   RT2  punkten 5,05 km bort; omräkningen sa "yta över 0" → "ingen vägpunkt", som fångsten
+//   RT3  "inget värde" utan punktens värde, och fångstens timme en annan → "gallrad", med rimfrosten kvar i orsakerna
+//   RT4  omräknad "yta över 0" med punkten 0,4 km bort → oförändrad, men märkt
+//   RT5  en fångst som aldrig räknades om ("inget värde") → orörd
+// Framåt: olycksfacit_k() ger "gallrad" när timmen saknas helt i ny_kandidat_live, "inget värde" när timmen finns men inte punkten,
+// och "fukt saknades" när punkten finns och är kall men torr.
+test("#822 olycksfacit: rättelsen av omräkningen och den gallrade timmen", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const las = (f: string) => q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+  const nord = (km: number) => 75 + km / 111.2;
+  const stad = async () => {
+    await q("DELETE FROM olycksfacit WHERE deviation_id LIKE 'RT%'").catch(() => {});
+    await q("DELETE FROM ny_kandidat_skugga WHERE segment_id LIKE '9999%'").catch(() => {});
+    await q("DELETE FROM ny_kandidat_skugga_korning WHERE korning > now() - interval '12 hours'").catch(() => {});
+    await q("DELETE FROM ny_kandidat_live WHERE punkt LIKE 'vR%'").catch(() => {});
+  };
+  try {
+    await q("CREATE TABLE IF NOT EXISTS shadow_log (id bigserial PRIMARY KEY, run_at timestamptz NOT NULL DEFAULT now(), alerts jsonb NOT NULL DEFAULT '[]'::jsonb)");
+    if (!(await q("SELECT 1 FROM information_schema.columns WHERE table_name = 'kandidat_skugga' AND column_name = 'fukt_pb'")).rowCount) {
+      await q("DROP FUNCTION IF EXISTS kandidat_regel()");
+      for (const f of ["001_init.sql", "008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql", "018_trend_berakna.sql",
+                       "029_brott_index.sql", "030_langsam_vakt.sql", "050_kandidat_live.sql", "052_kandidat_gallring_kort.sql", "053_arkiv_tabeller.sql",
+                       "055_vagpunkter.sql", "056_kandidat_regel.sql", "057_kandidat_skugga.sql", "058_kandidat_spridning.sql",
+                       "065_kandidat_domlogg_punkter.sql"]) await las(f);
+    }
+    for (const f of ["003_situation_archive.sql", "068_ny_kandidat_skugga.sql", "084_olycksfacit.sql", "085_olycksfacit_klassning.sql",
+                     "095_olycksfacit_k_timmen.sql", "089_stadspunkter.sql", "096_olycksfacit_stad.sql"]) await las(f);
+    await stad();
+    const T = "date_trunc('hour', now()) - interval '30 hours'", F = "date_trunc('hour', now()) - interval '33 hours'";
+    const olycka = (id: string, utfall: string, orsaker: string[]) => q(`INSERT INTO olycksfacit (deviation_id, start_time, message,
+      road_number, severity_code, geom, utfall, orsaker) VALUES ($1, ${T} + interval '20 minutes', 'Singelolycka', 'Väg 1', 4,
+      ST_SetSRID(ST_MakePoint(60, $2), 4326), $3, $4)`, [id, nord(1), utfall, orsaker]);
+    const lagren = (id: string, a1: string, tackning: string, rim: boolean, k: { talar: boolean; orsak: string; detalj: string }) =>
+      q(`INSERT INTO olycksfacit_lager (deviation_id, lager, talar, orsak, detalj) VALUES
+        ($1, 'A1', false, $2, '{}'), ($1, 'A2', false, 'ingen station inom 5 km', jsonb_build_object('rimfrost', $3::boolean)),
+        ($1, 'tackning', NULL, $4, '{}'), ($1, 'K', $5, $6, ${k.detalj})`, [id, a1, rim, tackning, k.talar, k.orsak]);
+    const omr = (punkt: string, km: number, extra: string) => `jsonb_build_object('punkt', '${punkt}', 'segment', '99991', 'km', ${km},
+      'timme', ${T}, 'narmaste_pb', NULL::real, 'omraknad', now() - interval '1 day', 'timregel', '#814') || ${extra}`;
+    await olycka("RT1", "TYST_TACKT", ["A1: väglaget Normalt", "K: inget värde", "A2: ingen station inom 5 km"]);
+    await lagren("RT1", "väglaget Normalt", "täckt", false, { talar: false, orsak: "inget värde", detalj: omr("vR1", 0.6,
+      `jsonb_build_object('narmaste_utfall', 'inget värde', 'fore', jsonb_build_object('talar', false, 'orsak', 'fukt saknades', 'timme', ${T}))`) });
+    await olycka("RT2", "TYST_OTACKT", ["A1: ingen sträcka", "K: yta över 0", "A2: ingen station inom 5 km"]);
+    await lagren("RT2", "ingen sträcka", "otäckt", false, { talar: false, orsak: "yta över 0", detalj: omr("vR2", 5.05,
+      `jsonb_build_object('narmaste_utfall', 'yta över 0', 'stracka_i_timmen', false, 'fore', jsonb_build_object('talar', false, 'orsak', 'ingen vägpunkt', 'timme', NULL::timestamptz))`) });
+    await olycka("RT3", "TYST_TACKT", ["A1: väglaget Normalt", "K: inget värde", "A2: ingen station inom 5 km", "rimfrost"]);
+    await lagren("RT3", "väglaget Normalt", "täckt", true, { talar: false, orsak: "inget värde", detalj: omr("vR3", 0.7,
+      `jsonb_build_object('narmaste_utfall', 'inget värde', 'fore', jsonb_build_object('talar', true, 'orsak', 'varnar', 'timme', ${F}))`) });
+    await olycka("RT4", "TYST_TACKT", ["A1: väglaget Normalt", "K: yta över 0", "A2: ingen station inom 5 km"]);
+    await lagren("RT4", "väglaget Normalt", "täckt", false, { talar: false, orsak: "yta över 0", detalj: omr("vR4", 0.4,
+      `jsonb_build_object('narmaste_utfall', 'yta över 0', 'stracka_i_timmen', false, 'fore', jsonb_build_object('talar', false, 'orsak', 'ingen timme', 'timme', ${F}))`) });
+    await olycka("RT5", "TYST_TACKT", ["A1: väglaget Normalt", "K: inget värde", "A2: ingen station inom 5 km"]);
+    await lagren("RT5", "väglaget Normalt", "täckt", false, { talar: false, orsak: "inget värde",
+      detalj: `jsonb_build_object('punkt', 'vR5', 'segment', '99991', 'km', 0.5, 'timme', ${T}, 'narmaste_pb', NULL::real, 'timregel', '#814')` });
+
+    await las("100_olycksfacit_rattelse.sql");
+    const lager = async (id: string) => Object.fromEntries((await q("SELECT lager, talar, orsak, detalj FROM olycksfacit_lager WHERE deviation_id = $1", [id])).rows
+      .map((r: any) => [r.lager, r]));
+    const rad = async (id: string) => (await q("SELECT utfall, orsaker FROM olycksfacit WHERE deviation_id = $1", [id])).rows[0];
+    const k1 = (await lager("RT1")).K;
+    assert.equal(k1.orsak, "fukt saknades", "RT1: fångstens besked i samma timme");
+    assert.equal(k1.talar, false);
+    assert.equal(k1.detalj.rattelse, "#822"); assert.equal(k1.detalj.narmaste_utfall, "torr");
+    assert.deepEqual(k1.detalj.omrakningen, { talar: false, orsak: "inget värde" }, "RT1: det omräkningen skrev står kvar");
+    assert.deepEqual(await rad("RT1"), { utfall: "TYST_TACKT", orsaker: ["A1: väglaget Normalt", "K: fukt saknades", "A2: ingen station inom 5 km"] });
+    const k2 = (await lager("RT2")).K;
+    assert.equal(k2.orsak, "ingen vägpunkt", "RT2: punkten mer än 2 km bort");
+    assert.deepEqual(await rad("RT2"), { utfall: "TYST_OTACKT", orsaker: ["A1: ingen sträcka", "K: ingen vägpunkt", "A2: ingen station inom 5 km"] });
+    const k3 = (await lager("RT3")).K;
+    assert.equal(k3.orsak, "gallrad", "RT3: fångstens timme är en annan, och värdet går inte att läsa");
+    assert.equal(k3.talar, false, "RT3: en gammal timmes varning räknas inte");
+    assert.deepEqual(await rad("RT3"), { utfall: "TYST_TACKT", orsaker: ["A1: väglaget Normalt", "K: gallrad", "A2: ingen station inom 5 km", "rimfrost"] });
+    const k4 = (await lager("RT4")).K;
+    assert.equal(k4.orsak, "yta över 0", "RT4: oförändrad"); assert.equal(k4.detalj.rattelse, "#822", "RT4: märkt");
+    assert.equal(k4.detalj.omrakningen, undefined, "RT4: inget att spara");
+    assert.deepEqual((await rad("RT4")).orsaker, ["A1: väglaget Normalt", "K: yta över 0", "A2: ingen station inom 5 km"]);
+    const k5 = (await lager("RT5")).K;
+    assert.equal(k5.orsak, "inget värde", "RT5: aldrig omräknad, orörd"); assert.equal(k5.detalj.rattelse, undefined);
+    const fore = JSON.stringify((await lager("RT1")).K.detalj);
+    await las("100_olycksfacit_rattelse.sql");
+    assert.equal(JSON.stringify((await lager("RT1")).K.detalj), fore, "en andra körning rör ingenting");
+
+    // Framåt: en timme som talade 35 minuter före nu, där punkten vR9 inte står bland sträckans fuktpunkter.
+    for (const f of ["olycksfacit_k", "olycksfacit_k_stad"])
+      assert.deepEqual((await q("SELECT proconfig FROM pg_proc WHERE proname = $1", [f])).rows[0].proconfig,
+        ["search_path=public, extensions"], `${f}: fast sökväg i definitionen (DECISIONS #784)`);
+    assert.ok((await q("SELECT prosrc FROM pg_proc WHERE proname = 'olycksfacit_k_stad'")).rows[0].prosrc.includes("'gallrad'"),
+      "olycksfacit_k_stad har samma skydd");
+    const H = "date_trunc('hour', now() - interval '35 minutes')";
+    await q(`INSERT INTO ny_kandidat_skugga_korning (korning, observed_at, status) VALUES (now() - interval '32 minutes', ${H}, 'räknad')`);
+    await q(`INSERT INTO ny_kandidat_skugga (segment_id, observed_at, skriven_at, punkter, varnar, veto, torr, vat, flackvis_vat, pb_min,
+               spridning, fukt_punkter, fukt_utfall) VALUES ('99992', ${H}, now() - interval '32 minutes', 1, 0, 0, 1, false, false, -1.0, 0, '{}', '{}')`);
+    const k = async () => (await q("SELECT orsak FROM olycksfacit_k(now() - interval '20 minutes', 'vR9', '99992', ST_SetSRID(ST_MakePoint(61, $1), 4326))",
+      [nord(1)])).rows[0].orsak;
+    // Andra prov skriver ny_kandidat_live för samma timme; provets timme ska sakna rader helt (ci 8/11 föll på det).
+    await q(`DELETE FROM ny_kandidat_live WHERE tid = ${H}`);
+    assert.equal(await k(), "gallrad", "timmen saknas helt i ny_kandidat_live");
+    await q(`INSERT INTO ny_kandidat_live (tid, punkt, pb) VALUES (${H}, 'vR8', -1.0)`);
+    assert.equal(await k(), "inget värde", "timmen finns, men inte punkten");
+    await q(`INSERT INTO ny_kandidat_live (tid, punkt, pb) VALUES (${H}, 'vR9', -1.0)`);
+    assert.equal(await k(), "fukt saknades", "punkten finns och är kall men torr");
+  } finally {
+    await stad().catch(() => {});
+    await pool.end();
+  }
+});
+
 // SÄSONGSFACIT (sql/099, docs/TROSKLAR-SASONGSFACIT.md, DECISIONS #818): dygnsräkningen mot riktig PostGIS, ett påhittat dygn
 // 15/1 2026 (svensk tid = UTC+1) på sträckan SF1 vid 75° N, i det påhittade länet 99. K varnar 06 och 07, Trafikverket säger hal
 // 07–09 (kod 2 från 07.30, kod 1 från 10.30), luften är 2 °C 06–09 och 0,5 °C kl. 08 med radar 0,5 mm/h, annars 5 °C, och en olycka
