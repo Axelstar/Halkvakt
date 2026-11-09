@@ -242,6 +242,18 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         }
     }
 
+    /// Halkvakt öppnades på bilens skärm (DECISIONS #828, Axel 9/11): starta vakten om platsen redan är tillåten. CarPlay-scenen
+    /// är förgrund, så det fungerar också med Vid användning. Ingen fråga om Alltid härifrån: en systemdialog på telefonen
+    /// mitt i körningen vore fel. Inte om föraren stoppade vakten för hand nyss, och inte om självstarten är avslagen.
+    func startFranCarPlay() {
+        guard !running, Prefs.shared.autoWake else { return }
+        if let t = manualStoppedAt, Date.now.timeIntervalSince(t) < Self.noProbeAfterManualStopS { return }
+        let s = manager.authorizationStatus
+        guard s == .authorizedAlways || s == .authorizedWhenInUse else { return }
+        startRequested = true
+        start()
+    }
+
     private func start() {
         guard !running else { return }
         print("[Vakten] startar")
