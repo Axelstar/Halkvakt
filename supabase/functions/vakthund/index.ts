@@ -224,6 +224,30 @@ Deno.serve(async (req) => {
         if (wx.length && med < wx.length) problem.push(`**Bevisbäraren saknas på ${wx.length - med} av ${wx.length} väderpunkter** i live.json (kort #245)`);
       } catch (e) { problem.push(`**Kunde inte läsa bevisbäraren i live.json**: ${String(e).slice(0, 120)}`); }
     }
+    // 3b. FAVORITERNA (DECISIONS #617, #686 punkt 2): appens rapportfil i hinken `favoriter`, var tionde minut (:x6, sql/061). Appen
+    //     läser den sedan (34), så ett stopp här är ett driftfel, som lägesfilen. Åldern ur manifestets generated_at, och båda delarnas
+    //     sha256 prövas mot filerna som de ligger i hinken: appen förkastar en fil vars sha256 inte stämmer och behåller den förra. Den
+    //     långa delen skrivs bara när linjerna ändrats, och manifestet bär då den förra delens post. Larm efter 25 min, alltså två
+    //     uteblivna körningar.
+    try {
+      const bas = `${Deno.env.get("SUPABASE_URL")}/storage/v1/object/public/favoriter/`;
+      const hamta = async (fil: string) => {
+        const r = await fetch(`${bas}${fil}?t=${Date.now()}`, { cache: "no-store" });
+        if (!r.ok) throw new Error(`${fil} svarar ${r.status}`);
+        return r;
+      };
+      const sha = async (fil: string) => [...new Uint8Array(await crypto.subtle.digest("SHA-256", await (await hamta(fil)).arrayBuffer()))]
+        .map((b) => b.toString(16).padStart(2, "0")).join("");
+      const m = await (await hamta("manifest.json")).json();
+      const min = (Date.now() - new Date(m?.generated_at).getTime()) / 60000;
+      const snabbOk = (await sha(m?.snabb?.fil ?? "rapport-snabb.json")) === m?.snabb?.sha256;
+      const langOk = (await sha(m?.lang?.fil ?? "rapport-lang.json")) === m?.lang?.sha256;
+      rad.push(`favoriter: manifest ${min.toFixed(0)} min | sha snabb ${snabbOk ? "stämmer" : "MISMATCH"} · lång ${langOk ? "stämmer" : "MISMATCH"}`);
+      if (!(min <= 25))
+        problem.push(`**favoriter: manifestet ${min.toFixed(0)} min gammalt** (skrivs :x6, var tionde minut) — appens rapport står still; funktionens svar med felet ligger i public.anrop (halkvakt-favoriter)`);
+      if (!snabbOk) problem.push("**favoriter: manifestets sha256 stämmer inte med rapport-snabb.json** — appen förkastar filen och behåller den förra");
+      if (!langOk) problem.push("**favoriter: manifestets sha256 stämmer inte med rapport-lang.json** — appen förkastar filen och behåller den förra");
+    } catch (e) { problem.push(`**favoriter: hinken gick inte att läsa**: ${String(e).slice(0, 120)}`); }
   } catch (e) {
     problem.push(`Vakthunden kunde inte slutföra kontrollen: ${String(e)}`);
   }
@@ -540,19 +564,7 @@ Deno.serve(async (req) => {
       const m = await (await fetch(`${Deno.env.get("SUPABASE_URL")}/storage/v1/object/public/favoritprov/manifest.json?t=${Date.now()}`, { cache: "no-store" })).json();
       aFp = alderH(m?.generated_at);
     } catch { /* aFp förblir null */ }
-    // FAVORITER (DECISIONS #617): appens rapportfil i hinken `favoriter`, var tionde minut (:x6, sql/061). Åldern ur manifestets
-    // generated_at, och kontrollsumman prövas mot filen som den ligger i hinken: appen förkastar en fil vars sha256 inte stämmer, så en
-    // trasig fil syns här innan den syns i telefonen. Larm efter 25 min, alltså två uteblivna körningar. En källa i mätvakten tills
-    // appen läser filen (kort #357); därefter hör den till kedjans larm, som lägesfilen.
-    let aFv: number | null = null, shaFv: boolean | null = null;
-    try {
-      const bas = `${Deno.env.get("SUPABASE_URL")}/storage/v1/object/public/favoriter/`;
-      const m = await (await fetch(`${bas}manifest.json?t=${Date.now()}`, { cache: "no-store" })).json();
-      aFv = alderH(m?.generated_at);
-      const rå = new Uint8Array(await (await fetch(`${bas}${m?.snabb?.fil ?? "rapport-snabb.json"}?t=${Date.now()}`, { cache: "no-store" })).arrayBuffer());
-      const sum = [...new Uint8Array(await crypto.subtle.digest("SHA-256", rå))].map((b) => b.toString(16).padStart(2, "0")).join("");
-      shaFv = sum === m?.snabb?.sha256;
-    } catch { /* aFv förblir null */ }
+    // FAVORITER: appens rapportfil prövas i driftlarmet (3b) sedan (34), DECISIONS #686 punkt 2.
     // MCP-SERVERN (DECISIONS #630): den publika servern ska svara på tools/list med fyra verktyg. Den läser samma CDN-filer som
     // sajten, så ett stopp här är servern själv (deploy, gateway), inte datan.
     let mcpOk: boolean | null = null;
@@ -561,7 +573,7 @@ Deno.serve(async (req) => {
         body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/list" }) });
       mcpOk = r.ok && ((await r.json())?.result?.tools?.length ?? 0) === 4;
     } catch { mcpOk = false; }
-    rad.push(`källor: skuggloggen ${visa(aSl)} · olycksarkivet ${visa(aSa)} · radarn ${visa(aRp)} (stationsnederbörd 3 h: ${vatt.n}) · väglaget ${visa(aRc)} (kalla stationer 3 h: ${kallt.n}/${kallt.alla}) · kamerafacit ${visa(aFc)} (skuggans svenska larm 12 h: ${sl12.n}) · favoritprovet ${visa(aFp)} · favoriter ${visa(aFv)}${shaFv === false ? " (sha256 stämmer inte)" : ""} · mcp ${mcpOk ? "svarar" : "svarar inte"}`);
+    rad.push(`källor: skuggloggen ${visa(aSl)} · olycksarkivet ${visa(aSa)} · radarn ${visa(aRp)} (stationsnederbörd 3 h: ${vatt.n}) · väglaget ${visa(aRc)} (kalla stationer 3 h: ${kallt.n}/${kallt.alla}) · kamerafacit ${visa(aFc)} (skuggans svenska larm 12 h: ${sl12.n}) · favoritprovet ${visa(aFp)} · mcp${mcpOk ? "svarar" : "svarar inte"}`);
 
     const torra: string[] = [];
     if (mcpOk === false)
@@ -578,10 +590,6 @@ Deno.serve(async (req) => {
       torra.push(`**road_conditions** står stilla sedan ${visa(aRc)} MEDAN ${kallt.n} av ${kallt.alla} stationer (${(kallAndel * 100).toFixed(0)} %) legat på eller under noll de senaste 3 h — operatören borde klassa om; antingen ingest-live:s roadconditions() eller Trafikverket är tyst (#124)`);
     if (aFp === null || aFp > 1.25)
       torra.push(`**favoritprovet** (hinken \`favoritprov\`) har inte skrivit manifest.json på ${visa(aFp)} (körs :08/:38) — favoriternas provmiljö står still; funktionens svar med felet ligger i net._http_response`);
-    if (aFv === null || aFv > 25 / 60)
-      torra.push(`**favoriter** (hinken \`favoriter\`, appens rapportfil) har inte skrivit manifest.json på ${visa(aFv)} (körs :x6) — funktionens svar med felet ligger i net._http_response`);
-    else if (shaFv === false)
-      torra.push(`**favoriter**: \`rapport-snabb.json\` stämmer inte med manifestets sha256 — appen skulle förkasta filen och behålla den förra`);
 
     // Egen livscykel, egen etikett. Aldrig problem.push() — se huvudkommentaren.
     const allt = [...sena.map((x) => `- ❌ KÖRNING · ${x}`), ...torra.map((x) => `- ❌ KÄLLA · ${x}`)];

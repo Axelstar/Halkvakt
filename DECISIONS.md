@@ -14980,3 +14980,36 @@ halt."*
   förklaringen under kartorna, och på livekartan som en egen knapp (*Länsgräns*) som också stänger av den.
 
 **Alternativ.** Behålla gul kant men tunnare: förkastat, det var just gult som lästes som halka.
+
+## #824 (9/11 2026) Fristerna 9/11: skuggmotorns 546 är borta och kort #375 står kvar för ingest-lives tidsgränser, favoriterna i driftlarmet, och frågan om norr mitt i vintern flyttas till 3/12
+
+**Bengts ord 9/11:** *"Ja, alla"*, på genomgången av de sex öppna fristärendena: förslagen 1–4 och (a) för norr.
+
+**1. Skuggmotorns 546 (kort #375, fristen `skuggmotor-546-2026-11-07`).** Läst med SELECT i SQL-redigeraren 9/11 omkring 02.40 UTC:
+- inga 546 och inga andra sparade fel från skuggmotorns jobb (`halkvakt-skuggmotor`, `halkvakt-skuggmotor-forsprang`) i
+  `public.anrop` från rättelsen 4/11 15:17 UTC till 9/11 02:37 UTC, alltså 4,5 dygn;
+- `forsprang_log`: 214 av 214 försprångsvarv 4/11 15:42 – 9/11 02:12 UTC med 30 rader;
+- kontrollen: samma filter fångar 243 fel 546 från försprånget och 25 från huvudvarvet 3/11 00:00 – 4/11 15:17 UTC, och sopningen
+  går (ingest-lives tidsgränser sparade till 02:24 UTC).
+
+Första halvan av kortets Verify är uppfylld, med orsaken i #790. Kortet står kvar med Verify krympt till den andra halvan:
+ingest-lives tidsgränser förklarade och bokförda, eller borta. De har ökat. Per dygn UTC: 154 · 158 · 118 · 180 · 206 · 199 · 181
+för 30/10–5/11 och 246 · 256 · 243 för 6–8/11, alla pg_nets gräns på 20 s. Ökningen 6/11 sammanfaller i tid med storstädernas
+start (#804), men något samband är inte prövat. Kortets tal *69–206 per dygn sedan minst 30/10* går inte att återfinna i
+30/10–4/11 (lägst 118, 1/11).
+
+**2. Favoriterna i driftlarmet (#686 punkt 2, fristen `favoriter-driftlarm`).** Villkoret, att bygget som skickas in är släppt, var
+uppfyllt 25/10, när (34) godkändes (#713), och 0.3.17 (39) är släppt sedan 8/11 (#816). Vakthunden prövar nu favoriterna i
+driftlarmet (led 3b): manifestets ålder, högst 25 minuter, och båda delarnas sha256 mot filerna i hinken. Mätvakten läser inte längre
+hinken. Provet står i `test/hinken.test.ts`. Deployen av vakthunden görs på Bengts ord (#686), och fristen stängs när den är gjord.
+
+**3. Frågan om norr mitt i vintern (kort #317 b, fristen `norr-62`) flyttas från 15/11 till 3/12.** Fristen ska avgöras med skuggans
+november i norr som underlag, och den 15/11 finns bara halva november. Mätningen som #317 b kräver först görs i halkvakt-kuvos före
+3/12 (#768).
+**Alternativ:** (b) behålla 15/11 och mäta 1–14/11. Förkastat, eftersom underlaget då är en halv månad.
+
+**4. Stängt och städat.** Telefonturen och brytarna (ärendena #1459 och #1460) stängda 9/11, eftersom klart när är uppfyllt enligt
+#778 och #816, tilläggen 8/11. Ur fristlistan tas de två fristerna och `skuggmotor-546-2026-11-07` bort, och `taklasningen-2-11`
+med dem: dess ärende stängdes 3/11 men raden stod kvar. PAT-rotationen (`pat-rotation`, 15/11) är Axels och står kvar.
+
+**Stomdokument:** BED §4.2 — norr och söder om 62° (beslutet 3/12), SYS — favoriterna i vakthundens driftlarm

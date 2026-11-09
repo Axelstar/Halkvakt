@@ -29,3 +29,17 @@ test("vakthunden prövar hinken som appens väg och Pages som reserv, hinken med
   assert.ok(hink < reserv, "hinken skrivs varannan minut, Pages var tionde");
   assert.ok(k.indexOf('prova("hinken"') < k.indexOf('prova("reserven (Pages)"'), "hinken prövas först, och bevisbäraren läses ur den");
 });
+
+// FAVORITERNA I DRIFTLARMET (DECISIONS #686 punkt 2, fristen favoriter-driftlarm): appen läser rapportfilen sedan (34), så ett
+// stopp i hinken `favoriter` är ett driftfel och inte en mätning. Vakthunden prövar båda delarnas sha256 i driftlarmet.
+test("vakthunden prövar favoriternas båda delar i driftlarmet, inte i mätvakten", () => {
+  const k = kod("vakthund/index.ts");
+  const drift = k.slice(k.indexOf("// 3. Når det APPEN?"), k.indexOf("// 4. HAR VINTERN KOMMIT"));
+  const matvakt = k.slice(k.indexOf("// 6a. GÅR MÄTNINGSKÖRNINGARNA?"), k.indexOf("// 7. LIGGER EN KÄLLÄNDRING OLÄST?"));
+  assert.ok(drift.includes("/storage/v1/object/public/favoriter/"), "driftlarmet läser hinken favoriter");
+  for (const del of ["snabb", "lang"])
+    assert.match(drift, new RegExp(`m\\?\\.${del}\\?\\.sha256`), `driftlarmet prövar ${del}-delens sha256 mot manifestet`);
+  assert.ok(/problem\.push\([^;]*favoriter/.test(drift), "ett fel i favoriterna färgar driftlarmet");
+  assert.ok(!matvakt.includes("public/favoriter/"), "mätvakten läser inte längre hinken favoriter");
+  assert.ok(!/torra\.push\([^;]*\*\*favoriter\*\*/.test(matvakt), "mätvakten larmar inte längre för favoriterna");
+});
