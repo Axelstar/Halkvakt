@@ -3145,3 +3145,150 @@ test("#818 säsongsfacit: dygnsräkningen per län och tid på dygnet, ledtiden 
     await pool.end();
   }
 });
+
+// FLÄCKVIS VÅT SOM FUKT UTANFÖR STORSTÄDERNA (sql/101, DECISIONS #825, kort #644), mot riktig PostGIS. Samma fall i den frystas och den
+// nyas regel och i den snabba (sql/080), först på 094 och sedan på 101. Punkterna ligger vid 36° Ö och 70° N, långt från provens
+// övriga punkter och stationer.
+//   FV1  följeorden: fläckvis Våt ensamt och med fläckvis Torrt är fukt; med Torrt eller med ett annat ord (fläckvis Is) torr
+//   FV2  Våt som förut, också 1,5 km från en stadspunkt
+//   FV3  storstadsundantaget: bara fläckvis Våt 1,5 km från en stadspunkt torr, 2,5 km bort på samma sträcka fukt; listan följer
+//        vägpunkterna och stadspunkterna (triggrarna)
+//   FV4  storstädernas gren oförändrad: B med radarn varnar, B utan torr, på 094 och 101
+//   FV5  radarn 0,1 mm/h räknas, 0,09 inte
+//   FV6  vetot och spridningsspärren går före: fläckvis Våt med en varm station 10 km bort veto, med frys_min 0,5 spridning
+//   FV7  på 094 är varje fläckvis-fall torr; 101 går att köra två gånger, den snabba skuggan stannar tills 080 körts om, och efter
+//        080 och 081 fattar den snabba samma beslut
+//   FV8  regelfunktionerna förblir inlinebara: LANGUAGE sql utan SET och SECURITY DEFINER, och EXPLAIN (VERBOSE) har samma form som på 094
+test("#825 fläckvis Våt: följeorden, storstadsundantaget, radarn, vetot och spridningen, och den snabba", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const las = (f: string) => q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+  const st = (km: number) => 70 + km / 111.2;   // en punkt km norr om 70° N
+  const LIVE = ["kandidat_live", "ny_kandidat_live"];
+  const FN = ["kandidat_regel", "ny_kandidat_regel", "ny_kandidat_regel_snabb"];
+  const STAD = ["B99951", "B99952"];
+  // [punkt, sträcka, km norr om 70° N, n_ank, frys_min]
+  const P: [string, string, number, number, number][] = [
+    ["vP01", "99890", 50, 1, 0],     // fläckvis Våt ensamt
+    ["vP02", "99891", 51, 1, 0],     // fläckvis Våt och fläckvis Torrt
+    ["vP03", "99892", 52, 1, 0],     // fläckvis Våt och Torrt
+    ["vP04", "99893", 53, 1, 0],     // fläckvis Våt och fläckvis Is
+    ["vP05", "99894", 54, 1, 0],     // Våt
+    ["vP06", "99895", -1.5, 1, 0],   // Våt, 1,5 km från stadspunkten B99951
+    ["vP07", "99896", 1.5, 1, 0],    // bara fläckvis Våt, 1,5 km från B99951
+    ["vP08", "99896", 2.5, 1, 0],    // samma sträcka, 2,5 km från B99951
+    ["vP09", "99897", 55, 1, 0],     // Torrt, radarn 0,1
+    ["vP10", "99898", 56, 1, 0],     // Torrt, radarn 0,09
+    ["vP11", "99890", 300, 1, 0],    // fläckvis Våt ensamt, varm station 10 km bort
+    ["vP12", "99890", 200, 2, 0.5],  // fläckvis Våt ensamt, två ankare och frys_min 0,5
+  ];
+  const stad = async () => {
+    await q("DELETE FROM ny_kandidat_snabb").catch(() => {});
+    for (const t of LIVE) await q(`DELETE FROM ${t} WHERE punkt LIKE 'vP%' OR punkt = ANY($1)`, [STAD]).catch(() => {});
+    await q("DELETE FROM radar_stad WHERE grupp LIKE 'B-995-%'").catch(() => {});
+    await q("DELETE FROM radar_precip WHERE segment_id LIKE '9989%'").catch(() => {});
+    await q("DELETE FROM weather_observations WHERE station_id = 'RP1'").catch(() => {});
+    await q("DELETE FROM stadspunkt WHERE punkt = ANY($1)", [STAD]).catch(() => {});
+    await q("UPDATE stadsbrytare SET pa = false").catch(() => {});
+    await q("DELETE FROM vagpunkt WHERE punkt LIKE 'vP%'");
+    await q("DELETE FROM road_conditions WHERE segment_id LIKE '9989%'");
+  };
+  const utfall = async (fn: string) => Object.fromEntries((await q(
+    `SELECT punkt, utfall FROM ${fn}() WHERE punkt LIKE 'vP%' OR punkt = ANY($1)`, [STAD])).rows.map((r: any) => [r.punkt, r.utfall]));
+  const del = (u: Record<string, string>, ps: string[]) => Object.fromEntries(ps.map((p) => [p, u[p]]));
+  const nara = async () => (await q("SELECT punkt FROM vagpunkt_nara_stad WHERE punkt LIKE 'vP%' ORDER BY punkt")).rows.map((r: any) => r.punkt);
+  // FV8: planens form och funktionens egenskaper. Inlinad = ingen Function Scan på funktionen i EXPLAIN (VERBOSE).
+  const form = async () => {
+    const ut: Record<string, unknown> = {};
+    for (const fn of FN) {
+      const plan = (await q(`EXPLAIN (VERBOSE, COSTS OFF) SELECT * FROM ${fn}()`)).rows.map((r: any) => r["QUERY PLAN"]).join("\n");
+      const d = (await q(`SELECT l.lanname, p.proconfig, p.prosecdef, p.provolatile FROM pg_proc p JOIN pg_language l ON l.oid = p.prolang
+        WHERE p.oid = $1::regprocedure`, [`${fn}()`])).rows[0];
+      ut[fn] = { ...d, inlinad: !new RegExp(`Function Scan on (\\w+\\.)?${fn}\\b`).test(plan), avstand: /'2000'::double precision/.test(plan) };
+    }
+    return ut;
+  };
+  try {
+    await q("CREATE TABLE IF NOT EXISTS shadow_log (id bigserial PRIMARY KEY, run_at timestamptz NOT NULL DEFAULT now(), alerts jsonb NOT NULL DEFAULT '[]'::jsonb)");
+    await q("DROP FUNCTION IF EXISTS kandidat_regel()");   // sql/056 har den äldre returtypen (som proven #800 och #804)
+    for (const f of ["001_init.sql", "008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql", "018_trend_berakna.sql",
+                     "029_brott_index.sql", "030_langsam_vakt.sql", "050_kandidat_live.sql", "053_arkiv_tabeller.sql", "055_vagpunkter.sql",
+                     "056_kandidat_regel.sql", "057_kandidat_skugga.sql", "058_kandidat_spridning.sql", "059_kandidat_brytare.sql",
+                     "065_kandidat_domlogg_punkter.sql", "068_ny_kandidat_skugga.sql", "069_radarns_tal.sql",
+                     "086_spridningsparren_frys_min.sql", "087_spridningsparren_f1.sql", "089_stadspunkter.sql", "090_radar_stad.sql",
+                     "091_stadsregeln.sql", "094_stadsgrenens_timme.sql", "078_kandidat_snabb.sql", "080_kandidat_snabb_skugga.sql"]) await las(f);
+    await stad();
+    for (const [p, g, km] of [["B99951", "B-995-951", 0], ["B99952", "B-995-952", 100]] as const)
+      await q("INSERT INTO stadspunkt (punkt, grupp, lager, omrade, lon, lat) VALUES ($1, $2, 'B', 'Stor-Stockholm', 36, $3)", [p, g, st(km)]);
+    await q("UPDATE stadsbrytare SET pa = true WHERE omrade = 'Stor-Stockholm' AND lager = 'B'");
+    for (const [p, s, km] of P) await q("INSERT INTO vagpunkt (punkt, segment_id, lon, lat) VALUES ($1, $2, 36, $3)", [p, s, st(km)]);
+    await q(`INSERT INTO road_conditions (segment_id, condition_code, condition_text, condition_info) VALUES
+      ('99890', 1, 'Normalt', '{"fläckvis Våt"}'), ('99891', 1, 'Normalt', '{"fläckvis Våt","fläckvis Torrt"}'),
+      ('99892', 1, 'Normalt', '{"fläckvis Våt",Torrt}'), ('99893', 1, 'Normalt', '{"fläckvis Våt","fläckvis Is"}'),
+      ('99894', 1, 'Normalt', '{Våt}'), ('99895', 1, 'Normalt', '{Våt}'), ('99896', 1, 'Normalt', '{"fläckvis Våt"}'),
+      ('99897', 1, 'Normalt', '{Torrt}'), ('99898', 1, 'Normalt', '{Torrt}')`);
+    await q(`INSERT INTO radar_precip (segment_id, observed_at, rate_max_mmh, rate_mean_mmh) VALUES
+      ('99897', now() - interval '10 minutes', 0.2, 0.1), ('99898', now() - interval '10 minutes', 0.2, 0.09)`);
+    await q("INSERT INTO radar_stad (grupp, observed_at, rate_max_mmh, rate_mean_mmh) VALUES ('B-995-951', now() - interval '10 minutes', 0.8, 0.5)");
+    await q(`INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c)
+      VALUES ('RP1', 'prov', ST_SetSRID(ST_MakePoint(36, $1), 4326), now() - interval '20 minutes', 3.0, 1.0)`, [st(310)]);   // 10 km från vP11
+    const tid: Date = (await q("SELECT date_trunc('hour', now()) AS t")).rows[0].t;
+    for (const t of LIVE) {
+      await q(`INSERT INTO ${t} (tid, punkt, pb) SELECT $1, v.punkt, 5 FROM vagpunkt v WHERE v.punkt NOT LIKE 'vP%' ON CONFLICT DO NOTHING`, [tid]);
+      for (const [p, , , n, fm] of P) await q(`INSERT INTO ${t} (tid, punkt, pb, n_ank, spr, frys_min, ank_km) VALUES ($1, $2, -1, $3, 1, $4, 4)`, [tid, p, n, fm]);
+      for (const p of STAD) await q(`INSERT INTO ${t} (tid, punkt, pb, n_ank, spr, frys_min, ank_km) VALUES ($1, $2, -1, 1, 1, 0, 4)`, [tid, p]);
+    }
+    for (const [p, , , n] of P) await q("INSERT INTO ny_kandidat_snabb (punkt, tid, raknad, pb, n_ank, spr) VALUES ($1, $2, now(), -1.5, $3, 1)", [p, tid, n]);
+    for (const p of STAD) await q("INSERT INTO ny_kandidat_snabb (punkt, tid, raknad, pb, n_ank, spr) VALUES ($1, $2, now(), -1.5, 1, 1)", [p, tid]);
+
+    // På 094: fläckvis Våt är aldrig fukt.
+    const V094: Record<string, string> = { vP01: "torr", vP02: "torr", vP03: "torr", vP04: "torr", vP05: "varnar", vP06: "varnar", vP07: "torr",
+      vP08: "torr", vP09: "varnar", vP10: "torr", vP11: "veto", vP12: "torr", B99951: "varnar", B99952: "torr" };
+    for (const fn of FN) assert.deepEqual(await utfall(fn), V094, `FV7: ${fn} på 094`);
+    const form094 = await form();
+
+    for (const f of ["101_flackvis_fukt.sql", "101_flackvis_fukt.sql"]) await las(f);
+    assert.match((await q("SELECT kandidat_snabb_skugga() AS s")).rows[0].s, /regeln har ändrats/, "FV7: den snabba skuggan stannar tills 080 körts om");
+    for (const f of ["080_kandidat_snabb_skugga.sql", "081_search_path.sql"]) await las(f);
+    assert.deepEqual(await nara(), ["vP06", "vP07"], "FV3: vägpunkterna inom 2 km från en stadspunkt");
+    assert.deepEqual((await q("SELECT tgrelid::regclass::text AS t FROM pg_trigger WHERE tgname = 'nara_stad' ORDER BY 1")).rows.map((r: any) => r.t),
+      ["stadspunkt", "vagpunkt"], "FV3: en trigger på var tabell, också efter två körningar");
+
+    const V101: Record<string, string> = { ...V094, vP01: "varnar", vP02: "varnar", vP08: "varnar", vP12: "spridning" };
+    for (const fn of FN) {
+      const u = await utfall(fn);
+      assert.deepEqual(del(u, ["vP01", "vP02", "vP03", "vP04"]), { vP01: "varnar", vP02: "varnar", vP03: "torr", vP04: "torr" },
+        `FV1: ${fn}, fläckvis Våt ensamt och med fläckvis Torrt fukt, med Torrt och med fläckvis Is torr`);
+      assert.deepEqual(del(u, ["vP06", "vP07", "vP08"]), { vP06: "varnar", vP07: "torr", vP08: "varnar" },
+        `FV2/FV3: ${fn}, Våt nära staden fukt, fläckvis Våt 1,5 km från en stadspunkt torr och 2,5 km bort fukt`);
+      assert.deepEqual(del(u, ["vP09", "vP10"]), { vP09: "varnar", vP10: "torr" }, `FV5: ${fn}, radarn 0,1 räknas och 0,09 inte`);
+      assert.deepEqual(del(u, ["vP11", "vP12"]), { vP11: "veto", vP12: "spridning" }, `FV6: ${fn}, vetot och spridningsspärren går före`);
+      assert.deepEqual(del(u, STAD), { B99951: "varnar", B99952: "torr" }, `FV4: ${fn}, storstädernas gren som på 094`);
+      assert.deepEqual(u, V101, `FV1–FV6: ${fn}, alla punkter`);
+    }
+    const hela = (fn: string) => q(`SELECT * FROM ${fn}() WHERE punkt LIKE 'vP%' OR punkt = ANY($1) ORDER BY punkt`, [STAD]).then((r) => r.rows);
+    assert.deepEqual(await hela("ny_kandidat_regel"), await hela("kandidat_regel"), "FV7: den frystas och den nyas regel ger samma rader, fält för fält");
+    assert.equal((await q("SELECT kandidat_snabb_skugga() AS s")).rows[0].s, "mätt", "FV7: efter 080 mäter den snabba skuggan igen");
+
+    const form101 = await form();
+    for (const fn of FN) console.log(`FV8 ${fn}: på 094 ${JSON.stringify(form094[fn])}, på 101 ${JSON.stringify(form101[fn])}`);
+    assert.deepEqual(form101, form094, "FV8: samma språk, inget SET, ingen SECURITY DEFINER, samma inlining och inget avstånd i planen");
+    assert.deepEqual((form101.ny_kandidat_regel as any).lanname, "sql");
+    assert.deepEqual((await q(`SELECT proname, proconfig FROM pg_proc WHERE proname IN ('vagpunkt_nara_stad_bygg', 'vagpunkt_nara_stad_trigger')
+      ORDER BY proname`)).rows.map((r: any) => r.proconfig), [["search_path=public, extensions"], ["search_path=public, extensions"]],
+      "FV8: bygget och triggern har fast sökväg i definitionen (DECISIONS #784)");
+
+    // FV3: listan följer vägpunkterna och stadspunkterna.
+    await q("UPDATE vagpunkt SET lat = $1 WHERE punkt = 'vP08'", [st(1)]);
+    assert.deepEqual(await nara(), ["vP06", "vP07", "vP08"], "FV3: en vägpunkt som flyttas inom 2 km kommer med (triggern på vagpunkt)");
+    assert.equal((await utfall("ny_kandidat_regel")).vP08, "torr", "FV3: och fläckvis Våt räknas inte där");
+    await q("DELETE FROM stadspunkt WHERE punkt = 'B99951'");
+    assert.deepEqual(await nara(), [], "FV3: utan stadspunkten är listan tom (triggern på stadspunkt)");
+    assert.deepEqual(del(await utfall("ny_kandidat_regel"), ["vP06", "vP07", "vP08"]), { vP06: "varnar", vP07: "varnar", vP08: "varnar" },
+      "FV3: utan stadspunkten är fläckvis Våt fukt igen");
+  } finally {
+    await stad().catch(() => {});
+    await pool.end();
+  }
+});
