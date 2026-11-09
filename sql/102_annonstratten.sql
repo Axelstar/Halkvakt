@@ -71,6 +71,9 @@ BEGIN
     REVOKE ALL ON TABLE meta_annons_dag FROM anon; REVOKE ALL ON TABLE appstore_dag FROM anon;
     REVOKE ALL ON FUNCTION annonstratten_stat(integer) FROM anon;
   END IF;
+  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'service_role') THEN
+    GRANT ALL ON TABLE meta_annons_dag TO service_role; GRANT ALL ON TABLE appstore_dag TO service_role;
+  END IF;
   IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'authenticated') THEN
     REVOKE ALL ON TABLE meta_annons_dag FROM authenticated; REVOKE ALL ON TABLE appstore_dag FROM authenticated;
     REVOKE ALL ON FUNCTION annonstratten_stat(integer) FROM authenticated;
