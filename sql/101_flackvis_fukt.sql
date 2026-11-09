@@ -22,15 +22,16 @@
 CREATE TABLE IF NOT EXISTS vagpunkt_nara_stad (
   punkt text PRIMARY KEY
 );
--- Stadspunkterna på geografin, så att bygget slår upp avståndet i ett index i stället för att jämföra alla par.
-CREATE INDEX IF NOT EXISTS stadspunkt_geog ON stadspunkt USING gist ((geom::geography));
 
 CREATE OR REPLACE FUNCTION vagpunkt_nara_stad_bygg() RETURNS void
 LANGUAGE plpgsql SET search_path = public, extensions AS $$
 BEGIN
   WITH nara AS (
     SELECT v.punkt FROM vagpunkt v
-    WHERE EXISTS (SELECT 1 FROM stadspunkt s WHERE ST_DWithin(s.geom::geography, v.geom::geography, 2000))   -- STAD_FLACKVIS_M
+    -- Förfiltret på sql/089:s geometriindex (stadspunkt_geom): 0,1° är minst 4 km även vid 69° N. Prövat i full skala 9/11 som läsning
+    -- (EXPLAIN ANALYZE): 12 960 vägpunkter mot 15 786 stadspunkter på 0,45 s, ett indexuppslag per vägpunkt.
+    WHERE EXISTS (SELECT 1 FROM stadspunkt s WHERE s.geom && ST_Expand(v.geom, 0.1)
+                    AND ST_DWithin(s.geom::geography, v.geom::geography, 2000))                                  -- STAD_FLACKVIS_M
   ),
   bort AS (DELETE FROM vagpunkt_nara_stad n WHERE NOT EXISTS (SELECT 1 FROM nara WHERE nara.punkt = n.punkt))
   INSERT INTO vagpunkt_nara_stad (punkt) SELECT nara.punkt FROM nara ON CONFLICT (punkt) DO NOTHING;
