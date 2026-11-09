@@ -1600,13 +1600,31 @@ export function lsOrtVagar(ort: { namn: string; lan: number; lon: number; lat: n
   const km = new Map<LanSegment, number>();
   // Utan geometri (Node-vägen, proven) gäller namnregeln som förut.
   if (namngivna.length >= 2 || !vaglag.some((s) => s.linje?.length)) return { avsnitt: namngivna, km, nara: false, narmast: null };
-  for (const s of vaglag) km.set(s, lsAvsnittKm(ort, s));
-  const nara = vaglag.filter((s) => km.get(s)! <= LS_NARA_AVSNITT_KM).sort((a, b) => km.get(a)! - km.get(b)!).slice(0, LS_NARA_AVSNITT_MAX);
+  // Sträckans ruta först: en sträcka vars ruta ligger längre bort än radien räknas inte i detalj (291 orter gånger alla sträckor).
+  const kx = 111.32 * Math.cos((ort.lat * Math.PI) / 180), ky = 110.57;
+  for (const s of vaglag) {
+    const r = lsRuta(s);
+    const dx = Math.max(r[0] - ort.lon, 0, ort.lon - r[2]) * kx, dy = Math.max(r[1] - ort.lat, 0, ort.lat - r[3]) * ky;
+    if (Math.hypot(dx, dy) <= LS_NARA_AVSNITT_KM) km.set(s, lsAvsnittKm(ort, s));
+  }
+  const nara = [...km.keys()].filter((s) => km.get(s)! <= LS_NARA_AVSNITT_KM).sort((a, b) => km.get(a)! - km.get(b)!).slice(0, LS_NARA_AVSNITT_MAX);
   const avsnitt = [...nara, ...namngivna.filter((s) => !nara.includes(s))];
   if (avsnitt.length) return { avsnitt, km, nara: true, narmast: null };
+  for (const s of vaglag) km.set(s, lsAvsnittKm(ort, s));
   let narmast: { s: LanSegment; km: number } | null = null;
   for (const [s, d] of km) if (d < Infinity && (!narmast || d < narmast.km)) narmast = { s, km: d };
   return { avsnitt, km, nara: true, narmast };
+}
+const LS_RUTOR = new WeakMap<LanSegment, [number, number, number, number]>();
+/** Sträckans ruta [västligast, sydligast, östligast, nordligast], räknad en gång per körning. */
+function lsRuta(s: LanSegment): [number, number, number, number] {
+  let r = LS_RUTOR.get(s);
+  if (!r) {
+    r = [Infinity, Infinity, -Infinity, -Infinity];
+    for (const l of s.linje ?? []) for (const [x, y] of l) { r[0] = Math.min(r[0], x); r[1] = Math.min(r[1], y); r[2] = Math.max(r[2], x); r[3] = Math.max(r[3], y); }
+    LS_RUTOR.set(s, r);
+  }
+  return r;
 }
 const lsKmText = (km: number) => (km < 1 ? "under 1 km" : `${Math.round(km)} km`);
 
