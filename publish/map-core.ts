@@ -235,7 +235,9 @@ export async function buildMapData(q: Q, opts: {
     sidor = byggLanssidor({
       smhi: smhi as unknown as SmhiRad[],
       vaglag: vaglag.map((r) => ({ code: numOrNull(r.condition_code), text: r.condition_text ?? null, info: (r.condition_info ?? []) as string[],
-        road: r.road_number ?? null, plats: r.location_text ?? null, lan: numOrNull(r.lan) })),
+        road: r.road_number ?? null, plats: r.location_text ?? null, lan: numOrNull(r.lan),
+        // Linjen (9/11): ortssidorna väljer avsnitten nära en kommun vars namn inget avsnitt bär.
+        linje: r.g?.type === "LineString" ? [r.g.coordinates] : r.g?.type === "MultiLineString" ? r.g.coordinates : undefined })),
       stationer,
       olyckor: olyckor.filter((r) => r.land === "SE").map((r) => ({ road: r.road_number ?? null, start: r.start_time ? new Date(r.start_time).toISOString() : null,
         allvar: r.severity_text ?? null, lan: numOrNull(r.lan) })),

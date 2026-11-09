@@ -900,7 +900,9 @@ export const STRAK: Record<string, Strak> = {
 /** Vägnumret utan form: väglaget skriver "E 4" och "Väg 40", olyckorna "E4" och "Väg 274". */
 export const vagNyckel = (s: string | null) => (s ?? "").toLowerCase().replace(/\s+/g, "").replace(/^väg/, "");
 
-export type LanSegment = { code: number | null; text: string | null; info: string[]; road: string | null; plats: string | null; lan: number | null };
+/** `linje` (9/11): sträckans geometri, [lon, lat] per linje, så att en ortssida kan välja avsnitten nära orten när inget bär dess namn. */
+export type LanSegment = { code: number | null; text: string | null; info: string[]; road: string | null; plats: string | null; lan: number | null;
+  linje?: [number, number][][] };
 export type LanStation = { name: string; yta: number; fukt: boolean; lan: number; vag?: string | null; lon?: number; lat?: number };
 export type LanOlycka = { road: string | null; start: string | null; allvar: string | null; lan: number | null };
 
@@ -1099,7 +1101,7 @@ function lsVagLanForLan(vag: (typeof VAGAR)[number], d: { vaglag: LanSegment[]; 
     const namn = [...new Set((halt.length ? halt : sv).map(lsStracka).filter(Boolean))].slice(0, 6);
     return `<li><b><a href="../../lan/${lan.slug}/">${lsEsc(lan.kort)}</a></b>${lage}${temp}${namn.length ? `<small>${lsEsc(namn.join(" · "))}</small>` : ""}</li>`;
   });
-  const orter = ORTER.filter((o) => lsOrtAvsnitt(o, segs).length).map((o) => `<a href="../../ort/${ortSlug(o.namn)}/">${lsEsc(o.namn)}</a>`);
+  const orter = ORTER.filter((o) => lsOrtAvsnitt(o, segs).length).map((o) => `<a href="../../ort/${ortAdress(o)}/">${lsEsc(o.namn)}</a>`);
   return (rader.length ? `<h2>${lsEsc(vag.namn)} län för län</h2>\n<ul class="vaglista">\n${rader.join("\n")}\n</ul>` : "") +
     (orter.length ? `\n<h2>Orter längs ${lsEsc(vag.rubrik)}</h2>\n<p>${orter.join(" · ")}</p>` : "");
 }
@@ -1373,7 +1375,7 @@ const lsLanTitelnamn = (lan: (typeof LAN)[number]) =>
  *  Koordinaten (6/11, DECISIONS #807) är tätortens punkt i Wikidata (P625, CC0, läst 6/11 2026), avrundad till tre decimaler, och
  *  används bara till att välja vägväderstationerna inom LS_NARA_KM från orten — Borås 6/11: Trafikverkets sex sträckor sa normalt
  *  hela dagen medan alla 13 stationer inom 30 km låg under noll, och det var stationerna de som googlade Borås kom för. */
-export const ORTER: { namn: string; lan: number; lon: number; lat: number }[] = [
+export const ORTER: { namn: string; lan: number; lon: number; lat: number; tatort?: string; slug?: string }[] = [
   { namn: "Stockholm", lan: 1, lon: 18.046, lat: 59.31 }, { namn: "Södertälje", lan: 1, lon: 17.599, lat: 59.194 },
   { namn: "Uppsala", lan: 3, lon: 17.639, lat: 59.85 }, { namn: "Eskilstuna", lan: 4, lon: 16.513, lat: 59.377 },
   { namn: "Nyköping", lan: 4, lon: 17.018, lat: 58.758 }, { namn: "Linköping", lan: 5, lon: 15.626, lat: 58.409 },
@@ -1398,27 +1400,233 @@ export const ORTER: { namn: string; lan: number; lon: number; lat: number }[] = 
   { namn: "Lycksele", lan: 24, lon: 18.675, lat: 64.596 }, { namn: "Vilhelmina", lan: 24, lon: 16.659, lat: 64.626 },
   { namn: "Luleå", lan: 25, lon: 22.191, lat: 65.584 }, { namn: "Piteå", lan: 25, lon: 21.451, lat: 65.32 },
   { namn: "Kiruna", lan: 25, lon: 20.303, lat: 67.849 },
+  // ALLA KOMMUNERNA (9/11, Axel: *"Gör en ortssida för alla 290 kommuner"*): de 244 kommuner som inte redan har en ort ovan, en sida var,
+  // med kommunens namn utan genitiv-s. Koordinaten är centralortens punkt i Wikidata (P625 på kommunens P36, CC0, läst 9/11 2026),
+  // avrundad till tre decimaler. `tatort` är centralorten när den heter något annat än kommunen: den står på sidan, räknas i
+  // avsnittens namn och går att söka på. Region Gotland är Visby ovan; Sälen ovan är ingen kommun och står kvar. `slug` bara där två
+  // namn annars ger samma adress (Håbo och Habo).
+  { namn: "Botkyrka", lan: 1, lon: 17.823, lat: 59.194, tatort: "Tumba" },
+  { namn: "Danderyd", lan: 1, lon: 18.087, lat: 59.397, tatort: "Djursholm" }, { namn: "Ekerö", lan: 1, lon: 17.8, lat: 59.274 },
+  { namn: "Haninge", lan: 1, lon: 18.133, lat: 59.167, tatort: "Handen" }, { namn: "Huddinge", lan: 1, lon: 17.981, lat: 59.235 },
+  { namn: "Järfälla", lan: 1, lon: 17.833, lat: 59.417, tatort: "Jakobsberg" }, { namn: "Lidingö", lan: 1, lon: 18.133, lat: 59.367 },
+  { namn: "Nacka", lan: 1, lon: 18.164, lat: 59.31 }, { namn: "Norrtälje", lan: 1, lon: 18.705, lat: 59.758 },
+  { namn: "Nykvarn", lan: 1, lon: 17.433, lat: 59.175 }, { namn: "Nynäshamn", lan: 1, lon: 17.945, lat: 58.908 },
+  { namn: "Salem", lan: 1, lon: 17.767, lat: 59.2 }, { namn: "Sigtuna", lan: 1, lon: 17.839, lat: 59.623, tatort: "Märsta" },
+  { namn: "Sollentuna", lan: 1, lon: 17.936, lat: 59.429 }, { namn: "Solna", lan: 1, lon: 18.001, lat: 59.36 },
+  { namn: "Sundbyberg", lan: 1, lon: 17.972, lat: 59.361 }, { namn: "Tyresö", lan: 1, lon: 18.224, lat: 59.241 },
+  { namn: "Täby", lan: 1, lon: 18.083, lat: 59.433 }, { namn: "Upplands Väsby", lan: 1, lon: 17.917, lat: 59.517 },
+  { namn: "Upplands-Bro", lan: 1, lon: 17.736, lat: 59.483, tatort: "Kungsängen" },
+  { namn: "Vallentuna", lan: 1, lon: 18.078, lat: 59.534 }, { namn: "Vaxholm", lan: 1, lon: 18.332, lat: 59.404 },
+  { namn: "Värmdö", lan: 1, lon: 18.386, lat: 59.326, tatort: "Gustavsberg" },
+  { namn: "Österåker", lan: 1, lon: 18.299, lat: 59.48, tatort: "Åkersberga" },
+  { namn: "Enköping", lan: 3, lon: 17.073, lat: 59.64 }, { namn: "Heby", lan: 3, lon: 16.856, lat: 59.941 },
+  { namn: "Håbo", lan: 3, lon: 17.504, lat: 59.551, tatort: "Bålsta", slug: "habo-balsta" },
+  { namn: "Knivsta", lan: 3, lon: 17.794, lat: 59.725 }, { namn: "Tierp", lan: 3, lon: 17.517, lat: 60.348 },
+  { namn: "Älvkarleby", lan: 3, lon: 17.405, lat: 60.634, tatort: "Skutskär" }, { namn: "Östhammar", lan: 3, lon: 18.363, lat: 60.259 },
+  { namn: "Flen", lan: 4, lon: 16.592, lat: 59.058 }, { namn: "Gnesta", lan: 4, lon: 17.308, lat: 59.047 },
+  { namn: "Katrineholm", lan: 4, lon: 16.201, lat: 58.992 }, { namn: "Oxelösund", lan: 4, lon: 17.114, lat: 58.67 },
+  { namn: "Strängnäs", lan: 4, lon: 17.023, lat: 59.365 }, { namn: "Trosa", lan: 4, lon: 17.56, lat: 58.901 },
+  { namn: "Vingåker", lan: 4, lon: 15.873, lat: 59.044 },
+  { namn: "Boxholm", lan: 5, lon: 15.048, lat: 58.194 }, { namn: "Finspång", lan: 5, lon: 15.809, lat: 58.705 },
+  { namn: "Kinda", lan: 5, lon: 15.63, lat: 57.986, tatort: "Kisa" }, { namn: "Mjölby", lan: 5, lon: 15.131, lat: 58.332 },
+  { namn: "Söderköping", lan: 5, lon: 16.327, lat: 58.475 }, { namn: "Vadstena", lan: 5, lon: 14.897, lat: 58.445 },
+  { namn: "Valdemarsvik", lan: 5, lon: 16.594, lat: 58.2 }, { namn: "Ydre", lan: 5, lon: 15.278, lat: 57.825, tatort: "Österbymo" },
+  { namn: "Åtvidaberg", lan: 5, lon: 15.997, lat: 58.2 }, { namn: "Ödeshög", lan: 5, lon: 14.655, lat: 58.231 },
+  { namn: "Aneby", lan: 6, lon: 14.809, lat: 57.835 }, { namn: "Eksjö", lan: 6, lon: 14.975, lat: 57.665 },
+  { namn: "Gislaved", lan: 6, lon: 13.564, lat: 57.3 }, { namn: "Gnosjö", lan: 6, lon: 13.741, lat: 57.353 },
+  { namn: "Habo", lan: 6, lon: 14.086, lat: 57.907 }, { namn: "Mullsjö", lan: 6, lon: 13.878, lat: 57.918 },
+  { namn: "Nässjö", lan: 6, lon: 14.705, lat: 57.653 }, { namn: "Sävsjö", lan: 6, lon: 14.667, lat: 57.398 },
+  { namn: "Tranås", lan: 6, lon: 14.975, lat: 58.032 }, { namn: "Vaggeryd", lan: 6, lon: 14.136, lat: 57.494 },
+  { namn: "Vetlanda", lan: 6, lon: 15.078, lat: 57.422 }, { namn: "Värnamo", lan: 6, lon: 14.058, lat: 57.182 },
+  { namn: "Alvesta", lan: 7, lon: 14.553, lat: 56.901 }, { namn: "Lessebo", lan: 7, lon: 15.272, lat: 56.753 },
+  { namn: "Ljungby", lan: 7, lon: 13.941, lat: 56.835 }, { namn: "Markaryd", lan: 7, lon: 13.587, lat: 56.451 },
+  { namn: "Tingsryd", lan: 7, lon: 14.975, lat: 56.528 }, { namn: "Uppvidinge", lan: 7, lon: 15.351, lat: 57.168, tatort: "Åseda" },
+  { namn: "Älmhult", lan: 7, lon: 14.135, lat: 56.552 },
+  { namn: "Borgholm", lan: 8, lon: 16.698, lat: 56.879 }, { namn: "Emmaboda", lan: 8, lon: 15.535, lat: 56.63 },
+  { namn: "Hultsfred", lan: 8, lon: 15.842, lat: 57.496 }, { namn: "Högsby", lan: 8, lon: 16.032, lat: 57.165 },
+  { namn: "Mönsterås", lan: 8, lon: 16.449, lat: 57.029 }, { namn: "Mörbylånga", lan: 8, lon: 16.388, lat: 56.522 },
+  { namn: "Nybro", lan: 8, lon: 15.911, lat: 56.743 }, { namn: "Oskarshamn", lan: 8, lon: 16.447, lat: 57.262 },
+  { namn: "Torsås", lan: 8, lon: 16.003, lat: 56.411 }, { namn: "Vimmerby", lan: 8, lon: 15.855, lat: 57.669 },
+  { namn: "Västervik", lan: 8, lon: 16.632, lat: 57.756 },
+  { namn: "Karlshamn", lan: 10, lon: 14.858, lat: 56.175 }, { namn: "Olofström", lan: 10, lon: 14.528, lat: 56.276 },
+  { namn: "Ronneby", lan: 10, lon: 15.279, lat: 56.207 }, { namn: "Sölvesborg", lan: 10, lon: 14.574, lat: 56.03 },
+  { namn: "Bjuv", lan: 12, lon: 12.942, lat: 56.073 }, { namn: "Bromölla", lan: 12, lon: 14.474, lat: 56.076 },
+  { namn: "Burlöv", lan: 12, lon: 13.033, lat: 55.633, tatort: "Arlöv" }, { namn: "Båstad", lan: 12, lon: 12.879, lat: 56.429 },
+  { namn: "Eslöv", lan: 12, lon: 13.3, lat: 55.839 }, { namn: "Hässleholm", lan: 12, lon: 13.778, lat: 56.159 },
+  { namn: "Höganäs", lan: 12, lon: 12.577, lat: 56.196 }, { namn: "Hörby", lan: 12, lon: 13.664, lat: 55.851 },
+  { namn: "Höör", lan: 12, lon: 13.547, lat: 55.91 }, { namn: "Klippan", lan: 12, lon: 13.147, lat: 56.135 },
+  { namn: "Kävlinge", lan: 12, lon: 13.114, lat: 55.797 }, { namn: "Landskrona", lan: 12, lon: 12.837, lat: 55.879 },
+  { namn: "Lomma", lan: 12, lon: 13.08, lat: 55.675 }, { namn: "Osby", lan: 12, lon: 13.995, lat: 56.38 },
+  { namn: "Perstorp", lan: 12, lon: 13.391, lat: 56.137 }, { namn: "Simrishamn", lan: 12, lon: 14.348, lat: 55.551 },
+  { namn: "Sjöbo", lan: 12, lon: 13.697, lat: 55.634 }, { namn: "Skurup", lan: 12, lon: 13.504, lat: 55.482 },
+  { namn: "Staffanstorp", lan: 12, lon: 13.209, lat: 55.64 }, { namn: "Svalöv", lan: 12, lon: 13.104, lat: 55.914 },
+  { namn: "Svedala", lan: 12, lon: 13.232, lat: 55.514 }, { namn: "Tomelilla", lan: 12, lon: 13.947, lat: 55.547 },
+  { namn: "Trelleborg", lan: 12, lon: 13.181, lat: 55.372 }, { namn: "Vellinge", lan: 12, lon: 13.032, lat: 55.475 },
+  { namn: "Ystad", lan: 12, lon: 13.825, lat: 55.435 }, { namn: "Ängelholm", lan: 12, lon: 12.86, lat: 56.24 },
+  { namn: "Åstorp", lan: 12, lon: 12.934, lat: 56.131 }, { namn: "Örkelljunga", lan: 12, lon: 13.288, lat: 56.283 },
+  { namn: "Östra Göinge", lan: 12, lon: 14.076, lat: 56.256, tatort: "Broby" },
+  { namn: "Falkenberg", lan: 13, lon: 12.497, lat: 56.901 }, { namn: "Hylte", lan: 13, lon: 13.241, lat: 57.0, tatort: "Hyltebruk" },
+  { namn: "Kungsbacka", lan: 13, lon: 12.076, lat: 57.487 }, { namn: "Laholm", lan: 13, lon: 13.039, lat: 56.504 },
+  { namn: "Ale", lan: 14, lon: 12.108, lat: 57.922, tatort: "Nödinge-Nol" }, { namn: "Alingsås", lan: 14, lon: 12.531, lat: 57.93 },
+  { namn: "Bengtsfors", lan: 14, lon: 12.233, lat: 59.026 }, { namn: "Bollebygd", lan: 14, lon: 12.571, lat: 57.672 },
+  { namn: "Dals-Ed", lan: 14, lon: 11.94, lat: 58.91, tatort: "Ed" },
+  { namn: "Essunga", lan: 14, lon: 12.723, lat: 58.187, tatort: "Nossebro" }, { namn: "Falköping", lan: 14, lon: 13.555, lat: 58.17 },
+  { namn: "Färgelanda", lan: 14, lon: 11.994, lat: 58.57 }, { namn: "Grästorp", lan: 14, lon: 12.681, lat: 58.333 },
+  { namn: "Gullspång", lan: 14, lon: 14.209, lat: 58.849, tatort: "Hova" }, { namn: "Götene", lan: 14, lon: 13.477, lat: 58.529 },
+  { namn: "Herrljunga", lan: 14, lon: 13.024, lat: 58.075 }, { namn: "Hjo", lan: 14, lon: 14.279, lat: 58.304 },
+  { namn: "Härryda", lan: 14, lon: 12.123, lat: 57.653, tatort: "Mölnlycke" }, { namn: "Karlsborg", lan: 14, lon: 14.523, lat: 58.527 },
+  { namn: "Kungälv", lan: 14, lon: 11.976, lat: 57.872 }, { namn: "Lerum", lan: 14, lon: 12.266, lat: 57.769 },
+  { namn: "Lidköping", lan: 14, lon: 13.15, lat: 58.498 }, { namn: "Lilla Edet", lan: 14, lon: 12.132, lat: 58.13 },
+  { namn: "Lysekil", lan: 14, lon: 11.443, lat: 58.278 }, { namn: "Mariestad", lan: 14, lon: 13.825, lat: 58.702 },
+  { namn: "Mark", lan: 14, lon: 12.68, lat: 57.495, tatort: "Kinna" }, { namn: "Mellerud", lan: 14, lon: 12.459, lat: 58.701 },
+  { namn: "Munkedal", lan: 14, lon: 11.695, lat: 58.476 }, { namn: "Mölndal", lan: 14, lon: 12.014, lat: 57.654 },
+  { namn: "Orust", lan: 14, lon: 11.679, lat: 58.237, tatort: "Henån" }, { namn: "Partille", lan: 14, lon: 12.103, lat: 57.739 },
+  { namn: "Skara", lan: 14, lon: 13.435, lat: 58.384 }, { namn: "Sotenäs", lan: 14, lon: 11.256, lat: 58.361, tatort: "Kungshamn" },
+  { namn: "Stenungsund", lan: 14, lon: 11.836, lat: 58.064 }, { namn: "Strömstad", lan: 14, lon: 11.186, lat: 58.944 },
+  { namn: "Svenljunga", lan: 14, lon: 13.11, lat: 57.496 }, { namn: "Tanum", lan: 14, lon: 11.318, lat: 58.726, tatort: "Tanumshede" },
+  { namn: "Tibro", lan: 14, lon: 14.158, lat: 58.419 }, { namn: "Tidaholm", lan: 14, lon: 13.96, lat: 58.179 },
+  { namn: "Tjörn", lan: 14, lon: 11.557, lat: 57.985, tatort: "Skärhamn" }, { namn: "Tranemo", lan: 14, lon: 13.359, lat: 57.484 },
+  { namn: "Töreboda", lan: 14, lon: 14.118, lat: 58.702 }, { namn: "Ulricehamn", lan: 14, lon: 13.419, lat: 57.792 },
+  { namn: "Vara", lan: 14, lon: 12.96, lat: 58.262 }, { namn: "Vänersborg", lan: 14, lon: 12.325, lat: 58.365 },
+  { namn: "Vårgårda", lan: 14, lon: 12.808, lat: 58.034 }, { namn: "Åmål", lan: 14, lon: 12.697, lat: 59.05 },
+  { namn: "Öckerö", lan: 14, lon: 11.648, lat: 57.712 },
+  { namn: "Eda", lan: 17, lon: 12.302, lat: 59.885, tatort: "Charlottenberg" }, { namn: "Filipstad", lan: 17, lon: 14.159, lat: 59.697 },
+  { namn: "Forshaga", lan: 17, lon: 13.482, lat: 59.528 }, { namn: "Grums", lan: 17, lon: 13.108, lat: 59.349 },
+  { namn: "Hagfors", lan: 17, lon: 13.705, lat: 60.04 }, { namn: "Hammarö", lan: 17, lon: 13.498, lat: 59.328, tatort: "Skoghall" },
+  { namn: "Kil", lan: 17, lon: 13.315, lat: 59.505 }, { namn: "Kristinehamn", lan: 17, lon: 14.077, lat: 59.306 },
+  { namn: "Munkfors", lan: 17, lon: 13.538, lat: 59.834 }, { namn: "Storfors", lan: 17, lon: 14.275, lat: 59.535 },
+  { namn: "Sunne", lan: 17, lon: 13.142, lat: 59.841 }, { namn: "Säffle", lan: 17, lon: 12.921, lat: 59.133 },
+  { namn: "Torsby", lan: 17, lon: 13.007, lat: 60.137 }, { namn: "Årjäng", lan: 17, lon: 12.133, lat: 59.387 },
+  { namn: "Askersund", lan: 18, lon: 14.915, lat: 58.887 }, { namn: "Degerfors", lan: 18, lon: 14.43, lat: 59.241 },
+  { namn: "Hallsberg", lan: 18, lon: 15.108, lat: 59.068 }, { namn: "Hällefors", lan: 18, lon: 14.53, lat: 59.785 },
+  { namn: "Karlskoga", lan: 18, lon: 14.492, lat: 59.315 }, { namn: "Kumla", lan: 18, lon: 15.146, lat: 59.124 },
+  { namn: "Laxå", lan: 18, lon: 14.621, lat: 58.985 }, { namn: "Lekeberg", lan: 18, lon: 14.871, lat: 59.176, tatort: "Fjugesta" },
+  { namn: "Lindesberg", lan: 18, lon: 15.213, lat: 59.602 },
+  { namn: "Ljusnarsberg", lan: 18, lon: 14.989, lat: 59.873, tatort: "Kopparberg" }, { namn: "Nora", lan: 18, lon: 15.026, lat: 59.517 },
+  { namn: "Arboga", lan: 19, lon: 15.827, lat: 59.399 }, { namn: "Fagersta", lan: 19, lon: 15.823, lat: 59.992 },
+  { namn: "Hallstahammar", lan: 19, lon: 16.231, lat: 59.615 }, { namn: "Kungsör", lan: 19, lon: 16.106, lat: 59.423 },
+  { namn: "Köping", lan: 19, lon: 15.992, lat: 59.514 }, { namn: "Norberg", lan: 19, lon: 15.932, lat: 60.073 },
+  { namn: "Sala", lan: 19, lon: 16.592, lat: 59.922 }, { namn: "Skinnskatteberg", lan: 19, lon: 15.694, lat: 59.827 },
+  { namn: "Surahammar", lan: 19, lon: 16.229, lat: 59.706 },
+  { namn: "Avesta", lan: 20, lon: 16.184, lat: 60.139 }, { namn: "Gagnef", lan: 20, lon: 15.134, lat: 60.559, tatort: "Djurås" },
+  { namn: "Hedemora", lan: 20, lon: 15.98, lat: 60.28 }, { namn: "Leksand", lan: 20, lon: 14.999, lat: 60.731 },
+  { namn: "Ludvika", lan: 20, lon: 15.171, lat: 60.12 }, { namn: "Malung-Sälen", lan: 20, lon: 13.723, lat: 60.654, tatort: "Malung" },
+  { namn: "Orsa", lan: 20, lon: 14.629, lat: 61.09 }, { namn: "Rättvik", lan: 20, lon: 15.116, lat: 60.872 },
+  { namn: "Smedjebacken", lan: 20, lon: 15.413, lat: 60.143 }, { namn: "Säter", lan: 20, lon: 15.759, lat: 60.343 },
+  { namn: "Vansbro", lan: 20, lon: 14.227, lat: 60.51 },
+  { namn: "Bollnäs", lan: 21, lon: 16.388, lat: 61.348 }, { namn: "Hofors", lan: 21, lon: 16.294, lat: 60.545 },
+  { namn: "Ljusdal", lan: 21, lon: 16.093, lat: 61.831 }, { namn: "Nordanstig", lan: 21, lon: 17.062, lat: 61.983, tatort: "Bergsjö" },
+  { namn: "Ockelbo", lan: 21, lon: 16.7, lat: 60.874 }, { namn: "Ovanåker", lan: 21, lon: 15.813, lat: 61.369, tatort: "Edsbyn" },
+  { namn: "Sandviken", lan: 21, lon: 16.768, lat: 60.613 }, { namn: "Söderhamn", lan: 21, lon: 17.053, lat: 61.308 },
+  { namn: "Kramfors", lan: 22, lon: 17.796, lat: 62.925 }, { namn: "Timrå", lan: 22, lon: 17.348, lat: 62.496 },
+  { namn: "Ånge", lan: 22, lon: 15.646, lat: 62.518 },
+  { namn: "Berg", lan: 23, lon: 14.431, lat: 62.766, tatort: "Svenstavik" }, { namn: "Bräcke", lan: 23, lon: 15.421, lat: 62.751 },
+  { namn: "Härjedalen", lan: 23, lon: 14.365, lat: 62.035, tatort: "Sveg" }, { namn: "Krokom", lan: 23, lon: 14.449, lat: 63.331 },
+  { namn: "Ragunda", lan: 23, lon: 16.349, lat: 63.106, tatort: "Hammarstrand" }, { namn: "Strömsund", lan: 23, lon: 15.567, lat: 63.854 },
+  { namn: "Åre", lan: 23, lon: 13.462, lat: 63.349, tatort: "Järpen" },
+  { namn: "Bjurholm", lan: 24, lon: 19.219, lat: 63.93 }, { namn: "Dorotea", lan: 24, lon: 16.412, lat: 64.262 },
+  { namn: "Malå", lan: 24, lon: 18.742, lat: 65.187 }, { namn: "Nordmaling", lan: 24, lon: 19.501, lat: 63.569 },
+  { namn: "Norsjö", lan: 24, lon: 19.481, lat: 64.913 }, { namn: "Robertsfors", lan: 24, lon: 20.85, lat: 64.192 },
+  { namn: "Sorsele", lan: 24, lon: 17.53, lat: 65.528 }, { namn: "Storuman", lan: 24, lon: 17.108, lat: 65.091 },
+  { namn: "Vindeln", lan: 24, lon: 19.719, lat: 64.201 }, { namn: "Vännäs", lan: 24, lon: 19.745, lat: 63.906 },
+  { namn: "Åsele", lan: 24, lon: 17.357, lat: 64.16 },
+  { namn: "Arjeplog", lan: 25, lon: 17.879, lat: 66.048 }, { namn: "Arvidsjaur", lan: 25, lon: 19.179, lat: 65.591 },
+  { namn: "Boden", lan: 25, lon: 21.705, lat: 65.818 }, { namn: "Gällivare", lan: 25, lon: 20.65, lat: 67.133 },
+  { namn: "Haparanda", lan: 25, lon: 24.117, lat: 65.834 }, { namn: "Jokkmokk", lan: 25, lon: 19.828, lat: 66.605 },
+  { namn: "Kalix", lan: 25, lon: 23.178, lat: 65.849 }, { namn: "Pajala", lan: 25, lon: 23.367, lat: 67.212 },
+  { namn: "Älvsbyn", lan: 25, lon: 21.001, lat: 65.677 }, { namn: "Överkalix", lan: 25, lon: 22.848, lat: 66.323 },
+  { namn: "Övertorneå", lan: 25, lon: 23.644, lat: 66.388 },
 ];
-export const ortSlug = (namn: string) => namn.toLowerCase().replace(/[åä]/g, "a").replace(/ö/g, "o");
+export const ortSlug = (namn: string) => namn.toLowerCase().replace(/[åä]/g, "a").replace(/ö/g, "o").replace(/\s+/g, "-");
+/** Ortens adress under ort/: namnet som slug, eller `slug` där två namn annars krockar (9/11). */
+export const ortAdress = (o: { namn: string; slug?: string }) => o.slug ?? ortSlug(o.namn);
 
 /** Vägväderstationerna inom LS_NARA_KM från ortens punkt (6/11, DECISIONS #807), kallast först. Storcirkelavstånd; stationer utan
  *  koordinat (Node-vägen utan appVader) räknas inte. 30 km är avståndet Axel mätte Borås med 6/11. */
 export const LS_NARA_KM = 30;
-export function lsNaraStationer(ort: { lon: number; lat: number }, stationer: LanStation[], km = LS_NARA_KM): LanStation[] {
+/** Storcirkelavståndet i km. */
+function lsKm(a: { lon: number; lat: number }, b: { lon: number; lat: number }): number {
   const r = (g: number) => (g * Math.PI) / 180;
-  const nara = stationer.filter((s) => {
-    if (s.lon === undefined || s.lat === undefined) return false;
-    const a = Math.sin(r(s.lat - ort.lat) / 2) ** 2 + Math.cos(r(ort.lat)) * Math.cos(r(s.lat)) * Math.sin(r(s.lon - ort.lon) / 2) ** 2;
-    return 6371 * 2 * Math.asin(Math.sqrt(a)) <= km;
-  });
+  const x = Math.sin(r(b.lat - a.lat) / 2) ** 2 + Math.cos(r(a.lat)) * Math.cos(r(b.lat)) * Math.sin(r(b.lon - a.lon) / 2) ** 2;
+  return 6371 * 2 * Math.asin(Math.sqrt(x));
+}
+export function lsNaraStationer(ort: { lon: number; lat: number }, stationer: LanStation[], km = LS_NARA_KM): LanStation[] {
+  const nara = stationer.filter((s) => s.lon !== undefined && s.lat !== undefined && lsKm(ort, { lon: s.lon, lat: s.lat }) <= km);
   return nara.sort((a, b) => a.yta - b.yta || a.name.localeCompare(b.name, "sv"));
 }
+/** Närmaste station med koordinat och avståndet, för en ort utan station inom LS_NARA_KM (9/11). */
+function lsNarmasteStation(ort: { lon: number; lat: number }, stationer: LanStation[]): { s: LanStation; km: number } | null {
+  let bast: { s: LanStation; km: number } | null = null;
+  for (const s of stationer) {
+    if (s.lon === undefined || s.lat === undefined) continue;
+    const km = lsKm(ort, { lon: s.lon, lat: s.lat });
+    if (!bast || km < bast.km) bast = { s, km };
+  }
+  return bast;
+}
 
-/** Avsnitten som bär ortens namn, i ortens län. "Länsgräns Värmland/Örebro" är ett län, inte orten, och räknas inte. */
-function lsOrtAvsnitt(ort: { namn: string; lan: number }, vaglag: LanSegment[]): LanSegment[] {
-  const rx = new RegExp(`(^|[^\\p{L}])${ort.namn}($|[^\\p{L}])`, "u");
+/** Avsnitten som bär ortens (eller centralortens) namn, i ortens län. "Länsgräns Värmland/Örebro" är ett län, inte orten, och räknas inte. */
+function lsOrtAvsnitt(ort: { namn: string; lan: number; tatort?: string }, vaglag: LanSegment[]): LanSegment[] {
+  const namn = [ort.namn, ort.tatort].filter((n): n is string => !!n).map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|");
+  const rx = new RegExp(`(^|[^\\p{L}])(${namn})($|[^\\p{L}])`, "u");
   return vaglag.filter((s) => s.lan === ort.lan && rx.test((s.plats ?? "").replace(/Länsgräns[^-]*/g, "")));
 }
+
+/** Kortaste avståndet i km från punkten till sträckans linje (9/11). Plan projektion runt punkten, som räcker på några tiotal km;
+ *  en sträcka utan linje (Node-vägen) är oändligt långt bort. */
+export function lsAvsnittKm(p: { lon: number; lat: number }, s: LanSegment): number {
+  const kx = 111.32 * Math.cos((p.lat * Math.PI) / 180), ky = 110.57;
+  let bast = Infinity;
+  for (const l of s.linje ?? []) {
+    for (let i = 0; i < l.length; i++) {
+      const ax = (l[i][0] - p.lon) * kx, ay = (l[i][1] - p.lat) * ky;
+      const b = l[Math.min(i + 1, l.length - 1)], dx = (b[0] - p.lon) * kx - ax, dy = (b[1] - p.lat) * ky - ay;
+      const len = dx * dx + dy * dy, t = len ? Math.max(0, Math.min(1, -(ax * dx + ay * dy) / len)) : 0;
+      bast = Math.min(bast, Math.hypot(ax + t * dx, ay + t * dy));
+    }
+  }
+  return bast;
+}
+
+/** Vägarna på ortssidan (9/11, alla kommunerna). Bär minst två av Trafikverkets avsnitt ortens namn gäller regeln från 28/10: de
+ *  avsnitten, "till och från" orten. Annars avsnitten vars linje går inom LS_NARA_AVSNITT_KM från ortens punkt, närmast först och
+ *  högst LS_NARA_AVSNITT_MAX, och de som bär namnet: "inom 10 km från" orten. Finns inget avsnitt så nära är `narmast` det närmaste
+ *  i landet, med avståndet, så att sidan ändå säger något sant om vägen närmast orten. Uppmätt 9/11 på kartans 818 avsnitt: 239 av de
+ *  244 nya kommunerna har ett avsnitt inom 5 km och 242 inom 10. */
+export const LS_NARA_AVSNITT_KM = 10, LS_NARA_AVSNITT_MAX = 8;
+export function lsOrtVagar(ort: { namn: string; lan: number; lon: number; lat: number; tatort?: string }, vaglag: LanSegment[]):
+  { avsnitt: LanSegment[]; km: Map<LanSegment, number>; nara: boolean; narmast: { s: LanSegment; km: number } | null } {
+  const namngivna = lsOrtAvsnitt(ort, vaglag);
+  const km = new Map<LanSegment, number>();
+  // Utan geometri (Node-vägen, proven) gäller namnregeln som förut.
+  if (namngivna.length >= 2 || !vaglag.some((s) => s.linje?.length)) return { avsnitt: namngivna, km, nara: false, narmast: null };
+  // Sträckans ruta först: en sträcka vars ruta ligger längre bort än radien räknas inte i detalj (291 orter gånger alla sträckor).
+  const kx = 111.32 * Math.cos((ort.lat * Math.PI) / 180), ky = 110.57;
+  for (const s of vaglag) {
+    const r = lsRuta(s);
+    const dx = Math.max(r[0] - ort.lon, 0, ort.lon - r[2]) * kx, dy = Math.max(r[1] - ort.lat, 0, ort.lat - r[3]) * ky;
+    if (Math.hypot(dx, dy) <= LS_NARA_AVSNITT_KM) km.set(s, lsAvsnittKm(ort, s));
+  }
+  const nara = [...km.keys()].filter((s) => km.get(s)! <= LS_NARA_AVSNITT_KM).sort((a, b) => km.get(a)! - km.get(b)!).slice(0, LS_NARA_AVSNITT_MAX);
+  const avsnitt = [...nara, ...namngivna.filter((s) => !nara.includes(s))];
+  if (avsnitt.length) return { avsnitt, km, nara: true, narmast: null };
+  for (const s of vaglag) km.set(s, lsAvsnittKm(ort, s));
+  let narmast: { s: LanSegment; km: number } | null = null;
+  for (const [s, d] of km) if (d < Infinity && (!narmast || d < narmast.km)) narmast = { s, km: d };
+  return { avsnitt, km, nara: true, narmast };
+}
+const LS_RUTOR = new WeakMap<LanSegment, [number, number, number, number]>();
+/** Sträckans ruta [västligast, sydligast, östligast, nordligast], räknad en gång per körning. */
+function lsRuta(s: LanSegment): [number, number, number, number] {
+  let r = LS_RUTOR.get(s);
+  if (!r) {
+    r = [Infinity, Infinity, -Infinity, -Infinity];
+    for (const l of s.linje ?? []) for (const [x, y] of l) { r[0] = Math.min(r[0], x); r[1] = Math.min(r[1], y); r[2] = Math.max(r[2], x); r[3] = Math.max(r[3], y); }
+    LS_RUTOR.set(s, r);
+  }
+  return r;
+}
+const lsKmText = (km: number) => (km < 1 ? "under 1 km" : `${Math.round(km)} km`);
 
 /** Raden under svaret på läns-, orts- och vägsidorna när SMHI har en vägvarning där (1/11): SMHI:s nivå och händelse, och länken. */
 function lsVarnadRad(v: Vagvarning[], var_: string, rot: string, medOmrade = false): string {
@@ -1519,18 +1727,27 @@ function lsOrtKarta(ort: (typeof ORTER)[number], lan: { slug: string; kort: stri
 
 function lsOrtsida(ort: (typeof ORTER)[number], lan: (typeof LAN)[number], lanLage: LanLage, now: Date,
   d: { vaglag: LanSegment[]; olyckor: LanOlycka[]; stationer: LanStation[] }, varn: Vagvarning[] = []): string {
-  const avsnitt = lsOrtAvsnitt(ort, d.vaglag);
+  const { avsnitt, km, nara: avNara, narmast } = lsOrtVagar(ort, d.vaglag);
   const halt = avsnitt.filter((s) => arHalt(s.code, s.info));
   const vagar = new Set(avsnitt.map((s) => vagNyckel(s.road)));
-  const olyckor = d.olyckor.filter((o) => o.lan === ort.lan && vagar.has(vagNyckel(o.road)));
+  const avLan = new Set(avsnitt.map((s) => s.lan));
+  const olyckor = d.olyckor.filter((o) => (o.lan === ort.lan || avLan.has(o.lan)) && vagar.has(vagNyckel(o.road)));
   const n = lsEsc(ort.namn), lk = lsEsc(lsSoknamn(lan.kort));
+  // "till och från" när avsnitten bär ortens namn, "inom 10 km från" när de valts på avståndet (9/11).
+  const varAv = avNara ? `inom ${LS_NARA_AVSNITT_KM} km från ${ort.namn}` : `till och från ${ort.namn}`;
+  const narmastVad = narmast ? `${lsVagNamn(narmast.s.road ?? "")} ${lsStracka(narmast.s)}`.trim() : "";
+  const trv = avsnitt.length
+    ? `Kl. ${lsTid(now, false)} rapporterar Trafikverket ${halt.length
+      ? `halka eller vinterväglag på ${halt.length} av ${avsnitt.length} vägavsnitt ${varAv}`
+      : `ingen halka på ${avsnitt.length} vägavsnitt ${varAv}`}.`
+    : narmast
+      ? `Kl. ${lsTid(now, false)} rapporterar Trafikverket inget väglag för vägar inom ${LS_NARA_AVSNITT_KM} km från ${ort.namn}. Närmast är ${narmastVad}, ${lsKmText(narmast.km)} bort: ${arHalt(narmast.s.code, narmast.s.info) ? "halka eller vinterväglag" : "ingen halka rapporterad"}.`
+      : `Kl. ${lsTid(now, false)} rapporterar Trafikverket inget väglag för vägarna vid ${ort.namn}.`;
   // Stationerna runt orten (6/11, DECISIONS #807): inom LS_NARA_KM, kallast först. Meningen säger vad stationerna visar, aldrig
-  // vad vägen mellan dem är (punktkällor säger "vid", inte "på vägen").
+  // vad vägen mellan dem är (punktkällor säger "vid", inte "på vägen"). Ingen inom radien: den närmaste med avståndet (9/11).
   const nara = lsNaraStationer(ort, d.stationer);
   const naraKalla = nara.filter((s) => s.yta <= 0);
-  const trv = `Kl. ${lsTid(now, false)} rapporterar Trafikverket ${halt.length
-    ? `halka eller vinterväglag på ${halt.length} av ${avsnitt.length} vägavsnitt till och från ${ort.namn}`
-    : `ingen halka på ${avsnitt.length} vägavsnitt till och från ${ort.namn}`}.`;
+  const narSt = nara.length ? null : lsNarmasteStation(ort, d.stationer);
   const lanTemp = lanLage.kalla.length
     ? `I ${lsSoknamn(lan.kort)} ${lanLage.kalla.length === 1 ? "visar 1 mätstation" : `visar ${lanLage.kalla.length} mätstationer`} vägbana på 0 °C eller kallare, kallast ${lsGrad(lanLage.kalla[0].yta)} vid ${lanLage.kalla[0].name}.`
     : `Ingen mätstation i ${lsSoknamn(lan.kort)} visar vägbana under noll.`;
@@ -1540,30 +1757,44 @@ function lsOrtsida(ort: (typeof ORTER)[number], lan: (typeof LAN)[number], lanLa
       : nara.length === 1
         ? `Vägväderstationen inom ${LS_NARA_KM} km från ${ort.namn}, ${nara[0].name}, visar vägbana på ${lsGrad(nara[0].yta)}.`
         : `Ingen av de ${nara.length} vägväderstationerna inom ${LS_NARA_KM} km från ${ort.namn} visar vägbana på 0 °C eller kallare; den kallaste, ${nara[0].name}, visar ${lsGrad(nara[0].yta)}.`}`
-    : `${trv} ${lanTemp}`;
+    : narSt
+      ? `${trv} Närmaste vägväderstation, ${narSt.s.name}, ligger ${lsKmText(narSt.km)} från ${ort.namn} och visar vägbana på ${lsGrad(narSt.s.yta)}.`
+      : `${trv} ${lanTemp}`;
   const naraRader = nara.slice(0, 10).map((s) =>
     `<li>${lsEsc(s.name)}: ${lsGrad(s.yta)}${s.fukt ? ", nederbörd eller fukt rapporteras" : ""}</li>`).join("\n");
-  const rader = [...avsnitt].sort((a, b) => Number(arHalt(b.code, b.info)) - Number(arHalt(a.code, a.info))).map((s) => {
+  const vagRad = (s: LanSegment, bort?: number) => {
     const h = arHalt(s.code, s.info);
     const vad = [s.text, ...s.info].filter(Boolean).join(", ");
     return `<li><b>${lsEsc(lsVagNamn(s.road ?? ""))}</b>${h ? '<span class="halt">Halka eller vinterväglag</span>' : "Ingen halka rapporterad"}` +
-      `<small>${lsEsc(lsStracka(s))}${vad ? ` · ${lsEsc(vad)}` : ""}</small></li>`;
-  }).join("\n");
-  const grannar = ORTER.filter((o) => o.lan === ort.lan && o.namn !== ort.namn).map((o) => `<a href="../${ortSlug(o.namn)}/">${lsEsc(o.namn)}</a>`).join(" · ");
+      `<small>${lsEsc(lsStracka(s))}${bort !== undefined ? ` · ${lsKmText(bort)} bort` : ""}${vad ? ` · ${lsEsc(vad)}` : ""}</small></li>`;
+  };
+  const rader = [...avsnitt].sort((a, b) => Number(arHalt(b.code, b.info)) - Number(arHalt(a.code, a.info)))
+    .map((s) => vagRad(s, avNara && km.get(s)! < Infinity ? km.get(s) : undefined)).join("\n");
+  const vagLista = avsnitt.length
+    ? `<ul class="vaglista">\n${rader}\n</ul>`
+    : narmast
+      ? `<p>Trafikverket rapporterar inget väglag för någon väg inom ${LS_NARA_AVSNITT_KM} km från ${n}. Det betyder inte att vägarna är fria från halka, bara att ingen sträcka här ingår i Trafikverkets väglagsrapporter just nu. Närmaste rapporterade sträcka:</p>\n<ul class="vaglista">\n${vagRad(narmast.s, narmast.km)}\n</ul>`
+      : `<p>Trafikverket rapporterar inget väglag för vägarna vid ${n} just nu.</p>`;
+  // Grannorterna (9/11): de tolv närmaste i länet, närmast först, när länet har tiotals kommuner.
+  const grannar = ORTER.filter((o) => o.lan === ort.lan && o.namn !== ort.namn).sort((a, b) => lsKm(ort, a) - lsKm(ort, b)).slice(0, 12)
+    .map((o) => `<a href="../${ortAdress(o)}/">${lsEsc(o.namn)}</a>`).join(" · ");
+  const visas = ort.tatort ? `${n} (${lsEsc(ort.tatort)})` : n;
   const innehall = `<p class="dim">Uppdaterad ${lsTid(now)}</p>
 <h1>Är det halt i ${n} just nu?</h1>
 <p class="svar">${lsEsc(svar)}</p>
 ${lsOrtKarta(ort, lan)}
-${lsVarnadRad(varn.filter((v) => v.lan.includes(ort.lan)), `i ${lsSoknamn(lan.kort)}`, "../../")}<p class="dim">Väglaget och trafikläget i ${n} idag: vägarna till och från orten enligt Trafikverket, uppdaterat var 30:e minut.</p>
-${halt.length ? `<div class="svar-app"><p>Kör du i ${n} idag? Appen säger till med rösten innan du är framme vid halkan.</p><a class="knapp" href="${lsApp("ort-halt")}">Få varningar i appen</a></div>\n` : ""}<h2>Vägarna till och från ${n}</h2>
-<ul class="vaglista">\n${rader}\n</ul>
+${lsVarnadRad(varn.filter((v) => v.lan.includes(ort.lan)), `i ${lsSoknamn(lan.kort)}`, "../../")}<p class="dim">Väglaget och trafikläget i ${visas} idag: vägarna ${avNara ? `runt ${ort.tatort ? "kommunens centralort" : "orten"}` : "till och från orten"} enligt Trafikverket, uppdaterat var 30:e minut.</p>
+${halt.length ? `<div class="svar-app"><p>Kör du i ${n} idag? Appen säger till med rösten innan du är framme vid halkan.</p><a class="knapp" href="${lsApp("ort-halt")}">Få varningar i appen</a></div>\n` : ""}<h2>Vägarna ${avNara ? "runt" : "till och från"} ${n}</h2>
+${vagLista}
 <h2>Vägbanan runt ${n} just nu</h2>
 ${nara.length ? `<p>Vägbanans temperatur kl. ${lsTid(now, false)} vid Trafikverkets vägväderstationer inom ${LS_NARA_KM} km från ${n}, kallast först:</p>
 <ul>\n${naraRader}\n</ul>${nara.length > 10 ? `\n<p class="dim">och ${nara.length - 10} stationer till.</p>` : ""}`
-    : `<p>Ingen av Trafikverkets vägväderstationer ligger inom ${LS_NARA_KM} km från ${n}. Länets stationer står under Hela ${lk}.</p>`}
+    : narSt
+      ? `<p>Ingen av Trafikverkets vägväderstationer ligger inom ${LS_NARA_KM} km från ${n}. Närmast är ${lsEsc(narSt.s.name)}, ${lsKmText(narSt.km)} bort: ${lsGrad(narSt.s.yta)}${narSt.s.fukt ? ", nederbörd eller fukt rapporteras" : ""}.</p>`
+      : `<p>Ingen av Trafikverkets vägväderstationer ligger inom ${LS_NARA_KM} km från ${n}. Länets stationer står under Hela ${lk}.</p>`}
 <h2>Pågående olyckor</h2>
 ${olyckor.length ? `<ul>\n${olyckor.slice(0, 10).map((o) => `<li>${lsEsc(lsVagNamn(o.road ?? "Väg"))}${o.start ? `, sedan ${lsTid(new Date(o.start))}` : ""}${o.allvar ? ` (${lsEsc(o.allvar)})` : ""}</li>`).join("\n")}\n</ul>`
-    : `<p>Trafikverket rapporterar ingen pågående olycka på vägarna genom ${n} i ${lk}.</p>`}
+    : `<p>Trafikverket rapporterar ingen pågående olycka på vägarna ${avNara ? "runt" : "genom"} ${n} i ${lk}.</p>`}
 <h2>Hela ${lk}</h2>
 <p>${lsEsc(lsSvar(lanLage, "länets", "i länet", now))} Mer på <a href="../../lan/${lan.slug}/">halka och väglag i ${lk}</a>.</p>
 <p>Undrar du när vägen blir hal? Läs <a href="../../nar-blir-det-halt.html">när det blir halt på vägarna</a>.</p>
@@ -1571,10 +1802,13 @@ ${olyckor.length ? `<ul>\n${olyckor.slice(0, 10).map((o) => `<li>${lsEsc(lsVagNa
 ${lsFragorHtml(lsFragor(ort.namn))}
 <nav>${grannar ? `<h2>Fler orter i ${lk}</h2><p>${grannar}</p>` : ""}<h2>Stora vägar</h2><p>${lsVagLankar("../../")}</p></nav>`;
   // Sökträffens beskrivning: halkan, och vägbanan vid den kallaste stationen inom LS_NARA_KM när någon ligger under noll (6/11).
-  const beskrivning = `Kl. ${lsTid(now, false)}: ${halt.length ? `halka eller vinterväglag på ${halt.length} av ${avsnitt.length}` : `ingen halka på ${avsnitt.length}`} vägavsnitt till och från ${ort.namn}${naraKalla.length ? `, vägbanan ${lsGrad(naraKalla[0].yta)} vid ${naraKalla[0].name}` : ""}. ${LS_SLUT}`;
+  const avDel = avsnitt.length
+    ? `${halt.length ? `halka eller vinterväglag på ${halt.length} av ${avsnitt.length}` : `ingen halka på ${avsnitt.length}`} vägavsnitt ${varAv}`
+    : `inget väglag rapporterat inom ${LS_NARA_AVSNITT_KM} km från ${ort.namn}`;
+  const beskrivning = `Kl. ${lsTid(now, false)}: ${avDel}${naraKalla.length ? `, vägbanan ${lsGrad(naraKalla[0].yta)} vid ${naraKalla[0].name}` : ""}. ${LS_SLUT}`;
   return lsSkal({
     titel: `Halka i ${ort.namn} idag: väglag och trafikläget just nu | Halkvakt`,
-    beskrivning, adress: `${SIDBAS}/ort/${ortSlug(ort.namn)}/`, rot: "../../", innehall, now, ct: "ort", extra: lsFragorLd(lsFragor(ort.namn)),
+    beskrivning, adress: `${SIDBAS}/ort/${ortAdress(ort)}/`, rot: "../../", innehall, now, ct: "ort", extra: lsFragorLd(lsFragor(ort.namn)),
   });
 }
 
@@ -1612,7 +1846,7 @@ ${l.olyckor.length ? `<ul>\n${olyckor}\n</ul>` : "<p>Trafikverket rapporterar in
 <h2>Vanliga frågor</h2>
 ${lsFragorHtml(lsFragor(lan.namn))}
 <p>Undrar du när vägen blir hal? Läs <a href="../../nar-blir-det-halt.html">när det blir halt på vägarna</a>.</p>
-<nav>${ORTER.some((o) => o.lan === lan.kod) ? `<h2>Orter i ${lsEsc(lsSoknamn(lan.kort))}</h2><p>${ORTER.filter((o) => o.lan === lan.kod).map((o) => `<a href="../../ort/${ortSlug(o.namn)}/">${lsEsc(o.namn)}</a>`).join(" · ")}</p>` : ""}<h2>Andra län</h2><p>${andra}</p><h2>Stora vägar</h2><p>${lsVagLankar("../../")}</p></nav>`;
+<nav>${ORTER.some((o) => o.lan === lan.kod) ? `<h2>Orter i ${lsEsc(lsSoknamn(lan.kort))}</h2><p>${ORTER.filter((o) => o.lan === lan.kod).map((o) => `<a href="../../ort/${ortAdress(o)}/">${lsEsc(o.namn)}</a>`).join(" · ")}</p>` : ""}<h2>Andra län</h2><p>${andra}</p><h2>Stora vägar</h2><p>${lsVagLankar("../../")}</p></nav>`;
   return lsSkal({
     titel: `Halka i ${lsLanTitelnamn(lan)} idag: väglag och trafikläget just nu | Halkvakt`,
     beskrivning: lsBeskrivning(l, `i ${lan.namn}`, now),
@@ -1666,7 +1900,9 @@ ${lsLankar("../")}`;
  *  publicera, mellan markörerna <!-- hv:lankar --> på startsidan. `rot` är vägen till sajtens rot från sidan. */
 export function lsLankar(rot: string): string {
   const lan = LAN.map((l) => {
-    const orter = ORTER.filter((o) => o.lan === l.kod).map((o) => `<a href="${rot}ort/${ortSlug(o.namn)}/">${lsEsc(o.namn)}</a>`);
+    // data-alias (9/11): centralorten när den heter något annat än kommunen, så att startsidans sökruta hittar Åkersberga.
+    const orter = ORTER.filter((o) => o.lan === l.kod).map((o) =>
+      `<a href="${rot}ort/${ortAdress(o)}/"${o.tatort ? ` data-alias="${lsEsc(o.tatort)}"` : ""}>${lsEsc(o.namn)}</a>`);
     return `<li><a href="${rot}lan/${l.slug}/"><b>${lsEsc(l.kort)}</b></a>${orter.length ? ` · ${orter.join(" · ")}` : ""}</li>`;
   }).join("\n");
   return `<ul class="hv-lankar">\n${lan}\n</ul>
@@ -1778,7 +2014,7 @@ export function byggLanssidor(d: { vaglag: LanSegment[]; stationer: LanStation[]
   for (const nyckel of Object.keys(STRAK)) Object.assign(ut, lsPendlingDw(nyckel, d));
   ut["data/strak.json"] = JSON.stringify(STRAK);
   for (const v of VAGAR) ut[`vag/${v.slug}/index.html`] = lsVagsida(v, vagar.get(v.slug)!, d.now, d, varn);
-  for (const o of ORTER) ut[`ort/${ortSlug(o.namn)}/index.html`] = lsOrtsida(o, LAN.find((l) => l.kod === o.lan)!, lagen.get(o.lan)!, d.now, d, varn);
+  for (const o of ORTER) ut[`ort/${ortAdress(o)}/index.html`] = lsOrtsida(o, LAN.find((l) => l.kod === o.lan)!, lagen.get(o.lan)!, d.now, d, varn);
   ut["varningar/index.html"] = lsVarningssida(varn, lagen, d.now);
   return ut;
 }
@@ -1822,7 +2058,7 @@ function lsStrackorJson(d: { vaglag: LanSegment[]; stationer: LanStation[]; now:
 }
 
 export const sidAdresser = () => [`${SIDBAS}/lan/`, `${SIDBAS}/varningar/`, ...LAN.map((l) => `${SIDBAS}/lan/${l.slug}/`),
-  ...VAGAR.map((v) => `${SIDBAS}/vag/${v.slug}/`), ...ORTER.map((o) => `${SIDBAS}/ort/${ortSlug(o.namn)}/`)];
+  ...VAGAR.map((v) => `${SIDBAS}/vag/${v.slug}/`), ...ORTER.map((o) => `${SIDBAS}/ort/${ortAdress(o)}/`)];
 
 export type SidAndring = { lage: string; andrad: string };
 
@@ -2094,7 +2330,9 @@ export async function buildMapData(q: Q, opts: {
     sidor = byggLanssidor({
       smhi: smhi as unknown as SmhiRad[],
       vaglag: vaglag.map((r) => ({ code: numOrNull(r.condition_code), text: r.condition_text ?? null, info: (r.condition_info ?? []) as string[],
-        road: r.road_number ?? null, plats: r.location_text ?? null, lan: numOrNull(r.lan) })),
+        road: r.road_number ?? null, plats: r.location_text ?? null, lan: numOrNull(r.lan),
+        // Linjen (9/11): ortssidorna väljer avsnitten nära en kommun vars namn inget avsnitt bär.
+        linje: r.g?.type === "LineString" ? [r.g.coordinates] : r.g?.type === "MultiLineString" ? r.g.coordinates : undefined })),
       stationer,
       olyckor: olyckor.filter((r) => r.land === "SE").map((r) => ({ road: r.road_number ?? null, start: r.start_time ? new Date(r.start_time).toISOString() : null,
         allvar: r.severity_text ?? null, lan: numOrNull(r.lan) })),
