@@ -1,4 +1,4 @@
-# Annonstratten (DECISIONS #826, Axel 9/11): Meta-annonsernas dagssiffror och App Store-nedladdningarna för de senaste 14 dygnen
+# Annonstratten (DECISIONS #827, Axel 9/11): Meta-annonsernas dagssiffror och App Store-nedladdningarna för de senaste 14 dygnen
 # till Supabase (meta_annons_dag och appstore_dag, sql/102), som annonstratten_stat lägger bredvid Apple Ads och appräknaren.
 # GitHub-cronen och inte pulsklockan, som apple-annonser.yml: inget brådskar, och nästa körning skriver om hela fönstret.
 # Apples dagsrapport för gårdagen är klar på förmiddagen amerikansk tid, så kvällskörningen är den som får med den.
