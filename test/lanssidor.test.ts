@@ -182,6 +182,9 @@ test("kartkärnan: med appens väderpunkter skrivs länssidorna; stationen får 
       { segment_id: "S1", condition_code: "2", condition_text: "Besvärligt", condition_info: ["Is"], road_number: "E10",
         location_text: "Kiruna", modified_time: "2026-11-20T06:00:00Z", lan: "25", g: { type: "LineString", coordinates: [[20.2, 67.8], [20.3, 67.9]] } },
     ];
+    // De varmare stationerna (9/11): W9 vid Stockholm på 5,1 °C, och W1 en gång till, som appens lista redan bär.
+    if (text.includes("surface_temp_c > 3")) return [{ station_id: "W9", surface_temp_c: 5.1, rain: false, snow: false, lon: 18.05, lat: 59.32 },
+      { station_id: "W1", surface_temp_c: 4, rain: false, snow: false, lon: 20.25, lat: 67.85 }];
     if (text.includes("FROM weather_latest")) return [];
     if (text.includes("FROM deviations")) return [
       { land: "SE", deviation_id: "D1", message_type: "Olycka", message: "x", severity_text: null, road_number: "E10", start_time: new Date("2026-11-20T05:00:00Z"), g: null, lan: "25" },
@@ -201,6 +204,9 @@ test("kartkärnan: med appens väderpunkter skrivs länssidorna; stationen får 
   assert.ok(nb.includes("Kiruna: −3,2 °C"), "W1 hör till Norrbotten via närmaste sträcka");
   assert.ok(!Object.values(med.sidor!).some((h) => h.includes("−9,0")), "W2 saknar län (ingen sträcka inom 20 km) och står inte på någon sida");
   assert.ok(nb.includes("E10, sedan 20 nov. 06:00"), "olyckan ur Date, i svensk tid");
+  assert.ok(med.sidor!["ort/stockholm/index.html"].includes("Vägväderstationen inom 30 km från Stockholm, Varm, visar vägbana på 5,1 °C."),
+    "en station över 3 °C räknas på ortssidan (9/11)");
+  assert.ok(!nb.includes("4,0 °C"), "appens värde går före när stationen finns i båda");
   assert.equal((med.sidor!["lan/index.html"].match(/<td>1<\/td><td>1<\/td><td>[^<]*(<a[^>]*>[^<]*<\/a>)?<\/td><\/tr>/g) ?? []).length, 1, "bara Norrbottens rad bär olyckan; den finska räknas inte");
   // Startsidans och kartans tal följer med sidorna (6/11, DECISIONS #807); utan sidor inga tal.
   assert.equal(utan.start, null);

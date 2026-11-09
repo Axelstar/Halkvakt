@@ -15057,6 +15057,10 @@ vägarna till och från), med ett vettigt svar när det inte finns vägavsnitt e
   avsnitt inom 10 km (Ockelbo, 17 km till E4).
 - Stationerna: ingen station inom 30 km ger den närmaste med avståndet, i stället för länets mening (som står kvar när ingen station
   har koordinat). Grannorterna är de tolv närmaste i länet.
+- Tillägg samma kväll, efter första publiceringen 23:30: sidornas stationer var appens, och appen får bara stationer på 3 °C eller
+  kallare. En natt med plusgrader i Skåne sa därför Malmös sida att närmaste station låg 110 km bort, och "stationerna inom 30 km"
+  räknade bara de kalla (felet fanns sedan 6/11 men doldes av länets mening). publicera lägger nu till stationerna över 3 °C med
+  samma givarvakt, radvakt och karantän, bara för sidorna; appens snapshot ändras inte.
 
 **Alternativ.** (a) Bara kommuner med två namngivna avsnitt (samma regel som 28/10): omkring 140 kommuner hade blivit utan sida.
 (b) Sökningen på alla tätorter med närmaste sida (kort #382): kvar, och lättare nu när varje kommun har en sida.
