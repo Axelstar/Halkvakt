@@ -902,8 +902,8 @@ export const KONTRAKT: Kontrakt[] = [
     namn: "Spridningsspärrens F1 — minoritetens viktandel kring noll som tystar kandidaten",
     varfor: "Den frystas och den nyas regel ska tystas av samma gräns (sql/087, DECISIONS #800). Driver den talar appen olika i den frystas och den nyas timmar.",
     former: [/k\.frys_min >= ([\d.]+) THEN 'spridning'/],
-    filer: /sql\/087_|sql\/091_|sql\/094_/,  // sql/091 (#804) skapar om båda regelfunktionerna med stadspunkterna
-    golv: 6,
+    filer: /sql\/087_|sql\/091_|sql\/094_|sql\/101_/,  // sql/091 (#804) skapar om båda regelfunktionerna med stadspunkterna; sql/101 (#825) likaså
+    golv: 8,
   },
   // Den nya kandidatens skugga (sql/068, DECISIONS #692) bär regelns tal en gång till: samma regel på den nyas värden, så att domen i
   // ersättningsregeln §5 räknas likadant för båda. Den kopian vaktas här med de andra (golven höjda med ett).
@@ -915,43 +915,43 @@ export const KONTRAKT: Kontrakt[] = [
     namn: "Kandidatens kalla yta — regeln och facitläsningen",
     varfor: "Driver gränsen läser kuvösen andra kalla timmar än regeln varnar på (DECISIONS #562, #593).",
     former: [/l\.pb <= ([\d.]+)\s+-- YTA_GRANS_C/, /export const KALL_C = ([\d.]+);/],
-    filer: /sql\/058_|sql\/068_|sql\/069_|sql\/091_|sql\/094_|kuvos\/facit-trv\.ts$/,
-    golv: 11,
+    filer: /sql\/058_|sql\/068_|sql\/069_|sql\/091_|sql\/094_|sql\/101_|kuvos\/facit-trv\.ts$/,
+    golv: 15,
   },
   {
     namn: "Kandidatens radargräns för fukt — regeln och facitläsningen",
     varfor: "Driver gränsen räknar kuvösen fukt där regeln ser torrt (DECISIONS #565, #593).",
     former: [/coalesce\(r\.mmh, 0\) >= ([\d.]+)\) THEN 'torr'/, /export const RADAR_MMH = ([\d.]+);/],
-    filer: /sql\/069_|sql\/091_|sql\/094_|kuvos\/facit-trv\.ts$/,  // R = 0,1 sedan 26/10 (#725): 069 bär driftens gräns; 091 är driftens regel sedan #804
-    golv: 7,
+    filer: /sql\/069_|sql\/091_|sql\/094_|sql\/101_|kuvos\/facit-trv\.ts$/,  // R = 0,1 sedan 26/10 (#725): 069 bär driftens gräns; 091 är driftens regel sedan #804
+    golv: 9,
   },
   {
     namn: "Kandidatens radarfönster — regeln och facitläsningen",
     varfor: "Driver fönstret läser kuvösen radarn längre eller kortare bakåt än regeln (DECISIONS #573, #593).",
     former: [/r\.observed_at > now\(\) - interval '(\d+) minutes'/, /export const RADAR_MIN = (\d+);/],
-    filer: /sql\/058_|sql\/068_|sql\/069_|sql\/091_|sql\/094_|kuvos\/facit-trv\.ts$/,
-    golv: 11,
+    filer: /sql\/058_|sql\/068_|sql\/069_|sql\/091_|sql\/094_|sql\/101_|kuvos\/facit-trv\.ts$/,
+    golv: 15,
   },
   {
     namn: "Kandidatens vetofönster — regeln och facitläsningen",
     varfor: "Driver fönstret vetar kuvösen andra timmar än regeln (DECISIONS #566, #593).",
     former: [/w\.sample_time > now\(\) - interval '(\d+) minutes' AND w\.surface_temp_c >/, /export const VETO_MIN = (\d+);/],
-    filer: /sql\/058_|sql\/068_|sql\/069_|sql\/091_|sql\/094_|kuvos\/facit-trv\.ts$/,
-    golv: 7,
+    filer: /sql\/058_|sql\/068_|sql\/069_|sql\/091_|sql\/094_|sql\/101_|kuvos\/facit-trv\.ts$/,
+    golv: 9,
   },
   {
     namn: "Kandidatens vetoyta — regeln och facitläsningen",
     varfor: "Driver gränsen vetar kuvösen på andra stationer än regeln (DECISIONS #566, #593).",
     former: [/AND w\.surface_temp_c > (\d+)\s+-- VETO_MIN/, /export const VETO_YTA_C = (\d+);/],
-    filer: /sql\/058_|sql\/068_|sql\/069_|sql\/091_|sql\/094_|kuvos\/facit-trv\.ts$/,
-    golv: 7,
+    filer: /sql\/058_|sql\/068_|sql\/069_|sql\/091_|sql\/094_|sql\/101_|kuvos\/facit-trv\.ts$/,
+    golv: 9,
   },
   {
     namn: "Kandidatens vetoavstånd i meter — regeln och facitläsningen",
     varfor: "Driver avståndet vetar kuvösen med fler eller färre stationer än regeln (DECISIONS #566, #593).",
     former: [/k\.geom::geography, (\d+)\)\s+-- VETO_KM/, /export const VETO_M = (\d+);/],
-    filer: /sql\/058_|sql\/068_|sql\/069_|sql\/091_|sql\/094_|kuvos\/facit-trv\.ts$/,
-    golv: 7,
+    filer: /sql\/058_|sql\/068_|sql\/069_|sql\/091_|sql\/094_|sql\/101_|kuvos\/facit-trv\.ts$/,
+    golv: 9,
   },
   {
     namn: "Spridningsgrindens ankarantal — regeln och facitläsningen",
@@ -966,9 +966,20 @@ export const KONTRAKT: Kontrakt[] = [
     namn: `Storstädernas marsfönster — ${s}`,
     varfor: "Den frystas och den nyas regel ska tiga i samma timmar och på samma breddgrader. Driver de isär talar storstädernas K olika beroende på vilken kandidat som talar.",
     former: [new RegExp(`(\\d+)\\)?\\s+-- STAD_MARS_${k}\\b`)],
-    filer: /sql\/091_|sql\/094_/,   // sql/094 (#813) skapar om båda regelfunktionerna med stadsgrenens timme som underfråga
-    golv: 4,
+    filer: /sql\/091_|sql\/094_|sql\/101_/,   // sql/094 (#813) och sql/101 (#825) skapar om båda regelfunktionerna
+    golv: 6,
   })),
+  // FLÄCKVIS VÅT UTANFÖR STORSTÄDERNA (sql/101, DECISIONS #825): orden som får stå med fläckvis Våt för att sträckan ska räknas som
+  // fukt. Två kopior, den frystas och den nyas regel, som marsfönstret. 2 km-gränsen (STAD_FLACKVIS_M) står en gång, i bygget av
+  // vagpunkt_nara_stad, och är därför inget kontrakt här.
+  {
+    namn: "Fläckvis Våt som fukt — orden som får stå med",
+    varfor: "Den frystas och den nyas regel ska räkna samma väglag som fukt. Driver listorna isär talar K olika beroende på vilken kandidat som talar.",
+    former: [/rc\.condition_info <@ ARRAY\[([^\]]*)\] AS flackvis_fukt/],
+    filer: /sql\/101_/,
+    golv: 2,
+    lista: true,
+  },
 ];
 
 // ── SJÄLVTEST mot känd sanning, utan disk ──────────────────────────────────────────────
