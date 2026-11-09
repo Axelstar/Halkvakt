@@ -15063,3 +15063,21 @@ vägarna till och från), med ett vettigt svar när det inte finns vägavsnitt e
 
 **Stomdokument:** SYS — ortssidorna för alla kommuner och vägvalet på avståndet
 
+## #827 (9/11 2026) Annonstratten: Meta-annonsernas dagssiffror och App Store-nedladdningarna till Supabase (kort #646)
+
+**Axels ord 9/11:** *"Yeah I think it would be good to start with that"*, på Claudes förslag efter videon *Cracked Marketing 101*
+(agenten läser annonsdatan ur en egen databas i stället för att fråga annons-API:erna direkt).
+
+**Beslutet.**
+- `marknadsforing/annonsdata.mjs` (flödet `annonsdata`, 06:41 och 18:41 UTC) skriver om de senaste 14 dygnen: Metas insights per
+  annonsuppsättning (län) och dygn i `meta_annons_dag`, Apples dagliga försäljningsrapport för Halkvakt i `appstore_dag` (sql/102).
+- `annonstratten_stat` lägger per dygn Meta-kostnad och länkklick, Apple Ads, första nedladdningar (alla länder och SE) och
+  appräknarens nya iPhone-installationer (onboarding klar, behörighet Alltid, första starten, första varningen) bredvid varandra,
+  och besok_stat får nyckeln `annonstratten`. Tratten går per dygn: appräknaren har inget län och får inget.
+- Inga nya tjänster och inget i appen: samma Meta-token som annonsstyrningen, samma App Store Connect-nyckel som TestFlight-bygget.
+  Det enda nya är leverantörsnumret (repovariabeln `ASC_VENDOR`), som Axel hämtar ur App Store Connect.
+
+**Alternativ.** Fråga Metas API direkt varje morgon (som annonsstyrningens rad "I går: …"): ger inget att jämföra över dagar och inget
+att lägga bredvid nedladdningarna. Ett betalt verktyg (Graft, Airbyte): onödigt när Supabase redan finns.
+
+**Stomdokument:** inga — ett marknadsföringsmått som varken ändrar appen, motorn eller vad appen skickar
