@@ -15013,3 +15013,38 @@ november i norr som underlag, och den 15/11 finns bara halva november. Mätninge
 med dem: dess ärende stängdes 3/11 men raden stod kvar. PAT-rotationen (`pat-rotation`, 15/11) är Axels och står kvar.
 
 **Stomdokument:** BED §4.2 — norr och söder om 62° (beslutet 3/12), SYS — favoriterna i vakthundens driftlarm
+
+## #825 (9/11 2026) Fläckvis Våt räknas som fukt i kandidatens regel utanför storstäderna (kort #644)
+
+**Beslut.** Bengt och Axel 9/11: *"vårt val är A"*. Kandidatens regel (K) räknar Trafikverkets *fläckvis Våt* på sträckan som fukt
+när ordet står ensamt eller med *fläckvis Torrt*, och vägpunkten ligger mer än 2 km från varje stadspunkt. Med *Torrt*, eller med något
+annat ord, räknas det inte. Allt annat i regeln är oförändrat: *Våt* och radarn som förut, vetot går före fukten och spridningsspärren
+efter den, och storstädernas punkter (#804) har radarn som enda fukt. Den frystas och den nyas regel ändras likadant.
+
+**Varför.** Väg 233 7/11 var en tyst miss på *fläckvis Våt* (olycksfacit 7/11, issue #1472, kort #644). Regeln räknade bara det exakta
+ordet *Våt* som fukt på sträckan.
+
+**Bygget** (grenen `claude/flackvis-fukt-a`, inte migrerat):
+- `sql/101`: `kandidat_regel()` och `ny_kandidat_regel()` ur `sql/094` ord för ord, med fläckvis-fukten i väglaget
+  (`'fläckvis Våt' = ANY(condition_info) AND condition_info <@ ARRAY['fläckvis Våt','fläckvis Torrt']`) och i fuktvillkoret. Radartermen
+  står kvar sist, så kontraktsgrinden binder fortfarande regelns radargräns.
+- Storstadsundantaget räknas inte per rad i regeln. Tabellen `vagpunkt_nara_stad` bär vägpunkterna inom 2 km från någon stadspunkt,
+  och regeln läser den med en koppling på punkten. Både `stadspunkt` (laddaren varje timme ur kuvösens lista) och `vagpunkt` (`sql/055`
+  när den genereras om) kan ändras, så triggrar på båda bygger om listan efter varje sats och skriver bara skillnaden. Regelfunktionerna
+  förblir `LANGUAGE sql` utan `SET` och utan `SECURITY DEFINER` (#783, #784).
+- Den snabba regeln (`sql/080`) härleds om på 101 utan ändring: dess ankare träffar som på 094.
+- Kontraktsgrinden läser 101 som driftens senaste definition och binder listan över orden som får stå med fläckvis Våt mellan den
+  frystas och den nyas regel.
+- Integrationsprovet #825 prövar båda regelfunktionerna och den snabba, först på 094 och sedan på 101.
+
+**Alternativ för undantaget.** (a) En kolumn i `vagpunkt`: förkastad, eftersom tabellen skrivs av en genererad fil och service-rollen bara
+har läsrätt där. (b) Avståndet i regeln: förkastat, eftersom det då räknas per rad (CLAUDE.md, #783). (c) En lista som byggs en gång i
+migrationen: förkastad, eftersom stadspunkterna laddas om varje timme och listan då kan bli inaktuell utan att något syns.
+
+**Påslaget.** Mätningen är kuvösens (halkvakt-kuvos F41/F42). Regeln slås på först när omkörningen är läst mot villkoren som bestämdes
+före den: `sql/101` migreras då med DB-knappen på Bengts ord, följt av `sql/080` och `sql/081`. Därefter följs regeln upp dagligen i sju
+dygn. Den snabba skuggan stannar från migrationen tills 080 körts om, och dess sju dygn börjar om.
+
+**Tillbaka.** Kör om `sql/094` och sedan `sql/080` och `sql/081`. Tabellen och triggrarna kan stå kvar, eftersom ingen regel läser dem då.
+
+**Stomdokument:** MAT, APP, SYS, KAR — kandidatens fukt när sql/101 är migrerad; BED §4.2 — omkörningen läses före migrationen
