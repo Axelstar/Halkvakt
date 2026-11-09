@@ -15041,9 +15041,19 @@ ordet *Våt* som fukt på sträckan.
 har läsrätt där. (b) Avståndet i regeln: förkastat, eftersom det då räknas per rad (CLAUDE.md, #783). (c) En lista som byggs en gång i
 migrationen: förkastad, eftersom stadspunkterna laddas om varje timme och listan då kan bli inaktuell utan att något syns.
 
-**Påslaget.** Mätningen är kuvösens (halkvakt-kuvos F41/F42). Regeln slås på först när omkörningen är läst mot villkoren som bestämdes
-före den: `sql/101` migreras då med DB-knappen på Bengts ord, följt av `sql/080` och `sql/081`. Därefter följs regeln upp dagligen i sju
-dygn. Den snabba skuggan stannar från migrationen tills 080 körts om, och dess sju dygn börjar om.
+**Påslaget.** Mätningen är kuvösens (halkvakt-kuvos F41–F43). Omkörningen är läst mot villkoren som bestämdes före den, och alla
+villkor håller (halkvakt-kuvos F43, 9/11). Bengt 9/11: *"vi vill att den här går ut i drift nu"*. Före migrationen signerar Bengt och
+Axel kuvösens tillägg till marsdomens förregistrering: domen räknar varje timme med den fukt som gällde den timmen, och den gamla fukten
+redovisas bredvid. Sedan migreras `sql/101` med DB-knappen på Bengts ord, följt av `sql/080` och `sql/081`, och tiden T bokförs i
+halkvakt-kuvos. Den snabba skuggan stannar från migrationen tills 080 körts om, och dess sju dygn börjar om.
+
+**Vad förarna märker.** Bara kandidatens betavarning (*"Halkvakt tror: halka framöver."*) ändras, i appen på båda plattformarna och på
+kartan, eftersom regeln bor i databasen och ingen app behöver byggas om. Trafikverkets halkvarning (A1), stationernas (A2) och de andra
+varningarna är orörda, och i storstäderna är kandidaten som förut. Produktboken säger det i samma commit.
+
+**Uppföljningen.** Varje dygn i sju dygn läses kandidatens sträcktimmar där bara *fläckvis Våt* gav fukten: hur många som varnade, hur
+många av dem som fick Trafikverkets is efteråt, och norr om 62° för sig. Fristerna står i `docs/fristerna.json`, och läsningen bokförs på
+kort #644 utan tal ur kuvösen.
 
 **Tillbaka.** Kör om `sql/094` och sedan `sql/080` och `sql/081`. Tabellen och triggrarna kan stå kvar, eftersom ingen regel läser dem då.
 
