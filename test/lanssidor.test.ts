@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { arHalt, byggLanssidor, sitemapMed, sitemapDatum, medBlock, medId, lsLankar, lsStartsida, lsKartsida, lsNaraStationer, LS_NARA_KM, sidAdresser, vagNyckel, vagvarningar, LAN, VAGAR, ORTER, ortSlug, SIDBAS, PENDLING, STRAK } from "../publish/lanssidor.ts";
+import { arHalt, byggLanssidor, sitemapMed, sitemapDatum, medBlock, medId, lsLankar, lsStartsida, lsKartsida, lsNaraStationer, LS_NARA_KM, lsOrtVagar, lsAvsnittKm, LS_NARA_AVSNITT_KM, sidAdresser, vagNyckel, vagvarningar, LAN, VAGAR, ORTER, ortSlug, ortAdress, SIDBAS, PENDLING, STRAK } from "../publish/lanssidor.ts";
 import { buildMapData } from "../publish/map-core.ts";
 import type { Q } from "../publish/snapshot-core.ts";
 
@@ -42,7 +42,7 @@ test("länssidorna: 21 län och en översikt, svaret ur källorna, Trafikverkets
     "översikten, 21 län, 6 vägar, orterna, varningssidan, widgetens datafil, vägrutans, Datawrapper-tabellerna (vägar och hela läget per län, pendling per stråk) och strak.json");
   assert.deepEqual(Object.keys(sidor).filter((p) => p !== "lan/index.html" && !p.startsWith("data/")).sort(),
     ["varningar/index.html", ...LAN.map((l) => `lan/${l.slug}/index.html`), ...VAGAR.map((v) => `vag/${v.slug}/index.html`),
-      ...ORTER.map((o) => `ort/${ortSlug(o.namn)}/index.html`)].sort());
+      ...ORTER.map((o) => `ort/${ortAdress(o)}/index.html`)].sort());
   // 29/10: orten Uppsala har egen sida med titeln "Halka i Uppsala idag", så länssidan säger "län" — två sidor, två titlar.
   assert.ok(sidor["lan/uppsala/index.html"].includes("<title>Halka i Uppsala län idag:"), "länet när en ort bär namnet");
   assert.ok(sidor["lan/stockholm/index.html"].includes("<title>Halka i Stockholms län idag:"), "länet när en ort bär namnet");
@@ -153,7 +153,7 @@ test("sitemapen (3/11): lastmod flyttas bara när sidans läge ändras, inte vid
 test("länkarna (3/11): /lan/ och startsidans block når varje län, ort och väg, varningarna och guiden", () => {
   const sidor = byggLanssidor({ vaglag: [], stationer: [], olyckor: [], now: NOW });
   for (const [html, rot] of [[sidor["lan/index.html"], "../"], [lsLankar(""), ""]] as const) {
-    for (const o of ORTER) assert.ok(html.includes(`href="${rot}ort/${ortSlug(o.namn)}/"`), `${rot || "start"}: ${o.namn}`);
+    for (const o of ORTER) assert.ok(html.includes(`href="${rot}ort/${ortAdress(o)}/"`), `${rot || "start"}: ${o.namn}`);
     for (const l of LAN) assert.ok(html.includes(`href="${rot}lan/${l.slug}/"`), `${rot || "start"}: ${l.kort}`);
     for (const v of VAGAR) assert.ok(html.includes(`href="${rot}vag/${v.slug}/"`), `${rot || "start"}: ${v.namn}`);
     for (const x of ["varningar/", "nar-blir-det-halt.html", "app-som-varnar-for-halka.html"]) assert.ok(html.includes(`href="${rot}${x}"`));
@@ -281,7 +281,7 @@ test("läns- och vägsidorna bär sajtens ram: samma meny, spårkod per knapp, a
 test("ortssidorna (28/10): ortens egna avsnitt i dess län, ett län i Länsgräns räknas inte, titeln som sökrutan", () => {
   assert.equal(ortSlug("Örnsköldsvik"), "ornskoldsvik");
   assert.equal(ortSlug("Älvdalen"), "alvdalen");
-  assert.equal(new Set(ORTER.map((o) => ortSlug(o.namn))).size, ORTER.length, "unika adresser");
+  assert.equal(new Set(ORTER.map((o) => ortAdress(o))).size, ORTER.length, "unika adresser");
   for (const o of ORTER) assert.ok(LAN.some((l) => l.kod === o.lan), `${o.namn}: länet finns`);
   const sidor = byggLanssidor({
     vaglag: [
@@ -479,9 +479,12 @@ test("ortssidorna (6/11, DECISIONS #807): stationerna inom 30 km från orten, ka
   assert.ok(varm.includes('content="Kl. 07:30: ingen halka på 2 vägavsnitt till och från Borås. '), "ingen station i beskrivningen när ingen ligger under noll");
   const ensam = byggLanssidor({ vaglag, stationer: stationer.slice(2, 3), olyckor: [], now: NOW })["ort/boras/index.html"];
   assert.ok(ensam.includes("Vägväderstationen inom 30 km från Borås, Ulricehamn, visar vägbana på 0,8 °C."));
+  // Ingen station inom 30 km (9/11): den närmaste med avståndet. Ingen station med koordinat alls: länets mening som förut.
   const utan = byggLanssidor({ vaglag, stationer: stationer.slice(3), olyckor: [], now: NOW })["ort/boras/index.html"];
-  assert.ok(utan.includes("till och från Borås. I Västra Götaland visar 2 mätstationer vägbana på 0 °C eller kallare, kallast −9,0 °C vid Utan plats."), "utan stationer inom 30 km: länets mening");
-  assert.ok(utan.includes(`Ingen av Trafikverkets vägväderstationer ligger inom ${LS_NARA_KM} km från Borås.`));
+  assert.ok(utan.includes("till och från Borås. Närmaste vägväderstation, Nysäter, ligger 76 km från Borås och visar vägbana på −3,0 °C."), "utan stationer inom 30 km: den närmaste");
+  assert.ok(utan.includes(`Ingen av Trafikverkets vägväderstationer ligger inom ${LS_NARA_KM} km från Borås. Närmast är Nysäter, 76 km bort: −3,0 °C.`));
+  const blind = byggLanssidor({ vaglag, stationer: stationer.slice(4), olyckor: [], now: NOW })["ort/boras/index.html"];
+  assert.ok(blind.includes("till och från Borås. I Västra Götaland visar 1 mätstation vägbana på 0 °C eller kallare, kallast −9,0 °C vid Utan plats."), "utan koordinater: länets mening");
 });
 
 test("startsidan och kartan i HTML (6/11, DECISIONS #807): samma tal som sidornas skript, i samma element, bara det som ändras", () => {
@@ -533,4 +536,37 @@ test("kartorna (8/11): länsgränsen är aldrig gul och står i förklaringen; o
   assert.ok(ort, "Stockholms ortssida byggs");
   assert.match(ort, /<iframe src="\.\.\/\.\.\/karta\.html\?lan=stockholm&amp;punkt=18\.046,59\.31&amp;namn=Stockholm&amp;inbaddad=1"/);
   assert.ok(ort.includes("Länsgräns") && ort.includes("Öppna i helskärm"), "förklaring och länk till hela kartan");
+});
+
+test("alla kommunerna (9/11): en ortssida per kommun, avsnitten nära orten när inget bär namnet, och ett svar när inget finns nära", () => {
+  assert.equal(ORTER.length, 291, "290 kommuner (Region Gotland är Visby) och Sälen");
+  assert.equal(new Set(ORTER.map((o) => ortAdress(o))).size, ORTER.length, "unika adresser");
+  assert.equal(ortAdress(ORTER.find((o) => o.namn === "Håbo")!), "habo-balsta");
+  assert.equal(ortAdress(ORTER.find((o) => o.namn === "Upplands Väsby")!), "upplands-vasby");
+  const sim = ORTER.find((o) => o.namn === "Simrishamn")!;
+  assert.equal(sim.lan, 12);
+  // En rak sträcka 3 km norr om Simrishamn, en 40 km bort, ingen bär namnet.
+  const linje = (dlat: number): [number, number][][] => [[[sim.lon - 0.2, sim.lat + dlat], [sim.lon + 0.2, sim.lat + dlat]]];
+  const nara = { code: 2, text: "Besvärligt", info: ["Is"], road: "Väg 9", plats: "Väg 9 Kivik - Brantevik", lan: 12, linje: linje(0.027) };
+  const langt = { code: 1, text: "Normalt", info: [], road: "E 22", plats: "E 22 Hörby - Kristianstad", lan: 12, linje: linje(0.36) };
+  assert.ok(Math.abs(lsAvsnittKm(sim, nara) - 3) < 0.1, "avståndet till linjen, inte till en ändpunkt");
+  const v = lsOrtVagar(sim, [nara, langt]);
+  assert.deepEqual(v.avsnitt, [nara]); assert.equal(v.nara, true);
+  const sida = byggLanssidor({ vaglag: [nara, langt], stationer: [], olyckor: [], now: NOW })["ort/simrishamn/index.html"];
+  assert.ok(sida.includes(`Kl. 07:30 rapporterar Trafikverket halka eller vinterväglag på 1 av 1 vägavsnitt inom ${LS_NARA_AVSNITT_KM} km från Simrishamn.`));
+  assert.ok(sida.includes("<h2>Vägarna runt Simrishamn</h2>") && sida.includes("Kivik–Brantevik · 3 km bort"));
+  assert.ok(sida.includes("<title>Halka i Simrishamn idag: väglag och trafikläget just nu | Halkvakt</title>"));
+  // Inget inom 10 km: den närmaste sträckan i landet, med avståndet och vad den visar.
+  const tom = byggLanssidor({ vaglag: [langt], stationer: [], olyckor: [], now: NOW })["ort/simrishamn/index.html"];
+  assert.ok(tom.includes(`rapporterar Trafikverket inget väglag för vägar inom ${LS_NARA_AVSNITT_KM} km från Simrishamn. Närmast är E22 Hörby–Kristianstad, 40 km bort: ingen halka rapporterad.`));
+  assert.ok(tom.includes("Närmaste rapporterade sträcka:"));
+  // Två avsnitt med ortens namn: regeln från 28/10, "till och från", också när det finns linjer.
+  const namn = [1, 2].map((i) => ({ code: 1, text: "Normalt", info: [], road: "Väg 11", plats: `Väg 11 Simrishamn - Ort${i}`, lan: 12, linje: linje(0.5) }));
+  assert.equal(lsOrtVagar(sim, [...namn, nara]).nara, false);
+  // Centralorten räknas i avsnittens namn och står i länklistan som sökrutan läser.
+  const ost = ORTER.find((o) => o.namn === "Österåker")!;
+  assert.equal(ost.tatort, "Åkersberga");
+  const ak = [1, 2].map((i) => ({ code: 1, text: "Normalt", info: [], road: "Väg 276", plats: `Väg 276 Åkersberga - Ort${i}`, lan: 1 }));
+  assert.equal(lsOrtVagar(ost, ak).avsnitt.length, 2);
+  assert.ok(lsLankar("").includes('<a href="ort/osteraker/" data-alias="Åkersberga">Österåker</a>'));
 });

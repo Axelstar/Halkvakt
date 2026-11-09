@@ -15039,3 +15039,27 @@ Alla tre förkastade; skälen står i halkvakt-kuvos F43.
 signaturen.
 
 **Stomdokument:** MAT 5 — fläckvis Våt prövad och regeln orörd till vinterprovet, BED §4.2 — signaturen på vinterprovet
+
+## #826 (9/11 2026) En ortssida för var och en av Sveriges 290 kommuner
+
+**Axels ord 9/11:** *"Gör en ortssida för alla 290 kommuner på halkvakt.se, likadan som de 47 ortssidorna (text, livekarta runt orten,
+vägarna till och från), med ett vettigt svar när det inte finns vägavsnitt eller stationer nära. Sökrutan på startsidan ska hitta dem."*
+
+**Beslutet.**
+- `ORTER` i `publish/lanssidor.ts` får de 244 kommuner som saknade en ort: 291 sidor under `/ort/` (290 kommuner, där Region Gotland är
+  Visby, och Sälen). Namnet är kommunens utan genitiv-s; koordinaten centralortens punkt i Wikidata (P625 på kommunens P36, CC0, läst
+  9/11). `tatort` bär centralorten när den heter något annat (Österåker och Åkersberga): den står på sidan, räknas i avsnittens namn och
+  går att söka på (`data-alias` i länklistan). Håbo får adressen `habo-balsta`, eftersom Habo och Håbo annars blir samma.
+- Vägarna: bär minst två av Trafikverkets avsnitt ortens namn gäller regeln från 28/10 ("till och från"). Annars avsnitten vars linje
+  går inom 10 km från orten, högst åtta, närmast först, med avståndet ("inom 10 km från"). Finns inget så nära säger sidan det, och
+  att det inte betyder att vägen är fri från halka, och visar den närmaste rapporterade sträckan med avståndet. publicera skickar
+  sträckornas linje till sidorna för det. Uppmätt 9/11 på kartans 818 avsnitt: 190 orter med namnregeln, 99 på avståndet, 2 utan
+  avsnitt inom 10 km (Ockelbo, 17 km till E4).
+- Stationerna: ingen station inom 30 km ger den närmaste med avståndet, i stället för länets mening (som står kvar när ingen station
+  har koordinat). Grannorterna är de tolv närmaste i länet.
+
+**Alternativ.** (a) Bara kommuner med två namngivna avsnitt (samma regel som 28/10): omkring 140 kommuner hade blivit utan sida.
+(b) Sökningen på alla tätorter med närmaste sida (kort #382): kvar, och lättare nu när varje kommun har en sida.
+
+**Stomdokument:** SYS — ortssidorna för alla kommuner och vägvalet på avståndet
+
