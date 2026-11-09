@@ -15013,3 +15013,29 @@ november i norr som underlag, och den 15/11 finns bara halva november. Mätninge
 med dem: dess ärende stängdes 3/11 men raden stod kvar. PAT-rotationen (`pat-rotation`, 15/11) är Axels och står kvar.
 
 **Stomdokument:** BED §4.2 — norr och söder om 62° (beslutet 3/12), SYS — favoriterna i vakthundens driftlarm
+
+## #825 (9/11 2026) Fläckvis Våt räknas inte som fukt i vinter: val A väntar på ett prov i vinterns drift (kort #644, #645)
+
+**Bengts ord 9/11:** *"Ja, låt A vänta"*, på Claudes rekommendation efter läsningen av omkörningen i halkvakt-kuvos (F43). Efter
+Claudes granskning av F43 på Bengts fråga om något avgörande misstag ändå gav A en plats, utanför storstäderna eller i dem:
+*"Ja, bokför"*.
+
+**Beslutet.**
+- Kandidatens regel ändras inte: *fläckvis Våt* räknas inte som fukt, och #573 står. Ingen app, ingen karta och ingen varning ändras.
+- PR #1474 (`sql/101`, val A: *fläckvis Våt* ensam eller med *fläckvis Torrt*, mer än 2 km från varje stadspunkt) blir utkast och
+  slås inte ihop. Slås A på senare skrivs dess bokföring om: beslutets nummer och text, fristerna och produktboken.
+- Val A prövas i vinterns drift från 10/11 2026, på data som ingen har läst, enligt en ny förregistrering i halkvakt-kuvos som Bengt
+  och Axel signerar före läsningen. Första läsdagen är 15/1 2027 (fristen `flackvis-vinterprovet-2027-01-15`), den sista 1/4 2027.
+  Läsningen, talen och skälen står i halkvakt-kuvos (F43 och förregistreringen), inte här.
+- Klarar A provet i en region föreslår Claude att A slås på där, och Bengt och Axel beslutar för sig. Före ett påslag får marsdomens
+  förregistrering ett tillägg enligt regel L (#564).
+
+**Alternativ.** (a) Slå på A nu utanför storstäderna. (b) Slå på A i hela landet, storstäderna med. (c) Lägga A åt sidan helt.
+Alla tre förkastade; skälen står i halkvakt-kuvos F43.
+
+**Axel.** Regeln ändras inte, så beslutet kräver inget nytt ord av Axel. Axels ord kommer med signaturen på vinterprovet (kort #645).
+
+**Korten.** #644 stängt: läsningen är bokförd i halkvakt-kuvos (F42, F43) och beslutet här. #645 öppnat för vinterprovet, låst på
+signaturen.
+
+**Stomdokument:** MAT 5 — fläckvis Våt prövad och regeln orörd till vinterprovet, BED §4.2 — signaturen på vinterprovet
