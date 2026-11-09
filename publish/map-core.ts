@@ -10,7 +10,7 @@
 //
 // Inga Node- eller Deno-importer. Namnen krockar inte med snapshot-core.ts: båda buntas
 // in i SAMMA modul i publicera/index.ts.
-import type { Q } from "./snapshot-core.ts";
+import { WX_SANE, KARANTAN_DYGN, KARANTAN_BROTT, type Q } from "./snapshot-core.ts";
 import { byggLanssidor, lsStartsida, lsKartsida, type LanStation, type SmhiRad, type StartTal } from "./lanssidor.ts";
 
 const featureCollection = (features: unknown[]) => ({ type: "FeatureCollection", features });
@@ -225,7 +225,18 @@ export async function buildMapData(q: Q, opts: {
   if (opts.appVader) {
     const stLan = await q(STATION_LAN_SQL);
     const lanFor = new Map(stLan.map((r) => [String(r.station_id), { name: String(r.name), lan: Number(r.lan), vag: r.vag ?? null }]));
-    const stationer: LanStation[] = opts.appVader.flatMap((w) => {
+    // Appens stationer bär bara vägbana på 3 °C eller kallare (snapshotens förfilter), så sidorna räknade "stationerna inom 30 km"
+    // bland de kalla och sa en natt med plusgrader att Malmös närmaste station låg 110 km bort (9/11, DECISIONS #826). De varmare
+    // stationerna läggs till här med samma givarvakt, radvakt och karantän; en station över 3 °C kan aldrig ge minusgrader i länet.
+    const varma = await q(`
+      SELECT station_id, surface_temp_c, rain, snow, ST_X(geom) AS lon, ST_Y(geom) AS lat FROM weather_latest w
+      WHERE ${WX_SANE} AND surface_temp_c > 3 AND station_id NOT IN (
+        SELECT station_id FROM weather_observations WHERE sample_time > now() - interval '${KARANTAN_DYGN} days'
+          AND air_temp_c IS NOT NULL AND surface_temp_c < air_temp_c - 12 GROUP BY station_id HAVING count(*) >= ${KARANTAN_BROTT})`);
+    const appIds = new Set(opts.appVader.map((w) => w.id));
+    const alla = [...opts.appVader, ...varma.filter((r) => !appIds.has(String(r.station_id))).map((r) => ({ id: String(r.station_id),
+      yta: Number(r.surface_temp_c), fukt: Boolean(r.rain || r.snow), lon: Number(r.lon), lat: Number(r.lat) }))];
+    const stationer: LanStation[] = alla.flatMap((w) => {
       const s = lanFor.get(w.id);
       return s && w.yta !== null ? [{ name: s.name, yta: w.yta, fukt: w.fukt, lan: s.lan, vag: s.vag, lon: w.lon, lat: w.lat }] : [];
     });
