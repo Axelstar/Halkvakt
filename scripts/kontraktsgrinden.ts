@@ -572,6 +572,14 @@ export const KONTRAKT: Kontrakt[] = [
     golv: 3,
   },
   {
+    // DECISIONS #829: kortet Tipsa en vän på Redo. visas efter så här många avslutade vaktpass — samma i båda apparna.
+    namn: "Tipsa en vän — vaktpass före kortet på hemskärmen",
+    varfor: "Med olika tal visar iPhone och Android kortet vid olika tillfällen, och produktboken stämmer på bara en av dem.",
+    former: [/(?:PASS_FORE_KORTET|static let passForeKortet)\s*=\s*(\d+)(?![\d.])/],
+    filer: /app\/Tipsa\.kt|Services\/Tipsa\.swift/,
+    golv: 2,
+  },
+  {
     // DECISIONS #633: frågan Spara resan? kommer bara efter en resa på minst så här många km — samma i båda apparna.
     namn: "Sparade rutter — kortaste resa som erbjuds, km",
     varfor: "Med olika gräns frågar iPhone och Android efter olika resor, och produktbokens 'minst en kilometer' blir fel på en av dem.",

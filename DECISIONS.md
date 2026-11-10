@@ -15158,3 +15158,34 @@ Brytarna är av tills dess.
 **Tillägg 10/11 (Bengt: *"men börja på steg 3"* och *"Slå ihop och dbknappen"*): steg 3, radarn i småvägspunkterna, i drift.** PR #1498 sammanslagen (c1b817ec) 13.31 UTC på grön ci (integrationsprovet RV1–RV5), direkt efter att stadsradarns körning 13.31 startat på den gamla koden. `sql/104` migrerad med DB-knappen 13.31.58 UTC (42825320824): RLS på, rättigheter bara för `service_role`, inga rader. Radarn läser punkterna i bitar om högst fem i följd längs vägen och gallrar efter två timmar (`radar-karna.ts` `SMAVAG`). Första körningen på den nya koden, 13.46 (42827533485), var grön: *stadsradarn: klart* och *småvägsradarn: klart på 253 ms*, med tom punkttabell tills laddningen 18.28 UTC.
 
 **Stomdokument:** MAT 5 — småvägsrösten beställd och byggs avstängd, SYS 2 — driftens rörarbete för småvägarna, APP 3 — betavarningens farotyp och text
+
+## #829 (10/11 2026) Tipsa en vän, Tyck till och Betygsätt i 0.4.0 (42), tillsammans med Favoriter 2a och CarPlay
+
+**Beslut (Axel 10/11: *"I would like that we do it all in one go"*).** Appen får tre rader under etiketten *Halkvakt* sist i
+Inställningar och ett kort på Redo.:
+- **Tipsa en vän:** telefonens delningsark med en text och länken `halkvakt.se/?r=dela`. Koden `r` är den som webbplatsens räknare
+  `besok` redan räknar, så tipsen syns i statistiken utan något nytt i appen.
+- **Tyck till:** förarens egen mejlapp till hej@halkvakt.se, med appens version, telefonens modell och systemets version ifyllda
+  under en linje som föraren ser och kan ta bort. Utan mejlapp visas adressen med en kopieringsknapp.
+- **Betygsätt Halkvakt:** butikens sida för omdömen (App Store id6806939784, Google Play `se.halkvakt.app`).
+- **Kortet på Redo.:** efter femte avslutade vaktpasset (`PASS_FORE_KORTET` = 5, i kontraktsgrinden), aldrig medan vakten kör och
+  aldrig samtidigt som ett kort om resorna. *Tipsa en vän* eller *Inte nu* döljer det för gott. Antalet pass och flaggan sparas bara i
+  telefonen.
+
+Allt byggs in i 0.4.0, som höjs till bygge 42, och provas tillsammans med Favoriter 2a och CarPlay (#817) i TestFlight och Androids
+interna test, flera gånger per plattform (Axel 10/11), före inlämningen till App Review.
+
+**Vad som lämnar telefonen:** inget nytt. Delningen, mejlet och betyget går genom telefonens egna appar på förarens tryck, och appens
+egen sändning (räknaren, betatestets svar) är oförändrad. Därför ändras varken produktinvariantraden i CLAUDE.md, Play Data Safety,
+App Privacy eller integritet.html.
+
+**Alternativen:**
+- ett formulär i appen som skickar till Supabase: förkastat, eftersom det ändrar vad appen sänder (invarianten, Data Safety, App Privacy och
+  integritetstexten i samma commit), och svaren hamnar inte där någon kan svara;
+- Apples och Googles egen betygsruta (`requestReview`) i stället för en rad: förkastat för raden, eftersom systemet själv bestämmer om den
+  visas och ett tryck då kan göra ingenting;
+- en direktlänk till butiken i stället för `halkvakt.se`: förkastat, eftersom webbplatsen väljer rätt butik och räknar koden;
+- kortet varje gång eller under körning: förkastat, eftersom tystnad är en egenskap (CLAUDE.md).
+
+**Stomdokument:** APP 4 — raderna i Inställningar och kortet på Redo., APP 7 — inget nytt lämnar telefonen
+

@@ -24,7 +24,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
+import androidx.compose.material3.TextButton
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -72,6 +76,7 @@ import se.halkvakt.app.Nearby
 import se.halkvakt.app.NearbyItem
 import se.halkvakt.app.Prefs
 import se.halkvakt.app.R
+import se.halkvakt.app.Tipsa
 import se.halkvakt.engine.HazardKind
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -260,6 +265,11 @@ fun RedoScreen(activity: MainActivity, overst: @Composable () -> Unit) {
     val spara = erbjud && dagens.isNotEmpty()
     val erbjudRad = Favoriter.erbjudRaden(erbjud, km.toDouble(), slutMs, dold, System.currentTimeMillis())
     val scope = rememberCoroutineScope()
+    // DECISIONS #829: kortet Tipsa en vän, en gång efter femte passet, aldrig samtidigt som ett kort om resorna.
+    val pass by remember { Prefs.vaktPass(ctx) }.collectAsStateWithLifecycle(initialValue = 0)
+    val tipsaDold by remember { Prefs.tipsaDold(ctx) }.collectAsStateWithLifecycle(initialValue = true)
+    val kor by GuardService.runningFlow.collectAsStateWithLifecycle()
+    val tipsa = !spara && !erbjudRad && Tipsa.visaKortet(pass, tipsaDold, kor)
     val tur = remember(historik, start, slutMs) {
         if (start <= 0L || slutMs < start) emptyList() else historik.filter { it.t in start..slutMs }.sortedBy { it.t }
     }
@@ -292,7 +302,20 @@ fun RedoScreen(activity: MainActivity, overst: @Composable () -> Unit) {
                 MonoLink("Inte nu") { scope.launch { Prefs.setFavErbjudDold(ctx, System.currentTimeMillis()) } }
             }
         }
-        if (tur.isEmpty() && !spara && !erbjudRad) Plinth(R.drawable.plinth_logo) else Spacer(Modifier.height(24.dp))
+        if (tipsa) Box(Modifier.padding(top = 14.dp)) {
+            Column(Modifier.fillMaxWidth().background(Brand.panel, RoundedCornerShape(18.dp)).padding(horizontal = 20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(Modifier.fillMaxWidth().padding(vertical = 16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    MonoLabel("Fem pass med vakten")
+                    Text("Kör någon du känner samma vägar?", color = Brand.text, fontFamily = Typo.sans, fontWeight = FontWeight.Medium, fontSize = 16.sp)
+                    Text("Tipsa om Halkvakt. Du skickar bara en länk, inget om dig.",
+                        color = Text2, fontFamily = Typo.sans, fontSize = 14.sp, lineHeight = 21.sp)
+                }
+                YellowPill("Tipsa en vän") { Tipsa.dela(ctx); scope.launch { Prefs.setTipsaDold(ctx) } }
+                MonoLink("Inte nu") { scope.launch { Prefs.setTipsaDold(ctx) } }
+            }
+        }
+        if (tur.isEmpty() && !spara && !erbjudRad && !tipsa) Plinth(R.drawable.plinth_logo) else Spacer(Modifier.height(24.dp))
         Text("Redo.", color = Brand.text, fontFamily = Typo.sans, fontWeight = FontWeight.SemiBold, fontSize = 44.sp,
             letterSpacing = (-0.03).em, modifier = Modifier.padding(top = 12.dp))
         val vaknar = if (autostart) "Vakten vaknar själv när du kör. " else ""
@@ -509,6 +532,16 @@ private fun SettingsRoot(activity: MainActivity, onIntro: (() -> Unit)?, open: (
     val warn by remember { Prefs.warnDistanceM(ctx) }.collectAsStateWithLifecycle(initialValue = Prefs.WARN_MAX_M)
     val autostart by activity.autostartOn.collectAsStateWithLifecycle()
     val facitOn by Prefs.facitEnabled(ctx).collectAsStateWithLifecycle(initialValue = false)
+    var ingenMejl by remember { mutableStateOf(false) }
+    val urklipp = LocalClipboardManager.current
+    if (ingenMejl) AlertDialog(
+        onDismissRequest = { ingenMejl = false },
+        title = { Text("Mejla oss på ${Tipsa.ADRESS}") },
+        text = { Text("Telefonen har ingen mejlapp inställd. Kopiera adressen och skriv från din vanliga mejl. Vi läser allt.") },
+        confirmButton = { TextButton({ urklipp.setText(AnnotatedString(Tipsa.ADRESS)); ingenMejl = false }) { Text("Kopiera adressen", color = Brand.yellow) } },
+        dismissButton = { TextButton({ ingenMejl = false }) { Text("Stäng", color = Brand.text) } },
+        containerColor = Brand.panel, titleContentColor = Brand.text, textContentColor = Text2,
+    )
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp).padding(top = 24.dp, bottom = 150.dp)) {
         Text("Inställningar", color = Brand.text, fontFamily = Typo.sans, fontWeight = FontWeight.SemiBold, fontSize = 32.sp, letterSpacing = (-0.025).em)
         Text("Allt är på från början.", color = Text2, fontFamily = Typo.sans, fontSize = 15.sp, modifier = Modifier.padding(top = 10.dp))
@@ -525,6 +558,13 @@ private fun SettingsRoot(activity: MainActivity, onIntro: (() -> Unit)?, open: (
             NavRow("Integritet") { open(Sida.INTEGRITET) }
             onIntro?.let { NavRow("Visa introduktionen igen", onClick = it) }
             NavRow("Om Halkvakt", divider = false) { open(Sida.OM) }
+        }
+        // DECISIONS #829: tipsa, tyck till och betygsätt. Delningsarket, förarens mejlapp och Google Play; appen sänder inget.
+        MonoLabel("Halkvakt", modifier = Modifier.padding(top = 24.dp, start = 4.dp, bottom = 10.dp))
+        RowPanel {
+            NavRow("Tipsa en vän") { Tipsa.dela(ctx) }
+            NavRow("Tyck till") { if (!Tipsa.tyckTill(ctx)) ingenMejl = true }
+            NavRow("Betygsätt Halkvakt", divider = false) { Tipsa.betyg(ctx) }
         }
         Column(Modifier.padding(top = 24.dp, start = 4.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             MonoLabel("Löftet")

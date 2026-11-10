@@ -6,6 +6,7 @@ import android.content.Context
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.floatPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -30,6 +31,8 @@ object Prefs {
     private val KEY_MISSAR = stringPreferencesKey("missar")
     private val KEY_FAV_ERBJUD = booleanPreferencesKey("fav_erbjud")   // kort #357: brytaren, aldrig vägarna (Favoriter.kt)
     private val KEY_FAV_ERBJUD_DOLD = longPreferencesKey("fav_erbjud_dold")   // #817: Inte nu, en tidpunkt
+    private val KEY_VAKT_PASS = intPreferencesKey("vakt_pass")         // #829: avslutade vaktpass, bara ett tal
+    private val KEY_TIPSA_DOLD = booleanPreferencesKey("tipsa_dold")   // #829: kortet Tipsa en vän avfärdat
     private fun kindKey(k: HazardKind) = booleanPreferencesKey("warn_${k.wire}")
 
     /** Favoriterna (kort #357, DECISIONS #616): "Erbjud att spara resor", AV tills föraren själv slår på den. */
@@ -38,6 +41,12 @@ object Prefs {
     /** När föraren tryckte Inte nu på raden Kör du den här ofta? (DECISIONS #817) — en tidpunkt, ingen väg. */
     fun favErbjudDold(ctx: Context): Flow<Long> = ctx.dataStore.data.map { it[KEY_FAV_ERBJUD_DOLD] ?: 0L }
     suspend fun setFavErbjudDold(ctx: Context, ms: Long) { ctx.dataStore.edit { it[KEY_FAV_ERBJUD_DOLD] = ms } }
+
+    /** Kortet *Tipsa en vän* på Redo. (DECISIONS #829): antalet avslutade vaktpass och om kortet är avfärdat. Bara i telefonen. */
+    fun vaktPass(ctx: Context): Flow<Int> = ctx.dataStore.data.map { it[KEY_VAKT_PASS] ?: 0 }
+    suspend fun raknaVaktPass(ctx: Context) { ctx.dataStore.edit { it[KEY_VAKT_PASS] = (it[KEY_VAKT_PASS] ?: 0) + 1 } }
+    fun tipsaDold(ctx: Context): Flow<Boolean> = ctx.dataStore.data.map { it[KEY_TIPSA_DOLD] ?: false }
+    suspend fun setTipsaDold(ctx: Context) { ctx.dataStore.edit { it[KEY_TIPSA_DOLD] = true } }
 
     /** Kategorier föraren stängt av (default: allt PÅ). */
     fun disabledKinds(ctx: Context): Flow<Set<HazardKind>> =
