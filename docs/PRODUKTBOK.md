@@ -163,8 +163,8 @@ och *fartkamera* (en låda på stolpe med blixtlinjer). Svarta på kortet, ljusa
   (18/10; *"ingen spårning"* ströks, för en sparad resa är ett spår, även om det bara finns hos föraren, #616),
   raden till Betatest och Integritetspolicyn.
 - *Visa introduktionen igen* (iOS).
-- *Om Halkvakt* — Livekartan, Om appen & vanliga frågor, Press & material, ärlighetsraden och attributionen
-  (oförändrade), och versionen.
+- *Om Halkvakt* — Livekartan, Om appen & vanliga frågor, *Ansvar och källor* (sajtens ansvarssida), Press & material, ansvaret
+  (*"Halkvakt är ett stöd, inte en garanti. Varningarna bygger på Trafikverkets mätningar och på Halkvaktens egna prognoser ur väderdata, som är betavarningar. De kan vara fel, komma sent eller saknas, och att appen är tyst betyder inte att vägen är säker. Du ansvarar alltid för att köra efter väglag och sikt. Rör inte telefonen under körning — Halkvakt talar av sig själv."*, kort #648, DECISIONS #830), källraden med MET Norway och Statens vegvesen, och versionen.
 
 Under panelerna: *LÖFTET — Din position lämnar inte telefonen av sig själv.*
 
@@ -223,8 +223,8 @@ butiken. Integritetstexterna är oförändrade.
 Fyra sidor med punkter längst ner, *HOPPA ÖVER* till vänster och *NÄSTA* / *KLAR* till höger. Allt går att hoppa över och
 ändra senare. Toppraden säger *VAKEN* med gult ljus tills platsen är *Alltid*, sedan *PÅ* med grönt.
 
-1. **Löftet** — logotypen stort, *"Varnar med rösten"*, *"Halka, olyckor, frysrisk, vilt och fartkameror från
-   Trafikverket — i din högtalare, innan du är där."*, sockeln med logotypen, rutan *LÖFTET — "Din position lämnar inte
+1. **Löftet** — logotypen stort, *"Varnar med rösten"*, *"Halka, olyckor, frysrisk, vilt och fartkameror ur
+   Trafikverkets data och Halkvaktens egna prognoser — i din högtalare, innan du är där."* (kort #648), sockeln med logotypen, rutan *LÖFTET — "Din position lämnar inte
    telefonen av sig själv."* med raden *"Sparar du resor som favoriter stannar de också i telefonen."* (18/10) och *Testa rösten* (som säger *"Fartkamera om 500 meter. Gränsen är 80."*).
 2. **Platsen** — *"Platsen — bara i telefonen"*, *"Välj Alltid så kan vakten starta själv när du kör."* och en kartnål på
    sockeln. *Fortsätt* → iOS egen fråga; sedan den gröna *Fortsätt* → iOS fråga om Alltid (Apple 5.1.1(iv), DECISIONS #460). Med Alltid: en grön bock och *"Alltid —
@@ -244,7 +244,8 @@ Fyra sidor med punkter längst ner, *HOPPA ÖVER* till vänster och *NÄSTA* / *
 4. **Du är klar** — ett kvitto, inte en manual: *KVITTO* och dagens datum, *START* (*Själv när du kör* / *När appen är
    öppen* / *Plats saknas*), *DIREKT "Hej Siri, starta Halkvakt"*, *STOPP Efter 15 min parkerad*, *BANNER På* eller *Av —
    bara röst*, och *STATUS*: *REDO* i grönt, eller *REDO · UTAN BANNER*, *BEGRÄNSAD*, *EJ REDO*. Saknas något:
-   *ÅTGÄRDA I INSTÄLLNINGAR*, som går tillbaka till rätt sida; annars *ALLT GÅR ATT ÄNDRA I INSTÄLLNINGAR*.
+   *ÅTGÄRDA I INSTÄLLNINGAR*, som går tillbaka till rätt sida; annars *ALLT GÅR ATT ÄNDRA I INSTÄLLNINGAR*. Sist: *"Halkvakt
+   varnar inte överallt och kan ha fel. Kör alltid efter väglaget."* (kort #648).
 
 Inga konton, ingen e-post, inga fler frågor.
 

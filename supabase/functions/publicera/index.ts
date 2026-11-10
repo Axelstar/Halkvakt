@@ -977,7 +977,8 @@ function lsJsonLd(o: { titel: string; beskrivning: string; adress: string; now?:
   return `<script type="application/ld+json">${JSON.stringify(d).replace(/</g, "\\u003c")}</script>`;
 }
 
-const LS_KALLOR = "Källa: Trafikverkets öppna data (CC0): väglag, vägväderstationer och olyckor. Sidan skrivs om var 30:e minut. Fristående från myndigheterna.";
+// Kort #648 (DECISIONS #830): ansvaret först, och MET Norway (CC BY 4.0) eftersom kartans prognos (#819) bygger på MET Nordic.
+const LS_KALLOR = "Halkvakt är ett stöd, inte en garanti. Källa: Trafikverkets öppna data (CC0): väglag, vägväderstationer och olyckor; prognosen bygger på data från MET Norway (CC BY 4.0). Sidan skrivs om var 30:e minut. Fristående från myndigheterna.";
 function lsSkal(o: { titel: string; beskrivning: string; adress: string; rot: string; innehall: string; ct: string; aktiv?: "lanen"; now?: Date; extra?: string;
   smhi?: boolean; kallor?: string; ladda?: { rubrik: string; text: string } }) {
   return `<!doctype html>
@@ -1027,7 +1028,7 @@ ${o.innehall}
   <div class="wrap">
     <a class="logo" href="${o.rot}">${LS_MARKE}<b>HALKVAKT</b></a>
     <p class="kallor">${lsEsc(o.kallor ?? LS_KALLOR)}</p>
-    <nav aria-label="Sidfot"><a href="${o.rot}lan/">Länen</a><a href="${o.rot}om-halkvakt.html">Om Halkvakt</a><a href="${o.rot}karta.html">Livekartan</a><a href="${o.rot}om.html">Vanliga frågor</a><a href="${o.rot}lan/#vagar">Stora vägar</a><a href="${o.rot}varningar/">SMHI-varningar</a><a href="${o.rot}support.html">Hjälp och kontakt</a><a href="${o.rot}press.html">Press</a><a href="${o.rot}integritet.html">Integritet</a></nav>
+    <nav aria-label="Sidfot"><a href="${o.rot}lan/">Länen</a><a href="${o.rot}om-halkvakt.html">Om Halkvakt</a><a href="${o.rot}karta.html">Livekartan</a><a href="${o.rot}om.html">Vanliga frågor</a><a href="${o.rot}ansvar.html">Ansvar och källor</a><a href="${o.rot}lan/#vagar">Stora vägar</a><a href="${o.rot}varningar/">SMHI-varningar</a><a href="${o.rot}support.html">Hjälp och kontakt</a><a href="${o.rot}press.html">Press</a><a href="${o.rot}integritet.html">Integritet</a></nav>
   </div>
   <nav class="wrap lanrad" aria-label="Halka per län"><span>Halka i</span>${LAN.map((x) => `<a href="${o.rot}lan/${x.slug}/">${lsEsc(x.kort)}</a>`).join("")}</nav>
 </footer>
@@ -1709,7 +1710,7 @@ ${lsFragorHtml(LS_VARN_FRAGOR)}
     titel: "Halkvarning idag: SMHI:s varningar för snöfall och is och väglaget län för län | Halkvakt",
     beskrivning, adress: `${SIDBAS}/varningar/`, rot: "../", innehall, now, ct: "varningar", smhi: true,
     extra: LS_VARN_STIL + lsFragorLd(LS_VARN_FRAGOR),
-    kallor: "Källor: SMHI:s öppna data om vädervarningar och Trafikverkets öppna data (CC0) om väglag, vägväderstationer och olyckor. Sidan skrivs om var 30:e minut. Fristående från myndigheterna.",
+    kallor: "Halkvakt är ett stöd, inte en garanti. Källor: SMHI:s öppna data (CC BY 4.0) om vädervarningar och Trafikverkets öppna data (CC0) om väglag, vägväderstationer och olyckor. Sidan skrivs om var 30:e minut. Fristående från myndigheterna.",
     ladda: { rubrik: "Ska du ut på vägarna?", text: "Appen säger till med rösten innan du är framme vid halkan. Samma data från Trafikverket. Gratis för iPhone, och din position lämnar inte telefonen av sig själv." },
   });
 }
