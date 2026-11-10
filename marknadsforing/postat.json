@@ -861,6 +861,17 @@
       "facebook": "1312515671952967_122111648301516187",
       "instagram": "18581002912072883",
       "x": "2120186768611770828"
+    },
+    {
+      "pass": "live",
+      "namn": "2026-11-10-live-1737",
+      "typ": "smhi",
+      "nyckel": "smhi:Snöfall:Värmland och delar av sydvästra Svealand.:YELLOW",
+      "tid": "2026-11-10T16:37:43.428Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-11-10-live-1737.jpg",
+      "facebook": "1312515671952967_122111654241516187",
+      "instagram": "18439084045194037",
+      "x": "2120194273995792527"
     }
   ]
 }
