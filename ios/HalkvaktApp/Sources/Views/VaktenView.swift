@@ -97,9 +97,9 @@ struct VaktenView: View {
             // S4 (DECISIONS #210): facitknapparna hör hemma där "Senast sagt" faktiskt visas — här, inte i
             // LastSaidCard som ingen vy använder sedan skinnet v3. Bara betatestare, bara på en varning med id.
             // Inte medan kortet Efter resan visas: det bär samma varning med samma knappar (kort #279).
-            if resa == nil, prefs.facitOn, prefs.lastSaidText != nil, let id = prefs.lastSaidId, let at = prefs.lastSaidAt,
+            if resa == nil, prefs.facitOn, let text = prefs.lastSaidText, let id = prefs.lastSaidId, let at = prefs.lastSaidAt,
                Date.now.timeIntervalSince(at) < Facit.maxAge {   // äldre än så tar servern inte emot
-                FacitRow(id: id, at: at).padding(.top, 10)
+                FacitRow(id: id, at: at, text: text).padding(.top, 10)
             }
         }
     }

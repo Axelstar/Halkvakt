@@ -7,12 +7,19 @@ struct FacitButton: View {
     let action: () -> Void
 
     var body: some View {
-        Button(title, action: action)
-            .font(Typo.sans(14, .semibold))
-            .foregroundStyle(selected ? Brand.bg : Brand.yellow)
-            .padding(.horizontal, 14).padding(.vertical, 8)
-            .background(selected ? Brand.yellow : Color.clear, in: Capsule())
-            .overlay(Capsule().stroke(Brand.yellow, lineWidth: 1))
-            .accessibilityAddTraits(selected ? .isSelected : [])
+        // Egen etikett och .plain (kort #998): standardknappen färgade texten själv, så att den valda knappen visade gul text på
+        // gul botten och ordet försvann i trycket (Axels skärminspelning 10/11).
+        Button(action: action) {
+            Text(title)
+                .font(Typo.sans(14, .semibold))
+                .foregroundStyle(selected ? Brand.bg : Brand.yellow)
+                .padding(.horizontal, 14).padding(.vertical, 8)
+                .frame(minHeight: 44)
+                .background(selected ? Brand.yellow : Color.clear, in: Capsule())
+                .overlay(Capsule().stroke(Brand.yellow, lineWidth: 1))
+                .contentShape(Capsule())
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(selected ? .isSelected : [])
     }
 }
