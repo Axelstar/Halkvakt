@@ -2804,7 +2804,8 @@ jobs:
   # docs/FORREGISTRERING-DF-BAKAT-2026-11.md i det privata repot. Diagnos, ingen dom: inget utfall ändrar kod, drift eller en dom.
   # En vinter per jobb (de sex med småvägsprovets veck, halvvintrarna med P-I:s skattningar), och läsningen i ett sista jobb.
   # Punkterna, MET-filerna och Trafikverkets filer stannar i jobben. Bara cellerna per station och dygn, antalen och läsningen går
-  # till hinken (kuvos/kuvos-df-bakat-2026-11-<körningens nummer>/). Loggen säger bara klart eller fel.
+  # till hinken (kuvos/kuvos-df-bakat-2026-11-<körningens nummer>/). Loggen säger bara klart eller fel. Jobbet för 2017-18 räknar
+  # dessutom diagnosen med norrregeln på P-I:s halvvintrar (halkvakt-kuvos F48), eftersom det redan har båda skattningarna.
   dfbakat-vinter:
     if: ${{ inputs.steg == 'dfbakat' }}
     runs-on: ubuntu-latest
@@ -2841,6 +2842,7 @@ jobs:
           prov "spärren (F47, signerad)" python3 fysik/ny_kandidat/sparren.py docs/FORREGISTRERING-DF-BAKAT-2026-11.md
           prov "populationsprovet" python3 fysik/ny_kandidat/smavagar.py --check
           prov "självtestet (påhittade data)" python3 fysik/ny_kandidat/df_bakat.py --sjalvtest
+          prov "självtestet för norrregeln (påhittade data)" python3 fysik/ny_kandidat/norrregeln_diag.py --sjalvtest
       - name: Hinken — kandidatens punkter och leveransen för vintern, summorna mot manifesten
         shell: bash
         env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
@@ -2946,10 +2948,18 @@ jobs:
           RC=0; python3 fysik/ny_kandidat/df_bakat.py celler --vinter "$V" "${ARGS[@]}" --vvis "${VV[@]}" --metnordic $(cat met/delar.txt) --ut ut > df.txt 2>&1 || RC=$?
           # Vilket prov som föll: bara ordet ur skriptets rad, aldrig talen.
           PROVET=$(sed -n 's/^DF FÖLL: \(vintern\|vecket\|koderna\)$/\1/p' df.txt | tail -1)
+          # P-I med norrregeln (halkvakt-kuvos F48): en gång, i jobbet för 2017-18, som har båda halvvintrarnas skattningar.
+          RC2=0; if [ "$V" = 2017-18 ]; then python3 fysik/ny_kandidat/norrregeln_diag.py halvvintrar --levande lev --smavagar sma --ut ut/norrregeln_p1.json > nr.txt 2>&1 || RC2=$?; rm -f nr.txt; fi
           rm -rf vv vv.txt vk lev sma met rel df.txt
           [ "$RC" -eq 0 ] || { echo "::error::D-F bakåt, vintern $V: fel i ${PROVET:-skriptet, utan besked (kod $RC)}"; exit "$RC"; }
           echo "D-F bakåt, vintern $V: klart"
           lagg "ut/df_celler_$V.csv.gz" "ut/df_info_$V.json"
+          if [ "$V" = 2017-18 ]; then
+            # Föll kontrollen ligger bara kontrollen i filen: den går till hinken, så att skälet går att läsa där.
+            if [ -f ut/norrregeln_p1.json ]; then lagg ut/norrregeln_p1.json; fi
+            [ "$RC2" -eq 0 ] || { echo "::error::norrregeln på P-I: fel i kontrollen eller skriptet (kod $RC2)"; exit "$RC2"; }
+            echo "norrregeln på P-I: klart"
+          fi
           rm -rf ut
 
   dfbakat-las:
