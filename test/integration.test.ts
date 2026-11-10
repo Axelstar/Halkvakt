@@ -2410,6 +2410,69 @@ test("#804 stadspunkterna: tabellen, brytarna av och laddarens satser", { skip: 
   }
 });
 
+// SMÅVÄGSRÖSTEN (sql/103, DECISIONS #828, kort #647; halkvakt-kuvos F53): tabellen och brytarna, och laddarens satser, mot riktig PostGIS.
+//   SV1  filen går att köra två gånger; RLS på båda tabellerna; två brytare, P1 och N, båda av
+//   SV2  laddarens skriv tar två punkter; samma värden ändrar inget; ett ändrat läge skrivs och geom följer
+//   SV3  ett v-id, ett B-id, en okänd grupp och ett läge utanför Sverige vägras av tabellen
+//   SV4  ta_bort tar punkten som inte längre står i listan och rör varken vagpunkt eller stadspunkt
+//   SV5  full skala (CLAUDE.md, #783: ett jobb i full skala prövas i full skala utanför produktionen): 90 000 punkter skrivs i delar
+//        om 500, en andra skrivning med samma värden ändrar inget, och ta_bort med alla utom en tar exakt en, på under 10 s
+test("#828 småvägspunkterna: tabellen, brytarna av och laddarens satser, i full skala", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { SATS, kolumner } = await import("../ingest/smavagspunkter-db.ts");
+  const { delar } = await import("../ingest/kandidat-db.ts");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const las = (f: string) => q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+  type P = { punkt: string; grupp: "P1" | "N"; vag: string; ordning: number; lon: number; lat: number };
+  const p = (punkt: string, grupp: string, vag: string, ordning: number, lon: number, lat: number) => ({ punkt, grupp, vag, ordning, lon, lat }) as P;
+  const skriv = (r: P[]) => q(SATS.skriv, kolumner(r));
+  const antal = async (t: string) => Number((await q(`SELECT count(*) AS n FROM ${t}`)).rows[0].n);
+  try {
+    await las("055_vagpunkter.sql"); await las("089_stadspunkter.sql");
+    const vp = await antal("vagpunkt"), sp = await antal("stadspunkt");
+    await las("103_smavagspunkter.sql"); await las("103_smavagspunkter.sql");
+    await q("DELETE FROM smavagspunkt");
+    assert.deepEqual((await q("SELECT relname, relrowsecurity FROM pg_class WHERE relname IN ('smavagspunkt', 'smavagsbrytare') ORDER BY 1")).rows,
+      [{ relname: "smavagsbrytare", relrowsecurity: true }, { relname: "smavagspunkt", relrowsecurity: true }], "SV1: RLS");
+    assert.deepEqual((await q("SELECT grupp, pa FROM smavagsbrytare ORDER BY grupp")).rows,
+      [{ grupp: "N", pa: false }, { grupp: "P1", pa: false }], "SV1: två brytare, båda av");
+    await skriv([p("r00001", "P1", "v00001", 0, 15.0, 60.0), p("r00002", "N", "v00001", 1, 15.01, 60.0)]);
+    assert.equal((await skriv([p("r00001", "P1", "v00001", 0, 15.0, 60.0)])).rowCount, 0, "SV2: samma värden ändrar inget");
+    assert.equal((await skriv([p("r00001", "P1", "v00001", 0, 15.001, 60.0)])).rowCount, 1, "SV2: ett ändrat läge skrivs");
+    const g = await q("SELECT ST_X(geom) AS x FROM smavagspunkt WHERE punkt = 'r00001'");
+    assert.ok(Math.abs(g.rows[0].x - 15.001) < 1e-9, "SV2: geom följer läget");
+    for (const [namn, rad] of [["v-id", p("v00003", "P1", "v00002", 0, 15, 60)], ["B-id", p("B00003", "P1", "v00002", 0, 15, 60)],
+                               ["okänd grupp", p("r00003", "P3", "v00002", 0, 15, 60)], ["läget i havet", p("r00003", "P1", "v00002", 0, 15, 0)]] as const)
+      await assert.rejects(skriv([rad]), undefined, `SV3: ${namn}`);
+    await q(SATS.ta_bort, [["r00001"]]);
+    assert.deepEqual((await q("SELECT punkt FROM smavagspunkt ORDER BY punkt")).rows, [{ punkt: "r00001" }], "SV4: r00002 togs bort");
+    assert.equal(await antal("vagpunkt"), vp, "SV4: vagpunkt orörd");
+    assert.equal(await antal("stadspunkt"), sp, "SV4: stadspunkt orörd");
+    const N = 90000, nr = (i: number) => String(i).padStart(5, "0");
+    const alla = Array.from({ length: N }, (_, i) =>
+      p(`r${nr(i + 1)}`, i % 3 ? "P1" : "N", `v${nr(Math.floor(i / 4) + 1)}`, i % 4, 11 + (i % 1000) * 0.012, 56 + Math.floor(i / 1000) * 0.13));
+    let t = Date.now();
+    for (const d of delar(alla)) await skriv(d);
+    const tSkriv = Date.now() - t;
+    let andrade = 0;
+    t = Date.now();
+    for (const d of delar(alla)) andrade += (await skriv(d)).rowCount ?? 0;
+    const tIgen = Date.now() - t;
+    assert.equal(andrade, 0, "SV5: en andra skrivning med samma värden ändrar inget");
+    t = Date.now();
+    const bort = await q(SATS.ta_bort, [alla.slice(1).map((x) => x.punkt)]);
+    const tBort = Date.now() - t;
+    assert.equal(bort.rowCount, 1, "SV5: ta_bort tar exakt den punkt som inte står i listan");
+    assert.equal(await antal("smavagspunkt"), N - 1, "SV5: resten står kvar");
+    assert.ok(tBort < 10000, `SV5: ta_bort tog ${tBort} ms`);
+    console.log(`SV5: ${N} punkter skrivna på ${tSkriv} ms, igen på ${tIgen} ms, ta_bort på ${tBort} ms`);
+  } finally {
+    await q("DELETE FROM smavagspunkt").catch(() => {});
+    await pool.end();
+  }
+});
+
 // RADARN FÖR STORSTÄDERNAS PUNKTER (sql/090, DECISIONS #804, kort #378): tabellen, mot riktig PostGIS.
 //   RS1  filen går att köra två gånger; RLS på       RS2  en grupp-rad skrivs, samma komposit en gång till ändrar inget
 //   RS3  en numerisk grupp (Trafikverkets sträckor) vägras, så radar_stad och radar_precip kan aldrig blandas ihop
