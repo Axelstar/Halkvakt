@@ -15155,6 +15155,8 @@ Brytarna är av tills dess.
 
 **Tillägg 10/11 (Bengt: *"slå ihop och därefter dbknappen"*): steg 2 i drift med brytarna av.** PR #1496 sammanslagen (e977332a) på grön ci; integrationsprovet i full skala gick i ci (90 000 punkter skrivna på 2,4 s, en andra gång på 1,7 s, ta_bort på 0,1 s). `sql/103` migrerad med DB-knappen 13.07 UTC (42821613445), transaktionen bekräftad. Bevisraderna: brytarna N och P1 av, RLS på båda tabellerna, rättigheter bara för `service_role`, inga punkter ännu. Laddningen går med `ny-kandidat-fysik` var sjätte timme, första gången 18.28 UTC; beviset är stegets rad *småvägspunkterna: klart*.
 
+**Tillägg 10/11 (Bengt: *"men börja på steg 3"* och *"Slå ihop och dbknappen"*): steg 3, radarn i småvägspunkterna, i drift.** PR #1498 sammanslagen (c1b817ec) 13.31 UTC på grön ci (integrationsprovet RV1–RV5), direkt efter att stadsradarns körning 13.31 startat på den gamla koden. `sql/104` migrerad med DB-knappen 13.31.58 UTC (42825320824): RLS på, rättigheter bara för `service_role`, inga rader. Radarn läser punkterna i bitar om högst fem i följd längs vägen och gallrar efter två timmar (`radar-karna.ts` `SMAVAG`). Första körningen på den nya koden, 13.46 (42827533485), var grön: *stadsradarn: klart* och *småvägsradarn: klart på 253 ms*, med tom punkttabell tills laddningen 18.28 UTC.
+
 **Stomdokument:** MAT 5 — småvägsrösten beställd och byggs avstängd, SYS 2 — driftens rörarbete för småvägarna, APP 3 — betavarningens farotyp och text
 
 ## #829 (10/11 2026) Tipsa en vän, Tyck till och Betygsätt i 0.4.0 (42), tillsammans med Favoriter 2a och CarPlay
