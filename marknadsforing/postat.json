@@ -850,6 +850,17 @@
       "facebook": "1312515671952967_122111644077516187",
       "instagram": "18646660078045194",
       "x": "2120182790020890632"
+    },
+    {
+      "pass": "live",
+      "namn": "2026-11-10-live-1707",
+      "typ": "smhi",
+      "nyckel": "smhi:Snöfall:Västerbottenskusten:YELLOW",
+      "tid": "2026-11-10T16:07:57.711Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-11-10-live-1707.jpg",
+      "facebook": "1312515671952967_122111648301516187",
+      "instagram": "18581002912072883",
+      "x": "2120186768611770828"
     }
   ]
 }
