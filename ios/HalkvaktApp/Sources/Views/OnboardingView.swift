@@ -92,7 +92,7 @@ struct OnboardingView: View {
         Sida {
             Lockup(markSize: 30, textSize: 18).padding(.bottom, 28)
             Rubrik(titel: "Varnar med rösten",
-                   text: "Halka, olyckor, frysrisk, vilt och fartkameror från Trafikverket — i din högtalare, innan du är där.")
+                   text: "Halka, olyckor, frysrisk, vilt och fartkameror ur Trafikverkets data och Halkvaktens egna prognoser — i din högtalare, innan du är där.")
             Plinth(name: "plinth-logo").frame(minHeight: 160, maxHeight: 220)
             VStack(alignment: .leading, spacing: 8) {
                 MonoLabel(text: "Löftet")
@@ -231,6 +231,10 @@ struct OnboardingView: View {
             } else {
                 MonoLink(title: "Åtgärda i Inställningar") { withAnimation { page = always ? 2 : 1 } }.padding(.top, 6)
             }
+            // Kort #648 (DECISIONS #830): en mening om begränsningarna, en gång, innan vakten används.
+            Text("Halkvakt varnar inte överallt och kan ha fel. Kör alltid efter väglaget.")
+                .font(Typo.sans(13)).foregroundStyle(Brand.text2).multilineTextAlignment(.center)
+                .padding(.top, 18)
         }
     }
 

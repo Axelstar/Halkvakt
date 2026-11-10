@@ -228,12 +228,18 @@ struct InstallningarView: View {
             RowPanel {
                 LankRad(titel: "Livekartan — läget just nu", url: "https://axelstar.github.io/halkvakt-karta/karta.html")
                 LankRad(titel: "Om appen & vanliga frågor", url: "https://axelstar.github.io/halkvakt-karta/om.html")
+                LankRad(titel: "Ansvar och källor", url: "https://axelstar.github.io/halkvakt-karta/ansvar.html")
                 LankRad(titel: "Press & material", url: "https://axelstar.github.io/halkvakt-karta/press.html", divider: false)
             }
             .padding(.top, 24)
-            Text("Varnar vid Trafikverkets mätstationer och rapporterade väglag — mellan stationerna är vägen oövervakad. Data: Trafikverket (CC0), SMHI, Fintraffic (CC BY 4.0), broar © OpenStreetMap-bidragsgivare (ODbL). Halkvakt är fristående och har ingen koppling till myndigheterna.")
-                .font(Typo.sans(12)).lineSpacing(3).foregroundStyle(Brand.faint)
+            // Kort #648 (DECISIONS #830): ansvaret och källorna. Den gamla raden sa att vägen mellan stationerna är oövervakad,
+            // men kandidatens prognoser talar där; MET Norway (CC BY 4.0) och Statens vegvesen (NLOD) kräver att källan anges.
+            Text("Halkvakt är ett stöd, inte en garanti. Varningarna bygger på Trafikverkets mätningar och på Halkvaktens egna prognoser ur väderdata, som är betavarningar. De kan vara fel, komma sent eller saknas, och att appen är tyst betyder inte att vägen är säker. Du ansvarar alltid för att köra efter väglag och sikt. Rör inte telefonen under körning — Halkvakt talar av sig själv.")
+                .font(Typo.sans(12)).lineSpacing(3).foregroundStyle(Brand.text2)
                 .padding(.top, 20).padding(.horizontal, 4)
+            Text("Data: Trafikverket (CC0), SMHI, MET Norway, Fintraffic (CC BY 4.0), Statens vegvesen (NLOD), broar © OpenStreetMap-bidragsgivare (ODbL). Halkvaktens prognoser bygger på data från MET Norway, bearbetad av Halkvakt. Halkvakt är fristående och har ingen koppling till myndigheterna.")
+                .font(Typo.sans(12)).lineSpacing(3).foregroundStyle(Brand.faint)
+                .padding(.top, 12).padding(.horizontal, 4)
             MonoLabel(text: "Halkvakt \(Self.version) · beta", color: Brand.faint2).padding(.top, 16).padding(.horizontal, 4)
         }
     }

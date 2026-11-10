@@ -716,13 +716,20 @@ private fun Undersida(sida: Sida, activity: MainActivity, open: (Sida) -> Unit, 
                 RowPanel {
                     NavRow("Livekartan — läget just nu") { uri.openUri("https://axelstar.github.io/halkvakt-karta/karta.html") }
                     NavRow("Om appen & vanliga frågor") { uri.openUri("https://axelstar.github.io/halkvakt-karta/om.html") }
+                    NavRow("Ansvar och källor") { uri.openUri("https://axelstar.github.io/halkvakt-karta/ansvar.html") }
                     NavRow("Press & material", divider = false) { uri.openUri("https://axelstar.github.io/halkvakt-karta/press.html") }
                 }
-                // #249 (a): samma ärlighetsrad och attribution som iOS — Fintraffic (CC BY 4.0) och OSM (ODbL) kräver källan.
-                Text("Varnar vid Trafikverkets mätstationer och rapporterade väglag — mellan stationerna är vägen oövervakad. " +
-                    "Data: Trafikverket (CC0), SMHI, Fintraffic (CC BY 4.0), broar © OpenStreetMap-bidragsgivare (ODbL). " +
-                    "Halkvakt är fristående och har ingen koppling till myndigheterna.",
-                    color = Muted2, fontFamily = Typo.sans, fontSize = 12.sp, lineHeight = 18.sp, modifier = Modifier.padding(top = 20.dp, start = 4.dp))
+                // Kort #648 (DECISIONS #830): samma ansvar och källor som iOS. Android har ingen introduktion, så Om bär också
+                // meningen om begränsningarna. MET Norway, Fintraffic (CC BY 4.0), Statens vegvesen (NLOD) och OSM (ODbL) kräver källan.
+                Text("Halkvakt är ett stöd, inte en garanti. Varningarna bygger på Trafikverkets mätningar och på Halkvaktens egna " +
+                    "prognoser ur väderdata, som är betavarningar. De kan vara fel, komma sent eller saknas, och att appen är tyst " +
+                    "betyder inte att vägen är säker. Du ansvarar alltid för att köra efter väglag och sikt. Rör inte telefonen " +
+                    "under körning — Halkvakt talar av sig själv.",
+                    color = Text2, fontFamily = Typo.sans, fontSize = 12.sp, lineHeight = 18.sp, modifier = Modifier.padding(top = 20.dp, start = 4.dp))
+                Text("Data: Trafikverket (CC0), SMHI, MET Norway, Fintraffic (CC BY 4.0), Statens vegvesen (NLOD), broar © " +
+                    "OpenStreetMap-bidragsgivare (ODbL). Halkvaktens prognoser bygger på data från MET Norway, bearbetad av " +
+                    "Halkvakt. Halkvakt är fristående och har ingen koppling till myndigheterna.",
+                    color = Muted2, fontFamily = Typo.sans, fontSize = 12.sp, lineHeight = 18.sp, modifier = Modifier.padding(top = 12.dp, start = 4.dp))
                 MonoLabel("Halkvakt $version · beta", Muted3, modifier = Modifier.padding(top = 16.dp, start = 4.dp))
             }
         }

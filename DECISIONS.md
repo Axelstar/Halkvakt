@@ -15189,3 +15189,19 @@ App Privacy eller integritet.html.
 
 **Stomdokument:** APP 4 — raderna i Inställningar och kortet på Redo., APP 7 — inget nytt lämnar telefonen
 
+## #830 (10/11 2026) Ansvarstexten och källraden i appen och på sajten (kort #648)
+
+**Beslut.** Bengt 10/11: *"kör särdragsknapp och gör pr 1503 och kort 648"*, på förslaget samma kväll (Bengt: *"skriv ihop ett förslag till text, kortfattat som täcker 'friskrivning' och gör källhänvisningar till det vi behöver"*). Axel granskar formuleringen innan bygget går till TestFlight (PLAN.md, riskraden om ansvaret).
+- **Ansvaret,** samma text i appen och på sajten: *"Halkvakt är ett stöd, inte en garanti. Varningarna bygger på Trafikverkets mätningar och på Halkvaktens egna prognoser ur väderdata, som är betavarningar. De kan vara fel, komma sent eller saknas, och att appen är tyst betyder inte att vägen är säker. Du ansvarar alltid för att köra efter väglag och sikt. Rör inte telefonen under körning — Halkvakt talar av sig själv."*
+- **Källraden i appen:** Trafikverket (CC0), SMHI, MET Norway, Fintraffic (CC BY 4.0), Statens vegvesen (NLOD) och broarna ur OpenStreetMap (ODbL), och att Halkvaktens prognoser bygger på data från MET Norway, bearbetad av Halkvakt. MET Norway och Statens vegvesen är nya: kandidaten räknas ur MET Nordic, och norska stationer nära gränsen når appen (`BORDER_LANDS`, #742).
+- **Appen:** Om bär ansvaret, källraden och länken *Ansvar och källor* till sajten. I iOS-introduktionen nämner löftet Halkvaktens egna prognoser, och kvittot får meningen *"Halkvakt varnar inte överallt och kan ha fel. Kör alltid efter väglaget."* Android har ingen introduktion, och där bär Om samma ansvar.
+- **Sajten:** sidan *Ansvar och källor* (`ansvar.html` i halkvakt-karta) med ansvaret, en mening om att uppgifterna lämnas utan garanti, och alla källor med licens, också modellens fasta indata (Copernicus DEM, ESA WorldCover och Meta och WRI:s trädhöjd, licenserna lästa på källorna 10/11). Sidfoten på sajtens sidor länkar dit.
+- **Butikerna:** en mening sist i beskrivningen, som Axel för in.
+
+**Alternativ.** Användarvillkor som godkänns vid första start; en friskrivning utan beskrivning av begränsningarna; att bara rätta källraden.
+
+**Varför.** Ingen lag kräver en friskrivning, men texten om vad appen inte gör påverkar vad en användare rimligen kan räkna med. EU:s nya produktansvar (direktiv 2024/2853, infört senast 9/12 2026) räknar programvara som produkt och väger in presentationen och varningarna. Mot en konsument går ansvaret för personskada inte att avtala bort (avtalslagen 36 §), så texten informerar och lovar ingen ansvarsfrihet. Den gamla raden sa att vägen mellan stationerna är oövervakad, fast kandidatens prognoser talar där. CC BY 4.0 och NLOD kräver att källan anges (MET:s licenssida lästes 10/11), som för Fintraffic och DMI (#374, #585).
+
+**Kvar:** Axels granskning av formuleringen; sajtens PR; fotostudions skärmbilder av Om och kvittot till produktboken; butikstexterna; en jurists läsning av den slutliga texten (rekommenderad, inte beslutad).
+
+**Stomdokument:** APP 4, APP 10, SYS 1
