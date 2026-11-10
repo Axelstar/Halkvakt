@@ -225,6 +225,10 @@ export const KARTAN: Beroende[] = [
   { vard: "apps.apple.com", roll: "bygg",
     matar: "länken till Halkvakt i App Store på läns- och vägsidorna",
     brister: "knappen leder till en död sida; sidorna visas ändå", bevakad: "", signal: "OKÄND" },
+  // Androidappens rad Betygsätt Halkvakt (Tipsa.kt, 10/11, DECISIONS #829): reservlänken när Play-appen saknas, ingen hämtar därifrån.
+  { vard: "play.google.com", roll: "bygg",
+    matar: "länken till Halkvakt i Google Play från Androidappens rad Betygsätt Halkvakt",
+    brister: "raden leder till en död sida; appen fungerar som vanligt", bevakad: "", signal: "OKÄND" },
 ];
 
 // Värdar som är vår EGEN infrastruktur eller allmän verktygsinfrastruktur — inte beroenden
