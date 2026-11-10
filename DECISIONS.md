@@ -15092,7 +15092,8 @@ att lägga bredvid nedladdningarna. Ett betalt verktyg (Graft, Airbyte): onödig
 signerar"*), i halkvakt-kuvos F51 och F52.
 - **Vad:** en röst på de statliga vägar som saknar väglagsmätning:
   - småvägarna, alltså de statliga vägarna mer än 2 km från en väglagspunkt;
-  - de statliga vägarna nära väglagsnätet men utanför sträckorna.
+  - de statliga vägarna nära väglagsnätet men utanför sträckorna: inom 2 km från en väglagspunkt, med en egen linje som ligger
+    mer än 100 m från varje väglagssträcka (Bengt 10/11: *"100 m"*), så att en parallell väg skiljs från sträckan.
 - **Hur den låter:** som kandidatens betavarning. Den säger bara *halka*, och aldrig frysrisk eller att vägen inte fryser.
 
 Kommunala gator, utom Stockholms stad som redan prövas (#804), och enskilda vägar ingår inte.
