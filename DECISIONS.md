@@ -15151,4 +15151,6 @@ Brytarna är av tills dess.
   under vakten, och med koordinaterna hade filen växt med vädret, till flera gånger dagens storlek en natt med utbredd halka.
   Motorns rutnät (#795) tar kostnaden per GPS-punkt, men inte hämtningen.
 
+**Tillägg 10/11 (Bengt: *"Två, P1 och N"*).** Rösten får två brytare, en för småvägarna (P1) och en för vägarna nära väglagsnätet (N), båda av tills påslaget (`sql/103`). Alternativet var fyra, norr och söder om 62° för varje grupp, så att en landsdel kunde slås av för sig. Det föll: rösten säger bara *halka*, norrregeln rör bara *fryser inte*, och gränsen hade blivit en ny kopia av norrgränsen att vakta. Behövs en landsdel för sig senare, görs det med en egen migration.
+
 **Stomdokument:** MAT 5 — småvägsrösten beställd och byggs avstängd, SYS 2 — driftens rörarbete för småvägarna, APP 3 — betavarningens farotyp och text

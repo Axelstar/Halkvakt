@@ -217,6 +217,18 @@ jobs:
           rm -f modell_alla.pkl
           if [ "${{ steps.stad_a.outcome }}" = success ]; then echo "storstädernas punkter: klart för $STAMP" | tee -a "$GITHUB_STEP_SUMMARY"
           else echo "**storstädernas punkter: fel** — ingen PH för stadspunkterna i körningen $STAMP; dagens punkter är skrivna" | tee -a "$GITHUB_STEP_SUMMARY"; fi
+      # SMÅVÄGSRÖSTEN (DECISIONS #828, kort #647; sql/103): punkterna ur kuvösens data/vagdata/smavagsrosten-punkter.json till
+      # smavagspunkt, med brytarna orörda (av tills Bengts och Axels ord). Efter dagens punkter och storstäderna, och continue-on-error:
+      # faller laddningen (till exempel före migrationen sql/103) står tabellen som förut och resten av jobbet går. Loggen säger bara
+      # klart eller fel.
+      - name: Småvägsröstens punkter — laddningen till smavagspunkt
+        if: env.FLAGGA == 'på'
+        continue-on-error: true
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        shell: bash
+        run: |
+          set -o pipefail
+          node --experimental-strip-types ingest/smavagspunkter-db.ts ladda 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Flaggan av — ingenting skrivs
         if: env.FLAGGA != 'på'
         run: echo "**Flaggan är av** (kuvos/ny-kandidat-skugga.json) — PH står bara i artefakten, ingenting är skrivet till databasen." | tee -a "$GITHUB_STEP_SUMMARY"
