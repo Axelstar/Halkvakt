@@ -15117,7 +15117,9 @@ livekartan ser ingen under körningen. En karta ensam varnar alltså ingen som k
   - kedjans steg och skuggans läsning;
   - motorns farotyp med testvektorer, som Swift och Kotlin klarar byte för byte;
   - appens text.
-- **Varningarnas koordinater** i `live.json`, som K:s i dag.
+- **Lägesfilen** (Bengt 10/11: *"Ja, var för sig"*): punkternas lägen står i en egen punktfil, som appen bara hämtar när den
+  ändras. I `live.json` står bara vilka punkter som varnar, en bit per punkt i punktfilens ordning, under en egen nyckel som äldre
+  appar inte läser. Lägena kommer ur Lastkajen (CC0) och får ligga i den publika punktfilen; särdragen bor kvar i kuvösen.
 
 **Vad som fortfarande bor i kuvösen (#768):**
 - punkterna med deras särdrag;
@@ -15128,7 +15130,7 @@ Loggar, sammanfattningar och ärenden här säger bara klart eller fel om dem.
 
 **Villkoren före påslaget:**
 - takten mätt i minst 14 dygn och taket valt av Bengt och Axel;
-- en batterimätning med punkterna i `live.json`, under 8 %/h med skärmen släckt;
+- en batterimätning med punktfilen och beskedet i `live.json`, under 8 %/h med skärmen släckt;
 - varje del provad;
 - appen godkänd av App Review;
 - Bengts och Axels ord.
@@ -15143,6 +15145,9 @@ Brytarna är av tills dess.
 **Alternativen:**
 - karta först (#757): förkastat, eftersom kartan inte når någon i bilen;
 - att vänta på kuvösens dom efter 31/3 2027: förkastat av Bengt;
-- en röst som också väcks av rimfrostläget: förkastat, eftersom den skulle tala dubbelt så ofta och stämma mer sällan (kuvösen F51).
+- en röst som också väcks av rimfrostläget: förkastat, eftersom den skulle tala dubbelt så ofta och stämma mer sällan (kuvösen F51);
+- varningarnas koordinater i `live.json`, som K:s i dag: förkastat av Bengt 10/11. Appen hämtar en ny lägesfil varannan minut
+  under vakten, och med koordinaterna hade filen växt med vädret, till flera gånger dagens storlek en natt med utbredd halka.
+  Motorns rutnät (#795) tar kostnaden per GPS-punkt, men inte hämtningen.
 
 **Stomdokument:** MAT 5 — småvägsrösten beställd och byggs avstängd, SYS 2 — driftens rörarbete för småvägarna, APP 3 — betavarningens farotyp och text
