@@ -15085,3 +15085,70 @@ vägarna till och från), med ett vettigt svar när det inte finns vägavsnitt e
 att lägga bredvid nedladdningarna. Ett betalt verktyg (Graft, Airbyte): onödigt när Supabase redan finns.
 
 **Stomdokument:** inga — ett marknadsföringsmått som varken ändrar appen, motorn eller vad appen skickar
+
+## #828 (10/11 2026) Undantag från #757 och #768: småvägsrösten går ut som kandidatens betavarning på statliga vägar utan mätning
+
+**Beslut.** Bengt 10/11: *"Jag beställer bygget"*. Bengt och Axel signerade underlaget samma dag (*"Skriv tillägget o jag o Axel
+signerar"*), i halkvakt-kuvos F51 och F52.
+- **Vad:** en röst på de statliga vägar som saknar väglagsmätning:
+  - småvägarna, alltså de statliga vägarna mer än 2 km från en väglagspunkt;
+  - de statliga vägarna nära väglagsnätet men utanför sträckorna: inom 2 km från en väglagspunkt, med en egen linje som ligger
+    mer än 100 m från varje väglagssträcka (Bengt 10/11: *"100 m"*), så att en parallell väg skiljs från sträckan.
+- **Hur den låter:** som kandidatens betavarning. Den säger bara *halka*, och aldrig frysrisk eller att vägen inte fryser.
+
+Kommunala gator, utom Stockholms stad som redan prövas (#804), och enskilda vägar ingår inte.
+
+**Varför rösten och inte kartan först (undantag från #757).** Appen talar i bakgrunden medan föraren har sin kartapp framme, och
+livekartan ser ingen under körningen. En karta ensam varnar alltså ingen som kör. Kartlagret kan komma som insyn.
+
+**Rösten:**
+- **Väcks av nederbörd** (MET Nordic, och radarn per punkt när den finns), inte av rimfrostläget ensamt.
+- **Ett besked per halkområde,** och sedan tystnad. Hur länge rösten tiger sätts ur takten, som mäts i skuggan på syntetiska resor i minst
+  14 dygn (kuvösen F50 del B). Taket är mätt, inte antaget (#200).
+- **Lägst prioritet,** efter K, så att den aldrig tystar en annan varning.
+- **Texten:** *"Betavarning: risk för halka på småvägarna framöver"*, utan avstånd. En punktkälla säger *framöver*.
+- **Bakom brytare,** med avbrottsvillkor bestämda före påslaget.
+
+**Vad som får ligga här (undantag från #768, som #804):**
+- **Driftens rörarbete:**
+  - en tabell för punkterna, med brytare;
+  - laddaren, som läser punkterna ur kuvösens överlägg;
+  - radarn per punkt;
+  - regeln med småvägsgrenen;
+  - kedjans steg och skuggans läsning;
+  - motorns farotyp med testvektorer, som Swift och Kotlin klarar byte för byte;
+  - appens text.
+- **Lägesfilen** (Bengt 10/11: *"Ja, var för sig"*): punkternas lägen står i en egen punktfil, som appen bara hämtar när den
+  ändras. I `live.json` står bara vilka punkter som varnar, en bit per punkt i punktfilens ordning, under en egen nyckel som äldre
+  appar inte läser. Lägena kommer ur Lastkajen (CC0) och får ligga i den publika punktfilen; särdragen bor kvar i kuvösen.
+
+**Vad som fortfarande bor i kuvösen (#768):**
+- punkterna med deras särdrag;
+- fysiken, förregistreringarna, proven och talen;
+- takten.
+
+Loggar, sammanfattningar och ärenden här säger bara klart eller fel om dem.
+
+**Villkoren före påslaget:**
+- takten mätt i minst 14 dygn och taket valt av Bengt och Axel;
+- en batterimätning med punktfilen och beskedet i `live.json`, under 8 %/h med skärmen släckt;
+- varje del provad;
+- appen godkänd av App Review;
+- Bengts och Axels ord.
+
+Brytarna är av tills dess.
+
+**Därefter.**
+- **Avbrott under säsongen** grundas på olycksfacit, testarnas facitsvar, takten och driftens hälsa. Kuvösens prov på vintern 2026/27
+  läses inte före sina datum.
+- **Om rösten står kvar 2027/28** avgör en regel som är skriven före läsningen (kuvösen F52). Den läses efter 31/3 2027.
+
+**Alternativen:**
+- karta först (#757): förkastat, eftersom kartan inte når någon i bilen;
+- att vänta på kuvösens dom efter 31/3 2027: förkastat av Bengt;
+- en röst som också väcks av rimfrostläget: förkastat, eftersom den skulle tala dubbelt så ofta och stämma mer sällan (kuvösen F51);
+- varningarnas koordinater i `live.json`, som K:s i dag: förkastat av Bengt 10/11. Appen hämtar en ny lägesfil varannan minut
+  under vakten, och med koordinaterna hade filen växt med vädret, till flera gånger dagens storlek en natt med utbredd halka.
+  Motorns rutnät (#795) tar kostnaden per GPS-punkt, men inte hämtningen.
+
+**Stomdokument:** MAT 5 — småvägsrösten beställd och byggs avstängd, SYS 2 — driftens rörarbete för småvägarna, APP 3 — betavarningens farotyp och text
