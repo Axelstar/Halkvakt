@@ -45,9 +45,9 @@ on:
   workflow_dispatch:
     inputs:
       steg:
-        description: "indata (en äldre vinter) → fyll (T2) → forberedning → traning → provning (bakom spärren) → samman; paritet (§4, den levande kedjan); osakerhet (#707, omdragning på 2022/23); identitet och dom bara med variant smavagar eller okanda; mars (marsprövningen, halkvakt-kuvos F8: prov (b), halvvintrarna och domen, bara till hinken); trafikmangd (halkvakt-kuvos F21, trafikmängdens betydelse, bara med variant okanda, bara till hinken)"
+        description: "indata (en äldre vinter) → fyll (T2) → forberedning → traning → provning (bakom spärren) → samman; paritet (§4, den levande kedjan); osakerhet (#707, omdragning på 2022/23); identitet och dom bara med variant smavagar eller okanda; mars (marsprövningen, halkvakt-kuvos F8: prov (b), halvvintrarna och domen, bara till hinken); trafikmangd (halkvakt-kuvos F21, trafikmängdens betydelse, bara med variant okanda, bara till hinken); dfbakat (fuktvarianten D-F bakåt, halkvakt-kuvos F47)"
         type: choice
-        options: ["indata", "fyll", "t4", "forberedning", "traning", "provning", "samman", "paritet", "osakerhet", "identitet", "dom", "mars", "trafikmangd", "sparren", "vetot", "fukten", "flackvis"]
+        options: ["indata", "fyll", "t4", "forberedning", "traning", "provning", "samman", "paritet", "osakerhet", "identitet", "dom", "mars", "trafikmangd", "sparren", "vetot", "fukten", "flackvis", "dfbakat"]
         default: "forberedning"
       vinter:
         description: "bara för indata och fyll: vintern som hämtas (2017-18 och 2023-24 är marsprövningens halvvintrar, halkvakt-kuvos F8)"
@@ -2798,6 +2798,256 @@ jobs:
           if [ "$RC" -ne 0 ]; then echo "::error::domskriptet (marsreglerna): fel"; exit "$RC"; fi
           echo "domskriptet (marsreglerna): klart"
           lagg ut/mars_regler.json
+          rm -rf ut
+
+  # ── dfbakat (fuktvarianten D-F bakåt, halkvakt-kuvos BESLUT F47) ─────────────────────────────────────────────────────────────────
+  # docs/FORREGISTRERING-DF-BAKAT-2026-11.md i det privata repot. Diagnos, ingen dom: inget utfall ändrar kod, drift eller en dom.
+  # En vinter per jobb (de sex med småvägsprovets veck, halvvintrarna med P-I:s skattningar), och läsningen i ett sista jobb.
+  # Punkterna, MET-filerna och Trafikverkets filer stannar i jobben. Bara cellerna per station och dygn, antalen och läsningen går
+  # till hinken (kuvos/kuvos-df-bakat-2026-11-<körningens nummer>/). Loggen säger bara klart eller fel. Jobbet för 2017-18 räknar
+  # dessutom diagnosen med norrregeln på P-I:s halvvintrar (halkvakt-kuvos F48), eftersom det redan har båda skattningarna.
+  dfbakat-vinter:
+    if: ${{ inputs.steg == 'dfbakat' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions: { contents: read, actions: read }
+    strategy:
+      fail-fast: false
+      matrix:
+        vinter: ["2018-19", "2019-20", "2020-21", "2021-22", "2022-23", "2024-25", "2017-18", "2023-24"]
+    env:
+      GH_TOKEN: "${{ github.token }}"
+      V: "${{ matrix.vinter }}"
+      UT_HINK: "kuvos-df-bakat-2026-11-${{ github.run_number }}"
+      G: kuvos-kandidat-2027-28-t4-smavagar
+      P: kuvos-mars-2026-11
+    steps:
+      - uses: actions/checkout@v4
+      # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos (DECISIONS #768): koden läggs ovanpå utcheckningen.
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13", cache: pip, cache-dependency-path: fysik/requirements.txt }
+      - name: Beroendena, de frysta filerna, spärren, populationsprovet och självtestet
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
+          (cd fysik && sha256sum -c --quiet SHA256SUMS)
+          prov() { if "${@:2}" > /dev/null 2>&1; then echo "$1: klart"; else echo "::error::$1: fel"; return 1; fi; }
+          prov "spärren (F47, signerad)" python3 fysik/ny_kandidat/sparren.py docs/FORREGISTRERING-DF-BAKAT-2026-11.md
+          prov "populationsprovet" python3 fysik/ny_kandidat/smavagar.py --check
+          prov "självtestet (påhittade data)" python3 fysik/ny_kandidat/df_bakat.py --sjalvtest
+          prov "självtestet för norrregeln (påhittade data)" python3 fysik/ny_kandidat/norrregeln_diag.py --sjalvtest
+      - name: Hinken — kandidatens punkter och leveransen för vintern, summorna mot manifesten
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          export FN KEY
+          hamta() {  # hamta <mapp> <hinknamn …>: ur hinken, högst 20 per anrop
+            node -e '
+              const { execFileSync } = require("child_process"), fs = require("fs"), [mapp, ...filer] = process.argv.slice(1);
+              // execFileSync:s fel bär kommandoraden och därmed nyckeln eller den signerade adressen: fångas, bara statusen skrivs ut.
+              const curl = (a, vad) => { try { return execFileSync("curl", ["-sS", "--fail", ...a], { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); }
+                catch (e) { console.error(`${vad} föll (curl ${e.status})`); process.exit(1); } };
+              if (!filer.length) { console.error("hamta: inga filer"); process.exit(1); }
+              fs.mkdirSync(mapp, { recursive: true });
+              for (let i = 0; i < filer.length; i += 20) {
+                const s = JSON.parse(curl(["-X", "POST", `${process.env.FN}?lage=kuvos_hamta`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
+                  "-H", "Content-Type: application/json", "-d", JSON.stringify({ filer: filer.slice(i, i + 20) })], "adresserna (finns filerna i hinken?)"));
+                for (const d of s.filer) curl(["-o", mapp + "/" + d.fil.split("/").pop(), d.url], `hämtningen av ${d.fil}`);
+              }' "$@"
+          }
+          case "$V" in
+            2017-18|2023-24)
+              L=(); S=(); for H in 2017-18 2023-24; do L+=("$P/skattning_$H.json" "$P/punkter_$H.npz"); S+=("$P-smavagar/skattning_$H.json" "$P-smavagar/punkter_$H.npz"); done
+              hamta lev "${L[@]}"; hamta sma "${S[@]}" ;;
+            *) hamta vk "$G/punkter_$V.npz" "$G/veck_$V.json" ;;
+          esac
+          # Leveransens filer i filordningen (lasare.py): hösten före våren, och 2024/25 i månadsordning.
+          node -e '
+            const v = process.env.V, a = Number(v.slice(0, 4)), halv = v === "2017-18" || v === "2023-24";
+            const f = v === "2024-25" ? require("./kuvos/leverans.json").filer.map((x) => "kuvos-trv-2024-25/" + x.packad)
+                    : (halv ? [`Halkvakt_${a + 1}-1.csv.gz`] : [`Halkvakt_${a}-2.csv.gz`, `Halkvakt_${a + 1}-1.csv.gz`]).map((x) => "kuvos-vvis-2018-24/" + x);
+            console.log(f.join("\n"));' > vv-hink.txt
+          mapfile -t VVH < vv-hink.txt
+          hamta vv "${VVH[@]}"
+          sed 's#^.*/#vv/#' vv-hink.txt > vv.txt && rm vv-hink.txt
+          node -e '
+            const c = require("crypto"), fs = require("fs"), v = process.env.V; let fel = 0;
+            const prova = (fil, sha, bytes) => { const b = fs.readFileSync(fil), h = c.createHash("sha256").update(b).digest("hex");
+              const ok = h === sha && (bytes === undefined || b.length === bytes); fel += !ok; console.log(`${fil}: ${ok ? "sha256 lika manifestet" : "FEL mot manifestet"}`); };
+            const filer = fs.readFileSync("vv.txt", "utf8").trim().split("\n");
+            if (v === "2024-25") for (const f of require("./kuvos/leverans.json").filer) prova("vv/" + f.packad, f.packad_sha256);
+            else for (const f of require("./kuvos/vvis-2018-24-leverans.json").filer.filter((x) => filer.includes("vv/" + x.packad))) prova("vv/" + f.packad, f.packad_sha256, f.packad_bytes);
+            process.exit(fel ? 1 : 0);'
+          echo "punkterna och leveransen för $V: klart"
+      # MET Nordic: 2024/25 ur kuvos-metnordic-2024-25 (summan mot manifestet), de andra vintrarna och halvvintrarna samma delar som
+      # kandidaten räknades på (metnordic_reserv.ts --valj, som F38 och P-I).
+      - name: MET Nordic för vintern
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p met
+          if [ "$V" = 2024-25 ]; then
+            gh release download kuvos-metnordic-2024-25 --dir met --pattern 'metnordic_2024-25.csv.gz'
+            node -e '
+              const c = require("crypto"), fs = require("fs"), f = "met/metnordic_2024-25.csv.gz";
+              const h = c.createHash("sha256").update(fs.readFileSync(f)).digest("hex"), ok = h === require("./kuvos/metnordic-leverans.json").filer.find((x) => x.fil === "metnordic_2024-25.csv.gz").sha256;
+              console.log(`${f}: ${ok ? "sha256 lika manifestet" : "FEL mot manifestet"}`); process.exit(ok ? 0 : 1);'
+            echo met/metnordic_2024-25.csv.gz > met/delar.txt
+          else
+            gh release download "kuvos-vintrar-$V" --dir rel --pattern 'metnordic_*.csv.gz'
+            node --experimental-strip-types fysik/ny_kandidat/metnordic_reserv.ts --valj "$V" rel > met/delar.txt
+            [ -s met/delar.txt ] || { echo "::error::MET Nordic-delarna för $V saknas"; exit 1; }
+          fi
+          echo "MET Nordic för $V: klart ($(wc -l < met/delar.txt) delar)"
+      - name: Cellerna för vintern, till hinken
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          export FN KEY
+          lagg() {   # lagg <fil …>: till $UT_HINK/<filnamn>; skrivs aldrig över, och det som ligger i hinken ska vara byte för byte filen
+            node -e '
+              const { execFileSync } = require("child_process"), fs = require("fs"), c = require("crypto"), filer = process.argv.slice(1);
+              const sha = (b) => c.createHash("sha256").update(b).digest("hex"), namn = filer.map((f) => process.env.UT_HINK + "/" + f.split("/").pop());
+              // execFileSync:s fel bär kommandoraden och därmed nyckeln eller den signerade adressen: fångas, bara statusen skrivs ut.
+              const curl = (a, vad) => { try { return execFileSync("curl", ["-sS", "--fail", ...a], { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); }
+                catch (e) { if (vad) { console.error(`${vad} föll (curl ${e.status})`); process.exit(1); } return null; } };
+              const anrop = (lage, vad) => { const b = curl(["-X", "POST", `${process.env.FN}?lage=${lage}`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
+                "-H", "Content-Type: application/json", "-d", JSON.stringify({ filer: namn })], vad); return b && JSON.parse(b); };
+              if (!filer.length || filer.length > 20) { console.error("lagg: 1–20 filer per anrop"); process.exit(1); }
+              let h = anrop("kuvos_hamta");
+              if (h) console.log("filerna finns redan i hinken (en omkörning): de jämförs, ingenting skrivs över");
+              else {
+                const u = anrop("kuvos_ladda_upp", "adresserna för uppladdningen").urls;
+                filer.forEach((f, i) => curl(["-X", "PUT", "-H", "Content-Type: application/octet-stream", "--data-binary", "@" + f, u[i]],
+                  `uppladdningen av ${namn[i]} (finns filen redan i hinken skrivs den inte över)`));
+                h = anrop("kuvos_hamta", "hämtningen tillbaka");
+              }
+              let fel = 0;
+              h.filer.forEach((d, i) => { const ok = sha(curl([d.url], `hämtningen av ${d.fil}`)) === sha(fs.readFileSync(filer[i])); fel += !ok;
+                console.log(`${d.fil}: ${ok ? "klart, i hinken byte för byte den skrivna" : "FEL: i hinken med annat innehåll"}`); });
+              process.exit(fel ? 1 : 0);' "$@"
+          }
+          case "$V" in 2017-18|2023-24) ARGS=(--levande lev --smavagar sma) ;; *) ARGS=(--veck vk) ;; esac
+          mapfile -t VV < vv.txt
+          RC=0; python3 fysik/ny_kandidat/df_bakat.py celler --vinter "$V" "${ARGS[@]}" --vvis "${VV[@]}" --metnordic $(cat met/delar.txt) --ut ut > df.txt 2>&1 || RC=$?
+          # Vilket prov som föll: bara ordet ur skriptets rad, aldrig talen.
+          PROVET=$(sed -n 's/^DF FÖLL: \(vintern\|vecket\|koderna\)$/\1/p' df.txt | tail -1)
+          # P-I med norrregeln (halkvakt-kuvos F48): en gång, i jobbet för 2017-18, som har båda halvvintrarnas skattningar.
+          RC2=0; if [ "$V" = 2017-18 ]; then python3 fysik/ny_kandidat/norrregeln_diag.py halvvintrar --levande lev --smavagar sma --ut ut/norrregeln_p1.json > nr.txt 2>&1 || RC2=$?; rm -f nr.txt; fi
+          rm -rf vv vv.txt vk lev sma met rel df.txt
+          [ "$RC" -eq 0 ] || { echo "::error::D-F bakåt, vintern $V: fel i ${PROVET:-skriptet, utan besked (kod $RC)}"; exit "$RC"; }
+          echo "D-F bakåt, vintern $V: klart"
+          lagg "ut/df_celler_$V.csv.gz" "ut/df_info_$V.json"
+          if [ "$V" = 2017-18 ]; then
+            # Föll kontrollen ligger bara kontrollen i filen: den går till hinken, så att skälet går att läsa där.
+            if [ -f ut/norrregeln_p1.json ]; then lagg ut/norrregeln_p1.json; fi
+            [ "$RC2" -eq 0 ] || { echo "::error::norrregeln på P-I: fel i kontrollen eller skriptet (kod $RC2)"; exit "$RC2"; }
+            echo "norrregeln på P-I: klart"
+          fi
+          rm -rf ut
+
+  dfbakat-las:
+    needs: dfbakat-vinter
+    if: ${{ inputs.steg == 'dfbakat' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      UT_HINK: "kuvos-df-bakat-2026-11-${{ github.run_number }}"
+    steps:
+      - uses: actions/checkout@v4
+      # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos (DECISIONS #768): koden läggs ovanpå utcheckningen.
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13", cache: pip, cache-dependency-path: fysik/requirements.txt }
+      - name: Beroendena, spärren och självtestet
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
+          (cd fysik && sha256sum -c --quiet SHA256SUMS)
+          prov() { if "${@:2}" > /dev/null 2>&1; then echo "$1: klart"; else echo "::error::$1: fel"; return 1; fi; }
+          prov "spärren (F47, signerad)" python3 fysik/ny_kandidat/sparren.py docs/FORREGISTRERING-DF-BAKAT-2026-11.md
+          prov "självtestet (påhittade data)" python3 fysik/ny_kandidat/df_bakat.py --sjalvtest
+      - name: Cellerna ur hinken, läsningen till hinken
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          export FN KEY
+          hamta() {  # hamta <mapp> <hinknamn …>: ur hinken, högst 20 per anrop
+            node -e '
+              const { execFileSync } = require("child_process"), fs = require("fs"), [mapp, ...filer] = process.argv.slice(1);
+              // execFileSync:s fel bär kommandoraden och därmed nyckeln eller den signerade adressen: fångas, bara statusen skrivs ut.
+              const curl = (a, vad) => { try { return execFileSync("curl", ["-sS", "--fail", ...a], { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); }
+                catch (e) { console.error(`${vad} föll (curl ${e.status})`); process.exit(1); } };
+              if (!filer.length) { console.error("hamta: inga filer"); process.exit(1); }
+              fs.mkdirSync(mapp, { recursive: true });
+              for (let i = 0; i < filer.length; i += 20) {
+                const s = JSON.parse(curl(["-X", "POST", `${process.env.FN}?lage=kuvos_hamta`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
+                  "-H", "Content-Type: application/json", "-d", JSON.stringify({ filer: filer.slice(i, i + 20) })], "adresserna (finns filerna i hinken?)"));
+                for (const d of s.filer) curl(["-o", mapp + "/" + d.fil.split("/").pop(), d.url], `hämtningen av ${d.fil}`);
+              }' "$@"
+          }
+          lagg() {   # lagg <fil …>: till $UT_HINK/<filnamn>; skrivs aldrig över, och det som ligger i hinken ska vara byte för byte filen
+            node -e '
+              const { execFileSync } = require("child_process"), fs = require("fs"), c = require("crypto"), filer = process.argv.slice(1);
+              const sha = (b) => c.createHash("sha256").update(b).digest("hex"), namn = filer.map((f) => process.env.UT_HINK + "/" + f.split("/").pop());
+              // execFileSync:s fel bär kommandoraden och därmed nyckeln eller den signerade adressen: fångas, bara statusen skrivs ut.
+              const curl = (a, vad) => { try { return execFileSync("curl", ["-sS", "--fail", ...a], { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); }
+                catch (e) { if (vad) { console.error(`${vad} föll (curl ${e.status})`); process.exit(1); } return null; } };
+              const anrop = (lage, vad) => { const b = curl(["-X", "POST", `${process.env.FN}?lage=${lage}`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
+                "-H", "Content-Type: application/json", "-d", JSON.stringify({ filer: namn })], vad); return b && JSON.parse(b); };
+              if (!filer.length || filer.length > 20) { console.error("lagg: 1–20 filer per anrop"); process.exit(1); }
+              let h = anrop("kuvos_hamta");
+              if (h) console.log("filerna finns redan i hinken (en omkörning): de jämförs, ingenting skrivs över");
+              else {
+                const u = anrop("kuvos_ladda_upp", "adresserna för uppladdningen").urls;
+                filer.forEach((f, i) => curl(["-X", "PUT", "-H", "Content-Type: application/octet-stream", "--data-binary", "@" + f, u[i]],
+                  `uppladdningen av ${namn[i]} (finns filen redan i hinken skrivs den inte över)`));
+                h = anrop("kuvos_hamta", "hämtningen tillbaka");
+              }
+              let fel = 0;
+              h.filer.forEach((d, i) => { const ok = sha(curl([d.url], `hämtningen av ${d.fil}`)) === sha(fs.readFileSync(filer[i])); fel += !ok;
+                console.log(`${d.fil}: ${ok ? "klart, i hinken byte för byte den skrivna" : "FEL: i hinken med annat innehåll"}`); });
+              process.exit(fel ? 1 : 0);' "$@"
+          }
+          F=(); for V in 2018-19 2019-20 2020-21 2021-22 2022-23 2024-25 2017-18 2023-24; do F+=("$UT_HINK/df_celler_$V.csv.gz" "$UT_HINK/df_info_$V.json"); done
+          hamta celler "${F[@]}"
+          RC=0; python3 fysik/ny_kandidat/df_bakat.py las --celler celler --ut ut > las.txt 2>&1 || RC=$?
+          PROVET=$(sed -n 's/^DF FÖLL: \(vintrarna\|koderna\|kontrollen\)$/\1/p' las.txt | tail -1)
+          rm -rf celler las.txt
+          if [ "$RC" -ne 0 ]; then
+            # Föll kontrollen (a) ligger bara kontrollen i läsningens fil: den går till hinken, så att skälet går att läsa där.
+            if [ -f ut/df_bakat.json ]; then lagg ut/df_bakat.json; fi
+            echo "::error::D-F bakåt, läsningen: fel i ${PROVET:-skriptet, utan besked (kod $RC)}"; exit "$RC"
+          fi
+          echo "D-F bakåt, läsningen: klart"
+          lagg ut/df_bakat.json
           rm -rf ut
 
   # Variant smavagar har bara lägena identitet, traning, provning och dom (indata, fyll och t4 är desamma för alla varianter), och
