@@ -15153,4 +15153,6 @@ Brytarna är av tills dess.
 
 **Tillägg 10/11 (Bengt: *"Två, P1 och N"*).** Rösten får två brytare, en för småvägarna (P1) och en för vägarna nära väglagsnätet (N), båda av tills påslaget (`sql/103`). Alternativet var fyra, norr och söder om 62° för varje grupp, så att en landsdel kunde slås av för sig. Det föll: rösten säger bara *halka*, norrregeln rör bara *fryser inte*, och gränsen hade blivit en ny kopia av norrgränsen att vakta. Behövs en landsdel för sig senare, görs det med en egen migration.
 
+**Tillägg 10/11 (Bengt: *"slå ihop och därefter dbknappen"*): steg 2 i drift med brytarna av.** PR #1496 sammanslagen (e977332a) på grön ci; integrationsprovet i full skala gick i ci (90 000 punkter skrivna på 2,4 s, en andra gång på 1,7 s, ta_bort på 0,1 s). `sql/103` migrerad med DB-knappen 13.07 UTC (42821613445), transaktionen bekräftad. Bevisraderna: brytarna N och P1 av, RLS på båda tabellerna, rättigheter bara för `service_role`, inga punkter ännu. Laddningen går med `ny-kandidat-fysik` var sjätte timme, första gången 18.28 UTC; beviset är stegets rad *småvägspunkterna: klart*.
+
 **Stomdokument:** MAT 5 — småvägsrösten beställd och byggs avstängd, SYS 2 — driftens rörarbete för småvägarna, APP 3 — betavarningens farotyp och text
