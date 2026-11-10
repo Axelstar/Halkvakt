@@ -14,6 +14,7 @@ struct VaktenView: View {
     @State private var prefs = Prefs.shared
     @State private var fav = Favoriter.shared
     @State private var tipsatt = false
+    @State private var facitNu: String?   // kort #999: varningen som besvarades medan skärmen visades
     @Environment(\.scenePhase) private var fas
 
     var body: some View {
@@ -31,7 +32,7 @@ struct VaktenView: View {
             }
         }
         .task { await guardM.refreshSnapshot() }
-        .onDisappear { if tipsatt { prefs.tipsaDold = true } }
+        .onDisappear { if tipsatt { prefs.tipsaDold = true }; facitNu = nil }
         .onChange(of: fas) { _, ny in if ny != .active, tipsatt { prefs.tipsaDold = true } }
     }
 
@@ -97,9 +98,12 @@ struct VaktenView: View {
             // S4 (DECISIONS #210): facitknapparna hör hemma där "Senast sagt" faktiskt visas — här, inte i
             // LastSaidCard som ingen vy använder sedan skinnet v3. Bara betatestare, bara på en varning med id.
             // Inte medan kortet Efter resan visas: det bär samma varning med samma knappar (kort #279).
+            // Kort #999: en besvarad varning frågas inte om igen. Raden står kvar med Tack medan föraren är kvar på skärmen
+            // (svaret går att ändra), och är borta nästa gång Redo. visas (Axels skärminspelning 11/11: "It always just stays").
             if resa == nil, prefs.facitOn, let text = prefs.lastSaidText, let id = prefs.lastSaidId, let at = prefs.lastSaidAt,
-               Date.now.timeIntervalSince(at) < Facit.maxAge {   // äldre än så tar servern inte emot
-                FacitRow(id: id, at: at, text: text).padding(.top, 10)
+               Date.now.timeIntervalSince(at) < Facit.maxAge,   // äldre än så tar servern inte emot
+               Facit.answerFor(prefs.facit, id: id, t: at) == nil || facitNu == "\(id)@\(at.timeIntervalSince1970)" {
+                FacitRow(id: id, at: at, text: text) { facitNu = "\(id)@\(at.timeIntervalSince1970)" }.padding(.top, 10)
             }
         }
     }

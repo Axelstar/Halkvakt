@@ -7,6 +7,7 @@ struct FacitRow: View {
     let id: String
     let at: Date
     let text: String
+    var onSvar: () -> Void = {}
     @State private var prefs = Prefs.shared
 
     var body: some View {
@@ -32,6 +33,7 @@ struct FacitRow: View {
     }
 
     private func svara(_ svar: Bool) {
+        onSvar()
         prefs.facit = Facit.answer(prefs.facit, id: id, t: at, svar: svar)
         if !GuardManager.shared.running { Task { _ = await FacitSender.flush() } }
     }
