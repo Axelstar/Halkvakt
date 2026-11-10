@@ -346,6 +346,7 @@ class GuardService : Service() {
         // #787: hur passet slutade, i ett eget kortlivat scope som efterResan. Nästa stopp eller öppning skickar det.
         val app = applicationContext; val orsak = stoppOrsak; stoppOrsak = "hand"
         CoroutineScope(Dispatchers.IO).launch { runCatching { Raknare.vaktStoppad(app, orsak) } }
+        CoroutineScope(Dispatchers.IO).launch { runCatching { Prefs.raknaVaktPass(app) } }   // #829: kortet Tipsa en vän
         sparaTuren()
         sparaMatningen()
         favoritResanSlut(this)   // kort #357, #817: dagens resor och notisen, bara om insamlingen var på
