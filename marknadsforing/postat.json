@@ -828,6 +828,17 @@
       "facebook": "1312515671952967_122111498901516187",
       "instagram": "18004382609806158",
       "x": "2120016321937015038"
+    },
+    {
+      "pass": "lunch",
+      "namn": "2026-11-10-lunch",
+      "typ": "svep",
+      "nyckel": "svep:lunch",
+      "tid": "2026-11-10T10:50:41.254Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-11-10-lunch-01.jpg",
+      "facebook": "1312515671952967_122111577117516187",
+      "instagram": "18012870636002833",
+      "x": "2120107256398430606"
     }
   ]
 }
