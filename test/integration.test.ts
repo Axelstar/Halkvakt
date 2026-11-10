@@ -2496,6 +2496,48 @@ test("#804 radar_stad: tabellen för storstädernas radar", { skip: !url }, asyn
   }
 });
 
+// RADARN FÖR SMÅVÄGSRÖSTENS PUNKTER (sql/104, DECISIONS #828, kort #647): tabellen och satserna i radar-karna.ts SMAVAG, mot riktig PostGIS.
+//   RV1  filen går att köra två gånger; RLS på
+//   RV2  grupper delar en väg i bitar om högst fem punkter i följd, i ordningens följd, och bara ur smavagspunkt
+//   RV3  skriv tar en rad per bit, och samma komposit en gång till ändrar inget
+//   RV4  en stadsgrupp och en numerisk sträcka vägras, så radar_smavag aldrig blandas ihop med radar_stad eller radar_precip
+//   RV5  gallra tar rader äldre än två timmar och låter yngre stå
+test("#828 radar_smavag: tabellen och satserna för småvägsröstens radar", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { SMAVAG } = await import("../ingest/radar-karna.ts");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const las = (f: string) => q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+  const skriv = (b: string[], t = "2026-11-10T12:00Z") => q(SMAVAG.skriv, [b, t, b.map(() => 0.5), b.map(() => 0.2)]);
+  try {
+    await las("103_smavagspunkter.sql");
+    await las("104_radar_smavag.sql"); await las("104_radar_smavag.sql");
+    await q("DELETE FROM smavagspunkt"); await q("DELETE FROM radar_smavag");
+    assert.equal((await q("SELECT relrowsecurity FROM pg_class WHERE relname = 'radar_smavag'")).rows[0].relrowsecurity, true, "RV1: RLS");
+    // sju punkter längs v99001 (ordning 0–7 utan 3: en lucka där vägen går på en sträcka) och en på v99002
+    await q(`INSERT INTO smavagspunkt (punkt, grupp, vag, ordning, lon, lat) SELECT 'r' || (99900 + o), 'P1', 'v99001', o, 15 + o * 0.01, 60
+             FROM unnest(ARRAY[0, 1, 2, 4, 5, 6, 7]) AS o`);
+    await q("INSERT INTO smavagspunkt (punkt, grupp, vag, ordning, lon, lat) VALUES ('r99990', 'N', 'v99002', 0, 16, 61)");
+    const g = Object.fromEntries((await q(SMAVAG.grupper)).rows.map((r: any) => [r.bit, r.p.map((x: number[]) => x[0])]));
+    assert.deepEqual(Object.keys(g).sort(), ["v99001-0", "v99001-1", "v99002-0"], "RV2: bitarna");
+    assert.deepEqual(g["v99001-0"], [15, 15.01, 15.02, 15.04], "RV2: ordning 0–4 i följd, luckan vid 3");
+    assert.deepEqual(g["v99001-1"], [15.05, 15.06, 15.07], "RV2: ordning 5–7");
+    assert.equal((await skriv(["v99001-0", "v99002-0"])).rowCount, 2, "RV3: en rad per bit");
+    assert.equal((await skriv(["v99001-0"])).rowCount, 0, "RV3: samma komposit en gång till ändrar inget");
+    await assert.rejects(skriv(["B-990-990"]), undefined, "RV4: en stadsgrupp vägras");
+    await assert.rejects(skriv(["4045"]), undefined, "RV4: en numerisk sträcka vägras");
+    await q(SMAVAG.skriv, [["v99001-1", "v99002-0"], new Date(Date.now() - 3 * 3600e3).toISOString(), [0.5, 0.5], [0.2, 0.2]]);
+    await q(SMAVAG.skriv, [["v99001-1"], new Date(Date.now() - 30 * 60e3).toISOString(), [0.5], [0.2]]);
+    await q("UPDATE radar_smavag SET observed_at = now() - interval '1 day' WHERE observed_at = '2026-11-10T12:00Z'");
+    await q(SMAVAG.gallra);
+    assert.deepEqual((await q("SELECT bit FROM radar_smavag ORDER BY bit")).rows, [{ bit: "v99001-1" }], "RV5: bara raden yngre än två timmar står");
+  } finally {
+    await q("DELETE FROM radar_smavag").catch(() => {});
+    await q("DELETE FROM smavagspunkt WHERE punkt LIKE 'r999%'").catch(() => {});
+    await pool.end();
+  }
+});
+
 // STORSTÄDERNAS REGEL (sql/091, DECISIONS #804, kort #378; halkvakt-kuvos F33): stadspunkterna i kandidatens regel, mot riktig PostGIS.
 //   SR1  filen går att köra två gånger; den frystas och den nyas regel ger samma rader; vägpunkten varnar som förut
 //   SR2  brytaren: B på talar med gruppen som sträcka, C av ger ingen rad, C på talar

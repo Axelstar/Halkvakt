@@ -77,3 +77,15 @@ export function gruppRader(grupper: { id: string; punkter: [number, number][] }[
   }
   return { ids, maxes, means, events, sampled, outside, maxRate };
 }
+
+/** Småvägsröstens radar (sql/104, DECISIONS #828, kort #647): punkterna i smavagspunkt (sql/103) läses i bitar om högst BIT punkter i
+ *  följd längs sin väg, och varje bit blir en grupp i gruppRader. Biten är `<väg>-<ordning div BIT>`; regeln (steg 5) ska dela på
+ *  samma sätt och läsa den här konstanten, inte en egen kopia. Gallringen håller två timmar, eftersom regeln läser den senaste timmen. */
+export const SMAVAG_BIT = 5;
+export const SMAVAG = {
+  grupper: `SELECT vag || '-' || (ordning / ${SMAVAG_BIT}) AS bit, array_agg(ARRAY[lon, lat] ORDER BY ordning) AS p FROM smavagspunkt GROUP BY 1`,
+  skriv: `INSERT INTO radar_smavag (bit, observed_at, rate_max_mmh, rate_mean_mmh)
+    SELECT u.bit, $2::timestamptz, u.mx, u.mn FROM UNNEST($1::text[], $3::numeric[], $4::numeric[]) AS u(bit, mx, mn)
+    ON CONFLICT (bit, observed_at) DO NOTHING`,
+  gallra: `DELETE FROM radar_smavag WHERE observed_at < now() - interval '2 hours'`,
+};
