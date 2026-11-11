@@ -247,7 +247,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↪ **Hit sammanslaget 22/9 (DECISIONS #303):** kort 6 *Tolv testare till väntelistan* (samma tolv).
   **Verify** *(kortgenomgången 3/10, DECISIONS #451)*: tolv testare inlagda i Play Consoles slutna test, och första dygnet av de fjorton bokfört.
 
-- [ ] 🔄 **#258 iOS LADDAR ALDRIG OM VÄGDATAN UNDER RESAN** (fynd 26/9 under #218, DECISIONS #370). Vägdatan laddas när vakten
+- [x] ✅ 🔄 **#258 iOS LADDAR ALDRIG OM VÄGDATAN UNDER RESAN (STÄNGT 11/11 — Bengt: *"Ja, stäng"*)** (fynd 26/9 under #218, DECISIONS #370). Vägdatan laddas när vakten
   startar och när Vakten-vyn visas (`GuardManager.swift:230`, `VaktenView.swift:68`); under resan ligger körläget som helskärm över
   vyn, så ingenting laddas om. Åldersvakten (45 min väder, 120 min olyckor och djur) prövas bara vid laddningen ⇒ en tre timmars
   resa varnar på starttidens is och olyckor, och nya olyckor når aldrig telefonen. Android förnyar var 30:e minut (`SnapshotSchedule`).
@@ -266,6 +266,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   *I närheten*. **Bygge (21)** i samma commit; produktboken följer med. Rör inte (20) hos Apple: (21) går till TestFlight, butiken får det
   som nästa version. ✅ **(21) uppladdat 2/10 13:56** (Axel, Xcode) — interna gruppen får det direkt. 🔑 Kvar: en resa på 45–60 min i (21)
   där klockslaget vid *PÅ DIN VÄG* flyttar sig minst en gång (servern publicerar var tionde minut, appen hämtar var trettionde). Axel eller Bengt.
+  ✅ **Stängt 11/11 på beviset, med Verify omskriven efter fas 2** (Bengt: *"Ja, stäng"*): fas 2 (DECISIONS #741 punkt 4) ersatte laddningen var 30:e minut med en koll omkring varannan minut under resan, och Bengts resa 8/11 (94 minuter med vakten, 0.4.0) gav 48 kollar, alla med ny vägdata och ingen ur reserven (DECISIONS #778, tillägg 8/11, ur skärmbilderna av *Inställningar → Mätningen*); resorna 2/11 gav 14 av 16 och 16 av 16 nya. Felet kortet beskriver, att ingenting laddas om medan körläget ligger över vyn, finns inte längre. Att klockslaget vid *PÅ DIN VÄG* flyttade sig lästes aldrig av; beviset är att varje koll gav ny data.
 
 
 - [ ] 📱 **#279 iOS: EFTER-RESAN-KORTET GICK UTANFÖR SKÄRMEN** (Axels skärmbild 1/10 21:35 från en resa 12:39–13:44 med fyra kameravarningar;
