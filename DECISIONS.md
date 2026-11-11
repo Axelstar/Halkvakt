@@ -15386,3 +15386,47 @@ och *Slut: för hand* 2 under sju dygn, period 0. Statistiksidan i halkvakt-kart
 **Numret.** Fattat 6/11 som #807 i PR #1427, som väntade på ett ord medan main gav #807 ett annat beslut. Bokfört som #837 11/11 (Bengt: *"Ja, slå ihop"*); funktionen kördes i produktionen 6/11 och filen finns nu på main.
 
 **Stomdokument:** inga — bara statistikens sammanställning; appen, räknaren och vad den skickar är orörda.
+
+## #835 (11/11 2026) PostGIS flyttades till extensions av Supabases support på Axels begäran (bokfört i efterhand ur PR #1421)
+
+**I efterhand.** Bokfört 11/11 (Bengt: *"stäng alla som är självklara att stänga både Axels och mina"*) ur PR #1421, som väntade på ett ord sedan 6/11 och bar numret #806, som main gav Reels.
+Det rättar DECISIONS #832, som 11/11 kallade flyttens upphov okänt: flytten gjordes av Supabases support på Axels skriftliga ja 5/11.
+Texten nedan är PR:ens, oförändrad.
+
+
+
+**Beslut (Axel, 5–6/11).** Supabase support (ärende SU-537379) drar inte in rättigheterna på `spatial_ref_sys`, utan erbjöd att flytta
+PostGIS till schemat `extensions` på plats: inget drop, inga data eller index förlorade, ingen omstart. Axel godkände skriftligt 5/11.
+Supabases egen kontroll 6/11 hittade sex osäkrade sql-funktioner med PostGIS-namn (`arkiv_jamfor`, `kandidat_regel`, `ny_kandidat_regel`,
+`ny_kandidat_regel_snabb`, `olja_aktiva`, `vagpunkt_ankare`). Varje anropare spårades: de låsta plpgsql-funktionerna har `public, extensions`
+(sql/081), edge-funktionerna `publicera` och `arkivexport` och flödena i Actions ansluter som postgres (sökvägen har `extensions`), och
+skuggmotorn går via Data API som service_role. Flyttad 6/11 kl. 17.19 UTC.
+
+**Bevis efter flytten (6/11 20.04 UTC):** postgis och `spatial_ref_sys` ligger i `extensions`; säkerhetsgranskningen har inget fel
+(`rls_disabled_in_public` borta), och `extension_in_public` gäller bara pg_net och `st_estimatedextent`-varningarna är borta; 452 cron-körningar
+sedan 17.00 UTC, alla lyckade; skuggmotorns körning 20.02 UTC fick prognosankarna (`vagpunkt_ankare`) och kandidatens träffar
+(`kandidat_regel`) via Data API, alltså når även den vägen PostGIS. `anrop` visar inga nya feltyper: tidsgränserna på ingest-live (omkring
+tio i timmen) fanns redan 5/11 och har ingenting med flytten att göra.
+
+**Förberett:** återläsningsprovet i arkivbackupen installerar PostGIS i källans schema (PR #1394), annars hade det tappat tabellerna med
+geometrikolumner (uppmätt 20/9). `halkvakt-kuvos` lästes igenom: kuvösens klocka (`kuvos, public, pg_catalog`) körs bara mot provdatabasen
+i flödet. DECISIONS #784:s "postgis i public lämnas" är överspelad.
+
+**Kvar, inte åtgärdat:** pg_net i public (Supabase erbjöd bara PostGIS) och de 23 osäkrade sql-funktionerna (med flit, #784).
+
+
+**Stomdokument:** SYS PostGIS i extensions och säkerhetsgranskningen 6/11
+
+## #836 (11/11 2026) Telefonturen med 0.4.0 (41), tillägg till #816 (bokfört i efterhand ur PR #1452)
+
+**I efterhand.** Bokfört 11/11 (Bengt: *"stäng alla som är självklara att stänga både Axels och mina"*) ur PR #1452, som väntade sedan 7/11. Ett gammalt beslut ändras inte i en bokföring
+(#834), så tillägget står här i stället för under #816. Texten nedan är PR:ens, oförändrad.
+
+**Tillägg 7/11, telefonturens bygge** (Bengt: *"Ja, 0.4.0 (41)"*):
+- **Telefonturen görs med 0.4.0 (41)**, inte med 0.3.17 (39). Axel laddade upp 0.4.0 (41) till TestFlight 09.46 UTC
+  (testflight-körningen 42360939502 från main 855367e8), och TestFlight installerar det senaste bygget. Turen ska mäta det
+  bygge som skeppas.
+- **Vilket bygge som går till App Review** är inte avgjort. Stegen i `marknadsforing/butik/appstore-ios.md` gäller 0.3.17 (39).
+  Frågan står i bedömningens §4.2.
+
+**Stomdokument:** BED §4.2 — vilket bygge som går till App Review

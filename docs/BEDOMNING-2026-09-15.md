@@ -1167,7 +1167,7 @@ mätningar — R1–R16 nedan är strukna och står kvar bara som historik.**
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
 ## Öppna kort
 
-Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 19 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
+Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 18 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
 
 **§1 NU — före första frosten**
 
@@ -1182,11 +1182,11 @@ Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 19 kort
 **§4.2 Öppna**
 
 - #214 PLAY-DEKLARATIONEN ÄR OSANN SEDAN 16/9 — Axel, beslut
-- #299 SPRIDNINGSGRINDEN OCH NATTBEGRÄNSNINGEN — TVÅ FÖRSLAG TILL TROSKLAR-SKUGGAN UR KUVÖSEN — Bengt
 - #298 FYSIKSPÅRET: FLYTTAD TILL HALKVAKT-KUVOS — Bengt
 - #297 FYSIKSPÅRET: FLYTTAD TILL HALKVAKT-KUVOS — Bengt
 - #296 EFTER GRANSKNINGEN — TVÅ BESLUT FÖRE MARS-DOMEN: Ö-B1 "INOM RÄCKVIDD" OCH STARTBANDETS ÖVRE DEL — Bengt
 - #270 FYSIKSPÅRET: FLYTTAD TILL HALKVAKT-KUVOS — Bengt
+- #299 SPRIDNINGSGRINDEN OCH NATTBEGRÄNSNINGEN — TVÅ FÖRSLAG TILL TROSKLAR-SKUGGAN UR KUVÖSEN — Claude
 - #367 SMÅVÄGARNA: FLYTTAD TILL HALKVAKT-KUVOS — Claude
 - #361 🧭 #361 BLOCK 4, MOTORN — ÅTGÄRDSLISTAN B4-01 TILL B4-60 (BESTÄLLD 21/10 — Claude, Bengts "jag vill åtgärda … — Claude
 - #344 🌡️ #344 FJÄRRYTORNA — EN PLATS GER TVÅ ANKARE I SKUGGANS RÅ (FYND 14/10, AVGJORT SAMMA KVÄLL: INGEN ÄNDRING … — Claude, låst
@@ -1195,6 +1195,5 @@ Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 19 kort
 - #285 iCLOUD-KOPIAN BÄR UNGEFÄR VAR OCH NÄR — Claude, låst
 - #276 OLJA PÅ VÄGEN — HALKA SOM RÖSTEN INTE SÄGER — Claude, låst
 - #153 ALLVAR SOM FÖRSPRÅNG + ETT SMALARE UNDANTAG — beslut 1 omformulerat 16/9 och väntar, beslut 2 öppet (Bengts) — Claude, låst
-- #316 UBUNTU-LATEST BLIR UBUNTU 26 DEN 19/10 — FLÖDENA PRÖVAS FÖRE (UPPTÄCKT 9/10 — Claude, GitHubs notis i … — pågår
 
 <!-- /ÖPPNA KORT -->
