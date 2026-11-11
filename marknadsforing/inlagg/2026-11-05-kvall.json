@@ -1,0 +1,23 @@
+{
+  "typ": "svep",
+  "nyckel": "svep:kvall",
+  "etikett": "Halkläget kl. 16:30",
+  "rubrik": "Halt i dag",
+  "underrad": "Halka på 112 vägavsnitt i 6 län.",
+  "fler": 0,
+  "text": "Halkläget kl. 16:30, torsdag 5 november: halka på 112 vägavsnitt i 6 län. Svep för att se ditt län.\n\nNorrbotten: halka på 29 av 58 vägavsnitt, 49 stationer under noll, kallast −4,2 °C vid Avvakko.\nVästerbotten: halka på 27 av 44 vägavsnitt, 15 stationer under noll, kallast −1,1 °C vid Mårdsele.\nDalarna: halka på 23 av 38 vägavsnitt, 10 stationer under noll, kallast −1,7 °C vid Gruvorna.\nVästmanland: halka på 18 av 24 vägavsnitt.\nVärmland: halka på 9 av 52 vägavsnitt, 15 stationer under noll, kallast −2,5 °C vid Gumhöjden.\nVästernorrland: halka på 6 av 22 vägavsnitt.\nJämtland: 3 stationer under noll, kallast −1,1 °C vid Överhogdal.\n\nLäget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Dalarna #Västmanland #Värmland #halkvakt",
+  "textIg": "Halkläget kl. 16:30, torsdag 5 november: halka på 112 vägavsnitt i 6 län. Svep för att se ditt län.\n\nNorrbotten: halka på 29 av 58 vägavsnitt, 49 stationer under noll, kallast −4,2 °C vid Avvakko.\nVästerbotten: halka på 27 av 44 vägavsnitt, 15 stationer under noll, kallast −1,1 °C vid Mårdsele.\nDalarna: halka på 23 av 38 vägavsnitt, 10 stationer under noll, kallast −1,7 °C vid Gruvorna.\nVästmanland: halka på 18 av 24 vägavsnitt.\nVärmland: halka på 9 av 52 vägavsnitt, 15 stationer under noll, kallast −2,5 °C vid Gumhöjden.\nVästernorrland: halka på 6 av 22 vägavsnitt.\nJämtland: 3 stationer under noll, kallast −1,1 °C vid Överhogdal.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone, länken finns i vår profil.\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Dalarna #Västmanland #Värmland #halkvakt",
+  "pass": "kvall",
+  "antal": 9,
+  "datum": "2026-11-05",
+  "generated_at": "2026-11-05T15:30:08.239Z",
+  "lan": [
+    "norrbotten",
+    "vasterbotten",
+    "dalarna",
+    "vastmanland",
+    "varmland",
+    "vasternorrland",
+    "jamtland"
+  ]
+}

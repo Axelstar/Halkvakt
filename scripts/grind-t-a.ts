@@ -150,7 +150,7 @@ if (process.argv.includes("--sjalvtest")) {
 // ── Skarpt (läser bara).
 const url = process.env.DATABASE_URL;
 if (!url) { console.error("DATABASE_URL not set"); process.exit(1); }
-const GALLRING_DYGN = 3;   // sql/044 (DECISIONS #511, sju dygn till 10/10); kontraktsgrinden vaktar kopiorna
+const GALLRING_DYGN = 7;   // sql/072 (DECISIONS #740; tre dygn 10/10–28/10, #511); kontraktsgrinden vaktar kopiorna
 const DAGAR = Number(process.argv.slice(2).find((a) => /^\d+$/.test(a)) ?? GALLRING_DYGN);
 const pg = (await import("pg")).default;
 const pool = new pg.Pool({ connectionString: url, max: 1, ssl: url.includes("localhost") ? undefined : { rejectUnauthorized: false } });

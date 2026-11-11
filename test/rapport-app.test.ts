@@ -1,7 +1,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { aldersgrind, kollensIds, nyttSedanKollen, radlage, resansRapport, riktning, titel, tomtRad, vand } from "../publish/rapport-app.ts";
+import { aldersgrind, KANDIDAT_AV, KANDIDAT_MARGINAL_M, KANDIDAT_MINST_PUNKTER, KANDIDAT_TOMT, kandidatRader, kandidatTomt, kollensIds,
+  nyttSedanKollen, radlage, resansRapport, riktning, titel, tomtRad, vand } from "../publish/rapport-app.ts";
 import { grupperade, MARGINALER, nyttSedan, tomma } from "../publish/rapport-core.ts";
 
 // Resans rapport i appen (favoriterna steg 3a, DECISIONS #636, #637): TypeScript mot det delade facit, som Swift och Kotlin prövas
@@ -63,4 +64,28 @@ test("fliken och skärmen (steg 3b): lägena, det nya, rubrikerna, åldersgräns
   assert.ok(aldersgrind(f.dit.rader, true, true).every((r) => !["halka", "frysrisk", "olycka", "vilt"].includes(r.slag)));
   const utan = a.tomt.find((t: { namn: string }) => t.namn.startsWith("bara kameror")).svar as string;
   assert.ok(utan.endsWith("Köer mäts inte längs den här vägen.") && !utan.includes(", köer,"));
+});
+
+test("Halkvakt tror (#739): rutan som facit, en rad per väg, och det som inte ska med står inte där", () => {
+  const dit = kandidatRader(rutt, false, live)!, hem = kandidatRader(rutt, true, live)!;
+  assert.deepEqual(dit, f.kandidat.dit);
+  assert.deepEqual(hem, f.kandidat.hem);
+  assert.equal(f.kandidat.marginalM, KANDIDAT_MARGINAL_M);
+  assert.equal(f.kandidat.minstPunkter, KANDIDAT_MINST_PUNKTER);
+  const strackor = (r: { ids: string[] }[]) => r.flatMap((x) => x.ids).sort();
+  // 1: halksträcka i segments; 43: tvärväg med en punkt nära; 45: 400 m bort; 46: en enda punkt.
+  assert.deepEqual(strackor(dit), ["40", "41", "42", "44"]);
+  assert.deepEqual(strackor(hem), strackor(dit), "samma sträckor åt båda hållen");
+  // En väg med flera sträckor står där resan först möter den, så Hem är inte bara Dit baklänges: E4 kommer före raden utan nummer.
+  for (const r of [dit, hem]) assert.ok(r.every((x, i) => i === 0 || r[i - 1].langsM <= x.langsM), "i körordning åt båda hållen");
+  assert.deepEqual(hem.map((r) => r.id), ["kand:väg 73", "kand:E4", "kand:"]);
+  assert.ok(dit.every((r) => !/\d+ ?(m|km)\b/.test(r.rubrik + r.text)), "inga avstånd på raderna (#577 punkt 5)");
+  const ids = new Set(dit.flatMap((r) => [r.id, ...r.ids]));
+  assert.ok(kollensIds(resansRapport(rutt, false, live, stat, snabb, lang), []).every((i) => !ids.has(i)), "rutan når aldrig förra kollen");
+  const { kandidat: _, ...utan } = live;
+  assert.equal(kandidatRader(rutt, false, utan), null, "utan nyckeln: avstängd");
+  assert.equal(kandidatTomt(null, false), KANDIDAT_AV);
+  assert.equal(kandidatTomt(dit, true), KANDIDAT_AV, "gammal lägesfil: samma åldersgräns som halkan");
+  assert.equal(kandidatTomt([], false), KANDIDAT_TOMT);
+  assert.equal(kandidatTomt(dit, false), null);
 });

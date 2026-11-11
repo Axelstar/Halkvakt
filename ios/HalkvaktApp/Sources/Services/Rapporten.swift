@@ -18,11 +18,17 @@ final class Rapporten {
     struct Resa {
         let dit: [RapportRad]
         let hem: [RapportRad]
+        /// Rutan Halkvakt tror (DECISIONS #739): kandidatens rader åt varje håll, nil när kandidaten är avstängd. Aldrig med i
+        /// förra kollen eller radens läge — `ids` och `radlage` läser bara `dit` och `hem`.
+        let kandidatDit: [KandidatRad]?
+        let kandidatHem: [KandidatRad]?
     }
 
     private(set) var resor: [String: Resa] = [:]
     private(set) var kollat: Date?
     private(set) var lagesfil: Date?
+    /// Rapportfilens tid: olyckor, vägarbeten, hinder, köer, restider och färjor kommer ur den (DECISIONS #686 punkt 5, B7-05).
+    private(set) var rapportfil: Date?
     private(set) var gammaltVaglag = false
     private(set) var gamlaOlyckor = false
     private(set) var gickInte = false
@@ -55,6 +61,7 @@ final class Rapporten {
             }
             resor = u.resor
             lagesfil = u.lagesfil
+            rapportfil = u.rapportfil
             gammaltVaglag = u.gammaltVaglag
             gamlaOlyckor = u.gamlaOlyckor
             kollat = .now
@@ -82,6 +89,7 @@ final class Rapporten {
     private struct Utfall {
         let resor: [String: Resa]
         let lagesfil: Date?
+        let rapportfil: Date?
         let gammaltVaglag: Bool
         let gamlaOlyckor: Bool
     }
@@ -103,8 +111,10 @@ final class Rapporten {
             if Task.isCancelled { return nil }
             let dit = ResansRapport.resansRapport(r.punkter, hem: false, lage: lage, kameror: kameror, snabb: fil, linjer: linjer)
             let hem = ResansRapport.resansRapport(r.punkter, hem: true, lage: lage, kameror: kameror, snabb: fil, linjer: linjer)
-            resor[r.id] = Resa(dit: grind(dit), hem: grind(hem))
+            resor[r.id] = Resa(dit: grind(dit), hem: grind(hem),
+                               kandidatDit: ResansRapport.kandidatRader(r.punkter, hem: false, lage: lage),
+                               kandidatHem: ResansRapport.kandidatRader(r.punkter, hem: true, lage: lage))
         }
-        return Utfall(resor: resor, lagesfil: lagesTid, gammaltVaglag: gammaltVaglag, gamlaOlyckor: gamlaOlyckor)
+        return Utfall(resor: resor, lagesfil: lagesTid, rapportfil: rapportTid, gammaltVaglag: gammaltVaglag, gamlaOlyckor: gamlaOlyckor)
     }
 }

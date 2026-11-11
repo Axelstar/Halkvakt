@@ -1119,6 +1119,128 @@
      "yta": 2,
      "fukt": true
     }
+   ],
+   "kandidat": [
+    {
+     "id": "1",
+     "tid": "2026-10-18T05:00:00.000Z",
+     "vag": "E4",
+     "punkter": [
+      [
+       18.0003519,
+       59.3134747
+      ],
+      [
+       18.0003519,
+       59.326051
+      ]
+     ]
+    },
+    {
+     "id": "40",
+     "tid": "2026-10-18T05:00:00.000Z",
+     "vag": "E4",
+     "punkter": [
+      [
+       18.0005279,
+       59.3044916
+      ],
+      [
+       18.0005279,
+       59.3224578
+      ]
+     ]
+    },
+    {
+     "id": "41",
+     "tid": "2026-10-18T05:00:00.000Z",
+     "vag": "E4",
+     "punkter": [
+      [
+       17.9992962,
+       59.3467122
+      ],
+      [
+       17.9992962,
+       59.3628818
+      ]
+     ]
+    },
+    {
+     "id": "42",
+     "tid": "2026-10-18T05:00:00.000Z",
+     "vag": "73",
+     "punkter": [
+      [
+       18.043988,
+       59.3724039
+      ],
+      [
+       18.0791785,
+       59.3724039
+      ]
+     ]
+    },
+    {
+     "id": "43",
+     "tid": "2026-10-18T05:00:00.000Z",
+     "vag": "263",
+     "punkter": [
+      [
+       17.9658653,
+       59.3449156
+      ],
+      [
+       18.0010557,
+       59.3449156
+      ],
+      [
+       18.0362461,
+       59.3449156
+      ]
+     ]
+    },
+    {
+     "id": "44",
+     "tid": "2026-10-18T05:00:00.000Z",
+     "vag": null,
+     "punkter": [
+      [
+       18.0017595,
+       59.3314409
+      ],
+      [
+       18.0017595,
+       59.3386274
+      ]
+     ]
+    },
+    {
+     "id": "45",
+     "tid": "2026-10-18T05:00:00.000Z",
+     "vag": "E18",
+     "punkter": [
+      [
+       18.0070381,
+       59.3538987
+      ],
+      [
+       18.0070381,
+       59.3628818
+      ]
+     ]
+    },
+    {
+     "id": "46",
+     "tid": "2026-10-18T05:00:00.000Z",
+     "vag": "E4",
+     "punkter": [
+      [
+       17.9991202,
+       59.3583902
+      ]
+     ]
+    }
    ]
   },
   "stat": {
@@ -3516,6 +3638,104 @@
     "vaglag": false,
     "olyckor": true,
     "svar": "Inget rapporterat: halt väglag på sträckorna, frysrisk vid stationerna, hinder, vägarbeten, hastighet, omledningar, färjor, fartkameror och SMHI-varningar. Köer mäts inte längs den här vägen."
+   }
+  ]
+ },
+ "kandidat": {
+  "marginalM": 150,
+  "minstPunkter": 2,
+  "fot": "Halkvakts egen beräkning, inte uppmätt. Rösten säger till under resan.",
+  "dit": [
+   {
+    "id": "kand:E4",
+    "rubrik": "Halka på E4, två sträckor",
+    "text": "Modellerat för kl. 07:00",
+    "antal": 2,
+    "ids": [
+     "40",
+     "41"
+    ],
+    "langsM": 499
+   },
+   {
+    "id": "kand:",
+    "rubrik": "Halka",
+    "text": "Modellerat för kl. 07:00",
+    "antal": 1,
+    "ids": [
+     "44"
+    ],
+    "langsM": 3496
+   },
+   {
+    "id": "kand:väg 73",
+    "rubrik": "Halka på väg 73",
+    "text": "Modellerat för kl. 07:00",
+    "antal": 1,
+    "ids": [
+     "42"
+    ],
+    "langsM": 10483
+   }
+  ],
+  "hem": [
+   {
+    "id": "kand:väg 73",
+    "rubrik": "Halka på väg 73",
+    "text": "Modellerat för kl. 07:00",
+    "antal": 1,
+    "ids": [
+     "42"
+    ],
+    "langsM": 1495
+   },
+   {
+    "id": "kand:E4",
+    "rubrik": "Halka på E4, två sträckor",
+    "text": "Modellerat för kl. 07:00",
+    "antal": 2,
+    "ids": [
+     "40",
+     "41"
+    ],
+    "langsM": 6979
+   },
+   {
+    "id": "kand:",
+    "rubrik": "Halka",
+    "text": "Modellerat för kl. 07:00",
+    "antal": 1,
+    "ids": [
+     "44"
+    ],
+    "langsM": 9676
+   }
+  ],
+  "avstangd": null,
+  "texter": [
+   {
+    "namn": "rader",
+    "rader": true,
+    "gammal": false,
+    "svar": null
+   },
+   {
+    "namn": "inga rader längs resan",
+    "rader": false,
+    "gammal": false,
+    "svar": "Halkvakts beräkning varnar inte längs rutten just nu. Den räknar bara på vägar där Trafikverket rapporterar väglag."
+   },
+   {
+    "namn": "avstängd",
+    "rader": null,
+    "gammal": false,
+    "svar": "Halkvakts egen beräkning visas inte just nu."
+   },
+   {
+    "namn": "gammal lägesfil",
+    "rader": true,
+    "gammal": true,
+    "svar": "Halkvakts egen beräkning visas inte just nu."
    }
   ]
  }

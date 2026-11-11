@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Frostkalendern (DECISIONS #722): första frostnatten per län, hösten 2018–2022, ur VViS-leveransen (#666).
+"""Frostkalendern (DECISIONS #839): första frostnatten per län, hösten 2018–2022, ur VViS-leveransen (#666).
 
 Per station: första dag (svensk lokaltid, som measuretime) från 1 augusti med tyta < 0,0 °C i minst två halvtimmar i följd.
 −99,9 och värden utanför ±45 räknas inte. En station räknas en höst om den har mätningar i september, oktober och november.
@@ -46,7 +46,7 @@ def host(fil):
 def main():
     mapp, karta, ut = sys.argv[1:4]
     stl = {str(s): int(l) for s, l in json.load(open(karta, encoding="utf-8"))}
-    res = {"beslut": "DECISIONS #722", "definition": "frostdag = dagen då en fjärdedel av länets stationer haft tyta < 0 °C två halvtimmar i följd",
+    res = {"beslut": "DECISIONS #839", "definition": "frostdag = dagen då en fjärdedel av länets stationer haft tyta < 0 °C två halvtimmar i följd",
            "hostar": {}}
     for ar in HOSTAR:
         forsta, aktiva = host(os.path.join(mapp, f"Halkvakt_{ar}-2.csv.gz"))

@@ -1,0 +1,25 @@
+{
+  "typ": "forandring",
+  "nyckel": "forandring",
+  "etikett": "Sedan i går",
+  "rubrik": "Halkan sprider sig",
+  "underrad": "vägavsnitt med halka, mot samma tid i går",
+  "lyft": {
+    "stort": "40 → 84",
+    "liten": "ny halka i Västmanland, Dalarna, Gävleborg och Jämtland"
+  },
+  "text": "Trafikverket rapporterar halka på 84 vägavsnitt, mot 40 vid samma tid i går.\nNy halka sedan i går: Västmanland, Dalarna, Gävleborg och Jämtland.\n\nNorrbotten: halka på 30 av 58 vägavsnitt, 3 stationer under noll, kallast −0,2 °C vid Vittangi.\nVästerbotten: halka på 29 av 44 vägavsnitt, 2 stationer under noll, kallast −0,6 °C vid Bjurträsk.\nVästernorrland: halka på 12 av 22 vägavsnitt.\nDalarna: halka på 6 av 38 vägavsnitt, 1 station under noll, kallast −2,1 °C vid Ryggen.\nGävleborg: halka på 5 av 27 vägavsnitt.\nHalka eller minusgrader även i 2 län till.\n\nLäget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Västernorrland #Dalarna #Gävleborg #halkvakt",
+  "textIg": "Trafikverket rapporterar halka på 84 vägavsnitt, mot 40 vid samma tid i går.\nNy halka sedan i går: Västmanland, Dalarna, Gävleborg och Jämtland.\n\nNorrbotten: halka på 30 av 58 vägavsnitt, 3 stationer under noll, kallast −0,2 °C vid Vittangi.\nVästerbotten: halka på 29 av 44 vägavsnitt, 2 stationer under noll, kallast −0,6 °C vid Bjurträsk.\nVästernorrland: halka på 12 av 22 vägavsnitt.\nDalarna: halka på 6 av 38 vägavsnitt, 1 station under noll, kallast −2,1 °C vid Ryggen.\nGävleborg: halka på 5 av 27 vägavsnitt.\nHalka eller minusgrader även i 2 län till.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone, länken finns i vår profil.\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Västernorrland #Dalarna #Gävleborg #halkvakt",
+  "pass": "lunch",
+  "datum": "2026-10-31",
+  "generated_at": "2026-10-31T10:30:08.523Z",
+  "lan": [
+    "norrbotten",
+    "vasterbotten",
+    "vasternorrland",
+    "dalarna",
+    "gavleborg",
+    "vastmanland",
+    "jamtland"
+  ]
+}

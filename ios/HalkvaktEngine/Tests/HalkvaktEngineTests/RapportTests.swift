@@ -99,6 +99,35 @@ final class RapportTests: XCTestCase {
         }
     }
 
+    /// Halkvakt tror (DECISIONS #739): rutans rader Dit och Hem, nil utan nyckeln, och rutans texter, som TypeScript.
+    func testKandidatenSomTypeScript() throws {
+        let f = try Self.facit(), i = Self.indata(f), k = f["kandidat"] as! [String: Any]
+        XCTAssertEqual((k["marginalM"] as! NSNumber).doubleValue, ResansRapport.kandidatMarginalM)
+        XCTAssertEqual((k["minstPunkter"] as! NSNumber).intValue, ResansRapport.kandidatMinstPunkter)
+        XCTAssertEqual(k["fot"] as! String, ResansRapport.kandidatFot)
+        for (hem, nyckel) in [(false, "dit"), (true, "hem")] {
+            let rader = try XCTUnwrap(ResansRapport.kandidatRader(i.rutt, hem: hem, lage: i.lage))
+            let v = k[nyckel] as! [[String: Any]]
+            XCTAssertEqual(rader.map(\.id), v.map { $0["id"] as! String }, "\(nyckel): samma rader i samma ordning")
+            for (r, w) in zip(rader, v) {
+                XCTAssertEqual(r.rubrik, w["rubrik"] as! String, "\(nyckel) \(r.id): rubriken")
+                XCTAssertEqual(r.text, w["text"] as! String, "\(nyckel) \(r.id): texten")
+                XCTAssertEqual(r.antal, (w["antal"] as! NSNumber).intValue, "\(nyckel) \(r.id): antalet")
+                XCTAssertEqual(r.ids, w["ids"] as! [String], "\(nyckel) \(r.id): sträckorna")
+                XCTAssertLessThanOrEqual(abs(r.langsM - (w["langsM"] as! NSNumber).intValue), 1, "\(nyckel) \(r.id): platsen")
+            }
+        }
+        var utan = (f["in"] as! [String: Any])["live"] as! [String: Any]
+        utan.removeValue(forKey: "kandidat")
+        XCTAssertTrue(k["avstangd"] is NSNull)
+        XCTAssertNil(ResansRapport.kandidatRader(i.rutt, hem: false, lage: ResansRapport.lasLage(utan)), "utan nyckeln: avstängd")
+        let dit = try XCTUnwrap(ResansRapport.kandidatRader(i.rutt, hem: false, lage: i.lage))
+        for t in k["texter"] as! [[String: Any]] {
+            let rader: [KandidatRad]? = t["rader"] is NSNull ? nil : (t["rader"] as! Bool) ? dit : []
+            XCTAssertEqual(ResansRapport.kandidatTomt(rader, gammaltVaglag: t["gammal"] as! Bool), t["svar"] as? String, t["namn"] as! String)
+        }
+    }
+
     func testRiktningenSomTypeScript() throws {
         let f = try Self.facit(), i = Self.indata(f)
         let fall = f["riktning"] as! [[String: Any]]

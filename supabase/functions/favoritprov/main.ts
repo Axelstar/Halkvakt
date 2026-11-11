@@ -9,7 +9,13 @@
 const SB = Deno.env.get("SUPABASE_URL")!;
 const SRK = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const TRV = Deno.env.get("TRAFIKVERKET_API_KEY")!;
-const CDN = "https://axelstar.github.io/halkvakt-karta/data/app/v1/";
+// Lägesfilerna ur appens hink, med servicenyckeln och utan CDN:ens cache, som funktionen favoriter (DECISIONS #752; #741 tillägget
+// 30/10): provmiljön ska läsa samma källa som driften. Ett fel bär svarets status och kropp.
+const APP = `${SB}/storage/v1/object/app/v1/`;
+const lagesfil = (namn: string) => fetch(APP + namn, { headers: { Authorization: `Bearer ${SRK}`, apikey: SRK } }).then(async (r) => {
+  if (!r.ok) throw new Error(`${namn} ${r.status}: ${(await r.text()).slice(0, 200)}`);
+  return r.json();
+});
 const HINK = "favoritprov";
 const HISTORIK = 48;   // ett dygn med två körningar i timmen
 // Minnet per körning (Bengt 13/10: "mät minnet", DECISIONS #541): det största värdet vid stegens slut, i MB med en decimal. heap är
@@ -83,8 +89,8 @@ Deno.serve(async (req) => {
     const [qSit, qTt, qFa, qFr] = rapportFragor(nu);
     const [sit, tt, fa, fr, lv, st, wl] = await Promise.all([
       trv(qSit), trv(qTt), trv(qFa), trv(qFr),
-      fetch(CDN + "live.json?t=" + nu).then((r) => r.json()),
-      fetch(CDN + "static.json?t=" + nu).then((r) => r.json()),
+      lagesfil("live.json"),
+      lagesfil("static.json"),
       fetch(`${SB}/rest/v1/weather_latest?select=station_id,name,air_temp_c`, { headers: { Authorization: `Bearer ${SRK}`, apikey: SRK } }).then((r) => r.json()),
     ]);
     steg("hamtning", t);

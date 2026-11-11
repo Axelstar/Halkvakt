@@ -7,7 +7,7 @@
 // Kollar tre led, i den ordning de kan gå sönder:
 //   1. Hämtar vi?      sync_state per källa
 //   2. Sparar vi?      nyaste väderobservationen
-//   3. Når det appen?  live.json på CDN — det led som faktiskt fallerade
+//   3. Når det appen?  live.json i hinken (appens väg) och på Pages (reserven) — det led som faktiskt fallerade
 // Larmar via GitHub-issue (API-anrop, inga Actions-minuter). En issue åt gången: öppnas när
 // något är fel, kommenteras när fyndet FÖRÄNDRAS, stängs när allt är grönt igen. (Förut
 // kommenterades den varje varv medan felet bestod — se mätvakten, 28/9, DECISIONS #384.)
@@ -55,7 +55,15 @@ import { nyckelGiltig } from "../_shared/nyckel.ts";
 const sql = postgres(Deno.env.get("SUPABASE_DB_URL")!, { max: 1, prepare: false });
 const REPO = "Axelstar/Halkvakt";
 const token = Deno.env.get("PUBLISH_TOKEN")!;
-const CDN = "https://axelstar.github.io/halkvakt-karta/data/app/v1/live.json";
+// Appens lägesfil (DECISIONS #752): appen läser hinken först och Pages bara när hinken inte svarar (SnapshotRepo), så hinken prövas
+// som appens väg, med samma publika adress som appen, och Pages som reserven och kartsajtens källa.
+const HINK_APP = `${Deno.env.get("SUPABASE_URL")}/storage/v1/object/public/app/v1/`;
+const CDN = "https://axelstar.github.io/halkvakt-karta/data/app/v1/";
+/** Hinkens manifest får vara högst så här många minuter gammalt (DECISIONS #752). publicera skriver varannan minut, så tio minuter
+ *  är fyra uteblivna körningar i rad; vakthunden kör :07, och appens åldersspärr tystar appen efter 45 minuter. */
+const HINK_MAX_MIN = 10;
+/** Pages skrivs var tionde minut (#741 punkt 3); gränsen är den gamla. */
+const RESERV_MAX_MIN = 45;
 const MARK = "<!-- vakthund -->";   // hittar vår egen issue igen
 // Veckodumpen (arkivbackup.yml) kör söndagar; 8 dygn = en missad söndag + ett dygns marginal (kort #223).
 const ARKIVBACKUP_MAX_DYGN = 8;
@@ -75,14 +83,14 @@ async function gh(path: string, method = "GET", body?: unknown): Promise<any> {
 
 /** FROSTTRIGGERN (DECISIONS #338, Bengts ja 24/9; omtryckningen #352, 25/9): mätningarna som frostnätterna ger trycks av
  *  vakthunden själv — kl 09 UTC, efter morgonen, ett dygn då frosten når tröskeln, och sedan högst var TRYCK_INTERVALL_D:e
- *  dygn så länge den varar (frosttryck.ts; varannan dag sedan gallringen tunnar efter tre dygn, DECISIONS #511). Före 25/9 trycktes de EN gång, mitt i första frostnatten, och stod sedan stilla. I stället för
+ *  dygn så länge den varar (frosttryck.ts; varannan dag sedan #511, och kvar så när gallringen fick sju dygn igen, #740). Före 25/9 trycktes de EN gång, mitt i första frostnatten, och stod sedan stilla. I stället för
  *  en veckoklocka i Actions (regeln 22/9) och i stället för att hänga på att någon läser issuen. Dispatch svarar 204 utan kropp, därför egen fetch.
  *  Utfallet per flöde skrivs i issuen: ett nekat anrop (PAT:en saknar actions:write) ska synas, inte tiga. */
 const FROSTFLODEN: { fil: string; inputs: Record<string, string> }[] = [
   { fil: "overgangar-steg0.yml", inputs: { dagar: String(GALLRING_DYGN) } },   // #89 0c
   { fil: "grind-t-a.yml", inputs: { dagar: String(GALLRING_DYGN) } },          // #88 trenden, inom gallringens dygn
   { fil: "grind-r-a.yml", inputs: { dagar: "30", land: "se" } }, // #46 rimfrosten, svensk körning (R-A4 molnkontrollen)
-  { fil: "grind-k-a.yml", inputs: { dagar: "60" } },         // #103 frysklassningen
+  // grind-k-a (#103) trycks inte längre: K-A fälld 29/10 och frysklassningen lagd ned (DECISIONS #743).
   { fil: "vindsikt-steg0.yml", inputs: { dagar: "14" } },    // #90 W-A
 ];
 async function utlos(floden: { fil: string; inputs: Record<string, string> }[]): Promise<string[]> {
@@ -138,7 +146,7 @@ Deno.serve(async (req) => {
   const problem: string[] = [];
   if (new URL(req.url).searchParams.get("larmprov") === "1") problem.push("**LARMPROV** — medvetet framkallat fel för att bevisa larmvägen. Ska stängas automatiskt vid nästa gröna körning.");
   // UTLÖSARPROVET (DECISIONS #338): bevisar att PAT:en får trycka ett flöde, innan frosten kommer och det inte går att ta om.
-  // Trycker bara det billigaste av de fem (vindsikt-steg0, ett dygn) och svarar med utfallet — skriver ingen issue.
+  // Trycker bara det billigaste av de fyra (vindsikt-steg0, ett dygn) och svarar med utfallet — skriver ingen issue.
   if (new URL(req.url).searchParams.get("utlosarprov") === "1") {
     const ut = await utlos([{ fil: "vindsikt-steg0.yml", inputs: { dagar: "1" } }]);
     return new Response(JSON.stringify({ ok: ut.every((x) => x.startsWith("✅")), utlosarprov: ut }), { headers: { "Content-Type": "application/json" } });
@@ -181,24 +189,31 @@ Deno.serve(async (req) => {
     //    första publicera-versionen ingen manifest.json alls: CDN såg färsk ut, telefonerna
     //    stod kvar på 5/9-snapshoten, och en vakthund som bara mätte live.json:s ålder sa
     //    grönt. Bengts granskning fångade det (#76). Mät det appen faktiskt gör.
-    const [mRes, lRes] = await Promise.all([
-      fetch(CDN.replace("live.json", "manifest.json"), { cache: "no-store" }),
-      fetch(CDN, { cache: "no-store" }),
-    ]);
-    if (!mRes.ok) problem.push(`**manifest.json svarar ${mRes.status}** — apparna kan inte verifiera och behåller gammal data`);
-    else if (!lRes.ok) problem.push(`**live.json svarar ${lRes.status}** — appen får ingen snapshot`);
-    else {
+    //    Sedan fas 1 två källor (DECISIONS #752): hinken, som appen läser, och Pages, som appen tar när hinken inte svarar.
+    //    Bevisbäraren prövas i hinkens fil.
+    const prova = async (kalla: string, bas: string, maxMin: number, rubrik: string, takt: string, utanSvar: string): Promise<Response | null> => {
+      const [mRes, lRes] = await Promise.all([
+        fetch(bas + "manifest.json", { cache: "no-store" }),
+        fetch(bas + "live.json", { cache: "no-store" }),
+      ]);
+      if (!mRes.ok) { problem.push(`**${kalla}: manifest.json svarar ${mRes.status}** — ${utanSvar}`); return null; }
+      if (!lRes.ok) { problem.push(`**${kalla}: live.json svarar ${lRes.status}** — ${utanSvar}`); return null; }
       const manifest = await mRes.json();
       const rå = new Uint8Array(await lRes.clone().arrayBuffer());
       const sum = [...new Uint8Array(await crypto.subtle.digest("SHA-256", rå))]
         .map((b) => b.toString(16).padStart(2, "0")).join("");
       const väntad = manifest?.files?.live?.sha256;
-      const cdnMin = (Date.now() - new Date(manifest.generated_at).getTime()) / 60000;
-      rad.push(`manifest: ${cdnMin.toFixed(0)} min | sha ${sum === väntad ? "stämmer" : "MISMATCH"}`);
+      const min = (Date.now() - new Date(manifest.generated_at).getTime()) / 60000;
+      rad.push(`${kalla}: manifest ${min.toFixed(0)} min | sha ${sum === väntad ? "stämmer" : "MISMATCH"}`);
       if (sum !== väntad)
-        problem.push(`**Manifestets sha256 stämmer inte med live.json** — apparna förkastar filen och kör vidare på förra snapshoten. Det här är felet som INTE syns på CDN.`);
-      if (cdnMin > 45)
-        problem.push(`**Appen får gammal data**: manifestet ${cdnMin.toFixed(0)} min gammalt (publiceras var 10:e min)`);
+        problem.push(`**${kalla}: manifestets sha256 stämmer inte med live.json** — apparna förkastar filen och kör vidare på förra snapshoten. Det här är felet som INTE syns på CDN.`);
+      if (min > maxMin) problem.push(`**${rubrik}**: manifestet i ${kalla} ${min.toFixed(0)} min gammalt (${takt})`);
+      return lRes;
+    };
+    const lRes = await prova("hinken", HINK_APP, HINK_MAX_MIN, "Appen får gammal data",
+      "publiceras varannan minut; appen tystnar efter 45 min", "appen går på reserven, som skrivs var tionde minut");
+    await prova("reserven (Pages)", CDN, RESERV_MAX_MIN, "Reserven får gammal data", "publiceras var tionde minut", "appen har ingen reserv");
+    if (lRes) {
       // BEVISBÄRAREN (kort #245, DECISIONS #342): bär varje väderpunkt fältet bredvid fukt? Noll punkter (varm dag) är inget
       // att mäta — raden säger det i stället för att tiga. Larm bara när punkter finns och någon saknar fältet.
       try {
@@ -209,6 +224,30 @@ Deno.serve(async (req) => {
         if (wx.length && med < wx.length) problem.push(`**Bevisbäraren saknas på ${wx.length - med} av ${wx.length} väderpunkter** i live.json (kort #245)`);
       } catch (e) { problem.push(`**Kunde inte läsa bevisbäraren i live.json**: ${String(e).slice(0, 120)}`); }
     }
+    // 3b. FAVORITERNA (DECISIONS #617, #686 punkt 2): appens rapportfil i hinken `favoriter`, var tionde minut (:x6, sql/061). Appen
+    //     läser den sedan (34), så ett stopp här är ett driftfel, som lägesfilen. Åldern ur manifestets generated_at, och båda delarnas
+    //     sha256 prövas mot filerna som de ligger i hinken: appen förkastar en fil vars sha256 inte stämmer och behåller den förra. Den
+    //     långa delen skrivs bara när linjerna ändrats, och manifestet bär då den förra delens post. Larm efter 25 min, alltså två
+    //     uteblivna körningar.
+    try {
+      const bas = `${Deno.env.get("SUPABASE_URL")}/storage/v1/object/public/favoriter/`;
+      const hamta = async (fil: string) => {
+        const r = await fetch(`${bas}${fil}?t=${Date.now()}`, { cache: "no-store" });
+        if (!r.ok) throw new Error(`${fil} svarar ${r.status}`);
+        return r;
+      };
+      const sha = async (fil: string) => [...new Uint8Array(await crypto.subtle.digest("SHA-256", await (await hamta(fil)).arrayBuffer()))]
+        .map((b) => b.toString(16).padStart(2, "0")).join("");
+      const m = await (await hamta("manifest.json")).json();
+      const min = (Date.now() - new Date(m?.generated_at).getTime()) / 60000;
+      const snabbOk = (await sha(m?.snabb?.fil ?? "rapport-snabb.json")) === m?.snabb?.sha256;
+      const langOk = (await sha(m?.lang?.fil ?? "rapport-lang.json")) === m?.lang?.sha256;
+      rad.push(`favoriter: manifest ${min.toFixed(0)} min | sha snabb ${snabbOk ? "stämmer" : "MISMATCH"} · lång ${langOk ? "stämmer" : "MISMATCH"}`);
+      if (!(min <= 25))
+        problem.push(`**favoriter: manifestet ${min.toFixed(0)} min gammalt** (skrivs :x6, var tionde minut) — appens rapport står still; funktionens svar med felet ligger i public.anrop (halkvakt-favoriter)`);
+      if (!snabbOk) problem.push("**favoriter: manifestets sha256 stämmer inte med rapport-snabb.json** — appen förkastar filen och behåller den förra");
+      if (!langOk) problem.push("**favoriter: manifestets sha256 stämmer inte med rapport-lang.json** — appen förkastar filen och behåller den förra");
+    } catch (e) { problem.push(`**favoriter: hinken gick inte att läsa**: ${String(e).slice(0, 120)}`); }
   } catch (e) {
     problem.push(`Vakthunden kunde inte slutföra kontrollen: ${String(e)}`);
   }
@@ -267,7 +306,7 @@ Deno.serve(async (req) => {
   // 5. HAR FROSTEN KOMMIT? Samma sort som 4: en HÄNDELSE, egen etikett, egen issue, EN gång,
   //    och den får aldrig färga vakthunden röd. Bengts order 11/9 efter steg 0 (kort #89).
   //    Varför den måste larma i stället för att stå i en issue: steg 0:s frysfråga (0c) gav
-  //    3–4 fall och behöver ~30, och avläsningen har en HÅRD deadline på GALLRING_DYGN (tre) dygn — gallringen
+  //    3–4 fall och behöver ~30, och avläsningen har en HÅRD deadline på GALLRING_DYGN (sju; tre 10/10–28/10, #511, #740) dygn — gallringen
   //    (#83, sql/044) tunnar allt äldre än så till en rad per halvtimme, och då kan arkivet
   //    inte längre säga NÄR regnet slutade (DECISIONS #97). En passiv påminnelse som ingen
   //    läser på tio dagar är i praktiken ingen påminnelse.
@@ -393,7 +432,7 @@ Deno.serve(async (req) => {
     // Kort #222: ett puls-jobb som avaktiveras eller raderas föll TYST ur bevakningslistan — vakten
     // såg en sen körning, aldrig ett försvunnet schema. Golvet är pulsklockans egen NYA-lista
     // (scripts/pulsklocka.ts); kontraktsgrinden vaktar att de två talen inte glider isär.
-    const PULS_GOLV = 21;   // 21 sedan den nya kandidatens kedja (DECISIONS #706); 19 sedan värdevakten (#1161, DECISIONS #688); 18 sedan larmen i Halkvakt live (kort #281, DECISIONS #627); 17 sedan Halkvakt live (kort #281, DECISIONS #600); 14 sedan kandidaten live (kort #343, DECISIONS #558); 12 sedan puls-favoritprov-synk (#534)
+    const PULS_GOLV = 30;   // 30 sedan morgonens reel (DECISIONS #806); 29 sedan storstädernas radar (DECISIONS #805); 28 sedan kvällens reel (DECISIONS #780); 27 sedan Meta-annonsernas eftermiddag (DECISIONS #746); 25 sedan Meta-annonserna (DECISIONS #735); 22 sedan kodgrinden (DECISIONS #734); 21 sedan den nya kandidatens kedja (DECISIONS #706); 19 sedan värdevakten (#1161, DECISIONS #688); 18 sedan larmen i Halkvakt live (kort #281, DECISIONS #627); 17 sedan Halkvakt live (kort #281, DECISIONS #600); 14 sedan kandidaten live (kort #343, DECISIONS #558); 12 sedan puls-favoritprov-synk (#534)
     rad.push(`pulsjobb: ${puls.length} aktiva (golv ${PULS_GOLV})`);
     if (puls.length < PULS_GOLV) problem.push(
       `**Pulsklockan har tappat jobb**: ${puls.length} aktiva av ${PULS_GOLV} — ett schema har avaktiverats eller raderats och faller tyst ur bevakningslistan (kort #222)`);
@@ -525,19 +564,7 @@ Deno.serve(async (req) => {
       const m = await (await fetch(`${Deno.env.get("SUPABASE_URL")}/storage/v1/object/public/favoritprov/manifest.json?t=${Date.now()}`, { cache: "no-store" })).json();
       aFp = alderH(m?.generated_at);
     } catch { /* aFp förblir null */ }
-    // FAVORITER (DECISIONS #617): appens rapportfil i hinken `favoriter`, var tionde minut (:x6, sql/061). Åldern ur manifestets
-    // generated_at, och kontrollsumman prövas mot filen som den ligger i hinken: appen förkastar en fil vars sha256 inte stämmer, så en
-    // trasig fil syns här innan den syns i telefonen. Larm efter 25 min, alltså två uteblivna körningar. En källa i mätvakten tills
-    // appen läser filen (kort #357); därefter hör den till kedjans larm, som lägesfilen.
-    let aFv: number | null = null, shaFv: boolean | null = null;
-    try {
-      const bas = `${Deno.env.get("SUPABASE_URL")}/storage/v1/object/public/favoriter/`;
-      const m = await (await fetch(`${bas}manifest.json?t=${Date.now()}`, { cache: "no-store" })).json();
-      aFv = alderH(m?.generated_at);
-      const rå = new Uint8Array(await (await fetch(`${bas}${m?.snabb?.fil ?? "rapport-snabb.json"}?t=${Date.now()}`, { cache: "no-store" })).arrayBuffer());
-      const sum = [...new Uint8Array(await crypto.subtle.digest("SHA-256", rå))].map((b) => b.toString(16).padStart(2, "0")).join("");
-      shaFv = sum === m?.snabb?.sha256;
-    } catch { /* aFv förblir null */ }
+    // FAVORITER: appens rapportfil prövas i driftlarmet (3b) sedan (34), DECISIONS #686 punkt 2.
     // MCP-SERVERN (DECISIONS #630): den publika servern ska svara på tools/list med fyra verktyg. Den läser samma CDN-filer som
     // sajten, så ett stopp här är servern själv (deploy, gateway), inte datan.
     let mcpOk: boolean | null = null;
@@ -546,7 +573,7 @@ Deno.serve(async (req) => {
         body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/list" }) });
       mcpOk = r.ok && ((await r.json())?.result?.tools?.length ?? 0) === 4;
     } catch { mcpOk = false; }
-    rad.push(`källor: skuggloggen ${visa(aSl)} · olycksarkivet ${visa(aSa)} · radarn ${visa(aRp)} (stationsnederbörd 3 h: ${vatt.n}) · väglaget ${visa(aRc)} (kalla stationer 3 h: ${kallt.n}/${kallt.alla}) · kamerafacit ${visa(aFc)} (skuggans svenska larm 12 h: ${sl12.n}) · favoritprovet ${visa(aFp)} · favoriter ${visa(aFv)}${shaFv === false ? " (sha256 stämmer inte)" : ""} · mcp ${mcpOk ? "svarar" : "svarar inte"}`);
+    rad.push(`källor: skuggloggen ${visa(aSl)} · olycksarkivet ${visa(aSa)} · radarn ${visa(aRp)} (stationsnederbörd 3 h: ${vatt.n}) · väglaget ${visa(aRc)} (kalla stationer 3 h: ${kallt.n}/${kallt.alla}) · kamerafacit ${visa(aFc)} (skuggans svenska larm 12 h: ${sl12.n}) · favoritprovet ${visa(aFp)} · mcp${mcpOk ? "svarar" : "svarar inte"}`);
 
     const torra: string[] = [];
     if (mcpOk === false)
@@ -563,10 +590,6 @@ Deno.serve(async (req) => {
       torra.push(`**road_conditions** står stilla sedan ${visa(aRc)} MEDAN ${kallt.n} av ${kallt.alla} stationer (${(kallAndel * 100).toFixed(0)} %) legat på eller under noll de senaste 3 h — operatören borde klassa om; antingen ingest-live:s roadconditions() eller Trafikverket är tyst (#124)`);
     if (aFp === null || aFp > 1.25)
       torra.push(`**favoritprovet** (hinken \`favoritprov\`) har inte skrivit manifest.json på ${visa(aFp)} (körs :08/:38) — favoriternas provmiljö står still; funktionens svar med felet ligger i net._http_response`);
-    if (aFv === null || aFv > 25 / 60)
-      torra.push(`**favoriter** (hinken \`favoriter\`, appens rapportfil) har inte skrivit manifest.json på ${visa(aFv)} (körs :x6) — funktionens svar med felet ligger i net._http_response`);
-    else if (shaFv === false)
-      torra.push(`**favoriter**: \`rapport-snabb.json\` stämmer inte med manifestets sha256 — appen skulle förkasta filen och behålla den förra`);
 
     // Egen livscykel, egen etikett. Aldrig problem.push() — se huvudkommentaren.
     const allt = [...sena.map((x) => `- ❌ KÖRNING · ${x}`), ...torra.map((x) => `- ❌ KÄLLA · ${x}`)];
@@ -890,13 +913,16 @@ Deno.serve(async (req) => {
     }
 
     // 9b. Gränssnapshoten (kort #49). Golven är MÄTTA, inte valda: FI 16–20, NO 42 vid mätningen.
+    //     Vägindexet först, som publiceringen (DECISIONS #742, #781): lådan 1,17° (BORDER_DEG i publish/snapshot-core.ts,
+    //     1,163°, avrundad uppåt) sållar vägarna, och samma ST_DWithin avgör. Med ST_Collect tog räkningen 20–23 s per land.
     for (const [land, golv] of [["fi", 10], ["no", 20]] as [string, number][]) {
       try {
         const r = await sql.unsafe(`
-          WITH se AS (SELECT ST_Collect(geom) g FROM road_conditions WHERE NOT deleted AND geom IS NOT NULL)
-          SELECT count(*)::int AS n FROM ${land}.weather_latest f, se
+          SELECT count(*)::int AS n FROM ${land}.weather_latest f
           WHERE f.sample_time > now() - interval '3 hours'
-            AND ST_DWithin(f.geom::geography, se.g::geography, 40000)`);
+            AND EXISTS (SELECT 1 FROM road_conditions r
+                        WHERE NOT r.deleted AND r.geom IS NOT NULL AND r.geom && ST_Expand(f.geom, 1.17)
+                          AND ST_DWithin(f.geom::geography, r.geom::geography, 40000))`);
         const n = Number(r[0].n);
         rad.push(`gräns-wx ${land.toUpperCase()}: ${n} nåbara inom 40 km (golv ${golv})`);
         if (n < golv) problem.push(`**Gränssnapshoten tunn**: bara ${n} ${land.toUpperCase()}-stationer nåbara (golv ${golv}) — ${land}-ingest eller gränslogiken?`);

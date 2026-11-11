@@ -8,7 +8,8 @@ name: ny-kandidat-fysik
 #   3. modell_alla.pkl, den slutliga enheten, ur hinken (kuvos/kuvos-kandidat-2027-28/), kontrollsumman mot kuvos/kandidat-2027-28.json —
 #      som måste vara ifylld ur samman-artefakten nykand-samman, annars stannar jobbet innan något hämtas;
 #   4. PH för R+6…R+11 → ny_kandidat_ph (sql/068) BARA med flaggan på (kuvos/ny-kandidat-skugga.json, ingest/ny-kandidat-db.ts);
-#      med flaggan av är artefakten enda utdatan.
+#      med flaggan av är artefakten enda utdatan;
+#   5. sist storstädernas punkter (B och C, DECISIONS #804, kort #378) i egna steg som aldrig fäller jobbet, se stegen.
 # PULSKLOCKAN sedan 24/10 (DECISIONS #706): puls-ny-kandidat-fysik "28 */6 * * *", en kvart efter den frystas :13, efter migrationen
 # sql/068, paritetsprovet (40067785091, #704) och flaggan. Knappen finns kvar för en enskild körning.
 # MET:s villkor är en förbindelse åt gången: jobbet väntar först tills den frystas del A inte kör. Egen concurrency-grupp med flit: i en
@@ -32,8 +33,15 @@ jobs:
     env:
       GH_TOKEN: "${{ github.token }}"
       REL: metnordic-live-2026-27
+      NYKAND_VARIANT: t4                     # T4 §4 a (DECISIONS #720): den rättade modellen i drift
     steps:
       - uses: actions/checkout@v4
+      # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos sedan 31/10 (DECISIONS #768, där F1): koden läggs ovanpå
+      # utcheckningen med läsnyckeln. Loggen och sammanfattningen här är publika: inga parametrar, särdrag eller modellutskrifter, bara klart eller fel.
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm }
       - run: npm ci
@@ -47,11 +55,11 @@ jobs:
           node --experimental-strip-types ingest/ny-kandidat-db.ts --sjalvtest 2>&1 | grep -v ExperimentalWarning | tail -1
           python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
           (cd fysik && sha256sum -c --quiet SHA256SUMS)
-          python3 fysik/live/indata.py --sjalvtest | tail -1
-          python3 fysik/ny_kandidat/sjalvtest_levande.py | tail -1
+          python3 fysik/live/indata.py --sjalvtest > /dev/null; echo "självtest ok: indata.py"
+          NYKAND_VARIANT= python3 fysik/ny_kandidat/sjalvtest_levande.py > /dev/null; echo "självtest ok: sjalvtest_levande.py"
           F=$(node --experimental-strip-types ingest/ny-kandidat-db.ts --flagga 2>/dev/null); echo "flaggan: $F" | tee -a "$GITHUB_STEP_SUMMARY"
           echo "FLAGGA=${F%%$'\t'*}" >> "$GITHUB_ENV"
-          python3 -c "import sys; sys.path.insert(0, 'fysik/ny_kandidat'); import levande; c = levande.ladda(); print(f\"kandidatfilen: paret W {c['W']:g} · L {c['L']:g} km, {len(c['names'])} särdrag\")" | tee -a "$GITHUB_STEP_SUMMARY"
+          python3 -c "import sys; sys.path.insert(0, 'fysik/ny_kandidat'); import levande; c = levande.ladda()" > /dev/null; echo "kandidatfilen läst" | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Väntan på den frystas del A (MET:s villkor, en förbindelse åt gången)
         shell: bash
         run: |
@@ -102,9 +110,9 @@ jobs:
           read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
           [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
           echo "::add-mask::$KEY"
-          curl -sS --fail-with-body -X POST "$FN?lage=kuvos_hamta" -H "x-halkvakt-key: $KEY" -H "Content-Type: application/json" -d '{"filer":["kuvos-kandidat-2027-28/modell_alla.pkl"]}' > hamta.json
+          curl -sS --fail-with-body -X POST "$FN?lage=kuvos_hamta" -H "x-halkvakt-key: $KEY" -H "Content-Type: application/json" -d '{"filer":["kuvos-kandidat-2027-28-t4/modell_alla.pkl"]}' > hamta.json
           node -e '
-            const k = require("./kuvos/kandidat-2027-28.json"), h = require("./hamta.json").filer, c = require("crypto"), { execFileSync } = require("child_process"), fs = require("fs");
+            const k = require("./kuvos/kandidat-2027-28-t4.json"), h = require("./hamta.json").filer, c = require("crypto"), { execFileSync } = require("child_process"), fs = require("fs");
             const curl = (a) => { try { return execFileSync("curl", a, { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); } catch (e) { console.error(`hämtningen föll (curl ${e.status})`); process.exit(1); } };
             const b = curl(["-sS", "--fail", h[0].url]); const f = k.filer.find((x) => (x.enhet ?? "alla") === "alla" && x.fil === "modell_alla.pkl");
             const ok = !!f && c.createHash("sha256").update(b).digest("hex") === f.sha256 && b.length === f.bytes;
@@ -114,13 +122,113 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          { echo '```'; python3 fysik/ny_kandidat/levande.py --del-a --indata indata-live --analys mn/metnordic_analys_*.csv.gz mn/dagar/*.csv.gz \
-              --korning "mn/metnordic_korning_$STAMP.csv.gz" --modell modell_alla.pkl --kandidat kuvos/kandidat-2027-28.json --ut ut; echo '```'; } 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
-          rm -f modell_alla.pkl
+          python3 fysik/ny_kandidat/levande.py --del-a --indata indata-live --analys mn/metnordic_analys_*.csv.gz mn/dagar/*.csv.gz \
+              --korning "mn/metnordic_korning_$STAMP.csv.gz" --modell modell_alla.pkl --kandidat kuvos/kandidat-2027-28-t4.json --ut ut > del-a.log 2>&1 || { echo "::error::Del A föll. Utskriften visas inte i den publika loggen; felsök i en session med halkvakt-kuvos."; tail -n 1 del-a.log; exit 1; }
+          echo "del A klar för $STAMP" | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Till tabellen ny_kandidat_ph (bara med flaggan på)
         if: env.FLAGGA == 'på'
         env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
         run: node --experimental-strip-types ingest/ny-kandidat-db.ts skriv-ph "ut/ny_kandidat_ph_$STAMP.csv.gz" 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+      # Kandidaten på en kvart (DECISIONS #782, kort #373): lägena och paret som kandidat_snabb() läser (sql/078). Paret skrivs aldrig ut.
+      # continue-on-error: del A och domkedjan får aldrig falla på visningens väg (till exempel före migrationen sql/078).
+      - name: Punkterna och paret till kandidaten på en kvart (bara med flaggan på)
+        if: env.FLAGGA == 'på'
+        continue-on-error: true
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        shell: bash
+        run: |
+          set -o pipefail
+          node --experimental-strip-types ingest/ny-kandidat-db.ts skriv-punkter mn/metnordic_punkter.csv 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types ingest/ny-kandidat-db.ts skriv-par kuvos/kandidat-2027-28.json 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+      # STORSTÄDERNAS PUNKTER (DECISIONS #804, kort #378): B och C räknas EFTER dagens punkter, som redan står i ny_kandidat_ph ovan. Del B
+      # kl. :47 väntar alltså aldrig på dem, och dagens K hänger aldrig på dem. Varje steg är continue-on-error: faller ett får
+      # stadspunkterna ingen PH den här körningen, medan jobbet, och kuvos-stad som startar när det är klart, går som förut.
+      # Kuvösens del A körs oförändrad (fysik/ny_kandidat/levande.py), med kuvos-stads indata (smavagar_pilot.py indata) i två delar.
+      # Historiken kommer ur två källor (ingest/stadskedjan.ts dygn). Den ena är kuvos-stads cache, med MET:s arkiv från 47 till 3 dygn
+      # bakåt. Den andra är kedjans egen cache med de levande dygnen, som fylls på i varje körning (metnordic-live.ts --dygn hämtar bara
+      # de timmar som saknas). Utan den egna cachen saknar körningen 00.28 dygnet för tre dagar sedan, eftersom kuvos-stad sparar det först
+      # efter, och del A vägrar då (mer än 1 % ifyllt). Punkterna, särdragen och PH stannar i jobbet och läggs inte i artefakten. Loggen
+      # säger bara klart eller fel.
+      - name: Storstädernas punkter — laddningen till stadspunkt
+        if: env.FLAGGA == 'på'
+        continue-on-error: true
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        shell: bash
+        run: node --experimental-strip-types ingest/stadspunkter-db.ts ladda 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Storstädernas punkter — kuvos-stads historik ur cachen (bara läsning)
+        if: env.FLAGGA == 'på'
+        continue-on-error: true
+        uses: actions/cache/restore@v4
+        with: { path: mnp, key: kuvos-stad-historik-, restore-keys: kuvos-stad-historik- }
+      - name: Storstädernas punkter — kedjans egna levande dygn ur cachen
+        if: env.FLAGGA == 'på'
+        continue-on-error: true
+        uses: actions/cache/restore@v4
+        with: { path: stad-dygn, key: "ny-kandidat-stad-dygn-${{ github.run_id }}-${{ github.run_attempt }}", restore-keys: ny-kandidat-stad-dygn- }
+      - name: Storstädernas punkter — dygnen, körningen och indatan
+        id: stad_in
+        if: env.FLAGGA == 'på'
+        continue-on-error: true
+        timeout-minutes: 20
+        shell: bash
+        env: { PILOT: data/vagdata/stadspunkter-2026-27.json, SARDRAG: data/vagdata/stadspunkter-2026-27-sardrag.csv }
+        run: |
+          set -o pipefail
+          [ -f mnp/pilot_punkter.csv ] || { echo "::warning::storstädernas punkter: kuvos-stads historik saknas i cachen — ingen PH den här körningen"; exit 1; }
+          for dag in $(date -u -d '3 days ago' +%F) $(date -u -d '2 days ago' +%F) $(date -u -d yesterday +%F) $(date -u +%F); do
+            node --experimental-strip-types ingest/metnordic-live.ts --dygn "$dag" --punkter mnp/pilot_punkter.csv --ut stad-dygn > /dev/null 2>&1 \
+              || { echo "::warning::storstädernas punkter: dygnet $dag gick inte att hämta"; exit 1; }
+          done
+          node --experimental-strip-types ingest/metnordic-live.ts --korning --stamp "$STAMP" --punkter mnp/pilot_punkter.csv --ut stad-korning > /dev/null 2>&1 \
+            && [ -f "stad-korning/metnordic_korning_$STAMP.csv.gz" ] || { echo "::warning::storstädernas punkter: körningen $STAMP gick inte att hämta"; exit 1; }
+          # De tio senaste egna dygnen står kvar, så att cachen hålls liten; de äldre finns i kuvos-stads.
+          ls stad-dygn/dagar | sort | head -n -10 | sed 's|^|stad-dygn/dagar/|' | xargs -r rm -f
+          node --experimental-strip-types ingest/stadskedjan.ts dygn stad-analys.txt "$(date -u -d '47 days ago' +%F)" "$(date -u +%F)" mnp stad-dygn 2>&1 \
+            | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+          python3 fysik/ny_kandidat/smavagar_pilot.py indata --indata indata-live --punkter "$PILOT" --sardrag "$SARDRAG" > /dev/null 2>&1 \
+            || { echo "::warning::storstädernas punkter: indatan föll"; exit 1; }
+          node --experimental-strip-types ingest/stadskedjan.ts indata indata-live 2 indata-stad 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Storstädernas punkter — kedjans egna dygn till cachen
+        if: env.FLAGGA == 'på' && steps.stad_in.outcome == 'success'
+        continue-on-error: true
+        uses: actions/cache/save@v4
+        with: { path: stad-dygn, key: "ny-kandidat-stad-dygn-${{ github.run_id }}-${{ github.run_attempt }}" }
+      - name: Storstädernas punkter — del A i två delar och PH till ny_kandidat_ph
+        id: stad_a
+        if: env.FLAGGA == 'på' && steps.stad_in.outcome == 'success'
+        continue-on-error: true
+        timeout-minutes: 20
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -o pipefail
+          mapfile -t ANALYS < stad-analys.txt
+          for i in 1 2; do
+            python3 fysik/ny_kandidat/levande.py --del-a --indata "indata-stad$i" --analys "${ANALYS[@]}" --korning "stad-korning/metnordic_korning_$STAMP.csv.gz" \
+                --modell modell_alla.pkl --kandidat kuvos/kandidat-2027-28-t4.json --ut "ut-stad$i" > "del-a-stad$i.log" 2>&1 \
+              || { echo "::warning::storstädernas punkter: del A, del $i, föll — ingen PH den här körningen"; exit 1; }
+          done
+          node --experimental-strip-types ingest/stadskedjan.ts ph "ut-stad1/ny_kandidat_ph_$STAMP.csv.gz" "ut-stad2/ny_kandidat_ph_$STAMP.csv.gz" 2>&1 \
+            | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Storstädernas punkter — läget
+        if: always() && env.FLAGGA == 'på'
+        shell: bash
+        run: |
+          rm -f modell_alla.pkl
+          if [ "${{ steps.stad_a.outcome }}" = success ]; then echo "storstädernas punkter: klart för $STAMP" | tee -a "$GITHUB_STEP_SUMMARY"
+          else echo "**storstädernas punkter: fel** — ingen PH för stadspunkterna i körningen $STAMP; dagens punkter är skrivna" | tee -a "$GITHUB_STEP_SUMMARY"; fi
+      # SMÅVÄGSRÖSTEN (DECISIONS #828, kort #647; sql/103): punkterna ur kuvösens data/vagdata/smavagsrosten-punkter.json till
+      # smavagspunkt, med brytarna orörda (av tills Bengts och Axels ord). Efter dagens punkter och storstäderna, och continue-on-error:
+      # faller laddningen (till exempel före migrationen sql/103) står tabellen som förut och resten av jobbet går. Loggen säger bara
+      # klart eller fel.
+      - name: Småvägsröstens punkter — laddningen till smavagspunkt
+        if: env.FLAGGA == 'på'
+        continue-on-error: true
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        shell: bash
+        run: |
+          set -o pipefail
+          node --experimental-strip-types ingest/smavagspunkter-db.ts ladda 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Flaggan av — ingenting skrivs
         if: env.FLAGGA != 'på'
         run: echo "**Flaggan är av** (kuvos/ny-kandidat-skugga.json) — PH står bara i artefakten, ingenting är skrivet till databasen." | tee -a "$GITHUB_STEP_SUMMARY"

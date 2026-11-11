@@ -8,7 +8,13 @@
 //   node --experimental-strip-types ingest/ny-kandidat-db.ts ph <tid-iso> <ut.csv>    PH vid timmen ur ny_kandidat_ph → punkt,ph
 //   node --experimental-strip-types ingest/ny-kandidat-db.ts skriv-live <live.csv>    del B:s fil → ny_kandidat_live, sedan gallringen
 //   node --experimental-strip-types ingest/ny-kandidat-db.ts logga                    ny_kandidat_logga(): domloggen för timmen
+//   node --experimental-strip-types ingest/ny-kandidat-db.ts logga-stad               ny_kandidat_logga_stad(): storstädernas punkter
+//                                                                                  för olycksfacit (sql/096, #815); skriver bara klart
+//   node --experimental-strip-types ingest/ny-kandidat-db.ts skriv-punkter <punkter.csv>   del A:s punkter → kandidat_punkter (sql/078)
+//   node --experimental-strip-types ingest/ny-kandidat-db.ts skriv-par <kandidatfil.json>  paret ur kandidatfilen → kandidat_par (sql/078)
 //   node --experimental-strip-types ingest/ny-kandidat-db.ts --sjalvtest
+// skriv-punkter och skriv-par är kandidaten på en kvart (DECISIONS #782, kort #373): kandidat_snabb() läser lägena och paret därifrån.
+// Paret skrivs aldrig ut — inte i loggen och inte i felen — eftersom Actions-loggen här är publik.
 // Ankarna läses med den frystas `ingest/kandidat-db.ts ankare` (vagpunkt_ankare(), bara läsning): samma population som den frystas RÅ.
 //
 // BYTET (förberett, INTE byggt): att den nya talar i stället för den frysta är att den här kedjan skriver i den frystas tabeller
@@ -34,13 +40,49 @@ export const SATS = {
     SELECT * FROM UNNEST($1::timestamptz[], $2::timestamptz[], $3::text[], $4::real[], $5::real[])
     ON CONFLICT (tid, punkt) DO UPDATE SET korning = EXCLUDED.korning, ts_fysik = EXCLUDED.ts_fysik, ph = EXCLUDED.ph`,
   ph: `SELECT punkt, ph FROM ${TABELLER.ph} WHERE tid = $1::timestamptz AND ph IS NOT NULL ORDER BY punkt`,
-  skrivLive: `INSERT INTO ${TABELLER.live} (tid, punkt, ph, pg, ra, ank_km, pb, n_ank, spr)
-    SELECT * FROM UNNEST($1::timestamptz[], $2::text[], $3::real[], $4::real[], $5::real[], $6::real[], $7::real[], $8::smallint[], $9::real[])
+  skrivLive: `INSERT INTO ${TABELLER.live} (tid, punkt, ph, pg, ra, ank_km, pb, n_ank, spr, frys_min)
+    SELECT * FROM UNNEST($1::timestamptz[], $2::text[], $3::real[], $4::real[], $5::real[], $6::real[], $7::real[], $8::smallint[], $9::real[], $10::float8[])
     ON CONFLICT (tid, punkt) DO UPDATE SET ph = EXCLUDED.ph, pg = EXCLUDED.pg, ra = EXCLUDED.ra, ank_km = EXCLUDED.ank_km, pb = EXCLUDED.pb,
-      n_ank = EXCLUDED.n_ank, spr = EXCLUDED.spr`,
+      n_ank = EXCLUDED.n_ank, spr = EXCLUDED.spr, frys_min = EXCLUDED.frys_min`,
   gallra: `SELECT ${TABELLER.gallra}() AS n`,
   logga: `SELECT ${TABELLER.logga}() AS m`,
+  loggaStad: `SELECT ny_kandidat_logga_stad() AS m`,   // sql/096 (#815)
 };
+
+/** Kandidaten på en kvart (DECISIONS #782, sql/078): punkternas lägen och paret, som kandidat_snabb() läser. Ett läge som inte ändrats
+ *  skrivs inte om, så att `andrad` bara flyttas när grannlistorna behöver byggas om. */
+export const SNABB = {
+  skrivPunkter: `INSERT INTO kandidat_punkter (punkt, lon, lat)
+    SELECT * FROM UNNEST($1::text[], $2::float8[], $3::float8[])
+    ON CONFLICT (punkt) DO UPDATE SET lon = EXCLUDED.lon, lat = EXCLUDED.lat, andrad = now()
+      WHERE (kandidat_punkter.lon, kandidat_punkter.lat) IS DISTINCT FROM (EXCLUDED.lon, EXCLUDED.lat)`,
+  skrivPar: `INSERT INTO kandidat_par (id, w, l_km, skriven) VALUES (1, $1, $2, now())
+    ON CONFLICT (id) DO UPDATE SET w = EXCLUDED.w, l_km = EXCLUDED.l_km, skriven = EXCLUDED.skriven`,
+};
+
+/** Punkterna ur del A:s punktfil (MET Nordics punkter, kolumnerna station_id eller sid, lon och lat). Id:t läses som text: en
+ *  station med siffror i namnet ska inte bli ett tal. */
+export function lasPunkter(fil: string): { punkt: string; lon: number; lat: number }[] {
+  const [rubrik, ...rader] = readFileSync(fil, "utf8").trim().split(/\r?\n/u);
+  const kol = rubrik.split(",");
+  const id = kol.indexOf("station_id") >= 0 ? kol.indexOf("station_id") : kol.indexOf("sid");
+  const lo = kol.indexOf("lon"), la = kol.indexOf("lat");
+  if (id < 0 || lo < 0 || la < 0) throw new Error(`${fil}: rubriken ska ha station_id (eller sid), lon och lat: ${rubrik}`);
+  return rader.map((r, i) => {
+    const c = r.split(",");
+    const p = { punkt: c[id], lon: Number(c[lo]), lat: Number(c[la]) };
+    if (!p.punkt || !Number.isFinite(p.lon) || !Number.isFinite(p.lat)) throw new Error(`${fil}: rad ${i + 2} saknar id eller läge`);
+    return p;
+  });
+}
+
+/** Paret ur kandidatfilen (par.W, par.L_km). Felet nämner aldrig talen. */
+export function lasPar(fil: string): { w: number; l: number } {
+  const k = JSON.parse(readFileSync(fil, "utf8"));
+  const w = Number(k?.par?.W), l = Number(k?.par?.L_km);
+  if (!(Number.isFinite(w) && w > 0 && w <= 1 && Number.isFinite(l) && l > 0)) throw new Error(`${fil}: paret saknas eller är ogiltigt`);
+  return { w, l };
+}
 
 export type Flagga = { pa: boolean; skal: string };
 
@@ -57,7 +99,7 @@ export function lasFlagga(fil: string = FLAGGA): Flagga {
   return { pa: true, skal: `skriv true, paritetsprovet klarat i körningen ${p.korning}` };
 }
 
-const SKRIVANDE = new Set(["skriv-ph", "skriv-live", "logga"]);
+const SKRIVANDE = new Set(["skriv-ph", "skriv-live", "logga", "logga-stad", "skriv-punkter", "skriv-par"]);
 
 async function pool() {
   const url = process.env.DATABASE_URL;
@@ -104,7 +146,7 @@ export async function main(arg: string[], flaggfil: string = FLAGGA): Promise<st
       let n = 0;
       for (const d of delar(rader)) {
         await p.query(SATS.skrivLive, [d.map((r) => r.tid_utc), d.map((r) => r.punkt), d.map((r) => r.ph), d.map((r) => r.pg), d.map((r) => r.ra),
-          d.map((r) => r.ank_km), d.map((r) => r.pb), d.map((r) => r.n_ank), d.map((r) => r.spr)]);
+          d.map((r) => r.ank_km), d.map((r) => r.pb), d.map((r) => r.n_ank), d.map((r) => r.spr), d.map((r) => r.frys_min ?? null)]);   // frys_min: F1 (kort #377)
         n += d.length;
       }
       const g = await p.query(SATS.gallra);
@@ -113,8 +155,25 @@ export async function main(arg: string[], flaggfil: string = FLAGGA): Promise<st
   } else if (kmd === "logga") {
     const p = await pool();
     try { console.log(`${TABELLER.logga}: ${(await p.query(SATS.logga)).rows[0].m}`); } finally { await p.end(); }
+  } else if (kmd === "logga-stad") {
+    // Storstädernas punkter (#815): funktionen svarar klart, tyst eller brytarna av, aldrig ett tal (#768).
+    const p = await pool();
+    try { console.log(`ny_kandidat_logga_stad: ${(await p.query(SATS.loggaStad)).rows[0].m}`); } finally { await p.end(); }
+  } else if (kmd === "skriv-punkter") {
+    const rader = lasPunkter(a);
+    const p = await pool();
+    try {
+      let n = 0;
+      for (const d of delar(rader)) n += (await p.query(SNABB.skrivPunkter, [d.map((r) => r.punkt), d.map((r) => r.lon), d.map((r) => r.lat)])).rowCount ?? 0;
+      console.log(`kandidat_punkter: ${rader.length} punkter lästa ur ${a}, ${n} nya eller flyttade`);
+    } finally { await p.end(); }
+  } else if (kmd === "skriv-par") {
+    const { w, l } = lasPar(a);
+    const p = await pool();
+    try { await p.query(SNABB.skrivPar, [w, l]); console.log(`kandidat_par: paret skrivet ur ${a}`); } finally { await p.end(); }
   } else {
-    console.error("kör: ny-kandidat-db.ts --flagga | skriv-ph <fil> | ph <tid> <ut> | skriv-live <fil> | logga | --sjalvtest"); process.exit(2);
+    console.error("kör: ny-kandidat-db.ts --flagga | skriv-ph <fil> | ph <tid> <ut> | skriv-live <fil> | logga | skriv-punkter <fil> | skriv-par <fil> | --sjalvtest");
+    process.exit(2);
   }
   return "klart";
 }
@@ -146,7 +205,7 @@ async function sjalvtest() {
   writeFileSync(fil, gzipSync("punkt,korning_utc,tid_utc,ts_fysik,ph\nv00001,2026-11-01T06:00:00Z,2026-11-01T12:00:00Z,-1.25,-0.9\n"));
   const tyst = console.log; const ut: string[] = []; console.log = (...x: unknown[]) => { ut.push(x.join(" ")); };
   try {
-    for (const kmd of [["skriv-ph", fil], ["skriv-live", fil], ["logga"]]) {
+    for (const kmd of [["skriv-ph", fil], ["skriv-live", fil], ["logga"], ["logga-stad"], ["skriv-punkter", fil], ["skriv-par", fil]]) {
       const r = await main(kmd, av);
       k(r === "av" && ut.at(-1)!.includes("ingenting skrivs"), `${kmd[0]} med flaggan av: ${r} ${ut.at(-1)}`);
     }
@@ -167,9 +226,30 @@ async function sjalvtest() {
   const byt = (s: string) => s.replace(/(?<![\w])kandidat_/gu, "ny_kandidat_").replace("gallra_kandidat()", "gallra_ny_kandidat()");
   k(byt(FRYST.skrivPh) === SATS.skrivPh && byt(FRYST.skrivLive) === SATS.skrivLive && byt(FRYST.ph) === SATS.ph && byt(FRYST.gallra) === SATS.gallra,
     "satserna är den frystas med bara tabellnamnen bytta");
+  // Kandidaten på en kvart (#782): punkterna med id som text, paret utan tal i felen, och satserna bara mot sql/078:s tabeller.
+  const pf = join(d, "punkter.csv");
+  writeFileSync(pf, "station_id,name,lon,lat\n0123,Ett,15.5,60.25\nv00001,,16,61\n");
+  const pk = lasPunkter(pf);
+  k(pk.length === 2 && pk[0].punkt === "0123" && pk[0].lon === 15.5 && pk[1].punkt === "v00001" && pk[1].lat === 61,
+    `lasPunkter läser id som text och lägena som tal: ${JSON.stringify(pk)}`);
+  writeFileSync(pf, "sid,lon,lat\nS1,15,x\n");
+  let kast = ""; try { lasPunkter(pf); } catch (e) { kast = String(e); }
+  k(kast.includes("saknar id eller läge"), `lasPunkter vägrar ett läge som inte är ett tal (${kast || "kastade inte"})`);
+  const kf = join(d, "kandidat.json");
+  writeFileSync(kf, JSON.stringify({ par: { W: 0.375, L_km: 77.5 } }));
+  k(JSON.stringify(lasPar(kf)) === JSON.stringify({ w: 0.375, l: 77.5 }), "lasPar läser par.W och par.L_km");
+  for (const trasigt of [{}, { par: { W: 0, L_km: 77.5 } }, { par: { W: 1.5, L_km: 77.5 } }, { par: { W: 0.375 } }]) {
+    writeFileSync(kf, JSON.stringify(trasigt));
+    kast = ""; try { lasPar(kf); } catch (e) { kast = String(e); }
+    k(kast.includes("paret saknas eller är ogiltigt") && !/\d\.\d|77/u.test(kast.replace(kf, "")), `lasPar vägrar ${JSON.stringify(trasigt)} utan att nämna talen (${kast})`);
+  }
+  k(SNABB.skrivPunkter.includes("INSERT INTO kandidat_punkter") && SNABB.skrivPar.includes("INSERT INTO kandidat_par")
+    && !/ny_kandidat_|(?<![\w])kandidat_(ph|live|logga|skugga|station|timme|regel)\b/u.test(Object.values(SNABB).join("\n")),
+    "skriv-punkter och skriv-par skriver bara kandidat_punkter och kandidat_par");
   if (fel) process.exit(1);
   console.log("✓ självtest: flaggan (av utan skriv, utan klarat paritetsprov, utan körningens nummer, trasig och saknad fil; på bara med båda), "
-    + "flaggan av skriver ingenting och öppnar aldrig databasen (motprov: på försöker), bara den nyas tabeller, satserna som den frystas med bytta namn");
+    + "flaggan av skriver ingenting och öppnar aldrig databasen (motprov: på försöker), bara den nyas tabeller, satserna som den frystas med bytta namn, "
+    + "punkterna och paret för kandidaten på en kvart");
 }
 
 const direkt = (process.argv[1] ?? "").replace(/\\/g, "/").endsWith("ingest/ny-kandidat-db.ts");

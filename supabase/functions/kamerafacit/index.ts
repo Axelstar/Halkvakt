@@ -15,7 +15,8 @@ import { nyckelGiltig } from "../_shared/nyckel.ts";
 const SB = Deno.env.get("SUPABASE_URL")!;
 const SRK = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const TRV = Deno.env.get("TRAFIKVERKET_API_KEY")!;
-const LIVE = "https://axelstar.github.io/halkvakt-karta/data/app/v1/live.json";
+// Lägesfilen ur appens hink, med servicenyckeln och utan CDN:ens cache (DECISIONS #752): V2 väljer bland de frysrisker appen ser.
+const LIVE = `${SB}/storage/v1/object/app/v1/live.json`;
 const sql = postgres(Deno.env.get("SUPABASE_DB_URL")!, { max: 1, prepare: false });
 
 async function kameror(): Promise<Kamera[]> {
@@ -45,7 +46,10 @@ Deno.serve(async (req) => {
   const nu = new Date();
   const timme = Math.floor(nu.getTime() / 3_600_000);
   try {
-    const [kams, live] = await Promise.all([kameror(), fetch(LIVE).then((r) => r.json())]);
+    const [kams, live] = await Promise.all([kameror(), fetch(LIVE, { headers: { Authorization: `Bearer ${SRK}`, apikey: SRK } }).then(async (r) => {
+      if (!r.ok) throw new Error(`lägesfilen ${r.status}: ${(await r.text()).slice(0, 200)}`);
+      return r.json();
+    })]);
     if (!kams.length) throw new Error("TRV gav noll väglagskameror");
 
     // V2 — frysriskerna i snapshoten, samma id som motorns (wx:, bro:).
@@ -64,11 +68,13 @@ Deno.serve(async (req) => {
     const nattIDag = nattbilderIDag(idag.map((r: any) => ({ k: r.k, h: Number(r.h) })), kams);
     const v2 = valjV2(vidFaror, (k) => dagsljus(k, nu), (k) => nattbilder.has(k.id), v2IDag, nattIDag);
 
-    // V3 — kalla stationer UTAN fara, med en kamera vid stationen. #75:s vakt och färskhet som grindarna.
+    // V3 — kalla stationer UTAN fara, med en kamera vid stationen. #75:s vakt, och publiceringens färskhet för svenska stationer
+    // (WX_SANE, DECISIONS #751 och #752): en station som är äldre är tyst för appen därför att värdet saknas, och V3 ska pröva den
+    // tystnad motorn väljer.
     const farligt = new Set(faror.map((f) => f.id));
     const kalla = await sql`SELECT station_id, ST_X(geom) AS lon, ST_Y(geom) AS lat FROM weather_latest
       WHERE surface_temp_c <= 3 AND air_temp_c IS NOT NULL AND surface_temp_c >= air_temp_c - 12
-        AND sample_time > now() - interval '3 hours'`;
+        AND sample_time > now() - interval '60 minutes'`;
     const kandidater: Kamera[] = [];
     for (const s of kalla as any[]) {
       if (farligt.has(`wx:${s.station_id}`)) continue;

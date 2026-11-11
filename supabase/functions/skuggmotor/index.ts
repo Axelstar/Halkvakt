@@ -239,6 +239,64 @@ export function isAhead(
   return { ahead, distM };
 }
 
+export interface Box { minLon: number; maxLon: number; minLat: number; maxLat: number; }
+
+/** The smallest lon/lat box around the points (an empty list gives an infinitely distant box). */
+export function boxOf(pts: LonLat[]): Box {
+  const b = { minLon: Infinity, maxLon: -Infinity, minLat: Infinity, maxLat: -Infinity };
+  for (const p of pts) {
+    if (p.lon < b.minLon) b.minLon = p.lon;
+    if (p.lon > b.maxLon) b.maxLon = p.lon;
+    if (p.lat < b.minLat) b.minLat = p.lat;
+    if (p.lat > b.maxLat) b.maxLat = p.lat;
+  }
+  return b;
+}
+
+/**
+ * A lower bound on haversineM(p, q) for every q in the box — never more than the true distance (kort #375). The larger of two
+ * bounds: the latitude gap alone (s ≥ sin²(Δφ/2)), and the longitude gap at the most poleward latitude involved
+ * (s ≥ cos φ₁ cos φ₂ sin²(Δλ/2) ≥ cos² φmax sin²(Δλ/2)).
+ */
+export function minDistToBoxM(p: LonLat, b: Box): number {
+  const dLat = p.lat < b.minLat ? b.minLat - p.lat : p.lat > b.maxLat ? p.lat - b.maxLat : 0;
+  const dLon = p.lon < b.minLon ? b.minLon - p.lon : p.lon > b.maxLon ? p.lon - b.maxLon : 0;
+  const latMax = Math.max(Math.abs(p.lat), Math.abs(b.minLat), Math.abs(b.maxLat));
+  const lonM = 2 * R * Math.asin(Math.min(1, Math.cos(latMax * D2R) * Math.sin(Math.min(Math.PI, dLon * D2R) / 2)));
+  return Math.max(R * dLat * D2R, lonM);
+}
+
+/**
+ * Half-widths in degrees of a lat/lon window around the points that holds every position within distM of one of them — the
+ * engine's grid (DECISIONS #795). Exact for a position with latitude in [−90, 90] and longitude in [−180, 180], from the haversine
+ * sum s = sin²(Δφ/2) + cos φ₁ cos φ₂ sin²(Δλ/2) and d = 2R·asin √s with d ≤ distM < πR:
+ *   · s ≥ sin²(Δφ/2) gives d ≥ R|Δφ|, so |Δφ| ≤ distM / R = dLat;
+ *   · both latitudes then lie in the window, where cos φ ≥ cos φmax > 0, so |sin(Δλ/2)| ≤ sin(distM / 2R) / cos φmax = k;
+ *   · k < 1 leaves |Δλ| ≤ 2·asin k = dLon or |Δλ| ≥ 360° − dLon, and the second needs a longitude outside [−180, 180] when every
+ *     point's |lon| + dLon < 180 (no way round the back of the antimeridian).
+ * null when no window proves anything — distM not in [0, πR), the window reaching a pole (φmax ≥ 90° or k ≥ 1) or the
+ * antimeridian, or no finite point — and the caller must then treat the points as reachable from everywhere. A point with a
+ * non-finite coordinate is skipped: haversineM is NaN for it, and NaN is never within a distance.
+ */
+export function reachWindow(pts: LonLat[], distM: number): { dLat: number; dLon: number } | null {
+  if (!(distM >= 0 && distM < Math.PI * R)) return null;
+  let minLat = Infinity, maxLat = -Infinity, maxAbsLon = -Infinity;
+  for (const p of pts) {
+    if (!Number.isFinite(p.lat) || !Number.isFinite(p.lon)) continue;
+    if (p.lat < minLat) minLat = p.lat;
+    if (p.lat > maxLat) maxLat = p.lat;
+    if (Math.abs(p.lon) > maxAbsLon) maxAbsLon = Math.abs(p.lon);
+  }
+  const dLat = distM / R / D2R;
+  const latMax = Math.max(Math.abs(minLat - dLat), Math.abs(maxLat + dLat));
+  if (!(latMax < 90)) return null;
+  const k = Math.sin(distM / (2 * R)) / Math.cos(latMax * D2R);
+  if (!(k < 1)) return null;
+  const dLon = (2 * Math.asin(k)) / D2R;
+  if (!(maxAbsLon + dLon < 180)) return null;
+  return { dLat, dLon };
+}
+
 /** Resample a polyline to points at most stepM apart (vertices always included). */
 export function samplePolyline(line: [number, number][], stepM: number): LonLat[] {
   const out: LonLat[] = [];
@@ -538,11 +596,86 @@ const SLIPPERY_INFO = /(?<![a-zåäö])(is|halka|halkrisk|halkig|halt|mycket bes
 // so only halka/halkrisk/halkig are listed above. Vector v24 locks all of it in three ports.
 const SLIPPERY_STAM = /(snö|frost)/i;
 
+// THE GRID (DECISIONS #795). Until 5/11 every fix evaluated every hazard; 16 000 more kandidat points made step() seven times
+// slower. Every candidate needs its distance within a reach the configuration bounds (reachOf below), so a hazard is listed in
+// every grid cell that holds a position within that reach of one of its points (reachWindow in geo.ts), and a fix evaluates only
+// its own cell's lists. A hazard left out would have returned null in the full scan, and the lists keep the hazards' order, so
+// the candidates — and everything after them — are the full scan's, byte for byte. The halka zone's loop over all stretches
+// (#360) is a rule, not a scan, and is untouched.
+/** Cell size in degrees, latitude and longitude alike (5.6 km north–south, 2.8 km east–west at 60° N). Only speed depends on it.
+ *  Samma tal i Engine.kt och Engine.swift (kontraktsgrinden). */
+const GRID_CELL_DEG = 0.05;
+/** Metres added to every reach before its window is drawn: rounding in reachWindow and haversineM is far below a millimetre.
+ *  Samma tal i Engine.kt och Engine.swift (kontraktsgrinden). */
+const GRID_MARGIN_M = 100;
+/** A window wider than this many cells per point (near a pole, or an odd configuration's reach) is not listed: the hazard goes to
+ *  the always-list instead, which is exact and keeps the build small. Samma tal i Engine.kt och Engine.swift (kontraktsgrinden). */
+const GRID_MAX_CELLS = 4096;
+
+/** The hazards of one list (points, stretches or kandidat stretches) by grid cell, each list ascending as the hazards came. */
+class HazardGrid {
+  /** Every hazard, ascending: what a fix outside the grid, and the test's full scan, evaluate. */
+  readonly all: number[] = [];
+  private readonly cells = new Map<number, number[]>();
+  /** Hazards no window bounds (reachWindow gave null): evaluated on every fix, as before the grid. */
+  private readonly always: number[] = [];
+
+  /** Hazard i — added in ascending order — produces a candidate only within reachM of one of pts. */
+  add(i: number, pts: LonLat[], reachM: number): void {
+    this.all.push(i);
+    const w = reachWindow(pts, reachM + GRID_MARGIN_M);
+    if (w === null || (2 * w.dLat / GRID_CELL_DEG + 2) * (2 * w.dLon / GRID_CELL_DEG + 2) > GRID_MAX_CELLS) {
+      this.always.push(i);
+      return;
+    }
+    let r0p = NaN, r1p = NaN, c0p = NaN, c1p = NaN;
+    for (const p of pts) {
+      if (!Number.isFinite(p.lat) || !Number.isFinite(p.lon)) continue;   // never within reach (reachWindow)
+      const r0 = Math.floor((p.lat - w.dLat) / GRID_CELL_DEG), r1 = Math.floor((p.lat + w.dLat) / GRID_CELL_DEG);
+      const c0 = Math.floor((p.lon - w.dLon) / GRID_CELL_DEG), c1 = Math.floor((p.lon + w.dLon) / GRID_CELL_DEG);
+      if (r0 === r0p && r1 === r1p && c0 === c0p && c1 === c1p) continue;   // same cells as the previous point
+      r0p = r0; r1p = r1; c0p = c0; c1p = c1;
+      for (let r = r0; r <= r1; r++) {
+        for (let c = c0; c <= c1; c++) {
+          const key = cellKey(r, c);
+          const list = this.cells.get(key);
+          if (list === undefined) this.cells.set(key, [i]);
+          else if (list[list.length - 1] !== i) list.push(i);
+        }
+      }
+    }
+  }
+
+  /** The hazards that can produce a candidate at the fix, ascending. A fix outside [−90, 90] × [−180, 180] gets all of them:
+   *  reachWindow's bound holds only inside. */
+  near(fix: LonLat): readonly number[] {
+    if (!(Math.abs(fix.lat) <= 90 && Math.abs(fix.lon) <= 180)) return this.all;
+    const cell = this.cells.get(cellKey(Math.floor(fix.lat / GRID_CELL_DEG), Math.floor(fix.lon / GRID_CELL_DEG)));
+    if (this.always.length === 0) return cell ?? this.always;
+    if (cell === undefined) return this.always;
+    const out: number[] = [];   // two ascending lists without common members (a hazard is in cells or in always)
+    let a = 0, b = 0;
+    while (a < cell.length || b < this.always.length) {
+      out.push(b >= this.always.length || (a < cell.length && cell[a] < this.always[b]) ? cell[a++] : this.always[b++]);
+    }
+    return out;
+  }
+}
+
+/** One number per cell: rows and columns stay within ±3 600 at 0.05°, so 65 536 keeps them apart (a clash would only add). */
+function cellKey(r: number, c: number): number { return r * 65536 + c; }
+
 export class AlertEngine {
   private readonly cfg: EngineConfig;
   private points: PointHazard[] = [];
-  private segments: { h: SegmentHazard; samples: LonLat[] }[] = [];
+  private segments: { h: SegmentHazard; samples: LonLat[]; box: Box }[] = [];
   private kandidater: { h: KandidatHazard; samples: LonLat[] }[] = [];
+  private pointGrid = new HazardGrid();
+  private segmentGrid = new HazardGrid();
+  private kandidatGrid = new HazardGrid();
+  /** Test only (DECISIONS #795): evaluate every hazard on every fix, as before the grid. The differential test runs both paths
+   *  side by side; their answers are the same by construction, so nothing else sets it. */
+  bruteForce = false;
 
   private prevFix: Fix | null = null;
   private lastHeadingDeg: number | null = null;
@@ -573,14 +706,40 @@ export class AlertEngine {
     this.points = [];
     this.segments = [];
     this.kandidater = [];
+    this.pointGrid = new HazardGrid();
+    this.segmentGrid = new HazardGrid();
+    this.kandidatGrid = new HazardGrid();
     for (const h of hazards) {
       if (h.kind === "slippery_segment") {
-        this.segments.push({ h, samples: samplePolyline(h.line, this.cfg.segmentSampleM) });
+        const samples = samplePolyline(h.line, this.cfg.segmentSampleM);
+        this.segmentGrid.add(this.segments.length, samples, this.reachOf(h.kind));
+        this.segments.push({ h, samples, box: boxOf(samples) });
       } else if (h.kind === "kandidat") {
-        this.kandidater.push({ h, samples: h.points.map(([lon, lat]) => ({ lon, lat })) });
+        const samples = h.points.map(([lon, lat]) => ({ lon, lat }));
+        this.kandidatGrid.add(this.kandidater.length, samples, this.reachOf(h.kind));
+        this.kandidater.push({ h, samples });
       } else {
+        this.pointGrid.add(this.points.length, [h], this.reachOf(h.kind));
         this.points.push(h);
       }
+    }
+  }
+
+  /**
+   * The grid's reach (DECISIONS #795): no candidate of this kind lies farther from the fix than this. Read off the evaluators:
+   * a camera needs distM ≤ cameraTriggerM, an accident distM ≤ accidentMaxAheadM, and icing, wildlife, a stretch's nearest sample
+   * and a kandidat's nearest point distM ≤ the lead — at most cfg.leadMaxM, and DEFAULT_CONFIG.leadMaxM under leadFor (TS only;
+   * the ports keep the same bound so the three stay one algorithm), or NaN, which step() handles. The 30 m near zone of isAhead
+   * only widens the angle, never a distance. NaN (Math.max keeps it), ∞ and an unknown kind give a reach no window bounds: always
+   * evaluated.
+   */
+  private reachOf(kind: HazardKind): number {
+    switch (kind) {
+      case "camera": return this.cfg.cameraTriggerM;
+      case "accident": return this.cfg.accidentMaxAheadM;
+      case "icing_point": case "wildlife": case "slippery_segment": case "kandidat":
+        return Math.max(this.cfg.leadMaxM, DEFAULT_CONFIG.leadMaxM);
+      default: return Infinity;
     }
   }
 
@@ -616,16 +775,26 @@ export class AlertEngine {
     const lead = (h: Hazard) => this.leadFor
       ? Math.min(DEFAULT_CONFIG.leadMaxM, Math.max(this.cfg.leadMinM, this.leadFor(h, leadM, speedMps)))
       : leadM;
+    // The grid (DECISIONS #795): only the hazards whose reach holds the fix, in the full scan's order. A stretch (segment or
+    // kandidat) tests `best > lead`, so a NaN lead lets it speak at ANY distance — the points test `distM <= lead` and stay silent.
+    // The reach bounds a number only: with a NaN lead (a NaN speed or setting), or leadFor's lead per hazard, the stretches take
+    // the full scan.
+    const points = this.bruteForce ? this.pointGrid.all : this.pointGrid.near(fix);
+    const allStretches = this.bruteForce || this.leadFor !== undefined || Number.isNaN(leadM);
+    const stretches = (g: HazardGrid) => allStretches ? g.all : g.near(fix);
     const candidates: Candidate[] = [];
-    for (const p of this.points) {
+    for (const i of points) {
+      const p = this.points[i];
       const c = this.evaluatePoint(fix, heading, p, lead(p));
       if (c) candidates.push(c);
     }
-    for (const s of this.segments) {
+    for (const i of stretches(this.segmentGrid)) {
+      const s = this.segments[i];
       const c = this.evaluateSegment(fix, heading, s, lead(s.h));
       if (c) candidates.push(c);
     }
-    for (const k of this.kandidater) {
+    for (const i of stretches(this.kandidatGrid)) {
+      const k = this.kandidater[i];
       const c = this.evaluateKandidat(fix, heading, k, lead(k.h));
       if (c) candidates.push(c);
     }
@@ -812,13 +981,17 @@ export class AlertEngine {
   }
 
   private evaluateSegment(
-    fix: Fix, heading: number, s: { h: SegmentHazard; samples: LonLat[] }, leadM: number,
+    fix: Fix, heading: number, s: { h: SegmentHazard; samples: LonLat[]; box: Box }, leadM: number,
   ): Candidate | null {
     const meta = s.h.meta ?? {};
     const slippery =
       (meta.code != null && meta.code >= 2) ||
       (meta.info ?? []).some((i) => SLIPPERY_INFO.test(i) || SLIPPERY_STAM.test(i));
     if (!slippery) return null; // "Normalt"/"Våt" segments make no sound — silence is default
+    // Kort #375: a stretch whose box lies farther away than the lead holds no sample within it, and only a sample within the lead
+    // can speak (best > leadM ⇒ null below), so the samples are not walked. Exact: the bound never exceeds the true distance, and
+    // 1 m covers rounding. Walking every sample of long stretches at every fix ran the skugga's försprång out of compute (546).
+    if (minDistToBoxM(fix, s.box) > leadM + 1) return null;
 
     let best: number | null = null;
     for (const pt of s.samples) {
@@ -1124,15 +1297,26 @@ const RUTTER_VAG: Record<string, [number, number][]> = {"E10 Luleå→Kiruna":[[
 // kamerabild (facit-hinken, dedupe per station & 3 h). Rör aldrig användare.
 // Land (#34): ?land=fi kör de finska rutterna mot den finska snapshoten. Samma motor,
 // samma logg (kolumnen land), samma rapport. Sverige är standard.
+const SB = Deno.env.get("SUPABASE_URL")!;
+const SRK = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const TRV = Deno.env.get("TRAFIKVERKET_API_KEY")!;
+// Sverige ur hinken, som appen läser först (DECISIONS #752): med servicenyckeln inifrån Supabase och utan CDN:ens cache, som
+// funktionen favoriter (#741 tillägget 30/10). Grannländerna finns bara på Pages.
 const CDN_BY_LAND: Record<string, string> = {
-  se: "https://axelstar.github.io/halkvakt-karta/data/app/v1/",
+  se: `${SB}/storage/v1/object/app/v1/`,
   fi: "https://axelstar.github.io/halkvakt-karta/data/app/fi/v1/",
   no: "https://axelstar.github.io/halkvakt-karta/data/app/no/v1/",   // #35, publiceras när Vegvesen-kontot finns
   dk: "https://axelstar.github.io/halkvakt-karta/data/app/dk/v1/",   // #36
 };
-const SB = Deno.env.get("SUPABASE_URL")!;
-const SRK = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const TRV = Deno.env.get("TRAFIKVERKET_API_KEY")!;
+/** Ett lands static.json och live.json. Ett fel bär svarets status och kropp. */
+function snapshot(land: string): Promise<[any, any]> {
+  const hamta = (namn: string) => fetch(CDN_BY_LAND[land] + namn + (land === "se" ? "" : `?t=${Date.now()}`),
+    land === "se" ? { headers: { Authorization: `Bearer ${SRK}`, apikey: SRK } } : undefined).then(async (r) => {
+      if (!r.ok) throw new Error(`${land} ${namn} ${r.status}: ${(await r.text()).slice(0, 200)}`);
+      return r.json();
+    });
+  return Promise.all([hamta("static.json"), hamta("live.json")]);
+}
 
 // Grova men FASTA referenslinjer (jämförbarhet över tid slår metern):
 // Finland (#34): tre referenslinjer, samma grovhet som de svenska. Fejkresorna.
@@ -1378,6 +1562,9 @@ function vbAlerts(lv: any, route: [number, number][], trace: Fix[]) {
 // få motorns riktnings-, avstånds- och upprepningsregler — ingen text och ingen prioritet prövas; de är Axels efter skuggan.
 // Hela klassen loggas med sin text, så mätningen kan skilja olja från potthål i efterhand.
 type Olja = { id: string; lon: number; lat: number; text: string | null; sev: number | null };
+/** Supabases REST lämnar högst så här många rader per svar, och säger det inte (kort #374). Ett svar med exakt så många rader kan vara
+ *  avskuret, och då säger skälet det, i stället för att listan ser hel ut. Kandidatens punkter går därför i ett enda värde (sql/093). */
+const REST_TAK = 1000;
 async function oljaAktiva(): Promise<{ lista: Olja[]; skal: string | null }> {
   try {
     const r = await fetch(`${SB}/rest/v1/rpc/olja_aktiva`, { method: "POST",
@@ -1386,7 +1573,8 @@ async function oljaAktiva(): Promise<{ lista: Olja[]; skal: string | null }> {
     const rows: any[] = await r.json();
     const lista = rows.flatMap((x) => (typeof x.lon === "number" && typeof x.lat === "number"
       ? [{ id: String(x.id), lon: x.lon, lat: x.lat, text: x.meddelande ?? null, sev: x.sev ?? null }] : []));
-    return { lista, skal: lista.length ? null : "inga aktiva händelser i arkivet" };
+    return { lista, skal: rows.length >= REST_TAK ? `olja_aktiva: ${rows.length} rader, REST-taket, listan kan vara avskuren`
+      : lista.length ? null : "inga aktiva händelser i arkivet" };
   } catch (e) { return { lista: [], skal: `olja_aktiva kastade: ${String(e).slice(0, 120)}` }; }
 }
 function oljaAlerts(olja: Olja[], route: [number, number][], trace: Fix[]) {
@@ -1430,24 +1618,32 @@ async function vagpunktAnkare(): Promise<{ lista: Ankare[]; skal: string | null 
     const rows: any[] = await r.json();
     const lista = rows.flatMap((x) => (typeof x.lon === "number" && typeof x.lat === "number" && x.yta != null
       ? [{ id: String(x.id), lon: x.lon, lat: x.lat, yta: Number(x.yta) }] : []));
-    return { lista, skal: lista.length ? null : "vagpunkt_ankare gav noll ankare" };
+    return { lista, skal: rows.length >= REST_TAK ? `vagpunkt_ankare: ${rows.length} rader, REST-taket, listan kan vara avskuren`
+      : lista.length ? null : "vagpunkt_ankare gav noll ankare" };
   } catch (e) { return { lista: [], skal: `vagpunkt_ankare kastade: ${String(e).slice(0, 120)}` }; }
 }
 
-/** KANDIDATENS VARNANDE VÄGPUNKTER (sql/057 kandidat_regel, DECISIONS #573 del 2): regeln räknas i databasen, på ett ställe;
- *  skuggan hämtar bara de punkter som varnar, en gång per anrop, för takten längs rutterna. Fail-soft med skäl, som ankarna.
- *  Tom lista med skälet "regeln tiger" när kandidatens timme är gammal eller ofullständig, eller ingen punkt varnar. */
+/** KANDIDATENS VARNANDE VÄGPUNKTER (DECISIONS #573 del 2): regeln räknas i databasen, på ett ställe, och skuggan hämtar bara de
+ *  punkter som varnar, en gång per anrop, för takten längs rutterna. Sedan kort #374 (DECISIONS #812) kommer de ur
+ *  skuggans_kandidat() (sql/093), som ett enda värde ur den talande regeln:
+ *  - Förut gick de via REST ur kandidat_regel(), och REST lämnar högst 1000 rader, så listan stod på exakt 1000 i 265 körningar
+ *    31/10–7/11.
+ *  - Den frysta kandidaten talar inte sedan 26/10 (#729). Skuggan mäter nu den kandidat föraren hör, och talaren står i loggen.
+ *  Fail-soft med skäl, som ankarna. Tom lista med skälet "regeln tiger" när kandidatens timme är gammal eller ofullständig, eller
+ *  när ingen punkt varnar. */
 type KandidatPunkt = { segment_id: string; lon: number; lat: number };
-async function kandidatVarnar(): Promise<{ lista: KandidatPunkt[]; tid: string | null; skal: string | null }> {
+async function kandidatVarnar(): Promise<{ lista: KandidatPunkt[]; tid: string | null; talare: string | null; skal: string | null }> {
   try {
-    const r = await fetch(`${SB}/rest/v1/rpc/kandidat_regel?utfall=eq.varnar&select=segment_id,lon,lat,tid`, { method: "POST",
+    const r = await fetch(`${SB}/rest/v1/rpc/skuggans_kandidat`, { method: "POST",
       headers: { Authorization: `Bearer ${SRK}`, apikey: SRK, "Content-Type": "application/json" }, body: "{}" });
-    if (!r.ok) return { lista: [], tid: null, skal: `kandidat_regel ${r.status}: ${(await r.text().catch(() => "")).slice(0, 120)}` };
-    const rows: any[] = await r.json();
-    const lista = rows.flatMap((x) => (typeof x.lon === "number" && typeof x.lat === "number" && x.segment_id != null
+    if (!r.ok) return { lista: [], tid: null, talare: null, skal: `skuggans_kandidat ${r.status}: ${(await r.text().catch(() => "")).slice(0, 120)}` };
+    const j: any = await r.json();
+    const rows: any[] = Array.isArray(j?.p) ? j.p : [];
+    const lista = rows.flatMap((x) => (typeof x?.lon === "number" && typeof x?.lat === "number" && x.segment_id != null
       ? [{ segment_id: String(x.segment_id), lon: x.lon, lat: x.lat }] : []));
-    return { lista, tid: rows[0]?.tid ?? null, skal: lista.length ? null : "regeln tiger: ingen varnande punkt, eller kandidatens timme gammal eller ofullständig" };
-  } catch (e) { return { lista: [], tid: null, skal: `kandidat_regel kastade: ${String(e).slice(0, 120)}` }; }
+    return { lista, tid: j?.tid ?? null, talare: j?.talare ?? null,
+      skal: lista.length ? null : "regeln tiger: ingen varnande punkt, eller kandidatens timme gammal eller ofullständig" };
+  } catch (e) { return { lista: [], tid: null, talare: null, skal: `skuggans_kandidat kastade: ${String(e).slice(0, 120)}` }; }
 }
 
 // FÖRSPRÅNGET (kort #153 beslut 1, docs/TROSKLAR-FORSPRANG.md §4, DECISIONS #359). Eget anrop på :12/:42 — huvudvarvet slår redan i
@@ -1481,12 +1677,7 @@ async function forsprangVarv(prov: boolean, c = false, slot: number | null = nul
     const trace = traceAlong([[15.0, 59.0], [15.1, 59.0]]);
     return svar({ ok: true, prov: "forsprang", svep_s: svepS, bas: kor(hazards, trace, nivaer, false), variant: kor(hazards, trace, nivaer, true) });
   }
-  const CDN = CDN_BY_LAND["se"];
-  const bust = `?t=${Date.now()}`;
-  const [st, lv] = await Promise.all([
-    fetch(CDN + "static.json" + bust).then((r) => r.json()),
-    fetch(CDN + "live.json" + bust).then((r) => r.json()),
-  ]);
+  const [st, lv] = await snapshot("se");
   // Kandidaten (K, DECISIONS #577) hålls utanför skuggans motorkörningar: deras domar är förregistrerade utan den, och sist i
   // prioriteten ändrar den ingen annan varning i appen. Kandidatens egen takt loggas för sig (kandidatVarnar, #573).
   const hazards = snapshotToHazards(st, lv).filter((h) => h.kind !== "kandidat");
@@ -1584,24 +1775,20 @@ Deno.serve(async (req) => {
         { headers: { "Content-Type": "application/json" } });
     }
     const land = (new URL(req.url).searchParams.get("land") ?? "se").toLowerCase();
-    const CDN = CDN_BY_LAND[land]; if (!CDN) return new Response("okänt land", { status: 400 });
+    if (!CDN_BY_LAND[land]) return new Response("okänt land", { status: 400 });
     // VÄG C (DECISIONS #527): `?grupp=c` kör ROUTES_C i ett eget anrop på :22/:52 och skriver till shadow_log_c — bara larmen.
     const grupp = new URL(req.url).searchParams.get("grupp");
     if (grupp !== null && (grupp !== "c" || land !== "se")) return new Response("okänd grupp", { status: 400 });
     const c = grupp === "c";
     const routes = c ? ROUTES_C : land === "fi" ? ROUTES_FI : land === "no" ? ROUTES_NO : land === "dk" ? ROUTES_DK : ROUTES;
-    const bust = `?t=${Date.now()}`;
-    const [st, lv] = await Promise.all([
-      fetch(CDN + "static.json" + bust).then((r) => r.json()),
-      fetch(CDN + "live.json" + bust).then((r) => r.json()),
-    ]);
+    const [st, lv] = await snapshot(land);
     // Utan kandidaten, som ovan (DECISIONS #577).
     const hazards = snapshotToHazards(st, lv).filter((h) => h.kind !== "kandidat");
     // Ankarna hämtas en gång per anrop, inte per rutt. Bara Sverige: funktionen läser det svenska arkivet.
     const ankare = land === "se" && !c ? await vagpunktAnkare() : { lista: [] as Ankare[], skal: c ? "grupp C loggar ingen prognos" : "bara Sverige" };
     // Kandidatens takt (DECISIONS #573): bara huvudvarvet i Sverige, som prognosen.
     const kandidatV = land === "se" && !c ? await kandidatVarnar()
-      : { lista: [] as KandidatPunkt[], tid: null, skal: c ? "grupp C loggar ingen kandidat" : "bara Sverige" };
+      : { lista: [] as KandidatPunkt[], tid: null, talare: null, skal: c ? "grupp C loggar ingen kandidat" : "bara Sverige" };
     const oljaLista = land === "se" ? await oljaAktiva() : { lista: [] as Olja[], skal: "bara Sverige" };
     const results: Record<string, unknown> = {};
     let facitTotal = 0;
@@ -1658,7 +1845,7 @@ Deno.serve(async (req) => {
       const vag = (RUTTER_VAG as Record<string, [number, number][]>)[name];
       const kandidatLinje = vag ?? line;
       const kandidat = land === "se" && !c
-        ? { tid: kandidatV.tid, n: kandidatV.lista.length, geo: vag ? "osrm" : "linje",
+        ? { tid: kandidatV.tid, talare: kandidatV.talare, n: kandidatV.lista.length, geo: vag ? "osrm" : "linje",
             h: kandidatLangsRutten(ankareNaraRutten(kandidatV.lista, kandidatLinje, UPPMATT_KM), kandidatLinje), ...(kandidatV.skal ? { skal: kandidatV.skal } : {}) }
         : {};
       ms.prognos += performance.now() - t2;

@@ -71,7 +71,7 @@ export const KARTAN: Beroende[] = [
     // bara säger "observationer" blir VET INTE, vilket LARMAR. Inget tystas, en dom rättas.
     nyckelord: ["metobs", "meteorologiska observationer", "parameter 16", "molnmängd", "latest-months"] },
   { vard: "tie.digitraffic.fi", roll: "produktion",
-    matar: "finska vägstationer (ingest/fi.ts): /weather/v1/stations och /stations/data",
+    matar: "finska vägstationer och trafikmeddelanden (ingest/fi.ts): /weather/v2/stations och /stations/data, /traffic-message/v2/traffic-announcements (v2 sedan 4/11, ärende #1327)",
     brister: "gränssnapshoten mot Finland och grind R-A --land=fi",
     bevakad: "fi-digitraffic",
     signal: "www.digitraffic.fi/en/news/ — hash, 20 857 tecken, stabil. API-changes-sidan är JS-renderad och ger bara skal (#148)",
@@ -85,8 +85,8 @@ export const KARTAN: Beroende[] = [
   { vard: "opendataapi.dmi.dk", roll: "produktion",
     matar: "danska stationer (ingest/dk.ts): /v2/metObs/collections, observation + station",
     brister: "dk-arkivet (medvetet utanför snapshoten — grästemp, #45)",
-    bevakad: "dk-dmi",
-    signal: "www.dmi.dk/frie-data — hash, 3 980 tecken. Adressen kommer ur DMI:s eget API-rotsvar; gamla opendatadocs.dmi.govcloud.dk svarar 404 på varje sökväg (#148)",
+    bevakad: "dk-dmi-api + dk-dmi",
+    signal: "opendataapi.dmi.dk/v2/metObs/collections, hash: samma adress som ingest/dk.ts hämtar, och den når GitHub (DECISIONS #737). Därtill www.dmi.dk/frie-data, hash, 3 980 tecken; adressen kommer ur DMI:s eget API-rotsvar; gamla opendatadocs.dmi.govcloud.dk svarar 404 på varje sökväg (#148). Webbplatsen spärrar GitHubs körmaskiner sedan oktober (403), vilket räknas som spärrad, inte som fel (#737)",
     nyckelord: ["metobs", "observation", "station", "opendataapi", "govcloud", "synop"] },
   { vard: "storage.googleapis.com", roll: "produktion",
     matar: "DMI:s utlagda filer (ingest/dk.ts)",
@@ -156,7 +156,7 @@ export const KARTAN: Beroende[] = [
     frammande: ["kjøretøy", "autosys", "førerkort", "bompeng"] },
   { vard: "www.dmi.dk", roll: "signal",
     matar: "inget — DMI:s frie data-sida, adressen kommer ur API:ets eget rotsvar",
-    brister: "inget", bevakad: "dk-dmi", signal: "frie-data, hash (#148)",
+    brister: "inget", bevakad: "dk-dmi", signal: "frie-data, hash (#148); spärrad från GitHubs körmaskiner sedan oktober (#737)",
     frammande: ["klimadata", "lightning", "oceanograf", "radar", "forecastedr", "grønland"] },
   { vard: "opendata.smhi.se", roll: "signal",
     matar: "inget — SMHI:s DOKUMENTATIONSsajt. Bevakas, men är inte en av de tre nedladdningsvärdar vi faktiskt hämtar från",
@@ -225,11 +225,16 @@ export const KARTAN: Beroende[] = [
   { vard: "apps.apple.com", roll: "bygg",
     matar: "länken till Halkvakt i App Store på läns- och vägsidorna",
     brister: "knappen leder till en död sida; sidorna visas ändå", bevakad: "", signal: "OKÄND" },
+  // Androidappens rad Betygsätt Halkvakt (Tipsa.kt, 10/11, DECISIONS #829): reservlänken när Play-appen saknas, ingen hämtar därifrån.
+  { vard: "play.google.com", roll: "bygg",
+    matar: "länken till Halkvakt i Google Play från Androidappens rad Betygsätt Halkvakt",
+    brister: "raden leder till en död sida; appen fungerar som vanligt", bevakad: "", signal: "OKÄND" },
 ];
 
 // Värdar som är vår EGEN infrastruktur eller allmän verktygsinfrastruktur — inte beroenden
-// i den mening kartan handlar om, och ska inte kräva en rad.
-export const EGEN = /github\.com|githubusercontent|axelstar\.github\.io|halkvakt\.se|deno\.land|supabase\.co|npmjs|nodejs\.org|schemas?\.|w3\.org|json-schema|localhost|example\.com/i;
+// i den mening kartan handlar om, och ska inte kräva en rad. 895845.github.io är stomdokumentens sidor i Bengts repo
+// 895845/halkvakt-sidor (DECISIONS #733).
+export const EGEN = /github\.com|githubusercontent|axelstar\.github\.io|895845\.github\.io|halkvakt\.se|deno\.land|supabase\.co|npmjs|nodejs\.org|schemas?\.|w3\.org|json-schema|localhost|example\.com/i;
 
 export type Granskning = { okanda: string[]; doda: string[]; obevakade: Beroende[] };
 

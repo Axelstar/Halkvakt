@@ -6,7 +6,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
-import { buildSnapshot, manifestFor, bridgesFromGeoJSON, WX_SANE, REGN_UTLOSARE_MMH, GIVARFEL_LUFT_MIN_C, GIVARFEL_GAP_C, KARANTAN_DYGN, KARANTAN_BROTT, RADVAKT_SQL, brottSql, karantanSql, givarfelSql, LANGSAM_FRIST_H, buildGrannSnapshot, GRANNAR, type Q } from "../publish/snapshot-core.ts";
+import { buildSnapshot, manifestFor, smavagBitar, bridgesFromGeoJSON, WX_SANE, WX_SANE_GRANS, BORDER_M, BORDER_DEG, REGN_UTLOSARE_MMH, GIVARFEL_LUFT_MIN_C, GIVARFEL_GAP_C, KARANTAN_DYGN, KARANTAN_BROTT, RADVAKT_SQL, brottSql, karantanSql, givarfelSql, LANGSAM_FRIST_H, buildGrannSnapshot, GRANNAR, type Q } from "../publish/snapshot-core.ts";
 import { snapshotToHazards } from "../engine/src/snapshot.ts";
 
 /** Låtsasdatabas: svarar på frågorna efter vilken tabell de läser, och loggar frågetexten. */
@@ -16,18 +16,33 @@ function fakeDb(rows: Partial<Record<string, any[]>>) {
   const q: Q = async (text, params) => {
     asked.push(text);
     if (text.includes("FROM cameras")) return rows.cameras ?? [];
+    if (text.includes("FROM smavagsbrytare")) {   // småvägsröstens brytare (#828), av som standard
+      if (rows.smavagKastar) throw new Error("relation \"smavagsbrytare\" does not exist");
+      return rows.smavagBrytare ?? [{ pa: false }];
+    }
+    if (text.includes("FROM smavag_punktfil")) return rows.smavagPunktfil ?? [];
+    if (text.includes("JOIN smavag_talar()")) return rows.smavagTalar ?? [];
     if (text.includes("kandidat_pa()")) {   // #578: brytaren, på som standard
       if (rows.brytareKastar) throw new Error("relation \"kandidat_brytare\" does not exist");
       return rows.brytare ?? [{ pa: true }];
     }
+    if (text.includes("talande_timme()")) {   // bytet (sql/070, #723): den frysta talar om inget annat sägs
+      if (rows.bytetFel) throw new Error("function talande_timme() does not exist");
+      return (rows.kandidatTimme ?? [{ t: "2026-10-15T08:00:00Z" }]).map((x) => ({ ...x, talare: rows.talare?.[0] ?? "fryst" }));
+    }
     if (text.includes("kandidat_timme()")) return rows.kandidatTimme ?? [{ t: "2026-10-15T08:00:00Z" }];   // #576
-    if (text.includes("FROM kandidat_regel()")) return rows.kandidat ?? [];
+    if (text.includes("FROM kandidat_regel()") || text.includes("FROM talande_regel()")) return rows.kandidat ?? [];
     if (text.includes("AS radar_mmh")) return rows.radarStation ?? [];   // radarn per station (#459), före weather_latest-frågorna
     if (text.includes("= ANY($1::text[])")) { anyParams.push(params); return rows.regnSegs ?? []; }
     if (text.includes("weather_latest f")) {
       if (rows.borderThrows) throw new Error(`schema "${text.includes("fi.") ? "fi" : "no"}" does not exist`);
-      assert.deepEqual(params, [40_000]);
+      assert.deepEqual(params, [BORDER_M, BORDER_DEG]);
       return text.includes("fi.") ? rows.fi ?? [] : rows.no ?? [];
+    }
+    if (text.includes("FROM deviations d")) return rows.deviations ?? [];   // olyckorna: vägnumret ur närmaste sträcka (3/11)
+    if (text.includes("road_number IS NOT NULL")) {   // kandidatens vägnummer (#739), samma tabell som väglaget
+      if (rows.vagarKastar) throw new Error("canceling statement due to statement timeout");
+      return rows.segments ?? [];
     }
     if (text.includes("FROM road_conditions")) return rows.segments ?? [];
     if (text.includes("FROM radar_precip")) return rows.radar ?? [];
@@ -67,6 +82,9 @@ test("#74 format: olyckans gradering är gated på Accident, SMHI/vilt/kamera i 
   const { staticDoc, liveDoc } = await buildSnapshot(q, [], NOW);
   const olycksfragan = asked.find((t) => t.includes("FROM deviations") && !t.includes("AnimalPresenceObstruction"));
   assert.match(olycksfragan!, /message_type_value = 'Accident'/, "#318: ett djur i deviations får aldrig bli en olycka");
+  // 3/11: saknas Trafikverkets vägnummer tas det ur närmaste väglagssträcka, men bara inom 25 m (97 % rätt väg i 60 dygns olyckor).
+  assert.match(olycksfragan!, /COALESCE\(NULLIF\(d\.road_number, ''\), \(/, "Trafikverkets vägnummer går först");
+  assert.match(olycksfragan!, /ST_DWithin\(rc\.geom::geography, .*::geography, 25\)/, "sträckans väg bara inom 25 m");
 
   assert.equal(liveDoc.generated_at, "2026-11-20T06:30:00.000Z");
   assert.deepEqual(staticDoc.cameras, [{ id: "TV1", lon: 15, lat: 58.02, bearing: 180, road: "E4" }]);
@@ -98,7 +116,7 @@ test("#38 broarna: bara broar med en kall+våt station inom 15 km, med stationen
     { geometry: { coordinates: [15.0, 58.06] }, properties: { id: "B1", road: "E4" } },   // ~1,1 km från den våta
     { geometry: { coordinates: [15.0, 58.31] }, properties: { id: "B2", road: "E45" } },  // ~1 km från den torra, 29 km från den våta
   ] });
-  const { liveDoc } = await buildSnapshot(q, bridges, NOW);
+  const { liveDoc } = await buildSnapshot(q, bridges, NOW, true);
   assert.deepEqual(liveDoc.bridges, [{ id: "B1", lon: 15, lat: 58.06, road: "E4", yta: 0.5, fukt: true }]);
   // Motorn ser bron som icing_point med bridge-flaggan.
   const bro = snapshotToHazards({ schema: 1, cameras: [] }, liveDoc).find((h) => h.id === "bro:B1");
@@ -108,7 +126,7 @@ test("#38 broarna: bara broar med en kall+våt station inom 15 km, med stationen
 
 test("#75 givarvakten sitter i VARJE väderfråga: svensk, gräns (fi/no) och bro", async () => {
   const { q, asked } = fakeDb({ fi: [{ station_id: "FI1", surface_temp_c: "-2", rain: false, snow: false, precipitation: null, lon: 24.1, lat: 65.9 }] });
-  const { liveDoc, border } = await buildSnapshot(q, [{ id: "B", lon: 15, lat: 58, road: null }], NOW);
+  const { liveDoc, border } = await buildSnapshot(q, [{ id: "B", lon: 15, lat: 58, road: null }], NOW, true);
   // Kort #203 (A): stationslistan i static.json läser bara id och position — inga mätvärden, alltså ingen väderfråga och ingen
   // givarvakt. Undantaget är namngivet och smalt: läser en fråga mot weather_latest EN ENDA mätkolumn räknas den som väderfråga.
   // Andra undantaget (DECISIONS #459): radarn per station läser stationens position och radarns regn, aldrig stationens mätvärden;
@@ -118,8 +136,12 @@ test("#75 givarvakten sitter i VARJE väderfråga: svensk, gräns (fi/no) och br
   assert.equal(positioner.filter((t) => t.includes("AS radar_mmh")).length, 1, "det andra undantaget är radarfrågan och ingen annan");
   const wxQueries = asked.filter((t) => t.includes("weather_latest") && !positioner.includes(t));
   assert.equal(wxQueries.length, 4, "svensk + fi + no + bro");
-  for (const t of wxQueries) assert.ok(t.includes(WX_SANE), "givarvakten saknas i: " + t.slice(0, 80));
-  assert.ok(WX_SANE.includes("interval '3 hours'"), "färskhetskravet");
+  // Färskheten (DECISIONS #751): svenska stationer och broarnas källor 60 minuter, grannländerna tre timmar (en hämtning i timmen, #83).
+  const grans = wxQueries.filter((t) => /\b(fi|no)\.weather_latest/.test(t));
+  assert.equal(grans.length, 2, "fi + no");
+  for (const t of wxQueries) assert.ok(t.includes(grans.includes(t) ? WX_SANE_GRANS : WX_SANE), "givarvakten saknas i: " + t.slice(0, 80));
+  assert.ok(WX_SANE.includes("interval '60 minutes'"), "färskhetskravet för svenska stationer");
+  assert.ok(WX_SANE_GRANS.includes("interval '3 hours'"), "grannländernas färskhet");
   assert.ok(WX_SANE.includes("surface_temp_c >= air_temp_c - 12"), "rimlighetskravet");
   // Gränsstationen hamnar bland väderpunkterna, källmärkt i border-räkningen.
   assert.deepEqual(liveDoc.weather.map((w) => w.id), ["FI1"]);
@@ -154,7 +176,7 @@ test("#234 karantänen: en station med brott mot #75 tystas — som väderpunkt 
     { geometry: { coordinates: [15.0, 58.06] }, properties: { id: "B-FRISK", road: "E4" } },
     { geometry: { coordinates: [13.0, 56.19] }, properties: { id: "B-TRASIG", road: "E4" } },   // ~1 km från den trasiga
   ] });
-  const { liveDoc, notes } = await buildSnapshot(q, bridges, NOW);
+  const { liveDoc, notes } = await buildSnapshot(q, bridges, NOW, true);
   assert.deepEqual(liveDoc.weather.map((w) => w.id), ["FRISK"]);
   assert.deepEqual(liveDoc.bridges.map((b) => b.id), ["B-FRISK"], "bron vid den trasiga givaren får ingen frysrisk");
   assert.ok(notes.some((n) => n.startsWith("karantän:") && n.includes("TRASIG")), "vem som tystats ska stå i noterna");
@@ -196,6 +218,17 @@ test("#75 fukt: \"no\" och \"Dry\" är torrt — bara regn, snö eller en våt k
   const { liveDoc } = await buildSnapshot(q, [], NOW);
   assert.deepEqual(Object.fromEntries(liveDoc.weather.map((w) => [w.id, w.fukt])),
     { TORR: false, DRY: false, TOM: false, REGN: true, FLAGGA: true, OKAND: true });
+});
+
+test("#741 weather_oldest_at: den äldsta mättiden bland de publicerade svenska stationerna, null utan tider", async () => {
+  const { q } = fakeDb({ wx: [
+    { station_id: "NY",     surface_temp_c: "-1", rain: false, snow: true, precipitation: "snow", sample_time: "2026-11-20T06:20:00Z", lon: 15, lat: 58 },
+    { station_id: "GAMMAL", surface_temp_c: "-2", rain: false, snow: true, precipitation: "snow", sample_time: new Date("2026-11-20T06:05:00Z"), lon: 15.1, lat: 58 },
+    { station_id: "UTAN",   surface_temp_c: "-2", rain: false, snow: true, precipitation: "snow", sample_time: null, lon: 15.2, lat: 58 },
+  ] });
+  assert.equal((await buildSnapshot(q, [], NOW)).liveDoc.weather_oldest_at, "2026-11-20T06:05:00.000Z");
+  const { q: utan } = fakeDb({ wx: [{ station_id: "UTAN", surface_temp_c: "-2", rain: false, snow: true, precipitation: "snow", lon: 15, lat: 58 }] });
+  assert.equal((await buildSnapshot(utan, [], NOW)).liveDoc.weather_oldest_at, null);
 });
 
 test("#49 saknat grannschema fäller inte snapshoten — noteras och hoppas", async () => {
@@ -347,10 +380,10 @@ test("#576 kandidaten: regelns varnande punkter blir en rad per sträcka i en eg
   });
   const { staticDoc, liveDoc, notes } = await buildSnapshot(q, [], NOW);
   assert.deepEqual(liveDoc.kandidat, [
-    { id: "S1", tid: "2026-10-15T08:00:00.000Z", punkter: [[20.12346, 67.65432], [20.2, 67.7]] },
-    { id: "S7", tid: "2026-10-15T08:00:00.000Z", punkter: [[21, 66.5]] },
-  ]);
-  assert.match(asked.find((t) => t.includes("FROM kandidat_regel()"))!, /WHERE utfall = 'varnar' ORDER BY segment_id, punkt/,
+    { id: "S1", tid: "2026-10-15T08:00:00.000Z", punkter: [[20.12346, 67.65432], [20.2, 67.7]], vag: "E4" },
+    { id: "S7", tid: "2026-10-15T08:00:00.000Z", punkter: [[21, 66.5]], vag: null },
+  ], "vägnumret ur road_conditions (#739); null där sträckan inte har något");
+  assert.match(asked.find((t) => t.includes("FROM talande_regel()"))!, /WHERE utfall = 'varnar' ORDER BY segment_id, punkt/,
     "bara utfallet varnar — inga egna tal i publiceringen");
   assert.ok(!notes.some((n) => n.startsWith("kandidat:")));
   assert.deepEqual(liveDoc.segments.map((s) => s.id), ["S1"], "väglaget är orört");
@@ -405,8 +438,20 @@ test("#578 brytaren oläsbar: nyckeln utelämnas — tyst är det säkra hållet
 test("#578 brytaren på: nyckeln finns som förut", async () => {
   const { q } = fakeDb({ brytare: [{ pa: true }], kandidat: [{ segment_id: "S1", lon: 20, lat: 67, tid: "2026-10-15T08:00:00Z" }] });
   const { liveDoc, notes } = await buildSnapshot(q, [], NOW);
-  assert.deepEqual(liveDoc.kandidat, [{ id: "S1", tid: "2026-10-15T08:00:00.000Z", punkter: [[20, 67]] }]);
+  assert.deepEqual(liveDoc.kandidat, [{ id: "S1", tid: "2026-10-15T08:00:00.000Z", punkter: [[20, 67]], vag: null }]);
   assert.ok(!notes.some((n) => n.startsWith("kandidat:")));
+});
+
+test("#739 en fallen fråga om vägnumren tystar inte kandidaten — vag blir null och noten säger det", async () => {
+  const { q } = fakeDb({
+    vagarKastar: true,
+    segments: [{ segment_id: "S1", condition_code: 3, condition_info: ["Is"], road_number: "E4", g: { coordinates: [[15, 60], [15.1, 60.1]] } }],
+    kandidat: [{ segment_id: "S1", lon: 20, lat: 67, tid: "2026-10-15T08:00:00Z" }],
+  });
+  const { liveDoc, notes } = await buildSnapshot(q, [], NOW);
+  assert.deepEqual(liveDoc.kandidat, [{ id: "S1", tid: "2026-10-15T08:00:00.000Z", punkter: [[20, 67]], vag: null }]);
+  assert.ok(notes.some((n) => n.startsWith("kandidat: vägnumren ej läsbara")));
+  assert.ok(!notes.some((n) => n.startsWith("kandidat: regeln")), "regeln och nyckeln står kvar");
 });
 
 // ── F1: SKATTARENS RÅA INDATA (kort #187, bedömning v3 N4, DECISIONS #188) ─────────────────
@@ -474,7 +519,7 @@ test("#236 den långsamma vakten: en station med ett färskt dygn i felet tystas
     { geometry: { coordinates: [15.0, 58.06] }, properties: { id: "B-FRISK", road: "E4" } },
     { geometry: { coordinates: [13.0, 56.19] }, properties: { id: "B-LJUNGBY", road: "E4" } },
   ] });
-  const { liveDoc, notes } = await buildSnapshot(q, bridges, NOW);
+  const { liveDoc, notes } = await buildSnapshot(q, bridges, NOW, true);
   assert.deepEqual(liveDoc.weather.map((w) => w.id), ["FRISK"], "gap under 12 och sval luft: bara den långsamma vakten tar den");
   assert.deepEqual(liveDoc.bridges.map((b) => b.id), ["B-FRISK"], "broarna vid den trasiga givaren får ingen frysrisk");
   assert.ok(notes.some((n) => n.startsWith("långsam vakt:") && n.includes("LJUNGBY")), "vem som tystats ska stå i noterna");
@@ -567,4 +612,80 @@ test("#245 bevisbäraren: väta och mängd ur skattaren bredvid fukt, radarn i s
   const hz = snapshotToHazards({ schema: 1, cameras: [] }, liveDoc).find((h) => h.id === "wx:B1") as any;
   assert.deepEqual(hz.meta, { surfaceTempC: 0.4, moisture: true, rainH: 0.4, fall30C: null },
     "motorns adapter läser inte bevis — bara regn_h och lutning30 sedan S3 (#524)");
+});
+
+// ── BYTET (FORREGISTRERING-2026-27 §12, sql/070, DECISIONS #723) ─────────────────────────────────────────────
+test("#723 bytet: beslutet säger ny och den nyas timme är färsk — den nyas regel publiceras, och noten säger det", async () => {
+  const { q, asked } = fakeDb({ talare: ["ny"], kandidat: [{ segment_id: "S1", lon: 20, lat: 67, tid: "2026-10-15T08:00:00Z" }] });
+  const { liveDoc, notes } = await buildSnapshot(q, [], NOW);
+  assert.equal(liveDoc.kandidat?.length, 1);
+  assert.ok(asked.some((t) => t.includes("FROM talande_regel()")) && !asked.some((t) => t.includes("FROM kandidat_regel()")));
+  assert.ok(notes.some((n) => n.startsWith("kandidat: den nya kandidaten talar")));
+});
+
+test("#723 bytet går inte att läsa (före migrationen): den frysta talar som förut, och noten säger det", async () => {
+  const { q, asked } = fakeDb({ bytetFel: [true], kandidat: [{ segment_id: "S1", lon: 20, lat: 67, tid: "2026-10-15T08:00:00Z" }] });
+  const { liveDoc, notes } = await buildSnapshot(q, [], NOW);
+  assert.equal(liveDoc.kandidat?.length, 1);
+  assert.ok(asked.some((t) => t.includes("SELECT kandidat_timme() AS t")) && asked.some((t) => t.includes("FROM kandidat_regel()")));
+  assert.ok(notes.some((n) => n.startsWith("kandidat: bytet ej läsbart")));
+});
+
+test("#723 utan beslut talar den frysta: talande_regel() frågas och ingen not om den nya", async () => {
+  const { q, asked } = fakeDb({ kandidat: [{ segment_id: "S1", lon: 20, lat: 67, tid: "2026-10-15T08:00:00Z" }] });
+  const { liveDoc, notes } = await buildSnapshot(q, [], NOW);
+  assert.equal(liveDoc.kandidat?.length, 1);
+  assert.ok(asked.some((t) => t.includes("FROM talande_regel()")));
+  assert.ok(!notes.some((n) => n.includes("den nya kandidaten talar") || n.includes("bytet ej läsbart")));
+});
+
+// ── TIDEN PER AVSNITT (DECISIONS #741 punkt 1) ─────────────────────────────────────────────────────────────────────────
+// Broarna frågar bara när det finns broar, så de står inte med här.
+test("#741 bygget räknar sin tid per avsnitt: varje fråga på sitt avsnitt, och bara tal", async () => {
+  const { q } = fakeDb({});
+  const { delar } = await buildSnapshot(q, [], NOW);
+  for (const a of ["static", "vaglag", "radar", "kandidat", "karantan", "langsam", "vader", "skattaren", "avvikelser", "radar_station"])
+    assert.ok(a in delar, `avsnittet ${a} finns`);
+  assert.ok(Object.values(delar).every((ms) => Number.isInteger(ms) && ms >= 0), JSON.stringify(delar));
+});
+
+test("broarna pausade (DECISIONS #788): standardläget skickar inga broar och säger det i noterna", async () => {
+  const q: Q = async (text) => /FROM weather_latest/.test(text)
+    ? [{ station_id: "S1", surface_temp_c: "2.0", rain: true, snow: false, precipitation: "rain", lon: 13.0, lat: 55.45 }] : [];
+  const bridges = bridgesFromGeoJSON({ features: [{ geometry: { coordinates: [13.0, 55.55] }, properties: { id: "B1", road: "E 20" } }] });
+  const { liveDoc, notes } = await buildSnapshot(q, bridges, NOW);
+  assert.deepEqual(liveDoc.bridges, []);
+  assert.ok(notes.some((n) => n.includes("broarna pausade")));
+});
+
+// SMÅVÄGSRÖSTENS BESKED (DECISIONS #828, byggsteg 5b): en bit per punkt i punktfilens ordning, mot punktfilens sha.
+test("#828 smavag: bitarna, nyckeln bara med en brytare på, och punktfilen i manifestet", async () => {
+  // Bit i är punkt i; åtta per byte, den första i den lägsta biten.
+  assert.equal(smavagBitar([0, 9], 10), "AQI=");
+  assert.equal(smavagBitar([], 3), "AA==");
+  assert.equal(atob(smavagBitar([7, 8], 16)).split("").map((x) => x.charCodeAt(0)).join(), "128,1");
+  assert.throws(() => smavagBitar([10], 10), /utanför/);
+  assert.equal(smavagBitar(Array.from({ length: 88335 }, (_, i) => i), 88335).length, 14724, "alla punkter varnar: 11 042 byte, 14 724 tecken");
+  // Brytarna av (standard): nyckeln saknas och ingen not.
+  const av = await buildSnapshot(fakeDb({}).q, [], NOW);
+  assert.ok(!("smavag" in av.liveDoc));
+  assert.ok(!av.notes.some((n) => n.startsWith("smavag")));
+  // En brytare på: bitarna mot punktfilens sha.
+  const sha = "a".repeat(64);
+  const pa = await buildSnapshot(fakeDb({ smavagBrytare: [{ pa: true }], smavagPunktfil: [{ sha256: sha, punkter: 10, n: "10" }],
+    smavagTalar: [{ i: 0 }, { i: 9 }] }).q, [], NOW);
+  assert.deepEqual((pa.liveDoc as any).smavag, { fil: sha, n: 10, bitar: "AQI=" });
+  // Punktfilen saknas, eller går isär med punkterna: nyckeln saknas, och noten säger varför.
+  const utan = await buildSnapshot(fakeDb({ smavagBrytare: [{ pa: true }] }).q, [], NOW);
+  assert.ok(!("smavag" in utan.liveDoc) && utan.notes.some((n) => n.startsWith("smavag: punktfilen saknas")));
+  const isar = await buildSnapshot(fakeDb({ smavagBrytare: [{ pa: true }], smavagPunktfil: [{ sha256: sha, punkter: 10, n: "11" }] }).q, [], NOW);
+  assert.ok(!("smavag" in isar.liveDoc) && isar.notes.some((n) => n.includes("går isär")));
+  // Ett fel (före sql/103): nyckeln saknas och resten av lägesfilen byggs.
+  const fel = await buildSnapshot(fakeDb({ smavagKastar: [true] }).q, [], NOW);
+  assert.ok(!("smavag" in fel.liveDoc) && fel.notes.some((n) => n.startsWith("smavag: ej läsbar")) && Array.isArray(fel.liveDoc.segments));
+  // Manifestet: punktfilen som en egen post, static och live oförändrade.
+  const m = await manifestFor("x", { static: "{}", live: "{}" }, "app/v1", { smavag: { sha256: sha, bytes: 5, gz_bytes: 3 } });
+  assert.deepEqual((m.files as any).smavag, { path: "app/v1/smavag.json", sha256: sha, bytes: 5, gz_bytes: 3 });
+  assert.deepEqual(Object.keys(m.files), ["static", "live", "smavag"]);
+  assert.deepEqual(Object.keys((await manifestFor("x", { static: "{}", live: "{}" })).files), ["static", "live"]);
 });

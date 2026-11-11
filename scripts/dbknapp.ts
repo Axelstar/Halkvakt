@@ -43,7 +43,10 @@ const pool = new pg.Pool({ connectionString: url, max: 1, ssl: url.includes("loc
 
 try {
   if (atgard === "migrera") {
-    if (!arg || !/^sql\/\d{3}_[a-z0-9_]+\.sql$/.test(arg)) { console.error(`migrera: ange en fil som sql/033_kamerafacit.sql (fick "${arg ?? ""}") — ingen standardfil sedan 1/10 (kort #263)`); process.exit(1); }
+    // fysik/live/*.sql är halkvakt-kuvos räkningar, ovanpå utcheckningen (DECISIONS #782): bara filens längd skrivs ut, och ett fel
+    // visas med sin kod men utan meddelandet, som kan citera filen. Loggen här är publik.
+    const privat = /^fysik\/live\/[a-z0-9_]+\.sql$/.test(arg ?? "");
+    if (!arg || !(/^sql\/\d{3}_[a-z0-9_]+\.sql$/.test(arg) || privat)) { console.error(`migrera: ange en fil som sql/033_kamerafacit.sql eller fysik/live/kandidat_snabb.sql (fick "${arg ?? ""}") — ingen standardfil sedan 1/10 (kort #263)`); process.exit(1); }
     const text = readFileSync(new URL(`../${arg}`, import.meta.url), "utf8");
     const client = await pool.connect();
     try {
@@ -51,7 +54,11 @@ try {
       await client.query(text);
       await client.query("COMMIT");
       console.log(`migrera: ${arg} körd (${text.length} tecken), transaktionen bekräftad`);
-    } catch (e) { await client.query("ROLLBACK").catch(() => {}); throw e; } finally { client.release(); }
+    } catch (e) {
+      await client.query("ROLLBACK").catch(() => {});
+      if (privat) { console.error(`migrera: ${arg} föll och rullades tillbaka (SQLSTATE ${(e as any)?.code ?? "okänd"}); meddelandet visas inte i den publika loggen`); process.exit(1); }
+      throw e;
+    } finally { client.release(); }
     for (const sats of bevis.split("\n").map((s) => s.trim()).filter(Boolean)) {
       const r = await pool.query(sats);
       console.log(`\nbevis: ${sats}`);

@@ -19,19 +19,24 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
+import se.halkvakt.engine.KandidatRad
 import se.halkvakt.engine.RapportRad
 import se.halkvakt.engine.ResansRapport
 import se.halkvakt.engine.SparadRutt
 import java.time.Instant
 
 object Rapporten {
-    /** En sparad resa åt båda hållen, efter åldersgränserna. */
-    data class Resa(val dit: List<RapportRad>, val hem: List<RapportRad>)
+    /** En sparad resa åt båda hållen, efter åldersgränserna. [kandidatDit] och [kandidatHem] är rutan Halkvakt tror (DECISIONS #739),
+     *  null när kandidaten är avstängd — aldrig med i förra kollen eller radens läge, som bara läser [dit] och [hem]. */
+    data class Resa(val dit: List<RapportRad>, val hem: List<RapportRad>, val kandidatDit: List<KandidatRad>?,
+                    val kandidatHem: List<KandidatRad>?)
 
     data class Lage(
         val resor: Map<String, Resa> = emptyMap(),
         val kollat: Long? = null,
         val lagesfil: Long? = null,
+        /** Rapportfilens tid: olyckor, vägarbeten, hinder, köer, restider och färjor kommer ur den (DECISIONS #686 punkt 5, B7-05). */
+        val rapportfil: Long? = null,
         val gammaltVaglag: Boolean = false,
         val gamlaOlyckor: Boolean = false,
         val laddar: Boolean = false,
@@ -66,13 +71,14 @@ object Rapporten {
             }
             _lage.update {
                 if (u == null) it.copy(laddar = false, gickInte = true)
-                else it.copy(resor = u.resor, kollat = System.currentTimeMillis(), lagesfil = u.lagesfil, gammaltVaglag = u.gammaltVaglag,
-                    gamlaOlyckor = u.gamlaOlyckor, laddar = false, gickInte = false)
+                else it.copy(resor = u.resor, kollat = System.currentTimeMillis(), lagesfil = u.lagesfil, rapportfil = u.rapportfil,
+                    gammaltVaglag = u.gammaltVaglag, gamlaOlyckor = u.gamlaOlyckor, laddar = false, gickInte = false)
             }
         }
     }
 
-    private class Utfall(val resor: Map<String, Resa>, val lagesfil: Long?, val gammaltVaglag: Boolean, val gamlaOlyckor: Boolean)
+    private class Utfall(val resor: Map<String, Resa>, val lagesfil: Long?, val rapportfil: Long?, val gammaltVaglag: Boolean,
+                         val gamlaOlyckor: Boolean)
 
     private fun rakna(rutter: List<SparadRutt>, stat: Map<String, Any?>, live: Map<String, Any?>, snabb: Map<String, Any?>,
                       lang: Map<String, Any?>, nu: Long, betatest: Boolean): Utfall? {
@@ -87,9 +93,10 @@ object Rapporten {
         val grind = { r: List<RapportRad> -> ResansRapport.aldersgrind(r, gammaltVaglag, gamlaOlyckor) }
         val resor = rutter.associate { r ->
             r.id to Resa(grind(ResansRapport.resansRapport(r.punkter, false, lage, kameror, fil, linjer)),
-                grind(ResansRapport.resansRapport(r.punkter, true, lage, kameror, fil, linjer)))
+                grind(ResansRapport.resansRapport(r.punkter, true, lage, kameror, fil, linjer)),
+                ResansRapport.kandidatRader(r.punkter, false, lage), ResansRapport.kandidatRader(r.punkter, true, lage))
         }
-        return Utfall(resor, lagesTid, gammaltVaglag, gamlaOlyckor)
+        return Utfall(resor, lagesTid, rapportTid, gammaltVaglag, gamlaOlyckor)
     }
 
     private fun tid(s: String?): Long? = s?.let { runCatching { Instant.parse(it).toEpochMilli() }.getOrNull() }

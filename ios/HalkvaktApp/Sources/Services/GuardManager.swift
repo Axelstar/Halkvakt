@@ -2,6 +2,7 @@
 // Spegel av Androids GuardService-beteende: tystad kategori behåller
 // motorminnet (gaten sitter vid munnen), körlägesstatistik, 8 s-varningskort.
 import Foundation
+import AVFoundation
 import CoreLocation
 import Observation
 import HalkvaktEngine
@@ -56,6 +57,11 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
     // S4: facit skickas när bilen står stilla — en gång per stopp.
     private var stillSince: Date?
     private var flushedThisStop = false
+    // Favoriter 2a (DECISIONS #817): resan räknas som slut för frågan Spara resan? när bilens CarPlay eller Bluetooth kopplas
+    // bort, eller när bilen stått still i tio minuter — före vaktens eget stopp efter en kvart, och aldrig medan bilen rullar.
+    private static let favoritStillaS: TimeInterval = 10 * 60
+    private var favoritFragadThisStop = false
+    private var lastKmh = 0.0
 
     // Vakna själv (DECISIONS #40): med "Alltid" ber vi iOS väcka appen vid betydande
     // förflyttning (~500 m, även när appen är stängd — iOS startar om oss i bakgrunden).
@@ -93,40 +99,69 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         manager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
         manager.activityType = .automotiveNavigation
         manager.pausesLocationUpdatesAutomatically = false
+        NotificationCenter.default.addObserver(forName: AVAudioSession.routeChangeNotification, object: nil, queue: .main) { n in
+            let bort = Self.bilenKoppladesBort(n)
+            Task { @MainActor in if bort { self.favoritResanSlut() } }
+        }
+    }
+
+    /// Bilens ljud försvann: CarPlay eller Bluetooth fanns i förra vägen och finns inte i den nya.
+    nonisolated private static func bilenKoppladesBort(_ n: Notification) -> Bool {
+        guard let raw = n.userInfo?[AVAudioSessionRouteChangeReasonKey] as? UInt,
+              AVAudioSession.RouteChangeReason(rawValue: raw) == .oldDeviceUnavailable,
+              let fore = n.userInfo?[AVAudioSessionRouteChangePreviousRouteKey] as? AVAudioSessionRouteDescription else { return false }
+        let bil: Set<AVAudioSession.Port> = [.carAudio, .bluetoothA2DP, .bluetoothHFP, .bluetoothLE]
+        let nu = AVAudioSession.sharedInstance().currentRoute.outputs.map(\.portType)
+        return fore.outputs.contains { bil.contains($0.portType) } && !nu.contains { bil.contains($0) }
+    }
+
+    /// Frågan Spara resan? för resan så långt, när bilen står. Vakten fortsätter; kör bilen vidare uppdaterar nästa stopp samma rad.
+    private func favoritResanSlut() {
+        guard running, lastKmh < 5 else { return }
+        Favoriter.shared.resanSlutar(km: distanceKm, minuter: drivingSeconds / 60)
     }
 
     // MARK: - Snapshot
 
-    // Kort #258 (DECISIONS #371): under resan laddas vägdatan om var 30:e minut, som på Android (SnapshotSchedule) —
-    // en laddning i taget, och efter ett fel väntar nästa försök en minut. Förut laddades den bara vid start och när
-    // Vakten-vyn visades, så åldersvakten prövades aldrig igen under en lång resa.
-    private static let refreshEvery: TimeInterval = 30 * 60
-    private static let retryAfter: TimeInterval = 60
-    private var loading = false
-    private var nextLoadAt = Date.distantPast
+    // Kort #258 (DECISIONS #371): under resan laddas vägdatan om, en laddning i taget, och efter ett fel väntar nästa försök
+    // en minut. Förut laddades den bara vid start och när Vakten-vyn visades, så åldersvakten prövades aldrig igen under en
+    // lång resa. Fas 2 (DECISIONS #741 punkt 4): kollen följer publiceringen varannan minut i stället för var 30:e minut —
+    // takten bor i motorpaketet (Kolltakten), prövad där, som Androids SnapshotSchedule. Inga timers: kollen åker på positionen.
+    private var takten = Kolltakten()
 
     /// `fresh`: vakten startar — ny motor, nytt minne. Annars behåller en körande vakt minnet (v14: aldrig säga om).
+    /// Start och Vakten-vyn kollar direkt; positionerna när takten säger att det är dags (handle).
     func refreshSnapshot(fresh: Bool = false) async {
-        guard !loading else { return }
-        loading = true
-        defer { loading = false }
+        guard takten.borja(nu: Date.now.timeIntervalSince1970, force: true) else { return }
+        await koll(fresh: fresh)
+    }
+
+    /// Ett varv. Takten får besked om utfallet också när laddningen föll.
+    private func koll(fresh: Bool) async {
+        var utfall = Kolltakten.Utfall.fel
+        var gen: Date?
+        defer { takten.klar(nu: Date.now.timeIntervalSince1970, utfall: utfall, gen: gen?.timeIntervalSince1970) }
         do {
             let snap = try await SnapshotRepo.loadSnapshot()
+            utfall = snap.utfall
+            if snap.generatedAt > .distantPast { gen = snap.generatedAt }
+            Matningen.shared.koll(snap)   // räknas bara medan vakten går
             let gate = AgeGate.filter(snap.hazards, generatedAt: snap.generatedAt, now: .now)
             hazards = gate.hazards
             if !snap.stations.isEmpty { stations = snap.stations }
             if !fresh, running, let engine { engine.updateHazards(gate.hazards) }
             else { engine = AlertEngine(gate.hazards, EngineConfig.withPrefs()) }
-            // Gammal sparad fil: nytt försök om en minut, inte om 30.
-            nextLoadAt = .now.addingTimeInterval(gate.stale && snap.fromCache ? Self.retryAfter : Self.refreshEvery)
+            // En gammal sparad fil efter ett fel prövas igen om en minut: det är takten för FEL.
             dataStale = gate.stale
+            if gate.stale { Raknare.fel("gammal_data") }   // #787: räknas bara medan ett pass pågår
             let df = DateFormatter(); df.dateFormat = "HH:mm"
             let tid = snap.generatedAt > .distantPast ? df.string(from: snap.generatedAt) : "okänd tid"
             snapshotInfo = "\(gate.hazards.count) faror · väglag \(tid)"
             recomputeNearby()
         } catch {
             // Behåll förra snapshoten; UI visar gammal info-rad tills nästa lyckade.
-            nextLoadAt = .now.addingTimeInterval(Self.retryAfter)
+            Matningen.shared.koll(nil)
+            Raknare.fel("hamtning_fel")   // #787
         }
     }
 
@@ -211,6 +246,9 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         guard !running else { return }
         print("[Vakten] startar")
         running = true
+        // #772, #787: ett ord i kön, skickas när vakten stannar. Intentet skriver sitt kvitto sekunden före start.
+        let viaIntent = Prefs.shared.lastIntentStartAt.map { Date.now.timeIntervalSince($0) < 10 } ?? false
+        Raknare.vaktStartad(autoWoke ? .sjalv : viaIntent ? .intent : .knapp)
         // Kort #359: startas vakten för hand medan självväckningens fartkoll pågår måste kollen ta slut här. Annars gick varje
         // position till kollen, och när den gav upp efter 90 s stängde den positionen under en vakt som stod igång.
         fartkoll.end()
@@ -228,6 +266,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
             Prefs.shared.tripStart = startedAt
         }
         Favoriter.shared.resanBorjar(ny: !sameTrip)   // kort #357: bara med brytaren på
+        Matningen.shared.resanBorjar()   // fas 2: en mätning per körning, start → stopp
         tripEndedAt = nil
         prevLoc = nil
         // ALLTID sant när vakten startas av föraren (#273). Apple: "When the value of this property is
@@ -269,9 +308,11 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         }
     }
 
-    func stop() {
+    /// `parkerad`: självstoppet efter en kvart stillastående (räknaren, #787); annars knappen eller intentet.
+    func stop(parkerad: Bool = false) {
         let korde = running
-        Task { _ = await FacitSender.flush() }   // S4: resan är slut — osända svar går iväg
+        if korde { Raknare.vaktStoppad(parkerad: parkerad) }
+        Task { _ = await FacitSender.flush(); await Raknare.flush() }   // S4: resan är slut — osända svar går iväg; räknarens kö likaså (#772)
         if running, autoWoke, let t0 = startedAt {
             Prefs.shared.lastAutoWakeMinutes = max(1, Int(Date.now.timeIntervalSince(t0) / 60))
         }
@@ -285,6 +326,8 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         Prefs.shared.lastTripEnd = tripEndedAt
         Prefs.shared.lastTripKm = distanceKm
         if korde { Favoriter.shared.resanSlutar(km: distanceKm, minuter: drivingSeconds / 60) }   // kort #357: frågan på Redo., bara med brytaren på
+        if korde { Matningen.shared.resanSlutar() }   // fas 2: sparas när resan slutar, stannar i telefonen
+        if korde { Prefs.shared.vaktPass += 1 }   // DECISIONS #829: kortet Tipsa en vän efter femte passet
         headsUpTask?.cancel()
         manager.stopUpdatingLocation()
         dismissTask?.cancel()
@@ -326,6 +369,8 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         let status = manager.authorizationStatus
         Task { @MainActor in
             self.authStatus = status
+            Raknare.behorighet(status)   // #772: alltid | nar | nekad, en gång per enhet och värde
+            if self.running, status == .denied || status == .restricted { Raknare.fel("plats_borta") }   // #787
             if status == .authorizedAlways { self.armAutoWake() }
             if status == .authorizedWhenInUse || status == .authorizedAlways {
                 self.locationDenied = false
@@ -334,6 +379,12 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
                 else if self.running { self.manager.allowsBackgroundLocationUpdates = true }
             }
         }
+    }
+
+    /// #787: positionen föll bort under passet. locationUnknown är ett tillfälligt glapp som CoreLocation själv tar igen.
+    nonisolated func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        guard (error as? CLError)?.code != .locationUnknown else { return }
+        Task { @MainActor in if self.running { Raknare.fel("plats_borta") } }
     }
 
     nonisolated func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -364,20 +415,25 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
 
         guard running else { return }
         if loc.horizontalAccuracy >= 0 { Favoriter.shared.fix(lon: loc.coordinate.longitude, lat: loc.coordinate.latitude) }   // #357
-        if !loading, Date.now >= nextLoadAt { Task { await refreshSnapshot() } }   // #258: också när första laddningen föll
+        if takten.borja(nu: Date.now.timeIntervalSince1970) { Task { await koll(fresh: false) } }   // #258: också när första laddningen föll
         guard let engine else { return }
 
         let kmh = loc.speed >= 0 ? loc.speed * 3.6 : 0
+        lastKmh = kmh
         // S4: facit skickas när bilen står stilla (≥ 30 s under 3 km/h), en gång per stopp — aldrig under körning.
-        if kmh >= 3 { stillSince = nil; flushedThisStop = false }
+        if kmh >= 3 { stillSince = nil; flushedThisStop = false; favoritFragadThisStop = false }
         else if stillSince == nil { stillSince = loc.timestamp }
         else if !flushedThisStop, let s = stillSince, loc.timestamp.timeIntervalSince(s) >= 30 {
             flushedThisStop = true
             Task { _ = await FacitSender.flush() }
         }
+        if !favoritFragadThisStop, let s = stillSince, loc.timestamp.timeIntervalSince(s) >= Self.favoritStillaS {
+            favoritFragadThisStop = true
+            favoritResanSlut()
+        }
         // Självstopp: en kvart utan att bilen kört (förflyttning, inte ett mätvärde) är slutet på resan.
         if idleStop.onFix(t: loc.timestamp.timeIntervalSince1970, lon: loc.coordinate.longitude, lat: loc.coordinate.latitude) {
-            stop()
+            stop(parkerad: true)
             manualStoppedAt = nil   // självstopp ⇒ nästa resa får väcka oss direkt
             print("[Vakten] stillastående en kvart — stoppar själv")
             return
@@ -392,6 +448,8 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         guard Prefs.shared.enabled(alert.kind) else { return }  // munnen tiger, minnet består
 
         alertCount += 1
+        Raknare.forstaVarningen()   // #772: en gång per enhet
+        Raknare.varning(alert.kind.rawValue, avstandM: alert.distanceM, ersatte: currentWarning?.kind.rawValue)   // #787
         lastSaid = alert.text
         // EN tidsstämpel för båda: facitsvaret nycklas på (id, t), och raden under "Senast sagt"
         // och raden i efter-resan-kortet måste peka på SAMMA svar. Två .now hade gett två rader.
@@ -407,7 +465,10 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         if history.count > 50 { history.removeLast() }
         SpeechService.shared.speak(alert.text)
         headsUpTask?.cancel()
-        headsUpTask = Task { await HeadsUpService.shared.show(alert) }   // #23
+        headsUpTask = Task {
+            Raknare.banner(visad: await HeadsUpService.shared.status() == .authorized)   // #787: bannern kom fram eller inte
+            await HeadsUpService.shared.show(alert)   // #23
+        }
 
         currentWarning = alert
         dismissTask?.cancel()

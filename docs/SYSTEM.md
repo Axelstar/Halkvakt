@@ -96,7 +96,10 @@ byggen, prognoslagrets form, kamerafacit, missknappen, arkivet och anmälningarn
   - ett facitsvar, alltså varningens id och tidpunkt och därmed ungefär var och när;
   - en miss som föraren markerat efter resan: närmaste station, tidpunkt och vad det var (#267, #379).
 
-  Båda gäller bara testförare som slagit på funktionen, som är av som standard. Ingen telemetri, inga konton. Ändras det som appen skickar ändras denna rad, Play-deklarationen, integritetssidan och produktboken i
+  Båda gäller bara testförare som slagit på funktionen, som är av som standard. Därtill, sedan 1/11 (DECISIONS #772), **räknaren**:
+  ett ord per händelse — introduktionen gick igenom, platsbehörigheten blev alltid/när appen används/nekad, vakten startade för
+  hand eller själv, första varningen sades — räknat som en rad per dygn, app, händelse och värde; inget id, ingen version, ingen
+  tid, ingen position, alltid på och sagt i integritetspolicyn. Ingen annan telemetri, inga konton. Ändras det som appen skickar ändras denna rad, Play-deklarationen, integritetssidan och produktboken i
   samma commit.
 - **Kamerabilder** sparas bara som facit och visas aldrig för användare. Det sker i tre fall:
   - när motorn varnar (dedupe station × 3 h), men inte vid fartkameravarningar;

@@ -166,9 +166,37 @@ export const KONTRAKT: Kontrakt[] = [
   {
     namn: "Gränsradien — hur nära svensk väg en grannstation räknas",
     varfor: "40 km är gränssnapshotens definition. Driver den mäter de två implementationerna olika populationer.",
-    former: [/se\.g::geography, (\d+)\)/],
+    former: [/r\.geom::geography, (\d+)\)/],
     filer: /healthcheck\.ts|functions\/vakthund\//,
     golv: 2,
+  },
+  // DECISIONS #781: de två räknas på vägindexet som publiceringen (#742). Lådan måste rymma 40 km; att den är minst
+  // BORDER_DEG prövas i test/integration.test.ts.
+  {
+    namn: "Gränslådan — vägindexets låda runt grannstationen",
+    varfor: "Krymper en kopia under BORDER_DEG tappar den stationer nära 40 km, och de två kontrollerna räknar olika populationer.",
+    former: [/ST_Expand\(f\.geom, ([\d.]+)\)/],
+    filer: /healthcheck\.ts|functions\/vakthund\//,
+    golv: 2,
+  },
+  // Grannstationernas färskhet (DECISIONS #751): publiceringen tar grannländernas stationer upp till tre timmar gamla, eftersom
+  // de hämtas en gång i timmen (#83), och de två kontrollerna av nåbara grannstationer ska räkna samma population. De svenska
+  // stationernas 60 minuter (WX_SANE) gäller inte här.
+  {
+    namn: "Grannstationernas färskhet — publiceringen och kontrollerna",
+    varfor: "Sänks en kopia till de svenska 60 minuterna kallar kontrollen gränsen frisk medan publiceringen tystar den, eller tvärtom.",
+    former: [/f\.sample_time > now\(\) - interval '([^']+)'/, /WX_SANE_GRANS = wxSane\("([^"]+)"\)/],
+    filer: /healthcheck\.ts|functions\/vakthund\/index\.ts|publish\/snapshot-core\.ts|functions\/publicera\/index\.ts/,
+    golv: 4,
+  },
+  // De svenska stationernas färskhet (DECISIONS #751, #752): kamerafacits V3 tar kalla stationer som är tysta i appen, och en
+  // station äldre än publiceringens gräns är tyst därför att värdet saknas, inte därför att motorn valt tystnad.
+  {
+    namn: "Svenska stationers färskhet — publiceringen och kamerafacits tystnadsstickprov",
+    varfor: "Driver de isär tar V3 stationer som appen aldrig såg, eller missar stationer som appen var tyst om.",
+    former: [/WX_SANE = wxSane\("([^"]+)"\)/, /sample_time > now\(\) - interval '(\d[^']*)'`/],
+    filer: /publish\/snapshot-core\.ts|functions\/publicera\/index\.ts|functions\/kamerafacit\/index\.ts/,
+    golv: 3,
   },
   // Grind A:s trösklar och domspärr (TROSKLAR-SKUGGAN §3) fick en andra kopia 23/9 när vägpunkts-
   // grinden lades i hojd-prov.ts (DECISIONS #323). Två grindar som dömer mot OLIKA tal vore två
@@ -494,6 +522,30 @@ export const KONTRAKT: Kontrakt[] = [
     filer: /engine\/src\/types\.ts|engine\/Types\.kt|HalkvaktEngine\/Engine\.swift/,
     golv: 3,
   },
+  // MOTORNS RUTNÄT (DECISIONS #795). Talen ändrar inget beteende i någon port — varje port är exakt för sig, och det differentiella
+  // provet i alla tre visar det — men portarna ska vara en algoritm, och en port med annan ruta eller marginal mäter en annan takt
+  // än de två andra. Bunten i skuggmotorn bär samma rader och vaktas av bundle-skuggmotor --check, så den räknas inte här.
+  {
+    namn: "Motorns rutnät — cellens storlek i grader",
+    varfor: "Motorns tre portar ska bygga samma rutnät (DECISIONS #795); en port med annan cell gör samma urval på annan tid.",
+    former: [/(?:GRID_CELL_DEG|static let cellDeg)\s*=\s*(\d+(?:\.\d+)?)(?![\d.])/],
+    filer: /engine\/src\/engine\.ts$|engine\/Engine\.kt$|HalkvaktEngine\/Engine\.swift$/,
+    golv: 3,
+  },
+  {
+    namn: "Motorns rutnät — marginalen i meter på varje räckvidd",
+    varfor: "Marginalen täcker avrundningen mellan fönstret och haversineM (DECISIONS #795); en port som krymper den kan tappa en varning vid gränsen.",
+    former: [/(?:GRID_MARGIN_M|static let marginM)\s*=\s*(\d+)(?:\.0)?(?![\d.])/],
+    filer: /engine\/src\/engine\.ts$|engine\/Engine\.kt$|HalkvaktEngine\/Engine\.swift$/,
+    golv: 3,
+  },
+  {
+    namn: "Motorns rutnät — högst så här många celler per punkt, annars alltid prövad",
+    varfor: "Taket håller bygget litet nära polerna (DECISIONS #795); olika tak ger olika bygg- och stegtider i portarna.",
+    former: [/(?:GRID_MAX_CELLS|static let maxCells)\s*=\s*(\d+)(?:\.0)?(?![\d.])/],
+    filer: /engine\/src\/engine\.ts$|engine\/Engine\.kt$|HalkvaktEngine\/Engine\.swift$/,
+    golv: 3,
+  },
   {
     // Favoriterna steg 2 (kort #357, DECISIONS #616, #625): de sparade rutterna glesas lika i alla tre språk, och facit
     // engine/fixtures/rutter.json prövar utfallet. `(?![\d.])` gör att en kopia som blivit 75.5 faller på golvet i stället
@@ -510,6 +562,22 @@ export const KONTRAKT: Kontrakt[] = [
     former: [/(?:MAX_RUTTER|static let max)\s*=\s*(\d+)(?![\d.])/],
     filer: /engine\/src\/rutter\.ts|engine\/Rutter\.kt|HalkvaktEngine\/Rutter\.swift/,
     golv: 3,
+  },
+  {
+    // Favoriter 2a (DECISIONS #817): dagens resor, högst så här många i väntan på namn — lika i alla tre språk, prövat mot rutter.json.
+    namn: "Dagens resor — högst så här många väntar på namn",
+    varfor: "Med olika tak släpper iPhone och Android olika resor, och samma dag ser olika ut i de två apparna.",
+    former: [/(?:VANTANDE_MAX|static let vantandeMax)\s*=\s*(\d+)(?![\d.])/],
+    filer: /engine\/src\/rutter\.ts|engine\/Rutter\.kt|HalkvaktEngine\/Rutter\.swift/,
+    golv: 3,
+  },
+  {
+    // DECISIONS #829: kortet Tipsa en vän på Redo. visas efter så här många avslutade vaktpass — samma i båda apparna.
+    namn: "Tipsa en vän — vaktpass före kortet på hemskärmen",
+    varfor: "Med olika tal visar iPhone och Android kortet vid olika tillfällen, och produktboken stämmer på bara en av dem.",
+    former: [/(?:PASS_FORE_KORTET|static let passForeKortet)\s*=\s*(\d+)(?![\d.])/],
+    filer: /app\/Tipsa\.kt|Services\/Tipsa\.swift/,
+    golv: 2,
   },
   {
     // DECISIONS #633: frågan Spara resan? kommer bara efter en resa på minst så här många km — samma i båda apparna.
@@ -529,10 +597,11 @@ export const KONTRAKT: Kontrakt[] = [
   },
   {
     namn: "Sparade rutter — timmar som frågan och vägen står kvar",
-    varfor: "Den tillfälliga filen med en körd väg ska raderas lika snabbt på båda plattformarna (FAVORITER §6: ett dygn).",
-    former: [/FRAGA_KVAR_MS\s*=\s*(\d+)\s*\*\s*3600\s*\*\s*1000L/, /fragaKvarS: TimeInterval\s*=\s*(\d+)\s*\*\s*3600/],
-    filer: /app\/Favoriter\.kt|Services\/Favoriter\.swift/,
-    golv: 2,
+    varfor: "Den tillfälliga filen med en körd väg ska raderas lika snabbt på båda plattformarna (FAVORITER §6: ett dygn). Sedan " +
+      "Favoriter 2a (DECISIONS #817) bor dygnet i motorns dagens resor, i tre språk.",
+    former: [/(?:VANTANDE_KVAR_S|vantandeKvarS)(?::\s*Double)?\s*=\s*(\d+)\s*\*\s*3600/],
+    filer: /engine\/src\/rutter\.ts|engine\/Rutter\.kt|HalkvaktEngine\/Rutter\.swift/,
+    golv: 3,
   },
   // Favoriterna steg 3a (kort #357, DECISIONS #637): provmiljöns avstånd per slag är appens trösklar, i TypeScript (rapport-core.ts
   // och dess två buntar), Swift och Kotlin. Facit engine/fixtures/rapport.json prövar utfallet i alla tre, men telefonernas prov körs
@@ -579,6 +648,21 @@ export const KONTRAKT: Kontrakt[] = [
     former: [/(?:GRUPP_FRAN|gruppFran)\s*=\s*(\d+)(?![\d.])/],
     filer: RAPPORTEN,
     golv: 5,
+  },
+  // Halkvakt tror (DECISIONS #739, kort #363): rutan räknas i rapport-app.ts (inte i serverns buntar), Swift och Kotlin.
+  {
+    namn: "Halkvakt tror — avståndet från resan för kandidatens punkter, m",
+    varfor: "Med olika avstånd visar iPhone och Android olika sträckor i rutan för samma resa (DECISIONS #739 punkt 4).",
+    former: [/(?:KANDIDAT_MARGINAL_M|kandidatMarginalM)\s*=\s*(\d+)(?:\.0)?(?![\d.])/],
+    filer: /publish\/rapport-app\.ts$|HalkvaktEngine\/Rapport\.swift$|engine\/Rapport\.kt$/,
+    golv: 3,
+  },
+  {
+    namn: "Halkvakt tror — punkter inom avståndet som krävs för en sträcka",
+    varfor: "Samma som ovan: kravet håller tvärvägarna borta, och med olika krav gör det det bara på den ena telefonen.",
+    former: [/(?:KANDIDAT_MINST_PUNKTER|kandidatMinstPunkter)\s*=\s*(\d+)(?![\d.])/],
+    filer: /publish\/rapport-app\.ts$|HalkvaktEngine\/Rapport\.swift$|engine\/Rapport\.kt$/,
+    golv: 3,
   },
   {
     // DECISIONS #637: vägen hem känns igen som samma resa, så frågan Spara resan? kommer inte en gång till.
@@ -667,6 +751,30 @@ export const KONTRAKT: Kontrakt[] = [
     namn: "Nära-miss-bandet — grader över K1 där en episod räknas som nära, inte uteblev",
     varfor: "Driver de isär räknar ovanpå och uppspelningen olika episoder som falsklarm, och priset i tabellen är ett annat än T-B:s.",
     former: [/p_band numeric DEFAULT ([\d.]+)/, /NARA_BAND_C = ([\d.]+)/],
+    golv: 2,
+  },
+  {
+    // Meta-annonserna (DECISIONS #735) räknar ett län som Halkvakt live gör; annonsstyrningen kan inte importera posta.mjs.
+    namn: "Länets halkregel — minsta antal hala vägavsnitt (Halkvakt live och Meta-annonserna)",
+    varfor: "Driver de isär annonserar Meta ett län som inlägget samma morgon säger är fritt, eller tvärtom.",
+    former: [/const MIN_HALT = (\d+)/],
+    filer: /marknadsforing\//,
+    golv: 2,
+  },
+  {
+    namn: "Länets halkregel — minsta antal stationer under noll (Halkvakt live och Meta-annonserna)",
+    varfor: "Driver de isär annonserar Meta ett län som inlägget samma morgon säger är fritt, eller tvärtom.",
+    former: [/MIN_HALT = \d+, MIN_KALLA = (\d+)/],
+    filer: /marknadsforing\//,
+    golv: 2,
+  },
+  {
+    // Reels (DECISIONS #780) tiger på samma gamla data som Meta-annonserna; reels.mjs kan inte importera annonsstyrningen
+    // utan att dra in hela annonsflödet.
+    namn: "Marknadsföringens åldersgräns för datan i timmar (Meta-annonserna och kvällens reel)",
+    varfor: "Driver de isär visar kvällens reel ett läge som annonserna samma kväll redan kallat för gammalt.",
+    former: [/const MAX_ALDER_H = (\d+)/],
+    filer: /marknadsforing\//,
     golv: 2,
   },
   {
@@ -765,20 +873,45 @@ export const KONTRAKT: Kontrakt[] = [
   {
     // Kort #322, DECISIONS #511 (10/10): gallringen tunnar efter tre dygn i stället för sju. Talet står i nattjobbet och i
     // de tre läsare som måste hinna före den. Gränsen stod som lös siffra i elva filer utan vakt till 10/10. sql/014 och
-    // sql/026 bär det gamla jobbet (7) som historik och ingår inte.
+    // sql/026 bär det gamla jobbet (7) som historik och ingår inte. DECISIONS #740 (28/10): sju dygn igen efter Supabase Pro;
+    // nattjobbet sätts nu av sql/072, och sql/044 (3) är historik som 014 och 026.
     namn: "Gallringens dygn — minutupplösningen finns bara så länge",
     varfor: "Läser trenden eller frostflödena längre bakåt än gallringen lämnar, räknar de på halvtimmesrader och blir OAVGJORT.",
     former: [/GALLRING_DYGN = (\d+)/, /'SELECT gallra_arkiv\((\d+)\)'/],
-    filer: /frosttryck\.ts$|trendarkivet\.ts$|grind-t-a\.ts$|sql\/044_/,
+    filer: /frosttryck\.ts$|trendarkivet\.ts$|grind-t-a\.ts$|sql\/072_/,
     golv: 4,
   },
+  {
+    // DECISIONS #741 punkt 3 (29/10): publicera går varannan minut och väljer GitHub och kartan på minuten med takten som fönster.
+    namn: "Publiceringens takt — pg_cron:s schema och fönstret för GitHub och kartan",
+    varfor: "Driver schemat från fönstret hoppar GitHub och kartan över körningar eller tar dem flera gånger, och Pages kan stå still utan ett fel.",
+    former: [/const PUBLICERA_TAKT_MIN = (\d+);/, /schedule := '\*\/(\d+) \* \* \* \*'.*-- PUBLICERA_TAKT_MIN/],
+    filer: /supabase\/functions\/publicera\/main\.ts$|sql\/074_/,
+    golv: 2,
+  },
+  // DECISIONS #741 punkt 4 (fas 2, 29/10): appens kolltakt, samma regel i Swift (sekunder) och Kotlin (millisekunder). Publiceringen
+  // (120 s) ska följa PUBLICERA_TAKT_MIN ovan; olika enheter, så den kopplingen vaktas inte här.
+  ...([["publicering", "PUBLICERING"], ["marginal", "MARGINAL"], ["omkoll", "OMKOLL"], ["fel", "FEL"]] as const).map(([s, k]) => ({
+    namn: `Appens kolltakt — ${s} i iOS och Android`,
+    varfor: "Driver talen isär kollar iPhone och Android olika ofta, och mätningen i fas 3 jämför två olika appar.",
+    former: [new RegExp(`static let ${s}S: TimeInterval = (\\d+)$`), new RegExp(`const val ${k}_MS = (\\d+)_000L`)],
+    filer: /Kolltakten\.swift$|SnapshotSchedule\.kt$/,
+    golv: 2,
+  })),
   {
     namn: "Spridningsgrindens X — domen och kandidatens regel tiger vid samma spridning",
     varfor: "Driver X i regeln (sql/058) från X i domen (grind-s-b.ts) dömer domen andra varningar än appen gav (DECISIONS #475, #477, #575).",
     former: [/const SPRIDNING_X: number \| null = ([\d.]+);/, /k\.spr >= ([\d.]+) THEN 'spridning'/, /export const SPRIDNING_X_C = ([\d.]+);/],
     // Kuvösens facitläsning speglar regeln (DECISIONS #593): en tredje kopia sedan 16/10.
-    filer: /grind-s-b\.ts$|sql\/058_|sql\/068_|kuvos\/facit-trv\.ts$/,
+    filer: /grind-s-b\.ts$|sql\/058_|sql\/068_|sql\/069_|kuvos\/facit-trv\.ts$/,
     golv: 4,
+  },
+  {
+    namn: "Spridningsspärrens F1 — minoritetens viktandel kring noll som tystar kandidaten",
+    varfor: "Den frystas och den nyas regel ska tystas av samma gräns (sql/087, DECISIONS #800). Driver den talar appen olika i den frystas och den nyas timmar.",
+    former: [/k\.frys_min >= ([\d.]+) THEN 'spridning'/],
+    filer: /sql\/087_|sql\/091_|sql\/094_/,  // sql/091 (#804) skapar om båda regelfunktionerna med stadspunkterna
+    golv: 6,
   },
   // Den nya kandidatens skugga (sql/068, DECISIONS #692) bär regelns tal en gång till: samma regel på den nyas värden, så att domen i
   // ersättningsregeln §5 räknas likadant för båda. Den kopian vaktas här med de andra (golven höjda med ett).
@@ -790,51 +923,85 @@ export const KONTRAKT: Kontrakt[] = [
     namn: "Kandidatens kalla yta — regeln och facitläsningen",
     varfor: "Driver gränsen läser kuvösen andra kalla timmar än regeln varnar på (DECISIONS #562, #593).",
     former: [/l\.pb <= ([\d.]+)\s+-- YTA_GRANS_C/, /export const KALL_C = ([\d.]+);/],
-    filer: /sql\/058_|sql\/068_|kuvos\/facit-trv\.ts$/,
-    golv: 3,
+    filer: /sql\/058_|sql\/068_|sql\/069_|sql\/091_|sql\/094_|kuvos\/facit-trv\.ts$/,
+    golv: 11,
   },
   {
     namn: "Kandidatens radargräns för fukt — regeln och facitläsningen",
     varfor: "Driver gränsen räknar kuvösen fukt där regeln ser torrt (DECISIONS #565, #593).",
     former: [/coalesce\(r\.mmh, 0\) >= ([\d.]+)\) THEN 'torr'/, /export const RADAR_MMH = ([\d.]+);/],
-    filer: /sql\/058_|sql\/068_|kuvos\/facit-trv\.ts$/,
-    golv: 3,
+    // R = 0,1 sedan 26/10 (#725): 069 bär driftens gräns; 091 är driftens regel sedan #804; 105 är småvägsröstens (#828)
+    filer: /sql\/069_|sql\/091_|sql\/094_|sql\/105_|kuvos\/facit-trv\.ts$/,
+    golv: 8,
   },
   {
     namn: "Kandidatens radarfönster — regeln och facitläsningen",
     varfor: "Driver fönstret läser kuvösen radarn längre eller kortare bakåt än regeln (DECISIONS #573, #593).",
     former: [/r\.observed_at > now\(\) - interval '(\d+) minutes'/, /export const RADAR_MIN = (\d+);/],
-    filer: /sql\/058_|sql\/068_|kuvos\/facit-trv\.ts$/,
-    golv: 3,
+    filer: /sql\/058_|sql\/068_|sql\/069_|sql\/091_|sql\/094_|sql\/105_|kuvos\/facit-trv\.ts$/,  // 105: småvägsröstens regel (#828)
+    golv: 12,
+  },
+  // KANDIDATENS TIMME (sql/056, 057, 068) och de som läser den: olycksfacit (095, 096, 100) och småvägsrösten (105, #828). En timme
+  // är färsk högst två timmar och fullständig med minst 95 % av punkterna. Driver en kopia talar en regel på en timme som en annan
+  // kallar gammal, eller bokför olycksfacit en tystnad som regeln aldrig hade.
+  {
+    namn: "Kandidatens färskhet — hur gammal timmen får vara",
+    varfor: "Regeln, olycksfacit och småvägsrösten ska kalla samma timmar gamla (sql/068, DECISIONS #814, #828).",
+    former: [/interval '(\d+) hours'(?: THEN)?\s+-- FARSK_TIMMAR/],
+    filer: /sql\/\d{3}_/,
+    golv: 8,
+  },
+  {
+    namn: "Kandidatens fullständighet — andelen punkter som timmen måste bära",
+    varfor: "Den frystas och den nyas timme och småvägsröstens ska kräva samma andel (sql/068, DECISIONS #828).",
+    former: [/>= ([\d.]+) \* \(SELECT count\(\*\) FROM \w+\)\s+-- FULLSTANDIG_ANDEL/],
+    filer: /sql\/\d{3}_/,
+    golv: 4,
+  },
+  {
+    namn: "Småvägsröstens radarbit — punkter i följd längs vägen",
+    varfor: "Radarn skriver per bit (radar-karna.ts) och regeln läser per bit (sql/105). Driver de isär läser regeln en annan bits regn än punktens (DECISIONS #828).",
+    former: [/export const SMAVAG_BIT = (\d+);/, /\(p\.ordning \/ (\d+)\)\s+-- SMAVAG_BIT/],
+    filer: /ingest\/radar-karna\.ts$|sql\/105_/,
+    golv: 2,
   },
   {
     namn: "Kandidatens vetofönster — regeln och facitläsningen",
     varfor: "Driver fönstret vetar kuvösen andra timmar än regeln (DECISIONS #566, #593).",
     former: [/w\.sample_time > now\(\) - interval '(\d+) minutes' AND w\.surface_temp_c >/, /export const VETO_MIN = (\d+);/],
-    filer: /sql\/058_|sql\/068_|kuvos\/facit-trv\.ts$/,
-    golv: 3,
+    filer: /sql\/058_|sql\/068_|sql\/069_|sql\/091_|sql\/094_|kuvos\/facit-trv\.ts$/,
+    golv: 7,
   },
   {
     namn: "Kandidatens vetoyta — regeln och facitläsningen",
     varfor: "Driver gränsen vetar kuvösen på andra stationer än regeln (DECISIONS #566, #593).",
     former: [/AND w\.surface_temp_c > (\d+)\s+-- VETO_MIN/, /export const VETO_YTA_C = (\d+);/],
-    filer: /sql\/058_|sql\/068_|kuvos\/facit-trv\.ts$/,
-    golv: 3,
+    filer: /sql\/058_|sql\/068_|sql\/069_|sql\/091_|sql\/094_|kuvos\/facit-trv\.ts$/,
+    golv: 7,
   },
   {
     namn: "Kandidatens vetoavstånd i meter — regeln och facitläsningen",
     varfor: "Driver avståndet vetar kuvösen med fler eller färre stationer än regeln (DECISIONS #566, #593).",
     former: [/k\.geom::geography, (\d+)\)\s+-- VETO_KM/, /export const VETO_M = (\d+);/],
-    filer: /sql\/058_|sql\/068_|kuvos\/facit-trv\.ts$/,
-    golv: 3,
+    filer: /sql\/058_|sql\/068_|sql\/069_|sql\/091_|sql\/094_|kuvos\/facit-trv\.ts$/,
+    golv: 7,
   },
   {
     namn: "Spridningsgrindens ankarantal — regeln och facitläsningen",
     varfor: "Med färre ankare grindar spridningen inte (#574); driver talet tystar kuvösen andra timmar än regeln (DECISIONS #593).",
     former: [/coalesce\(k\.n_ank, 0\) >= (\d+) AND k\.spr/, /ytor\.length >= (\d+) && Math\.round/],
-    filer: /sql\/058_|sql\/068_|kuvos\/facit-trv\.ts$/,
+    filer: /sql\/058_|sql\/068_|sql\/069_|kuvos\/facit-trv\.ts$/,
     golv: 3,
   },
+  // STORSTÄDERNAS MARSFÖNSTER (sql/091, DECISIONS #804; halkvakt-kuvos F33, regel B): stadspunkterna tiger kl. 10–16 svensk tid i
+  // mars söder om 62°. Två kopior, den frystas och den nyas regel. Kuvösens dom får sin kopia när regel B förs in där (före 1/3 2027).
+  ...([["månaden", "MANAD"], ["första timmen", "FRAN"], ["timmen då fönstret slutar", "TILL"], ["breddgraden", "LAT"]] as const).map(([s, k]) => ({
+    namn: `Storstädernas marsfönster — ${s}`,
+    varfor: "Den frystas och den nyas regel ska tiga i samma timmar och på samma breddgrader. Driver de isär talar storstädernas K olika beroende på vilken kandidat som talar.",
+    former: [new RegExp(`(\\d+)\\)?\\s+-- STAD_MARS_${k}\\b`)],
+    filer: /sql\/091_|sql\/094_/,   // sql/094 (#813) skapar om båda regelfunktionerna med stadsgrenens timme som underfråga
+    golv: 4,
+  })),
 ];
 
 // ── SJÄLVTEST mot känd sanning, utan disk ──────────────────────────────────────────────
@@ -914,11 +1081,11 @@ if (process.argv.includes("--sjalvtest")) {
 // Fillistan läses ur git, inte ur en handskriven lista — samma husregel som mätvakten (#105)
 // och ruttberedskapen (#124): listan som ska vara komplett läses från källan, inte från minnet.
 const { execSync } = await import("node:child_process");
-const { readFileSync } = await import("node:fs");
+const { readFileSync, existsSync } = await import("node:fs");
 const { fileURLToPath } = await import("node:url");
 
 const SJALV = "scripts/kontraktsgrinden.ts";   // grinden bär formerna själv och räknar inte sig
-const ANDELSER = /\.(ts|tsx|sql|kt|swift)$/;
+const ANDELSER = /\.(ts|tsx|sql|kt|swift|mjs)$/;
 
 // Roten läses ur git, inte ur process.cwd(): grinden ska ge samma svar oavsett varifrån den
 // körs. Utan det fäller den falskt på "under golvet" så fort någon kör den ur scripts/.
@@ -926,7 +1093,10 @@ const ANDELSER = /\.(ts|tsx|sql|kt|swift)$/;
 const har = { encoding: "utf-8" as const, cwd: fileURLToPath(new URL(".", import.meta.url)) };
 const rot = execSync("git rev-parse --show-toplevel", har).trim();
 
-const spar = execSync("git ls-files", { ...har, cwd: rot }).split("\n")
+// Kuvösens och fysikens filer ligger i det privata repot halkvakt-kuvos sedan 31/10 (DECISIONS #768) och läggs ovanpå utcheckningen
+// i ci, ospårade. Därför läses också ospårade filer som inte är ignorerade: utan dem saknas kuvösens kopior av kontrakten.
+if (!existsSync(`${rot}/kuvos`)) console.log("OBS: kuvos/ saknas — kör med halkvakt-kuvos ovanpå (se dess README), annars saknas kuvösens kopior.\n");
+const spar = execSync("git ls-files --cached --others --exclude-standard", { ...har, cwd: rot }).split("\n")
   .map((s) => s.trim()).filter((s) => s && ANDELSER.test(s) && s !== SJALV && !s.startsWith("node_modules/"));
 
 const filer = spar.map((fil) => ({ fil, text: readFileSync(`${rot}/${fil}`, "utf-8") }));

@@ -20,8 +20,8 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: se.halkvakt.app
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         TARGETED_DEVICE_FAMILY: "1"   # iPhone-app — iPad-multitasking kräver annars alla vridningar (validering 31/8)
-        MARKETING_VERSION: 0.3.13
-        CURRENT_PROJECT_VERSION: 34
+        MARKETING_VERSION: 0.4.0
+        CURRENT_PROJECT_VERSION: 44
         SWIFT_VERSION: "5.0"
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_CFBundleDisplayName: Halkvakt
@@ -33,6 +33,9 @@ targets:
       path: Halkvakt.entitlements
       properties:
         com.apple.developer.usernotifications.time-sensitive: true   # #23 heads-up bryter Fokus "Kör"
+        # CARPLAY-BRYTAREN (DECISIONS #817): tillståndet och scenkonfigurationen nedan (UIApplicationSceneManifest). Tas båda bort
+        # går bygget ut utan CarPlay; koden i Sources/CarPlay körs då aldrig. Apple gav kontot Driving Task-tillståndet 1/11.
+        com.apple.developer.carplay-driving-task: true
     info:
       path: Sources/Info.plist
       properties:
@@ -42,6 +45,13 @@ targets:
         UILaunchScreen: {}   # kräver fullskärm — utan denna letterboxar iOS appen med svarta band
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         UIBackgroundModes: [location, audio]
+        UIApplicationSceneManifest:   # CARPLAY-BRYTAREN, se tillståndet ovan. Telefonens fönster sköter SwiftUI själv.
+          UIApplicationSupportsMultipleScenes: true
+          UISceneConfigurations:
+            CPTemplateApplicationSceneSessionRoleApplication:
+              - UISceneClassName: CPTemplateApplicationScene
+                UISceneConfigurationName: CarPlay
+                UISceneDelegateClassName: $(PRODUCT_MODULE_NAME).CarPlaySceneDelegate
         NSLocationWhenInUseUsageDescription: >-
           Halkvakt jämför din position med vägfaror lokalt i telefonen och varnar
           med rösten, även med släckt skärm under körning. Ingen position lämnar

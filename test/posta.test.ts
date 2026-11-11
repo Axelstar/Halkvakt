@@ -43,7 +43,7 @@ test("Facebook får klickbar adress, Instagram hänvisar till profilen", () => {
 
 // ---------- Händelserna (DECISIONS #600) ----------
 // @ts-ignore — .mjs utan typer
-import { valjHandelse, nyHistorik, lagg, sparr, pass } from "../marknadsforing/posta.mjs";
+import { valjHandelse, nyHistorik, lagg, sparr, pass, svepBilder, svepNamn } from "../marknadsforing/posta.mjs";
 
 const L = (kod: number, kort: string, halt: number, kalla: number, yta: number | null = null) =>
   ({ kod, kort, slug: kort.toLowerCase(), halt, vagavsnitt: 40, kalla, kallast: yta === null ? null : { namn: "Station " + kort, yta }, olyckor: 0 });
@@ -58,23 +58,46 @@ test("passen följer svensk tid", () => {
   assert.deepEqual([MORGON, LUNCH, KVALL].map(pass), ["morgon", "lunch", "kvall"]);
 });
 
-test("morgonen utan händelse ger listan; lunch och kväll ger ett län, eller inget när vägarna är fria", () => {
-  assert.equal(valjHandelse(MORGON, bas(MORGON), null, hist(MORGON), {})?.typ, "lista");
+test("varje pass utan händelse ger svepinlägget, eller inget när vägarna är fria (DECISIONS #777)", () => {
+  assert.equal(valjHandelse(MORGON, bas(MORGON), null, hist(MORGON), {})?.nyckel, "svep:morgon");
   const lunch = valjHandelse(LUNCH, bas(LUNCH), null, hist(LUNCH), {});
-  assert.equal(lunch?.nyckel, "lan:25");
-  assert.match(lunch.text, /^Norrbotten: halka på 5 av 40 vägavsnitt.*\nLäget kl\. \d\d:\d\d, .+\.\n/);
-  assert.match(textX(lunch.textIg), /^Norrbotten: halka på 5 av 40 vägavsnitt/, "X behåller siffrorna");
+  assert.equal(lunch?.nyckel, "svep:lunch");
+  assert.match(lunch.text, /^Halkläget kl\. \d\d:\d\d, .+: halka på 5 vägavsnitt i 1 län\. Svep för att se ditt län\.\n\nNorrbotten: halka på 5 av 40 vägavsnitt/);
+  assert.match(textX(lunch.textIg), /^Halkläget kl\. \d\d:\d\d, .+: halka på 5 vägavsnitt i 1 län\./, "X behåller siffrorna");
   assert.ok(!lunch.text.includes("—") && !lunch.text.includes("!"));
   const fritt = lanVid(KVALL, [L(25, "Norrbotten", 0, 2), L(1, "Stockholms län", 0, 0)]);
   assert.equal(valjHandelse(KVALL, fritt, null, hist(KVALL), {}), null);
 });
 
-test("ett län: samma län inte inom 20 h, nästa län i tur tar över (DECISIONS #663)", () => {
+test("svepinlägget: ett per pass och dag, högst åtta län, resten räknas (DECISIONS #777)", () => {
   const tva = (nu: string) => lanVid(nu, [L(25, "Norrbotten", 5, 4, -2), L(23, "Jämtland", 2, 3, -1)]);
-  const postat = { "2026-11-12": [{ tid: LUNCH, nyckel: "lan:25", typ: "lan" }] };
-  assert.equal(valjHandelse(KVALL, tva(KVALL), null, hist(KVALL), postat)?.nyckel, "lan:23");
-  const bada = { "2026-11-12": [{ tid: "2026-11-12T06:00:00Z", nyckel: "lan:25", typ: "lan" }, { tid: LUNCH, nyckel: "lan:23", typ: "lan" }] };
-  assert.equal(valjHandelse(KVALL, tva(KVALL), null, hist(KVALL), bada), null);
+  const lunchen = { "2026-11-12": [{ tid: LUNCH, nyckel: "svep:lunch", typ: "svep" }] };
+  assert.equal(valjHandelse(KVALL, tva(KVALL), null, hist(KVALL), lunchen)?.nyckel, "svep:kvall");
+  const igarKvall = { "2026-11-11": [{ tid: "2026-11-11T16:50:00Z", nyckel: "svep:kvall", typ: "svep" }] };
+  assert.equal(valjHandelse(KVALL, tva(KVALL), null, hist(KVALL), igarKvall)?.nyckel, "svep:kvall", "i går kväll spärrar inte i kväll");
+  const kvallen = { "2026-11-12": [{ tid: "2026-11-12T12:40:00Z", nyckel: "svep:kvall", typ: "svep" }] };
+  assert.equal(valjHandelse(KVALL, tva(KVALL), null, hist(KVALL), kvallen), null);
+  const tio = lanVid(MORGON, Array.from({ length: 10 }, (_, i) => L(i + 1, "Län " + i, 10 - i, 0)));
+  const h = valjHandelse(MORGON, tio, null, sedda(hist(MORGON), ...tio.map((l: any) => l.kod)), {});
+  assert.equal(h.lan.length, 8);
+  assert.equal(h.fler, 2);
+  assert.match(h.text, /halka på 55 vägavsnitt i 10 län/);
+  assert.match(h.text, /Halka eller minusgrader även i 2 län till\./);
+  const frost = lanVid(MORGON, [L(25, "Norrbotten", 0, 4, -2)]);
+  assert.match(valjHandelse(MORGON, frost, null, hist(MORGON), {}).underrad, /^Vägbanan under noll i 1 län\.$/);
+});
+
+test("svepinlägget: omslaget numrerar länen, ett kort per län, appen sist", () => {
+  const lan = lanVid(MORGON, [L(25, "Norrbotten", 5, 4, -2.4), L(23, "Jämtland", 0, 3, -1)]);
+  const h = valjHandelse(MORGON, lan, null, sedda(hist(MORGON), 25, 23), {});
+  const str = { lan: [{ kort: "Norrbotten", vagar: [{ vag: "E 10", strackor: [{ plats: "Kiruna - Abisko", halt: true, text: "Mycket besvärligt", info: ["Is"] }] }] }] };
+  const b = svepBilder(h, lan, str, MORGON);
+  assert.deepEqual(b.map((x: any) => [x.bild, x.nr, x.av]), [["omslag", 1, 4], ["lan", 2, 4], ["lan", 3, 4], ["appen", 4, 4]]);
+  assert.deepEqual(b[0].lan.map((l: any) => [l.nr, l.kort]), [[2, "Norrbotten"], [3, "Jämtland"]]);
+  assert.equal(b[1].hazard, "Halka");
+  assert.deepEqual(b[1].roads, [{ road: "E10", stretch: "Kiruna–Abisko" }]);
+  assert.equal(b[2].hazard, "Frysrisk", "bara stationer under noll: aldrig halka");
+  assert.equal(svepNamn("2026-11-12-morgon", 0), "2026-11-12-morgon-01");
 });
 
 test("SMHI-varning för snö vinner över höstens första; vind till havs räknas inte", () => {
@@ -88,8 +111,8 @@ test("SMHI-varning för snö vinner över höstens första; vind till havs räkn
 test("larmen: bara i larmkollen, utanför dagens tre, högst fyra per dygn", () => {
   const lan = lanVid(LUNCH, [L(23, "Jämtland", 3, 0), ...bas(LUNCH)]);
   const p = (tid: string, typ: string, nyckel = typ + tid) => ({ tid, nyckel, typ });
-  assert.equal(valjHandelse(LUNCH, lan, snofall, hist(LUNCH), {})?.typ, "lan", "dagslägets pass tar inga larm");
-  const tre = { "2026-11-12": [p("2026-11-12T00:10:00Z", "lista"), p("2026-11-12T05:20:00Z", "forandring"), p("2026-11-12T11:30:00Z", "kallaste")] };
+  assert.equal(valjHandelse(LUNCH, lan, snofall, hist(LUNCH), {})?.typ, "svep", "dagslägets pass tar inga larm");
+  const tre = { "2026-11-12": [p("2026-11-12T00:10:00Z", "svep"), p("2026-11-12T05:20:00Z", "forandring"), p("2026-11-12T11:30:00Z", "kallaste")] };
   const v = valjHandelse(LUNCH, lan, snofall, hist(LUNCH), tre, true);
   assert.equal(v?.typ, "smhi", "dagens tre stoppar inte ett larm");
   assert.equal(v?.pass, "live");
@@ -107,7 +130,7 @@ test("höstens första: bara län som inte setts, och första körningen påstå
   assert.equal(h?.typ, "forsta");
   assert.match(h.text, /^I natt kom höstens första halka i Jämtland\./);
   assert.equal(valjHandelse(MORGON, lan, null, nyHistorik(MORGON, null, lan), {}, true), null);
-  assert.equal(valjHandelse(MORGON, lan, null, hist(MORGON), {})?.typ, "lista", "morgonens pass tar listan, larmet tar larmkollen");
+  assert.equal(valjHandelse(MORGON, lan, null, hist(MORGON), {})?.typ, "svep", "morgonens pass tar svepinlägget, larmet tar larmkollen");
 });
 
 test("stor förändring: fördubbling med minst +10, eller två nya län; samma tid i går krävs", () => {
@@ -117,10 +140,10 @@ test("stor förändring: fördubbling med minst +10, eller två nya län; samma 
   const vaxt = lanVid(LUNCH, [L(25, "Norrbotten", 17, 9, -2)]);
   assert.equal(valjHandelse(LUNCH, vaxt, null, h2, {})?.typ, "forandring");
   const lite = lanVid(LUNCH, [L(25, "Norrbotten", 15, 9, -2)]);   // 15 < 2 × 6 + … : fördubblat men bara +9
-  assert.equal(valjHandelse(LUNCH, lite, null, h2, {})?.typ, "lan");
+  assert.equal(valjHandelse(LUNCH, lite, null, h2, {})?.typ, "svep");
   const nya = lanVid(LUNCH, [L(25, "Norrbotten", 6, 4, -2), L(24, "Västerbotten", 1, 0), L(22, "Västernorrland", 1, 0)]);
   assert.equal(valjHandelse(LUNCH, nya, null, h2, {})?.typ, "forandring");
-  assert.equal(valjHandelse(LUNCH, vaxt, null, sedda(hist(LUNCH), 25), {})?.typ, "lan");   // ingen bild från i går
+  assert.equal(valjHandelse(LUNCH, vaxt, null, sedda(hist(LUNCH), 25), {})?.typ, "svep");   // ingen bild från i går
 });
 
 test("höstens kallaste: minst 0,5 °C under förra lägsta och högst −3 °C, utan avstånd i texten", () => {
@@ -129,9 +152,9 @@ test("höstens kallaste: minst 0,5 °C under förra lägsta och högst −3 °C,
   const v = valjHandelse(LUNCH, kall, null, h, {});
   assert.equal(v?.typ, "kallaste");
   assert.ok(!/\bkm\b|\bmeter\b|framför|längre fram/.test(v.text));
-  assert.equal(valjHandelse(LUNCH, lanVid(LUNCH, [L(25, "Norrbotten", 5, 4, -4.4)]), null, h, {})?.typ, "lan");
+  assert.equal(valjHandelse(LUNCH, lanVid(LUNCH, [L(25, "Norrbotten", 5, 4, -4.4)]), null, h, {})?.typ, "svep");
   const mild = { ...h, kallaste: { yta: -2, namn: "X", kort: "Norrbotten" } };
-  assert.equal(valjHandelse(LUNCH, lanVid(LUNCH, [L(25, "Norrbotten", 5, 4, -2.8)]), null, mild, {})?.typ, "lan");
+  assert.equal(valjHandelse(LUNCH, lanVid(LUNCH, [L(25, "Norrbotten", 5, 4, -2.8)]), null, mild, {})?.typ, "svep");
 });
 
 test("veckan: söndag kväll med minst fem dagars historik", () => {
@@ -154,10 +177,10 @@ test("spärrarna: tre per dygn, fyra timmar isär, samma nyckel inte inom 20 h",
   const lan = lanVid(LUNCH, [L(23, "Jämtland", 3, 0), ...bas(LUNCH)]);
   const igar = { "2026-11-11": [{ tid: "2026-11-11T20:00:00Z", nyckel: "forsta:23", typ: "forsta" }] };
   assert.equal(valjHandelse(LUNCH, lan, null, hist(LUNCH), igar, true), null);
-  // 16/10 skrevs ett enda kvitto per dag, inte en lista; det läses fortfarande
-  assert.equal(valjHandelse(MORGON, bas(MORGON), null, hist(MORGON), { "2026-11-12": { tid: "2026-11-12T00:30:00Z" } }), null);
-  // 17/10: gårdagens kvällsinlägg kl. 22 tystade morgonlistan. Listan spärras bara av en lista samma dag.
-  assert.equal(valjHandelse(MORGON, bas(MORGON), null, hist(MORGON), { "2026-11-11": { tid: "2026-11-11T21:14:00Z" } })?.typ, "lista");
+  // 16/10 skrevs ett enda kvitto per dag, inte en lista; det läses fortfarande och räknas mot fyratimmarsspärren
+  assert.equal(valjHandelse(MORGON, bas(MORGON), null, hist(MORGON), { "2026-11-12": { tid: "2026-11-12T03:30:00Z" } }), null);
+  // 17/10: gårdagens kvällsinlägg kl. 22 tystade morgonlistan. Morgonens svepinlägg spärras bara av ett samma morgon.
+  assert.equal(valjHandelse(MORGON, bas(MORGON), null, hist(MORGON), { "2026-11-11": { tid: "2026-11-11T21:14:00Z" } })?.typ, "svep");
 });
 
 test("App Store-länken står i Facebook-texten, inte i Instagram-texten", () => {

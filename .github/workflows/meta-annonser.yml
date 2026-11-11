@@ -1,0 +1,51 @@
+# Meta-annonserna per län (DECISIONS #735): varje län med halka får en annons med morgonens riktiga läge.
+# Startas av pulsklockan tre gånger varje morgon — puls-meta-natt 02:01, puls-meta-gry 04:31 och puls-meta-morgon 06:01 UTC
+# (03:01/05:31/07:01 vintertid). Den första lägger upp dagens annonser så att Meta hinner granska dem före visningen 06:30;
+# de två senare tar med län som blivit hala och byter reservannonsen mot dagens när den är godkänd. Körningarna är idempotenta.
+# Nattens körning ligger före morgonavbrottens fönster (03:28–08:05 UTC, #734); tappas en senare körning går dagens annonser ändå,
+# bara reservannonsen står kvar längre.
+# lage = uppsattning skapar kampanjen och länen en gång, pausade. Utan META_ADS_TOKEN är allt en torrkörning.
+name: meta-annonser
+on:
+  workflow_dispatch:
+    inputs:
+      lage:
+        description: "styr (morgonens körning) eller uppsattning (en gång)"
+        default: styr
+        type: choice
+        options: [styr, uppsattning]
+
+permissions:
+  contents: read
+
+concurrency: { group: meta-annonser, cancel-in-progress: false }
+
+jobs:
+  annonser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+
+      - name: Playwright
+        run: |
+          npm i --no-save --no-audit --no-fund playwright@1.47.2
+          npx playwright install --with-deps chromium
+
+      - name: Annonsstyrningen
+        env:
+          META_ADS_TOKEN: ${{ secrets.META_ADS_TOKEN }}
+          META_PAGE_ID: ${{ secrets.META_PAGE_ID }}
+          META_IG_ID: ${{ secrets.META_IG_ID }}
+        run: node marknadsforing/annonsstyrning.mjs "${{ inputs.lage || 'styr' }}"
+
+      - name: Dagens bilder
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: meta-annonser
+          path: marknadsforing/meta-ut/
+          if-no-files-found: ignore
+          retention-days: 14

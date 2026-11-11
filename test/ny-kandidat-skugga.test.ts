@@ -99,10 +99,19 @@ function* genom(dir: string): Generator<string> {
   }
 }
 
+// Arkivexporten läser den nyas domlogg bara för att lägga den i hinken `arkiv`, som ingen app läser (sql/083, DECISIONS #792).
+// Arkivdumpen signerar bara en hämtningsadress till samma dygnsfiler i hinken, åt Actions med funktionsnyckeln (5/11, PR #1385):
+// den läser ingen tabell och ingen app når den.
+const UNDANTAG = new Set(["supabase/functions/arkivexport/index.ts", "supabase/functions/arkivdump/delar.ts",
+  "supabase/functions/arkivdump/index.ts"]);
+
 test("ingenting i appen, motorn, publiceringen eller edge-funktionerna läser den nyas tabeller (§4: ingenting når förarna)", () => {
   const traff: string[] = [];
   for (const d of ["publish", "engine", "supabase", "android", "ios"]) {
-    for (const p of genom(join(ROT, d))) if (/ny_kandidat|gallra_ny_kandidat/.test(readFileSync(p, "utf8"))) traff.push(p.slice(ROT.length));
+    for (const p of genom(join(ROT, d))) {
+      const rel = p.slice(ROT.length).replace(/\\/g, "/").replace(/^\//, "");
+      if (!UNDANTAG.has(rel) && /ny_kandidat|gallra_ny_kandidat/.test(readFileSync(p, "utf8"))) traff.push(rel);
+    }
   }
   assert.deepEqual(traff, [], "den nya kandidaten loggas bara; publiceringen läser kandidat_regel()");
 });
@@ -116,4 +125,15 @@ test("provets egna verktyg: namnbytet och kolumnläsaren på en känd text", () 
   assert.deepEqual(k, ["a int NOT NULL", "b text CHECK (b IN ('p', 'q'))", "c real[]", "PRIMARY KEY (a, b)"]);
   assert.equal(definition("x\nCREATE OR REPLACE FUNCTION f() RETURNS int\nLANGUAGE sql AS $$\n  SELECT 1\n$$;\nrest", "f"),
     "CREATE OR REPLACE FUNCTION f() RETURNS int\nLANGUAGE sql AS $$\n  SELECT 1\n$$;");
+});
+
+// R = 0,1 (sql/069, DECISIONS #725): en senare migration som skapar om den frystas regel skapar om den nyas i samma fil, ord för ord.
+test("efter 068: varje migration som skapar om kandidat_regel skapar om ny_kandidat_regel likadant", () => {
+  for (const f of filer.filter((x) => x > NY)) {
+    const d = definition(las(f), "kandidat_regel");
+    if (!d) continue;
+    const n = definition(las(f), "ny_kandidat_regel");
+    assert.ok(n, `${f} skapar om kandidat_regel men inte ny_kandidat_regel`);
+    assert.equal(n, byt(d), `ny_kandidat_regel i ${f} ska vara kandidat_regel med bytta namn`);
+  }
 });

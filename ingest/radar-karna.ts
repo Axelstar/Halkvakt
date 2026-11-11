@@ -56,3 +56,36 @@ export function segmentRader(segments: { id: string; line: [number, number][] }[
   }
   return { ids, maxes, means, events, sampled, outside, maxRate };
 }
+
+/** Storstädernas grupper mot en komposit (sql/090, DECISIONS #804, kort #378): radarn läses i varje stadspunkt, inte längs en linje,
+ *  eftersom en grupp kan rymma flera vägar eller gator. Samma händelsegräns och avrundning som segmentRader. */
+export function gruppRader(grupper: { id: string; punkter: [number, number][] }[], rateAt: (lon: number, lat: number) => number | null) {
+  let events = 0, sampled = 0, outside = 0, maxRate = 0;
+  const ids: string[] = [], maxes: number[] = [], means: number[] = [];
+  for (const g of grupper) {
+    let mx = 0, sum = 0, n = 0;
+    for (const p of g.punkter) {
+      const rr = rateAt(p[0], p[1]);
+      sampled++;
+      if (rr === null) { outside++; continue; }
+      mx = Math.max(mx, rr); sum += rr; n++;
+    }
+    if (n > 0 && mx >= MIN_RATE_MMH) {
+      events++; maxRate = Math.max(maxRate, mx);
+      ids.push(g.id); maxes.push(Math.round(mx * 100) / 100); means.push(Math.round((sum / n) * 100) / 100);
+    }
+  }
+  return { ids, maxes, means, events, sampled, outside, maxRate };
+}
+
+/** Småvägsröstens radar (sql/104, DECISIONS #828, kort #647): punkterna i smavagspunkt (sql/103) läses i bitar om högst BIT punkter i
+ *  följd längs sin väg, och varje bit blir en grupp i gruppRader. Biten är `<väg>-<ordning div BIT>`; regeln (steg 5) ska dela på
+ *  samma sätt och läsa den här konstanten, inte en egen kopia. Gallringen håller två timmar, eftersom regeln läser den senaste timmen. */
+export const SMAVAG_BIT = 5;
+export const SMAVAG = {
+  grupper: `SELECT vag || '-' || (ordning / ${SMAVAG_BIT}) AS bit, array_agg(ARRAY[lon, lat] ORDER BY ordning) AS p FROM smavagspunkt GROUP BY 1`,
+  skriv: `INSERT INTO radar_smavag (bit, observed_at, rate_max_mmh, rate_mean_mmh)
+    SELECT u.bit, $2::timestamptz, u.mx, u.mn FROM UNNEST($1::text[], $3::numeric[], $4::numeric[]) AS u(bit, mx, mn)
+    ON CONFLICT (bit, observed_at) DO NOTHING`,
+  gallra: `DELETE FROM radar_smavag WHERE observed_at < now() - interval '2 hours'`,
+};

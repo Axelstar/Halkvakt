@@ -12,7 +12,8 @@
 const SB = Deno.env.get("SUPABASE_URL")!;
 const SRK = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const TRV = Deno.env.get("TRAFIKVERKET_API_KEY")!;
-const CDN = "https://axelstar.github.io/halkvakt-karta/data/app/v1/";
+// Lägesfilen ur hinken som publicera skriver varannan minut, inte kartans tiominutersfil (DECISIONS #741, tillägget 30/10).
+const LAGESFIL = `${SB}/storage/v1/object/app/v1/live.json`;
 const HINK = "favoriter";
 const HISTORIK = 144;   // ett dygn med sex körningar i timmen
 const mb = (b: number) => Math.round(b / 1e5) / 10;
@@ -67,7 +68,10 @@ Deno.serve(async (req) => {
     const [qSit, qTt, qFa, qFr] = rapportFragor(nu);
     const [sit, tt, fa, fr, lv, wl] = await Promise.all([
       trv(qSit), trv(qTt), trv(qFa), trv(qFr),
-      fetch(CDN + "live.json?t=" + nu).then((r) => r.json()),
+      fetch(LAGESFIL, { headers: { Authorization: `Bearer ${SRK}`, apikey: SRK } }).then(async (r) => {
+        if (!r.ok) throw new Error(`lägesfilen ${r.status}: ${(await r.text()).slice(0, 200)}`);
+        return r.json();
+      }),
       fetch(`${SB}/rest/v1/weather_latest?select=station_id,name,air_temp_c`, { headers: { Authorization: `Bearer ${SRK}`, apikey: SRK } }).then((r) => r.json()),
     ]);
     steg("hamtning", t);

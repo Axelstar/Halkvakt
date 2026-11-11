@@ -32,6 +32,11 @@ jobs:
           --health-timeout 5s --health-retries 10
     steps:
       - uses: actions/checkout@v4
+      # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos (DECISIONS #768): koden läggs ovanpå utcheckningen.
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm }
       - run: npm ci
@@ -94,6 +99,12 @@ jobs:
       # Själva vakten kör i md-vakt.yml, som ser varje ändring i DECISIONS.md; här prövas skriptet när koden ändras.
       - name: Stomvaktens självtest (#484)
         run: node --experimental-strip-types scripts/stomvakten.ts --sjalvtest
+      - name: Synk-ihops självtest — synkens PR slås ihop när allt är grönt (#731)
+        run: node --experimental-strip-types scripts/synk-ihop.ts --sjalvtest
+      - name: Sidornas självtest — förstasidan och genomsökningen (#731, #733)
+        run: node --experimental-strip-types scripts/sidorna.ts --sjalvtest
+      - name: Källvaktens självtest, spärregeln för DMI:s webbplats (#737)
+        run: node --experimental-strip-types scripts/trv-bevakning.ts --sjalvtest
       - name: Fristvakten och domlarmet — självtester och fristlistan (#649)
         run: |
           node --experimental-strip-types scripts/fristvakten.ts --sjalvtest
@@ -138,6 +149,10 @@ jobs:
           node --experimental-strip-types fysik/vintrar/langvag_v4.ts --sjalvtest        # den frysta på 2018/19–2021/22: långvågen ur MET:s v4 (DECISIONS #711)
           node --experimental-strip-types ingest/kandidat-db.ts --sjalvtest        # DECISIONS #558, steg 3: databasens in- och utgång
           node --experimental-strip-types ingest/ny-kandidat-db.ts --sjalvtest     # den nya kandidatens skugga: flaggan och den nyas tabeller (DECISIONS #692)
+          node --experimental-strip-types ingest/stadskedjan.ts --sjalvtest        # storstädernas punkter i kedjan: dygnen, indatan, id:na (DECISIONS #804)
+          node --experimental-strip-types ingest/smavagspunkter-db.ts --sjalvtest  # småvägsröstens punkter: laddarens prov av filen (DECISIONS #828)
+          node --experimental-strip-types ingest/smavagskedjan.ts --sjalvtest      # småvägsröstens kedja: historiken per del (#828)
+          node --experimental-strip-types ingest/smavag-live-db.ts --sjalvtest     # småvägsröstens timrader till databasen (#828)
           node --experimental-strip-types scripts/kandidat-reserv.ts --sjalvtest   # reserven för del A (20/10)
           node --experimental-strip-types scripts/matningar/kuvos-trafik-per-band-2026-10-08.ts --sjalvtest
           node --experimental-strip-types scripts/matningar/kuvos-fysik-givarvakt-2026-10-08.ts --sjalvtest
@@ -182,6 +197,7 @@ jobs:
           python3 fysik/vagpunkter/vagpunkter.py --sjalvtest          # DECISIONS #553
           python3 fysik/vagpunkter/hojd.py --sjalvtest                # DECISIONS #553, tillägg 13/10
           python3 fysik/vagpunkter/uh_klass.py --sjalvtest            # DECISIONS #553, val (b)
+          python3 fysik/vagpunkter/urval.py --sjalvtest               # småvägarnas urval och spann, DECISIONS #761
           python3 fysik/vagpunkter/vagpunkter.py prova --fil data/vagdata/vaglagspunkter-sardrag.json   # värdevaktens spann
       # Generatorn gled isär från vektorfilerna tre gånger (31/8, 2/9, 13/9) utan att någon vakt såg det (#195).
       # Den skriver bara filer vars innehåll ändrats och fäller själv på en vektorfil utan scenario.

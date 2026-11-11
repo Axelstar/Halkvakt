@@ -7,12 +7,12 @@
 //     Lutningen finns inte där och kan inte räknas där. Att lägga den i snapshoten hade krävt en
 //     ändring i publicera OCH en deploy av två funktioner för ett fält ingen röst läser.
 //   · Ett cron-jobb som räknar löpande är stängt sedan #85 och öppnas inte utan Bengts ord.
-//   · Ingångarna finns däremot i arkivet — men bara i TRE DYGN (sju till 10/10, DECISIONS #511). Gallringen
+//   · Ingångarna finns däremot i arkivet — men bara i SJU DYGN (tre 10/10–28/10, DECISIONS #511, #740). Gallringen
 //     (#83) tunnar äldre rader till en per halvtimme, och då faller 15-minutersfönstret bort helt och 30-minuters
 //     på trendens egen vakt. Underlaget är alltså färskvara, och höstens frostnätter går inte att ta igen.
 //
 // Alltså: knappen räknar kandidaterna INOM gallringens dygn och skriver dem durabelt. Vakthundens check 5
-// larmar redan vid frost och säger "kör inom tre dygn" — samma disciplin som T-A redan lyder under.
+// larmar redan vid frost och säger "kör inom sju dygn" — samma disciplin som T-A redan lyder under.
 // AVVIKELSEN FRÅN §7 ÄR ARKITEKTUR, INTE TRÖSKEL: svepet, vakterna och utfallsfönstret är
 // dokumentets, oförändrade, och delas med T-A genom publish/trenden.ts.
 //
@@ -20,7 +20,7 @@
 // en frostnatt är den natten borta. En skrivande kolumn hade tagit bort den risken till priset av en
 // deploy och ett jobb i drift. Vägvalet är Bengts; instrumentet är byggt så att båda vägarna är öppna.
 //
-// Run:      DATABASE_URL=... node --experimental-strip-types scripts/trendarkivet.ts [dagar=3]
+// Run:      DATABASE_URL=... node --experimental-strip-types scripts/trendarkivet.ts [dagar=7]
 // Torrkör:  ... scripts/trendarkivet.ts --torrkor      (räknar och rapporterar, skriver inget)
 // Självtest utan DB: scripts/trendarkivet.ts --sjalvtest
 
@@ -29,7 +29,7 @@ import { brottSql, givarfelSql } from "../publish/snapshot-core.ts";
 import { arKandidat, utfall } from "../publish/trendkandidat.ts";
 
 const UTFALLSFONSTER_MIN = 90;   // §2:s utfallsfönster, mitt i svepet 60·120·180
-const GALLRING_DYGN = 3;         // sql/044 (DECISIONS #511); kontraktsgrinden vaktar kopiorna
+const GALLRING_DYGN = 7;         // sql/072 (DECISIONS #740; tre 10/10–28/10, #511); kontraktsgrinden vaktar kopiorna
 const MAX_DAGAR = GALLRING_DYGN; // Ö-D:s syskon: bortom detta har gallringen ätit upplösningen
 
 if (process.argv.includes("--sjalvtest")) {

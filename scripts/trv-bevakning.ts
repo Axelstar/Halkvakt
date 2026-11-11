@@ -31,6 +31,10 @@
 //     dk-dmi           www.dmi.dk/frie-data (hash, 3 980 tecken). Adressen kommer ur DMI:s
 //                      eget API-rotsvar. Gamla opendatadocs.dmi.govcloud.dk svarar 404 på
 //                      VARJE sökväg och dmiapi.govcloud.dk 503 — dokumentationen har flyttat.
+//                      SPÄRRAD från GitHubs körmaskiner sedan oktober (403 "Access from your
+//                      location is not allowed", 200 från Sverige); räknas då inte som fel (#737).
+//     dk-dmi-api       opendataapi.dmi.dk/v2/metObs/collections (hash, JSON). Samma adress som
+//                      ingest/dk.ts hämtar, och den når GitHub. Tillagd 28/10 (Bengt, DECISIONS #737).
 //     polisen-regler   polisen.se …/regler-for-oppna-data/ (hash, 5 318 tecken). Villkoren,
 //                      inklusive user-agent-kravet som ger 403 om det bryts.
 //     polisen-api      polisen.se …/api-over-polisens-handelser/ (hash, 4 327 tecken). Fälten.
@@ -95,6 +99,15 @@ async function gql(query: string, variables?: unknown): Promise<any> {
 // gång per källa, sedan är stämpeln satt. Ingen flagga, inget handgrepp, ingen larmstorm.
 const NORMV = 2;
 const sha = (s: string) => createHash("sha256").update(s).digest("hex").slice(0, 16);
+
+// DMI:s webbplats spärrar GitHubs körmaskiner sedan oktober: 403 "Access from your location is not allowed",
+// medan samma adress svarar 200 från Sverige (DECISIONS #737). En sådan källa räknas som SPÄRRAD, inte som fel,
+// så att jobbet inte blir rött varje måndag för något vi inte kan ändra; DMI:s API bevakas av dk-dmi-api.
+// Bara uttryckligen listade källor och bara den texten: en annan 403, eller samma text från en annan källa,
+// är fortfarande ett fel.
+const SPARRBARA = new Set(["dk-dmi"]);
+const sparrad = (name: string, msg: string) =>
+  SPARRBARA.has(name) && / -> 403: [\s\S]*Access from your location is not allowed/i.test(msg);
 
 // ── List sources ──────────────────────────────────────────────────────────────
 // En RSS-feed är en RSS-feed: samma parser för Trafikverket och SMHI. Guid faller tillbaka
@@ -171,6 +184,8 @@ async function main(): Promise<number> {
     ["fi-digitraffic", async () => stable(norm(await fetchText("https://www.digitraffic.fi/en/news/")))],
     ["no-vegvesen", async () => stable(norm(await fetchText("https://www.vegvesen.no/fag/teknologi/apne-data/et-utvalg-apne-data/hva-er-datex/informasjon-og-nyheter/")))],
     ["dk-dmi", async () => stable(norm(await fetchText("https://www.dmi.dk/frie-data")))],
+    // DECISIONS #737: DMI:s API, som når GitHub när webbplatsen inte gör det. Första körningen seedar utan larm.
+    ["dk-dmi-api", async () => stable(norm(await fetchText("https://opendataapi.dmi.dk/v2/metObs/collections", "application/json")))],
     ["polisen-regler", async () => stable(norm(await fetchText("https://polisen.se/om-polisen/om-webbplatsen/oppna-data/regler-for-oppna-data/")))],
     ["polisen-api", async () => stable(norm(await fetchText("https://polisen.se/om-polisen/om-webbplatsen/oppna-data/api-over-polisens-handelser/")))]];
   for (const [name, fn] of hashSources) {
@@ -201,7 +216,12 @@ async function main(): Promise<number> {
         changes.push({ source: name, title: "innehållet ändrat", lines: rader, text: nya.join(" ") });
       }
       sources[name] = { hash: h, textLen: text.length, text, normv: NORMV };
-    } catch (e) { console.error(`${name}: ${String((e as Error).message)}`); fel++; }
+    } catch (e) {
+      const msg = String((e as Error).message);
+      // Spärrad källa: grundvärdet står kvar, och jobbet blir inte rött för något vi inte kan ändra (#737).
+      if (sparrad(name, msg)) console.log(`${name}: SPÄRRAD från körmaskinens plats (${msg.slice(0, 120)}). Inte ett fel: DMI:s API bevakas av dk-dmi-api.`);
+      else { console.error(`${name}: ${msg}`); fel++; }
+    }
   }
 
   if (seed) { console.log("State seedad för alla källor — inga larm."); }
@@ -237,4 +257,19 @@ async function main(): Promise<number> {
   // Trasiga källor = rött jobb — en källvakt som tappat en källa är ingen vakt.
   return fel ? 1 : 0;
 }
-process.exitCode = await main();
+// --sjalvtest (#737): spärregeln utan nätet. Den får bara släppa igenom DMI:s platsspärr på dk-dmi.
+function sjalvtest(): number {
+  const fall: [string, string, boolean][] = [
+    ["dk-dmi", "https://www.dmi.dk/frie-data -> 403: <html><body>Access from your location is not allowed</body></html>", true],
+    ["dk-dmi", "https://www.dmi.dk/frie-data -> 403: Forbidden", false],
+    ["dk-dmi", "https://www.dmi.dk/frie-data -> 503: Access from your location is not allowed", false],
+    ["dk-dmi-api", "https://opendataapi.dmi.dk/v2/metObs/collections -> 403: Access from your location is not allowed", false],
+    ["polisen-regler", "https://polisen.se/ -> 403: Access from your location is not allowed", false],
+  ];
+  const fel = fall.filter(([n, m, v]) => sparrad(n, m) !== v);
+  for (const [n, m, v] of fel) console.error(`FEL: sparrad(${n}, "${m.slice(0, 60)}…") skulle vara ${v}`);
+  if (!fel.length) console.log(`✓ trv-bevakning självtest: spärregeln släpper bara DMI:s platsspärr på dk-dmi (${fall.length} fall)`);
+  return fel.length ? 1 : 0;
+}
+
+process.exitCode = process.argv.includes("--sjalvtest") ? sjalvtest() : await main();

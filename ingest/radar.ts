@@ -14,16 +14,21 @@
 //
 // Run:  DATABASE_URL=... node --experimental-strip-types ingest/radar.ts        (skarp)
 //       node --experimental-strip-types ingest/radar.ts --prov                  (diagnos, ingen DB)
+//       DATABASE_URL=... node --experimental-strip-types ingest/radar.ts --bara-stad   (bara radar_stad och radar_smavag, var 15:e minut:
+//                                        radar-stad.yml, DECISIONS #805, #828; Trafikverkets sträckor och radar_precip rörs inte)
 // Källa: SMHI öppna data (CC BY 4.0). User-Agent: repo-URL, inga personuppgifter.
 
 import { readFileSync } from "node:fs";
 import h5wasm from "h5wasm";
 import proj4 from "proj4";
-import { MIN_RATE_MMH, rateFromRaw, segmentRader } from "./radar-karna.ts";
+import { MIN_RATE_MMH, SMAVAG, gruppRader, rateFromRaw, segmentRader } from "./radar-karna.ts";
 
 const UA = "Halkvakt-radarpilot/0.1 (+https://github.com/Axelstar/Halkvakt)";
 const API = "https://opendata-download-radar.smhi.se/api/version/latest/area/sweden/product/comp";
 const PROV = process.argv.includes("--prov");
+// Storstädernas radar var 15:e minut (DECISIONS #805): bara radar_stad. radar_precip skrivs bara av den vanliga körningen en gång i
+// timmen, så att K:s fukt på vägpunkterna, kandidatens dom och arkivet räknar på samma takt som förut.
+const BARA_STAD = process.argv.includes("--bara-stad");
 
 // ── 1. Senaste filen ur dagens (eller gårdagens, runt midnatt) listning.
 async function latestFile(): Promise<{ link: string; validIso: string }> {
@@ -111,6 +116,7 @@ let segments: { id: string; line: [number, number][] }[] = [];
 if (url) {
   const pg = (await import("pg")).default;
   const pool = new pg.Pool({ connectionString: url, max: 1, ssl: url.includes("localhost") ? undefined : { rejectUnauthorized: false } });
+  if (!BARA_STAD) {
   const res = await pool.query(`SELECT segment_id, ST_AsGeoJSON(geom)::json AS g FROM road_conditions WHERE NOT deleted AND geom IS NOT NULL`);
   segments = res.rows.map((r: any) => ({ id: r.segment_id, line: r.g.coordinates }));
 
@@ -131,6 +137,45 @@ if (url) {
   if (!PROV) {
     const fr = await pool.query(`SELECT count(*) AS n, count(DISTINCT observed_at) AS filer, max(observed_at) AS senaste FROM radar_precip WHERE observed_at > now() - interval '24 hours'`);
     console.log(`radar_precip senaste dygnet: ${fr.rows[0].n} rader över ${fr.rows[0].filer} kompositer, senaste ${fr.rows[0].senaste ?? "—"}`);
+  }
+  }
+  // STORSTÄDERNAS PUNKTER (sql/089, sql/090; DECISIONS #804, kort #378): radarn i varje stadspunkt i samma komposit, max och medel per
+  // grupp, till radar_stad — aldrig radar_precip. Efter radar_precip, så att den alltid är skriven. Loggen säger bara klart eller fel
+  // (punkterna är kuvösens, #768). Faller delen syns det i loggen och steget blir rött (radarfelslarmet, kort #293); radar_precip står.
+  if (!PROV) {
+    try {
+      const g = await pool.query(`SELECT grupp, array_agg(ARRAY[lon, lat] ORDER BY punkt) AS p FROM stadspunkt GROUP BY grupp`);
+      const st = gruppRader(g.rows.map((r: any) => ({ id: r.grupp, punkter: r.p })), rateAt);
+      if (st.ids.length)
+        await pool.query(
+          `INSERT INTO radar_stad (grupp, observed_at, rate_max_mmh, rate_mean_mmh)
+           SELECT u.grupp, $2::timestamptz, u.mx, u.mn FROM UNNEST($1::text[], $3::numeric[], $4::numeric[]) AS u(grupp, mx, mn)
+           ON CONFLICT (grupp, observed_at) DO NOTHING`,
+          [st.ids, validIso, st.maxes, st.means]);
+      await pool.query(`DELETE FROM radar_stad WHERE observed_at < now() - interval '2 days'`);
+      console.log("stadsradarn: klart");
+    } catch (e) {
+      console.log(`stadsradarn: FEL — ${String((e as Error)?.message ?? e).slice(0, 160)}`);
+      await pool.end();
+      process.exit(1);
+    }
+  }
+  // SMÅVÄGSRÖSTENS PUNKTER (sql/103, sql/104; DECISIONS #828, kort #647): radarn i varje småvägspunkt i samma komposit, max och medel
+  // per bit om högst fem punkter längs vägen (radar-karna.ts SMAVAG), till radar_smavag. Efter storstäderna, så att radar_precip och
+  // radar_stad alltid är skrivna. Loggen säger bara klart eller fel och tiden (#768: inga antal); faller delen blir steget rött.
+  if (!PROV) {
+    try {
+      const t0 = Date.now();
+      const g = await pool.query(SMAVAG.grupper);
+      const sv = gruppRader(g.rows.map((r: any) => ({ id: r.bit, punkter: r.p })), rateAt);
+      if (sv.ids.length) await pool.query(SMAVAG.skriv, [sv.ids, validIso, sv.maxes, sv.means]);
+      await pool.query(SMAVAG.gallra);
+      console.log(`småvägsradarn: klart på ${Date.now() - t0} ms`);
+    } catch (e) {
+      console.log(`småvägsradarn: FEL — ${String((e as Error)?.message ?? e).slice(0, 160)}`);
+      await pool.end();
+      process.exit(1);
+    }
   }
   await pool.end();
 } else {

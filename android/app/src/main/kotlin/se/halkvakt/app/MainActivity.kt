@@ -56,6 +56,7 @@ class MainActivity : ComponentActivity() {
         AlertBus.onEvent = AppEvents::post
         autostartOn.value = AutostartManager.isEnabled(this)
         setContent { HalkvaktApp(this) }
+        if (intent?.getBooleanExtra(FavoritNotis.EXTRA_FAVORITER, false) == true) Favoriter.visaFliken.value = true   // #817
         lifecycleScope.launch(Dispatchers.IO) {
             runCatching { SnapshotRepo.loadSnapshot(this@MainActivity) }
                 .onSuccess { snap ->
@@ -103,13 +104,14 @@ class MainActivity : ComponentActivity() {
             Prefs.setFavErbjud(this@MainActivity, true)
             val l = Favoriter.lager(this@MainActivity)
             val resa = { lat0: Double -> l.resanBorjar(true); repeat(400) { i -> l.fix(18.063, lat0 + i * 85 / 111_320.0) }; l.resanSlutar(34.0, 30.0) }
-            if (l.rutter.value.isEmpty()) { resa(59.20); l.spara("Till jobbet") }
-            if (l.vantande.value == null) resa(59.33)
+            if (l.rutter.value.isEmpty()) { resa(59.20)?.let { l.spara(it.id, "Jobbet") } }
+            if (l.dagens.value.isEmpty()) resa(59.33)
         }
     }
 
     override fun onNewIntent(intent: android.content.Intent) {
         super.onNewIntent(intent)
+        if (intent.getBooleanExtra(FavoritNotis.EXTRA_FAVORITER, false)) Favoriter.visaFliken.value = true   // #817: notisens tryck
         handleAutoStart(intent)   // the "Kör du?" notification while the app is already open
     }
 
@@ -134,6 +136,7 @@ class MainActivity : ComponentActivity() {
         if (AutostartManager.isEnabled(this)) {
             AutostartManager.setEnabled(this, false)
             autostartOn.value = false
+            lifecycleScope.launch(Dispatchers.IO) { runCatching { Raknare.installning(this@MainActivity, "autostart:av") } }   // #787
             AppEvents.post("Autostart av.")
             return
         }
@@ -168,6 +171,7 @@ class MainActivity : ComponentActivity() {
         }
         AutostartManager.setEnabled(this, true)
         autostartOn.value = true
+        lifecycleScope.launch(Dispatchers.IO) { runCatching { Raknare.installning(this@MainActivity, "autostart:pa") } }   // #787
         notice.value = null
         AppEvents.post("Autostart på. Vakten lär sig bilens Bluetooth vid nästa körning.")
     }
@@ -246,6 +250,9 @@ class MainActivity : ComponentActivity() {
     override fun onRequestPermissionsResult(code: Int, perms: Array<String>, results: IntArray) {
         super.onRequestPermissionsResult(code, perms, results)
         val granted = results.isNotEmpty() && results.all { it == PackageManager.PERMISSION_GRANTED }
+        // #772: ett nej i platsrutan räknas här; ett ja räknas i onResume, som följer efter rutan.
+        if (Manifest.permission.ACCESS_FINE_LOCATION in perms && !hasPermissions())
+            lifecycleScope.launch(Dispatchers.IO) { runCatching { Raknare.behorighet(this@MainActivity, nekad = true) } }
         when (code) {
             1 -> if (hasPermissions()) onToggle()
                  else notice.value = if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
@@ -263,6 +270,12 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         autostartOn.value = AutostartManager.isEnabled(this)
+        // #772: behörigheten som den ser ut nu (en gång per enhet och värde), och räknarens kö går iväg — appen är öppen, bilen står.
+        // #787: kohorten låses först (en ny telefon har inga spår än), sedan notiserna som de ser ut nu.
+        val notisPa = notificationsOk(); val notisFragat = askedNotifications
+        lifecycleScope.launch(Dispatchers.IO) { runCatching {
+            Prefs.raknareKohort(this@MainActivity)
+            Raknare.behorighet(this@MainActivity); Raknare.notiser(this@MainActivity, notisPa, notisFragat); Raknare.flush(this@MainActivity) } }
         if (hasPermissions()) {
             val fused = LocationServices.getFusedLocationProviderClient(this)
             fused.lastLocation.addOnSuccessListener { l ->

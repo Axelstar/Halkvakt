@@ -8,7 +8,8 @@
 // Kör: node --experimental-strip-types scripts/rapport-facit.ts            skriver filen
 //      node --experimental-strip-types scripts/rapport-facit.ts --check    fäller om filen inte är den skriptet skriver
 import { readFileSync, writeFileSync } from "node:fs";
-import { aldersgrind, kollensIds, nyttSedanKollen, radlage, resansRapport, riktning, titel, tomtRad } from "../publish/rapport-app.ts";
+import { aldersgrind, KANDIDAT_FOT, KANDIDAT_MARGINAL_M, KANDIDAT_MINST_PUNKTER, kandidatRader, kandidatTomt, kollensIds,
+  nyttSedanKollen, radlage, resansRapport, riktning, titel, tomtRad } from "../publish/rapport-app.ts";
 import type { Rad } from "../publish/rapport-core.ts";
 import { GRUPP_FRAN, grupperade, LANGS_ANDEL, LANGS_MINST_M, LANGS_STEG_M, MARGINALER, nyttSedan, RUBRIK, tomma, type Linje,
   type Linjer, type Rapport } from "../publish/rapport-core.ts";
@@ -22,6 +23,8 @@ const linje = (fran: [number, number], till: [number, number], steg = 100): Linj
   const n = Math.max(1, Math.round(Math.hypot(till[0] - fran[0], till[1] - fran[1]) / steg));
   return Array.from({ length: n + 1 }, (_, i) => P(fran[0] + ((till[0] - fran[0]) * i) / n, fran[1] + ((till[1] - fran[1]) * i) / n));
 };
+
+const K_TID = "2026-10-18T05:00:00.000Z";   // kandidatens timme: 07:00 i Stockholm
 
 // Resan: norrut 0 → 8 000 m, sedan österut 0 → 6 000 m, en punkt per 75 m.
 const rutt: Linje = [...Array.from({ length: 107 }, (_, i) => P(0, i * 75)), P(0, 8000),
@@ -44,6 +47,17 @@ const live = {
   smhi: [{ id: "smhi-1", event: "Halka", niva: 2, geom: { type: "Polygon", coordinates: [[
     P(-1000, 6000), P(1000, 6000), P(1000, 9000), P(-1000, 9000), P(-1000, 6000)]] } }],
   bridges: [{ id: "20", ...lonlat(50, 4000), road: "E4", yta: 2.0, fukt: true }],
+  // Halkvakt tror (#739): en rad per väg, minst två punkter inom 150 m, inte en sträcka som redan är halksträcka.
+  kandidat: [
+    { id: "1", tid: K_TID, vag: "E4", punkter: [P(20, 1500), P(20, 2900)] },                         // halksträcka i segments: inte här
+    { id: "40", tid: K_TID, vag: "E4", punkter: [P(30, 500), P(30, 2500)] },                         // 30 m: med
+    { id: "41", tid: K_TID, vag: "E4", punkter: [P(-40, 5200), P(-40, 7000)] },                      // 40 m, samma väg: samma rad
+    { id: "42", tid: K_TID, vag: "73", punkter: [P(2500, 8060), P(4500, 8060)] },                    // 60 m längs andra benet
+    { id: "43", tid: K_TID, vag: "263", punkter: [P(-1940, 5000), P(60, 5000), P(2060, 5000)] },     // tvärväg: en punkt nära
+    { id: "44", tid: K_TID, vag: null, punkter: [P(100, 3500), P(100, 4300)] },                      // 100 m, utan vägnummer
+    { id: "45", tid: K_TID, vag: "E18", punkter: [P(400, 6000), P(400, 7000)] },                     // 400 m: för långt
+    { id: "46", tid: K_TID, vag: "E4", punkter: [P(-50, 6500)] },                                    // en enda punkt
+  ],
 } as unknown as LiveDoc;
 
 const stat = { schema: 1, cameras: [
@@ -103,7 +117,25 @@ const ut = {
     { namn: "når bara en provpunkt", delar: R([50, 3000], [250, 3000]), svar: riktning(R([50, 3000], [250, 3000]), rutt, 100) },   // 50, 150 och 250 m: en inom
   ],
   app: appen(),
+  kandidat: kandidaten(),
 };
+
+/** Halkvakt tror (#739): rutans rader Dit och Hem, null utan nyckeln, och rutans texter. */
+function kandidaten() {
+  const d = kandidatRader(rutt, false, live)!, h = kandidatRader(rutt, true, live)!;
+  const utan = { ...live } as Record<string, unknown>;
+  delete utan.kandidat;
+  return {
+    marginalM: KANDIDAT_MARGINAL_M, minstPunkter: KANDIDAT_MINST_PUNKTER, fot: KANDIDAT_FOT,
+    dit: d, hem: h, avstangd: kandidatRader(rutt, false, utan as unknown as LiveDoc),
+    texter: [
+      { namn: "rader", rader: true, gammal: false, svar: kandidatTomt(d, false) },
+      { namn: "inga rader längs resan", rader: false, gammal: false, svar: kandidatTomt([], false) },
+      { namn: "avstängd", rader: null, gammal: false, svar: kandidatTomt(null, false) },
+      { namn: "gammal lägesfil", rader: true, gammal: true, svar: kandidatTomt(d, true) },
+    ],
+  };
+}
 
 /** Fliken och rapportskärmen (steg 3b): fallen ges som id ur Dit- och Hem-raderna ovan, så att apparna bygger samma indata. */
 function appen() {

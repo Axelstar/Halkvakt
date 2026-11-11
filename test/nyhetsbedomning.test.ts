@@ -103,7 +103,7 @@ test("en okänd källa ska inte krascha och inte påstå något", () => {
 
 // ── KARTANS EGEN INTEGRITET ───────────────────────────────────────────────────────────────
 test("varje källvaktskälla som täcker produktion kan slås upp i kartan", () => {
-  for (const namn of ["trv-rss", "smhi-uppdateringar", "fi-digitraffic", "no-vegvesen", "dk-dmi", "polisen-regler", "polisen-api"]) {
+  for (const namn of ["trv-rss", "smhi-uppdateringar", "fi-digitraffic", "no-vegvesen", "dk-dmi", "dk-dmi-api", "polisen-regler", "polisen-api"]) {
     const rader = raderForKalla(KARTAN, namn);
     assert.ok(rader.length, `${namn} ska finnas i kartan`);
     assert.ok(rader.some((r) => r.roll === "produktion"), `${namn} ska täcka minst ett produktionsberoende`);

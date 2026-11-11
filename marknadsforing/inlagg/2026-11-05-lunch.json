@@ -1,0 +1,24 @@
+{
+  "typ": "svep",
+  "nyckel": "svep:lunch",
+  "etikett": "Halkläget kl. 11:30",
+  "rubrik": "Halt i dag",
+  "underrad": "Halka på 102 vägavsnitt i 8 län.",
+  "fler": 0,
+  "text": "Halkläget kl. 11:30, torsdag 5 november: halka på 102 vägavsnitt i 8 län. Svep för att se ditt län.\n\nVästerbotten: halka på 22 av 44 vägavsnitt, 6 stationer under noll, kallast −0,5 °C vid Bjurträsk, 1 olycka.\nNorrbotten: halka på 21 av 58 vägavsnitt, 35 stationer under noll, kallast −2,7 °C vid Nedre Soppero.\nDalarna: halka på 20 av 38 vägavsnitt, 4 stationer under noll, kallast −1,9 °C vid Gruvorna.\nVästmanland: halka på 18 av 24 vägavsnitt.\nVärmland: halka på 8 av 52 vägavsnitt, 20 stationer under noll, kallast −2,2 °C vid Storberget, 1 olycka.\nJämtland: halka på 6 av 17 vägavsnitt, 2 stationer under noll, kallast −0,2 °C vid Vemdalsskalet.\nVästernorrland: halka på 6 av 22 vägavsnitt.\nUppsala län: halka på 1 av 25 vägavsnitt, 1 olycka.\n\nLäget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Västerbotten #Norrbotten #Dalarna #Västmanland #Värmland #halkvakt",
+  "textIg": "Halkläget kl. 11:30, torsdag 5 november: halka på 102 vägavsnitt i 8 län. Svep för att se ditt län.\n\nVästerbotten: halka på 22 av 44 vägavsnitt, 6 stationer under noll, kallast −0,5 °C vid Bjurträsk, 1 olycka.\nNorrbotten: halka på 21 av 58 vägavsnitt, 35 stationer under noll, kallast −2,7 °C vid Nedre Soppero.\nDalarna: halka på 20 av 38 vägavsnitt, 4 stationer under noll, kallast −1,9 °C vid Gruvorna.\nVästmanland: halka på 18 av 24 vägavsnitt.\nVärmland: halka på 8 av 52 vägavsnitt, 20 stationer under noll, kallast −2,2 °C vid Storberget, 1 olycka.\nJämtland: halka på 6 av 17 vägavsnitt, 2 stationer under noll, kallast −0,2 °C vid Vemdalsskalet.\nVästernorrland: halka på 6 av 22 vägavsnitt.\nUppsala län: halka på 1 av 25 vägavsnitt, 1 olycka.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone, länken finns i vår profil.\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Västerbotten #Norrbotten #Dalarna #Västmanland #Värmland #halkvakt",
+  "pass": "lunch",
+  "antal": 10,
+  "datum": "2026-11-05",
+  "generated_at": "2026-11-05T10:30:24.241Z",
+  "lan": [
+    "vasterbotten",
+    "norrbotten",
+    "dalarna",
+    "vastmanland",
+    "varmland",
+    "jamtland",
+    "vasternorrland",
+    "uppsala"
+  ]
+}

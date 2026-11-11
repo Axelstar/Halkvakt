@@ -68,14 +68,24 @@ export function karantanSql(rad: string, tabell = "weather_observations"): strin
   return `${brottSql(rad, tabell)} < ${KARANTAN_BROTT}` + (tabell === "weather_observations" ? ` AND NOT ${givarfelSql(rad)}` : "");
 }
 
-/** Givarvakten (#75) och radvakten (#234). Gäller VARJE fråga mot weather_latest — svensk, gräns och bro. */
-export const WX_SANE =
+/** Givarvakten (#75) och radvakten (#234). Gäller VARJE fråga mot weather_latest — svensk, gräns och bro. Färskheten skiljer
+ *  sig: en svensk station får vara högst 60 minuter gammal (DECISIONS #751; tre timmar till 30/10), så att en station som
+ *  stannat inte ger frysrisk på ett gammalt värde. Grannländernas har kvar tre timmar, eftersom de hämtas en gång i timmen
+ *  (DECISIONS #83); hälsokontrollen och vakthunden räknar de nåbara grannstationerna med samma tre timmar. */
+const wxSane = (farsk: string) =>
   "surface_temp_c IS NOT NULL" +
-  " AND sample_time > now() - interval '3 hours'" +
+  ` AND sample_time > now() - interval '${farsk}'` +
   " AND (air_temp_c IS NULL OR surface_temp_c >= air_temp_c - 12)" +
   ` AND ${RADVAKT_SQL}`;
+export const WX_SANE = wxSane("60 minutes");
+export const WX_SANE_GRANS = wxSane("3 hours");
 
-const BORDER_M = 40_000;
+export const BORDER_M = 40_000;
+/** Lådan runt grannstationen som gränsfrågan sållar vägarna med på vägindexet innan avståndet mäts (DECISIONS #742). Den
+ *  måste rymma varje vägpunkt inom BORDER_M. En longitudgrad är 111,32 km × cos(latitud), och 72° N ligger norr om varje
+ *  punkt inom 40 km från en svensk väg (de nordligaste går under 69,1° N), så lådan är 1,16° åt varje håll; latituden
+ *  behöver bara 0,36°. */
+export const BORDER_DEG = BORDER_M / (111_320 * Math.cos((72 * Math.PI) / 180));
 const BORDER_LANDS = ["fi", "no"] as const;
 
 /** RADARN I SNAPSHOTEN (kort #81 steg C, TROSKLAR-VATTENPLANING §3.4, DECISIONS #153–#156).
@@ -99,6 +109,10 @@ export const REGN_H_FONSTER_H = 48;
 /** F1 (kort #187): en lutning äldre än sitt längsta fönster säger inget om nu. */
 export const LUTNING_MAX_ALDER_MIN = 60;
 const BRIDGE_M = 15_000;
+/** BROARNA PAUSADE (DECISIONS #788, 4/11). Vellinge visade regn vid +2,0 °C kl. 08 och regeln "närmaste våta station ≤ +3 inom
+ *  15 km" gjorde alla 30 broar i södra Malmö till frysrisk; Bengt fick fem rop på åtta minuter på Yttre Ringvägen. Snapshoten
+ *  skickar inga broar förrän regeln är omgjord. Motorn och vektorerna är orörda: utan broar i filen finns inget att säga. */
+export const BROAR_PAUSADE = true;
 
 /** RADARN PER STATION (DECISIONS #459): radarns högsta RÅA `rate_mean_mmh` över väglagssträckorna inom 5 km från stationen
  *  (kopplingen station–väg, Bengt 17/9, DECISIONS #225 — samma som uppspelningens radarvariant) de senaste N timmarna, där N är
@@ -143,8 +157,18 @@ export function bridgesFromGeoJSON(fc: { features: any[] }): Bridge[] {
   }));
 }
 
-export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new Date()) {
+export async function buildSnapshot(qIn: Q, bridgesIn: Bridge[], now: Date = new Date(), broar = !BROAR_PAUSADE) {
   const notes: string[] = [];
+  // Tiden per avsnitt (DECISIONS #741 punkt 1): bygget tog 40,9 s 28/10 18:00 utan att det syntes vilka frågor. Varje fråga räknas
+  // på avsnittet den ställs i; det som inte är frågor (JSON, beräkningar) ingår inte. Publiceringen lägger talen i sitt svar.
+  // performance.now() och inte väggklockan, som kuvösens klocka (test/kuvos.test.ts) förbjuder här; en tidmätning påverkar inte
+  // lägesfilen.
+  const delar: Record<string, number> = {};
+  let avsnitt = "static";
+  const q: Q = async (text, params) => {
+    const t0 = performance.now();
+    try { return await qIn(text, params); } finally { delar[avsnitt] = (delar[avsnitt] ?? 0) + Math.round(performance.now() - t0); }
+  };
 
   // ---- static: kameror ----
   const cams = await q(`
@@ -164,6 +188,7 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
   };
 
   // ---- live: väglag ----
+  avsnitt = "vaglag";
   const segs = await q(`
     SELECT segment_id, condition_code, condition_info, road_number,
            ST_AsGeoJSON(ST_SimplifyPreserveTopology(geom, 0.0005))::json AS g
@@ -180,6 +205,7 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
         SELECT 1 FROM unnest(condition_info) i WHERE i ~* '(^|[^a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt)|snö|frost'))`);
 
   // ---- live: radarns regn per segment (kort #81 steg C) ----
+  avsnitt = "radar";
   // EN SKRIVARE: ingen annan sätter `regn`. Senaste raden per segment inom giltighetsfönstret.
   //
   // FRÅNVARO ÄR INTE TORRT, och det är hela finessen. radar_precip skrivs bara när ett segment
@@ -214,6 +240,7 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
   }
 
   // ---- live: regnsegmenten (kort #154 → DECISIONS #187, bedömning v3 N2) ----
+  avsnitt = "regnsegment";
   // Väglagsfrågan ovan släpper bara HALKKLASSADE segment, så radarns `regn` nådde aldrig de segment
   // vattenplaningen sitter på. De läggs INTE i `segments`: motorn och båda portarna gör varje rad
   // där till en slippery_segment-varning (engine/src/snapshot.ts, SnapshotRepo.kt/.swift), så en
@@ -238,6 +265,7 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
   }
 
   // ---- live: kandidatens varningar (kort #343, NIVA2-LIVE steg 6, DECISIONS #562 punkt 3, #576) ----
+  avsnitt = "kandidat";
   // Regeln bor på ETT ställe, kandidat_regel() i databasen — samma funktion som domloggen (kandidat_logga) och skuggmotorns
   // takt läser, så det som publiceras är det som döms. Här står inga tal: publiceringen tar bara utfallet `varnar`. Egen nyckel,
   // aldrig `segments` — varje rad där blir en halkvarning i tre portar (LÄGG TILL, ERSÄTT ALDRIG, som rain_segments). En rad per
@@ -255,28 +283,78 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
   } catch (e) {
     notes.push(`kandidat: brytaren ej läsbar (${String((e as Error).message).slice(0, 80)}) — nyckeln utelämnas`);
   }
-  const kandidat: { id: string; tid: string; punkter: [number, number][] }[] = [];
+  // BYTET (FORREGISTRERING-2026-27 §12, sql/070, DECISIONS #723): talande_timme() och talande_regel() ger den nya kandidatens timme
+  // och regel när Bengts och Axels beslut säger ny och den nyas timme är färsk, annars den frystas (§12 f). Utan beslut talar den
+  // frysta, som förut. Går bytet inte att läsa (före migrationen) frågas kandidat_timme() och kandidat_regel() som förut.
+  // `vag` (DECISIONS #739): sträckans vägnummer ur road_conditions, samma kolumn som halksträckornas `road`, så att rapporten i
+  // Favoriter kan skriva "Halka på E4". Läggs till, ersätter inget; null när Trafikverket inte satt något nummer.
+  const kandidat: { id: string; tid: string; punkter: [number, number][]; vag: string | null }[] = [];
   if (kandidatPa) try {
-    const [timme] = await q(`SELECT kandidat_timme() AS t`);
+    let timme: Record<string, any> | undefined, regel = "kandidat_regel()";
+    try {
+      [timme] = await q(`SELECT tid AS t, talare FROM talande_timme()`);
+      if (!timme) throw new Error("talande_timme() gav ingen rad");
+      regel = "talande_regel()";
+      if (timme?.talare === "ny") notes.push("kandidat: den nya kandidaten talar (FORREGISTRERING-2026-27 §12, talande_regel)");
+    } catch (e) {
+      notes.push(`kandidat: bytet ej läsbart (${String((e as Error).message).slice(0, 80)}) — den frysta talar`);
+      [timme] = await q(`SELECT kandidat_timme() AS t`);
+    }
     if (timme?.t == null) {
       notes.push("kandidat: regeln tiger — kandidatens timme är gammal eller ofullständig (kandidat_timme)");
     } else {
       const rader = await q(`
-        SELECT segment_id, lon, lat, tid FROM kandidat_regel()
+        SELECT segment_id, lon, lat, tid FROM ${regel}
         WHERE utfall = 'varnar' ORDER BY segment_id, punkt`);
       for (const r of rader) {
         const id = String(r.segment_id), sist = kandidat[kandidat.length - 1];
         const p: [number, number] = [Math.round(Number(r.lon) * 1e5) / 1e5, Math.round(Number(r.lat) * 1e5) / 1e5];
         if (sist?.id === id) sist.punkter.push(p);
-        else kandidat.push({ id, tid: new Date(r.tid).toISOString(), punkter: [p] });
+        else kandidat.push({ id, tid: new Date(r.tid).toISOString(), punkter: [p], vag: null });
       }
     }
   } catch (e) {
     kandidat.length = 0;
     notes.push(`kandidat: regeln ej läsbar (${String((e as Error).message).slice(0, 80)}) — kandidat blir tom`);
   }
+  // Vägnumren (DECISIONS #739) i en egen fråga: går de inte att läsa blir `vag` null och kandidaten står kvar som förut — en
+  // trasig etikett får aldrig tysta rösten.
+  if (kandidat.length) try {
+    const vagar = new Map<string, string>();
+    for (const r of await q(`SELECT segment_id, road_number FROM road_conditions WHERE road_number IS NOT NULL`))
+      vagar.set(String(r.segment_id), String(r.road_number));
+    for (const k of kandidat) k.vag = vagar.get(k.id) ?? null;
+  } catch (e) {
+    notes.push(`kandidat: vägnumren ej läsbara (${String((e as Error).message).slice(0, 80)}) — vag blir null`);
+  }
+
+  // ---- småvägsröstens besked (DECISIONS #828, sql/105–106, byggsteg 5b) ----
+  // En bit per punkt i punktfilens ordning (smavagspunkt ORDER BY punkt COLLATE "C", som laddaren skriver smavag_punktfil), som
+  // base64, med punktfilens sha så att appen bara läser bitarna mot den fil den har. Beskeden är smavag_talar(): regelns varnande
+  // punkter där brytaren är på. Med båda brytarna av saknas nyckeln helt (byggplanens Verify). Fail-soft: går något inte att läsa,
+  // eller stämmer punktfilen inte med punkterna, saknas nyckeln och noten säger varför — tyst är det säkra hållet.
+  avsnitt = "smavag";
+  let smavag: { fil: string; n: number; bitar: string } | null = null;
+  try {
+    const [b] = await q(`SELECT bool_or(pa) AS pa FROM smavagsbrytare`);
+    if (b?.pa === true) {
+      const [f] = await q(`SELECT sha256, punkter, (SELECT count(*) FROM smavagspunkt) AS n FROM smavag_punktfil WHERE id = 1`);
+      if (!f) notes.push("smavag: punktfilen saknas (smavag_punktfil) — nyckeln utelämnas");
+      else if (Number(f.n) !== Number(f.punkter)) notes.push("smavag: punktfilen och punkterna går isär — nyckeln utelämnas");
+      else {
+        const rader = await q(`
+          SELECT p.i FROM (SELECT punkt, (row_number() OVER (ORDER BY punkt COLLATE "C") - 1)::int AS i FROM smavagspunkt) p
+          JOIN smavag_talar() t ON t.punkt = p.punkt`);
+        smavag = { fil: String(f.sha256), n: Number(f.punkter), bitar: smavagBitar(rader.map((r) => Number(r.i)), Number(f.punkter)) };
+      }
+    }
+  } catch (e) {
+    smavag = null;
+    notes.push(`smavag: ej läsbar (${String((e as Error).message).slice(0, 80)}) — nyckeln utelämnas`);
+  }
 
   // ---- karantänen (kort #234): svenska stationer som nyligen brutit grovt mot #75 ----
+  avsnitt = "karantan";
   // Fail-soft som arkivfrågorna nedan: går historiken inte att läsa publiceras stationerna som förut, och det noteras.
   const karantan = new Set<string>();
   try {
@@ -291,6 +369,7 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
     notes.push(`karantän: weather_observations ej läsbar (${String((e as Error).message).slice(0, 80)}) — ingen station i karantän`);
   }
   // ---- den långsamma vakten (kort #236, DECISIONS #300): stationer med ett färskt dygn i felet, ur sql/030:s tabell ----
+  avsnitt = "langsam";
   // Samma tystnad som karantänen (väderpunkt och broarnas källa), samma fail-soft. Regeln själv står inte här.
   try {
     const l = await q(`SELECT station_id FROM givarfel_dygn WHERE senast > now() - interval '${LANGSAM_FRIST_H} hours'`);
@@ -302,23 +381,28 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
   }
 
   // ---- live: väderpunkter (svenska), med givarvakten ----
+  avsnitt = "vader";
   // Karantänen gäller bara de svenska raderna: gränsstationerna nedan har egna id-rymder som kan krocka.
   const wx = (await q(`
-    SELECT station_id, surface_temp_c, rain, snow, precipitation, ST_X(geom) AS lon, ST_Y(geom) AS lat
+    SELECT station_id, surface_temp_c, rain, snow, precipitation, sample_time, ST_X(geom) AS lon, ST_Y(geom) AS lat
     FROM weather_latest
     WHERE ${WX_SANE} AND (surface_temp_c <= 3 OR snow)`)).filter((r) => !karantan.has(String(r.station_id)));
 
   // ---- #49 gränssnapshoten: grannländernas stationer inom 40 km av svenska vägar ----
+  avsnitt = "grans";
   const border: Record<string, { reach: number; cold: number }> = {};
   for (const land of BORDER_LANDS) {
     try {
+      // Vägindexet först (DECISIONS #742): lådan sållar bort vägarna som ligger för långt bort, och samma ST_DWithin som
+      // förut avgör. Förut slogs alla vägar ihop med ST_Collect och mättes utan index: 37,9 av byggets 39,9 s 28/10.
       const b = await q(`
-        WITH se AS (SELECT ST_Collect(geom) g FROM road_conditions WHERE NOT deleted AND geom IS NOT NULL)
         SELECT f.station_id, f.surface_temp_c, f.rain, f.snow, f.precipitation,
                ST_X(f.geom) AS lon, ST_Y(f.geom) AS lat
-        FROM ${land}.weather_latest f, se
-        WHERE ${WX_SANE}
-          AND ST_DWithin(f.geom::geography, se.g::geography, $1)`, [BORDER_M]);
+        FROM ${land}.weather_latest f
+        WHERE ${WX_SANE_GRANS}
+          AND EXISTS (SELECT 1 FROM road_conditions r
+                      WHERE NOT r.deleted AND r.geom IS NOT NULL AND r.geom && ST_Expand(f.geom, $2)
+                        AND ST_DWithin(f.geom::geography, r.geom::geography, $1))`, [BORDER_M, BORDER_DEG]);
       const cold = b.filter((r) => Number(r.surface_temp_c) <= 3 || r.snow);
       border[land] = { reach: b.length, cold: cold.length };
       wx.push(...cold);
@@ -328,6 +412,7 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
   }
 
   // ---- live: skattarens råa indata per station (F1, kort #187, DECISIONS #188) ----
+  avsnitt = "skattaren";
   // Bredvid `fukt`, utan tolkning: `regn_h` = timmar sedan arkivet senast såg regn på stationen,
   // `lutning15/30/60` = ytans fall per fönster ur trendkandidaterna (positivt = faller). Motorn
   // och apparna läser regn_h och lutning30 sedan S3 (DECISIONS #524); lutning15/60 läser bara skuggan.
@@ -361,10 +446,12 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
   }
 
   // ---- #38 broarna: OSM-broar vars närmaste kalla+våta station ligger ≤ 15 km bort ----
+  avsnitt = "broar";
   // Motorn kollar regeln igen (tröskel +3 för bro); här förfiltreras så att inte
   // 3 000 broar skickas till varje telefon i juli. Samma givarvakt som ovan.
   const bridges: { id: string; lon: number; lat: number; road: string | null; yta: number | null; fukt: boolean }[] = [];
-  if (bridgesIn.length) {
+  if (!broar && bridgesIn.length) notes.push(`broarna pausade (DECISIONS #788): ${bridgesIn.length} broar skickas inte`);
+  if (broar && bridgesIn.length) {
     const allWx = await q(`
       SELECT station_id, surface_temp_c, rain, snow, precipitation, ST_X(geom) AS lon, ST_Y(geom) AS lat
       FROM weather_latest WHERE ${WX_SANE}`);
@@ -383,14 +470,22 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
   }
 
   // ---- live: avvikelser, vilt, SMHI ----
+  avsnitt = "avvikelser";
   const devs = await q(`
-    SELECT deviation_id, message_type, message_type_value, road_number, severity_code, end_time,
-           ST_X(COALESCE(geom, ST_Centroid(line_geom))) AS lon,
-           ST_Y(COALESCE(geom, ST_Centroid(line_geom))) AS lat
-    FROM deviations
-    WHERE NOT deleted AND (geom IS NOT NULL OR line_geom IS NOT NULL)
-      AND (end_time IS NULL OR end_time > now())
-      AND message_type_value = 'Accident'`);
+    SELECT d.deviation_id, d.message_type, d.message_type_value, d.severity_code, d.end_time,
+           -- Vägnumret när Trafikverket saknar det (3/11): närmaste väglagssträcka, bara inom 25 m. Mätt på 60 dygns olyckor
+           -- med känd väg: inom 25 m bar sträckan samma väg i 1 758 av 1 813 fall (97 %), 25–50 m bara i 34 av 52.
+           COALESCE(NULLIF(d.road_number, ''), (
+             SELECT rc.road_number FROM road_conditions rc
+             WHERE NOT rc.deleted AND rc.road_number IS NOT NULL AND rc.geom IS NOT NULL
+               AND ST_DWithin(rc.geom::geography, COALESCE(d.geom, ST_Centroid(d.line_geom))::geography, 25)
+             ORDER BY rc.geom <-> COALESCE(d.geom, ST_Centroid(d.line_geom)) LIMIT 1)) AS road_number,
+           ST_X(COALESCE(d.geom, ST_Centroid(d.line_geom))) AS lon,
+           ST_Y(COALESCE(d.geom, ST_Centroid(d.line_geom))) AS lat
+    FROM deviations d
+    WHERE NOT d.deleted AND (d.geom IS NOT NULL OR d.line_geom IS NOT NULL)
+      AND (d.end_time IS NULL OR d.end_time > now())
+      AND d.message_type_value = 'Accident'`);
   // Djur på vägen (kort #241, DECISIONS #318): Trafikverkets AnimalPresenceObstruction ersätter polisens
   // länspunkter. Samma tabell som olyckorna, så en radering släcker djuret. Olycksfrågan ovan får bara
   // Accident — utan den raden hade rösten sagt "olycka" om en älg.
@@ -416,6 +511,7 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
   // VÄTAN RÄKNAR BARA STATIONEN, med flit: `timmarSedanRadarregn` står kvar som null. Försprångets A2 läser `vata`
   // (TROSKLAR-FORSPRANG §2, §7: "radarn … räknas inte"), och att låta radarn höja vätan vore att ändra en mätning medan den
   // pågår. Det kräver båda signaturerna (§8). Radarn syns i sitt eget fält, där ingen läser den än.
+  avsnitt = "radar_station";
   const radarMmh = new Map<string, number>();
   try {
     for (const r of await q(RADAR_PER_STATION_SQL)) {
@@ -436,14 +532,20 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
     // mm/h i stationens skala, eller null när radarn inte har något att säga om segmentet.
     regn: regnPerSegment.get(String(r.segment_id)) ?? null,
   });
+  // Den äldsta mättiden bland de svenska väderpunkterna (DECISIONS #741 punkt 5): appens mätning räknar hur gammal den är vid
+  // ankomsten. null när ingen station publiceras eller ingen bär en tid.
+  const tider = wx.map((r) => (r.sample_time == null ? NaN : new Date(r.sample_time).getTime())).filter((t) => Number.isFinite(t));
   const liveDoc = {
     schema: 1,
     generated_at: now.toISOString(),
+    weather_oldest_at: tider.length ? new Date(Math.min(...tider)).toISOString() : null,
     segments: segs.map(segRow),
     // Regnsegmenten (#154): normalklassade segment med råradar ≥ utlösaren. Ingen port läser nyckeln.
     rain_segments: regnSegs.map(segRow),
     // Kandidatens varnande sträckor (#576): punkterna med fem decimaler, regelns timme. Saknas när brytaren är av (#578).
     ...(kandidatPa ? { kandidat } : {}),
+    // Småvägsröstens besked (#828, byggsteg 5b): bitarna mot punktfilen smavag.json. Saknas när båda brytarna är av.
+    ...(smavag ? { smavag } : {}),
     weather: wx.map((r) => {
       const id = String(r.station_id), l = lutning.get(id);
       return {
@@ -473,7 +575,7 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
     })),
     bridges,
   };
-  return { staticDoc, liveDoc, border, notes };
+  return { staticDoc, liveDoc, border, notes, delar };
 }
 
 /** Djurslaget ur Trafikverkets fritext ("Älg i vägområdet …"), grundform eller null. Samma artlista som
@@ -497,14 +599,31 @@ async function gzipBytes(s: string): Promise<number> {
 
 /** manifest.json — apparna vägrar en fil vars sha256 inte stämmer och behåller den förra.
  *  Skrivs ALLTID ihop med static.json och live.json, aldrig separat. */
-export async function manifestFor(generated_at: string, files: { static: string; live: string }, prefix = "app/v1") {
+/** Småvägsröstens bitar (DECISIONS #828, byggsteg 5b): bit i är punkt i i punktfilens ordning, åtta punkter per byte med den första i
+ *  den lägsta biten, som base64. 88 335 punkter blir 11 042 byte, 14 724 tecken. */
+export function smavagBitar(index: number[], n: number): string {
+  const b = new Uint8Array(Math.ceil(n / 8));
+  for (const i of index) {
+    if (!Number.isInteger(i) || i < 0 || i >= n) throw new Error(`smavag: index ${i} utanför 0–${n - 1}`);
+    b[i >> 3] |= 1 << (i & 7);
+  }
+  let s = "";
+  for (const x of b) s += String.fromCharCode(x);
+  return btoa(s);
+}
+
+/** ovriga: filer utöver static och live som manifestet ska bära (småvägsröstens punktfil, byggsteg 5b), med färdig sha och storlek.
+ *  Apparna läser bara static och live, så en ny post bryter ingen installerad app. */
+export async function manifestFor(generated_at: string, files: { static: string; live: string }, prefix = "app/v1",
+                                  ovriga: Record<string, { sha256: string; bytes: number; gz_bytes: number }> = {}) {
   const entry = async (name: "static" | "live") => ({
     path: `${prefix}/${name}.json`,
     sha256: await sha256Hex(files[name]),
     bytes: new TextEncoder().encode(files[name]).byteLength,
     gz_bytes: await gzipBytes(files[name]),
   });
-  return { schema: 1, generated_at, files: { static: await entry("static"), live: await entry("live") } };
+  const fler = Object.fromEntries(Object.entries(ovriga).map(([namn, x]) => [namn, { path: `${prefix}/${namn}.json`, ...x }]));
+  return { schema: 1, generated_at, files: { static: await entry("static"), live: await entry("live"), ...fler } };
 }
 
 /** GRANNLÄNDERNAS SNAPSHOT (kort #238; Bengts princip 22/9: återkommande körningar bor i Supabase, inte i Actions).

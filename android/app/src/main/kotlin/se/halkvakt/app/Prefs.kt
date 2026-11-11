@@ -3,11 +3,14 @@
 package se.halkvakt.app
 
 import android.content.Context
+import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.floatPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -27,11 +30,23 @@ object Prefs {
     private val KEY_TRIP_KM = floatPreferencesKey("trip_km")
     private val KEY_MISSAR = stringPreferencesKey("missar")
     private val KEY_FAV_ERBJUD = booleanPreferencesKey("fav_erbjud")   // kort #357: brytaren, aldrig vägarna (Favoriter.kt)
+    private val KEY_FAV_ERBJUD_DOLD = longPreferencesKey("fav_erbjud_dold")   // #817: Inte nu, en tidpunkt
+    private val KEY_VAKT_PASS = intPreferencesKey("vakt_pass")         // #829: avslutade vaktpass, bara ett tal
+    private val KEY_TIPSA_DOLD = booleanPreferencesKey("tipsa_dold")   // #829: kortet Tipsa en vän avfärdat
     private fun kindKey(k: HazardKind) = booleanPreferencesKey("warn_${k.wire}")
 
     /** Favoriterna (kort #357, DECISIONS #616): "Erbjud att spara resor", AV tills föraren själv slår på den. */
     fun favErbjud(ctx: Context): Flow<Boolean> = ctx.dataStore.data.map { it[KEY_FAV_ERBJUD] ?: false }
     suspend fun setFavErbjud(ctx: Context, on: Boolean) { ctx.dataStore.edit { it[KEY_FAV_ERBJUD] = on } }
+    /** När föraren tryckte Inte nu på raden Kör du den här ofta? (DECISIONS #817) — en tidpunkt, ingen väg. */
+    fun favErbjudDold(ctx: Context): Flow<Long> = ctx.dataStore.data.map { it[KEY_FAV_ERBJUD_DOLD] ?: 0L }
+    suspend fun setFavErbjudDold(ctx: Context, ms: Long) { ctx.dataStore.edit { it[KEY_FAV_ERBJUD_DOLD] = ms } }
+
+    /** Kortet *Tipsa en vän* på Redo. (DECISIONS #829): antalet avslutade vaktpass och om kortet är avfärdat. Bara i telefonen. */
+    fun vaktPass(ctx: Context): Flow<Int> = ctx.dataStore.data.map { it[KEY_VAKT_PASS] ?: 0 }
+    suspend fun raknaVaktPass(ctx: Context) { ctx.dataStore.edit { it[KEY_VAKT_PASS] = (it[KEY_VAKT_PASS] ?: 0) + 1 } }
+    fun tipsaDold(ctx: Context): Flow<Boolean> = ctx.dataStore.data.map { it[KEY_TIPSA_DOLD] ?: false }
+    suspend fun setTipsaDold(ctx: Context) { ctx.dataStore.edit { it[KEY_TIPSA_DOLD] = true } }
 
     /** Kategorier föraren stängt av (default: allt PÅ). */
     fun disabledKinds(ctx: Context): Flow<Set<HazardKind>> =
@@ -39,6 +54,7 @@ object Prefs {
 
     suspend fun setKindEnabled(ctx: Context, k: HazardKind, on: Boolean) {
         ctx.dataStore.edit { it[kindKey(k)] = on }
+        Raknare.installning(ctx, "${k.wire}:${if (on) "pa" else "av"}")   // #787
     }
 
     /** Kort #259: the engine speaks at speed × 30 s, clamped to leadMinM…leadMaxM, so the slider is a CAP. 1 200 m ≈ 30 s at
@@ -52,6 +68,7 @@ object Prefs {
 
     suspend fun setWarnDistanceM(ctx: Context, m: Float) {
         ctx.dataStore.edit { it[KEY_WARN_DIST] = m.coerceIn(WARN_MIN_M, WARN_MAX_M) }
+        Raknare.installning(ctx, "forvarning:${m.coerceIn(WARN_MIN_M, WARN_MAX_M).toInt()}")   // #787
     }
 
     fun history(ctx: Context): Flow<List<AlertEntry>> =
@@ -132,5 +149,57 @@ object Prefs {
             p[KEY_HISTORY] = AlertHistory.encode(
                 AlertHistory.append(AlertHistory.decode(p[KEY_HISTORY] ?: ""), e))
         }
+    }
+
+    // ── Räknaren (DECISIONS #772, Raknare.kt): osända händelser ("h v" per rad) och vad enheten redan räknat en gång ──
+    private val KEY_RAKNARE_KO = stringPreferencesKey("raknare_ko")
+    private val KEY_RAKNARE_RAKNAT = stringSetPreferencesKey("raknare_raknat")
+    private fun ko(p: Preferences) = (p[KEY_RAKNARE_KO] ?: "").lines().filter { it.isNotBlank() }
+    fun raknareKo(ctx: Context): Flow<List<String>> = ctx.dataStore.data.map { ko(it) }
+    /** true om nyckeln inte var räknad förut — och nu är det. */
+    suspend fun raknareMarkera(ctx: Context, nyckel: String): Boolean {
+        var ny = false
+        ctx.dataStore.edit { p ->
+            val s = p[KEY_RAKNARE_RAKNAT] ?: emptySet()
+            if (nyckel !in s) { ny = true; p[KEY_RAKNARE_RAKNAT] = s + nyckel }
+        }
+        return ny
+    }
+    suspend fun raknareLagg(ctx: Context, rad: String, max: Int) {
+        ctx.dataStore.edit { p -> p[KEY_RAKNARE_KO] = (ko(p) + rad).takeLast(max).joinToString("\n") }
+    }
+    suspend fun raknareTaBort(ctx: Context, n: Int) {
+        ctx.dataStore.edit { p -> p[KEY_RAKNARE_KO] = ko(p).drop(n).joinToString("\n") }
+    }
+
+    // ── #787: kohorten (när telefonen började räkna, och om den hade appen redan då), det pågående passet och senaste aktiva dygnet ──
+    private val KEY_RAKNARE_FORST = longPreferencesKey("raknare_forst")
+    private val KEY_RAKNARE_BEFINTLIG = booleanPreferencesKey("raknare_befintlig")
+    private val KEY_RAKNARE_PASS = stringPreferencesKey("raknare_pass")
+    private val KEY_RAKNARE_AKTIV_DAG = stringPreferencesKey("raknare_aktiv_dag")
+    /** (första dygnet i ms, befintlig). Sätts en gång: en telefon med spår av appen (0.3.15:s räknare, en varning, en resa) är befintlig. */
+    suspend fun raknareKohort(ctx: Context): Pair<Long, Boolean> {
+        var ut = 0L to false
+        ctx.dataStore.edit { p ->
+            val forst = p[KEY_RAKNARE_FORST]
+            if (forst == null) {
+                val befintlig = !p[KEY_RAKNARE_RAKNAT].isNullOrEmpty() || !p[KEY_HISTORY].isNullOrEmpty() || (p[KEY_TRIP_START] ?: 0L) > 0L
+                p[KEY_RAKNARE_FORST] = System.currentTimeMillis(); p[KEY_RAKNARE_BEFINTLIG] = befintlig
+            }
+            ut = p[KEY_RAKNARE_FORST]!! to (p[KEY_RAKNARE_BEFINTLIG] ?: false)
+        }
+        return ut
+    }
+    /** Byter passet ("metod|start") och ger det förra, om ett fanns. null tar bort det. */
+    suspend fun raknareBytPass(ctx: Context, nytt: String?): String? {
+        var gammalt: String? = null
+        ctx.dataStore.edit { p -> gammalt = p[KEY_RAKNARE_PASS]; if (nytt == null) p.remove(KEY_RAKNARE_PASS) else p[KEY_RAKNARE_PASS] = nytt }
+        return gammalt
+    }
+    /** true om dygnet inte var räknat förut — och nu är det. */
+    suspend fun raknareAktivDag(ctx: Context, dag: String): Boolean {
+        var ny = false
+        ctx.dataStore.edit { p -> if (p[KEY_RAKNARE_AKTIV_DAG] != dag) { ny = true; p[KEY_RAKNARE_AKTIV_DAG] = dag } }
+        return ny
     }
 }

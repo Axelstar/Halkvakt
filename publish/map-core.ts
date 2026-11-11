@@ -10,8 +10,8 @@
 //
 // Inga Node- eller Deno-importer. Namnen krockar inte med snapshot-core.ts: båda buntas
 // in i SAMMA modul i publicera/index.ts.
-import type { Q } from "./snapshot-core.ts";
-import { byggLanssidor, type LanStation } from "./lanssidor.ts";
+import { WX_SANE, KARANTAN_DYGN, KARANTAN_BROTT, type Q } from "./snapshot-core.ts";
+import { byggLanssidor, lsStartsida, lsKartsida, type LanStation, type SmhiRad, type StartTal } from "./lanssidor.ts";
 
 const featureCollection = (features: unknown[]) => ({ type: "FeatureCollection", features });
 const numOrNull = (x: unknown) => (x === null || x === undefined ? null : Number(x));
@@ -59,7 +59,7 @@ export const KANDIDAT_BITAR_SQL = `
  *  `appKandidat` = lägesfilens nyckel `kandidat` (#576), eller undefined när brytaren är av (#578) — kartan visar aldrig något annat
  *  än appen får. */
 export async function buildMapData(q: Q, opts: {
-  trvKey?: string; fetchFn?: typeof fetch; now?: Date; appVader?: { id: string; yta: number | null; fukt: boolean }[];
+  trvKey?: string; fetchFn?: typeof fetch; now?: Date; appVader?: { id: string; yta: number | null; fukt: boolean; lon?: number; lat?: number }[];
   appKandidat?: { id: string; tid: string; punkter: [number, number][] }[];
 } = {}) {
   const now = opts.now ?? new Date();
@@ -221,21 +221,47 @@ export async function buildMapData(q: Q, opts: {
   // väglagssträckan inom 20 km. Bara de stationer appen själv talar om (appVader) räknas — en trasig givare blir aldrig
   // "minusgrader i länet".
   let sidor: Record<string, string> | null = null;
+  let start: Record<string, string> | null = null, kartaText: Record<string, string> | null = null;
   if (opts.appVader) {
     const stLan = await q(STATION_LAN_SQL);
     const lanFor = new Map(stLan.map((r) => [String(r.station_id), { name: String(r.name), lan: Number(r.lan), vag: r.vag ?? null }]));
-    const stationer: LanStation[] = opts.appVader.flatMap((w) => {
+    // Appens stationer bär bara vägbana på 3 °C eller kallare (snapshotens förfilter), så sidorna räknade "stationerna inom 30 km"
+    // bland de kalla och sa en natt med plusgrader att Malmös närmaste station låg 110 km bort (9/11, DECISIONS #826). De varmare
+    // stationerna läggs till här med samma givarvakt, radvakt och karantän; en station över 3 °C kan aldrig ge minusgrader i länet.
+    const varma = await q(`
+      SELECT station_id, surface_temp_c, rain, snow, ST_X(geom) AS lon, ST_Y(geom) AS lat FROM weather_latest w
+      WHERE ${WX_SANE} AND surface_temp_c > 3 AND station_id NOT IN (
+        SELECT station_id FROM weather_observations WHERE sample_time > now() - interval '${KARANTAN_DYGN} days'
+          AND air_temp_c IS NOT NULL AND surface_temp_c < air_temp_c - 12 GROUP BY station_id HAVING count(*) >= ${KARANTAN_BROTT})`);
+    const appIds = new Set(opts.appVader.map((w) => w.id));
+    const alla = [...opts.appVader, ...varma.filter((r) => !appIds.has(String(r.station_id))).map((r) => ({ id: String(r.station_id),
+      yta: Number(r.surface_temp_c), fukt: Boolean(r.rain || r.snow), lon: Number(r.lon), lat: Number(r.lat) }))];
+    const stationer: LanStation[] = alla.flatMap((w) => {
       const s = lanFor.get(w.id);
-      return s && w.yta !== null ? [{ name: s.name, yta: w.yta, fukt: w.fukt, lan: s.lan, vag: s.vag }] : [];
+      return s && w.yta !== null ? [{ name: s.name, yta: w.yta, fukt: w.fukt, lan: s.lan, vag: s.vag, lon: w.lon, lat: w.lat }] : [];
     });
+    // SMHI:s alla gällande varningar (1/11): varningssidan och raden på läns-, orts- och vägsidorna väljer själva vägvarningarna
+    // (vagvarningar i lanssidor.ts), så att regeln bor på ett ställe och går att pröva.
+    const smhi = await q(`SELECT event_sv, level_sv, level_code, description_sv, area_name, affected_areas, approx_start, approx_end FROM smhi_warnings`);
     sidor = byggLanssidor({
+      smhi: smhi as unknown as SmhiRad[],
       vaglag: vaglag.map((r) => ({ code: numOrNull(r.condition_code), text: r.condition_text ?? null, info: (r.condition_info ?? []) as string[],
-        road: r.road_number ?? null, plats: r.location_text ?? null, lan: numOrNull(r.lan) })),
+        road: r.road_number ?? null, plats: r.location_text ?? null, lan: numOrNull(r.lan),
+        // Linjen (9/11): ortssidorna väljer avsnitten nära en kommun vars namn inget avsnitt bär.
+        linje: r.g?.type === "LineString" ? [r.g.coordinates] : r.g?.type === "MultiLineString" ? r.g.coordinates : undefined })),
       stationer,
       olyckor: olyckor.filter((r) => r.land === "SE").map((r) => ({ road: r.road_number ?? null, start: r.start_time ? new Date(r.start_time).toISOString() : null,
         allvar: r.severity_text ?? null, lan: numOrNull(r.lan) })),
       now,
     });
+    // Startsidans och kartans tal i HTML (6/11, DECISIONS #807): samma rader som lagren ovan och lan.json ur sidorna, räknade som
+    // sidornas egna skript räknar dem. publicera skriver in dem i index.html och karta.html i kartrepot.
+    const vaglagTal = vaglag.map((r) => ({ code: numOrNull(r.condition_code), info: (r.condition_info ?? []) as string[] }));
+    start = lsStartsida({
+      vader: vader.map((r) => ({ land: String(r.land), name: String(r.name ?? ""), yta: numOrNull(r.surface_temp_c), luft: numOrNull(r.air_temp_c) })),
+      vaglag: vaglagTal, ...(JSON.parse(sidor["data/lan.json"]) as Pick<StartTal, "lan" | "vag">), now,
+    });
+    kartaText = lsKartsida({ vaglag: vaglagTal, now });
   }
-  return { files, stats, notes, sidor };
+  return { files, stats, notes, sidor, start, kartaText };
 }

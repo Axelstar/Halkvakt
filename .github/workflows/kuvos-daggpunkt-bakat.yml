@@ -1,0 +1,205 @@
+name: kuvos-daggpunkt-bakat
+# BAKÅTPROVET FÖR DAGGPUNKTSVÄGEN (kuvösens förregistrering, signerad 5/11 2026, i det privata repot Axelstar/halkvakt-kuvos):
+# PB-steget (fysik/ny_kandidat/daggpunkt_pb.py) och läsaren (kuvos/daggpunktsvagen-bakat.ts) på vintrarna 2018/19–2022/23 och
+# 2024/25. Diagnos, ingen dom. Trafikverkets filer, kandidatens skattningar och mellanfilerna stannar i jobbet; de bär rader ur
+# leveransen och får aldrig bli en artefakt, en release eller en loggrad (PUBLIKT REPO). Bara utskriftens aggregat går till hinken,
+# kuvos/kuvos-daggpunkt-bakat-2026-11-<körningens nummer>/, och loggen bär bara filnamn, summornas utfall och klart eller fel.
+# Körs för hand.
+on:
+  workflow_dispatch:
+
+permissions: { contents: read, actions: read }
+
+concurrency: { group: kuvos-daggpunkt-bakat, cancel-in-progress: false }
+
+jobs:
+  bakatprov:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    env:
+      GH_TOKEN: "${{ github.token }}"
+      # En mapp per körning: hinken skriver aldrig över, så en omkörning i samma mapp hade fällts av den förra körningens filer.
+      HINK: "kuvos-daggpunkt-bakat-2026-11-${{ github.run_number }}"
+      VINTRAR: "2018-19 2019-20 2020-21 2021-22 2022-23 2024-25"
+      FORREG: docs/FORREGISTRERING-DAGGPUNKTSVAGEN-BAKATPROV.md
+    steps:
+      - uses: actions/checkout@v4
+      # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos (DECISIONS #768): koden läggs ovanpå utcheckningen.
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13", cache: pip, cache-dependency-path: fysik/requirements.txt }
+      - name: Beroendena, spärren och självtesten
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
+          (cd fysik && sha256sum -c --quiet SHA256SUMS)
+          python3 fysik/ny_kandidat/sparren.py "$FORREG"
+          prov() { if "${@:2}" > /dev/null 2>&1; then echo "$1: klart"; else echo "::error::$1: fel"; return 1; fi; }
+          prov "PB-stegets självtest" python3 fysik/ny_kandidat/daggpunkt_pb.py --sjalvtest
+          prov "regelns självtest" node --experimental-strip-types kuvos/daggpunktsvagen.ts --sjalvtest
+          prov "läsarens självtest" node --experimental-strip-types kuvos/daggpunktsvagen-bakat.ts --sjalvtest
+      # Hinken som i kuvos-ny-kandidat.yml: signerade adresser ur arkivdump, nyckeln ur pg_cron:s jobb, maskerad. Vecken (T4:s PH för
+      # den utelämnade vintern), vintrarnas VViS-filer och Trafikverkets väglag 2024/25; varje fils summa mot sitt manifest.
+      - name: Hinken — vecken, VViS-filerna och väglaget, summorna mot manifesten
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          export FN KEY
+          node -e '
+            const { execFileSync } = require("child_process"), fs = require("fs"), c = require("crypto"), lista = [];
+            const t4 = require("./kuvos/kandidat-2027-28-t4.json").filer;
+            for (const v of process.env.VINTRAR.split(" ")) {
+              const ph = t4.find((f) => f.fil === `ph_utan-${v}_${v}.npz`);
+              if (!ph) { console.error(`vecket för ${v} saknas i kuvos/kandidat-2027-28-t4.json`); process.exit(1); }
+              lista.push({ fil: `kuvos-kandidat-2027-28-t4/${ph.fil}`, ut: `hink/${v}/${ph.fil}`, sha: ph.sha256 });
+              if (v === "2024-25") for (const f of require("./kuvos/leverans.json").filer)
+                lista.push({ fil: `kuvos-trv-2024-25/${f.packad}`, ut: `hink/${v}/${f.packad}`, sha: f.packad_sha256 });
+              else { const a = Number(v.slice(0, 4)), beh = [`Halkvakt_${a}-2.csv.gz`, `Halkvakt_${a + 1}-1.csv.gz`];
+                for (const f of require("./kuvos/vvis-2018-24-leverans.json").filer.filter((x) => beh.includes(x.packad)))
+                  lista.push({ fil: `kuvos-vvis-2018-24/${f.packad}`, ut: `hink/${v}/${f.packad}`, sha: f.packad_sha256 }); }
+            }
+            for (const f of require("./kuvos/trv-111808-leverans.json").filer.filter((x) => x.fil === "RoadCondition24-25.xlsx"))
+              lista.push({ fil: `trv-2026-111808/${f.fil}`, ut: `trv/${f.fil}`, sha: f.sha256 });
+            // execFileSync:s fel bär kommandoraden och därmed nyckeln eller den signerade adressen: fångas, bara statusen skrivs ut.
+            const curl = (a, vad) => { try { return execFileSync("curl", ["-sS", "--fail", ...a], { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); }
+              catch (e) { console.error(`${vad} föll (curl ${e.status})`); process.exit(1); } };
+            let fel = 0;
+            for (let i = 0; i < lista.length; i += 20) {
+              const del = lista.slice(i, i + 20);
+              const s = JSON.parse(curl(["-X", "POST", `${process.env.FN}?lage=kuvos_hamta`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
+                "-H", "Content-Type: application/json", "-d", JSON.stringify({ filer: del.map((x) => x.fil) })], "adresserna (finns filerna i hinken?)"));
+              for (const d of s.filer) {
+                const x = del.find((y) => y.fil === d.fil);
+                fs.mkdirSync(x.ut.split("/").slice(0, -1).join("/"), { recursive: true });
+                curl(["-o", x.ut, d.url], `hämtningen av ${x.fil}`);
+                const ok = c.createHash("sha256").update(fs.readFileSync(x.ut)).digest("hex") === x.sha; fel += !ok;
+                console.log(`${x.fil}: ${ok ? "sha256 lika manifestet" : "FEL mot manifestet"}`);
+              }
+            }
+            process.exit(fel ? 1 : 0);'
+      - name: Releaserna — stationerna, MET Nordic, prognosen och radarn
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p indata frusen && gh release download kuvos-fysik-indata-2024-25 --dir indata
+          for f in indata/*.tar.gz; do tar -xzf "$f" -C frusen; done
+          if [ -d frusen/data ]; then mv frusen/data/* frusen/ && rmdir frusen/data; fi
+          test -f frusen/stations.csv
+          gh release download kuvos-metnordic-2024-25 --dir met/2024-25 --pattern 'metnordic_2024-25.csv.gz'
+          gh release download kuvos-metnordic-prognos-2024-25 --dir prognos --pattern 'metnordic_prognos_*.csv.gz'
+          gh release download kuvos-smhi-2024-25 --dir smhi --pattern 'radar_precip_2024-25.csv.gz'
+          node -e '
+            const c = require("crypto"), fs = require("fs"); let fel = 0;
+            const prova = (fil, sha) => { const h = c.createHash("sha256").update(fs.readFileSync(fil)).digest("hex"); fel += h !== sha;
+              console.log(`${fil}: ${h === sha ? "sha256 lika manifestet" : "FEL mot manifestet"}`); };
+            for (const f of require("./kuvos/fysik-indata-leverans.json").filer) prova("indata/" + f.fil, f.sha256);
+            prova("met/2024-25/metnordic_2024-25.csv.gz", require("./kuvos/metnordic-leverans.json").filer.find((x) => x.fil === "metnordic_2024-25.csv.gz").sha256);
+            for (const f of require("./kuvos/metnordic-prognos-leverans.json").filer) prova("prognos/" + f.fil, f.sha256);
+            prova("smhi/radar_precip_2024-25.csv.gz", require("./kuvos/smhi-leverans.json").filer.find((x) => x.fil === "radar_precip_2024-25.csv.gz").sha256);
+            process.exit(fel ? 1 : 0);'
+          # De äldre vintrarnas MET Nordic: samma delar som T4 räknades på (metnordic_reserv.ts --valj, som förberedningen).
+          for V in $VINTRAR; do
+            [ "$V" = 2024-25 ] && continue
+            gh release download "kuvos-vintrar-$V" --dir "rel/$V" --pattern 'metnordic_*.csv.gz'
+            mkdir -p "met/$V"
+            node --experimental-strip-types fysik/ny_kandidat/metnordic_reserv.ts --valj "$V" "rel/$V" > "rel/delar_$V.txt"
+            while read -r f; do cp "$f" "met/$V/"; done < "rel/delar_$V.txt"
+            echo "MET Nordic $V: $(wc -l < "rel/delar_$V.txt") delar"
+            (cd "met/$V" && sha256sum ./*.gz)
+          done
+          rm -rf rel indata
+      - name: Vecken — paret per vinter (artefakterna nykand-t4-veck-<vinter>)
+        shell: bash
+        run: |
+          set -euo pipefail
+          for V in $VINTRAR; do
+            id=$(gh api "repos/${{ github.repository }}/actions/artifacts?name=nykand-t4-veck-$V&per_page=100" -q '[.artifacts[] | select(.expired | not)] | sort_by(.created_at) | last | .id // empty')
+            [ -n "$id" ] || { echo "::error::artefakten nykand-t4-veck-$V saknas"; exit 1; }
+            # Varje kommando för sig, så att set -e fäller steget: i en &&-kedja tystades unzip:s fel (körning 42049604519, där
+            # unzip -d inte skapade mellanmappen veck/), och PB-steget fann ingen parfil.
+            gh api "repos/${{ github.repository }}/actions/artifacts/$id/zip" > a.zip
+            mkdir -p "veck/$V"
+            unzip -o -q a.zip "veck_$V.json" -d "veck/$V"
+            rm a.zip
+            test -s "veck/$V/veck_$V.json" || { echo "::error::parfilen veck_$V.json saknas efter uppackningen"; exit 1; }
+            echo "vecket $V: parfilen hämtad"
+          done
+      - name: PB-steget per vinter (mellanfilerna stannar i jobbet)
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p arbete ut
+          for V in $VINTRAR; do
+            ARGS=(--vinter "$V" --ph "hink/$V/ph_utan-${V}_$V.npz" --par "veck/$V/veck_$V.json" --stationer frusen/stations.csv
+                  --vvis "hink/$V" --metnordic met/$V/*.csv.gz --ut "arbete/timmar_$V.csv.gz")
+            if [ "$V" = 2024-25 ]; then ARGS+=(--prognos prognos/*.csv.gz); fi
+            if python3 fysik/ny_kandidat/daggpunkt_pb.py "${ARGS[@]}" > "ut/pb_$V.txt" 2>&1; then echo "PB $V: klart"
+            else echo "::error::PB $V: fel (felet står i hinken, ut/pb_$V.txt)"; exit 1; fi
+          done
+      - name: Läsaren — del A och del B
+        shell: bash
+        run: |
+          set -o pipefail
+          # -L: adressen omdirigeras (301) till halkvakt.se. Utan -L sparade curl omdirigeringens HTML-sida, eftersom --fail bara
+          # slår till från 400 (körning 42054133374). Filen prövas också: en geojson börjar med {.
+          curl -sSfL -o vaglag.geojson https://axelstar.github.io/halkvakt-karta/data/vaglag.geojson
+          [ "$(head -c 1 vaglag.geojson)" = "{" ] || { echo "::error::vaglag.geojson är inte JSON"; exit 1; }
+          export NODE_OPTIONS=--max-old-space-size=12288
+          B=(); for V in $VINTRAR; do [ "$V" = 2024-25 ] || B+=("arbete/timmar_$V.csv.gz"); done
+          if node --experimental-strip-types kuvos/daggpunktsvagen-bakat.ts --del-a --timmar arbete/timmar_2024-25.csv.gz --xlsx trv \
+               --radar smhi/radar_precip_2024-25.csv.gz --vaglag vaglag.geojson --stationer data/vagdata/stationer.json --ut ut > ut/lasaren_a.txt 2>&1
+          then echo "del A: klart"; else echo "::error::del A: fel (felet står i hinken, ut/lasaren_a.txt)"; exit 1; fi
+          if node --experimental-strip-types kuvos/daggpunktsvagen-bakat.ts --del-b --timmar "${B[@]}" --stationer data/vagdata/stationer.json \
+               --ut ut > ut/lasaren_b.txt 2>&1
+          then echo "del B: klart"; else echo "::error::del B: fel (felet står i hinken, ut/lasaren_b.txt)"; exit 1; fi
+      # Bara utskriften: aggregaten och stegens egna rader (antal, inga värden). Också när ett steg föll, så att felet går att läsa.
+      - name: Utskriften till hinken, byte för byte
+        if: always()
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          F=(ut/*.md ut/*.txt)
+          if [ ${#F[@]} -eq 0 ]; then echo "ingen utskrift att lägga i hinken"; exit 0; fi
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          export FN KEY
+          lagg() {   # lagg <fil …>: till $HINK/<filnamn>; skrivs aldrig över, och det som ligger i hinken ska vara byte för byte filen
+            node -e '
+              const { execFileSync } = require("child_process"), fs = require("fs"), c = require("crypto"), filer = process.argv.slice(1);
+              const sha = (b) => c.createHash("sha256").update(b).digest("hex"), namn = filer.map((f) => process.env.HINK + "/" + f.split("/").pop());
+              // execFileSync:s fel bär kommandoraden och därmed nyckeln eller den signerade adressen: fångas, bara statusen skrivs ut.
+              const curl = (a, vad) => { try { return execFileSync("curl", ["-sS", "--fail", ...a], { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); }
+                catch (e) { if (vad) { console.error(`${vad} föll (curl ${e.status})`); process.exit(1); } return null; } };
+              const anrop = (lage, vad) => { const b = curl(["-X", "POST", `${process.env.FN}?lage=${lage}`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
+                "-H", "Content-Type: application/json", "-d", JSON.stringify({ filer: namn })], vad); return b && JSON.parse(b); };
+              if (!filer.length || filer.length > 20) { console.error("lagg: 1–20 filer per anrop"); process.exit(1); }
+              let h = anrop("kuvos_hamta");
+              if (h) console.log("filerna finns redan i hinken (en omkörning): de jämförs, ingenting skrivs över");
+              else {
+                const u = anrop("kuvos_ladda_upp", "adresserna för uppladdningen").urls;
+                filer.forEach((f, i) => curl(["-X", "PUT", "-H", "Content-Type: application/octet-stream", "--data-binary", "@" + f, u[i]],
+                  `uppladdningen av ${namn[i]} (finns filen redan i hinken skrivs den inte över)`));
+                h = anrop("kuvos_hamta", "hämtningen tillbaka");
+              }
+              let fel = 0;
+              h.filer.forEach((d, i) => { const ok = sha(curl([d.url], `hämtningen av ${d.fil}`)) === sha(fs.readFileSync(filer[i])); fel += !ok;
+                console.log(`${d.fil}: ${ok ? "klart, i hinken byte för byte den skrivna" : "FEL: i hinken med annat innehåll"}`); });
+              process.exit(fel ? 1 : 0);' "$@"
+          }
+          lagg "${F[@]}"
+          rm -rf hink trv arbete met prognos smhi veck frusen ut

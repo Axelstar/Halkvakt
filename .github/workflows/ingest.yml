@@ -15,8 +15,18 @@ jobs:
   ingest:
     runs-on: ubuntu-latest
     timeout-minutes: 8
+    # TELIAS NYA ROT (11/11 2026). Trafikverkets API skickar sedan omkring 10 UTC en kedja som slutar i Telia RSA TLS Root CA v3, som
+    # Windows rotlista har men inte Nodes inbyggda (Mozillas), och fetch föll med SELF_SIGNED_CERT_IN_CHAIN. Filen är samma certifikat som
+    # i Windows rotlista; nästa steg prövar fingeravtrycket. NODE_EXTRA_CA_CERTS lägger den till Nodes lista, ersätter den inte.
+    env:
+      NODE_EXTRA_CA_CERTS: ${{ github.workspace }}/ingest/ca/telia-rsa-tls-root-ca-v3.pem
     steps:
       - uses: actions/checkout@v4
+      - name: Telias rot, fingeravtrycket
+        run: |
+          openssl x509 -in ingest/ca/telia-rsa-tls-root-ca-v3.pem -noout -fingerprint -sha256 \
+            | grep -qx 'sha256 Fingerprint=D1:3D:B1:29:4C:45:EB:C6:FC:86:C6:BB:F6:9F:A2:9B:DF:E6:92:DF:F7:C7:13:C2:43:C7:A9:56:C6:A2:28:4C' \
+            || { echo "::error::Telias rot i ingest/ca har ett annat fingeravtryck"; exit 1; }
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm }
       - run: npm ci

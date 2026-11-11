@@ -101,6 +101,9 @@ fun HazardIcon(k: HazardKind, size: Dp = 24.dp, tint: Color = Brand.yellow) {
 fun HalkvaktApp(activity: MainActivity) {
     MaterialTheme(colorScheme = Scheme) {
         var tab by rememberSaveable { mutableStateOf(0) }
+        // Favoriter 2a (#817): notisen och raden på Redo öppnar fliken med dagens resor överst.
+        val visaFavoriter by se.halkvakt.app.Favoriter.visaFliken.collectAsStateWithLifecycle()
+        LaunchedEffect(visaFavoriter) { if (visaFavoriter) { tab = 1; se.halkvakt.app.Favoriter.visaFliken.value = false } }
         val warning by GuardService.currentWarning.collectAsStateWithLifecycle()
         val running by GuardService.runningFlow.collectAsStateWithLifecycle()
         DisposableEffect(running) {
@@ -308,12 +311,15 @@ private fun LastSaidCard(e: AlertEntry?, facitOn: Boolean = false, svar: Boolean
                 color = if (e != null) Text else Dis, fontSize = 15.sp, fontStyle = FontStyle.Italic)
             // S4 (Axels form, DECISIONS #196): två knappar, ingen fritext. Bara betatestare, bara när varningen
             // bär ett id. Svaret loggas lokalt och skickas när bilen står stilla.
-            if (facitOn && e != null && e.id.isNotEmpty() && System.currentTimeMillis() - e.t < Facit.MAX_AGE_MS) {
+            // Kort #999: en besvarad varning frågas inte om igen. Knapparna står kvar med Tack medan kortet visas (svaret går att
+            // ändra) och är borta nästa gång startskärmen visas, som i iOS.
+            var svaradeNu by remember(e?.id, e?.t) { mutableStateOf(false) }
+            if (facitOn && e != null && e.id.isNotEmpty() && System.currentTimeMillis() - e.t < Facit.MAX_AGE_MS && (svar == null || svaradeNu)) {
                 Spacer(Modifier.height(10.dp))
                 Row {
-                    FacitKnapp("Stämde", vald = svar == true) { onSvar(true) }
+                    FacitKnapp("Stämde", vald = svar == true) { svaradeNu = true; onSvar(true) }
                     Spacer(Modifier.width(8.dp))
-                    FacitKnapp("Stämde inte", vald = svar == false) { onSvar(false) }
+                    FacitKnapp("Stämde inte", vald = svar == false) { svaradeNu = true; onSvar(false) }
                 }
                 Text(if (svar == null) "Stämde det? Svaret skickas när bilen står stilla." else "Tack — skickas när bilen står stilla.",
                     color = Dis, fontSize = 11.sp, modifier = Modifier.padding(top = 6.dp))

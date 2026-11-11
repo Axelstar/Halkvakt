@@ -1,0 +1,210 @@
+name: kuvos-vetot-staderna
+# STATIONSVETOT I STORSTÄDERNA, RADIEN OCH FORMEN (halkvakt-kuvos BESLUT F36; förregistreringen
+# docs/FORREGISTRERING-VETOT-STADERNA-2026-11.md i det privata repot, signerad 8/11 2026). Diagnos, ingen dom.
+# Kuvösens vinter 2024/25 läses in i en slit-och-släng-PostGIS exakt som kuvos-frysoenighet.yml gör (leveransen ur hinken med
+# summorna, SMHI, migrationerna och klockan, inläsningen, vakterna och värdevakten), och mätskriptet
+# scripts/matningar/kuvos-vetot-staderna-2026-11.ts jämför dagens stationsveto med varianterna vid storstädernas stationer, med
+# Trafikverkets väglag 2024/25 ur hinken som facit. De fem äldre vintrarna läses ur VViS-filerna i hinken av
+# scripts/matningar/kuvos-vetot-staderna-serie-2026-11.py och samma mätskript. Trafikverkets rader och mellanfilerna stannar i
+# jobbet; inläsningens utskrift går till en fil i jobbet, och mätningens tal går bara till hinken,
+# kuvos/kuvos-vetot-staderna-2026-11-<körningens nummer>/. Loggen bär bara filnamn, summornas utfall och klart eller fel.
+# Körs för hand, på Bengts ord.
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency: { group: kuvos-vetot-staderna, cancel-in-progress: false }
+jobs:
+  matningen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    services:
+      postgis:
+        image: postgis/postgis:16-3.4
+        env: { POSTGRES_PASSWORD: postgres }
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s
+          --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+      PGPASSWORD: postgres
+      HINK: "kuvos-vetot-staderna-2026-11-${{ github.run_number }}"
+      FORREG: docs/FORREGISTRERING-VETOT-STADERNA-2026-11.md
+      ALDRE: "2018-19 2019-20 2020-21 2021-22 2022-23"
+      MATNING: scripts/matningar/kuvos-vetot-staderna-2026-11.ts
+      SERIE: scripts/matningar/kuvos-vetot-staderna-serie-2026-11.py
+    steps:
+      - uses: actions/checkout@v4
+      # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos (DECISIONS #768): koden läggs ovanpå utcheckningen.
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13", cache: pip, cache-dependency-path: fysik/requirements.txt }
+      # SPÄRREN först: utan båda signaturerna läses ingenting (fysik/ny_kandidat/sparren.py), och självtesten före leveransen.
+      - name: Beroendena, spärren och självtesten
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
+          (cd fysik && sha256sum -c --quiet SHA256SUMS)
+          prov() { if "${@:2}" > /dev/null 2>&1; then echo "$1: klart"; else echo "::error::$1: fel"; return 1; fi; }
+          prov "spärren (F36, förregistreringen signerad)" python3 fysik/ny_kandidat/sparren.py "$FORREG"
+          prov "mätskriptets självtest (påhittade data)" node --experimental-strip-types "$MATNING" --sjalvtest
+          prov "exportörens självtest (påhittade data)" python3 "$SERIE" --sjalvtest
+      # Hinken som i kuvos-daggpunkt-bakat.yml: signerade adresser ur arkivdump, nyckeln ur pg_cron:s jobb, maskerad. Leveransen
+      # 2024/25, de äldre vintrarnas VViS-filer och Trafikverkets väglag 2024/25; varje fils summa mot sitt manifest.
+      - name: Hinken — leveransen, VViS-filerna och väglaget, summorna mot manifesten
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          export FN KEY
+          node -e '
+            const { execFileSync } = require("child_process"), fs = require("fs"), c = require("crypto"), lista = [];
+            for (const f of require("./kuvos/leverans.json").filer)
+              lista.push({ fil: `kuvos-trv-2024-25/${f.packad}`, ut: `leverans/${f.packad}`, sha: f.packad_sha256 });
+            for (const v of process.env.ALDRE.split(" ")) {
+              const a = Number(v.slice(0, 4)), beh = [`Halkvakt_${a}-2.csv.gz`, `Halkvakt_${a + 1}-1.csv.gz`];
+              for (const f of require("./kuvos/vvis-2018-24-leverans.json").filer.filter((x) => beh.includes(x.packad)))
+                lista.push({ fil: `kuvos-vvis-2018-24/${f.packad}`, ut: `hink/${v}/${f.packad}`, sha: f.packad_sha256 });
+            }
+            for (const f of require("./kuvos/trv-111808-leverans.json").filer.filter((x) => x.fil === "RoadCondition24-25.xlsx"))
+              lista.push({ fil: `trv-2026-111808/${f.fil}`, ut: `trv/${f.fil}`, sha: f.sha256 });
+            // execFileSync:s fel bär kommandoraden och därmed nyckeln eller den signerade adressen: fångas, bara statusen skrivs ut.
+            const curl = (a, vad) => { try { return execFileSync("curl", ["-sS", "--fail", ...a], { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); }
+              catch (e) { console.error(`${vad} föll (curl ${e.status})`); process.exit(1); } };
+            let fel = 0;
+            for (let i = 0; i < lista.length; i += 20) {
+              const del = lista.slice(i, i + 20);
+              const s = JSON.parse(curl(["-X", "POST", `${process.env.FN}?lage=kuvos_hamta`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
+                "-H", "Content-Type: application/json", "-d", JSON.stringify({ filer: del.map((x) => x.fil) })], "adresserna (finns filerna i hinken?)"));
+              for (const d of s.filer) {
+                const x = del.find((y) => y.fil === d.fil);
+                fs.mkdirSync(x.ut.split("/").slice(0, -1).join("/"), { recursive: true });
+                curl(["-o", x.ut, d.url], `hämtningen av ${x.fil}`);
+                const ok = c.createHash("sha256").update(fs.readFileSync(x.ut)).digest("hex") === x.sha; fel += !ok;
+                console.log(`${x.fil}: ${ok ? "sha256 lika manifestet" : "FEL mot manifestet"}`);
+              }
+            }
+            const vantat = require("./kuvos/leverans.json").filer.length + 2 * process.env.ALDRE.split(" ").length + 1;
+            if (lista.length !== vantat) { console.error(`${lista.length} filer i listan, väntat ${vantat}`); process.exit(1); }
+            process.exit(fel ? 1 : 0);'
+          # Stationernas lägen ur kartans static.json i den version som gällde när #476 kördes (kartrepots commit c8c0a2d),
+          # som kuvos-frysoenighet.yml: kontrollen (§6) är #476:s tal, och inläsningen stryker rader för stationer utan läge.
+          curl -sSfL -o static.json https://raw.githubusercontent.com/Axelstar/halkvakt-karta/c8c0a2d935891938e1b3e6ed59ece4acffec5dce/data/app/v1/static.json
+          echo "static.json: kartans version c8c0a2d (stationslistan när #476 kördes)"
+      - name: SMHI ur releasen, kontrollsummorna mot manifestet
+        if: ${{ hashFiles('kuvos/smhi-leverans.json') != '' }}
+        shell: bash
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          mkdir -p smhi && gh release download kuvos-smhi-2024-25 --dir smhi --pattern '*.csv.gz'
+          node -e '
+            const m = require("./kuvos/smhi-leverans.json"), c = require("crypto"), fs = require("fs");
+            let fel = 0;
+            for (const f of m.filer) {
+              const h = c.createHash("sha256").update(fs.readFileSync("smhi/" + f.fil)).digest("hex");
+              console.log(`${f.fil}: ${h === f.sha256 ? "ok" : "FEL " + h}`); if (h !== f.sha256) fel++;
+            }
+            process.exit(fel ? 1 : 0);'
+      - name: Migrationerna och klockan
+        shell: bash
+        run: |
+          psql -h localhost -U postgres -qc "CREATE EXTENSION IF NOT EXISTS postgis"
+          for f in sql/*.sql; do psql -h localhost -U postgres -q -v ON_ERROR_STOP=1 -f "$f" >/dev/null 2>err.txt || echo "föll (väntat om driftens tabell saknas): $f — $(tail -1 err.txt)"; done
+          psql -h localhost -U postgres -q -v ON_ERROR_STOP=1 -f kuvos/klocka.sql
+          psql -h localhost -U postgres -v ON_ERROR_STOP=1 -Atc "
+            SELECT 'weather_observations'::regclass, 'givarfel_dygn'::regclass, 'weather_obs_brott_idx'::regclass,
+                   'langsam_vakt(interval)'::regprocedure, 'kuvos.now()'::regprocedure, 'radar_precip'::regclass"
+      - name: Inläsningen, vakterna och värdevakten
+        shell: bash
+        run: |
+          fel() { echo "::error::$1: fel"; exit 1; }
+          node --experimental-strip-types kuvos/inlasning.ts leverans static.json >> inlasning.txt 2>&1 || fel "inläsningen"
+          if [ -d smhi ]; then node --experimental-strip-types kuvos/smhi-inlasning.ts smhi >> inlasning.txt 2>&1 || fel "SMHI-inläsningen"; fi
+          psql -h localhost -U postgres -qc "ANALYZE weather_observations" >> inlasning.txt 2>&1 || fel "ANALYZE"
+          node --experimental-strip-types kuvos/vakterna.ts >> inlasning.txt 2>&1 || fel "vakterna"
+          node --experimental-strip-types kuvos/trend.ts >> inlasning.txt 2>&1 || fel "trenden"
+          node --experimental-strip-types scripts/vardevakten.ts 1000 >> inlasning.txt 2>&1 || fel "värdevakten"
+          echo "inläsningen, vakterna och värdevakten: klart"
+      - name: Mätningen 2024/25
+        shell: bash
+        env: { NODE_OPTIONS: "--max-old-space-size=10240" }
+        run: |
+          mkdir -p ut
+          # -L: adressen omdirigeras (301) till halkvakt.se; filen prövas också, eftersom en geojson börjar med {.
+          curl -sSfL -o vaglag.geojson https://axelstar.github.io/halkvakt-karta/data/vaglag.geojson
+          [ "$(head -c 1 vaglag.geojson)" = "{" ] || { echo "::error::vaglag.geojson är inte JSON"; exit 1; }
+          RC=0; node --experimental-strip-types "$MATNING" --vinter 2024-25 --vaglag vaglag.geojson --trv trv --ut ut/vetot-2024-25.json > matning.txt 2>&1 || RC=$?
+          # Vilket prov som föll: bara ordet ur skriptets sista rad, aldrig talen.
+          PROVET=$(sed -n 's/^VETOT FÖLL: \(spärren\|DATABASE_URL\|kuvösen\|underlaget\|identiteten\|tidszonen\|argumenten\|kontrollen (§6)\)$/\1/p' matning.txt | tail -1)
+          rm -f matning.txt
+          if [ "$RC" -ne 0 ] && [ "$PROVET" != "kontrollen (§6)" ]; then echo "::error::mätningen 2024/25: fel i ${PROVET:-skriptet, utan besked (kod $RC)}"; exit "$RC"; fi
+          if [ "$RC" -ne 0 ]; then echo "::warning::kontrollen (§6) höll inte: bara kontrollens tal går till hinken, och ingenting annat läses"; fi
+          [ "$RC" -eq 0 ] && echo "mätningen 2024/25: klart"
+          echo "KONTROLL_RC=$RC" >> "$GITHUB_ENV"
+      # De äldre vintrarna bara när kontrollen höll (§6: avviker den läses ingenting förrän skälet är känt).
+      - name: Mätningen på de äldre vintrarna och följden
+        if: ${{ env.KONTROLL_RC == '0' }}
+        shell: bash
+        env: { NODE_OPTIONS: "--max-old-space-size=10240" }
+        run: |
+          set -o pipefail
+          mkdir -p arbete
+          for V in $ALDRE; do
+            if python3 "$SERIE" --vinter "$V" --vvis "hink/$V" --static static.json --ut "arbete/serie_$V.csv.gz" > "ut/serie_$V.txt" 2>&1
+            then echo "exportören $V: klart"; else echo "::error::exportören $V: fel (felet står i hinken, ut/serie_$V.txt)"; exit 1; fi
+            if node --experimental-strip-types "$MATNING" --vinter "$V" --serie "arbete/serie_$V.csv.gz" --static static.json --ut "ut/vetot-$V.json" > matning.txt 2>&1
+            then echo "mätningen $V: klart"; else echo "::error::mätningen $V: fel i $(sed -n 's/^VETOT FÖLL: \(.*\)$/\1/p' matning.txt | tail -1 | grep -E '^(spärren|underlaget|identiteten|serien|argumenten|vintern)$' || echo 'skriptet, utan besked')"; exit 1; fi
+            rm -f matning.txt "arbete/serie_$V.csv.gz"
+          done
+          F=(ut/vetot-2024-25.json); for V in $ALDRE; do F+=("ut/vetot-$V.json"); done
+          node --experimental-strip-types "$MATNING" --samman "${F[@]}" --ut ut/vetot-samman.json > /dev/null 2>&1 || { echo "::error::följden: fel"; exit 1; }
+          echo "följden (§5): klart"
+          rm -rf arbete
+      # Talen går bara till den privata hinken. Ingenting skrivs över, och det som ligger i hinken ska vara byte för byte filen.
+      # Också när ett steg föll, så att felet går att läsa (exportörens utskrift bär bara antal och felet).
+      - name: Mätningens filer till hinken, hämtade tillbaka och jämförda
+        if: always()
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          F=(ut/*.json ut/*.txt)
+          if [ ${#F[@]} -eq 0 ]; then echo "ingen fil att lägga i hinken"; exit 0; fi
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          export FN KEY
+          node -e '
+            const { execFileSync } = require("child_process"), fs = require("fs"), c = require("crypto"), filer = process.argv.slice(1);
+            const sha = (b) => c.createHash("sha256").update(b).digest("hex"), namn = filer.map((f) => process.env.HINK + "/" + f.split("/").pop());
+            // execFileSync:s fel bär kommandoraden och därmed nyckeln eller den signerade adressen: fångas, bara statusen skrivs ut.
+            const curl = (a, vad) => { try { return execFileSync("curl", ["-sS", "--fail", ...a], { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); }
+              catch (e) { if (vad) { console.error(`${vad} föll (curl ${e.status})`); process.exit(1); } return null; } };
+            const anrop = (lage, vad) => { const b = curl(["-X", "POST", `${process.env.FN}?lage=${lage}`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
+              "-H", "Content-Type: application/json", "-d", JSON.stringify({ filer: namn })], vad); return b && JSON.parse(b); };
+            if (filer.length > 20) { console.error("högst 20 filer per anrop"); process.exit(1); }
+            let h = anrop("kuvos_hamta");
+            if (h) { console.error("filerna finns redan i hinken — ingenting skrivs över"); process.exit(1); }
+            const u = anrop("kuvos_ladda_upp", "adresserna för uppladdningen").urls;
+            filer.forEach((f, i) => curl(["-X", "PUT", "-H", "Content-Type: application/octet-stream", "--data-binary", "@" + f, u[i]], `uppladdningen av ${namn[i]}`));
+            h = anrop("kuvos_hamta", "hämtningen tillbaka");
+            let fel = 0;
+            h.filer.forEach((d, i) => { const ok = sha(curl([d.url], `hämtningen av ${d.fil}`)) === sha(fs.readFileSync(filer[i])); fel += !ok;
+              console.log(`${d.fil}: ${ok ? "i hinken, byte för byte den skrivna" : "FEL: i hinken med annat innehåll"}`); });
+            process.exit(fel ? 1 : 0);' "${F[@]}"
+          rm -rf ut hink trv leverans smhi
+          [ "${KONTROLL_RC:-0}" -eq 0 ] || { echo "::error::kontrollen (§6) höll inte — läsningen läses inte förrän skälet är känt"; exit 1; }

@@ -1,0 +1,22 @@
+{
+  "typ": "forsta",
+  "nyckel": "forsta:5",
+  "alla": [
+    "forsta:5",
+    "forsta:8"
+  ],
+  "ikon": "frys",
+  "etikett": "Höstens första",
+  "rubrik": "Höstens första minusgrader på vägbanan",
+  "underrad": "i natt · lördag 31 oktober",
+  "lyft": null,
+  "text": "I natt kom höstens första minusgrader på vägbanan i Östergötland och Kalmar län.\n\nÖstergötland: 5 stationer under noll, kallast −0,7 °C vid Vadstugan.\nKalmar län: 5 stationer under noll, kallast −0,6 °C vid Mariannelund.\n\nKör efter väglaget, inte efter vanan.\n\nLäget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Östergötland #Kalmar #halkvakt",
+  "textIg": "I natt kom höstens första minusgrader på vägbanan i Östergötland och Kalmar län.\n\nÖstergötland: 5 stationer under noll, kallast −0,7 °C vid Vadstugan.\nKalmar län: 5 stationer under noll, kallast −0,6 °C vid Mariannelund.\n\nKör efter väglaget, inte efter vanan.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone, länken finns i vår profil.\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Östergötland #Kalmar #halkvakt",
+  "pass": "live",
+  "datum": "2026-10-31",
+  "generated_at": "2026-10-31T04:30:06.771Z",
+  "lan": [
+    "ostergotland",
+    "kalmar"
+  ]
+}

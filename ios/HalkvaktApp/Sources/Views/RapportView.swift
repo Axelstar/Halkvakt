@@ -1,7 +1,7 @@
 // RAPPORTEN FÖR EN SPARAD RESA (favoriterna steg 3b, kort #357; FAVORITER §3, DECISIONS #636, #637) — det föraren läser innan
 // bilen startar. Dit och Hem är samma sparade väg; Hem är den vända, så farorna kommer i körordning och köerna gäller förarens håll.
-// Överst när läget är från, sedan det nya sedan förra kollen, allt längs vägen i viktordning, det tomma på en rad, prognosens plats
-// och vakten. Inga avstånd på raderna: en station ligger vid en plats och får aldrig ett avstånd som mätningen inte bär.
+// Överst när läget är från, sedan det nya sedan förra kollen, allt längs vägen i viktordning, det tomma på en rad, rutan Halkvakt
+// tror (kandidatens betavarningar, DECISIONS #739) och vakten. Inga avstånd på raderna: en station ligger vid en plats och får aldrig ett avstånd som mätningen inte bär.
 import SwiftUI
 import HalkvaktEngine
 
@@ -23,8 +23,10 @@ struct RapportView: View {
                     Text(rutt.namn).font(Typo.sans(32, .semibold)).tracking(-0.8).foregroundStyle(Brand.text).padding(.top, 8)
                     RiktningsVal(hem: $hem).padding(.top, 18)
                     if let resa = rapporten.resor[ruttId] {
-                        RapportInnehall(rader: hem ? resa.hem : resa.dit, fore: fore, kollat: rapporten.kollat,
-                                        lagesfil: rapporten.lagesfil, gammaltVaglag: rapporten.gammaltVaglag,
+                        RapportInnehall(rader: hem ? resa.hem : resa.dit, kandidat: hem ? resa.kandidatHem : resa.kandidatDit,
+                                        fore: fore, kollat: rapporten.kollat,
+                                        lagesfil: rapporten.lagesfil, rapportfil: rapporten.rapportfil,
+                                        gammaltVaglag: rapporten.gammaltVaglag,
                                         gamlaOlyckor: rapporten.gamlaOlyckor)
                     } else {
                         Text(rapporten.gickInte ? "Läget kunde inte hämtas. Dra nedåt för att försöka igen." : "Kollar läget …")
@@ -51,10 +53,11 @@ struct RapportView: View {
         }
     }
 
-    /// Hämtar om, och det som nu visas åt båda hållen blir förra kollen till nästa gång.
+    /// Hämtar om, och det som nu visas åt båda hållen blir förra kollen till nästa gång — bara när hämtningen lyckades. Annars ligger
+    /// den förra rapporten kvar i minnet, och förra kollen hade fått en tid då ingenting hämtades (B7-24).
     private func uppdatera() async {
         await rapporten.uppdatera()
-        if rapporten.resor[ruttId] != nil { fav.kollad(rutt: ruttId, ids: rapporten.ids(ruttId)) }
+        if rapporten.resor[ruttId] != nil, !rapporten.gickInte { fav.kollad(rutt: ruttId, ids: rapporten.ids(ruttId)) }
     }
 
     private func startaVakten() { GuardManager.shared.requestPermissionAndStart() }
@@ -84,9 +87,11 @@ private struct RiktningsVal: View {
 
 private struct RapportInnehall: View {
     let rader: [RapportRad]
+    let kandidat: [KandidatRad]?
     let fore: Favoriter.Koll?
     let kollat: Date?
     let lagesfil: Date?
+    let rapportfil: Date?
     let gammaltVaglag: Bool
     let gamlaOlyckor: Bool
 
@@ -99,6 +104,8 @@ private struct RapportInnehall: View {
             MonoLabel(text: "Just nu · kollat \(kollat?.klockslag ?? "–")").padding(.top, 28).padding(.bottom, 10).padding(.horizontal, 4)
             VStack(alignment: .leading, spacing: 6) {
                 Text("Läget från \(lagesfil?.klockslag ?? "okänd tid")").font(Typo.sans(17, .semibold)).foregroundStyle(Brand.text)
+                // B7-05 (DECISIONS #686 punkt 5): olyckor, vägarbeten, hinder, köer, restider och färjor kommer ur rapportfilen.
+                Text("Rapporten från \(rapportfil?.klockslag ?? "okänd tid")").font(Typo.sans(17, .semibold)).foregroundStyle(Brand.text)
                 Text("Läget kan ändras under resan, och då säger rösten till.").font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2)
                 if gammaltVaglag {
                     Text("Väglaget är äldre än 45 minuter och visas inte som läget just nu.").font(Typo.sans(14)).foregroundStyle(Brand.yellow)
@@ -138,11 +145,19 @@ private struct RapportInnehall: View {
                 Text(tomt).font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.dim).padding(.top, 14).padding(.horizontal, 4)
             }
 
-            VStack(alignment: .leading, spacing: 6) {
-                MonoLabel(text: "Prognosen · kommer senare")
-                Text("Prognosen längs vägen visas här tidigast efter domen i mars.").font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2)
+            // Halkvakt tror (DECISIONS #739): kandidatens betavarningar i en egen ruta, en rad per väg, utan avstånd och aldrig i Nytt.
+            MonoLabel(text: "Halkvakt tror · beta").padding(.top, 24).padding(.bottom, 10).padding(.horizontal, 4)
+            if let tomt = ResansRapport.kandidatTomt(kandidat, gammaltVaglag: gammaltVaglag) {
+                Text(tomt).font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2).padding(.horizontal, 4)
+            } else if let kandidat {
+                RowPanel {
+                    ForEach(Array(kandidat.enumerated()), id: \.element.id) { i, r in
+                        RapportRadVy(titel: r.rubrik, text: r.text, divider: i < kandidat.count - 1)
+                    }
+                }
+                Text(ResansRapport.kandidatFot).font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.dim)
+                    .padding(.top, 14).padding(.horizontal, 4)
             }
-            .padding(.top, 24).padding(.horizontal, 4)
         }
     }
 

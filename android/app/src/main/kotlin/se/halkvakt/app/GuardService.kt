@@ -1,16 +1,18 @@
 // The guard: foreground location service. GPS fix → AlertEngine.step → Swedish TTS
 // that DUCKS whatever is playing (Google Maps, Spotify) and restores it.
 // Skeleton scope (BACKLOG #7): manual start/stop from MainActivity; snapshot loaded
-// at service start + refreshed every 30 min (engine rebuilt — cooldown state reset
-// accepted for skeleton, tracked in BACKLOG as engine.updateHazards).
+// at service start + refreshed on publicera's two-minute grid, SnapshotSchedule and DECISIONS #741 (engine rebuilt — cooldown
+// state reset accepted for skeleton, tracked in BACKLOG as engine.updateHazards).
 package se.halkvakt.app
 
 import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
+import android.os.BatteryManager
 import android.os.Build
 import android.os.IBinder
 import android.os.Looper
@@ -53,6 +55,8 @@ class GuardService : Service() {
     /** Skill-regel: asynkront arbete har en explicit ägare och livstid = tjänstens. */
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private var stillSinceMs = 0L
+    /** Favoriter 2a (DECISIONS #817): frågan Spara resan? efter tio minuter stilla, en gång per stopp, före kvartens självstopp. */
+    private var favoritFragadThisStop = false
     private var flushedThisStop = false
     @Volatile private var disabledKinds: Set<HazardKind> = emptySet()
     private var prevLon = Double.NaN; private var prevLat = Double.NaN
@@ -64,9 +68,11 @@ class GuardService : Service() {
     @Volatile private var pendingSpeech: String? = null
     private lateinit var audio: AudioManager
     private var focusRequest: AudioFocusRequest? = null
-    private val snapshotSchedule = SnapshotSchedule()   // #218: one load at a time, a minute's wait after a failure
+    private val snapshotSchedule = SnapshotSchedule()   // #218, #741: one load at a time, on the publication grid
     /** Den laddade vägdatan — kortet slår upp farans metadata här. Skrivs i laddtråden, läses i varningen. */
     @Volatile private var hazardsNow: List<Hazard> = emptyList()
+    /** Mätningen (DECISIONS #741 punkt 5): resans varv, bara i telefonen. Sätts vid start, räknas i laddtråden. */
+    @Volatile private var matare: Matare? = null
     private val idleStop = IdleStop()   // #248: samma kvart som iOS
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -100,8 +106,11 @@ class GuardService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startForeground(NOTIF_ID, buildNotification(IDLE_TEXT))
         running = true
+        val sjalv = AutostartManager.controller(this).isAutoStarted()
+        scope.launch { Raknare.vaktStartad(this@GuardService, sjalv) }   // #772: ett ord i kön, skickas vid nästa stopp
         prevLon = Double.NaN; prevLat = Double.NaN
         session.value = Session(startedAt = System.currentTimeMillis())
+        matare = Matare(session.value.startedAt, batteri())
         // Resans fönster överlever tjänsten (kort #203): notisens knapp trycks minuter senare,
         // i en annan process, och måste veta vad "alla varningar" syftar på.
         scope.launch { Prefs.setTripStart(this@GuardService, session.value.startedAt) }
@@ -119,13 +128,16 @@ class GuardService : Service() {
     }
 
     private fun loadSnapshot() {
-        var ok = false
+        var utfall = SnapshotRepo.Utfall.FEL; var gen = 0L
+        var laddad: SnapshotRepo.Snapshot? = null
         try {
             val snap = SnapshotRepo.loadSnapshot(this)
+            laddad = snap
             val gate = AgeGate.filter(snap.hazards, snap.generatedAtMs, System.currentTimeMillis())
             val hazards = gate.hazards
             hazardsNow = hazards
             dataStale.value = gate.stale
+            if (gate.stale) scope.launch { Raknare.fel(this@GuardService, "gammal_data") }   // #787
             val dataTid = if (snap.generatedAtMs > 0)
                 android.text.format.DateFormat.format("HH:mm", snap.generatedAtMs) else "okänd tid"
             val g = guard
@@ -138,6 +150,8 @@ class GuardService : Service() {
                         // Kortet (DECISIONS #444) slår upp farans metadata: vägnummer, gräns, bro, röjningstid.
                         val meta = (hazardsNow.firstOrNull { it.id == a.hazardId } as? PointHazard)?.meta
                         val shown = ShownWarning(a, WarningCard.make(a, meta))
+                        val ersatte = currentWarning.value?.alert?.kind?.wire   // #787: ett kort som syntes byts ut
+                        val bannerOk = getSystemService(NotificationManager::class.java).areNotificationsEnabled()
                         currentWarning.value = shown
                         scope.launch { kotlinx.coroutines.delay(8000)
                             if (currentWarning.value === shown) currentWarning.value = null }
@@ -145,7 +159,10 @@ class GuardService : Service() {
                             counts = s.counts + (a.kind to (s.counts[a.kind] ?: 0) + 1),
                             lastSaid = a.text to System.currentTimeMillis()) }
                         scope.launch {
-                            Prefs.appendAlert(this@GuardService, AlertEntry((a.t * 1000).toLong(), a.kind.wire, a.text, a.hazardId)) } })
+                            Prefs.appendAlert(this@GuardService, AlertEntry((a.t * 1000).toLong(), a.kind.wire, a.text, a.hazardId))
+                            Raknare.forstaVarningen(this@GuardService)   // #772: en gång per enhet
+                            Raknare.varning(this@GuardService, a.kind.wire, a.distanceM.toInt(), ersatte)   // #787
+                            Raknare.banner(this@GuardService, bannerOk) } })
                 AlertBus.post("Vägdata laddad: ${hazards.size} faror i landet. Kör försiktigt.")
                 snapshotInfo.value = "${hazards.size} faror · väglag $dataTid"
             } else {
@@ -154,15 +171,31 @@ class GuardService : Service() {
                 AlertBus.post("Vägdata uppdaterad: ${hazards.size} faror.")
                 snapshotInfo.value = "${hazards.size} faror · väglag $dataTid"
             }
-            ok = !(gate.stale && snap.fromCache)   // gammal sparad fil: nytt försök om en minut, inte om 30
+            utfall = snap.utfall; gen = snap.generatedAtMs   // takten (#741): FEL, och den sparade filen, prövas om efter en minut
         } catch (e: Exception) {
             AlertBus.post("Kunde inte ladda vägdata: ${e.message}")
+            scope.launch { Raknare.fel(this@GuardService, "hamtning_fel") }   // #787
         } finally {
-            snapshotSchedule.done(System.currentTimeMillis(), ok)
+            val nu = System.currentTimeMillis()
+            matare?.varv(nu, laddad)   // null: laddningen kastade, ett varv utan källa
+            snapshotSchedule.done(nu, utfall, gen)
         }
     }
 
+    /** Batterinivån i procent ur den klibbiga ACTION_BATTERY_CHANGED; null när den inte går att läsa (mätningen, #741 punkt 5). */
+    private fun batteri(): Int? = runCatching {
+        registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))?.let { i ->
+            val niva = i.getIntExtra(BatteryManager.EXTRA_LEVEL, -1); val skala = i.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
+            if (niva < 0 || skala <= 0) null else niva * 100 / skala
+        }
+    }.getOrNull()
+
     private val callback = object : LocationCallback() {
+        /** #787: positionen föll bort under passet (GPS av, ingen fix). Räknas en gång per pass. */
+        override fun onLocationAvailability(availability: com.google.android.gms.location.LocationAvailability) {
+            if (!availability.isLocationAvailable) scope.launch { Raknare.fel(this@GuardService, "plats_borta") }
+        }
+
         override fun onLocationResult(result: LocationResult) {
             val loc = result.lastLocation ?: return
             if (!prevLon.isNaN()) {
@@ -183,6 +216,7 @@ class GuardService : Service() {
             if (idleStop.onFix(loc.time, fix.lon, fix.lat)) {
                 AlertBus.post("Stillastående en kvart — vakten stoppar själv.")
                 AutostartManager.clearAutoStarted(this@GuardService)
+                stoppOrsak = "parkerad"   // #787
                 stopSelf()
                 return
             }
@@ -190,11 +224,15 @@ class GuardService : Service() {
             retuneCadence(fix.lon, fix.lat, fix.speedKmh)
             // S4: facit skickas när bilen står stilla (≥ 30 s under 3 km/h), en gång per stopp — aldrig under körning.
             val still = (fix.speedKmh ?: 99.0) < 3.0
-            if (!still) { stillSinceMs = 0L; flushedThisStop = false }
+            if (!still) { stillSinceMs = 0L; flushedThisStop = false; favoritFragadThisStop = false }
             else if (stillSinceMs == 0L) stillSinceMs = loc.time
             else if (!flushedThisStop && loc.time - stillSinceMs >= 30_000L) {
                 flushedThisStop = true
-                scope.launch(Dispatchers.IO) { runCatching { FacitSender.flush(this@GuardService) } }
+                scope.launch(Dispatchers.IO) { runCatching { FacitSender.flush(this@GuardService) }; runCatching { Raknare.flush(this@GuardService) } }   // #772: räknarens kö likaså
+            }
+            if (still && !favoritFragadThisStop && stillSinceMs > 0L && loc.time - stillSinceMs >= FAVORIT_STILLA_MS) {
+                favoritFragadThisStop = true
+                favoritResanSlut(this@GuardService)
             }
         }
     }
@@ -305,8 +343,13 @@ class GuardService : Service() {
 
     override fun onDestroy() {
         efterResan()          // FÖRE scope.cancel() — läser sitt eget, kortlivade scope
+        // #787: hur passet slutade, i ett eget kortlivat scope som efterResan. Nästa stopp eller öppning skickar det.
+        val app = applicationContext; val orsak = stoppOrsak; stoppOrsak = "hand"
+        CoroutineScope(Dispatchers.IO).launch { runCatching { Raknare.vaktStoppad(app, orsak) } }
+        CoroutineScope(Dispatchers.IO).launch { runCatching { Prefs.raknaVaktPass(app) } }   // #829: kortet Tipsa en vän
         sparaTuren()
-        Favoriter.lager(this).resanSlutar(session.value.km, (System.currentTimeMillis() - session.value.startedAt) / 60_000.0)   // kort #357: frågan på Redo., bara om insamlingen var på
+        sparaMatningen()
+        favoritResanSlut(this)   // kort #357, #817: dagens resor och notisen, bara om insamlingen var på
         scope.cancel()
         running = false
         fused.removeLocationUpdates(callback)
@@ -325,12 +368,26 @@ class GuardService : Service() {
      * är en läsning plus en notis. Ingen notis alls om betatestet är av — knappen finns bara för
      * den som själv slagit på den (#186).
      */
+    /** Favoriter 2a (DECISIONS #817): resan så långt läggs i dagens resor; en ny resa ger dagens notis. */
+    private fun favoritResanSlut(ctx: Context) {
+        val lager = Favoriter.lager(ctx)
+        val ny = lager.resanSlutar(session.value.km, (System.currentTimeMillis() - session.value.startedAt) / 60_000.0) ?: return
+        runCatching { FavoritNotis.fraga(ctx.applicationContext, ny, lager.dagens.value.size) }
+    }
+
     /** Redo efter tur (designen 01b): turens slut och sträcka till kvittot. Egen kortlivad scope, som efterResan. */
     private fun sparaTuren() {
         if (session.value.startedAt <= 0L) return
         val app = applicationContext
         val km = session.value.km.toFloat()
         CoroutineScope(Dispatchers.IO).launch { Prefs.setTripEnd(app, System.currentTimeMillis(), km) }
+    }
+
+    /** Mätningen (DECISIONS #741 punkt 5): resan sparas när den slutar, bara i telefonen; under två minuter sparas den inte. */
+    private fun sparaMatningen() {
+        val m = matare ?: return
+        matare = null
+        m.resa(System.currentTimeMillis(), batteri())?.let { Matningen.spara(Matningen.fil(this), it) }
     }
 
     private fun efterResan() {
@@ -384,11 +441,14 @@ class GuardService : Service() {
     }
 
     companion object {
+        /** #787: varför nästa onDestroy sker — parkerad (kvarten), sjalv (autostarten stängde), annars hand. */
+        @Volatile var stoppOrsak = "hand"
         private const val NOTIF_ID = 1
         private const val EFTER_CH = "efter_resan"
         private const val HEADS_UP_CH = "heads_up"
         private const val HEADS_UP_ID = 2
         private const val HEADS_UP_MS = 8_000L  // samma 8 s som helskärmskortet
+        private const val FAVORIT_STILLA_MS = 10 * 60 * 1000L   // Favoriter 2a (#817), samma tio minuter som iOS
         private const val IDLE_TEXT = "Halkvakt vaktar — inga varningar just nu"
         /** Null = rösten fungerar. Annars raden som visas på Redo och under Rösten. */
         val voiceProblem = MutableStateFlow<String?>(null)

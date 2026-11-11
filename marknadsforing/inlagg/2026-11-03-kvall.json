@@ -1,0 +1,24 @@
+{
+  "typ": "svep",
+  "nyckel": "svep:kvall",
+  "etikett": "Halkläget kl. 16:30",
+  "rubrik": "Halt i dag",
+  "underrad": "Halka på 122 vägavsnitt i 7 län.",
+  "fler": 0,
+  "text": "Halkläget kl. 16:30, tisdag 3 november: halka på 122 vägavsnitt i 7 län. Svep för att se ditt län.\n\nNorrbotten: halka på 46 av 58 vägavsnitt, 56 stationer under noll, kallast −3,9 °C vid Kitkiöjoki.\nVästerbotten: halka på 34 av 44 vägavsnitt, 24 stationer under noll, kallast −2,8 °C vid Missenträsk.\nVästra Götaland: halka på 14 av 133 vägavsnitt.\nVästernorrland: halka på 13 av 22 vägavsnitt, 1 station under noll, kallast 0,0 °C vid Långvattnet.\nVästmanland: halka på 6 av 24 vägavsnitt.\nUppsala län: halka på 5 av 25 vägavsnitt.\nDalarna: halka på 4 av 38 vägavsnitt, 4 stationer under noll, kallast −0,8 °C vid Ryggen.\nVärmland: 3 stationer under noll, kallast −0,5 °C vid Storberget, 1 olycka.\n\nLäget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #VästraGötaland #Västernorrland #Västmanland #halkvakt",
+  "textIg": "Halkläget kl. 16:30, tisdag 3 november: halka på 122 vägavsnitt i 7 län. Svep för att se ditt län.\n\nNorrbotten: halka på 46 av 58 vägavsnitt, 56 stationer under noll, kallast −3,9 °C vid Kitkiöjoki.\nVästerbotten: halka på 34 av 44 vägavsnitt, 24 stationer under noll, kallast −2,8 °C vid Missenträsk.\nVästra Götaland: halka på 14 av 133 vägavsnitt.\nVästernorrland: halka på 13 av 22 vägavsnitt, 1 station under noll, kallast 0,0 °C vid Långvattnet.\nVästmanland: halka på 6 av 24 vägavsnitt.\nUppsala län: halka på 5 av 25 vägavsnitt.\nDalarna: halka på 4 av 38 vägavsnitt, 4 stationer under noll, kallast −0,8 °C vid Ryggen.\nVärmland: 3 stationer under noll, kallast −0,5 °C vid Storberget, 1 olycka.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone, länken finns i vår profil.\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #VästraGötaland #Västernorrland #Västmanland #halkvakt",
+  "pass": "kvall",
+  "antal": 10,
+  "datum": "2026-11-03",
+  "generated_at": "2026-11-03T15:30:26.643Z",
+  "lan": [
+    "norrbotten",
+    "vasterbotten",
+    "vastra-gotaland",
+    "vasternorrland",
+    "vastmanland",
+    "uppsala",
+    "dalarna",
+    "varmland"
+  ]
+}

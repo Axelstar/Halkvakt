@@ -82,16 +82,16 @@ ligger på +1…+3 °C, har fallit minst 0,8 °C på 30 minuter och mätaren set
 <!-- LÄGESRADER §4: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 *Läget i projektkartan:*
 
-- [Trafikverkets väderstationer](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-vader): delvis, 89 % · kvar: Mätpunkter utan lufttemperatur vaktas inte (kort #344, #345): avgjort 14/10, ingen ändring nu, frågan tas upp inför 2027/28 (bedömningen §4.2). Mätt mot kandidatens veto 20/10: tre fjärrytor vetade 16 punkter på 9 sträcktimmar 17–20/10 och tystade ingen fuktig sträcka (DB-knappen 39415616056)
-- [Trafikverkets väglag (RoadCondition)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-vaglag): klar
-- [Trafikverkets olyckor, djur och hinder](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-situation): klar
-- [Publiceringen var tionde minut](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-l-publicera): klar
-- [Motorn i tre språk](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-motorn): klar
-- [Olyckor (A3), med olycksläget](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-olyckor): klar
-- [Rapporterad halka (A1)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-halka): klar
-- [Frysrisk vid stationer och broar (A2)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-frysrisk): klar
-- [Djur på vägen (A4)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-vilt): klar
-- [Fartkameror (A5)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-kameror): klar
+- [Trafikverkets väderstationer](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-k-vader): delvis, 89 % · kvar: Mätpunkter utan lufttemperatur vaktas inte (kort #344, #345): avgjort 14/10, ingen ändring nu, frågan tas upp inför 2027/28 (bedömningen §4.2). Mätt mot kandidatens veto 20/10: tre fjärrytor vetade 16 punkter på 9 sträcktimmar 17–20/10 och tystade ingen fuktig sträcka (DB-knappen 39415616056)
+- [Trafikverkets väglag (RoadCondition)](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-k-vaglag): klar
+- [Trafikverkets olyckor, djur och hinder](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-k-situation): klar
+- [Publiceringen var tionde minut](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-l-publicera): klar
+- [Motorn i tre språk](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-motorn): klar
+- [Olyckor (A3), med olycksläget](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-olyckor): klar
+- [Rapporterad halka (A1)](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-halka): klar
+- [Frysrisk vid stationer och broar (A2)](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-frysrisk): klar
+- [Djur på vägen (A4)](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-vilt): klar
+- [Fartkameror (A5)](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-kameror): klar
 
 <!-- /LÄGESRADER -->
 
@@ -152,6 +152,26 @@ Uppmätt i den publicerade `live.json` 14/9 05:10: **28 väderstationer, 1 avvik
 kamerorna att arbeta med. 15/10 17:30 bar `live.json` 40 sträckor i `segments` och kandidatens 2 sträckor med 16 punkter,
 79 531 byte (#576).
 
+Läget 1/11: lägesfilen ligger sedan 28/10 också i den publika hinken, och sedan 30/10 läser vakthunden (kontroll 3), skuggmotorn,
+favoritprovet och kamerafacit den därifrån, som appen, med Pages som reserv bara för vakthunden (#752). I filen får en svensk station
+vara högst 60 minuter gammal och en grannlands tre timmar (#751).
+
+Läget 7/11 (#810):
+- **Publiceringen** läser sedan 26/10 `talande_timme()` och `talande_regel()` (sql/070), så den nya kandidaten talar i stället för
+  den frysta (#729). Hinken skrivs varannan minut (#741).
+- **Kandidaten på en kvart** räknas var femte minut i databasen men talar inte. Den mäts i en skugga med flaggan av (#782, #783, #808).
+- **Storstädernas punkter** (B och C, #804) har en egen ledning bredvid:
+  - tabellen `stadspunkt` (sql/089);
+  - stadsradarn var 15:e minut i `radar-stad.yml`, till `radar_stad` (sql/090, #805);
+  - regelns stadsgren (sql/091);
+  - kedjans steg i kandidatens två flöden (#809).
+
+  Brytarna i `stadsbrytare` är av, så ingen stadspunkt når `live.json` än.
+- **Utanför kandidaten:**
+  - Finland läses ur Digitraffics v2 (#791).
+  - Olycksfacit fryser varningslagren vid varje olycka i arkivet och når inte appen (#796–#803).
+  - Räknaren skickar ett ord per händelse till `app-raknare` (#772, #787).
+
 ### 4.4 Kandidaten: en egen väg in, sist i stegen
 
 Kandidaten NIVÅ 2+BLANDNING (den frysta, #552) går live i appen före domen (#556) som en egen betavarning (#562). Den har
@@ -176,6 +196,16 @@ till App Store Connect; inskicket till App Review med (32) återstår (#643). Ap
 motorvarv körs utan kandidaten, eftersom deras domar är förregistrerade utan den; kandidatens egen takt och domlogg räknas ur
 regeln (#573, #577).
 
+**Läget 7/11 (#810).** Tabellen ovan beskriver den frysta kandidaten. Den nya (#692) talar sedan 26/10 21.40 UTC, enligt raden i
+`kandidat_talar` (#729). Dess räkning är kuvösens kod, som läggs ovanpå med läsnyckeln (#768), och dess tal står i halkvakt-kuvos.
+
+Två rader i tabellen gäller inte längre som de står:
+- **Spridningsgrinden** är sedan 6/11 12.31 UTC F1 för båda kandidaterna. Regeln tiger där minst två ankare bidrar och
+  `frys_min` ≥ 0,45 (`sql/087`, #799, #800). RÅ:s grind står kvar med 2,25 °C (#801).
+- **Regeln** finns sedan 6/11 i `sql/091`, med en gren för storstädernas punkter bakom brytarna (#804).
+
+Kandidaten på en kvart och storstäderna står i §4.3.
+
 **Var den döms.** I mars 2027, som en ny fråga (#547), enligt `docs/FORREGISTRERING-2026-27.md`: grind A–C med
 TROSKLAR-SKUGGAN §3, spridningsgrinden och tystnad på täckt sträcka som miss (§4), räknat på det kedjan räknade vid timmen
 (`kandidat_station`, `kandidat_skugga`) och prövat per ankarband 0–7, 7–15, 15–20 och över 20 km (§4b, #655, #656). RÅ redovisas
@@ -189,14 +219,14 @@ bredvid som kontroll och reserv (§6). Förväntan är skriven före vintern: 5,
 <!-- LÄGESRADER §5: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 *Läget i projektkartan:*
 
-- [SMHI:s varningar](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-smhi-varningar): delvis, 92 % · kvar: Ingen läsare i motorn: efter F-A (de första vintervarningarna) och F-B (en vintermånad)
-- [SMHI:s nederbördsradar](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-radar): delvis, 88 % · kvar: Radarns tal R i förregistreringen §10 (a), läses 26/10 (#568)
-- [Vägdatalagret (NVDB)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-vagdata): delvis, 92 % · kvar: Kuvösens inläsning till kuvos_ra.vagdata (kort #303)
-- [Lägesfilens fält för skuggdelarna](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-l-falten): klar
-- [L3 trenden](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-trenden): delvis, 44 % · kvar: T-B vilar till 2027/28 (#675); trendens värden prövas inom efterhalkan
-- [Rimfrosten](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-rimfrost): väntar, 44 % · En frostmånad för R-B; uppspelningen ur arkivet är byggd (#510), domen läses 9/11 (frist r-b-dom).
-- [Nederbördstypen (snö, slask)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-nederbord): väntar, 44 % · Domen tidigast 1/3 2027 när vintern gett ≥100 snö- och ≥40 slaskepisoder (NT-D).
-- [Kallplatserna](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-kallplatser): stängd · Kortet #91 stängt 25/9; vårlistans Ä6 struken 22/10 (#675): idén lever i kandidatens terrängsärdrag och kort #321
+- [SMHI:s varningar](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-k-smhi-varningar): delvis, 92 % · kvar: Ingen läsare i motorn: efter F-A (de första vintervarningarna) och F-B (en vintermånad)
+- [SMHI:s nederbördsradar](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-k-radar): delvis, 88 % · kvar: Radarns tal R i förregistreringen §10 (a), läses 26/10 (#568)
+- [Vägdatalagret (NVDB)](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-k-vagdata): delvis, 93 % · kvar: Kuvösens inläsning till kuvos_ra.vagdata (kort #303)
+- [Lägesfilens fält för skuggdelarna](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-l-falten): klar
+- [L3 trenden](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-trenden): delvis, 44 % · kvar: T-B vilar till 2027/28 (#675); trendens värden prövas inom efterhalkan
+- [Rimfrosten](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-rimfrost): väntar, 44 % · En frostmånad för R-B; uppspelningen ur arkivet är byggd (#510), domen läses 9/11 (frist r-b-dom).
+- [Nederbördstypen (snö, slask)](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-nederbord): väntar, 44 % · Domen tidigast 1/3 2027 när vintern gett ≥100 snö- och ≥40 slaskepisoder (NT-D).
+- [Kallplatserna](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-kallplatser): stängd · Kortet #91 stängt 25/9; vårlistans Ä6 struken 22/10 (#675): idén lever i kandidatens terrängsärdrag och kort #321
 
 <!-- /LÄGESRADER -->
 
@@ -360,10 +390,10 @@ till tre (v42–v44, #577). Taket var i båda fallen långt över kostnaden.
 <!-- LÄGESRADER §6: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 *Läget i projektkartan:*
 
-- [L2 tillståndet (skattaren S1–S3)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-tillstand): delvis, 100 % · kvar: Skattarens träffsäkerhet mot operatörens klasser, dömbar först med vinterfacit
-- [L4 räckvidden: segmentprognosen](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-segmentprognos): väntar, 74 % · Domen i mars 2027 (grind A–C) på kandidaten NIVÅ 2+BLANDNING som ny fråga, RÅ kontroll och reserv (#547), val d på kort #270 struket 21/10, domslut (b) döms per band (#655).
-- [L5 allvar som försprång](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-forsprang): delvis, 56 % · kvar: FS-A: nivå 2-fall i vinter (kod 3–4, eller yta ≤ 0 °C med väta ≥ 3); kod 3 och 4 finns i arkivet sedan 20–21/10 (kodgrinden 39617620449: 75 och 5 rader), andelen döms i mars
-- [RÅ: kontroll och reserv](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-prognoslagret): väntar, 88 % · Premissläsningen tisdag 24/11 (DECISIONS #435), som kunskap om RÅ; RÅ:s dom i mars redovisas bredvid kandidatens som kontroll och reserv (#547).
+- [L2 tillståndet (skattaren S1–S3)](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-tillstand): delvis, 100 % · kvar: Skattarens träffsäkerhet mot operatörens klasser, dömbar först med vinterfacit
+- [L4 räckvidden: segmentprognosen](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-segmentprognos): väntar, 76 % · Domen i mars 2027 (grind A–C) på kandidaten NIVÅ 2+BLANDNING som ny fråga, RÅ kontroll och reserv (#547), val d på kort #270 struket 21/10, domslut (b) döms per band (#655).
+- [L5 allvar som försprång](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-forsprang): delvis, 56 % · kvar: FS-A: nivå 2-fall i vinter (kod 3–4, eller yta ≤ 0 °C med väta ≥ 3); kod 3 och 4 finns i arkivet sedan 20–21/10 (kodgrinden 39617620449: 75 och 5 rader), andelen döms i mars
+- [RÅ: kontroll och reserv](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-prognoslagret): väntar, 88 % · Premissläsningen tisdag 24/11 (DECISIONS #435), som kunskap om RÅ; RÅ:s dom i mars redovisas bredvid kandidatens som kontroll och reserv (#547).
 
 <!-- /LÄGESRADER -->
 
@@ -869,6 +899,7 @@ ingen läser en överspelad version någon annanstans.
 | 9/10 | **Läge-raderna efter frosten, FYSIK och kallkartan:** L3 och L4 (§2), §6.1 och §13.6 (provet av helheten, Axels "en sak") — inget innehåll ändrat; fem innehållsfrågor (Ö-A1:s 76 % mot 18 % på frosten, operatörens *Våt*, väglagsarkivet, tre nej i §9.1, rimfrostens gren i §5.4) står i bedömningens §4.2 | DECISIONS #467, #485, #489–#492, #496, #497 |
 | 14/10 | **Läge-raderna efter nivå 2, prognosläget och väg B:** L4-raden (§2), §6.1 och §13.6 (provet av helheten) — ingen innehållsändring | DECISIONS #509, #516–#519, #544, #547–#553 |
 | 15/10 | **Läge-raden §13.6 efter beslutet att gå live:** kandidaten i appen före domen, körplatsen och pariteten — ingen innehållsändring | DECISIONS #556–#561 |
+| 7/11 | **Lägena i §4.3 och §4.4 efter den talande kandidaten, F1 och storstädernas punkter.** Tabellen i §4.4 rörs inte; att dess rader om spridningsgrinden och regeln är överspelade står i läget. | DECISIONS #729, #782, #783, #791, #796–#805, #808–#810 |
 
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
 ## Öppna kort
@@ -881,7 +912,7 @@ Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 3 kort.
 
 **§6 Var lagren står, mätt**
 
-- #270 PROGNOSLAGRET EFTER PREMISSMÄTNINGARNA — BENGTS VAL a–h — Bengt
+- #270 FYSIKSPÅRET: FLYTTAD TILL HALKVAKT-KUVOS — Bengt
 - #38b Stråket / skuggmotorn — ÅTERSTÄLLT 10/9 — Claude, låst
 
 <!-- /ÖPPNA KORT -->

@@ -1,0 +1,40 @@
+# Apple Ads-rapporten (DECISIONS #748, Axel 30/10): kampanjens sökordsrapport för de senaste 14 dygnen till Supabase
+# (apple_ads_sokord, sql/076), som statistik.html läser via besok_stat. GitHub-cronen och inte pulsklockan: rapporten är inte
+# brådskande, och en utebliven körning tas igen av nästa, som skriver om hela fönstret. Två tider eftersom cronen kan utebli (#70).
+# Apple lägger dygnets siffror med upp till tre timmars fördröjning; 06:23 UTC har gårdagen komplett.
+# Utan APPLE_ADS_PRIVATE_KEY är körningen en torrkörning.
+name: apple-annonser
+on:
+  schedule:
+    - cron: "23 6 * * *"
+    - cron: "23 18 * * *"
+  workflow_dispatch:
+    inputs:
+      torr:
+        description: "Hämta och skriv ut, skriv inget i databasen"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency: { group: apple-annonser, cancel-in-progress: false }
+
+jobs:
+  rapport:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - name: Sökordsrapporten
+        env:
+          APPLE_ADS_PRIVATE_KEY: ${{ secrets.APPLE_ADS_PRIVATE_KEY }}
+          APPLE_ADS_CLIENT_ID: ${{ secrets.APPLE_ADS_CLIENT_ID }}
+          APPLE_ADS_KEY_ID: ${{ secrets.APPLE_ADS_KEY_ID }}
+          APPLE_ADS_ORG_ID: ${{ secrets.APPLE_ADS_ORG_ID }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: node marknadsforing/appleannonser.mjs ${{ inputs.torr && '--torr' || '' }}

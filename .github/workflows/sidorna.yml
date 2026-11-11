@@ -1,0 +1,35 @@
+name: sidorna
+# SIDORNA (Bengt 27/10, DECISIONS #731 och #733): "bygger om så att det hämtar via github" och "kan man be github göra en genomsökning
+# också så att allt är aktuellt". Stomdokumentens sidor och projektkartan publiceras på https://895845.github.io/halkvakt-sidor/. Pages
+# kräver adminrätt i det här repot, så bygget och publiceringen görs i Bengts repo 895845/halkvakt-sidor, som hämtar main härifrån en
+# gång per dygn 05.30 UTC (Bengt 27/10: "Axel kan inte just nu. Visa hur sidorna kan publiceras från mitt eget konto i stället.").
+# Här körs bara genomsökningen i scripts/sidorna.ts, 06.00 UTC efter bygget, så att ärendet står i det här repot. Kostar inga
+# Actions-minuter mot någon kvot, eftersom repot är publikt.
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch: {}
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+concurrency:
+  group: sidorna
+  cancel-in-progress: false
+jobs:
+  genomsok:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      # Hela historiken: genomsökningen läser sidorna ur commiten de byggdes ur och ändringarna efter den.
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false, fetch-depth: 0 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Genomsökningen, sidorna lika bygget och allt aktuellt (#731, #733)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DYGN: "true"
+        run: |
+          node --experimental-strip-types scripts/sidorna.ts --sjalvtest
+          node --experimental-strip-types scripts/sidorna.ts --genomsok https://895845.github.io/halkvakt-sidor/

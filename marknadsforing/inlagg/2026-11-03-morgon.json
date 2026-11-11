@@ -1,0 +1,33 @@
+{
+  "typ": "forandring",
+  "nyckel": "forandring",
+  "etikett": "Sedan i går",
+  "rubrik": "Halkan sprider sig",
+  "underrad": "vägavsnitt med halka, mot samma tid i går",
+  "lyft": {
+    "stort": "135 → 204",
+    "liten": "ny halka i Stockholms län, Uppsala län, Södermanland, Halland, Västra Götaland och Västmanland"
+  },
+  "text": "Trafikverket rapporterar halka på 204 vägavsnitt, mot 135 vid samma tid i går.\nNy halka sedan i går: Stockholms län, Uppsala län, Södermanland, Halland, Västra Götaland och Västmanland.\n\nNorrbotten: halka på 46 av 58 vägavsnitt, 55 stationer under noll, kallast −5,8 °C vid Leipojärvi.\nVästerbotten: halka på 42 av 44 vägavsnitt, 29 stationer under noll, kallast −2,4 °C vid Älgsjö.\nVästernorrland: halka på 19 av 22 vägavsnitt, 23 stationer under noll, kallast −2,9 °C vid Torpshammar.\nSödermanland: halka på 18 av 24 vägavsnitt, 18 stationer under noll, kallast −2,1 °C vid 417 Slytan Fjärryta.\nGävleborg: halka på 17 av 27 vägavsnitt, 20 stationer under noll, kallast −3,0 °C vid Snäre.\nHalka eller minusgrader även i 10 län till.\n\nLäget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Västernorrland #Södermanland #Gävleborg #halkvakt",
+  "textIg": "Trafikverket rapporterar halka på 204 vägavsnitt, mot 135 vid samma tid i går.\nNy halka sedan i går: Stockholms län, Uppsala län, Södermanland, Halland, Västra Götaland och Västmanland.\n\nNorrbotten: halka på 46 av 58 vägavsnitt, 55 stationer under noll, kallast −5,8 °C vid Leipojärvi.\nVästerbotten: halka på 42 av 44 vägavsnitt, 29 stationer under noll, kallast −2,4 °C vid Älgsjö.\nVästernorrland: halka på 19 av 22 vägavsnitt, 23 stationer under noll, kallast −2,9 °C vid Torpshammar.\nSödermanland: halka på 18 av 24 vägavsnitt, 18 stationer under noll, kallast −2,1 °C vid 417 Slytan Fjärryta.\nGävleborg: halka på 17 av 27 vägavsnitt, 20 stationer under noll, kallast −3,0 °C vid Snäre.\nHalka eller minusgrader även i 10 län till.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone, länken finns i vår profil.\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Västernorrland #Södermanland #Gävleborg #halkvakt",
+  "pass": "morgon",
+  "datum": "2026-11-03",
+  "generated_at": "2026-11-03T04:30:08.043Z",
+  "lan": [
+    "norrbotten",
+    "vasterbotten",
+    "vasternorrland",
+    "sodermanland",
+    "gavleborg",
+    "vastra-gotaland",
+    "dalarna",
+    "vastmanland",
+    "jamtland",
+    "uppsala",
+    "stockholm",
+    "halland",
+    "varmland",
+    "orebro",
+    "ostergotland"
+  ]
+}

@@ -32,7 +32,12 @@ Define success criteria. Loop until verified.
   facit answer the driver presses themselves — warning id + timestamp, i.e. roughly where and when —
   or a miss the driver marks themselves ("appen missade": nearest station id + timestamp + what it was,
   chosen after the trip; DECISIONS #267/#379) — and only for beta testers who turned the switch on (off by
-  default). Rewritten 20/9 by Axel
+  default) — plus, since 1/11 (DECISIONS #772, Axel and Bengt), the anonymous counter: one word per event
+  (`{h, v, app, ver, k}` to `app-raknare`; the six areas since DECISIONS #787: the way in, active days, the guard session,
+  the warnings, settings changed and what went wrong — the value list lives in `supabase/functions/app-raknare/index.ts`),
+  counted as one row per day, app, app version, cohort (new or existing install), event and value — no id, no time finer
+  than the day, no position and no distance: a guard session is only its start method, its length in four buckets and how
+  it ended. Always on and stated in integritet.html (variant A). Rewritten 20/9 by Axel
   (DECISIONS #264) because the old wording ("Full stop") became untrue on 16/9 when S4 shipped, and
   stayed in four documents for four days. Change what the app sends ⇒ this line, the Play Data Safety
   file, integritet.html in the map repo and the product book change in the SAME commit.
@@ -93,6 +98,11 @@ Allt i repot är publikt och går inte att ta tillbaka: filerna, historiken, är
 - **Får aldrig ligga här** — varken i en fil, en release, en logg eller ett ärende: Trafikverkets leverans och allt som räknats ur den
   rad för rad (den ligger i hinken `arkiv`); testarnas svar och missar (DB-knappen spärrar dem, #498); hemligheter; personuppgifter
   (namn på privatpersoner, privata e-postadresser, telefonnummer). Ett aggregat per station är inte rad för rad.
+- **Fysik, kuvös och småvägar bor inte här** (Axel och Bengt 31/10, DECISIONS #768): ny kod, data, förregistreringar, mätningar och resultat
+  committas i det privata Axelstar/halkvakt-kuvos, aldrig här och inte heller på en gren här. Ett flöde här som kör den koden lägger den ovanpå
+  med `KUVOS_LASNYCKEL` och skriver bara klart eller fel: inga parametrar, särdrag, tal eller modellutskrifter i logg, sammanfattning eller ärende.
+  *Undantag* (Bengt och Axel 6/11, DECISIONS #804): driftens rörarbete för storstädernas punkter (B och C som K) får ligga här — tabellen,
+  laddaren, radarn, regeln, kedjans steg — och deras varningar står i `live.json` som K:s. Punkterna, särdragen, historiken och fysiken bor kvar i kuvösen. Stomdokumenten beskriver samma rörarbete, utan punkter, särdrag, kuvösens tal och fysik (DECISIONS #810).
 - Varje fil under `data/` står i `data/KALLOR.json` med källa och licens; publikvakten (`scripts/publikvakt.ts`, i ci) fäller en fil som
   saknas där, en fil över 20 MB och kända mönster (Trafikverkets leveransfiler, `.npy`, `oof`, exporter av testarnas svar).
 - Osäker? Lägg det i hinken, inte i repot, och fråga.
@@ -100,9 +110,12 @@ Allt i repot är publikt och går inte att ta tillbaka: filerna, historiken, är
 ## Session protocol (self-steering)
 Every session, in order:
 1. Run the kartsynk first (`node --experimental-strip-types scripts/kartsynk.ts`) and book what it lists (PROJEKTKARTAN →
-   Kartsynken below). Read the morning's dokumentsynk (DOKUMENTSYNKEN below): its STATUS line, its PR, and republish every artifact its line lists under
-   *Att republicera* that this machine can reach. Then the open issues labelled `frist` and `dom` (DECISIONS #649): a frist due
-   today or overdue, and a dom waiting to be booked, are raised with Bengt before anything else. Then orient per SESSIONSREGELN below: the project map (`docs/PROJEKTKARTAN.html`, PROJEKTKARTAN below) for where every part stands, the latest `docs/BEDOMNING-*.md` in full, `docs/INTEGRATIONSKARTAN.md` when it
+   Kartsynken below). Read the morning's dokumentsynk (DOKUMENTSYNKEN below): its STATUS line and its PR (merged by the flow `synk-ihop`, DECISIONS #731;
+   if it is still open, the flow's comment says why). The pages are built and published once a day by Bengt's repo
+   895845/halkvakt-sidor, and the flow `sidorna` here scans them (#731, #733): an open
+   issue *Genomsökningen av sidorna hittade fel* is raised with Bengt like a frist. Then the open issues labelled `frist`, `dom` (DECISIONS #649) and `olycka`
+   (DECISIONS #797): a frist due today or overdue, a dom waiting to be booked, and an olycksfacit day whose silent slippery accidents
+   still lack an action (a card or *ingen åtgärd* with the reason), are raised with Bengt before anything else. Then orient per SESSIONSREGELN below: the project map (`docs/PROJEKTKARTAN.html`, PROJEKTKARTAN below) for where every part stands, the latest `docs/BEDOMNING-*.md` in full, `docs/INTEGRATIONSKARTAN.md` when it
    changed or a new grepp starts, TAVLA.md's 🟡 section, DECISIONS added since last session, latest CI runs. Search
    TAVLA, STATUS and DECISIONS — don't read them whole (halved 26/9; the older half is in TAVLA-ARKIV.md and
    DECISIONS-ARKIV.md — search there too).
@@ -111,7 +124,7 @@ Every session, in order:
 3. Prove it: tests/CI/logs — never claim done without evidence.
 4. Commit with a message explaining what + why. Update the bedömning (läget överst,
    §4.2) and TAVLA; a session-log line in STATUS.md. Log decisions in DECISIONS.md, each with its **Stomdokument:** line —
-   the seven stomdokument's hand text is reconciled once a day by the morning dokumentsynk, not in each round (STOMREGELN,
+   the eight stomdokument's hand text is reconciled once a day by the morning dokumentsynk, not in each round (STOMREGELN,
    DECISIONS #522). Run the card review (`scripts/kortkartan.ts
    --genomgang`) and close every card whose Verify is met, in the same commit (TAVELREGELN 5).
 5. End by telling Axel: what shipped, what's next, and ONLY the questions that
@@ -159,46 +172,51 @@ Varje arbetsvarv AVSLUTAS med att TAVLA.md synkas mot verkligheten:
 3. Verkligheten bevisar något (commit, kvitto, skärmbild) → kortet flyttas
    utan att fråga.
 4. Finns det inte på tavlan finns det inte. Idéer utan kort = tappade idéer.
-5. **Kortgenomgången (Bengts krav 3/10, DECISIONS #451) — ett krav, som kartan och artefakterna:** varje varv avslutas, och varje
+5. **Kortgenomgången (Bengts krav 3/10, DECISIONS #451) — ett krav, som kartan och sidorna:** varje varv avslutas, och varje
    kartsynk körs, med `node --experimental-strip-types scripts/kortkartan.ts --genomgang`, som listar varje öppet kort med dess
    Verify-rad och "Kvar". Vart och ett prövas mot beviset: ett kort vars Verify är uppfylld med ett bevis som går att följa flyttas
    till 🟢 med beviset på raden **i samma commit** (kortkartan.json och delens `kort` i projektkartan.json följer med), och ett kort
    utan Verify-rad får en. Kortvakten i CI (#449) fäller det kartan själv vet; genomgången tar resten.
 Tavlan är människolagret; bedömningen, STATUS och DECISIONS är djuplagren.
 
-## STOMREGELN (Bengts order 2026-10-01 — åtta stomdokument, DECISIONS #415, #425, #445, #557)
-Åtta dokument är Bengts facit och kontrollpunkter för var vi är, och stommen för det fortsatta bygget:
-1. *Halkvaktens mätningar* — artefakt https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc, källa `docs/MATNINGAR.html`
-2. *Halkvaktens app* — https://claude.ai/artifact/FThC1PqVqEMqWxofrCv1GT, källa `docs/APPEN.html`
-3. *Halkvaktens systembild* — https://claude.ai/artifact/6hHX4LeXQUrJSbaNthNY9i, källa `docs/SYSTEMBILDEN.html`
+## STOMREGELN (Bengts order 2026-10-01 — sex stomdokument sedan 31/10, DECISIONS #415, #425, #445, #557, #768, #769)
+Sex dokument är Bengts facit och kontrollpunkter för var vi är, och stommen för det fortsatta bygget. Sidorna läses på
+https://895845.github.io/halkvakt-sidor/, som byggs ur main en gång per dygn i Bengts repo 895845/halkvakt-sidor (Bengt 27/10,
+DECISIONS #731 och #733; Pages kräver adminrätt här); deras adresser på claude.ai uppdateras inte längre:
+1. *Halkvaktens mätningar* — https://895845.github.io/halkvakt-sidor/MATNINGAR.html, källa `docs/MATNINGAR.html`
+2. *Halkvaktens app* — https://895845.github.io/halkvakt-sidor/APPEN.html, källa `docs/APPEN.html`
+3. *Halkvaktens systembild* — https://895845.github.io/halkvakt-sidor/SYSTEMBILDEN.html, källa `docs/SYSTEMBILDEN.html`
 4. Bedömningen — den senaste `docs/BEDOMNING-*.md`
 5. Integrationskartan — `docs/INTEGRATIONSKARTAN.md` (inte längre fryst sedan 22/10, DECISIONS #678)
-6. *Halkvaktens kuvös* — https://claude.ai/artifact/1xvv4hydYbfpF5eXFgLcxh, källa `docs/KUVOSEN.html` (tillagd 1/10 på Bengts order, DECISIONS #425)
-7. *Halkvaktens favoriter* — https://claude.ai/artifact/EJYcQFCyKYd9BgGcYkCMyT, källa `docs/FAVORITER.html` (tillagd 3/10 på Bengts order, DECISIONS #445)
-8. *Nivå 2+blandning live* — https://claude.ai/artifact/Wsuxr3UTG7d7axekXireqg, källa `docs/NIVA2-LIVE.html` (tillagd 14/10 på Bengts order, DECISIONS #557): stegen till kandidaten i appen, kort #343
-**En gång per dygn (Bengts order 11/10, DECISIONS #522).** De åtta stäms av EN gång per dygn, av morgonens dokumentsynk (DOKUMENTSYNKEN
-nedan): den läser allt som hänt sedan förra synken och rättar handtexten, och artefakterna republiceras då — når rutinen dem inte,
-gör dagens första session det. I varje varv förs bara in det som maskinerna prövar: beslutet med sin rad `**Stomdokument:**` (som
+6. *Halkvaktens favoriter* — https://895845.github.io/halkvakt-sidor/FAVORITER.html, källa `docs/FAVORITER.html` (tillagd 3/10 på Bengts order, DECISIONS #445)
+*Halkvaktens kuvös* (KUVOSEN.html) och *Nivå 2+blandning live* (NIVA2-LIVE.html) flyttade 31/10 till det privata
+halkvakt-kuvos och stäms av där (DECISIONS #768, #769); filerna här ändras inte och tas bort när flytten är klar.
+**En gång per dygn (Bengts order 11/10, DECISIONS #522).** De sex stäms av EN gång per dygn, av morgonens dokumentsynk (DOKUMENTSYNKEN
+nedan): den läser allt som hänt sedan förra synken och rättar handtexten. Flödet `synk-ihop` slår ihop synkens PR när kontrollerna
+är gröna, 895845/halkvakt-sidor bygger och publicerar sidorna ur main 05.30 UTC, och flödet `sidorna` här söker 06.00 UTC
+igenom att allt är aktuellt (Bengt 27/10, DECISIONS #731 och #733). I varje varv förs bara in det som maskinerna prövar: beslutet med sin rad `**Stomdokument:**` (som
 säger vad synken ska stämma av), tavlan, projektkartan och kortkartan (skripten skriver lägesraderna och korten i sidorna) och en
 rad i STATUS. Skälet: 107 av 118 commits 4–11/10 rörde dokument, och varje ändring rättade två till tre sidor och republicerade dem
-efter sammanslagningen. En artefakt får ligga högst ett dygn efter sin repokopia. Integrationskartans frysregel är hävd
+efter sammanslagningen. Sidorna och löptexten ligger högst ett dygn efter main (Bengt 27/10: *"det räcker med en gång per
+dygn"*); Run workflow i 895845/halkvakt-sidor bygger om direkt. Integrationskartans frysregel är hävd
 sedan 22/10 (Bengt, DECISIONS #678): den rättas av synken som de andra. Kontrollen att inget
-beslut glömts är `stomvakten.ts --lage` i synken: varje dokuments senaste handtextändring och besluten sedan dess som namnger det.
+beslut glömts är `stomvakten.ts --lage` i synken. För varje dokument visar den varje beslut från #772 som namnger dokumentet men inte
+nämns med sitt nummer i handtexten. Beslutet är öppet (⚠) tills synken bokför det, och står sedan som bokfört utan handtext (DECISIONS #811).
 **KORTKARTAN (Bengts order 3/10, DECISIONS #445).** Varje öppet kort på tavlan hör till ett eller flera avsnitt i stomdokumenten,
 och varje stomdokument visar sina öppna kort under rubriken *Öppna kort*. Kopplingen bor på ETT ställe, `docs/kortkartan.json`;
 listorna skrivs av `node --experimental-strip-types scripts/kortkartan.ts` och ändras aldrig för hand. Ett nytt kort, ett stängt kort
-eller en ny rubrik på ett kort ⇒ kortkartan.json och skriptet i SAMMA commit som tavlan; republiceringen sker i dygnets synk (#522). `--check` (i ci.yml, och i md-vakt.yml för commits som bara ändrar .md) fäller på okopplade kort, kopplingar till stängda kort, okända avsnitt och listor som inte är aktuella.
+eller en ny rubrik på ett kort ⇒ kortkartan.json och skriptet i SAMMA commit som tavlan; sidorna byggs om nästa morgon (#733). `--check` (i ci.yml, och i md-vakt.yml för commits som bara ändrar .md) fäller på okopplade kort, kopplingar till stängda kort, okända avsnitt och listor som inte är aktuella.
 
 ## PROJEKTKARTAN (Bengts ja 2026-10-03 — navet över bygget, DECISIONS #446)
-*Halkvaktens projektkarta* — https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8, källa `docs/PROJEKTKARTAN.html`, skriven ur `docs/projektkartan.json` av
-`node --experimental-strip-types scripts/projektkartan.ts` (ändras aldrig för hand). Den är navet OVANFÖR de åtta stomdokumenten:
+*Halkvaktens projektkarta* — https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html, källa `docs/PROJEKTKARTAN.html`, skriven ur `docs/projektkartan.json` av
+`node --experimental-strip-types scripts/projektkartan.ts` (ändras aldrig för hand). Den är navet OVANFÖR de sex stomdokumenten:
 varje del av projektet med block, läge, bevis eller nyckel, vad som saknas, beroenden, kort, beslut och var delen beskrivs.
 - **Kartan äger LÄGET per del** och är vägen in i bygget. Den är **underordnad BEVISET**: grönt kräver ett bevis som går att följa
   (commit, grön körning, mätning efter driftsättning, beslut), blått en nyckel, orange och rött en lista över vad som saknas. Säger
   koden eller ett prov något annat är kartan fel, inte koden. Besluten stannar i DECISIONS, ordningen och kalendern i bedömningen,
   arbetet på tavlan och reglerna i tröskeldokumenten.
 - **Samma commit:** byggs, mäts, stängs eller öppnas något ⇒ delens rad i projektkartan.json och skriptet i SAMMA commit som ändringen;
-  republiceringen till samma URL sker i dygnets synk (#522). Ett nytt kort ska hänga på en del. `--check` i ci.yml (och i md-vakt.yml för commits som bara ändrar .md) fäller en del som bär ett öppet kort fast den är grön eller dess Verify-steg är klart (kortvakten, DECISIONS #449), grönt utan bevis, blått utan nyckel,
+  sidan byggs om nästa morgon (#733). Ett nytt kort ska hänga på en del. `--check` i ci.yml (och i md-vakt.yml för commits som bara ändrar .md) fäller en del som bär ett öppet kort fast den är grön eller dess Verify-steg är klart (kortvakten, DECISIONS #449), grönt utan bevis, blått utan nyckel,
   orange och rött utan lista, okända beroenden och avsnitt, öppna kort utan del och en sida som inte är aktuell.
 - **Mätt mot koden 3/10** (kort #286): varje del har byggsteg med bevis, och procenten räknas ur stegen, viktad 1–3. En ny del får byggsteg
   från början; ett steg är klart bara med bevis.
@@ -217,26 +235,37 @@ varje del av projektet med block, läge, bevis eller nyckel, vad som saknas, ber
   skriptet listar varje commit på main sedan `synk.till` som inte rörde kartan (utom Marknadsmotorns och Halkvakt lives, trv-bevakningens och
   kartsynkens egna). Sessionen bokför var och en på sin del — steget och kort sha som bevis — eller konstaterar att den inte rör
   någon del, och kör sedan `--bokford`. Grenen heter `kartsynk/<datum>`, PR-rubriken börjar med "Kartsynk:", och en gren där
-  `--tillatna` är grön (den rör bara kartan och det kartan skriver) slås ihop på grön CI på exakt huvudet utan "slå ihop" och
-  republiceras; allt annat väntar på Bengts ord. Regeln *samma commit* ovan gäller fortfarande — kartsynken är nätet under den.
+  `--tillatna` är grön (den rör bara kartan och det kartan skriver) slås ihop på grön CI på exakt huvudet utan "slå ihop";
+  allt annat väntar på Bengts ord. Regeln *samma commit* ovan gäller fortfarande — kartsynken är nätet under den.
   En session utan GitHub-API (webben, mobilen) gör bokföringsvägen; signalerna tar nästa session som når dem. Kartsynken listar
   också **öppna PR:er** (6/10): en PR som väntar lyfts i rapporten till Bengt, och kartgrenar slås ihop av sessionen, aldrig av CI.
+- **Bokföringen når main av sig själv (Bengt 11/11: *"bygg a och b"*, DECISIONS #834).** Bokföring av det som redan är gjort eller
+  beslutat (STATUS, tavlan, kartan, kalendern, fristerna, stomdokumentens text och nya beslut sist i DECISIONS) läggs i en PR vars rubrik
+  börjar med `Bokföring:`, och en kartsynk med `Kartsynk:`. Flödet `synk-ihop` slår ihop den på dokumentsynkens villkor: bara dokument,
+  ci och md-vakt gröna på exakt huvudet och kontrollerna gröna på det ihopslagna trädet. Ett gammalt beslut får inte ändras, och ett
+  förslag eller utkast får aldrig den rubriken eller ett nytt beslut som heter FÖRSLAG eller UTKAST (de väntar på ett ord, som förut).
+  Kod och migrationer läggs alltid i en egen PR. Det gäller alla sessioner, Axels också, och molnets och mobilens, som inte får slå ihop
+  själva. Genomsökningen 06.00 UTC (`sidorna.ts`) larmar en PR som inte är ett utkast och väntat mer än två dygn.
 
 ## DOKUMENTSYNKEN (Bengts ja 2026-10-07 — styrdokumenten stäms av varje dygn, DECISIONS #484, kort #304)
 Genomgången 7/10 (DECISIONS #483) behövde ett sjuttiotal rättelser i handtexten, fast kartan visade stomdokumenten gröna: CI
 prövade bara det skripten skriver, och regeln *samma varv* hängde på minnet. Tre delar håller nu dokumenten i fas, för alla
 sessioner på alla enheter:
 - **Stomvakten (CI).** Varje nytt beslut slutar med `**Stomdokument:** MAT, SYS` (koderna ur `docs/kortkartan.json`: MAT APP SYS
-  BED KAR KUV FAV LIV; text efter koden är fri, t.ex. `BED §4.2`) eller `**Stomdokument:** inga — skälet`. `scripts/stomvakten.ts --bas
+  BED KAR FAV; text efter koden är fri, t.ex. `BED §4.2`) eller `**Stomdokument:** inga — skälet`. `scripts/stomvakten.ts --bas
   <sha>` i md-vakt.yml fäller ett nytt beslut utan raden, ett *inga* utan skäl och en okänd kod. Att det namngivna dokumentets
-  handtext ändras prövas inte längre i PR:en (#522): det gör morgonens synk. Gamla beslut prövas inte. En ändring som rör `kuvos/` eller
-  `scripts/matningar/kuvos-*` och lägger till beslut måste namnge KUV i minst ett av dem (DECISIONS #489).
-  `stomvakten.ts --lage` visar varje dokuments senaste handtextändring och besluten sedan dess som namnger det (⚠): det är synkens
-  lista över vad som ska stämmas av, men den ersätter inte läsningen.
+  handtext ändras prövas inte längre i PR:en (#522): det gör morgonens synk. Gamla beslut prövas inte. Kuvösregeln (#489) är borta sedan 31/10 (#769).
+  `stomvakten.ts --lage` visar per dokument varje beslut från #772 som namnger dokumentet men inte nämns med sitt nummer i handtexten.
+  Beslutet är öppet (⚠) tills synken bokför det. Sedan står det som *bokfört utan handtext*, och där står det kvar (DECISIONS #811).
+  Det beror inte på när handtexten senast ändrades. Den gamla listan räknade från den senaste handtextändringen, och 7/11 försvann
+  #804 och #809 ur den när synken rättade samma sidor för olycksfacit. Listan är synkens lista över vad som ska stämmas av, men den
+  ersätter inte läsningen.
 - **Morgonrutinen** — claude.ai-rutinen *Halkvakt: dokumentsynken varje morgon* (`trig_015zMNvnicaHT1wFNk4ZWdaH`), kl. 03:30 UTC
   (05:30 sommartid, 04:30 vintertid), i molnet och inte bunden till någon dator. Den gör stegen nedan.
 - **Väntar på Bengt / Väntar på Axel** överst i projektkartan, skrivna av `projektkartan.ts` ur tavlans avsnitt för Bengt och Axel
-  (kortets *Kvar*, annars dess nyckel) och kartsynkens lista över öppna PR:er (`synk.prar`). Ändras aldrig för hand.
+  (kortets *Kvar*, annars dess nyckel) och kartsynkens lista över öppna PR:er (`synk.prar`). Ändras aldrig för hand. Sedan 11/11
+  (DECISIONS #834) läser sidan de öppna PR:erna ur GitHub när den öppnas; kartsynkens lista är reserven, och svarar GitHub inte står
+  det i rött hur gammal den är (kartsynkens läsning föll tyst 9–11/11).
 
 **Fristvakten och domlarmet** (Bengts order 20/10, DECISIONS #649). Kalendern listade datumen men larmade inte, och en dom som
 en körning skrev nådde aldrig synken, som läser beslut och commits, inte utskrifter (V-B fälldes 19/10 och bokfördes först 20/10):
@@ -259,25 +288,31 @@ en körning skrev nådde aldrig synken, som läser beslut och commits, inte utsk
    stå — 7/10 bockade regeln `inlamnad:0.3.9` en inlämning som App Review avvisat. Sedan `--bokford`.
 3. Kortgenomgången (TAVELREGELN 5): `kortkartan.ts --genomgang`; stäng varje kort vars Verify är uppfylld, med beviset.
 4. Stomgenomgången: `stomvakten.ts --lage`. Läs allt som hänt sedan förra dokumentsynken — commits på main från alla författare,
-   nya beslut, nya STATUS-rader, sammanslagna och öppna PR:er — och rätta handtexten i de åtta, `docs/KALENDERN.md` och TAVLA.md
+   nya beslut, nya STATUS-rader, sammanslagna och öppna PR:er — och rätta handtexten i de sex, `docs/KALENDERN.md` och TAVLA.md
    där den inte längre stämmer. **Fristerna** (#649): varje nytt datum som någon ska agera på — i ett beslut, en STATUS-rad,
    bedömningens §4.2, kalendern eller på tavlan — får en rad i `docs/fristerna.json`, ett flyttat datum rättas där, och en
    frist vars ärende är stängt tas bort. **En rad i ett skriptskrivet block (LÄGESRADER, Öppna kort) räknas inte som att handtexten
    stämmer** (Bengts ja 13/10, DECISIONS #546). Varje ⚠ i `--lage` blir antingen text i dokumentets handtext, i det avsnitt
-   beslutets rad `**Stomdokument:**` namnger, eller en post i synkens STATUS-rad med skälet: *#NN: ingen handtext, skälet*. Ett tal förs bara in om det står i källan (DECISIONS, STATUS, koden, en körning) — aldrig ur minnet.
-   **Kuvösen** (eget block i projektkartan sedan 8/10, DECISIONS #489): en ny läsning är ett byggsteg på sin del i blocket — testbädden,
-   systemets delar, prognoslagrets kandidater, före resan eller facit — med körning, beslut och utfall som bevis, och en kandidat för
-   prognoslagret får en rad i jämförelsetabellen på kuvössidan (§5). Kön står i sidans §9, bara framtid; historiken i §12.
+   beslutets rad `**Stomdokument:**` namnger, eller en post i synkens STATUS-rad med skälet: *#NN: ingen handtext, skälet*. När beslutet namnger flera dokument och bara
+   några blir utan text, står koden med: *#NN (SYS): ingen handtext, skälet* (#811). En post flyttar beslutet till *bokförda utan
+   handtext* i `--lage`, och där står det kvar. Läs den listan också, och skriv texten när skälet inte längre håller. Ett tal förs bara in om det står i källan (DECISIONS, STATUS, koden, en körning) — aldrig ur minnet.
+   **Kuvösen, fysiken och småvägarna** (DECISIONS #768, #769): synken skriver ingen sådan text i Halkvakt, varken i docs/,
+   projektkartan, MATNINGAR eller STATUS. De stäms av i halkvakt-kuvos. Driftens rörarbete är inte kuvös: tabellerna, flödena,
+   regeln och brytarna för kandidaten och storstäderna skrivs i Halkvakts stomdokument, utan punkter, särdrag, kuvösens tal och
+   fysik (DECISIONS #804, #810).
 5. `projektkartan.ts` och `kortkartan.ts`, sedan `--check` på båda, `kartsynk.ts --check`, `fristvakten.ts --check` och
    `stomvakten.ts --tillatna`.
 6. En rad i STATUS.md: *Dokumentsynk <datum>:* vad som rättades per dokument, eller *inget att stämma av* — en tyst morgon ska inte
-   se ut som en lyckad — och *Att republicera:* med de artefakter vars källa ändrades. Raden och rapporten listar också de öppna
-   ärendena med etiketterna `frist` och `dom` (#649); ett dom-ärende bokförs på Bengts ord, aldrig av rutinen.
-7. Commit (märk den aldrig så att CI hoppas över), push, PR med rubriken *Dokumentsynk: <datum>*. Rutinen slår aldrig ihop: PR:en
-   väntar på Bengts *slå ihop*, och rapporten säger om ci och md-vakt är gröna på exakt huvudet och om `--tillatna` är grön (Bengts
-   val (b) 8/10, DECISIONS #488: auto-läget nekade sammanslagningen första morgonen, och (d) i #484 är struken).
-8. Republicera de artefakter vars källa ändrades, till sina adresser. Når rutinen inte artefakterna gör dagens första session det
-   (sessionsprotokollet steg 1).
+   se ut som en lyckad. Raden och rapporten listar också de öppna
+   ärendena med etiketterna `frist`, `dom` (#649) och `olycka` (#797); ett dom-ärende bokförs på Bengts ord, aldrig av rutinen,
+   och ett olycksfacit-ärende stängs först när varje rad under *Att åtgärda* har en åtgärd.
+7. Commit (märk den aldrig så att CI hoppas över), push, PR med rubriken *Dokumentsynk: <datum>*. Rutinen slår inte ihop själv (auto-läget
+   nekade det 8/10, DECISIONS #488). Flödet `synk-ihop` (`.github/workflows/synk-ihop.yml`, `scripts/synk-ihop.ts`) slår ihop PR:en
+   när grenen bara rör dokumenten (`--tillatna`), ci och md-vakt är gröna på exakt huvudet och dokumentkontrollerna är gröna på det
+   ihopslagna trädet; annars står den kvar med en kommentar, och nästa synk bär innehållet (Bengt 27/10, DECISIONS #731). Rapporten
+   säger PR:ens nummer och om `--tillatna` är grön.
+8. Rutinen publicerar ingenting själv. Sidorna byggs om 05.30 UTC i 895845/halkvakt-sidor, efter att synk-ihop har slagit ihop
+   PR:en, och dygnets genomsökning 06.00 UTC prövar att dagens synk finns på main (DECISIONS #731 och #733).
 Rutinen fattar inga beslut, ändrar inga trösklar, rör ingen kod och inga hemligheter och kör inga flöden. Det som kräver ett
 beslut skrivs som en fråga i §4.2 och står i rapporten.
 
@@ -288,6 +323,15 @@ fotostudions senaste artefakt (app-screenshots) committade till docs/produktbok/
 i samma commit när de överlappar.
 - Supabase-gatewayen TVÅNGSSTÄMPLAR funktions-HTML till text/plain + nosniff på GET (HEAD ljuger och visar text/html — verifiera alltid med GET!). Regel: funktioner serverar JSON-API, människosidor bor på Pages (karta-repot).
 - /tmp/karta kan sakna git-identitet i färsk container: git config user.email/name lokalt före commit.
+- En omstart av databasen nollställer pg_nets räknare för anropens id (`net.http_request_queue_id_seq`, olagrad), och `public.anrop` har pg_nets id som primärnyckel. Efter en omstart faller därför varje jobb som anropar en funktion med *duplicate key … anrop_pkey*, tills räknaren flyttas förbi tabellen: `select setval('net.http_request_queue_id_seq', (select max(id) from public.anrop) + 1000)` (3/11, DECISIONS #783). Omstarten kom av ett nytt tungt SQL-jobb vars prov bara gått i liten skala. Ett jobb som bygger något i full skala i produktionen prövas först i full skala utanför den.
+- En SQL-funktion (`LANGUAGE sql`) som inte kan inlinas läcker minne i Supabases Postgres: omkring 230 byte per anrop, som frigörs
+  först när satsen är klar (pgaudit står för drygt hälften, trots `pgaudit.log = none`). Planeraren inlinar bara en kropp som är ett
+  enda uttryck: en `FROM`, en delfråga, `SET`, `SECURITY DEFINER` eller ett dyrt argument som används två gånger stoppar det. Den
+  snabba kandidatens avståndsfunktion hade `FROM (SELECT …)` och anropades omkring tio miljoner gånger i en sats, och databasen
+  föll (3/11, DECISIONS #783). **En lokal Postgres läcker inte**, så ett prov på datorn frikände koden; bara Supabases egen avbild
+  (`supabase/postgres:<version>` i en container med produktionens minne) visade det. Regel: en funktion som anropas per rad i en stor
+  sats skrivs som ett enda uttryck, och beviset är `EXPLAIN (VERBOSE)` där funktionens namn inte står kvar (en kuvösfunktions plan bär dess kropp: skriv bara ut
+  ja eller nej i en publik logg).
 - Apple Developer-inskrivning: Developer-APPEN kan låsa ID-steget till körkort; WEBBEN (developer.apple.com/enroll) gick igenom utan ID-fråga och gav omedelbar beställning (31/8 2026, Sverige). Individual visar juridiskt namn som säljare; migrering till organisation möjlig senare.
 - iOS-uppladdning kräver AppIcon i Assets.xcassets (1024 px universal räcker sedan Xcode 14) + ASSETCATALOG_COMPILER_APPICON_NAME — utan ikon vägrar App Store Connect bygget.
 - xcodegen-genererad Info.plist får 1.0 (1) som standard — koppla CFBundleShortVersionString/CFBundleVersion till $(MARKETING_VERSION)/$(CURRENT_PROJECT_VERSION) i info.properties, ANNARS låser första uppladdningen versionsspåret (Apple tillåter aldrig lägre version än uppladdad). Fångat i Organizer 31/8 sekunder före upload.
@@ -338,6 +382,9 @@ i samma commit när de överlappar.
   migration som skapar en tabell i `public` ger `service_role` sina rättigheter i SAMMA fil (`GRANT ALL ON TABLE x TO service_role`,
   och `GRANT USAGE, SELECT, UPDATE ON SEQUENCE x_id_seq TO service_role` för en serial-kolumn), vaktat på `pg_roles` som ovan.
   `anon` och `authenticated` får fortfarande ingenting utan ett beslut. `test/rattigheter.test.ts` fäller en fil från 064 som saknar det.
+- `CREATE OR REPLACE FUNCTION` utan `SET search_path` nollställer den fasta sökvägen som sql/081 satte (3/11, DECISIONS #784). En ny
+  eller omskriven plpgsql-funktion i public skriver `SET search_path = public, extensions` i definitionen, annars körs 081 om efteråt.
+  sql-funktioner får ingen SET-klausul: då inlinas de inte, och reglerna körs per rad.
 - SwiftUI TabView(.page) lägger sidprickarna OVANPÅ innehållet, inte under det. Sista
   elementet på varje sida måste ha ≥ 56 pt fri höjd under sig, annars täcks knappar.
   Fångat på Axels telefon 31/8: "Byt bilkoppling" låg under prickarna och gick inte att träffa.

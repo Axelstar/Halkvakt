@@ -28,6 +28,9 @@ const NYA: { namn: string; schema: string; fil: string }[] = [
   // Kort #80: svenska GitHub-ingesten tillbaka EN gång i timmen — med --skip=weather,deviations
   // i ingest.yml bär den bara det livemotorn inte gör (kamerorna, moaten, polisen, SMHI).
   { namn: "puls-ingest", schema: "11 * * * *", fil: "ingest.yml" },
+  // Storstädernas radar var 15:e minut (DECISIONS #804, #805, kort #378): bara radar_stad, så att stadspunkternas fukt inte faller bort
+  // mellan timmens kompositer. :01, :16, :31 och :46: inte på den snabba kandidatens minuter (:04, :09 …, sql/079) eller klockans andra.
+  { namn: "puls-radar-stad", schema: "1,16,31,46 * * * *", fil: "radar-stad.yml" },
   // Kort #50 (Bengts beslut 9/9 "gör den som en bro", DECISIONS #91): puls-healthcheck tillbaka.
   // Axel stängde den 8/9 när vakthunden i Supabase tog över, men vakthunden ser bara livekedjan
   // och manifestet — healthchecken är ensam om grannländerna, gränsstationerna, kamerorna,
@@ -80,13 +83,32 @@ const NYA: { namn: string; schema: string; fil: string }[] = [
   // databasens klocka. `*/6` av samma skäl som ovan.
   { namn: "puls-ny-kandidat-fysik", schema: "28 */6 * * *", fil: "ny-kandidat-fysik.yml" },
   { namn: "puls-ny-kandidat-timme", schema: "47 * * * *", fil: "ny-kandidat-timme.yml" },
+  // DECISIONS #734 (Bengt 27/10): kodgrinden varje dygn tills C är avgjord; domlarmet tiger på SPÄRRAD och säger till vid
+  // KLARAR eller FALLER. 09:16, efter morgonavbrottens fönster (03:28–07:39), och inget annat pulsjobb startar på :16 (databasens
+  // egna halkvakt-ingest-live och halkvakt-favoriter går ändå då, rättat 27/10). ~16 s per körning.
+  { namn: "puls-kodgrinden", schema: "16 9 * * *", fil: "kodgrinden.yml" },
+  // DECISIONS #735 (Axel 27/10): Meta-annonserna per län. Natten lägger upp dagens annonser så att Metas granskning hinner före
+  // visningen 06:30 svensk tid; gryningen och morgonen tar med nya hala län och byter reservannonsen mot dagens när den är godkänd.
+  // Tre jobb och inte ett schema med en timlista (kadensTimmar, #558). :01 och :31 är lediga i databasens klocka. ~1 min per körning.
+  { namn: "puls-meta-natt", schema: "1 2 * * *", fil: "meta-annonser.yml" },
+  { namn: "puls-meta-gry", schema: "31 4 * * *", fil: "meta-annonser.yml" },
+  { namn: "puls-meta-morgon", schema: "1 6 * * *", fil: "meta-annonser.yml" },
+  // DECISIONS #746 (Axel 29/10): eftermiddagen får en egen annons för hemresan. 12:01 lägger upp den så att Metas granskning hinner
+  // före visningen 14:00 svensk tid (flyttad en timme 30/10, DECISIONS #749), 13:31 tar med nya hala län och byter reservannonsen
+  // mot den godkända. Vintertid (UTC+1).
+  { namn: "puls-meta-middag", schema: "1 11 * * *", fil: "meta-annonser.yml" },
+  { namn: "puls-meta-eftermiddag", schema: "31 12 * * *", fil: "meta-annonser.yml" },
+  // Reels (DECISIONS #780): en nationell reel per kväll, 19:50 UTC (20:50 vintertid, 21:50 sommartid).
+  { namn: "puls-reels", schema: "50 19 * * *", fil: "reels.yml" },
+  // Morgonens reel (DECISIONS #806): 05:45 UTC (06:45 vintertid, 07:45 sommartid).
+  { namn: "puls-reels-morgon", schema: "45 5 * * *", fil: "reels.yml" },
 ];
 
 // Vakthundens check 6a bär samma tal som golv (kort #222, DECISIONS #255): ett puls-jobb som
 // avaktiveras eller raderas ska larma, inte tyst falla ur bevakningslistan. Vakthunden kör i Deno
 // hos Supabase och kan inte importera den här filen, så talet är en KOPIA — kontraktsgrinden vaktar
 // att kopiorna bär samma värde, och raden under vaktar att värdet stämmer med listan ovan.
-const ANTAL_NYA = 21;
+const ANTAL_NYA = 30;
 if (NYA.length !== ANTAL_NYA) {
   console.error(`NYA har ${NYA.length} jobb men ANTAL_NYA säger ${ANTAL_NYA} — uppdatera båda, och vakthundens PULS_GOLV.`);
   process.exit(1);

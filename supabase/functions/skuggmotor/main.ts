@@ -4,15 +4,26 @@
 // kamerabild (facit-hinken, dedupe per station & 3 h). Rör aldrig användare.
 // Land (#34): ?land=fi kör de finska rutterna mot den finska snapshoten. Samma motor,
 // samma logg (kolumnen land), samma rapport. Sverige är standard.
+const SB = Deno.env.get("SUPABASE_URL")!;
+const SRK = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const TRV = Deno.env.get("TRAFIKVERKET_API_KEY")!;
+// Sverige ur hinken, som appen läser först (DECISIONS #752): med servicenyckeln inifrån Supabase och utan CDN:ens cache, som
+// funktionen favoriter (#741 tillägget 30/10). Grannländerna finns bara på Pages.
 const CDN_BY_LAND: Record<string, string> = {
-  se: "https://axelstar.github.io/halkvakt-karta/data/app/v1/",
+  se: `${SB}/storage/v1/object/app/v1/`,
   fi: "https://axelstar.github.io/halkvakt-karta/data/app/fi/v1/",
   no: "https://axelstar.github.io/halkvakt-karta/data/app/no/v1/",   // #35, publiceras när Vegvesen-kontot finns
   dk: "https://axelstar.github.io/halkvakt-karta/data/app/dk/v1/",   // #36
 };
-const SB = Deno.env.get("SUPABASE_URL")!;
-const SRK = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const TRV = Deno.env.get("TRAFIKVERKET_API_KEY")!;
+/** Ett lands static.json och live.json. Ett fel bär svarets status och kropp. */
+function snapshot(land: string): Promise<[any, any]> {
+  const hamta = (namn: string) => fetch(CDN_BY_LAND[land] + namn + (land === "se" ? "" : `?t=${Date.now()}`),
+    land === "se" ? { headers: { Authorization: `Bearer ${SRK}`, apikey: SRK } } : undefined).then(async (r) => {
+      if (!r.ok) throw new Error(`${land} ${namn} ${r.status}: ${(await r.text()).slice(0, 200)}`);
+      return r.json();
+    });
+  return Promise.all([hamta("static.json"), hamta("live.json")]);
+}
 
 // Grova men FASTA referenslinjer (jämförbarhet över tid slår metern):
 // Finland (#34): tre referenslinjer, samma grovhet som de svenska. Fejkresorna.
@@ -258,6 +269,9 @@ function vbAlerts(lv: any, route: [number, number][], trace: Fix[]) {
 // få motorns riktnings-, avstånds- och upprepningsregler — ingen text och ingen prioritet prövas; de är Axels efter skuggan.
 // Hela klassen loggas med sin text, så mätningen kan skilja olja från potthål i efterhand.
 type Olja = { id: string; lon: number; lat: number; text: string | null; sev: number | null };
+/** Supabases REST lämnar högst så här många rader per svar, och säger det inte (kort #374). Ett svar med exakt så många rader kan vara
+ *  avskuret, och då säger skälet det, i stället för att listan ser hel ut. Kandidatens punkter går därför i ett enda värde (sql/093). */
+const REST_TAK = 1000;
 async function oljaAktiva(): Promise<{ lista: Olja[]; skal: string | null }> {
   try {
     const r = await fetch(`${SB}/rest/v1/rpc/olja_aktiva`, { method: "POST",
@@ -266,7 +280,8 @@ async function oljaAktiva(): Promise<{ lista: Olja[]; skal: string | null }> {
     const rows: any[] = await r.json();
     const lista = rows.flatMap((x) => (typeof x.lon === "number" && typeof x.lat === "number"
       ? [{ id: String(x.id), lon: x.lon, lat: x.lat, text: x.meddelande ?? null, sev: x.sev ?? null }] : []));
-    return { lista, skal: lista.length ? null : "inga aktiva händelser i arkivet" };
+    return { lista, skal: rows.length >= REST_TAK ? `olja_aktiva: ${rows.length} rader, REST-taket, listan kan vara avskuren`
+      : lista.length ? null : "inga aktiva händelser i arkivet" };
   } catch (e) { return { lista: [], skal: `olja_aktiva kastade: ${String(e).slice(0, 120)}` }; }
 }
 function oljaAlerts(olja: Olja[], route: [number, number][], trace: Fix[]) {
@@ -310,24 +325,32 @@ async function vagpunktAnkare(): Promise<{ lista: Ankare[]; skal: string | null 
     const rows: any[] = await r.json();
     const lista = rows.flatMap((x) => (typeof x.lon === "number" && typeof x.lat === "number" && x.yta != null
       ? [{ id: String(x.id), lon: x.lon, lat: x.lat, yta: Number(x.yta) }] : []));
-    return { lista, skal: lista.length ? null : "vagpunkt_ankare gav noll ankare" };
+    return { lista, skal: rows.length >= REST_TAK ? `vagpunkt_ankare: ${rows.length} rader, REST-taket, listan kan vara avskuren`
+      : lista.length ? null : "vagpunkt_ankare gav noll ankare" };
   } catch (e) { return { lista: [], skal: `vagpunkt_ankare kastade: ${String(e).slice(0, 120)}` }; }
 }
 
-/** KANDIDATENS VARNANDE VÄGPUNKTER (sql/057 kandidat_regel, DECISIONS #573 del 2): regeln räknas i databasen, på ett ställe;
- *  skuggan hämtar bara de punkter som varnar, en gång per anrop, för takten längs rutterna. Fail-soft med skäl, som ankarna.
- *  Tom lista med skälet "regeln tiger" när kandidatens timme är gammal eller ofullständig, eller ingen punkt varnar. */
+/** KANDIDATENS VARNANDE VÄGPUNKTER (DECISIONS #573 del 2): regeln räknas i databasen, på ett ställe, och skuggan hämtar bara de
+ *  punkter som varnar, en gång per anrop, för takten längs rutterna. Sedan kort #374 (DECISIONS #812) kommer de ur
+ *  skuggans_kandidat() (sql/093), som ett enda värde ur den talande regeln:
+ *  - Förut gick de via REST ur kandidat_regel(), och REST lämnar högst 1000 rader, så listan stod på exakt 1000 i 265 körningar
+ *    31/10–7/11.
+ *  - Den frysta kandidaten talar inte sedan 26/10 (#729). Skuggan mäter nu den kandidat föraren hör, och talaren står i loggen.
+ *  Fail-soft med skäl, som ankarna. Tom lista med skälet "regeln tiger" när kandidatens timme är gammal eller ofullständig, eller
+ *  när ingen punkt varnar. */
 type KandidatPunkt = { segment_id: string; lon: number; lat: number };
-async function kandidatVarnar(): Promise<{ lista: KandidatPunkt[]; tid: string | null; skal: string | null }> {
+async function kandidatVarnar(): Promise<{ lista: KandidatPunkt[]; tid: string | null; talare: string | null; skal: string | null }> {
   try {
-    const r = await fetch(`${SB}/rest/v1/rpc/kandidat_regel?utfall=eq.varnar&select=segment_id,lon,lat,tid`, { method: "POST",
+    const r = await fetch(`${SB}/rest/v1/rpc/skuggans_kandidat`, { method: "POST",
       headers: { Authorization: `Bearer ${SRK}`, apikey: SRK, "Content-Type": "application/json" }, body: "{}" });
-    if (!r.ok) return { lista: [], tid: null, skal: `kandidat_regel ${r.status}: ${(await r.text().catch(() => "")).slice(0, 120)}` };
-    const rows: any[] = await r.json();
-    const lista = rows.flatMap((x) => (typeof x.lon === "number" && typeof x.lat === "number" && x.segment_id != null
+    if (!r.ok) return { lista: [], tid: null, talare: null, skal: `skuggans_kandidat ${r.status}: ${(await r.text().catch(() => "")).slice(0, 120)}` };
+    const j: any = await r.json();
+    const rows: any[] = Array.isArray(j?.p) ? j.p : [];
+    const lista = rows.flatMap((x) => (typeof x?.lon === "number" && typeof x?.lat === "number" && x.segment_id != null
       ? [{ segment_id: String(x.segment_id), lon: x.lon, lat: x.lat }] : []));
-    return { lista, tid: rows[0]?.tid ?? null, skal: lista.length ? null : "regeln tiger: ingen varnande punkt, eller kandidatens timme gammal eller ofullständig" };
-  } catch (e) { return { lista: [], tid: null, skal: `kandidat_regel kastade: ${String(e).slice(0, 120)}` }; }
+    return { lista, tid: j?.tid ?? null, talare: j?.talare ?? null,
+      skal: lista.length ? null : "regeln tiger: ingen varnande punkt, eller kandidatens timme gammal eller ofullständig" };
+  } catch (e) { return { lista: [], tid: null, talare: null, skal: `skuggans_kandidat kastade: ${String(e).slice(0, 120)}` }; }
 }
 
 // FÖRSPRÅNGET (kort #153 beslut 1, docs/TROSKLAR-FORSPRANG.md §4, DECISIONS #359). Eget anrop på :12/:42 — huvudvarvet slår redan i
@@ -361,12 +384,7 @@ async function forsprangVarv(prov: boolean, c = false, slot: number | null = nul
     const trace = traceAlong([[15.0, 59.0], [15.1, 59.0]]);
     return svar({ ok: true, prov: "forsprang", svep_s: svepS, bas: kor(hazards, trace, nivaer, false), variant: kor(hazards, trace, nivaer, true) });
   }
-  const CDN = CDN_BY_LAND["se"];
-  const bust = `?t=${Date.now()}`;
-  const [st, lv] = await Promise.all([
-    fetch(CDN + "static.json" + bust).then((r) => r.json()),
-    fetch(CDN + "live.json" + bust).then((r) => r.json()),
-  ]);
+  const [st, lv] = await snapshot("se");
   // Kandidaten (K, DECISIONS #577) hålls utanför skuggans motorkörningar: deras domar är förregistrerade utan den, och sist i
   // prioriteten ändrar den ingen annan varning i appen. Kandidatens egen takt loggas för sig (kandidatVarnar, #573).
   const hazards = snapshotToHazards(st, lv).filter((h) => h.kind !== "kandidat");
@@ -464,24 +482,20 @@ Deno.serve(async (req) => {
         { headers: { "Content-Type": "application/json" } });
     }
     const land = (new URL(req.url).searchParams.get("land") ?? "se").toLowerCase();
-    const CDN = CDN_BY_LAND[land]; if (!CDN) return new Response("okänt land", { status: 400 });
+    if (!CDN_BY_LAND[land]) return new Response("okänt land", { status: 400 });
     // VÄG C (DECISIONS #527): `?grupp=c` kör ROUTES_C i ett eget anrop på :22/:52 och skriver till shadow_log_c — bara larmen.
     const grupp = new URL(req.url).searchParams.get("grupp");
     if (grupp !== null && (grupp !== "c" || land !== "se")) return new Response("okänd grupp", { status: 400 });
     const c = grupp === "c";
     const routes = c ? ROUTES_C : land === "fi" ? ROUTES_FI : land === "no" ? ROUTES_NO : land === "dk" ? ROUTES_DK : ROUTES;
-    const bust = `?t=${Date.now()}`;
-    const [st, lv] = await Promise.all([
-      fetch(CDN + "static.json" + bust).then((r) => r.json()),
-      fetch(CDN + "live.json" + bust).then((r) => r.json()),
-    ]);
+    const [st, lv] = await snapshot(land);
     // Utan kandidaten, som ovan (DECISIONS #577).
     const hazards = snapshotToHazards(st, lv).filter((h) => h.kind !== "kandidat");
     // Ankarna hämtas en gång per anrop, inte per rutt. Bara Sverige: funktionen läser det svenska arkivet.
     const ankare = land === "se" && !c ? await vagpunktAnkare() : { lista: [] as Ankare[], skal: c ? "grupp C loggar ingen prognos" : "bara Sverige" };
     // Kandidatens takt (DECISIONS #573): bara huvudvarvet i Sverige, som prognosen.
     const kandidatV = land === "se" && !c ? await kandidatVarnar()
-      : { lista: [] as KandidatPunkt[], tid: null, skal: c ? "grupp C loggar ingen kandidat" : "bara Sverige" };
+      : { lista: [] as KandidatPunkt[], tid: null, talare: null, skal: c ? "grupp C loggar ingen kandidat" : "bara Sverige" };
     const oljaLista = land === "se" ? await oljaAktiva() : { lista: [] as Olja[], skal: "bara Sverige" };
     const results: Record<string, unknown> = {};
     let facitTotal = 0;
@@ -538,7 +552,7 @@ Deno.serve(async (req) => {
       const vag = (RUTTER_VAG as Record<string, [number, number][]>)[name];
       const kandidatLinje = vag ?? line;
       const kandidat = land === "se" && !c
-        ? { tid: kandidatV.tid, n: kandidatV.lista.length, geo: vag ? "osrm" : "linje",
+        ? { tid: kandidatV.tid, talare: kandidatV.talare, n: kandidatV.lista.length, geo: vag ? "osrm" : "linje",
             h: kandidatLangsRutten(ankareNaraRutten(kandidatV.lista, kandidatLinje, UPPMATT_KM), kandidatLinje), ...(kandidatV.skal ? { skal: kandidatV.skal } : {}) }
         : {};
       ms.prognos += performance.now() - t2;

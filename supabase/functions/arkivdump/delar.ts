@@ -36,14 +36,18 @@ export function kuvosnamn(fil: string): string {
 }
 
 /** Arkivexportens dygnsfiler (sql/034), som grindarnas tillfälliga databas läser tillbaka (kort #323): bara hämtning, aldrig
- *  uppladdning eller radering. Ett riktigt kalenderdatum blir `weather_observations/ÅÅÅÅ-MM-DD.ndjson.gz`; allt annat avvisas. */
+ *  uppladdning eller radering. Ett riktigt kalenderdatum blir `weather_observations/ÅÅÅÅ-MM-DD.ndjson.gz`; allt annat avvisas.
+ *  Sedan 5/11 också radarn (sql/063) och den nya kandidatens stationslogg (sql/083), som kuvösens daggpunktsprov läser när raderna
+ *  är borta ur databasen (`tabell`); ingen annan tabell. */
 export const DYGNMAPP = "weather_observations";
+export const DYGNTABELLER = new Set([DYGNMAPP, "radar_precip", "ny_kandidat_station"]);
 export const MAX_DYGN = 70;
 
-export function dygnnamn(dag: string): string {
+export function dygnnamn(dag: string, tabell: string = DYGNMAPP): string {
+  if (!DYGNTABELLER.has(tabell)) throw new Error(`ogiltig tabell: ${tabell}`);
   const d = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dag);
   if (!d || new Date(`${dag}T00:00:00Z`).toISOString().slice(0, 10) !== dag) throw new Error(`ogiltigt dygn: ${dag}`);
-  return `${DYGNMAPP}/${dag}.ndjson.gz`;
+  return `${tabell}/${dag}.ndjson.gz`;
 }
 
 /** Vilka filer i mappen som ska bort: delarna av alla kopior utom de `behall` senaste. Namnen bär UTC-tiden och sorteras

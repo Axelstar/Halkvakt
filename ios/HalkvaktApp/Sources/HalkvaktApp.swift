@@ -1,11 +1,13 @@
 // INSTÄLLNINGAR + OM + appens ingång. Samma svenska som Android, ordagrant
 // där kontraktet kräver det (kategoribeskrivningarna, integritetslöftet).
 import SwiftUI
+import UIKit
 import HalkvaktEngine
 
 struct InstallningarView: View {
     @State private var prefs = Prefs.shared
     @State private var guardM = GuardManager.shared
+    @State private var matningen = Matningen.shared
 
     enum Sida: Hashable { case varnaFor, forvarning, start, rosten, betatest, integritet, om }
 
@@ -34,6 +36,15 @@ struct InstallningarView: View {
                     }
                     .padding(.top, 14)
 
+                    // DECISIONS #829: tipsa, tyck till och betygsätt. Delningsarket, förarens mejlapp och App Store; appen sänder inget.
+                    MonoLabel(text: "Halkvakt").padding(.top, 24).padding(.horizontal, 4)
+                    RowPanel {
+                        ShareLink(item: Tipsa.lank, message: Text(Tipsa.text)) { NavRowLabel(title: "Tipsa en vän") }
+                        Button { tyckTill() } label: { NavRowLabel(title: "Tyck till") }
+                        Button { openURL(Tipsa.betyg) } label: { NavRowLabel(title: "Betygsätt Halkvakt", divider: false) }
+                    }
+                    .padding(.top, 10)
+
                     VStack(alignment: .leading, spacing: 6) {
                         MonoLabel(text: "Löftet")
                         Text("Din position lämnar inte telefonen av sig själv.").font(Typo.sans(15)).foregroundStyle(Brand.text2)
@@ -49,6 +60,22 @@ struct InstallningarView: View {
             .navigationDestination(for: Sida.self) { sida in
                 Undersida { innehall(sida) }
             }
+            .sheet(isPresented: $ingenMejl) { IngenMejlVy() }
+        }
+    }
+
+    @Environment(\.openURL) private var openURL
+    @State private var ingenMejl = false
+
+    /// Förarens egen mejlapp med adressen och tre tekniska rader; tar ingen app emot mailto visas adressen i stället.
+    private func tyckTill() {
+        let info = Bundle.main.infoDictionary
+        let url = Tipsa.mejl(version: info?["CFBundleShortVersionString"] as? String ?? "",
+                             bygge: info?["CFBundleVersion"] as? String ?? "",
+                             modell: Tipsa.modell,
+                             system: "iOS \(UIDevice.current.systemVersion)")
+        openURL(url) { ok in
+            if !ok { Task { @MainActor in ingenMejl = true } }
         }
     }
 
@@ -153,6 +180,21 @@ struct InstallningarView: View {
             Text("Ett varnings-id pekar på en fara på kartan, så vi ser ungefär var du var just då. Appens namn och version följer med. Bara för betatestare. Betatest slår också på betavarningen efter regn (*Halkvakt tror: frysrisk framöver*), som prövas bland testarna först.")
                 .font(Typo.sans(13)).lineSpacing(3).foregroundStyle(Brand.dim)
                 .padding(.top, 14).padding(.horizontal, 4)
+            // Fas 2 (DECISIONS #741 punkt 5): mätningen per resa, bara i telefonen (Matningen.swift).
+            MonoLabel(text: "Mätningen").padding(.top, 28).padding(.bottom, 6).padding(.horizontal, 4)
+            Text("Hur färska varningarna var när de kom fram, och vad det kostade i batteri. Stannar i telefonen.")
+                .font(Typo.sans(13)).lineSpacing(3).foregroundStyle(Brand.dim)
+                .padding(.bottom, 10).padding(.horizontal, 4)
+            RowPanel {
+                if matningen.resor.isEmpty {
+                    Text("Inga resor mätta än.").font(Typo.sans(15)).foregroundStyle(Brand.dim)
+                        .padding(.vertical, 15).frame(maxWidth: .infinity, alignment: .leading)
+                } else {
+                    ForEach(matningen.resor) { resa in
+                        MatningRad(resa: resa, divider: resa.id != matningen.resor.last?.id)
+                    }
+                }
+            }
         case .integritet:
             Rubrik(titel: "Integritet", text: nil)
             VStack(alignment: .leading, spacing: 12) {
@@ -162,7 +204,10 @@ struct InstallningarView: View {
                 // även om det bara finns hos föraren. Texten säger var de ligger och hur de tas bort.
                 Text(Prefs.betatestTillaten
                      ? "All matchning mot vägdata sker lokalt i appen. Inget konto. Undantaget är betatestet — bara om du själv slår på det."
-                     : "All matchning mot vägdata sker lokalt i appen. Inget konto, och inget skickas.")
+                     : "All matchning mot vägdata sker lokalt i appen. Inget konto.")
+                    .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2)
+                // #772: räknaren är alltid på och står här — texten "inget skickas" var sann till 0.3.15. #787: de sex områdena.
+                Text("Appen räknar anonymt hur många som går igenom introduktionen, vilka behörigheter som väljs, hur ofta och ungefär hur länge vakten är på, vilka varningar som sägs, vilka inställningar som ändras och vad som går fel. Ett ord per händelse, med appens version. Aldrig var du är, hur långt du kör eller vem du är.")
                     .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2)
                 Text("Slår du på Erbjud att spara resor under Favoriter sparas vägarna du väljer, bara i telefonen och aldrig i en säkerhetskopia. Du tar bort dem där.")
                     .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2)
@@ -260,6 +305,26 @@ private struct KallRuta: View {
     }
 }
 
+/// En mätt resa under Betatest (fas 2): dag, klockslag och längd, raderna under i dämpad text.
+private struct MatningRad: View {
+    let resa: Matningen.Resa
+    var divider = true
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(resa.rubrik).font(Typo.sans(15, .medium)).foregroundStyle(Brand.text)
+                ForEach(resa.rader, id: \.self) { rad in
+                    Text(rad).font(Typo.sans(13)).foregroundStyle(Brand.dim)
+                }
+            }
+            .padding(.vertical, 15)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .accessibilityElement(children: .combine)
+            if divider { DashedDivider() }
+        }
+    }
+}
+
 private struct LankRad: View {
     let titel: String
     let url: String
@@ -331,6 +396,7 @@ private struct GenvagarGuide: View {
 struct RootView: View {
     @State private var tab = 0
     @State private var guardM = GuardManager.shared
+    @State private var fav = Favoriter.shared
     var body: some View {
         ZStack(alignment: .bottom) {
             // Flikarna lever hela tiden, som i TabView: ingen omladdning och ingen tappad undersida vid flikbyte.
@@ -352,6 +418,8 @@ struct RootView: View {
         .safeAreaInset(edge: .top, spacing: 0) { Color.clear.frame(height: 0).background(Brand.bg) }
         // Här och inte i VaktenView: vakten kan starta (Siri, Genvägar, självväckning) medan Inställningar visas.
         .fullScreenCover(isPresented: $guardM.running) { KorlageView() }
+        // Favoriter 2a (#817): notisen och raden på Redo öppnar fliken med dagens resor överst.
+        .onChange(of: fav.visaFliken) { _, visa in if visa { tab = 1; fav.visaFliken = false } }
     }
 }
 
@@ -404,14 +472,18 @@ struct HalkvaktApp: App {
             RootView()
             .tint(Brand.yellow)
             .preferredColorScheme(.dark)
-            // S4: osända facitsvar går iväg när appen blir aktiv — bilen står stilla då.
+            // S4: osända facitsvar går iväg när appen blir aktiv — bilen står stilla då. Räknarens kö likaså (#772).
             .onChange(of: scenePhase) { _, phase in
-                if phase == .active { Task { _ = await FacitSender.flush() } }
+                if phase == .active { Task {
+                    Raknare.notiser(await HeadsUpService.shared.status())   // #787: en gång per enhet och värde
+                    _ = await FacitSender.flush(); await Raknare.flush()
+                } }
             }
             // DECISIONS #36: introduktionen är det första man ser, en gång.
+            // #772: räknas när föraren gick igenom den — inte när fotostudion hoppar över den (init ovan skriver fältet direkt).
             .fullScreenCover(isPresented: Binding(
                 get: { !prefs.onboardingDone },
-                set: { if !$0 { prefs.onboardingDone = true } }
+                set: { if !$0 { prefs.onboardingDone = true; Raknare.onboardingKlar() } }
             )) {
                 OnboardingView()
             }
