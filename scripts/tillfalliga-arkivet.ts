@@ -142,7 +142,21 @@ const tal = (n: number) => n.toLocaleString("sv-SE");
 console.log(`GRINDARNAS TILLFÄLLIGA DATABAS — ${DAGAR} dygn (kort #323)\n`);
 
 // 1. Driftens schema.
-await tf.query("CREATE EXTENSION IF NOT EXISTS postgis");
+// PostGIS i samma schema som i driften. Där flyttades den någon gång efter 3/11 2026 från public till extensions (DECISIONS #784 såg den
+// i public), och pg_dump skriver då extensions.geometry. Med PostGIS kvar i public föll weather_observations vid inläsningen, och
+// grindarna och höjdprovet stannade 9/11. Schemat läses ur driften, och databasens sökväg får det efter public, som Supabases.
+const pg_ = await kor("psql", [DUMP_URL, "-X", "-Atc", "SELECT extnamespace::regnamespace FROM pg_extension WHERE extname = 'postgis'"]);
+const POSTGIS = pg_.ut.trim() || "public";
+if (pg_.kod !== 0 || !/^[a-z_]+$/u.test(POSTGIS)) { console.error(`driftens postgis-schema gick inte att läsa: ${pg_.fel.slice(0, 200)}`); process.exit(1); }
+const [har] = (await tf.query(`SELECT extnamespace::regnamespace::text AS s FROM pg_extension WHERE extname = 'postgis'`)).rows;
+if (har && har.s !== POSTGIS) await tf.query("DROP EXTENSION postgis CASCADE");   // bilden lägger den i public
+await tf.query(`CREATE SCHEMA IF NOT EXISTS ${POSTGIS}`);
+await tf.query(`CREATE EXTENSION IF NOT EXISTS postgis SCHEMA ${POSTGIS}`);
+if (POSTGIS !== "public") {
+  await tf.query(`DO $$ BEGIN EXECUTE format('ALTER DATABASE %I SET search_path = public, ${POSTGIS}', current_database()); END $$`);
+  await tf.query(`SET search_path = public, ${POSTGIS}`);
+}
+console.log(`postgis i schemat ${POSTGIS}, som i driften`);
 const dump = await kor("pg_dump", ["--schema-only", "--schema=public", "--no-owner", "--no-privileges", DUMP_URL]);
 if (dump.kod !== 0) { console.error(`pg_dump föll: ${dump.fel.slice(0, 400)}`); process.exit(1); }
 const schema = await kor("psql", [DATABASE_URL, "-X", "-q"], dump.ut);
