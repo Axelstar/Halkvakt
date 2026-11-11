@@ -80,8 +80,15 @@ jobs:
           set -e
           [ "$KOD" = 3 ] && { echo "::warning::tidsbudgeten tog slut — tryck historik igen, den tar vid där"; echo "klar=nej" >> "$GITHUB_OUTPUT"; exit 0; }
           [ "$KOD" = 0 ] || exit "$KOD"
-          echo "klar=ja" >> "$GITHUB_OUTPUT"
           cat mnp/historik_*.json | tee -a "$GITHUB_STEP_SUMMARY"
+          # Dygn utan 24 timmar per punkt tas bort och hämtas om (ingest/smavagskedjan.ts hela; MET:s arkiv svarade 404 11/11).
+          set +e
+          node --experimental-strip-types ingest/smavagskedjan.ts hela mnp > hela.log 2>&1
+          KOD=$?
+          set -e
+          [ "$KOD" = 3 ] && { echo "::warning::$(tail -1 hela.log) — tryck historik igen"; echo "klar=nej" >> "$GITHUB_OUTPUT"; exit 0; }
+          [ "$KOD" = 0 ] || { echo "::error::kontrollen av dygnen föll: $(tail -1 hela.log | cut -c1-200)"; exit 1; }
+          echo "klar=ja" >> "$GITHUB_OUTPUT"
       # MET Nordic är öppna data. Cachen bär punkternas rutor och analysens värden, inga kandidattal. En ny post bara när dygnen ändrats:
       # nyckeln är fönstrets sista dygn, och en ofullständig hämtning sparas under körningens id så att nästa tar vid.
       - name: Dygnen till cachen
@@ -165,11 +172,19 @@ jobs:
           set -e
           [ "$KOD" = 3 ] && { echo "::warning::historiken är inte komplett efter tidsbudgeten — nästa körning tar vid; kedjan räknar inget nu"; echo "klar=nej" >> "$GITHUB_OUTPUT"; exit 0; }
           [ "$KOD" = 0 ] || exit "$KOD"
+          # Dygn utan 24 timmar per punkt tas bort (smavagskedjan.ts hela). Kedjan räknar ändå, med de levande dygnen (del A vägrar själv
+          # om analysen är ofullständig), och cachen sparas som ofullständig så att nästa körning hämtar om dygnet.
+          set +e
+          node --experimental-strip-types ingest/smavagskedjan.ts hela mnp > hela.log 2>&1
+          KOD=$?
+          set -e
+          [ "$KOD" = 3 ] && { echo "::warning::$(tail -1 hela.log) — kedjan räknar vidare, och nästa körning hämtar om dem"; echo "hel=nej" >> "$GITHUB_OUTPUT"; }
+          [ "$KOD" = 0 ] || [ "$KOD" = 3 ] || { echo "::error::kontrollen av dygnen föll: $(tail -1 hela.log | cut -c1-200)"; exit 1; }
           echo "klar=ja" >> "$GITHUB_OUTPUT"
       - name: Dygnen till cachen
         if: ${{ always() && steps.finns.outputs.ja == 'ja' && steps.c.outputs.cache-hit != 'true' && steps.h.outcome == 'success' }}
         uses: actions/cache/save@v4
-        with: { path: mnp, key: "${{ env.CACHE }}${{ steps.h.outputs.klar == 'ja' && steps.f.outputs.till || format('ofullstandig-{0}', github.run_id) }}" }
+        with: { path: mnp, key: "${{ env.CACHE }}${{ steps.h.outputs.klar == 'ja' && steps.h.outputs.hel != 'nej' && steps.f.outputs.till || format('ofullstandig-{0}', github.run_id) }}" }
       - name: Historien för de befintliga punkterna ur releasen (bara läsning)
         if: ${{ steps.h.outputs.klar == 'ja' }}
         shell: bash

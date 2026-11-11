@@ -170,13 +170,13 @@ jobs:
           node --experimental-strip-types ingest/smavagskedjan.ts hela mnsv > hela.log 2>&1
           KOD=$?
           set -e
-          [ "$KOD" = 3 ] && { echo "::warning::$(tail -1 hela.log) — kedjan räknar inget nu, nästa körning hämtar om dem"; echo "klar=nej" >> "$GITHUB_OUTPUT"; exit 0; }
-          [ "$KOD" = 0 ] || { echo "::error::kontrollen av dygnen föll: $(tail -1 hela.log | cut -c1-200)"; exit 1; }
+          [ "$KOD" = 3 ] && { echo "::warning::$(tail -1 hela.log) — kedjan räknar vidare, och nästa körning hämtar om dem"; echo "hel=nej" >> "$GITHUB_OUTPUT"; }
+          [ "$KOD" = 0 ] || [ "$KOD" = 3 ] || { echo "::error::kontrollen av dygnen föll: $(tail -1 hela.log | cut -c1-200)"; exit 1; }
           echo "klar=ja" >> "$GITHUB_OUTPUT"
       - name: Dygnen till cachen
         if: ${{ always() && steps.finns.outputs.ja == 'ja' && steps.c.outputs.cache-hit != 'true' && steps.h.outcome == 'success' }}
         uses: actions/cache/save@v4
-        with: { path: mnsv, key: "${{ env.CACHE }}${{ steps.h.outputs.klar == 'ja' && steps.f.outputs.till || format('ofullstandig-{0}', github.run_id) }}" }
+        with: { path: mnsv, key: "${{ env.CACHE }}${{ steps.h.outputs.klar == 'ja' && steps.h.outputs.hel != 'nej' && steps.f.outputs.till || format('ofullstandig-{0}', github.run_id) }}" }
       - name: De levande dygnen ur cachen
         if: ${{ steps.h.outputs.klar == 'ja' }}
         uses: actions/cache/restore@v4
