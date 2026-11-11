@@ -930,15 +930,40 @@ export const KONTRAKT: Kontrakt[] = [
     namn: "Kandidatens radargräns för fukt — regeln och facitläsningen",
     varfor: "Driver gränsen räknar kuvösen fukt där regeln ser torrt (DECISIONS #565, #593).",
     former: [/coalesce\(r\.mmh, 0\) >= ([\d.]+)\) THEN 'torr'/, /export const RADAR_MMH = ([\d.]+);/],
-    filer: /sql\/069_|sql\/091_|sql\/094_|kuvos\/facit-trv\.ts$/,  // R = 0,1 sedan 26/10 (#725): 069 bär driftens gräns; 091 är driftens regel sedan #804
-    golv: 7,
+    // R = 0,1 sedan 26/10 (#725): 069 bär driftens gräns; 091 är driftens regel sedan #804; 105 är småvägsröstens (#828)
+    filer: /sql\/069_|sql\/091_|sql\/094_|sql\/105_|kuvos\/facit-trv\.ts$/,
+    golv: 8,
   },
   {
     namn: "Kandidatens radarfönster — regeln och facitläsningen",
     varfor: "Driver fönstret läser kuvösen radarn längre eller kortare bakåt än regeln (DECISIONS #573, #593).",
     former: [/r\.observed_at > now\(\) - interval '(\d+) minutes'/, /export const RADAR_MIN = (\d+);/],
-    filer: /sql\/058_|sql\/068_|sql\/069_|sql\/091_|sql\/094_|kuvos\/facit-trv\.ts$/,
-    golv: 11,
+    filer: /sql\/058_|sql\/068_|sql\/069_|sql\/091_|sql\/094_|sql\/105_|kuvos\/facit-trv\.ts$/,  // 105: småvägsröstens regel (#828)
+    golv: 12,
+  },
+  // KANDIDATENS TIMME (sql/056, 057, 068) och de som läser den: olycksfacit (095, 096, 100) och småvägsrösten (105, #828). En timme
+  // är färsk högst två timmar och fullständig med minst 95 % av punkterna. Driver en kopia talar en regel på en timme som en annan
+  // kallar gammal, eller bokför olycksfacit en tystnad som regeln aldrig hade.
+  {
+    namn: "Kandidatens färskhet — hur gammal timmen får vara",
+    varfor: "Regeln, olycksfacit och småvägsrösten ska kalla samma timmar gamla (sql/068, DECISIONS #814, #828).",
+    former: [/interval '(\d+) hours'(?: THEN)?\s+-- FARSK_TIMMAR/],
+    filer: /sql\/\d{3}_/,
+    golv: 8,
+  },
+  {
+    namn: "Kandidatens fullständighet — andelen punkter som timmen måste bära",
+    varfor: "Den frystas och den nyas timme och småvägsröstens ska kräva samma andel (sql/068, DECISIONS #828).",
+    former: [/>= ([\d.]+) \* \(SELECT count\(\*\) FROM \w+\)\s+-- FULLSTANDIG_ANDEL/],
+    filer: /sql\/\d{3}_/,
+    golv: 4,
+  },
+  {
+    namn: "Småvägsröstens radarbit — punkter i följd längs vägen",
+    varfor: "Radarn skriver per bit (radar-karna.ts) och regeln läser per bit (sql/105). Driver de isär läser regeln en annan bits regn än punktens (DECISIONS #828).",
+    former: [/export const SMAVAG_BIT = (\d+);/, /\(p\.ordning \/ (\d+)\)\s+-- SMAVAG_BIT/],
+    filer: /ingest\/radar-karna\.ts$|sql\/105_/,
+    golv: 2,
   },
   {
     namn: "Kandidatens vetofönster — regeln och facitläsningen",

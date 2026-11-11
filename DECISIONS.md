@@ -15157,6 +15157,24 @@ Brytarna är av tills dess.
 
 **Tillägg 10/11 (Bengt: *"men börja på steg 3"* och *"Slå ihop och dbknappen"*): steg 3, radarn i småvägspunkterna, i drift.** PR #1498 sammanslagen (c1b817ec) 13.31 UTC på grön ci (integrationsprovet RV1–RV5), direkt efter att stadsradarns körning 13.31 startat på den gamla koden. `sql/104` migrerad med DB-knappen 13.31.58 UTC (42825320824): RLS på, rättigheter bara för `service_role`, inga rader. Radarn läser punkterna i bitar om högst fem i följd längs vägen och gallrar efter två timmar (`radar-karna.ts` `SMAVAG`). Första körningen på den nya koden, 13.46 (42827533485), var grön: *stadsradarn: klart* och *småvägsradarn: klart på 253 ms*, med tom punkttabell tills laddningen 18.28 UTC.
 
+**Tillägg 11/11 (Bengt: *"Ja, bygg regeln"*): steg 5, regeln, byggd på en gren och inte migrerad.** `sql/105`:
+- **Kedjans kontrakt.** Kuvösens kedja (steg 4) skriver en rad per punkt och timme där regel D säger *fryser* (`smavag_live`), med den
+  strängare N3 som ett ja eller nej, och sist en rad för timmen (`smavag_korning`) med antalet punkter som fick ett besked. Gränserna och
+  talen bakom D och N3 bor kvar i kuvösen (#768).
+- **Timmen** är färsk högst två timmar och fullständig med minst 95 % av punkterna, som kandidatens (sql/068), och räknas en gång per
+  körning (#813).
+- **Regeln** (`smavag_regel()`) varnar där D säger *fryser* och N3 eller radarn i punktens bit (`radar_smavag`, minst 0,1 mm/h på 60
+  minuter, som kandidaten) ger fukt. Den räknar oberoende av brytaren, så att skuggan kan mäta takten med brytarna av (steg 6).
+- **Beskeden** (`smavag_talar()`) är regelns varnande punkter där gruppens brytare är på. Lägesfilen (steg 5b) läser bara dem.
+- **Radarn väcker också när N3 är torr,** enligt ordalydelsen ovan (*"MET Nordic, och radarn per punkt när den finns"*). Underlaget i
+  kuvösen säger *"helst bekräftad av radarn"*, och mätningen räknade N3 utan radar. Valet står som fråga i bedömningen §4.2, och en
+  ändring är en rad i regeln.
+- Inget veto och ingen spridningsspärr, som i mätningen.
+- **Proven:** integrationsprovet SG1–SG5, med full skala på 90 000 punkter. Kontraktsgrinden vaktar radargränsen, radarfönstret och
+  radarbiten mot `radar-karna.ts`, och från och med nu också timmens färskhet och fullständighet. De två hade sju respektive tre kopior
+  utan vakt före 105.
+- **Kvar:** ci, Bengts ord om radarn, sammanslagningen, DB-knappen och regelns tid mätt i driften när kedjan skriver.
+
 **Stomdokument:** MAT 5 — småvägsrösten beställd och byggs avstängd, SYS 2 — driftens rörarbete för småvägarna, APP 3 — betavarningens farotyp och text
 
 ## #829 (10/11 2026) Tipsa en vän, Tyck till och Betygsätt i 0.4.0 (42), tillsammans med Favoriter 2a och CarPlay
