@@ -1,6 +1,6 @@
 # Småvägsröstens avbrottsvillkor — förslag (DECISIONS #828, kort #647)
 
-**Status: UTKAST 11/11 2026.** Bengt och Axel signerar villkoren före påslaget (byggplanens steg 10). Inget av vintern 2026/27 är läst.
+**Status: SIGNERAT 11/11 2026** av Bengt (*"jag tar gärna rekommenationer från dej"*, på förslagen) och av Axel via Bengt (*"axel signerar"*). DECISIONS #833. Villkoren gäller från påslaget (byggplanens steg 10). Inget av vintern 2026/27 är läst.
 Bengt 11/11: *"kör vidare"*, efter förslaget att skriva villkoren för signering.
 
 #828 och kuvösens F52 punkt 4 säger att ett avbrott under säsongen bara får grundas på fyra saker:
@@ -46,9 +46,9 @@ Svaren läses med DB-knappen och publiceras aldrig, som alla testares svar (#498
 
 Skälet: olycksfacit mäter om en varning fanns när en olycka hände, inte hur ofta rösten talar i onödan. En miss talar för fler varningar, inte färre. Det rösten kan göra fel åt det hållet syns i takten och i testarnas svar.
 
-## 6. Valen, som besvaras vid signeringen
+## 6. Valen
 
-Claudes förslag står först.
+Valda 11/11: förslagen, som står först.
 
 | # | Val | Förslag | Annat |
 | :-- | :-- | :-- | :-- |
@@ -62,5 +62,5 @@ Claudes förslag står först.
 
 | | Datum | Signatur |
 | :-- | :-- | :-- |
-| Bengt | — | — |
-| Axel | — | — |
+| Bengt | 2026-11-11 | Bengt i chatten: *"jag tar gärna rekommenationer från dej"*, på de uppräknade valen 1–5 |
+| Axel | 2026-11-11 | Via Bengt i chatten: *"axel signerar"* |
