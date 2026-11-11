@@ -197,6 +197,27 @@ Application Support, undantagna från iCloud-kopian; på Android i `noBackupFile
 
 Appen hämtar rapportfilen ur den publika hinken `favoriter` (samma fil för alla, utan fråga och utan plats; manifestets sha256 prövas, och en del som inte stämmer förkastas) och räknar rapporten i telefonen med motorns `ResansRapport`. Förra kollen per resa — när rapporten senast hämtades utan fel och vilka faror den visade — ligger i `kollen.json` bredvid rutterna, utanför säkerhetskopian, eftersom farornas id pekar på platser längs vägen. **Vägen hem känns igen:** ligger en ny resa längs en sparad, åt något håll (minst 80 % av varje inom 100 m av den andra), frågar appen inte *Spara resan?* en gång till. Misslyckas hämtningen står förra kollen kvar, så att *Nytt sedan* aldrig räknas från en kontroll som inte blev av (B7-24). **Android (steg 3c, 18/10)** gör samma sak med samma ord: rapporten öppnas en nivå ned, som inställningarnas undersidor, och tillbakaknappen leder till listan. I stället för att dra nedåt finns *KOLLA IGEN* bredvid *Dit / Hem* — appens Compose-version saknar dra-för-att-uppdatera — och läget räknas om varje gång fliken eller rapporten visas. Förra kollen ligger i `noBackupFilesDir` med rutterna.
 
+## Tipsa en vän och Tyck till (10/11, kort #997)
+
+*Skärmbilder följer ur fotostudion när 0.4.0 (42) är byggt. Designen: Claude Design-ytan* Tipsa en vän och Tyck till.
+
+Sist i **Inställningar**, under etiketten *HALKVAKT*, tre rader:
+
+- **Tipsa en vän** öppnar telefonens eget delningsark med texten *"Jag kör med Halkvakt. Den säger till med rösten om halka,
+  olyckor och vilt på vägen framför mig, innan jag är där."* och länken `halkvakt.se/?r=dela`. Webbplatsen skickar vännen till
+  App Store eller Google Play, och webbplatsens räknare räknar koden *dela*, så vi ser hur många som kommer via tips.
+- **Tyck till** öppnar förarens egen mejlapp till **hej@halkvakt.se** med ämnet *Synpunkter på Halkvakt* och tre rader under
+  en streckad linje: appens version och bygge, telefonens modell och systemets version, och *"Ingen plats och inga resor. Ta bort
+  raderna om du vill."* Föraren ser allt och trycker själv på Skicka. Finns ingen mejlapp visas adressen med knappen *Kopiera adressen*.
+- **Betygsätt Halkvakt** öppnar appens sida i App Store (skriv ett omdöme) eller Google Play.
+
+På **Redo.**, efter det femte avslutade vaktpasset och bara när vakten inte kör, står kortet *FEM PASS MED VAKTEN* — *"Kör någon du
+känner samma vägar?"* — *"Tipsa om Halkvakt. Du skickar bara en länk, inget om dig."* med knappen **Tipsa en vän** och länken
+*INTE NU*. Båda döljer kortet för gott. Det visas aldrig samtidigt som ett kort om resorna.
+
+Appen skickar ingenting själv: delningen går genom telefonens delningsark, mejlet genom förarens mejlapp och betyget genom
+butiken. Integritetstexterna är oförändrade.
+
 ## Första gången — introduktionen (iOS)
 
 Fyra sidor med punkter längst ner, *HOPPA ÖVER* till vänster och *NÄSTA* / *KLAR* till höger. Allt går att hoppa över och
@@ -522,6 +543,11 @@ halv minut och startar vakten vid 15 km/h. Första resan efter installation, nä
 väcks den i stället av iOS större platsbyten (Apple anger ungefär 500 meter). Kostar nästan inget batteri.
 Inget mer att ställa in. Kan stängas av under Inställningar → *Vaknar själv när du kör*.
 
+**iPhone — vakten startar när Halkvakt öppnas i CarPlay (11/11, DECISIONS #840, kort #380):** öppnas Halkvakt på bilens skärm startar
+vakten, om platsen redan är tillåten, *Alltid* eller *Vid användning*, eftersom CarPlay räknas som att appen är öppen. Ingen fråga om
+platsen visas på telefonen under körningen. Vakten startar inte om du stoppat den för hand de senaste tio minuterna, och inte om
+*Vaknar själv när du kör* är avslagen. Kommer med i nästa bygge efter 0.4.0 (44).
+
 **Bevisat på pappas telefon 31/8** — vakten startade själv utan att han rörde telefonen,
 och körläget visade fyra fartkameror sex kilometer fram. Sedan Malmö–Boden 1/9: 100 mil
 med självväckningen som enda start.
@@ -687,6 +713,9 @@ du var just då."* (Axels villkor för ja:et, DECISIONS #267.)
 | 0.3.15 (37) | 1/11 | **Räknaren** (DECISIONS #772): appen räknar anonymt introduktionen, platsbehörigheten (*Alltid* / *När appen används* / nekad), vaktens starter och den första varningen — ett ord per händelse till `app-raknare`, en rad per dygn, inget om vem. Integritet säger det; *"inget skickas"* struken. Android versionCode 37 i takt. |
 | 0.3.16 (38) | 4/11 | **Räknarens sex områden** (DECISIONS #787): version och kohort på varje ord, notiserna och första starten, aktiva dygn, vaktpasset (startsätt, längd i fyra hinkar, slut; ingen sträcka), varningarna, ändrade inställningar och fel. Integritet säger det med ny mening. Android versionCode 38 i takt. |
 | 0.3.17 (39) | 7/11 | **Motorns rutnät** (DECISIONS #795, #816): varje GPS-punkt prövar bara farorna i sin egen ruta, med samma svar som hela svepet, och en hal sträcka hoppas över när dess ruta ligger längre bort än försprånget (#789). Inget som föraren ser eller hör ändras. Bygget behövs innan storstädernas punkter slås på (kort #378). |
+| 0.4.0 (42) | 10/11 | **Tipsa en vän, Tyck till och Betygsätt** (DECISIONS #829): tre rader under etiketten *HALKVAKT* i Inställningar, och kortet *Kör någon du känner samma vägar?* på Redo. efter femte vaktpasset. Bygger på 0.4.0 (41). |
+| 0.4.0 (43) | 10/11 | **Facitknapparna på Redo.** (kort #998): ordet syns i den valda knappen, och raden *SENAST SAGT · tid* med varningens text står ovanför *Stämde* och *Stämde inte*, så att det framgår vilken varning svaret gäller. |
+| 0.4.0 (44) | 11/11 | **En besvarad varning frågas inte om igen** (kort #999): *Stämde / Stämde inte* står kvar med *Tack* medan startskärmen visas och är borta nästa gång den visas. Gäller båda apparna. |
 | Android (CI) | 16/9 → | Facitknappen och betatest-brytaren (S4, DECISIONS #202), Efter resan (20/9), viltvarningen på Trafikverkets djur (22/9), omladdningsloopen lagad och reglaget (26/9), missarna (26/9). **0.3.9 (18)**, samma nummer som iOS (DECISIONS #377). |
 
 Android bar versionsnumret 0.3.1 (4) från 31/8 till 26/9, fast CI byggde den ur main med skinnet v3, facitknappen

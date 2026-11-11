@@ -14,14 +14,14 @@
 //
 // Run:  DATABASE_URL=... node --experimental-strip-types ingest/radar.ts        (skarp)
 //       node --experimental-strip-types ingest/radar.ts --prov                  (diagnos, ingen DB)
-//       DATABASE_URL=... node --experimental-strip-types ingest/radar.ts --bara-stad   (bara radar_stad, var 15:e minut: radar-stad.yml,
-//                                        DECISIONS #805; Trafikverkets sträckor och radar_precip rörs inte)
+//       DATABASE_URL=... node --experimental-strip-types ingest/radar.ts --bara-stad   (bara radar_stad och radar_smavag, var 15:e minut:
+//                                        radar-stad.yml, DECISIONS #805, #828; Trafikverkets sträckor och radar_precip rörs inte)
 // Källa: SMHI öppna data (CC BY 4.0). User-Agent: repo-URL, inga personuppgifter.
 
 import { readFileSync } from "node:fs";
 import h5wasm from "h5wasm";
 import proj4 from "proj4";
-import { MIN_RATE_MMH, gruppRader, rateFromRaw, segmentRader } from "./radar-karna.ts";
+import { MIN_RATE_MMH, SMAVAG, gruppRader, rateFromRaw, segmentRader } from "./radar-karna.ts";
 
 const UA = "Halkvakt-radarpilot/0.1 (+https://github.com/Axelstar/Halkvakt)";
 const API = "https://opendata-download-radar.smhi.se/api/version/latest/area/sweden/product/comp";
@@ -156,6 +156,23 @@ if (url) {
       console.log("stadsradarn: klart");
     } catch (e) {
       console.log(`stadsradarn: FEL — ${String((e as Error)?.message ?? e).slice(0, 160)}`);
+      await pool.end();
+      process.exit(1);
+    }
+  }
+  // SMÅVÄGSRÖSTENS PUNKTER (sql/103, sql/104; DECISIONS #828, kort #647): radarn i varje småvägspunkt i samma komposit, max och medel
+  // per bit om högst fem punkter längs vägen (radar-karna.ts SMAVAG), till radar_smavag. Efter storstäderna, så att radar_precip och
+  // radar_stad alltid är skrivna. Loggen säger bara klart eller fel och tiden (#768: inga antal); faller delen blir steget rött.
+  if (!PROV) {
+    try {
+      const t0 = Date.now();
+      const g = await pool.query(SMAVAG.grupper);
+      const sv = gruppRader(g.rows.map((r: any) => ({ id: r.bit, punkter: r.p })), rateAt);
+      if (sv.ids.length) await pool.query(SMAVAG.skriv, [sv.ids, validIso, sv.maxes, sv.means]);
+      await pool.query(SMAVAG.gallra);
+      console.log(`småvägsradarn: klart på ${Date.now() - t0} ms`);
+    } catch (e) {
+      console.log(`småvägsradarn: FEL — ${String((e as Error)?.message ?? e).slice(0, 160)}`);
       await pool.end();
       process.exit(1);
     }

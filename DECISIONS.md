@@ -15086,7 +15086,352 @@ att lägga bredvid nedladdningarna. Ett betalt verktyg (Graft, Airbyte): onödig
 
 **Stomdokument:** inga — ett marknadsföringsmått som varken ändrar appen, motorn eller vad appen skickar
 
-## #828 (9/11 2026) Vakten startar när Halkvakt öppnas på bilens skärm, med i CarPlay-släppet; introduktionen väntar (kort #380)
+## #828 (10/11 2026) Undantag från #757 och #768: småvägsrösten går ut som kandidatens betavarning på statliga vägar utan mätning
+
+**Beslut.** Bengt 10/11: *"Jag beställer bygget"*. Bengt och Axel signerade underlaget samma dag (*"Skriv tillägget o jag o Axel
+signerar"*), i halkvakt-kuvos F51 och F52.
+- **Vad:** en röst på de statliga vägar som saknar väglagsmätning:
+  - småvägarna, alltså de statliga vägarna mer än 2 km från en väglagspunkt;
+  - de statliga vägarna nära väglagsnätet men utanför sträckorna: inom 2 km från en väglagspunkt, med en egen linje som ligger
+    mer än 100 m från varje väglagssträcka (Bengt 10/11: *"100 m"*), så att en parallell väg skiljs från sträckan.
+- **Hur den låter:** som kandidatens betavarning. Den säger bara *halka*, och aldrig frysrisk eller att vägen inte fryser.
+
+Kommunala gator, utom Stockholms stad som redan prövas (#804), och enskilda vägar ingår inte.
+
+**Varför rösten och inte kartan först (undantag från #757).** Appen talar i bakgrunden medan föraren har sin kartapp framme, och
+livekartan ser ingen under körningen. En karta ensam varnar alltså ingen som kör. Kartlagret kan komma som insyn.
+
+**Rösten:**
+- **Väcks av nederbörd** (MET Nordic, och radarn per punkt när den finns), inte av rimfrostläget ensamt.
+- **Ett besked per halkområde,** och sedan tystnad. Hur länge rösten tiger sätts ur takten, som mäts i skuggan på syntetiska resor i minst
+  14 dygn (kuvösen F50 del B). Taket är mätt, inte antaget (#200).
+- **Lägst prioritet,** efter K, så att den aldrig tystar en annan varning.
+- **Texten:** *"Betavarning: risk för halka på småvägarna framöver"*, utan avstånd. En punktkälla säger *framöver*.
+- **Bakom brytare,** med avbrottsvillkor bestämda före påslaget.
+
+**Vad som får ligga här (undantag från #768, som #804):**
+- **Driftens rörarbete:**
+  - en tabell för punkterna, med brytare;
+  - laddaren, som läser punkterna ur kuvösens överlägg;
+  - radarn per punkt;
+  - regeln med småvägsgrenen;
+  - kedjans steg och skuggans läsning;
+  - motorns farotyp med testvektorer, som Swift och Kotlin klarar byte för byte;
+  - appens text.
+- **Lägesfilen** (Bengt 10/11: *"Ja, var för sig"*): punkternas lägen står i en egen punktfil, som appen bara hämtar när den
+  ändras. I `live.json` står bara vilka punkter som varnar, en bit per punkt i punktfilens ordning, under en egen nyckel som äldre
+  appar inte läser. Lägena kommer ur Lastkajen (CC0) och får ligga i den publika punktfilen; särdragen bor kvar i kuvösen.
+
+**Vad som fortfarande bor i kuvösen (#768):**
+- punkterna med deras särdrag;
+- fysiken, förregistreringarna, proven och talen;
+- takten.
+
+Loggar, sammanfattningar och ärenden här säger bara klart eller fel om dem.
+
+**Villkoren före påslaget:**
+- takten mätt i minst 14 dygn och taket valt av Bengt och Axel;
+- en batterimätning med punktfilen och beskedet i `live.json`, under 8 %/h med skärmen släckt;
+- varje del provad;
+- appen godkänd av App Review;
+- Bengts och Axels ord.
+
+Brytarna är av tills dess.
+
+**Därefter.**
+- **Avbrott under säsongen** grundas på olycksfacit, testarnas facitsvar, takten och driftens hälsa. Kuvösens prov på vintern 2026/27
+  läses inte före sina datum.
+- **Om rösten står kvar 2027/28** avgör en regel som är skriven före läsningen (kuvösen F52). Den läses efter 31/3 2027.
+
+**Alternativen:**
+- karta först (#757): förkastat, eftersom kartan inte når någon i bilen;
+- att vänta på kuvösens dom efter 31/3 2027: förkastat av Bengt;
+- en röst som också väcks av rimfrostläget: förkastat, eftersom den skulle tala dubbelt så ofta och stämma mer sällan (kuvösen F51);
+- varningarnas koordinater i `live.json`, som K:s i dag: förkastat av Bengt 10/11. Appen hämtar en ny lägesfil varannan minut
+  under vakten, och med koordinaterna hade filen växt med vädret, till flera gånger dagens storlek en natt med utbredd halka.
+  Motorns rutnät (#795) tar kostnaden per GPS-punkt, men inte hämtningen.
+
+**Tillägg 10/11 (Bengt: *"Två, P1 och N"*).** Rösten får två brytare, en för småvägarna (P1) och en för vägarna nära väglagsnätet (N), båda av tills påslaget (`sql/103`). Alternativet var fyra, norr och söder om 62° för varje grupp, så att en landsdel kunde slås av för sig. Det föll: rösten säger bara *halka*, norrregeln rör bara *fryser inte*, och gränsen hade blivit en ny kopia av norrgränsen att vakta. Behövs en landsdel för sig senare, görs det med en egen migration.
+
+**Tillägg 10/11 (Bengt: *"slå ihop och därefter dbknappen"*): steg 2 i drift med brytarna av.** PR #1496 sammanslagen (e977332a) på grön ci; integrationsprovet i full skala gick i ci (90 000 punkter skrivna på 2,4 s, en andra gång på 1,7 s, ta_bort på 0,1 s). `sql/103` migrerad med DB-knappen 13.07 UTC (42821613445), transaktionen bekräftad. Bevisraderna: brytarna N och P1 av, RLS på båda tabellerna, rättigheter bara för `service_role`, inga punkter ännu. Laddningen går med `ny-kandidat-fysik` var sjätte timme, första gången 18.28 UTC; beviset är stegets rad *småvägspunkterna: klart*.
+
+**Tillägg 10/11 (Bengt: *"men börja på steg 3"* och *"Slå ihop och dbknappen"*): steg 3, radarn i småvägspunkterna, i drift.** PR #1498 sammanslagen (c1b817ec) 13.31 UTC på grön ci (integrationsprovet RV1–RV5), direkt efter att stadsradarns körning 13.31 startat på den gamla koden. `sql/104` migrerad med DB-knappen 13.31.58 UTC (42825320824): RLS på, rättigheter bara för `service_role`, inga rader. Radarn läser punkterna i bitar om högst fem i följd längs vägen och gallrar efter två timmar (`radar-karna.ts` `SMAVAG`). Första körningen på den nya koden, 13.46 (42827533485), var grön: *stadsradarn: klart* och *småvägsradarn: klart på 253 ms*, med tom punkttabell tills laddningen 18.28 UTC.
+
+**Tillägg 11/11 (Bengt: *"Jag tillåter provet"*): steg 4, provet på en fjärdedel, läst.** `kuvos-smavag` på main:
+- **Historiken** (42919204621): 45 dygn, inget saknat, sparad i cachen.
+- **Provet** (42937524585): grönt, 22 121 punkter på 5 924 vägar.
+  - **Del A** i tre delar om 7 374 punkter tog 35,7–37,1 s och 7 035–7 103 MB per del.
+  - **Del 1 med hela fjärdedelens historik** tog 56,0 s och 7 023 MB, och PH blev lika med delens egen historik.
+  - **Del B** för timmen tog 4,0 s och 810 MB.
+  - **Hämtningarna ur MET:** dygnen 827 s och körningen 50 s.
+- **Läsningen:**
+  - Minnet följer punkterna och inte historiken. Historiken per del sparar tid, inte minne.
+  - Alla punkter ryms i 12 delar om högst 7 400 punkter, var och en under planens 8 GB, men med under 1 GB marginal.
+- **Kvar:** kedjan i drift med brytarna av, på Bengts ord (bedömningen §4.2).
+
+**Tillägg 11/11 (Bengt: *"Ja, bygg regeln"*): steg 5, regeln, byggd på en gren och inte migrerad.** `sql/105`:
+- **Kedjans kontrakt.** Kuvösens kedja (steg 4) skriver en rad per punkt och timme där regel D säger *fryser* (`smavag_live`), med den
+  strängare N3 som ett ja eller nej, och sist en rad för timmen (`smavag_korning`) med antalet punkter som fick ett besked. Gränserna och
+  talen bakom D och N3 bor kvar i kuvösen (#768).
+- **Timmen** är färsk högst två timmar och fullständig med minst 95 % av punkterna, som kandidatens (sql/068), och räknas en gång per
+  körning (#813).
+- **Regeln** (`smavag_regel()`) varnar där D säger *fryser* och N3 eller radarn i punktens bit (`radar_smavag`, minst 0,1 mm/h på 60
+  minuter, som kandidaten) ger fukt. Den räknar oberoende av brytaren, så att skuggan kan mäta takten med brytarna av (steg 6).
+- **Beskeden** (`smavag_talar()`) är regelns varnande punkter där gruppens brytare är på. Lägesfilen (steg 5b) läser bara dem.
+- **Radarn väcker också när N3 är torr,** enligt ordalydelsen ovan (*"MET Nordic, och radarn per punkt när den finns"*). Underlaget i
+  kuvösen säger *"helst bekräftad av radarn"*, och mätningen räknade N3 utan radar. Valet står som fråga i bedömningen §4.2, och en
+  ändring är en rad i regeln.
+- Inget veto och ingen spridningsspärr, som i mätningen.
+- **Proven:** integrationsprovet SG1–SG5, med full skala på 90 000 punkter. Kontraktsgrinden vaktar radargränsen, radarfönstret och
+  radarbiten mot `radar-karna.ts`, och från och med nu också timmens färskhet och fullständighet. De två hade sju respektive tre kopior
+  utan vakt före 105.
+- **Kvar:** ci, Bengts ord om radarn, sammanslagningen, DB-knappen och regelns tid mätt i driften när kedjan skriver.
+
+**Tillägg 11/11 (Bengt: *"Ja, båda"*, på förslagen i bedömningen §4.2): kedjan i 15 delar, och radarn avgörs efter takten.**
+- **Kedjan i drift** blir ett eget jobb i MET-kön efter fysiken, som `kuvos-stad`: en hämtning och 15 delar om omkring 6 000 punkter
+  efter varandra. Det ger omkring 5,8 GB per del och högst omkring två minuter mer än 12 delar, som hade under 1 GB marginal till planens
+  8 GB. Först går historiken för alla punkter med knappen.
+- **Radarn** står kvar som väckare i `sql/105` tills vidare, eftersom inget talar före påslaget. Takten i skuggan räknas både på N3 ensam och
+  med radarn, och radarns bakåtprov på vintern 2024/25 läses. Sedan väljer Bengt och Axel, före taket, mellan att radarn väcker och att
+  bara N3 gäller.
+- **Att radarn bara bekräftar N3 är struket.** `radar_smavag` har bara rader vid regn, så en utebliven rad går inte att skilja från att
+  radarn inte ser, och radarns 60 minuter mot N3:s fyra timmar hade tystat rösten just när en våt väg fryser.
+- **Väntar:** att takten räknas också med radarn är ett tillägg till kuvösens F50, som Bengt och Axel signerar.
+
+**Tillägg 11/11 (Bengt: *"Ja, bygg"*): kedjan i drift byggd på en gren, inte sammanslagen.**
+- **Var sjätte timme:** `kuvos-smavag` startar när `kuvos-stad` är klar, så att de två aldrig väntar i MET-kön samtidigt (en väntande körning i en
+  concurrency-grupp avbryts av nästa). En hämtning och 15 delar, och sedan timfilen till hinken. Den går inte till Actions-cachen, som kan läsas av en PR
+  från en fork, och inte till databasen, där den hade blivit omkring 530 000 rader var sjätte timme.
+- **Varje timme:** det nya flödet `kuvos-smavag-timme` startar när `ny-kandidat-timme` är klar. Det läser timfilen, stationernas PH och ankarna, kör del B och
+  kuvösens regel D och skriver timmens rader (`ingest/smavag-live-db.ts`) i en transaktion. K:s flöde ändras inte och kan inte fällas härifrån.
+- **N3 i driften** kommer som i P-II ur samma MET-körning som timmen, med 6–11 timmars ledtid. Bakåtmätningen gjordes på MET:s analys, så träffsäkerheten i
+  driften kan bli sämre än den mätta.
+- **Luckan:** kedjan blir klar omkring en timme efter fysiken, så timmen närmast efter körningen hinner oftast inte med. Regeln läser då föregående timme så
+  länge den är högst två timmar gammal och tiger sedan till nästa skrivna timme, omkring 50 minuter var sjätte timme, längre om kedjan blir sen. Inget talar förrän brytarna slås på.
+- **Ordningen:** PR #1509 och `sql/105` med DB-knappen, kuvösens PR, sedan flödena, knappen `historik` för alla punkter och första körningen.
+
+**Tillägg 11/11 (Bengt: *"gör 1, 2, 3 och 4 i den ordningen"*): regeln migrerad och kedjan sammanslagen, med brytarna av.** PR #1509 sammanslagen (e353c978) på grön ci. `sql/105` migrerad med DB-knappen 06.20 UTC (42971659393), transaktionen bekräftad. Bevisraderna: RLS på båda tabellerna, inga rader, brytarna N och P1 av, ingen timme, inga besked och rättigheter bara för `service_role`. Kuvösens PR 71 (24b279c0, F54) och PR #1512 (9b79145e) sammanslagna på grön ci; integrationsproven i full skala gick i ci (SG5 och SL6). Historiken för alla punkter trycks när körningen av `kuvos-stad` efter 06.28 UTC är klar, så att staden inte fördröjs.
+
+**Tillägg 11/11 (Bengt: *"Ta 1 o 2 nu"* och *"sen 3"*): steg 5b, punktfilen och beskedet i lägesfilen, byggt på en gren.**
+- **Punktfilen** `smavag.json` bär punkternas lägen med fem decimaler i ordningen `punkt COLLATE "C"`, omkring 1,6 MB.
+  - Laddaren skriver den i `smavag_punktfil` (`sql/106`) i samma transaktion som punkterna, så att filen och tabellen aldrig går isär.
+  - Publiceringen laddar upp den till hinken och kartrepot bara när sha:n är ny, och den står i manifestet som en egen post, `smavag`.
+  - Apparna läser bara `static` och `live` i manifestet, så ingen installerad app påverkas.
+- **I `live.json`** står nyckeln `smavag`: `{fil, n, bitar}`.
+  - `bitar` har en bit per punkt i punktfilens ordning, base64, ur `smavag_talar()`, och `fil` är punktfilens sha, så att appen bara läser bitarna mot rätt fil.
+  - Med båda brytarna av saknas nyckeln helt.
+  - Stämmer punktfilen inte med punkterna saknas nyckeln också, och noten säger varför.
+- **Storleken:** 88 335 punkter blir 11 042 byte, eller 14 724 tecken base64. Det är något över byggplanens omkring 10 kB, men packad är filen mycket mindre när nästan inga eller nästan alla punkter varnar.
+- **Kvar:** ci, sammanslagningen, DB-knappen för `sql/106` och deployen av `publicera`, alla på Bengts ord, och appens hämtning (med motorn, steg 7).
+
+**Tillägg 11/11 eftermiddag (Bengt: *"Ja, gör det"*): steg 5b i drift med brytarna av, och historiken väntar på MET.**
+- PR #1520 sammanslagen (9501450c) på grön ci. `sql/106` migrerad med DB-knappen (43046159614): RLS på, inga rader, rättigheter bara för `service_role`, båda brytarna av.
+- `publicera` deployad (43046265602, 15.14 UTC). Manifestet 15.18 UTC var nyare än deployen och bar `static` och `live`, och `live.json` saknade nyckeln `smavag`, som det ska med brytarna av.
+- Punktfilen skrivs vid nästa laddning i `ny-kandidat-fysik`, och först därefter står den i manifestet.
+- **Historiken för alla punkter väntar på MET.** MET:s arkiv (`metpparchive`) svarade 404 på alla dygn och på katalogen från förmiddagen 11/11. Första försöket sparade dygn med luckor, och kedjan föll i del A. PR #1514 och #1517 tar bort dygn utan 24 timmar per punkt så att de hämtas om, i småvägskedjan och i `kuvos-stad`. En väntare trycker historiken och kedjan när arkivet svarar igen.
+
+**Stomdokument:** MAT 5 — småvägsrösten beställd och byggs avstängd, SYS 2 — driftens rörarbete för småvägarna, APP 3 — betavarningens farotyp och text
+
+## #829 (10/11 2026) Tipsa en vän, Tyck till och Betygsätt i 0.4.0 (42), tillsammans med Favoriter 2a och CarPlay
+
+**Beslut (Axel 10/11: *"I would like that we do it all in one go"*).** Appen får tre rader under etiketten *Halkvakt* sist i
+Inställningar och ett kort på Redo.:
+- **Tipsa en vän:** telefonens delningsark med en text och länken `halkvakt.se/?r=dela`. Koden `r` är den som webbplatsens räknare
+  `besok` redan räknar, så tipsen syns i statistiken utan något nytt i appen.
+- **Tyck till:** förarens egen mejlapp till hej@halkvakt.se, med appens version, telefonens modell och systemets version ifyllda
+  under en linje som föraren ser och kan ta bort. Utan mejlapp visas adressen med en kopieringsknapp.
+- **Betygsätt Halkvakt:** butikens sida för omdömen (App Store id6806939784, Google Play `se.halkvakt.app`).
+- **Kortet på Redo.:** efter femte avslutade vaktpasset (`PASS_FORE_KORTET` = 5, i kontraktsgrinden), aldrig medan vakten kör och
+  aldrig samtidigt som ett kort om resorna. *Tipsa en vän* eller *Inte nu* döljer det för gott. Antalet pass och flaggan sparas bara i
+  telefonen.
+
+Allt byggs in i 0.4.0, som höjs till bygge 42, och provas tillsammans med Favoriter 2a och CarPlay (#817) i TestFlight och Androids
+interna test, flera gånger per plattform (Axel 10/11), före inlämningen till App Review.
+
+**Vad som lämnar telefonen:** inget nytt. Delningen, mejlet och betyget går genom telefonens egna appar på förarens tryck, och appens
+egen sändning (räknaren, betatestets svar) är oförändrad. Därför ändras varken produktinvariantraden i CLAUDE.md, Play Data Safety,
+App Privacy eller integritet.html.
+
+**Alternativen:**
+- ett formulär i appen som skickar till Supabase: förkastat, eftersom det ändrar vad appen sänder (invarianten, Data Safety, App Privacy och
+  integritetstexten i samma commit), och svaren hamnar inte där någon kan svara;
+- Apples och Googles egen betygsruta (`requestReview`) i stället för en rad: förkastat för raden, eftersom systemet själv bestämmer om den
+  visas och ett tryck då kan göra ingenting;
+- en direktlänk till butiken i stället för `halkvakt.se`: förkastat, eftersom webbplatsen väljer rätt butik och räknar koden;
+- kortet varje gång eller under körning: förkastat, eftersom tystnad är en egenskap (CLAUDE.md).
+
+**Stomdokument:** APP 4 — raderna i Inställningar och kortet på Redo., APP 7 — inget nytt lämnar telefonen
+
+## #831 (11/11 2026) Trafikverkets nya certifikatkedja: Telias rotcertifikat i ingest (PR #1518)
+
+**Bengt 11/11:** *"Ja, gör det"*, på rättelsen efter kontrollen 14:07.
+
+**Vad som hände.**
+- `ingest` föll varje timme 10.11–14.11 UTC med `SELF_SIGNED_CERT_IN_CHAIN` mot `api.trafikinfo.trafikverket.se`.
+- Kamerorna, väglagsarkivet, SMHI:s varningssynk och radarn stod still från 09.11. Kandidaten hade alltså ingen radar som fukt under de timmarna.
+- Orsaken: Trafikverkets API skickar nu kedjan *.trafikinfo.trafikverket.se → Telia RSA OV CA v4 → Telia RSA TLS Root CA v3. Roten finns i Windows rotlista men inte i Nodes inbyggda (Mozillas), som Actions använder. Livemotorn i Supabase påverkades inte.
+
+**Beslut.**
+- `ingest/ca/telia-rsa-tls-root-ca-v3.pem` är certifikatet ur Windows rotlista. Fingeravtrycket sha256 `D1:3D:B1:29:4C:45:EB:C6:FC:86:C6:BB:F6:9F:A2:9B:DF:E6:92:DF:F7:C7:13:C2:43:C7:A9:56:C6:A2:28:4C` är detsamma som det Trafikverket skickar.
+- `ingest.yml` sätter `NODE_EXTRA_CA_CERTS`, som lägger till roten och inte ersätter Nodes lista, och har ett steg som prövar fingeravtrycket.
+- **Beviset:** `ingest` 43039885470 var grön 14.35 UTC, med 225 rader i väglaget och arkivet, SMHI och radarn, och radarlarmet stängt.
+
+**Alternativen:**
+- att vänta på Trafikverket: förkastat, eftersom vinterarkivet tappade rader under tiden;
+- `--use-system-ca`: förkastat, eftersom det är osäkert om Ubuntus lista har roten;
+- en nyare Node: förkastat, eftersom Node 24:s inbyggda lista inte heller har den.
+
+**Kvar:** ett annat flöde eller skript som når Trafikverket från Actions och faller med samma fel får samma inställning.
+
+**Stomdokument:** SYS — ingestens flöde i Actions litar på Telias rot
+
+## #832 (11/11 2026) PostGIS ligger i schemat extensions i driften, och grindarnas tillfälliga databas följer (PR #1522)
+
+**Bengt 11/11:** *"Ja, gör det"* och *"Ta 6 o 4"*.
+
+**Vad som hände.**
+- Grind A, V-A, V-B och höjdprovet föll 9/11, och grind R-A 8/11 och 10/11.
+- Felet låg i `tillfalliga-arkivet`: `schema "extensions" does not exist`, och `weather_observations` skapades inte.
+- Mätvakten larmade 11/11, två dygn efter.
+
+**Vad som är läst** (SELECT i panelen 11/11):
+- PostGIS ligger i `extensions` (`postgis@extensions 3.3.7`). #784 sade 3/11 att den låg i `public`.
+- Objektnumren är oförändrade: tillägget 17485, lägre än alla våra tabeller. Den är alltså flyttad, inte ominstallerad, med Supabases anvisning: den görs tillfälligt flyttbar (`extrelocatable`) och flyttas med `ALTER EXTENSION … SET SCHEMA extensions`.
+- Satsstatistiken sedan 3/11 12.46 bär fyra satser om `extrelocatable`, tre `ALTER EXTENSION … postgis` och en `SET SCHEMA … extensions`. Rollerna var `postgres` och `supabase_admin`, och satstexterna lästes inte, eftersom de kan bära nycklar.
+- Dumpen var 167 612 tecken med 2 fel i grind R-A 6/11 09.07 och 197 267 tecken med 59 fel 8/11 09.07. **Flytten gjordes alltså mellan 6/11 09.07 och 8/11 09.07 UTC.** Vem som gjorde den är okänt.
+- Driften påverkades inte: ingen funktion i `public` med fast sökväg utan `extensions` anropar PostGIS, och de 22 i #784 har `public, extensions`.
+
+**Beslut.**
+- `scripts/tillfalliga-arkivet.ts` läser driftens PostGIS-schema och lägger PostGIS där i den tillfälliga databasen, med sökvägen `public, <schemat>`.
+- #784:s rad om att PostGIS ligger i `public` gällde 3/11 men gäller inte längre.
+
+**Kvar:**
+- grind R-A körs 12/11 09.07 med rättelsen;
+- Bengt eller Axel säger om någon av dem gjorde flytten.
+
+**Stomdokument:** SYS — PostGIS i schemat extensions och grindarnas tillfälliga databas
+
+## #833 (11/11 2026) Småvägsröstens avbrottsvillkor, signerade (kort #647)
+
+**Signaturerna.** Bengt 11/11: *"jag tar gärna rekommenationer från dej"*, på de uppräknade valen 1–5. Axel via Bengt samma dag: *"axel signerar"*.
+
+**Villkoren** (`docs/FORSLAG-AVBROTT-SMAVAGSROSTEN-2026-11-11.md`). De gäller från påslaget, och avbrottet görs med `sql/107` (båda brytarna av).
+- **Driftens hälsa:** Claude slår av utan att fråga om
+  - publiceringen faller två körningar i rad, eller lägesfilen står still i mer än 10 minuter;
+  - en K-timme försvinner för dagens punkter, eller ett av storstädernas steg faller, och felet går att följa till småvägskedjan;
+  - publiceringens bygge tar mer än dubbelt så lång tid som medianen veckan före påslaget, två körningar i rad;
+  - en förare rapporterar att batteriet eller värmen är fel.
+- **Takten:** Claude slår av och frågar sedan när beskeden per körtimme i skuggan ligger över det valda taket två dygn i rad, i norr eller i söder.
+- **Testarnas svar:** rösten slås av när minst 10 facitsvar om småvägsrösten under en vecka ger mer än hälften *inte halt*.
+- **Olycksfacit:** granskning, inget avbrott. En miss talar för fler varningar, inte färre.
+- **Omfånget:** båda brytarna.
+- Varje avbrott får en rad i STATUS och ett besked till Bengt.
+
+**Alternativen som inte valdes:** att Claude frågar först vid driftens hälsa; ett dygn eller en vecka över taket; avbrott vid ett antal missar i olycksfacit; att bara den grupp där villkoret slog till slås av.
+
+**Stomdokument:** MAT 5 — småvägsröstens avbrottsvillkor
+
+## #834 (11/11 2026) Väntar på-listorna lever: PR:erna läses ur GitHub, och bokföringen slås ihop av synk-ihop
+
+**Beslutet.** Bengt 11/11: *"bygg a och b"*, på förslagen (a) och (b) efter frågan varför projektkartans listor inte uppdateras.
+
+**Varför.** Genomgången av listorna 11/11 visade tre skäl:
+- Kartsynken läste senast de öppna PR:erna 8/11 03.37 UTC. Morgonrutinens läsning föll 9–11/11, och skriptet behöll den gamla listan med
+  bara en rad i sin logg. Fyra öppna PR:er syntes därför inte (#1474, #1485, #1505, #1506).
+- Bokföringen från sessioner, mest Axels, låg i PR:er som väntade på Bengts ord och fick konflikter och krockande beslutsnummer. Sex
+  av de tolv bar arbete som redan var gjort eller i drift. Sessioner i molnet och på mobilen får inte slå ihop själva.
+- Ett kort stängs bara mot bevis på main, så det som låg i en väntande PR syntes aldrig som gjort.
+
+**Det som är byggt.**
+- **(a)** Projektkartan läser de öppna PR:erna ur GitHubs publika API när sidan öppnas (`PR_SKRIPT` i `scripts/projektkartan.ts`).
+  Kartsynkens lista står kvar i sidan som reserv, och svarar GitHub inte står det i rött hur gammal den är. Sidans bytes är desamma i
+  varje bygge, så genomsökningen jämför som förut. Provat i en webbläsare: 16 öppna PR:er lästa, och felfallet rött med reservens tid.
+- **(b)** `synk-ihop` slår också ihop en PR vars rubrik börjar med `Bokföring:` eller `Kartsynk:`, på dokumentsynkens villkor: bara
+  dokument, ci och md-vakt gröna på exakt huvudet, och kontrollerna gröna på det ihopslagna trädet. En bokföring får lägga till nya
+  beslut sist i DECISIONS.md, men aldrig ändra ett gammalt. Ett förslag eller utkast, i rubriken eller i ett nytt beslut, slås aldrig
+  ihop. Flödet startar på varje PR i repot och prövar bara den PR:ens huvud. Genomsökningen 06.00 UTC (`sidorna.ts`) larmar en PR som
+  inte är ett utkast och väntat mer än två dygn.
+- Självtesten i de tre skripten är gröna, och 16 av 16 motprov fälldes. `synk-ihop.ts --prova <ref> bokforing` på riktiga grenar:
+  ett nytt beslut sist gick igenom; samma gren som dokumentsynk, ett ändrat gammalt beslut, ett nytt FÖRSLAG och en ändring i kod
+  stoppades.
+
+**Gränserna.** Sidorna byggs en gång per dygn, 05.30 UTC, så korten flyttar sig dagen efter (#733). Beslut, signaturer, fältprov och PR:er
+med kod väntar fortfarande på en människa. Gamla PR:er med andra rubriker slås inte ihop av sig själva; de städas för sig.
+
+**Alternativen som inte valdes:** att bygget i 895845/halkvakt-sidor skriver in PR-listan, vilket hade fått genomsökningen att larma
+varje dygn; att kartsynken faller helt när PR-listan inte går att läsa, vilket hade stoppat hela morgonrutinen; att sessionen slår ihop
+själv, vilket molnets och mobilens sessioner inte får.
+
+**Stomdokument:** inga — rör projektkartan, synk-ihop och CLAUDE.md, inte stomdokumentens text
+
+## #837 (6/11 2026) Statistikens 7-dygns- och dagskolumner räknas mot hela tabellen, inte inom vald period
+
+**Axels ord 6/11 22:04**, på halkvakt.se/statistik med perioden ett dygn vald: *"Detta är lite oroväckande, har vi inte haft någon
+varning om halka idag?"*, och 22:22 på förslaget att rätta funktionen: *"Okej ja tack"*.
+
+**Bakgrunden.** Alla varningar stod på noll på sidan, också under *7 dygn*, fast 0.3.16 hade sagt nio varningar den 4/11 (åtta frysrisk,
+en olycka) och Trafikverket rapporterade halka i 16 län kl. 22:00. `app_raknare_stat` (sql/082) räknade `sju` och `dagens` ur samma
+periodbegränsade CTE som `period`, så med en kortare period än sju dygn blev 7-dygnskolumnen dagens tal. Sidan läste fönstren som
+fasta och de var det inte. Appen hade varnat hela dagen: 63 telefoner fick sin första varning den 6/11 (0.3.15 skickar bara
+`forsta_varningen`, utan typ; typerna kommer med 0.3.16, DECISIONS #787).
+
+**Beslut.** sql/092: `period` följer vald period som förut; `sju` och `idag` räknas mot de senaste sju dygnen oavsett period, och en rad
+som har tal i ett fönster men inte i perioden kommer med, med period 0. `per_dag` följer perioden som förut. Körd i produktionen
+6/11 22:28 via Management API (migrationen `092_app_raknare_stat_fonster`) och provad: `app_raknare_stat(1)` ger frysrisk 8, olycka 1
+och *Slut: för hand* 2 under sju dygn, period 0. Statistiksidan i halkvakt-karta ändras inte: den summerar `sju` och `idag` per rad redan.
+
+**Alternativ.** (a) Dölja 7-dygns- och dagskolumnerna när perioden är kortare: förkastat, det är de talen man vill se oavsett period.
+(b) Låta sidan alltid hämta 30 dygn och filtrera själv: förkastat, mer kod på sidan för samma tal.
+
+**Numret.** Fattat 6/11 som #807 i PR #1427, som väntade på ett ord medan main gav #807 ett annat beslut. Bokfört som #837 11/11 (Bengt: *"Ja, slå ihop"*); funktionen kördes i produktionen 6/11 och filen finns nu på main.
+
+**Stomdokument:** inga — bara statistikens sammanställning; appen, räknaren och vad den skickar är orörda.
+
+## #835 (11/11 2026) PostGIS flyttades till extensions av Supabases support på Axels begäran (bokfört i efterhand ur PR #1421)
+
+**I efterhand.** Bokfört 11/11 (Bengt: *"stäng alla som är självklara att stänga både Axels och mina"*) ur PR #1421, som väntade på ett ord sedan 6/11 och bar numret #806, som main gav Reels.
+Det rättar DECISIONS #832, som 11/11 kallade flyttens upphov okänt: flytten gjordes av Supabases support på Axels skriftliga ja 5/11.
+Texten nedan är PR:ens, oförändrad.
+
+
+
+**Beslut (Axel, 5–6/11).** Supabase support (ärende SU-537379) drar inte in rättigheterna på `spatial_ref_sys`, utan erbjöd att flytta
+PostGIS till schemat `extensions` på plats: inget drop, inga data eller index förlorade, ingen omstart. Axel godkände skriftligt 5/11.
+Supabases egen kontroll 6/11 hittade sex osäkrade sql-funktioner med PostGIS-namn (`arkiv_jamfor`, `kandidat_regel`, `ny_kandidat_regel`,
+`ny_kandidat_regel_snabb`, `olja_aktiva`, `vagpunkt_ankare`). Varje anropare spårades: de låsta plpgsql-funktionerna har `public, extensions`
+(sql/081), edge-funktionerna `publicera` och `arkivexport` och flödena i Actions ansluter som postgres (sökvägen har `extensions`), och
+skuggmotorn går via Data API som service_role. Flyttad 6/11 kl. 17.19 UTC.
+
+**Bevis efter flytten (6/11 20.04 UTC):** postgis och `spatial_ref_sys` ligger i `extensions`; säkerhetsgranskningen har inget fel
+(`rls_disabled_in_public` borta), och `extension_in_public` gäller bara pg_net och `st_estimatedextent`-varningarna är borta; 452 cron-körningar
+sedan 17.00 UTC, alla lyckade; skuggmotorns körning 20.02 UTC fick prognosankarna (`vagpunkt_ankare`) och kandidatens träffar
+(`kandidat_regel`) via Data API, alltså når även den vägen PostGIS. `anrop` visar inga nya feltyper: tidsgränserna på ingest-live (omkring
+tio i timmen) fanns redan 5/11 och har ingenting med flytten att göra.
+
+**Förberett:** återläsningsprovet i arkivbackupen installerar PostGIS i källans schema (PR #1394), annars hade det tappat tabellerna med
+geometrikolumner (uppmätt 20/9). `halkvakt-kuvos` lästes igenom: kuvösens klocka (`kuvos, public, pg_catalog`) körs bara mot provdatabasen
+i flödet. DECISIONS #784:s "postgis i public lämnas" är överspelad.
+
+**Kvar, inte åtgärdat:** pg_net i public (Supabase erbjöd bara PostGIS) och de 23 osäkrade sql-funktionerna (med flit, #784).
+
+
+**Stomdokument:** SYS PostGIS i extensions och säkerhetsgranskningen 6/11
+
+## #836 (11/11 2026) Telefonturen med 0.4.0 (41), tillägg till #816 (bokfört i efterhand ur PR #1452)
+
+**I efterhand.** Bokfört 11/11 (Bengt: *"stäng alla som är självklara att stänga både Axels och mina"*) ur PR #1452, som väntade sedan 7/11. Ett gammalt beslut ändras inte i en bokföring
+(#834), så tillägget står här i stället för under #816. Texten nedan är PR:ens, oförändrad.
+
+**Tillägg 7/11, telefonturens bygge** (Bengt: *"Ja, 0.4.0 (41)"*):
+- **Telefonturen görs med 0.4.0 (41)**, inte med 0.3.17 (39). Axel laddade upp 0.4.0 (41) till TestFlight 09.46 UTC
+  (testflight-körningen 42360939502 från main 855367e8), och TestFlight installerar det senaste bygget. Turen ska mäta det
+  bygge som skeppas.
+- **Vilket bygge som går till App Review** är inte avgjort. Stegen i `marknadsforing/butik/appstore-ios.md` gäller 0.3.17 (39).
+  Frågan står i bedömningens §4.2.
+
+**Stomdokument:** BED §4.2 — vilket bygge som går till App Review
+
+## #840 (9/11 2026) Vakten startar när Halkvakt öppnas på bilens skärm, med i CarPlay-släppet; introduktionen väntar (kort #380)
 
 **Axels ord 9/11:** *"Yeah er should do the car play when u release it and then I'll think of the onboarding"*, efter genomgången av
 varför en tredjedel av de nya iPhone-förarna stannar på Vid användning (2–8/11: 513 gav platsen, 345 nådde Alltid) och Claudes
@@ -15102,5 +15447,7 @@ skiss av Alltid-trappan (Design-duken *Halkvakt · Alltid-trappan*).
 
 **Alternativ.** Starta när ljudet går till bilen (AVAudioSession, `carAudio`): kräver att appen redan kör, så det hjälper inte den som
 inte öppnat appen. Bara Genvägar-automationen "när CarPlay ansluts": finns redan, men föraren måste lägga upp den själv.
+
+**Numret.** Fattat 9/11 som #828 i PR #1485, som väntade på ett ord medan main gav #828 småvägsrösten. Bokfört som #840 11/11 (Bengt: *"Ja, slå ihop"*). Byggt efter 0.4.0 (44), så det kommer med i nästa iPhone-bygge; beviset är ett prov i bil.
 
 **Stomdokument:** inga — en startväg i CarPlay-scenen som inte ändrar vad appen skickar eller hur den varnar

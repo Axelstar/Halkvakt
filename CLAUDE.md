@@ -239,6 +239,13 @@ varje del av projektet med block, läge, bevis eller nyckel, vad som saknas, ber
   allt annat väntar på Bengts ord. Regeln *samma commit* ovan gäller fortfarande — kartsynken är nätet under den.
   En session utan GitHub-API (webben, mobilen) gör bokföringsvägen; signalerna tar nästa session som når dem. Kartsynken listar
   också **öppna PR:er** (6/10): en PR som väntar lyfts i rapporten till Bengt, och kartgrenar slås ihop av sessionen, aldrig av CI.
+- **Bokföringen når main av sig själv (Bengt 11/11: *"bygg a och b"*, DECISIONS #834).** Bokföring av det som redan är gjort eller
+  beslutat (STATUS, tavlan, kartan, kalendern, fristerna, stomdokumentens text och nya beslut sist i DECISIONS) läggs i en PR vars rubrik
+  börjar med `Bokföring:`, och en kartsynk med `Kartsynk:`. Flödet `synk-ihop` slår ihop den på dokumentsynkens villkor: bara dokument,
+  ci och md-vakt gröna på exakt huvudet och kontrollerna gröna på det ihopslagna trädet. Ett gammalt beslut får inte ändras, och ett
+  förslag eller utkast får aldrig den rubriken eller ett nytt beslut som heter FÖRSLAG eller UTKAST (de väntar på ett ord, som förut).
+  Kod och migrationer läggs alltid i en egen PR. Det gäller alla sessioner, Axels också, och molnets och mobilens, som inte får slå ihop
+  själva. Genomsökningen 06.00 UTC (`sidorna.ts`) larmar en PR som inte är ett utkast och väntat mer än två dygn.
 
 ## DOKUMENTSYNKEN (Bengts ja 2026-10-07 — styrdokumenten stäms av varje dygn, DECISIONS #484, kort #304)
 Genomgången 7/10 (DECISIONS #483) behövde ett sjuttiotal rättelser i handtexten, fast kartan visade stomdokumenten gröna: CI
@@ -256,7 +263,9 @@ sessioner på alla enheter:
 - **Morgonrutinen** — claude.ai-rutinen *Halkvakt: dokumentsynken varje morgon* (`trig_015zMNvnicaHT1wFNk4ZWdaH`), kl. 03:30 UTC
   (05:30 sommartid, 04:30 vintertid), i molnet och inte bunden till någon dator. Den gör stegen nedan.
 - **Väntar på Bengt / Väntar på Axel** överst i projektkartan, skrivna av `projektkartan.ts` ur tavlans avsnitt för Bengt och Axel
-  (kortets *Kvar*, annars dess nyckel) och kartsynkens lista över öppna PR:er (`synk.prar`). Ändras aldrig för hand.
+  (kortets *Kvar*, annars dess nyckel) och kartsynkens lista över öppna PR:er (`synk.prar`). Ändras aldrig för hand. Sedan 11/11
+  (DECISIONS #834) läser sidan de öppna PR:erna ur GitHub när den öppnas; kartsynkens lista är reserven, och svarar GitHub inte står
+  det i rött hur gammal den är (kartsynkens läsning föll tyst 9–11/11).
 
 **Fristvakten och domlarmet** (Bengts order 20/10, DECISIONS #649). Kalendern listade datumen men larmade inte, och en dom som
 en körning skrev nådde aldrig synken, som läser beslut och commits, inte utskrifter (V-B fälldes 19/10 och bokfördes först 20/10):

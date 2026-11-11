@@ -188,19 +188,54 @@ export function havstang(k: Karta, del: Map<string, Del>): Map<string, { mal: st
 }
 
 /** Sidan: projektets mål och procenten, flödet, målen, det som lönar sig först, delarna bakom ett klick, bladen. */
-/** Väntar på Bengt och Väntar på Axel (Bengts ja 7/10, DECISIONS #484 (c)): ur tavlans avsnitt och kartsynkens PR-lista. */
+/** Öppna PR:er hämtas när sidan öppnas, ur GitHubs publika API (Bengt 11/11, "bygg a och b"): kartsynkens lista stod still 8–11/11
+ *  medan morgonrutinen inte nådde GitHub, och sidan sa det bara med liten stil. Kartsynkens lista står kvar i sidan och byts ut när
+ *  GitHub svarar; svarar den inte står det i rött hur gammal listan är. Sidans bytes är desamma varje bygge, så genomsökningen
+ *  (sidorna.ts punkt 1) jämför som förut. */
+export const PR_SKRIPT = `<script>
+(async () => {
+  const ul = document.getElementById("vantar-bengt"), n = document.getElementById("vantar-bengt-n"), last = document.getElementById("prlast");
+  if (!ul || !n || !last) return;
+  const tid = (iso) => { const p = Object.fromEntries(new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Stockholm", day: "numeric", month: "numeric",
+    hour: "2-digit", minute: "2-digit" }).formatToParts(new Date(iso)).map((x) => [x.type, x.value])); return p.day + "/" + p.month + " " + p.hour + ":" + p.minute; };
+  try {
+    const r = await fetch("https://api.github.com/repos/Axelstar/Halkvakt/pulls?state=open&per_page=100", { headers: { accept: "application/vnd.github+json" } });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const prar = await r.json();
+    ul.querySelectorAll("li.pr").forEach((li) => li.remove());
+    const forst = ul.firstChild;
+    for (const p of prar) {
+      const li = document.createElement("li"), b = document.createElement("b"), s = document.createElement("span");
+      li.className = "pr"; b.textContent = "PR #" + p.number; s.className = "litet";
+      s.textContent = " — " + (p.draft ? "utkast, " : "") + "väntar på ditt ord, öppnad " + tid(p.created_at);
+      li.append(b, " " + p.title, s);
+      ul.insertBefore(li, forst);
+    }
+    n.textContent = "(" + ul.children.length + ")";
+    last.textContent = "lästa ur GitHub nu, när sidan öppnades";
+  } catch (e) {
+    last.textContent = "GitHub svarade inte (" + (e && e.message ? e.message : e) + "), så PR:erna är kartsynkens, lästa " + last.dataset.tid;
+    last.style.color = "#b00020";
+  }
+})();
+</script>`;
+
+/** Väntar på Bengt och Väntar på Axel (Bengts ja 7/10, DECISIONS #484 (c)): ur tavlans avsnitt och de öppna PR:erna. */
 function vantarPa(k: Karta, vantar: Vantar[]): string {
   const rad = (v: Vantar) => `<li><b>${esc(v.nr || v.titel)}</b>${v.nr ? ` ${esc(v.titel.length > 90 ? v.titel.slice(0, v.titel.lastIndexOf(" ", 90)) + " …" : v.titel)}` : ""}` +
     `${v.vantar ? `<span class="litet"> — ${esc(v.vantar)}</span>` : ""}</li>`;
-  const prar = (k.synk?.prar ?? []).map((p) => `<li><b>PR #${p.nr}</b> ${esc(p.titel)}<span class="litet"> — väntar på ditt ord, öppnad ${esc(stockholm(p.oppnad))}</span></li>`);
+  const prar = (k.synk?.prar ?? []).map((p) => `<li class="pr"><b>PR #${p.nr}</b> ${esc(p.titel)}<span class="litet"> — väntar på ditt ord, öppnad ${esc(stockholm(p.oppnad))}</span></li>`);
   const bengt = [...prar, ...vantar.filter((v) => v.agare === "Bengt").map(rad)];
   const axel = vantar.filter((v) => v.agare.startsWith("Axel")).map(rad);
-  const lista = (namn: string, r: string[]) => `<div><h3>Väntar på ${namn} <span class="litet">(${r.length})</span></h3>${r.length ? `<ul>${r.join("")}</ul>` : `<p class="litet">Inget just nu.</p>`}</div>`;
+  const lista = (namn: string, r: string[], id = "") => `<div><h3>Väntar på ${namn} <span class="litet"${id ? ` id="${id}-n"` : ""}>(${r.length})</span></h3>` +
+    (id ? `<ul id="${id}">${r.join("")}</ul>` : r.length ? `<ul>${r.join("")}</ul>` : `<p class="litet">Inget just nu.</p>`) + `</div>`;
+  const lastTid = k.synk?.prtid ? esc(stockholm(k.synk.prtid)) : "aldrig";
   return `<section class="vantar" aria-label="Vad som väntar på vem">
-    ${lista("Bengt", bengt)}
+    ${lista("Bengt", bengt, "vantar-bengt")}
     ${lista("Axel", axel)}
-    <p class="litet">Skrivs ur tavlans avsnitt för Bengt och Axel, med kortets <i>Kvar</i> eller nyckel, och ur kartsynkens lista över öppna PR:er${k.synk?.prtid ? `, läst ${esc(stockholm(k.synk.prtid))}` : ""}. Ändras aldrig för hand (DECISIONS #484).</p>
-  </section>`;
+    <p class="litet">Skrivs ur tavlans avsnitt för Bengt och Axel, med kortets <i>Kvar</i> eller nyckel, och ur de öppna PR:erna: <span id="prlast" data-tid="${lastTid}">kartsynkens lista, läst ${lastTid}</span>. Ändras aldrig för hand (DECISIONS #484).</p>
+  </section>
+  ${PR_SKRIPT}`;
 }
 
 /** Takten (Bengts val (a) 10/10, DECISIONS #515): de senaste sju dygnens klara, nya och borttagna steg, per block, och varje ändring
@@ -827,6 +862,11 @@ if (direkt && process.argv[2] === "--sjalvtest") {
   const b = vh.slice(vh.indexOf("Väntar på Bengt"), vh.indexOf("Väntar på Axel")), a = vh.slice(vh.indexOf("Väntar på Axel"));
   if (!(b.includes("PR #9") && b.includes("#7</b> SJU") && b.includes("ditt ja") && a.includes("<b>Skydda namnet</b></li>") && !a.includes("SJU"))) {
     console.error("✗ självtest: väntar på-listorna"); process.exit(1);
+  }
+  // PR:erna ur GitHub när sidan öppnas (11/11): kartsynkens rader går att byta ut, och tiden står kvar för felfallet.
+  if (!(b.includes('<ul id="vantar-bengt"><li class="pr"><b>PR #9</b>') && b.includes('id="vantar-bengt-n">(2)') && vh.includes('id="prlast" data-tid="7/10 22:00"')
+    && vh.includes("api.github.com/repos/Axelstar/Halkvakt/pulls?state=open") && !a.includes('class="pr"'))) {
+    console.error("✗ självtest: PR:erna ur GitHub"); process.exit(1);
   }
   // Takten (DECISIONS #515): ett steg som blir klart, ett nytt klart steg i en ny del, ett steg som går tillbaka och ett som tas bort.
   const c = { tid: "2026-10-10T10:00:00Z", sha: "abcdef1234", rubrik: "Ett bygge <b>" };

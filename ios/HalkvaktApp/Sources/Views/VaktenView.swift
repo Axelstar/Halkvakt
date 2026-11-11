@@ -13,6 +13,9 @@ struct VaktenView: View {
     @State private var guardM = GuardManager.shared
     @State private var prefs = Prefs.shared
     @State private var fav = Favoriter.shared
+    @State private var tipsatt = false
+    @State private var facitNu: String?   // kort #999: varningen som besvarades medan skärmen visades
+    @Environment(\.scenePhase) private var fas
 
     var body: some View {
         ZStack {
@@ -29,6 +32,8 @@ struct VaktenView: View {
             }
         }
         .task { await guardM.refreshSnapshot() }
+        .onDisappear { if tipsatt { prefs.tipsaDold = true }; facitNu = nil }
+        .onChange(of: fas) { _, ny in if ny != .active, tipsatt { prefs.tipsaDold = true } }
     }
 
     private var innehall: some View {
@@ -52,8 +57,11 @@ struct VaktenView: View {
             let erbjud = fav.erbjudRaden(senasteKm: prefs.lastTripKm, senasteSlut: prefs.lastTripEnd)
             if spara { attSpara.padding(.top, 14) }
             if erbjud { erbjudKort.padding(.top, 14) }
+            // DECISIONS #829: en gång, efter femte passet, och aldrig samtidigt som ett kort om resorna.
+            let tipsa = !spara && !erbjud && Tipsa.visaKortet(pass: prefs.vaktPass, dold: prefs.tipsaDold, vaktenKor: guardM.running)
+            if tipsa { tipsaKort.padding(.top, 14) }
 
-            if tur == nil && resa == nil && !spara && !erbjud {
+            if tur == nil && resa == nil && !spara && !erbjud && !tipsa {
                 Spacer(minLength: 12)
                 Plinth(name: "plinth-logo").frame(height: 220)
             } else {
@@ -90,9 +98,12 @@ struct VaktenView: View {
             // S4 (DECISIONS #210): facitknapparna hör hemma där "Senast sagt" faktiskt visas — här, inte i
             // LastSaidCard som ingen vy använder sedan skinnet v3. Bara betatestare, bara på en varning med id.
             // Inte medan kortet Efter resan visas: det bär samma varning med samma knappar (kort #279).
-            if resa == nil, prefs.facitOn, prefs.lastSaidText != nil, let id = prefs.lastSaidId, let at = prefs.lastSaidAt,
-               Date.now.timeIntervalSince(at) < Facit.maxAge {   // äldre än så tar servern inte emot
-                FacitRow(id: id, at: at).padding(.top, 10)
+            // Kort #999: en besvarad varning frågas inte om igen. Raden står kvar med Tack medan föraren är kvar på skärmen
+            // (svaret går att ändra), och är borta nästa gång Redo. visas (Axels skärminspelning 11/11: "It always just stays").
+            if resa == nil, prefs.facitOn, let text = prefs.lastSaidText, let id = prefs.lastSaidId, let at = prefs.lastSaidAt,
+               Date.now.timeIntervalSince(at) < Facit.maxAge,   // äldre än så tar servern inte emot
+               Facit.answerFor(prefs.facit, id: id, t: at) == nil || facitNu == "\(id)@\(at.timeIntervalSince1970)" {
+                FacitRow(id: id, at: at, text: text) { facitNu = "\(id)@\(at.timeIntervalSince1970)" }.padding(.top, 10)
             }
         }
     }
@@ -129,6 +140,31 @@ struct VaktenView: View {
             .padding(.vertical, 16)
             YellowPill(title: "Slå på Spara resor") { fav.erbjud = true }
             MonoLink(title: "Inte nu") { fav.erbjudDold = .now }
+                .frame(maxWidth: .infinity).padding(.vertical, 6)
+        }
+        .padding(.horizontal, 20)
+        .background(Brand.panel, in: RoundedRectangle(cornerRadius: 18))
+    }
+
+    /// "Kör någon du känner samma vägar?" — telefonens delningsark; båda knapparna döljer kortet för gott.
+    private var tipsaKort: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: 6) {
+                MonoLabel(text: "Fem pass med vakten")
+                Text("Kör någon du känner samma vägar?").font(Typo.sans(16, .medium)).foregroundStyle(Brand.text)
+                Text("Tipsa om Halkvakt. Du skickar bara en länk, inget om dig.")
+                    .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(.vertical, 16)
+            // Kortet döljs först när föraren lämnar skärmen: försvann det under delningsarket kunde arket stängas med det.
+            ShareLink(item: Tipsa.lank, message: Text(Tipsa.text)) {
+                Text("Tipsa en vän").font(Typo.sans(17, .semibold)).foregroundStyle(Brand.bg)
+                    .frame(width: 220, height: 56)
+                    .background(Brand.yellow, in: Capsule())
+            }
+            .simultaneousGesture(TapGesture().onEnded { tipsatt = true })
+            MonoLink(title: "Inte nu") { prefs.tipsaDold = true }
                 .frame(maxWidth: .infinity).padding(.vertical, 6)
         }
         .padding(.horizontal, 20)

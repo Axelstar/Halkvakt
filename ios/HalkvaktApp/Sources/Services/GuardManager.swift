@@ -242,7 +242,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         }
     }
 
-    /// Halkvakt öppnades på bilens skärm (DECISIONS #828, Axel 9/11): starta vakten om platsen redan är tillåten. CarPlay-scenen
+    /// Halkvakt öppnades på bilens skärm (DECISIONS #840, Axel 9/11): starta vakten om platsen redan är tillåten. CarPlay-scenen
     /// är förgrund, så det fungerar också med Vid användning. Ingen fråga om Alltid härifrån: en systemdialog på telefonen
     /// mitt i körningen vore fel. Inte om föraren stoppade vakten för hand nyss, och inte om självstarten är avslagen.
     func startFranCarPlay() {
@@ -339,6 +339,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         Prefs.shared.lastTripKm = distanceKm
         if korde { Favoriter.shared.resanSlutar(km: distanceKm, minuter: drivingSeconds / 60) }   // kort #357: frågan på Redo., bara med brytaren på
         if korde { Matningen.shared.resanSlutar() }   // fas 2: sparas när resan slutar, stannar i telefonen
+        if korde { Prefs.shared.vaktPass += 1 }   // DECISIONS #829: kortet Tipsa en vän efter femte passet
         headsUpTask?.cancel()
         manager.stopUpdatingLocation()
         dismissTask?.cancel()

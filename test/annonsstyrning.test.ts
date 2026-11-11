@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 // @ts-ignore — .mjs utan typer
-import { fara, annons, stracka, vagBild, vagText, dagdel, VISNING, GRANSKODER, sammaSchema, ordning, rang } from "../marknadsforing/annonsstyrning.mjs";
+import { fara, annons, stracka, vagBild, vagText, dagdel, VISNING, GRANSKODER, sammaSchema, ordning, rang, kampanjLank } from "../marknadsforing/annonsstyrning.mjs";
 
 const l = (kort: string, halt: number, kalla: number, extra = {}) =>
   ({ kod: 1, kort, slug: kort.toLowerCase(), halt, vagavsnitt: 40, kalla, kallast: null, olyckor: 0, ...extra });
@@ -100,4 +100,13 @@ test("ordning: pauses first, then the strongest hazard and most icy stretches (D
   assert.deepEqual(ordning(satser, n => annons[n] ?? null, n => lan[n]).map(s => s.name),
     ["Län · E", "Län · C", "Län · D", "Län · B", "Län · A"]);
   assert.equal(rang("Frysrisk"), 0);
+});
+
+test("kampanjlänken bär länet i ct och Halkvakts pt, högst 40 tecken", () => {
+  const u = new URL(kampanjLank("vastra-gotaland"));
+  assert.equal(u.searchParams.get("pt"), "129386146");
+  assert.equal(u.searchParams.get("ct"), "meta-vastra-gotaland");
+  assert.equal(u.searchParams.get("mt"), "8");
+  assert.ok(u.pathname.endsWith("/id6806939784"));
+  assert.ok(new URL(kampanjLank("x".repeat(60))).searchParams.get("ct")!.length <= 40);
 });

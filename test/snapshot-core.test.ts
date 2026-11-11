@@ -6,7 +6,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
-import { buildSnapshot, manifestFor, bridgesFromGeoJSON, WX_SANE, WX_SANE_GRANS, BORDER_M, BORDER_DEG, REGN_UTLOSARE_MMH, GIVARFEL_LUFT_MIN_C, GIVARFEL_GAP_C, KARANTAN_DYGN, KARANTAN_BROTT, RADVAKT_SQL, brottSql, karantanSql, givarfelSql, LANGSAM_FRIST_H, buildGrannSnapshot, GRANNAR, type Q } from "../publish/snapshot-core.ts";
+import { buildSnapshot, manifestFor, smavagBitar, bridgesFromGeoJSON, WX_SANE, WX_SANE_GRANS, BORDER_M, BORDER_DEG, REGN_UTLOSARE_MMH, GIVARFEL_LUFT_MIN_C, GIVARFEL_GAP_C, KARANTAN_DYGN, KARANTAN_BROTT, RADVAKT_SQL, brottSql, karantanSql, givarfelSql, LANGSAM_FRIST_H, buildGrannSnapshot, GRANNAR, type Q } from "../publish/snapshot-core.ts";
 import { snapshotToHazards } from "../engine/src/snapshot.ts";
 
 /** Låtsasdatabas: svarar på frågorna efter vilken tabell de läser, och loggar frågetexten. */
@@ -16,6 +16,12 @@ function fakeDb(rows: Partial<Record<string, any[]>>) {
   const q: Q = async (text, params) => {
     asked.push(text);
     if (text.includes("FROM cameras")) return rows.cameras ?? [];
+    if (text.includes("FROM smavagsbrytare")) {   // småvägsröstens brytare (#828), av som standard
+      if (rows.smavagKastar) throw new Error("relation \"smavagsbrytare\" does not exist");
+      return rows.smavagBrytare ?? [{ pa: false }];
+    }
+    if (text.includes("FROM smavag_punktfil")) return rows.smavagPunktfil ?? [];
+    if (text.includes("JOIN smavag_talar()")) return rows.smavagTalar ?? [];
     if (text.includes("kandidat_pa()")) {   // #578: brytaren, på som standard
       if (rows.brytareKastar) throw new Error("relation \"kandidat_brytare\" does not exist");
       return rows.brytare ?? [{ pa: true }];
@@ -650,4 +656,36 @@ test("broarna pausade (DECISIONS #788): standardläget skickar inga broar och s�
   const { liveDoc, notes } = await buildSnapshot(q, bridges, NOW);
   assert.deepEqual(liveDoc.bridges, []);
   assert.ok(notes.some((n) => n.includes("broarna pausade")));
+});
+
+// SMÅVÄGSRÖSTENS BESKED (DECISIONS #828, byggsteg 5b): en bit per punkt i punktfilens ordning, mot punktfilens sha.
+test("#828 smavag: bitarna, nyckeln bara med en brytare på, och punktfilen i manifestet", async () => {
+  // Bit i är punkt i; åtta per byte, den första i den lägsta biten.
+  assert.equal(smavagBitar([0, 9], 10), "AQI=");
+  assert.equal(smavagBitar([], 3), "AA==");
+  assert.equal(atob(smavagBitar([7, 8], 16)).split("").map((x) => x.charCodeAt(0)).join(), "128,1");
+  assert.throws(() => smavagBitar([10], 10), /utanför/);
+  assert.equal(smavagBitar(Array.from({ length: 88335 }, (_, i) => i), 88335).length, 14724, "alla punkter varnar: 11 042 byte, 14 724 tecken");
+  // Brytarna av (standard): nyckeln saknas och ingen not.
+  const av = await buildSnapshot(fakeDb({}).q, [], NOW);
+  assert.ok(!("smavag" in av.liveDoc));
+  assert.ok(!av.notes.some((n) => n.startsWith("smavag")));
+  // En brytare på: bitarna mot punktfilens sha.
+  const sha = "a".repeat(64);
+  const pa = await buildSnapshot(fakeDb({ smavagBrytare: [{ pa: true }], smavagPunktfil: [{ sha256: sha, punkter: 10, n: "10" }],
+    smavagTalar: [{ i: 0 }, { i: 9 }] }).q, [], NOW);
+  assert.deepEqual((pa.liveDoc as any).smavag, { fil: sha, n: 10, bitar: "AQI=" });
+  // Punktfilen saknas, eller går isär med punkterna: nyckeln saknas, och noten säger varför.
+  const utan = await buildSnapshot(fakeDb({ smavagBrytare: [{ pa: true }] }).q, [], NOW);
+  assert.ok(!("smavag" in utan.liveDoc) && utan.notes.some((n) => n.startsWith("smavag: punktfilen saknas")));
+  const isar = await buildSnapshot(fakeDb({ smavagBrytare: [{ pa: true }], smavagPunktfil: [{ sha256: sha, punkter: 10, n: "11" }] }).q, [], NOW);
+  assert.ok(!("smavag" in isar.liveDoc) && isar.notes.some((n) => n.includes("går isär")));
+  // Ett fel (före sql/103): nyckeln saknas och resten av lägesfilen byggs.
+  const fel = await buildSnapshot(fakeDb({ smavagKastar: [true] }).q, [], NOW);
+  assert.ok(!("smavag" in fel.liveDoc) && fel.notes.some((n) => n.startsWith("smavag: ej läsbar")) && Array.isArray(fel.liveDoc.segments));
+  // Manifestet: punktfilen som en egen post, static och live oförändrade.
+  const m = await manifestFor("x", { static: "{}", live: "{}" }, "app/v1", { smavag: { sha256: sha, bytes: 5, gz_bytes: 3 } });
+  assert.deepEqual((m.files as any).smavag, { path: "app/v1/smavag.json", sha256: sha, bytes: 5, gz_bytes: 3 });
+  assert.deepEqual(Object.keys(m.files), ["static", "live", "smavag"]);
+  assert.deepEqual(Object.keys((await manifestFor("x", { static: "{}", live: "{}" })).files), ["static", "live"]);
 });

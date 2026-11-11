@@ -20,7 +20,7 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
         self.interfaceController = interfaceController
         lista.emptyViewTitleVariants = ["Halkvakt"]
         interfaceController.setRootTemplate(lista, animated: false, completion: nil)
-        GuardManager.shared.startFranCarPlay()   // DECISIONS #828: bilens skärm öppnad ⇒ vakten startar
+        GuardManager.shared.startFranCarPlay()   // DECISIONS #840: bilens skärm öppnad ⇒ vakten startar
         rita()
         uppdatering = Task { @MainActor [weak self] in
             await Rapporten.shared.uppdatera()

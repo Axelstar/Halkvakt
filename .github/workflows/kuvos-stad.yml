@@ -9,6 +9,7 @@ name: kuvos-stad
 #             punkter i DELAR delar (F22: en halva om 11 857 punkter tog 11,8 GB), del B för timmen och beskeden. Loggen visar tider,
 #             minne, storlekar och antal punkter. Beskeden går bara till hinken (kuvos-stad-2026-27/), aldrig till en artefakt.
 #             Sist stadsmiljön (kuvösens BESLUT F31): de utelämnade stationerna i storstädernas tätorter, se steget.
+#             Därefter P-II (kuvösens BESLUT F35): småvägskartans prövning vid småvägsstationerna, se steget.
 # MET-kön: samma grupp som kuvos-ny-kandidat:s och kuvos-pilot:s hämtningar, så att två av våra hämtningar aldrig går samtidigt.
 # Källa: MET Norway, MET Nordic (NLOD / CC BY 4.0).
 on:
@@ -79,8 +80,15 @@ jobs:
           set -e
           [ "$KOD" = 3 ] && { echo "::warning::tidsbudgeten tog slut — tryck historik igen, den tar vid där"; echo "klar=nej" >> "$GITHUB_OUTPUT"; exit 0; }
           [ "$KOD" = 0 ] || exit "$KOD"
-          echo "klar=ja" >> "$GITHUB_OUTPUT"
           cat mnp/historik_*.json | tee -a "$GITHUB_STEP_SUMMARY"
+          # Dygn utan 24 timmar per punkt tas bort och hämtas om (ingest/smavagskedjan.ts hela; MET:s arkiv svarade 404 11/11).
+          set +e
+          node --experimental-strip-types ingest/smavagskedjan.ts hela mnp > hela.log 2>&1
+          KOD=$?
+          set -e
+          [ "$KOD" = 3 ] && { echo "::warning::$(tail -1 hela.log) — tryck historik igen"; echo "klar=nej" >> "$GITHUB_OUTPUT"; exit 0; }
+          [ "$KOD" = 0 ] || { echo "::error::kontrollen av dygnen föll: $(tail -1 hela.log | cut -c1-200)"; exit 1; }
+          echo "klar=ja" >> "$GITHUB_OUTPUT"
       # MET Nordic är öppna data. Cachen bär punkternas rutor och analysens värden, inga kandidattal. En ny post bara när dygnen ändrats:
       # nyckeln är fönstrets sista dygn, och en ofullständig hämtning sparas under körningens id så att nästa tar vid.
       - name: Dygnen till cachen
@@ -164,11 +172,19 @@ jobs:
           set -e
           [ "$KOD" = 3 ] && { echo "::warning::historiken är inte komplett efter tidsbudgeten — nästa körning tar vid; kedjan räknar inget nu"; echo "klar=nej" >> "$GITHUB_OUTPUT"; exit 0; }
           [ "$KOD" = 0 ] || exit "$KOD"
+          # Dygn utan 24 timmar per punkt tas bort (smavagskedjan.ts hela). Kedjan räknar ändå, med de levande dygnen (del A vägrar själv
+          # om analysen är ofullständig), och cachen sparas som ofullständig så att nästa körning hämtar om dygnet.
+          set +e
+          node --experimental-strip-types ingest/smavagskedjan.ts hela mnp > hela.log 2>&1
+          KOD=$?
+          set -e
+          [ "$KOD" = 3 ] && { echo "::warning::$(tail -1 hela.log) — kedjan räknar vidare, och nästa körning hämtar om dem"; echo "hel=nej" >> "$GITHUB_OUTPUT"; }
+          [ "$KOD" = 0 ] || [ "$KOD" = 3 ] || { echo "::error::kontrollen av dygnen föll: $(tail -1 hela.log | cut -c1-200)"; exit 1; }
           echo "klar=ja" >> "$GITHUB_OUTPUT"
       - name: Dygnen till cachen
         if: ${{ always() && steps.finns.outputs.ja == 'ja' && steps.c.outputs.cache-hit != 'true' && steps.h.outcome == 'success' }}
         uses: actions/cache/save@v4
-        with: { path: mnp, key: "${{ env.CACHE }}${{ steps.h.outputs.klar == 'ja' && steps.f.outputs.till || format('ofullstandig-{0}', github.run_id) }}" }
+        with: { path: mnp, key: "${{ env.CACHE }}${{ steps.h.outputs.klar == 'ja' && steps.h.outputs.hel != 'nej' && steps.f.outputs.till || format('ofullstandig-{0}', github.run_id) }}" }
       - name: Historien för de befintliga punkterna ur releasen (bara läsning)
         if: ${{ steps.h.outputs.klar == 'ja' }}
         shell: bash
@@ -439,3 +455,65 @@ jobs:
           done
           rm -rf stad stad-ph stad-dag stad-finns ut-f7 indata-f7 f7
           [ "$IDENT" -eq 0 ] || { echo "::error::stadsmiljön: identiteten (§6 d) föll"; exit 1; }
+      # P-II (halkvakt-kuvos FORREGISTRERING-MARS-SMAVAGAR-2026-11 §4 och §14, BESLUT F8 och F35): småvägskartans prövning vid
+      # småvägsstationerna på vintern 2026/27. Den levande kandidatens PH är driftens egen (ny_kandidat_station); här räknas
+      # småvägsprovets enhet bredvid, på samma analys och körning, och fukten för variant D-F sparas. Varje passerat UTC-dygn får sina
+      # punkter, också dygnen sedan 1/11 som databasen fortfarande bär. Koden ligger i det privata repot (fysik/ny_kandidat/p2_kedjan.py
+      # och p2_db.ts); här står bara stegen. Loggen säger bara klart eller fel, och allt räknat går bara till hinken (kuvos-p2-2026-27/).
+      # Steget körs efter stadsmiljön, så att ett fel här aldrig stoppar den.
+      - name: P-II — småvägsenheten, fukten och de passerade dygnen
+        if: ${{ steps.h.outputs.klar == 'ja' }}
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}", SMMAPP: kuvos-kandidat-2027-28-t4-smavagar, P2: kuvos-p2-2026-27 }
+        run: |
+          set -euo pipefail
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          export FN KEY
+          N() { node --experimental-strip-types "$@" 2>&1 | { grep -v ExperimentalWarning || true; }; }
+          K=fysik/ny_kandidat/p2_kedjan.py; H=fysik/ny_kandidat/stadsmiljon_hinken.ts; D=fysik/ny_kandidat/p2_db.ts
+          N "$D" --sjalvtest
+          python3 "$K" --sjalvtest 2>&1 | tail -1
+          # Småvägsprovets enhet ur hinken, med spärren och vakten mot de utelämnade, och en kandidatfil för del A.
+          N "$H" hamta "$SMMAPP" sm enhet_alla.json modell_alla.pkl veck_alla.json
+          python3 "$K" enheten --enhet sm/enhet_alla.json --modell sm/modell_alla.pkl --veck sm/veck_alla.json --ut sm/kandidat_sm.json
+          # Del A med småvägsenheten för stationerna, på samma analys och körning som den levande.
+          python3 "$K" stationer --indata indata-live --ut indata-sm
+          python3 fysik/ny_kandidat/levande.py --del-a --indata indata-sm \
+              --analys mn/metnordic_analys_*.csv.gz mn/dagar/*.csv.gz mnp/dagar/*.csv.gz mnp-live/dagar/*.csv.gz \
+              --korning "mn/metnordic_korning_$STAMP.csv.gz" --modell sm/modell_alla.pkl --kandidat sm/kandidat_sm.json --ut ut-sm > del-a-sm.log 2>&1 \
+            || { echo "::error::Del A för P-II föll: $(tail -1 del-a-sm.log | cut -c1-300)"; exit 1; }
+          rm -f sm/modell_alla.pkl
+          # Småvägsenhetens PH och fukten, en fil var per MET-körning.
+          python3 "$K" spara --sm "ut-sm/ny_kandidat_ph_$STAMP.csv.gz" --korning "mn/metnordic_korning_$STAMP.csv.gz" --stationer indata-sm --ut p2
+          N "$H" ladda-upp "$P2" "p2/p2_ph_$STAMP.csv.gz" "p2/p2_met_$STAMP.csv.gz"
+          # De passerade UTC-dygnen sedan 1/11 som saknas i hinken, högst 13 dygn bakåt: driftens PH ligger 14 dygn i databasen.
+          # Ett dygn räknas först när det är helt förbi, från körningen 06 nästa dygn, så att kvällens och nattens mätningar och
+          # driftens timmar finns (körningen 18 samma dygn går omkring 18.45 UTC, före dygnets sista sex timmar). Med alla fem
+          # körningars filer räknas det genast. Utan dem väntar det, och från två dygn bakåt räknas det med den levande ensam
+          # (dygnen före steget, eller en hoppad körning); dygnets sammanfattning säger det.
+          python3 "$K" mal --ut mal.txt
+          R=$(date -u -d "${STAMP:0:4}-${STAMP:4:2}-${STAMP:6:2} ${STAMP:9:2}:00" +%s)
+          IDAG=$(date -u -d "@$R" +%F)
+          for k in $(seq 13 -1 0); do
+            DAG=$(date -u -d "$IDAG - $k days" +%F)
+            [[ "$DAG" < "2026-11-01" ]] && continue
+            [ $(( $(date -u -d "$DAG" +%s) + 30 * 3600 )) -le "$R" ] || continue
+            N "$H" hamta "$P2" p2-finns "p2_$DAG.csv.gz"
+            [ -f "p2-finns/p2_$DAG.csv.gz" ] && continue
+            B=$(date -u -d "$DAG" +%s)
+            NAMN=(); for h in -6 0 6 12 18; do S=$(date -u -d "@$((B + h * 3600))" +%Y%m%dT%HZ); NAMN+=("p2_ph_$S.csv.gz" "p2_met_$S.csv.gz"); done
+            N "$H" hamta "$P2" p2-sm "${NAMN[@]}"
+            SAKNAS=0; for f in "${NAMN[@]}"; do [ -f "p2-sm/$f" ] || SAKNAS=$((SAKNAS + 1)); done
+            if [ "$SAKNAS" -gt 0 ] && [ "$k" -lt 2 ]; then echo "dygnet $DAG väntar: $SAKNAS av ${#NAMN[@]} filer saknas"; continue; fi
+            read -r PF PT HF HT < <(python3 "$K" fonster --dag "$DAG")
+            N "$D" pop "$PF" "$PT" "pop_$DAG.csv"
+            N "$D" fukt "$HF" "$HT" mal.txt "fukt_$DAG.csv"
+            N "$D" ph "$HF" "$HT" "t4_$DAG.csv"
+            python3 "$K" dag --dag "$DAG" --t4 "t4_$DAG.csv" --pop "pop_$DAG.csv" --fukt "fukt_$DAG.csv" --stationer indata-sm \
+                --sm p2-sm --veck sm/veck_alla.json --ut p2-dag
+            rm -f "pop_$DAG.csv" "fukt_$DAG.csv" "t4_$DAG.csv"
+            N "$H" ladda-upp "$P2" "p2-dag/p2_$DAG.csv.gz" "p2-dag/p2_sammanfattning_$DAG.json"
+          done
+          rm -rf p2 p2-sm p2-dag p2-finns ut-sm indata-sm sm mal.txt del-a-sm.log
