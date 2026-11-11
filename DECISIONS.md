@@ -15224,6 +15224,12 @@ Brytarna är av tills dess.
 - **Storleken:** 88 335 punkter blir 11 042 byte, eller 14 724 tecken base64. Det är något över byggplanens omkring 10 kB, men packad är filen mycket mindre när nästan inga eller nästan alla punkter varnar.
 - **Kvar:** ci, sammanslagningen, DB-knappen för `sql/106` och deployen av `publicera`, alla på Bengts ord, och appens hämtning (med motorn, steg 7).
 
+**Tillägg 11/11 eftermiddag (Bengt: *"Ja, gör det"*): steg 5b i drift med brytarna av, och historiken väntar på MET.**
+- PR #1520 sammanslagen (9501450c) på grön ci. `sql/106` migrerad med DB-knappen (43046159614): RLS på, inga rader, rättigheter bara för `service_role`, båda brytarna av.
+- `publicera` deployad (43046265602, 15.14 UTC). Manifestet 15.18 UTC var nyare än deployen och bar `static` och `live`, och `live.json` saknade nyckeln `smavag`, som det ska med brytarna av.
+- Punktfilen skrivs vid nästa laddning i `ny-kandidat-fysik`, och först därefter står den i manifestet.
+- **Historiken för alla punkter väntar på MET.** MET:s arkiv (`metpparchive`) svarade 404 på alla dygn och på katalogen från förmiddagen 11/11. Första försöket sparade dygn med luckor, och kedjan föll i del A. PR #1514 och #1517 tar bort dygn utan 24 timmar per punkt så att de hämtas om, i småvägskedjan och i `kuvos-stad`. En väntare trycker historiken och kedjan när arkivet svarar igen.
+
 **Stomdokument:** MAT 5 — småvägsrösten beställd och byggs avstängd, SYS 2 — driftens rörarbete för småvägarna, APP 3 — betavarningens farotyp och text
 
 ## #829 (10/11 2026) Tipsa en vän, Tyck till och Betygsätt i 0.4.0 (42), tillsammans med Favoriter 2a och CarPlay
@@ -15256,3 +15262,51 @@ App Privacy eller integritet.html.
 
 **Stomdokument:** APP 4 — raderna i Inställningar och kortet på Redo., APP 7 — inget nytt lämnar telefonen
 
+## #831 (11/11 2026) Trafikverkets nya certifikatkedja: Telias rotcertifikat i ingest (PR #1518)
+
+**Bengt 11/11:** *"Ja, gör det"*, på rättelsen efter kontrollen 14:07.
+
+**Vad som hände.**
+- `ingest` föll varje timme 10.11–14.11 UTC med `SELF_SIGNED_CERT_IN_CHAIN` mot `api.trafikinfo.trafikverket.se`.
+- Kamerorna, väglagsarkivet, SMHI:s varningssynk och radarn stod still från 09.11. Kandidaten hade alltså ingen radar som fukt under de timmarna.
+- Orsaken: Trafikverkets API skickar nu kedjan *.trafikinfo.trafikverket.se → Telia RSA OV CA v4 → Telia RSA TLS Root CA v3. Roten finns i Windows rotlista men inte i Nodes inbyggda (Mozillas), som Actions använder. Livemotorn i Supabase påverkades inte.
+
+**Beslut.**
+- `ingest/ca/telia-rsa-tls-root-ca-v3.pem` är certifikatet ur Windows rotlista. Fingeravtrycket sha256 `D1:3D:B1:29:4C:45:EB:C6:FC:86:C6:BB:F6:9F:A2:9B:DF:E6:92:DF:F7:C7:13:C2:43:C7:A9:56:C6:A2:28:4C` är detsamma som det Trafikverket skickar.
+- `ingest.yml` sätter `NODE_EXTRA_CA_CERTS`, som lägger till roten och inte ersätter Nodes lista, och har ett steg som prövar fingeravtrycket.
+- **Beviset:** `ingest` 43039885470 var grön 14.35 UTC, med 225 rader i väglaget och arkivet, SMHI och radarn, och radarlarmet stängt.
+
+**Alternativen:**
+- att vänta på Trafikverket: förkastat, eftersom vinterarkivet tappade rader under tiden;
+- `--use-system-ca`: förkastat, eftersom det är osäkert om Ubuntus lista har roten;
+- en nyare Node: förkastat, eftersom Node 24:s inbyggda lista inte heller har den.
+
+**Kvar:** ett annat flöde eller skript som når Trafikverket från Actions och faller med samma fel får samma inställning.
+
+**Stomdokument:** SYS — ingestens flöde i Actions litar på Telias rot
+
+## #832 (11/11 2026) PostGIS ligger i schemat extensions i driften, och grindarnas tillfälliga databas följer (PR #1522)
+
+**Bengt 11/11:** *"Ja, gör det"* och *"Ta 6 o 4"*.
+
+**Vad som hände.**
+- Grind A, V-A, V-B och höjdprovet föll 9/11, och grind R-A 8/11 och 10/11.
+- Felet låg i `tillfalliga-arkivet`: `schema "extensions" does not exist`, och `weather_observations` skapades inte.
+- Mätvakten larmade 11/11, två dygn efter.
+
+**Vad som är läst** (SELECT i panelen 11/11):
+- PostGIS ligger i `extensions` (`postgis@extensions 3.3.7`). #784 sade 3/11 att den låg i `public`.
+- Objektnumren är oförändrade: tillägget 17485, lägre än alla våra tabeller. Den är alltså flyttad, inte ominstallerad, med Supabases anvisning: den görs tillfälligt flyttbar (`extrelocatable`) och flyttas med `ALTER EXTENSION … SET SCHEMA extensions`.
+- Satsstatistiken sedan 3/11 12.46 bär fyra satser om `extrelocatable`, tre `ALTER EXTENSION … postgis` och en `SET SCHEMA … extensions`. Rollerna var `postgres` och `supabase_admin`, och satstexterna lästes inte, eftersom de kan bära nycklar.
+- Dumpen var 167 612 tecken med 2 fel i grind R-A 6/11 09.07 och 197 267 tecken med 59 fel 8/11 09.07. **Flytten gjordes alltså mellan 6/11 09.07 och 8/11 09.07 UTC.** Vem som gjorde den är okänt.
+- Driften påverkades inte: ingen funktion i `public` med fast sökväg utan `extensions` anropar PostGIS, och de 22 i #784 har `public, extensions`.
+
+**Beslut.**
+- `scripts/tillfalliga-arkivet.ts` läser driftens PostGIS-schema och lägger PostGIS där i den tillfälliga databasen, med sökvägen `public, <schemat>`.
+- #784:s rad om att PostGIS ligger i `public` gällde 3/11 men gäller inte längre.
+
+**Kvar:**
+- grind R-A körs 12/11 09.07 med rättelsen;
+- Bengt eller Axel säger om någon av dem gjorde flytten.
+
+**Stomdokument:** SYS — PostGIS i schemat extensions och grindarnas tillfälliga databas
