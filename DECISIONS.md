@@ -15363,3 +15363,26 @@ varje dygn; att kartsynken faller helt när PR-listan inte går att läsa, vilke
 själv, vilket molnets och mobilens sessioner inte får.
 
 **Stomdokument:** inga — rör projektkartan, synk-ihop och CLAUDE.md, inte stomdokumentens text
+
+## #837 (6/11 2026) Statistikens 7-dygns- och dagskolumner räknas mot hela tabellen, inte inom vald period
+
+**Axels ord 6/11 22:04**, på halkvakt.se/statistik med perioden ett dygn vald: *"Detta är lite oroväckande, har vi inte haft någon
+varning om halka idag?"*, och 22:22 på förslaget att rätta funktionen: *"Okej ja tack"*.
+
+**Bakgrunden.** Alla varningar stod på noll på sidan, också under *7 dygn*, fast 0.3.16 hade sagt nio varningar den 4/11 (åtta frysrisk,
+en olycka) och Trafikverket rapporterade halka i 16 län kl. 22:00. `app_raknare_stat` (sql/082) räknade `sju` och `dagens` ur samma
+periodbegränsade CTE som `period`, så med en kortare period än sju dygn blev 7-dygnskolumnen dagens tal. Sidan läste fönstren som
+fasta och de var det inte. Appen hade varnat hela dagen: 63 telefoner fick sin första varning den 6/11 (0.3.15 skickar bara
+`forsta_varningen`, utan typ; typerna kommer med 0.3.16, DECISIONS #787).
+
+**Beslut.** sql/092: `period` följer vald period som förut; `sju` och `idag` räknas mot de senaste sju dygnen oavsett period, och en rad
+som har tal i ett fönster men inte i perioden kommer med, med period 0. `per_dag` följer perioden som förut. Körd i produktionen
+6/11 22:28 via Management API (migrationen `092_app_raknare_stat_fonster`) och provad: `app_raknare_stat(1)` ger frysrisk 8, olycka 1
+och *Slut: för hand* 2 under sju dygn, period 0. Statistiksidan i halkvakt-karta ändras inte: den summerar `sju` och `idag` per rad redan.
+
+**Alternativ.** (a) Dölja 7-dygns- och dagskolumnerna när perioden är kortare: förkastat, det är de talen man vill se oavsett period.
+(b) Låta sidan alltid hämta 30 dygn och filtrera själv: förkastat, mer kod på sidan för samma tal.
+
+**Numret.** Fattat 6/11 som #807 i PR #1427, som väntade på ett ord medan main gav #807 ett annat beslut. Bokfört som #837 11/11 (Bengt: *"Ja, slå ihop"*); funktionen kördes i produktionen 6/11 och filen finns nu på main.
+
+**Stomdokument:** inga — bara statistikens sammanställning; appen, räknaren och vad den skickar är orörda.
