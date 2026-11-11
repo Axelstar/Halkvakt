@@ -15464,3 +15464,24 @@ Förvaltning ska tillfrågas om att visa en sammanställning per län i ett erbj
 **Numret.** Fattat 25/10 som #722 i PR #1208, som väntade på ett ord medan main gav #722 länssidorna. Bokfört som #839 11/11.
 
 **Stomdokument:** inga — ett marknadsunderlag, ingen mätning, grind eller kandidat; kuvösens prövningar rörs inte.
+
+## #840 (9/11 2026) Vakten startar när Halkvakt öppnas på bilens skärm, med i CarPlay-släppet; introduktionen väntar (kort #380)
+
+**Axels ord 9/11:** *"Yeah er should do the car play when u release it and then I'll think of the onboarding"*, efter genomgången av
+varför en tredjedel av de nya iPhone-förarna stannar på Vid användning (2–8/11: 513 gav platsen, 345 nådde Alltid) och Claudes
+skiss av Alltid-trappan (Design-duken *Halkvakt · Alltid-trappan*).
+
+**Beslutet.**
+- När CarPlay-scenen ansluts startar vakten (`GuardManager.startFranCarPlay`) om platsen redan är tillåten, Alltid eller Vid användning:
+  scenen är förgrund. Ingen fråga om Alltid härifrån (en systemdialog på telefonen under körning), inte inom tio minuter efter ett
+  stopp för hand, och inte om självstarten är avslagen. Följer med 0.4.0, kort #380.
+- Introduktionens Alltid-trappa (andra frågan direkt, ärlig sida för Vid användning, påminnelsen, plan B med Genvägar) byggs inte än:
+  Axel tar ställning efter CarPlay-släppet.
+- Räknaren ändras inte: CarPlay-starten räknas som `knapp`, som starten från CarPlay-listan redan gör.
+
+**Alternativ.** Starta när ljudet går till bilen (AVAudioSession, `carAudio`): kräver att appen redan kör, så det hjälper inte den som
+inte öppnat appen. Bara Genvägar-automationen "när CarPlay ansluts": finns redan, men föraren måste lägga upp den själv.
+
+**Numret.** Fattat 9/11 som #828 i PR #1485, som väntade på ett ord medan main gav #828 småvägsrösten. Bokfört som #840 11/11 (Bengt: *"Ja, slå ihop"*). Byggt efter 0.4.0 (44), så det kommer med i nästa iPhone-bygge; beviset är ett prov i bil.
+
+**Stomdokument:** inga — en startväg i CarPlay-scenen som inte ändrar vad appen skickar eller hur den varnar

@@ -543,6 +543,11 @@ halv minut och startar vakten vid 15 km/h. Första resan efter installation, nä
 väcks den i stället av iOS större platsbyten (Apple anger ungefär 500 meter). Kostar nästan inget batteri.
 Inget mer att ställa in. Kan stängas av under Inställningar → *Vaknar själv när du kör*.
 
+**iPhone — vakten startar när Halkvakt öppnas i CarPlay (11/11, DECISIONS #840, kort #380):** öppnas Halkvakt på bilens skärm startar
+vakten, om platsen redan är tillåten, *Alltid* eller *Vid användning*, eftersom CarPlay räknas som att appen är öppen. Ingen fråga om
+platsen visas på telefonen under körningen. Vakten startar inte om du stoppat den för hand de senaste tio minuterna, och inte om
+*Vaknar själv när du kör* är avslagen. Kommer med i nästa bygge efter 0.4.0 (44).
+
 **Bevisat på pappas telefon 31/8** — vakten startade själv utan att han rörde telefonen,
 och körläget visade fyra fartkameror sex kilometer fram. Sedan Malmö–Boden 1/9: 100 mil
 med självväckningen som enda start.
