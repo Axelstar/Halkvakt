@@ -29,6 +29,11 @@ const PREFIX = "Län · ";
 const BUDGET_ORE = 600000;                       // 6 000 kr för hela kampanjen (DECISIONS #763; 2 000 kr till 31/10)
 const DAGAR = 30;
 const APP = "https://apps.apple.com/se/app/halkvakt/id6806939784";
+// Kampanjlänk per län (Axel 10/11, genomlysningen): App Store Connect räknar nedladdningar per kampanj (ct), så kronor per
+// installation går att räkna län för län. pt är Halkvakts leverantörs-id för kampanjlänkar, inte hemligt. Kampanjens
+// object_store_url står kvar som APP: Meta knyter appen till den adressen.
+const PT = "129386146";
+export const kampanjLank = slug => `https://apps.apple.com/app/apple-store/id6806939784?pt=${PT}&ct=${encodeURIComponent(("meta-" + slug).slice(0, 40))}&mt=8`;
 // Meta-appen Halkvakt Ads, med Halkvakts bundle-id och App Store-id under plattformen iOS. Ingen Meta-SDK i appen:
 // den skulle skicka enhetsdata och bryta löftet, så kampanjen optimerar på klick till App Store, inte på installationer.
 const META_APP_ID = "28619019301133859";
@@ -184,19 +189,27 @@ async function rita(data, namn) {
   return jpg;
 }
 
-async function laggUpp(a, namn, adsetId) {
+async function laggUpp(a, namn, adsetId, lank = APP) {
   const jpg = await rita(a.data, namn);
   if (!TOKEN) return null;
   const bild = await graph(`${KONTO}/adimages`, { bytes: jpg.toString("base64") }, "POST");
   const hash = Object.values(bild.images)[0].hash;
-  const kreativ = await graph(`${KONTO}/adcreatives`, {
+  const skapa = l => graph(`${KONTO}/adcreatives`, {
     name: namn,
     object_story_spec: {
       page_id: process.env.META_PAGE_ID, instagram_user_id: process.env.META_IG_ID,
-      link_data: { image_hash: hash, link: APP, message: a.text, name: a.rubrik,
-                   call_to_action: { type: "DOWNLOAD", value: { link: APP } } },
+      link_data: { image_hash: hash, link: l, message: a.text, name: a.rubrik,
+                   call_to_action: { type: "DOWNLOAD", value: { link: l } } },
     },
   }, "POST");
+  // Avvisar Meta kampanjlänken går annonsen ut med den vanliga länken: hellre en annons utan mätning än ingen annons.
+  let kreativ;
+  try { kreativ = await skapa(lank); }
+  catch (e) {
+    if (lank === APP) throw e;
+    skriv(`${namn}: Meta avvisade kampanjlänken, annonsen får den vanliga App Store-länken. ${String(e.message).slice(0, 200)}`);
+    kreativ = await skapa(APP);
+  }
   return (await graph(`${KONTO}/ads`, { name: namn, adset_id: adsetId, creative: { creative_id: kreativ.id }, status: "ACTIVE" }, "POST")).id;
 }
 
@@ -271,7 +284,7 @@ async function uppsattning() {
       }
     }
     if ((s.ads?.data ?? []).some(a => a.name.startsWith("Reserv · "))) continue;
-    const id = await laggUpp(RESERV, `Reserv · ${l.kort}`, s.id);
+    const id = await laggUpp(RESERV, `Reserv · ${l.kort}`, s.id, kampanjLank(l.slug));
     skriv(`${namn}: reservannonsen skapad (${id}).`);
   }
 }
@@ -324,7 +337,7 @@ async function styr() {
     const idag = `Dag · ${lanNamn} · ${datum} · ${del}`;
     let dagens = ads.find(x => x.name === idag);
     if (!dagens) {
-      const id = await laggUpp(a, idag, s.id);
+      const id = await laggUpp(a, idag, s.id, kampanjLank(vikt.get(s.name)?.slug ?? lanNamn));
       dagens = { id, effective_status: "PENDING_REVIEW" };
       skriv(`${s.name}: ${a.data.hazard}. Dagens annons skapad (${id}), väntar på granskning.`);
     }
