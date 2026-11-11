@@ -2,7 +2,8 @@
 // bära väg, tid, läge, koderna och antalen, aldrig kandidatens tal.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { ATERKOMMANDE, MARK, MARKV, type Olycka, arendeKropp, arendeTitel, bedomning, behoverAtgard, omrade, paminnelse, svenskDag,
+import { readFileSync } from "node:fs";
+import { ATERKOMMANDE, DYGN_EFTER, MARK, MARKV, type Olycka, arendeKropp, arendeTitel, bedomning, behoverAtgard, omrade, paminnelse, svenskDag,
   svenskTid, veckaKropp, veckaPaminnelse, veckaTitel, veckansForslag } from "../supabase/functions/olycksfacit/arende.ts";
 
 const o = (x: Partial<Olycka>): Olycka => ({ tid: "2026-11-06T05:23:00.000Z", vag: "Väg 134", lon: 15.5434, lat: 57.9831,
@@ -129,4 +130,14 @@ test("arendeKropp: ett dygn utan något att åtgärda säger det, och inga tal u
   assert.ok(!/pb|narmaste_pb|pb_min/.test(k));
   assert.equal(arendeTitel("2026-11-07"), "Olycksfacit 2026-11-07");
   assert.ok(paminnelse("2026-11-07", 7).startsWith(MARK("2026-11-07")));
+});
+
+test("dygnet i går och måndagen efter veckan (TROSKLAR-OLYCKSFACIT §10, DECISIONS #842): båda frågorna i funktionen läser DYGN_EFTER", () => {
+  assert.equal(DYGN_EFTER, 1, "dagens ärende gäller dygnet i går, veckans skrivs måndagen efter veckan (förut 2: i förrgår och tisdagen)");
+  const index = readFileSync(new URL("../supabase/functions/olycksfacit/index.ts", import.meta.url), "utf8");
+  assert.match(index, /::date - \$\{DYGN_EFTER\}::int, interval '1 day'\) AS g\(t\)/, "dygnen: till och med i dag minus DYGN_EFTER");
+  assert.match(index, /::date - \(6 \+ \$\{DYGN_EFTER\}::int\)\)::timestamp, interval '7 days'\) AS g\(m\)/,
+    "veckorna: måndagen senast DYGN_EFTER + 6 dygn bort, så att söndagen är i går");
+  assert.ok(!/::date - [0-9]+[,)]/.test(index), "inget inskrivet antal dygn kvar i frågorna");
+  assert.ok(arendeKropp("2026-11-10", []).includes("klassningen när olyckan är minst sex timmar gammal och har lämnat flödet"));
 });

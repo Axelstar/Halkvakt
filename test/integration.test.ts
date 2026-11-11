@@ -2312,6 +2312,288 @@ test("#797 olycksfacit: efterkontrollen klassar en gång, med vakterna, och K l�
   }
 });
 
+// OLYCKSFACIT I NÄRA REALTID (sql/108, DECISIONS #841, #842, kort #641). En funktions definition ur en migration: från raden med
+// FUNCTION <namn>( till semikolonet efter det avslutande $$ (som test/ny-kandidat-skugga.test.ts).
+const definition842 = (text: string, namn: string): string => {
+  const i = text.search(new RegExp(`^CREATE (?:OR REPLACE )?FUNCTION ${namn}\\(`, "m"));
+  assert.ok(i >= 0, `${namn} saknas`);
+  const a = text.indexOf("$$", i), b = text.indexOf("$$", a + 2), c = text.indexOf(";", b);
+  return text.slice(i, c + 1);
+};
+const sql842 = (f: string) => readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8");
+/** En mutant: ersätter `fran` (exakt en gång) i definitionen, så att ett motprov aldrig blir tomt av att texten flyttat. */
+const mutant842 = (def: string, fran: string | RegExp, till: string): string => {
+  const n = typeof fran === "string" ? def.split(fran).length - 1 : (def.match(new RegExp(fran.source, "g")) ?? []).length;
+  assert.equal(n, 1, `motprovets text finns inte exakt en gång: ${String(fran).slice(0, 80)}`);
+  return def.replace(fran, till);
+};
+
+test("#842 efterkontrollen i sql/108 är sql/085:s ord för ord, utom urvalet", () => {
+  const fore = definition842(sql842("085_olycksfacit_klassning.sql"), "olycksfacit_efterkontroll");
+  const nu = definition842(sql842("108_olycksfacit_driftlarm.sql"), "olycksfacit_efterkontroll");
+  const urval = /f\.start_time <= now\(\) - interval '6 hours'\n\s+AND NOT EXISTS \(SELECT 1 FROM situation_archive s WHERE s\.deviation_id = f\.deviation_id\s+-- #842: lämnat flödet\n\s+AND s\.last_seen > \(SELECT max\(a\.last_seen\) FROM situation_archive a\) - interval '1 hour'\)/;
+  assert.match(nu, urval, "urvalet: sex timmar och flödet");
+  assert.equal(nu.replace(urval, "f.start_time <= now() - interval '24 hours'"), fore, "resten av kroppen är 085:s");
+});
+
+// DRIFTLARMET I SKUGGA (sql/108 del 1). Fixturerna kring 77° N, en grad isär (25 km), så att ingen stations räckvidd når en annan
+// olycka. Varje fixtur är en fälla som ger ett annat svar om ett villkor saknas, och motproven nedan muterar ett villkor i taget:
+//   DL1  genom fångsten: "halt väglag", kedjans senaste körning tyst, en station 2 km bort som teg i tre timmar
+//        → K ingen timme och A2 tyst, halka på ordet (ingen station med värde inom 15 km)
+//   DL2  "Trafikolycka" utan halkord, men närmaste vaktade station +0,5 °C, och kandidatens tal gallrade → K gallrad, halka på ytan
+//   DL3  utan halkord på +5 °C, med kedjans timme borta → ingenting (villkor 1 håller inte)
+//   DL4  "Halka", ingen vaktad station inom 5 km, men stationen 1 km bort har ett värde som vakterna tog bort → inte tyst
+//   DL5  "isig", ingen station inom 5 km alls (närmaste 7 km) → inte tyst
+//   DL6  dubbletten av DL1 → ingenting        DL7  fångad för sju timmar sedan → prövas inte
+//   DL8  publiceringen stod still: den senaste lyckade 60 min före, i fönstret bara en med hinken trasig och en grannlands
+//        → appen stilla
+//   DL9  publicerat 2 min före; A2 talade, och en tyst station inom 5 km gör inte A2 tyst → ingenting
+//   DL10 pg_nets svar når inte 15 min före starten → appen okänd      DL11 når dit, utan lyckad publicering → appen stilla
+// CI:s PostGIS saknar pg_net: net._http_response spelas av en egen tabell med samma kolumner (som #543), och tas bort efteråt; utan
+// den blir appen okänd. Finns en riktig pg_net rörs den inte, och provet hoppas över.
+test("#842 driftlarmet i skugga: en rad per feltyp när ett lager inte fungerade vid en olycka som kan gälla halka", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const las = (f: string) => q(sql842(f));
+  const nu = Date.now();
+  const ago = (min: number) => new Date(nu - min * 60_000).toISOString();
+  const nord = 77, ost = (lon: number, km: number) => lon + km / (111.2 * Math.cos((nord * Math.PI) / 180));
+  const riktiga = (await q("SELECT to_regclass('net._http_response') IS NOT NULL AS j")).rows[0].j;
+  let egenNet = false;
+  const stad = async () => {
+    await q("DELETE FROM olycksfacit WHERE deviation_id LIKE 'DL%'").catch(() => {});
+    await q("DELETE FROM situation_archive WHERE deviation_id LIKE 'DL%'");
+    await q("DELETE FROM ny_kandidat_skugga_korning WHERE korning > now() - interval '3 hours'").catch(() => {});
+    await q("DELETE FROM vagpunkt WHERE punkt LIKE 'vD%'").catch(() => {});
+    await q("DELETE FROM weather_latest WHERE station_id LIKE 'DLW%'");
+    await q("DELETE FROM weather_observations WHERE station_id LIKE 'DLW%'");
+  };
+  try {
+    if (riktiga) return;   // en riktig pg_net rörs inte
+    await q("CREATE TABLE IF NOT EXISTS shadow_log (id bigserial PRIMARY KEY, run_at timestamptz NOT NULL DEFAULT now(), alerts jsonb NOT NULL DEFAULT '[]'::jsonb)");
+    if (!(await q("SELECT 1 FROM information_schema.columns WHERE table_name = 'kandidat_skugga' AND column_name = 'fukt_pb'")).rowCount) {
+      await q("DROP FUNCTION IF EXISTS kandidat_regel()");
+      for (const f of ["001_init.sql", "008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql", "018_trend_berakna.sql",
+                       "029_brott_index.sql", "030_langsam_vakt.sql", "050_kandidat_live.sql", "052_kandidat_gallring_kort.sql", "053_arkiv_tabeller.sql",
+                       "055_vagpunkter.sql", "056_kandidat_regel.sql", "057_kandidat_skugga.sql", "058_kandidat_spridning.sql",
+                       "065_kandidat_domlogg_punkter.sql"]) await las(f);
+    }
+    // Fångsten som kör (084, 085, 095, 096 och 100), och 108 två gånger (idempotent).
+    for (const f of ["003_situation_archive.sql", "068_ny_kandidat_skugga.sql", "084_olycksfacit.sql", "085_olycksfacit_klassning.sql",
+                     "095_olycksfacit_k_timmen.sql", "089_stadspunkter.sql", "096_olycksfacit_stad.sql", "100_olycksfacit_rattelse.sql",
+                     "108_olycksfacit_driftlarm.sql", "108_olycksfacit_driftlarm.sql"]) await las(f);
+    await stad();
+    assert.deepEqual((await q("SELECT relrowsecurity FROM pg_class WHERE relname = 'olycksfacit_driftlarm'")).rows, [{ relrowsecurity: true }]);
+    for (const f of ["olycksfacit_driftlarm", "olycksfacit_efterkontroll"])
+      assert.deepEqual((await q("SELECT proconfig FROM pg_proc WHERE proname = $1", [f])).rows[0].proconfig,
+        ["search_path=public, extensions"], `${f}: fast sökväg i definitionen (DECISIONS #784)`);
+
+    // Publiceringens svar, som pg_net sparar dem.
+    await q(`CREATE SCHEMA net; CREATE TABLE net._http_response (id bigint, status_code integer, content_type text, headers jsonb,
+      content text, timed_out boolean, error_msg text, created timestamptz NOT NULL DEFAULT now())`);
+    egenNet = true;
+    const pub = (min: number, hinken = "ok") => `{"ok":true,"sha":null,"generated_at":"${ago(min)}","segments":1,"notes":[],"hinken":"${hinken}","ms":9}`;
+    for (const [id, min, content] of [[1, 100, '{"ok":true}'], [2, 60, pub(60)], [3, 33, pub(33, "Storage 500: fel")],
+        [4, 31, '{"ok":true,"land":"no","sha":"abc","hinken":"ok","ms":3}'], [5, 12, pub(12)], [6, 5, '{"ok":false,"error":"x"}']] as const)
+      await q("INSERT INTO net._http_response (id, status_code, content, timed_out, created) VALUES ($1, 200, $2, false, $3)", [id, content, ago(min)]);
+
+    // DL1 genom fångsten: kedjans senaste körning före starten var tyst, och stationen 2 km bort teg i tre timmar.
+    await q("INSERT INTO ny_kandidat_skugga_korning (korning, observed_at, status) VALUES ($1, $2, 'tyst')", [ago(15), ago(240)]);
+    await q("INSERT INTO vagpunkt (punkt, segment_id, lon, lat) VALUES ('vD01', '99991', $1, $2)", [ost(60, 1), nord]);
+    await q(`INSERT INTO weather_latest (station_id, name, geom, sample_time, surface_temp_c, air_temp_c)
+             VALUES ('DLW1', 'Tyst station', ST_SetSRID(ST_MakePoint($1, $2), 4326), $3, -1, 0)`, [ost(60, 2), nord, ago(180)]);
+    await q(`INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c)
+             VALUES ('DLW1', 'Tyst station', ST_SetSRID(ST_MakePoint($1, $2), 4326), $3, -1, 0)`, [ost(60, 2), nord, ago(180)]);
+    await q(`INSERT INTO situation_archive (deviation_id, message_type_value, message, severity_code, geom, start_time) VALUES
+             ('DL1', 'Accident', 'Singelolycka, halt väglag', 4, ST_SetSRID(ST_MakePoint(60, $1), 4326), $2)`, [nord, ago(10)]);
+    await q("SELECT olycksfacit_fanga()");
+    const k1 = (await q("SELECT orsak, detalj FROM olycksfacit_lager WHERE deviation_id = 'DL1' AND lager IN ('K', 'A2') ORDER BY lager")).rows;
+    assert.deepEqual(k1.map((r: any) => r.orsak), ["ingen station inom 5 km", "ingen timme"], "fångsten: A2 utan station, K utan timme");
+
+    // De andra direkt i olycksfacit, med lagren som fångsten skriver dem.
+    const olycka = async (id: string, lon: number, text: string, k: [string, object], a2: [string, object[]],
+                          x: { t?: string; fangad?: string; dubblett?: string } = {}) => {
+      await q(`INSERT INTO olycksfacit (deviation_id, start_time, fangad_at, message, road_number, severity_code, geom, dubblett_av, utfall)
+               VALUES ($1, $2, $3, $4, 'Väg 1', 4, ST_SetSRID(ST_MakePoint($5, $6), 4326), $7, 'TYST_TACKT')`,
+        [id, x.t ?? ago(10), x.fangad ?? new Date(nu).toISOString(), text, lon, nord, x.dubblett ?? null]);
+      await q(`INSERT INTO olycksfacit_lager (deviation_id, lager, talar, orsak, detalj) VALUES ($1, 'K', $2, $3, $4), ($1, 'A2', $5, $6, $7)`,
+        [id, k[0] === "varnar", k[0], k[1], a2[0] === "isrisk", a2[0], { stationer: a2[1], rimfrost: false }]);
+    };
+    const st = (yta: number) => [{ station: "X", km: 3.1, yta }];
+    await olycka("DL2", 61, "Trafikolycka", ["gallrad", { punkt: "vX2", timme: ago(70) }], ["ingen fukt vid stationen", st(0.5)]);
+    await olycka("DL3", 62, "Trafikolycka, flera fordon", ["ingen timme", { punkt: "vX3", timme: ago(300), korning: "tyst" }], ["yta över +1", st(5.0)]);
+    await olycka("DL4", 63, "Halka, singelolycka", ["varnar", {}], ["ingen station inom 5 km", []]);
+    await q(`INSERT INTO weather_latest (station_id, name, geom, sample_time, surface_temp_c, air_temp_c) VALUES
+             ('DLW4', 'Trasig givare', ST_SetSRID(ST_MakePoint($1, $2), 4326), $3, -14, 0),
+             ('DLW5', 'Långt bort', ST_SetSRID(ST_MakePoint($4, $2), 4326), $5, -1, 0),
+             ('DLW9', 'Tyst granne', ST_SetSRID(ST_MakePoint($6, $2), 4326), $7, -1, 0)`,
+      [ost(63, 1), nord, ago(30), ost(64, 7), ago(600), ost(67, 2), ago(300)]);
+    await q(`INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c)
+             VALUES ('DLW4', 'Trasig givare', ST_SetSRID(ST_MakePoint($1, $2), 4326), $3, -14, 0)`, [ost(63, 1), nord, ago(30)]);
+    await olycka("DL5", 64, "Singelolycka, isig vägbana", ["fukt saknades", {}], ["ingen station inom 5 km", []]);
+    await olycka("DL6", 60, "Singelolycka, halt väglag", ["ingen timme", { timme: ago(240) }], ["ingen station inom 5 km", []], { dubblett: "DL1" });
+    await olycka("DL7", 65, "Singelolycka, halt", ["ingen timme", { timme: ago(600) }], ["ingen station inom 5 km", []],
+      { t: ago(430), fangad: ago(420) });
+    await olycka("DL8", 66, "Singelolycka, halt", ["varnar", {}], ["isrisk", st(-1.0)], { t: ago(30) });
+    await olycka("DL9", 67, "Singelolycka, halt", ["varnar", {}], ["isrisk", st(-1.0)], { t: ago(2) });
+    await olycka("DL10", 68, "Singelolycka, halt", ["varnar", {}], ["isrisk", st(-1.0)], { t: ago(95) });
+    await olycka("DL11", 69, "Singelolycka, halt", ["varnar", {}], ["isrisk", st(-1.0)], { t: ago(80) });
+
+    const ALLA = ["DL1", "DL2", "DL3", "DL4", "DL5", "DL6", "DL7", "DL8", "DL9", "DL10", "DL11"];
+    const rader = async () => {
+      const ut: Record<string, string[]> = Object.fromEntries(ALLA.map((id) => [id, []]));
+      for (const r of (await q("SELECT deviation_id, feltyp, halka FROM olycksfacit_driftlarm WHERE deviation_id LIKE 'DL%' ORDER BY 1, 2")).rows)
+        ut[r.deviation_id].push(`${r.feltyp} · ${r.halka}`);
+      return ut;
+    };
+    const kor = async (def: string) => {
+      await q(def);
+      await q("DELETE FROM olycksfacit_driftlarm WHERE deviation_id LIKE 'DL%'");
+      await q("UPDATE olycksfacit SET driftlarm_at = NULL WHERE deviation_id LIKE 'DL%'");
+      await q("SELECT olycksfacit_driftlarm()");
+      return rader();
+    };
+    const VANTAT: Record<string, string[]> = {
+      DL1: ["A2 tyst · halkord", "K ingen timme · halkord"], DL2: ["K gallrad · yta"], DL3: [], DL4: [], DL5: [], DL6: [], DL7: [],
+      DL8: ["appen stilla · halkord och yta"], DL9: [], DL10: ["appen okänd · halkord och yta"], DL11: ["appen stilla · halkord och yta"],
+    };
+    const RIKTIG = definition842(sql842("108_olycksfacit_driftlarm.sql"), "olycksfacit_driftlarm");
+    assert.deepEqual(await kor(RIKTIG), VANTAT);
+    const sedan = Object.fromEntries((await q("SELECT deviation_id || ' ' || feltyp AS n, sedan FROM olycksfacit_driftlarm WHERE deviation_id LIKE 'DL%'"))
+      .rows.map((r: any) => [r.n, r.sedan === null ? null : new Date(r.sedan).toISOString()]));
+    assert.deepEqual(sedan, { "DL1 A2 tyst": ago(180), "DL1 K ingen timme": ago(240), "DL2 K gallrad": ago(70),
+      "DL8 appen stilla": ago(60), "DL10 appen okänd": null, "DL11 appen stilla": null }, "sedan: när lagret senast fungerade, ur samma data");
+    assert.equal((await q("SELECT driftlarm_at FROM olycksfacit WHERE deviation_id = 'DL7'")).rows[0].driftlarm_at, null, "DL7 prövas inte");
+    assert.ok((await q("SELECT driftlarm_at FROM olycksfacit WHERE deviation_id = 'DL6'")).rows[0].driftlarm_at, "dubbletten är prövad");
+    assert.equal((await q("SELECT olycksfacit_driftlarm() AS n")).rows[0].n, 0, "en olycka prövas en gång");
+    assert.deepEqual(await rader(), VANTAT, "omkörningen ändrar inget");
+
+    // Motproven: ett villkor i taget. Varje mutant ska ge ett annat svar än VANTAT, och raden säger vilka fixturer som fällde den.
+    const MUTANTER: [string, string | RegExp, string][] = [
+      ["halkordet", /halkord := coalesce\(o\.message, ''\) ~\* '[^']+';/, "halkord := false;"],
+      ["ytan ≤ +1 °C", /ytan := coalesce\([^;]+;/, "ytan := false;"],
+      ["villkor 1 alls", "CONTINUE WHEN NOT (halkord OR ytan);", ""],
+      ["K ingen timme", "IN ('ingen timme', 'gallrad')", "IN ('gallrad')"],
+      ["K gallrad", "IN ('ingen timme', 'gallrad')", "IN ('ingen timme')"],
+      ["A2: fångstens orsak", "IF a2_orsak = 'ingen station inom 5 km' THEN", "IF true THEN"],
+      ["A2: en station inom 5 km", "a2_st IS NOT NULL AND ", ""],
+      ["A2: inget värde den sista timmen", "(a2_sedan IS NULL OR a2_sedan < o.t - interval '1 hour')", "true"],
+      ["appen: hinken skriven", ` AND r.content LIKE '%"hinken":"ok"%'`, ""],
+      ["appen: bara Sveriges publicering", `r.content LIKE '{"ok":true,"sha"%'`, `r.content LIKE '{"ok":true%'`],
+      ["appen: 15 minuter", "pub < o.t - interval '15 minutes'", "pub < o.t - interval '75 minutes'"],
+      ["appen: svaren når 15 minuter bakåt", "IF svar_nar THEN", "IF true THEN"],
+      ["dubbletten", "CONTINUE WHEN o.dubblett_av IS NOT NULL;", ""],
+      ["nyfångad", " AND f.fangad_at > now() - interval '6 hours'", ""],
+    ];
+    for (const [namn, fran, till] of MUTANTER) {
+      const r = await kor(mutant842(RIKTIG, fran, till));
+      const fallde = ALLA.filter((id) => JSON.stringify(r[id]) !== JSON.stringify(VANTAT[id]));
+      console.log(`motprov driftlarmet, ${namn}: fälls av ${fallde.join(", ") || "INGEN"}`);
+      assert.ok(fallde.length > 0, `motprovet ${namn} fälls inte av någon fixtur`);
+    }
+    assert.deepEqual(await kor(RIKTIG), VANTAT, "den riktiga funktionen tillbaka");
+
+    // Utan pg_net går appen inte att avgöra: okänd, aldrig stilla.
+    await q("DROP SCHEMA net CASCADE");
+    egenNet = false;
+    await q("UPDATE olycksfacit SET driftlarm_at = NULL WHERE deviation_id IN ('DL8', 'DL9')");
+    await q("DELETE FROM olycksfacit_driftlarm WHERE deviation_id IN ('DL8', 'DL9')");
+    await q("SELECT olycksfacit_driftlarm()");
+    assert.deepEqual((await q("SELECT deviation_id, feltyp, detalj->>'skal' AS skal FROM olycksfacit_driftlarm WHERE deviation_id IN ('DL8', 'DL9') ORDER BY 1")).rows,
+      [{ deviation_id: "DL8", feltyp: "appen okänd", skal: "pg_net saknas" }, { deviation_id: "DL9", feltyp: "appen okänd", skal: "pg_net saknas" }]);
+  } finally {
+    if (egenNet) await q("DROP SCHEMA IF EXISTS net CASCADE").catch(() => {});
+    if (!riktiga) await stad().catch(() => {});
+    await pool.end();
+  }
+});
+
+// KLASSNINGEN EFTER SEX TIMMAR (sql/108 del 2, TROSKLAR-OLYCKSFACIT §10). Fixturerna kring 78° N:
+//   DK1  sju timmar gammal, händelsen sedd senast för 200 min sedan → kontrolleras; texten efteråt ("Halt") gör den TYDLIG
+//   DK2  5 h 50 min gammal → väntar          DK3  sju timmar gammal men sedd i flödet för 30 min sedan → väntar
+//   DK4  sju timmar gammal, händelsen borta ur arkivet → kontrolleras
+//   DK5  åtta timmar gammal, sedd för 125 min sedan → kontrolleras; men står inläsningen still sedan två timmar (arkivets senast
+//        sedda händelse för 120 min sedan) är den sedd i flödets sista timme och väntar
+test("#842 efterkontrollen: sex timmar, och händelsen ska ha lämnat flödet", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const nu = Date.now();
+  const ago = (min: number) => new Date(nu - min * 60_000).toISOString();
+  const stad = async () => {
+    await q("DELETE FROM olycksfacit WHERE deviation_id LIKE 'DK%'").catch(() => {});
+    await q("DELETE FROM situation_archive WHERE deviation_id LIKE 'DK%'");
+    await q("DELETE FROM weather_observations WHERE station_id LIKE 'DKS%'");
+  };
+  try {
+    for (const f of ["003_situation_archive.sql", "084_olycksfacit.sql", "085_olycksfacit_klassning.sql", "108_olycksfacit_driftlarm.sql"])
+      await q(sql842(f));
+    await stad();
+    const olycka = (id: string, lon: number, alder: number) => q(`INSERT INTO olycksfacit (deviation_id, start_time, message, road_number,
+      severity_code, geom, utfall) VALUES ($1, $2, 'Singelolycka', 'Väg 1', 4, ST_SetSRID(ST_MakePoint($3, 78), 4326), 'TYST_TACKT')`, [id, ago(alder), lon]);
+    const handelse = (id: string, lon: number, alder: number, sedd: number, typ = "Accident", text = "Singelolycka") =>
+      q(`INSERT INTO situation_archive (deviation_id, message_type_value, message, severity_code, geom, start_time, first_seen, last_seen)
+         VALUES ($1, $2, $3, 4, ST_SetSRID(ST_MakePoint($4, 78), 4326), $5, $5, $6)`, [id, typ, text, lon, ago(alder), ago(sedd)]);
+    await handelse("DKF", 59, 780, 0, "GeneralObstruction", "Flödet lever");          // arkivets senast sedda händelse: nu
+    await olycka("DK1", 60, 420); await handelse("DK1", 60, 420, 200, "Accident", "Singelolycka. Halt på platsen.");
+    await q(`INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, dewpoint_c, precipitation)
+             VALUES ('DKS1', 'Provstation', ST_SetSRID(ST_MakePoint($1, 78), 4326), $2, 0.5, 1, -1, 'no')`,
+      [60 + 1 / (111.2 * Math.cos((78 * Math.PI) / 180)), ago(420)]);
+    await olycka("DK2", 61, 350); await handelse("DK2", 61, 350, 300);
+    await olycka("DK3", 62, 420); await handelse("DK3", 62, 420, 30);
+    await olycka("DK4", 63, 420);
+    await olycka("DK5", 64, 480); await handelse("DK5", 64, 480, 125);
+
+    const ALLA = ["DK1", "DK2", "DK3", "DK4", "DK5"];
+    const kontrollerade = async (c: { query: typeof q }) =>
+      Object.fromEntries((await c.query("SELECT deviation_id, kontrollerad_at IS NOT NULL AS k FROM olycksfacit WHERE deviation_id LIKE 'DK%' ORDER BY 1"))
+        .rows.map((r: any) => [r.deviation_id, r.k]));
+    /** Två lägen: flödet lever, och inläsningen står still sedan två timmar (i en transaktion som rullas tillbaka). */
+    const kor = async (def: string) => {
+      await q(def);
+      await q("UPDATE olycksfacit SET kontrollerad_at = NULL WHERE deviation_id LIKE 'DK%'");
+      await q("SELECT olycksfacit_efterkontroll()");
+      const lever = await kontrollerade({ query: q });
+      await q("UPDATE olycksfacit SET kontrollerad_at = NULL WHERE deviation_id LIKE 'DK%'");
+      const c = await pool.connect();
+      try {
+        await c.query("BEGIN");
+        await c.query("UPDATE situation_archive SET last_seen = least(last_seen, $1::timestamptz)", [ago(120)]);
+        await c.query("SELECT olycksfacit_efterkontroll()");
+        const still = await kontrollerade({ query: (s: string, p: unknown[] = []) => c.query(s, p) });
+        await c.query("ROLLBACK");
+        return { lever, still };
+      } finally { c.release(); }
+    };
+    const VANTAT = { lever: { DK1: true, DK2: false, DK3: false, DK4: true, DK5: true },
+                     still: { DK1: true, DK2: false, DK3: false, DK4: true, DK5: false } };
+    const RIKTIG = definition842(sql842("108_olycksfacit_driftlarm.sql"), "olycksfacit_efterkontroll");
+    assert.deepEqual(await kor(RIKTIG), VANTAT);
+    const dk1 = (await q("SELECT klass, klass_skal, text_efter FROM olycksfacit WHERE deviation_id = 'DK1'")).rows[0];
+    assert.deepEqual(dk1, { klass: "TYDLIG", klass_skal: "halkord i texten och yta ≤ +1 °C", text_efter: "Singelolycka. Halt på platsen." },
+      "texten efteråt läses vid kontrollen, sju timmar efter starten");
+    assert.equal((await q("SELECT klass FROM olycksfacit WHERE deviation_id = 'DK4'")).rows[0].klass, "OKLAR", "utan arkivrad: ingen station, OKLAR");
+
+    const MUTANTER: [string, string | RegExp, string][] = [
+      ["sex timmar (24)", "now() - interval '6 hours'", "now() - interval '24 hours'"],
+      ["sex timmar (5)", "now() - interval '6 hours'", "now() - interval '5 hours'"],
+      ["flödet alls", /\n\s+AND NOT EXISTS \(SELECT 1 FROM situation_archive s[^\n]*\n[^\n]*interval '1 hour'\)/, ""],
+      ["flödets timme ur arkivet, inte klockan", "(SELECT max(a.last_seen) FROM situation_archive a)", "now()"],
+    ];
+    for (const [namn, fran, till] of MUTANTER) {
+      const r = await kor(mutant842(RIKTIG, fran, till));
+      const fallde = (["lever", "still"] as const).flatMap((l) => ALLA.filter((id) => r[l][id] !== VANTAT[l][id]).map((id) => `${id} (${l})`));
+      console.log(`motprov efterkontrollen, ${namn}: fälls av ${fallde.join(", ") || "INGEN"}`);
+      assert.ok(fallde.length > 0, `motprovet ${namn} fälls inte av någon fixtur`);
+    }
+    assert.deepEqual(await kor(RIKTIG), VANTAT, "den riktiga funktionen tillbaka");
+  } finally {
+    await stad().catch(() => {});
+    await pool.end();
+  }
+});
+
 // SPRIDNINGSSPÄRREN F1 (sql/086 och sql/087, DECISIONS #799, #800): båda regelfunktionerna tystar där minst två ankare bidrar och
 // minoritetens viktandel kring noll (frys_min) är minst 0,45 — inte längre på spridningen 2,25 °C. Sedan TILLBAKA med sql/069, som
 // ger dagens spärr igen; det lämnar också databasen som provet fann den.

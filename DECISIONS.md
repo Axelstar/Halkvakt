@@ -15527,3 +15527,42 @@ skrivet av Claude.
   med det nya villkoret och dagens och veckans dag i `supabase/functions/olycksfacit`.
 
 **Stomdokument:** BED §4.2 — olycksfacit i nära realtid
+
+## #842 (11/11 2026) Olycksfacit i nära realtid byggt: driftlarmet i skugga och klassningen efter sex timmar (kort #641)
+
+**Beslutet.** Axel signerar del 6, via Bengt 11/11: *"axel signerar 641"*. Med Bengts signatur i #841 har ändringen av
+TROSKLAR-OLYCKSFACIT båda, och tillägget står där som §10 (det ändrar §2, §3, §5 och §9.5 och prövar regel L). Bygget följer #841 på Bengts ord.
+
+**Det som byggdes.**
+1. **Driftlarmet i skugga** (`sql/108`): `olycksfacit_driftlarm()` och tabellen `olycksfacit_driftlarm`, en rad per olycka och feltyp. Jobbet
+   `halkvakt-olycksfacit-drift` går fem minuter efter fångsten (:05, :20, :35 och :50), bara SQL. Ingen förardata läses, och inga ärenden
+   skrivs under skuggan.
+2. **Klassningen efter sex timmar** (`sql/108`): `olycksfacit_efterkontroll()` är `sql/085` ord för ord utom urvalet.
+3. **Dagens och veckans ärende** (`supabase/functions/olycksfacit`): dygnet i går och måndagen efter veckan (`DYGN_EFTER` = 1). Texten i
+   dagens ärende säger att klassningen sker efter minst sex timmar.
+4. **Prov:** integrationsproven #842 med ett motprov per villkor, och ett prov utan databas att efterkontrollen är `sql/085` utom urvalet.
+   Kontraktsgrinden vaktar halkorden, ytan och viltorden i kopiorna.
+
+**Claudes metodval, att läsa före skuggveckan:**
+- **Feltyperna** är fem: `K ingen timme`, `K gallrad`, `A2 tyst`, `appen stilla` och `appen okänd`.
+- **A2 tyst:** en station finns inom 5 km i `weather_latest`, men ingen station inom 5 km har en yta i arkivet den sista timmen före
+  starten. Vakterna räknas inte här: en station vars värden vakterna tog bort är inte tyst och ger ingen rad.
+- **Appen** läses ur publiceras svar i `net._http_response`. Svaret ska säga `"ok":true` och ha hinken skriven, för hinken är appens väg.
+  `public.anrop` duger inte, eftersom sopningen tar bort de lyckade anropen (sql/051).
+- **Appen okänd:** pg_net sparar svaren i sex timmar. När de inte når 15 minuter före starten, eller när pg_net saknas, skrivs `appen
+  okänd` i stället för en gissning.
+- **Flödet** räknas från arkivets senast sedda händelse, inte från klockan. Står inläsningen still väntar kontrollen.
+- **Avgränsningar:** dubbletterna får ingen rad. Bara olyckor som fångats de senaste sex timmarna prövas, en gång var, så att det som fångats
+  före migrationen inte räknas in i skuggveckan.
+
+**Kvar:** `sql/108` med DB-knappen efter sammanslagningen, och deployen av `olycksfacit`. Ordningen spelar ingen roll: med funktionen före
+migrationen väntar gårdagen ett dygn, och med migrationen före skrivs ärendet ett dygn för sent. Sedan läses skuggveckan: antalet per feltyp
+ur `olycksfacit_driftlarm`. Efter veckan väljer Bengt vilka feltyper som får göra ärenden med etiketten `drift`, och de byggs i funktionen
+`olycksfacit`.
+
+**Alternativen som inte valdes:**
+- A2 tyst på de vaktade värdena: då hade en trasig givare räknats som en tyst station.
+- Flödet räknat från klockan: då hade ett stopp i inläsningen fått kontrollen att läsa en text som ännu kunde ändras.
+- Att pröva alla olyckor sedan 6/11 vid första körningen: då hade skuggveckan blandats med fall som är äldre än pg_nets svar.
+
+**Stomdokument:** MAT 3 — olycksfacit i nära realtid: driftlarmet i skugga och klassningen efter sex timmar

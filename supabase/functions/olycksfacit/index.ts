@@ -1,13 +1,14 @@
 // ═══ Olycksfacit, steg 3 och 4: dagens och veckans ärende (DECISIONS #797 och #802, kort #376) ═══
 // Anropas av pg_cron varje morgon 05:17 UTC (sql/085). Skriver ett ärende med etiketten `olycka` för varje svenskt dygn från
-// FORSTA_DAG till i förrgår som har kontrollerats färdigt (alla dess olyckor har gått genom efterkontrollen, sql/085) och som
-// inte har något ärende än (olycksfacit_arenden). Ett dygn utan en tyst halkkopplad olycka får ett ärende som stängs direkt, så
-// att en tyst dag syns som tyst och inte som utebliven. Sedan samma sak för varje ISO-vecka vars söndag är i förrgår eller tidigare
+// FORSTA_DAG till i går (DYGN_EFTER, sedan 11/11: TROSKLAR-OLYCKSFACIT §10, DECISIONS #842) som har kontrollerats färdigt (alla dess
+// olyckor har gått genom efterkontrollen, sql/085 och sql/108) och som inte har något ärende än (olycksfacit_arenden). Ett dygn utan en
+// tyst halkkopplad olycka får ett ärende som stängs direkt, så att en tyst dag syns som tyst och inte som utebliven. Sedan samma sak för
+// varje ISO-vecka vars söndag är i går eller tidigare, så att veckans ärende skrivs måndagen efter veckan
 // (olycksfacit_veckor, sql/088; TROSKLAR-OLYCKSFACIT §9.5): en vecka utan återkommande förbättringsområde stängs direkt. Öppna
 // ärenden påminns var sjunde dygn. ?torrt=1 visar ärendena utan att skriva något.
 import postgres from "https://deno.land/x/postgresjs@v3.4.4/mod.js";
 import { nyckelGiltig } from "../_shared/nyckel.ts";
-import { ETIKETT, FORSTA_DAG, MARK, MARKV, type Olycka, PAMINN_DYGN, TILLDELAD, arendeKropp, arendeTitel, behoverAtgard, paminnelse,
+import { DYGN_EFTER, ETIKETT, FORSTA_DAG, MARK, MARKV, type Olycka, PAMINN_DYGN, TILLDELAD, arendeKropp, arendeTitel, behoverAtgard, paminnelse,
   veckaKropp, veckaPaminnelse, veckaTitel, veckansForslag } from "./arende.ts";
 
 const REPO = "Axelstar/Halkvakt";
@@ -50,12 +51,12 @@ Deno.serve(async (req) => {
   if (!(await nyckelGiltig(req))) return new Response("forbidden", { status: 403 });  // nyckeln i databasen, DECISIONS #571
   const torrt = new URL(req.url).searchParams.get("torrt") === "1";
   try {
-    // Dygnen utan ärende, från FORSTA_DAG till i förrgår (svensk tid), med antalet olyckor som inte är kontrollerade än.
+    // Dygnen utan ärende, från FORSTA_DAG till i går (svensk tid), med antalet olyckor som inte är kontrollerade än.
     const dygn = await sql`
       SELECT g.t::date::text AS dag,
              count(f.deviation_id)::int AS olyckor,
              count(f.deviation_id) FILTER (WHERE f.kontrollerad_at IS NULL)::int AS okontrollerade
-      FROM generate_series(${FORSTA_DAG}::date, (now() AT TIME ZONE 'Europe/Stockholm')::date - 2, interval '1 day') AS g(t)
+      FROM generate_series(${FORSTA_DAG}::date, (now() AT TIME ZONE 'Europe/Stockholm')::date - ${DYGN_EFTER}::int, interval '1 day') AS g(t)
       LEFT JOIN olycksfacit f ON (f.start_time AT TIME ZONE 'Europe/Stockholm')::date = g.t::date
       WHERE NOT EXISTS (SELECT 1 FROM olycksfacit_arenden a WHERE a.dag = g.t::date)
       GROUP BY g.t ORDER BY g.t`;
@@ -73,14 +74,14 @@ Deno.serve(async (req) => {
       skrivna.push({ dag: d.dag, nr, atgarda });
     }
 
-    // Veckorna (§9.5): ISO-veckor från FORSTA_DAG:s vecka vars söndag är i förrgår eller tidigare, utan ärende. Veckan börjar
+    // Veckorna (§9.5): ISO-veckor från FORSTA_DAG:s vecka vars söndag är i går eller tidigare, utan ärende. Veckan börjar
     // tidigast på FORSTA_DAG, och säsongen räknas från FORSTA_DAG till veckans söndag.
     const veckor = await sql`
       SELECT to_char(g.m, 'IYYY-"V"IW') AS vecka, greatest(g.m::date, ${FORSTA_DAG}::date)::text AS fran,
              (g.m + interval '6 days')::date::text AS till,
              count(f.deviation_id) FILTER (WHERE f.kontrollerad_at IS NULL)::int AS okontrollerade
       FROM generate_series(date_trunc('week', ${FORSTA_DAG}::date::timestamp),
-                           ((now() AT TIME ZONE 'Europe/Stockholm')::date - 8)::timestamp, interval '7 days') AS g(m)
+                           ((now() AT TIME ZONE 'Europe/Stockholm')::date - (6 + ${DYGN_EFTER}::int))::timestamp, interval '7 days') AS g(m)
       LEFT JOIN olycksfacit f ON (f.start_time AT TIME ZONE 'Europe/Stockholm')::date
                                  BETWEEN greatest(g.m::date, ${FORSTA_DAG}::date) AND (g.m + interval '6 days')::date
       WHERE NOT EXISTS (SELECT 1 FROM olycksfacit_veckor v WHERE v.vecka = to_char(g.m, 'IYYY-"V"IW'))

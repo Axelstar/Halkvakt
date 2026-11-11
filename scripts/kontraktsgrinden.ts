@@ -333,6 +333,30 @@ export const KONTRAKT: Kontrakt[] = [
     former: [/SLIPPERY_STAM\s*=\s*\/\(([^)]+)\)\/i/, /HALKSTAM\s*=\s*"([^"]+)"/, /OR i ~\* '\(([^)]+)\)'/],
     golv: 7,
   },
+  // OLYCKSFACITS KLASSNING (TROSKLAR-OLYCKSFACIT §4) och driftlarmet som lånar den (sql/108, DECISIONS #842). Efterkontrollen står i
+  // sql/085 och, ord för ord utom urvalet, i sql/108; driftlarmet prövar halka med TYDLIG-regelns ord och yta. Driver en kopia larmar
+  // driften på andra olyckor än klassningen kallar halkkopplade, eller klassar 108 olyckorna efter andra ord än det signerade.
+  {
+    namn: "Olycksfacits halkord — klassningens TYDLIG och driftlarmet",
+    varfor: "Klassningen (sql/085, sql/108) och driftlarmets villkor 1 (sql/108) ska läsa samma ord som halka (DECISIONS #797, #842).",
+    former: [/~\* '\(\^\|\[\^a-zåäö\]\)\((hal\|[^)]+)\)\(\[\^a-zåäö\]\|\$\)'/],
+    filer: /sql\/\d{3}_/,
+    golv: 3,
+  },
+  {
+    namn: "Olycksfacits halkyta — klassningens TYDLIG och driftlarmet, °C",
+    varfor: "TYDLIG kräver ytan högst +1 °C, och driftlarmet larmar på samma yta (TROSKLAR-OLYCKSFACIT §4, förslaget §3).",
+    former: [/AND y <= ([\d.]+) THEN 'TYDLIG'/, /::real <= ([\d.]+), false\);\s+-- HALKYTA/],
+    filer: /sql\/\d{3}_/,
+    golv: 3,
+  },
+  {
+    namn: "Olycksfacits viltord — klassningens INTE (vilt)",
+    varfor: "Regel 1 får skärpas men aldrig mjukas upp (TROSKLAR-OLYCKSFACIT §7); kopiorna i sql/085 och sql/108 ska bära samma ord.",
+    former: [/\((vilt\[a-zåäö\]\*\|[^)]+)\)\(\[\^a-zåäö\]\|\$\)'/],
+    filer: /sql\/\d{3}_/,
+    golv: 4,
+  },
   {
     namn: "Trendens minsta lutning — svepets lägsta steg (°C per fönster)",
     varfor: "Finns i TypeScript (T-A och knappen) och i SQL (drifträkningen). Driver den sparar driften andra kandidater än domen prövar.",
