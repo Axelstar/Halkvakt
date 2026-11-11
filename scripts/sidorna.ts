@@ -233,9 +233,9 @@ function sjalvtest(): void {
   const r = resurser([{ fil: "docs/APPEN.html", namn: "A" }, { fil: "docs/PROJEKTKARTAN.html", namn: "P" }], (f) => app[f]);
   const ok9 = JSON.stringify(r) === JSON.stringify([{ namn: "bilder/b.pdf", fil: "docs/bilder/b.pdf", sida: "APPEN.html" },
     { namn: "produktbok/a.png", fil: "docs/produktbok/a.png", sida: "APPEN.html" }]);
-  // Punkt 3 (#834): en PR som väntat mer än två dygn, äldst först; ett utkast och en PR under två dygn räknas inte.
+  // Punkt 3 (#834): en PR som väntat mer än två dygn, äldst först; ett utkast och en PR på 30 timmar räknas inte.
   const t = Date.parse("2026-11-11T12:00:00Z");
-  const v = vantande([{ number: 3, title: "Ny", draft: false, created_at: "2026-11-10T12:00:00Z" },
+  const v = vantande([{ number: 3, title: "Trettio timmar", draft: false, created_at: "2026-11-10T06:00:00Z" },
     { number: 2, title: "Gammal", draft: false, created_at: "2026-11-06T11:00:00Z" }, { number: 4, title: "Utkast", draft: true, created_at: "2026-11-01T00:00:00Z" },
     { number: 1, title: "Precis över", draft: false, created_at: "2026-11-09T11:59:00Z" }], t);
   const ok10 = v.length === 2 && v[0] === "PR #2 har väntat 5 dygn på ett ord: Gammal" && v[1].startsWith("PR #1 har väntat 2 dygn");
