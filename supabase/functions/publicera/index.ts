@@ -453,6 +453,31 @@ export async function buildSnapshot(qIn: Q, bridgesIn: Bridge[], now: Date = new
     notes.push(`kandidat: vägnumren ej läsbara (${String((e as Error).message).slice(0, 80)}) — vag blir null`);
   }
 
+  // ---- småvägsröstens besked (DECISIONS #828, sql/105–106, byggsteg 5b) ----
+  // En bit per punkt i punktfilens ordning (smavagspunkt ORDER BY punkt COLLATE "C", som laddaren skriver smavag_punktfil), som
+  // base64, med punktfilens sha så att appen bara läser bitarna mot den fil den har. Beskeden är smavag_talar(): regelns varnande
+  // punkter där brytaren är på. Med båda brytarna av saknas nyckeln helt (byggplanens Verify). Fail-soft: går något inte att läsa,
+  // eller stämmer punktfilen inte med punkterna, saknas nyckeln och noten säger varför — tyst är det säkra hållet.
+  avsnitt = "smavag";
+  let smavag: { fil: string; n: number; bitar: string } | null = null;
+  try {
+    const [b] = await q(`SELECT bool_or(pa) AS pa FROM smavagsbrytare`);
+    if (b?.pa === true) {
+      const [f] = await q(`SELECT sha256, punkter, (SELECT count(*) FROM smavagspunkt) AS n FROM smavag_punktfil WHERE id = 1`);
+      if (!f) notes.push("smavag: punktfilen saknas (smavag_punktfil) — nyckeln utelämnas");
+      else if (Number(f.n) !== Number(f.punkter)) notes.push("smavag: punktfilen och punkterna går isär — nyckeln utelämnas");
+      else {
+        const rader = await q(`
+          SELECT p.i FROM (SELECT punkt, (row_number() OVER (ORDER BY punkt COLLATE "C") - 1)::int AS i FROM smavagspunkt) p
+          JOIN smavag_talar() t ON t.punkt = p.punkt`);
+        smavag = { fil: String(f.sha256), n: Number(f.punkter), bitar: smavagBitar(rader.map((r) => Number(r.i)), Number(f.punkter)) };
+      }
+    }
+  } catch (e) {
+    smavag = null;
+    notes.push(`smavag: ej läsbar (${String((e as Error).message).slice(0, 80)}) — nyckeln utelämnas`);
+  }
+
   // ---- karantänen (kort #234): svenska stationer som nyligen brutit grovt mot #75 ----
   avsnitt = "karantan";
   // Fail-soft som arkivfrågorna nedan: går historiken inte att läsa publiceras stationerna som förut, och det noteras.
@@ -644,6 +669,8 @@ export async function buildSnapshot(qIn: Q, bridgesIn: Bridge[], now: Date = new
     rain_segments: regnSegs.map(segRow),
     // Kandidatens varnande sträckor (#576): punkterna med fem decimaler, regelns timme. Saknas när brytaren är av (#578).
     ...(kandidatPa ? { kandidat } : {}),
+    // Småvägsröstens besked (#828, byggsteg 5b): bitarna mot punktfilen smavag.json. Saknas när båda brytarna är av.
+    ...(smavag ? { smavag } : {}),
     weather: wx.map((r) => {
       const id = String(r.station_id), l = lutning.get(id);
       return {
@@ -697,14 +724,31 @@ async function gzipBytes(s: string): Promise<number> {
 
 /** manifest.json — apparna vägrar en fil vars sha256 inte stämmer och behåller den förra.
  *  Skrivs ALLTID ihop med static.json och live.json, aldrig separat. */
-export async function manifestFor(generated_at: string, files: { static: string; live: string }, prefix = "app/v1") {
+/** Småvägsröstens bitar (DECISIONS #828, byggsteg 5b): bit i är punkt i i punktfilens ordning, åtta punkter per byte med den första i
+ *  den lägsta biten, som base64. 88 335 punkter blir 11 042 byte, 14 724 tecken. */
+export function smavagBitar(index: number[], n: number): string {
+  const b = new Uint8Array(Math.ceil(n / 8));
+  for (const i of index) {
+    if (!Number.isInteger(i) || i < 0 || i >= n) throw new Error(`smavag: index ${i} utanför 0–${n - 1}`);
+    b[i >> 3] |= 1 << (i & 7);
+  }
+  let s = "";
+  for (const x of b) s += String.fromCharCode(x);
+  return btoa(s);
+}
+
+/** ovriga: filer utöver static och live som manifestet ska bära (småvägsröstens punktfil, byggsteg 5b), med färdig sha och storlek.
+ *  Apparna läser bara static och live, så en ny post bryter ingen installerad app. */
+export async function manifestFor(generated_at: string, files: { static: string; live: string }, prefix = "app/v1",
+                                  ovriga: Record<string, { sha256: string; bytes: number; gz_bytes: number }> = {}) {
   const entry = async (name: "static" | "live") => ({
     path: `${prefix}/${name}.json`,
     sha256: await sha256Hex(files[name]),
     bytes: new TextEncoder().encode(files[name]).byteLength,
     gz_bytes: await gzipBytes(files[name]),
   });
-  return { schema: 1, generated_at, files: { static: await entry("static"), live: await entry("live") } };
+  const fler = Object.fromEntries(Object.entries(ovriga).map(([namn, x]) => [namn, { path: `${prefix}/${namn}.json`, ...x }]));
+  return { schema: 1, generated_at, files: { static: await entry("static"), live: await entry("live"), ...fler } };
 }
 
 /** GRANNLÄNDERNAS SNAPSHOT (kort #238; Bengts princip 22/9: återkommande körningar bor i Supabase, inte i Actions).
@@ -2437,6 +2481,17 @@ async function skrivHinken(files: Record<string, string>) {
   await skriv("manifest.json");
 }
 
+/** Småvägsröstens punktfil (sql/106, byggsteg 5b): laddaren skriver den i smavag_punktfil, och här laddas den upp bara när sha:n är ny
+ *  (i_hinken, i_github). null före sql/106 eller utan punkter: då står den inte i manifestet. */
+type Punktfil = { sha256: string; bytes: number; gz_bytes: number; i_hinken: string | null; i_github: string | null };
+async function punktfilen(): Promise<Punktfil | null> {
+  try {
+    const [r] = await sql`SELECT sha256, bytes, gz_bytes, i_hinken, i_github FROM smavag_punktfil WHERE id = 1`;
+    return r ? { sha256: r.sha256, bytes: Number(r.bytes), gz_bytes: Number(r.gz_bytes), i_hinken: r.i_hinken, i_github: r.i_github } : null;
+  } catch { return null; }
+}
+const punktfilensText = async () => String((await sql`SELECT json FROM smavag_punktfil WHERE id = 1`)[0].json);
+
 Deno.serve(async (req) => {
   if (!(await nyckelGiltig(req))) return new Response("forbidden", { status: 403 });  // nyckeln i databasen, DECISIONS #571
   const t0 = Date.now();
@@ -2471,8 +2526,28 @@ Deno.serve(async (req) => {
       (text, params) => sql.unsafe(text, (params ?? []) as any[]) as unknown as Promise<Record<string, any>[]>,
       BRIDGES);
     const sStatic = JSON.stringify(staticDoc), sLive = JSON.stringify(liveDoc);
-    const manifest = await manifestFor(liveDoc.generated_at, { static: sStatic, live: sLive });
     tider.bygget = Date.now() - tDel;
+    // Punktfilen först i hinken när den är ny, så att manifestet bara pekar på en fil som finns. Ett fel här stoppar inget annat: då
+    // står punktfilen inte i manifestet den här körningen, och svaret säger varför.
+    const minutNu = new Date(t0).getUTCMinutes();
+    const githubNu = new URL(req.url).searchParams.get("karta") === "1" || minutNu % 30 < PUBLICERA_TAKT_MIN || minutNu % 10 < PUBLICERA_TAKT_MIN;
+    const pf = await punktfilen();
+    let smavagText: string | null = null, smavagLage = pf ? "oförändrad" : "ingen";
+    let iHinken = !!pf && pf.i_hinken === pf.sha256;
+    if (pf && (!iHinken || (githubNu && pf.i_github !== pf.sha256))) {
+      try {
+        smavagText = await punktfilensText();
+        if (!iHinken) {
+          const r = await fetch(`${SB}/storage/v1/object/app/v1/smavag.json`, { method: "POST", body: smavagText,
+            headers: { Authorization: `Bearer ${SRK}`, apikey: SRK, "Content-Type": "application/json", "x-upsert": "true", "cache-control": "no-cache" } });
+          if (!r.ok) throw new Error(`hinken smavag.json ${r.status}: ${(await r.text()).slice(0, 200)}`);
+          await sql`UPDATE smavag_punktfil SET i_hinken = ${pf.sha256} WHERE id = 1 AND sha256 = ${pf.sha256}`;
+          iHinken = true; smavagLage = "uppladdad";
+        }
+      } catch (e) { smavagLage = String((e as Error).message ?? e).slice(0, 200); smavagText = null; }
+    }
+    const manifest = await manifestFor(liveDoc.generated_at, { static: sStatic, live: sLive }, "app/v1",
+      pf && iHinken ? { smavag: { sha256: pf.sha256, bytes: pf.bytes, gz_bytes: pf.gz_bytes } } : {});
     const files: Record<string, string> = {
       "data/app/v1/static.json": sStatic,
       "data/app/v1/live.json": sLive,
@@ -2486,9 +2561,12 @@ Deno.serve(async (req) => {
     tider.hinken = Date.now() - tDel;
     // Kartlagren var 30:e minut (#77) och GitHub var tionde (#741 punkt 3), ur minuten när körningen startade; pg_cron fyrar varannan
     // minut (:00, :02 …). Hinken ovan skrivs varje körning. `?karta=1` tvingar båda.
-    const minut = new Date(t0).getUTCMinutes();
+    const minut = minutNu;
     const karta = new URL(req.url).searchParams.get("karta") === "1" || minut % 30 < PUBLICERA_TAKT_MIN;
-    const github = karta || minut % 10 < PUBLICERA_TAKT_MIN;
+    const github = githubNu;
+    // Kartrepot (reserven) får punktfilen i samma commit som manifestet som pekar på den, när den inte redan ligger där.
+    const smavagTillGithub = github && !!pf && iHinken && pf.i_github !== pf.sha256 && smavagText !== null;
+    if (smavagTillGithub) files["data/app/v1/smavag.json"] = smavagText!;
     let kartaStats: unknown = null;
     const inline: Record<string, string> = {};
     if (karta) {
@@ -2535,6 +2613,7 @@ Deno.serve(async (req) => {
       tDel = Date.now();
       sha = await publicera(files, inline);
       tider.github = Date.now() - tDel;
+      if (smavagTillGithub) await sql`UPDATE smavag_punktfil SET i_github = ${pf!.sha256} WHERE id = 1 AND sha256 = ${pf!.sha256}`;
     }
     return new Response(JSON.stringify({ ok: true, sha, generated_at: liveDoc.generated_at,
       segments: liveDoc.segments.length, kandidat: liveDoc.kandidat?.length ?? null, weather: liveDoc.weather.length,
@@ -2542,7 +2621,7 @@ Deno.serve(async (req) => {
       bridges: liveDoc.bridges.length, smhi: liveDoc.smhi.length,
       cameras: staticDoc.cameras.length, border, notes,
       live_gz_bytes: manifest.files.live.gz_bytes,
-      karta: kartaStats, lanssidor: Object.keys(inline).length, github, hinken, tider, bygget_delar: delar, ms: Date.now() - t0 }), { headers: { "Content-Type": "application/json" } });
+      karta: kartaStats, lanssidor: Object.keys(inline).length, github, hinken, smavag: smavagLage, tider, bygget_delar: delar, ms: Date.now() - t0 }), { headers: { "Content-Type": "application/json" } });
   } catch (e) {
     return new Response(JSON.stringify({ ok: false, error: String(e) }), { status: 500 });
   }

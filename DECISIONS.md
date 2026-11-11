@@ -15212,6 +15212,18 @@ Brytarna är av tills dess.
 
 **Tillägg 11/11 (Bengt: *"gör 1, 2, 3 och 4 i den ordningen"*): regeln migrerad och kedjan sammanslagen, med brytarna av.** PR #1509 sammanslagen (e353c978) på grön ci. `sql/105` migrerad med DB-knappen 06.20 UTC (42971659393), transaktionen bekräftad. Bevisraderna: RLS på båda tabellerna, inga rader, brytarna N och P1 av, ingen timme, inga besked och rättigheter bara för `service_role`. Kuvösens PR 71 (24b279c0, F54) och PR #1512 (9b79145e) sammanslagna på grön ci; integrationsproven i full skala gick i ci (SG5 och SL6). Historiken för alla punkter trycks när körningen av `kuvos-stad` efter 06.28 UTC är klar, så att staden inte fördröjs.
 
+**Tillägg 11/11 (Bengt: *"Ta 1 o 2 nu"* och *"sen 3"*): steg 5b, punktfilen och beskedet i lägesfilen, byggt på en gren.**
+- **Punktfilen** `smavag.json` bär punkternas lägen med fem decimaler i ordningen `punkt COLLATE "C"`, omkring 1,6 MB.
+  - Laddaren skriver den i `smavag_punktfil` (`sql/106`) i samma transaktion som punkterna, så att filen och tabellen aldrig går isär.
+  - Publiceringen laddar upp den till hinken och kartrepot bara när sha:n är ny, och den står i manifestet som en egen post, `smavag`.
+  - Apparna läser bara `static` och `live` i manifestet, så ingen installerad app påverkas.
+- **I `live.json`** står nyckeln `smavag`: `{fil, n, bitar}`.
+  - `bitar` har en bit per punkt i punktfilens ordning, base64, ur `smavag_talar()`, och `fil` är punktfilens sha, så att appen bara läser bitarna mot rätt fil.
+  - Med båda brytarna av saknas nyckeln helt.
+  - Stämmer punktfilen inte med punkterna saknas nyckeln också, och noten säger varför.
+- **Storleken:** 88 335 punkter blir 11 042 byte, eller 14 724 tecken base64. Det är något över byggplanens omkring 10 kB, men packad är filen mycket mindre när nästan inga eller nästan alla punkter varnar.
+- **Kvar:** ci, sammanslagningen, DB-knappen för `sql/106` och deployen av `publicera`, alla på Bengts ord, och appens hämtning (med motorn, steg 7).
+
 **Stomdokument:** MAT 5 — småvägsrösten beställd och byggs avstängd, SYS 2 — driftens rörarbete för småvägarna, APP 3 — betavarningens farotyp och text
 
 ## #829 (10/11 2026) Tipsa en vän, Tyck till och Betygsätt i 0.4.0 (42), tillsammans med Favoriter 2a och CarPlay
