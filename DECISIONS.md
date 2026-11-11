@@ -15363,3 +15363,25 @@ varje dygn; att kartsynken faller helt när PR-listan inte går att läsa, vilke
 själv, vilket molnets och mobilens sessioner inte får.
 
 **Stomdokument:** inga — rör projektkartan, synk-ihop och CLAUDE.md, inte stomdokumentens text
+
+## #838 (11/11 2026) Kort #262, batteripaketet, stängt i sin helhet
+
+**Beslutet.** Bengt 11/11: *"Stäng hela"*, i genomgången av Väntar på (punkt 8), på frågan om Å0 och Å8 skulle strykas och kortet stå kvar bara
+för Android-timmen (Å7).
+
+**Läget när kortet stängdes.**
+- Å1–Å5 är i main och i varje bygge sedan (23) (DECISIONS #431, #461).
+- Å0 (testaren på 0.3.9) är överspelad av 0.4.x.
+- Å8 (nollmätning före fixarna) går inte längre att göra: inget bygge utan dem finns.
+- Å6 (fältprotokollet) är inte skrivet.
+- Å7 (en körtimme på Android under 8 %/h) är inte visad. Galaxy J6 gav 4,2, 6,7, 8,2 och 8,1 %/h utan nät, i hela procent (DECISIONS #778, 2/11).
+- iPhone ligger på omkring 2,8 %/h, som högst 5,4 (#778, tillägg 8/11).
+
+**Det som inte ändras.** Batteribudgeten, under 8 %/h med skärmen släckt, gäller som förut (CLAUDE.md), och en mätning över 8 %/h hindrar
+nästa bygge (DECISIONS #753). Kortet bär inte längre Android-mätningen, så den lyfts nästa gång en Android mäts; delen *Batteriet* i
+projektkartan står orange med den som enda rad.
+
+**Alternativet som inte valdes:** att stryka Å0 och Å8 och låta kortet stå kvar för Android-timmen (Claudes förslag), med protokollet (Å6)
+skrivet av Claude.
+
+**Stomdokument:** APP §8 — batteriet: kort #262 stängt och Android under 8 %/h inte visad

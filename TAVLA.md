@@ -30,7 +30,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↪ **29/10 16:14 UTC, (1) klart:** testflight `ladda-upp` från main (f1c0808f, körning 40909018044, 16:10–16:14 UTC) gick igenom: *"bygget bär 0.3.14 (35), project.yml säger 0.3.14 (35)"*, *"Upload succeeded"* och `** EXPORT SUCCEEDED **`. Certifikaten är alltså frigjorda; vem som återkallade dem är inte bokfört. Byggnumret höjdes i ea31425d, och ingen fil under `ios/` har ändrats efter det. (2) står kvar: utan ett sparat certifikat skapar varje bygge i Actions ett nytt, så taket kan nås igen.
   **Kvar:** (2), ett sparat distributionscertifikat i flödet eller ett beslut att låta det vänta.
   ✅ **Stängt 11/11** (Bengt: *"Ja, stäng"*; genomgången av Väntar på, punkt 5): steg 2, ett sparat distributionscertifikat i flödet, får vänta tills taket slår till igen; då görs steg 1 om, några minuter för Axel i Apple-kontot. Det uppfyller Verify (en plan eller ett beslut att låta den vänta). Taket har inte slagit till sedan 29/10: åtta lyckade uppladdningar från main efter 40909018044, senast 42921592468 (10/11). Ingen har räknat certifikaten i kontot sedan dess.
-- [ ] 🔋 **#262 BATTERIPAKETET — SJU ÅTGÄRDER EFTER FÄLTRAPPORTEN 27/9** (Bengts beställning 27/9: *"föreslå ett åtgärdspaket
+- [x] ✅ 🔋 **#262 BATTERIPAKETET — SJU ÅTGÄRDER EFTER FÄLTRAPPORTEN 27/9** (Bengts beställning 27/9: *"föreslå ett åtgärdspaket
   … jag vill att Axel gör det"*. DECISIONS #386, #387). 🚨 **Släppblockerare** — batteribudgeten är ett krav i CLAUDE.md.
   📱 **Vad testaren rapporterade:** 42 % efter en baddag, telefonen knappt använd. 27/9: **11 h 39 m** bakgrund, **0 m** skärm,
   GPS **6 h 40 m**, 924 väckningar, väckningslås 4 h 16 m, CPU **2 h 21 m**. 26/9: **21,6 %** av dygnets förbrukning.
@@ -42,6 +42,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   omladdningsfixen (#370, 26/9).** Hela fältrapporten är otolkbar tills testaren står på ett bygge vars nummer betyder något.
   Det är därför Å0 är först och inte förhandlingsbart.
   **Verify** *(kortgenomgången 3/10, DECISIONS #451)*: batteribudgeten bevisad på båda plattformarna på ett numrerat bygge med Å1–Å5: Android och iPhone mätta en timme med skärmen av och ingen sladd, under 8 %/h (Å7, Å8 med nollmätningen före), och testarens fältprotokoll (Å6) utan avvikelse.
+  ✅ **Stängt 11/11** (Bengt: *"Stäng hela"*; genomgången av Väntar på, punkt 8): stängt i sin helhet på Bengts beslut (DECISIONS #838), mot förslaget att låta Android-timmen stå kvar. Å1–Å5 i main; Å0 och Å8 överspelade; Å6 inte skrivet; Å7 inte visad: Galaxy J6 gav 8,2 och 8,1 %/h utan nät (#778). Budgeten under 8 %/h och #753 gäller som förut, och delen Batteriet i projektkartan står orange med Android-mätningen.
 
   | # | Åtgärd | Tröskel? | Verify |
   | :-- | :-- | :-- | :-- |

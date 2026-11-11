@@ -1167,7 +1167,7 @@ mätningar — R1–R16 nedan är strukna och står kvar bara som historik.**
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
 ## Öppna kort
 
-Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 16 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
+Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 15 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
 
 **§1 NU — före första frosten**
 
@@ -1176,7 +1176,6 @@ Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 16 kort
 
 **§2.1 Vägen till förare: efterhalkan som märkt beta**
 
-- #262 BATTERIPAKETET — SJU ÅTGÄRDER EFTER FÄLTRAPPORTEN 27/9 — Axels nästa steg
 - #219 ANDROIDS VÄG TILL PLAY — enhetsverifiering, första uppladdning, slutet test — Axel
 
 **§4.2 Öppna**
