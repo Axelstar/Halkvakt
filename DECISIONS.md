@@ -15187,6 +15187,17 @@ Brytarna är av tills dess.
   utan vakt före 105.
 - **Kvar:** ci, Bengts ord om radarn, sammanslagningen, DB-knappen och regelns tid mätt i driften när kedjan skriver.
 
+**Tillägg 11/11 (Bengt: *"Ja, båda"*, på förslagen i bedömningen §4.2): kedjan i 15 delar, och radarn avgörs efter takten.**
+- **Kedjan i drift** blir ett eget jobb i MET-kön efter fysiken, som `kuvos-stad`: en hämtning och 15 delar om omkring 6 000 punkter
+  efter varandra. Det ger omkring 5,8 GB per del och högst omkring två minuter mer än 12 delar, som hade under 1 GB marginal till planens
+  8 GB. Först går historiken för alla punkter med knappen.
+- **Radarn** står kvar som väckare i `sql/105` tills vidare, eftersom inget talar före påslaget. Takten i skuggan räknas både på N3 ensam och
+  med radarn, och radarns bakåtprov på vintern 2024/25 läses. Sedan väljer Bengt och Axel, före taket, mellan att radarn väcker och att
+  bara N3 gäller.
+- **Att radarn bara bekräftar N3 är struket.** `radar_smavag` har bara rader vid regn, så en utebliven rad går inte att skilja från att
+  radarn inte ser, och radarns 60 minuter mot N3:s fyra timmar hade tystat rösten just när en våt väg fryser.
+- **Väntar:** att takten räknas också med radarn är ett tillägg till kuvösens F50, som Bengt och Axel signerar.
+
 **Stomdokument:** MAT 5 — småvägsrösten beställd och byggs avstängd, SYS 2 — driftens rörarbete för småvägarna, APP 3 — betavarningens farotyp och text
 
 ## #829 (10/11 2026) Tipsa en vän, Tyck till och Betygsätt i 0.4.0 (42), tillsammans med Favoriter 2a och CarPlay
