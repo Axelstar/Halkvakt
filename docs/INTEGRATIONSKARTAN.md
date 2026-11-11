@@ -904,7 +904,7 @@ ingen läser en överspelad version någon annanstans.
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
 ## Öppna kort
 
-Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 3 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
+Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 2 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
 
 **§5 Fogarna — var en skuggdel kan greppa, och vad den kostar**
 
@@ -912,7 +912,6 @@ Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 3 kort.
 
 **§6 Var lagren står, mätt**
 
-- #270 FYSIKSPÅRET: FLYTTAD TILL HALKVAKT-KUVOS — Bengt
 - #38b Stråket / skuggmotorn — ÅTERSTÄLLT 10/9 — Claude, låst
 
 <!-- /ÖPPNA KORT -->

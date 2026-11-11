@@ -1167,7 +1167,7 @@ mätningar — R1–R16 nedan är strukna och står kvar bara som historik.**
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
 ## Öppna kort
 
-Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 19 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
+Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 16 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
 
 **§1 NU — före första frosten**
 
@@ -1183,10 +1183,7 @@ Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 19 kort
 
 - #214 PLAY-DEKLARATIONEN ÄR OSANN SEDAN 16/9 — Axel, beslut
 - #299 SPRIDNINGSGRINDEN OCH NATTBEGRÄNSNINGEN — TVÅ FÖRSLAG TILL TROSKLAR-SKUGGAN UR KUVÖSEN — Bengt
-- #298 FYSIKSPÅRET: FLYTTAD TILL HALKVAKT-KUVOS — Bengt
-- #297 FYSIKSPÅRET: FLYTTAD TILL HALKVAKT-KUVOS — Bengt
 - #296 EFTER GRANSKNINGEN — TVÅ BESLUT FÖRE MARS-DOMEN: Ö-B1 "INOM RÄCKVIDD" OCH STARTBANDETS ÖVRE DEL — Bengt
-- #270 FYSIKSPÅRET: FLYTTAD TILL HALKVAKT-KUVOS — Bengt
 - #367 SMÅVÄGARNA: FLYTTAD TILL HALKVAKT-KUVOS — Claude
 - #361 🧭 #361 BLOCK 4, MOTORN — ÅTGÄRDSLISTAN B4-01 TILL B4-60 (BESTÄLLD 21/10 — Claude, Bengts "jag vill åtgärda … — Claude
 - #344 🌡️ #344 FJÄRRYTORNA — EN PLATS GER TVÅ ANKARE I SKUGGANS RÅ (FYND 14/10, AVGJORT SAMMA KVÄLL: INGEN ÄNDRING … — Claude, låst
