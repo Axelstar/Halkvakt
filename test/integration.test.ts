@@ -2651,6 +2651,28 @@ test("#828 småvägsregeln: timmen, fukten, radarn och brytarna, i full skala", 
   }
 });
 
+// SMÅVÄGSRÖSTENS AVFIL (sql/107, avbrottsvillkoren, DECISIONS #828), mot riktig PostGIS.
+//   SA1  med båda brytarna på slår filen av båda, med tid och skäl; en andra körning ändrar inget; beskeden blir tomma
+test("#828 småvägsröstens avfil: sql/107 slår av båda brytarna", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const las = (f: string) => q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+  try {
+    await las("103_smavagspunkter.sql"); await las("104_radar_smavag.sql"); await las("105_smavagsregeln.sql");
+    await q("UPDATE smavagsbrytare SET pa = true, skal = 'prov'");
+    const r1 = await las("107_smavag_brytarna_av.sql");
+    assert.equal(r1.rowCount, 2, "SA1: båda slås av");
+    assert.deepEqual((await q("SELECT grupp, pa, skal FROM smavagsbrytare ORDER BY grupp")).rows,
+      [{ grupp: "N", pa: false, skal: "av med sql/107 (DECISIONS #828)" }, { grupp: "P1", pa: false, skal: "av med sql/107 (DECISIONS #828)" }], "SA1: av med skäl");
+    assert.equal((await las("107_smavag_brytarna_av.sql")).rowCount, 0, "SA1: en andra körning ändrar inget");
+    assert.equal(Number((await q("SELECT count(*) AS n FROM smavag_talar()")).rows[0].n), 0, "SA1: inga besked");
+  } finally {
+    await q("UPDATE smavagsbrytare SET pa = false").catch(() => {});
+    await pool.end();
+  }
+});
+
 // SMÅVÄGSRÖSTENS PUNKTFIL OCH BESKED (sql/106, byggsteg 5b, DECISIONS #828), mot riktig PostGIS.
 //   SF1  punktfilen skrivs i ordningen punkt COLLATE "C" med sha och storlekar; samma punkter en gång till ändrar inget
 //   SF2  en ny punkt ger en ny sha och nollar i_hinken och i_github
