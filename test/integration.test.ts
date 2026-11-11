@@ -2651,6 +2651,64 @@ test("#828 småvägsregeln: timmen, fukten, radarn och brytarna, i full skala", 
   }
 });
 
+// SMÅVÄGSRÖSTENS TIMRADER (ingest/smavag-live-db.ts, sql/105, DECISIONS #828, kort #647), mot riktig PostGIS.
+//   SL1  en timme skrivs med körningens rad, och regeln läser den
+//   SL2  samma timme en gång till ersätter raderna och körningens antal
+//   SL3  ett fel mitt i skrivningen lämnar timmen som den var (transaktionen)
+//   SL4  gallringen tar rader äldre än sex timmar och låter körningsraderna stå
+//   SL5  lagen läser punkterna i id-ordning
+//   SL6  full skala: 90 000 rader på under 10 s, och en andra skrivning lämnar lika många
+test("#828 småvägsröstens timrader: skrivningen, omskrivningen och gallringen, i full skala", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { SATS, skrivTimme } = await import("../ingest/smavag-live-db.ts");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const c = await pool.connect();
+  const q = (s: string, p: unknown[] = []) => c.query(s, p);
+  const las = (f: string) => q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+  const antal = async (t: string) => Number((await q(`SELECT count(*) AS n FROM ${t}`)).rows[0].n);
+  const rensa = async () => { for (const t of ["smavag_live", "smavag_korning", "radar_smavag", "smavagspunkt"]) await q(`DELETE FROM ${t}`); };
+  try {
+    await las("103_smavagspunkter.sql"); await las("104_radar_smavag.sql"); await las("105_smavagsregeln.sql");
+    await rensa();
+    const tid = (await q("SELECT to_char(date_trunc('hour', now()) AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:00:00\"Z\"') AS t")).rows[0].t as string;
+    await q(`INSERT INTO smavagspunkt (punkt, grupp, vag, ordning, lon, lat) VALUES
+      ('r99902', 'P1', 'v99001', 1, 15.01, 60), ('r99901', 'P1', 'v99001', 0, 15.00, 60), ('r99903', 'N', 'v99002', 0, 16.00, 61)`);
+    await skrivTimme(c, tid, [{ punkt: "r99901", ned: true }, { punkt: "r99902", ned: false }], 3);
+    const regel = async () => Object.fromEntries((await q("SELECT punkt, utfall FROM smavag_regel()")).rows.map((r: any) => [r.punkt, r.utfall]));
+    assert.deepEqual(await regel(), { r99901: "varnar", r99902: "torr" }, "SL1: regeln läser timmen");
+    assert.equal((await q("SELECT punkter FROM smavag_korning WHERE tid = $1", [tid])).rows[0].punkter, 3, "SL1: körningens antal");
+    await skrivTimme(c, tid, [{ punkt: "r99902", ned: true }], 2);
+    assert.deepEqual(await regel(), {}, "SL2: 2 av 3 punkter är under 95 %, så timmen räknas inte");
+    await skrivTimme(c, tid, [{ punkt: "r99902", ned: true }], 3);
+    assert.deepEqual(await regel(), { r99902: "varnar" }, "SL2: raderna ersatta");
+    await assert.rejects(skrivTimme(c, tid, [{ punkt: "r99901", ned: true }, { punkt: "x", ned: true }], 3), undefined, "SL3: ett ogiltigt id vägras");
+    assert.deepEqual(await regel(), { r99902: "varnar" }, "SL3: timmen är orörd efter felet");
+    await q("INSERT INTO smavag_live (tid, punkt, ned) VALUES (now() - interval '7 hours', 'r99901', true), (now() - interval '5 hours', 'r99903', true)");
+    await q("INSERT INTO smavag_korning (tid, punkter) VALUES (now() - interval '7 hours', 3)");
+    await q(SATS.gallra);
+    assert.equal(Number((await q("SELECT count(*) AS n FROM smavag_live WHERE tid < now() - interval '6 hours'")).rows[0].n), 0, "SL4: den gamla raden är borta");
+    assert.equal(Number((await q("SELECT count(*) AS n FROM smavag_live WHERE punkt = 'r99903'")).rows[0].n), 1, "SL4: raden fem timmar bort står kvar");
+    assert.equal(await antal("smavag_korning"), 2, "SL4: körningsraderna står kvar");
+    assert.deepEqual((await q(SATS.lagen)).rows.map((r: any) => r.punkt), ["r99901", "r99902", "r99903"], "SL5: lägena i id-ordning");
+    await rensa();
+    const N = 90000;
+    const alla = Array.from({ length: N }, (_, i) => ({ punkt: `r${String(i + 1).padStart(5, "0")}`, ned: i % 2 === 0 }));
+    let t = Date.now();
+    await skrivTimme(c, tid, alla, N);
+    const t1 = Date.now() - t;
+    t = Date.now();
+    await skrivTimme(c, tid, alla, N);
+    const t2 = Date.now() - t;
+    assert.equal(await antal("smavag_live"), N, "SL6: en andra skrivning lämnar lika många rader");
+    assert.ok(t1 < 10000 && t2 < 10000, `SL6: ${t1} och ${t2} ms`);
+    console.log(`SL6: ${N} rader skrivna på ${t1} ms, en gång till på ${t2} ms`);
+  } finally {
+    for (const t of ["smavag_live", "smavag_korning", "radar_smavag", "smavagspunkt"]) await q(`DELETE FROM ${t}`).catch(() => {});
+    c.release();
+    await pool.end();
+  }
+});
+
 // STORSTÄDERNAS REGEL (sql/091, DECISIONS #804, kort #378; halkvakt-kuvos F33): stadspunkterna i kandidatens regel, mot riktig PostGIS.
 //   SR1  filen går att köra två gånger; den frystas och den nyas regel ger samma rader; vägpunkten varnar som förut
 //   SR2  brytaren: B på talar med gruppen som sträcka, C av ger ingen rad, C på talar

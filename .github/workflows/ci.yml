@@ -151,7 +151,8 @@ jobs:
           node --experimental-strip-types ingest/ny-kandidat-db.ts --sjalvtest     # den nya kandidatens skugga: flaggan och den nyas tabeller (DECISIONS #692)
           node --experimental-strip-types ingest/stadskedjan.ts --sjalvtest        # storstädernas punkter i kedjan: dygnen, indatan, id:na (DECISIONS #804)
           node --experimental-strip-types ingest/smavagspunkter-db.ts --sjalvtest  # småvägsröstens punkter: laddarens prov av filen (DECISIONS #828)
-          node --experimental-strip-types ingest/smavagskedjan.ts --sjalvtest      # småvägsröstens kedja: fjärdedelen och historiken per del (#828)
+          node --experimental-strip-types ingest/smavagskedjan.ts --sjalvtest      # småvägsröstens kedja: historiken per del (#828)
+          node --experimental-strip-types ingest/smavag-live-db.ts --sjalvtest     # småvägsröstens timrader till databasen (#828)
           node --experimental-strip-types scripts/kandidat-reserv.ts --sjalvtest   # reserven för del A (20/10)
           node --experimental-strip-types scripts/matningar/kuvos-trafik-per-band-2026-10-08.ts --sjalvtest
           node --experimental-strip-types scripts/matningar/kuvos-fysik-givarvakt-2026-10-08.ts --sjalvtest
