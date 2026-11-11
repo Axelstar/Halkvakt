@@ -15210,6 +15210,8 @@ Brytarna är av tills dess.
   länge den är högst två timmar gammal och tiger sedan till nästa skrivna timme, omkring 50 minuter var sjätte timme, längre om kedjan blir sen. Inget talar förrän brytarna slås på.
 - **Ordningen:** PR #1509 och `sql/105` med DB-knappen, kuvösens PR, sedan flödena, knappen `historik` för alla punkter och första körningen.
 
+**Tillägg 11/11 (Bengt: *"gör 1, 2, 3 och 4 i den ordningen"*): regeln migrerad och kedjan sammanslagen, med brytarna av.** PR #1509 sammanslagen (e353c978) på grön ci. `sql/105` migrerad med DB-knappen 06.20 UTC (42971659393), transaktionen bekräftad. Bevisraderna: RLS på båda tabellerna, inga rader, brytarna N och P1 av, ingen timme, inga besked och rättigheter bara för `service_role`. Kuvösens PR 71 (24b279c0, F54) och PR #1512 (9b79145e) sammanslagna på grön ci; integrationsproven i full skala gick i ci (SG5 och SL6). Historiken för alla punkter trycks när körningen av `kuvos-stad` efter 06.28 UTC är klar, så att staden inte fördröjs.
+
 **Stomdokument:** MAT 5 — småvägsrösten beställd och byggs avstängd, SYS 2 — driftens rörarbete för småvägarna, APP 3 — betavarningens farotyp och text
 
 ## #829 (10/11 2026) Tipsa en vän, Tyck till och Betygsätt i 0.4.0 (42), tillsammans med Favoriter 2a och CarPlay
