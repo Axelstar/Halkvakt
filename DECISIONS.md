@@ -15310,3 +15310,23 @@ App Privacy eller integritet.html.
 - Bengt eller Axel säger om någon av dem gjorde flytten.
 
 **Stomdokument:** SYS — PostGIS i schemat extensions och grindarnas tillfälliga databas
+
+## #833 (11/11 2026) Småvägsröstens avbrottsvillkor, signerade (kort #647)
+
+**Signaturerna.** Bengt 11/11: *"jag tar gärna rekommenationer från dej"*, på de uppräknade valen 1–5. Axel via Bengt samma dag: *"axel signerar"*.
+
+**Villkoren** (`docs/FORSLAG-AVBROTT-SMAVAGSROSTEN-2026-11-11.md`). De gäller från påslaget, och avbrottet görs med `sql/107` (båda brytarna av).
+- **Driftens hälsa:** Claude slår av utan att fråga om
+  - publiceringen faller två körningar i rad, eller lägesfilen står still i mer än 10 minuter;
+  - en K-timme försvinner för dagens punkter, eller ett av storstädernas steg faller, och felet går att följa till småvägskedjan;
+  - publiceringens bygge tar mer än dubbelt så lång tid som medianen veckan före påslaget, två körningar i rad;
+  - en förare rapporterar att batteriet eller värmen är fel.
+- **Takten:** Claude slår av och frågar sedan när beskeden per körtimme i skuggan ligger över det valda taket två dygn i rad, i norr eller i söder.
+- **Testarnas svar:** rösten slås av när minst 10 facitsvar om småvägsrösten under en vecka ger mer än hälften *inte halt*.
+- **Olycksfacit:** granskning, inget avbrott. En miss talar för fler varningar, inte färre.
+- **Omfånget:** båda brytarna.
+- Varje avbrott får en rad i STATUS och ett besked till Bengt.
+
+**Alternativen som inte valdes:** att Claude frågar först vid driftens hälsa; ett dygn eller en vecka över taket; avbrott vid ett antal missar i olycksfacit; att bara den grupp där villkoret slog till slås av.
+
+**Stomdokument:** MAT 5 — småvägsröstens avbrottsvillkor
