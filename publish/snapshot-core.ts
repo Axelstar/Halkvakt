@@ -328,6 +328,31 @@ export async function buildSnapshot(qIn: Q, bridgesIn: Bridge[], now: Date = new
     notes.push(`kandidat: vägnumren ej läsbara (${String((e as Error).message).slice(0, 80)}) — vag blir null`);
   }
 
+  // ---- småvägsröstens besked (DECISIONS #828, sql/105–106, byggsteg 5b) ----
+  // En bit per punkt i punktfilens ordning (smavagspunkt ORDER BY punkt COLLATE "C", som laddaren skriver smavag_punktfil), som
+  // base64, med punktfilens sha så att appen bara läser bitarna mot den fil den har. Beskeden är smavag_talar(): regelns varnande
+  // punkter där brytaren är på. Med båda brytarna av saknas nyckeln helt (byggplanens Verify). Fail-soft: går något inte att läsa,
+  // eller stämmer punktfilen inte med punkterna, saknas nyckeln och noten säger varför — tyst är det säkra hållet.
+  avsnitt = "smavag";
+  let smavag: { fil: string; n: number; bitar: string } | null = null;
+  try {
+    const [b] = await q(`SELECT bool_or(pa) AS pa FROM smavagsbrytare`);
+    if (b?.pa === true) {
+      const [f] = await q(`SELECT sha256, punkter, (SELECT count(*) FROM smavagspunkt) AS n FROM smavag_punktfil WHERE id = 1`);
+      if (!f) notes.push("smavag: punktfilen saknas (smavag_punktfil) — nyckeln utelämnas");
+      else if (Number(f.n) !== Number(f.punkter)) notes.push("smavag: punktfilen och punkterna går isär — nyckeln utelämnas");
+      else {
+        const rader = await q(`
+          SELECT p.i FROM (SELECT punkt, (row_number() OVER (ORDER BY punkt COLLATE "C") - 1)::int AS i FROM smavagspunkt) p
+          JOIN smavag_talar() t ON t.punkt = p.punkt`);
+        smavag = { fil: String(f.sha256), n: Number(f.punkter), bitar: smavagBitar(rader.map((r) => Number(r.i)), Number(f.punkter)) };
+      }
+    }
+  } catch (e) {
+    smavag = null;
+    notes.push(`smavag: ej läsbar (${String((e as Error).message).slice(0, 80)}) — nyckeln utelämnas`);
+  }
+
   // ---- karantänen (kort #234): svenska stationer som nyligen brutit grovt mot #75 ----
   avsnitt = "karantan";
   // Fail-soft som arkivfrågorna nedan: går historiken inte att läsa publiceras stationerna som förut, och det noteras.
@@ -519,6 +544,8 @@ export async function buildSnapshot(qIn: Q, bridgesIn: Bridge[], now: Date = new
     rain_segments: regnSegs.map(segRow),
     // Kandidatens varnande sträckor (#576): punkterna med fem decimaler, regelns timme. Saknas när brytaren är av (#578).
     ...(kandidatPa ? { kandidat } : {}),
+    // Småvägsröstens besked (#828, byggsteg 5b): bitarna mot punktfilen smavag.json. Saknas när båda brytarna är av.
+    ...(smavag ? { smavag } : {}),
     weather: wx.map((r) => {
       const id = String(r.station_id), l = lutning.get(id);
       return {
@@ -572,14 +599,31 @@ async function gzipBytes(s: string): Promise<number> {
 
 /** manifest.json — apparna vägrar en fil vars sha256 inte stämmer och behåller den förra.
  *  Skrivs ALLTID ihop med static.json och live.json, aldrig separat. */
-export async function manifestFor(generated_at: string, files: { static: string; live: string }, prefix = "app/v1") {
+/** Småvägsröstens bitar (DECISIONS #828, byggsteg 5b): bit i är punkt i i punktfilens ordning, åtta punkter per byte med den första i
+ *  den lägsta biten, som base64. 88 335 punkter blir 11 042 byte, 14 724 tecken. */
+export function smavagBitar(index: number[], n: number): string {
+  const b = new Uint8Array(Math.ceil(n / 8));
+  for (const i of index) {
+    if (!Number.isInteger(i) || i < 0 || i >= n) throw new Error(`smavag: index ${i} utanför 0–${n - 1}`);
+    b[i >> 3] |= 1 << (i & 7);
+  }
+  let s = "";
+  for (const x of b) s += String.fromCharCode(x);
+  return btoa(s);
+}
+
+/** ovriga: filer utöver static och live som manifestet ska bära (småvägsröstens punktfil, byggsteg 5b), med färdig sha och storlek.
+ *  Apparna läser bara static och live, så en ny post bryter ingen installerad app. */
+export async function manifestFor(generated_at: string, files: { static: string; live: string }, prefix = "app/v1",
+                                  ovriga: Record<string, { sha256: string; bytes: number; gz_bytes: number }> = {}) {
   const entry = async (name: "static" | "live") => ({
     path: `${prefix}/${name}.json`,
     sha256: await sha256Hex(files[name]),
     bytes: new TextEncoder().encode(files[name]).byteLength,
     gz_bytes: await gzipBytes(files[name]),
   });
-  return { schema: 1, generated_at, files: { static: await entry("static"), live: await entry("live") } };
+  const fler = Object.fromEntries(Object.entries(ovriga).map(([namn, x]) => [namn, { path: `${prefix}/${namn}.json`, ...x }]));
+  return { schema: 1, generated_at, files: { static: await entry("static"), live: await entry("live"), ...fler } };
 }
 
 /** GRANNLÄNDERNAS SNAPSHOT (kort #238; Bengts princip 22/9: återkommande körningar bor i Supabase, inte i Actions).

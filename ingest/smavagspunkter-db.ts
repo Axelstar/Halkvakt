@@ -2,9 +2,13 @@
 // smavagspunkt lika med den: nya och ändrade punkter skrivs, punkter som inte längre står i filen tas bort, allt i en transaktion.
 // Laddaren rör aldrig vagpunkt, stadspunkt eller brytarna (smavagsbrytare). Loggen säger bara klart eller fel (DECISIONS #768:
 // punkterna är kuvösens; inga antal eller lägen här).
+// PUNKTFILEN (byggsteg 5b, sql/106): i samma transaktion skrivs appens punktfil, punkternas lägen i ordningen punkt COLLATE "C", till
+// smavag_punktfil när den ändrats. Publiceringen laddar upp den, och bitarna i live.json följer samma ordning.
 //   node --experimental-strip-types ingest/smavagspunkter-db.ts ladda [data/vagdata/smavagsrosten-punkter.json]
 //   node --experimental-strip-types ingest/smavagspunkter-db.ts --sjalvtest
 import { readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { gzipSync } from "node:zlib";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { delar } from "./kandidat-db.ts";
 
@@ -41,7 +45,22 @@ export const SATS = {
       IS DISTINCT FROM (EXCLUDED.grupp, EXCLUDED.vag, EXCLUDED.ordning, EXCLUDED.lon, EXCLUDED.lat)`,
   // En anti-join, inte NOT (punkt = ANY($1)): med omkring 90 000 punkter hade den jämfört varje rad med hela listan.
   ta_bort: `DELETE FROM smavagspunkt s WHERE NOT EXISTS (SELECT 1 FROM unnest($1::text[]) AS l(punkt) WHERE l.punkt = s.punkt)`,
+  // Punktfilen (sql/106): ordningen är bitarnas i live.json (publish/snapshot-core.ts). En ny fil nollar vad hinken och kartrepot bär.
+  finnsPunktfil: `SELECT to_regclass('public.smavag_punktfil') IS NOT NULL AS ja`,
+  punktfilRader: `SELECT punkt, lon, lat FROM smavagspunkt ORDER BY punkt COLLATE "C"`,
+  punktfil: `INSERT INTO smavag_punktfil (id, sha256, punkter, bytes, gz_bytes, json, skriven_at) VALUES (1, $1, $2, $3, $4, $5, now())
+    ON CONFLICT (id) DO UPDATE SET sha256 = EXCLUDED.sha256, punkter = EXCLUDED.punkter, bytes = EXCLUDED.bytes, gz_bytes = EXCLUDED.gz_bytes,
+      json = EXCLUDED.json, skriven_at = now(), i_hinken = NULL, i_github = NULL
+    WHERE smavag_punktfil.sha256 IS DISTINCT FROM EXCLUDED.sha256`,
 };
+
+/** Appens punktfil: lägena med fem decimaler i den givna ordningen, och filens sha256, storlek och packade storlek. */
+export function punktfil(rader: { lon: number; lat: number }[]) {
+  const r5 = (x: number) => Math.round(Number(x) * 1e5) / 1e5;
+  const json = JSON.stringify({ schema: 1, punkter: rader.map((p) => [r5(p.lon), r5(p.lat)]) });
+  const b = Buffer.from(json, "utf8");
+  return { json, sha256: createHash("sha256").update(b).digest("hex"), punkter: rader.length, bytes: b.byteLength, gz_bytes: gzipSync(b).byteLength };
+}
 
 export const kolumner = (d: Smavagspunkt[]) =>
   [d.map((x) => x.punkt), d.map((x) => x.grupp), d.map((x) => x.vag), d.map((x) => x.ordning), d.map((x) => x.lon), d.map((x) => x.lat)];
@@ -57,6 +76,11 @@ async function ladda(fil: string) {
     await c.query("BEGIN");
     for (const d of delar(r)) await c.query(SATS.skriv, kolumner(d));
     await c.query(SATS.ta_bort, [r.map((x) => x.punkt)]);
+    // Före sql/106 finns ingen punktfil att skriva; punkterna laddas ändå.
+    if ((await c.query(SATS.finnsPunktfil)).rows[0]?.ja) {
+      const f = punktfil((await c.query(SATS.punktfilRader)).rows);
+      await c.query(SATS.punktfil, [f.sha256, f.punkter, f.bytes, f.gz_bytes, f.json]);
+    }
     await c.query("COMMIT");
   } catch (e) {
     await c.query("ROLLBACK").catch(() => {});
@@ -87,6 +111,11 @@ function sjalvtest(): number {
   if (!SATS.skriv.includes("ON CONFLICT (punkt)") || !SATS.ta_bort.startsWith("DELETE FROM smavagspunkt") || /vagpunkt\b|stadspunkt|brytare/.test(satser.replace(/smavagspunkt/g, "")))
     fel.push("satserna rör annat än smavagspunkt");
   if (/= ANY\(/.test(SATS.ta_bort)) fel.push("ta_bort jämför varje rad med hela listan");
+  const f = punktfil([{ lon: 15.123456, lat: 60.000004 }, { lon: 16, lat: 61.5 }]);
+  if (f.json !== '{"schema":1,"punkter":[[15.12346,60],[16,61.5]]}' || f.punkter !== 2 || !/^[0-9a-f]{64}$/.test(f.sha256) || f.bytes !== f.json.length)
+    fel.push(`punktfilen: ${f.json}`);
+  if (punktfil([{ lon: 16, lat: 61.5 }, { lon: 15.123456, lat: 60.000004 }]).sha256 === f.sha256) fel.push("punktfilens sha bär inte ordningen");
+  if (!SATS.punktfilRader.includes('ORDER BY punkt COLLATE "C"') || !SATS.punktfil.includes("i_hinken = NULL")) fel.push("punktfilens ordning eller nollningen");
   console.log(`självtest smavagspunkter-db: ${fel.length ? "FEL" : "klart"}`);
   for (const f of fel) console.log(`  ${f}`);
   return fel.length ? 1 : 0;
