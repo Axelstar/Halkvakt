@@ -2538,6 +2538,119 @@ test("#828 radar_smavag: tabellen och satserna för småvägsröstens radar", { 
   }
 });
 
+// SMÅVÄGSRÖSTENS REGEL (sql/105, DECISIONS #828, kort #647; halkvakt-kuvos F51): timmen, fukten, radarn och brytarna, mot riktig PostGIS.
+//   SG1  filen går att köra två gånger; RLS på båda tabellerna
+//   SG2  timmen: utan körning ingen; en tre timmar gammal körning och en med för få punkter räknas inte; den senaste färska och
+//        fullständiga gäller, och en körning i framtiden rör den inte
+//   SG3  fukten: N3 varnar; utan N3 och utan radar torr; radarn ≥ 0,1 mm/h i punktens bit på 60 minuter varnar, men inte i grannbiten
+//        (ordning 5 är bit 1); 70 minuter gammal radar och ett medel på 0,05 mm/h (max 0,1) väcker inte; en punkt utan rad (D säger
+//        inte fryser), en rad ur en äldre timme och en rad vars punkt saknas i smavagspunkt ger ingen rad
+//   SG4  brytarna: båda av ⇒ smavag_talar() är tom medan smavag_regel() varnar som förut (skuggans underlag); P1 på ⇒ bara P1:s
+//        varnande; båda på ⇒ alla varnande
+//   SG5  full skala (CLAUDE.md, #783; regelns tid som #813): 90 000 punkter med rad i timmen, hälften med N3 och regn i var tredje
+//        bit, båda brytarna på, före och efter ANALYZE; regeln och beskeden tar under 10 s, och med brytarna av är beskeden tomma
+test("#828 småvägsregeln: timmen, fukten, radarn och brytarna, i full skala", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const las = (f: string) => q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+  const brytare = (p1: boolean, n: boolean) =>
+    q("UPDATE smavagsbrytare SET pa = CASE grupp WHEN 'P1' THEN $1::boolean ELSE $2::boolean END", [p1, n]);
+  const regel = async () => Object.fromEntries((await q("SELECT punkt, utfall FROM smavag_regel()")).rows.map((r: any) => [r.punkt, r.utfall]));
+  const talar = async () => (await q("SELECT punkt FROM smavag_talar() ORDER BY punkt")).rows.map((r: any) => r.punkt);
+  const timme = async () => (await q("SELECT smavag_timme() AS t")).rows[0].t?.toISOString() ?? null;
+  const rensa = async () => { for (const t of ["smavag_live", "smavag_korning", "radar_smavag", "smavagspunkt"]) await q(`DELETE FROM ${t}`); };
+  try {
+    await las("103_smavagspunkter.sql"); await las("104_radar_smavag.sql");
+    await las("105_smavagsregeln.sql"); await las("105_smavagsregeln.sql");
+    await rensa(); await brytare(false, false);
+    assert.deepEqual((await q("SELECT relname, relrowsecurity FROM pg_class WHERE relname IN ('smavag_live', 'smavag_korning') ORDER BY 1")).rows,
+      [{ relname: "smavag_korning", relrowsecurity: true }, { relname: "smavag_live", relrowsecurity: true }], "SG1: RLS");
+    const t0 = (await q("SELECT date_trunc('hour', now()) AS t")).rows[0].t.toISOString();
+
+    // Åtta punkter. Bitarna är <väg>-<ordning div 5>.
+    await q(`INSERT INTO smavagspunkt (punkt, grupp, vag, ordning, lon, lat) VALUES
+      ('r99901', 'P1', 'v99001', 0, 15.00, 60), ('r99902', 'P1', 'v99001', 1, 15.01, 60), ('r99903', 'P1', 'v99001', 5, 15.05, 60),
+      ('r99904', 'P1', 'v99002', 0, 16.00, 60), ('r99905', 'P1', 'v99003', 0, 17.00, 60),
+      ('r99906', 'N', 'v99004', 0, 18.00, 61), ('r99907', 'N', 'v99004', 1, 18.01, 61), ('r99908', 'P1', 'v99005', 0, 19.00, 62)`);
+    // D säger fryser i timmen för r99901–r99906 (r99907 har ingen rad); r99908 bara i timmen före; r99999 saknas bland punkterna.
+    await q(`INSERT INTO smavag_live (tid, punkt, ned) SELECT $1::timestamptz - h * interval '1 hour', p, n
+             FROM (VALUES ('r99901', true, 0), ('r99902', false, 0), ('r99903', false, 0), ('r99904', false, 0), ('r99905', false, 0),
+                          ('r99906', true, 0), ('r99908', true, 1), ('r99999', true, 0)) AS v(p, n, h)`, [t0]);
+    await q(`INSERT INTO radar_smavag (bit, observed_at, rate_max_mmh, rate_mean_mmh) VALUES
+      ('v99001-1', now() - interval '30 minutes', 0.3, 0.2), ('v99002-0', now() - interval '70 minutes', 0.3, 0.2),
+      ('v99003-0', now() - interval '10 minutes', 0.1, 0.05)`);
+
+    // SG2: timmen.
+    assert.equal(await timme(), null, "SG2: utan körning ingen timme");
+    await q("INSERT INTO smavag_korning (tid, punkter) VALUES ($1::timestamptz - interval '3 hours', 8)", [t0]);
+    assert.equal(await timme(), null, "SG2: en tre timmar gammal körning räknas inte");
+    await q("INSERT INTO smavag_korning (tid, punkter) VALUES ($1, 7)", [t0]);
+    assert.equal(await timme(), null, "SG2: 7 av 8 punkter är under 95 %");
+    await q("UPDATE smavag_korning SET punkter = 8 WHERE tid = $1", [t0]);
+    assert.equal(await timme(), t0, "SG2: den färska och fullständiga timmen");
+    await q("INSERT INTO smavag_korning (tid, punkter) VALUES ($1::timestamptz + interval '1 hour', 8)", [t0]);
+    assert.equal(await timme(), t0, "SG2: en körning i framtiden rör inte timmen");
+
+    // SG3: fukten och radarn.
+    const VANTAT = { r99901: "varnar", r99902: "torr", r99903: "varnar", r99904: "torr", r99905: "torr", r99906: "varnar" };
+    assert.deepEqual(await regel(), VANTAT, "SG3: N3, radarn i biten, grannbiten, 70 minuter, medlet 0,05, punkter utan rad");
+
+    // SG4: brytarna.
+    assert.deepEqual(await talar(), [], "SG4: båda av ⇒ inga besked");
+    assert.deepEqual(await regel(), VANTAT, "SG4: regeln räknar som förut med brytarna av");
+    await brytare(true, false);
+    assert.deepEqual(await talar(), ["r99901", "r99903"], "SG4: P1 på ⇒ bara P1:s varnande");
+    await brytare(true, true);
+    assert.deepEqual(await talar(), ["r99901", "r99903", "r99906"], "SG4: båda på ⇒ alla varnande");
+
+    // SG5: full skala, med båda brytarna på.
+    await rensa();
+    const N = 90000;
+    await q(`INSERT INTO smavagspunkt (punkt, grupp, vag, ordning, lon, lat)
+             SELECT 'r' || lpad(i::text, 5, '0'), CASE WHEN i % 3 = 0 THEN 'N' ELSE 'P1' END, 'v' || lpad((i / 40 + 1)::text, 5, '0'),
+                    i % 40, 11 + (i % 1000) * 0.012, 56 + (i / 1000) * 0.13
+             FROM generate_series(1, $1::int) AS i`, [N]);
+    await q(`INSERT INTO smavag_live (tid, punkt, ned) SELECT $1::timestamptz, punkt, substr(punkt, 2)::int % 2 = 0 FROM smavagspunkt`, [t0]);
+    await q("INSERT INTO smavag_korning (tid, punkter) VALUES ($1, $2)", [t0, N]);
+    await q(`INSERT INTO radar_smavag (bit, observed_at, rate_max_mmh, rate_mean_mmh)
+             SELECT b.bit, now() - m * interval '1 minute', 0.5, 0.3
+             FROM (SELECT DISTINCT vag || '-' || (ordning / 5) AS bit FROM smavagspunkt WHERE (ordning / 5) % 3 = 0) b,
+                  unnest(ARRAY[5, 20, 35, 50]) AS m`);
+    const matt = async () => {
+      let t = Date.now();
+      const nRegel = (await q("SELECT count(*) AS n FROM smavag_regel()")).rows[0].n;
+      const tRegel = Date.now() - t;
+      t = Date.now();
+      const nTalar = (await q("SELECT count(*) AS n FROM smavag_talar()")).rows[0].n;
+      return { nRegel: Number(nRegel), nTalar: Number(nTalar), tRegel, tTalar: Date.now() - t };
+    };
+    const fore = await matt();
+    await q("ANALYZE smavagspunkt"); await q("ANALYZE smavag_live"); await q("ANALYZE radar_smavag");
+    const efter = await matt();
+    for (const [namn, m] of [["före ANALYZE", fore], ["efter ANALYZE", efter]] as const) {
+      assert.equal(m.nRegel, N, `SG5 ${namn}: en rad per punkt`);
+      assert.ok(m.nTalar > N / 2 && m.nTalar < N, `SG5 ${namn}: ${m.nTalar} besked, N3 för hälften och radarn för en del av resten`);
+      assert.ok(m.tRegel < 10000 && m.tTalar < 10000, `SG5 ${namn}: regeln ${m.tRegel} ms, beskeden ${m.tTalar} ms`);
+    }
+    assert.equal(fore.nTalar, efter.nTalar, "SG5: samma besked före och efter ANALYZE");
+    const plan = (await q("EXPLAIN SELECT * FROM smavag_talar()")).rows.map((r: any) => r["QUERY PLAN"]).join("\n");
+    await brytare(false, false);
+    let t = Date.now();
+    assert.equal(Number((await q("SELECT count(*) AS n FROM smavag_talar()")).rows[0].n), 0, "SG5: brytarna av ⇒ inga besked");
+    const tAv = Date.now() - t;
+    console.log(`SG5: ${N} punkter, ${efter.nTalar} besked; regeln ${fore.tRegel}/${efter.tRegel} ms och beskeden ${fore.tTalar}/${efter.tTalar} ms ` +
+                `(före/efter ANALYZE), beskeden med brytarna av ${tAv} ms; planen ${plan.includes("InitPlan") ? "räknar timmen en gång (InitPlan)" : "är en funktionsskanning"}`);
+  } finally {
+    await q("DELETE FROM smavag_live").catch(() => {});
+    await q("DELETE FROM smavag_korning").catch(() => {});
+    await q("DELETE FROM radar_smavag").catch(() => {});
+    await q("DELETE FROM smavagspunkt").catch(() => {});
+    await q("UPDATE smavagsbrytare SET pa = false").catch(() => {});
+    await pool.end();
+  }
+});
+
 // STORSTÄDERNAS REGEL (sql/091, DECISIONS #804, kort #378; halkvakt-kuvos F33): stadspunkterna i kandidatens regel, mot riktig PostGIS.
 //   SR1  filen går att köra två gånger; den frystas och den nyas regel ger samma rader; vägpunkten varnar som förut
 //   SR2  brytaren: B på talar med gruppen som sträcka, C av ger ingen rad, C på talar
