@@ -918,6 +918,17 @@
       "facebook": "1312515671952967_122111934513516187",
       "instagram": "17925722661449266",
       "x": "2120469382254227928"
+    },
+    {
+      "pass": "live",
+      "namn": "2026-11-11-live-1808",
+      "typ": "smhi",
+      "nyckel": "smhi:Snöfall:Delar av nordligaste Västerbottens kustland:ORANGE",
+      "tid": "2026-11-11T17:08:40.490Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-11-11-live-1808.jpg",
+      "facebook": "1312515671952967_122112021315516187",
+      "instagram": "18081878627403088",
+      "x": "2120564433093038568"
     }
   ]
 }
