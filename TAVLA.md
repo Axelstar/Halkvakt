@@ -436,7 +436,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   plattformarna, så kortet står kvar öppet med iOS-halvan bevisad.
   🔨 **KADENSTESTET LAGAT 26/9** (femma sju, DECISIONS #373): `tiers()` ersatt av ett körprov i 140 km/h rakt mot en fara från varje start 3,6–60 km; inom motorns räckvidd (leadMaxM + cameraTriggerM) ska varje GPS-punkt komma högst 1 s efter förra. android.yml 36217938454 grön på grenen; motprovet 36217945802 (NEAR_MS 1 → 10 s) rött på exakt två prov — körprovet och `noSnapshotMeansFullAlertness` — där det gamla testet höll. Enligt en modell av provet fäller det också FAR 15 → 450 s men inte 15 → 150 s, som fortfarande är säkert. Kvar på kortet: **mätningen** (iPhone: Bengt · Android: testtelefonen).
 
-- [ ] ↩︎ **Introduktionen** (iOS) — bevis saknas: radera appen → installera → intron ska komma
+- [x] ✅ ↩︎ **Introduktionen** (iOS) — bevis saknas: radera appen → installera → intron ska komma
   först; "Visa igen" i Inställningar. ~~Introduktionen i Claude Design är enda skärmen som inte
   ritats om än.~~ Android-spegeln (DECISIONS #36) efter att iOS-varianten testats.
   ↪ **Flyttat 26/9 från *Axel — hösten (brainstorm 31/8)*** (femma åtta, DECISIONS #377): nästa steg är Bengts två minuter (*Visa introduktionen igen*).
@@ -444,6 +444,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   kort #284 byggde den på iOS i 0.3.10 (22), släppt av Axel 3/10. Beviset ovan saknas fortfarande. Android har ingen introduktion
   (kort #284 (c)).
   **Verify** *(kortgenomgången 3/10, DECISIONS #451)*: appen raderad och installerad om på en iPhone, introduktionen kommer först, och *Visa igen* i Inställningar visar den — bokfört med datum och bygge.
+  ✅ **Stängt 11/11** (Bengt: *"stäng punkt 9"*; genomgången av Väntar på, punkt 9): stängt utan provet, på Bengts ord. Introduktionen ritades om i 0.3.10 (22), och knappen Visa igen finns (HalkvaktApp.swift:34); det enda provet är från första installationen 31/8, med den gamla introduktionen. Ett fel i den nya syns först hos en ny användare.
 
 ### Claude — olåst
 - [ ] 🛑 **#643 VAKTEN DOG UNDER KÖRNINGEN — UTRESAN 8/11 SLUTADE SOM AVBRUTEN (NYTT 8/11 — Claude, under läsningen av telefonturen; Bengt: *"Den gick samma resa dit"* och *"Ja, bokför"*; DECISIONS #778 tillägg 8/11 kväll)**: Bengts utresa 8/11 med 0.4.0 fick aldrig sitt slut. Räknaren bär `resa_slut` *knapp:okand:avbruten* (passet startat med knappen, appen dog under körning, #787), och *Mätningen* saknar resan, eftersom den bara sparas när vakten stoppas. Hemresan startade av sig själv, alltså väckte parkeringsstaketet en app som hade dött. Halkvakt var 2 h 58 min i bakgrunden mot hemresans 94 minuter, så appen levde troligen större delen av utresan, men när den dog syns inte. Dör vakten mitt i en körning tystnar varningarna utan att föraren märker det. Möjliga orsaker: bortsvept, uppdaterad av TestFlight, krasch eller iOS:s minnesstopp (jetsam). **Kvar:** Bengt läser *Analysdata* (*Halkvakt-2026-11-08*, *JetsamEvent-2026-11-08*) och säger om appen sveptes bort eller uppdaterades; TestFlight-krascher syns för Axel i Xcode Organizer. *Verify:* orsaken känd och bokförd i DECISIONS; var den en krasch eller ett minnesstopp, är den rättad i ett bygge, och en resa med vakten igång slutar i räknaren som *hand* eller *parkerad*, inte *avbruten*.
