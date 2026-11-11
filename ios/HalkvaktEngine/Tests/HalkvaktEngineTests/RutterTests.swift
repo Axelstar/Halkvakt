@@ -72,6 +72,28 @@ final class RutterTests: XCTestCase {
         }
     }
 
+    func testDagensResorSomTypeScript() throws {
+        let d = try Self.facit()["dagens"] as! [String: Any]
+        XCTAssertEqual((d["max"] as! NSNumber).intValue, Vantande.vantandeMax)
+        XCTAssertEqual((d["kvarS"] as! NSNumber).doubleValue, Vantande.vantandeKvarS)
+        let pkt = { (a: Any?) in (a as! [[Any]]).map { [($0[0] as! NSNumber).doubleValue, ($0[1] as! NSNumber).doubleValue] } }
+        var l: [Vantande] = []
+        let fall = d["fall"] as! [[String: Any]]
+        XCTAssertEqual(fall.count, 7, "facit bär sina fall")
+        for f in fall {
+            let n = f["ny"] as! [String: Any]
+            let ny = Vantande(id: n["id"] as! String, slutS: (n["slutS"] as! NSNumber).doubleValue, km: (n["km"] as! NSNumber).doubleValue,
+                              punkter: pkt(n["punkter"]), dithem: n["dithem"] as! Bool)
+            l = Vantande.dagensResor(l, ny, nuS: (f["nuS"] as! NSNumber).doubleValue)
+            let efter = f["efter"] as! [[String: Any]]
+            XCTAssertEqual(l.map(\.id), efter.map { $0["id"] as! String }, f["namn"] as! String)
+            XCTAssertEqual(l.map(\.slutS), efter.map { ($0["slutS"] as! NSNumber).doubleValue }, f["namn"] as! String)
+            XCTAssertEqual(l.map(\.km), efter.map { ($0["km"] as! NSNumber).doubleValue }, f["namn"] as! String)
+            XCTAssertEqual(l.map(\.dithem), efter.map { $0["dithem"] as! Bool }, f["namn"] as! String)
+            XCTAssertEqual(l.map(\.punkter.count), efter.map { ($0["punkter"] as! NSNumber).intValue }, f["namn"] as! String)
+        }
+    }
+
     func testFilenTurOchRetur() throws {
         let r = Rutter(rutter: [Self.rutt("r1")])
         XCTAssertEqual(try JSONDecoder().decode(Rutter.self, from: JSONEncoder().encode(r)), r)

@@ -1,4 +1,4 @@
--- 092: statistikens fönster räknas mot hela tabellen (DECISIONS #807; Axel 6/11). Idempotent.
+-- 092: statistikens fönster räknas mot hela tabellen (DECISIONS #837, fattat som #807; Axel 6/11). Idempotent.
 -- Förut räknades "7 dygn" och "i dag" inom vald period (CTE:n a), så med perioden ett dygn blev 7-dygnskolumnen samma som
 -- dagens tal, och varningarna den 4/11 syntes inte på halkvakt.se/statistik. Nu följer 'period' vald period som förut, medan
 -- 'sju' och 'idag' är fasta fönster oavsett period. En rad som har tal i ett fönster men inte i perioden kommer med, med period 0.

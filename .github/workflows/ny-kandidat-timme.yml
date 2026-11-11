@@ -10,6 +10,8 @@ name: ny-kandidat-timme
 # PULSKLOCKAN sedan 24/10 (DECISIONS #706): puls-ny-kandidat-timme "47 * * * *", tre minuter före den frystas logg :50. Knappen finns
 # kvar för en enskild timme. Ingenting här når appen, rösten, lägesfilen eller den frystas dom.
 # Ingen Trafikverksdata i någon fil eller logg: ankarna lämnar aldrig jobbet, bara kandidatens egna tal skrivs.
+# STORSTÄDERNAS PUNKTER (B och C, DECISIONS #804, kort #378): en egen omgång av del B efter dagens punkter, som aldrig fäller jobbet,
+# se steget.
 on:
   workflow_dispatch:
     inputs:
@@ -83,7 +85,6 @@ jobs:
           set -o pipefail
           python3 fysik/ny_kandidat/levande.py --del-b --ph ph.csv --punkter punkter.csv --ankare ankare.csv --tid "$TID" --ut live.csv > del-b.log 2>&1 || { echo "::error::Del B föll. Utskriften visas inte i den publika loggen; felsök i en session med halkvakt-kuvos."; tail -n 1 del-b.log; exit 1; }
           echo "del B klar för $TID" | tee -a "$GITHUB_STEP_SUMMARY"
-          rm -f ankare.csv
       - name: Till ny_kandidat_live, gallringen och domloggen
         if: env.FLAGGA == 'på' && env.HOPPAD != '1'
         env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
@@ -92,3 +93,30 @@ jobs:
           set -o pipefail
           node --experimental-strip-types ingest/ny-kandidat-db.ts skriv-live live.csv 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
           node --experimental-strip-types ingest/ny-kandidat-db.ts logga 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+      # STORSTÄDERNAS PUNKTER (DECISIONS #804, kort #378): en egen omgång av del B EFTER dagens punkter, som redan är skrivna ovan. Den
+      # första omgången hoppar över stadspunkterna, eftersom de saknar läge i punktfilen. Samma timme, samma PH och samma ankare. Stationernas
+      # rader och lägen följer med, eftersom RÅ:s rester räknas ur stationernas eget PH (kandidat_timme.timme). Varje punkt räknas för sig
+      # mot ankarna, så utfallet är detsamma som i en gemensam omgång. Bara B- och C-raderna skrivs. continue-on-error: faller omgången har
+      # stadspunkterna inget värde den timmen, och dagens K är redan skrivet. Loggen säger bara klart eller fel.
+      - name: Storstädernas punkter — del B och ny_kandidat_live
+        if: env.FLAGGA == 'på' && env.HOPPAD != '1'
+        continue-on-error: true
+        timeout-minutes: 8
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        shell: bash
+        run: |
+          set -o pipefail
+          { head -1 ph.csv; grep -v -E '^(punkt,|v)' ph.csv || true; } > ph-stad.csv
+          grep -qE '^[BC][0-9]{5},' ph-stad.csv || { echo "storstädernas punkter: ingen PH för $TID" | tee -a "$GITHUB_STEP_SUMMARY"; exit 0; }
+          node --experimental-strip-types ingest/stadskedjan.ts lagen punkter-stad.csv 2>&1 | grep -v ExperimentalWarning
+          tail -n +2 punkter.csv | grep -v '^v' | cut -d, -f1-3 >> punkter-stad.csv
+          python3 fysik/ny_kandidat/levande.py --del-b --ph ph-stad.csv --punkter punkter-stad.csv --ankare ankare.csv --tid "$TID" --ut live-stad.csv > del-b-stad.log 2>&1 \
+            || { echo "::warning::storstädernas punkter: del B föll för $TID"; exit 1; }
+          awk -F, 'NR == 1 || $2 ~ /^[BC][0-9][0-9][0-9][0-9][0-9]$/' live-stad.csv > live-bc.csv
+          node --experimental-strip-types ingest/ny-kandidat-db.ts skriv-live live-bc.csv > /dev/null 2>&1 || { echo "::warning::storstädernas punkter: skrivningen föll för $TID"; exit 1; }
+          # Stadspunkternas logg för olycksfacit (sql/096, DECISIONS #815), efter att deras värden är skrivna. Utskriften visas inte (#768).
+          node --experimental-strip-types ingest/ny-kandidat-db.ts logga-stad > /dev/null 2>&1 || { echo "::warning::storstädernas punkter: stadsloggen föll för $TID"; exit 1; }
+          echo "storstädernas punkter: klart för $TID" | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Ankarna lämnar aldrig jobbet
+        if: always()
+        run: rm -f ankare.csv

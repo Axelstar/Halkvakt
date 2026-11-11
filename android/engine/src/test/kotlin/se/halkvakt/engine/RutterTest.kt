@@ -75,4 +75,26 @@ class RutterTest {
             assertEquals(f.getBoolean("svar"), Rutter.sammaResa(b, a), "${f.getString("namn")}, åt andra hållet")
         }
     }
+
+    @Test fun dagensResorSomTypeScript() {
+        val d = facit().getJSONObject("dagens")
+        assertEquals(d.getInt("max"), Vantande.VANTANDE_MAX)
+        assertEquals(d.getDouble("kvarS"), Vantande.VANTANDE_KVAR_S)
+        val pkt = { a: JSONArray -> (0 until a.length()).map { val p = a.getJSONArray(it); doubleArrayOf(p.getDouble(0), p.getDouble(1)) } }
+        val fall = d.getJSONArray("fall")
+        assertEquals(7, fall.length(), "facit bär sina fall")
+        var l = emptyList<Vantande>()
+        for (k in 0 until fall.length()) {
+            val f = fall.getJSONObject(k); val n = f.getJSONObject("ny")
+            val ny = Vantande(n.getString("id"), n.getDouble("slutS"), n.getDouble("km"), pkt(n.getJSONArray("punkter")), n.getBoolean("dithem"))
+            l = Vantande.dagensResor(l, ny, f.getDouble("nuS"))
+            val efter = f.getJSONArray("efter").let { a -> (0 until a.length()).map { a.getJSONObject(it) } }
+            val namn = f.getString("namn")
+            assertEquals(efter.map { it.getString("id") }, l.map { it.id }, namn)
+            assertEquals(efter.map { it.getDouble("slutS") }, l.map { it.slutS }, namn)
+            assertEquals(efter.map { it.getDouble("km") }, l.map { it.km }, namn)
+            assertEquals(efter.map { it.getBoolean("dithem") }, l.map { it.dithem }, namn)
+            assertEquals(efter.map { it.getInt("punkter") }, l.map { it.punkter.size }, namn)
+        }
+    }
 }

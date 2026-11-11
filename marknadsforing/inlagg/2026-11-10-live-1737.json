@@ -1,0 +1,27 @@
+{
+  "typ": "smhi",
+  "nyckel": "smhi:Snöfall:Värmland och delar av sydvästra Svealand.:YELLOW",
+  "etikett": "SMHI-varning",
+  "rubrik": "Varning för väglaget",
+  "underrad": "Halkläget kl. 17:30",
+  "varning": {
+    "niva": "Gul varning",
+    "event": "Snöfall",
+    "omrade": "Värmland och delar av sydvästra Svealand.",
+    "fler": 1
+  },
+  "text": "SMHI har utfärdat en gul varning för snöfall i Värmland och delar av sydvästra Svealand.. Det finns 1 varning till för snö eller halka.\n\nHalkläget kl. 17:30:\nNorrbotten: halka på 48 av 58 vägavsnitt, 57 stationer under noll, kallast −8,3 °C vid Kitkiöjoki.\nVästerbotten: halka på 39 av 44 vägavsnitt, 46 stationer under noll, kallast −6,1 °C vid Missenträsk.\nVästernorrland: halka på 15 av 22 vägavsnitt, 35 stationer under noll, kallast −5,4 °C vid Nämforsen.\nJämtland: halka på 11 av 17 vägavsnitt, 28 stationer under noll, kallast −4,7 °C vid Ytterturingen 2.\nDalarna: halka på 8 av 38 vägavsnitt, 19 stationer under noll, kallast −3,7 °C vid Sörsjön.\n\nLäget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från SMHI och Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Västernorrland #Jämtland #Dalarna #halkvakt",
+  "textIg": "SMHI har utfärdat en gul varning för snöfall i Värmland och delar av sydvästra Svealand.. Det finns 1 varning till för snö eller halka.\n\nHalkläget kl. 17:30:\nNorrbotten: halka på 48 av 58 vägavsnitt, 57 stationer under noll, kallast −8,3 °C vid Kitkiöjoki.\nVästerbotten: halka på 39 av 44 vägavsnitt, 46 stationer under noll, kallast −6,1 °C vid Missenträsk.\nVästernorrland: halka på 15 av 22 vägavsnitt, 35 stationer under noll, kallast −5,4 °C vid Nämforsen.\nJämtland: halka på 11 av 17 vägavsnitt, 28 stationer under noll, kallast −4,7 °C vid Ytterturingen 2.\nDalarna: halka på 8 av 38 vägavsnitt, 19 stationer under noll, kallast −3,7 °C vid Sörsjön.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone, länken finns i vår profil.\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från SMHI och Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Västernorrland #Jämtland #Dalarna #halkvakt",
+  "pass": "live",
+  "datum": "2026-11-10",
+  "generated_at": "2026-11-10T16:30:29.343Z",
+  "lan": [
+    "norrbotten",
+    "vasterbotten",
+    "vasternorrland",
+    "jamtland",
+    "dalarna",
+    "varmland",
+    "gavleborg"
+  ]
+}

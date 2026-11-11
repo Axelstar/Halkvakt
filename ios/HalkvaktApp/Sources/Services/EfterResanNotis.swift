@@ -34,9 +34,13 @@ final class EfterResanNotis: NSObject, UNUserNotificationCenterDelegate {
         let ja = UNNotificationAction(identifier: Self.actionJa, title: "Ja, alla stämde", options: [])
         let avvikelse = UNNotificationAction(identifier: Self.actionAvvikelse, title: "Något stämde inte",
                                              options: [.foreground])
+        // Alla appens kategorier registreras här, en gång: setNotificationCategories ersätter hela mängden.
+        // Favoriter 2a (#817) har sin egen; heads-up-bannern får visas i CarPlay (allowInCarPlay, iOS 18.4 för Driving Task-appar).
         center.setNotificationCategories([
             UNNotificationCategory(identifier: Self.categoryId, actions: [ja, avvikelse],
-                                   intentIdentifiers: [], options: [])
+                                   intentIdentifiers: [], options: []),
+            FavoritNotis.kategorin,
+            UNNotificationCategory(identifier: HeadsUpService.kategori, actions: [], intentIdentifiers: [], options: [.allowInCarPlay]),
         ])
         center.delegate = self
     }
@@ -61,14 +65,32 @@ final class EfterResanNotis: NSObject, UNUserNotificationCenterDelegate {
 
     /// I förgrunden visas ingen banner — exakt som innan appen fick en delegat alls. Heads-up-bannern
     /// (#23) är till för när Halkvakt ligger BAKOM kartan; står föraren i appen säger skärmen redan allt.
-    nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter,
-                                            willPresent notification: UNNotification) async
-        -> UNNotificationPresentationOptions { [] }
+    ///
+    /// KRASCHEN I 0.3.13–0.3.15 (Xcode Organizer 7/11, DECISIONS #817): delegatens async-varianter är nonisolated, och iOS kör då
+    /// deras avslut på en bakgrundstråd i Swift concurrency. UIKit uppdaterar ögonblicksbilden för bakgrunden i samma avslut
+    /// (`_updateSnapshotAndStateRestorationWithAction`) och kraschar utanför huvudtråden — vid ett tryck på en notis. Därför
+    /// varianterna med completionHandler, som alltid anropas på huvudtråden.
+    nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification,
+                                            withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        DispatchQueue.main.async { completionHandler([]) }
+    }
 
-    nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter,
-                                            didReceive response: UNNotificationResponse) async {
-        guard response.actionIdentifier == Self.actionJa else { return }   // avvikelse ⇒ appen öppnas, kortet tar vid
-        await Self.svaraAlla()
+    nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse,
+                                            withCompletionHandler completionHandler: @escaping () -> Void) {
+        // Läs allt ur svaret här: det är inte Sendable och får inte följa med till huvudtråden.
+        let n = response.notification.request.content
+        let favorit = n.categoryIdentifier == FavoritNotis.kategori || n.threadIdentifier == "halkvakt.favorit.notis"
+        let id = n.userInfo[FavoritNotis.resaNyckel] as? String
+        let text = (response as? UNTextInputNotificationResponse)?.userText
+        let action = response.actionIdentifier
+        Task { @MainActor in
+            if favorit {
+                if let id { FavoritNotis.svar(action: action, id: id, text: text) } else { Favoriter.shared.visaFliken = true }
+            } else if action == Self.actionJa {   // avvikelse ⇒ appen öppnas, kortet tar vid
+                await Self.svaraAlla()
+            }
+            completionHandler()   // på huvudtråden
+        }
     }
 
     /// Ett tryck, hela resan. Läser fönstret ur Prefs — utan starttid vet vi inte vad "alla" betyder.

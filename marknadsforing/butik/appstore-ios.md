@@ -97,6 +97,30 @@ Versionen i butiken är 0.3.13 (34); listan gäller allt som kommit sedan dess (
 
 *App Privacy:* lägg till *Diagnostics → Other Diagnostic Data* (Analytics, inte kopplad, ingen spårning), som manifestet i bygget.
 
+## Inskicket 0.3.17 (39) — 7/11 (DECISIONS #816, kort #378)
+
+0.3.17 (39) innehåller motorns rutnät (#795). Det behövs innan storstädernas punkter slås på. I butiken finns 0.3.15 (37), godkänd och
+släppt 2/11 (`appstore:0.3.15:READY_FOR_DISTRIBUTION`). 0.3.16 (38) skickades aldrig in, så inskicket tar också med räknarens sex
+områden ur avsnittet ovan.
+
+Bygget laddades upp av TestFlight-flödet 42355683754 (main 3c21f4d1, 7/11 08.33 UTC). Stegen är desamma som för 0.3.15, med fyra
+skillnader:
+- **(a) Versionsposten:** *+* vid iOS-appen → **0.3.17** → bygge **39**.
+- **(b) What's New:**
+  - *• Varningsmotorn arbetar snålare: appen prövar bara varningarna i din närhet, med samma varningar som förut.*
+  - räknarens rad ur avsnittet ovan.
+- **(c) Granskarens anteckningar:** stycket ovan, med rubriken *NEW IN 0.3.17*, och sist meningen *The warning engine now only checks
+  the hazards near the car (a spatial grid); the warnings themselves are unchanged.*
+- **(d) App Privacy:** *Diagnostics → Other Diagnostic Data*, som avsnittet ovan säger.
+
+Skärmbilderna och inspelningarna är desamma som för 0.3.15.
+
+**Släppet är automatiskt den här gången** (Bengt 7/11: *"Ja, automatiskt"*): *Automatically release this version*, så att versionen
+kommer ut så fort Apple har godkänt den, före måndagsrusningen om det hinns.
+
+Beviset är `appstore:0.3.17:WAITING_FOR_REVIEW` i byggsignalerna. Android: AAB:n ur android-flödet 42355685674 (`betatest=false`, main
+3c21f4d1) går till Play Consoles interna test.
+
 ## Granskarens anteckningar (App Review Information → Notes)
 Klistra in på engelska — granskarna läser engelska. Stycket om nyheterna i 0.3.13 är ett utkast 18/10 som Axel godkänner; meningarna om
 inspelningarna gäller först när de är bifogade (steg 2 nedan).

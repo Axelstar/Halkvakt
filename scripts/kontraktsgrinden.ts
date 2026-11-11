@@ -564,6 +564,22 @@ export const KONTRAKT: Kontrakt[] = [
     golv: 3,
   },
   {
+    // Favoriter 2a (DECISIONS #817): dagens resor, högst så här många i väntan på namn — lika i alla tre språk, prövat mot rutter.json.
+    namn: "Dagens resor — högst så här många väntar på namn",
+    varfor: "Med olika tak släpper iPhone och Android olika resor, och samma dag ser olika ut i de två apparna.",
+    former: [/(?:VANTANDE_MAX|static let vantandeMax)\s*=\s*(\d+)(?![\d.])/],
+    filer: /engine\/src\/rutter\.ts|engine\/Rutter\.kt|HalkvaktEngine\/Rutter\.swift/,
+    golv: 3,
+  },
+  {
+    // DECISIONS #829: kortet Tipsa en vän på Redo. visas efter så här många avslutade vaktpass — samma i båda apparna.
+    namn: "Tipsa en vän — vaktpass före kortet på hemskärmen",
+    varfor: "Med olika tal visar iPhone och Android kortet vid olika tillfällen, och produktboken stämmer på bara en av dem.",
+    former: [/(?:PASS_FORE_KORTET|static let passForeKortet)\s*=\s*(\d+)(?![\d.])/],
+    filer: /app\/Tipsa\.kt|Services\/Tipsa\.swift/,
+    golv: 2,
+  },
+  {
     // DECISIONS #633: frågan Spara resan? kommer bara efter en resa på minst så här många km — samma i båda apparna.
     namn: "Sparade rutter — kortaste resa som erbjuds, km",
     varfor: "Med olika gräns frågar iPhone och Android efter olika resor, och produktbokens 'minst en kilometer' blir fel på en av dem.",
@@ -581,10 +597,11 @@ export const KONTRAKT: Kontrakt[] = [
   },
   {
     namn: "Sparade rutter — timmar som frågan och vägen står kvar",
-    varfor: "Den tillfälliga filen med en körd väg ska raderas lika snabbt på båda plattformarna (FAVORITER §6: ett dygn).",
-    former: [/FRAGA_KVAR_MS\s*=\s*(\d+)\s*\*\s*3600\s*\*\s*1000L/, /fragaKvarS: TimeInterval\s*=\s*(\d+)\s*\*\s*3600/],
-    filer: /app\/Favoriter\.kt|Services\/Favoriter\.swift/,
-    golv: 2,
+    varfor: "Den tillfälliga filen med en körd väg ska raderas lika snabbt på båda plattformarna (FAVORITER §6: ett dygn). Sedan " +
+      "Favoriter 2a (DECISIONS #817) bor dygnet i motorns dagens resor, i tre språk.",
+    former: [/(?:VANTANDE_KVAR_S|vantandeKvarS)(?::\s*Double)?\s*=\s*(\d+)\s*\*\s*3600/],
+    filer: /engine\/src\/rutter\.ts|engine\/Rutter\.kt|HalkvaktEngine\/Rutter\.swift/,
+    golv: 3,
   },
   // Favoriterna steg 3a (kort #357, DECISIONS #637): provmiljöns avstånd per slag är appens trösklar, i TypeScript (rapport-core.ts
   // och dess två buntar), Swift och Kotlin. Facit engine/fixtures/rapport.json prövar utfallet i alla tre, men telefonernas prov körs
@@ -893,8 +910,8 @@ export const KONTRAKT: Kontrakt[] = [
     namn: "Spridningsspärrens F1 — minoritetens viktandel kring noll som tystar kandidaten",
     varfor: "Den frystas och den nyas regel ska tystas av samma gräns (sql/087, DECISIONS #800). Driver den talar appen olika i den frystas och den nyas timmar.",
     former: [/k\.frys_min >= ([\d.]+) THEN 'spridning'/],
-    filer: /sql\/087_|sql\/091_/,  // sql/091 (#804) skapar om båda regelfunktionerna med stadspunkterna
-    golv: 4,
+    filer: /sql\/087_|sql\/091_|sql\/094_/,  // sql/091 (#804) skapar om båda regelfunktionerna med stadspunkterna
+    golv: 6,
   },
   // Den nya kandidatens skugga (sql/068, DECISIONS #692) bär regelns tal en gång till: samma regel på den nyas värden, så att domen i
   // ersättningsregeln §5 räknas likadant för båda. Den kopian vaktas här med de andra (golven höjda med ett).
@@ -906,43 +923,68 @@ export const KONTRAKT: Kontrakt[] = [
     namn: "Kandidatens kalla yta — regeln och facitläsningen",
     varfor: "Driver gränsen läser kuvösen andra kalla timmar än regeln varnar på (DECISIONS #562, #593).",
     former: [/l\.pb <= ([\d.]+)\s+-- YTA_GRANS_C/, /export const KALL_C = ([\d.]+);/],
-    filer: /sql\/058_|sql\/068_|sql\/069_|sql\/091_|kuvos\/facit-trv\.ts$/,
-    golv: 7,
+    filer: /sql\/058_|sql\/068_|sql\/069_|sql\/091_|sql\/094_|kuvos\/facit-trv\.ts$/,
+    golv: 11,
   },
   {
     namn: "Kandidatens radargräns för fukt — regeln och facitläsningen",
     varfor: "Driver gränsen räknar kuvösen fukt där regeln ser torrt (DECISIONS #565, #593).",
     former: [/coalesce\(r\.mmh, 0\) >= ([\d.]+)\) THEN 'torr'/, /export const RADAR_MMH = ([\d.]+);/],
-    filer: /sql\/069_|sql\/091_|kuvos\/facit-trv\.ts$/,  // R = 0,1 sedan 26/10 (#725): 069 bär driftens gräns; 091 är driftens regel sedan #804
-    golv: 5,
+    // R = 0,1 sedan 26/10 (#725): 069 bär driftens gräns; 091 är driftens regel sedan #804; 105 är småvägsröstens (#828)
+    filer: /sql\/069_|sql\/091_|sql\/094_|sql\/105_|kuvos\/facit-trv\.ts$/,
+    golv: 8,
   },
   {
     namn: "Kandidatens radarfönster — regeln och facitläsningen",
     varfor: "Driver fönstret läser kuvösen radarn längre eller kortare bakåt än regeln (DECISIONS #573, #593).",
     former: [/r\.observed_at > now\(\) - interval '(\d+) minutes'/, /export const RADAR_MIN = (\d+);/],
-    filer: /sql\/058_|sql\/068_|sql\/069_|sql\/091_|kuvos\/facit-trv\.ts$/,
-    golv: 7,
+    filer: /sql\/058_|sql\/068_|sql\/069_|sql\/091_|sql\/094_|sql\/105_|kuvos\/facit-trv\.ts$/,  // 105: småvägsröstens regel (#828)
+    golv: 12,
+  },
+  // KANDIDATENS TIMME (sql/056, 057, 068) och de som läser den: olycksfacit (095, 096, 100) och småvägsrösten (105, #828). En timme
+  // är färsk högst två timmar och fullständig med minst 95 % av punkterna. Driver en kopia talar en regel på en timme som en annan
+  // kallar gammal, eller bokför olycksfacit en tystnad som regeln aldrig hade.
+  {
+    namn: "Kandidatens färskhet — hur gammal timmen får vara",
+    varfor: "Regeln, olycksfacit och småvägsrösten ska kalla samma timmar gamla (sql/068, DECISIONS #814, #828).",
+    former: [/interval '(\d+) hours'(?: THEN)?\s+-- FARSK_TIMMAR/],
+    filer: /sql\/\d{3}_/,
+    golv: 8,
+  },
+  {
+    namn: "Kandidatens fullständighet — andelen punkter som timmen måste bära",
+    varfor: "Den frystas och den nyas timme och småvägsröstens ska kräva samma andel (sql/068, DECISIONS #828).",
+    former: [/>= ([\d.]+) \* \(SELECT count\(\*\) FROM \w+\)\s+-- FULLSTANDIG_ANDEL/],
+    filer: /sql\/\d{3}_/,
+    golv: 4,
+  },
+  {
+    namn: "Småvägsröstens radarbit — punkter i följd längs vägen",
+    varfor: "Radarn skriver per bit (radar-karna.ts) och regeln läser per bit (sql/105). Driver de isär läser regeln en annan bits regn än punktens (DECISIONS #828).",
+    former: [/export const SMAVAG_BIT = (\d+);/, /\(p\.ordning \/ (\d+)\)\s+-- SMAVAG_BIT/],
+    filer: /ingest\/radar-karna\.ts$|sql\/105_/,
+    golv: 2,
   },
   {
     namn: "Kandidatens vetofönster — regeln och facitläsningen",
     varfor: "Driver fönstret vetar kuvösen andra timmar än regeln (DECISIONS #566, #593).",
     former: [/w\.sample_time > now\(\) - interval '(\d+) minutes' AND w\.surface_temp_c >/, /export const VETO_MIN = (\d+);/],
-    filer: /sql\/058_|sql\/068_|sql\/069_|sql\/091_|kuvos\/facit-trv\.ts$/,
-    golv: 5,
+    filer: /sql\/058_|sql\/068_|sql\/069_|sql\/091_|sql\/094_|kuvos\/facit-trv\.ts$/,
+    golv: 7,
   },
   {
     namn: "Kandidatens vetoyta — regeln och facitläsningen",
     varfor: "Driver gränsen vetar kuvösen på andra stationer än regeln (DECISIONS #566, #593).",
     former: [/AND w\.surface_temp_c > (\d+)\s+-- VETO_MIN/, /export const VETO_YTA_C = (\d+);/],
-    filer: /sql\/058_|sql\/068_|sql\/069_|sql\/091_|kuvos\/facit-trv\.ts$/,
-    golv: 5,
+    filer: /sql\/058_|sql\/068_|sql\/069_|sql\/091_|sql\/094_|kuvos\/facit-trv\.ts$/,
+    golv: 7,
   },
   {
     namn: "Kandidatens vetoavstånd i meter — regeln och facitläsningen",
     varfor: "Driver avståndet vetar kuvösen med fler eller färre stationer än regeln (DECISIONS #566, #593).",
     former: [/k\.geom::geography, (\d+)\)\s+-- VETO_KM/, /export const VETO_M = (\d+);/],
-    filer: /sql\/058_|sql\/068_|sql\/069_|sql\/091_|kuvos\/facit-trv\.ts$/,
-    golv: 5,
+    filer: /sql\/058_|sql\/068_|sql\/069_|sql\/091_|sql\/094_|kuvos\/facit-trv\.ts$/,
+    golv: 7,
   },
   {
     namn: "Spridningsgrindens ankarantal — regeln och facitläsningen",
@@ -957,8 +999,8 @@ export const KONTRAKT: Kontrakt[] = [
     namn: `Storstädernas marsfönster — ${s}`,
     varfor: "Den frystas och den nyas regel ska tiga i samma timmar och på samma breddgrader. Driver de isär talar storstädernas K olika beroende på vilken kandidat som talar.",
     former: [new RegExp(`(\\d+)\\)?\\s+-- STAD_MARS_${k}\\b`)],
-    filer: /sql\/091_/,
-    golv: 2,
+    filer: /sql\/091_|sql\/094_/,   // sql/094 (#813) skapar om båda regelfunktionerna med stadsgrenens timme som underfråga
+    golv: 4,
   })),
 ];
 

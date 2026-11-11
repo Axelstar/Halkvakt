@@ -64,11 +64,17 @@ under den *INGEN TUR ÄN*.
 sträckan (*16:58–17:34 · 36 MIN · 31 KM*) och en rad per varning — klockslag, ikon, rubrik och exakt vad rösten sa.
 Under: *3 VARNINGAR · VISAS TILLS NÄSTA TUR*. En tur utan varningar ger tillbaka 01.
 **Betatestare** ser dessutom kortet *Efter resan* överst, som förut (kort #203) — designen visar det inte, men det står kvar.
-**Spara resan?** (18/10, kort #357) Har föraren slagit på *Erbjud att spara resor* under Favoriter står frågan som en
-egen panel efter resan: *SPARA RESAN?* och *"Resan slutade 14:05. Spara vägen du körde, så finns den under Favoriter. Den
-stannar i telefonen."*, tre namnknappar — *Till jobbet*, *Hem* och *Resa 18/10* (dagens datum) — *EGET NAMN* för fritext och
-*NEJ TACK* (på Android två namnknappar per rad, som missraderna). Med fem sparade resor står i stället *"Du har redan fem resor. Ta bort en under Favoriter först."* Frågan kommer
-bara efter en resa på minst två kilometer och fem minuter (DECISIONS #701), och utan svar försvinner den och vägen efter ett dygn (DECISIONS #616, #625).
+**Spara resan?** (0.4.0, 6/11, kort #379, DECISIONS #817 — ersätter panelen från 18/10). Frågan kommer som **notis** efter
+resan, inte längre som panel på Redo: *Spara resan?* och *"34 km, 1 resa i dag. Dra ut notisen och skriv vad det var för resa."*
+(Android: *Skriv vad det var för resa.*). På iPhone syns fältet när notisen dras ut eller hålls; *Spara* sparar utan att appen öppnas
+och *Släng* raderar vägen. På Android står svarsfältet direkt i notisen. Kvittot *Sparad som Jobbet* — *"Du ser läget längs den under
+Favoriter."*, och *"1 resa till i dag att spara."* om fler väntar — ersätter frågan. Högst en notis per dag; senare resor samlas tyst
+under *Dagens resor*. Resan räknas som slut när bilens CarPlay eller Bluetooth kopplas bort, när bilen stått still i tio minuter eller
+när vakten stannar, aldrig medan bilen rullar; minst två kilometer och fem minuter (DECISIONS #701). Hemresan samma väg samma dag slås
+ihop med ditresan och ger ingen ny fråga. Redo visar *1 RESA ATT SPARA* · *"34 km. Ge den ett namn i Favoriter."*, som leder till fliken.
+Med brytaren av, efter en resa på minst 10 km: *RESAN SLUTADE · 34 KM*, *"Kör du den här ofta? Slå på Spara resor."*, *"Den här resan
+sparades inte, eftersom Spara resor var av. Nästa gång du kör frågar appen efteråt."*, knappen *Slå på Spara resor* och *INTE NU*, som
+döljer raden i minst en vecka. *Skärmbilderna nedan är från 18/10 och byts när 0.4.0 fotograferas.*
 
 **02 På vakt.** En panel med *● PÅ VAKT* i grönt, minuter och kilometer i stort, och tre räknare (varningar, halka,
 vilt). Under den en streckad ruta: *"Tyst så länge — Inget på din väg än. Du hör det direkt när något dyker upp."*,
@@ -168,11 +174,15 @@ Under panelerna: *LÖFTET — Din position lämnar inte telefonen av sig själv.
 
 *Fotostudion (Android-emulatorn) med påhittade vägar ur kroken `fotostudio_favoriter`; läget och rapporten ur den riktiga rapportfilen och lägesfilen när bilden togs (android 39113957298). Klockslagen är emulatorns, i UTC.*
 
-Den mittersta fliken. Överst *"Favoriter — Vägar du kör ofta, sparade efter en resa."* och vippan **Erbjud att spara resor**
+Den mittersta fliken. Överst *"Favoriter — Vägar du kör ofta. Båda hållen räknas som en."* (0.4.0) och vippan **Erbjud att spara resor**
 (*Appen frågar efter resan*), **av från början**. Av: ingen väg samlas in och ingen fil skrivs — appen är som förut, och
 texten säger *"Slå på, så frågar appen efter en resa om du vill spara vägen du körde. Högst fem resor."* På och inga resor:
 *"Kör en resa, så frågar appen efteråt om du vill spara den."* Med resor: *DINA RESOR · 2 AV 5* och en rad per resa med
-namnet och *34 KM · SPARAD 18/10*, knappen *Ta bort* på varje rad och *TA BORT ALLA* under, som frågar en gång till. Sist
+namnet och *34 KM · SPARAD 18/10*, länkarna *BYT NAMN* och *TA BORT* på varje rad (0.4.0) och *TA BORT ALLA* under, som frågar en
+gång till. Med fem resor står *5 AV 5 · LISTAN ÄR FULL*. Överst, när resor väntar: *DAGENS RESOR · 2 ATT SPARA* och en panel per resa
+med *34 KM · SLUTADE 07:58* (eller *DIT OCH HEM*), *SLÄNG*, fältet *t.ex. Jobbet* med *Spara*, *Förslag: Pendlingen* (väljer namnet,
+sparar inte) och *"Tomt namn sparar som Resa 6/11."*; är listan full står *"Listan är full. Ta bort en resa nedan för att spara den
+här."* i stället för fältet. Sist
 *BARA I TELEFONEN — "Resorna sparas bara i telefonen och följer inte med i säkerhetskopian. De försvinner när du tar bort
 dem eller appen."* Sparade resor står kvar i listan också om vippan slås av; den som vill bli av med dem tar bort dem.
 
@@ -186,6 +196,27 @@ Application Support, undantagna från iCloud-kopian; på Android i `noBackupFile
 **Läget och rapporten (steg 3b på iPhone, 18/10; DECISIONS #636, #637).** Under namnet på varje rad står resans läge (FAVORITER §2): **Nytt** med ett gult märke — *2 NYA* — och det viktigaste av det nya, till exempel *Olycka på E4*; **Inget nytt** med det största som pågår — *Inget nytt · Halt väglag på E4*; eller **Lugnt** — *Lugnt · inget rapporterat längs vägen just nu*. Fartkamerorna och restidssträckorna i normal trafik räknas inte: de är inga händelser (en restid med fördröjning är en kö och räknas). Läget räknas om när fliken visas och när föraren drar nedåt. Ett tryck på raden öppnar **rapporten**: tillbakalänken *← FAVORITER*, resans namn och valet **Dit / Hem** — samma sparade väg åt två håll, där *Hem* är den vända, så att farorna kommer i körordning och köerna och restiderna gäller förarens håll. Sedan *JUST NU · KOLLAT 07:05* med *Läget från 07:04*, *Rapporten från 06:56* och *"Läget kan ändras under resan, och då säger rösten till."* — läget är lägesfilens tid (väglag, frysrisk och *Halkvakt tror*), rapporten rapportfilens (olyckor, vägarbeten, hinder, köer, restider och färjor), som skrivs var tionde minut (#686, B7-05); *NYTT SEDAN 16:20* (i gult, *i går 16:20* dagen efter) med det som tillkommit sedan rapporten senast öppnades; *LÄNGS VÄGEN JUST NU* med en rad per sak i viktordning, där fartkamerorna läggs samman per väg, restiderna i normal trafik till en rad och vägarbeten, hastigheter och omledningar per väg från tre; raden om det tomma — *"Inget rapporterat: vilt, färjor och SMHI-varningar."* och *"Köer mäts inte längs den här vägen."* där ingen restidssträcka går; *PROGNOSEN · KOMMER SENARE* med *"Prognosen längs vägen visas här tidigast efter domen i mars."*; och sist *Starta vakten*. Trafikverkets *Vägen avstängd* heter *Avstängning* i rapporten, med vägen när den finns (*Avstängning på E45*), och för vägarbeten, olyckor och hinder står Trafikverkets påverkan i texten — *"Drift- och underhållsarbete. Tunneln avstängd under arbetet. · ingen påverkan enligt Trafikverket · till 19 oktober"* (DECISIONS #641). Inga avstånd på raderna. Är lägesfilen 45 minuter eller äldre visas inte väglag och frysrisk, och är rapportfilen två timmar eller äldre visas inte olyckor och vilt — samma gränser som rösten — och rapporten säger det i gult. Med Betatest av, och alltid i App Store-versionen från (33), räknas frysrisken efter regn (S3) inte fram i rapporten, precis som rösten tiger om den (#679, #681).
 
 Appen hämtar rapportfilen ur den publika hinken `favoriter` (samma fil för alla, utan fråga och utan plats; manifestets sha256 prövas, och en del som inte stämmer förkastas) och räknar rapporten i telefonen med motorns `ResansRapport`. Förra kollen per resa — när rapporten senast hämtades utan fel och vilka faror den visade — ligger i `kollen.json` bredvid rutterna, utanför säkerhetskopian, eftersom farornas id pekar på platser längs vägen. **Vägen hem känns igen:** ligger en ny resa längs en sparad, åt något håll (minst 80 % av varje inom 100 m av den andra), frågar appen inte *Spara resan?* en gång till. Misslyckas hämtningen står förra kollen kvar, så att *Nytt sedan* aldrig räknas från en kontroll som inte blev av (B7-24). **Android (steg 3c, 18/10)** gör samma sak med samma ord: rapporten öppnas en nivå ned, som inställningarnas undersidor, och tillbakaknappen leder till listan. I stället för att dra nedåt finns *KOLLA IGEN* bredvid *Dit / Hem* — appens Compose-version saknar dra-för-att-uppdatera — och läget räknas om varje gång fliken eller rapporten visas. Förra kollen ligger i `noBackupFilesDir` med rutterna.
+
+## Tipsa en vän och Tyck till (10/11, kort #997)
+
+*Skärmbilder följer ur fotostudion när 0.4.0 (42) är byggt. Designen: Claude Design-ytan* Tipsa en vän och Tyck till.
+
+Sist i **Inställningar**, under etiketten *HALKVAKT*, tre rader:
+
+- **Tipsa en vän** öppnar telefonens eget delningsark med texten *"Jag kör med Halkvakt. Den säger till med rösten om halka,
+  olyckor och vilt på vägen framför mig, innan jag är där."* och länken `halkvakt.se/?r=dela`. Webbplatsen skickar vännen till
+  App Store eller Google Play, och webbplatsens räknare räknar koden *dela*, så vi ser hur många som kommer via tips.
+- **Tyck till** öppnar förarens egen mejlapp till **hej@halkvakt.se** med ämnet *Synpunkter på Halkvakt* och tre rader under
+  en streckad linje: appens version och bygge, telefonens modell och systemets version, och *"Ingen plats och inga resor. Ta bort
+  raderna om du vill."* Föraren ser allt och trycker själv på Skicka. Finns ingen mejlapp visas adressen med knappen *Kopiera adressen*.
+- **Betygsätt Halkvakt** öppnar appens sida i App Store (skriv ett omdöme) eller Google Play.
+
+På **Redo.**, efter det femte avslutade vaktpasset och bara när vakten inte kör, står kortet *FEM PASS MED VAKTEN* — *"Kör någon du
+känner samma vägar?"* — *"Tipsa om Halkvakt. Du skickar bara en länk, inget om dig."* med knappen **Tipsa en vän** och länken
+*INTE NU*. Båda döljer kortet för gott. Det visas aldrig samtidigt som ett kort om resorna.
+
+Appen skickar ingenting själv: delningen går genom telefonens delningsark, mejlet genom förarens mejlapp och betyget genom
+butiken. Integritetstexterna är oförändrade.
 
 ## Första gången — introduktionen (iOS)
 
@@ -672,9 +703,14 @@ du var just då."* (Axels villkor för ja:et, DECISIONS #267.)
 | 0.3.13 (33) | 23/10 | Spärren för efterhalkan (S3) också i favoriternas rapport (#677, #679), Betatest bara i testbyggen: i App Store-versionen syns varken brytaren eller frågan efter resan, och integritetsraden säger *"Inget konto, och inget skickas."* (#681), Android-lagningarna och targetSdk 36 (#1029). Uppladdat 23/10 (TestFlight-flödet 39905409183 på d240c1b); inskicket till App Review görs med (33) (#681). |
 | 0.3.13 (34) | 24/10 | Rättelserna efter Axels prov på (33): SMHI-nivån i klartext (*Gul varning*), *Spara resan?* klipps inte, *INGA VARNINGAR SENASTE TUREN* efter en tur utan varningar (bara iPhone), flikraden göms bakom tangentbordet och minsta resa 2 km och 5 minuter (DECISIONS #701). Skickad till App Review 24/10 och godkänd enligt Bengt (#713). |
 | 0.3.14 (35) | 29/10 | Fas 2 av kedjans takt: appen hämtar ur hinken med Pages som reserv, kollar strax efter varje väntad publicering och mäter varje resa under Betatest, avsnittet *Mätningen* (DECISIONS #741). Uppladdat 29/10 (TestFlight-flödet 40909018044). |
+| 0.4.0 (41) | 6/11 | Favoriter 2a: frågan efter resan som notis med namnfält, dagens resor (högst tre, dit och hem som en), Byt namn, taket synligt och raderna på Redo i båda apparna; CarPlay på iPhone: listan på bilens skärm och varningsbannern i bilen; kraschen vid ett tryck på en notis rättad (DECISIONS #817). |
 | 0.3.14 (36) | 30/10 | Favoriternas rapport: *Rapporten från HH:MM* under *Läget från*, och förra kollen sparas bara när hämtningen lyckades (åtgärdslistan B7-05 och B7-24, DECISIONS #686, PR #1279). Uppladdat 30/10 (TestFlight-flödet 41026622176). |
 | 0.3.15 (37) | 1/11 | **Räknaren** (DECISIONS #772): appen räknar anonymt introduktionen, platsbehörigheten (*Alltid* / *När appen används* / nekad), vaktens starter och den första varningen — ett ord per händelse till `app-raknare`, en rad per dygn, inget om vem. Integritet säger det; *"inget skickas"* struken. Android versionCode 37 i takt. |
 | 0.3.16 (38) | 4/11 | **Räknarens sex områden** (DECISIONS #787): version och kohort på varje ord, notiserna och första starten, aktiva dygn, vaktpasset (startsätt, längd i fyra hinkar, slut; ingen sträcka), varningarna, ändrade inställningar och fel. Integritet säger det med ny mening. Android versionCode 38 i takt. |
+| 0.3.17 (39) | 7/11 | **Motorns rutnät** (DECISIONS #795, #816): varje GPS-punkt prövar bara farorna i sin egen ruta, med samma svar som hela svepet, och en hal sträcka hoppas över när dess ruta ligger längre bort än försprånget (#789). Inget som föraren ser eller hör ändras. Bygget behövs innan storstädernas punkter slås på (kort #378). |
+| 0.4.0 (42) | 10/11 | **Tipsa en vän, Tyck till och Betygsätt** (DECISIONS #829): tre rader under etiketten *HALKVAKT* i Inställningar, och kortet *Kör någon du känner samma vägar?* på Redo. efter femte vaktpasset. Bygger på 0.4.0 (41). |
+| 0.4.0 (43) | 10/11 | **Facitknapparna på Redo.** (kort #998): ordet syns i den valda knappen, och raden *SENAST SAGT · tid* med varningens text står ovanför *Stämde* och *Stämde inte*, så att det framgår vilken varning svaret gäller. |
+| 0.4.0 (44) | 11/11 | **En besvarad varning frågas inte om igen** (kort #999): *Stämde / Stämde inte* står kvar med *Tack* medan startskärmen visas och är borta nästa gång den visas. Gäller båda apparna. |
 | Android (CI) | 16/9 → | Facitknappen och betatest-brytaren (S4, DECISIONS #202), Efter resan (20/9), viltvarningen på Trafikverkets djur (22/9), omladdningsloopen lagad och reglaget (26/9), missarna (26/9). **0.3.9 (18)**, samma nummer som iOS (DECISIONS #377). |
 
 Android bar versionsnumret 0.3.1 (4) från 31/8 till 26/9, fast CI byggde den ur main med skinnet v3, facitknappen

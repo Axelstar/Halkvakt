@@ -69,6 +69,17 @@ async function skrivHinken(files: Record<string, string>) {
   await skriv("manifest.json");
 }
 
+/** Småvägsröstens punktfil (sql/106, byggsteg 5b): laddaren skriver den i smavag_punktfil, och här laddas den upp bara när sha:n är ny
+ *  (i_hinken, i_github). null före sql/106 eller utan punkter: då står den inte i manifestet. */
+type Punktfil = { sha256: string; bytes: number; gz_bytes: number; i_hinken: string | null; i_github: string | null };
+async function punktfilen(): Promise<Punktfil | null> {
+  try {
+    const [r] = await sql`SELECT sha256, bytes, gz_bytes, i_hinken, i_github FROM smavag_punktfil WHERE id = 1`;
+    return r ? { sha256: r.sha256, bytes: Number(r.bytes), gz_bytes: Number(r.gz_bytes), i_hinken: r.i_hinken, i_github: r.i_github } : null;
+  } catch { return null; }
+}
+const punktfilensText = async () => String((await sql`SELECT json FROM smavag_punktfil WHERE id = 1`)[0].json);
+
 Deno.serve(async (req) => {
   if (!(await nyckelGiltig(req))) return new Response("forbidden", { status: 403 });  // nyckeln i databasen, DECISIONS #571
   const t0 = Date.now();
@@ -103,8 +114,28 @@ Deno.serve(async (req) => {
       (text, params) => sql.unsafe(text, (params ?? []) as any[]) as unknown as Promise<Record<string, any>[]>,
       BRIDGES);
     const sStatic = JSON.stringify(staticDoc), sLive = JSON.stringify(liveDoc);
-    const manifest = await manifestFor(liveDoc.generated_at, { static: sStatic, live: sLive });
     tider.bygget = Date.now() - tDel;
+    // Punktfilen först i hinken när den är ny, så att manifestet bara pekar på en fil som finns. Ett fel här stoppar inget annat: då
+    // står punktfilen inte i manifestet den här körningen, och svaret säger varför.
+    const minutNu = new Date(t0).getUTCMinutes();
+    const githubNu = new URL(req.url).searchParams.get("karta") === "1" || minutNu % 30 < PUBLICERA_TAKT_MIN || minutNu % 10 < PUBLICERA_TAKT_MIN;
+    const pf = await punktfilen();
+    let smavagText: string | null = null, smavagLage = pf ? "oförändrad" : "ingen";
+    let iHinken = !!pf && pf.i_hinken === pf.sha256;
+    if (pf && (!iHinken || (githubNu && pf.i_github !== pf.sha256))) {
+      try {
+        smavagText = await punktfilensText();
+        if (!iHinken) {
+          const r = await fetch(`${SB}/storage/v1/object/app/v1/smavag.json`, { method: "POST", body: smavagText,
+            headers: { Authorization: `Bearer ${SRK}`, apikey: SRK, "Content-Type": "application/json", "x-upsert": "true", "cache-control": "no-cache" } });
+          if (!r.ok) throw new Error(`hinken smavag.json ${r.status}: ${(await r.text()).slice(0, 200)}`);
+          await sql`UPDATE smavag_punktfil SET i_hinken = ${pf.sha256} WHERE id = 1 AND sha256 = ${pf.sha256}`;
+          iHinken = true; smavagLage = "uppladdad";
+        }
+      } catch (e) { smavagLage = String((e as Error).message ?? e).slice(0, 200); smavagText = null; }
+    }
+    const manifest = await manifestFor(liveDoc.generated_at, { static: sStatic, live: sLive }, "app/v1",
+      pf && iHinken ? { smavag: { sha256: pf.sha256, bytes: pf.bytes, gz_bytes: pf.gz_bytes } } : {});
     const files: Record<string, string> = {
       "data/app/v1/static.json": sStatic,
       "data/app/v1/live.json": sLive,
@@ -118,9 +149,12 @@ Deno.serve(async (req) => {
     tider.hinken = Date.now() - tDel;
     // Kartlagren var 30:e minut (#77) och GitHub var tionde (#741 punkt 3), ur minuten när körningen startade; pg_cron fyrar varannan
     // minut (:00, :02 …). Hinken ovan skrivs varje körning. `?karta=1` tvingar båda.
-    const minut = new Date(t0).getUTCMinutes();
+    const minut = minutNu;
     const karta = new URL(req.url).searchParams.get("karta") === "1" || minut % 30 < PUBLICERA_TAKT_MIN;
-    const github = karta || minut % 10 < PUBLICERA_TAKT_MIN;
+    const github = githubNu;
+    // Kartrepot (reserven) får punktfilen i samma commit som manifestet som pekar på den, när den inte redan ligger där.
+    const smavagTillGithub = github && !!pf && iHinken && pf.i_github !== pf.sha256 && smavagText !== null;
+    if (smavagTillGithub) files["data/app/v1/smavag.json"] = smavagText!;
     let kartaStats: unknown = null;
     const inline: Record<string, string> = {};
     if (karta) {
@@ -147,11 +181,18 @@ Deno.serve(async (req) => {
           const andrade = JSON.stringify(d.andrade, null, 1);
           if (andrade !== JSON.stringify(forra, null, 1)) inline["data/sidor-andrade.json"] = andrade;
         } catch (e) { notes.push(`sitemap: ej läsbar (${String((e as Error).message).slice(0, 120)}) — länssidorna skrivs ändå`); }
-        // Startsidans länkar till varje län, ort och väg (3/11), mellan markörerna; skrivs bara när listan ändras.
-        try {
-          const ny = medBlock(await las("index.html"), "lankar", lsLankar(""));
-          if (ny) inline["index.html"] = ny;
-        } catch (e) { notes.push(`startsidan: ej läsbar (${String((e as Error).message).slice(0, 120)})`); }
+        // Startsidans länkar till varje län, ort och väg (3/11), mellan markörerna, och dagens tal i de element sidans skript fyller
+        // (6/11, DECISIONS #807), så att HTML:en bär läget utan JavaScript. Samma för karta.html. Skrivs bara när något ändras.
+        const handsida = async (fil: string, block: [string, string] | null, ids: Record<string, string> | null) => {
+          try {
+            const html = await las(fil);
+            let ny = (block ? medBlock(html, block[0], block[1]) : null) ?? html;
+            for (const [id, inner] of Object.entries(ids ?? {})) ny = medId(ny, id, inner) ?? ny;
+            if (ny !== html) inline[fil] = ny;
+          } catch (e) { notes.push(`${fil}: ej läsbar (${String((e as Error).message).slice(0, 120)})`); }
+        };
+        await handsida("index.html", ["lankar", lsLankar("")], m.start);
+        await handsida("karta.html", null, m.kartaText);
       }
       tider.kartan = Date.now() - tDel;
     }
@@ -160,6 +201,7 @@ Deno.serve(async (req) => {
       tDel = Date.now();
       sha = await publicera(files, inline);
       tider.github = Date.now() - tDel;
+      if (smavagTillGithub) await sql`UPDATE smavag_punktfil SET i_github = ${pf!.sha256} WHERE id = 1 AND sha256 = ${pf!.sha256}`;
     }
     return new Response(JSON.stringify({ ok: true, sha, generated_at: liveDoc.generated_at,
       segments: liveDoc.segments.length, kandidat: liveDoc.kandidat?.length ?? null, weather: liveDoc.weather.length,
@@ -167,7 +209,7 @@ Deno.serve(async (req) => {
       bridges: liveDoc.bridges.length, smhi: liveDoc.smhi.length,
       cameras: staticDoc.cameras.length, border, notes,
       live_gz_bytes: manifest.files.live.gz_bytes,
-      karta: kartaStats, lanssidor: Object.keys(inline).length, github, hinken, tider, bygget_delar: delar, ms: Date.now() - t0 }), { headers: { "Content-Type": "application/json" } });
+      karta: kartaStats, lanssidor: Object.keys(inline).length, github, hinken, smavag: smavagLage, tider, bygget_delar: delar, ms: Date.now() - t0 }), { headers: { "Content-Type": "application/json" } });
   } catch (e) {
     return new Response(JSON.stringify({ ok: false, error: String(e) }), { status: 500 });
   }

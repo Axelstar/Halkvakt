@@ -1,6 +1,7 @@
 // INSTÄLLNINGAR + OM + appens ingång. Samma svenska som Android, ordagrant
 // där kontraktet kräver det (kategoribeskrivningarna, integritetslöftet).
 import SwiftUI
+import UIKit
 import HalkvaktEngine
 
 struct InstallningarView: View {
@@ -35,6 +36,15 @@ struct InstallningarView: View {
                     }
                     .padding(.top, 14)
 
+                    // DECISIONS #829: tipsa, tyck till och betygsätt. Delningsarket, förarens mejlapp och App Store; appen sänder inget.
+                    MonoLabel(text: "Halkvakt").padding(.top, 24).padding(.horizontal, 4)
+                    RowPanel {
+                        ShareLink(item: Tipsa.lank, message: Text(Tipsa.text)) { NavRowLabel(title: "Tipsa en vän") }
+                        Button { tyckTill() } label: { NavRowLabel(title: "Tyck till") }
+                        Button { openURL(Tipsa.betyg) } label: { NavRowLabel(title: "Betygsätt Halkvakt", divider: false) }
+                    }
+                    .padding(.top, 10)
+
                     VStack(alignment: .leading, spacing: 6) {
                         MonoLabel(text: "Löftet")
                         Text("Din position lämnar inte telefonen av sig själv.").font(Typo.sans(15)).foregroundStyle(Brand.text2)
@@ -50,6 +60,22 @@ struct InstallningarView: View {
             .navigationDestination(for: Sida.self) { sida in
                 Undersida { innehall(sida) }
             }
+            .sheet(isPresented: $ingenMejl) { IngenMejlVy() }
+        }
+    }
+
+    @Environment(\.openURL) private var openURL
+    @State private var ingenMejl = false
+
+    /// Förarens egen mejlapp med adressen och tre tekniska rader; tar ingen app emot mailto visas adressen i stället.
+    private func tyckTill() {
+        let info = Bundle.main.infoDictionary
+        let url = Tipsa.mejl(version: info?["CFBundleShortVersionString"] as? String ?? "",
+                             bygge: info?["CFBundleVersion"] as? String ?? "",
+                             modell: Tipsa.modell,
+                             system: "iOS \(UIDevice.current.systemVersion)")
+        openURL(url) { ok in
+            if !ok { Task { @MainActor in ingenMejl = true } }
         }
     }
 
@@ -370,6 +396,7 @@ private struct GenvagarGuide: View {
 struct RootView: View {
     @State private var tab = 0
     @State private var guardM = GuardManager.shared
+    @State private var fav = Favoriter.shared
     var body: some View {
         ZStack(alignment: .bottom) {
             // Flikarna lever hela tiden, som i TabView: ingen omladdning och ingen tappad undersida vid flikbyte.
@@ -391,6 +418,8 @@ struct RootView: View {
         .safeAreaInset(edge: .top, spacing: 0) { Color.clear.frame(height: 0).background(Brand.bg) }
         // Här och inte i VaktenView: vakten kan starta (Siri, Genvägar, självväckning) medan Inställningar visas.
         .fullScreenCover(isPresented: $guardM.running) { KorlageView() }
+        // Favoriter 2a (#817): notisen och raden på Redo öppnar fliken med dagens resor överst.
+        .onChange(of: fav.visaFliken) { _, visa in if visa { tab = 1; fav.visaFliken = false } }
     }
 }
 

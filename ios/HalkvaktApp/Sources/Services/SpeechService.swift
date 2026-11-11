@@ -110,6 +110,9 @@ final class Prefs {
     /// Redo efter tur (designen 01b): senaste resans slut och sträcka.
     var lastTripEnd: Date? { didSet { d.set(lastTripEnd, forKey: "k.lastTripEnd") } }
     var lastTripKm: Double { didSet { d.set(lastTripKm, forKey: "k.lastTripKm") } }
+    /// DECISIONS #829: antalet avslutade vaktpass, och om kortet *Tipsa en vän* på Redo. är avfärdat. Bara i telefonen.
+    var vaktPass: Int { didSet { d.set(vaktPass, forKey: "k.vaktPass") } }
+    var tipsaDold: Bool { didSet { d.set(tipsaDold, forKey: "k.tipsaDold") } }
     /// Kort #203 lager 2: förarens missar, markerade och valda. Ren Swift-logik i Missar.swift.
     var missar: [MissEntry] { didSet { d.set(try? JSONEncoder().encode(missar), forKey: "k.missar") } }
     /// S4: vad senaste sändningsförsöket gav — syns under knapparna så testaren ser vad som hände (DECISIONS #209).
@@ -161,6 +164,8 @@ final class Prefs {
         tripStart = d.object(forKey: "k.tripStart") as? Date
         lastTripEnd = d.object(forKey: "k.lastTripEnd") as? Date
         lastTripKm = d.double(forKey: "k.lastTripKm")
+        vaktPass = d.integer(forKey: "k.vaktPass")
+        tipsaDold = d.bool(forKey: "k.tipsaDold")
         onboardingDone = d.bool(forKey: "k.onboardingDone")
         raknareKo = d.data(forKey: "k.raknareKo").flatMap { try? JSONDecoder().decode([RaknadHandelse].self, from: $0) } ?? []
         raknat = d.stringArray(forKey: "k.raknat") ?? []

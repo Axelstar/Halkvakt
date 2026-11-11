@@ -1,8 +1,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { MAX_RUTTER, RUTT_STEG_M, Ruttinsamlare, SAMMA_RESA_ANDEL, SAMMA_RESA_M, laggTill, namnforslag, sammaResa, taBort,
-  type Rutter } from "../engine/src/rutter.ts";
+import { MAX_RUTTER, RUTT_STEG_M, Ruttinsamlare, SAMMA_RESA_ANDEL, SAMMA_RESA_M, VANTANDE_MAX, dagensResor, laggTill, namnforslag,
+  sammaResa, taBort, type Rutter, type Vantande } from "../engine/src/rutter.ts";
 
 // De sparade rutterna (favoriterna steg 2, kort #357, DECISIONS #616, #625): TypeScript mot det delade facit, som Swift och Kotlin
 // prövas mot, och några invarianter som facit inte säger.
@@ -42,7 +42,17 @@ test("igenkänningen: samma väg åt något håll, men inte en del av den eller 
   for (const c of facit.samma.fall) assert.equal(sammaResa(c.b, facit.samma.a), c.svar, `${c.namn}, åt andra hållet`);
 });
 
-test("namnförslagen: fasta och datumet (DECISIONS #625)", () => {
-  assert.deepEqual(namnforslag(17, 10), ["Till jobbet", "Hem", "Resa 17/10"]);
+test("namnförslagen: ett för båda hållen och datumet (DECISIONS #625, #817)", () => {
+  assert.deepEqual(namnforslag(17, 10), ["Pendlingen", "Resa 17/10"]);
   assert.deepEqual(facit.namnforslag.svar, namnforslag(facit.namnforslag.dag, facit.namnforslag.manad));
+});
+
+test("dagens resor: samma pass ersätter, dit och hem blir en, högst tre, ett dygn (DECISIONS #817)", () => {
+  let l: Vantande[] = [];
+  for (const f of facit.dagens.fall) {
+    l = dagensResor(l, f.ny, f.nuS);
+    assert.deepEqual(l.map((v) => ({ id: v.id, slutS: v.slutS, km: v.km, dithem: v.dithem, punkter: v.punkter.length })), f.efter, f.namn);
+    assert.ok(l.length <= VANTANDE_MAX);
+  }
+  assert.deepEqual(facit.dagens.fall[3].efter.map((v: { id: string; dithem: boolean }) => [v.id, v.dithem]), [["s1", true], ["s2", false]]);
 });
