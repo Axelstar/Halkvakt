@@ -12,6 +12,8 @@
 //     FORDROJNING_H timmar utan att komma med i ett bygge.
 //  2. De skriptskrivna delarna är aktuella på main: projektkartan.ts --check och kortkartan.ts --check.
 //  3. Bara i dygnets körning: dagens dokumentsynk finns på main (raden "Dokumentsynk <datum>" i STATUS.md) och ingen synk-PR står öppen.
+//     Sedan 11/11 (Bengt: "bygg a och b", DECISIONS #834) inte heller en PR, utom ett utkast, som väntat mer än VANTAN_H timmar: den
+//     väntar på någons ord, och ärendet nedan är det som lyfter den.
 //  4. Ingen fil på main länkar till sidornas gamla adresser, på claude.ai eller på Pages i det här repot, utom DECISIONS och STATUS,
 //     som är historik.
 // Hittar den fel öppnas ärendet "Genomsökningen av sidorna hittade fel", eller får en kommentar om det redan är öppet. Är allt grönt
@@ -33,6 +35,15 @@ export const GAMLA = ["RVrWtvUGPfc88aFUbcYREc", "FThC1PqVqEMqWxofrCv1GT", "6hHX4
 export const GAMMAL_PAGES = "axelstar\\.github\\.io/Halkvakt/";
 /** Punkt 1: hur länge en ändring av en sida får ligga på main innan den ska finnas i ett bygge. Dygnet och två timmars marginal. */
 export const FORDROJNING_H = 26;
+/** Punkt 3: hur länge en PR som inte är ett utkast får vänta på ett ord (#834: "en PR som legat mer än två dygn blir en frist"). */
+export const VANTAN_H = 48;
+
+/** Punkt 3: de öppna PR:er som väntat längre än VANTAN_H, äldst först, med antalet dygn. Utkasten väntar med flit och räknas inte. */
+export function vantande(prar: { number: number; title: string; draft: boolean; created_at: string }[], nu: number): string[] {
+  return prar.filter((p) => !p.draft && nu - Date.parse(p.created_at) > VANTAN_H * 3600_000)
+    .sort((a, b) => Date.parse(a.created_at) - Date.parse(b.created_at))
+    .map((p) => `PR #${p.number} har väntat ${Math.floor((nu - Date.parse(p.created_at)) / 86400_000)} dygn på ett ord: ${p.title}`);
+}
 
 /** Källfilerna är fragment utan doctype (de skrevs för artefakttjänsten, som lade till skalet). Utan skal renderar en webbläsare dem
  *  i quirks-läge. noindex håller dem utanför sökmotorerna: innehållet finns redan i det publika repot, men adressen ska inte annonseras. */
@@ -167,9 +178,9 @@ async function genomsok(bas: string): Promise<string[]> {
   if (process.env.DYGN === "true") {
     if (!synkIdag(las("STATUS.md"), idag(new Date()))) fel.push(`ingen dokumentsynk ${idag(new Date())} på main (raden saknas i STATUS.md)`);
     if (process.env.GH_TOKEN) {
-      const oppna = ((await api("/pulls?state=open&base=main&per_page=100")) as { number: number; head: { ref: string } }[])
-        .filter((p) => p.head.ref.startsWith("claude/dokumentsynk-"));
-      for (const p of oppna) fel.push(`synkens PR #${p.number} står öppen; synk-ihops kommentar på PR:en säger varför`);
+      const alla = (await api("/pulls?state=open&base=main&per_page=100")) as { number: number; title: string; draft: boolean; created_at: string; head: { ref: string } }[];
+      for (const p of alla.filter((p) => p.head.ref.startsWith("claude/dokumentsynk-"))) fel.push(`synkens PR #${p.number} står öppen; synk-ihops kommentar på PR:en säger varför`);
+      fel.push(...vantande(alla.filter((p) => !p.head.ref.startsWith("claude/dokumentsynk-")), Date.now()));
     }
   }
   // 4. Gamla adresser.
@@ -222,9 +233,15 @@ function sjalvtest(): void {
   const r = resurser([{ fil: "docs/APPEN.html", namn: "A" }, { fil: "docs/PROJEKTKARTAN.html", namn: "P" }], (f) => app[f]);
   const ok9 = JSON.stringify(r) === JSON.stringify([{ namn: "bilder/b.pdf", fil: "docs/bilder/b.pdf", sida: "APPEN.html" },
     { namn: "produktbok/a.png", fil: "docs/produktbok/a.png", sida: "APPEN.html" }]);
-  if (!(ok1 && ok2 && ok3 && ok4 && ok5 && ok6 && ok7 && ok8 && ok9)) { console.error("✗ sidorna självtest", { ok1, ok2, ok3, ok4, ok5, ok6, ok7, ok8, ok9 }); process.exit(1); }
+  // Punkt 3 (#834): en PR som väntat mer än två dygn, äldst först; ett utkast och en PR under två dygn räknas inte.
+  const t = Date.parse("2026-11-11T12:00:00Z");
+  const v = vantande([{ number: 3, title: "Ny", draft: false, created_at: "2026-11-10T12:00:00Z" },
+    { number: 2, title: "Gammal", draft: false, created_at: "2026-11-06T11:00:00Z" }, { number: 4, title: "Utkast", draft: true, created_at: "2026-11-01T00:00:00Z" },
+    { number: 1, title: "Precis över", draft: false, created_at: "2026-11-09T11:59:00Z" }], t);
+  const ok10 = v.length === 2 && v[0] === "PR #2 har väntat 5 dygn på ett ord: Gammal" && v[1].startsWith("PR #1 har väntat 2 dygn");
+  if (!(ok1 && ok2 && ok3 && ok4 && ok5 && ok6 && ok7 && ok8 && ok9 && ok10)) { console.error("✗ sidorna självtest", { ok1, ok2, ok3, ok4, ok5, ok6, ok7, ok8, ok9, ok10 }); process.exit(1); }
   console.log("✓ sidorna självtest: sidlistan, skalet med noindex, förstasidan med byggets sha, dagens synk i STATUS, datumet i svensk tid, " +
-    "fördröjningen mot main, den gamla Pages-adressen och filerna sidorna pekar på");
+    "fördröjningen mot main, den gamla Pages-adressen, filerna sidorna pekar på och PR:erna som väntat mer än två dygn");
 }
 
 async function main(): Promise<void> {
