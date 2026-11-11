@@ -9,6 +9,9 @@ först när dokumentet är signerat.
 **§9 (steg 4: bedömningen per olycka, veckan och säsongen) tillades 6/11, före den första klassningen, och FASTSTÄLLDES samma dag av
 Bengt och Axel** (DECISIONS #802, #803), med valen i §9.8 som rekommenderat. §1–§8 gäller som de signerades.
 
+**§10 (klassningen efter sex timmar) tillades och FASTSTÄLLDES 11/11 av Bengt och Axel** (DECISIONS #841, #842). Det ändrar §2, §3, §5 och
+§9.5; varje ändrat stycke säger det och bär den gamla lydelsen. Klasserna i §4 och allt annat gäller som förut.
+
 **Varifrån det kommer.** Bengt 6/11: *"Analys av olyckor är ett av de mest effektiva metoderna för att se om varningssystemen fungerar.
 Olyckan fungerar som facit."*
 - Steg 1 (DECISIONS #796) fryser vad varje varningslager sa när olyckan började.
@@ -33,13 +36,14 @@ Olyckan fungerar som facit."*
 
 - Populationen är varje olycka av typen `Accident` i `situation_archive` som `olycksfacit_fanga()` (sql/084, sql/085) har fångat, med start från 6/11 2026.
 - **Dubbletter** är en tidigare rad inom 300 m och 30 minuter. De klassas, men ärendet räknar dem inte.
-- **En olycka klassas en gång**, när den är minst 24 timmar gammal, och klassen ändras aldrig efteråt.
+- **En olycka klassas en gång**, när den är minst sex timmar gammal och händelsen inte har setts i flödet den senaste timmen, och klassen
+  ändras aldrig efteråt. (Ändrat 11/11, §10. Förut: *när den är minst 24 timmar gammal*.)
 
 ## 3. Måtten: vad efterkontrollen läser
 
 | Fält | Källa | Fönster |
 | :-- | :-- | :-- |
-| `text_efter` | `situation_archive.message` vid kontrollen. Klassningen läser den tillsammans med texten vid fångsten | ett dygn efter starten |
+| `text_efter` | `situation_archive.message` vid kontrollen. Klassningen läser den tillsammans med texten vid fångsten | vid kontrollen: minst sex timmar efter starten, när händelsen har lämnat flödet (§2). (Ändrat 11/11, §10. Förut: *ett dygn efter starten*.) |
 | `yta_min`, `dagg_min` | den **närmaste vaktade stationen inom 15 km**: dess lägsta yta och daggpunkt | 2 timmar före till 2 timmar efter starten |
 | `fukt_efter` | samma station: regn, snö, eller nederbörd som inte är `no`/`Dry` (snapshotkärnans fukt) | samma |
 | `rimfrost_efter` | samma station: yta ≤ 0 °C och under daggpunkten | samma |
@@ -72,7 +76,8 @@ Utan station är ytan okänd. Då kan bara regel 1 och regel 5 ge en klass. Regl
 
 ## 5. Vad som följer
 
-- **Dagens ärende** med etiketten `olycka` (steg 3, funktionen `olycksfacit`, varje morgon 05:17 UTC) skrivs för det svenska dygnet i förrgår.
+- **Dagens ärende** med etiketten `olycka` (steg 3, funktionen `olycksfacit`, varje morgon 05:17 UTC) skrivs för det svenska dygnet i går.
+  (Ändrat 11/11, §10. Förut: *i förrgår*.)
   - Det bär en tabell per klass och utfall, och orsakerna till tystnaden.
   - Under *Att åtgärda* listar det varje olycka som är TYDLIG eller TROLIG och där appen teg (täckt eller otäckt).
   - Ärendet är publikt och bär bara väg, tid, läge, koder och antal, aldrig kandidatens tal.
@@ -186,7 +191,7 @@ Två tillägg i ärendet från §5:
 ### 9.5 Veckans ärende
 
 - **Rubriken** är *Olycksfacit vecka ÅÅÅÅ-Vnn*. Veckan är ISO-veckan, måndag till söndag i svensk tid, och etiketten är `olycka`.
-- **Det skrivs** av samma funktion och samma jobb som dagens ärende (05:17 UTC). Det görs den första morgonen då veckans söndag ligger minst två dygn bort och alla veckans olyckor är kontrollerade, normalt på tisdagen.
+- **Det skrivs** av samma funktion och samma jobb som dagens ärende (05:17 UTC). Det görs den första morgonen då veckans söndag ligger minst ett dygn bort och alla veckans olyckor är kontrollerade, normalt på måndagen. (Ändrat 11/11, §10. Förut: *minst två dygn bort … normalt på tisdagen*.)
 - **Den första veckan** är 2026-V45, från 6/11.
 - **Ärendet bär:**
   1. bedömningarna i §9.2, med antal;
@@ -232,11 +237,59 @@ Claude rekommenderar. Bengt och Axel väljer, och valen förs in här före sign
 | Bengt | 2026-11-07 | §9.1, storstädernas punkter i K-lagret (DECISIONS #815): i chatten *"ja till alla fem. Axel och jag signerar"* |
 | Axel | 2026-11-07 | via Bengt i chatten, samma rad |
 
+## 10. Tillägg 11/11 2026: klassningen efter sex timmar (DECISIONS #841, #842)
+
+**Status:** ✅ **FASTSTÄLLT 2026-11-11 av Bengt och Axel.** Förslaget är `docs/FORSLAG-OLYCKSFACIT-DRIFTLARM-2026-11-08.md` §6. Bengt 8/11:
+*"Jag vill gärna att vi inte ligger 24 timmar efter med olycksfacit"*.
+
+### 10.1 Vad som ändras
+
+| § | Förut | Nu |
+| :-- | :-- | :-- |
+| 2 | En olycka klassas när den är minst 24 timmar gammal | när den är minst sex timmar gammal **och** händelsen inte har setts i flödet den senaste timmen |
+| 3 | `text_efter`: ett dygn efter starten | vid kontrollen, alltså enligt §2 |
+| 5 | Dagens ärende gäller dygnet i förrgår | dygnet i går |
+| 9.5 | Veckans ärende när söndagen ligger minst två dygn bort, normalt på tisdagen | minst ett dygn bort, normalt på måndagen |
+
+- **Flödet** läses ur arkivet: den senaste timmen räknas bakåt från den händelse som `situation_archive` såg senast, inte från klockan. Står
+  inläsningen still väntar kontrollen, i stället för att läsa en text som ännu kan ändras. Villkoret läser alltså data, inte ett
+  klockslag, och en händelse som lever länge väntar tills den har lämnat flödet.
+- **Oförändrat:** klasserna och deras ordning (§4), vakterna och stationens fönster (§3: två timmar före till två timmar efter starten),
+  `halka_efter` (sex timmar efter starten, bokförs och klassar inte), dubbletterna, att en olycka klassas en gång, och §9:s bedömning.
+- Byggt i `sql/108_olycksfacit_driftlarm.sql`: `olycksfacit_efterkontroll()` är `sql/085` ord för ord utom urvalet, och dagens och veckans
+  dag i `supabase/functions/olycksfacit` (`DYGN_EFTER`). Integrationsprovet #842 prövar de båda villkoren och flödet när inläsningen står
+  still, med ett motprov per villkor.
+- **Fördröjningen** från olyckan till ärendet blir 6–30 timmar, i stället för 29–53.
+
+### 10.2 Regel L
+
+Ändringen kommer efter den första klassningen (6/11), så §7:s regel L gäller om den är en lättnad. Den ändrar inte vilka ord eller ytor som
+ger en klass, bara när texten läses. Den kan bara göra färre olyckor TYDLIG eller TROLIG om Trafikverket skriver ett halkord eller *singel*
+i texten efter kontrollen. Villkoret om flödet ska hindra det: texten läses först när händelsen har lämnat flödet.
+- **L1:** de olyckor som redan är klassade rörs inte; en olycka klassas en gång (§2).
+- **L2:** ändringen gäller bara olyckor som inte är kontrollerade när `sql/108` migreras.
+- **L3, det sedda talet** (förslaget §6, mätt 8/11 i driften på 120 olyckor utan dubbletter sedan 6/11, varav 72 klassade):
+  - ingen händelse syntes i flödet mer än 4 h 21 min efter starten; 2 över 3 h, ingen över 6 h;
+  - texten efteråt var ändrad jämfört med fångsten i 27 av 72;
+  - halkord bara i texten efteråt: 0; *singel* bara efteråt: 1, som blev TROLIG; vilt bara efteråt: 0.
+
+  En kontroll sex timmar efter starten, med villkoret om flödet, hade läst samma text som kontrollen efter ett dygn för alla 120 och gett
+  samma klass. Ändringen flyttar alltså inget sett tal.
+- **L4:** skälet är fördröjningen till ärendet, inte utfallet.
+
+### 10.3 Signaturer
+
+| Vem | Datum | Hur |
+| :-- | :-- | :-- |
+| Bengt | 2026-11-11 | i chatten: *"Ja, alla fyra"*, på förslagets fyra frågor, där fråga 4 var klassningen efter sex timmar (DECISIONS #841) |
+| Axel | 2026-11-11 | via Bengt i chatten: *"axel signerar 641"* (DECISIONS #842) |
+
 ---
 
 *Källor:*
-- `sql/084_olycksfacit.sql` (steg 1) och `sql/085_olycksfacit_klassning.sql` (steg 2 och 3);
+- `sql/084_olycksfacit.sql` (steg 1), `sql/085_olycksfacit_klassning.sql` (steg 2 och 3) och `sql/108_olycksfacit_driftlarm.sql` (§10);
 - `supabase/functions/olycksfacit/`;
 - förslaget `Desktop/Olyckorna_2026-11-06/OLYCKSFACIT_RUTINEN_FORSLAG_2026-11-06.md` (Bengt 6/11: *"Bygg olycksfacit"*, *"Ja, bygg steg 2 och 3"*);
-- DECISIONS #247, #245, #564, #649, #784, #796 och #797;
+- förslaget `docs/FORSLAG-OLYCKSFACIT-DRIFTLARM-2026-11-08.md` (§10);
+- DECISIONS #247, #245, #564, #649, #784, #796, #797, #841 och #842;
 - `publish/snapshot-core.ts`: vakterna och fukten.

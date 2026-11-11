@@ -6,6 +6,10 @@ export const FORSTA_DAG = "2026-11-06";   // första svenska dygnet som fångste
 export const ETIKETT = "olycka";
 export const TILLDELAD = "895845";          // Bengt, som dom-ärendena (DECISIONS #649)
 export const PAMINN_DYGN = 7;
+/** Dygn från det svenska dygnets slut till morgonen då dess ärende skrivs: dagens ärende gäller dygnet i går, och veckans skrivs måndagen
+ *  efter veckan. Klassningen sker när olyckan är minst sex timmar gammal och har lämnat flödet, så gårdagens sista olyckor är klassade
+ *  05.17 UTC (TROSKLAR-OLYCKSFACIT §10, DECISIONS #842; förut 2, i förrgår och tisdagen). */
+export const DYGN_EFTER = 1;
 export const MARK = (dag: string) => `<!-- olycksfacit:${dag} -->`;
 
 export type Olycka = {
@@ -104,7 +108,8 @@ export function arendeKropp(dag: string, olyckor: Olycka[]): string {
   return [
     MARK(dag),
     `**Olycksfacit för ${dag}** (svensk tid; DECISIONS #796 och #797, kort #376). Olyckan är facit för varningssystemen, inte för vägen ` +
-      "(DECISIONS #247): tabellen visar vad A1, kandidaten och A2 sa vid olyckans start, och klassningen efter ett dygn " +
+      "(DECISIONS #247): tabellen visar vad A1, kandidaten och A2 sa vid olyckans start, och klassningen när olyckan är minst " +
+      "sex timmar gammal och har lämnat flödet " +
       "(docs/TROSKLAR-OLYCKSFACIT.md).",
     "",
     ...tabell,
