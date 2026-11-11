@@ -2651,6 +2651,52 @@ test("#828 småvägsregeln: timmen, fukten, radarn och brytarna, i full skala", 
   }
 });
 
+// SMÅVÄGSRÖSTENS PUNKTFIL OCH BESKED (sql/106, byggsteg 5b, DECISIONS #828), mot riktig PostGIS.
+//   SF1  punktfilen skrivs i ordningen punkt COLLATE "C" med sha och storlekar; samma punkter en gång till ändrar inget
+//   SF2  en ny punkt ger en ny sha och nollar i_hinken och i_github
+//   SF3  bitarna i lägesfilen: brytarna av ⇒ ingen nyckel; P1 på ⇒ en bit för varje talande punkt på punktfilens plats
+test("#828 småvägsröstens punktfil och besked i lägesfilen", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { SATS, punktfil } = await import("../ingest/smavagspunkter-db.ts");
+  const { smavagBitar } = await import("../publish/snapshot-core.ts");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const las = (f: string) => q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+  const skrivFil = async () => { const f = punktfil((await q(SATS.punktfilRader)).rows); await q(SATS.punktfil, [f.sha256, f.punkter, f.bytes, f.gz_bytes, f.json]); return f; };
+  const rensa = async () => { for (const t of ["smavag_live", "smavag_korning", "radar_smavag", "smavagspunkt", "smavag_punktfil"]) await q(`DELETE FROM ${t}`); };
+  try {
+    await las("103_smavagspunkter.sql"); await las("104_radar_smavag.sql"); await las("105_smavagsregeln.sql");
+    await las("106_smavag_punktfil.sql"); await las("106_smavag_punktfil.sql");
+    await rensa(); await q("UPDATE smavagsbrytare SET pa = false");
+    await q(`INSERT INTO smavagspunkt (punkt, grupp, vag, ordning, lon, lat) VALUES
+      ('r00003', 'N', 'v00002', 0, 16.0, 61.0), ('r00001', 'P1', 'v00001', 0, 15.0, 60.0), ('r00002', 'P1', 'v00001', 1, 15.01, 60.0)`);
+    const f1 = await skrivFil();
+    assert.equal(f1.json, '{"schema":1,"punkter":[[15,60],[15.01,60],[16,61]]}', "SF1: lägena i id-ordning");
+    const rad = async () => (await q("SELECT sha256, punkter, bytes, gz_bytes, i_hinken, i_github FROM smavag_punktfil")).rows[0];
+    assert.deepEqual(await rad(), { sha256: f1.sha256, punkter: 3, bytes: f1.bytes, gz_bytes: f1.gz_bytes, i_hinken: null, i_github: null }, "SF1: raden");
+    await q("UPDATE smavag_punktfil SET i_hinken = sha256, i_github = sha256");
+    assert.equal((await q(SATS.punktfil, [f1.sha256, f1.punkter, f1.bytes, f1.gz_bytes, f1.json])).rowCount, 0, "SF1: samma fil ändrar inget");
+    assert.equal((await rad()).i_hinken, f1.sha256, "SF1: hinkens sha står kvar");
+    await q("INSERT INTO smavagspunkt (punkt, grupp, vag, ordning, lon, lat) VALUES ('r00004', 'P1', 'v00003', 0, 17.0, 62.0)");
+    const f2 = await skrivFil();
+    assert.ok(f2.sha256 !== f1.sha256 && (await rad()).i_hinken === null && (await rad()).i_github === null, "SF2: ny sha nollar hinken och kartrepot");
+    // SF3: r00002 (P1) och r00003 (N) varnar i timmen; med P1 på talar bara r00002, på plats 1 i punktfilen.
+    const t0 = (await q("SELECT date_trunc('hour', now()) AS t")).rows[0].t;
+    await q("INSERT INTO smavag_live (tid, punkt, ned) VALUES ($1::timestamptz, 'r00002', true), ($1::timestamptz, 'r00003', true)", [t0]);
+    await q("INSERT INTO smavag_korning (tid, punkter) VALUES ($1::timestamptz, 4)", [t0]);
+    const bitar = async () => (await q(`SELECT p.i FROM (SELECT punkt, (row_number() OVER (ORDER BY punkt COLLATE "C") - 1)::int AS i FROM smavagspunkt) p
+      JOIN smavag_talar() t ON t.punkt = p.punkt`)).rows.map((r: any) => r.i);
+    assert.deepEqual(await bitar(), [], "SF3: brytarna av ⇒ inga besked");
+    await q("UPDATE smavagsbrytare SET pa = (grupp = 'P1')");
+    assert.deepEqual(await bitar(), [1], "SF3: P1 på ⇒ r00002 på plats 1");
+    assert.equal(smavagBitar(await bitar(), 4), "Ag==", "SF3: bit 1");
+  } finally {
+    await rensa().catch(() => {});
+    await q("UPDATE smavagsbrytare SET pa = false").catch(() => {});
+    await pool.end();
+  }
+});
+
 // SMÅVÄGSRÖSTENS TIMRADER (ingest/smavag-live-db.ts, sql/105, DECISIONS #828, kort #647), mot riktig PostGIS.
 //   SL1  en timme skrivs med körningens rad, och regeln läser den
 //   SL2  samma timme en gång till ersätter raderna och körningens antal
