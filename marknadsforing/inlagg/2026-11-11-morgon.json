@@ -1,0 +1,29 @@
+{
+  "typ": "forandring",
+  "nyckel": "forandring",
+  "etikett": "Sedan i går",
+  "rubrik": "Halkan sprider sig",
+  "underrad": "vägavsnitt med halka, mot samma tid i går",
+  "lyft": {
+    "stort": "152 → 178",
+    "liten": "ny halka i Kalmar län och Västmanland"
+  },
+  "text": "Trafikverket rapporterar halka på 178 vägavsnitt, mot 152 vid samma tid i går.\nNy halka sedan i går: Kalmar län och Västmanland.\n\nNorrbotten: halka på 48 av 58 vägavsnitt, 57 stationer under noll, kallast −11,7 °C vid Kätkesuando.\nDalarna: halka på 31 av 38 vägavsnitt, 22 stationer under noll, kallast −3,3 °C vid Ryggen.\nVästerbotten: halka på 28 av 44 vägavsnitt, 46 stationer under noll, kallast −9,4 °C vid Holmfors 2.\nVästernorrland: halka på 19 av 22 vägavsnitt, 39 stationer under noll, kallast −7,1 °C vid Långvattnet.\nGävleborg: halka på 19 av 27 vägavsnitt, 15 stationer under noll, kallast −3,2 °C vid Kårböle 2.\nHalka eller minusgrader även i 6 län till.\n\nLäget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Dalarna #Västerbotten #Västernorrland #Gävleborg #halkvakt",
+  "textIg": "Trafikverket rapporterar halka på 178 vägavsnitt, mot 152 vid samma tid i går.\nNy halka sedan i går: Kalmar län och Västmanland.\n\nNorrbotten: halka på 48 av 58 vägavsnitt, 57 stationer under noll, kallast −11,7 °C vid Kätkesuando.\nDalarna: halka på 31 av 38 vägavsnitt, 22 stationer under noll, kallast −3,3 °C vid Ryggen.\nVästerbotten: halka på 28 av 44 vägavsnitt, 46 stationer under noll, kallast −9,4 °C vid Holmfors 2.\nVästernorrland: halka på 19 av 22 vägavsnitt, 39 stationer under noll, kallast −7,1 °C vid Långvattnet.\nGävleborg: halka på 19 av 27 vägavsnitt, 15 stationer under noll, kallast −3,2 °C vid Kårböle 2.\nHalka eller minusgrader även i 6 län till.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone, länken finns i vår profil.\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Dalarna #Västerbotten #Västernorrland #Gävleborg #halkvakt",
+  "pass": "morgon",
+  "datum": "2026-11-11",
+  "generated_at": "2026-11-11T04:30:10.904Z",
+  "lan": [
+    "norrbotten",
+    "dalarna",
+    "vasterbotten",
+    "vasternorrland",
+    "gavleborg",
+    "jamtland",
+    "vastmanland",
+    "varmland",
+    "kalmar",
+    "uppsala",
+    "orebro"
+  ]
+}
