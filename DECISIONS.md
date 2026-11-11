@@ -15385,3 +15385,23 @@ projektkartan står orange med den som enda rad.
 skrivet av Claude.
 
 **Stomdokument:** APP §8 — batteriet: kort #262 stängt och Android under 8 %/h inte visad
+
+## #841 (11/11 2026) Olycksfacit i nära realtid: ja till förslagets fyra frågor (kort #641)
+
+**Beslutet.** Bengt 11/11: *"Ja, alla fyra"*, på frågorna i `docs/FORSLAG-OLYCKSFACIT-DRIFTLARM-2026-11-08.md` §5, alla som Claudes rekommendation.
+1. **Kanalen:** ett ärende med etiketten `drift`, tilldelat Bengt, inom 15 minuter från fångsten. Det stängs som olycksfacits ärenden, när
+   felet är förklarat.
+2. **Feltyperna:** K *ingen timme* och *gallrad*, en tyst station (A2) och en stillastående publicering (appen), när olyckan kan gälla halka
+   (förslaget §3).
+3. **Skuggan:** en vecka med bara tabellen innan något ärende skrivs, så att frekvensen är mätt och inte antagen (DECISIONS #200). Efter
+   veckan väljer Bengt vilka feltyper som får göra ärenden.
+4. **Klassningen efter sex timmar** (del 6): en olycka kontrolleras och klassas när den är minst sex timmar gammal och händelsen inte setts
+   i flödet den senaste timmen. Det ändrar fastställda delar av TROSKLAR-OLYCKSFACIT (§2, §3, §5 och §9.5; DECISIONS #798, #803) och kräver
+   båda signaturerna: **Bengts är given här, Axels väntar.** Tillägget i TROSKLAR-OLYCKSFACIT skrivs när båda finns.
+
+**Kvar:**
+- Axels signatur på del 6.
+- Bygget, på Bengts ord: `olycksfacit_driftlarm()` med integrationsprov och motprov, och efter Axels signatur `olycksfacit_efterkontroll()`
+  med det nya villkoret och dagens och veckans dag i `supabase/functions/olycksfacit`.
+
+**Stomdokument:** BED §4.2 — olycksfacit i nära realtid
