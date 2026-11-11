@@ -15485,3 +15485,45 @@ inte öppnat appen. Bara Genvägar-automationen "när CarPlay ansluts": finns re
 **Numret.** Fattat 9/11 som #828 i PR #1485, som väntade på ett ord medan main gav #828 småvägsrösten. Bokfört som #840 11/11 (Bengt: *"Ja, slå ihop"*). Byggt efter 0.4.0 (44), så det kommer med i nästa iPhone-bygge; beviset är ett prov i bil.
 
 **Stomdokument:** inga — en startväg i CarPlay-scenen som inte ändrar vad appen skickar eller hur den varnar
+
+## #838 (11/11 2026) Kort #262, batteripaketet, stängt i sin helhet
+
+**Beslutet.** Bengt 11/11: *"Stäng hela"*, i genomgången av Väntar på (punkt 8), på frågan om Å0 och Å8 skulle strykas och kortet stå kvar bara
+för Android-timmen (Å7).
+
+**Läget när kortet stängdes.**
+- Å1–Å5 är i main och i varje bygge sedan (23) (DECISIONS #431, #461).
+- Å0 (testaren på 0.3.9) är överspelad av 0.4.x.
+- Å8 (nollmätning före fixarna) går inte längre att göra: inget bygge utan dem finns.
+- Å6 (fältprotokollet) är inte skrivet.
+- Å7 (en körtimme på Android under 8 %/h) är inte visad. Galaxy J6 gav 4,2, 6,7, 8,2 och 8,1 %/h utan nät, i hela procent (DECISIONS #778, 2/11).
+- iPhone ligger på omkring 2,8 %/h, som högst 5,4 (#778, tillägg 8/11).
+
+**Det som inte ändras.** Batteribudgeten, under 8 %/h med skärmen släckt, gäller som förut (CLAUDE.md), och en mätning över 8 %/h hindrar
+nästa bygge (DECISIONS #753). Kortet bär inte längre Android-mätningen, så den lyfts nästa gång en Android mäts; delen *Batteriet* i
+projektkartan står orange med den som enda rad.
+
+**Alternativet som inte valdes:** att stryka Å0 och Å8 och låta kortet stå kvar för Android-timmen (Claudes förslag), med protokollet (Å6)
+skrivet av Claude.
+
+**Stomdokument:** APP §8 — batteriet: kort #262 stängt och Android under 8 %/h inte visad
+
+## #841 (11/11 2026) Olycksfacit i nära realtid: ja till förslagets fyra frågor (kort #641)
+
+**Beslutet.** Bengt 11/11: *"Ja, alla fyra"*, på frågorna i `docs/FORSLAG-OLYCKSFACIT-DRIFTLARM-2026-11-08.md` §5, alla som Claudes rekommendation.
+1. **Kanalen:** ett ärende med etiketten `drift`, tilldelat Bengt, inom 15 minuter från fångsten. Det stängs som olycksfacits ärenden, när
+   felet är förklarat.
+2. **Feltyperna:** K *ingen timme* och *gallrad*, en tyst station (A2) och en stillastående publicering (appen), när olyckan kan gälla halka
+   (förslaget §3).
+3. **Skuggan:** en vecka med bara tabellen innan något ärende skrivs, så att frekvensen är mätt och inte antagen (DECISIONS #200). Efter
+   veckan väljer Bengt vilka feltyper som får göra ärenden.
+4. **Klassningen efter sex timmar** (del 6): en olycka kontrolleras och klassas när den är minst sex timmar gammal och händelsen inte setts
+   i flödet den senaste timmen. Det ändrar fastställda delar av TROSKLAR-OLYCKSFACIT (§2, §3, §5 och §9.5; DECISIONS #798, #803) och kräver
+   båda signaturerna: **Bengts är given här, Axels väntar.** Tillägget i TROSKLAR-OLYCKSFACIT skrivs när båda finns.
+
+**Kvar:**
+- Axels signatur på del 6.
+- Bygget, på Bengts ord: `olycksfacit_driftlarm()` med integrationsprov och motprov, och efter Axels signatur `olycksfacit_efterkontroll()`
+  med det nya villkoret och dagens och veckans dag i `supabase/functions/olycksfacit`.
+
+**Stomdokument:** BED §4.2 — olycksfacit i nära realtid
