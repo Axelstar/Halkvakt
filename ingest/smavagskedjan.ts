@@ -4,9 +4,13 @@
 //              varje del A bara läser sina punkters historik. Provet på en fjärdedel 11/11 visade samma PH och samma minne med delens egen
 //              historik som med hela, och kortare tid (#828).
 // Punkterna, särdragen och historiken stannar i jobbet. Loggen säger bara klart eller fel.
+//   hela       dygnsfilerna i <mnsv>/dagar som inte bär 24 timmar för varje punkt i <mnsv>/pilot_punkter.csv tas bort, så att nästa
+//              hämtning tar om dem. MET:s arkiv svarade 404 under en störning 11/11, historiken räknade timmarna som saknade i arkivet och
+//              sparade dygnen med luckor, och nästa körning hämtar aldrig ett sparat dygn. Kod 3 när något togs bort.
 //   node --experimental-strip-types ingest/smavagskedjan.ts historik <lista.txt> <indata-prefix> <n> <ut-prefix>
+//   node --experimental-strip-types ingest/smavagskedjan.ts hela <mnsv>
 //   node --experimental-strip-types ingest/smavagskedjan.ts --sjalvtest
-import { readFileSync, writeFileSync, existsSync, mkdirSync, mkdtempSync, rmSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, mkdirSync, mkdtempSync, rmSync, readdirSync } from "node:fs";
 import { gunzipSync, gzipSync } from "node:zlib";
 import { basename, join } from "node:path";
 import { tmpdir } from "node:os";
@@ -40,6 +44,19 @@ export function delaHistorik(lista: string[], prefix: string, n: number, ut: str
   return antal;
 }
 
+/** Dygnsfilerna som inte bär 24 rader per punkt tas bort. Raderna räknas som radslut i den uppackade filen. → de borttagna dygnen. */
+export function hela(mnsv: string): string[] {
+  const n = readFileSync(join(mnsv, "pilot_punkter.csv"), "utf8").trim().split(/\r?\n/u).length - 1;
+  const d = join(mnsv, "dagar"), bort: string[] = [];
+  for (const f of existsSync(d) ? readdirSync(d).filter((x) => /^\d{4}-\d\d-\d\d\.csv\.gz$/u.test(x)).sort() : []) {
+    const b = gunzipSync(readFileSync(join(d, f)));
+    let rader = 0;
+    for (let i = 0; i < b.length; i++) if (b[i] === 10) rader++;
+    if (rader !== 24 * n) { rmSync(join(d, f)); bort.push(f); }
+  }
+  return bort;
+}
+
 function sjalvtest(): number {
   const fel: string[] = [], k = (ok: boolean, namn: string) => { if (!ok) fel.push(namn); };
   const rot = mkdtempSync(join(tmpdir(), "smavagskedjan-"));
@@ -62,6 +79,18 @@ function sjalvtest(): number {
     k(las(join(rot, "h2", "dagar", "2026-11-01.csv.gz")) === "s00002,2026-11-01T00:00:00Z,1.5\ns00002,2026-11-01T01:00:00Z,1.5\n", "del 2 bär bara sin punkt");
     k(existsSync(join(rot, "h1", "dagar", "2026-11-02.csv.gz")) && !las(join(rot, "h1", "dagar", "2026-11-02.csv.gz")).includes("s00002"), "del 1 utan del 2:s punkt");
     k(vagra(() => delaHistorik([dag("2026-11-03", ["s00009"])], join(rot, "in"), 2, join(rot, "h"))), "en punkt utanför delarna vägras");
+
+    // hela: ett helt dygn står kvar, ett med en timme för lite, ett tomt och ett med en rad för mycket tas bort.
+    const mn = join(rot, "mn");
+    mkdirSync(join(mn, "dagar"), { recursive: true });
+    writeFileSync(join(mn, "pilot_punkter.csv"), "station_id,lat,lon,ruta_y,ruta_x,avstand_km\ns00000,60,15,1,1,0.1\ns00001,60,15,1,2,0.1\n");
+    const fil = (d: string, timmar: number, extra = 0) => writeFileSync(join(mn, "dagar", `${d}.csv.gz`),
+      gzipSync(Array.from({ length: timmar * 2 + extra }, (_, i) => `s0000${i % 2},${d}T00:00:00Z,1`).join("\n") + (timmar * 2 + extra ? "\n" : "")));
+    fil("2026-11-01", 24); fil("2026-11-02", 23); fil("2026-11-03", 0); fil("2026-11-04", 24, 1);
+    const b = hela(mn);
+    k(JSON.stringify(b) === JSON.stringify(["2026-11-02.csv.gz", "2026-11-03.csv.gz", "2026-11-04.csv.gz"]), `hela tar bort: ${b}`);
+    k(readdirSync(join(mn, "dagar")).join() === "2026-11-01.csv.gz", "det hela dygnet står kvar");
+    k(hela(mn).length === 0, "en andra kontroll tar inget");
   } finally { rmSync(rot, { recursive: true, force: true }); }
   console.log(`självtest smavagskedjan: ${fel.length ? "FEL" : "klart"}`);
   for (const f of fel) console.log(`  ${f}`);
@@ -76,6 +105,10 @@ if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {
       const lista = readFileSync(a[0], "utf8").split("\n").filter(Boolean);
       delaHistorik(lista, a[1], Number(a[2]), a[3]);
       console.log("historiken per del: klart");
-    } else { console.error("historik <lista> <indata> <n> <ut> | --sjalvtest"); process.exit(2); }
+    } else if (kmd === "hela" && a.length === 1) {
+      const b = hela(a[0]);
+      console.log(b.length ? `dygnen: ${b.length} ofullständiga borttagna, hämtas om` : "dygnen: klart");
+      if (b.length) process.exit(3);
+    } else { console.error("hela <mnsv> | historik <lista> <indata> <n> <ut> | --sjalvtest"); process.exit(2); }
   } catch (e: any) { console.error(`smavagskedjan ${kmd}: ${String(e?.message ?? e).slice(0, 200)}`); process.exit(1); }
 }

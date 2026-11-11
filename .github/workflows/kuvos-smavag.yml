@@ -28,7 +28,7 @@ permissions:
 env:
   PUNKTER: data/vagdata/smavagsrosten-punkter.json
   SARDRAG: data/vagdata/smavagsrosten-punkter-sardrag.csv
-  CACHE: kuvos-smavag-alla-
+  CACHE: kuvos-smavag-dygn-               # ny 11/11: kuvos-smavag-alla-2026-11-08 bär dygn med luckor (smavagskedjan.ts hela)
   HINK: kuvos-smavag-2026-27
 jobs:
   historik:
@@ -49,7 +49,7 @@ jobs:
         id: f
         shell: bash
         run: |
-          tyst() { "$@" > tyst.log 2>&1 || { echo "::error::föll: ${*:1:3}"; exit 1; }; }
+          tyst() { "$@" > tyst.log 2>&1 || { echo "::error::föll: ${*:1:3}: $(tail -1 tyst.log | cut -c1-200)"; exit 1; }; }
           tyst node --experimental-strip-types fysik/ny_kandidat/smavagar_pilot.ts --sjalvtest
           tyst node --experimental-strip-types ingest/smavagskedjan.ts --sjalvtest
           echo "fran=$(date -u -d '47 days ago' +%F)" >> "$GITHUB_OUTPUT"; echo "till=$(date -u -d '3 days ago' +%F)" >> "$GITHUB_OUTPUT"
@@ -60,7 +60,7 @@ jobs:
       - name: Rutorna (första gången), mot releasens ruta
         shell: bash
         run: |
-          tyst() { "$@" > tyst.log 2>&1 || { echo "::error::föll: ${*:1:3}"; exit 1; }; }
+          tyst() { "$@" > tyst.log 2>&1 || { echo "::error::föll: ${*:1:3}: $(tail -1 tyst.log | cut -c1-200)"; exit 1; }; }
           mkdir -p mnsv/dagar
           gh release download "$REL" --dir rel --pattern metnordic_punkter.csv
           [ -f mnsv/pilot_punkter.csv ] || tyst node --experimental-strip-types fysik/ny_kandidat/smavagar_pilot.ts --rutor mnsv/pilot_punkter.csv --punkter "$PUNKTER" --release rel/metnordic_punkter.csv
@@ -76,7 +76,13 @@ jobs:
           KOD=$?
           set -e
           [ "$KOD" = 3 ] && { echo "::warning::tidsbudgeten tog slut — tryck historik igen, den tar vid där"; echo "klar=nej" >> "$GITHUB_OUTPUT"; exit 0; }
-          [ "$KOD" = 0 ] || { echo "::error::historiken föll"; exit 1; }
+          [ "$KOD" = 0 ] || { echo "::error::historiken föll: $(tail -1 historik.log | cut -c1-200)"; exit 1; }
+          set +e
+          node --experimental-strip-types ingest/smavagskedjan.ts hela mnsv > hela.log 2>&1
+          KOD=$?
+          set -e
+          [ "$KOD" = 3 ] && { echo "::warning::$(tail -1 hela.log) — tryck historik igen"; echo "klar=nej" >> "$GITHUB_OUTPUT"; exit 0; }
+          [ "$KOD" = 0 ] || { echo "::error::kontrollen av dygnen föll: $(tail -1 hela.log | cut -c1-200)"; exit 1; }
           echo "klar=ja" >> "$GITHUB_OUTPUT"
           echo "historiken: klart" | tee -a "$GITHUB_STEP_SUMMARY"
       # MET Nordic är öppna data. Cachen bär punkternas rutor och analysens värden, inga kandidattal. En ny post bara när dygnen ändrats:
@@ -110,7 +116,7 @@ jobs:
         id: f
         shell: bash
         run: |
-          tyst() { "$@" > tyst.log 2>&1 || { echo "::error::föll: ${*:1:3}"; exit 1; }; }
+          tyst() { "$@" > tyst.log 2>&1 || { echo "::error::föll: ${*:1:3}: $(tail -1 tyst.log | cut -c1-200)"; exit 1; }; }
           tyst node --experimental-strip-types fysik/ny_kandidat/smavagar_pilot.ts --sjalvtest
           tyst node --experimental-strip-types ingest/metnordic-live.ts --sjalvtest
           tyst node --experimental-strip-types ingest/stadskedjan.ts --sjalvtest
@@ -159,7 +165,13 @@ jobs:
           KOD=$?
           set -e
           [ "$KOD" = 3 ] && { echo "::warning::historiken är inte komplett efter tidsbudgeten — tryck historik; kedjan räknar inget nu"; echo "klar=nej" >> "$GITHUB_OUTPUT"; exit 0; }
-          [ "$KOD" = 0 ] || { echo "::error::historiken föll"; exit 1; }
+          [ "$KOD" = 0 ] || { echo "::error::historiken föll: $(tail -1 historik.log | cut -c1-200)"; exit 1; }
+          set +e
+          node --experimental-strip-types ingest/smavagskedjan.ts hela mnsv > hela.log 2>&1
+          KOD=$?
+          set -e
+          [ "$KOD" = 3 ] && { echo "::warning::$(tail -1 hela.log) — kedjan räknar inget nu, nästa körning hämtar om dem"; echo "klar=nej" >> "$GITHUB_OUTPUT"; exit 0; }
+          [ "$KOD" = 0 ] || { echo "::error::kontrollen av dygnen föll: $(tail -1 hela.log | cut -c1-200)"; exit 1; }
           echo "klar=ja" >> "$GITHUB_OUTPUT"
       - name: Dygnen till cachen
         if: ${{ always() && steps.finns.outputs.ja == 'ja' && steps.c.outputs.cache-hit != 'true' && steps.h.outcome == 'success' }}
@@ -175,7 +187,7 @@ jobs:
         if: ${{ steps.h.outputs.klar == 'ja' }}
         shell: bash
         run: |
-          tyst() { "$@" > tyst.log 2>&1 || { echo "::error::föll: ${*:1:3}"; exit 1; }; }
+          tyst() { "$@" > tyst.log 2>&1 || { echo "::error::föll: ${*:1:3}: $(tail -1 tyst.log | cut -c1-200)"; exit 1; }; }
           for dag in $(date -u -d '2 days ago' +%F) $(date -u -d yesterday +%F) $(date -u +%F); do
             tyst node --experimental-strip-types ingest/metnordic-live.ts --dygn "$dag" --punkter mnsv/pilot_punkter.csv --ut mnsv-live
           done
@@ -199,7 +211,7 @@ jobs:
         shell: bash
         env: { FRAN: "${{ steps.f.outputs.fran }}" }
         run: |
-          tyst() { "$@" > tyst.log 2>&1 || { echo "::error::föll: ${*:1:3}"; exit 1; }; }
+          tyst() { "$@" > tyst.log 2>&1 || { echo "::error::föll: ${*:1:3}: $(tail -1 tyst.log | cut -c1-200)"; exit 1; }; }
           gh release download kuvos-fysik-indata-2024-25 --dir indata
           node -e '
             const m = require("./kuvos/fysik-indata-leverans.json"), c = require("crypto"), fs = require("fs");
@@ -239,7 +251,7 @@ jobs:
           for i in $(seq 1 "$DELAR"); do
             python3 fysik/ny_kandidat/levande.py --del-a --indata "indata-sv$i" --analys mnsv-del$i/dagar/*.csv.gz \
                 --korning "sv-korning/metnordic_korning_$STAMP.csv.gz" --modell modell_alla.pkl --kandidat kuvos/kandidat-2027-28-t4.json --ut "ut-sv$i" > "del-a-$i.log" 2>&1 \
-              || { echo "::error::Del A, del $i, föll"; exit 1; }
+              || { echo "::error::Del A, del $i, föll: $(tail -1 "del-a-$i.log" | cut -c1-200)"; exit 1; }
           done
           rm -f modell_alla.pkl
           echo "del A: klart" | tee -a "$GITHUB_STEP_SUMMARY"
@@ -249,7 +261,7 @@ jobs:
         run: |
           python3 fysik/ny_kandidat/smavag_drift.py timmar --punkter "$PUNKTER" --ph ut-sv*/ny_kandidat_ph_"$STAMP".csv.gz \
               --korning "sv-korning/metnordic_korning_$STAMP.csv.gz" --ut "timmar/timmar_$STAMP.csv.gz" > timmar.log 2>&1 \
-            || { echo "::error::timfilen föll"; exit 1; }
+            || { echo "::error::timfilen föll: $(tail -1 timmar.log | cut -c1-200)"; exit 1; }
       # Timfilen går bara till den privata hinken, aldrig till en artefakt. Finns den redan (en omkörning) skrivs ingenting över.
       - name: Timfilen till hinken, hämtad tillbaka och jämförd
         if: ${{ steps.m.outputs.klar == 'ja' }}
