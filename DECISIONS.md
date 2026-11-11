@@ -15330,3 +15330,36 @@ App Privacy eller integritet.html.
 **Alternativen som inte valdes:** att Claude frågar först vid driftens hälsa; ett dygn eller en vecka över taket; avbrott vid ett antal missar i olycksfacit; att bara den grupp där villkoret slog till slås av.
 
 **Stomdokument:** MAT 5 — småvägsröstens avbrottsvillkor
+
+## #834 (11/11 2026) Väntar på-listorna lever: PR:erna läses ur GitHub, och bokföringen slås ihop av synk-ihop
+
+**Beslutet.** Bengt 11/11: *"bygg a och b"*, på förslagen (a) och (b) efter frågan varför projektkartans listor inte uppdateras.
+
+**Varför.** Genomgången av listorna 11/11 visade tre skäl:
+- Kartsynken läste senast de öppna PR:erna 8/11 03.37 UTC. Morgonrutinens läsning föll 9–11/11, och skriptet behöll den gamla listan med
+  bara en rad i sin logg. Fyra öppna PR:er syntes därför inte (#1474, #1485, #1505, #1506).
+- Bokföringen från sessioner, mest Axels, låg i PR:er som väntade på Bengts ord och fick konflikter och krockande beslutsnummer. Sex
+  av de tolv bar arbete som redan var gjort eller i drift. Sessioner i molnet och på mobilen får inte slå ihop själva.
+- Ett kort stängs bara mot bevis på main, så det som låg i en väntande PR syntes aldrig som gjort.
+
+**Det som är byggt.**
+- **(a)** Projektkartan läser de öppna PR:erna ur GitHubs publika API när sidan öppnas (`PR_SKRIPT` i `scripts/projektkartan.ts`).
+  Kartsynkens lista står kvar i sidan som reserv, och svarar GitHub inte står det i rött hur gammal den är. Sidans bytes är desamma i
+  varje bygge, så genomsökningen jämför som förut. Provat i en webbläsare: 16 öppna PR:er lästa, och felfallet rött med reservens tid.
+- **(b)** `synk-ihop` slår också ihop en PR vars rubrik börjar med `Bokföring:` eller `Kartsynk:`, på dokumentsynkens villkor: bara
+  dokument, ci och md-vakt gröna på exakt huvudet, och kontrollerna gröna på det ihopslagna trädet. En bokföring får lägga till nya
+  beslut sist i DECISIONS.md, men aldrig ändra ett gammalt. Ett förslag eller utkast, i rubriken eller i ett nytt beslut, slås aldrig
+  ihop. Flödet startar på varje PR i repot och prövar bara den PR:ens huvud. Genomsökningen 06.00 UTC (`sidorna.ts`) larmar en PR som
+  inte är ett utkast och väntat mer än två dygn.
+- Självtesten i de tre skripten är gröna, och 16 av 16 motprov fälldes. `synk-ihop.ts --prova <ref> bokforing` på riktiga grenar:
+  ett nytt beslut sist gick igenom; samma gren som dokumentsynk, ett ändrat gammalt beslut, ett nytt FÖRSLAG och en ändring i kod
+  stoppades.
+
+**Gränserna.** Sidorna byggs en gång per dygn, 05.30 UTC, så korten flyttar sig dagen efter (#733). Beslut, signaturer, fältprov och PR:er
+med kod väntar fortfarande på en människa. Gamla PR:er med andra rubriker slås inte ihop av sig själva; de städas för sig.
+
+**Alternativen som inte valdes:** att bygget i 895845/halkvakt-sidor skriver in PR-listan, vilket hade fått genomsökningen att larma
+varje dygn; att kartsynken faller helt när PR-listan inte går att läsa, vilket hade stoppat hela morgonrutinen; att sessionen slår ihop
+själv, vilket molnets och mobilens sessioner inte får.
+
+**Stomdokument:** inga — rör projektkartan, synk-ihop och CLAUDE.md, inte stomdokumentens text
