@@ -2726,9 +2726,11 @@ test("#828 småvägsröstens punktfil och besked i lägesfilen", { skip: !url },
 //   SL4  gallringen tar rader äldre än sex timmar och låter körningsraderna stå
 //   SL5  lagen läser punkterna i id-ordning
 //   SL6  full skala: 90 000 rader på under 10 s, och en andra skrivning lämnar lika många
+//   SL7  taktens underlag (kuvösen F55): regelns varnande punkter med N3 och radarns medel i biten, i id-ordning; den torra står inte
+//        med; en timme som inte är regelns ger ingenting
 test("#828 småvägsröstens timrader: skrivningen, omskrivningen och gallringen, i full skala", { skip: !url }, async () => {
   const { default: pg } = await import("pg");
-  const { SATS, skrivTimme } = await import("../ingest/smavag-live-db.ts");
+  const { SATS, skrivTimme, underlag } = await import("../ingest/smavag-live-db.ts");
   const pool = new pg.Pool({ connectionString: url, max: 1 });
   const c = await pool.connect();
   const q = (s: string, p: unknown[] = []) => c.query(s, p);
@@ -2758,6 +2760,11 @@ test("#828 småvägsröstens timrader: skrivningen, omskrivningen och gallringen
     assert.equal(Number((await q("SELECT count(*) AS n FROM smavag_live WHERE punkt = 'r99903'")).rows[0].n), 1, "SL4: raden fem timmar bort står kvar");
     assert.equal(await antal("smavag_korning"), 2, "SL4: körningsraderna står kvar");
     assert.deepEqual((await q(SATS.lagen)).rows.map((r: any) => r.punkt), ["r99901", "r99902", "r99903"], "SL5: lägena i id-ordning");
+    await q("DELETE FROM smavag_live");
+    await skrivTimme(c, tid, [{ punkt: "r99902", ned: false }, { punkt: "r99901", ned: true }, { punkt: "r99903", ned: false }], 3);
+    await q(`INSERT INTO radar_smavag (bit, observed_at, rate_max_mmh, rate_mean_mmh) VALUES ('v99001-0', now() - interval '10 minutes', 0.4, 0.2)`);
+    assert.equal(await underlag(c, tid), "punkt,ned,radar_mmh\nr99901,1,0.2\nr99902,0,0.2\n", "SL7: N3 och radarn varnar, den torra står inte med");
+    assert.equal(await underlag(c, new Date(Date.parse(tid) - 3600e3).toISOString().replace(".000Z", "Z")), null, "SL7: en annan timme ger ingenting");
     await rensa();
     const N = 90000;
     const alla = Array.from({ length: N }, (_, i) => ({ punkt: `r${String(i + 1).padStart(5, "0")}`, ned: i % 2 === 0 }));

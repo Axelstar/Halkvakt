@@ -2,7 +2,8 @@ name: kuvos-smavag-timme
 # SMÅVÄGSRÖSTENS TIMME (DECISIONS #828, kort #647; sql/105; halkvakt-kuvos F54). Startar när ny-kandidat-timme är klar (workflow_run), ett
 # eget flöde så att K:s timjobb inte ändras och aldrig kan fällas härifrån. Timfilen ur hinken (kuvos-smavag.yml: PH och den strängare N3 per
 # punkt och timme), stationernas PH och ankarna som dagens K, del B (levande.py) för alla småvägspunkter, regel D (smavag_drift.py rader)
-# och timmens rader i smavag_live och smavag_korning. Med brytarna av talar ingenting (sql/105, smavag_talar).
+# och timmens rader i smavag_live och smavag_korning. Med brytarna av talar ingenting (sql/105, smavag_talar). Sist taktens underlag till
+# den privata hinken (halkvakt-kuvos F55): regelns varnande punkter med N3 och radarns medel, eftersom radar_smavag gallras efter två timmar.
 # Saknas timfilen eller timmens PH hoppas timmen grönt. Loggen säger bara klart eller fel (#768). Ankarna lämnar aldrig jobbet.
 on:
   workflow_run:
@@ -110,6 +111,41 @@ jobs:
           tyst python3 fysik/ny_kandidat/smavag_drift.py rader --live live.csv --timmar timmar.csv.gz --lagen punkter-sv.csv --tid "$TID" --ut rader.csv
           tyst node --experimental-strip-types ingest/smavag-live-db.ts skriv rader.csv "$TID" "$(cat rader.csv.antal)"
           echo "småvägsröstens timme: klart för $TID" | tee -a "$GITHUB_STEP_SUMMARY"
+      # Underlaget går bara till den privata hinken, aldrig till en artefakt. Är timmen inte regelns (för gammal eller under 95 % av
+      # punkterna) skrivs ingenting; finns filen redan (en omkörning) skrivs ingenting över.
+      - name: Taktens underlag till hinken, hämtat tillbaka och jämfört
+        if: ${{ steps.p.outputs.klar == 'ja' }}
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          FIL="underlag_$(date -u -d "$TID" +%Y%m%dT%H).csv"
+          set +e
+          node --experimental-strip-types ingest/smavag-live-db.ts underlag "$FIL" "$TID" > underlag.log 2>&1
+          KOD=$?
+          set -e
+          if [ "$KOD" = 3 ]; then echo "taktens underlag: timmen är inte regelns" | tee -a "$GITHUB_STEP_SUMMARY"; exit 0; fi
+          [ "$KOD" = 0 ] || { echo "::error::underlaget föll: $(tail -1 underlag.log | cut -c1-200)"; exit 1; }
+          gzip -n "$FIL"
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          export FN KEY
+          node -e '
+            const { execFileSync } = require("child_process"), fs = require("fs"), c = require("crypto"), fil = process.argv[1];
+            const sha = (b) => c.createHash("sha256").update(b).digest("hex"), namn = process.env.HINK + "/" + fil.split("/").pop();
+            // execFileSync:s fel bär kommandoraden och därmed nyckeln eller den signerade adressen: fångas, bara statusen skrivs ut.
+            const curl = (a, vad) => { try { return execFileSync("curl", ["-sS", "--fail", ...a], { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); }
+              catch (e) { if (vad) { console.error(`${vad} föll (curl ${e.status})`); process.exit(1); } return null; } };
+            const anrop = (lage, vad) => { const b = curl(["-X", "POST", `${process.env.FN}?lage=${lage}`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
+              "-H", "Content-Type: application/json", "-d", JSON.stringify({ filer: [namn] })], vad); return b && JSON.parse(b); };
+            if (anrop("kuvos_hamta")) { console.log("taktens underlag: klart (fanns redan)"); process.exit(0); }
+            const u = anrop("kuvos_ladda_upp", "adressen för uppladdningen").urls[0];
+            curl(["-X", "PUT", "-H", "Content-Type: application/octet-stream", "--data-binary", "@" + fil, u], "uppladdningen");
+            const h = anrop("kuvos_hamta", "hämtningen tillbaka").filer[0];
+            const ok = sha(curl([h.url], "hämtningen")) === sha(fs.readFileSync(fil));
+            console.log(ok ? "taktens underlag: klart" : "taktens underlag: FEL, i hinken med annat innehåll"); process.exit(ok ? 0 : 1);' "$FIL.gz" | tee -a "$GITHUB_STEP_SUMMARY"
+          rm -f "$FIL.gz"
       - name: Ankarna lämnar aldrig jobbet
         if: always()
         run: rm -f ankare.csv

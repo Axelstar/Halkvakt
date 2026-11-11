@@ -4,6 +4,9 @@
 // Laddaren rör aldrig brytarna. Loggen säger bara klart eller fel (DECISIONS #768: inga antal, lägen eller tal).
 //   node --experimental-strip-types ingest/smavag-live-db.ts lagen <ut.csv>                  punkternas lägen, som del B:s punktfil
 //   node --experimental-strip-types ingest/smavag-live-db.ts skriv <rader.csv> <tid> <antal>  rader.csv: punkt,ned
+//   node --experimental-strip-types ingest/smavag-live-db.ts underlag <ut.csv> <tid>          taktens underlag (kuvösen F55, F50 §7 punkt 3):
+//       regelns varnande punkter i timmen, med N3 och radarns medel i biten, så att takten kan räknas med och utan radarn sedan
+//       radar_smavag gallrats. Är timmen inte regelns (smavag_timme()) skrivs ingenting, kod 3. Filen går bara till den privata hinken.
 //   node --experimental-strip-types ingest/smavag-live-db.ts --sjalvtest
 import { readFileSync, writeFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
@@ -32,7 +35,15 @@ export const SATS = {
   korning: `INSERT INTO smavag_korning (tid, punkter, skriven_at) VALUES ($1::timestamptz, $2::int, now())
     ON CONFLICT (tid) DO UPDATE SET punkter = EXCLUDED.punkter, skriven_at = EXCLUDED.skriven_at`,
   gallra: `DELETE FROM smavag_live WHERE tid < now() - interval '6 hours'`,
+  timmen: `SELECT coalesce(smavag_timme() = $1::timestamptz, false) AS ok`,
+  underlag: `SELECT r.punkt, r.ned, r.radar_mmh FROM smavag_regel() r WHERE r.utfall = 'varnar' AND r.tid = $1::timestamptz
+    ORDER BY r.punkt COLLATE "C"`,
 };
+
+/** Underlagets fil: punkt, ned (1 eller 0) och radarns medel i biten (tomt utan radarrad). */
+export function underlagCsv(rr: { punkt: string; ned: boolean; radar_mmh: string | number | null }[]): string {
+  return "punkt,ned,radar_mmh\n" + rr.map((r) => `${r.punkt},${r.ned ? 1 : 0},${r.radar_mmh ?? ""}\n`).join("");
+}
 
 type Klient = { query: (s: string, p?: unknown[]) => Promise<unknown> };
 
@@ -49,6 +60,12 @@ export async function skrivTimme(c: Klient, tid: string, rader: Rad[], punkter: 
     throw e;
   }
   await c.query(SATS.gallra);
+}
+
+/** Timmens underlag, eller null när timmen inte är regelns (för gammal, ofullständig eller en annan). */
+export async function underlag(c: Klient, tid: string): Promise<string | null> {
+  const ok = ((await c.query(SATS.timmen, [tid])) as any).rows[0].ok;
+  return ok ? underlagCsv(((await c.query(SATS.underlag, [tid])) as any).rows) : null;
 }
 
 async function klient<T>(f: (c: any) => Promise<T>): Promise<T> {
@@ -73,6 +90,10 @@ function sjalvtest(): number {
   vagra("punkt,ned\nr00001,1\nr00001,0\n", "dubblett");
   if (!/smavag_live/.test(SATS.skriv) || !/smavag_korning/.test(SATS.korning) || /brytare|vagpunkt\b|ny_kandidat/.test(Object.values(SATS).join(" ").replace(/smavagspunkt/g, "")))
     fel.push("satserna rör annat än småvägstabellerna");
+  if (underlagCsv([{ punkt: "r00001", ned: true, radar_mmh: null }, { punkt: "r00002", ned: false, radar_mmh: "0.25" }]) !==
+      "punkt,ned,radar_mmh\nr00001,1,\nr00002,0,0.25\n") fel.push("underlagets rader");
+  if (underlagCsv([]) !== "punkt,ned,radar_mmh\n") fel.push("ett underlag utan varnande punkter är bara rubriken");
+  if (!/utfall = 'varnar'/.test(SATS.underlag) || /0[.,]1\b/.test(SATS.underlag)) fel.push("underlaget tar regelns utfall, utan egen radargräns");
   console.log(`självtest smavag-live-db: ${fel.length ? "FEL" : "klart"}`);
   for (const f of fel) console.log(`  ${f}`);
   return fel.length ? 1 : 0;
@@ -91,5 +112,12 @@ if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {
     }).catch(fel);
   } else if (kmd === "skriv" && a && /^\d{4}-\d\d-\d\dT\d\d:00:00Z$/u.test(b ?? "") && /^\d+$/u.test(n ?? "")) {
     klient(async (c) => { await skrivTimme(c, b, lasRader(readFileSync(a, "utf8")), Number(n)); console.log("småvägsraderna: klart"); }).catch(fel);
-  } else { console.error("lagen <ut.csv> | skriv <rader.csv> <tid> <antal> | --sjalvtest"); process.exit(2); }
+  } else if (kmd === "underlag" && a && /^\d{4}-\d\d-\d\dT\d\d:00:00Z$/u.test(b ?? "")) {
+    klient(async (c) => {
+      const u = await underlag(c, b);
+      if (u === null) { console.log("underlaget: timmen är inte regelns"); process.exit(3); }
+      writeFileSync(a, u);
+      console.log("underlaget: klart");
+    }).catch(fel);
+  } else { console.error("lagen <ut.csv> | skriv <rader.csv> <tid> <antal> | underlag <ut.csv> <tid> | --sjalvtest"); process.exit(2); }
 }
