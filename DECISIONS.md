@@ -15157,6 +15157,18 @@ Brytarna är av tills dess.
 
 **Tillägg 10/11 (Bengt: *"men börja på steg 3"* och *"Slå ihop och dbknappen"*): steg 3, radarn i småvägspunkterna, i drift.** PR #1498 sammanslagen (c1b817ec) 13.31 UTC på grön ci (integrationsprovet RV1–RV5), direkt efter att stadsradarns körning 13.31 startat på den gamla koden. `sql/104` migrerad med DB-knappen 13.31.58 UTC (42825320824): RLS på, rättigheter bara för `service_role`, inga rader. Radarn läser punkterna i bitar om högst fem i följd längs vägen och gallrar efter två timmar (`radar-karna.ts` `SMAVAG`). Första körningen på den nya koden, 13.46 (42827533485), var grön: *stadsradarn: klart* och *småvägsradarn: klart på 253 ms*, med tom punkttabell tills laddningen 18.28 UTC.
 
+**Tillägg 11/11 (Bengt: *"Jag tillåter provet"*): steg 4, provet på en fjärdedel, läst.** `kuvos-smavag` på main:
+- **Historiken** (42919204621): 45 dygn, inget saknat, sparad i cachen.
+- **Provet** (42937524585): grönt, 22 121 punkter på 5 924 vägar.
+  - **Del A** i tre delar om 7 374 punkter tog 35,7–37,1 s och 7 035–7 103 MB per del.
+  - **Del 1 med hela fjärdedelens historik** tog 56,0 s och 7 023 MB, och PH blev lika med delens egen historik.
+  - **Del B** för timmen tog 4,0 s och 810 MB.
+  - **Hämtningarna ur MET:** dygnen 827 s och körningen 50 s.
+- **Läsningen:**
+  - Minnet följer punkterna och inte historiken. Historiken per del sparar tid, inte minne.
+  - Alla punkter ryms i 12 delar om högst 7 400 punkter, var och en under planens 8 GB, men med under 1 GB marginal.
+- **Kvar:** kedjan i drift med brytarna av, på Bengts ord (bedömningen §4.2).
+
 **Tillägg 11/11 (Bengt: *"Ja, bygg regeln"*): steg 5, regeln, byggd på en gren och inte migrerad.** `sql/105`:
 - **Kedjans kontrakt.** Kuvösens kedja (steg 4) skriver en rad per punkt och timme där regel D säger *fryser* (`smavag_live`), med den
   strängare N3 som ett ja eller nej, och sist en rad för timmen (`smavag_korning`) med antalet punkter som fick ett besked. Gränserna och
