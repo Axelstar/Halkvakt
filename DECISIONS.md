@@ -15198,6 +15198,18 @@ Brytarna är av tills dess.
   radarn inte ser, och radarns 60 minuter mot N3:s fyra timmar hade tystat rösten just när en våt väg fryser.
 - **Väntar:** att takten räknas också med radarn är ett tillägg till kuvösens F50, som Bengt och Axel signerar.
 
+**Tillägg 11/11 (Bengt: *"Ja, bygg"*): kedjan i drift byggd på en gren, inte sammanslagen.**
+- **Var sjätte timme:** `kuvos-smavag` startar när `kuvos-stad` är klar, så att de två aldrig väntar i MET-kön samtidigt (en väntande körning i en
+  concurrency-grupp avbryts av nästa). En hämtning och 15 delar, och sedan timfilen till hinken. Den går inte till Actions-cachen, som kan läsas av en PR
+  från en fork, och inte till databasen, där den hade blivit omkring 530 000 rader var sjätte timme.
+- **Varje timme:** det nya flödet `kuvos-smavag-timme` startar när `ny-kandidat-timme` är klar. Det läser timfilen, stationernas PH och ankarna, kör del B och
+  kuvösens regel D och skriver timmens rader (`ingest/smavag-live-db.ts`) i en transaktion. K:s flöde ändras inte och kan inte fällas härifrån.
+- **N3 i driften** kommer som i P-II ur samma MET-körning som timmen, med 6–11 timmars ledtid. Bakåtmätningen gjordes på MET:s analys, så träffsäkerheten i
+  driften kan bli sämre än den mätta.
+- **Luckan:** kedjan blir klar omkring en timme efter fysiken, så timmen närmast efter körningen hinner oftast inte med. Regeln läser då föregående timme så
+  länge den är högst två timmar gammal och tiger sedan till nästa skrivna timme, omkring 50 minuter var sjätte timme, längre om kedjan blir sen. Inget talar förrän brytarna slås på.
+- **Ordningen:** PR #1509 och `sql/105` med DB-knappen, kuvösens PR, sedan flödena, knappen `historik` för alla punkter och första körningen.
+
 **Stomdokument:** MAT 5 — småvägsrösten beställd och byggs avstängd, SYS 2 — driftens rörarbete för småvägarna, APP 3 — betavarningens farotyp och text
 
 ## #829 (10/11 2026) Tipsa en vän, Tyck till och Betygsätt i 0.4.0 (42), tillsammans med Favoriter 2a och CarPlay
