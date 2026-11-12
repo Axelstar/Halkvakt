@@ -131,9 +131,15 @@ export const nyckel = (b: Bit) => `kuvos-smavag-bakat-met-${b.typ}-${b.fran}-${b
 /** Analysbitarna en prognosvecka högst läser: så många steg har kedjan-a för att läsa dem ur cachen. */
 export const MAX_ANALYS = 9;
 
+/** Dygn per jobb i kedjan-b: ankarfilen och körningarnas filer hämtas ur hinken en gång per block i stället för en gång per dygn
+ *  (DECISIONS #850), och ett block om fyra dygn ryms väl inom jobbets tidstak. */
+export const BLOCK_DYGN = 4;
+
 /** Kedjans jobb: bitarna som stationernas dygn plockas ur (st), prognosveckorna med nycklarna till de analysbitar som småvägarnas 47
- *  dygn före veckans körningar ligger i (veckor: från 47 dygn före veckans första dygn till dygnet efter dess sista), och dygnen. */
-export function kedjan(fran: string, till: string): { st: Bit[]; veckor: { fran: string; till: string; a: string[] }[]; dagar: string[] } {
+ *  dygn före veckans körningar ligger i (veckor: från 47 dygn före veckans första dygn till dygnet efter dess sista), dygnen, och dygnen
+ *  i block om BLOCK_DYGN (block). */
+export function kedjan(fran: string, till: string): { st: Bit[]; veckor: { fran: string; till: string; a: string[] }[]; dagar: string[];
+  block: { fran: string; till: string }[] } {
   const bb = bitar(fran, till);
   const ut = bb.filter((b) => b.typ === "prognos").map((p) => {
     const fore = dygn(p.fran, -47), efter = dygn(p.till, 1);
@@ -143,7 +149,9 @@ export function kedjan(fran: string, till: string): { st: Bit[]; veckor: { fran:
   });
   const dagar: string[] = [];
   for (let d = fran; d <= till; d = dygn(d, 1)) dagar.push(d);
-  return { st: bb.filter((b) => b.typ !== "prognos"), veckor: ut, dagar };
+  const block = [];
+  for (let i = 0; i < dagar.length; i += BLOCK_DYGN) block.push({ fran: dagar[i], till: dagar[Math.min(i + BLOCK_DYGN, dagar.length) - 1] });
+  return { st: bb.filter((b) => b.typ !== "prognos"), veckor: ut, dagar, block };
 }
 
 /** Talet som en real (fyra byte) i Postgres kortaste decimalform: den som node-postgres läser tillbaka ur ny_kandidat_ph (ph real). */
@@ -266,6 +274,8 @@ function sjalvtest(): number {
       "bitar: prognosveckorna som 12/11");
     const kj = kedjan("2024-01-01", "2024-03-31");
     k(kj.st.length === 32 && kj.dagar.length === 91 && kj.dagar[90] === "2024-03-31" && kj.veckor.length === 14, "kedjan: bitarna och dygnen");
+    k(kj.block.length === 23 && kj.block[0].fran === "2024-01-01" && kj.block[0].till === "2024-01-04" && kj.block[22].fran === "2024-03-29" &&
+      kj.block[22].till === "2024-03-31", `kedjan: dygnen i block om fyra (${kj.block.length})`);
     k(kj.veckor[0].a.length === 9 && kj.veckor[0].a[0].endsWith("analys-2023-11-15-2023-11-15") && kj.veckor[0].a[8].endsWith("2024-01-04-2024-01-10"),
       `kedjan: första veckans analysbitar ${kj.veckor[0].a.length}`);
     k(kj.veckor.every((v) => v.a.length <= MAX_ANALYS && v.a.length >= 8), "kedjan: varje vecka läser 8 eller 9 analysbitar");
@@ -326,7 +336,7 @@ if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {
       console.log(JSON.stringify(bitar(a[0], a[1])));
     } else if (kmd === "kedjan" && a.length === 2) {
       const kj = kedjan(a[0], a[1]);
-      console.log(`st=${JSON.stringify(kj.st)}\nveckor=${JSON.stringify(kj.veckor)}\ndagar=${JSON.stringify(kj.dagar)}`);
+      console.log(`st=${JSON.stringify(kj.st)}\nveckor=${JSON.stringify(kj.veckor)}\ndagar=${JSON.stringify(kj.dagar)}\nblock=${JSON.stringify(kj.block)}`);
     } else if (kmd === "ph" && a.length === 3) {
       const t = stationsPh(gunzipSync(readFileSync(a[0])).toString("utf8"), a[1]);
       if (t === null) { console.log("stationernas PH: inget för timmen"); process.exit(3); }

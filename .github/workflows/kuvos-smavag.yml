@@ -273,8 +273,9 @@ jobs:
           python3 fysik/ny_kandidat/smavag_drift.py timmar --punkter "$PUNKTER" --ph ut-sv*/ny_kandidat_ph_"$STAMP".csv.gz \
               --korning "sv-korning/metnordic_korning_$STAMP.csv.gz" --ut "timmar/timmar_$STAMP.csv.gz" > timmar.log 2>&1 \
             || { echo "::error::timfilen föll: $(tail -1 timmar.log | cut -c1-200)"; exit 1; }
-      # Timfilen går bara till den privata hinken, aldrig till en artefakt. Finns den redan (en omkörning) skrivs ingenting över.
-      - name: Timfilen till hinken, hämtad tillbaka och jämförd
+      # Timfilen går bara till den privata hinken, aldrig till en artefakt. Finns den redan (en omkörning) skrivs ingenting över. Den
+      # kontrolleras med hinkens ETag (ingest/hinken.ts, DECISIONS #850) i stället för att hämtas tillbaka.
+      - name: Timfilen till hinken, kontrollerad
         if: ${{ steps.m.outputs.klar == 'ja' }}
         shell: bash
         env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
@@ -284,19 +285,7 @@ jobs:
           read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
           [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
           echo "::add-mask::$KEY"
-          export FN KEY
-          node -e '
-            const { execFileSync } = require("child_process"), fs = require("fs"), c = require("crypto"), fil = process.argv[1];
-            const sha = (b) => c.createHash("sha256").update(b).digest("hex"), namn = process.env.HINK + "/" + fil.split("/").pop();
-            // execFileSync:s fel bär kommandoraden och därmed nyckeln eller den signerade adressen: fångas, bara statusen skrivs ut.
-            const curl = (a, vad) => { try { return execFileSync("curl", ["-sS", "--fail", ...a], { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); }
-              catch (e) { if (vad) { console.error(`${vad} föll (curl ${e.status})`); process.exit(1); } return null; } };
-            const anrop = (lage, vad) => { const b = curl(["-X", "POST", `${process.env.FN}?lage=${lage}`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
-              "-H", "Content-Type: application/json", "-d", JSON.stringify({ filer: [namn] })], vad); return b && JSON.parse(b); };
-            if (anrop("kuvos_hamta")) { console.log("timfilen: klart (fanns redan)"); process.exit(0); }
-            const u = anrop("kuvos_ladda_upp", "adressen för uppladdningen").urls[0];
-            curl(["-X", "PUT", "-H", "Content-Type: application/octet-stream", "--data-binary", "@" + fil, u], "uppladdningen");
-            const h = anrop("kuvos_hamta", "hämtningen tillbaka").filer[0];
-            const ok = sha(curl([h.url], "hämtningen")) === sha(fs.readFileSync(fil));
-            console.log(ok ? "timfilen: klart" : "timfilen: FEL, i hinken med annat innehåll"); process.exit(ok ? 0 : 1);' "timmar/timmar_$STAMP.csv.gz" | tee -a "$GITHUB_STEP_SUMMARY"
+          FN="$FN" KEY="$KEY" node --experimental-strip-types ingest/hinken.ts ladda "timmar/timmar_$STAMP.csv.gz" "$HINK/timmar_$STAMP.csv.gz" --finns-ok 2> hinken.log \
+            || { echo "::error::timfilen gick inte till hinken"; exit 1; }
+          echo "timfilen: klart" | tee -a "$GITHUB_STEP_SUMMARY"
           rm -rf timmar

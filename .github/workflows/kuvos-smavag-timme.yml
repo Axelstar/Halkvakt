@@ -117,8 +117,9 @@ jobs:
           tyst node --experimental-strip-types ingest/smavag-live-db.ts skriv rader.csv "$TID" "$(cat rader.csv.antal)"
           echo "småvägsröstens timme: klart för $TID" | tee -a "$GITHUB_STEP_SUMMARY"
       # Underlaget går bara till den privata hinken, aldrig till en artefakt. Är timmen inte regelns (för gammal eller under 95 % av
-      # punkterna) skrivs ingenting; finns filen redan (en omkörning) skrivs ingenting över.
-      - name: Taktens underlag och resorna till hinken, hämtade tillbaka och jämförda
+      # punkterna) skrivs ingenting; finns filen redan (en omkörning) skrivs ingenting över. Filerna kontrolleras med hinkens ETag
+      # (ingest/hinken.ts, DECISIONS #850) i stället för att hämtas tillbaka.
+      - name: Taktens underlag och resorna till hinken, kontrollerade
         if: ${{ steps.p.outputs.klar == 'ja' }}
         shell: bash
         env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
@@ -136,30 +137,15 @@ jobs:
           read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
           [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
           echo "::add-mask::$KEY"
-          export FN KEY
-          # .cjs: repots package.json säger "type": "module", och en .js-fil med require fäller då (alla timmar 11/11–12/11).
-          cat > ladda.cjs <<'JS'
-            const { execFileSync } = require("child_process"), fs = require("fs"), c = require("crypto"), [fil, vad0] = process.argv.slice(2);
-            const sha = (b) => c.createHash("sha256").update(b).digest("hex"), namn = process.env.HINK + "/" + fil.split("/").pop();
-            // execFileSync:s fel bär kommandoraden och därmed nyckeln eller den signerade adressen: fångas, bara statusen skrivs ut.
-            const curl = (a, vad) => { try { return execFileSync("curl", ["-sS", "--fail", ...a], { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); }
-              catch (e) { if (vad) { console.error(`${vad} föll (curl ${e.status})`); process.exit(1); } return null; } };
-            const anrop = (lage, vad) => { const b = curl(["-X", "POST", `${process.env.FN}?lage=${lage}`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
-              "-H", "Content-Type: application/json", "-d", JSON.stringify({ filer: [namn] })], vad); return b && JSON.parse(b); };
-            if (anrop("kuvos_hamta")) { console.log(`${vad0}: klart (fanns redan)`); process.exit(0); }
-            const u = anrop("kuvos_ladda_upp", "adressen för uppladdningen").urls[0];
-            curl(["-X", "PUT", "-H", "Content-Type: application/octet-stream", "--data-binary", "@" + fil, u], "uppladdningen");
-            const h = anrop("kuvos_hamta", "hämtningen tillbaka").filer[0];
-            const ok = sha(curl([h.url], "hämtningen")) === sha(fs.readFileSync(fil));
-            console.log(ok ? `${vad0}: klart` : `${vad0}: FEL, i hinken med annat innehåll`); process.exit(ok ? 0 : 1);
-          JS
+          ladda() { FN="$FN" KEY="$KEY" node --experimental-strip-types ingest/hinken.ts ladda "$1" "$HINK/$1" --finns-ok 2>> hinken.log \
+            || { echo "::error::$2 gick inte till hinken"; exit 1; }; echo "$2: klart" | tee -a "$GITHUB_STEP_SUMMARY"; }
           # Underlaget först: det går inte att räkna om när radar_smavag gallrats, men resorna går att dra ur det i efterhand.
-          node ladda.cjs "$FIL.gz" "taktens underlag" | tee -a "$GITHUB_STEP_SUMMARY"
+          ladda "$FIL.gz" "taktens underlag"
           # Resorna (halkvakt-kuvos F50 del B med F55 och F56): timmens syntetiska resor och röstens besked.
           python3 fysik/ny_kandidat/smavag_takt.py resor --punkter data/vagdata/smavagsrosten-punkter.json --underlag "$FIL.gz" --tid "$TID" --ut "$RES" > resor.log 2>&1 \
             || { echo "::error::resorna föll: $(tail -1 resor.log | cut -c1-200)"; exit 1; }
-          node ladda.cjs "$RES" "resorna" | tee -a "$GITHUB_STEP_SUMMARY"
-          rm -f "$FIL.gz" "$RES" ladda.cjs
+          ladda "$RES" "resorna"
+          rm -f "$FIL.gz" "$RES"
       # Regeln utanför databasen (ingest/smavag-regel.ts, DECISIONS #843, halkvakt-kuvos F57 §9 punkt 3) mot smavag_regel() för samma
       # timme, efter underlaget så att en skillnad aldrig stoppar det. Backtesten räknar underlaget med kopian, så den måste fatta samma
       # beslut som driften. Bara utfallet skrivs, inga punkter eller tal (#768).

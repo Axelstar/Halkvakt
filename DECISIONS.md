@@ -15866,3 +15866,43 @@ säsongsreleasen från 30 augusti och småvägarna 47 dygn bakåt. Med en kortar
 - ett komplett dygn enligt vakten.
 
 **Stomdokument:** SYS 2 — småvägsröstens kedja i drift: egen start och vakten
+
+## #850 (12/11 2026) Supabase-trafiken: förslag 1 är redan i kraft, förslag 5 byggt för småvägsflödena (kort #647)
+
+**Beslutet.** Bengt 12/11: *"Vi följer Axels förslag och gör 1 och 5 nu."* Axel 12/11: kör 1 och 5 direkt, slå av kostnadsspärren och
+ta R2 i nästa appversion.
+- **Förslag 1, Cloudflare cachar lägesfilen, behöver inget bygge.**
+  - Supabases CDN cachar redan de publika filerna i `app/v1` och tömmer cachen när en fil skrivs om. Huvudet `cache-control: no-cache`
+    hindrar inte det.
+  - Mätt 12/11: det andra anropet på `live.json` och manifestet ger HIT. Under den senaste timmen kom `live.json` ur cachen 438 gånger
+    mot 36 missar (omkring 92 %), och manifestet lika (edge-loggarna).
+  - Den cachade trafiken var 1,7–3,0 GB per dygn 9–12/11.
+  - Påståendet 11/11 att Cloudflare inte cachar filen (`private, no-cache`) var fel.
+- **Förslag 5, kuvösflödena hämtar inte samma filer igen, byggt för småvägsflödena:**
+  - `ingest/hinken.ts` kontrollerar en uppladdning med hinkens ETag. ETag är filens MD5 vid en vanlig uppladdning (provat på tre filer)
+    och läses ur ett anrop som bara ber om första byten. Hela filen hämtas bara när ETag inte är en MD5.
+  - Flaggan `--finns-ok` låter en befintlig fil stå kvar utan jämförelse. Den behövs eftersom en omräknad fil med gzip:s klockslag aldrig
+    är byte-lik.
+  - Tillbakahämtningen tas bort i `kuvos-smavag.yml` (timfilen), `kuvos-smavag-timme.yml` (underlaget och resorna) och
+    `kuvos-smavag-bakat.yml` (ankarna och prognosveckornas körningar). Kedjans steg använde redan `hinken.ts`.
+  - kedjan-b går i block om fyra dygn (23 jobb i stället för 91), så att ankarfilen och körningarnas filer hämtas en gång per block.
+
+**Varför.**
+- Edge-loggarna 6–12/11 visar att den ocachade lagringstrafiken kommer från kuvösflödenas hämtningar ur arkivhinken, med signerade
+  adresser som aldrig cachas.
+  - Exempel: Trafikverkets leverans 30 gånger (8/11).
+  - Exempel: den okända kandidatens filer i 24 jobb (6/11).
+  - Exempel: småvägskandidatens filer 15 gånger (10/11).
+- Backtesten hade hämtat tillbaka varje uppladdning, uppskattningsvis 10 GB.
+
+**Kvar, inte byggt i dag:**
+- de äldre kuvösflödena (`kuvos.yml`, `kuvos-ny-kandidat.yml`, `kuvos-pilot.yml`, `kuvos-stad.yml`, `kuvos-vetot-staderna.yml`,
+  `kuvos-frysoenighet.yml`, `kuvos-daggpunkt-bakat.yml`, `kuvos-hinken.yml`) hämtar fortfarande tillbaka sina uppladdningar;
+- de stora hämtningarna av samma indata i många matrisjobb går inte att lägga i Actions-cachen, som en PR från en fork kan läsa.
+  Vägarna är färre jobb som läser hela filerna, mindre utdrag i hinken eller arkivet i R2.
+
+**Alternativen som inte valdes:**
+- att sätta `max-age` på lägesfilen (CDN:n styrs redan av Supabase, och appens egen cache vore då den enda effekten);
+- att lägga kuvösens data i Actions-cachen (kan läsas av en PR från en fork, #768).
+
+**Stomdokument:** SYS 1 — trafiken ut ur Supabase: cachen och kuvösflödenas hämtningar
