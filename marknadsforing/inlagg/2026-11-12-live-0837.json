@@ -1,0 +1,27 @@
+{
+  "typ": "smhi",
+  "nyckel": "smhi:Snöfall:Skellefteå, norrut till länsgränsen:RED",
+  "etikett": "SMHI-varning",
+  "rubrik": "Varning för väglaget",
+  "underrad": "Halkläget kl. 08:30",
+  "varning": {
+    "niva": "Röd varning",
+    "event": "Snöfall",
+    "omrade": "Skellefteå, norrut till länsgränsen",
+    "fler": 2
+  },
+  "text": "SMHI har utfärdat en röd varning för snöfall i Skellefteå, norrut till länsgränsen. Det finns 2 varningar till för snö eller halka.\n\nHalkläget kl. 08:30:\nVästerbotten: halka på 44 av 44 vägavsnitt, 45 stationer under noll, kallast −4,9 °C vid Missenträsk.\nNorrbotten: halka på 41 av 58 vägavsnitt, 56 stationer under noll, kallast −14,3 °C vid Bergfors.\nDalarna: halka på 36 av 38 vägavsnitt, 14 stationer under noll, kallast −3,2 °C vid Ryggen.\nVästernorrland: halka på 22 av 22 vägavsnitt, 28 stationer under noll, kallast −2,2 °C vid Lillkrog.\nGävleborg: halka på 19 av 27 vägavsnitt, 11 stationer under noll, kallast −1,2 °C vid Kårböle 2, 1 olycka.\n\nLäget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från SMHI och Trafikverkets öppna data.\n\n#halka #väglag #Västerbotten #Norrbotten #Dalarna #Västernorrland #Gävleborg #halkvakt",
+  "textIg": "SMHI har utfärdat en röd varning för snöfall i Skellefteå, norrut till länsgränsen. Det finns 2 varningar till för snö eller halka.\n\nHalkläget kl. 08:30:\nVästerbotten: halka på 44 av 44 vägavsnitt, 45 stationer under noll, kallast −4,9 °C vid Missenträsk.\nNorrbotten: halka på 41 av 58 vägavsnitt, 56 stationer under noll, kallast −14,3 °C vid Bergfors.\nDalarna: halka på 36 av 38 vägavsnitt, 14 stationer under noll, kallast −3,2 °C vid Ryggen.\nVästernorrland: halka på 22 av 22 vägavsnitt, 28 stationer under noll, kallast −2,2 °C vid Lillkrog.\nGävleborg: halka på 19 av 27 vägavsnitt, 11 stationer under noll, kallast −1,2 °C vid Kårböle 2, 1 olycka.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone, länken finns i vår profil.\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från SMHI och Trafikverkets öppna data.\n\n#halka #väglag #Västerbotten #Norrbotten #Dalarna #Västernorrland #Gävleborg #halkvakt",
+  "pass": "live",
+  "datum": "2026-11-12",
+  "generated_at": "2026-11-12T07:30:23.789Z",
+  "lan": [
+    "vasterbotten",
+    "norrbotten",
+    "dalarna",
+    "vasternorrland",
+    "gavleborg",
+    "jamtland",
+    "varmland"
+  ]
+}
