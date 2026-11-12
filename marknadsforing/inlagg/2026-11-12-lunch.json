@@ -1,0 +1,24 @@
+{
+  "typ": "svep",
+  "nyckel": "svep:lunch",
+  "etikett": "Halkläget kl. 11:30",
+  "rubrik": "Halt i dag",
+  "underrad": "Halka på 210 vägavsnitt i 8 län.",
+  "fler": 0,
+  "text": "Halkläget kl. 11:30, torsdag 12 november: halka på 210 vägavsnitt i 8 län. Svep för att se ditt län.\n\nVästerbotten: halka på 44 av 44 vägavsnitt, 42 stationer under noll, kallast −4,7 °C vid Missenträsk.\nNorrbotten: halka på 41 av 58 vägavsnitt, 56 stationer under noll, kallast −14,0 °C vid Bergfors.\nDalarna: halka på 36 av 38 vägavsnitt, 14 stationer under noll, kallast −2,0 °C vid Ryggen.\nVärmland: halka på 23 av 52 vägavsnitt, 12 stationer under noll, kallast −0,8 °C vid Lisskogsåsen.\nVästernorrland: halka på 22 av 22 vägavsnitt, 23 stationer under noll, kallast −1,6 °C vid Mellansel.\nGävleborg: halka på 20 av 27 vägavsnitt, 9 stationer under noll, kallast −0,7 °C vid Simeå.\nJämtland: halka på 17 av 17 vägavsnitt, 30 stationer under noll, kallast −2,0 °C vid Vemdalsskalet, 1 olycka.\nJönköpings län: halka på 7 av 52 vägavsnitt.\n\nLäget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Västerbotten #Norrbotten #Dalarna #Värmland #Västernorrland #halkvakt",
+  "textIg": "Halkläget kl. 11:30, torsdag 12 november: halka på 210 vägavsnitt i 8 län. Svep för att se ditt län.\n\nVästerbotten: halka på 44 av 44 vägavsnitt, 42 stationer under noll, kallast −4,7 °C vid Missenträsk.\nNorrbotten: halka på 41 av 58 vägavsnitt, 56 stationer under noll, kallast −14,0 °C vid Bergfors.\nDalarna: halka på 36 av 38 vägavsnitt, 14 stationer under noll, kallast −2,0 °C vid Ryggen.\nVärmland: halka på 23 av 52 vägavsnitt, 12 stationer under noll, kallast −0,8 °C vid Lisskogsåsen.\nVästernorrland: halka på 22 av 22 vägavsnitt, 23 stationer under noll, kallast −1,6 °C vid Mellansel.\nGävleborg: halka på 20 av 27 vägavsnitt, 9 stationer under noll, kallast −0,7 °C vid Simeå.\nJämtland: halka på 17 av 17 vägavsnitt, 30 stationer under noll, kallast −2,0 °C vid Vemdalsskalet, 1 olycka.\nJönköpings län: halka på 7 av 52 vägavsnitt.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone, länken finns i vår profil.\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Västerbotten #Norrbotten #Dalarna #Värmland #Västernorrland #halkvakt",
+  "pass": "lunch",
+  "antal": 10,
+  "datum": "2026-11-12",
+  "generated_at": "2026-11-12T10:30:09.474Z",
+  "lan": [
+    "vasterbotten",
+    "norrbotten",
+    "dalarna",
+    "varmland",
+    "vasternorrland",
+    "gavleborg",
+    "jamtland",
+    "jonkoping"
+  ]
+}
