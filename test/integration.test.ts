@@ -3861,3 +3861,50 @@ test("#818 säsongsfacit: dygnsräkningen per län och tid på dygnet, ledtiden 
     await pool.end();
   }
 });
+
+// DECISIONS #845 (sql/109, kort #375): försprångets elva anrop läggs på sex jobb. CI:s PostGIS saknar pg_cron, så cron.job, schedule och
+// unschedule spelas av egna tabeller och funktioner. Kommandot kopieras ur skuggmotorns jobb med nyckeln kvar; varje anrop finns en gång;
+// skuggmotorns eget jobb rörs inte; omkörningen ändrar inget; ett skuggmotorjobb med två adresser stoppar omläggningen utan att röra något.
+test("#845 försprånget spritt: sex jobb, elva anrop en gång var, nyckeln kopierad, omkörningen ändrar inget", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const riktiga = (await pool.query("SELECT 1 FROM pg_extension WHERE extname = 'pg_cron'")).rowCount;
+  try {
+    if (riktiga) return;   // en riktig pg_cron rörs inte
+    await pool.query(`CREATE SCHEMA cron;
+      CREATE TABLE cron.job (jobid bigserial PRIMARY KEY, jobname text UNIQUE, schedule text, command text);
+      CREATE FUNCTION cron.schedule(n text, s text, c text) RETURNS bigint LANGUAGE sql AS $f$
+        INSERT INTO cron.job (jobname, schedule, command) VALUES (n, s, c)
+        ON CONFLICT (jobname) DO UPDATE SET schedule = excluded.schedule, command = excluded.command RETURNING jobid $f$;
+      CREATE FUNCTION cron.unschedule(id bigint) RETURNS boolean LANGUAGE sql AS $f$ DELETE FROM cron.job WHERE jobid = id RETURNING true $f$`);
+    const huvud = "select net.http_post(url:='https://prov.supabase.co/functions/v1/skuggmotor', headers:=jsonb_build_object('x-ingest-key', 'PROVNYCKEL'), timeout_milliseconds:=60000);";
+    await pool.query(`INSERT INTO cron.job (jobname, schedule, command) VALUES ('halkvakt-skuggmotor', '2,32 * * * *', $1),
+      ('halkvakt-skuggmotor-forsprang', '12,42 * * * *', 'select 1')`, [huvud]);
+    const sql = readFileSync(new URL("../sql/109_forsprang_spritt.sql", import.meta.url), "utf8");
+    await pool.query(sql);
+    const jobb = async () => (await pool.query(`SELECT jobname, schedule, command FROM cron.job ORDER BY jobname`)).rows;
+    const j = await jobb();
+    assert.deepEqual(j.map((x) => x.jobname), ["halkvakt-skuggmotor", ...[1, 2, 3, 4, 5, 6].map((i) => `halkvakt-skuggmotor-forsprang-${i}`)],
+      "det gamla jobbet är borta och sex nya finns");
+    assert.equal(j[0].command, huvud, "skuggmotorns eget jobb är orört");
+    assert.deepEqual(j.slice(1).map((x) => x.schedule),
+      ["12,42 * * * *", "13,43 * * * *", "14,44 * * * *", "16,46 * * * *", "17,47 * * * *", "18,48 * * * *"]);
+    const adresser = j.slice(1).flatMap((x) => [...x.command.matchAll(/skuggmotor\?([^']+)'/g)].map((m) => m[1]));
+    assert.deepEqual(adresser, [0, 1, 2, 3, 4, 5, 6].map((s) => `lage=forsprang&slot=${s}`).concat([0, 1, 2, 3].map((s) => `lage=forsprang&grupp=c&slot=${s}`)),
+      "elva anrop, vart och ett en gång, i platsordning");
+    for (const x of j.slice(1)) {
+      assert.equal((x.command.match(/PROVNYCKEL/g) ?? []).length, (x.command.match(/net\.http_post/g) ?? []).length, `${x.jobname}: nyckeln i varje anrop`);
+      assert.ok(!/;;/.test(x.command), `${x.jobname}: inga tomma satser`);
+    }
+    await pool.query(sql);
+    assert.deepEqual(await jobb(), j, "omkörningen ändrar inget");
+    // Ett skuggmotorjobb med två adresser: omläggningen stoppas och försprångets jobb står kvar som de var.
+    await pool.query(`UPDATE cron.job SET command = $1 WHERE jobname = 'halkvakt-skuggmotor'`, [huvud + huvud]);
+    await assert.rejects(pool.query(sql), /inte väntad form/);
+    assert.deepEqual((await jobb()).slice(1), j.slice(1), "inget ändrat när kommandot inte har väntad form");
+  } finally {
+    if (!riktiga) await pool.query("DROP SCHEMA IF EXISTS cron CASCADE");
+    await pool.end();
+  }
+});

@@ -15656,3 +15656,40 @@ ett eget beslut efter K:s mätperiod, med samma mätning som underlag.
 Brytarna är av, så ingen förare hör rösten.
 
 **Stomdokument:** APP 3 — småvägsröstens farotyp och kort, SYS 2 — motorns vägtest för småvägarna
+
+## #845 (12/11 2026) Försprångets elva anrop sprids på sex jobb (kort #375)
+
+**Beslutet.** Bengt 12/11: *"Ja"*, på förslaget att sprida försprångets anrop först och dela favoritprovets rutt-steg som ett eget steg.
+- `sql/109` ersätter jobbet `halkvakt-skuggmotor-forsprang` (sql/066, ett jobb med elva anrop i samma sekund) med sex jobb,
+  `halkvakt-skuggmotor-forsprang-1` till `-6`, på minuterna 12, 13, 14, 16, 17 och 18 (42–44 och 46–48):
+  - jobb 1–3: platserna 0 och 1, 2 och 3, 4 och 5;
+  - jobb 4: plats 6 och C-plats 0;
+  - jobb 5: C-platserna 1 och 2;
+  - jobb 6: C-plats 3.
+- Anropen stannar inom samma halvtimme, eftersom skuggmotorn väljer rutter och svepvärde per halvtimme. Inget av dem går på 15 eller 45,
+  där det finska varvet går.
+- Kommandot kopieras ur skuggmotorns jobb inne i databasen, som i sql/066, så nyckeln aldrig står i en fil. Efterkontrollen i filen
+  rullar tillbaka om något av de elva anropen inte finns exakt en gång.
+- Skuggmotorns kod ändras inte.
+
+**Varför.** Utredningen 12/11 (Bengt: *"Ja, utred"*; underlaget på Bengts skrivbord, `Resursgransen_2026-11-12/UTREDNING.md`):
+- Funktionsloggen 11.42 UTC visar att ett isolat startade, stängdes efter tre sekunder med *CPU Time exceeded*, och att alla elva anrop
+  fick 546 i samma sekund. Supabase räknar CPU-tiden för de samtidiga anropen i isolatet tillsammans.
+- Från 12/11 02.42 UTC föll så många att 271 av 600 rader saknades i `forsprang_log` till kl. 12.
+- Arbetet per varv var inte större än nätterna innan, då alla 60 rader i timmen kom fram. Det är samtidigheten som fäller.
+- Samma fel fanns 1–4/11 och försvann med motorns rutnät (#795, #824). Nu kom det tillbaka utan att koden ändrats.
+
+**Favoritprovet** faller på samma gräns sedan 11/11 16.38 UTC, i varje körning. Där är ett enda anrop för tungt: rutt-steget kostar omkring
+4 s CPU-tid på datorn. Rättelsen är ett eget steg som väntar på Bengts ord (kort #650, bedömningen §4.2).
+
+**Fler pg_cron-starter.** sql/066 valde ett jobb för att hålla pg_crons starter nere under morgonavbrotten (ärende #1100). De kom av
+minnesbrist på Micro-instansen och upphörde med bytet till Small 20/10.
+
+**Alternativen som inte valdes:**
+- en väntan per plats i skuggmotorn: de väntande anropen ligger kvar i samma isolat;
+- elva jobb med ett anrop var: fler starter utan känd vinst;
+- att vänta och se om Supabase ändrar sig.
+
+**Beviset** blir ett dygn efter migreringen med 60 rader i timmen i `forsprang_log` och inga 546 från försprångets jobb i `public.anrop`.
+
+**Stomdokument:** SYS 2 — försprångets jobb, MAT 3 — försprångsmätningens bortfall 12/11
