@@ -15781,3 +15781,46 @@ och de är korta, trafikerade bitar mellan korsningar.
 - batterimätningen (steg 10).
 
 **Stomdokument:** SYS 2 — småvägarnas ändar som hjälppunkter i punktfilen och läsaren
+
+## #848 (12/11 2026) Småvägsröstens backtest: driftens kedja bakåt, med stationernas historik från 30 augusti (kort #647)
+
+**Beslutet.** Bengt 12/11: *"Ja, bygg bakåtläget"*, och på frågan om stationernas historik: *"Ja, från 30 augusti"*.
+- **Kedjan bakåt kör driftens program oförändrade** (del A och del B i `levande.py`, `smavag_drift.py`, `smavag_takt.py`). Där
+  driften läser databasen får de filer i driftens form, ur `ingest/smavagskedjan.ts`:
+  - `ph`: stationernas PH vid timmen ur del A:s fil, som `ny-kandidat-db.ts ph` läser det ur `ny_kandidat_ph`. PH avrundas till
+    tabellens `real`, som driften får tillbaka det.
+  - `ankare`: backtestens ankare per timme, i formen ur `kandidat-db.ts ankare`.
+  - `lagen`: småvägspunkternas lägen ur punktfilen, som `smavagspunkt`.
+  - `underlag`: regeln utanför databasen (`smavag-regel.ts`, #843) med radarn ur cachen, vid kuvösens klocka (timmen + 50 minuter,
+    som ankarna). Kravet på 95 % av punkterna är en kopia av `smavag_timme()` i `smavag-regel.ts`, vaktad av kontraktsgrinden.
+- **Stegen** i `kuvos-smavag-bakat.yml`:
+  - `kedjan-a`: del A per körning, ett jobb per prognosvecka. Stationerna läser hela historiken från 30 augusti. Småvägarna läser
+    47 dygn i 15 delar, och sedan skrivs timfilen. Bara de 364 körningar vars block når in i januari–mars räknas.
+  - `kedjan-b`: timmarna, ett jobb per dygn. Stationernas PH och ankarna, del B, regel D, underlaget och resorna. Sist veckotalen
+    (`smavag_takt.py vecka`).
+  - Allt kedjan räknar går bara till hinken under `kuvos-smavag-bakat-2024/`. Loggen säger klart eller fel (#768).
+- **Hämtningen** (steget met) får två bitar till: stationernas analys 30 augusti–14 november 2023 (bara stationerna) och
+  15 november för alla punkter. Veckorna räknas på ett ställe (`smavagskedjan.ts bitar`), och provet håller nycklarna från 12/11
+  oförändrade.
+- **Hinken** nås ur flödet med `ingest/hinken.ts` (finns, hämta, ladda), som skriver ut bara klart eller fel.
+
+**Varför.** Del A bygger snötäcket från historikens första timme (kandidat_fysik.snotacke_fore). Driftens stationer läser
+säsongsreleasen från 30 augusti och småvägarna 47 dygn bakåt. Med en kortare historik hade stationernas PH inte varit driftens.
+- Stationerna räknas utan vägpunkterna (v): deras historik hämtades inte, och del A räknar varje punkt för sig, så stationernas PH
+  blir detsamma.
+
+**Alternativen som inte valdes:**
+- historiken från 16 november, med skillnaden mot driften redovisad;
+- att återställa analysveckorna i varje jobb för stationerna (omkring 4 GB per jobb), i stället för att plocka stationernas rader
+  en gång (steget kedjan-st, en artefakt per vecka med öppna data).
+
+**Avvikelser från driften:**
+- Radarn är hela: driftens timjobb kan sakna den sista kompositen före klockan.
+- PH för stationerna läses ur fil, avrundat som `real`, i stället för ur tabellen.
+
+**Kvar:**
+- hämtningens nya bitar;
+- kedjan-a och kedjan-b körda;
+- veckotalen lästa och taket valt av Bengt och Axel.
+
+**Stomdokument:** SYS 2 — småvägsröstens backtest: driftens kedja bakåt

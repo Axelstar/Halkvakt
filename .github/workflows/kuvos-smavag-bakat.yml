@@ -8,14 +8,25 @@ name: kuvos-smavag-bakat
 #          kuvos/vvis-2018-24-leverans.json), läses in i en tillfällig PostGIS med kuvösens klocka (kuvos/klocka.sql), och driftens egen
 #          vagpunkt_ankare() körs vid timmen + 50 minuter (kuvos/ankare-bakat.ts). Filen är Trafikverkets data rad för rad och går bara
 #          till den privata hinken, aldrig till cachen, en artefakt eller loggen.
-#   met    MET Nordic ur MET:s arkiv (metpparchive) för kedjan bakåt: analysen från 46 dygn före fran (körningen R = fran − 1 dygn kl. 18
-#          och 45 dygns historik före den) till till, och prognoskörningarna 00/06/12/18 med steg 0–17 som driften från fran − 1 dygn.
+#   met    MET Nordic ur MET:s arkiv (metpparchive) för kedjan bakåt: analysen från 47 dygn före fran (driftens småvägar läser 47 dygn
+#          före körningens dygn) till till, och prognoskörningarna 00/06/12/18 med steg 0–17 som driften från fran − 1 dygn. Stationernas
+#          analys läses som i driften från 30 augusti (säsongsreleasen metnordic-live-2026-27 börjar 2026-08-30; snötäcket byggs från
+#          historikens första timme): de veckorna (typen stationer) bär bara stationerna (Bengt 12/11: "Ja, från 30 augusti").
 #          Rutorna är driftens: stationerna (metnordic_punkter.csv) och småvägarnas punkter (smavagar_pilot.ts --rutor), i samma anrop.
 #          En vecka per jobb och en i taget, med paus mellan anropen, väntan runt driftens MET-körningar och avbrott när MET svarar med
 #          fel (val 15, MET_AVBRYT): då stannar alla jobb (fail-fast), och nästa tryck tar vid efter de veckor som är klara.
 #          Analysveckorna ligger i cachen (omkring 200 MB var). Prognosveckorna (omkring 560 MB var, för stora för cachens 10 GB, Bengt
 #          12/11: "I hinken, per körning") delas per körning i driftens namn (metnordic_korning_<stämpel>.csv.gz) och går till den
 #          privata hinken under kuvos-smavag-bakat-2024/, hämtade tillbaka och jämförda; cachen bär bara veckans markör.
+# Kedjan bakåt (DECISIONS #848) kör driftens program oförändrade och matar dem med filer där driften läser databasen
+# (ingest/smavagskedjan.ts: ph, ankare, lagen, underlag). Allt den räknar går bara till hinken under kuvos-smavag-bakat-2024/.
+#   kedjan-a  del A per körning, som kuvos-smavag.yml och ny-kandidat-fysik.yml: stationerna (bara stationerna i indatan, deras
+#             historik från 30 augusti) och småvägarna i 15 delar (47 dygns historik), sedan timfilen (smavag_drift.py timmar). Ett jobb
+#             per prognosvecka; en körning som redan står i hinken hoppas, så att nästa tryck tar vid. Stationernas dygn plockas först ur
+#             analysveckorna (kedjan-st, en artefakt per vecka med MET Nordic för stationerna, öppna data).
+#   kedjan-b  timmarna, som kuvos-smavag-timme.yml: stationernas PH och ankarna för timmen, del B, regel D, regeln utanför databasen med
+#             radarn ur cachen, och timmens resor (smavag_takt.py resor). Ett jobb per dygn, dygnets underlag och resor i en fil. Sist
+#             veckotalen (smavag_takt.py vecka) ur alla dygnen.
 # SMHI:s radar, MET Nordic och punkternas lägen (Lastkajen, CC0) är öppna data och får ligga i cachen. Cachen glöms efter sju dygn
 # utan läsning.
 # Källa: SMHI öppna data (CC BY 4.0); MET Norway, MET Nordic (NLOD / CC BY 4.0); Trafikverket, VViS (leveransen till projektet, bara i
@@ -24,9 +35,9 @@ on:
   workflow_dispatch:
     inputs:
       steg:
-        description: "radar (SMHI:s arkiv i småvägsbitarna) · ankare (stationernas yta per timme ur leveransen) · met (MET:s arkiv: analysen och prognoserna)"
+        description: "radar (SMHI:s arkiv i småvägsbitarna) · ankare (stationernas yta per timme ur leveransen) · met (MET:s arkiv: analysen och prognoserna) · kedjan-a (del A per körning) · kedjan-b (timmarna och veckotalen)"
         type: choice
-        options: [radar, ankare, met]
+        options: [radar, ankare, met, kedjan-a, kedjan-b]
         default: radar
       fran:
         description: "första UTC-dygnet, ÅÅÅÅ-MM-DD (F58: januari–mars 2024; radarn hämtades 12/11 för 2023-11-01 … 2024-03-31)"
@@ -42,7 +53,10 @@ permissions:
   actions: read      # driftens MET-körningar, för väntan i steget met
 env:
   PUNKTER: data/vagdata/smavagsrosten-punkter.json
+  SARDRAG: data/vagdata/smavagsrosten-punkter-sardrag.csv
   HINK: kuvos-smavag-2026-27
+  MAPP: kuvos-smavag-bakat-2024                                      # kedjans filer i hinken
+  RADAR: kuvos-smavag-radar-2023-11-01-2024-03-31-klar               # radarns cache (steget radar 12/11)
 jobs:
   radar:
     if: ${{ inputs.steg == 'radar' }}
@@ -222,7 +236,8 @@ jobs:
         run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
-      # Veckorna: analysen från 46 dygn före fran, prognoserna från fran − 1 dygn, båda till till. Varje vecka är ett jobb och en post i cachen.
+      # Veckorna (smavagskedjan.ts bitar): stationerna från 30 augusti, dygnet 47 före fran för sig, analysen från 46 dygn före fran och
+      # prognoserna från fran − 1 dygn, till till. Varje vecka är ett jobb och en post i cachen.
       - name: Självtesten och veckorna
         id: b
         timeout-minutes: 10
@@ -235,11 +250,8 @@ jobs:
           tyst node --experimental-strip-types fysik/ny_kandidat/metnordic_reserv.ts --sjalvtest
           tyst node --experimental-strip-types fysik/ny_kandidat/smavagar_pilot.ts --sjalvtest
           tyst node --experimental-strip-types ingest/smavagskedjan.ts --sjalvtest
-          veckor() { local typ=$1 d=$2 e s=""
-            while [[ ! "$d" > "$TILL" ]]; do e=$(date -u -d "$d + 6 days" +%F); [[ "$e" > "$TILL" ]] && e=$TILL
-              s="$s{\"typ\":\"$typ\",\"fran\":\"$d\",\"till\":\"$e\"},"; d=$(date -u -d "$e + 1 day" +%F); done; printf '%s' "$s"; }
-          J="[$(veckor analys "$(date -u -d "$FRAN - 46 days" +%F)")$(veckor prognos "$(date -u -d "$FRAN - 1 day" +%F)")"
-          echo "bitar=${J%,}]" >> "$GITHUB_OUTPUT"
+          B=$(node --experimental-strip-types ingest/smavagskedjan.ts bitar "$FRAN" "$TILL" 2>/dev/null) || { echo "::error::veckorna gick inte att räkna"; exit 1; }
+          echo "bitar=$B" >> "$GITHUB_OUTPUT"
       - name: Rutorna ur cachen
         id: c
         uses: actions/cache/restore@v4
@@ -321,9 +333,11 @@ jobs:
         env: { TYP: "${{ matrix.bit.typ }}", FRAN: "${{ matrix.bit.fran }}", TILL: "${{ matrix.bit.till }}", MNP_MINUTER: "300" }
         run: |
           mkdir -p met-bit
+          # Stationerna är rutfilens rader med stationens nummer (metnordic_punkter.csv); vägpunkterna (v) och småvägarna (s) står inte med.
+          if [ "$TYP" = stationer ]; then grep -E '^(station_id|[0-9]+),' met-rutor/pilot_punkter.csv > met-bit/pilot_punkter.csv
+          elif [ "$TYP" = analys ]; then cp met-rutor/pilot_punkter.csv met-bit/pilot_punkter.csv; fi
           set +e
-          if [ "$TYP" = analys ]; then
-            cp met-rutor/pilot_punkter.csv met-bit/pilot_punkter.csv
+          if [ "$TYP" != prognos ]; then
             node --experimental-strip-types fysik/ny_kandidat/smavagar_pilot.ts --historik met-bit "$FRAN" "$TILL" > met.log 2>&1
           else
             MNP_TIMSTEG=18 MNP_PAUS_MS=5000 MNP_FONSTER=1 MNP_UTAN_SLUTFIL=1 node --experimental-strip-types kuvos/metnordic-prognos.ts \
@@ -334,7 +348,7 @@ jobs:
           if grep -q "hämtningen avbryts (F57 val 15)" met.log; then echo "::error::MET svarade med fel: hämtningen avbröts (val 15); tryck igen senare"; exit 1; fi
           [ "$KOD" = 3 ] && { echo "::error::tidsbudgeten tog slut i veckan: tryck igen, de klara veckorna står kvar"; exit 1; }
           [ "$KOD" = 0 ] || { echo "::error::hämtningen föll: $(grep -v ExperimentalWarning met.log | tail -1 | cut -c1-200)"; exit 1; }
-          if [ "$TYP" = analys ]; then
+          if [ "$TYP" != prognos ]; then
             node --experimental-strip-types ingest/smavagskedjan.ts hela met-bit > hela.log 2>&1 \
               || { echo "::error::analysen saknar timmar i veckan: $(tail -1 hela.log | cut -c1-200)"; exit 1; }
             rm -f met-bit/pilot_punkter.csv
@@ -388,3 +402,401 @@ jobs:
         if: ${{ steps.l.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v4
         with: { path: met-bit, key: "${{ env.NYCKEL }}" }
+
+  # ── kedjan: driftens kedja bakåt (DECISIONS #848; F57 §9, F58) ──────────────────────────────────────────────────────────────────────
+  # Jobben räknas ur samma bitar som steget met (smavagskedjan.ts kedjan), så att varje jobb läser exakt de veckor som hämtades.
+  kedjan:
+    if: ${{ inputs.steg == 'kedjan-a' || inputs.steg == 'kedjan-b' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs: { st: "${{ steps.b.outputs.st }}", veckor: "${{ steps.b.outputs.veckor }}", dagar: "${{ steps.b.outputs.dagar }}" }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Självtesten och jobben
+        id: b
+        shell: bash
+        env: { FRAN: "${{ inputs.fran }}", TILL: "${{ inputs.till }}" }
+        run: |
+          tyst() { "$@" > tyst.log 2>&1 || { echo "::error::föll: ${*:1:3}: $(tail -1 tyst.log | cut -c1-200)"; exit 1; }; }
+          [[ "$FRAN" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ && "$TILL" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] || { echo "::error::dygnen ska vara ÅÅÅÅ-MM-DD"; exit 1; }
+          tyst node --experimental-strip-types ingest/smavagskedjan.ts --sjalvtest
+          tyst node --experimental-strip-types ingest/smavag-regel.ts --sjalvtest
+          tyst node --experimental-strip-types ingest/smavag-live-db.ts --sjalvtest
+          node --experimental-strip-types ingest/smavagskedjan.ts kedjan "$FRAN" "$TILL" 2>/dev/null >> "$GITHUB_OUTPUT" \
+            || { echo "::error::jobben gick inte att räkna"; exit 1; }
+
+  # Stationernas rader ur varje analysbit, en artefakt per bit: MET Nordic för stationerna, öppna data (som cachen). kedjan-a läser
+  # alla, eftersom stationernas historik börjar 30 augusti som i driften.
+  kedjan-st:
+    if: ${{ inputs.steg == 'kedjan-a' }}
+    needs: kedjan
+    name: "kedjan-st ${{ matrix.bit.typ }} ${{ matrix.bit.fran }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      max-parallel: 10
+      fail-fast: true
+      matrix: { bit: "${{ fromJSON(needs.kedjan.outputs.st) }}" }
+    steps:
+      - name: Biten ur cachen
+        uses: actions/cache/restore@v4
+        with: { path: met-bit, key: "kuvos-smavag-bakat-met-${{ matrix.bit.typ }}-${{ matrix.bit.fran }}-${{ matrix.bit.till }}", fail-on-cache-miss: true }
+      - name: Stationernas rader
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p st/dagar
+          for f in met-bit/dagar/*.csv.gz; do { zcat "$f" | grep -E '^[0-9]+,' || true; } | gzip -n > "st/dagar/$(basename "$f")"; done
+          echo "stationernas dygn: klart"
+      - uses: actions/upload-artifact@v4
+        with: { name: "st-${{ matrix.bit.fran }}", path: st, retention-days: 5, if-no-files-found: error }
+
+  # Del A per körning, som kuvos-smavag.yml (småvägarna) och ny-kandidat-fysik.yml (stationerna). Bara körningarna vars block R+6 … R+11
+  # når in i fönstret räknas. En körning vars filer redan står i hinken hoppas; veckans markör i cachen sparas när alla är klara.
+  kedjan-a:
+    if: ${{ inputs.steg == 'kedjan-a' }}
+    needs: [kedjan, kedjan-st]
+    name: "kedjan-a ${{ matrix.vecka.fran }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    strategy:
+      max-parallel: 10
+      fail-fast: false
+      matrix: { vecka: "${{ fromJSON(needs.kedjan.outputs.veckor) }}" }
+    env:
+      GH_TOKEN: "${{ github.token }}"
+      NYKAND_VARIANT: t4                     # T4 §4 a (DECISIONS #720): den rättade modellen, som i drift
+      DELAR: "15"                            # som kuvos-smavag.yml (#828)
+      FRAN: "${{ inputs.fran }}"
+      TILL: "${{ inputs.till }}"
+      KLAR: "kuvos-smavag-bakat-a-${{ matrix.vecka.fran }}-${{ matrix.vecka.till }}"
+    steps:
+      - name: Finns veckan redan?
+        id: l
+        uses: actions/cache/restore@v4
+        with: { path: kedjan-klar, key: "${{ env.KLAR }}", lookup-only: true }
+      - if: ${{ steps.l.outputs.cache-hit != 'true' }}
+        uses: actions/checkout@v4
+      - if: ${{ steps.l.outputs.cache-hit != 'true' }}
+        uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        if: ${{ steps.l.outputs.cache-hit != 'true' }}
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
+      - if: ${{ steps.l.outputs.cache-hit != 'true' }}
+        uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - if: ${{ steps.l.outputs.cache-hit != 'true' }}
+        run: npm ci
+      - if: ${{ steps.l.outputs.cache-hit != 'true' }}
+        uses: actions/setup-python@v5
+        with: { python-version: "3.13", cache: pip, cache-dependency-path: fysik/requirements.txt }
+      - name: Självtesten och kandidatfilen
+        if: ${{ steps.l.outputs.cache-hit != 'true' }}
+        shell: bash
+        run: |
+          tyst() { "$@" > tyst.log 2>&1 || { echo "::error::föll: ${*:1:3}: $(tail -1 tyst.log | cut -c1-200)"; exit 1; }; }
+          tyst node --experimental-strip-types ingest/stadskedjan.ts --sjalvtest
+          tyst node --experimental-strip-types ingest/smavagskedjan.ts --sjalvtest
+          python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
+          (cd fysik && sha256sum -c --quiet SHA256SUMS)
+          tyst python3 fysik/live/indata.py --sjalvtest
+          tyst python3 fysik/ny_kandidat/smavagar_pilot.py --sjalvtest
+          tyst python3 fysik/ny_kandidat/smavag_drift.py --sjalvtest
+          tyst python3 -c "import sys; sys.path.insert(0, 'fysik/ny_kandidat'); import levande; c = levande.ladda()"
+      # Prognosveckans markör (körningarnas namn och kontrollsummor), analysbitarna för småvägarnas 47 dygn och stationernas dygn.
+      - name: Prognosveckans markör ur cachen
+        if: ${{ steps.l.outputs.cache-hit != 'true' }}
+        uses: actions/cache/restore@v4
+        with: { path: met-bit, key: "kuvos-smavag-bakat-met-prognos-${{ matrix.vecka.fran }}-${{ matrix.vecka.till }}", fail-on-cache-miss: true }
+      - name: Analysbit 1 ur cachen
+        if: ${{ steps.l.outputs.cache-hit != 'true' && matrix.vecka.a[0] }}
+        uses: actions/cache/restore@v4
+        with: { path: met-bit, key: "${{ matrix.vecka.a[0] }}", fail-on-cache-miss: true }
+      - name: Analysbit 2 ur cachen
+        if: ${{ steps.l.outputs.cache-hit != 'true' && matrix.vecka.a[1] }}
+        uses: actions/cache/restore@v4
+        with: { path: met-bit, key: "${{ matrix.vecka.a[1] }}", fail-on-cache-miss: true }
+      - name: Analysbit 3 ur cachen
+        if: ${{ steps.l.outputs.cache-hit != 'true' && matrix.vecka.a[2] }}
+        uses: actions/cache/restore@v4
+        with: { path: met-bit, key: "${{ matrix.vecka.a[2] }}", fail-on-cache-miss: true }
+      - name: Analysbit 4 ur cachen
+        if: ${{ steps.l.outputs.cache-hit != 'true' && matrix.vecka.a[3] }}
+        uses: actions/cache/restore@v4
+        with: { path: met-bit, key: "${{ matrix.vecka.a[3] }}", fail-on-cache-miss: true }
+      - name: Analysbit 5 ur cachen
+        if: ${{ steps.l.outputs.cache-hit != 'true' && matrix.vecka.a[4] }}
+        uses: actions/cache/restore@v4
+        with: { path: met-bit, key: "${{ matrix.vecka.a[4] }}", fail-on-cache-miss: true }
+      - name: Analysbit 6 ur cachen
+        if: ${{ steps.l.outputs.cache-hit != 'true' && matrix.vecka.a[5] }}
+        uses: actions/cache/restore@v4
+        with: { path: met-bit, key: "${{ matrix.vecka.a[5] }}", fail-on-cache-miss: true }
+      - name: Analysbit 7 ur cachen
+        if: ${{ steps.l.outputs.cache-hit != 'true' && matrix.vecka.a[6] }}
+        uses: actions/cache/restore@v4
+        with: { path: met-bit, key: "${{ matrix.vecka.a[6] }}", fail-on-cache-miss: true }
+      - name: Analysbit 8 ur cachen
+        if: ${{ steps.l.outputs.cache-hit != 'true' && matrix.vecka.a[7] }}
+        uses: actions/cache/restore@v4
+        with: { path: met-bit, key: "${{ matrix.vecka.a[7] }}", fail-on-cache-miss: true }
+      - name: Analysbit 9 ur cachen
+        if: ${{ steps.l.outputs.cache-hit != 'true' && matrix.vecka.a[8] }}
+        uses: actions/cache/restore@v4
+        with: { path: met-bit, key: "${{ matrix.vecka.a[8] }}", fail-on-cache-miss: true }
+      - name: Stationernas dygn
+        if: ${{ steps.l.outputs.cache-hit != 'true' }}
+        uses: actions/download-artifact@v4
+        with: { pattern: "st-*", merge-multiple: true, path: mn-st }
+      # Indatan som i kuvos-smavag.yml. Stationernas indata är releasens stationer utan vägpunkterna (v), vars historik inte hämtades:
+      # del A räknar varje punkt för sig, så stationernas PH blir detsamma. Analysbitarnas rader för stationerna och vägpunkterna går i
+      # historikens delning till en extra del, som inte räknas.
+      - name: Indatan och historiken per del
+        if: ${{ steps.l.outputs.cache-hit != 'true' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tyst() { "$@" > tyst.log 2>&1 || { echo "::error::föll: ${*:1:3}: $(tail -1 tyst.log | cut -c1-200)"; exit 1; }; }
+          gh release download kuvos-fysik-indata-2024-25 --dir indata
+          node -e '
+            const m = require("./kuvos/fysik-indata-leverans.json"), c = require("crypto"), fs = require("fs");
+            process.exit(m.filer.every((f) => c.createHash("sha256").update(fs.readFileSync("indata/" + f.fil)).digest("hex") === f.sha256) ? 0 : 1);' \
+            || { echo "::error::indatans kontrollsumma stämmer inte"; exit 1; }
+          mkdir -p frusen && for f in indata/*.tar.gz; do tar -xzf "$f" -C frusen; done
+          if [ -d frusen/data ]; then mv frusen/data/* frusen/ && rmdir frusen/data; fi
+          tyst python3 fysik/live/indata.py --frusen frusen --rot . --ut indata-live
+          rm -rf indata frusen
+          cp -r indata-live indata-st
+          { head -1 indata-live/stations.csv; grep -E '^[0-9]+,' indata-live/stations.csv; } > indata-st/stations.csv
+          tyst python3 fysik/ny_kandidat/smavagar_pilot.py indata --indata indata-live --punkter "$PUNKTER" --sardrag "$SARDRAG"
+          tyst node --experimental-strip-types ingest/stadskedjan.ts indata indata-live "$DELAR" indata-sv
+          gh release download metnordic-live-2026-27 --dir rel --pattern metnordic_punkter.csv
+          X=$((DELAR + 1)); mkdir -p "indata-sv$X"
+          { echo "sid,lat,lon"; tail -n +2 rel/metnordic_punkter.csv | cut -d, -f1-3; } > "indata-sv$X/stations.csv"
+          ls met-bit/dagar/*.csv.gz > sv-analys.txt
+          tyst node --experimental-strip-types ingest/smavagskedjan.ts historik sv-analys.txt indata-sv "$X" mnsv-del
+          rm -rf met-bit/dagar "mnsv-del$X" "indata-sv$X"
+          echo "indatan och historiken: klart"
+      - name: modell_alla.pkl ur hinken, kontrollsumman mot kandidatfilen
+        if: ${{ steps.l.outputs.cache-hit != 'true' }}
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          SHA=$(node -e 'const f = require("./kuvos/kandidat-2027-28-t4.json").filer.find((x) => (x.enhet ?? "alla") === "alla" && x.fil === "modell_alla.pkl"); console.log(f.sha256)')
+          [[ "$SHA" =~ ^[0-9a-f]{64}$ ]] || { echo "::error::kandidatfilen bär ingen kontrollsumma för modell_alla.pkl"; exit 1; }
+          FN="$FN" KEY="$KEY" node --experimental-strip-types ingest/hinken.ts hamta kuvos-kandidat-2027-28-t4/modell_alla.pkl modell_alla.pkl "$SHA" \
+            || { echo "::error::modellen gick inte att hämta, eller kontrollsumman stämmer inte"; exit 1; }
+          echo "modell_alla.pkl ur hinken: sha256 lika kandidatfilen"
+      # Per körning: stationernas del A med hela historiken till körningens dygn + 6 timmar, småvägarnas del A i delar med 47 dygn
+      # (tre delar åt gången; omkring 1,5 GB var), timfilen, och båda filerna till hinken. Utskrifterna stannar i jobbet (#768).
+      - name: Körningarna
+        if: ${{ steps.l.outputs.cache-hit != 'true' }}
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          hink() { FN="$FN" KEY="$KEY" node --experimental-strip-types ingest/hinken.ts "$@" 2>> hinken.log; }
+          node -e '
+            const m = JSON.parse(require("fs").readFileSync("met-bit/i-hinken.json", "utf8"));
+            const fran = Date.parse(process.env.FRAN + "T00:00:00Z") - 11 * 3600e3, till = Date.parse(process.env.TILL + "T23:00:00Z") - 6 * 3600e3;
+            for (const f of m.filer) {
+              const s = /metnordic_korning_(\d{4})(\d\d)(\d\d)T(\d\d)Z\.csv\.gz$/.exec(f.fil), t = Date.parse(`${s[1]}-${s[2]}-${s[3]}T${s[4]}:00:00Z`);
+              if (t >= fran && t <= till) console.log(`${s[1]}${s[2]}${s[3]}T${s[4]}Z ${f.sha256}`);
+            }' > korningar.txt
+          [ -s korningar.txt ] || { echo "::error::veckan har inga körningar i fönstret"; exit 1; }
+          cat > del-a.sh <<'SH'
+          i=$1
+          mapfile -t A < <(for f in "mnsv-del$i"/dagar/*.csv.gz; do d=$(basename "$f" .csv.gz); [[ "$d" < "$F47" || "$d" > "$T6" ]] || echo "$f"; done)
+          python3 fysik/ny_kandidat/levande.py --del-a --indata "indata-sv$i" --analys "${A[@]}" --korning "korning/metnordic_korning_$S.csv.gz" \
+              --modell modell_alla.pkl --kandidat kuvos/kandidat-2027-28-t4.json --ut "ut-sv$i" > "del-a-$i.log" 2>&1 \
+            || { echo "::error::Del A, del $i, föll: $(tail -1 "del-a-$i.log" | cut -c1-200)"; exit 1; }
+          SH
+          # Timfilen går sist till hinken och visar att körningen är klar. gzip skriver klockslaget i filen, så en omräknad fil är aldrig
+          # byte-lik: stationernas fil från ett avbrutet försök står kvar.
+          while read -r S SHA <&3; do
+            if hink finns "$MAPP/timmar_$S.csv.gz"; then continue; fi
+            mkdir -p korning timmar
+            hink hamta "$MAPP/metnordic_korning_$S.csv.gz" "korning/metnordic_korning_$S.csv.gz" "$SHA" \
+              || { echo "::error::körningen gick inte att hämta ur hinken, eller kontrollsumman stämmer inte"; exit 1; }
+            R=$(date -u -d "${S:0:4}-${S:4:2}-${S:6:2} ${S:9:2}:00:00" +%s)
+            T6=$(date -u -d "@$((R + 6 * 3600))" +%F); F47=$(date -u -d "@$((R + 6 * 3600 - 47 * 86400))" +%F)
+            export S T6 F47
+            mapfile -t ST < <(for f in mn-st/dagar/*.csv.gz; do [[ "$(basename "$f" .csv.gz)" > "$T6" ]] || echo "$f"; done)
+            python3 fysik/ny_kandidat/levande.py --del-a --indata indata-st --analys "${ST[@]}" --korning "korning/metnordic_korning_$S.csv.gz" \
+                --modell modell_alla.pkl --kandidat kuvos/kandidat-2027-28-t4.json --ut ut-st > del-a-st.log 2>&1 \
+              || { echo "::error::Del A, stationerna, föll: $(tail -1 del-a-st.log | cut -c1-200)"; exit 1; }
+            seq 1 "$DELAR" | xargs -P 3 -n 1 bash del-a.sh
+            python3 fysik/ny_kandidat/smavag_drift.py timmar --punkter "$PUNKTER" --ph ut-sv*/ny_kandidat_ph_"$S".csv.gz \
+                --korning "korning/metnordic_korning_$S.csv.gz" --ut "timmar/timmar_$S.csv.gz" > timmar.log 2>&1 \
+              || { echo "::error::timfilen föll: $(tail -1 timmar.log | cut -c1-200)"; exit 1; }
+            hink finns "$MAPP/stationer_ph_$S.csv.gz" || hink ladda "ut-st/ny_kandidat_ph_$S.csv.gz" "$MAPP/stationer_ph_$S.csv.gz" \
+              || { echo "::error::stationernas PH gick inte till hinken"; exit 1; }
+            hink ladda "timmar/timmar_$S.csv.gz" "$MAPP/timmar_$S.csv.gz" || { echo "::error::timfilen gick inte till hinken"; exit 1; }
+            rm -rf korning timmar ut-st ut-sv*
+          done 3< korningar.txt
+          rm -f modell_alla.pkl
+          mkdir -p kedjan-klar && cut -d' ' -f1 korningar.txt > kedjan-klar/korningar.txt
+          echo "del A: klart" | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Veckans markör till cachen
+        if: ${{ steps.l.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v4
+        with: { path: kedjan-klar, key: "${{ env.KLAR }}" }
+
+  # Timmarna, som kuvos-smavag-timme.yml, ett jobb per dygn: stationernas PH och ankarna för timmen, del B, regel D, regeln utanför
+  # databasen med radarn ur cachen (smavagskedjan.ts underlag) och timmens resor. Dygnets underlag, resor och timlista går som en fil
+  # till hinken; ett dygn som redan står där hoppas. En timme utan PH eller med för få punkter står i timlistan, som i driften.
+  kedjan-b:
+    if: ${{ inputs.steg == 'kedjan-b' }}
+    needs: kedjan
+    name: "kedjan-b ${{ matrix.dag }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    strategy:
+      max-parallel: 12
+      fail-fast: false
+      matrix: { dag: "${{ fromJSON(needs.kedjan.outputs.dagar) }}" }
+    env:
+      GH_TOKEN: "${{ github.token }}"
+      NYKAND_VARIANT: t4
+      DAG: "${{ matrix.dag }}"
+      FRAN: "${{ inputs.fran }}"
+      TILL: "${{ inputs.till }}"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13", cache: pip, cache-dependency-path: fysik/requirements.txt }
+      - name: Självtesten och kandidatfilen
+        shell: bash
+        run: |
+          tyst() { "$@" > tyst.log 2>&1 || { echo "::error::föll: ${*:1:3}: $(tail -1 tyst.log | cut -c1-200)"; exit 1; }; }
+          tyst node --experimental-strip-types ingest/smavagskedjan.ts --sjalvtest
+          tyst node --experimental-strip-types ingest/smavag-regel.ts --sjalvtest
+          python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
+          tyst python3 fysik/ny_kandidat/smavag_drift.py --sjalvtest
+          tyst python3 fysik/ny_kandidat/smavag_takt.py --sjalvtest
+          tyst python3 -c "import sys; sys.path.insert(0, 'fysik/ny_kandidat'); import levande; c = levande.ladda()"
+      - name: Radarn ur cachen
+        uses: actions/cache/restore@v4
+        with: { path: radar-bakat, key: "${{ env.RADAR }}", fail-on-cache-miss: true }
+      - name: Dygnets timmar
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          tyst() { "$@" > tyst.log 2>&1 || { echo "::error::föll: ${*:1:3}: $(tail -1 tyst.log | cut -c1-200)"; exit 1; }; }
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          hink() { FN="$FN" KEY="$KEY" node --experimental-strip-types ingest/hinken.ts "$@" 2>> hinken.log; }
+          if hink finns "$MAPP/dygn_$DAG.tar"; then echo "dygnet: klart (fanns redan)" | tee -a "$GITHUB_STEP_SUMMARY"; exit 0; fi
+          # Lägena som kuvos-smavag-timme.yml: småvägspunkterna, och stationerna ur säsongens release utan vägpunkterna.
+          gh release download metnordic-live-2026-27 --pattern metnordic_punkter.csv --dir mn
+          tyst node --experimental-strip-types ingest/smavagskedjan.ts lagen "$PUNKTER" punkter-sv.csv
+          tail -n +2 mn/metnordic_punkter.csv | grep -v '^v' | cut -d, -f1-3 >> punkter-sv.csv
+          # Ankarna är Trafikverkets data rad för rad: de stannar i jobbet och tas bort i sista steget.
+          hink hamta "$HINK/ankare_${FRAN}_${TILL}.csv.gz" ankare-alla.csv.gz || { echo "::error::ankarna gick inte att hämta ur hinken"; exit 1; }
+          tyst node --experimental-strip-types ingest/smavagskedjan.ts ankare ankare-alla.csv.gz "${DAG}T00:00:00Z" "${DAG}T23:00:00Z" ankare
+          rm -f ankare-alla.csv.gz
+          mkdir -p kor ut
+          : > ut/timmar.txt
+          for h in $(seq -w 0 23); do
+            TID="${DAG}T$h:00:00Z"; T="${DAG//-/}T$h"
+            S=$(node --experimental-strip-types -e 'import("./ingest/metnordic-live.ts").then((m) => console.log(m.korningFor(new Date(process.argv[1]))))' "$TID" 2>/dev/null)
+            [[ "$S" =~ ^[0-9]{8}T[0-9]{2}Z$ ]] || { echo "::error::körningen för timmen gick inte att räkna"; exit 1; }
+            if [ ! -f "kor/timmar_$S.csv.gz" ]; then
+              hink hamta "$MAPP/timmar_$S.csv.gz" "kor/timmar_$S.csv.gz" && hink hamta "$MAPP/stationer_ph_$S.csv.gz" "kor/stationer_ph_$S.csv.gz" \
+                || { echo "::error::körningens filer saknas i hinken: kör kedjan-a först"; exit 1; }
+            fi
+            set +e
+            node --experimental-strip-types ingest/smavagskedjan.ts ph "kor/stationer_ph_$S.csv.gz" "$TID" ph.csv > ph.log 2>&1; K1=$?
+            python3 fysik/ny_kandidat/smavag_drift.py ph --timmar "kor/timmar_$S.csv.gz" --tid "$TID" --ut ph-sv.csv > ph-sv.log 2>&1; K2=$?
+            set -e
+            if [ "$K1" = 3 ] || [ "$K2" = 3 ]; then echo "$TID ingen-ph" >> ut/timmar.txt; continue; fi
+            [ "$K1" = 0 ] && [ "$K2" = 0 ] || { echo "::error::PH gick inte att läsa"; exit 1; }
+            # Stationernas rader följer med, som i driften (RÅ:s rester räknas ur stationernas eget PH).
+            { head -1 ph.csv; grep -v -E '^(punkt,|v|[BC][0-9]{5},)' ph.csv || true; tail -n +2 ph-sv.csv; } > ph-alla.csv
+            tyst python3 fysik/ny_kandidat/levande.py --del-b --ph ph-alla.csv --punkter punkter-sv.csv --ankare "ankare/ankare_$T.csv" --tid "$TID" --ut live.csv
+            tyst python3 fysik/ny_kandidat/smavag_drift.py rader --live live.csv --timmar "kor/timmar_$S.csv.gz" --lagen punkter-sv.csv --tid "$TID" --ut rader.csv
+            set +e
+            node --experimental-strip-types ingest/smavagskedjan.ts underlag rader.csv "$(cat rader.csv.antal)" "$PUNKTER" \
+              "radar-bakat/radar_smavag_$DAG.csv.gz" "$TID" "ut/underlag_$T.csv" > underlag.log 2>&1; K=$?
+            set -e
+            if [ "$K" = 3 ]; then echo "$TID ofullstandig" >> ut/timmar.txt; continue; fi
+            [ "$K" = 0 ] || { echo "::error::underlaget föll: $(grep -v ExperimentalWarning underlag.log | tail -1 | cut -c1-200)"; exit 1; }
+            gzip -n "ut/underlag_$T.csv"
+            tyst python3 fysik/ny_kandidat/smavag_takt.py resor --punkter "$PUNKTER" --underlag "ut/underlag_$T.csv.gz" --tid "$TID" --ut "ut/resor_$T.csv.gz"
+            echo "$TID klar" >> ut/timmar.txt
+          done
+          tar -cf "dygn_$DAG.tar" -C ut .
+          hink ladda "dygn_$DAG.tar" "$MAPP/dygn_$DAG.tar" || { echo "::error::dygnet gick inte till hinken"; exit 1; }
+          echo "dygnet: klart" | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Ankarna lämnar aldrig jobbet
+        if: always()
+        run: rm -rf ankare ankare-alla.csv.gz
+
+  # Veckotalen (smavag_takt.py vecka) ur alla dygnens resor, till hinken. Saknas ett dygn räknas ingenting.
+  kedjan-vecka:
+    if: ${{ inputs.steg == 'kedjan-b' }}
+    needs: [kedjan, kedjan-b]
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env: { DAGAR: "${{ needs.kedjan.outputs.dagar }}", FRAN: "${{ inputs.fran }}", TILL: "${{ inputs.till }}" }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13", cache: pip, cache-dependency-path: fysik/requirements.txt }
+      - name: Veckotalen till hinken
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          tyst() { "$@" > tyst.log 2>&1 || { echo "::error::föll: ${*:1:3}: $(tail -1 tyst.log | cut -c1-200)"; exit 1; }; }
+          python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
+          tyst python3 fysik/ny_kandidat/smavag_takt.py --sjalvtest
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          hink() { FN="$FN" KEY="$KEY" node --experimental-strip-types ingest/hinken.ts "$@" 2>> hinken.log; }
+          for d in $(node -e 'console.log(JSON.parse(process.env.DAGAR).join(" "))'); do
+            mkdir -p "dygn/$d"
+            hink hamta "$MAPP/dygn_$d.tar" "dygn/$d.tar" || { echo "::error::ett dygn saknas i hinken: kör kedjan-b igen"; exit 1; }
+            tar -xf "dygn/$d.tar" -C "dygn/$d"
+          done
+          cat dygn/*/timmar.txt > "timmar_${FRAN}_${TILL}.txt"
+          ls dygn/*/resor_*.csv.gz > resor.txt 2>/dev/null || true
+          [ -s resor.txt ] || { echo "::error::inga resor i fönstret"; exit 1; }
+          tyst python3 fysik/ny_kandidat/smavag_takt.py vecka --resor $(cat resor.txt) --ut "takt_veckor_${FRAN}_${TILL}.csv"
+          hink ladda "takt_veckor_${FRAN}_${TILL}.csv" "$MAPP/takt_veckor_${FRAN}_${TILL}.csv" || { echo "::error::veckotalen gick inte till hinken"; exit 1; }
+          hink ladda "timmar_${FRAN}_${TILL}.txt" "$MAPP/timmar_${FRAN}_${TILL}.txt" || { echo "::error::timlistan gick inte till hinken"; exit 1; }
+          rm -rf dygn
+          echo "veckotalen: klart" | tee -a "$GITHUB_STEP_SUMMARY"
