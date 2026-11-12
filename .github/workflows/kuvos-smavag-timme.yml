@@ -135,7 +135,8 @@ jobs:
           [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
           echo "::add-mask::$KEY"
           export FN KEY
-          cat > ladda.js <<'JS'
+          # .cjs: repots package.json säger "type": "module", och en .js-fil med require fäller då (alla timmar 11/11–12/11).
+          cat > ladda.cjs <<'JS'
             const { execFileSync } = require("child_process"), fs = require("fs"), c = require("crypto"), [fil, vad0] = process.argv.slice(2);
             const sha = (b) => c.createHash("sha256").update(b).digest("hex"), namn = process.env.HINK + "/" + fil.split("/").pop();
             // execFileSync:s fel bär kommandoraden och därmed nyckeln eller den signerade adressen: fångas, bara statusen skrivs ut.
@@ -151,12 +152,12 @@ jobs:
             console.log(ok ? `${vad0}: klart` : `${vad0}: FEL, i hinken med annat innehåll`); process.exit(ok ? 0 : 1);
           JS
           # Underlaget först: det går inte att räkna om när radar_smavag gallrats, men resorna går att dra ur det i efterhand.
-          node ladda.js "$FIL.gz" "taktens underlag" | tee -a "$GITHUB_STEP_SUMMARY"
+          node ladda.cjs "$FIL.gz" "taktens underlag" | tee -a "$GITHUB_STEP_SUMMARY"
           # Resorna (halkvakt-kuvos F50 del B med F55 och F56): timmens syntetiska resor och röstens besked.
           python3 fysik/ny_kandidat/smavag_takt.py resor --punkter data/vagdata/smavagsrosten-punkter.json --underlag "$FIL.gz" --tid "$TID" --ut "$RES" > resor.log 2>&1 \
             || { echo "::error::resorna föll: $(tail -1 resor.log | cut -c1-200)"; exit 1; }
-          node ladda.js "$RES" "resorna" | tee -a "$GITHUB_STEP_SUMMARY"
-          rm -f "$FIL.gz" "$RES" ladda.js
+          node ladda.cjs "$RES" "resorna" | tee -a "$GITHUB_STEP_SUMMARY"
+          rm -f "$FIL.gz" "$RES" ladda.cjs
       # Regeln utanför databasen (ingest/smavag-regel.ts, DECISIONS #843, halkvakt-kuvos F57 §9 punkt 3) mot smavag_regel() för samma
       # timme, efter underlaget så att en skillnad aldrig stoppar det. Backtesten räknar underlaget med kopian, så den måste fatta samma
       # beslut som driften. Bara utfallet skrivs, inga punkter eller tal (#768).
