@@ -45,7 +45,9 @@ STATUS. Det som inte nämns står som i läget 20/10 nedan och i besluten därem
 
   De första körningarna 7/11 gav klart med brytarna av, och ingen stadspunkt når appen.
 - **Olycksfacit** (#796–#803): varje olycka fångas inom 15 minuter med vad varje varningslager sa på platsen, klassas efter ett dygn
-  och får ett ärende. Tröskeldokumentet är fastställt.
+  och får ett ärende. Tröskeldokumentet är fastställt. Den första veckans ärende (2026-V45) skrevs 10/11, och kort #376 är stängt.
+  I nära realtid (#841, #842, kort #641): driftlarmet i skugga och klassningen efter sex timmar är byggda och sammanslagna 11/11;
+  `sql/108` med DB-knappen och deployen av `olycksfacit` återstår, och sedan en veckas skugga (§4.2).
 - **Motorn:** rutan per hal sträcka (#790) och rutnätet (#795). Broarnas frysrisk är pausad i publiceringen (#788).
 - **Källorna:** Finland läses ur Digitraffics v2 (#791).
 - **Appen och sajten:**
@@ -54,16 +56,19 @@ STATUS. Det som inte nämns står som i läget 20/10 nedan och i besluten därem
   - sanna datum i sitemapen (#785);
   - startsidans tal i HTML (#807).
 - **Rimfrostens R-B:** R-B1 klarar och R-B2 faller (#794). Domslutet väntar på Bengt, med fristen 10/12.
-- **Databasen:** driftstörningen 3/11 (#783) och den fasta sökvägen (#784).
+- **Databasen:** driftstörningen 3/11 (#783) och den fasta sökvägen (#784). PostGIS ligger i `extensions` sedan 6/11, flyttad av Supabases support på Axels ja (#835), och grindarnas tillfälliga databas följer sedan 11/11 (#832); grindarna föll 8–11/11 på flytten.
+- **Källorna, Actions:** Trafikverkets kedja slutar sedan 11/11 i Telias rot, som `ingest` nu litar på (#831); `ingest` stod still 10.11–14.11 UTC 11/11.
 - **Säsongsfacit** (#818): en redovisning och ingen grind, fastställd 7/11; dygnsräkningen (`sql/099`) är i drift och räknade 1/11–6/11 i efterhand.
 - **Webben** (#819–#821): Prognos är påslagen på alla kartor, startsidan B1 och en karta runt varje ortssida.
-- **Appen:** 0.4.0 (41) med Favoriter 2a och CarPlay är i koden (#817); 0.3.17 (39) med rutnätet är uppladdad till TestFlight (#816). Telefonturen med (41) har PR #1452.
-- **Väntar på Bengts ord:** sjutton PR:er (§4.2, dokumentsynken 11/11).
+- **Appen:** 0.4.0 med Favoriter 2a och CarPlay är i koden, senast (44) med rättelsen av kort #999, och (43) är provad ur TestFlight (#817, #829); 0.3.17 (39) med rutnätet är uppladdad till TestFlight (#816). Telefonturen gjordes med 0.4.0 (41) (#836), och vilket bygge som går till App Review är öppet (§4.2). Vakten startar när Halkvakt öppnas på bilens skärm (#840), i nästa bygge efter (44). Kort #262 (batteriet) är stängt utan Android-timmen (#838).
+- **Väntar på Bengts ord:** två PR:er efter städningen 11/11 (#834): #1505 (kort #648) och utkastet #1474 (§4.2, dokumentsynken 12/11).
 
 **Vart vi är på väg.**
-- 8/11 och 10/11: olycksfacits första ärende för dagen och för veckan (fristen `olycksfacit-v45`).
+- 12/11 09.07 UTC: grind R-A körs med rättelsen av den tillfälliga databasen (#832).
+- Efter `sql/108`: olycksfacits skuggvecka i nära realtid, sedan Bengts val av feltyper för ärendet `drift` (#842).
 - 15/11: den snabba skuggans läsning (flyttad från 14/11, eftersom `sql/094` och `sql/080` kördes 7/11, #816).
 - 15/11: PAT:en roteras, före 22/11.
+- 18/11: databasens storlek läses igen (fristen `databas-2026-11-18`).
 - 24/11: prognoslagrets premissläsning.
 - 30/11: kandidatens domskript.
 - 1/12: spridningsgrindens vinterläsning för RÅ.
@@ -606,6 +611,7 @@ Fem rader. Inget annat är "nu". **17/9: fyra klara — kvar är N3, nycklarna (
 
 | Beslut | Vem | Rekommendation | Kort |
 | :-- | :-- | :-- | :-- |
+| ❓ **NY 12/11 (dokumentsynken): tre saker väntar på ord, och två PR:er väntar på Bengt.** (1) **Vilket bygge går till App Review?** Telefonturen gjordes med 0.4.0 (41), stegen i `marknadsforing/butik/appstore-ios.md` gäller 0.3.17 (39), och 0.4.0 (44) är det senaste bygget i koden (DECISIONS #836). (2) **Olycksfacit i nära realtid:** `sql/108` med DB-knappen och deployen av `olycksfacit` efter sammanslagningen 11/11 (DECISIONS #842); ordningen spelar ingen roll, och skuggveckan börjar när båda är gjorda. (3) Raden 11/11 om DECISIONS #828 och PR:erna: av de sjutton PR:erna är två öppna efter städningen (#834), och frågan om #828 i stomdokumenten står kvar. Öppna PR:er: #1505 (kort #648, 1 dygn) och #1474 (utkast, väntar på vinterprovet). Öppna ärenden: `frist` #1461 (rotera PAT:en, 15/11) och #1463 (norr om 62°, 15/11); `dom` #1384 (R-B, bokförs på Bengts ord); `olycka` inga. | Bengt | (1) Bengts val; (2) DB-knappen och deployen på Bengts ord. | #641, #380 |
 | ❓ **NY 11/11 (dokumentsynken): ska DECISIONS #828 stämmas av i Halkvakts stomdokument, och sjutton PR:er väntar på Bengts ord (äldst #1056, 24 dygn).** (1) #828 namnger MAT, SYS och APP för småvägsröstens rörarbete och betavarning, som #804 och #810 gör för storstäderna. Dokumentsynkens rutin skriver enligt sin instruktion (#768, #769) ingen småvägstext i Halkvakt, så #828 är bokförd utan handtext och *hör till halkvakt-kuvos*. Ska rutinens instruktion få samma undantag för småvägarnas rörarbete som #804 ger storstäderna, eller ska #828:s rad *Stomdokument:* rättas? (2) Nya PR:er sedan 10/11: #1485 (CarPlay-starten, #828 i rubriken), #1505 (kort #648, ansvaret och källraden), #1506 (kampanjlänk per län); #1474 och #1509 hör till halkvakt-kuvos. Väntar också: #1056, #1208, #1271, #1300 (hör till halkvakt-kuvos), #1302, #1307, #1320, #1333, #1360, #1421, #1427 och #1452. | Bengt | (1) Bengt väljer; rutinen ändrar ingenting förrän ordet finns. (2) Slå ihop, stäng eller låt vänta, PR för PR. | #304 |
 | **Friskrivningen och källraden (Bengts fråga 10/11, kort #648).** Ingen lag kräver en friskrivning, men texten om vad appen inte gör påverkar vad en användare rimligen kan räkna med, och från december räknar EU:s nya produktansvar också programvara som produkt (direktiv 2024/2853), med presentationen och varningarna invägda. Mot en konsument går ansvaret för personskada inte att avtala bort, så texten ska informera. Appens rad säger att vägen mellan stationerna är oövervakad, fast K och storstäderna talar där, och den nämner inte MET Norway (CC BY 4.0), fast K räknas ur MET Nordic. | Bengt + Axel | En text i Om, i introduktionen, på sajtens om-sida och i sidfoten och i butikerna: *"Halkvakt är ett stöd, inte en garanti. Varningarna bygger på Trafikverkets mätningar och på Halkvaktens egna prognoser ur väderdata, som är betavarningar. De kan vara fel, komma sent eller saknas, och att appen är tyst betyder inte att vägen är säker. Du ansvarar alltid för att köra efter väglag och sikt."* Källraden prövas mot det som når appen, med MET Norway. En jurist läser den slutliga texten. | #648 |
 | **Fartfallet redan i vinter? (fråga 10/11, efter TrafficFlow 1.6, Ä3).** Det öppna API:t ger bara aktuella värden, så fartfallet (DECISIONS #380) kan bara prövas mot kalla nätter som har sparats. Sparas ingenting i vinter blir vintern 2027/28 den första det går att pröva på. Hela TrafficFlow ryms knappast i databasen; volymen per detektor är inte räknad, och fälten i 1.6 går att läsa tidigast 18/11. | Bengt | Ingen brådska: utan ett ord väntar idén till våren 2027 som beslutat (#315, #380). Vill Bengt pröva i vinter: först en läsning av 1.6 efter 18/11 (ett flöde på Bengts ord) och en volymräkning, sedan ett beslut. | — |
