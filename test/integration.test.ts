@@ -3010,9 +3010,12 @@ test("#828 småvägsröstens punktfil och besked i lägesfilen", { skip: !url },
 //   SL6  full skala: 90 000 rader på under 10 s, och en andra skrivning lämnar lika många
 //   SL7  taktens underlag (kuvösen F55): regelns varnande punkter med N3 och radarns medel i biten, i id-ordning; den torra står inte
 //        med; en timme som inte är regelns ger ingenting
+//   SL8  regeln utanför databasen (smavag-regel.ts, DECISIONS #843) ger samma underlag som smavag_regel() vid gränserna: radarn
+//        exakt 0,1 och närmaste tal under, en komposit strax innanför och strax utanför 60 minuter, och bitgränsen vid ordning 5;
+//        motprov: en grupp utan brytare tas bort av sql/105 men inte av kopian, och jämförelsen säger olika
 test("#828 småvägsröstens timrader: skrivningen, omskrivningen och gallringen, i full skala", { skip: !url }, async () => {
   const { default: pg } = await import("pg");
-  const { SATS, skrivTimme, underlag } = await import("../ingest/smavag-live-db.ts");
+  const { SATS, skrivTimme, underlag, jamfor } = await import("../ingest/smavag-live-db.ts");
   const pool = new pg.Pool({ connectionString: url, max: 1 });
   const c = await pool.connect();
   const q = (s: string, p: unknown[] = []) => c.query(s, p);
@@ -3047,6 +3050,21 @@ test("#828 småvägsröstens timrader: skrivningen, omskrivningen och gallringen
     await q(`INSERT INTO radar_smavag (bit, observed_at, rate_max_mmh, rate_mean_mmh) VALUES ('v99001-0', now() - interval '10 minutes', 0.4, 0.2)`);
     assert.equal(await underlag(c, tid), "punkt,ned,radar_mmh\nr99901,1,0.2\nr99902,0,0.2\n", "SL7: N3 och radarn varnar, den torra står inte med");
     assert.equal(await underlag(c, new Date(Date.parse(tid) - 3600e3).toISOString().replace(".000Z", "Z")), null, "SL7: en annan timme ger ingenting");
+    assert.equal(await jamfor(c, tid), true, "SL8: samma underlag som SL7");
+    await q(`INSERT INTO smavagspunkt (punkt, grupp, vag, ordning, lon, lat) VALUES
+      ('r99904', 'P1', 'v99003', 4, 17.00, 62), ('r99905', 'P1', 'v99003', 5, 17.01, 62), ('r99906', 'N', 'v99004', 0, 18.00, 63),
+      ('r99907', 'N', 'v99005', 0, 18.10, 63)`);
+    await skrivTimme(c, tid, ["r99901", "r99902", "r99903", "r99904", "r99905", "r99906", "r99907"].map((punkt) => ({ punkt, ned: false })), 7);
+    await q(`INSERT INTO radar_smavag (bit, observed_at, rate_max_mmh, rate_mean_mmh) VALUES
+      ('v99003-0', now() - interval '59 minutes', 0.3, 0.1), ('v99003-1', now() - interval '61 minutes', 9, 5),
+      ('v99004-0', now() - interval '5 minutes', 0.3, 0.09999999999999999), ('v99005-0', now() - interval '5 minutes', 0.3, 0.10000000000000002)`);
+    const utfall = async () => Object.fromEntries((await q("SELECT punkt, utfall FROM smavag_regel()")).rows.map((r: any) => [r.punkt, r.utfall]));
+    assert.deepEqual(await utfall(), { r99901: "varnar", r99902: "varnar", r99903: "torr", r99904: "varnar", r99905: "torr", r99906: "torr", r99907: "varnar" },
+      "SL8: sql/105 vid gränserna");
+    assert.equal(await jamfor(c, tid), true, "SL8: kopian ger samma underlag vid gränserna");
+    await q("DELETE FROM smavagsbrytare WHERE grupp = 'N'");
+    assert.equal(await jamfor(c, tid), false, "SL8 motprov: en grupp utan brytare ger olika");
+    await q("INSERT INTO smavagsbrytare (grupp) VALUES ('N') ON CONFLICT (grupp) DO NOTHING");
     await rensa();
     const N = 90000;
     const alla = Array.from({ length: N }, (_, i) => ({ punkt: `r${String(i + 1).padStart(5, "0")}`, ned: i % 2 === 0 }));
@@ -3061,6 +3079,7 @@ test("#828 småvägsröstens timrader: skrivningen, omskrivningen och gallringen
     console.log(`SL6: ${N} rader skrivna på ${t1} ms, en gång till på ${t2} ms`);
   } finally {
     for (const t of ["smavag_live", "smavag_korning", "radar_smavag", "smavagspunkt"]) await q(`DELETE FROM ${t}`).catch(() => {});
+    await q("INSERT INTO smavagsbrytare (grupp) VALUES ('N') ON CONFLICT (grupp) DO NOTHING").catch(() => {});
     c.release();
     await pool.end();
   }
