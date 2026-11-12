@@ -7,8 +7,13 @@
 //   hela       dygnsfilerna i <mnsv>/dagar som inte bär 24 timmar för varje punkt i <mnsv>/pilot_punkter.csv tas bort, så att nästa
 //              hämtning tar om dem. MET:s arkiv svarade 404 under en störning 11/11, historiken räknade timmarna som saknade i arkivet och
 //              sparade dygnen med luckor, och nästa körning hämtar aldrig ett sparat dygn. Kod 3 när något togs bort.
+//   korningar  backtestens prognosdygn (kuvos/metnordic-prognos.ts, dagar/<dygn>.csv.gz med alla dygnets körningar) delade per körning i
+//              driftens form och namn: <ut>/metnordic_korning_<ÅÅÅÅMMDDTHHZ>.csv.gz med prognosfilens rubrik först, som
+//              metnordic-live.ts --korning skriver i drift, så att kedjans bakåtläge läser dem som driften läser sin körning (F57, F58).
+//              Alla körningar ska ha lika många rader; annars ett fel.
 //   node --experimental-strip-types ingest/smavagskedjan.ts historik <lista.txt> <indata-prefix> <n> <ut-prefix>
 //   node --experimental-strip-types ingest/smavagskedjan.ts hela <mnsv>
+//   node --experimental-strip-types ingest/smavagskedjan.ts korningar <dagar> <ut>     (rubriken ur kuvösens metnordic-prognos.ts)
 //   node --experimental-strip-types ingest/smavagskedjan.ts --sjalvtest
 import { readFileSync, writeFileSync, existsSync, mkdirSync, mkdtempSync, rmSync, readdirSync } from "node:fs";
 import { gunzipSync, gzipSync } from "node:zlib";
@@ -57,6 +62,31 @@ export function hela(mnsv: string): string[] {
   return bort;
 }
 
+/** Prognosdygnen i <dagar> delade per körning (andra kolumnen, körningens tid) till <ut>/metnordic_korning_<stämpel>.csv.gz med <rubrik>
+ *  först. En rad med fel antal kolumner eller en tid som inte är en körning 00, 06, 12 eller 18 UTC är ett fel, liksom körningar med
+ *  olika många rader (alla bär samma punkter och timsteg). → körningarnas stämplar i ordning. */
+export function korningar(dagar: string, ut: string, rubrik: string): string[] {
+  const kolumner = rubrik.split(",").length, per = new Map<string, string[]>();
+  for (const f of readdirSync(dagar).filter((x) => /^\d{4}-\d\d-\d\d\.csv\.gz$/u.test(x)).sort()) {
+    for (const r of gunzipSync(readFileSync(join(dagar, f))).toString("utf8").split("\n")) {
+      if (!r) continue;
+      const c = r.split(",");
+      if (c.length !== kolumner) throw new Error(`${f}: en rad med ${c.length} kolumner, väntat ${kolumner}`);
+      const m = /^(\d{4})-(\d\d)-(\d\d)T(00|06|12|18):00:00Z$/u.exec(c[1]);
+      if (!m) throw new Error(`${f}: körningens tid ${c[1].slice(0, 30)} är ingen körning`);
+      const s = `${m[1]}${m[2]}${m[3]}T${m[4]}Z`;
+      let l = per.get(s); if (!l) per.set(s, (l = []));
+      l.push(r);
+    }
+  }
+  const storlek = new Set([...per.values()].map((l) => l.length));
+  if (storlek.size > 1) throw new Error(`körningarna har olika många rader: ${[...storlek].sort((a, b) => a - b).join(", ")}`);
+  mkdirSync(ut, { recursive: true });
+  const stamplar = [...per.keys()].sort();
+  for (const s of stamplar) writeFileSync(join(ut, `metnordic_korning_${s}.csv.gz`), gzipSync(rubrik + "\n" + per.get(s)!.join("\n") + "\n"));
+  return stamplar;
+}
+
 function sjalvtest(): number {
   const fel: string[] = [], k = (ok: boolean, namn: string) => { if (!ok) fel.push(namn); };
   const rot = mkdtempSync(join(tmpdir(), "smavagskedjan-"));
@@ -91,6 +121,24 @@ function sjalvtest(): number {
     k(JSON.stringify(b) === JSON.stringify(["2026-11-02.csv.gz", "2026-11-03.csv.gz", "2026-11-04.csv.gz"]), `hela tar bort: ${b}`);
     k(readdirSync(join(mn, "dagar")).join() === "2026-11-01.csv.gz", "det hela dygnet står kvar");
     k(hela(mn).length === 0, "en andra kontroll tar inget");
+
+    // korningar: två dygn med tre körningar delas i tre filer med rubriken först och raderna i ordning; olika många rader och en tid
+    // som inte är en körning vägras.
+    const pd = join(rot, "pd");
+    mkdirSync(pd);
+    const RUB = "station_id,korning_utc,ledtid_h,tid_utc,a";
+    const rad = (id: string, k: string, l: number) => `${id},${k},${l},x,1`;
+    writeFileSync(join(pd, "2024-01-01.csv.gz"), gzipSync([rad("s1", "2024-01-01T12:00:00Z", 0), rad("s2", "2024-01-01T12:00:00Z", 0),
+      rad("s1", "2024-01-01T18:00:00Z", 0), rad("s2", "2024-01-01T18:00:00Z", 0)].join("\n") + "\n"));
+    writeFileSync(join(pd, "2024-01-02.csv.gz"), gzipSync([rad("s1", "2024-01-02T00:00:00Z", 0), rad("s2", "2024-01-02T00:00:00Z", 0)].join("\n") + "\n"));
+    const st = korningar(pd, join(rot, "pk"), RUB);
+    k(st.join() === "20240101T12Z,20240101T18Z,20240102T00Z", `körningarnas stämplar: ${st}`);
+    k(las(join(rot, "pk", "metnordic_korning_20240101T18Z.csv.gz")) === `${RUB}\n${rad("s1", "2024-01-01T18:00:00Z", 0)}\n${rad("s2", "2024-01-01T18:00:00Z", 0)}\n`,
+      "körningsfilen: rubriken och körningens rader");
+    writeFileSync(join(pd, "2024-01-03.csv.gz"), gzipSync(rad("s1", "2024-01-03T06:00:00Z", 0) + "\n"));
+    k(vagra(() => korningar(pd, join(rot, "pk2"), RUB)), "körningar med olika många rader vägras");
+    writeFileSync(join(pd, "2024-01-03.csv.gz"), gzipSync([rad("s1", "2024-01-03T07:00:00Z", 0), rad("s2", "2024-01-03T07:00:00Z", 0)].join("\n") + "\n"));
+    k(vagra(() => korningar(pd, join(rot, "pk3"), RUB)), "en tid som inte är en körning vägras");
   } finally { rmSync(rot, { recursive: true, force: true }); }
   console.log(`självtest smavagskedjan: ${fel.length ? "FEL" : "klart"}`);
   for (const f of fel) console.log(`  ${f}`);
@@ -105,10 +153,15 @@ if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {
       const lista = readFileSync(a[0], "utf8").split("\n").filter(Boolean);
       delaHistorik(lista, a[1], Number(a[2]), a[3]);
       console.log("historiken per del: klart");
+    } else if (kmd === "korningar" && a.length === 2) {
+      // Rubriken ur kuvösens prognoshämtning, som ligger ovanpå i flödet (DECISIONS #768); självtestet ovan klarar sig utan den.
+      const { RUBRIK } = await import(pathToFileURL(join(process.cwd(), "kuvos", "metnordic-prognos.ts")).href);
+      const st = korningar(a[0], a[1], RUBRIK);
+      console.log(st.length ? "körningarna: klart" : "körningarna: inga"); if (!st.length) process.exit(1);
     } else if (kmd === "hela" && a.length === 1) {
       const b = hela(a[0]);
       console.log(b.length ? `dygnen: ${b.length} ofullständiga borttagna, hämtas om` : "dygnen: klart");
       if (b.length) process.exit(3);
-    } else { console.error("hela <mnsv> | historik <lista> <indata> <n> <ut> | --sjalvtest"); process.exit(2); }
+    } else { console.error("hela <mnsv> | historik <lista> <indata> <n> <ut> | korningar <dagar> <ut> | --sjalvtest"); process.exit(2); }
   } catch (e: any) { console.error(`smavagskedjan ${kmd}: ${String(e?.message ?? e).slice(0, 200)}`); process.exit(1); }
 }

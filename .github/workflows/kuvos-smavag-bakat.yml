@@ -13,6 +13,9 @@ name: kuvos-smavag-bakat
 #          Rutorna är driftens: stationerna (metnordic_punkter.csv) och småvägarnas punkter (smavagar_pilot.ts --rutor), i samma anrop.
 #          En vecka per jobb och en i taget, med paus mellan anropen, väntan runt driftens MET-körningar och avbrott när MET svarar med
 #          fel (val 15, MET_AVBRYT): då stannar alla jobb (fail-fast), och nästa tryck tar vid efter de veckor som är klara.
+#          Analysveckorna ligger i cachen (omkring 200 MB var). Prognosveckorna (omkring 560 MB var, för stora för cachens 10 GB, Bengt
+#          12/11: "I hinken, per körning") delas per körning i driftens namn (metnordic_korning_<stämpel>.csv.gz) och går till den
+#          privata hinken under kuvos-smavag-bakat-2024/, hämtade tillbaka och jämförda; cachen bär bara veckans markör.
 # SMHI:s radar, MET Nordic och punkternas lägen (Lastkajen, CC0) är öppna data och får ligga i cachen. Cachen glöms efter sju dygn
 # utan läsning.
 # Källa: SMHI öppna data (CC BY 4.0); MET Norway, MET Nordic (NLOD / CC BY 4.0); Trafikverket, VViS (leveransen till projektet, bara i
@@ -323,7 +326,7 @@ jobs:
             cp met-rutor/pilot_punkter.csv met-bit/pilot_punkter.csv
             node --experimental-strip-types fysik/ny_kandidat/smavagar_pilot.ts --historik met-bit "$FRAN" "$TILL" > met.log 2>&1
           else
-            MNP_TIMSTEG=18 MNP_PAUS_MS=5000 MNP_FONSTER=1 node --experimental-strip-types kuvos/metnordic-prognos.ts \
+            MNP_TIMSTEG=18 MNP_PAUS_MS=5000 MNP_FONSTER=1 MNP_UTAN_SLUTFIL=1 node --experimental-strip-types kuvos/metnordic-prognos.ts \
               met-rutor/pilot_punkter.csv met-bit "$FRAN" "$TILL" > met.log 2>&1
           fi
           KOD=$?
@@ -336,10 +339,51 @@ jobs:
               || { echo "::error::analysen saknar timmar i veckan: $(tail -1 hela.log | cut -c1-200)"; exit 1; }
             rm -f met-bit/pilot_punkter.csv
           else
-            rm -f met-bit/metnordic_prognos_*.csv.gz
             grep -q "^  saknas: " met.log && echo "::warning::en eller flera körningar saknas i MET:s arkiv för veckan"
+            node --experimental-strip-types ingest/smavagskedjan.ts korningar met-bit/dagar met-korningar > korningar.log 2>&1 \
+              || { echo "::error::delningen per körning föll: $(grep -v ExperimentalWarning korningar.log | tail -1 | cut -c1-200)"; exit 1; }
           fi
-          echo "$TYP $FRAN–$TILL: klart" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "$TYP $FRAN–$TILL: hämtad" | tee -a "$GITHUB_STEP_SUMMARY"
+      # Prognosveckan: varje körning till hinken. Finns filen redan med samma innehåll står den kvar; med annat innehåll är det ett fel.
+      # Varje uppladdad fil hämtas tillbaka och jämförs. Sedan bär cachen bara markören med filernas namn och kontrollsummor.
+      - name: Körningarna till hinken, hämtade tillbaka och jämförda
+        if: ${{ steps.l.outputs.cache-hit != 'true' && matrix.bit.typ == 'prognos' }}
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}", MAPP: kuvos-smavag-bakat-2024 }
+        run: |
+          set -euo pipefail
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          export FN KEY
+          node -e '
+            const { execFileSync } = require("child_process"), fs = require("fs"), c = require("crypto"), path = require("path");
+            const sha = (b) => c.createHash("sha256").update(b).digest("hex");
+            // execFileSync:s fel bär kommandoraden och därmed nyckeln eller den signerade adressen: fångas, bara statusen skrivs ut.
+            const curl = (a, vad) => { try { return execFileSync("curl", ["-sS", "--fail", ...a], { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); }
+              catch (e) { if (vad) { console.error(`${vad} föll (curl ${e.status})`); process.exit(1); } return null; } };
+            const anrop = (lage, namn, vad) => { const b = curl(["-X", "POST", `${process.env.FN}?lage=${lage}`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
+              "-H", "Content-Type: application/json", "-d", JSON.stringify({ filer: [namn] })], vad); return b && JSON.parse(b); };
+            const filer = fs.readdirSync("met-korningar").filter((f) => /^metnordic_korning_\d{8}T\d\dZ\.csv\.gz$/.test(f)).sort();
+            if (!filer.length) { console.error("körningarna: inga filer"); process.exit(1); }
+            const markor = [];
+            for (const f of filer) {
+              const lokal = fs.readFileSync(path.join("met-korningar", f)), namn = `${process.env.MAPP}/${f}`;
+              const finns = anrop("kuvos_hamta", namn);
+              if (finns) {
+                if (sha(curl([finns.filer[0].url], "hämtningen av en befintlig fil")) !== sha(lokal)) { console.error("körningarna: FEL, en fil i hinken har annat innehåll"); process.exit(1); }
+              } else {
+                const u = anrop("kuvos_ladda_upp", namn, "adressen för uppladdningen").urls[0];
+                curl(["-X", "PUT", "-H", "Content-Type: application/octet-stream", "--data-binary", "@" + path.join("met-korningar", f), u], "uppladdningen");
+                const h = anrop("kuvos_hamta", namn, "hämtningen tillbaka").filer[0];
+                if (sha(curl([h.url], "hämtningen")) !== sha(lokal)) { console.error("körningarna: FEL, i hinken med annat innehåll"); process.exit(1); }
+              }
+              markor.push({ fil: namn, sha256: sha(lokal), bytes: lokal.length });
+            }
+            fs.writeFileSync("met-bit/i-hinken.json", JSON.stringify({ schema: 1, filer: markor }));
+            console.log("körningarna: klart");' | tee -a "$GITHUB_STEP_SUMMARY"
+          rm -rf met-bit/dagar met-korningar
       - name: Veckan till cachen
         if: ${{ steps.l.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v4
