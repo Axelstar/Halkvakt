@@ -20,6 +20,8 @@ object SnapshotRepo {
     private const val RESERV = "https://axelstar.github.io/halkvakt-karta/data/app/v1/"
     private const val MANIFEST = "manifest.json"
     private val FILER = listOf("static.json", "live.json")
+    /** Småvägarnas punktfil (byggsteg 7, DECISIONS #844): hämtas bara när live.json bär ett besked, se [smavagFor]. */
+    private const val SMAVAG = "smavag.json"
 
     /** Ett varvs utfall: NY = nya filer skrevs; OFORANDRAD = inget nyare, eller filerna låg efter manifestet i Cloudflares cache,
      *  och cachen gäller; FEL = ingen källa svarade, och den sparade snapshoten gäller. */
@@ -40,7 +42,7 @@ object SnapshotRepo {
         val gen = tid(docs.live, "generated_at") ?: 0L  // saknad tidsstämpel = maximalt gammal ⇒ vakten fäller
         // Efterhalkan (S3) bara för den som slagit på Betatest — Kompisarna först (Bengt 22/10, DECISIONS #676/#677).
         val betatest = kotlinx.coroutines.runBlocking { Prefs.facitEnabled(ctx).first() }
-        val faror = toHazards(docs.stat, docs.live)
+        val faror = toHazards(docs.stat, docs.live) + smavagFor(ctx.filesDir, docs.live, ::httpGet)
         return Snapshot(if (betatest) faror else utanEfterhalka(faror), gen, stations(docs.stat), docs.utfall == Utfall.FEL,
             docs.utfall, docs.kalla, tid(docs.live, "weather_oldest_at"))
     }
@@ -92,6 +94,28 @@ object SnapshotRepo {
         nya.forEach { (namn, text) -> skriv(mapp, namn, text) }
         skriv(mapp, MANIFEST, ny.text)   // sist: manifestet säger vad filerna verifierades mot
         return Docs(stat, live, Utfall.NY, kalla)
+    }
+
+    /** Den tolkade punktfilen och dess kontrollsumma, så att 2–3 MB inte läses om varannan minut. */
+    @Volatile internal var smavagMinne: Pair<String, SmavagFil>? = null
+
+    /**
+     * Småvägsrösten (byggsteg 7, DECISIONS #844). Punktfilen hämtas bara när live.json bär ett besked: med brytarna av hämtas den aldrig.
+     * Den sparade filen gäller när dess kontrollsumma är beskedets; annars hämtas den ur hinken och, om hinken inte svarar eller ger
+     * fel innehåll, ur reserven. En fil med fel kontrollsumma skrivs aldrig, och utan rätt fil blir det inga faror (läsaren tiger). Ett
+     * fel här rör aldrig static och live: de är redan hämtade.
+     */
+    @Synchronized internal fun smavagFor(mapp: File, live: JSONObject, hamta: (String) -> String): List<Hazard> {
+        val besked = live.optJSONObject("smavag") ?: return emptyList()
+        if (besked.isNull("fil")) return emptyList()
+        val vill = besked.get("fil").toString()
+        smavagMinne?.let { (sha, fil) -> if (sha == vill) return fil.hazards(besked, sha) }
+        val text = las(mapp, SMAVAG)?.takeIf { sha256(it) == vill }
+            ?: listOf(HINK, RESERV).firstNotNullOfOrNull { bas -> runCatching { hamta(bas + SMAVAG) }.getOrNull()?.takeIf { sha256(it) == vill } }
+                ?.also { t -> runCatching { skriv(mapp, SMAVAG, t) } }
+        val fil = text?.let { runCatching { SmavagFil.parse(JSONObject(it)) }.getOrNull() } ?: return emptyList()
+        smavagMinne = vill to fil
+        return fil.hazards(besked, vill)
     }
 
     /** Den sparade snapshoten. */

@@ -36,8 +36,8 @@ enum SnapshotRepo {
         let (staticDoc, liveDoc) = (varv.stat, varv.live)
         let gen = tid(liveDoc["generated_at"]) ?? .distantPast
 
-        // Tolkningen bor i motorpaketet (kort #289) och prövas där mot engine/fixtures/lasarprov.json.
-        let lasta = SnapshotReader.toHazards(staticDoc: staticDoc, liveDoc: liveDoc)
+        // Tolkningen bor i motorpaketet (kort #289) och prövas där mot engine/fixtures/lasarprov.json; småvägarna mot smavagprov.json.
+        let lasta = SnapshotReader.toHazards(staticDoc: staticDoc, liveDoc: liveDoc) + (await smavag(liveDoc))
         // Efterhalkan (S3) bara för den som slagit på Betatest — Kompisarna först (Bengt 22/10, DECISIONS #676/#677).
         // Prefs bor på huvudaktören, så läsningen väntas in (utan await byggdes inte appen, prov-bygget 22/10, #679).
         let betatest = await Prefs.shared.facitOn
@@ -55,6 +55,35 @@ enum SnapshotRepo {
     static func dokument() async throws -> (stat: [String: Any], live: [String: Any]) {
         let varv = try await koll()
         return (varv.stat, varv.live)
+    }
+
+    // MARK: - Småvägarnas punktfil (byggsteg 7, DECISIONS #844)
+
+    /// Den tolkade punktfilen och dess kontrollsumma, så att 2–3 MB inte läses om varannan minut.
+    private actor SmavagMinne {
+        private var sha: String?, fil: SmavagFil?
+        func las(_ s: String) -> SmavagFil? { s == sha ? fil : nil }
+        func spara(_ s: String, _ f: SmavagFil) { sha = s; fil = f }
+    }
+    private static let smavagMinne = SmavagMinne()
+
+    /// Punktfilen hämtas bara när live.json bär ett besked: med brytarna av hämtas den aldrig. Den sparade filen gäller när dess
+    /// kontrollsumma är beskedets; annars hämtas den ur hinken och, om hinken inte svarar eller ger fel innehåll, ur reserven. En fil
+    /// med fel kontrollsumma skrivs aldrig, och utan rätt fil blir det inga faror (läsaren tiger). Ett fel här rör aldrig static och
+    /// live: de är redan hämtade. Spegel av SnapshotRepo.kt:smavagFor.
+    private static func smavag(_ live: [String: Any]) async -> [Hazard] {
+        guard let besked = live["smavag"] as? [String: Any], let vill = besked["fil"] as? String else { return [] }
+        if let f = await smavagMinne.las(vill) { return f.hazards(besked: besked, filSha: vill) }
+        var data = (try? Data(contentsOf: fil("smavag"))).flatMap { sha($0) == vill ? $0 : nil }
+        if data == nil {
+            for bas in [hink, reserv] {
+                if let d = try? await httpGet(bas + "smavag.json"), sha(d) == vill { data = d; break }
+            }
+            if let d = data { try? d.write(to: fil("smavag"), options: .atomic) }
+        }
+        guard let d = data, let f = SmavagFil.parse(d) else { return [] }
+        await smavagMinne.spara(vill, f)
+        return f.hazards(besked: besked, filSha: vill)
     }
 
     // MARK: - Ett varv

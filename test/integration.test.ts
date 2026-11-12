@@ -3039,7 +3039,7 @@ test("#828 småvägsröstens punktfil och besked i lägesfilen", { skip: !url },
     await q(`INSERT INTO smavagspunkt (punkt, grupp, vag, ordning, lon, lat) VALUES
       ('r00003', 'N', 'v00002', 0, 16.0, 61.0), ('r00001', 'P1', 'v00001', 0, 15.0, 60.0), ('r00002', 'P1', 'v00001', 1, 15.01, 60.0)`);
     const f1 = await skrivFil();
-    assert.equal(f1.json, '{"schema":1,"punkter":[[15,60],[15.01,60],[16,61]]}', "SF1: lägena i id-ordning");
+    assert.equal(f1.json, '{"schema":2,"punkter":[[15,60],[15.01,60],[16,61]],"vag":[1,1,2],"ordning":[0,1,0]}', "SF1: lägena, vägen och ordningen i id-ordning");
     const rad = async () => (await q("SELECT sha256, punkter, bytes, gz_bytes, i_hinken, i_github FROM smavag_punktfil")).rows[0];
     assert.deepEqual(await rad(), { sha256: f1.sha256, punkter: 3, bytes: f1.bytes, gz_bytes: f1.gz_bytes, i_hinken: null, i_github: null }, "SF1: raden");
     await q("UPDATE smavag_punktfil SET i_hinken = sha256, i_github = sha256");
@@ -3058,6 +3058,10 @@ test("#828 småvägsröstens punktfil och besked i lägesfilen", { skip: !url },
     await q("UPDATE smavagsbrytare SET pa = (grupp = 'P1')");
     assert.deepEqual(await bitar(), [1], "SF3: P1 på ⇒ r00002 på plats 1");
     assert.equal(smavagBitar(await bitar(), 4), "Ag==", "SF3: bit 1");
+    // SF4 (byggsteg 7): appens läsare (engine/src/smavagfil.ts) gör punktfilen och beskedet till en fara för väg 1, med r00002 på plats 1.
+    const { smavagHazards } = await import("../engine/src/smavagfil.ts");
+    assert.deepEqual(smavagHazards(JSON.parse(f2.json), { fil: f2.sha256, n: 4, bitar: smavagBitar(await bitar(), 4) }, f2.sha256),
+      [{ id: "smv:1", kind: "smavag", points: [[15, 60], [15.01, 60]], warn: [1] }], "SF4: väg 1 med den varnande punkten på plats 1");
   } finally {
     await rensa().catch(() => {});
     await q("UPDATE smavagsbrytare SET pa = false").catch(() => {});

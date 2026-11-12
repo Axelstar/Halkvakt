@@ -47,6 +47,44 @@ class SnapshotKollTest {
         return m
     }
 
+    // Småvägsrösten (byggsteg 7, DECISIONS #844): punktfilen hämtas bara med ett besked, prövas mot beskedets kontrollsumma, hålls i
+    // minnet per kontrollsumma och tas ur reserven när hinken ger fel innehåll. Utan rätt fil blir det inga faror.
+    private val punktfil = """{"schema":2,"punkter":[[12.0,56.0],[12.01,56.005]],"vag":[1,1],"ordning":[0,1]}"""
+    private fun liveMed(sha: String) = org.json.JSONObject("""{"generated_at":"$t1","segments":[],"smavag":{"fil":"$sha","n":2,"bitar":"Ag=="}}""")
+
+    @Test fun punktfilenHamtasInteUtanBesked() {
+        SnapshotRepo.smavagMinne = null
+        val m = mapp(); svar[hink + "smavag.json"] = punktfil
+        assertEquals(0, SnapshotRepo.smavagFor(m, org.json.JSONObject(live(t1)), hamta).size)
+        assertEquals(emptyList<String>(), anrop, "inget anrop utan besked")
+    }
+
+    @Test fun punktfilenHamtasEnGangOchHallsIMinnet() {
+        SnapshotRepo.smavagMinne = null
+        val m = mapp(); svar[hink + "smavag.json"] = punktfil
+        val faror = SnapshotRepo.smavagFor(m, liveMed(sha(punktfil)), hamta)
+        assertEquals(listOf("smv:1"), faror.map { it.id })
+        assertEquals(listOf(1), (faror[0] as se.halkvakt.engine.SmavagHazard).warn, "punkt 1 varnar (bit 1, Ag==)")
+        assertEquals(punktfil, File(m, "smavag.json").readText())
+        anrop.clear()
+        assertEquals(1, SnapshotRepo.smavagFor(m, liveMed(sha(punktfil)), hamta).size)
+        assertEquals(emptyList<String>(), anrop, "andra gången ur minnet")
+        SnapshotRepo.smavagMinne = null
+        assertEquals(1, SnapshotRepo.smavagFor(m, liveMed(sha(punktfil)), hamta).size)
+        assertEquals(emptyList<String>(), anrop, "efter en omstart ur den sparade filen")
+    }
+
+    @Test fun felInnehallIHinkenGerReservenOchFelOverallGerTystnad() {
+        SnapshotRepo.smavagMinne = null
+        val m = mapp(); svar[hink + "smavag.json"] = punktfil.replace("12.01", "12.02"); svar[reserv + "smavag.json"] = punktfil
+        assertEquals(1, SnapshotRepo.smavagFor(m, liveMed(sha(punktfil)), hamta).size, "reserven när hinken ger fel innehåll")
+        assertEquals(listOf(hink + "smavag.json", reserv + "smavag.json"), anrop)
+        SnapshotRepo.smavagMinne = null; anrop.clear()
+        val m2 = mapp(); svar[reserv + "smavag.json"] = punktfil.replace("12.01", "12.03")
+        assertEquals(0, SnapshotRepo.smavagFor(m2, liveMed(sha(punktfil)), hamta).size, "fel innehåll överallt: tystnad")
+        assertEquals(false, File(m2, "smavag.json").exists(), "en fil med fel kontrollsumma skrivs aldrig")
+    }
+
     @Test fun forstaKollenHamtarTrionUrHinkenOchSkriverManifestetSist() {
         val m = mapp(); trio(hink, t1)
         val d = SnapshotRepo.koll(m, hamta)
