@@ -26,6 +26,7 @@ struct LasarkontraktetTests {
         case .point(_, let kind, _, _, _, _): return kind.rawValue
         case .segment: return HazardKind.slippery_segment.rawValue
         case .kandidat: return HazardKind.kandidat.rawValue
+        case .smavag: return HazardKind.smavag.rawValue
         }
     }
 
@@ -56,6 +57,9 @@ struct LasarkontraktetTests {
             case "lat0": return points.first?[1]
             default: break
             }
+        case .smavag:
+            // Småvägsrösten (DECISIONS #844): the reader does not produce it yet (the point file's road and order come in step 7).
+            break
         }
         Issue.record("\(h.id): okänt fält \(nyckel) i provfilen")
         return nil

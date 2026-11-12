@@ -11,6 +11,7 @@ import se.halkvakt.engine.Hazard
 import se.halkvakt.engine.KandidatHazard
 import se.halkvakt.engine.PointHazard
 import se.halkvakt.engine.SegmentHazard
+import se.halkvakt.engine.SmavagHazard
 import java.io.File
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -54,6 +55,8 @@ class LasarkontraktetTest {
             "lat0" -> h.points.firstOrNull()?.get(1)
             else -> error("${h.id}: unknown kandidat field $nyckel")
         }
+        // Småvägsrösten (DECISIONS #844): the reader does not produce it yet (the point file's road and order come in step 7).
+        is SmavagHazard -> error("${h.id}: the reader has no small-roads fields yet")
     }
 
     /** Numbers compare by value (the fixture's 180 is an Int, the reader's bearing a Double). */

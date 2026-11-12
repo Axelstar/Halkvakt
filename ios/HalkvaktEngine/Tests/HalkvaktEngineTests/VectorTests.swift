@@ -23,6 +23,11 @@ final class VectorTests: XCTestCase {
             let points = (o["points"] as! [[Any]]).map { $0.map { ($0 as! NSNumber).doubleValue } }
             return .kandidat(id: o["id"] as! String, points: points, segmentHazardId: o["segmentHazardId"] as? String)
         }
+        if kind == .smavag {   // DECISIONS #844: one small road with its points in order and the indices that warn
+            let points = (o["points"] as! [[Any]]).map { $0.map { ($0 as! NSNumber).doubleValue } }
+            let warn = (o["warn"] as! [Any]).map { ($0 as! NSNumber).intValue }
+            return .smavag(id: o["id"] as! String, points: points, warn: warn)
+        }
         if kind == .slippery_segment {
             let line = (o["line"] as! [[Any]]).map { $0.map { ($0 as! NSNumber).doubleValue } }
             let m = o["meta"] as? [String: Any]

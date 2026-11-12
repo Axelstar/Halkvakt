@@ -77,6 +77,8 @@ object RouteFilter {
                 is PointHazard -> nearest(doubleArrayOf(h.lon, h.lat)).let { d = it.first; along = it.second }
                 // K (DECISIONS #577): the candidate is not in the favourites' selection — skipped, as in rutfilter.ts.
                 is KandidatHazard -> continue
+                // S (DECISIONS #828): the small roads are not in the selection either, as in rutfilter.ts.
+                is SmavagHazard -> continue
             }
             if (d <= marginM) out.add(AlongRoute(h, d, along))
         }

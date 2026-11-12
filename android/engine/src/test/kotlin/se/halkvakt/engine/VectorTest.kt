@@ -34,6 +34,17 @@ class VectorTest {
             return KandidatHazard(id = o.getString("id"), points = points,
                 segmentHazardId = if (o.has("segmentHazardId") && !o.isNull("segmentHazardId")) o.getString("segmentHazardId") else null)
         }
+        if (kind == HazardKind.SMAVAG) {
+            // S (DECISIONS #844): one small road with its points in order and the indices that warn.
+            val points = o.getJSONArray("points").let { arr ->
+                (0 until arr.length()).map { i ->
+                    val p = arr.getJSONArray(i)
+                    doubleArrayOf(p.getDouble(0), p.getDouble(1))
+                }
+            }
+            val warn = o.getJSONArray("warn").let { arr -> (0 until arr.length()).map { arr.getInt(it) } }
+            return SmavagHazard(id = o.getString("id"), points = points, warn = warn)
+        }
         if (kind == HazardKind.SLIPPERY_SEGMENT) {
             val line = o.getJSONArray("line").let { arr ->
                 (0 until arr.length()).map { i ->

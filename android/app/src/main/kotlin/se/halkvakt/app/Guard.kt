@@ -13,6 +13,7 @@ import se.halkvakt.engine.Hazard
 import se.halkvakt.engine.KandidatHazard
 import se.halkvakt.engine.PointHazard
 import se.halkvakt.engine.SegmentHazard
+import se.halkvakt.engine.SmavagHazard
 
 class Guard(
     hazards: List<Hazard>,
@@ -67,6 +68,7 @@ class Guard(
             is PointHazard -> add(doubleArrayOf(h.lon, h.lat))
             is SegmentHazard -> addAll(h.line)
             is KandidatHazard -> addAll(h.points)   // #577: takten följer också kandidatens punkter
+            is SmavagHazard -> h.warn.forEach { j -> h.points.getOrNull(j)?.let { add(it) } }   // #828: bara de varnande punkterna
         }
     }
 

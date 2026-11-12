@@ -197,6 +197,7 @@ final class Prefs {
         case .wildlife: return wildlife
         case .camera: return camera
         case .kandidat: return slippery   // #577: följer reglaget Halka — den säger halka, och har inget eget reglage
+        case .smavag: return slippery     // #828: följer också reglaget Halka, som kandidaten
         }
     }
 
@@ -208,6 +209,7 @@ final class Prefs {
         case .wildlife: return "Vilt"
         case .camera: return "Fartkamera"
         case .kandidat: return "Halka (beta)"
+        case .smavag: return "Halka på småvägar (beta)"
         }
     }
 }

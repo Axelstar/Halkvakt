@@ -250,7 +250,8 @@ struct GridTests {
             }
         }
         // Not a vacuous comparison: every kind spoke, every accident step and the beta occurred, many alerts sat on a bound.
-        for k in HazardKind.allCases { #expect(kinds[k, default: 0] >= 20, "only \(kinds[k, default: 0]) \(k) alerts") }
+        // The small roads (S, DECISIONS #844) need a road the drive follows, so they are compared in skaneFixtureWithSmallRoads below.
+        for k in HazardKind.allCases where k != .smavag { #expect(kinds[k, default: 0] >= 20, "only \(kinds[k, default: 0]) \(k) alerts") }
         for st in ["early", "reminder", "late", "beta"] { #expect(steps.contains(st), "no \(st) alert") }
         #expect(alerts >= 800, "only \(alerts) alerts")
         #expect(edgeCamera >= 30 && edgeAccident >= 30 && edgeLead >= 30,
@@ -312,6 +313,43 @@ struct GridTests {
         let alerts = try GridTests.runBoth(Scenario(name: "Skåne + kandidater", cfg: EngineConfig(), hazards: hazards, trace: trace, updates: []))
         #expect(alerts.contains { $0.kind == .kandidat }, "the kandidat points must speak")
         #expect(alerts.contains { $0.kind == .wildlife }, "the wildlife points must speak")
+    }
+
+    /// S (DECISIONS #844), mirror of the TS test: small roads along the Skåne drive — on it, at the road test's margin (40, 70, 90 m)
+    /// and beside it (150 m) — and across it, half their points warning. The silence after a call is switched off so the 488 s drive
+    /// gives the comparison many calls, and the default silence runs too.
+    @Test func skaneFixtureWithSmallRoads() throws {
+        let url = GridTests.repoRoot().appendingPathComponent("engine/fixtures/skane_vag108.json")
+        let doc = try JSONSerialization.jsonObject(with: Data(contentsOf: url)) as! [String: Any]
+        let trace: [Fix] = (doc["trace"] as! [[String: Any]]).map { f in
+            Fix(t: (f["t"] as! NSNumber).doubleValue, lon: (f["lon"] as! NSNumber).doubleValue,
+                lat: (f["lat"] as! NSNumber).doubleValue, speedKmh: (f["speedKmh"] as? NSNumber)?.doubleValue)
+        }
+        var hazards: [Hazard] = []
+        let r = Rng(828)
+        let steg = 20
+        var s = 0
+        while s + steg * 6 < trace.count {
+            let av = r.pick([0.0, 0.0, 40.0, 70.0, 90.0, 150.0])
+            var points: [[Double]] = []
+            for k in 0..<6 {
+                let a = trace[s + k * steg], b = trace[s + k * steg + 1]
+                points.append(GridTests.dest(a.lon, a.lat, av, Geo.bearingDeg(a.lon, a.lat, b.lon, b.lat) + 90))
+            }
+            var warn: [Int] = []
+            for i in points.indices where r.next() < 0.5 { warn.append(i) }
+            hazards.append(.smavag(id: "smv:l\(s)", points: points, warn: warn))
+            let f = trace[s + 3 * steg], g = trace[s + 3 * steg + 1]
+            let tvars = [-1350.0, -450.0, 450.0, 1350.0].map { m in GridTests.dest(f.lon, f.lat, m, Geo.bearingDeg(f.lon, f.lat, g.lon, g.lat) + 90) }
+            hazards.append(.smavag(id: "smv:t\(s)", points: tvars, warn: [0, 1, 2, 3]))
+            s += steg * 6
+        }
+        var tyst = EngineConfig()
+        tyst.smavagTystS = 0
+        tyst.smavagTystM = 0
+        let alerts = try GridTests.runBoth(Scenario(name: "Skåne + småvägar", cfg: tyst, hazards: hazards, trace: trace, updates: []))
+        #expect(alerts.filter { $0.kind == .smavag }.count >= 3, "the small roads along the drive must speak")
+        _ = try GridTests.runBoth(Scenario(name: "Skåne + småvägar, standardtystnaden", cfg: EngineConfig(), hazards: hazards, trace: trace, updates: []))
     }
 
     @Test func theWindowsNorthAndSouthEdges() throws {

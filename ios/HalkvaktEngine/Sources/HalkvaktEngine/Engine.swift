@@ -4,10 +4,10 @@
 import Foundation
 
 public enum HazardKind: String, CaseIterable {
-    case accident, slippery_segment, icing_point, wildlife, camera, kandidat
+    case accident, slippery_segment, icing_point, wildlife, camera, kandidat, smavag
     // Spoken priority = declaration order above. Losers are DROPPED, never queued.
-    // `kandidat` (DECISIONS #562, #577) is LAST on purpose: every other kind outranks it, so the cooldown can never drop or
-    // delay another warning because the candidate spoke. Mirrors PRIORITY in engine/src/types.ts.
+    // `kandidat` (DECISIONS #562, #577) comes after every warning that is measured, and `smavag` (DECISIONS #828, #844) after the
+    // candidate: neither can ever drop or delay a warning above it because it spoke. Mirrors PRIORITY in engine/src/types.ts.
     var priority: Int { HazardKind.allCases.firstIndex(of: self)! }
 }
 
@@ -52,12 +52,17 @@ public enum Hazard {
     /// One stretch where the candidate's database rule says `varnar` (live.json `kandidat`, DECISIONS #576, #577): only the
     /// warning points [lon, lat], no threshold. One hazard per stretch, so the repeat rule holds per stretch.
     case kandidat(id: String, points: [[Double]], segmentHazardId: String?)
+    /// S — one state road without road-condition measurement (DECISIONS #828, #844), mirror of SmavagHazard in types.ts: its points
+    /// [lon, lat] in order along the road and the indices of those that warn. Roads without a warning point belong here too: the
+    /// road test first decides which road the car is on, among all of them.
+    case smavag(id: String, points: [[Double]], warn: [Int])
 
     public var id: String {
         switch self {
         case .point(let id, _, _, _, _, _): return id
         case .segment(let id, _, _): return id
         case .kandidat(let id, _, _): return id
+        case .smavag(let id, _, _): return id
         }
     }
 }
@@ -114,6 +119,15 @@ public struct EngineConfig {
     // Halkzonen (DECISIONS #624): sträckor inom så här många meter är en zon för reprisregeln — samma tal som engine/src/types.ts
     // (kontraktsgrinden).
     public var halkZonM = 500.0
+    // S, vägtestet (DECISIONS #844): inom så här många meter och grader från linjen mellan två grannpunkter, så många fixar i rad;
+    // grannar längre isär än smavagKordaMaxM har ingen linje — samma tal som engine/src/types.ts (kontraktsgrinden).
+    public var smavagPaM = 80.0
+    public var smavagPaGrader = 30.0
+    public var smavagPaFixar = 3
+    public var smavagKordaMaxM = 3000.0
+    // S, tystnaden efter ett besked (DECISIONS #828): båda ska ha gått — samma tal som engine/src/types.ts (kontraktsgrinden).
+    public var smavagTystS = 600.0
+    public var smavagTystM = 5000.0
     public init() {}
 }
 
@@ -136,6 +150,17 @@ enum Geo {
         let x = cos(p1) * sin(p2) - sin(p1) * cos(p2) * cos(dl)
         let th = atan2(y, x) / D2R
         return (th + 360).truncatingRemainder(dividingBy: 360)
+    }
+
+    /// Mirror of distToSegmentM in geo.ts (DECISIONS #844): metres from p to the straight segment a–b in a flat plane around p,
+    /// the same arithmetic step for step.
+    static func distToSegmentM(_ pLon: Double, _ pLat: Double, _ aLon: Double, _ aLat: Double, _ bLon: Double, _ bLat: Double) -> Double {
+        let kx = R * D2R * cos(pLat * D2R), ky = R * D2R
+        let ax = (aLon - pLon) * kx, ay = (aLat - pLat) * ky
+        let dx = (bLon - aLon) * kx, dy = (bLat - aLat) * ky
+        let l2 = dx * dx + dy * dy
+        let t = l2 > 0 ? max(0, min(1, -(ax * dx + ay * dy) / l2)) : 0
+        return hypot(ax + t * dx, ay + t * dy)
     }
 
     static func angDiffDeg(_ a: Double, _ b: Double) -> Double {
@@ -196,6 +221,8 @@ enum Texts {
     static let efterhalkaText = "Halkvakt tror: frysrisk framöver."
     /// Kandidatens betavarning (DECISIONS #562, #573) — spegel av KANDIDAT_TEXT i texts.ts.
     static let kandidatText = "Halkvakt tror: halka framöver."
+    /// Småvägsröstens betavarning (DECISIONS #828) — spegel av SMAVAG_TEXT i texts.ts.
+    static let smavagText = "Betavarning: risk för halka på småvägarna framöver."
 
     /// " på E18" / " på väg 25" / "" när numret saknas.
     static func roadPhrase(_ road: String?) -> String {
@@ -241,6 +268,8 @@ enum Texts {
             return "Fartkamera om 500 meter."
         case .kandidat:
             return kandidatText
+        case .smavag:
+            return smavagText
         }
     }
 }
@@ -312,12 +341,17 @@ public final class AlertEngine {
     private struct Point { let id: String; let kind: HazardKind; let lon, lat: Double; let bearing: Double?; let meta: PointMeta }
     private struct Segment { let id: String; let meta: SegmentMeta; let samples: [[Double]]; let line: [[Double]] }
     private struct Kandidat { let id: String; let points: [[Double]]; let segmentHazardId: String? }
+    /// S (DECISIONS #844): one small road, and whether the line to the previous point exists (neighbours within smavagKordaMaxM).
+    private struct Smavag { let id: String; let points: [[Double]]; let warn: [Int]; let linje: [Bool] }
     private var points: [Point] = []
     private var segments: [Segment] = []
     private var kandidater: [Kandidat] = []
+    private var smavagar: [Smavag] = []
+    private var smavagById: [String: Int] = [:]
     private var pointGrid = HazardGrid()
     private var segmentGrid = HazardGrid()
     private var kandidatGrid = HazardGrid()
+    private var smavagGrid = HazardGrid()
     /// Test only (DECISIONS #795): evaluate every hazard on every fix, as before the grid. GridTests runs both paths side by side;
     /// their answers are the same by construction, so nothing else sets it.
     var bruteForce = false
@@ -330,6 +364,12 @@ public final class AlertEngine {
     private var lastSpokenKind: HazardKind?
     /// När kandidaten senast talade — taket räknas därifrån, oavsett sträcka (DECISIONS #606).
     private var lastKandidatT: Double?
+    /// S, the road test (DECISIONS #844): the road the car followed on the last fixes and for how many fixes in a row, by id.
+    private var smavagVag: String?
+    private var smavagFixar = 0
+    /// S: when and where the small-roads voice last spoke (DECISIONS #828).
+    private var lastSmavagT: Double?
+    private var lastSmavagOdoM = 0.0
     private var fired: [String: (t: Double, odo: Double)] = [:]
     /// Halkzonen (kort #360): whether two stretches are neighbours, per sorted id pair (the geometry does not change).
     private var zonGrannar: [String: Bool] = [:]
@@ -349,9 +389,12 @@ public final class AlertEngine {
         points = []
         segments = []
         kandidater = []
+        smavagar = []
+        smavagById = [:]
         pointGrid = HazardGrid()
         segmentGrid = HazardGrid()
         kandidatGrid = HazardGrid()
+        smavagGrid = HazardGrid()
         for h in hazards {
             switch h {
             case .point(let id, let kind, let lon, let lat, let bearing, let meta):
@@ -364,6 +407,13 @@ public final class AlertEngine {
             case .kandidat(let id, let pts, let seg):
                 kandidatGrid.add(kandidater.count, pts, reachOf(.kandidat))
                 kandidater.append(Kandidat(id: id, points: pts, segmentHazardId: seg))
+            case .smavag(let id, let pts, let warn):
+                let linje = pts.indices.map { k in
+                    k > 0 && Geo.haversineM(pts[k - 1][0], pts[k - 1][1], pts[k][0], pts[k][1]) <= cfg.smavagKordaMaxM
+                }
+                smavagGrid.add(smavagar.count, Geo.samplePolyline(pts, cfg.segmentSampleM), reachOf(.smavag))
+                smavagById[id] = smavagar.count
+                smavagar.append(Smavag(id: id, points: pts, warn: warn, linje: linje))
             }
         }
     }
@@ -375,6 +425,8 @@ public final class AlertEngine {
         case .camera: return cfg.cameraTriggerM
         case .accident: return cfg.accidentMaxAheadM
         case .icing_point, .wildlife, .slippery_segment, .kandidat: return max(cfg.leadMaxM, EngineConfig().leadMaxM)
+        // S: the road test needs a line within smavagPaM, and every point of a line lies within half a sample step of a sample.
+        case .smavag: return cfg.smavagPaM + cfg.segmentSampleM
         }
     }
 
@@ -423,6 +475,8 @@ public final class AlertEngine {
         // There a NaN lead lets a stretch speak at any distance and sends the stretches to the full scan; here a stretch tests
         // `b <= leadM`, which NaN never passes, but the rule is kept so the three ports stay one algorithm.
         let allStretches = bruteForce || leadM.isNaN
+        // S, the road test (DECISIONS #844): which small road the car follows, before any of its warning points may speak.
+        smavagPa(fix, heading)
         for i in (bruteForce ? pointGrid.all : pointGrid.near(fix.lon, fix.lat)) {
             let p = points[i]
             let (ahead, distM) = isAhead(fix, heading, p.lon, p.lat)
@@ -479,7 +533,7 @@ public final class AlertEngine {
                 if p.meta.active, distM <= leadM {
                     candidates.append(Candidate(id: p.id, kind: p.kind, distM: distM, limit: nil, alertKey: p.id))
                 }
-            case .slippery_segment, .kandidat:
+            case .slippery_segment, .kandidat, .smavag:
                 continue
             }
         }
@@ -516,6 +570,21 @@ public final class AlertEngine {
                 candidates.append(Candidate(id: k.id, kind: .kandidat, distM: b, limit: nil, alertKey: k.id, beta: true))
             }
         }
+        // S — småvägsröstens betavarning (DECISIONS #828, #844), spegel av evaluateSmavag i engine.ts: only the road the car follows
+        // may speak, with K's corridor and lead over its warning points; then silent until both smavagTystS and smavagTystM passed.
+        if let vag = smavagVag, smavagFixar >= cfg.smavagPaFixar,
+           lastSmavagT.map({ fix.t - $0 >= cfg.smavagTystS && odometerM - lastSmavagOdoM >= cfg.smavagTystM }) ?? true,
+           let i = smavagById[vag] {
+            let v = smavagar[i]
+            var best: Double?
+            for j in v.warn where j >= 0 && j < v.points.count {
+                let (ahead, distM) = isAhead(fix, heading, v.points[j][0], v.points[j][1])
+                if ahead && distM <= leadM && (best == nil || distM < best!) { best = distM }
+            }
+            if let b = best {
+                candidates.append(Candidate(id: v.id, kind: .smavag, distM: b, limit: nil, alertKey: v.id, beta: true))
+            }
+        }
         if candidates.isEmpty { return nil }
 
         let rearmed: ((t: Double, odo: Double)) -> Bool = { f in
@@ -549,6 +618,7 @@ public final class AlertEngine {
         lastSpokenT = fix.t
         lastSpokenKind = win.kind
         if win.kind == .kandidat { lastKandidatT = fix.t }
+        if win.kind == .smavag { lastSmavagT = fix.t; lastSmavagOdoM = odometerM }
         fired[win.alertKey] = (fix.t, odometerM)
         return Alert(
             t: fix.t, hazardId: win.id, kind: win.kind,
@@ -559,6 +629,28 @@ public final class AlertEngine {
     }
 
     public func run(_ trace: [Fix]) -> [Alert] { trace.compactMap { step($0) } }
+
+    /// S, the road test (DECISIONS #844), mirror of smavagPa in engine.ts: the nearest straight line between two neighbouring points
+    /// of any small road within smavagPaM of the fix and within smavagPaGrader of its direction, either way. The same road on
+    /// consecutive fixes counts up; another road, or none, starts over. Ascending road and point order; a strictly nearer line wins.
+    private func smavagPa(_ fix: Fix, _ heading: Double) {
+        var bestId: String?
+        var bestD = Double.infinity
+        for i in (bruteForce ? smavagGrid.all : smavagGrid.near(fix.lon, fix.lat)) {
+            let v = smavagar[i]
+            for k in stride(from: 1, to: v.points.count, by: 1) where v.linje[k] {
+                let a = v.points[k - 1], b = v.points[k]
+                let d = Geo.distToSegmentM(fix.lon, fix.lat, a[0], a[1], b[0], b[1])
+                if !(d <= cfg.smavagPaM) || !(d < bestD) { continue }
+                let r = Geo.bearingDeg(a[0], a[1], b[0], b[1])
+                if min(Geo.angDiffDeg(r, heading), Geo.angDiffDeg((r + 180).truncatingRemainder(dividingBy: 360), heading)) > cfg.smavagPaGrader {
+                    continue
+                }
+                bestId = v.id; bestD = d
+            }
+        }
+        if let b = bestId, b == smavagVag { smavagFixar += 1 } else { smavagVag = bestId; smavagFixar = bestId == nil ? 0 : 1 }
+    }
 
     private func kinematics(_ fix: Fix) -> (Double?, Double?) {
         var speedKmh = fix.speedKmh

@@ -12,6 +12,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { AlertEngine } from "../engine/src/engine.ts";
+import { bearingDeg } from "../engine/src/geo.ts";
 import { DEFAULT_CONFIG, type Alert, type EngineConfig, type Fix, type Hazard, type HazardKind } from "../engine/src/types.ts";
 
 type Rng = () => number;
@@ -272,6 +273,33 @@ test("the shared vectors and the Skåne fixture: the grid and the full scan give
     const updates = (v.updates ?? []).map((u) => ({ at: v.trace.findIndex((f) => f.t >= u.atT), hazards: u.hazards }));
     runBoth({ name: v.name, cfg: v.config ?? {}, hazards: v.hazards, trace: v.trace, updates });
   }
+});
+
+// S (DECISIONS #844): small roads along the Skåne drive — some on it, some at the road test's margin (40, 70, 90 m) and some beside it
+// (150 m) — plus roads across it, with a third of their points warning. The road test and the warning both run on the grid's lists.
+// The drive is 488 s, so the silence after a call is switched off (smavagTystS = smavagTystM = 0) for the comparison to see many.
+test("the Skåne fixture with small roads along and across the drive: the grid and the full scan give the same log", () => {
+  const fx: VectorFile = JSON.parse(readFileSync(new URL("../engine/fixtures/skane_vag108.json", import.meta.url), "utf8"));
+  const r = rng(828);
+  const extra: Hazard[] = [];
+  const steg = 20;
+  for (let s = 0; s + steg * 6 < fx.trace.length; s += steg * 6) {
+    const av = pick(r, [0, 0, 40, 70, 90, 150] as const);
+    const points: [number, number][] = [];
+    for (let k = 0; k < 6; k++) {
+      const a = fx.trace[s + k * steg], b = fx.trace[s + k * steg + 1];
+      points.push(dest(a.lon, a.lat, av, bearingDeg(a, b) + 90));
+    }
+    const warn = points.flatMap((_, i) => (r() < 1 / 2 ? [i] : []));
+    extra.push({ id: `smv:l${s}`, kind: "smavag", points, warn });
+    const f = fx.trace[s + 3 * steg], g = fx.trace[s + 3 * steg + 1];
+    const tvars = [-1350, -450, 450, 1350].map((m) => dest(f.lon, f.lat, m, bearingDeg(f, g) + 90));
+    extra.push({ id: `smv:t${s}`, kind: "smavag", points: tvars, warn: [0, 1, 2, 3] });
+  }
+  const hazards = [...fx.hazards, ...extra];
+  const run = runBoth({ name: "Skåne + småvägar", cfg: { smavagTystS: 0, smavagTystM: 0 }, hazards, trace: fx.trace, updates: [] });
+  assert.ok(run.alerts.filter((a) => a.kind === "smavag").length >= 3, "the small roads along the drive must speak");
+  runBoth({ name: "Skåne + småvägar, standardtystnaden", cfg: {}, hazards, trace: fx.trace, updates: [] });
 });
 
 test("the Skåne fixture with 2 000 kandidat points along the road and 3 000 wildlife points in the county: same log, a fraction of the work", () => {

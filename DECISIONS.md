@@ -15606,3 +15606,53 @@ Regel #200 håller: taket kommer ur en mätning, nu av driftens regel på en hel
 - steg 9–12 som förut.
 
 **Stomdokument:** MAT 5 — småvägsröstens tak ur en backtest och skuggan i drift
+
+## #844 (12/11 2026) Småvägsröstens farotyp i motorn: bilen måste följa småvägen innan den talar (kort #647)
+
+**Beslutet.** Bengt 12/11: *"Ja, bygg"*, på förslaget att bygga variant B med räta linjer och 80 m. Förslaget kom ur mätningen av
+smittan mellan vägar (Bengt: *"borde inte samma princip i så fall gälla för de stora vägarna"*, *"Ja, båda"* och *"Ja, mät först"*).
+- **Farotypen S** (`smavag`) finns i alla tre motorerna (`engine/src`, Kotlin och Swift), sist i prioriteten efter K (#828).
+- **Vägtestet:**
+  - bilen är på en småväg när fixen ligger inom 80 m från den räta linjen mellan två grannpunkter på vägen;
+  - fixen ska ligga högst 30° från linjens riktning, åt något håll, i tre fixar i rad;
+  - grannar mer än 3 km isär har ingen linje.
+- **Först då får vägens varnande punkter framför bilen tala,** med K:s korridor (35°) och förvarning (30 s, 400–3 000 m).
+  Punkterna på en väg som bilen inte följer tiger, också när de varnar.
+- **Ett besked per halkområde,** och sedan tystnad i 10 min och 5 km, båda, vilken väg det än gäller. Det är upprepningsregelns tal
+  tills taket väljs ur backtesten (#843).
+- **Texten** är #828:s: *"Betavarning: risk för halka på småvägarna framöver."*
+- **Kortet:** Halka, märkt BETA, med *"Småvägarna — modellerat"* och FRAMÖVER.
+- **Ikonen** är halkans, och rösten följer reglaget Halka, som K.
+- Småvägarna står inte i *I närheten* och inte i favoriternas urval, som K.
+- **Proven:**
+  - testvektorerna v51–v60: talar på vägen, en väg 150 m bredvid tiger, marginalen 70 och 90 m, en korsande väg tiger, tystnaden
+    mellan två vägar, sist i prioriteten efter kameran och efter K, en punkt direkt efter avfarten tiger och motsatt riktning;
+  - rutnätsprovet med småvägar längs Skåne-körningen i alla tre språken;
+  - kontraktsgrindens sex nya poster för inställningarna.
+
+**Varför.** K:s korridor ensam hade talat för småvägar som bilen inte kör på. Gruppen N:s vägar ligger bara drygt 100 m från
+väglagssträckorna (#828), och en punkt 150 m åt sidan och en kilometer fram ligger inne i korridoren. Mätningen 12/11 i kuvösen valde
+variant och marginal:
+- favoritprovets 30 rutter på vägnätet;
+- de riktiga småvägarna ur Lastkajen, med en varnande punkt i taget.
+
+Talen står där (#768). De räta linjerna räckte, och 80 m låg mellan de prövade 50 och 120 m, under N:s 100 m.
+
+**De stora vägarna.** Samma mätning visade att också A1, K och kamerorna ibland talar för en korsande väg, i värsta fall med alla
+faror varnande. Inget ändras där nu: rösten är fältprovad, och K:s mätperiod pågår. Om de stora vägarna ska få ett vägtest blir det
+ett eget beslut efter K:s mätperiod, med samma mätning som underlag.
+
+**Alternativen som inte valdes:**
+- K:s mönster ensamt;
+- B med vägarnas riktiga linjer i punktfilen, en större fil;
+- marginalen 50 eller 120 m.
+
+**Kvar:**
+- väg och ordning i den publika punktfilen och appens hämtning (steg 7);
+- apparnas läsare av `smavag` i `live.json`;
+- ios-engine och android gröna på grenen;
+- batterimätningen och appens version (steg 10 och 11).
+
+Brytarna är av, så ingen förare hör rösten.
+
+**Stomdokument:** APP 3 — småvägsröstens farotyp och kort, SYS 2 — motorns vägtest för småvägarna

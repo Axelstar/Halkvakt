@@ -12,7 +12,8 @@ export type HazardKind =
   | "icing_point"       // A2 — WeatherMeasurepoint showing icing conditions
   | "wildlife"          // A4 — historical hotspot / fresh polisen event
   | "camera"            // A5 — TrafficSafetyCamera
-  | "kandidat";         // K — kandidatens betavarning: modellerad halka per sträcka (NIVÅ 2+BLANDNING, DECISIONS #562, #577)
+  | "kandidat"          // K — kandidatens betavarning: modellerad halka per sträcka (NIVÅ 2+BLANDNING, DECISIONS #562, #577)
+  | "smavag";           // S — småvägsröstens betavarning på statliga vägar utan väglagsmätning (DECISIONS #828, #844)
 
 /** Spoken priority, highest first. Lower priority candidates are DROPPED, never queued. */
 export const PRIORITY: readonly HazardKind[] = [
@@ -25,6 +26,8 @@ export const PRIORITY: readonly HazardKind[] = [
   // another warning because the candidate spoke — the other kinds behave exactly as without it, and the shadow's
   // pre-registered measurements still describe what the app says about them.
   "kandidat",
+  // After K (DECISIONS #828): the small-roads voice never silences or delays another warning, the candidate included.
+  "smavag",
 ] as const;
 
 export interface PointHazard {
@@ -88,7 +91,21 @@ export interface KandidatHazard {
   segmentHazardId?: string;
 }
 
-export type Hazard = PointHazard | SegmentHazard | KandidatHazard;
+/** S — one state road without road-condition measurement (DECISIONS #828, #844): its points in order along the road (the point
+ *  file's road and order) and the indices of those the database rule says varnar. The roads WITHOUT a warning point belong here
+ *  too: the engine first decides which road the car is on, among all of them, and only then lets that road's warning points ahead
+ *  speak — so a car on a main road 100 m from a small road is not warned for it (measured 12/11 in halkvakt-kuvos: with K's corridor
+ *  alone most small-road warnings on main-road drives were for another road). */
+export interface SmavagHazard {
+  id: string;
+  kind: "smavag";
+  /** WGS84 [lon, lat] of the road's points, in order along the road. */
+  points: [number, number][];
+  /** Indices into points that warn, ascending. */
+  warn: number[];
+}
+
+export type Hazard = PointHazard | SegmentHazard | KandidatHazard | SmavagHazard;
 
 export interface Fix {
   /** Seconds. Any epoch; only deltas matter. Engine reads no clocks. */
@@ -150,6 +167,18 @@ export interface EngineConfig {
    *  zone for the repeat rule. A new halka warning stays silent while a neighbour's warning is not yet re-armed (10 min AND 5 km),
    *  so three stretches meeting at a junction speak once, and a long zone still repeats like a long stretch (#103). */
   halkZonM: number;
+  /** S, the road test (DECISIONS #844, measured 12/11): the car is on a small road when its fix lies within smavagPaM of the straight
+   *  line between two neighbouring points of the road, at most smavagPaGrader from the line's direction either way, for
+   *  smavagPaFixar fixes in a row. Neighbours farther apart than smavagKordaMaxM have no line between them. */
+  smavagPaM: number;
+  smavagPaGrader: number;
+  smavagPaFixar: number;
+  smavagKordaMaxM: number;
+  /** S, one call per slippery area and then silence (DECISIONS #828): after a small-roads call the voice stays silent until BOTH
+   *  smavagTystS and smavagTystM have passed, whatever the road. The repeat rule's values until the cap is chosen from the
+   *  backtest (halkvakt-kuvos F57). */
+  smavagTystS: number;
+  smavagTystM: number;
 }
 
 export const DEFAULT_CONFIG: EngineConfig = {
@@ -189,6 +218,17 @@ export const DEFAULT_CONFIG: EngineConfig = {
   // Halkzonen (DECISIONS #624): 500 m — all 17 close pairs in the shadow log lay within 451 m, and no pair at all between 500 m and
   // 2 km (#621). Samma tal i Types.kt och Engine.swift (kontraktsgrinden).
   halkZonM: 500,
+  // S (DECISIONS #844): 80 m, chosen 12/11 from the measurement in halkvakt-kuvos on the real roads (Lastkajen) and on main-road
+  // drives, between 50 and 120 m. Under the 100 m that separates group N's roads from the road-condition stretches (#828). Samma tal
+  // i Types.kt och Engine.swift (kontraktsgrinden).
+  smavagPaM: 80,
+  smavagPaGrader: 30,
+  smavagPaFixar: 3,
+  smavagKordaMaxM: 3000,
+  // S (DECISIONS #828, #844): the repeat rule's 10 min and 5 km until the cap is chosen (F57). Samma tal i Types.kt och
+  // Engine.swift (kontraktsgrinden).
+  smavagTystS: 600,
+  smavagTystM: 5000,
 };
 
 
@@ -217,6 +257,18 @@ export function bearingDeg(a: LonLat, b: LonLat): number {
   const x = Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(dλ);
   const θ = Math.atan2(y, x) / D2R;
   return (θ + 360) % 360;
+}
+
+/** Metres from p to the straight segment a–b, in a flat plane around p (equirectangular, the Earth radius above). Exact enough for
+ *  the small roads' road test (DECISIONS #844), whose lines are at most a few kilometres and whose margin is 80 m. The same
+ *  arithmetic in Engine.kt and Engine.swift, step for step. */
+export function distToSegmentM(p: LonLat, a: LonLat, b: LonLat): number {
+  const kx = R * D2R * Math.cos(p.lat * D2R), ky = R * D2R;
+  const ax = (a.lon - p.lon) * kx, ay = (a.lat - p.lat) * ky;
+  const dx = (b.lon - a.lon) * kx, dy = (b.lat - a.lat) * ky;
+  const l2 = dx * dx + dy * dy;
+  const t = l2 > 0 ? Math.max(0, Math.min(1, -(ax * dx + ay * dy) / l2)) : 0;
+  return Math.hypot(ax + t * dx, ay + t * dy);
 }
 
 /** Absolute angular difference, degrees [0, 180]. */
@@ -496,6 +548,10 @@ export const EFTERHALKA_TEXT = "Halkvakt tror: frysrisk framöver.";
  *  "Halkvakt tror" och "framöver", aldrig ett avstånd. */
 export const KANDIDAT_TEXT = "Halkvakt tror: halka framöver.";
 
+/** S, småvägsröstens betavarning (DECISIONS #828: texten beställd av Bengt och signerad med Axel 10/11). Modellerad på vägar utan
+ *  mätning, en punktkälla — därför "framöver" och aldrig ett avstånd. */
+export const SMAVAG_TEXT = "Betavarning: risk för halka på småvägarna framöver.";
+
 export function alertText(
   kind: HazardKind,
   distanceM: number,
@@ -543,6 +599,8 @@ export function alertText(
     }
     case "kandidat":
       return KANDIDAT_TEXT;
+    case "smavag":
+      return SMAVAG_TEXT;
   }
 }
 
@@ -554,7 +612,7 @@ export function alertText(
 //
 //   1. Within 10 s of an utterance only a MORE important hazard may speak (priority-aware
 //      cooldown, globalCooldownS; kort #127, v23 — replaced the blind 45 s). Priority
-//      accident > slippery > icing > wildlife > camera > kandidat (the beta candidate, last: #577).
+//      accident > slippery > icing > wildlife > camera > kandidat (the beta candidate: #577) > smavag (the small roads: #828).
 //      Losers are DROPPED, not queued. No exceptions, not even for accidents (logged in
 //      DECISIONS — revisit only on beta evidence).
 //   2. Same hazard never repeats until BOTH 10 min have passed AND 5 km been driven. Slippery stretches whose lines lie
@@ -673,6 +731,11 @@ export class AlertEngine {
   private pointGrid = new HazardGrid();
   private segmentGrid = new HazardGrid();
   private kandidatGrid = new HazardGrid();
+  /** S (DECISIONS #844): the small roads, each with its points and whether the line to the previous point exists (neighbours at
+   *  most smavagKordaMaxM apart), listed in the grid by the line's samples so that a fix within the road test's reach finds them. */
+  private smavagar: { h: SmavagHazard; pts: LonLat[]; linje: boolean[] }[] = [];
+  private smavagGrid = new HazardGrid();
+  private smavagById = new Map<string, number>();
   /** Test only (DECISIONS #795): evaluate every hazard on every fix, as before the grid. The differential test runs both paths
    *  side by side; their answers are the same by construction, so nothing else sets it. */
   bruteForce = false;
@@ -685,6 +748,13 @@ export class AlertEngine {
   private lastSpokenKind: HazardKind | null = null;
   /** När kandidaten senast talade — taket räknas därifrån, oavsett sträcka (DECISIONS #606). */
   private lastKandidatT: number | null = null;
+  /** S, the road test (DECISIONS #844): the road the car followed on the last fixes and for how many fixes in a row. Kept by id,
+   *  so a fresh snapshot does not restart it. */
+  private smavagVag: string | null = null;
+  private smavagFixar = 0;
+  /** S: when and where the small-roads voice last spoke — its silence runs from there, whatever the road (DECISIONS #828). */
+  private lastSmavagT: number | null = null;
+  private lastSmavagOdoM = 0;
   /** Skuggmotorn lyssnar här (#127 a): vad spärren kastar syns annars ingenstans. */
   onSuppressed?: (c: { kind: HazardKind; hazardId: string; distM: number; by: HazardKind; sinceS: number; zon?: string }) => void;
   /** FÖRSPRÅNGET (kort #153 beslut 1, docs/TROSKLAR-FORSPRANG.md §4): valfri krok som ger förvarningsavståndet per fara. Utan
@@ -709,6 +779,9 @@ export class AlertEngine {
     this.pointGrid = new HazardGrid();
     this.segmentGrid = new HazardGrid();
     this.kandidatGrid = new HazardGrid();
+    this.smavagar = [];
+    this.smavagGrid = new HazardGrid();
+    this.smavagById = new Map();
     for (const h of hazards) {
       if (h.kind === "slippery_segment") {
         const samples = samplePolyline(h.line, this.cfg.segmentSampleM);
@@ -718,6 +791,12 @@ export class AlertEngine {
         const samples = h.points.map(([lon, lat]) => ({ lon, lat }));
         this.kandidatGrid.add(this.kandidater.length, samples, this.reachOf(h.kind));
         this.kandidater.push({ h, samples });
+      } else if (h.kind === "smavag") {
+        const pts = h.points.map(([lon, lat]) => ({ lon, lat }));
+        const linje = pts.map((p, k) => k > 0 && haversineM(pts[k - 1], p) <= this.cfg.smavagKordaMaxM);
+        this.smavagGrid.add(this.smavagar.length, samplePolyline(h.points, this.cfg.segmentSampleM), this.reachOf(h.kind));
+        this.smavagById.set(h.id, this.smavagar.length);
+        this.smavagar.push({ h, pts, linje });
       } else {
         this.pointGrid.add(this.points.length, [h], this.reachOf(h.kind));
         this.points.push(h);
@@ -739,6 +818,8 @@ export class AlertEngine {
       case "accident": return this.cfg.accidentMaxAheadM;
       case "icing_point": case "wildlife": case "slippery_segment": case "kandidat":
         return Math.max(this.cfg.leadMaxM, DEFAULT_CONFIG.leadMaxM);
+      // S: the road test needs a line within smavagPaM, and every point of a line lies within half a sample step of a sample.
+      case "smavag": return this.cfg.smavagPaM + this.cfg.segmentSampleM;
       default: return Infinity;
     }
   }
@@ -782,6 +863,8 @@ export class AlertEngine {
     const points = this.bruteForce ? this.pointGrid.all : this.pointGrid.near(fix);
     const allStretches = this.bruteForce || this.leadFor !== undefined || Number.isNaN(leadM);
     const stretches = (g: HazardGrid) => allStretches ? g.all : g.near(fix);
+    // S, the road test (DECISIONS #844): which small road the car follows, before any of its warning points may speak.
+    this.smavagPa(fix, heading);
     const candidates: Candidate[] = [];
     for (const i of points) {
       const p = this.points[i];
@@ -798,6 +881,8 @@ export class AlertEngine {
       const c = this.evaluateKandidat(fix, heading, k, lead(k.h));
       if (c) candidates.push(c);
     }
+    const sv = this.evaluateSmavag(fix, heading, lead);
+    if (sv) candidates.push(sv);
     if (candidates.length === 0) return null;
 
     // Rule 2: per-hazard repeat suppression (both time AND distance must have elapsed).
@@ -855,8 +940,9 @@ export class AlertEngine {
     this.lastSpokenT = fix.t;
     this.lastSpokenKind = win.kind;
     if (win.kind === "kandidat") this.lastKandidatT = fix.t;
+    if (win.kind === "smavag") { this.lastSmavagT = fix.t; this.lastSmavagOdoM = this.odometerM; }
     this.fired.set(win.alertKey, { t: fix.t, odometerM: this.odometerM });
-    const pointHazard = win.hazard.kind === "slippery_segment" || win.hazard.kind === "kandidat"
+    const pointHazard = win.hazard.kind === "slippery_segment" || win.hazard.kind === "kandidat" || win.hazard.kind === "smavag"
       ? undefined : (win.hazard as PointHazard);
     return {
       t: fix.t,
@@ -1023,6 +1109,53 @@ export class AlertEngine {
     if (this.lastKandidatT !== null && fix.t - this.lastKandidatT < this.cfg.kandidatTakS) return null;
     return { hazard: k.h, kind: "kandidat", distM: best, alertKey: k.h.id, beta: true };
   }
+
+  /**
+   * S, the road test (DECISIONS #844): the nearest straight line between two neighbouring points of any small road within
+   * smavagPaM of the fix and within smavagPaGrader of its direction, either way along the road. The same road on consecutive
+   * fixes counts up; another road, or none, starts over. Lines in ascending road and point order, and a strictly nearer line
+   * wins, so the three ports pick the same road.
+   */
+  private smavagPa(fix: Fix, heading: number): void {
+    let bestId: string | null = null, bestD = Infinity;
+    for (const i of this.bruteForce ? this.smavagGrid.all : this.smavagGrid.near(fix)) {
+      const v = this.smavagar[i];
+      for (let k = 1; k < v.pts.length; k++) {
+        if (!v.linje[k]) continue;
+        const d = distToSegmentM(fix, v.pts[k - 1], v.pts[k]);
+        if (!(d <= this.cfg.smavagPaM) || !(d < bestD)) continue;
+        const r = bearingDeg(v.pts[k - 1], v.pts[k]);
+        if (Math.min(angDiffDeg(r, heading), angDiffDeg((r + 180) % 360, heading)) > this.cfg.smavagPaGrader) continue;
+        bestId = v.h.id; bestD = d;
+      }
+    }
+    if (bestId !== null && bestId === this.smavagVag) this.smavagFixar++;
+    else { this.smavagVag = bestId; this.smavagFixar = bestId === null ? 0 : 1; }
+  }
+
+  /**
+   * S — småvägsröstens betavarning (DECISIONS #828, #844). The rule lives in the database (smavag_regel, sql/105): every warning
+   * point is one where it says `varnar`. Only the road the car follows (smavagPaFixar fixes in a row) may speak, with K's corridor
+   * and lead over its warning points; then one call per slippery area: silent until both smavagTystS and smavagTystM have passed.
+   */
+  private evaluateSmavag(fix: Fix, heading: number, lead: (h: Hazard) => number): Candidate | null {
+    if (this.smavagVag === null || this.smavagFixar < this.cfg.smavagPaFixar) return null;
+    if (this.lastSmavagT !== null &&
+        (fix.t - this.lastSmavagT < this.cfg.smavagTystS || this.odometerM - this.lastSmavagOdoM < this.cfg.smavagTystM)) return null;
+    const i = this.smavagById.get(this.smavagVag);
+    if (i === undefined) return null;
+    const v = this.smavagar[i];
+    const leadM = lead(v.h);
+    let best: number | null = null;
+    for (const j of v.h.warn) {
+      const p = v.pts[j];
+      if (p === undefined) continue;
+      const { ahead, distM } = isAhead(fix, heading, p, this.cfg.corridorHalfAngleDeg);
+      if (ahead && distM <= leadM && (best === null || distM < best)) best = distM;
+    }
+    if (best === null) return null;
+    return { hazard: v.h, kind: "smavag", distM: best, alertKey: v.h.id, beta: true };
+  }
 }
 
 
@@ -1118,6 +1251,7 @@ export function farorNaraRutten(hazards: Hazard[], line: [number, number][], mar
   const r = rutaKring(line, marginalKm);
   return hazards.filter((h) => {
     if (h.kind === "kandidat") return false;   // K (DECISIONS #577): utanför urvalet, som i farorLangsRutten nedan
+    if (h.kind === "smavag") return false;     // S (DECISIONS #828): utanför urvalet, som kandidaten
     if (h.kind === "slippery_segment") {
       const xs = h.line.map((p) => p[0]), ys = h.line.map((p) => p[1]);
       return Math.max(...xs) >= r.x0 && Math.min(...xs) <= r.x1 && Math.max(...ys) >= r.y0 && Math.min(...ys) <= r.y1;
@@ -1186,6 +1320,7 @@ export function farorLangsRutten(hazards: Hazard[], line: [number, number][], ma
     // K (DECISIONS #577): kandidaten hör inte till urvalet längs rutten (favoriterna, skuggans förfilter) — hoppas över
     // uttryckligen, så att den inte faller bort som NaN. Kandidatens egen takt räknas av kandidatLangsRutten (segment.ts).
     if (h.kind === "kandidat") continue;
+    if (h.kind === "smavag") continue;   // S (DECISIONS #828): utanför urvalet, som kandidaten
     let d: number, langs: number;
     if (h.kind === "slippery_segment") {
       ({ d, langs } = narmast(h.line[0]));

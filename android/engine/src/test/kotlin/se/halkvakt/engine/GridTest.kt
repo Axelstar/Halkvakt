@@ -265,8 +265,9 @@ class GridTest {
                 if (a.kind in leadKinds && s.cfg.leadMaxM - a.distanceM <= 60) edgeLead++
             }
         }
-        // Not a vacuous comparison: every kind spoke, every accident step and the beta occurred, many alerts sat on a bound.
-        for (k in HazardKind.entries) assertTrue((kinds[k] ?: 0) >= 50, "only ${kinds[k] ?: 0} $k alerts")
+        // Not a vacuous comparison: every kind spoke, every accident step and the beta occurred, many alerts sat on a bound. The
+        // small roads (S, DECISIONS #844) need a road the drive follows, so they are compared in skaneFixtureWithSmallRoads below.
+        for (k in HazardKind.entries.filter { it != HazardKind.SMAVAG }) assertTrue((kinds[k] ?: 0) >= 50, "only ${kinds[k] ?: 0} $k alerts")
         for (st in listOf("early", "reminder", "late", "beta")) assertTrue(st in steps, "no $st alert")
         assertTrue(alerts >= 2500, "only $alerts alerts")
         assertTrue(edgeCamera >= 80 && edgeAccident >= 80 && edgeLead >= 80,
@@ -319,6 +320,38 @@ class GridTest {
         val alerts = runBoth(Scenario("Skåne + kandidater", EngineConfig(), hazards, trace, emptyList()))
         assertTrue(alerts.any { it.kind == HazardKind.KANDIDAT }, "the kandidat points must speak")
         assertTrue(alerts.any { it.kind == HazardKind.WILDLIFE }, "the wildlife points must speak")
+    }
+
+    /** S (DECISIONS #844), mirror of the TS test: small roads along the Skåne drive — on it, at the road test's margin (40, 70, 90 m)
+     *  and beside it (150 m) — and across it, half their points warning. The silence after a call is switched off so the 488 s drive
+     *  gives the comparison many calls, and the default silence runs too. */
+    @Test
+    fun skaneFixtureWithSmallRoads() {
+        val doc = JSONObject(File(repoRoot(), "engine/fixtures/skane_vag108.json").readText())
+        val trace = doc.getJSONArray("trace").let { a ->
+            (0 until a.length()).map { val o = a.getJSONObject(it); Fix(o.getDouble("t"), o.getDouble("lon"), o.getDouble("lat"), o.getDouble("speedKmh")) }
+        }
+        val hazards = ArrayList<Hazard>()
+        doc.getJSONArray("hazards").let { a -> for (j in 0 until a.length()) hazards.add(fixtureHazard(a.getJSONObject(j))) }
+        val r = Rng(828)
+        val steg = 20
+        var s = 0
+        while (s + steg * 6 < trace.size) {
+            val av = r.pick(listOf(0.0, 0.0, 40.0, 70.0, 90.0, 150.0))
+            val points = (0 until 6).map { k ->
+                val a = trace[s + k * steg]; val b = trace[s + k * steg + 1]
+                dest(a.lon, a.lat, av, Geo.bearingDeg(a.lon, a.lat, b.lon, b.lat) + 90.0)
+            }
+            val warn = points.indices.filter { r.next() < 0.5 }
+            hazards.add(SmavagHazard("smv:l$s", points, warn))
+            val f = trace[s + 3 * steg]; val g = trace[s + 3 * steg + 1]
+            val tvars = listOf(-1350.0, -450.0, 450.0, 1350.0).map { m -> dest(f.lon, f.lat, m, Geo.bearingDeg(f.lon, f.lat, g.lon, g.lat) + 90.0) }
+            hazards.add(SmavagHazard("smv:t$s", tvars, listOf(0, 1, 2, 3)))
+            s += steg * 6
+        }
+        val alerts = runBoth(Scenario("Skåne + småvägar", EngineConfig(smavagTystS = 0.0, smavagTystM = 0.0), hazards, trace, emptyList()))
+        assertTrue(alerts.count { it.kind == HazardKind.SMAVAG } >= 3, "the small roads along the drive must speak")
+        runBoth(Scenario("Skåne + småvägar, standardtystnaden", EngineConfig(), hazards, trace, emptyList()))
     }
 
     @Test

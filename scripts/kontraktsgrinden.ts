@@ -546,6 +546,48 @@ export const KONTRAKT: Kontrakt[] = [
     filer: /engine\/src\/types\.ts|engine\/Types\.kt|HalkvaktEngine\/Engine\.swift/,
     golv: 3,
   },
+  {
+    namn: "Småvägsröstens vägtest — så här många meter från linjen mellan två grannpunkter",
+    varfor: "Motorns tre portar ska känna igen samma småväg (DECISIONS #844); en port med vidare marginal varnar för vägar bredvid den bilen kör på.",
+    former: [/\bsmavagPaM(?::\s*\w+)?\s*[:=]\s*(\d+)(?:\.0)?(?![\d.])/],
+    filer: /engine\/src\/types\.ts|engine\/Types\.kt|HalkvaktEngine\/Engine\.swift/,
+    golv: 3,
+  },
+  {
+    namn: "Småvägsröstens vägtest — så här många grader från linjens riktning",
+    varfor: "Motorns tre portar ska skilja en korsande småväg från den bilen följer lika (DECISIONS #844).",
+    former: [/\bsmavagPaGrader(?::\s*\w+)?\s*[:=]\s*(\d+)(?:\.0)?(?![\d.])/],
+    filer: /engine\/src\/types\.ts|engine\/Types\.kt|HalkvaktEngine\/Engine\.swift/,
+    golv: 3,
+  },
+  {
+    namn: "Småvägsröstens vägtest — så här många fixar i rad på samma väg",
+    varfor: "Motorns tre portar ska känna igen vägen lika snabbt (DECISIONS #844); färre fixar ger fler besked vid en korsning.",
+    former: [/\bsmavagPaFixar(?::\s*\w+)?\s*[:=]\s*(\d+)(?:\.0)?(?![\d.])/],
+    filer: /engine\/src\/types\.ts|engine\/Types\.kt|HalkvaktEngine\/Engine\.swift/,
+    golv: 3,
+  },
+  {
+    namn: "Småvägsröstens vägtest — grannpunkter längre isär än så här har ingen linje",
+    varfor: "Motorns tre portar ska dra samma linjer längs vägen (DECISIONS #844).",
+    former: [/\bsmavagKordaMaxM(?::\s*\w+)?\s*[:=]\s*(\d+)(?:\.0)?(?![\d.])/],
+    filer: /engine\/src\/types\.ts|engine\/Types\.kt|HalkvaktEngine\/Engine\.swift/,
+    golv: 3,
+  },
+  {
+    namn: "Småvägsröstens tystnad — så här många sekunder efter ett besked",
+    varfor: "Motorns tre portar ska tiga lika länge efter ett besked (DECISIONS #828); en port med kortare tystnad säger fler gissningar.",
+    former: [/\bsmavagTystS(?::\s*\w+)?\s*[:=]\s*(\d+)(?:\.0)?(?![\d.])/],
+    filer: /engine\/src\/types\.ts|engine\/Types\.kt|HalkvaktEngine\/Engine\.swift/,
+    golv: 3,
+  },
+  {
+    namn: "Småvägsröstens tystnad — så här många meter efter ett besked",
+    varfor: "Motorns tre portar ska tiga lika långt efter ett besked (DECISIONS #828).",
+    former: [/\bsmavagTystM(?::\s*\w+)?\s*[:=]\s*(\d+)(?:\.0)?(?![\d.])/],
+    filer: /engine\/src\/types\.ts|engine\/Types\.kt|HalkvaktEngine\/Engine\.swift/,
+    golv: 3,
+  },
   // MOTORNS RUTNÄT (DECISIONS #795). Talen ändrar inget beteende i någon port — varje port är exakt för sig, och det differentiella
   // provet i alla tre visar det — men portarna ska vara en algoritm, och en port med annan ruta eller marginal mäter en annan takt
   // än de två andra. Bunten i skuggmotorn bär samma rader och vaktas av bundle-skuggmotor --check, så den räknas inte här.

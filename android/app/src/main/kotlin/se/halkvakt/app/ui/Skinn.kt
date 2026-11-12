@@ -101,6 +101,7 @@ fun rubrik(k: HazardKind) = when (k) {
     HazardKind.WILDLIFE -> "Vilt"
     HazardKind.CAMERA -> "Fartkamera"
     HazardKind.KANDIDAT -> "Halka"   // #577: kortets rubrik, märkt BETA på kortet
+    HazardKind.SMAVAG -> "Halka"     // #828: småvägsrösten, märkt BETA på kortet som K
 }
 
 /* ---------- Delar som återkommer ---------- */
