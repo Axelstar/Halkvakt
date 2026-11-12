@@ -1271,6 +1271,70 @@ test("kuvösens klocka: byggaren ser världen som den var vid T — inget ur fra
   }
 });
 
+// SMÅVÄGSRÖSTENS ANKARE BAKÅT (kuvos/ankare-bakat.ts, DECISIONS #843, halkvakt-kuvos F58): driftens egen vagpunkt_ankare() (sql/032)
+// vid kuvösens klocka, en gång per timme med klockan på timmen + 50 minuter. Varje station ger ett annat svar om klockan står fel
+// eller om framtiden läcker: en rad ur framtiden, #75, radvakten, en för gammal rad, en karantän som inte hänt än och en som har hänt,
+// och ett dygn i den långsamma vakten som börjar efter klockan och ett som pågår.
+test("ankarna bakåt: driftens vagpunkt_ankare() vid kuvösens klocka, timme för timme, utan framtiden", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const { kuvosKlient } = await import("../kuvos/klocka.ts");
+  const { ankare, timmar, klockan } = await import("../kuvos/ankare-bakat.ts");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  let k: Awaited<ReturnType<typeof kuvosKlient>> | null = null;
+  try {
+    await pool.query("CREATE TABLE IF NOT EXISTS shadow_log (id bigserial PRIMARY KEY, run_at timestamptz NOT NULL DEFAULT now(), alerts jsonb NOT NULL DEFAULT '[]'::jsonb)");
+    for (const f of ["001_init.sql", "008_rain_sum.sql", "030_langsam_vakt.sql", "032_prognos.sql"])
+      await pool.query(readFileSync(new URL("../sql/" + f, import.meta.url), "utf8"));
+    await pool.query(readFileSync(new URL("../kuvos/klocka.sql", import.meta.url), "utf8"));
+    for (const t of ["weather_observations", "weather_latest", "givarfel_dygn"]) await pool.query(`DELETE FROM ${t} WHERE station_id LIKE 'KUA_%'`);
+
+    const [H] = timmar("2024-01-15", "2024-01-15").slice(6, 7);           // 06:00 UTC; klockan 06:50
+    const K = klockan(H);
+    const vid = (min: number) => `'${new Date(K.getTime() + min * 60_000).toISOString()}'`;
+    const g = (x: number) => `ST_SetSRID(ST_MakePoint(${x}, 62.0), 4326)`;
+    await pool.query(`
+      INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c) VALUES
+        ('KUA_OK',     'x', ${g(15.1)}, ${vid(-20)},  0.5,  1.0),
+        ('KUA_OK',     'x', ${g(15.1)}, ${vid(10)},  -3.0, -2.0),
+        ('KUA_B75',    'x', ${g(15.2)}, ${vid(-10)}, -15.0, 2.0),
+        ('KUA_RAD',    'x', ${g(15.3)}, ${vid(-10)},  1.0, 12.0),
+        ('KUA_GAMMAL', 'x', ${g(15.4)}, ${vid(-200)}, 0.0,  1.0),
+        ('KUA_KARF',   'x', ${g(15.5)}, ${vid(-10)},  0.5,  1.0),
+        ('KUA_KARF',   'x', ${g(15.5)}, ${vid(5)},  -20.0,  5.0),
+        ('KUA_KARF',   'x', ${g(15.5)}, ${vid(6)},  -20.0,  5.0),
+        ('KUA_KARF',   'x', ${g(15.5)}, ${vid(7)},  -20.0,  5.0),
+        ('KUA_KAR',    'x', ${g(15.6)}, ${vid(-4320)}, -20.0, 5.0),
+        ('KUA_KAR',    'x', ${g(15.6)}, ${vid(-4319)}, -20.0, 5.0),
+        ('KUA_KAR',    'x', ${g(15.6)}, ${vid(-4318)}, -20.0, 5.0),
+        ('KUA_KAR',    'x', ${g(15.6)}, ${vid(-10)},  0.5,  1.0),
+        ('KUA_LANG',   'x', ${g(15.7)}, ${vid(-10)},  0.5,  1.0),
+        ('KUA_LANG2',  'x', ${g(15.8)}, ${vid(-10)},  0.5,  1.0)`);
+    // Ett dygn i felet som börjar efter klockan (KUA_LANG), och ett som pågick för en timme sedan (KUA_LANG2).
+    await pool.query(`INSERT INTO givarfel_dygn (station_id, dag, forst, senast) VALUES
+      ('KUA_LANG', '2024-01-15', ${vid(30)}, ${vid(90)}), ('KUA_LANG2', '2024-01-15', ${vid(-300)}, ${vid(-60)})`);
+
+    k = await kuvosKlient(url!);
+    const rader = (text: string) => text.trim().split("\n").slice(1).map((r) => r.split(",")).filter((r) => r[1].startsWith("KUA_"))
+      .map(([tid, punkt, yta]) => [tid, punkt, Number(yta)]);
+    assert.deepEqual(rader(await ankare(k.q, k.stall, [H])), [
+      ["2024-01-15T06:00:00Z", "KUA_KARF", 0.5], ["2024-01-15T06:00:00Z", "KUA_LANG", 0.5], ["2024-01-15T06:00:00Z", "KUA_OK", 0.5]],
+      "vid 06:50: raden före klockan, inte den ur framtiden; #75, radvakten, den gamla raden, karantänen och det pågående dygnet i felet tystar; karantänen och dygnet som inte hänt än tystar inte");
+    const H2 = new Date(H.getTime() + 3600e3);
+    assert.deepEqual(rader(await ankare(k.q, k.stall, [H2])), [["2024-01-15T07:00:00Z", "KUA_OK", -3]],
+      "vid 07:50 har framtiden hänt: den nya raden, tre brott mot #75 och dygnet i felet");
+
+    // MOTKONTROLLEN: driftens funktion utan klockan ser ingen av dem — raderna är snart tre år gamla, och tabellen weather_latest
+    // har dem inte. Det är klockan som bär provet, inte testdatan.
+    assert.deepEqual((await pool.query("SELECT id FROM vagpunkt_ankare() WHERE id LIKE 'KUA_%'")).rows, []);
+  } finally {
+    await k?.slut();
+    for (const t of ["weather_observations", "givarfel_dygn"]) await pool.query(`DELETE FROM ${t} WHERE station_id LIKE 'KUA_%'`).catch(() => {});
+    await pool.query("DROP SCHEMA IF EXISTS kuvos CASCADE");   // vyerna får inte stå kvar och låsa tabellerna för andra prov
+    await pool.end();
+  }
+});
+
 // VÄG A (kuvos/trend.ts, DECISIONS #455): samma halvtimmesserie genom driftens trendfunktion och kuvösens variant. Driften kräver tre
 // rader i 30-minutersramen och ger därför ingen 30-minuterslutning; varianten ger värdet 30 minuter bakåt minus nu. 60 minuter lika.
 test("väg A: halvtimmesdata ger 30-minuterslutningen i kuvösens variant men inte i driftens — 60 minuter lika i båda", { skip: !url }, async () => {
