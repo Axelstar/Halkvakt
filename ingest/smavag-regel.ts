@@ -5,12 +5,21 @@
 // Gränserna är kopior av sql/105 och vaktas av kontraktsgrinden; biten är radar-karna.ts SMAVAG_BIT, utan egen kopia.
 // Flyttalen: radar.ts skriver medlen som JavaScript-tal till numeric, alltså med talets kortaste decimalform, och den läses tillbaka
 // till exakt samma tal. Jämförelsen mot 0,1 ger då samma svar i båda språken (närmaste tal under 0,1 skrivs 0.09999999999999999).
+// Timmen är regelns bara när den bär minst FULLSTANDIG_ANDEL av punkterna, som smavag_timme() i sql/105; backtesten prövar det med
+// fullstandig(), i heltal som numeric räknar exakt. Färskheten (högst två timmar) gäller bara i drift.
 //   node --experimental-strip-types ingest/smavag-regel.ts --sjalvtest
 import { pathToFileURL } from "node:url";
 import { SMAVAG_BIT } from "./radar-karna.ts";
 
 export const RADAR_MMH = 0.1;
 export const RADAR_MIN = 60;
+export const FULLSTANDIG_ANDEL = 0.95;
+
+/** Bär timmen tillräckligt många punkter? `antal` är punkterna som fick ett värde (smavag_drift.py rader, <ut>.antal), `punkter` alla
+ *  småvägspunkter. Räknat i hundradelar som heltal: 0,95 × n i flyttal kan hamna under ett heltal som numeric räknar exakt. */
+export function fullstandig(antal: number, punkter: number): boolean {
+  return antal * 100 >= Math.round(FULLSTANDIG_ANDEL * 100) * punkter;
+}
 
 export type Punkt = { vag: string; ordning: number };
 export type Radarrad = { bit: string; observed_at: Date; rate_mean_mmh: number };
@@ -70,6 +79,8 @@ function sjalvtest(): number {
   ], punkter, radar);
   const vantat = [{ punkt: "r00001", ned: true, radar_mmh: null }, { punkt: "r00002", ned: false, radar_mmh: 0.1 }];
   if (JSON.stringify(u) !== JSON.stringify(vantat)) fel.push(`varnande punkter: ${JSON.stringify(u)}`);
+  if (!fullstandig(19, 20) || fullstandig(18, 20) || !fullstandig(95, 100) || fullstandig(94, 99) || !fullstandig(0, 0))
+    fel.push("fullständigheten: minst 95 % av punkterna, exakt vid gränsen");
   console.log(`självtest smavag-regel: ${fel.length ? "FEL" : "klart"}`);
   for (const f of fel) console.log(`  ${f}`);
   return fel.length ? 1 : 0;

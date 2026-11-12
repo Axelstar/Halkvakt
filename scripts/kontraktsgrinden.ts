@@ -1019,9 +1019,9 @@ export const KONTRAKT: Kontrakt[] = [
   },
   {
     namn: "Kandidatens fullständighet — andelen punkter som timmen måste bära",
-    varfor: "Den frystas och den nyas timme och småvägsröstens ska kräva samma andel (sql/068, DECISIONS #828).",
-    former: [/>= ([\d.]+) \* \(SELECT count\(\*\) FROM \w+\)\s+-- FULLSTANDIG_ANDEL/],
-    filer: /sql\/\d{3}_/,
+    varfor: "Den frystas och den nyas timme och småvägsröstens ska kräva samma andel (sql/068, DECISIONS #828); backtestens kopia lika sql/105 (#848).",
+    former: [/>= ([\d.]+) \* \(SELECT count\(\*\) FROM \w+\)\s+-- FULLSTANDIG_ANDEL/, /export const FULLSTANDIG_ANDEL = ([\d.]+);/],
+    filer: /sql\/\d{3}_|ingest\/smavag-regel\.ts$/,
     golv: 4,
   },
   {
