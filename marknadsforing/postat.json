@@ -1019,6 +1019,17 @@
       "facebook": "1312515671952967_122112223635516187",
       "instagram": "17911738608577372",
       "x": "2120832161100308622"
+    },
+    {
+      "pass": "kvall",
+      "namn": "2026-11-12-kvall",
+      "typ": "svep",
+      "nyckel": "svep:kvall",
+      "tid": "2026-11-12T15:51:05.161Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-11-12-kvall-01.jpg",
+      "facebook": "1312515671952967_122112290955516187",
+      "instagram": "17977510278140003",
+      "x": "2120907645628690824"
     }
   ]
 }
