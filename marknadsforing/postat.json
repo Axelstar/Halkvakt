@@ -997,6 +997,17 @@
       "facebook": "1312515671952967_122112185259516187",
       "instagram": "17916611208283330",
       "x": "2120783100875616624"
+    },
+    {
+      "pass": "live",
+      "namn": "2026-11-12-live-0907",
+      "typ": "smhi",
+      "nyckel": "smhi:Snöfall:Högre terräng mellan Timrå och Örnsköldsvik:ORANGE",
+      "tid": "2026-11-12T08:07:58.935Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-11-12-live-0907.jpg",
+      "facebook": "1312515671952967_122112190671516187",
+      "instagram": "17902081125611041",
+      "x": "2120790757720084929"
     }
   ]
 }
