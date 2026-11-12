@@ -46,6 +46,7 @@ jobs:
         run: |
           tyst() { "$@" > tyst.log 2>&1 || { echo "::error::föll: ${*:1:3}: $(tail -1 tyst.log | cut -c1-200)"; exit 1; }; }
           tyst node --experimental-strip-types ingest/smavag-live-db.ts --sjalvtest
+          tyst node --experimental-strip-types ingest/smavag-regel.ts --sjalvtest
           python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
           tyst python3 fysik/ny_kandidat/smavag_drift.py --sjalvtest
           tyst python3 fysik/ny_kandidat/smavag_takt.py --sjalvtest
@@ -156,6 +157,23 @@ jobs:
             || { echo "::error::resorna föll: $(tail -1 resor.log | cut -c1-200)"; exit 1; }
           node ladda.js "$RES" "resorna" | tee -a "$GITHUB_STEP_SUMMARY"
           rm -f "$FIL.gz" "$RES" ladda.js
+      # Regeln utanför databasen (ingest/smavag-regel.ts, DECISIONS #843, halkvakt-kuvos F57 §9 punkt 3) mot smavag_regel() för samma
+      # timme, efter underlaget så att en skillnad aldrig stoppar det. Backtesten räknar underlaget med kopian, så den måste fatta samma
+      # beslut som driften. Bara utfallet skrivs, inga punkter eller tal (#768).
+      - name: Regeln utanför databasen mot databasens
+        if: ${{ steps.p.outputs.klar == 'ja' }}
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set +e
+          node --experimental-strip-types ingest/smavag-live-db.ts jamfor "$TID" > jamfor.log 2>&1
+          KOD=$?
+          set -e
+          RAD=$(grep -v ExperimentalWarning jamfor.log | tail -1 | cut -c1-200)
+          echo "$RAD" | tee -a "$GITHUB_STEP_SUMMARY"
+          if [ "$KOD" = 0 ] || [ "$KOD" = 3 ]; then exit 0; fi
+          if echo "$RAD" | grep -q "OLIKA"; then echo "::error::regeln utanför databasen ger ett annat underlag än smavag_regel()"; exit 1; fi
+          echo "::error::jämförelsen föll: $RAD"; exit 1
       - name: Ankarna lämnar aldrig jobbet
         if: always()
         run: rm -f ankare.csv

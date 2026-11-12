@@ -955,15 +955,15 @@ export const KONTRAKT: Kontrakt[] = [
     varfor: "Driver gränsen räknar kuvösen fukt där regeln ser torrt (DECISIONS #565, #593).",
     former: [/coalesce\(r\.mmh, 0\) >= ([\d.]+)\) THEN 'torr'/, /export const RADAR_MMH = ([\d.]+);/],
     // R = 0,1 sedan 26/10 (#725): 069 bär driftens gräns; 091 är driftens regel sedan #804; 105 är småvägsröstens (#828)
-    filer: /sql\/069_|sql\/091_|sql\/094_|sql\/105_|kuvos\/facit-trv\.ts$/,
-    golv: 8,
+    filer: /sql\/069_|sql\/091_|sql\/094_|sql\/105_|kuvos\/facit-trv\.ts$|ingest\/smavag-regel\.ts$/,  // smavag-regel.ts: sql/105 utanför databasen (#843)
+    golv: 9,
   },
   {
     namn: "Kandidatens radarfönster — regeln och facitläsningen",
     varfor: "Driver fönstret läser kuvösen radarn längre eller kortare bakåt än regeln (DECISIONS #573, #593).",
     former: [/r\.observed_at > now\(\) - interval '(\d+) minutes'/, /export const RADAR_MIN = (\d+);/],
-    filer: /sql\/058_|sql\/068_|sql\/069_|sql\/091_|sql\/094_|sql\/105_|kuvos\/facit-trv\.ts$/,  // 105: småvägsröstens regel (#828)
-    golv: 12,
+    filer: /sql\/058_|sql\/068_|sql\/069_|sql\/091_|sql\/094_|sql\/105_|kuvos\/facit-trv\.ts$|ingest\/smavag-regel\.ts$/,  // 105: småvägsröstens regel (#828); smavag-regel.ts dess kopia (#843)
+    golv: 13,
   },
   // KANDIDATENS TIMME (sql/056, 057, 068) och de som läser den: olycksfacit (095, 096, 100) och småvägsrösten (105, #828). En timme
   // är färsk högst två timmar och fullständig med minst 95 % av punkterna. Driver en kopia talar en regel på en timme som en annan

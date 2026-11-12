@@ -7,9 +7,13 @@
 //   node --experimental-strip-types ingest/smavag-live-db.ts underlag <ut.csv> <tid>          taktens underlag (kuvösen F55, F50 §7 punkt 3):
 //       regelns varnande punkter i timmen, med N3 och radarns medel i biten, så att takten kan räknas med och utan radarn sedan
 //       radar_smavag gallrats. Är timmen inte regelns (smavag_timme()) skrivs ingenting, kod 3. Filen går bara till den privata hinken.
+//   node --experimental-strip-types ingest/smavag-live-db.ts jamfor <tid>                    regeln utanför databasen (smavag-regel.ts,
+//       DECISIONS #843, kuvösen F57 §9 punkt 3) mot smavag_regel() för samma timme, i samma ögonblicksbild: lika (kod 0), olika (kod 1)
+//       eller timmen är inte regelns (kod 3). Bara utfallet skrivs, inga punkter eller tal.
 //   node --experimental-strip-types ingest/smavag-live-db.ts --sjalvtest
 import { readFileSync, writeFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
+import { radarPerBit, varnande, type Punkt } from "./smavag-regel.ts";
 
 export type Rad = { punkt: string; ned: boolean };
 
@@ -38,6 +42,13 @@ export const SATS = {
   timmen: `SELECT coalesce(smavag_timme() = $1::timestamptz, false) AS ok`,
   underlag: `SELECT r.punkt, r.ned, r.radar_mmh FROM smavag_regel() r WHERE r.utfall = 'varnar' AND r.tid = $1::timestamptz
     ORDER BY r.punkt COLLATE "C"`,
+  // Jämförelsens råvaror, utan regelns gränser: timmens rader med punkternas väg och ordning, all radar som står kvar efter gallringen,
+  // och transaktionens now(), som smavag_regel() räknar fönstret från. Brytarna läses inte (laddaren rör dem aldrig): sql/105 kräver
+  // en brytare för punktens grupp, så en grupp utan brytare ger "olika", och det är ett fel värt att se.
+  jamforRader: `SELECT l.punkt, l.ned, p.vag, p.ordning FROM smavag_live l JOIN smavagspunkt p ON p.punkt = l.punkt
+    WHERE l.tid = $1::timestamptz`,
+  jamforRadar: `SELECT bit, observed_at, rate_mean_mmh::text AS mmh FROM radar_smavag`,
+  nu: `SELECT now() AS nu`,
 };
 
 /** Underlagets fil: punkt, ned (1 eller 0) och radarns medel i biten (tomt utan radarrad). */
@@ -68,6 +79,27 @@ export async function underlag(c: Klient, tid: string): Promise<string | null> {
   return ok ? underlagCsv(((await c.query(SATS.underlag, [tid])) as any).rows) : null;
 }
 
+/** Regeln utanför databasen mot smavag_regel() för timmen, i en ögonblicksbild (REPEATABLE READ: samma now() och samma radar i båda).
+ *  true när underlagen är lika, false när de skiljer, null när timmen inte är regelns. */
+export async function jamfor(c: Klient, tid: string): Promise<boolean | null> {
+  await c.query("BEGIN ISOLATION LEVEL REPEATABLE READ");
+  try {
+    const rows = async (s: string, p?: unknown[]) => ((await c.query(s, p)) as any).rows as any[];
+    if (!(await rows(SATS.timmen, [tid]))[0].ok) return null;
+    const db = underlagCsv(await rows(SATS.underlag, [tid]));
+    const nu = new Date((await rows(SATS.nu))[0].nu);
+    const rader = await rows(SATS.jamforRader, [tid]);
+    const punkter = new Map<string, Punkt>(rader.map((r) => [r.punkt, { vag: r.vag, ordning: Number(r.ordning) }]));
+    const radar = radarPerBit((await rows(SATS.jamforRadar)).map((r) => ({ bit: r.bit, observed_at: new Date(r.observed_at), rate_mean_mmh: Number(r.mmh) })), nu);
+    const egen = underlagCsv(varnande(rader.map((r) => ({ punkt: r.punkt, ned: r.ned })), punkter, radar));
+    // Radarns medel jämförs som tal: databasen skriver numeric med sin egen decimalform, kopian med JavaScripts.
+    const tal = (t: string) => t.split("\n").map((r) => r.split(",")).map(([p, n, m]) => [p, n, m === "" || m === undefined ? m : String(Number(m))].join(","));
+    return JSON.stringify(tal(db)) === JSON.stringify(tal(egen));
+  } finally {
+    await c.query("COMMIT").catch(() => {});
+  }
+}
+
 async function klient<T>(f: (c: any) => Promise<T>): Promise<T> {
   const url = process.env.DATABASE_URL;
   if (!url) throw new Error("DATABASE_URL saknas");
@@ -94,6 +126,7 @@ function sjalvtest(): number {
       "punkt,ned,radar_mmh\nr00001,1,\nr00002,0,0.25\n") fel.push("underlagets rader");
   if (underlagCsv([]) !== "punkt,ned,radar_mmh\n") fel.push("ett underlag utan varnande punkter är bara rubriken");
   if (!/utfall = 'varnar'/.test(SATS.underlag) || /0[.,]1\b/.test(SATS.underlag)) fel.push("underlaget tar regelns utfall, utan egen radargräns");
+  if (/interval|0[.,]1\b|>=/.test(SATS.jamforRader + SATS.jamforRadar)) fel.push("jämförelsens råvaror bär ingen egen gräns eller eget fönster");
   console.log(`självtest smavag-live-db: ${fel.length ? "FEL" : "klart"}`);
   for (const f of fel) console.log(`  ${f}`);
   return fel.length ? 1 : 0;
@@ -119,5 +152,12 @@ if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {
       writeFileSync(a, u);
       console.log("underlaget: klart");
     }).catch(fel);
-  } else { console.error("lagen <ut.csv> | skriv <rader.csv> <tid> <antal> | underlag <ut.csv> <tid> | --sjalvtest"); process.exit(2); }
+  } else if (kmd === "jamfor" && /^\d{4}-\d\d-\d\dT\d\d:00:00Z$/u.test(a ?? "")) {
+    klient(async (c) => {
+      const lika = await jamfor(c, a);
+      if (lika === null) { console.log("jämförelsen: timmen är inte regelns"); process.exit(3); }
+      console.log(`jämförelsen med databasens regel: ${lika ? "lika" : "OLIKA"}`);
+      process.exit(lika ? 0 : 1);
+    }).catch(fel);
+  } else { console.error("lagen <ut.csv> | skriv <rader.csv> <tid> <antal> | underlag <ut.csv> <tid> | jamfor <tid> | --sjalvtest"); process.exit(2); }
 }
