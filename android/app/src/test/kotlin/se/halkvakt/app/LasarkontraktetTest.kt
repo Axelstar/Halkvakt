@@ -11,6 +11,7 @@ import se.halkvakt.engine.Hazard
 import se.halkvakt.engine.KandidatHazard
 import se.halkvakt.engine.PointHazard
 import se.halkvakt.engine.SegmentHazard
+import se.halkvakt.engine.SmavagHazard
 import java.io.File
 import kotlin.test.Test
 import kotlin.test.assertEquals
