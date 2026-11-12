@@ -16,6 +16,7 @@ enum AgeGate {
             switch h {
             case .segment: return false
             case .kandidat: return false   // kandidaten (#577): väglag, åldras som halksträckorna
+            case .smavag: return false     // småvägsrösten (#828): åldras som kandidaten
             case .point(_, let kind, _, _, _, _):
                 switch kind {
                 case .icing_point: return false

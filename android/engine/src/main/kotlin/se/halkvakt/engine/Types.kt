@@ -13,7 +13,10 @@ enum class HazardKind(val wire: String) {
     CAMERA("camera"),
     /** K — kandidatens betavarning (DECISIONS #562, #577). LAST on purpose: every other kind outranks it, so the cooldown can
      *  never drop or delay another warning because the candidate spoke. Mirrors PRIORITY in engine/src/types.ts. */
-    KANDIDAT("kandidat");
+    KANDIDAT("kandidat"),
+    /** S — småvägsröstens betavarning (DECISIONS #828, #844). After K: it never silences or delays another warning, the candidate
+     *  included. Mirrors PRIORITY in engine/src/types.ts. */
+    SMAVAG("smavag");
     companion object { fun of(s: String) = entries.first { it.wire == s } }
 }
 
@@ -61,6 +64,14 @@ data class KandidatHazard(
     /** The A1 hazard on the same stretch ("seg:<id>"): silent for kandidatEfterHalkaS after it spoke (DECISIONS #581). */
     val segmentHazardId: String? = null,
 ) : Hazard { override val kind = HazardKind.KANDIDAT }
+/** S — one state road without road-condition measurement (DECISIONS #828, #844), mirror of SmavagHazard in types.ts: its points in
+ *  order along the road and the indices of those that warn. Roads without a warning point belong here too: the road test first
+ *  decides which road the car is on, among all of them. */
+data class SmavagHazard(
+    override val id: String,
+    val points: List<DoubleArray>, // [lon, lat], in order along the road
+    val warn: List<Int>,
+) : Hazard { override val kind = HazardKind.SMAVAG }
 
 data class Fix(
     val t: Double, val lon: Double, val lat: Double,
@@ -104,6 +115,15 @@ data class EngineConfig(
     // Halkzonen (DECISIONS #624): sträckor inom så här många meter är en zon för reprisregeln — samma tal som engine/src/types.ts
     // (kontraktsgrinden).
     val halkZonM: Double = 500.0,
+    // S, vägtestet (DECISIONS #844): inom så här många meter och grader från linjen mellan två grannpunkter, så många fixar i rad;
+    // grannar längre isär än smavagKordaMaxM har ingen linje — samma tal som engine/src/types.ts (kontraktsgrinden).
+    val smavagPaM: Double = 80.0,
+    val smavagPaGrader: Double = 30.0,
+    val smavagPaFixar: Int = 3,
+    val smavagKordaMaxM: Double = 3000.0,
+    // S, tystnaden efter ett besked (DECISIONS #828): båda ska ha gått — samma tal som engine/src/types.ts (kontraktsgrinden).
+    val smavagTystS: Double = 600.0,
+    val smavagTystM: Double = 5000.0,
 )
 
 // ---- geo (mirror of geo.ts, same formula sequences) ----
@@ -124,6 +144,17 @@ object Geo {
         val x = cos(p1) * sin(p2) - sin(p1) * cos(p2) * cos(dl)
         val th = atan2(y, x) / D2R
         return (th + 360.0) % 360.0
+    }
+
+    /** Mirror of distToSegmentM in geo.ts (DECISIONS #844): metres from p to the straight segment a–b in a flat plane around p,
+     *  the same arithmetic step for step. */
+    fun distToSegmentM(pLon: Double, pLat: Double, aLon: Double, aLat: Double, bLon: Double, bLat: Double): Double {
+        val kx = R * D2R * cos(pLat * D2R); val ky = R * D2R
+        val ax = (aLon - pLon) * kx; val ay = (aLat - pLat) * ky
+        val dx = (bLon - aLon) * kx; val dy = (bLat - aLat) * ky
+        val l2 = dx * dx + dy * dy
+        val t = if (l2 > 0) max(0.0, min(1.0, -(ax * dx + ay * dy) / l2)) else 0.0
+        return hypot(ax + t * dx, ay + t * dy)
     }
 
     fun angDiffDeg(a: Double, b: Double): Double {
@@ -187,6 +218,9 @@ object Texts {
     /** K, kandidatens betavarning (DECISIONS #562, #573) — spegel av KANDIDAT_TEXT i texts.ts. */
     const val KANDIDAT_TEXT = "Halkvakt tror: halka framöver."
 
+    /** S, småvägsröstens betavarning (DECISIONS #828) — spegel av SMAVAG_TEXT i texts.ts. */
+    const val SMAVAG_TEXT = "Betavarning: risk för halka på småvägarna framöver."
+
     /** " på E18" / " på väg 25" / "" när numret saknas. */
     fun roadPhrase(road: String?): String {
         val r = road?.trim().orEmpty()
@@ -227,5 +261,6 @@ object Texts {
         HazardKind.CAMERA -> hazard?.meta?.speedLimitKmh?.let { "Fartkamera om 500 meter. Gränsen är $it." }
             ?: "Fartkamera om 500 meter."
         HazardKind.KANDIDAT -> KANDIDAT_TEXT
+        HazardKind.SMAVAG -> SMAVAG_TEXT
     }
 }

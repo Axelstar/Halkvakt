@@ -71,6 +71,9 @@ public enum RouteFilter {
             case .kandidat:
                 // Kandidaten (DECISIONS #577) hör inte till favoriternas urval — hoppas över, som i rutfilter.ts.
                 continue
+            case .smavag:
+                // Småvägsrösten (DECISIONS #828) inte heller, som i rutfilter.ts.
+                continue
             }
             if d <= marginM { out.append(AlongRoute(hazard: h, distanceM: d, alongM: along)) }
         }

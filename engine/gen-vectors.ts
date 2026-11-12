@@ -28,6 +28,26 @@ function northTrace(seconds: number, kmh: number, startNorthM = 0): Fix[] {
 }
 const northOf = (m: number) => LAT0 + m / M_PER_DEG_LAT;
 const eastOf = (m: number) => LON0 + m / (M_PER_DEG_LAT * Math.cos((LAT0 * Math.PI) / 180));
+/** Straight due-south drive from startNorthM: 1 Hz fixes, constant speed (S, v59). */
+function southTrace(seconds: number, kmh: number, startNorthM: number): Fix[] {
+  const mps = (kmh * 1000) / 3600;
+  const out: Fix[] = [];
+  for (let t = 0; t <= seconds; t++) out.push({ t, lon: LON0, lat: LAT0 + (startNorthM - t * mps) / M_PER_DEG_LAT });
+  return out;
+}
+/** S: a small road due north eastM east of the drive, points every 900 m from fromM to toM plus the warning positions that fall
+ *  between, in order; warn = those positions' indices, or every point. */
+function smavag(id: string, eastM: number, fromM: number, toM: number, warn: number[] | "alla"): Hazard {
+  const ys = new Set<number>();
+  for (let y = fromM; y <= toM; y += 900) ys.add(y);
+  if (warn !== "alla") for (const y of warn) ys.add(y);
+  const ordnade = [...ys].sort((a, b) => a - b);
+  return {
+    id, kind: "smavag",
+    points: ordnade.map((y) => [eastOf(eastM), northOf(y)] as [number, number]),
+    warn: warn === "alla" ? ordnade.map((_, i) => i) : ordnade.flatMap((y, i) => (warn.includes(y) ? [i] : [])),
+  };
+}
 // v05:s kamera B och hela v23 byggdes 13/9 för hand med 111 000 m per latitudgrad (v23 med nio decimaler), inte med
 // northOf:s 111 320. De återskapas exakt så: en frusen vektor ändras inte för att generatorn ska se prydligare ut (#195).
 const n9 = (m: number) => +(LAT0 + m / 111_000).toFixed(9);
@@ -603,6 +623,109 @@ const scenarios: Scenario[] = [
       { id: "seg:B", kind: "slippery_segment", line: [[LON0, northOf(5010)], [LON0, northOf(8000)]], meta: { code: 2, info: [] } },
     ],
     trace: northTrace(240, 80),
+  },
+  // S — SMÅVÄGSRÖSTEN (DECISIONS #828, #844). Regeln bor i databasen; motorn får varje småväg med sina punkter i ordning och vilka som
+  // varnar. Bilen måste först följa en vägs räta linje mellan två punkter (inom 80 m och 30°, tre fixar i rad); sedan talar vägens
+  // varnande punkter framför bilen med K:s korridor och förvarning, och därefter tystnad i 10 min och 5 km. Sist i prioriteten.
+  // 80 km/h ger förvarningen 667 m; en punkt 4 500 m fram kommer inom den vid t=173 (655 m; t=172 låg 677 m — marginal 11 m åt
+  // båda håll). Vägens punkter ligger var 900:e m, från 1 800 m bakom starten, så att bilen följer vägen från första fixen.
+  {
+    file: "v51_smavag_talar_pa_vagen", name: "Småvägsrösten talar när bilen följer småvägen (S)",
+    description:
+      "Småvägen v1 går norrut längs bilens väg med punkter var 900:e m; punkten 4 500 m fram varnar. Bilen känns igen på vägen vid " +
+      "t=3 (tredje fixen inom 80 m och 30° från linjen) och punkten talar vid t=173 med 'Betavarning: risk för halka på småvägarna " +
+      "framöver.' och beta=true. De andra punkterna varnar inte och tiger.",
+    hazards: [smavag("smv:v1", 0, -1800, 9000, [4500])],
+    trace: northTrace(240, 80),
+  },
+  {
+    file: "v52_smavag_parallell_stor_vag_tiger", name: "En småväg 150 m bredvid bilens väg tiger, fast alla punkter varnar (S)",
+    description:
+      "Samma väg som v51 men 150 m österut, och varje punkt varnar. Bilen följer en egen väg rakt norrut och kommer aldrig inom 80 m " +
+      "från småvägens linje, så småvägen tiger hela vägen. Med K:s korridor ensam hade punkterna talat (12,7° från färdriktningen " +
+      "vid 667 m): det är falsklarmet från en stor väg som vägtestet tar bort (mätt 12/11 i kuvösen).",
+    hazards: [smavag("smv:v1", 150, -1800, 9000, "alla")],
+    trace: northTrace(240, 80),
+  },
+  {
+    file: "v53_smavag_marginalen_inifran", name: "Vägtestet håller 80 m: en småväg 70 m bredvid räknas som bilens väg (S)",
+    description:
+      "Som v51 men vägen ligger 70 m österut (marginal 10 m innanför 80). Bilen känns igen på vägen och punkten 4 500 m fram talar " +
+      "vid t=173. Låser marginalen inifrån.",
+    hazards: [smavag("smv:v1", 70, -1800, 9000, [4500])],
+    trace: northTrace(240, 80),
+  },
+  {
+    file: "v54_smavag_marginalen_utifran", name: "Vägtestet håller 80 m: en småväg 90 m bredvid tiger (S)",
+    description:
+      "Som v53 men 90 m österut (marginal 10 m utanför 80), och varje punkt varnar. Bilen känns aldrig igen på vägen ⇒ tystnad. " +
+      "Låser marginalen utifrån.",
+    hazards: [smavag("smv:v1", 90, -1800, 9000, "alla")],
+    trace: northTrace(240, 80),
+  },
+  {
+    file: "v55_smavag_korsande_vag_tiger", name: "En korsande småväg tiger, också med en varnande punkt mitt i korsningen (S)",
+    description:
+      "Småvägen v2 går öster–väster 2 000 m norr om starten, med punkter var 900:e m från 2 700 m väster till 2 700 m öster; varje " +
+      "punkt varnar, också den i korsningen. Bilen passerar linjen men kör 90° från dess riktning (gränsen 30°), så den känns aldrig " +
+      "igen på vägen ⇒ tystnad. K:s korridor ensam hade talat för korsningens punkt.",
+    hazards: [{
+      id: "smv:v2", kind: "smavag",
+      points: [-2700, -1800, -900, 0, 900, 1800, 2700].map((x) => [eastOf(x), northOf(2000)] as [number, number]),
+      warn: [0, 1, 2, 3, 4, 5, 6],
+    }],
+    trace: northTrace(180, 80),
+  },
+  {
+    file: "v56_smavag_tystnad_tio_minuter_fem_km", name: "Ett besked per halkområde: tyst i 10 min och 5 km, vilken punkt det än gäller (S)",
+    description:
+      "Två vägar i följd längs bilens väg: v1 till 5 400 m med P1 1 500 m fram, och v2 från 5 700 m med P2 8 011 och P3 16 011 m fram. " +
+      "P1 talar vid t=38 (655 m; t=37 låg 677 m). P2 kommer inom förvarningen vid t=331 (655 m; t=330 låg 677 m), 293 s efter P1 ⇒ " +
+      "tyst: 5 km har körts men inte 10 min. P2 ligger på en annan väg, så det är tystnaden som håller den, inte upprepningsregeln. " +
+      "P3 kommer inom den vid t=691 (655 m; t=690 låg 677 m), 653 s och 14,5 km efter P1 ⇒ talar.",
+    hazards: [smavag("smv:v1", 0, -1800, 5400, [1500]), smavag("smv:v2", 0, 5700, 17100, [8011, 16011])],
+    trace: northTrace(720, 80),
+  },
+  {
+    file: "v57_smavag_sist_i_prioriteten", name: "Småvägsrösten är sist: kameran vinner samma fix, och småvägen väntar ut spärren (S)",
+    description:
+      "Kameran 1 333 m fram och småvägens varnande punkt 1 500 m fram kommer båda in vid t=38 (kameran 488 m, t=37 låg 510 m; " +
+      "punkten 655 m, t=37 låg 677 m). Kameran är viktigare och talar; småvägen kastas, inte köad. Under spärren (10 s) är småvägen " +
+      "inte viktigare än kameran ⇒ kastad; vid t=48 talar den, 433 m före punkten.",
+    hazards: [
+      { id: "cam1", kind: "camera", lon: LON0, lat: northOf(1333), bearing: 180 },
+      smavag("smv:v1", 0, -1800, 9000, [1500]),
+    ],
+    trace: northTrace(120, 80),
+  },
+  {
+    file: "v60_smavag_efter_kandidaten", name: "Småvägsrösten kommer efter K: kandidaten vinner samma fix, och småvägen väntar ut spärren (S)",
+    description:
+      "Kandidatens punkt och småvägens varnande punkt ligger båda 1 500 m fram och kommer in vid t=38 (655 m; t=37 låg 677 m). K är " +
+      "viktigare och talar; småvägen kastas. Under spärren (10 s) är småvägen inte viktigare än K ⇒ kastad; vid t=48 talar den, 433 m " +
+      "före punkten.",
+    hazards: [
+      { id: "kand:S1", kind: "kandidat", points: [[LON0, northOf(1500)]] },
+      smavag("smv:v1", 0, -1800, 9000, [1500]),
+    ],
+    trace: northTrace(120, 80),
+  },
+  {
+    file: "v58_smavag_punkt_direkt_efter_avfarten_tiger", name: "En varnande punkt 25 m efter starten hinns inte: vägen känns igen först vid tredje fixen (S)",
+    description:
+      "Punkten ligger 25 m norr om starten. Vid t=3 är bilen känd på vägen, men punkten ligger då 42 m bakom (utanför 30 m-zonen " +
+      "som räknas som framför) ⇒ tystnad. Det är priset för vägtestet: missarna är punkter direkt efter avfarten (mätt 12/11 " +
+      "i kuvösen). K:s korridor hade talat vid t=1.",
+    hazards: [smavag("smv:v1", 0, -1800, 9000, [25])],
+    trace: northTrace(60, 80),
+  },
+  {
+    file: "v59_smavag_motsatt_riktning", name: "Vägtestet gäller åt båda håll längs vägen: söderut talar punkten framför (S)",
+    description:
+      "Bilen kör söderut från 9 000 m norr om starten längs samma väg som v51. Linjen gäller åt båda håll, så bilen känns igen vid " +
+      "t=3, och punkten vid 4 500 m talar vid t=173 (655 m; t=172 låg 677 m).",
+    hazards: [smavag("smv:v1", 0, -1800, 10800, [4500])],
+    trace: southTrace(240, 80, 9000),
   },
 ];
 

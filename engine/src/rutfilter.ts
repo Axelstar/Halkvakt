@@ -36,6 +36,7 @@ export function farorNaraRutten(hazards: Hazard[], line: [number, number][], mar
   const r = rutaKring(line, marginalKm);
   return hazards.filter((h) => {
     if (h.kind === "kandidat") return false;   // K (DECISIONS #577): utanför urvalet, som i farorLangsRutten nedan
+    if (h.kind === "smavag") return false;     // S (DECISIONS #828): utanför urvalet, som kandidaten
     if (h.kind === "slippery_segment") {
       const xs = h.line.map((p) => p[0]), ys = h.line.map((p) => p[1]);
       return Math.max(...xs) >= r.x0 && Math.min(...xs) <= r.x1 && Math.max(...ys) >= r.y0 && Math.min(...ys) <= r.y1;
@@ -104,6 +105,7 @@ export function farorLangsRutten(hazards: Hazard[], line: [number, number][], ma
     // K (DECISIONS #577): kandidaten hör inte till urvalet längs rutten (favoriterna, skuggans förfilter) — hoppas över
     // uttryckligen, så att den inte faller bort som NaN. Kandidatens egen takt räknas av kandidatLangsRutten (segment.ts).
     if (h.kind === "kandidat") continue;
+    if (h.kind === "smavag") continue;   // S (DECISIONS #828): utanför urvalet, som kandidaten
     let d: number, langs: number;
     if (h.kind === "slippery_segment") {
       ({ d, langs } = narmast(h.line[0]));

@@ -24,6 +24,18 @@ export function bearingDeg(a: LonLat, b: LonLat): number {
   return (θ + 360) % 360;
 }
 
+/** Metres from p to the straight segment a–b, in a flat plane around p (equirectangular, the Earth radius above). Exact enough for
+ *  the small roads' road test (DECISIONS #844), whose lines are at most a few kilometres and whose margin is 80 m. The same
+ *  arithmetic in Engine.kt and Engine.swift, step for step. */
+export function distToSegmentM(p: LonLat, a: LonLat, b: LonLat): number {
+  const kx = R * D2R * Math.cos(p.lat * D2R), ky = R * D2R;
+  const ax = (a.lon - p.lon) * kx, ay = (a.lat - p.lat) * ky;
+  const dx = (b.lon - a.lon) * kx, dy = (b.lat - a.lat) * ky;
+  const l2 = dx * dx + dy * dy;
+  const t = l2 > 0 ? Math.max(0, Math.min(1, -(ax * dx + ay * dy) / l2)) : 0;
+  return Math.hypot(ax + t * dx, ay + t * dy);
+}
+
 /** Absolute angular difference, degrees [0, 180]. */
 export function angDiffDeg(a: number, b: number): number {
   const d = Math.abs(a - b) % 360;

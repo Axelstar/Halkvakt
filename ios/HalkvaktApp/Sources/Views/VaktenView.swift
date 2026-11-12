@@ -222,6 +222,7 @@ struct VaktenView: View {
         case .wildlife: return "Vilt"
         case .camera: return "Fartkamera"
         case .kandidat: return "Halka"   // #577: kortets rubrik, märkt BETA på kortet
+        case .smavag: return "Halka"     // #828: småvägsrösten, märkt BETA på kortet som K
         case nil: return kind
         }
     }

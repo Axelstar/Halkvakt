@@ -25,6 +25,7 @@ object AgeGate {
             when (h) {
                 is SegmentHazard -> false                       // halksträckor: bort
                 is KandidatHazard -> false                      // kandidaten (#577): väglag, åldras som halksträckorna
+                is SmavagHazard -> false                        // småvägsrösten (#828): åldras som kandidaten
                 is PointHazard -> when (h.kind) {
                     HazardKind.ICING_POINT -> false             // frysrisk: bort
                     HazardKind.ACCIDENT -> keepAccidents

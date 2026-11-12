@@ -262,6 +262,7 @@ public enum ResansRapport {
                 case .segment(_, let line, _): ps = line
                 case .point(_, _, let lon, let lat, _, _): ps = [[lon, lat]]
                 case .kandidat: ps = []
+                case .smavag: ps = []
                 }
                 guard !ps.isEmpty else { continue }
                 let x0 = ps.map { $0[0] }.min()!, x1 = ps.map { $0[0] }.max()!, y0 = ps.map { $0[1] }.min()!, y1 = ps.map { $0[1] }.max()!

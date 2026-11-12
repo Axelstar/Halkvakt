@@ -9,7 +9,8 @@ export type HazardKind =
   | "icing_point"       // A2 — WeatherMeasurepoint showing icing conditions
   | "wildlife"          // A4 — historical hotspot / fresh polisen event
   | "camera"            // A5 — TrafficSafetyCamera
-  | "kandidat";         // K — kandidatens betavarning: modellerad halka per sträcka (NIVÅ 2+BLANDNING, DECISIONS #562, #577)
+  | "kandidat"          // K — kandidatens betavarning: modellerad halka per sträcka (NIVÅ 2+BLANDNING, DECISIONS #562, #577)
+  | "smavag";           // S — småvägsröstens betavarning på statliga vägar utan väglagsmätning (DECISIONS #828, #844)
 
 /** Spoken priority, highest first. Lower priority candidates are DROPPED, never queued. */
 export const PRIORITY: readonly HazardKind[] = [
@@ -22,6 +23,8 @@ export const PRIORITY: readonly HazardKind[] = [
   // another warning because the candidate spoke — the other kinds behave exactly as without it, and the shadow's
   // pre-registered measurements still describe what the app says about them.
   "kandidat",
+  // After K (DECISIONS #828): the small-roads voice never silences or delays another warning, the candidate included.
+  "smavag",
 ] as const;
 
 export interface PointHazard {
@@ -85,7 +88,21 @@ export interface KandidatHazard {
   segmentHazardId?: string;
 }
 
-export type Hazard = PointHazard | SegmentHazard | KandidatHazard;
+/** S — one state road without road-condition measurement (DECISIONS #828, #844): its points in order along the road (the point
+ *  file's road and order) and the indices of those the database rule says varnar. The roads WITHOUT a warning point belong here
+ *  too: the engine first decides which road the car is on, among all of them, and only then lets that road's warning points ahead
+ *  speak — so a car on a main road 100 m from a small road is not warned for it (measured 12/11 in halkvakt-kuvos: with K's corridor
+ *  alone most small-road warnings on main-road drives were for another road). */
+export interface SmavagHazard {
+  id: string;
+  kind: "smavag";
+  /** WGS84 [lon, lat] of the road's points, in order along the road. */
+  points: [number, number][];
+  /** Indices into points that warn, ascending. */
+  warn: number[];
+}
+
+export type Hazard = PointHazard | SegmentHazard | KandidatHazard | SmavagHazard;
 
 export interface Fix {
   /** Seconds. Any epoch; only deltas matter. Engine reads no clocks. */
@@ -147,6 +164,18 @@ export interface EngineConfig {
    *  zone for the repeat rule. A new halka warning stays silent while a neighbour's warning is not yet re-armed (10 min AND 5 km),
    *  so three stretches meeting at a junction speak once, and a long zone still repeats like a long stretch (#103). */
   halkZonM: number;
+  /** S, the road test (DECISIONS #844, measured 12/11): the car is on a small road when its fix lies within smavagPaM of the straight
+   *  line between two neighbouring points of the road, at most smavagPaGrader from the line's direction either way, for
+   *  smavagPaFixar fixes in a row. Neighbours farther apart than smavagKordaMaxM have no line between them. */
+  smavagPaM: number;
+  smavagPaGrader: number;
+  smavagPaFixar: number;
+  smavagKordaMaxM: number;
+  /** S, one call per slippery area and then silence (DECISIONS #828): after a small-roads call the voice stays silent until BOTH
+   *  smavagTystS and smavagTystM have passed, whatever the road. The repeat rule's values until the cap is chosen from the
+   *  backtest (halkvakt-kuvos F57). */
+  smavagTystS: number;
+  smavagTystM: number;
 }
 
 export const DEFAULT_CONFIG: EngineConfig = {
@@ -186,4 +215,15 @@ export const DEFAULT_CONFIG: EngineConfig = {
   // Halkzonen (DECISIONS #624): 500 m — all 17 close pairs in the shadow log lay within 451 m, and no pair at all between 500 m and
   // 2 km (#621). Samma tal i Types.kt och Engine.swift (kontraktsgrinden).
   halkZonM: 500,
+  // S (DECISIONS #844): 80 m, chosen 12/11 from the measurement in halkvakt-kuvos on the real roads (Lastkajen) and on main-road
+  // drives, between 50 and 120 m. Under the 100 m that separates group N's roads from the road-condition stretches (#828). Samma tal
+  // i Types.kt och Engine.swift (kontraktsgrinden).
+  smavagPaM: 80,
+  smavagPaGrader: 30,
+  smavagPaFixar: 3,
+  smavagKordaMaxM: 3000,
+  // S (DECISIONS #828, #844): the repeat rule's 10 min and 5 km until the cap is chosen (F57). Samma tal i Types.kt och
+  // Engine.swift (kontraktsgrinden).
+  smavagTystS: 600,
+  smavagTystM: 5000,
 };

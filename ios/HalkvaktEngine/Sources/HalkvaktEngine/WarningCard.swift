@@ -78,6 +78,10 @@ public struct WarningCard: Equatable {
             // Kandidaten (DECISIONS #562, #577): märkt beta och modellerat, aldrig uppmätt — samma kort som efterhalkans, med halkans ikon.
             return WarningCard(icon: .halka, stage: "BETA", title: "Halka", sub: "Halkvakt tror — modellerat",
                                distance: .words("FRAMÖVER"), road: nil, limit: nil, advice: nil, adviceSub: nil, quote: alert.text)
+        case .smavag:
+            // Småvägsröstens betavarning (DECISIONS #828, #844): samma kort som kandidatens, med småvägarna i underraden.
+            return WarningCard(icon: .halka, stage: "BETA", title: "Halka", sub: "Småvägarna — modellerat",
+                               distance: .words("FRAMÖVER"), road: nil, limit: nil, advice: nil, adviceSub: nil, quote: alert.text)
         }
     }
 

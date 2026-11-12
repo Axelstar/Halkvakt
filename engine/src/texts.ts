@@ -31,6 +31,10 @@ export const EFTERHALKA_TEXT = "Halkvakt tror: frysrisk framöver.";
  *  "Halkvakt tror" och "framöver", aldrig ett avstånd. */
 export const KANDIDAT_TEXT = "Halkvakt tror: halka framöver.";
 
+/** S, småvägsröstens betavarning (DECISIONS #828: texten beställd av Bengt och signerad med Axel 10/11). Modellerad på vägar utan
+ *  mätning, en punktkälla — därför "framöver" och aldrig ett avstånd. */
+export const SMAVAG_TEXT = "Betavarning: risk för halka på småvägarna framöver.";
+
 export function alertText(
   kind: HazardKind,
   distanceM: number,
@@ -78,5 +82,7 @@ export function alertText(
     }
     case "kandidat":
       return KANDIDAT_TEXT;
+    case "smavag":
+      return SMAVAG_TEXT;
   }
 }

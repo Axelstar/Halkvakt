@@ -71,6 +71,10 @@ data class WarningCard(
                 HazardKind.KANDIDAT ->
                     WarningCard(Icon.HALKA, "BETA", "Halka", "Halkvakt tror — modellerat", Distance.Words("FRAMÖVER"),
                         null, null, null, null, q)
+                // S (DECISIONS #828, #844): småvägsröstens betavarning — samma kort som K, med småvägarna i underraden.
+                HazardKind.SMAVAG ->
+                    WarningCard(Icon.HALKA, "BETA", "Halka", "Småvägarna — modellerat", Distance.Words("FRAMÖVER"),
+                        null, null, null, null, q)
             }
         }
 

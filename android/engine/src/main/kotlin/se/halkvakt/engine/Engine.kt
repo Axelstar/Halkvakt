@@ -79,10 +79,21 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
     private var points: List<PointHazard> = emptyList()
     private var segments: List<Pair<SegmentHazard, List<DoubleArray>>> = emptyList()
     private var kandidater: List<KandidatHazard> = emptyList()
+    /** S (DECISIONS #844), mirror of engine.ts: each small road, and whether the line to the previous point exists. */
+    private var smavagar: List<Pair<SmavagHazard, BooleanArray>> = emptyList()
+    private var smavagById: Map<String, Int> = emptyMap()
     // Declared before init: an initializer below it would run after ingest and empty the grids again.
     private var pointGrid = HazardGrid()
     private var segmentGrid = HazardGrid()
     private var kandidatGrid = HazardGrid()
+    private var smavagGrid = HazardGrid()
+    /** S, the road test (DECISIONS #844): the road the car followed on the last fixes and for how many fixes in a row, by id.
+     *  Declared before init for the same reason as the grids. */
+    private var smavagVag: String? = null
+    private var smavagFixar = 0
+    /** S: when and where the small-roads voice last spoke (DECISIONS #828). */
+    private var lastSmavagT: Double? = null
+    private var lastSmavagOdoM = 0.0
 
     /** Test only (DECISIONS #795): evaluate every hazard on every fix, as before the grid. GridTest runs both paths side by side;
      *  their answers are the same by construction, so nothing else sets it. */
@@ -95,6 +106,12 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
         segments = hazards.filterIsInstance<SegmentHazard>()
             .map { it to Geo.samplePolyline(it.line, cfg.segmentSampleM) }
         kandidater = hazards.filterIsInstance<KandidatHazard>()
+        smavagar = hazards.filterIsInstance<SmavagHazard>().map { h ->
+            h to BooleanArray(h.points.size) { k ->
+                k > 0 && Geo.haversineM(h.points[k - 1][0], h.points[k - 1][1], h.points[k][0], h.points[k][1]) <= cfg.smavagKordaMaxM
+            }
+        }
+        smavagById = smavagar.withIndex().associate { (i, v) -> v.first.id to i }
         // The grid (DECISIONS #795), mirror of ingest in engine.ts.
         pointGrid = HazardGrid().apply {
             points.forEachIndexed { i, p -> add(i, listOf(doubleArrayOf(p.lon, p.lat)), reachOf(p.kind)) }
@@ -108,6 +125,10 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
             kandidater.forEachIndexed { i, k -> add(i, k.points, reachOf(HazardKind.KANDIDAT)) }
             freeze()
         }
+        smavagGrid = HazardGrid().apply {
+            smavagar.forEachIndexed { i, (h, _) -> add(i, Geo.samplePolyline(h.points, cfg.segmentSampleM), reachOf(HazardKind.SMAVAG)) }
+            freeze()
+        }
     }
 
     /** The grid's reach (DECISIONS #795), mirror of reachOf in engine.ts — the derivation is there. maxOf keeps a NaN, and NaN or
@@ -117,6 +138,8 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
         HazardKind.ACCIDENT -> cfg.accidentMaxAheadM
         HazardKind.ICING_POINT, HazardKind.WILDLIFE, HazardKind.SLIPPERY_SEGMENT, HazardKind.KANDIDAT ->
             maxOf(cfg.leadMaxM, EngineConfig().leadMaxM)
+        // S: the road test needs a line within smavagPaM, and every point of a line lies within half a sample step of a sample.
+        HazardKind.SMAVAG -> cfg.smavagPaM + cfg.segmentSampleM
     }
 
     /**
@@ -182,6 +205,8 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
         // order. A stretch tests `b > leadM`, so a NaN lead (a NaN speed or setting) lets it speak at any distance: then the
         // stretches take the full scan.
         val allStretches = bruteForce || leadM.isNaN()
+        // S, the road test (DECISIONS #844): which small road the car follows, before any of its warning points may speak.
+        smavagPa(fix, heading)
         val candidates = ArrayList<Candidate>()
         for (i in if (bruteForce) pointGrid.all else pointGrid.near(fix.lon, fix.lat)) {
             evaluatePoint(fix, heading, points[i], leadM)?.let { candidates.add(it) }
@@ -193,6 +218,7 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
         for (i in if (allStretches) kandidatGrid.all else kandidatGrid.near(fix.lon, fix.lat)) {
             evaluateKandidat(fix, heading, kandidater[i], leadM)?.let { candidates.add(it) }
         }
+        evaluateSmavag(fix, heading, leadM)?.let { candidates.add(it) }
         if (candidates.isEmpty()) return null
 
         val rearmed = { f: Pair<Double, Double> -> fix.t - f.first >= cfg.repeatMinS && odometerM - f.second >= cfg.repeatMinM }
@@ -223,6 +249,7 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
         lastSpokenT = fix.t
         lastSpokenKind = win.kind
         if (win.kind == HazardKind.KANDIDAT) lastKandidatT = fix.t
+        if (win.kind == HazardKind.SMAVAG) { lastSmavagT = fix.t; lastSmavagOdoM = odometerM }
         fired[win.alertKey] = fix.t to odometerM
         val ph = win.hazard as? PointHazard
         return Alert(
@@ -351,5 +378,49 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
         // Taket, DECISIONS #606: högst en kandidat per kandidatTakS, vilken sträcka det än gäller.
         lastKandidatT?.let { if (fix.t - it < cfg.kandidatTakS) return null }
         return Candidate(k, HazardKind.KANDIDAT, b, k.id, beta = true)
+    }
+
+    /**
+     * S, the road test (DECISIONS #844), mirror of smavagPa in engine.ts: the nearest straight line between two neighbouring points
+     * of any small road within smavagPaM of the fix and within smavagPaGrader of its direction, either way. The same road on
+     * consecutive fixes counts up; another road, or none, starts over. Ascending road and point order; a strictly nearer line wins.
+     */
+    private fun smavagPa(fix: Fix, heading: Double) {
+        var bestId: String? = null
+        var bestD = Double.POSITIVE_INFINITY
+        for (i in if (bruteForce) smavagGrid.all else smavagGrid.near(fix.lon, fix.lat)) {
+            val (h, linje) = smavagar[i]
+            for (k in 1 until h.points.size) {
+                if (!linje[k]) continue
+                val a = h.points[k - 1]; val b = h.points[k]
+                val d = Geo.distToSegmentM(fix.lon, fix.lat, a[0], a[1], b[0], b[1])
+                if (!(d <= cfg.smavagPaM) || !(d < bestD)) continue
+                val r = Geo.bearingDeg(a[0], a[1], b[0], b[1])
+                if (minOf(Geo.angDiffDeg(r, heading), Geo.angDiffDeg((r + 180.0) % 360.0, heading)) > cfg.smavagPaGrader) continue
+                bestId = h.id; bestD = d
+            }
+        }
+        if (bestId != null && bestId == smavagVag) smavagFixar++
+        else { smavagVag = bestId; smavagFixar = if (bestId == null) 0 else 1 }
+    }
+
+    /**
+     * S — småvägsröstens betavarning (DECISIONS #828, #844), mirror of evaluateSmavag in engine.ts: only the road the car follows
+     * may speak, with K's corridor and lead over its warning points; then silent until both smavagTystS and smavagTystM have passed.
+     */
+    private fun evaluateSmavag(fix: Fix, heading: Double, leadM: Double): Candidate? {
+        val vag = smavagVag ?: return null
+        if (smavagFixar < cfg.smavagPaFixar) return null
+        lastSmavagT?.let { if (fix.t - it < cfg.smavagTystS || odometerM - lastSmavagOdoM < cfg.smavagTystM) return null }
+        val i = smavagById[vag] ?: return null
+        val h = smavagar[i].first
+        var best: Double? = null
+        for (j in h.warn) {
+            val p = h.points.getOrNull(j) ?: continue
+            val (ahead, distM) = isAhead(fix, heading, p[0], p[1])
+            if (ahead && distM <= leadM && (best == null || distM < best!!)) best = distM
+        }
+        val b = best ?: return null
+        return Candidate(h, HazardKind.SMAVAG, b, h.id, beta = true)
     }
 }
