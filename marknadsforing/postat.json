@@ -1031,5 +1031,18 @@
       "instagram": "17977510278140003",
       "x": "2120907645628690824"
     }
+  ],
+  "2026-11-13": [
+    {
+      "pass": "live",
+      "namn": "2026-11-13-live-0008",
+      "typ": "smhi",
+      "nyckel": "smhi:Snöfall:Västernorrlands län och norra Hälsingland:YELLOW",
+      "tid": "2026-11-12T23:08:20.773Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-11-13-live-0008.jpg",
+      "facebook": "1312515671952967_122112366993516187",
+      "instagram": "18109849253211280",
+      "x": "2121017350132822192"
+    }
   ]
 }
