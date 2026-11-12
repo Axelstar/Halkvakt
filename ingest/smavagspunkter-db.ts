@@ -47,17 +47,24 @@ export const SATS = {
   ta_bort: `DELETE FROM smavagspunkt s WHERE NOT EXISTS (SELECT 1 FROM unnest($1::text[]) AS l(punkt) WHERE l.punkt = s.punkt)`,
   // Punktfilen (sql/106): ordningen är bitarnas i live.json (publish/snapshot-core.ts). En ny fil nollar vad hinken och kartrepot bär.
   finnsPunktfil: `SELECT to_regclass('public.smavag_punktfil') IS NOT NULL AS ja`,
-  punktfilRader: `SELECT punkt, lon, lat FROM smavagspunkt ORDER BY punkt COLLATE "C"`,
+  punktfilRader: `SELECT punkt, vag, ordning, lon, lat FROM smavagspunkt ORDER BY punkt COLLATE "C"`,
   punktfil: `INSERT INTO smavag_punktfil (id, sha256, punkter, bytes, gz_bytes, json, skriven_at) VALUES (1, $1, $2, $3, $4, $5, now())
     ON CONFLICT (id) DO UPDATE SET sha256 = EXCLUDED.sha256, punkter = EXCLUDED.punkter, bytes = EXCLUDED.bytes, gz_bytes = EXCLUDED.gz_bytes,
       json = EXCLUDED.json, skriven_at = now(), i_hinken = NULL, i_github = NULL
     WHERE smavag_punktfil.sha256 IS DISTINCT FROM EXCLUDED.sha256`,
 };
 
-/** Appens punktfil: lägena med fem decimaler i den givna ordningen, och filens sha256, storlek och packade storlek. */
-export function punktfil(rader: { lon: number; lat: number }[]) {
+/** Appens punktfil: lägena med fem decimaler i den givna ordningen, och filens sha256, storlek och packade storlek. Schema 2 (byggsteg 7,
+ *  DECISIONS #844): för varje punkt också vägens nummer (v00001 → 1) och platsen längs vägen, i två listor bredvid lägena, så att appen
+ *  kan lägga vägens punkter i ordning (engine/src/smavagfil.ts). Bitarnas ordning är densamma som i schema 1. */
+export function punktfil(rader: { lon: number; lat: number; vag: string; ordning: number }[]) {
   const r5 = (x: number) => Math.round(Number(x) * 1e5) / 1e5;
-  const json = JSON.stringify({ schema: 1, punkter: rader.map((p) => [r5(p.lon), r5(p.lat)]) });
+  const vag = rader.map((p) => {
+    const m = /^v(\d+)$/.exec(p.vag);
+    if (!m) throw new Error(`punktfilen: vägen ${p.vag} har inte formen v + siffror`);
+    return Number(m[1]);
+  });
+  const json = JSON.stringify({ schema: 2, punkter: rader.map((p) => [r5(p.lon), r5(p.lat)]), vag, ordning: rader.map((p) => Number(p.ordning)) });
   const b = Buffer.from(json, "utf8");
   return { json, sha256: createHash("sha256").update(b).digest("hex"), punkter: rader.length, bytes: b.byteLength, gz_bytes: gzipSync(b).byteLength };
 }
@@ -111,10 +118,13 @@ function sjalvtest(): number {
   if (!SATS.skriv.includes("ON CONFLICT (punkt)") || !SATS.ta_bort.startsWith("DELETE FROM smavagspunkt") || /vagpunkt\b|stadspunkt|brytare/.test(satser.replace(/smavagspunkt/g, "")))
     fel.push("satserna rör annat än smavagspunkt");
   if (/= ANY\(/.test(SATS.ta_bort)) fel.push("ta_bort jämför varje rad med hela listan");
-  const f = punktfil([{ lon: 15.123456, lat: 60.000004 }, { lon: 16, lat: 61.5 }]);
-  if (f.json !== '{"schema":1,"punkter":[[15.12346,60],[16,61.5]]}' || f.punkter !== 2 || !/^[0-9a-f]{64}$/.test(f.sha256) || f.bytes !== f.json.length)
-    fel.push(`punktfilen: ${f.json}`);
-  if (punktfil([{ lon: 16, lat: 61.5 }, { lon: 15.123456, lat: 60.000004 }]).sha256 === f.sha256) fel.push("punktfilens sha bär inte ordningen");
+  const f = punktfil([{ lon: 15.123456, lat: 60.000004, vag: "v00012", ordning: 3 }, { lon: 16, lat: 61.5, vag: "v00001", ordning: 0 }]);
+  if (f.json !== '{"schema":2,"punkter":[[15.12346,60],[16,61.5]],"vag":[12,1],"ordning":[3,0]}' || f.punkter !== 2 || !/^[0-9a-f]{64}$/.test(f.sha256)
+    || f.bytes !== f.json.length) fel.push(`punktfilen: ${f.json}`);
+  if (punktfil([{ lon: 16, lat: 61.5, vag: "v00001", ordning: 0 }, { lon: 15.123456, lat: 60.000004, vag: "v00012", ordning: 3 }]).sha256 === f.sha256)
+    fel.push("punktfilens sha bär inte ordningen");
+  try { punktfil([{ lon: 16, lat: 61.5, vag: "00001", ordning: 0 }]); fel.push("punktfilen släppte igenom en väg utan v"); } catch { /* väntat */ }
+  if (!SATS.punktfilRader.includes("vag, ordning")) fel.push("punktfilens rader saknar väg och ordning");
   if (!SATS.punktfilRader.includes('ORDER BY punkt COLLATE "C"') || !SATS.punktfil.includes("i_hinken = NULL")) fel.push("punktfilens ordning eller nollningen");
   console.log(`självtest smavagspunkter-db: ${fel.length ? "FEL" : "klart"}`);
   for (const f of fel) console.log(`  ${f}`);

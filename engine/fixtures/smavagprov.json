@@ -1,0 +1,697 @@
+{
+ "_om": "SMÅVÄGSPROVET (DECISIONS #828 byggsteg 7, #844). Punktfilen smavag.json (schema 2: punkterna i bitarnas ordning, med väg och ordning per punkt) och live.json:s smavag-besked (punktfilens sha, antalet punkter, bitarna i base64) → motorns SmavagHazard. Alla tre läsarna prövas mot den: TS engine/src/smavagfil.ts i test/smavagfil.test.ts, Kotlin SmavagFil.kt i SmavagFilTest.kt och Swift SmavagFil.swift i SmavagFilTests.swift. Varje fall: id, punkterna i ordning och de varnande punkternas platser ska bli exakt vantat; allt tvivel ger tystnad.",
+ "fall": [
+  {
+   "namn": "vanligt",
+   "_varfor": "bitarna 3, 4 och 7 varnar (byten 152 = mA==, den första punkten i den lägsta biten): väg 1 i ordningen 0, 1, 2 med den varnande punkten på plats 1, väg 4 med sin andra punkt; väg 3 har en ensam punkt och kan aldrig tala; väg 2 varnar inte. Vägarna i nummerordning.",
+   "fil": {
+    "schema": 2,
+    "punkter": [
+     [
+      12.02,
+      56.01
+     ],
+     [
+      13.0,
+      57.0
+     ],
+     [
+      12.0,
+      56.0
+     ],
+     [
+      14.0,
+      58.0
+     ],
+     [
+      12.01,
+      56.005
+     ],
+     [
+      13.01,
+      57.005
+     ],
+     [
+      15.0,
+      59.0
+     ],
+     [
+      15.01,
+      59.005
+     ]
+    ],
+    "vag": [
+     1,
+     2,
+     1,
+     3,
+     1,
+     2,
+     4,
+     4
+    ],
+    "ordning": [
+     2,
+     0,
+     0,
+     0,
+     1,
+     1,
+     0,
+     1
+    ]
+   },
+   "filSha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "besked": {
+    "fil": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "n": 8,
+    "bitar": "mA=="
+   },
+   "vantat": [
+    {
+     "id": "smv:1",
+     "points": [
+      [
+       12.0,
+       56.0
+      ],
+      [
+       12.01,
+       56.005
+      ],
+      [
+       12.02,
+       56.01
+      ]
+     ],
+     "warn": [
+      1
+     ]
+    },
+    {
+     "id": "smv:4",
+     "points": [
+      [
+       15.0,
+       59.0
+      ],
+      [
+       15.01,
+       59.005
+      ]
+     ],
+     "warn": [
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "namn": "annan fil",
+   "_varfor": "beskedet är gjort för en annan punktfil: tystnad",
+   "fil": {
+    "schema": 2,
+    "punkter": [
+     [
+      12.02,
+      56.01
+     ],
+     [
+      13.0,
+      57.0
+     ],
+     [
+      12.0,
+      56.0
+     ],
+     [
+      14.0,
+      58.0
+     ],
+     [
+      12.01,
+      56.005
+     ],
+     [
+      13.01,
+      57.005
+     ],
+     [
+      15.0,
+      59.0
+     ],
+     [
+      15.01,
+      59.005
+     ]
+    ],
+    "vag": [
+     1,
+     2,
+     1,
+     3,
+     1,
+     2,
+     4,
+     4
+    ],
+    "ordning": [
+     2,
+     0,
+     0,
+     0,
+     1,
+     1,
+     0,
+     1
+    ]
+   },
+   "filSha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+   "besked": {
+    "fil": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "n": 8,
+    "bitar": "mA=="
+   },
+   "vantat": []
+  },
+  {
+   "namn": "fel antal punkter",
+   "_varfor": "beskedet säger nio punkter, filen har åtta",
+   "fil": {
+    "schema": 2,
+    "punkter": [
+     [
+      12.02,
+      56.01
+     ],
+     [
+      13.0,
+      57.0
+     ],
+     [
+      12.0,
+      56.0
+     ],
+     [
+      14.0,
+      58.0
+     ],
+     [
+      12.01,
+      56.005
+     ],
+     [
+      13.01,
+      57.005
+     ],
+     [
+      15.0,
+      59.0
+     ],
+     [
+      15.01,
+      59.005
+     ]
+    ],
+    "vag": [
+     1,
+     2,
+     1,
+     3,
+     1,
+     2,
+     4,
+     4
+    ],
+    "ordning": [
+     2,
+     0,
+     0,
+     0,
+     1,
+     1,
+     0,
+     1
+    ]
+   },
+   "filSha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "besked": {
+    "fil": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "n": 9,
+    "bitar": "mA=="
+   },
+   "vantat": []
+  },
+  {
+   "namn": "schema 1",
+   "_varfor": "den gamla filen utan väg och ordning ger inga faror",
+   "fil": {
+    "schema": 1,
+    "punkter": [
+     [
+      12.02,
+      56.01
+     ],
+     [
+      13.0,
+      57.0
+     ],
+     [
+      12.0,
+      56.0
+     ],
+     [
+      14.0,
+      58.0
+     ],
+     [
+      12.01,
+      56.005
+     ],
+     [
+      13.01,
+      57.005
+     ],
+     [
+      15.0,
+      59.0
+     ],
+     [
+      15.01,
+      59.005
+     ]
+    ]
+   },
+   "filSha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "besked": {
+    "fil": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "n": 8,
+    "bitar": "mA=="
+   },
+   "vantat": []
+  },
+  {
+   "namn": "fel antal byte",
+   "_varfor": "åtta punkter är en byte; två byte är ett besked för en annan fil",
+   "fil": {
+    "schema": 2,
+    "punkter": [
+     [
+      12.02,
+      56.01
+     ],
+     [
+      13.0,
+      57.0
+     ],
+     [
+      12.0,
+      56.0
+     ],
+     [
+      14.0,
+      58.0
+     ],
+     [
+      12.01,
+      56.005
+     ],
+     [
+      13.01,
+      57.005
+     ],
+     [
+      15.0,
+      59.0
+     ],
+     [
+      15.01,
+      59.005
+     ]
+    ],
+    "vag": [
+     1,
+     2,
+     1,
+     3,
+     1,
+     2,
+     4,
+     4
+    ],
+    "ordning": [
+     2,
+     0,
+     0,
+     0,
+     1,
+     1,
+     0,
+     1
+    ]
+   },
+   "filSha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "besked": {
+    "fil": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "n": 8,
+    "bitar": "mAA="
+   },
+   "vantat": []
+  },
+  {
+   "namn": "trasig base64",
+   "_varfor": "bitar som inte går att läsa ger tystnad, aldrig en gissning",
+   "fil": {
+    "schema": 2,
+    "punkter": [
+     [
+      12.02,
+      56.01
+     ],
+     [
+      13.0,
+      57.0
+     ],
+     [
+      12.0,
+      56.0
+     ],
+     [
+      14.0,
+      58.0
+     ],
+     [
+      12.01,
+      56.005
+     ],
+     [
+      13.01,
+      57.005
+     ],
+     [
+      15.0,
+      59.0
+     ],
+     [
+      15.01,
+      59.005
+     ]
+    ],
+    "vag": [
+     1,
+     2,
+     1,
+     3,
+     1,
+     2,
+     4,
+     4
+    ],
+    "ordning": [
+     2,
+     0,
+     0,
+     0,
+     1,
+     1,
+     0,
+     1
+    ]
+   },
+   "filSha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "besked": {
+    "fil": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "n": 8,
+    "bitar": "@@@@"
+   },
+   "vantat": []
+  },
+  {
+   "namn": "väg som bråktal",
+   "_varfor": "en väg som inte är ett heltal: hela filen tiger",
+   "fil": {
+    "schema": 2,
+    "punkter": [
+     [
+      12.02,
+      56.01
+     ],
+     [
+      13.0,
+      57.0
+     ],
+     [
+      12.0,
+      56.0
+     ],
+     [
+      14.0,
+      58.0
+     ],
+     [
+      12.01,
+      56.005
+     ],
+     [
+      13.01,
+      57.005
+     ],
+     [
+      15.0,
+      59.0
+     ],
+     [
+      15.01,
+      59.005
+     ]
+    ],
+    "vag": [
+     1,
+     2,
+     1,
+     3,
+     1.5,
+     2,
+     4,
+     4
+    ],
+    "ordning": [
+     2,
+     0,
+     0,
+     0,
+     1,
+     1,
+     0,
+     1
+    ]
+   },
+   "filSha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "besked": {
+    "fil": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "n": 8,
+    "bitar": "mA=="
+   },
+   "vantat": []
+  },
+  {
+   "namn": "kortare ordning",
+   "_varfor": "ordningen har en punkt för lite",
+   "fil": {
+    "schema": 2,
+    "punkter": [
+     [
+      12.02,
+      56.01
+     ],
+     [
+      13.0,
+      57.0
+     ],
+     [
+      12.0,
+      56.0
+     ],
+     [
+      14.0,
+      58.0
+     ],
+     [
+      12.01,
+      56.005
+     ],
+     [
+      13.01,
+      57.005
+     ],
+     [
+      15.0,
+      59.0
+     ],
+     [
+      15.01,
+      59.005
+     ]
+    ],
+    "vag": [
+     1,
+     2,
+     1,
+     3,
+     1,
+     2,
+     4,
+     4
+    ],
+    "ordning": [
+     2,
+     0,
+     0,
+     0,
+     1,
+     1,
+     0
+    ]
+   },
+   "filSha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "besked": {
+    "fil": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "n": 8,
+    "bitar": "mA=="
+   },
+   "vantat": []
+  },
+  {
+   "namn": "inget besked",
+   "_varfor": "brytarna av: live.json saknar smavag",
+   "fil": {
+    "schema": 2,
+    "punkter": [
+     [
+      12.02,
+      56.01
+     ],
+     [
+      13.0,
+      57.0
+     ],
+     [
+      12.0,
+      56.0
+     ],
+     [
+      14.0,
+      58.0
+     ],
+     [
+      12.01,
+      56.005
+     ],
+     [
+      13.01,
+      57.005
+     ],
+     [
+      15.0,
+      59.0
+     ],
+     [
+      15.01,
+      59.005
+     ]
+    ],
+    "vag": [
+     1,
+     2,
+     1,
+     3,
+     1,
+     2,
+     4,
+     4
+    ],
+    "ordning": [
+     2,
+     0,
+     0,
+     0,
+     1,
+     1,
+     0,
+     1
+    ]
+   },
+   "filSha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "besked": null,
+   "vantat": []
+  },
+  {
+   "namn": "inga bitar satta",
+   "_varfor": "beskedet finns men ingen punkt varnar",
+   "fil": {
+    "schema": 2,
+    "punkter": [
+     [
+      12.02,
+      56.01
+     ],
+     [
+      13.0,
+      57.0
+     ],
+     [
+      12.0,
+      56.0
+     ],
+     [
+      14.0,
+      58.0
+     ],
+     [
+      12.01,
+      56.005
+     ],
+     [
+      13.01,
+      57.005
+     ],
+     [
+      15.0,
+      59.0
+     ],
+     [
+      15.01,
+      59.005
+     ]
+    ],
+    "vag": [
+     1,
+     2,
+     1,
+     3,
+     1,
+     2,
+     4,
+     4
+    ],
+    "ordning": [
+     2,
+     0,
+     0,
+     0,
+     1,
+     1,
+     0,
+     1
+    ]
+   },
+   "filSha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "besked": {
+    "fil": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "n": 8,
+    "bitar": "AA=="
+   },
+   "vantat": []
+  }
+ ]
+}
