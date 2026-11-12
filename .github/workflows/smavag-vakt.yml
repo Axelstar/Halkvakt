@@ -1,0 +1,68 @@
+# SMÅVÄGSRÖSTENS VAKT (DECISIONS #849, kort #647; Bengt 12/11: "Ja, båda"). Varje morgon prövas förra UTC-dygnet timme för timme:
+# kedjan räknade timmen (smavag_korning), underlaget och resorna står i hinken, och timflödet gick grönt (scripts/smavag-vakt.ts).
+# Ett ofullständigt dygn ger ett ärende med etiketten smavag-vakt, tilldelat Bengt; första kompletta dygnet stänger det. Ärendet och
+# loggen säger bara komplett eller ofullständigt och vilken prövning som föll (#768); timmarna går till den privata hinken
+# (kuvos-smavag-2026-27/vakt_<dygn>.json).
+# GitHub-cronen, inte pulsklockan, som fristvakten: vakten ska larma även när databasen och pulsklockan står. Cronen kan utebli och går
+# sent, därför två tider; samma dygn prövas aldrig två gånger. På en PR körs bara självtestet.
+name: smavag-vakt
+on:
+  schedule:
+    - cron: "17 6 * * *"
+    - cron: "17 12 * * *"
+  workflow_dispatch:
+    inputs:
+      dygn:
+        description: "UTC-dygnet att pröva, ÅÅÅÅ-MM-DD (tomt = i går)"
+        required: false
+        default: ""
+      torr:
+        description: "Bara skriv vad vakten skulle göra med ärendet"
+        type: boolean
+        default: false
+  pull_request:
+    paths: ["scripts/smavag-vakt.ts", ".github/workflows/smavag-vakt.yml"]
+permissions:
+  issues: write
+  contents: read
+  actions: read      # timflödets körningar
+concurrency: { group: smavag-vakt, cancel-in-progress: false }
+env:
+  HINK: kuvos-smavag-2026-27
+jobs:
+  vakt:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: node --experimental-strip-types scripts/smavag-vakt.ts --sjalvtest
+      - name: Dygnet
+        if: ${{ github.event_name != 'pull_request' }}
+        shell: bash
+        env:
+          DATABASE_URL: "${{ secrets.DATABASE_URL }}"
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          DYGN: "${{ inputs.dygn }}"
+          TORR: "${{ inputs.torr && '--torr' || '' }}"
+        run: |
+          set -euo pipefail
+          D="${DYGN:-$(date -u -d yesterday +%F)}"
+          [[ "$D" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] || { echo "::error::dygnet ska vara ÅÅÅÅ-MM-DD"; exit 1; }
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          hink() { FN="$FN" KEY="$KEY" node --experimental-strip-types ingest/hinken.ts "$@" 2>> hinken.log; }
+          : > hinken.txt
+          for h in $(seq -w 0 23); do
+            for f in "underlag_${D//-/}T$h.csv.gz" "resor_${D//-/}T$h.csv.gz"; do if hink finns "$HINK/$f"; then echo "$f" >> hinken.txt; fi; done
+          done
+          node --experimental-strip-types scripts/smavag-vakt.ts "$D" hinken.txt "vakt_$D.json" $TORR 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+          if [ -z "$TORR" ]; then
+            hink finns "$HINK/vakt_$D.json" || hink ladda "vakt_$D.json" "$HINK/vakt_$D.json" || { echo "::error::timmarna gick inte till hinken"; exit 1; }
+          fi
+          rm -f hinken.txt "vakt_$D.json"
