@@ -19,11 +19,11 @@ test("småvägsprovet: TS-läsaren ger varje falls väntade faror", () => {
 });
 
 test("småvägsprovet: läsarens faror talar i motorn när bilen följer vägen", () => {
-  // Väg 1 i det vanliga fallet går från 12,00/56,00 mot nordost med punkterna omkring 800 m isär. En bil som följer vägen i 80 km/h
-  // ska få beskedet om den varnande punkten (plats 1).
+  // Väg 1 i det vanliga fallet går från sin första ände mot nordost med punkterna omkring 800 m isär. En bil som följer vägen i 80 km/h
+  // ska få beskedet om den varnande punkten.
   const f = prov.fall.find((x: { namn: string }) => x.namn === "vanligt");
   const faror = smavagHazards(f.fil, f.besked, f.filSha).filter((h) => h.id === "smv:1");
-  const [a, b] = [faror[0].points[0], faror[0].points[2]];
+  const [a, b] = [faror[0].points[0], faror[0].points[faror[0].points.length - 1]];
   const kurs = bearingDeg({ lon: a[0], lat: a[1] }, { lon: b[0], lat: b[1] }), steg = 40;
   const fixar = Array.from({ length: steg + 1 }, (_, i) => ({ t: i * 2, lon: a[0] + (b[0] - a[0]) * (i / steg), lat: a[1] + (b[1] - a[1]) * (i / steg),
     speedKmh: 80, headingDeg: kurs }));

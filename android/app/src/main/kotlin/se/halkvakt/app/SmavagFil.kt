@@ -1,8 +1,9 @@
 // Mirror of engine/src/smavagfil.ts — keep 1:1 (DECISIONS #828 byggsteg 7, #844). Held to engine/fixtures/smavagprov.json by
 // SmavagFilTest, like the TS and Swift readers. The point file (smavag.json, schema 2) lists every small-road point in the order of
 // the bits in live.json's `smavag`; each point carries its road (`vag`) and place along it (`ordning`). Silence is a feature: an
-// unknown schema, a besked for another file, a wrong point or byte count or a value that is not a whole number gives no hazards.
-// Only roads with a warning point become hazards, and a road with a single point is left out (the road test needs two neighbours).
+// unknown schema, a besked for another file, a wrong point or byte count, a value that is not a whole number or a broken end gives
+// no hazards. Only roads with a warning point become hazards. `andar` (DECISIONS #847): each road's two ends, first and last on the
+// road and never warning; a road left with fewer than two points is left out (the road test needs two neighbours).
 package se.halkvakt.app
 
 import org.json.JSONArray
@@ -10,7 +11,8 @@ import org.json.JSONObject
 import se.halkvakt.engine.SmavagHazard
 import java.util.Base64
 
-class SmavagFil private constructor(val lon: DoubleArray, val lat: DoubleArray, val vag: IntArray, val ordning: IntArray) {
+class SmavagFil private constructor(val lon: DoubleArray, val lat: DoubleArray, val vag: IntArray, val ordning: IntArray,
+                                     val andar: Map<Int, DoubleArray>) {
     val n: Int get() = lon.size
 
     /** The hazards for live.json's `smavag` besked, read against this file, whose verified sha256 is [filSha]. */
@@ -28,9 +30,15 @@ class SmavagFil private constructor(val lon: DoubleArray, val lat: DoubleArray, 
         val out = ArrayList<SmavagHazard>()
         for (v in perVag.keys.sorted()) {
             val idx = perVag.getValue(v).sortedBy { ordning[it] }
-            if (idx.size < 2) continue
-            out.add(SmavagHazard(id = "smv:$v", points = idx.map { doubleArrayOf(lon[it], lat[it]) },
-                warn = idx.indices.filter { varnar(idx[it]) }))
+            val a = andar[v]
+            val points = buildList {
+                if (a != null) add(doubleArrayOf(a[0], a[1]))
+                idx.forEach { add(doubleArrayOf(lon[it], lat[it])) }
+                if (a != null) add(doubleArrayOf(a[2], a[3]))
+            }
+            if (points.size < 2) continue
+            val forst = if (a != null) 1 else 0
+            out.add(SmavagHazard(id = "smv:$v", points = points, warn = idx.indices.filter { varnar(idx[it]) }.map { it + forst }))
         }
         return out
     }
@@ -53,7 +61,19 @@ class SmavagFil private constructor(val lon: DoubleArray, val lat: DoubleArray, 
                 vag[i] = heltal(v, i) ?: return null
                 ordning[i] = heltal(r, i) ?: return null
             }
-            return SmavagFil(lon, lat, vag, ordning)
+            val andar = HashMap<Int, DoubleArray>()
+            if (doc.has("andar")) {
+                val ao = doc.optJSONObject("andar") ?: return null
+                for (k in ao.keys()) {
+                    val v = k.toIntOrNull()?.takeIf { it >= 0 && k.all(Char::isDigit) } ?: return null
+                    val q = ao.optJSONArray(k) ?: return null
+                    if (q.length() != 4) return null
+                    val a = DoubleArray(4)
+                    for (j in 0 until 4) a[j] = tal(q, j) ?: return null
+                    andar[v] = a
+                }
+            }
+            return SmavagFil(lon, lat, vag, ordning, andar)
         }
 
         // JVM tests run json-java, Android its own org.json: a number can be Integer, Long, Double or BigDecimal in either (#289).

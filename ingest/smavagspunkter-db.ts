@@ -37,6 +37,24 @@ export function rader(lista: { rader?: unknown }): Smavagspunkt[] {
   });
 }
 
+/** Vägarnas ändar (DECISIONS #847): kuvösens "andar", två hjälppunkter per väg 200 m in från korsningarna, som ger vägtestet en linje
+ *  också på en väg med en enda punkt. Prövade som raderna: ett v-id, två lägen om två tal i Sverige. Saknas nyckeln blir det inga ändar
+ *  (en äldre punktfil); ett fel kastar. */
+export function andar(lista: { andar?: unknown }): Map<string, [[number, number], [number, number]]> {
+  const ut = new Map<string, [[number, number], [number, number]]>();
+  if (lista.andar === undefined) return ut;
+  if (!lista.andar || typeof lista.andar !== "object" || Array.isArray(lista.andar)) throw new Error("andar är inget objekt");
+  for (const [vag, x] of Object.entries(lista.andar as Record<string, unknown>)) {
+    const fel = (v: string) => { throw new Error(`ändarna för ${vag}: ${v}`); };
+    if (!/^v\d{5,}$/.test(vag)) fel("vägen är inget v-id");
+    if (!Array.isArray(x) || x.length !== 2) fel("inte två ändar");
+    const par = (x as unknown[]).map((q) => (Array.isArray(q) && q.length === 2 ? [Number(q[0]), Number(q[1])] : [NaN, NaN]));
+    for (const [lon, lat] of par) if (!(lon > 10 && lon < 25 && lat > 55 && lat < 70)) fel("läget ligger inte i Sverige");
+    ut.set(vag, par as [[number, number], [number, number]]);
+  }
+  return ut;
+}
+
 export const SATS = {
   skriv: `INSERT INTO smavagspunkt (punkt, grupp, vag, ordning, lon, lat)
     SELECT * FROM unnest($1::text[], $2::text[], $3::text[], $4::int[], $5::float8[], $6::float8[])
@@ -55,16 +73,21 @@ export const SATS = {
 };
 
 /** Appens punktfil: lägena med fem decimaler i den givna ordningen, och filens sha256, storlek och packade storlek. Schema 2 (byggsteg 7,
- *  DECISIONS #844): för varje punkt också vägens nummer (v00001 → 1) och platsen längs vägen, i två listor bredvid lägena, så att appen
- *  kan lägga vägens punkter i ordning (engine/src/smavagfil.ts). Bitarnas ordning är densamma som i schema 1. */
-export function punktfil(rader: { lon: number; lat: number; vag: string; ordning: number }[]) {
+ *  DECISIONS #844, #846): för varje punkt också vägens nummer (v00001 → 1) och platsen längs vägen, i två listor bredvid lägena, så att
+ *  appen kan lägga vägens punkter i ordning (engine/src/smavagfil.ts). Bitarnas ordning är densamma som i schema 1. Med ändarna (#847):
+ *  "andar" per vägnummer, [lon, lat, lon, lat] för vägens början och slut, bara för vägar som har punkter i filen. */
+export function punktfil(rader: { lon: number; lat: number; vag: string; ordning: number }[],
+                         andarna: Map<string, [[number, number], [number, number]]> = new Map()) {
   const r5 = (x: number) => Math.round(Number(x) * 1e5) / 1e5;
   const vag = rader.map((p) => {
     const m = /^v(\d+)$/.exec(p.vag);
     if (!m) throw new Error(`punktfilen: vägen ${p.vag} har inte formen v + siffror`);
     return Number(m[1]);
   });
-  const json = JSON.stringify({ schema: 2, punkter: rader.map((p) => [r5(p.lon), r5(p.lat)]), vag, ordning: rader.map((p) => Number(p.ordning)) });
+  const mina = [...new Set(rader.map((p) => p.vag))].filter((v) => andarna.has(v)).sort((a, b) => Number(a.slice(1)) - Number(b.slice(1)));
+  const ande = Object.fromEntries(mina.map((v) => { const [a, b] = andarna.get(v)!; return [String(Number(v.slice(1))), [r5(a[0]), r5(a[1]), r5(b[0]), r5(b[1])]]; }));
+  const json = JSON.stringify({ schema: 2, punkter: rader.map((p) => [r5(p.lon), r5(p.lat)]), vag, ordning: rader.map((p) => Number(p.ordning)),
+    ...(mina.length ? { andar: ande } : {}) });
   const b = Buffer.from(json, "utf8");
   return { json, sha256: createHash("sha256").update(b).digest("hex"), punkter: rader.length, bytes: b.byteLength, gz_bytes: gzipSync(b).byteLength };
 }
@@ -73,7 +96,8 @@ export const kolumner = (d: Smavagspunkt[]) =>
   [d.map((x) => x.punkt), d.map((x) => x.grupp), d.map((x) => x.vag), d.map((x) => x.ordning), d.map((x) => x.lon), d.map((x) => x.lat)];
 
 async function ladda(fil: string) {
-  const r = rader(JSON.parse(readFileSync(fil, "utf8")));
+  const lista = JSON.parse(readFileSync(fil, "utf8"));
+  const r = rader(lista), a = andar(lista);
   const url = process.env.DATABASE_URL;
   if (!url) throw new Error("DATABASE_URL saknas");
   const pg = (await import("pg")).default;
@@ -85,7 +109,7 @@ async function ladda(fil: string) {
     await c.query(SATS.ta_bort, [r.map((x) => x.punkt)]);
     // Före sql/106 finns ingen punktfil att skriva; punkterna laddas ändå.
     if ((await c.query(SATS.finnsPunktfil)).rows[0]?.ja) {
-      const f = punktfil((await c.query(SATS.punktfilRader)).rows);
+      const f = punktfil((await c.query(SATS.punktfilRader)).rows, a);
       await c.query(SATS.punktfil, [f.sha256, f.punkter, f.bytes, f.gz_bytes, f.json]);
     }
     await c.query("COMMIT");
@@ -125,6 +149,16 @@ function sjalvtest(): number {
     fel.push("punktfilens sha bär inte ordningen");
   try { punktfil([{ lon: 16, lat: 61.5, vag: "00001", ordning: 0 }]); fel.push("punktfilen släppte igenom en väg utan v"); } catch { /* väntat */ }
   if (!SATS.punktfilRader.includes("vag, ordning")) fel.push("punktfilens rader saknar väg och ordning");
+  // Ändarna (#847): bara för vägar med punkter i filen, i vägnummerordning; trasiga ändar kastar; utan nyckeln inga ändar.
+  const a = andar({ andar: { v00012: [[15.1, 60.0], [15.2, 60.1]], v00001: [[16.0, 61.4], [16.1, 61.6]], v00099: [[17, 62], [17.1, 62.1]] } });
+  const fa = punktfil([{ lon: 15.123456, lat: 60.000004, vag: "v00012", ordning: 3 }, { lon: 16, lat: 61.5, vag: "v00001", ordning: 0 }], a);
+  if (fa.json !== '{"schema":2,"punkter":[[15.12346,60],[16,61.5]],"vag":[12,1],"ordning":[3,0],"andar":{"1":[16,61.4,16.1,61.6],"12":[15.1,60,15.2,60.1]}}')
+    fel.push(`punktfilen med ändarna: ${fa.json}`);
+  if (andar({}).size !== 0) fel.push("utan nyckeln ska det inte bli några ändar");
+  for (const [namn, x] of [["en ände", { v00001: [[16, 61]] }], ["läget i havet", { v00001: [[16, 61], [0, 0]] }], ["fel id", { r00001: [[16, 61], [16, 61.1]] }],
+    ["en lista", [[16, 61]]]] as const) {
+    try { andar({ andar: x }); fel.push(`ändarna släppte igenom: ${namn}`); } catch { /* väntat */ }
+  }
   if (!SATS.punktfilRader.includes('ORDER BY punkt COLLATE "C"') || !SATS.punktfil.includes("i_hinken = NULL")) fel.push("punktfilens ordning eller nollningen");
   console.log(`självtest smavagspunkter-db: ${fel.length ? "FEL" : "klart"}`);
   for (const f of fel) console.log(`  ${f}`);

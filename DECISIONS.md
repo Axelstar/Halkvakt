@@ -15738,3 +15738,46 @@ fanns redan i tabellen `smavagspunkt` (sql/103), så bara filen och läsarna sak
 Inget hörs: brytarna är av.
 
 **Stomdokument:** APP 3 — appens hämtning av småvägarnas punktfil, SYS 2 — punktfilen med väg och ordning och läsaren
+
+## #847 (12/11 2026) Småvägarnas ändar som hjälppunkter, 200 m in från korsningen (kort #647, byggsteg 7)
+
+**Beslutet.** Bengt 12/11: *"Ja, bygg A200"*. Frågan kom ur Bengts *"nu ska vi se faller 8700 av vägarna bort eller?"* och
+*"Ja, mät först"*.
+- **Ändarna:** varje småväg får två hjälppunkter, en i varje ände, 200 m in från korsningen längs vägens riktiga linje.
+  - De läggs aldrig förbi vägens första eller sista punkt, utan högst 10 m före den.
+  - De varnar aldrig själva.
+  - De ger motorns vägtest (#844) en linje också på en väg med en enda punkt, och en linje fram till den första punkten efter
+    korsningen.
+- **Kuvösen** räknar ändarna (`rostpunkter.py andar`, halkvakt-kuvos PR 79) och lägger dem i sin punktfil under `andar`. Punkterna
+  och deras id ändras inte.
+- **Laddaren** (`ingest/smavagspunkter-db.ts`) prövar ändarna och skriver dem i appens `smavag.json`: schema 2, `andar` per
+  vägnummer, `[lon, lat, lon, lat]`.
+- **Läsaren** i TS, Kotlin och Swift lägger ändarna först och sist och flyttar `warn` förbi den första.
+  - Trasiga ändar ger tystnad.
+  - Provet `smavagprov.json` har nu 13 fall.
+- **Motorn ändras inte.**
+
+**Varför.** Utan ändar kan en väg med en enda punkt aldrig tala: vägtestet behöver två grannar. Det gäller 8 762 av 23 451 vägar,
+och de är korta, trafikerade bitar mellan korsningar.
+- Mätningen 12/11 med den riktiga motorn på vägarnas riktiga linjer jämförde sex varianter: ändar i korsningen, 100 och 200 m in,
+  och ändar bara på vägarna med en enda punkt.
+- Ändar i själva korsningen gav mycket mer smitta till de stora vägarna, eftersom korsningen ofta ligger på den stora vägen.
+- 200 m in behöll fångsten och tog bort det mesta av smittan.
+- Talen står i mätningen (#768).
+
+**Alternativen som inte valdes:**
+- inga ändar (vägarna med en punkt tiger);
+- ändar i korsningen eller 100 m in (mer smitta);
+- ändar bara på vägarna med en enda punkt (de korta vägarna med 2–4 punkter missar den första punkten).
+- Längre indrag än 200 m är inte mätta.
+
+**Följd:** punktfilen blir omkring 3,5 MB, 1,0 MB packad. Den hämtas bara när `live.json` bär ett besked (#846) och bara när den
+ändras.
+
+**Kvar:**
+- android och ios-engine på grenen;
+- iOS-appens hämtning i Xcode;
+- laddarens första fil med ändarna;
+- batterimätningen (steg 10).
+
+**Stomdokument:** SYS 2 — småvägarnas ändar som hjälppunkter i punktfilen och läsaren
