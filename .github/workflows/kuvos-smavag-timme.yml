@@ -5,7 +5,9 @@ name: kuvos-smavag-timme
 # och timmens rader i smavag_live och smavag_korning. Med brytarna av talar ingenting (sql/105, smavag_talar). Sist taktens underlag till
 # den privata hinken (halkvakt-kuvos F55): regelns varnande punkter med N3 och radarns medel, eftersom radar_smavag gallras efter två timmar,
 # och timmens resor ur det (smavag_takt.py, F50 del B med F55 och F56).
-# Saknas timfilen eller timmens PH hoppas timmen grönt. Loggen säger bara klart eller fel (#768). Ankarna lämnar aldrig jobbet.
+# Saknas timmens PH hoppas timmen grönt. Saknas timfilen är det ett fel (DECISIONS #849): kedjan startas sedan 12/11 vid R + 51 minuter
+# och är klar långt före blocket, så en saknad timfil betyder att kedjan inte räknade, och det ska synas. Loggen säger bara klart eller fel
+# (#768). Ankarna lämnar aldrig jobbet.
 on:
   workflow_run:
     workflows: [ny-kandidat-timme]
@@ -80,7 +82,7 @@ jobs:
             fs.writeFileSync(ut, f);' "$HINK/timmar_$STAMP.csv.gz" timmar.csv.gz
           KOD=$?
           set -e
-          [ "$KOD" = 3 ] && { echo "småvägsröstens timme: ingen timfil" | tee -a "$GITHUB_STEP_SUMMARY"; echo "klar=nej" >> "$GITHUB_OUTPUT"; exit 0; }
+          [ "$KOD" = 3 ] && { echo "småvägsröstens timme: ingen timfil" | tee -a "$GITHUB_STEP_SUMMARY"; echo "::error::timfilen för timmen saknas i hinken: kedjan (kuvos-smavag) räknade inte körningen"; exit 1; }
           [ "$KOD" = 0 ] || { echo "::error::timfilen gick inte att hämta"; exit 1; }
           echo "klar=ja" >> "$GITHUB_OUTPUT"
       - name: PH, ankarna och lägena

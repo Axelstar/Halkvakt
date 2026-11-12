@@ -15824,3 +15824,45 @@ säsongsreleasen från 30 augusti och småvägarna 47 dygn bakåt. Med en kortar
 - veckotalen lästa och taket valt av Bengt och Axel.
 
 **Stomdokument:** SYS 2 — småvägsröstens backtest: driftens kedja bakåt
+
+## #849 (12/11 2026) Småvägsröstens kedja startas av pulsklockan, och en daglig vakt larmar för ett ofullständigt dygn (kort #647)
+
+**Beslutet.** Bengt 12/11: *"vad är din bedömning kommer detta att fixa problematiken även på sikt"*, sedan *"Ja"* (underlaget) och
+*"Ja, båda"*.
+- **Kedjans egna start.**
+  - Pulsklockan får jobbet `puls-kuvos-smavag` (`51 */6 * * *`), som startar `kuvos-smavag.yml` vid R + 51 minuter.
+  - Starten efter kuvos-stad (`workflow_run`) tas bort, och en tryckning utan val kör kedjan.
+  - Körningen är den senaste 00/06/12/18 (`--stamp`). Saknas den i MET:s katalog frågar steget igen var femte minut i en halvtimme.
+  - Historiken räknas från körningen: 47 dygn före dygnet för R + 6 timmar, som förut och som i backtesten (#848).
+  - Pulsklockans ANTAL_NYA och vakthundens PULS_GOLV går till 31.
+- **Timflödet** (`kuvos-smavag-timme.yml`) blir rött när timfilen saknas. Med den tidiga starten betyder en saknad timfil att kedjan
+  inte räknade.
+- **Vakten** (`smavag-vakt.yml`, `scripts/smavag-vakt.ts`) körs varje morgon på GitHubs cron, inte pulsklockan, som fristvakten.
+  - Den prövar förra UTC-dygnet timme för timme: att kedjan räknade timmen (minst 95 % av punkterna, `fullstandig` ur
+    `smavag-regel.ts`), att underlaget och resorna står i hinken, och att timflödet gick grönt.
+  - Ett ofullständigt dygn ger ett ärende med etiketten `smavag-vakt`, tilldelat Bengt. Det kommenteras varje ofullständigt dygn och
+    stängs av första kompletta dygnet.
+  - Ärendet säger bara vilken prövning som föll, utan antal och timmar (#768). Timmarna går till hinken (`vakt_<dygn>.json`).
+- **Skuggans 14 dygn (#843)** räknas bara på kompletta dygn.
+
+**Varför.**
+- MET:s körning R finns i katalogen 26–28 minuter efter R och analysen 14–16 minuter efter timmen (`metpplatest`, 73 körningar
+  10–12/11).
+- Kedjan startade efter kuvos-stad och blev klar först vid R+7.15 och R+8.10 (12/11). Blockets första en till två timmar (17–33 %)
+  saknade därför timfil.
+- Som ett flöde startat av ett flöde fick kedjan inte spara cachen ("token has no writable scopes"). Efterhämtningen hade vuxit med
+  ett dygn om dagen och nått budgeten på 40 minuter omkring 20/11. Kuvos-stad, som startas av ett tryckt flöde, sparar sin cache.
+- Två tysta fel hittades 12/11 bara genom att läsa loggar: timflödet var grönt i 26 av 30 timmar utan att räkna något, och
+  uppladdningen föll med kod 1 utan felrad (#1551).
+
+**Alternativen som inte valdes:**
+- ett dagligt schemalagt historiksteg för cachen (tar inte bort tidsförlusten);
+- att låta hela K-kedjan räkna tidigare (rör den nya kandidatens drift och pariteten);
+- vakten i vakthunden (står när databasen står och kräver en deploy).
+
+**Kvar:**
+- pulsjobbet inlagt (`pulsklocka.ts` skarpt via flödet pulsklocka) och vakthunden deployad med det nya golvet;
+- första körningen vid R + 51 minuter, med "Cache saved" som bevis på att cachen går att spara;
+- ett komplett dygn enligt vakten.
+
+**Stomdokument:** SYS 2 — småvägsröstens kedja i drift: egen start och vakten

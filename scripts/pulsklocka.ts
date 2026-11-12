@@ -102,13 +102,17 @@ const NYA: { namn: string; schema: string; fil: string }[] = [
   { namn: "puls-reels", schema: "50 19 * * *", fil: "reels.yml" },
   // Morgonens reel (DECISIONS #806): 05:45 UTC (06:45 vintertid, 07:45 sommartid).
   { namn: "puls-reels-morgon", schema: "45 5 * * *", fil: "reels.yml" },
+  // Småvägsröstens kedja (DECISIONS #849, kort #647): MET:s körning R finns i katalogen 26–28 minuter efter R (mätt 10–12/11), och
+  // kedjan räknar den vid R + 51 minuter, långt före blocket R+6 … R+11. Förut startade den efter kuvos-stad vid R+7 till R+8 och
+  // tappade blockets första timmar. :51 är ledig i databasens klocka och bland pulsjobben. `*/6` för kadensTimmar (#558).
+  { namn: "puls-kuvos-smavag", schema: "51 */6 * * *", fil: "kuvos-smavag.yml" },
 ];
 
 // Vakthundens check 6a bär samma tal som golv (kort #222, DECISIONS #255): ett puls-jobb som
 // avaktiveras eller raderas ska larma, inte tyst falla ur bevakningslistan. Vakthunden kör i Deno
 // hos Supabase och kan inte importera den här filen, så talet är en KOPIA — kontraktsgrinden vaktar
 // att kopiorna bär samma värde, och raden under vaktar att värdet stämmer med listan ovan.
-const ANTAL_NYA = 30;
+const ANTAL_NYA = 31;
 if (NYA.length !== ANTAL_NYA) {
   console.error(`NYA har ${NYA.length} jobb men ANTAL_NYA säger ${ANTAL_NYA} — uppdatera båda, och vakthundens PULS_GOLV.`);
   process.exit(1);

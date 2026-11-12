@@ -4,23 +4,24 @@ name: kuvos-smavag
 # smavagar_pilot.py och levande.py i det privata repot). Punkterna, särdragen och koden ligger där.
 #   historik  45 dygns MET Nordic-analys bakåt, ur MET:s arkiv, till Actions-cachen kuvos-smavag-alla-<dygn>. Pausar runt de levande
 #             körningarna. Tar tiden slut, tar nästa körning vid där den slutade (som kuvos-stad).
-#   kedjan    startar när kuvos-stad är klar (workflow_run), så att de två aldrig väntar i MET-kön samtidigt: en väntande körning i
-#             en concurrency-grupp avbryts av nästa. Dygnen som saknas, körningen, del A i DELAR delar där varje del bara läser sin dels
-#             historik, och timfilen med PH och den strängare N3 per punkt och timme (smavag_drift.py timmar) till hinken. Timflödet
-#             kuvos-smavag-timme.yml läser den. Inga punkter, tal eller PH i loggen, bara klart eller fel (#768).
+#   kedjan    startas av pulsklockan (puls-kuvos-smavag, R + 51 minuter; DECISIONS #849): MET:s körning R finns i katalogen 26–28
+#             minuter efter R (mätt 10–12/11), och kedjan blir klar långt innan blocket R+6 … R+11 börjar. Fram till 12/11 startade den
+#             efter kuvos-stad (workflow_run), vid R+7 till R+8, och de första en till två timmarna i varje block saknade timfil; som
+#             flöde startat av ett flöde fick den dessutom inte spara cachen. Dygnen som saknas, körningen, del A i DELAR delar där varje
+#             del bara läser sin dels historik, och timfilen med PH och den strängare N3 per punkt och timme (smavag_drift.py timmar) till
+#             hinken. Timflödet kuvos-smavag-timme.yml läser den. Inga punkter, tal eller PH i loggen, bara klart eller fel (#768).
+#             Kuvos-stad startar vid R+6.36, så de två väntar aldrig i MET-kön samtidigt (en väntande körning i en concurrency-grupp
+#             avbryts av nästa).
 # Timfilen ligger i hinken eftersom Actions-cachen kan läsas av en PR från en fork. MET-dygnen är öppna data och får ligga i cachen.
 # Källa: MET Norway, MET Nordic (NLOD / CC BY 4.0).
 on:
-  workflow_run:
-    workflows: [kuvos-stad]
-    types: [completed]
   workflow_dispatch:
     inputs:
       steg:
-        description: "historik (en gång, några timmar) → kedjan (startar sedan själv efter kuvos-stad)"
+        description: "kedjan (pulsklockan trycker den var sjätte timme, utan val) · historik (en gång, några timmar)"
         type: choice
-        options: [historik, kedjan]
-        default: historik
+        options: [kedjan, historik]
+        default: kedjan
 concurrency: { group: kuvos-ny-kandidat-met, cancel-in-progress: false }
 permissions:
   contents: read
@@ -93,7 +94,7 @@ jobs:
         with: { path: mnsv, key: "${{ env.CACHE }}${{ steps.h.outputs.klar == 'ja' && steps.f.outputs.till || format('ofullstandig-{0}', github.run_id) }}" }
 
   kedjan:
-    if: ${{ github.event_name == 'workflow_run' || inputs.steg == 'kedjan' }}
+    if: ${{ inputs.steg == 'kedjan' }}
     runs-on: ubuntu-latest
     timeout-minutes: 120
     env:
@@ -127,7 +128,11 @@ jobs:
           tyst python3 fysik/ny_kandidat/smavagar_pilot.py --sjalvtest
           tyst python3 fysik/ny_kandidat/smavag_drift.py --sjalvtest
           tyst python3 -c "import sys; sys.path.insert(0, 'fysik/ny_kandidat'); import levande; c = levande.ladda()"
-          echo "fran=$(date -u -d '47 days ago' +%F)" >> "$GITHUB_OUTPUT"; echo "till=$(date -u -d '3 days ago' +%F)" >> "$GITHUB_OUTPUT"
+          # Körningen R är den senaste 00/06/12/18 (pulsklockan trycker vid R + 51 minuter). Historiken räknas från den och inte från
+          # klockan: 47 dygn före dygnet för R + 6 timmar, som när kedjan startade efter kuvos-stad och som i backtesten (kedjan-a).
+          R=$(( $(date -u +%s) / 21600 * 21600 ))
+          echo "stamp=$(date -u -d "@$R" +%Y%m%dT%HZ)" >> "$GITHUB_OUTPUT"
+          echo "fran=$(date -u -d "@$((R + 6 * 3600 - 47 * 86400))" +%F)" >> "$GITHUB_OUTPUT"; echo "till=$(date -u -d '3 days ago' +%F)" >> "$GITHUB_OUTPUT"
       - name: Historiken ur cachen
         id: c
         uses: actions/cache/restore@v4
@@ -181,22 +186,28 @@ jobs:
         if: ${{ steps.h.outputs.klar == 'ja' }}
         uses: actions/cache/restore@v4
         with: { path: mnsv-live, key: "kuvos-smavag-live-${{ github.run_id }}-${{ github.run_attempt }}", restore-keys: kuvos-smavag-live- }
-      # metnordic-live.ts --dygn hämtar bara de timmar som saknas. Finns körningen inte i katalogen (kod 3) räknas ingenting den här gången.
+      # metnordic-live.ts --dygn hämtar bara de timmar som saknas. Finns körningen inte i katalogen (kod 3) frågar steget igen var femte
+      # minut i en halvtimme; sedan räknas ingenting den här gången.
       - name: Hämtningarna ur MET
         id: m
         if: ${{ steps.h.outputs.klar == 'ja' }}
         shell: bash
+        env: { KORNING: "${{ steps.f.outputs.stamp }}" }
         run: |
           tyst() { "$@" > tyst.log 2>&1 || { echo "::error::föll: ${*:1:3}: $(tail -1 tyst.log | cut -c1-200)"; exit 1; }; }
           for dag in $(date -u -d '2 days ago' +%F) $(date -u -d yesterday +%F) $(date -u +%F); do
             tyst node --experimental-strip-types ingest/metnordic-live.ts --dygn "$dag" --punkter mnsv/pilot_punkter.csv --ut mnsv-live
           done
           ls mnsv-live/dagar | sort | head -n -4 | sed 's|^|mnsv-live/dagar/|' | xargs -r rm -f
-          set +e
-          node --experimental-strip-types ingest/metnordic-live.ts --korning --punkter mnsv/pilot_punkter.csv --ut sv-korning > korning.log 2>&1
-          KOD=$?
-          set -e
-          [ "$KOD" = 3 ] && { echo "::notice::körningen finns inte i MET:s katalog ännu — kedjan räknar inget den här gången"; echo "klar=nej" >> "$GITHUB_OUTPUT"; exit 0; }
+          for i in $(seq 1 7); do
+            set +e
+            node --experimental-strip-types ingest/metnordic-live.ts --korning --stamp "$KORNING" --punkter mnsv/pilot_punkter.csv --ut sv-korning > korning.log 2>&1
+            KOD=$?
+            set -e
+            [ "$KOD" = 3 ] || break
+            [ "$i" = 7 ] || { echo "körningen finns inte i MET:s katalog än — frågar igen om fem minuter"; sleep 300; }
+          done
+          [ "$KOD" = 3 ] && { echo "::warning::körningen finns inte i MET:s katalog efter en halvtimme — kedjan räknar inget den här gången"; echo "klar=nej" >> "$GITHUB_OUTPUT"; exit 0; }
           [ "$KOD" = 0 ] || { echo "::error::körningen gick inte att hämta"; exit 1; }
           echo "STAMP=$(cat sv-korning/korning.txt)" >> "$GITHUB_ENV"
           echo "klar=ja" >> "$GITHUB_OUTPUT"
