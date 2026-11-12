@@ -15566,3 +15566,43 @@ ur `olycksfacit_driftlarm`. Efter veckan väljer Bengt vilka feltyper som får g
 - Att pröva alla olyckor sedan 6/11 vid första körningen: då hade skuggveckan blandats med fall som är äldre än pg_nets svar.
 
 **Stomdokument:** MAT 3 — olycksfacit i nära realtid: driftlarmet i skugga och klassningen efter sex timmar
+
+## #843 (12/11 2026) Småvägsrösten: taket ur en backtest och skuggan i drift; villkoren i #828 och #833 ändrade (kort #647)
+
+**Beslutet.** Bengt och Axel signerade 12/11 tillägget till förregistreringen för takten i halkvakt-kuvos (F57), Bengt i chatten: *"axel och
+jag signerar f57"*, och Axel via Bengt i samma ord. På frågan om vilket avbrott som ska gälla för takten svarade Bengt: *"vi kör på F57"*.
+Det skrevs på Bengts *"Utred backtesten"*, *"det måste ju vara betydligt bättre att göra en backtest än att göra två novemberveckor. Jag
+vill att novembertesten dras ned till ett minimum"* och *"kan man inte tänka sej att man testar på gammal vinter, deployar och sätter i
+drift och mäter skuggan samtidigt"*.
+- **Taket väljs ur en backtest:** driftens kedja och regel körs bakåt på en tidigare vinter, som kandidaten inte är tränad på, med MET Nordics
+  arkiverade prognoser och SMHI:s radararkiv. Vintern, hur radarn läses och måtten står i kuvösen (F57). Inget av takten är räknat.
+- **Före påslaget:** kedjans prov i minst 48 timmar, där timmen är fullständig (minst 95 % av punkterna) i minst 90 % av timmarna. Takten
+  jämförs inte före påslaget.
+- **Efter påslaget:** skuggan går vidare i drift i 14 dygn.
+- **Avbrottet för takten:** ligger beskeden per körtimme i skuggan under ett dygn över backtestens högsta vecka för samma region, slås båda
+  brytarna av samma dag (`sql/107`). En kontroll varje dygn skriver ett ärende, och Bengt eller Axel slår av.
+
+**Vad som ändras i tidigare beslut:**
+- **#828, villkoren före påslaget:** *"takten mätt i minst 14 dygn och taket valt av Bengt och Axel"* blir *taket valt av Bengt och Axel ur
+  backtesten, och kedjans prov i minst 48 timmar*. De andra villkoren står kvar: batterimätningen, motorns farotyp med testvektorer och
+  appens granskning.
+- **#833, takten:** *"Claude slår av och frågar sedan när beskeden per körtimme i skuggan ligger över det valda taket två dygn i rad"* ersätts
+  av avbrottet ovan. Driftens hälsa, testarnas svar, olycksfacit och omfånget står kvar.
+
+**Varför.** Två novemberveckor visar lite om januari, och taket ska hålla de kalla och snöiga veckorna. Det som bara driften visar, att kedjan
+räknar hela timmar i år och vad verkliga avbrott gör (MET:s underhåll 11–12/11), mäts av kedjans prov före påslaget och av skuggan efter.
+Regel #200 håller: taket kommer ur en mätning, nu av driftens regel på en hel vinter.
+
+**Alternativen som inte valdes:**
+- skuggan i 14 dygn före taket, som i #828;
+- skuggan i 7 dygn före påslaget som kontroll av takten;
+- att #833:s villkor för takten gäller bredvid;
+- att brytarna slås av automatiskt, vilket är ett eget bygge.
+
+**Kvar:**
+- backtestens bygge i kuvösen: kedjans bakåtläge, regeln utanför databasen med en jämförelse mot `smavag_regel()`, radarn ur arkivet och flödet;
+- MET:s arkiv tillbaka (nere sedan 11/11);
+- kedjans prov i drift och kontrollen varje dygn;
+- steg 9–12 som förut.
+
+**Stomdokument:** MAT 5 — småvägsröstens tak ur en backtest och skuggan i drift
