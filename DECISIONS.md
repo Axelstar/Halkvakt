@@ -15693,3 +15693,48 @@ minnesbrist på Micro-instansen och upphörde med bytet till Small 20/10.
 **Beviset** blir ett dygn efter migreringen med 60 rader i timmen i `forsprang_log` och inga 546 från försprångets jobb i `public.anrop`.
 
 **Stomdokument:** SYS 2 — försprångets jobb, MAT 3 — försprångsmätningens bortfall 12/11
+
+## #846 (12/11 2026) Småvägsröstens punktfil med väg och ordning, och apparnas läsare (kort #647, byggsteg 7)
+
+**Beslutet.** Bengt 12/11: *"Ja, båda"*, på förslaget att bygga steg 7 medan backtestens hämtning går.
+- **Punktfilen `smavag.json` får schema 2:**
+  - för varje punkt vägens nummer (`vag`, v00001 → 1) och platsen längs vägen (`ordning`), i två listor bredvid lägena;
+  - bitarnas ordning i `live.json` är densamma som i schema 1 (punkt COLLATE "C");
+  - laddaren skriver den vid nästa körning (`ingest/smavagspunkter-db.ts`), och publicera lägger upp den när kontrollsumman ändras.
+- **Läsaren** (`engine/src/smavagfil.ts`, med speglar i Kotlin `SmavagFil.kt` och Swift `SmavagFil.swift`):
+  - beskedet i `live.json` och punktfilen blir `SmavagHazard`, en per väg med minst en varnande punkt;
+  - vägens punkter läggs i ordning, och de varnande punkternas platser bildar `warn`;
+  - en väg med en enda punkt tas inte med, eftersom motorns vägtest behöver en linje mellan två grannar.
+- **Tystnad vid tvivel.** Läsaren ger inga faror vid något av detta:
+  - okänt schema;
+  - ett besked för en annan fil;
+  - fel antal punkter eller byte;
+  - ett värde som inte är ett heltal.
+- **Prov:** alla tre läsarna prövas mot `engine/fixtures/smavagprov.json` (tio fall).
+- **Apparna hämtar punktfilen bara när `live.json` bär ett besked**, så med brytarna av hämtas den aldrig:
+  - den sparade filen gäller när kontrollsumman är beskedets;
+  - annars hämtas den ur hinken och sedan ur reserven;
+  - en fil med fel kontrollsumma skrivs aldrig;
+  - den tolkade filen hålls i minnet per kontrollsumma, så att den inte läses om varannan minut;
+  - ett fel med punktfilen rör aldrig `static.json` och `live.json`.
+
+**Varför.** Motorns farotyp (#844) behöver vägens punkter i ordning, och apparna läste bara `static` och `live` (#828). Väg och ordning
+fanns redan i tabellen `smavagspunkt` (sql/103), så bara filen och läsarna saknades.
+- Två listor bredvid lägena gör filen ungefär en halv gång större före packning, men behåller schema 1:s form för lägena.
+- Vägarnas riktiga linjer valdes bort i #844.
+- Apparna laddar inte filen förrän beskedet finns, så ingen telefon betalar för den medan brytarna är av.
+
+**Alternativen som inte valdes:**
+- vägen och ordningen i varje punkts lista (`[lon, lat, väg, ordning]`): samma storlek, men lägenas form ändras;
+- att läsa punktfilen i `snapshot.ts`: funktionerna buntar den filen, och punktfilen är bara apparnas;
+- att hämta punktfilen så fort manifestet bär den: 2–3 MB till varje telefon med brytarna av.
+
+**Kvar:**
+- android och ios-engine gröna på grenen;
+- iOS-appens hämtning (`HalkvaktApp/…/SnapshotRepo.swift`) byggs bara i Xcode;
+- laddarens första fil med schema 2;
+- batterimätningen (steg 10).
+
+Inget hörs: brytarna är av.
+
+**Stomdokument:** APP 3 — appens hämtning av småvägarnas punktfil, SYS 2 — punktfilen med väg och ordning och läsaren
