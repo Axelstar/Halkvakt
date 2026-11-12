@@ -17,7 +17,7 @@ name: kuvos-smavag-bakat
 #          fel (val 15, MET_AVBRYT): då stannar alla jobb (fail-fast), och nästa tryck tar vid efter de veckor som är klara.
 #          Analysveckorna ligger i cachen (omkring 200 MB var). Prognosveckorna (omkring 560 MB var, för stora för cachens 10 GB, Bengt
 #          12/11: "I hinken, per körning") delas per körning i driftens namn (metnordic_korning_<stämpel>.csv.gz) och går till den
-#          privata hinken under kuvos-smavag-bakat-2024/, hämtade tillbaka och jämförda; cachen bär bara veckans markör.
+#          privata hinken under kuvos-smavag-bakat-2024/, kontrollerade mot hinkens ETag; cachen bär bara veckans markör.
 # Kedjan bakåt (DECISIONS #848) kör driftens program oförändrade och matar dem med filer där driften läser databasen
 # (ingest/smavagskedjan.ts: ph, ankare, lagen, underlag). Allt den räknar går bara till hinken under kuvos-smavag-bakat-2024/.
 #   kedjan-a  del A per körning, som kuvos-smavag.yml och ny-kandidat-fysik.yml: stationerna (bara stationerna i indatan, deras
@@ -25,8 +25,10 @@ name: kuvos-smavag-bakat
 #             per prognosvecka; en körning som redan står i hinken hoppas, så att nästa tryck tar vid. Stationernas dygn plockas först ur
 #             analysveckorna (kedjan-st, en artefakt per vecka med MET Nordic för stationerna, öppna data).
 #   kedjan-b  timmarna, som kuvos-smavag-timme.yml: stationernas PH och ankarna för timmen, del B, regel D, regeln utanför databasen med
-#             radarn ur cachen, och timmens resor (smavag_takt.py resor). Ett jobb per dygn, dygnets underlag och resor i en fil. Sist
-#             veckotalen (smavag_takt.py vecka) ur alla dygnen.
+#             radarn ur cachen, och timmens resor (smavag_takt.py resor). Ett jobb per block om fyra dygn, varje dygns underlag och resor
+#             i en fil. Sist veckotalen (smavag_takt.py vecka) ur alla dygnen.
+# Varje hämtning ur hinken räknas mot Supabase-trafiken (DECISIONS #850): uppladdningar kontrolleras med hinkens ETag (ingest/hinken.ts)
+# i stället för att hämtas tillbaka, och ankarfilen och körningarnas filer hämtas en gång per block.
 # SMHI:s radar, MET Nordic och punkternas lägen (Lastkajen, CC0) är öppna data och får ligga i cachen. Cachen glöms efter sju dygn
 # utan läsning.
 # Källa: SMHI öppna data (CC BY 4.0); MET Norway, MET Nordic (NLOD / CC BY 4.0); Trafikverket, VViS (leveransen till projektet, bara i
@@ -196,8 +198,9 @@ jobs:
           RAD=$(grep -v ExperimentalWarning ankare.log | tail -1 | cut -c1-200)
           echo "$RAD" | tee -a "$GITHUB_STEP_SUMMARY"
           [ "$KOD" = 0 ] || { echo "::error::ankarna föll"; exit 1; }
-      # Ankarna går bara till den privata hinken. Finns filen redan skrivs ingenting över.
-      - name: Ankarna till hinken, hämtade tillbaka och jämförda
+      # Ankarna går bara till den privata hinken. Finns filen redan skrivs ingenting över. Kontrollen är hinkens ETag (ingest/hinken.ts,
+      # DECISIONS #850), inte en hämtning tillbaka.
+      - name: Ankarna till hinken, kontrollerade
         shell: bash
         env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}", FRAN: "${{ inputs.fran }}", TILL: "${{ inputs.till }}" }
         run: |
@@ -205,20 +208,10 @@ jobs:
           read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
           [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
           echo "::add-mask::$KEY"
-          export FN KEY
-          node -e '
-            const { execFileSync } = require("child_process"), fs = require("fs"), c = require("crypto"), fil = process.argv[1];
-            const sha = (b) => c.createHash("sha256").update(b).digest("hex"), namn = process.env.HINK + "/" + fil;
-            const curl = (a, vad) => { try { return execFileSync("curl", ["-sS", "--fail", ...a], { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); }
-              catch (e) { if (vad) { console.error(`${vad} föll (curl ${e.status})`); process.exit(1); } return null; } };
-            const anrop = (lage, vad) => { const b = curl(["-X", "POST", `${process.env.FN}?lage=${lage}`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
-              "-H", "Content-Type: application/json", "-d", JSON.stringify({ filer: [namn] })], vad); return b && JSON.parse(b); };
-            if (anrop("kuvos_hamta")) { console.log("ankarna: klart (fanns redan)"); process.exit(0); }
-            const u = anrop("kuvos_ladda_upp", "adressen för uppladdningen").urls[0];
-            curl(["-X", "PUT", "-H", "Content-Type: application/octet-stream", "--data-binary", "@" + fil, u], "uppladdningen");
-            const h = anrop("kuvos_hamta", "hämtningen tillbaka").filer[0];
-            const ok = sha(curl([h.url], "hämtningen")) === sha(fs.readFileSync(fil));
-            console.log(ok ? "ankarna: klart" : "ankarna: FEL, i hinken med annat innehåll"); process.exit(ok ? 0 : 1);' "ankare_${FRAN}_${TILL}.csv.gz" | tee -a "$GITHUB_STEP_SUMMARY"
+          FIL="ankare_${FRAN}_${TILL}.csv.gz"
+          FN="$FN" KEY="$KEY" node --experimental-strip-types ingest/hinken.ts ladda "$FIL" "$HINK/$FIL" --finns-ok 2> hinken.log \
+            || { echo "::error::ankarna gick inte till hinken"; exit 1; }
+          echo "ankarna: klart" | tee -a "$GITHUB_STEP_SUMMARY"
           rm -f ankare_*.csv.gz
 
   # ── met: MET:s arkiv för kedjan bakåt (F57 punkt 2 och val 15, F58) ────────────────────────────────────────────────────────────────
@@ -359,8 +352,9 @@ jobs:
           fi
           echo "$TYP $FRAN–$TILL: hämtad" | tee -a "$GITHUB_STEP_SUMMARY"
       # Prognosveckan: varje körning till hinken. Finns filen redan med samma innehåll står den kvar; med annat innehåll är det ett fel.
-      # Varje uppladdad fil hämtas tillbaka och jämförs. Sedan bär cachen bara markören med filernas namn och kontrollsummor.
-      - name: Körningarna till hinken, hämtade tillbaka och jämförda
+      # Varje fil kontrolleras med hinkens ETag (ingest/hinken.ts, DECISIONS #850), inte med en hämtning tillbaka. Sedan bär cachen bara
+      # markören med filernas namn och kontrollsummor.
+      - name: Körningarna till hinken, kontrollerade
         if: ${{ steps.l.outputs.cache-hit != 'true' && matrix.bit.typ == 'prognos' }}
         shell: bash
         env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}", MAPP: kuvos-smavag-bakat-2024 }
@@ -370,34 +364,20 @@ jobs:
           read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
           [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
           echo "::add-mask::$KEY"
-          export FN KEY
+          (ls met-korningar | grep -E '^metnordic_korning_[0-9]{8}T[0-9]{2}Z\.csv\.gz$' || true) | sort > filer.txt
+          [ -s filer.txt ] || { echo "::error::körningarna: inga filer"; exit 1; }
+          while read -r f <&3; do
+            FN="$FN" KEY="$KEY" node --experimental-strip-types ingest/hinken.ts ladda "met-korningar/$f" "$MAPP/$f" 2>> hinken.log \
+              || { echo "::error::körningarna: en fil gick inte till hinken, eller finns där med annat innehåll"; exit 1; }
+          done 3< filer.txt
           node -e '
-            const { execFileSync } = require("child_process"), fs = require("fs"), c = require("crypto"), path = require("path");
-            const sha = (b) => c.createHash("sha256").update(b).digest("hex");
-            // execFileSync:s fel bär kommandoraden och därmed nyckeln eller den signerade adressen: fångas, bara statusen skrivs ut.
-            const curl = (a, vad) => { try { return execFileSync("curl", ["-sS", "--fail", ...a], { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); }
-              catch (e) { if (vad) { console.error(`${vad} föll (curl ${e.status})`); process.exit(1); } return null; } };
-            const anrop = (lage, namn, vad) => { const b = curl(["-X", "POST", `${process.env.FN}?lage=${lage}`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
-              "-H", "Content-Type: application/json", "-d", JSON.stringify({ filer: [namn] })], vad); return b && JSON.parse(b); };
-            const filer = fs.readdirSync("met-korningar").filter((f) => /^metnordic_korning_\d{8}T\d\dZ\.csv\.gz$/.test(f)).sort();
-            if (!filer.length) { console.error("körningarna: inga filer"); process.exit(1); }
-            const markor = [];
-            for (const f of filer) {
-              const lokal = fs.readFileSync(path.join("met-korningar", f)), namn = `${process.env.MAPP}/${f}`;
-              const finns = anrop("kuvos_hamta", namn);
-              if (finns) {
-                if (sha(curl([finns.filer[0].url], "hämtningen av en befintlig fil")) !== sha(lokal)) { console.error("körningarna: FEL, en fil i hinken har annat innehåll"); process.exit(1); }
-              } else {
-                const u = anrop("kuvos_ladda_upp", namn, "adressen för uppladdningen").urls[0];
-                curl(["-X", "PUT", "-H", "Content-Type: application/octet-stream", "--data-binary", "@" + path.join("met-korningar", f), u], "uppladdningen");
-                const h = anrop("kuvos_hamta", namn, "hämtningen tillbaka").filer[0];
-                if (sha(curl([h.url], "hämtningen")) !== sha(lokal)) { console.error("körningarna: FEL, i hinken med annat innehåll"); process.exit(1); }
-              }
-              markor.push({ fil: namn, sha256: sha(lokal), bytes: lokal.length });
-            }
-            fs.writeFileSync("met-bit/i-hinken.json", JSON.stringify({ schema: 1, filer: markor }));
-            console.log("körningarna: klart");' | tee -a "$GITHUB_STEP_SUMMARY"
-          rm -rf met-bit/dagar met-korningar
+            const fs = require("fs"), c = require("crypto"), path = require("path");
+            const filer = fs.readFileSync("filer.txt", "utf8").split("\n").filter(Boolean);
+            const markor = filer.map((f) => { const b = fs.readFileSync(path.join("met-korningar", f));
+              return { fil: `${process.env.MAPP}/${f}`, sha256: c.createHash("sha256").update(b).digest("hex"), bytes: b.length }; });
+            fs.writeFileSync("met-bit/i-hinken.json", JSON.stringify({ schema: 1, filer: markor }));'
+          echo "körningarna: klart" | tee -a "$GITHUB_STEP_SUMMARY"
+          rm -rf met-bit/dagar met-korningar filer.txt
       - name: Veckan till cachen
         if: ${{ steps.l.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v4
@@ -409,7 +389,7 @@ jobs:
     if: ${{ inputs.steg == 'kedjan-a' || inputs.steg == 'kedjan-b' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    outputs: { st: "${{ steps.b.outputs.st }}", veckor: "${{ steps.b.outputs.veckor }}", dagar: "${{ steps.b.outputs.dagar }}" }
+    outputs: { st: "${{ steps.b.outputs.st }}", veckor: "${{ steps.b.outputs.veckor }}", dagar: "${{ steps.b.outputs.dagar }}", block: "${{ steps.b.outputs.block }}" }
     steps:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
@@ -657,23 +637,25 @@ jobs:
         uses: actions/cache/save@v4
         with: { path: kedjan-klar, key: "${{ env.KLAR }}" }
 
-  # Timmarna, som kuvos-smavag-timme.yml, ett jobb per dygn: stationernas PH och ankarna för timmen, del B, regel D, regeln utanför
-  # databasen med radarn ur cachen (smavagskedjan.ts underlag) och timmens resor. Dygnets underlag, resor och timlista går som en fil
-  # till hinken; ett dygn som redan står där hoppas. En timme utan PH eller med för få punkter står i timlistan, som i driften.
+  # Timmarna, som kuvos-smavag-timme.yml, ett jobb per block om fyra dygn (smavagskedjan.ts BLOCK_DYGN; ankarfilen och körningarnas filer
+  # hämtas ur hinken en gång per block, DECISIONS #850): stationernas PH och ankarna för timmen, del B, regel D, regeln utanför databasen
+  # med radarn ur cachen (smavagskedjan.ts underlag) och timmens resor. Varje dygns underlag, resor och timlista går som en fil till
+  # hinken; ett dygn som redan står där hoppas. En timme utan PH eller med för få punkter står i timlistan, som i driften.
   kedjan-b:
     if: ${{ inputs.steg == 'kedjan-b' }}
     needs: kedjan
-    name: "kedjan-b ${{ matrix.dag }}"
+    name: "kedjan-b ${{ matrix.block.fran }}"
     runs-on: ubuntu-latest
-    timeout-minutes: 150
+    timeout-minutes: 300
     strategy:
       max-parallel: 12
       fail-fast: false
-      matrix: { dag: "${{ fromJSON(needs.kedjan.outputs.dagar) }}" }
+      matrix: { block: "${{ fromJSON(needs.kedjan.outputs.block) }}" }
     env:
       GH_TOKEN: "${{ github.token }}"
       NYKAND_VARIANT: t4
-      DAG: "${{ matrix.dag }}"
+      BFRAN: "${{ matrix.block.fran }}"
+      BTILL: "${{ matrix.block.till }}"
       FRAN: "${{ inputs.fran }}"
       TILL: "${{ inputs.till }}"
     steps:
@@ -700,7 +682,7 @@ jobs:
       - name: Radarn ur cachen
         uses: actions/cache/restore@v4
         with: { path: radar-bakat, key: "${{ env.RADAR }}", fail-on-cache-miss: true }
-      - name: Dygnets timmar
+      - name: Blockets timmar
         shell: bash
         env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
         run: |
@@ -711,16 +693,22 @@ jobs:
           [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
           echo "::add-mask::$KEY"
           hink() { FN="$FN" KEY="$KEY" node --experimental-strip-types ingest/hinken.ts "$@" 2>> hinken.log; }
-          if hink finns "$MAPP/dygn_$DAG.tar"; then echo "dygnet: klart (fanns redan)" | tee -a "$GITHUB_STEP_SUMMARY"; exit 0; fi
+          DAGAR=""
+          for (( t = $(date -u -d "$BFRAN" +%s); t <= $(date -u -d "$BTILL" +%s); t += 86400 )); do
+            D=$(date -u -d "@$t" +%F); hink finns "$MAPP/dygn_$D.tar" || DAGAR="$DAGAR $D"
+          done
+          [ -n "$DAGAR" ] || { echo "blocket: klart (fanns redan)" | tee -a "$GITHUB_STEP_SUMMARY"; exit 0; }
           # Lägena som kuvos-smavag-timme.yml: småvägspunkterna, och stationerna ur säsongens release utan vägpunkterna.
           gh release download metnordic-live-2026-27 --pattern metnordic_punkter.csv --dir mn
           tyst node --experimental-strip-types ingest/smavagskedjan.ts lagen "$PUNKTER" punkter-sv.csv
           tail -n +2 mn/metnordic_punkter.csv | grep -v '^v' | cut -d, -f1-3 >> punkter-sv.csv
-          # Ankarna är Trafikverkets data rad för rad: de stannar i jobbet och tas bort i sista steget.
+          # Ankarna är Trafikverkets data rad för rad: de stannar i jobbet och tas bort i sista steget. En hämtning för hela blocket.
           hink hamta "$HINK/ankare_${FRAN}_${TILL}.csv.gz" ankare-alla.csv.gz || { echo "::error::ankarna gick inte att hämta ur hinken"; exit 1; }
-          tyst node --experimental-strip-types ingest/smavagskedjan.ts ankare ankare-alla.csv.gz "${DAG}T00:00:00Z" "${DAG}T23:00:00Z" ankare
+          tyst node --experimental-strip-types ingest/smavagskedjan.ts ankare ankare-alla.csv.gz "${BFRAN}T00:00:00Z" "${BTILL}T23:00:00Z" ankare
           rm -f ankare-alla.csv.gz
-          mkdir -p kor ut
+          mkdir -p kor
+          for DAG in $DAGAR; do
+          rm -rf ut && mkdir -p ut
           : > ut/timmar.txt
           for h in $(seq -w 0 23); do
             TID="${DAG}T$h:00:00Z"; T="${DAG//-/}T$h"
@@ -752,7 +740,9 @@ jobs:
           done
           tar -cf "dygn_$DAG.tar" -C ut .
           hink ladda "dygn_$DAG.tar" "$MAPP/dygn_$DAG.tar" || { echo "::error::dygnet gick inte till hinken"; exit 1; }
-          echo "dygnet: klart" | tee -a "$GITHUB_STEP_SUMMARY"
+          rm -f "dygn_$DAG.tar"
+          done
+          echo "blocket: klart" | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Ankarna lämnar aldrig jobbet
         if: always()
         run: rm -rf ankare ankare-alla.csv.gz
