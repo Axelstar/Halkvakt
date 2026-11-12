@@ -15575,7 +15575,7 @@ Det skrevs på Bengts *"Utred backtesten"*, *"det måste ju vara betydligt bätt
 vill att novembertesten dras ned till ett minimum"* och *"kan man inte tänka sej att man testar på gammal vinter, deployar och sätter i
 drift och mäter skuggan samtidigt"*.
 - **Taket väljs ur en backtest:** driftens kedja och regel körs bakåt på en tidigare vinter, som kandidaten inte är tränad på, med MET Nordics
-  arkiverade prognoser och SMHI:s radararkiv. Vintern, radarns rättelse och måtten står i kuvösen (F57). Inget av takten är räknat.
+  arkiverade prognoser och SMHI:s radararkiv. Vintern, hur radarn läses och måtten står i kuvösen (F57). Inget av takten är räknat.
 - **Före påslaget:** kedjans prov i minst 48 timmar, där timmen är fullständig (minst 95 % av punkterna) i minst 90 % av timmarna. Takten
   jämförs inte före påslaget.
 - **Efter påslaget:** skuggan går vidare i drift i 14 dygn.
