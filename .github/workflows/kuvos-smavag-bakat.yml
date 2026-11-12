@@ -1,0 +1,77 @@
+name: kuvos-smavag-bakat
+# SMÅVÄGSRÖSTENS BACKTEST (DECISIONS #843, kort #647; halkvakt-kuvos BESLUT F57 och förregistreringen för småvägsrösten §9). Taket för
+# hur ofta rösten talar väljs ur driftens kedja och regel körda bakåt på en tidigare vinter. Koden och punkterna ligger i det privata
+# repot och läggs ovanpå utcheckningen; loggen och sammanfattningen säger bara klart eller fel (#768).
+#   radar  SMHI:s komposit ur arkivet (tif, utan rättelse) var 15:e minut, läst i driftens bitar (kuvos/radar-smavag-vinter.ts), ett
+#          UTC-dygn per fil i Actions-cachen. Tar tidstaket slut tar nästa körning vid där den slutade. Ingen förbindelse till MET.
+# SMHI:s radar och punkternas lägen (Lastkajen, CC0) är öppna data och får ligga i cachen. Cachen glöms efter sju dygn utan läsning.
+# Källa: SMHI öppna data (CC BY 4.0).
+on:
+  workflow_dispatch:
+    inputs:
+      steg:
+        description: "radar (SMHI:s arkiv i småvägsbitarna)"
+        type: choice
+        options: [radar]
+        default: radar
+      fran:
+        description: "första UTC-dygnet, ÅÅÅÅ-MM-DD"
+        required: true
+        default: "2023-11-01"
+      till:
+        description: "sista UTC-dygnet, ÅÅÅÅ-MM-DD"
+        required: true
+        default: "2024-03-31"
+concurrency: { group: kuvos-smavag-bakat-radar, cancel-in-progress: false }
+permissions:
+  contents: read
+env:
+  PUNKTER: data/vagdata/smavagsrosten-punkter.json
+jobs:
+  radar:
+    if: ${{ inputs.steg == 'radar' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+      # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos (DECISIONS #768): koden läggs ovanpå utcheckningen.
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm ci
+      - name: Självtestet och fönstret
+        id: f
+        shell: bash
+        env: { FRAN: "${{ inputs.fran }}", TILL: "${{ inputs.till }}" }
+        run: |
+          [[ "$FRAN" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ && "$TILL" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] || { echo "::error::dygnen ska vara ÅÅÅÅ-MM-DD"; exit 1; }
+          node --experimental-strip-types kuvos/radar-smavag-vinter.ts --sjalvtest > sjalvtest.log 2>&1 \
+            || { echo "::error::självtestet föll: $(grep -v ExperimentalWarning sjalvtest.log | tail -1 | cut -c1-200)"; exit 1; }
+          echo "nyckel=kuvos-smavag-radar-$FRAN-$TILL-" >> "$GITHUB_OUTPUT"
+      - name: Dygnen ur cachen (återupptagningen)
+        id: c
+        uses: actions/cache/restore@v4
+        with: { path: radar-bakat, key: "${{ steps.f.outputs.nyckel }}klar", restore-keys: "${{ steps.f.outputs.nyckel }}" }
+      - name: Radarn ur SMHI:s arkiv
+        id: r
+        if: ${{ steps.c.outputs.cache-hit != 'true' }}
+        shell: bash
+        env: { FRAN: "${{ inputs.fran }}", TILL: "${{ inputs.till }}" }
+        run: |
+          set +e
+          node --experimental-strip-types kuvos/radar-smavag-vinter.ts "$PUNKTER" radar-bakat "$FRAN" "$TILL" 5.3 > radar.log 2>&1
+          KOD=$?
+          set -e
+          RAD=$(grep -v ExperimentalWarning radar.log | tail -1 | cut -c1-200)
+          echo "$RAD" | tee -a "$GITHUB_STEP_SUMMARY"
+          if [ "$KOD" = 0 ]; then echo "klar=ja" >> "$GITHUB_OUTPUT"; exit 0; fi
+          if [ "$KOD" = 4 ]; then echo "::notice::tidstaket: tryck igen med samma dygn, så tar nästa körning vid"; exit 0; fi
+          echo "::error::radarn föll: $RAD"; exit 1
+      # En hel hämtning sparas under nyckeln …klar, en ofullständig under körningens id, så att nästa tar vid där den slutade.
+      - name: Dygnen till cachen
+        if: ${{ always() && steps.c.outputs.cache-hit != 'true' && hashFiles('radar-bakat/*.csv.gz') != '' }}
+        uses: actions/cache/save@v4
+        with: { path: radar-bakat, key: "${{ steps.f.outputs.nyckel }}${{ steps.r.outputs.klar == 'ja' && 'klar' || github.run_id }}" }
