@@ -37,6 +37,18 @@ export const kampanjLank = slug => `https://apps.apple.com/app/apple-store/id680
 // Meta-appen Halkvakt Ads, med Halkvakts bundle-id och App Store-id under plattformen iOS. Ingen Meta-SDK i appen:
 // den skulle skicka enhetsdata och bryta löftet, så kampanjen optimerar på klick till App Store, inte på installationer.
 const META_APP_ID = "28619019301133859";
+// Android (Axel 13/11): Google Play is live, and the Meta app carries the platform Android (package se.halkvakt.app, Google
+// Play) since the same evening. An app campaign's ad set promotes one store, so each county gets a second ad set,
+// "Län · <län> · Android", targeting Android phones and linking to Google Play. It starts as a pilot in three counties;
+// widen ANDROID_LAN when the pilot has run. The iPhone ad sets are not touched.
+const PLAY = "https://play.google.com/store/apps/details?id=se.halkvakt.app";
+export const ANDROID = " · Android";
+export const ANDROID_LAN = new Set([20, 22, 23]);   // Dalarna, Västernorrland, Jämtland (lan.json:s kod)
+/** Play link per county: Play Console counts installs per utm_campaign, as App Store Connect does per ct. */
+export const playLank = slug => `${PLAY}&referrer=${encodeURIComponent(`utm_source=meta&utm_campaign=${("meta-" + slug).slice(0, 40)}`)}`;
+/** The county part of an ad set name, without the prefix and the Android suffix. */
+export const lanAv = namn => namn.slice(PREFIX.length).replace(ANDROID, "");
+export const arAndroid = namn => namn.endsWith(ANDROID);
 const MAX_ALDER_H = 2;
 const MIN_HALT = 1, MIN_KALLA = 3;
 const raknas = l => l.halt >= MIN_HALT || l.kalla >= MIN_KALLA;
@@ -103,17 +115,18 @@ export const vagText = v => v.replace(/^E\s+/, "E").replace(/^Väg/, "väg");
 export const stracka = p => p.replace(/^\.\d+\s+/, "").replace(/\s+-\s+/g, "–");
 
 /** Länets annons ur lan.json-raden och länets del av strackor.json; null när länet inte räknas. */
-export function annons(l, sl, generatedAt, datum) {
+export function annons(l, sl, generatedAt, datum, android = false) {
   if (!raknas(l)) return null;
   const klock = tid(generatedAt);
   const coldest = l.kallast ? { station: l.kallast.namn, surfaceTemp: l.kallast.yta } : null;
-  const bas = { variant: "daily", date: datum, county: l.kort, coldest, dataTime: klock };
+  const bas = { variant: "daily", date: datum, county: l.kort, coldest, dataTime: klock, ...(android ? { store: "play" } : {}) };
+  const gratis = android ? "Gratis för Android." : "Gratis för iPhone.";
   const hala = (sl?.vagar ?? []).flatMap(v => v.strackor.filter(s => s.halt).map(s => ({ vag: v.vag, plats: s.plats, fara: fara(s) })));
   if (l.halt < 1) {
     return {
       data: { ...bas, hazard: "Frysrisk", subtitle: `${l.kalla} stationer under noll i ${l.kort}`, roads: [] },
       text: `Vägbanan under noll vid ${l.kalla} stationer i ${l.kort}, enligt Trafikverket kl. ${klock}. ` +
-            "Halkvakt säger till med rösten innan du är där. Gratis för iPhone.",
+            "Halkvakt säger till med rösten innan du är där. " + gratis,
       rubrik: `Läget i ${l.kort} kl. ${klock}`,
     };
   }
@@ -127,7 +140,7 @@ export function annons(l, sl, generatedAt, datum) {
     data: { ...bas, hazard, subtitle: `${l.halt} vägavsnitt i ${l.kort}`,
             roads: vagar.map(s => ({ road: vagBild(s.vag), stretch: stracka(s.plats) })) },
     text: `${hazard}${vagar.length ? " på " + lista(vagar.slice(0, 2).map(s => vagText(s.vag))) : ""} i ${l.kort}, enligt Trafikverket kl. ${klock}. ` +
-          "Halkvakt säger till med rösten innan du är där. Gratis för iPhone.",
+          "Halkvakt säger till med rösten innan du är där. " + gratis,
     rubrik: `Läget i ${l.kort} kl. ${klock}`,
   };
 }
@@ -137,6 +150,7 @@ export const RESERV = {
   text: "Halkvakt säger till med rösten när det är halt på vägen framför dig. Med Trafikverkets öppna data. Gratis för iPhone.",
   rubrik: "Halka framför dig",
 };
+export const RESERV_ANDROID = { data: { ...RESERV.data, store: "play" }, text: RESERV.text.replace("iPhone", "Android"), rubrik: RESERV.rubrik };
 
 // ---- Meta ----
 
@@ -203,12 +217,13 @@ async function laggUpp(a, namn, adsetId, lank = APP) {
     },
   }, "POST");
   // Avvisar Meta kampanjlänken går annonsen ut med den vanliga länken: hellre en annons utan mätning än ingen annons.
+  const vanlig = lank.startsWith(PLAY) ? PLAY : APP;
   let kreativ;
   try { kreativ = await skapa(lank); }
   catch (e) {
-    if (lank === APP) throw e;
-    skriv(`${namn}: Meta avvisade kampanjlänken, annonsen får den vanliga App Store-länken. ${String(e.message).slice(0, 200)}`);
-    kreativ = await skapa(APP);
+    if (lank === vanlig) throw e;
+    skriv(`${namn}: Meta avvisade kampanjlänken, annonsen får den vanliga länken till ${vanlig === PLAY ? "Google Play" : "App Store"}. ${String(e.message).slice(0, 200)}`);
+    kreativ = await skapa(vanlig);
   }
   return (await graph(`${KONTO}/ads`, { name: namn, adset_id: adsetId, creative: { creative_id: kreativ.id }, status: "ACTIVE" }, "POST")).id;
 }
@@ -287,18 +302,55 @@ async function uppsattning() {
     const id = await laggUpp(RESERV, `Reserv · ${l.kort}`, s.id, kampanjLank(l.slug));
     skriv(`${namn}: reservannonsen skapad (${id}).`);
   }
+  // Android: a second ad set per pilot county, same windows and region as the county's iPhone ad set, PAUSED like everything
+  // uppsattning makes. styr turns it on when the county has ice.
+  const nu2 = new Map((await satserna(k.id)).map(s => [s.name, s]));
+  for (const l of lan.lan.filter(l => ANDROID_LAN.has(l.kod))) {
+    const namn = PREFIX + l.kort + ANDROID;
+    let s = nu2.get(namn);
+    if (!s) {
+      const traff = (await graph("search", { type: "adgeolocation", location_types: ["region"], country_code: "SE", q: META_LAN[l.kod] })).data
+        .filter(r => r.country_code === "SE" && r.type === "region" && r.name.startsWith(META_LAN[l.kod]));
+      if (traff.length !== 1) { skriv(`${namn}: Meta gav ${traff.length} träffar på "${META_LAN[l.kod]}", hoppas över.`); continue; }
+      s = await graph(`${KONTO}/adsets`, {
+        name: namn, campaign_id: k.id, status: "PAUSED",
+        optimization_goal: "LINK_CLICKS", billing_event: "IMPRESSIONS",
+        promoted_object: { application_id: META_APP_ID, object_store_url: PLAY },
+        start_time: start.toISOString(), end_time: slut.toISOString(),
+        pacing_type: ["day_parting"],
+        adset_schedule: VISNING,
+        targeting: { geo_locations: { regions: [{ key: traff[0].key }], location_types: ["home", "recent"] },
+                     age_min: 18, user_os: ["Android"], device_platforms: ["mobile"], publisher_platforms: ["facebook", "instagram"],
+                     targeting_automation: { advantage_audience: 1 } },
+        dsa_beneficiary: "Halkvakt", dsa_payor: "Axel Lagerlöf",
+      }, "POST");
+      s.ads = { data: [] };
+      skriv(`${namn}: skapad, pausad, regionen ${traff[0].name} (${s.id}).`);
+    }
+    if ((s.ads?.data ?? []).some(a => a.name.startsWith("Reserv · "))) continue;
+    const id = await laggUpp(RESERV_ANDROID, `Reserv · ${l.kort}${ANDROID}`, s.id, playLank(l.slug));
+    skriv(`${namn}: reservannonsen skapad (${id}).`);
+  }
 }
 
 async function styr() {
   const { lan, str, alder } = await hamta();
   const datum = dag(nu()), del = dagdel(nu());
   const annonser = new Map(lan.lan.map(l => [PREFIX + l.kort, annons(l, str.lan.find(x => x.kort === l.kort), lan.generated_at, datum)]));
+  // The Android ad sets get the county's ad with the Play badge and text; whether a county counts is the same decision.
+  const annonserAndroid = new Map(lan.lan.map(l => [PREFIX + l.kort + ANDROID,
+    annons(l, str.lan.find(x => x.kort === l.kort), lan.generated_at, datum, true)]));
+  const annonsFor = namn => (arAndroid(namn) ? annonserAndroid : annonser).get(namn);
   const gammal = alder > MAX_ALDER_H;
   if (gammal) skriv(`lan.json är ${alder.toFixed(1)} h gammal (${lan.generated_at}). Alla län pausas, ingen dagsannons.`);
   else skriv(`Län med halka kl. ${tid(lan.generated_at)}: ${[...annonser].filter(([, a]) => a).map(([n]) => n.slice(PREFIX.length)).join(", ") || "inga"}.`);
 
   if (!TOKEN) {
     if (!gammal) for (const [namn, a] of annonser) if (a) await rita(a.data, `Dag · ${namn.slice(PREFIX.length)} · ${datum} · ${del}`);
+    if (!gammal) for (const l of lan.lan.filter(l => ANDROID_LAN.has(l.kod))) {
+      const a = annonserAndroid.get(PREFIX + l.kort + ANDROID);
+      if (a) await rita(a.data, `Dag · ${l.kort}${ANDROID} · ${datum} · ${del}`);
+    }
     skriv("Torrkörning: META_ADS_TOKEN saknas. Bilderna ritade till meta-ut/, inget ändrat hos Meta.");
     return;
   }
@@ -306,13 +358,14 @@ async function styr() {
   if (!k) { skriv(`Kampanjen "${KAMPANJ}" finns inte. Kör uppsattning först.`); return; }
   const satt = async (id, status) => graph(id, { status }, "POST");
   const vikt = new Map(lan.lan.map(l => [PREFIX + l.kort, l]));
+  const lanFor = namn => vikt.get(PREFIX + lanAv(namn));
   // Pauses first so they free budget, then the strongest hazard first (DECISIONS #762): the campaign budget only carries a
   // handful of counties at once, and Meta refuses the next one with subcode 2446149.
-  const satser = ordning(await satserna(k.id), namn => gammal ? null : annonser.get(namn), namn => vikt.get(namn));
+  const satser = ordning(await satserna(k.id), namn => gammal ? null : annonsFor(namn), lanFor);
   for (const s of satser) {
-    const a = gammal ? null : annonser.get(s.name);
+    const a = gammal ? null : annonsFor(s.name);
     const ads = s.ads?.data ?? [];
-    if (!annonser.has(s.name)) { skriv(`${s.name}: okänt län, lämnas orörd.`); continue; }
+    if (!lanFor(s.name)) { skriv(`${s.name}: okänt län, lämnas orörd.`); continue; }
     if (!a) {
       if (s.status !== "PAUSED") { await satt(s.id, "PAUSED"); s.status = "PAUSED"; skriv(`${s.name}: pausad.`); }
       continue;
@@ -324,8 +377,8 @@ async function styr() {
         catch (e) {
           if (!String(e.message).includes('"error_subcode":2446149')) throw e;
           const egen = rang(a.data.hazard);
-          const svagast = satser.filter(x => x.status === "ACTIVE" && annonser.get(x.name) &&
-            rang(annonser.get(x.name).data.hazard) < egen).at(-1);
+          const svagast = satser.filter(x => x.status === "ACTIVE" && annonsFor(x.name) &&
+            rang(annonsFor(x.name).data.hazard) < egen).at(-1);
           if (!svagast) { skriv(`${s.name}: ${a.data.hazard}, men budgeten räcker inte för fler län. Står av.`); break; }
           await satt(svagast.id, "PAUSED"); svagast.status = "PAUSED";
           skriv(`${svagast.name}: pausad för att ge plats åt ${s.name} (budgeten räcker inte för båda).`);
@@ -333,11 +386,12 @@ async function styr() {
       }
       if (s.status !== "ACTIVE") continue;
     }
-    const lanNamn = s.name.slice(PREFIX.length);
+    const lanNamn = s.name.slice(PREFIX.length);   // "Jämtland" or "Jämtland · Android"
     const idag = `Dag · ${lanNamn} · ${datum} · ${del}`;
     let dagens = ads.find(x => x.name === idag);
     if (!dagens) {
-      const id = await laggUpp(a, idag, s.id, kampanjLank(vikt.get(s.name)?.slug ?? lanNamn));
+      const slug = lanFor(s.name)?.slug ?? lanAv(s.name);
+      const id = await laggUpp(a, idag, s.id, arAndroid(s.name) ? playLank(slug) : kampanjLank(slug));
       dagens = { id, effective_status: "PENDING_REVIEW" };
       skriv(`${s.name}: ${a.data.hazard}. Dagens annons skapad (${id}), väntar på granskning.`);
     }

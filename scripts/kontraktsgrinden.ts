@@ -853,6 +853,14 @@ export const KONTRAKT: Kontrakt[] = [
     golv: 2,
   },
   {
+    // DECISIONS #859: reserven räknar sitt fönster (45–269 minuter) från pulsklockans slott för småvägskedjan.
+    namn: "Småvägskedjans slott — minuten i pulsklockan och i kedjans reserv",
+    varfor: "Driver de isär startar reserven kedjan medan slottens kedja kör, eller räknar fönstret från fel minut och missar körningen.",
+    former: [/namn: "puls-kuvos-smavag", schema: "(\d+) \*\/6 \* \* \*"/, /export const SLOTT_MIN = (\d+);\s+\/\/ puls-kuvos-smavag/],
+    filer: /pulsklocka\.ts|smavag-reserv\.ts/,
+    golv: 2,
+  },
+  {
     namn: "Räckvidden för facit — km från stationen (Bengt 20/9, DECISIONS #245)",
     varfor: "Standardvärdet och vakten som avvisar andra tal måste bära samma km, annars släpper vakten igenom sitt eget fel.",
     former: [/p_facit_km numeric DEFAULT (\d+)/, /p_facit_km <> (\d+) THEN/, /const FACIT_KM = (\d+)/],   // tredje kopian: B-uppspelningarnas facitmodul (#510)

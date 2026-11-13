@@ -97,35 +97,59 @@ Versionen i butiken är 0.3.13 (34); listan gäller allt som kommit sedan dess (
 
 *App Privacy:* lägg till *Diagnostics → Other Diagnostic Data* (Analytics, inte kopplad, ingen spårning), som manifestet i bygget.
 
-## Inskicket 0.4.0 (49) — utkast 13/11, Axel godkänner (DECISIONS #851, #858, kort #651)
+## Inskicket 0.4.0 (49) — 13/11 (DECISIONS #851, #858, kort #651)
 
-0.4.0 (49) laddades upp av TestFlight-flödet 43406203371 (main db50832, 13/11 10.07 UTC): nya introduktionen, och CarPlay
-avslaget i bygget (#858). Texterna nedan utgår från att butiken har 0.3.15 (37). Har 0.3.17 (39) släppts stryks de två sista
-raderna i What's New och meningarna om rutnätet och räknaren i anteckningarna.
+**Inskickat av Axel 13/11 11:15** (App Store Connect: *1 Item Submitted*, versionen *0.4.0 Waiting for Review*). I butiken låg
+0.3.17 (*Ready for Distribution*). Bygget 0.4.0 (49) laddades upp av TestFlight-flödet 43406203371 (main db50832, 13/11 10.07
+UTC): nya introduktionen, och CarPlay avslaget i bygget (#858).
 
-- **(a) Versionsposten:** *+* vid iOS-appen → **0.4.0** → bygge **49**.
-- **(b) What's New:**
-  - *• Ny introduktion: appen visar allt den varnar för, säger vilken knapp du ska välja i telefonens frågor om plats och notiser, och visar vad varje val innebär.*
-  - *• Favoriter: frågan om att spara resan kommer som en notis efter resan, dagens resor visas i fliken och en sparad resa kan byta namn.*
-  - *• Tipsa en vän, Tyck till och Betygsätt finns i Inställningar.*
-  - *• En krasch vid tryck på en notis är rättad.*
-  - *• Varningsmotorn arbetar snålare: appen prövar bara varningarna i din närhet, med samma varningar som förut.*
-  - räknarens rad ur avsnittet *Nästa version: räknarens sex områden*.
-- **(c) Granskarens anteckningar:** texten under *Granskarens anteckningar*, med två ändringar. Stycket HOW TO SEE A WARNING
-  börjar i stället: *open the app, go through the six-step introduction (tap "Visa mig", "Nästa", "Nästa", then "Fortsätt" and
-  answer the two location prompts and the notification prompt), tap "Klar", then tap "Starta vakten" (Start the guard).* Och
-  efter NEW IN 0.3.15 läggs stycket:
+**What's New:**
 
-  > NEW IN 0.4.0: (1) A new six-step introduction. It lists the five warning types, shows a sample warning, and before each system prompt tells the user which button to choose. Each answer has its own follow-up screen: with "Always" the guard starts itself when driving; with "While Using" the user starts it with one tap before the trip; if location is denied the app explains how to turn it on in Settings and can still be opened. The button before each system prompt says "Fortsätt" (Continue). (2) Favoriter: when "Erbjud att spara resor" is on, the question whether to save a trip arrives as a local notification after the trip, with a name field; nothing is sent to a server and there are no push notifications. (3) Settings has three new rows: recommend the app (share sheet), send feedback (e-mail) and rate the app (StoreKit review prompt). (4) The warning engine now only checks the hazards near the car (a spatial grid); the warnings themselves are unchanged. (5) The anonymous counter covers six areas, as described under App Privacy. This build does not include CarPlay: the CarPlay entitlement is not in the binary.
+• Ny introduktion: appen visar allt den varnar för, säger vilken knapp du ska välja i telefonens frågor om plats och notiser, och visar vad varje val innebär.
+• Favoriter: frågan om att spara resan kommer som en notis efter resan, dagens resor visas i fliken och en sparad resa kan byta namn.
+• Tipsa en vän, Tyck till och Betygsätt finns i Inställningar.
+• En krasch vid tryck på en notis är rättad.
 
-- **(d) App Privacy:** *Diagnostics → Other Diagnostic Data* (Analytics, inte kopplad, ingen spårning), om den inte redan är
-  tillagd; annars oförändrat.
-- **(e) Skärmbilderna:** butikens bilder är ur (19). Introduktionen syns inte i dem, så inskicket går med de gamla; nya bilder
-  ur (49) är ett eget steg.
-- **(f) Släppet:** Axels val i App Store Connect, automatiskt eller manuellt.
+**Kampanjtexten** (fältet var tomt): *Halka, olyckor, vilt, frysrisk och fartkameror, uppläst i bilen innan du är där.
+Trafikverkets data, din telefon. Din position lämnar inte telefonen av sig själv.*
 
-Inte bekräftat före inskicket: *Tillåt en gång* är inte inspelad, iOS rutor är bara sedda på en engelsk telefon, och vad
-*Starta vakten* gör när platsen är nekad är inte provat.
+**Granskarens anteckningar** (hela fältet, 3 426 av 4 000 tecken; ersätter texten från 0.3.17):
+
+> NEW IN 0.4.0
+> - A new six-step introduction. It lists the five warning types, shows a sample warning, and before each system prompt tells the user which button to choose. Each answer has its own follow-up screen: with "Always" the guard starts itself when driving; with "While Using" the user starts it with one tap; if location is denied the app explains why and links to Settings. The button before each system prompt reads "Fortsätt" (Continue).
+> - Favoriter: when "Erbjud att spara resor" is on, the question whether to save a trip arrives as a local notification after the trip. A saved trip can be renamed. Nothing is sent to a server; no push notifications.
+> - Settings has three new rows: recommend the app (share sheet), send feedback (e-mail), rate the app (system review prompt).
+> - A crash when tapping a notification is fixed.
+> - No new permissions, no account, no sign-in. No CarPlay in this build: the entitlement is not in the binary.
+>
+> ABOUT: Halkvakt is a Swedish road-safety app. It reads Trafikverket's (Swedish Transport Administration) open data on slippery roads, accidents, wildlife, freezing risk and speed cameras, matches the phone's position against it locally, and speaks a warning through the car speakers before the driver reaches the hazard.
+>
+> BACKGROUND LOCATION (2.5.4, 5.1.1): warnings must work with the screen locked while driving. Nothing about the user's position leaves the device automatically; matching happens on the phone against a downloaded data file. "Always" is only requested so the guard can start itself when driving begins; "When In Use" is enough for warnings.
+>
+> NOTIFICATIONS: optional and local only. They show a spoken warning as a banner. Warnings are spoken whether or not notifications are allowed.
+>
+> HOW TO SEE A WARNING WITHOUT DRIVING: go through the introduction: tap "Visa mig", "Nästa", "Nästa", "Fortsätt" (answer the location prompts), "Fortsätt" (answer the notification prompt), "Klar". Tap "Starta vakten". Press and hold "PÅ VAKT" at the top for half a second: a sample warning card ("Halka", "FRAMFÖR DIG") fills the screen for eight seconds, without sound. Real warnings are spoken. Tap "Avsluta vakten" to stop.
+>
+> BACKGROUND AUDIO (2.5.4): keeps the voice speaking with the screen locked. To hear it: Settings → Rösten → "Testa i bakgrunden (talar om 5 s)", then go to the Home Screen; the voice speaks five seconds later.
+>
+> ANONYMOUS COUNTER (since 0.3.15, unchanged): one word per event, stored as one row per day, app version, event and value. No identifier, no time finer than the day, no position. Declared in App Privacy and described in halkvakt.se/integritet.html.
+>
+> The "Betatest" switch is shown only in TestFlight builds; in the App Store version it is hidden and nothing is sent by it.
+>
+> EARLIER FEATURES (unchanged): (1) "Halkvakt tror" (beta): a modelled slippery-road warning, spoken only when the modelled road surface is at or below 0 °C and moisture is measured nearby; it cannot appear in Cupertino. (2) Favoriter tab: "Erbjud att spara resor" is off by default. Saved routes are stored only on the device, excluded from iCloud backup, never transmitted, and deleted with one tap. A route's report downloads one public file of Trafikverket's current situations (the same for every user, no route or position in the request) and matches it on the device.
+>
+> The app is in Swedish and released in Sweden only. Contact: Axel Lagerlöf, hej@halkvakt.se.
+
+**App Privacy:** oförändrat. Tre poster, inte kopplade: *Coarse Location*, *Product Interaction* och *Other Diagnostic Data*.
+Den sista står som *App Functionality*, inte *Analytics* som avsnittet om räknaren säger; inte ändrat.
+
+**Skärmbilderna:** butikens gamla, ur (19). Introduktionen syns inte i dem.
+
+**Före inskicket** spelade Axel in tre vägar i (48): Alltid, När appen används och Tillåt inte. Efter (49) svarade han
+*"Ser bra ut!"* på proven av Alltid-vägen och av *Starta vakten* med platsen nekad; inga inspelningar av (49) finns.
+Inte sett: *Tillåt en gång*, och iOS rutor på en svensk telefon.
+
+Beviset är `appstore:0.4.0:WAITING_FOR_REVIEW` i byggsignalerna.
 
 ## Inskicket 0.3.17 (39) — 7/11 (DECISIONS #816, kort #378)
 

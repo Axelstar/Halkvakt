@@ -12,6 +12,8 @@ name: kuvos-smavag
 #             hinken. Timflödet kuvos-smavag-timme.yml läser den. Inga punkter, tal eller PH i loggen, bara klart eller fel (#768).
 #             Kuvos-stad startar vid R+6.36, så de två väntar aldrig i MET-kön samtidigt (en väntande körning i en concurrency-grupp
 #             avbryts av nästa).
+#             Räknar kedjan inte körningen (MET:s katalog eller ett fel hos MET) startar timflödets jobb reserv den igen, högst tre
+#             gånger och senast R + 5 h 21 min (scripts/smavag-reserv.ts, DECISIONS #859).
 # Timfilen ligger i hinken eftersom Actions-cachen kan läsas av en PR från en fork. MET-dygnen är öppna data och får ligga i cachen.
 # Källa: MET Norway, MET Nordic (NLOD / CC BY 4.0).
 on:
