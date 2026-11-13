@@ -3,12 +3,13 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { ATERKOMMANDE, DYGN_EFTER, MARK, MARKV, type Olycka, arendeKropp, arendeTitel, bedomning, behoverAtgard, omrade, paminnelse, svenskDag,
-  svenskTid, veckaKropp, veckaPaminnelse, veckaTitel, veckansForslag } from "../supabase/functions/olycksfacit/arende.ts";
+import { ATERKOMMANDE, DYGN_EFTER, MARK, MARKV, type Olycka, arendeKropp, arendeTitel, bedomning, behoverAtgard, forifylld, kollision, omrade,
+  paminnelse, smavagText, svenskDag, svenskTid, veckaKropp, veckaPaminnelse, veckaTitel, veckansForslag, veckansLasrader }
+  from "../supabase/functions/olycksfacit/arende.ts";
 
 const o = (x: Partial<Olycka>): Olycka => ({ tid: "2026-11-06T05:23:00.000Z", vag: "Väg 134", lon: 15.5434, lat: 57.9831,
   utfall: "TYST_TACKT", orsaker: ["A1: väglaget Normalt", "K: fukt saknades", "A2: ingen station inom 5 km"], klass: "TROLIG",
-  skal: "singelolycka, yta ≤ 0 °C och fukt", dubblett: false, talade: [], ...x });
+  skal: "singelolycka, yta ≤ 0 °C och fukt", dubblett: false, talade: [], art: "ett fordon", smavag: null, flackvisVat: false, ...x });
 
 test("behoverAtgard: bara tysta olyckor med tydlig eller trolig koppling, aldrig en dubblett", () => {
   assert.equal(behoverAtgard(o({})), true);
@@ -44,8 +45,9 @@ test("arendeKropp: tabellen per klass och utfall, orsakerna, raden att åtgärda
   const rader = k.split("\n").filter((r) => r.startsWith("- [ ] "));
   assert.equal(rader.length, 1, "bara Kisa ska åtgärdas: E18 varnade, väg 700 är OKLAR");
   assert.ok(rader[0].startsWith("- [ ] 06:23 Väg 134 (15.543, 57.983) — tyst, täckt, TROLIG"));
-  assert.ok(rader[0].endsWith(" — område: Fukten syntes inte — **Åtgärd:** "), "missens förbättringsområde (§9.4)");
-  assert.ok(k.includes("**Stängningsregeln:**"));
+  assert.ok(rader[0].endsWith(" — område: Fukten syntes inte — **Åtgärd:** i veckans ärende"),
+    "missens förbättringsområde (§9.4), och utan förifylld åtgärd läses den i veckans ärende (§11, B)");
+  assert.ok(k.includes("**Läsningen**") && k.includes("Det här ärendet stängs av funktionen."), "dagens ärende stängs alltid (§11, B)");
   // §9.4: listan Rätt varning tar E18 (varnade, TYDLIG), inte Kisa (tyst) eller väg 700 (OKLAR).
   const ratt = k.split("\n").filter((r) => r.startsWith("- 05:23"));
   assert.deepEqual(ratt, ["- 05:23 E18 (15.543, 57.983) — TYDLIG (singelolycka, yta ≤ 0 °C och fukt) — varnade: A1, K"]);
@@ -116,7 +118,7 @@ test("veckaKropp (§9.5): bedömningarna, lagren, områdena, fallen, säsongen o
 test("veckaKropp: en vecka utan återkommande område stängs, och säsongen räknas för sig", () => {
   const sasong = [o({ tid: "2026-11-06T05:00:00.000Z", utfall: "VARNADE", talade: ["A1"] }), o({ tid: "2026-11-10T05:00:00.000Z" })];
   const k = veckaKropp("2026-V46", "2026-11-09", "2026-11-15", [sasong[1]], sasong);
-  assert.ok(k.includes("Inget förbättringsområde har 2 missar eller fler den här veckan. Ärendet stängs av funktionen."));
+  assert.ok(k.includes("Inget förbättringsområde har 2 missar eller fler den här veckan.") && k.includes("Ingen rad att åtgärda. Ärendet stängs av funktionen."));
   assert.ok(!k.includes("- [ ] "));
   assert.ok(k.includes("**Säsongen sedan 2026-11-06:** 2 halkkopplade olyckor; Halkvakt hade rätt varning vid 1 av dem (50 %) och missade 1."));
   assert.ok(veckaPaminnelse("2026-V46", 7).startsWith(MARKV("2026-V46")));
@@ -140,4 +142,87 @@ test("dygnet i går och måndagen efter veckan (TROSKLAR-OLYCKSFACIT §10, DECIS
     "veckorna: måndagen senast DYGN_EFTER + 6 dygn bort, så att söndagen är i går");
   assert.ok(!/::date - [0-9]+[,)]/.test(index), "inget inskrivet antal dygn kvar i frågorna");
   assert.ok(arendeKropp("2026-11-10", []).includes("klassningen när olyckan är minst sex timmar gammal och har lämnat flödet"));
+});
+
+// ── Det nya upplägget (TROSKLAR-OLYCKSFACIT §11, DECISIONS #852) ──
+test("D2: en kollision på frusen väg är TROLIG och en miss i statistiken, men får ingen åtgärdsrad och inget område", () => {
+  const k = o({ art: "flera fordon", skal: "kollision, yta ≤ 0 °C och fukt" });
+  assert.equal(kollision(k), true);
+  assert.equal(kollision(o({})), false, "ett fordon");
+  assert.equal(kollision(o({ art: "flera fordon", klass: "OKLAR" })), false, "bara TROLIG");
+  assert.equal(behoverAtgard(k), false);
+  assert.equal(bedomning(k), "MISS", "räknas som miss i statistiken");
+  assert.equal(omrade(k), null);
+  assert.deepEqual(veckansForslag([k, { ...k, tid: "2026-11-06T06:00:00.000Z" }]), [], "två kollisioner gör inget återkommande område");
+  const dag = arendeKropp("2026-11-06", [k, { ...k, tid: "2026-11-06T06:00:00.000Z", utfall: "VARNADE", orsaker: [], talade: ["A1"] }]);
+  assert.ok(dag.includes("**Kollisioner på frusen väg** (TROLIG, flera fordon; TROSKLAR-OLYCKSFACIT §11): 2, varav 1 där Halkvakt varnade."));
+  assert.ok(!dag.includes("- [ ] "), "ingen åtgärdsrad");
+  assert.ok(dag.includes("— TROLIG (kollision, yta ≤ 0 °C och fukt) — varnade: A1"), "en varnad kollision är rätt varning");
+  // Utom kollisionen är en miss fortfarande exakt det som ska ha en åtgärd (§5).
+  for (const art of ["ett fordon", "flera fordon", null]) for (const kl of ["TYDLIG", "TROLIG", "OKLAR", "INTE"] as const) {
+    const x = o({ art, klass: kl });
+    assert.equal(bedomning(x) === "MISS" && !kollision(x), behoverAtgard(x), `${art} ${kl}`);
+  }
+});
+
+test("A: de förifyllda åtgärderna M1–M3, och fällorna där mönstret inte gäller", () => {
+  const otackt = { utfall: "TYST_OTACKT" as const, orsaker: ["A1: ingen sträcka", "K: ingen vägpunkt", "A2: ingen station inom 5 km"] };
+  assert.match(forifylld(o({ ...otackt, smavag: "varnar" })) ?? "", /^kort #647 — förifylld \(M1 småväg\): .*småvägsrösten: skulle ha talat\.$/);
+  assert.match(forifylld(o({ ...otackt, smavag: "torr" })) ?? "", /^kort #647 .*småvägsrösten: teg, torrt\.$/);
+  assert.equal(forifylld(o({ ...otackt, smavag: "ingen småvägspunkt" })), null, "M1 kräver en punkt inom 0,5 km");
+  assert.equal(forifylld(o({ ...otackt, smavag: null })), null, "M1 kräver lagret (olyckor före sql/110)");
+  assert.equal(forifylld(o({ smavag: "varnar" })), null, "M1 gäller bara otäckta: en täckt miss har en egen orsak");
+  const rimfrost = { klass: "TROLIG" as const, skal: "singelolycka, yta ≤ 0 °C och rimfrost" };
+  assert.match(forifylld(o(rimfrost)) ?? "", /^kort #46 — förifylld \(M2 rimfrost\)/);
+  assert.equal(forifylld(o({ ...rimfrost, utfall: "TYST_OTACKT" })), null, "M2 gäller bara täckta");
+  assert.equal(forifylld(o({ klass: "TYDLIG", skal: "halkord i texten och yta ≤ +1 °C" })), null, "M2 kräver TROLIG");
+  assert.equal(forifylld(o({})), null, "TROLIG på fukt utan fläckvis Våt passar inget mönster");
+  assert.match(forifylld(o({ flackvisVat: true })) ?? "", /^kort #645 — förifylld \(M3 fläckvis Våt\)/);
+  assert.equal(forifylld(o({ flackvisVat: true, orsaker: ["A1: väglaget Normalt", "K: spridningsspärren"] })), null,
+    "M3 kräver att K räknade sträckan torr");
+  assert.equal(forifylld(o({ flackvisVat: true, utfall: "VARNADE" })), null, "bara en miss förifylls");
+  assert.equal(forifylld(o({ ...rimfrost, art: "flera fordon" })), null, "en kollision får ingen rad alls");
+  // I dagens ärende: en förifylld rad är bokförd ([x]); småvägsrösten står i ord, aldrig med tal.
+  const dag = arendeKropp("2026-11-06", [o({ ...otackt, smavag: "varnar" }), o({ tid: "2026-11-06T06:00:00.000Z" })]);
+  const x = dag.split("\n").filter((r) => r.startsWith("- [x] "));
+  assert.equal(x.length, 1);
+  assert.ok(x[0].includes(" — småvägsrösten: skulle ha talat — **Åtgärd:** kort #647 — förifylld (M1 småväg)"), x[0]);
+  assert.equal(dag.split("\n").filter((r) => r.startsWith("- [ ] ")).length, 1, "den andra läses i veckans ärende");
+  assert.equal(smavagText(o({ smavag: "fryser inte" })), "teg, fryser inte");
+  assert.ok(!/pb|ned|mmh|N3/.test(dag), "inga tal ur kuvösen eller kandidaten");
+});
+
+test("B: veckans ärende tar missarna utan förifylld åtgärd, bara från de dygn som lämnade dem dit", () => {
+  const veckans = [
+    o({ tid: "2026-11-16T05:00:00.000Z" }),                                                    // dygn med veckoläsning: läses här
+    o({ tid: "2026-11-17T05:00:00.000Z", flackvisVat: true }),                                 // förifylld (M3): inte här
+    o({ tid: "2026-11-18T05:00:00.000Z" }),                                                    // dygn utan veckoläsning (äldre ärende)
+    o({ tid: "2026-11-16T06:00:00.000Z", utfall: "VARNADE", talade: ["K"] }),                  // varnade
+  ];
+  const lasdagar = new Set(["2026-11-16", "2026-11-17"]);
+  assert.deepEqual(veckansLasrader(veckans, lasdagar).map((x) => x.tid), ["2026-11-16T05:00:00.000Z"]);
+  const k = veckaKropp("2026-V47", "2026-11-16", "2026-11-22", veckans, veckans, lasdagar);
+  const rader = k.split("\n").filter((r) => r.startsWith("- [ ] "));
+  assert.deepEqual(rader, [
+    "- [ ] 2026-11-16 06:00 Väg 134 (15.543, 57.983) — tyst, täckt, TROLIG (singelolycka, yta ≤ 0 °C och fukt) — A1: väglaget Normalt · " +
+      "K: fukt saknades · A2: ingen station inom 5 km — område: Fukten syntes inte — **Åtgärd:** ",
+    "- [ ] Fukten syntes inte — 3 missar — **Åtgärd:** ",
+  ], "missen att läsa, och det återkommande området räknar alla tre missar, också den förifyllda och den från dygnet utan veckoläsning");
+  assert.ok(k.includes("**Stängningsregeln:**"));
+  assert.equal(veckaKropp("2026-V47", "2026-11-16", "2026-11-22", veckans.slice(3), veckans, lasdagar).includes("Ingen rad att åtgärda."), true);
+});
+
+test("E: nämnaren per klass, med INTE delad på viltet och värmen", () => {
+  const veckans = [
+    o({ utfall: "VARNADE", talade: ["A1"] }), o({ tid: "2026-11-06T06:00:00.000Z" }),
+    o({ tid: "2026-11-06T07:00:00.000Z", art: "flera fordon", utfall: "VARNADE", talade: ["K"] }),
+    o({ tid: "2026-11-06T08:00:00.000Z", klass: "INTE", skal: "yta över +3 °C" }),
+    o({ tid: "2026-11-06T09:00:00.000Z", klass: "INTE", skal: "yta över +3 °C", utfall: "VARNADE", talade: ["A2"] }),
+    o({ tid: "2026-11-06T10:00:00.000Z", klass: "INTE", skal: "vilt" }),
+    o({ tid: "2026-11-06T11:00:00.000Z", klass: "OKLAR", dubblett: true }),
+  ];
+  const k = veckaKropp("2026-V45", "2026-11-06", "2026-11-08", veckans, veckans);
+  for (const r of ["| TYDLIG | 0 | 0 | – |", "| TROLIG, ett fordon | 2 | 1 | 50 % |", "| TROLIG, kollision | 1 | 1 | 100 % |",
+                   "| OKLAR | 0 | 0 | – |", "| INTE, vilt | 1 | 0 | 0 % |", "| INTE, varmt | 2 | 1 | 50 % |"]) assert.ok(k.includes(r), r);
+  assert.ok(k.includes("**Nämnaren**"));
 });

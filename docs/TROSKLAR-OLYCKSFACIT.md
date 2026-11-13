@@ -12,6 +12,10 @@ Bengt och Axel** (DECISIONS #802, #803), med valen i §9.8 som rekommenderat. §
 **§10 (klassningen efter sex timmar) tillades och FASTSTÄLLDES 11/11 av Bengt och Axel** (DECISIONS #841, #842). Det ändrar §2, §3, §5 och
 §9.5; varje ändrat stycke säger det och bär den gamla lydelsen. Klasserna i §4 och allt annat gäller som förut.
 
+**§11 (det nya upplägget: olycksarten, fönstret fram till starten, kollisionerna, småvägsröstens lager, förifyllda åtgärder, läsningen i
+veckans ärende och nämnaren) tillades 13/11** (DECISIONS #852). Det ändrar §3, §4, §5, §9.1, §9.2 och §9.5, och varje ändrat stycke säger
+det och bär den gamla lydelsen. ✅ **FASTSTÄLLT 2026-11-13 av Bengt och Axel** (DECISIONS #852, #853).
+
 **Varifrån det kommer.** Bengt 6/11: *"Analys av olyckor är ett av de mest effektiva metoderna för att se om varningssystemen fungerar.
 Olyckan fungerar som facit."*
 - Steg 1 (DECISIONS #796) fryser vad varje varningslager sa när olyckan började.
@@ -44,7 +48,7 @@ Olyckan fungerar som facit."*
 | Fält | Källa | Fönster |
 | :-- | :-- | :-- |
 | `text_efter` | `situation_archive.message` vid kontrollen. Klassningen läser den tillsammans med texten vid fångsten | vid kontrollen: minst sex timmar efter starten, när händelsen har lämnat flödet (§2). (Ändrat 11/11, §10. Förut: *ett dygn efter starten*.) |
-| `yta_min`, `dagg_min` | den **närmaste vaktade stationen inom 15 km**: dess lägsta yta och daggpunkt | 2 timmar före till 2 timmar efter starten |
+| `yta_min`, `dagg_min` | den **närmaste vaktade stationen inom 15 km**: dess lägsta yta och daggpunkt | 2 timmar före till starten. (Ändrat 13/11, §11, D1. Förut: *2 timmar före till 2 timmar efter starten*.) |
 | `fukt_efter` | samma station: regn, snö, eller nederbörd som inte är `no`/`Dry` (snapshotkärnans fukt) | samma |
 | `rimfrost_efter` | samma station: yta ≤ 0 °C och under daggpunkten | samma |
 | `halka_efter` | A1:s sträcka (inom 100 m vid fångsten): satte Trafikverket kod ≥ 2 eller ett halkord? **Bokförs, klassar inte** | 6 timmar efter starten |
@@ -67,22 +71,26 @@ och små bokstäver. Ett ord räknas bara som eget ord, inte inuti ett annat.
 | :-- | :-- | :-- |
 | 1 | **INTE** (vilt) | Texten nämner vilt, älg, rådjur, hjort, vildsvin, ren eller djur |
 | 2 | **TYDLIG** | Texten har ett halkord (*hal, halt, halk…, is, isen, isig…, ishalk…, sladd…, glashal…, blixthalk…*) **och** `yta_min` ≤ +1 °C |
-| 3 | **TROLIG** | Texten säger *singel…* **och** `yta_min` ≤ 0 °C **och** fukt eller rimfrost |
+| 3 | **TROLIG** | Olycksarten är *ett fordon* eller *flera fordon* (§11.2) **och** `yta_min` ≤ 0 °C **och** fukt eller rimfrost. Skälet för *flera fordon* är *kollision*. (Ändrat 13/11, §11, D3 och D2. Förut: *Texten säger singel…*.) |
 | 4 | **INTE** (varmt) | `yta_min` > +3 °C |
 | 5 | **OKLAR** | Allt annat, också när ingen vaktad station finns inom 15 km |
 
 Utan station är ytan okänd. Då kan bara regel 1 och regel 5 ge en klass. Reglerna står ordagrant i `sql/085_olycksfacit_klassning.sql`
-(`olycksfacit_efterkontroll`), och integrationsprovet #797 prövar varje regel och varje vakt med en fälla.
+(`olycksfacit_efterkontroll`), och integrationsprovet #797 prövar varje regel och varje vakt med en fälla. Sedan 13/11 står de i
+`sql/110_olycksfacit_upplagg.sql`, med olycksarten i `olycksart()`; integrationsproven #852 prövar ändringarna med ett motprov var.
 
 ## 5. Vad som följer
 
 - **Dagens ärende** med etiketten `olycka` (steg 3, funktionen `olycksfacit`, varje morgon 05:17 UTC) skrivs för det svenska dygnet i går.
   (Ändrat 11/11, §10. Förut: *i förrgår*.)
   - Det bär en tabell per klass och utfall, och orsakerna till tystnaden.
-  - Under *Att åtgärda* listar det varje olycka som är TYDLIG eller TROLIG och där appen teg (täckt eller otäckt).
+  - Under *Att åtgärda* listar det varje olycka som är TYDLIG eller TROLIG och där appen teg (täckt eller otäckt), utom kollisionerna
+    (§11, D2).
   - Ärendet är publikt och bär bara väg, tid, läge, koder och antal, aldrig kandidatens tal.
-- **Stängningsregeln:** ärendet stängs först när varje rad under *Att åtgärda* har en åtgärd: ett kort på tavlan eller *ingen åtgärd* med skälet.
-  - Ett dygn utan sådana olyckor får ett ärende som stängs direkt.
+- **Stängningsregeln:** dagens ärende stängs av funktionen. En rad som passar ett känt mönster (§11.3) har en förifylld åtgärd, och de övriga
+  läses i veckans ärende, som stängs först när varje rad har en åtgärd: ett kort på tavlan eller *ingen åtgärd* med skälet. (Ändrat 13/11,
+  §11, A och B. Förut: *ärendet stängs först när varje rad under Att åtgärda har en åtgärd … Ett dygn utan sådana olyckor får ett ärende som
+  stängs direkt.*)
   - Ett öppet ärende påminns var sjunde dygn.
   - Öppna `olycka`-ärenden tas upp med Bengt först i varje session, som `frist` och `dom` (CLAUDE.md).
 - **Veckans sammanställning** (steg 4) gör återkommande orsaker till kort och frågor. Reglerna står i §9 (tillagt 6/11).
@@ -149,6 +157,8 @@ förbättring i systemet"*.
     stadspunkt inom 2 km, när dess brytare var på vid timmen. Den läses ur stadsloggen med samma timregel. Med brytaren av gäller K som
     för vägpunkterna, och stadspunkten bokförs med *brytaren av*.
   - A2: stationernas värden timmen före starten.
+  - Småvägsrösten (lagret `smavag`, §11.4): närmaste punkt i småvägsröstens punktfil inom 0,5 km och vad rösten hade sagt vid starten. Den
+    räknas som en varning bara när brytaren för punktens grupp var på. Med brytarna av bokförs den, som skuggans facit. (Tillagt 13/11, §11, C.)
 - **VARNADE** betyder att minst ett av appens lager hade en aktiv varning på platsen när olyckan började.
 - Det säger inte att någon förare med appen var där, och inte att olyckan hade undvikits. Ingen förardata läses (förslaget §4).
 
@@ -160,7 +170,7 @@ Varje klassad olycka utom dubbletterna får en bedömning. Den första raden som
 | :-- | :-- | :-- |
 | **RÄTT VARNING** | VARNADE, och TYDLIG eller TROLIG | Halkvakt hade en varning på platsen när en olycka med koppling till halka började |
 | **VARNING, HALKA INTE BEKRÄFTAD** | VARNADE, och OKLAR eller INTE | Bokförs. Ingen slutsats |
-| **MISS** | Tyst (täckt eller otäckt), och TYDLIG eller TROLIG | Ska ha en åtgärd (§5) och får ett förbättringsområde (§9.3) |
+| **MISS** | Tyst (täckt eller otäckt), och TYDLIG eller TROLIG | Ska ha en åtgärd (§5) och får ett förbättringsområde (§9.3). En kollision (§11, D2) räknas som miss men får varken åtgärd eller område. (Ändrat 13/11.) |
 | **OKLAR TYSTNAD** | Tyst, och OKLAR | Ingen slutsats |
 | **RÄTT TYSTNAD** | Tyst, och INTE | Tystnaden är en funktion |
 
@@ -198,9 +208,12 @@ Två tillägg i ärendet från §5:
   2. vid de halkkopplade olyckorna (TYDLIG och TROLIG): hur många gånger A1, K och A2 varnade;
   3. missarna per förbättringsområde;
   4. veckans RÄTT VARNING fall för fall: tid, väg, läge, klass och lager;
-  5. säsongen sedan 6/11: halkkopplade olyckor, RÄTT VARNING i antal och andel, och missarna per område.
+  5. säsongen sedan 6/11: halkkopplade olyckor, RÄTT VARNING i antal och andel, och missarna per område;
+  6. nämnaren: per klass hur ofta Halkvakt varnade, med INTE delad på viltet och ytan över +3 °C och TROLIG på ett fordon och kollision
+     (tillagt 13/11, §11, E);
+  7. veckans missar utan förifylld åtgärd, en rad var att åtgärda (tillagt 13/11, §11, B).
 - **Förslagen.** Ett område med minst **två** missar under veckan är återkommande. Det står som en rad att åtgärda, med ett kort på tavlan, en fråga i bedömningens §4.2 eller *ingen åtgärd* med skälet.
-- **Stängning.** Ärendet stängs när varje rad har sin åtgärd. Utan ett återkommande område stängs det direkt. Ett öppet ärende påminns var sjunde dygn, som dagens.
+- **Stängning.** Ärendet stängs när varje rad har sin åtgärd. Utan ett återkommande område och utan en miss att läsa stängs det direkt. Ett öppet ärende påminns var sjunde dygn, som dagens. (Ändrat 13/11, §11. Förut: *Utan ett återkommande område stängs det direkt*.)
 - **Publikt.** Som i §5 bär ärendet bara väg, tid, läge, koder och antal.
 
 ### 9.6 Säljregeln: vad som får sägas utåt
@@ -284,10 +297,117 @@ i texten efter kontrollen. Villkoret om flödet ska hindra det: texten läses f�
 | Bengt | 2026-11-11 | i chatten: *"Ja, alla fyra"*, på förslagets fyra frågor, där fråga 4 var klassningen efter sex timmar (DECISIONS #841) |
 | Axel | 2026-11-11 | via Bengt i chatten: *"axel signerar 641"* (DECISIONS #842) |
 
+## 11. Tillägg 13/11 2026: det nya upplägget (DECISIONS #852)
+
+**Status:** ✅ **FASTSTÄLLT 2026-11-13 av Bengt och Axel** (DECISIONS #852, #853). Texten som signerades är filen på grenen
+`claude/olycksfacit-upplagg` vid 7da12b3d, sha256 `a0b9c37055e512c4f64866fb51f3195ffb325b54c78df6ca9728b0b449c69b86` med radsluten som LF. Förslaget mättes på veckan 6–12/11, med SELECT i
+Supabase-panelen 13/11; det ligger privat på Bengts dator. Bengt 13/11, på frågan om singelkravet: *"är det verkligen rätt behandling att
+kräva singelolyckor"*, och på förslaget: *"bygg allt"*. Byggt i `sql/110_olycksfacit_upplagg.sql` och `supabase/functions/olycksfacit`.
+
+### 11.1 Vad som ändras
+
+| Del | § | Förut | Nu |
+| :-- | :-- | :-- | :-- |
+| D1 | 3 | stationens fönster två timmar före till två timmar efter starten | två timmar före till starten: halka som kom efter starten orsakade inte olyckan |
+| D3 | 4, regel 3 | TROLIG kräver ordet *singel* i texten | TROLIG kräver olycksarten *ett fordon* (§11.2): förloppet, inte ett ord |
+| D2 | 4, regel 3; 9.2 | en kollision kan aldrig bli TROLIG | arten *flera fordon* med samma yta och fukt blir TROLIG med skälet *kollision*; den räknas i statistiken men får ingen åtgärdsrad och inget område |
+| C | 9.1 | lagren A1, K och A2 | också småvägsröstens lager (§11.4) |
+| A | 5 | varje miss läses av en människa | en miss som passar ett känt mönster får en förifylld åtgärd (§11.3) |
+| B | 5, 9.5 | dagens ärende står öppet tills varje rad har en åtgärd | dagens ärende stängs av funktionen; missarna utan förifylld åtgärd läses i veckans ärende |
+| E | 9.5 | – | veckans ärende bär nämnaren: per klass hur ofta Halkvakt varnade |
+
+Oförändrat: populationen och dubbletterna (§2), vakterna (§3), regel 1 (viltet), TYDLIG, INTE (varmt) och klassernas ordning (§4),
+`halka_efter`, att en olycka klassas en gång, fångsten av A1, K och A2, driftlarmet (§10) och säljregeln (§9.6). D1 gäller alla klasser
+som läser ytan, alltså också TYDLIG och INTE (varmt).
+
+### 11.2 Olycksarten
+
+Arten läses ur texten vid fångsten och texten efteråt, utan hänsyn till stora och små bokstäver. Ett ord räknas från sin början, inte
+inuti ett annat. Den första raden som stämmer gäller; orden står ordagrant i `olycksart()` i `sql/110`.
+
+| # | Art | Ord (urval) |
+| --: | :-- | :-- |
+| 1 | vilt | regel 1:s ord, tecken för tecken |
+| 2 | oskyddad | fotgängare, cykel, cyklist, moped, motorcykel, mc |
+| 3 | ett fordon | *singel…* |
+| 4 | flera fordon | flera, två eller tre fordon, kollision, krock, personbilar, lastbilar, bilar, mötande, frontal, upphinnande, bakifrån, *mellan en personbil och …*, *personbil och lastbil*, *påkörd av en lastbil* |
+| 5 | ett fordon | dike och vägdike, kört av, voltat, vält, på taket, tvärs, refug, räcke, stolpe, träd, bergvägg, omkull, i skogen, ställt sig |
+| 6 | ett fordon, svag | bara ett fordon nämns (personbil, lastbil, buss, skåpbil, traktor, fordon, bil) |
+| 7 | okänd | inget av ovanstående |
+
+- *Svag* klassar inte: texten säger inget om förloppet, och olyckan blir OKLAR som förut.
+- Trafikverkets texter har stavfel. Mönstret för personbil tål *pesonbil*.
+- Ett ortnamn efter *mellan* är ingen kollision. *Buss i diket mellan Rättvik och Leksand* är ett fordon.
+
+### 11.3 De förifyllda åtgärderna (A)
+
+| Mönster | Villkor | Åtgärd |
+| :-- | :-- | :-- |
+| M1 småväg | tyst och otäckt, och en punkt i småvägsröstens punktfil inom 0,5 km (§11.4) | kort #647 |
+| M2 rimfrost | tyst och täckt, TROLIG på rimfrost utan fukt | kort #46 |
+| M3 fläckvis Våt | tyst och täckt, K:s sträcka hade *fläckvis Våt* i A1:s text, och K räknade sträckan torr | kort #645 |
+
+En förifylld rad räknas som åtgärdad och kan skrivas om. Det som inte passar ett mönster läses av en människa i veckans ärende.
+
+### 11.4 Småvägsröstens lager (C)
+
+- Fångas en gång per olycka, inom sex timmar från fångsten, eftersom kedjans timmar gallras efter sex timmar.
+- **Punkten:** närmaste punkt i småvägsröstens punktfil inom 0,5 km.
+- **Timmen:** småvägsröstens regel räknad vid starten. Det är den senaste timmen som var skriven före starten, högst två timmar gammal och
+  med minst 95 % av punkterna, som `smavag_timme()`.
+- **Utfallet:**
+  - *varnar*: regeln säger fryser, och den strängare N3 eller radarn i punktens bit de 60 minuterna före starten visar nederbörd;
+  - *torr*;
+  - *fryser inte*;
+  - *ingen timme*;
+  - *gallrad*;
+  - *ingen småvägspunkt*.
+- Lagret talar bara när brytaren för punktens grupp är på. Då varnade appen, och olyckan blir VARNADE. Med brytarna av är lagret skuggans
+  facit, och utfallet rörs inte.
+- Ärendet säger bara vad rösten hade gjort, i ord. Inga tal ur kuvösen sparas eller skrivs (#768).
+
+### 11.5 Regel L
+
+Tillägget kommer efter den första klassningen (6/11), så §7:s regel L gäller.
+- **D1 är en lättnad:** veckans TROLIG går från 29 till 18.
+- **D3 och D2 är skärpningar:** TROLIG går upp.
+- **Tillsammans** blir raderna att åtgärda färre, så tillägget prövas som en lättnad med båda signaturerna.
+
+- **L1:** de olyckor som redan är klassade rörs inte; en olycka klassas en gång (§2).
+- **L2:** ändringen gäller bara olyckor som inte är kontrollerade när `sql/110` migreras.
+- **L3, de sedda talen** (veckan 6–12/11, 362 olyckor utan dubbletter, förslagets mätning; vakterna är inte tillämpade på fönstret före
+  starten, så en omklassning kan skilja sig något):
+
+  | Veckan 6–12/11 | Förut | D1 + D3 | D1 + D2 + D3 |
+  | :-- | --: | --: | --: |
+  | TROLIG | 29 | 24 | 33 (varav 9 kollisioner) |
+  | — varnade | 12 | 15 | 21 |
+  | — tysta | 17 | 9 | 12 (varav 3 kollisioner utan rad) |
+  | Rader att åtgärda, med TYDLIG | 18 | 10 | 10 |
+  | Andelen varnade bland TYDLIG och TROLIG | 40 % (12 av 30) | 60 % (15 av 25) | 62 % (21 av 34) |
+
+  Ordlistan i `olycksart()` gav 13/11, körd med SELECT på samma vecka, samma tal i fönstret före starten som provet. I hela veckan
+  flyttade fyra olyckor mellan arterna.
+
+- **L4, skälen:**
+  - D1: värden efter starten kan inte ha orsakat olyckan. Elva av veckans 29 TROLIG faller bort med fönstret fram till starten, bland
+    dem väg 631 11/11 (regnet 1,5 timmar efter) och väg 1885 12/11 (ytan 0,0 °C två timmar efter). Skälet syntes alltså i utfallet, och
+    därför krävs båda signaturerna.
+  - D3: ordet *singel* är ett ord, inte förloppet. Bengts fråga kom före talen.
+  - D2: kollisioner på frusen väg räknades aldrig.
+
+### 11.6 Signaturer
+
+| Vem | Datum | Hur |
+| :-- | :-- | :-- |
+| Bengt | 2026-11-13 | i chatten: *"bygg allt och axel signerar del 6"*, på förslaget där D-delarna krävde båda signaturerna |
+| Axel | 2026-11-13 | via Bengt i chatten: *"Ja, Axel signerar"*, på frågan om Axel också signerar §11. Bengts första ord, *"axel signerar del 6"*, gällde §10, som Axel signerade 11/11 (DECISIONS #853) |
+
 ---
 
 *Källor:*
-- `sql/084_olycksfacit.sql` (steg 1), `sql/085_olycksfacit_klassning.sql` (steg 2 och 3) och `sql/108_olycksfacit_driftlarm.sql` (§10);
+- `sql/084_olycksfacit.sql` (steg 1), `sql/085_olycksfacit_klassning.sql` (steg 2 och 3), `sql/108_olycksfacit_driftlarm.sql` (§10) och
+  `sql/110_olycksfacit_upplagg.sql` (§11);
 - `supabase/functions/olycksfacit/`;
 - förslaget `Desktop/Olyckorna_2026-11-06/OLYCKSFACIT_RUTINEN_FORSLAG_2026-11-06.md` (Bengt 6/11: *"Bygg olycksfacit"*, *"Ja, bygg steg 2 och 3"*);
 - förslaget `docs/FORSLAG-OLYCKSFACIT-DRIFTLARM-2026-11-08.md` (§10);
