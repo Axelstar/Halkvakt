@@ -1054,6 +1054,17 @@
       "facebook": "1312515671952967_122112403815516187",
       "instagram": "18034204499857807",
       "x": "2121062453744476323"
+    },
+    {
+      "pass": "live",
+      "namn": "2026-11-13-live-0507",
+      "typ": "smhi",
+      "nyckel": "smhi:Snöfall:Skellefteå, norrut till länsgränsen:RED",
+      "tid": "2026-11-13T04:07:38.661Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-11-13-live-0507.jpg",
+      "facebook": "1312515671952967_122112423525516187",
+      "instagram": "17981735649128063",
+      "x": "2121092650224787936"
     }
   ]
 }
