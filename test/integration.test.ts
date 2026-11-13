@@ -4104,3 +4104,62 @@ test("#845 försprånget spritt: sex jobb, elva anrop en gång var, nyckeln kopi
     await pool.end();
   }
 });
+
+// DECISIONS #855 (sql/111, kort #650): favoritprovets rutt-steg i tre delar. CI:s PostGIS saknar pg_cron, så cron.job, schedule och
+// unschedule spelas av egna tabeller och funktioner, som i #845. Kommandot kopieras ur favoritprovets jobb med nyckeln kvar; varje del
+// finns en gång; favoritprovets eget jobb (del 0) rörs inte; omkörningen ändrar inget; ett jobb med två adresser stoppar allt.
+test("#855 favoritprovet i delar: tre jobb, var del en gång, nyckeln kopierad, del 0 orörd, omkörningen ändrar inget", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const riktiga = (await pool.query("SELECT 1 FROM pg_extension WHERE extname = 'pg_cron'")).rowCount;
+  try {
+    if (riktiga) return;   // en riktig pg_cron rörs inte
+    await pool.query(`CREATE SCHEMA cron;
+      CREATE TABLE cron.job (jobid bigserial PRIMARY KEY, jobname text UNIQUE, schedule text, command text);
+      CREATE FUNCTION cron.schedule(n text, s text, c text) RETURNS bigint LANGUAGE sql AS $f$
+        INSERT INTO cron.job (jobname, schedule, command) VALUES (n, s, c)
+        ON CONFLICT (jobname) DO UPDATE SET schedule = excluded.schedule, command = excluded.command RETURNING jobid $f$;
+      CREATE FUNCTION cron.unschedule(id bigint) RETURNS boolean LANGUAGE sql AS $f$ DELETE FROM cron.job WHERE jobid = id RETURNING true $f$`);
+    const huvud = "select net.http_post(url:='https://prov.supabase.co/functions/v1/favoritprov', headers:=jsonb_build_object('x-ingest-key', 'PROVNYCKEL'), timeout_milliseconds:=60000);";
+    await pool.query(`INSERT INTO cron.job (jobname, schedule, command) VALUES ('halkvakt-favoritprov', '8,38 * * * *', $1),
+      ('halkvakt-favoritprov-9', '59 * * * *', 'select 1')`, [huvud]);
+    const sql = readFileSync(new URL("../sql/111_favoritprov_delat.sql", import.meta.url), "utf8");
+    await pool.query(sql);
+    const jobb = async () => (await pool.query(`SELECT jobname, schedule, command FROM cron.job ORDER BY jobname`)).rows;
+    const j = await jobb();
+    assert.deepEqual(j.map((x) => x.jobname), ["halkvakt-favoritprov", "halkvakt-favoritprov-1", "halkvakt-favoritprov-2", "halkvakt-favoritprov-3"],
+      "tre deljobb, och ett gammalt deljobb är borta");
+    assert.deepEqual(j[0], { jobname: "halkvakt-favoritprov", schedule: "8,38 * * * *", command: huvud }, "del 0 är orörd");
+    assert.deepEqual(j.slice(1).map((x) => x.schedule), ["9,39 * * * *", "11,41 * * * *", "19,49 * * * *"]);
+    assert.deepEqual(j.slice(1).map((x) => x.command), [1, 2, 3].map((d) => huvud.replace("/functions/v1/favoritprov'", `/functions/v1/favoritprov?del=${d}'`)),
+      "kommandot kopierat med nyckeln, bara adressen ändrad");
+    await pool.query(sql);
+    assert.deepEqual(await jobb(), j, "omkörningen ändrar inget");
+    // Ett favoritprovsjobb med två adresser: inget ändras.
+    await pool.query(`UPDATE cron.job SET command = $1 WHERE jobname = 'halkvakt-favoritprov'`, [huvud + huvud]);
+    await assert.rejects(pool.query(sql), /inte väntad form/);
+    assert.deepEqual((await jobb()).slice(1), j.slice(1), "inget ändrat när kommandot inte har väntad form");
+  } finally {
+    if (!riktiga) await pool.query("DROP SCHEMA IF EXISTS cron CASCADE");
+    await pool.end();
+  }
+});
+
+// Funktionen och jobben ska mena samma antal delar, och delningen ska ta varje rutt exakt en gång (#855).
+test("#855 favoritprovets delar: DELAR i funktionen lika med jobben i sql/111, och var rutt i en del", () => {
+  const main = readFileSync(new URL("../supabase/functions/favoritprov/main.ts", import.meta.url), "utf8");
+  const delar = Number(main.match(/^const DELAR = (\d+);/m)?.[1]);
+  const sql = readFileSync(new URL("../sql/111_favoritprov_delat.sql", import.meta.url), "utf8");
+  const scheman = [...(sql.match(/schema text\[\] := ARRAY\[([^\]]+)\]/)?.[1] ?? "").matchAll(/'[^']+'/g)].length;
+  assert.equal(delar, 3);
+  assert.equal(scheman, delar, "ett jobb per del");
+  assert.match(sql, new RegExp(`FOR i IN 1\\.\\.${delar} LOOP`), "efterkontrollen prövar varje del");
+  const bunt = readFileSync(new URL("../supabase/functions/favoritprov/index.ts", import.meta.url), "utf8");
+  const rutter = Object.keys(JSON.parse(bunt.match(/^const RUTTER_PROV: Record<string, \[number, number\]\[\]> = (.+);$/m)![1]));
+  assert.equal(rutter.length, 30);
+  const tagna = Array.from({ length: delar }, (_, d) => rutter.filter((_, i) => i % delar === d));
+  assert.deepEqual(tagna.flat().sort(), [...rutter].sort(), "varje rutt i exakt en del");
+  assert.deepEqual(tagna.map((x) => x.length), [10, 10, 10]);
+  assert.match(main, /\.filter\(\(_, i\) => i % DELAR === del - 1\)/, "funktionen delar på samma sätt");
+});

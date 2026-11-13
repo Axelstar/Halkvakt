@@ -16023,3 +16023,44 @@ Mätningen av MET:s filnedladdning (`fileServer`) under morgonfönstret föresl�
 - Att låta K tala på förra körningen: det är ett beslut om fysiken för Bengt och Axel i kuvösen.
 
 **Stomdokument:** SYS 2 — kandidatens kedja: reserven för den nya kandidatens del A efter MET:s morgonfel
+
+## #855 (13/11 2026) Favoritprovets rutt-steg i tre anrop, så att varje anrop ligger under Supabases CPU-gräns (kort #650)
+
+**Beslutet.** Bengt 13/11: *"provkör kedjan-a och gör favoritprovet"*. Förslaget var utredningens väg (a), att dela rutt-steget på tre
+anrop (`Desktop/Resursgransen_2026-11-12/UTREDNING.md`).
+
+**Varför.** Sedan 11/11 16.38 UTC har varje körning av `halkvakt-favoritprov` fallit med 546 (*"CPU Time exceeded"*). Supabase ger
+2 s CPU per anrop. Hämtningen, rapporten och skrivningen gick igenom, men slingan över de 30 provrutterna stoppades. Därför har
+`favoriter.json` och `historik.json` inte skrivits sedan dess.
+
+**Det som byggdes.**
+- `supabase/functions/favoritprov/main.ts`:
+  - **Del 0**, anropet utan del (`:08/:38`, jobbet orört), gör hämtningen, rapporten, skrivningen och synkens spegling. Det skriver
+    manifestet sist, med sin tid.
+  - **Del 1–3** (`?del=1`, `2`, `3`) tar var tredje rutt (rutt i går till del i % 3 + 1, så att de tunga C-rutterna sprids). De läser
+    rapporten ur hinken och skriver om sina rutter i `favoriter.json`.
+  - **En del vars rapport är äldre än 20 minuter** skriver ingenting.
+  - **Den sista delen** skriver historiken för hela körningen: tiden summerad och per del (`ms_delar`) och antalet klara delar.
+  - Bunten är omgjord (`bundle-favoritprov.ts`).
+- `sql/111`: tre jobb på udda minuter, `:09/:39`, `:11/:41` och `:19/:49`, som inte delar minut med publicera eller med andra
+  funktioners starter. Kommandot kopieras ur favoritprovets eget jobb, och efterkontrollen kräver varje del exakt en gång.
+- Prov:
+  - integrationsprovet #855 med spelad pg_cron: tre jobb, nyckeln kopierad, del 0 orörd, omkörningen ändrar inget, och en felaktig form
+    stoppar allt;
+  - ett prov utan databas att `DELAR` i funktionen och jobben i `sql/111` är lika och att varje rutt hamnar i exakt en del.
+
+**Mätt lokalt 13/11** med dagens filer ur de publika hinkarna och tre varv: del 1–3 tar 0,94–1,25 s CPU var. Det tyngsta är det första,
+kalla varvet. Alla 30 rutterna tar 2,8–3,4 s, och tolkningen av de fyra filerna 15 ms.
+
+**Kvar:**
+1. Sammanslagningen.
+2. `sql/111` med DB-knappen och deployen av `favoritprov`. Ordningen spelar ingen roll: med jobben före deployen gör del 1–3 hela slingan
+   tills funktionen är ny, och med deployen före jobben skrivs inga rutter tills jobben finns.
+3. Beviset: `favoriter.json` skriven av varje körning under ett dygn, och inga 546 från favoritprovets jobb i `public.anrop`.
+
+**Alternativen som inte valdes:**
+- Fyra delar: tre ligger under gränsen med marginal i mätningen, och fler jobb ger fler starter.
+- Att flytta steget till Actions: det fungerar, men favoritprovet är just ett prov av körningen i Supabase.
+- Att göra `favoritRapport` billigare: den fasta kostnaden per rutt är liten, och vinsten måste mätas först.
+
+**Stomdokument:** FAV 7 — favoritprovets rutt-steg i tre anrop under CPU-gränsen
