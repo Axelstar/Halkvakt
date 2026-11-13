@@ -16221,3 +16221,53 @@ timmen direkt (#854, #857), som prövas första gången 14/11 på morgonen.
 
 **Stomdokument:** SYS — småvägsröstens kedja får en reserv när timfilen saknas
 
+## #860 (13/11 2026) Viltsträckan: steg 0, läsningen av Trafikverkets viltolyckskartor, förregistreras (kort #657)
+
+**Beslutet.** Bengt 13/11: *"Ja, förbered steg 0"* och *"Ja, öppna PR"*. Frågan var vad som kan hålla appen och sajten i bruk
+maj–oktober, när halkan saknas. Underlaget ligger på Bengts Skrivbord (`Halkvakt_Aret_runt_Djupdykning_2026-11-13.md` och
+`Halkvakt_Viltvakten_Skiss_2026-11-13.md`). Bara steg 0 är beslutat, och det är en läsning. Ingen regel, ingen rösttext och ingen
+kod i motorn eller apparna.
+
+**Varför.**
+- PLAN.md rad A4 beskrev från början en viltzon ur olycksstatistik per sträcka, månad och timme. Den lades i vila 25/8 (#13),
+  eftersom ingen öppen data med positioner fanns. Sedan 22/9 varnar rösten för djur som Trafikverket just har rapporterat (#318),
+  omkring 35 om dygnet i september (#316).
+- Trafikverkets *Viltolyckskartor* 2020–2024 finns i Lastkajen (produktpaket 10094, GeoPackage, licens CC0 enligt
+  metadatakatalogen, post 1575 och 1576, läst 13/11): olyckor per kilometer och år för varje väglänk i huvudvägnätet, per art.
+  Metoden står i Trafikverkets publikation 2019:179.
+- Nationella viltolycksrådet redovisar 70 458 viltolyckor på väg 2025, varav 40 237 april–oktober (statistik.viltolycka.se, läst
+  13/11).
+- Trafikverkets väglag (RoadCondition) uppdateras bara 1 november–30 april (datamodellen, läst 13/11), så rapporterad halka kan
+  inte ge något maj–oktober.
+- De vädervarningar som låg närmast till hands för sommaren är redan fällda: vattenplaning i båda spåren (#648) och sikten (#491).
+
+**Det som är byggt.** `scripts/matningar/vilt-steg0-2026-11-13.ts`, som bara läser och bara skriver ut:
+- `falt` skriver varje lager och kolumn som den finns, med spann. Fältnamnen i 2019:179 gäller äldre serier och binds först efter
+  den utskriften.
+- `rakna` har fyra delar, skrivna i filens huvud före körningen:
+  1. nätet: länkar, kilometer och olyckor, och en kontroll av att frekvensfältet och längdfältet betyder det 2019:179 säger;
+  2. koncentrationen: andelen olyckor på de 1, 2, 5, 10 och 20 % av väglängden som har högst frekvens;
+  3. trappan: länkar längre än 250 m med mer än 0,5, 1, 2 och 3 olyckor per kilometer och år, med längd, art och län;
+  4. takten längs de 20 svenska skuggrutterna: länkar med ruttens vägnummer inom 5 km från linjen, heta länkar hopslagna när luckan
+     är högst 500 m (halkzonens regel), och rop på ett varv med kandidatens tak på ett rop per 10 minuter (#606).
+- Ingen dom och inga egna trösklar. Gränsen 1 olycka per kilometer och år med längre än 250 m är Trafikverkets egen definition av en
+  hotspot, så långt länkarnas fält bär den. Taket är lånat som en läsning, inte valt som regel.
+- Självtestet bygger en fil i minnet med en fälla per vakt. Åtta motprov (längden, den strikta gränsen, korridoren, vägnumret, zonen,
+  taket, geometrins envelope och Z-koordinaten) fälldes vart och ett på rätt rad. Skriptet körs med Nodes inbyggda SQLite och står
+  inte i ci.
+- Filen hämtas av Bengt, eftersom Lastkajen kräver inloggning (#65), och ligger utanför repot. Skriptet är inte kört mot den.
+
+**Det skriptet inte bär.**
+- Skuggrutterna är grova linjer, så läget längs rutten är ungefärligt. De tio C-rutterna saknar vägnummer och är inte med.
+- Filen bär ingen tid. Tidsvillkoret (artens veckor och timmar) sänker takten ytterligare och hör till ett senare steg.
+
+**Inte beslutat:** allt efter steg 0, det vill säga stabiliteten mellan två serier, tidsvillkoret, tröskeldokument, skugga och
+röst. Viltolycksrådets rådata med koordinater har ingen namngiven licens. Frågan till rådet väcks först om steg 0 visar att en
+smal regel finns (KONTAKTREGELN).
+
+**Alternativen som inte valdes:**
+- Att hålla skriptet utanför repot tills filen är läst. Förregistreringen är starkare när den är pushad före körningen.
+- Att börja med Viltolycksrådets rådata. Villkoren är oklara, och Trafikverkets fil är CC0 och räcker för steg 0.
+
+**Stomdokument:** BED §4.2 — viltsträckan är ett nytt spår som väntar på filen ur Lastkajen
+
