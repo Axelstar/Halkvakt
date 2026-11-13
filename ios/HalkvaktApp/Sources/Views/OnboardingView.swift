@@ -157,7 +157,7 @@ struct OnboardingView: View {
         case .authorizedWhenInUse where !askedAlways:
             Sida(knapp: "Fortsätt", action: { askedAlways = true; guardM.requestAlwaysUpgrade() }) {
                 Rubrik(titel: "Bra. En ruta till: Alltid",
-                       text: "Med Alltid startar vakten själv när du kör. Utan det öppnar du appen och trycker Starta vakten före varje resa.")
+                       text: "Med Alltid startar vakten själv när du kör. Du behöver inte öppna appen före resan.")
                 Etikett(text: "I nästa ruta från iOS")
                 IosVal(rader: ["Behåll Endast när appen används", "Ändra till Tillåt alltid"], vald: 1)
                 Fot(text: "Platsen stannar i telefonen, även med Alltid.")
@@ -165,11 +165,11 @@ struct OnboardingView: View {
         case .authorizedWhenInUse:
             Sida(knapp: "Fortsätt", action: { ga(till: .notiserna) }, lank: "Ändra till Alltid", lankAction: oppnaInstallningar) {
                 Rubrik(titel: "Du startar vakten själv",
-                       text: "Platsen står på När appen används. Det fungerar, men vakten vaknar inte av sig själv när du kör.")
+                       text: "Halkvakt varnar precis som vanligt. Du öppnar bara appen och trycker Starta vakten före varje resa.")
                 Etikett(text: "Så blir det")
                 RowPanel {
-                    StegRad(bock: true, titel: "Varningar när vakten är på", text: "Tryck Starta vakten före resan.")
-                    StegRad(bock: false, titel: "Självstart när du kör", text: "Kräver att platsen står på Alltid.", marke: "Av", divider: false)
+                    StegRad(bock: true, titel: "Alla varningar, när vakten är på", text: "Öppna Halkvakt och tryck Starta vakten före resan.")
+                    StegRad(bock: false, titel: "Självstart när du kör", text: "Vill du slippa trycka? Ändra platsen till Alltid.", marke: "Av", divider: false)
                 }
             }
         case .authorizedAlways:
