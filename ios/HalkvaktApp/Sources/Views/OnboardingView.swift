@@ -17,6 +17,9 @@ struct OnboardingView: View {
     /// iOS säger inte att föraren avböjde Alltid — status står kvar på "vid användning". Vi vet att vi frågade.
     /// Tillåt en gång ser likadant ut för appen: iOS visar då ingen andra ruta, och läget blir detsamma.
     @State private var askedAlways = false
+    /// Rutan om Alltid är begärd men inte besvarad. Sidan före rutan står kvar bakom den tills svaret finns: på Axels
+    /// inspelning 13/11 syntes "Du startar vakten själv" bakom rutan, innan han hunnit svara.
+    @State private var vantarPaAlltid = false
 
     private enum Steg: Int {
         case valkommen, varningarna, markningen, platsen, notiserna, klar
@@ -45,6 +48,8 @@ struct OnboardingView: View {
         // Tillbaka från Inställningar: läs om notisläget, annars står sidan kvar på "avslagna".
         .onChange(of: scenePhase) { _, fas in
             if fas == .active { Task { notifStatus = await HeadsUpService.shared.status() } }
+            // iOS ruta gör appen inaktiv; när den är aktiv igen är rutan besvarad.
+            if fas == .active, vantarPaAlltid { vantarPaAlltid = false; askedAlways = true }
         }
     }
 
@@ -155,7 +160,15 @@ struct OnboardingView: View {
                 Fot(text: "Sedan frågar iOS en gång till. Vi visar vad du väljer då också.")
             }
         case .authorizedWhenInUse where !askedAlways:
-            Sida(knapp: "Fortsätt", action: { askedAlways = true; guardM.requestAlwaysUpgrade() }) {
+            Sida(knapp: "Fortsätt", action: {
+                vantarPaAlltid = true
+                guardM.requestAlwaysUpgrade()
+                // Visar iOS ingen ruta (Tillåt en gång, eller redan frågad) blir appen aldrig inaktiv: gå vidare ändå.
+                Task {
+                    try? await Task.sleep(for: .seconds(1.5))
+                    if vantarPaAlltid, scenePhase == .active { vantarPaAlltid = false; askedAlways = true }
+                }
+            }) {
                 Rubrik(titel: "Bra. En ruta till: Alltid",
                        text: "Med Alltid startar vakten själv när du kör. Du behöver inte öppna appen före resan.")
                 Etikett(text: "I nästa ruta från iOS")
