@@ -91,6 +91,7 @@ ligger på +1…+3 °C, har fallit minst 0,8 °C på 30 minuter och mätaren set
 - [Rapporterad halka (A1)](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-halka): klar
 - [Frysrisk vid stationer och broar (A2)](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-frysrisk): klar
 - [Djur på vägen (A4)](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-vilt): klar
+- [Viltsträckan (statistik per sträcka)](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-viltstracka): väntar, 33 % · Bengt hämtar Trafikverkets viltolyckskartor 2020–2024 ur Lastkajen (produktpaket 10094; Lastkajen kräver inloggning), sedan körs och läses steg 0 (DECISIONS #860).
 - [Fartkameror (A5)](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-kameror): klar
 
 <!-- /LÄGESRADER -->
@@ -904,7 +905,11 @@ ingen läser en överspelad version någon annanstans.
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
 ## Öppna kort
 
-Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 2 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
+Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 3 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
+
+**§4 Motorn som den faktiskt ser ut i dag**
+
+- #657 🦌 #657 VILTSTRÄCKAN — VARNING DÄR OCH NÄR VILTOLYCKORNA SKER: STEG 0, LÄSNINGEN AV TRAFIKVERKETS … — Bengt
 
 **§5 Fogarna — var en skuggdel kan greppa, och vad den kostar**
 
