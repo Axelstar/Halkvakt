@@ -385,6 +385,9 @@ Tillägget kommer efter den första klassningen (6/11), så §7:s regel L gälle
   | Rader att åtgärda, med TYDLIG | 18 | 10 | 10 |
   | Andelen varnade bland TYDLIG och TROLIG | 40 % (12 av 30) | 60 % (15 av 25) | 62 % (21 av 34) |
 
+  Ordlistan i `olycksart()` gav 13/11, körd med SELECT på samma vecka, samma tal i fönstret före starten som provet. I hela veckan
+  flyttade fyra olyckor mellan arterna.
+
 - **L4, skälen:**
   - D1: värden efter starten kan inte ha orsakat olyckan. Elva av veckans 29 TROLIG faller bort med fönstret fram till starten, bland
     dem väg 631 11/11 (regnet 1,5 timmar efter) och väg 1885 12/11 (ytan 0,0 °C två timmar efter). Skälet syntes alltså i utfallet, och

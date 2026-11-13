@@ -15951,7 +15951,10 @@ Allt byggs; tillägget står i TROSKLAR-OLYCKSFACIT som §11 och ändrar §3, §
   - *vägdike* och *mitträcke*;
   - *påkörd av en lastbil* som kollision.
 
-  *av vägen* ensamt är struket, eftersom *en del av vägen* inte är ett förlopp. Utfallet på veckan prövas igen efter migrationen.
+  *av vägen* ensamt är struket, eftersom *en del av vägen* inte är ett förlopp.
+- **Ordlistan prövad på veckan 6–12/11** (13/11, SELECT i panelen, `sql/110`:s mönster ordagrant):
+  - fönstret före starten gav samma tal som provet: 24 med ett fordon (15 varnade), 9 kollisioner (6 varnade), 4 svaga och 1 okänd;
+  - i hela veckan flyttade fyra olyckor mot provets lista: ett fordon 166, flera fordon 137, svag 18 och okänd 21, mot 167, 138, 17 och 20.
 - **B:** dagens ärende stängs alltid. Raderna utan förifylld åtgärd står kvar i det med *i veckans ärende*, och de läses där.
 - **Brytaren** läses när lagret skrivs, inte vid starten.
 
@@ -15960,7 +15963,6 @@ Allt byggs; tillägget står i TROSKLAR-OLYCKSFACIT som §11 och ändrar §3, §
 2. Sammanslagningen.
 3. `sql/110` med DB-knappen.
 4. Deployen av `olycksfacit`. Ordningen är migrationen först: funktionen läser `art` och `veckolasning`.
-5. Mätningen av veckan 6–12/11 med den riktiga funktionen.
 
 **Alternativen som inte valdes:**
 - En läsning med en språkmodell i Anthropics API: den kostar per olycka, och Bengt sa nej.
