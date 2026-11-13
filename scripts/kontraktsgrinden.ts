@@ -996,15 +996,16 @@ export const KONTRAKT: Kontrakt[] = [
     namn: "Kandidatens radargräns för fukt — regeln och facitläsningen",
     varfor: "Driver gränsen räknar kuvösen fukt där regeln ser torrt (DECISIONS #565, #593).",
     former: [/coalesce\(r\.mmh, 0\) >= ([\d.]+)\) THEN 'torr'/, /export const RADAR_MMH = ([\d.]+);/],
-    // R = 0,1 sedan 26/10 (#725): 069 bär driftens gräns; 091 är driftens regel sedan #804; 105 är småvägsröstens (#828)
-    filer: /sql\/069_|sql\/091_|sql\/094_|sql\/105_|kuvos\/facit-trv\.ts$|ingest\/smavag-regel\.ts$/,  // smavag-regel.ts: sql/105 utanför databasen (#843)
+    // R = 0,1 sedan 26/10 (#725): 069 bär driftens gräns; 091 är driftens regel sedan #804; 105 är småvägsröstens (#828); 110 är
+    // olycksfacits lager för småvägsrösten, regeln räknad vid olyckans start (#852)
+    filer: /sql\/069_|sql\/091_|sql\/094_|sql\/105_|sql\/110_|kuvos\/facit-trv\.ts$|ingest\/smavag-regel\.ts$/,  // smavag-regel.ts: sql/105 utanför databasen (#843)
     golv: 9,
   },
   {
     namn: "Kandidatens radarfönster — regeln och facitläsningen",
     varfor: "Driver fönstret läser kuvösen radarn längre eller kortare bakåt än regeln (DECISIONS #573, #593).",
-    former: [/r\.observed_at > now\(\) - interval '(\d+) minutes'/, /export const RADAR_MIN = (\d+);/],
-    filer: /sql\/058_|sql\/068_|sql\/069_|sql\/091_|sql\/094_|sql\/105_|kuvos\/facit-trv\.ts$|ingest\/smavag-regel\.ts$/,  // 105: småvägsröstens regel (#828); smavag-regel.ts dess kopia (#843)
+    former: [/r\.observed_at > (?:now\(\)|o\.t) - interval '(\d+) minutes'/, /export const RADAR_MIN = (\d+);/],
+    filer: /sql\/058_|sql\/068_|sql\/069_|sql\/091_|sql\/094_|sql\/105_|sql\/110_|kuvos\/facit-trv\.ts$|ingest\/smavag-regel\.ts$/,  // 105: småvägsröstens regel (#828); smavag-regel.ts dess kopia (#843); 110 vid olyckans start (o.t, #852)
     golv: 13,
   },
   // KANDIDATENS TIMME (sql/056, 057, 068) och de som läser den: olycksfacit (095, 096, 100) och småvägsrösten (105, #828). En timme
@@ -1027,8 +1028,8 @@ export const KONTRAKT: Kontrakt[] = [
   {
     namn: "Småvägsröstens radarbit — punkter i följd längs vägen",
     varfor: "Radarn skriver per bit (radar-karna.ts) och regeln läser per bit (sql/105). Driver de isär läser regeln en annan bits regn än punktens (DECISIONS #828).",
-    former: [/export const SMAVAG_BIT = (\d+);/, /\(p\.ordning \/ (\d+)\)\s+-- SMAVAG_BIT/],
-    filer: /ingest\/radar-karna\.ts$|sql\/105_/,
+    former: [/export const SMAVAG_BIT = (\d+);/, /\(p[._]ordning \/ (\d+)\)\s+-- SMAVAG_BIT/],
+    filer: /ingest\/radar-karna\.ts$|sql\/105_|sql\/110_/,   // 110: olycksfacits lager för småvägsrösten (#852)
     golv: 2,
   },
   {

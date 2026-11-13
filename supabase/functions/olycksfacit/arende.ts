@@ -1,6 +1,7 @@
 // Olycksfacit, steg 3 och 4 (DECISIONS #797 och #802, kort #376): dagens och veckans ärende, de rena delarna. Ärendena ligger i det
 // publika repot och bär därför bara Trafikverkets öppna data (väg, tid och läge) och koderna och antalen — aldrig kandidatens tal
-// (förslaget §4). Bedömningen per olycka, förbättringsområdet och veckans regler står i docs/TROSKLAR-OLYCKSFACIT.md §9.
+// (förslaget §4). Bedömningen per olycka, förbättringsområdet och veckans regler står i docs/TROSKLAR-OLYCKSFACIT.md §9; det nya
+// upplägget (förifyllda åtgärder, läsningen i veckans ärende, nämnaren och kollisionerna, DECISIONS #852) i §11.
 
 export const FORSTA_DAG = "2026-11-06";   // första svenska dygnet som fångsten täcker helt (fångsten i drift 6/11 07:45 UTC)
 export const ETIKETT = "olycka";
@@ -23,14 +24,41 @@ export type Olycka = {
   skal: string | null;
   dubblett: boolean;
   talade: string[];       // lagren som varnade vid starten (A1, A2, K), ur olycksfacit_lager
+  art: string | null;     // olycksarten (sql/110, D3); null före sql/110
+  smavag: string | null;  // småvägsröstens lager vid starten (sql/110, C): varnar, torr, fryser inte, …; null utan lagret
+  flackvisVat: boolean;   // K:s sträcka hade fläckvis Våt i A1:s text (K-lagrets flackvis_vat)
 };
 
 const KLASSER = ["TYDLIG", "TROLIG", "OKLAR", "INTE"] as const;
 const UTFALL = ["VARNADE", "TYST_TACKT", "TYST_OTACKT"] as const;
 
-/** En tyst olycka med tydlig eller trolig koppling till halka ska ha en åtgärd innan ärendet stängs. */
+/** D2 (TROSKLAR-OLYCKSFACIT §11): en kollision på frusen väg är TROLIG och räknas i statistiken, men får ingen åtgärdsrad. */
+export const kollision = (o: Olycka): boolean => o.klass === "TROLIG" && o.art === "flera fordon";
+
+/** En tyst olycka med tydlig eller trolig koppling till halka ska ha en åtgärd, utom en kollision (D2). */
 export function behoverAtgard(o: Olycka): boolean {
-  return !o.dubblett && (o.klass === "TYDLIG" || o.klass === "TROLIG") && o.utfall !== "VARNADE";
+  return !o.dubblett && (o.klass === "TYDLIG" || o.klass === "TROLIG") && o.utfall !== "VARNADE" && !kollision(o);
+}
+
+/** Småvägsröstens besked vid starten, i ord för ärendet (inga tal, #768). Null utan småvägspunkt inom 0,5 km eller utan lagret. */
+export function smavagText(o: Olycka): string | null {
+  if (o.smavag === null || o.smavag === "ingen småvägspunkt") return null;
+  return ({ "varnar": "skulle ha talat", "torr": "teg, torrt", "fryser inte": "teg, fryser inte", "ingen timme": "ingen timme",
+            "gallrad": "timmen gallrad" } as Record<string, string>)[o.smavag] ?? o.smavag;
+}
+
+/** A (§11): den förifyllda åtgärden när en miss passar ett känt mönster, annars null. Bengt kan alltid skriva om den. */
+export function forifylld(o: Olycka): string | null {
+  if (!behoverAtgard(o)) return null;
+  const sv = smavagText(o);
+  if (o.utfall === "TYST_OTACKT" && sv !== null)
+    return "kort #647 — förifylld (M1 småväg): ingen väglagssträcka eller vägpunkt inom reglernas avstånd, men en punkt i " +
+      `småvägsröstens punktfil inom 0,5 km; småvägsrösten: ${sv}.`;
+  if (o.utfall === "TYST_TACKT" && o.klass === "TROLIG" && (o.skal ?? "").endsWith(" och rimfrost"))
+    return "kort #46 — förifylld (M2 rimfrost): TROLIG på rimfrost utan fukt vid stationen.";
+  if (o.utfall === "TYST_TACKT" && o.flackvisVat && o.orsaker.includes("K: fukt saknades"))
+    return "kort #645 — förifylld (M3 fläckvis Våt): A1:s sträcka hade fläckvis Våt, och K räknade den torr.";
+  return null;
 }
 
 // ── Steg 4 (TROSKLAR-OLYCKSFACIT §9) ──
@@ -54,7 +82,7 @@ export function bedomning(o: Olycka): Bedomning | null {
 
 /** Förbättringsområdet för en miss (§9.3), ur fångstens orsaker. Bara en miss har ett område. */
 export function omrade(o: Olycka): Omrade | null {
-  if (bedomning(o) !== "MISS") return null;
+  if (bedomning(o) !== "MISS" || kollision(o)) return null;   // en kollision får ingen åtgärd och inget område (D2)
   const k = o.orsaker.find((x) => x.startsWith("K: "))?.slice(3) ?? "";
   if (o.utfall === "TYST_OTACKT" || k === "ingen vägpunkt") return "Täckningen";
   if (k === "spridningsspärren") return "Spridningsspärren";
@@ -82,6 +110,20 @@ export function svenskDag(iso: string): string {
 const plats = (o: Olycka) => `${o.vag ?? "okänd väg"} (${o.lon.toFixed(3)}, ${o.lat.toFixed(3)})`;
 const rattVarning = (o: Olycka, medDag: boolean) =>
   `- ${medDag ? `${svenskDag(o.tid)} ` : ""}${svenskTid(o.tid)} ${plats(o)} — ${o.klass} (${o.skal ?? "?"}) — varnade: ${o.talade.join(", ") || "?"}`;
+/** En miss att åtgärda, utan kryssrutan och åtgärden. */
+const missRad = (o: Olycka, medDag: boolean) => {
+  const sv = smavagText(o);
+  return `${medDag ? `${svenskDag(o.tid)} ` : ""}${svenskTid(o.tid)} ${plats(o)} — ${o.utfall === "TYST_TACKT" ? "tyst, täckt" : "tyst, otäckt"}, ` +
+    `${o.klass} (${o.skal ?? "?"}) — ${o.orsaker.join(" · ")} — område: ${omrade(o) ?? "?"}${sv ? ` — småvägsrösten: ${sv}` : ""}`;
+};
+/** Kollisionerna på frusen väg (D2): antalet och hur många där Halkvakt varnade, eller inget. */
+const kollisionsRad = (egna: Olycka[]): string[] => {
+  const k = egna.filter(kollision);
+  return k.length
+    ? [`**Kollisioner på frusen väg** (TROLIG, flera fordon; TROSKLAR-OLYCKSFACIT §11): ${k.length}, varav ${k.filter((o) => o.utfall === "VARNADE").length} ` +
+       "där Halkvakt varnade. De räknas i statistiken och får inga åtgärdsrader.", ""]
+    : [];
+};
 
 export function arendeKropp(dag: string, olyckor: Olycka[]): string {
   const egna = olyckor.filter((o) => !o.dubblett);
@@ -100,9 +142,11 @@ export function arendeKropp(dag: string, olyckor: Olycka[]): string {
   const orsaksrader = [...orsaker].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "sv")).map(([s, n]) => `| ${s} | ${n} |`);
 
   const atgarda = egna.filter(behoverAtgard);
-  const lista = atgarda.map((o) =>
-    `- [ ] ${svenskTid(o.tid)} ${plats(o)} — ${o.utfall === "TYST_TACKT" ? "tyst, täckt" : "tyst, otäckt"}, ` +
-    `${o.klass} (${o.skal ?? "?"}) — ${o.orsaker.join(" · ")} — område: ${omrade(o) ?? "?"} — **Åtgärd:** `);
+  // A och B (§11): en förifylld rad är bokförd; de övriga läses i veckans ärende, och dagens stängs av funktionen.
+  const lista = atgarda.map((o) => {
+    const f = forifylld(o);
+    return f ? `- [x] ${missRad(o, false)} — **Åtgärd:** ${f}` : `- [ ] ${missRad(o, false)} — **Åtgärd:** i veckans ärende`;
+  });
   const ratta = egna.filter((o) => bedomning(o) === "RÄTT VARNING");
 
   return [
@@ -121,10 +165,12 @@ export function arendeKropp(dag: string, olyckor: Olycka[]): string {
       ? ["**Rätt varning** — Halkvakt hade en aktiv varning på platsen när olyckan började, och olyckan har tydlig eller trolig " +
          "koppling till halka (TROSKLAR-OLYCKSFACIT §9):", "", ...ratta.map((o) => rattVarning(o, false)), ""]
       : []),
+    ...kollisionsRad(egna),
     ...(atgarda.length
       ? ["**Att åtgärda** — tysta olyckor med tydlig eller trolig koppling till halka:", "", ...lista, "",
-         "**Stängningsregeln:** ärendet stängs först när varje rad ovan har en åtgärd: ett kort på tavlan (`kort #NN`, nytt eller " +
-         `befintligt) eller *ingen åtgärd* med skälet (DECISIONS #797). Står det öppet i ${PAMINN_DYGN} dygn påminner funktionen.`]
+         "**Läsningen** (TROSKLAR-OLYCKSFACIT §11): en rad som passar ett känt mönster har en förifylld åtgärd, som kan skrivas om. " +
+         "De övriga läses i veckans ärende, som stängs när varje rad har en åtgärd: ett kort på tavlan (`kort #NN`) eller " +
+         "*ingen åtgärd* med skälet. Det här ärendet stängs av funktionen."]
       : ["Ingen tyst olycka med tydlig eller trolig koppling till halka det här dygnet. Ärendet stängs av funktionen."]),
   ].join("\n");
 }
@@ -156,12 +202,30 @@ export function veckansForslag(veckans: Olycka[]): [Omrade, number][] {
 const procent = (a: number, b: number) => (b ? `${Math.round((100 * a) / b)} %` : "–");
 const omradesRader = (olyckor: Olycka[]) => { const n = perOmrade(olyckor); return OMRADEN.filter((a) => n.has(a)).map((a) => `| ${a} | ${n.get(a)} |`); };
 
-export function veckaKropp(vecka: string, fran: string, till: string, veckans: Olycka[], sasong: Olycka[]): string {
+/** B (§11): veckans tysta halkkopplade olyckor utan förifylld åtgärd, från de dygn vars ärende lämnade dem hit (veckolasning). */
+export function veckansLasrader(veckans: Olycka[], lasdagar: ReadonlySet<string>): Olycka[] {
+  return veckans.filter((o) => behoverAtgard(o) && forifylld(o) === null && lasdagar.has(svenskDag(o.tid)));
+}
+
+/** E (§11): nämnaren, per klass hur ofta Halkvakt varnade. INTE delas på viltet och ytan över +3 °C. */
+const NAMNARE: [string, (o: Olycka) => boolean][] = [
+  ["TYDLIG", (o) => o.klass === "TYDLIG"],
+  ["TROLIG, ett fordon", (o) => o.klass === "TROLIG" && !kollision(o)],
+  ["TROLIG, kollision", kollision],
+  ["OKLAR", (o) => o.klass === "OKLAR"],
+  ["INTE, vilt", (o) => o.klass === "INTE" && o.skal === "vilt"],
+  ["INTE, varmt", (o) => o.klass === "INTE" && o.skal !== "vilt"],
+];
+
+export function veckaKropp(vecka: string, fran: string, till: string, veckans: Olycka[], sasong: Olycka[],
+                           lasdagar: ReadonlySet<string> = new Set()): string {
   const egna = veckans.filter((o) => !o.dubblett);
   const bed = (b: Bedomning, x: Olycka[]) => x.filter((o) => bedomning(o) === b).length;
   const halk = egna.filter(halkkopplad);
   const ratta = egna.filter((o) => bedomning(o) === "RÄTT VARNING");
   const forslag = veckansForslag(egna);
+  const lasrader = veckansLasrader(egna, lasdagar);
+  const namnare = NAMNARE.map(([namn, f]) => { const x = egna.filter(f); return [namn, x.length, x.filter((o) => o.utfall === "VARNADE").length] as const; });
   const s = sasong.filter((o) => !o.dubblett);
   const sHalk = s.filter(halkkopplad), sRatta = bed("RÄTT VARNING", s);
   const veckansOmraden = omradesRader(egna), sasongensOmraden = omradesRader(s);
@@ -179,6 +243,14 @@ export function veckaKropp(vecka: string, fran: string, till: string, veckans: O
     `**Lagren vid de halkkopplade olyckorna** (TYDLIG och TROLIG, ${halk.length}): ` +
       LAGER.map((l) => `${l} varnade vid ${halk.filter((o) => o.talade.includes(l)).length}`).join(", ") + ".",
     "",
+    "**Nämnaren** (TROSKLAR-OLYCKSFACIT §11): hur ofta Halkvakt varnade, per klass. Det är inte en träffsäkerhet, men det visar var " +
+      "varningarna hamnar.",
+    "",
+    "| Klass | Olyckor | Varnade | Andel |",
+    "| :-- | --: | --: | --: |",
+    ...namnare.map(([namn, n, v]) => `| ${namn} | ${n} | ${v} | ${procent(v, n)} |`),
+    "",
+    ...kollisionsRad(egna),
     ...(veckansOmraden.length
       ? ["**Missarna per förbättringsområde:**", "", "| Område | Missar |", "| :-- | --: |", ...veckansOmraden, ""]
       : ["Inga missar den här veckan.", ""]),
@@ -190,12 +262,18 @@ export function veckaKropp(vecka: string, fran: string, till: string, veckans: O
     "**Säljregeln** (§9.6): bara RÄTT VARNING får anföras utåt, med orden *Halkvakt hade en aktiv varning på platsen när olyckan " +
       "började*, lagret utskrivet och säsongens andel bredvid — aldrig att en förare varnades eller att en olycka hade undvikits.",
     "",
+    ...(lasrader.length
+      ? ["**Att åtgärda: veckans missar** — tysta olyckor med tydlig eller trolig koppling till halka utan förifylld åtgärd " +
+         "(TROSKLAR-OLYCKSFACIT §11):", "", ...lasrader.map((o) => `- [ ] ${missRad(o, true)} — **Åtgärd:** `), ""]
+      : []),
     ...(forslag.length
       ? [`**Att åtgärda** — förbättringsområden med minst ${ATERKOMMANDE} missar den här veckan:`, "",
-         ...forslag.map(([a, n]) => `- [ ] ${a} — ${n} missar — **Åtgärd:** `), "",
-         "**Stängningsregeln:** ärendet stängs först när varje rad ovan har en åtgärd: ett kort på tavlan (`kort #NN`), en fråga i " +
-         `bedömningens §4.2 eller *ingen åtgärd* med skälet (DECISIONS #802). Står det öppet i ${PAMINN_DYGN} dygn påminner funktionen.`]
-      : [`Inget förbättringsområde har ${ATERKOMMANDE} missar eller fler den här veckan. Ärendet stängs av funktionen.`]),
+         ...forslag.map(([a, n]) => `- [ ] ${a} — ${n} missar — **Åtgärd:** `), ""]
+      : [`Inget förbättringsområde har ${ATERKOMMANDE} missar eller fler den här veckan.`, ""]),
+    ...(lasrader.length || forslag.length
+      ? ["**Stängningsregeln:** ärendet stängs först när varje rad ovan har en åtgärd: ett kort på tavlan (`kort #NN`), en fråga i " +
+         `bedömningens §4.2 eller *ingen åtgärd* med skälet (DECISIONS #802, #852). Står det öppet i ${PAMINN_DYGN} dygn påminner funktionen.`]
+      : ["Ingen rad att åtgärda. Ärendet stängs av funktionen."]),
   ].join("\n");
 }
 

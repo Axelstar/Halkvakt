@@ -15906,3 +15906,65 @@ ta R2 i nästa appversion.
 - att lägga kuvösens data i Actions-cachen (kan läsas av en PR från en fork, #768).
 
 **Stomdokument:** SYS 1 — trafiken ut ur Supabase: cachen och kuvösflödenas hämtningar
+
+## #852 (13/11 2026) Olycksfacit, det nya upplägget: olycksarten, fönstret fram till starten, kollisionerna, småvägsröstens lager, förifyllda åtgärder, läsningen i veckan och nämnaren (kort #654)
+
+**Beslutet.** Bengt 13/11, på förslaget till nytt upplägg för olycksfacit: *"bygg allt och axel signerar del 6"*. Förslaget skrevs efter
+olycksfacits första vecka (6–12/11) och Bengts fråga om singelkravet (*"är det verkligen rätt behandling att kräva singelolyckor"*). Han
+avböjde en läsning med en betald språkmodell (*"nej vi tar ingen extra kostnad"*), och olycksarten läses därför med en ordlista i databasen.
+Allt byggs; tillägget står i TROSKLAR-OLYCKSFACIT som §11 och ändrar §3, §4, §5, §9.1, §9.2 och §9.5. Bengt har signerat §11.
+**Axels signatur på §11 väntar:** *del 6* är §10 (klassningen efter sex timmar), som Axel signerade 11/11 (#842). Frågan står i bedömningens
+§4.2, och `sql/110` migreras först efter hans signatur (§7, regel L).
+
+**Det som byggdes.**
+1. **Olycksarten (D3)**, `sql/110`: `olycksart(text)`, ett enda CASE-uttryck som inlinas. Arterna i ordning är vilt (regel 1:s ord),
+   oskyddad, ordet *singel*, flera fordon, ett fordon (förloppet), ett fordon svag och okänd. Kolumnen `olycksfacit.art` bär arten.
+2. **Efterkontrollen (D1, D2, D3)**, `sql/110`: `sql/108` ord för ord utom åtta märkta rader.
+   - Stationens fönster går från två timmar före till starten.
+   - TROLIG kräver arten *ett fordon* i stället för ordet.
+   - Arten *flera fordon* blir TROLIG med skälet *kollision*.
+3. **Småvägsröstens lager (C)**, `sql/110`: `olycksfacit_smavag()` och jobbet `halkvakt-olycksfacit-smavag` två minuter efter fångsten.
+   - Lagret bär närmaste småvägspunkt inom 0,5 km och regeln räknad vid starten. Utfallet är varnar, torr, fryser inte, ingen timme, gallrad
+     eller ingen småvägspunkt.
+   - Lagret talar bara med brytaren på, och då blir olyckan VARNADE.
+   - Inga tal ur kuvösen sparas.
+4. **Ärendena (A, B, E)**, `supabase/functions/olycksfacit`:
+   - **Förifyllda åtgärder:** M1 småväg ger kort #647, M2 rimfrost ger kort #46 och M3 fläckvis Våt ger kort #645.
+   - **Dagens ärende** stängs alltid av funktionen. Missarna utan förifylld åtgärd läses i veckans ärende; det hittar dem genom
+     `olycksfacit_arenden.veckolasning`, så att dygnen före bytet inte läses två gånger.
+   - **Veckans ärende** bär nämnaren per klass.
+   - **Kollisionerna** räknas i statistiken men får ingen åtgärdsrad och inget område.
+5. **Prov:**
+   - ett prov utan databas att efterkontrollen är `sql/108` utom de märkta raderna;
+   - integrationsproven #852:
+     - olycksarten med 28 fällor, och att funktionen inlinas;
+     - efterkontrollen med en fixtur och ett motprov per ändring;
+     - småvägslagret med regeln vid starten, timmen som skrevs efter starten, radarns fönster, gallringen och brytaren;
+   - enhetsproven för M1–M3, kollisionerna, veckans rader och nämnaren.
+
+   Kontraktsgrinden vaktar småvägsröstens trösklar i `sql/110`: radarns gräns och fönster, biten, färskheten och fullständigheten.
+
+**Claudes metodval:**
+- **D1 gäller alla klasser som läser ytan**, också TYDLIG och INTE (varmt). Förslaget mätte bara TROLIG.
+- **Ordlistan** är provets lista med ordgräns i början, och med några tillägg:
+  - *cykel*;
+  - *vägdike* och *mitträcke*;
+  - *påkörd av en lastbil* som kollision.
+
+  *av vägen* ensamt är struket, eftersom *en del av vägen* inte är ett förlopp. Utfallet på veckan prövas igen efter migrationen.
+- **B:** dagens ärende stängs alltid. Raderna utan förifylld åtgärd står kvar i det med *i veckans ärende*, och de läses där.
+- **Brytaren** läses när lagret skrivs, inte vid starten.
+
+**Kvar:**
+1. Axels signatur på §11.
+2. Sammanslagningen.
+3. `sql/110` med DB-knappen.
+4. Deployen av `olycksfacit`. Ordningen är migrationen först: funktionen läser `art` och `veckolasning`.
+5. Mätningen av veckan 6–12/11 med den riktiga funktionen.
+
+**Alternativen som inte valdes:**
+- En läsning med en språkmodell i Anthropics API: den kostar per olycka, och Bengt sa nej.
+- Att låta D1 bara gälla TROLIG: då hade fönstret betytt olika saker för olika klasser i samma rad.
+- Att låta dagens ärende stå öppet med raderna som också står i veckans ärende: då läses de två gånger.
+
+**Stomdokument:** MAT 3 — olycksfacits nya upplägg (TROSKLAR-OLYCKSFACIT §11), BED §4.2 — Axels signatur på §11
