@@ -9,6 +9,9 @@
     "FAV": { "fil": "docs/FAVORITER.html", "namn": "Halkvaktens favoriter", "url": "https://895845.github.io/halkvakt-sidor/FAVORITER.html" }
   },
   "kort": {
+    "#651": ["APP 4"],
+    "#652": ["APP 4"],
+    "#653": ["APP 4"],
     "#372": ["APP 10", "APP 4"],
     "#648": ["APP 10", "SYS 1"],
     "#647": ["MAT 5", "SYS 2", "APP 3"],
