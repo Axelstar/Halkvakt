@@ -93,10 +93,16 @@ export function hela(mnsv: string): string[] {
  *  körningsfilerna bort, så att inget halvt skrivet ligger kvar. */
 export async function korningar(dagar: string, ut: string, rubrik: string): Promise<string[]> {
   const kolumner = rubrik.split(",").length;
-  const per = new Map<string, { gz: Gzip; fil: WriteStream; n: number }>();
+  const per = new Map<string, { gz: Gzip; fil: WriteStream; n: number; buf: string[]; byte: number }>();
   mkdirSync(ut, { recursive: true });
+  // Raderna samlas per körning och skrivs i bitar om omkring 4 MB: en skrivning per rad var för långsam (351 s för ett dygn på 662 MB).
+  const tom = async (k: { gz: Gzip; buf: string[]; byte: number }) => {
+    if (!k.buf.length) return;
+    const ok = k.gz.write(k.buf.join("")); k.buf = []; k.byte = 0;
+    if (!ok) await once(k.gz, "drain");
+  };
   const stang = async () => {
-    for (const { gz, fil } of per.values()) { gz.end(); if (!fil.closed) await once(fil, "close"); }
+    for (const k of per.values()) { await tom(k); k.gz.end(); if (!k.fil.closed) await once(k.fil, "close"); }
   };
   try {
     for (const f of readdirSync(dagar).filter((x) => /^\d{4}-\d\d-\d\d\.csv\.gz$/u.test(x)).sort()) {
@@ -112,10 +118,11 @@ export async function korningar(dagar: string, ut: string, rubrik: string): Prom
         if (!k) {
           const gz = createGzip(), fil = createWriteStream(join(ut, `metnordic_korning_${s}.csv.gz`));
           gz.pipe(fil); gz.write(rubrik + "\n");
-          per.set(s, (k = { gz, fil, n: 0 }));
+          per.set(s, (k = { gz, fil, n: 0, buf: [], byte: 0 }));
         }
         k.n++;
-        if (!k.gz.write(r + "\n")) await once(k.gz, "drain");
+        k.buf.push(r + "\n"); k.byte += r.length + 1;
+        if (k.byte >= 4_000_000) await tom(k);
       }
     }
     await stang();
