@@ -51,7 +51,10 @@ tap "Avsluta vakten"; sleep 3
 # Favoriterna och rapporten (fotostudions krok: påhittade vägar), och Varna för.
 adb shell am start -S -W -n $PKG/.MainActivity --ez fotostudio_favoriter true >/dev/null; sleep 8; shot spara-resan
 tap "FAVORITER"; sleep 12; shot favoriter
+# Den sparade resan ligger under flikraden på en hög skärm: rulla upp den först, annars träffar trycket systemets hemrad.
+adb shell input swipe 540 1300 540 500 400; sleep 2
 tap "Jobbet"; sleep 12; shot rapporten
 adb shell input keyevent 4; sleep 2
+adb shell am start -n $PKG/.MainActivity >/dev/null; sleep 3
 tap "INSTÄLLNINGAR"; tap "Varna för"; sleep 2; shot varna-for
 ls -la /tmp/butik
