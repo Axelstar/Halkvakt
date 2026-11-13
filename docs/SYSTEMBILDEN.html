@@ -294,7 +294,7 @@
         <h3>Hur den är byggd</h3>
         <ul>
           <li>Matchningen sker i telefonen. Ingen position lämnar telefonen av sig själv.</li>
-          <li>Ny lägesbild var tionde minut, med kontrollsumma. En trasig fil vägras.</li>
+          <li>Ny lägesbild var tionde minut, med kontrollsumma. En trasig fil vägras. Supabases CDN cachar lägesfilen och manifestet och tömmer cachen när en fil skrivs om: 12/11 kom <span class="mono">live.json</span> ur cachen 438 gånger mot 36 missar på en timme, omkring 92 % (DECISIONS #850).</li>
           <li>Samma motor i tre språk, låst av <span class="mono">50</span> testfall som alla tre måste klara byte för byte.</li>
           <li>Vakter sorterar bort trasiga givare, och en vakthund kontrollerar kedjan varje timme.</li>
           <li>Öppna data, ingen licenskostnad, och gratisnivåer där de räcker. Databasen ligger sedan 19/10 på Supabase Pro, 25 USD/mån, eftersom gratisnivåns 500 MB inte räckte (#644).</li>
@@ -485,7 +485,7 @@
 <!-- /LÄGESRADER -->
     <p>Skuggmotorn kör samma motor mot riktiga data på tjugo referensrutter per land — 80 rutter och knappt 13 000 km i Sverige,
       Finland, Norge och Danmark. Varje halvtimme körs två eller tre rutter per land, så varje rutt körs var tredje och en halv timme,
-      och motorn loggar vad rösten <em>skulle</em> ha sagt. Ingen förare hör något. Sedan 4/11 går motorn inte igenom en hal sträckas punkter när sträckans ruta ligger längre bort än försprånget; utfallet är lika byte för byte, och skuggvarven föll förut på datorkraften (546, DECISIONS #790). Sedan 5/11 prövar varje GPS-punkt dessutom bara farorna i sin egen ruta om 0,05° × 0,05° (motorns rutnät i alla tre portar, lika svar som hela svepet, DECISIONS #795); skuggmotorn är deployad med det, favoritprovet och favoriterna får det i nästa bygge. Sedan 11/10 kör den också tio C-rutter i Sverige: kedjor av
+      och motorn loggar vad rösten <em>skulle</em> ha sagt. Ingen förare hör något. Sedan 4/11 går motorn inte igenom en hal sträckas punkter när sträckans ruta ligger längre bort än försprånget; utfallet är lika byte för byte, och skuggvarven föll förut på datorkraften (546, DECISIONS #790). Försprångets elva anrop gick i ett jobb i samma sekund och föll tillsammans på samma gräns från 12/11 02.42 UTC (271 av 600 rader saknades till kl. 12); sedan 12/11 12.27 UTC går de i sex jobb på minuterna 12–14 och 16–18 (42–44 och 46–48), inom samma halvtimme och aldrig på det finska varvets 15 och 45 (<span class="mono">sql/109</span>, DECISIONS #845). Beviset är ett dygn med 60 rader i timmen. Sedan 5/11 prövar varje GPS-punkt dessutom bara farorna i sin egen ruta om 0,05° × 0,05° (motorns rutnät i alla tre portar, lika svar som hela svepet, DECISIONS #795); skuggmotorn är deployad med det, favoritprovet och favoriterna får det i nästa bygge. Sedan 11/10 kör den också tio C-rutter i Sverige: kedjor av
       stationerna där efterhalkans fall låg, med raka sträckor emellan, 47 stationer på 77–208 km per rutt. De går i ett eget anrop på
       <span class="mono">:22/:52</span> med högst tre rutter per anrop, så varje C-rutt körs varannan timme, och loggar bara larmen, i en egen
       tabell, så att mätningarna som läser de tjugo rutterna behåller sin population (#527). Sedan 12/10 prövar skuggan bara de faror
