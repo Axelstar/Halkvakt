@@ -1043,6 +1043,17 @@
       "facebook": "1312515671952967_122112366993516187",
       "instagram": "18109849253211280",
       "x": "2121017350132822192"
+    },
+    {
+      "pass": "live",
+      "namn": "2026-11-13-live-0307",
+      "typ": "smhi",
+      "nyckel": "smhi:Snöfall:Delar av Värmland och Dalarna.:YELLOW",
+      "tid": "2026-11-13T02:07:35.916Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-11-13-live-0307.jpg",
+      "facebook": "1312515671952967_122112403815516187",
+      "instagram": "18034204499857807",
+      "x": "2121062453744476323"
     }
   ]
 }
