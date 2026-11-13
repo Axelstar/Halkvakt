@@ -6,7 +6,11 @@ name: ny-kandidat-timme
 # ny_kandidat_logga() (sql/068). Loggen anropas härifrån och inte av pg_cron, så att flaggan styr all skrivning.
 # FLAGGAN (kuvos/ny-kandidat-skugga.json) av ⇒ jobbet räknar inget och skriver inget; PH finns då inte heller i databasen.
 # SAKNAS PH för timmen hoppas den grönt med en notis, och loggen skriver timmen som tyst (som den frystas logg gör en timme utan
-# färskt värde). Den frystas reserv (scripts/kandidat-reserv.ts, som startar del A om en slott missats) är INTE byggd här.
+# färskt värde).
+# RESERVEN (DECISIONS #854, Bengt 13/11: "Ja, båda"): för den pågående timmen avgör scripts/kandidat-reserv.ts ur del A:s körningar
+# sedan slotten :28 om del A ska startas igen, som den frystas reserv men med tre försök. MET:s THREDDS föll varje morgon 11–13/11
+# mellan omkring 06:10 och 06:50 UTC, och del A på 06:28 föll 12/11 och 13/11; då saknade både den nya kandidaten och småvägsröstens
+# timme PH i flera timmar. Timmen utan PH loggas som tyst som förut, och jobbet är grönt; reserven startar bara del A igen.
 # PULSKLOCKAN sedan 24/10 (DECISIONS #706): puls-ny-kandidat-timme "47 * * * *", tre minuter före den frystas logg :50. Knappen finns
 # kvar för en enskild timme. Ingenting här når appen, rösten, lägesfilen eller den frystas dom.
 # Ingen Trafikverksdata i någon fil eller logg: ankarna lämnar aldrig jobbet, bara kandidatens egna tal skrivs.
@@ -22,6 +26,7 @@ on:
 concurrency: { group: ny-kandidat-timme, cancel-in-progress: false }
 permissions:
   contents: read
+  actions: write     # del A:s körningar och reserven som startar del A igen (#854)
 jobs:
   timme:
     runs-on: ubuntu-latest
@@ -48,6 +53,7 @@ jobs:
           set -o pipefail
           node --experimental-strip-types ingest/ny-kandidat-db.ts --sjalvtest 2>&1 | grep -v ExperimentalWarning | tail -1
           node --experimental-strip-types ingest/kandidat-db.ts --sjalvtest 2>&1 | grep -v ExperimentalWarning | tail -1
+          node --experimental-strip-types scripts/kandidat-reserv.ts --sjalvtest 2>&1 | grep -v ExperimentalWarning | tail -1
           python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
           python3 fysik/live/kandidat_timme.py --sjalvtest > /dev/null; echo "självtest ok: kandidat_timme.py"
           F=$(node --experimental-strip-types ingest/ny-kandidat-db.ts --flagga 2>/dev/null); echo "flaggan: $F" | tee -a "$GITHUB_STEP_SUMMARY"
@@ -71,6 +77,25 @@ jobs:
             echo "::notice title=HOPPAD::den nya kandidaten: ingen PH för $TID — timmen loggas som tyst"
             echo "**HOPPAD:** ingen PH för $TID i ny_kandidat_ph — timmen loggas som tyst." >> "$GITHUB_STEP_SUMMARY"
             node --experimental-strip-types ingest/ny-kandidat-db.ts logga 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+            # Reserven (#854), efter loggen så att timmen alltid loggas. Den gäller den pågående timmen. En angiven tid, eller ett gh som inte svarar, startar ingenting.
+            if [ -z "${{ inputs.tid }}" ]; then
+              RES=$(gh run list --workflow ny-kandidat-fysik.yml --limit 10 --json status,conclusion,createdAt 2>/dev/null \
+                | node --experimental-strip-types scripts/kandidat-reserv.ts --slott-min 28 --forsok 3 2>/dev/null) || RES=""
+              BESLUT="${RES%%$'\t'*}"; SKAL="${RES#*$'\t'}"
+              case "$BESLUT" in
+                starta)
+                  gh workflow run ny-kandidat-fysik.yml || echo "::warning title=RESERV::den nya kandidaten: del A gick inte att starta"
+                  echo "::warning title=RESERV::den nya kandidaten: ingen PH för $TID: $SKAL — del A startad igen (scripts/kandidat-reserv.ts)"
+                  echo "**RESERV:** $SKAL. Del A är startad igen; PH kommer till nästa timme." >> "$GITHUB_STEP_SUMMARY" ;;
+                trasig)
+                  echo "::warning title=TRASIG::den nya kandidaten: ingen PH för $TID: $SKAL"
+                  echo "**TRASIG?** $SKAL, men PH saknas för $TID." >> "$GITHUB_STEP_SUMMARY" ;;
+                hoppa)
+                  echo "Reserven: $SKAL." >> "$GITHUB_STEP_SUMMARY" ;;
+                *)
+                  echo "Reserven: gh eller skriptet svarade inte, ingenting startat." >> "$GITHUB_STEP_SUMMARY" ;;
+              esac
+            fi
             echo "HOPPAD=1" >> "$GITHUB_ENV"
             exit 0
           fi

@@ -1256,11 +1256,23 @@ async function speglaSynk(): Promise<string> {
   return `synken: ${rader.length} körningar speglade, senast ${senaste.generated_at}`;
 }
 
+// RUTT-STEGET I TRE DELAR (DECISIONS #855, kort #650; Bengt 13/11: "gör favoritprovet"). Sedan 11/11 16.38 UTC föll varje körning på
+// Supabases CPU-gräns, 2 s per anrop (546, "CPU Time exceeded"): slingan över de 30 provrutterna kostar omkring 4,2 s CPU lokalt, och
+// hämtningen och rapporten gick igenom före den. Anropet utan del (del 0, :08/:38) gör nu hämtningen, rapporten, skrivningen och synken,
+// men inga rutter. Del 1–3 (:09/:39, :11/:41 och :19/:49, sql/111) tar var tionde rutt var (rutt i går till del i % 3 + 1, så att de tunga
+// C-rutterna sprids), läser rapporten ur hinken och skriver om sina rutter i favoriter.json. Den sista delen skriver historiken för hela
+// körningen. En del vars rapport är äldre än RAPPORT_MAX_MIN skriver ingenting: då har del 0 inte gått.
+const DELAR = 3;
+const RAPPORT_MAX_MIN = 20;
+
 import { nyckelGiltig } from "../_shared/nyckel.ts";
 Deno.serve(async (req) => {
   if (!(await nyckelGiltig(req))) return new Response("forbidden", { status: 403 });  // nyckeln i databasen, DECISIONS #571
+  const del = Number(new URL(req.url).searchParams.get("del") ?? "0");
+  if (!Number.isInteger(del) || del < 0 || del > DELAR) return new Response(JSON.stringify({ ok: false, error: `del ${del}: 0–${DELAR}` }), { status: 400 });
   const minne = minnesmatare(); minne.mat();
   const t0 = performance.now(); const ms: Record<string, number> = {}; const steg = (n: string, t: number) => { ms[n] = Math.round(performance.now() - t); minne.mat(); };
+  if (del > 0) return ruttdel(del, minne, t0, ms, steg);
   try {
     const nu = Date.now();
     let t = performance.now();
@@ -1290,36 +1302,67 @@ Deno.serve(async (req) => {
       lang: nyLang ? { sha256: shaLang, innehall: shaLangUtanTid, byte: utf8Byte(sLang), gz_byte: await gzBytes(sLang), skriven: snabb.generated_at } : fore.lang };
     await skrivHink("rapport-snabb.json", sSnabb);
     if (nyLang) await skrivHink("rapport-lang.json", sLang);
-    await skrivHink("manifest.json", JSON.stringify(manifest));
     steg("skrivning", t);
-    t = performance.now();
-    const forra = await lasHink("favoriter.json");
-    const rutter: Record<string, unknown> = {};
-    for (const [namn, linje] of Object.entries(RUTTER_PROV)) {
-      const rader = favoritRapport(linje, lv, st, snabb, lang);
-      const nytt = nyttSedan(forra?.rutter?.[namn]?.rader ?? null, rader);
-      // Skärmen visar grupperna (#530: sammanslagna per slag och väg); raderna står kvar under dem, och notisen räknas på det nya.
-      rutter[namn] = { km: Math.round(linje.reduce((s, p, i) => i ? s + haversineM({ lon: linje[i - 1][0], lat: linje[i - 1][1] }, { lon: p[0], lat: p[1] }) : 0, 0) / 1000),
-        grupper: grupperade(rader), rader, nytt, notis: notis(rader, nytt, nu), tomma: tomma(rader) };
-    }
-    steg("rutterna", t);
-    const fav = { schema: 1, generated_at: snabb.generated_at, lagesfil: lv.generated_at, forra: forra?.generated_at ?? null, rutter };
-    await skrivHink("favoriter.json", JSON.stringify(fav));
-    const hist = (await lasHink("historik.json"))?.korningar ?? [];
-    hist.push({ t: snabb.generated_at, ms: Math.round(performance.now() - t0), minne_mb: minne.varde(), poster: snabb.poster.length, snabb_gz: manifest.snabb.gz_byte,
-      lang_gz: manifest.lang.gz_byte, rader: Object.fromEntries(Object.entries(rutter).map(([n, r]: [string, any]) => [n, r.rader.length])),
-      nytt: Object.values(rutter).reduce((s: number, r: any) => s + r.nytt.length, 0),
-      grupper: Object.values(rutter).reduce((s: number, r: any) => s + r.grupper.length, 0),
-      notis: Object.entries(rutter).filter(([, r]: [string, any]) => r.notis.ja).map(([n]) => n) });
-    await skrivHink("historik.json", JSON.stringify({ schema: 1, korningar: hist.slice(-HISTORIK) }));
     t = performance.now();
     const synk = await speglaSynk().catch((e) => `synken: ${String(e).slice(0, 160)}`);
     steg("synken", t);
-    return new Response(JSON.stringify({ ok: true, generated_at: snabb.generated_at, poster: snabb.poster.length, noter: snabb.noter,
+    // Manifestet sist, med del 0:s tid, så att rutt-delarna och historiken kan läsa den.
+    await skrivHink("manifest.json", JSON.stringify({ ...manifest, ms: Math.round(performance.now() - t0), minne_mb: minne.varde() }));
+    return new Response(JSON.stringify({ ok: true, del: 0, generated_at: snabb.generated_at, poster: snabb.poster.length, noter: snabb.noter,
       svar_byte: { situation: sit.byte, restider: tt.byte, farjor: fa.byte, farjeleder: fr.byte }, manifest, ny_lang: nyLang,
-      rutter: Object.keys(rutter).length, synk, ms: { ...ms, totalt: Math.round(performance.now() - t0) }, minne_mb: minne.varde() }), { headers: { "Content-Type": "application/json" } });
+      synk, ms: { ...ms, totalt: Math.round(performance.now() - t0) }, minne_mb: minne.varde() }), { headers: { "Content-Type": "application/json" } });
   } catch (e) {
     minne.mat();
-    return new Response(JSON.stringify({ ok: false, error: String(e), ms, minne_mb: minne.varde() }), { status: 500 });
+    return new Response(JSON.stringify({ ok: false, del: 0, error: String(e), ms, minne_mb: minne.varde() }), { status: 500 });
   }
 });
+
+/** Del 1–3: var tredje rutt, ur rapporten som del 0 skrev i hinken. Den sista delen skriver historiken för hela körningen. */
+async function ruttdel(del: number, minne: ReturnType<typeof minnesmatare>, t0: number, ms: Record<string, number>,
+                       steg: (n: string, t: number) => void): Promise<Response> {
+  try {
+    const nu = Date.now();
+    let t = performance.now();
+    const [lv, st, snabb, lang, manifest, forra] = await Promise.all([lagesfil("live.json"), lagesfil("static.json"), lasHink("rapport-snabb.json"),
+      lasHink("rapport-lang.json"), lasHink("manifest.json"), lasHink("favoriter.json")]);
+    steg("hamtning", t);
+    if (!snabb || !lang || !manifest) throw new Error("rapporten saknas i hinken");
+    const alder = (nu - Date.parse(snabb.generated_at)) / 60_000;
+    if (!(alder <= RAPPORT_MAX_MIN)) throw new Error(`rapporten är ${Math.round(alder)} min gammal — del 0 har inte gått, ingenting skrivs`);
+    t = performance.now();
+    const mina: Record<string, unknown> = {};
+    for (const [namn, linje] of Object.entries(RUTTER_PROV).filter((_, i) => i % DELAR === del - 1)) {
+      const rader = favoritRapport(linje, lv, st, snabb, lang);
+      const nytt = nyttSedan(forra?.rutter?.[namn]?.rader ?? null, rader);
+      // Skärmen visar grupperna (#530: sammanslagna per slag och väg); raderna står kvar under dem, och notisen räknas på det nya.
+      mina[namn] = { km: Math.round(linje.reduce((s, p, i) => i ? s + haversineM({ lon: linje[i - 1][0], lat: linje[i - 1][1] }, { lon: p[0], lat: p[1] }) : 0, 0) / 1000),
+        grupper: grupperade(rader), rader, nytt, notis: notis(rader, nytt, nu), tomma: tomma(rader) };
+    }
+    steg("rutterna", t);
+    // Samma körning som förra delen: forra (den förra körningens tid) och delarnas tider står kvar; annars börjar en ny körning.
+    const samma = forra?.generated_at === snabb.generated_at;
+    const delar = { ...(samma ? forra.delar ?? {} : {}), [del]: { ms: Math.round(performance.now() - t0), minne_mb: minne.varde(), rutter: Object.keys(mina).length } };
+    const rutter: Record<string, any> = { ...(forra?.rutter ?? {}), ...mina };
+    const fav = { schema: 1, generated_at: snabb.generated_at, lagesfil: lv.generated_at,
+      forra: samma ? forra.forra ?? null : forra?.generated_at ?? null, delar, rutter };
+    await skrivHink("favoriter.json", JSON.stringify(fav));
+    if (del === DELAR) {
+      const klara = Object.keys(delar).map(Number);
+      const hist = (await lasHink("historik.json"))?.korningar ?? [];
+      hist.push({ t: snabb.generated_at,
+        ms: (manifest.generated_at === snabb.generated_at ? manifest.ms ?? 0 : 0) + Object.values(delar).reduce((s: number, d: any) => s + d.ms, 0),
+        ms_delar: { 0: manifest.generated_at === snabb.generated_at ? manifest.ms ?? null : null, ...Object.fromEntries(Object.entries(delar).map(([k, d]: [string, any]) => [k, d.ms])) },
+        delar_klara: klara.length, minne_mb: minne.varde(), poster: snabb.poster.length, snabb_gz: manifest.snabb.gz_byte, lang_gz: manifest.lang.gz_byte,
+        rader: Object.fromEntries(Object.entries(rutter).map(([n, r]) => [n, r.rader.length])),
+        nytt: Object.values(rutter).reduce((s: number, r: any) => s + r.nytt.length, 0),
+        grupper: Object.values(rutter).reduce((s: number, r: any) => s + r.grupper.length, 0),
+        notis: Object.entries(rutter).filter(([, r]) => r.notis.ja).map(([n]) => n) });
+      await skrivHink("historik.json", JSON.stringify({ schema: 1, korningar: hist.slice(-HISTORIK) }));
+    }
+    return new Response(JSON.stringify({ ok: true, del, generated_at: snabb.generated_at, rutter: Object.keys(mina).length,
+      ms: { ...ms, totalt: Math.round(performance.now() - t0) }, minne_mb: minne.varde() }), { headers: { "Content-Type": "application/json" } });
+  } catch (e) {
+    minne.mat();
+    return new Response(JSON.stringify({ ok: false, del, error: String(e), ms, minne_mb: minne.varde() }), { status: 500 });
+  }
+}
