@@ -16096,3 +16096,46 @@ Den frystas reserv startade del A 06:43, men timmen räknades först i nästa or
 appen inte gav.
 
 **Stomdokument:** MAT 3 — olycksfacits K-lager med den kandidat som talade (TROSKLAR-OLYCKSFACIT §12)
+
+## #857 (13/11 2026) Småvägsrösten efter genomgången: timmen direkt, mätningen av vägtestet, olycksfacit som facit före påslaget och ett kort för svartis (kort #647, #656)
+
+**Beslutet.** Bengt 13/11, på genomgången av småvägsröstens fördelar, risker och förbättringar: *"vi gör 1 nu och mäter 2 och slår på 3 och
+lägger upp ett kort för svartis"*.
+
+**1. Kedjans reserv: timmen direkt (byggt).**
+- `kandidat-fysik.yml` och `ny-kandidat-fysik.yml` får ett sista steg. Blir del A klar efter slottens ordinarie del B (:43 för den frysta,
+  :47 för den nya), startar steget del B för den pågående timmen direkt. Det gäller en reserv, en körning för hand eller en körning som
+  väntat länge på MET.
+- Efter den nyas del B följer småvägsröstens timme (`workflow_run`).
+- `scripts/kandidat-reserv.ts --minuter-efter-slott` räknar minuterna. Självtestet har sex nya fall.
+- Varför: 12/11 och 13/11 lyckades den frystas reserv 06:43, men timmen räknades först 07:43, och K var tyst i appen 07:00–07:45.
+- **Inte byggt:** att småvägsröstens timme läser den frystas PH när den nyas saknas. Det skulle blanda två modeller i samma räkning: den
+  nyas punkter med den frystas stationer och rester. Det är ett fysikval för kuvösen (#768) med Bengts och Axels ord. Den renare vägen är
+  att småvägskedjan räknar stationernas PH själv i sin del A, så att den inte beror på den nyas körning alls. Det är kuvöskod och föreslås
+  separat.
+
+**2. Vägtestet på långa och kurviga vägar (mätning i kuvösen).** Mätt 13/11 med den riktiga motorn och ändpunkterna 200 m in, på var fjärde lång småväg (minst fem punkter, utan lucka) längs vägarnas riktiga linjer ur Lastkajen, norr och söder om 62°. Vägtestet fångar nästan alla varnande punkter, i norr som i söder, och den första punkten efter korsningen alltid. Missarna samlas där vägen avviker mest från den räta linjen före punkten. Talen står i mätningen, privat (#768). Nästa mätning är en hjälppunkt mitt i de kurvigaste bitarna, som ändpunkterna; den föreslås först om den mäts bättre.
+
+**3. Olycksfacit som facit före påslaget (påslaget).** Olycksfacits lager för småvägsrösten (`sql/110`, TROSKLAR-OLYCKSFACIT §11.4) blir
+ett av underlagen före påslaget, bredvid takten och backtesten.
+- Före påslaget läses minst fyra veckor av lagret i halkvakt-kuvos: för varje olycka på en småväg om rösten hade talat, och för de tysta
+  halkkopplade olyckorna varför den teg.
+- Talen bor i kuvösen (#768). Här står bara att läsningen är gjord.
+- Villkoret står på kort #647.
+
+**4. Svartis på småvägarna (kort #656).** Rösten väcks i dag bara av nederbörd (#828), så svartis och rimfrost utan nederbörd fångas inte
+på småvägarna. Olycksfacit har visat rimfrostmissar på de stora vägarna (kort #46). Kortet är en senare variant: den mäts i kuvösen med
+falsklarmen först och förregistreras med Bengts och Axels signatur.
+
+**Funnet samtidigt: delningen per körning i backtesten.** Den första prognosveckan hämtades 13/11, men steget som delar veckan per körning
+föll 08:57 på Nodes gräns för en sträng (*"Cannot create a string longer than 0x1fffffe8 characters"*). Hämtningen avbröts, och de 13
+veckor som stod i kön ställdes in.
+- `korningar()` i `ingest/smavagskedjan.ts` läser nu dygnen som en ström och skriver varje körning under tiden.
+- Den är provad på ett syntetiskt dygn större än gränsen.
+- Hämtningen trycks igen efter sammanslagningen.
+
+**Alternativen som inte valdes:**
+- Den frystas PH i småvägsröstens timme (se 1).
+- Att alltid starta del B efter del A: det hade gett en extra körning i varje slott utan nytta, och en extra rad i domloggen.
+
+**Stomdokument:** MAT 5 — småvägsröstens förbättringar efter genomgången 13/11 (timmen direkt och mätningen av vägtestet)
