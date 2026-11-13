@@ -15906,3 +15906,26 @@ ta R2 i nästa appversion.
 - att lägga kuvösens data i Actions-cachen (kan läsas av en PR från en fork, #768).
 
 **Stomdokument:** SYS 1 — trafiken ut ur Supabase: cachen och kuvösflödenas hämtningar
+
+## #851 (13/11 2026) Nya introduktionen i iPhone-appen: sex steg, platsen i klartext och ett läge för varje svar i iOS rutor (kort #651)
+
+**Beslut.** Axel 13/11: *"jag vill att du bygger nya introduktions flödet till en början"*, efter genomgången 12–13/11 av designytan *Halkvakt: nya flödet, introduktion och startsida* (flöde A–E). Axels val samma morgon:
+- **Stegen:** Välkommen, varningarna, hur en varning märks, platsen, notiserna och en slutskärm. De ersätter Löftet, Platsen, Bannern och Du är klar. *Testa rösten* tas bort, och kvittot ersätts av *Det här har du nu* och *Så fungerar det*.
+- **Bredden:** steg två visar de fem varningarna med halka och fartkameror först (Axel 12/11: fartkamerorna är en viktig del, och appen ska visa att den är mer än halka).
+- **Platsen i klartext i introduktionen** (Axels ord 13/11): *"Din plats stannar i telefonen. Appen hämtar samma vägdata till alla och jämför med var du är, i din telefon. Inget konto behövs."* Raden om sparade resor står kvar under den (kort #357, DECISIONS #616). Inställningar, Android, sajten, varumärkesguiden och texten i iOS egen ruta (`project.yml`) behåller den gamla meningen *"Din position lämnar inte telefonen av sig själv."* tills Axel och Bengt har bestämt om den ska bytas överallt (bedömningen §4.2). Det appen skickar ändras inte.
+- **Före varje ruta från iOS står vilken knapp som ska väljas:** *Tillåt när appen används* i den första platsrutan och *Ändra till Tillåt alltid* i den andra, båda märkta *Välj den* (Axels val 13/11). Knappen före rutan heter fortfarande *Fortsätt* (Apple 5.1.1(iv), DECISIONS #460), också före notisrutan, som förut hette *Tillåt notiser*.
+- **Varje svar har ett eget läge.** Alltid: *Platsen är klar*. När appen används: *Du startar vakten själv*, och slutskärmen heter *Redo när du startar*. Nekad plats: *Vakten kan inte varna* med stegen i Inställningar, och slutskärmen heter *Nästan redo*. Nekade notiser: slutskärmen visar bannern som av. Alltid är inget krav (Axel 12/11: både Alltid och När appen används ska gå).
+- **Ansvaret** står på Välkommen, med orden ur DECISIONS #830: *"Halkvakt är ett stöd, inte en garanti. Den varnar inte överallt och kan ha fel. Kör alltid efter väglaget."* PR #1505 (kort #648) lägger samma mening på det gamla kvittot och ändrar den gamla första sidans text; de två raderna i `OnboardingView.swift` utgår när den här introduktionen är inne.
+- **Bara iPhone.** Android har ingen introduktion och andra systemrutor, och byggs i ett eget kort när skärmarna är ritade (kort #652).
+
+**Det som inte gick att bygga som ritat.** iOS skiljer inte *Tillåt en gång* från *När appen används* (båda ger `authorizedWhenInUse`), så flöde C har inget eget läge: föraren ser *En ruta till: Alltid* och sedan *Du startar vakten själv*, som i flöde B.
+
+**Alternativ.** Att kräva Alltid för att komma vidare (Axel valde bort det 12/11, och Apple avvisar appar som tvingar fram en behörighet); att behålla löftets mening med en förklaring under; att byta löftet överallt i samma varv; att bygga Android samtidigt.
+
+**Varför.** Den gamla introduktionen sa inte tydligt vad föraren skulle göra i iOS rutor, och de som stannade på *När appen används* fick inte veta vad det betydde. Appen kan inte starta själv utan Alltid, så det valet avgör om den används alls.
+
+**Inte prövat:** ordalydelsen på knapparna i iOS rutor är inte avläst på en telefon, och vad iOS gör efter *Tillåt en gång* är inte provat. Båda står i kortets Verify.
+
+**Kvar:** telefonprovet i ett TestFlight-bygge med vart och ett av svaren; beslutet om löftets mening i resten av appen och på sajten.
+
+**Stomdokument:** APP 4 — introduktionen i iPhone-appen
