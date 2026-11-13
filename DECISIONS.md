@@ -16162,3 +16162,26 @@ veckor som stod i kön ställdes in.
 - Att alltid starta del B efter del A: det hade gett en extra körning i varje slott utan nytta, och en extra rad i domloggen.
 
 **Stomdokument:** MAT 5 — småvägsröstens förbättringar efter genomgången 13/11 (timmen direkt och mätningen av vägtestet)
+
+## #858 (13/11 2026) iPhone-bygget till granskningen går ut utan CarPlay; CarPlay kommer tillbaka till helgen (kort #651, #380)
+
+**Beslut (Axel 13/11: *"vi ska göra en release utan carplay. Det får komma till helgen"*):** bygget 0.4.0 (49), med nya
+introduktionen, går till granskning utan CarPlay. Brytaren i `ios/HalkvaktApp/project.yml` (DECISIONS #817) slås av:
+tillståndet `com.apple.developer.carplay-driving-task` och scenkonfigurationen är bortkommenterade, och koden i
+`Sources/CarPlay` körs då aldrig. CarPlay slås på igen i ett senare bygge.
+
+**Varför:** Axel vill inte att CarPlay ska kunna fördröja granskningen av introduktionen. CarPlay är inte provat i bil
+(kort #380), så det skulle lämnas in oprovat.
+
+**Följd för föraren:** rösten hörs som förut i bilens högtalare. Varningen visas inte på bilens skärm, Halkvakt ligger inte
+på CarPlays hemskärm, och vakten startar inte av att appen öppnas där (DECISIONS #840).
+
+**Alternativ:** lämna in med CarPlay påslaget. Avfärdat av Axel.
+
+**I samma bygge:** sidan om Alltid i introduktionen står kvar bakom iOS ruta tills den är besvarad. På Axels inspelning av
+(48) syntes *Du startar vakten själv* i ett par sekunder innan *Platsen är klar*.
+
+**Kvar:** slå på brytaren igen och prova CarPlay i bil (kort #380).
+
+**Stomdokument:** APP 4 — iPhone-bygget utan CarPlay tills vidare
+
