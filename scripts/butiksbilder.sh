@@ -6,6 +6,7 @@ set -u
 mkdir -p /tmp/butik
 APK=android/app/build/outputs/apk/debug/app-debug.apk
 PKG=se.halkvakt.app
+adb shell wm size 1080x2340; adb shell wm density 420   # emulatorns egen skärm är 320 × 640, för liten för butiken
 adb shell settings put system screen_off_timeout 600000
 adb install -r "$APK"
 adb emu geo fix 18.0686 59.3293
