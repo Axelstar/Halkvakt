@@ -1,4 +1,5 @@
--- 110: OLYCKSFACIT, DET NYA UPPLÄGGET (Bengt 13/11: "bygg allt"; DECISIONS #852; TROSKLAR-OLYCKSFACIT §11). Förslaget står i
+-- 110: OLYCKSFACIT, DET NYA UPPLÄGGET (Bengt 13/11: "bygg allt"; DECISIONS #852; Axel via Bengt 13/11: "Ja, Axel signerar",
+-- DECISIONS #853; TROSKLAR-OLYCKSFACIT §11). Förslaget står i
 -- Desktop/Olycksfacit_nytt_upplagg_FORSLAG_2026-11-13.md, mätt på veckan 6–12/11. Fyra delar här; A, B och E bor i funktionen
 -- olycksfacit (supabase/functions/olycksfacit/arende.ts):
 --

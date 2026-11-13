@@ -2738,7 +2738,7 @@ test("#852 olycksarten och efterkontrollen: D1, D2 och D3, med ett motprov per �
       severity_code, geom, utfall) VALUES ($1, $2, $3, 'Väg 1', 4, ST_SetSRID(ST_MakePoint($4, 79), 4326), 'TYST_TACKT')`, [id, ago(480), text, lon]);
     const station = (id: string, lon: number, min: number, yta: number, dagg: number, nb: string) =>
       q(`INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, dewpoint_c, precipitation)
-         VALUES ($1, 'Provstation', ST_SetSRID(ST_MakePoint($2, 79), 4326), $3, $4, $4 + 1, $5, $6)`, [id, ost(lon, 1), ago(min), yta, dagg, nb]);
+         VALUES ($1, 'Provstation', ST_SetSRID(ST_MakePoint($2, 79), 4326), $3, $4, $5, $6, $7)`, [id, ost(lon, 1), ago(min), yta, yta + 1, dagg, nb]);
     await olycka("UA1", 70, "Personbil i diket"); await station("UAS1", 70, 540, -1, -2, "Snow");
     await olycka("UA2", 71, "Singelolycka"); await station("UAS2", 71, 540, 2, 0, "no"); await station("UAS2", 71, 420, -1, -2, "Snow");
     await olycka("UA3", 72, "Två personbilar som krockat"); await station("UAS3", 72, 540, -1, -2, "Snow");

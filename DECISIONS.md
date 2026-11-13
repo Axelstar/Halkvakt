@@ -15970,3 +15970,19 @@ Allt byggs; tillägget står i TROSKLAR-OLYCKSFACIT som §11 och ändrar §3, §
 - Att låta dagens ärende stå öppet med raderna som också står i veckans ärende: då läses de två gånger.
 
 **Stomdokument:** MAT 3 — olycksfacits nya upplägg (TROSKLAR-OLYCKSFACIT §11), BED §4.2 — Axels signatur på §11
+
+## #853 (13/11 2026) Axel signerar TROSKLAR-OLYCKSFACIT §11, olycksfacits nya upplägg (kort #654)
+
+**Beslutet.** Axel signerar §11 via Bengt 13/11: *"Ja, Axel signerar"*, på frågan om Axel också signerar §11. Bengts första ord, *"axel
+signerar del 6"* (#852), gällde §10, klassningen efter sex timmar, som Axel signerade 11/11 (#842). Med Bengts signatur i #852 har §11 båda,
+och regel L (§7) är uppfylld. Texten som signerades är filen på grenen `claude/olycksfacit-upplagg` vid 7da12b3d.
+
+**Kvar:**
+1. CI grön på exakt huvudet och sammanslagningen på Bengts ord.
+2. `sql/110` med DB-knappen.
+3. Deployen av `olycksfacit`, efter migrationen.
+
+**Alternativen som inte valdes:** att läsa *"axel signerar del 6"* som Axels signatur på §11. Del 6 var redan signerad, så ordet kunde inte
+avse §11 utan en fråga.
+
+**Stomdokument:** MAT 3 — olycksfacits nya upplägg (TROSKLAR-OLYCKSFACIT §11) signerat av Bengt och Axel

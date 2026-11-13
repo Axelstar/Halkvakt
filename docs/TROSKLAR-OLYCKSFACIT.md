@@ -14,7 +14,7 @@ Bengt och Axel** (DECISIONS #802, #803), med valen i §9.8 som rekommenderat. §
 
 **§11 (det nya upplägget: olycksarten, fönstret fram till starten, kollisionerna, småvägsröstens lager, förifyllda åtgärder, läsningen i
 veckans ärende och nämnaren) tillades 13/11** (DECISIONS #852). Det ändrar §3, §4, §5, §9.1, §9.2 och §9.5, och varje ändrat stycke säger
-det och bär den gamla lydelsen. **Bengt har signerat; Axels signatur väntar (§11.6).**
+det och bär den gamla lydelsen. ✅ **FASTSTÄLLT 2026-11-13 av Bengt och Axel** (DECISIONS #852, #853).
 
 **Varifrån det kommer.** Bengt 6/11: *"Analys av olyckor är ett av de mest effektiva metoderna för att se om varningssystemen fungerar.
 Olyckan fungerar som facit."*
@@ -299,7 +299,8 @@ i texten efter kontrollen. Villkoret om flödet ska hindra det: texten läses f�
 
 ## 11. Tillägg 13/11 2026: det nya upplägget (DECISIONS #852)
 
-**Status:** Bengt har signerat 13/11, och **Axels signatur väntar** (§11.6). Förslaget mättes på veckan 6–12/11, med SELECT i
+**Status:** ✅ **FASTSTÄLLT 2026-11-13 av Bengt och Axel** (DECISIONS #852, #853). Texten som signerades är filen på grenen
+`claude/olycksfacit-upplagg` vid 7da12b3d, sha256 `a0b9c37055e512c4f64866fb51f3195ffb325b54c78df6ca9728b0b449c69b86` med radsluten som LF. Förslaget mättes på veckan 6–12/11, med SELECT i
 Supabase-panelen 13/11; det ligger privat på Bengts dator. Bengt 13/11, på frågan om singelkravet: *"är det verkligen rätt behandling att
 kräva singelolyckor"*, och på förslaget: *"bygg allt"*. Byggt i `sql/110_olycksfacit_upplagg.sql` och `supabase/functions/olycksfacit`.
 
@@ -400,7 +401,7 @@ Tillägget kommer efter den första klassningen (6/11), så §7:s regel L gälle
 | Vem | Datum | Hur |
 | :-- | :-- | :-- |
 | Bengt | 2026-11-13 | i chatten: *"bygg allt och axel signerar del 6"*, på förslaget där D-delarna krävde båda signaturerna |
-| Axel | väntar | Bengts ord *"axel signerar del 6"* gäller §10, klassningen efter sex timmar, som Axel signerade 11/11. Frågan om Axel också signerar §11 står i bedömningens §4.2. `sql/110` migreras först efter hans signatur (§7). |
+| Axel | 2026-11-13 | via Bengt i chatten: *"Ja, Axel signerar"*, på frågan om Axel också signerar §11. Bengts första ord, *"axel signerar del 6"*, gällde §10, som Axel signerade 11/11 (DECISIONS #853) |
 
 ---
 
