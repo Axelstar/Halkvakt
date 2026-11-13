@@ -102,6 +102,17 @@ fun HazardIcon(k: HazardKind, size: Dp = 24.dp, tint: Color = Brand.yellow) {
 fun HalkvaktApp(activity: MainActivity) {
     MaterialTheme(colorScheme = Scheme) {
         var tab by rememberSaveable { mutableStateOf(0) }
+        // Introduktionen (kort #652): visas för en ny installation tills den är genomgången eller överhoppad, och igen från
+        // Inställningar. En installation som redan gett platsen har använt appen förut och får den inte påtvingad.
+        val ctxIntro = LocalContext.current
+        val introKlar by remember { Prefs.introKlar(ctxIntro) }.collectAsStateWithLifecycle(initialValue = null)
+        var visaIntro by rememberSaveable { mutableStateOf(false) }
+        val fotoIntro by activity.fotostudioIntro.collectAsStateWithLifecycle()
+        LaunchedEffect(introKlar) {
+            val klar = introKlar ?: return@LaunchedEffect
+            if (se.halkvakt.app.Intro.visasVidStart(klar, activity.platsLage() != MainActivity.Plats.INGEN)) visaIntro = true
+            else if (!klar) withContext(Dispatchers.IO) { runCatching { Prefs.setIntroKlar(ctxIntro) } }
+        }
         // Favoriter 2a (#817): notisen och raden på Redo öppnar fliken med dagens resor överst.
         val visaFavoriter by se.halkvakt.app.Favoriter.visaFliken.collectAsStateWithLifecycle()
         LaunchedEffect(visaFavoriter) { if (visaFavoriter) { tab = 1; se.halkvakt.app.Favoriter.visaFliken.value = false } }
@@ -112,6 +123,11 @@ fun HalkvaktApp(activity: MainActivity) {
             if (running) w.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
             onDispose { w.clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON) }
         }
+        if (introKlar == null) { Box(Modifier.fillMaxSize().background(Natt)); return@MaterialTheme }
+        if ((visaIntro || fotoIntro != null) && !running) {
+            IntroScreen(activity, startSteg = fotoIntro ?: 0) { visaIntro = false; activity.fotostudioIntro.value = null }
+            return@MaterialTheme
+        }
         Box(Modifier.fillMaxSize().background(Natt)) {
             Box(Modifier.fillMaxSize().statusBarsPadding()) {
                 // Ingen flikrad medan vakten kör: körläget täcker allt (designen v2, DECISIONS #444).
@@ -119,7 +135,7 @@ fun HalkvaktApp(activity: MainActivity) {
                 else when (tab) {
                     0 -> RedoScreen(activity) { BetaOverst(activity) }
                     1 -> FavoriterScreen(activity)   // kort #357, DECISIONS #616: den mittersta fliken
-                    else -> SettingsScreen(activity)
+                    else -> SettingsScreen(activity) { visaIntro = true }
                 }
             }
             if (!running) {

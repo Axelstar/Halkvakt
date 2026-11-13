@@ -289,9 +289,54 @@ Inställningar, och introduktionen kan visas igen därifrån.
 
 Inga konton, ingen e-post, inga fler frågor.
 
-*(Android har ingen introduktion än (kort #652). Första trycket på Starta ber om plats och,
-på Android 13 och senare, notiser; vippan *Vaknar själv när du kör* under Inställningar → Start ber om resten:
-rörelseigenkänning, Bluetooth och plats "Tillåt hela tiden".)*
+## Första gången — introduktionen (Android)
+
+Byggd 13/11 (kort #652, DECISIONS #862), från 0.4.0 (49). Samma upplägg och texter som på iPhone, ritad för Androids egna
+rutor: fem steg i stället för fyra, eftersom självstarten är ett eget steg. Överst till höger står *VÄLKOMMEN*, *STEG 1 AV 5*
+till *STEG 5 AV 5* och *KLART*. Introduktionen visas för en ny installation; den som redan gett appen platsen får den inte
+påtvingad, men kan visa den från Inställningar (*Visa introduktionen igen*, sist i den andra panelen).
+
+1. **Välkommen**, 2. **Varningarna** och 3. **Så märks en varning** har samma texter som på iPhone.
+4. **Platsen** (steg 3 av 5) — fyra lägen:
+   - *Inte frågad:* *"Nu slår vi på vakten"*, *"Först platsen: vakten behöver veta var du är för att kunna varna."* Under *DIN
+     PLATS* samma text som på iPhone. Under *I NÄSTA RUTA FRÅN ANDROID* står rutans val, *Exakt*, *När appen används*, *Bara
+     den här gången* och *Tillåt inte*, med de två första förbockade och märkta *VÄLJ DEN*. Knappen *Fortsätt* öppnar Androids
+     ruta. Väljs exakt plats går introduktionen direkt till självstarten.
+   - *Exakt, ändrad i telefonens inställningar:* *"Platsen är klar"*, raden *Platsen EXAKT*. Knappen *Fortsätt*.
+   - *Ungefärlig:* *PLATSEN ÄR UNGEFÄRLIG*, *"Exakt plats behövs"*, *"Med ungefärlig plats vet Halkvakt inte vilken väg du kör
+     på, och kan inte varna. Det ändras i telefonens inställningar."* Fyra steg: *Tryck Öppna inställningar*, *Tryck
+     Behörigheter, sedan Plats*, *Slå på Använd exakt plats*, *Kom tillbaka hit*. Knappen *Öppna inställningar*, länken
+     *FORTSÄTT UTAN EXAKT PLATS*.
+   - *Nekad:* *PLATSEN ÄR AV*, *"Vakten kan inte varna"*, samma fyra steg med *Välj Tillåt bara när appen används* som tredje.
+     Knappen *Öppna inställningar*, länken *FORTSÄTT UTAN PLATS*.
+5. **Självstarten** (steg 4 av 5) — visas bara när platsen är exakt. Fyra lägen:
+   - *Frågan:* *"Ska vakten starta själv?"*, *"Då vaknar den när du börjar köra. Du behöver inte öppna appen före resan."*
+     Under *ANDROID FRÅGAR OM TRE SAKER*: *Fysisk aktivitet* (*Så ser telefonen att du åker bil.*), *Enheter i närheten* (*Så
+     märker den när bilens Bluetooth kopplar upp.*) och *Platsen hela tiden* (*Så kan vakten starta med appen stängd.*).
+     *"Platsen stannar i telefonen, även då. Välj Tillåt i de två första rutorna."* Knappen *Slå på självstart* öppnar
+     rutorna om fysisk aktivitet och enheter i närheten. Länken *INTE NU, JAG STARTAR SJÄLV*.
+   - *Hela tiden:* *"Sista frågan: hela tiden"*, *"Android öppnar en sida i telefonens inställningar. Välj Tillåt hela tiden
+     och tryck sedan bakåt för att komma tillbaka hit."* Under *PÅ NÄSTA SIDA FRÅN ANDROID* sidans fyra val med *Tillåt hela
+     tiden* förbockat och märkt *VÄLJ DEN*, och redogörelsen: *"Halkvakt läser platsen även när appen är stängd eller skärmen
+     släckt, så att vakten kan starta själv när du börjar köra. Platsen läses bara medan vakten är på och notisen Halkvakt
+     vaktar syns. Den skickas aldrig av sig själv."* Knappen *Öppna sidan*.
+   - *På:* *"Självstarten är på"*, raderna *Platsen HELA TIDEN* och *Självstart när du kör PÅ* (*Vakten lär sig bilens
+     Bluetooth vid nästa körning.*). Knappen *Fortsätt*.
+   - *Föraren startar själv* (länken, ett nej i en ruta, eller något annat än *Tillåt hela tiden*): *"Du startar vakten
+     själv"*, *"Halkvakt varnar precis som vanligt. Du öppnar bara appen och trycker Starta vakten före varje resa."* Knappen
+     *Fortsätt*, länken *SLÅ PÅ SJÄLVSTART* (tillbaka till frågan).
+6. **Notiserna** (steg 5 av 5) — som på iPhone, med en rad till under *HALKVAKT SKICKAR*: *Notisen Halkvakt vaktar* (*Visar
+   att vakten är på.*). Före Android 13 frågar systemet inte, och steget visar *Notiser PÅ*. Avslagna: *"Notiserna är
+   avslagna. Rösten varnar ändå, men varken bannern eller notisen Halkvakt vaktar syns."*, länken *SLÅ PÅ I INSTÄLLNINGAR*.
+7. **Slutskärmen** — *"Vakten är redo"* (självstart på), *"Redo när du startar"* (länken *SLÅ PÅ SJÄLVSTART*) eller *"Nästan
+   redo"* (platsen saknas eller är ungefärlig; knappen *Slå på platsen*, länken *GÖR DET SENARE*), med samma rader som på
+   iPhone.
+
+Vippan *Vaknar själv när du kör* under Inställningar → Start och första trycket på *Starta vakten* frågar som förut, med
+sina egna förklaringar före varje ruta, för den som hoppat över introduktionen eller sagt nej i den.
+
+Inte provat på en telefon 13/11: texterna i Androids egna rutor är skrivna ur minnet och skiljer sig mellan Android-versioner
+och tillverkare. Skärmbilder ur fotostudion (`shot-20-intro` till `shot-26-intro`) förs in när bygget har körts.
 
 ## Exakt vad rösten säger
 
@@ -761,6 +806,7 @@ du var just då."* (Axels villkor för ja:et, DECISIONS #267.)
 | 0.4.0 (44) | 11/11 | **En besvarad varning frågas inte om igen** (kort #999): *Stämde / Stämde inte* står kvar med *Tack* medan startskärmen visas och är borta nästa gång den visas. Gäller båda apparna. |
 | 0.4.0 (48) | 13/11 | **Nya introduktionen** (kort #651, DECISIONS #851): sex steg i stället för fyra sidor. Före varje ruta från iOS står vilken knapp som ska väljas, och varje svar har sitt eget läge. Alla fem varningarna visas, med fartkamerorna i rubriken. *Testa rösten* finns bara i Inställningar. Bara iPhone. |
 | 0.4.0 (49) | 13/11 | **Utan CarPlay** (DECISIONS #858): bygget till granskningen har CarPlay avslaget. Rösten hörs som förut; varningen visas inte på bilens skärm, och vakten startar inte av att Halkvakt öppnas där. Dessutom står sidan om *Alltid* i introduktionen kvar bakom iOS ruta tills den är besvarad. |
+| Android 0.4.0 (49) | 13/11 | **Introduktionen i Android** (kort #652, DECISIONS #862): sju skärmar i fem steg, med självstarten som eget steg och ett läge per svar i Androids rutor. Raden *Visa introduktionen igen* i Inställningar. Räknaren säger `onboarding_klar` en gång, som iPhone. |
 | Android (CI) | 16/9 → | Facitknappen och betatest-brytaren (S4, DECISIONS #202), Efter resan (20/9), viltvarningen på Trafikverkets djur (22/9), omladdningsloopen lagad och reglaget (26/9), missarna (26/9). **0.3.9 (18)**, samma nummer som iOS (DECISIONS #377). |
 
 Android bar versionsnumret 0.3.1 (4) från 31/8 till 26/9, fast CI byggde den ur main med skinnet v3, facitknappen

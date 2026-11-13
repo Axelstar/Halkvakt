@@ -4,7 +4,7 @@
 // rad per dygn, app, version, kohort, händelse och värde. Ingen position, ingen sträcka, inget enhets-id, ingen tid. Det som
 // finns på servern är "i dag valde 14 Android-ägare Tillåt hela tiden", aldrig vem. Alltid på (variant A); står i
 // integritet.html och i appens Integritet. ver = versionName; k = ny | befintlig (hade telefonen appen när räknandet började).
-// Sex områden, som iOS (värdelistan bor i supabase/functions/app-raknare/index.ts; Android har ingen introduktion och inget intent):
+// Sex områden, som iOS (värdelistan bor i supabase/functions/app-raknare/index.ts; Android har introduktionen sedan kort #652 men inget intent):
 //   1 vägen in       behorighet (alltid | nar | nekad), notiser (pa | nekad), forsta_starten, forsta_varningen
 //   2 aktiva förare  aktiv_dag: en gång per dygn som vakten gick (0 | 1-7 | 8-30 | over30 dagar sedan räknandet började)
 //   3 vaktpasset     vakt_startad (hand | sjalv) och resa_slut start:längd:slut — sjalv|knapp, fyra längdhinkar (okand när
@@ -89,6 +89,8 @@ object Raknare {
     fun avstandHink(m: Int): String = when { m < 400 -> "under400"; m < 800 -> "400-800"; m < 1200 -> "800-1200"; m < 3000 -> "1200-3000"; else -> "over3000" }
 
     suspend fun forstaVarningen(ctx: Context) = raknaEnGang(ctx, "forsta_varningen")
+    /** Introduktionen genomgången eller överhoppad (kort #652), en gång per installation, som iOS. */
+    suspend fun onboardingKlar(ctx: Context) = raknaEnGang(ctx, "onboarding_klar")
 
     private suspend fun raknaEnGang(ctx: Context, h: String, v: String = "") {
         if (BuildConfig.DEBUG) return   // ett debugbygge får inte "minnas" ett ord det aldrig skickade
