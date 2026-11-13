@@ -16,6 +16,8 @@ Bengt och Axel** (DECISIONS #802, #803), med valen i §9.8 som rekommenderat. §
 veckans ärende och nämnaren) tillades 13/11** (DECISIONS #852). Det ändrar §3, §4, §5, §9.1, §9.2 och §9.5, och varje ändrat stycke säger
 det och bär den gamla lydelsen. ✅ **FASTSTÄLLT 2026-11-13 av Bengt och Axel** (DECISIONS #852, #853).
 
+**§12 (K-lagret följer den kandidat som talade) tillades och FASTSTÄLLDES 13/11 av Bengt och Axel** (DECISIONS #856). Det ändrar §9.1.
+
 **Varifrån det kommer.** Bengt 6/11: *"Analys av olyckor är ett av de mest effektiva metoderna för att se om varningssystemen fungerar.
 Olyckan fungerar som facit."*
 - Steg 1 (DECISIONS #796) fryser vad varje varningslager sa när olyckan började.
@@ -149,7 +151,7 @@ förbättring i systemet"*.
 
 - Fångsten (`sql/084`, `sql/085`) fryser vad lagren sa **när olyckan började**:
   - A1: väglaget som gällde vid starten;
-  - K: den timme kandidaten talade med vid starten. Det är domloggens senaste körning före starten, räknad och högst två timmar
+  - K: den timme kandidaten talade med vid starten, med den kandidat som talade (§12, tillagt 13/11). Det är domloggens senaste körning före starten, räknad och högst två timmar
     gammal, som regelns färskhet. Saknas sträckan i den timmen hade den ingen kall punkt (*yta över 0*). Var körningen tyst, eller
     är timmen äldre, är skälet *ingen timme*. (Ändrat 7/11, DECISIONS #814. Förut: *kandidatens senaste timme som var skriven före
     starten*, utan åldersgräns. Den regeln räknade in varningar som var släckta sedan flera timmar.)
@@ -403,11 +405,48 @@ Tillägget kommer efter den första klassningen (6/11), så §7:s regel L gälle
 | Bengt | 2026-11-13 | i chatten: *"bygg allt och axel signerar del 6"*, på förslaget där D-delarna krävde båda signaturerna |
 | Axel | 2026-11-13 | via Bengt i chatten: *"Ja, Axel signerar"*, på frågan om Axel också signerar §11. Bengts första ord, *"axel signerar del 6"*, gällde §10, som Axel signerade 11/11 (DECISIONS #853) |
 
+## 12. Tillägg 13/11 2026: K-lagret följer den kandidat som talade (DECISIONS #856)
+
+**Status:** ✅ **FASTSTÄLLT 2026-11-13 av Bengt och Axel.** Bengts fråga 13/11: *"borde man ha en koppling av olycksfacit mot den frysta
+kandidaten också"*. Byggt i `sql/112_olycksfacit_k_talande.sql`.
+
+### 12.1 Vad som ändras
+
+§9.1 säger att K är vad appen sa vid starten. Fram till nu läste fångsten bara den nya kandidatens domlogg. Appen talar med den nya när
+beslutet säger *ny* och den nyas timme är färsk, och annars med den frysta (bytet, `sql/070`, `talande_timme()`, FORREGISTRERING-2026-27
+§12 f). K-lagret räknas nu på samma sätt vid starten:
+
+1. **Beslutet** är den senaste raden i `kandidat_talar` som var skriven vid starten, annars *fryst*.
+2. **Den nya:** säger beslutet *ny* och har den nya en timme enligt §9.1:s timregel, gäller den nyas besked, med talaren *ny*.
+3. **Den frysta:** annars gäller den frystas besked, räknat med samma timregel ur den frystas domlogg, med talaren *fryst*.
+4. **Ingen:** har ingen av dem en timme gäller *ingen timme*, med talaren *ingen*.
+
+(Ändrat 13/11, §12. Förut: *K: den timme kandidaten talade med vid starten. Det är domloggens senaste körning före starten* — den nya
+kandidatens domlogg, också när appen talade med den frysta.)
+
+### 12.2 Det sedda talet
+
+Läst 13/11: sedan 6/11 hade 10 av omkring 490 olyckor K *ingen timme*. Vid 2 av dem, båda 12/11, hade den frysta en färsk timme, så appen
+talade med den. Ingen av de två var halkkopplad. Ändringen kan göra fler olyckor VARNADE, men ingen färre, och den ändrar ingen klass.
+Redan fångade olyckor rörs inte.
+
+### 12.3 Avgränsning
+
+Storstädernas punkter (§9.1, DECISIONS #815) läses som förut ur den nya kandidatens stadslogg. Den frysta saknar en sådan logg. När den
+frysta talar räknas därför stadspunkterna inte, och fångsten bokför dem som förut.
+
+### 12.4 Signaturer
+
+| Vem | Datum | Hur |
+| :-- | :-- | :-- |
+| Bengt | 2026-11-13 | i chatten: *"vi signerar gör 1,2,3"*, där punkt 1 var tillägget till §9.1 för Bengts och Axels signatur |
+| Axel | 2026-11-13 | via Bengt i chatten, samma rad |
+
 ---
 
 *Källor:*
 - `sql/084_olycksfacit.sql` (steg 1), `sql/085_olycksfacit_klassning.sql` (steg 2 och 3), `sql/108_olycksfacit_driftlarm.sql` (§10) och
-  `sql/110_olycksfacit_upplagg.sql` (§11);
+  `sql/110_olycksfacit_upplagg.sql` (§11) och `sql/112_olycksfacit_k_talande.sql` (§12);
 - `supabase/functions/olycksfacit/`;
 - förslaget `Desktop/Olyckorna_2026-11-06/OLYCKSFACIT_RUTINEN_FORSLAG_2026-11-06.md` (Bengt 6/11: *"Bygg olycksfacit"*, *"Ja, bygg steg 2 och 3"*);
 - förslaget `docs/FORSLAG-OLYCKSFACIT-DRIFTLARM-2026-11-08.md` (§10);
