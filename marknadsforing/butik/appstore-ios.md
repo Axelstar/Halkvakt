@@ -97,6 +97,36 @@ Versionen i butiken är 0.3.13 (34); listan gäller allt som kommit sedan dess (
 
 *App Privacy:* lägg till *Diagnostics → Other Diagnostic Data* (Analytics, inte kopplad, ingen spårning), som manifestet i bygget.
 
+## Inskicket 0.4.0 (49) — utkast 13/11, Axel godkänner (DECISIONS #851, #858, kort #651)
+
+0.4.0 (49) laddades upp av TestFlight-flödet 43406203371 (main db50832, 13/11 10.07 UTC): nya introduktionen, och CarPlay
+avslaget i bygget (#858). Texterna nedan utgår från att butiken har 0.3.15 (37). Har 0.3.17 (39) släppts stryks de två sista
+raderna i What's New och meningarna om rutnätet och räknaren i anteckningarna.
+
+- **(a) Versionsposten:** *+* vid iOS-appen → **0.4.0** → bygge **49**.
+- **(b) What's New:**
+  - *• Ny introduktion: appen visar allt den varnar för, säger vilken knapp du ska välja i telefonens frågor om plats och notiser, och visar vad varje val innebär.*
+  - *• Favoriter: frågan om att spara resan kommer som en notis efter resan, dagens resor visas i fliken och en sparad resa kan byta namn.*
+  - *• Tipsa en vän, Tyck till och Betygsätt finns i Inställningar.*
+  - *• En krasch vid tryck på en notis är rättad.*
+  - *• Varningsmotorn arbetar snålare: appen prövar bara varningarna i din närhet, med samma varningar som förut.*
+  - räknarens rad ur avsnittet *Nästa version: räknarens sex områden*.
+- **(c) Granskarens anteckningar:** texten under *Granskarens anteckningar*, med två ändringar. Stycket HOW TO SEE A WARNING
+  börjar i stället: *open the app, go through the six-step introduction (tap "Visa mig", "Nästa", "Nästa", then "Fortsätt" and
+  answer the two location prompts and the notification prompt), tap "Klar", then tap "Starta vakten" (Start the guard).* Och
+  efter NEW IN 0.3.15 läggs stycket:
+
+  > NEW IN 0.4.0: (1) A new six-step introduction. It lists the five warning types, shows a sample warning, and before each system prompt tells the user which button to choose. Each answer has its own follow-up screen: with "Always" the guard starts itself when driving; with "While Using" the user starts it with one tap before the trip; if location is denied the app explains how to turn it on in Settings and can still be opened. The button before each system prompt says "Fortsätt" (Continue). (2) Favoriter: when "Erbjud att spara resor" is on, the question whether to save a trip arrives as a local notification after the trip, with a name field; nothing is sent to a server and there are no push notifications. (3) Settings has three new rows: recommend the app (share sheet), send feedback (e-mail) and rate the app (StoreKit review prompt). (4) The warning engine now only checks the hazards near the car (a spatial grid); the warnings themselves are unchanged. (5) The anonymous counter covers six areas, as described under App Privacy. This build does not include CarPlay: the CarPlay entitlement is not in the binary.
+
+- **(d) App Privacy:** *Diagnostics → Other Diagnostic Data* (Analytics, inte kopplad, ingen spårning), om den inte redan är
+  tillagd; annars oförändrat.
+- **(e) Skärmbilderna:** butikens bilder är ur (19). Introduktionen syns inte i dem, så inskicket går med de gamla; nya bilder
+  ur (49) är ett eget steg.
+- **(f) Släppet:** Axels val i App Store Connect, automatiskt eller manuellt.
+
+Inte bekräftat före inskicket: *Tillåt en gång* är inte inspelad, iOS rutor är bara sedda på en engelsk telefon, och vad
+*Starta vakten* gör när platsen är nekad är inte provat.
+
 ## Inskicket 0.3.17 (39) — 7/11 (DECISIONS #816, kort #378)
 
 0.3.17 (39) innehåller motorns rutnät (#795). Det behövs innan storstädernas punkter slås på. I butiken finns 0.3.15 (37), godkänd och
