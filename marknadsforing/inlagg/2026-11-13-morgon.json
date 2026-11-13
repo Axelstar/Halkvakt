@@ -1,0 +1,37 @@
+{
+  "typ": "forandring",
+  "nyckel": "forandring",
+  "etikett": "Sedan i går",
+  "rubrik": "Halkan sprider sig",
+  "underrad": "vägavsnitt med halka, mot samma tid i går",
+  "lyft": {
+    "stort": "175 → 423",
+    "liten": "ny halka i Stockholms län, Södermanland, Östergötland, Jönköpings län, Kronoberg, Kalmar län, Blekinge, Skåne, Halland, Västra Götaland och Västmanland"
+  },
+  "text": "Trafikverket rapporterar halka på 423 vägavsnitt, mot 175 vid samma tid i går.\nNy halka sedan i går: Stockholms län, Södermanland, Östergötland, Jönköpings län, Kronoberg, Kalmar län, Blekinge, Skåne, Halland, Västra Götaland och Västmanland.\n\nNorrbotten: halka på 50 av 58 vägavsnitt, 56 stationer under noll, kallast −16,1 °C vid Kätkesuando.\nVästra Götaland: halka på 46 av 133 vägavsnitt, 27 stationer under noll, kallast −1,1 °C vid 1620 Marka Fjärryta.\nVästerbotten: halka på 44 av 44 vägavsnitt, 44 stationer under noll, kallast −5,1 °C vid Kåtaviken.\nVärmland: halka på 43 av 52 vägavsnitt, 37 stationer under noll, kallast −2,8 °C vid Lisskogsåsen.\nDalarna: halka på 37 av 38 vägavsnitt, 23 stationer under noll, kallast −3,2 °C vid Högfjällshotellet, 1 olycka.\nHalka eller minusgrader även i 14 län till.\n\nLäget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #VästraGötaland #Västerbotten #Värmland #Dalarna #halkvakt",
+  "textIg": "Trafikverket rapporterar halka på 423 vägavsnitt, mot 175 vid samma tid i går.\nNy halka sedan i går: Stockholms län, Södermanland, Östergötland, Jönköpings län, Kronoberg, Kalmar län, Blekinge, Skåne, Halland, Västra Götaland och Västmanland.\n\nNorrbotten: halka på 50 av 58 vägavsnitt, 56 stationer under noll, kallast −16,1 °C vid Kätkesuando.\nVästra Götaland: halka på 46 av 133 vägavsnitt, 27 stationer under noll, kallast −1,1 °C vid 1620 Marka Fjärryta.\nVästerbotten: halka på 44 av 44 vägavsnitt, 44 stationer under noll, kallast −5,1 °C vid Kåtaviken.\nVärmland: halka på 43 av 52 vägavsnitt, 37 stationer under noll, kallast −2,8 °C vid Lisskogsåsen.\nDalarna: halka på 37 av 38 vägavsnitt, 23 stationer under noll, kallast −3,2 °C vid Högfjällshotellet, 1 olycka.\nHalka eller minusgrader även i 14 län till.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone, länken finns i vår profil.\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #VästraGötaland #Västerbotten #Värmland #Dalarna #halkvakt",
+  "pass": "morgon",
+  "datum": "2026-11-13",
+  "generated_at": "2026-11-13T04:30:06.934Z",
+  "lan": [
+    "norrbotten",
+    "vastra-gotaland",
+    "vasterbotten",
+    "varmland",
+    "dalarna",
+    "jonkoping",
+    "ostergotland",
+    "vasternorrland",
+    "jamtland",
+    "gavleborg",
+    "skane",
+    "kalmar",
+    "sodermanland",
+    "stockholm",
+    "blekinge",
+    "kronoberg",
+    "halland",
+    "vastmanland",
+    "orebro"
+  ]
+}
