@@ -16064,3 +16064,35 @@ kalla varvet. Alla 30 rutterna tar 2,8–3,4 s, och tolkningen av de fyra filern
 - Att göra `favoritRapport` billigare: den fasta kostnaden per rutt är liten, och vinsten måste mätas först.
 
 **Stomdokument:** FAV 7 — favoritprovets rutt-steg i tre anrop under CPU-gränsen
+
+## #856 (13/11 2026) Olycksfacits K-lager följer den kandidat som talade: den nya när den har en timme, annars den frysta (kort #655)
+
+**Beslutet.** Bengt och Axel signerar TROSKLAR-OLYCKSFACIT §12. Bengt 13/11: *"vi signerar gör 1,2,3"*, där punkt 1 var tillägget till
+§9.1 för deras signatur. Frågan var Bengts: *"borde man ha en koppling av olycksfacit mot den frysta kandidaten också"*.
+
+**Varför.** §9.1 säger att K är vad appen sa vid starten. Fångsten läste ändå bara den nya kandidatens domlogg. Appen talar med den frysta
+när den nyas timme saknas eller är för gammal (bytet, `sql/070`, `talande_timme()`).
+- Sedan 6/11 hade 10 av omkring 490 olyckor K *ingen timme*.
+- Vid 2 av dem, båda 12/11, hade den frysta en färsk timme, och ingen av de två var halkkopplad.
+- Med MET:s morgonfel (#854) blir det vanligare, och driftlarmet larmar då *K ingen timme* fast appen talade.
+
+**Det som byggdes** (`sql/112`):
+- `olycksfacit_k_ny()` är `sql/100`:s `olycksfacit_k` ord för ord, och `olycksfacit_k_fryst()` samma funktion mot den frystas tabeller.
+- `olycksfacit_k()` väljer som `talande_timme()` vid starten och skriver talaren i detaljen: *ny*, *fryst* eller *ingen*.
+- Fångsten och driftlarmet är orörda, eftersom de anropar `olycksfacit_k()` som förut.
+- Storstädernas punkter läses som förut ur den nyas stadslogg; den frysta saknar en sådan (§12.3).
+- Prov: ett prov utan databas att kopiorna är ord för ord, och integrationsprovet #856 med fyra fall i en transaktion som rullas tillbaka
+  (den nyas timme gammal, båda gamla, den nyas färsk, och beslutet tillbaka till den frysta).
+
+**Avvikelse funnen samtidigt:** båda kandidaterna saknade en färsk timme omkring 07:00–07:45 UTC 12/11 och 13/11. K var då tyst i appen.
+Den frystas reserv startade del A 06:43, men timmen räknades först i nästa ordinarie del B 07:43. Det är inte ändrat här.
+
+**Kvar:**
+1. Sammanslagningen.
+2. `sql/112` med DB-knappen.
+3. Beviset: den första K-raden i driften med talaren i detaljen.
+
+**Alternativen som inte valdes:** att läsa båda kandidaterna och kalla olyckan varnad om någon av dem varnade. Det hade räknat varningar som
+appen inte gav.
+
+**Stomdokument:** MAT 3 — olycksfacits K-lager med den kandidat som talade (TROSKLAR-OLYCKSFACIT §12)
