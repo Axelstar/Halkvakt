@@ -15986,3 +15986,40 @@ och regel L (§7) är uppfylld. Texten som signerades är filen på grenen `clau
 avse §11 utan en fråga.
 
 **Stomdokument:** MAT 3 — olycksfacits nya upplägg (TROSKLAR-OLYCKSFACIT §11) signerat av Bengt och Axel
+
+## #854 (13/11 2026) Den nya kandidatens reserv för del A: tre försök efter slotten :28, efter MET:s morgonfel 11–13/11 (kort #343)
+
+**Beslutet.** Bengt 13/11, på frågan om att trycka om `ny-kandidat-fysik` och bygga en efterkörning: *"Ja, båda"*. Frågan kom efter
+mätvaktens ärende #1560 och Bengts *"jag är bekymrad över de problem vi har hos met. Vad kan man göra åt det?"*.
+
+**Det som hänt.**
+- MET:s THREDDS svarade HTTP 500 (*"datasetTracker_2 is not active"*) varje morgon 11–13/11, mellan omkring 06:10 och 06:50 UTC.
+- Den frystas del A föll 06:13 alla tre morgnarna. Dess reserv på :43 räddade 13/11, men inte 12/11, då också försöket 06:43 föll.
+- Den nyas del A, med en enda slott 06:28, föll 12/11 och 13/11 och hade ingen reserv.
+- 13/11 saknade därför den nya kandidaten PH från 06:00. Småvägsröstens timme hoppades av samma skäl ("ingen PH för timmen").
+- Appen talade med den frysta, eftersom bytet faller tillbaka när den nyas timme är gammal (`talande_timme()`, sql/070).
+- Sedan 23/10 har 11 av 94 körningar av den frystas del A och 3 av 83 av den nyas fallit på MET.
+
+**Det som byggdes.**
+- `scripts/kandidat-reserv.ts` får slottens minut och antalet försök som parametrar. Den frysta är oförändrad: :13 och två försök.
+- `ny-kandidat-timme.yml` frågar reserven med `--slott-min 28 --forsok 3` när PH saknas för den pågående timmen:
+  - *starta*: del A startas igen;
+  - *trasig*: varning;
+  - *hoppa*: en rad i sammanfattningen.
+
+  Timmen loggas som tyst som förut och före reserven. Jobbet förblir grönt, och det får `actions: write`.
+- Självtestet har fyra nya fall för den nya kandidaten, bland dem 12/11, där det tredje försöket 07:47 startar.
+
+**Claudes metodval:** tre försök för den nya och inte för den frysta. Den frysta har talat med sin reserv sedan 20/10 och rörs inte utan ett
+eget beslut, även om 12/11 visar att den hade haft nytta av ett tredje försök.
+
+**Kvar:** den första reserven i driften, alltså en sammanfattning med *RESERV* i `ny-kandidat-timme` och en lyckad del A efteråt.
+Mätningen av MET:s filnedladdning (`fileServer`) under morgonfönstret föreslås efter detta.
+
+**Alternativen som inte valdes:**
+- Längre väntan i hämtningen (`FORSOK_HAMTA`): MET:s fönster är omkring 40 minuter, och en körning som väntar så länge håller MET:s enda
+  förbindelse.
+- Ett pulsjobb som alltid startar del A igen 30 minuter efter slotten: det startar en körning också när den första lyckades.
+- Att låta K tala på förra körningen: det är ett beslut om fysiken för Bengt och Axel i kuvösen.
+
+**Stomdokument:** SYS 2 — kandidatens kedja: reserven för den nya kandidatens del A efter MET:s morgonfel
