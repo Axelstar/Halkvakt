@@ -1,0 +1,39 @@
+{
+  "typ": "smhi",
+  "nyckel": "smhi:Snöfall:Skellefteå, norrut till länsgränsen:RED",
+  "etikett": "SMHI-varning",
+  "rubrik": "Varning för väglaget",
+  "underrad": "Halkläget kl. 05:00",
+  "varning": {
+    "niva": "Röd varning",
+    "event": "Snöfall",
+    "omrade": "Skellefteå, norrut till länsgränsen",
+    "fler": 2
+  },
+  "text": "SMHI har utfärdat en röd varning för snöfall i Skellefteå, norrut till länsgränsen. Det finns 2 varningar till för snö eller halka.\n\nHalkläget kl. 05:00:\nVästra Götaland: halka på 54 av 133 vägavsnitt, 30 stationer under noll, kallast −1,1 °C vid 1620 Marka Fjärryta.\nNorrbotten: halka på 50 av 58 vägavsnitt, 56 stationer under noll, kallast −16,1 °C vid Kätkesuando.\nVästerbotten: halka på 44 av 44 vägavsnitt, 43 stationer under noll, kallast −5,1 °C vid Kåtaviken.\nVärmland: halka på 43 av 52 vägavsnitt, 35 stationer under noll, kallast −2,7 °C vid Lisskogsåsen.\nDalarna: halka på 36 av 38 vägavsnitt, 22 stationer under noll, kallast −3,0 °C vid Högfjällshotellet, 2 olyckor.\n\nLäget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från SMHI och Trafikverkets öppna data.\n\n#halka #väglag #VästraGötaland #Norrbotten #Västerbotten #Värmland #Dalarna #halkvakt",
+  "textIg": "SMHI har utfärdat en röd varning för snöfall i Skellefteå, norrut till länsgränsen. Det finns 2 varningar till för snö eller halka.\n\nHalkläget kl. 05:00:\nVästra Götaland: halka på 54 av 133 vägavsnitt, 30 stationer under noll, kallast −1,1 °C vid 1620 Marka Fjärryta.\nNorrbotten: halka på 50 av 58 vägavsnitt, 56 stationer under noll, kallast −16,1 °C vid Kätkesuando.\nVästerbotten: halka på 44 av 44 vägavsnitt, 43 stationer under noll, kallast −5,1 °C vid Kåtaviken.\nVärmland: halka på 43 av 52 vägavsnitt, 35 stationer under noll, kallast −2,7 °C vid Lisskogsåsen.\nDalarna: halka på 36 av 38 vägavsnitt, 22 stationer under noll, kallast −3,0 °C vid Högfjällshotellet, 2 olyckor.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone, länken finns i vår profil.\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från SMHI och Trafikverkets öppna data.\n\n#halka #väglag #VästraGötaland #Norrbotten #Västerbotten #Värmland #Dalarna #halkvakt",
+  "pass": "live",
+  "datum": "2026-11-13",
+  "generated_at": "2026-11-13T04:00:07.890Z",
+  "lan": [
+    "vastra-gotaland",
+    "norrbotten",
+    "vasterbotten",
+    "varmland",
+    "dalarna",
+    "jonkoping",
+    "ostergotland",
+    "vasternorrland",
+    "jamtland",
+    "gavleborg",
+    "sodermanland",
+    "kalmar",
+    "skane",
+    "stockholm",
+    "blekinge",
+    "kronoberg",
+    "halland",
+    "vastmanland",
+    "orebro"
+  ]
+}
