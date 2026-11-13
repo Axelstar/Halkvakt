@@ -16271,3 +16271,29 @@ smal regel finns (KONTAKTREGELN).
 
 **Stomdokument:** BED §4.2 — viltsträckan är ett nytt spår som väntar på filen ur Lastkajen
 
+
+## #861 (13/11 2026) Meta-annonserna når Android: en Android-uppsättning per län, först i tre län
+
+Google Play är ute (produktion sedan 10/11), och Axel vill att Meta-annonserna når Android-telefoner också (13/11: *"shall we start
+with a few counties so we know it works fine?"*).
+
+**Beslut.**
+- En appkampanjs annonsuppsättning främjar en butik, så Android får egna uppsättningar i samma kampanj, *Län · <län> · Android*:
+  Android-telefoner, länk och främjat objekt till Google Play, samma region, placeringar och visningsfönster som länets
+  iPhone-uppsättning. iPhone-uppsättningarna rörs inte (en ändring av dem startar om leveransen, DECISIONS #754).
+- Pilot i tre län: Dalarna, Västernorrland och Jämtland (`ANDROID_LAN` i annonsstyrning.mjs). Breddas när piloten gått.
+- Samma regel och samma bild som iPhone: länet räknas lika, dagens annons ritas ur samma mall med Googles officiella svenska märke
+  *Ladda ned på Google Play* (oförändrad fil, `meta-mall/google-play-badge-sv.png`) i stället för App Store-märket, och texten slutar
+  *Gratis för Android.* Reservannonsen likaså.
+- Play-länken bär `utm_campaign=meta-<län>` i referrer, så Play Console räknar installationer per län som App Store Connect gör med `ct`.
+- Meta-appen Halkvakt Ads har plattformen Android (paket se.halkvakt.app, Google Play) sedan 13/11 kväll. Klassnamnet där
+  (`se.halkvakt.app.MainActivity`) krävs av formuläret och påverkar inte annonserna.
+- Budgeten är densamma, 6 000 kr för kampanjen. Android-uppsättningarna konkurrerar om den på samma ordning (#762).
+
+**Alternativ som inte valdes:**
+- Att lägga Android i iPhone-uppsättningarna. Meta tillåter en butik per uppsättning i en appkampanj.
+- Att bygga uppsättningarna för hand i Ads Manager. Skriptet lägger upp två nya annonser per län och dygn och pausar län utan halka;
+  handbyggda uppsättningar skulle stå med samma annons hela dygnet i varje län.
+- Alla 21 län på en gång. En pilot visar att Meta godkänner annonserna och att länken landar rätt innan budgeten delas på fler.
+
+**Stomdokument:** inga — marknadsföringen beskrivs inte i stomdokumenten
