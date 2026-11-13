@@ -20,6 +20,9 @@
 //   gh run list --workflow kandidat-fysik.yml --limit 10 --json status,conclusion,createdAt \
 //     | node --experimental-strip-types scripts/kandidat-reserv.ts [--nu 2026-10-20T07:43:00Z] [--slott-min 28] [--forsok 3]
 //     skriver "<beslut>\t<skäl>", beslut = starta | hoppa | trasig
+//   node --experimental-strip-types scripts/kandidat-reserv.ts --minuter-efter-slott 2026-11-13T06:47:12Z [--slott-min 28]
+//     skriver hur många hela minuter efter den senaste slotten tiden ligger (TIMMEN DIREKT, DECISIONS #857: blir del A klar efter
+//     slottens ordinarie del B startar flödet del B direkt)
 //   node --experimental-strip-types scripts/kandidat-reserv.ts --sjalvtest
 import { readFileSync } from "node:fs";
 
@@ -42,6 +45,9 @@ export function slott(nu: Date, slottMin = SLOTT_MIN): Date {
 }
 
 const hm = (iso: string) => iso.slice(5, 16).replace("T", " ");
+
+/** Hela minuter från den senaste slotten till `nu` (TIMMEN DIREKT, #857). */
+export const minuterEfterSlott = (nu: Date, slottMin = SLOTT_MIN): number => Math.floor((nu.getTime() - slott(nu, slottMin).getTime()) / 60_000);
 
 export function besluta(korningar: Korning[], nu: Date, slottMin = SLOTT_MIN, forsok = FORSOK): Beslut {
   const s = slott(nu, slottMin);
@@ -90,6 +96,10 @@ function sjalvtest(): void {
   if (besluta([k("2026-11-12T06:48:00Z", "completed", "failure"), k("2026-11-12T06:13:01Z", "completed", "failure")], nu("2026-11-12T07:43:00Z")).beslut !== "hoppa")
     fel("den frysta har fortfarande två försök");
   if (slott(nu("2026-11-13T06:20:00Z"), 28).toISOString() !== "2026-11-13T00:28:00.000Z") fel("den nyas slott före 06:28");
+  // Timmen direkt (#857): minuterna efter slotten när del A blir klar; del B startas när de passerat slottens ordinarie del B.
+  const sen: [string, number, number][] = [["2026-11-13T06:13:05Z", 13, 0], ["2026-11-13T06:43:20Z", 13, 30], ["2026-11-13T06:28:01Z", 28, 0],
+    ["2026-11-13T06:47:40Z", 28, 19], ["2026-11-13T07:46:07Z", 28, 78], ["2026-11-13T06:20:00Z", 28, 352]];
+  for (const [t, s, m] of sen) if (minuterEfterSlott(nu(t), s) !== m) fel(`minuterna efter slotten ${t} (:${s}): ${minuterEfterSlott(nu(t), s)}, väntade ${m}`);
   if (slott(nu("2026-10-20T00:05:00Z")).toISOString() !== "2026-10-19T18:13:00.000Z") fel("slotten strax efter midnatt");
   if (slott(nu("2026-10-20T12:13:00Z")).toISOString() !== "2026-10-20T12:13:00.000Z") fel("slotten på minuten");
   console.log(`✓ kandidat-reserv självtest: ${fall.length + ny.length} fall — missad slott startar, pågående och dubbelfall hoppar, lyckad utan PH är trasig, ett fall försöks om; den nya: slotten :28 och tre försök`);
@@ -101,6 +111,11 @@ if (direkt) {
   if (a[0] === "--sjalvtest") sjalvtest();
   else {
     const arg = (namn: string) => { const i = a.indexOf(namn); return i >= 0 ? a[i + 1] : undefined; };
+    if (arg("--minuter-efter-slott")) {
+      const t = new Date(arg("--minuter-efter-slott")!), s = Number(arg("--slott-min") ?? SLOTT_MIN);
+      if (Number.isNaN(t.getTime()) || !Number.isInteger(s) || s < 0 || s > 59) { console.error("ogiltig tid eller slott"); process.exit(2); }
+      console.log(minuterEfterSlott(t, s)); process.exit(0);
+    }
     const nu = arg("--nu") ? new Date(arg("--nu")!) : new Date();
     const slottMin = Number(arg("--slott-min") ?? SLOTT_MIN), forsok = Number(arg("--forsok") ?? FORSOK);
     if (!Number.isInteger(slottMin) || slottMin < 0 || slottMin > 59 || !Number.isInteger(forsok) || forsok < 1) {

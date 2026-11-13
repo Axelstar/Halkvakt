@@ -33,8 +33,11 @@
 //   node --experimental-strip-types ingest/smavagskedjan.ts lagen <punkter.json> <ut.csv>
 //   node --experimental-strip-types ingest/smavagskedjan.ts underlag <rader.csv> <antal> <punkter.json> <radar.csv.gz> <tid> <ut.csv>
 //   node --experimental-strip-types ingest/smavagskedjan.ts --sjalvtest
-import { readFileSync, writeFileSync, existsSync, mkdirSync, mkdtempSync, rmSync, readdirSync } from "node:fs";
-import { gunzipSync, gzipSync } from "node:zlib";
+import { readFileSync, writeFileSync, existsSync, mkdirSync, mkdtempSync, rmSync, readdirSync, createReadStream, createWriteStream,
+  type WriteStream } from "node:fs";
+import { gunzipSync, gzipSync, createGunzip, createGzip, type Gzip } from "node:zlib";
+import { once } from "node:events";
+import { createInterface } from "node:readline";
 import { basename, join } from "node:path";
 import { tmpdir } from "node:os";
 import { pathToFileURL } from "node:url";
@@ -84,27 +87,53 @@ export function hela(mnsv: string): string[] {
 
 /** Prognosdygnen i <dagar> delade per körning (andra kolumnen, körningens tid) till <ut>/metnordic_korning_<stämpel>.csv.gz med <rubrik>
  *  först. En rad med fel antal kolumner eller en tid som inte är en körning 00, 06, 12 eller 18 UTC är ett fel, liksom körningar med
- *  olika många rader (alla bär samma punkter och timsteg). → körningarnas stämplar i ordning. */
-export function korningar(dagar: string, ut: string, rubrik: string): string[] {
-  const kolumner = rubrik.split(",").length, per = new Map<string, string[]>();
-  for (const f of readdirSync(dagar).filter((x) => /^\d{4}-\d\d-\d\d\.csv\.gz$/u.test(x)).sort()) {
-    for (const r of gunzipSync(readFileSync(join(dagar, f))).toString("utf8").split("\n")) {
-      if (!r) continue;
-      const c = r.split(",");
-      if (c.length !== kolumner) throw new Error(`${f}: en rad med ${c.length} kolumner, väntat ${kolumner}`);
-      const m = /^(\d{4})-(\d\d)-(\d\d)T(00|06|12|18):00:00Z$/u.exec(c[1]);
-      if (!m) throw new Error(`${f}: körningens tid ${c[1].slice(0, 30)} är ingen körning`);
-      const s = `${m[1]}${m[2]}${m[3]}T${m[4]}Z`;
-      let l = per.get(s); if (!l) per.set(s, (l = []));
-      l.push(r);
-    }
-  }
-  const storlek = new Set([...per.values()].map((l) => l.length));
-  if (storlek.size > 1) throw new Error(`körningarna har olika många rader: ${[...storlek].sort((a, b) => a - b).join(", ")}`);
+ *  olika många rader (alla bär samma punkter och timsteg). → körningarnas stämplar i ordning.
+ *  RAD FÖR RAD (13/11): dygnsfilerna läses som en ström och varje körning skrivs till sin fil under tiden. Förut lästes ett helt dygn som
+ *  en sträng, och den första prognosveckan i backtesten föll 13/11 08:57 på Nodes gräns för en sträng (512 MB). Vid ett fel tas
+ *  körningsfilerna bort, så att inget halvt skrivet ligger kvar. */
+export async function korningar(dagar: string, ut: string, rubrik: string): Promise<string[]> {
+  const kolumner = rubrik.split(",").length;
+  const per = new Map<string, { gz: Gzip; fil: WriteStream; n: number; buf: string[]; byte: number }>();
   mkdirSync(ut, { recursive: true });
-  const stamplar = [...per.keys()].sort();
-  for (const s of stamplar) writeFileSync(join(ut, `metnordic_korning_${s}.csv.gz`), gzipSync(rubrik + "\n" + per.get(s)!.join("\n") + "\n"));
-  return stamplar;
+  // Raderna samlas per körning och skrivs i bitar om omkring 4 MB: en skrivning per rad var för långsam (351 s för ett dygn på 662 MB).
+  const tom = async (k: { gz: Gzip; buf: string[]; byte: number }) => {
+    if (!k.buf.length) return;
+    const ok = k.gz.write(k.buf.join("")); k.buf = []; k.byte = 0;
+    if (!ok) await once(k.gz, "drain");
+  };
+  const stang = async () => {
+    for (const k of per.values()) { await tom(k); k.gz.end(); if (!k.fil.closed) await once(k.fil, "close"); }
+  };
+  try {
+    for (const f of readdirSync(dagar).filter((x) => /^\d{4}-\d\d-\d\d\.csv\.gz$/u.test(x)).sort()) {
+      const rl = createInterface({ input: createReadStream(join(dagar, f)).pipe(createGunzip()), crlfDelay: Infinity });
+      for await (const r of rl) {
+        if (!r) continue;
+        const c = r.split(",");
+        if (c.length !== kolumner) throw new Error(`${f}: en rad med ${c.length} kolumner, väntat ${kolumner}`);
+        const m = /^(\d{4})-(\d\d)-(\d\d)T(00|06|12|18):00:00Z$/u.exec(c[1]);
+        if (!m) throw new Error(`${f}: körningens tid ${c[1].slice(0, 30)} är ingen körning`);
+        const s = `${m[1]}${m[2]}${m[3]}T${m[4]}Z`;
+        let k = per.get(s);
+        if (!k) {
+          const gz = createGzip(), fil = createWriteStream(join(ut, `metnordic_korning_${s}.csv.gz`));
+          gz.pipe(fil); gz.write(rubrik + "\n");
+          per.set(s, (k = { gz, fil, n: 0, buf: [], byte: 0 }));
+        }
+        k.n++;
+        k.buf.push(r + "\n"); k.byte += r.length + 1;
+        if (k.byte >= 4_000_000) await tom(k);
+      }
+    }
+    await stang();
+    const storlek = new Set([...per.values()].map((k) => k.n));
+    if (storlek.size > 1) throw new Error(`körningarna har olika många rader: ${[...storlek].sort((a, b) => a - b).join(", ")}`);
+    return [...per.keys()].sort();
+  } catch (e) {
+    await stang().catch(() => {});
+    for (const s of per.keys()) rmSync(join(ut, `metnordic_korning_${s}.csv.gz`), { force: true });
+    throw e;
+  }
 }
 
 export type Bit = { typ: "stationer" | "analys" | "prognos"; fran: string; till: string };
@@ -208,10 +237,11 @@ export function underlagBakat(rader: string, antal: number, pf: Punktfil, radar:
   return underlagCsv(varnande(lasRader(rader), punkter, radarPerBit(rad, nu)));
 }
 
-function sjalvtest(): number {
+async function sjalvtest(): Promise<number> {
   const fel: string[] = [], k = (ok: boolean, namn: string) => { if (!ok) fel.push(namn); };
   const rot = mkdtempSync(join(tmpdir(), "smavagskedjan-"));
   const vagra = (f: () => unknown) => { try { f(); return false; } catch { return true; } };
+  const vagraA = async (f: () => Promise<unknown>) => { try { await f(); return false; } catch { return true; } };
   try {
     // historik: raderna går till sin del, varje del får varje dygn, och en okänd punkt fäller.
     for (const [i, s] of [[1, "s00000\ns00001"], [2, "s00002"]] as const) {
@@ -252,14 +282,15 @@ function sjalvtest(): number {
     writeFileSync(join(pd, "2024-01-01.csv.gz"), gzipSync([rad("s1", "2024-01-01T12:00:00Z", 0), rad("s2", "2024-01-01T12:00:00Z", 0),
       rad("s1", "2024-01-01T18:00:00Z", 0), rad("s2", "2024-01-01T18:00:00Z", 0)].join("\n") + "\n"));
     writeFileSync(join(pd, "2024-01-02.csv.gz"), gzipSync([rad("s1", "2024-01-02T00:00:00Z", 0), rad("s2", "2024-01-02T00:00:00Z", 0)].join("\n") + "\n"));
-    const st = korningar(pd, join(rot, "pk"), RUB);
+    const st = await korningar(pd, join(rot, "pk"), RUB);
     k(st.join() === "20240101T12Z,20240101T18Z,20240102T00Z", `körningarnas stämplar: ${st}`);
     k(las(join(rot, "pk", "metnordic_korning_20240101T18Z.csv.gz")) === `${RUB}\n${rad("s1", "2024-01-01T18:00:00Z", 0)}\n${rad("s2", "2024-01-01T18:00:00Z", 0)}\n`,
       "körningsfilen: rubriken och körningens rader");
     writeFileSync(join(pd, "2024-01-03.csv.gz"), gzipSync(rad("s1", "2024-01-03T06:00:00Z", 0) + "\n"));
-    k(vagra(() => korningar(pd, join(rot, "pk2"), RUB)), "körningar med olika många rader vägras");
+    k(await vagraA(() => korningar(pd, join(rot, "pk2"), RUB)), "körningar med olika många rader vägras");
+    k(!existsSync(join(rot, "pk2", "metnordic_korning_20240103T06Z.csv.gz")), "ingen halv körningsfil står kvar efter ett fel");
     writeFileSync(join(pd, "2024-01-03.csv.gz"), gzipSync([rad("s1", "2024-01-03T07:00:00Z", 0), rad("s2", "2024-01-03T07:00:00Z", 0)].join("\n") + "\n"));
-    k(vagra(() => korningar(pd, join(rot, "pk3"), RUB)), "en tid som inte är en körning vägras");
+    k(await vagraA(() => korningar(pd, join(rot, "pk3"), RUB)), "en tid som inte är en körning vägras");
 
     // bitar: nycklarna för analysveckorna som hämtades 12/11 är oförändrade; stationerna från 30 augusti; dygnet 47 före för sig.
     const bb = bitar("2024-01-01", "2024-03-31"), typ = (t: string) => bb.filter((b) => b.typ === t);
@@ -318,7 +349,7 @@ function sjalvtest(): number {
 if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {
   const [kmd, ...a] = process.argv.slice(2);
   try {
-    if (kmd === "--sjalvtest") process.exit(sjalvtest());
+    if (kmd === "--sjalvtest") process.exit(await sjalvtest());
     else if (kmd === "historik" && a.length === 4) {
       const lista = readFileSync(a[0], "utf8").split("\n").filter(Boolean);
       delaHistorik(lista, a[1], Number(a[2]), a[3]);
@@ -326,7 +357,7 @@ if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {
     } else if (kmd === "korningar" && a.length === 2) {
       // Rubriken ur kuvösens prognoshämtning, som ligger ovanpå i flödet (DECISIONS #768); självtestet ovan klarar sig utan den.
       const { RUBRIK } = await import(pathToFileURL(join(process.cwd(), "kuvos", "metnordic-prognos.ts")).href);
-      const st = korningar(a[0], a[1], RUBRIK);
+      const st = await korningar(a[0], a[1], RUBRIK);
       console.log(st.length ? "körningarna: klart" : "körningarna: inga"); if (!st.length) process.exit(1);
     } else if (kmd === "hela" && a.length === 1) {
       const b = hela(a[0]);

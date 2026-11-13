@@ -18,6 +18,7 @@ on:
 concurrency: { group: thredds-metnordic-live, cancel-in-progress: false }
 permissions:
   contents: write
+  actions: write     # timmen direkt: körningens start och del B (#857)
 jobs:
   fysik:
     runs-on: ubuntu-latest
@@ -104,6 +105,21 @@ jobs:
       - name: Till tabellen kandidat_ph
         env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
         run: node --experimental-strip-types ingest/kandidat-db.ts skriv-ph "ut/kandidat_ph_$STAMP.csv.gz" 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+      # TIMMEN DIREKT (DECISIONS #857, Bengt 13/11: "vi gör 1 nu"): blir del A klar efter slottens ordinarie del B (:43), som en
+      # reserv, en körning för hand eller en körning som väntat länge på MET, startas del B för den pågående timmen direkt, i stället för
+      # vid nästa :43. Efter reserven 06:43 räknades timmen förut först 07:43, och K var tyst i appen 07:00–07:45 12/11 och 13/11. En
+      # ordinarie körning som blir klar före :43 rör ingenting här. En dubbel räkning av timmen är ofarlig.
+      - name: Timmen direkt efter en sen körning
+        if: ${{ success() && inputs.stamp == '' }}
+        shell: bash
+        run: |
+          M=$(node --experimental-strip-types scripts/kandidat-reserv.ts --minuter-efter-slott "$(date -u +%FT%TZ)" --slott-min 13 2>/dev/null) || M=""
+          if [ -n "$M" ] && [ "$M" -ge 30 ]; then
+            gh workflow run kandidat-timme.yml && echo "**Timmen direkt:** del A blev klar $M minuter efter slotten, efter den ordinarie del B; del B är startad för den pågående timmen." | tee -a "$GITHUB_STEP_SUMMARY" \
+              || echo "::warning::del B gick inte att starta — timmen räknas vid nästa :43"
+          else
+            echo "Timmen direkt: del A blev klar ${M:-?} min efter slotten, del B räknar vid :43."
+          fi
       - uses: actions/upload-artifact@v4
         if: always()
         with: { name: "kandidat-fysik-${{ github.run_id }}", path: ut/, retention-days: 3, if-no-files-found: ignore }
