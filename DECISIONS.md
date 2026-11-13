@@ -16185,3 +16185,39 @@ på CarPlays hemskärm, och vakten startar inte av att appen öppnas där (DECIS
 
 **Stomdokument:** APP 4 — iPhone-bygget utan CarPlay tills vidare
 
+## #859 (13/11 2026) Småvägsrösten: kedjan startas igen när timfilen saknas (kort #647)
+
+**Beslutet.** Bengt 13/11: *"Ja, bygg reserven"*, på förslaget att småvägsröstens kedja får en reserv som kandidatens (#854, #857).
+
+**Varför.**
+- Kedjan (`kuvos-smavag.yml`) startas av pulsklockan vid R + 51 minuter, och dess timfil för körningen R bär blocket R+6 … R+11. Kedjan
+  frågar MET:s katalog i en halvtimme och ger sedan upp, och ett fel hos MET fäller den. Ingenting startade den igen.
+- 13/11 00–05 UTC saknade småvägsrösten timfil, eftersom körningen 18Z 12/11 aldrig räknades vid bytet till pulsklockan (#849).
+  Timjobbet föll varje timme med *"timfilen för timmen saknas i hinken"*.
+- MET:s THREDDS föll varje morgon 11–13/11 mellan omkring 06:10 och 06:50 UTC. Kedjan startar 06:51, och 13/11 gick den igenom.
+- Kedjans prov före påslaget (halkvakt-kuvos F57 val 12) kräver fullständiga timmar i minst 90 % av 48 timmar. En förlorad körning
+  kostar sex timmar.
+
+**Det som är byggt.**
+- `scripts/smavag-reserv.ts` beslutar för den senaste slotten. Finns timfilen är kedjan klar. Annars startas kedjan igen 45–269 minuter
+  efter slotten, högst tre gånger: slottens kedja och två reserver. En kedja som lyckades utan timfil räknas som ett försök.
+- Inget startas när kedjan pågår eller väntar, eller när en annan körning i MET-kön (`kuvos-ny-kandidat-met`: kuvos-stad och
+  kuvos-pilot) kör eller väntar. En ny väntande körning hade då avbrutit den som väntar.
+- Efter 269 minuter hinner en kedja inte starta före R + 6, och då räknar den nästa körning i stället.
+- Jobbet `reserv` i `kuvos-smavag-timme.yml` frågar varje timme, oberoende av timjobbet. Det läser bara om timfilen finns
+  (`ingest/hinken.ts finns`) och skriver bara beslutet och körningens stämpel (#768). Ett gh eller en hink som inte svarar startar
+  ingenting.
+- Självtestet har 14 fall och fyra stämplar och körs i ci. Sex motprov fälldes av det. Jobbets skal provades lokalt med påhittade svar
+  från gh och hinken i sex fall.
+- Kontraktsgrinden vaktar slottens minut i pulsklockan och i reserven.
+- En dubbel kedja är ofarlig: timfilen laddas upp med `--finns-ok` och skrivs aldrig över.
+
+**Inte byggt:** morgonens timmar utan PH (13/11 06–07), när den nya kandidatens del A föll på MET. De tas av kandidatens reserv och
+timmen direkt (#854, #857), som prövas första gången 14/11 på morgonen.
+
+**Alternativen som inte valdes:**
+- En andra puls i pulsklockan, till exempel R + 2 h 21 min. Den kräver en migration och startar kedjan också när timfilen finns.
+- Att kedjan väntar längre på MET. Den håller då MET-kön och kan krocka med kuvos-stad.
+
+**Stomdokument:** SYS — småvägsröstens kedja får en reserv när timfilen saknas
+

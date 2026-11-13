@@ -154,6 +154,7 @@ jobs:
           node --experimental-strip-types ingest/smavagskedjan.ts --sjalvtest      # småvägsröstens kedja: historiken per del (#828)
           node --experimental-strip-types ingest/smavag-live-db.ts --sjalvtest     # småvägsröstens timrader till databasen (#828)
           node --experimental-strip-types scripts/kandidat-reserv.ts --sjalvtest   # reserven för del A (20/10)
+          node --experimental-strip-types scripts/smavag-reserv.ts --sjalvtest     # reserven för småvägsröstens kedja (DECISIONS #859)
           node --experimental-strip-types scripts/matningar/kuvos-trafik-per-band-2026-10-08.ts --sjalvtest
           node --experimental-strip-types scripts/matningar/kuvos-fysik-givarvakt-2026-10-08.ts --sjalvtest
           node --experimental-strip-types scripts/matningar/kuvos-kallkartan-2026-10-09.ts --sjalvtest
