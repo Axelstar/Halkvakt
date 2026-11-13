@@ -584,6 +584,8 @@ halv minut och startar vakten vid 15 km/h. Första resan efter installation, nä
 väcks den i stället av iOS större platsbyten (Apple anger ungefär 500 meter). Kostar nästan inget batteri.
 Inget mer att ställa in. Kan stängas av under Inställningar → *Vaknar själv när du kör*.
 
+*(CarPlay är avslaget i bygget från 0.4.0 (49), DECISIONS #858, och stycket nedan gäller igen när det slås på.)*
+
 **iPhone — vakten startar när Halkvakt öppnas i CarPlay (11/11, DECISIONS #840, kort #380):** öppnas Halkvakt på bilens skärm startar
 vakten, om platsen redan är tillåten, *Alltid* eller *Vid användning*, eftersom CarPlay räknas som att appen är öppen. Ingen fråga om
 platsen visas på telefonen under körningen. Vakten startar inte om du stoppat den för hand de senaste tio minuterna, och inte om
@@ -758,6 +760,7 @@ du var just då."* (Axels villkor för ja:et, DECISIONS #267.)
 | 0.4.0 (43) | 10/11 | **Facitknapparna på Redo.** (kort #998): ordet syns i den valda knappen, och raden *SENAST SAGT · tid* med varningens text står ovanför *Stämde* och *Stämde inte*, så att det framgår vilken varning svaret gäller. |
 | 0.4.0 (44) | 11/11 | **En besvarad varning frågas inte om igen** (kort #999): *Stämde / Stämde inte* står kvar med *Tack* medan startskärmen visas och är borta nästa gång den visas. Gäller båda apparna. |
 | 0.4.0 (48) | 13/11 | **Nya introduktionen** (kort #651, DECISIONS #851): sex steg i stället för fyra sidor. Före varje ruta från iOS står vilken knapp som ska väljas, och varje svar har sitt eget läge. Alla fem varningarna visas, med fartkamerorna i rubriken. *Testa rösten* finns bara i Inställningar. Bara iPhone. |
+| 0.4.0 (49) | 13/11 | **Utan CarPlay** (DECISIONS #858): bygget till granskningen har CarPlay avslaget. Rösten hörs som förut; varningen visas inte på bilens skärm, och vakten startar inte av att Halkvakt öppnas där. Dessutom står sidan om *Alltid* i introduktionen kvar bakom iOS ruta tills den är besvarad. |
 | Android (CI) | 16/9 → | Facitknappen och betatest-brytaren (S4, DECISIONS #202), Efter resan (20/9), viltvarningen på Trafikverkets djur (22/9), omladdningsloopen lagad och reglaget (26/9), missarna (26/9). **0.3.9 (18)**, samma nummer som iOS (DECISIONS #377). |
 
 Android bar versionsnumret 0.3.1 (4) från 31/8 till 26/9, fast CI byggde den ur main med skinnet v3, facitknappen
