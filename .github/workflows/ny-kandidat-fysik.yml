@@ -25,7 +25,7 @@ on:
 concurrency: { group: ny-kandidat-fysik, cancel-in-progress: false }
 permissions:
   contents: read
-  actions: read      # den frystas del A:s körningar, för väntan på MET
+  actions: write     # den frystas del A:s körningar, för väntan på MET; timmen direkt startar del B (#857)
 jobs:
   fysik:
     runs-on: ubuntu-latest
@@ -229,6 +229,21 @@ jobs:
         run: |
           set -o pipefail
           node --experimental-strip-types ingest/smavagspunkter-db.ts ladda 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+      # TIMMEN DIREKT (DECISIONS #857, Bengt 13/11: "vi gör 1 nu"): blir del A klar efter slottens ordinarie del B (:47), som en
+      # reserv, en körning för hand eller en körning som väntat länge på MET, startas del B för den pågående timmen direkt, i stället för
+      # vid nästa :47. Efter reserven 06:43 räknades timmen förut först 07:43, och K var tyst i appen 07:00–07:45 12/11 och 13/11. En
+      # ordinarie körning som blir klar före :47 rör ingenting här. En dubbel räkning av timmen är ofarlig.
+      - name: Timmen direkt efter en sen körning (och småvägsröstens timme efter den nyas del B)
+        if: ${{ success() && env.FLAGGA == 'på' && inputs.stamp == '' }}
+        shell: bash
+        run: |
+          M=$(node --experimental-strip-types scripts/kandidat-reserv.ts --minuter-efter-slott "$(date -u +%FT%TZ)" --slott-min 28 2>/dev/null) || M=""
+          if [ -n "$M" ] && [ "$M" -ge 19 ]; then
+            gh workflow run ny-kandidat-timme.yml && echo "**Timmen direkt:** del A blev klar $M minuter efter slotten, efter den ordinarie del B; del B är startad för den pågående timmen." | tee -a "$GITHUB_STEP_SUMMARY" \
+              || echo "::warning::del B gick inte att starta — timmen räknas vid nästa :47"
+          else
+            echo "Timmen direkt: del A blev klar ${M:-?} min efter slotten, del B räknar vid :47."
+          fi
       - name: Flaggan av — ingenting skrivs
         if: env.FLAGGA != 'på'
         run: echo "**Flaggan är av** (kuvos/ny-kandidat-skugga.json) — PH står bara i artefakten, ingenting är skrivet till databasen." | tee -a "$GITHUB_STEP_SUMMARY"
