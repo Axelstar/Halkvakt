@@ -86,21 +86,16 @@ struct OnboardingView: View {
 
     private var valkommen: some View {
         Sida(knapp: "Visa mig", action: { ga(till: .varningarna) }, lank: "Hoppa över", lankAction: { ga(till: .klar) }) {
+            // Malins läsning 13/11: först hur det fungerar, sedan vad man ska göra. Platsen står där den slås på.
             Rubrik(titel: "Rösten som varnar innan du är där",
-                   text: "Halkvakt säger till i bilens högtalare om faror på vägen framför dig.")
-            Etikett(text: "Tre steg, ungefär en minut")
+                   text: "Halkvakt säger till med rösten om faror på vägen framför dig.")
+            Etikett(text: "Så fungerar det")
             RowPanel {
-                StegRad(nummer: 1, titel: "Se vad vakten varnar för")
-                StegRad(nummer: 2, titel: "Ge appen två tillstånd")
-                StegRad(nummer: 3, titel: "Kör. Resten sköter vakten.", divider: false)
+                StegRad(nummer: 1, titel: "Du kör som vanligt", text: "Med vilken kartapp du vill, eller ingen alls.")
+                StegRad(nummer: 2, titel: "Halkvakt håller koll på vägen framför dig", text: "Halka, fartkameror, olyckor, vilt och frysrisk.")
+                StegRad(nummer: 3, titel: "Rösten säger till innan du är framme",
+                        text: "I bilens högtalare om telefonen är kopplad till bilen, annars i telefonens.", divider: false)
             }
-            Etikett(text: "Din plats")
-            VStack(alignment: .leading, spacing: 6) {
-                Text(Self.platsText).font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text)
-                // Kort #357 (DECISIONS #616): introduktionen säger att resor kan sparas, och var.
-                Text("Sparar du resor som favoriter stannar de också i telefonen.").font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2)
-            }
-            .padding(.horizontal, 4)
             Etikett(text: "Bra att veta")
             // Ansvaret (kort #648, DECISIONS #830), en gång, innan vakten används.
             Text("Halkvakt är ett stöd, inte en garanti. Den varnar inte överallt och kan ha fel. Kör alltid efter väglaget.")
@@ -133,8 +128,8 @@ struct OnboardingView: View {
                    text: "Rösten säger vad som ligger framför dig, ungefär 30 sekunder innan du är framme.")
             ExempelKort().padding(.top, 24)
             RowPanel {
-                StegRad(nummer: 1, titel: "Rösten i bilens högtalare", text: "Eller i telefonens, om den inte är kopplad till bilen.")
-                StegRad(nummer: 2, titel: "Gult kort i åtta sekunder", text: "Som en banner om en annan app ligger framme.")
+                StegRad(nummer: 1, titel: "Rösten säger till", text: "I bilens högtalare om telefonen är kopplad till bilen, annars i telefonens.")
+                StegRad(nummer: 2, titel: "Gult kort i åtta sekunder", text: "Syns på skärmen, vilken app du än har framme.")
                 StegRad(nummer: 3, titel: "Tyst annars", text: "Vakten talar bara när det finns något att varna för.", divider: false)
             }
             .padding(.top, 14)
@@ -146,8 +141,15 @@ struct OnboardingView: View {
         case .notDetermined:
             // Apple 5.1.1(iv), 5/10: knappen före systemdialogen får inte säga "Tillåt" — bara "Fortsätt".
             Sida(knapp: "Fortsätt", action: { guardM.requestLocationPermission() }) {
-                Rubrik(titel: "Platsen, bara i telefonen",
-                       text: "Vakten behöver veta var du är för att kunna varna. Din plats stannar i telefonen.")
+                Rubrik(titel: "Nu slår vi på vakten",
+                       text: "Telefonen ställer två frågor. Den första gäller platsen: vakten behöver veta var du är för att kunna varna.")
+                Etikett(text: "Din plats")
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(Self.platsText).font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text)
+                    // Kort #357 (DECISIONS #616): introduktionen säger att resor kan sparas, och var.
+                    Text("Sparar du resor som favoriter stannar de också i telefonen.").font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2)
+                }
+                .padding(.horizontal, 4)
                 Etikett(text: "I nästa ruta från iOS")
                 IosVal(rader: ["Tillåt en gång", "Tillåt när appen används", "Tillåt inte"], vald: 1)
                 Fot(text: "Sedan frågar iOS en gång till. Vi visar vad du väljer då också.")
@@ -155,7 +157,7 @@ struct OnboardingView: View {
         case .authorizedWhenInUse where !askedAlways:
             Sida(knapp: "Fortsätt", action: { askedAlways = true; guardM.requestAlwaysUpgrade() }) {
                 Rubrik(titel: "Bra. En ruta till: Alltid",
-                       text: "Med Alltid startar vakten själv när du kör. Utan det öppnar du appen och trycker Starta vakten före varje resa.")
+                       text: "Med Alltid startar vakten själv när du kör. Du behöver inte öppna appen före resan.")
                 Etikett(text: "I nästa ruta från iOS")
                 IosVal(rader: ["Behåll Endast när appen används", "Ändra till Tillåt alltid"], vald: 1)
                 Fot(text: "Platsen stannar i telefonen, även med Alltid.")
@@ -163,11 +165,11 @@ struct OnboardingView: View {
         case .authorizedWhenInUse:
             Sida(knapp: "Fortsätt", action: { ga(till: .notiserna) }, lank: "Ändra till Alltid", lankAction: oppnaInstallningar) {
                 Rubrik(titel: "Du startar vakten själv",
-                       text: "Platsen står på När appen används. Det fungerar, men vakten vaknar inte av sig själv när du kör.")
+                       text: "Halkvakt varnar precis som vanligt. Du öppnar bara appen och trycker Starta vakten före varje resa.")
                 Etikett(text: "Så blir det")
                 RowPanel {
-                    StegRad(bock: true, titel: "Varningar när vakten är på", text: "Tryck Starta vakten före resan.")
-                    StegRad(bock: false, titel: "Självstart när du kör", text: "Kräver att platsen står på Alltid.", marke: "Av", divider: false)
+                    StegRad(bock: true, titel: "Alla varningar, när vakten är på", text: "Öppna Halkvakt och tryck Starta vakten före resan.")
+                    StegRad(bock: false, titel: "Självstart när du kör", text: "Vill du slippa trycka? Ändra platsen till Alltid.", marke: "Av", divider: false)
                 }
             }
         case .authorizedAlways:

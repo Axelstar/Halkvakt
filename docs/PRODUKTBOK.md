@@ -225,35 +225,37 @@ Sex steg (ombyggd 13/11, DECISIONS #851). Överst till höger står var du är: 
 Före varje ruta från iOS står vilken knapp du ska välja, och varje svar har sitt eget läge. Allt går att ändra senare i
 Inställningar, och introduktionen kan visas igen därifrån.
 
-1. **Välkommen** — *"Rösten som varnar innan du är där"*, *"Halkvakt säger till i bilens högtalare om faror på vägen framför
-   dig."* Under *TRE STEG, UNGEFÄR EN MINUT*: *Se vad vakten varnar för*, *Ge appen två tillstånd*, *Kör. Resten sköter vakten.*
-   Under *DIN PLATS*: *"Din plats stannar i telefonen. Appen hämtar samma vägdata till alla och jämför med var du är, i din
-   telefon. Inget konto behövs."* och *"Sparar du resor som favoriter stannar de också i telefonen."* Under *BRA ATT VETA*:
-   *"Halkvakt är ett stöd, inte en garanti. Den varnar inte överallt och kan ha fel. Kör alltid efter väglaget."* Knappen
-   *Visa mig*, länken *HOPPA ÖVER* (som går till sista steget).
+1. **Välkommen** — *"Rösten som varnar innan du är där"*, *"Halkvakt säger till med rösten om faror på vägen framför dig."*
+   Under *SÅ FUNGERAR DET*: *Du kör som vanligt* (*Med vilken kartapp du vill, eller ingen alls.*), *Halkvakt håller koll på
+   vägen framför dig* (*Halka, fartkameror, olyckor, vilt och frysrisk.*) och *Rösten säger till innan du är framme* (*I bilens
+   högtalare om telefonen är kopplad till bilen, annars i telefonens.*). Under *BRA ATT VETA*: *"Halkvakt är ett stöd, inte en
+   garanti. Den varnar inte överallt och kan ha fel. Kör alltid efter väglaget."* Knappen *Visa mig*, länken *HOPPA ÖVER* (som
+   går till sista steget). Först hur det fungerar, sedan vad man gör: platsen står i steget där den slås på (13/11).
 2. **Varningarna** (steg 1 av 4) — *"Halka, fartkameror och mer"*, *"Fem slags varningar, alla påslagna från början."* Fem rader
    med ikon: *Halka* (*Rapporterade hala vägsträckor*), *Fartkameror* (*Fasta kameror på din väg, 500 meter innan och med
    hastighetsgränsen*), *Olyckor och hinder* (*Trafikverkets pågående lägen*), *Vilt* (*Djur på vägen*) och *Frysrisk*
    (*Vägbanan nära noll och vått, även på broar*). Under listan: *DU VÄLJER SJÄLV VILKA I INSTÄLLNINGAR*. Knappen *Nästa*.
 3. **Så märks en varning** (steg 2 av 4) — *"Du hör den först"*, *"Rösten säger vad som ligger framför dig, ungefär 30 sekunder
    innan du är framme."* Ett litet varningskort i gult (*HALKVAKT VARNAR*, *Halka*, *FRAMFÖR DIG* och repliken *"Varning: halka
-   rapporterad på vägen framför dig."*) och tre rader: *Rösten i bilens högtalare* (*Eller i telefonens, om den inte är kopplad
-   till bilen.*), *Gult kort i åtta sekunder* (*Som en banner om en annan app ligger framme.*) och *Tyst annars* (*Vakten talar
+   rapporterad på vägen framför dig."*) och tre rader: *Rösten säger till* (*I bilens högtalare om telefonen är kopplad till bilen, annars i telefonens.*),
+   *Gult kort i åtta sekunder* (*Syns på skärmen, vilken app du än har framme.*) och *Tyst annars* (*Vakten talar
    bara när det finns något att varna för.*). Knappen *Nästa*.
 4. **Platsen** (steg 3 av 4) — fem lägen, efter vad iOS svarar:
-   - *Inte frågad:* *"Platsen, bara i telefonen"*, *"Vakten behöver veta var du är för att kunna varna. Din plats stannar i
+   - *Inte frågad:* *"Nu slår vi på vakten"*, *"Telefonen ställer två frågor. Den första gäller platsen: vakten behöver veta
+     var du är för att kunna varna."* Under *DIN PLATS*: *"Din plats stannar i telefonen. Appen hämtar samma vägdata till alla
+     och jämför med var du är, i din telefon. Inget konto behövs."* och *"Sparar du resor som favoriter stannar de också i
      telefonen."* Under *I NÄSTA RUTA FRÅN IOS* står rutans tre knappar, *Tillåt en gång*, *Tillåt när appen används* och
      *Tillåt inte*, med den mellersta förbockad och märkt *VÄLJ DEN*. *"Sedan frågar iOS en gång till. Vi visar vad du väljer
      då också."* Knappen *Fortsätt* öppnar iOS egen ruta (Apple 5.1.1(iv), DECISIONS #460).
    - *När appen används, före den andra rutan:* *"Bra. En ruta till: Alltid"*, *"Med Alltid startar vakten själv när du kör.
-     Utan det öppnar du appen och trycker Starta vakten före varje resa."* Rutans två knappar, *Behåll Endast när appen
+     Du behöver inte öppna appen före resan."* (Att man annars startar själv sägs först i läget efter, till den som valt det.) Rutans två knappar, *Behåll Endast när appen
      används* och *Ändra till Tillåt alltid*, med den andra förbockad och märkt *VÄLJ DEN*. *"Platsen stannar i telefonen,
      även med Alltid."* Knappen *Fortsätt* öppnar iOS ruta om Alltid.
    - *Alltid:* *"Platsen är klar"*, *"Du valde Alltid. Vakten startar själv när du kör."*, raderna *Platsen ALLTID* och
      *Självstart när du kör PÅ*. Knappen *Fortsätt*.
-   - *När appen används, efter den andra rutan:* *"Du startar vakten själv"*, *"Platsen står på När appen används. Det
-     fungerar, men vakten vaknar inte av sig själv när du kör."* Raderna *Varningar när vakten är på* (bock) och *Självstart
-     när du kör* (*AV*). Knappen *Fortsätt*, länken *ÄNDRA TILL ALLTID* (öppnar Inställningar). *Tillåt en gång* ger samma
+   - *När appen används, efter den andra rutan:* *"Du startar vakten själv"*, *"Halkvakt varnar precis som vanligt. Du öppnar bara
+     appen och trycker Starta vakten före varje resa."* Raderna *Alla varningar, när vakten är på* (bock, *Öppna Halkvakt och
+     tryck Starta vakten före resan.*) och *Självstart när du kör* (*AV*, *Vill du slippa trycka? Ändra platsen till Alltid.*). Knappen *Fortsätt*, länken *ÄNDRA TILL ALLTID* (öppnar Inställningar). *Tillåt en gång* ger samma
      läge: iOS skiljer inte de två åt för appen.
    - *Nekad:* *PLATSEN ÄR AV*, *"Vakten kan inte varna"*, *"Utan platsen vet Halkvakt inte vad som ligger framför dig. iOS
      frågar inte igen, så det ändras i telefonens inställningar."* Fyra steg: *Tryck Öppna Inställningar*, *Tryck Plats*, *Välj
@@ -755,7 +757,7 @@ du var just då."* (Axels villkor för ja:et, DECISIONS #267.)
 | 0.4.0 (42) | 10/11 | **Tipsa en vän, Tyck till och Betygsätt** (DECISIONS #829): tre rader under etiketten *HALKVAKT* i Inställningar, och kortet *Kör någon du känner samma vägar?* på Redo. efter femte vaktpasset. Bygger på 0.4.0 (41). |
 | 0.4.0 (43) | 10/11 | **Facitknapparna på Redo.** (kort #998): ordet syns i den valda knappen, och raden *SENAST SAGT · tid* med varningens text står ovanför *Stämde* och *Stämde inte*, så att det framgår vilken varning svaret gäller. |
 | 0.4.0 (44) | 11/11 | **En besvarad varning frågas inte om igen** (kort #999): *Stämde / Stämde inte* står kvar med *Tack* medan startskärmen visas och är borta nästa gång den visas. Gäller båda apparna. |
-| 0.4.0 (46) | 13/11 | **Nya introduktionen** (kort #651, DECISIONS #851): sex steg i stället för fyra sidor. Före varje ruta från iOS står vilken knapp som ska väljas, och varje svar har sitt eget läge. Alla fem varningarna visas, med fartkamerorna i rubriken. *Testa rösten* finns bara i Inställningar. Bara iPhone. |
+| 0.4.0 (48) | 13/11 | **Nya introduktionen** (kort #651, DECISIONS #851): sex steg i stället för fyra sidor. Före varje ruta från iOS står vilken knapp som ska väljas, och varje svar har sitt eget läge. Alla fem varningarna visas, med fartkamerorna i rubriken. *Testa rösten* finns bara i Inställningar. Bara iPhone. |
 | Android (CI) | 16/9 → | Facitknappen och betatest-brytaren (S4, DECISIONS #202), Efter resan (20/9), viltvarningen på Trafikverkets djur (22/9), omladdningsloopen lagad och reglaget (26/9), missarna (26/9). **0.3.9 (18)**, samma nummer som iOS (DECISIONS #377). |
 
 Android bar versionsnumret 0.3.1 (4) från 31/8 till 26/9, fast CI byggde den ur main med skinnet v3, facitknappen
