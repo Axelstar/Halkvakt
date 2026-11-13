@@ -51,7 +51,7 @@ adb shell am start -W -n se.halkvakt.app/.MainActivity; sleep 4; shot 01-valkomm
 #    background location on the system page ("Allow all the time").
 tap "Visa mig"; shot 02-varningarna; tap "Nästa"; shot 03-sa-marks-en-varning; tap "Nästa"
 sleep 2; shot 04-forklaring-platsen; sleep 3; tap "Fortsätt"
-tap_any "Precise" "Exakt"; shot 05-platsruta; tap_any "While using the app" "När appen används"
+tap_any "Precise" "Exakt"; shot 05-platsruta; tap_any "While using the app" "När du använder appen" "När appen används"
 sleep 2; shot 06-forklaring-sjalvstart; sleep 3; tap "Slå på självstart"
 tap_any "Allow" "Tillåt"; tap_any "Allow" "Tillåt" 3
 sleep 2; shot 07-forklaring-hela-tiden; sleep 4; tap "Öppna sidan"

@@ -52,12 +52,12 @@ notiserna() { ser "Se varningen på skärmen"; tap "Fortsätt"; sleep 2; systemt
 
 # K: tillåter platsen, väljer "Inte nu, jag startar själv"
 ny K; tillplatsen; systemtext platsen; shot K1-platsrutan
-tap_any "Exakt" "Precise"; tap_any "När appen används" "While using the app"
+tap_any "Exakt" "Precise"; tap_any "När du använder appen" "När appen används" "While using the app"
 ser "Ska vakten starta själv?"; tap "Inte nu, jag startar själv"; ser "Du startar vakten själv"; shot K2-startar-sjalv; tap "Fortsätt"
 notiserna; ser "Redo när du startar"; shot K3-redo-nar-du-startar; tap "Klar"; ser "Starta vakten"; shot K4-startsidan
 
 # L: vill ha självstart men backar från sidan utan att välja "Tillåt hela tiden"
-ny L; tillplatsen; tap_any "Exakt" "Precise"; tap_any "När appen används" "While using the app"
+ny L; tillplatsen; tap_any "Exakt" "Precise"; tap_any "När du använder appen" "När appen används" "While using the app"
 ser "Ska vakten starta själv?"; tap "Slå på självstart"; sleep 2; systemtext aktivitet; shot L1-aktivitetsrutan
 tap_any "Tillåt" "Allow"; sleep 2; systemtext enheter; shot L2-enhetsrutan; tap_any "Tillåt" "Allow"
 ser "Sista frågan: hela tiden"; shot L3-hela-tiden; tap "Öppna sidan"; sleep 3; systemtext platssidan; shot L4-platssidan
@@ -65,7 +65,7 @@ adb shell input keyevent 4; sleep 3; ser "Du startar vakten själv"; shot L5-sta
 notiserna; ser "Redo när du startar"; shot L6-redo-nar-du-startar
 
 # M: väljer ungefärlig plats
-ny M; tillplatsen; tap_any "Ungefärlig" "Approximate"; shot M1-ungefarlig; tap_any "När appen används" "While using the app"
+ny M; tillplatsen; tap_any "Ungefärlig" "Approximate"; shot M1-ungefarlig; tap_any "När du använder appen" "När appen används" "While using the app"
 ser "Exakt plats behövs"; shot M2-exakt-behovs; tap "Fortsätt utan exakt plats"
 notiserna; ser "Nästan redo"; shot M3-nastan-redo; tap "Gör det senare"; ser "Starta vakten"
 

@@ -189,7 +189,7 @@ class MainActivity : ComponentActivity() {
             if (!hasPermissions()) {
                 disclosure.value = Disclosure("Platsen — bara i telefonen",
                     "Halkvakt läser din plats medan vakten är på, för att veta vad som finns på vägen framför dig. " +
-                        "Matchningen sker i telefonen — positionen skickas aldrig av sig själv.\n\nVälj \"Exakt\" och \"När appen används\" på nästa sida.",
+                        "Matchningen sker i telefonen — positionen skickas aldrig av sig själv.\n\nVälj \"Exakt\" och \"När du använder appen\" på nästa sida.",
                     ::requestStartPermissions)
                 return
             }

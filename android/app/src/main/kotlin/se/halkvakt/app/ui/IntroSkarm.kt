@@ -156,7 +156,8 @@ fun IntroScreen(activity: MainActivity, startSteg: Int = 0, onKlar: () -> Unit) 
                     Etikett("Din plats", top = 20.dp, bottom = 6.dp)
                     Brodtext(PLATSTEXT, Brand.text, Modifier.padding(horizontal = 4.dp))
                     Etikett("I nästa ruta från Android", top = 22.dp)
-                    ValLista(listOf("Exakt" to true, "När appen används" to true, "Bara den här gången" to false, "Tillåt inte" to false))
+                    // Knapparnas namn är avlästa på en svensk Android 14 (introprov 14/11): "När du använder appen", inte "När appen används".
+                    ValLista(listOf("Exakt" to true, "När du använder appen" to true, "Bara den här gången" to false, "Tillåt inte" to false))
                 }
                 Intro.PlatsSkarm.KLAR -> Sida("Fortsätt", { steg = Intro.efterPlatsen(true) }) {
                     Rubrik("Platsen är klar", "Vakten vet var du är medan den är på. Platsen stannar i telefonen.")
