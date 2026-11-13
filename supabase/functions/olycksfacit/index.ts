@@ -1,15 +1,16 @@
 // ═══ Olycksfacit, steg 3 och 4: dagens och veckans ärende (DECISIONS #797 och #802, kort #376) ═══
 // Anropas av pg_cron varje morgon 05:17 UTC (sql/085). Skriver ett ärende med etiketten `olycka` för varje svenskt dygn från
 // FORSTA_DAG till i går (DYGN_EFTER, sedan 11/11: TROSKLAR-OLYCKSFACIT §10, DECISIONS #842) som har kontrollerats färdigt (alla dess
-// olyckor har gått genom efterkontrollen, sql/085 och sql/108) och som inte har något ärende än (olycksfacit_arenden). Ett dygn utan en
-// tyst halkkopplad olycka får ett ärende som stängs direkt, så att en tyst dag syns som tyst och inte som utebliven. Sedan samma sak för
-// varje ISO-vecka vars söndag är i går eller tidigare, så att veckans ärende skrivs måndagen efter veckan
-// (olycksfacit_veckor, sql/088; TROSKLAR-OLYCKSFACIT §9.5): en vecka utan återkommande förbättringsområde stängs direkt. Öppna
-// ärenden påminns var sjunde dygn. ?torrt=1 visar ärendena utan att skriva något.
+// olyckor har gått genom efterkontrollen, sql/085, sql/108 och sql/110) och som inte har något ärende än (olycksfacit_arenden). Sedan
+// 13/11 (TROSKLAR-OLYCKSFACIT §11, DECISIONS #852) stängs dagens ärende alltid direkt: en miss som passar ett känt mönster har en
+// förifylld åtgärd, och de övriga läses i veckans ärende. Sedan samma sak för varje ISO-vecka vars söndag är i går eller tidigare, så
+// att veckans ärende skrivs måndagen efter veckan (olycksfacit_veckor, sql/088; TROSKLAR-OLYCKSFACIT §9.5): en vecka utan återkommande
+// förbättringsområde och utan miss att läsa stängs direkt. Öppna ärenden påminns var sjunde dygn. ?torrt=1 visar ärendena utan att
+// skriva något.
 import postgres from "https://deno.land/x/postgresjs@v3.4.4/mod.js";
 import { nyckelGiltig } from "../_shared/nyckel.ts";
-import { DYGN_EFTER, ETIKETT, FORSTA_DAG, MARK, MARKV, type Olycka, PAMINN_DYGN, TILLDELAD, arendeKropp, arendeTitel, behoverAtgard, paminnelse,
-  veckaKropp, veckaPaminnelse, veckaTitel, veckansForslag } from "./arende.ts";
+import { DYGN_EFTER, ETIKETT, FORSTA_DAG, MARK, MARKV, type Olycka, PAMINN_DYGN, TILLDELAD, arendeKropp, arendeTitel, behoverAtgard, forifylld,
+  paminnelse, veckaKropp, veckaPaminnelse, veckaTitel, veckansForslag, veckansLasrader } from "./arende.ts";
 
 const REPO = "Axelstar/Halkvakt";
 const sql = postgres(Deno.env.get("SUPABASE_DB_URL")!, { max: 1, prepare: false });
@@ -28,12 +29,17 @@ const json = (x: unknown, status = 200) => new Response(JSON.stringify(x), { sta
 async function hamta(fran: string, till: string): Promise<Olycka[]> {
   return (await sql`
     SELECT f.start_time, f.road_number, ST_X(f.geom) AS lon, ST_Y(f.geom) AS lat, f.utfall, f.orsaker, f.klass, f.klass_skal, f.dubblett_av,
-           coalesce((SELECT array_agg(l.lager ORDER BY array_position(ARRAY['A1', 'K', 'A2'], l.lager)) FROM olycksfacit_lager l
-                     WHERE l.deviation_id = f.deviation_id AND l.talar), '{}') AS talade
+           coalesce((SELECT array_agg(l.lager ORDER BY array_position(ARRAY['A1', 'K', 'A2', 'smavag'], l.lager)) FROM olycksfacit_lager l
+                     WHERE l.deviation_id = f.deviation_id AND l.talar), '{}') AS talade,
+           f.art,
+           (SELECT l.orsak FROM olycksfacit_lager l WHERE l.deviation_id = f.deviation_id AND l.lager = 'smavag') AS smavag,
+           coalesce((SELECT (l.detalj->>'flackvis_vat')::boolean FROM olycksfacit_lager l
+                     WHERE l.deviation_id = f.deviation_id AND l.lager = 'K'), false) AS flackvis_vat
     FROM olycksfacit f WHERE (f.start_time AT TIME ZONE 'Europe/Stockholm')::date BETWEEN ${fran}::date AND ${till}::date
     ORDER BY f.start_time, f.deviation_id`).map((r: any) => ({
       tid: new Date(r.start_time).toISOString(), vag: r.road_number, lon: Number(r.lon), lat: Number(r.lat), utfall: r.utfall,
-      orsaker: r.orsaker ?? [], klass: r.klass, skal: r.klass_skal, dubblett: r.dubblett_av !== null, talade: r.talade ?? [] }));
+      orsaker: r.orsaker ?? [], klass: r.klass, skal: r.klass_skal, dubblett: r.dubblett_av !== null, talade: r.talade ?? [],
+      art: r.art, smavag: r.smavag, flackvisVat: r.flackvis_vat === true }));
 }
 
 /** Ett ärende med etiketten: finns det redan (skrivet men inte bokfört, om förra körningen föll mellan stegen) tas dess nummer,
@@ -65,11 +71,13 @@ Deno.serve(async (req) => {
     for (const d of dygn as any[]) {
       if (d.okontrollerade > 0) { vantar.push(d.dag); continue; }
       const olyckor = await hamta(d.dag, d.dag);
-      const atgarda = olyckor.filter(behoverAtgard).length;
+      // B (TROSKLAR-OLYCKSFACIT §11, DECISIONS #852): dagens ärende stängs alltid av funktionen. Raderna utan förifylld åtgärd
+      // (atgarda) läses i veckans ärende, som hittar dygnet på veckolasning.
+      const atgarda = olyckor.filter((o) => behoverAtgard(o) && forifylld(o) === null).length;
       const titel = arendeTitel(d.dag), kropp = arendeKropp(d.dag, olyckor);
       if (torrt) { skrivna.push({ dag: d.dag, titel, atgarda, kropp }); continue; }
-      const nr = await skrivArende(titel, MARK(d.dag), kropp, atgarda);
-      await sql`INSERT INTO olycksfacit_arenden (dag, nr, atgarda, stangd) VALUES (${d.dag}::date, ${nr}, ${atgarda}, ${!atgarda})
+      const nr = await skrivArende(titel, MARK(d.dag), kropp, 0);
+      await sql`INSERT INTO olycksfacit_arenden (dag, nr, atgarda, stangd, veckolasning) VALUES (${d.dag}::date, ${nr}, ${atgarda}, true, true)
         ON CONFLICT (dag) DO NOTHING`;
       skrivna.push({ dag: d.dag, nr, atgarda });
     }
@@ -90,8 +98,11 @@ Deno.serve(async (req) => {
     for (const v of veckor as any[]) {
       if (v.okontrollerade > 0) { vantar.push(v.vecka); continue; }
       const veckans = await hamta(v.fran, v.till), sasong = await hamta(FORSTA_DAG, v.till);
-      const forslag = veckansForslag(veckans.filter((o) => !o.dubblett)).length;
-      const titel = veckaTitel(v.vecka), kropp = veckaKropp(v.vecka, v.fran, v.till, veckans, sasong);
+      const lasdagar = new Set((await sql`SELECT dag::text AS dag FROM olycksfacit_arenden
+        WHERE veckolasning AND dag BETWEEN ${v.fran}::date AND ${v.till}::date`).map((r: any) => r.dag as string));
+      const egna = veckans.filter((o) => !o.dubblett);
+      const forslag = veckansForslag(egna).length + veckansLasrader(egna, lasdagar).length;   // raderna att åtgärda (§9.5, §11)
+      const titel = veckaTitel(v.vecka), kropp = veckaKropp(v.vecka, v.fran, v.till, veckans, sasong, lasdagar);
       if (torrt) { veckorna.push({ vecka: v.vecka, titel, forslag, kropp }); continue; }
       const nr = await skrivArende(titel, MARKV(v.vecka), kropp, forslag);
       await sql`INSERT INTO olycksfacit_veckor (vecka, nr, forslag, stangd) VALUES (${v.vecka}, ${nr}, ${forslag}, ${!forslag})

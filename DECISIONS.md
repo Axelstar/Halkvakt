@@ -15929,3 +15929,193 @@ ta R2 i nästa appversion.
 **Kvar:** telefonprovet i ett TestFlight-bygge med vart och ett av svaren; beslutet om löftets mening i resten av appen och på sajten.
 
 **Stomdokument:** APP 4 — introduktionen i iPhone-appen
+
+## #852 (13/11 2026) Olycksfacit, det nya upplägget: olycksarten, fönstret fram till starten, kollisionerna, småvägsröstens lager, förifyllda åtgärder, läsningen i veckan och nämnaren (kort #654)
+
+**Beslutet.** Bengt 13/11, på förslaget till nytt upplägg för olycksfacit: *"bygg allt och axel signerar del 6"*. Förslaget skrevs efter
+olycksfacits första vecka (6–12/11) och Bengts fråga om singelkravet (*"är det verkligen rätt behandling att kräva singelolyckor"*). Han
+avböjde en läsning med en betald språkmodell (*"nej vi tar ingen extra kostnad"*), och olycksarten läses därför med en ordlista i databasen.
+Allt byggs; tillägget står i TROSKLAR-OLYCKSFACIT som §11 och ändrar §3, §4, §5, §9.1, §9.2 och §9.5. Bengt har signerat §11.
+**Axels signatur på §11 väntar:** *del 6* är §10 (klassningen efter sex timmar), som Axel signerade 11/11 (#842). Frågan står i bedömningens
+§4.2, och `sql/110` migreras först efter hans signatur (§7, regel L).
+
+**Det som byggdes.**
+1. **Olycksarten (D3)**, `sql/110`: `olycksart(text)`, ett enda CASE-uttryck som inlinas. Arterna i ordning är vilt (regel 1:s ord),
+   oskyddad, ordet *singel*, flera fordon, ett fordon (förloppet), ett fordon svag och okänd. Kolumnen `olycksfacit.art` bär arten.
+2. **Efterkontrollen (D1, D2, D3)**, `sql/110`: `sql/108` ord för ord utom åtta märkta rader.
+   - Stationens fönster går från två timmar före till starten.
+   - TROLIG kräver arten *ett fordon* i stället för ordet.
+   - Arten *flera fordon* blir TROLIG med skälet *kollision*.
+3. **Småvägsröstens lager (C)**, `sql/110`: `olycksfacit_smavag()` och jobbet `halkvakt-olycksfacit-smavag` två minuter efter fångsten.
+   - Lagret bär närmaste småvägspunkt inom 0,5 km och regeln räknad vid starten. Utfallet är varnar, torr, fryser inte, ingen timme, gallrad
+     eller ingen småvägspunkt.
+   - Lagret talar bara med brytaren på, och då blir olyckan VARNADE.
+   - Inga tal ur kuvösen sparas.
+4. **Ärendena (A, B, E)**, `supabase/functions/olycksfacit`:
+   - **Förifyllda åtgärder:** M1 småväg ger kort #647, M2 rimfrost ger kort #46 och M3 fläckvis Våt ger kort #645.
+   - **Dagens ärende** stängs alltid av funktionen. Missarna utan förifylld åtgärd läses i veckans ärende; det hittar dem genom
+     `olycksfacit_arenden.veckolasning`, så att dygnen före bytet inte läses två gånger.
+   - **Veckans ärende** bär nämnaren per klass.
+   - **Kollisionerna** räknas i statistiken men får ingen åtgärdsrad och inget område.
+5. **Prov:**
+   - ett prov utan databas att efterkontrollen är `sql/108` utom de märkta raderna;
+   - integrationsproven #852:
+     - olycksarten med 28 fällor, och att funktionen inlinas;
+     - efterkontrollen med en fixtur och ett motprov per ändring;
+     - småvägslagret med regeln vid starten, timmen som skrevs efter starten, radarns fönster, gallringen och brytaren;
+   - enhetsproven för M1–M3, kollisionerna, veckans rader och nämnaren.
+
+   Kontraktsgrinden vaktar småvägsröstens trösklar i `sql/110`: radarns gräns och fönster, biten, färskheten och fullständigheten.
+
+**Claudes metodval:**
+- **D1 gäller alla klasser som läser ytan**, också TYDLIG och INTE (varmt). Förslaget mätte bara TROLIG.
+- **Ordlistan** är provets lista med ordgräns i början, och med några tillägg:
+  - *cykel*;
+  - *vägdike* och *mitträcke*;
+  - *påkörd av en lastbil* som kollision.
+
+  *av vägen* ensamt är struket, eftersom *en del av vägen* inte är ett förlopp.
+- **Ordlistan prövad på veckan 6–12/11** (13/11, SELECT i panelen, `sql/110`:s mönster ordagrant):
+  - fönstret före starten gav samma tal som provet: 24 med ett fordon (15 varnade), 9 kollisioner (6 varnade), 4 svaga och 1 okänd;
+  - i hela veckan flyttade fyra olyckor mot provets lista: ett fordon 166, flera fordon 137, svag 18 och okänd 21, mot 167, 138, 17 och 20.
+- **B:** dagens ärende stängs alltid. Raderna utan förifylld åtgärd står kvar i det med *i veckans ärende*, och de läses där.
+- **Brytaren** läses när lagret skrivs, inte vid starten.
+
+**Kvar:**
+1. Axels signatur på §11.
+2. Sammanslagningen.
+3. `sql/110` med DB-knappen.
+4. Deployen av `olycksfacit`. Ordningen är migrationen först: funktionen läser `art` och `veckolasning`.
+
+**Alternativen som inte valdes:**
+- En läsning med en språkmodell i Anthropics API: den kostar per olycka, och Bengt sa nej.
+- Att låta D1 bara gälla TROLIG: då hade fönstret betytt olika saker för olika klasser i samma rad.
+- Att låta dagens ärende stå öppet med raderna som också står i veckans ärende: då läses de två gånger.
+
+**Stomdokument:** MAT 3 — olycksfacits nya upplägg (TROSKLAR-OLYCKSFACIT §11), BED §4.2 — Axels signatur på §11
+
+## #853 (13/11 2026) Axel signerar TROSKLAR-OLYCKSFACIT §11, olycksfacits nya upplägg (kort #654)
+
+**Beslutet.** Axel signerar §11 via Bengt 13/11: *"Ja, Axel signerar"*, på frågan om Axel också signerar §11. Bengts första ord, *"axel
+signerar del 6"* (#852), gällde §10, klassningen efter sex timmar, som Axel signerade 11/11 (#842). Med Bengts signatur i #852 har §11 båda,
+och regel L (§7) är uppfylld. Texten som signerades är filen på grenen `claude/olycksfacit-upplagg` vid 7da12b3d.
+
+**Kvar:**
+1. CI grön på exakt huvudet och sammanslagningen på Bengts ord.
+2. `sql/110` med DB-knappen.
+3. Deployen av `olycksfacit`, efter migrationen.
+
+**Alternativen som inte valdes:** att läsa *"axel signerar del 6"* som Axels signatur på §11. Del 6 var redan signerad, så ordet kunde inte
+avse §11 utan en fråga.
+
+**Stomdokument:** MAT 3 — olycksfacits nya upplägg (TROSKLAR-OLYCKSFACIT §11) signerat av Bengt och Axel
+
+## #854 (13/11 2026) Den nya kandidatens reserv för del A: tre försök efter slotten :28, efter MET:s morgonfel 11–13/11 (kort #343)
+
+**Beslutet.** Bengt 13/11, på frågan om att trycka om `ny-kandidat-fysik` och bygga en efterkörning: *"Ja, båda"*. Frågan kom efter
+mätvaktens ärende #1560 och Bengts *"jag är bekymrad över de problem vi har hos met. Vad kan man göra åt det?"*.
+
+**Det som hänt.**
+- MET:s THREDDS svarade HTTP 500 (*"datasetTracker_2 is not active"*) varje morgon 11–13/11, mellan omkring 06:10 och 06:50 UTC.
+- Den frystas del A föll 06:13 alla tre morgnarna. Dess reserv på :43 räddade 13/11, men inte 12/11, då också försöket 06:43 föll.
+- Den nyas del A, med en enda slott 06:28, föll 12/11 och 13/11 och hade ingen reserv.
+- 13/11 saknade därför den nya kandidaten PH från 06:00. Småvägsröstens timme hoppades av samma skäl ("ingen PH för timmen").
+- Appen talade med den frysta, eftersom bytet faller tillbaka när den nyas timme är gammal (`talande_timme()`, sql/070).
+- Sedan 23/10 har 11 av 94 körningar av den frystas del A och 3 av 83 av den nyas fallit på MET.
+
+**Det som byggdes.**
+- `scripts/kandidat-reserv.ts` får slottens minut och antalet försök som parametrar. Den frysta är oförändrad: :13 och två försök.
+- `ny-kandidat-timme.yml` frågar reserven med `--slott-min 28 --forsok 3` när PH saknas för den pågående timmen:
+  - *starta*: del A startas igen;
+  - *trasig*: varning;
+  - *hoppa*: en rad i sammanfattningen.
+
+  Timmen loggas som tyst som förut och före reserven. Jobbet förblir grönt, och det får `actions: write`.
+- Självtestet har fyra nya fall för den nya kandidaten, bland dem 12/11, där det tredje försöket 07:47 startar.
+
+**Claudes metodval:** tre försök för den nya och inte för den frysta. Den frysta har talat med sin reserv sedan 20/10 och rörs inte utan ett
+eget beslut, även om 12/11 visar att den hade haft nytta av ett tredje försök.
+
+**Kvar:** den första reserven i driften, alltså en sammanfattning med *RESERV* i `ny-kandidat-timme` och en lyckad del A efteråt.
+Mätningen av MET:s filnedladdning (`fileServer`) under morgonfönstret föreslås efter detta.
+
+**Alternativen som inte valdes:**
+- Längre väntan i hämtningen (`FORSOK_HAMTA`): MET:s fönster är omkring 40 minuter, och en körning som väntar så länge håller MET:s enda
+  förbindelse.
+- Ett pulsjobb som alltid startar del A igen 30 minuter efter slotten: det startar en körning också när den första lyckades.
+- Att låta K tala på förra körningen: det är ett beslut om fysiken för Bengt och Axel i kuvösen.
+
+**Stomdokument:** SYS 2 — kandidatens kedja: reserven för den nya kandidatens del A efter MET:s morgonfel
+
+## #855 (13/11 2026) Favoritprovets rutt-steg i tre anrop, så att varje anrop ligger under Supabases CPU-gräns (kort #650)
+
+**Beslutet.** Bengt 13/11: *"provkör kedjan-a och gör favoritprovet"*. Förslaget var utredningens väg (a), att dela rutt-steget på tre
+anrop (`Desktop/Resursgransen_2026-11-12/UTREDNING.md`).
+
+**Varför.** Sedan 11/11 16.38 UTC har varje körning av `halkvakt-favoritprov` fallit med 546 (*"CPU Time exceeded"*). Supabase ger
+2 s CPU per anrop. Hämtningen, rapporten och skrivningen gick igenom, men slingan över de 30 provrutterna stoppades. Därför har
+`favoriter.json` och `historik.json` inte skrivits sedan dess.
+
+**Det som byggdes.**
+- `supabase/functions/favoritprov/main.ts`:
+  - **Del 0**, anropet utan del (`:08/:38`, jobbet orört), gör hämtningen, rapporten, skrivningen och synkens spegling. Det skriver
+    manifestet sist, med sin tid.
+  - **Del 1–3** (`?del=1`, `2`, `3`) tar var tredje rutt (rutt i går till del i % 3 + 1, så att de tunga C-rutterna sprids). De läser
+    rapporten ur hinken och skriver om sina rutter i `favoriter.json`.
+  - **En del vars rapport är äldre än 20 minuter** skriver ingenting.
+  - **Den sista delen** skriver historiken för hela körningen: tiden summerad och per del (`ms_delar`) och antalet klara delar.
+  - Bunten är omgjord (`bundle-favoritprov.ts`).
+- `sql/111`: tre jobb på udda minuter, `:09/:39`, `:11/:41` och `:19/:49`, som inte delar minut med publicera eller med andra
+  funktioners starter. Kommandot kopieras ur favoritprovets eget jobb, och efterkontrollen kräver varje del exakt en gång.
+- Prov:
+  - integrationsprovet #855 med spelad pg_cron: tre jobb, nyckeln kopierad, del 0 orörd, omkörningen ändrar inget, och en felaktig form
+    stoppar allt;
+  - ett prov utan databas att `DELAR` i funktionen och jobben i `sql/111` är lika och att varje rutt hamnar i exakt en del.
+
+**Mätt lokalt 13/11** med dagens filer ur de publika hinkarna och tre varv: del 1–3 tar 0,94–1,25 s CPU var. Det tyngsta är det första,
+kalla varvet. Alla 30 rutterna tar 2,8–3,4 s, och tolkningen av de fyra filerna 15 ms.
+
+**Kvar:**
+1. Sammanslagningen.
+2. `sql/111` med DB-knappen och deployen av `favoritprov`. Ordningen spelar ingen roll: med jobben före deployen gör del 1–3 hela slingan
+   tills funktionen är ny, och med deployen före jobben skrivs inga rutter tills jobben finns.
+3. Beviset: `favoriter.json` skriven av varje körning under ett dygn, och inga 546 från favoritprovets jobb i `public.anrop`.
+
+**Alternativen som inte valdes:**
+- Fyra delar: tre ligger under gränsen med marginal i mätningen, och fler jobb ger fler starter.
+- Att flytta steget till Actions: det fungerar, men favoritprovet är just ett prov av körningen i Supabase.
+- Att göra `favoritRapport` billigare: den fasta kostnaden per rutt är liten, och vinsten måste mätas först.
+
+**Stomdokument:** FAV 7 — favoritprovets rutt-steg i tre anrop under CPU-gränsen
+
+## #856 (13/11 2026) Olycksfacits K-lager följer den kandidat som talade: den nya när den har en timme, annars den frysta (kort #655)
+
+**Beslutet.** Bengt och Axel signerar TROSKLAR-OLYCKSFACIT §12. Bengt 13/11: *"vi signerar gör 1,2,3"*, där punkt 1 var tillägget till
+§9.1 för deras signatur. Frågan var Bengts: *"borde man ha en koppling av olycksfacit mot den frysta kandidaten också"*.
+
+**Varför.** §9.1 säger att K är vad appen sa vid starten. Fångsten läste ändå bara den nya kandidatens domlogg. Appen talar med den frysta
+när den nyas timme saknas eller är för gammal (bytet, `sql/070`, `talande_timme()`).
+- Sedan 6/11 hade 10 av omkring 490 olyckor K *ingen timme*.
+- Vid 2 av dem, båda 12/11, hade den frysta en färsk timme, och ingen av de två var halkkopplad.
+- Med MET:s morgonfel (#854) blir det vanligare, och driftlarmet larmar då *K ingen timme* fast appen talade.
+
+**Det som byggdes** (`sql/112`):
+- `olycksfacit_k_ny()` är `sql/100`:s `olycksfacit_k` ord för ord, och `olycksfacit_k_fryst()` samma funktion mot den frystas tabeller.
+- `olycksfacit_k()` väljer som `talande_timme()` vid starten och skriver talaren i detaljen: *ny*, *fryst* eller *ingen*.
+- Fångsten och driftlarmet är orörda, eftersom de anropar `olycksfacit_k()` som förut.
+- Storstädernas punkter läses som förut ur den nyas stadslogg; den frysta saknar en sådan (§12.3).
+- Prov: ett prov utan databas att kopiorna är ord för ord, och integrationsprovet #856 med fyra fall i en transaktion som rullas tillbaka
+  (den nyas timme gammal, båda gamla, den nyas färsk, och beslutet tillbaka till den frysta).
+
+**Avvikelse funnen samtidigt:** båda kandidaterna saknade en färsk timme omkring 07:00–07:45 UTC 12/11 och 13/11. K var då tyst i appen.
+Den frystas reserv startade del A 06:43, men timmen räknades först i nästa ordinarie del B 07:43. Det är inte ändrat här.
+
+**Kvar:**
+1. Sammanslagningen.
+2. `sql/112` med DB-knappen.
+3. Beviset: den första K-raden i driften med talaren i detaljen.
+
+**Alternativen som inte valdes:** att läsa båda kandidaterna och kalla olyckan varnad om någon av dem varnade. Det hade räknat varningar som
+appen inte gav.
+
+**Stomdokument:** MAT 3 — olycksfacits K-lager med den kandidat som talade (TROSKLAR-OLYCKSFACIT §12)
