@@ -7,7 +7,7 @@ object Intro {
 
     /** Platsstegets lägen, efter vad Android svarar. */
     enum class PlatsSkarm { FRAGA, KLAR, EXAKT_BEHOVS, NEKAD }
-    /** Självstartens lägen: frågan, sidan före "Tillåt hela tiden", på, eller föraren startar själv. */
+    /** Självstartens lägen: frågan, sidan före "Tillåt alltid", på, eller föraren startar själv. */
     enum class Sjalv { FRAGA, HELA_TIDEN, PA, STARTAR_SJALV }
     enum class NotisSkarm { FRAGA, PA, AV }
     enum class SlutSkarm { REDO, REDO_NAR_DU_STARTAR, NASTAN_REDO }
@@ -30,7 +30,7 @@ object Intro {
         else -> Sjalv.HELA_TIDEN
     }
 
-    /** Efter systemets sida om "Tillåt hela tiden" (kod 12). */
+    /** Efter systemets sida om "Tillåt alltid" (kod 12). */
     fun efterHelaTiden(bakgrund: Boolean): Sjalv = if (bakgrund) Sjalv.PA else Sjalv.STARTAR_SJALV
 
     /** fragas = Android 13+, där notiser kräver ett ja. Äldre Android har dem på från början. */

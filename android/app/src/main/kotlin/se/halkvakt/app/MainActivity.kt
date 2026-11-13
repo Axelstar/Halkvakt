@@ -172,7 +172,7 @@ class MainActivity : ComponentActivity() {
             disclosure.value = Disclosure("Platsen även i bakgrunden",
                 "Halkvakt läser din plats även när appen är stängd eller skärmen släckt, så att vakten kan starta själv när du börjar köra och " +
                     "varna medan du kör. Platsen läses bara medan vakten är på och notisen \"Halkvakt vaktar\" syns. Matchningen sker i telefonen — " +
-                    "positionen skickas aldrig av sig själv.\n\nVälj \"Tillåt hela tiden\" på nästa sida.") {
+                    "positionen skickas aldrig av sig själv.\n\nVälj \"Tillåt alltid\" på nästa sida.") {
                 requestPermissions(arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION), 3)
             }
             return
@@ -268,7 +268,7 @@ class MainActivity : ComponentActivity() {
         if (saknas.isEmpty()) introSvarade(11) else requestPermissions(saknas.toTypedArray(), 11)
     }
 
-    /** Android 11+ öppnar systemets sida där föraren väljer "Tillåt hela tiden"; svaret kommer när hen backar. */
+    /** Android 11+ öppnar systemets sida där föraren väljer "Tillåt alltid" (så heter valet på svensk Android 14, introprov 14/11); svaret kommer när hen backar. */
     fun introBegarBakgrund() {
         if (bakgrundOk()) introSvarade(12) else requestPermissions(arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION), 12)
     }
@@ -325,7 +325,7 @@ class MainActivity : ComponentActivity() {
             2 -> if (granted || hasAllAutostart()) onAutostartToggle()
                  else notice.value = "Autostart är av: den behöver plats, rörelseigenkänning, Bluetooth och notiser. Slå på dem i appens inställningar."
             3 -> if (granted) onAutostartToggle()
-                 else notice.value = "Autostart är av: välj \"Tillåt hela tiden\" under Plats i appens inställningar och slå på igen."
+                 else notice.value = "Autostart är av: välj \"Tillåt alltid\" under Plats i appens inställningar och slå på igen."
             10, 11, 12, 13 -> introSvarade(code)   // introduktionens rutor: skärmen läser läget och går vidare
         }
     }

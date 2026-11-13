@@ -55,7 +55,7 @@ tap_any "Precise" "Exakt"; shot 05-platsruta; tap_any "While using the app" "Nä
 sleep 2; shot 06-forklaring-sjalvstart; sleep 3; tap "Slå på självstart"
 tap_any "Allow" "Tillåt"; tap_any "Allow" "Tillåt" 3
 sleep 2; shot 07-forklaring-hela-tiden; sleep 4; tap "Öppna sidan"
-sleep 3; tap_any "Allow all the time" "Tillåt hela tiden"; shot 08-tillat-hela-tiden; sleep 2
+sleep 3; tap_any "Allow all the time" "Tillåt alltid" "Tillåt hela tiden"; shot 08-tillat-hela-tiden; sleep 2
 adb shell input keyevent 4; sleep 3; shot 09-sjalvstarten-pa; sleep 2; tap "Fortsätt"
 sleep 2; shot 10-forklaring-notiser; sleep 2; tap "Fortsätt"; tap_any "Allow" "Tillåt" 3
 sleep 2; shot 11-notiser-pa; tap "Fortsätt"

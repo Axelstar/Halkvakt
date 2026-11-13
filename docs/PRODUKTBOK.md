@@ -299,7 +299,7 @@ påtvingad, men kan visa den från Inställningar (*Visa introduktionen igen*, s
 1. **Välkommen**, 2. **Varningarna** och 3. **Så märks en varning** har samma texter som på iPhone.
 4. **Platsen** (steg 3 av 5) — fyra lägen:
    - *Inte frågad:* *"Nu slår vi på vakten"*, *"Först platsen: vakten behöver veta var du är för att kunna varna."* Under *DIN
-     PLATS* samma text som på iPhone. Under *I NÄSTA RUTA FRÅN ANDROID* står rutans val, *Exakt*, *När appen används*, *Bara
+     PLATS* samma text som på iPhone. Under *I NÄSTA RUTA FRÅN ANDROID* står rutans val, *Exakt*, *När du använder appen*, *Bara
      den här gången* och *Tillåt inte*, med de två första förbockade och märkta *VÄLJ DEN*. Knappen *Fortsätt* öppnar Androids
      ruta. Väljs exakt plats går introduktionen direkt till självstarten.
    - *Exakt, ändrad i telefonens inställningar:* *"Platsen är klar"*, raden *Platsen EXAKT*. Knappen *Fortsätt*.
@@ -312,17 +312,17 @@ påtvingad, men kan visa den från Inställningar (*Visa introduktionen igen*, s
 5. **Självstarten** (steg 4 av 5) — visas bara när platsen är exakt. Fyra lägen:
    - *Frågan:* *"Ska vakten starta själv?"*, *"Då vaknar den när du börjar köra. Du behöver inte öppna appen före resan."*
      Under *ANDROID FRÅGAR OM TRE SAKER*: *Fysisk aktivitet* (*Så ser telefonen att du åker bil.*), *Enheter i närheten* (*Så
-     märker den när bilens Bluetooth kopplar upp.*) och *Platsen hela tiden* (*Så kan vakten starta med appen stängd.*).
+     märker den när bilens Bluetooth kopplar upp.*) och *Platsen, alltid* (*Så kan vakten starta med appen stängd.*).
      *"Platsen stannar i telefonen, även då. Välj Tillåt i de två första rutorna."* Knappen *Slå på självstart* öppnar
      rutorna om fysisk aktivitet och enheter i närheten. Länken *INTE NU, JAG STARTAR SJÄLV*.
-   - *Hela tiden:* *"Sista frågan: hela tiden"*, *"Android öppnar en sida i telefonens inställningar. Välj Tillåt hela tiden
-     och tryck sedan bakåt för att komma tillbaka hit."* Under *PÅ NÄSTA SIDA FRÅN ANDROID* sidans fyra val med *Tillåt hela
-     tiden* förbockat och märkt *VÄLJ DEN*, och redogörelsen: *"Halkvakt läser platsen även när appen är stängd eller skärmen
+   - *Alltid:* *"Sista frågan: Tillåt alltid"*, *"Android öppnar en sida i telefonens inställningar. Välj Tillåt alltid
+     och tryck sedan bakåt för att komma tillbaka hit."* Under *PÅ NÄSTA SIDA FRÅN ANDROID* sidans fyra val med *Tillåt
+     alltid* förbockat och märkt *VÄLJ DEN*, och redogörelsen: *"Halkvakt läser platsen även när appen är stängd eller skärmen
      släckt, så att vakten kan starta själv när du börjar köra. Platsen läses bara medan vakten är på och notisen Halkvakt
      vaktar syns. Den skickas aldrig av sig själv."* Knappen *Öppna sidan*.
-   - *På:* *"Självstarten är på"*, raderna *Platsen HELA TIDEN* och *Självstart när du kör PÅ* (*Vakten lär sig bilens
+   - *På:* *"Självstarten är på"*, raderna *Platsen ALLTID* och *Självstart när du kör PÅ* (*Vakten lär sig bilens
      Bluetooth vid nästa körning.*). Knappen *Fortsätt*.
-   - *Föraren startar själv* (länken, ett nej i en ruta, eller något annat än *Tillåt hela tiden*): *"Du startar vakten
+   - *Föraren startar själv* (länken, ett nej i en ruta, eller något annat än *Tillåt alltid*): *"Du startar vakten
      själv"*, *"Halkvakt varnar precis som vanligt. Du öppnar bara appen och trycker Starta vakten före varje resa."* Knappen
      *Fortsätt*, länken *SLÅ PÅ SJÄLVSTART* (tillbaka till frågan).
 6. **Notiserna** (steg 5 av 5) — som på iPhone, med en rad till under *HALKVAKT SKICKAR*: *Notisen Halkvakt vaktar* (*Visar
@@ -335,8 +335,10 @@ påtvingad, men kan visa den från Inställningar (*Visa introduktionen igen*, s
 Vippan *Vaknar själv när du kör* under Inställningar → Start och första trycket på *Starta vakten* frågar som förut, med
 sina egna förklaringar före varje ruta, för den som hoppat över introduktionen eller sagt nej i den.
 
-Inte provat på en telefon 13/11: texterna i Androids egna rutor är skrivna ur minnet och skiljer sig mellan Android-versioner
-och tillverkare. Skärmbilder ur fotostudion (`shot-20-intro` till `shot-26-intro`) förs in när bygget har körts.
+Provat på emulator 13–14/11 (android-flödet 43520848549 och 43525445302): huvudvägen i demovideon, och de fyra sidovägarna i
+`scripts/introprov.sh` på en svensk Android 14. Rutornas knappnamn är avlästa där: *När du använder appen* och *Tillåt alltid*
+(introduktionen sa först *När appen används* och *Tillåt hela tiden*, som inte finns i rutorna). Andra Android-versioner och
+tillverkare kan ha andra ord. Inte provat på en telefon. Skärmbilder ur fotostudion (`shot-20-intro` till `shot-26-intro`) förs in när bygget har körts.
 
 ## Exakt vad rösten säger
 

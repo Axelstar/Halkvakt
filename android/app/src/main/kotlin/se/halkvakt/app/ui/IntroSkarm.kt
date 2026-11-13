@@ -189,16 +189,17 @@ fun IntroScreen(activity: MainActivity, startSteg: Int = 0, onKlar: () -> Unit) 
                     RowPanel {
                         StegRad({ Nummer(1) }, "Fysisk aktivitet", "Så ser telefonen att du åker bil.")
                         StegRad({ Nummer(2) }, "Enheter i närheten", "Så märker den när bilens Bluetooth kopplar upp.")
-                        StegRad({ Nummer(3) }, "Platsen hela tiden", "Så kan vakten starta med appen stängd.", divider = false)
+                        StegRad({ Nummer(3) }, "Platsen, alltid", "Så kan vakten starta med appen stängd.", divider = false)
                     }
                     Brodtext("Platsen stannar i telefonen, även då. Välj Tillåt i de två första rutorna.", IntroText2,
                         Modifier.padding(start = 4.dp, end = 4.dp, top = 14.dp))
                 }
                 Sjalv.HELA_TIDEN -> Sida("Öppna sidan", { activity.introBegarBakgrund() }) {
-                    Rubrik("Sista frågan: hela tiden",
-                        "Android öppnar en sida i telefonens inställningar. Välj Tillåt hela tiden och tryck sedan bakåt för att komma tillbaka hit.")
+                    Rubrik("Sista frågan: Tillåt alltid",
+                        "Android öppnar en sida i telefonens inställningar. Välj Tillåt alltid och tryck sedan bakåt för att komma tillbaka hit.")
                     Etikett("På nästa sida från Android")
-                    ValLista(listOf("Tillåt hela tiden" to true, "Tillåt bara när appen används" to false, "Fråga varje gång" to false, "Tillåt inte" to false))
+                    // Sidans val är avlästa på en svensk Android 14 (introprov 14/11): "Tillåt alltid", inte "Tillåt hela tiden".
+                    ValLista(listOf("Tillåt alltid" to true, "Tillåt bara när appen används" to false, "Fråga varje gång" to false, "Tillåt inte" to false))
                     Brodtext("Halkvakt läser platsen även när appen är stängd eller skärmen släckt, så att vakten kan starta själv när du börjar " +
                         "köra. Platsen läses bara medan vakten är på och notisen Halkvakt vaktar syns. Den skickas aldrig av sig själv.",
                         IntroText2, Modifier.padding(start = 4.dp, end = 4.dp, top = 14.dp))
@@ -207,7 +208,7 @@ fun IntroScreen(activity: MainActivity, startSteg: Int = 0, onKlar: () -> Unit) 
                     Rubrik("Självstarten är på", "Vakten startar själv när du kör. Notisen Halkvakt vaktar visar när den är på.")
                     Spacer(Modifier.height(24.dp))
                     RowPanel {
-                        StegRad({ Bock() }, "Platsen", null, marke = "Hela tiden", markeFarg = Brand.green)
+                        StegRad({ Bock() }, "Platsen", null, marke = "Alltid", markeFarg = Brand.green)
                         StegRad({ Bock() }, "Självstart när du kör", "Vakten lär sig bilens Bluetooth vid nästa körning.",
                             marke = "På", markeFarg = Brand.green, divider = false)
                     }
