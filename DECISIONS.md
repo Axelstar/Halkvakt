@@ -16625,3 +16625,23 @@ avgör olycksfacit och testarnas svar, inte takten. Talen står i halkvakt-kuvos
 **Kvar:** Axels prov på telefonen; Bengts läsning; beslutet om löftets mening; Android; skärmbilderna i produktboken.
 
 **Stomdokument:** APP 4, BED §4.2
+
+## #873 (14/11 2026) Startsidan i iPhone-appen: svaret om området som rubrik, båda knapparna överst, och fartkamerorna ur listan (kort #659)
+
+**Beslut.** Axel 14/11 kväll, med en skärmbild av 0.4.1 (52): *"Lets work on this ui / ux"* och *"where is the button if i want to plan my trip?"*. Skärmbilden visade fyra fel: knappen *Planera en resa* låg under flikraden, listan *Nära dig* var tre fartkameror, kartan var täckt av kamerornas märken, och förarens plats hade farornas gula färg. Claude föreslog sex ändringar och byggde fem av dem direkt, utan en skiss först, eftersom Axel provar i TestFlight.
+- **Rubriken är svaret om området.** *"Halka 12,4 km bort"* (den närmaste faran som inte är en fartkamera, fågelvägen), eller *"Inget rapporterat nära dig"* med *"Inget inom sex mil just nu."* under. *"Redo."* står kvar bara när platsen eller vägdatan saknas.
+- **Båda knapparna står direkt under rubriken**, *Starta vakten* och *Planera en resa*, före kartan.
+- **Kartan** har Apples dämpade stil, fartkamerorna är små grå prickar (högst 80), de andra farorna gula märken och förarens plats vit.
+- **Listan *Nära dig*** visar de tre närmaste farorna utan fartkamerorna. Kamerorna står som en rad under: *"31 FARTKAMEROR INOM SEX MIL"*.
+- **Löftets mening och källraden** står längst ner på sidan. Meningen är oförändrad.
+- **Inte byggt:** att trycka på kartan för att öppna den i helskärm.
+
+**Varför rubriken får säga ett avstånd.** Avståndet är fågelvägen till farans plats, som i listan *I närheten* i körläget (`Nearby`), inte ett avstånd längs en väg. Regeln att en mätstation inte får ett avstånd som mätningen inte bär gäller rösten och rapporten längs en väg.
+
+**Alternativ:** en skiss på designytan före bygget (Claude frågade; Axel bad om knappen); att behålla *Redo.* som rubrik.
+
+**Inte prövat:** inte sett på en telefon. Hur Apples dämpade karta ser ut i appens mörka skinn är inte känt.
+
+**Kvar:** Axels prov; helskärmskartan; samma startsida i Android.
+
+**Stomdokument:** APP 4

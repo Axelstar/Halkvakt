@@ -78,41 +78,41 @@ struct VaktenView: View {
             // Kort #659: en planerad resa med avresetid står här tills sex timmar efter avresan.
             if let kommande = plan.kommande { planeradRad(kommande).padding(.top, 14) }
 
-            if tur == nil && resa == nil && !spara && !erbjud && !tipsa {
-                // Kort #659 (DECISIONS #870, #872): kartan Nära dig står där sockeln stod, med de tre närmaste farorna under.
-                naraDig.padding(.top, 14)
-                Spacer(minLength: 12)
-            } else {
-                Spacer(minLength: 24)
-            }
-
-            VStack(spacing: 14) {
-                Text("Redo.")
-                    .font(Typo.sans(44, .semibold)).tracking(-1.3)
+            // DECISIONS #873 (Axels skärmbild 14/11): svaret om området är rubriken, knapparna står direkt under den och
+            // syns utan att rulla, och kartan och listan kommer sedan.
+            let nara = naraFaror
+            VStack(spacing: 10) {
+                Text(rubrikNu(nara))
+                    .font(Typo.sans(34, .semibold)).tracking(-1)
                     .foregroundStyle(Brand.text)
-                Text(tur == nil ? subtitle : (wakes ? "Vakten vaknar själv när du kör." : "Din position lämnar inte telefonen av sig själv."))
+                    .multilineTextAlignment(.center)
+                    .accessibilityAddTraits(.isHeader)
+                Text(underrubrik(nara))
                     .font(Typo.sans(15)).lineSpacing(4)
                     .foregroundStyle(Brand.text2)
                     .multilineTextAlignment(.center)
-                    .frame(maxWidth: 290)
-                if tur == nil {
-                    Text(kallor).font(Typo.mono(10)).tracking(1.4).foregroundStyle(Brand.dim)
-                        .multilineTextAlignment(.center).padding(.top, 4)
-                }
+                    .frame(maxWidth: 300)
             }
-            .padding(.top, 12)
+            .padding(.top, 28)
 
-            if let tur { kvitto(tur).padding(.top, 24) }
-
-            Spacer(minLength: 24)
-
-            YellowPill(title: "Starta vakten", playIcon: true) { guardM.requestPermissionAndStart() }
+            YellowPill(title: "Starta vakten", playIcon: true) { guardM.requestPermissionAndStart() }.padding(.top, 24)
             NeutralPill(title: "Planera en resa") { visaPlanera = true }.padding(.top, 12)
             if guardM.locationDenied { LocationDeniedRow().padding(.top, 10) }
 
+            if let tur { kvitto(tur).padding(.top, 24) }
+
+            naraDig(nara).padding(.top, 28)
+
             Text(tur.map { "\($0.varningar.count) \($0.varningar.count == 1 ? "VARNING" : "VARNINGAR") · VISAS TILLS NÄSTA TUR" } ?? (prefs.lastTripEnd == nil ? "INGEN TUR ÄN" : "INGA VARNINGAR SENASTE TUREN"))
                 .font(Typo.mono(10)).tracking(1.4).foregroundStyle(Brand.faint)
-                .padding(.top, 16)
+                .padding(.top, 24)
+            Text(kallor).font(Typo.mono(10)).tracking(1.4).foregroundStyle(Brand.dim)
+                .multilineTextAlignment(.center).padding(.top, 8)
+            // Löftet står i underrubriken när platsen saknas, annars här.
+            if harPlats != nil {
+                Text("Din position lämnar inte telefonen av sig själv.")
+                    .font(Typo.sans(13)).foregroundStyle(Brand.faint).multilineTextAlignment(.center).padding(.top, 8)
+            }
 
             // S4 (DECISIONS #210): facitknapparna hör hemma där "Senast sagt" faktiskt visas — här, inte i
             // LastSaidCard som ingen vy använder sedan skinnet v3. Bara betatestare, bara på en varning med id.
@@ -159,9 +159,36 @@ struct VaktenView: View {
         }
     }
 
-    /// Kartan och de tre närmaste farorna inom sex mil.
-    private var naraDig: some View {
-        let nara = harPlats.map { Nearby.nearest(guardM.hazards, lon: $0.lon, lat: $0.lat, n: 3) } ?? []
+    private static func arKamera(_ h: Hazard) -> Bool {
+        if case .point(_, let kind, _, _, _, _) = h { return kind == .camera }
+        return false
+    }
+
+    /// De tre närmaste farorna inom sex mil, utan fartkamerorna: en kamera säger ingenting om väglaget, och de är så många
+    /// att de annars fyller listan (Axels skärmbild 14/11: tre kameror).
+    private var naraFaror: [NearbyItem] {
+        guard let p = harPlats else { return [] }
+        return Nearby.nearest(guardM.hazards.filter { !Self.arKamera($0) }, lon: p.lon, lat: p.lat, n: 3)
+    }
+
+    /// "Halka 12,4 km bort", "Inget rapporterat nära dig", eller "Redo." när platsen eller vägdatan saknas.
+    private func rubrikNu(_ nara: [NearbyItem]) -> String {
+        guard harPlats != nil, guardM.snapshotInfo != nil else { return "Redo." }
+        guard let forst = nara.first else { return "Inget rapporterat nära dig" }
+        return "\(Self.rubrik(forst.kind.rawValue)) \(Nearby.distText(forst.distM)) bort"
+    }
+
+    private func underrubrik(_ nara: [NearbyItem]) -> String {
+        guard harPlats != nil, guardM.snapshotInfo != nil else { return subtitle }
+        let start = wakes ? "Vakten vaknar själv när du kör." : "Tryck Starta vakten innan du kör."
+        return nara.isEmpty ? "Inget inom sex mil just nu. \(start)" : start
+    }
+
+    /// Kartan, de närmaste farorna och antalet fartkameror inom sex mil.
+    private func naraDig(_ nara: [NearbyItem]) -> some View {
+        let kameror = harPlats.map { p in
+            guardM.hazards.filter { Self.arKamera($0) && Nearby.distanceM($0, lon: p.lon, lat: p.lat) <= Nearby.maxM }.count
+        } ?? 0
         return VStack(alignment: .leading, spacing: 0) {
             NaraDigKarta(faror: guardM.hazards, plats: harPlats)
             // Sagt där kartan står (DECISIONS #872): kartbilderna hämtas från Apple.
@@ -180,6 +207,10 @@ struct VaktenView: View {
                         NearbyRow(item: item, divider: i < nara.count - 1)
                     }
                 }
+            }
+            if kameror > 0 {
+                MonoLabel(text: kameror == 1 ? "1 fartkamera inom sex mil" : "\(kameror) fartkameror inom sex mil", color: Brand.faint)
+                    .padding(.top, 12).padding(.horizontal, 4)
             }
         }
     }

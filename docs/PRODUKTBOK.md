@@ -60,6 +60,13 @@ inte telefonen av sig själv."* (första meningen bara när vakten kan vakna sj�
 (*HALKA · VILT · OLYCKOR · FRYSRISK · KAMEROR* — en avslagen källa står inte med), den gula knappen ▶ *Starta vakten* och
 under den *INGEN TUR ÄN*.
 
+**Startsidan från 0.4.1 (54) (DECISIONS #873; bara iPhone).** Rubriken är svaret om området: *"Halka 12,4 km bort"* (den närmaste
+faran som inte är en fartkamera) eller *"Inget rapporterat nära dig"*, och under den *"Vakten vaknar själv när du kör."* eller
+*"Tryck Starta vakten innan du kör."* *"Redo."* står bara när platsen eller vägdatan saknas. Direkt under står ▶ *Starta
+vakten* och *Planera en resa*, sedan kartan och listan. På kartan är fartkamerorna små grå prickar och förarens plats vit.
+Listan *NÄRA DIG JUST NU* visar inga fartkameror; de står som en rad under, *31 FARTKAMEROR INOM SEX MIL*. Källraden och
+*"Din position lämnar inte telefonen av sig själv."* står längst ner. Stycket nedan beskriver delarna; ordningen är den här.
+
 **Nära dig och Planera en resa (14/11, kort #659, DECISIONS #870 och #872; bara iPhone, från 0.4.1, för alla).** På 01 Redo står
 Apples karta där sockeln stod: farorna inom sex mil, halkan som gula streck längs vägen och de andra farorna som gula
 punkter, raden *KARTAN KOMMER FRÅN APPLE*, och under den *NÄRA DIG JUST NU* med de tre närmaste (avstånd, fara, detalj) eller *"Inget rapporterat inom sex
