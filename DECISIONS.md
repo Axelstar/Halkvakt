@@ -13380,6 +13380,36 @@ vakten går. Räknaren (#787) bär spåret. iPhone 0.4.0 den 8/11 (dagens rader,
   varningarna utan att föraren märker det. Orsaken kan vara att appen sveptes bort, att TestFlight uppdaterade den, en krasch eller
   iOS:s minnesstopp (jetsam). Kort #643; frågan om Analysdata står i bedömningen §4.2.
 
+**Tillägg 14/11 (Bengt: *"Bokför batteridrivet"*): batteriprovet 14/11, och Halkvakt omkring 1,2 %/h.** Bengts två resor lördag
+14/11, 12:11 (20 minuter) och 12:34 (96 minuter). Underlaget är Bengts skärmbilder av *Inställningar → Mätningen* (15:47) och
+*Inställningar → Batteri* (15:52, dagen). Bygget lästes inte i telefonen.
+
+| Mått | 14/11 12:11 | 14/11 12:34 |
+| :-- | :-- | :-- |
+| Längd | 20 min | 96 min |
+| Kollar | 11, varav 9 nya, inget ur reserven | 48, alla nya, inget ur reserven |
+| Filens ålder vid ankomst | median 1:00, högst 1:04 | median 1:01, högst 1:19 |
+| Äldsta station | median 32 min | median 48 min |
+| Telefonen under resan | 100 → 100 % | 100 → 85 %, 9,4 %/h; med stegen om 5 % mellan 6,3 och 12,5 %/h |
+| Halkvakts andel av dagen | 5 %; 1 minut på skärmen, 1 h 57 min i bakgrunden | |
+
+- **Batteriet är inom budgeten.** Dagens förbrukning var minst omkring 46 procentenheter, från 100 % vid den första resan till 54 %
+  15:52. Halkvakts 5 % av den är omkring 2,3 procentenheter på 1 h 57 min, alltså **omkring 1,2 %/h**. Laddades telefonen ur före
+  den första resan var dagens förbrukning större, och Halkvakts del likaså. Men 8 %/h på 1 h 57 min hade krävt en förbrukning på
+  omkring 300 procentenheter under dagen. Inget hinder enligt #753. Det stämmer med 8/11 (omkring 2,8 %/h).
+- **Bakgrundstiden stämmer med resorna:** 1 h 57 min mot resornas 116 minuter. Vakten gick alltså inte utanför resorna, till
+  skillnad från 8/11.
+- **Resten av telefonens fall var annan användning med skärmen tänd:** Telefon 24 % (36 minuter på skärmen), FaceTime 16 % (17
+  minuter), Safari 7 % (19 minuter) och Meddelanden 3 % (17 minuter). Resan är alltså inget prov med skärmen av.
+- **Takten** är som förut: en koll ungefär varannan minut, och filen drygt en minut gammal. Äldsta station 48 minuter, under taket
+  60 minuter.
+- **Småvägsrösten ingår inte.** Appen hämtar punktfilen bara när lägesfilen bär ett besked (#846), och med brytarna av bär den inget.
+  Telefonen har alltså inte hämtat filen. Småvägsröstens batteristeg (punktfilen och beskedet i `live.json`) står kvar.
+
+Förbehåll: iOS ger andelar i hela procent, inte procentenheter. Omkring 46 procentenheter förutsätter att telefonen inte laddades
+efter den första resan. Att telefonen visade 100 % genom hela resan 12:11 kan bero på att iPhone håller 100 % en stund efter
+laddningen.
+
 **Stomdokument:** SYS 1 (kedjans takt), APP 9, BED §4.2
 
 ## #779 (2/11 2026) Datawrapper: pendlingstabellen per stråk och hela läget per län, där bara det hala syns
