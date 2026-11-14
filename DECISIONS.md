@@ -16521,7 +16521,8 @@ slås brytaren av samma dag. En kontroll varje dygn skriver ett ärende, och Ben
 ## #869 (14/11 2026) Småvägsrösten: avbrottet räknas på sju dygn (halkvakt-kuvos F66, ändrar F57 val 14; kort #647)
 
 **Beslut.** Bengt 14/11: *"Bygg med B"*. Avbrottskontrollen (#868) prövar de sju senaste dygnen mot backtestens högsta vecka för
-regionen, inte ett enskilt dygn. Val 14 i halkvakt-kuvos F57 är signerat av Bengt och Axel; Axel har inte signerat ändringen ännu.
+regionen, inte ett enskilt dygn. Val 14 i halkvakt-kuvos F57 är signerat av Bengt och Axel, och **ändringen är signerad av båda**
+14/11 (Bengt: *"Axel o jag signerar"*).
 
 **Skälet.** Den första körningen 14/11 prövade 13/11, och norr låg över gränsen (#1598). Dygnet var ett långvarigt halkväder från
 kvällen 12/11 till morgonen 14/11. Gränsen är ett veckomedel, och en vecka nära gränsen består av halkdygn långt över den och lugna
@@ -16541,6 +16542,6 @@ avgör olycksfacit och testarnas svar, inte takten. Talen står i halkvakt-kuvos
 - **Dygnet mot veckan,** som i F57 val 14.
 - **Dygnet mot backtestens högsta dygn.** Backtesten har inga dygnstal.
 
-**Kvar:** Axels signatur, sammanslagningen av PR:en här och halkvakt-kuvos PR, och flödets första körning.
+**Kvar:** sammanslagningen av PR:en här och halkvakt-kuvos PR, och flödets första körning.
 
 **Stomdokument:** MAT §5 — småvägsröstens avbrott
