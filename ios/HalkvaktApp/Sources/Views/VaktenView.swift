@@ -44,7 +44,9 @@ struct VaktenView: View {
             .navigationDestination(isPresented: $visaPlan) { PlaneradResaView() }
         }
         .task { await guardM.refreshSnapshot() }
-        .task { await hamtaPlats() }
+        // Bara med brytaren Kartan och Planera en resa på (DECISIONS #871). Av ⇒ ingen plats läses här och ingen karta hämtas.
+        .task(id: prefs.planeraPa) { await hamtaPlats() }
+        .onChange(of: prefs.planeraPa) { _, pa in if !pa { plan.rensa() } }
         .onDisappear { if tipsatt { prefs.tipsaDold = true }; facitNu = nil }
         .onChange(of: fas) { _, ny in if ny != .active, tipsatt { prefs.tipsaDold = true } }
     }
@@ -75,12 +77,17 @@ struct VaktenView: View {
             if tipsa { tipsaKort.padding(.top, 14) }
 
             // Kort #659: en planerad resa med avresetid står här tills sex timmar efter avresan.
-            if let kommande = plan.kommande { planeradRad(kommande).padding(.top, 14) }
+            if prefs.planeraPa, let kommande = plan.kommande { planeradRad(kommande).padding(.top, 14) }
 
             if tur == nil && resa == nil && !spara && !erbjud && !tipsa {
-                // Kort #659 (DECISIONS #870): kartan Nära dig står där sockeln stod, med de tre närmaste farorna under.
-                naraDig.padding(.top, 14)
-                Spacer(minLength: 12)
+                if prefs.planeraPa {
+                    // Kort #659 (DECISIONS #870, #871): kartan Nära dig står där sockeln står, med de tre närmaste farorna under.
+                    naraDig.padding(.top, 14)
+                    Spacer(minLength: 12)
+                } else {
+                    Spacer(minLength: 12)
+                    Plinth(name: "plinth-logo").frame(height: 220)
+                }
             } else {
                 Spacer(minLength: 24)
             }
@@ -106,7 +113,7 @@ struct VaktenView: View {
             Spacer(minLength: 24)
 
             YellowPill(title: "Starta vakten", playIcon: true) { guardM.requestPermissionAndStart() }
-            NeutralPill(title: "Planera en resa") { visaPlanera = true }.padding(.top, 12)
+            if prefs.planeraPa { NeutralPill(title: "Planera en resa") { visaPlanera = true }.padding(.top, 12) }
             if guardM.locationDenied { LocationDeniedRow().padding(.top, 10) }
 
             Text(tur.map { "\($0.varningar.count) \($0.varningar.count == 1 ? "VARNING" : "VARNINGAR") · VISAS TILLS NÄSTA TUR" } ?? (prefs.lastTripEnd == nil ? "INGEN TUR ÄN" : "INGA VARNINGAR SENASTE TUREN"))
@@ -131,6 +138,7 @@ struct VaktenView: View {
     private var harPlats: (lon: Double, lat: Double)? { guardM.lastLoc ?? plats }
 
     private func hamtaPlats() async {
+        guard prefs.planeraPa else { return }
         let status = CLLocationManager().authorizationStatus
         guard status == .authorizedWhenInUse || status == .authorizedAlways else { return }
         do {

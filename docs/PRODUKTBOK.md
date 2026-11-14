@@ -60,7 +60,11 @@ inte telefonen av sig själv."* (första meningen bara när vakten kan vakna sj�
 (*HALKA · VILT · OLYCKOR · FRYSRISK · KAMEROR* — en avslagen källa står inte med), den gula knappen ▶ *Starta vakten* och
 under den *INGEN TUR ÄN*.
 
-**Nära dig och Planera en resa (14/11, kort #659, DECISIONS #870; bara iPhone, i en gren, inte släppt).** På 01 Redo står
+**Nära dig och Planera en resa (14/11, kort #659, DECISIONS #870 och #871; bara iPhone, bara i TestFlight och bara med
+brytaren *Kartan och Planera en resa* under Inställningar → Betatest på; av från början).** Under brytaren står: *"Med den på
+visar startsidan Apples karta, och du kan söka en adress och se läget längs vägen. Apple får då veta vilket område kartan
+visar och, när du söker, var du är och vart du ska. Halkvakt får aldrig veta det."* Med brytaren av är Redo som ovan. Med den
+på står på 01 Redo
 Apples karta där sockeln stod: farorna inom sex mil, halkan som gula streck längs vägen och de andra farorna som gula
 punkter, och under den *NÄRA DIG JUST NU* med de tre närmaste (avstånd, fara, detalj) eller *"Inget rapporterat inom sex
 mil."* Utan plats visar kartan hela landet med bara halkan, under *HALKAN I LANDET JUST NU*, och raden *"Slå på platsen
@@ -75,8 +79,8 @@ längs vägen. Den öppnar Halkvakt, där läget hämtas färskt."* Notisen lyde
 en kvart. Öppna Halkvakt och se läget längs vägen."* En resa med avresetid står överst på Redo som *PLANERAD RESA*,
 *Till {målet}*, *Avresa {dag och tid}. Se läget längs vägen.*, tills sex timmar efter avresan, och *TA BORT RESAN* tar
 bort den. Under sökrutan står *NÄR DU SÖKER*: *"Apple slår upp adressen och räknar ut vägen, och får då veta var du är och
-vart du ska. Halkvakt får aldrig veta det. Resan sparas inte."* **Löftets rad på Redo är inte ändrad än**, fast kartan
-hämtar kartbilder från Apple: orden väntar på Bengts ja (#870), och inget bygge med detta släpps före det. Skärmbilderna
+vart du ska. Halkvakt får aldrig veta det. Resan sparas inte."* **Löftets rad på Redo är inte ändrad än**: den gäller alla
+som inte slagit på brytaren. De nya orden (Axels val 14/11, #871) skrivs in när brytaren tas bort, efter Bengts ja (#870). Skärmbilderna
 är inte tagna.
 
 **01b Redo efter tur.** Efter en tur med minst en varning byts sockeln mot ett **kvitto**: *SENASTE TUREN*, tiden och

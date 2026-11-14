@@ -16588,3 +16588,21 @@ avgör olycksfacit och testarnas svar, inte takten. Talen står i halkvakt-kuvos
 **Kvar:** Bengts ja eller nej; Android-bygget och Google Cloud-nycklarna; telefonproven; skärmbilderna i produktboken; räknare för Planera resa (kräver ett eget beslut).
 
 **Stomdokument:** APP 4, FAV §2, BED §4.2
+
+## #871 (14/11 2026) Kartan och Planera resa slås ihop bakom en brytare som bara finns i TestFlight, och Axel väljer nya ord överallt när den släpps (kort #659; #870)
+
+**Beslut.** Axel 14/11 kväll, på frågan i #870 om orden: *"Lets do a)"*, det vill säga nya ord om platsen överallt när kartan och Planera resa släpps. Och på frågan hur bygget kommer till telefonen utan att nästa inskick bär det: *Behind a switch*.
+- **Brytaren** *Kartan och Planera en resa* står under Inställningar → Betatest, av från början. Den finns bara i TestFlight och utvecklarbyggen, med samma prövning som Betatest (`Prefs.betatestTillaten`, DECISIONS #681): i ett App Store-bygge syns den inte, och ett sparat värde gäller inte.
+- **Av** är appen som förut: sockeln på Redo, en knapp, ingen karta, ingen plats läst för kartan och ingenting till Apple. **På** visar kartan *Nära dig*, knappen *Planera en resa* och den planerade resan. Slås den av tas den planerade resan och dess påminnelse bort.
+- **Under brytaren står vad den gör:** *"Med den på visar startsidan Apples karta, och du kan söka en adress och se läget längs vägen. Apple får då veta vilket område kartan visar och, när du söker, var du är och vart du ska. Halkvakt får aldrig veta det."*
+- **Produktregeln i CLAUDE.md** har fått en mening om brytaren, i samma commit. Löftets rad, introduktionen, `project.yml`, integritetssidan och butikernas uppgifter är oförändrade: för alla som inte slår på brytaren i ett TestFlight-bygge skickar appen det den skickade förut. Plays datablankett rörs inte, eftersom Android inte har delen.
+- **Spärren ur #870 står kvar:** brytaren tas bort och de nya orden skrivs in överallt först när Bengt har sagt ja. Axels val av orden (väg a) är bokfört; Bengts svar väntas.
+- **Bygget** är 0.4.0 (50), höjt i samma commit som brytaren. 0.4.0 (49) ligger hos App Review.
+
+**Alternativ som Axel valde bort:** att slå ihop med allt på och släppa väntan på Bengt; att vänta med TestFlight tills Bengt svarat.
+
+**Inte prövat:** brytaren är inte sedd på en telefon. App Reviews granskare kör bygget med ett provkvitto och kan därför se brytaren; den är av, och texten under säger vad den gör.
+
+**Kvar:** TestFlight-bygget och Axels prov på telefonen; Bengts ja eller nej; Android.
+
+**Stomdokument:** APP 4, BED §4.2
