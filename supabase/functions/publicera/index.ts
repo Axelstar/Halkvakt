@@ -2337,13 +2337,16 @@ export async function buildMapData(q: Q, opts: {
   // Väntelistans storlek — socialt bevis på startsidan (visas från 25+).
   const wl = await q(`SELECT count(*)::int AS n FROM waitlist`);
 
+  // Rikstalen räknar bara Sverige (Bengt 14/11, DECISIONS #865): kartan visar dem under "Sveriges väglag just nu". Finlands och
+  // Danmarks stationer och Finlands olyckor ritas på kartan men räknas inte här (14/11 09.31 UTC+1: 933 kalla stationer i filen, varav 259 finska).
+  const seVader = vader.filter((r) => r.land === "SE");
   const stats = {
     generated_at: now.toISOString(),
     vaglag_total: vaglag.length,
     vaglag_ej_normalt: vaglag.filter((r) => Number(r.condition_code) > 1).length,
-    stationer: vader.length,
-    kalla_stationer: vader.filter((r) => r.surface_temp_c !== null && Number(r.surface_temp_c) <= 0).length,
-    olyckor: olyckor.length,
+    stationer: seVader.length,
+    kalla_stationer: seVader.filter((r) => r.surface_temp_c !== null && Number(r.surface_temp_c) <= 0).length,
+    olyckor: olyckor.filter((r) => r.land === "SE").length,
     kameror: kameror.length,
     kameror_vaglag: kamerorVaglag,
     vilt_dygn: Number(vilt[0]?.dygn ?? 0),
