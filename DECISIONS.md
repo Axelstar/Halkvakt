@@ -16406,6 +16406,27 @@ men rubriken fel.
 
 **Stomdokument:** SYS 1 — kartsajtens rikstal
 
+## #866 (14/11 2026) Småvägsrösten: fukten är N3 eller radarn, som regeln är byggd (kort #647)
+
+**Beslut.** Bengt 14/11, för sig och Axel: *"Ja, vi signerar"*. Frågan var om de signerar fukten B: N3 eller radarn, som byggt i `sql/105`.
+Radarns bakåtprov (kort #658, halkvakt-kuvos F62) gav enligt den signerade läsregeln (halkvakt-kuvos F59 §5) att radarn får väcka
+rösten. Kuvösens eget beslut med talen är F63.
+
+- `sql/105` och kopian `ingest/smavag-regel.ts` står kvar, och ingen kod ändras.
+- Taket, 30 minuter och 20 km (#863), är detsamma för båda fukterna.
+- Avbrottsgränsen i skuggan (halkvakt-kuvos F57 val 14) följer den valda fukten. Gränsen står i F63 (#768).
+
+**Alternativen som inte valdes:**
+- **A, N3 ensam vid påslaget.** Det rekommenderades i underlaget 14/11 före provet. Villkoret för radarn, att provet visar att den träffar, är
+  nu uppfyllt.
+- **C, att vänta på provet.** Provet är gjort.
+
+**Kvar före påslaget** (#828, #833):
+- avbrottskontrollen enligt F57 val 14, som inte är byggd;
+- kedjans prov i 48 timmar;
+- batteriet och appens granskning (kort #647).
+
+**Stomdokument:** APP §3, MAT §5 — småvägsröstens fukt
 ## #867 (14/11 2026) Småvägsrösten vid olyckorna: facit varje dygn, från 12/11 till sju dygn efter påslaget (kort #647)
 
 **Beslut.** Bengt 14/11 bad om tre saker:
