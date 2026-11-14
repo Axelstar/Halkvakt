@@ -16303,7 +16303,7 @@ with a few counties so we know it works fine?"*).
 **Beslutet.** Bengt 14/11: *"Ja bygg o ta det tak du rekommenderar"*, på beslutsunderlaget för fukten och taket (Bengts Skrivbord,
 `Smavagsrosten_Beslutsunderlag_fukten_och_taket_2026-11-14.md`). Efter ett besked tiger småvägsrösten tills både 30 minuter och 20 km
 har gått, på alla vägar: `smavagTystS` 1800 och `smavagTystM` 20000 i motorn, Kotlin och Swift. Platshållarna var 10 minuter och 5 km
-(#844). **Axels ord är inte givet:** Bengt sa inte att svaret gällde för båda, och taket väljs av Bengt och Axel (halkvakt-kuvos F57).
+(#844). Bengt bekräftade samma dag (*"Ja, 30/20"*) efter frågan varför taket inte stod kvar på platshållarna, och **Axel sa ja via Bengt** (*"axel säge ja"*). Taket väljs av Bengt och Axel (halkvakt-kuvos F57).
 
 **Varför.**
 - Taket väljs ur backtesten januari–mars 2024 (halkvakt-kuvos F57 och F58). Talen och läsningen står i halkvakt-kuvos F60.
