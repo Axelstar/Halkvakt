@@ -37,10 +37,10 @@ Define success criteria. Loop until verified.
   the warnings, settings changed and what went wrong — the value list lives in `supabase/functions/app-raknare/index.ts`),
   counted as one row per day, app, app version, cohort (new or existing install), event and value — no id, no time finer
   than the day, no position and no distance: a guard session is only its start method, its length in four buckets and how
-  it ended. Always on and stated in integritet.html (variant A). In TestFlight builds only, behind the switch *Kartan och
-  Planera en resa* (off by default; Axel 14/11, DECISIONS #870, #871; not in App Store builds until Bengt has agreed to new
-  wording): Apple's MapKit fetches map tiles for the area shown, and when the driver searches an address the search text,
-  the driver's position and the destination go to Apple — never to Halkvakt. Rewritten 20/9 by Axel
+  it ended. Always on and stated in integritet.html (variant A). One exception since 14/11 (Axel, DECISIONS
+  #870, #872), on iPhone: the start page and a planned trip show Apple's map, so MapKit fetches map tiles from Apple for the
+  area shown without the driver pressing anything, and when the driver searches an address the search text, the driver's
+  position and the destination go to Apple — never to Halkvakt. Stated in integritet.html and next to the map and the search. Rewritten 20/9 by Axel
   (DECISIONS #264) because the old wording ("Full stop") became untrue on 16/9 when S4 shipped, and
   stayed in four documents for four days. Change what the app sends ⇒ this line, the Play Data Safety
   file, integritet.html in the map repo and the product book change in the SAME commit.

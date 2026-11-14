@@ -170,14 +170,6 @@ struct InstallningarView: View {
                 GreenToggleRow(title: "Svara på varningarna", sub: "Tryck Stämde eller Stämde inte efter en varning", isOn: $prefs.facitOn)
             }
             .padding(.top, 24)
-            // Kort #659 (DECISIONS #871): kartan och Planera en resa provas här innan de släpps.
-            RowPanel {
-                GreenToggleRow(title: "Kartan och Planera en resa", sub: "Prova innan det släpps", isOn: $prefs.planeraPa)
-            }
-            .padding(.top, 10)
-            Text("Med den på visar startsidan Apples karta, och du kan söka en adress och se läget längs vägen. Apple får då veta vilket område kartan visar och, när du söker, var du är och vart du ska. Halkvakt får aldrig veta det.")
-                .font(Typo.sans(13)).lineSpacing(3).foregroundStyle(Brand.dim)
-                .padding(.top, 14).padding(.horizontal, 4)
             MonoLabel(text: "Vad skickas").padding(.top, 28).padding(.bottom, 10).padding(.horizontal, 4)
             // S4 (Bengt #186, Axel #196): texten säger exakt vad som skickas — inget mer, inget mindre.
             RowPanel {
