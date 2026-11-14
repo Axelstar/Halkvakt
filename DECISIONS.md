@@ -16405,3 +16405,39 @@ men rubriken fel.
 **Kvar:** deploy av `publicera` (och `mcp`, där bara en kommentar ändrats) och beviset i nästa `meta.json`.
 
 **Stomdokument:** SYS 1 — kartsajtens rikstal
+
+## #867 (14/11 2026) Småvägsrösten vid olyckorna: facit varje dygn, från 12/11 till sju dygn efter påslaget (kort #647)
+
+**Beslut.** Bengt 14/11 bad om tre saker:
+- att det byggs: *"Ja, bygg"*, på frågan om bakåträkningen av småvägsrösten vid säsongens halkolyckor;
+- att det inte blir någon skarv: *"ok men då måste bakåträkningen fortsätta ändå tills det är ett ok för småvägarna. kan du bygga in det så
+  det inte blir någon skarv"*;
+- och omfånget: *"bakåträkningens omfång så gör vi bara a"*.
+
+Före det, 14/11: statistiken ska skilja tydligt mellan det som är bakåträknat mot en tänkt regel och regeln som den faktiskt tillämpas i
+det löpande olycksfacit.
+
+**Det som är byggt:**
+- **Flödet** `kuvos-smavag-olyckor` körs en gång om dygnet och på knapp.
+- **Läsningen** (`ingest/smavag-olyckor-db.ts`, READ ONLY) tar olycksfacits olyckor sedan 12/11 kl. 14 UTC, när driften började räkna
+  rösten. För varje olycka tar den närmaste småvägspunkt inom 0,5 km, olycksfacits lager för småvägsrösten (`sql/110`) och timmen som
+  rösten hade talat med vid starten, räknad som i `sql/110`.
+- **Kuvösens facit** (halkvakt-kuvos F64) skriver ett dygn i svensk tid i taget till den privata hinken, en gång, när alla dygnets olyckor är
+  fångade.
+- **Nivån står på varje rad** och läggs aldrig ihop med en annan:
+  - *3 olycksfacit*: olycksfacits eget lager, alltså driftens regel vid starten;
+  - *3 underlag*: driftens underlag för timmen, när lagret saknas;
+  - *lucka*: driften hade ingen timme, eller underlaget saknas.
+- **En lucka ger ett ärende.** Nivå 2, en omräkning med kedjan, görs bara på Bengts ord och bara medan driftens indata finns kvar.
+- **Slutet:** serien slutar sju dygn efter att en brytare slagits på (`smavagsbrytare.andrad_at`), så att samma olyckor finns både i
+  facit och i drift.
+- **Kontraktsgrinden** vaktar läsningens kopior av `sql/110`:s avstånd (ny regel, SMAVAG_M), färskhet och fullständighet.
+
+**Alternativen som inte valdes:**
+- **(b), en omräkning av 6/11–12/11 med kedjan.** Småvägspunkternas underlag fanns aldrig i driften före 12/11, så det hade varit flera
+  dagars bygge, och vägväderstationernas observationer glesas redan ut efter sju dygn.
+- **Att bara läsa olycksfacits lager.** Då hade luckorna och olyckorna före lagret inte synts.
+
+**Kvar:** sammanslagningen av PR:en här och halkvakt-kuvos PR, och den första körningen, båda på Bengts ord.
+
+**Stomdokument:** MAT §5 — småvägsröstens facit vid olyckorna

@@ -1,0 +1,65 @@
+name: kuvos-smavag-olyckor
+# SMÅVÄGSRÖSTEN VID OLYCKORNA, FACIT VARJE DYGN (Bengt 14/11: "Ja, bygg" och "bakåträkningens omfång så gör vi bara a"; DECISIONS #867,
+# halkvakt-kuvos F64, kort #647). För varje olycka i olycksfacit nära en småvägspunkt sedan 12/11 kl. 14 UTC, när driften började räkna
+# rösten: vad driftens regel sa vid starten. Nivån står på varje rad och läggs aldrig ihop med en annan: olycksfacits eget lager (sql/110),
+# driftens underlag för timmen när lagret saknas, eller en lucka när driften inte hade någon timme. Ett dygn skrivs en gång, när alla dess
+# olyckor är fångade, till den privata hinken; serien fortsätter till sju dygn efter att en brytare slagits på. En lucka ger ett ärende,
+# eftersom nivå 2 (en omräkning med kedjan) bara går medan driftens indata finns kvar och bara görs på Bengts ord.
+# Läsningen är READ ONLY. Inget lämnar jobbet utom filerna i hinken, och loggen säger bara klart, lucka eller fel (#768).
+on:
+  schedule:
+    - cron: "17 6 * * *"                     # en gång om dygnet; GitHubs schema går sent, och ett dygn räknas först 18 timmar efter
+  workflow_dispatch:
+concurrency: { group: kuvos-smavag-olyckor, cancel-in-progress: false }
+permissions:
+  contents: read
+  issues: write
+env:
+  HINK_UT: kuvos-smavag-olyckor-2026-27
+  HINK_DRIFT: kuvos-smavag-2026-27
+jobs:
+  facit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos (DECISIONS #768): koden läggs ovanpå utcheckningen.
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå, och versionerna till raderna
+        run: |
+          echo "KUVOS_SHA=$(git -C .kuvos-privat rev-parse --short=12 HEAD)" >> "$GITHUB_ENV"
+          echo "HALKVAKT_SHA=$(git rev-parse --short=12 HEAD)" >> "$GITHUB_ENV"
+          rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - name: Självtesten
+        shell: bash
+        run: |
+          tyst() { "$@" > tyst.log 2>&1 || { echo "::error::föll: ${*:1:3}: $(tail -1 tyst.log | cut -c1-200)"; exit 1; }; }
+          tyst node --experimental-strip-types ingest/smavag-olyckor-db.ts --sjalvtest
+          tyst node --experimental-strip-types ingest/hinken.ts --sjalvtest
+          tyst node --experimental-strip-types kuvos/smavag-olyckor.ts --sjalvtest
+      - name: Olyckorna, facit och hinken
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          export FN KEY
+          node --experimental-strip-types ingest/smavag-olyckor-db.ts las 2026-11-12T14:00:00Z olyckor.json > las.log 2>&1 \
+            || { echo "::error::läsningen föll: $(tail -1 las.log | cut -c1-200)"; exit 1; }
+          node --experimental-strip-types kuvos/smavag-olyckor.ts kor olyckor.json arbete 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+          if [ -s arbete/luckor.txt ]; then echo "LUCKOR=$(paste -sd ' ' arbete/luckor.txt)" >> "$GITHUB_ENV"; fi
+          rm -rf arbete olyckor.json
+      - name: Ärende om en lucka
+        if: ${{ env.LUCKOR != '' }}
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          gh issue create --repo "$GITHUB_REPOSITORY" --assignee 895845 \
+            --title "Småvägsrösten vid olyckorna: lucka i driften $LUCKOR" \
+            --body "Facit för småvägsrösten vid olyckorna (DECISIONS #867, halkvakt-kuvos F64) fann olyckor nära en småvägspunkt där driften inte hade någon timme vid starten, eller där timmens underlag saknas: dygnen $LUCKOR. Raderna är märkta lucka i facit i den privata hinken. Nivå 2, en omräkning med kedjan, går bara medan driftens indata finns kvar, omkring sju dygn, och görs bara på Bengts ord. Stäng ärendet när luckan är omräknad eller bokförd som en lucka. Körningen: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
