@@ -121,9 +121,9 @@ data class EngineConfig(
     val smavagPaGrader: Double = 30.0,
     val smavagPaFixar: Int = 3,
     val smavagKordaMaxM: Double = 3000.0,
-    // S, tystnaden efter ett besked (DECISIONS #828): båda ska ha gått — samma tal som engine/src/types.ts (kontraktsgrinden).
-    val smavagTystS: Double = 600.0,
-    val smavagTystM: Double = 5000.0,
+    // S, tystnaden efter ett besked (DECISIONS #828, #863): båda ska ha gått — samma tal som engine/src/types.ts (kontraktsgrinden).
+    val smavagTystS: Double = 1800.0,
+    val smavagTystM: Double = 20000.0,
 )
 
 // ---- geo (mirror of geo.ts, same formula sequences) ----
