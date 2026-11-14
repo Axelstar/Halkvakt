@@ -36,6 +36,27 @@ struct PlaneradResaView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 18))
                     .padding(.top, 18)
 
+                    // Det föraren gör står direkt under kartan, före rapporten (Axel 14/11, DECISIONS #874).
+                    HStack {
+                        Spacer()
+                        YellowPill(title: "Starta vakten", playIcon: true) { GuardManager.shared.requestPermissionAndStart() }
+                        Spacer()
+                    }
+                    .padding(.top, 20)
+                    if let hinder = rapport?.rader.first(where: { Self.tipsSlag.contains($0.slag) }) {
+                        Text("\(hinder.rubrik) längs vägen. Se om det finns en annan väg i din kartapp.")
+                            .font(Typo.sans(14, .medium)).lineSpacing(3).foregroundStyle(Brand.yellow)
+                            .multilineTextAlignment(.center).frame(maxWidth: .infinity)
+                            .padding(.top, 16)
+                    }
+                    HStack(spacing: 24) {
+                        MonoLink(title: "Öppna i Kartor") { oppna("http://maps.apple.com/?daddr=%@&dirflg=d", p) }
+                        MonoLink(title: "Öppna i Google Maps") {
+                            oppna("https://www.google.com/maps/dir/?api=1&destination=%@&travelmode=driving", p)
+                        }
+                    }
+                    .frame(maxWidth: .infinity).padding(.top, 4)
+
                     if let rapport {
                         RapportInnehall(rader: rapport.rader, kandidat: rapport.kandidat, fore: nil, kollat: rapport.kollat,
                                         lagesfil: rapport.lagesfil, rapportfil: rapport.rapportfil,
@@ -63,12 +84,6 @@ struct PlaneradResaView: View {
                         .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(notisFel ? Brand.yellow : Brand.dim)
                         .padding(.top, 14).padding(.horizontal, 4)
 
-                    HStack {
-                        Spacer()
-                        YellowPill(title: "Starta vakten", playIcon: true) { GuardManager.shared.requestPermissionAndStart() }
-                        Spacer()
-                    }
-                    .padding(.top, 32)
                     if p.avresa != nil {
                         MonoLink(title: "Ta bort resan") { plan.rensa(); dismiss() }
                             .frame(maxWidth: .infinity).padding(.top, 6)
@@ -93,6 +108,16 @@ struct PlaneradResaView: View {
         }
         .onChange(of: paminn) { _, _ in Task { await sattAvresa() } }
         .onChange(of: avresa) { _, _ in Task { await sattAvresa() } }
+    }
+
+    /// Det som kan göra en annan väg värd att se efter: olycka, hinder, halka, kö och omledning.
+    private static let tipsSlag: Set<RapportSlag> = [.olycka, .hinder, .halka, .ko, .omledning]
+
+    /// Öppnar resans mål i förarens kartapp, som visar vägarna dit. Målet går då till den appen, på förarens tryck.
+    private func oppna(_ mall: String, _ p: Resplan.Plan) {
+        guard let mal = p.punkter.last, mal.count == 2,
+              let url = URL(string: String(format: mall, "\(mal[1]),\(mal[0])")) else { return }
+        UIApplication.shared.open(url)
     }
 
     private func hamta() async {

@@ -11,6 +11,8 @@ import CoreLocation
 import HalkvaktEngine
 
 struct VaktenView: View {
+    /// Ändras vid varje tryck på fliken Vakten (RootView): undersidorna stängs och startsidan visas (DECISIONS #874).
+    var hem = 0
     @State private var guardM = GuardManager.shared
     @State private var prefs = Prefs.shared
     @State private var fav = Favoriter.shared
@@ -42,6 +44,10 @@ struct VaktenView: View {
             .toolbar(.hidden, for: .navigationBar)
             .navigationDestination(isPresented: $visaPlanera) { PlaneraView() }
             .navigationDestination(isPresented: $visaPlan) { PlaneradResaView() }
+        }
+        .onChange(of: hem) { _, _ in
+            visaPlanera = false
+            visaPlan = false
         }
         .task { await guardM.refreshSnapshot() }
         // Om igen när platstillståndet ändras: den som just svarat i iOS ruta ska få kartan över sitt område direkt.
@@ -95,8 +101,28 @@ struct VaktenView: View {
             }
             .padding(.top, 28)
 
-            YellowPill(title: "Starta vakten", playIcon: true) { guardM.requestPermissionAndStart() }.padding(.top, 24)
-            NeutralPill(title: "Planera en resa") { visaPlanera = true }.padding(.top, 12)
+            // Bredvid varandra (Axel 14/11, DECISIONS #874), lika breda.
+            HStack(spacing: 10) {
+                Button { guardM.requestPermissionAndStart() } label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: "play.fill").font(.system(size: 12))
+                        Text("Starta vakten").font(Typo.sans(16, .semibold)).lineLimit(1).minimumScaleFactor(0.85)
+                    }
+                    .foregroundStyle(Brand.bg)
+                    .frame(maxWidth: .infinity).frame(height: 56)
+                    .background(Brand.yellow, in: Capsule())
+                }
+                .buttonStyle(PressScale())
+                Button { visaPlanera = true } label: {
+                    Text("Planera resa").font(Typo.sans(16, .semibold)).lineLimit(1).minimumScaleFactor(0.85)
+                        .foregroundStyle(Brand.text)
+                        .frame(maxWidth: .infinity).frame(height: 56)
+                        .background(Brand.panel, in: Capsule())
+                        .overlay(Capsule().strokeBorder(Brand.trackOff, lineWidth: 1))
+                }
+                .buttonStyle(PressScale())
+            }
+            .padding(.top, 24)
             if guardM.locationDenied { LocationDeniedRow().padding(.top, 10) }
 
             if let tur { kvitto(tur).padding(.top, 24) }

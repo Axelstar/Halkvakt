@@ -16645,3 +16645,20 @@ avgör olycksfacit och testarnas svar, inte takten. Talen står i halkvakt-kuvos
 **Kvar:** Axels prov; helskärmskartan; samma startsida i Android.
 
 **Stomdokument:** APP 4
+
+## #874 (14/11 2026) Knapparna bredvid varandra, fliken Vakten går alltid hem, och tipset om en annan väg öppnar förarens kartapp (kort #659)
+
+**Beslut.** Axel 14/11 23:17–23:21, om förslaget till startsidan (#873): *"Okej jag gillar det! Dock vill jag ha knapparna brevid varandra. Sedan ska man altid kunna trycka på vakten och det tar en hem"*, *"Går det att vi tipas om en annan resa om vi ser en olycka eller något, dock vill jag att man gör detta i maps eller kartor"* och *"Kanske ska actionen vara högre upp"*.
+- **Knapparna** *Starta vakten* och *Planera resa* står bredvid varandra, lika breda. Knappen heter *Planera resa*, utan *en*, för att få plats.
+- **Fliken Vakten går hem.** Ett tryck på den stänger Planera resa och den planerade resan och visar startsidan, också när fliken redan är vald.
+- **Tipset om en annan väg.** När rapporten längs en planerad resa har en olycka, ett hinder, halka, en kö eller en omledning står det i gult under knappen: *"{Olycka} längs vägen. Se om det finns en annan väg i din kartapp."* Under står alltid länkarna *ÖPPNA I KARTOR* och *ÖPPNA I GOOGLE MAPS*, som öppnar resans mål i den appen. Halkvakt räknar inte ut någon annan väg och säger inte att en finns.
+- **Det föraren gör står högre upp** på den planerade resan: *Starta vakten*, tipset och länkarna står direkt under kartan, före rapporten. Claude läste *actionen* som de knapparna; menade Axel något annat rättas det i nästa bygge.
+- **Vad som lämnar telefonen:** resans mål går till Kartor eller Google Maps när föraren trycker på länken. Integritetssidan får en rad om det.
+
+**Alternativ som inte byggdes:** att be Apple om flera vägar och jämföra läget längs var och en i appen. Axel ville att valet av väg görs i kartappen.
+
+**Inte prövat:** inte sett på en telefon. Att länken till Google Maps öppnar appen och inte webbläsaren när appen finns är inte provat.
+
+**Kvar:** Axels prov.
+
+**Stomdokument:** APP 4

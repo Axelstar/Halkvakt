@@ -192,6 +192,8 @@ struct GreenToggleRow: View {
 /// Den flytande flikraden: Vakten / Favoriter / Inställningar, 104 × 52 per flik — tre i bredd ryms på en 375 pt-skärm.
 struct FloatingTabBar: View {
     @Binding var tab: Int
+    /// Ett tryck på Vakten, också när fliken redan visas: startsidan går då hem från en undersida (DECISIONS #874).
+    var vidVakten: () -> Void = {}
     var body: some View {
         HStack(spacing: 4) {
             item(0, "VAKTEN") {
@@ -213,7 +215,10 @@ struct FloatingTabBar: View {
     }
 
     private func item<I: View>(_ i: Int, _ title: String, @ViewBuilder icon: () -> I) -> some View {
-        Button { tab = i } label: {
+        Button {
+            if i == 0 { vidVakten() }
+            tab = i
+        } label: {
             VStack(spacing: 6) {
                 icon()
                 Text(title).font(Typo.mono(10)).tracking(1.2).foregroundStyle(tab == i ? Brand.text : Brand.dim)
