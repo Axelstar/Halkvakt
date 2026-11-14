@@ -60,6 +60,25 @@ inte telefonen av sig själv."* (första meningen bara när vakten kan vakna sj�
 (*HALKA · VILT · OLYCKOR · FRYSRISK · KAMEROR* — en avslagen källa står inte med), den gula knappen ▶ *Starta vakten* och
 under den *INGEN TUR ÄN*.
 
+**Nära dig och Planera en resa (14/11, kort #659, DECISIONS #870; bara iPhone, i en gren, inte släppt).** På 01 Redo står
+Apples karta där sockeln stod: farorna inom sex mil, halkan som gula streck längs vägen och de andra farorna som gula
+punkter, och under den *NÄRA DIG JUST NU* med de tre närmaste (avstånd, fara, detalj) eller *"Inget rapporterat inom sex
+mil."* Utan plats visar kartan hela landet med bara halkan, under *HALKAN I LANDET JUST NU*, och raden *"Slå på platsen
+för att se vad som finns nära dig."* Under ▶ *Starta vakten* står knappen *Planera en resa*. Den öppnar **Vart ska du?**:
+*"Se läget längs vägen innan du åker."*, sökrutan *Sök adress eller ort* och under den *DINA RESOR* med de sparade
+resorna (ett tryck öppnar resans rapport, som i Favoriter). Medan föraren skriver visas upp till sex förslag från Apple.
+Ett tryck på ett förslag räknar ut bilvägen dit från där föraren är (*"Räknar ut vägen …"*) och öppnar **Till {målet}**:
+vägen som en gul linje på kartan, längden och *RESAN SPARAS INTE*, samma rapport som en sparad resa (*Läget från*,
+*Rapporten från*, *LÄNGS VÄGEN JUST NU*, *HALKVAKT TROR · BETA*), sedan *NÄR ÅKER DU?* med vippan *Påminn mig före
+avresan* (*En notis en kvart innan*) och en tid, och ▶ *Starta vakten*. Under vippan: *"Notisen säger inte vad som finns
+längs vägen. Den öppnar Halkvakt, där läget hämtas färskt."* Notisen lyder *"Dags att se vägen till {målet}"*, *"Du åker om
+en kvart. Öppna Halkvakt och se läget längs vägen."* En resa med avresetid står överst på Redo som *PLANERAD RESA*,
+*Till {målet}*, *Avresa {dag och tid}. Se läget längs vägen.*, tills sex timmar efter avresan, och *TA BORT RESAN* tar
+bort den. Under sökrutan står *NÄR DU SÖKER*: *"Apple slår upp adressen och räknar ut vägen, och får då veta var du är och
+vart du ska. Halkvakt får aldrig veta det. Resan sparas inte."* **Löftets rad på Redo är inte ändrad än**, fast kartan
+hämtar kartbilder från Apple: orden väntar på Bengts ja (#870), och inget bygge med detta släpps före det. Skärmbilderna
+är inte tagna.
+
 **01b Redo efter tur.** Efter en tur med minst en varning byts sockeln mot ett **kvitto**: *SENASTE TUREN*, tiden och
 sträckan (*16:58–17:34 · 36 MIN · 31 KM*) och en rad per varning — klockslag, ikon, rubrik och exakt vad rösten sa.
 Under: *3 VARNINGAR · VISAS TILLS NÄSTA TUR*. En tur utan varningar ger tillbaka 01.
