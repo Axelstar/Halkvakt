@@ -40,7 +40,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
 
     private let manager = CLLocationManager()
     private var engine: AlertEngine?
-    private var hazards: [Hazard] = []
+    private(set) var hazards: [Hazard] = []   // läses av kartan Nära dig (kort #659)
     /// Kort #203 lager 2: alla stationer ur static.json — missens plats. Den förra listan står kvar om en laddning saknar den.
     private var stations: [Station] = []
     private var prevLoc: CLLocation?
