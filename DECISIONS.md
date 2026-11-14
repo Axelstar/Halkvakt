@@ -16462,3 +16462,28 @@ det löpande olycksfacit.
 **Kvar:** sammanslagningen av PR:en här och halkvakt-kuvos PR, och den första körningen, båda på Bengts ord.
 
 **Stomdokument:** MAT §5 — småvägsröstens facit vid olyckorna
+
+## #868 (14/11 2026) Småvägsrösten: avbrottskontrollen enligt F57 val 14 (kort #647)
+
+**Beslut.** Bengt 14/11: *"bygg avbrottskontrollen"*. Det är det signerade valet 14 i halkvakt-kuvos F57 (12/11), som ersatte taktens
+villkor i #833. Ligger skuggans besked per körtimme under ett dygn, vid det valda taket, över backtestens högsta vecka för samma region,
+slås brytaren av samma dag. En kontroll varje dygn skriver ett ärende, och Bengt eller Axel slår av.
+
+**Det som är byggt:**
+- **Flödet** `kuvos-smavag-avbrott` prövar varje morgon, vid två tider, förra UTC-dygnet. Samma dygn prövas aldrig två gånger.
+- **Måttet** räknas ur dygnets resefiler i den privata hinken med taktens eget mått (`smavag_takt.py vecka`), som i backtesten.
+- **Prövningen** görs av kuvösens `smavag_avbrott.py` (halkvakt-kuvos F65). Den prövar raden med länkradien 1,5 km, resor om 30 punkter,
+  fukten N3 eller radarn (#866), båda grupperna och taket 30 minuter och 20 km (#863), mot gränsen i halkvakt-kuvos F63.
+- **Över gränsen ger ett ärende,** tilldelat Bengt. Samma ärende kommenteras varje dygn som ligger över gränsen.
+  - Är brytaren på, ska den slås av samma dag, av Bengt eller Axel.
+  - Är den av, är utfallet ett underlag inför påslaget.
+- **Saknade timmar** är vaktens sak (#849).
+- **Inga tal** står i loggen eller ärendet (#768). Talen står i hinken (`avbrott_<dygn>.json`).
+
+**Alternativen som inte valdes:**
+- **Att slå av automatiskt.** Val 14 säger att Bengt eller Axel slår av.
+- **Ett nytt ärende för varje dygn.** Ett ärende som kommenteras räcker.
+
+**Kvar:** sammanslagningen av PR:en här och halkvakt-kuvos PR, och den första körningen, båda på Bengts ord.
+
+**Stomdokument:** MAT §5 — småvägsröstens avbrott
