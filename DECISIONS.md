@@ -16517,3 +16517,30 @@ slås brytaren av samma dag. En kontroll varje dygn skriver ett ärende, och Ben
 **Kvar:** sammanslagningen av PR:en här och halkvakt-kuvos PR, och den första körningen, båda på Bengts ord.
 
 **Stomdokument:** MAT §5 — småvägsröstens avbrott
+
+## #869 (14/11 2026) Småvägsrösten: avbrottet räknas på sju dygn (halkvakt-kuvos F66, ändrar F57 val 14; kort #647)
+
+**Beslut.** Bengt 14/11: *"Bygg med B"*. Avbrottskontrollen (#868) prövar de sju senaste dygnen mot backtestens högsta vecka för
+regionen, inte ett enskilt dygn. Val 14 i halkvakt-kuvos F57 är signerat av Bengt och Axel; Axel har inte signerat ändringen ännu.
+
+**Skälet.** Den första körningen 14/11 prövade 13/11, och norr låg över gränsen (#1598). Dygnet var ett långvarigt halkväder från
+kvällen 12/11 till morgonen 14/11. Gränsen är ett veckomedel, och en vecka nära gränsen består av halkdygn långt över den och lugna
+dygn nära noll. Ett dygn mot en vecka slår alltså till på vanliga halkdygn, just när rösten gör mest nytta. Om beskeden stämmer
+avgör olycksfacit och testarnas svar, inte takten. Talen står i halkvakt-kuvos F66 (#768).
+
+**Det som ändras:**
+- **Fönstret** är dygnet och de sex dygnen före, i UTC. Måttet är summan av beskeden genom summan av körtimmarna, samma mått som
+  backtestens veckor.
+- **För få timmar:** med färre än fem dygns timmar i fönstret fälls ingen dom. Den första domen kommer därför med dygnet 18/11, om
+  kedjan inte får fler luckor.
+- **Flödet** `kuvos-smavag-avbrott` hämtar de sju dygnens resefiler ur den privata hinken i stället för ett dygns, och kuvösens
+  `smavag_avbrott.py` läser dem direkt. Ärendet säger *de sju dygnen*.
+- **Oförändrat:** gränsen, taket, fukten och vem som slår av.
+
+**Alternativen som inte valdes:**
+- **Dygnet mot veckan,** som i F57 val 14.
+- **Dygnet mot backtestens högsta dygn.** Backtesten har inga dygnstal.
+
+**Kvar:** Axels signatur, sammanslagningen av PR:en här och halkvakt-kuvos PR, och flödets första körning.
+
+**Stomdokument:** MAT §5 — småvägsröstens avbrott
