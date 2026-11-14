@@ -105,6 +105,11 @@ class MainActivity : ComponentActivity() {
             val a = Alert(System.currentTimeMillis() / 1000.0, "kand:fotostudio", HazardKind.KANDIDAT, 655, Texts.KANDIDAT_TEXT, beta = true)
             GuardService.currentWarning.value = ShownWarning(a, WarningCard.make(a, null))
         }
+        // Fotostudion: småvägsröstens betakort (DECISIONS #828, #844) på en påhittad varning, för produktboken. Bara debug-byggen.
+        if (debug && intent?.getBooleanExtra("fotostudio_smavag", false) == true) {
+            val a = Alert(System.currentTimeMillis() / 1000.0, "smavag:fotostudio", HazardKind.SMAVAG, 655, Texts.SMAVAG_TEXT, beta = true)
+            GuardService.currentWarning.value = ShownWarning(a, WarningCard.make(a, null))
+        }
         // Fotostudion: favoriterna (kort #357) — brytaren på, en sparad resa och en som väntar på svar, så att frågan på Redo. och
         // fliken syns i produktboken. Påhittade vägar, aldrig en riktig resa. Betatestets kort stängs av så att frågan syns överst.
         if (debug && intent?.getBooleanExtra("fotostudio_favoriter", false) == true) lifecycleScope.launch {
