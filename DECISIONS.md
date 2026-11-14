@@ -16662,3 +16662,19 @@ avgör olycksfacit och testarnas svar, inte takten. Talen står i halkvakt-kuvos
 **Kvar:** Axels prov.
 
 **Stomdokument:** APP 4
+
+## #875 (14/11 2026) Länkarna till Kartor och Google Maps startar vakten i samma tryck (kort #659)
+
+Axel 14/11 23:52: *"hur får vi vakten att starta med vårt tips i Google eller kartor"*. Den som följer tipset och öppnar resan i sin kartapp kör efter den appen, och ska ha rösten med utan att gå tillbaka till Halkvakt och trycka en gång till.
+- **Ett tryck gör båda.** *ÖPPNA I KARTOR* och *ÖPPNA I GOOGLE MAPS* på den planerade resan startar vakten och öppnar sedan resans mål i kartappen. Vakten startar bara om platsen redan är tillåten (Vid användning eller Alltid) och vakten inte redan kör.
+- **Ingen fråga från iOS i det trycket.** Är platsen inte tillåten öppnas bara kartappen, som förut: föraren lämnar Halkvakt i samma stund, och en fråga från iOS skulle försvinna.
+- **Sagt där det händer.** Under länkarna står *"Vakten startar när du öppnar kartappen."*, bara när det är sant.
+- **Vad som lämnar telefonen** är oförändrat: resans mål går till kartappen på förarens tryck (#874). Vakten räknar i telefonen som vid Starta vakten.
+
+**Alternativ som inte byggdes:** en egen knapp *Starta vakten och öppna Kartor* bredvid länkarna (tre val i rad där två räcker), och att be om platsen i samma tryck (frågan försvinner när appen byts).
+
+**Inte prövat:** inte sett på en telefon. Att vakten fortsätter i bakgrunden med Vid användning efter bytet till kartappen bygger på samma väg som Starta vakten med släckt skärm (#273), men just det här bytet är inte provat.
+
+**Kvar:** Axels prov i bil eller till fots med bygge 56.
+
+**Stomdokument:** APP 4

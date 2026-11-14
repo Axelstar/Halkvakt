@@ -71,6 +71,8 @@ Listan *NÄRA DIG JUST NU* visar inga fartkameror; de står som en rad under, *3
 **Den planerade resan från 0.4.1 (55) (DECISIONS #874).** ▶ *Starta vakten* står direkt under kartan, före rapporten. Har
 rapporten en olycka, ett hinder, halka, en kö eller en omledning står i gult: *"{Olycka} längs vägen. Se om det finns en annan
 väg i din kartapp."* Under står länkarna *ÖPPNA I KARTOR* och *ÖPPNA I GOOGLE MAPS*, som öppnar resans mål i den appen.
+Från 0.4.1 (56) startar vakten i samma tryck (DECISIONS #875), när platsen redan är tillåten, och under länkarna står då
+*"Vakten startar när du öppnar kartappen."* Är platsen inte tillåten öppnas bara kartappen, och raden står inte.
 
 **Nära dig och Planera en resa (14/11, kort #659, DECISIONS #870 och #872; bara iPhone, från 0.4.1, för alla).** På 01 Redo står
 Apples karta där sockeln stod: farorna inom sex mil, halkan som gula streck längs vägen och de andra farorna som gula
