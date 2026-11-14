@@ -64,7 +64,8 @@ under den *INGEN TUR ÄN*.
 Apples karta där sockeln stod: farorna inom sex mil, halkan som gula streck längs vägen och de andra farorna som gula
 punkter, raden *KARTAN KOMMER FRÅN APPLE*, och under den *NÄRA DIG JUST NU* med de tre närmaste (avstånd, fara, detalj) eller *"Inget rapporterat inom sex
 mil."* Utan plats visar kartan hela landet med bara halkan, under *HALKAN I LANDET JUST NU*, och raden *"Slå på platsen
-för att se vad som finns nära dig."* Under ▶ *Starta vakten* står knappen *Planera en resa*. Den öppnar **Vart ska du?**:
+för att se vad som finns nära dig."* och länken *SLÅ PÅ PLATSEN* (iOS ruta första gången, annars appens sida i
+Inställningar). Under ▶ *Starta vakten* står knappen *Planera en resa*. Den öppnar **Vart ska du?**:
 *"Se läget längs vägen innan du åker."*, sökrutan *Sök adress eller ort* och under den *DINA RESOR* med de sparade
 resorna (ett tryck öppnar resans rapport, som i Favoriter). Medan föraren skriver visas upp till sex förslag från Apple.
 Ett tryck på ett förslag räknar ut bilvägen dit från där föraren är (*"Räknar ut vägen …"*) och öppnar **Till {målet}**:

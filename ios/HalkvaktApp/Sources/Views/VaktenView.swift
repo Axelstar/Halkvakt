@@ -44,7 +44,8 @@ struct VaktenView: View {
             .navigationDestination(isPresented: $visaPlan) { PlaneradResaView() }
         }
         .task { await guardM.refreshSnapshot() }
-        .task { await hamtaPlats() }
+        // Om igen när platstillståndet ändras: den som just svarat i iOS ruta ska få kartan över sitt område direkt.
+        .task(id: guardM.authStatus) { await hamtaPlats() }
         .onDisappear { if tipsatt { prefs.tipsaDold = true }; facitNu = nil }
         .onChange(of: fas) { _, ny in if ny != .active, tipsatt { prefs.tipsaDold = true } }
     }
@@ -131,8 +132,12 @@ struct VaktenView: View {
     private var harPlats: (lon: Double, lat: Double)? { guardM.lastLoc ?? plats }
 
     private func hamtaPlats() async {
-        let status = CLLocationManager().authorizationStatus
+        let manager = CLLocationManager()
+        let status = manager.authorizationStatus
         guard status == .authorizedWhenInUse || status == .authorizedAlways else { return }
+        // Telefonens senast kända plats först, så att kartan inte väntar på en ny avläsning (Axels telefon 14/11: kartan
+        // visade hela landet).
+        if let l = manager.location { plats = (lon: l.coordinate.longitude, lat: l.coordinate.latitude) }
         do {
             for try await u in CLLocationUpdate.liveUpdates() {
                 if let l = u.location {
@@ -142,6 +147,15 @@ struct VaktenView: View {
             }
         } catch {
             // Ingen plats: kartan visar hela landet.
+        }
+    }
+
+    /// iOS frågar bara en gång. Har föraren redan svarat öppnas appens sida i Inställningar.
+    private func slaPaPlatsen() {
+        if CLLocationManager().authorizationStatus == .notDetermined {
+            guardM.requestLocationPermission()
+        } else if let u = URL(string: UIApplication.openSettingsURLString) {
+            UIApplication.shared.open(u)
         }
     }
 
@@ -157,6 +171,7 @@ struct VaktenView: View {
             if harPlats == nil {
                 Text("Slå på platsen för att se vad som finns nära dig.").font(Typo.sans(14)).foregroundStyle(Brand.text2)
                     .padding(.horizontal, 4)
+                MonoLink(title: "Slå på platsen", action: slaPaPlatsen).padding(.horizontal, 4)
             } else if nara.isEmpty {
                 Text("Inget rapporterat inom sex mil.").font(Typo.sans(14)).foregroundStyle(Brand.text2).padding(.horizontal, 4)
             } else {
