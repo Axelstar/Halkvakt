@@ -16297,3 +16297,33 @@ with a few counties so we know it works fine?"*).
 - Alla 21 län på en gång. En pilot visar att Meta godkänner annonserna och att länken landar rätt innan budgeten delas på fler.
 
 **Stomdokument:** inga — marknadsföringen beskrivs inte i stomdokumenten
+
+## #863 (14/11 2026) Småvägsrösten: taket valt, tyst i 30 minuter och 20 km efter ett besked (kort #647)
+
+**Beslutet.** Bengt 14/11: *"Ja bygg o ta det tak du rekommenderar"*, på beslutsunderlaget för fukten och taket (Bengts Skrivbord,
+`Smavagsrosten_Beslutsunderlag_fukten_och_taket_2026-11-14.md`). Efter ett besked tiger småvägsrösten tills både 30 minuter och 20 km
+har gått, på alla vägar: `smavagTystS` 1800 och `smavagTystM` 20000 i motorn, Kotlin och Swift. Platshållarna var 10 minuter och 5 km
+(#844). **Axels ord är inte givet:** Bengt sa inte att svaret gällde för båda, och taket väljs av Bengt och Axel (halkvakt-kuvos F57).
+
+**Varför.**
+- Taket väljs ur backtesten januari–mars 2024 (halkvakt-kuvos F57 och F58). Talen och läsningen står i halkvakt-kuvos F60.
+- Med 30 minuter blir det högst ett besked på en vanlig småvägsresa. Med kortare tystnad upprepade rösten oftast samma väder direkt
+  efter tystnaden.
+- D, 20 km, avgör bara när farten är under 40 km/h.
+- Taket kompileras in i apparna och måste vara valt innan appversionen med småvägsrösten byggs.
+
+**Avsteg från ordningen.** Tillägget 11/11 till #828 sa att fukten väljs före taket. Bengt valde taket först, på underlaget att det
+rekommenderade taket är detsamma för båda fukterna. Fukten väljs efter radarns bakåtprov (kort #658, halkvakt-kuvos F59), och
+avbrottsgränsen i skuggan (halkvakt-kuvos F57 val 14) följer den fukt som väljs.
+
+**Det som är byggt.**
+- Motorns värden i TypeScript, Kotlin och Swift. Kontraktsgrinden bär båda talen i de tre portarna.
+- Vektorn v56 är ritad om för 30 minuter och 20 km, och den gamla v56 för 10 minuter och 5 km är borttagen. P2 tiger efter 28,7 km
+  och 1 293 s, och P3 talar efter 1 813 s. Varje gräns har minst 10 m marginal, mätt med motorns haversine.
+- Skuggmotorn, favoriter och favoritprov är buntade ur motorn.
+- Inget är deployat, och brytarna är av.
+
+**Alternativen som inte valdes:** 60 minuter och 50 km; 20 minuter och 10 km; platshållaren 10 minuter och 5 km; att vänta med taket
+tills fukten är vald.
+
+**Stomdokument:** APP §3, MAT §5 — småvägsröstens tystnad efter ett besked
