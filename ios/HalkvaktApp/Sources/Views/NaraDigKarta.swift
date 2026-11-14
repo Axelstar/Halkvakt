@@ -17,11 +17,7 @@ struct NaraDigKarta: View {
     private static let flestPunkter = 60
     private static let flestKameror = 80
 
-    private struct Punkt: Identifiable {
-        let id: String
-        let kind: HazardKind
-        let koord: CLLocationCoordinate2D
-    }
+    private typealias Punkt = Kartbild.Punkt
 
     private struct Stracka: Identifiable {
         let id: String
@@ -29,40 +25,20 @@ struct NaraDigKarta: View {
     }
 
     var body: some View {
-        Map(initialPosition: .region(omrade), interactionModes: []) {
-            UserAnnotation()
-            ForEach(strackor) { s in
-                MapPolyline(coordinates: s.koord).stroke(Brand.yellow, lineWidth: 4)
-            }
-            ForEach(kameror) { p in
-                Annotation("Fartkamera", coordinate: p.koord) {
-                    Circle().fill(Brand.dim).frame(width: 6, height: 6)
-                }
-                .annotationTitles(.hidden)
-            }
-            ForEach(punkter) { p in
-                Annotation(VaktenView.rubrik(p.kind.rawValue), coordinate: p.koord) {
-                    HazardIcon(kind: p.kind, size: 14).foregroundStyle(Brand.bg)
-                        .padding(5).background(Brand.yellow, in: Circle())
-                }
-                .annotationTitles(.hidden)
-            }
-        }
-        .mapStyle(.standard(elevation: .flat, emphasis: .muted, pointsOfInterest: .excludingAll))
-        // Förarens egen plats i vitt: appens gula är farornas färg.
-        .tint(.white)
-        // Kartan byggs om när platsen kommer, så att den visar rätt område.
-        .id(plats.map { "\($0.lon),\($0.lat)" } ?? "landet")
-        .frame(height: 200)
-        .clipShape(RoundedRectangle(cornerRadius: 18))
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(plats == nil ? "Karta över halkan i Sverige" : "Karta över farorna inom sex mil")
+        // En stillbild i gråskala med egna märken (DECISIONS #876): halkan gul, kamerorna små grå prickar, platsen vit.
+        Kartbild(omrade: omrade,
+                 streck: strackor.map(\.koord),
+                 prickar: kameror.map(\.koord),
+                 punkter: punkter,
+                 plats: plats.map { CLLocationCoordinate2D(latitude: $0.lat, longitude: $0.lon) },
+                 nyckel: plats.map { String(format: "%.2f,%.2f", $0.lon, $0.lat) } ?? "landet",
+                 etikett: plats == nil ? "Karta över halkan i Sverige" : "Karta över farorna inom sex mil")
     }
 
     private var omrade: MKCoordinateRegion {
         if let plats {
             return MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: plats.lat, longitude: plats.lon),
-                                      latitudinalMeters: 2 * Nearby.maxM, longitudinalMeters: 2 * Nearby.maxM)
+                                      latitudinalMeters: 2.3 * Nearby.maxM, longitudinalMeters: 2.3 * Nearby.maxM)
         }
         return MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 62.5, longitude: 16.5),
                                   span: MKCoordinateSpan(latitudeDelta: 16, longitudeDelta: 16))

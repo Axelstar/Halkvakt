@@ -16678,3 +16678,18 @@ Axel 14/11 23:52: *"hur får vi vakten att starta med vårt tips i Google eller 
 **Kvar:** Axels prov i bil eller till fots med bygge 56.
 
 **Stomdokument:** APP 4
+
+## #876 (15/11 2026) Kartorna i iPhone-appen blir stillbilder i gråskala med egna märken (kort #659)
+
+Axel 14/11 23:52: *"Hur får vi det att se ut ungefär som på design?"*, och skärmbilden 15/11 00:06 av bygge 55. Uppställningen stämde med designytan; kartan gjorde det inte: Apples karta i färg (blått hav, gröna fält), blå platsprick fast koden bad om vit, 140 grå kameraprickar i full storlek, och olyckan vid 56,8 km klippt i kartans överkant.
+- **Stillbild i gråskala.** Kartan *Nära dig* och kartan över en planerad resa hämtas som en stillbild av Apples karta (`MKMapSnapshotter`, mörk och dämpad), visas utan färg och nedtonad, och Halkvakts märken ritas ovanpå: halkan och resans väg som gula streck, de andra farorna som gula märken, fartkamerorna som grå prickar på 4 pt och förarens plats vit. Apples karta går inte att färga om, och kartorna gick redan inte att flytta.
+- **Marginal.** Området är 2,3 gånger sex mil brett i stället för 2, så att en fara nära gränsen inte hamnar i kanten.
+- **Vad som lämnar telefonen** är oförändrat: bilden hämtas från Apple för området som visas, som kartbilderna förut (#870, #872).
+
+**Alternativ som inte byggdes:** att lägga ett gråfilter över den rörliga kartan (då blir de gula märkena också grå), och att ta bort kamerorna från kartan (de visar var vägarna går).
+
+**Inte prövat:** inte sett på en telefon; bara kompilerat. Ortnamnen står kvar och följer telefonens språk. Om Apples märke står i stillbilden vet jag inte; raden *KARTAN KOMMER FRÅN APPLE* står kvar under kartan.
+
+**Kvar:** Axels skärmbild av bygge 57.
+
+**Stomdokument:** APP 4
