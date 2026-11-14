@@ -557,8 +557,9 @@ private fun SettingsRoot(activity: MainActivity, onIntro: (() -> Unit)?, open: (
         RowPanel {
             if (Prefs.betatestTillaten) NavRow("Betatest", if (facitOn) "På" else "Av") { open(Sida.BETATEST) }   // bara i testbyggen (#681)
             NavRow("Integritet") { open(Sida.INTEGRITET) }
-            onIntro?.let { NavRow("Visa introduktionen igen", onClick = it) }
-            NavRow("Om Halkvakt", divider = false) { open(Sida.OM) }
+            NavRow("Om Halkvakt", divider = onIntro != null) { open(Sida.OM) }
+            // Sist i panelen: fotostudion trycker på raderna ovanför i procent av skärmen (android.yml).
+            onIntro?.let { NavRow("Visa introduktionen igen", divider = false, onClick = it) }
         }
         // DECISIONS #829: tipsa, tyck till och betygsätt. Delningsarket, förarens mejlapp och Google Play; appen sänder inget.
         MonoLabel("Halkvakt", modifier = Modifier.padding(top = 24.dp, start = 4.dp, bottom = 10.dp))

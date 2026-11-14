@@ -33,6 +33,12 @@ object Prefs {
     private val KEY_FAV_ERBJUD_DOLD = longPreferencesKey("fav_erbjud_dold")   // #817: Inte nu, en tidpunkt
     private val KEY_VAKT_PASS = intPreferencesKey("vakt_pass")         // #829: avslutade vaktpass, bara ett tal
     private val KEY_TIPSA_DOLD = booleanPreferencesKey("tipsa_dold")   // #829: kortet Tipsa en vän avfärdat
+    private val KEY_INTRO_KLAR = booleanPreferencesKey("intro_klar")   // kort #652: introduktionen genomgången eller överhoppad
+
+    /** null tills lagret är läst, så att startskärmen inte blinkar förbi före introduktionen. */
+    fun introKlar(ctx: Context): Flow<Boolean?> = ctx.dataStore.data.map { it[KEY_INTRO_KLAR] ?: false }
+    suspend fun setIntroKlar(ctx: Context) { ctx.dataStore.edit { it[KEY_INTRO_KLAR] = true } }
+
     private fun kindKey(k: HazardKind) = booleanPreferencesKey("warn_${k.wire}")
 
     /** Favoriterna (kort #357, DECISIONS #616): "Erbjud att spara resor", AV tills föraren själv slår på den. */

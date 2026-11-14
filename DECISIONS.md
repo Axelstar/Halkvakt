@@ -16298,6 +16298,40 @@ with a few counties so we know it works fine?"*).
 
 **Stomdokument:** inga — marknadsföringen beskrivs inte i stomdokumenten
 
+## #862 (13/11 2026) Introduktionen i Android-appen: iPhones upplägg, ritad för Androids rutor (kort #652)
+
+**Beslut (Axel 13/11 kväll: *"I would like that we get play store to the same onboarding as iPhone"*, och om skärmarna
+*"Jag tycker det ser väldigt bra ut"*):** Android-appen får introduktionen från kort #651, med samma texter där de går att
+återanvända. Skärmarna är ritade som raderna J till N i flödesartefakten och byggda i `android/` (0.4.0, versionCode 49).
+
+**Det som skiljer från iPhone, och varför:**
+- **Självstarten är ett eget steg** (fem steg i stället för fyra). På iPhone är *Alltid* ett val i en ruta. På Android kräver
+  självstarten tre saker utöver platsen: rörelseigenkänning, bilens Bluetooth och bakgrundsplatsen, som väljs på en sida i
+  systemets inställningar. Frågan *Ska vakten starta själv?* har länken *Inte nu, jag startar själv*, och ett nej säger
+  först att Halkvakt varnar som vanligt.
+- **Trappans ordning är oförändrad:** platsen i förgrunden, sedan rörelse och Bluetooth, och bakgrundsplatsen i ett eget steg
+  sist (Plays krav, `skills/halkvakt-android` §2). Introduktionens skärmar är redogörelsen före varje ruta; redogörelsen för
+  bakgrundsplatsen står på skärmen före systemets sida. Trappan för vippan i Inställningar och för *Starta vakten* är orörd.
+- **Ungefärlig plats har ett eget läge** (*Exakt plats behövs*): Androids ruta låter föraren välja det, och vakten kan inte
+  varna med det.
+- **En installation som redan gett platsen får inte introduktionen påtvingad.** Den har använt appen förut. Fotostudion i
+  android.yml beviljar platsen före första starten och berörs därför inte.
+
+**Vad appen skickar:** räknaren säger `onboarding_klar` en gång per installation, samma ord som iPhone sedan #772, inom det
+första av räknarens sex områden (*the way in*). Värdelistan i `app-raknare` hade redan ordet. Inget annat ändras.
+
+**Prövat:** `IntroTest` (sex prov av vilken skärm som följer på vilket svar), appens 126 enhetsprov och kompileringen.
+Demovideons skript (`scripts/demovideo.sh`) går genom introduktionen i stället för vippan.
+
+**Inte prövat:** på en telefon. Texterna i Androids egna rutor är skrivna ur minnet. Play-deklarationens demovideo visar det
+gamla flödet tills en ny är inspelad.
+
+**Alternativ:** (a) vänta med Android tills iPhone-versionen är godkänd av Apple; avfärdat av Axel, Play-versionen ligger ute
+utan introduktion. (b) Be om alla behörigheter i en följd utan eget steg för självstarten; avfärdat, det bryter trappan och
+ger avslag i Plays granskning.
+
+**Stomdokument:** APP 4 — introduktionen i Android-appen
+
 ## #863 (14/11 2026) Småvägsrösten: taket valt, tyst i 30 minuter och 20 km efter ett besked (kort #647)
 
 **Beslutet.** Bengt 14/11: *"Ja bygg o ta det tak du rekommenderar"*, på beslutsunderlaget för fukten och taket (Bengts Skrivbord,
