@@ -3092,7 +3092,7 @@ jobs:
           rm -rf ut
 
   # ── radarstn (radarns bakåtprov, halkvakt-kuvos F59 §12): radarn kring stationen ur SMHI:s arkiv för 2024/25 ─────────────────────
-  # §12 i docs/FORREGISTRERING-RADARN-SMAVAGAR-2026-11.md i det privata repot. Arkivets kompositer (tif, en per halvtimme) hämtas ur
+  # §12 i docs/FORREGISTRERING-RADARN-SMAVAGAR-2026-11.md i det privata repot. Arkivets kompositer (tif, en per kvart som driften, F61) hämtas ur
   # SMHI:s öppna data, en månad per jobb och en månad åt gången, och läses kring varje station i data/vagdata/stationer.json
   # (kuvos/radar-kring-stationen.ts). Bara raderna och kompositernas antal går till hinken under kuvos/kuvos-radarn-kring-stationen-2024-25/.
   # En månad som redan ligger där hämtas inte igen, så steget går att köra om. Sammanställningen läggs i samma mapp, och steget dfbakat:s
@@ -3107,11 +3107,11 @@ jobs:
       max-parallel: 1        # en månad åt gången mot SMHI:s arkiv (429 vid täta hämtningar; skriptet hämtar två åt gången)
       matrix:
         manad:
-          - { namn: "2024-11", fran: "2024-10-31T21:00:00Z", till: "2024-11-30T23:30:00Z" }
-          - { namn: "2024-12", fran: "2024-12-01T00:00:00Z", till: "2024-12-31T23:30:00Z" }
-          - { namn: "2025-01", fran: "2025-01-01T00:00:00Z", till: "2025-01-31T23:30:00Z" }
-          - { namn: "2025-02", fran: "2025-02-01T00:00:00Z", till: "2025-02-28T23:30:00Z" }
-          - { namn: "2025-03", fran: "2025-03-01T00:00:00Z", till: "2025-03-31T23:30:00Z" }
+          - { namn: "2024-11", fran: "2024-10-31T21:00:00Z", till: "2024-11-30T23:45:00Z" }
+          - { namn: "2024-12", fran: "2024-12-01T00:00:00Z", till: "2024-12-31T23:45:00Z" }
+          - { namn: "2025-01", fran: "2025-01-01T00:00:00Z", till: "2025-01-31T23:45:00Z" }
+          - { namn: "2025-02", fran: "2025-02-01T00:00:00Z", till: "2025-02-28T23:45:00Z" }
+          - { namn: "2025-03", fran: "2025-03-01T00:00:00Z", till: "2025-03-31T23:45:00Z" }
     env:
       UT_HINK: kuvos-radarn-kring-stationen-2024-25
       M: "${{ matrix.manad.namn }}"
