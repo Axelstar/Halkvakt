@@ -45,9 +45,9 @@ on:
   workflow_dispatch:
     inputs:
       steg:
-        description: "indata (en äldre vinter) → fyll (T2) → forberedning → traning → provning (bakom spärren) → samman; paritet (§4, den levande kedjan); osakerhet (#707, omdragning på 2022/23); identitet och dom bara med variant smavagar eller okanda; mars (marsprövningen, halkvakt-kuvos F8: prov (b), halvvintrarna och domen, bara till hinken); trafikmangd (halkvakt-kuvos F21, trafikmängdens betydelse, bara med variant okanda, bara till hinken); dfbakat (fuktvarianten D-F bakåt, halkvakt-kuvos F47)"
+        description: "indata (en äldre vinter) → fyll (T2) → forberedning → traning → provning (bakom spärren) → samman; paritet (§4, den levande kedjan); osakerhet (#707, omdragning på 2022/23); identitet och dom bara med variant smavagar eller okanda; mars (marsprövningen, halkvakt-kuvos F8: prov (b), halvvintrarna och domen, bara till hinken); trafikmangd (halkvakt-kuvos F21, trafikmängdens betydelse, bara med variant okanda, bara till hinken); dfbakat (fuktvarianten D-F bakåt, halkvakt-kuvos F47, och radarns bakåtprov, F59); radarstn (radarn kring stationen 2024/25 ur SMHI:s arkiv till hinken, halkvakt-kuvos F59 §12)"
         type: choice
-        options: ["indata", "fyll", "t4", "forberedning", "traning", "provning", "samman", "paritet", "osakerhet", "identitet", "dom", "mars", "trafikmangd", "sparren", "vetot", "fukten", "flackvis", "dfbakat"]
+        options: ["indata", "fyll", "t4", "forberedning", "traning", "provning", "samman", "paritet", "osakerhet", "identitet", "dom", "mars", "trafikmangd", "sparren", "vetot", "fukten", "flackvis", "dfbakat", "radarstn"]
         default: "forberedning"
       vinter:
         description: "bara för indata och fyll: vintern som hämtas (2017-18 och 2023-24 är marsprövningens halvvintrar, halkvakt-kuvos F8)"
@@ -2911,31 +2911,35 @@ jobs:
             [ -s met/delar.txt ] || { echo "::error::MET Nordic-delarna för $V saknas"; exit 1; }
           fi
           echo "MET Nordic för $V: klart ($(wc -l < met/delar.txt) delar)"
-      # Radarns bakåtprov (halkvakt-kuvos F59, rättad i F60), bara 2024/25: kuvösens radar per station och halvtimme ur samma fil och
-      # sträckor som steget fukten, till cellerna. Radarfilen är SMHI:s och sträckorna och stationerna öppna data; inga tal i loggen.
-      - name: Radarn per station (2024/25, halkvakt-kuvos F59)
+      # Radarns bakåtprov (halkvakt-kuvos F59, §12 för radarn kring stationen), bara 2024/25. Radarn per station och halvtimme kring
+      # stationen tas ur hinken, där steget radarstn lagt den. På segmenten räknas den inte längre: körning 50 stannade på täckningen
+      # (§7 b). Saknas filen faller jobbet med ett tydligt fel. df_bakat.py vägrar läsa den förrän §12 är signerat. Inga tal i loggen.
+      - name: Radarn kring stationen ur hinken (2024/25, halkvakt-kuvos F59 §12)
         if: ${{ matrix.vinter == '2024-25' }}
         shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}", RS_HINK: kuvos-radarn-kring-stationen-2024-25 }
         run: |
           set -euo pipefail
           prov() { if "${@:2}" > /dev/null 2>&1; then echo "$1: klart"; else echo "::error::$1: fel"; return 1; fi; }
           prov "spärren (F59, signerad)" python3 fysik/ny_kandidat/sparren.py docs/FORREGISTRERING-RADARN-SMAVAGAR-2026-11.md
-          prov "självtestet för radarn per station (påhittade data)" node --experimental-strip-types kuvos/radarn-stationer.ts --sjalvtest
-          mkdir -p smhi radar && gh release download kuvos-smhi-2024-25 --dir smhi --pattern 'radar_precip_2024-25.csv.gz'
-          node -e '
-            const c = require("crypto"), fs = require("fs");
-            const f = require("./kuvos/smhi-leverans.json").filer.find((x) => x.fil === "radar_precip_2024-25.csv.gz");
-            const h = c.createHash("sha256").update(fs.readFileSync("smhi/" + f.fil)).digest("hex");
-            console.log(`${f.fil}: ${h === f.sha256 ? "sha256 lika manifestet" : "FEL " + h}`); process.exit(h === f.sha256 ? 0 : 1);'
-          # -L: adressen omdirigeras (301) till halkvakt.se; filen prövas också, eftersom en geojson börjar med {.
-          curl -sSfL -o vaglag.geojson https://axelstar.github.io/halkvakt-karta/data/vaglag.geojson
-          [ "$(head -c 1 vaglag.geojson)" = "{" ] || { echo "::error::vaglag.geojson är inte JSON"; exit 1; }
-          RC=0; node --experimental-strip-types kuvos/radarn-stationer.ts --radar smhi/radar_precip_2024-25.csv.gz --vaglag vaglag.geojson \
-            --stationer data/vagdata/stationer.json --ut radar/radar_stationer_2024-25.csv.gz --info radar/radar_stationer_2024-25.json > rs.txt 2>&1 || RC=$?
-          PROVET=$(sed -n 's/^RADARN FÖLL: \(radarn\|filerna\|argumenten\)$/\1/p' rs.txt | tail -1)
-          rm -rf smhi vaglag.geojson rs.txt
-          [ "$RC" -eq 0 ] || { echo "::error::radarn per station: fel i ${PROVET:-skriptet, utan besked (kod $RC)}"; exit "$RC"; }
-          echo "radarn per station: klart"
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          export FN KEY
+          RC=0; node -e '
+            const { execFileSync } = require("child_process"), fs = require("fs"), [mapp, ...filer] = process.argv.slice(1);
+            // execFileSync:s fel bär kommandoraden och därmed nyckeln eller den signerade adressen: fångas, bara statusen skrivs ut.
+            const curl = (a, vad) => { try { return execFileSync("curl", ["-sS", "--fail", ...a], { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); }
+              catch (e) { console.error(`${vad} föll (curl ${e.status})`); process.exit(1); } };
+            fs.mkdirSync(mapp, { recursive: true });
+            const s = JSON.parse(curl(["-X", "POST", `${process.env.FN}?lage=kuvos_hamta`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
+              "-H", "Content-Type: application/json", "-d", JSON.stringify({ filer })], "adresserna (finns filerna i hinken?)"));
+            for (const d of s.filer) curl(["-o", mapp + "/" + d.fil.split("/").pop(), d.url], `hämtningen av ${d.fil}`);' \
+            radar "$RS_HINK/radar_stationer_kring_2024-25.csv.gz" "$RS_HINK/radar_stationer_kring_2024-25.json" || RC=$?
+          [ "$RC" -eq 0 ] || { echo "::error::radarn kring stationen saknas i hinken (kuvos/$RS_HINK/): kör steget radarstn först"; exit 1; }
+          mv radar/radar_stationer_kring_2024-25.csv.gz radar/radar_stationer_2024-25.csv.gz
+          mv radar/radar_stationer_kring_2024-25.json radar/radar_stationer_2024-25.json
+          echo "radarn kring stationen ur hinken: klart"
       - name: Cellerna för vintern, till hinken
         shell: bash
         env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
@@ -2974,7 +2978,7 @@ jobs:
           mapfile -t VV < vv.txt
           RC=0; python3 fysik/ny_kandidat/df_bakat.py celler --vinter "$V" "${ARGS[@]}" --vvis "${VV[@]}" --metnordic $(cat met/delar.txt) --ut ut > df.txt 2>&1 || RC=$?
           # Vilket prov som föll: bara ordet ur skriptets rad, aldrig talen.
-          PROVET=$(sed -n 's/^DF FÖLL: \(vintern\|vecket\|koderna\|radarn\)$/\1/p' df.txt | tail -1)
+          PROVET=$(sed -n 's/^DF FÖLL: \(vintern\|vecket\|koderna\|radarn\|sparren\)$/\1/p' df.txt | tail -1)
           # P-I med norrregeln (halkvakt-kuvos F48): en gång, i jobbet för 2017-18, som har båda halvvintrarnas skattningar.
           RC2=0; if [ "$V" = 2017-18 ]; then python3 fysik/ny_kandidat/norrregeln_diag.py halvvintrar --levande lev --smavagar sma --ut ut/norrregeln_p1.json > nr.txt 2>&1 || RC2=$?; rm -f nr.txt; fi
           rm -rf vv vv.txt vk lev sma met rel df.txt radar
@@ -3069,7 +3073,7 @@ jobs:
           # Radarns bakåtprov (halkvakt-kuvos F59, §7 a): 2024-25 med radarn mot del A:s celler ur körning 42797406921 (nummer 49, F51).
           hamta gamla "kuvos-df-bakat-2026-11-49/df_celler_2024-25.csv.gz"
           RCR=0; python3 fysik/ny_kandidat/df_bakat.py las-radar --celler celler --gamla gamla/df_celler_2024-25.csv.gz --ut ut > lr.txt 2>&1 || RCR=$?
-          PROVETR=$(sed -n 's/^DF FÖLL: \(vintrarna\|radarn\|kontrollen\|tackningen\)$/\1/p' lr.txt | tail -1)
+          PROVETR=$(sed -n 's/^DF FÖLL: \(vintrarna\|radarn\|kontrollen\|tackningen\|sparren\)$/\1/p' lr.txt | tail -1)
           rm -rf gamla lr.txt
           RC=0; python3 fysik/ny_kandidat/df_bakat.py las --celler celler --ut ut > las.txt 2>&1 || RC=$?
           PROVET=$(sed -n 's/^DF FÖLL: \(vintrarna\|koderna\|kontrollen\)$/\1/p' las.txt | tail -1)
@@ -3085,6 +3089,178 @@ jobs:
           if [ -f ut/radarn_bakat.json ]; then lagg ut/radarn_bakat.json; fi
           [ "$RCR" -eq 0 ] || { echo "::error::radarns bakåtprov, läsningen: fel i ${PROVETR:-skriptet, utan besked (kod $RCR)}"; exit "$RCR"; }
           echo "radarns bakåtprov, läsningen: klart"
+          rm -rf ut
+
+  # ── radarstn (radarns bakåtprov, halkvakt-kuvos F59 §12): radarn kring stationen ur SMHI:s arkiv för 2024/25 ─────────────────────
+  # §12 i docs/FORREGISTRERING-RADARN-SMAVAGAR-2026-11.md i det privata repot. Arkivets kompositer (tif, en per halvtimme) hämtas ur
+  # SMHI:s öppna data, en månad per jobb och en månad åt gången, och läses kring varje station i data/vagdata/stationer.json
+  # (kuvos/radar-kring-stationen.ts). Bara raderna och kompositernas antal går till hinken under kuvos/kuvos-radarn-kring-stationen-2024-25/.
+  # En månad som redan ligger där hämtas inte igen, så steget går att köra om. Sammanställningen läggs i samma mapp, och steget dfbakat:s
+  # jobb för 2024/25 läser den. Loggen säger bara klart eller fel.
+  radarstn-manad:
+    if: ${{ inputs.steg == 'radarstn' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions: { contents: read }
+    strategy:
+      fail-fast: false
+      max-parallel: 1        # en månad åt gången mot SMHI:s arkiv (429 vid täta hämtningar; skriptet hämtar två åt gången)
+      matrix:
+        manad:
+          - { namn: "2024-11", fran: "2024-10-31T21:00:00Z", till: "2024-11-30T23:30:00Z" }
+          - { namn: "2024-12", fran: "2024-12-01T00:00:00Z", till: "2024-12-31T23:30:00Z" }
+          - { namn: "2025-01", fran: "2025-01-01T00:00:00Z", till: "2025-01-31T23:30:00Z" }
+          - { namn: "2025-02", fran: "2025-02-01T00:00:00Z", till: "2025-02-28T23:30:00Z" }
+          - { namn: "2025-03", fran: "2025-03-01T00:00:00Z", till: "2025-03-31T23:30:00Z" }
+    env:
+      UT_HINK: kuvos-radarn-kring-stationen-2024-25
+      M: "${{ matrix.manad.namn }}"
+      FRAN: "${{ matrix.manad.fran }}"
+      TILL: "${{ matrix.manad.till }}"
+    steps:
+      - uses: actions/checkout@v4
+      # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos (DECISIONS #768): koden läggs ovanpå utcheckningen.
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - name: Självtestet (påhittade data)
+        shell: bash
+        run: |
+          set -euo pipefail
+          prov() { if "${@:2}" > /dev/null 2>&1; then echo "$1: klart"; else echo "::error::$1: fel"; return 1; fi; }
+          prov "självtestet för radarn kring stationen (påhittade data)" node --experimental-strip-types kuvos/radar-kring-stationen.ts --sjalvtest
+      - name: Månaden kring stationerna, till hinken
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          export FN KEY
+          finns() {  # finns <hinknamn …>: kod 0 om alla filerna redan ligger i hinken
+            node -e '
+              const { execFileSync } = require("child_process");
+              try { execFileSync("curl", ["-sS", "--fail", "-X", "POST", `${process.env.FN}?lage=kuvos_hamta`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
+                "-H", "Content-Type: application/json", "-d", JSON.stringify({ filer: process.argv.slice(1) })], { stdio: ["ignore", "pipe", "ignore"] }); }
+              catch { process.exit(1); }' "$@"
+          }
+          lagg() {   # lagg <fil …>: till $UT_HINK/<filnamn>; skrivs aldrig över, och det som ligger i hinken ska vara byte för byte filen
+            node -e '
+              const { execFileSync } = require("child_process"), fs = require("fs"), c = require("crypto"), filer = process.argv.slice(1);
+              const sha = (b) => c.createHash("sha256").update(b).digest("hex"), namn = filer.map((f) => process.env.UT_HINK + "/" + f.split("/").pop());
+              // execFileSync:s fel bär kommandoraden och därmed nyckeln eller den signerade adressen: fångas, bara statusen skrivs ut.
+              const curl = (a, vad) => { try { return execFileSync("curl", ["-sS", "--fail", ...a], { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); }
+                catch (e) { if (vad) { console.error(`${vad} föll (curl ${e.status})`); process.exit(1); } return null; } };
+              const anrop = (lage, vad) => { const b = curl(["-X", "POST", `${process.env.FN}?lage=${lage}`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
+                "-H", "Content-Type: application/json", "-d", JSON.stringify({ filer: namn })], vad); return b && JSON.parse(b); };
+              if (!filer.length || filer.length > 20) { console.error("lagg: 1–20 filer per anrop"); process.exit(1); }
+              let h = anrop("kuvos_hamta");
+              if (h) console.log("filerna finns redan i hinken (en omkörning): de jämförs, ingenting skrivs över");
+              else {
+                const u = anrop("kuvos_ladda_upp", "adresserna för uppladdningen").urls;
+                filer.forEach((f, i) => curl(["-X", "PUT", "-H", "Content-Type: application/octet-stream", "--data-binary", "@" + f, u[i]],
+                  `uppladdningen av ${namn[i]} (finns filen redan i hinken skrivs den inte över)`));
+                h = anrop("kuvos_hamta", "hämtningen tillbaka");
+              }
+              let fel = 0;
+              h.filer.forEach((d, i) => { const ok = sha(curl([d.url], `hämtningen av ${d.fil}`)) === sha(fs.readFileSync(filer[i])); fel += !ok;
+                console.log(`${d.fil}: ${ok ? "klart, i hinken byte för byte den skrivna" : "FEL: i hinken med annat innehåll"}`); });
+              process.exit(fel ? 1 : 0);' "$@"
+          }
+          if finns "$UT_HINK/radar_kring_$M.csv.gz" "$UT_HINK/radar_kring_$M.json"; then
+            echo "månaden $M ligger redan i hinken: hämtas inte igen"; exit 0
+          fi
+          mkdir -p ut
+          RC=0; node --experimental-strip-types kuvos/radar-kring-stationen.ts manad --stationer data/vagdata/stationer.json \
+            --fran "$FRAN" --till "$TILL" --ut "ut/radar_kring_$M.csv.gz" --info "ut/radar_kring_$M.json" > rk.txt 2>&1 || RC=$?
+          PROVET=$(sed -n 's/^RADARN FÖLL: \(argumenten\|hamtningen\)$/\1/p' rk.txt | tail -1)
+          rm -f rk.txt
+          [ "$RC" -eq 0 ] || { echo "::error::radarn kring stationen, månaden $M: fel i ${PROVET:-skriptet, utan besked (kod $RC)}"; exit "$RC"; }
+          echo "radarn kring stationen, månaden $M: klart"
+          lagg "ut/radar_kring_$M.csv.gz" "ut/radar_kring_$M.json"
+          rm -rf ut
+
+  radarstn-samman:
+    needs: radarstn-manad
+    if: ${{ inputs.steg == 'radarstn' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions: { contents: read }
+    env:
+      UT_HINK: kuvos-radarn-kring-stationen-2024-25
+    steps:
+      - uses: actions/checkout@v4
+      # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos (DECISIONS #768): koden läggs ovanpå utcheckningen.
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - name: Månaderna ur hinken, sammanställningen till hinken
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          export FN KEY
+          hamta() {  # hamta <mapp> <hinknamn …>: ur hinken, högst 20 per anrop
+            node -e '
+              const { execFileSync } = require("child_process"), fs = require("fs"), [mapp, ...filer] = process.argv.slice(1);
+              // execFileSync:s fel bär kommandoraden och därmed nyckeln eller den signerade adressen: fångas, bara statusen skrivs ut.
+              const curl = (a, vad) => { try { return execFileSync("curl", ["-sS", "--fail", ...a], { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); }
+                catch (e) { console.error(`${vad} föll (curl ${e.status})`); process.exit(1); } };
+              if (!filer.length) { console.error("hamta: inga filer"); process.exit(1); }
+              fs.mkdirSync(mapp, { recursive: true });
+              for (let i = 0; i < filer.length; i += 20) {
+                const s = JSON.parse(curl(["-X", "POST", `${process.env.FN}?lage=kuvos_hamta`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
+                  "-H", "Content-Type: application/json", "-d", JSON.stringify({ filer: filer.slice(i, i + 20) })], "adresserna (finns filerna i hinken?)"));
+                for (const d of s.filer) curl(["-o", mapp + "/" + d.fil.split("/").pop(), d.url], `hämtningen av ${d.fil}`);
+              }' "$@"
+          }
+          lagg() {   # lagg <fil …>: till $UT_HINK/<filnamn>; skrivs aldrig över, och det som ligger i hinken ska vara byte för byte filen
+            node -e '
+              const { execFileSync } = require("child_process"), fs = require("fs"), c = require("crypto"), filer = process.argv.slice(1);
+              const sha = (b) => c.createHash("sha256").update(b).digest("hex"), namn = filer.map((f) => process.env.UT_HINK + "/" + f.split("/").pop());
+              // execFileSync:s fel bär kommandoraden och därmed nyckeln eller den signerade adressen: fångas, bara statusen skrivs ut.
+              const curl = (a, vad) => { try { return execFileSync("curl", ["-sS", "--fail", ...a], { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); }
+                catch (e) { if (vad) { console.error(`${vad} föll (curl ${e.status})`); process.exit(1); } return null; } };
+              const anrop = (lage, vad) => { const b = curl(["-X", "POST", `${process.env.FN}?lage=${lage}`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
+                "-H", "Content-Type: application/json", "-d", JSON.stringify({ filer: namn })], vad); return b && JSON.parse(b); };
+              if (!filer.length || filer.length > 20) { console.error("lagg: 1–20 filer per anrop"); process.exit(1); }
+              let h = anrop("kuvos_hamta");
+              if (h) console.log("filerna finns redan i hinken (en omkörning): de jämförs, ingenting skrivs över");
+              else {
+                const u = anrop("kuvos_ladda_upp", "adresserna för uppladdningen").urls;
+                filer.forEach((f, i) => curl(["-X", "PUT", "-H", "Content-Type: application/octet-stream", "--data-binary", "@" + f, u[i]],
+                  `uppladdningen av ${namn[i]} (finns filen redan i hinken skrivs den inte över)`));
+                h = anrop("kuvos_hamta", "hämtningen tillbaka");
+              }
+              let fel = 0;
+              h.filer.forEach((d, i) => { const ok = sha(curl([d.url], `hämtningen av ${d.fil}`)) === sha(fs.readFileSync(filer[i])); fel += !ok;
+                console.log(`${d.fil}: ${ok ? "klart, i hinken byte för byte den skrivna" : "FEL: i hinken med annat innehåll"}`); });
+              process.exit(fel ? 1 : 0);' "$@"
+          }
+          F=(); for M in 2024-11 2024-12 2025-01 2025-02 2025-03; do F+=("$UT_HINK/radar_kring_$M.csv.gz" "$UT_HINK/radar_kring_$M.json"); done
+          hamta man "${F[@]}"
+          mkdir -p ut
+          RC=0; node --experimental-strip-types kuvos/radar-kring-stationen.ts samman --stationer data/vagdata/stationer.json \
+            --manader man/radar_kring_*.json --ut ut/radar_stationer_kring_2024-25.csv.gz --info ut/radar_stationer_kring_2024-25.json > rs.txt 2>&1 || RC=$?
+          PROVET=$(sed -n 's/^RADARN FÖLL: \(argumenten\|manaderna\|radarn\|filerna\)$/\1/p' rs.txt | tail -1)
+          rm -rf man rs.txt
+          [ "$RC" -eq 0 ] || { echo "::error::radarn kring stationen, sammanställningen: fel i ${PROVET:-skriptet, utan besked (kod $RC)}"; exit "$RC"; }
+          echo "radarn kring stationen, sammanställningen: klart"
+          lagg ut/radar_stationer_kring_2024-25.csv.gz ut/radar_stationer_kring_2024-25.json
           rm -rf ut
 
   # Variant smavagar har bara lägena identitet, traning, provning och dom (indata, fyll och t4 är desamma för alla varianter), och
