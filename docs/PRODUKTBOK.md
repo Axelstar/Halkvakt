@@ -65,6 +65,8 @@ faran som inte är en fartkamera) eller *"Inget rapporterat nära dig"*, och und
 *"Tryck Starta vakten innan du kör."* *"Redo."* står bara när platsen eller vägdatan saknas. Direkt under står ▶ *Starta
 vakten* och *Planera resa* bredvid varandra (DECISIONS #874), sedan kartan och listan. Ett tryck på fliken *Vakten* går
 alltid hem till startsidan, också från Planera resa. På kartan är fartkamerorna små grå prickar och förarens plats vit.
+Från 0.4.1 (57) är kartan en stillbild av Apples karta i gråskala, med Halkvakts egna märken ovanpå (DECISIONS #876); så
+är också kartan över en planerad resa.
 Listan *NÄRA DIG JUST NU* visar inga fartkameror; de står som en rad under, *31 FARTKAMEROR INOM SEX MIL*. Källraden och
 *"Din position lämnar inte telefonen av sig själv."* står längst ner. Stycket nedan beskriver delarna; ordningen är den här.
 

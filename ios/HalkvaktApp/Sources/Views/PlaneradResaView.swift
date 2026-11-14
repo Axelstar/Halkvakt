@@ -145,19 +145,17 @@ struct PlaneradResaView: View {
     }
 }
 
-/// Vägen som en gul linje på Apples karta. Kartan går inte att flytta.
+/// Vägen som en gul linje på en stillbild av Apples karta (Kartbild, DECISIONS #876).
 private struct ResansKarta: View {
     let punkter: [[Double]]
 
     var body: some View {
         let koord = punkter.map { CLLocationCoordinate2D(latitude: $0[1], longitude: $0[0]) }
         let ram = MKPolyline(coordinates: koord, count: koord.count).boundingMapRect
-        Map(initialPosition: .rect(ram.insetBy(dx: -ram.size.width * 0.15, dy: -ram.size.height * 0.15)), interactionModes: []) {
-            MapPolyline(coordinates: koord).stroke(Brand.yellow, lineWidth: 4)
-        }
-        .mapStyle(.standard(elevation: .flat, pointsOfInterest: .excludingAll))
-        .frame(height: 160)
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Karta över vägen")
+        Kartbild(omrade: MKCoordinateRegion(ram.insetBy(dx: -ram.size.width * 0.15, dy: -ram.size.height * 0.15)),
+                 hojd: 160,
+                 streck: [koord],
+                 nyckel: "\(koord.count)|\(punkter.last?.first ?? 0)|\(punkter.last?.last ?? 0)",
+                 etikett: "Karta över vägen")
     }
 }
