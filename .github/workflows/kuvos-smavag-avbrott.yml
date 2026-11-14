@@ -1,11 +1,12 @@
 name: kuvos-smavag-avbrott
-# SMÅVÄGSRÖSTEN: AVBROTTET (halkvakt-kuvos F57 val 14, med fukten och gränsen ur F63; DECISIONS #868, kort #647; Bengt 14/11: "bygg
-# avbrottskontrollen"). Varje morgon prövas förra UTC-dygnet: skuggans besked per körtimme, ur dygnets resefiler i den privata hinken
-# (smavag_takt.py vecka, samma mått som backtesten), vid taket 30 minuter och 20 km, mot backtestens högsta vecka för regionen
-# (fysik/ny_kandidat/smavag_avbrott.py). Över gränsen ger ett ärende, tilldelat Bengt, som kommenteras varje dygn över gränsen. Är
-# brytaren på slås den av samma dag, av Bengt eller Axel (F57 val 14); med brytaren av är det ett underlag inför påslaget. Saknade timmar
-# är vaktens sak (smavag-vakt). Samma dygn prövas aldrig två gånger. Loggen och ärendet säger bara regionerna och över, under eller inga
-# timmar; talen går till hinken (avbrott_<dygn>.json, #768). GitHub-cronen, två tider, eftersom den kan utebli och går sent.
+# SMÅVÄGSRÖSTEN: AVBROTTET (halkvakt-kuvos F57 val 14, ändrat i F66, med fukten och gränsen ur F63; DECISIONS #868 och #869, kort #647;
+# Bengt 14/11: "bygg avbrottskontrollen" och "Bygg med B"). Varje morgon prövas förra UTC-dygnet: skuggans besked per körtimme under
+# dygnet och de sex dygnen före, ur resefilerna i den privata hinken (summan av beskeden genom summan av körtimmarna, samma mått som
+# backtestens veckor), vid taket 30 minuter och 20 km, mot backtestens högsta vecka för regionen (fysik/ny_kandidat/smavag_avbrott.py).
+# Färre än 120 timmar i fönstret ger ingen dom. Över gränsen ger ett ärende, tilldelat Bengt, som kommenteras varje dygn över gränsen.
+# Är brytaren på slås den av samma dag, av Bengt eller Axel; med brytaren av är det ett underlag inför påslaget. Saknade timmar är
+# vaktens sak (smavag-vakt). Samma dygn prövas aldrig två gånger. Loggen och ärendet säger bara regionerna och över, under, för få eller
+# inga timmar; talen går till hinken (avbrott_<dygn>.json, #768). GitHub-cronen, två tider, eftersom den kan utebli och går sent.
 on:
   schedule:
     - cron: "37 6 * * *"
@@ -25,7 +26,7 @@ env:
 jobs:
   avbrott:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos (DECISIONS #768): koden läggs ovanpå utcheckningen.
@@ -46,7 +47,7 @@ jobs:
           python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy)==' fysik/requirements.txt)
           tyst python3 fysik/ny_kandidat/smavag_takt.py --sjalvtest
           tyst python3 fysik/ny_kandidat/smavag_avbrott.py --sjalvtest
-      - name: Dygnets resor, provningen och hinken
+      - name: Sju dygns resor, provningen och hinken
         shell: bash
         env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}", INDYGN: "${{ inputs.dygn }}" }
         run: |
@@ -64,36 +65,37 @@ jobs:
           if [ "$K" = 0 ]; then echo "avbrottet: dygnet $D är redan prövat" | tee -a "$GITHUB_STEP_SUMMARY"; exit 0; fi
           [ "$K" = 3 ] || { echo "::error::hinken svarade inte"; exit 1; }
           mkdir -p resor
-          DAG=$(date -u -d "$D" +%Y%m%d)
-          for HH in $(seq -w 0 23); do
-            F="resor_${DAG}T$HH.csv.gz"
-            set +e; h hamta "$HINK/$F" "resor/$F"; K=$?; set -e
-            [ "$K" = 0 ] || [ "$K" = 3 ] || { echo "::error::resorna gick inte att hämta"; exit 1; }
+          for B in 6 5 4 3 2 1 0; do
+            DAG=$(date -u -d "$D -$B days" +%Y%m%d)
+            for HH in $(seq -w 0 23); do
+              F="resor_${DAG}T$HH.csv.gz"
+              set +e; h hamta "$HINK/$F" "resor/$F"; K=$?; set -e
+              [ "$K" = 0 ] || [ "$K" = 3 ] || { echo "::error::resorna gick inte att hämta"; exit 1; }
+            done
           done
-          if ! ls resor/*.csv.gz >/dev/null 2>&1; then echo "avbrottet: inga resor i hinken för dygnet $D" | tee -a "$GITHUB_STEP_SUMMARY"; exit 0; fi
-          python3 fysik/ny_kandidat/smavag_takt.py vecka --resor resor/*.csv.gz --ut dygn.csv > takt.log 2>&1 \
-            || { echo "::error::dygnets takt föll: $(tail -1 takt.log | cut -c1-200)"; exit 1; }
-          python3 fysik/ny_kandidat/smavag_avbrott.py provning --takt dygn.csv --dygn "$D" --ut "avbrott_$D.json" --over over.txt \
+          DAG=$(date -u -d "$D" +%Y%m%d)
+          if ! ls resor/resor_${DAG}T*.csv.gz >/dev/null 2>&1; then echo "avbrottet: inga resor i hinken för dygnet $D" | tee -a "$GITHUB_STEP_SUMMARY"; exit 0; fi
+          python3 fysik/ny_kandidat/smavag_avbrott.py provning --resor resor/*.csv.gz --dygn "$D" --ut "avbrott_$D.json" --over over.txt \
             | tee -a "$GITHUB_STEP_SUMMARY"
           h ladda "avbrott_$D.json" "$HINK/avbrott_$D.json" || { echo "::error::provningen gick inte till hinken"; exit 1; }
           if [ -s over.txt ]; then echo "OVER=$(sed 's/soder/söder/' over.txt | paste -sd ' ')" >> "$GITHUB_ENV"; fi
           echo "PA=$(psql "$DATABASE_URL" -At -c 'select coalesce(bool_or(pa), false) from smavagsbrytare')" >> "$GITHUB_ENV"
-          rm -rf resor dygn.csv "avbrott_$D.json" over.txt
+          rm -rf resor "avbrott_$D.json" over.txt
       - name: Ärendet om avbrottet
         if: ${{ env.OVER != '' }}
         shell: bash
         env: { GH_TOKEN: "${{ github.token }}" }
         run: |
           set -euo pipefail
-          if [ "$PA" = t ]; then LAGE="brytaren är på, och enligt F57 val 14 slås den av i dag, av Bengt eller Axel"
+          if [ "$PA" = t ]; then LAGE="brytaren är på, och enligt F57 val 14 (ändrat i F66) slås den av i dag, av Bengt eller Axel"
           else LAGE="brytaren är av, så det är ett underlag inför påslaget"; fi
-          TEXT="Dygnet $DYGN (UTC): skuggans besked per körtimme vid taket 30 minuter och 20 km låg över backtestens högsta vecka i: $OVER. Läget: $LAGE. Talen står i den privata hinken (avbrott_$DYGN.json). Körningen: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          TEXT="Dygnet $DYGN (UTC): skuggans besked per körtimme under de sju dygnen till och med $DYGN, vid taket 30 minuter och 20 km, låg över backtestens högsta vecka i: $OVER. Läget: $LAGE. Talen står i den privata hinken (avbrott_$DYGN.json). Körningen: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
           NR=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "Småvägsrösten: avbrottet in:title" --json number --jq '.[0].number // empty')
           if [ -n "$NR" ]; then gh issue comment "$NR" --repo "$GITHUB_REPOSITORY" --body "$TEXT"
           else
             gh issue create --repo "$GITHUB_REPOSITORY" --assignee 895845 \
               --title "Småvägsrösten: avbrottet (F57 val 14), skuggan över gränsen" \
-              --body "Avbrottskontrollen (DECISIONS #868, halkvakt-kuvos F57 val 14 och F65) prövar varje dygn skuggans takt mot backtestens högsta vecka. Ärendet kommenteras varje dygn över gränsen och stängs av Bengt eller Axel när det är hanterat.
+              --body "Avbrottskontrollen (DECISIONS #868 och #869, halkvakt-kuvos F57 val 14, F65 och F66) prövar varje dygn skuggans takt under de sju senaste dygnen mot backtestens högsta vecka. Ärendet kommenteras varje dygn över gränsen och stängs av Bengt eller Axel när det är hanterat.
 
           $TEXT"
           fi
