@@ -1023,15 +1023,22 @@ export const KONTRAKT: Kontrakt[] = [
     namn: "Kandidatens färskhet — hur gammal timmen får vara",
     varfor: "Regeln, olycksfacit och småvägsrösten ska kalla samma timmar gamla (sql/068, DECISIONS #814, #828).",
     former: [/interval '(\d+) hours'(?: THEN)?\s+-- FARSK_TIMMAR/],
-    filer: /sql\/\d{3}_/,
-    golv: 8,
+    filer: /sql\/\d{3}_|ingest\/smavag-olyckor-db\.ts$/,   // smavag-olyckor-db.ts: sql/110:s timme vid olyckan, för kuvösens facit (#867)
+    golv: 9,
   },
   {
     namn: "Kandidatens fullständighet — andelen punkter som timmen måste bära",
     varfor: "Den frystas och den nyas timme och småvägsröstens ska kräva samma andel (sql/068, DECISIONS #828); backtestens kopia lika sql/105 (#848).",
     former: [/>= ([\d.]+) \* \(SELECT count\(\*\) FROM \w+\)\s+-- FULLSTANDIG_ANDEL/, /export const FULLSTANDIG_ANDEL = ([\d.]+);/],
-    filer: /sql\/\d{3}_|ingest\/smavag-regel\.ts$/,
-    golv: 4,
+    filer: /sql\/\d{3}_|ingest\/smavag-regel\.ts$|ingest\/smavag-olyckor-db\.ts$/,   // smavag-olyckor-db.ts: sql/110:s timme (#867)
+    golv: 5,
+  },
+  {
+    namn: "Småvägsröstens avstånd till olyckan — närmaste punkt",
+    varfor: "Olycksfacits lager (sql/110) och kuvösens facit vid olyckorna (#867) ska välja samma punkt; driver avståndet räknar de olika olyckor som småvägsröstens.",
+    former: [/ST_DWithin\(s\.geom::geography, \w+\.geom::geography, (\d+)\)\s+-- SMAVAG_M/],
+    filer: /sql\/110_|ingest\/smavag-olyckor-db\.ts$/,
+    golv: 2,
   },
   {
     namn: "Småvägsröstens radarbit — punkter i följd längs vägen",
