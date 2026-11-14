@@ -16361,3 +16361,22 @@ avbrottsgränsen i skuggan (halkvakt-kuvos F57 val 14) följer den fukt som väl
 tills fukten är vald.
 
 **Stomdokument:** APP §3, MAT §5 — småvägsröstens tystnad efter ett besked
+
+## #864 (14/11 2026) Meta-annonserna: Android i alla 21 län, och kampanjens tak 9 500 kr
+
+Piloten från DECISIONS #861 gick som den skulle: 03:01 14/11 slogs Android-uppsättningarna i Dalarna, Västernorrland och Jämtland på,
+dagens annonser lades upp, och 05:31 var alla tre godkända av Meta och reservannonserna pausade (körningarna 43543903507 och
+43557064058). Axel 14/11: *"can you turn on so we do all counties for andorid as well?"*
+
+**Beslut.**
+- Android-uppsättningar i alla 21 län (`ANDROID_LAN`), med samma regel, mall och länk som i piloten.
+- Kampanjens tak höjs från 6 000 kr till omkring 9 500 kr (Axels val 14/11). Samma morgon hade alla 21 län halka och 6 000 kr räckte
+  inte ens för iPhone-länen: fyra till fem län stod av för budgeten (körningen 43564253409). Med 42 uppsättningar och omkring 10 kr per
+  dygn och påslagen uppsättning behövs omkring 420 kr per dygn de kallaste dagarna, och omkring 3 400 kr återstod för 16 dygn.
+  Taket ändras av Axel i Ads Manager, som förut; skriptet rör aldrig budgeten. `BUDGET_ORE` följer med så att rapportraden stämmer.
+- Prioriteringen är densamma (#762): når budgeten inte, står det svagaste ordet av först, oavsett telefon.
+
+**Alternativ som inte valdes:** att behålla 6 000 kr (fler län hade stått av de kalla morgnarna), och att vänta till december då
+kampanjen ändå byggs om.
+
+**Stomdokument:** inga — marknadsföringen beskrivs inte i stomdokumenten

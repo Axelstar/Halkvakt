@@ -126,12 +126,12 @@ test("Android: samma annons med Googles märke och texten Gratis för Android", 
   assert.equal(RESERV_ANDROID.text, RESERV.text.replace("iPhone", "Android"));
 });
 
-test("Android: namnen ger länet tillbaka, piloten är tre län", () => {
+test("Android: namnen ger länet tillbaka, alla 21 län", () => {
   assert.equal(lanAv("Län · Jämtland · Android"), "Jämtland");
   assert.equal(lanAv("Län · Jämtland"), "Jämtland");
   assert.equal(arAndroid("Län · Jämtland · Android"), true);
   assert.equal(arAndroid("Län · Jämtland"), false);
-  assert.deepEqual([...ANDROID_LAN].sort((a, b) => a - b), [20, 22, 23]);
+  assert.equal(ANDROID_LAN.size, 21);   // every county since 14/11 (DECISIONS #864)
   const u = new URL(playLank("jamtland"));
   assert.equal(u.searchParams.get("id"), "se.halkvakt.app");
   assert.equal(u.searchParams.get("referrer"), "utm_source=meta&utm_campaign=meta-jamtland");

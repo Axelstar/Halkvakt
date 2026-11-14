@@ -26,7 +26,7 @@ const KONTO = "act_1760320565448083";
 // "Halkvakt · län" från 27/10 avvisade länken och står kvar pausad; den tas bort i Ads Manager.
 const KAMPANJ = "Halkvakt · län · app";
 const PREFIX = "Län · ";
-const BUDGET_ORE = 600000;                       // 6 000 kr för hela kampanjen (DECISIONS #763; 2 000 kr till 31/10)
+const BUDGET_ORE = 950000;                       // 9 500 kr för hela kampanjen (DECISIONS #864; 6 000 kr till 14/11, 2 000 kr till 31/10)
 const DAGAR = 30;
 const APP = "https://apps.apple.com/se/app/halkvakt/id6806939784";
 // Kampanjlänk per län (Axel 10/11, genomlysningen): App Store Connect räknar nedladdningar per kampanj (ct), så kronor per
@@ -39,11 +39,11 @@ export const kampanjLank = slug => `https://apps.apple.com/app/apple-store/id680
 const META_APP_ID = "28619019301133859";
 // Android (Axel 13/11): Google Play is live, and the Meta app carries the platform Android (package se.halkvakt.app, Google
 // Play) since the same evening. An app campaign's ad set promotes one store, so each county gets a second ad set,
-// "Län · <län> · Android", targeting Android phones and linking to Google Play. It starts as a pilot in three counties;
-// widen ANDROID_LAN when the pilot has run. The iPhone ad sets are not touched.
+// "Län · <län> · Android", targeting Android phones and linking to Google Play. Piloted in three counties 13/11 (#861),
+// all 21 counties from 14/11 (#864). The iPhone ad sets are not touched.
 const PLAY = "https://play.google.com/store/apps/details?id=se.halkvakt.app";
 export const ANDROID = " · Android";
-export const ANDROID_LAN = new Set([20, 22, 23]);   // Dalarna, Västernorrland, Jämtland (lan.json:s kod)
+export const ANDROID_LAN = new Set([1, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25]);   // every county (lan.json:s kod)
 /** Play link per county: Play Console counts installs per utm_campaign, as App Store Connect does per ct. */
 export const playLank = slug => `${PLAY}&referrer=${encodeURIComponent(`utm_source=meta&utm_campaign=${("meta-" + slug).slice(0, 40)}`)}`;
 /** The county part of an ad set name, without the prefix and the Android suffix. */
