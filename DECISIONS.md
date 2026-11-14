@@ -16380,3 +16380,28 @@ dagens annonser lades upp, och 05:31 var alla tre godkända av Meta och reservan
 kampanjen ändå byggs om.
 
 **Stomdokument:** inga — marknadsföringen beskrivs inte i stomdokumenten
+
+## #865 (14/11 2026) Kartans rikstal räknar bara Sverige
+
+Bengt frågade 14/11 hur många vägstationer det finns, med en skärmbild av kartan: under rubriken *Sveriges väglag just nu* stod
+*Stationer på 0 °C eller kallare: 996*. Talet kom ur `meta.json`, som räknade alla stationer i `vader.geojson`, alltså Sveriges,
+Finlands och Danmarks. Filen från 09.30 svensk tid bar 1 340 stationer (860 svenska, 456 finska och 24 danska) och 933 kalla, varav
+674 svenska och 259 finska. *Olyckor och hinder* räknade på samma sätt Finlands olyckor (2 i filen, varav 1 finsk). Samma tal står
+på pressidan under *Läget på vägarna just nu* (*Vägväderstationer på 0 °C eller kallare*, *Pågående olyckor och hinder*). MCP-servern
+visste det redan och tar rikstalen ur länen (#630). Bengt: *"Ja, rätta"*.
+
+**Beslut.** `stationer`, `kalla_stationer` och `olyckor` i `meta.json` räknar bara Sverige (`publish/map-core.ts`). Finlands och
+Danmarks stationer och Finlands olyckor ritas på kartan som förut. `stationer` följer med fast kartan inte visar det:
+marknadsföringens sommartext (`marknadsforing/generator.mjs`) säger *"N mätstationer"* om Sverige. Kartsidan och pressidan i
+halkvakt-karta ändras inte; de får de rätta talen ur filen.
+
+**Prov.** Fallet #865 i `test/map-core.test.ts`: kalla stationer i Finland och Danmark och en finsk olycka ritas men räknas inte.
+Motprov: var och en av de tre räkningarna tillbaka till alla länder fäller fallet.
+
+**Alternativen som inte valdes:** nya fält för Sverige bredvid de gamla och kartsidan och pressidan ändrade i halkvakt-karta (två
+repon för samma sak, och fälten som räknar alla länder har ingen annan läsare); en annan rubrik på kartan, som skulle göra talet sant
+men rubriken fel.
+
+**Kvar:** deploy av `publicera` (och `mcp`, där bara en kommentar ändrats) och beviset i nästa `meta.json`.
+
+**Stomdokument:** SYS 1 — kartsajtens rikstal
