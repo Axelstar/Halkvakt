@@ -172,8 +172,8 @@ export interface EngineConfig {
   smavagPaFixar: number;
   smavagKordaMaxM: number;
   /** S, one call per slippery area and then silence (DECISIONS #828): after a small-roads call the voice stays silent until BOTH
-   *  smavagTystS and smavagTystM have passed, whatever the road. The repeat rule's values until the cap is chosen from the
-   *  backtest (halkvakt-kuvos F57). */
+   *  smavagTystS and smavagTystM have passed, whatever the road. The cap chosen from the backtest (DECISIONS #863,
+   *  halkvakt-kuvos F60). */
   smavagTystS: number;
   smavagTystM: number;
 }
@@ -222,8 +222,8 @@ export const DEFAULT_CONFIG: EngineConfig = {
   smavagPaGrader: 30,
   smavagPaFixar: 3,
   smavagKordaMaxM: 3000,
-  // S (DECISIONS #828, #844): the repeat rule's 10 min and 5 km until the cap is chosen (F57). Samma tal i Types.kt och
-  // Engine.swift (kontraktsgrinden).
-  smavagTystS: 600,
-  smavagTystM: 5000,
+  // S (DECISIONS #828, #844, #863): the cap, 30 min and 20 km, chosen by Bengt 14/11 from the backtest (halkvakt-kuvos F60).
+  // Samma tal i Types.kt och Engine.swift (kontraktsgrinden).
+  smavagTystS: 1800,
+  smavagTystM: 20000,
 };
