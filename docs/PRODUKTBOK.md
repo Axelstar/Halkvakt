@@ -108,6 +108,7 @@ krymper och tonar bort; stapeln börjar om.
 | Frysrisk vid station | *Frysrisk* — *Vägbanan nära noll grader* | *FRAMÖVER* | — |
 | Frysrisk efter regnet (beta, S3) | *Frysrisk* — *Halkvakt tror — efter regnet* | *FRAMÖVER* | *BETA* |
 | Halka enligt kandidaten (beta, nivå 2) | *Halka* — *Halkvakt tror — modellerat* | *FRAMÖVER* | *BETA*, halkans ikon |
+| Halka på småvägarna (beta, S) | *Halka* — *Småvägarna — modellerat* | *FRAMÖVER* | *BETA*, halkans ikon |
 | Frysrisk på bro | *Frysrisk* — *Bro* | *600 M* (hundratal, som rösten) | egen ikon |
 | Vilt | *Vilt* | *FRAMÖVER* | — |
 | Fartkamera | *Fartkamera* | *500 M* | hastighetsskylt när gränsen är känd |
@@ -121,6 +122,12 @@ krymper och tonar bort; stapeln börjar om.
 *(Kandidatens betakort: Android ur fotostudion 16/10, android.yml 38852518205 på grenen `claude/kandidat-farotyp-577`, en påhittad varning
 655 m bort, bara i debug-bygget (DECISIONS #577). iOS-kortet har samma rader (`WarningCardTests.testCandidateBetaIsMarked`), men ingen
 skärmbild.)*
+
+![Småvägsröstens betakort](produktbok/shot-13-smavagkortet.png)
+
+*(Småvägsröstens betakort: Android ur fotostudion 14/11, android.yml 43613610625 på grenen `claude/produktbok-smavag`, en påhittad
+varning 655 m bort, bara i debug-bygget (DECISIONS #828, #844). iOS-kortet har samma rader i `WarningCard.swift`, men inget eget prov
+och ingen skärmbild.)*
 
 Kortets innehåll räknas i motorpaketen (`WarningCard` i Swift och Kotlin) och prövas av CI med samma fall på båda
 plattformarna; olycksläget kommer ur motorn (`Alert.step`, DECISIONS #443).
@@ -353,6 +360,7 @@ tillverkare kan ha andra ord. Inte provat på en telefon. Skärmbilder ur fotost
 | Mätstation visar frysrisk | "Isrisk framöver — vägbanan nära noll grader." |
 | **Efter regnet, märkt beta (S3):** ytan +1…+3 °C, fallit minst 0,8 °C på 30 minuter och regn inom 2 timmar — vägbanan är fortfarande över fryspunkten men på väg ned (DECISIONS #222, #524) | "Halkvakt tror: frysrisk framöver." |
 | **Halka enligt kandidaten, märkt beta (nivå 2):** modellens vägyta 0 °C eller kallare och ett mätt fuktbesked — Trafikverkets *Våt* på sträckan eller nederbörd på radarn — ingen varm station inom 15 km och stationerna runt omkring överens; en gång per sträcka och högst en gång per 10 minuter (DECISIONS #562–#577, #606) | "Halkvakt tror: halka framöver." |
+| **Halka på småvägarna, märkt beta (S):** på statliga vägar där Trafikverket inte mäter väglaget — småvägarna och vägarna nära väglagsnätet — när vädermodellen säger att vägbanan fryser och det faller nederbörd, i modellen eller på radarn; ett besked per halkområde, sedan tyst tills både 30 minuter och 20 km har gått (DECISIONS #828, #844, #863, #866) | "Betavarning: risk för halka på småvägarna framöver." |
 | Djur på vägen enligt Trafikverket — älg, hjort, vildsvin, men också lösa kor och får (sedan 22/9, DECISIONS #318; polisens länspunkter är borta) | "Viltrisk framöver." |
 | Fartkamera (hastighetsgränsen sägs inte: Trafikverkets kameradata bär ingen) | "Fartkamera om 500 meter." |
 
@@ -361,11 +369,21 @@ en uppmätt frysning. Värdena är satta före frosten och döms i januari på f
 annars tas den bort (TROSKLAR-KOMBINATIONEN §7). Testförarna får veta att värdena är gissade.
 
 **Halkan som kandidaten tror på är också en beta.** Den räknas ur en vädermodell vid punkter ungefär varannan kilometer längs
-vägen, inte ur en mätning på platsen — därför *"Halkvakt tror"* och aldrig ett avstånd. Den talar sist av alla varningar: allt annat
-går före, och den kan aldrig tysta en annan varning. Har Trafikverkets halkvarning för samma sträcka just hörts tiger den i två
+vägen, inte ur en mätning på platsen — därför *"Halkvakt tror"* och aldrig ett avstånd. Den talar efter alla andra varningar utom
+småvägsrösten: allt annat går före, och den kan aldrig tysta en annan varning. Har Trafikverkets halkvarning för samma sträcka just hörts tiger den i två
 minuter, så att samma besked inte kommer två gånger i rad, och den talar högst en gång per 10 minuter, vilken sträcka det än gäller (DECISIONS #606). Den följer reglaget *Halka* i *Varna för* och tystnar när väglagsdatan är äldre
 än 45 minuter. Domen faller i mars (DECISIONS #547); den kan stängas av från servern utan ett nytt bygge, och det provas före App
 Review (NIVA2-LIVE steg 13).
+
+**Halkan på småvägarna är också en beta, och den tiger tills den slås på.** Den talar på statliga vägar där Trafikverket inte mäter
+väglaget, och bara på den väg bilen följer: bilen ska ligga inom 80 meter från vägen och i dess riktning, tre GPS-punkter i rad. Den
+räknas ur en vädermodell vid punkter längs vägarna, inte ur en mätning — därför *"Betavarning"* och *"framöver"*, och aldrig ett
+avstånd. Den talar sist av alla varningar, efter kandidaten, och kan aldrig tysta en annan varning. Efter ett besked är den tyst tills
+både 30 minuter och 20 km har gått, vilken väg det än gäller. Den följer reglaget *Halka* i *Varna för*, och den tiger när modellens
+senaste timme är äldre än två timmar eller ofullständig. Appen hämtar vägarnas punkter, omkring 3,5 MB, först när lägesfilen bär ett
+besked, och ingenting skickas tillbaka. Två brytare på servern, en för småvägarna och en för vägarna nära väglagsnätet, är av tills
+påslaget (DECISIONS #828). En kontroll varje dygn lyfter ett ärende om rösten under de sju senaste dygnen talat oftare än i
+backtestens värsta vecka, och då slås brytarna av (#869).
 
 **Allvarlig olycka — varför två gånger?** Trafikverket klassar varje olycka efter
 hur mycket den påverkar trafiken. Är påverkan *mycket* stor — riktigt stopp — säger
@@ -806,7 +824,7 @@ du var just då."* (Axels villkor för ja:et, DECISIONS #267.)
 | 0.4.0 (42) | 10/11 | **Tipsa en vän, Tyck till och Betygsätt** (DECISIONS #829): tre rader under etiketten *HALKVAKT* i Inställningar, och kortet *Kör någon du känner samma vägar?* på Redo. efter femte vaktpasset. Bygger på 0.4.0 (41). |
 | 0.4.0 (43) | 10/11 | **Facitknapparna på Redo.** (kort #998): ordet syns i den valda knappen, och raden *SENAST SAGT · tid* med varningens text står ovanför *Stämde* och *Stämde inte*, så att det framgår vilken varning svaret gäller. |
 | 0.4.0 (44) | 11/11 | **En besvarad varning frågas inte om igen** (kort #999): *Stämde / Stämde inte* står kvar med *Tack* medan startskärmen visas och är borta nästa gång den visas. Gäller båda apparna. |
-| 0.4.0 (48) | 13/11 | **Nya introduktionen** (kort #651, DECISIONS #851): sex steg i stället för fyra sidor. Före varje ruta från iOS står vilken knapp som ska väljas, och varje svar har sitt eget läge. Alla fem varningarna visas, med fartkamerorna i rubriken. *Testa rösten* finns bara i Inställningar. Bara iPhone. |
+| 0.4.0 (48) | 13/11 | **Nya introduktionen** (kort #651, DECISIONS #851): sex steg i stället för fyra sidor. Före varje ruta från iOS står vilken knapp som ska väljas, och varje svar har sitt eget läge. Alla fem varningarna visas, med fartkamerorna i rubriken. *Testa rösten* finns bara i Inställningar. Bara iPhone. Första iPhone-bygget med **småvägsrösten** i koden (DECISIONS #828, #844, #846); den tiger tills brytarna på servern slås på. |
 | 0.4.0 (49) | 13/11 | **Utan CarPlay** (DECISIONS #858): bygget till granskningen har CarPlay avslaget. Rösten hörs som förut; varningen visas inte på bilens skärm, och vakten startar inte av att Halkvakt öppnas där. Dessutom står sidan om *Alltid* i introduktionen kvar bakom iOS ruta tills den är besvarad. |
 | Android 0.4.0 (49) | 13/11 | **Introduktionen i Android** (kort #652, DECISIONS #862): sju skärmar i fem steg, med självstarten som eget steg och ett läge per svar i Androids rutor. Raden *Visa introduktionen igen* i Inställningar. Räknaren säger `onboarding_klar` en gång, som iPhone. |
 | Android (CI) | 16/9 → | Facitknappen och betatest-brytaren (S4, DECISIONS #202), Efter resan (20/9), viltvarningen på Trafikverkets djur (22/9), omladdningsloopen lagad och reglaget (26/9), missarna (26/9). **0.3.9 (18)**, samma nummer som iOS (DECISIONS #377). |
