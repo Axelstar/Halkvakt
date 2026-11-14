@@ -986,6 +986,7 @@ const LS_STIL = `.dok{max-width:760px}.svar{font:500 19px/1.5 var(--sans);color:
 .dok nav p{line-height:2.1}.dok nav a{white-space:nowrap}.tabell{overflow-x:auto}.dok td+td,.dok th+th{white-space:nowrap;text-align:right}
 .ladda{display:grid;gap:12px;background:var(--panel);border:1px solid var(--kant);border-radius:18px;padding:22px 24px;margin-top:44px}
 .ladda b{font-size:19px}.ladda p{margin:0}.ladda .knapp{justify-self:start}
+.appknappar{display:flex;flex-wrap:wrap;gap:10px}
 .dok a.knapp{color:var(--mark);text-decoration:none}
 .svar-app{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;margin:0 0 8px}.svar-app p{margin:0;color:var(--text2);flex:1 1 280px}
 .lankarta{position:relative;display:block;height:min(62vw,440px);margin:22px 0 6px;background:var(--panel);border:1px solid var(--kant);border-radius:18px;overflow:hidden}
@@ -998,6 +999,10 @@ const LS_STIL = `.dok{max-width:760px}.svar{font:500 19px/1.5 var(--sans);color:
 .varnad{background:var(--panel);border:1px solid var(--kant);border-radius:14px;padding:12px 16px;margin:10px 0}`;
 // App Store med kampanjkod per knapp (27/10, DECISIONS #732), samma som sajtens övriga sidor.
 const lsApp = (ct: string) => `https://apps.apple.com/se/app/halkvakt/id6806939784?ct=${ct}`;
+// Google Play med samma kod som referrer (14/11, Axel: "Kan du inte göra detta?"), syns under användarförvärv i Play Console.
+const lsPlay = (ct: string) => `https://play.google.com/store/apps/details?id=se.halkvakt.app&amp;referrer=utm_source%3Dhalkvakt.se%26utm_content%3D${ct}`;
+// Två knappar överallt där appen kan hämtas (Axel 13/11: App Store och Google Play, båda gula).
+const lsKnappar = (ct: string) => `<span class="appknappar"><a class="knapp" href="${lsApp(ct)}">Ladda ner för iPhone</a><a class="knapp" href="${lsPlay(ct)}">Ladda ner för Android</a></span>`;
 const LS_MARKE = `<svg viewBox="3 3 94 83" aria-hidden="true"><path fill-rule="evenodd" fill="#FFC94A" d="M55.196 6 L96.196 77 A6 6 0 0 1 91 86 L9 86 A6 6 0 0 1 3.804 77 L44.804 6 A6 6 0 0 1 55.196 6 Z M46.4 32 L53.6 32 L52 58 L48 58 Z M45.6 68 A4.4 4.4 0 1 0 54.4 68 A4.4 4.4 0 1 0 45.6 68 Z"/></svg>`;
 
 const LS_TRV_DATA = { "@type": "Dataset", name: "Trafikverkets öppna data: väglag, vägväderstationer och olyckor",
@@ -1064,7 +1069,7 @@ ${lsJsonLd(o)}${o.extra ?? ""}
 <main class="wrap">
 <div class="dok">
 ${o.innehall}
-<div class="ladda"><b>${lsEsc(o.ladda?.rubrik ?? "Kör du här ofta?")}</b><p>${lsEsc(o.ladda?.text ?? "Appen säger till med rösten innan du är framme vid halkan. Samma data som på den här sidan. Gratis för iPhone.")}</p><a class="knapp" href="${lsApp(o.ct)}">Få varningar i appen</a></div>
+<div class="ladda"><b>${lsEsc(o.ladda?.rubrik ?? "Kör du här ofta?")}</b><p>${lsEsc(o.ladda?.text ?? "Appen säger till med rösten innan du är framme vid halkan. Samma data som på den här sidan. Gratis för iPhone och Android.")}</p>${lsKnappar(o.ct)}</div>
 </div>
 </main>
 <footer class="fot">
@@ -1364,7 +1369,7 @@ function lsFragor(namn: string, var_ = `i ${namn}`): { fraga: string; svar: stri
     { fraga: `Hur ofta uppdateras väglaget ${var_}?`, svar: "Sidan skrivs om var 30:e minut med Trafikverkets senaste väglagsrapport, vägbanans temperatur vid vägväderstationerna och pågående olyckor." },
     { fraga: "Vad räknas som halka på sidan?", svar: "En sträcka räknas som hal när Trafikverkets väglagsrapport anger besvärligt väglag eller nämner is, snö, frost eller halka. Det är samma regel som får appen att varna." },
     { fraga: "Var mäts vägbanans temperatur?", svar: "Vid Trafikverkets vägväderstationer längs de större vägarna. Mellan stationerna mäts ingenting, så vägen kan vara kallare eller varmare där." },
-    { fraga: "Kan jag få en varning medan jag kör?", svar: "Ja. Halkvakt för iPhone säger till med rösten när halka är rapporterad på vägen framför dig. Appen är gratis, och din position lämnar inte telefonen av sig själv." },
+    { fraga: "Kan jag få en varning medan jag kör?", svar: "Ja. Halkvakt för iPhone och Android säger till med rösten när halka är rapporterad på vägen framför dig. Appen är gratis, och din position lämnar inte telefonen av sig själv." },
   ];
 }
 const lsFragorHtml = (f: { fraga: string; svar: string }[]) =>
@@ -1754,7 +1759,7 @@ ${lsFragorHtml(LS_VARN_FRAGOR)}
     beskrivning, adress: `${SIDBAS}/varningar/`, rot: "../", innehall, now, ct: "varningar", smhi: true,
     extra: LS_VARN_STIL + lsFragorLd(LS_VARN_FRAGOR),
     kallor: "Källor: SMHI:s öppna data om vädervarningar och Trafikverkets öppna data (CC0) om väglag, vägväderstationer och olyckor. Sidan skrivs om var 30:e minut. Fristående från myndigheterna.",
-    ladda: { rubrik: "Ska du ut på vägarna?", text: "Appen säger till med rösten innan du är framme vid halkan. Samma data från Trafikverket. Gratis för iPhone, och din position lämnar inte telefonen av sig själv." },
+    ladda: { rubrik: "Ska du ut på vägarna?", text: "Appen säger till med rösten innan du är framme vid halkan. Samma data från Trafikverket. Gratis för iPhone och Android, och din position lämnar inte telefonen av sig själv." },
   });
 }
 
@@ -1828,7 +1833,7 @@ function lsOrtsida(ort: (typeof ORTER)[number], lan: (typeof LAN)[number], lanLa
 <p class="svar">${lsEsc(svar)}</p>
 ${lsOrtKarta(ort, lan)}
 ${lsVarnadRad(varn.filter((v) => v.lan.includes(ort.lan)), `i ${lsSoknamn(lan.kort)}`, "../../")}<p class="dim">Väglaget och trafikläget i ${visas} idag: vägarna ${avNara ? `runt ${ort.tatort ? "kommunens centralort" : "orten"}` : "till och från orten"} enligt Trafikverket, uppdaterat var 30:e minut.</p>
-${halt.length ? `<div class="svar-app"><p>Kör du i ${n} idag? Appen säger till med rösten innan du är framme vid halkan.</p><a class="knapp" href="${lsApp("ort-halt")}">Få varningar i appen</a></div>\n` : ""}<h2>Vägarna ${avNara ? "runt" : "till och från"} ${n}</h2>
+${halt.length ? `<div class="svar-app"><p>Kör du i ${n} idag? Appen säger till med rösten innan du är framme vid halkan.</p>${lsKnappar("ort-halt")}</div>\n` : ""}<h2>Vägarna ${avNara ? "runt" : "till och från"} ${n}</h2>
 ${vagLista}
 <h2>Vägbanan runt ${n} just nu</h2>
 ${nara.length ? `<p>Vägbanans temperatur kl. ${lsTid(now, false)} vid Trafikverkets vägväderstationer inom ${LS_NARA_KM} km från ${n}, kallast först:</p>
@@ -1870,7 +1875,7 @@ function lsLanssida(lan: (typeof LAN)[number], l: LanLage, now: Date, d: { vagla
 <h1>Är det halt i ${lsEsc(lan.kort)} just nu?</h1>
 <p class="svar">${lsEsc(lsSvar(l, "länets", "i länet", now))}</p>
 ${lsVarnadRad(varn.filter((v) => v.lan.includes(lan.kod)), "i länet", "../../")}<p class="dim">Väglaget och trafikläget i ${lsEsc(lsSoknamn(lan.kort))} idag: halka, vägbanans temperatur och pågående olyckor enligt Trafikverket, uppdaterat var 30:e minut.</p>
-${l.halt.length ? `<div class="svar-app"><p>Kör du i ${lsEsc(lan.kort)} idag? Appen säger till med rösten innan du är framme vid halkan.</p><a class="knapp" href="${lsApp("lan-halt")}">Få varningar i appen</a></div>
+${l.halt.length ? `<div class="svar-app"><p>Kör du i ${lsEsc(lan.kort)} idag? Appen säger till med rösten innan du är framme vid halkan.</p>${lsKnappar("lan-halt")}</div>
 ` : ""}${lsLanKarta(lan, l)}
 <h2>Stora vägar i ${lsEsc(lan.kort)} just nu</h2>
 ${lsVagarILanet(lan.kod, d)}

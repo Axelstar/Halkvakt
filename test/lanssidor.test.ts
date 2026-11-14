@@ -276,7 +276,9 @@ test("läns- och vägsidorna bär sajtens ram: samma meny, spårkod per knapp, a
     // 8/11: samma meny som startsidan, med Storstäderna och Vägar (Axel: "storstäderna fliken i toppen inte alltid är där").
     assert.match(s, /Livekartan<\/a>\s*<a [^>]*#storstader">Storstäderna<\/a>\s*<a [^>]*>Länen<\/a>\s*<a [^>]*#vagar">Vägar<\/a>\s*<a [^>]*>Appen<\/a>\s*<a [^>]*>Om Halkvakt<\/a>/, namn);
     assert.ok(s.includes("?ct=huvud\">Hämta appen</a>"), namn);
-    assert.ok(s.includes(`?ct=${ct}">Få varningar i appen</a>`), namn);
+    // 14/11: två knappar med samma kod, App Store som ct och Google Play som referrer (Axel 13/11: alltid båda butikerna).
+    assert.ok(s.includes(`?ct=${ct}">Ladda ner för iPhone</a>`), namn);
+    assert.ok(s.includes(`utm_content%3D${ct}">Ladda ner för Android</a>`), namn);
     assert.equal((s.match(/aria-label="Halka per län"/g) ?? []).length, 1, namn);
   }
   assert.ok(sidor["lan/skane/index.html"].includes("?ct=lan-halt"), "halt i länet ⇒ appraden under svaret");
