@@ -15260,6 +15260,19 @@ Brytarna är av tills dess.
 - Punktfilen skrivs vid nästa laddning i `ny-kandidat-fysik`, och först därefter står den i manifestet.
 - **Historiken för alla punkter väntar på MET.** MET:s arkiv (`metpparchive`) svarade 404 på alla dygn och på katalogen från förmiddagen 11/11. Första försöket sparade dygn med luckor, och kedjan föll i del A. PR #1514 och #1517 tar bort dygn utan 24 timmar per punkt så att de hämtas om, i småvägskedjan och i `kuvos-stad`. En väntare trycker historiken och kedjan när arkivet svarar igen.
 
+**Tillägg 14/11 (Bengt: *"Gör 2 o 6 nu"*): regelns tid i driften är mätt, och produktboken beskriver rösten.**
+- **Regelns tid:** `smavag_regel()` utan brytarvillkoret, alltså som när brytarna är på, tog 84,5, 89,5 och 85,6 ms. Planeringen tog
+  omkring 3 ms. `smavag_talar()` med brytarna av tog 0,3 ms. Mätt med EXPLAIN ANALYZE i SQL-redigeraren 14/11 eftermiddag, bara
+  läsning och med en tidsgräns på 30 s. Stadsgrenens regel tog 3,0 s efter rättelsen i #813, så småvägsregeln är inget hinder för
+  publiceringen.
+- **Produktboken** (PRODUKTBOKSREGELN) har kortet, frasen och ett stycke om rösten, med fotostudions bild
+  `shot-13-smavagkortet.png` (android.yml 43613610625, kroken `fotostudio_smavag` i debug-bygget). Kandidatens stycke säger nu att
+  den talar efter alla andra varningar utom småvägsrösten.
+- **Punktfilen** med schema 2 har legat i kartrepot sedan 12/11 18.40 UTC (`data/app/v1/smavag.json`, omkring 3,5 MB). Kvar av steget
+  är att en app hämtar och läser den med ett riktigt besked, och det kräver att en brytare är på.
+
+Förbehåll: regeln mättes en torr eftermiddag. En timme med regn bär fler rader i radarns del.
+
 **Stomdokument:** MAT 5 — småvägsrösten beställd och byggs avstängd, SYS 2 — driftens rörarbete för småvägarna, APP 3 — betavarningens farotyp och text
 
 ## #829 (10/11 2026) Tipsa en vän, Tyck till och Betygsätt i 0.4.0 (42), tillsammans med Favoriter 2a och CarPlay
