@@ -16606,3 +16606,22 @@ avgör olycksfacit och testarnas svar, inte takten. Talen står i halkvakt-kuvos
 **Kvar:** TestFlight-bygget och Axels prov på telefonen; Bengts ja eller nej; Android.
 
 **Stomdokument:** APP 4, BED §4.2
+
+## #872 (14/11 2026) Kartan och Planera resa för alla: brytaren tas bort, och Axel häver väntan på Bengt (kort #659; ersätter #871, ändrar #870)
+
+**Beslut.** Axel 14/11 22:38, efter att ha öppnat 0.4.1 (51) i TestFlight och sett startsidan utan kartan: *"No this is really not what we want. We want a plan your trip for all users and then it should show whats around me when i open the app"*. Brytaren *Kartan och Planera en resa* (#871) tas bort. Kartan *Nära dig*, knappen *Planera en resa* och den planerade resan finns för alla, utan något att slå på.
+- **Väntan på Bengt ur #870 är hävd av Axel.** Bengt har inte svarat och får veta det av det här beslutet och raden i bedömningens §4.2. Ingenting når App Store förrän ett bygge skickas till App Review, och det gör Axel själv.
+- **Produktregeln i CLAUDE.md** har undantaget inskrivet i samma commit: Apples karta hämtar kartbilder för området utan att föraren trycker på något, och en sökning skickar sökorden, platsen och målet till Apple. Aldrig till Halkvakt.
+- **Sagt där det sker.** Under kartan på Redo står *KARTAN KOMMER FRÅN APPLE*. Under sökrutan står, som förut: *"Apple slår upp adressen och räknar ut vägen, och får då veta var du är och vart du ska. Halkvakt får aldrig veta det. Resan sparas inte."*
+- **Integritetssidan** (kartrepot) får ett stycke om kartan och adressökningen i iPhone-appen från 0.4.1, och kärnlöftet en mening om undantaget, i samma varv.
+- **Inte ändrat, och varför:** raden *"Din position lämnar inte telefonen av sig själv."* på Redo, i introduktionen, i iOS egna platsrutor, i varumärkesguiden och på sajtens övriga sidor står kvar. Axel valde 14/11 nya ord överallt (#871), men meningen är varumärkets och vaktas av kontraktsgrinden mellan iPhone, Android och sajten, och Android har inte kartan. Att byta den är ett eget varv med Bengt. Till dess säger appen och integritetssidan vad Apple får veta, där det sker. Plays datablankett rörs inte: Android har inte delen. App Stores integritetsuppgifter rörs inte: det Apple får genom sin egen karta samlas inte in av Halkvakt.
+- **Bygget** är 0.4.1 (52).
+- Sockeln på Redo (`Plinth`) är borttagen ur koden; bilderna `plinth-*` ligger kvar bland appens bilder.
+
+**Alternativ som Axel valde bort:** brytaren i TestFlight (#871); att vänta på Bengt (#870); en lista i stället för kartan; ortslista och rutt i telefonen.
+
+**Inte prövat:** kartan, sökningen och påminnelsen är inte sedda på en telefon. Bygge 51 sågs bara med brytaren av.
+
+**Kvar:** Axels prov på telefonen; Bengts läsning; beslutet om löftets mening; Android; skärmbilderna i produktboken.
+
+**Stomdokument:** APP 4, BED §4.2

@@ -189,14 +189,6 @@ struct GreenToggleRow: View {
     }
 }
 
-/// En 3D-sockel ur designen, renderad till bild (scripts/design-socklar.py) — 300 × 240 pt.
-struct Plinth: View {
-    let name: String
-    var body: some View {
-        Image(name).resizable().scaledToFit().frame(maxWidth: 300).accessibilityHidden(true)
-    }
-}
-
 /// Den flytande flikraden: Vakten / Favoriter / Inställningar, 104 × 52 per flik — tre i bredd ryms på en 375 pt-skärm.
 struct FloatingTabBar: View {
     @Binding var tab: Int

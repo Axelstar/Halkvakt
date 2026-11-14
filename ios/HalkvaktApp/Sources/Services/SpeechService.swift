@@ -99,10 +99,6 @@ final class Prefs {
     }()
     /// S4: betatestets facitknapp (DECISIONS #186) — AV tills föraren själv slår på den.
     var facitOn: Bool { didSet { d.set(facitOn, forKey: "k.facitOn") } }
-    /// Kort #659 (DECISIONS #870, #871): kartan Nära dig och Planera en resa. Bara i TestFlight, som Betatest, och AV tills
-    /// föraren själv slår på den. På ⇒ Apples karta och adressökning används: Apple får veta området kartan visar och, vid en
-    /// sökning, förarens plats och målet. Halkvakt får ingenting.
-    var planeraPa: Bool { didSet { d.set(planeraPa, forKey: "k.planeraPa") } }
     /// S4: svaren, sända och osända. Ren Swift-logik i Facit.swift.
     var facit: [FacitEntry] { didSet { d.set(try? JSONEncoder().encode(facit), forKey: "k.facit") } }
     /// Kort #203: resans varningar, persistenta. iOS hade förut bara "senast sagt" — bara resans SISTA
@@ -160,7 +156,6 @@ final class Prefs {
         lastSaidAt = d.object(forKey: "k.lastSaidAt") as? Date
         lastSaidId = d.string(forKey: "k.lastSaidId")
         facitOn = Self.betatestTillaten && d.bool(forKey: "k.facitOn")   // det sparade värdet rörs inte (#681)
-        planeraPa = Self.betatestTillaten && d.bool(forKey: "k.planeraPa")
         facit = d.data(forKey: "k.facit").flatMap { try? JSONDecoder().decode([FacitEntry].self, from: $0) } ?? []
         facitStatus = d.string(forKey: "k.facitStatus")
         facitStatusAt = d.object(forKey: "k.facitStatusAt") as? Date
