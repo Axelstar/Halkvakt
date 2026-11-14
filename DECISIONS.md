@@ -13403,8 +13403,8 @@ vakten går. Räknaren (#787) bär spåret. iPhone 0.4.0 den 8/11 (dagens rader,
   minuter), Safari 7 % (19 minuter) och Meddelanden 3 % (17 minuter). Resan är alltså inget prov med skärmen av.
 - **Takten** är som förut: en koll ungefär varannan minut, och filen drygt en minut gammal. Äldsta station 48 minuter, under taket
   60 minuter.
-- **Småvägsrösten ingår inte.** iPhone-appen har ingen småvägskod i main; bara Android har den (`SmavagFil.kt`). Småvägsröstens
-  batteristeg (punktfilen och beskedet i `live.json`) står kvar.
+- **Småvägsrösten ingår inte.** Appen hämtar punktfilen bara när lägesfilen bär ett besked (#846), och med brytarna av bär den inget.
+  Telefonen har alltså inte hämtat filen. Småvägsröstens batteristeg (punktfilen och beskedet i `live.json`) står kvar.
 
 Förbehåll: iOS ger andelar i hela procent, inte procentenheter. Omkring 46 procentenheter förutsätter att telefonen inte laddades
 efter den första resan. Att telefonen visade 100 % genom hela resan 12:11 kan bero på att iPhone håller 100 % en stund efter
