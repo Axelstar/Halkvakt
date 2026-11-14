@@ -1,5 +1,6 @@
-// KARTAN NÄRA DIG (kort #659, DECISIONS #870): Apples karta med farorna inom sex mil, på startsidan. Halkan är gula streck
-// längs vägen, de andra farorna är punkter. Utan plats visas hela landet med bara halkan.
+// KARTAN NÄRA DIG (kort #659, DECISIONS #870, #873): Apples karta med farorna inom sex mil, på startsidan. Halkan är gula
+// streck längs vägen, de andra farorna gula punkter och fartkamerorna små grå prickar, så att de inte täcker resten. Utan
+// plats visas hela landet med bara halkan.
 //
 // Kartbilderna hämtas från Apple för det område som visas, så Apple får veta ungefär var föraren är när startsidan öppnas.
 // Halkvakt får ingenting. Kandidaten och småvägsrösten står inte på kartan, som i listan I närheten (Nearby).
@@ -12,8 +13,9 @@ struct NaraDigKarta: View {
     let faror: [Hazard]
     let plats: (lon: Double, lat: Double)?
 
-    /// Flest punkter som ritas. Strecken är få och ritas alla.
+    /// Flest punkter av varje slag som ritas. Strecken är få och ritas alla.
     private static let flestPunkter = 60
+    private static let flestKameror = 80
 
     private struct Punkt: Identifiable {
         let id: String
@@ -32,6 +34,12 @@ struct NaraDigKarta: View {
             ForEach(strackor) { s in
                 MapPolyline(coordinates: s.koord).stroke(Brand.yellow, lineWidth: 4)
             }
+            ForEach(kameror) { p in
+                Annotation("Fartkamera", coordinate: p.koord) {
+                    Circle().fill(Brand.dim).frame(width: 6, height: 6)
+                }
+                .annotationTitles(.hidden)
+            }
             ForEach(punkter) { p in
                 Annotation(VaktenView.rubrik(p.kind.rawValue), coordinate: p.koord) {
                     HazardIcon(kind: p.kind, size: 14).foregroundStyle(Brand.bg)
@@ -40,7 +48,9 @@ struct NaraDigKarta: View {
                 .annotationTitles(.hidden)
             }
         }
-        .mapStyle(.standard(elevation: .flat, pointsOfInterest: .excludingAll))
+        .mapStyle(.standard(elevation: .flat, emphasis: .muted, pointsOfInterest: .excludingAll))
+        // Förarens egen plats i vitt: appens gula är farornas färg.
+        .tint(.white)
         // Kartan byggs om när platsen kommer, så att den visar rätt område.
         .id(plats.map { "\($0.lon),\($0.lat)" } ?? "landet")
         .frame(height: 200)
@@ -70,13 +80,16 @@ struct NaraDigKarta: View {
         }
     }
 
-    private var punkter: [Punkt] {
+    private var punkter: [Punkt] { Array(allaPunkter.filter { $0.kind != .camera }.prefix(Self.flestPunkter)) }
+
+    private var kameror: [Punkt] { Array(allaPunkter.filter { $0.kind == .camera }.prefix(Self.flestKameror)) }
+
+    private var allaPunkter: [Punkt] {
         // Utan plats ritas bara halkan: tusentals punkter över hela landet säger ingenting.
         guard plats != nil else { return [] }
-        let alla = faror.compactMap { h -> Punkt? in
+        return faror.compactMap { h -> Punkt? in
             guard case .point(let id, let kind, let lon, let lat, _, _) = h, nara(h) else { return nil }
             return Punkt(id: id, kind: kind, koord: CLLocationCoordinate2D(latitude: lat, longitude: lon))
         }
-        return Array(alla.prefix(Self.flestPunkter))
     }
 }

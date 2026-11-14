@@ -11,6 +11,8 @@ import CoreLocation
 import HalkvaktEngine
 
 struct VaktenView: View {
+    /// Ändras vid varje tryck på fliken Vakten (RootView): undersidorna stängs och startsidan visas (DECISIONS #874).
+    var hem = 0
     @State private var guardM = GuardManager.shared
     @State private var prefs = Prefs.shared
     @State private var fav = Favoriter.shared
@@ -43,8 +45,13 @@ struct VaktenView: View {
             .navigationDestination(isPresented: $visaPlanera) { PlaneraView() }
             .navigationDestination(isPresented: $visaPlan) { PlaneradResaView() }
         }
+        .onChange(of: hem) { _, _ in
+            visaPlanera = false
+            visaPlan = false
+        }
         .task { await guardM.refreshSnapshot() }
-        .task { await hamtaPlats() }
+        // Om igen när platstillståndet ändras: den som just svarat i iOS ruta ska få kartan över sitt område direkt.
+        .task(id: guardM.authStatus) { await hamtaPlats() }
         .onDisappear { if tipsatt { prefs.tipsaDold = true }; facitNu = nil }
         .onChange(of: fas) { _, ny in if ny != .active, tipsatt { prefs.tipsaDold = true } }
     }
@@ -77,41 +84,61 @@ struct VaktenView: View {
             // Kort #659: en planerad resa med avresetid står här tills sex timmar efter avresan.
             if let kommande = plan.kommande { planeradRad(kommande).padding(.top, 14) }
 
-            if tur == nil && resa == nil && !spara && !erbjud && !tipsa {
-                // Kort #659 (DECISIONS #870, #872): kartan Nära dig står där sockeln stod, med de tre närmaste farorna under.
-                naraDig.padding(.top, 14)
-                Spacer(minLength: 12)
-            } else {
-                Spacer(minLength: 24)
-            }
-
-            VStack(spacing: 14) {
-                Text("Redo.")
-                    .font(Typo.sans(44, .semibold)).tracking(-1.3)
+            // DECISIONS #873 (Axels skärmbild 14/11): svaret om området är rubriken, knapparna står direkt under den och
+            // syns utan att rulla, och kartan och listan kommer sedan.
+            let nara = naraFaror
+            VStack(spacing: 10) {
+                Text(rubrikNu(nara))
+                    .font(Typo.sans(34, .semibold)).tracking(-1)
                     .foregroundStyle(Brand.text)
-                Text(tur == nil ? subtitle : (wakes ? "Vakten vaknar själv när du kör." : "Din position lämnar inte telefonen av sig själv."))
+                    .multilineTextAlignment(.center)
+                    .accessibilityAddTraits(.isHeader)
+                Text(underrubrik(nara))
                     .font(Typo.sans(15)).lineSpacing(4)
                     .foregroundStyle(Brand.text2)
                     .multilineTextAlignment(.center)
-                    .frame(maxWidth: 290)
-                if tur == nil {
-                    Text(kallor).font(Typo.mono(10)).tracking(1.4).foregroundStyle(Brand.dim)
-                        .multilineTextAlignment(.center).padding(.top, 4)
-                }
+                    .frame(maxWidth: 300)
             }
-            .padding(.top, 12)
+            .padding(.top, 28)
+
+            // Bredvid varandra (Axel 14/11, DECISIONS #874), lika breda.
+            HStack(spacing: 10) {
+                Button { guardM.requestPermissionAndStart() } label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: "play.fill").font(.system(size: 12))
+                        Text("Starta vakten").font(Typo.sans(16, .semibold)).lineLimit(1).minimumScaleFactor(0.85)
+                    }
+                    .foregroundStyle(Brand.bg)
+                    .frame(maxWidth: .infinity).frame(height: 56)
+                    .background(Brand.yellow, in: Capsule())
+                }
+                .buttonStyle(PressScale())
+                Button { visaPlanera = true } label: {
+                    Text("Planera resa").font(Typo.sans(16, .semibold)).lineLimit(1).minimumScaleFactor(0.85)
+                        .foregroundStyle(Brand.text)
+                        .frame(maxWidth: .infinity).frame(height: 56)
+                        .background(Brand.panel, in: Capsule())
+                        .overlay(Capsule().strokeBorder(Brand.trackOff, lineWidth: 1))
+                }
+                .buttonStyle(PressScale())
+            }
+            .padding(.top, 24)
+            if guardM.locationDenied { LocationDeniedRow().padding(.top, 10) }
 
             if let tur { kvitto(tur).padding(.top, 24) }
 
-            Spacer(minLength: 24)
-
-            YellowPill(title: "Starta vakten", playIcon: true) { guardM.requestPermissionAndStart() }
-            NeutralPill(title: "Planera en resa") { visaPlanera = true }.padding(.top, 12)
-            if guardM.locationDenied { LocationDeniedRow().padding(.top, 10) }
+            naraDig(nara).padding(.top, 28)
 
             Text(tur.map { "\($0.varningar.count) \($0.varningar.count == 1 ? "VARNING" : "VARNINGAR") · VISAS TILLS NÄSTA TUR" } ?? (prefs.lastTripEnd == nil ? "INGEN TUR ÄN" : "INGA VARNINGAR SENASTE TUREN"))
                 .font(Typo.mono(10)).tracking(1.4).foregroundStyle(Brand.faint)
-                .padding(.top, 16)
+                .padding(.top, 24)
+            Text(kallor).font(Typo.mono(10)).tracking(1.4).foregroundStyle(Brand.dim)
+                .multilineTextAlignment(.center).padding(.top, 8)
+            // Löftet står i underrubriken när platsen saknas, annars här.
+            if harPlats != nil {
+                Text("Din position lämnar inte telefonen av sig själv.")
+                    .font(Typo.sans(13)).foregroundStyle(Brand.faint).multilineTextAlignment(.center).padding(.top, 8)
+            }
 
             // S4 (DECISIONS #210): facitknapparna hör hemma där "Senast sagt" faktiskt visas — här, inte i
             // LastSaidCard som ingen vy använder sedan skinnet v3. Bara betatestare, bara på en varning med id.
@@ -131,8 +158,12 @@ struct VaktenView: View {
     private var harPlats: (lon: Double, lat: Double)? { guardM.lastLoc ?? plats }
 
     private func hamtaPlats() async {
-        let status = CLLocationManager().authorizationStatus
+        let manager = CLLocationManager()
+        let status = manager.authorizationStatus
         guard status == .authorizedWhenInUse || status == .authorizedAlways else { return }
+        // Telefonens senast kända plats först, så att kartan inte väntar på en ny avläsning (Axels telefon 14/11: kartan
+        // visade hela landet).
+        if let l = manager.location { plats = (lon: l.coordinate.longitude, lat: l.coordinate.latitude) }
         do {
             for try await u in CLLocationUpdate.liveUpdates() {
                 if let l = u.location {
@@ -145,9 +176,45 @@ struct VaktenView: View {
         }
     }
 
-    /// Kartan och de tre närmaste farorna inom sex mil.
-    private var naraDig: some View {
-        let nara = harPlats.map { Nearby.nearest(guardM.hazards, lon: $0.lon, lat: $0.lat, n: 3) } ?? []
+    /// iOS frågar bara en gång. Har föraren redan svarat öppnas appens sida i Inställningar.
+    private func slaPaPlatsen() {
+        if CLLocationManager().authorizationStatus == .notDetermined {
+            guardM.requestLocationPermission()
+        } else if let u = URL(string: UIApplication.openSettingsURLString) {
+            UIApplication.shared.open(u)
+        }
+    }
+
+    private static func arKamera(_ h: Hazard) -> Bool {
+        if case .point(_, let kind, _, _, _, _) = h { return kind == .camera }
+        return false
+    }
+
+    /// De tre närmaste farorna inom sex mil, utan fartkamerorna: en kamera säger ingenting om väglaget, och de är så många
+    /// att de annars fyller listan (Axels skärmbild 14/11: tre kameror).
+    private var naraFaror: [NearbyItem] {
+        guard let p = harPlats else { return [] }
+        return Nearby.nearest(guardM.hazards.filter { !Self.arKamera($0) }, lon: p.lon, lat: p.lat, n: 3)
+    }
+
+    /// "Halka 12,4 km bort", "Inget rapporterat nära dig", eller "Redo." när platsen eller vägdatan saknas.
+    private func rubrikNu(_ nara: [NearbyItem]) -> String {
+        guard harPlats != nil, guardM.snapshotInfo != nil else { return "Redo." }
+        guard let forst = nara.first else { return "Inget rapporterat nära dig" }
+        return "\(Self.rubrik(forst.kind.rawValue)) \(Nearby.distText(forst.distM)) bort"
+    }
+
+    private func underrubrik(_ nara: [NearbyItem]) -> String {
+        guard harPlats != nil, guardM.snapshotInfo != nil else { return subtitle }
+        let start = wakes ? "Vakten vaknar själv när du kör." : "Tryck Starta vakten innan du kör."
+        return nara.isEmpty ? "Inget inom sex mil just nu. \(start)" : start
+    }
+
+    /// Kartan, de närmaste farorna och antalet fartkameror inom sex mil.
+    private func naraDig(_ nara: [NearbyItem]) -> some View {
+        let kameror = harPlats.map { p in
+            guardM.hazards.filter { Self.arKamera($0) && Nearby.distanceM($0, lon: p.lon, lat: p.lat) <= Nearby.maxM }.count
+        } ?? 0
         return VStack(alignment: .leading, spacing: 0) {
             NaraDigKarta(faror: guardM.hazards, plats: harPlats)
             // Sagt där kartan står (DECISIONS #872): kartbilderna hämtas från Apple.
@@ -157,6 +224,7 @@ struct VaktenView: View {
             if harPlats == nil {
                 Text("Slå på platsen för att se vad som finns nära dig.").font(Typo.sans(14)).foregroundStyle(Brand.text2)
                     .padding(.horizontal, 4)
+                MonoLink(title: "Slå på platsen", action: slaPaPlatsen).padding(.horizontal, 4)
             } else if nara.isEmpty {
                 Text("Inget rapporterat inom sex mil.").font(Typo.sans(14)).foregroundStyle(Brand.text2).padding(.horizontal, 4)
             } else {
@@ -165,6 +233,10 @@ struct VaktenView: View {
                         NearbyRow(item: item, divider: i < nara.count - 1)
                     }
                 }
+            }
+            if kameror > 0 {
+                MonoLabel(text: kameror == 1 ? "1 fartkamera inom sex mil" : "\(kameror) fartkameror inom sex mil", color: Brand.faint)
+                    .padding(.top, 12).padding(.horizontal, 4)
             }
         }
     }

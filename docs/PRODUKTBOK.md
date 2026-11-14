@@ -60,11 +60,24 @@ inte telefonen av sig själv."* (första meningen bara när vakten kan vakna sj�
 (*HALKA · VILT · OLYCKOR · FRYSRISK · KAMEROR* — en avslagen källa står inte med), den gula knappen ▶ *Starta vakten* och
 under den *INGEN TUR ÄN*.
 
+**Startsidan från 0.4.1 (55) (DECISIONS #873, #874; bara iPhone).** Rubriken är svaret om området: *"Halka 12,4 km bort"* (den närmaste
+faran som inte är en fartkamera) eller *"Inget rapporterat nära dig"*, och under den *"Vakten vaknar själv när du kör."* eller
+*"Tryck Starta vakten innan du kör."* *"Redo."* står bara när platsen eller vägdatan saknas. Direkt under står ▶ *Starta
+vakten* och *Planera resa* bredvid varandra (DECISIONS #874), sedan kartan och listan. Ett tryck på fliken *Vakten* går
+alltid hem till startsidan, också från Planera resa. På kartan är fartkamerorna små grå prickar och förarens plats vit.
+Listan *NÄRA DIG JUST NU* visar inga fartkameror; de står som en rad under, *31 FARTKAMEROR INOM SEX MIL*. Källraden och
+*"Din position lämnar inte telefonen av sig själv."* står längst ner. Stycket nedan beskriver delarna; ordningen är den här.
+
+**Den planerade resan från 0.4.1 (55) (DECISIONS #874).** ▶ *Starta vakten* står direkt under kartan, före rapporten. Har
+rapporten en olycka, ett hinder, halka, en kö eller en omledning står i gult: *"{Olycka} längs vägen. Se om det finns en annan
+väg i din kartapp."* Under står länkarna *ÖPPNA I KARTOR* och *ÖPPNA I GOOGLE MAPS*, som öppnar resans mål i den appen.
+
 **Nära dig och Planera en resa (14/11, kort #659, DECISIONS #870 och #872; bara iPhone, från 0.4.1, för alla).** På 01 Redo står
 Apples karta där sockeln stod: farorna inom sex mil, halkan som gula streck längs vägen och de andra farorna som gula
 punkter, raden *KARTAN KOMMER FRÅN APPLE*, och under den *NÄRA DIG JUST NU* med de tre närmaste (avstånd, fara, detalj) eller *"Inget rapporterat inom sex
 mil."* Utan plats visar kartan hela landet med bara halkan, under *HALKAN I LANDET JUST NU*, och raden *"Slå på platsen
-för att se vad som finns nära dig."* Under ▶ *Starta vakten* står knappen *Planera en resa*. Den öppnar **Vart ska du?**:
+för att se vad som finns nära dig."* och länken *SLÅ PÅ PLATSEN* (iOS ruta första gången, annars appens sida i
+Inställningar). Under ▶ *Starta vakten* står knappen *Planera en resa*. Den öppnar **Vart ska du?**:
 *"Se läget längs vägen innan du åker."*, sökrutan *Sök adress eller ort* och under den *DINA RESOR* med de sparade
 resorna (ett tryck öppnar resans rapport, som i Favoriter). Medan föraren skriver visas upp till sex förslag från Apple.
 Ett tryck på ett förslag räknar ut bilvägen dit från där föraren är (*"Räknar ut vägen …"*) och öppnar **Till {målet}**:
