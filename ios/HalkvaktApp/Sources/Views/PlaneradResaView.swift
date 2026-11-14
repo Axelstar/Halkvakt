@@ -56,6 +56,12 @@ struct PlaneradResaView: View {
                         }
                     }
                     .frame(maxWidth: .infinity).padding(.top, 4)
+                    // DECISIONS #875: sagt där länkarna står, och bara när det är sant.
+                    if GuardManager.shared.platsTillaten {
+                        Text("Vakten startar när du öppnar kartappen.")
+                            .font(Typo.sans(13)).foregroundStyle(Brand.dim)
+                            .multilineTextAlignment(.center).frame(maxWidth: .infinity)
+                    }
 
                     if let rapport {
                         RapportInnehall(rader: rapport.rader, kandidat: rapport.kandidat, fore: nil, kollat: rapport.kollat,
@@ -114,9 +120,11 @@ struct PlaneradResaView: View {
     private static let tipsSlag: Set<RapportSlag> = [.olycka, .hinder, .halka, .ko, .omledning]
 
     /// Öppnar resans mål i förarens kartapp, som visar vägarna dit. Målet går då till den appen, på förarens tryck.
+    /// Vakten startar i samma tryck (Axel 14/11, DECISIONS #875), så att rösten är med när föraren kör efter kartappen.
     private func oppna(_ mall: String, _ p: Resplan.Plan) {
         guard let mal = p.punkter.last, mal.count == 2,
               let url = URL(string: String(format: mall, "\(mal[1]),\(mal[0])")) else { return }
+        GuardManager.shared.startInforKartappen()
         UIApplication.shared.open(url)
     }
 

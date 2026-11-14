@@ -205,6 +205,18 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         }
     }
 
+    /// Platsen är tillåten, så att vakten kan starta utan en fråga från iOS.
+    var platsTillaten: Bool { authStatus == .authorizedAlways || authStatus == .authorizedWhenInUse }
+
+    /// Föraren öppnar resan i sin kartapp (DECISIONS #875): vakten startar i samma tryck om platsen redan är tillåten.
+    /// Ingen fråga från iOS härifrån, eftersom föraren lämnar appen i samma stund och frågan skulle försvinna.
+    func startInforKartappen() {
+        let s = manager.authorizationStatus
+        guard !running, s == .authorizedAlways || s == .authorizedWhenInUse else { return }
+        startRequested = true
+        start()
+    }
+
     /// Slå på självväckning om användaren tillåtit Alltid och inte stängt av funktionen.
     func armAutoWake() {
         guard Prefs.shared.autoWake, manager.authorizationStatus == .authorizedAlways else {
