@@ -16558,3 +16558,51 @@ avgör olycksfacit och testarnas svar, inte takten. Talen står i halkvakt-kuvos
 **Kvar:** sammanslagningen av PR:en här och halkvakt-kuvos PR, och flödets första körning.
 
 **Stomdokument:** MAT §5 — småvägsröstens avbrott
+
+## #870 (14/11 2026) Planera resa med adressökning genom Apple och Google, en riktig karta på startsidan och påminnelsen före avresan: Axels val, och inget släpp före Bengts ja till de nya orden om platsen (kort #659, #653)
+
+**Beslut.** Axel 14/11: *"all users should be able to plan their trip before hand and then we tell them about the road condition prior to them going"*, och *"we are really trying to have something prior to winter"*. Samma kväll valde Axel, på fyra frågor:
+- **Adressökning och rutt genom Apple och Google**, inte en egen ruttberäkning i telefonen mellan orter. Föraren ska kunna skriva en exakt adress. Axels val: *Build, Bengt signs off*. Bygget får göras nu, men **inget bygge med detta går till App Review eller Play förrän Bengt har sagt ja till de nya orden om platsen**.
+- **En riktig karta på startsidan**, inte en lista som appen ritar själv.
+- **Båda apparna på en gång.**
+- **Ett släpp**, med påminnelsen före avresan.
+
+**Vad som lämnar telefonen, som det är byggt på iPhone:**
+- *När föraren söker en resa:* sökorden, förarens plats och målet går till Apple (MapKit: `MKLocalSearchCompleter`, `MKLocalSearch`, `MKDirections`). Det sker bara när föraren själv skriver och väljer ett förslag. Halkvakt får ingenting.
+- *När startsidan eller en planerad resa visas:* Apples karta hämtar kartbilder för området som visas, så Apple får veta ungefär var föraren är. **Det sker utan att föraren trycker på något**, och det går inte ihop med produktregeln i CLAUDE.md (*No user location … may ever leave the device AUTOMATICALLY*) som den står, och inte med raden på samma skärm, *"Din position lämnar inte telefonen av sig själv."*
+- Platsen för kartan läses en gång när startsidan visas och stannar i telefonen. Rapporten längs vägen räknas i telefonen ur samma filer som förut. Inget nytt går till Halkvakts servrar, och räknarna är oförändrade.
+- De sparade körda vägarna (DECISIONS #616) går aldrig till Apple: Planera en resa öppnar deras rapport som fliken Favoriter gör, och ruttspärren (`scripts/rutterspar.ts`) räknar nu `MKLocalSearch` och `MKDirections` som nät.
+
+**Byggt på iPhone 14/11 (grenen `claude/kort-659-planera-resa`):** kartan *Nära dig* med de tre närmaste farorna där sockeln stod; knappen *Planera en resa* under *Starta vakten*; skärmen *Vart ska du?* med de sparade resorna och en sökruta; den planerade resan med vägen på kartan, rapporten (`ResansRapport`, samma räkning som en sparad resa, utan förra kollen), *När åker du?* och *Starta vakten*. En avresetid ger en lokal notis en kvart innan (*"Dags att se vägen till …"*) och lägger resan på startsidan tills sex timmar efter avresan, i en fil utanför säkerhetskopian. En sökt resa sparas inte bland favoriterna (Axel 12/11).
+
+**Påminnelsen säger inte vad som finns längs vägen.** iOS låter inte appen hämta läget vid ett klockslag (#616 punkt 7.1), så notisen öppnar appen, där rapporten hämtas färsk. På Android kan telefonen göra kollen själv; det byggs med Android-delen.
+
+**Betaltjänsten (CLAUDE.md: ingen betaltjänst utan Axels beslut).** Android har ingen fri ruttjänst i systemet. Axel godkände 14/11 ett Google Cloud-projekt med ett kort på, för karta, sökning och rutter. Googles prislista (läst 14/11): 10 000 fria anrop i månaden per tjänst, sedan 2,83 dollar per 1 000 sökförslag och 5 dollar per 1 000 rutter. Axel sätter upp projektet och nycklarna, och ett tak för kostnaden sätts i Google Cloud innan nyckeln byggs in.
+
+**Det som ändras om Bengt säger ja, i samma commit som orden (CLAUDE.md):** produktregeln i CLAUDE.md, introduktionens text om platsen, raden på startsidan, iOS egna platsrutor (`project.yml`), integritetssidan i kartrepot, Plays datablankett, App Stores integritetsuppgifter och produktboken. Förslag till orden: *"Halkvakt får aldrig veta var du är. Kartan och adressökningen kommer från Apple, som då får veta vilket område du tittar på och vart du söker en väg."* (Google på Android).
+
+**Alternativ som Axel valde bort:** en ortslista i appen och ruttberäkning i telefonen på det statliga vägnätet (löftet oförändrat, men bara orter och ett längre bygge); en lista i stället för kartan (inget lämnar telefonen); iPhone först; två släpp.
+
+**Inte prövat:** ingenting är sett på en telefon. Apples sökning och rutt kan inte köras i ci. Hur många förslag Apple ger för svenska adresser, hur lång tid rutten tar och hur kartan ser ut i appens mörka skinn är inte mätt.
+
+**Kvar:** Bengts ja eller nej; Android-bygget och Google Cloud-nycklarna; telefonproven; skärmbilderna i produktboken; räknare för Planera resa (kräver ett eget beslut).
+
+**Stomdokument:** APP 4, FAV §2, BED §4.2
+
+## #871 (14/11 2026) Kartan och Planera resa slås ihop bakom en brytare som bara finns i TestFlight, och Axel väljer nya ord överallt när den släpps (kort #659; #870)
+
+**Beslut.** Axel 14/11 kväll, på frågan i #870 om orden: *"Lets do a)"*, det vill säga nya ord om platsen överallt när kartan och Planera resa släpps. Och på frågan hur bygget kommer till telefonen utan att nästa inskick bär det: *Behind a switch*.
+- **Brytaren** *Kartan och Planera en resa* står under Inställningar → Betatest, av från början. Den finns bara i TestFlight och utvecklarbyggen, med samma prövning som Betatest (`Prefs.betatestTillaten`, DECISIONS #681): i ett App Store-bygge syns den inte, och ett sparat värde gäller inte.
+- **Av** är appen som förut: sockeln på Redo, en knapp, ingen karta, ingen plats läst för kartan och ingenting till Apple. **På** visar kartan *Nära dig*, knappen *Planera en resa* och den planerade resan. Slås den av tas den planerade resan och dess påminnelse bort.
+- **Under brytaren står vad den gör:** *"Med den på visar startsidan Apples karta, och du kan söka en adress och se läget längs vägen. Apple får då veta vilket område kartan visar och, när du söker, var du är och vart du ska. Halkvakt får aldrig veta det."*
+- **Produktregeln i CLAUDE.md** har fått en mening om brytaren, i samma commit. Löftets rad, introduktionen, `project.yml`, integritetssidan och butikernas uppgifter är oförändrade: för alla som inte slår på brytaren i ett TestFlight-bygge skickar appen det den skickade förut. Plays datablankett rörs inte, eftersom Android inte har delen.
+- **Spärren ur #870 står kvar:** brytaren tas bort och de nya orden skrivs in överallt först när Bengt har sagt ja. Axels val av orden (väg a) är bokfört; Bengts svar väntas.
+- **Bygget** är 0.4.0 (50), höjt i samma commit som brytaren. 0.4.0 (49) ligger hos App Review.
+
+**Alternativ som Axel valde bort:** att slå ihop med allt på och släppa väntan på Bengt; att vänta med TestFlight tills Bengt svarat.
+
+**Inte prövat:** brytaren är inte sedd på en telefon. App Reviews granskare kör bygget med ett provkvitto och kan därför se brytaren; den är av, och texten under säger vad den gör.
+
+**Kvar:** TestFlight-bygget och Axels prov på telefonen; Bengts ja eller nej; Android.
+
+**Stomdokument:** APP 4, BED §4.2
