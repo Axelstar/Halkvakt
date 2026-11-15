@@ -16735,4 +16735,6 @@ apparna eller på servern.
 **Det som gäller fortfarande:** batteribudgeten är ett släppstopp (CLAUDE.md). Brytarna sitter på servern och kan slås av utan en ny
 app. Vad som görs om mätningen går över 8 %/h avgörs inte här.
 
+**Signerat** av Bengt och Axel 15/11 (Bengt: *"Axel signerar också"*).
+
 **Stomdokument:** APP 3 — batterimätningen för småvägsröstens punktfil flyttas till efter påslaget
