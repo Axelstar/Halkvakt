@@ -7,6 +7,8 @@ import HalkvaktEngine
 
 struct RapportView: View {
     let ruttId: String
+    /// Skärmen föraren kom ifrån: Favoriter, eller Planera (kort #659).
+    var tillbaka = "Favoriter"
     @State private var fav = Favoriter.shared
     @State private var rapporten = Rapporten.shared
     @State private var hem = false
@@ -17,7 +19,7 @@ struct RapportView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
                 Button { dismiss() } label: {
-                    Text("← FAVORITER").font(Typo.mono(11)).tracking(1.5).foregroundStyle(Brand.text).frame(height: 44)
+                    Text("← \(tillbaka.uppercased())").font(Typo.mono(11)).tracking(1.5).foregroundStyle(Brand.text).frame(height: 44)
                 }
                 if let rutt = fav.rutter.first(where: { $0.id == ruttId }) {
                     Text(rutt.namn).font(Typo.sans(32, .semibold)).tracking(-0.8).foregroundStyle(Brand.text).padding(.top, 8)
@@ -85,7 +87,8 @@ private struct RiktningsVal: View {
     }
 }
 
-private struct RapportInnehall: View {
+/// Rapportens innehåll. Också för en planerad resa (kort #659), då utan förra kollen.
+struct RapportInnehall: View {
     let rader: [RapportRad]
     let kandidat: [KandidatRad]?
     let fore: Favoriter.Koll?

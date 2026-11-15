@@ -60,6 +60,42 @@ inte telefonen av sig själv."* (första meningen bara när vakten kan vakna sj�
 (*HALKA · VILT · OLYCKOR · FRYSRISK · KAMEROR* — en avslagen källa står inte med), den gula knappen ▶ *Starta vakten* och
 under den *INGEN TUR ÄN*.
 
+**Startsidan från 0.4.1 (55) (DECISIONS #873, #874; bara iPhone).** Rubriken är svaret om området: *"Halka 12,4 km bort"* (den närmaste
+faran som inte är en fartkamera) eller *"Inget rapporterat nära dig"*, och under den *"Vakten vaknar själv när du kör."* eller
+*"Tryck Starta vakten innan du kör."* *"Redo."* står bara när platsen eller vägdatan saknas. Direkt under står ▶ *Starta
+vakten* och *Planera resa* bredvid varandra (DECISIONS #874), sedan kartan och listan. Ett tryck på fliken *Vakten* går
+alltid hem till startsidan, också från Planera resa. På kartan är fartkamerorna små grå prickar och förarens plats vit.
+Från 0.4.1 (57) är kartan en stillbild av Apples karta i gråskala, med Halkvakts egna märken ovanpå (DECISIONS #876); så
+är också kartan över en planerad resa.
+Listan *NÄRA DIG JUST NU* visar inga fartkameror; de står som en rad under, *31 FARTKAMEROR INOM SEX MIL*. Källraden och
+*"Din position lämnar inte telefonen av sig själv."* står längst ner. Stycket nedan beskriver delarna; ordningen är den här.
+
+**Den planerade resan från 0.4.1 (55) (DECISIONS #874).** ▶ *Starta vakten* står direkt under kartan, före rapporten. Har
+rapporten en olycka, ett hinder, halka, en kö eller en omledning står i gult: *"{Olycka} längs vägen. Se om det finns en annan
+väg i din kartapp."* Under står länkarna *ÖPPNA I KARTOR* och *ÖPPNA I GOOGLE MAPS*, som öppnar resans mål i den appen.
+Från 0.4.1 (56) startar vakten i samma tryck (DECISIONS #875), när platsen redan är tillåten, och under länkarna står då
+*"Vakten startar när du öppnar kartappen."* Är platsen inte tillåten öppnas bara kartappen, och raden står inte.
+
+**Nära dig och Planera en resa (14/11, kort #659, DECISIONS #870 och #872; bara iPhone, från 0.4.1, för alla).** På 01 Redo står
+Apples karta där sockeln stod: farorna inom sex mil, halkan som gula streck längs vägen och de andra farorna som gula
+punkter, raden *KARTAN KOMMER FRÅN APPLE*, och under den *NÄRA DIG JUST NU* med de tre närmaste (avstånd, fara, detalj) eller *"Inget rapporterat inom sex
+mil."* Utan plats visar kartan hela landet med bara halkan, under *HALKAN I LANDET JUST NU*, och raden *"Slå på platsen
+för att se vad som finns nära dig."* och länken *SLÅ PÅ PLATSEN* (iOS ruta första gången, annars appens sida i
+Inställningar). Under ▶ *Starta vakten* står knappen *Planera en resa*. Den öppnar **Vart ska du?**:
+*"Se läget längs vägen innan du åker."*, sökrutan *Sök adress eller ort* och under den *DINA RESOR* med de sparade
+resorna (ett tryck öppnar resans rapport, som i Favoriter). Medan föraren skriver visas upp till sex förslag från Apple.
+Ett tryck på ett förslag räknar ut bilvägen dit från där föraren är (*"Räknar ut vägen …"*) och öppnar **Till {målet}**:
+vägen som en gul linje på kartan, längden och *RESAN SPARAS INTE*, samma rapport som en sparad resa (*Läget från*,
+*Rapporten från*, *LÄNGS VÄGEN JUST NU*, *HALKVAKT TROR · BETA*), sedan *NÄR ÅKER DU?* med vippan *Påminn mig före
+avresan* (*En notis en kvart innan*) och en tid, och ▶ *Starta vakten*. Under vippan: *"Notisen säger inte vad som finns
+längs vägen. Den öppnar Halkvakt, där läget hämtas färskt."* Notisen lyder *"Dags att se vägen till {målet}"*, *"Du åker om
+en kvart. Öppna Halkvakt och se läget längs vägen."* En resa med avresetid står överst på Redo som *PLANERAD RESA*,
+*Till {målet}*, *Avresa {dag och tid}. Se läget längs vägen.*, tills sex timmar efter avresan, och *TA BORT RESAN* tar
+bort den. Under sökrutan står *NÄR DU SÖKER*: *"Apple slår upp adressen och räknar ut vägen, och får då veta var du är och
+vart du ska. Halkvakt får aldrig veta det. Resan sparas inte."* **Löftets rad på Redo är inte ändrad** (#872): vad Apple får veta
+står under kartan, under sökrutan och på integritetssidan. Sockeln med logotypen visas inte längre på Redo. Skärmbilderna
+är inte tagna.
+
 **01b Redo efter tur.** Efter en tur med minst en varning byts sockeln mot ett **kvitto**: *SENASTE TUREN*, tiden och
 sträckan (*16:58–17:34 · 36 MIN · 31 KM*) och en rad per varning — klockslag, ikon, rubrik och exakt vad rösten sa.
 Under: *3 VARNINGAR · VISAS TILLS NÄSTA TUR*. En tur utan varningar ger tillbaka 01.
@@ -108,6 +144,7 @@ krymper och tonar bort; stapeln börjar om.
 | Frysrisk vid station | *Frysrisk* — *Vägbanan nära noll grader* | *FRAMÖVER* | — |
 | Frysrisk efter regnet (beta, S3) | *Frysrisk* — *Halkvakt tror — efter regnet* | *FRAMÖVER* | *BETA* |
 | Halka enligt kandidaten (beta, nivå 2) | *Halka* — *Halkvakt tror — modellerat* | *FRAMÖVER* | *BETA*, halkans ikon |
+| Halka på småvägarna (beta, S) | *Halka* — *Småvägarna — modellerat* | *FRAMÖVER* | *BETA*, halkans ikon |
 | Frysrisk på bro | *Frysrisk* — *Bro* | *600 M* (hundratal, som rösten) | egen ikon |
 | Vilt | *Vilt* | *FRAMÖVER* | — |
 | Fartkamera | *Fartkamera* | *500 M* | hastighetsskylt när gränsen är känd |
@@ -121,6 +158,12 @@ krymper och tonar bort; stapeln börjar om.
 *(Kandidatens betakort: Android ur fotostudion 16/10, android.yml 38852518205 på grenen `claude/kandidat-farotyp-577`, en påhittad varning
 655 m bort, bara i debug-bygget (DECISIONS #577). iOS-kortet har samma rader (`WarningCardTests.testCandidateBetaIsMarked`), men ingen
 skärmbild.)*
+
+![Småvägsröstens betakort](produktbok/shot-13-smavagkortet.png)
+
+*(Småvägsröstens betakort: Android ur fotostudion 14/11, android.yml 43613610625 på grenen `claude/produktbok-smavag`, en påhittad
+varning 655 m bort, bara i debug-bygget (DECISIONS #828, #844). iOS-kortet har samma rader i `WarningCard.swift`, men inget eget prov
+och ingen skärmbild.)*
 
 Kortets innehåll räknas i motorpaketen (`WarningCard` i Swift och Kotlin) och prövas av CI med samma fall på båda
 plattformarna; olycksläget kommer ur motorn (`Alert.step`, DECISIONS #443).
@@ -289,9 +332,56 @@ Inställningar, och introduktionen kan visas igen därifrån.
 
 Inga konton, ingen e-post, inga fler frågor.
 
-*(Android har ingen introduktion än (kort #652). Första trycket på Starta ber om plats och,
-på Android 13 och senare, notiser; vippan *Vaknar själv när du kör* under Inställningar → Start ber om resten:
-rörelseigenkänning, Bluetooth och plats "Tillåt hela tiden".)*
+## Första gången — introduktionen (Android)
+
+Byggd 13/11 (kort #652, DECISIONS #862), från 0.4.0 (49). Samma upplägg och texter som på iPhone, ritad för Androids egna
+rutor: fem steg i stället för fyra, eftersom självstarten är ett eget steg. Överst till höger står *VÄLKOMMEN*, *STEG 1 AV 5*
+till *STEG 5 AV 5* och *KLART*. Introduktionen visas för en ny installation; den som redan gett appen platsen får den inte
+påtvingad, men kan visa den från Inställningar (*Visa introduktionen igen*, sist i den andra panelen).
+
+1. **Välkommen**, 2. **Varningarna** och 3. **Så märks en varning** har samma texter som på iPhone.
+4. **Platsen** (steg 3 av 5) — fyra lägen:
+   - *Inte frågad:* *"Nu slår vi på vakten"*, *"Först platsen: vakten behöver veta var du är för att kunna varna."* Under *DIN
+     PLATS* samma text som på iPhone. Under *I NÄSTA RUTA FRÅN ANDROID* står rutans val, *Exakt*, *När du använder appen*, *Bara
+     den här gången* och *Tillåt inte*, med de två första förbockade och märkta *VÄLJ DEN*. Knappen *Fortsätt* öppnar Androids
+     ruta. Väljs exakt plats går introduktionen direkt till självstarten.
+   - *Exakt, ändrad i telefonens inställningar:* *"Platsen är klar"*, raden *Platsen EXAKT*. Knappen *Fortsätt*.
+   - *Ungefärlig:* *PLATSEN ÄR UNGEFÄRLIG*, *"Exakt plats behövs"*, *"Med ungefärlig plats vet Halkvakt inte vilken väg du kör
+     på, och kan inte varna. Det ändras i telefonens inställningar."* Fyra steg: *Tryck Öppna inställningar*, *Tryck
+     Behörigheter, sedan Plats*, *Slå på Använd exakt plats*, *Kom tillbaka hit*. Knappen *Öppna inställningar*, länken
+     *FORTSÄTT UTAN EXAKT PLATS*.
+   - *Nekad:* *PLATSEN ÄR AV*, *"Vakten kan inte varna"*, samma fyra steg med *Välj Tillåt bara när appen används* som tredje.
+     Knappen *Öppna inställningar*, länken *FORTSÄTT UTAN PLATS*.
+5. **Självstarten** (steg 4 av 5) — visas bara när platsen är exakt. Fyra lägen:
+   - *Frågan:* *"Ska vakten starta själv?"*, *"Då vaknar den när du börjar köra. Du behöver inte öppna appen före resan."*
+     Under *ANDROID FRÅGAR OM TRE SAKER*: *Fysisk aktivitet* (*Så ser telefonen att du åker bil.*), *Enheter i närheten* (*Så
+     märker den när bilens Bluetooth kopplar upp.*) och *Platsen, alltid* (*Så kan vakten starta med appen stängd.*).
+     *"Platsen stannar i telefonen, även då. Välj Tillåt i de två första rutorna."* Knappen *Slå på självstart* öppnar
+     rutorna om fysisk aktivitet och enheter i närheten. Länken *INTE NU, JAG STARTAR SJÄLV*.
+   - *Alltid:* *"Sista frågan: Tillåt alltid"*, *"Android öppnar en sida i telefonens inställningar. Välj Tillåt alltid
+     och tryck sedan bakåt för att komma tillbaka hit."* Under *PÅ NÄSTA SIDA FRÅN ANDROID* sidans fyra val med *Tillåt
+     alltid* förbockat och märkt *VÄLJ DEN*, och redogörelsen: *"Halkvakt läser platsen även när appen är stängd eller skärmen
+     släckt, så att vakten kan starta själv när du börjar köra. Platsen läses bara medan vakten är på och notisen Halkvakt
+     vaktar syns. Den skickas aldrig av sig själv."* Knappen *Öppna sidan*.
+   - *På:* *"Självstarten är på"*, raderna *Platsen ALLTID* och *Självstart när du kör PÅ* (*Vakten lär sig bilens
+     Bluetooth vid nästa körning.*). Knappen *Fortsätt*.
+   - *Föraren startar själv* (länken, ett nej i en ruta, eller något annat än *Tillåt alltid*): *"Du startar vakten
+     själv"*, *"Halkvakt varnar precis som vanligt. Du öppnar bara appen och trycker Starta vakten före varje resa."* Knappen
+     *Fortsätt*, länken *SLÅ PÅ SJÄLVSTART* (tillbaka till frågan).
+6. **Notiserna** (steg 5 av 5) — som på iPhone, med en rad till under *HALKVAKT SKICKAR*: *Notisen Halkvakt vaktar* (*Visar
+   att vakten är på.*). Före Android 13 frågar systemet inte, och steget visar *Notiser PÅ*. Avslagna: *"Notiserna är
+   avslagna. Rösten varnar ändå, men varken bannern eller notisen Halkvakt vaktar syns."*, länken *SLÅ PÅ I INSTÄLLNINGAR*.
+7. **Slutskärmen** — *"Vakten är redo"* (självstart på), *"Redo när du startar"* (länken *SLÅ PÅ SJÄLVSTART*) eller *"Nästan
+   redo"* (platsen saknas eller är ungefärlig; knappen *Slå på platsen*, länken *GÖR DET SENARE*), med samma rader som på
+   iPhone.
+
+Vippan *Vaknar själv när du kör* under Inställningar → Start och första trycket på *Starta vakten* frågar som förut, med
+sina egna förklaringar före varje ruta, för den som hoppat över introduktionen eller sagt nej i den.
+
+Provat på emulator 13–14/11 (android-flödet 43520848549 och 43525445302): huvudvägen i demovideon, och de fyra sidovägarna i
+`scripts/introprov.sh` på en svensk Android 14. Rutornas knappnamn är avlästa där: *När du använder appen* och *Tillåt alltid*
+(introduktionen sa först *När appen används* och *Tillåt hela tiden*, som inte finns i rutorna). Andra Android-versioner och
+tillverkare kan ha andra ord. Inte provat på en telefon. Skärmbilder ur fotostudion (`shot-20-intro` till `shot-26-intro`) förs in när bygget har körts.
 
 ## Exakt vad rösten säger
 
@@ -306,6 +396,7 @@ rörelseigenkänning, Bluetooth och plats "Tillåt hela tiden".)*
 | Mätstation visar frysrisk | "Isrisk framöver — vägbanan nära noll grader." |
 | **Efter regnet, märkt beta (S3):** ytan +1…+3 °C, fallit minst 0,8 °C på 30 minuter och regn inom 2 timmar — vägbanan är fortfarande över fryspunkten men på väg ned (DECISIONS #222, #524) | "Halkvakt tror: frysrisk framöver." |
 | **Halka enligt kandidaten, märkt beta (nivå 2):** modellens vägyta 0 °C eller kallare och ett mätt fuktbesked — Trafikverkets *Våt* på sträckan eller nederbörd på radarn — ingen varm station inom 15 km och stationerna runt omkring överens; en gång per sträcka och högst en gång per 10 minuter (DECISIONS #562–#577, #606) | "Halkvakt tror: halka framöver." |
+| **Halka på småvägarna, märkt beta (S):** på statliga vägar där Trafikverket inte mäter väglaget — småvägarna och vägarna nära väglagsnätet — när vädermodellen säger att vägbanan fryser och det faller nederbörd, i modellen eller på radarn; ett besked per halkområde, sedan tyst tills både 30 minuter och 20 km har gått (DECISIONS #828, #844, #863, #866) | "Betavarning: risk för halka på småvägarna framöver." |
 | Djur på vägen enligt Trafikverket — älg, hjort, vildsvin, men också lösa kor och får (sedan 22/9, DECISIONS #318; polisens länspunkter är borta) | "Viltrisk framöver." |
 | Fartkamera (hastighetsgränsen sägs inte: Trafikverkets kameradata bär ingen) | "Fartkamera om 500 meter." |
 
@@ -314,11 +405,21 @@ en uppmätt frysning. Värdena är satta före frosten och döms i januari på f
 annars tas den bort (TROSKLAR-KOMBINATIONEN §7). Testförarna får veta att värdena är gissade.
 
 **Halkan som kandidaten tror på är också en beta.** Den räknas ur en vädermodell vid punkter ungefär varannan kilometer längs
-vägen, inte ur en mätning på platsen — därför *"Halkvakt tror"* och aldrig ett avstånd. Den talar sist av alla varningar: allt annat
-går före, och den kan aldrig tysta en annan varning. Har Trafikverkets halkvarning för samma sträcka just hörts tiger den i två
+vägen, inte ur en mätning på platsen — därför *"Halkvakt tror"* och aldrig ett avstånd. Den talar efter alla andra varningar utom
+småvägsrösten: allt annat går före, och den kan aldrig tysta en annan varning. Har Trafikverkets halkvarning för samma sträcka just hörts tiger den i två
 minuter, så att samma besked inte kommer två gånger i rad, och den talar högst en gång per 10 minuter, vilken sträcka det än gäller (DECISIONS #606). Den följer reglaget *Halka* i *Varna för* och tystnar när väglagsdatan är äldre
 än 45 minuter. Domen faller i mars (DECISIONS #547); den kan stängas av från servern utan ett nytt bygge, och det provas före App
 Review (NIVA2-LIVE steg 13).
+
+**Halkan på småvägarna är också en beta, och den tiger tills den slås på.** Den talar på statliga vägar där Trafikverket inte mäter
+väglaget, och bara på den väg bilen följer: bilen ska ligga inom 80 meter från vägen och i dess riktning, tre GPS-punkter i rad. Den
+räknas ur en vädermodell vid punkter längs vägarna, inte ur en mätning — därför *"Betavarning"* och *"framöver"*, och aldrig ett
+avstånd. Den talar sist av alla varningar, efter kandidaten, och kan aldrig tysta en annan varning. Efter ett besked är den tyst tills
+både 30 minuter och 20 km har gått, vilken väg det än gäller. Den följer reglaget *Halka* i *Varna för*, och den tiger när modellens
+senaste timme är äldre än två timmar eller ofullständig. Appen hämtar vägarnas punkter, omkring 3,5 MB, först när lägesfilen bär ett
+besked, och ingenting skickas tillbaka. Två brytare på servern, en för småvägarna och en för vägarna nära väglagsnätet, är av tills
+påslaget (DECISIONS #828). En kontroll varje dygn lyfter ett ärende om rösten under de sju senaste dygnen talat oftare än i
+backtestens värsta vecka, och då slås brytarna av (#869).
 
 **Allvarlig olycka — varför två gånger?** Trafikverket klassar varje olycka efter
 hur mycket den påverkar trafiken. Är påverkan *mycket* stor — riktigt stopp — säger
@@ -759,8 +860,9 @@ du var just då."* (Axels villkor för ja:et, DECISIONS #267.)
 | 0.4.0 (42) | 10/11 | **Tipsa en vän, Tyck till och Betygsätt** (DECISIONS #829): tre rader under etiketten *HALKVAKT* i Inställningar, och kortet *Kör någon du känner samma vägar?* på Redo. efter femte vaktpasset. Bygger på 0.4.0 (41). |
 | 0.4.0 (43) | 10/11 | **Facitknapparna på Redo.** (kort #998): ordet syns i den valda knappen, och raden *SENAST SAGT · tid* med varningens text står ovanför *Stämde* och *Stämde inte*, så att det framgår vilken varning svaret gäller. |
 | 0.4.0 (44) | 11/11 | **En besvarad varning frågas inte om igen** (kort #999): *Stämde / Stämde inte* står kvar med *Tack* medan startskärmen visas och är borta nästa gång den visas. Gäller båda apparna. |
-| 0.4.0 (48) | 13/11 | **Nya introduktionen** (kort #651, DECISIONS #851): sex steg i stället för fyra sidor. Före varje ruta från iOS står vilken knapp som ska väljas, och varje svar har sitt eget läge. Alla fem varningarna visas, med fartkamerorna i rubriken. *Testa rösten* finns bara i Inställningar. Bara iPhone. |
+| 0.4.0 (48) | 13/11 | **Nya introduktionen** (kort #651, DECISIONS #851): sex steg i stället för fyra sidor. Före varje ruta från iOS står vilken knapp som ska väljas, och varje svar har sitt eget läge. Alla fem varningarna visas, med fartkamerorna i rubriken. *Testa rösten* finns bara i Inställningar. Bara iPhone. Första iPhone-bygget med **småvägsrösten** i koden (DECISIONS #828, #844, #846); den tiger tills brytarna på servern slås på. |
 | 0.4.0 (49) | 13/11 | **Utan CarPlay** (DECISIONS #858): bygget till granskningen har CarPlay avslaget. Rösten hörs som förut; varningen visas inte på bilens skärm, och vakten startar inte av att Halkvakt öppnas där. Dessutom står sidan om *Alltid* i introduktionen kvar bakom iOS ruta tills den är besvarad. |
+| Android 0.4.0 (49) | 13/11 | **Introduktionen i Android** (kort #652, DECISIONS #862): sju skärmar i fem steg, med självstarten som eget steg och ett läge per svar i Androids rutor. Raden *Visa introduktionen igen* i Inställningar. Räknaren säger `onboarding_klar` en gång, som iPhone. |
 | Android (CI) | 16/9 → | Facitknappen och betatest-brytaren (S4, DECISIONS #202), Efter resan (20/9), viltvarningen på Trafikverkets djur (22/9), omladdningsloopen lagad och reglaget (26/9), missarna (26/9). **0.3.9 (18)**, samma nummer som iOS (DECISIONS #377). |
 
 Android bar versionsnumret 0.3.1 (4) från 31/8 till 26/9, fast CI byggde den ur main med skinnet v3, facitknappen

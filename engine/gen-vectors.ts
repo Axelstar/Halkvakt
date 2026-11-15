@@ -677,14 +677,15 @@ const scenarios: Scenario[] = [
     trace: northTrace(180, 80),
   },
   {
-    file: "v56_smavag_tystnad_tio_minuter_fem_km", name: "Ett besked per halkområde: tyst i 10 min och 5 km, vilken punkt det än gäller (S)",
+    file: "v56_smavag_tystnad_trettio_minuter_tjugo_km", name: "Ett besked per halkområde: tyst i 30 min och 20 km, vilken punkt det än gäller (S)",
     description:
-      "Två vägar i följd längs bilens väg: v1 till 5 400 m med P1 1 500 m fram, och v2 från 5 700 m med P2 8 011 och P3 16 011 m fram. " +
-      "P1 talar vid t=38 (655 m; t=37 låg 677 m). P2 kommer inom förvarningen vid t=331 (655 m; t=330 låg 677 m), 293 s efter P1 ⇒ " +
-      "tyst: 5 km har körts men inte 10 min. P2 ligger på en annan väg, så det är tystnaden som håller den, inte upprepningsregeln. " +
-      "P3 kommer inom den vid t=691 (655 m; t=690 låg 677 m), 653 s och 14,5 km efter P1 ⇒ talar.",
-    hazards: [smavag("smv:v1", 0, -1800, 5400, [1500]), smavag("smv:v2", 0, 5700, 17100, [8011, 16011])],
-    trace: northTrace(720, 80),
+      "Taket valt 14/11 (DECISIONS #863). Två vägar i följd längs bilens väg: v1 till 5 400 m med P1 1 500 m fram, och v2 från " +
+      "5 700 m med P2 30 233 och P3 41 789 m fram. P1 talar vid t=38 (655 m; t=37 låg 677 m). P2 kommer inom förvarningen vid " +
+      "t=1331 (654 m; t=1330 låg 677 m), 1 293 s och 28,7 km efter P1 ⇒ tyst: 20 km har körts men inte 30 min. P2 ligger på en " +
+      "annan väg, så det är tystnaden som håller den, inte upprepningsregeln. P3 kommer inom den vid t=1851 (655 m; t=1850 låg " +
+      "677 m), 1 813 s och 40,2 km efter P1 ⇒ talar. Förvarningen är 666 m; varje gräns har minst 10 m marginal.",
+    hazards: [smavag("smv:v1", 0, -1800, 5400, [1500]), smavag("smv:v2", 0, 5700, 42900, [30233, 41789])],
+    trace: northTrace(1880, 80),
   },
   {
     file: "v57_smavag_sist_i_prioriteten", name: "Småvägsrösten är sist: kameran vinner samma fix, och småvägen väntar ut spärren (S)",

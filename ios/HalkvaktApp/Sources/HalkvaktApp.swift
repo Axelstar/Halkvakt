@@ -395,12 +395,14 @@ private struct GenvagarGuide: View {
 /// Favoriter och Inställningar. Ingen flikrad medan vakten kör: körläget täcker allt.
 struct RootView: View {
     @State private var tab = 0
+    /// Räknas upp vid varje tryck på fliken Vakten; VaktenView går då hem från Planera en resa (DECISIONS #874).
+    @State private var hem = 0
     @State private var guardM = GuardManager.shared
     @State private var fav = Favoriter.shared
     var body: some View {
         ZStack(alignment: .bottom) {
             // Flikarna lever hela tiden, som i TabView: ingen omladdning och ingen tappad undersida vid flikbyte.
-            VaktenView().opacity(tab == 0 ? 1 : 0).allowsHitTesting(tab == 0).accessibilityHidden(tab != 0)
+            VaktenView(hem: hem).opacity(tab == 0 ? 1 : 0).allowsHitTesting(tab == 0).accessibilityHidden(tab != 0)
             FavoriterView(synlig: tab == 1).opacity(tab == 1 ? 1 : 0).allowsHitTesting(tab == 1).accessibilityHidden(tab != 1)
             InstallningarView().opacity(tab == 2 ? 1 : 0).allowsHitTesting(tab == 2).accessibilityHidden(tab != 2)
             LinearGradient(colors: [Brand.bg.opacity(0), Brand.bg], startPoint: .top, endPoint: .init(x: 0.5, y: 0.6))
@@ -409,7 +411,7 @@ struct RootView: View {
                 .ignoresSafeArea(.keyboard, edges: .bottom)
             // Flikraden står kvar längst ner när tangentbordet kommer upp (Eget namn i Spara resan?) och göms bakom det,
             // i stället för att flyta upp över innehållet (Axels skärmbild 24/10).
-            FloatingTabBar(tab: $tab).padding(.bottom, 8)
+            FloatingTabBar(tab: $tab, vidVakten: { hem += 1 }).padding(.bottom, 8)
                 .ignoresSafeArea(.keyboard, edges: .bottom)
         }
         .background(Brand.bg)

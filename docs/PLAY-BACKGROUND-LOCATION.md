@@ -26,6 +26,16 @@ missed something. Each press sends the warning id or nearest weather-station id,
 timestamp and the answer — which reveals roughly where and when — with no account,
 device id or IP stored. This is disclosed in the privacy policy and Data safety form."
 
+## Redogörelsen i appen (13/11, kort #652, DECISIONS #862)
+
+Från 0.4.0 (49) möter en ny installation behörigheterna i introduktionen. Redogörelsen för bakgrundsplatsen står på skärmen
+*Sista frågan: hela tiden*, före systemets sida: *"Halkvakt läser platsen även när appen är stängd eller skärmen släckt, så
+att vakten kan starta själv när du börjar köra. Platsen läses bara medan vakten är på och notisen Halkvakt vaktar syns. Den
+skickas aldrig av sig själv."* Knappen heter *Öppna sidan*. Ordningen är densamma som förut: platsen i förgrunden, sedan
+rörelseigenkänning och Bluetooth, och bakgrundsplatsen i ett eget steg. Vippan under Inställningar → Start har kvar sin egen
+redogörelse. Användningen av bakgrundsplatsen är oförändrad, så deklarationstexten nedan står kvar. **Demovideon i Play
+Console visar det gamla flödet** (vippan); `scripts/demovideo.sh` spelar in det nya, och Axel byter filmen vid inlämningen.
+
 ## Demovideo-manus (spelas in på testmobilen, ~30 s, Fas 4)
 1. Visa autostart-knappen slås PÅ + behörighetsstegen ("Tillåt hela tiden").
 2. Lägg telefonen åt sidan; starta bilen → notisen "Halkvakt vaktar" dyker upp själv.

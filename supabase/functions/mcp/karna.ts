@@ -128,7 +128,7 @@ async function sverige(hamta: Hamta, nu: Date) {
     halt.length ? `Trafikverket rapporterar halka i ${plural(halt.length, "län", "län")}: ${halt.map((l) => `${l.kort} (${l.halt} av ${l.vagavsnitt} vägavsnitt)`).join(", ")}.`
       : "Trafikverket rapporterar ingen halka i något län.",
     kalla.length ? `Vägbana under noll men ingen rapporterad halka: ${kalla.map((l) => `${l.kort} (${plural(l.kalla, "station", "stationer")})`).join(", ")}.` : "",
-    // Rikstalen ur länen: meta.json räknar även Finlands och Danmarks stationer.
+    // Rikstalen ur länen, samma källa som raderna ovan. (meta.json räknade till 14/11 även Finlands och Danmarks stationer, DECISIONS #865.)
     `I Sverige visar ${plural(d.lan.reduce((n, l) => n + l.kalla, 0), "vägväderstation", "vägväderstationer")} vägbana på 0 °C eller kallare, och ${plural(d.lan.reduce((n, l) => n + l.olyckor, 0), "olycka eller hinder pågår", "olyckor eller hinder pågår")}.`,
     varningar.length ? `SMHI varnar: ${varningar.map((v) => `${v.niva} varning, ${v.event.toLowerCase()}, ${v.omrade}`).join("; ")}.` : "SMHI har ingen varning som rör väglaget.",
     `Läget per län: ${SIDBAS}/lan/`,

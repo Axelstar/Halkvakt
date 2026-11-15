@@ -125,9 +125,9 @@ public struct EngineConfig {
     public var smavagPaGrader = 30.0
     public var smavagPaFixar = 3
     public var smavagKordaMaxM = 3000.0
-    // S, tystnaden efter ett besked (DECISIONS #828): båda ska ha gått — samma tal som engine/src/types.ts (kontraktsgrinden).
-    public var smavagTystS = 600.0
-    public var smavagTystM = 5000.0
+    // S, tystnaden efter ett besked (DECISIONS #828, #863): båda ska ha gått — samma tal som engine/src/types.ts (kontraktsgrinden).
+    public var smavagTystS = 1800.0
+    public var smavagTystM = 20000.0
     public init() {}
 }
 

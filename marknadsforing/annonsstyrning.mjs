@@ -25,8 +25,12 @@ const KONTO = "act_1760320565448083";
 // Appkampanj (DECISIONS #744): Meta tar en App Store-länk bara under målet appinstallationer. Trafikkampanjen
 // "Halkvakt · län" från 27/10 avvisade länken och står kvar pausad; den tas bort i Ads Manager.
 const KAMPANJ = "Halkvakt · län · app";
+// Android has its own campaign and budget since 15/11 (DECISIONS #879): with one shared budget Meta moved nearly all the money
+// to the Android ad sets, whose clicks were cheaper.
+const KAMPANJ_ANDROID = "Halkvakt · län · Android";
 const PREFIX = "Län · ";
-const BUDGET_ORE = 600000;                       // 6 000 kr för hela kampanjen (DECISIONS #763; 2 000 kr till 31/10)
+const BUDGET_ORE = 750000;                       // 7 500 kr för iPhone-kampanjen (DECISIONS #879; 9 500 kr med Android till 15/11, 6 000 kr till 14/11, 2 000 kr till 31/10)
+const BUDGET_ANDROID_ORE = 200000;               // 2 000 kr för Android-kampanjen (DECISIONS #879)
 const DAGAR = 30;
 const APP = "https://apps.apple.com/se/app/halkvakt/id6806939784";
 // Kampanjlänk per län (Axel 10/11, genomlysningen): App Store Connect räknar nedladdningar per kampanj (ct), så kronor per
@@ -39,11 +43,11 @@ export const kampanjLank = slug => `https://apps.apple.com/app/apple-store/id680
 const META_APP_ID = "28619019301133859";
 // Android (Axel 13/11): Google Play is live, and the Meta app carries the platform Android (package se.halkvakt.app, Google
 // Play) since the same evening. An app campaign's ad set promotes one store, so each county gets a second ad set,
-// "Län · <län> · Android", targeting Android phones and linking to Google Play. It starts as a pilot in three counties;
-// widen ANDROID_LAN when the pilot has run. The iPhone ad sets are not touched.
+// "Län · <län> · Android", targeting Android phones and linking to Google Play. Piloted in three counties 13/11 (#861),
+// all 21 counties from 14/11 (#864). The iPhone ad sets are not touched.
 const PLAY = "https://play.google.com/store/apps/details?id=se.halkvakt.app";
 export const ANDROID = " · Android";
-export const ANDROID_LAN = new Set([20, 22, 23]);   // Dalarna, Västernorrland, Jämtland (lan.json:s kod)
+export const ANDROID_LAN = new Set([1, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25]);   // every county (lan.json:s kod)
 /** Play link per county: Play Console counts installs per utm_campaign, as App Store Connect does per ct. */
 export const playLank = slug => `${PLAY}&referrer=${encodeURIComponent(`utm_source=meta&utm_campaign=${("meta-" + slug).slice(0, 40)}`)}`;
 /** The county part of an ad set name, without the prefix and the Android suffix. */
@@ -236,14 +240,14 @@ async function hamta() {
   return { lan, str, alder: (nu() - Date.parse(lan.generated_at)) / 36e5 };
 }
 
-async function kampanjen() {
+async function kampanjen(namn = KAMPANJ) {
   const k = (await alla(`${KONTO}/campaigns`, { fields: "id,name,effective_status" }))
-    .filter(c => c.name === KAMPANJ && !["DELETED", "ARCHIVED"].includes(c.effective_status));
+    .filter(c => c.name === namn && !["DELETED", "ARCHIVED"].includes(c.effective_status));
   return k[0] ?? null;
 }
 
 async function satserna(kampanjId) {
-  return (await alla(`${kampanjId}/adsets`, { fields: "id,name,status,effective_status,adset_schedule,ads.limit(50){id,name,status,effective_status}" }))
+  return (await alla(`${kampanjId}/adsets`, { fields: "id,name,status,effective_status,adset_schedule,end_time,ads.limit(50){id,name,status,effective_status}" }))
     .filter(s => s.name.startsWith(PREFIX) && !["DELETED", "ARCHIVED"].includes(s.effective_status));
 }
 
@@ -302,21 +306,42 @@ async function uppsattning() {
     const id = await laggUpp(RESERV, `Reserv · ${l.kort}`, s.id, kampanjLank(l.slug));
     skriv(`${namn}: reservannonsen skapad (${id}).`);
   }
-  // Android: a second ad set per pilot county, same windows and region as the county's iPhone ad set, PAUSED like everything
-  // uppsattning makes. styr turns it on when the county has ice.
+  // Android: a second ad set per county, same windows, region and end date as the county's iPhone ad set, PAUSED like
+  // everything uppsattning makes. styr turns it on when the county has ice. The end date follows the iPhone ad set (#877):
+  // a later end stretches the campaign's lifetime budget over more days and fewer ad sets fit per day.
   const nu2 = new Map((await satserna(k.id)).map(s => [s.name, s]));
+  // The Android ad sets that lived in the iPhone campaign 13–15/11 are archived; their successors are in the Android campaign.
+  for (const [namn, s] of nu2) if (arAndroid(namn)) {
+    await graph(s.id, { status: "ARCHIVED" }, "POST");
+    skriv(`${namn}: arkiverad i "${KAMPANJ}", flyttas till "${KAMPANJ_ANDROID}".`);
+  }
+  let kA = await kampanjen(KAMPANJ_ANDROID);
+  if (kA) skriv(`Kampanjen "${KAMPANJ_ANDROID}" finns redan (${kA.id}).`);
+  else {
+    // Created ACTIVE: every ad set in it starts PAUSED, so nothing is spent until styr turns a county on.
+    kA = await graph(`${KONTO}/campaigns`, { name: KAMPANJ_ANDROID, objective: "OUTCOME_APP_PROMOTION", status: "ACTIVE",
+      special_ad_categories: [], lifetime_budget: String(BUDGET_ANDROID_ORE), bid_strategy: "LOWEST_COST_WITHOUT_CAP" }, "POST");
+    skriv(`Kampanjen "${KAMPANJ_ANDROID}" skapad, ${BUDGET_ANDROID_ORE / 100} kr (${kA.id}).`);
+  }
+  const iAndroid = new Map((await satserna(kA.id)).map(s => [s.name, s]));
   for (const l of lan.lan.filter(l => ANDROID_LAN.has(l.kod))) {
     const namn = PREFIX + l.kort + ANDROID;
-    let s = nu2.get(namn);
+    const iphoneSlut = nu2.get(PREFIX + l.kort)?.end_time;
+    const slutFor = iphoneSlut ? new Date(iphoneSlut) : slut;
+    let s = iAndroid.get(namn);
+    if (s && iphoneSlut && new Date(s.end_time).getTime() !== slutFor.getTime()) {
+      await graph(s.id, { end_time: slutFor.toISOString() }, "POST");
+      skriv(`${namn}: slutdatum ${s.end_time} → ${slutFor.toISOString()}, som länets iPhone-uppsättning.`);
+    }
     if (!s) {
       const traff = (await graph("search", { type: "adgeolocation", location_types: ["region"], country_code: "SE", q: META_LAN[l.kod] })).data
         .filter(r => r.country_code === "SE" && r.type === "region" && r.name.startsWith(META_LAN[l.kod]));
       if (traff.length !== 1) { skriv(`${namn}: Meta gav ${traff.length} träffar på "${META_LAN[l.kod]}", hoppas över.`); continue; }
       s = await graph(`${KONTO}/adsets`, {
-        name: namn, campaign_id: k.id, status: "PAUSED",
+        name: namn, campaign_id: kA.id, status: "PAUSED",
         optimization_goal: "LINK_CLICKS", billing_event: "IMPRESSIONS",
         promoted_object: { application_id: META_APP_ID, object_store_url: PLAY },
-        start_time: start.toISOString(), end_time: slut.toISOString(),
+        start_time: start.toISOString(), end_time: slutFor.toISOString(),
         pacing_type: ["day_parting"],
         adset_schedule: VISNING,
         targeting: { geo_locations: { regions: [{ key: traff[0].key }], location_types: ["home", "recent"] },
@@ -354,11 +379,13 @@ async function styr() {
     skriv("Torrkörning: META_ADS_TOKEN saknas. Bilderna ritade till meta-ut/, inget ändrat hos Meta.");
     return;
   }
-  const k = await kampanjen();
-  if (!k) { skriv(`Kampanjen "${KAMPANJ}" finns inte. Kör uppsattning först.`); return; }
   const satt = async (id, status) => graph(id, { status }, "POST");
   const vikt = new Map(lan.lan.map(l => [PREFIX + l.kort, l]));
   const lanFor = namn => vikt.get(PREFIX + lanAv(namn));
+  // Each campaign has its own budget, so each is steered on its own (iPhone first, then Android).
+  for (const namnK of [KAMPANJ, KAMPANJ_ANDROID]) {
+  const k = await kampanjen(namnK);
+  if (!k) { skriv(`Kampanjen "${namnK}" finns inte. Kör uppsattning först.`); continue; }
   // Pauses first so they free budget, then the strongest hazard first (DECISIONS #762): the campaign budget only carries a
   // handful of counties at once, and Meta refuses the next one with subcode 2446149.
   const satser = ordning(await satserna(k.id), namn => gammal ? null : annonsFor(namn), lanFor);
@@ -405,10 +432,11 @@ async function styr() {
       if (r.status !== onskat) { await satt(r.id, onskat); skriv(`${s.name}: reservannonsen ${onskat === "ACTIVE" ? "på" : "pausad, dagens annons godkänd"}.`); }
     }
   }
+  }
   const igar = (await graph(`${KONTO}/insights`, { date_preset: "yesterday", fields: "spend,impressions,clicks" })).data[0];
   const totalt = (await graph(`${KONTO}/insights`, { date_preset: "maximum", fields: "spend,clicks" })).data[0];
   skriv(`I går: ${igar?.spend ?? 0} kr, ${igar?.impressions ?? 0} visningar, ${igar?.clicks ?? 0} klick. ` +
-        `Totalt: ${totalt?.spend ?? 0} av ${BUDGET_ORE / 100} kr, ${totalt?.clicks ?? 0} klick.`);
+        `Totalt: ${totalt?.spend ?? 0} av ${(BUDGET_ORE + BUDGET_ANDROID_ORE) / 100} kr, ${totalt?.clicks ?? 0} klick.`);
 }
 
 // Only when run as the script: Halkvakt live imports annons() for its swipe post (DECISIONS #777) and must not start a step.

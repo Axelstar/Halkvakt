@@ -229,6 +229,14 @@ export const KARTAN: Beroende[] = [
   { vard: "play.google.com", roll: "bygg",
     matar: "länken till Halkvakt i Google Play från Androidappens rad Betygsätt Halkvakt",
     brister: "raden leder till en död sida; appen fungerar som vanligt", bevakad: "", signal: "OKÄND" },
+  // iPhone-appens länkar vid en planerad resa (PlaneradResaView.swift, 14/11, DECISIONS #874): öppnar resans mål i förarens
+  // kartapp. Ingen hämtar därifrån.
+  { vard: "maps.apple.com", roll: "bygg",
+    matar: "länken Öppna i Kartor vid en planerad resa i iPhone-appen",
+    brister: "länken öppnar inte Kartor; rapporten och vakten fungerar som vanligt", bevakad: "", signal: "OKÄND" },
+  { vard: "www.google.com", roll: "bygg",
+    matar: "länken Öppna i Google Maps vid en planerad resa i iPhone-appen",
+    brister: "länken öppnar inte Google Maps; rapporten och vakten fungerar som vanligt", bevakad: "", signal: "OKÄND" },
 ];
 
 // Värdar som är vår EGEN infrastruktur eller allmän verktygsinfrastruktur — inte beroenden

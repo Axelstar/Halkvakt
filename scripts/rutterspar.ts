@@ -18,7 +18,8 @@ import { existsSync, readFileSync } from "node:fs";
 export const GOLV = { swift: 1, kotlin: 1 };
 export const MANIFEST = "android/app/src/main/AndroidManifest.xml";
 export const REGLER = "android/app/src/main/res/xml/data_extraction_rules.xml";
-const NAT = { swift: /\bURLSession\b|\bURLRequest\b|\bNWConnection\b/, kotlin: /HttpURLConnection|openConnection\s*\(|\bOkHttp|\bURL\s*\(/ };
+// MKLocalSearch och MKDirections (kort #659, DECISIONS #870): Apples adressökning och ruttberäkning når nätet de också.
+const NAT = { swift: /\bURLSession\b|\bURLRequest\b|\bNWConnection\b|\bMKLocalSearch\b|\bMKDirections\b/, kotlin: /HttpURLConnection|openConnection\s*\(|\bOkHttp|\bURL\s*\(/ };
 const RUTT = /\bFavoriter\b|\bRuttinsamlare\b|\bSparadRutt\b|\bVantandeResa\b|\bRutter\b|\bRuttLager\b|\bRuttJson\b|rutter\.json|senaste-resan|kollen\.json/;
 // kollen.json (steg 3b): förra kollen per resa, farornas id längs vägen — de pekar på platser, så filen vaktas som rutterna.
 const SKRIVER = /"rutter\.json"|"senaste-resan\.json"|"kollen\.json"/;
