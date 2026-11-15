@@ -294,8 +294,9 @@
       <div>
         <h3>Hur den är byggd</h3>
         <ul>
-          <li>Matchningen sker i telefonen. Ingen position lämnar telefonen av sig själv.</li>
+          <li>Matchningen sker i telefonen. Ingen position lämnar telefonen av sig själv till Halkvakt. Undantaget sedan iPhone 0.4.1 (52): Apples karta på startsidan och vid en planerad resa hämtar kartbilden för området som visas, och en adressökning går till Apple (DECISIONS #872).</li>
           <li>Ny lägesbild var tionde minut, med kontrollsumma. En trasig fil vägras. Supabases CDN cachar lägesfilen och manifestet och tömmer cachen när en fil skrivs om: 12/11 kom <span class="mono">live.json</span> ur cachen 438 gånger mot 36 missar på en timme, omkring 92 % (DECISIONS #850).</li>
+          <li>Kartsajtens rikstal i <span class="mono">meta.json</span> (<span class="mono">stationer</span>, <span class="mono">kalla_stationer</span> och <span class="mono">olyckor</span>), som kartan visar under <i>Sveriges väglag just nu</i> och pressidan under <i>Läget på vägarna just nu</i>, räknar sedan 14/11 bara Sverige; Finlands och Danmarks stationer och Finlands olyckor ritas på kartan som förut. Förut räknades alla tre länderna: 933 kalla stationer kl. 08.30, mot 629 svenska i första filen efter deployen kl. 09.00 (DECISIONS #865).</li>
           <li>Samma motor i tre språk, låst av <span class="mono">50</span> testfall som alla tre måste klara byte för byte.</li>
           <li>Vakter sorterar bort trasiga givare, och en vakthund kontrollerar kedjan varje timme.</li>
           <li>Öppna data, ingen licenskostnad, och gratisnivåer där de räcker. Databasen ligger sedan 19/10 på Supabase Pro, 25 USD/mån, eftersom gratisnivåns 500 MB inte räckte (#644).</li>
