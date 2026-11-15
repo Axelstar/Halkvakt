@@ -16759,3 +16759,23 @@ happy that android take most of the clicks / views"*; han valde en egen Android-
 kampanjen (svårare att följa, och Meta hade fortfarande valt mellan telefonerna).
 
 **Stomdokument:** inga — marknadsföringen beskrivs inte i stomdokumenten
+
+## #880 (15/11 2026) Småvägsrösten: olycksfacit läses vid påslaget, utan ett fast antal veckor (ändrar #857 punkt 3)
+
+**Beslutet.** Bengt 15/11: *"Javisst låt det fortsätta"*, på frågan hur olycksfacit ska gälla före påslaget, där rekommendationen var att
+läsa facit vid påslaget. Olycksfacits lager för småvägsrösten (`sql/110`) och kuvösens facit varje dygn (#867) fortsätter som förut, från
+12/11 till sju dygn efter påslaget. Före påslaget läses det som finns när beslutet om påslaget fattas: för varje olycka på en småväg om
+rösten hade talat, och för de tysta halkkopplade olyckorna varför den teg. Kravet på *minst fyra veckor* i #857 punkt 3 utgår.
+
+**Varför.** Förslaget 13/11 som Bengt sa ja till (*"slår på 3"*) sa *"efter några veckor finns ett riktigt underlag för taket och
+avbrottsvillkoren"*. Antalet fyra veckor skrevs in av Claude i bokföringen av #857 och var inte Bengts ord. Med lagret i drift sedan 13/11
+hade det skjutit påslaget till omkring 11/12. Taket och avbrottsgränsen har sedan valts ur backtesten (#863, halkvakt-kuvos F63), så
+läsningen behövs inte längre för dem.
+
+**Alternativen som inte valdes:**
+- fyra veckor, som i #857;
+- att stryka läsningen helt och bara låta facit gå vidare.
+
+Talen bor i kuvösen (#768). Här står bara att läsningen är gjord.
+
+**Stomdokument:** MAT 5 — småvägsrösten: olycksfacit läses vid påslaget i stället för efter fyra veckor
