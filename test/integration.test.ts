@@ -3280,6 +3280,65 @@ test("#828 småvägsröstens avfil: sql/107 slår av båda brytarna", { skip: !u
   }
 });
 
+// SMÅVÄGSRÖSTENS PÅFIL (sql/113, DECISIONS #881), mot riktig PostGIS. Varje vakt får sitt motprov, och en vägrande körning ändrar ingenting.
+//   SP1  utan punktfil, och med en punktfil som inte ligger i hinken och kartrepot, vägrar filen
+//   SP2  en punktfil med färre punkter än smavagspunkt vägrar filen
+//   SP3  en regel som räknar timmen per rad (utan underfrågan, #813) vägrar filen
+//   SP4  utan olycksfacits småvägslager (olycksfacit_smavag) vägrar filen
+//   SP5  med allt på plats slår filen på båda brytarna med tid och skäl; en andra körning ändrar inget; sql/107 slår av dem igen
+test("#881 småvägsröstens påfil: sql/113 slår på båda brytarna bara med vakterna uppfyllda", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { SATS, punktfil } = await import("../ingest/smavagspunkter-db.ts");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const las = (f: string) => q(sql842(f));
+  const skrivFil = async () => { const f = punktfil((await q(SATS.punktfilRader)).rows); await q(SATS.punktfil, [f.sha256, f.punkter, f.bytes, f.gz_bytes, f.json]); };
+  const rensa = async () => { for (const t of ["smavag_live", "smavag_korning", "radar_smavag", "smavagspunkt", "smavag_punktfil"]) await q(`DELETE FROM ${t}`).catch(() => {}); };
+  const lage = async () => (await q("SELECT grupp, pa FROM smavagsbrytare ORDER BY grupp")).rows;
+  const AV = [{ grupp: "N", pa: false }, { grupp: "P1", pa: false }];
+  const vagrar = async (moster: RegExp, namn: string) => {
+    await assert.rejects(las("113_smavag_brytarna_pa.sql"), moster, `${namn}: filen vägrar`);
+    assert.deepEqual(await lage(), AV, `${namn}: brytarna står kvar av`);
+  };
+  try {
+    for (const f of ["003_situation_archive.sql", "084_olycksfacit.sql", "085_olycksfacit_klassning.sql", "103_smavagspunkter.sql",
+                     "104_radar_smavag.sql", "105_smavagsregeln.sql", "106_smavag_punktfil.sql", "108_olycksfacit_driftlarm.sql",
+                     "110_olycksfacit_upplagg.sql"]) await las(f);
+    await rensa(); await q("UPDATE smavagsbrytare SET pa = false");
+    await vagrar(/punktfilen ligger inte i hinken/, "SP1 utan punktfil");
+    await q(`INSERT INTO smavagspunkt (punkt, grupp, vag, ordning, lon, lat) VALUES
+      ('r00001', 'P1', 'v00001', 0, 15.0, 60.0), ('r00002', 'N', 'v00002', 0, 16.0, 61.0)`);
+    await skrivFil();
+    await vagrar(/punktfilen ligger inte i hinken/, "SP1 utan hinken och kartrepot");
+    await q("UPDATE smavag_punktfil SET i_hinken = sha256, i_github = sha256");
+    // SP2: en punkt till i tabellen utan en ny fil (laddaren skriver båda i samma transaktion, så det här är vakten mot en trasig laddning).
+    await q("INSERT INTO smavagspunkt (punkt, grupp, vag, ordning, lon, lat) VALUES ('r00003', 'P1', 'v00003', 0, 17.0, 62.0)");
+    await vagrar(/olika många punkter/, "SP2");
+    await q("DELETE FROM smavagspunkt WHERE punkt = 'r00003'");
+    // SP3: regeln utan underfrågan, sedan tillbaka med sql/105.
+    const regel = (await q("SELECT pg_get_functiondef('smavag_regel()'::regprocedure) AS d")).rows[0].d as string;
+    assert.ok(regel.includes("(SELECT smavag_timme())"), "SP3: regeln i 105 räknar timmen som underfråga");
+    await q(regel.replace("(SELECT smavag_timme())", "smavag_timme()"));
+    await vagrar(/räknar inte timmen som en underfråga/, "SP3");
+    await las("105_smavagsregeln.sql");
+    // SP4: olycksfacits lager borta, sedan tillbaka med namnet.
+    await q("ALTER FUNCTION olycksfacit_smavag() RENAME TO olycksfacit_smavag_prov");
+    try { await vagrar(/saknar småvägsröstens lager/, "SP4"); } finally { await q("ALTER FUNCTION olycksfacit_smavag_prov() RENAME TO olycksfacit_smavag"); }
+    // SP5: allt på plats.
+    const rader = (r: any): number => (Array.isArray(r) ? r[r.length - 1] : r).rowCount;   // DO-blocket och UPDATE: två resultat
+    assert.equal(rader(await las("113_smavag_brytarna_pa.sql")), 2, "SP5: båda slås på");
+    assert.deepEqual((await q("SELECT grupp, pa, skal FROM smavagsbrytare ORDER BY grupp")).rows,
+      [{ grupp: "N", pa: true, skal: "på med sql/113 (DECISIONS #881)" }, { grupp: "P1", pa: true, skal: "på med sql/113 (DECISIONS #881)" }], "SP5: på med skäl");
+    assert.equal(rader(await las("113_smavag_brytarna_pa.sql")), 0, "SP5: en andra körning ändrar inget");
+    assert.equal(rader(await las("107_smavag_brytarna_av.sql")), 2, "SP5: sql/107 slår av båda igen");
+    assert.deepEqual(await lage(), AV, "SP5: av igen");
+  } finally {
+    await rensa();
+    await q("UPDATE smavagsbrytare SET pa = false").catch(() => {});
+    await pool.end();
+  }
+});
+
 // SMÅVÄGSRÖSTENS PUNKTFIL OCH BESKED (sql/106, byggsteg 5b, DECISIONS #828), mot riktig PostGIS.
 //   SF1  punktfilen skrivs i ordningen punkt COLLATE "C" med sha och storlekar; samma punkter en gång till ändrar inget
 //   SF2  en ny punkt ger en ny sha och nollar i_hinken och i_github

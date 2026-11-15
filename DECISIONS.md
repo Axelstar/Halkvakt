@@ -16779,3 +16779,45 @@ läsningen behövs inte längre för dem.
 Talen bor i kuvösen (#768). Här står bara att läsningen är gjord.
 
 **Stomdokument:** MAT 5 — småvägsrösten: olycksfacit läses vid påslaget i stället för efter fyra veckor
+
+## #881 (15/11 2026) Småvägsrösten fram till påslaget: påfilen med vakter, timmen kl. 06 rättad, K:s timmar och olycksfacit lästa (kort #647)
+
+**Beställningen.** Bengt 15/11: *"gör klart hela vägen fram till axels och mitt ord"*. Det som står kvar före påslaget enligt #828 med
+#843, #863, #878 och #880 är att varje del är provad, att olycksfacit är läst och Bengts och Axels ord.
+
+**1. Påfilen `sql/113` (byggd, inte körd).** `sql/107` hänvisar till *"påfilen, som byggs till påslaget med sina vakter"*. Den slår på
+båda brytarna, P1 och N, som `sql/097` gjorde för storstäderna (#816), och vägrar utan att ändra något:
+- om punktfilen inte ligger i hinken och i kartrepot med tabellens sha (#846: en app som inte kan hämta just den filen tiger);
+- om punktfilen och `smavagspunkt` inte har lika många punkter (bitarna i `live.json` står i filens ordning, sql/106);
+- om regeln räknar timmen per rad i stället för som en underfråga (#813);
+- om olycksfacit saknar småvägsröstens lager (sql/110).
+Integrationsprovet SP1–SP5 fäller varje vakt för sig, och en vägrande körning lämnar brytarna av. Alla fyra vakterna var uppfyllda i
+drift 15/11 (läst i SQL-redigeraren, bara läsning). Filen körs med DB-knappen (`migrera`, `fil=sql/113_smavag_brytarna_pa.sql`) på
+Bengts och Axels ord, aldrig av ett flöde. `sql/107` slår av.
+
+**2. Timmen kl. 06 UTC (rättad).** Vakten (#849) fann inget komplett dygn, och kedjans prov hade två ofullständiga timmar, båda
+kl. 06 UTC. Orsaken: K:s del A för 06-körningen blir klar efter :47, så *timmen direkt* (#857) startar K:s del B kl. 06.55 med
+flödets egen nyckel, och en körning som den nyckeln startat sätter aldrig igång `workflow_run` (GitHubs regel). Småvägsröstens timme
+följde därför inte efter, och rösten hade tigit omkring 07.00–07.50 UTC (08.00–08.50 svensk tid) varje morgon. Olycksfacit visar en
+olycka i luckan 15/11 07.12 UTC. Steget väntar nu på K:s del B och startar `kuvos-smavag-timme` för samma timme
+(`ny-kandidat-fysik.yml`). Beviset är att timmen kl. 06 står i `smavag_korning` och att vakten kallar dygnet komplett.
+
+**3. K:s timmar.** Kort #647 kräver ingen förlorad K-timme för dagens punkter. K räknade varje timme 14–15/11. De K-timmar som
+saknades sedan 11/11 (11/11 kl. 20, 12/11 och 13/11 kl. 06–07 UTC) föll när MET låg nere, före reserverna i #857 och #859
+(`ny_kandidat_skugga_korning`, läst 15/11).
+
+**4. Olycksfacit läst (#880).** Läsningen står i halkvakt-kuvos F67, med talen där (#768).
+
+**Påslaget, steg för steg, på Bengts och Axels ord:**
+1. DB-knappen `migrera` med `sql/113`, och som bevis brytarnas rader.
+2. Nästa publicering bär nyckeln `smavag` i `live.json` när regeln varnar, och apparna hämtar punktfilen (punktfilens steg).
+3. Avbrottskontrollen prövar varje dygn (#868, #869), och olycksfacit går till sju dygn efter påslaget (#867).
+4. Batteriet mäts på första resan med ett besked (#878).
+5. Skuggan går i drift i 14 dygn (#843).
+
+**Alternativen som inte valdes:**
+- att starta småvägsröstens timme med en egen nyckel i stället för flödets: det kräver en ny hemlighet för en sak som ett steg kan vänta in;
+- att låta K:s timjobb starta småvägsröstens timme: K:s timjobb ändras inte för småvägarnas skull (kuvos-smavag-timme.yml);
+- en påfil per grupp: avbrottet och `sql/107` gäller båda grupperna.
+
+**Stomdokument:** MAT 5 — småvägsröstens villkor före påslaget uppfyllda utom ordet, SYS 2 — påfilen och timmen efter K:s timmen direkt

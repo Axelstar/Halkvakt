@@ -239,8 +239,28 @@ jobs:
         run: |
           M=$(node --experimental-strip-types scripts/kandidat-reserv.ts --minuter-efter-slott "$(date -u +%FT%TZ)" --slott-min 28 2>/dev/null) || M=""
           if [ -n "$M" ] && [ "$M" -ge 19 ]; then
-            gh workflow run ny-kandidat-timme.yml && echo "**Timmen direkt:** del A blev klar $M minuter efter slotten, efter den ordinarie del B; del B är startad för den pågående timmen." | tee -a "$GITHUB_STEP_SUMMARY" \
-              || echo "::warning::del B gick inte att starta — timmen räknas vid nästa :47"
+            TID=$(date -u +%Y-%m-%dT%H:00:00Z); START=$(date -u -d '-5 seconds' +%FT%TZ)
+            if gh workflow run ny-kandidat-timme.yml; then
+              echo "**Timmen direkt:** del A blev klar $M minuter efter slotten, efter den ordinarie del B; del B är startad för den pågående timmen." | tee -a "$GITHUB_STEP_SUMMARY"
+              # SMÅVÄGSRÖSTENS TIMME EFTER DEL B (DECISIONS #881, 15/11). En körning som flödets egen nyckel har startat sätter aldrig
+              # igång workflow_run (GitHubs regel), så kuvos-smavag-timme följde inte efter del B ovan, och småvägarnas timme kl. 06
+              # saknades 13–15/11 (smavag-vakt, ärende #1574). Steget väntar därför på del B och startar timmen själv, för samma timme.
+              R=""
+              for i in 1 2 3 4 5 6; do
+                sleep 10
+                R=$(gh run list --workflow ny-kandidat-timme.yml --event workflow_dispatch -L 5 --json databaseId,createdAt \
+                  --jq "[.[] | select(.createdAt >= \"$START\")] | last | .databaseId // empty" 2>/dev/null) || R=""
+                [ -n "$R" ] && break
+              done
+              if [ -n "$R" ] && timeout 900 gh run watch "$R" --exit-status --interval 15 > /dev/null 2>&1; then
+                gh workflow run kuvos-smavag-timme.yml -f tid="$TID" && echo "**Småvägsröstens timme** $TID är startad efter del B." | tee -a "$GITHUB_STEP_SUMMARY" \
+                  || echo "::warning::småvägsröstens timme gick inte att starta — den räknas vid nästa :47"
+              else
+                echo "::warning::del B blev inte klar inom 15 minuter — småvägsröstens timme räknas vid nästa :47"
+              fi
+            else
+              echo "::warning::del B gick inte att starta — timmen räknas vid nästa :47"
+            fi
           else
             echo "Timmen direkt: del A blev klar ${M:-?} min efter slotten, del B räknar vid :47."
           fi
