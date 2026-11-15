@@ -16718,3 +16718,21 @@ Android-uppsättningarna är ett dygn gamla, så det finns lite inlärning att f
 fram till dess), och att ändra för hand i Ads Manager (tre län har ett annat slutdatum än de andra, och nya uppsättningar hade fått fel datum igen).
 
 **Stomdokument:** inga — marknadsföringen beskrivs inte i stomdokumenten
+
+## #878 (15/11 2026) Småvägsrösten: batteriet mäts efter påslaget (ändrar villkoren i #828)
+
+**Beslutet.** Bengt 15/11: *"Slå ihop och mäter efter påslag"*, på frågan om batteriprovet skulle göras i en provgrupp först eller
+efter påslaget. Batterimätningen med punktfilen och beskedet i `live.json` är inte längre ett villkor före påslaget i #828. Den görs
+på den första resan efter påslaget där telefonen har fått ett besked och hämtat punktfilen, med samma budget: under 8 %/h med skärmen
+släckt. De andra villkoren i #828 står kvar, och påslaget kräver fortfarande Bengts och Axels ord.
+
+**Varför frågan kom upp.** #828 krävde mätningen före påslaget, men #846 låter apparna hämta punktfilen bara när `live.json` bär ett
+besked, och med brytarna av finns inget besked. Mätningen gick alltså inte att göra före påslaget utan att ändra något.
+
+**Alternativet som inte valdes:** en provgrupp först, alltså ett besked till utvalda telefoner före påslaget. Det kräver en ny väg i
+apparna eller på servern.
+
+**Det som gäller fortfarande:** batteribudgeten är ett släppstopp (CLAUDE.md). Brytarna sitter på servern och kan slås av utan en ny
+app. Vad som görs om mätningen går över 8 %/h avgörs inte här.
+
+**Stomdokument:** APP 3 — batterimätningen för småvägsröstens punktfil flyttas till efter påslaget
