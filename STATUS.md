@@ -3081,3 +3081,9 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - **Hemsidans egna filer** i halkvakt-karta PR #23.
   - **Hemsidans datafiler** behåller Trafikverkets form, eftersom tidningsrutorna jämför mot den.
   - **Provat:** 448 prov gröna, 0 fel.
+- 15/11 sent (Claude; Bengt: *"Slå ihop och driftsätt"*): **vägbeteckningarna i drift (DECISIONS #882, kort #660).**
+  - **Sammanslaget:** PR #1628 (08a16042) och halkvakt-karta PR #23 (2c09f481).
+  - **Driftsatt:** publicera, mcp och olycksfacit ur 08a16042, klara 21.59 UTC.
+  - **Mätt efter driftsättningen:** `live.json` 22.00 UTC bär alla 177 sträckor, 4 olyckor och 41 kandidatsträckor som *E4* eller siffror. 21.50 UTC, före driftsättningen, stod *E 4* och *Väg 395*.
+  - **Sidorna:** vägsidan för väg 40 säger *väg 40*, och E18 står en gång i Stockholms län. En genomsökning av hela hemsidan hittade ingen *E 4*, *riksväg N*, *Rv N* eller *väg ,* i texten.
+  - **Kvar:** testarsidan, och provet av mcp och olycksfacit i drift.
