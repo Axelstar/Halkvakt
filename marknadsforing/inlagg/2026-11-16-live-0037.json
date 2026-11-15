@@ -1,0 +1,29 @@
+{
+  "typ": "smhi",
+  "nyckel": "smhi:Isbeläggning:Västerbotten och norra Västernorrlands län, kustland:YELLOW",
+  "etikett": "SMHI-varning",
+  "rubrik": "Varning för väglaget",
+  "underrad": "Halkläget kl. 00:30",
+  "varning": {
+    "niva": "Gul varning",
+    "event": "Isbeläggning",
+    "omrade": "Västerbotten och norra Västernorrlands län, kustland",
+    "fler": 0
+  },
+  "text": "SMHI har utfärdat en gul varning för isbeläggning i Västerbotten och norra Västernorrlands län, kustland.\n\nHalkläget kl. 00:30:\nNorrbotten: halka på 58 av 58 vägavsnitt, 56 stationer under noll, kallast −15,0 °C vid Vittangi.\nVästerbotten: halka på 44 av 44 vägavsnitt, 38 stationer under noll, kallast −5,1 °C vid Gunnarn.\nVästernorrland: halka på 20 av 22 vägavsnitt, 16 stationer under noll, kallast −2,5 °C vid Mellansel.\nVästmanland: halka på 18 av 24 vägavsnitt, 2 stationer under noll, kallast −0,5 °C vid Åmänningen.\nGävleborg: halka på 15 av 27 vägavsnitt, 2 stationer under noll, kallast −0,1 °C vid Furuberg.\n\nLäget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från SMHI och Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Västernorrland #Västmanland #Gävleborg #halkvakt",
+  "textIg": "SMHI har utfärdat en gul varning för isbeläggning i Västerbotten och norra Västernorrlands län, kustland.\n\nHalkläget kl. 00:30:\nNorrbotten: halka på 58 av 58 vägavsnitt, 56 stationer under noll, kallast −15,0 °C vid Vittangi.\nVästerbotten: halka på 44 av 44 vägavsnitt, 38 stationer under noll, kallast −5,1 °C vid Gunnarn.\nVästernorrland: halka på 20 av 22 vägavsnitt, 16 stationer under noll, kallast −2,5 °C vid Mellansel.\nVästmanland: halka på 18 av 24 vägavsnitt, 2 stationer under noll, kallast −0,5 °C vid Åmänningen.\nGävleborg: halka på 15 av 27 vägavsnitt, 2 stationer under noll, kallast −0,1 °C vid Furuberg.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone, länken finns i vår profil.\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från SMHI och Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Västernorrland #Västmanland #Gävleborg #halkvakt",
+  "pass": "live",
+  "datum": "2026-11-16",
+  "generated_at": "2026-11-15T23:30:09.274Z",
+  "lan": [
+    "norrbotten",
+    "vasterbotten",
+    "vasternorrland",
+    "vastmanland",
+    "gavleborg",
+    "jamtland",
+    "dalarna",
+    "varmland",
+    "kalmar"
+  ]
+}
