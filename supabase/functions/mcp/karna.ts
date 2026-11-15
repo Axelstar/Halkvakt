@@ -7,6 +7,8 @@
 // - Varje svar säger klockslaget och källan. Data äldre än två timmar sägs.
 // - Servern sparar inga frågor. Ingenting här skriver något någonstans.
 
+import { vagForst, vagText } from "../_shared/vagnamn.ts";   // svaren skriver vägen som appen och sajten (DECISIONS #882)
+
 export type Hamta = (fil: string) => Promise<unknown>;
 
 type Lan = { kod: number; namn: string; kort: string; slug: string; halt: number; vagavsnitt: number; kalla: number;
@@ -65,7 +67,7 @@ export const VERKTYG = [
     inputSchema: { type: "object", properties: { lan: LAN_ARG }, required: ["lan"] }, annotations: { readOnlyHint: true, openWorldHint: false } },
   { name: "vag", title: "Väglaget på en väg",
     description: "Väglaget på en E-väg eller riksväg just nu, sträcka för sträcka enligt Trafikverket, i ett län eller i alla län vägen går genom, med den kallaste vägbanan vid vägen.",
-    inputSchema: { type: "object", properties: { vag: { type: "string", description: "Vägen, t.ex. E18, E4 eller riksväg 26." }, lan: { ...LAN_ARG, description: "Valfritt: bara i det här länet." } }, required: ["vag"] },
+    inputSchema: { type: "object", properties: { vag: { type: "string", description: "Vägen, t.ex. E18, E4 eller väg 26." }, lan: { ...LAN_ARG, description: "Valfritt: bara i det här länet." } }, required: ["vag"] },
     annotations: { readOnlyHint: true, openWorldHint: false } },
   { name: "sverige_just_nu", title: "Väglaget i Sverige",
     description: "Läget i hela Sverige just nu: län där Trafikverket rapporterar halka eller där vägbanan är under noll, rikstalen och SMHI:s varningar som rör väglaget.",
@@ -97,7 +99,7 @@ async function lageILan(arg: Record<string, unknown>, hamta: Hamta, nu: Date) {
 async function vag(arg: Record<string, unknown>, hamta: Hamta, nu: Date) {
   const d = await hamta("strackor.json") as StrackFil;
   const namn = vagNamn(String(arg.vag ?? ""));
-  if (!namn) return text(`Förstår inte vägen "${String(arg.vag ?? "")}". Skriv t.ex. E18 eller riksväg 26.`, true);
+  if (!namn) return text(`Förstår inte vägen "${String(arg.vag ?? "")}". Skriv t.ex. E18 eller väg 26.`, true);
   let lan = d.lan;
   if (arg.lan) {
     const lanFil = await hamta("lan.json") as LanFil;
@@ -106,17 +108,17 @@ async function vag(arg: Record<string, unknown>, hamta: Hamta, nu: Date) {
     lan = d.lan.filter((x) => x.slug === l.slug);
   }
   const traffar = lan.flatMap((l) => l.vagar.filter((v) => v.vag === namn).map((v) => ({ l, v })));
-  const visa = namn.replace("Väg ", "riksväg ").replace("E ", "E");
+  const visa = vagText(namn) ?? namn;
   if (!traffar.length) return text(`Halkvakt följer inte ${visa}${arg.lan ? " i det länet" : ""}. Vägarna som följs är E-vägarna och de större riksvägarna i varje län.`, true);
   const rader: string[] = [];
   for (const { l, v } of traffar) {
     const hala = v.strackor.filter((s) => s.halt);
-    const sträckor = hala.map((s) => `${s.plats.replace(/ - /g, "–")} (${[s.text, ...s.info].filter(Boolean).join(", ")})`);
+    const sträckor = hala.map((s) => `${s.plats.replace(/^\.?\d+\s+/, "").replace(/ - /g, "–")} (${[s.text, ...s.info].filter(Boolean).join(", ")})`);
     rader.push(hala.length ? `${l.kort}: halka på ${hala.length} av ${v.strackor.length} sträckor: ${sträckor.join("; ")}.`
       : `${l.kort}: ingen halka rapporterad på vägens ${v.strackor.length} sträckor.`);
     if (v.kallast) rader.push(`  Kallast vid vägen: ${grad(v.kallast.yta)} vid ${v.kallast.namn}.`);
   }
-  return text([`${visa} enligt Trafikverket:`, ...rader, kallrad(d.generated_at, nu)].join("\n"));
+  return text([`${vagForst(namn) ?? namn} enligt Trafikverket:`, ...rader, kallrad(d.generated_at, nu)].join("\n"));
 }
 
 async function sverige(hamta: Hamta, nu: Date) {

@@ -58,6 +58,13 @@ test("vägnamn och sträckor i bildens och textens form", () => {
   assert.equal(vagBild("E 4"), "E4");
   assert.equal(vagBild("Väg 26"), "VÄG 26");
   assert.equal(vagText("Väg 26"), "väg 26");
+  // DECISIONS #882: blanka nummer och de andra formerna får samma beteckning
+  assert.equal(vagBild("50"), "VÄG 50");
+  assert.equal(vagText("50"), "väg 50");
+  assert.equal(vagText("E18"), "E18");
+  assert.equal(vagText("Götaälvbron väg 570"), "väg 570");
+  assert.equal(vagText("Saltsjöbadsleden"), "Saltsjöbadsleden");
+  assert.equal(vagText(""), "");
   assert.equal(stracka(".25 Trafikplats Karlberg - Trafikplats Johanneshov"), "Trafikplats Karlberg–Trafikplats Johanneshov");
 });
 

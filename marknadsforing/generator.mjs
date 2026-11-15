@@ -8,6 +8,7 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { vagText } from "./annonsstyrning.mjs";   // vägen som appen och sajten skriver den (DECISIONS #882)
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const BASE = process.env.HV_BASE ?? "https://axelstar.github.io/halkvakt-karta";
@@ -28,7 +29,7 @@ const st = {};
 const lan = n => (st[n] ??= { halka: 0, frys: 0, sno: 0, vagar: new Set() });
 for (const f of vaglag.features) {
   const p = f.properties;
-  if (p.code !== 1 && fresh(p.updated, 24)) { const s = lan(p.lan ?? 0); s.halka++; if (p.road) s.vagar.add(p.road); }
+  if (p.code !== 1 && fresh(p.updated, 24)) { const s = lan(p.lan ?? 0); s.halka++; if (p.road) s.vagar.add(vagText(p.road)); }
 }
 for (const f of vader.features) {
   const p = f.properties;

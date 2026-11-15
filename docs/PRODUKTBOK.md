@@ -127,7 +127,7 @@ under *På din väg*. Ljuset förblir grönt; vakten är på.
 **Varningskortet** — helgult i åtta sekunder medan rösten talar, sedan bort av sig självt. **Ingen knapp på någon
 plattform** (Androids *Uppfattat* är borta). Samma ordning varje gång: *HALKVAKT VARNAR* och klockslaget, för allvarliga
 olyckor en mörk lägesetikett (*ALLVARLIG · TIDIGT*, *PÅMINNELSE*, *ALLVARLIG · SENT*) och *BETA* för frysrisken efter regnet, farans ikon, rubriken, avståndet,
-eventuellt en vägskylt (*E18*, *VÄG 25*) och en hastighetsskylt (*80*), för allvarliga olyckor en mörk rådruta
+eventuellt en vägskylt (*E18*, *VÄG 25*; aldrig Trafikverkets råa *E 4*, sedan publiceringen skriver vägen som *E4* eller siffrorna, DECISIONS #882) och en hastighetsskylt (*80*), för allvarliga olyckor en mörk rådruta
 (*Överväg annan väg* med *STOR PÅVERKAN · RÖJD CA 19:30*, eller *Sakta ner*), repliken ordagrant och en stapel som fylls.
 **Kortet visar det rösten sa och inget mer:** under en kilometer i hela hundratal (*500 M*, *600 M*), annars hela
 kilometer (*3 KM*), och för halka, vilt och väderstationer ord i stället för tal (*FRAMFÖR DIG*, *FRAMÖVER*). Talet står
@@ -387,9 +387,9 @@ tillverkare kan ha andra ord. Inte provat på en telefon. Skärmbilder ur fotost
 
 | När | Frasen |
 |---|---|
-| Lindrig olycka framför dig | "Olycka rapporterad **på väg 25**, 3 kilometer framför dig." |
+| Lindrig olycka framför dig | "Olycka rapporterad **på väg 25** 3 kilometer framför dig." (utan kommatecken, som koden säger det; DECISIONS #882) |
 | Bro nära frysande station (0.3.3) | "Frysrisk framöver — bro om 700 meter." |
-| **Allvarlig olycka — tidigt ropet, ca 10 km** | "Allvarlig olycka **på E18**, 10 kilometer framför dig — stor påverkan på trafiken. Överväg annan väg. Beräknas röjd vid 14:20." |
+| **Allvarlig olycka — tidigt ropet, ca 10 km** | "Allvarlig olycka **på E18** 10 kilometer framför dig — stor påverkan på trafiken. Överväg annan väg. Beräknas röjd vid 14:20." |
 | **Allvarlig olycka — påminnelsen, ca 2 km** | "Sakta ner — olycksplats strax framför dig." |
 | **Allvarlig olycka du kom nära utan att höra det tidiga ropet** | "Allvarlig olycka 2 kilometer framför dig — stor påverkan. Sakta ner." |
 | Rapporterad halka på din väg — kod 2 eller högre, eller kod 1 med is, snö, frost, halka, halt, halkrisk, halkig eller *mycket besvärligt* (det sista sedan 22/9, kort #156; sedan 16/9 även i sammansättningar: *Rimfrost*, *Nysnö*, *Blötsnö*; motåtgärder som *Halkbekämpning* tiger) | "Varning: halka rapporterad på vägen framför dig." |

@@ -16,6 +16,8 @@
 // Inga Node- eller Deno-importer här. Web Crypto (sha256) och CompressionStream (gzip)
 // finns i båda körtiderna. Skattaren (./tillstand.ts) är ren TypeScript och buntas med (bundle-publicera).
 import { skattaNiva, N_SVEP, K1_GRANS, K2_ZON } from "./tillstand.ts";
+// Vägens kod i live.json och static.json (DECISIONS #882): "E4" eller siffrorna, så att appens röst och skylt säger "E4" och "väg 40".
+import { vagKod } from "../supabase/functions/_shared/vagnamn.ts";
 
 export type Q = (text: string, params?: unknown[]) => Promise<Record<string, any>[]>;
 
@@ -153,7 +155,7 @@ export function hhmmStockholm(ts: Date | string | null): string | null {
 export function bridgesFromGeoJSON(fc: { features: any[] }): Bridge[] {
   return fc.features.map((f) => ({
     id: String(f.properties.id), lon: Number(f.geometry.coordinates[0]),
-    lat: Number(f.geometry.coordinates[1]), road: f.properties.road ?? null,
+    lat: Number(f.geometry.coordinates[1]), road: vagKod(f.properties.road),
   }));
 }
 
@@ -182,7 +184,7 @@ export async function buildSnapshot(qIn: Q, bridgesIn: Bridge[], now: Date = new
     schema: 1,
     cameras: cams.map((r) => ({
       id: String(r.camera_id), lon: Number(r.lon), lat: Number(r.lat),
-      bearing: num(r.bearing), road: r.road_number ?? null,
+      bearing: num(r.bearing), road: vagKod(r.road_number),
     })),
     stations: stns.map((r) => ({ id: String(r.station_id), lon: Number(r.lon), lat: Number(r.lat) })),
   };
@@ -322,7 +324,7 @@ export async function buildSnapshot(qIn: Q, bridgesIn: Bridge[], now: Date = new
   if (kandidat.length) try {
     const vagar = new Map<string, string>();
     for (const r of await q(`SELECT segment_id, road_number FROM road_conditions WHERE road_number IS NOT NULL`))
-      vagar.set(String(r.segment_id), String(r.road_number));
+      { const k = vagKod(r.road_number); if (k) vagar.set(String(r.segment_id), k); }
     for (const k of kandidat) k.vag = vagar.get(k.id) ?? null;
   } catch (e) {
     notes.push(`kandidat: vägnumren ej läsbara (${String((e as Error).message).slice(0, 80)}) — vag blir null`);
@@ -528,7 +530,7 @@ export async function buildSnapshot(qIn: Q, bridgesIn: Bridge[], now: Date = new
   };
   const segRow = (r: Record<string, any>) => ({
     id: String(r.segment_id), line: r.g.coordinates as [number, number][],
-    code: num(r.condition_code), info: (r.condition_info ?? []) as string[], road: r.road_number ?? null,
+    code: num(r.condition_code), info: (r.condition_info ?? []) as string[], road: vagKod(r.road_number),
     // mm/h i stationens skala, eller null när radarn inte har något att säga om segmentet.
     regn: regnPerSegment.get(String(r.segment_id)) ?? null,
   });
@@ -558,7 +560,7 @@ export async function buildSnapshot(qIn: Q, bridgesIn: Bridge[], now: Date = new
     }),
     deviations: devs.map((r) => ({
       id: String(r.deviation_id), lon: Number(r.lon), lat: Number(r.lat),
-      typ: r.message_type ?? null, road: r.road_number ?? null,
+      typ: r.message_type ?? null, road: vagKod(r.road_number),
       // Olyckslyftet (#28): graderas på Trafikverkets SeverityCode, MEN bara när Trafikverket
       // själva klassat det som olycka — texten säger ordet "olycka" högt. Annan typ ⇒ null,
       // och motorn faller tillbaka på den mildare raden. Får aldrig lättas upp.

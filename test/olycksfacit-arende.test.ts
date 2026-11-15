@@ -44,7 +44,7 @@ test("arendeKropp: tabellen per klass och utfall, orsakerna, raden att åtgärda
   assert.ok(!k.includes("| A1: väglaget Normalt | 2 |"));
   const rader = k.split("\n").filter((r) => r.startsWith("- [ ] "));
   assert.equal(rader.length, 1, "bara Kisa ska åtgärdas: E18 varnade, väg 700 är OKLAR");
-  assert.ok(rader[0].startsWith("- [ ] 06:23 Väg 134 (15.543, 57.983) — tyst, täckt, TROLIG"));
+  assert.ok(rader[0].startsWith("- [ ] 06:23 väg 134 (15.543, 57.983) — tyst, täckt, TROLIG"), "vägen mitt i raden som #882 skriver den");
   assert.ok(rader[0].endsWith(" — område: Fukten syntes inte — **Åtgärd:** i veckans ärende"),
     "missens förbättringsområde (§9.4), och utan förifylld åtgärd läses den i veckans ärende (§11, B)");
   assert.ok(k.includes("**Läsningen**") && k.includes("Det här ärendet stängs av funktionen."), "dagens ärende stängs alltid (§11, B)");
@@ -204,7 +204,7 @@ test("B: veckans ärende tar missarna utan förifylld åtgärd, bara från de dy
   const k = veckaKropp("2026-V47", "2026-11-16", "2026-11-22", veckans, veckans, lasdagar);
   const rader = k.split("\n").filter((r) => r.startsWith("- [ ] "));
   assert.deepEqual(rader, [
-    "- [ ] 2026-11-16 06:00 Väg 134 (15.543, 57.983) — tyst, täckt, TROLIG (singelolycka, yta ≤ 0 °C och fukt) — A1: väglaget Normalt · " +
+    "- [ ] 2026-11-16 06:00 väg 134 (15.543, 57.983) — tyst, täckt, TROLIG (singelolycka, yta ≤ 0 °C och fukt) — A1: väglaget Normalt · " +
       "K: fukt saknades · A2: ingen station inom 5 km — område: Fukten syntes inte — **Åtgärd:** ",
     "- [ ] Fukten syntes inte — 3 missar — **Åtgärd:** ",
   ], "missen att läsa, och det återkommande området räknar alla tre missar, också den förifyllda och den från dygnet utan veckoläsning");
