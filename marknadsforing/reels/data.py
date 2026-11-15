@@ -20,6 +20,17 @@ bx0, by0 = min(xs), min(ys); S = 1000 / (max(ys) - by0); W = (max(xs) - bx0) * S
 T = lambda lon, lat: (round((P(lon, lat)[0] - bx0) * S, 1), round((P(lon, lat)[1] - by0) * S, 1))
 D = lambda ring: 'M' + ' L'.join(f'{a},{b}' for a, b in (T(*p) for p in ring)) + 'Z'
 
+
+def vag_bild(v):
+    """Vägen på bilden (DECISIONS #882): "E4", "VÄG 40", gatunamnet med versaler; samma regel som annonsstyrning.mjs vagBild."""
+    s = (v or '').strip()
+    e = re.match(r'E\s*(\d+)', s, re.I)
+    if e: return f'E{int(e.group(1))}'
+    n = re.fullmatch(r'(?:(?:väg|rv|riksväg|länsväg|lv)\.?\s*)?(\d+)(?:\.\d+)?', s, re.I)
+    if n: return f'VÄG {int(n.group(1))}'
+    m = re.search(r'(?:^|\s)väg\s+(\d+)(?:\s|$)', s, re.I)
+    return f'VÄG {int(m.group(1))}' if m else s.upper()
+
 def fara(text, info):
     """Trafikverket's word, never stronger: the same rule as fara() in annonsstyrning.mjs."""
     t = ' '.join([text] + (info or [])).lower()
@@ -41,7 +52,7 @@ for g in vag:
     p = g['properties']
     if p['code'] < 2: continue
     c0 = g['geometry']['coordinates'][0] if g['geometry']['type'] == 'LineString' else g['geometry']['coordinates'][0][0]
-    roads.append({'d': linjer(g), 'lan': p['lan'], 'road': p['road'].upper().replace('E ', 'E'),
+    roads.append({'d': linjer(g), 'lan': p['lan'], 'road': vag_bild(p['road']),
                   'stretch': re.sub(r'^(E \d+|Väg \d+)\s+', '', p['plats']).replace(' - ', '–'),
                   'word': fara(p['text'], p.get('info')), 'y': T(*c0)[1]})
 counties = sorted([{k2: l[k2] for k2 in ('kod', 'kort', 'halt', 'kalla', 'kallast')} for l in summ['lan']], key=lambda c: (-c['halt'], -c['kalla']))

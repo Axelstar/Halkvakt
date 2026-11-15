@@ -3,8 +3,9 @@
 // Trafikverkets väglagsrapport med deras egna ord, vägbanans temperatur vid de stationer som klarar appens vakter, och pågående
 // olyckor. Sidan påstår aldrig själv att det är halt.
 //
-// Ren och körtidsneutral som kartkärnan: inga importer, för scripts/bundle-publicera.ts klistrar in filen i publicera. Namnen får
-// därför inte krocka med snapshot-core.ts eller map-core.ts.
+// Ren och körtidsneutral som kartkärnan: inga importer utom vägbeteckningarna (DECISIONS #882), för scripts/bundle-publicera.ts
+// klistrar in filen i publicera efter dem. Namnen får därför inte krocka med snapshot-core.ts eller map-core.ts.
+import { vagKod, vagText, vagForst } from "../supabase/functions/_shared/vagnamn.ts";
 
 /** Kartsajtens adress: halkvakt.se sedan 13/10 (Pages skickar github.io vidare). Kanoniska adresser och sitemapen följer härifrån. */
 export const SIDBAS = "https://halkvakt.se";
@@ -76,34 +77,34 @@ export const VAGAR: { nyckel: string; namn: string; rubrik: string; slug: string
     stycke: "E20 går från Malmö via Göteborg, Skövde, Örebro och Eskilstuna till Stockholm." },
   { nyckel: "e22", namn: "E22", rubrik: "E22", slug: "e22",
     stycke: "E22 går längs sydostkusten från Trelleborg via Kristianstad, Karlskrona och Kalmar till Norrköping." },
-  { nyckel: "40", namn: "Riksväg 40", rubrik: "riksväg 40", slug: "rv40",
-    stycke: "Riksväg 40 går från Göteborg via Borås och Jönköping till Västervik." },
+  { nyckel: "40", namn: "Väg 40", rubrik: "väg 40", slug: "rv40",
+    stycke: "Väg 40 går från Göteborg via Borås och Jönköping till Västervik." },
 ];
 
 /** Pendlarstråken per län (25/10, DECISIONS #722). Skrivet för hand och säger bara var vägarna går och vilka orter de binder ihop;
  *  läget på vägarna står i listan ovanför, ur Trafikverkets rapport. */
 export const PENDLING: Record<string, string> = {
   stockholm: "De stora pendlarstråken in mot Stockholm är E4 från Södertälje i söder och från Arlanda och Märsta i norr, E18 från Norrtälje och från Bålsta, E20 från Södertälje och Strängnäs, väg 73 från Nynäshamn och Haninge och väg 222 från Värmdö.",
-  uppsala: "Från Uppsala pendlar många söderut på E4 mot Knivsta, Arlanda och Stockholm. Väg 55 går mot Enköping, riksväg 72 mot Sala och väg 288 mot Gimo och Östhammar. I söder går E18 förbi Bålsta mot Stockholm.",
+  uppsala: "Från Uppsala pendlar många söderut på E4 mot Knivsta, Arlanda och Stockholm. Väg 55 går mot Enköping, väg 72 mot Sala och väg 288 mot Gimo och Östhammar. I söder går E18 förbi Bålsta mot Stockholm.",
   sodermanland: "E4 binder ihop Nyköping med Stockholm och Norrköping, och E20 går från Eskilstuna via Strängnäs mot Stockholm. Väg 53 går mellan Nyköping och Eskilstuna, och väg 55 och väg 52 går genom Katrineholm.",
-  ostergotland: "E4 binder ihop Norrköping, Linköping och Mjölby. Riksväg 34 går från Linköping mot Motala, riksväg 50 från Mjölby mot Motala och Askersund, och riksväg 51 från Norrköping mot Finspång.",
-  jonkoping: "E4 går genom Jönköping och Huskvarna, norrut mot Gränna och söderut mot Värnamo. Riksväg 40 går mot Borås i väster och mot Nässjö och Eksjö i öster, riksväg 26 mot Värnamo och Halmstad, och riksväg 47 mot Falköping.",
-  kronoberg: "Från Växjö går riksväg 25 västerut mot Ljungby och österut mot Kalmar, riksväg 23 söderut mot Älmhult och Hässleholm, riksväg 27 mot Värnamo och Karlskrona, och riksväg 30 mot Jönköping. E4 går genom Ljungby.",
-  kalmar: "E22 går längs kusten mellan Kalmar, Oskarshamn och Västervik. Riksväg 25 går från Kalmar via Nybro mot Växjö, och Ölandsbron förbinder Kalmar med Öland.",
+  ostergotland: "E4 binder ihop Norrköping, Linköping och Mjölby. Väg 34 går från Linköping mot Motala, väg 50 från Mjölby mot Motala och Askersund, och väg 51 från Norrköping mot Finspång.",
+  jonkoping: "E4 går genom Jönköping och Huskvarna, norrut mot Gränna och söderut mot Värnamo. Väg 40 går mot Borås i väster och mot Nässjö och Eksjö i öster, väg 26 mot Värnamo och Halmstad, och väg 47 mot Falköping.",
+  kronoberg: "Från Växjö går väg 25 västerut mot Ljungby och österut mot Kalmar, väg 23 söderut mot Älmhult och Hässleholm, väg 27 mot Värnamo och Karlskrona, och väg 30 mot Jönköping. E4 går genom Ljungby.",
+  kalmar: "E22 går längs kusten mellan Kalmar, Oskarshamn och Västervik. Väg 25 går från Kalmar via Nybro mot Växjö, och Ölandsbron förbinder Kalmar med Öland.",
   gotland: "På Gotland går de stora vägarna ut från Visby mot Slite, Hemse och Fårösund. Långa sträckor går över öppet land där blåsten kan göra väglaget sämre.",
-  blekinge: "E22 binder ihop Karlskrona, Ronneby, Karlshamn och Sölvesborg. Riksväg 27 går från Karlskrona mot Växjö och riksväg 29 från Karlshamn mot Växjö.",
-  skane: "E6 går mellan Malmö, Lund och Helsingborg, och E22 från Malmö och Lund via Hörby mot Kristianstad. E65 går mot Ystad, riksväg 11 mot Sjöbo och Tomelilla, riksväg 23 mot Höör och Hässleholm, och riksväg 21 mellan Helsingborg och Kristianstad.",
-  halland: "E6 binder ihop Kungsbacka, Varberg, Falkenberg och Halmstad. Riksväg 41 går från Varberg mot Borås, riksväg 26 från Halmstad mot Jönköping och riksväg 25 från Halmstad mot Ljungby.",
-  "vastra-gotaland": "Kring Göteborg går E6 norrut mot Kungälv och Uddevalla och söderut mot Kungsbacka. E20 går mot Alingsås och Skövde, riksväg 40 mot Borås och E45 mot Trollhättan och Vänersborg. Riksväg 44 går mellan Uddevalla, Trollhättan och Lidköping.",
-  varmland: "E18 går genom Karlstad, österut mot Kristinehamn och västerut mot Grums och Årjäng. Riksväg 61 går mot Kil och Arvika, riksväg 62 norrut längs Klarälven och riksväg 63 mot Filipstad. E45 går genom Torsby.",
-  orebro: "E18 och E20 går tillsammans från Örebro österut mot Arboga. E20 går söderut mot Hallsberg och E18 västerut mot Karlskoga. Riksväg 50 går norrut mot Lindesberg och riksväg 51 söderut mot Finspång.",
-  vastmanland: "E18 går genom Västerås, österut mot Enköping och Stockholm och västerut mot Köping och Arboga. Riksväg 56 går mot Sala och riksväg 66 norrut.",
-  dalarna: "E16 går mellan Falun och Borlänge och vidare mot Gävle och Malung. Riksväg 70 går från Borlänge mot Mora och söderut mot Avesta, och riksväg 50 går från Borlänge mot Ludvika.",
-  gavleborg: "E4 binder ihop Gävle, Söderhamn och Hudiksvall. Riksväg 80 går från Gävle mot Sandviken och Falun, riksväg 83 från Bollnäs mot Ljusdal och riksväg 84 från Hudiksvall mot Ljusdal.",
-  vasternorrland: "E4 binder ihop Sundsvall, Härnösand och Örnsköldsvik och går över Högakustenbron. E14 går från Sundsvall mot Östersund, och riksväg 90 går från Härnösand mot Kramfors och Sollefteå.",
+  blekinge: "E22 binder ihop Karlskrona, Ronneby, Karlshamn och Sölvesborg. Väg 27 går från Karlskrona mot Växjö och väg 29 från Karlshamn mot Växjö.",
+  skane: "E6 går mellan Malmö, Lund och Helsingborg, och E22 från Malmö och Lund via Hörby mot Kristianstad. E65 går mot Ystad, väg 11 mot Sjöbo och Tomelilla, väg 23 mot Höör och Hässleholm, och väg 21 mellan Helsingborg och Kristianstad.",
+  halland: "E6 binder ihop Kungsbacka, Varberg, Falkenberg och Halmstad. Väg 41 går från Varberg mot Borås, väg 26 från Halmstad mot Jönköping och väg 25 från Halmstad mot Ljungby.",
+  "vastra-gotaland": "Kring Göteborg går E6 norrut mot Kungälv och Uddevalla och söderut mot Kungsbacka. E20 går mot Alingsås och Skövde, väg 40 mot Borås och E45 mot Trollhättan och Vänersborg. Väg 44 går mellan Uddevalla, Trollhättan och Lidköping.",
+  varmland: "E18 går genom Karlstad, österut mot Kristinehamn och västerut mot Grums och Årjäng. Väg 61 går mot Kil och Arvika, väg 62 norrut längs Klarälven och väg 63 mot Filipstad. E45 går genom Torsby.",
+  orebro: "E18 och E20 går tillsammans från Örebro österut mot Arboga. E20 går söderut mot Hallsberg och E18 västerut mot Karlskoga. Väg 50 går norrut mot Lindesberg och väg 51 söderut mot Finspång.",
+  vastmanland: "E18 går genom Västerås, österut mot Enköping och Stockholm och västerut mot Köping och Arboga. Väg 56 går mot Sala och väg 66 norrut.",
+  dalarna: "E16 går mellan Falun och Borlänge och vidare mot Gävle och Malung. Väg 70 går från Borlänge mot Mora och söderut mot Avesta, och väg 50 går från Borlänge mot Ludvika.",
+  gavleborg: "E4 binder ihop Gävle, Söderhamn och Hudiksvall. Väg 80 går från Gävle mot Sandviken och Falun, väg 83 från Bollnäs mot Ljusdal och väg 84 från Hudiksvall mot Ljusdal.",
+  vasternorrland: "E4 binder ihop Sundsvall, Härnösand och Örnsköldsvik och går över Högakustenbron. E14 går från Sundsvall mot Östersund, och väg 90 går från Härnösand mot Kramfors och Sollefteå.",
   jamtland: "Från Östersund går E14 västerut mot Åre och österut mot Sundsvall, och E45 går söderut mot Svenstavik. Fjällvägarna kan ha vinterväglag långt in på våren.",
   vasterbotten: "E4 binder ihop Umeå och Skellefteå, och E12 går från Umeå inåt landet mot Lycksele.",
-  norrbotten: "E4 binder ihop Luleå, Piteå och Kalix. E10 går från Luleå via Boden mot Gällivare och Kiruna, och riksväg 97 går från Boden mot Jokkmokk.",
+  norrbotten: "E4 binder ihop Luleå, Piteå och Kalix. E10 går från Luleå via Boden mot Gällivare och Kiruna, och väg 97 går från Boden mot Jokkmokk.",
 };
 
 /** Pendlarstråken (2/11: flyttade hit ur rutan, ruta.html i halkvakt-karta, så att Datawrapper-tabellerna kan räknas här; rutan
@@ -361,7 +362,7 @@ function lsVagsida(vag: (typeof VAGAR)[number], l: LanLage, now: Date, d: { vagl
   const langs = new Set(d.vaglag.filter((s) => vagNyckel(s.road) === vag.nyckel && s.lan !== null).map((s) => s.lan as number));
   const med = (lan: number | null, text: string) => { const k = lsLanKort(lan); return k ? `${lsEsc(k)}: ${text}` : text; };
   const halt = l.halt.slice(0, 20).map((s) =>
-    `<li>${med(s.lan, `${lsEsc(s.plats ?? s.road ?? "Vägavsnitt")}: ${lsEsc([s.text, ...s.info].filter(Boolean).join(", "))}`)}</li>`).join("\n");
+    `<li>${med(s.lan, `${lsEsc(lsSegNamn(s))}: ${lsEsc([s.text, ...s.info].filter(Boolean).join(", "))}`)}</li>`).join("\n");
   const kalla = l.kalla.slice(0, 8).map((s) =>
     `<li>${med(s.lan, `${lsEsc(s.name)}: ${lsGrad(s.yta)}${s.fukt ? ", nederbörd eller fukt rapporteras" : ""}`)}</li>`).join("\n");
   const olyckor = l.olyckor.slice(0, 10).map((o) =>
@@ -369,12 +370,12 @@ function lsVagsida(vag: (typeof VAGAR)[number], l: LanLage, now: Date, d: { vagl
   const andra = VAGAR.filter((x) => x.slug !== vag.slug).map((x) => `<a href="../${x.slug}/">${lsEsc(x.namn)}</a>`).join(" · ");
   const innehall = `<p class="dim">Uppdaterad ${lsTid(now)}</p>
 <h1>Är det halt på ${lsEsc(vag.rubrik)} just nu?</h1>
-<p class="svar">${lsEsc(lsSvar(l, `${vag.namn}:s`, "vid vägen", now))}</p>
+<p class="svar">${lsEsc(lsSvar(l, `${vag.rubrik}:s`, "vid vägen", now))}</p>
 ${lsVarnadRad(varn.filter((v) => v.lan.some((k) => langs.has(k))), "längs vägen", "../../", true)}<h2>Väglaget enligt Trafikverket</h2>
 ${l.halt.length ? `<ul>\n${halt}\n</ul>${l.halt.length > 20 ? `\n<p class="dim">och ${l.halt.length - 20} till.</p>` : ""}`
     : `<p>Inget av vägens ${l.vagavsnitt} vägavsnitt har halka eller vinterväglag i Trafikverkets rapport.</p>`}
 <h2>Vägbanans temperatur</h2>
-${l.kalla.length ? `<p>Kallast just nu, vid de vägväderstationer som ligger närmast ${lsEsc(vag.namn)}:</p>\n<ul>\n${kalla}\n</ul>`
+${l.kalla.length ? `<p>Kallast just nu, vid de vägväderstationer som ligger närmast ${lsEsc(vag.rubrik)}:</p>\n<ul>\n${kalla}\n</ul>`
     : "<p>Ingen av vägväderstationerna vid vägen visar vägbana på 0 °C eller kallare.</p>"}
 <h2>Pågående olyckor</h2>
 ${l.olyckor.length ? `<ul>\n${olyckor}\n</ul>` : `<p>Trafikverket rapporterar ingen pågående olycka på ${lsEsc(vag.rubrik)}.</p>`}
@@ -393,23 +394,30 @@ ${lsFragorHtml(lsFragor(vag.namn, `på ${vag.rubrik}`))}
 }
 
 
-/** Vägen som folk skriver den: "E 4" → "E4", "Väg 55" → "väg 55". */
-const lsVagNamn = (r: string) => r.replace(/^E\s*(\d+)/, "E$1").replace(/^Väg\s*/, "väg ");
+/** Vägen i löpande text (DECISIONS #882): "E 4" → "E4", "Väg 55" och "55" → "väg 55"; tomt utan väg. */
+const lsVagNamn = (r: string | null) => vagText(r) ?? "";
+/** Vägen först i en listrad eller en cell (#882): "E4", "Väg 55"; tomt utan väg. */
+const lsVagForst = (r: string | null) => vagForst(r) ?? "";
+/** Stor första bokstav i en cell som börjar med en väg: "E18/väg 61", "Väg 61/E18". */
+const lsForstaVersal = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
 /** Sträckans namn utan vägnumret och Trafikverkets löpnummer: "E 4 .25 Knivsta - Arlanda" → "Knivsta–Arlanda". */
 const lsStracka = (s: LanSegment) => (s.plats ?? "").replace(new RegExp("^" + (s.road ?? "").replace(/\s+/g, "\\s*") + "\\s*"), "")
   .replace(/^\.?\d+\s+/, "").replace(/\s+-\s+/g, "–").trim();
-const lsVagOrdning = (r: string) => { const m = /^(E|Väg)\s*(\d+)/.exec(r); return m ? (m[1] === "E" ? 0 : 1000) + Number(m[2]) : 9999; };
+/** En väglagssträcka som rad (#882): "E4 Knivsta–Arlanda", aldrig Trafikverkets råa "E 4 .25 Knivsta - Arlanda". */
+const lsSegNamn = (s: LanSegment) => [lsVagForst(s.road), lsStracka(s)].filter(Boolean).join(" ") || "Vägavsnitt";
+const lsVagOrdning = (r: string) => { const m = /^(E?)(\d+)$/.exec(vagKod(r) ?? ""); return m ? (m[1] ? 0 : 1000) + Number(m[2]) : 9999; };
 
 /** Länets stora vägar just nu (25/10, DECISIONS #722): E-vägarna och riksvägarna, och varje annan väg med halka. Raderna räknas
  *  här en gång och visas både som lista på länssidan och som Datawrapper-tabell (2/11, NWT), så att de aldrig säger olika saker. */
 type VagRad = { vag: string; halt: number; strackor: number; namn: string[]; st: LanStation | undefined };
 function lsVagRader(kod: number, d: { vaglag: LanSegment[]; stationer: LanStation[] }): VagRad[] {
   const segs = d.vaglag.filter((x) => x.lan === kod && x.road);
-  const vagar = [...new Set(segs.map((x) => x.road as string))].sort((a, b) => lsVagOrdning(a) - lsVagOrdning(b));
+  // Per vägkod (#882), så att Trafikverkets "E 18" och "E18" blir en rad och inte två.
+  const vagar = [...new Set(segs.map((x) => vagKod(x.road) as string))].sort((a, b) => lsVagOrdning(a) - lsVagOrdning(b));
   return vagar.flatMap((vag) => {
-    const sv = segs.filter((x) => x.road === vag);
+    const sv = segs.filter((x) => vagKod(x.road) === vag);
     const halt = sv.filter((x) => arHalt(x.code, x.info));
-    const stor = /^E\s*\d/.test(vag) || lsVagOrdning(vag) < 1100;
+    const stor = /^E\d/.test(vag) || lsVagOrdning(vag) < 1100;
     if (!stor && !halt.length) return [];
     const namn = [...new Set((halt.length ? halt : sv).map(lsStracka).filter(Boolean))].slice(0, 5);
     const st = d.stationer.filter((x) => x.lan === kod && vagNyckel(x.vag ?? null) === vagNyckel(vag)).sort((a, b) => a.yta - b.yta)[0];
@@ -425,7 +433,7 @@ function lsVagarILanet(kod: number, d: { vaglag: LanSegment[]; stationer: LanSta
   const rader = lsVagRader(kod, d).map((r) => {
     const lage = r.halt ? `<span class="halt">${lsVagLageText(r)}</span>` : lsVagLageText(r);
     const temp = r.st ? ` · vägbanan ${lsGrad(r.st.yta)} vid ${lsEsc(r.st.name)}` : "";
-    return `<li><b>${lsEsc(lsVagNamn(r.vag))}</b>${lage}${temp}${r.namn.length ? `<small>${lsEsc(r.namn.join(" · "))}</small>` : ""}</li>`;
+    return `<li><b>${lsEsc(lsVagForst(r.vag))}</b>${lage}${temp}${r.namn.length ? `<small>${lsEsc(r.namn.join(" · "))}</small>` : ""}</li>`;
   });
   return rader.length ? `<ul class="vaglista">\n${rader.join("\n")}\n</ul>` : "<p>Trafikverket rapporterar inget väglag för länets stora vägar just nu.</p>";
 }
@@ -453,7 +461,7 @@ const lsDwEtikett = (h: number, n: number) => {
   const t = `${h} av ${lsPlural(n, "sträcka", "sträckor")}`;
   return `<span style="${h ? LS_DW_GUL : LS_DW_DAMPAD}">${t}</span>`;
 };
-const lsDwVag = (v: string) => lsVagNamn(v).replace(/^väg /, "Väg ");
+const lsDwVag = (v: string) => lsVagForst(v);
 // Bold when the road surface is at or below 0 °C (Axel 2/11: "mycket bättre"); the station name small and grey after the number.
 const lsDwTemp = (st?: LanStation) => st
   ? `<span style="${st.yta <= 0 ? LS_DW_FET : LS_DW_GRA}">${lsGrad(st.yta)}</span> <span style="${LS_DW_LITEN}">${lsEsc(st.name)}</span>` : "";
@@ -491,7 +499,7 @@ function lsStrakRader(p: Strak, kod: number, d: { vaglag: LanSegment[] }): Strak
     const delar = s.delar.map(([vag, plats]) => segs.find((x) => x.road === vag && lsSegPlats(x) === plats)).filter((x): x is LanSegment => !!x);
     if (!delar.length) return [];
     const halt = delar.filter((x) => arHalt(x.code, x.info));
-    return [{ fran: s.fran ?? p.fran ?? "", till: s.till, vagar: [...new Set(s.delar.map(([v]) => lsDwVag(v)))].join("/"),
+    return [{ fran: s.fran ?? p.fran ?? "", till: s.till, vagar: lsForstaVersal([...new Set(s.delar.map(([v]) => lsVagNamn(v)))].join("/")),
       halt: halt.length, delar: delar.length, var_: halt.map((x) => lsSegPlats(x).replace(/ - /g, "–")) }];
   });
 }
@@ -1016,7 +1024,7 @@ function lsOrtsida(ort: (typeof ORTER)[number], lan: (typeof LAN)[number], lanLa
   const vagRad = (s: LanSegment, bort?: number) => {
     const h = arHalt(s.code, s.info);
     const vad = [s.text, ...s.info].filter(Boolean).join(", ");
-    return `<li><b>${lsEsc(lsVagNamn(s.road ?? ""))}</b>${h ? '<span class="halt">Halka eller vinterväglag</span>' : "Ingen halka rapporterad"}` +
+    return `<li><b>${lsEsc(lsVagForst(s.road))}</b>${h ? '<span class="halt">Halka eller vinterväglag</span>' : "Ingen halka rapporterad"}` +
       `<small>${lsEsc(lsStracka(s))}${bort !== undefined ? ` · ${lsKmText(bort)} bort` : ""}${vad ? ` · ${lsEsc(vad)}` : ""}</small></li>`;
   };
   const rader = [...avsnitt].sort((a, b) => Number(arHalt(b.code, b.info)) - Number(arHalt(a.code, a.info)))
@@ -1044,7 +1052,7 @@ ${nara.length ? `<p>Vägbanans temperatur kl. ${lsTid(now, false)} vid Trafikver
       ? `<p>Ingen av Trafikverkets vägväderstationer ligger inom ${LS_NARA_KM} km från ${n}. Närmast är ${lsEsc(narSt.s.name)}, ${lsKmText(narSt.km)} bort: ${lsGrad(narSt.s.yta)}${narSt.s.fukt ? ", nederbörd eller fukt rapporteras" : ""}.</p>`
       : `<p>Ingen av Trafikverkets vägväderstationer ligger inom ${LS_NARA_KM} km från ${n}. Länets stationer står under Hela ${lk}.</p>`}
 <h2>Pågående olyckor</h2>
-${olyckor.length ? `<ul>\n${olyckor.slice(0, 10).map((o) => `<li>${lsEsc(lsVagNamn(o.road ?? "Väg"))}${o.start ? `, sedan ${lsTid(new Date(o.start))}` : ""}${o.allvar ? ` (${lsEsc(o.allvar)})` : ""}</li>`).join("\n")}\n</ul>`
+${olyckor.length ? `<ul>\n${olyckor.slice(0, 10).map((o) => `<li>${lsEsc(lsVagForst(o.road) || "Olycka")}${o.start ? `, sedan ${lsTid(new Date(o.start))}` : ""}${o.allvar ? ` (${lsEsc(o.allvar)})` : ""}</li>`).join("\n")}\n</ul>`
     : `<p>Trafikverket rapporterar ingen pågående olycka på vägarna ${avNara ? "runt" : "genom"} ${n} i ${lk}.</p>`}
 <h2>Hela ${lk}</h2>
 <p>${lsEsc(lsSvar(lanLage, "länets", "i länet", now))} Mer på <a href="../../lan/${lan.slug}/">halka och väglag i ${lk}</a>.</p>
@@ -1066,11 +1074,11 @@ ${lsFragorHtml(lsFragor(ort.namn))}
 function lsLanssida(lan: (typeof LAN)[number], l: LanLage, now: Date, d: { vaglag: LanSegment[]; stationer: LanStation[] }, varn: Vagvarning[] = []): string {
   const halt = l.halt.slice(0, 15).map((s) => {
     const vad = [s.text, ...s.info].filter(Boolean).join(", ");
-    return `<li>${lsEsc(s.plats ?? s.road ?? "Vägavsnitt")}: ${lsEsc(vad)}</li>`;
+    return `<li>${lsEsc(lsSegNamn(s))}: ${lsEsc(vad)}</li>`;
   }).join("\n");
   const kalla = l.kalla.slice(0, 5).map((s) =>
     `<li>${lsEsc(s.name)}: ${lsGrad(s.yta)}${s.fukt ? ", nederbörd eller fukt rapporteras" : ""}</li>`).join("\n");
-  const olyckor = l.olyckor.slice(0, 10).map((o) => `<li>${lsEsc(o.road ?? "Väg")}${o.start ? `, sedan ${lsTid(new Date(o.start))}` : ""}` +
+  const olyckor = l.olyckor.slice(0, 10).map((o) => `<li>${lsEsc(lsVagForst(o.road) || "Olycka")}${o.start ? `, sedan ${lsTid(new Date(o.start))}` : ""}` +
     `${o.allvar ? ` (${lsEsc(o.allvar)})` : ""}</li>`).join("\n");
   const andra = LAN.filter((x) => x.kod !== lan.kod).map((x) => `<a href="../${x.slug}/">${lsEsc(x.kort)}</a>`).join(" · ");
   const innehall = `<p class="dim">Uppdaterad ${lsTid(now)}</p>

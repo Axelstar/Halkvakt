@@ -114,8 +114,20 @@ export function fara(s) {
   return "Risk för halka";
 }
 
-export const vagBild = v => v.replace(/^E\s+/, "E").toUpperCase();
-export const vagText = v => v.replace(/^E\s+/, "E").replace(/^Väg/, "väg");
+// Vägbeteckningarna (DECISIONS #882): "E4", "väg 40" (bilden "VÄG 40"), gatunamnet som det står. Samma regel som
+// supabase/functions/_shared/vagnamn.ts, som en .mjs utan steg inte kan importera.
+const vagKod = v => {
+  const s = String(v ?? "").trim();
+  if (!s) return null;
+  const e = /^E\s*(\d+)/i.exec(s);
+  if (e) return `E${Number(e[1])}`;
+  const n = /^(?:(?:väg|rv|riksväg|länsväg|lv)\.?\s*)?(\d+)(?:\.\d+)?$/i.exec(s);
+  if (n) return String(Number(n[1]));
+  const namn = /(?:^|\s)väg\s+(\d+)(?:\s|$)/i.exec(s);
+  return namn ? String(Number(namn[1])) : s;
+};
+export const vagText = v => { const k = vagKod(v); return k === null ? "" : /^\d+$/.test(k) ? `väg ${k}` : k; };
+export const vagBild = v => vagText(v).toUpperCase();
 export const stracka = p => p.replace(/^\.\d+\s+/, "").replace(/\s+-\s+/g, "–");
 
 /** Länets annons ur lan.json-raden och länets del av strackor.json; null när länet inte räknas. */

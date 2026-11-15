@@ -2,6 +2,7 @@
 // publika repot och bär därför bara Trafikverkets öppna data (väg, tid och läge) och koderna och antalen — aldrig kandidatens tal
 // (förslaget §4). Bedömningen per olycka, förbättringsområdet och veckans regler står i docs/TROSKLAR-OLYCKSFACIT.md §9; det nya
 // upplägget (förifyllda åtgärder, läsningen i veckans ärende, nämnaren och kollisionerna, DECISIONS #852) i §11.
+import { vagText } from "../_shared/vagnamn.ts";   // vägen som appen och sajten skriver den (DECISIONS #882)
 
 export const FORSTA_DAG = "2026-11-06";   // första svenska dygnet som fångsten täcker helt (fångsten i drift 6/11 07:45 UTC)
 export const ETIKETT = "olycka";
@@ -107,7 +108,7 @@ export function svenskDag(iso: string): string {
   return new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Stockholm", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(iso));
 }
 
-const plats = (o: Olycka) => `${o.vag ?? "okänd väg"} (${o.lon.toFixed(3)}, ${o.lat.toFixed(3)})`;
+const plats = (o: Olycka) => `${vagText(o.vag) ?? "okänd väg"} (${o.lon.toFixed(3)}, ${o.lat.toFixed(3)})`;
 const rattVarning = (o: Olycka, medDag: boolean) =>
   `- ${medDag ? `${svenskDag(o.tid)} ` : ""}${svenskTid(o.tid)} ${plats(o)} — ${o.klass} (${o.skal ?? "?"}) — varnade: ${o.talade.join(", ") || "?"}`;
 /** En miss att åtgärda, utan kryssrutan och åtgärden. */

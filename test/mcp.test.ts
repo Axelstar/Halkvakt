@@ -88,7 +88,7 @@ test("vag: sträckorna med halka per län, kallast vid vägen, ett län eller al
   assert.ok(e18.text.includes("Kallast vid vägen: −4,2 °C vid Vadje."));
   const bara = await anropa("vag", { vag: "e 18", lan: "Västra Götaland" });
   assert.ok(!bara.text.includes("Värmland") && bara.text.includes("Västra Götaland"));
-  assert.ok((await anropa("vag", { vag: "riksväg 26" })).text.includes("riksväg 26 enligt Trafikverket"));
+  assert.ok((await anropa("vag", { vag: "riksväg 26" })).text.includes("Väg 26 enligt Trafikverket"), "vägen som #882 skriver den, först i raden");
   assert.ok((await anropa("vag", { vag: "E99" })).fel);
   assert.ok((await anropa("vag", { vag: "Kungsgatan" })).fel);
 });

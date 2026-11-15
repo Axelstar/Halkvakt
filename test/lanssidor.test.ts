@@ -55,7 +55,8 @@ test("länssidorna: 21 län och en översikt, svaret ur källorna, Trafikverkets
   assert.ok(skane.includes(`<link rel="canonical" href="${SIDBAS}/lan/skane/">`));
   assert.ok(skane.includes("Kl. 07:30 rapporterar Trafikverket halka eller vinterväglag på 1 av länets 2 vägavsnitt."), "fläckvis Våt räknas inte");
   assert.ok(skane.includes("1 mätstation visar vägbana på 0 °C eller kallare, kallast −1,5 °C vid Lund."));
-  assert.ok(skane.includes("E 6 Malmö - Lund: Mycket besvärligt, Is, &lt;b&gt;"), "Trafikverkets ord, escapade");
+  assert.ok(skane.includes("E6 Malmö–Lund: Mycket besvärligt, Is, &lt;b&gt;"), "Trafikverkets ord, escapade, med vägen som #882 skriver den");
+  assert.ok(!skane.includes(">E 6 Malmö - Lund"), "Trafikverkets råa sträcknamn visas aldrig i texten (#882); kartans skript matchar fortfarande på det");
   assert.ok(skane.includes("Lund: −1,5 °C, nederbörd eller fukt rapporteras") && !skane.includes("Malmö: 0,4"));
   assert.ok(!skane.includes("—"), "inga långa tankstreck (varumärkesguiden)");
   assert.ok(skane.includes("E22, sedan 20 nov. 06:10 (Stor påverkan)"), "svensk tid, vinter +1");
@@ -101,7 +102,7 @@ test("vägsidorna: vägnumret utan form, vägens sträckor i alla län, statione
   assert.ok(e6.includes("<title>Väglag E6 idag: halka och trafikläget just nu | Halkvakt</title>"));
   assert.ok(e6.includes(`content="Kl. 07:30: halka eller vinterväglag på 1 av 2 vägavsnitt på E6, kallast −1,5 °C vid Lund.`));
   assert.ok(e6.includes("Kl. 07:30 rapporterar Trafikverket halka eller vinterväglag på 1 av E6:s 2 vägavsnitt. 1 mätstation visar vägbana på 0 °C eller kallare, kallast −1,5 °C vid Lund."));
-  assert.ok(e6.includes("Skåne: E 6 Malmö - Lund: Mycket besvärligt, Is") && !e6.includes("E 6 Kungälv - Uddevalla"), "bara det hala listas, med länet");
+  assert.ok(e6.includes("Skåne: E6 Malmö–Lund: Mycket besvärligt, Is") && !e6.includes("E6 Kungälv–Uddevalla:"), "bara det hala listas, med länet");
   // Vägen län för län (29/10): varje län med sina sträckor och länken dit, orterna längs vägen och frågorna.
   assert.ok(e6.includes(`<h2>E6 län för län</h2>`));
   assert.ok(e6.includes(`<li><b><a href="../../lan/skane/">Skåne</a></b><span class="halt">Halka eller vinterväglag på 1 av 1 sträcka</span> · vägbanan −1,5 °C vid Lund<small>Malmö–Lund</small></li>`));
@@ -111,8 +112,11 @@ test("vägsidorna: vägnumret utan form, vägens sträckor i alla län, statione
   assert.ok(e6.includes("Skåne: Lund: −1,5 °C") && !e6.includes("Kall men vid en annan väg"));
   assert.ok(e6.includes("Västra Götaland: sedan 20 nov. 06:10"), "olyckan 'E6' möter väglagets 'E 6'");
   const rv40 = sidor["vag/rv40/index.html"];
-  assert.ok(rv40.includes("Är det halt på riksväg 40 just nu?") && rv40.includes("1 av Riksväg 40:s 1 vägavsnitt"));
-  assert.ok(rv40.includes("Trafikverket rapporterar ingen pågående olycka på riksväg 40."));
+  // Väg 40 överallt, också i titeln (DECISIONS #882 a); adressen rv40 ligger kvar.
+  assert.ok(rv40.includes("Är det halt på väg 40 just nu?") && rv40.includes("1 av väg 40:s 1 vägavsnitt"));
+  assert.ok(rv40.includes("Trafikverket rapporterar ingen pågående olycka på väg 40."));
+  assert.ok(rv40.includes("<title>Väglag väg 40 idag: halka och trafikläget just nu | Halkvakt</title>"));
+  assert.ok(!/[Rr]iksväg 40|Rv ?40/.test(rv40.replace(/rv40\//g, "")), "ingen riksväg 40 eller Rv40 i texten, bara i adressen");
   assert.ok(sidor["lan/index.html"].includes(`<tr><td><a href="../vag/e6/">E6</a></td><td>1 av 2</td><td>1</td><td>1</td><td></td></tr>`));
   assert.ok(sidor["lan/skane/index.html"].includes(`<a href="../../vag/e4/">E4</a>`), "länssidorna länkar till vägarna");
   for (const [p, html] of Object.entries(sidor)) if (!p.startsWith("data/")) assert.ok(!/undefined|NaN|null/.test(html), `${p}: inget tomt läckte ut`);

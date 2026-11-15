@@ -16821,3 +16821,39 @@ saknades sedan 11/11 (11/11 kl. 20, 12/11 och 13/11 kl. 06–07 UTC) föll när 
 - en påfil per grupp: avbrottet och `sql/107` gäller båda grupperna.
 
 **Stomdokument:** MAT 5 — småvägsröstens villkor före påslaget uppfyllda utom ordet, SYS 2 — påfilen och timmen efter K:s timmen direkt
+
+## #882 (15/11 2026) Vägbeteckningarna: E4 och väg 40 överallt, utan väderstreck och utan kommatecken, rättat i appens flöde före appversionen (kort #660, #661)
+
+**Beslutet.** Bengt 15/11, på förslaget om hur vägarna betecknas i appen, på hemsidan och i dokumenten (kort #660). Först:
+*"om det blir krångligt struntar vi i väderstreck och väljer bara vägnummer"*, och *"Det här gäller även småvägarna"*. Sedan, på
+kortets tre frågor: *"S väg 40 b inget komma v rättelse före kör vidare"*, läst som (a) väg 40, (b) inget kommatecken och
+(c) rättelsen före appversionen.
+- **Regeln:**
+  - en E-väg skrivs *E4*, aldrig *E 4*;
+  - varje annat nummer skrivs *väg 40*, aldrig *riksväg 40*, *Rv40*, *länsväg* eller ett blankt *40*;
+  - *Väg 40* bara först i en mening, en rubrik, en listrad eller en cell;
+  - ett gatunamn skrivs som Trafikverket skriver det, och utan väg skrivs texten utan väg;
+  - sträckor skrivs *Knivsta–Arlanda*;
+  - Trafikverkets löpnummer tas bort, och numret går före namnet (*Götaälvbron väg 570* blir *väg 570*);
+  - generiska ord som *riksvägarna* får stå.
+- **(a) Väg 40 överallt**, också i vägsidans titel och rubrik. Adressen `/vag/rv40/` ligger kvar, så att länkar inte bryts.
+- **(b) Inget kommatecken i röstraden.** Olycksraden står kvar som koden säger den (*"Olycka rapporterad på väg 25 3 kilometer framför
+  dig."*), och dokumenten citerar koden. Rösten ändras alltså inte, och K:s och småvägsröstens signerade texter (#573, #828) rörs inte.
+- **(c) Rättelsen före appversionen.**
+  - Appens flöde (`live.json`) bär vägen som *E4* eller bara siffrorna.
+  - Appens röst och skylt gör redan *"på E4"*, *"på väg 40"*, *E4* och *VÄG 40* av det. Skylten byter därmed från *E 4* till *E4*, och
+    den citerade röstraden från *"Väg 1184"* till *"väg 1184"*, utan ett nytt bygge.
+  - Uttalet ändras inte.
+- **Hemsidans datafiler behåller Trafikverkets form** (`strackor.json`, `vaglag.geojson`, `strak.json`). Tidningsrutorna jämför mot den
+  (*"E 18"*), så texten rättas där den visas. Det avviker från förslagets steg 1, som också ville rätta hemsidans data: med två repon
+  och två driftsättningar hade rutorna hos tidningarna varit trasiga mellan dem.
+- **Småvägarna** följer regeln efter påslaget (kort #661). Vägnumret hämtas då ur NVDB:s *Vägnummer*.
+
+**Alternativen som inte valdes:**
+- väderstreck (*E4 norrut*, *väg 40 österut*): 57 av 237 vägar i väglagsdatan är tvetydiga, och ordet blir fel när varningen gäller
+  en korsande väg;
+- *riksväg* för nummer under 100: numret säger det bara ungefär, och hemsidan hade sex former;
+- kommatecknet i röstraden;
+- att rätta också hemsidans datafiler.
+
+**Stomdokument:** APP 3 — olycksraden utan kommatecken som koden säger den, APP 4 — skylten och den citerade röstraden med E4 och väg 40
