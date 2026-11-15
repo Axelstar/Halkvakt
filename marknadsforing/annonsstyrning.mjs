@@ -25,8 +25,12 @@ const KONTO = "act_1760320565448083";
 // Appkampanj (DECISIONS #744): Meta tar en App Store-länk bara under målet appinstallationer. Trafikkampanjen
 // "Halkvakt · län" från 27/10 avvisade länken och står kvar pausad; den tas bort i Ads Manager.
 const KAMPANJ = "Halkvakt · län · app";
+// Android has its own campaign and budget since 15/11 (DECISIONS #879): with one shared budget Meta moved nearly all the money
+// to the Android ad sets, whose clicks were cheaper.
+const KAMPANJ_ANDROID = "Halkvakt · län · Android";
 const PREFIX = "Län · ";
-const BUDGET_ORE = 950000;                       // 9 500 kr för hela kampanjen (DECISIONS #864; 6 000 kr till 14/11, 2 000 kr till 31/10)
+const BUDGET_ORE = 750000;                       // 7 500 kr för iPhone-kampanjen (DECISIONS #879; 9 500 kr med Android till 15/11, 6 000 kr till 14/11, 2 000 kr till 31/10)
+const BUDGET_ANDROID_ORE = 200000;               // 2 000 kr för Android-kampanjen (DECISIONS #879)
 const DAGAR = 30;
 const APP = "https://apps.apple.com/se/app/halkvakt/id6806939784";
 // Kampanjlänk per län (Axel 10/11, genomlysningen): App Store Connect räknar nedladdningar per kampanj (ct), så kronor per
@@ -236,9 +240,9 @@ async function hamta() {
   return { lan, str, alder: (nu() - Date.parse(lan.generated_at)) / 36e5 };
 }
 
-async function kampanjen() {
+async function kampanjen(namn = KAMPANJ) {
   const k = (await alla(`${KONTO}/campaigns`, { fields: "id,name,effective_status" }))
-    .filter(c => c.name === KAMPANJ && !["DELETED", "ARCHIVED"].includes(c.effective_status));
+    .filter(c => c.name === namn && !["DELETED", "ARCHIVED"].includes(c.effective_status));
   return k[0] ?? null;
 }
 
@@ -306,11 +310,25 @@ async function uppsattning() {
   // everything uppsattning makes. styr turns it on when the county has ice. The end date follows the iPhone ad set (#877):
   // a later end stretches the campaign's lifetime budget over more days and fewer ad sets fit per day.
   const nu2 = new Map((await satserna(k.id)).map(s => [s.name, s]));
+  // The Android ad sets that lived in the iPhone campaign 13–15/11 are archived; their successors are in the Android campaign.
+  for (const [namn, s] of nu2) if (arAndroid(namn)) {
+    await graph(s.id, { status: "ARCHIVED" }, "POST");
+    skriv(`${namn}: arkiverad i "${KAMPANJ}", flyttas till "${KAMPANJ_ANDROID}".`);
+  }
+  let kA = await kampanjen(KAMPANJ_ANDROID);
+  if (kA) skriv(`Kampanjen "${KAMPANJ_ANDROID}" finns redan (${kA.id}).`);
+  else {
+    // Created ACTIVE: every ad set in it starts PAUSED, so nothing is spent until styr turns a county on.
+    kA = await graph(`${KONTO}/campaigns`, { name: KAMPANJ_ANDROID, objective: "OUTCOME_APP_PROMOTION", status: "ACTIVE",
+      special_ad_categories: [], lifetime_budget: String(BUDGET_ANDROID_ORE), bid_strategy: "LOWEST_COST_WITHOUT_CAP" }, "POST");
+    skriv(`Kampanjen "${KAMPANJ_ANDROID}" skapad, ${BUDGET_ANDROID_ORE / 100} kr (${kA.id}).`);
+  }
+  const iAndroid = new Map((await satserna(kA.id)).map(s => [s.name, s]));
   for (const l of lan.lan.filter(l => ANDROID_LAN.has(l.kod))) {
     const namn = PREFIX + l.kort + ANDROID;
     const iphoneSlut = nu2.get(PREFIX + l.kort)?.end_time;
     const slutFor = iphoneSlut ? new Date(iphoneSlut) : slut;
-    let s = nu2.get(namn);
+    let s = iAndroid.get(namn);
     if (s && iphoneSlut && new Date(s.end_time).getTime() !== slutFor.getTime()) {
       await graph(s.id, { end_time: slutFor.toISOString() }, "POST");
       skriv(`${namn}: slutdatum ${s.end_time} → ${slutFor.toISOString()}, som länets iPhone-uppsättning.`);
@@ -320,7 +338,7 @@ async function uppsattning() {
         .filter(r => r.country_code === "SE" && r.type === "region" && r.name.startsWith(META_LAN[l.kod]));
       if (traff.length !== 1) { skriv(`${namn}: Meta gav ${traff.length} träffar på "${META_LAN[l.kod]}", hoppas över.`); continue; }
       s = await graph(`${KONTO}/adsets`, {
-        name: namn, campaign_id: k.id, status: "PAUSED",
+        name: namn, campaign_id: kA.id, status: "PAUSED",
         optimization_goal: "LINK_CLICKS", billing_event: "IMPRESSIONS",
         promoted_object: { application_id: META_APP_ID, object_store_url: PLAY },
         start_time: start.toISOString(), end_time: slutFor.toISOString(),
@@ -361,11 +379,13 @@ async function styr() {
     skriv("Torrkörning: META_ADS_TOKEN saknas. Bilderna ritade till meta-ut/, inget ändrat hos Meta.");
     return;
   }
-  const k = await kampanjen();
-  if (!k) { skriv(`Kampanjen "${KAMPANJ}" finns inte. Kör uppsattning först.`); return; }
   const satt = async (id, status) => graph(id, { status }, "POST");
   const vikt = new Map(lan.lan.map(l => [PREFIX + l.kort, l]));
   const lanFor = namn => vikt.get(PREFIX + lanAv(namn));
+  // Each campaign has its own budget, so each is steered on its own (iPhone first, then Android).
+  for (const namnK of [KAMPANJ, KAMPANJ_ANDROID]) {
+  const k = await kampanjen(namnK);
+  if (!k) { skriv(`Kampanjen "${namnK}" finns inte. Kör uppsattning först.`); continue; }
   // Pauses first so they free budget, then the strongest hazard first (DECISIONS #762): the campaign budget only carries a
   // handful of counties at once, and Meta refuses the next one with subcode 2446149.
   const satser = ordning(await satserna(k.id), namn => gammal ? null : annonsFor(namn), lanFor);
@@ -412,10 +432,11 @@ async function styr() {
       if (r.status !== onskat) { await satt(r.id, onskat); skriv(`${s.name}: reservannonsen ${onskat === "ACTIVE" ? "på" : "pausad, dagens annons godkänd"}.`); }
     }
   }
+  }
   const igar = (await graph(`${KONTO}/insights`, { date_preset: "yesterday", fields: "spend,impressions,clicks" })).data[0];
   const totalt = (await graph(`${KONTO}/insights`, { date_preset: "maximum", fields: "spend,clicks" })).data[0];
   skriv(`I går: ${igar?.spend ?? 0} kr, ${igar?.impressions ?? 0} visningar, ${igar?.clicks ?? 0} klick. ` +
-        `Totalt: ${totalt?.spend ?? 0} av ${BUDGET_ORE / 100} kr, ${totalt?.clicks ?? 0} klick.`);
+        `Totalt: ${totalt?.spend ?? 0} av ${(BUDGET_ORE + BUDGET_ANDROID_ORE) / 100} kr, ${totalt?.clicks ?? 0} klick.`);
 }
 
 // Only when run as the script: Halkvakt live imports annons() for its swipe post (DECISIONS #777) and must not start a step.
