@@ -40,6 +40,16 @@ Fintraffic (CC BY 4.0), broar © OpenStreetMap-bidragsgivare (ODbL).
 Halkvakt är fristående och har
 ingen koppling till myndigheterna.
 
+## Publicerat 14/11 (Android 0.4.0 (49), kort #652)
+
+Texten ovan är den gamla. Det som ligger ute sedan 14/11 är:
+
+**Kort beskrivning:** Rösten som varnar för halka, olyckor, vilt och fartkameror innan du är där.
+
+**Fullständig beskrivning:** som ovan, med fyra ändringar: introduktionen och självstarten som eget val i *Så fungerar det*,
+favoriterna, stycket om den anonyma räknaren i stället för *Ingenting skickas från appen* (osant sedan 1/11, DECISIONS #772),
+och *Halkvakt är ett stöd, inte en garanti … Kör alltid efter väglaget* i sista stycket. Skärmbilderna: `play/01.png`–`08.png`.
+
 ## Anteckningar
 - ⚠️ **RÄTTAT 20/9 (kort #214):** integritetsstycket sade *"Vi samlar in: ingenting"*, vilket varit osant
   sedan 16/9 (facitsvaret). Fjärde stället med samma påstående — de andra tre: `docs/PLAY-DATASAFETY.md`,
