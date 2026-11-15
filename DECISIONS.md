@@ -13380,6 +13380,36 @@ vakten går. Räknaren (#787) bär spåret. iPhone 0.4.0 den 8/11 (dagens rader,
   varningarna utan att föraren märker det. Orsaken kan vara att appen sveptes bort, att TestFlight uppdaterade den, en krasch eller
   iOS:s minnesstopp (jetsam). Kort #643; frågan om Analysdata står i bedömningen §4.2.
 
+**Tillägg 14/11 (Bengt: *"Bokför batteridrivet"*): batteriprovet 14/11, och Halkvakt omkring 1,2 %/h.** Bengts två resor lördag
+14/11, 12:11 (20 minuter) och 12:34 (96 minuter). Underlaget är Bengts skärmbilder av *Inställningar → Mätningen* (15:47) och
+*Inställningar → Batteri* (15:52, dagen). Bygget lästes inte i telefonen.
+
+| Mått | 14/11 12:11 | 14/11 12:34 |
+| :-- | :-- | :-- |
+| Längd | 20 min | 96 min |
+| Kollar | 11, varav 9 nya, inget ur reserven | 48, alla nya, inget ur reserven |
+| Filens ålder vid ankomst | median 1:00, högst 1:04 | median 1:01, högst 1:19 |
+| Äldsta station | median 32 min | median 48 min |
+| Telefonen under resan | 100 → 100 % | 100 → 85 %, 9,4 %/h; med stegen om 5 % mellan 6,3 och 12,5 %/h |
+| Halkvakts andel av dagen | 5 %; 1 minut på skärmen, 1 h 57 min i bakgrunden | |
+
+- **Batteriet är inom budgeten.** Dagens förbrukning var minst omkring 46 procentenheter, från 100 % vid den första resan till 54 %
+  15:52. Halkvakts 5 % av den är omkring 2,3 procentenheter på 1 h 57 min, alltså **omkring 1,2 %/h**. Laddades telefonen ur före
+  den första resan var dagens förbrukning större, och Halkvakts del likaså. Men 8 %/h på 1 h 57 min hade krävt en förbrukning på
+  omkring 300 procentenheter under dagen. Inget hinder enligt #753. Det stämmer med 8/11 (omkring 2,8 %/h).
+- **Bakgrundstiden stämmer med resorna:** 1 h 57 min mot resornas 116 minuter. Vakten gick alltså inte utanför resorna, till
+  skillnad från 8/11.
+- **Resten av telefonens fall var annan användning med skärmen tänd:** Telefon 24 % (36 minuter på skärmen), FaceTime 16 % (17
+  minuter), Safari 7 % (19 minuter) och Meddelanden 3 % (17 minuter). Resan är alltså inget prov med skärmen av.
+- **Takten** är som förut: en koll ungefär varannan minut, och filen drygt en minut gammal. Äldsta station 48 minuter, under taket
+  60 minuter.
+- **Småvägsrösten ingår inte.** Appen hämtar punktfilen bara när lägesfilen bär ett besked (#846), och med brytarna av bär den inget.
+  Telefonen har alltså inte hämtat filen. Småvägsröstens batteristeg (punktfilen och beskedet i `live.json`) står kvar.
+
+Förbehåll: iOS ger andelar i hela procent, inte procentenheter. Omkring 46 procentenheter förutsätter att telefonen inte laddades
+efter den första resan. Att telefonen visade 100 % genom hela resan 12:11 kan bero på att iPhone håller 100 % en stund efter
+laddningen.
+
 **Stomdokument:** SYS 1 (kedjans takt), APP 9, BED §4.2
 
 ## #779 (2/11 2026) Datawrapper: pendlingstabellen per stråk och hela läget per län, där bara det hala syns
@@ -15230,6 +15260,27 @@ Brytarna är av tills dess.
 - Punktfilen skrivs vid nästa laddning i `ny-kandidat-fysik`, och först därefter står den i manifestet.
 - **Historiken för alla punkter väntar på MET.** MET:s arkiv (`metpparchive`) svarade 404 på alla dygn och på katalogen från förmiddagen 11/11. Första försöket sparade dygn med luckor, och kedjan föll i del A. PR #1514 och #1517 tar bort dygn utan 24 timmar per punkt så att de hämtas om, i småvägskedjan och i `kuvos-stad`. En väntare trycker historiken och kedjan när arkivet svarar igen.
 
+**Tillägg 14/11 (Bengt: *"Gör 2 o 6 nu"*): regelns tid i driften är mätt, och produktboken beskriver rösten.**
+- **Regelns tid:** `smavag_regel()` utan brytarvillkoret, alltså som när brytarna är på, tog 84,5, 89,5 och 85,6 ms. Planeringen tog
+  omkring 3 ms. `smavag_talar()` med brytarna av tog 0,3 ms. Mätt med EXPLAIN ANALYZE i SQL-redigeraren 14/11 eftermiddag, bara
+  läsning och med en tidsgräns på 30 s. Stadsgrenens regel tog 3,0 s efter rättelsen i #813, så småvägsregeln är inget hinder för
+  publiceringen.
+- **Produktboken** (PRODUKTBOKSREGELN) har kortet, frasen och ett stycke om rösten, med fotostudions bild
+  `shot-13-smavagkortet.png` (android.yml 43613610625, kroken `fotostudio_smavag` i debug-bygget). Kandidatens stycke säger nu att
+  den talar efter alla andra varningar utom småvägsrösten.
+- **Punktfilen** med schema 2 har legat i kartrepot sedan 12/11 18.40 UTC (`data/app/v1/smavag.json`, omkring 3,5 MB). Kvar av steget
+  är att en app hämtar och läser den med ett riktigt besked, och det kräver att en brytare är på.
+
+Förbehåll: regeln mättes en torr eftermiddag. En timme med regn bär fler rader i radarns del.
+
+**Tillägg 15/11 (Bengt: *"Ja, lägg till smavag i räknaren"*): räknaren tar emot småvägsrösten.** Apparna skickar `varning`
+med `smavag:<avstånd>` och `varning_ersatt` med `smavag` (`Raknare.swift`, `Raknare.kt`, farotypens namn), men funktionen
+`app-raknare` kände bara sex faror och svarade 400. `smavag` står nu sist i dess lista `FAROR`, så `varning` och `varning_ersatt`
+godtar den. `installning` tar de fem första, och rösten har inget eget reglage (den följer *Halka*), så den listan är oförändrad.
+Inget nytt skickas: ordet och formen var redan de som integritetspolicyn, Play-deklarationen och produktboken beskriver (*varje varning
+med fara och avstånd i hinkar*, #787), så ingen av dem ändras. Statistiksidan i kartrepot har en egen namnlista över farorna och
+behöver raden för att visa talen.
+
 **Stomdokument:** MAT 5 — småvägsrösten beställd och byggs avstängd, SYS 2 — driftens rörarbete för småvägarna, APP 3 — betavarningens farotyp och text
 
 ## #829 (10/11 2026) Tipsa en vän, Tyck till och Betygsätt i 0.4.0 (42), tillsammans med Favoriter 2a och CarPlay
@@ -16361,3 +16412,370 @@ avbrottsgränsen i skuggan (halkvakt-kuvos F57 val 14) följer den fukt som väl
 tills fukten är vald.
 
 **Stomdokument:** APP §3, MAT §5 — småvägsröstens tystnad efter ett besked
+
+## #864 (14/11 2026) Meta-annonserna: Android i alla 21 län, och kampanjens tak 9 500 kr
+
+Piloten från DECISIONS #861 gick som den skulle: 03:01 14/11 slogs Android-uppsättningarna i Dalarna, Västernorrland och Jämtland på,
+dagens annonser lades upp, och 05:31 var alla tre godkända av Meta och reservannonserna pausade (körningarna 43543903507 och
+43557064058). Axel 14/11: *"can you turn on so we do all counties for andorid as well?"*
+
+**Beslut.**
+- Android-uppsättningar i alla 21 län (`ANDROID_LAN`), med samma regel, mall och länk som i piloten.
+- Kampanjens tak höjs från 6 000 kr till omkring 9 500 kr (Axels val 14/11). Samma morgon hade alla 21 län halka och 6 000 kr räckte
+  inte ens för iPhone-länen: fyra till fem län stod av för budgeten (körningen 43564253409). Med 42 uppsättningar och omkring 10 kr per
+  dygn och påslagen uppsättning behövs omkring 420 kr per dygn de kallaste dagarna, och omkring 3 400 kr återstod för 16 dygn.
+  Taket ändras av Axel i Ads Manager, som förut; skriptet rör aldrig budgeten. `BUDGET_ORE` följer med så att rapportraden stämmer.
+- Prioriteringen är densamma (#762): når budgeten inte, står det svagaste ordet av först, oavsett telefon.
+
+**Alternativ som inte valdes:** att behålla 6 000 kr (fler län hade stått av de kalla morgnarna), och att vänta till december då
+kampanjen ändå byggs om.
+
+**Stomdokument:** inga — marknadsföringen beskrivs inte i stomdokumenten
+
+## #865 (14/11 2026) Kartans rikstal räknar bara Sverige
+
+Bengt frågade 14/11 hur många vägstationer det finns, med en skärmbild av kartan: under rubriken *Sveriges väglag just nu* stod
+*Stationer på 0 °C eller kallare: 996*. Talet kom ur `meta.json`, som räknade alla stationer i `vader.geojson`, alltså Sveriges,
+Finlands och Danmarks. Filen från 09.30 svensk tid bar 1 340 stationer (860 svenska, 456 finska och 24 danska) och 933 kalla, varav
+674 svenska och 259 finska. *Olyckor och hinder* räknade på samma sätt Finlands olyckor (2 i filen, varav 1 finsk). Samma tal står
+på pressidan under *Läget på vägarna just nu* (*Vägväderstationer på 0 °C eller kallare*, *Pågående olyckor och hinder*). MCP-servern
+visste det redan och tar rikstalen ur länen (#630). Bengt: *"Ja, rätta"*.
+
+**Beslut.** `stationer`, `kalla_stationer` och `olyckor` i `meta.json` räknar bara Sverige (`publish/map-core.ts`). Finlands och
+Danmarks stationer och Finlands olyckor ritas på kartan som förut. `stationer` följer med fast kartan inte visar det:
+marknadsföringens sommartext (`marknadsforing/generator.mjs`) säger *"N mätstationer"* om Sverige. Kartsidan och pressidan i
+halkvakt-karta ändras inte; de får de rätta talen ur filen.
+
+**Prov.** Fallet #865 i `test/map-core.test.ts`: kalla stationer i Finland och Danmark och en finsk olycka ritas men räknas inte.
+Motprov: var och en av de tre räkningarna tillbaka till alla länder fäller fallet.
+
+**Alternativen som inte valdes:** nya fält för Sverige bredvid de gamla och kartsidan och pressidan ändrade i halkvakt-karta (två
+repon för samma sak, och fälten som räknar alla länder har ingen annan läsare); en annan rubrik på kartan, som skulle göra talet sant
+men rubriken fel.
+
+**Kvar:** deploy av `publicera` (och `mcp`, där bara en kommentar ändrats) och beviset i nästa `meta.json`.
+
+**Stomdokument:** SYS 1 — kartsajtens rikstal
+
+## #866 (14/11 2026) Småvägsrösten: fukten är N3 eller radarn, som regeln är byggd (kort #647)
+
+**Beslut.** Bengt 14/11, för sig och Axel: *"Ja, vi signerar"*. Frågan var om de signerar fukten B: N3 eller radarn, som byggt i `sql/105`.
+Radarns bakåtprov (kort #658, halkvakt-kuvos F62) gav enligt den signerade läsregeln (halkvakt-kuvos F59 §5) att radarn får väcka
+rösten. Kuvösens eget beslut med talen är F63.
+
+- `sql/105` och kopian `ingest/smavag-regel.ts` står kvar, och ingen kod ändras.
+- Taket, 30 minuter och 20 km (#863), är detsamma för båda fukterna.
+- Avbrottsgränsen i skuggan (halkvakt-kuvos F57 val 14) följer den valda fukten. Gränsen står i F63 (#768).
+
+**Alternativen som inte valdes:**
+- **A, N3 ensam vid påslaget.** Det rekommenderades i underlaget 14/11 före provet. Villkoret för radarn, att provet visar att den träffar, är
+  nu uppfyllt.
+- **C, att vänta på provet.** Provet är gjort.
+
+**Kvar före påslaget** (#828, #833):
+- avbrottskontrollen enligt F57 val 14, som inte är byggd;
+- kedjans prov i 48 timmar;
+- batteriet och appens granskning (kort #647).
+
+**Stomdokument:** APP §3, MAT §5 — småvägsröstens fukt
+## #867 (14/11 2026) Småvägsrösten vid olyckorna: facit varje dygn, från 12/11 till sju dygn efter påslaget (kort #647)
+
+**Beslut.** Bengt 14/11 bad om tre saker:
+- att det byggs: *"Ja, bygg"*, på frågan om bakåträkningen av småvägsrösten vid säsongens halkolyckor;
+- att det inte blir någon skarv: *"ok men då måste bakåträkningen fortsätta ändå tills det är ett ok för småvägarna. kan du bygga in det så
+  det inte blir någon skarv"*;
+- och omfånget: *"bakåträkningens omfång så gör vi bara a"*.
+
+Före det, 14/11: statistiken ska skilja tydligt mellan det som är bakåträknat mot en tänkt regel och regeln som den faktiskt tillämpas i
+det löpande olycksfacit.
+
+**Det som är byggt:**
+- **Flödet** `kuvos-smavag-olyckor` körs en gång om dygnet och på knapp.
+- **Läsningen** (`ingest/smavag-olyckor-db.ts`, READ ONLY) tar olycksfacits olyckor sedan 12/11 kl. 14 UTC, när driften började räkna
+  rösten. För varje olycka tar den närmaste småvägspunkt inom 0,5 km, olycksfacits lager för småvägsrösten (`sql/110`) och timmen som
+  rösten hade talat med vid starten, räknad som i `sql/110`.
+- **Kuvösens facit** (halkvakt-kuvos F64) skriver ett dygn i svensk tid i taget till den privata hinken, en gång, när alla dygnets olyckor är
+  fångade.
+- **Nivån står på varje rad** och läggs aldrig ihop med en annan:
+  - *3 olycksfacit*: olycksfacits eget lager, alltså driftens regel vid starten;
+  - *3 underlag*: driftens underlag för timmen, när lagret saknas;
+  - *lucka*: driften hade ingen timme, eller underlaget saknas.
+- **En lucka ger ett ärende.** Nivå 2, en omräkning med kedjan, görs bara på Bengts ord och bara medan driftens indata finns kvar.
+- **Slutet:** serien slutar sju dygn efter att en brytare slagits på (`smavagsbrytare.andrad_at`), så att samma olyckor finns både i
+  facit och i drift.
+- **Kontraktsgrinden** vaktar läsningens kopior av `sql/110`:s avstånd (ny regel, SMAVAG_M), färskhet och fullständighet.
+
+**Alternativen som inte valdes:**
+- **(b), en omräkning av 6/11–12/11 med kedjan.** Småvägspunkternas underlag fanns aldrig i driften före 12/11, så det hade varit flera
+  dagars bygge, och vägväderstationernas observationer glesas redan ut efter sju dygn.
+- **Att bara läsa olycksfacits lager.** Då hade luckorna och olyckorna före lagret inte synts.
+
+**Kvar:** sammanslagningen av PR:en här och halkvakt-kuvos PR, och den första körningen, båda på Bengts ord.
+
+**Stomdokument:** MAT §5 — småvägsröstens facit vid olyckorna
+
+## #868 (14/11 2026) Småvägsrösten: avbrottskontrollen enligt F57 val 14 (kort #647)
+
+**Beslut.** Bengt 14/11: *"bygg avbrottskontrollen"*. Det är det signerade valet 14 i halkvakt-kuvos F57 (12/11), som ersatte taktens
+villkor i #833. Ligger skuggans besked per körtimme under ett dygn, vid det valda taket, över backtestens högsta vecka för samma region,
+slås brytaren av samma dag. En kontroll varje dygn skriver ett ärende, och Bengt eller Axel slår av.
+
+**Det som är byggt:**
+- **Flödet** `kuvos-smavag-avbrott` prövar varje morgon, vid två tider, förra UTC-dygnet. Samma dygn prövas aldrig två gånger.
+- **Måttet** räknas ur dygnets resefiler i den privata hinken med taktens eget mått (`smavag_takt.py vecka`), som i backtesten.
+- **Prövningen** görs av kuvösens `smavag_avbrott.py` (halkvakt-kuvos F65). Den prövar raden med länkradien 1,5 km, resor om 30 punkter,
+  fukten N3 eller radarn (#866), båda grupperna och taket 30 minuter och 20 km (#863), mot gränsen i halkvakt-kuvos F63.
+- **Över gränsen ger ett ärende,** tilldelat Bengt. Samma ärende kommenteras varje dygn som ligger över gränsen.
+  - Är brytaren på, ska den slås av samma dag, av Bengt eller Axel.
+  - Är den av, är utfallet ett underlag inför påslaget.
+- **Saknade timmar** är vaktens sak (#849).
+- **Inga tal** står i loggen eller ärendet (#768). Talen står i hinken (`avbrott_<dygn>.json`).
+
+**Alternativen som inte valdes:**
+- **Att slå av automatiskt.** Val 14 säger att Bengt eller Axel slår av.
+- **Ett nytt ärende för varje dygn.** Ett ärende som kommenteras räcker.
+
+**Kvar:** sammanslagningen av PR:en här och halkvakt-kuvos PR, och den första körningen, båda på Bengts ord.
+
+**Stomdokument:** MAT §5 — småvägsröstens avbrott
+
+## #869 (14/11 2026) Småvägsrösten: avbrottet räknas på sju dygn (halkvakt-kuvos F66, ändrar F57 val 14; kort #647)
+
+**Beslut.** Bengt 14/11: *"Bygg med B"*. Avbrottskontrollen (#868) prövar de sju senaste dygnen mot backtestens högsta vecka för
+regionen, inte ett enskilt dygn. Val 14 i halkvakt-kuvos F57 är signerat av Bengt och Axel, och **ändringen är signerad av båda**
+14/11 (Bengt: *"Axel o jag signerar"*).
+
+**Skälet.** Den första körningen 14/11 prövade 13/11, och norr låg över gränsen (#1598). Dygnet var ett långvarigt halkväder från
+kvällen 12/11 till morgonen 14/11. Gränsen är ett veckomedel, och en vecka nära gränsen består av halkdygn långt över den och lugna
+dygn nära noll. Ett dygn mot en vecka slår alltså till på vanliga halkdygn, just när rösten gör mest nytta. Om beskeden stämmer
+avgör olycksfacit och testarnas svar, inte takten. Talen står i halkvakt-kuvos F66 (#768).
+
+**Det som ändras:**
+- **Fönstret** är dygnet och de sex dygnen före, i UTC. Måttet är summan av beskeden genom summan av körtimmarna, samma mått som
+  backtestens veckor.
+- **För få timmar:** med färre än fem dygns timmar i fönstret fälls ingen dom. Den första domen kommer därför med dygnet 18/11, om
+  kedjan inte får fler luckor.
+- **Flödet** `kuvos-smavag-avbrott` hämtar de sju dygnens resefiler ur den privata hinken i stället för ett dygns, och kuvösens
+  `smavag_avbrott.py` läser dem direkt. Ärendet säger *de sju dygnen*.
+- **Oförändrat:** gränsen, taket, fukten och vem som slår av.
+
+**Alternativen som inte valdes:**
+- **Dygnet mot veckan,** som i F57 val 14.
+- **Dygnet mot backtestens högsta dygn.** Backtesten har inga dygnstal.
+
+**Kvar:** sammanslagningen av PR:en här och halkvakt-kuvos PR, och flödets första körning.
+
+**Stomdokument:** MAT §5 — småvägsröstens avbrott
+
+## #870 (14/11 2026) Planera resa med adressökning genom Apple och Google, en riktig karta på startsidan och påminnelsen före avresan: Axels val, och inget släpp före Bengts ja till de nya orden om platsen (kort #659, #653)
+
+**Beslut.** Axel 14/11: *"all users should be able to plan their trip before hand and then we tell them about the road condition prior to them going"*, och *"we are really trying to have something prior to winter"*. Samma kväll valde Axel, på fyra frågor:
+- **Adressökning och rutt genom Apple och Google**, inte en egen ruttberäkning i telefonen mellan orter. Föraren ska kunna skriva en exakt adress. Axels val: *Build, Bengt signs off*. Bygget får göras nu, men **inget bygge med detta går till App Review eller Play förrän Bengt har sagt ja till de nya orden om platsen**.
+- **En riktig karta på startsidan**, inte en lista som appen ritar själv.
+- **Båda apparna på en gång.**
+- **Ett släpp**, med påminnelsen före avresan.
+
+**Vad som lämnar telefonen, som det är byggt på iPhone:**
+- *När föraren söker en resa:* sökorden, förarens plats och målet går till Apple (MapKit: `MKLocalSearchCompleter`, `MKLocalSearch`, `MKDirections`). Det sker bara när föraren själv skriver och väljer ett förslag. Halkvakt får ingenting.
+- *När startsidan eller en planerad resa visas:* Apples karta hämtar kartbilder för området som visas, så Apple får veta ungefär var föraren är. **Det sker utan att föraren trycker på något**, och det går inte ihop med produktregeln i CLAUDE.md (*No user location … may ever leave the device AUTOMATICALLY*) som den står, och inte med raden på samma skärm, *"Din position lämnar inte telefonen av sig själv."*
+- Platsen för kartan läses en gång när startsidan visas och stannar i telefonen. Rapporten längs vägen räknas i telefonen ur samma filer som förut. Inget nytt går till Halkvakts servrar, och räknarna är oförändrade.
+- De sparade körda vägarna (DECISIONS #616) går aldrig till Apple: Planera en resa öppnar deras rapport som fliken Favoriter gör, och ruttspärren (`scripts/rutterspar.ts`) räknar nu `MKLocalSearch` och `MKDirections` som nät.
+
+**Byggt på iPhone 14/11 (grenen `claude/kort-659-planera-resa`):** kartan *Nära dig* med de tre närmaste farorna där sockeln stod; knappen *Planera en resa* under *Starta vakten*; skärmen *Vart ska du?* med de sparade resorna och en sökruta; den planerade resan med vägen på kartan, rapporten (`ResansRapport`, samma räkning som en sparad resa, utan förra kollen), *När åker du?* och *Starta vakten*. En avresetid ger en lokal notis en kvart innan (*"Dags att se vägen till …"*) och lägger resan på startsidan tills sex timmar efter avresan, i en fil utanför säkerhetskopian. En sökt resa sparas inte bland favoriterna (Axel 12/11).
+
+**Påminnelsen säger inte vad som finns längs vägen.** iOS låter inte appen hämta läget vid ett klockslag (#616 punkt 7.1), så notisen öppnar appen, där rapporten hämtas färsk. På Android kan telefonen göra kollen själv; det byggs med Android-delen.
+
+**Betaltjänsten (CLAUDE.md: ingen betaltjänst utan Axels beslut).** Android har ingen fri ruttjänst i systemet. Axel godkände 14/11 ett Google Cloud-projekt med ett kort på, för karta, sökning och rutter. Googles prislista (läst 14/11): 10 000 fria anrop i månaden per tjänst, sedan 2,83 dollar per 1 000 sökförslag och 5 dollar per 1 000 rutter. Axel sätter upp projektet och nycklarna, och ett tak för kostnaden sätts i Google Cloud innan nyckeln byggs in.
+
+**Det som ändras om Bengt säger ja, i samma commit som orden (CLAUDE.md):** produktregeln i CLAUDE.md, introduktionens text om platsen, raden på startsidan, iOS egna platsrutor (`project.yml`), integritetssidan i kartrepot, Plays datablankett, App Stores integritetsuppgifter och produktboken. Förslag till orden: *"Halkvakt får aldrig veta var du är. Kartan och adressökningen kommer från Apple, som då får veta vilket område du tittar på och vart du söker en väg."* (Google på Android).
+
+**Alternativ som Axel valde bort:** en ortslista i appen och ruttberäkning i telefonen på det statliga vägnätet (löftet oförändrat, men bara orter och ett längre bygge); en lista i stället för kartan (inget lämnar telefonen); iPhone först; två släpp.
+
+**Inte prövat:** ingenting är sett på en telefon. Apples sökning och rutt kan inte köras i ci. Hur många förslag Apple ger för svenska adresser, hur lång tid rutten tar och hur kartan ser ut i appens mörka skinn är inte mätt.
+
+**Kvar:** Bengts ja eller nej; Android-bygget och Google Cloud-nycklarna; telefonproven; skärmbilderna i produktboken; räknare för Planera resa (kräver ett eget beslut).
+
+**Stomdokument:** APP 4, FAV §2, BED §4.2
+
+## #871 (14/11 2026) Kartan och Planera resa slås ihop bakom en brytare som bara finns i TestFlight, och Axel väljer nya ord överallt när den släpps (kort #659; #870)
+
+**Beslut.** Axel 14/11 kväll, på frågan i #870 om orden: *"Lets do a)"*, det vill säga nya ord om platsen överallt när kartan och Planera resa släpps. Och på frågan hur bygget kommer till telefonen utan att nästa inskick bär det: *Behind a switch*.
+- **Brytaren** *Kartan och Planera en resa* står under Inställningar → Betatest, av från början. Den finns bara i TestFlight och utvecklarbyggen, med samma prövning som Betatest (`Prefs.betatestTillaten`, DECISIONS #681): i ett App Store-bygge syns den inte, och ett sparat värde gäller inte.
+- **Av** är appen som förut: sockeln på Redo, en knapp, ingen karta, ingen plats läst för kartan och ingenting till Apple. **På** visar kartan *Nära dig*, knappen *Planera en resa* och den planerade resan. Slås den av tas den planerade resan och dess påminnelse bort.
+- **Under brytaren står vad den gör:** *"Med den på visar startsidan Apples karta, och du kan söka en adress och se läget längs vägen. Apple får då veta vilket område kartan visar och, när du söker, var du är och vart du ska. Halkvakt får aldrig veta det."*
+- **Produktregeln i CLAUDE.md** har fått en mening om brytaren, i samma commit. Löftets rad, introduktionen, `project.yml`, integritetssidan och butikernas uppgifter är oförändrade: för alla som inte slår på brytaren i ett TestFlight-bygge skickar appen det den skickade förut. Plays datablankett rörs inte, eftersom Android inte har delen.
+- **Spärren ur #870 står kvar:** brytaren tas bort och de nya orden skrivs in överallt först när Bengt har sagt ja. Axels val av orden (väg a) är bokfört; Bengts svar väntas.
+- **Bygget** är 0.4.0 (50), höjt i samma commit som brytaren. 0.4.0 (49) ligger hos App Review.
+
+**Alternativ som Axel valde bort:** att slå ihop med allt på och släppa väntan på Bengt; att vänta med TestFlight tills Bengt svarat.
+
+**Inte prövat:** brytaren är inte sedd på en telefon. App Reviews granskare kör bygget med ett provkvitto och kan därför se brytaren; den är av, och texten under säger vad den gör.
+
+**Kvar:** TestFlight-bygget och Axels prov på telefonen; Bengts ja eller nej; Android.
+
+**Stomdokument:** APP 4, BED §4.2
+
+## #872 (14/11 2026) Kartan och Planera resa för alla: brytaren tas bort, och Axel häver väntan på Bengt (kort #659; ersätter #871, ändrar #870)
+
+**Beslut.** Axel 14/11 22:38, efter att ha öppnat 0.4.1 (51) i TestFlight och sett startsidan utan kartan: *"No this is really not what we want. We want a plan your trip for all users and then it should show whats around me when i open the app"*. Brytaren *Kartan och Planera en resa* (#871) tas bort. Kartan *Nära dig*, knappen *Planera en resa* och den planerade resan finns för alla, utan något att slå på.
+- **Väntan på Bengt ur #870 är hävd av Axel.** Bengt har inte svarat och får veta det av det här beslutet och raden i bedömningens §4.2. Ingenting når App Store förrän ett bygge skickas till App Review, och det gör Axel själv.
+- **Produktregeln i CLAUDE.md** har undantaget inskrivet i samma commit: Apples karta hämtar kartbilder för området utan att föraren trycker på något, och en sökning skickar sökorden, platsen och målet till Apple. Aldrig till Halkvakt.
+- **Sagt där det sker.** Under kartan på Redo står *KARTAN KOMMER FRÅN APPLE*. Under sökrutan står, som förut: *"Apple slår upp adressen och räknar ut vägen, och får då veta var du är och vart du ska. Halkvakt får aldrig veta det. Resan sparas inte."*
+- **Integritetssidan** (kartrepot) får ett stycke om kartan och adressökningen i iPhone-appen från 0.4.1, och kärnlöftet en mening om undantaget, i samma varv.
+- **Inte ändrat, och varför:** raden *"Din position lämnar inte telefonen av sig själv."* på Redo, i introduktionen, i iOS egna platsrutor, i varumärkesguiden och på sajtens övriga sidor står kvar. Axel valde 14/11 nya ord överallt (#871), men meningen är varumärkets och vaktas av kontraktsgrinden mellan iPhone, Android och sajten, och Android har inte kartan. Att byta den är ett eget varv med Bengt. Till dess säger appen och integritetssidan vad Apple får veta, där det sker. Plays datablankett rörs inte: Android har inte delen. App Stores integritetsuppgifter rörs inte: det Apple får genom sin egen karta samlas inte in av Halkvakt.
+- **Bygget** är 0.4.1 (52).
+- Sockeln på Redo (`Plinth`) är borttagen ur koden; bilderna `plinth-*` ligger kvar bland appens bilder.
+
+**Alternativ som Axel valde bort:** brytaren i TestFlight (#871); att vänta på Bengt (#870); en lista i stället för kartan; ortslista och rutt i telefonen.
+
+**Inte prövat:** kartan, sökningen och påminnelsen är inte sedda på en telefon. Bygge 51 sågs bara med brytaren av.
+
+**Kvar:** Axels prov på telefonen; Bengts läsning; beslutet om löftets mening; Android; skärmbilderna i produktboken.
+
+**Stomdokument:** APP 4, BED §4.2
+
+## #873 (14/11 2026) Startsidan i iPhone-appen: svaret om området som rubrik, båda knapparna överst, och fartkamerorna ur listan (kort #659)
+
+**Beslut.** Axel 14/11 kväll, med en skärmbild av 0.4.1 (52): *"Lets work on this ui / ux"* och *"where is the button if i want to plan my trip?"*. Skärmbilden visade fyra fel: knappen *Planera en resa* låg under flikraden, listan *Nära dig* var tre fartkameror, kartan var täckt av kamerornas märken, och förarens plats hade farornas gula färg. Claude föreslog sex ändringar och byggde fem av dem direkt, utan en skiss först, eftersom Axel provar i TestFlight.
+- **Rubriken är svaret om området.** *"Halka 12,4 km bort"* (den närmaste faran som inte är en fartkamera, fågelvägen), eller *"Inget rapporterat nära dig"* med *"Inget inom sex mil just nu."* under. *"Redo."* står kvar bara när platsen eller vägdatan saknas.
+- **Båda knapparna står direkt under rubriken**, *Starta vakten* och *Planera en resa*, före kartan.
+- **Kartan** har Apples dämpade stil, fartkamerorna är små grå prickar (högst 80), de andra farorna gula märken och förarens plats vit.
+- **Listan *Nära dig*** visar de tre närmaste farorna utan fartkamerorna. Kamerorna står som en rad under: *"31 FARTKAMEROR INOM SEX MIL"*.
+- **Löftets mening och källraden** står längst ner på sidan. Meningen är oförändrad.
+- **Inte byggt:** att trycka på kartan för att öppna den i helskärm.
+
+**Varför rubriken får säga ett avstånd.** Avståndet är fågelvägen till farans plats, som i listan *I närheten* i körläget (`Nearby`), inte ett avstånd längs en väg. Regeln att en mätstation inte får ett avstånd som mätningen inte bär gäller rösten och rapporten längs en väg.
+
+**Alternativ:** en skiss på designytan före bygget (Claude frågade; Axel bad om knappen); att behålla *Redo.* som rubrik.
+
+**Inte prövat:** inte sett på en telefon. Hur Apples dämpade karta ser ut i appens mörka skinn är inte känt.
+
+**Kvar:** Axels prov; helskärmskartan; samma startsida i Android.
+
+**Stomdokument:** APP 4
+
+## #874 (14/11 2026) Knapparna bredvid varandra, fliken Vakten går alltid hem, och tipset om en annan väg öppnar förarens kartapp (kort #659)
+
+**Beslut.** Axel 14/11 23:17–23:21, om förslaget till startsidan (#873): *"Okej jag gillar det! Dock vill jag ha knapparna brevid varandra. Sedan ska man altid kunna trycka på vakten och det tar en hem"*, *"Går det att vi tipas om en annan resa om vi ser en olycka eller något, dock vill jag att man gör detta i maps eller kartor"* och *"Kanske ska actionen vara högre upp"*.
+- **Knapparna** *Starta vakten* och *Planera resa* står bredvid varandra, lika breda. Knappen heter *Planera resa*, utan *en*, för att få plats.
+- **Fliken Vakten går hem.** Ett tryck på den stänger Planera resa och den planerade resan och visar startsidan, också när fliken redan är vald.
+- **Tipset om en annan väg.** När rapporten längs en planerad resa har en olycka, ett hinder, halka, en kö eller en omledning står det i gult under knappen: *"{Olycka} längs vägen. Se om det finns en annan väg i din kartapp."* Under står alltid länkarna *ÖPPNA I KARTOR* och *ÖPPNA I GOOGLE MAPS*, som öppnar resans mål i den appen. Halkvakt räknar inte ut någon annan väg och säger inte att en finns.
+- **Det föraren gör står högre upp** på den planerade resan: *Starta vakten*, tipset och länkarna står direkt under kartan, före rapporten. Claude läste *actionen* som de knapparna; menade Axel något annat rättas det i nästa bygge.
+- **Vad som lämnar telefonen:** resans mål går till Kartor eller Google Maps när föraren trycker på länken. Integritetssidan får en rad om det.
+
+**Alternativ som inte byggdes:** att be Apple om flera vägar och jämföra läget längs var och en i appen. Axel ville att valet av väg görs i kartappen.
+
+**Inte prövat:** inte sett på en telefon. Att länken till Google Maps öppnar appen och inte webbläsaren när appen finns är inte provat.
+
+**Kvar:** Axels prov.
+
+**Stomdokument:** APP 4
+
+## #875 (14/11 2026) Länkarna till Kartor och Google Maps startar vakten i samma tryck (kort #659)
+
+Axel 14/11 23:52: *"hur får vi vakten att starta med vårt tips i Google eller kartor"*. Den som följer tipset och öppnar resan i sin kartapp kör efter den appen, och ska ha rösten med utan att gå tillbaka till Halkvakt och trycka en gång till.
+- **Ett tryck gör båda.** *ÖPPNA I KARTOR* och *ÖPPNA I GOOGLE MAPS* på den planerade resan startar vakten och öppnar sedan resans mål i kartappen. Vakten startar bara om platsen redan är tillåten (Vid användning eller Alltid) och vakten inte redan kör.
+- **Ingen fråga från iOS i det trycket.** Är platsen inte tillåten öppnas bara kartappen, som förut: föraren lämnar Halkvakt i samma stund, och en fråga från iOS skulle försvinna.
+- **Sagt där det händer.** Under länkarna står *"Vakten startar när du öppnar kartappen."*, bara när det är sant.
+- **Vad som lämnar telefonen** är oförändrat: resans mål går till kartappen på förarens tryck (#874). Vakten räknar i telefonen som vid Starta vakten.
+
+**Alternativ som inte byggdes:** en egen knapp *Starta vakten och öppna Kartor* bredvid länkarna (tre val i rad där två räcker), och att be om platsen i samma tryck (frågan försvinner när appen byts).
+
+**Inte prövat:** inte sett på en telefon. Att vakten fortsätter i bakgrunden med Vid användning efter bytet till kartappen bygger på samma väg som Starta vakten med släckt skärm (#273), men just det här bytet är inte provat.
+
+**Kvar:** Axels prov i bil eller till fots med bygge 56.
+
+**Stomdokument:** APP 4
+
+## #876 (15/11 2026) Kartorna i iPhone-appen blir stillbilder i gråskala med egna märken (kort #659)
+
+Axel 14/11 23:52: *"Hur får vi det att se ut ungefär som på design?"*, och skärmbilden 15/11 00:06 av bygge 55. Uppställningen stämde med designytan; kartan gjorde det inte: Apples karta i färg (blått hav, gröna fält), blå platsprick fast koden bad om vit, 140 grå kameraprickar i full storlek, och olyckan vid 56,8 km klippt i kartans överkant.
+- **Stillbild i gråskala.** Kartan *Nära dig* och kartan över en planerad resa hämtas som en stillbild av Apples karta (`MKMapSnapshotter`, mörk och dämpad), visas utan färg och nedtonad, och Halkvakts märken ritas ovanpå: halkan och resans väg som gula streck, de andra farorna som gula märken, fartkamerorna som grå prickar på 4 pt och förarens plats vit. Apples karta går inte att färga om, och kartorna gick redan inte att flytta.
+- **Marginal.** Området är 2,3 gånger sex mil brett i stället för 2, så att en fara nära gränsen inte hamnar i kanten.
+- **Vad som lämnar telefonen** är oförändrat: bilden hämtas från Apple för området som visas, som kartbilderna förut (#870, #872).
+
+**Alternativ som inte byggdes:** att lägga ett gråfilter över den rörliga kartan (då blir de gula märkena också grå), och att ta bort kamerorna från kartan (de visar var vägarna går).
+
+**Inte prövat:** inte sett på en telefon; bara kompilerat. Ortnamnen står kvar och följer telefonens språk. Om Apples märke står i stillbilden vet jag inte; raden *KARTAN KOMMER FRÅN APPLE* står kvar under kartan.
+
+**Kvar:** Axels skärmbild av bygge 57.
+
+**Stomdokument:** APP 4
+
+## #877 (15/11 2026) Meta-annonserna: Android-uppsättningarna slutar samma dag som länets iPhone-uppsättning
+
+Android-uppsättningarna skapades 13–14/11 med 30 dygn och slutar 13–14/12, och kampanjen förlängdes därmed till 14/12, medan
+iPhone-uppsättningarna slutar 29–30/11. Med en livstidsbudget fördelar Meta det som återstår över de dagar som återstår, så färre
+uppsättningar ryms per dygn de kalla dagarna. Axel 15/11: *"Yes they should end on the same date as iphone."*
+
+**Beslut.** Varje Android-uppsättning slutar samma tid som länets iPhone-uppsättning. `uppsattning` sätter slutdatumet så på nya
+uppsättningar och rättar de befintliga; körs en gång efter sammanslagningen.
+
+**Risk som tas:** ett ändrat slutdatum kan räknas som en stor ändring och ge uppsättningarna en ny inlärning (DECISIONS #754).
+Android-uppsättningarna är ett dygn gamla, så det finns lite inlärning att förlora.
+
+**Alternativ som inte valdes:** att låta dem gå till december (kampanjen byggs ändå om då, men budgeten räcker till färre län per dygn
+fram till dess), och att ändra för hand i Ads Manager (tre län har ett annat slutdatum än de andra, och nya uppsättningar hade fått fel datum igen).
+
+**Stomdokument:** inga — marknadsföringen beskrivs inte i stomdokumenten
+
+## #878 (15/11 2026) Småvägsrösten: batteriet mäts efter påslaget (ändrar villkoren i #828)
+
+**Beslutet.** Bengt 15/11: *"Slå ihop och mäter efter påslag"*, på frågan om batteriprovet skulle göras i en provgrupp först eller
+efter påslaget. Batterimätningen med punktfilen och beskedet i `live.json` är inte längre ett villkor före påslaget i #828. Den görs
+på den första resan efter påslaget där telefonen har fått ett besked och hämtat punktfilen, med samma budget: under 8 %/h med skärmen
+släckt. De andra villkoren i #828 står kvar, och påslaget kräver fortfarande Bengts och Axels ord.
+
+**Varför frågan kom upp.** #828 krävde mätningen före påslaget, men #846 låter apparna hämta punktfilen bara när `live.json` bär ett
+besked, och med brytarna av finns inget besked. Mätningen gick alltså inte att göra före påslaget utan att ändra något.
+
+**Alternativet som inte valdes:** en provgrupp först, alltså ett besked till utvalda telefoner före påslaget. Det kräver en ny väg i
+apparna eller på servern.
+
+**Det som gäller fortfarande:** batteribudgeten är ett släppstopp (CLAUDE.md). Brytarna sitter på servern och kan slås av utan en ny
+app. Vad som görs om mätningen går över 8 %/h avgörs inte här.
+
+**Signerat** av Bengt och Axel 15/11 (Bengt: *"Axel signerar också"*).
+
+**Stomdokument:** APP 3 — batterimätningen för småvägsröstens punktfil flyttas till efter påslaget
+
+## #879 (15/11 2026) Meta-annonserna: Android i en egen kampanj med egen budget
+
+Med en gemensam livstidsbudget för iPhone och Android flyttade Meta nästan alla pengar till Android-uppsättningarna, vars klick var
+billigare: 15/11 kl. 10 hade Android fått omkring 97 kr och iPhone omkring 6 kr (Ads Manager, Axels skärmbild). Axel 15/11: *"I'm not to
+happy that android take most of the clicks / views"*; han valde en egen Android-kampanj och delningen 4 500 / 2 000 kr av det som var kvar.
+
+**Beslut.**
+- Android-uppsättningarna ligger i kampanjen *Halkvakt · län · Android* med 2 000 kr i livstidsbudget (`BUDGET_ANDROID_ORE`).
+  Kampanjen skapas påslagen, eftersom alla uppsättningar i den börjar pausade.
+- iPhone-kampanjens tak blir 7 500 kr (`BUDGET_ORE`): de omkring 2 980 kr som var spenderade 15/11 plus 4 500 kr. Axel sänker taket i
+  Ads Manager; skriptet rör aldrig en befintlig budget. Totalt 9 500 kr, som förut.
+- De 21 Android-uppsättningarna i iPhone-kampanjen arkiveras och ersätts av nya i Android-kampanjen, med samma regel, mall, länk och
+  slutdatum som länets iPhone-uppsättning (DECISIONS #877).
+- `styr` styr kampanjerna var för sig. När budgeten inte räcker får det svagaste ordet ge plats inom samma kampanj, så iPhone och Android
+  tränger inte längre undan varandra.
+
+**Alternativ som inte valdes:** att pausa Android till december, och att sätta ett utgiftstak per Android-uppsättning i den gemensamma
+kampanjen (svårare att följa, och Meta hade fortfarande valt mellan telefonerna).
+
+**Stomdokument:** inga — marknadsföringen beskrivs inte i stomdokumenten
+
+## #880 (15/11 2026) Småvägsrösten: olycksfacit läses vid påslaget, utan ett fast antal veckor (ändrar #857 punkt 3)
+
+**Beslutet.** Bengt 15/11: *"Javisst låt det fortsätta"*, på frågan hur olycksfacit ska gälla före påslaget, där rekommendationen var att
+läsa facit vid påslaget. Olycksfacits lager för småvägsrösten (`sql/110`) och kuvösens facit varje dygn (#867) fortsätter som förut, från
+12/11 till sju dygn efter påslaget. Före påslaget läses det som finns när beslutet om påslaget fattas: för varje olycka på en småväg om
+rösten hade talat, och för de tysta halkkopplade olyckorna varför den teg. Kravet på *minst fyra veckor* i #857 punkt 3 utgår.
+
+**Varför.** Förslaget 13/11 som Bengt sa ja till (*"slår på 3"*) sa *"efter några veckor finns ett riktigt underlag för taket och
+avbrottsvillkoren"*. Antalet fyra veckor skrevs in av Claude i bokföringen av #857 och var inte Bengts ord. Med lagret i drift sedan 13/11
+hade det skjutit påslaget till omkring 11/12. Taket och avbrottsgränsen har sedan valts ur backtesten (#863, halkvakt-kuvos F63), så
+läsningen behövs inte längre för dem.
+
+**Alternativen som inte valdes:**
+- fyra veckor, som i #857;
+- att stryka läsningen helt och bara låta facit gå vidare.
+
+Talen bor i kuvösen (#768). Här står bara att läsningen är gjord.
+
+**Stomdokument:** MAT 5 — småvägsrösten: olycksfacit läses vid påslaget i stället för efter fyra veckor

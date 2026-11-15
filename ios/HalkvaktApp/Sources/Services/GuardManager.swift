@@ -40,7 +40,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
 
     private let manager = CLLocationManager()
     private var engine: AlertEngine?
-    private var hazards: [Hazard] = []
+    private(set) var hazards: [Hazard] = []   // läses av kartan Nära dig (kort #659)
     /// Kort #203 lager 2: alla stationer ur static.json — missens plats. Den förra listan står kvar om en laddning saknar den.
     private var stations: [Station] = []
     private var prevLoc: CLLocation?
@@ -203,6 +203,18 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
             // UI visar en rad med vägen till Inställningar.
             locationDenied = true
         }
+    }
+
+    /// Platsen är tillåten, så att vakten kan starta utan en fråga från iOS.
+    var platsTillaten: Bool { authStatus == .authorizedAlways || authStatus == .authorizedWhenInUse }
+
+    /// Föraren öppnar resan i sin kartapp (DECISIONS #875): vakten startar i samma tryck om platsen redan är tillåten.
+    /// Ingen fråga från iOS härifrån, eftersom föraren lämnar appen i samma stund och frågan skulle försvinna.
+    func startInforKartappen() {
+        let s = manager.authorizationStatus
+        guard !running, s == .authorizedAlways || s == .authorizedWhenInUse else { return }
+        startRequested = true
+        start()
     }
 
     /// Slå på självväckning om användaren tillåtit Alltid och inte stängt av funktionen.

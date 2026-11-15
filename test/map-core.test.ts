@@ -8,7 +8,7 @@ import type { Q } from "../publish/snapshot-core.ts";
 const NOW = new Date("2026-11-20T06:30:00Z");
 const pt = (lon: number, lat: number) => ({ type: "Point", coordinates: [lon, lat] });
 
-function fakeDb(o: { bitar?: Record<string, unknown>[]; bitarKastar?: boolean; fragor?: { text: string; params?: unknown[] }[] } = {}) {
+function fakeDb(o: { bitar?: Record<string, unknown>[]; bitarKastar?: boolean; fragor?: { text: string; params?: unknown[] }[]; grannar?: boolean } = {}) {
   const q: Q = async (text, params) => {
     if (text === KANDIDAT_BITAR_SQL) {   // #579
       o.fragor?.push({ text, params });
@@ -24,9 +24,14 @@ function fakeDb(o: { bitar?: Record<string, unknown>[]; bitarKastar?: boolean; f
     if (text.includes("FROM weather_latest")) return [
       { land: "SE", station_id: "W1", name: "Kall", sample_time: "2026-11-20T06:20:00Z", surface_temp_c: "-1.5", air_temp_c: "0.5", precipitation: "no", rain: false, snow: false, g: pt(17, 62.4) },
       { land: "FI", station_id: "F1", name: "Varm", sample_time: "2026-11-20T06:20:00Z", surface_temp_c: "4", air_temp_c: null, precipitation: "rain", rain: true, snow: false, g: pt(24, 65.9) },
+      ...(o.grannar ? [   // #865: kalla grannar, som skulle räknas om rikstalen tog med dem
+        { land: "FI", station_id: "F2", name: "Kall FI", sample_time: "2026-11-20T06:20:00Z", surface_temp_c: "-3", air_temp_c: "-4", precipitation: "no", rain: false, snow: false, g: pt(25, 66) },
+        { land: "DK", station_id: "K1", name: "Kall DK", sample_time: "2026-11-20T06:20:00Z", surface_temp_c: "-0.5", air_temp_c: "1", precipitation: "no", rain: false, snow: false, g: pt(10, 56) },
+      ] : []),
     ];
     if (text.includes("FROM deviations")) return [
       { land: "SE", deviation_id: "D1", message_type: "Olycka", message: "Testolycka", severity_text: "Stor påverkan", road_number: "E4", start_time: "2026-11-20T05:00:00Z", g: pt(18.1, 59.4) },
+      ...(o.grannar ? [{ land: "FI", deviation_id: "FD1", message_type: "Onnettomuus", message: "Testi", severity_text: null, road_number: "4", start_time: "2026-11-20T05:00:00Z", g: pt(25.5, 65) }] : []),
     ];
     if (text.includes("FROM cameras")) return [{ camera_id: "TV1", name: "Kamera", road_number: "E4", bearing: "180", g: pt(18, 59.3) }];
     if (text.includes("FROM polisen_events")) return [{ dygn: "1", vecka: "3", vanligast: "älg" }];
@@ -56,11 +61,20 @@ test("#77 alla sju kartfiler ur kärnan, i kartsajtens format (kandidaten sedan 
   assert.deepEqual(kv.features[0], { type: "Feature", geometry: { type: "Point", coordinates: [15.0, 58.0] }, properties: { id: "K0", name: "Kamera 0", photo: "https://x/0.jpg", dir: 90 } });
   assert.deepEqual(JSON.parse(files["meta.json"]), stats);
   assert.deepEqual(stats, {
-    generated_at: "2026-11-20T06:30:00.000Z", vaglag_total: 2, vaglag_ej_normalt: 1, stationer: 2, kalla_stationer: 1,
+    generated_at: "2026-11-20T06:30:00.000Z", vaglag_total: 2, vaglag_ej_normalt: 1, stationer: 1, kalla_stationer: 1,   // #865: F1 är finsk
     olyckor: 1, kameror: 1, kameror_vaglag: 600, vilt_dygn: 1, vilt_vecka: 3, vilt_vanligast: "älg",
     smhi_vinter: [{ event: "Snöfall", niva: "Gul", niva_kod: "YELLOW", omrade: "Norrbotten" }], waitlist_count: 31,
     kandidat: { pa: false, strackor: 0, punkter: 0, ritade: 0, km: 0, tid: null },   // #579: ingen nyckel ⇒ av
   });
+});
+
+test("#865 rikstalen räknar bara Sverige: grannländerna ritas men räknas inte", async () => {
+  const { files, stats } = await buildMapData(fakeDb({ grannar: true }), { now: NOW });
+  assert.deepEqual(JSON.parse(files["vader.geojson"]).features.map((f: any) => f.properties.land), ["SE", "FI", "FI", "DK"]);
+  assert.deepEqual(JSON.parse(files["olyckor.geojson"]).features.map((f: any) => f.properties.land), ["SE", "FI"]);
+  assert.equal(stats.stationer, 1, "bara den svenska stationen");
+  assert.equal(stats.kalla_stationer, 1, "den finska och den danska kalla stationen räknas inte");
+  assert.equal(stats.olyckor, 1, "den finska olyckan räknas inte");
 });
 
 test("#77 fail-soft för väglagskamerorna: TRV-fel eller tunt svar ⇒ filen utelämnas, resten skrivs, noten bär kroppen", async () => {

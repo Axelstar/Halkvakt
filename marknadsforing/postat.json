@@ -1122,6 +1122,63 @@
       "facebook": "1312515671952967_122112724059516187",
       "instagram": "18194537506404661",
       "x": "2121465893037167086"
+    },
+    {
+      "pass": "lunch",
+      "namn": "2026-11-14-lunch",
+      "typ": "svep",
+      "nyckel": "svep:lunch",
+      "tid": "2026-11-14T10:50:49.444Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-11-14-lunch-01.jpg",
+      "facebook": "1312515671952967_122112830781516187",
+      "instagram": "18003953312812905",
+      "x": "2121556850650804457"
+    },
+    {
+      "pass": "kvall",
+      "namn": "2026-11-14-kvall",
+      "typ": "svep",
+      "nyckel": "svep:kvall",
+      "tid": "2026-11-14T15:50:39.581Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-11-14-kvall-01.jpg",
+      "facebook": "1312515671952967_122112899265516187",
+      "instagram": "18350184559251884",
+      "x": "2121632328971927577"
+    }
+  ],
+  "2026-11-15": [
+    {
+      "pass": "morgon",
+      "namn": "2026-11-15-morgon",
+      "typ": "svep",
+      "nyckel": "svep:morgon",
+      "tid": "2026-11-15T04:50:37.932Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-11-15-morgon-01.jpg",
+      "facebook": "1312515671952967_122113030143516187",
+      "instagram": "18091762616273939",
+      "x": "2121828483769024578"
+    },
+    {
+      "pass": "lunch",
+      "namn": "2026-11-15-lunch",
+      "typ": "svep",
+      "nyckel": "svep:lunch",
+      "tid": "2026-11-15T10:50:51.932Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-11-15-lunch-01.jpg",
+      "facebook": "1312515671952967_122113092531516187",
+      "instagram": "17901036318655095",
+      "x": "2121919134569033733"
+    },
+    {
+      "pass": "kvall",
+      "namn": "2026-11-15-kvall",
+      "typ": "vecka",
+      "nyckel": "vecka",
+      "tid": "2026-11-15T15:50:34.448Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-11-15-kvall.jpg",
+      "facebook": "1312515671952967_122113164477516187",
+      "instagram": "18113725550233789",
+      "x": "2121994334509941026"
     }
   ]
 }

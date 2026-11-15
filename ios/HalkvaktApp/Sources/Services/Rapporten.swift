@@ -71,6 +71,37 @@ final class Rapporten {
         }
     }
 
+    // MARK: - En planerad resa (kort #659)
+
+    /// Rapporten längs en planerad resa, åt ett håll, efter åldersgränserna.
+    struct Planerad {
+        let rader: [RapportRad]
+        let kandidat: [KandidatRad]?
+        let kollat: Date
+        let lagesfil: Date?
+        let rapportfil: Date?
+        let gammaltVaglag: Bool
+        let gamlaOlyckor: Bool
+    }
+
+    /// Samma hämtning och samma räkning som för en sparad resa. Vägen kommer som data och sparas inte här. Nil när hämtningen
+    /// eller läsningen inte gick.
+    func planerad(_ punkter: [[Double]]) async -> Planerad? {
+        let betatest = Prefs.shared.facitOn
+        let resa = [SparadRutt(id: "planerad", namn: "", sparad: "", punkter: punkter)]
+        do {
+            async let dok = SnapshotRepo.dokument()
+            async let fil = RapportRepo.hamta()
+            let (d, f) = try await (dok, fil)
+            guard let u = await Self.rakna(resa, stat: d.stat, live: d.live, snabb: f.snabb, lang: f.lang, nu: .now, betatest: betatest),
+                  let r = u.resor["planerad"] else { return nil }
+            return Planerad(rader: r.dit, kandidat: r.kandidatDit, kollat: .now, lagesfil: u.lagesfil, rapportfil: u.rapportfil,
+                            gammaltVaglag: u.gammaltVaglag, gamlaOlyckor: u.gamlaOlyckor)
+        } catch {
+            return nil
+        }
+    }
+
     // MARK: - Fliken och skärmen — reglerna bor i motorn (ResansRapport, prövade mot facit), här bara resans rader
 
     /// Alla id resan visar åt båda hållen — det som sparas som förra kollen.

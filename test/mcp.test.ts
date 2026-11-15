@@ -25,7 +25,7 @@ const STRACKOR = {
     ] },
   ],
 };
-const META = { generated_at: "2026-11-20T06:30:00Z", stationer: 1321, kalla_stationer: 167, olyckor: 3,   // räknar även Finland och Danmark
+const META = { generated_at: "2026-11-20T06:30:00Z", stationer: 1321, kalla_stationer: 167, olyckor: 3,   // läses inte: rikstalen tas ur länen
   smhi_vinter: [{ event: "Snöfall", niva: "Gul", omrade: "Värmlands län" }, { event: "Medelvind till havs", niva: "Gul", omrade: "Södra Östersjön" }] };
 const VADER = { features: [
   { properties: { land: "SE", name: "Vadje", t: "2026-11-20T06:25:00Z", yta: -4.2 } },

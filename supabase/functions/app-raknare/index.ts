@@ -16,7 +16,8 @@ const TAK_PER_DYGN = 20000;   // tusen förare × ett par starter är ett par tu
 const MAX_BYTES = 192;   // ver och k gör anropet längre (#787); gränsen gäller fortfarande ett enda ord
 const kors = (...delar: string[][]): string[] =>
   delar.reduce<string[]>((acc, d) => acc.flatMap((a) => d.map((b) => (a ? `${a}:${b}` : b))), [""]);
-const FAROR = ["accident", "slippery_segment", "icing_point", "wildlife", "camera", "kandidat"];
+// smavag: småvägsrösten (DECISIONS #828, tillägg 15/11), sist så att installning:s fem egna reglage inte ändras
+const FAROR = ["accident", "slippery_segment", "icing_point", "wildlife", "camera", "kandidat", "smavag"];
 const HANDELSER: Record<string, Set<string>> = {
   // 1 · vägen in (en gång per enhet och värde)
   onboarding_klar: new Set([""]),
