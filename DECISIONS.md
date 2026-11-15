@@ -16693,3 +16693,20 @@ Axel 14/11 23:52: *"Hur får vi det att se ut ungefär som på design?"*, och sk
 **Kvar:** Axels skärmbild av bygge 57.
 
 **Stomdokument:** APP 4
+
+## #877 (15/11 2026) Meta-annonserna: Android-uppsättningarna slutar samma dag som länets iPhone-uppsättning
+
+Android-uppsättningarna skapades 13–14/11 med 30 dygn och slutar 13–14/12, och kampanjen förlängdes därmed till 14/12, medan
+iPhone-uppsättningarna slutar 29–30/11. Med en livstidsbudget fördelar Meta det som återstår över de dagar som återstår, så färre
+uppsättningar ryms per dygn de kalla dagarna. Axel 15/11: *"Yes they should end on the same date as iphone."*
+
+**Beslut.** Varje Android-uppsättning slutar samma tid som länets iPhone-uppsättning. `uppsattning` sätter slutdatumet så på nya
+uppsättningar och rättar de befintliga; körs en gång efter sammanslagningen.
+
+**Risk som tas:** ett ändrat slutdatum kan räknas som en stor ändring och ge uppsättningarna en ny inlärning (DECISIONS #754).
+Android-uppsättningarna är ett dygn gamla, så det finns lite inlärning att förlora.
+
+**Alternativ som inte valdes:** att låta dem gå till december (kampanjen byggs ändå om då, men budgeten räcker till färre län per dygn
+fram till dess), och att ändra för hand i Ads Manager (tre län har ett annat slutdatum än de andra, och nya uppsättningar hade fått fel datum igen).
+
+**Stomdokument:** inga — marknadsföringen beskrivs inte i stomdokumenten
