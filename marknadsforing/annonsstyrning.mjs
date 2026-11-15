@@ -243,7 +243,7 @@ async function kampanjen() {
 }
 
 async function satserna(kampanjId) {
-  return (await alla(`${kampanjId}/adsets`, { fields: "id,name,status,effective_status,adset_schedule,ads.limit(50){id,name,status,effective_status}" }))
+  return (await alla(`${kampanjId}/adsets`, { fields: "id,name,status,effective_status,adset_schedule,end_time,ads.limit(50){id,name,status,effective_status}" }))
     .filter(s => s.name.startsWith(PREFIX) && !["DELETED", "ARCHIVED"].includes(s.effective_status));
 }
 
@@ -302,12 +302,19 @@ async function uppsattning() {
     const id = await laggUpp(RESERV, `Reserv · ${l.kort}`, s.id, kampanjLank(l.slug));
     skriv(`${namn}: reservannonsen skapad (${id}).`);
   }
-  // Android: a second ad set per pilot county, same windows and region as the county's iPhone ad set, PAUSED like everything
-  // uppsattning makes. styr turns it on when the county has ice.
+  // Android: a second ad set per county, same windows, region and end date as the county's iPhone ad set, PAUSED like
+  // everything uppsattning makes. styr turns it on when the county has ice. The end date follows the iPhone ad set (#877):
+  // a later end stretches the campaign's lifetime budget over more days and fewer ad sets fit per day.
   const nu2 = new Map((await satserna(k.id)).map(s => [s.name, s]));
   for (const l of lan.lan.filter(l => ANDROID_LAN.has(l.kod))) {
     const namn = PREFIX + l.kort + ANDROID;
+    const iphoneSlut = nu2.get(PREFIX + l.kort)?.end_time;
+    const slutFor = iphoneSlut ? new Date(iphoneSlut) : slut;
     let s = nu2.get(namn);
+    if (s && iphoneSlut && new Date(s.end_time).getTime() !== slutFor.getTime()) {
+      await graph(s.id, { end_time: slutFor.toISOString() }, "POST");
+      skriv(`${namn}: slutdatum ${s.end_time} → ${slutFor.toISOString()}, som länets iPhone-uppsättning.`);
+    }
     if (!s) {
       const traff = (await graph("search", { type: "adgeolocation", location_types: ["region"], country_code: "SE", q: META_LAN[l.kod] })).data
         .filter(r => r.country_code === "SE" && r.type === "region" && r.name.startsWith(META_LAN[l.kod]));
@@ -316,7 +323,7 @@ async function uppsattning() {
         name: namn, campaign_id: k.id, status: "PAUSED",
         optimization_goal: "LINK_CLICKS", billing_event: "IMPRESSIONS",
         promoted_object: { application_id: META_APP_ID, object_store_url: PLAY },
-        start_time: start.toISOString(), end_time: slut.toISOString(),
+        start_time: start.toISOString(), end_time: slutFor.toISOString(),
         pacing_type: ["day_parting"],
         adset_schedule: VISNING,
         targeting: { geo_locations: { regions: [{ key: traff[0].key }], location_types: ["home", "recent"] },
