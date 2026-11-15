@@ -16738,3 +16738,24 @@ app. Vad som görs om mätningen går över 8 %/h avgörs inte här.
 **Signerat** av Bengt och Axel 15/11 (Bengt: *"Axel signerar också"*).
 
 **Stomdokument:** APP 3 — batterimätningen för småvägsröstens punktfil flyttas till efter påslaget
+
+## #879 (15/11 2026) Meta-annonserna: Android i en egen kampanj med egen budget
+
+Med en gemensam livstidsbudget för iPhone och Android flyttade Meta nästan alla pengar till Android-uppsättningarna, vars klick var
+billigare: 15/11 kl. 10 hade Android fått omkring 97 kr och iPhone omkring 6 kr (Ads Manager, Axels skärmbild). Axel 15/11: *"I'm not to
+happy that android take most of the clicks / views"*; han valde en egen Android-kampanj och delningen 4 500 / 2 000 kr av det som var kvar.
+
+**Beslut.**
+- Android-uppsättningarna ligger i kampanjen *Halkvakt · län · Android* med 2 000 kr i livstidsbudget (`BUDGET_ANDROID_ORE`).
+  Kampanjen skapas påslagen, eftersom alla uppsättningar i den börjar pausade.
+- iPhone-kampanjens tak blir 7 500 kr (`BUDGET_ORE`): de omkring 2 980 kr som var spenderade 15/11 plus 4 500 kr. Axel sänker taket i
+  Ads Manager; skriptet rör aldrig en befintlig budget. Totalt 9 500 kr, som förut.
+- De 21 Android-uppsättningarna i iPhone-kampanjen arkiveras och ersätts av nya i Android-kampanjen, med samma regel, mall, länk och
+  slutdatum som länets iPhone-uppsättning (DECISIONS #877).
+- `styr` styr kampanjerna var för sig. När budgeten inte räcker får det svagaste ordet ge plats inom samma kampanj, så iPhone och Android
+  tränger inte längre undan varandra.
+
+**Alternativ som inte valdes:** att pausa Android till december, och att sätta ett utgiftstak per Android-uppsättning i den gemensamma
+kampanjen (svårare att följa, och Meta hade fortfarande valt mellan telefonerna).
+
+**Stomdokument:** inga — marknadsföringen beskrivs inte i stomdokumenten
