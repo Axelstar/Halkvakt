@@ -15273,6 +15273,14 @@ Brytarna är av tills dess.
 
 Förbehåll: regeln mättes en torr eftermiddag. En timme med regn bär fler rader i radarns del.
 
+**Tillägg 15/11 (Bengt: *"Ja, lägg till smavag i räknaren"*): räknaren tar emot småvägsrösten.** Apparna skickar `varning`
+med `smavag:<avstånd>` och `varning_ersatt` med `smavag` (`Raknare.swift`, `Raknare.kt`, farotypens namn), men funktionen
+`app-raknare` kände bara sex faror och svarade 400. `smavag` står nu sist i dess lista `FAROR`, så `varning` och `varning_ersatt`
+godtar den. `installning` tar de fem första, och rösten har inget eget reglage (den följer *Halka*), så den listan är oförändrad.
+Inget nytt skickas: ordet och formen var redan de som integritetspolicyn, Play-deklarationen och produktboken beskriver (*varje varning
+med fara och avstånd i hinkar*, #787), så ingen av dem ändras. Statistiksidan i kartrepot har en egen namnlista över farorna och
+behöver raden för att visa talen.
+
 **Stomdokument:** MAT 5 — småvägsrösten beställd och byggs avstängd, SYS 2 — driftens rörarbete för småvägarna, APP 3 — betavarningens farotyp och text
 
 ## #829 (10/11 2026) Tipsa en vän, Tyck till och Betygsätt i 0.4.0 (42), tillsammans med Favoriter 2a och CarPlay
