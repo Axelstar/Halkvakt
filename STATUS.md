@@ -3094,3 +3094,8 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - **Pulsklockan:** vakten, avbrottet och uppföljningen får egna pulsjobb (31 → 34), eftersom GitHub-cronen gick 6–8 timmar sent. Den skarpa körningen och vakthundens deploy väntar på Bengts ord.
   - **Provlistan** `scripts/smavag-provlista.sql`, körd i SQL-redigeraren 15/11 kl. 23 UTC: den gav 30 rader kring Umeå, och ingen varnande punkt inom 15 km från Ystad.
   - **Provat:** självtesten och motproven (11 för databasdelen och rapporten), integrationsprovet SU1–SU3 i ci, och stegets logik provkörd lokalt i sju fall med påhittade svar. Flödet självt har inte gått.
+- 16/11 morgon (Claude; Bengt: *"jag och axel signerar tillägget om driftkontrollen och slå ihop pr 90 och halkvakt 1630"*): **småvägsröstens uppföljning sammanslagen, och driftkontrollens post signerad** (kort #662, DECISIONS #883).
+  - **Sammanslaget:** halkvakt-kuvos PR 90 (dc346bd) och PR #1630 (6114f04). PR #1630 fick först main in i grenen, eftersom morgonens dokumentsynk (PR #1631) krockade i STATUS.md och den genererade projektkartan. ci gick grön på det nya huvudet 9350458.
+  - **Signerat:** Bengt, och Axel via Bengt, har signerat posten 16/11 i det privata repots förregistrering (halkvakt-kuvos F69). Före signaturen vägrade spärren, och efter den släpper den. Ingen dygnsfil var läst vid signaturen.
+  - **Följden:** flödets reservschema (09.41 UTC, GitHubs cron) kör uppföljningen av sig självt, nu med driftkontrollen öppen.
+  - **Kvar på Bengts ord:** den skarpa pulsklockan, vakthundens deploy efter den, och den första rapporten läst.
