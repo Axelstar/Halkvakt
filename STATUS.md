@@ -3099,3 +3099,8 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - **Signerat:** Bengt, och Axel via Bengt, har signerat posten 16/11 i det privata repots förregistrering (halkvakt-kuvos F69). Före signaturen vägrade spärren, och efter den släpper den. Ingen dygnsfil var läst vid signaturen.
   - **Följden:** flödets reservschema (09.41 UTC, GitHubs cron) kör uppföljningen av sig självt, nu med driftkontrollen öppen.
   - **Kvar på Bengts ord:** den skarpa pulsklockan, vakthundens deploy efter den, och den första rapporten läst.
+- 16/11 morgon (Claude; Bengt: *"Ja, driftsätt"*): **småvägsröstens uppföljning driftsatt, och ett fel funnet i morgonkörningen** (kort #662, #663; DECISIONS #883).
+  - **Pulsklockan skarp** (körning 43817629992): 69 jobb, alla 34 pulsjobb på plats, de tre nya OK. Avbrottet startade av pulsklockan 06.39 UTC och sa *för få timmar* i båda regionerna.
+  - **Vakthunden deployad** från 6114f04 (körning 43817717000). Dess rad med golvet 34 läses efter nästa körning, 07.07 UTC.
+  - **Första körningen** av `kuvos-smavag-uppfoljning` (43817816425) grön: räknaren, facitsvaren, olyckorna och radarkollen *klart*; driftkontrollen *under* i alla tre regionerna för dygnet 13/11 och *väntar* för 14/11 och 15/11. Inget ärende skrevs.
+  - **Felet (kort #663):** `kuvos-stad` är *skipped* varje morgon sedan 14/11, eftersom fysikens körning 06.28 UTC faller och reserven, som flödets egen nyckel startar, inte sätter igång `workflow_run`. Stadsmiljöns och P-II:s steg går därför inte för den körningen. Rättelsen väntar på Bengts ord.
