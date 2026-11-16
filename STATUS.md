@@ -3116,3 +3116,8 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - **Inget startat.** Svaret kom 13.38 UTC. Stadsflödet väljer körning efter klockan, och efter 12.00 UTC är det 06, som 12.39-körningen redan räknat.
   - **Valet `stamp`** i `kuvos-stad.yml`: en körning som klockan passerat räknas i efterhand, utan timmens besked, identiteten och dygnen. Spärren är provkörd i 14 fall, och sex motprov fälldes. Valet har inte gått i drift.
   - **Funnet:** stadsmiljöns dygn 14/11 och 15/11 väntar på körningen 00 och bedöms aldrig utan den. P-II räknade 14/11 klart 12.39 UTC, med den levande ensam.
+- 16/11 kl. 15 UTC (Claude; Bengt: *"du måste utreda varför"*): **MET:s morgonfel utrett, bara läsning** (kort #663).
+  - **Felet:** MET:s THREDDS svarar HTTP 500 *"datasetTracker_2 is not active"* på varje datafråga varje morgon sedan 11/11, omkring 06.10–06.52 UTC. Den frystas 06.13 och den nyas 06.28 föll fem av sex morgnar; före 11/11 fanns felet inte, och inte på andra tider.
+  - **Varför vår körning faller:** hämtningen gör sex försök på 4,5 minuter, mot ett fönster på omkring 40. Reserven 06.47 ligger i fönstrets slut.
+  - **Mekanismen, troligen:** Unidatas THREDDS-fel där *datasetTracker* stängs när katalogerna läses om och inte startas igen, rättat i 5.8 (Unidata/tds#626, #627). MET visar inte sin version, och deras statussida visar inget för morgnarna.
+  - **Följd:** den frystas körning 00 gick förlorad 11/11 och 15/11. Felanmälan till MET är Bengts val (bedömningen §4.2).
