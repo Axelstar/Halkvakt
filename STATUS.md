@@ -3108,3 +3108,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - **Rättelsen:** ett steg i `ny-kandidat-fysik.yml` startar `kuvos-stad` (kedjan) när körningen är startad med flödets egen nyckel, och bara när ingen körning väntar i MET-kön och `kuvos-stad` inte redan kör.
   - **Provat:** logiken provkörd lokalt med ett påhittat `gh` i nio fall, och fem motprov fällda. Steget har inte gått i drift.
   - **Kvar:** sammanslagningen på Bengts ord, en morgon med grön körning efter reserven, och dygnen som saknar körningen (halkvakt-kuvos F70).
+- 16/11 kl. 07.08 UTC (Claude): **två bevis lästa i databasen, bara läsning.**
+  - **Vakthunden efter deployen** (kort #662): körningen 07.07 UTC sa *pulsjobb: 34 aktiva (golv 34)*, utan problem. 06.07 sa den 31 mot golvet 31.
+  - **Timmen kl. 06 UTC** (DECISIONS #881, kort #647): skriven 06.59 i `smavag_korning`, med alla punkter. Reserven blev klar 06.58, och stegets start av `kuvos-smavag-timme` gick 06.58–07.00. Timmen saknades 14/11 och 15/11. Vakten prövar dygnet 16/11 i morgon.
+  - `kuvos-stad` startade inte efter reserven i dag heller, som väntat före rättelsen (kort #663).
