@@ -1,0 +1,30 @@
+{
+  "typ": "smhi",
+  "nyckel": "smhi:Isbeläggning:Västerbottens- och Västernorrlandskusten:YELLOW",
+  "etikett": "SMHI-varning",
+  "rubrik": "Varning för väglaget",
+  "underrad": "Halkläget kl. 06:30",
+  "varning": {
+    "niva": "Gul varning",
+    "event": "Isbeläggning",
+    "omrade": "Västerbottens- och Västernorrlandskusten",
+    "fler": 0
+  },
+  "text": "SMHI har utfärdat en gul varning för isbeläggning i Västerbottens- och Västernorrlandskusten.\n\nHalkläget kl. 06:30:\nNorrbotten: halka på 58 av 58 vägavsnitt, 56 stationer under noll, kallast −13,6 °C vid Leipojärvi.\nVästerbotten: halka på 44 av 44 vägavsnitt, 38 stationer under noll, kallast −7,6 °C vid Gunnarn.\nVästernorrland: halka på 20 av 22 vägavsnitt, 20 stationer under noll, kallast −2,7 °C vid Lillkrog.\nVästmanland: halka på 18 av 24 vägavsnitt, 1 station under noll, kallast −0,4 °C vid Åmänningen.\nJämtland: halka på 15 av 17 vägavsnitt, 30 stationer under noll, kallast −6,0 °C vid Brånan.\n\nLäget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från SMHI och Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Västernorrland #Västmanland #Jämtland #halkvakt",
+  "textIg": "SMHI har utfärdat en gul varning för isbeläggning i Västerbottens- och Västernorrlandskusten.\n\nHalkläget kl. 06:30:\nNorrbotten: halka på 58 av 58 vägavsnitt, 56 stationer under noll, kallast −13,6 °C vid Leipojärvi.\nVästerbotten: halka på 44 av 44 vägavsnitt, 38 stationer under noll, kallast −7,6 °C vid Gunnarn.\nVästernorrland: halka på 20 av 22 vägavsnitt, 20 stationer under noll, kallast −2,7 °C vid Lillkrog.\nVästmanland: halka på 18 av 24 vägavsnitt, 1 station under noll, kallast −0,4 °C vid Åmänningen.\nJämtland: halka på 15 av 17 vägavsnitt, 30 stationer under noll, kallast −6,0 °C vid Brånan.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone, länken finns i vår profil.\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från SMHI och Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Västernorrland #Västmanland #Jämtland #halkvakt",
+  "pass": "live",
+  "datum": "2026-11-16",
+  "generated_at": "2026-11-16T05:30:09.211Z",
+  "lan": [
+    "norrbotten",
+    "vasterbotten",
+    "vasternorrland",
+    "vastmanland",
+    "jamtland",
+    "gavleborg",
+    "dalarna",
+    "varmland",
+    "kalmar",
+    "uppsala"
+  ]
+}
