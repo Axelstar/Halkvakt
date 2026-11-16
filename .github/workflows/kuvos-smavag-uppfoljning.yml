@@ -1,0 +1,157 @@
+name: kuvos-smavag-uppfoljning
+# SMÅVÄGSRÖSTEN MOT VERKLIGA DATA: DYGNSRAPPORTEN (DECISIONS #883, kort #662; halkvakt-kuvos F68; Bengt 16/11: "bygg uppföljningen på
+# alla fyra delar och implementera ett system som följer upp och rapporterar hur systemet förhåller sig till verkliga data").
+# Varje morgon skrivs en rapport för förra UTC-dygnet, med fem delar:
+#   räknaren          småvägsbeskeden i riktiga appar per app och version, mot vaktpassen (scripts/smavag-uppfoljning.ts);
+#   facitsvaren       testarnas Stämde och Stämde inte på småvägsrösten;
+#   olyckorna         olyckorna vid en småvägspunkt: vad regeln sa vid starten, klassningen, och andelen som började i halkaläge mot
+#                     andelen av punkt-timmarna i halkaläge;
+#   radarkollen       prognosens nederbörd mot radarn, ur skuggans underlag (fysik/ny_kandidat/smavag_radarkoll.py i det privata repot);
+#   driftkontrollen   röstens regel mot stationernas mätning, ur P-II:s dygnsfiler (fysik/ny_kandidat/rosten_drift.py). Den är SPÄRRAD
+#                     tills posten 16/11 i marsförregistreringens §14 är signerad av Bengt och Axel: före det hämtas ingen dygnsfil.
+# Rapporten går bara till den privata hinken (uppfoljning_<dygn>.json och .md, och rosten_drift_<dygn>.json): loggen säger bara vilka
+# delar som är klara och driftkontrollens ord per region (#768, #498). Ligger driftkontrollen över larmgränsen i en region får Bengt
+# ett ärende, utan tal. Avstängningen är Bengts och Axels beslut, med sql/107. Samma dygn skrivs aldrig två gånger.
+# Pulsklockan startar flödet 08.36 UTC (scripts/pulsklocka.ts), när P-II:s dygnsfil från körningen 06 finns. GitHub-cronen är reserven.
+on:
+  schedule:
+    - cron: "41 9 * * *"
+  workflow_dispatch:
+    inputs:
+      dygn:
+        description: "UTC-dygnet att rapportera, ÅÅÅÅ-MM-DD (tomt = i går)"
+        required: false
+        default: ""
+concurrency: { group: kuvos-smavag-uppfoljning, cancel-in-progress: false }
+permissions:
+  contents: read
+  issues: write
+env:
+  HINK: kuvos-smavag-2026-27
+  P2: kuvos-p2-2026-27
+jobs:
+  uppfoljning:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos (DECISIONS #768): koden läggs ovanpå utcheckningen.
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13", cache: pip, cache-dependency-path: fysik/requirements.txt }
+      - name: Självtesten
+        shell: bash
+        run: |
+          tyst() { "$@" > tyst.log 2>&1 || { echo "::error::föll: ${*:1:3}: $(tail -1 tyst.log | cut -c1-200)"; exit 1; }; }
+          tyst node --experimental-strip-types ingest/hinken.ts --sjalvtest
+          tyst node --experimental-strip-types scripts/smavag-uppfoljning.ts --sjalvtest
+          python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|pyarrow)==' fysik/requirements.txt)
+          tyst python3 fysik/ny_kandidat/smavag_radarkoll.py --sjalvtest
+          tyst python3 fysik/ny_kandidat/rosten_drift.py --sjalvtest
+      - name: Dygnsrapporten och hinken
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}", INDYGN: "${{ inputs.dygn }}" }
+        run: |
+          set -euo pipefail
+          D="${INDYGN:-$(date -u -d yesterday +%Y-%m-%d)}"
+          [[ "$D" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] || { echo "::error::dygnet ska skrivas ÅÅÅÅ-MM-DD"; exit 1; }
+          echo "DYGN=$D" >> "$GITHUB_ENV"
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          export FN KEY
+          h() { node --experimental-strip-types ingest/hinken.ts "$@" 2>> hinken.log; }
+          # hamta_om <namn i hinken> <lokal fil>: 0 = hämtad, 3 = finns inte; annat stoppar.
+          hamta_om() { set +e; h hamta "$1" "$2"; local K=$?; set -e; [ "$K" = 0 ] || [ "$K" = 3 ] || { echo "::error::hinken svarade inte"; exit 1; }; return "$K"; }
+          set +e; h finns "$HINK/uppfoljning_$D.json"; K=$?; set -e
+          if [ "$K" = 0 ]; then echo "uppföljningen: dygnet $D är redan rapporterat" | tee -a "$GITHUB_STEP_SUMMARY"; exit 0; fi
+          [ "$K" = 3 ] || { echo "::error::hinken svarade inte"; exit 1; }
+
+          # 1. Databasens delar: räknaren, facitsvaren och olyckorna.
+          node --experimental-strip-types scripts/smavag-uppfoljning.ts db "$D" db.json > db.log 2>&1 \
+            || { echo "::error::databasens delar föll: $(tail -1 db.log | cut -c1-200)"; exit 1; }
+
+          # 2. Radarkollen: dygnets underlag och de tre timmarna före (N3:s fönster).
+          mkdir -p u
+          for T in $(seq -3 23); do
+            S=$(date -u -d "$D $T hours" +%Y%m%dT%H)
+            hamta_om "$HINK/underlag_$S.csv.gz" "u/underlag_$S.csv.gz" || true
+          done
+          RADAR=-
+          shopt -s nullglob; UF=(u/underlag_*.csv.gz); shopt -u nullglob
+          if [ "${#UF[@]}" -gt 0 ]; then
+            set +e; python3 fysik/ny_kandidat/smavag_radarkoll.py dygn --punkter data/vagdata/smavagsrosten-punkter.json --underlag "${UF[@]}" \
+              --dygn "$D" --ut radar.json > radar.log 2>&1; K=$?; set -e
+            if [ "$K" = 0 ]; then RADAR=radar.json
+            elif [ "$K" != 3 ]; then echo "::error::radarkollen föll: $(tail -1 radar.log | cut -c1-200)"; exit 1; fi
+          fi
+
+          # 3. Driftkontrollen. Spärren prövas INNAN någon dygnsfil hämtas: utan båda signaturerna läses ingenting.
+          STN=-; LAGE=fel
+          set +e; python3 fysik/ny_kandidat/rosten_drift.py --sparren > sparr.log 2>&1; K=$?; set -e
+          if [ "$K" = 2 ]; then LAGE=sparrad
+          elif [ "$K" != 0 ]; then echo "::error::spärren gick inte att pröva"; exit 1
+          else
+            mkdir -p p2
+            for B in $(seq 8 -1 0); do
+              DAG=$(date -u -d "$D -$B days" +%Y-%m-%d)
+              hamta_om "$P2/p2_$DAG.csv.gz" "p2/p2_$DAG.csv.gz" || continue
+              hamta_om "$P2/p2_sammanfattning_$DAG.json" "p2/p2_sammanfattning_$DAG.json" || true
+            done
+            # De två dygnen före som saknar sin fil räknas ikapp (dygnsfilen kom efter den morgonens körning); sedan dygnet självt.
+            for B in 2 1 0; do
+              DAG=$(date -u -d "$D -$B days" +%Y-%m-%d)
+              if [ "$B" != 0 ]; then set +e; h finns "$HINK/rosten_drift_$DAG.json"; F=$?; set -e; [ "$F" = 3 ] || continue; fi
+              set +e; python3 fysik/ny_kandidat/rosten_drift.py provning --dygn "$DAG" --dygnsfiler p2 --ut "rosten_drift_$DAG.json" --over "over_$DAG.txt" \
+                > "drift_$DAG.log" 2>&1; K=$?; set -e
+              grep -h '^driftkontrollen ' "drift_$DAG.log" | tail -1 | tee -a "$GITHUB_STEP_SUMMARY" || true
+              if [ "$K" = 0 ]; then h ladda "rosten_drift_$DAG.json" "$HINK/rosten_drift_$DAG.json" --finns-ok || { echo "::error::driftkontrollen gick inte till hinken"; exit 1; }; fi
+              if [ "$B" = 0 ]; then
+                if [ "$K" = 0 ]; then STN="rosten_drift_$D.json"; elif [ "$K" = 3 ]; then LAGE=vantar; else LAGE=fel; echo "::warning::driftkontrollen föll för dygnet $D"; fi
+              fi
+            done
+          fi
+
+          # 4. De sex föregående dygnens rapporter, för halkalägets andel över fönstret.
+          mkdir -p tid
+          for B in 6 5 4 3 2 1; do
+            DAG=$(date -u -d "$D -$B days" +%Y-%m-%d)
+            hamta_om "$HINK/uppfoljning_$DAG.json" "tid/uppfoljning_$DAG.json" || true
+          done
+          shopt -s nullglob; TF=(tid/uppfoljning_*.json); shopt -u nullglob
+
+          # 5. Rapporten, och hinken. Loggraden bär bara ord.
+          node --experimental-strip-types scripts/smavag-uppfoljning.ts rapport "$D" db.json "$RADAR" "$STN" "$LAGE" "uppfoljning_$D.json" "uppfoljning_$D.md" "${TF[@]}" \
+            > rad.txt 2> rapport.log || { echo "::error::rapporten föll: $(tail -1 rapport.log | cut -c1-200)"; exit 1; }
+          tee -a "$GITHUB_STEP_SUMMARY" < rad.txt
+          # Texten först och rapporten sist: rapportens fil är märket för att dygnet är skrivet.
+          h ladda "uppfoljning_$D.md" "$HINK/uppfoljning_$D.md" --finns-ok || { echo "::error::rapportens text gick inte till hinken"; exit 1; }
+          h ladda "uppfoljning_$D.json" "$HINK/uppfoljning_$D.json" || { echo "::error::rapporten gick inte till hinken"; exit 1; }
+          if [ -s "over_$D.txt" ]; then echo "OVER=$(sed 's/soder/söder/' "over_$D.txt" | paste -sd ' ')" >> "$GITHUB_ENV"; fi
+          echo "PA=$(psql "$DATABASE_URL" -At -c 'select coalesce(bool_or(pa), false) from smavagsbrytare')" >> "$GITHUB_ENV"
+          rm -rf u p2 tid db.json radar.json rosten_drift_*.json over_*.txt uppfoljning_*.json uppfoljning_*.md
+      - name: Ärendet om driftkontrollen
+        if: ${{ env.OVER != '' }}
+        shell: bash
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          set -euo pipefail
+          if [ "$PA" = t ]; then LAGE="en brytare är på, och avstängningen (sql/107) är Bengts och Axels beslut i dag"
+          else LAGE="brytarna är av, så det är ett underlag inför påslaget"; fi
+          TEXT="Dygnet $DYGN (UTC): driftkontrollen av småvägsrösten låg över larmgränsen i: $OVER. Gränsen prövas på de sju dygnen till och med $DYGN vid stationerna långt från väglagsnätet: röstens regel har fel oftare än rätt, eller säger mindre än regeln för frysning ensam. Läget: $LAGE. Talen står i den privata hinken (uppfoljning_$DYGN.md), inte här (#768)."
+          NR=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "Småvägsrösten: driftkontrollen in:title" --json number --jq '.[0].number // empty')
+          if [ -n "$NR" ]; then gh issue comment "$NR" --repo "$GITHUB_REPOSITORY" --body "$TEXT"
+          else
+            gh issue create --repo "$GITHUB_REPOSITORY" --assignee 895845 \
+              --title "Småvägsrösten: driftkontrollen, rösten över larmgränsen" \
+              --body "Driftkontrollen (DECISIONS #883, halkvakt-kuvos F68 och posten 16/11 i marsförregistreringens §14) prövar varje dygn röstens regel mot stationernas mätning. Ärendet kommenteras varje dygn över gränsen och stängs av Bengt.
+
+          $TEXT"
+          fi
