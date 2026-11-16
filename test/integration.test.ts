@@ -4291,3 +4291,76 @@ test("#855 favoritprovets delar: DELAR i funktionen lika med jobben i sql/111, o
   assert.deepEqual(tagna.map((x) => x.length), [10, 10, 10]);
   assert.match(main, /\.filter\(\(_, i\) => i % DELAR === del - 1\)/, "funktionen delar på samma sätt");
 });
+
+// SMÅVÄGSRÖSTENS UPPFÖLJNING (scripts/smavag-uppfoljning.ts, DECISIONS #883), mot riktig PostGIS: frågorna går att köra mot tabellerna
+// som de är efter migreringarna, och dygnens gränser räknas i UTC också när sessionen står i svensk tid.
+//   SU1  räknaren: småvägsbeskeden, vaktpassen och reglaget per app och version, kohorterna ihop, och bara fönstrets dygn
+//   SU2  facitsvaren: bara smv-id:n, utan provsvaren, och ett svar 23.30 UTC räknas på sitt UTC-dygn
+//   SU3  olyckorna: lagret smavag med klassningen, utan dubbletter och utan olyckor som saknar lagret
+test("#883 småvägsröstens uppföljning: frågorna mot databasen, per dygn i UTC", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { lasDb, raknaren, facit, olyckor, fonster } = await import("../scripts/smavag-uppfoljning.ts");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const D = "2031-01-15", FORE = "2031-01-08";   // FORE ligger dygnet före fönstret
+  const stada = async () => {
+    await q("DELETE FROM app_raknare WHERE dag BETWEEN '2031-01-01' AND '2031-01-31'").catch(() => {});
+    await q("DELETE FROM driver_facit WHERE alert_t BETWEEN '2031-01-01' AND '2031-02-01'").catch(() => {});
+    await q("DELETE FROM olycksfacit WHERE deviation_id LIKE 'su883-%'").catch(() => {});
+  };
+  try {
+    for (const f of ["003_situation_archive.sql", "022_driver_facit.sql", "025_driver_facit_prov.sql", "027_driver_facit_prov_fotostudio.sql",
+      "077_app_raknare.sql", "082_app_raknare_version_kohort.sql", "084_olycksfacit.sql", "085_olycksfacit_klassning.sql",
+      "103_smavagspunkter.sql", "104_radar_smavag.sql", "105_smavagsregeln.sql", "106_smavag_punktfil.sql", "108_olycksfacit_driftlarm.sql",
+      "110_olycksfacit_upplagg.sql"]) await q(sql842(f));
+    await stada();
+    await q("SET TimeZone = 'Europe/Stockholm'");   // sessionens zon ska inte styra dygnens gränser
+    const rakna = (dag: string, app: string, ver: string, kohort: string, h: string, v: string, n: number) =>
+      q("INSERT INTO app_raknare (dag, app, version, kohort, handelse, varde, antal) VALUES ($1, $2, $3, $4, $5, $6, $7)", [dag, app, ver, kohort, h, v, n]);
+    await rakna(D, "ios", "0.4.0", "ny", "varning", "smavag:400-800", 4);
+    await rakna(D, "ios", "0.4.0", "befintlig", "varning", "smavag:400-800", 2);
+    await rakna(D, "ios", "0.4.0", "ny", "varning", "kandidat:400-800", 50);          // en annan fara räknas inte
+    await rakna(D, "ios", "0.4.0", "ny", "vakt_startad", "sjalv", 3);
+    await rakna(D, "ios", "0.4.0", "ny", "installning", "slippery_segment:av", 1);
+    await rakna(D, "ios", "0.4.0", "ny", "installning", "camera:av", 9);              // ett annat reglage räknas inte
+    await rakna(D, "ios", "0.4.0", "ny", "resa_slut", "sjalv:3-15:parkerad", 3);
+    await rakna(FORE, "ios", "0.4.0", "ny", "varning", "smavag:under400", 77);
+    const svar = (id: string, t: string, s: string) => q("INSERT INTO driver_facit (alert_id, alert_t, svar, app, version) VALUES ($1, $2, $3, 'ios', '0.4.1')", [id, t, s]);
+    await svar("smv:v00012", `${D}T23:30:00Z`, "ja");                                  // 00.30 svensk tid dagen efter: räknas på D
+    await svar("smv:v00013", `${D}T08:00:00Z`, "nej");
+    await svar("smv:prov1", `${D}T09:00:00Z`, "nej");                                  // provsvar räknas inte
+    await svar("seg:16010", `${D}T10:00:00Z`, "nej");                                  // en annan varning räknas inte
+    await svar("smv:v00014", `${FORE}T12:00:00Z`, "nej");
+    const olycka = async (id: string, t: string, klass: string | null, utfall: string, orsak: string | null, dubblett: string | null = null) => {
+      await q(`INSERT INTO olycksfacit (deviation_id, start_time, geom, utfall, klass, dubblett_av) VALUES ($1, $2, ST_SetSRID(ST_MakePoint(15, 60), 4326), $3, $4, $5)`,
+        [`su883-${id}`, t, utfall, klass, dubblett]);
+      if (orsak) await q("INSERT INTO olycksfacit_lager (deviation_id, lager, talar, orsak) VALUES ($1, 'smavag', false, $2)", [`su883-${id}`, orsak]);
+    };
+    await olycka("a", `${D}T06:00:00Z`, "TROLIG", "TYST_OTACKT", "varnar");
+    await olycka("b", `${D}T07:00:00Z`, null, "TYST_TACKT", "fryser inte");
+    await olycka("c", `${D}T08:00:00Z`, "TROLIG", "TYST_TACKT", "ingen småvägspunkt");
+    await olycka("d", `${D}T08:05:00Z`, "TROLIG", "TYST_OTACKT", "varnar", "su883-a");  // dubblett räknas inte
+    await olycka("e", `${D}T09:00:00Z`, "OKLAR", "TYST_TACKT", null);                   // utan lagret räknas inte
+    await olycka("f", `${FORE}T09:00:00Z`, "TYDLIG", "TYST_OTACKT", "varnar");
+    const db = await lasDb(q, D);
+    assert.equal((await q("SHOW TimeZone")).rows[0].TimeZone, "UTC", "läsningen sätter zonen själv");
+    const idag = new Set([D]), sju = new Set(fonster(D));
+    // SU1
+    const r = raknaren(db.raknaren, sju)["ios 0.4.0"];
+    assert.deepEqual([r.besked, r.band["400-800"], r.vaktpass, r.halt_vaglag_av, r.resor["3-15"], r.besked_per_vaktpass], [6, 6, 3, 1, 3, 2], "SU1: kohorterna ihop, bara småvägsbeskeden och Halt väglag");
+    assert.ok(!db.raknaren.some((x: any) => x.dag === FORE), "SU1: dygnet före fönstret läses inte");
+    // SU2
+    const f = facit(db.facit, idag);
+    assert.deepEqual([f.alla.ja, f.alla.nej], [1, 1], "SU2: ett ja 23.30 UTC och ett nej, utan provsvaret och utan den andra varningen");
+    assert.deepEqual(facit(db.facit, sju).alla, { ja: 1, nej: 1, andel_ja: 0.5 }, "SU2: svaret före fönstret läses inte");
+    // SU3
+    const o = olyckor(db.olyckor, sju, 0.25);
+    assert.deepEqual([o.olyckor, o.vid_punkt, o.med_timme, o.i_halkalage, o.otackta_vid_punkt, o.halkkopplade.varnar, o.per_orsak["fryser inte"]["ej klassad"]],
+      [3, 2, 2, 1, 1, 1, 1], "SU3: tre olyckor med lagret, utan dubbletten, den utan lager och den före fönstret");
+    assert.equal(o.overrepresentation, 2, "SU3: en av två i halkaläge mot 25 % av tiden");
+    assert.deepEqual(db.brytarna.map((b: any) => b.grupp), ["N", "P1"], "brytarna följer med");
+  } finally {
+    await stada();
+    await pool.end();
+  }
+});

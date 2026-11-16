@@ -16857,3 +16857,60 @@ kortets tre frågor: *"S väg 40 b inget komma v rättelse före kör vidare"*, 
 - att rätta också hemsidans datafiler.
 
 **Stomdokument:** APP 3 — olycksraden utan kommatecken som koden säger den, APP 4 — skylten och den citerade röstraden med E4 och väg 40
+
+## #883 (16/11 2026) Småvägsrösten mot verkliga data: en dygnsrapport i fem delar, kontrollerna på pulsklockan, och driftkontrollen spärrad tills tillägget är signerat (kort #662)
+
+**Beslutet.** Bengt 16/11: *"ja skriv tillägget och bygg uppföljningen på alla fyra delar och implementera ett system som följer upp
+och rapporterar hur systemet förhåller sig till verkliga data"*. Före det: *"när vi står i begrepp att launcha borde vi inte då
+dagligen kunna ha kontroll på hur rätt våra prognoser är"*.
+
+**Bakgrunden.** Granskningen 16/11 visade att inget i säsongens uppföljning mäter om småvägsrösten har rätt:
+- avbrottskontrollen (#868, #869) prövar bara hur ofta skuggans påhittade resor får ett besked, vid taket 30 minuter och 20 km. iPhone 0.4.0
+  (49) i App Store har 10 minuter och 5 km (byggd före #863), och det ser avbrottet inte;
+- olycksfacit täcker mest större vägar;
+- GitHub-cronen startade vakten och avbrottet 6–8 timmar sent (15/11: 06.37 UTC gick 14.15), så ett dåligt dygn syntes först nästa kväll;
+- röstens träffsäkerhet vid stationerna samlas in varje dygn men är spärrad till mars i det privata repots förregistrering.
+
+**1. Dygnsrapporten** (`kuvos-smavag-uppfoljning.yml`, `scripts/smavag-uppfoljning.ts`). Varje morgon skrivs en rapport för förra
+UTC-dygnet, med dygnet och sju dygn:
+- **räknaren:** småvägsbeskeden per app och version mot vaktpassen, och hur många som stängt av *Halt väglag* (`app_raknare`);
+- **facitsvaren** på småvägsrösten (`driver_facit`, utan provsvaren);
+- **olyckorna** vid en småvägspunkt: vad regeln sa vid starten och klassningen (lagret `smavag`, sql/110), och andelen som började i
+  halkaläge mot andelen av punkt-timmarna i halkaläge;
+- **radarkollen:** prognosens nederbörd mot radarn, ur skuggans underlag (räknas i det privata repot);
+- **driftkontrollen:** röstens regel mot stationernas mätning (räknas i det privata repot).
+
+Rapporten går bara till den privata hinken (`uppfoljning_<dygn>.json` och `.md`). Loggen säger bara vilka delar som är klara och
+driftkontrollens ord per region: under, över, för få, väntar eller spärrad (#768, #498).
+
+**2. Driftkontrollen är spärrad.** Den läser ingen dygnsfil förrän posten 16/11 i det privata repots förregistrering är signerad av
+Bengt och Axel. Flödet prövar spärren innan något hämtas ur hinken. Ligger driftkontrollen över larmgränsen i en region får Bengt ett
+ärende utan tal, och avstängningen är Bengts och Axels beslut med `sql/107`. Ingen kod slår av rösten.
+
+**3. Kontrollerna på pulsklockan** (`scripts/pulsklocka.ts`, 31 → 34 jobb, och vakthundens golv):
+- `puls-smavag-vakt` 06.19 UTC;
+- `puls-smavag-avbrott` 06.39 UTC;
+- `puls-smavag-uppfoljning` 08.36 UTC, när P-II:s dygnsfil från körningen 06 finns.
+
+GitHub-cronen står kvar som reserv. Samma dygn prövas aldrig två gånger.
+
+**4. Provlistan** (`scripts/smavag-provlista.sql`): småvägarna nära en plats där regeln varnar just nu, med kartlänk. Den körs för hand
+i SQL-redigeraren, bara läsning, och aldrig i ett flöde. Det är den enda kontrollen på själva småvägarna: att någon ser efter.
+
+**Vad uppföljningen inte kan säga:**
+- Stationerna står på mätta vägar, inte på småvägarna, och facit är en kall och fuktig yta, inte friktion.
+- Olyckorna matchas på avstånd (0,5 km), inte på väg, och klassningen läser en station inom 15 km.
+- Radarn ser lätt snö dåligt och täcker inte allt. Radarkollen har ingen larmgräns.
+- Räknaren säger hur ofta rösten talade, inte om den hade rätt.
+
+**Driftsättningen**, på Bengts ord efter sammanslagningen:
+1. pulsklockan körs skarpt (`pulsklocka.yml`), så att de tre jobben finns;
+2. vakthunden deployas med det nya golvet, efter pulsklockan, så att den inte larmar om saknade jobb.
+
+**Alternativen som inte valdes:**
+- att låta spärren stå till mars: då är det okänt hela vintern om rösten har rätt i drift;
+- att häva spärren utan ett signerat tillägg: spärren är Bengts och Axels signatur;
+- en larmgräns för radarkollen: ingen gräns är bestämd, och den ska skrivas före läsningen;
+- att visa talen i ärendet eller loggen: det publika repot bär inga tal ur kuvösen eller ur testarnas svar.
+
+**Stomdokument:** MAT 5 — småvägsröstens uppföljning mot verkliga data, SYS 2 — dygnsrapporten och kontrollerna på pulsklockan

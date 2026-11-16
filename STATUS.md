@@ -3087,3 +3087,9 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - **Mätt efter driftsättningen:** `live.json` 22.00 UTC bär alla 177 sträckor, 4 olyckor och 41 kandidatsträckor som *E4* eller siffror. 21.50 UTC, före driftsättningen, stod *E 4* och *Väg 395*.
   - **Sidorna:** vägsidan för väg 40 säger *väg 40*, och E18 står en gång i Stockholms län. En genomsökning av hela hemsidan hittade ingen *E 4*, *riksväg N*, *Rv N* eller *väg ,* i texten.
   - **Kvar:** testarsidan, och provet av mcp och olycksfacit i drift.
+- 16/11 natt (Claude; Bengt: *"ja skriv tillägget och bygg uppföljningen på alla fyra delar och implementera ett system som följer upp och rapporterar hur systemet förhåller sig till verkliga data"*): **småvägsröstens uppföljning mot verkliga data byggd (DECISIONS #883, kort #662), inte sammanslagen och inte driftsatt.**
+  - **Dygnsrapporten:** flödet `kuvos-smavag-uppfoljning.yml` skriver förra dygnets rapport till den privata hinken, med räknaren per app och version, facitsvaren, olyckorna vid en småvägspunkt, radarkollen och driftkontrollen.
+  - **Driftkontrollen är spärrad:** röstens regel mot stationernas mätning läses inte förrän Bengt och Axel har signerat posten i det privata repots förregistrering (halkvakt-kuvos F68). Flödet prövar spärren innan någon dygnsfil hämtas.
+  - **Pulsklockan:** vakten, avbrottet och uppföljningen får egna pulsjobb (31 → 34), eftersom GitHub-cronen gick 6–8 timmar sent. Den skarpa körningen och vakthundens deploy väntar på Bengts ord.
+  - **Provlistan** `scripts/smavag-provlista.sql`, körd i SQL-redigeraren 15/11 kl. 23 UTC: den gav 30 rader kring Umeå, och ingen varnande punkt inom 15 km från Ystad.
+  - **Provat:** självtesten och motproven (11 för databasdelen och rapporten), integrationsprovet SU1–SU3 i ci, och stegets logik provkörd lokalt i sju fall med påhittade svar. Flödet självt har inte gått.

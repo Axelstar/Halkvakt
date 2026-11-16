@@ -106,13 +106,19 @@ const NYA: { namn: string; schema: string; fil: string }[] = [
   // kedjan räknar den vid R + 51 minuter, långt före blocket R+6 … R+11. Förut startade den efter kuvos-stad vid R+7 till R+8 och
   // tappade blockets första timmar. :51 är ledig i databasens klocka och bland pulsjobben. `*/6` för kadensTimmar (#558).
   { namn: "puls-kuvos-smavag", schema: "51 */6 * * *", fil: "kuvos-smavag.yml" },
+  // Småvägsröstens dagliga kontroller (DECISIONS #883, kort #662): GitHub-cronen startade dem 6–8 timmar sent (15/11: 06.37 gick
+  // 14.15 UTC), så ett dåligt dygn syntes först nästa kväll. Vakten och avbrottet prövar förra UTC-dygnet på morgonen, och
+  // uppföljningen går när P-II:s dygnsfil från körningen 06 finns. Minuterna :19, :39 och :36 är lediga bland pulsjobben.
+  { namn: "puls-smavag-vakt", schema: "19 6 * * *", fil: "smavag-vakt.yml" },
+  { namn: "puls-smavag-avbrott", schema: "39 6 * * *", fil: "kuvos-smavag-avbrott.yml" },
+  { namn: "puls-smavag-uppfoljning", schema: "36 8 * * *", fil: "kuvos-smavag-uppfoljning.yml" },
 ];
 
 // Vakthundens check 6a bär samma tal som golv (kort #222, DECISIONS #255): ett puls-jobb som
 // avaktiveras eller raderas ska larma, inte tyst falla ur bevakningslistan. Vakthunden kör i Deno
 // hos Supabase och kan inte importera den här filen, så talet är en KOPIA — kontraktsgrinden vaktar
 // att kopiorna bär samma värde, och raden under vaktar att värdet stämmer med listan ovan.
-const ANTAL_NYA = 31;
+const ANTAL_NYA = 34;
 if (NYA.length !== ANTAL_NYA) {
   console.error(`NYA har ${NYA.length} jobb men ANTAL_NYA säger ${ANTAL_NYA} — uppdatera båda, och vakthundens PULS_GOLV.`);
   process.exit(1);
