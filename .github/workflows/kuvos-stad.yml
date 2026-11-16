@@ -5,7 +5,8 @@ name: kuvos-stad
 #   historik  45 dygns MET Nordic-analys bakåt för stadspunkterna, ur MET:s arkiv, till Actions-cachen kuvos-stad-historik-<dygn>.
 #             Pausar runt de levande körningarna. Tar tiden slut, tar nästa körning vid där den slutade.
 #   kedjan    startar av sig själv när den levande fysiken (ny-kandidat-fysik) har kört klart (workflow_run, F24: inte pulsklockan), eller
-#             med knappen. De dygn som saknas läggs till i cachen, sedan de senaste timmarna och körningen ur metpplatest, del A för alla
+#             med knappen. Efter en körning som flödets egen nyckel har startat (reserven) går ingen workflow_run, och då startar
+#             ny-kandidat-fysik kedjan själv (DECISIONS #884). De dygn som saknas läggs till i cachen, sedan de senaste timmarna och körningen ur metpplatest, del A för alla
 #             punkter i DELAR delar (F22: en halva om 11 857 punkter tog 11,8 GB), del B för timmen och beskeden. Loggen visar tider,
 #             minne, storlekar och antal punkter. Beskeden går bara till hinken (kuvos-stad-2026-27/), aldrig till en artefakt.
 #             Sist stadsmiljön (kuvösens BESLUT F31): de utelämnade stationerna i storstädernas tätorter, se steget.

@@ -16914,3 +16914,46 @@ i SQL-redigeraren, bara läsning, och aldrig i ett flöde. Det är den enda kont
 - att visa talen i ärendet eller loggen: det publika repot bär inga tal ur kuvösen eller ur testarnas svar.
 
 **Stomdokument:** MAT 5 — småvägsröstens uppföljning mot verkliga data, SYS 2 — dygnsrapporten och kontrollerna på pulsklockan
+
+## #884 (16/11 2026) Stadsflödet startas efter fysikens reserv (kort #663)
+
+**Beslut.** Bengt 16/11: *"Ja, rätta"*, på frågan om fysikflödet ska rättas så att stadsflödet startar efter reserven.
+`ny-kandidat-fysik.yml` får ett steg som startar `kuvos-stad` (kedjan) när körningen är startad med flödets egen nyckel.
+
+**Felet,** funnet 16/11 vid den första körningen av småvägsröstens uppföljning (kort #662):
+- Fysikens ordinarie körning kl. 06.28 UTC har fallit varje morgon från 12/11, i steget som hämtar de levande timmarna och körningen
+  ur metpplatest, efter fem omförsök. Reserven (#857, #859) räknar om den omkring 06.47, med flödets egen nyckel.
+- `kuvos-stad` startar på `workflow_run` efter fysiken. En körning som flödets egen nyckel har startat sätter aldrig igång
+  `workflow_run` (GitHubs regel, som i #881). Körningen 06.33 var därför *skipped* 14/11, 15/11 och 16/11, och ingen kom i dess ställe.
+- Stadsmiljöns och P-II:s steg gick alltså inte för den körningen, och uppföljningens driftkontroll (#883) sa *väntar* för 14/11 och
+  15/11. Vad det betyder för proven står i halkvakt-kuvos F70 (#768).
+
+**Rättelsen:**
+- **Ett steg efter *Timmen direkt*.** När körningen är startad av `github-actions[bot]`, utan vald körning, startar steget `kuvos-stad`
+  med steget kedjan.
+- **Annars som förut.** Efter en körning som pulsklockan eller en människa har startat går `workflow_run`, och steget hoppas över.
+- **MET-kön.** `kuvos-ny-kandidat-met` håller en väntande körning, och en ny väntande avbryter den som väntar. Steget startar därför
+  bara när ingen körning i kön väntar och `kuvos-stad` inte redan kör. Annars räknar `kuvos-stad` vid nästa körning, som förut.
+- **Högst en minut.** Småvägskedjan och `kuvos-stad` väntar själva på att fysikens körning ska bli klar, i upp till 45 minuter, så
+  steget får inte hålla kvar den. Det prövar kön fyra gånger med 20 sekunder emellan.
+
+**Provat:**
+- Stegets logik är provkörd lokalt med ett påhittat `gh`, i nio fall: tom kö, en väntande körning i vart och ett av de tre flödena,
+  stadsflödet som kör, kön som töms i det andra och det fjärde försöket, `gh` som inte svarar och en start som faller.
+- Fem motprov fälldes.
+- Att reserven startas av `github-actions[bot]` är läst i GitHubs API för körningen 16/11 06.47 (43819230589). Den ordinarie körningen
+  06.28 startades av pulsklockans nyckel.
+
+**Inte provat.** Steget har inte gått i drift. Beviset är en morgon där `kuvos-stad` har en grön körning efter reserven.
+
+**Alternativen som inte valdes:**
+- att starta `kuvos-stad` med pulsklockan: kedjan ska följa fysiken och inte en klocka;
+- att låta reserven starta fysiken med en egen nyckel, så att `workflow_run` går: det kräver en ny hemlighet för något ett steg kan
+  göra (som #881);
+- att vänta in MET-kön i fysikens jobb: småvägskedjan väntar på fysiken, och de två hade väntat på varandra.
+
+**Kvar:**
+- varför den ordinarie körningen faller varje morgon är inte utrett. Reserven bär den;
+- dygnen som saknar körningen avgörs i det privata repot.
+
+**Stomdokument:** SYS 2 — stadsflödet startas efter fysikens reserv

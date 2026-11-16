@@ -3104,3 +3104,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - **Vakthunden deployad** från 6114f04 (körning 43817717000). Dess rad med golvet 34 läses efter nästa körning, 07.07 UTC.
   - **Första körningen** av `kuvos-smavag-uppfoljning` (43817816425) grön: räknaren, facitsvaren, olyckorna och radarkollen *klart*; driftkontrollen *under* i alla tre regionerna för dygnet 13/11 och *väntar* för 14/11 och 15/11. Inget ärende skrevs.
   - **Felet (kort #663):** `kuvos-stad` är *skipped* varje morgon sedan 14/11, eftersom fysikens körning 06.28 UTC faller och reserven, som flödets egen nyckel startar, inte sätter igång `workflow_run`. Stadsmiljöns och P-II:s steg går därför inte för den körningen. Rättelsen väntar på Bengts ord.
+- 16/11 morgon (Claude; Bengt: *"Ja, rätta"*): **stadsflödet startas efter fysikens reserv** (DECISIONS #884, kort #663).
+  - **Rättelsen:** ett steg i `ny-kandidat-fysik.yml` startar `kuvos-stad` (kedjan) när körningen är startad med flödets egen nyckel, och bara när ingen körning väntar i MET-kön och `kuvos-stad` inte redan kör.
+  - **Provat:** logiken provkörd lokalt med ett påhittat `gh` i nio fall, och fem motprov fällda. Steget har inte gått i drift.
+  - **Kvar:** sammanslagningen på Bengts ord, en morgon med grön körning efter reserven, och dygnen som saknar körningen (halkvakt-kuvos F70).
