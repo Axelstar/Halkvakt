@@ -3133,3 +3133,8 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - **14/11** (körning 43888741527, 14.43–15.01 UTC) och **15/11** (43891909642, 15.01–15.12 UTC) är gröna. Stadsmiljöns PH och P-II:s två filer för varje körning ligger i hinken, hämtade tillbaka och lika de skrivna. Del B, timmens besked, identiteten och dygnen hoppades över.
   - **Följden:** de vanliga körningarna kan nu räkna stadsmiljöns dygn 14/11 och 15/11 och P-II:s dygn 15/11, som alla väntade på körningen 00. P-II:s dygn 14/11 skrevs redan 12.39 UTC med den levande ensam och står kvar så (halkvakt-kuvos F70).
   - **Bevis kvar:** loggraderna *dygnet … klart* i nästa vanliga körning av `kuvos-stad`, omkring 18.36 UTC.
+- 16/11 kl. 19.02 UTC (Claude; Bengt: *"kolla kvällens körning när den gått"*): **kvällens stadsflöde räknade dygnen som väntade på körningen 00** (DECISIONS #885, kort #663).
+  - **Körningen** 43931878522 (`kuvos-stad` efter fysikens körning 18, körningen 20261116T12Z, 18.43–19.02 UTC) är grön.
+  - **Stadsmiljön:** dygnen 14/11 och 15/11 *klart*, med dygnsfil och sammanfattning i hinken, hämtade tillbaka och lika de skrivna. Identiteten för körningen 06 är klarad.
+  - **P-II:** dygnet 15/11 *klart* med alla körningarnas filer, dygnsfil och sammanfattning i hinken. Dygnet 14/11 står kvar med den levande ensam (halkvakt-kuvos F70).
+  - **Kvar:** dygnet 16/11 (stadsmiljön efter körningen 18, omkring 00.40 UTC 17/11; P-II av körningen 06 17/11, omkring 12.40 UTC) och morgonen 17/11, det första beviset för #884.
