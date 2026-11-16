@@ -16914,3 +16914,85 @@ i SQL-redigeraren, bara läsning, och aldrig i ett flöde. Det är den enda kont
 - att visa talen i ärendet eller loggen: det publika repot bär inga tal ur kuvösen eller ur testarnas svar.
 
 **Stomdokument:** MAT 5 — småvägsröstens uppföljning mot verkliga data, SYS 2 — dygnsrapporten och kontrollerna på pulsklockan
+
+## #884 (16/11 2026) Stadsflödet startas efter fysikens reserv (kort #663)
+
+**Beslut.** Bengt 16/11: *"Ja, rätta"*, på frågan om fysikflödet ska rättas så att stadsflödet startar efter reserven.
+`ny-kandidat-fysik.yml` får ett steg som startar `kuvos-stad` (kedjan) när körningen är startad med flödets egen nyckel.
+
+**Felet,** funnet 16/11 vid den första körningen av småvägsröstens uppföljning (kort #662):
+- Fysikens ordinarie körning kl. 06.28 UTC har fallit varje morgon från 12/11, i steget som hämtar de levande timmarna och körningen
+  ur metpplatest, efter fem omförsök. Reserven (#857, #859) räknar om den omkring 06.47, med flödets egen nyckel.
+- `kuvos-stad` startar på `workflow_run` efter fysiken. En körning som flödets egen nyckel har startat sätter aldrig igång
+  `workflow_run` (GitHubs regel, som i #881). Körningen 06.33 var därför *skipped* 14/11, 15/11 och 16/11, och ingen kom i dess ställe.
+- Stadsmiljöns och P-II:s steg gick alltså inte för den körningen, och uppföljningens driftkontroll (#883) sa *väntar* för 14/11 och
+  15/11. Vad det betyder för proven står i halkvakt-kuvos F70 (#768).
+
+**Rättelsen:**
+- **Ett steg efter *Timmen direkt*.** När körningen är startad av `github-actions[bot]`, utan vald körning, startar steget `kuvos-stad`
+  med steget kedjan.
+- **Annars som förut.** Efter en körning som pulsklockan eller en människa har startat går `workflow_run`, och steget hoppas över.
+- **MET-kön.** `kuvos-ny-kandidat-met` håller en väntande körning, och en ny väntande avbryter den som väntar. Steget startar därför
+  bara när ingen körning i kön väntar och `kuvos-stad` inte redan kör. Annars räknar `kuvos-stad` vid nästa körning, som förut.
+- **Högst en minut.** Småvägskedjan och `kuvos-stad` väntar själva på att fysikens körning ska bli klar, i upp till 45 minuter, så
+  steget får inte hålla kvar den. Det prövar kön fyra gånger med 20 sekunder emellan.
+
+**Provat:**
+- Stegets logik är provkörd lokalt med ett påhittat `gh`, i nio fall: tom kö, en väntande körning i vart och ett av de tre flödena,
+  stadsflödet som kör, kön som töms i det andra och det fjärde försöket, `gh` som inte svarar och en start som faller.
+- Fem motprov fälldes.
+- Att reserven startas av `github-actions[bot]` är läst i GitHubs API för körningen 16/11 06.47 (43819230589). Den ordinarie körningen
+  06.28 startades av pulsklockans nyckel.
+
+**Inte provat.** Steget har inte gått i drift. Beviset är en morgon där `kuvos-stad` har en grön körning efter reserven.
+
+**Alternativen som inte valdes:**
+- att starta `kuvos-stad` med pulsklockan: kedjan ska följa fysiken och inte en klocka;
+- att låta reserven starta fysiken med en egen nyckel, så att `workflow_run` går: det kräver en ny hemlighet för något ett steg kan
+  göra (som #881);
+- att vänta in MET-kön i fysikens jobb: småvägskedjan väntar på fysiken, och de två hade väntat på varandra.
+
+**Kvar:**
+- varför den ordinarie körningen faller varje morgon är inte utrett. Reserven bär den;
+- dygnen som saknar körningen avgörs i det privata repot.
+
+**Stomdokument:** SYS 2 — stadsflödet startas efter fysikens reserv
+
+## #885 (16/11 2026) Stadsflödet kan räkna en äldre körning i efterhand (kort #663)
+
+**Beslut.** Bengt 16/11: *"Ja, kör"*, på frågan om stadsflödet ska köras för hand så att dygnet 16/11 får körningen 00. Svaret kom
+13.38 UTC, och då valde stadsflödet körningen 06 efter klockan, som 12.39-körningen redan räknat. Ingenting startades.
+`kuvos-stad.yml` får i stället valet `stamp`, som `ny-kandidat-fysik.yml` har: en äldre körning räknas i efterhand, så länge MET:s
+katalog har den kvar.
+
+**Varför ett val behövs:**
+- Stadsflödet hämtar körningen efter klockan: den senaste av 00, 06, 12 och 18 som är minst sex timmar gammal. Efter 12.00 UTC är
+  det körningen 06.
+- MET:s katalog `metpplatest` har körningarna i omkring tre dygn. Den äldsta 16/11 13.38 UTC var 13/11 18Z.
+- Del A klipper analysen vid körningens start (`levande.py` i det privata repot), så en efterräkning får samma indata som den levande
+  hade fått.
+
+**Spärrarna:**
+- **Bara en körning som klockan passerat.** Stämpeln ska ha formen `20261116T00Z`, med timmen 00, 06, 12 eller 18, och vara äldre än
+  klockans körning. En efterräkning hinner alltså aldrig före den levande, som annars hade hittat sina filer i hinken.
+- **Timmens besked hoppas över.** Del B och beskeden hör till timmen när körningen går.
+- **Identiteten hoppas över.** Den jämför förra körningens timmar med driftens `ny_kandidat_live`, som bara bär de senaste timmarna.
+  För en äldre körning blir jämförelsen tom, provet räknas som fallet, och stadsmiljöns steg hade stoppat P-II.
+- **Dygnen räknas inte.** Efterräkningen lägger bara körningens filer i hinken, och nästa vanliga körning räknar dygnen. P-II räknar
+  annars upp till 13 dygn bakåt från körningen, och så långt bakåt från en äldre körning kan databasen redan ha gallrat driftens timmar.
+- **MET-kön.** En ny väntande körning ersätter den som väntar, så en efterräkning startas bara när ingen körning väntar i kön.
+
+**Funnet samtidigt:** stadsmiljön har ingen reserv för ett dygn som saknar en körning. Dess dygn 14/11 och 15/11 väntar på körningen 00,
+och de bedöms aldrig om den inte kommer. P-II räknade dygnet 14/11 klart 12.39 UTC utan körningen 00, med den levande ensam. Vad det
+betyder för proven står i halkvakt-kuvos F70 (#768).
+
+**Provat:** spärren och de två dygnslistorna är provkörda lokalt i 14 fall, med klockan påhittad, och sex motprov fälldes. Valet har
+inte gått i drift.
+
+**Alternativen som inte valdes:**
+- att köra stadsflödet utan val: det hade räknat körningen 06 en gång till;
+- att ge stadsmiljön en reserv som P-II:s: det ändrar hur ett dygn bedöms, och det hör till förregistreringen i det privata repot.
+
+**Kvar:** vilka körningar som ska räknas i efterhand avgör Bengt och Axel (F70). Körningen 00 för 16/11 är den Bengt sagt ja till.
+
+**Stomdokument:** SYS 2 — stadsflödet kan räkna en äldre körning i efterhand

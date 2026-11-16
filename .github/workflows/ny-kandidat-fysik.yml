@@ -264,6 +264,32 @@ jobs:
           else
             echo "Timmen direkt: del A blev klar ${M:-?} min efter slotten, del B räknar vid :47."
           fi
+      # STADSFLÖDET EFTER RESERVEN (DECISIONS #884, kort #663). kuvos-stad startar på workflow_run när den här körningen är klar, men en
+      # körning som flödets egen nyckel har startat (reserven, #857 och #859) sätter aldrig igång workflow_run (GitHubs regel, som #881).
+      # Den ordinarie körningen 06.28 UTC föll varje morgon från 12/11, reserven räknade om den, och kuvos-stad stod över 14–16/11.
+      # Steget startar därför kuvos-stad självt, och bara när körningen är startad med flödets nyckel: efter en körning som pulsklockan
+      # eller en människa har startat går workflow_run som förut.
+      # MET-kön (kuvos-ny-kandidat-met) håller en väntande körning, och en ny väntande avbryter den som väntar. Steget startar därför
+      # bara när ingen körning i kön väntar och kuvos-stad inte redan kör, och det väntar högst en minut: småvägskedjan och kuvos-stad
+      # väntar själva på att den här körningen ska bli klar. Annars räknar kuvos-stad vid nästa körning, som förut.
+      - name: Stadsflödet efter en körning som flödets egen nyckel startat
+        if: ${{ success() && inputs.stamp == '' && github.triggering_actor == 'github-actions[bot]' }}
+        shell: bash
+        run: |
+          vantar() { gh run list --workflow "$1" --limit 10 --json status -q '[.[] | select(.status != "completed" and .status != "in_progress")] | length'; }
+          kor() { gh run list --workflow "$1" --limit 10 --json status -q '[.[] | select(.status == "in_progress")] | length'; }
+          for i in 1 2 3 4; do
+            V=""
+            if A=$(vantar kuvos-stad.yml) && B=$(vantar kuvos-pilot.yml) && C=$(vantar kuvos-smavag.yml) && S=$(kor kuvos-stad.yml); then V=$((A + B + C + S)); fi
+            [ "$V" = 0 ] && break
+            [ "$i" = 4 ] || sleep 20
+          done
+          if [ "$V" = 0 ]; then
+            gh workflow run kuvos-stad.yml -f steg=kedjan && echo "**Stadsflödet** är startat efter en körning som flödets egen nyckel startat." | tee -a "$GITHUB_STEP_SUMMARY" \
+              || echo "::warning::stadsflödet gick inte att starta — det räknar vid nästa körning"
+          else
+            echo "::warning::stadsflödet startas inte (${V:-gh svarade inte}): en körning i MET-kön väntar eller kuvos-stad kör redan — det räknar vid nästa körning"
+          fi
       - name: Flaggan av — ingenting skrivs
         if: env.FLAGGA != 'på'
         run: echo "**Flaggan är av** (kuvos/ny-kandidat-skugga.json) — PH står bara i artefakten, ingenting är skrivet till databasen." | tee -a "$GITHUB_STEP_SUMMARY"
