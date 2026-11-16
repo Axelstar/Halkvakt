@@ -3121,3 +3121,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - **Varför vår körning faller:** hämtningen gör sex försök på 4,5 minuter, mot ett fönster på omkring 40. Reserven 06.47 ligger i fönstrets slut.
   - **Mekanismen, troligen:** Unidatas THREDDS-fel där *datasetTracker* stängs när katalogerna läses om och inte startas igen, rättat i 5.8 (Unidata/tds#626, #627). MET visar inte sin version, och deras statussida visar inget för morgnarna.
   - **Följd:** den frystas körning 00 gick förlorad 11/11 och 15/11. Felanmälan till MET är Bengts val (bedömningen §4.2).
+- 16/11 kl. 14.32 UTC (Claude; Bengt: *"slå ihop 1639 och 91 och kör 16/11"*): **rättelsen sammanslagen, och körningen 00 för 16/11 efterräknad** (DECISIONS #884, #885, kort #663).
+  - **Sammanslaget 14.21 UTC:** #1639 som 092a8dc1, med ci grön på huvudet 3b6439aa, och kuvösens #91 (F70) som e4991cda.
+  - **Efterräkningen** (`kuvos-stad`, kedjan med `stamp=20261116T00Z`, körning 43884877700, 14.21–14.32 UTC) är grön. Stadsmiljöns PH och P-II:s två filer för körningen ligger i hinken, hämtade tillbaka och lika de skrivna. Del B, timmens besked, identiteten och dygnen hoppades över, som spärrarna säger.
+  - **Kvar:** morgonen 17/11, den första där fysikens steg ska starta `kuvos-stad` efter reserven. Dygnet 16/11 räknas av de vanliga körningarna: stadsmiljön efter körningen 18, P-II från körningen 06 i morgon.
