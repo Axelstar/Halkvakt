@@ -1,0 +1,23 @@
+{
+  "typ": "svep",
+  "nyckel": "svep:kvall",
+  "etikett": "Halkläget kl. 16:30",
+  "rubrik": "Halt i dag",
+  "underrad": "Halka på 170 vägavsnitt i 7 län.",
+  "fler": 0,
+  "text": "Halkläget kl. 16:30, måndag 16 november: halka på 170 vägavsnitt i 7 län. Svep för att se ditt län.\n\nNorrbotten: halka på 56 av 58 vägavsnitt, 56 stationer under noll, kallast −14,4 °C vid Leipojärvi, 1 olycka.\nVästerbotten: halka på 44 av 44 vägavsnitt, 45 stationer under noll, kallast −9,0 °C vid Gunnarn, 1 olycka.\nVästernorrland: halka på 22 av 22 vägavsnitt, 38 stationer under noll, kallast −5,2 °C vid Lillkrog, 2 olyckor.\nDalarna: halka på 18 av 38 vägavsnitt, 14 stationer under noll, kallast −5,7 °C vid Storbo/Idre, 1 olycka.\nGävleborg: halka på 15 av 27 vägavsnitt, 13 stationer under noll, kallast −3,0 °C vid Kårböle 2.\nJämtland: halka på 13 av 17 vägavsnitt, 31 stationer under noll, kallast −6,7 °C vid Brånan.\nVärmland: halka på 2 av 52 vägavsnitt, 11 stationer under noll, kallast −3,5 °C vid Storberget.\n\nLäget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Västernorrland #Dalarna #Gävleborg #halkvakt",
+  "textIg": "Halkläget kl. 16:30, måndag 16 november: halka på 170 vägavsnitt i 7 län. Svep för att se ditt län.\n\nNorrbotten: halka på 56 av 58 vägavsnitt, 56 stationer under noll, kallast −14,4 °C vid Leipojärvi, 1 olycka.\nVästerbotten: halka på 44 av 44 vägavsnitt, 45 stationer under noll, kallast −9,0 °C vid Gunnarn, 1 olycka.\nVästernorrland: halka på 22 av 22 vägavsnitt, 38 stationer under noll, kallast −5,2 °C vid Lillkrog, 2 olyckor.\nDalarna: halka på 18 av 38 vägavsnitt, 14 stationer under noll, kallast −5,7 °C vid Storbo/Idre, 1 olycka.\nGävleborg: halka på 15 av 27 vägavsnitt, 13 stationer under noll, kallast −3,0 °C vid Kårböle 2.\nJämtland: halka på 13 av 17 vägavsnitt, 31 stationer under noll, kallast −6,7 °C vid Brånan.\nVärmland: halka på 2 av 52 vägavsnitt, 11 stationer under noll, kallast −3,5 °C vid Storberget.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone, länken finns i vår profil.\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Västernorrland #Dalarna #Gävleborg #halkvakt",
+  "pass": "kvall",
+  "antal": 9,
+  "datum": "2026-11-16",
+  "generated_at": "2026-11-16T15:30:10.230Z",
+  "lan": [
+    "norrbotten",
+    "vasterbotten",
+    "vasternorrland",
+    "dalarna",
+    "gavleborg",
+    "jamtland",
+    "varmland"
+  ]
+}
