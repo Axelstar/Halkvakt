@@ -3125,3 +3125,11 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - **Sammanslaget 14.21 UTC:** #1639 som 092a8dc1, med ci grön på huvudet 3b6439aa, och kuvösens #91 (F70) som e4991cda.
   - **Efterräkningen** (`kuvos-stad`, kedjan med `stamp=20261116T00Z`, körning 43884877700, 14.21–14.32 UTC) är grön. Stadsmiljöns PH och P-II:s två filer för körningen ligger i hinken, hämtade tillbaka och lika de skrivna. Del B, timmens besked, identiteten och dygnen hoppades över, som spärrarna säger.
   - **Kvar:** morgonen 17/11, den första där fysikens steg ska starta `kuvos-stad` efter reserven. Dygnet 16/11 räknas av de vanliga körningarna: stadsmiljön efter körningen 18, P-II från körningen 06 i morgon.
+- 16/11 kl. 15 UTC (Claude; Bengt: *"ge den frysta kandidaten ett tredje försök"*): **den frysta kandidatens del A får ett tredje försök** (DECISIONS #886, kort #663).
+  - `scripts/kandidat-reserv.ts`: `FORSOK = 3`, som den nya fick i #854. Den frystas del B frågar utan `--forsok`; den nyas anrop är oförändrat.
+  - **Provat:** självtestet 13 fall, bland dem 15/11, där två fall ger det tredje försöket 07.43. Motproven två och fyra försök fälldes. Inte provat i drift.
+  - **Vad det skyddar:** den nya talar varje timme den är färsk (#729); den frysta behövs bara när den nya saknas. Det tredje försöket skyddar morgonen då båda faller.
+- 16/11 kl. 15.12 UTC (Claude; Bengt: *"Ja, båda"*): **körningen 00 för 14/11 och 15/11 efterräknad** (DECISIONS #885, kort #663).
+  - **14/11** (körning 43888741527, 14.43–15.01 UTC) och **15/11** (43891909642, 15.01–15.12 UTC) är gröna. Stadsmiljöns PH och P-II:s två filer för varje körning ligger i hinken, hämtade tillbaka och lika de skrivna. Del B, timmens besked, identiteten och dygnen hoppades över.
+  - **Följden:** de vanliga körningarna kan nu räkna stadsmiljöns dygn 14/11 och 15/11 och P-II:s dygn 15/11, som alla väntade på körningen 00. P-II:s dygn 14/11 skrevs redan 12.39 UTC med den levande ensam och står kvar så (halkvakt-kuvos F70).
+  - **Bevis kvar:** loggraderna *dygnet … klart* i nästa vanliga körning av `kuvos-stad`, omkring 18.36 UTC.

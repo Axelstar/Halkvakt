@@ -16996,3 +16996,31 @@ inte gått i drift.
 **Kvar:** vilka körningar som ska räknas i efterhand avgör Bengt och Axel (F70). Körningen 00 för 16/11 är den Bengt sagt ja till.
 
 **Stomdokument:** SYS 2 — stadsflödet kan räkna en äldre körning i efterhand
+
+## #886 (16/11 2026) Den frysta kandidatens del A får ett tredje försök (kort #663)
+
+**Beslut.** Bengt 16/11: *"ge den frysta kandidaten ett tredje försök"*, efter utredningen av MET:s morgonfel (kort #663).
+`scripts/kandidat-reserv.ts` får `FORSOK = 3`, som den nya kandidaten fick i #854. Den frystas del B (`kandidat-timme.yml`) frågar
+reserven utan `--forsok` och får därmed tre försök; den nyas anrop är oförändrat.
+
+**Varför:**
+- MET:s THREDDS har svarat HTTP 500 (*"datasetTracker_2 is not active"*) varje morgon sedan 11/11, omkring 06.10–06.52 UTC.
+- Den frystas körning 06.13 föll fem av sex morgnar 11–16/11, och reserven 06.43 föll 11/11, 12/11 och 15/11. Med två försök blev den
+  frystas körning 00 aldrig räknad 11/11 och 15/11 (12/11 räknades den för hand 07.34).
+- Det tredje försöket startar vid del B på :43 timmen efter slotten, efter MET:s fönster. *Timmen direkt* (#857) startar del B när
+  del A blir klar minst 30 minuter efter slotten, så timmen räknas direkt.
+
+**Vad det skyddar** (Bengt och Claude 16/11): den nya kandidaten talar varje timme då dess timme är färsk och fullständig, och den
+frysta bara annars (#729, `sql/070_bytet.sql`, §12 f). Den nya räknades 11/11 och 15/11, så den frystas förlorade körning ändrade inte
+vad förarna hörde. Det tredje försöket skyddar den morgon då båda faller samtidigt.
+
+**Provat:** självtestet har 13 fall, bland dem 15/11 (två fall ger det tredje försöket 07.43) och tre fall som hoppar. Två motprov
+fälldes: två försök och fyra försök. `smavag-reserv.ts`, som läser samma skript, är grön. Inte provat i drift.
+
+**Alternativen som inte valdes:**
+- `--forsok 3` i `kandidat-timme.yml` och standardvärdet kvar: då hade skriptets standard sagt två försök för en kandidat som får tre;
+- att flytta den frystas slott förbi MET:s fönster: det ändrar pulsklockans slott, som kontraktsgrinden vaktar, och väntar på MET:s svar.
+
+**Kvar:** den första morgonen där det tredje försöket behövs, med *RESERV* i `kandidat-timme` 07.43 och en lyckad del A efteråt.
+
+**Stomdokument:** SYS 2 — kandidatens kedja: den frysta kandidatens reserv får tre försök

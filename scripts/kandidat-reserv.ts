@@ -7,15 +7,18 @@
 // När del B saknar PH för timmen beslutar det här skriptet, ur del A:s körningar sedan den senaste slotten:
 //   ingen körning sedan slotten            → starta del A nu (reserven)
 //   körningen pågår                        → hoppa timmen (grönt; PH kommer)
-//   den enda körningen sedan slotten föll  → starta ett nytt försök
-//   två eller fler har fallit              → hoppa timmen (mätvakten larmar redan på del A)
+//   färre fall sedan slotten än försöken   → starta ett nytt försök (tre försök för båda kandidaterna, #854, #886)
+//   lika många fall som försöken           → hoppa timmen (mätvakten larmar redan på del A)
 //   körningen lyckades men PH saknas       → trasig kedja (rött)
 // En dubbel körning är ofarlig: kandidat-fysik har en concurrency-grupp, och skrivningen till kandidat_ph är ON CONFLICT DO UPDATE.
 //
 // DEN NYA KANDIDATEN (DECISIONS #854, Bengt 13/11: "Ja, båda"): samma reserv för ny-kandidat-fysik.yml, vars slott är :28, med tre
 // försök i stället för två. MET:s THREDDS svarade HTTP 500 ("datasetTracker_2 is not active") varje morgon 11–13/11 mellan omkring
 // 06:10 och 06:50 UTC. Den frystas reserv på :43 räddade 13/11 men inte 12/11, där också försöket 06:43 föll; ett tredje försök 07:47
-// hade nått fram. Den nyas del B (ny-kandidat-timme.yml, :47) frågar med --slott-min 28 --forsok 3. Den frysta är oförändrad.
+// hade nått fram. Den nyas del B (ny-kandidat-timme.yml, :47) frågar med --slott-min 28 --forsok 3.
+// DEN FRYSTA får samma tre försök (DECISIONS #886, Bengt 16/11: "ge den frysta kandidaten ett tredje försök"). MET:s morgonfel
+// fortsatte varje morgon till 16/11, och den frystas körning 00 gick förlorad 11/11 och 15/11, när både 06:13 och 06:43 föll. Det
+// tredje försöket startar på :43 timmen efter, efter MET:s fönster. Den frystas del B (kandidat-timme.yml) frågar utan --forsok.
 //
 //   gh run list --workflow kandidat-fysik.yml --limit 10 --json status,conclusion,createdAt \
 //     | node --experimental-strip-types scripts/kandidat-reserv.ts [--nu 2026-10-20T07:43:00Z] [--slott-min 28] [--forsok 3]
@@ -31,7 +34,7 @@ export type Beslut = { beslut: "starta" | "hoppa" | "trasig"; skal: string };
 
 export const SLOTTAR_H = [0, 6, 12, 18];
 export const SLOTT_MIN = 13;
-export const FORSOK = 2;   // den frystas: slottens körning och ett nytt försök (20/10)
+export const FORSOK = 3;   // den frystas: slottens körning och två nya försök (#886; två försök 20/10–16/11)
 
 /** Den senaste slotten (00:13, 06:13, 12:13, 18:13 UTC, eller på slottMin) som inte ligger efter `nu`. */
 export function slott(nu: Date, slottMin = SLOTT_MIN): Date {
@@ -71,7 +74,9 @@ function sjalvtest(): void {
     ["slottens körning pågår", [k("2026-10-20T06:13:05Z", "in_progress", null), k("2026-10-20T00:13:03Z")], "2026-10-20T06:43:00Z", "hoppa"],
     ["slottens körning lyckades men PH saknas", [k("2026-10-20T06:13:05Z")], "2026-10-20T07:43:00Z", "trasig"],
     ["slottens körning föll en gång", [k("2026-10-20T06:13:05Z", "completed", "failure")], "2026-10-20T07:43:00Z", "starta"],
-    ["två fall sedan slotten", [k("2026-10-20T07:44:00Z", "completed", "failure"), k("2026-10-20T06:13:05Z", "completed", "failure")], "2026-10-20T08:43:00Z", "hoppa"],
+    ["två fall sedan slotten, tredje försöket", [k("2026-10-20T07:44:00Z", "completed", "failure"), k("2026-10-20T06:13:05Z", "completed", "failure")], "2026-10-20T08:43:00Z", "starta"],
+    ["tre fall sedan slotten", [k("2026-10-20T08:44:00Z", "completed", "failure"), k("2026-10-20T07:44:00Z", "completed", "failure"),
+      k("2026-10-20T06:13:05Z", "completed", "failure")], "2026-10-20T09:43:00Z", "hoppa"],
     ["reservens körning pågår", [k("2026-10-20T07:44:00Z", "queued", null), k("2026-10-20T00:13:03Z")], "2026-10-20T08:43:00Z", "hoppa"],
     ["före 06:13 gäller 00:13", [k("2026-10-20T00:13:03Z")], "2026-10-20T05:43:00Z", "trasig"],
     ["strax efter midnatt gäller gårdagens 18:13", [], "2026-10-20T00:05:00Z", "starta"],
@@ -93,8 +98,12 @@ function sjalvtest(): void {
     const b = besluta(kor, nu(n), 28, 3);
     if (b.beslut !== vant) fel(`${namn}: ${b.beslut} (${b.skal}), väntade ${vant}`);
   }
-  if (besluta([k("2026-11-12T06:48:00Z", "completed", "failure"), k("2026-11-12T06:13:01Z", "completed", "failure")], nu("2026-11-12T07:43:00Z")).beslut !== "hoppa")
-    fel("den frysta har fortfarande två försök");
+  // Den frysta (#886): 15/11 föll 06:13 och 06:43, och det tredje försöket startar 07:43; tre fall hoppar.
+  if (besluta([k("2026-11-15T06:43:42Z", "completed", "failure"), k("2026-11-15T06:13:01Z", "completed", "failure")], nu("2026-11-15T07:43:00Z")).beslut !== "starta")
+    fel("den frysta, 15/11: två fall ska ge det tredje försöket");
+  if (besluta([k("2026-11-15T07:43:30Z", "completed", "failure"), k("2026-11-15T06:43:42Z", "completed", "failure"),
+    k("2026-11-15T06:13:01Z", "completed", "failure")], nu("2026-11-15T08:43:00Z")).beslut !== "hoppa")
+    fel("den frysta: tre fall ska hoppa");
   if (slott(nu("2026-11-13T06:20:00Z"), 28).toISOString() !== "2026-11-13T00:28:00.000Z") fel("den nyas slott före 06:28");
   // Timmen direkt (#857): minuterna efter slotten när del A blir klar; del B startas när de passerat slottens ordinarie del B.
   const sen: [string, number, number][] = [["2026-11-13T06:13:05Z", 13, 0], ["2026-11-13T06:43:20Z", 13, 30], ["2026-11-13T06:28:01Z", 28, 0],
@@ -102,7 +111,7 @@ function sjalvtest(): void {
   for (const [t, s, m] of sen) if (minuterEfterSlott(nu(t), s) !== m) fel(`minuterna efter slotten ${t} (:${s}): ${minuterEfterSlott(nu(t), s)}, väntade ${m}`);
   if (slott(nu("2026-10-20T00:05:00Z")).toISOString() !== "2026-10-19T18:13:00.000Z") fel("slotten strax efter midnatt");
   if (slott(nu("2026-10-20T12:13:00Z")).toISOString() !== "2026-10-20T12:13:00.000Z") fel("slotten på minuten");
-  console.log(`✓ kandidat-reserv självtest: ${fall.length + ny.length} fall — missad slott startar, pågående och dubbelfall hoppar, lyckad utan PH är trasig, ett fall försöks om; den nya: slotten :28 och tre försök`);
+  console.log(`✓ kandidat-reserv självtest: ${fall.length + ny.length} fall — missad slott startar, pågående och dubbelfall hoppar, lyckad utan PH är trasig, fall försöks om till tre försök (den frysta från #886); den nya: slotten :28`);
 }
 
 const direkt = (process.argv[1] ?? "").replace(/\\/g, "/").endsWith("scripts/kandidat-reserv.ts");

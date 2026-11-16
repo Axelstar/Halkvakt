@@ -7,8 +7,9 @@ name: kandidat-timme
 # larmar redan på del A. Har del A:s senaste körning LYCKATS och PH ändå saknas är kedjan trasig, och då blir jobbet rött; annars
 # kunde del B tiga för alltid medan allt såg grönt ut.
 # RESERVEN (Bengts order 20/10): för den pågående timmen avgör scripts/kandidat-reserv.ts ur del A:s körningar sedan den senaste
-# slotten (00:13, 06:13, 12:13, 18:13 UTC). Har pulsklockan inte startat slottens körning, eller har den enda fallit, startar del B
-# del A själv och hoppar timmen — 20/10 föll 06:13 bort under morgonavbrottet och kandidaten teg nästan elva timmar.
+# slotten (00:13, 06:13, 12:13, 18:13 UTC). Har pulsklockan inte startat slottens körning, eller har den fallit färre än tre gånger
+# (två före DECISIONS #886), startar del B del A själv och hoppar timmen — 20/10 föll 06:13 bort under morgonavbrottet och kandidaten
+# teg nästan elva timmar.
 # Ingen Trafikverksdata i någon fil eller logg: ankarna lämnar aldrig jobbet, bara kandidatens egna tal skrivs.
 on:
   workflow_dispatch:
