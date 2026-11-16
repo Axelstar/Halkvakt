@@ -3112,3 +3112,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - **Vakthunden efter deployen** (kort #662): körningen 07.07 UTC sa *pulsjobb: 34 aktiva (golv 34)*, utan problem. 06.07 sa den 31 mot golvet 31.
   - **Timmen kl. 06 UTC** (DECISIONS #881, kort #647): skriven 06.59 i `smavag_korning`, med alla punkter. Reserven blev klar 06.58, och stegets start av `kuvos-smavag-timme` gick 06.58–07.00. Timmen saknades 14/11 och 15/11. Vakten prövar dygnet 16/11 i morgon.
   - `kuvos-stad` startade inte efter reserven i dag heller, som väntat före rättelsen (kort #663).
+- 16/11 kl. 13.52 UTC (Claude; Bengt: *"Ja, kör"*): **körningen 00 för 16/11 gick inte att räkna för hand, och stadsflödet får ett val för en äldre körning** (DECISIONS #885, kort #663).
+  - **Inget startat.** Svaret kom 13.38 UTC. Stadsflödet väljer körning efter klockan, och efter 12.00 UTC är det 06, som 12.39-körningen redan räknat.
+  - **Valet `stamp`** i `kuvos-stad.yml`: en körning som klockan passerat räknas i efterhand, utan timmens besked, identiteten och dygnen. Spärren är provkörd i 14 fall, och sex motprov fälldes. Valet har inte gått i drift.
+  - **Funnet:** stadsmiljöns dygn 14/11 och 15/11 väntar på körningen 00 och bedöms aldrig utan den. P-II räknade 14/11 klart 12.39 UTC, med den levande ensam.

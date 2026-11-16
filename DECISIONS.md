@@ -16957,3 +16957,42 @@ i SQL-redigeraren, bara läsning, och aldrig i ett flöde. Det är den enda kont
 - dygnen som saknar körningen avgörs i det privata repot.
 
 **Stomdokument:** SYS 2 — stadsflödet startas efter fysikens reserv
+
+## #885 (16/11 2026) Stadsflödet kan räkna en äldre körning i efterhand (kort #663)
+
+**Beslut.** Bengt 16/11: *"Ja, kör"*, på frågan om stadsflödet ska köras för hand så att dygnet 16/11 får körningen 00. Svaret kom
+13.38 UTC, och då valde stadsflödet körningen 06 efter klockan, som 12.39-körningen redan räknat. Ingenting startades.
+`kuvos-stad.yml` får i stället valet `stamp`, som `ny-kandidat-fysik.yml` har: en äldre körning räknas i efterhand, så länge MET:s
+katalog har den kvar.
+
+**Varför ett val behövs:**
+- Stadsflödet hämtar körningen efter klockan: den senaste av 00, 06, 12 och 18 som är minst sex timmar gammal. Efter 12.00 UTC är
+  det körningen 06.
+- MET:s katalog `metpplatest` har körningarna i omkring tre dygn. Den äldsta 16/11 13.38 UTC var 13/11 18Z.
+- Del A klipper analysen vid körningens start (`levande.py` i det privata repot), så en efterräkning får samma indata som den levande
+  hade fått.
+
+**Spärrarna:**
+- **Bara en körning som klockan passerat.** Stämpeln ska ha formen `20261116T00Z`, med timmen 00, 06, 12 eller 18, och vara äldre än
+  klockans körning. En efterräkning hinner alltså aldrig före den levande, som annars hade hittat sina filer i hinken.
+- **Timmens besked hoppas över.** Del B och beskeden hör till timmen när körningen går.
+- **Identiteten hoppas över.** Den jämför förra körningens timmar med driftens `ny_kandidat_live`, som bara bär de senaste timmarna.
+  För en äldre körning blir jämförelsen tom, provet räknas som fallet, och stadsmiljöns steg hade stoppat P-II.
+- **Dygnen räknas inte.** Efterräkningen lägger bara körningens filer i hinken, och nästa vanliga körning räknar dygnen. P-II räknar
+  annars upp till 13 dygn bakåt från körningen, och så långt bakåt från en äldre körning kan databasen redan ha gallrat driftens timmar.
+- **MET-kön.** En ny väntande körning ersätter den som väntar, så en efterräkning startas bara när ingen körning väntar i kön.
+
+**Funnet samtidigt:** stadsmiljön har ingen reserv för ett dygn som saknar en körning. Dess dygn 14/11 och 15/11 väntar på körningen 00,
+och de bedöms aldrig om den inte kommer. P-II räknade dygnet 14/11 klart 12.39 UTC utan körningen 00, med den levande ensam. Vad det
+betyder för proven står i halkvakt-kuvos F70 (#768).
+
+**Provat:** spärren och de två dygnslistorna är provkörda lokalt i 14 fall, med klockan påhittad, och sex motprov fälldes. Valet har
+inte gått i drift.
+
+**Alternativen som inte valdes:**
+- att köra stadsflödet utan val: det hade räknat körningen 06 en gång till;
+- att ge stadsmiljön en reserv som P-II:s: det ändrar hur ett dygn bedöms, och det hör till förregistreringen i det privata repot.
+
+**Kvar:** vilka körningar som ska räknas i efterhand avgör Bengt och Axel (F70). Körningen 00 för 16/11 är den Bengt sagt ja till.
+
+**Stomdokument:** SYS 2 — stadsflödet kan räkna en äldre körning i efterhand

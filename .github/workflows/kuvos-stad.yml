@@ -11,6 +11,10 @@ name: kuvos-stad
 #             minne, storlekar och antal punkter. Beskeden går bara till hinken (kuvos-stad-2026-27/), aldrig till en artefakt.
 #             Sist stadsmiljön (kuvösens BESLUT F31): de utelämnade stationerna i storstädernas tätorter, se steget.
 #             Därefter P-II (kuvösens BESLUT F35): småvägskartans prövning vid småvägsstationerna, se steget.
+#             Med stamp räknas en äldre körning i efterhand, när den levande inte blev räknad (DECISIONS #885, kort #663): del A,
+#             stadsmiljöns PH och P-II:s filer som vanligt. Timmens besked och identiteten hoppas över, för de hör till timmen när
+#             körningen går, och de passerade dygnen räknas av nästa vanliga körning. Starta bara när ingen körning väntar i MET-kön:
+#             en ny väntande ersätter den som väntar.
 # MET-kön: samma grupp som kuvos-ny-kandidat:s och kuvos-pilot:s hämtningar, så att två av våra hämtningar aldrig går samtidigt.
 # Källa: MET Norway, MET Nordic (NLOD / CC BY 4.0).
 on:
@@ -24,6 +28,10 @@ on:
         type: choice
         options: [historik, kedjan]
         default: historik
+      stamp:
+        description: "bara med kedjan: en äldre körning att räkna i efterhand, t.ex. 20261116T00Z — tomt = den senaste som är minst sex timmar gammal"
+        required: false
+        default: ""
 concurrency: { group: kuvos-ny-kandidat-met, cancel-in-progress: false }
 permissions:
   contents: read
@@ -109,6 +117,7 @@ jobs:
       NYKAND_VARIANT: t4                     # T4 §4 a (DECISIONS #720): den rättade modellen, som i drift
       HINK: kuvos-stad-2026-27
       DELAR: "3"                             # F22: en del om högst cirka 12 000 punkter; 13 714 + 15 786 ger tre
+      STAMP_IN: "${{ inputs.stamp }}"        # efterräkningen (#885); tomt vid workflow_run
     steps:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
@@ -125,6 +134,13 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
+          # En efterräkning bara för en körning som klockan redan passerat, så att den aldrig hinner före den levande (#885).
+          if [ -n "$STAMP_IN" ]; then
+            KLOCKAN=$(date -u -d "@$(( ($(date -u +%s) - 21600) / 21600 * 21600 ))" +%Y%m%dT%HZ)
+            [[ "$STAMP_IN" =~ ^20[0-9]{6}T(00|06|12|18)Z$ && "$STAMP_IN" < "$KLOCKAN" ]] \
+              || { echo "::error::körningen $STAMP_IN går inte att räkna i efterhand: formen är t.ex. 20261116T00Z, och den ska vara äldre än klockans körning $KLOCKAN"; exit 1; }
+            echo "**Efterräkningen:** körningen $STAMP_IN (klockans körning är $KLOCKAN). Timmens besked, identiteten och dygnen hoppas över." | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
           node --experimental-strip-types fysik/ny_kandidat/smavagar_pilot.ts --sjalvtest 2>&1 | grep -v ExperimentalWarning
           node --experimental-strip-types ingest/metnordic-live.ts --sjalvtest 2>&1 | grep -v ExperimentalWarning | tail -1
           python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
@@ -212,7 +228,7 @@ jobs:
           S_DYGN_STAD=$(sek $T)
           { cat mn/metnordic_punkter.csv; tail -n +2 mnp/pilot_punkter.csv; } > alla_punkter.csv
           TID=$(date -u +%Y-%m-%dT%H:00:00Z); T=$(date +%s)
-          node --experimental-strip-types ingest/metnordic-live.ts --korning --punkter alla_punkter.csv --ut mn 2>&1 | grep -v ExperimentalWarning | tee korning.txt
+          node --experimental-strip-types ingest/metnordic-live.ts --korning ${STAMP_IN:+--stamp "$STAMP_IN"} --punkter alla_punkter.csv --ut mn 2>&1 | grep -v ExperimentalWarning | tee korning.txt
           S_KORNING=$(sek $T)
           STAMP=$(cat mn/korning.txt)
           { echo "STAMP=$STAMP"; echo "TID=$TID"; } >> "$GITHUB_ENV"
@@ -333,7 +349,7 @@ jobs:
           PY
           sudo dmesg -T 2>/dev/null | grep -i -E "out of memory|oom-kill|killed process" | tail -5 || true
       - name: Del B för timmen och beskeden
-        if: ${{ steps.h.outputs.klar == 'ja' }}
+        if: ${{ steps.h.outputs.klar == 'ja' && env.STAMP_IN == '' }}
         shell: bash
         env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
         run: |
@@ -358,7 +374,7 @@ jobs:
       # Beskeden är räknade med stationernas mätningar och går bara till den privata hinken, aldrig till en artefakt. Som i
       # kuvos-pilot.yml skrivs ingenting över, och det som ligger i hinken ska vara byte för byte det jobbet skrev.
       - name: Beskeden till hinken, hämtade tillbaka och jämförda
-        if: ${{ steps.h.outputs.klar == 'ja' }}
+        if: ${{ steps.h.outputs.klar == 'ja' && env.STAMP_IN == '' }}
         shell: bash
         env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
         run: |
@@ -424,7 +440,9 @@ jobs:
           R=$(date -u -d "${STAMP:0:4}-${STAMP:4:2}-${STAMP:6:2} ${STAMP:9:2}:00" +%s)
           FORRA=$(date -u -d "@$((R - 21600))" +%Y%m%dT%HZ)
           N "$H" hamta "$HINK" stad-ph "stadsmiljon_ph_$FORRA.csv.gz"
-          if [ -f "stad-ph/stadsmiljon_ph_$FORRA.csv.gz" ]; then
+          if [ -n "$STAMP_IN" ]; then
+            echo "identiteten: hoppas över i efterräkningen (driftens timmar för förra körningen finns inte kvar)"; IDENT=0
+          elif [ -f "stad-ph/stadsmiljon_ph_$FORRA.csv.gz" ]; then
             N "$D" live indata-f7/stations.csv live_ph.csv
             set +e; python3 "$S" identitet --ph "stad-ph/stadsmiljon_ph_$FORRA.csv.gz" --live live_ph.csv --ut stad; IDENT=$?; set -e
             rm -f live_ph.csv
@@ -433,7 +451,8 @@ jobs:
             echo "identiteten: förra körningens PH finns inte i hinken (första körningen eller en hoppad)"; IDENT=0
           fi
           # De passerade dygnen: ett UTC-dygn bedöms när dess fem körningar har PH (den sista är dygnets 18), en gång.
-          for k in 2 1 0; do
+          # En efterräkning lägger bara körningens PH i hinken; dygnen bedöms av nästa vanliga körning (#885).
+          for k in $([ -n "$STAMP_IN" ] || echo 2 1 0); do
             DAG=$(date -u -d "@$((R - k * 86400))" +%F)
             [ "$(date -u -d "$DAG 18:00" +%s)" -le "$R" ] || continue
             N "$H" hamta "$HINK" stad-finns "stadsmiljon_$DAG.csv.gz"
@@ -497,7 +516,9 @@ jobs:
           python3 "$K" mal --ut mal.txt
           R=$(date -u -d "${STAMP:0:4}-${STAMP:4:2}-${STAMP:6:2} ${STAMP:9:2}:00" +%s)
           IDAG=$(date -u -d "@$R" +%F)
-          for k in $(seq 13 -1 0); do
+          # En efterräkning lägger bara körningens filer i hinken; dygnen räknas av nästa vanliga körning (#885), aldrig 13 dygn bakåt
+          # från en äldre körning, där databasen redan kan ha gallrat driftens PH.
+          for k in $([ -n "$STAMP_IN" ] || seq 13 -1 0); do
             DAG=$(date -u -d "$IDAG - $k days" +%F)
             [[ "$DAG" < "2026-11-01" ]] && continue
             [ $(( $(date -u -d "$DAG" +%s) + 30 * 3600 )) -le "$R" ] || continue
