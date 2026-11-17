@@ -17142,3 +17142,59 @@ gamla vakthunden, och att det sista svaret lämnas. Motprovet, slingan med ett e
 - **Låta larmet stå:** avvisat. Ett falskt larm var fjärde dygn lär den som läser att larmet inte betyder något.
 
 **Stomdokument:** SYS vakthunden — hinkens kontrollsumma prövas om före larmet
+
+## #890 (17/11 2026) Rösten mätt längs vägens linje och Trafikverkets varningsfält läst — underlag för frågan om ny halkrisk och vinterväglag (kort #666, #667)
+
+**Bakgrund.** En tidning jämförde rutan med Trafikverkets karta 16/11 och fann ingen varning på sträckor som rutan kallade hala. Frågan som
+följde gäller både rutan och rösten: ska vinterväglag som stått i veckor sägas på samma sätt som halka som kommit i natt? Bengt 17/11:
+*"Läs och kom med förslag inte någon kodning eller liknande ännu"*, *"gör den riktiga mätningen längs vägens linje"* och *"läs varningsfältet"*.
+
+**Mätt 17/11, bara läsning.**
+1. **Rösten längs vägen.** Motorn i `engine/src` (main 686b2a32) kördes mot lägesfilen från kl. 08.48 UTC längs skuggans rutter som
+   vägrutter (`data/favoritprov/rutter-osrm.json`, #531), en position var femte sekund. Umeå–Luleå gav 19 halkvarningar vid 80 km/h och 16
+   vid 100 km/h, Luleå–Piteå 4 och 3, Luleå–Kiruna 22 och 17. Mediantiden mellan två var tio minuter på varje resa: upprepningsregeln sätter
+   antalet. Samma motor längs skuggans raka streck gav 4 på Umeå–Luleå. Strecken ligger 5,9 km från vägen i median på den rutten och 24,1 km
+   på Luleå–Kiruna, och 2–18 % av skuggans positioner ligger inom 500 m från vägen på de fem rutterna i norr.
+2. **Hur länge sträckorna varit hala** (`road_condition_history`, SQL-redigeraren, bara SELECT). Kl. 08.36 UTC hade ingen av Norrbottens
+   55 hala sträckor varit hal i mindre än ett dygn och 39 i mer än en vecka; i Västmanland var alla 11 nya. Ingen varning på resorna i
+   Norrbotten och Västerbotten gällde en sträcka som varit hal i mindre än 3,75 dygn.
+3. **Trafikverkets fält *Warning*, *Cause* och *Measure*,** som ingesten aldrig har hämtat (`ingest/sources/roadcondition.ts` läser schema
+   1.2): `scripts/matningar/varningsfaltet-2026-11-17.ts`, körning 44056412959 kl. 09.32 UTC. Av 193 hala sträckor bär 154 varningen *Risk
+   för halka*, två av dem dessutom *Hal vägbana* (båda *Mycket besvärligt*), och 39 ingen varning: 29 *Besvärligt (risk för)* och alla tio
+   *Is- och snövägbana*, alla i Norrbotten, Jämtland och Västerbotten. Varningen står på 50 av 52 nya och 104 av 141 stående sträckor, så
+   den skiljer inte nytt från stående. En åtgärd (halkbekämpning) står på 43 av de nya och 13 av de stående, en orsak på 25 och 4.
+
+**Vad som följer.** Ett förslag lämnades till Bengt 17/11, för Axel: rutan och rösten skiljer *ny halkrisk* (hal i mindre än ett dygn) från
+*vinterväglag* (hal längre), rutan visar Trafikverkets varning, orsak och åtgärd per sträcka, och rösten säger vinterväglag glesare. Regeln för
+vad som räknas som halt ändras inte. Inget är beslutat och inget är byggt: frågan står i bedömningen §4.2 och på kort #666. Skuggans
+huvudrutter på vägens linje är kort #667.
+
+**Avvikelser.** (1) Förregistreringen står i skriptets huvud, skriven före körningen, och inte i DECISIONS som mätknappen anger. Mätningen har
+ingen tröskel och ingen dom. (2) Mätknappen `vagarbeten-matning` sätter inte `NODE_EXTRA_CA_CERTS` som `ingest.yml`; skriptet lägger
+själv till Telias rot (körlistan B14). (3) Väglagshistoriken skrivs en gång i timmen: en sträcka som blev hal 08.42 UTC saknade rad 09.12. En
+räkning av vad som är nytt måste läsa nuläget. (4) Mätningarna gäller en enda morgon.
+
+**Alternativ.** Dela på klass och lyfta ut *Is- och snövägbana*: Norrbotten går från 55 till 51 av 58, alltså ingen skillnad i norr. Låta
+Trafikverkets varning avgöra: den står på fyra av fem hala sträckor, också efter två veckor.
+
+**Stomdokument:** BED §4.2
+
+## #891 (17/11 2026) Kort #151 stängt: väglagets ålder — premissen föll i vinterns data (Bengts ord)
+
+**Beslut (Bengt 17/11: *"du kan stänga kort 151 med hänvisning till vad som framkommit idag"*).** Kort #151 stängs utan att Å-A mäts, delen
+*Väglagets ålder* i projektkartan blir grå, och fristen `a-a-skriptet` (31/1) tas bort.
+
+**Skälet.** Tröskeldokumentet (`docs/TROSKLAR-VAGLAGETS-ALDER.md`, #151, #152) byggde på mätningen 12/9: operatören skriver bara vid
+förändring, så en gammal klassning kan stå kvar fast vägen ändrats. Dokumentets §6 säger vad som fäller kortet: *"Visar vinterdata att
+operatören ändå skriver om vid varje förändring, är hela frågan felställd"*. Läst 17/11 (DECISIONS #890): de 133 sträckor som varit hala i
+minst tre dygn har 1,9–4,1 rader per dygn i `road_condition_history`, median 3,2, och alla 193 hala sträckor kl. 09.32 UTC bar en starttid
+från samma dag. Operatören rapporterar alltså om varje hal sträcka omkring tre gånger per dygn. En gammal klassning i dokumentets mening
+finns inte i vinterdriften.
+
+**Vad som står kvar.** Tröskeldokumentet ligger kvar orört som historik; att det är överspelat står här och på kortet. Frågan om halka som
+stått länge mot halka som är ny gäller tillståndets längd och inte rapportens ålder, och förs på kort #666 (DECISIONS #890).
+`end_time`-regeln och arkivvakten, som dokumentet höll utanför, rörs inte.
+
+**Alternativ.** Låta kortet stå till Å-A-skriptets frist 31/1: det hade mätt en fråga vars premiss redan fallit.
+
+**Stomdokument:** MAT avsnitt 6
