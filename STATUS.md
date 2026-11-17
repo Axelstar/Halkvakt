@@ -3194,3 +3194,8 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - **R2 i drift:** `sql/117` migrerad (DB-knappen 44115976770). Funktionen tar 40 ms och gav 189 hala sträckor, varav 45 nya.
   - **R3 byggt, inte i drift:** `strackor.json` och `lan.json` bär tiden och Trafikverkets fält. Faller läsningen skrivs filerna utan nycklarna.
   - **Inte gjort:** deployen av `publicera`, och stegen R4–R7 och V1–V6.
+- 17/11 kl. 16.30 UTC (Claude; Bengt: *"Slå ihop 1658"* och *"Ja, deploya"*): **R3 i drift** (DECISIONS #897, tillägget; kort #668).
+  - **Deployen:** `publicera` kl. 16.16 UTC (körning 44123694181), med R3 som enda ändring sedan 15/11.
+  - **Filerna:** kartbygget 16.30 skrev tiden på alla 193 hala sträckor (50 nya) och Trafikverkets fält. Kartbygget tog 3,5 s, som före deployen.
+  - **Sett i förbigående:** ett skriptfel i flikarnas kod i rutan för Norrbotten. Rutan ritas rätt. Tas i R4.
+  - **Inte gjort:** R4–R7 och V1–V6.

@@ -17479,4 +17479,16 @@ Regeln för vad som räknas som halt ändras inte: samma mängd sträckor delas 
   fälten förrän R4.
 - **Kvar för R3:** deployen av `publicera`, på Bengts ord, och en läsning av filerna i hinken.
 
+**Tillägg 17/11 kl. 16.30 UTC (Bengt: *"Slå ihop 1658"* och *"Ja, deploya"*): R3 i drift.** PR #1658 sammanslagen (0f9bb529) och
+`publicera` deployad kl. 16.16 UTC (körning 44123694181). R3 var den enda ändringen i publiceringen sedan förra deployen 15/11.
+- **Filerna:** kartbygget kl. 16.30 UTC skrev de nya nycklarna, lästa på halkvakt.se kl. 16.32. `strackor.json` bär `sedan` på alla
+  193 hala sträckor, 50 är nya, början är känd för alla, och 167 sträckor bär en varning, 101 en orsak och 101 en åtgärd. `lan.json`
+  bär `ny`, `ny_sedan` och `vinter_vecka` för varje län och väg.
+- **Kostnaden:** kartbygget tog 3,5 s kl. 16.30 mot 3,6 s kl. 16.00, före deployen, och lägesfilens bygge är oförändrat, 7,4–8,0 s
+  (DB-knappen 44126768053). `strackor.json` växte från 107 till 136 kB och `lan.json` från 3,9 till 5,1 kB.
+- **Rutan** ritas som förut i Norrbotten och Västra Götaland (läst i en webbläsare kl. 16.35). Den läser inte de nya nycklarna
+  förrän R4.
+- **Sett i förbigående:** rutan för Norrbotten ger ett skriptfel i flikarnas kod (`markera` i `ruta.html`, kartrepot). Koden läser
+  inga data där, och rutan ritas rätt. Om felet fanns före deployen är inte läst. Det tas i R4, som ändrar samma fil.
+
 **Stomdokument:** APP 9 — rutan till tidningarna får ny halkrisk och vinterväglag, APP 3 — röstens två meningar och takter som byggs efter uppspelningen
