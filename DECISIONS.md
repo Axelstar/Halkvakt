@@ -17466,4 +17466,17 @@ Regeln för vad som räknas som halt ändras inte: samma mängd sträckor delas 
 - Talet *7 i stället för 19* för Umeå–Luleå är ett efterfilter på dagens varningar, inte en ombyggd motor. Uppspelningen i V2 ger det
   riktiga talet.
 
+**Tillägg 17/11 kväll (Bengt: *"Slå ihop 1657"* och *"Ja, migrera"*): R2 i drift och R3 byggt.**
+- **R2 i drift:** PR #1657 sammanslagen (5fa6d6c3), och `sql/117` migrerad med DB-knappen (körning 44115976770, 15.35 UTC). Bara
+  service-rollen får köra funktionen. Läst direkt efter: 189 hala sträckor i landet, varav 45 nya, och början känd för alla.
+- **Kostnaden:** funktionen tar 40 ms (tre körningar med EXPLAIN ANALYZE: 39,9, 40,0 och 39,8 ms), mot publiceringens bygge på
+  omkring 8,2 s.
+- **R3 byggt, inte i drift:** kartbygget läser tiden och fälten i en egen fråga (`VAGLAG_TID_SQL` i `publish/map-core.ts`).
+  `data/strackor.json` bär `sedan`, `sedan_kand` och `ny` på hala sträckor, `ny_sedan` på de nya, och `varning`, `orsak` och `atgard`
+  där de bär något. `data/lan.json` bär `ny`, `ny_sedan` och `vinter_vecka` per län och väg; vinterväglag är `halt` minus `ny`.
+  Faller frågan skrivs filerna utan nycklarna, och noten säger varför. Rutan säger då aldrig *ingen ny halkrisk* på grund av ett fel.
+- **Proven:** tre nya prov i `test/lanssidor.test.ts`, och sex motprov fällda. Ingen sida ändrar text, och rutan läser inte de nya
+  fälten förrän R4.
+- **Kvar för R3:** deployen av `publicera`, på Bengts ord, och en läsning av filerna i hinken.
+
 **Stomdokument:** APP 9 — rutan till tidningarna får ny halkrisk och vinterväglag, APP 3 — röstens två meningar och takter som byggs efter uppspelningen
