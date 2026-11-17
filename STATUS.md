@@ -3143,3 +3143,9 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - **Läst:** halkvakt-kuvos BESLUT F12–F70, tavlan, bedömningen, körningarnas loggar och driften 17/11 kl. 04.52 UTC (SQL-redigeraren, bara SELECT). Ingen dygnsfil och ingen dygnsrapport är öppnad.
   - **Driftläget, utan tal:** storstädernas fyra brytare är på sedan 8/11, och stadsloggen har varningar 12–14/11. Småvägsröstens brytare är av, och kedjans första kompletta dygn är 16/11. Stadsmiljöns dygn 16/11 är bedömt (körning 43988943141).
   - **Var den står:** i Bengts fil på Skrivbordet, och frågorna till Bengt och Axel i bedömningen §4.2.
+- 17/11 kl. 06 UTC (Claude; Bengt: *"Jag vill att du upprättar en att göra lista"* och *"gör så att du kan hålla reda på alla dessa punkter"*): **körlistan upprättad och spårad** (DECISIONS #887, kort #664).
+  - **Läst inför listan:** kuvösens BESLUT F12–F70, besluten #796–#886 om storstäderna, småvägsrösten, olycksfacit, räknaren, förarfacit och skuggan (tre läsare, med stickprov), tröskeldokumenten för säsongsfacit och olycksfacit, och de fem öppna PR:erna i de tre repona.
+  - **`docs/KORLISTAN.md`:** 26 punkter i fyra delar, med vem, klart när, källor och läge. Läget står bara där.
+  - **KÖRLISTEREGELN i CLAUDE.md,** och sessionsprotokollets steg 2 pekar på listan.
+  - **Fristen `stadsloggen-2026-11-22`** för punkt A2: stadsloggen gallras efter 14 dygn, och raderna från påslaget 8/11 försvinner från 22/11.
+  - Ingenting är byggt eller ändrat i driften.

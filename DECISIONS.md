@@ -17024,3 +17024,45 @@ fälldes: två försök och fyra försök. `smavag-reserv.ts`, som läser samma 
 **Kvar:** den första morgonen där det tredje försöket behövs, med *RESERV* i `kandidat-timme` 07.43 och en lyckad del A efteråt.
 
 **Stomdokument:** SYS 2 — kandidatens kedja: den frysta kandidatens reserv får tre försök
+
+## #887 (17/11 2026) Körlistan: vägen till ett tillförlitligt system, mätt nytta och redovisning, spårad i `docs/KORLISTAN.md` (kort #664)
+
+**Bengts ord 17/11:**
+- *"Jag vill att du upprättar en att göra lista för hur vi ska nå ända fram till tillförlitligt system, mätt nytta för användare o ett
+  redovisningssystem för oss. Sen ska du och jag genomföra varje punkt"*;
+- *"Jag vill att du gör så att du kan hålla reda på alla dessa punkter o att vi genomför dessa utan att tappa bort något. Jag kommer att
+  arbeta med opus som motor i det här projektet så det är viktigt att den motorn är fullt införstådd med alla steg"*.
+
+**Bakgrund.**
+- Genomlysningen av storstäderna och småvägarna 17/11 lämnade åtta frågor (bedömningen §4.2).
+- Läsningen efteråt gav 26 punkter. Den omfattade besluten #796–#886, kuvösens beslut, tröskeldokumenten för olycksfacit och
+  säsongsfacit och de öppna PR:erna i de tre repona.
+- Mätningarnas resultat ligger i dag på sex ställen: publika ärenden, interna tabeller, den privata hinken, halkvakt-kuvos,
+  statistiksidan och skuggrapporten. Ingen lista höll ihop vägen fram.
+
+**Beslut.**
+- **`docs/KORLISTAN.md` bär varje punkt:** vad, vem, vad som räknas som klart, källorna och läget. Den har fyra delar:
+  - A, det som annars går förlorat den här veckan (A1–A4);
+  - B, tillförlitligt system (B1–B10);
+  - C, mätt nytta för användarna (C1–C8);
+  - D, redovisning för Bengt och Axel (D1–D4).
+- **Läget står bara där.** Det ändras i samma commit som beviset. En punkt stryks bara på Bengts ord, och ingen rad tas bort.
+- **KÖRLISTEREGELN i CLAUDE.md** gör att varje session läser listan vid start, tar nästa öppna punkt i listans ordning och säger i
+  sin rapport vilka punkter som rörde sig. Sessionsprotokollets steg 2 pekar dit.
+- **Kort #664** står öppet tills varje punkt är klar eller struken. En punkt som börjar får sitt eget kort, eller pekar på det kort
+  som redan bär arbetet.
+- **Bara ord i Halkvakt.** Bakgrunden med kuvösens tal står i halkvakt-kuvos (`docs/KORLISTAN-BAKGRUND-2026-11-17.md`,
+  `docs/GENOMLYSNING-2026-11-17.md` och BESLUT F71).
+- **Fristen `stadsloggen-2026-11-22`** läggs in för punkt A2. Stadsloggen gallras efter 14 dygn (#815), och raderna från påslaget
+  8/11 försvinner från 22/11.
+- **Bedömningen §4.2:** raden 17/11 med de åtta frågorna ersätts av en rad som pekar på körlistan. Frågorna är nu punkterna A3, B1,
+  B2, B3, B5, B8, B10, C4 och C5.
+
+**Vad beslutet inte gör.** Det bygger ingenting och ändrar ingenting i driften. Varje punkt genomförs på sitt eget ord.
+
+**Alternativ.**
+- **Ett kort per punkt på tavlan:** avvisat. 26 nya kort hade dränkt tavlan, och flera punkter har redan kort.
+- **Listan bara i bedömningen:** avvisat. Bedömningen är över tusen rader, och läget per punkt hade inte gått att se.
+- **En vakt i CI som prövar listans form:** inte nu. Den kan byggas som en del av punkt D4 om listan visar sig glida.
+
+**Stomdokument:** BED §4.2 — raden 17/11 pekar på körlistan med punkterna och deras läge
