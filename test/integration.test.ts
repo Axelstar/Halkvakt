@@ -4364,3 +4364,112 @@ test("#883 småvägsröstens uppföljning: frågorna mot databasen, per dygn i U
     await pool.end();
   }
 });
+
+// Körlistan A2 (sql/114, DECISIONS #888): storstädernas logg och dess körningar står i arkivets vitlista, exporteras när dygnet är
+// färdigt, och körningsloggen räknar dygnet på kolumnen korning. Tabellerna är sql/096:s. Går provet ensamt tas deras CREATE TABLE ur
+// filen, utan resten av 096, som kräver olycksfacit.
+test("#888 stadsloggen i arkivexporten: vitlistan, tidskolumnen, filen och bokföringen", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const las = (f: string) => q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+  const GRUPPER = ["B-888-001", "C-888-001"];
+  const TAB = ["ny_kandidat_skugga_stad", "ny_kandidat_skugga_stad_korning"];
+  let d = "";
+  const stad = async () => {
+    await q("DELETE FROM ny_kandidat_skugga_stad WHERE grupp = ANY($1)", [GRUPPER]).catch(() => {});
+    if (d) await q("DELETE FROM ny_kandidat_skugga_stad_korning WHERE (korning AT TIME ZONE 'UTC')::date = $1::date", [d]).catch(() => {});
+    await q("DELETE FROM arkiv_export_tabell WHERE tabell = ANY($1)", [TAB]).catch(() => {});
+  };
+  try {
+    await q("CREATE TABLE IF NOT EXISTS shadow_log (id bigserial PRIMARY KEY, run_at timestamptz NOT NULL DEFAULT now(), alerts jsonb NOT NULL DEFAULT '[]'::jsonb)");
+    if (!(await q("SELECT to_regclass('road_condition_history') AS t")).rows[0].t) await las("001_init.sql");
+    if (!(await q("SELECT to_regclass('situation_archive') AS t")).rows[0].t) await las("003_situation_archive.sql");
+    if (!(await q("SELECT to_regprocedure('arkiv2_golv(text,integer)') AS t")).rows[0].t)
+      for (const f of ["008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql", "018_trend_berakna.sql", "029_brott_index.sql",
+                       "030_langsam_vakt.sql", "050_kandidat_live.sql", "053_arkiv_tabeller.sql", "055_vagpunkter.sql", "056_kandidat_regel.sql",
+                       "057_kandidat_skugga.sql"]) await las(f);
+    // sql/063 laddas ALLTID: ett tidigare prov kan ha laddat om 053 och 057, vars kö och bokföring räknar dygnet på observed_at för
+    // varje tabell. Driften har 063:s funktioner, som läser arkiv2_tidkolumn, och det är dem sql/114 bygger på (provet föll på just
+    // det 17/11). 063 lägger tillbaka tabellvillkoret med nio namn, så rader för den nya kandidatens tabeller tas bort först.
+    await q("DELETE FROM arkiv_export_tabell WHERE tabell LIKE 'ny_kandidat%'");
+    for (const f of ["062_kortare_forvaring.sql", "063_arkiv_fyra_tabeller.sql", "072_gallringen_tillbaka.sql"]) await las(f);
+    if (!(await q("SELECT to_regclass('ny_kandidat_skugga_stad') AS t")).rows[0].t) {
+      const f096 = readFileSync(new URL("../sql/096_olycksfacit_stad.sql", import.meta.url), "utf8");
+      for (const t of TAB) {
+        const m = f096.match(new RegExp(`CREATE TABLE IF NOT EXISTS ${t} \\([\\s\\S]*?\\n\\);`));
+        assert.ok(m, `sql/096 skapar ${t}`);
+        await q(m![0]);
+      }
+    }
+    await las("114_stadsloggen_arkiv.sql");
+    await las("114_stadsloggen_arkiv.sql");   // filen tål att köras två gånger
+    await stad();
+
+    for (const tab of TAB) {
+      assert.equal((await q("SELECT arkiv2_tabell($1) AS t", [tab])).rows[0].t, tab, `${tab} i vitlistan`);
+      assert.equal((await q("SELECT arkiv2_alder($1) AS n", [tab])).rows[0].n, 1, `${tab} exporteras dygnet efter`);
+      assert.equal((await q("SELECT arkiv2_golv($1, 14) AS n", [tab])).rows[0].n, 14, `${tab} raderas efter 14 dygn, som gallringen i sql/096`);
+    }
+    assert.equal((await q("SELECT arkiv2_tidkolumn('ny_kandidat_skugga_stad') AS k")).rows[0].k, "observed_at", "stadsloggen räknar dygnet på observed_at");
+    assert.equal((await q("SELECT arkiv2_tidkolumn('ny_kandidat_skugga_stad_korning') AS k")).rows[0].k, "korning", "körningsloggen räknar dygnet på korning");
+    assert.equal((await q("SELECT arkiv2_tidkolumn('shadow_log') AS k")).rows[0].k, "run_at", "de andras tidskolumn är orörd");
+    assert.equal((await q("SELECT arkiv2_alder('shadow_log') AS n")).rows[0].n, 8, "de andras ålder är orörd");
+    assert.equal((await q("SELECT arkiv2_alder('ny_kandidat_station') AS n")).rows[0].n, 1, "den nya kandidatens ålder är orörd");
+    assert.equal((await q("SELECT arkiv2_tabell('ny_kandidat_station') AS t")).rows[0].t, "ny_kandidat_station", "den nya kandidatens logg står kvar i vitlistan");
+    await assert.rejects(q("SELECT arkiv2_tabell('stadspunkt')"), /okänd tabell stadspunkt/, "en tabell utanför listan vägras");
+    assert.deepEqual((await q("SELECT proconfig FROM pg_proc WHERE proname = 'arkiv2_tabell'")).rows[0].proconfig,
+      ["search_path=public, extensions"], "arkiv2_tabell: fast sökväg i definitionen (DECISIONS #784)");
+    const efterslap: string = (await q("SELECT pg_get_functiondef('arkiv2_efterslap()'::regprocedure) AS f")).rows[0].f;
+    for (const tab of TAB) assert.ok(efterslap.includes(`arkiv2_att_exportera('${tab}', 100000)`), `eftersläpet räknar med ${tab}`);
+
+    d = (await q("SELECT ((now() - interval '30 days') AT TIME ZONE 'UTC')::date::text AS d")).rows[0].d as string;
+    const fore = (await q("SELECT ($1::date - 1)::text AS d", [d])).rows[0].d as string;
+    const kl = (h: number, m = 0, dag = d) => `${dag}T${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:00Z`;
+    // Bara provets rader får finnas på provets dygn och på dygnet före.
+    for (const dag of [d, fore]) {
+      await q("DELETE FROM ny_kandidat_skugga_stad WHERE (observed_at AT TIME ZONE 'UTC')::date = $1::date", [dag]);
+      await q("DELETE FROM ny_kandidat_skugga_stad_korning WHERE (korning AT TIME ZONE 'UTC')::date = $1::date OR (observed_at AT TIME ZONE 'UTC')::date = $1::date", [dag]);
+    }
+    await q(`INSERT INTO ny_kandidat_skugga_stad (grupp, observed_at, omrade, lager, punkter, varnar, veto, torr, spridning, pb_min, fukt_punkter, fukt_utfall) VALUES
+      ('B-888-001', $1, 'Stor-Stockholm', 'B', 3, 1, 1, 1, 0, -1.5, ARRAY['B88801', 'B88802'], ARRAY['varnar', 'veto']),
+      ('C-888-001', $1, 'Stor-Stockholm', 'C', 2, 0, 0, 2, 0, -0.5, NULL, NULL),
+      ('B-888-001', $2, 'Stor-Stockholm', 'B', 3, 0, 0, 3, 0, -0.25, NULL, NULL)`, [kl(3), kl(4)]);
+    // Den första körningen gick 00.10 på provets dygn men bär kandidatens timme 23 dygnet före: räknad på korning hör den till
+    // provets dygn, räknad på observed_at till dygnet före. Så skiljs den rätta tidskolumnen från den äldre funktionens.
+    await q(`INSERT INTO ny_kandidat_skugga_stad_korning (korning, observed_at, status, brytare, grupper) VALUES
+      ($1, $2, 'räknad', '["Stor-Stockholm/B", "Stor-Stockholm/C"]'::jsonb, 2),
+      ($3, $4, 'räknad', '["Stor-Stockholm/B"]'::jsonb, 1)`, [kl(0, 10), kl(23, 0, fore), kl(4, 50), kl(4)]);
+
+    const iKo = async (tab: string) => (await q("SELECT arkiv2_att_exportera($1, 100000)::text AS d", [tab])).rows.map((r: any) => r.d as string);
+    for (const tab of TAB) assert.ok((await iKo(tab)).includes(d), `${tab}: dygnet står i kö`);
+    assert.ok(!(await iKo("ny_kandidat_skugga_stad_korning")).includes(fore), "körningsloggen: dygnet före står inte i kö, fast en rad bär dess timme");
+
+    const text: string = (await q("SELECT arkiv2_dygn('ny_kandidat_skugga_stad', $1::date) AS t", [d])).rows[0].t;
+    const rader = text.split("\n");
+    const kol = JSON.parse(rader[0]) as string[];
+    assert.deepEqual(kol.slice(0, 5), ["grupp", "observed_at", "skriven_at", "omrade", "lager"], "rubrikraden bär kolumnerna i tabellens ordning");
+    assert.equal(rader.length - 1, 3, "stadsloggen: tre rader på dygnet");
+    const forsta = JSON.parse(rader[1]);   // ordnad på gruppen och timmen: B-gruppen kl. 03
+    assert.deepEqual([forsta[kol.indexOf("grupp")], forsta[kol.indexOf("varnar")], forsta[kol.indexOf("veto")], forsta[kol.indexOf("torr")]],
+      ["B-888-001", 1, 1, 1], "första raden bär gruppens tal");
+    assert.deepEqual(forsta[kol.indexOf("fukt_utfall")], ["varnar", "veto"], "textlistorna följer med som listor");
+    assert.equal(JSON.parse(rader[3])[kol.indexOf("grupp")], "C-888-001", "C-gruppen sist");
+
+    const ktext: string = (await q("SELECT arkiv2_dygn('ny_kandidat_skugga_stad_korning', $1::date) AS t", [d])).rows[0].t;
+    const krader = ktext.split("\n");
+    const kkol = JSON.parse(krader[0]) as string[];
+    assert.equal(krader.length - 1, 2, "körningsloggen: två körningar på dygnet, räknat på korning");
+    assert.deepEqual(JSON.parse(krader[1])[kkol.indexOf("brytare")], ["Stor-Stockholm/B", "Stor-Stockholm/C"], "brytarna som var på följer med");
+
+    await assert.rejects(q("SELECT arkiv2_export_klar('ny_kandidat_skugga_stad', $1::date, 2, 100, 'x', 'v')", [d]),
+      /har 3 rader i databasen men filen bär 2/, "bokföringen räknar om dygnet och vägrar ett annat antal");
+    assert.equal((await q("SELECT arkiv2_export_klar('ny_kandidat_skugga_stad', $1::date, 3, 100, 'x', 'v') AS n", [d])).rows[0].n, 3);
+    assert.equal((await q("SELECT arkiv2_export_klar('ny_kandidat_skugga_stad_korning', $1::date, 2, 50, 'y', 'v') AS n", [d])).rows[0].n, 2,
+      "körningsloggen bokförs med två rader: räknat på korning, inte på observed_at");
+    for (const tab of TAB) assert.ok(!(await iKo(tab)).includes(d), `${tab}: ett bokfört dygn står inte i kö`);
+  } finally {
+    await stad();
+    await pool.end();
+  }
+});

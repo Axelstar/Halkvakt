@@ -3149,3 +3149,9 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - **KÖRLISTEREGELN i CLAUDE.md,** och sessionsprotokollets steg 2 pekar på listan.
   - **Fristen `stadsloggen-2026-11-22`** för punkt A2: stadsloggen gallras efter 14 dygn, och raderna från påslaget 8/11 försvinner från 22/11.
   - Ingenting är byggt eller ändrat i driften.
+- 17/11 kl. 06.30 UTC (Claude; Bengt: *"börja med A1 och A2, A3 och A4"*): **körlistans A2 byggd, A3 väntar på Axel och A4 är klar** (DECISIONS #888, kort #664, #378, #381).
+  - **A2, stadsloggen till hinken:** `sql/114` och arkivexporten, med integrationsprovet #888. Inte i drift: kvar är sammanslagningen, migreringen, deployen och dygnet 8/11 bokfört i hinken, före 22/11.
+  - **A3, pulsklockans nyckel:** en ny nyckel kan bara skapas på Axels konto (#237). Meddelandet till Axel är skrivet, och Bengt skickar det.
+  - **A4, säsongsfacits veckoläsning:** tabellerna lästa för 1–15/11 (SQL-redigeraren, bara SELECT), och rapporten skickad internt till Bengt. Inga osäkerhetsintervall, eftersom rapportskriptet inte är byggt (C2).
+  - **A1** väntar på morgonens körningar, som går efter kl. 06.13 UTC.
+  - **Körlistan:** ny rad D5, eftersom `docs/KORLISTAN.md` inte står i listan som `synk-ihop` tillåter.

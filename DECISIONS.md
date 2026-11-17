@@ -17066,3 +17066,43 @@ fälldes: två försök och fyra försök. `smavag-reserv.ts`, som läser samma 
 - **En vakt i CI som prövar listans form:** inte nu. Den kan byggas som en del av punkt D4 om listan visar sig glida.
 
 **Stomdokument:** BED §4.2 — raden 17/11 pekar på körlistan med punkterna och deras läge
+
+## #888 (17/11 2026) Storstädernas logg exporteras till hinken före gallringen (körlistan A2, kort #378)
+
+**Bengts ord 17/11:** *"börja med A1 och A2, A3 och A4"*.
+
+**Bakgrund.**
+- `sql/096` (#815) gallrar `ny_kandidat_skugga_stad` och `ny_kandidat_skugga_stad_korning` efter 14 dygn, och ingenting sparar dem.
+  Tröskeldokumentet för säsongsfacit säger det (§8).
+- Stadsloggen är den enda källan för vad regeln sa vid stadspunkterna timme för timme: kalla punkter, varnande, veto, torra och
+  spärrade. Körningsloggen säger vilka brytare som var på.
+- Brytarna slogs på 8/11 kl. 17.35 UTC (#816). De första raderna hade gallrats 22/11, och storstäderna hade inte gått att redovisa
+  för säsongen (körlistan C3).
+
+**Beslut.**
+- **`sql/114`:** de två tabellerna läggs i arkivexportens vitlista, samma väg som den nya kandidatens domlogg (#792, `sql/083`). Ett
+  dygn exporteras när det är färdigt, läses tillbaka ur hinken och bokförs.
+  - Stadsloggen räknar dygnet på `observed_at`, körningsloggen på `korning`.
+  - Arkivets radering får nattjobbets golv, 14 dygn. Det är samma som gallringen i `sql/096`, som står kvar orörd.
+  - `arkiv2_tabell` får fast sökväg i definitionen (#784).
+- **`supabase/functions/arkivexport`:** listan `TABELLER` får de två, sist.
+- **Ordningen i driften:** migreringen först, sedan deployen. I omvänd ordning vägrar `arkiv2_tabell` de nya namnen, och varje
+  anrop slutar med fel tills migreringen är gjord. Migreringen ensam ändrar ingenting som körs.
+- **Fälten besiktigas inte här.** Loggens tal bär ingen mätning förrän de har spann i värdevakten. Det hör till körlistan C3.
+
+**Provat.**
+- Integrationsprovet #888 körs i ci mot en riktig databas: vitlistan, tidskolumnen, filen med textlistorna, bokföringen som vägrar
+  fel antal, och kön före och efter.
+- Lokalt: provets utdrag av tabellerna ur `sql/096`, och att provfilen går att läsa.
+- Inte provat i drift.
+
+**Kvar:** sammanslagningen, `sql/114` med DB-knappen, deployen av `arkivexport`, och beviset: stadsloggens dygn 8/11 bokfört i
+`arkiv_export_tabell` före 22/11 kl. 17 UTC.
+
+**Alternativ.**
+- **Längre gallring i `sql/096`:** avvisat. I kyla kan loggen växa med tiotusentals rader per dygn, och databasens storlek är redan
+  en bevakad frist.
+- **En egen dygnstabell med summor:** avvisat nu. Den hade tappat gruppen och timmen, som olycksfacit och förarnas svar kan behöva
+  läggas mot.
+
+**Stomdokument:** SYS arkivet — storstädernas logg i hinken
