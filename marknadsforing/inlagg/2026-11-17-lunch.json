@@ -1,0 +1,24 @@
+{
+  "typ": "svep",
+  "nyckel": "svep:lunch",
+  "etikett": "Halkläget kl. 11:30",
+  "rubrik": "Halt i dag",
+  "underrad": "Halka på 193 vägavsnitt i 8 län.",
+  "fler": 1,
+  "text": "Halkläget kl. 11:30, tisdag 17 november: halka på 193 vägavsnitt i 8 län. Svep för att se ditt län.\n\nNorrbotten: halka på 55 av 58 vägavsnitt, 56 stationer under noll, kallast −12,5 °C vid Lauker.\nVästerbotten: halka på 44 av 44 vägavsnitt, 44 stationer under noll, kallast −11,5 °C vid Gunnarn.\nVärmland: halka på 23 av 52 vägavsnitt, 42 stationer under noll, kallast −7,1 °C vid Storberget.\nVästernorrland: halka på 22 av 22 vägavsnitt, 39 stationer under noll, kallast −9,3 °C vid Graninge.\nDalarna: halka på 19 av 38 vägavsnitt, 24 stationer under noll, kallast −8,1 °C vid Sörsjön.\nJämtland: halka på 15 av 17 vägavsnitt, 31 stationer under noll, kallast −7,1 °C vid Rörström.\nVästra Götaland: halka på 10 av 133 vägavsnitt, 8 stationer under noll, kallast −2,1 °C vid Gustavsfors.\nGävleborg: halka på 5 av 27 vägavsnitt, 17 stationer under noll, kallast −3,1 °C vid Snäre.\nHalka eller minusgrader även i 1 län till.\n\nLäget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Värmland #Västernorrland #Dalarna #halkvakt",
+  "textIg": "Halkläget kl. 11:30, tisdag 17 november: halka på 193 vägavsnitt i 8 län. Svep för att se ditt län.\n\nNorrbotten: halka på 55 av 58 vägavsnitt, 56 stationer under noll, kallast −12,5 °C vid Lauker.\nVästerbotten: halka på 44 av 44 vägavsnitt, 44 stationer under noll, kallast −11,5 °C vid Gunnarn.\nVärmland: halka på 23 av 52 vägavsnitt, 42 stationer under noll, kallast −7,1 °C vid Storberget.\nVästernorrland: halka på 22 av 22 vägavsnitt, 39 stationer under noll, kallast −9,3 °C vid Graninge.\nDalarna: halka på 19 av 38 vägavsnitt, 24 stationer under noll, kallast −8,1 °C vid Sörsjön.\nJämtland: halka på 15 av 17 vägavsnitt, 31 stationer under noll, kallast −7,1 °C vid Rörström.\nVästra Götaland: halka på 10 av 133 vägavsnitt, 8 stationer under noll, kallast −2,1 °C vid Gustavsfors.\nGävleborg: halka på 5 av 27 vägavsnitt, 17 stationer under noll, kallast −3,1 °C vid Snäre.\nHalka eller minusgrader även i 1 län till.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\nHalkvakt säger till med rösten innan det blir halt. Gratis för iPhone, länken finns i vår profil.\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Värmland #Västernorrland #Dalarna #halkvakt",
+  "pass": "lunch",
+  "antal": 10,
+  "datum": "2026-11-17",
+  "generated_at": "2026-11-17T10:30:10.876Z",
+  "lan": [
+    "norrbotten",
+    "vasterbotten",
+    "varmland",
+    "vasternorrland",
+    "dalarna",
+    "jamtland",
+    "vastra-gotaland",
+    "gavleborg"
+  ]
+}
