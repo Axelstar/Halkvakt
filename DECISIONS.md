@@ -17106,3 +17106,39 @@ fälldes: två försök och fyra försök. `smavag-reserv.ts`, som läser samma 
   läggas mot.
 
 **Stomdokument:** SYS arkivet — storstädernas logg i hinken
+
+## #889 (17/11 2026) Vakthunden prövar om hinkens kontrollsumma innan den larmar (ärende #1647, kort #665, körlistan B11)
+
+**Bengts ord 17/11**, om larmet *Vakthunden: kedjan är bruten* i ärende #1647: *"kan du kontrollera och åtgärda"*.
+
+**Vad som hände.**
+- Vakthunden skrev 06.07 UTC att manifestets sha256 inte stämde med `live.json` i hinken.
+- Kedjan var hel. Fyra mätningar 06.15 UTC stämde, med ett manifest från 06.14.
+- Samma larm kom 5/11 (#1390) och 7/11 (#1431). Båda stängdes av nästa körning en timme senare.
+
+**Orsaken, mätt 17/11 kl. 06.20–06.24 UTC** med en hämtning i sekunden, 229 prov:
+- CDN bytte manifestet 06.22.46 och `live.json` 06.22.47. I en sekund låg ett nytt manifest ihop med en gammal fil.
+- `publicera` skriver `live.json` före manifestet, men CDN byter inte ut dem i den ordningen.
+- En sekund av publiceringens två minuter är knappt en procent. Vakthunden kör en gång i timmen och har larmat tre gånger på omkring
+  290 körningar, vilket stämmer med det.
+- Appen råkar ut för samma sak. Den behåller förra filen och hämtar igen, som den är byggd för.
+
+**Beslut.**
+- **Omprovet:** stämmer inte kontrollsumman hämtar vakthunden paret igen, högst två gånger med fem sekunder emellan, och larmar bara
+  om felet står kvar (`supabase/functions/vakthund/omprov.ts`).
+- **Ett svar som inte är 200 prövas inte om.** Det larmar direkt, som förut.
+- **Raden i mätvärdena** säger *stämmer*, *stämmer efter N omprov* eller *MISMATCH*, så att glappet går att följa över tid.
+- **Larmtexten** säger att felet står kvar efter omproven.
+- Samma prov gäller reserven på Pages, som går genom samma funktion.
+
+**Provat.** Sju prov i `test/vakthund-omprov.test.ts`: första provet stämmer, glappet 17/11, ett fel som står kvar, noll omprov som den
+gamla vakthunden, och att det sista svaret lämnas. Motprovet, slingan med ett enda omprov, fällde tre av dem. Inte provat i drift.
+
+**Kvar:** sammanslagningen, deployen av `vakthund`, och den första körningen med raden om hinken.
+
+**Alternativ.**
+- **En hämtning som går förbi CDN:** avvisat. Vakthunden ska mäta det appen gör, och appen hämtar genom CDN.
+- **Låta `publicera` skriva manifestet först:** avvisat. CDN byter filerna oberoende av skrivordningen, så glappet hade stått kvar.
+- **Låta larmet stå:** avvisat. Ett falskt larm var fjärde dygn lär den som läser att larmet inte betyder något.
+
+**Stomdokument:** SYS vakthunden — hinkens kontrollsumma prövas om före larmet
