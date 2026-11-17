@@ -391,7 +391,7 @@
       <li><span aria-hidden="true">–</span> <b>I appen</b> <span style="color: var(--dampad, #4A5763)">gäller inte · Ingen egen röst</span></li>
     </ul>
   </details>
-  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-p-skuggmotorn">Skuggmotorn</a> <span style="color: var(--dampad, #4A5763)">delvis, 88 % · kvar: försprångets 546 tillbaka sedan 12/11 02.42 UTC: sql/109 migrerad och ett dygn med 60 rader i timmen i forsprang_log utan 546 (kort #375, DECISIONS #845)</span></summary>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-p-skuggmotorn">Skuggmotorn</a> <span style="color: var(--dampad, #4A5763)">delvis, 88 % · kvar: huvudvarvets rutter på vägens linje: strecken ligger 2,7–24,1 km från vägen i median på de fem rutterna i norr, så halkvarningarna per varv är för låga (kort #667, DECISIONS #890)</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">✓</span> <b>Byggd</b> <span style="color: var(--dampad, #4A5763)">klart · supabase/functions/skuggmotor/main.ts; index.ts buntad av scripts/bundle-skuggmotor.ts, --check i ci.yml</span></li>
       <li><span aria-hidden="true">✓</span> <b>I drift</b> <span style="color: var(--dampad, #4A5763)">klart · Sex cron-jobb: SE :02/:32 (sql/036:17, #344; jobbet skapat för hand, sql/036 flyttar det), försprånget :12/:42 (sql/037:43, #359), FI :15/:45 och DK :20/:50 (skapade för hand, ingen fil i sql/), väg C :22/:52 (sql/046:35, #527, skriver till shadow_log_c) och NO :25/:55 (scripts/matningar/grannar-i-supabase-2026-09-22.sql:12); minutlistan i scripts/pulsklocka.ts:67; senaste deploy 17/10 från 96d1045 (39060328769, STATUS 17/10); morgonavbrotten 19/10 och 20/10 stoppade alla pg_cron-jobb, också skuggvarven (i-livemotorns steg Drift utan morgonavbrott, fristen morgonavbrotten, ärende #1100)</span></li>
@@ -1055,13 +1055,13 @@
       <li><span aria-hidden="true">◐</span> <b>I appen</b> <span style="color: var(--dampad, #4A5763)">pågår · 'Halkvakt tror: frysrisk framöver.' (texts.ts:28, Engine.swift:171, Types.kt:156) med BETA på kortet i båda apparna (DECISIONS #524), i 0.3.12 (24) och senare byggen (#526); 'Isrisk framöver' oförändrad för dagens regel (texts.ts:70); kvar: till användarna, som i m-efterhalkan</span></li>
     </ul>
   </details>
-  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-vaglagets-alder">Väglagets ålder</a> <span style="color: var(--dampad, #4A5763)">väntar, 33 % · Å-A-mätningen: vinterklassningarna finns i arkivet sedan 20/10 (kodgrinden 39401059236), och Å-A4 kräver ≥ 100 med uppmätt motsägelse.</span></summary>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--dampad, #6B7680); margin-right: 6px"></span><a href="https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-vaglagets-alder">Väglagets ålder</a> <span style="color: var(--dampad, #4A5763)">stängd · Inget: stängd 17/11 på Bengts ord (#891). Tröskeldokumentets premiss föll i vinterns data: operatören rapporterar om varje hal sträcka omkring tre gånger per dygn, så en gammal klassning finns inte i vinterdriften. Frågan om ny och stående halka förs på kort #666</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">✓</span> <b>Tröskeldokument</b> <span style="color: var(--dampad, #4A5763)">klart · TROSKLAR-VAGLAGETS-ALDER.md:4 FASTSTÄLLT 12/9 (DECISIONS #152)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Data i arkivet</b> <span style="color: var(--dampad, #4A5763)">klart · road_condition_history append-only (sql/001_init.sql:30–31), skrivs varje timme (ingest/db.ts:105); vinterklassningarna har kommit: kodgrinden 20/10 (39401059236) fann 1 929 rader med kod 2, varav 485 fläckvis Is, och 624 omklassningar till halka på sju dygn (39401269093; STATUS 20/10)</span></li>
       <li><span aria-hidden="true">○</span> <b>Publicerat i lägesfilen</b> <span style="color: var(--dampad, #4A5763)">saknas · segments[] bär kod och info men varken ålder eller motsägelse (snapshot-core.ts:433–438)</span></li>
       <li><span aria-hidden="true">○</span> <b>Mätt i skuggan</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen Å-A-mätning, ingen E0-skuggkolumn; bara kodgrindens avsnitt D (scripts/kodgrinden.ts:18)</span></li>
-      <li><span aria-hidden="true">○</span> <b>Dom</b> <span style="color: var(--dampad, #4A5763)">saknas · Å-A odömd; kräver ≥ 100 vinterklassningar med uppmätt motsägelse; skriptet byggs efter försprångets domknapp, senast 31/1, underlagsläge först och domläge när Å-A4 ≥ 100 (DECISIONS #661)</span></li>
+      <li><span aria-hidden="true">○</span> <b>Dom</b> <span style="color: var(--dampad, #4A5763)">saknas · Utgår: kortet stängt 17/11 utan att Å-A mäts (DECISIONS #891)</span></li>
       <li><span aria-hidden="true">–</span> <b>Villkoret i motorn</b> <span style="color: var(--dampad, #4A5763)">gäller inte · Verkan E2 sker i snapshoten (TROSKLAR-VAGLAGETS-ALDER.md:172)</span></li>
       <li><span aria-hidden="true">–</span> <b>Testfall i tre språk</b> <span style="color: var(--dampad, #4A5763)">gäller inte · Ingen motorregel; tystnaden ligger i publiceringen</span></li>
       <li><span aria-hidden="true">○</span> <b>I appen</b> <span style="color: var(--dampad, #4A5763)">saknas · Når förarna först vid E2, efter Å-A, Å-B och Bengts ord</span></li>
@@ -1711,7 +1711,7 @@
 
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
   <h2 id="oppna-kort">Öppna kort</h2>
-  <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 31 kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>
+  <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 29 kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>
   <h3><a href="#avsnitt-2">2. Delområdena</a></h3>
   <ul>
     <li>#276 OLJA PÅ VÄGEN — HALKA SOM RÖSTEN INTE SÄGER <span class="litet">· Claude, låst</span></li>
@@ -1741,7 +1741,6 @@
     <li>#321 FYSIKSPÅRET: FLYTTAD TILL HALKVAKT-KUVOS <span class="litet">· Claude</span></li>
     <li>#331 FYSIKSPÅRET: FLYTTAD TILL HALKVAKT-KUVOS <span class="litet">· Claude</span></li>
     <li>#662 🔒 📋 #662 SMÅVÄGSRÖSTEN MOT VERKLIGA DATA — DYGNSRAPPORTEN, KONTROLLERNA PÅ PULSKLOCKAN OCH DRIFTKONTROLLEN … <span class="litet">· Claude, låst</span></li>
-    <li>#663 🔒 📋 #663 STADSFLÖDETS MORGONKÖRNING HOPPAS ÖVER — KUVOS-STAD STARTAR INTE EFTER FYSIKENS RESERV (RÄTTAT … <span class="litet">· Claude, låst</span></li>
     <li>#656 🔒 🧊 #656 SVARTIS PÅ SMÅVÄGARNA — RÖSTEN UTAN NEDERBÖRD, EN SENARE VARIANT (BESTÄLLT 13/11 — Bengt: "lägger … <span class="litet">· Claude, låst</span></li>
     <li>#645 🔒 💧 #645 FLÄCKVIS VÅT SOM FUKT: VINTERPROVET I DRIFTEN 2026/27 (BESTÄLLT 9/11 — Bengt: "Ja, låt A vänta"; … <span class="litet">· Claude, låst</span></li>
     <li>#344 🌡️ #344 FJÄRRYTORNA — EN PLATS GER TVÅ ANKARE I SKUGGANS RÅ (FYND 14/10, AVGJORT SAMMA KVÄLL: INGEN ÄNDRING … <span class="litet">· Claude, låst</span></li>
@@ -1756,7 +1755,6 @@
   <h3><a href="#avsnitt-7">7. Tillstånd (L2)</a></h3>
   <ul>
     <li>#296 EFTER GRANSKNINGEN — TVÅ BESLUT FÖRE MARS-DOMEN: Ö-B1 "INOM RÄCKVIDD" OCH STARTBANDETS ÖVRE DEL <span class="litet">· Bengt</span></li>
-    <li>#151 VÄGLAGETS ÅLDER — ska en stående vinterklassning tystas när mätningarna säger att vintern tagit slut? <span class="litet">· Claude, låst</span></li>
   </ul>
   <h3><a href="#avsnitt-8">8. Allvar och röst (L5)</a></h3>
   <ul>
