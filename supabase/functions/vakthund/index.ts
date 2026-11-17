@@ -50,6 +50,7 @@
 import postgres from "https://deno.land/x/postgresjs@v3.4.4/mod.js";
 import { skaTrycka, senasteTryck, FROSTTRYCK_MARK, GALLRING_DYGN, TRYCK_INTERVALL_D } from "./frosttryck.ts";
 import { I_RAD, datavakter, noter, rad as datavaktRad } from "./datavakter.ts";
+import { medOmprov, shaOrd, OMPROV_S } from "./omprov.ts";
 import { nyckelGiltig } from "../_shared/nyckel.ts";
 
 const sql = postgres(Deno.env.get("SUPABASE_DB_URL")!, { max: 1, prepare: false });
@@ -191,22 +192,33 @@ Deno.serve(async (req) => {
     //    grönt. Bengts granskning fångade det (#76). Mät det appen faktiskt gör.
     //    Sedan fas 1 två källor (DECISIONS #752): hinken, som appen läser, och Pages, som appen tar när hinken inte svarar.
     //    Bevisbäraren prövas i hinkens fil.
+    //    OMPROVET (DECISIONS #889, omprov.ts): CDN byter de två filerna omkring en sekund isär vid varje publicering, och en hämtning
+    //    i den sekunden ser ett manifest som inte stämmer. Paret hämtas därför om innan vakthunden larmar. Ett svar som inte är 200
+    //    prövas inte om: det larmar direkt, som förut.
     const prova = async (kalla: string, bas: string, maxMin: number, rubrik: string, takt: string, utanSvar: string): Promise<Response | null> => {
-      const [mRes, lRes] = await Promise.all([
-        fetch(bas + "manifest.json", { cache: "no-store" }),
-        fetch(bas + "live.json", { cache: "no-store" }),
-      ]);
+      type Par = { mRes: Response; lRes: Response; manifest: any; sum: string };
+      const hamtaPar = async (): Promise<Par> => {
+        const [mRes, lRes] = await Promise.all([
+          fetch(bas + "manifest.json", { cache: "no-store" }),
+          fetch(bas + "live.json", { cache: "no-store" }),
+        ]);
+        if (!mRes.ok || !lRes.ok) return { mRes, lRes, manifest: null, sum: "" };
+        const manifest = await mRes.json();
+        const rå = new Uint8Array(await lRes.clone().arrayBuffer());
+        const sum = [...new Uint8Array(await crypto.subtle.digest("SHA-256", rå))]
+          .map((b) => b.toString(16).padStart(2, "0")).join("");
+        return { mRes, lRes, manifest, sum };
+      };
+      const { svar: { mRes, lRes, manifest, sum }, omprov } = await medOmprov(hamtaPar,
+        (p) => !p.mRes.ok || !p.lRes.ok || p.sum === p.manifest?.files?.live?.sha256,
+        () => new Promise<void>((klar) => setTimeout(klar, OMPROV_S * 1000)));
       if (!mRes.ok) { problem.push(`**${kalla}: manifest.json svarar ${mRes.status}** — ${utanSvar}`); return null; }
       if (!lRes.ok) { problem.push(`**${kalla}: live.json svarar ${lRes.status}** — ${utanSvar}`); return null; }
-      const manifest = await mRes.json();
-      const rå = new Uint8Array(await lRes.clone().arrayBuffer());
-      const sum = [...new Uint8Array(await crypto.subtle.digest("SHA-256", rå))]
-        .map((b) => b.toString(16).padStart(2, "0")).join("");
       const väntad = manifest?.files?.live?.sha256;
       const min = (Date.now() - new Date(manifest.generated_at).getTime()) / 60000;
-      rad.push(`${kalla}: manifest ${min.toFixed(0)} min | sha ${sum === väntad ? "stämmer" : "MISMATCH"}`);
+      rad.push(`${kalla}: manifest ${min.toFixed(0)} min | sha ${shaOrd(sum === väntad, omprov)}`);
       if (sum !== väntad)
-        problem.push(`**${kalla}: manifestets sha256 stämmer inte med live.json** — apparna förkastar filen och kör vidare på förra snapshoten. Det här är felet som INTE syns på CDN.`);
+        problem.push(`**${kalla}: manifestets sha256 stämmer inte med live.json** — apparna förkastar filen och kör vidare på förra snapshoten. Det här är felet som INTE syns på CDN. Felet står kvar efter ${omprov} omprov med ${OMPROV_S} s emellan.`);
       if (min > maxMin) problem.push(`**${rubrik}**: manifestet i ${kalla} ${min.toFixed(0)} min gammalt (${takt})`);
       return lRes;
     };
