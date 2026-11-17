@@ -27,6 +27,10 @@
 // arkivet, och står så tills någon skriver ned vad det får innehålla. Det är billigare att
 // deklarera ett spann än att upptäcka en sentinel i en tröskel.
 //
+// FLAGGOR OCH ORDLISTOR (körlistan B3, 17/11 2026). Sanningsvärden och kodlistor i text är inte tal, och varvet såg dem aldrig,
+// fast de bär mätningar: nederbördsklassen och ytvattnets flagga är fukten i vinterns facit vid stationerna. De deklareras i
+// FLAGGOR och ORD nedan och besiktas sist i varvet. En odeklarerad flagga är OBESIKTIGAT, och ett ord utanför listan är OKÄNT ORD.
+//
 // HUSREGELN (CLAUDE.md): ett fält får inte bära en mätning, en tröskel eller en varning förrän
 // det passerat värdevakten.
 //
@@ -138,6 +142,10 @@ export const SPANN: Record<string, [number, number, string]> = {
   // minus minst yta. Spridningen bär grindens tröskel 2,25 °C, så den besiktigas innan grinden talar. Ytornas spann (−60…+80) ger en
   // teoretisk spridning upp till 140; 60 °C är redan en trasig givare bland grannarna, inte ett väder.
   n_ank: [0, 5, "antal bidragande ankare"], spr: [0, 60, "°C — ankarnas spridning"],
+  // Spärren F1 (DECISIONS #799, sql/086–087): minoritetens andel av ankarnas vikt på andra sidan noll. En minoritet är per definition
+  // högst hälften, och 0 betyder att ankarna är ense. Fältet bär spärrens tröskel 0,45 sedan 6/11 men stod obesiktigat till 17/11
+  // (körlistan B3): läst då till 0…0,4999 i båda tabellerna, med 0 i 94–97 % av raderna.
+  frys_min: [0, 0.5, "andel — minoritetens vikt på andra sidan noll (F1); 0 = ankarna ense"],
   // Domloggen (sql/057–058, kandidat_skugga): antal vägpunkter per sträcka och utfall — en sträcka har högst 64 punkter
   // (vaglagspunkter.json 15/10) — och sträckans radar, kallaste värde, vetostation och minsta spridning bland de varnande.
   punkter: [0, 64, "vägpunkter med yta ≤ 0 på sträckan"], varnar: [0, 64, "varnande punkter"], veto: [0, 64, "vetade punkter"],
@@ -151,13 +159,59 @@ export const SPANN: Record<string, [number, number, string]> = {
  *  kunna bära en tröskel, så de får en egen kategori i stället för att tigas ihjäl. */
 export const IDFALT = new Set(["id", "event_id", "area_id", "warning_id", "camera_id", "segment_id"]);
 
+/** ORDLISTOR (körlistan B3, 17/11 2026). Ett textfält som är en KODLISTA och bär en mätning deklareras här med varje ord det får
+ *  innehålla, i gemener. Ett ord utanför listan är OKÄNT ORD och ett hinder, av samma skäl som ett tal utanför spannet: koden som
+ *  läser fältet vet inte vad ordet betyder. `precipitation` är skälet att listan finns: "no" betyder torrt, och Boolean("no") är
+ *  sant (huvudet ovan). Bara deklarerade textfält skannas: de flesta textfält är fritext eller identifierare, och ett textfält som
+ *  börjar bära en mätning deklareras här innan det används. */
+export const ORD: Record<string, { ord: string[]; not: string }> = {
+  precipitation: { ord: ["no", "dry", "rain", "snow", "sleet", "freezing_rain", "yes"],
+    not: "stationens nederbördsklass: no och dry är torrt, yes är nederbörd av okänt slag. Aldrig ett sanningsvärde" },
+  condition_text: { ord: ["normalt", "besvärligt (risk för)", "mycket besvärligt", "is- och snövägbana"],
+    not: "Trafikverkets väglagsklass i ord, condition_code 1–4" },
+};
+
+/** FLAGGOR (körlistan B3, 17/11 2026). Ett sanningsvärde som bär en mätning deklareras här med vad sant betyder. NULL betyder alltid
+ *  "mäts inte" och aldrig falskt (sql/043). En flagga har inget spann att bryta, så besiktningen är deklarationen och en utskrift
+ *  som en människa läser: täckningen, andelen sant, och stationerna där flaggan aldrig eller alltid är sann. */
+export const FLAGGOR: Record<string, string> = {
+  rain: "stationens regnflagga", snow: "stationens snöflagga",
+  surface_water: "ytstatusgivaren: vatten på vägbanan (Surface.Water, omkring 50 stationer); NULL = ingen givare",
+  surface_ice: "ytstatusgivaren: is på vägbanan (Surface.Ice); markerar inte is tillförlitligt (kort #324)",
+  surface_snow: "ytstatusgivaren: snö på vägbanan (Surface.Snow)",
+  vat: "kandidatens domlogg: sträckans väglag säger våt", flackvis_vat: "kandidatens domlogg: sträckans väglag säger fläckvis våt",
+};
+/** Statusflaggor är bokföring, inte mätvärden: samma kategori som identifierarna. */
+export const STATUSFLAGGOR = new Set(["deleted"]);
+
 export type Falt = {
   tabell: string; kolumn: string; rader: number; nollor: number;
   min: number | null; max: number | null; distinkta: number;
   toppVarde: number | null; toppAndel: number;
 };
 
-export type Dom = { utfall: "OK" | "OBESIKTIGAT" | "UTANFÖR SPANN" | "SENTINEL?" | "ID" | "–"; varfor: string };
+export type Dom = { utfall: "OK" | "OBESIKTIGAT" | "UTANFÖR SPANN" | "SENTINEL?" | "OKÄNT ORD" | "ID" | "–"; varfor: string };
+
+export type OrdFalt = { tabell: string; kolumn: string; rader: number; varden: { ord: string; n: number }[] };
+/** Domen för en kodlista i text: varje ord ska stå i den deklarerade ordlistan, oavsett versaler. */
+export function domaOrd(f: OrdFalt): Dom {
+  const d = ORD[f.kolumn];
+  if (!d) return { utfall: "OBESIKTIGAT", varfor: "ingen deklarerad ordlista — får inte bära en mätning" };
+  if (f.rader < MIN_RADER) return { utfall: "–", varfor: `${f.rader} rader, kräver ${MIN_RADER}` };
+  const okanda = f.varden.filter((v) => !d.ord.includes(v.ord.toLowerCase()));
+  if (okanda.length) return { utfall: "OKÄNT ORD", varfor: `${okanda.slice(0, 5).map((v) => `"${v.ord}" (${v.n})`).join(", ")} står inte i ordlistan` };
+  return { utfall: "OK", varfor: d.not };
+}
+
+export type FlaggFalt = { tabell: string; kolumn: string; rader: number };
+/** Domen för en flagga: deklarationen. Obesiktigat slår allt annat, som för talen. */
+export function domaFlagga(f: FlaggFalt): Dom {
+  if (STATUSFLAGGOR.has(f.kolumn)) return { utfall: "ID", varfor: "statusflagga — bokföring, inte ett mätvärde" };
+  const d = FLAGGOR[f.kolumn];
+  if (!d) return { utfall: "OBESIKTIGAT", varfor: "ingen deklarerad flagga — får inte bära en mätning" };
+  if (f.rader < MIN_RADER) return { utfall: "–", varfor: `${f.rader} rader, kräver ${MIN_RADER}` };
+  return { utfall: "OK", varfor: d };
+}
 
 /** Domen för ett fält. Ordningen är avsiktlig: obesiktigat slår allt annat, för ett fält vi inte
  *  vet något om kan inte friskförklaras av att dess tal råkar se rimliga ut. */
@@ -224,6 +278,20 @@ if (korsSjalv && process.argv.includes("--sjalvtest")) {
   k("för få rader ger ingen dom", doma(f("wind_gust_ms", { rader: 99 })).utfall, "–");
   k("deklarationen täcker de fält motorn läser",
     ["surface_temp_c", "severity_code", "speed_limit_kmh", "bearing"].every((x) => x in SPANN), true);
+  // 7. Ordlistor och flaggor (körlistan B3): det som inte är tal men ändå bär en mätning.
+  const o = (kolumn: string, varden: [string, number][], rader?: number): OrdFalt => ({
+    tabell: "t", kolumn, varden: varden.map(([ord, n]) => ({ ord, n })), rader: rader ?? varden.reduce((s, v) => s + v[1], 0) });
+  k("nederbördens ord passerar", domaOrd(o("precipitation", [["no", 9000], ["rain", 800], ["snow", 200]])).utfall, "OK");
+  k("versaler gör inget ord okänt", domaOrd(o("precipitation", [["no", 9000], ["Dry", 500]])).utfall, "OK");
+  k("ett ord utanför listan fälls", domaOrd(o("precipitation", [["no", 9000], ["hail", 3]])).utfall, "OKÄNT ORD");
+  k("väglagsklassens ord passerar", domaOrd(o("condition_text", [["Normalt", 600], ["Besvärligt (risk för)", 180]])).utfall, "OK");
+  k("odeklarerad kodlista är obesiktigad", domaOrd(o("ny_kodlista_2027", [["a", 9000]])).utfall, "OBESIKTIGAT");
+  k("för få rader ger ingen dom för en ordlista", domaOrd(o("precipitation", [["hail", 3]])).utfall, "–");
+  k("ytvattnets flagga är deklarerad", domaFlagga({ tabell: "t", kolumn: "surface_water", rader: 5000 }).utfall, "OK");
+  k("odeklarerad flagga är obesiktigad", domaFlagga({ tabell: "t", kolumn: "ny_flagga_2027", rader: 5000 }).utfall, "OBESIKTIGAT");
+  k("statusflagga är inte ett mätvärde", domaFlagga({ tabell: "t", kolumn: "deleted", rader: 5000 }).utfall, "ID");
+  k("flagga med för få rader får ingen dom", domaFlagga({ tabell: "t", kolumn: "surface_water", rader: 12 }).utfall, "–");
+  k("ordet no är sant som sanningsvärde, därför en ordlista", Boolean("no") && ORD.precipitation.ord.includes("no"), true);
   if (!ok) { console.error("\nSJÄLVTEST FÄLLDE."); process.exit(1); }
   console.log("\nSJÄLVTEST OK: alla fyra fall som lurade oss 12/9 fastnar, kodlistor fälls inte");
   console.log("för dominans, och ett odeklarerat fält är obesiktigat även när talen ser rimliga ut.");
@@ -303,14 +371,60 @@ for (const { f, d } of falt) {
   if (d.utfall !== "OK") console.log(`     ${d.utfall}: ${d.varfor}`);
 }
 
-const rakna = (u: Dom["utfall"]) => falt.filter((x) => x.d.utfall === u).length;
+// ── Flaggor och ordlistor (körlistan B3, 17/11): det numeriska varvet ovan ser dem inte, och F-halka i kuvösens prov vilar på två.
+const ovriga: { namn: string; d: Dom }[] = [];
+const fonsterFor = (t: string) => (TID[t] ? `WHERE ${TID[t]} > now() - ${DAGAR} * interval '1 day'` : "");
+const flaggor = await q(`
+  SELECT table_name, column_name FROM information_schema.columns
+  WHERE table_schema = 'public' AND data_type = 'boolean' AND table_name = ANY($1::text[])
+  ORDER BY table_name, ordinal_position`, [Object.keys(TID)]);
+const medStation = new Set((await q(`
+  SELECT table_name FROM information_schema.columns
+  WHERE table_schema = 'public' AND column_name = 'station_id' AND table_name = ANY($1::text[])`, [Object.keys(TID)])).map((r) => r.table_name));
+console.log(`\nFLAGGOR (${flaggor.length} sanningsvärden; NULL = mäts inte)`);
+for (const { table_name: t, column_name: c } of flaggor) {
+  const fonster = fonsterFor(t);
+  const g = (await q(`SELECT count(*)::bigint AS alla, count("${c}")::bigint AS rader, count(*) FILTER (WHERE "${c}")::bigint AS sant
+    FROM "${t}" ${fonster}`))[0];
+  const rader = Number(g.rader), d = domaFlagga({ tabell: t, kolumn: c, rader });
+  let stationer = "";
+  if (d.utfall === "OK" && medStation.has(t)) {
+    const s = (await q(`SELECT count(*)::int AS n, count(*) FILTER (WHERE sant = 0)::int AS aldrig, count(*) FILTER (WHERE sant = rader)::int AS alltid
+      FROM (SELECT station_id, count("${c}") AS rader, count(*) FILTER (WHERE "${c}") AS sant FROM "${t}" ${fonster}
+            GROUP BY 1 HAVING count("${c}") >= ${MIN_RADER}) x`))[0];
+    stationer = ` · ${s.n} stationer med minst ${MIN_RADER} rader: ${s.aldrig} aldrig sant, ${s.alltid} alltid sant`;
+  }
+  console.log(`  ${ikon(d.utfall)} ${`${t}.${c}`.padEnd(40)} ${String(rader).padStart(9)} rader av ${g.alla}` +
+    (rader ? ` · sant ${(100 * Number(g.sant) / rader).toFixed(1)} %` : "") + stationer);
+  if (d.utfall !== "OK") console.log(`     ${d.utfall}: ${d.varfor}`);
+  ovriga.push({ namn: `${t}.${c}`, d });
+}
+const ordfalt = await q(`
+  SELECT table_name, column_name FROM information_schema.columns
+  WHERE table_schema = 'public' AND data_type IN ('text', 'character varying') AND table_name = ANY($1::text[]) AND column_name = ANY($2::text[])
+  ORDER BY table_name, ordinal_position`, [Object.keys(TID), Object.keys(ORD)]);
+console.log(`\nORDLISTOR (${ordfalt.length} deklarerade kodlistor i text)`);
+for (const { table_name: t, column_name: c } of ordfalt) {
+  const fonster = fonsterFor(t);
+  const v = await q(`SELECT "${c}" AS ord, count(*)::bigint AS n FROM "${t}" ${fonster} ${fonster ? "AND" : "WHERE"} "${c}" IS NOT NULL
+    GROUP BY 1 ORDER BY 2 DESC LIMIT 200`);
+  const varden = v.map((r) => ({ ord: String(r.ord), n: Number(r.n) })), rader = varden.reduce((s, x) => s + x.n, 0);
+  const d = domaOrd({ tabell: t, kolumn: c, rader, varden });
+  console.log(`  ${ikon(d.utfall)} ${`${t}.${c}`.padEnd(40)} ${String(rader).padStart(9)} rader · ` +
+    varden.slice(0, 8).map((x) => `${x.ord} ${(100 * x.n / Math.max(1, rader)).toFixed(1)} %`).join(", "));
+  if (d.utfall !== "OK") console.log(`     ${d.utfall}: ${d.varfor}`);
+  ovriga.push({ namn: `${t}.${c}`, d });
+}
+
+const rakna = (u: Dom["utfall"]) => falt.filter((x) => x.d.utfall === u).length + ovriga.filter((x) => x.d.utfall === u).length;
 console.log(`\nSAMMANFATTNING`);
 console.log(`  ✅ ${rakna("OK")} besiktade och rimliga`);
-console.log(`  ⚠️  ${rakna("UTANFÖR SPANN")} utanför deklarerat spann · ${rakna("SENTINEL?")} misstänkt sentinel`);
-console.log(`  ⊘ ${rakna("OBESIKTIGAT")} OBESIKTIGADE — inget deklarerat spann`);
+console.log(`  ⚠️  ${rakna("UTANFÖR SPANN")} utanför deklarerat spann · ${rakna("SENTINEL?")} misstänkt sentinel · ${rakna("OKÄNT ORD")} med okänt ord`);
+console.log(`  ⊘ ${rakna("OBESIKTIGAT")} OBESIKTIGADE — inget deklarerat spann, ingen ordlista eller ingen flagga`);
 console.log(`  · ${rakna("–")} för tunt underlag för en dom`);
 
-const hinder = falt.filter((x) => x.d.utfall === "OBESIKTIGAT" || x.d.utfall === "UTANFÖR SPANN" || x.d.utfall === "SENTINEL?");
+const arHinder = (u: Dom["utfall"]) => u === "OBESIKTIGAT" || u === "UTANFÖR SPANN" || u === "SENTINEL?" || u === "OKÄNT ORD";
+const hinder = [...falt.filter((x) => arHinder(x.d.utfall)), ...ovriga.filter((x) => arHinder(x.d.utfall)).map((x) => ({ f: { tabell: x.namn.split(".")[0], kolumn: x.namn.split(".")[1] }, d: x.d }))];
 if (hinder.length) {
   console.log(`\nFÄLT SOM INTE FÅR BÄRA EN MÄTNING, TRÖSKEL ELLER VARNING (husregeln i CLAUDE.md):`);
   for (const { f, d } of hinder) console.log(`  ${ikon(d.utfall)} ${f.tabell}.${f.kolumn} — ${d.varfor}`);
