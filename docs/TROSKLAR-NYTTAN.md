@@ -1,7 +1,7 @@
 # TROSKLAR — mätplanen: vad nytta är, och hur den mäts vintern 2026/27
 
-**UTKAST 17/11 2026, inte fastställt.** Skrivet av Claude på Bengts order (körlistan C1; Bengt 17/11: *"ta B6 först och gör sedan B1, B2, B3
-och C1 i den ordning du tycker är bäst"*). Dokumentet gäller först när Bengt och Axel har fastställt det (§10). Efter den första läsningen
+**FASTSTÄLLT 17/11 2026 av Bengt och Axel (DECISIONS #895, signaturerna i §10).** Skrivet av Claude på Bengts order (körlistan C1; Bengt 17/11: *"ta B6 först och gör sedan B1, B2, B3
+och C1 i den ordning du tycker är bäst"*). Efter den första läsningen
 ändras inget mått, underlag eller krav utan ett nytt beslut, med skälet bokfört (regel L, §9).
 
 ## 1. Vad mätplanen är, och vad den inte är
@@ -95,7 +95,7 @@ skälet bokfört. En ändring som görs efter att ett utfall har setts lutar sig
 
 ## 10. Valen, och signaturer
 
-Varje val har en rekommendation. Dokumentet är fastställt när Bengt och Axel har svarat på alla fem.
+Varje val hade en rekommendation, och svaret blev ja på alla fem 17/11 2026 (DECISIONS #895).
 
 | Val | Rekommendation | Skäl |
 | :-- | :-- | :-- |
@@ -105,4 +105,7 @@ Varje val har en rekommendation. Dokumentet är fastställt när Bengt och Axel 
 | 4. Ska förarnas svar få sägas utåt, med antalet bredvid? | **Ja** | Ett svar från vägen är det närmaste Halkvakt kommer en förares bedömning |
 | 5. Ska veckorapporten bära alla fyra nivåerna från första måndagen efter fastställandet? | **Ja** | Då mäts allt mot samma plan från början |
 
-**Signaturer:** väntar på Bengt och Axel.
+**Signaturer:** Bengt 17/11 2026: *"Ja till c1, b2 och b1 enligt din rek"*. Axel 17/11 2026, via Bengt: *"axel signerar"*. Bengts svar gavs på frågan om jaet också gällde för
+Axel, ställd om posterna i kuvösens förregistreringar, och är läst som att det gäller hela jaet (DECISIONS #895).
+
+**Första måndagen efter fastställandet** (val 5) är 23/11 2026.

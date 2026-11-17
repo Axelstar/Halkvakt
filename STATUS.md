@@ -3173,3 +3173,9 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - **C1:** `docs/TROSKLAR-NYTTAN.md` är skriven som utkast, med fyra nivåer och fem val. Inte fastställd.
   - **B1 och B2:** underlaget och två postutkast står i det privata repot (halkvakt-kuvos F72, PR 94). Bygget för B1 väntar på signaturerna.
   - **A1 rättad:** kuvösens prov hade inte skrivit dygnet 16/11 kl. 08.36 UTC. Raden står som pågår tills det är läst.
+- 17/11 kväll (Claude; Bengt: *"Ja till c1, b2 och b1 enligt din rek, b6 ja sen bygg b1 o avläs så att a1 kan stängas"* och *"axel signerar"*): **A1 stängd, mätplanen fastställd, B1 och B6 byggda men inte i drift** (DECISIONS #894–#896).
+  - **A1 klar:** kuvösens prov skrev dygnet 16/11 i `kuvos-stad` 44086843299 (12.50–13.02 UTC, grön). Dygnets fil är inte öppnad.
+  - **C1 (#895):** `docs/TROSKLAR-NYTTAN.md` är fastställd med ja på alla fem valen. Axels signatur gavs via Bengt och är läst som att den gäller hela jaet. Val 5 gör måndagen 23/11 till veckorapportens första, och rapporten (D1) är inte byggd.
+  - **B1 och B2 (#894):** svaren och de signerade posterna står i halkvakt-kuvos F73 (PR 95). Stadsflödet räknar en saknad körning i efterhand av sig självt (PR #1652). Inget är sammanslaget, och kuvösens PR ska gå först.
+  - **B6 (#896):** `sql/115` sparar publiceringens byggtid, och vakthundens kontroll 9l larmar när brytarna är på och två körningar i rad tar mer än det dubbla av medianen veckan före påslaget. Migrationen och deployen väntar på Bengts ord.
+  - **Inte gjort:** provet av reserven med en framkallad lucka, och namnet på den som slår av på testarnas svar.

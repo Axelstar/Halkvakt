@@ -4473,3 +4473,163 @@ test("#888 stadsloggen i arkivexporten: vitlistan, tidskolumnen, filen och bokf�
     await pool.end();
   }
 });
+
+// Körlistan B6 (sql/115, DECISIONS #896): publiceringens byggtid sparas ur pg_nets svar, och avbrottsvillkoret i #833 prövas mot
+// medianen veckan före påslaget. Fixturerna (minuter sedan, D = ett dygn):
+//   samla  sju svar i pg_net: två av dem är publiceringar med tider.bygget; ett grannland, ett 500-svar, ett svar där bara
+//          bygget_delar bär ordet bygget, ett annat svar med tider.bygget och ett fel ska inte sparas
+//   S1  brytarna av: medianen de sju senaste dygnen, och aldrig över
+//   S2  brytaren på sedan 1 D, två i rad över det dubbla → över, och referensen bär bara veckan före påslaget
+//   S3  en ensam topp → inte över                S4  exakt det dubbla → inte över           S5  strax över, två i rad → över
+//   S6  paret är tre timmar gammalt → inte över  S7  två toppar med en vanlig emellan → inte över
+//   S8  inga rader före påslaget → ingen referens, inte över                                  S9  tom tabell → en rad med nollor
+//   G1  brytaren på sedan 100 D: gallringen tar raden före referensveckan och den gamla efter påslaget, men inte referensveckans
+//   G2  brytarna av: allt äldre än 60 dygn gallras
+// CI:s PostGIS saknar pg_net: net._http_response spelas av en egen tabell (som #842) och tas bort efteråt. En riktig pg_net rörs inte.
+test("#896 publiceringens byggtid: sparad ur svaren, och avbrottsvillkoret mot veckan före påslaget", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const fil = (f: string) => readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8");
+  const nu = Date.now(), D = 1440;
+  const ago = (min: number) => new Date(nu - min * 60_000).toISOString();
+  const riktiga = (await q("SELECT to_regclass('net._http_response') IS NOT NULL AS j")).rows[0].j;
+  let egenNet = false;
+  let brytareFore: { grupp: string; pa: boolean; andrad_at: Date; skal: string }[] | null = null;
+  try {
+    if (riktiga) return;   // en riktig pg_net rörs inte
+    await q(fil("103_smavagspunkter.sql"));
+    await q(fil("115_publicera_bygge.sql")); await q(fil("115_publicera_bygge.sql"));   // filen tål att köras två gånger
+    brytareFore = (await q("SELECT grupp, pa, andrad_at, skal FROM smavagsbrytare")).rows;
+    assert.deepEqual((await q("SELECT relrowsecurity FROM pg_class WHERE relname = 'publicera_bygge'")).rows, [{ relrowsecurity: true }]);
+    assert.deepEqual((await q("SELECT proconfig FROM pg_proc WHERE proname = 'publicera_bygge_samla'")).rows[0].proconfig,
+      ["search_path=public, extensions"], "samla: fast sökväg i definitionen (DECISIONS #784)");
+    assert.equal((await q("SELECT proconfig FROM pg_proc WHERE proname = 'publicera_bygge_lage'")).rows[0].proconfig, null,
+      "läget är en sql-funktion och får ingen SET-klausul (CLAUDE.md)");
+
+    // Utan pg_net finns inget att samla, och funktionen går ändå.
+    await q("DELETE FROM publicera_bygge");
+    assert.equal((await q("SELECT publicera_bygge_samla() AS n")).rows[0].n, 0, "utan pg_net: inget samlas");
+
+    await q(`CREATE SCHEMA net; CREATE TABLE net._http_response (id bigint, status_code integer, content_type text, headers jsonb,
+      content text, timed_out boolean, error_msg text, created timestamptz NOT NULL DEFAULT now())`);
+    egenNet = true;
+    const pub = (bygget: number) => `{"ok":true,"sha":"a","hinken":"ok","tider":{"lasning":12,"bygget":${bygget},"hinken":300},"bygget_delar":{"kandidat":6000,"smavag":23},"ms":9000}`;
+    const SVAR: [number, number, number, string][] = [
+      [1, 30, 200, pub(8000)],
+      [2, 28, 200, '{"ok":true,"land":"no","sha":"abc","hinken":"ok","ms":3}'],
+      [3, 26, 500, pub(7000)],
+      [4, 24, 200, '{"ok":true,"tider":{"hinken":5},"bygget_delar":{"bygget":99},"ms":1}'],
+      [5, 22, 200, '{"ok":true,"tider":{"bygget":8100},"bygget_delar":{},"ms":1}'],
+      [6, 20, 200, '{"ok":false,"error":"tider bygget 5"}'],
+      [7, 18, 200, '{"ok":true,"tider":{"bygget":77},"ms":1}'],
+    ];
+    for (const [id, min, status, content] of SVAR)
+      await q("INSERT INTO net._http_response (id, status_code, content, timed_out, created) VALUES ($1, $2, $3, false, $4)", [id, status, content, ago(min)]);
+
+    const REF: [number, number][] = [[6.5 * D, 8000], [5.5 * D, 8200], [4.5 * D, 8400], [3.5 * D, 9000], [2.5 * D, 30000]];
+    const lagg = async (rader: [number, number][]) => {
+      await q("DELETE FROM publicera_bygge");
+      for (const [min, ms] of rader) await q("INSERT INTO publicera_bygge (t, bygget_ms) VALUES ($1, $2)", [ago(min), ms]);
+    };
+    const brytare = async (paSedanMin: number | null) => {
+      await q("UPDATE smavagsbrytare SET pa = false");
+      if (paSedanMin !== null) await q("UPDATE smavagsbrytare SET pa = true, andrad_at = $1 WHERE grupp = 'P1'", [ago(paSedanMin)]);
+    };
+    const lage = async (rader: [number, number][], paSedanMin: number | null) => {
+      await lagg(rader); await brytare(paSedanMin);
+      const r = (await q("SELECT * FROM publicera_bygge_lage()")).rows;
+      assert.equal(r.length, 1, "läget är alltid en rad");
+      const x = r[0];
+      return { pa: x.pa_sedan !== null, ref: x.referens_ms, n: x.referens_n, dygn: x.referens_dygn === null ? null : Number(x.referens_dygn),
+               senaste: x.senaste_ms, rader: x.rader, par: x.par_i_rad, over: x.over };
+    };
+    const kvar = async (paSedanMin: number | null) => {
+      await lagg([[110 * D, 1], [103 * D, 2], [80 * D, 3], [30 * D, 4]]); await brytare(paSedanMin);
+      await q("SELECT publicera_bygge_samla()");
+      // Samlingen lägger också in pg_nets två publiceringar; gallringen prövas på provets egna rader, som är äldre än ett dygn.
+      return (await q("SELECT bygget_ms FROM publicera_bygge WHERE t < now() - interval '1 day' ORDER BY t")).rows.map((x: any) => x.bygget_ms);
+    };
+    const kor = async () => {
+      const ut: Record<string, unknown> = {};
+      await lagg([]); await brytare(null);
+      const n1 = (await q("SELECT publicera_bygge_samla() AS n")).rows[0].n;
+      const n2 = (await q("SELECT publicera_bygge_samla() AS n")).rows[0].n;
+      ut.samla = [n1, n2, (await q("SELECT bygget_ms FROM publicera_bygge ORDER BY t")).rows.map((x: any) => x.bygget_ms)];
+      ut.S1 = await lage([...REF, [10, 20000], [8, 21000]], null);
+      ut.S2 = await lage([...REF, [10, 20000], [8, 21000]], D);
+      ut.S3 = await lage([...REF, [10, 9000], [8, 21000]], D);
+      ut.S4 = await lage([...REF, [10, 16800], [8, 16800]], D);
+      ut.S5 = await lage([...REF, [10, 16801], [8, 16801]], D);
+      ut.S6 = await lage([...REF, [180, 20000], [178, 21000], [8, 8100]], D);
+      ut.S7 = await lage([...REF, [12, 20000], [10, 8100], [8, 21000]], D);
+      ut.S8 = await lage([[10, 20000], [8, 21000]], D);
+      ut.S9 = await lage([], null);
+      ut.G1 = await kvar(100 * D);
+      ut.G2 = await kvar(null);
+      return ut;
+    };
+    const pa = (o: object) => ({ pa: true, ref: 8400, n: 5, dygn: 4, rader: 7, ...o });
+    const VANTAT: Record<string, unknown> = {
+      samla: [2, 0, [8000, 8100]],
+      S1: { pa: false, ref: 9000, n: 7, dygn: 6.5, senaste: 21000, rader: 7, par: 1, over: false },
+      S2: pa({ senaste: 21000, par: 1, over: true }),
+      S3: pa({ senaste: 21000, par: 0, over: false }),
+      S4: pa({ senaste: 16800, par: 0, over: false }),
+      S5: pa({ senaste: 16801, par: 1, over: true }),
+      S6: pa({ senaste: 8100, rader: 8, par: 0, over: false }),
+      S7: pa({ senaste: 21000, rader: 8, par: 0, over: false }),
+      S8: { pa: true, ref: null, n: 0, dygn: null, senaste: 21000, rader: 2, par: 0, over: false },
+      S9: { pa: false, ref: null, n: 0, dygn: null, senaste: null, rader: 0, par: 0, over: false },
+      G1: [2, 4],
+      G2: [4],
+    };
+    // Jämförelsen går på JSON, så nycklarnas ordning i VANTAT saknar betydelse för domen men inte för utskriften.
+    const lika = (a: unknown, b: unknown) => JSON.stringify(sortera896(a)) === JSON.stringify(sortera896(b));
+    const ALLA = Object.keys(VANTAT);
+    const skiljer = (r: Record<string, unknown>) => ALLA.filter((id) => !lika(r[id], VANTAT[id]));
+    const visa = (r: Record<string, unknown>) => skiljer(r).map((id) => `${id}: fick ${JSON.stringify(r[id])}, väntat ${JSON.stringify(VANTAT[id])}`).join("\n");
+    const forsta = await kor();
+    assert.deepEqual(skiljer(forsta), [], `den riktiga filen ger det väntade i varje fixtur\n${visa(forsta)}`);
+
+    // Motproven: ett villkor i taget ur filen. Varje mutant ska ge ett annat svar än VANTAT, och raden säger vilka fixturer som fällde den.
+    const RIKTIG = fil("115_publicera_bygge.sql");
+    const MONSTER = String.raw`'"tider":\{[^}]*"bygget":([0-9]+)'`;
+    const MUTANTER: [string, string, string][] = [
+      ["bara lyckade svar", "WHERE status_code = 200 AND content LIKE", "WHERE content LIKE"],
+      ["bara publiceringens svar", `content LIKE '%"bygget_delar"%'`, "content LIKE '%'"],
+      ["tiderna, inte delarna", MONSTER, `'"bygget":([0-9]+)'`],
+      ["mer än det dubbla", "x.bygget_ms > 2 * ref.ms AND x.forra > 2 * ref.ms", "x.bygget_ms >= 2 * ref.ms AND x.forra >= 2 * ref.ms"],
+      ["två i rad", " AND x.forra > 2 * ref.ms", ""],
+      ["den senaste timmen", " WHERE p.t > now() - interval '70 minutes'", ""],
+      ["bara med brytarna på", "(f.pa_sedan IS NOT NULL AND ref.ms IS NOT NULL AND par.n > 0)", "(ref.ms IS NOT NULL AND par.n > 0)"],
+      ["referensen före påslaget", "coalesce(b.pa_sedan, now()) AS slut", "now() AS slut"],
+      ["sju dygn", "p.t >= f.slut - interval '7 days'", "p.t >= f.slut - interval '3 days'"],
+      ["medianen", "percentile_cont(0.5)", "percentile_cont(0.9)"],
+      ["gallringen skonar referensveckan", "AND (pa_sedan IS NULL OR t < pa_sedan - interval '7 days' OR t >= pa_sedan)", ""],
+      ["gallringen efter 60 dygn", "WHERE t < now() - interval '60 days'", "WHERE t < now() - interval '20 days'"],
+    ];
+    for (const [namn, fran, till] of MUTANTER) {
+      assert.ok(RIKTIG.includes(fran), `motprovet ${namn}: texten finns i filen`);
+      await q(RIKTIG.split(fran).join(till));
+      const fallde = skiljer(await kor());
+      console.log(`motprov byggtiden, ${namn}: fälls av ${fallde.join(", ") || "INGEN"}`);
+      assert.ok(fallde.length > 0, `motprovet ${namn} fälls inte av någon fixtur`);
+    }
+    await q(RIKTIG);
+    const sista = await kor();
+    assert.deepEqual(skiljer(sista), [], `den riktiga filen tillbaka\n${visa(sista)}`);
+  } finally {
+    if (egenNet) await q("DROP SCHEMA net CASCADE").catch(() => {});
+    await q("DELETE FROM publicera_bygge").catch(() => {});
+    for (const b of brytareFore ?? [])
+      await q("UPDATE smavagsbrytare SET pa = $2, andrad_at = $3, skal = $4 WHERE grupp = $1", [b.grupp, b.pa, b.andrad_at, b.skal]).catch(() => {});
+    await pool.end();
+  }
+});
+// Nycklarna i bokstavsordning, så att två poster med samma innehåll blir samma text.
+function sortera896(v: unknown): unknown {
+  if (Array.isArray(v)) return v.map(sortera896);
+  if (v && typeof v === "object") return Object.fromEntries(Object.entries(v as Record<string, unknown>).sort(([a], [b]) => a.localeCompare(b)).map(([k, x]) => [k, sortera896(x)]));
+  return v;
+}

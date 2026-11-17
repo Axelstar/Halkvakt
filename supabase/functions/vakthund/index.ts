@@ -51,6 +51,7 @@ import postgres from "https://deno.land/x/postgresjs@v3.4.4/mod.js";
 import { skaTrycka, senasteTryck, FROSTTRYCK_MARK, GALLRING_DYGN, TRYCK_INTERVALL_D } from "./frosttryck.ts";
 import { I_RAD, datavakter, noter, rad as datavaktRad } from "./datavakter.ts";
 import { medOmprov, shaOrd, OMPROV_S } from "./omprov.ts";
+import { byggeLarm, byggeRad, type ByggeLage } from "./bygge.ts";
 import { nyckelGiltig } from "../_shared/nyckel.ts";
 
 const sql = postgres(Deno.env.get("SUPABASE_DB_URL")!, { max: 1, prepare: false });
@@ -1086,6 +1087,16 @@ Deno.serve(async (req) => {
       if (y.efter > y.tabeller && (y.timmar === null || Number(y.timmar) > 3))
         problem.push(`**Arkivexporten av trendtabellerna och radarn står still**: ${y.efter} färdiga tabelldygn väntar och ingen export på ${y.timmar ?? "–"} h — läs net._http_response för arkivexport (kort #347, DECISIONS #569)`);
     } catch (e) { problem.push(`**Kunde inte läsa arkivexporten**: ${String(e).slice(0, 160)}`); }
+    // 9l. PUBLICERINGENS BYGGE (körlistan B6, DECISIONS #896). Avbrottsvillkoret i #833 kräver medianen för bygget veckan före
+    //     påslaget, men svaren finns bara kvar i pg_net i omkring sex timmar. Vakten samlar därför byggtiden varje timme (sql/115)
+    //     och larmar när brytarna är på och två körningar i rad tog mer än det dubbla av referensen. Orden står i bygge.ts.
+    try {
+      const [{ n: nya }] = await sql`SELECT publicera_bygge_samla() AS n`;
+      const [b] = await sql`SELECT * FROM publicera_bygge_lage()`;
+      rad.push(byggeRad(b as unknown as ByggeLage, Number(nya)));
+      const larm = byggeLarm(b as unknown as ByggeLage);
+      if (larm) problem.push(larm);
+    } catch (e) { problem.push(`**Kunde inte läsa publiceringens byggtid**: ${String(e).slice(0, 160)}`); }
   } catch (e) {
     // Samma regel som de andra: en blind vakt är värre än ingen.
     problem.push(`**Healthcheckens kontroller (kort #87) kunde inte köras**: ${String(e)}`);
