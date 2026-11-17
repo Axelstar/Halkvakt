@@ -1193,7 +1193,7 @@ mätningar — R1–R16 nedan är strukna och står kvar bara som historik.**
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
 ## Öppna kort
 
-Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 15 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
+Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 16 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
 
 **§1 NU — före första frosten**
 
@@ -1208,6 +1208,7 @@ Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 15 kort
 
 - #214 PLAY-DEKLARATIONEN ÄR OSANN SEDAN 16/9 — Axel, beslut
 - #296 EFTER GRANSKNINGEN — TVÅ BESLUT FÖRE MARS-DOMEN: Ö-B1 "INOM RÄCKVIDD" OCH STARTBANDETS ÖVRE DEL — Bengt
+- #665 🐕 #665 VAKTHUNDEN LARMAR FALSKT OM HINKEN — OMPROV FÖRE LARMET (NYTT 17/11 — Bengt, om larmet i ärende … — Claude
 - #664 🧭 #664 KÖRLISTAN — VÄGEN TILL ETT TILLFÖRLITLIGT SYSTEM, MÄTT NYTTA OCH REDOVISNING (BESTÄLLT 17/11 — Bengt: … — Claude
 - #299 SPRIDNINGSGRINDEN OCH NATTBEGRÄNSNINGEN — TVÅ FÖRSLAG TILL TROSKLAR-SKUGGAN UR KUVÖSEN — Claude
 - #367 SMÅVÄGARNA: FLYTTAD TILL HALKVAKT-KUVOS — Claude
