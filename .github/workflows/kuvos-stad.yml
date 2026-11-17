@@ -15,6 +15,10 @@ name: kuvos-stad
 #             stadsmiljöns PH och P-II:s filer som vanligt. Timmens besked och identiteten hoppas över, för de hör till timmen när
 #             körningen går, och de passerade dygnen räknas av nästa vanliga körning. Starta bara när ingen körning väntar i MET-kön:
 #             en ny väntande ersätter den som väntar.
+#             Reserven (DECISIONS #894, kuvösens BESLUT F72 och F73): sist i en vanlig körning prövas om någon körning de senaste
+#             dygnen saknar sin fil i hinken. Den äldsta som MET har kvar räknas då i efterhand med stamp, en per körning. Ett dygn
+#             i P-II väntar så länge en saknad körning ännu går att räkna i efterhand. Regeln och dess gräns står i det privata
+#             repot (fysik/ny_kandidat/efterrakning.py); här står bara stegen.
 # MET-kön: samma grupp som kuvos-ny-kandidat:s och kuvos-pilot:s hämtningar, så att två av våra hämtningar aldrig går samtidigt.
 # Källa: MET Norway, MET Nordic (NLOD / CC BY 4.0).
 on:
@@ -35,7 +39,7 @@ on:
 concurrency: { group: kuvos-ny-kandidat-met, cancel-in-progress: false }
 permissions:
   contents: read
-  actions: read      # de levande körningarna för väntan på MET
+  actions: write     # de levande körningarna för väntan på MET, och reserven som startar en efterräkning (#894)
 env:
   PUNKTER: data/vagdata/stadspunkter-2026-27.json
   SARDRAG: data/vagdata/stadspunkter-2026-27-sardrag.csv
@@ -147,6 +151,7 @@ jobs:
           (cd fysik && sha256sum -c --quiet SHA256SUMS)
           python3 fysik/live/indata.py --sjalvtest > /dev/null; echo "självtest ok: indata.py"
           python3 fysik/ny_kandidat/smavagar_pilot.py --sjalvtest > /dev/null; echo "självtest ok: smavagar_pilot.py"
+          python3 fysik/ny_kandidat/efterrakning.py --sjalvtest
           python3 -c "import sys; sys.path.insert(0, 'fysik/ny_kandidat'); import levande; c = levande.ladda()" > /dev/null; echo "kandidatfilen läst"
           [ -f "$PUNKTER" ] && [ -f "$SARDRAG" ] || { echo "::error::punktfilen eller platsdragen saknas i kuvos"; exit 1; }
           echo "fran=$(date -u -d '47 days ago' +%F)" >> "$GITHUB_OUTPUT"; echo "till=$(date -u -d '3 days ago' +%F)" >> "$GITHUB_OUTPUT"
@@ -508,11 +513,18 @@ jobs:
           # Småvägsenhetens PH och fukten, en fil var per MET-körning.
           python3 "$K" spara --sm "ut-sm/ny_kandidat_ph_$STAMP.csv.gz" --korning "mn/metnordic_korning_$STAMP.csv.gz" --stationer indata-sm --ut p2
           N "$H" ladda-upp "$P2" "p2/p2_ph_$STAMP.csv.gz" "p2/p2_met_$STAMP.csv.gz"
+          # En efterräkning lämnar ett märke, så att domen kan säga vilka körningar som är räknade i efterhand (#894).
+          if [ -n "$STAMP_IN" ]; then
+            echo "$STAMP räknad i efterhand $(date -u +%FT%TZ), körning $GITHUB_RUN_ID" > "p2/p2_efter_$STAMP.txt"
+            N "$H" ladda-upp "$P2" "p2/p2_efter_$STAMP.txt"
+          fi
           # De passerade UTC-dygnen sedan 1/11 som saknas i hinken, högst 13 dygn bakåt: driftens PH ligger 14 dygn i databasen.
           # Ett dygn räknas först när det är helt förbi, från körningen 06 nästa dygn, så att kvällens och nattens mätningar och
           # driftens timmar finns (körningen 18 samma dygn går omkring 18.45 UTC, före dygnets sista sex timmar). Med alla fem
-          # körningars filer räknas det genast. Utan dem väntar det, och från två dygn bakåt räknas det med den levande ensam
-          # (dygnen före steget, eller en hoppad körning); dygnets sammanfattning säger det.
+          # körningars filer räknas det genast. Utan dem väntar det så länge en saknad körning ännu går att räkna i efterhand
+          # (efterrakning.py vantan, #894), och sedan räknas det med den levande ensam (dygnen före steget, eller en körning
+          # som inte gick att räkna); dygnets sammanfattning säger det.
+          E=fysik/ny_kandidat/efterrakning.py
           python3 "$K" mal --ut mal.txt
           R=$(date -u -d "${STAMP:0:4}-${STAMP:4:2}-${STAMP:6:2} ${STAMP:9:2}:00" +%s)
           IDAG=$(date -u -d "@$R" +%F)
@@ -525,10 +537,13 @@ jobs:
             N "$H" hamta "$P2" p2-finns "p2_$DAG.csv.gz"
             [ -f "p2-finns/p2_$DAG.csv.gz" ] && continue
             B=$(date -u -d "$DAG" +%s)
-            NAMN=(); for h in -6 0 6 12 18; do S=$(date -u -d "@$((B + h * 3600))" +%Y%m%dT%HZ); NAMN+=("p2_ph_$S.csv.gz" "p2_met_$S.csv.gz"); done
+            NAMN=(); FEM=(); for h in -6 0 6 12 18; do S=$(date -u -d "@$((B + h * 3600))" +%Y%m%dT%HZ); FEM+=("$S"); NAMN+=("p2_ph_$S.csv.gz" "p2_met_$S.csv.gz"); done
             N "$H" hamta "$P2" p2-sm "${NAMN[@]}"
-            SAKNAS=0; for f in "${NAMN[@]}"; do [ -f "p2-sm/$f" ] || SAKNAS=$((SAKNAS + 1)); done
-            if [ "$SAKNAS" -gt 0 ] && [ "$k" -lt 2 ]; then echo "dygnet $DAG väntar: $SAKNAS av ${#NAMN[@]} filer saknas"; continue; fi
+            SAKN=(); for S in "${FEM[@]}"; do { [ -f "p2-sm/p2_ph_$S.csv.gz" ] && [ -f "p2-sm/p2_met_$S.csv.gz" ]; } || SAKN+=("$S"); done
+            # Utgångskod 3 = vänta, 0 = skriv; allt annat är ett fel i regeln och fäller steget.
+            set +e; python3 "$E" vantan --dag "$DAG" --stamp "$STAMP" --saknas "${SAKN[@]}" > /dev/null; VK=$?; set -e
+            if [ "$VK" -eq 3 ]; then echo "dygnet $DAG väntar: ${#SAKN[@]} av ${#FEM[@]} körningar saknas, och minst en går ännu att räkna i efterhand"; continue; fi
+            [ "$VK" -eq 0 ] || { echo "::error::P-II: regeln för dygnets väntan föll för $DAG"; exit 1; }
             read -r PF PT HF HT < <(python3 "$K" fonster --dag "$DAG")
             N "$D" pop "$PF" "$PT" "pop_$DAG.csv"
             N "$D" fukt "$HF" "$HT" mal.txt "fukt_$DAG.csv"
@@ -539,3 +554,43 @@ jobs:
             N "$H" ladda-upp "$P2" "p2-dag/p2_$DAG.csv.gz" "p2-dag/p2_sammanfattning_$DAG.json"
           done
           rm -rf p2 p2-sm p2-dag p2-finns ut-sm indata-sm sm mal.txt del-a-sm.log
+      # RESERVEN (DECISIONS #894; kuvösens BESLUT F72 och F73, posterna 17/11 i de två förregistreringarna). En körning som inte blev
+      # räknad i tid kostade ett helt dygn i kuvösens prov (14–16/11). Sist i en vanlig körning prövas därför de körningar som klockan
+      # passerat och som ännu går att räkna i efterhand (efterrakning.py kandidater, den äldsta först): saknas körningens fil i hinken
+      # och har MET den kvar, startas kuvos-stad med stamp, en körning per gång. Stadsmiljöns PH är den första fil en körning skriver.
+      # Kontrollen först: går körningens egen fil inte att läsa i hinken prövas ingenting, så att ett fel i hinken aldrig ser ut som
+      # en saknad körning. MET-kön håller en väntande körning, och en ny väntande ersätter den som väntar (#884): reserven startar
+      # därför bara när ingen annan körning i kön väntar. Annars prövas den vid nästa körning.
+      - name: Reserven — en körning som saknas räknas i efterhand
+        if: ${{ !cancelled() && steps.h.outputs.klar == 'ja' && env.STAMP_IN == '' }}
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          [ -n "${STAMP:-}" ] || { echo "reserven: körningens stämpel saknas, ingenting prövas"; exit 0; }
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          export FN KEY
+          N() { node --experimental-strip-types "$@" 2>&1 | { grep -v ExperimentalWarning || true; }; }
+          E=fysik/ny_kandidat/efterrakning.py; H=fysik/ny_kandidat/stadsmiljon_hinken.ts
+          finns() { rm -rf res; N "$H" hamta "$HINK" res "stadsmiljon_ph_$1.csv.gz" > /dev/null; [ -f "res/stadsmiljon_ph_$1.csv.gz" ]; }
+          finns "$STAMP" || { echo "reserven: körningens egen fil går inte att läsa i hinken, ingenting prövas"; rm -rf res; exit 0; }
+          VAL=""
+          for S in $(python3 "$E" kandidater --stamp "$STAMP"); do
+            if finns "$S"; then continue; fi
+            if curl -sS --fail --max-time 30 -o /dev/null -A "Halkvakt-live/0.1 (+https://github.com/Axelstar/Halkvakt)" \
+                "https://thredds.met.no/thredds/dodsC/metpplatest/met_forecast_1_0km_nordic_${S}.nc.dds" 2> /dev/null; then VAL="$S"; break; fi
+            echo "reserven: körningen $S saknas i hinken, men MET svarar inte för den. Den prövas vid nästa körning"
+          done
+          rm -rf res
+          [ -n "$VAL" ] || { echo "reserven: ingen körning att räkna i efterhand"; exit 0; }
+          vantar() { gh run list --workflow "$1" --limit 10 --json status -q '[.[] | select(.status != "completed" and .status != "in_progress")] | length'; }
+          V=""
+          if A=$(vantar kuvos-stad.yml) && B=$(vantar kuvos-pilot.yml) && C=$(vantar kuvos-smavag.yml); then V=$((A + B + C)); fi
+          if [ "$V" = 0 ]; then
+            gh workflow run kuvos-stad.yml -f steg=kedjan -f stamp="$VAL" && echo "**Reserven:** körningen $VAL saknade sin fil och räknas i efterhand." | tee -a "$GITHUB_STEP_SUMMARY" \
+              || echo "::warning::reserven gick inte att starta — körningen $VAL prövas vid nästa körning"
+          else
+            echo "::warning::reserven startas inte (${V:-gh svarade inte}): en körning i MET-kön väntar — körningen $VAL prövas vid nästa körning"
+          fi
