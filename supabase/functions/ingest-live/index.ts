@@ -4,7 +4,7 @@
 // kameror och vilt ligger kvar i GitHub-ingesten. GitHub-ingesten blir reserv — dubbla skrivningar är ofarliga
 // (idempotenta upserts).
 import postgres from "https://deno.land/x/postgresjs@v3.4.4/mod.js";
-import { skrivSituationer, skrivVader, skrivVaglag } from "./skriv.ts";
+import { skrivSituationer, skrivVader, skrivVaglag, skrivVaglagsfalt } from "./skriv.ts";
 import { leveranstid, type Leverans } from "./leverans.ts";
 import { nyckelGiltig } from "../_shared/nyckel.ts";
 
@@ -49,6 +49,24 @@ async function roadconditions() {
   const n = await skrivVaglag(sql, items);
   await saveCursor("road_conditions", lastChangeId);
   return n;
+}
+
+// TRAFIKVERKETS EGNA FÄLT (DECISIONS #897, sql/116): varningen, orsaken och åtgärden finns bara i schema 1.3 med namnrymden
+// road.trafficinfo. Väglaget självt läses som förut ur schema 1.2, och den här hämtningen är ett eget anrop med egen kursor, så
+// att ett fel i den aldrig rör livemotorns väglag. Den går bara när väglaget har ändrats i samma varv (fälten ändras med
+// objektet) eller när kursorn aldrig har satts, och den uppdaterar bara sträckor som redan finns.
+// FEL SKRIVS UT, ALDRIG TYST, som trenden nedan: felet går med i svaret.
+async function vaglagsfalt(andrade: number): Promise<string> {
+  try {
+    const fran = await cursor("road_conditions_falt");
+    if (andrade === 0 && fran !== "0") return "inget nytt väglag";
+    const { items, lastChangeId } = await tv("RoadCondition", "1.3", fran, "road.trafficinfo");
+    const n = await skrivVaglagsfalt(sql, items);
+    await saveCursor("road_conditions_falt", lastChangeId);
+    return `${n} sträckor av ${items.length} objekt`;
+  } catch (e) {
+    return `FEL: ${String(e).slice(0, 120)}`;
+  }
 }
 
 /** Svarets rad om arkivpolicyn (DECISIONS #353): hur många varma halvtimmesrader, eller att frågan fallerade. */
@@ -99,10 +117,12 @@ Deno.serve(async (req) => {
   if (!(await nyckelGiltig(req))) return new Response("forbidden", { status: 403 });  // nyckeln i databasen, DECISIONS #571
   try {
     const [s, r, w] = await Promise.all([situations(), roadconditions(), weather()]);
+    // Efter väglaget, aldrig parallellt med det: fälten fylls bara i på sträckor som väglaget redan har skrivit.
+    const vf = await vaglagsfalt(r);
     // Efter vädret, aldrig parallellt med det: trenden räknar på raderna weather() nyss skrev.
     const tr = await trend();
     const lv = await langsamVakt();
-    return new Response(JSON.stringify({ ok: true, situations: s, roadconditions: r, weather: w, arkivpolicy, leverans, trend: tr, langsam_vakt: lv }), {
+    return new Response(JSON.stringify({ ok: true, situations: s, roadconditions: r, vaglagsfalt: vf, weather: w, arkivpolicy, leverans, trend: tr, langsam_vakt: lv }), {
       headers: { "Content-Type": "application/json" } });
   } catch (e) {
     return new Response(JSON.stringify({ ok: false, error: String(e) }), { status: 500 });
