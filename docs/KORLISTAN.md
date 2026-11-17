@@ -41,6 +41,21 @@ därför att de avgör om en varning når föraren.
 **Lägen:** *öppen* · *pågår* (med vad som är gjort) · *väntar på* (en punkt eller ett ord) · *klar* (datum och bevis) · *struken*
 (datum och beslut).
 
+### Det en ny session måste veta innan den rör en punkt
+
+- **Läs källorna på raden först.** Kolumnen *Källor* pekar på korten, besluten och kuvösens beslut. Sök i TAVLA och DECISIONS,
+  läs dem inte hela. En punkts text här är en sammanfattning, inte en specifikation.
+- **Följ kedjan till den senaste posten.** Ett beslut kan vara ändrat av ett senare. Redovisa det som gäller efter alla
+  ändringar, och nämn en äldre dom bara som historik.
+- **Kuvösens prov är spärrade.** Stadsmiljöns dygnsfiler läses inte före 1/4 2027. Småvägsprovets regel A läses tidigast 1/3 2027
+  och de övriga tidigast 1/4 2027. Det enda som får läsas löpande är småvägsröstens mått vid stationerna, genom driftkontrollen
+  (halkvakt-kuvos F69). Öppna aldrig en dygnsfil för att se hur det går.
+- **Driften rörs bara på Bengts ord:** DB-knappen, migrationer, deploy och flöden som startas för hand. En PR slås ihop bara på
+  Bengts *"slå ihop"*, utom bokföring som `synk-ihop` tar själv.
+- **Läs i databasen bara med SELECT,** och läs aldrig `cron.job.command`. Testarnas svar skrivs aldrig ut rad för rad.
+- **Varje tal om varningar bär sin nivå** (§8), och mätningar av en varningsregel görs på kandidaten som talar i appen.
+- **Ordningen i §3 är ett förslag.** Bengt bestämmer vilken punkt som tas, och ett datum i kolumnen *Klart när* går före ordningen.
+
 ## 3. Ordningen
 
 1. **Vecka 47 (17–22/11):** A1, A2, A3 och A4. Därefter B1, B2 och B3, som skyddar proven i mars och april, och C1, så att allt
