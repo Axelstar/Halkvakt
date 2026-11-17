@@ -88,7 +88,7 @@ export async function skrivVaglagsfalt(sql: Sql, items: Post[]): Promise<number>
   let n = 0;
   for (const rc of items) {
     const r = await sql`UPDATE road_conditions SET trv_varning = ${rc.Deleted ? [] : lista(rc.Warning)},
-        trv_orsak = ${rc.Deleted ? [] : lista(rc.Cause)}, trv_atgard = ${rc.Deleted ? [] : lista(rc.Measure)},
+        trv_orsak = ${rc.Deleted ? [] : (rc.Cause ?? null)}, trv_atgard = ${rc.Deleted ? [] : lista(rc.Measure)},
         trv_falt_tid = ${rc.ModifiedTime ?? new Date().toISOString()}
       WHERE segment_id = ${String(rc.Id)}`;
     n += r.count;
