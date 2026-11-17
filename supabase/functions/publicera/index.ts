@@ -981,7 +981,12 @@ export const vagNyckel = (s: string | null) => (s ?? "").toLowerCase().replace(/
 
 /** `linje` (9/11): sträckans geometri, [lon, lat] per linje, så att en ortssida kan välja avsnitten nära orten när inget bär dess namn. */
 export type LanSegment = { code: number | null; text: string | null; info: string[]; road: string | null; plats: string | null; lan: number | null;
-  linje?: [number, number][][] };
+  linje?: [number, number][][];
+  // Ny halkrisk och vinterväglag (DECISIONS #897, kort #668 steg R3), ur vaglag_hal_sedan() (sql/117) och Trafikverkets egna fält
+  // (sql/116). `sedan` = när det hala läget började; `sedanKand` = om början är känd, annars är sträckan hal minst sedan dess;
+  // `ny` = halt i mindre än ett dygn, eller höjd till Mycket besvärligt inom ett dygn; `nySedan` = händelsen som gjorde den ny.
+  sedan?: string | null; sedanKand?: boolean; ny?: boolean; nySedan?: string | null;
+  varning?: string[]; orsak?: string[]; atgard?: string[] };
 export type LanStation = { name: string; yta: number; fukt: boolean; lan: number; vag?: string | null; lon?: number; lat?: number };
 export type LanOlycka = { road: string | null; start: string | null; allvar: string | null; lan: number | null };
 
@@ -2085,11 +2090,11 @@ export function lsKartsida(d: Pick<StartTal, "vaglag" | "now">): Record<string, 
 }
 
 /** Alla sidor, nyckel = sökvägen i kartsajten. */
-export function byggLanssidor(d: { vaglag: LanSegment[]; stationer: LanStation[]; olyckor: LanOlycka[]; now: Date; smhi?: SmhiRad[] }): Record<string, string> {
+export function byggLanssidor(d: { vaglag: LanSegment[]; stationer: LanStation[]; olyckor: LanOlycka[]; now: Date; smhi?: SmhiRad[]; tid?: boolean }): Record<string, string> {
   const lagen = new Map(LAN.map((lan) => [lan.kod, lsLage(lan.kod, d)] as const));
   const varn = vagvarningar(d.smhi ?? []);
   const vagar = new Map(VAGAR.map((v) => [v.slug, lsVagLage(v.nyckel, d)] as const));
-  const ut: Record<string, string> = { "lan/index.html": lsOversikt(lagen, vagar, d.now), "data/lan.json": lsLanJson(lagen, vagar, d.now),
+  const ut: Record<string, string> = { "lan/index.html": lsOversikt(lagen, vagar, d.now), "data/lan.json": lsLanJson(lagen, vagar, d.now, d.tid === true),
     "data/strackor.json": lsStrackorJson(d) };
   for (const lan of LAN) {
     ut[`lan/${lan.slug}/index.html`] = lsLanssida(lan, lagen.get(lan.kod)!, d.now, d, varn);
@@ -2105,9 +2110,26 @@ export function byggLanssidor(d: { vaglag: LanSegment[]; stationer: LanStation[]
   return ut;
 }
 
+const VECKA_MS = 7 * 86_400_000;
+
+/** Ny halkrisk och vinterväglag i tal (DECISIONS #897, kort #668 steg R3). `ny` = hur många av de hala sträckorna som är nya,
+ *  `ny_sedan` = när den första av dem blev ny, `vinter_vecka` = hur många av de övriga som stått som hala i minst en vecka.
+ *  Vinterväglag är `halt` minus `ny`. Vad som är nytt avgörs i databasen (vaglag_hal_sedan, sql/117), inte här: gränsen ett dygn har
+ *  en enda kopia. Nycklarna utelämnas när tiden inte gick att läsa (`tid` falskt): då visar rutan raden Halka som förut, och säger
+ *  aldrig "ingen ny halkrisk" på grund av ett fel. */
+export function lsNyTal(halt: LanSegment[], now: Date, tid: boolean): { ny?: number; ny_sedan?: string | null; vinter_vecka?: number } {
+  if (!tid) return {};
+  const nya = halt.filter((s) => s.ny === true);
+  const tider = nya.map((s) => s.nySedan ?? s.sedan).filter((t): t is string => !!t).sort();
+  return {
+    ny: nya.length, ny_sedan: tider[0] ?? null,
+    vinter_vecka: halt.filter((s) => s.ny !== true && !!s.sedan && now.getTime() - new Date(s.sedan).getTime() >= VECKA_MS).length,
+  };
+}
+
 /** Widgetens och startsidans datafil (kort #281, widgeten): samma tal som sidorna, utan text. Kallast = kallaste stationen under noll. */
-function lsLanJson(lagen: Map<number, LanLage>, vagar: Map<string, LanLage>, now: Date): string {
-  const tal = (l: LanLage) => ({ halt: l.halt.length, vagavsnitt: l.vagavsnitt, kalla: l.kalla.length,
+function lsLanJson(lagen: Map<number, LanLage>, vagar: Map<string, LanLage>, now: Date, tid = false): string {
+  const tal = (l: LanLage) => ({ halt: l.halt.length, ...lsNyTal(l.halt, now, tid), vagavsnitt: l.vagavsnitt, kalla: l.kalla.length,
     kallast: l.kalla.length ? { namn: l.kalla[0].name, yta: l.kalla[0].yta } : null, olyckor: l.olyckor.length });
   return JSON.stringify({
     generated_at: now.toISOString(),
@@ -2130,10 +2152,19 @@ function lsStrackorJson(d: { vaglag: LanSegment[]; stationer: LanStation[]; now:
         const st = d.stationer.filter((x) => x.lan === l.kod && vagNyckel(x.vag ?? null) === vagNyckel(vag)).sort((a, b) => a.yta - b.yta);
         return {
           vag,
-          strackor: segs.filter((x) => x.road === vag).map((x) => ({
-            plats: (x.plats ?? vag).replace(new RegExp("^" + vag.replace(/\s+/g, "\\s*") + "\\s*"), ""),
-            halt: arHalt(x.code, x.info), text: x.text, info: x.info,
-          })),
+          strackor: segs.filter((x) => x.road === vag).map((x) => {
+            const halt = arHalt(x.code, x.info);
+            return {
+              plats: (x.plats ?? vag).replace(new RegExp("^" + vag.replace(/\s+/g, "\\s*") + "\\s*"), ""),
+              halt, text: x.text, info: x.info,
+              // Tiden bara på hala sträckor, och Trafikverkets fält bara där de bär något (DECISIONS #897): filen ska rymmas i en ruta.
+              ...(halt && x.sedan ? { sedan: x.sedan, sedan_kand: x.sedanKand === true, ny: x.ny === true,
+                ...(x.ny === true && x.nySedan ? { ny_sedan: x.nySedan } : {}) } : {}),
+              ...(x.varning?.length ? { varning: x.varning } : {}),
+              ...(x.orsak?.length ? { orsak: x.orsak } : {}),
+              ...(x.atgard?.length ? { atgard: x.atgard } : {}),
+            };
+          }),
           kallast: st.length ? { namn: st[0].name, yta: st[0].yta } : null,
           kalla: st.filter((x) => x.yta <= 0).length,
         };
@@ -2199,6 +2230,15 @@ const numOrNull = (x: unknown) => (x === null || x === undefined ? null : Number
 
 /** Varje svensk station med länet och vägnumret för den närmaste väglagssträckan inom 20 km (länssidorna och vägsidorna,
  *  #458). Stationerna saknar egen länskod i arkivet; sträckorna bär Trafikverkets CountyNo och RoadNumber. */
+/** Tiden och Trafikverkets fält per sträcka (DECISIONS #897, kort #668 steg R3): när det hala läget började och om halkrisken är ny
+ *  (vaglag_hal_sedan, sql/117), och varningen, orsaken och åtgärden (sql/116). `ny_sedan` är händelsen som gjorde sträckan ny: det
+ *  hala lägets början, eller höjningen till Mycket besvärligt när den kom senare. Vad som är nytt avgörs i databasen. */
+export const VAGLAG_TID_SQL = `
+  SELECT rc.segment_id, h.hal_sedan, h.sedan_kand, h.ny, CASE WHEN h.ny THEN greatest(h.hal_sedan, h.hojd_sedan) END AS ny_sedan,
+         rc.trv_varning, rc.trv_orsak, rc.trv_atgard
+  FROM road_conditions rc LEFT JOIN vaglag_hal_sedan() h USING (segment_id)
+  WHERE NOT rc.deleted AND rc.geom IS NOT NULL`;
+
 export const STATION_LAN_SQL = `
   SELECT w.station_id, w.name, n.lan, n.vag
   FROM weather_latest w
@@ -2427,9 +2467,21 @@ export async function buildMapData(q: Q, opts: {
     // SMHI:s alla gällande varningar (1/11): varningssidan och raden på läns-, orts- och vägsidorna väljer själva vägvarningarna
     // (vagvarningar i lanssidor.ts), så att regeln bor på ett ställe och går att pröva.
     const smhi = await q(`SELECT event_sv, level_sv, level_code, description_sv, area_name, affected_areas, approx_start, approx_end FROM smhi_warnings`);
+    // Tiden och Trafikverkets fält (DECISIONS #897, kort #668 steg R3), i en egen fråga: faller den skrivs sidorna och rutans filer
+    // ändå, utan fälten, och noten säger varför. Rutan visar då raden Halka som förut.
+    const iso = (t: unknown) => (t ? new Date(t as string).toISOString() : null);
+    const tidFalt = new Map<string, Partial<LanSegment>>();
+    let tid = false;
+    try {
+      for (const r of await q(VAGLAG_TID_SQL)) tidFalt.set(String(r.segment_id), {
+        sedan: iso(r.hal_sedan), sedanKand: r.sedan_kand === true, ny: r.ny === true, nySedan: iso(r.ny_sedan),
+        varning: (r.trv_varning ?? []) as string[], orsak: (r.trv_orsak ?? []) as string[], atgard: (r.trv_atgard ?? []) as string[] });
+      tid = true;
+    } catch (e) { notes.push(`väglagets tid och fält: ej läsbara (${String((e as Error).message).slice(0, 100)}) — rutans filer skrivs utan dem`); }
     sidor = byggLanssidor({
-      smhi: smhi as unknown as SmhiRad[],
-      vaglag: vaglag.map((r) => ({ code: numOrNull(r.condition_code), text: r.condition_text ?? null, info: (r.condition_info ?? []) as string[],
+      smhi: smhi as unknown as SmhiRad[], tid,
+      vaglag: vaglag.map((r) => ({ ...tidFalt.get(String(r.segment_id)),
+        code: numOrNull(r.condition_code), text: r.condition_text ?? null, info: (r.condition_info ?? []) as string[],
         road: r.road_number ?? null, plats: r.location_text ?? null, lan: numOrNull(r.lan),
         // Linjen (9/11): ortssidorna väljer avsnitten nära en kommun vars namn inget avsnitt bär.
         linje: r.g?.type === "LineString" ? [r.g.coordinates] : r.g?.type === "MultiLineString" ? r.g.coordinates : undefined })),
