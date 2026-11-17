@@ -3167,3 +3167,9 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - **B5:** felanmälan om MET:s morgonfel skickad av Bengt 17/11. Mätt 17/11: felet stod kvar 07.03–07.29 UTC. En mätning 18/11 ska visa när det börjar.
   - **Kort #151 stängt (#891):** operatören rapporterar om varje hal sträcka omkring tre gånger per dygn, så tröskeldokumentets premiss föll. Fristen `a-a-skriptet` borttagen.
   - **Inte gjort:** besluten om förslaget, uppspelningen av november längs vägen, skuggans rutter (kort #667) och mätknappens rot (körlistan B14).
+- 17/11 kl. 11 UTC (Claude; Bengt: *"ta B6 först och gör sedan B1, B2, B3 och C1 i den ordning du tycker är bäst"*): **körlistans B6 mätt, B3 byggd, C1 skriven som utkast, och B1 och B2 lämnade för signering** (DECISIONS #892, #893).
+  - **B6 (#892):** publiceringens bygge har medianen 8,3 s på 179 körningar, och småvägsregeln tar omkring 100 ms en timme med regn. Veckans median går inte att läsa i efterhand, eftersom svaren bara finns kvar i sex timmar.
+  - **B3 (#893):** värdevakten besiktar flaggor och ordlistor. `precipitation`, `surface_water` och `frys_min` är godkända (körning 44066982583). `frys_min` bar en tröskel i driften utan spann sedan 6/11.
+  - **C1:** `docs/TROSKLAR-NYTTAN.md` är skriven som utkast, med fyra nivåer och fem val. Inte fastställd.
+  - **B1 och B2:** underlaget och två postutkast står i det privata repot (halkvakt-kuvos F72, PR 94). Bygget för B1 väntar på signaturerna.
+  - **A1 rättad:** kuvösens prov hade inte skrivit dygnet 16/11 kl. 08.36 UTC. Raden står som pågår tills det är läst.

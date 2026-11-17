@@ -17198,3 +17198,61 @@ stått länge mot halka som är ny gäller tillståndets längd och inte rapport
 **Alternativ.** Låta kortet stå till Å-A-skriptets frist 31/1: det hade mätt en fråga vars premiss redan fallit.
 
 **Stomdokument:** MAT avsnitt 6
+
+## #892 (17/11 2026) Avbrottsvillkorens två mätningar: publiceringens bygge och småvägsregelns tid (körlistan B6, kort #647)
+
+**Uppdraget.** Bengt 17/11: *"ta B6 först"*. Avbrottsvillkoren (#833) kräver medianen för publiceringens bygge veckan före påslaget, och
+småvägsregelns tid var bara mätt en torr eftermiddag (#828, tillägget 14/11).
+
+**Mätt 17/11, bara läsning i SQL-redigeraren.**
+1. **Publiceringens bygge.** `publicera` skriver i sitt svar hur lång tid bygget av lägesfilen tog (#741). I de 179 svar som pg_net bar,
+   kl. 04.28–10.24 UTC, tog bygget 7,7–9,6 s, med medianen 8,3 s och nio av tio under 8,7 s. Ingen körning låg över det dubbla av
+   medianen, som är villkorets gräns: 16,6 s. Kandidatens del av bygget har medianen 6,2 s, och småvägsdelen 23 ms med brytarna av.
+2. **Småvägsregelns tid.** `smavag_regel()` tog 119, 100 och 96 ms kl. 10.27 UTC (EXPLAIN ANALYZE, planeringen 3,4 ms), en timme med regn
+   i radarn. Den torra eftermiddagen 14/11 tog den 85–90 ms. Regeln är inget hinder för publiceringen.
+
+**Vad som inte gick att mäta.** Medianen för en hel vecka går inte att läsa i efterhand: pg_net bär svaren i omkring sex timmar, och
+`public.anrop` raderar lyckade anrop (sql/051). Supabases loggutforskare gick inte att läsa 17/11. Villkoret i #833 går därför inte att
+pröva utan att byggtiden sparas, eller läses för hand var sjätte timme.
+
+**Förslag, inte beslutat.** Vakthunden sparar byggtiden per körning i en liten tabell och larmar när två körningar i rad ligger över det
+dubbla av veckans median. Det är ett bygge med en migration och en deploy, på Bengts ord.
+
+**Kvar av B6.** Vem som slår av på testarnas svar (#833) är inte utsett.
+
+**Avvikelse.** Bygget tog omkring 3,6 s när publiceringen gick över till varannan minut (sql/074) och tar nu 8,3 s. Ökningen ligger i
+kandidatens del.
+
+**Stomdokument:** inga — mätningarna står här och i körlistan, och inget stomdokument beskriver publiceringens byggtid
+
+## #893 (17/11 2026) Värdevakten besiktar flaggor och ordlistor, och frys_min får sitt spann (körlistan B3)
+
+**Beslut (Bengt 17/11: *"gör sedan B1, B2, B3 och C1 i den ordning du tycker är bäst"*).** Värdevakten (#133) läste bara tal. Två fält
+som bär fukten i vinterns facit vid stationerna var därför aldrig besiktade: nederbördsklassen `precipitation` (text) och ytvattnets
+flagga `surface_water` (sanningsvärde). Driftkontrollens larmgräns vilar redan på dem.
+
+**Byggt** (`scripts/vardevakten.ts`):
+- **ORD:** kodlistor i text med varje tillåtet ord. Ett ord utanför listan är *OKÄNT ORD* och ett hinder. Deklarerade: `precipitation`
+  och `condition_text`.
+- **FLAGGOR:** sanningsvärden med vad sant betyder. En odeklarerad flagga är *OBESIKTIGAT*. Deklarerade: `rain`, `snow`,
+  `surface_water`, `surface_ice`, `surface_snow`, `vat` och `flackvis_vat`. Statusflaggan `deleted` är bokföring.
+- **`frys_min`** får spannet 0–0,5. Fältet bär spärren F1:s tröskel 0,45 sedan 6/11 (#799) men stod obesiktigat, också i måndagens
+  körning 16/11. Det bröt husregeln om att ett fält ska passera värdevakten innan det bär en tröskel.
+- Elva nya fall i självtestet, och tre motprov fällde vart sitt fall.
+
+**Beviset.** Värdevaktens knapp på grenen, körning 44066982583 (17/11): inga obesiktigade fält, och `precipitation`, `surface_water`
+och `frys_min` är godkända.
+
+**Vad utskriften visade,** på 30 dygn:
+- `precipitation` bär sex ord: *no* 79,3 %, *rain* 11,5 %, *snow* 8,6 %, *sleet* 0,6 %, och *yes* och *freezing_rain* i enstaka rader.
+- `surface_water` finns vid 55 stationer och är sann i 68,8 % av raderna. Ingen station är alltid eller aldrig sann, och andelen följer
+  vädret: 22–29 % de torra dygnen 3–6/11 och 81–89 % de våta.
+- Vid de 55 stationerna är fukten alltså uppfylld mycket oftare än vid de övriga, där bara nederbörden och daggpunkten kan ge fukt. Det
+  ändrar inget i något prov, men det ska stå bredvid när facit läses.
+
+**Kvar sedan förut i värdevaktens utskrift,** och inte rört här: radarns högsta värde 205 mm/h mot spannet 200, byvinden 83,5 m/s,
+siktens tak och friktionens tak 0,82.
+
+**Avgränsning.** Bara deklarerade textfält skannas, eftersom de flesta textfält är fritext eller identifierare.
+
+**Stomdokument:** inga — värdevakten beskrivs i sitt eget skript och i CLAUDE.md
