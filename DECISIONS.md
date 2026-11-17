@@ -17256,3 +17256,98 @@ siktens tak och friktionens tak 0,82.
 **Avgränsning.** Bara deklarerade textfält skannas, eftersom de flesta textfält är fritext eller identifierare.
 
 **Stomdokument:** inga — värdevakten beskrivs i sitt eget skript och i CLAUDE.md
+
+## #894 (17/11 2026) Stadsflödet räknar en saknad körning i efterhand av sig självt (körlistan B1)
+
+**Beslut (Bengt 17/11: *"Ja till c1, b2 och b1 enligt din rek"* och *"bygg b1"*; Axel via Bengt samma dag: *"axel signerar"*).** En körning
+i `kuvos-stad` som inte blev räknad kostade ett helt dygn i kuvösens prov (#885: tre körningar från 16/11 räknades för hand i efterhand).
+Flödet gör det nu självt, medan MET har körningen kvar.
+
+**Regeln står i det privata repot** (halkvakt-kuvos BESLUT F72 och F73, och en post i var och en av de två förregistreringarna, signerad
+av Bengt och Axel 17/11 före all läsning av provens utfall). Här står bara vad flödet gör.
+
+**Byggt** (`.github/workflows/kuvos-stad.yml`, PR #1652; regeln i `fysik/ny_kandidat/efterrakning.py` i halkvakt-kuvos, PR 95):
+- **Reserven:** sist i en vanlig körning prövar flödet om någon av de senaste körningarna saknar sin fil i hinken. Finns körningen kvar
+  hos MET och ingen körning väntar i MET-kön startar flödet sig självt med valet `stamp`, den äldsta först. En körning som inte går att
+  räkna nu prövas vid nästa körning.
+- **Dygnets väntan:** ett dygn i provet skrivs inte medan en av dess körningar ännu kan räknas i efterhand. Förut väntade flödet ett
+  bestämt antal körningar.
+- **Märket:** en körning som räknas i efterhand lämnar en märkesfil i hinken, så att domen kan säga vilka körningar det gäller.
+- Regelns självtest går först i varje körning av flödet.
+
+**Proven.** Regeln: 20 fall i självtestet, och fem motprov fällda. Flödets steg, körda lokalt mot en påhittad hink: 16 fall, och sju
+motprov fällda. ci är grön på PR #1652.
+
+**Ordningen.** Kuvösens PR 95 slås ihop före PR #1652. I omvänd ordning faller varje körning av stadsflödet på självtestet, som då saknar
+sitt skript.
+
+**Inte prövat.** Flödet är inte kört i driften med ändringen. Flödesfilen är prövad med en egen kontroll av indrag och block, inte med
+en YAML-tolk. Provet i driften är en framkallad lucka, på Bengts ord (körlistan B1, *klart när*).
+
+**Kvar.** Det som återstår för domen står i halkvakt-kuvos F73.
+
+**Stomdokument:** SYS 2 — stadsflödet räknar en saknad körning i efterhand av sig självt
+
+## #895 (17/11 2026) Mätplanen fastställd: vad nytta är, och hur den mäts vintern 2026/27 (körlistan C1)
+
+**Beslut (Bengt 17/11: *"Ja till c1, b2 och b1 enligt din rek"*; Axel via Bengt samma dag: *"axel signerar"*).** `docs/TROSKLAR-NYTTAN.md`
+är fastställd med ja på alla fem valen i §10:
+1. Nyttan delas i fyra nivåer: räckvidd, riktighet vid en mätpunkt, riktighet på vägen och olyckorna.
+2. Förarnas svar redovisas som andel först vid 30 svar per varningsslag.
+3. Räknarens tal får sägas utåt som antal varningar, aldrig som antal förare.
+4. Förarnas svar får sägas utåt, med antalet bredvid.
+5. Veckorapporten bär alla fyra nivåerna från första måndagen efter fastställandet.
+
+**Hur signaturerna gavs.** Bengts ja nämnde inte Axel. På frågan om jaet också gällde för Axel svarade Bengt *"axel signerar"*. Frågan
+ställdes om de två posterna i kuvösens förregistreringar (#894), och svaret är här läst som att det gäller hela jaet, alltså också
+mätplanen. Gällde det bara posterna rättas signaturraden i dokumentet och det här beslutet.
+
+**Följden av val 5.** Första måndagen efter fastställandet är 23/11. Veckorapporten (körlistan D1) är inte byggd och väntar på Bengts
+ord. Frågan står i bedömningen §4.2.
+
+**Vad som inte ändras.** Mätplanen är ingen grind: den avgör inte vad som får tala och ändrar ingen regel. Efter den första läsningen
+ändras inget mått, underlag eller krav utan ett nytt beslut (regel L, §9 i dokumentet).
+
+**Stomdokument:** BED §4.2 — frågan om veckorapporten från 23/11
+
+## #896 (17/11 2026) Publiceringens byggtid sparas, och vakthunden prövar avbrottsvillkoret (körlistan B6)
+
+**Beslut (Bengt 17/11: *"b6 ja"*, på förslaget i #892).** Avbrottsvillkoret i #833 säger: publiceringens bygge tar mer än dubbelt så lång
+tid som medianen veckan före påslaget, två körningar i rad. Det gick inte att pröva, eftersom svaren bara finns kvar i pg_net i omkring
+sex timmar (#892). Nu sparas byggtiden, och vakthunden prövar villkoret varje timme.
+
+**Byggt.**
+- **`sql/115_publicera_bygge.sql`:** tabellen `publicera_bygge` med en rad per publicering (när svaret kom, och byggtiden i
+  millisekunder). `publicera_bygge_samla()` lägger in de svar pg_net ännu bär, med samma uttryck som mätningen i #892, och gallrar efter
+  60 dygn utom referensveckan före påslaget. `publicera_bygge_lage()` ger referensens median, den senaste körningen och om villkoret är
+  uppfyllt.
+- **Vakthundens kontroll 9l** (`supabase/functions/vakthund/index.ts`, orden i `bygge.ts`): en rad i varje körning, och ett larm när
+  brytarna är på och två körningar i rad den senaste timmen tog mer än det dubbla av referensen.
+- **Värdevakten:** `bygget_ms` har spannet 0–600 000 ms, och tabellen står i listan över tabeller som skannas.
+
+**Reglerna som valdes.**
+- **Referensen** är medianen de sju dygnen före påslaget. Påslaget är den tidigaste ändringen bland de brytare som är på
+  (`smavagsbrytare.andrad_at`). Med brytarna av visar raden medianen de sju senaste dygnen, och inget larm går: villkoren gäller från
+  påslaget.
+- **Två i rad** räknas på publiceringar som följer direkt på varandra, den senaste timmen (70 minuter, så att två körningar av vakthunden
+  överlappar).
+- **Mer än det dubbla:** exakt det dubbla larmar inte.
+- **Utan referens larmar vakten inte,** och raden säger att villkoret inte går att pröva. Det händer om brytarna slås på innan tabellen
+  bär rader från veckan före.
+
+**Proven.** Fyra prov av orden (`test/vakthund-bygge.test.ts`). Integrationsprovet (`test/integration.test.ts`, *#896*) kör filen mot en
+databas med tolv fixturer och tolv motprov, ett villkor i taget, och går bara i ci, eftersom datorn saknar Postgres. Värdevaktens
+självtest har två nya fall.
+
+**Inte i drift.** Migrationen (`sql/115` med DB-knappen) och deployen av `vakthund` väntar på Bengts ord. Migrationen ska gå före
+deployen, annars larmar vakthunden om att funktionen saknas.
+
+**Reservationer.**
+- Slås brytarna av och på igen flyttas referensen till veckan före det nya påslaget, som då rymmer tid med brytarna på.
+- En topp som är över innan vakthunden kör nästa gång larmar i en enda körning. En körning av vakthunden som uteblir kan missa ett par.
+- Referensen bär bara det som hunnit sparas. Slås brytarna på ett dygn efter migrationen är referensen ett dygn, och raden säger hur
+  många dygn den täcker.
+
+**Kvar av B6.** Vem som slår av på testarnas svar (#833) är inte utsett.
+
+**Stomdokument:** SYS vakthunden — publiceringens byggtid sparas och avbrottsvillkoret prövas

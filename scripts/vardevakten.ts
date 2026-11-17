@@ -153,6 +153,10 @@ export const SPANN: Record<string, [number, number, string]> = {
   radar_mmh: [0, 200, "mm/h — radarns rate_mean över sträckan"], pb_min: [-60, 80, "°C — kandidatens kallaste värde på sträckan"],
   veto_km: [0, 15, "km till vetostationen"], veto_yta: [-60, 80, "°C — vetostationens yta"],
   fukt_spr_min: [0, 60, "°C — minsta spridningen bland de fuktiga punkterna med minst två ankare"],
+  // Publiceringens byggtid (sql/115, DECISIONS #896, körlistan B6): bär avbrottsvillkoret i #833 (mer än det dubbla av medianen veckan
+  // före påslaget, två körningar i rad), så den besiktigas innan vakthunden larmar på den. Läst 17/11 ur pg_nets svar (#892): 7 668
+  // till 9 566 ms på 179 körningar. Tio minuter är ingen byggtid utan ett fel i svaret.
+  bygget_ms: [0, 600000, "ms — publiceringens bygge av lägesfilen"],
 };
 
 /** Identifierare är inte mätvärden. De ska inte stå som obesiktigade — men de ska inte heller
@@ -276,6 +280,8 @@ if (korsSjalv && process.argv.includes("--sjalvtest")) {
     doma(f("rate_max_mmh", { min: 0.1, max: 727.54, distinkta: 117 })).utfall, "UTANFÖR SPANN");
   // 6. Underlagsvakten.
   k("för få rader ger ingen dom", doma(f("wind_gust_ms", { rader: 99 })).utfall, "–");
+  k("byggtiden som mättes 17/11 passerar", doma(f("bygget_ms", { min: 7668, max: 9566 })).utfall, "OK");
+  k("en byggtid på en timme fälls", doma(f("bygget_ms", { min: 7668, max: 3_600_000 })).utfall, "UTANFÖR SPANN");
   k("deklarationen täcker de fält motorn läser",
     ["surface_temp_c", "severity_code", "speed_limit_kmh", "bearing"].every((x) => x in SPANN), true);
   // 7. Ordlistor och flaggor (körlistan B3): det som inte är tal men ändå bär en mätning.
@@ -326,6 +332,8 @@ const TID: Record<string, string> = {
   kandidat_skugga: "observed_at", kandidat_station: "observed_at",
   // Den nya kandidatens skugga (sql/068, DECISIONS #692): samma kolumner som den frystas, alltså samma spann — fött besiktigad.
   ny_kandidat_ph: "tid", ny_kandidat_live: "tid", ny_kandidat_skugga: "observed_at", ny_kandidat_station: "observed_at",
+  // Publiceringens byggtid (sql/115, DECISIONS #896): bär avbrottsvillkoret i #833 — fött besiktigad.
+  publicera_bygge: "t",
 };
 
 console.log(`Värdevakten — besiktning av arkivets numeriska fält (${DAGAR} dygns fönster)\n`);
