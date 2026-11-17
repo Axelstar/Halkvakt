@@ -4,7 +4,7 @@
 // Fallen är de som har gått fel eller nästan gått fel: en radering av en typ vi aldrig lagrat får inte skapa en rad (de 4 584
 // gravstenarna 31/8), en omkörning får inte dubblera, en äldre mätning får inte skriva över nuläget.
 import postgres from "https://deno.land/x/postgresjs@v3.4.4/mod.js";
-import { skrivSituationer, skrivVader, skrivVaglag } from "./skriv.ts";
+import { skrivSituationer, skrivVader, skrivVaglag, skrivVaglagsfalt } from "./skriv.ts";
 
 const url = Deno.env.get("TEST_DATABASE_URL");
 
@@ -16,7 +16,7 @@ Deno.test({ name: "livemotorns skrivningar mot PostGIS", ignore: !url, sanitizeO
   const sql = postgres(url!, { max: 1, onnotice: () => {} });
   try {
     // Tabellerna som livemotorn skriver till, i den ordning den gamla ingesten migrerar dem (ingest/db.ts).
-    for (const f of ["001_init.sql", "003_situation_archive.sql", "008_rain_sum.sql", "011_vind_sikt.sql", "043_ytstatus.sql"]) {
+    for (const f of ["001_init.sql", "003_situation_archive.sql", "008_rain_sum.sql", "011_vind_sikt.sql", "043_ytstatus.sql", "116_vaglagets_falt.sql"]) {
       await sql.unsafe(await Deno.readTextFile(new URL(`../../../sql/${f}`, import.meta.url)));
     }
     await sql`TRUNCATE deviations, situation_archive, road_conditions, weather_observations, weather_latest`;
@@ -65,6 +65,29 @@ Deno.test({ name: "livemotorns skrivningar mot PostGIS", ignore: !url, sanitizeO
       await skrivVaglag(sql, [halt(4, true)]);
       const [d] = await sql`SELECT deleted FROM road_conditions WHERE segment_id = 'R1'`;
       lika(d.deleted, true, "raderingen flaggar sträckan");
+    });
+
+    await t.step("väglagets fält: varning, orsak och åtgärd fylls i på en sträcka som finns, och skapar aldrig en rad", async () => {
+      const falt = async () => (await sql`SELECT trv_varning, trv_orsak, trv_atgard, trv_falt_tid FROM road_conditions WHERE segment_id = 'R1'`)[0];
+      const f0 = await falt();
+      lika([f0.trv_varning, f0.trv_orsak, f0.trv_atgard, f0.trv_falt_tid], [null, null, null, null], "olästa fält är NULL, inte tomma listor");
+      const obj = (o: Record<string, unknown>) => ({ Id: "R1", ModifiedTime: "2026-11-17T09:00:00Z", ...o });
+      // Schema 1.3 ger listor; ett ensamt värde som text ska också bli en lista.
+      lika(await skrivVaglagsfalt(sql, [obj({ Warning: ["Risk för halka", "Snörök"], Cause: ["Regn"], Measure: "Halkbekämpning 17 nov. 08:40-18 nov. 00:00" })]), 1, "en sträcka uppdaterad");
+      const f1 = await falt();
+      lika([f1.trv_varning, f1.trv_orsak, f1.trv_atgard], [["Risk för halka", "Snörök"], ["Regn"], ["Halkbekämpning 17 nov. 08:40-18 nov. 00:00"]], "fälten ordagrant");
+      lika(new Date(f1.trv_falt_tid).toISOString(), "2026-11-17T09:00:00.000Z", "tiden är objektets ModifiedTime");
+      // Ett objekt utan fälten har lästs och är tomt: tomma listor, inte NULL.
+      await skrivVaglagsfalt(sql, [obj({ ModifiedTime: "2026-11-17T10:00:00Z" })]);
+      const f2 = await falt();
+      lika([f2.trv_varning, f2.trv_orsak, f2.trv_atgard], [[], [], []], "ett objekt utan fält ger tomma listor");
+      // En sträcka som väglaget aldrig har skrivit skapas inte av sidofälten (läxan från gravstenarna 31/8).
+      lika(await skrivVaglagsfalt(sql, [{ Id: "FINNS-INTE", ModifiedTime: "2026-11-17T10:00:00Z", Warning: ["Risk för halka"] }]), 0, "ingen rad att uppdatera");
+      lika(await antal("road_conditions"), 1, "sidofälten skapar ingen sträcka");
+      // En raderad sträcka får tomma fält, och väglagets egna kolumner rörs inte.
+      await skrivVaglagsfalt(sql, [obj({ Warning: ["Risk för halka"], Deleted: true, ModifiedTime: "2026-11-17T11:00:00Z" })]);
+      const [r] = await sql`SELECT trv_varning, condition_code, road_number, deleted FROM road_conditions WHERE segment_id = 'R1'`;
+      lika([r.trv_varning, r.condition_code, r.road_number, r.deleted], [[], 4, "108", true], "raderingen tömmer fälten och rör inget annat");
     });
 
     await t.step("vädret: kalla mätningar arkiveras, varma en gång per halvtimme, nuläget skrivs aldrig över av en äldre", async () => {

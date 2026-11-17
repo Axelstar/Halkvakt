@@ -78,6 +78,24 @@ export async function skrivVaglag(sql: Sql, items: Post[]): Promise<number> {
   return n;
 }
 
+const lista = (v: unknown): string[] => (Array.isArray(v) ? v.map(String) : v === undefined || v === null || v === "" ? [] : [String(v)]);
+
+/** Trafikverkets egna fält per sträcka (RoadCondition 1.3; DECISIONS #897, sql/116): varning, orsak och åtgärd, ordagrant. Bara
+ *  UPDATE: en sträcka som inte finns i road_conditions skapas inte här. Väglaget självt skrivs av skrivVaglag ur schema 1.2, och
+ *  ett sidofält får fylla i en rad men aldrig skapa den (läxan från gravstenarna 31/8). En raderad sträcka får tomma listor.
+ *  Returnerar antalet sträckor som fick sina fält skrivna. */
+export async function skrivVaglagsfalt(sql: Sql, items: Post[]): Promise<number> {
+  let n = 0;
+  for (const rc of items) {
+    const r = await sql`UPDATE road_conditions SET trv_varning = ${rc.Deleted ? [] : lista(rc.Warning)},
+        trv_orsak = ${rc.Deleted ? [] : lista(rc.Cause)}, trv_atgard = ${rc.Deleted ? [] : lista(rc.Measure)},
+        trv_falt_tid = ${rc.ModifiedTime ?? new Date().toISOString()}
+      WHERE segment_id = ${String(rc.Id)}`;
+    n += r.count;
+  }
+  return n;
+}
+
 // Väderstationerna (#72, 8/9): flyttade hit från GitHub-ingesten när Actions-minuterna tog
 // slut 5/9 och databasen slutade få mätningar. Arkivpolicyn är DECISIONS #4:s — spara bara
 // "intressanta" lägen (yta ≤ 5 °C, eller nederbörd) så gratisnivån räcker. Speglar

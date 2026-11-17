@@ -173,6 +173,11 @@ export const ORD: Record<string, { ord: string[]; not: string }> = {
     not: "stationens nederbördsklass: no och dry är torrt, yes är nederbörd av okänt slag. Aldrig ett sanningsvärde" },
   condition_text: { ord: ["normalt", "besvärligt (risk för)", "mycket besvärligt", "is- och snövägbana"],
     not: "Trafikverkets väglagsklass i ord, condition_code 1–4" },
+  // Trafikverkets egna fält på väglaget (sql/116, DECISIONS #897): textlistor, ett ord per element. Orden är de som fanns 17/11
+  // (#890, 818 sträckor). Rutan visar dem ordagrant, så ett ord utanför listan ska läsas av en människa innan det står kvar där.
+  // Åtgärden (trv_atgard) är fri text med tidsfönster och ingen kodlista.
+  trv_varning: { ord: ["risk för halka", "hal vägbana", "snörök"], not: "Trafikverkets varning på sträckan (Warning). Visas ordagrant, avgör inget" },
+  trv_orsak: { ord: ["regn", "fallande temperatur", "frost"], not: "Trafikverkets orsak till väglaget (Cause). Visas ordagrant, avgör inget" },
 };
 
 /** FLAGGOR (körlistan B3, 17/11 2026). Ett sanningsvärde som bär en mätning deklareras här med vad sant betyder. NULL betyder alltid
@@ -291,6 +296,9 @@ if (korsSjalv && process.argv.includes("--sjalvtest")) {
   k("versaler gör inget ord okänt", domaOrd(o("precipitation", [["no", 9000], ["Dry", 500]])).utfall, "OK");
   k("ett ord utanför listan fälls", domaOrd(o("precipitation", [["no", 9000], ["hail", 3]])).utfall, "OKÄNT ORD");
   k("väglagsklassens ord passerar", domaOrd(o("condition_text", [["Normalt", 600], ["Besvärligt (risk för)", 180]])).utfall, "OK");
+  k("Trafikverkets varningar från 17/11 passerar", domaOrd(o("trv_varning", [["Risk för halka", 154], ["Hal vägbana", 2], ["Snörök", 1]])).utfall, "OK");
+  k("en varning som inte har setts förut fälls", domaOrd(o("trv_varning", [["Risk för halka", 154], ["Snödrev", 4]])).utfall, "OKÄNT ORD");
+  k("Trafikverkets orsaker från 17/11 passerar", domaOrd(o("trv_orsak", [["Regn", 76], ["Fallande temperatur", 74], ["Frost", 6]])).utfall, "OK");
   k("odeklarerad kodlista är obesiktigad", domaOrd(o("ny_kodlista_2027", [["a", 9000]])).utfall, "OBESIKTIGAT");
   k("för få rader ger ingen dom för en ordlista", domaOrd(o("precipitation", [["hail", 3]])).utfall, "–");
   k("ytvattnets flagga är deklarerad", domaFlagga({ tabell: "t", kolumn: "surface_water", rader: 5000 }).utfall, "OK");
@@ -408,13 +416,17 @@ for (const { table_name: t, column_name: c } of flaggor) {
   ovriga.push({ namn: `${t}.${c}`, d });
 }
 const ordfalt = await q(`
-  SELECT table_name, column_name FROM information_schema.columns
-  WHERE table_schema = 'public' AND data_type IN ('text', 'character varying') AND table_name = ANY($1::text[]) AND column_name = ANY($2::text[])
+  SELECT table_name, column_name, data_type FROM information_schema.columns
+  WHERE table_schema = 'public' AND (data_type IN ('text', 'character varying') OR (data_type = 'ARRAY' AND udt_name = '_text'))
+    AND table_name = ANY($1::text[]) AND column_name = ANY($2::text[])
   ORDER BY table_name, ordinal_position`, [Object.keys(TID), Object.keys(ORD)]);
 console.log(`\nORDLISTOR (${ordfalt.length} deklarerade kodlistor i text)`);
-for (const { table_name: t, column_name: c } of ordfalt) {
+for (const { table_name: t, column_name: c, data_type } of ordfalt) {
   const fonster = fonsterFor(t);
-  const v = await q(`SELECT "${c}" AS ord, count(*)::bigint AS n FROM "${t}" ${fonster} ${fonster ? "AND" : "WHERE"} "${c}" IS NOT NULL
+  // En textlista (text[]) räknas per element: varje ord i listan är ett värde ur kodlistan.
+  const v = await q(data_type === "ARRAY"
+    ? `SELECT u.ord, count(*)::bigint AS n FROM "${t}" CROSS JOIN LATERAL unnest("${c}") AS u(ord) ${fonster} GROUP BY 1 ORDER BY 2 DESC LIMIT 200`
+    : `SELECT "${c}" AS ord, count(*)::bigint AS n FROM "${t}" ${fonster} ${fonster ? "AND" : "WHERE"} "${c}" IS NOT NULL
     GROUP BY 1 ORDER BY 2 DESC LIMIT 200`);
   const varden = v.map((r) => ({ ord: String(r.ord), n: Number(r.n) })), rader = varden.reduce((s, x) => s + x.n, 0);
   const d = domaOrd({ tabell: t, kolumn: c, rader, varden });
