@@ -3,7 +3,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { arHalt, byggLanssidor, sitemapMed, sitemapDatum, medBlock, medId, lsLankar, lsStartsida, lsKartsida, lsNaraStationer, LS_NARA_KM, lsOrtVagar, lsAvsnittKm, LS_NARA_AVSNITT_KM, sidAdresser, vagNyckel, vagvarningar, LAN, VAGAR, ORTER, ortSlug, ortAdress, SIDBAS, PENDLING, STRAK } from "../publish/lanssidor.ts";
-import { buildMapData } from "../publish/map-core.ts";
+import { buildMapData, VAGLAG_TID_SQL } from "../publish/map-core.ts";
 import type { Q } from "../publish/snapshot-core.ts";
 
 const NOW = new Date("2026-11-20T06:30:00Z");
@@ -579,4 +579,101 @@ test("alla kommunerna (9/11): en ortssida per kommun, avsnitten nära orten när
   const ak = [1, 2].map((i) => ({ code: 1, text: "Normalt", info: [], road: "Väg 276", plats: `Väg 276 Åkersberga - Ort${i}`, lan: 1 }));
   assert.equal(lsOrtVagar(ost, ak).avsnitt.length, 2);
   assert.ok(lsLankar("").includes('<a href="ort/osteraker/" data-alias="Åkersberga">Österåker</a>'));
+});
+
+// Kort #668 steg R3 (DECISIONS #897): rutans två datafiler bär tiden och Trafikverkets fält. Vad som är nytt avgörs i databasen
+// (vaglag_hal_sedan, sql/117); här prövas att filerna bär det som kommer därifrån, och ingenting annat.
+const R3_TID = (h: number) => new Date(NOW.getTime() - h * 3_600_000).toISOString();
+const R3_VAGLAG = [
+  { code: 2, text: "Besvärligt (risk för)", info: ["Våt"], road: "E 18", plats: "E 18 Karlstad - Kristinehamn", lan: 17,
+    sedan: R3_TID(5), sedanKand: true, ny: true, nySedan: R3_TID(5),
+    varning: ["Risk för halka"], orsak: ["Regn"], atgard: ["Halkbekämpning 20 nov. 04:00-08:00"] },
+  { code: 2, text: "Besvärligt (risk för)", info: ["Is"], road: "E 18", plats: "E 18 Grums - Karlstad", lan: 17,
+    sedan: R3_TID(240), sedanKand: true, ny: false, nySedan: null, varning: [], orsak: [], atgard: [] },
+  // Höjd till Mycket besvärligt för två timmar sedan: hal sedan tre dygn, ny sedan höjningen. Början är inte känd.
+  { code: 3, text: "Mycket besvärligt", info: [], road: "Väg 61", plats: "Väg 61 Kil - Karlstad", lan: 17,
+    sedan: R3_TID(72), sedanKand: false, ny: true, nySedan: R3_TID(2) },
+  // Inte hal, men Trafikverket varnar: varningen följer med, tiden gör det inte.
+  { code: 1, text: "Normalt", info: ["Torrt"], road: "Väg 61", plats: "Väg 61 Arvika - Högboda", lan: 17, varning: ["Snörök"] },
+  // Stående i två dygn: varken ny eller över en vecka.
+  { code: 2, text: "Besvärligt (risk för)", info: [], road: "E 4", plats: "E 4 Malmö - Lund", lan: 12, sedan: R3_TID(48), sedanKand: true, ny: false },
+];
+
+test("#897 rutans filer: tiden per hal sträcka, Trafikverkets fält där de bär något, och länets tal om nytt och stående", () => {
+  const sidor = byggLanssidor({ vaglag: R3_VAGLAG, stationer: [], olyckor: [], now: NOW, tid: true });
+  const v = JSON.parse(sidor["data/strackor.json"]).lan.find((l: any) => l.slug === "varmland");
+  assert.deepEqual(v.vagar[0].strackor, [
+    { plats: "Karlstad - Kristinehamn", halt: true, text: "Besvärligt (risk för)", info: ["Våt"], sedan: R3_TID(5), sedan_kand: true, ny: true,
+      ny_sedan: R3_TID(5), varning: ["Risk för halka"], orsak: ["Regn"], atgard: ["Halkbekämpning 20 nov. 04:00-08:00"] },
+    { plats: "Grums - Karlstad", halt: true, text: "Besvärligt (risk för)", info: ["Is"], sedan: R3_TID(240), sedan_kand: true, ny: false },
+  ], "E 18: den nya bär tiden, ny_sedan och Trafikverkets tre fält; den stående bara tiden");
+  assert.deepEqual(v.vagar[1].strackor, [
+    { plats: "Kil - Karlstad", halt: true, text: "Mycket besvärligt", info: [], sedan: R3_TID(72), sedan_kand: false, ny: true, ny_sedan: R3_TID(2) },
+    { plats: "Arvika - Högboda", halt: false, text: "Normalt", info: ["Torrt"], varning: ["Snörök"] },
+  ], "Väg 61: höjningen gör sträckan ny, och en sträcka som inte är hal bär ingen tid");
+
+  const d = JSON.parse(sidor["data/lan.json"]);
+  const lan = (slug: string) => d.lan.find((l: any) => l.slug === slug);
+  assert.deepEqual([lan("varmland").halt, lan("varmland").ny, lan("varmland").ny_sedan, lan("varmland").vinter_vecka, lan("varmland").vagavsnitt],
+    [3, 2, R3_TID(5), 1, 4], "Värmland: tre hala, två nya sedan fem timmar, en stående i över en vecka");
+  assert.deepEqual([lan("skane").halt, lan("skane").ny, lan("skane").ny_sedan, lan("skane").vinter_vecka], [1, 0, null, 0],
+    "Skåne: en stående i två dygn är varken ny eller över en vecka");
+  assert.deepEqual([lan("gotland").halt, lan("gotland").ny, lan("gotland").ny_sedan, lan("gotland").vinter_vecka], [0, 0, null, 0],
+    "ett län utan halka säger noll nya, inte ingenting");
+  const e18 = d.vag.find((x: any) => x.slug === "e18");
+  assert.deepEqual([e18.halt, e18.ny, e18.vinter_vecka], [2, 1, 1], "vägarna bär samma tal");
+});
+
+test("#897 rutans filer utan tiden: nycklarna saknas, så att rutan visar raden Halka som förut", () => {
+  const utanTid = R3_VAGLAG.map(({ sedan: _s, sedanKand: _k, ny: _n, nySedan: _t, varning: _v, orsak: _o, atgard: _a, ...resten }: any) => resten);
+  const sidor = byggLanssidor({ vaglag: utanTid, stationer: [], olyckor: [], now: NOW });
+  const d = JSON.parse(sidor["data/lan.json"]);
+  for (const l of d.lan) assert.deepEqual(["ny" in l, "ny_sedan" in l, "vinter_vecka" in l], [false, false, false], l.slug);
+  assert.equal(d.lan.find((l: any) => l.slug === "varmland").halt, 3, "halt räknas som förut");
+  const v = JSON.parse(sidor["data/strackor.json"]).lan.find((l: any) => l.slug === "varmland");
+  assert.deepEqual(v.vagar[0].strackor[0], { plats: "Karlstad - Kristinehamn", halt: true, text: "Besvärligt (risk för)", info: ["Våt"] },
+    "sträckan ser ut som före #897");
+  // Tiden läst men inte för den här sträckan (regeln i databasen och regeln här skulle ha gått isär): sträckan räknas inte som ny.
+  const delvis = byggLanssidor({ vaglag: utanTid, stationer: [], olyckor: [], now: NOW, tid: true });
+  const dl = JSON.parse(delvis["data/lan.json"]).lan.find((l: any) => l.slug === "varmland");
+  assert.deepEqual([dl.halt, dl.ny, dl.vinter_vecka], [3, 0, 0], "en hal sträcka utan tid är varken ny eller över en vecka");
+});
+
+test("#897 kartkärnan: tiden och fälten läses i en egen fråga, och ett fel där stoppar inte sidorna", async () => {
+  const db = (tid: Record<string, unknown>[] | "kastar"): Q => async (text) => {
+    if (text === VAGLAG_TID_SQL) { if (tid === "kastar") throw new Error("function vaglag_hal_sedan() does not exist"); return tid; }
+    if (text.includes("CROSS JOIN LATERAL")) return [];
+    if (text.includes("FROM road_conditions")) return [
+      { segment_id: "S1", condition_code: "2", condition_text: "Besvärligt (risk för)", condition_info: ["Is"], road_number: "E 10",
+        location_text: "E 10 Kiruna - Skaulo", modified_time: "2026-11-20T06:00:00Z", lan: "25", g: { type: "LineString", coordinates: [[20.2, 67.8], [20.3, 67.9]] } },
+      { segment_id: "S2", condition_code: "1", condition_text: "Normalt", condition_info: [], road_number: "E 10",
+        location_text: "E 10 Skaulo - Stenbron", modified_time: "2026-11-20T06:00:00Z", lan: "25", g: { type: "LineString", coordinates: [[20.3, 67.9], [20.4, 68]] } },
+    ];
+    if (text.includes("surface_temp_c > 3") || text.includes("FROM weather_latest") || text.includes("FROM deviations") || text.includes("FROM cameras") || text.includes("FROM smhi_warnings")) return [];
+    if (text.includes("FROM polisen_events")) return [{ dygn: "0", vecka: "0", vanligast: null }];
+    if (text.includes("FROM waitlist")) return [{ n: 0 }];
+    throw new Error("okänd fråga: " + text.slice(0, 60));
+  };
+  const appVader = [{ id: "W1", yta: -3.2, fukt: false }];
+  // Databasen ger tiderna som Date och text[] som listor; en sträcka som inte är hal har NULL i tidens kolumner.
+  const med = await buildMapData(db([
+    { segment_id: "S1", hal_sedan: new Date(R3_TID(30)), sedan_kand: true, ny: false, ny_sedan: null, trv_varning: ["Risk för halka"], trv_orsak: [], trv_atgard: null },
+    { segment_id: "S2", hal_sedan: null, sedan_kand: null, ny: null, ny_sedan: null, trv_varning: [], trv_orsak: [], trv_atgard: [] },
+  ]), { now: NOW, appVader });
+  const omTiden = (n: string[]) => n.filter((x) => x.startsWith("väglagets tid"));
+  assert.deepEqual(omTiden(med.notes), [], "ingen not om tiden när frågan går");
+  const strackor = JSON.parse(med.sidor!["data/strackor.json"]).lan.find((l: any) => l.slug === "norrbotten").vagar[0].strackor;
+  assert.deepEqual(strackor, [
+    { plats: "Kiruna - Skaulo", halt: true, text: "Besvärligt (risk för)", info: ["Is"], sedan: R3_TID(30), sedan_kand: true, ny: false, varning: ["Risk för halka"] },
+    { plats: "Skaulo - Stenbron", halt: false, text: "Normalt", info: [] },
+  ]);
+  const nb = JSON.parse(med.sidor!["data/lan.json"]).lan.find((l: any) => l.slug === "norrbotten");
+  assert.deepEqual([nb.halt, nb.ny, nb.ny_sedan, nb.vinter_vecka], [1, 0, null, 0], "Norrbotten: en hal sträcka, ingen ny");
+
+  const utan = await buildMapData(db("kastar"), { now: NOW, appVader });
+  assert.equal(omTiden(utan.notes).length, 1);
+  assert.match(omTiden(utan.notes)[0], /^väglagets tid och fält: ej läsbara \(function vaglag_hal_sedan\(\) does not exist\)/, "felet står i noten, med källans namn först");
+  const nb2 = JSON.parse(utan.sidor!["data/lan.json"]).lan.find((l: any) => l.slug === "norrbotten");
+  assert.deepEqual([nb2.halt, "ny" in nb2], [1, false], "sidorna och filerna skrivs ändå, utan nycklarna");
+  assert.ok(utan.sidor!["lan/norrbotten/index.html"].includes("halka eller vinterväglag på 1 av länets 2 vägavsnitt"), "länssidan är oförändrad");
 });

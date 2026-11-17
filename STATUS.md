@@ -3190,3 +3190,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - **R1 i drift** (PR #1655; DB-knappen 44109092611, deployen 44109257889): livemotorn hämtar Trafikverkets varning, orsak och åtgärd, och fälten är lästa för alla 818 sträckor. De tre första anropen efter deployen passerade tidsgränsen, och två nya orsaksord dök upp samma timme.
   - **R2 byggt, inte i drift:** `sql/117` räknar när det hala läget började och om halkrisken är ny. November uppspelad: Norrbotten hade ingen ny halkrisk fyra av sjutton morgnar, och 39 av 42 den 2/11.
   - **Inte gjort:** migrationen av `sql/117`, och stegen R3–R7 och V1–V6.
+- 17/11 kl. 16 UTC (Claude; Bengt: *"Slå ihop 1657"* och *"Ja, migrera"*): **R2 i drift och R3 byggt** (DECISIONS #897, tillägget; kort #668).
+  - **R2 i drift:** `sql/117` migrerad (DB-knappen 44115976770). Funktionen tar 40 ms och gav 189 hala sträckor, varav 45 nya.
+  - **R3 byggt, inte i drift:** `strackor.json` och `lan.json` bär tiden och Trafikverkets fält. Faller läsningen skrivs filerna utan nycklarna.
+  - **Inte gjort:** deployen av `publicera`, och stegen R4–R7 och V1–V6.

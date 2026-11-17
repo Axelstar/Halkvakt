@@ -11,13 +11,22 @@
 // Inga Node- eller Deno-importer. Namnen krockar inte med snapshot-core.ts: båda buntas
 // in i SAMMA modul i publicera/index.ts.
 import { WX_SANE, KARANTAN_DYGN, KARANTAN_BROTT, type Q } from "./snapshot-core.ts";
-import { byggLanssidor, lsStartsida, lsKartsida, type LanStation, type SmhiRad, type StartTal } from "./lanssidor.ts";
+import { byggLanssidor, lsStartsida, lsKartsida, type LanSegment, type LanStation, type SmhiRad, type StartTal } from "./lanssidor.ts";
 
 const featureCollection = (features: unknown[]) => ({ type: "FeatureCollection", features });
 const numOrNull = (x: unknown) => (x === null || x === undefined ? null : Number(x));
 
 /** Varje svensk station med länet och vägnumret för den närmaste väglagssträckan inom 20 km (länssidorna och vägsidorna,
  *  #458). Stationerna saknar egen länskod i arkivet; sträckorna bär Trafikverkets CountyNo och RoadNumber. */
+/** Tiden och Trafikverkets fält per sträcka (DECISIONS #897, kort #668 steg R3): när det hala läget började och om halkrisken är ny
+ *  (vaglag_hal_sedan, sql/117), och varningen, orsaken och åtgärden (sql/116). `ny_sedan` är händelsen som gjorde sträckan ny: det
+ *  hala lägets början, eller höjningen till Mycket besvärligt när den kom senare. Vad som är nytt avgörs i databasen. */
+export const VAGLAG_TID_SQL = `
+  SELECT rc.segment_id, h.hal_sedan, h.sedan_kand, h.ny, CASE WHEN h.ny THEN greatest(h.hal_sedan, h.hojd_sedan) END AS ny_sedan,
+         rc.trv_varning, rc.trv_orsak, rc.trv_atgard
+  FROM road_conditions rc LEFT JOIN vaglag_hal_sedan() h USING (segment_id)
+  WHERE NOT rc.deleted AND rc.geom IS NOT NULL`;
+
 export const STATION_LAN_SQL = `
   SELECT w.station_id, w.name, n.lan, n.vag
   FROM weather_latest w
@@ -246,9 +255,21 @@ export async function buildMapData(q: Q, opts: {
     // SMHI:s alla gällande varningar (1/11): varningssidan och raden på läns-, orts- och vägsidorna väljer själva vägvarningarna
     // (vagvarningar i lanssidor.ts), så att regeln bor på ett ställe och går att pröva.
     const smhi = await q(`SELECT event_sv, level_sv, level_code, description_sv, area_name, affected_areas, approx_start, approx_end FROM smhi_warnings`);
+    // Tiden och Trafikverkets fält (DECISIONS #897, kort #668 steg R3), i en egen fråga: faller den skrivs sidorna och rutans filer
+    // ändå, utan fälten, och noten säger varför. Rutan visar då raden Halka som förut.
+    const iso = (t: unknown) => (t ? new Date(t as string).toISOString() : null);
+    const tidFalt = new Map<string, Partial<LanSegment>>();
+    let tid = false;
+    try {
+      for (const r of await q(VAGLAG_TID_SQL)) tidFalt.set(String(r.segment_id), {
+        sedan: iso(r.hal_sedan), sedanKand: r.sedan_kand === true, ny: r.ny === true, nySedan: iso(r.ny_sedan),
+        varning: (r.trv_varning ?? []) as string[], orsak: (r.trv_orsak ?? []) as string[], atgard: (r.trv_atgard ?? []) as string[] });
+      tid = true;
+    } catch (e) { notes.push(`väglagets tid och fält: ej läsbara (${String((e as Error).message).slice(0, 100)}) — rutans filer skrivs utan dem`); }
     sidor = byggLanssidor({
-      smhi: smhi as unknown as SmhiRad[],
-      vaglag: vaglag.map((r) => ({ code: numOrNull(r.condition_code), text: r.condition_text ?? null, info: (r.condition_info ?? []) as string[],
+      smhi: smhi as unknown as SmhiRad[], tid,
+      vaglag: vaglag.map((r) => ({ ...tidFalt.get(String(r.segment_id)),
+        code: numOrNull(r.condition_code), text: r.condition_text ?? null, info: (r.condition_info ?? []) as string[],
         road: r.road_number ?? null, plats: r.location_text ?? null, lan: numOrNull(r.lan),
         // Linjen (9/11): ortssidorna väljer avsnitten nära en kommun vars namn inget avsnitt bär.
         linje: r.g?.type === "LineString" ? [r.g.coordinates] : r.g?.type === "MultiLineString" ? r.g.coordinates : undefined })),
