@@ -3179,3 +3179,14 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - **B1 och B2 (#894):** svaren och de signerade posterna står i halkvakt-kuvos F73 (PR 95). Stadsflödet räknar en saknad körning i efterhand av sig självt (PR #1652). Inget är sammanslaget, och kuvösens PR ska gå först.
   - **B6 (#896):** `sql/115` sparar publiceringens byggtid, och vakthundens kontroll 9l larmar när brytarna är på och två körningar i rad tar mer än det dubbla av medianen veckan före påslaget. Migrationen och deployen väntar på Bengts ord.
   - **Inte gjort:** provet av reserven med en framkallad lucka, och namnet på den som slår av på testarnas svar.
+- 17/11 kl. 15 UTC (Claude; Bengt: *"Slå ihop alla tre"* och *"Ja, migrera och deploya"*): **B6 i drift, B2 klar och B1 sammanslagen** (DECISIONS #894 och #896, tilläggen).
+  - **Sammanslaget i ordning:** halkvakt-kuvos PR 95 (2347ad75), PR #1652 (8fff2ec3) och PR #1654 (a5438ded). ci grön på main (körning 44100915586).
+  - **B6 i drift:** `sql/115` migrerad (DB-knappen 44102790954, 14.24 UTC), `vakthund` deployad (körning 44102948162, 14.25 UTC), och vakthundens körning 15.07 UTC sparade 180 körningar och skrev raden om byggtiden (läst med DB-knappen 44110902220). Referensen räknas från kl. 09.08 UTC, och brytarna är av.
+  - **B1 inte visad i drift:** stadsflödets första vanliga körning med den nya flödesfilen väntas omkring kl. 18.50 UTC.
+  - **Inte gjort:** provet av reserven med en framkallad lucka, och namnet på den som slår av på testarnas svar.
+- 17/11 kl. 15 UTC (Claude; Bengt: *"axel har godkänt alla förslag. Då bygger vi"*): **ny halkrisk och vinterväglag beslutat och bygget påbörjat** (DECISIONS #897).
+  - **Beslutet:** ja på alla frågor för rutan och rösten, med tillägget att raderna *Under noll* och *Kallast* blir neutrala. Regeln för vad som räknas som halt ändras inte.
+  - **Ordningen:** rutan först i sju steg (kort #668, körlistan B15), rösten efter uppspelningen av november i sex steg (kort #669, B16). Kort #666 stängt, kort #667 upplåst.
+  - **R1 i drift** (PR #1655; DB-knappen 44109092611, deployen 44109257889): livemotorn hämtar Trafikverkets varning, orsak och åtgärd, och fälten är lästa för alla 818 sträckor. De tre första anropen efter deployen passerade tidsgränsen, och två nya orsaksord dök upp samma timme.
+  - **R2 byggt, inte i drift:** `sql/117` räknar när det hala läget började och om halkrisken är ny. November uppspelad: Norrbotten hade ingen ny halkrisk fyra av sjutton morgnar, och 39 av 42 den 2/11.
+  - **Inte gjort:** migrationen av `sql/117`, och stegen R3–R7 och V1–V6.
