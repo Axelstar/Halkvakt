@@ -123,7 +123,9 @@ Every session, in order:
    TAVLA, STATUS and DECISIONS — don't read them whole (halved 26/9; the older half is in TAVLA-ARKIV.md and
    DECISIONS-ARKIV.md — search there too).
 2. Take the top unblocked item in the bedömning (§1 NU, then its calendar) or the TAVLA card it names. Build against its
-   *Verify* line. (BACKLOG.md avvecklad 26/9, kort #221 — kön bor i bedömningen och på tavlan.)
+   *Verify* line. (BACKLOG.md avvecklad 26/9, kort #221 — kön bor i bedömningen och på tavlan.) While kort #664 is open, read
+   `docs/KORLISTAN.md` first and take the next open point in its order (KÖRLISTEREGELN below, DECISIONS #887); the frister,
+   domar and olycksfacit of step 1 still come before it.
 3. Prove it: tests/CI/logs — never claim done without evidence.
 4. Commit with a message explaining what + why. Update the bedömning (läget överst,
    §4.2) and TAVLA; a session-log line in STATUS.md. Log decisions in DECISIONS.md, each with its **Stomdokument:** line —
@@ -132,6 +134,22 @@ Every session, in order:
    --genomgang`) and close every card whose Verify is met, in the same commit (TAVELREGELN 5).
 5. End by telling Axel: what shipped, what's next, and ONLY the questions that
    block progress. Batch questions; never drip them.
+
+## KÖRLISTEREGELN (Bengts order 2026-11-17 — körlistan hålls i fas och inget tappas bort, DECISIONS #887)
+`docs/KORLISTAN.md` bär varje punkt på vägen till ett tillförlitligt system, mätt nytta för användarna och en redovisning för Bengt och
+Axel: vad, vem, vad som räknas som klart, källorna och läget. Bengt 17/11: *"Jag vill att du gör så att du kan hålla reda på alla
+dessa punkter o att vi genomför dessa utan att tappa bort något"*. Kort #664 står öppet tills varje punkt är klar eller struken.
+1. **Vid start — läs körlistan hela,** efter kartsynken, fristerna och bedömningen. Den är kort, och den säger själv hur den används (§2).
+2. **Nästa punkt** är den första öppna i listans ordning (§3) som inte väntar på en annan punkt eller på någons ord, om Bengt inte
+   säger annat. Säg i början av varvet vilken punkt det gäller. Kolumnen *Vem* säger vems ord som krävs.
+3. **Läget står bara i körlistan och ändras i samma commit som beviset.** *klar* kräver beviset på raden (commit, grön körning,
+   mätning efter driftsättningen, beslut). Ett bygge som inte har gått i drift är *pågår*.
+4. **Ingen rad tas bort.** En punkt stryks bara på Bengts ord, med datum och beslutets nummer på raden.
+5. **Nytt arbete** som hör till de tre målen får en egen rad i samma varv, med nästa lediga id i sin del och en rad i listans §9.
+6. **Sessionens slut:** rapporten till Bengt säger vilka punkter som rörde sig, vilken som står på tur och vad som väntar på hans
+   eller Axels ord.
+7. **Bara ord i körlistan.** Tal och resultat ur halkvakt-kuvos står i bakgrunden där (`docs/KORLISTAN-BAKGRUND-2026-11-17.md`,
+   BESLUT F71), aldrig här.
 
 ## SESSIONSREGELN (Bengts order 2026-09-17 — inga obesvarade trådar, DECISIONS #228)
 Repot är enda synken mellan sessioner (dator, webb, mobil). Det som bara stod i chatten finns inte nästa gång.
