@@ -142,6 +142,10 @@ export const SPANN: Record<string, [number, number, string]> = {
   // minus minst yta. Spridningen bär grindens tröskel 2,25 °C, så den besiktigas innan grinden talar. Ytornas spann (−60…+80) ger en
   // teoretisk spridning upp till 140; 60 °C är redan en trasig givare bland grannarna, inte ett väder.
   n_ank: [0, 5, "antal bidragande ankare"], spr: [0, 60, "°C — ankarnas spridning"],
+  // Spärren F1 (DECISIONS #799, sql/086–087): minoritetens andel av ankarnas vikt på andra sidan noll. En minoritet är per definition
+  // högst hälften, och 0 betyder att ankarna är ense. Fältet bär spärrens tröskel 0,45 sedan 6/11 men stod obesiktigat till 17/11
+  // (körlistan B3): läst då till 0…0,4999 i båda tabellerna, med 0 i 94–97 % av raderna.
+  frys_min: [0, 0.5, "andel — minoritetens vikt på andra sidan noll (F1); 0 = ankarna ense"],
   // Domloggen (sql/057–058, kandidat_skugga): antal vägpunkter per sträcka och utfall — en sträcka har högst 64 punkter
   // (vaglagspunkter.json 15/10) — och sträckans radar, kallaste värde, vetostation och minsta spridning bland de varnande.
   punkter: [0, 64, "vägpunkter med yta ≤ 0 på sträckan"], varnar: [0, 64, "varnande punkter"], veto: [0, 64, "vetade punkter"],
