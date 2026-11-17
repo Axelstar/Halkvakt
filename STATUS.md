@@ -3199,3 +3199,8 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - **Filerna:** kartbygget 16.30 skrev tiden på alla 193 hala sträckor (50 nya) och Trafikverkets fält. Kartbygget tog 3,5 s, som före deployen.
   - **Sett i förbigående:** ett skriptfel i flikarnas kod i rutan för Norrbotten. Rutan ritas rätt. Tas i R4.
   - **Inte gjort:** R4–R7 och V1–V6.
+- 17/11 kväll (Claude; Bengt: *"Ja, bygg R4"*): **R4 byggt som förhandsvisning, inte ute** (DECISIONS #897, tillägget; kort #668; halkvakt-karta PR 24).
+  - **Rutan:** med `&ny=1` ritas *Ny halkrisk* och *Vinterväglag* i stället för *Halka*, gult bara på det nya, och varje hal sträcka säger sedan när. Utan parametern är rutan oförändrad.
+  - **Demosidan** `ny-halkrisk-demo.html` visar dagens ruta bredvid förslaget.
+  - **Provat** i fyra län, två teman, tre flikar, PT:s inställning, 320 px och reservläget. Inga skriptfel.
+  - **Inte gjort:** sammanslagningen av PR 24, godkännandet, och stegen R5–R7 och V1–V6.

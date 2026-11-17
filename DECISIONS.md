@@ -17491,4 +17491,18 @@ Regeln för vad som räknas som halt ändras inte: samma mängd sträckor delas 
 - **Sett i förbigående:** rutan för Norrbotten ger ett skriptfel i flikarnas kod (`markera` i `ruta.html`, kartrepot). Koden läser
   inga data där, och rutan ritas rätt. Om felet fanns före deployen är inte läst. Det tas i R4, som ändrar samma fil.
 
+**Tillägg 17/11 kväll (Bengt: *"Ja, bygg R4"*): R4 byggt som förhandsvisning, inte ute.** Rutan i kartrepot (`ruta.html`,
+halkvakt-karta PR 24) ritar de två raderna bara med `&ny=1`. Utan parametern är rutan oförändrad, så ingen ruta hos en tidning ändras.
+- **Länet:** *Ny halkrisk* (gul när den finns) och *Vinterväglag* (neutral), och *Under noll* och *Kallast* neutrala.
+- **Vägarna och Pendling:** varje hal sträcka säger sedan när, de nya först, och visar Trafikverkets varning, orsak och åtgärd.
+- **Reservläget:** saknar datafilerna tiden ritas raden *Halka* som förut.
+- **Demosidan** `ny-halkrisk-demo.html` visar rutan som den är i dag bredvid förslaget, med val av län, flik och tema.
+- **Provat i en webbläsare** mot datafilerna från kl. 16.30 UTC: Norrbotten, Dalarna, Värmland och Skåne, ljust och mörkt tema,
+  alla tre flikarna, PT:s inställning med klickbara rader, 320 px bredd och reservläget. Inga skriptfel.
+- **Ordval att godkänna:** klockslag i stället för *i natt* (*sedan kl. 15:43*, *sedan i går kl. 20:26*), och meningen under raderna
+  som förklarar de två orden. Kartfliken säger fortfarande *Halka*.
+- **Skriptfelet i rutan** (tillägget kl. 16.30) fanns före deployen: rutan räknar med sin bredd när fönstret ändrar storlek, och
+  blir fel när bredden är noll. Det påverkar inte vad rutan visar, och är inte ändrat.
+- **Kvar:** sammanslagningen av kartrepots PR 24, på Bengts ord, och sedan Bengts och Axels godkännande av förhandsvisningen.
+
 **Stomdokument:** APP 9 — rutan till tidningarna får ny halkrisk och vinterväglag, APP 3 — röstens två meningar och takter som byggs efter uppspelningen
