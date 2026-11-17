@@ -17286,6 +17286,10 @@ en YAML-tolk. Provet i driften är en framkallad lucka, på Bengts ord (körlist
 
 **Kvar.** Det som återstår för domen står i halkvakt-kuvos F73.
 
+**Tillägg 17/11 eftermiddag (Bengt: *"Slå ihop alla tre"*): sammanslaget, inte visat i drift.** Kuvösens PR 95 slogs ihop 14.13 UTC
+(2347ad75) och PR #1652 därefter (8fff2ec3), i den ordningen. Stadsflödet har inte gått med ändringen än: den första vanliga
+körningen väntas omkring kl. 18.50 UTC 17/11, och provet med en framkallad lucka görs på Bengts ord.
+
 **Stomdokument:** SYS 2 — stadsflödet räknar en saknad körning i efterhand av sig självt
 
 ## #895 (17/11 2026) Mätplanen fastställd: vad nytta är, och hur den mäts vintern 2026/27 (körlistan C1)
@@ -17350,4 +17354,116 @@ deployen, annars larmar vakthunden om att funktionen saknas.
 
 **Kvar av B6.** Vem som slår av på testarnas svar (#833) är inte utsett.
 
+**Tillägg 17/11 eftermiddag (Bengt: *"Slå ihop alla tre"* och *"Ja, migrera och deploya"*): i drift.** PR #1654 slogs ihop 14.14 UTC
+(a5438ded), med ci grön på main (körning 44100915586).
+- **Migrationen:** `sql/115` med DB-knappen (körning 44102790954, 14.24 UTC). Bevisraderna: tabellen finns med RLS, service-rollen
+  får skriva och varken `anon` eller `authenticated` får läsa, `publicera_bygge_samla()` har fast sökväg, läget svarade med en rad,
+  och 181 svar låg i pg_net att samla.
+- **Deployen:** `vakthund` kl. 14.25 UTC (körning 44102948162, från a5438ded).
+- **Första raden:** vakthundens körning 15.07 UTC sparade 180 körningar, den äldsta från kl. 09.08 UTC, och skrev:
+  *publiceringens bygge: 180 körningar sparade (180 nya), median 8,2 s de senaste 0,2 dygn, senaste 8,2 s — brytarna är av, villkoret i #833 gäller från påslaget* (läst med DB-knappen 44110902220).
+- **Referensen räknas från 17/11 kl. 09.08 UTC.** Brytarna är av, så inget larm kan gå än.
+
 **Stomdokument:** SYS vakthunden — publiceringens byggtid sparas och avbrottsvillkoret prövas
+
+## #897 (17/11 2026) Ny halkrisk och vinterväglag: Bengts och Axels ja på alla frågor, och bygget beställt (kort #666 stängt, kort #668 och #669)
+
+**Beslut (Bengt 17/11: *"axel har godkänt alla förslag. Då bygger vi"*).** Rutan till tidningarna och rösten till förarna skiljer *ny
+halkrisk*, en sträcka som blivit hal det senaste dygnet, från *vinterväglag*, en sträcka som stått som hal längre än så. Förslaget
+från 17/11 (underlaget i #890) är godkänt av Bengt och Axel på varje fråga, med tillägget om temperaturraderna (Bengt: *"Ja, neutrala"*).
+Regeln för vad som räknas som halt ändras inte: samma mängd sträckor delas i två, och spärren mellan webben och motorn rörs inte.
+
+**Rutan, svaren.**
+1. Rutan delas på tid, i nytt och stående: ja. Den delas inte på klass, och Trafikverkets varning avgör inte vad som räknas.
+2. Gränsen för nytt är ett dygn, räknat från att sträckan senast stod som normal. En höjning till *Mycket besvärligt* räknas som ny;
+   ett byte av ord räknas inte, eftersom orden är fri text. Gränsen prövas mot november innan den visas (steg R2).
+3. Rutan visar Trafikverkets varning, orsak och åtgärd per sträcka, ordagrant, och *Hal sedan* med datum.
+4. Rutan säger *halkrisk* i stället för *halka*, som Trafikverket själv gör.
+5. Gult står bara på raden *Ny halkrisk*. Raderna *Under noll* och *Kallast* blir neutrala: de är i dag gula så fort en station ligger
+   under noll, alltså hela vintern i norr.
+6. Ändringen gäller alla tidningar, efter en förhandsvisning som Bengt och Axel godkänner. Tipsen utlöses av ny halkrisk. Inget
+   skickas till nästa tidning i norr före ändringen.
+
+**Rösten, svaren.**
+1. Två meningar. Ny halkrisk: *"Varning: ny halkrisk rapporterad på vägen framför dig."* Vinterväglag: *"Vinterväglag på vägen framför
+   dig."* Ordet *varning* reserveras för det nya.
+2. Ny halkrisk sägs som i dag, var tionde minut och 5 km. Beslutet från 12/9 (DECISIONS-ARKIV #103, dämpningen avvisad) gäller alltså
+   oförändrat för ny halkrisk.
+3. Vinterväglag sägs glesare: när föraren kommer in på vägen, och sedan var trettionde minut och 20 km, räknat över alla sträckor.
+   Rösten tiger aldrig om vinterväglag och säger det inte bara en gång per resa.
+4. Trafikverkets varning styr inte rösten. Rösten får ingen egen, brådskande version: ändringen går med nästa ordinarie, och äldre
+   appar varnar som i dag.
+5. November spelas upp längs vägen innan rösten byggs, och fristen `norr-62` (3/12) avgörs efter uppspelningen.
+
+**Ordningen: rutan först** (kort #668, körlistan B15). Rutan kräver ingen ny appversion och går att backa samma dag.
+- **R1** Trafikverkets tre fält in i databasen. *Verify:* efter migrationen och deployen bär sträckorna fälten, och värdevaktens knapp
+  visar inga obesiktigade fält.
+- **R2** Tiden per sträcka räknas på servern, ur nuläget och väglagshistoriken. *Verify:* november uppspelad med gränsen ett dygn, och
+  räkningen ger morgonen 17/11 samma tal som läsningen i #890.
+- **R3** Rutans datafiler bär tiden och fälten. *Verify:* filen i hinken bär dem för en hal sträcka, och publiceringens byggtid
+  håller sig under gränsen i #896.
+- **R4** Rutan med de två raderna, som förhandsvisning på demosidan (halkvakt-karta). *Verify:* Bengts och Axels godkännande.
+- **R5** Länssidorna och tidningssidorna får samma två ord, och löftet *Samma regel överallt* ett tillägg om nytt och stående.
+- **R6** Tipsens villkor A räknar ny halkrisk.
+- **R7** Standard hos alla tidningar.
+
+**Rösten efter uppspelningen** (kort #669, körlistan B16).
+- **V1** Skuggans huvudrutter läggs på vägens linje (kort #667, körlistan B13; ordet är givet med det här beslutet).
+- **V2** November spelas upp längs vägen med den nya regeln, och halkolyckorna i norr prövas mot nytt och stående. *Verify:* svaret på
+  om den glesare takten hade tystat rösten före en olycka, bokfört här.
+- **V3** Lägesfilen får ett fält per sträcka som säger om halkrisken är ny, med samma räkning som rutans.
+- **V4** Motorn får de två meningarna och de två takterna i alla tre språken, med nya frysta provfall. Produktregeln om upprepning i
+  CLAUDE.md ändras i samma commit.
+- **V5** Texterna och produktboken. Bengt godkänner meningarna.
+- **V6** Ny version i båda butikerna.
+
+**R1 i drift 17/11** (PR #1655, bcbad297; Bengt: *"Slå ihop 1655"* och *"Ja, migrera och deploya R1"*).
+- **`sql/116_vaglagets_falt.sql`:** fyra kolumner på `road_conditions`: `trv_varning`, `trv_orsak`, `trv_atgard` och `trv_falt_tid`.
+  NULL betyder aldrig läst, en tom lista läst och tom.
+- **Livemotorn** (`supabase/functions/ingest-live`): en egen hämtning ur schema 1.3 med egen kursor (`road_conditions_falt`). Den går
+  bara när väglaget har ändrats i samma varv, uppdaterar bara sträckor som redan finns, och ett fel i den står i svaret utan att röra
+  livemotorns väglag, som läses ur schema 1.2 som förut.
+- **Värdevakten:** ordlistor för varningen och orsaken, och textlistor (`text[]`) skannas per ord. Åtgärden är fri text.
+- **Proven:** ett nytt steg i livemotorns prov mot PostGIS (`skriv_test.ts`, flödet `livemotorn`, körning 44107256900), och tre nya
+  fall i värdevaktens självtest. Tre motprov på en provgren fälldes vart och ett av den rad i provet som vaktar felet (körningarna
+  44107563167, 44107777875 och 44107943175; PR #1656, stängd utan sammanslagning).
+- **I drift:** `sql/116` migrerad med DB-knappen (körning 44109092611, 14.59 UTC) och `ingest-live` deployad kl. 15.00 UTC (körning
+  44109257889). Läst 15.03 och 15.13 UTC (DB-knappen 44109964016 och 44111688554): fälten är lästa för alla 818 levande sträckor, 149
+  bär en varning, 114 en orsak och 117 en åtgärd. Livemotorns svar säger varje minut hur många sträckor som fick sina fält, eller
+  *inget nytt väglag*.
+- **Avvikelse vid starten:** den första hämtningen läste alla sträckor och tog över en minut. Livemotorns anrop kl. 15.00, 15.01 och
+  15.02 passerade därför pg_nets tidsgräns på 20 sekunder. Väglaget, olyckorna och vädret skrivs före fälten i samma anrop. Därefter
+  passerar livemotorn tidsgränsen lika ofta som före deployen, omkring var sjätte minut (läst minut för minut 14.25–15.14,
+  DB-knappen 44111957219).
+- **Två nya ord den första timmen:** orsakerna *Snöfall* och *Smältvatten* fanns inte i morgonens läsning. De är lästa och inlagda i
+  värdevaktens ordlista.
+
+**R2 byggt 17/11, inte i drift** (Bengt: *"bygg sedan R2"*).
+- **`sql/117_vaglag_hal_sedan.sql`:** `vaglag_hal_sedan(vid)` ger för varje sträcka som är hal vid en tidpunkt när det hala läget
+  började, om början är känd, när klassen gick upp till *Mycket besvärligt*, och om halkrisken är ny. Läget är det senaste av
+  nuläget och historiken, så att en sträcka som nyss blivit hal syns innan historiken hunnit ifatt. Regeln för halt är rutans och
+  motorns, tecken för tecken (kontraktsgrinden).
+- **Provet:** integrationsprovet har fjorton sträckor och tolv motprov, ett villkor i taget, också lästa som de stod 48 timmar
+  tidigare. Det går bara i ci.
+- **November uppspelad** (DB-knappen 44110902220, bara läsning, med funktionens egen text, kl. 07 UTC varje dygn 1–17/11):
+  - Hela landet: mellan 28 och 401 hala sträckor, varav mellan 7 och 244 nya.
+  - Norrbotten: ingen ny 7/11, 12/11, 15/11 och 17/11, och 39 av 42 nya 2/11.
+  - Dalarna: alla hala var nya 2/11, 3/11 och 11/11, och ingen 14/11 och 15/11.
+  - Början är känd för varje hal sträcka alla sjutton dygnen.
+- **Mot morgonens läsning i #890** (17/11 kl. 08.48 UTC): Norrbotten, 55 hala och ingen ny, och Västerbotten, 44 hala och ingen ny,
+  stämmer exakt, också fördelningen på 1–7 dygn och över en vecka. Dalarna ger 19 hala och 12 nya mot 18 och 11, och Västmanland
+  ingen hal mot 11.
+- **Skillnaden är förklarad** (DB-knappen 44111380834): operatören ställde Västmanlands sträckor till *Normalt* kl. 08.41.48, men
+  ändringen hade inte nått lägesfilen kl. 08.48. Funktionen räknar på Trafikverkets ändringstid, och lägesfilen visar det som har
+  hunnit fram. I driften läser funktionen nuläget, så rutan och funktionen ser samma sak.
+
+**Reservationer.**
+- Ordlistorna bär de ord som fanns en enda dag, 17/11: tre varningar och fem orsaker. Ett nytt ord blir *OKÄNT ORD* i värdevaktens
+  knapp tills en människa har läst det. Det är avsikten, eftersom rutan ska visa orden ordagrant.
+- Uppspelningen läser läget en gång per dygn. Väglagshistoriken skrivs en gång i timmen med den senaste ändringen per sträcka, så ett
+  halt läge som kom och gick inom timmen kan saknas i den.
+- Vad funktionen kostar i driften är inte mätt. Det mäts efter migrationen, innan publiceringen börjar anropa den varannan minut (R3).
+- Talet *7 i stället för 19* för Umeå–Luleå är ett efterfilter på dagens varningar, inte en ombyggd motor. Uppspelningen i V2 ger det
+  riktiga talet.
+
+**Stomdokument:** APP 9 — rutan till tidningarna får ny halkrisk och vinterväglag, APP 3 — röstens två meningar och takter som byggs efter uppspelningen

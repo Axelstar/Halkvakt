@@ -177,7 +177,8 @@ export const ORD: Record<string, { ord: string[]; not: string }> = {
   // (#890, 818 sträckor). Rutan visar dem ordagrant, så ett ord utanför listan ska läsas av en människa innan det står kvar där.
   // Åtgärden (trv_atgard) är fri text med tidsfönster och ingen kodlista.
   trv_varning: { ord: ["risk för halka", "hal vägbana", "snörök"], not: "Trafikverkets varning på sträckan (Warning). Visas ordagrant, avgör inget" },
-  trv_orsak: { ord: ["regn", "fallande temperatur", "frost"], not: "Trafikverkets orsak till väglaget (Cause). Visas ordagrant, avgör inget" },
+  // Snöfall och smältvatten kom redan den första timmen i drift (17/11 kl. 15 UTC): listan från morgonen var inte hela ordförrådet.
+  trv_orsak: { ord: ["regn", "fallande temperatur", "frost", "snöfall", "smältvatten"], not: "Trafikverkets orsak till väglaget (Cause). Visas ordagrant, avgör inget" },
 };
 
 /** FLAGGOR (körlistan B3, 17/11 2026). Ett sanningsvärde som bär en mätning deklareras här med vad sant betyder. NULL betyder alltid
@@ -298,7 +299,7 @@ if (korsSjalv && process.argv.includes("--sjalvtest")) {
   k("väglagsklassens ord passerar", domaOrd(o("condition_text", [["Normalt", 600], ["Besvärligt (risk för)", 180]])).utfall, "OK");
   k("Trafikverkets varningar från 17/11 passerar", domaOrd(o("trv_varning", [["Risk för halka", 154], ["Hal vägbana", 2], ["Snörök", 1]])).utfall, "OK");
   k("en varning som inte har setts förut fälls", domaOrd(o("trv_varning", [["Risk för halka", 154], ["Snödrev", 4]])).utfall, "OKÄNT ORD");
-  k("Trafikverkets orsaker från 17/11 passerar", domaOrd(o("trv_orsak", [["Regn", 76], ["Fallande temperatur", 74], ["Frost", 6]])).utfall, "OK");
+  k("Trafikverkets orsaker från 17/11 passerar", domaOrd(o("trv_orsak", [["Fallande temperatur", 71], ["Regn", 34], ["Frost", 18], ["Snöfall", 14], ["Smältvatten", 1]])).utfall, "OK");
   k("odeklarerad kodlista är obesiktigad", domaOrd(o("ny_kodlista_2027", [["a", 9000]])).utfall, "OBESIKTIGAT");
   k("för få rader ger ingen dom för en ordlista", domaOrd(o("precipitation", [["hail", 3]])).utfall, "–");
   k("ytvattnets flagga är deklarerad", domaFlagga({ tabell: "t", kolumn: "surface_water", rader: 5000 }).utfall, "OK");

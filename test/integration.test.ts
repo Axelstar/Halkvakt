@@ -4627,6 +4627,133 @@ test("#896 publiceringens byggtid: sparad ur svaren, och avbrottsvillkoret mot v
     await pool.end();
   }
 });
+
+// Kort #668 steg R2 (sql/117, DECISIONS #897): hur länge en sträcka har varit hal, och om halkrisken är ny. Fixturerna står som
+// timmar före provets tidpunkt T, och svaret som [hal_sedan i timmar före T, början känd, höjningen i timmar före T, ny]:
+//   HS1   ny i natt, och ett byte av ord flyttar inte tiden            HS2   stående sedan 200 timmar, omskriven tre gånger
+//   HS3   stående utan känd början (ingen rad där den inte var hal)    HS4   höjd till Mycket besvärligt för 6 timmar sedan → ny
+//   HS5   Mycket besvärligt sedan länge → inte ny                      HS6   nyss hal, historiken har inte hunnit ifatt → nulägets tid
+//   HS7   hal på ordet Rimfrost fast klassen är Normalt                HS8   fläckvis Våt är inte halt (delsträngen is)
+//   HS9   normal nu, hal förut                                         HS10  raderad nu
+//   HS11  raderad emellan: raderingen bryter det hala läget            HS12  exakt 24 timmar → inte ny     HS13  strax under → ny
+//   HS16  två normala rader med halt emellan: den senaste gäller
+// Samma fixturer läses också som de stod 48 timmar före T (uppspelningen): då gäller historiken, inte nuläget.
+test("#897 vägens hala tid: när läget började, om början är känd, höjningen och vad som är nytt", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const fil = (f: string) => readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8");
+  const T = Date.UTC(2026, 10, 17, 8, 0, 0);
+  const tid = (h: number) => new Date(T + h * 3_600_000).toISOString();
+  const stad = async () => {
+    await q("DELETE FROM road_condition_history WHERE segment_id LIKE 'HS%'").catch(() => {});
+    await q("DELETE FROM road_conditions WHERE segment_id LIKE 'HS%'").catch(() => {});
+  };
+  try {
+    if (!(await q("SELECT to_regclass('road_condition_history') AS t")).rows[0].t) await q(fil("001_init.sql"));
+    await q(fil("117_vaglag_hal_sedan.sql")); await q(fil("117_vaglag_hal_sedan.sql"));   // filen tål att köras två gånger
+    assert.equal((await q("SELECT proconfig FROM pg_proc WHERE proname = 'vaglag_hal_sedan'")).rows[0].proconfig, null,
+      "en sql-funktion får ingen SET-klausul (CLAUDE.md)");
+    await stad();
+
+    type Rad = [number, number, string[], boolean?];   // [timmar före T, klass, ord, raderad]
+    const N: string[] = ["Torrt"];
+    // Historiken per sträcka, äldst först. `nu` är raden i road_conditions; utelämnad är den historikens sista rad.
+    const STRACKOR: Record<string, { hist: Rad[]; nu?: Rad }> = {
+      HS1: { hist: [[-100, 1, N], [-5, 2, ["Våt"]], [-2, 2, ["Is"]]] },
+      HS2: { hist: [[-300, 1, N], [-200, 2, ["Våt"]], [-100, 2, ["Våt"]], [-3, 2, ["Våt"]]] },
+      HS3: { hist: [[-400, 4, ["Is", "Packad snö"]], [-2, 4, ["Is", "Packad snö"]]] },
+      HS4: { hist: [[-300, 1, N], [-200, 2, ["Våt"]], [-6, 3, ["Våt"]]] },
+      HS5: { hist: [[-300, 1, N], [-200, 3, ["Våt"]], [-5, 3, ["Våt"]]] },
+      HS6: { hist: [[-50, 1, N]], nu: [-0.5, 2, ["Våt"]] },
+      HS7: { hist: [[-30, 1, N], [-10, 1, ["Rimfrost"]]] },
+      HS8: { hist: [[-10, 1, ["fläckvis Våt"]]] },
+      HS9: { hist: [[-100, 2, ["Våt"]], [-5, 1, N]] },
+      HS10: { hist: [[-100, 2, ["Våt"]], [-4, 2, ["Våt"], true]] },
+      HS11: { hist: [[-200, 2, ["Våt"]], [-100, 2, ["Våt"], true], [-50, 2, ["Våt"]]] },
+      HS12: { hist: [[-100, 1, N], [-24, 2, ["Våt"]]] },
+      HS13: { hist: [[-100, 1, N], [-1439 / 60, 2, ["Våt"]]] },
+      HS16: { hist: [[-300, 1, N], [-250, 2, ["Våt"]], [-200, 1, N], [-100, 2, ["Våt"]]] },
+    };
+    for (const [id, s] of Object.entries(STRACKOR)) {
+      for (const [h, kod, ord, raderad] of s.hist)
+        await q("INSERT INTO road_condition_history (segment_id, condition_code, condition_text, condition_info, modified_time, deleted) VALUES ($1, $2, 'x', $3, $4, $5)",
+          [id, kod, ord, tid(h), raderad ?? false]);
+      const [h, kod, ord, raderad] = s.nu ?? s.hist[s.hist.length - 1];
+      await q("INSERT INTO road_conditions (segment_id, condition_code, condition_text, condition_info, modified_time, deleted) VALUES ($1, $2, 'x', $3, $4, $5)",
+        [id, kod, ord, tid(h), raderad ?? false]);
+    }
+
+    const timmar = (t: Date | null) => (t === null ? null : Math.round(((new Date(t).getTime() - T) / 3_600_000) * 100) / 100);
+    const las = async (vid: string) => Object.fromEntries((await q(
+      "SELECT segment_id, hal_sedan, sedan_kand, hojd_sedan, ny FROM vaglag_hal_sedan($1::timestamptz) WHERE segment_id LIKE 'HS%' ORDER BY segment_id", [vid]))
+      .rows.map((r: any) => [r.segment_id, [timmar(r.hal_sedan), r.sedan_kand, timmar(r.hojd_sedan), r.ny]]));
+    const kor = async () => ({ vid_T: await las(tid(0)), fore_48h: await las(tid(-48)) });
+
+    const VANTAT = {
+      vid_T: {
+        HS1: [-5, true, null, true], HS11: [-50, true, null, false], HS12: [-24, true, null, false], HS13: [-23.98, true, null, true],
+        HS16: [-100, true, null, false], HS2: [-200, true, null, false], HS3: [-400, false, null, false], HS4: [-200, true, -6, true],
+        HS5: [-200, true, -200, false], HS6: [-0.5, true, null, true], HS7: [-10, true, null, true],
+      },
+      fore_48h: {
+        HS10: [-100, false, null, false], HS11: [-50, true, null, true], HS16: [-100, true, null, false], HS2: [-200, true, null, false],
+        HS3: [-400, false, null, false], HS4: [-200, true, null, false], HS5: [-200, true, -200, false], HS9: [-100, false, null, false],
+      },
+    };
+    const forsta = await kor();
+    assert.deepEqual(forsta, VANTAT);
+
+    // Utan argument räknar funktionen på nu: en sträcka som blev hal för tre timmar sedan är ny.
+    const nu = Date.now(), sedan = (h: number) => new Date(nu - h * 3_600_000).toISOString();
+    await q("INSERT INTO road_condition_history (segment_id, condition_code, condition_text, condition_info, modified_time, deleted) VALUES ('HS15', 1, 'x', $1, $2, false), ('HS15', 2, 'x', $3, $4, false)",
+      [N, sedan(30), ["Våt"], sedan(3)]);
+    await q("INSERT INTO road_conditions (segment_id, condition_code, condition_text, condition_info, modified_time, deleted) VALUES ('HS15', 2, 'x', $1, $2, false)", [["Våt"], sedan(3)]);
+    const r15 = (await q("SELECT hal_sedan, sedan_kand, ny FROM vaglag_hal_sedan() WHERE segment_id = 'HS15'")).rows;
+    assert.equal(r15.length, 1, "HS15 är hal nu");
+    assert.deepEqual([new Date(r15[0].hal_sedan).toISOString(), r15[0].sedan_kand, r15[0].ny], [sedan(3), true, true], "utan argument: nu");
+    await q("DELETE FROM road_condition_history WHERE segment_id = 'HS15'"); await q("DELETE FROM road_conditions WHERE segment_id = 'HS15'");
+
+    // Motproven: ett villkor i taget ur filen. Varje mutant ska ge ett annat svar än VANTAT, och raden säger vilka sträckor som fällde den.
+    const RIKTIG = fil("117_vaglag_hal_sedan.sql");
+    const MUTANTER: [string, string, string][] = [
+      ["den första raden i det hala läget, inte den senaste", "SELECT min(h.modified_time) AS t FROM road_condition_history h", "SELECT max(h.modified_time) AS t FROM road_condition_history h"],
+      ["under 24 timmar, inte upp till och med", "(vid - coalesce(forsta.t, a.tid) < interval '24 hours')", "(vid - coalesce(forsta.t, a.tid) <= interval '24 hours')"],
+      ["höjningen räknas som ny", " OR coalesce(vid - hojd.t < interval '24 hours', false)", ""],
+      ["höjningen gäller bara Mycket besvärligt", "WHERE a.kod = 3) hojd ON true", "WHERE a.kod >= 2) hojd ON true"],
+      ["ordgränsen: fläckvis Våt är inte is", "'(^|[^a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt)'", "'(is|halka|halkrisk|halkig|halt|mycket besvärligt)'"],
+      ["stammarna snö och frost", " OR i ~* '(snö|frost)'", ""],
+      ["en raderad rad bryter det hala läget", "AND NOT (NOT h.deleted AND (h.condition_code >= 2", "AND NOT (true AND (h.condition_code >= 2"],
+      ["nuläget gäller före historiken", "WHERE c.modified_time <= vid\n", "WHERE false\n"],
+      ["uppspelningen läser inte nuläget", "WHERE c.modified_time <= vid\n", "WHERE true\n"],
+      ["en raderad sträcka är inte hal", "WHERE NOT l.raderad AND (l.kod >= 2", "WHERE (l.kod >= 2"],
+      ["klassen Besvärligt räcker", "(l.kod >= 2 OR EXISTS", "(l.kod >= 3 OR EXISTS"],
+      ["den senaste raden utan halka, inte den äldsta", "ORDER BY h.modified_time DESC LIMIT 1) ohal ON true", "ORDER BY h.modified_time ASC LIMIT 1) ohal ON true"],
+    ];
+    const text = (v: unknown) => JSON.stringify(v);
+    const skiljer = (r: Record<string, Record<string, unknown>>) => {
+      const ut: string[] = [];
+      for (const lage of ["vid_T", "fore_48h"] as const)
+        for (const id of new Set([...Object.keys(VANTAT[lage]), ...Object.keys(r[lage])]))
+          if (text((r[lage] as any)[id]) !== text((VANTAT[lage] as any)[id])) ut.push(`${id}${lage === "fore_48h" ? " (48 h före)" : ""}`);
+      return ut;
+    };
+    assert.deepEqual(skiljer(forsta), [], "jämförelsen själv: den riktiga filen skiljer sig inte");
+    for (const [namn, fran, till] of MUTANTER) {
+      assert.ok(RIKTIG.includes(fran), `motprovet ${namn}: texten finns i filen`);
+      await q(RIKTIG.split(fran).join(till));
+      const fallde = skiljer(await kor());
+      console.log(`motprov hala tiden, ${namn}: fälls av ${fallde.join(", ") || "INGEN"}`);
+      assert.ok(fallde.length > 0, `motprovet ${namn} fälls inte av någon fixtur`);
+    }
+    await q(RIKTIG);
+    assert.deepEqual(await kor(), VANTAT, "den riktiga filen tillbaka");
+  } finally {
+    await stad();
+    await pool.end();
+  }
+});
+
 // Nycklarna i bokstavsordning, så att två poster med samma innehåll blir samma text.
 function sortera896(v: unknown): unknown {
   if (Array.isArray(v)) return v.map(sortera896);
