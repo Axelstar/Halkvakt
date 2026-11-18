@@ -1125,11 +1125,13 @@ ${o.innehall}
 `;
 }
 
-type LanLage = { halt: LanSegment[]; vagavsnitt: number; kalla: LanStation[]; olyckor: LanOlycka[] };
+// `tid` (kort #668 steg R5): om väglagets tid gick att läsa, så att sidorna kan skilja ny halkrisk från vinterväglag.
+type LanLage = { halt: LanSegment[]; vagavsnitt: number; kalla: LanStation[]; olyckor: LanOlycka[]; tid?: boolean };
 
-function lsLage(kod: number, d: { vaglag: LanSegment[]; stationer: LanStation[]; olyckor: LanOlycka[] }): LanLage {
+function lsLage(kod: number, d: { vaglag: LanSegment[]; stationer: LanStation[]; olyckor: LanOlycka[]; tid?: boolean }): LanLage {
   const segs = d.vaglag.filter((s) => s.lan === kod);
   return {
+    tid: d.tid === true,
     halt: segs.filter((s) => arHalt(s.code, s.info)),
     vagavsnitt: segs.length,
     kalla: d.stationer.filter((s) => s.lan === kod && s.yta <= 0).sort((a, b) => a.yta - b.yta),
@@ -1137,11 +1139,35 @@ function lsLage(kod: number, d: { vaglag: LanSegment[]; stationer: LanStation[];
   };
 }
 
+/** Ny halkrisk och vinterväglag (DECISIONS #897, kort #668 steg R5), med rutans ord: ny halkrisk = sträckor som har blivit hala det
+ *  senaste dygnet (databasens räkning, sql/117), vinterväglag = de andra hala. Regeln för halt är densamma (arHalt). Utan tiden
+ *  (`tid` falskt) null, och sidan säger "halka eller vinterväglag" som förut, aldrig "ingen ny halkrisk" på grund av ett fel. */
+const lsDelning = (halt: LanSegment[], tid?: boolean) =>
+  tid ? { ny: halt.filter((s) => s.ny === true).length, vinter: halt.filter((s) => s.ny !== true).length } : null;
+/** En vägs eller ett läns rad, som rutans flik Vägarna: "Ny halkrisk på 2, vinterväglag på 3 av 9 sträckor". */
+const lsDeladText = (dl: { ny: number; vinter: number }, av: string) => dl.ny && dl.vinter ? `Ny halkrisk på ${dl.ny}, vinterväglag på ${dl.vinter} av ${av}`
+  : dl.ny ? `Ny halkrisk på ${dl.ny} av ${av}` : dl.vinter ? `Vinterväglag på ${dl.vinter} av ${av}` : `Ingen halkrisk rapporterad på ${av}`;
+/** Sträckans tid efter Trafikverkets ord, som rutans rad: " · ny halkrisk sedan 18 nov. 06:05" eller " · vinterväglag sedan minst …". */
+const lsSedan = (s: LanSegment, tid?: boolean) => {
+  if (!tid) return "";
+  const t = s.ny === true ? s.nySedan ?? s.sedan : s.sedan;
+  return ` · ${s.ny === true ? "ny halkrisk" : "vinterväglag"}${t ? ` sedan ${s.ny !== true && s.sedanKand === false ? "minst " : ""}${lsTid(new Date(t))}` : ""}`;
+};
+/** "halt" om ett vägavsnitt, "hala" om flera. */
+const lsHala = (n: number) => (n === 1 ? "halt" : "hala");
+/** De nya först, som i rutan; utan tiden ordningen som förut. */
+const lsNyaForst = (halt: LanSegment[], tid?: boolean) => tid ? [...halt].sort((a, b) => Number(b.ny === true) - Number(a.ny === true)) : halt;
+
 /** Svaret överst: vad källorna säger, med deras ord. `vems` = "länets" eller "E4:s", `var` = "i länet" eller "vid vägen". */
 function lsSvar(l: LanLage, vems = "länets", var_ = "i länet", now?: Date): string {
-  const vad = l.halt.length
-    ? `halka eller vinterväglag på ${l.halt.length} av ${vems} ${l.vagavsnitt} vägavsnitt`
-    : `ingen halka på ${vems} ${l.vagavsnitt} vägavsnitt just nu`;
+  const dl = lsDelning(l.halt, l.tid), alla = `${vems} ${l.vagavsnitt} vägavsnitt`;
+  const vad = dl
+    ? dl.ny ? `ny halkrisk på ${dl.ny} av ${alla}, som har blivit ${lsHala(dl.ny)} det senaste dygnet${dl.vinter ? `, och vinterväglag på ${dl.vinter}, som har varit ${lsHala(dl.vinter)} längre än så` : ""}`
+      : dl.vinter ? `ingen ny halkrisk det senaste dygnet, och vinterväglag på ${dl.vinter} av ${alla}, som har varit ${lsHala(dl.vinter)} längre än ett dygn`
+      : `ingen halkrisk på ${alla} just nu`
+    : l.halt.length
+    ? `halka eller vinterväglag på ${l.halt.length} av ${alla}`
+    : `ingen halka på ${alla} just nu`;
   // Med klockslaget först (17/10, DECISIONS #629): en mening som en AI-tjänst eller en reporter kan citera som den står.
   const vag = now ? `Kl. ${lsTid(now, false)} rapporterar Trafikverket ${vad}.` : `Trafikverket rapporterar ${vad}.`;
   const temp = l.kalla.length
@@ -1151,9 +1177,10 @@ function lsSvar(l: LanLage, vems = "länets", var_ = "i länet", now?: Date): st
 }
 
 /** Vägens läge: dess sträckor i alla län, stationerna vars närmaste sträcka är vägen, och olyckorna på den. */
-function lsVagLage(nyckel: string, d: { vaglag: LanSegment[]; stationer: LanStation[]; olyckor: LanOlycka[] }): LanLage {
+function lsVagLage(nyckel: string, d: { vaglag: LanSegment[]; stationer: LanStation[]; olyckor: LanOlycka[]; tid?: boolean }): LanLage {
   const segs = d.vaglag.filter((s) => vagNyckel(s.road) === nyckel);
   return {
+    tid: d.tid === true,
     halt: segs.filter((s) => arHalt(s.code, s.info)),
     vagavsnitt: segs.length,
     kalla: d.stationer.filter((s) => vagNyckel(s.vag ?? null) === nyckel && s.yta <= 0).sort((a, b) => a.yta - b.yta),
@@ -1163,8 +1190,11 @@ function lsVagLage(nyckel: string, d: { vaglag: LanSegment[]; stationer: LanStat
 
 /** Sökträffens beskrivning med dagens siffror (25/10): klockslaget, halkan och kallaste stationen, sedan vad sidan visar. */
 const LS_SLUT = "Trafikverkets väglag, vägtemperatur och olyckor, uppdaterat var 30:e minut.";
+const lsDeladKort = (dl: { ny: number; vinter: number }, av: string) => dl.ny && dl.vinter ? `ny halkrisk på ${dl.ny} och vinterväglag på ${dl.vinter} av ${av}`
+  : dl.ny ? `ny halkrisk på ${dl.ny} av ${av}` : dl.vinter ? `ingen ny halkrisk, vinterväglag på ${dl.vinter} av ${av}` : `ingen halkrisk på ${av}`;
 function lsBeskrivning(l: LanLage, plats: string, now: Date): string {
-  const halt = l.halt.length
+  const dl = lsDelning(l.halt, l.tid);
+  const halt = dl ? lsDeladKort(dl, `${l.vagavsnitt} vägavsnitt ${plats}`) : l.halt.length
     ? `halka eller vinterväglag på ${l.halt.length} av ${l.vagavsnitt} vägavsnitt ${plats}`
     : `ingen halka på ${l.vagavsnitt} vägavsnitt ${plats}`;
   const kall = l.kalla.length ? `kallast ${lsGrad(l.kalla[0].yta)} vid ${l.kalla[0].name}` : "ingen mätstation under noll";
@@ -1176,13 +1206,15 @@ const lsVagLankar = (rot: string) => VAGAR.map((v) => `<a href="${rot}vag/${v.sl
 
 /** Vägen län för län (29/10, Search Console: vägsidorna var tunnast, ~175 ord): varje län vägen går genom, med dess sträckor
  *  i Trafikverkets ord, halkan och kallaste stationen vid vägen, och orterna längs vägen. Bara rapporterat läge, inga påståenden. */
-function lsVagLanForLan(vag: (typeof VAGAR)[number], d: { vaglag: LanSegment[]; stationer: LanStation[] }): string {
+function lsVagLanForLan(vag: (typeof VAGAR)[number], d: { vaglag: LanSegment[]; stationer: LanStation[]; tid?: boolean }): string {
   const segs = d.vaglag.filter((s) => vagNyckel(s.road) === vag.nyckel);
   const rader = LAN.filter((lan) => segs.some((s) => s.lan === lan.kod)).map((lan) => {
     const sv = segs.filter((s) => s.lan === lan.kod);
     const halt = sv.filter((s) => arHalt(s.code, s.info));
     const st = d.stationer.filter((x) => x.lan === lan.kod && vagNyckel(x.vag ?? null) === vag.nyckel).sort((a, b) => a.yta - b.yta)[0];
-    const lage = halt.length
+    const dl = lsDelning(halt, d.tid);
+    const lage = dl ? (dl.ny ? `<span class="halt">${lsDeladText(dl, lsPlural(sv.length, "sträcka", "sträckor"))}</span>` : lsDeladText(dl, lsPlural(sv.length, "sträcka", "sträckor")))
+      : halt.length
       ? `<span class="halt">Halka eller vinterväglag på ${halt.length} av ${lsPlural(sv.length, "sträcka", "sträckor")}</span>`
       : `Ingen halka rapporterad på ${lsPlural(sv.length, "sträcka", "sträckor")}`;
     const temp = st ? ` · vägbanan ${lsGrad(st.yta)} vid ${lsEsc(st.name)}` : "";
@@ -1194,11 +1226,11 @@ function lsVagLanForLan(vag: (typeof VAGAR)[number], d: { vaglag: LanSegment[]; 
     (orter.length ? `\n<h2>Orter längs ${lsEsc(vag.rubrik)}</h2>\n<p>${orter.join(" · ")}</p>` : "");
 }
 
-function lsVagsida(vag: (typeof VAGAR)[number], l: LanLage, now: Date, d: { vaglag: LanSegment[]; stationer: LanStation[] }, varn: Vagvarning[] = []): string {
+function lsVagsida(vag: (typeof VAGAR)[number], l: LanLage, now: Date, d: { vaglag: LanSegment[]; stationer: LanStation[]; tid?: boolean }, varn: Vagvarning[] = []): string {
   const langs = new Set(d.vaglag.filter((s) => vagNyckel(s.road) === vag.nyckel && s.lan !== null).map((s) => s.lan as number));
   const med = (lan: number | null, text: string) => { const k = lsLanKort(lan); return k ? `${lsEsc(k)}: ${text}` : text; };
-  const halt = l.halt.slice(0, 20).map((s) =>
-    `<li>${med(s.lan, `${lsEsc(lsSegNamn(s))}: ${lsEsc([s.text, ...s.info].filter(Boolean).join(", "))}`)}</li>`).join("\n");
+  const halt = lsNyaForst(l.halt, l.tid).slice(0, 20).map((s) =>
+    `<li>${med(s.lan, `${lsEsc(lsSegNamn(s))}: ${lsEsc([s.text, ...s.info].filter(Boolean).join(", "))}${lsEsc(lsSedan(s, l.tid))}`)}</li>`).join("\n");
   const kalla = l.kalla.slice(0, 8).map((s) =>
     `<li>${med(s.lan, `${lsEsc(s.name)}: ${lsGrad(s.yta)}${s.fukt ? ", nederbörd eller fukt rapporteras" : ""}`)}</li>`).join("\n");
   const olyckor = l.olyckor.slice(0, 10).map((o) =>
@@ -1245,8 +1277,8 @@ const lsVagOrdning = (r: string) => { const m = /^(E?)(\d+)$/.exec(vagKod(r) ?? 
 
 /** Länets stora vägar just nu (25/10, DECISIONS #722): E-vägarna och riksvägarna, och varje annan väg med halka. Raderna räknas
  *  här en gång och visas både som lista på länssidan och som Datawrapper-tabell (2/11, NWT), så att de aldrig säger olika saker. */
-type VagRad = { vag: string; halt: number; strackor: number; namn: string[]; st: LanStation | undefined };
-function lsVagRader(kod: number, d: { vaglag: LanSegment[]; stationer: LanStation[] }): VagRad[] {
+type VagRad = { vag: string; halt: number; strackor: number; namn: string[]; st: LanStation | undefined; ny: number | null };
+function lsVagRader(kod: number, d: { vaglag: LanSegment[]; stationer: LanStation[]; tid?: boolean }): VagRad[] {
   const segs = d.vaglag.filter((x) => x.lan === kod && x.road);
   // Per vägkod (#882), så att Trafikverkets "E 18" och "E18" blir en rad och inte två.
   const vagar = [...new Set(segs.map((x) => vagKod(x.road) as string))].sort((a, b) => lsVagOrdning(a) - lsVagOrdning(b));
@@ -1257,17 +1289,19 @@ function lsVagRader(kod: number, d: { vaglag: LanSegment[]; stationer: LanStatio
     if (!stor && !halt.length) return [];
     const namn = [...new Set((halt.length ? halt : sv).map(lsStracka).filter(Boolean))].slice(0, 5);
     const st = d.stationer.filter((x) => x.lan === kod && vagNyckel(x.vag ?? null) === vagNyckel(vag)).sort((a, b) => a.yta - b.yta)[0];
-    return [{ vag, halt: halt.length, strackor: sv.length, namn, st }];
+    return [{ vag, halt: halt.length, strackor: sv.length, namn, st, ny: lsDelning(halt, d.tid)?.ny ?? null }];
   }).slice(0, 14);
 }
-const lsVagLageText = (r: VagRad) => r.halt
+const lsVagLageText = (r: VagRad) => r.ny !== null ? lsDeladText({ ny: r.ny, vinter: r.halt - r.ny }, lsPlural(r.strackor, "sträcka", "sträckor"))
+  : r.halt
   ? `Halka eller vinterväglag på ${r.halt} av ${lsPlural(r.strackor, "sträcka", "sträckor")}`
   : `Ingen halka rapporterad på ${lsPlural(r.strackor, "sträcka", "sträckor")}`;
 
 /** Text, så att orterna i sträckornas namn går att söka på. */
-function lsVagarILanet(kod: number, d: { vaglag: LanSegment[]; stationer: LanStation[] }): string {
+function lsVagarILanet(kod: number, d: { vaglag: LanSegment[]; stationer: LanStation[]; tid?: boolean }): string {
   const rader = lsVagRader(kod, d).map((r) => {
-    const lage = r.halt ? `<span class="halt">${lsVagLageText(r)}</span>` : lsVagLageText(r);
+    // Gult bara på det nya (#897), när tiden finns.
+    const lage = (r.ny ?? r.halt) ? `<span class="halt">${lsVagLageText(r)}</span>` : lsVagLageText(r);
     const temp = r.st ? ` · vägbanan ${lsGrad(r.st.yta)} vid ${lsEsc(r.st.name)}` : "";
     return `<li><b>${lsEsc(lsVagForst(r.vag))}</b>${lage}${temp}${r.namn.length ? `<small>${lsEsc(r.namn.join(" · "))}</small>` : ""}</li>`;
   });
@@ -1413,7 +1447,7 @@ function lsHelaDw(lan: (typeof LAN)[number], l: LanLage, d: { vaglag: LanSegment
 function lsFragor(namn: string, var_ = `i ${namn}`): { fraga: string; svar: string }[] {
   return [
     { fraga: `Hur ofta uppdateras väglaget ${var_}?`, svar: "Sidan skrivs om var 30:e minut med Trafikverkets senaste väglagsrapport, vägbanans temperatur vid vägväderstationerna och pågående olyckor." },
-    { fraga: "Vad räknas som halka på sidan?", svar: "En sträcka räknas som hal när Trafikverkets väglagsrapport anger besvärligt väglag eller nämner is, snö, frost eller halka. Det är samma regel som får appen att varna." },
+    { fraga: "Vad räknas som halka på sidan?", svar: "En sträcka räknas som hal när Trafikverkets väglagsrapport anger besvärligt väglag eller nämner is, snö, frost eller halka. Det är samma regel som får appen att varna. Ny halkrisk är en sträcka som har blivit hal det senaste dygnet, och vinterväglag en som har varit hal längre än så." },
     { fraga: "Var mäts vägbanans temperatur?", svar: "Vid Trafikverkets vägväderstationer längs de större vägarna. Mellan stationerna mäts ingenting, så vägen kan vara kallare eller varmare där." },
     { fraga: "Kan jag få en varning medan jag kör?", svar: "Ja. Halkvakt för iPhone säger till med rösten när halka är rapporterad på vägen framför dig. Appen är gratis, och din position lämnar inte telefonen av sig själv." },
   ];
@@ -1831,12 +1865,17 @@ function lsOrtsida(ort: (typeof ORTER)[number], lan: (typeof LAN)[number], lanLa
   // "till och från" när avsnitten bär ortens namn, "inom 10 km från" när de valts på avståndet (9/11).
   const varAv = avNara ? `inom ${LS_NARA_AVSNITT_KM} km från ${ort.namn}` : `till och från ${ort.namn}`;
   const narmastVad = narmast ? `${lsVagNamn(narmast.s.road ?? "")} ${lsStracka(narmast.s)}`.trim() : "";
+  const dl = lsDelning(halt, lanLage.tid), tid = lanLage.tid;
   const trv = avsnitt.length
-    ? `Kl. ${lsTid(now, false)} rapporterar Trafikverket ${halt.length
+    ? `Kl. ${lsTid(now, false)} rapporterar Trafikverket ${dl
+      ? dl.ny ? `ny halkrisk på ${dl.ny} av ${avsnitt.length} vägavsnitt ${varAv}${dl.vinter ? `, och vinterväglag på ${dl.vinter}` : ""}`
+        : dl.vinter ? `ingen ny halkrisk det senaste dygnet, och vinterväglag på ${dl.vinter} av ${avsnitt.length} vägavsnitt ${varAv}`
+        : `ingen halkrisk på ${avsnitt.length} vägavsnitt ${varAv}`
+      : halt.length
       ? `halka eller vinterväglag på ${halt.length} av ${avsnitt.length} vägavsnitt ${varAv}`
       : `ingen halka på ${avsnitt.length} vägavsnitt ${varAv}`}.`
     : narmast
-      ? `Kl. ${lsTid(now, false)} rapporterar Trafikverket inget väglag för vägar inom ${LS_NARA_AVSNITT_KM} km från ${ort.namn}. Närmast är ${narmastVad}, ${lsKmText(narmast.km)} bort: ${arHalt(narmast.s.code, narmast.s.info) ? "halka eller vinterväglag" : "ingen halka rapporterad"}.`
+      ? `Kl. ${lsTid(now, false)} rapporterar Trafikverket inget väglag för vägar inom ${LS_NARA_AVSNITT_KM} km från ${ort.namn}. Närmast är ${narmastVad}, ${lsKmText(narmast.km)} bort: ${arHalt(narmast.s.code, narmast.s.info) ? (tid ? (narmast.s.ny === true ? "ny halkrisk" : "vinterväglag") : "halka eller vinterväglag") : tid ? "ingen halkrisk rapporterad" : "ingen halka rapporterad"}.`
       : `Kl. ${lsTid(now, false)} rapporterar Trafikverket inget väglag för vägarna vid ${ort.namn}.`;
   // Stationerna runt orten (6/11, DECISIONS #807): inom LS_NARA_KM, kallast först. Meningen säger vad stationerna visar, aldrig
   // vad vägen mellan dem är (punktkällor säger "vid", inte "på vägen"). Ingen inom radien: den närmaste med avståndet (9/11).
@@ -1860,10 +1899,12 @@ function lsOrtsida(ort: (typeof ORTER)[number], lan: (typeof LAN)[number], lanLa
   const vagRad = (s: LanSegment, bort?: number) => {
     const h = arHalt(s.code, s.info);
     const vad = [s.text, ...s.info].filter(Boolean).join(", ");
-    return `<li><b>${lsEsc(lsVagForst(s.road))}</b>${h ? '<span class="halt">Halka eller vinterväglag</span>' : "Ingen halka rapporterad"}` +
-      `<small>${lsEsc(lsStracka(s))}${bort !== undefined ? ` · ${lsKmText(bort)} bort` : ""}${vad ? ` · ${lsEsc(vad)}` : ""}</small></li>`;
+    const lage = !h ? (tid ? "Ingen halkrisk rapporterad" : "Ingen halka rapporterad") : !tid ? '<span class="halt">Halka eller vinterväglag</span>'
+      : s.ny === true ? '<span class="halt">Ny halkrisk</span>' : "Vinterväglag";
+    return `<li><b>${lsEsc(lsVagForst(s.road))}</b>${lage}` +
+      `<small>${lsEsc(lsStracka(s))}${bort !== undefined ? ` · ${lsKmText(bort)} bort` : ""}${vad ? ` · ${lsEsc(vad)}` : ""}${h ? lsEsc(lsSedan(s, tid)) : ""}</small></li>`;
   };
-  const rader = [...avsnitt].sort((a, b) => Number(arHalt(b.code, b.info)) - Number(arHalt(a.code, a.info)))
+  const rader = [...avsnitt].sort((a, b) => Number(arHalt(b.code, b.info)) - Number(arHalt(a.code, a.info)) || (tid ? Number(b.ny === true) - Number(a.ny === true) : 0))
     .map((s) => vagRad(s, avNara && km.get(s)! < Infinity ? km.get(s) : undefined)).join("\n");
   const vagLista = avsnitt.length
     ? `<ul class="vaglista">\n${rader}\n</ul>`
@@ -1898,7 +1939,8 @@ ${lsFragorHtml(lsFragor(ort.namn))}
 <nav>${grannar ? `<h2>Fler orter i ${lk}</h2><p>${grannar}</p>` : ""}<h2>Stora vägar</h2><p>${lsVagLankar("../../")}</p></nav>`;
   // Sökträffens beskrivning: halkan, och vägbanan vid den kallaste stationen inom LS_NARA_KM när någon ligger under noll (6/11).
   const avDel = avsnitt.length
-    ? `${halt.length ? `halka eller vinterväglag på ${halt.length} av ${avsnitt.length}` : `ingen halka på ${avsnitt.length}`} vägavsnitt ${varAv}`
+    ? dl ? lsDeladKort(dl, `${avsnitt.length} vägavsnitt ${varAv}`)
+      : `${halt.length ? `halka eller vinterväglag på ${halt.length} av ${avsnitt.length}` : `ingen halka på ${avsnitt.length}`} vägavsnitt ${varAv}`
     : `inget väglag rapporterat inom ${LS_NARA_AVSNITT_KM} km från ${ort.namn}`;
   const beskrivning = `Kl. ${lsTid(now, false)}: ${avDel}${naraKalla.length ? `, vägbanan ${lsGrad(naraKalla[0].yta)} vid ${naraKalla[0].name}` : ""}. ${LS_SLUT}`;
   return lsSkal({
@@ -1907,10 +1949,10 @@ ${lsFragorHtml(lsFragor(ort.namn))}
   });
 }
 
-function lsLanssida(lan: (typeof LAN)[number], l: LanLage, now: Date, d: { vaglag: LanSegment[]; stationer: LanStation[] }, varn: Vagvarning[] = []): string {
-  const halt = l.halt.slice(0, 15).map((s) => {
+function lsLanssida(lan: (typeof LAN)[number], l: LanLage, now: Date, d: { vaglag: LanSegment[]; stationer: LanStation[]; tid?: boolean }, varn: Vagvarning[] = []): string {
+  const halt = lsNyaForst(l.halt, l.tid).slice(0, 15).map((s) => {
     const vad = [s.text, ...s.info].filter(Boolean).join(", ");
-    return `<li>${lsEsc(lsSegNamn(s))}: ${lsEsc(vad)}</li>`;
+    return `<li>${lsEsc(lsSegNamn(s))}: ${lsEsc(vad)}${lsEsc(lsSedan(s, l.tid))}</li>`;
   }).join("\n");
   const kalla = l.kalla.slice(0, 5).map((s) =>
     `<li>${lsEsc(s.name)}: ${lsGrad(s.yta)}${s.fukt ? ", nederbörd eller fukt rapporteras" : ""}</li>`).join("\n");
@@ -1954,12 +1996,21 @@ function lsOversiktBeskrivning(lagen: Map<number, LanLage>, now: Date): string {
   const halt = alla.filter((l) => l.halt.length).length;
   const kallast = alla.flatMap((l) => l.kalla.slice(0, 1)).sort((a, b) => a.yta - b.yta)[0];
   const kall = kallast ? `kallast ${lsGrad(kallast.yta)} vid ${kallast.name}` : "ingen mätstation under noll";
+  const dl = alla.map((l) => lsDelning(l.halt, l.tid));
+  if (dl.every(Boolean)) {
+    const ny = dl.filter((x) => x!.ny).length, vinter = dl.filter((x) => x!.vinter).length;
+    return `Kl. ${lsTid(now, false)}: ny halkrisk i ${ny} och vinterväglag i ${vinter} av ${alla.length} län, ${kall}. ${LS_SLUT}`;
+  }
   return `Kl. ${lsTid(now, false)}: halka eller vinterväglag i ${halt} av ${alla.length} län, ${kall}. ${LS_SLUT}`;
 }
 
 function lsOversikt(lagen: Map<number, LanLage>, vagar: Map<string, LanLage>, now: Date): string {
+  // Ny halkrisk och vinterväglag i var sin kolumn (#897, R5) när tiden finns; annars kolumnen Halka som förut.
+  const delad = [...lagen.values()].every((l) => l.tid);
+  const halka = (l: LanLage) => { const dl = lsDelning(l.halt, delad); return dl ? `<td>${dl.ny}</td><td>${dl.vinter} av ${l.vagavsnitt}</td>` : `<td>${l.halt.length} av ${l.vagavsnitt}</td>`; };
+  const huvud = delad ? "<th>Ny halkrisk¹</th><th>Vinterväglag¹</th>" : "<th>Halka¹</th>";
   const rad = (href: string, namn: string, l: LanLage, karta?: string) =>
-    `<tr><td><a href="${href}">${lsEsc(namn)}</a></td><td>${l.halt.length} av ${l.vagavsnitt}</td><td>${l.kalla.length}</td><td>${l.olyckor.length}</td>` +
+    `<tr><td><a href="${href}">${lsEsc(namn)}</a></td>${halka(l)}<td>${l.kalla.length}</td><td>${l.olyckor.length}</td>` +
     `${karta ? `<td><a class="lank-mono" href="${karta}">Karta →</a></td>` : "<td></td>"}</tr>`;
   const rader = LAN.map((lan) => rad(`${lan.slug}/`, lan.namn, lagen.get(lan.kod)!, `../karta.html?lan=${lan.slug}`)).join("\n");
   const vagrader = VAGAR.map((v) => rad(`../vag/${v.slug}/`, v.namn, vagar.get(v.slug)!)).join("\n");
@@ -1967,16 +2018,16 @@ function lsOversikt(lagen: Map<number, LanLage>, vagar: Map<string, LanLage>, no
 <h1>Är det halt i Sverige just nu? Läget per län</h1>
 <p>Trafikverkets väglagsrapport, vägbanans temperatur vid vägväderstationerna och pågående olyckor, län för län.</p>
 <div class="tabell"><table>
-<thead><tr><th>Län</th><th>Halka¹</th><th>≤ 0 °C²</th><th>Olyckor</th><th>Just nu</th></tr></thead>
+<thead><tr><th>Län</th>${huvud}<th>≤ 0 °C²</th><th>Olyckor</th><th>Just nu</th></tr></thead>
 <tbody>
 ${rader}
 </tbody>
 </table></div>
-<p class="dim">¹ Vägavsnitt med halka eller vinterväglag i Trafikverkets rapport, av länets alla. ² Vägväderstationer som visar vägbana på
+<p class="dim">¹ ${delad ? "Vägavsnitt med halka eller vinterväglag i Trafikverkets rapport, delade på tid: ny halkrisk betyder att avsnittet har blivit halt det senaste dygnet, vinterväglag att det har varit halt längre än så. Vinterväglag står av länets alla." : "Vägavsnitt med halka eller vinterväglag i Trafikverkets rapport, av länets alla."} ² Vägväderstationer som visar vägbana på
 0 °C eller kallare. Olyckor: pågående, enligt Trafikverket.</p>
 <h2 id="vagar">Stora vägar</h2>
 <div class="tabell"><table>
-<thead><tr><th>Väg</th><th>Halka¹</th><th>≤ 0 °C²</th><th>Olyckor</th><th></th></tr></thead>
+<thead><tr><th>Väg</th>${huvud}<th>≤ 0 °C²</th><th>Olyckor</th><th></th></tr></thead>
 <tbody>
 ${vagrader}
 </tbody>
