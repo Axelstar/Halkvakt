@@ -471,8 +471,8 @@ fun PaVaktScreen(activity: MainActivity) {
     MonoLabel(label)
 }
 
-/** Raden under panelen: det senast sagda, annars "Tyst så länge". Inte på gammal data — då är halkvarningarna
- *  avstängda, och appen får aldrig tala lugnt på gammal data. */
+/** Raden under panelen: det senast sagda, annars "Tyst så länge". På gammal data är halkvarningarna avstängda, och
+ *  appen får aldrig tala lugnt på gammal data: då säger raden att väglaget inte är uppdaterat (DECISIONS #899). */
 @Composable
 private fun Tillstand(stale: Boolean, lastSaid: Pair<String, Long>?) {
     val dashed = Modifier.fillMaxWidth().dashedBorder().padding(horizontal = 20.dp, vertical = 16.dp)
@@ -483,7 +483,11 @@ private fun Tillstand(stale: Boolean, lastSaid: Pair<String, Long>?) {
         }
         !stale -> Column(dashed, verticalArrangement = Arrangement.spacedBy(6.dp)) {
             MonoLabel("Tyst så länge")
-            Text("Inget på din väg än. Du hör det direkt när något dyker upp.", color = Text2, fontFamily = Typo.sans, fontSize = 15.sp)
+            Text("Inget rapporterat på din väg. Tyst betyder inte att vägen är fri från halka.", color = Text2, fontFamily = Typo.sans, fontSize = 15.sp)
+        }
+        else -> Column(dashed, verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            MonoLabel("Väglaget är gammalt")
+            Text("Väglaget är inte uppdaterat. Halkvakt varnar inte för halka just nu.", color = Text2, fontFamily = Typo.sans, fontSize = 15.sp)
         }
     }
 }
@@ -718,15 +722,18 @@ private fun Undersida(sida: Sida, activity: MainActivity, open: (Sida) -> Unit, 
                 RowPanel {
                     NavRow("Livekartan — läget just nu") { uri.openUri("https://axelstar.github.io/halkvakt-karta/karta.html") }
                     NavRow("Om appen & vanliga frågor") { uri.openUri("https://axelstar.github.io/halkvakt-karta/om.html") }
+                    NavRow("Ansvar och källor") { uri.openUri("https://axelstar.github.io/halkvakt-karta/ansvar.html") }
                     NavRow("Press & material", divider = false) { uri.openUri("https://axelstar.github.io/halkvakt-karta/press.html") }
                 }
                 // #249 (a): samma ärlighetsrad och attribution som iOS — Fintraffic (CC BY 4.0) och OSM (ODbL) kräver källan,
                 // liksom MET Norway (CC BY 4.0, prognoserna) och Statens vegvesen (NLOD, gränsstationerna) sedan 18/11 (DECISIONS #898).
-                Text("Varnar vid Trafikverkets mätstationer och rapporterade väglag — mellan stationerna är vägen oövervakad. " +
-                    "Data: Trafikverket (CC0), SMHI, MET Norway (CC BY 4.0; prognoserna räknas ur deras data), Statens vegvesen (NLOD), " +
+                // Före källraden: var Halkvakt varnar och ansvaret (kort #648, DECISIONS #899).
+                Text("Halkvakt varnar för halka på omkring 800 vägsträckor där Trafikverket rapporterar väglaget: europavägar, riksvägar och större länsvägar, sammanlagt omkring 24 000 km. Där varnar Halkvakt också när dess egna prognoser tror att det är halt; de är betavarningar. Isrisk varnas vid omkring 800 vägväderstationer. Runt Stockholm, Göteborg och Malmö varnar prognoserna också på fler statliga vägar, och i Stockholms stad på gatorna. På de flesta mindre vägar, kommunala gator och enskilda vägar varnar Halkvakt inte för halka. Is som bildas utan regn eller snö, till exempel en klar natt, varnas bara där Trafikverket har rapporterat den eller en station mäter den. Varningarna kan vara fel, komma sent eller saknas, och att appen är tyst betyder inte att vägen är säker. Du ansvarar alltid för att köra efter väglag och sikt.",
+                    color = Text2, fontFamily = Typo.sans, fontSize = 13.sp, lineHeight = 20.sp, modifier = Modifier.padding(top = 20.dp, start = 4.dp))
+                Text("Data: Trafikverket (CC0), SMHI, MET Norway (CC BY 4.0; prognoserna räknas ur deras data), Statens vegvesen (NLOD), " +
                     "Fintraffic (CC BY 4.0), broar © OpenStreetMap-bidragsgivare (ODbL). " +
                     "Halkvakt är fristående och har ingen koppling till myndigheterna.",
-                    color = Muted2, fontFamily = Typo.sans, fontSize = 12.sp, lineHeight = 18.sp, modifier = Modifier.padding(top = 20.dp, start = 4.dp))
+                    color = Muted2, fontFamily = Typo.sans, fontSize = 12.sp, lineHeight = 18.sp, modifier = Modifier.padding(top = 12.dp, start = 4.dp))
                 MonoLabel("Halkvakt $version · beta", Muted3, modifier = Modifier.padding(top = 16.dp, start = 4.dp))
             }
         }

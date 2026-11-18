@@ -687,3 +687,15 @@ test("#898 källraden: sidorna som ritar prognosen nämner MET Norway, de andra 
   for (const p of ["lan/index.html", "varningar/index.html", ...VAGAR.map((v) => `vag/${v.slug}/index.html`)])
     assert.ok(!kalla(p).includes("MET Norway"), `${p} har ingen karta och ingen prognos`);
 });
+
+test("#899 ansvaret: varje genererad sida börjar sidfoten med ansvaret och länkar till ansvarssidan", () => {
+  const sidor = byggLanssidor({ vaglag: [], stationer: [], olyckor: [], now: NOW });
+  const html = Object.keys(sidor).filter((p) => p.endsWith(".html"));
+  assert.ok(html.length > 300, `alla sidorna prövas (${html.length})`);
+  for (const p of html) {
+    const kalla = sidor[p].match(/<p class="kallor">(.*?)<\/p>/)?.[1];
+    if (kalla === undefined) continue;
+    assert.ok(kalla.startsWith("Halkvakt är ett stöd, inte en garanti. "), `${p}: källraden börjar med ansvaret`);
+    assert.match(sidor[p], /<nav aria-label="Sidfot">.*?href="(\.\.\/)*ansvar\.html">Ansvar och källor<\/a>/, `${p}: menyn länkar till ansvarssidan`);
+  }
+});

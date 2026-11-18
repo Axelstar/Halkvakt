@@ -3199,3 +3199,11 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - **Byggt:** Om i båda apparna, butikstexterna, läns- och ortsidorna (`LS_KALLOR_KARTA`, `publicera` buntad om) och, i halkvakt-karta,
     sidfoten på tio sidor, livekartans källrad och rutans kartförklaring. Prov 24 av 24 i `test/lanssidor.test.ts`, ett nytt; motprov fällt.
   - **Inte gjort:** sammanslagningen, deployen av `publicera`, nästa appversion, butikstexterna i butikerna och fotostudions bild av Om.
+- 18/11 (Claude; Bengt: *"Ja på alla"*): **Ansvarstexten byggd** (DECISIONS #899, kort #648), grenen `claude/ansvarstexten` här och
+  i halkvakt-karta.
+  - **Byggt:** introduktionen, körskärmen med en ruta när väglaget är gammalt, Androids notis, Om med täckningen och länken *Ansvar och
+    källor*, *Lugnt* bort ur Favoriter och CarPlay, butikstexterna (App Store och Plays ändringar att klistra in), sidfoten i `publicera`
+    (buntad om; prov 25 av 25 i `test/lanssidor.test.ts`, ett nytt, motprov fällt), inläggen och annonsernas reservtext, produktboken;
+    i halkvakt-karta ansvarssidan, sajtens löften och tidningssidorna. Lagens datum rättat: 1/1 2027 enligt prop. 2026/27:12, inte 9/12.
+  - **Inte gjort:** Axels ord, sammanslagningen, deployen av `publicera`, android.yml på grenen (bara den kompilerar appen), nästa
+    appversion, butikstexterna i butikerna, fotostudions bilder och juristen.

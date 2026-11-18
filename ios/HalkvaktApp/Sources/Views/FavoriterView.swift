@@ -154,7 +154,7 @@ private struct RadLageText: View {
         case .ingetNytt(let storst):
             Text("Inget nytt · \(ResansRapport.titel(storst.rubrik, vag: storst.vag))").font(Typo.sans(14)).foregroundStyle(Brand.text2).lineLimit(2)
         case .lugnt:
-            Text("Lugnt · inget rapporterat längs vägen just nu").font(Typo.sans(14)).foregroundStyle(Brand.greenText)
+            Text("Inget rapporterat längs vägen just nu").font(Typo.sans(14)).foregroundStyle(Brand.greenText)
         case nil:
             if laddar || gickInte {
                 Text(laddar ? "Kollar läget …" : "Läget kunde inte hämtas").font(Typo.sans(14)).foregroundStyle(Brand.dim)

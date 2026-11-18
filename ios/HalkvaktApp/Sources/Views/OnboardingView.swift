@@ -102,8 +102,8 @@ struct OnboardingView: View {
                         text: "I bilens högtalare om telefonen är kopplad till bilen, annars i telefonens.", divider: false)
             }
             Etikett(text: "Bra att veta")
-            // Ansvaret (kort #648, DECISIONS #830), en gång, innan vakten används.
-            Text("Halkvakt är ett stöd, inte en garanti. Den varnar inte överallt och kan ha fel. Kör alltid efter väglaget.")
+            // Ansvaret (kort #648, DECISIONS #899), en gång, innan vakten används: var Halkvakt varnar och att tyst inte är fri väg.
+            Text("Halkvakt är ett stöd, inte en garanti. Den varnar för halka främst på de större vägarna där Trafikverket rapporterar väglaget, och är ofta tyst på mindre vägar och gator. Att den är tyst betyder inte att vägen är fri från halka. Kör alltid efter väglaget.")
                 .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2).padding(.horizontal, 4)
         }
     }

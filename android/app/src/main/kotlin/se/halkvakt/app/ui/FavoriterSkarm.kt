@@ -225,7 +225,7 @@ private fun RadLageText(lage: ResansRapport.Radlage?, laddar: Boolean, gickInte:
         }
         is ResansRapport.Radlage.IngetNytt -> Text("Inget nytt · ${ResansRapport.titel(lage.storst.rubrik, lage.storst.vag)}", color = Brand.text2,
             fontFamily = Typo.sans, fontSize = 14.sp, maxLines = 2, modifier = m)
-        ResansRapport.Radlage.Lugnt -> Text("Lugnt · inget rapporterat längs vägen just nu", color = Brand.greenText, fontFamily = Typo.sans,
+        ResansRapport.Radlage.Lugnt -> Text("Inget rapporterat längs vägen just nu", color = Brand.greenText, fontFamily = Typo.sans,
             fontSize = 14.sp, modifier = m)
         null -> if (laddar || gickInte) Text(if (laddar) "Kollar läget …" else "Läget kunde inte hämtas", color = Brand.dim, fontFamily = Typo.sans,
             fontSize = 14.sp, modifier = m)
