@@ -1954,8 +1954,11 @@ Deno.serve(async (req) => {
       // RUTFILTRET (kort #244, DECISIONS #360): motorn prövar bara faror inom sin längsta räckvidd från rutten — utfallet är
       // detsamma byte för byte (test/rutfilter.test.ts), arbetet en bråkdel. n_hazards nedan är fortsatt hela snapshotens antal.
       // Sedan 12/10 räknas räckvidden från själva linjen, inte från rektangeln runt rutten (Bengt, DECISIONS #535).
+      // Rektangeln först (kort #667, 18/11): vägens linje har 157–776 punkter mot strecken 3–9, och linjefiltret prövade varje fara mot
+      // varje punkt, 0,3–1,6 s per rutt, så varven 17.32 och 18.02 hann bara en och två av tre rutter. Rektangeln är en övermängd av
+      // allt inom räckvidden och behåller snapshotens ordning, så urvalet blir detsamma (test/skuggrutter.test.ts), på 3–259 ms.
       const t1 = performance.now();
-      const motor = new AlertEngine(farorVidLinjen(hazards, line));
+      const motor = new AlertEngine(farorVidLinjen(farorNaraRutten(hazards, line), line));
       // Halkzonen (kort #360, DECISIONS #624): en halkvarning som tystas för att en grannsträcka inom 500 m nyss talade bär `zon`.
       const suppressed: { kind: string; id: string; distM: number; by: string; sinceS: number; zon?: string }[] = [];
       motor.onSuppressed = (c) => suppressed.push({ kind: c.kind, id: c.hazardId, distM: Math.round(c.distM), by: c.by, sinceS: c.sinceS,

@@ -3242,3 +3242,8 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - **Ihopslaget:** PR #1667 (226186a4), halkvakt-karta PR 27 (f1c22d89; sajten byggd 16.55.55 UTC) och PR #1668 (0d8a7b68). **Deployen:** `publicera` deployad 16.56 UTC (körning 44352880743), ci grön på main (44352851571).
   - **Läst live:** rutan för Jämtland och Värmland, och Norrbottens länssida kl. 18.00 med de nya orden och ansvaret i foten.
   - **Inte gjort:** Verify-dagen, ett län i norr utan ny halka; R6 (Axel); PR #1670 (#667) och deployen av `skuggmotor`.
+- 18/11 kväll (Claude): **Skuggans rutter i drift, och ett fel i varvens tid** (DECISIONS #897, tillägget; kort #667).
+  - **I drift:** 17.11.52 UTC. E14 Sundsvall→Åre i varvet 17.32: 64 larm, varav 22 halka, samma som motorn längs vägen på samma lägesfil.
+  - **Felet:** varven 17.32 och 18.02 skrev en och två av tre rutter. Rutfiltret tog 0,3–1,6 s per rutt längs vägen.
+  - **Rättelsen:** rektangeln först, med samma urval på 3–259 ms; nytt prov med motprov; sviten 469 godkända, 0 fel, 77 överhoppade.
+  - **Inte gjort:** sammanslagningen och deployen av rättelsen.

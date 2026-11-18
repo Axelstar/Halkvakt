@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { AlertEngine } from "../engine/src/engine.ts";
-import { farorVidLinjen } from "../engine/src/rutfilter.ts";
+import { farorNaraRutten, farorVidLinjen } from "../engine/src/rutfilter.ts";
 import { haversineM } from "../engine/src/geo.ts";
 import type { Hazard } from "../engine/src/types.ts";
 import { bilensLarm, korLangs } from "../publish/synk-core.ts";
@@ -55,10 +55,22 @@ test("#667: huvudvarvet längs vägen ger lika många halkvarningar som motorn k
 test("#667: i skuggmotorn går spåret, rutfiltret, vägbanan och oljan längs vägen; prognosen, efterhalkan och försprånget på strecket", () => {
   const varv = KOD.slice(KOD.indexOf("const batch = allNames.filter"), KOD.indexOf("results[name] = {"));
   assert.match(varv, /const rak = routes\[name\];\s*const vag = land === "se" && !c \? \(RUTTER_VAG as [^)]*\)\[name\] : undefined;\s*const line = vag \?\? rak;/);
-  for (const anrop of ["traceAlong(line)", "farorVidLinjen(hazards, line)", "vbAlerts(lv, line, trace)", "oljaAlerts(oljaLista.lista, line, trace)",
+  for (const anrop of ["traceAlong(line)", "farorVidLinjen(farorNaraRutten(hazards, line), line)", "vbAlerts(lv, line, trace)", "oljaAlerts(oljaLista.lista, line, trace)",
     "efterhalkaRader(lv, name === batch[0] ? null : rak, alerts)", "ankareNaraRutten(ankare.lista, rak)", "segmentPrognos(rak, ankRutt)",
     "holdoutRader(rak, ankRutt)", "const kandidatLinje = vag ?? rak;"]) assert.ok(varv.includes(anrop), anrop);
   // Försprånget är förregistrerat (#664) och kör kvar på strecket.
   const fors = KOD.slice(KOD.indexOf("const urval = forsprangUrval("), KOD.indexOf("const batch = allNames.filter"));
   assert.match(fors, /const line = routes\[name\];\s*const trace = traceAlong\(line\);/);
+});
+
+test("#667: rektangeln före linjefiltret ger samma faror i samma ordning på alla 20 vägrutter", () => {
+  // Faror längs alla rutterna, så att varje rutt har många faror långt bort och några nära.
+  const alla = Object.keys(RAKA).flatMap((n) => halkaLangsVagen(VAGAR[n].punkter).map((h) => ({ ...h, id: `${n}:${h.id}` }) as Hazard));
+  assert.ok(alla.length > 200, `faror i hela landet (${alla.length})`);
+  for (const namn of Object.keys(RAKA)) {
+    const vag = VAGAR[namn].punkter;
+    const utan = farorVidLinjen(alla, vag), med = farorVidLinjen(farorNaraRutten(alla, vag), vag);
+    assert.deepEqual(med.map((h) => h.id), utan.map((h) => h.id), namn);
+    assert.ok(utan.length > 0 && utan.length < alla.length, `${namn}: urvalet är en del av landet (${utan.length})`);
+  }
 });
