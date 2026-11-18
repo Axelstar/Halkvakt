@@ -3229,3 +3229,8 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
     main. halkvakt.se/ansvar.html svarar, och sajtens sidfot bär ansvaret. PR 21 i halkvakt-karta stängd som ersatt.
   - **Inte gjort:** deployen av `publicera`, nästa appversion (byggnumret måste höjas: appen är ändrad efter b5b8968), Axels ord
     och juristen.
+- 18/11 (Claude; Bengt: *"vi godkänner förhandsvisningen"* och *"Ja, bygg R5"*): **Rutans R5 och R7 byggda** (DECISIONS #897, tillägget; kort #668; körlistan B15).
+  - **R5:** läns-, väg- och ortsidorna i `publicera` (buntad om) och tidningssidorna i halkvakt-karta säger ny halkrisk och vinterväglag;
+    löftet *Samma regel överallt* har fått sitt tillägg. **R7:** rutan visar de två raderna utan `&ny=1` (halkvakt-karta PR 27).
+  - **Provat:** nytt prov i `test/lanssidor.test.ts` med motprov; sviten 465 godkända, 0 fel, 77 överhoppade; rutan i en webbläsare.
+  - **Inte gjort:** sammanslagningen, deployen av `publicera` och R6 (Axel).

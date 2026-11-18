@@ -17520,6 +17520,28 @@ halkvakt-karta PR 24, sammanslagen som 2897ffdc kl. 16.53 UTC) ritar de två rad
     stämmer fortfarande, eftersom regeln för halt inte ändras. R5:s tillägg om nytt och stående får inte säga att rösten skiljer dem åt
     förrän rösten är byggd.
 
+**Förhandsvisningen godkänd 18/11, och R5 och R7 byggda** (Bengt 18/11: *"vi godkänner förhandsvisningen"*, för Bengt och Axel, och *"Ja, bygg R5"*).
+- **Godkännandet** gäller rutan som den står på demosidan sedan 17/11: klockslaget i stället för *i natt*, och en till två rader per hal
+  sträcka på fliken Vägarna. Kartfliken säger fortfarande *Halka*.
+- **R5, länssidorna** (`publish/lanssidor.ts`, `publicera` buntad om): läns-, väg- och ortsidorna, översikten och sökträffarnas text
+  säger *ny halkrisk* och *vinterväglag* med rutans ord. Gult står bara på det nya, varje hal sträcka säger sin tid, och vanliga frågor
+  förklarar de två orden. Utan tiden säger sidorna *halka eller vinterväglag* som förut. Datawrapper-filernas kolumner är oförändrade,
+  eftersom tidningarnas diagram läser kolumnnamnen; tabellens ingress följer länssidans mening.
+- **R5, tidningssidorna** (halkvakt-karta PR 27): mallen, de 37 sidorna ur verktyget och NWT säger rutans två ord i korten om länet,
+  vägarna och pendlingen. Löftet *Samma regel överallt* får tillägget *Rutan och länssidorna skiljer dessutom ny halkrisk, det senaste
+  dygnet, från vinterväglag.* Rösten nämns inte, eftersom den vilar. Kortet *Morgonnotisen* (*Morgnar med halka …*) ändras när tipsen
+  går på ny halkrisk (R6).
+- **R7** (halkvakt-karta PR 27): rutan ritar de två raderna utan `&ny=1`, och `&ny=0` visar raden *Halka* som förut. Varje tidning som
+  har rutan inbäddad får den nya versionen inom tio minuter efter att sajten byggts, utan att göra något (GitHub Pages:
+  `Cache-Control: max-age=600`), också Jämtlands Tidning, som väntar på besked.
+- **Provat:**
+  - Ett nytt prov i `test/lanssidor.test.ts`. Motprovet, med uppdelningen avstängd, fäller det på svaret överst, och filen är återställd
+    byte för byte.
+  - Hela sviten: 465 godkända, 0 fel, 77 överhoppade (databasproven körs bara i ci).
+  - Rutan i en webbläsare: Jämtland utan parameter, `&ny=0`, Norrbotten i mörkt tema på 375 px, Värmland med PT:s inställning, demosidan
+    och Jämtlands Tidnings sida. Inga skriptfel.
+- **Kvar:** sammanslagningen av båda PR:erna samma dag och deployen av `publicera`, båda på Bengts ord, och R6 (Axel).
+
 **Stomdokument:** APP 9 — rutan till tidningarna får ny halkrisk och vinterväglag, APP 3 — röstens två meningar och takter som byggs efter uppspelningen
 
 ## #898 (18/11 2026) MET Norway och Statens vegvesen i källraderna (kort #648)

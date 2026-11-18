@@ -204,7 +204,8 @@ test("kartkärnan: med appens väderpunkter skrivs länssidorna; stationen får 
   assert.equal(utan.sidor, null, "utan appens väderpunkter skrivs inga sidor (Node-vägen)");
   const med = await buildMapData(q, { now: NOW, appVader: [{ id: "W1", yta: -3.2, fukt: false }, { id: "W2", yta: -9, fukt: false }] });
   const nb = med.sidor!["lan/norrbotten/index.html"];
-  assert.ok(nb.includes("rapporterar Trafikverket halka eller vinterväglag på 1 av länets 1 vägavsnitt."));
+  // Tiden läst (#897, R5) men utan början för sträckan: den räknas som vinterväglag, som i lan.json och rutan.
+  assert.ok(nb.includes("rapporterar Trafikverket ingen ny halkrisk det senaste dygnet, och vinterväglag på 1 av länets 1 vägavsnitt, som har varit halt längre än ett dygn."));
   assert.ok(nb.includes("Kiruna: −3,2 °C"), "W1 hör till Norrbotten via närmaste sträcka");
   assert.ok(!Object.values(med.sidor!).some((h) => h.includes("−9,0")), "W2 saknar län (ingen sträcka inom 20 km) och står inte på någon sida");
   assert.ok(nb.includes("E10, sedan 20 nov. 06:00"), "olyckan ur Date, i svensk tid");
@@ -637,6 +638,42 @@ test("#897 rutans filer utan tiden: nycklarna saknas, så att rutan visar raden 
   const delvis = byggLanssidor({ vaglag: utanTid, stationer: [], olyckor: [], now: NOW, tid: true });
   const dl = JSON.parse(delvis["data/lan.json"]).lan.find((l: any) => l.slug === "varmland");
   assert.deepEqual([dl.halt, dl.ny, dl.vinter_vecka], [3, 0, 0], "en hal sträcka utan tid är varken ny eller över en vecka");
+});
+
+test("#897 R5: läns-, väg- och ortsidorna säger ny halkrisk och vinterväglag med rutans ord, och utan tiden som förut", () => {
+  const sidor = byggLanssidor({ vaglag: R3_VAGLAG, stationer: [], olyckor: [], now: NOW, tid: true });
+  const v = sidor["lan/varmland/index.html"];
+  assert.ok(v.includes("Kl. 07:30 rapporterar Trafikverket ny halkrisk på 2 av länets 4 vägavsnitt, som har blivit hala det senaste dygnet, och vinterväglag på 1, som har varit halt längre än så."), "svaret överst");
+  assert.ok(v.includes('content="Kl. 07:30: ny halkrisk på 2 och vinterväglag på 1 av 4 vägavsnitt i Värmlands län,'), "sökträffen");
+  assert.ok(v.includes('<li><b>E18</b><span class="halt">Ny halkrisk på 1, vinterväglag på 1 av 2 sträckor</span>'), "vägens rad, som rutans flik Vägarna");
+  assert.ok(v.includes('<li><b>Väg 61</b><span class="halt">Ny halkrisk på 1 av 2 sträckor</span>'), "höjningen till Mycket besvärligt är ny");
+  const lista = v.match(/<h2>Väglaget enligt Trafikverket<\/h2>\n<ul>\n([\s\S]*?)\n<\/ul>/)![1].split("\n");
+  assert.deepEqual(lista, [
+    "<li>E18 Karlstad–Kristinehamn: Besvärligt (risk för), Våt · ny halkrisk sedan 20 nov. 02:30</li>",
+    "<li>Väg 61 Kil–Karlstad: Mycket besvärligt · ny halkrisk sedan 20 nov. 05:30</li>",
+    "<li>E18 Grums–Karlstad: Besvärligt (risk för), Is · vinterväglag sedan 10 nov. 07:30</li>",
+  ], "de nya först, var och en med sin tid; den nya höjningen räknas från höjningen");
+  const sk = sidor["lan/skane/index.html"];
+  assert.ok(sk.includes("rapporterar Trafikverket ingen ny halkrisk det senaste dygnet, och vinterväglag på 1 av länets 1 vägavsnitt, som har varit halt längre än ett dygn."), "bara stående");
+  assert.ok(sk.includes('<li><b>E4</b>Vinterväglag på 1 av 1 sträcka<small>'), "vinterväglag är aldrig gult");
+  assert.ok(sidor["lan/gotland/index.html"].includes("rapporterar Trafikverket ingen halkrisk på länets"), "ingen halka alls");
+  const e18 = sidor["vag/e18/index.html"];
+  assert.ok(e18.includes("ny halkrisk på 1 av E18:s 2 vägavsnitt, som har blivit halt det senaste dygnet, och vinterväglag på 1, som har varit halt längre än så."), "vägsidan");
+  assert.ok(e18.includes('<span class="halt">Ny halkrisk på 1, vinterväglag på 1 av 2 sträckor</span>'), "vägsidan län för län");
+  const ort = sidor["ort/karlstad/index.html"];
+  assert.ok(ort.includes("rapporterar Trafikverket ny halkrisk på 2 av 3 vägavsnitt till och från Karlstad, och vinterväglag på 1."), "ortssidan");
+  assert.ok(ort.includes('<li><b>E18</b>Vinterväglag<small>Grums–Karlstad · Besvärligt (risk för), Is · vinterväglag sedan 10 nov. 07:30</small></li>'), "ortssidans sträcka");
+  const ov = sidor["lan/index.html"];
+  assert.ok(ov.includes("<th>Län</th><th>Ny halkrisk¹</th><th>Vinterväglag¹</th>"), "översikten delar kolumnen");
+  assert.ok(ov.includes('<tr><td><a href="varmland/">Värmlands län</a></td><td>2</td><td>1 av 4</td>'), "Värmlands rad");
+  assert.ok(ov.includes('content="Kl. 07:30: ny halkrisk i 1 och vinterväglag i 2 av 21 län,'), "översiktens sökträff");
+  assert.ok(v.includes("Ny halkrisk är en sträcka som har blivit hal det senaste dygnet, och vinterväglag en som har varit hal längre än så."), "vanliga frågor förklarar orden");
+  // Datawrapper-filerna (tidningarnas diagram läser kolumnnamnen) är oförändrade.
+  assert.ok(sidor["data/datawrapper/varmland.csv"].startsWith('"Väg","Halka","Vägbanan","Var"'), "kolumnerna står kvar");
+  // Utan tiden: som före R5, och aldrig "ingen ny halkrisk".
+  const utan = byggLanssidor({ vaglag: R3_VAGLAG, stationer: [], olyckor: [], now: NOW });
+  assert.ok(utan["lan/varmland/index.html"].includes("rapporterar Trafikverket halka eller vinterväglag på 3 av länets 4 vägavsnitt."));
+  assert.ok(!Object.values(utan).some((h) => /ny halkrisk|Ny halkrisk¹/.test(h.replace(/Ny halkrisk är en sträcka[^.]*\./g, ""))), "inga nya ord utan tiden");
 });
 
 test("#897 kartkärnan: tiden och fälten läses i en egen fråga, och ett fel där stoppar inte sidorna", async () => {
