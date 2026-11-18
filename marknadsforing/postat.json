@@ -1270,5 +1270,18 @@
       "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-11-17-kvall-01.jpg",
       "facebook": "1312515671952967_122113699539516187"
     }
+  ],
+  "2026-11-18": [
+    {
+      "pass": "morgon",
+      "namn": "2026-11-18-morgon",
+      "typ": "svep",
+      "nyckel": "svep:morgon",
+      "tid": "2026-11-18T04:50:36.166Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-11-18-morgon-01.jpg",
+      "facebook": "1312515671952967_122113832157516187",
+      "instagram": "17909608527606118",
+      "x": "2122915636980457664"
+    }
   ]
 }
