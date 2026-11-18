@@ -3247,3 +3247,5 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - **Felet:** varven 17.32 och 18.02 skrev en och två av tre rutter. Rutfiltret tog 0,3–1,6 s per rutt längs vägen.
   - **Rättelsen:** rektangeln först, med samma urval på 3–259 ms; nytt prov med motprov; sviten 469 godkända, 0 fel, 77 överhoppade.
   - **Inte gjort:** sammanslagningen och deployen av rättelsen.
+- 18/11 kväll (Claude; Bengt: *"Slå ihop och deploya"*): **Skuggans rutter klara, kort #667 stängt** (DECISIONS #897, tillägget; körlistan B13).
+  - Rättelsen 84c29e54 deployad 18.19 UTC. Varvet 18.32: alla tre rutterna, och varje rutt lika med motorn längs vägen på samma lägesfil.
