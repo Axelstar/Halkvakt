@@ -17507,6 +17507,19 @@ halkvakt-karta PR 24, sammanslagen som 2897ffdc kl. 16.53 UTC) ritar de två rad
   parametern är oförändrad, också med PT:s exakta adress (läst i en webbläsare).
 - **Kvar:** Bengts och Axels godkännande av förhandsvisningen. Efter det blir de två raderna standard (R7).
 
+**Rösten vilar 18/11, och rutan går före** (Bengt 18/11: *"vi gör rutan till tidningarna så länge och du sparar rösten i appen 668 så tittar vi på det senare"*).
+- **Rösten** (kort #669, körlistan B16): V1–V6 påbörjas inte, och kortet tas upp igen på Bengts ord. Skuggans huvudrutter (kort #667,
+  körlistan B13) är V1 och vilar med rösten.
+- **Rutan** (kort #668, körlistan B15) byggs vidare, och R5 är nästa steg. R6 är Axels: tipsen skickar Axel själv, och villkoren A, B
+  och C står inte i något av repona. R7 väntar på Bengts och Axels godkännande av förhandsvisningen.
+- **Två följder:**
+  - Fristen `norr-62` (3/12) skulle enligt röstens punkt 5 avgöras efter uppspelningen av november längs vägen (V2). Med rösten vilande
+    blir det ingen uppspelning före 3/12, och skuggans halkvarningar per varv på huvudrutterna i norr är för låga med de raka strecken
+    (kort #667). Frågan står i bedömningen §4.2.
+  - Löftet *Samma regel överallt* på tidningssidorna säger att rutan, länssidorna och appens röstvarning menar samma sak med halka. Det
+    stämmer fortfarande, eftersom regeln för halt inte ändras. R5:s tillägg om nytt och stående får inte säga att rösten skiljer dem åt
+    förrän rösten är byggd.
+
 **Stomdokument:** APP 9 — rutan till tidningarna får ny halkrisk och vinterväglag, APP 3 — röstens två meningar och takter som byggs efter uppspelningen
 
 ## #898 (18/11 2026) MET Norway och Statens vegvesen i källraderna (kort #648)

@@ -3218,3 +3218,14 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
     i halkvakt-karta ansvarssidan, sajtens löften och tidningssidorna. Lagens datum rättat: 1/1 2027 enligt prop. 2026/27:12, inte 9/12.
   - **Inte gjort:** Axels ord, sammanslagningen, deployen av `publicera`, android.yml på grenen (bara den kompilerar appen), nästa
     appversion, butikstexterna i butikerna, fotostudions bilder och juristen.
+- 18/11 (Claude; Bengt: *"vi gör rutan till tidningarna så länge och du sparar rösten i appen 668 så tittar vi på det senare"*): **Rösten vilar, och rutan går före** (DECISIONS #897, tillägget 18/11; kort #667, #668 och #669;
+  körlistan B13, B15 och B16). PR #1660 (R3 i drift och R4 som förhandsvisning) är ombaserad på main.
+  - **Funnet:** tipsen till tidningarna skickar Axel själv, och villkoren för dem står inte i repona, så R6 är Axels. Fristen `norr-62`
+    3/12 skulle avgöras efter uppspelningen längs vägen, som nu inte blir av; frågan står i bedömningen §4.2.
+  - **Inte gjort:** R5–R7 och godkännandet av förhandsvisningen.
+- 18/11 (Claude; Bengt: *"Ja, kör båda"* och *"Slå ihop båda"*): **Ansvarstexten ihopslagen** (DECISIONS #899, kort #648).
+  - **Byggproven på grenen:** android.yml grön (44335247896) och TestFlight-provet grönt (44335256727, `ARCHIVE SUCCEEDED`, 0.4.1 (57)).
+  - **Ihopslaget:** halkvakt-karta PR 26 som c6ddeae0 och Halkvakt PR #1666 som c1a86504; ci, android, ios-engine och md-vakt gröna på
+    main. halkvakt.se/ansvar.html svarar, och sajtens sidfot bär ansvaret. PR 21 i halkvakt-karta stängd som ersatt.
+  - **Inte gjort:** deployen av `publicera`, nästa appversion (byggnumret måste höjas: appen är ändrad efter b5b8968), Axels ord
+    och juristen.
