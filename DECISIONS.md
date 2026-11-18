@@ -17480,3 +17480,36 @@ Regeln för vad som räknas som halt ändras inte: samma mängd sträckor delas 
 - **Kvar för R3:** deployen av `publicera`, på Bengts ord, och en läsning av filerna i hinken.
 
 **Stomdokument:** APP 9 — rutan till tidningarna får ny halkrisk och vinterväglag, APP 3 — röstens två meningar och takter som byggs efter uppspelningen
+
+## #898 (18/11 2026) MET Norway och Statens vegvesen i källraderna (kort #648)
+
+**Beslut.** Bengt 18/11: *"Ja, för in dem"*, på frågan om MET Norway och Statens vegvesen ska föras in där de saknas.
+- **Appen** (Om i båda apparna) och **butikstexterna**: *Data: Trafikverket (CC0), SMHI, MET Norway (CC BY 4.0; prognoserna räknas ur
+  deras data), Statens vegvesen (NLOD), Fintraffic (CC BY 4.0), broar © OpenStreetMap-bidragsgivare (ODbL).*
+- **Sajtens sidfot** på tio sidor i halkvakt-karta: samma källor, med länk till CC BY 4.0 och till NLOD (`data.norge.no/nlod/no/`, den
+  sida Statens vegvesen själva länkar till).
+- **Läns- och ortsidorna**, som ritar prognosen, säger *Prognosen på kartan räknas ur data från MET Norway (CC BY 4.0).* Väg-,
+  översikts- och varningssidorna har ingen karta och ändras inte (`LS_KALLOR_KARTA` i `publish/lanssidor.ts`, prov i
+  `test/lanssidor.test.ts`).
+- **Livekartan:** MET Norway stod redan i källraden; nu med länk till licensen och att prognosen räknas ur deras data. Statens vegvesen
+  står inte där, eftersom kartan inte visar de norska stationerna (`vader.geojson` bär bara SE, FI och DK).
+- **Rutan till tidningarna:** krediten står i kartans förklaring, *Prognos ur data från MET Norway*, intill prognosen (kartan visas bara
+  med `&karta=1`). Fotraden ändras inte: med MET Norway bröts den på två rader under 400 px, mot en rad förut, och de 38 tidningssidorna
+  lovar *en rad i foten*.
+
+**Underlag.** MET Norway (met.no, läst 18/11): datan har licenserna NLOD 2.0 och CC BY 4.0, och källan ska anges som *MET Norway*.
+CC BY 4.0 kräver erkännande, en länk till licensen och att ändringar anges (#585). Statens vegvesen (vegvesen.no, *Hva er DATEX*, läst
+18/11): bruken regleras av norsk lisens for offentlige data, och den som för informationen vidare ombeds ange Statens vegvesen som källa.
+Versionen av NLOD står inte på sidan, och licenstexten på data.norge.no gick inte att läsa (svarade 406). De norska stationerna når
+appen som gränsstationer inom 40 km (`BORDER_LANDS` i `publicera`).
+
+**Alternativ.** Vänta på ansvarstexten i kort #648 och halkvakt-karta PR 21, som bär samma källor; eller bara en rad i sajtens sidfot.
+
+**Varför.** Licenserna kräver källan, och prognoserna som alla förare hör räknas ur MET Nordic. Källraden behöver inte vänta på
+ansvarstexten.
+
+**Kvar.** Sammanslagningen av båda PR:erna, på Bengts ord. Deployen av `publicera` för läns- och ortsidorna, på Bengts ord. Appen i
+nästa version i båda butikerna. Butikstexterna klistras in av Axel: Play när som helst, App Store med nästa version. Fotostudions nya
+bild av Om till produktboken.
+
+**Stomdokument:** APP 10 — källraden i appen och butikerna, SYS 1 — sajtens sidfot och livekartan

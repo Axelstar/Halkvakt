@@ -677,3 +677,13 @@ test("#897 kartkärnan: tiden och fälten läses i en egen fråga, och ett fel d
   assert.deepEqual([nb2.halt, "ny" in nb2], [1, false], "sidorna och filerna skrivs ändå, utan nycklarna");
   assert.ok(utan.sidor!["lan/norrbotten/index.html"].includes("halka eller vinterväglag på 1 av länets 2 vägavsnitt"), "länssidan är oförändrad");
 });
+
+test("#898 källraden: sidorna som ritar prognosen nämner MET Norway, de andra inte", () => {
+  const sidor = byggLanssidor({ vaglag: [], stationer: [], olyckor: [], now: NOW });
+  const kalla = (p: string) => sidor[p].match(/<p class="kallor">(.*?)<\/p>/)![1];
+  const met = "Prognosen på kartan räknas ur data från MET Norway (CC BY 4.0).";
+  for (const l of LAN) assert.ok(kalla(`lan/${l.slug}/index.html`).includes(met), `länssidan ${l.slug} ritar prognosen`);
+  for (const o of ORTER) assert.ok(kalla(`ort/${ortAdress(o)}/index.html`).includes(met), `ortsidan ${o.namn} bäddar in livekartan`);
+  for (const p of ["lan/index.html", "varningar/index.html", ...VAGAR.map((v) => `vag/${v.slug}/index.html`)])
+    assert.ok(!kalla(p).includes("MET Norway"), `${p} har ingen karta och ingen prognos`);
+});
