@@ -3219,7 +3219,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - **Inte gjort:** Axels ord, sammanslagningen, deployen av `publicera`, android.yml på grenen (bara den kompilerar appen), nästa
     appversion, butikstexterna i butikerna, fotostudions bilder och juristen.
 - 18/11 (Claude; Bengt: *"vi gör rutan till tidningarna så länge och du sparar rösten i appen 668 så tittar vi på det senare"*): **Rösten vilar, och rutan går före** (DECISIONS #897, tillägget 18/11; kort #667, #668 och #669;
-  körlistan B13, B15 och B16). PR #1660 (R3 i drift och R4 som förhandsvisning) är ombaserad på main.
+  körlistan B13, B15 och B16). PR #1660 (R3 i drift och R4 som förhandsvisning) krockade med main och är ersatt av PR #1667, med samma commits omlagda.
   - **Funnet:** tipsen till tidningarna skickar Axel själv, och villkoren för dem står inte i repona, så R6 är Axels. Fristen `norr-62`
     3/12 skulle avgöras efter uppspelningen längs vägen, som nu inte blir av; frågan står i bedömningen §4.2.
   - **Inte gjort:** R5–R7 och godkännandet av förhandsvisningen.
