@@ -1293,6 +1293,17 @@
       "facebook": "1312515671952967_122113905099516187",
       "instagram": "17878114692619642",
       "x": "2123006030497960248"
+    },
+    {
+      "pass": "live",
+      "namn": "2026-11-18-live-1438",
+      "typ": "smhi",
+      "nyckel": "smhi:Isbeläggning:Västerbottens läns kustland:YELLOW",
+      "tid": "2026-11-18T13:38:06.719Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-11-18-live-1438.jpg",
+      "facebook": "1312515671952967_122113940457516187",
+      "instagram": "17875696356649241",
+      "x": "2123048187384541466"
     }
   ]
 }
