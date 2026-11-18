@@ -17578,6 +17578,23 @@ V1, och svaret på frågan i bedömningen §4.2 om rutterna före fristen `norr-
 - **Kortets Verify** står kvar på en sak: rutan för ett län i norr en dag utan ny halka. I dag har alla län i norr något nytt
   (Norrbotten 13, Västerbotten 7, Västernorrland 6, Jämtland 2). R6 är Axels.
 
+**Skuggans rutter i drift 18/11, med ett fel i varvens tid som rättas** (kort #667; Bengt: *"Slå ihop och deploya"*).
+- **I drift:** PR #1670 ihopslagen som c6dec196, och `skuggmotor` deployad 17.11.52 UTC (körning 44355842360). Det är bytestiden för skuggans mått per rutt.
+- **Första varvet, 17.32:** E14 Sundsvall→Åre gav 64 larm, varav 22 halka, på lägesfilen 17.30.02. Motorn körd längs vägen mot samma lägesfil
+  (`scripts/matningar/skuggrutter-2026-11-18.ts`) gav också 64 larm, varav 22 halka, och favoritprovets bil 64. Längs strecket blev det 11 larm,
+  varav 10 halka. För den rutten är kortets Verify uppfylld.
+- **Felet:** varvet 17.32 skrev bara den första av sina tre rutter, och varvet 18.02 bara två av tre (E18 Karlstad→Örebro 8 och E4 Sundsvall→Umeå
+  46; Rv40 Göteborg→Jönköping saknas). Före deployen, kl. 17.02, skrev varvet alla tre.
+- **Orsaken** (`scripts/matningar/skuggrutter-tid-2026-11-18.ts`): rutfiltret prövar varje fara mot varje punkt på linjen. Vägens linje har 157–776
+  punkter mot strecken 3–9, så filtret tog 0,3–1,6 s per rutt mot 8–14 ms. Funktionen hann inte tre rutter.
+  - Svaren syns inte i `public.anrop`, eftersom databasens klient ger upp efter 20 s (`net._http_response`, *Timeout of 20000 ms reached*).
+- **Rättelsen** (grenen `claude/kort-667-forfilter`): rektangeln runt rutten (`farorNaraRutten`) väljs först, och linjefiltret körs på det som är
+  kvar. Rektangeln är en övermängd av allt inom räckvidden och behåller snapshotens ordning, så urvalet blir detsamma.
+  - Mätt mot lägesfilen 18.00 på alla 20 rutter: samma faror i samma ordning, och 3–259 ms per rutt mot 326–1 641 ms.
+  - Ett nytt prov i `test/skuggrutter.test.ts`. Motprovet, med en för liten rektangel, fäller det.
+  - Hela sviten: 469 godkända, 0 fel, 77 överhoppade.
+- **Kvar:** sammanslagningen och deployen på Bengts ord. Därefter ett varv med alla tre rutter, och varje rutt mot motorn längs vägen.
+
 **Stomdokument:** APP 9 — rutan till tidningarna får ny halkrisk och vinterväglag, APP 3 — röstens två meningar och takter som byggs efter uppspelningen
 
 ## #898 (18/11 2026) MET Norway och Statens vegvesen i källraderna (kort #648)
