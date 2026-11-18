@@ -17479,6 +17479,47 @@ Regeln för vad som räknas som halt ändras inte: samma mängd sträckor delas 
   fälten förrän R4.
 - **Kvar för R3:** deployen av `publicera`, på Bengts ord, och en läsning av filerna i hinken.
 
+**Tillägg 17/11 kl. 16.30 UTC (Bengt: *"Slå ihop 1658"* och *"Ja, deploya"*): R3 i drift.** PR #1658 sammanslagen (0f9bb529) och
+`publicera` deployad kl. 16.16 UTC (körning 44123694181). R3 var den enda ändringen i publiceringen sedan förra deployen 15/11.
+- **Filerna:** kartbygget kl. 16.30 UTC skrev de nya nycklarna, lästa på halkvakt.se kl. 16.32. `strackor.json` bär `sedan` på alla
+  193 hala sträckor, 50 är nya, början är känd för alla, och 167 sträckor bär en varning, 101 en orsak och 101 en åtgärd. `lan.json`
+  bär `ny`, `ny_sedan` och `vinter_vecka` för varje län och väg.
+- **Kostnaden:** kartbygget tog 3,5 s kl. 16.30 mot 3,6 s kl. 16.00, före deployen, och lägesfilens bygge är oförändrat, 7,4–8,0 s
+  (DB-knappen 44126768053). `strackor.json` växte från 107 till 136 kB och `lan.json` från 3,9 till 5,1 kB.
+- **Rutan** ritas som förut i Norrbotten och Västra Götaland (läst i en webbläsare kl. 16.35). Den läser inte de nya nycklarna
+  förrän R4.
+- **Sett i förbigående:** rutan för Norrbotten ger ett skriptfel i flikarnas kod (`markera` i `ruta.html`, kartrepot). Koden läser
+  inga data där, och rutan ritas rätt. Om felet fanns före deployen är inte läst. Det tas i R4, som ändrar samma fil.
+
+**Tillägg 17/11 kväll (Bengt: *"Ja, bygg R4"* och *"Slå ihop PR 24"*): R4 ute som förhandsvisning.** Rutan i kartrepot (`ruta.html`,
+halkvakt-karta PR 24, sammanslagen som 2897ffdc kl. 16.53 UTC) ritar de två raderna bara med `&ny=1`. Utan parametern är rutan oförändrad, så ingen ruta hos en tidning ändras.
+- **Länet:** *Ny halkrisk* (gul när den finns) och *Vinterväglag* (neutral), och *Under noll* och *Kallast* neutrala.
+- **Vägarna och Pendling:** varje hal sträcka säger sedan när, de nya först, och visar Trafikverkets varning, orsak och åtgärd.
+- **Reservläget:** saknar datafilerna tiden ritas raden *Halka* som förut.
+- **Demosidan** `ny-halkrisk-demo.html` visar rutan som den är i dag bredvid förslaget, med val av län, flik och tema.
+- **Provat i en webbläsare** mot datafilerna från kl. 16.30 UTC: Norrbotten, Dalarna, Värmland och Skåne, ljust och mörkt tema,
+  alla tre flikarna, PT:s inställning med klickbara rader, 320 px bredd och reservläget. Inga skriptfel.
+- **Ordval att godkänna:** klockslag i stället för *i natt* (*sedan kl. 15:43*, *sedan i går kl. 20:26*), och meningen under raderna
+  som förklarar de två orden. Kartfliken säger fortfarande *Halka*.
+- **Skriptfelet i rutan** (tillägget kl. 16.30) fanns före deployen: rutan räknar med sin bredd när fönstret ändrar storlek, och
+  blir fel när bredden är noll. Det påverkar inte vad rutan visar, och är inte ändrat.
+- **Ute kl. 16.54 UTC:** demosidan svarar på halkvakt.se/ny-halkrisk-demo.html, rutan med `&ny=1` ritar de två raderna utan skriptfel, och rutan utan
+  parametern är oförändrad, också med PT:s exakta adress (läst i en webbläsare).
+- **Kvar:** Bengts och Axels godkännande av förhandsvisningen. Efter det blir de två raderna standard (R7).
+
+**Rösten vilar 18/11, och rutan går före** (Bengt 18/11: *"vi gör rutan till tidningarna så länge och du sparar rösten i appen 668 så tittar vi på det senare"*).
+- **Rösten** (kort #669, körlistan B16): V1–V6 påbörjas inte, och kortet tas upp igen på Bengts ord. Skuggans huvudrutter (kort #667,
+  körlistan B13) är V1 och vilar med rösten.
+- **Rutan** (kort #668, körlistan B15) byggs vidare, och R5 är nästa steg. R6 är Axels: tipsen skickar Axel själv, och villkoren A, B
+  och C står inte i något av repona. R7 väntar på Bengts och Axels godkännande av förhandsvisningen.
+- **Två följder:**
+  - Fristen `norr-62` (3/12) skulle enligt röstens punkt 5 avgöras efter uppspelningen av november längs vägen (V2). Med rösten vilande
+    blir det ingen uppspelning före 3/12, och skuggans halkvarningar per varv på huvudrutterna i norr är för låga med de raka strecken
+    (kort #667). Frågan står i bedömningen §4.2.
+  - Löftet *Samma regel överallt* på tidningssidorna säger att rutan, länssidorna och appens röstvarning menar samma sak med halka. Det
+    stämmer fortfarande, eftersom regeln för halt inte ändras. R5:s tillägg om nytt och stående får inte säga att rösten skiljer dem åt
+    förrän rösten är byggd.
+
 **Stomdokument:** APP 9 — rutan till tidningarna får ny halkrisk och vinterväglag, APP 3 — röstens två meningar och takter som byggs efter uppspelningen
 
 ## #898 (18/11 2026) MET Norway och Statens vegvesen i källraderna (kort #648)
