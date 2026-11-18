@@ -1062,6 +1062,9 @@ function lsJsonLd(o: { titel: string; beskrivning: string; adress: string; now?:
 }
 
 const LS_KALLOR = "Källa: Trafikverkets öppna data (CC0): väglag, vägväderstationer och olyckor. Sidan skrivs om var 30:e minut. Fristående från myndigheterna.";
+/** Sidorna med karta (länet och orten) ritar prognosen, som räknas ur MET Nordic: CC BY 4.0 kräver källan och att bearbetningen anges
+ *  (DECISIONS #898, kort #648). Länken till licensen står i sajtens sidfot. */
+const LS_KALLOR_KARTA = "Källa: Trafikverkets öppna data (CC0): väglag, vägväderstationer och olyckor. Prognosen på kartan räknas ur data från MET Norway (CC BY 4.0). Sidan skrivs om var 30:e minut. Fristående från myndigheterna.";
 function lsSkal(o: { titel: string; beskrivning: string; adress: string; rot: string; innehall: string; ct: string; aktiv?: "lanen"; now?: Date; extra?: string;
   smhi?: boolean; kallor?: string; ladda?: { rubrik: string; text: string } }) {
   return `<!doctype html>
@@ -1899,7 +1902,7 @@ ${lsFragorHtml(lsFragor(ort.namn))}
   const beskrivning = `Kl. ${lsTid(now, false)}: ${avDel}${naraKalla.length ? `, vägbanan ${lsGrad(naraKalla[0].yta)} vid ${naraKalla[0].name}` : ""}. ${LS_SLUT}`;
   return lsSkal({
     titel: `Halka i ${ort.namn} idag: väglag och trafikläget just nu | Halkvakt`,
-    beskrivning, adress: `${SIDBAS}/ort/${ortAdress(ort)}/`, rot: "../../", innehall, now, ct: "ort", extra: lsFragorLd(lsFragor(ort.namn)),
+    beskrivning, adress: `${SIDBAS}/ort/${ortAdress(ort)}/`, rot: "../../", innehall, now, ct: "ort", extra: lsFragorLd(lsFragor(ort.namn)), kallor: LS_KALLOR_KARTA,
   });
 }
 
@@ -1941,7 +1944,7 @@ ${lsFragorHtml(lsFragor(lan.namn))}
   return lsSkal({
     titel: `Halka i ${lsLanTitelnamn(lan)} idag: väglag och trafikläget just nu | Halkvakt`,
     beskrivning: lsBeskrivning(l, `i ${lan.namn}`, now),
-    adress: `${SIDBAS}/lan/${lan.slug}/`, rot: "../../", innehall, now, ct: "lan", aktiv: "lanen", extra: lsFragorLd(lsFragor(lan.namn)),
+    adress: `${SIDBAS}/lan/${lan.slug}/`, rot: "../../", innehall, now, ct: "lan", aktiv: "lanen", extra: lsFragorLd(lsFragor(lan.namn)), kallor: LS_KALLOR_KARTA,
   });
 }
 

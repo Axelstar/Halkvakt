@@ -231,7 +231,7 @@ struct InstallningarView: View {
                 LankRad(titel: "Press & material", url: "https://axelstar.github.io/halkvakt-karta/press.html", divider: false)
             }
             .padding(.top, 24)
-            Text("Varnar vid Trafikverkets mätstationer och rapporterade väglag — mellan stationerna är vägen oövervakad. Data: Trafikverket (CC0), SMHI, Fintraffic (CC BY 4.0), broar © OpenStreetMap-bidragsgivare (ODbL). Halkvakt är fristående och har ingen koppling till myndigheterna.")
+            Text("Varnar vid Trafikverkets mätstationer och rapporterade väglag — mellan stationerna är vägen oövervakad. Data: Trafikverket (CC0), SMHI, MET Norway (CC BY 4.0; prognoserna räknas ur deras data), Statens vegvesen (NLOD), Fintraffic (CC BY 4.0), broar © OpenStreetMap-bidragsgivare (ODbL). Halkvakt är fristående och har ingen koppling till myndigheterna.")
                 .font(Typo.sans(12)).lineSpacing(3).foregroundStyle(Brand.faint)
                 .padding(.top, 20).padding(.horizontal, 4)
             MonoLabel(text: "Halkvakt \(Self.version) · beta", color: Brand.faint2).padding(.top, 16).padding(.horizontal, 4)

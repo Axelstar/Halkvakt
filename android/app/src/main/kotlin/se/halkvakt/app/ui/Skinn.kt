@@ -720,9 +720,11 @@ private fun Undersida(sida: Sida, activity: MainActivity, open: (Sida) -> Unit, 
                     NavRow("Om appen & vanliga frågor") { uri.openUri("https://axelstar.github.io/halkvakt-karta/om.html") }
                     NavRow("Press & material", divider = false) { uri.openUri("https://axelstar.github.io/halkvakt-karta/press.html") }
                 }
-                // #249 (a): samma ärlighetsrad och attribution som iOS — Fintraffic (CC BY 4.0) och OSM (ODbL) kräver källan.
+                // #249 (a): samma ärlighetsrad och attribution som iOS — Fintraffic (CC BY 4.0) och OSM (ODbL) kräver källan,
+                // liksom MET Norway (CC BY 4.0, prognoserna) och Statens vegvesen (NLOD, gränsstationerna) sedan 18/11 (DECISIONS #898).
                 Text("Varnar vid Trafikverkets mätstationer och rapporterade väglag — mellan stationerna är vägen oövervakad. " +
-                    "Data: Trafikverket (CC0), SMHI, Fintraffic (CC BY 4.0), broar © OpenStreetMap-bidragsgivare (ODbL). " +
+                    "Data: Trafikverket (CC0), SMHI, MET Norway (CC BY 4.0; prognoserna räknas ur deras data), Statens vegvesen (NLOD), " +
+                    "Fintraffic (CC BY 4.0), broar © OpenStreetMap-bidragsgivare (ODbL). " +
                     "Halkvakt är fristående och har ingen koppling till myndigheterna.",
                     color = Muted2, fontFamily = Typo.sans, fontSize = 12.sp, lineHeight = 18.sp, modifier = Modifier.padding(top = 20.dp, start = 4.dp))
                 MonoLabel("Halkvakt $version · beta", Muted3, modifier = Modifier.padding(top = 16.dp, start = 4.dp))

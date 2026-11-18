@@ -37,7 +37,7 @@ Ingenting skickas från appen. Betatestet, där testare efter resan kan svara om
 GRATIS, UTAN FÖRBEHÅLL
 Halkvakt är gratis och byggd på öppna svenska data. Vägen är redan betald med dina skattepengar — vi ser bara till att den får tala.
 
-Halkvakt varnar vid Trafikverkets mätstationer och rapporterade väglag — mellan stationerna är vägen oövervakad. Datakällor: Trafikverket (CC0), SMHI, Fintraffic (CC BY 4.0), broar © OpenStreetMap-bidragsgivare (ODbL). Halkvakt är fristående och har ingen koppling till myndigheterna.
+Halkvakt varnar vid Trafikverkets mätstationer och rapporterade väglag — mellan stationerna är vägen oövervakad. Datakällor: Trafikverket (CC0), SMHI, MET Norway (CC BY 4.0; prognoserna räknas ur deras data), Statens vegvesen (NLOD), Fintraffic (CC BY 4.0), broar © OpenStreetMap-bidragsgivare (ODbL). Halkvakt är fristående och har ingen koppling till myndigheterna.
 
 ## Nyckelord (100 tecken, kommaseparerade)
 halka,halkvarning,väglag,vinterväg,fartkamera,viltvarning,olycka,trafikverket,bilkörning,röst

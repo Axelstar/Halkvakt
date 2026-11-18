@@ -36,6 +36,7 @@ dina skattepengar — vi ser bara till att den får tala.
 
 Halkvakt varnar vid Trafikverkets mätstationer och rapporterade väglag — mellan
 stationerna är vägen oövervakad. Datakällor: Trafikverket (CC0), SMHI,
+MET Norway (CC BY 4.0; prognoserna räknas ur deras data), Statens vegvesen (NLOD),
 Fintraffic (CC BY 4.0), broar © OpenStreetMap-bidragsgivare (ODbL).
 Halkvakt är fristående och har
 ingen koppling till myndigheterna.
