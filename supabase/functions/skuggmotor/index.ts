@@ -1938,7 +1938,14 @@ Deno.serve(async (req) => {
     const ms = { motor: 0, prognos: 0, facit: 0, t0: performance.now() };
     const batch = allNames.filter((_, i) => i % slots === slot);
     for (const name of batch) {
-      const line = routes[name];
+      // HUVUDRUTTERNA LÄNGS VÄGEN (kort #667, DECISIONS #897, Bengt 18/11: "bygg skuggans rutter kort 667"): de raka strecken låg
+      // 2,7–24,1 km från vägen i median på rutterna i norr, och motorn gav 4 halkvarningar längs strecket Umeå–Luleå mot 19 längs
+      // vägen. Spåret, rutfiltret, vägbanan och oljan går nu längs vägnätet (RUTTER_VAG, OSRM, som kandidaten sedan #573) i Sverige;
+      // prognosen och efterhalkan stannar på den raka linjen (`rak`), som grindarnas facitradie och lasRutter läser. Grupp C, de
+      // andra länderna och försprånget (förregistrerat, #664) är oförändrade.
+      const rak = routes[name];
+      const vag = land === "se" && !c ? (RUTTER_VAG as Record<string, [number, number][]>)[name] : undefined;
+      const line = vag ?? rak;
       {
       const trace = traceAlong(line);
       // SPÄRREN SYNLIG (#127 a, kort #188, DECISIONS #193, Bengts ja 15/9). Kroken fanns i motorn och
@@ -1965,20 +1972,19 @@ Deno.serve(async (req) => {
       // korridor. Rutterna kör var 3,5:e timme och gick förbi 95 % av efterhalkans fall 4–11/10 (#521); S1 handlar om stationer,
       // inte vägar. Inga nya rader: jämförelsen mot arkivet tar bort dubbletterna.
       // Grupp C loggar ingen efterhalka: huvudvarvets första rutt bär redan varje station varje halvtimme (#523).
-      const efterhalka = land === "se" && !c ? efterhalkaRader(lv, name === batch[0] ? null : line, alerts) : [];
+      const efterhalka = land === "se" && !c ? efterhalkaRader(lv, name === batch[0] ? null : rak, alerts) : [];
       // SEGMENTPROGNOSEN (kort #38b steg 4, DECISIONS #324/#325, Bengts "bygg nu" 23/9): rå avståndsviktning av de
       // vaktade stationerna per provpunkt längs rutten (engine/src/segment.ts). Loggad, aldrig hörd — grind B och C
       // dömer i mars. Tom utan ankare, och skälet står i svaret (ankareSkal), så en tom kolumn aldrig är tvetydig.
       // h = HOLDOUT (4c, DECISIONS #326): varje station inom 2 km av rutten skattad ur de övriga, med sin egen mätning.
       // Samma filter för ankarna: bara de inom prognosens grannradie plus holdoutens 2 km kan väga in (#360).
       const t2 = performance.now();
-      const ankRutt = ankareNaraRutten(ankare.lista, line);
-      const prognos = ankare.lista.length ? { ...segmentPrognos(line, ankRutt), h: holdoutRader(line, ankRutt) } : {};
+      const ankRutt = ankareNaraRutten(ankare.lista, rak);
+      const prognos = ankare.lista.length ? { ...segmentPrognos(rak, ankRutt), h: holdoutRader(rak, ankRutt) } : {};
       // KANDIDATEN (DECISIONS #573 del 2): de varnande sträckorna längs rutten, för takten. Loggad, aldrig hörd. Längs vägnätet
       // (RUTTER_VAG, OSRM, inbäddad av bundle-skuggmotor.ts): de raka linjerna gick 6,9 km från de varnande punkterna på E10 15/10.
-      // geo säger vilken linje som räknades; den raka bara om vägnätet saknas för rutten.
-      const vag = (RUTTER_VAG as Record<string, [number, number][]>)[name];
-      const kandidatLinje = vag ?? line;
+      // geo säger vilken linje som räknades; den raka bara om vägnätet saknas för rutten. Samma vägnät som huvudvarvet (#667).
+      const kandidatLinje = vag ?? rak;
       const kandidat = land === "se" && !c
         ? { tid: kandidatV.tid, talare: kandidatV.talare, n: kandidatV.lista.length, geo: vag ? "osrm" : "linje",
             h: kandidatLangsRutten(ankareNaraRutten(kandidatV.lista, kandidatLinje, UPPMATT_KM), kandidatLinje), ...(kandidatV.skal ? { skal: kandidatV.skal } : {}) }

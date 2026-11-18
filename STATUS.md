@@ -3234,3 +3234,11 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
     löftet *Samma regel överallt* har fått sitt tillägg. **R7:** rutan visar de två raderna utan `&ny=1` (halkvakt-karta PR 27).
   - **Provat:** nytt prov i `test/lanssidor.test.ts` med motprov; sviten 465 godkända, 0 fel, 77 överhoppade; rutan i en webbläsare.
   - **Inte gjort:** sammanslagningen, deployen av `publicera` och R6 (Axel).
+- 18/11 (Claude; Bengt: *"bygg skuggans rutter kort 667"*): **Skuggans huvudrutter längs vägen byggda** (DECISIONS #897, tillägget; kort #667; körlistan B13).
+  - **Byggt:** huvudvarvets spår, rutfilter, vägbana och olja längs vägnätet för de 20 svenska rutterna; prognosen, efterhalkan, grupp C
+    och försprånget oförändrade. `test/skuggrutter.test.ts` med motprov; sviten 468 godkända, 0 fel, 77 överhoppade.
+  - **Inte gjort:** deployen av `skuggmotor` och ett varv mätt mot favoritprovets synk.
+- 18/11 kl. 17 UTC (Claude; Bengt: *"Slå ihop och deploya"*): **Rutans R5 och R7 i drift, och ansvarstextens sidfot** (DECISIONS #897 och #899; kort #668 och #648).
+  - **Ihopslaget:** PR #1667 (226186a4), halkvakt-karta PR 27 (f1c22d89; sajten byggd 16.55.55 UTC) och PR #1668 (0d8a7b68). **Deployen:** `publicera` deployad 16.56 UTC (körning 44352880743), ci grön på main (44352851571).
+  - **Läst live:** rutan för Jämtland och Värmland, och Norrbottens länssida kl. 18.00 med de nya orden och ansvaret i foten.
+  - **Inte gjort:** Verify-dagen, ett län i norr utan ny halka; R6 (Axel); PR #1670 (#667) och deployen av `skuggmotor`.
