@@ -17696,3 +17696,71 @@ av Axel: Play när som helst, App Store med nästa version. Fotostudions bilder 
 butikstexterna ändras igen när småvägsrösten slås på (C5).
 
 **Stomdokument:** APP 4 — introduktionen och körskärmen, APP 10 — Om och butikerna, SYS 1 — sajtens sidfot och ansvarssidan, FAV 2 — läget Lugnt, BED §4.2
+
+## #900 (18/11 2026) Lagerlöf Labs HB ger ut Halkvakt och är personuppgiftsansvarigt; dataskyddets 23 svar, schemat och steg 1 (kort #670)
+
+**Beslut** (Bengt 18/11: *"Bolagets namn är Lagerlöf Labs och det finns ett organisationsnummer"*, och sedan *"969805-2694 och ja"*).
+- **Bolaget:** handelsbolaget Lagerlöf Labs, org.nr 969805-2694, med Bengt och Axel Lagerlöf som bolagsmän.
+  - Bolaget ger ut Halkvakt och är personuppgiftsansvarigt.
+  - Bolaget är sökande i Skyltfondsansökan. Bengt skickar kompletteringen, och utkastet ligger utanför repot.
+  - Det ersätter att Halkvakt drivs av privatpersoner (#683).
+  - Det ersätter #699:s följd att namnet Lagerlöf Labs skulle bort ur App Store och integritetssidan. Namnet står kvar, med *HB* och
+    organisationsnumret.
+  - Ägandet av koden och dokumenten (#699) är oförändrat, så de ägs av Bengt och Axel. Ska bolaget äga dem krävs ett avtal om
+    överlåtelse.
+- **De 23 frågorna i beslutsunderlaget om dataskyddet (18/11): rekommendationen på alla.**
+  1. Lagerlöf Labs HB är personuppgiftsansvarigt; det ändrades samma dag från att Bengt och Axel skulle vara gemensamt ansvariga.
+  2. Axel är kontakt utåt.
+  3. Leverantörsavtalen med Supabase, GitHub och Zoho accepteras och sparas privat.
+  4. Ett register förs privat.
+  5. Testarnas svar raderas eller görs om till summor en månad efter slutrapporten i april.
+  6. Sajtens besöksrader sparas i 13 månader.
+  7. Kamerabilderna raderas efter mätningen i mars.
+  8. Kartan på startsidan behålls.
+  9. Meningen *"Din position lämnar inte telefonen av sig själv"* byts ut överallt.
+  10. iPhones fråga om platsen rättas före 0.4.1.
+  11. Räknaren i appen frågar om lov, om ingen jurist säger annat.
+  12. Räknaren förblir inte alltid på (nej).
+  13. Historiken, facitsvaren, missarna och Bluetooth-adresserna undantas från säkerhetskopian.
+  14. Rutans räknare tas bort.
+  15. Rutans räknare behålls inte med besked till tidningarna (nej).
+  16. Sajten slutar läsa markeringen i besökarnas webbläsare.
+  17. Räkningen av unika besökare per dygn behålls, med information och lagringstid.
+  18. Listan över de flitigaste besökarna tas bort.
+  19. Väntelistan raderas och stängs.
+  20. Integritetssidan skrivs om fullständigt.
+  21. Kartbiblioteket läggs på egen server.
+  22. En jurist granskar räknaren och kartan, samlat med ansvarstextens frågor.
+  23. Allt annat väntar inte på juristen (nej).
+- **Schemat:**
+  - steg 1 (rutan och sajten) 19–21/11;
+  - steg 2 (orden om platsen och integritetssidan) före 0.4.1 till Apple;
+  - steg 3 (avtalen, registret, lagringstiderna) senast 18/12;
+  - steg 4 (juristen) före 1/1 2027;
+  - steg 5 (säkerhetskopian, räknaren efter juristen) i nästa ordinarie version.
+- **De sannolika svaren på juristfrågorna** (läsningen 18/11, ingen juridisk rådgivning; underlaget utanför repot):
+  - Räknaren i appen kräver sannolikt samtycke (LEK 9 kap. 28 §). En räkning på servern av de nedladdningar appen ändå gör kräver det
+    inte.
+  - Kartan från Apple klarar sig utan samtycke om föraren får veta det innan.
+  - Undantaget för fri programvara i den nya produktansvarslagen gäller sannolikt inte, så länge ett bolag med vinstsyfte ger ut appen.
+  - Handelsbolaget skyddar inte bolagsmännen. De svarar personligen för bolagets skulder.
+
+**Steg 1 byggt 18/11, inte i drift.**
+- **halkvakt-karta PR 28:**
+  - Fråga 14: rutans räknare (`assets/ruta-besok.js`) är borta ur `ruta.html`, verktyget `rutor.py`, de 56 rutsidorna och NWT:s.
+  - Fråga 16: `assets/besok.js` läser och skriver ingenting i besökarens webbläsare. Markeringen `?oss=1` är borta, så Bengts och
+    Axels egna besök räknas med.
+  - Fråga 18: statistiksidans flik *Övrigt* är borta.
+- **Halkvakt (`sql/118_dataskydd_steg1.sql`):**
+  - `besok_stat` utan listan *tyngsta* (fråga 18).
+  - Väntelistan stängd och tömd (fråga 19). Den hade fyra rader, alla från 24/8 2026. Tabellen står kvar, eftersom publiceringen räknar den.
+  - Migrationen raderar och körs med DB-knappen på Bengts ord.
+- **Inte byggt:**
+  - Fråga 21: kartbiblioteket. Det kräver att filerna för `maplibre-gl` 4.7.1 laddas ned från unpkg.com, och det väntar på Bengts ja.
+  - Fråga 17: informationen och lagringstiden, som hör till steg 2 och 3.
+  - Statistiksidans avsnitt *Rutorna hos tidningarna* får inga nya rader.
+
+**Alternativ.** Bengt och Axel som gemensamt ansvariga (artikel 26) föll med bolaget. Att behålla rutans räknare och säga det till
+tidningarna föll, eftersom tidningarna då måste föra in Halkvakt i sina samtyckesrutor.
+
+**Stomdokument:** APP 10 — integritetssidan och dataskyddets steg, SYS 1 — vem som ger ut Halkvakt och ansvarar för uppgifterna, BED §4.2

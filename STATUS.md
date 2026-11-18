@@ -3249,3 +3249,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - **Inte gjort:** sammanslagningen och deployen av rättelsen.
 - 18/11 kväll (Claude; Bengt: *"Slå ihop och deploya"*): **Skuggans rutter klara, kort #667 stängt** (DECISIONS #897, tillägget; körlistan B13).
   - Rättelsen 84c29e54 deployad 18.19 UTC. Varvet 18.32: alla tre rutterna, och varje rutt lika med motorn längs vägen på samma lägesfil.
+- 18/11 kväll (Claude; Bengt: *"969805-2694 och ja"*): **Dataskyddet beslutat, och steg 1 byggt** (DECISIONS #900, kort #670).
+  - **Beslutat:** Lagerlöf Labs HB (org.nr 969805-2694) ger ut Halkvakt och är personuppgiftsansvarigt; ja på alla 23 frågorna.
+  - **Byggt:** rutans räknare bort, ingen läsning i besökarnas webbläsare, listan över flitigaste besökare bort (halkvakt-karta PR 28); `sql/118` stänger och tömmer väntelistan.
+  - **Inte gjort:** sammanslagningen, migrationen 118, kartbiblioteket (nedladdningen väntar på Bengts ja), steg 2–5.
