@@ -17763,4 +17763,21 @@ butikstexterna ändras igen när småvägsrösten slås på (C5).
 **Alternativ.** Bengt och Axel som gemensamt ansvariga (artikel 26) föll med bolaget. Att behålla rutans räknare och säga det till
 tidningarna föll, eftersom tidningarna då måste föra in Halkvakt i sina samtyckesrutor.
 
+**Steg 1 i drift 18/11 kväll** (Bengt: *"Slå ihop, ladda ned, Axel är kontakt utåt"* och *"Ja o slå ihop"*).
+- **Ihopslaget och migrerat:** halkvakt-karta PR 28 (f4722790, sajten byggd 20.55 UTC) och PR 29 (b8394bc8, 21.16 UTC), Halkvakt PR #1673 (b00759b2) och migrationen 118 med DB-knappen (44399484171).
+- **Läst live på halkvakt.se:**
+  - `ruta.html` och NWT:s rutsida laddar inte räknarskriptet, och `assets/ruta-besok.js` ger 404 (fråga 14).
+  - `assets/besok.js` saknar `localStorage` och markeringen (fråga 16).
+  - `statistik.html` saknar listan över de flitigaste besökarna (fråga 18).
+  - Livekartan laddar MapLibre GL JS 4.7.1 från `assets/maplibre-gl-4.7.1/`, med samma sha256 som filerna från unpkg.com och
+    cdn.jsdelivr.net (js be9633c4…, css 576b085f…), och ingenting från unpkg.com (fråga 21).
+- **Migrationens bevisrader:**
+  - väntelistan har 0 rader, och anon får inte längre lägga till rader (ingen policy kvar) (fråga 19);
+  - `besok_stat` saknar listan *tyngsta* och har kvar antalen.
+- **Fråga 2:** Axel är kontakt utåt i integritetsfrågor (Bengt: *"Axel är kontakt utåt"*).
+- **Kvar:**
+  - Kartbilderna kommer fortfarande från tiles.openfreemap.org och ska nämnas på integritetssidan (steg 2).
+  - Statistiksidans avsnitt om rutorna får inga nya rader.
+  - Bengts och Axels egna besök räknas nu med.
+
 **Stomdokument:** APP 10 — integritetssidan och dataskyddets steg, SYS 1 — vem som ger ut Halkvakt och ansvarar för uppgifterna, BED §4.2

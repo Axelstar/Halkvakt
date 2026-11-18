@@ -3253,3 +3253,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - **Beslutat:** Lagerlöf Labs HB (org.nr 969805-2694) ger ut Halkvakt och är personuppgiftsansvarigt; ja på alla 23 frågorna.
   - **Byggt:** rutans räknare bort, ingen läsning i besökarnas webbläsare, listan över flitigaste besökare bort (halkvakt-karta PR 28); `sql/118` stänger och tömmer väntelistan.
   - **Inte gjort:** sammanslagningen, migrationen 118, kartbiblioteket (nedladdningen väntar på Bengts ja), steg 2–5.
+- 18/11 kväll (Claude; Bengt: *"Slå ihop, ladda ned, Axel är kontakt utåt"* och *"Ja o slå ihop"*): **Dataskyddet steg 1 i drift** (DECISIONS #900, tillägget; kort #670).
+  - halkvakt-karta PR 28 (f4722790, sajten byggd 20.55 UTC) och PR 29 (b8394bc8, 21.16 UTC), Halkvakt PR #1673 (b00759b2) och migrationen 118 med DB-knappen (44399484171).
+  - Läst live: rutan och sajten utan räknare och markering, statistiken utan listan, kartbiblioteket på egen server; väntelistan 0 rader och stängd.
+  - **Inte gjort:** steg 2–5; kartbilderna från tiles.openfreemap.org nämns på integritetssidan i steg 2.
