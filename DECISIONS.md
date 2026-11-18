@@ -17595,6 +17595,16 @@ V1, och svaret på frågan i bedömningen §4.2 om rutterna före fristen `norr-
   - Hela sviten: 469 godkända, 0 fel, 77 överhoppade.
 - **Kvar:** sammanslagningen och deployen på Bengts ord. Därefter ett varv med alla tre rutter, och varje rutt mot motorn längs vägen.
 
+**Skuggans rutter klara 18/11** (kort #667 stängt; Bengt: *"Slå ihop och deploya"*). Rättelsen (PR #1671, 84c29e54) deployades 18.19 UTC.
+Varvet 18.32 skrev alla tre rutterna. Varje rutt gav samma antal larm och halkvarningar som motorn körd längs vägen mot samma lägesfil
+(18.30.20) och som favoritprovets bil:
+- E18 Örebro→Stockholm: 21 larm, varav 13 halka; längs strecket 7 och 3.
+- E4 Södertälje→Uppsala: 13 larm, varav 9 halka; längs strecket 6 och 5.
+- Rv70 Enköping→Mora: 41 larm, varav 12 halka; längs strecket 11 och 7.
+
+Från bytestiden 17.11.52 UTC är skuggans tal per rutt inte jämförbara med tiden före. Fristen `norr-62` (3/12) har vägrutterna för
+tiden efter deployen.
+
 **Stomdokument:** APP 9 — rutan till tidningarna får ny halkrisk och vinterväglag, APP 3 — röstens två meningar och takter som byggs efter uppspelningen
 
 ## #898 (18/11 2026) MET Norway och Statens vegvesen i källraderna (kort #648)
