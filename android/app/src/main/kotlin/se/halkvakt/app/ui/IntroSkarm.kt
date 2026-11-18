@@ -122,7 +122,8 @@ fun IntroScreen(activity: MainActivity, startSteg: Int = 0, onKlar: () -> Unit) 
                         "I bilens högtalare om telefonen är kopplad till bilen, annars i telefonens.", divider = false)
                 }
                 Etikett("Bra att veta", top = 20.dp, bottom = 6.dp)
-                Brodtext("Halkvakt är ett stöd, inte en garanti. Den varnar inte överallt och kan ha fel. Kör alltid efter väglaget.",
+                // Ansvaret (kort #648, DECISIONS #899): var Halkvakt varnar och att tyst inte är fri väg.
+                Brodtext("Halkvakt är ett stöd, inte en garanti. Den varnar för halka främst på de större vägarna där Trafikverket rapporterar väglaget, och är ofta tyst på mindre vägar och gator. Att den är tyst betyder inte att vägen är fri från halka. Kör alltid efter väglaget.",
                     IntroText2, Modifier.padding(horizontal = 4.dp))
             }
 

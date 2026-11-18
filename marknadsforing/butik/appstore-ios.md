@@ -18,9 +18,9 @@ Rösten som varnar på vägen
 Halka, olyckor, vilt, frysrisk och fartkameror — uppläst i bilen innan du är där. Trafikverkets data, din telefon. Din position lämnar inte telefonen av sig själv.
 
 ## Beskrivning (4 000 tecken)
-Halkvakt är passageraren som läst allt Trafikverket vet om vägen framför dig — och säger till, med rösten, exakt när det behövs.
+Halkvakt är passageraren som läser Trafikverkets data om vägen framför dig — och säger till med rösten innan du är där.
 
-Starta vakten, lås skärmen och kör. När något väntar på din väg hör du det i bilens högtalare: rapporterad halka, en olycka längre fram, djur på vägen, en vägväderstation som mäter frysrisk, eller en fartkamera. Inga knappar under körning. Tystnad betyder att vägen är lugn.
+Starta vakten, lås skärmen och kör. När något väntar på din väg hör du det i bilens högtalare: rapporterad halka, en olycka längre fram, djur på vägen, en vägväderstation som mäter frysrisk, eller en fartkamera. Inga knappar under körning. Halkvakt talar bara när den har något att säga. Att den är tyst betyder inte att vägen är fri från halka.
 
 SÅ FUNGERAR DET
 • Bygger på Trafikverkets öppna data om väglag, olyckor, djur, vägväder och fartkameror — uppdaterat dygnet runt.
@@ -32,12 +32,12 @@ SÅ FUNGERAR DET
 DIN INTEGRITET, PÅ RIKTIGT
 Din position lämnar inte telefonen av sig själv. All matchning mot vägdata sker lokalt i appen. Inga konton, ingen inloggning, inga annonser. Sparar du resor som favoriter stannar de i telefonen och följer inte med i säkerhetskopian. Läget längs dem räknas i telefonen: appen hämtar samma fil som alla andra, utan att fråga om din väg.
 
-Ingenting skickas från appen. Betatestet, där testare efter resan kan svara om varningarna stämde, finns bara i testversionen i TestFlight och inte i App Store-versionen.
+Appen räknar anonymt hur många som går igenom introduktionen, vilka behörigheter som väljs, hur ofta och ungefär hur länge vakten är på, vilka varningar som sägs, vilka inställningar som ändras och vad som går fel. Ett ord per händelse, med appens version. Aldrig var du är, hur långt du kör eller vem du är. Betatestet, där testare efter resan kan svara om varningarna stämde, finns bara i testversionen i TestFlight och inte i App Store-versionen.
 
 GRATIS, UTAN FÖRBEHÅLL
 Halkvakt är gratis och byggd på öppna svenska data. Vägen är redan betald med dina skattepengar — vi ser bara till att den får tala.
 
-Halkvakt varnar vid Trafikverkets mätstationer och rapporterade väglag — mellan stationerna är vägen oövervakad. Datakällor: Trafikverket (CC0), SMHI, MET Norway (CC BY 4.0; prognoserna räknas ur deras data), Statens vegvesen (NLOD), Fintraffic (CC BY 4.0), broar © OpenStreetMap-bidragsgivare (ODbL). Halkvakt är fristående och har ingen koppling till myndigheterna.
+Halkvakt varnar för halka på de omkring 800 vägsträckor där Trafikverket rapporterar väglaget — europavägar, riksvägar och större länsvägar — och för isrisk vid omkring 800 vägväderstationer. På de flesta mindre vägar och gator varnar den inte för halka. Halkvakt är ett stöd, inte en garanti. Kör alltid efter väglaget. Datakällor: Trafikverket (CC0), SMHI, MET Norway (CC BY 4.0; prognoserna räknas ur deras data), Statens vegvesen (NLOD), Fintraffic (CC BY 4.0), broar © OpenStreetMap-bidragsgivare (ODbL). Halkvakt är fristående och har ingen koppling till myndigheterna.
 
 ## Nyckelord (100 tecken, kommaseparerade)
 halka,halkvarning,väglag,vinterväg,fartkamera,viltvarning,olycka,trafikverket,bilkörning,röst

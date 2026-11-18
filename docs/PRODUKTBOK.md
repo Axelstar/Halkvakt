@@ -113,8 +113,10 @@ sparades inte, eftersom Spara resor var av. Nästa gång du kör frågar appen e
 döljer raden i minst en vecka. *Skärmbilderna nedan är från 18/10 och byts när 0.4.0 fotograferas.*
 
 **02 På vakt.** En panel med *● PÅ VAKT* i grönt, minuter och kilometer i stort, och tre räknare (varningar, halka,
-vilt). Under den en streckad ruta: *"Tyst så länge — Inget på din väg än. Du hör det direkt när något dyker upp."*,
-eller *Senast sagt · HH:MM* med repliken när rösten har talat. Sedan *PÅ DIN VÄG* med de tre närmaste farorna (ikon,
+vilt). Under den en streckad ruta: *"Tyst så länge — Inget rapporterat på din väg. Tyst betyder inte att vägen är fri från
+halka."*, eller *Senast sagt · HH:MM* med repliken när rösten har talat. När väglaget är för gammalt (halkvarningarna är då
+avstängda) står i stället *"Väglaget är gammalt — Väglaget är inte uppdaterat. Halkvakt varnar inte för halka just nu."*
+(18/11, DECISIONS #899; förut försvann rutan utan ett ord). Sedan *PÅ DIN VÄG* med de tre närmaste farorna (ikon,
 avstånd, fara, väg) och vägdatans klockslag till höger om rubriken. Längst ner *APPEN MISSADE NÅGOT* (betatestare) och
 den neutrala knappen *Avsluta vakten*. Håll fingret på *PÅ VAKT* en halv sekund så visas kort B, halkkortet, med
 motorns riktiga replik — så att granskaren ser ett varningskort utan att köra.
@@ -206,8 +208,12 @@ och *fartkamera* (en låda på stolpe med blixtlinjer). Svarta på kortet, ljusa
   (18/10; *"ingen spårning"* ströks, för en sparad resa är ett spår, även om det bara finns hos föraren, #616),
   raden till Betatest och Integritetspolicyn.
 - *Visa introduktionen igen* (iOS).
-- *Om Halkvakt* — Livekartan, Om appen & vanliga frågor, Press & material, ärlighetsraden och attributionen
-  (oförändrade), och versionen.
+- *Om Halkvakt* — Livekartan, Om appen & vanliga frågor, *Ansvar och källor* (halkvakt.se/ansvar.html) och Press & material;
+  sedan texten om var Halkvakt varnar och ansvaret (18/11, DECISIONS #899): omkring 800 vägsträckor där Trafikverket
+  rapporterar väglaget, prognoserna som betavarningar, isrisk vid omkring 800 stationer, fler vägar runt Stockholm, Göteborg
+  och Malmö och gatorna i Stockholms stad, att de flesta mindre vägar, kommunala gator och enskilda vägar saknas, att is utan
+  regn eller snö bara varnas där den rapporterats eller mäts, och att tyst inte betyder säker väg; därefter källraden
+  (#898) och versionen. Raden *mellan stationerna är vägen oövervakad* är borta.
 
 Under panelerna: *LÖFTET — Din position lämnar inte telefonen av sig själv.*
 
@@ -236,7 +242,8 @@ Application Support, undantagna från iCloud-kopian; på Android i `noBackupFile
 (`res/xml/data_extraction_rules.xml`) stänger ute dem när appen flyttas till en ny telefon. Ingen kod som når nätet rör dem, och ingen karta ritas bakom vägen (ruttspärren i ci,
 `scripts/rutterspar.ts`).
 
-**Läget och rapporten (steg 3b på iPhone, 18/10; DECISIONS #636, #637).** Under namnet på varje rad står resans läge (FAVORITER §2): **Nytt** med ett gult märke — *2 NYA* — och det viktigaste av det nya, till exempel *Olycka på E4*; **Inget nytt** med det största som pågår — *Inget nytt · Halt väglag på E4*; eller **Lugnt** — *Lugnt · inget rapporterat längs vägen just nu*. Fartkamerorna och restidssträckorna i normal trafik räknas inte: de är inga händelser (en restid med fördröjning är en kö och räknas). Läget räknas om när fliken visas och när föraren drar nedåt. Ett tryck på raden öppnar **rapporten**: tillbakalänken *← FAVORITER*, resans namn och valet **Dit / Hem** — samma sparade väg åt två håll, där *Hem* är den vända, så att farorna kommer i körordning och köerna och restiderna gäller förarens håll. Sedan *JUST NU · KOLLAT 07:05* med *Läget från 07:04*, *Rapporten från 06:56* och *"Läget kan ändras under resan, och då säger rösten till."* — läget är lägesfilens tid (väglag, frysrisk och *Halkvakt tror*), rapporten rapportfilens (olyckor, vägarbeten, hinder, köer, restider och färjor), som skrivs var tionde minut (#686, B7-05); *NYTT SEDAN 16:20* (i gult, *i går 16:20* dagen efter) med det som tillkommit sedan rapporten senast öppnades; *LÄNGS VÄGEN JUST NU* med en rad per sak i viktordning, där fartkamerorna läggs samman per väg, restiderna i normal trafik till en rad och vägarbeten, hastigheter och omledningar per väg från tre; raden om det tomma — *"Inget rapporterat: vilt, färjor och SMHI-varningar."* och *"Köer mäts inte längs den här vägen."* där ingen restidssträcka går; *PROGNOSEN · KOMMER SENARE* med *"Prognosen längs vägen visas här tidigast efter domen i mars."*; och sist *Starta vakten*. Trafikverkets *Vägen avstängd* heter *Avstängning* i rapporten, med vägen när den finns (*Avstängning på E45*), och för vägarbeten, olyckor och hinder står Trafikverkets påverkan i texten — *"Drift- och underhållsarbete. Tunneln avstängd under arbetet. · ingen påverkan enligt Trafikverket · till 19 oktober"* (DECISIONS #641). Inga avstånd på raderna. Är lägesfilen 45 minuter eller äldre visas inte väglag och frysrisk, och är rapportfilen två timmar eller äldre visas inte olyckor och vilt — samma gränser som rösten — och rapporten säger det i gult. Med Betatest av, och alltid i App Store-versionen från (33), räknas frysrisken efter regn (S3) inte fram i rapporten, precis som rösten tiger om den (#679, #681).
+**Läget och rapporten (steg 3b på iPhone, 18/10; DECISIONS #636, #637).** Under namnet på varje rad står resans läge (FAVORITER §2): **Nytt** med ett gult märke — *2 NYA* — och det viktigaste av det nya, till exempel *Olycka på E4*; **Inget nytt** med det största som pågår — *Inget nytt · Halt väglag på E4*; eller **Lugnt** — *Inget rapporterat längs vägen just nu* (ordet *Lugnt* syns inte sedan 18/11, DECISIONS #899; läget heter så i
+koden och i FAVORITER §2). Fartkamerorna och restidssträckorna i normal trafik räknas inte: de är inga händelser (en restid med fördröjning är en kö och räknas). Läget räknas om när fliken visas och när föraren drar nedåt. Ett tryck på raden öppnar **rapporten**: tillbakalänken *← FAVORITER*, resans namn och valet **Dit / Hem** — samma sparade väg åt två håll, där *Hem* är den vända, så att farorna kommer i körordning och köerna och restiderna gäller förarens håll. Sedan *JUST NU · KOLLAT 07:05* med *Läget från 07:04*, *Rapporten från 06:56* och *"Läget kan ändras under resan, och då säger rösten till."* — läget är lägesfilens tid (väglag, frysrisk och *Halkvakt tror*), rapporten rapportfilens (olyckor, vägarbeten, hinder, köer, restider och färjor), som skrivs var tionde minut (#686, B7-05); *NYTT SEDAN 16:20* (i gult, *i går 16:20* dagen efter) med det som tillkommit sedan rapporten senast öppnades; *LÄNGS VÄGEN JUST NU* med en rad per sak i viktordning, där fartkamerorna läggs samman per väg, restiderna i normal trafik till en rad och vägarbeten, hastigheter och omledningar per väg från tre; raden om det tomma — *"Inget rapporterat: vilt, färjor och SMHI-varningar."* och *"Köer mäts inte längs den här vägen."* där ingen restidssträcka går; *PROGNOSEN · KOMMER SENARE* med *"Prognosen längs vägen visas här tidigast efter domen i mars."*; och sist *Starta vakten*. Trafikverkets *Vägen avstängd* heter *Avstängning* i rapporten, med vägen när den finns (*Avstängning på E45*), och för vägarbeten, olyckor och hinder står Trafikverkets påverkan i texten — *"Drift- och underhållsarbete. Tunneln avstängd under arbetet. · ingen påverkan enligt Trafikverket · till 19 oktober"* (DECISIONS #641). Inga avstånd på raderna. Är lägesfilen 45 minuter eller äldre visas inte väglag och frysrisk, och är rapportfilen två timmar eller äldre visas inte olyckor och vilt — samma gränser som rösten — och rapporten säger det i gult. Med Betatest av, och alltid i App Store-versionen från (33), räknas frysrisken efter regn (S3) inte fram i rapporten, precis som rösten tiger om den (#679, #681).
 
 Appen hämtar rapportfilen ur den publika hinken `favoriter` (samma fil för alla, utan fråga och utan plats; manifestets sha256 prövas, och en del som inte stämmer förkastas) och räknar rapporten i telefonen med motorns `ResansRapport`. Förra kollen per resa — när rapporten senast hämtades utan fel och vilka faror den visade — ligger i `kollen.json` bredvid rutterna, utanför säkerhetskopian, eftersom farornas id pekar på platser längs vägen. **Vägen hem känns igen:** ligger en ny resa längs en sparad, åt något håll (minst 80 % av varje inom 100 m av den andra), frågar appen inte *Spara resan?* en gång till. Misslyckas hämtningen står förra kollen kvar, så att *Nytt sedan* aldrig räknas från en kontroll som inte blev av (B7-24). **Android (steg 3c, 18/10)** gör samma sak med samma ord: rapporten öppnas en nivå ned, som inställningarnas undersidor, och tillbakaknappen leder till listan. I stället för att dra nedåt finns *KOLLA IGEN* bredvid *Dit / Hem* — appens Compose-version saknar dra-för-att-uppdatera — och läget räknas om varje gång fliken eller rapporten visas. Förra kollen ligger i `noBackupFilesDir` med rutterna.
 
@@ -272,7 +279,8 @@ Inställningar, och introduktionen kan visas igen därifrån.
    Under *SÅ FUNGERAR DET*: *Du kör som vanligt* (*Med vilken kartapp du vill, eller ingen alls.*), *Halkvakt håller koll på
    vägen framför dig* (*Halka, fartkameror, olyckor, vilt och frysrisk.*) och *Rösten säger till innan du är framme* (*I bilens
    högtalare om telefonen är kopplad till bilen, annars i telefonens.*). Under *BRA ATT VETA*: *"Halkvakt är ett stöd, inte en
-   garanti. Den varnar inte överallt och kan ha fel. Kör alltid efter väglaget."* Knappen *Visa mig*, länken *HOPPA ÖVER* (som
+   garanti. Den varnar för halka främst på de större vägarna där Trafikverket rapporterar väglaget, och är ofta tyst på mindre
+   vägar och gator. Att den är tyst betyder inte att vägen är fri från halka. Kör alltid efter väglaget."* (18/11, DECISIONS #899) Knappen *Visa mig*, länken *HOPPA ÖVER* (som
    går till sista steget). Först hur det fungerar, sedan vad man gör: platsen står i steget där den slås på (13/11).
 2. **Varningarna** (steg 1 av 4) — *"Halka, fartkameror och mer"*, *"Fem slags varningar, alla påslagna från början."* Fem rader
    med ikon: *Halka* (*Rapporterade hala vägsträckor*), *Fartkameror* (*Fasta kameror på din väg, 500 meter innan och med
@@ -369,7 +377,7 @@ påtvingad, men kan visa den från Inställningar (*Visa introduktionen igen*, s
      själv"*, *"Halkvakt varnar precis som vanligt. Du öppnar bara appen och trycker Starta vakten före varje resa."* Knappen
      *Fortsätt*, länken *SLÅ PÅ SJÄLVSTART* (tillbaka till frågan).
 6. **Notiserna** (steg 5 av 5) — som på iPhone, med en rad till under *HALKVAKT SKICKAR*: *Notisen Halkvakt vaktar* (*Visar
-   att vakten är på.*). Före Android 13 frågar systemet inte, och steget visar *Notiser PÅ*. Avslagna: *"Notiserna är
+   att vakten är på.*; notisen själv säger *Halkvakt vaktar. Tyst betyder inte att vägen är fri från halka.*, DECISIONS #899). Före Android 13 frågar systemet inte, och steget visar *Notiser PÅ*. Avslagna: *"Notiserna är
    avslagna. Rösten varnar ändå, men varken bannern eller notisen Halkvakt vaktar syns."*, länken *SLÅ PÅ I INSTÄLLNINGAR*.
 7. **Slutskärmen** — *"Vakten är redo"* (självstart på), *"Redo när du startar"* (länken *SLÅ PÅ SJÄLVSTART*) eller *"Nästan
    redo"* (platsen saknas eller är ungefärlig; knappen *Slå på platsen*, länken *GÖR DET SENARE*), med samma rader som på
@@ -642,8 +650,8 @@ i stället för att det *fungerade*. Instrumenten är byggda. Vintern är facit.
 
 ## Vad appen inte gör
 
-Ingen prognos (varnar på uppmätt läge, inte gissningar), tyst mellan
-mätstationerna, ingen ködetektion ännu. Skickar ingenting om
+Varnar inte för halka på de flesta mindre vägar, kommunala gator och enskilda vägar, och is utan regn eller snö bara där
+Trafikverket rapporterat den eller en station mäter den (DECISIONS #899); ingen ködetektion ännu. Skickar ingenting om
 dig — med ett enda undantag som du själv slår på: betatestets facitsvar (se Om) — och, sedan 0.3.15 (37), räknaren (DECISIONS #772):
 ett ord per händelse när introduktionen gått igenom, när platsbehörigheten blivit *Alltid*, *När appen används* eller nekad, när
 vakten startar (för hand eller av sig själv) och vid enhetens första varning. Från nästa version (DECISIONS #787) sex områden: vägen

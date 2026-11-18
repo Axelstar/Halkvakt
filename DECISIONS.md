@@ -17513,3 +17513,60 @@ nästa version i båda butikerna. Butikstexterna klistras in av Axel: Play när 
 bild av Om till produktboken.
 
 **Stomdokument:** APP 10 — källraden i appen och butikerna, SYS 1 — sajtens sidfot och livekartan
+
+## #899 (18/11 2026) Ansvarstexten: vad Halkvakt lovar om halka, i appen, i butikerna och på sajten (kort #648)
+
+**Beslut.** Bengt 18/11: *"Ja på alla"*, på femton frågor i förslaget till ansvarstext, som bygger på genomgången av vad Halkvakt
+lovar mot vad systemet levererar (18/11). Axels ord väntar: kortets nyckel är Bengts och Axels ord på texten.
+1. **Butikerna:** *Tystnad betyder att vägen är lugn* blir *Halkvakt talar bara när den har något att säga. Att den är tyst betyder
+   inte att vägen är fri från halka.* (samma meningar i Play), och *exakt när det behövs* blir *innan du är där*.
+2. **Täckningen står som vilka vägar, aldrig som procent.** Om i båda apparna: omkring 800 sträckor där Trafikverket rapporterar
+   väglaget (europavägar, riksvägar och större länsvägar, omkring 24 000 km), prognoserna som betavarningar, isrisk vid omkring 800
+   stationer, fler statliga vägar runt Stockholm, Göteborg och Malmö och gatorna i Stockholms stad, att de flesta mindre vägar,
+   kommunala gator och enskilda vägar saknas, och att is utan regn eller snö bara varnas där den rapporterats eller mäts. En kort
+   form i butikerna, och samma text på ansvarssidan.
+3. **Introduktionen** i båda apparna: *Halkvakt är ett stöd, inte en garanti. Den varnar för halka främst på de större vägarna där
+   Trafikverket rapporterar väglaget, och är ofta tyst på mindre vägar och gator. Att den är tyst betyder inte att vägen är fri från
+   halka. Kör alltid efter väglaget.*
+4. **Körskärmen:** *Inget rapporterat på din väg. Tyst betyder inte att vägen är fri från halka.* När väglaget är för gammalt, och
+   halkvarningarna därför avstängda, står en egen ruta: *Väglaget är inte uppdaterat. Halkvakt varnar inte för halka just nu.* Förut
+   försvann rutan utan ett ord.
+5. **Androids notis:** *Halkvakt vaktar. Tyst betyder inte att vägen är fri från halka.*
+6. **Ordet *Lugnt*** syns inte längre i Favoriter och CarPlay; läget heter så i koden och i FAVORITER §2.
+7. **Ansvarstexten** från utkastet 10/11 står på ansvarssidan halkvakt.se/ansvar.html: *Halkvakt är ett stöd, inte en garanti.
+   Varningarna bygger på Trafikverkets mätningar och på Halkvaktens egna prognoser ur väderdata, som är betavarningar. De kan vara
+   fel, komma sent eller saknas, och att appen är tyst betyder inte att vägen är säker. Du ansvarar alltid för att köra efter väglag
+   och sikt. Rör inte telefonen under körning — Halkvakt talar av sig själv.* Sidfoten på sajtens sidor, tidningssidorna och de
+   genererade läns-, väg- och ortssidorna börjar med *Halkvakt är ett stöd, inte en garanti.* och länkar dit, och Om i appen länkar dit.
+8. **Ingen friskrivning tills en jurist har läst:** meningen *I den utsträckning lagen tillåter ansvarar Halkvakt inte för skada …* står
+   inte med. Ingen hårdare friskrivning (*på egen risk*, *inget ansvar*).
+9. **Sajten, tidningssidorna, sociala inlägg och annonsernas reservtext:** *innan det blir halt* blir *innan du är där*, *när det är halt
+   där du kör* blir *när halka är rapporterad på vägen framför dig*, och sidorna som säger att kommunala gator saknar prognoser rättas
+   för Stockholms stad.
+10. **App Store:** *Ingenting skickas från appen* byts mot appens egen mening om den anonyma räknaren; den har inte stämt sedan 1/11 (#772).
+11. **Apptexterna** byggs i samma version som dataskyddets nya ord om platsen, i båda apparna.
+12. **En jurist** läser texterna före 1/1 2027, i samma tillfälle som dataskyddets frågor. Vem och när är Bengts val.
+
+**Underlag.** Prop. 2026/27:12 *En ny produktansvarslag* (15/10 2026; riksdagens öppna data, HE0312, och betänkandet 2026/27:CU4 med
+beslutet planerat 25/11, lästa 18/11): lagen föreslås gälla från 1/1 2027, *"något senare"* än i lagrådsremissen, som sa 9/12, och
+1992 års lag gäller för produkter som släppts ut före dess. Programvara är en produkt, bristen bedöms efter den säkerhet man kan förvänta
+sig med hänsyn till hur produkten presenteras, och ansvaret går inte att avtala bort. Undantaget för fri och öppen programvara gäller bara
+programvara som varken utvecklats eller tillhandahålls som ett led i näringsverksamhet. Täckningen mätt 18/11 med DB-knappens läsläge
+(44241766319): 818 sträckor, 23 681 km (6 757 europavägar, 8 828 riksvägar, 8 097 länsvägar), 830 stationer.
+
+**Alternativ.** En hårdare friskrivning; täckningen som procentsats (omkring 24 % av de statliga vägarna, 4 % av alla); vänta med
+bygget tills juristen har läst.
+
+**Varför.** En friskrivning skyddar inte mot produktansvaret, men presentationen avgör vad föraren kan förvänta sig. Skyddet är att säga
+var appen varnar, och att tystnad inte betyder säker väg, där föraren läser. En procentsats beror på vad man räknar mot; vilka vägar är
+sant och begripligt.
+
+**Numret.** Utkastet 10/11 hette #830, men det kom aldrig till main (PR #1505 stängd utan sammanslagning 16/11), och main hoppar från #829
+till #831. Introduktionens kommentar hänvisar nu hit.
+
+**Kvar.** Axels ord. Sammanslagningen på Bengts ord: halkvakt-karta först, eftersom ansvarssidan inte finns förrän dess, sedan Halkvakt och
+deployen av `publicera`. android.yml körd på grenen före sammanslagningen. Nästa appversion i båda butikerna. Butikstexterna klistras in
+av Axel: Play när som helst, App Store med nästa version. Fotostudions bilder till produktboken. Juristen före 1/1 2027. Om-texten och
+butikstexterna ändras igen när småvägsrösten slås på (C5).
+
+**Stomdokument:** APP 4 — introduktionen och körskärmen, APP 10 — Om och butikerna, SYS 1 — sajtens sidfot och ansvarssidan, FAV 2 — läget Lugnt, BED §4.2

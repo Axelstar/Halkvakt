@@ -4,13 +4,14 @@
 **Kort beskrivning (80):** Rösten som varnar för halka, olyckor och vilt — innan du är där.
 
 ## Fullständig beskrivning
-Halkvakt är passageraren som läst allt Trafikverket vet om vägen framför dig —
-och säger till, med rösten, exakt när det behövs.
+Halkvakt är passageraren som läser Trafikverkets data om vägen framför dig —
+och säger till med rösten innan du är där.
 
 Starta vakten, lägg telefonen i fickan och kör. När något väntar på din väg
 hör du det i bilens högtalare: rapporterad halka, en olycka längre fram, en
 vägsträcka med färska viltolyckor, en vägväderstation som mäter frysrisk,
-eller en fartkamera.
+eller en fartkamera. Halkvakt talar bara när den har
+något att säga. Att den är tyst betyder inte att vägen är fri från halka.
 
 **Så fungerar det**
 • Bygger på Trafikverkets öppna data om väglag, olyckor, djur, vägväder och
@@ -34,8 +35,11 @@ versionen i Google Play.
 Halkvakt är gratis och byggd på öppna svenska data. Vägen är redan betald med
 dina skattepengar — vi ser bara till att den får tala.
 
-Halkvakt varnar vid Trafikverkets mätstationer och rapporterade väglag — mellan
-stationerna är vägen oövervakad. Datakällor: Trafikverket (CC0), SMHI,
+Halkvakt varnar för halka på de omkring 800 vägsträckor där Trafikverket
+rapporterar väglaget — europavägar, riksvägar och större länsvägar — och för
+isrisk vid omkring 800 vägväderstationer. På de flesta mindre vägar och gator
+varnar den inte för halka. Halkvakt är ett stöd, inte en garanti. Kör alltid
+efter väglaget. Datakällor: Trafikverket (CC0), SMHI,
 MET Norway (CC BY 4.0; prognoserna räknas ur deras data), Statens vegvesen (NLOD),
 Fintraffic (CC BY 4.0), broar © OpenStreetMap-bidragsgivare (ODbL).
 Halkvakt är fristående och har
@@ -50,6 +54,17 @@ Texten ovan är den gamla. Det som ligger ute sedan 14/11 är:
 **Fullständig beskrivning:** som ovan, med fyra ändringar: introduktionen och självstarten som eget val i *Så fungerar det*,
 favoriterna, stycket om den anonyma räknaren i stället för *Ingenting skickas från appen* (osant sedan 1/11, DECISIONS #772),
 och *Halkvakt är ett stöd, inte en garanti … Kör alltid efter väglaget* i sista stycket. Skärmbilderna: `play/01.png`–`08.png`.
+
+## Att klistra in i Play 18/11 (DECISIONS #899, kort #648)
+Ansvarstexten, Bengts ja 18/11. Fyra ändringar i den fullständiga beskrivningen som ligger ute; den korta beskrivningen stämmer redan.
+1. Första meningen: *Halkvakt är passageraren som läser Trafikverkets data om vägen framför dig — och säger till med rösten innan
+   du är där.*
+2. Andra stycket slutar: *… eller en fartkamera. Halkvakt talar bara när den har något att säga. Att den är tyst betyder inte att
+   vägen är fri från halka.*
+3. Sista stycket börjar: *Halkvakt varnar för halka på de omkring 800 vägsträckor där Trafikverket rapporterar väglaget —
+   europavägar, riksvägar och större länsvägar — och för isrisk vid omkring 800 vägväderstationer. På de flesta mindre vägar och
+   gator varnar den inte för halka. Halkvakt är ett stöd, inte en garanti. Kör alltid efter väglaget.* Sedan datakällorna.
+4. Meningen *mellan stationerna är vägen oövervakad* tas bort om den står kvar.
 
 ## Anteckningar
 - ⚠️ **RÄTTAT 20/9 (kort #214):** integritetsstycket sade *"Vi samlar in: ingenting"*, vilket varit osant

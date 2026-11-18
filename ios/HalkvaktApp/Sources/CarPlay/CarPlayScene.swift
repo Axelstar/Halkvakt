@@ -81,7 +81,7 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
         switch l {
         case .nytt(let antal, let v): return "\(antal == 1 ? "1 ny" : "\(antal) nya") · \(ResansRapport.titel(v.rubrik, vag: v.vag))"
         case .ingetNytt(let v): return "Inget nytt · \(ResansRapport.titel(v.rubrik, vag: v.vag))"
-        case .lugnt: return "Lugnt · inget rapporterat längs vägen"
+        case .lugnt: return "Inget rapporterat längs vägen"
         case nil: return "Läget hämtas"
         }
     }

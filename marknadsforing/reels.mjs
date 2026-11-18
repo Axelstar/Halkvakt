@@ -72,8 +72,8 @@ const LANK = {
   instagram: "Läget i ditt län uppdateras var 30:e minut: halkvakt.se/lan (länken finns i vår profil).",
 };
 const APP = {
-  facebook: "Halkvakt säger till med rösten innan det blir halt. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784?ct=reels",
-  instagram: "Halkvakt säger till med rösten innan det blir halt. Gratis för iPhone, länken finns i vår profil.",
+  facebook: "Halkvakt säger till med rösten innan du är där. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784?ct=reels",
+  instagram: "Halkvakt säger till med rösten innan du är där. Gratis för iPhone, länken finns i vår profil.",
 };
 
 // Trafikverket's words, never stronger: "halka" only where they say it, otherwise "risk för halka".

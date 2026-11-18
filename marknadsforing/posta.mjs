@@ -96,8 +96,8 @@ const LANK = {
 };
 // Facebook får App Store-länken klickbar i varje inlägg; på Instagram ligger den först i profilen (DECISIONS #601).
 const APP = {
-  facebook: "Halkvakt säger till med rösten innan det blir halt. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784",
-  instagram: "Halkvakt säger till med rösten innan det blir halt. Gratis för iPhone, länken finns i vår profil.",
+  facebook: "Halkvakt säger till med rösten innan du är där. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784",
+  instagram: "Halkvakt säger till med rösten innan du är där. Gratis för iPhone, länken finns i vår profil.",
 };
 const lanTagg = l => "#" + l.kort.replace(/s? län$/, "").replace(/\s+/g, "");
 

@@ -132,8 +132,8 @@ struct KorlageView: View {
         }
     }
 
-    /// Raden under panelen: det senast sagda, annars "Tyst så länge". Inte på gammal data — då är halkvarningarna
-    /// avstängda, och appen får aldrig tala lugnt på gammal data.
+    /// Raden under panelen: det senast sagda, annars "Tyst så länge". På gammal data är halkvarningarna avstängda, och
+    /// appen får aldrig tala lugnt på gammal data: då säger raden att väglaget inte är uppdaterat (DECISIONS #899).
     @ViewBuilder private var tillstand: some View {
         if let said = guardM.lastSaid {
             VStack(alignment: .leading, spacing: 6) {
@@ -147,7 +147,15 @@ struct KorlageView: View {
         } else if !guardM.dataStale {
             VStack(alignment: .leading, spacing: 6) {
                 MonoLabel(text: "Tyst så länge")
-                Text("Inget på din väg än. Du hör det direkt när något dyker upp.").font(Typo.sans(15)).foregroundStyle(Brand.text2)
+                Text("Inget rapporterat på din väg. Tyst betyder inte att vägen är fri från halka.").font(Typo.sans(15)).foregroundStyle(Brand.text2)
+            }
+            .padding(.horizontal, 20).padding(.vertical, 16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .overlay(RoundedRectangle(cornerRadius: 18).strokeBorder(Brand.divider, style: StrokeStyle(lineWidth: 1, dash: [4, 4])))
+        } else {
+            VStack(alignment: .leading, spacing: 6) {
+                MonoLabel(text: "Väglaget är gammalt")
+                Text("Väglaget är inte uppdaterat. Halkvakt varnar inte för halka just nu.").font(Typo.sans(15)).foregroundStyle(Brand.text2)
             }
             .padding(.horizontal, 20).padding(.vertical, 16)
             .frame(maxWidth: .infinity, alignment: .leading)

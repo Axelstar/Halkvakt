@@ -450,7 +450,8 @@ class GuardService : Service() {
         private const val HEADS_UP_ID = 2
         private const val HEADS_UP_MS = 8_000L  // samma 8 s som helskärmskortet
         private const val FAVORIT_STILLA_MS = 10 * 60 * 1000L   // Favoriter 2a (#817), samma tio minuter som iOS
-        private const val IDLE_TEXT = "Halkvakt vaktar — inga varningar just nu"
+        // DECISIONS #899: tyst är inte fri väg — notisen får inte lugna föraren.
+        private const val IDLE_TEXT = "Halkvakt vaktar. Tyst betyder inte att vägen är fri från halka."
         /** Null = rösten fungerar. Annars raden som visas på Redo och under Rösten. */
         val voiceProblem = MutableStateFlow<String?>(null)
         /** UI observerar; autostart-limmet läser var-formen. Flow är sanningen. */

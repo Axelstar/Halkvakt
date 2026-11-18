@@ -163,7 +163,7 @@ export function annons(l, sl, generatedAt, datum, android = false) {
 
 export const RESERV = {
   data: { variant: "evergreen" },
-  text: "Halkvakt säger till med rösten när det är halt på vägen framför dig. Med Trafikverkets öppna data. Gratis för iPhone.",
+  text: "Halkvakt säger till med rösten när halka är rapporterad på vägen framför dig. Med Trafikverkets öppna data. Gratis för iPhone.",
   rubrik: "Halka framför dig",
 };
 export const RESERV_ANDROID = { data: { ...RESERV.data, store: "play" }, text: RESERV.text.replace("iPhone", "Android"), rubrik: RESERV.rubrik };

@@ -228,12 +228,17 @@ struct InstallningarView: View {
             RowPanel {
                 LankRad(titel: "Livekartan — läget just nu", url: "https://axelstar.github.io/halkvakt-karta/karta.html")
                 LankRad(titel: "Om appen & vanliga frågor", url: "https://axelstar.github.io/halkvakt-karta/om.html")
+                LankRad(titel: "Ansvar och källor", url: "https://axelstar.github.io/halkvakt-karta/ansvar.html")
                 LankRad(titel: "Press & material", url: "https://axelstar.github.io/halkvakt-karta/press.html", divider: false)
             }
             .padding(.top, 24)
-            Text("Varnar vid Trafikverkets mätstationer och rapporterade väglag — mellan stationerna är vägen oövervakad. Data: Trafikverket (CC0), SMHI, MET Norway (CC BY 4.0; prognoserna räknas ur deras data), Statens vegvesen (NLOD), Fintraffic (CC BY 4.0), broar © OpenStreetMap-bidragsgivare (ODbL). Halkvakt är fristående och har ingen koppling till myndigheterna.")
-                .font(Typo.sans(12)).lineSpacing(3).foregroundStyle(Brand.faint)
+            // Var Halkvakt varnar och ansvaret (kort #648, DECISIONS #899), sedan källraden (#898).
+            Text("Halkvakt varnar för halka på omkring 800 vägsträckor där Trafikverket rapporterar väglaget: europavägar, riksvägar och större länsvägar, sammanlagt omkring 24 000 km. Där varnar Halkvakt också när dess egna prognoser tror att det är halt; de är betavarningar. Isrisk varnas vid omkring 800 vägväderstationer. Runt Stockholm, Göteborg och Malmö varnar prognoserna också på fler statliga vägar, och i Stockholms stad på gatorna. På de flesta mindre vägar, kommunala gator och enskilda vägar varnar Halkvakt inte för halka. Is som bildas utan regn eller snö, till exempel en klar natt, varnas bara där Trafikverket har rapporterat den eller en station mäter den. Varningarna kan vara fel, komma sent eller saknas, och att appen är tyst betyder inte att vägen är säker. Du ansvarar alltid för att köra efter väglag och sikt.")
+                .font(Typo.sans(13)).lineSpacing(3).foregroundStyle(Brand.text2)
                 .padding(.top, 20).padding(.horizontal, 4)
+            Text("Data: Trafikverket (CC0), SMHI, MET Norway (CC BY 4.0; prognoserna räknas ur deras data), Statens vegvesen (NLOD), Fintraffic (CC BY 4.0), broar © OpenStreetMap-bidragsgivare (ODbL). Halkvakt är fristående och har ingen koppling till myndigheterna.")
+                .font(Typo.sans(12)).lineSpacing(3).foregroundStyle(Brand.faint)
+                .padding(.top, 12).padding(.horizontal, 4)
             MonoLabel(text: "Halkvakt \(Self.version) · beta", color: Brand.faint2).padding(.top, 16).padding(.horizontal, 4)
         }
     }
