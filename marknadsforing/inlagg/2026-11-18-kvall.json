@@ -1,0 +1,24 @@
+{
+  "typ": "svep",
+  "nyckel": "svep:kvall",
+  "etikett": "Halkläget kl. 16:30",
+  "rubrik": "Halt i dag",
+  "underrad": "Halka på 287 vägavsnitt i 15 län.",
+  "fler": 7,
+  "text": "Halkläget kl. 16:30, onsdag 18 november: halka på 287 vägavsnitt i 15 län. Svep för att se ditt län.\n\nNorrbotten: halka på 58 av 58 vägavsnitt, 56 stationer under noll, kallast −11,8 °C vid Merkenäs V.\nVästerbotten: halka på 44 av 44 vägavsnitt, 45 stationer under noll, kallast −5,0 °C vid Norrheden.\nStockholms län: halka på 38 av 44 vägavsnitt, 12 stationer under noll, kallast −1,4 °C vid Ekerö.\nVästernorrland: halka på 22 av 22 vägavsnitt, 39 stationer under noll, kallast −4,0 °C vid Lillkrog, 1 olycka.\nGävleborg: halka på 22 av 27 vägavsnitt, 27 stationer under noll, kallast −3,1 °C vid Kårböle 2.\nVästra Götaland: halka på 20 av 133 vägavsnitt, 26 stationer under noll, kallast −1,7 °C vid Svinesundsbron, 1 olycka.\nDalarna: halka på 20 av 38 vägavsnitt, 26 stationer under noll, kallast −6,1 °C vid Storbo/Idre.\nJämtland: halka på 15 av 17 vägavsnitt, 31 stationer under noll, kallast −7,6 °C vid Fjällnäs.\nHalka eller minusgrader även i 7 län till.\n\nLäget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan\nHalkvakt säger till med rösten innan du är där. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Stockholm #Västernorrland #Gävleborg #halkvakt",
+  "textIg": "Halkläget kl. 16:30, onsdag 18 november: halka på 287 vägavsnitt i 15 län. Svep för att se ditt län.\n\nNorrbotten: halka på 58 av 58 vägavsnitt, 56 stationer under noll, kallast −11,8 °C vid Merkenäs V.\nVästerbotten: halka på 44 av 44 vägavsnitt, 45 stationer under noll, kallast −5,0 °C vid Norrheden.\nStockholms län: halka på 38 av 44 vägavsnitt, 12 stationer under noll, kallast −1,4 °C vid Ekerö.\nVästernorrland: halka på 22 av 22 vägavsnitt, 39 stationer under noll, kallast −4,0 °C vid Lillkrog, 1 olycka.\nGävleborg: halka på 22 av 27 vägavsnitt, 27 stationer under noll, kallast −3,1 °C vid Kårböle 2.\nVästra Götaland: halka på 20 av 133 vägavsnitt, 26 stationer under noll, kallast −1,7 °C vid Svinesundsbron, 1 olycka.\nDalarna: halka på 20 av 38 vägavsnitt, 26 stationer under noll, kallast −6,1 °C vid Storbo/Idre.\nJämtland: halka på 15 av 17 vägavsnitt, 31 stationer under noll, kallast −7,6 °C vid Fjällnäs.\nHalka eller minusgrader även i 7 län till.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\nHalkvakt säger till med rösten innan du är där. Gratis för iPhone, länken finns i vår profil.\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Stockholm #Västernorrland #Gävleborg #halkvakt",
+  "pass": "kvall",
+  "antal": 10,
+  "datum": "2026-11-18",
+  "generated_at": "2026-11-18T15:30:09.721Z",
+  "lan": [
+    "norrbotten",
+    "vasterbotten",
+    "stockholm",
+    "vasternorrland",
+    "gavleborg",
+    "vastra-gotaland",
+    "dalarna",
+    "jamtland"
+  ]
+}
