@@ -17562,6 +17562,22 @@ V1, och svaret på frågan i bedömningen §4.2 om rutterna före fristen `norr-
 - **Kvar:** deployen av `skuggmotor` på Bengts ord. Därefter Verify: ett varv läst ur `shadow_log` mot favoritprovets synk mot samma lägesfil
   (DB-knappens läsläge).
 
+**R5 och R7 i drift 18/11** (Bengt 18/11: *"Slå ihop och deploya"*).
+- **Ihopslaget:** PR #1667 (226186a4), halkvakt-karta PR 27 (f1c22d89; sajten byggd 16.55.55 UTC) och PR #1668 (0d8a7b68).
+- **Deployen:** `publicera` deployad 16.56 UTC (körning 44352880743), ci grön på main (44352851571).
+- **Läst live på halkvakt.se:**
+  - **Rutan för Jämtland**, utan parameter: *Ny halkrisk* "På 2 vägavsnitt sedan kl. 08:04" i gult, och *Vinterväglag* "På 13 av 17 vägavsnitt,
+    de flesta sedan över en vecka".
+  - **Rutan för Värmland:** *Ny halkrisk* "Ingen det senaste dygnet" utan gult, och *Vinterväglag* "På 2 av 52 vägavsnitt". På fliken
+    Vägarna står E16 Torsby–Hejdröset med "Hal sedan 11 november" och "Trafikverket: Risk för halka."
+  - Inga skriptfel.
+  - **Norrbottens länssida kl. 18.00**, den första publiceringen efter deployen: *"Kl. 18:00 rapporterar Trafikverket ny halkrisk på 13 av
+    länets 58 vägavsnitt, som har blivit hala det senaste dygnet, och vinterväglag på 45, som har varit hala längre än så."*
+  - **Översikten** har kolumnerna *Ny halkrisk* och *Vinterväglag*.
+  - **Sidfoten** börjar med *Halkvakt är ett stöd, inte en garanti.*, alltså är ansvarstexten (#899) i drift på de genererade sidorna.
+- **Kortets Verify** står kvar på en sak: rutan för ett län i norr en dag utan ny halka. I dag har alla län i norr något nytt
+  (Norrbotten 13, Västerbotten 7, Västernorrland 6, Jämtland 2). R6 är Axels.
+
 **Stomdokument:** APP 9 — rutan till tidningarna får ny halkrisk och vinterväglag, APP 3 — röstens två meningar och takter som byggs efter uppspelningen
 
 ## #898 (18/11 2026) MET Norway och Statens vegvesen i källraderna (kort #648)
