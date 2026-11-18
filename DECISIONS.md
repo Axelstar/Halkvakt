@@ -17542,6 +17542,26 @@ halkvakt-karta PR 24, sammanslagen som 2897ffdc kl. 16.53 UTC) ritar de två rad
     och Jämtlands Tidnings sida. Inga skriptfel.
 - **Kvar:** sammanslagningen av båda PR:erna samma dag och deployen av `publicera`, båda på Bengts ord, och R6 (Axel).
 
+**Skuggans huvudrutter längs vägen byggda 18/11, fast rösten vilar** (Bengt 18/11: *"bygg skuggans rutter kort 667"*; kort #667, körlistan B13). Det är röstens
+V1, och svaret på frågan i bedömningen §4.2 om rutterna före fristen `norr-62`. Resten av rösten (V2–V6) vilar som förut.
+- **Ändringen** (`supabase/functions/skuggmotor/main.ts`, bunten skriven om): i huvudvarvet går spåret, rutfiltret, vägbanan och oljan
+  längs vägnätet (`RUTTER_VAG`, OSRM, samma linjer som kandidaten sedan #573) för de 20 svenska rutterna. Prognosen, holdouten och
+  efterhalkan stannar på de raka linjerna, eftersom grind S-B och V-B dömer på dem och facitradien läser dem (`lasRutter`). Kandidaten
+  räknas som förut. Grupp C, de andra länderna och försprånget, som är förregistrerat (#664), är oförändrade. `ROUTES` är orörd, så
+  ruttnamnen i `shadow_log` är desamma.
+- **Jämförbarheten:** från deployen räknar `shadow_log` larmen, de tystade larmen, vägbanan och oljan per rutt längs vägen, och skuggrapportens
+  takt per rutt är inte jämförbar med tiden före. Deployens klockslag är bytestiden och bokförs med deployen. Fristen `norr-62` får
+  vägrutterna bara för tiden efter deployen.
+- **Kostnaden:** spåret blir längre, för E4 Umeå→Luleå 2 384 punkter mot 1 962. Svarets `ms` läses efter deployen, eftersom CPU-taket har
+  nåtts förut (#650, kort #375).
+- **Provat:**
+  - `test/skuggrutter.test.ts`, tre prov: alla 20 rutter har sin väg i vägnätet. Med 20 påhittade halkavsnitt på vägen Umeå–Luleå talar
+    alla 20 längs vägen, lika många som favoritprovets bil längs vägen (`synk-core`), och inget längs strecket. Källan bär linjevalet.
+  - Motprovet, med strecket tillbaka i huvudvarvet, fäller provet. Filen är återställd byte för byte.
+  - Hela sviten: 468 godkända, 0 fel, 77 överhoppade.
+- **Kvar:** deployen av `skuggmotor` på Bengts ord. Därefter Verify: ett varv läst ur `shadow_log` mot favoritprovets synk mot samma lägesfil
+  (DB-knappens läsläge).
+
 **Stomdokument:** APP 9 — rutan till tidningarna får ny halkrisk och vinterväglag, APP 3 — röstens två meningar och takter som byggs efter uppspelningen
 
 ## #898 (18/11 2026) MET Norway och Statens vegvesen i källraderna (kort #648)

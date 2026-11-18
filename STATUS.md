@@ -3234,3 +3234,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
     löftet *Samma regel överallt* har fått sitt tillägg. **R7:** rutan visar de två raderna utan `&ny=1` (halkvakt-karta PR 27).
   - **Provat:** nytt prov i `test/lanssidor.test.ts` med motprov; sviten 465 godkända, 0 fel, 77 överhoppade; rutan i en webbläsare.
   - **Inte gjort:** sammanslagningen, deployen av `publicera` och R6 (Axel).
+- 18/11 (Claude; Bengt: *"bygg skuggans rutter kort 667"*): **Skuggans huvudrutter längs vägen byggda** (DECISIONS #897, tillägget; kort #667; körlistan B13).
+  - **Byggt:** huvudvarvets spår, rutfilter, vägbana och olja längs vägnätet för de 20 svenska rutterna; prognosen, efterhalkan, grupp C
+    och försprånget oförändrade. `test/skuggrutter.test.ts` med motprov; sviten 468 godkända, 0 fel, 77 överhoppade.
+  - **Inte gjort:** deployen av `skuggmotor` och ett varv mätt mot favoritprovets synk.
