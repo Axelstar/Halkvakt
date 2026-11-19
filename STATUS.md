@@ -3273,3 +3273,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 19/11 (Claude; Bengt: *"Ja, allt"*): **Dataskyddet steg 3:s delar i drift** (DECISIONS #900, tillägget; kort #670). halkvakt-karta PR 31
   och #1678 ihopslagna; migrationen 120 (DB-knappen 44459220314): jobbet aktivt 31 maj, anon utan rätt, 0 summarader; integritetssidan läst live.
   **Inte gjort:** avtalen i kontona, bolagsavtalet, Meta, OpenFreeMap och Datawrapper.
+- 19/11 (Claude; Bengt: *"Bara PR 32"*): **Metas, OpenFreeMaps och Datawrappers överföringar** (DECISIONS #900, tillägget; kort #670).
+  halkvakt-karta PR 32 (7b6f0a84) ihopslagen och integritetssidan läst live; Datawrappers tabeller på nwt.html ligger kvar på Bengts val.
+  **Inte gjort:** avtalen i kontona och bolagsavtalet.

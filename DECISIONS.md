@@ -17870,4 +17870,22 @@ tidningarna föll, eftersom tidningarna då måste föra in Halkvakt i sina samt
   - summatabellen har 0 rader.
 - **Integritetssidan live** (sajten byggd 04.30 UTC): överföringsgrunden per leverantör och kamerabildernas radering.
 
+**Metas, OpenFreeMaps och Datawrappers överföringar lästa 19/11** (Bengt: *"läs Metas, OpenFreeMaps och Datawrappers överföringar"* och *"Bara PR 32"* (19/11)).
+- **Meta:** EU–USA-ramverket (Meta Platforms, Inc. är certifierat) och standardavtalsklausuler. För användare i EU ansvarar Meta
+  Platforms Ireland. Läst i policyns avsnitt om globala dataöverföringar.
+- **OpenFreeMap** (livekartans kartbilder): Hyperknot Software Kft. i Ungern.
+  - Åtkomstloggarna saknar IP-adress, och felloggarna sparas högst 7 dagar.
+  - Ingen överföring utanför EU anges.
+- **Datawrapper** (tabellerna på tidningssidan nwt.html): Datawrapper GmbH i Berlin.
+  - De publicerade tabellerna ligger hos Amazon Web Services i USA.
+  - Policyn hänvisar till Privacy Shield, som är ogiltigt sedan 2020, och anger ingen annan grund för USA.
+  - Policyn säger att läsarnas IP-adresser inte samlas in.
+- **Bengts val:** tabellerna på nwt.html ligger kvar.
+- **Integritetssidan** (halkvakt-karta PR 32, 7b6f0a84, läst live) säger att tabellerna ligger hos Amazon Web Services i USA. Att
+  Datawrappers policy inte anger någon giltig grund står inte där.
+- **Registret** (privat) är rättat med de tre leverantörerna.
+- **Kvar i steg 3:**
+  - leverantörsavtalen godkända i kontona (Axel eller Bengt);
+  - en rad om dataskyddet i bolagsavtalet.
+
 **Stomdokument:** APP 10 — integritetssidan och dataskyddets steg, SYS 1 — vem som ger ut Halkvakt och ansvarar för uppgifterna, BED §4.2
