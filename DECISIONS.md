@@ -17780,4 +17780,44 @@ tidningarna föll, eftersom tidningarna då måste föra in Halkvakt i sina samt
   - Statistiksidans avsnitt om rutorna får inga nya rader.
   - Bengts och Axels egna besök räknas nu med.
 
+**Steg 2 byggt 19/11** (Bengt: *"Ja"* (19/11, på förslaget till steg 2)).
+- **Meningen:** *"Din position skickas aldrig till Halkvakt av sig själv."*
+  - *Av sig själv* står kvar mot förslaget i fråga 9, eftersom betatestets facitsvar och missar skickar varningens id och klockslag
+    när testaren trycker.
+  - På iPhone dessutom: *"Kartan på startsidan kommer från Apple, som får veta ungefär vilket område den visar."*
+- **Apparna:**
+  - iPhone: Om, Redo, startsidan och introduktionen med foten.
+  - iOS två frågor om platsen i `project.yml` (fråga 10), som nu säger att kartan och sökningen kommer från Apple och inte längre att
+    det enda som skickas är facitsvaren.
+  - Android: Om, Redo, startsidan, behörighetsrutan och introduktionen.
+- **Butikerna:**
+  - App Store: reklamtexten, beskrivningen (med Apple-meningen) och kampanjtexten.
+  - Play: ändring 5 att klistra in.
+  - Butiksbildernas ram (`rama.py`). Bilderna måste ramas om.
+- **Övrigt i Halkvakt:**
+  - Inläggsmallarna.
+  - Läns-, väg- och ortssidornas vanliga frågor och appruta (`publish/lanssidor.ts`, `publicera` buntad om).
+  - Produktboken.
+- **Integritetssidan** (halkvakt-karta PR 30) är fullständig, med:
+  - Lagerlöf Labs HB som ansvarigt och Axel som kontakt;
+  - vad som skickas, till vem, varför, med vilken rättslig grund och hur länge;
+  - säkerhetskopian sagd som den är i dag;
+  - livekartans kartbilder, Datawrapper, Zoho och Meta;
+  - leverantörerna och överföringarna, rättigheterna och IMY.
+
+  Platslöftet är bytt på 46 sidor och i tidningsskillens regel.
+- **`sql/119_besok_gallring.sql`:** besöksraderna raderas efter 13 månader, i ett jobb varje natt kl. 03.25 UTC (fråga 6). Det gör
+  sidans löfte sant från början.
+- **Provat:**
+  - Sviten: 469 godkända, 0 fel, 77 överhoppade.
+  - Integritetssidan på 375 px, och sökmotordatan giltig.
+  - Inget kvar av de gamla formuleringarna i apparna, butikerna, Halkvakts sidor eller sajten.
+  - Appkoden är inte kompilerad. Det görs bara av android.yml och TestFlight-provet.
+- **Kvar:**
+  - sammanslagningen, migrationen 119 och deployen av `publicera`;
+  - byggproven;
+  - Axels del: butikstexterna, butiksbilderna, App Privacy mot sidan, och 0.4.1 med nytt byggnummer;
+  - fotostudions nya bilder till produktboken;
+  - överföringsgrunden per leverantör, i steg 3.
+
 **Stomdokument:** APP 10 — integritetssidan och dataskyddets steg, SYS 1 — vem som ger ut Halkvakt och ansvarar för uppgifterna, BED §4.2

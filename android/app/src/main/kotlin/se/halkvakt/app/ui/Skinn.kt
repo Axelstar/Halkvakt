@@ -320,8 +320,8 @@ fun RedoScreen(activity: MainActivity, overst: @Composable () -> Unit) {
         Text("Redo.", color = Brand.text, fontFamily = Typo.sans, fontWeight = FontWeight.SemiBold, fontSize = 44.sp,
             letterSpacing = (-0.03).em, modifier = Modifier.padding(top = 12.dp))
         val vaknar = if (autostart) "Vakten vaknar själv när du kör. " else ""
-        Text(if (tur.isEmpty()) vaknar + "Din position lämnar inte telefonen av sig själv."
-             else if (autostart) "Vakten vaknar själv när du kör." else "Din position lämnar inte telefonen av sig själv.",
+        Text(if (tur.isEmpty()) vaknar + "Din position skickas aldrig till Halkvakt av sig själv."
+             else if (autostart) "Vakten vaknar själv när du kör." else "Din position skickas aldrig till Halkvakt av sig själv.",
             color = Text2, fontFamily = Typo.sans, fontSize = 15.sp, lineHeight = 22.sp, textAlign = TextAlign.Center,
             modifier = Modifier.widthIn(max = 290.dp).padding(top = 14.dp))
         if (tur.isEmpty()) {
@@ -574,7 +574,7 @@ private fun SettingsRoot(activity: MainActivity, onIntro: (() -> Unit)?, open: (
         }
         Column(Modifier.padding(top = 24.dp, start = 4.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             MonoLabel("Löftet")
-            Text("Din position lämnar inte telefonen av sig själv.", color = Text2, fontFamily = Typo.sans, fontSize = 15.sp)
+            Text("Din position skickas aldrig till Halkvakt av sig själv.", color = Text2, fontFamily = Typo.sans, fontSize = 15.sp)
         }
     }
 }
@@ -698,7 +698,7 @@ private fun Undersida(sida: Sida, activity: MainActivity, open: (Sida) -> Unit, 
                 Column(Modifier.padding(top = 24.dp).fillMaxWidth().background(Brand.panel, RoundedCornerShape(18.dp)).padding(20.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     MonoLabel("Löftet", size = 11.sp)
-                    Text("Din position lämnar inte telefonen av sig själv.", color = Brand.text, fontFamily = Typo.sans, fontWeight = FontWeight.Medium, fontSize = 20.sp)
+                    Text("Din position skickas aldrig till Halkvakt av sig själv.", color = Brand.text, fontFamily = Typo.sans, fontWeight = FontWeight.Medium, fontSize = 20.sp)
                     // Kort #357 (DECISIONS #616, #625): "ingen spårning" blev osant när resor kan sparas — samma ord som iOS.
                     Text(if (Prefs.betatestTillaten) "All matchning mot vägdata sker lokalt i appen. Inget konto. Undantaget är betatestet — bara om du själv slår på det."
                          else "All matchning mot vägdata sker lokalt i appen. Inget konto.",

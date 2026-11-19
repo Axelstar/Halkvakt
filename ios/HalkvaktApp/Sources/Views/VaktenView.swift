@@ -136,7 +136,7 @@ struct VaktenView: View {
                 .multilineTextAlignment(.center).padding(.top, 8)
             // Löftet står i underrubriken när platsen saknas, annars här.
             if harPlats != nil {
-                Text("Din position lämnar inte telefonen av sig själv.")
+                Text("Din position skickas aldrig till Halkvakt av sig själv.")
                     .font(Typo.sans(13)).foregroundStyle(Brand.faint).multilineTextAlignment(.center).padding(.top, 8)
             }
 
@@ -391,9 +391,9 @@ struct VaktenView: View {
     private var wakes: Bool { prefs.autoWake && guardM.authStatus == .authorizedAlways }
 
     private var subtitle: String {
-        // "lämnar inte telefonen av sig själv" — samma ord som Android, introduktionen och produktboken (DECISIONS #320);
-        // "stannar i telefonen" blev osant 16/9 när facitsvaret kom (`docs/TILL-AXEL-BYGGE-19.md` p. 1).
-        (wakes ? "Vakten vaknar själv när du kör. " : "") + "Din position lämnar inte telefonen av sig själv."
+        // "skickas aldrig till Halkvakt av sig själv" — samma ord som Android, introduktionen och produktboken (DECISIONS #900, fråga 9):
+        // "lämnar inte telefonen" (#320) blev osant med kartan från Apple (0.4.1), och "av sig själv" står kvar för betatestets facitsvar.
+        (wakes ? "Vakten vaknar själv när du kör. " : "") + "Din position skickas aldrig till Halkvakt av sig själv."
     }
 
     /// "HALKA · VILT · OLYCKOR · FRYSRISK · KAMEROR" — bara de källor som är på.

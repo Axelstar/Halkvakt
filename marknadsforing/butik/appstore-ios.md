@@ -15,7 +15,7 @@ Halkvakt
 Rösten som varnar på vägen
 
 ## Kampanjtext (170 tecken, kan ändras utan nytt bygge)
-Halka, olyckor, vilt, frysrisk och fartkameror — uppläst i bilen innan du är där. Trafikverkets data, din telefon. Din position lämnar inte telefonen av sig själv.
+Halka, olyckor, vilt, frysrisk och fartkameror — uppläst i bilen innan du är där. Trafikverkets data, din telefon. Din position skickas aldrig till Halkvakt av sig själv.
 
 ## Beskrivning (4 000 tecken)
 Halkvakt är passageraren som läser Trafikverkets data om vägen framför dig — och säger till med rösten innan du är där.
@@ -30,7 +30,7 @@ SÅ FUNGERAR DET
 • Spara vägar du kör ofta som favoriter efter en resa, och se läget längs dem innan du kör: halka, frysrisk, olyckor, köer åt ditt håll där Trafikverket mäter dem och vägarbeten — dit och hem, med det som är nytt sedan du sist tittade. Brytaren är av tills du slår på den.
 
 DIN INTEGRITET, PÅ RIKTIGT
-Din position lämnar inte telefonen av sig själv. All matchning mot vägdata sker lokalt i appen. Inga konton, ingen inloggning, inga annonser. Sparar du resor som favoriter stannar de i telefonen och följer inte med i säkerhetskopian. Läget längs dem räknas i telefonen: appen hämtar samma fil som alla andra, utan att fråga om din väg.
+Din position skickas aldrig till Halkvakt av sig själv. All matchning mot vägdata sker lokalt i appen. Kartan på startsidan och sökningen i Planera resa kommer från Apple. Inga konton, ingen inloggning, inga annonser. Sparar du resor som favoriter stannar de i telefonen och följer inte med i säkerhetskopian. Läget längs dem räknas i telefonen: appen hämtar samma fil som alla andra, utan att fråga om din väg.
 
 Appen räknar anonymt hur många som går igenom introduktionen, vilka behörigheter som väljs, hur ofta och ungefär hur länge vakten är på, vilka varningar som sägs, vilka inställningar som ändras och vad som går fel. Ett ord per händelse, med appens version. Aldrig var du är, hur långt du kör eller vem du är. Betatestet, där testare efter resan kan svara om varningarna stämde, finns bara i testversionen i TestFlight och inte i App Store-versionen.
 
@@ -111,7 +111,7 @@ UTC): nya introduktionen, och CarPlay avslaget i bygget (#858).
 • En krasch vid tryck på en notis är rättad.
 
 **Kampanjtexten** (fältet var tomt): *Halka, olyckor, vilt, frysrisk och fartkameror, uppläst i bilen innan du är där.
-Trafikverkets data, din telefon. Din position lämnar inte telefonen av sig själv.*
+Trafikverkets data, din telefon. Din position skickas aldrig till Halkvakt av sig själv.*
 
 **Granskarens anteckningar** (hela fältet, 3 426 av 4 000 tecken; ersätter texten från 0.3.17):
 

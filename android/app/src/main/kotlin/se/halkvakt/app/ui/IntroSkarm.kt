@@ -43,7 +43,7 @@ private val IntroLinje = Color(0xFF1E282D)
 private val IntroRing = Color(0xFF34424A)
 
 private const val PLATSTEXT =
-    "Din plats stannar i telefonen. Appen hämtar samma vägdata till alla och jämför med var du är, i din telefon. Inget konto behövs."
+    "Din position skickas aldrig till Halkvakt av sig själv. Appen hämtar samma vägdata till alla och jämför med var du är, i din telefon. Inget konto behövs."
 
 @Composable
 fun IntroScreen(activity: MainActivity, startSteg: Int = 0, onKlar: () -> Unit) {
@@ -161,7 +161,7 @@ fun IntroScreen(activity: MainActivity, startSteg: Int = 0, onKlar: () -> Unit) 
                     ValLista(listOf("Exakt" to true, "När du använder appen" to true, "Bara den här gången" to false, "Tillåt inte" to false))
                 }
                 Intro.PlatsSkarm.KLAR -> Sida("Fortsätt", { steg = Intro.efterPlatsen(true) }) {
-                    Rubrik("Platsen är klar", "Vakten vet var du är medan den är på. Platsen stannar i telefonen.")
+                    Rubrik("Platsen är klar", "Vakten vet var du är medan den är på. Din position skickas aldrig till Halkvakt.")
                     Spacer(Modifier.height(24.dp))
                     RowPanel { StegRad({ Bock() }, "Platsen", null, marke = "Exakt", markeFarg = Brand.green, divider = false) }
                 }
@@ -192,7 +192,7 @@ fun IntroScreen(activity: MainActivity, startSteg: Int = 0, onKlar: () -> Unit) 
                         StegRad({ Nummer(2) }, "Enheter i närheten", "Så märker den när bilens Bluetooth kopplar upp.")
                         StegRad({ Nummer(3) }, "Platsen, alltid", "Så kan vakten starta med appen stängd.", divider = false)
                     }
-                    Brodtext("Platsen stannar i telefonen, även då. Välj Tillåt i de två första rutorna.", IntroText2,
+                    Brodtext("Din position skickas aldrig till Halkvakt, även då. Välj Tillåt i de två första rutorna.", IntroText2,
                         Modifier.padding(start = 4.dp, end = 4.dp, top = 14.dp))
                 }
                 Sjalv.HELA_TIDEN -> Sida("Öppna sidan", { activity.introBegarBakgrund() }) {
