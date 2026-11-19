@@ -3332,3 +3332,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 19/11 (Claude; Bengt: *"gör alla 4 punkterna"*): **Utkasten för C3 och C4** (bedömningen §4.2).
   C3: storstädernas tillägg i säsongsfacit (§11) i PR #1695, sju frågor; körlistan C3 pågår, på kort #381. C4: förregistreringen
   för skuggan av fler fuktkällor i halkvakt-kuvos (PR #97), tio frågor. Båda väntar på Bengts och Axels svar och signaturer.
+- 19/11 (Claude; Bengt: *"gör 1,2 och 3"*): **Frister för fukten i storstäderna** (körlistan C4).
+  `friktionen-las-2026-12-06`: friktionens läsfråga körs tidigast 6/12, på Bengts ord. `fuktskuggan-las-2027-04-01`: skuggan läses
+  mot friktionen med data till och med 31/3.
