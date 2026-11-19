@@ -5118,3 +5118,286 @@ test("#907 #908 the moisture shadow in the cities: P0, K1, K2a, svartis and rimf
     await pool.end();
   }
 });
+
+// SÄSONGSFACIT FOR THE CITIES (sql/128, docs/TROSKLAR-SASONGSFACIT.md §11, DECISIONS #913; körlistan C3): the daily aggregate against
+// PostGIS on invented days in March 2026 (Swedish time = UTC+1), in a transaction that is rolled back (kandidat_talar is the decision
+// log and must not be changed by the test). Two test cells of their own: Prov-913 B, three points in two groups south of 62° N, and
+// Prov-913 C, one point at 63° N, which rule B does not silence. The runs, in Swedish time:
+//   1/3  av all day                                       the run log reaches back before the period
+//   2/3  av 00–09, räknad with B on 10–23                 the period starts with the first counted run, 10.00 (§11.2)
+//   3/3  räknad B 00–05, tyst 06, av 07, no run 08, räknad C 09 and a tyst run in the same hour, räknad B and C 10, räknad B 11–23;
+//        kandidat_talar says fryst 16.40–17.20, so the hour 16, logged 16.50, is inte ny; an exception 19.42–20.14 covers 19 and 20
+//   4/3  räknad B all day                                 the day after, for the bucket's files
+//   SS1  2/3: the hours from 10.00 only, the March window for B, brytaren av for C, and a row before the period not counted
+//   SS2  3/3: the classes in their order, the switch per cell, the March window per cell, the levels and the reasons
+//   SS3  a second count gives the same rows; before the period, a day not ended, after 31/3 2027 and a thinned day give no rows
+//   SS4  §11.4's check: a row where punkter is not the sum stops the day, with an error that carries no count
+//   SS5  the bucket: 3/3 from the export's own day files (arkiv2_dygn, sql/114) gives the same rows as from the tables
+//   SS6  counter-tests: each mutation of sql/128 is caught by at least one site, and the output says which
+//   SS7  the section's questions (scripts/sasongsfacit-stad.ts) on the same days, with accidents and answers; the section stops at the
+//        test cell's area, which is not in the value guard's word list, and at the days missing in the aggregate
+//   SS8  the value guard against the database: the keys in jsonb are read, and no number from a city table reaches its output
+test("#913 säsongsfacit for the cities: the hours, the levels, the reasons, the bucket, the section and the value guard", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { execFileSync } = await import("node:child_process");
+  const { fileURLToPath } = await import("node:url");
+  const { lasDb, avsnitt } = await import("../scripts/sasongsfacit-stad.ts");
+  const { JSONB } = await import("../scripts/vardevakten.ts");
+  const pool = new pg.Pool({ connectionString: url, max: 2 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const fil = (f: string) => readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8");
+  const RIKTIG = fil("128_sasongsfacit_stad.sql");
+  const lika = (a: unknown, b: unknown) => { try { assert.deepEqual(a, b); return true; } catch { return false; } };
+  try {
+    // Prerequisites, as the tests above leave them; a table that is missing is created from its own file.
+    if (!(await q("SELECT to_regclass('stadsbrytare') AS t")).rows[0].t) await q(fil("089_stadspunkter.sql"));
+    for (const [tab, f] of [["ny_kandidat_skugga_stad", "096_olycksfacit_stad.sql"], ["ny_kandidat_skugga_stad_korning", "096_olycksfacit_stad.sql"],
+      ["kandidat_talar", "070_bytet.sql"]]) {
+      if ((await q("SELECT to_regclass($1) AS t", [tab])).rows[0].t) continue;
+      await q(fil(f).match(new RegExp(`CREATE TABLE IF NOT EXISTS ${tab} \\([\\s\\S]*?\\n\\);`))![0]);
+    }
+    assert.ok((await q("SELECT to_regprocedure('arkiv2_dygn(text,date)') AS t")).rows[0].t, "the export's day file (sql/063, sql/114) is there");
+    await q(RIKTIG);
+    await q(RIKTIG);                                                                    // the file can run twice
+    for (const f of ["sasongsfacit_stad_karna", "sasongsfacit_stad_rakna", "sasongsfacit_stad_rakna_ur_hinken"]) {
+      const conf = (await q("SELECT proconfig FROM pg_proc WHERE proname = $1", [f])).rows[0].proconfig as string[];
+      assert.ok(conf.includes("search_path=public, extensions") && conf.some((k) => /^timezone=UTC$/i.test(k)), `${f}: fixed search path and UTC: ${conf}`);
+    }
+    assert.deepEqual((await q("SELECT relname, relrowsecurity FROM pg_class WHERE relname IN ('sasongsfacit_stad_dag', 'sasongsfacit_stad_undantag') ORDER BY 1")).rows,
+      [{ relname: "sasongsfacit_stad_dag", relrowsecurity: true }, { relname: "sasongsfacit_stad_undantag", relrowsecurity: true }], "RLS on both tables");
+    assert.equal((await q("SELECT count(*)::int AS n FROM sasongsfacit_stad_undantag WHERE fran = '2026-11-19T07:42Z' AND till = '2026-11-19T08:14Z'")).rows[0].n, 1,
+      "the exception 19/11 (DECISIONS #903) is seeded once");
+
+    const c = await pool.connect();
+    const x = (s: string, p: unknown[] = []) => c.query(s, p);
+    try {
+      await x("BEGIN");
+      const utc = (dag: number, tim: number, min = 0) => new Date(Date.UTC(2026, 2, dag, tim - 1, min));
+      await x("DELETE FROM kandidat_talar");
+      await x("DELETE FROM sasongsfacit_stad_dag");
+      await x("DELETE FROM ny_kandidat_skugga_stad_korning WHERE korning < '2026-03-06'");
+      await x("DELETE FROM ny_kandidat_skugga_stad WHERE observed_at < '2026-03-06'");
+      await x("INSERT INTO stadsbrytare (omrade, lager, pa, skal) VALUES ('Prov-913', 'B', false, 'provet #913'), ('Prov-913', 'C', false, 'provet #913')");
+      await x(`INSERT INTO stadspunkt (punkt, grupp, lager, omrade, lon, lat) VALUES ('B91301', 'B-913-1', 'B', 'Prov-913', 18.0, 59.3),
+        ('B91302', 'B-913-1', 'B', 'Prov-913', 18.01, 59.3), ('B91303', 'B-913-2', 'B', 'Prov-913', 18.02, 59.3), ('C91301', 'C-913-1', 'C', 'Prov-913', 18.0, 63.0)`);
+      await x(`INSERT INTO kandidat_talar (tid, talar, beslut) VALUES ('2026-03-01T00:00Z', 'ny', 'provet #913'), ('2026-03-03T15:40Z', 'fryst', 'provet #913'),
+        ('2026-03-03T16:20Z', 'ny', 'provet #913')`);
+      await x("INSERT INTO sasongsfacit_stad_undantag (fran, till, skal) VALUES ('2026-03-03T18:42Z', '2026-03-03T19:14Z', 'provet #913')");
+      const B = '["Prov-913/B"]', C = '["Prov-913/C"]', BC = '["Prov-913/B", "Prov-913/C"]';
+      // A run at minute min of the Swedish hour; a counted run bears the hour, the others carry an older candidate hour (fore hours back).
+      const kor = (dag: number, tim: number, status: string, brytare = "[]", min = 50, fore = 3) => x(
+        "INSERT INTO ny_kandidat_skugga_stad_korning (korning, observed_at, status, brytare) VALUES ($1, $2, $3, $4::jsonb)",
+        [utc(dag, tim, min), status === "räknad" ? utc(dag, tim) : utc(dag, tim - fore), status, status === "av" ? "[]" : brytare]);
+      for (let h = 0; h <= 23; h++) await kor(1, h, "av", "[]", -10);
+      for (let h = 0; h <= 9; h++) await kor(2, h, "av");
+      for (let h = 10; h <= 23; h++) await kor(2, h, "räknad", B);
+      for (let h = 0; h <= 5; h++) await kor(3, h, "räknad", B);
+      await kor(3, 6, "tyst", B);
+      await kor(3, 7, "av");
+      await kor(3, 9, "räknad", C);
+      await kor(3, 9, "tyst", C, 55, 2);
+      await kor(3, 10, "räknad", BC);
+      for (let h = 11; h <= 23; h++) await kor(3, h, "räknad", B);
+      for (let h = 0; h <= 23; h++) await kor(4, h, "räknad", B);
+      // [day, hour, group, punkter, varnar, veto, torr, spridning]
+      const LOGG: [number, number, string, number, number, number, number, number][] = [
+        [2, 8, "B-913-1", 1, 1, 0, 0, 0],                   // before the period: not counted
+        [2, 17, "B-913-1", 2, 1, 0, 1, 0], [2, 17, "B-913-2", 1, 0, 1, 0, 0],
+        [3, 1, "B-913-1", 2, 0, 0, 2, 0], [3, 1, "B-913-2", 1, 0, 0, 0, 1],
+        [3, 9, "C-913-1", 1, 1, 0, 0, 0],
+        [3, 16, "B-913-1", 1, 1, 0, 0, 0],                  // inte ny
+        [3, 17, "B-913-1", 3, 2, 1, 0, 0],                  // a warning group hour with a vetoed point: its reasons are not counted
+        [3, 19, "B-913-2", 1, 1, 0, 0, 0],                  // undantag
+        [4, 2, "B-913-1", 1, 0, 0, 1, 0]];
+      for (const [dag, tim, grupp, ...n] of LOGG)
+        await x(`INSERT INTO ny_kandidat_skugga_stad (grupp, observed_at, skriven_at, omrade, lager, punkter, varnar, veto, torr, spridning, pb_min)
+          VALUES ($1, $2, $3, 'Prov-913', $4, $5, $6, $7, $8, $9, -1)`, [grupp, utc(dag, tim), utc(dag, tim, 50), grupp[0], ...n]);
+
+      const KOL = ["timmar_raknad", "timmar_mars", "timmar_brytaren_av", "timmar_ingen_timme", "timmar_av", "timmar_ingen_korning", "kalla", "varnande",
+        "timmar_varning", "tysta_punkter", "veto", "torr", "spridning", "ytan_over_0", "grupper"];
+      const rader = async (d: string) => Object.fromEntries((await x(`SELECT lager, dygnsdel, niva, ${KOL.join(", ")} FROM sasongsfacit_stad_dag
+        WHERE dag = $1 AND omrade = 'Prov-913'`, [d])).rows.map((r: any) => [`${r.lager} ${r.dygnsdel} ${r.niva}`, KOL.map((k) => r[k])]));
+      const alla = async (d: string) => (await x(`SELECT omrade, lager, dygnsdel, niva, ${KOL.join(", ")} FROM sasongsfacit_stad_dag WHERE dag = $1
+        ORDER BY 1, 2, 3, 4`, [d])).rows;
+      const rakna = async (d: string) => (await x("SELECT sasongsfacit_stad_rakna($1::date) AS m", [d])).rows[0].m as string;
+      // The indexes in KOL: 0 räknad, 1 mars, 2 brytaren av, 3 ingen timme, 4 av, 5 ingen körning, 6 kalla, 7 varnande, 8 timmar med
+      // varning, 9 tysta punkter, 10 veto, 11 torr, 12 spridning, 13 ytan över 0, 14 grupper.
+      const v = (o: Record<number, number>) => KOL.map((_, i) => o[i] ?? 0);
+      const D1 = {
+        "B dag drift": v({ 0: 6, 1: 6, 14: 2 }), "B kvällsrusning drift": v({ 0: 3, 6: 2, 7: 1, 8: 1, 9: 1, 10: 1, 13: 4, 14: 2 }),
+        "B kväll drift": v({ 0: 3, 13: 6, 14: 2 }), "B natt drift": v({ 0: 2, 13: 4, 14: 2 }),
+        "C dag drift": v({ 2: 6, 14: 1 }), "C kvällsrusning drift": v({ 2: 3, 14: 1 }), "C kväll drift": v({ 2: 3, 14: 1 }), "C natt drift": v({ 2: 2, 14: 1 }),
+      };
+      const D2 = {
+        "B natt drift": v({ 0: 8, 6: 2, 9: 3, 11: 2, 12: 1, 13: 14, 14: 2 }),
+        "B morgonrusning drift": v({ 2: 1, 3: 1, 4: 1, 5: 1, 14: 2 }),
+        "B dag drift": v({ 0: 6, 1: 6, 14: 2 }),
+        "B kvällsrusning drift": v({ 0: 2, 6: 1, 7: 1, 8: 1, 13: 3, 14: 2 }), "B kvällsrusning inte ny": v({ 0: 1, 6: 1, 7: 1, 8: 1, 13: 1, 14: 2 }),
+        "B kväll undantag": v({ 0: 2, 6: 1, 7: 1, 8: 1, 13: 3, 14: 2 }), "B kväll drift": v({ 0: 1, 13: 2, 14: 2 }),
+        "C natt drift": v({ 2: 8, 14: 1 }), "C morgonrusning drift": v({ 0: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 14: 1 }),
+        "C dag drift": v({ 0: 1, 2: 5, 13: 1, 14: 1 }),
+        "C kvällsrusning drift": v({ 2: 2, 14: 1 }), "C kvällsrusning inte ny": v({ 2: 1, 14: 1 }),
+        "C kväll undantag": v({ 2: 2, 14: 1 }), "C kväll drift": v({ 2: 1, 14: 1 }),
+      };
+
+      // SS3 and SS1: before the period, then the first day of the period.
+      assert.equal(await rakna("2026-03-01"), "före perioden", "SS3: the day before the first counted run");
+      assert.equal((await x("SELECT count(*)::int AS n FROM sasongsfacit_stad_dag")).rows[0].n, 0, "SS3: before the period, no rows");
+      assert.equal(await rakna("2026-03-02"), "klart");
+      assert.deepEqual(await rader("2026-03-02"), D1, "SS1: 2/3 from 10.00, the March window for B, brytaren av for C");
+      // SS2: 3/3 hour by hour, and every clock hour in exactly one class per cell.
+      assert.equal(await rakna("2026-03-03"), "klart");
+      assert.deepEqual(await rader("2026-03-03"), D2, "SS2: 3/3 hour by hour");
+      const celler = (await x(`SELECT omrade || '/' || lager AS c, sum(timmar_raknad + timmar_brytaren_av + timmar_ingen_timme + timmar_av
+        + timmar_ingen_korning)::int AS n FROM sasongsfacit_stad_dag WHERE dag = '2026-03-03' GROUP BY 1`)).rows;
+      assert.equal(celler.length, (await x("SELECT count(*)::int AS n FROM stadsbrytare")).rows[0].n, "SS2: every switch is a cell");
+      assert.ok(celler.every((r: any) => r.n === 24), `SS2: 24 hours in exactly one class per cell: ${JSON.stringify(celler)}`);
+      // SS3: a second count, and the days that are not counted.
+      assert.equal(await rakna("2026-03-03"), "klart");
+      assert.deepEqual(await rader("2026-03-03"), D2, "SS3: a second count gives the same rows");
+      assert.equal(await rakna("2026-02-20"), "gallrat: räknas ur hinken (sql/114)", "SS3: a day the run log no longer reaches back to");
+      assert.equal((await x("SELECT sasongsfacit_stad_rakna((now() AT TIME ZONE 'Europe/Stockholm')::date) AS m")).rows[0].m, "dygnet är inte slut");
+      assert.equal((await x("SELECT sasongsfacit_stad_karna('2027-04-01', '{}', '{}') AS m")).rows[0].m, "utanför perioden", "SS3: the season ends 31/3 2027");
+
+      // SS4: §11.4's check.
+      const fel = `INSERT INTO ny_kandidat_skugga_stad (grupp, observed_at, omrade, lager, punkter, varnar, veto, torr, spridning)
+        VALUES ('B-913-2', '2026-03-03T11:00Z', 'Prov-913', 'B', 3, 1, 0, 0, 0)`;
+      await x("SAVEPOINT summan");
+      await x(fel);
+      await assert.rejects(rakna("2026-03-03"), (e: Error) => /en rad i stadsloggen där punkterna inte är summan av skälen \(§11\.4\)/.test(e.message)
+        && !/\d/.test(e.message.replace("2026-03-03", "").replace("§11.4", "")), "SS4: the day stops with an error that carries no count");
+      await x("ROLLBACK TO SAVEPOINT summan");
+      await x("RELEASE SAVEPOINT summan");
+      assert.deepEqual(await rader("2026-03-03"), D2, "SS4: the stopped count changed nothing");
+
+      // SS5: the bucket, from the export's own day files for the UTC days.
+      const dygnsfil = async (tab: string, d: string) => (await x("SELECT arkiv2_dygn($1, $2::date) AS t", [tab, d])).rows[0].t as string;
+      const logg = [await dygnsfil("ny_kandidat_skugga_stad", "2026-03-02"), await dygnsfil("ny_kandidat_skugga_stad", "2026-03-03")];
+      const korn: string[] = [];
+      for (const d of ["2026-03-02", "2026-03-03", "2026-03-04"]) korn.push(await dygnsfil("ny_kandidat_skugga_stad_korning", d));
+      assert.ok(logg[1].split("\n").length > 3 && korn[1].split("\n").length > 20, "SS5: the files carry the day's rows");
+      const ursprung = await alla("2026-03-03");
+      await x("DELETE FROM sasongsfacit_stad_dag WHERE dag = '2026-03-03'");
+      assert.equal((await x("SELECT sasongsfacit_stad_rakna_ur_hinken('2026-03-03', $1, $2) AS m", [logg, korn])).rows[0].m, "klart");
+      assert.deepEqual(await alla("2026-03-03"), ursprung, "SS5: a day in both places gives the same rows, in every cell");
+
+      // SS6: counter-tests. Each mutation of the file must be caught by at least one site.
+      const platser = async (): Promise<string[]> => {
+        const ut: string[] = [];
+        await x("DELETE FROM sasongsfacit_stad_dag");
+        if (await rakna("2026-03-02") !== "klart" || !lika(await rader("2026-03-02"), D1)) ut.push("SS1");
+        if (await rakna("2026-03-03") !== "klart" || !lika(await rader("2026-03-03"), D2)) ut.push("SS2");
+        await x("SAVEPOINT summan");
+        await x(fel);
+        const stoppad = await rakna("2026-03-03").then(() => false, () => true);
+        await x("ROLLBACK TO SAVEPOINT summan");
+        await x("RELEASE SAVEPOINT summan");
+        if (!stoppad) ut.push("SS4");
+        const fore = await alla("2026-03-03");
+        await x("DELETE FROM sasongsfacit_stad_dag WHERE dag = '2026-03-03'");
+        if ((await x("SELECT sasongsfacit_stad_rakna_ur_hinken('2026-03-03', $1, $2) AS m", [logg, korn])).rows[0].m !== "klart"
+          || !lika(await alla("2026-03-03"), fore)) ut.push("SS5");
+        return ut;
+      };
+      const MUTANTER: [string, string, string][] = [
+        ["the cell's switch ignored", "k.status = 'räknad' AND k.brytare ? (c.omrade || '/' || c.lager)) THEN 'räknad'", "k.status = 'räknad') THEN 'räknad'"],
+        ["tyst before brytaren av", "WHEN bool_or(k.status = 'räknad') THEN 'brytaren av'", "WHEN bool_or(k.status = 'räknad') AND NOT bool_or(k.status = 'tyst') THEN 'brytaren av'"],
+        ["the period from midnight", "WHERE h >= borjan", "WHERE true"],
+        ["a tyst run bears its candidate hour", "ELSE date_trunc('hour', k.korning) END AS h", "ELSE k.observed_at END AS h"],
+        ["rule B without the latitude", "bool_and(s.lat < 62)", "bool_and(s.lat < 64)"],
+        ["the March window to 17.00", "x.h AT TIME ZONE 'Europe/Stockholm') < 16", "x.h AT TIME ZONE 'Europe/Stockholm') < 17"],
+        ["the decision at the hour, not when it was logged", "b.tid <= x.loggad", "b.tid <= x.h"],
+        ["the decision ignored", "'fryst') <> 'ny'", "'fryst') <> 'ny' AND false"],
+        ["the exception only inside the hour", "u.till >= x.h)", "u.till >= x.h + interval '1 hour')"],
+        ["ytan över 0 counts the March window", "* count(*) FILTER (WHERE t.klass = 'räknad' AND NOT t.mars)", "* count(*) FILTER (WHERE t.klass = 'räknad')"],
+        ["the reasons of the warning group hours too", "coalesce(sum(l.veto) FILTER (WHERE l.varnar = 0), 0) AS veto", "coalesce(sum(l.veto), 0) AS veto"],
+        ["the warning group hours' points as silent", "coalesce(sum(l.punkter) FILTER (WHERE l.varnar = 0), 0) AS tysta_punkter", "coalesce(sum(l.punkter), 0) AS tysta_punkter"],
+        ["a warning hour where a group was only cold", "count(*) FILTER (WHERE t.klass = 'räknad' AND g.varnande > 0)", "count(*) FILTER (WHERE t.klass = 'räknad' AND g.kalla > 0)"],
+        ["no sum check", "IS DISTINCT FROM l.varnar + l.veto + l.torr + l.spridning", "IS DISTINCT FROM l.punkter"],
+        ["the bucket loses each file's first row", "WHERE d.n > 1", "WHERE d.n > 2"],
+      ];
+      for (const [namn, fran, till] of MUTANTER) {
+        assert.equal(RIKTIG.split(fran).length, 2, `SS6 ${namn}: the text is in the file once`);
+        await x("SAVEPOINT mutant");
+        let fallde: string[];
+        try { await x(RIKTIG.split(fran).join(till)); fallde = await platser(); } catch (e) { fallde = [`fel: ${String((e as Error).message).slice(0, 60)}`]; }
+        await x("ROLLBACK TO SAVEPOINT mutant");
+        await x("RELEASE SAVEPOINT mutant");
+        console.log(`counter-test säsongsfacit for the cities, ${namn}: caught by ${fallde.join(", ") || "NONE"}`);
+        assert.ok(fallde.length > 0, `SS6 ${namn}: no site catches the mutation`);
+      }
+      assert.deepEqual(await platser(), [], "SS6: the real file, every site as expected");
+
+      // SS7: the section's questions on the same days, with accidents and answers.
+      const olycka = async (id: string, t: Date, klass: string | null, utfall: string, k: object, a1 = false, dubblett: string | null = null) => {
+        await x(`INSERT INTO olycksfacit (deviation_id, start_time, geom, utfall, klass, dubblett_av) VALUES ($1, $2, ST_SetSRID(ST_MakePoint(18, 59.3), 4326), $3, $4, $5)`,
+          [id, t, utfall, klass, dubblett]);
+        await x(`INSERT INTO olycksfacit_lager (deviation_id, lager, talar, orsak, detalj) VALUES ($1, 'K', $2, 'prov', $3::jsonb), ($1, 'A1', $4, 'prov', '{}'),
+          ($1, 'A2', false, 'prov', '{}')`, [id, utfall === "VARNADE", JSON.stringify(k), a1]);
+      };
+      const stad = (o: object) => ({ stad: { omrade: "Stor-Stockholm", lager: "B", aktiv: true, talar: false, orsak: "fukt saknades", ...o } });
+      await olycka("SS913-1", utc(3, 9, 20), "TROLIG", "VARNADE", { varnande_km: 3.5, ...stad({ talar: true, orsak: "varnar", varnande_km: 0.4 }) });
+      await olycka("SS913-2", utc(3, 10), "TYDLIG", "TYST_TACKT", stad({}));
+      await olycka("SS913-3", utc(3, 9, 25), "TROLIG", "VARNADE", stad({ talar: true, orsak: "varnar" }), false, "SS913-1");   // a duplicate
+      await olycka("SS913-4", utc(3, 11), "TROLIG", "TYST_TACKT", { punkt: "v1" });                                              // no city point within 2 km
+      await olycka("SS913-5", utc(10, 12), "TROLIG", "TYST_TACKT", stad({}));                                                    // after the Monday
+      await olycka("SS913-6", utc(2, 12), null, "TYST_OTACKT", stad({ omrade: "Stor-Göteborg", aktiv: false, orsak: "brytaren av" }), true);
+      const svar = (id: string, t: Date, s: string) => x("INSERT INTO driver_facit (alert_id, alert_t, svar, app, version) VALUES ($1, $2, $3, 'ios', '0.4.1')", [id, t, s]);
+      await svar("kand:B-913-1", utc(3, 8), "ja");
+      await svar("kand:B-913-1", utc(3, 9), "nej");
+      await svar("kand:C-913-1", utc(3, 10), "ja");
+      await svar("kand:B-913-9", utc(3, 11), "ja");                                                // the group has left the list: okänt
+      await svar("kand:B-913-prov", utc(3, 12), "ja");                                             // a test row
+      await svar("seg:16010", utc(3, 13), "nej");                                                  // another warning
+      await svar("kand:16010", utc(3, 14), "ja");                                                  // K on a road segment
+      await svar("kand:B-913-1", utc(10, 8), "ja");                                                // after the Monday
+      await x("SET TimeZone = 'Europe/Stockholm'");                                              // the session's zone does not steer the days
+      const db = await lasDb(x, "2026-03-09");
+      assert.equal((await x("SHOW TimeZone")).rows[0].TimeZone, "UTC", "SS7: the reading sets the zone itself");
+      assert.deepEqual([db.mandag, db.vecka_fran, db.till, db.sasong_fran, db.dagar], ["2026-03-09", "2026-03-02", "2026-03-09", "2026-03-02", ["2026-03-02", "2026-03-03"]]);
+      const prov = db.aggregat.filter((a) => a.omrade === "Prov-913" && a.lager === "B" && a.niva === "drift");
+      assert.deepEqual([prov.reduce((s, a) => s + a.kalla, 0), prov.reduce((s, a) => s + a.varnande, 0), prov.every((a) => a.vecka)], [5, 2, true],
+        "SS7: the week's cold and warning group hours in drift, summed over 2/3 and 3/3, without the exceptions");
+      assert.equal(db.spann.length, KOL.length, "SS7: every count has its smallest and largest value");
+      const nyckel = (r: any) => [r.omrade, r.lager, r.klass ?? "", r.svar ?? ""].join("/");
+      const sortera = (r: any[]) => [...r].sort((a, b) => (nyckel(a) < nyckel(b) ? -1 : 1));
+      assert.deepEqual(sortera(db.olyckor), sortera([
+        { vecka: true, omrade: "Stor-Stockholm", lager: "B", klass: "TROLIG", utfall: "VARNADE", aktiv: true, orsak: "varnar", a1: false, k_vag: false, k_stad: true, a2: false, antal: 1 },
+        { vecka: true, omrade: "Stor-Stockholm", lager: "B", klass: "TYDLIG", utfall: "TYST_TACKT", aktiv: true, orsak: "fukt saknades", a1: false, k_vag: false, k_stad: false, a2: false, antal: 1 },
+        { vecka: true, omrade: "Stor-Göteborg", lager: "B", klass: "ej klassad", utfall: "TYST_OTACKT", aktiv: false, orsak: "brytaren av", a1: true, k_vag: false, k_stad: false, a2: false, antal: 1 }]),
+        "SS7: three accidents, without the duplicate, the one without a city point and the one after the Monday");
+      assert.deepEqual(sortera(db.svar), sortera([{ vecka: true, lager: "B", omrade: "Prov-913", svar: "ja", antal: 1 }, { vecka: true, lager: "B", omrade: "Prov-913", svar: "nej", antal: 1 },
+        { vecka: true, lager: "C", omrade: "Prov-913", svar: "ja", antal: 1 }, { vecka: true, lager: "B", omrade: "okänt", svar: "ja", antal: 1 }]),
+        "SS7: four answers, without the test row, the other warnings and the one after the Monday");
+      assert.throws(() => avsnitt(db), /sasongsfacit_stad_dag\.omrade: ett ord som inte står i värdevaktens ordlista/, "SS7: the test cell's area stops the section");
+      const ren = { ...db, aggregat: db.aggregat.filter((a) => a.omrade !== "Prov-913"), svar: db.svar.filter((s) => s.omrade !== "Prov-913") };
+      assert.throws(() => avsnitt(ren), /dygnet 2026-03-04 saknas i aggregatet/, "SS7: a missing day stops the section");
+      const md = avsnitt({ ...ren, till: "2026-03-04" });
+      assert.match(md, /\| Stor-Stockholm B \| veckan \| 2 \| 1 \| 1 \| 0 \| 0 \| 0 \| 2 \|/, "SS7: the accidents per class");
+      assert.match(md, /\| Stor-Göteborg B \| veckan \| 1 \| 0 \| 0 \| 0 \| 0 \| 1 \| 0 \|/);
+      assert.match(md, /\| Stor-Stockholm B \| veckan \| 1 av 2 \| 1 av 1 \| fukt saknades 1 \|/, "SS7: only the city point warned, and its reason when silent");
+      assert.match(md, /\| B, okänt område \| veckan \| 1 \| 0 \| 1 av 1 \|/);
+      assert.doesNotMatch(md, /\b[BC]-\d|\b[BC]\d{5}\b/, "SS7: no group or point id in the section");
+    } finally {
+      await x("ROLLBACK").catch(() => {});
+      c.release();
+    }
+
+    // SS8: the value guard against the database, with one committed row whose count must never reach the output.
+    await q(`INSERT INTO sasongsfacit_stad_dag (dag, omrade, lager, dygnsdel, niva, timmar_raknad, timmar_mars, timmar_brytaren_av, timmar_ingen_timme,
+      timmar_av, timmar_ingen_korning, kalla, varnande, timmar_varning, tysta_punkter, veto, torr, spridning, ytan_over_0, grupper)
+      VALUES ((now() AT TIME ZONE 'Europe/Stockholm')::date - 1, 'Prov-913', 'B', 'natt', 'drift', 1, 0, 0, 0, 0, 0, 987654, 0, 0, 0, 0, 0, 0, 0, 0)`);
+    const ut = execFileSync(process.execPath, ["--experimental-strip-types", "scripts/vardevakten.ts", "36500"],
+      { cwd: fileURLToPath(new URL("..", import.meta.url)), env: { ...process.env, DATABASE_URL: url }, encoding: "utf8", timeout: 240_000 });
+    assert.match(ut, /\nsasongsfacit_stad_dag \(talen skrivs inte ut, #768\)\n/, "SS8: the aggregate is scanned");
+    assert.match(ut, /\nny_kandidat_skugga_stad \(talen skrivs inte ut, #768\)\n/, "SS8: the city log is scanned");
+    assert.match(ut, /\nny_kandidat_skugga_stad_korning \(talen skrivs inte ut, #768\)\n/, "SS8: the run log is scanned");
+    assert.ok(!ut.includes("987654"), "SS8: no number from a city table reaches the output");
+    assert.match(ut, new RegExp(`JSONB \\(${JSONB.length} deklarerade nycklar\\)`));
+    for (const j of JSONB) assert.ok(ut.includes(`${j.tabell}.${j.falt}`) && !ut.includes(`${j.tabell}.${j.falt}`.padEnd(40) + " tabellen finns inte"),
+      `SS8: ${j.tabell}.${j.falt} is read`);
+  } finally {
+    await q("DELETE FROM sasongsfacit_stad_dag WHERE omrade = 'Prov-913'").catch(() => {});
+    await pool.end();
+  }
+});

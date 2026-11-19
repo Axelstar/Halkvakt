@@ -1092,9 +1092,28 @@ export const KONTRAKT: Kontrakt[] = [
     namn: `Storstädernas marsfönster — ${s}`,
     varfor: "Den frystas och den nyas regel ska tiga i samma timmar och på samma breddgrader. Driver de isär talar storstädernas K olika beroende på vilken kandidat som talar.",
     former: [new RegExp(`(\\d+)\\)?\\s+-- STAD_MARS_${k}\\b`)],
-    filer: /sql\/091_|sql\/094_/,   // sql/094 (#813) skapar om båda regelfunktionerna med stadsgrenens timme som underfråga
-    golv: 4,
+    // sql/094 (#813) skapar om båda regelfunktionerna med stadsgrenens timme som underfråga. sql/128 (#913) räknar marsfönstrets
+    // timmar för sig i säsongsfacit för storstäderna (TROSKLAR-SASONGSFACIT §11.4): driver kopian där isär räknas tystnaden fel.
+    filer: /sql\/091_|sql\/094_|sql\/128_/,
+    golv: 5,
   })),
+  // SÄSONGSFACITS TID PÅ DYGNET (TROSKLAR-SASONGSFACIT §5): natt 22–05, morgonrusning 06–09, dag 10–15, kvällsrusning 16–18 och kväll
+  // 19–21, i svensk tid. sql/099 delar K:s sträcktimmar och olyckorna, sql/128 (#913) storstädernas timmar. Driver de isär jämförs
+  // storstädernas avsnitt med huvudtabellen på olika timmar.
+  ...(["morgonrusning", "dag", "kvällsrusning", "kväll"] as const).map((del) => ({
+    namn: `Säsongsfacits tid på dygnet — ${del}`,
+    varfor: "Säsongsfacits huvudtabell och storstädernas avsnitt ska dela dygnet i samma timmar (§5). Driver kopiorna isär hamnar samma timme i olika delar.",
+    former: [new RegExp(`BETWEEN (\\d+ AND \\d+) THEN '${del}'`)],
+    filer: /sql\/099_|sql\/128_/,
+    golv: 3,
+  })),
+  {
+    namn: "Storstädernas säsong i säsongsfacit — sista dygnet",
+    varfor: "Dygnsaggregatet och avsnittet i veckorapporten ska sluta samma dag (TROSKLAR-SASONGSFACIT §2, §11.2). Driver de isär räknar avsnittet dygn som aggregatet inte har, och stannar på ett fel.",
+    former: [/DATE '(\d{4}-\d\d-\d\d)' THEN RETURN 'utanför perioden'; END IF;\s+-- SASONG_SLUT/, /SASONG_SLUT = "(\d{4}-\d\d-\d\d)";/],
+    filer: /sql\/128_|scripts\/sasongsfacit-stad\.ts$/,
+    golv: 2,
+  },
   // THE MOISTURE SHADOW IN THE CITIES (sql/127, DECISIONS #907; halkvakt-kuvos F74 §2.3): K1 and K2a are read as the kuvös reading of the
   // friction reads them (its preciseringar 2, 9 and 10), so its constants are copied into the migration. The kuvös files lie over the
   // checkout in ci, as for kuvos/facit-trv.ts above; without them these contracts are under the floor. Drift means the shadow counts
