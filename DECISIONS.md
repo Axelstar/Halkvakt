@@ -18110,3 +18110,33 @@ rimfrost hade inte varit samma regel i de två skuggorna.
 **Varför.** Skuggan talar aldrig, och med samma regel i båda skuggorna går de att jämföra rad för rad.
 
 **Stomdokument:** BED §4.2
+
+## #909 (19/11 2026) Stadsmiljöns reserv startade aldrig: den körs nu också sist i småvägskedjan (körlistan B1, DECISIONS #894)
+
+**Beslut.** Bengt 19/11: *"Börja med det"*, på frågan om rättelsen av reserven. Reserven för stadsmiljön (#894) står i en gemensam del,
+`.github/actions/stadens-reserv`, som två flöden kör sist: `kuvos-stad`, som förut, och `kuvos-smavag`, som får `actions: write`
+för det.
+
+**Vad som var fel.** Reserven startar bara när ingen annan körning väntar i MET-kön, eftersom en ny väntande körning ersätter den som
+väntar (#884). Småvägskedjan startas av pulsklockan vid R + 51 minuter. Kuvos-stad går från R + 6.36 till omkring R + 7.00 och håller
+kön, så när reserven prövas sist i kuvos-stad väntar småvägskedjan nästan alltid. 19/11 sköt reserven upp körningen 20261119T00Z två
+gånger med samma skäl, kl. 13.01 och 19.00 UTC. Ingen mätning hade visat det, eftersom reserven aldrig hade behövts i drift förut
+(körlistan B1: *inte visad i drift*).
+
+**Rättelsen.** Sist i småvägskedjan väntar ingen annan körning, och där prövas reserven också:
+- Kandidaterna räknas från småvägskedjans körning R. Stadsmiljöns fil för R kommer först med kuvos-stad vid R + 6.36.
+- Kontrollen att hinken svarar är att någon av kandidaternas filer går att läsa. I kuvos-stad är den som förut körningens egen fil.
+- En kuvos-stad som redan går räknas som väntande, eftersom den kan vara en efterräkning av samma körning.
+- Steget får aldrig fälla småvägskedjan (`continue-on-error`).
+Gränsen för efterräkningen är oförändrad (60 timmar, `efterrakning.py` i det privata repot), så 20261119T00Z går att räkna till omkring
+21/11 kl. 12 UTC.
+
+**Alternativ.**
+- Reserven startar en efterräkning trots att en körning väntar. Det avbryter den väntande småvägskedjan.
+- Ett eget flöde som startar när småvägskedjan är klar (`workflow_run`). Det är fler rörliga delar för samma sak.
+- Låta reserven vänta i kuvos-stad. Det går inte, eftersom kuvos-stad håller kön så länge den går.
+
+**Varför.** Reserven ska räkna en saknad körning medan MET har den kvar, och sist i småvägskedjan står kön tom. En gemensam del gör att
+stegen står på ett ställe.
+
+**Stomdokument:** SYS 2 — stadsmiljöns kedja och reserven

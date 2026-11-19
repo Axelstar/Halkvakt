@@ -1,0 +1,77 @@
+# RESERVEN FÖR STADSMILJÖN (DECISIONS #894 och #909; kuvösens BESLUT F72 och F73, posterna 17/11 i de två förregistreringarna). En körning
+# som inte blev räknad i tid kostade ett helt dygn i kuvösens prov (14–16/11). De körningar som klockan passerat och som ännu går att
+# räkna i efterhand prövas därför (efterrakning.py kandidater, den äldsta först): saknas körningens fil i hinken och har MET den kvar,
+# startas kuvos-stad med stamp, en körning per gång. Stadsmiljöns PH är den första fil en körning skriver.
+# Kontrollen först: svarar hinken inte prövas ingenting, så att ett fel i hinken aldrig ser ut som en saknad körning. MET-kön håller en
+# väntande körning, och en ny väntande ersätter den som väntar (#884): reserven startar därför bara när ingen annan körning i kön väntar.
+# Annars prövas den vid nästa körning.
+# Två flöden anropar den (#909). Sist i kuvos-stad stod småvägskedjan alltid i kön: den startas vid R + 51 minuter, medan kuvos-stad går
+# R + 6.36 till omkring R + 7.00, så reserven startade aldrig (19/11, körningarna 12.34 och 18.36). Sist i kuvos-smavag väntar ingen.
+#   kuvos-stad    stamp är körningens egen, och kontrollen är dess egen fil;
+#   kuvos-smavag  stamp är småvägskedjans körning R, vars stadsfil kommer först vid R + 6.36. Kontrollen är att någon av kandidaternas
+#                 filer går att läsa, och en kuvos-stad som redan går räknas som väntande: den kan vara en efterräkning av samma körning.
+# Jobbet har checkat ut repot med kuvösens kod ovanpå, satt upp node och python och satt GH_TOKEN med actions: write.
+name: stadens-reserv
+description: En körning i stadsmiljön som saknas i hinken räknas i efterhand med kuvos-stad
+inputs:
+  stamp:
+    description: "Körningen reserven räknar bakåt från, t.ex. 20261119T12Z"
+    required: true
+  database-url:
+    description: "Driftens DATABASE_URL (hemligheten), för hinkens adress och nyckel"
+    required: true
+  anropare:
+    description: "kuvos-stad eller kuvos-smavag"
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Reserven — en körning som saknas räknas i efterhand
+      shell: bash
+      env:
+        DATABASE_URL: "${{ inputs.database-url }}"
+        STAMP: "${{ inputs.stamp }}"
+        ANROPARE: "${{ inputs.anropare }}"
+        HINK: kuvos-stad-2026-27
+      run: |
+        set -euo pipefail
+        case "$ANROPARE" in kuvos-stad|kuvos-smavag) ;; *) echo "::error::reserven: okänd anropare ($ANROPARE)"; exit 1 ;; esac
+        [ -n "${STAMP:-}" ] || { echo "reserven: körningens stämpel saknas, ingenting prövas"; exit 0; }
+        command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client
+        read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+        [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+        echo "::add-mask::$KEY"
+        export FN KEY
+        N() { node --experimental-strip-types "$@" 2>&1 | { grep -v ExperimentalWarning || true; }; }
+        E=fysik/ny_kandidat/efterrakning.py; H=fysik/ny_kandidat/stadsmiljon_hinken.ts
+        finns() { rm -rf res; N "$H" hamta "$HINK" res "stadsmiljon_ph_$1.csv.gz" > /dev/null; [ -f "res/stadsmiljon_ph_$1.csv.gz" ]; }
+        KAND=$(python3 "$E" kandidater --stamp "$STAMP")
+        if [ "$ANROPARE" = kuvos-stad ]; then
+          finns "$STAMP" || { echo "reserven: körningens egen fil går inte att läsa i hinken, ingenting prövas"; rm -rf res; exit 0; }
+        else
+          SVAR=""
+          for S in $KAND; do if finns "$S"; then SVAR=ja; break; fi; done
+          [ -n "$SVAR" ] || { echo "reserven: ingen av de senaste körningarnas filer går att läsa i hinken, ingenting prövas"; rm -rf res; exit 0; }
+        fi
+        VAL=""
+        for S in $KAND; do
+          if finns "$S"; then continue; fi
+          if curl -sS --fail --max-time 30 -o /dev/null -A "Halkvakt-live/0.1 (+https://github.com/Axelstar/Halkvakt)" \
+              "https://thredds.met.no/thredds/dodsC/metpplatest/met_forecast_1_0km_nordic_${S}.nc.dds" 2> /dev/null; then VAL="$S"; break; fi
+          echo "reserven: körningen $S saknas i hinken, men MET svarar inte för den. Den prövas vid nästa körning"
+        done
+        rm -rf res
+        [ -n "$VAL" ] || { echo "reserven: ingen körning att räkna i efterhand"; exit 0; }
+        vantar() { gh run list --workflow "$1" --limit 10 --json status -q '[.[] | select(.status != "completed" and .status != "in_progress")] | length'; }
+        pagar() { gh run list --workflow "$1" --limit 10 --json status -q '[.[] | select(.status == "in_progress")] | length'; }
+        V=""
+        if A=$(vantar kuvos-stad.yml) && B=$(vantar kuvos-pilot.yml) && C=$(vantar kuvos-smavag.yml); then V=$((A + B + C)); fi
+        if [ "$ANROPARE" = kuvos-smavag ] && [ -n "$V" ]; then
+          if P=$(pagar kuvos-stad.yml); then V=$((V + P)); else V=""; fi
+        fi
+        if [ "$V" = 0 ]; then
+          gh workflow run kuvos-stad.yml -f steg=kedjan -f stamp="$VAL" && echo "**Reserven ($ANROPARE):** körningen $VAL saknade sin fil och räknas i efterhand." | tee -a "$GITHUB_STEP_SUMMARY" \
+            || echo "::warning::reserven gick inte att starta — körningen $VAL prövas vid nästa körning"
+        else
+          echo "::warning::reserven startas inte (${V:-gh svarade inte}): en körning i MET-kön väntar eller går — körningen $VAL prövas vid nästa körning"
+        fi

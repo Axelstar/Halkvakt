@@ -3339,3 +3339,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   Förregistreringen i halkvakt-kuvos (F75, PR #98). Skuggan räknar grannstationens rimfrost utan korsgivarkontrollen, och
   §3:s hela vakt gäller i rösten (DECISIONS #906, TROSKLAR-RIMFROST). Fuktskuggans fönster börjar efter läsfrågan för friktionen.
   Frist `svartis-rimfrost-las-2027-04-01`. Kvar är bygget.
+- 19/11 (Claude; Bengt: *"Börja med det"*): **Stadsmiljöns reserv startade aldrig** (körlistan B1, DECISIONS #909). Sist i kuvos-stad
+  väntade småvägskedjan alltid i MET-kön, så reserven sköt upp 20261119T00Z två gånger. Den gemensamma delen
+  `.github/actions/stadens-reserv` körs nu också sist i kuvos-smavag.
