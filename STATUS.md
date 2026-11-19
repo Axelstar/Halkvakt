@@ -3335,3 +3335,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 19/11 (Claude; Bengt: *"gör 1,2 och 3"*): **Frister för fukten i storstäderna** (körlistan C4).
   `friktionen-las-2026-12-06`: friktionens läsfråga körs tidigast 6/12, på Bengts ord. `fuktskuggan-las-2027-04-01`: skuggan läses
   mot friktionen med data till och med 31/3.
+- 19/11 (Claude; Axel: *"Can we add the brand guide"*, till GitHub): **Varumärkesguiden ligger i repot.** `docs/brand/` bär
+  Varumärkesguide 1.0, de sociala mallarna, varumärkesbesluten och logomärket, som textkopior av Claude Design-filerna (källorna
+  länkas överst i varje fil). `docs/DESIGN-BRIEF.md` har en rad överst om att dess färger och typsnitt är ersatta. Inga beslut, ingen kod.

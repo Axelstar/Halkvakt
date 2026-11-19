@@ -1,5 +1,7 @@
 # Halkvakt — designbrief för Claude Design (1 september 2026)
 
+> **Ersatt 17/10 2026 i fråga om färger och typsnitt.** Gällande varumärke står i `docs/brand/VARUMARKESGUIDE.md` (Varumärkesguide 1.0). Den här briefen är underlaget som skinnet ritades från 1/9 och ligger kvar som historik.
+
 Det här är underlaget för skinnet (#24). Axel ritar i Claude Design, exporterar till
 `docs/design/`, Claude portar exakt till SwiftUI (iOS) och Compose (Android). Ändra
 inte i koden för utseendets skull — ändra här och i designen, så håller båda plattformarna ihop.
