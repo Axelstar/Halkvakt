@@ -3352,3 +3352,9 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 19/11 (Claude; Bengt: *"… vi inte kan göra samma mätningar på småvägar som storstäder … får du backa"*): **Svartis och rimfrost:
   småvägsdelen struken** (DECISIONS #911, halkvakt-kuvos F76). Provet gäller bara storstäderna. Kort #656 är tillbaka där det var för
   småvägarna, och körlistans C7, fristen 1/4 och bedömningen §4.2 säger det.
+- 19/11 (Claude; Bengt: *"Kör"*): **Fuktskuggan i storstäderna i drift, med C7:s kolumner** (körlistan C4 och C7, DECISIONS #907, #908).
+  Fullskaleprovet i Supabases avbild (44605046947): skuggan en timme på 4,0 s och +25 MB, omkörningen likadan, kontrollen 229 byte
+  per anrop; steget avbröts efter utskriften av ett fel i provskriptet. Sedan halkvakt-kuvos #99 (d16fd28b), PR #1697 (0b3ca30c),
+  DB-knappen för sql/126 (44619009178) och sql/127 (44619099576, regeln orörd), arkivexport deployad (44619213875). Första körningen
+  21.48 UTC för timmen 21:00: räknad, raderna har värden (läsläget 44622541740). MET:s fukt per stadspunkt kommer med fysikens nästa
+  körning.
