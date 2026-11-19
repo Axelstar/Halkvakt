@@ -45,9 +45,9 @@ on:
   workflow_dispatch:
     inputs:
       steg:
-        description: "indata (en äldre vinter) → fyll (T2) → forberedning → traning → provning (bakom spärren) → samman; paritet (§4, den levande kedjan); osakerhet (#707, omdragning på 2022/23); identitet och dom bara med variant smavagar eller okanda; mars (marsprövningen, halkvakt-kuvos F8: prov (b), halvvintrarna och domen, bara till hinken); trafikmangd (halkvakt-kuvos F21, trafikmängdens betydelse, bara med variant okanda, bara till hinken); dfbakat (fuktvarianten D-F bakåt, halkvakt-kuvos F47, och radarns bakåtprov, F59); radarstn (radarn kring stationen 2024/25 ur SMHI:s arkiv till hinken, halkvakt-kuvos F59 §12)"
+        description: "indata (en äldre vinter) → fyll (T2) → forberedning → traning → provning (bakom spärren) → samman; paritet (§4, den levande kedjan); osakerhet (#707, omdragning på 2022/23); identitet och dom bara med variant smavagar eller okanda; mars (marsprövningen, halkvakt-kuvos F8: prov (b), halvvintrarna och domen, bara till hinken); trafikmangd (halkvakt-kuvos F21, trafikmängdens betydelse, bara med variant okanda, bara till hinken); dfbakat (fuktvarianten D-F bakåt, halkvakt-kuvos F47, och radarns bakåtprov, F59); radarstn (radarn kring stationen 2024/25 ur SMHI:s arkiv till hinken, halkvakt-kuvos F59 §12); friktionen (källa 3 i fukten i storstäderna, halkvakt-kuvos F38 §8: läsfrågan framåt ur driften, tidigast 6/12, bara till hinken)"
         type: choice
-        options: ["indata", "fyll", "t4", "forberedning", "traning", "provning", "samman", "paritet", "osakerhet", "identitet", "dom", "mars", "trafikmangd", "sparren", "vetot", "fukten", "flackvis", "dfbakat", "radarstn"]
+        options: ["indata", "fyll", "t4", "forberedning", "traning", "provning", "samman", "paritet", "osakerhet", "identitet", "dom", "mars", "trafikmangd", "sparren", "vetot", "fukten", "friktionen", "flackvis", "dfbakat", "radarstn"]
         default: "forberedning"
       vinter:
         description: "bara för indata och fyll: vintern som hämtas (2017-18 och 2023-24 är marsprövningens halvvintrar, halkvakt-kuvos F8)"
@@ -2533,6 +2533,111 @@ jobs:
           echo "fukten på kandidaten, följden (§5): klart"
           lagg ut/fukten-staderna-samman.json
           rm -rf ut
+
+  # ── friktionen (fukten i storstäderna, källa 3: friktionen läst framåt ur driften, halkvakt-kuvos BESLUT F38 §8) ───────────────
+  # Läsfrågan scripts/matningar/kuvos-friktionen-staderna-2026-12.ts räknar halvtimmarna sedan friktionen kom i drift vid
+  # storstädernas teststationer med friktion: halt enligt friktionen (#540) och kandidaten fryser utan veto, och vad fuktkällorna
+  # hade sagt då. Den vägrar före 6/12 och utan båda signaturerna i förregistreringen. Väderarkivet ur grindarnas tillfälliga databas
+  # (kort #323), kandidatens stationslogg och radarn ur den och ur hinkens dygnsfiler (sql/063, sql/083), SMHI och MET ur deras
+  # öppna data. Talen går bara till hinken (kuvos/kuvos-friktionen-staderna-2026-12-<körningens nummer>/), också skälet när ett steg
+  # faller; loggen säger bara klart eller vilket steg som föll.
+  friktionen:
+    if: ${{ inputs.steg == 'friktionen' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      UT_HINK: "kuvos-friktionen-staderna-2026-12-${{ github.run_number }}"
+      MATNING: scripts/matningar/kuvos-friktionen-staderna-2026-12.ts
+    steps:
+      - uses: actions/checkout@v4
+      # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos (DECISIONS #768): koden läggs ovanpå utcheckningen.
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      # Fönstrets första dygn ur läsfrågan själv (FRAN_DAG), så att datumet står på ett ställe. Den tillfälliga databasen räknar
+      # karantänens dygn före fönstret av sig själv; ett dygn till ger marginal för timmen före det första dygnet.
+      - name: Självtestet och fönstret
+        id: fonstret
+        shell: bash
+        run: |
+          set -euo pipefail
+          if node --experimental-strip-types "$MATNING" --sjalvtest > /dev/null 2>&1; then echo "läsfrågans självtest: klart"; else echo "::error::läsfrågans självtest: fel"; exit 1; fi
+          FRAN=$(node --experimental-strip-types --input-type=module -e "const m = await import('./$MATNING'); console.log(m.FRAN_DAG)")
+          [[ "$FRAN" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] || { echo "::error::fönstrets första dygn gick inte att läsa ur läsfrågan"; exit 1; }
+          DAGAR=$(( ( $(date -u +%s) - $(date -u -d "$FRAN" +%s) ) / 86400 + 2 ))
+          echo "fran=$FRAN" >> "$GITHUB_OUTPUT"; echo "dagar=$DAGAR" >> "$GITHUB_OUTPUT"
+          echo "fönstret: från $FRAN, $DAGAR dygn"
+      - uses: ./.github/actions/tillfalliga-arkivet
+        with: { dagar: "${{ steps.fonstret.outputs.dagar }}", drift-url: "${{ secrets.DATABASE_URL }}", tabeller: "arkiv_export_tabell,ny_kandidat_station,radar_precip,road_condition_history" }
+      - name: Läsfrågan, filen till hinken
+        shell: bash
+        env: { DRIFT_URL: "${{ secrets.DATABASE_URL }}", FRAN: "${{ steps.fonstret.outputs.fran }}" }
+        run: |
+          set -euo pipefail
+          read -r FN KEY < <(psql "$DRIFT_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          export FN KEY
+          lagg() {   # lagg <fil …>: till $UT_HINK/<filnamn>; skrivs aldrig över, och det som ligger i hinken ska vara byte för byte filen
+            node -e '
+              const { execFileSync } = require("child_process"), fs = require("fs"), c = require("crypto"), filer = process.argv.slice(1);
+              const sha = (b) => c.createHash("sha256").update(b).digest("hex"), namn = filer.map((f) => process.env.UT_HINK + "/" + f.split("/").pop());
+              // execFileSync:s fel bär kommandoraden och därmed nyckeln eller den signerade adressen: fångas, bara statusen skrivs ut.
+              const curl = (a, vad) => { try { return execFileSync("curl", ["-sS", "--fail", ...a], { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); }
+                catch (e) { if (vad) { console.error(`${vad} föll (curl ${e.status})`); process.exit(1); } return null; } };
+              const anrop = (lage, vad) => { const b = curl(["-X", "POST", `${process.env.FN}?lage=${lage}`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
+                "-H", "Content-Type: application/json", "-d", JSON.stringify({ filer: namn })], vad); return b && JSON.parse(b); };
+              if (!filer.length || filer.length > 20) { console.error("lagg: 1–20 filer per anrop"); process.exit(1); }
+              let h = anrop("kuvos_hamta");
+              if (h) console.log("filerna finns redan i hinken (en omkörning): de jämförs, ingenting skrivs över");
+              else {
+                const u = anrop("kuvos_ladda_upp", "adresserna för uppladdningen").urls;
+                filer.forEach((f, i) => curl(["-X", "PUT", "-H", "Content-Type: application/octet-stream", "--data-binary", "@" + f, u[i]],
+                  `uppladdningen av ${namn[i]} (finns filen redan i hinken skrivs den inte över)`));
+                h = anrop("kuvos_hamta", "hämtningen tillbaka");
+              }
+              let fel = 0;
+              h.filer.forEach((d, i) => { const ok = sha(curl([d.url], `hämtningen av ${d.fil}`)) === sha(fs.readFileSync(filer[i])); fel += !ok;
+                console.log(`${d.fil}: ${ok ? "klart, i hinken byte för byte den skrivna" : "FEL: i hinken med annat innehåll"}`); });
+              process.exit(fel ? 1 : 0);' "$@"
+          }
+          # Kandidatens och radarns dygnsfiler ur hinken (arkivdump dygn_hamta): de dygn från fönstrets början som den tillfälliga
+          # databasens arkiv_export_tabell bokför. Läsfrågan prövar varje fil mot bokföringen (sha256 och antalet rader).
+          psql "$TILLFALLIG_URL" -At -F ' ' -c "SELECT tabell, dag::text FROM arkiv_export_tabell WHERE tabell IN ('ny_kandidat_station', 'radar_precip') AND dag >= '$FRAN'::date ORDER BY 1, 2" > dygnen.txt
+          node -e '
+            const { execFileSync } = require("child_process"), fs = require("fs");
+            const curl = (a, vad) => { try { return execFileSync("curl", ["-sS", "--fail", ...a], { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); }
+              catch (e) { console.error(`${vad} föll (curl ${e.status})`); process.exit(1); } };
+            const per = new Map();
+            for (const rad of fs.readFileSync("dygnen.txt", "utf8").split("\n").filter(Boolean)) { const [t, d] = rad.split(" "); (per.get(t) ?? per.set(t, []).get(t)).push(d); }
+            let n = 0;
+            for (const [t, dagar] of per) {
+              fs.mkdirSync(`arkiv/${t}`, { recursive: true });
+              for (let i = 0; i < dagar.length; i += 70) {   // arkivdumps MAX_DYGN
+                const s = JSON.parse(curl(["-X", "POST", `${process.env.FN}?lage=dygn_hamta`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
+                  "-H", "Content-Type: application/json", "-d", JSON.stringify({ dagar: dagar.slice(i, i + 70), tabell: t })], `adresserna för ${t}`));
+                for (const f of s.filer) { curl(["-o", `arkiv/${t}/${f.dag}.ndjson.gz`, f.url], `hämtningen av ${t} ${f.dag}`); n++; }
+              }
+            }
+            console.log(`kandidatens och radarns dygnsfiler ur hinken: klart (${n} filer)`);'
+          rm dygnen.txt
+          # -L: adressen omdirigeras (301) till halkvakt.se; filen prövas också, eftersom en geojson börjar med {.
+          curl -sSfL -o vaglag.geojson https://axelstar.github.io/halkvakt-karta/data/vaglag.geojson
+          [ "$(head -c 1 vaglag.geojson)" = "{" ] || { echo "::error::vaglag.geojson är inte JSON"; exit 1; }
+          mkdir -p ut
+          RC=0; DATABASE_URL="$TILLFALLIG_URL" NODE_OPTIONS=--max-old-space-size=12288 node --experimental-strip-types "$MATNING" \
+            --vaglag vaglag.geojson --arkiv arkiv --ut ut/friktionen-staderna.json > mat.txt 2>&1 || RC=$?
+          # Vilket steg som föll: bara ordet ur skriptets sista rad, aldrig talen; skälet står i filen i hinken.
+          PROVET=$(sed -n 's/^FRIKTIONEN FÖLL: \(datumspärren\|spärren\|argumenten\|SMHI\|databasen\|nätet\|stationerna\|väderarkivet\|arkivet\|väglaget\|räkningen\|MET\)$/\1/p' mat.txt | tail -1)
+          rm -rf mat.txt arkiv vaglag.geojson
+          if [ -f ut/friktionen-staderna.json ]; then lagg ut/friktionen-staderna.json; fi
+          rm -rf ut
+          if [ "$RC" -ne 0 ]; then echo "::error::friktionen i storstäderna: fel i ${PROVET:-skriptet, utan besked (kod $RC)}"; exit "$RC"; fi
+          echo "friktionen i storstäderna: klart"
 
   # ── mars (marsprövningen, halkvakt-kuvos BESLUT F8) ─────────────────────────────────────────────────────────────────────────────
   # Ett jobb per enhet. Prov (b) först (§7 b): faller det läses ingen halvvinter, och Trafikverkets filer för 2018 och 2024 hämtas
