@@ -3301,3 +3301,8 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - **Inte gjort:** kartan ur hinken och tiden i appen.
 - 19/11 (Claude; Bengt: *"jag tycker att vi kan lägga uppdateringen av kartsteget som ett öppet kort som vi eventuellt tar senare"*): **Kort #671 lagt** (Claude — låst, nyckel Bengts ord): kandidatens Prognos-linjer på
   halkvakt.se ur hinken vid varje publicering, så att webbkartan visar samma sak som appen (DECISIONS #782 punkt 6).
+- 19/11 (Claude; Bengt: *"Ja, slå av"* (19/11) och *"Ja, börja"* (19/11, på bokföringen, vakten och rättelsen)): **Den snabba kandidaten tystade storstäderna 07.42–08.14 UTC** (DECISIONS #903;
+  kort #373, #378).
+  - **Avstängd** med `sql/123` (DB-knappen 44485898988), och publiceringen 08.16 bar timvärdet med storstäderna.
+  - **Rättelsen och vakten** i `sql/124`, vakthundens kontroll 3c och `test/kandidat-snabb-stad.test.ts`.
+  - **Inte gjort:** sammanslagningen, `sql/124`, vakthundens deploy och ett nytt påslag.

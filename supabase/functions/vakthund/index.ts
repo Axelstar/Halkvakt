@@ -261,6 +261,17 @@ Deno.serve(async (req) => {
       if (!snabbOk) problem.push("**favoriter: manifestets sha256 stämmer inte med rapport-snabb.json** — appen förkastar filen och behåller den förra");
       if (!langOk) problem.push("**favoriter: manifestets sha256 stämmer inte med rapport-lang.json** — appen förkastar filen och behåller den förra");
     } catch (e) { problem.push(`**favoriter: hinken gick inte att läsa**: ${String(e).slice(0, 120)}`); }
+    // 3c. STORSTÄDERNA (DECISIONS #903, kort #378): talar kandidaten i storstäderna? 19/11 tystade påslaget av den snabba kandidaten
+    //     storstädernas punkter i 34 minuter utan att något larmade (sql/123). storstader_tyst() (sql/124) jämför den talande regelns
+    //     rader vid stadspunkterna med timvärdets regel för samma talare: noll i den talande när timvärdet har rader är ett driftfel,
+    //     och noll i båda (en varm dag, brytarna av) är inget att mäta.
+    try {
+      const [s] = await sql`SELECT talare, stad_talande, stad_timvarde FROM storstader_tyst()`;
+      const t = Number(s?.stad_talande ?? 0), h = Number(s?.stad_timvarde ?? 0);
+      rad.push(`storstäderna: ${t} rader i den talande regeln (${s?.talare ?? "?"}) · ${h} i timvärdets`);
+      if (h > 0 && t === 0)
+        problem.push(`**Storstäderna är tysta**: den talande regeln (${s?.talare}) har inga rader vid stadspunkterna, fast timvärdets regel har ${h} — förarna i storstäderna får inga kandidatvarningar (sql/124, DECISIONS #903)`);
+    } catch (e) { problem.push(`**Storstäderna gick inte att läsa**: ${String(e).slice(0, 120)}`); }
   } catch (e) {
     problem.push(`Vakthunden kunde inte slutföra kontrollen: ${String(e)}`);
   }
