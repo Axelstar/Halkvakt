@@ -3358,3 +3358,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   DB-knappen för sql/126 (44619009178) och sql/127 (44619099576, regeln orörd), arkivexport deployad (44619213875). Första körningen
   21.48 UTC för timmen 21:00: räknad, raderna har värden (läsläget 44622541740). MET:s fukt per stadspunkt kommer med fysikens nästa
   körning.
+- 19/11 (Claude; Bengt: *"a och ja, kör den 6/12"*): **Villkor 5 läses som texten står** i fuktskuggan och i svartis och rimfrost (halkvakt-kuvos F77,
+  PR #102), och **friktionens läsfråga körs 6/12 utan ny fråga** (fristen `friktionen-las-2026-12-06`). Bedömningen §4.2 bär raden.
+- 19/11 (Claude; Bengt: *"B7 kan du stryka den kommer inte att genomföras"*): **Körlistans B7 struken** (DECISIONS #912). Batteriet under driftens villkor mäts inte;
+  #878:s villkor och batteribudgeten i CLAUDE.md står kvar omätta tills ett eget beslut ändrar dem.
