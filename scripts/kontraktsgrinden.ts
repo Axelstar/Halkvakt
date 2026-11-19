@@ -983,9 +983,18 @@ export const KONTRAKT: Kontrakt[] = [
   {
     namn: "Spridningsspärrens F1 — minoritetens viktandel kring noll som tystar kandidaten",
     varfor: "Den frystas och den nyas regel ska tystas av samma gräns (sql/087, DECISIONS #800). Driver den talar appen olika i den frystas och den nyas timmar.",
-    former: [/k\.frys_min >= ([\d.]+) THEN 'spridning'/],
-    filer: /sql\/087_|sql\/091_|sql\/094_/,  // sql/091 (#804) skapar om båda regelfunktionerna med stadspunkterna
-    golv: 6,
+    // sql/125 (#905): the moisture shadow counts F1 again for the city points, the dry ones too, and must block where the rule blocks.
+    former: [/k\.frys_min >= ([\d.]+) THEN 'spridning'/, /l\.frys_min >= ([\d.]+)\) IS TRUE AS f1/],
+    filer: /sql\/087_|sql\/091_|sql\/094_|sql\/125_/,  // sql/091 (#804) skapar om båda regelfunktionerna med stadspunkterna
+    golv: 7,
+  },
+  {
+    // The anchors of F1 were copied without a contract in 087, 091 and 094; the moisture shadow (sql/125, #905) is the fourth file.
+    namn: "Spridningsspärrens F1 — minsta antal ankare där spärren kan tysta",
+    varfor: "Den frystas och den nyas regel och fuktskuggan ska spärra vid samma antal ankare. Driver det räknar skuggan andra punkter i P0 än regeln.",
+    former: [/coalesce\(\w\.n_ank, 0\) >= (\d+) AND \w\.frys_min/],
+    filer: /sql\/087_|sql\/091_|sql\/094_|sql\/125_/,
+    golv: 7,
   },
   // Den nya kandidatens skugga (sql/068, DECISIONS #692) bär regelns tal en gång till: samma regel på den nyas värden, så att domen i
   // ersättningsregeln §5 räknas likadant för båda. Den kopian vaktas här med de andra (golven höjda med ett).
@@ -1003,11 +1012,11 @@ export const KONTRAKT: Kontrakt[] = [
   {
     namn: "Kandidatens radargräns för fukt — regeln och facitläsningen",
     varfor: "Driver gränsen räknar kuvösen fukt där regeln ser torrt (DECISIONS #565, #593).",
-    former: [/coalesce\(r\.mmh, 0\) >= ([\d.]+)\) THEN 'torr'/, /export const RADAR_MMH = ([\d.]+);/],
+    former: [/coalesce\(r\.mmh, 0\) >= ([\d.]+)\) THEN 'torr'/, /export const RADAR_MMH = ([\d.]+);/, /coalesce\(x\.radar_mmh, 0\) >= ([\d.]+) AS r0/],
     // R = 0,1 sedan 26/10 (#725): 069 bär driftens gräns; 091 är driftens regel sedan #804; 105 är småvägsröstens (#828); 110 är
-    // olycksfacits lager för småvägsrösten, regeln räknad vid olyckans start (#852)
-    filer: /sql\/069_|sql\/091_|sql\/094_|sql\/105_|sql\/110_|kuvos\/facit-trv\.ts$|ingest\/smavag-regel\.ts$/,  // smavag-regel.ts: sql/105 utanför databasen (#843)
-    golv: 9,
+    // olycksfacits lager för småvägsrösten, regeln räknad vid olyckans start (#852); 125 is R0 in the moisture shadow (#905)
+    filer: /sql\/069_|sql\/091_|sql\/094_|sql\/105_|sql\/110_|sql\/125_|kuvos\/facit-trv\.ts$|ingest\/smavag-regel\.ts$/,  // smavag-regel.ts: sql/105 utanför databasen (#843)
+    golv: 10,
   },
   {
     namn: "Kandidatens radarfönster — regeln och facitläsningen",
@@ -1084,6 +1093,41 @@ export const KONTRAKT: Kontrakt[] = [
     filer: /sql\/091_|sql\/094_/,   // sql/094 (#813) skapar om båda regelfunktionerna med stadsgrenens timme som underfråga
     golv: 4,
   })),
+  // THE MOISTURE SHADOW IN THE CITIES (sql/125, DECISIONS #905; halkvakt-kuvos F74 §2.3): K1 and K2a are read as the kuvös reading of the
+  // friction reads them (its preciseringar 2, 9 and 10), so its constants are copied into the migration. The kuvös files lie over the
+  // checkout in ci, as for kuvos/facit-trv.ts above; without them these contracts are under the floor. Drift means the shadow counts
+  // another source than the one the preregistration names, and the reading's verdict rests on it.
+  ...([
+    ["K1:s grannradie i km", /export const K1_KM = (\d+)/, /::geography, (\d+) \* 1000\)\s+-- K1_KM/, /kuvos-fukten-staderna-2026-11\.ts$/, 2],
+    ["K1:s fjärrytor — stationerna som aldrig är grannar", /const FJARRYTA = \/([^/\n]+)\/;/, /station_id !~ '([^']+)'\s+-- FJARRYTA/,
+      /kuvos-fukten-staderna-2026-11\.ts$/, 2],
+    ["K1:s daggpunkt — nedre gränsen i °C", /DAGG_SPANN: \[number, number\] = \[(-?\d+), -?\d+\]/, /BETWEEN (-?\d+) AND -?\d+\s+-- DAGG_SPANN/,
+      /kuvos-friktionen-staderna-2026-12\.ts$/, 2],
+    ["K1:s daggpunkt — övre gränsen i °C", /DAGG_SPANN: \[number, number\] = \[-?\d+, (-?\d+)\]/, /BETWEEN -?\d+ AND (-?\d+)\s+-- DAGG_SPANN/,
+      /kuvos-friktionen-staderna-2026-12\.ts$/, 2],
+    ["K1:s daggpunktsvakt — yta minus daggpunkt, °C", /export const DAGG_VAKT_C = (-?\d+);/, /dagg >= (-?\d+), false\) AS k1_rim,\s+-- DAGG_VAKT_C/,
+      /kuvos\/daggpunktsvagen\.ts$/, 2],
+    ["K1:s yta — värdevaktens nedre gräns i °C", /surface_temp_c: \[(-?\d+), -?\d+, "°C"\]/, /surface_temp_c BETWEEN (-?\d+) AND -?\d+\s+-- SPANN surface_temp_c/,
+      /scripts\/vardevakten\.ts$/, 2],
+    ["K1:s yta — värdevaktens övre gräns i °C", /surface_temp_c: \[-?\d+, (-?\d+), "°C"\]/, /surface_temp_c BETWEEN -?\d+ AND (-?\d+)\s+-- SPANN surface_temp_c/,
+      /scripts\/vardevakten\.ts$/, 2],
+    ["K2a:s avstånd till väglagssträckan i meter", /export const PAR_M = (\d+);/, /::geography, (\d+)\)\) AS k2a\w*,?\s+-- PAR_M/,
+      /kuvos\/facit-trv\.ts$/, 3],
+  ] as const).map(([s, kuvos, sql, fil, golv]) => ({
+    namn: `Fuktskuggan — ${s}`,
+    varfor: "Skuggan ska räkna källan så som förregistreringen säger, alltså som kuvösens läsning av friktionen. Driver de isär läses en annan källa än den som är förregistrerad.",
+    former: [kuvos, sql],
+    filer: new RegExp(`${fil.source}|sql\\/125_`),
+    golv,
+  })),
+  {
+    namn: "Fuktskuggan — K1:s nederbördsord",
+    varfor: "Skuggan ska räkna samma ord som nederbörd som kuvösens läsning av friktionen. yes, no och Dry är aldrig fukt (DECISIONS #905).",
+    former: [/export const NEDERBORD = new Set\(\[([^\]]*)\]\)/, /precipitation IN \(([^)]*)\)\) AS k1_nb,\s+-- NEDERBORD/],
+    filer: /kuvos-friktionen-staderna-2026-12\.ts$|sql\/125_/,
+    golv: 2,
+    lista: true,
+  },
 ];
 
 // ── SJÄLVTEST mot känd sanning, utan disk ──────────────────────────────────────────────

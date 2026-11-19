@@ -21,7 +21,9 @@ const TABELLER = ["trend_kandidater", "trend_stigande", "radar_precip", "kandida
   // Den nya kandidatens domlogg, raderad efter 14 dygn (sql/083, DECISIONS #792).
   "ny_kandidat_skugga", "ny_kandidat_station",
   // Storstädernas logg och dess körningar, som sql/096 annars gallrar osparade efter 14 dygn (sql/114, DECISIONS #888).
-  "ny_kandidat_skugga_stad", "ny_kandidat_skugga_stad_korning"];  // sql/053, 057, 063, 083 och 114:s vitlista
+  "ny_kandidat_skugga_stad", "ny_kandidat_skugga_stad_korning",
+  // The moisture shadow in the cities and its runs, thinned after 14 days (sql/125, DECISIONS #905).
+  "ny_kandidat_fuktskugga_stad", "ny_kandidat_fuktskugga_stad_korning"];  // sql/053, 057, 063, 083, 114 och 125:s vitlista
 
 async function rpc(fn: string, args: Record<string, unknown>): Promise<any> {
   const r = await fetch(`${SB}/rest/v1/rpc/${fn}`, { method: "POST", headers: { ...H, "Content-Type": "application/json" }, body: JSON.stringify(args) });

@@ -10,6 +10,8 @@
 //   node --experimental-strip-types ingest/ny-kandidat-db.ts logga                    ny_kandidat_logga(): domloggen för timmen
 //   node --experimental-strip-types ingest/ny-kandidat-db.ts logga-stad               ny_kandidat_logga_stad(): storstädernas punkter
 //                                                                                  för olycksfacit (sql/096, #815); skriver bara klart
+//   node --experimental-strip-types ingest/ny-kandidat-db.ts fuktskugga               ny_kandidat_logga_fuktskugga(): the moisture shadow in
+//                                                                                  the cities (sql/125, #905), after logga-stad; never a number
 //   node --experimental-strip-types ingest/ny-kandidat-db.ts skriv-punkter <punkter.csv>   del A:s punkter → kandidat_punkter (sql/078)
 //   node --experimental-strip-types ingest/ny-kandidat-db.ts skriv-par <kandidatfil.json>  paret ur kandidatfilen → kandidat_par (sql/078)
 //   node --experimental-strip-types ingest/ny-kandidat-db.ts --sjalvtest
@@ -47,6 +49,7 @@ export const SATS = {
   gallra: `SELECT ${TABELLER.gallra}() AS n`,
   logga: `SELECT ${TABELLER.logga}() AS m`,
   loggaStad: `SELECT ny_kandidat_logga_stad() AS m`,   // sql/096 (#815)
+  fuktskugga: `SELECT ny_kandidat_logga_fuktskugga() AS m`,   // sql/125 (#905)
 };
 
 /** Kandidaten på en kvart (DECISIONS #782, sql/078): punkternas lägen och paret, som kandidat_snabb() läser. Ett läge som inte ändrats
@@ -99,7 +102,7 @@ export function lasFlagga(fil: string = FLAGGA): Flagga {
   return { pa: true, skal: `skriv true, paritetsprovet klarat i körningen ${p.korning}` };
 }
 
-const SKRIVANDE = new Set(["skriv-ph", "skriv-live", "logga", "logga-stad", "skriv-punkter", "skriv-par"]);
+const SKRIVANDE = new Set(["skriv-ph", "skriv-live", "logga", "logga-stad", "fuktskugga", "skriv-punkter", "skriv-par"]);
 
 async function pool() {
   const url = process.env.DATABASE_URL;
@@ -159,6 +162,11 @@ export async function main(arg: string[], flaggfil: string = FLAGGA): Promise<st
     // Storstädernas punkter (#815): funktionen svarar klart, tyst eller brytarna av, aldrig ett tal (#768).
     const p = await pool();
     try { console.log(`ny_kandidat_logga_stad: ${(await p.query(SATS.loggaStad)).rows[0].m}`); } finally { await p.end(); }
+  } else if (kmd === "fuktskugga") {
+    // The moisture shadow in the cities (sql/125, #905): a call of its own after logga-stad, so that an error here cannot undo the
+    // city log. The function answers klart, tyst or brytarna av, never a number (#768).
+    const p = await pool();
+    try { console.log(`ny_kandidat_logga_fuktskugga: ${(await p.query(SATS.fuktskugga)).rows[0].m}`); } finally { await p.end(); }
   } else if (kmd === "skriv-punkter") {
     const rader = lasPunkter(a);
     const p = await pool();
@@ -205,7 +213,7 @@ async function sjalvtest() {
   writeFileSync(fil, gzipSync("punkt,korning_utc,tid_utc,ts_fysik,ph\nv00001,2026-11-01T06:00:00Z,2026-11-01T12:00:00Z,-1.25,-0.9\n"));
   const tyst = console.log; const ut: string[] = []; console.log = (...x: unknown[]) => { ut.push(x.join(" ")); };
   try {
-    for (const kmd of [["skriv-ph", fil], ["skriv-live", fil], ["logga"], ["logga-stad"], ["skriv-punkter", fil], ["skriv-par", fil]]) {
+    for (const kmd of [["skriv-ph", fil], ["skriv-live", fil], ["logga"], ["logga-stad"], ["fuktskugga"], ["skriv-punkter", fil], ["skriv-par", fil]]) {
       const r = await main(kmd, av);
       k(r === "av" && ut.at(-1)!.includes("ingenting skrivs"), `${kmd[0]} med flaggan av: ${r} ${ut.at(-1)}`);
     }

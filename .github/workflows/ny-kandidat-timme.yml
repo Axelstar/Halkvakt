@@ -141,7 +141,21 @@ jobs:
           node --experimental-strip-types ingest/ny-kandidat-db.ts skriv-live live-bc.csv > /dev/null 2>&1 || { echo "::warning::storstädernas punkter: skrivningen föll för $TID"; exit 1; }
           # Stadspunkternas logg för olycksfacit (sql/096, DECISIONS #815), efter att deras värden är skrivna. Utskriften visas inte (#768).
           node --experimental-strip-types ingest/ny-kandidat-db.ts logga-stad > /dev/null 2>&1 || { echo "::warning::storstädernas punkter: stadsloggen föll för $TID"; exit 1; }
+          echo "STADSLOGG=1" >> "$GITHUB_ENV"
           echo "storstädernas punkter: klart för $TID" | tee -a "$GITHUB_STEP_SUMMARY"
+      # THE MOISTURE SHADOW IN THE CITIES (sql/125, DECISIONS #905; halkvakt-kuvos F74): last in the city round, only after the city log
+      # was written, in a step and a call of its own, so that an error here can never undo the city log or fail the job
+      # (continue-on-error). A run that fails shows here as a warning and as a missing row in its run log. It never speaks: it writes
+      # only its own two tables. The output is not shown (#768), only done or failed.
+      - name: Storstädernas fuktskugga — tyst, efter stadsloggen
+        if: env.FLAGGA == 'på' && env.HOPPAD != '1' && env.STADSLOGG == '1'
+        continue-on-error: true
+        timeout-minutes: 5
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        shell: bash
+        run: |
+          node --experimental-strip-types ingest/ny-kandidat-db.ts fuktskugga > /dev/null 2>&1 || { echo "::warning::storstädernas fuktskugga föll för $TID"; exit 1; }
+          echo "storstädernas fuktskugga: klart för $TID" | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Ankarna lämnar aldrig jobbet
         if: always()
         run: rm -f ankare.csv

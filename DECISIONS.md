@@ -18087,3 +18087,86 @@ görs bara på Bengts ord.
 kolumnnamnet och inte tabellen, och värdevakten läser inte jsonb.
 
 **Stomdokument:** MAT säsongsfacit, BED §4.2
+
+## #905 (19/11 2026) Fuktskuggan i storstäderna: byggd som tyst skugga efter stadsloggen (körlistan C4)
+
+**Bakgrund.** Förregistreringen av fuktskuggan signerades 19/11 (halkvakt-kuvos F74). Skuggan räknar varje timme vad fler fuktkällor
+hade gett vid storstädernas punkter: grannstationen (K1), väglagets *Våt* (K2a) och varianten utan fuktvillkor. Radarn (R0) står bredvid,
+eftersom den är storstädernas enda fukt i regeln (`sql/091`, `sql/094`). Skuggan skriver bara en logg och talar aldrig. Förregistreringens
+§13 listar vad som byggs här. Det här beslutet är punkterna 1–5. Punkt 6, DB-knappen och deployen, görs bara på Bengts ord.
+
+**Bygget.**
+- **`sql/125_fuktskuggan_stad.sql`:**
+  - **Tabellerna.** `ny_kandidat_fuktskugga_stad` har en rad per grupp och timme, bara för grupper med punkter i P0. Raden bär
+    antalet punkter i P0 med fukt per variant och antalet utan värde. `ny_kandidat_fuktskugga_stad_korning` har en rad per körning:
+    *räknad*, *tyst* eller *av*, och brytarna som var på.
+  - **Funktionen** `ny_kandidat_logga_fuktskugga()` är plpgsql med fast sökväg (#784) och UTC.
+  - **Gallringen** sker efter 14 dygn, som stadsloggen.
+  - **Rättigheterna:** `service_role` i samma fil (#653), RLS utan policy och REVOKE, vaktat på `pg_roles`.
+  - **Exporten** till hinken går samma väg som `sql/114`. Listan `TABELLER` i `supabase/functions/arkivexport` ändras i samma commit.
+- **Punkterna** är regelns egna rader vid stadspunkterna, lästa i skuggans anrop. Brytarna och marsfönstret är alltså regelns. P0 är
+  raderna utan veto och utan spärren F1. F1 räknas om för varje rad, också de torra, ur regelns ankare och `ny_kandidat_live.frys_min`
+  (förregistreringen §2.3 punkt 2).
+- **Anropet** sker i `ny-kandidat-timme.yml`, sist i stadsomgången:
+  - Det är ett eget steg med `continue-on-error`, och det körs bara när stadsloggen är skriven (`STADSLOGG=1`).
+  - Kommandot är `ingest/ny-kandidat-db.ts fuktskugga`. Utskriften visas inte, bara klart eller fel (#768).
+- **Värdevakten:**
+  - Båda tabellerna står i `TID`, och varje antal har ett eget spann i `SPANN`.
+  - `ORD` har ordlistor för `status`, `brytare`, `omrade` och `lager`, och för `condition_info`.
+  - Inga flaggor finns i tabellerna.
+- **Kontraktsgrinden** vaktar kopiorna: R0:s radargräns och F1:s två tal mot regeln, och K1:s och K2a:s definitioner mot kuvösens
+  läsning av friktionen och mot värdevaktens spann för ytan.
+
+**Tiden e.** Skuggan läser regeln i ett eget anrop direkt efter stadsloggen. Det är förregistreringens reserv (§2.3 punkt 1). Skälet är att
+samma anrop hade krävt en deltransaktion i stadsloggens transaktion. En deltransaktion skyddar bara mot ett vanligt fel. En tidsgräns gäller
+hela satsen, och en krasch eller ett minnesfel i skuggan hade tagit stadsloggen med sig. Varje rad i skuggan bär sin tid (`raknad_at`), och
+stadsloggens rader bär sin (`skriven_at`). Kontrollen i §8 kan därför visa båda tiderna för varje grupptimme där de skiljer sig.
+
+**Spannen.** Gränserna kommer ur schemat. En punkts id är en bokstav och fem siffror, och en grupp har ett lager (`sql/089`). En grupp rymmer
+därför högst 100 000 punkter, och en körning högst 200 000 grupper. Spannen säger alltså ingenting om hur stora grupperna är.
+- **#904 svar 5 (a)** kräver gränser ur schemat för stadstabellerna, aldrig ur punktlistan.
+- **F74 fråga 4 (ja)** tillåter den största gruppens antal som övre gräns, men kräver det inte.
+- Gränser ur schemat följer båda besluten. Någon motsägelse i vad som ska göras finns inte. Skälen skiljer sig: F74 räknar inte gruppens
+  storlek som kuvösens tal, medan #904 inte vill att spannet röjer den. Tillståndet i F74 används inte.
+
+**Tillägg och val i bygget, utöver förregistreringens text:**
+- **`r0_f1_punkter`:** punkterna med R0 som F1 tystar. Utan fältet kan kontrollen i §8 (*dess spridning*) inte göras.
+  - Raderna gäller bara grupper med punkter i P0 (§4).
+  - Spridningen prövas därför bara där skuggan har en rad. *Varnar* prövas överallt, eftersom en varnande punkt alltid ligger i P0.
+- **`brytare` är en textlista,** inte jsonb som i stadsloggen, så att värdevakten kan läsa den. Innehållet är detsamma.
+- **`condition_info`** har bara de fyra ord som repot har sett i arkivet (`docs/TILL-AXEL-HALKORDEN.md`). Vinterns ord är inte lästa
+  härifrån. De står som OKÄNT ORD i värdevakten tills en människa har läst dem, och det gäller också `road_conditions`.
+- **Avstånden** mäts på jordellipsoiden (geography), som regelns veto. Kuvösens skript räknar med haversine.
+- **Daggpunkten** tas ur den senaste giltiga raden, som förregistreringen säger. Läsfrågan för friktionen tar den ur halvtimmens senaste
+  rad.
+- **Ytan** ska ligga inom värdevaktens spann (läsfrågans precisering 2).
+- **Nederbörden** räknas i varje rad hos grannen i timmen, också en rad som vakterna fäller. Grannen själv måste ha en giltig rad.
+
+**Provat.**
+- Integrationsprovet #905 körs i ci mot PostGIS med 17 platser:
+  - Det visar att raderna bär innehåll plats för plats.
+  - Det visar att ingen regelfunktion ändras (md5, och `kandidat_skugga_meta` stämmer).
+  - `talande_regel()` och `ny_kandidat_regel()` ger samma rader före och efter skuggan.
+  - Det visar kontrollen mot stadsloggen, *av* och *tyst*, en andra körning, gallringen och exporten.
+  - Provet har 17 motprov på funktionen, och vart och ett ska fällas av minst en plats.
+- `test/fuktskugga-stad.test.ts` utan databas visar att filen bara skriver sina två tabeller och skapar inga regelfunktioner. Det visar
+  också att exportlistan är densamma på båda ställena, att värdevakten känner varje fält med schemats gränser, och flödets ordning.
+- Inte provat i drift och inte i Supabases avbild.
+
+**Ordningen i driften (Bengts ord):**
+1. Förregistreringens §8 kräver *full skala utanför driften* före DB-knappen: en hel timme med alla brytare på i Supabases egen avbild,
+   med `EXPLAIN (VERBOSE)`, tiden per körning och storleken.
+2. DB-knappen med *migrera* och `sql/125_fuktskuggan_stad.sql`.
+3. Deployen av `arkivexport`. I omvänd ordning vägrar `arkiv2_tabell` de nya namnen.
+
+Mellan sammanslagningen och migreringen faller flödets nya steg varje timme med en varning, och jobbet förblir grönt.
+
+**Kvar.** Beviset efter driftsättningen: körningsloggen har en rad för varje timme under ett helt dygn, minst en rad i skuggan bär
+innehåll, och skuggans första dygn är bokfört i `arkiv_export_tabell`.
+
+**Alternativ.**
+- **Samma anrop som stadsloggen, med en deltransaktion:** avvisat, se *Tiden e*.
+- **Den största gruppens antal som gräns:** avvisat. Det är förenligt med F74 men inte med #904.
+- **`brytare` som jsonb, som i stadsloggen:** avvisat, eftersom värdevakten inte läser jsonb (§11.7).
+
+**Stomdokument:** SYS 2 — fuktskuggan i kandidatens timkedja efter stadsloggen, MAT 5 — storstädernas fukt i skugga

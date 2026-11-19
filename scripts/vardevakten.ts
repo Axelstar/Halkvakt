@@ -157,6 +157,20 @@ export const SPANN: Record<string, [number, number, string]> = {
   // före påslaget, två körningar i rad), så den besiktigas innan vakthunden larmar på den. Läst 17/11 ur pg_nets svar (#892): 7 668
   // till 9 566 ms på 179 körningar. Tio minuter är ingen byggtid utan ett fel i svaret.
   bygget_ms: [0, 600000, "ms — publiceringens bygge av lägesfilen"],
+  // The moisture shadow in the cities (sql/125, DECISIONS #905; halkvakt-kuvos F74 §5). The fields have names of their own, since a key
+  // here holds in every table. The upper bounds come from the schema, never from the point list (TROSKLAR-SASONGSFACIT §11.7, DECISIONS
+  // #904 answer 5 (a)): a point id is ^[BC][0-9]{5}$ and a group has one layer (sql/089), so a group holds at most 100 000 points and a
+  // run at most 200 000 groups. The bounds say nothing about how large the groups are.
+  p0_punkter: [0, 100000, "stadspunkter i P0 i gruppen — gränsen är schemats (sql/089), inte gruppens storlek"],
+  r0_punkter: [0, 100000, "stadspunkter i P0 med radarns fukt (R0)"],
+  r0_f1_punkter: [0, 100000, "stadspunkter med R0 som spärren F1 tystar"],
+  k1_punkter: [0, 100000, "stadspunkter i P0 med R0 eller grannstationens fukt (K1)"],
+  k1_nb_punkter: [0, 100000, "stadspunkter i P0 med R0 eller grannstationens nederbörd"],
+  k1_rim_punkter: [0, 100000, "stadspunkter i P0 med R0 eller grannstationens rimfrost"],
+  k1_utan_varde: [0, 100000, "stadspunkter i P0 utan giltig station inom 15 km"],
+  k2a_punkter: [0, 100000, "stadspunkter i P0 med R0 eller Våt inom 2 km (K2a)"],
+  k2a_utan_varde: [0, 100000, "stadspunkter i P0 utan väglagssträcka inom 2 km"],
+  p0_grupper: [0, 200000, "grupper skrivna i fuktskuggans körning — gränsen är schemats (två lager, sql/089)"],
 };
 
 /** Identifierare är inte mätvärden. De ska inte stå som obesiktigade — men de ska inte heller
@@ -179,6 +193,16 @@ export const ORD: Record<string, { ord: string[]; not: string }> = {
   trv_varning: { ord: ["risk för halka", "hal vägbana", "snörök"], not: "Trafikverkets varning på sträckan (Warning). Visas ordagrant, avgör inget" },
   // Snöfall och smältvatten kom redan den första timmen i drift (17/11 kl. 15 UTC): listan från morgonen var inte hela ordförrådet.
   trv_orsak: { ord: ["regn", "fallande temperatur", "frost", "snöfall", "smältvatten"], not: "Trafikverkets orsak till väglaget (Cause). Visas ordagrant, avgör inget" },
+  // The road state's word list, where the rule and K2a in the moisture shadow read Våt (sql/091, sql/125; halkvakt-kuvos F74 §5). Only the
+  // words the repo has seen in the archive are here (docs/TILL-AXEL-HALKORDEN.md, 21/2–25/8 2026). The winter's words have not been read
+  // from here: each one is an OKÄNT ORD until a person has read it in the value guard's output and added it.
+  condition_info: { ord: ["torrt", "våt", "fläckvis våt", "fläckvis torrt"],
+    not: "Trafikverkets väglagsord på sträckan (ConditionInfo), en textlista. Våt är fukten i regeln och i fuktskuggans K2a; fläckvis Våt räknas inte" },
+  // The moisture shadow's own codes (sql/125). The areas and layers are the four switches in sql/089.
+  status: { ord: ["räknad", "tyst", "av"], not: "fuktskuggans körning: räknad, tyst (kandidatens timme saknas) eller av (alla brytare av)" },
+  brytare: { ord: ["stor-stockholm/b", "stor-göteborg/b", "stor-malmö/b", "stor-stockholm/c"], not: "brytarna som var på vid körningen, område/lager" },
+  omrade: { ord: ["stor-stockholm", "stor-göteborg", "stor-malmö"], not: "storstadens område (sql/089)" },
+  lager: { ord: ["b", "c"], not: "stadspunktens lager: B statliga vägar, C kommunala gator (sql/089)" },
 };
 
 /** FLAGGOR (körlistan B3, 17/11 2026). Ett sanningsvärde som bär en mätning deklareras här med vad sant betyder. NULL betyder alltid
@@ -343,6 +367,8 @@ const TID: Record<string, string> = {
   ny_kandidat_ph: "tid", ny_kandidat_live: "tid", ny_kandidat_skugga: "observed_at", ny_kandidat_station: "observed_at",
   // Publiceringens byggtid (sql/115, DECISIONS #896): bär avbrottsvillkoret i #833 — fött besiktigad.
   publicera_bygge: "t",
+  // The moisture shadow in the cities and its runs (sql/125, DECISIONS #905): born inspected, with the time columns of the export.
+  ny_kandidat_fuktskugga_stad: "observed_at", ny_kandidat_fuktskugga_stad_korning: "korning",
 };
 
 console.log(`Värdevakten — besiktning av arkivets numeriska fält (${DAGAR} dygns fönster)\n`);
