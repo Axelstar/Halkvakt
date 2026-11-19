@@ -3287,3 +3287,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 19/11 (Claude; Bengt: *"Ja, gör det"*): **PAT-nyckelns frist flyttad till nästa byte.** Axel bytte PAT:en och pulsklockans nyckel 8/11;
   nyckelkalendern 9/11 (ärende #1440) visar 2027-02-06 för båda. Ärendet #1461 stängt. Den nya fristen `pat-rotation-2027-01-30` har ett
   eget id, eftersom fristvakten tiger för alltid om ett id vars ärende är stängt. Kalenderns rad rättad.
+- 19/11 (Claude; Bengt: *"Ja, förbered"* (19/11, på påslaget av kandidaten på en kvart)): **Kandidaten på en kvart: skuggan läst och påslaget förberett** (DECISIONS #782, tillägget; kort #373).
+  Skuggan 7/11–19/11: 0,81 gånger så många utfallsbyten som timvärdet (högst 1,5), avvikelsen vid :47 0,00 °C i median, 12 nätter med
+  varning. `sql/121` (vem som talar) och `sql/122` (raden) med prov i `test/kandidat-snabb-pa.test.ts`. Fristen flyttad till 26/11.
+  **Inte gjort:** migrationerna, påslaget, kartan ur hinken, tiden i appen och PRODUKTBOKEN.
