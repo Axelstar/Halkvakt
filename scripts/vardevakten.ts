@@ -226,11 +226,9 @@ export const FLAGGOR: Record<string, string> = {
   surface_ice: "ytstatusgivaren: is på vägbanan (Surface.Ice); markerar inte is tillförlitligt (kort #324)",
   surface_snow: "ytstatusgivaren: snö på vägbanan (Surface.Snow)",
   vat: "kandidatens domlogg: sträckans väglag säger våt", flackvis_vat: "kandidatens domlogg: sträckans väglag säger fläckvis våt",
-  // The small-road voice's rows (sql/105, sql/128; DECISIONS #828, #908, halkvakt-kuvos F75 §8): ned is the rule's moisture, rim and n6
-  // are the shadow's flags, which no rule reads. NULL in rim and n6 = not counted (a row written before the chain carried them).
+  // The small-road voice's rows (sql/105; DECISIONS #828, #908, halkvakt-kuvos F75 §13 point 1): ned is the rule's moisture, and the rule
+  // already reads it, so it is declared now that smavag_live is in TID below.
   ned: "småvägsröstens fukt i regeln: kuvösens strängare N3, nederbörd i timmen eller de tre före (sql/105)",
-  rim: "småvägarnas rimfrostläge, varianten N3+rim ur kuvösens kedja (sql/128); läses inte av regeln",
-  n6: "småvägarnas nederbörd i timmen eller de sex före, varianten N6 ur kuvösens kedja (sql/128); läses inte av regeln",
 };
 /** Statusflaggor är bokföring, inte mätvärden: samma kategori som identifierarna. */
 export const STATUSFLAGGOR = new Set(["deleted"]);
@@ -353,8 +351,7 @@ if (korsSjalv && process.argv.includes("--sjalvtest")) {
   k("MET:s daggpunkt +31 °C fälls", doma(f("met_td_c", { min: -20, max: 31 })).utfall, "UTANFÖR SPANN");
   k("samma −52 °C passerar som stationens daggpunkt", doma(f("dewpoint_c", { min: -52, max: 2 })).utfall, "OK");
   k("MET:s fukt som procent fälls", doma(f("rh2m", { min: 0.3, max: 95 })).utfall, "UTANFÖR SPANN");
-  k("småvägarnas flaggor är deklarerade", [domaFlagga({ tabell: "smavag_live", kolumn: "ned", rader: 5000 }).utfall,
-    domaFlagga({ tabell: "smavag_live", kolumn: "rim", rader: 5000 }).utfall, domaFlagga({ tabell: "smavag_live", kolumn: "n6", rader: 5000 }).utfall].join(), "OK,OK,OK");
+  k("småvägsröstens ned är deklarerad", domaFlagga({ tabell: "smavag_live", kolumn: "ned", rader: 5000 }).utfall, "OK");
   if (!ok) { console.error("\nSJÄLVTEST FÄLLDE."); process.exit(1); }
   console.log("\nSJÄLVTEST OK: alla fyra fall som lurade oss 12/9 fastnar, kodlistor fälls inte");
   console.log("för dominans, och ett odeklarerat fält är obesiktigat även när talen ser rimliga ut.");
@@ -395,7 +392,7 @@ const TID: Record<string, string> = {
   ny_kandidat_fuktskugga_stad: "observed_at", ny_kandidat_fuktskugga_stad_korning: "korning",
   // Svartis and rimfrost (DECISIONS #908; halkvakt-kuvos F75 §8, §13 point 1): MET's moisture at the city points (sql/126), born
   // inspected; and the three tables the rules already read, which were missing here, so their fields were never scanned, not even as
-  // OBESIKTIGADE: the small roads' rows (sql/105, sql/128) and the radar per city group and per small-road piece (sql/090, sql/104).
+  // OBESIKTIGADE: the small roads' rows (sql/105) and the radar per city group and per small-road piece (sql/090, sql/104).
   ny_kandidat_met_stad: "tid", smavag_live: "tid", radar_stad: "observed_at", radar_smavag: "observed_at",
 };
 

@@ -18197,12 +18197,17 @@ innehåll, och skuggans första dygn är bokfört i `arkiv_export_tabell`.
 
 **Stomdokument:** SYS 2 — fuktskuggan i kandidatens timkedja efter stadsloggen, MAT 5 — storstädernas fukt i skugga
 
-## #908 (19/11 2026) Svartis och rimfrost i driften: MET:s fukt vid stadspunkterna, skuggans nya kolumner och småvägarnas flaggor (körlistan C7, kort #656)
+## #908 (19/11 2026) Svartis och rimfrost i storstäderna: MET:s fukt vid stadspunkterna och skuggans nya kolumner (körlistan C7, kort #656)
 
 **Beslut.** Bengt 19/11: *"gör alla delar du har i rutan ovan"*. Förregistreringen för svartis och rimfrost är signerad i halkvakt-kuvos
-(F75; här #906). Det här beslutet bygger dess §12 punkterna 1–5 i Halkvakt: rörarbetet i driften, utan punkter, särdrag, kuvösens tal eller
-fysik (#804, #810). Punkt 6, DB-knappen och deployen, görs bara på Bengts och Axels ord. Skuggan talar aldrig (F75 §3): regeln, rösten,
-lägesfilen och appen ändras inte.
+(F75; här #906). Det här beslutet bygger storstädernas del av dess §12 punkterna 1–5 i Halkvakt: rörarbetet i driften, utan punkter,
+särdrag, kuvösens tal eller fysik (#804, #810). Punkt 6, DB-knappen och deployen, görs bara på Bengts och Axels ord. Skuggan talar aldrig
+(F75 §3): regeln, rösten, lägesfilen och appen ändras inte.
+
+**Småvägarnas del av C7 drogs tillbaka 19/11 på Bengts order** och står kvar på kort #656. Skälet enligt Bengt: det var redan
+överenskommet att småvägarna inte kan mätas på samma sätt som storstäderna, och att mäta småvägarnas varianter mot friktionen var ett
+avsteg. Inget byggs här för småvägsrösten: `smavag_live`, `ingest/smavag-live-db.ts`, småvägskedjan och underlaget till hinken är som på
+main.
 
 **Bygget.**
 - **`sql/126_stadens_met_fukt.sql`:**
@@ -18219,20 +18224,14 @@ lägesfilen och appen ändras inte.
   - `s1h_punkter` till `s4h_punkter`. Radarn i gruppen ska vara minst 0,1 mm/h inom 1, 2, 3 eller 4 timmar. S-3h avgör (fråga 3 a).
   - `c7_alla_punkter`: R0, G-rim, M-dagg eller S-3h.
   - Varje variant har fukt där R0 har det. Funktionen är plpgsql med fast sökväg och UTC, och ingen regelfunktion ändras.
-- **`sql/128_smavag_fukt.sql`** ger `smavag_live` två flaggor som får vara NULL: `rim` för N3+rim och `n6` för N6. `smavag_regel()` och
-  `smavag_talar()` läser bara `ned` och ändras inte.
-- **Kedjan:**
-  - `ny-kandidat-fysik.yml` får ett eget steg efter stadspunkternas PH, med `continue-on-error`. Kuvösens kedja (`kuvos/stadens-fukt.ts`)
-    läser samma körningsfil och samma punkter och timmar som PH. Sedan skriver `ingest/ny-kandidat-db.ts skriv-met-stad` raderna. Loggen
-    säger bara klart eller fel.
-  - `ingest/smavag-live-db.ts` läser både `punkt,ned` och `punkt,ned,rim,n6`. En fil utan flaggorna skrivs som förut.
-  - `kuvos-smavag-timme.yml` lägger varje timme en ny fil i hinken, `kuvos-smavag-2026-27/fukt_<timme>.csv.gz` (F75 §12 punkt 3). Filen
-    bär varje rad i `smavag_live` med `ned`, `rim`, `n6` och regelns utfall, också där regeln är torr. Den skrivs aldrig över, och ett fel
-    fäller inte steget. Underlaget (`underlag_`) ändras inte, eftersom tre läsare läser dess rubrik exakt.
+- **Kedjan.** `ny-kandidat-fysik.yml` får ett eget steg efter stadspunkternas PH, med `continue-on-error`. Kuvösens kedja
+  (`kuvos/stadens-fukt.ts`) läser samma körningsfil och samma punkter och timmar som PH. Sedan skriver `ingest/ny-kandidat-db.ts
+  skriv-met-stad` raderna. Loggen säger bara klart eller fel.
 - **Värdevakten** (F75 §8):
-  - `TID` får `ny_kandidat_met_stad`, `smavag_live`, `radar_stad` och `radar_smavag`. De tre sista läser regeln redan (F75 §13 punkt 1).
+  - `TID` får `ny_kandidat_met_stad`.
+  - `TID` får också `smavag_live`, `radar_stad` och `radar_smavag`, och `FLAGGOR` får `ned`. Regeln läser de tabellerna redan, men deras
+    fält skannades aldrig (F75 §13 punkt 1). Det är en lucka oberoende av C7, och därför står det kvar sedan småvägarnas del drogs tillbaka.
   - `SPANN` får `met_td_c` med F38:s spann, som är strängare än `dewpoint_c`, och schemats gränser för de nya antalen.
-  - `FLAGGOR` får `ned`, `rim` och `n6`.
 - **Kontraktsgrinden** vaktar fem saker:
   - M, U och H mot kuvösens `AVGOR`;
   - att fuktigheten är en andel, i värdevakten och i Magnus formel;
@@ -18256,11 +18255,7 @@ Innehållet är det F75 beskriver: MET:s luft och fuktighet för samma punkt, k�
   - Varje variant har fukt där R0 har det. Veto och F1 kommer aldrig in i P0.
   - Varje motprov på funktionen fälls av minst en plats.
   - `sql/126` och `sql/127` ändrar ingen regelfunktion (md5).
-- Provet för småvägarna:
-  - `sql/128` ändrar inte `smavag_timme()`, `smavag_regel()` och `smavag_talar()` (md5).
-  - Regeln och rösten ger samma rader vad flaggorna än säger.
-  - Fuktfilen bär varje rad i timmen, och underlaget är oförändrat.
-- `test/fuktskugga-stad.test.ts` prövar filerna, flödena och värdevakten utan databas.
+- `test/fuktskugga-stad.test.ts` prövar filerna, flödet och värdevakten utan databas.
 - **Motprovet i ci:** commit 20a9d231 lät M-dagg pröva fuktigheten i timmen före i stället för i kandidatens timme. Felet ligger utanför
   kontraktsgrinden, som höll. ci-körningen 44599693472 föll bara på integrationsprovet #907 #908, i FS3 vid platsen S19
   (`test/integration.test.ts:5002`). Nästa commit återställde felet.
@@ -18268,26 +18263,22 @@ Innehållet är det F75 beskriver: MET:s luft och fuktighet för samma punkt, k�
 
 **Ordningen i driften (Bengts och Axels ord):**
 1. Full skala utanför driften (F75 §9), som för #907.
-2. DB-knappen med *migrera*: `sql/126`, sedan `sql/127` och `sql/128`.
+2. DB-knappen med *migrera*: `sql/126`, sedan `sql/127`.
 3. Deployen av `arkivexport` (#907).
-4. Kuvösens PR #99 (`claude/c7-kedjan`) slås ihop sist. Därefter skriver kedjan MET:s fukt och flaggorna.
+4. Kuvösens PR #99 (`claude/c7-kedjan`). Därefter skriver kedjan MET:s fukt.
 
-Före punkt 4 står `ny_kandidat_met_stad`, `rim` och `n6` tomma, och M-dagg har inget värde. Före punkt 2 faller de nya stegen med en
-varning, och jobben förblir gröna. Slås kuvösens PR ihop före den här, vägrar `smavag-live-db.ts` på main den nya rubriken, och
-småvägsröstens timme står still.
+Före punkt 4 står `ny_kandidat_met_stad` tom, och M-dagg har inget värde. Före punkt 2 och 4 faller det nya steget med en varning, och
+jobbet förblir grönt.
 
 **Kvar.** Beviset efter driftsättningen:
 - en rad i `ny_kandidat_met_stad` för stadspunkterna varje timme;
-- `rim` och `n6` med innehåll;
-- en fuktfil i hinken för varje timme;
 - skuggans nya kolumner med innehåll i en rad.
 
 **Alternativ.**
 - **MET:s fukt i `ny_kandidat_live`:** avvisat, se avsteget.
-- **Flaggorna i underlaget:** avvisat, eftersom dess tre läsare kräver rubriken exakt.
 - **En egen skugga för C7:** avvisat i F75 fråga 4 (a).
 
-**Stomdokument:** SYS 2 — svartisens och rimfrostens kolumner i fuktskuggan och småvägarnas flaggor, MAT 5 — svartis och rimfrost i skugga
+**Stomdokument:** SYS 2 — svartisens och rimfrostens kolumner i fuktskuggan, MAT 5 — svartis och rimfrost i skugga
 
 ## #909 (19/11 2026) Stadsmiljöns reserv startade aldrig: den körs nu också sist i småvägskedjan (körlistan B1, DECISIONS #894)
 

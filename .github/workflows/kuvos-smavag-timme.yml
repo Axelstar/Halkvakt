@@ -4,7 +4,7 @@ name: kuvos-smavag-timme
 # punkt och timme), stationernas PH och ankarna som dagens K, del B (levande.py) för alla småvägspunkter, regel D (smavag_drift.py rader)
 # och timmens rader i smavag_live och smavag_korning. Med brytarna av talar ingenting (sql/105, smavag_talar). Sist taktens underlag till
 # den privata hinken (halkvakt-kuvos F55): regelns varnande punkter med N3 och radarns medel, eftersom radar_smavag gallras efter två timmar,
-# och timmens resor ur det (smavag_takt.py, F50 del B med F55 och F56), och fuktflaggornas fil (sql/128, DECISIONS #908, F75).
+# och timmens resor ur det (smavag_takt.py, F50 del B med F55 och F56).
 # Saknas timmens PH hoppas timmen grönt. Saknas timfilen är det ett fel (DECISIONS #849): kedjan startas sedan 12/11 vid R + 51 minuter
 # och är klar långt före blocket, så en saknad timfil betyder att kedjan inte räknade, och det ska synas. Loggen säger bara klart eller fel
 # (#768). Ankarna lämnar aldrig jobbet. Jobbet reserv startar kedjan igen när timfilen för den senaste slottens körning saknas (#859).
@@ -146,18 +146,6 @@ jobs:
             || { echo "::error::resorna föll: $(tail -1 resor.log | cut -c1-200)"; exit 1; }
           ladda "$RES" "resorna"
           rm -f "$FIL.gz" "$RES"
-          # FUKTFLAGGORNA (sql/128, DECISIONS #908; halkvakt-kuvos F75 §12 punkt 3): en egen fil bredvid underlaget, med varje rad i timmen,
-          # också där regeln är torr, med svartisens och rimfrostens flaggor och regelns utfall, för takten och olycksfacit. Underlagets
-          # format ändras inte (tre läsare). Ett fel här fäller aldrig steget: underlaget och resorna är redan i hinken. Före migrationen
-          # sql/128 faller den här delen varje timme med en varning.
-          FUKT="fukt_$(date -u -d "$TID" +%Y%m%dT%H).csv"
-          if node --experimental-strip-types ingest/smavag-live-db.ts fukt "$FUKT" "$TID" > fukt.log 2>&1 && gzip -n "$FUKT" \
-            && FN="$FN" KEY="$KEY" node --experimental-strip-types ingest/hinken.ts ladda "$FUKT.gz" "$HINK/$FUKT.gz" --finns-ok 2>> hinken.log; then
-            echo "fuktflaggornas underlag: klart" | tee -a "$GITHUB_STEP_SUMMARY"
-          else
-            echo "::warning::fuktflaggornas underlag gick inte till hinken: $(grep -v ExperimentalWarning fukt.log | tail -1 | cut -c1-200)"
-          fi
-          rm -f "$FUKT" "$FUKT.gz"
       # Regeln utanför databasen (ingest/smavag-regel.ts, DECISIONS #843, halkvakt-kuvos F57 §9 punkt 3) mot smavag_regel() för samma
       # timme, efter underlaget så att en skillnad aldrig stoppar det. Backtesten räknar underlaget med kopian, så den måste fatta samma
       # beslut som driften. Bara utfallet skrivs, inga punkter eller tal (#768).

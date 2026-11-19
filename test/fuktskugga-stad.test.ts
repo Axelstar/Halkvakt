@@ -5,18 +5,17 @@
 //   3. the value guard knows both tables and every field, and the spans' upper bounds come from the schema (sql/089), never from the
 //      point list (TROSKLAR-SASONGSFACIT §11.7, DECISIONS #904 answer 5 (a))
 //   4. the hourly flow calls the shadow last in the city round, after the city log, in a step that may fail on its own
-// DECISIONS #908, körlistan C7 (halkvakt-kuvos F75 §8, §9 and §12): svartis and rimfrost in the same shadow, sql/126–128.
-//   5. sql/126 and sql/128 create no function, change only their own table and sql/105's smavag_live, and lock the new table twice;
-//      none of the three files names a rule function, so smavag_regel(), smavag_talar() and ny_kandidat_regel() are untouched
+// DECISIONS #908, körlistan C7 (halkvakt-kuvos F75 §8, §9 and §12): svartis and rimfrost in the same shadow, sql/126 and sql/127. The
+// small-road part of C7 was withdrawn 19/11 (Bengt), so nothing here touches the small roads' tables or flows.
+//   5. sql/126 creates no function, changes only its own table and locks it twice; neither file names a rule function, so
+//      smavag_regel(), smavag_talar() and ny_kandidat_regel() are untouched
 //   6. the value guard knows the new fields and the tables the rules already read (F75 §8, §13 point 1)
-//   7. the flows: MET's moisture after the city PH in a step that may fail on its own, and the small roads' file beside the
-//      unchanged underlag
+//   7. the flow: MET's moisture after the city PH in a step that may fail on its own
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { SPANN, ORD, FLAGGOR } from "../scripts/vardevakten.ts";
 import { SATS, MET_STAD_KOLUMNER } from "../ingest/ny-kandidat-db.ts";
-import { SATS as SV } from "../ingest/smavag-live-db.ts";
 
 const las = (p: string) => readFileSync(new URL(`../${p}`, import.meta.url), "utf8");
 const MIG = las("sql/127_fuktskuggan_stad.sql");
@@ -122,23 +121,18 @@ test("#907 the hourly flow: the shadow last in the city round, after the city lo
   assert.equal(y.slice(satt, steg).includes("logga-stad"), false, "the mark is set after the city log, not before");
 });
 
-const MET = las("sql/126_stadens_met_fukt.sql"), SMAFUKT = las("sql/128_smavag_fukt.sql");
+const MET = las("sql/126_stadens_met_fukt.sql");
 const REGELFUNKTIONER = ["kandidat_regel", "ny_kandidat_regel", "talande_regel", "storstader_tyst", "smavag_regel", "smavag_talar", "smavag_timme",
   "ny_kandidat_timme", "ny_kandidat_logga", "ny_kandidat_logga_stad"];
 
-test("#908 sql/126 and sql/128 create no function and change only their own table; no rule function is named in 126–128", () => {
-  for (const [namn, text, tabell] of [["sql/126", MET, "ny_kandidat_met_stad"], ["sql/128", SMAFUKT, "smavag_live"]] as const) {
-    const t = utanKommentarer(text);
-    assert.ok(!/\bFUNCTION\b/.test(t), `${namn} creates, alters or drops no function`);
-    assert.ok(!/cron\.(schedule|unschedule)/.test(t), `${namn}: no schedule`);
-    for (const m of t.matchAll(/\b(?:INSERT INTO|UPDATE|DELETE FROM|TRUNCATE|ALTER TABLE|CREATE TABLE IF NOT EXISTS|DROP TABLE)\s+(\w+)/g))
-      assert.equal(m[1], tabell, `${namn} touches only ${tabell}: ${m[0]}`);
-  }
-  // sql/128 only adds the two nullable flags: no default, no NOT NULL, nothing dropped (F75 §3: the voice reads only ned).
-  assert.match(utanKommentarer(SMAFUKT), /ALTER TABLE smavag_live ADD COLUMN IF NOT EXISTS rim boolean, ADD COLUMN IF NOT EXISTS n6 boolean;/);
-  assert.ok(!/NOT NULL|DEFAULT|DROP/.test(utanKommentarer(SMAFUKT)), "the flags are nullable and nothing is dropped");
-  // The rule functions are untouched: none of 126–128 creates or replaces one, and 127 creates only the shadow's and the export's.
-  for (const [namn, text] of [["sql/126", MET], ["sql/127", MIG], ["sql/128", SMAFUKT]] as const)
+test("#908 sql/126 creates no function and changes only its own table; no rule function is named in 126 or 127", () => {
+  const t = utanKommentarer(MET);
+  assert.ok(!/\bFUNCTION\b/.test(t), "sql/126 creates, alters or drops no function");
+  assert.ok(!/cron\.(schedule|unschedule)/.test(t), "sql/126: no schedule");
+  for (const m of t.matchAll(/\b(?:INSERT INTO|UPDATE|DELETE FROM|TRUNCATE|ALTER TABLE|CREATE TABLE IF NOT EXISTS|DROP TABLE)\s+(\w+)/g))
+    assert.equal(m[1], "ny_kandidat_met_stad", `sql/126 touches only ny_kandidat_met_stad: ${m[0]}`);
+  // The rule functions are untouched: neither file creates or replaces one, and 127 creates only the shadow's and the export's.
+  for (const [namn, text] of [["sql/126", MET], ["sql/127", MIG]] as const)
     for (const f of REGELFUNKTIONER)
       assert.ok(!new RegExp(`FUNCTION ${f}\\(`).test(utanKommentarer(text)), `${namn} does not create or replace ${f}()`);
   // ny_kandidat_met_stad: keyed as ny_kandidat_ph, the drift id checked, locked twice and granted to the service role only.
@@ -153,9 +147,6 @@ test("#908 sql/126 and sql/128 create no function and change only their own tabl
   assert.match(SATS.skrivMetStad, /ON CONFLICT \(tid, punkt\) DO UPDATE SET korning = EXCLUDED\.korning/);
   assert.match(SATS.skrivPh, /ON CONFLICT \(tid, punkt\) DO UPDATE SET korning = EXCLUDED\.korning/);
   assert.match(SATS.gallraMetStad, /^DELETE FROM ny_kandidat_met_stad WHERE tid < now\(\) - interval '48 hours'$/);
-  // The small roads' writer: the flags with the new header, the old statement unchanged.
-  assert.equal(SV.skriv, "INSERT INTO smavag_live (tid, punkt, ned) SELECT $1::timestamptz, u.p, u.n FROM unnest($2::text[], $3::boolean[]) AS u(p, n)");
-  assert.match(SV.skrivFlaggor, /INSERT INTO smavag_live \(tid, punkt, ned, rim, n6\)/);
 });
 
 test("#908 the shadow's C7 variants: G-rim is K1's hoar frost, M-dagg reads both hours, the S windows, and the union", () => {
@@ -172,7 +163,7 @@ test("#908 the shadow's C7 variants: G-rim is K1's hoar frost, M-dagg reads both
   assert.deepEqual(ins, kolumner(TAB[0]).map(([n]) => n).filter((n) => n !== "raknad_at"), "the insert writes every column but e, in order");
 });
 
-test("#908 the value guard knows MET's moisture, the small roads' flags and the tables the rules already read", () => {
+test("#908 the value guard knows MET's moisture and the tables the rules already read", () => {
   const vakt = las("scripts/vardevakten.ts");
   for (const [t, k] of [["ny_kandidat_met_stad", "tid"], ["smavag_live", "tid"], ["radar_stad", "observed_at"], ["radar_smavag", "observed_at"]])
     assert.match(vakt, new RegExp(`\\b${t}: "${k}"`), `${t} is in TID`);
@@ -180,7 +171,8 @@ test("#908 the value guard knows MET's moisture, the small roads' flags and the 
   assert.deepEqual(SPANN.met_td_c.slice(0, 2), [-50, 30], "MET's dew point has F38's span, stricter than dewpoint_c");
   assert.ok(SPANN.dewpoint_c[0] < SPANN.met_td_c[0] && SPANN.dewpoint_c[1] > SPANN.met_td_c[1]);
   assert.deepEqual(SPANN.rh2m.slice(0, 2), [0, 1], "MET's humidity is a fraction");
-  for (const f of ["ned", "rim", "n6"]) assert.ok(FLAGGOR[f], `smavag_live.${f} is a declared flag`);
+  assert.ok(FLAGGOR.ned, "smavag_live.ned, which the small-road rule reads, is a declared flag");
+  for (const f of ["rim", "n6"]) assert.equal(FLAGGOR[f], undefined, `${f}: the small-road part of C7 is withdrawn (Bengt 19/11)`);
   for (const [namn, typ] of kolumner("ny_kandidat_met_stad", MET)) {
     if (typ === "double") assert.ok(SPANN[namn], `ny_kandidat_met_stad.${namn}: a declared span`);
     else assert.ok(namn === "punkt" || typ === "timestamptz", `ny_kandidat_met_stad.${namn}: an identifier or a time`);
@@ -190,7 +182,7 @@ test("#908 the value guard knows MET's moisture, the small roads' flags and the 
     for (const [namn, typ] of kolumner(tab, las(fil))) if (typ === "numeric") assert.ok(SPANN[namn], `${tab}.${namn}: a declared span`);
 });
 
-test("#908 the flows: MET's moisture after the city PH on its own, and the small roads' file beside the unchanged underlag", () => {
+test("#908 the flow: MET's moisture after the city PH, in a step of its own", () => {
   const y = las(".github/workflows/ny-kandidat-fysik.yml");
   const ph = y.indexOf("ingest/stadskedjan.ts ph "), steg = y.indexOf("- name: Storstädernas punkter — MET:s fukt till ny_kandidat_met_stad");
   const nasta = y.indexOf("- name:", steg + 1), laget = y.indexOf("- name: Storstädernas punkter — läget");
@@ -203,13 +195,7 @@ test("#908 the flows: MET's moisture after the city PH on its own, and the small
     "the kuvös chain reads the same run file and the same PH files as del A, and its output is not shown");
   assert.match(b, /ny-kandidat-db\.ts skriv-met-stad met-stad\.csv > \/dev\/null 2>&1/, "the writer's output is not shown (#768)");
   assert.match(b, /rm -f met-stad\.csv\n/, "the file stays in the job");
-  const s = las(".github/workflows/kuvos-smavag-timme.yml");
-  assert.match(s, /FIL="underlag_\$\(date -u -d "\$TID" \+%Y%m%dT%H\)\.csv"/, "the underlag keeps its name");
-  assert.match(s, /FUKT="fukt_\$\(date -u -d "\$TID" \+%Y%m%dT%H\)\.csv"/, "the flags go to a file of their own");
-  const fukt = s.slice(s.indexOf('FUKT="fukt_'), s.indexOf('rm -f "$FUKT" "$FUKT.gz"'));
-  assert.ok(s.indexOf('ladda "$RES" "resorna"') < s.indexOf('FUKT="fukt_'), "after the underlag and the trips are in the bucket");
-  assert.match(fukt, /^\s+if node --experimental-strip-types ingest\/smavag-live-db\.ts fukt "\$FUKT" "\$TID" > fukt\.log 2>&1 && gzip -n "\$FUKT"/m, "an error here never fails the step");
-  assert.match(fukt, /hinken\.ts ladda "\$FUKT\.gz" "\$HINK\/\$FUKT\.gz" --finns-ok/, "never overwritten, as the underlag");
-  assert.match(fukt, /::warning::/);
-  assert.match(SV.underlag, /^SELECT r\.punkt, r\.ned, r\.radar_mmh FROM smavag_regel\(\) r WHERE r\.utfall = 'varnar'/, "the underlag's rows are unchanged");
+  // The small-road part of C7 is withdrawn (Bengt 19/11): no migration, flow or writer for it.
+  for (const f of [".github/workflows/kuvos-smavag-timme.yml", "ingest/smavag-live-db.ts"])
+    assert.ok(!/fukt_|skrivFlaggor|punkt,ned,rim,n6/.test(las(f)), `${f} carries nothing of it`);
 });
