@@ -3282,3 +3282,5 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 19/11 (Claude; Bengt: *"Ja på alla"*): **Rutiner för begäranden och incidenter antagna** (DECISIONS #900, tillägget; kort #670).
   Sparade privat med registret. Axel svarar inom en månad, Bengt raderar i panelen, och en incident anmäls till IMY inom 72 timmar
   när risken inte är osannolik.
+- 19/11 (Claude; Bengt: *"ok lägger du en rutin att du ska bygga steg 5 i januari 2027"*): **Frist för dataskyddets steg 5** (kort #670): `dataskydd-steg5-2027-01-31`, med förvarning
+  30 dygn, så att ärendet kommer 1/1 2027. Klart när båda apparna är ute med säkerhetskopian undantagen och räknarens fråga om lov.
