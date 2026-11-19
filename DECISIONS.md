@@ -18087,3 +18087,26 @@ görs bara på Bengts ord.
 kolumnnamnet och inte tabellen, och värdevakten läser inte jsonb.
 
 **Stomdokument:** MAT säsongsfacit, BED §4.2
+
+## #906 (19/11 2026) Svartis och rimfrost i kuvösens skugga: förregistreringen signerad, och givarvakten i TROSKLAR-RIMFROST §3 gäller rösten (körlistan C7, kort #656)
+
+**Beslut.** Bengt 19/11: *"allt ok utom 2 som ska vara b) och del B 1 som ska vara samma"*, och för Axel: *"Ja, fortsätt så, Axel signerar också"*. Förregistreringen för svartis och rimfrost är
+signerad i halkvakt-kuvos (F75, PR #98). Den prövar väckare utan nederbörd för kandidaten i storstäderna och för småvägsrösten, i
+skugga, och läses mot friktionen tidigast 1/4 2027. Varianterna, talen och villkoren står i kuvösen.
+
+**Givarvakten (TROSKLAR-RIMFROST §3).** Skuggan räknar grannstationens rimfrost utan korsgivarkontrollen (fuktigheten ≥ 90 %), som
+fuktskuggans K1 (PR #1697), men med #75:s vakt och daggpunktens vakt. §3 säger att vakten *"får skärpas men aldrig mjukas upp,
+oavsett signaturer"*. Bengt och Axel valde det med §3 framför sig, och avsteget avgränsas så här:
+- **Bara mätningen.** Skuggan talar aldrig.
+- **Rösten har hela vakten.** Föreslås en variant med grannstationens rimfrost för rösten, gäller §3:s hela vakt i rösten, och
+  beslutet redovisar vad vakten tar bort.
+
+**Fuktskuggans fönster** börjar tidigast dygnet efter läsfrågan för friktionen (halkvakt-kuvos F74 §15). Annars hade läsfrågan
+redovisat dygn ur skuggans fönster innan skuggan läses (regel L, #564, L2).
+
+**Alternativ.** Korsgivarkontrollen i båda skuggorna, som var Claudes rekommendation. Vakten hade då varit hel, men grannstationens
+rimfrost hade inte varit samma regel i de två skuggorna.
+
+**Varför.** Skuggan talar aldrig, och med samma regel i båda skuggorna går de att jämföra rad för rad.
+
+**Stomdokument:** BED §4.2

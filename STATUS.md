@@ -3335,3 +3335,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 19/11 (Claude; Bengt: *"gör 1,2 och 3"*): **Frister för fukten i storstäderna** (körlistan C4).
   `friktionen-las-2026-12-06`: friktionens läsfråga körs tidigast 6/12, på Bengts ord. `fuktskuggan-las-2027-04-01`: skuggan läses
   mot friktionen med data till och med 31/3.
+- 19/11 (Claude; Bengt: *"allt ok utom 2 som ska vara b) och del B 1 som ska vara samma"*, och för Axel: *"Ja, fortsätt så, Axel signerar också"*): **Svartis och rimfrost signerad** (körlistan C7, kort #656).
+  Förregistreringen i halkvakt-kuvos (F75, PR #98). Skuggan räknar grannstationens rimfrost utan korsgivarkontrollen, och
+  §3:s hela vakt gäller i rösten (DECISIONS #906, TROSKLAR-RIMFROST). Fuktskuggans fönster börjar efter läsfrågan för friktionen.
+  Frist `svartis-rimfrost-las-2027-04-01`. Kvar är bygget.
