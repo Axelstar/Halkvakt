@@ -273,6 +273,10 @@ TROSKLAR-TRENDEN §8 och TROSKLAR-OVERGANGAR §10.
 **Givarvakten i §3 är undantagen från all lättnad.** Den får skärpas men aldrig mjukas upp, oavsett
 signaturer. Skälet står i §3 och heter Ollsta, Storvik och Bolhyttan.
 
+**Skuggor som aldrig talar** (19/11 2026, DECISIONS #906). Kuvösens skuggor i storstäderna räknar grannstationens rimfrost utan
+korsgivarkontrollen (§3 punkt 3), men med #75:s vakt och daggpunktens vakt. Det är ett avsteg från meningen ovan, valt av Bengt och
+Axel, och det gäller bara mätningen. I rösten gäller §3:s hela vakt.
+
 ---
 
 *Källor: TAVLA.md kort #46, #20, #75, #88, #89, #90, #95, #98; DECISIONS #4, #71, #79, #94, #96,
