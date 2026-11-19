@@ -3276,3 +3276,9 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 19/11 (Claude; Bengt: *"Bara PR 32"*): **Metas, OpenFreeMaps och Datawrappers överföringar** (DECISIONS #900, tillägget; kort #670).
   halkvakt-karta PR 32 (7b6f0a84) ihopslagen och integritetssidan läst live; Datawrappers tabeller på nwt.html ligger kvar på Bengts val.
   **Inte gjort:** avtalen i kontona och bolagsavtalet.
+- 19/11 (Claude; Bengt: *"vi hoppar över juriststeget"*): **Ingen jurist** (DECISIONS #901; kort #670, #648, #372). Dataskyddets steg 4 och juristens läsning av
+  ansvarstexten strukna; räknaren i appen frågar om lov i steg 5. Fristen för ansvarstexten, körlistans B9, bedömningens §4.2 och
+  projektkartan rättade.
+- 19/11 (Claude; Bengt: *"Ja på alla"*): **Rutiner för begäranden och incidenter antagna** (DECISIONS #900, tillägget; kort #670).
+  Sparade privat med registret. Axel svarar inom en månad, Bengt raderar i panelen, och en incident anmäls till IMY inom 72 timmar
+  när risken inte är osannolik.
