@@ -17889,3 +17889,35 @@ tidningarna föll, eftersom tidningarna då måste föra in Halkvakt i sina samt
   - en rad om dataskyddet i bolagsavtalet.
 
 **Stomdokument:** APP 10 — integritetssidan och dataskyddets steg, SYS 1 — vem som ger ut Halkvakt och ansvarar för uppgifterna, BED §4.2
+
+## #901 (19/11 2026) Ingen jurist: dataskyddets steg 4 stryks, och juristens läsning av ansvarstexten med det (kort #670, #648)
+
+**Beslut** (Bengt 19/11: *"vi hoppar över juriststeget"*).
+- **Steg 4 i dataskyddet stryks.** Ingen jurist anlitas före 1/1 2027.
+  - #900 fråga 22 (en jurist granskar räknaren och kartan, samlat med ansvarstextens frågor) blir nej.
+  - Fråga 23 (allt annat väntar inte på juristen) faller med den.
+- **Ansvarstexten** (#899): juristens läsning stryks också, eftersom steg 4 var ett enda tillfälle för båda. Axels ord på texten och en
+  appversion med texterna i båda butikerna står kvar före 1/1 2027.
+- **Följder av besluten som redan finns** (inga nya val):
+  - räknaren i appen frågar om lov (#900 fråga 11: *om ingen jurist säger annat*) och förblir inte alltid på (fråga 12). Det byggs i
+    steg 5, nästa ordinarie version, tillsammans med säkerhetskopian;
+  - kartan från Apple behålls, med meningen om vad Apple får veta (fråga 8 och steg 2);
+  - de sannolika svaren i #900 (läsningen 18/11, ingen juridisk rådgivning) är det enda underlaget för juristfrågorna. Ingen jurist har
+    prövat dem.
+- **Det som står obesvarat utan jurist:**
+  - om undantaget för fri programvara i den nya produktansvarslagen gäller (sannolikt inte, så länge bolaget ger ut appen);
+  - om ansvarstexten räcker, friskrivningsmeningen, och om lagen gäller en ny version av en app som redan finns ute.
+
+  Bolagsmännen i ett handelsbolag svarar personligen för bolagets förpliktelser, och det ändrar inte beslutet.
+- **Kort #372:** punkt (4), att en jurist bekräftar undantaget för fri programvara, faller. (1)–(3) är Axels som förut.
+- **Ändrat i samma commit:**
+  - fristen `ansvarstexten-2026-12-31` kräver inte längre juristens läsning;
+  - kort #670, #648 och #372;
+  - körlistans B9;
+  - bedömningens §4.2;
+  - projektkartan.
+
+**Alternativ:** behålla steg 4 med en jurist före 1/1 2027 (#900); skjuta upp juristen till efter nyår.
+**Varför:** Bengts val; inget skäl angivet.
+
+**Stomdokument:** APP 10 — dataskyddets steg och ansvarstexten, BED §4.2
