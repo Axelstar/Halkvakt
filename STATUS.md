@@ -3262,3 +3262,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - Meningen *"Din position skickas aldrig till Halkvakt av sig själv."* i apparna, iOS platsfrågor, butikerna, länssidorna, produktboken
     och på sajten; integritetssidan fullständig (halkvakt-karta PR 30); `sql/119` gallrar besöksraderna efter 13 månader.
   - **Inte gjort:** sammanslagningen, migrationen 119, deployen av `publicera`, byggproven och Axels del.
+- 19/11 (Claude; Bengt: *"Ja"* (19/11, på att slå ihop, migrera och deploya)): **Dataskyddet steg 2 i drift på sajten och servern** (DECISIONS #900, tillägget; kort #670).
+  - halkvakt-karta PR 30 (7de90c9b), Halkvakt PR #1675 (f01ce1db, efter android.yml 44451916677 och TestFlight-provet 44451920056 gröna på grenen), migrationen 119 med DB-knappen (44454949479) och deployen av `publicera` (44454996051).
+  - Läst live: integritetssidan, startsidan och länssidorna. Gallringen av besöksraderna är schemalagd 03.25 UTC.
+  - **Inte gjort:** apparna (nästa version), steg 3–5. Den första dispatchen av migrationen föll på att filen saknades (inget kördes).

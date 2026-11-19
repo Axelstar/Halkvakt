@@ -17820,4 +17820,20 @@ tidningarna föll, eftersom tidningarna då måste föra in Halkvakt i sina samt
   - fotostudions nya bilder till produktboken;
   - överföringsgrunden per leverantör, i steg 3.
 
+**Steg 2 i drift 19/11 på sajten och servern** (Bengt: *"Ja"* (19/11, på att slå ihop, migrera och deploya)).
+- **Ihopslaget, migrerat och deployat:** halkvakt-karta PR 30 (7de90c9b), Halkvakt PR #1675 (f01ce1db, efter android.yml 44451916677 och TestFlight-provet 44451920056 gröna på grenen), migrationen 119 med DB-knappen (44454949479) och deployen av `publicera` (44454996051).
+- **Läst live:**
+  - integritetssidan med Lagerlöf Labs HB och org.nr, *Gäller från 2026-11-19* och IMY;
+  - startsidans löfte med den nya meningen;
+  - Norrbottens länssida i publiceringen 05.00 svensk tid med den nya meningen, och ortssidan för Kiruna utan den gamla.
+- **Migrationens bevis:**
+  - jobbet `halkvakt-gallring-besok` går 03.25 UTC och är aktivt;
+  - anon får inte köra funktionen;
+  - inga rader är äldre än 13 månader;
+  - den första raden är från 19/10 2026, inte 28/10 som migrationens kommentar säger, så den första raderingen sker kring 19/11 2027.
+- **Avvikelse:** den första dispatchen av migrationen gjordes innan #1675 var ihopslagen och föll på att filen saknades på main (ENOENT,
+  DB-knappen 44453874017). Inget kördes mot databasen.
+- **Apparna:** orden är byggda och kompilerade, men går ut först med nästa version. Axel klistrar in butikstexterna, ramar om butiksbilderna
+  och skickar 0.4.1 med ett nytt byggnummer.
+
 **Stomdokument:** APP 10 — integritetssidan och dataskyddets steg, SYS 1 — vem som ger ut Halkvakt och ansvarar för uppgifterna, BED §4.2
