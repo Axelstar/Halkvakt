@@ -11,7 +11,9 @@ beslut, med skälet bokfört (regel L).
 - **Säsongsfacit uppdateras löpande hela vintern.** Varje måndag räknas veckan och säsongen hittills (§6).
 - **Säsongsfacit är ingen grind.** Det avgör inte vad som får tala. Kandidatens marsdom (kuvösen, DECISIONS #768), prognoslagrets grindar,
   olycksfacit (TROSKLAR-OLYCKSFACIT) och domkalendern gäller som förut. Säsongsfacit använder deras underlag, men ändrar dem inte.
-- **Säsongsfacit omfattar inte allt.** B och C, alltså storstädernas punkter, ingår inte i den här versionen. Deras dom fälls i kuvösen
+- **Säsongsfacit omfattar inte allt.** B och C, alltså storstädernas punkter, redovisas i ett eget avsnitt (§11), och olycksmåttet F4 omfattar dem sedan 8/11 genom
+  olycksfacits K-lager (§11.5). (Ändrat 19/11, §11 och DECISIONS #904. Förut: *B och C, alltså storstädernas punkter, ingår inte i
+  den här versionen*.) Deras dom fälls i kuvösen
   efter 31/3, och olycksfacit visar vid varje olycka om de varnade (DECISIONS #815). Olyckor, vilt och kameror (A3, A4 och A5) är inte
   halkvarningar och ingår inte heller.
 
@@ -144,7 +146,8 @@ Inget nytt underlag behöver sparas.
 
 **Det som inte sparas:**
 - Lägesfilen skrivs över vid varje publicering. Domloggen ersätter den för K, och A1 och A2 räknas ur arkiven.
-- Stadsloggen för B och C gallras efter 14 dygn (sql/096).
+- Stadsloggen för B och C gallras efter 14 dygn i databasen (sql/096), men exporteras sedan 17/11 till hinken (sql/114, DECISIONS
+  #888). (Ändrat 19/11, DECISIONS #904. Förut: *Stadsloggen för B och C gallras efter 14 dygn (sql/096)*.)
 
 **Fällor:**
 - Svartis syns inte på kamerabilderna.
@@ -169,11 +172,12 @@ Inget nytt underlag behöver sparas.
 | Bengt | 2026-11-07 | i chatten *"kör på allt detta"*, på Claudes rekommendationer till valen 1–5 med ändringen i val 2 (DECISIONS #818) |
 | Axel | 2026-11-07 | via Bengt i chatten: *"jag signerar för axel och vi bygger det nu"* |
 
-## 11. Tillägg, UTKAST 19/11 2026: storstäderna i redovisningen (körlistan C3)
+## 11. Tillägg 19/11 2026: storstäderna i redovisningen (körlistan C3)
 
-**Status:** ⏳ **UTKAST. Inte signerat, och gäller inte.** Skrivet av Claude 19/11 2026 för körlistans punkt C3 (`docs/KORLISTAN.md`:
-*"ni signerar tillägget, Claude bygger"*). Tillägget ändrar ingenting i §1–§10. Inget byggs, migreras eller räknas förrän Bengt och Axel
-har svarat på frågorna i §11.10 och signerat. Inget av avsnittets mått har räknats (§11.9).
+**Status:** ✅ **SIGNERAT 19/11 2026 av Bengt och Axel** (DECISIONS #904). Skrivet av Claude 19/11 2026 för körlistans punkt C3
+(`docs/KORLISTAN.md`: *"ni signerar tillägget, Claude bygger"*). Svaren i §11.10 är Claudes rekommendationer. Tillägget ändrar inget
+mått i §1–§10; §1 och §8 har fått en rättelserad var (fråga 7). Inget av avsnittets mått har räknats (§11.9). Bygget går i egna PR:er,
+och migrationer och deployer görs bara på Bengts ord.
 
 ### 11.1 Vad tillägget är, och vad det inte är
 
@@ -369,6 +373,8 @@ Läget 19/11:
 
 ### 11.10 Frågor till Bengt och Axel
 
+**Svaren 19/11** (Bengt, för sig och Axel, DECISIONS #904): som Claudes rekommendationer. 1 ja · 2 (a) · 3 (a) · 4 ja · 5 (a) · 6 (a) · 7 ja.
+
 1. **Enheten och nivån.** Ska avsnittet räkna på grupp × timme ur stadsloggen, som nivån *i drift*, med de två undantagen i §11.2
    redovisade för sig? *Ja eller nej.* **Rekommendation: ja.** Det är samma enhet som K:s domlogg (§2), och med brytaren av räknas
    stadspunkterna inte alls, så loggen har ingen skugga som kan blandas in.
@@ -399,4 +405,7 @@ Läget 19/11:
 
 ### 11.11 Signaturer
 
-Inga. Tillägget gäller först när Bengt och Axel har signerat, och signaturerna förs in här med datum och ord, som i §10.
+| Vem | Datum | Hur |
+| :-- | :-- | :-- |
+| Bengt | 2026-11-19 | i chatten *"Jag o Axel signerar med dina rekommendationer men med den nya gränsen b"*, och *"Ja"* på frågan om signaturen med Claudes rekommendationer också gäller C3 (DECISIONS #904) |
+| Axel | 2026-11-19 | via Bengt i samma ord (DECISIONS #904) |

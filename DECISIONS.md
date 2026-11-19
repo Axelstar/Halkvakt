@@ -18062,3 +18062,28 @@ larmar inom en timme i stället för att upptäckas av en slump.
   larm. Vakten är alltså i drift, och kontrollen 3c finns i det som kör.
 
 **Stomdokument:** SYS 2 — kandidatens kedja med storstäderna i den snabba och vakten, APP 10 — kandidatens varning
+
+## #904 (19/11 2026) Storstäderna i säsongsfacit: tillägget §11 signerat (körlistan C3, kort #381)
+
+**Beslut.** Bengt 19/11, för sig och Axel: *"Jag o Axel signerar med dina rekommendationer men med den nya gränsen b"*, och *"Ja"* på frågan om signaturen med Claudes rekommendationer också gäller C3. Tillägget är `docs/TROSKLAR-SASONGSFACIT.md` §11, skrivet som utkast samma dag (PR #1695).
+
+**Svaren (§11.10), som Claudes rekommendationer:**
+1. **Enheten:** grupp × timme ur stadsloggen, som nivån *i drift*, med de två undantagen i §11.2 redovisade för sig.
+2. **Räkningen:** (a) ett dygnsaggregat med pg_cron före gallringen, och de gallrade dygnen en gång ur hinken.
+3. **Olyckorna:** (a) `sql/099` står kvar, och avsnittet visar hur många av K:s varningar vid de halkkopplade olyckorna som bara
+   stadspunkten stod för. Säsongsfacit är läst 17/11, och ett mått ändras inte efter läsningen (regel L).
+4. **Förarnas svar:** *stämde det?* per cell, och *appen missade* bara för hela landet, utan en ny regel som knyter en miss till en
+   storstad.
+5. **Spannen:** (a) egna spann för stadstabellerna, med gränser ur schemat och aldrig ur punktlistan.
+6. **Publiceringen:** (a) efter slutrapporten vad det än blir, per område och månad, men tidigast när stadsmiljöns dom i kuvösen är
+   fälld.
+7. **Noterna:** en rättelserad var i §1 och §8, skrivna i samma commit.
+
+**Inget mått är räknat** (§11.9), och inget i §1–§10 ändras utom de två raderna. Bygget följer i egna PR:er: dygnsaggregatet,
+stadsloggens tabeller i värdevaktens `TID` med egna spann, och avsnittet i veckorapporten (körlistan D1). Migrationer och deployer
+görs bara på Bengts ord.
+
+**Fynd vid skrivningen** (§11.7 och tavlans kort #381): värdevakten skannar inte stadsloggens tabeller alls, spannen gäller
+kolumnnamnet och inte tabellen, och värdevakten läser inte jsonb.
+
+**Stomdokument:** MAT säsongsfacit, BED §4.2

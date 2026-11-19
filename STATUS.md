@@ -3317,3 +3317,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 19/11 (Claude; Bengt: *"Ja, vänta"* (19/11, på att vänta på MET:s svar till 26/11)): **Småvägsröstens timme 06 UTC väntar på MET** (DECISIONS #902, körlistan B5).
   Luckorna 15/11, 17/11 och 18/11 ligger i MET:s morgonfel. Inget byggs före MET:s svar eller 26/11 (fristen `met-svar-2026-11-26`),
   och därefter läggs återtagningen i timflödet fram om felet står kvar.
+- 19/11 (Claude; Bengt: *"Jag o Axel signerar med dina rekommendationer men med den nya gränsen b"* och *"Ja"*): **Storstäderna i säsongsfacit signerat** (DECISIONS #904, körlistan C3).
+  Tillägget §11 i TROSKLAR-SASONGSFACIT med Claudes rekommendationer, och en rättelserad var i §1 och §8. Inget mått är räknat;
+  bygget (aggregatet, värdevaktens spann och veckorapportens avsnitt) går i egna PR:er.
