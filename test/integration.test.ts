@@ -4850,7 +4850,7 @@ test("#905 the moisture shadow in the cities: P0, K1, K2a, the check against the
   const KOL = ["p0_punkter", "r0_punkter", "r0_f1_punkter", "k1_punkter", "k1_nb_punkter", "k1_rim_punkter", "k1_utan_varde",
     "k2a_punkter", "k2a_utan_varde"];
   const flytta = async (lon: number, lat: number, m: number, grader: number) => (await q(`SELECT ST_X(g::geometry) AS lon, ST_Y(g::geometry) AS lat
-    FROM ST_Project(ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography, $3, radians($4)) g`, [lon, lat, m, grader])).rows[0] as { lon: number; lat: number };
+    FROM ST_Project(ST_SetSRID(ST_MakePoint($1::float8, $2::float8), 4326)::geography, $3::float8, radians($4::float8)) g`, [lon, lat, m, grader])).rows[0] as { lon: number; lat: number };
   const km = async (a: string, b: string) => Number((await q(`SELECT ST_Distance(w.geom::geography, s.geom::geography) AS m
     FROM weather_observations w, stadspunkt s WHERE w.station_id = $1 AND s.punkt = $2 LIMIT 1`, [a, b])).rows[0].m);
   const sm = async (seg: string, b: string) => Number((await q(`SELECT ST_Distance(r.geom::geography, s.geom::geography) AS m
@@ -4915,8 +4915,8 @@ test("#905 the moisture shadow in the cities: P0, K1, K2a, the check against the
       }
       for (const [seg, m, info, raderad] of p.strackor ?? [])
         await q(`INSERT INTO road_conditions (segment_id, condition_code, condition_text, condition_info, geom, deleted)
-          SELECT $1, 1, 'Normalt', $2::text[], ST_MakeLine(ST_Project(n, 100, radians(270))::geometry, ST_Project(n, 100, radians(90))::geometry), $3
-          FROM (SELECT ST_Project(ST_SetSRID(ST_MakePoint($4, $5), 4326)::geography, $6, 0) AS n) x`, [seg, info, raderad ?? false, lon, lat, m]);
+          SELECT $1, 1, 'Normalt', $2::text[], ST_MakeLine(ST_Project(n, 100::float8, radians(270))::geometry, ST_Project(n, 100::float8, radians(90))::geometry), $3
+          FROM (SELECT ST_Project(ST_SetSRID(ST_MakePoint($4::float8, $5::float8), 4326)::geography, $6::float8, 0::float8) AS n) x`, [seg, info, raderad ?? false, lon, lat, m]);
     }
     // The margins are measured, not assumed (CLAUDE.md, the five-metre rule).
     const d1 = await km("9050011", "B90501"), d2 = await km("9050021", "B90502"), s11 = await sm("9050111", "B90511"), s12 = await sm("9050121", "B90512");
