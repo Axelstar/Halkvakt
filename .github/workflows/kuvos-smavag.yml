@@ -14,6 +14,8 @@ name: kuvos-smavag
 #             avbryts av nästa).
 #             Räknar kedjan inte körningen (MET:s katalog eller ett fel hos MET) startar timflödets jobb reserv den igen, högst tre
 #             gånger och senast R + 5 h 21 min (scripts/smavag-reserv.ts, DECISIONS #859).
+#             Sist stadsmiljöns reserv (.github/actions/stadens-reserv, DECISIONS #909): här väntar ingen annan körning i MET-kön, vilket
+#             den nästan alltid gör sist i kuvos-stad. Därför får jobbet actions: write.
 # Timfilen ligger i hinken eftersom Actions-cachen kan läsas av en PR från en fork. MET-dygnen är öppna data och får ligga i cachen.
 # Källa: MET Norway, MET Nordic (NLOD / CC BY 4.0).
 on:
@@ -99,6 +101,9 @@ jobs:
     if: ${{ inputs.steg == 'kedjan' }}
     runs-on: ubuntu-latest
     timeout-minutes: 120
+    permissions:
+      contents: read
+      actions: write     # väntan på MET, och stadsmiljöns reserv som startar en efterräkning i kuvos-stad (#909)
     env:
       GH_TOKEN: "${{ github.token }}"
       NYKAND_VARIANT: t4                     # T4 §4 a (DECISIONS #720): den rättade modellen, som i drift
@@ -291,3 +296,10 @@ jobs:
             || { echo "::error::timfilen gick inte till hinken"; exit 1; }
           echo "timfilen: klart" | tee -a "$GITHUB_STEP_SUMMARY"
           rm -rf timmar
+      # Stadsmiljöns reserv (DECISIONS #909). Kandidaterna räknas från småvägskedjans körning R, vars stadsfil kommer först med kuvos-stad vid
+      # R + 6.36. Steget får aldrig fälla småvägskedjan.
+      - name: Stadsmiljöns reserv — en körning som saknas räknas i efterhand
+        if: ${{ !cancelled() && steps.f.outputs.stamp != '' }}
+        continue-on-error: true
+        uses: ./.github/actions/stadens-reserv
+        with: { stamp: "${{ steps.f.outputs.stamp }}", database-url: "${{ secrets.DATABASE_URL }}", anropare: kuvos-smavag }
