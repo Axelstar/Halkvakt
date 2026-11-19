@@ -3287,3 +3287,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 19/11 (Claude; Bengt: *"Ja, gör det"*): **PAT-nyckelns frist flyttad till nästa byte.** Axel bytte PAT:en och pulsklockans nyckel 8/11;
   nyckelkalendern 9/11 (ärende #1440) visar 2027-02-06 för båda. Ärendet #1461 stängt. Den nya fristen `pat-rotation-2027-01-30` har ett
   eget id, eftersom fristvakten tiger för alltid om ett id vars ärende är stängt. Kalenderns rad rättad.
+- 19/11 06.56 UTC (Claude; Bengt: *"Ja, börja"*): **Databasens storlek 1 145,6 MB** (frist #1669), läst med `pg_database_size` i
+  SQL-redigeraren. ~25 MB per dygn sedan 11/11 (955 MB); 15,5 % av larmgränsen 7 373 MB. Utan tabell 58,5 MB, oförändrat. Nästa läsning
+  26/11 (`databas-2026-11-26`).
