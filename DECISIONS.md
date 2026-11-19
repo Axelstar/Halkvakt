@@ -18028,4 +18028,9 @@ tidningarna föll, eftersom tidningarna då måste föra in Halkvakt i sina samt
 **Varför:** förarna på vägarna får de färska värdena, storstäderna behåller timvärdet som före påslaget, och en tystnad i storstäderna
 larmar inom en timme i stället för att upptäckas av en slump.
 
+**På igen 19/11 09.14 UTC** (Bengt: *"det första vi gör är att slå på den snabba kandidaten för det skulle funka även för storstäderna nu"* (19/11)).
+- **Körningen:** `sql/122` igen med DB-knappen 44494568098, 09.14.56 UTC: `talande_timme()` gav `snabb` (09.14), `storstader_tyst()` 1 162 rader vid stadspunkterna i den talande regeln och 1 162 i timvärdets, och `talande_regel()` 8 338 snabba rader och 1 162 med timvärdet (08.00). Publiceringen 09.16.04 UTC bar den snabba tiden 09.14 för 261 sträckor.
+- **Vakten:** vakthundens körning 09.07 UTC svarade *storstäderna: 1162 rader i den talande regeln (ny) · 1162 i timvärdets*, utan
+  larm. Vakten är alltså i drift, och kontrollen 3c finns i det som kör.
+
 **Stomdokument:** SYS 2 — kandidatens kedja med storstäderna i den snabba och vakten, APP 10 — kandidatens varning
