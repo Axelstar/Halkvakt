@@ -1,0 +1,71 @@
+name: engangsprov-fuktskugga-fullskala
+# ENGÅNGSPROV 19/11 2026 (körlistan C4 och C7; DECISIONS #907 och #908; halkvakt-kuvos F74 §8 och F75 §9): fuktskuggan i full skala i
+# Supabases egen Postgres, i en container med produktionens minne, med driftens schema och rader (scripts/tillfalliga-arkivet.ts) och
+# sql/126–127 ovanpå, innan DB-knappen trycks. Läxan är DECISIONS #783. Körs bara på grenen claude/fuktskugga-fullskala-prov, som aldrig
+# slås ihop; driften läses men skrivs aldrig. Loggen bär bara tider, minne, storlek och ja eller nej
+# (scripts/engangsprov-fuktskugga-fullskala.mjs).
+on:
+  push:
+    branches: [claude/fuktskugga-fullskala-prov]
+    paths: [".github/workflows/engangsprov-fuktskugga-fullskala.yml", "scripts/engangsprov-fuktskugga-fullskala.mjs"]
+permissions:
+  contents: read
+jobs:
+  prov:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - name: Supabases Postgres med produktionens minne, och en klient som matchar driften
+        env: { DRIFT_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          PW=$(openssl rand -hex 16); JW=$(openssl rand -hex 32)
+          echo "::add-mask::$PW"; echo "::add-mask::$JW"
+          docker run -d --name pg --memory=1800m --memory-swap=1800m -p 5433:5432 -e POSTGRES_PASSWORD="$PW" -e JWT_SECRET="$JW" \
+            supabase/postgres:17.6.1.178 > /dev/null
+          echo "DATABASE_URL=postgresql://postgres:$PW@127.0.0.1:5433/postgres" >> "$GITHUB_ENV"
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client
+          MAJOR=$(psql "$DRIFT_URL" -Atc "show server_version_num" | cut -c1-2)
+          if ! grep -rqs apt.postgresql.org /etc/apt/sources.list.d/; then
+            curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/pgdg.gpg
+            echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list >/dev/null
+          fi
+          sudo apt-get -qq update >/dev/null
+          sudo apt-get -qq install -y "postgresql-client-$MAJOR" >/dev/null
+          echo "/usr/lib/postgresql/$MAJOR/bin" >> "$GITHUB_PATH"
+          echo "driften kör Postgres $(psql "$DRIFT_URL" -Atc 'show server_version' | cut -d' ' -f1); avbilden supabase/postgres:17.6.1.178"
+          SESSION_URL="${DRIFT_URL/:6543\//:5432\/}"
+          echo "::add-mask::$SESSION_URL"
+          if psql "$SESSION_URL" -Atc "select 1" >/dev/null 2>&1; then echo "DUMP_URL=$SESSION_URL" >> "$GITHUB_ENV"; else echo "DUMP_URL=$DRIFT_URL" >> "$GITHUB_ENV"; fi
+          for i in $(seq 120); do
+            if "/usr/lib/postgresql/$MAJOR/bin/pg_isready" -q -h 127.0.0.1 -p 5433 -U postgres; then break; fi
+            [ "$i" = 120 ] && { echo "::error::avbilden svarade inte på 120 s"; docker logs pg 2>&1 | tail -20; exit 1; }
+            sleep 1
+          done
+      # Driftens schema och rader: ett dygn väder (med karantänens dygn före) och tabellerna regeln och skuggan läser. radar_precip
+      # följer inte med: skuggans stadsdel läser den inte, och en kopia av hela tabellen hade belastat driften. Regeln ensam blir därför
+      # snabbare här än i driften för vägpunkterna (mätt i driften 7/11, DECISIONS #813).
+      - name: Driftens schema och rader till avbilden
+        env: { DRIFT_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          node --experimental-strip-types scripts/tillfalliga-arkivet.ts 1 \
+            "--tabeller=kandidat_live,ny_kandidat_live,radar_stad,road_conditions,stadsbrytare,stadspunkt,vagpunkt,kandidat_skugga_meta" \
+            2>&1 | grep -v ExperimentalWarning
+      - name: sql/126–127 ovanpå
+        run: |
+          set -euo pipefail
+          for f in sql/126_stadens_met_fukt.sql sql/127_fuktskuggan_stad.sql; do
+            psql "$DATABASE_URL" -X -q -v ON_ERROR_STOP=1 -f "$f" > /dev/null && echo "$f: klart"
+          done
+      - name: Skuggan i full skala
+        env: { PGMOD: "${{ github.workspace }}" }
+        run: node scripts/engangsprov-fuktskugga-fullskala.mjs
+      # Bara raderna om processer som dött, aldrig satserna.
+      - name: Containerns logg vid fel
+        if: failure()
+        run: docker logs pg 2>&1 | grep -E "terminated by signal|out of memory|database system is" | tail -20 || true
