@@ -3266,3 +3266,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - halkvakt-karta PR 30 (7de90c9b), Halkvakt PR #1675 (f01ce1db, efter android.yml 44451916677 och TestFlight-provet 44451920056 gröna på grenen), migrationen 119 med DB-knappen (44454949479) och deployen av `publicera` (44454996051).
   - Läst live: integritetssidan, startsidan och länssidorna. Gallringen av besöksraderna är schemalagd 03.25 UTC.
   - **Inte gjort:** apparna (nästa version), steg 3–5. Den första dispatchen av migrationen föll på att filen saknades (inget kördes).
+- 19/11 (Claude; Bengt: *"kör"*): **Dataskyddet steg 3 påbörjat** (DECISIONS #900, tillägget; kort #670).
+  - `sql/120` gör testarnas svar till summor 31 maj 2027; frister för kamerabilderna (30/4 2027) och för att läsa jobbet (31/5 2027);
+    registret sparat privat; överföringsgrunderna på integritetssidan (halkvakt-karta PR 31).
+  - **Inte gjort:** migrationen 120, avtalen i kontona, bolagsavtalet, Meta, OpenFreeMap och Datawrapper.
