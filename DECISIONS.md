@@ -13589,6 +13589,21 @@ dess slutsatser. #373 och inte #372: #372 bärs redan av två grenar som inte ä
   - **PRODUKTBOKEN** uppdateras i samma varv som påslaget.
   - **Olycksfacit (sql/112)** räknar K på timvärdena, eftersom det snabba värdet inte loggas (punkt 4).
 
+**Påslaget 19/11** (Bengt: *"Ja, slå på"* (19/11)).
+- **Körningen:** `sql/121` migrerad med DB-knappen 44481062664 efter PR #1686 (d4a1003c); talaren var fortfarande den nya, och
+  publiceringen 07.38 UTC bar timmen 06.00. `sql/122` migrerad med DB-knappen 44481515623, 07.41 UTC.
+- **Bevisraderna efter påslaget:**
+  - `talande_timme()` gav `snabb` med tiden 07.39.00 UTC (den nyas timme 06.00);
+  - `kandidat_snabb_pa()` gav sant, med en rad i loggen;
+  - `talande_regel()` gav den snabbas punkter med samma tid.
+- **Publiceringen efter påslaget:** 07.42.08 UTC med 285 kandidatsträckor och tiden 07.39 (timvärdet 07.38 bar 346 sträckor och timmen 06.00).
+- **PRODUKTBOKEN** är uppdaterad i samma varv.
+- **Kvar:**
+  - kartan ur hinken (punkt 6), kort #671 på Bengts ord;
+  - tiden i appen (en appversion);
+  - rättelsen av den sena PH i timmarna 00, 06, 12 och 18 UTC (i kuvösen).
+- **AV:** en rad med `talar = 'av'` i `kandidat_snabb_talar`, i samma form som `sql/122`.
+
 **Stomdokument:** SYS kandidatens kedja och databasen, APP kandidatens varning, BED §4.2.
 
 ## #783 (3/11 2026) Kandidaten på en kvart pausad: den första riktiga körningen fällde databasen tre gånger; pg_nets räknare flyttad fram

@@ -3294,3 +3294,10 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   Skuggan 7/11–19/11: 0,81 gånger så många utfallsbyten som timvärdet (högst 1,5), avvikelsen vid :47 0,00 °C i median, 12 nätter med
   varning. `sql/121` (vem som talar) och `sql/122` (raden) med prov i `test/kandidat-snabb-pa.test.ts`. Fristen flyttad till 26/11.
   **Inte gjort:** migrationerna, påslaget, kartan ur hinken, tiden i appen och PRODUKTBOKEN.
+- 19/11 07.41 UTC (Claude; Bengt: *"Ja, slå på"* (19/11)): **Kandidaten på en kvart påslagen** (DECISIONS #782, tillägget; kort #373).
+  - `sql/121` (DB-knappen 44481062664) och `sql/122` (44481515623). `talande_timme()` gav `snabb` 07.39.
+  - Publiceringen efteråt: 07.42.08 UTC med 285 kandidatsträckor och tiden 07.39 (timvärdet 07.38 bar 346 sträckor och timmen 06.00).
+  - PRODUKTBOKEN uppdaterad; fristen `kandidat-snabb-skuggan` borttagen och #1597 stängt.
+  - **Inte gjort:** kartan ur hinken och tiden i appen.
+- 19/11 (Claude; Bengt: *"jag tycker att vi kan lägga uppdateringen av kartsteget som ett öppet kort som vi eventuellt tar senare"*): **Kort #671 lagt** (Claude — låst, nyckel Bengts ord): kandidatens Prognos-linjer på
+  halkvakt.se ur hinken vid varje publicering, så att webbkartan visar samma sak som appen (DECISIONS #782 punkt 6).
