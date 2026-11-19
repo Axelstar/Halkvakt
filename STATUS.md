@@ -3306,3 +3306,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - **Avstängd** med `sql/123` (DB-knappen 44485898988), och publiceringen 08.16 bar timvärdet med storstäderna.
   - **Rättelsen och vakten** i `sql/124`, vakthundens kontroll 3c och `test/kandidat-snabb-stad.test.ts`.
   - **Inte gjort:** sammanslagningen, `sql/124`, vakthundens deploy och ett nytt påslag.
+- 19/11 09.14 UTC (Claude; Bengt: *"det första vi gör är att slå på den snabba kandidaten för det skulle funka även för storstäderna nu"* (19/11)): **Den snabba kandidaten påslagen igen** (DECISIONS #903, tillägget; kort #373).
+  - `sql/124` migrerad (DB-knappen 44488706884) och vakthunden deployad 08.35 UTC. Vakten svarade 09.07: 1 162 mot 1 162, utan larm.
+  - `sql/122` igen (44494568098): den snabba talar för vägarna, och storstäderna har timvärdet (1 162 rader i båda).
+  - Publiceringen 09.16 bar den snabba tiden 09.14. PRODUKTBOKEN rättad.
