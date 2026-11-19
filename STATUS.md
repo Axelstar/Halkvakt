@@ -3317,3 +3317,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 19/11 (Claude; Bengt: *"Ja, vänta"* (19/11, på att vänta på MET:s svar till 26/11)): **Småvägsröstens timme 06 UTC väntar på MET** (DECISIONS #902, körlistan B5).
   Luckorna 15/11, 17/11 och 18/11 ligger i MET:s morgonfel. Inget byggs före MET:s svar eller 26/11 (fristen `met-svar-2026-11-26`),
   och därefter läggs återtagningen i timflödet fram om felet står kvar.
+- 19/11 (Claude; Bengt: *"gör alla 4 punkterna"*): **Bokföring: B10:s frister, kartkortet och namnet** (körlistan B10, kort #671).
+  Tre nya frister för kuvösens stadsmiljö: `stadsmiljon-marsfonstret` (28/2), `stadsmiljon-domsteget` (31/3) och `stadsmiljon-dom` (1/4). Kort #671 bär
+  att livekartan inte ritar storstädernas punkter. Kontaktpersonens namn i bedömningen och FINANSIERING är utbytt mot rollen (repot är publikt).
