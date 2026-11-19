@@ -18261,6 +18261,9 @@ Innehållet är det F75 beskriver: MET:s luft och fuktighet för samma punkt, k�
   - Regeln och rösten ger samma rader vad flaggorna än säger.
   - Fuktfilen bär varje rad i timmen, och underlaget är oförändrat.
 - `test/fuktskugga-stad.test.ts` prövar filerna, flödena och värdevakten utan databas.
+- **Motprovet i ci:** commit 20a9d231 lät M-dagg pröva fuktigheten i timmen före i stället för i kandidatens timme. Felet ligger utanför
+  kontraktsgrinden, som höll. ci-körningen 44599693472 föll bara på integrationsprovet #907 #908, i FS3 vid platsen S19
+  (`test/integration.test.ts:5002`). Nästa commit återställde felet.
 - Inte provat i drift och inte i Supabases avbild.
 
 **Ordningen i driften (Bengts och Axels ord):**
