@@ -121,7 +121,7 @@ BEGIN
            -- everywhere in Sweden (a degree of longitude is more than 38 km south of 70° N).
            EXISTS (SELECT 1 FROM road_conditions rc WHERE NOT rc.deleted AND rc.geom && ST_Expand(p.geom, 0.1)
                      AND ST_DWithin(rc.geom::geography, p.geom::geography, 2000)) AS k2a_finns,           -- PAR_M
-           EXISTS (SELECT 1 FROM road_conditions rc WHERE 'Våt' = ANY (rc.condition_info)
+           EXISTS (SELECT 1 FROM road_conditions rc WHERE NOT rc.deleted AND 'Våt' = ANY (rc.condition_info)
                      AND rc.geom && ST_Expand(p.geom, 0.1)
                      AND ST_DWithin(rc.geom::geography, p.geom::geography, 2000)) AS k2a                  -- PAR_M
     FROM r p
