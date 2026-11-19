@@ -17836,4 +17836,30 @@ tidningarna föll, eftersom tidningarna då måste föra in Halkvakt i sina samt
 - **Apparna:** orden är byggda och kompilerade, men går ut först med nästa version. Axel klistrar in butikstexterna, ramar om butiksbilderna
   och skickar 0.4.1 med ett nytt byggnummer.
 
+**Steg 3 påbörjat 19/11, utan Axel** (Bengt: *"kör"* (19/11, på steg 3 utan Axel, med datumen 31 maj och 30 april 2027)).
+- **Testarnas svar** (fråga 5, `sql/120_testarnas_svar_gallring.sql`):
+  - den 31 maj varje år kl. 04.10 UTC läggs svaren som kom in före 1 maj ihop till summor per säsong, källa, app och svar i
+    `testarnas_svar_summa`, och raderas sedan;
+  - provraderna räknas inte i summorna;
+  - funktionen gör ingenting före 31 maj 2027.
+- **Kamerabilderna** (fråga 7): raderas senast 30 april 2027. Det är en frist (`kamerabilder-2027-04-30`), eftersom filerna i hinken `facit`
+  tas bort genom lagringens gränssnitt eller panelen och inte med en SQL-sats. Klassningarna i `kamerafacit` står kvar; de har inga
+  personuppgifter.
+- **Registret** (fråga 4) är skrivet ur utredningen och besluten och sparat privat, utanför repot.
+- **Överföringsgrunden** är läst på leverantörernas egna sidor 19/11:
+  - Supabase: standardavtalsklausuler, med avtalsparten Supabase Pte. Ltd i Singapore;
+  - Cloudflare och GitHub: EU–USA-ramverket och klausuler;
+  - Google: ramverket och klausuler;
+  - Apple: klausuler, och Apple Distribution International i Irland för användare i EU;
+  - Zoho: klausuler;
+  - Meta: inte läst, eftersom sidan krävde inloggning.
+
+  Det står på integritetssidan (halkvakt-karta PR 31). Den officiella listan över ramverket gick inte att söka.
+- **Provat:** sviten 469 godkända, 0 fel, 77 överhoppade. Migrationen prövas mot PostGIS i ci.
+- **Kvar i steg 3:**
+  - leverantörsavtalen godkända i kontona (Axel eller Bengt);
+  - en rad om dataskyddet i bolagsavtalet;
+  - Metas, OpenFreeMaps och Datawrappers överföringar;
+  - migrationen 120 på Bengts ord.
+
 **Stomdokument:** APP 10 — integritetssidan och dataskyddets steg, SYS 1 — vem som ger ut Halkvakt och ansvarar för uppgifterna, BED §4.2
