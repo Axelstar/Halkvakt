@@ -3310,3 +3310,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - `sql/124` migrerad (DB-knappen 44488706884) och vakthunden deployad 08.35 UTC. Vakten svarade 09.07: 1 162 mot 1 162, utan larm.
   - `sql/122` igen (44494568098): den snabba talar för vägarna, och storstäderna har timvärdet (1 162 rader i båda).
   - Publiceringen 09.16 bar den snabba tiden 09.14. PRODUKTBOKEN rättad.
+- 19/11 (Claude; Bengt: *"Ja, ta dem"* (19/11, på storstadslistans nr 5 och nr 4)): **Kort #378 stängt, och stadsflödets reserv läst** (körlistan D4 och B1).
+  - #378: lägesfilen (reservens kopia, `data/app/v1/live.json` i halkvakt-karta) bar storstädernas första varningar 18/11: 12.50 UTC 10 grupper med 14 punkter i lager B (88aaaa24), och 13.50 UTC 191 grupper med 2 163 punkter, med lager C (b98f087d).
+  - B1: körningarna sedan 17/11 18.39 gröna, och reserven har inte behövt räkna något i efterhand. Körningen 19/11 06.49 föll på MET:s
+    morgonfel, som står kvar 19/11 (körlistan B5); reserven ska räkna 20261119T06Z i efterhand i nästa vanliga körning.
