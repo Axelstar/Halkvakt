@@ -1327,5 +1327,18 @@
       "instagram": "18469541410186876",
       "x": "2123108480907464864"
     }
+  ],
+  "2026-11-19": [
+    {
+      "pass": "morgon",
+      "namn": "2026-11-19-morgon",
+      "typ": "svep",
+      "nyckel": "svep:morgon",
+      "tid": "2026-11-19T04:50:52.098Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-11-19-morgon-01.jpg",
+      "facebook": "1312515671952967_122114106531516187",
+      "instagram": "18141959182745143",
+      "x": "2123278126654374111"
+    }
   ]
 }
