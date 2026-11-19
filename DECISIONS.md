@@ -17862,4 +17862,12 @@ tidningarna föll, eftersom tidningarna då måste föra in Halkvakt i sina samt
   - Metas, OpenFreeMaps och Datawrappers överföringar;
   - migrationen 120 på Bengts ord.
 
+**Steg 3:s delar i drift 19/11** (Bengt: *"Ja, allt"*):
+- **Ihopslaget:** halkvakt-karta PR 31 (a16f2f6d) och Halkvakt #1678 (1ede9aae).
+- **Migrationen 120 med DB-knappen** (44459220314):
+  - jobbet `halkvakt-testarnas-svar` är aktivt och går `10 4 31 5 *`;
+  - anon får inte köra funktionen och inte läsa summorna;
+  - summatabellen har 0 rader.
+- **Integritetssidan live** (sajten byggd 04.30 UTC): överföringsgrunden per leverantör och kamerabildernas radering.
+
 **Stomdokument:** APP 10 — integritetssidan och dataskyddets steg, SYS 1 — vem som ger ut Halkvakt och ansvarar för uppgifterna, BED §4.2
