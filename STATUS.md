@@ -3326,3 +3326,9 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 19/11 (Claude; Bengt: *"Jag o Axel signerar med dina rekommendationer men med den nya gränsen b"* och *"Ja"*): **Storstäderna i säsongsfacit signerat** (DECISIONS #904, körlistan C3).
   Tillägget §11 i TROSKLAR-SASONGSFACIT med Claudes rekommendationer, och en rättelserad var i §1 och §8. Inget mått är räknat;
   bygget (aggregatet, värdevaktens spann och veckorapportens avsnitt) går i egna PR:er.
+- 19/11 (Claude; Bengt: *"gör alla 4 punkterna"*): **Bokföring: B10:s frister, kartkortet och namnet** (körlistan B10, kort #671).
+  Tre nya frister för kuvösens stadsmiljö: `stadsmiljon-marsfonstret` (28/2), `stadsmiljon-domsteget` (31/3) och `stadsmiljon-dom` (1/4). Kort #671 bär
+  att livekartan inte ritar storstädernas punkter. Kontaktpersonens namn i bedömningen och FINANSIERING är utbytt mot rollen (repot är publikt).
+- 19/11 (Claude; Bengt: *"gör alla 4 punkterna"*): **Utkasten för C3 och C4** (bedömningen §4.2).
+  C3: storstädernas tillägg i säsongsfacit (§11) i PR #1695, sju frågor; körlistan C3 pågår, på kort #381. C4: förregistreringen
+  för skuggan av fler fuktkällor i halkvakt-kuvos (PR #97), tio frågor. Båda väntar på Bengts och Axels svar och signaturer.
