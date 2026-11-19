@@ -3301,3 +3301,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - **Inte gjort:** kartan ur hinken och tiden i appen.
 - 19/11 (Claude; Bengt: *"jag tycker att vi kan lägga uppdateringen av kartsteget som ett öppet kort som vi eventuellt tar senare"*): **Kort #671 lagt** (Claude — låst, nyckel Bengts ord): kandidatens Prognos-linjer på
   halkvakt.se ur hinken vid varje publicering, så att webbkartan visar samma sak som appen (DECISIONS #782 punkt 6).
+- 19/11 (Claude; Bengt: *"Ja, vänta"* (19/11, på att vänta på MET:s svar till 26/11)): **Småvägsröstens timme 06 UTC väntar på MET** (DECISIONS #902, körlistan B5).
+  Luckorna 15/11, 17/11 och 18/11 ligger i MET:s morgonfel. Inget byggs före MET:s svar eller 26/11 (fristen `met-svar-2026-11-26`),
+  och därefter läggs återtagningen i timflödet fram om felet står kvar.
