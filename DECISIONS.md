@@ -18175,3 +18175,19 @@ på Bengts ord.
 fysiken bakom.
 
 **Stomdokument:** MAT, SYS, APP, KAR — båda spårens rörarbete i handtexten
+
+## #911 (19/11 2026) Svartis och rimfrost: småvägsdelen struken ur kuvösens prov, som bara gäller storstäderna (körlistan C7, kort #656)
+
+**Beslut.** Bengt 19/11: *"Nej det här är något som är fel. När vi tidigare jobbat fram småvägar har vi varit eniga om att vi inte kan göra samma mätningar på småvägar som storstäder. Det är fortfarande det som gäller. Om du/jag nu gjort avsteg från det får du backa"*.
+
+**Vad som backas.** Förregistreringen för svartis och rimfrost (#906, halkvakt-kuvos F75) prövade också småvägsröstens varianter, mot
+friktionen vid stationerna och med storstädernas villkor. Småvägarna mäts inte som storstäderna, så det var ett avsteg. Kuvösen stryker
+allt som gäller småvägsrösten (F76, förregistreringens §16 post 1), och provet gäller bara kandidaten i storstäderna.
+- Ur byggena tas småvägarnas flaggor och läsfråga bort.
+- Storstädernas delar står kvar.
+- Inget var byggt i drift eller läst för småvägsdelen.
+
+**Kvar.** Svartis och rimfrost på småvägarna står på kort #656. Prövas de, förregistreras de på småvägarnas sätt i ett eget dokument.
+#906 står som beslut om signeringen. Det här beslutet gäller före dess text om småvägsrösten.
+
+**Stomdokument:** BED §4.2

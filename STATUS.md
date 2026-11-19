@@ -3349,3 +3349,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - **KAR** §4.3: läget 19/11 för storstäderna och den snabba kandidaten, och småvägsröstens ledning med brytarna av; en rad i §14.
   - **Projektkartan:** en ny del, `m-storstaderna` (*Storstäderna: B och C som K*, orange), med storstädernas två steg ur `m-segmentprognos` och tio nya: brytarna på, stadsloggen i hinken, stadsflödet, reserven, den snabba kandidaten, säsongsfacit, fuktskuggan, friktionens läsfråga, svartis och rimfrost, och batteriet. Kort #672 flyttat dit från segmentprognosen; #671 och #381 hänger också på delen. C7 beskrivs bara som storstädernas (Bengt 19/11). Kortkartan: #672 till SYS 3.
   - `stomvakten.ts --lage`: inget öppet för MAT, SYS och KAR; i APP står #901 (dataskyddet, inte det här varvet). `--tillatna` faller på CLAUDE.md och DECISIONS.md, som bär beslutet, så PR:en väntar på Bengts ord.
+- 19/11 (Claude; Bengt: *"… vi inte kan göra samma mätningar på småvägar som storstäder … får du backa"*): **Svartis och rimfrost:
+  småvägsdelen struken** (DECISIONS #911, halkvakt-kuvos F76). Provet gäller bara storstäderna. Kort #656 är tillbaka där det var för
+  småvägarna, och körlistans C7, fristen 1/4 och bedömningen §4.2 säger det.
