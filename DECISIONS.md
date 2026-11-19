@@ -18463,6 +18463,13 @@ Migrationen, värdevaktens knapp och flöden görs bara på Bengts ord. Inget m�
   - 15 motprov på migrationen, och vart och ett fälls av minst en plats;
   - avsnittets frågor mot olycksfacit och `driver_facit`;
   - värdevakten mot databasen, där en rad med ett känt tal aldrig når utskriften.
+- Den första ci-körningen (44635844463) fällde inte motprovet *beslutet vid timmen, inte när den loggades*. Timmarna 16 och 17 bar
+  likadana rader, så att en nivå som flyttades en timme inte syntes. Raden kl. 16 ändrades (ed470c32), och ci-körningen 44637355771 var
+  grön med alla 15 motprov fällda.
+- **Motprovet i ci:** commit b0611cb1 lät en räknad körning göra timmen räknad i varje cell, utan cellens brytare. Felet ligger utanför
+  kontraktsgrinden, som höll. ci-körningen 44638462703 föll bara på integrationsprovet #913, i SS1 (`test/integration.test.ts:5247`).
+  Nästa commit återställde felet.
+- Inte provat i drift och inte i Supabases avbild.
 
 **Ordningen i driften (Bengts ord):**
 1. DB-knappen med *migrera* och `sql/128_sasongsfacit_stad.sql`, före 22/11 kl. 00.00 svensk tid om hinken inte ska behövas.
