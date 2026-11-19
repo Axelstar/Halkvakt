@@ -18140,3 +18140,38 @@ Gränsen för efterräkningen är oförändrad (60 timmar, `efterrakning.py` i d
 stegen står på ett ställe.
 
 **Stomdokument:** SYS 2 — stadsmiljöns kedja och reserven
+
+## #910 (19/11 2026) Småvägsröstens rörarbete får storstädernas undantag i stomdokumenten, och båda spåren rättas ikapp (kort #304)
+
+**Beslut.** Bengt 19/11: *"Ja, båda spåren"*, på frågan om småvägsröstens rörarbete ska få samma undantag som storstäderna, så att båda spåren
+rättas. Frågan stod i bedömningen §4.2 sedan 11/11 (dokumentsynken).
+
+**Undantaget.** Röstens rörarbete i driften (#828) beskrivs i Halkvakts stomdokument som storstädernas (#804, #810):
+- tabellerna, flödena, regeln och brytarna;
+- betavarningen i appen.
+Punkterna, särdragen, fysiken och kuvösens småvägsprov (P-II, kartans ord) bor kvar i halkvakt-kuvos (#768). Instruktionen står i
+CLAUDE.md, i avsnittet PUBLIKT REPO och i dokumentsynkens steg 4. Morgonrutinens egen text (punkt 3) säger samma sak, och den
+ändras när CLAUDE.md är ihopslagen.
+
+**Vad som var fel** (läst 19/11 kväll på main 8b1047ed). Synken har gått varje morgon 10–19/11, men:
+- **Småvägsrösten** nämns inte i handtexten i mätningarna, systembilden, appen eller integrationskartan. Synkens instruktion uteslöt
+  *småvägarna*, och undantaget gällde bara kandidaten och storstäderna. Därför står tolv beslut som *bokförda utan handtext* med skälet
+  *hör till halkvakt-kuvos*: #828, #844, #846–#849, #857, #859, #881, #883, #884 och #885.
+- **Storstäderna** står i mätningarna och systembilden som om brytarna vore av (*"Ingenting av storstäderna når föraren förrän brytarna
+  slås på"*). Brytarna slogs på 8/11 17.35 UTC (tillägget till #816). Tillägget nådde aldrig handtexten: #816 nämndes redan där, och
+  stomvakten flaggar bara besluten efter numret. Appens handtext nämner inte storstäderna.
+- **Projektkartan** har ingen del för storstäderna. Deras steg ligger i *L4 räckvidden: segmentprognosen*, och det sista är bokfört
+  10/11.
+
+**Ikapprättningen** (i samma PR): handtexten i MAT, SYS, APP och KAR för båda spåren, utan kuvösens tal, och en egen del för
+storstäderna i projektkartan. Stomvakten ändras inte: att den ska flagga ett tillägg till ett gammalt beslut är ett förslag som väntar
+på Bengts ord.
+
+**Alternativ.**
+- Rätta #828:s rad **Stomdokument:** till *inga*. Då hade rösten, som förarna hör, saknats i appens och systembildens beskrivning.
+- Låta rösten stå bara i kuvösen. Men rörarbetet och betavarningen finns i Halkvakt och i appen, inte i kuvösen.
+
+**Varför.** Stomdokumenten är Bengts facit för var bygget står. Det föraren hör och det som går i driften ska stå där, vem som än äger
+fysiken bakom.
+
+**Stomdokument:** MAT, SYS, APP, KAR — båda spårens rörarbete i handtexten
