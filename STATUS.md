@@ -3323,3 +3323,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 19/11 (Claude; Bengt: *"Jag o Axel signerar med dina rekommendationer men med den nya gränsen b"* och *"Ja"*): **Fuktskuggan i storstäderna signerad** (halkvakt-kuvos F74, PR #97;
   körlistan C4, kort #672). Claudes rekommendationer, och villkor 3 lättat till 1 procentenhet enligt regel L, med följden för
   föraren som skäl. Inget är byggt och inget är läst.
+- 19/11 (Claude; Bengt: *"Jag o Axel signerar med dina rekommendationer men med den nya gränsen b"* och *"Ja"*): **Storstäderna i säsongsfacit signerat** (DECISIONS #904, körlistan C3).
+  Tillägget §11 i TROSKLAR-SASONGSFACIT med Claudes rekommendationer, och en rättelserad var i §1 och §8. Inget mått är räknat;
+  bygget (aggregatet, värdevaktens spann och veckorapportens avsnitt) går i egna PR:er.
