@@ -3270,3 +3270,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - `sql/120` gör testarnas svar till summor 31 maj 2027; frister för kamerabilderna (30/4 2027) och för att läsa jobbet (31/5 2027);
     registret sparat privat; överföringsgrunderna på integritetssidan (halkvakt-karta PR 31).
   - **Inte gjort:** migrationen 120, avtalen i kontona, bolagsavtalet, Meta, OpenFreeMap och Datawrapper.
+- 19/11 (Claude; Bengt: *"Ja, allt"*): **Dataskyddet steg 3:s delar i drift** (DECISIONS #900, tillägget; kort #670). halkvakt-karta PR 31
+  och #1678 ihopslagna; migrationen 120 (DB-knappen 44459220314): jobbet aktivt 31 maj, anon utan rätt, 0 summarader; integritetssidan läst live.
+  **Inte gjort:** avtalen i kontona, bolagsavtalet, Meta, OpenFreeMap och Datawrapper.
