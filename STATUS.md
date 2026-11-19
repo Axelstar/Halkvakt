@@ -3320,3 +3320,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 19/11 (Claude; Bengt: *"Ja, bygg"* och *"Slå ihop o bygg"* (19/11, på friktionens läsfråga och flödessteget)): **Friktionens läsfråga och steget i flödet** (körlistan C4, kort #672).
   Läsfrågan är ihopslagen i halkvakt-kuvos (PR #96). Steget `friktionen` i `kuvos-ny-kandidat.yml` bygger grindarnas tillfälliga databas från friktionens
   första dygn, hämtar kandidatens och radarns dygnsfiler ur hinken och lägger talen bara i hinken. Inte kört: läsfrågan vägrar före 6/12.
+- 19/11 (Claude; Bengt: *"Jag o Axel signerar med dina rekommendationer men med den nya gränsen b"* och *"Ja"*): **Fuktskuggan i storstäderna signerad** (halkvakt-kuvos F74, PR #97;
+  körlistan C4, kort #672). Claudes rekommendationer, och villkor 3 lättat till 1 procentenhet enligt regel L, med följden för
+  föraren som skäl. Inget är byggt och inget är läst.
