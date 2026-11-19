@@ -157,7 +157,7 @@ export const SPANN: Record<string, [number, number, string]> = {
   // före påslaget, två körningar i rad), så den besiktigas innan vakthunden larmar på den. Läst 17/11 ur pg_nets svar (#892): 7 668
   // till 9 566 ms på 179 körningar. Tio minuter är ingen byggtid utan ett fel i svaret.
   bygget_ms: [0, 600000, "ms — publiceringens bygge av lägesfilen"],
-  // The moisture shadow in the cities (sql/125, DECISIONS #905; halkvakt-kuvos F74 §5). The fields have names of their own, since a key
+  // The moisture shadow in the cities (sql/127, DECISIONS #907; halkvakt-kuvos F74 §5). The fields have names of their own, since a key
   // here holds in every table. The upper bounds come from the schema, never from the point list (TROSKLAR-SASONGSFACIT §11.7, DECISIONS
   // #904 answer 5 (a)): a point id is ^[BC][0-9]{5}$ and a group has one layer (sql/089), so a group holds at most 100 000 points and a
   // run at most 200 000 groups. The bounds say nothing about how large the groups are.
@@ -171,6 +171,18 @@ export const SPANN: Record<string, [number, number, string]> = {
   k2a_punkter: [0, 100000, "stadspunkter i P0 med R0 eller Våt inom 2 km (K2a)"],
   k2a_utan_varde: [0, 100000, "stadspunkter i P0 utan väglagssträcka inom 2 km"],
   p0_grupper: [0, 200000, "grupper skrivna i fuktskuggans körning — gränsen är schemats (två lager, sql/089)"],
+  // Svartis and rimfrost in the same shadow (sql/127, DECISIONS #908; halkvakt-kuvos F75 §8): the same schema bounds as above.
+  g_rim_utan_varde: [0, 100000, "stadspunkter i P0 vars giltiga granne saknar en daggpunkt inom spannet (G-rim utan värde)"],
+  m_dagg_punkter: [0, 100000, "stadspunkter i P0 med R0 eller MET:s daggfukt vid punkten (M-dagg)"],
+  m_dagg_utan_varde: [0, 100000, "stadspunkter i P0 där kandidatens värde eller MET:s rad saknas i någon av timmarna (M-dagg utan värde)"],
+  s1h_punkter: [0, 100000, "stadspunkter i P0 med R0 eller radarn i gruppen inom 1 timme (S-1h)"],
+  s2h_punkter: [0, 100000, "stadspunkter i P0 med R0 eller radarn i gruppen inom 2 timmar (S-2h)"],
+  s3h_punkter: [0, 100000, "stadspunkter i P0 med R0 eller radarn i gruppen inom 3 timmar (S-3h, den som avgör)"],
+  s4h_punkter: [0, 100000, "stadspunkter i P0 med R0 eller radarn i gruppen inom 4 timmar (S-4h)"],
+  c7_alla_punkter: [0, 100000, "stadspunkter i P0 med R0, G-rim, M-dagg eller S-3h"],
+  // MET Nordic's dew point per city point (sql/126, DECISIONS #908; F75 §8): F38's span, stricter than dewpoint_c, under a key of its
+  // own since a key holds in every table. The humidity beside it is rh2m above, as a fraction.
+  met_td_c: [-50, 30, "°C MET Nordics daggpunkt vid stadspunkten (ur kuvösens kedja) — F38:s spann, strängare än dewpoint_c"],
 };
 
 /** Identifierare är inte mätvärden. De ska inte stå som obesiktigade — men de ska inte heller
@@ -193,12 +205,12 @@ export const ORD: Record<string, { ord: string[]; not: string }> = {
   trv_varning: { ord: ["risk för halka", "hal vägbana", "snörök"], not: "Trafikverkets varning på sträckan (Warning). Visas ordagrant, avgör inget" },
   // Snöfall och smältvatten kom redan den första timmen i drift (17/11 kl. 15 UTC): listan från morgonen var inte hela ordförrådet.
   trv_orsak: { ord: ["regn", "fallande temperatur", "frost", "snöfall", "smältvatten"], not: "Trafikverkets orsak till väglaget (Cause). Visas ordagrant, avgör inget" },
-  // The road state's word list, where the rule and K2a in the moisture shadow read Våt (sql/091, sql/125; halkvakt-kuvos F74 §5). Only the
+  // The road state's word list, where the rule and K2a in the moisture shadow read Våt (sql/091, sql/127; halkvakt-kuvos F74 §5). Only the
   // words the repo has seen in the archive are here (docs/TILL-AXEL-HALKORDEN.md, 21/2–25/8 2026). The winter's words have not been read
   // from here: each one is an OKÄNT ORD until a person has read it in the value guard's output and added it.
   condition_info: { ord: ["torrt", "våt", "fläckvis våt", "fläckvis torrt"],
     not: "Trafikverkets väglagsord på sträckan (ConditionInfo), en textlista. Våt är fukten i regeln och i fuktskuggans K2a; fläckvis Våt räknas inte" },
-  // The moisture shadow's own codes (sql/125). The areas and layers are the four switches in sql/089.
+  // The moisture shadow's own codes (sql/127). The areas and layers are the four switches in sql/089.
   status: { ord: ["räknad", "tyst", "av"], not: "fuktskuggans körning: räknad, tyst (kandidatens timme saknas) eller av (alla brytare av)" },
   brytare: { ord: ["stor-stockholm/b", "stor-göteborg/b", "stor-malmö/b", "stor-stockholm/c"], not: "brytarna som var på vid körningen, område/lager" },
   omrade: { ord: ["stor-stockholm", "stor-göteborg", "stor-malmö"], not: "storstadens område (sql/089)" },
@@ -214,6 +226,11 @@ export const FLAGGOR: Record<string, string> = {
   surface_ice: "ytstatusgivaren: is på vägbanan (Surface.Ice); markerar inte is tillförlitligt (kort #324)",
   surface_snow: "ytstatusgivaren: snö på vägbanan (Surface.Snow)",
   vat: "kandidatens domlogg: sträckans väglag säger våt", flackvis_vat: "kandidatens domlogg: sträckans väglag säger fläckvis våt",
+  // The small-road voice's rows (sql/105, sql/128; DECISIONS #828, #908, halkvakt-kuvos F75 §8): ned is the rule's moisture, rim and n6
+  // are the shadow's flags, which no rule reads. NULL in rim and n6 = not counted (a row written before the chain carried them).
+  ned: "småvägsröstens fukt i regeln: kuvösens strängare N3, nederbörd i timmen eller de tre före (sql/105)",
+  rim: "småvägarnas rimfrostläge, varianten N3+rim ur kuvösens kedja (sql/128); läses inte av regeln",
+  n6: "småvägarnas nederbörd i timmen eller de sex före, varianten N6 ur kuvösens kedja (sql/128); läses inte av regeln",
 };
 /** Statusflaggor är bokföring, inte mätvärden: samma kategori som identifierarna. */
 export const STATUSFLAGGOR = new Set(["deleted"]);
@@ -331,6 +348,13 @@ if (korsSjalv && process.argv.includes("--sjalvtest")) {
   k("statusflagga är inte ett mätvärde", domaFlagga({ tabell: "t", kolumn: "deleted", rader: 5000 }).utfall, "ID");
   k("flagga med för få rader får ingen dom", domaFlagga({ tabell: "t", kolumn: "surface_water", rader: 12 }).utfall, "–");
   k("ordet no är sant som sanningsvärde, därför en ordlista", Boolean("no") && ORD.precipitation.ord.includes("no"), true);
+  // MET:s daggpunkt vid stadspunkterna (#908): F38:s spann, strängare än stationernas.
+  k("MET:s daggpunkt −52 °C fälls", doma(f("met_td_c", { min: -52, max: 2 })).utfall, "UTANFÖR SPANN");
+  k("MET:s daggpunkt +31 °C fälls", doma(f("met_td_c", { min: -20, max: 31 })).utfall, "UTANFÖR SPANN");
+  k("samma −52 °C passerar som stationens daggpunkt", doma(f("dewpoint_c", { min: -52, max: 2 })).utfall, "OK");
+  k("MET:s fukt som procent fälls", doma(f("rh2m", { min: 0.3, max: 95 })).utfall, "UTANFÖR SPANN");
+  k("småvägarnas flaggor är deklarerade", [domaFlagga({ tabell: "smavag_live", kolumn: "ned", rader: 5000 }).utfall,
+    domaFlagga({ tabell: "smavag_live", kolumn: "rim", rader: 5000 }).utfall, domaFlagga({ tabell: "smavag_live", kolumn: "n6", rader: 5000 }).utfall].join(), "OK,OK,OK");
   if (!ok) { console.error("\nSJÄLVTEST FÄLLDE."); process.exit(1); }
   console.log("\nSJÄLVTEST OK: alla fyra fall som lurade oss 12/9 fastnar, kodlistor fälls inte");
   console.log("för dominans, och ett odeklarerat fält är obesiktigat även när talen ser rimliga ut.");
@@ -367,8 +391,12 @@ const TID: Record<string, string> = {
   ny_kandidat_ph: "tid", ny_kandidat_live: "tid", ny_kandidat_skugga: "observed_at", ny_kandidat_station: "observed_at",
   // Publiceringens byggtid (sql/115, DECISIONS #896): bär avbrottsvillkoret i #833 — fött besiktigad.
   publicera_bygge: "t",
-  // The moisture shadow in the cities and its runs (sql/125, DECISIONS #905): born inspected, with the time columns of the export.
+  // The moisture shadow in the cities and its runs (sql/127, DECISIONS #907): born inspected, with the time columns of the export.
   ny_kandidat_fuktskugga_stad: "observed_at", ny_kandidat_fuktskugga_stad_korning: "korning",
+  // Svartis and rimfrost (DECISIONS #908; halkvakt-kuvos F75 §8, §13 point 1): MET's moisture at the city points (sql/126), born
+  // inspected; and the three tables the rules already read, which were missing here, so their fields were never scanned, not even as
+  // OBESIKTIGADE: the small roads' rows (sql/105, sql/128) and the radar per city group and per small-road piece (sql/090, sql/104).
+  ny_kandidat_met_stad: "tid", smavag_live: "tid", radar_stad: "observed_at", radar_smavag: "observed_at",
 };
 
 console.log(`Värdevakten — besiktning av arkivets numeriska fält (${DAGAR} dygns fönster)\n`);

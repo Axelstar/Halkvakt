@@ -1,4 +1,4 @@
--- 125: THE MOISTURE SHADOW IN THE CITIES (DECISIONS #905, körlistan C4; the preregistration signed as halkvakt-kuvos F74, its §13).
+-- 127: THE MOISTURE SHADOW IN THE CITIES (DECISIONS #907, körlistan C4; the preregistration signed as halkvakt-kuvos F74, its §13).
 --
 -- A SHADOW, NEVER A VOICE. Every hour, after the city log (sql/096), it counts what more moisture sources would have given at the
 -- city points, beside the radar that is their only moisture in the rule (sql/091, sql/094). It writes its two tables and nothing
@@ -27,6 +27,18 @@
 -- r0_f1_punkter is the check in §8: the points with R0 that F1 blocks, which should be the city log's spridning. The points in P0
 -- with R0 should be its varnar.
 --
+-- SVARTIS AND RIMFROST (DECISIONS #908, körlistan C7; the preregistration signed as halkvakt-kuvos F75, its §2.2, §2.4, §2.5 and §12
+-- point 1). Their variants are columns of their own in the same rows, with the same P0, and each has moisture where R0 has it:
+--   G-rim  the neighbour's hoar frost, exactly K1's hoar-frost part above (k1_rim_punkter, F75 question 2 (b)); g_rim_utan_varde
+--          counts the points whose neighbour is valid but whose row has no dew point, or one outside the span (§2.5 point 3).
+--   M-dagg the candidate's value at or below MET Nordic's dew point at the point in the candidate's hour and in the hour before,
+--          and MET's relative humidity at least 0.9 in the candidate's hour (F15's daggfukt with AVGOR in the kuvös). The values of the
+--          two hours come from ny_kandidat_live, MET's from ny_kandidat_met_stad (sql/126), each hour from its own run. A missing value
+--          is no value, never moisture (m_dagg_utan_varde, §2.5 point 4).
+--   S-Nh   the group's radar_stad at least 0.1 mm/h at some time in (e - N h, e], for N = 1, 2, 3 and 4 hours; S-3h decides and the
+--          others stand beside (§2.5 point 5, question 3 (a)).
+--   c7_alla_punkter: R0, G-rim, M-dagg or S-3h, a union the other counts cannot give.
+--
 -- THE TIME e (§2.3 point 1) is now() in the call. The shadow reads the rule itself, so the rule's radar and veto and the shadow's
 -- sources are read at the same e. It runs in its own call after the city log, never in the same one, so that an error here cannot
 -- undo the city log. Every row carries its e (raknad_at), and the city log's rows carry theirs (skriven_at), so the check can show
@@ -36,7 +48,7 @@
 -- supabase/functions/arkivexport/index.ts changes in the same commit. scripts/vardevakten.ts knows both tables and their fields.
 -- No rule function is created or replaced here (§3), so ny_kandidat_regel()'s md5 still matches kandidat_skugga_meta (sql/080,
 -- sql/121). The function answers klart, tyst or brytarna av, never a number (#768, #810).
--- ORDER: after sql/096 and sql/114; the migration first, then the deploy of arkivexport. BACK: drop the function and take the two
+-- ORDER: after sql/096, sql/114 and sql/126; the migration first, then the deploy of arkivexport. BACK: drop the function and take the two
 -- names out of the export again (sql/114); the tables can stay. Idempotent.
 
 CREATE TABLE IF NOT EXISTS ny_kandidat_fuktskugga_stad (
@@ -54,6 +66,14 @@ CREATE TABLE IF NOT EXISTS ny_kandidat_fuktskugga_stad (
   k1_utan_varde   int NOT NULL,                         -- points in P0 without a valid station within 15 km
   k2a_punkter     int NOT NULL,                         -- points in P0 with R0 or K2a
   k2a_utan_varde  int NOT NULL,                         -- points in P0 without a road segment within 2 km
+  g_rim_utan_varde int NOT NULL,                        -- points in P0 whose valid neighbour gives no dew point inside the span (#908)
+  m_dagg_punkter  int NOT NULL,                         -- points in P0 with R0 or M-dagg
+  m_dagg_utan_varde int NOT NULL,                       -- points in P0 without the candidate's value or MET's row in one of the hours
+  s1h_punkter     int NOT NULL,                         -- points in P0 with R0 or the group's radar within 1 hour
+  s2h_punkter     int NOT NULL,                         -- … within 2 hours
+  s3h_punkter     int NOT NULL,                         -- … within 3 hours: S-3h, the one that decides
+  s4h_punkter     int NOT NULL,                         -- … within 4 hours
+  c7_alla_punkter int NOT NULL,                         -- points in P0 with R0, G-rim, M-dagg or S-3h
   PRIMARY KEY (grupp, observed_at)
 );
 CREATE TABLE IF NOT EXISTS ny_kandidat_fuktskugga_stad_korning (
@@ -63,7 +83,7 @@ CREATE TABLE IF NOT EXISTS ny_kandidat_fuktskugga_stad_korning (
   brytare      text[] NOT NULL DEFAULT '{}',            -- area/layer switched on, e.g. Stor-Stockholm/B; a text list, so the value guard reads it
   p0_grupper   int NOT NULL DEFAULT 0                   -- groups written in the run
 );
-COMMENT ON TABLE ny_kandidat_fuktskugga_stad IS 'The moisture shadow in the cities (sql/125, DECISIONS #905, halkvakt-kuvos F74): per group and hour, the points in P0 with moisture per variant. A shadow: nothing that speaks reads it. Service role only.';
+COMMENT ON TABLE ny_kandidat_fuktskugga_stad IS 'The moisture shadow in the cities (sql/127, DECISIONS #907 and #908, halkvakt-kuvos F74 and F75): per group and hour, the points in P0 with moisture per variant. A shadow: nothing that speaks reads it. Service role only.';
 
 CREATE OR REPLACE FUNCTION ny_kandidat_logga_fuktskugga() RETURNS text
 LANGUAGE plpgsql SET search_path = public, extensions SET TimeZone = 'UTC' AS $$
@@ -93,7 +113,9 @@ BEGIN
   -- Grind A's population at e: each station's latest valid row in (e - 30 min, e]. MATERIALIZED: read in the lateral below and
   -- counted once, not once per point (the lesson in #567).
   giltiga AS MATERIALIZED (
-    SELECT DISTINCT ON (w.station_id) w.station_id, w.geom, w.surface_temp_c AS yta, w.dewpoint_c AS dagg
+    SELECT DISTINCT ON (w.station_id) w.station_id, w.geom, w.surface_temp_c AS yta, w.dewpoint_c AS dagg,
+           w.dewpoint_c BETWEEN -50 AND 30                                                              -- DAGG_SPANN
+             AS dagg_i_spann
     FROM weather_observations w
     WHERE w.sample_time > now() - interval '30 minutes' AND w.sample_time <= now()
       AND w.station_id !~ '^\d{3,4}100$'                                                                -- FJARRYTA
@@ -108,12 +130,38 @@ BEGIN
                         AND g.dag = (w.sample_time AT TIME ZONE 'UTC')::date)
     ORDER BY w.station_id, w.sample_time DESC
   ),
+  -- M-dagg (#908; F75 §2.5 point 4): MET's rows of the U hours up to the candidate's hour, each with the candidate's value of the same
+  -- hour (ny_kandidat_live holds the rule's value of the hour, sql/094). A point has a value only when every one of the U hours has
+  -- both, and MET's humidity of the candidate's hour decides with them. Read once for all points, by the tables' keys.
+  dagg AS (
+    SELECT m.punkt, h.tid, count(*) AS timmar,
+           count(*) FILTER (WHERE l.pb <= m.met_td_c + 0) AS vid_dagg,                                    -- DAGG_M
+           max(m.rh2m) FILTER (WHERE m.tid = h.tid) AS rh
+    FROM (SELECT DISTINCT r.tid FROM r) h
+    JOIN ny_kandidat_met_stad m ON m.tid > h.tid - interval '2 hours' AND m.tid <= h.tid                -- DAGG_U
+    JOIN ny_kandidat_live l ON l.tid = m.tid AND l.punkt = m.punkt
+    WHERE l.pb IS NOT NULL AND m.met_td_c IS NOT NULL AND m.rh2m IS NOT NULL
+    GROUP BY m.punkt, h.tid
+  ),
+  -- S-1h … S-4h (#908; F75 §2.5 point 5): the group's radar at least 0.1 mm/h at some time in (e - N h, e]. radar_stad only has rows
+  -- with rain (sql/090) and keeps two days, so a group without a row has had no rain in the windows.
+  regn AS (
+    SELECT rs.grupp,
+           bool_or(rs.observed_at > now() - interval '1 hour') AS s1h,                                  -- S_TIMMAR
+           bool_or(rs.observed_at > now() - interval '2 hours') AS s2h,                                 -- S_TIMMAR
+           bool_or(rs.observed_at > now() - interval '3 hours') AS s3h,                                 -- S_TIMMAR
+           bool_or(rs.observed_at > now() - interval '4 hours') AS s4h                                  -- S_TIMMAR
+    FROM radar_stad rs
+    WHERE rs.rate_mean_mmh >= 0.1 AND rs.observed_at <= now()                                           -- RADAR_MMH
+    GROUP BY rs.grupp
+  ),
   k AS (
     SELECT p.grupp, p.tid, p.omrade, p.lager, p.r0,
            g.station_id IS NULL AS k1_utan,
-           coalesce(g.yta <= 0 AND g.yta <= g.dagg
-                    AND g.dagg BETWEEN -50 AND 30                                                       -- DAGG_SPANN
+           coalesce(g.yta <= 0 AND g.yta <= g.dagg AND g.dagg_i_spann
                     AND g.yta - g.dagg >= -5, false) AS k1_rim,                                         -- DAGG_VAKT_C
+           -- G-rim (#908) is k1_rim. A valid neighbour whose row has no dew point inside the span gives no value (F75 §2.5 point 3).
+           g.station_id IS NOT NULL AND g.dagg_i_spann IS NOT TRUE AS g_rim_utan,
            EXISTS (SELECT 1 FROM weather_observations w WHERE w.station_id = g.station_id
                      AND w.sample_time > now() - interval '60 minutes' AND w.sample_time <= now()
                      AND w.precipitation IN ('rain', 'freezing_rain', 'snow', 'sleet')) AS k1_nb,         -- NEDERBORD
@@ -123,10 +171,15 @@ BEGIN
                      AND ST_DWithin(rc.geom::geography, p.geom::geography, 2000)) AS k2a_finns,           -- PAR_M
            EXISTS (SELECT 1 FROM road_conditions rc WHERE NOT rc.deleted AND 'Våt' = ANY (rc.condition_info)
                      AND rc.geom && ST_Expand(p.geom, 0.1)
-                     AND ST_DWithin(rc.geom::geography, p.geom::geography, 2000)) AS k2a                  -- PAR_M
+                     AND ST_DWithin(rc.geom::geography, p.geom::geography, 2000)) AS k2a,                 -- PAR_M
+           coalesce(d.timmar, 0) = 2 AS dagg_finns,                                                     -- DAGG_U
+           coalesce(d.vid_dagg = d.timmar AND d.rh >= 0.9, false) AS dagg_under,                           -- DAGG_H
+           coalesce(s.s1h, false) AS s1h, coalesce(s.s2h, false) AS s2h, coalesce(s.s3h, false) AS s3h, coalesce(s.s4h, false) AS s4h
     FROM r p
+    LEFT JOIN dagg d ON d.punkt = p.punkt AND d.tid = p.tid
+    LEFT JOIN regn s ON s.grupp = p.grupp
     LEFT JOIN LATERAL (
-      SELECT x.station_id, x.yta, x.dagg FROM giltiga x
+      SELECT x.station_id, x.yta, x.dagg, x.dagg_i_spann FROM giltiga x
       WHERE ST_DWithin(x.geom::geography, p.geom::geography, 15 * 1000)                                 -- K1_KM
       ORDER BY ST_Distance(x.geom::geography, p.geom::geography), x.station_id
       LIMIT 1
@@ -136,14 +189,24 @@ BEGIN
   f1 AS (SELECT r.grupp, r.tid, count(*) FILTER (WHERE r.r0) AS n FROM r WHERE r.f1 GROUP BY r.grupp, r.tid),
   ins AS (
     INSERT INTO ny_kandidat_fuktskugga_stad (grupp, observed_at, omrade, lager, p0_punkter, r0_punkter, r0_f1_punkter,
-                                             k1_punkter, k1_nb_punkter, k1_rim_punkter, k1_utan_varde, k2a_punkter, k2a_utan_varde)
+                                             k1_punkter, k1_nb_punkter, k1_rim_punkter, k1_utan_varde, k2a_punkter, k2a_utan_varde,
+                                             g_rim_utan_varde, m_dagg_punkter, m_dagg_utan_varde,
+                                             s1h_punkter, s2h_punkter, s3h_punkter, s4h_punkter, c7_alla_punkter)
     SELECT k.grupp, k.tid, k.omrade, k.lager, count(*), count(*) FILTER (WHERE k.r0), coalesce(max(f.n), 0),
            count(*) FILTER (WHERE k.r0 OR k.k1_nb OR k.k1_rim),
            count(*) FILTER (WHERE k.r0 OR k.k1_nb),
            count(*) FILTER (WHERE k.r0 OR k.k1_rim),
            count(*) FILTER (WHERE k.k1_utan),
            count(*) FILTER (WHERE k.r0 OR k.k2a),
-           count(*) FILTER (WHERE NOT k.k2a_finns)
+           count(*) FILTER (WHERE NOT k.k2a_finns),
+           count(*) FILTER (WHERE k.g_rim_utan),
+           count(*) FILTER (WHERE k.r0 OR (k.dagg_finns AND k.dagg_under)),
+           count(*) FILTER (WHERE NOT k.dagg_finns),
+           count(*) FILTER (WHERE k.r0 OR k.s1h),
+           count(*) FILTER (WHERE k.r0 OR k.s2h),
+           count(*) FILTER (WHERE k.r0 OR k.s3h),
+           count(*) FILTER (WHERE k.r0 OR k.s4h),
+           count(*) FILTER (WHERE k.r0 OR k.k1_rim OR (k.dagg_finns AND k.dagg_under) OR k.s3h)
     FROM k LEFT JOIN f1 f ON f.grupp = k.grupp AND f.tid = k.tid
     GROUP BY k.grupp, k.tid, k.omrade, k.lager
     ON CONFLICT (grupp, observed_at) DO NOTHING
@@ -155,7 +218,7 @@ BEGIN
   DELETE FROM ny_kandidat_fuktskugga_stad_korning WHERE korning < now() - interval '14 days';
   RETURN 'klart';
 END $$;
-COMMENT ON FUNCTION ny_kandidat_logga_fuktskugga() IS 'The moisture shadow in the cities (sql/125, DECISIONS #905): reads the rule at its own now() and writes its two tables. Answers klart, tyst or brytarna av. Service role only.';
+COMMENT ON FUNCTION ny_kandidat_logga_fuktskugga() IS 'The moisture shadow in the cities (sql/127, DECISIONS #907 and #908): reads the rule at its own now() and writes its two tables. Answers klart, tyst or brytarna av. Service role only.';
 
 -- Locked twice (CLAUDE.md, DECISIONS #653): RLS without a policy; only the service role gets the tables and the function.
 ALTER TABLE ny_kandidat_fuktskugga_stad ENABLE ROW LEVEL SECURITY;

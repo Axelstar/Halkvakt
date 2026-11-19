@@ -11,7 +11,9 @@
 //   node --experimental-strip-types ingest/ny-kandidat-db.ts logga-stad               ny_kandidat_logga_stad(): storstädernas punkter
 //                                                                                  för olycksfacit (sql/096, #815); skriver bara klart
 //   node --experimental-strip-types ingest/ny-kandidat-db.ts fuktskugga               ny_kandidat_logga_fuktskugga(): the moisture shadow in
-//                                                                                  the cities (sql/125, #905), after logga-stad; never a number
+//                                                                                  the cities (sql/127, #907), after logga-stad; never a number
+//   node --experimental-strip-types ingest/ny-kandidat-db.ts skriv-met-stad <met-stad.csv>  MET Nordic's moisture at the city points, from
+//                                                                                  the kuvös chain → ny_kandidat_met_stad (sql/126, #908)
 //   node --experimental-strip-types ingest/ny-kandidat-db.ts skriv-punkter <punkter.csv>   del A:s punkter → kandidat_punkter (sql/078)
 //   node --experimental-strip-types ingest/ny-kandidat-db.ts skriv-par <kandidatfil.json>  paret ur kandidatfilen → kandidat_par (sql/078)
 //   node --experimental-strip-types ingest/ny-kandidat-db.ts --sjalvtest
@@ -49,8 +51,27 @@ export const SATS = {
   gallra: `SELECT ${TABELLER.gallra}() AS n`,
   logga: `SELECT ${TABELLER.logga}() AS m`,
   loggaStad: `SELECT ny_kandidat_logga_stad() AS m`,   // sql/096 (#815)
-  fuktskugga: `SELECT ny_kandidat_logga_fuktskugga() AS m`,   // sql/125 (#905)
+  fuktskugga: `SELECT ny_kandidat_logga_fuktskugga() AS m`,   // sql/127 (#907)
+  // MET Nordic's moisture at the city points (sql/126, #908): keyed and replaced as ny_kandidat_ph, so the row for an hour is the run
+  // whose PH del B read for it; kept 48 hours.
+  skrivMetStad: `INSERT INTO ny_kandidat_met_stad (tid, punkt, korning, met_td_c, rh2m, raknad_at)
+    SELECT u.t, u.p, u.k, u.d, u.r, now() FROM UNNEST($1::timestamptz[], $2::text[], $3::timestamptz[], $4::float8[], $5::float8[]) AS u(t, p, k, d, r)
+    ON CONFLICT (tid, punkt) DO UPDATE SET korning = EXCLUDED.korning, met_td_c = EXCLUDED.met_td_c, rh2m = EXCLUDED.rh2m, raknad_at = EXCLUDED.raknad_at`,
+  gallraMetStad: `DELETE FROM ny_kandidat_met_stad WHERE tid < now() - interval '48 hours'`,
 };
+
+/** The kuvös chain's file for ny_kandidat_met_stad (sql/126, #908): punkt,korning_utc,tid_utc,met_td_c,rh2m, one row per city point
+ *  and hour, the point in the drift id (B… or C…). The values may be empty (MET has none); an id that is not a city point's is refused
+ *  before the database is opened, and the error never names it. */
+export const MET_STAD_KOLUMNER = ["punkt", "korning_utc", "tid_utc", "met_td_c", "rh2m"];
+export function lasMetStad(fil: string): Record<string, string | number | null>[] {
+  const rader = lasCsv(fil, MET_STAD_KOLUMNER);
+  rader.forEach((r, i) => {
+    if (!/^[BC]\d{5}$/u.test(String(r.punkt))) throw new Error(`${fil}: rad ${i + 2}: id:t är inget stadspunkts-id`);
+    for (const k of ["met_td_c", "rh2m"]) if (r[k] !== null && typeof r[k] !== "number") throw new Error(`${fil}: rad ${i + 2}: ${k} är inget tal`);
+  });
+  return rader;
+}
 
 /** Kandidaten på en kvart (DECISIONS #782, sql/078): punkternas lägen och paret, som kandidat_snabb() läser. Ett läge som inte ändrats
  *  skrivs inte om, så att `andrad` bara flyttas när grannlistorna behöver byggas om. */
@@ -102,7 +123,7 @@ export function lasFlagga(fil: string = FLAGGA): Flagga {
   return { pa: true, skal: `skriv true, paritetsprovet klarat i körningen ${p.korning}` };
 }
 
-const SKRIVANDE = new Set(["skriv-ph", "skriv-live", "logga", "logga-stad", "fuktskugga", "skriv-punkter", "skriv-par"]);
+const SKRIVANDE = new Set(["skriv-ph", "skriv-live", "logga", "logga-stad", "fuktskugga", "skriv-met-stad", "skriv-punkter", "skriv-par"]);
 
 async function pool() {
   const url = process.env.DATABASE_URL;
@@ -163,10 +184,23 @@ export async function main(arg: string[], flaggfil: string = FLAGGA): Promise<st
     const p = await pool();
     try { console.log(`ny_kandidat_logga_stad: ${(await p.query(SATS.loggaStad)).rows[0].m}`); } finally { await p.end(); }
   } else if (kmd === "fuktskugga") {
-    // The moisture shadow in the cities (sql/125, #905): a call of its own after logga-stad, so that an error here cannot undo the
+    // The moisture shadow in the cities (sql/127, #907): a call of its own after logga-stad, so that an error here cannot undo the
     // city log. The function answers klart, tyst or brytarna av, never a number (#768).
     const p = await pool();
     try { console.log(`ny_kandidat_logga_fuktskugga: ${(await p.query(SATS.fuktskugga)).rows[0].m}`); } finally { await p.end(); }
+  } else if (kmd === "skriv-met-stad") {
+    // MET Nordic's moisture at the city points (sql/126, #908), right after the city PH of the same run.
+    const rader = lasMetStad(a);
+    const p = await pool();
+    try {
+      let n = 0;
+      for (const d of delar(rader)) {
+        await p.query(SATS.skrivMetStad, [d.map((r) => r.tid_utc), d.map((r) => r.punkt), d.map((r) => r.korning_utc), d.map((r) => r.met_td_c), d.map((r) => r.rh2m)]);
+        n += d.length;
+      }
+      const g = await p.query(SATS.gallraMetStad);
+      console.log(`ny_kandidat_met_stad: ${n} rader skrivna ur ${a}; gallringen tog ${g.rowCount ?? 0} rader`);
+    } finally { await p.end(); }
   } else if (kmd === "skriv-punkter") {
     const rader = lasPunkter(a);
     const p = await pool();
@@ -180,7 +214,7 @@ export async function main(arg: string[], flaggfil: string = FLAGGA): Promise<st
     const p = await pool();
     try { await p.query(SNABB.skrivPar, [w, l]); console.log(`kandidat_par: paret skrivet ur ${a}`); } finally { await p.end(); }
   } else {
-    console.error("kör: ny-kandidat-db.ts --flagga | skriv-ph <fil> | ph <tid> <ut> | skriv-live <fil> | logga | skriv-punkter <fil> | skriv-par <fil> | --sjalvtest");
+    console.error("kör: ny-kandidat-db.ts --flagga | skriv-ph <fil> | ph <tid> <ut> | skriv-live <fil> | logga | logga-stad | fuktskugga | skriv-met-stad <fil> | skriv-punkter <fil> | skriv-par <fil> | --sjalvtest");
     process.exit(2);
   }
   return "klart";
@@ -213,7 +247,7 @@ async function sjalvtest() {
   writeFileSync(fil, gzipSync("punkt,korning_utc,tid_utc,ts_fysik,ph\nv00001,2026-11-01T06:00:00Z,2026-11-01T12:00:00Z,-1.25,-0.9\n"));
   const tyst = console.log; const ut: string[] = []; console.log = (...x: unknown[]) => { ut.push(x.join(" ")); };
   try {
-    for (const kmd of [["skriv-ph", fil], ["skriv-live", fil], ["logga"], ["logga-stad"], ["fuktskugga"], ["skriv-punkter", fil], ["skriv-par", fil]]) {
+    for (const kmd of [["skriv-ph", fil], ["skriv-live", fil], ["logga"], ["logga-stad"], ["fuktskugga"], ["skriv-met-stad", fil], ["skriv-punkter", fil], ["skriv-par", fil]]) {
       const r = await main(kmd, av);
       k(r === "av" && ut.at(-1)!.includes("ingenting skrivs"), `${kmd[0]} med flaggan av: ${r} ${ut.at(-1)}`);
     }
@@ -234,6 +268,23 @@ async function sjalvtest() {
   const byt = (s: string) => s.replace(/(?<![\w])kandidat_/gu, "ny_kandidat_").replace("gallra_kandidat()", "gallra_ny_kandidat()");
   k(byt(FRYST.skrivPh) === SATS.skrivPh && byt(FRYST.skrivLive) === SATS.skrivLive && byt(FRYST.ph) === SATS.ph && byt(FRYST.gallra) === SATS.gallra,
     "satserna är den frystas med bara tabellnamnen bytta");
+  // MET Nordic's moisture at the city points (sql/126, #908): the drift id and numbers or empty values, keyed as ny_kandidat_ph.
+  const mf = join(d, "met-stad.csv");
+  writeFileSync(mf, "punkt,korning_utc,tid_utc,met_td_c,rh2m\nB00001,2026-11-19T06:00:00Z,2026-11-19T12:00:00Z,-1.5,0.91\nC00002,2026-11-19T06:00:00Z,2026-11-19T12:00:00Z,,\n");
+  const mr = lasMetStad(mf);
+  k(mr.length === 2 && mr[0].punkt === "B00001" && mr[0].met_td_c === -1.5 && mr[0].rh2m === 0.91 && mr[1].met_td_c === null && mr[1].rh2m === null,
+    `lasMetStad läser id, tal och tomma värden: ${JSON.stringify(mr)}`);
+  for (const [namn, text] of [["pilotens id", "punkt,korning_utc,tid_utc,met_td_c,rh2m\ns00001,2026-11-19T06:00:00Z,2026-11-19T12:00:00Z,-1.5,0.91\n"],
+    ["en vägpunkt", "punkt,korning_utc,tid_utc,met_td_c,rh2m\nv00001,2026-11-19T06:00:00Z,2026-11-19T12:00:00Z,-1.5,0.91\n"],
+    ["en kolumn saknas", "punkt,korning_utc,tid_utc,met_td_c\nB00001,2026-11-19T06:00:00Z,2026-11-19T12:00:00Z,-1.5\n"],
+    ["ett värde som inte är ett tal", "punkt,korning_utc,tid_utc,met_td_c,rh2m\nB00001,2026-11-19T06:00:00Z,2026-11-19T12:00:00Z,x,0.91\n"]] as const) {
+    writeFileSync(mf, text);
+    let mk = ""; try { lasMetStad(mf); } catch (e) { mk = String(e); }
+    k(mk !== "" && !/s00001|v00001/u.test(mk.replace(mf, "")), `lasMetStad vägrar ${namn} utan att nämna id:t (${mk || "kastade inte"})`);
+  }
+  k(SATS.skrivMetStad.includes("INSERT INTO ny_kandidat_met_stad") && /ON CONFLICT \(tid, punkt\) DO UPDATE SET korning = EXCLUDED\.korning/u.test(SATS.skrivMetStad)
+    && /ON CONFLICT \(tid, punkt\) DO UPDATE SET korning = EXCLUDED\.korning/u.test(SATS.skrivPh) && SATS.gallraMetStad.startsWith("DELETE FROM ny_kandidat_met_stad"),
+    "skriv-met-stad skriver ny_kandidat_met_stad med samma nyckel och ersättning som PH, och gallrar bara den");
   // Kandidaten på en kvart (#782): punkterna med id som text, paret utan tal i felen, och satserna bara mot sql/078:s tabeller.
   const pf = join(d, "punkter.csv");
   writeFileSync(pf, "station_id,name,lon,lat\n0123,Ett,15.5,60.25\nv00001,,16,61\n");
@@ -257,7 +308,7 @@ async function sjalvtest() {
   if (fel) process.exit(1);
   console.log("✓ självtest: flaggan (av utan skriv, utan klarat paritetsprov, utan körningens nummer, trasig och saknad fil; på bara med båda), "
     + "flaggan av skriver ingenting och öppnar aldrig databasen (motprov: på försöker), bara den nyas tabeller, satserna som den frystas med bytta namn, "
-    + "punkterna och paret för kandidaten på en kvart");
+    + "punkterna och paret för kandidaten på en kvart, MET:s fukt vid stadspunkterna (#908)");
 }
 
 const direkt = (process.argv[1] ?? "").replace(/\\/g, "/").endsWith("ingest/ny-kandidat-db.ts");
