@@ -3317,3 +3317,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 19/11 (Claude; Bengt: *"Ja, vänta"* (19/11, på att vänta på MET:s svar till 26/11)): **Småvägsröstens timme 06 UTC väntar på MET** (DECISIONS #902, körlistan B5).
   Luckorna 15/11, 17/11 och 18/11 ligger i MET:s morgonfel. Inget byggs före MET:s svar eller 26/11 (fristen `met-svar-2026-11-26`),
   och därefter läggs återtagningen i timflödet fram om felet står kvar.
+- 19/11 (Claude; Bengt: *"Ja, bygg"* och *"Slå ihop o bygg"* (19/11, på friktionens läsfråga och flödessteget)): **Friktionens läsfråga och steget i flödet** (körlistan C4, kort #672).
+  Läsfrågan är ihopslagen i halkvakt-kuvos (PR #96). Steget `friktionen` i `kuvos-ny-kandidat.yml` bygger grindarnas tillfälliga databas från friktionens
+  första dygn, hämtar kandidatens och radarns dygnsfiler ur hinken och lägger talen bara i hinken. Inte kört: läsfrågan vägrar före 6/12.
