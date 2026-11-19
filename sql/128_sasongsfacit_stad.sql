@@ -112,7 +112,7 @@ BEGIN
   ),
   timklass AS (
     SELECT c.omrade, c.lager, t.h,
-           CASE WHEN bool_or(k.status = 'räknad' AND k.brytare ? (c.omrade || '/' || c.lager)) THEN 'räknad'
+           CASE WHEN bool_or(k.status = 'räknad') THEN 'räknad'
                 WHEN bool_or(k.status = 'räknad') THEN 'brytaren av'
                 WHEN bool_or(k.status = 'tyst') THEN 'ingen timme'
                 WHEN bool_or(k.status = 'av') THEN 'av'
