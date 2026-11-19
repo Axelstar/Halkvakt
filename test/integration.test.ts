@@ -5205,7 +5205,7 @@ test("#913 säsongsfacit for the cities: the hours, the levels, the reasons, the
         [2, 17, "B-913-1", 2, 1, 0, 1, 0], [2, 17, "B-913-2", 1, 0, 1, 0, 0],
         [3, 1, "B-913-1", 2, 0, 0, 2, 0], [3, 1, "B-913-2", 1, 0, 0, 0, 1],
         [3, 9, "C-913-1", 1, 1, 0, 0, 0],
-        [3, 16, "B-913-1", 1, 1, 0, 0, 0],                  // inte ny
+        [3, 16, "B-913-1", 1, 0, 0, 1, 0],                  // inte ny, and unlike the hour 17, so a level moved one hour shows
         [3, 17, "B-913-1", 3, 2, 1, 0, 0],                  // a warning group hour with a vetoed point: its reasons are not counted
         [3, 19, "B-913-2", 1, 1, 0, 0, 0],                  // undantag
         [4, 2, "B-913-1", 1, 0, 0, 1, 0]];
@@ -5232,7 +5232,7 @@ test("#913 säsongsfacit for the cities: the hours, the levels, the reasons, the
         "B natt drift": v({ 0: 8, 6: 2, 9: 3, 11: 2, 12: 1, 13: 14, 14: 2 }),
         "B morgonrusning drift": v({ 2: 1, 3: 1, 4: 1, 5: 1, 14: 2 }),
         "B dag drift": v({ 0: 6, 1: 6, 14: 2 }),
-        "B kvällsrusning drift": v({ 0: 2, 6: 1, 7: 1, 8: 1, 13: 3, 14: 2 }), "B kvällsrusning inte ny": v({ 0: 1, 6: 1, 7: 1, 8: 1, 13: 1, 14: 2 }),
+        "B kvällsrusning drift": v({ 0: 2, 6: 1, 7: 1, 8: 1, 13: 3, 14: 2 }), "B kvällsrusning inte ny": v({ 0: 1, 6: 1, 9: 1, 11: 1, 13: 1, 14: 2 }),
         "B kväll undantag": v({ 0: 2, 6: 1, 7: 1, 8: 1, 13: 3, 14: 2 }), "B kväll drift": v({ 0: 1, 13: 2, 14: 2 }),
         "C natt drift": v({ 2: 8, 14: 1 }), "C morgonrusning drift": v({ 0: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 14: 1 }),
         "C dag drift": v({ 0: 1, 2: 5, 13: 1, 14: 1 }),
