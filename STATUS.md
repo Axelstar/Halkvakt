@@ -3290,3 +3290,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 19/11 06.56 UTC (Claude; Bengt: *"Ja, börja"*): **Databasens storlek 1 145,6 MB** (frist #1669), läst med `pg_database_size` i
   SQL-redigeraren. ~25 MB per dygn sedan 11/11 (955 MB); 15,5 % av larmgränsen 7 373 MB. Utan tabell 58,5 MB, oförändrat. Nästa läsning
   26/11 (`databas-2026-11-26`).
+- 19/11 (Claude; Bengt: *"Ja, förbered"* (19/11, på påslaget av kandidaten på en kvart)): **Kandidaten på en kvart: skuggan läst och påslaget förberett** (DECISIONS #782, tillägget; kort #373).
+  Skuggan 7/11–19/11: 0,81 gånger så många utfallsbyten som timvärdet (högst 1,5), avvikelsen vid :47 0,00 °C i median, 12 nätter med
+  varning. `sql/121` (vem som talar) och `sql/122` (raden) med prov i `test/kandidat-snabb-pa.test.ts`. Fristen flyttad till 26/11.
+  **Inte gjort:** migrationerna, påslaget, kartan ur hinken, tiden i appen och PRODUKTBOKEN.

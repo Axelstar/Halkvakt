@@ -13557,6 +13557,38 @@ dess slutsatser. #373 och inte #372: #372 bärs redan av två grenar som inte ä
 
 **PRODUKTBOKEN** uppdateras i samma varv som påslaget, eftersom förarna hör ett färskare värde och kartan visar ett nytt klockslag.
 
+**Skuggan läst och påslaget förberett 19/11** (Bengt: *"Ja, förbered"* (19/11, på påslaget av kandidaten på en kvart)).
+- **Skuggan** (`ny_kandidat_skugga_snabb`, läst med SELECT i SQL-redigeraren 19/11): 7/11 08 – 19/11 06 UTC, 282 timmar och 3 049
+  körningar.
+  - **Utfallsbyten:** 11 777 med de snabba värdena mot 14 567 med timvärdena, alltså **0,81 gånger** (gränsen i punkt 5 är högst
+    1,5).
+  - **Avvikelsen vid :47:** 0,00 °C i median; p95 0,05 °C i median över timmarna och högst 0,16 °C.
+  - **Nätter med varning:** 12 (minst tre krävs).
+  - Villkoret för påslaget är uppfyllt.
+- **Förberett, inte påslaget:**
+  - `sql/121_kandidat_snabb_talar.sql`: loggen `kandidat_snabb_talar`, `kandidat_snabb_pa()`, `ny_kandidat_snabb_tid()` och
+    `talande_timme()` och `talande_regel()` med den snabba som första steg (punkt 3). Utan en rad ger de samma som sql/070.
+  - Den snabba talar bara när påslaget står i loggen, och när dess senaste körning
+    - räknade,
+    - är högst 10 minuter gammal,
+    - bär minst 95 % av vägpunkterna,
+    - är härledd ur den gällande regeln (sql/080:s kontrollsumma), så att en ändrad regel inte talar med den gamla,
+    - och den nyas timme är färsk, eftersom den snabba lånar timmens frys_min (#808).
+  - Regelns tid för den snabba är när värdet räknades.
+  - `sql/122_kandidat_snabb_pa.sql`: raden med det här beslutets nummer, som körs på Bengts ord.
+  - Proven står i `test/kandidat-snabb-pa.test.ts` (i databasen: av, på, för gammal, ofullständig, skäl, ändrad regel, utan den nyas
+    timme, AV och den frysta).
+- **Upptäckt 19/11:** i timmarna 00, 06, 12 och 18 UTC hoppar den snabba över 45–80 % av körningarna med skälet *ingen PH för timmen*,
+  eftersom PH för timmen kommer sent. Efter påslaget talar timvärdet de minuterna, och sedan den snabba. Skuggan räknade inte
+  bytena mellan de två. Samma sena PH stoppar småvägsröstens timme 06 UTC (ärende #1664).
+- **Kvar efter påslaget:**
+  - **Kartan (punkt 6):** kartans lager byggs var 30:e minut, och kandidatens fil följer med dem. För att kartan ska visa samma sak
+    som appen behöver kandidatens fil byggas varje körning och skrivas till hinken. Det är ett eget steg i `publish/map-core.ts` och
+    `publicera`, och kartsidan läser sedan filen från hinken.
+  - **Appen:** *Betatest → Mätningen* visar i dag batteriet, inte kandidatens tid. Att visa den kräver en appversion.
+  - **PRODUKTBOKEN** uppdateras i samma varv som påslaget.
+  - **Olycksfacit (sql/112)** räknar K på timvärdena, eftersom det snabba värdet inte loggas (punkt 4).
+
 **Stomdokument:** SYS kandidatens kedja och databasen, APP kandidatens varning, BED §4.2.
 
 ## #783 (3/11 2026) Kandidaten på en kvart pausad: den första riktiga körningen fällde databasen tre gånger; pg_nets räknare flyttad fram
