@@ -13599,7 +13599,7 @@ dess slutsatser. #373 och inte #372: #372 bärs redan av två grenar som inte ä
 - **Publiceringen efter påslaget:** 07.42.08 UTC med 285 kandidatsträckor och tiden 07.39 (timvärdet 07.38 bar 346 sträckor och timmen 06.00).
 - **PRODUKTBOKEN** är uppdaterad i samma varv.
 - **Kvar:**
-  - kartan ur hinken (punkt 6, Bengts beslut väntar);
+  - kartan ur hinken (punkt 6), kort #671 på Bengts ord;
   - tiden i appen (en appversion);
   - rättelsen av den sena PH i timmarna 00, 06, 12 och 18 UTC (i kuvösen).
 - **AV:** en rad med `talar = 'av'` i `kandidat_snabb_talar`, i samma form som `sql/122`.

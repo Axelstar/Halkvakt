@@ -3299,3 +3299,5 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - Publiceringen efteråt: 07.42.08 UTC med 285 kandidatsträckor och tiden 07.39 (timvärdet 07.38 bar 346 sträckor och timmen 06.00).
   - PRODUKTBOKEN uppdaterad; fristen `kandidat-snabb-skuggan` borttagen och #1597 stängt.
   - **Inte gjort:** kartan ur hinken och tiden i appen.
+- 19/11 (Claude; Bengt: *"jag tycker att vi kan lägga uppdateringen av kartsteget som ett öppet kort som vi eventuellt tar senare"*): **Kort #671 lagt** (Claude — låst, nyckel Bengts ord): kandidatens Prognos-linjer på
+  halkvakt.se ur hinken vid varje publicering, så att webbkartan visar samma sak som appen (DECISIONS #782 punkt 6).
