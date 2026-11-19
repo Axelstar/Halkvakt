@@ -18361,6 +18361,21 @@ allt som gäller småvägsrösten (F76, förregistreringens §16 post 1), och pr
 
 **Stomdokument:** BED §4.2
 
+## #912 (19/11 2026) Körlistans B7 struken: batteriet under driftens villkor mäts inte (kort #378, #647)
+
+**Beslut.** Bengt 19/11: *"B7 kan du stryka den kommer inte att genomföras"*.
+
+**Vad som stryks.** B7 skulle visa batteriet under driftens villkor: en resa per plattform med skärmen släckt och storstädernas punkter i
+lägesfilen, och vad som händer över 8 %/h efter småvägsröstens påslag (#778, #838, #878). Resan görs inte, och projektkartans steg för
+batteriet med stadspunkterna tas bort.
+
+**Vad som står kvar** tills ett eget beslut ändrar det:
+- villkoret i #878 att batteriet mäts efter småvägsröstens påslag;
+- batteribudgeten i CLAUDE.md, under 8 %/h med skärmen släckt.
+Med B7 struken mäts ingen av dem i driften. Det står här så att det inte ser ut som om de vore visade.
+
+**Stomdokument:** BED §4.2
+
 ## #913 (20/11 2026) Storstäderna i säsongsfacit: dygnsaggregatet, värdevaktens spann och avsnittet i veckorapporten (körlistan C3, kort #381)
 
 **Beslut.** Bengt 19/11: *"börja bygga c3 och B10"*. Tillägget `docs/TROSKLAR-SASONGSFACIT.md` §11 är signerat med Claudes
