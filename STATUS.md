@@ -3335,3 +3335,8 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 19/11 (Claude; Bengt: *"gör 1,2 och 3"*): **Frister för fukten i storstäderna** (körlistan C4).
   `friktionen-las-2026-12-06`: friktionens läsfråga körs tidigast 6/12, på Bengts ord. `fuktskuggan-las-2027-04-01`: skuggan läses
   mot friktionen med data till och med 31/3.
+- 19/11 (Claude; i chatten: *"ja tack försök laga flikarna för appen och annonserna"*): **Statistikens flikar Appen och Annonser** (DECISIONS #905, kort #670).
+  `sql/118` tog bort nycklarna `apple_ads`, `appen` och `annonstratten` ur `besok_stat` 18/11; `sql/125` lägger tillbaka dem, provad i
+  en lokal Postgres 16 (067–102, 118, 119, 125 två gånger: nycklarna borta efter 118, tillbaka efter 125, oförändrat vid omkörning).
+  Provet `test/besok-stat-nycklar.test.ts`. Kvar: sammanslagningen och migrationen 125 med DB-knappen, sedan flikarna lästa live.
+
