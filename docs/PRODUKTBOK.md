@@ -416,9 +416,10 @@ annars tas den bort (TROSKLAR-KOMBINATIONEN §7). Testförarna får veta att vä
 vägen, inte ur en mätning på platsen — därför *"Halkvakt tror"* och aldrig ett avstånd. Den talar efter alla andra varningar utom
 småvägsrösten: allt annat går före, och den kan aldrig tysta en annan varning. Har Trafikverkets halkvarning för samma sträcka just hörts tiger den i två
 minuter, så att samma besked inte kommer två gånger i rad, och den talar högst en gång per 10 minuter, vilken sträcka det än gäller (DECISIONS #606). Den följer reglaget *Halka* i *Varna för* och tystnar när väglagsdatan är äldre
-än 45 minuter. Sedan 19/11 räknas värdet om var femte minut ur stationsmätningar som är omkring 7–14 minuter gamla, i stället
-för en gång i timmen ur mätningar som var upp till en timme gamla (kandidaten på en kvart, DECISIONS #782). Är den snabba räkningen
-inte färsk talar timvärdet som förut; i timmarna 00, 06, 12 och 18 UTC händer det en del av timmen. Domen faller i mars (DECISIONS #547); den kan stängas av från servern utan ett nytt bygge, och det provas före App
+än 45 minuter. När kandidaten på en kvart är påslagen räknas värdet för vägarna om var femte minut ur stationsmätningar som är
+omkring 7–14 minuter gamla, i stället för en gång i timmen (DECISIONS #782). I storstäderna, och när den snabba räkningen inte är
+färsk (en del av timmarna 00, 06, 12 och 18 UTC), talar timvärdet. Den slogs på 19/11 07.41 UTC, av igen 08.14 sedan den tystat
+storstäderna, och på 09.14 med timvärdet i storstäderna (DECISIONS #903). Domen faller i mars (DECISIONS #547); den kan stängas av från servern utan ett nytt bygge, och det provas före App
 Review (NIVA2-LIVE steg 13).
 
 **Halkan på småvägarna är också en beta, och den tiger tills den slås på.** Den talar på statliga vägar där Trafikverket inte mäter

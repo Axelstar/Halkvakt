@@ -3301,6 +3301,19 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - **Inte gjort:** kartan ur hinken och tiden i appen.
 - 19/11 (Claude; Bengt: *"jag tycker att vi kan lägga uppdateringen av kartsteget som ett öppet kort som vi eventuellt tar senare"*): **Kort #671 lagt** (Claude — låst, nyckel Bengts ord): kandidatens Prognos-linjer på
   halkvakt.se ur hinken vid varje publicering, så att webbkartan visar samma sak som appen (DECISIONS #782 punkt 6).
+- 19/11 (Claude; Bengt: *"Ja, slå av"* (19/11) och *"Ja, börja"* (19/11, på bokföringen, vakten och rättelsen)): **Den snabba kandidaten tystade storstäderna 07.42–08.14 UTC** (DECISIONS #903;
+  kort #373, #378).
+  - **Avstängd** med `sql/123` (DB-knappen 44485898988), och publiceringen 08.16 bar timvärdet med storstäderna.
+  - **Rättelsen och vakten** i `sql/124`, vakthundens kontroll 3c och `test/kandidat-snabb-stad.test.ts`.
+  - **Inte gjort:** sammanslagningen, `sql/124`, vakthundens deploy och ett nytt påslag.
+- 19/11 09.14 UTC (Claude; Bengt: *"det första vi gör är att slå på den snabba kandidaten för det skulle funka även för storstäderna nu"* (19/11)): **Den snabba kandidaten påslagen igen** (DECISIONS #903, tillägget; kort #373).
+  - `sql/124` migrerad (DB-knappen 44488706884) och vakthunden deployad 08.35 UTC. Vakten svarade 09.07: 1 162 mot 1 162, utan larm.
+  - `sql/122` igen (44494568098): den snabba talar för vägarna, och storstäderna har timvärdet (1 162 rader i båda).
+  - Publiceringen 09.16 bar den snabba tiden 09.14. PRODUKTBOKEN rättad.
+- 19/11 (Claude; Bengt: *"Ja, ta dem"* (19/11, på storstadslistans nr 5 och nr 4)): **Kort #378 stängt, och stadsflödets reserv läst** (körlistan D4 och B1).
+  - #378: lägesfilen (reservens kopia, `data/app/v1/live.json` i halkvakt-karta) bar storstädernas första varningar 18/11: 12.50 UTC 10 grupper med 14 punkter i lager B (88aaaa24), och 13.50 UTC 191 grupper med 2 163 punkter, med lager C (b98f087d).
+  - B1: körningarna sedan 17/11 18.39 gröna, och reserven har inte behövt räkna något i efterhand. Körningen 19/11 06.49 föll på MET:s
+    morgonfel, som står kvar 19/11 (körlistan B5); reserven ska räkna 20261119T06Z i efterhand i nästa vanliga körning.
 - 19/11 (Claude; Bengt: *"Ja, vänta"* (19/11, på att vänta på MET:s svar till 26/11)): **Småvägsröstens timme 06 UTC väntar på MET** (DECISIONS #902, körlistan B5).
   Luckorna 15/11, 17/11 och 18/11 ligger i MET:s morgonfel. Inget byggs före MET:s svar eller 26/11 (fristen `met-svar-2026-11-26`),
   och därefter läggs återtagningen i timflödet fram om felet står kvar.

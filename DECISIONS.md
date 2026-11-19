@@ -13604,6 +13604,8 @@ dess slutsatser. #373 och inte #372: #372 bärs redan av två grenar som inte ä
   - rättelsen av den sena PH i timmarna 00, 06, 12 och 18 UTC (i kuvösen).
 - **AV:** en rad med `talar = 'av'` i `kandidat_snabb_talar`, i samma form som `sql/122`.
 
+**Avstängt 19/11 08.14 UTC** (Bengt: *"Ja, slå av"* (19/11)): påslaget tystade storstäderna. Händelsen, rättelsen och vakten står i #903.
+
 **Stomdokument:** SYS kandidatens kedja och databasen, APP kandidatens varning, BED §4.2.
 
 ## #783 (3/11 2026) Kandidaten på en kvart pausad: den första riktiga körningen fällde databasen tre gånger; pg_nets räknare flyttad fram
@@ -18014,3 +18016,49 @@ tidningarna föll, eftersom tidningarna då måste föra in Halkvakt i sina samt
 morgon med felet, och skuggans 14 dygn räknas bara på kompletta dygn (#843).
 
 **Stomdokument:** SYS 2 — småvägsröstens timme väntar på MET:s svar
+
+## #903 (19/11 2026) Den snabba kandidaten tystade storstäderna: avstängd, rättad och en vakt (kort #373, #378; sql/123, sql/124)
+
+**Händelsen.**
+- **Påslaget:** 19/11 07.41 UTC slogs kandidaten på en kvart på (#782, sql/122).
+- **Orsaken:** den snabba räkningen bär inga stadspunkter. sql/080 säger det: *"kandidat_punkter har inga stadspunkter, så grenen är tom
+  här"*. Därför gav `talande_regel()` noll rader vid stadspunkterna medan den snabba talade.
+- **Följden:** förarna i Stockholm, Göteborg och Malmö fick inga kandidatvarningar från publiceringen 07.42 till och med 08.14, i ungefär
+  34 minuter. Läst omkring 08.05 UTC: 0 rader vid stadspunkterna mot 1 832 i timvärdets regel, varav 29 varnande.
+- **Upptäckten:** ingen vakt larmade. Claude såg det när storstädernas läge lästes för Bengt.
+- **Varför proven inte fångade det:** skuggan (sql/080) mätte bara vägpunkterna, och provet för sql/121 hade inga stadspunkter.
+
+**Avstängt** (Bengt: *"Ja, slå av"* (19/11)):
+- `sql/123` lade en rad `av` (PR #1689, DB-knappen 44485898988, 08.14.34 UTC);
+- därefter talade timvärdet, och `talande_regel()` hade 1 832 rader vid stadspunkterna, varav 18 varnande;
+- publiceringen 08.16.01 UTC bar timmen 07.00 med 287 sträckor.
+
+**Rättat och vakat** (Bengt: *"Ja, börja"* (19/11, på bokföringen, vakten och rättelsen)):
+- **`sql/124`, rättelsen:** när den snabba talar ger `talande_regel()` den snabbas rader för punkterna den bär, och timvärdets rader
+  för punkterna den inte bär, alltså storstäderna, med timmens tid och talaren `ny`.
+- **`sql/124`, vakten:** `storstader_tyst()` jämför den talande regelns rader vid stadspunkterna med timvärdets regel för samma talare.
+- **Vakthunden, kontroll 3c:** larmar varje timme när timvärdet har rader och den talande har noll.
+- **Proven** står i `test/kandidat-snabb-stad.test.ts`, med en stadspunkt i regeln och den snabba regeln tom i storstäderna som i
+  driften:
+  - felet med sql/121, och att vakten ser det;
+  - rättelsen med sql/124: storstäderna har timvärdet, och vakten är nöjd;
+  - AV och den frysta.
+- **Ordningen på Bengts ord:**
+  1. slå ihop;
+  2. DB-knappen `sql/124`;
+  3. deploy av vakthunden, efter 124, annars larmar den på en funktion som inte finns;
+  4. `sql/122` en gång till för ett nytt påslag.
+
+**Alternativ:**
+- låta den snabba räkna stadspunkterna, vilket ändrar räkningen i kuvösen och kräver beslut och prov där;
+- lämna den snabba avslagen.
+
+**Varför:** förarna på vägarna får de färska värdena, storstäderna behåller timvärdet som före påslaget, och en tystnad i storstäderna
+larmar inom en timme i stället för att upptäckas av en slump.
+
+**På igen 19/11 09.14 UTC** (Bengt: *"det första vi gör är att slå på den snabba kandidaten för det skulle funka även för storstäderna nu"* (19/11)).
+- **Körningen:** `sql/122` igen med DB-knappen 44494568098, 09.14.56 UTC: `talande_timme()` gav `snabb` (09.14), `storstader_tyst()` 1 162 rader vid stadspunkterna i den talande regeln och 1 162 i timvärdets, och `talande_regel()` 8 338 snabba rader och 1 162 med timvärdet (08.00). Publiceringen 09.16.04 UTC bar den snabba tiden 09.14 för 261 sträckor.
+- **Vakten:** vakthundens körning 09.07 UTC svarade *storstäderna: 1162 rader i den talande regeln (ny) · 1162 i timvärdets*, utan
+  larm. Vakten är alltså i drift, och kontrollen 3c finns i det som kör.
+
+**Stomdokument:** SYS 2 — kandidatens kedja med storstäderna i den snabba och vakten, APP 10 — kandidatens varning
