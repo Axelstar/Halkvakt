@@ -30,7 +30,7 @@ BILDER = [
     ("abf993ba", "Körläget",       "Tre kameror framför dig.\nRösten säger till."),
     ("9e0f4ba7", "Så fungerar det", "Rösten säger till\ninnan du är där."),
     ("918d06d0", "Inställningar",  "Fem källor. Slå av\ndet du inte vill höra."),
-    ("55fd6ca3", "Integritet",     "Din position lämnar\ninte telefonen."),
+    ("55fd6ca3", "Integritet",     "Din position skickas\naldrig till Halkvakt."),
     ("11b411bb", "Autostart",      "Vaknar själv när du kör.\nStoppar själv."),
     ("8dcd46d2", "Under körning",  "En kort banner över\nkartan. Inget att trycka."),
 ]

@@ -622,7 +622,7 @@ function lsFragor(namn: string, var_ = `i ${namn}`): { fraga: string; svar: stri
     { fraga: `Hur ofta uppdateras väglaget ${var_}?`, svar: "Sidan skrivs om var 30:e minut med Trafikverkets senaste väglagsrapport, vägbanans temperatur vid vägväderstationerna och pågående olyckor." },
     { fraga: "Vad räknas som halka på sidan?", svar: "En sträcka räknas som hal när Trafikverkets väglagsrapport anger besvärligt väglag eller nämner is, snö, frost eller halka. Det är samma regel som får appen att varna. Ny halkrisk är en sträcka som har blivit hal det senaste dygnet, och vinterväglag en som har varit hal längre än så." },
     { fraga: "Var mäts vägbanans temperatur?", svar: "Vid Trafikverkets vägväderstationer längs de större vägarna. Mellan stationerna mäts ingenting, så vägen kan vara kallare eller varmare där." },
-    { fraga: "Kan jag få en varning medan jag kör?", svar: "Ja. Halkvakt för iPhone säger till med rösten när halka är rapporterad på vägen framför dig. Appen är gratis, och din position lämnar inte telefonen av sig själv." },
+    { fraga: "Kan jag få en varning medan jag kör?", svar: "Ja. Halkvakt för iPhone säger till med rösten när halka är rapporterad på vägen framför dig. Appen är gratis, och din position skickas aldrig till Halkvakt av sig själv." },
   ];
 }
 const lsFragorHtml = (f: { fraga: string; svar: string }[]) =>
@@ -1012,7 +1012,7 @@ ${lsFragorHtml(LS_VARN_FRAGOR)}
     beskrivning, adress: `${SIDBAS}/varningar/`, rot: "../", innehall, now, ct: "varningar", smhi: true,
     extra: LS_VARN_STIL + lsFragorLd(LS_VARN_FRAGOR),
     kallor: "Halkvakt är ett stöd, inte en garanti. Källor: SMHI:s öppna data om vädervarningar och Trafikverkets öppna data (CC0) om väglag, vägväderstationer och olyckor. Sidan skrivs om var 30:e minut. Fristående från myndigheterna.",
-    ladda: { rubrik: "Ska du ut på vägarna?", text: "Appen säger till med rösten innan du är framme vid halkan. Samma data från Trafikverket. Gratis för iPhone, och din position lämnar inte telefonen av sig själv." },
+    ladda: { rubrik: "Ska du ut på vägarna?", text: "Appen säger till med rösten innan du är framme vid halkan. Samma data från Trafikverket. Gratis för iPhone, och din position skickas aldrig till Halkvakt av sig själv." },
   });
 }
 

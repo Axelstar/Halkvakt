@@ -109,7 +109,7 @@ struct OnboardingView: View {
     }
 
     /// Platsen i klartext (Axels val 13/11, DECISIONS #851). Inställningar bär fortfarande löftets gamla mening.
-    private static let platsText = "Din plats stannar i telefonen. Appen hämtar samma vägdata till alla och jämför med var du är, i din telefon. Inget konto behövs."
+    private static let platsText = "Din position skickas aldrig till Halkvakt av sig själv. Appen hämtar samma vägdata till alla och jämför med var du är, i din telefon. Kartan på startsidan kommer från Apple, som får veta ungefär vilket område den visar. Inget konto behövs."
 
     private var varningarna: some View {
         Sida(knapp: "Nästa", action: { ga(till: .markningen) }) {
@@ -173,7 +173,7 @@ struct OnboardingView: View {
                        text: "Med Alltid startar vakten själv när du kör. Du behöver inte öppna appen före resan.")
                 Etikett(text: "I nästa ruta från iOS")
                 IosVal(rader: ["Behåll Endast när appen används", "Ändra till Tillåt alltid"], vald: 1)
-                Fot(text: "Platsen stannar i telefonen, även med Alltid.")
+                Fot(text: "Din position skickas aldrig till Halkvakt, även med Alltid.")
             }
         case .authorizedWhenInUse:
             Sida(knapp: "Fortsätt", action: { ga(till: .notiserna) }, lank: "Ändra till Alltid", lankAction: oppnaInstallningar) {

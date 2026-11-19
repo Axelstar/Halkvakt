@@ -17,8 +17,9 @@ En app du startar när du sätter dig i bilen — sedan lägger du undan telefon
 Halkvakt lyssnar på Trafikverkets mätstationer och rapporterade väglag och
 **säger till med rösten** (i högtalaren eller bilens Bluetooth) när något farligt
 finns framför dig: halka, frysrisk, olyckor, vilt, fartkameror. Ingen skärm att
-titta på, inget konto, och ingen position lämnar telefonen av sig själv — det enda som
-någonsin skickas är betatestets facitsvar, som du själv slår på (se Om). Tystnad är
+titta på, inget konto, och din position skickas aldrig till Halkvakt av sig själv. Halkvakt tar emot en anonym räkning
+av hur appen används och, bara om du själv slår på det, betatestets facitsvar (se Om); på iPhone kommer kartan och sökningen
+från Apple (DECISIONS #900). Tystnad är
 grundläget — pratar den, betyder det något.
 
 ## Så ser den ut
@@ -55,8 +56,8 @@ Logotypen är triangeln med utropstecknet urstansat; *v3*:s skinn (31/8) och des
 (*Favoriter* i mitten sedan 18/10, kort #357; 104 punkter per flik, så att tre ryms på en smal telefon). Ingen flikrad medan
 vakten kör.
 
-**01 Redo.** En 3D-sockel med logotypen, ordet *"Redo."*, raden *"Vakten vaknar själv när du kör. Din position lämnar
-inte telefonen av sig själv."* (första meningen bara när vakten kan vakna själv), källorna i mono
+**01 Redo.** En 3D-sockel med logotypen, ordet *"Redo."*, raden *"Vakten vaknar själv när du kör. Din position skickas
+aldrig till Halkvakt av sig själv."* (första meningen bara när vakten kan vakna själv), källorna i mono
 (*HALKA · VILT · OLYCKOR · FRYSRISK · KAMEROR* — en avslagen källa står inte med), den gula knappen ▶ *Starta vakten* och
 under den *INGEN TUR ÄN*.
 
@@ -68,7 +69,7 @@ alltid hem till startsidan, också från Planera resa. På kartan är fartkamero
 Från 0.4.1 (57) är kartan en stillbild av Apples karta i gråskala, med Halkvakts egna märken ovanpå (DECISIONS #876); så
 är också kartan över en planerad resa.
 Listan *NÄRA DIG JUST NU* visar inga fartkameror; de står som en rad under, *31 FARTKAMEROR INOM SEX MIL*. Källraden och
-*"Din position lämnar inte telefonen av sig själv."* står längst ner. Stycket nedan beskriver delarna; ordningen är den här.
+*"Din position skickas aldrig till Halkvakt av sig själv."* står längst ner. Stycket nedan beskriver delarna; ordningen är den här.
 
 **Den planerade resan från 0.4.1 (55) (DECISIONS #874).** ▶ *Starta vakten* står direkt under kartan, före rapporten. Har
 rapporten en olycka, ett hinder, halka, en kö eller en omledning står i gult: *"{Olycka} längs vägen. Se om det finns en annan
@@ -196,7 +197,7 @@ och *fartkamera* (en låda på stolpe med blixtlinjer). Svarta på kortet, ljusa
 
   ![Mätningen under Betatest](produktbok/shot-6b-matningen.png)
 
-- *Integritet* — löftet: *"Din position lämnar inte telefonen av sig själv."* och *"All matchning mot vägdata sker lokalt
+- *Integritet* — löftet: *"Din position skickas aldrig till Halkvakt av sig själv."* och *"All matchning mot vägdata sker lokalt
   i appen. Inget konto. Undantaget är betatestet — bara om du själv slår på det."* (i App Store-versionen från (33): *"Inget
   konto, och inget skickas."*, #681; från (37) *"Inget konto."* följt av räknarens mening: *"Appen räknar anonymt hur många som går
   igenom introduktionen, vilken platsbehörighet som väljs, att vakten startar och att en första varning sägs — ett ord per
@@ -215,7 +216,7 @@ och *fartkamera* (en låda på stolpe med blixtlinjer). Svarta på kortet, ljusa
   regn eller snö bara varnas där den rapporterats eller mäts, och att tyst inte betyder säker väg; därefter källraden
   (#898) och versionen. Raden *mellan stationerna är vägen oövervakad* är borta.
 
-Under panelerna: *LÖFTET — Din position lämnar inte telefonen av sig själv.*
+Under panelerna: *LÖFTET — Din position skickas aldrig till Halkvakt av sig själv.*
 
 ## Favoriter (18/10, kort #357 — steg 2 och 3)
 
@@ -293,14 +294,14 @@ Inställningar, och introduktionen kan visas igen därifrån.
    bara när det finns något att varna för.*). Knappen *Nästa*.
 4. **Platsen** (steg 3 av 4) — fem lägen, efter vad iOS svarar:
    - *Inte frågad:* *"Nu slår vi på vakten"*, *"Telefonen ställer två frågor. Den första gäller platsen: vakten behöver veta
-     var du är för att kunna varna."* Under *DIN PLATS*: *"Din plats stannar i telefonen. Appen hämtar samma vägdata till alla
-     och jämför med var du är, i din telefon. Inget konto behövs."* och *"Sparar du resor som favoriter stannar de också i
+     var du är för att kunna varna."* Under *DIN PLATS*: *"Din position skickas aldrig till Halkvakt av sig själv. Appen hämtar samma vägdata till alla
+     och jämför med var du är, i din telefon. Kartan på startsidan kommer från Apple, som får veta ungefär vilket område den visar. Inget konto behövs."* och *"Sparar du resor som favoriter stannar de också i
      telefonen."* Under *I NÄSTA RUTA FRÅN IOS* står rutans tre knappar, *Tillåt en gång*, *Tillåt när appen används* och
      *Tillåt inte*, med den mellersta förbockad och märkt *VÄLJ DEN*. *"Sedan frågar iOS en gång till. Vi visar vad du väljer
      då också."* Knappen *Fortsätt* öppnar iOS egen ruta (Apple 5.1.1(iv), DECISIONS #460).
    - *När appen används, före den andra rutan:* *"Bra. En ruta till: Alltid"*, *"Med Alltid startar vakten själv när du kör.
      Du behöver inte öppna appen före resan."* (Att man annars startar själv sägs först i läget efter, till den som valt det.) Rutans två knappar, *Behåll Endast när appen
-     används* och *Ändra till Tillåt alltid*, med den andra förbockad och märkt *VÄLJ DEN*. *"Platsen stannar i telefonen,
+     används* och *Ändra till Tillåt alltid*, med den andra förbockad och märkt *VÄLJ DEN*. *"Din position skickas aldrig till Halkvakt,
      även med Alltid."* Knappen *Fortsätt* öppnar iOS ruta om Alltid.
    - *Alltid:* *"Platsen är klar"*, *"Du valde Alltid. Vakten startar själv när du kör."*, raderna *Platsen ALLTID* och
      *Självstart när du kör PÅ*. Knappen *Fortsätt*.
@@ -312,12 +313,11 @@ Inställningar, och introduktionen kan visas igen därifrån.
      frågar inte igen, så det ändras i telefonens inställningar."* Fyra steg: *Tryck Öppna Inställningar*, *Tryck Plats*, *Välj
      Alltid eller När appen används*, *Kom tillbaka hit*. Knappen *Öppna Inställningar*, länken *FORTSÄTT UTAN PLATS*.
 
-   **iOS egen ruta** säger (ordagrant, `project.yml`): *"Halkvakt jämför din position med
-   vägfaror lokalt i telefonen och varnar med rösten, även med släckt skärm under körning.
-   Ingen position lämnar telefonen av sig själv — det enda som skickas är betatestets
-   facitsvar, som du själv slår på."* Och vid *Alltid*: *"Med "Alltid" startar vakten av sig
-   själv när du börjar köra. Matchningen sker lokalt i telefonen — ingen position lämnar den
-   av sig själv."*
+   **iOS egen ruta** säger (ordagrant, `project.yml`, DECISIONS #900 fråga 10): *"Halkvakt jämför din position med
+   vägfaror i telefonen och varnar med rösten, även med släckt skärm under körning. Din position skickas aldrig till
+   Halkvakt av sig själv. Kartan på startsidan och sökningen i Planera resa kommer från Apple, som får veta ungefär
+   vilket område det gäller."* Och vid *Alltid*: *"Med "Alltid" startar vakten av sig själv när du börjar köra.
+   Jämförelsen sker i telefonen, och din position skickas aldrig till Halkvakt av sig själv."*
 5. **Notiserna** (steg 4 av 4) — *"Se varningen på skärmen"*, *"Rösten varnar alltid. Med notiser syns varningen också som en
    banner överst på skärmen, vilken app du än har framme."*, en svävande exempelbanner (*FARTKAMERA · 500 M — "Fartkamera om
    500 meter. Gränsen är 80."*) och under *HALKVAKT SKICKAR*: *Varningar medan du kör* och *En fråga efter resan, om du vill
@@ -364,7 +364,7 @@ påtvingad, men kan visa den från Inställningar (*Visa introduktionen igen*, s
    - *Frågan:* *"Ska vakten starta själv?"*, *"Då vaknar den när du börjar köra. Du behöver inte öppna appen före resan."*
      Under *ANDROID FRÅGAR OM TRE SAKER*: *Fysisk aktivitet* (*Så ser telefonen att du åker bil.*), *Enheter i närheten* (*Så
      märker den när bilens Bluetooth kopplar upp.*) och *Platsen, alltid* (*Så kan vakten starta med appen stängd.*).
-     *"Platsen stannar i telefonen, även då. Välj Tillåt i de två första rutorna."* Knappen *Slå på självstart* öppnar
+     *"Din position skickas aldrig till Halkvakt, även då. Välj Tillåt i de två första rutorna."* Knappen *Slå på självstart* öppnar
      rutorna om fysisk aktivitet och enheter i närheten. Länken *INTE NU, JAG STARTAR SJÄLV*.
    - *Alltid:* *"Sista frågan: Tillåt alltid"*, *"Android öppnar en sida i telefonens inställningar. Välj Tillåt alltid
      och tryck sedan bakåt för att komma tillbaka hit."* Under *PÅ NÄSTA SIDA FRÅN ANDROID* sidans fyra val med *Tillåt

@@ -3257,3 +3257,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - halkvakt-karta PR 28 (f4722790, sajten byggd 20.55 UTC) och PR 29 (b8394bc8, 21.16 UTC), Halkvakt PR #1673 (b00759b2) och migrationen 118 med DB-knappen (44399484171).
   - Läst live: rutan och sajten utan räknare och markering, statistiken utan listan, kartbiblioteket på egen server; väntelistan 0 rader och stängd.
   - **Inte gjort:** steg 2–5; kartbilderna från tiles.openfreemap.org nämns på integritetssidan i steg 2.
+- 19/11 (Claude; Bengt: *"Ja"*): **Dataskyddet steg 2 byggt** (DECISIONS #900, tillägget; kort #670).
+  - Meningen *"Din position skickas aldrig till Halkvakt av sig själv."* i apparna, iOS platsfrågor, butikerna, länssidorna, produktboken
+    och på sajten; integritetssidan fullständig (halkvakt-karta PR 30); `sql/119` gallrar besöksraderna efter 13 månader.
+  - **Inte gjort:** sammanslagningen, migrationen 119, deployen av `publicera`, byggproven och Axels del.

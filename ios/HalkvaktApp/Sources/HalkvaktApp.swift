@@ -47,7 +47,7 @@ struct InstallningarView: View {
 
                     VStack(alignment: .leading, spacing: 6) {
                         MonoLabel(text: "Löftet")
-                        Text("Din position lämnar inte telefonen av sig själv.").font(Typo.sans(15)).foregroundStyle(Brand.text2)
+                        Text("Din position skickas aldrig till Halkvakt av sig själv.").font(Typo.sans(15)).foregroundStyle(Brand.text2)
                     }
                     .padding(.top, 24).padding(.horizontal, 4)
                 }
@@ -199,7 +199,7 @@ struct InstallningarView: View {
             Rubrik(titel: "Integritet", text: nil)
             VStack(alignment: .leading, spacing: 12) {
                 MonoLabel(text: "Löftet", size: 11)
-                Text("Din position lämnar inte telefonen av sig själv.").font(Typo.sans(20, .medium)).foregroundStyle(Brand.text)
+                Text("Din position skickas aldrig till Halkvakt av sig själv.").font(Typo.sans(20, .medium)).foregroundStyle(Brand.text)
                 // Kort #357 (DECISIONS #616, #625): "ingen spårning" blev osant när resor kan sparas — en sparad resa är ett spår,
                 // även om det bara finns hos föraren. Texten säger var de ligger och hur de tas bort.
                 Text(Prefs.betatestTillaten

@@ -23,8 +23,8 @@ något att säga. Att den är tyst betyder inte att vägen är fri från halka.
   kopplas (valfritt). Vakten stoppar sig själv när bilen stått still en kvart.
 
 **Din integritet, på riktigt**
-Din position lämnar aldrig telefonen av sig själv. All matchning mot vägdata
-sker lokalt i appen. Inga konton, ingen inloggning, inga annonser, ingen
+Din position skickas aldrig till Halkvakt av sig själv. All matchning mot
+vägdata sker lokalt i appen. Inga konton, ingen inloggning, inga annonser, ingen
 spårning.
 
 Ingenting skickas från appen. Betatestet, där testare efter resan kan svara
@@ -65,6 +65,10 @@ Ansvarstexten, Bengts ja 18/11. Fyra ändringar i den fullständiga beskrivninge
    europavägar, riksvägar och större länsvägar — och för isrisk vid omkring 800 vägväderstationer. På de flesta mindre vägar och
    gator varnar den inte för halka. Halkvakt är ett stöd, inte en garanti. Kör alltid efter väglaget.* Sedan datakällorna.
 4. Meningen *mellan stationerna är vägen oövervakad* tas bort om den står kvar.
+
+## Att klistra in i Play 19/11 (DECISIONS #900, dataskyddet steg 2)
+5. I stycket *Din integritet, på riktigt*: byt *Din position lämnar aldrig telefonen av sig själv.* mot *Din position skickas aldrig
+   till Halkvakt av sig själv.* Android har ingen karta från Apple, så Apple-meningen från App Store-texten står inte här.
 
 ## Anteckningar
 - ⚠️ **RÄTTAT 20/9 (kort #214):** integritetsstycket sade *"Vi samlar in: ingenting"*, vilket varit osant

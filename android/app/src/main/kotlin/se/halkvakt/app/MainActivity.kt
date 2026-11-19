@@ -167,7 +167,7 @@ class MainActivity : ComponentActivity() {
             if (Manifest.permission.POST_NOTIFICATIONS in missing) askedNotifications = true
             disclosure.value = Disclosure("Vakten vaknar själv",
                 "För att starta själv behöver vakten din plats, se när du åker bil (rörelseigenkänning) och när bilens Bluetooth kopplar upp. " +
-                    "Notisen \"Halkvakt vaktar\" visar när den är på. Din position lämnar inte telefonen av sig själv.") {
+                    "Notisen \"Halkvakt vaktar\" visar när den är på. Din position skickas aldrig till Halkvakt av sig själv.") {
                 requestPermissions(missing.toTypedArray(), 2)
             }
             return
