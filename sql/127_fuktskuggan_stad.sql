@@ -136,7 +136,7 @@ BEGIN
   dagg AS (
     SELECT m.punkt, h.tid, count(*) AS timmar,
            count(*) FILTER (WHERE l.pb <= m.met_td_c + 0) AS vid_dagg,                                    -- DAGG_M
-           max(m.rh2m) FILTER (WHERE m.tid = h.tid) AS rh
+           max(m.rh2m) FILTER (WHERE m.tid < h.tid) AS rh
     FROM (SELECT DISTINCT r.tid FROM r) h
     JOIN ny_kandidat_met_stad m ON m.tid > h.tid - interval '2 hours' AND m.tid <= h.tid                -- DAGG_U
     JOIN ny_kandidat_live l ON l.tid = m.tid AND l.punkt = m.punkt
