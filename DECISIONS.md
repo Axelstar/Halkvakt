@@ -17888,6 +17888,24 @@ tidningarna föll, eftersom tidningarna då måste föra in Halkvakt i sina samt
   - leverantörsavtalen godkända i kontona (Axel eller Bengt);
   - en rad om dataskyddet i bolagsavtalet.
 
+**Rutiner för begäranden och incidenter 19/11** (Bengt: *"Ja på alla"* (19/11, på de fem frågorna i förslaget till rutiner för begäranden och incidenter)). Rutinerna sparas privat tillsammans med registret, utanför repot.
+- **Begäranden:**
+  - Axel tar emot och svarar via hej@halkvakt.se, med ett kvitto inom tre arbetsdagar och svaret inom en månad;
+  - Bengt raderar i Supabase-panelen, aldrig via DB-knappen, vars logg är publik, och aldrig i ett publikt ärende;
+  - testarnas rader (`driver_facit`, `driver_miss`) har inget id för telefon eller person. De raderas på begäran utan bevis på vem man
+    är, när personen kan peka ut dem med ungefärligt klockslag och telefon;
+  - besöksraderna går inte att koppla till någon, eftersom IP-adressen aldrig sparas och dygnets slumptal raderas nästa dygn.
+- **Incidenter:**
+  1. stoppa läckan;
+  2. säg till den andra direkt;
+  3. skriv in incidenten i loggen, även när den inte anmäls;
+  4. bedöm risken. När den inte är osannolik anmäls incidenten till IMY med e-tjänsten inom 72 timmar från att någon av bolagsmännen
+     fått vetskap om den, och vid hög risk informeras de berörda utan onödigt dröjsmål.
+- **Loggarna:** en privat logg för begäranden, som sparas ett år efter svaret, och en för incidenter, som sparas så länge Halkvakt finns.
+- **Integritetssidan ändras inte.** Den beskriver redan rättigheterna och IMY.
+- **Fristerna** är lästa på imy.se 19/11.
+- **Ingen jurist har läst rutinerna** (#901).
+
 **Stomdokument:** APP 10 — integritetssidan och dataskyddets steg, SYS 1 — vem som ger ut Halkvakt och ansvarar för uppgifterna, BED §4.2
 
 ## #901 (19/11 2026) Ingen jurist: dataskyddets steg 4 stryks, och juristens läsning av ansvarstexten med det (kort #670, #648)
