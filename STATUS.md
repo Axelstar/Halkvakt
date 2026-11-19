@@ -3314,3 +3314,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - #378: lägesfilen (reservens kopia, `data/app/v1/live.json` i halkvakt-karta) bar storstädernas första varningar 18/11: 12.50 UTC 10 grupper med 14 punkter i lager B (88aaaa24), och 13.50 UTC 191 grupper med 2 163 punkter, med lager C (b98f087d).
   - B1: körningarna sedan 17/11 18.39 gröna, och reserven har inte behövt räkna något i efterhand. Körningen 19/11 06.49 föll på MET:s
     morgonfel, som står kvar 19/11 (körlistan B5); reserven ska räkna 20261119T06Z i efterhand i nästa vanliga körning.
+- 19/11 (Claude; Bengt: *"Ja, vänta"* (19/11, på att vänta på MET:s svar till 26/11)): **Småvägsröstens timme 06 UTC väntar på MET** (DECISIONS #902, körlistan B5).
+  Luckorna 15/11, 17/11 och 18/11 ligger i MET:s morgonfel. Inget byggs före MET:s svar eller 26/11 (fristen `met-svar-2026-11-26`),
+  och därefter läggs återtagningen i timflödet fram om felet står kvar.

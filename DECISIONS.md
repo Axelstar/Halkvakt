@@ -17989,6 +17989,34 @@ tidningarna föll, eftersom tidningarna då måste föra in Halkvakt i sina samt
 
 **Stomdokument:** APP 10 — dataskyddets steg och ansvarstexten, BED §4.2
 
+## #902 (19/11 2026) Småvägsröstens timme 06 UTC: vänta på MET:s svar till 26/11, sedan återtagningen i timflödet (körlistan B5, ärende #1664)
+
+**Beslut** (Bengt 19/11: *"Ja, vänta"* (19/11, på att vänta på MET:s svar till 26/11)).
+- **Läget:** småvägsröstens timflöde (`kuvos-smavag-timme.yml`) räknar en gång i timmen, omkring :47. Saknas timmens PH hoppas
+  timmen över grönt, och ingenting räknar den senare.
+  - Timmen 06 UTC föll så 15/11, 17/11 och 18/11, och 07 UTC 18/11. Vaktens ärende #1664 står öppet.
+  - Alla luckorna ligger i MET:s morgonfel: THREDDS svarar HTTP 500 omkring 06.10–06.52 UTC sedan 11/11 (#886, kort #663).
+  - Bengt anmälde felet till MET 17/11 (körlistan B5).
+- **Beslutet:** vi bygger inget förrän MET har svarat, eller till 26/11. Rättar MET felet försvinner luckorna troligen utan kod.
+- **Står felet kvar 26/11**, eller faller fler än två eller tre morgnar före dess, läggs förslaget fram igen: timflödet räknar efter
+  sin egen timme också de tre föregående timmarna som saknar en räknad rad, när deras PH finns. Det rör bara vilka timmar flödet
+  räknar, inte räkningen i kuvösen.
+  - Före bygget prövas att kedjan läser timmens egna indata och inte det senaste.
+  - Det prövas också hur länge PH sparas.
+- **Den snabba kandidaten berörs inte:** timvärdet talar när den snabba saknar PH (#782, tillägget 19/11).
+- **15/11 (ärende #1659)** går inte att räkna om, eftersom PH för timmen redan är gallrat. Bokföringen som en lucka väntar på Bengts
+  ord.
+
+**Alternativ:**
+- bygga återtagningen nu;
+- vänta i samma körning tills PH kommer, vilket blockerar nästa timme;
+- ta PH ur MET:s körning före, vilket ändrar fysiken och kräver ett beslut i kuvösen.
+
+**Varför:** Bengts val. Grundfelet ligger hos MET, och deras svar kan göra bygget onödigt. Kostnaden är ett ofullständigt dygn per
+morgon med felet, och skuggans 14 dygn räknas bara på kompletta dygn (#843).
+
+**Stomdokument:** SYS 2 — småvägsröstens timme väntar på MET:s svar
+
 ## #903 (19/11 2026) Den snabba kandidaten tystade storstäderna: avstängd, rättad och en vakt (kort #373, #378; sql/123, sql/124)
 
 **Händelsen.**
