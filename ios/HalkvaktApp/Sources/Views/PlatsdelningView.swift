@@ -127,6 +127,7 @@ struct DinDataView: View {
                 RowPanel {
                     ReceiptRow(label: "Kommun", value: plats.kommunNamn ?? "Inte läst än")
                     ReceiptRow(label: "Skickad", value: plats.skickad?.dagOchKlockslag ?? (plats.sandningFel ? "Gick inte, försöker igen" : "Inte än"))
+                    ReceiptRow(label: "Notiser", value: plats.notisadress == nil ? "Ingen adress sparad" : "Adress sparad")
                     GreenToggleRow(title: "Erbjudanden", sub: "Från våra partner. Aldrig när du kör.", isOn: $plats.erbjudanden)
                 }
                 Text("Det här är allt vi har sparat om den här telefonen. \(Platsord.nyttLofte)")
