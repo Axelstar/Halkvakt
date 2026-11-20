@@ -21,7 +21,7 @@ targets:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         TARGETED_DEVICE_FAMILY: "1"   # iPhone-app — iPad-multitasking kräver annars alla vridningar (validering 31/8)
         MARKETING_VERSION: 0.4.1
-        CURRENT_PROJECT_VERSION: 58
+        CURRENT_PROJECT_VERSION: 59
         SWIFT_VERSION: "5.0"
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_CFBundleDisplayName: Halkvakt
@@ -58,12 +58,12 @@ targets:
         # DECISIONS #900, fråga 10: Apple granskar texten. Kartan och sökningen går till Apple; "av sig själv" för facitsvaren.
         NSLocationWhenInUseUsageDescription: >-
           Halkvakt jämför din position med vägfaror i telefonen och varnar med
-          rösten, även med släckt skärm under körning. Din position skickas aldrig
-          till Halkvakt av sig själv. Kartan på startsidan och sökningen i Planera
+          rösten, även med släckt skärm under körning. Din exakta position skickas
+          aldrig till Halkvakt av sig själv. Kartan på startsidan och sökningen i Planera
           resa kommer från Apple, som får veta ungefär vilket område det gäller.
         NSLocationAlwaysAndWhenInUseUsageDescription: >-
           Med "Alltid" startar vakten av sig själv när du börjar köra. Jämförelsen
-          sker i telefonen, och din position skickas aldrig till Halkvakt av sig själv.
+          sker i telefonen, och din exakta position skickas aldrig till Halkvakt av sig själv.
         ITSAppUsesNonExemptEncryption: false
         UIAppFonts:   # skinnet v3 — Instrument Sans + IBM Plex Mono (OFL), Sources/Fonts
           - InstrumentSans.ttf

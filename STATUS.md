@@ -3403,3 +3403,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   PR #1716 ihopslagen (283c14a), migrationen 130 med DB-knappen (44731913178) och `app-enhet` deployad (44732030982). Läst live: en giltig
   rad gav 204 och stod i tabellen, en rad med position gav 400, DELETE gav 204 och tabellen var tom efteråt. Ingenting finns i TestFlight
   än: apparna är inte byggda. Axel: alla sidor på sajten och i appen ska gås igenom så att orden stämmer; räkningen står på kortet.
+- 20/11 (Claude; Axel: *"Okej ja kör"*): **Platsdelningen i iPhone-appen, bara i TestFlight** (DECISIONS #918, kort #674). Frågan i två
+  steg, Din data under Integritet med *Radera min data*, och kommunen räknad i telefonen ur `data/kommuner/kommuner.json`. Bygget är
+  0.4.1 (59). Ett App Store-bygge frågar inte och skickar inget. Notiserna och Android är inte byggda. Kommungränsernas licens är inte
+  bekräftad. Inte prövat på en telefon.

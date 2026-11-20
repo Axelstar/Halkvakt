@@ -18645,3 +18645,39 @@ ger rörelsemönster som kan peka ut en person, och behövs inte för en notis p
 28 § (läsningen i #900 talar för att skärmen måste vara ett samtycke); flytten av appen till Lagerlöf Labs HB i butikerna.
 
 **Stomdokument:** APP 7 — vad som lämnar telefonen; SYS — tabellen och funktionen med gallringen; BED §4.2
+
+## #918 (20/11 2026) Platsdelningen i iPhone: byggd, men bara i TestFlight tills orden är bytta överallt (kort #674)
+
+**Beslut** (Claude 20/11, på Axels ord *"Ja börja bygga"*, *"kör ihop och så vi kan testa det på testflight"* och *"extremt viktigt att
+vi går igenom alla sidor på hemsidan, i appen och allt så det är uppdaterat och korrekt"*; Axel och Bengt kan ändra det).
+- **Platsdelningen (DECISIONS #917) finns i iPhone-appen från 0.4.1 (59), men bara i TestFlight och i utvecklarbyggen.** Ett bygge
+  från App Store frågar inte, skickar inget och bär de gamla orden. Skälet: main är grenen som släpps. Utan spärren hade nästa bygge
+  till App Store burit platsdelningen medan 371 sidor på sajten, butikernas texter och Android-appen fortfarande säger att positionen
+  aldrig skickas. Spärren är samma som betatestets (#681): kvittots namn. Den tas bort i samma commit som orden byts överallt.
+- **Frågan** täcker appen efter introduktionen tills föraren svarat, i två steg: *Ja, dela min kommun* eller *Inte nu*, och för den som
+  sagt ja valet om erbjudanden, med *Nej tack* förvalt. Inget skickas förrän steg två är klart. Skärmen är byggd som ett samtycke
+  (bedömningen §4.2, LEK): ett uttryckligt ja, ett nej som lämnar appen som den var, och *Radera min data* som tar tillbaka det.
+- **Kommunen räknas i telefonen** ur en tabell med kommunernas förenklade gränser (`data/kommuner/kommuner.json`, 290 kommuner,
+  367 kB, samma fil i appen). En position i en glipa längs en kust får närmaste kommuncentrum inom 15 km; längre bort än så, utomlands
+  eller till havs, ger ingen kommun och då skickas inget nytt.
+- **När det skickas:** när appen öppnas, när vakten stannar och när föraren svarar eller ändrar valet om erbjudanden. Aldrig under
+  körning. Raden skickas om kommunen är ny, valet ändrat eller förra sändningen är äldre än ett dygn (servern gallrar efter 30).
+- **Din data** under Integritet visar kommunen, när raden skickades, valet om erbjudanden och det slumpade numret, och knappen
+  *Radera min data*. Når appen inte servern raderas inget, och det står på skärmen.
+- **Orden i testbygget:** *"Din exakta position skickas aldrig till Halkvakt av sig själv."* Meningen från #917, *"Vi vet vilken kommun
+  du är i, aldrig var du kör"*, står på frågan och under Din data, men inte som appens allmänna löfte: för den som sagt nej är den
+  osann, eftersom vi då inte vet någon kommun. iPhones två platsfrågor fick ordet *exakta*; de gäller alla byggen och är sanna i båda.
+- **Apples integritetsmanifest** säger nu att ungefärlig plats är kopplad och att ett enhets-id samlas in. Det gäller alla byggen och
+  är för mycket sagt för App Store-bygget, vilket är åt det säkra hållet.
+
+**Inte byggt:** notiserna (utskicket, nyckeln hos Apple), Android, och erbjudandena själva. Testbygget säger på frågan att notiserna
+inte är påslagna än.
+
+**Kommungränsernas licens är inte bekräftad** (`data/KALLOR.json` säger det): filen kommer från okfse/sweden-geojson, som skriver
+*Feel free to reuse* utan licensfil. Den bekräftas eller byts mot Lantmäteriets eller SCB:s öppna gränser före ett bygge till App Store.
+
+**Alternativ.** Släppa till alla direkt: kräver att app, sajt och butiker byter ord samma dag, och det arbetet är inte gjort. En
+brytare i Inställningar: Axel avvisade en brytare för Planera resa 14/11, och en brytare säger inget om vem som får frågan. Apples
+omvända geokodning i stället för en egen tabell: skickar positionen till Apple vid varje uppslag.
+
+**Stomdokument:** APP 7 — platsdelningen i testbygget; BED §4.2

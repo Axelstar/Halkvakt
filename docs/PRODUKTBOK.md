@@ -269,6 +269,30 @@ känner samma vägar?"* — *"Tipsa om Halkvakt. Du skickar bara en länk, inget
 Appen skickar ingenting själv: delningen går genom telefonens delningsark, mejlet genom förarens mejlapp och betyget genom
 butiken. Integritetstexterna är oförändrade.
 
+## Platsdelningen (iPhone, bara i TestFlight — 20/11, DECISIONS #917, #918)
+
+Från 0.4.1 (59) frågar iPhone-appen i TestFlight om den får dela vilken kommun telefonen är i. Ett bygge från App Store frågar inte.
+Skärmbilder saknas: fotostudion tar inte iPhones skärmar, och de här är inte prövade på en telefon än. Skisserna ligger på
+Design-duken *Halkvakt: platsdelning och erbjudanden, skärmar*.
+
+**Frågan** täcker appen efter introduktionen, tills föraren svarat. Etiketten *Nytt i Halkvakt*, rubriken *Vill du ha en varning innan
+du kör?* och texten *Då behöver vi veta vilken kommun du är i, så att vi kan säga till när det är halt där.* En panel säger vad som
+gäller: *Vi sparar* din kommun, senaste läget · *Aldrig* var du kör, dina resor · *Kopplas till* ett slumpat nummer · *Tas bort* när
+du vill, under Integritet. Under den: *Vi vet vilken kommun du är i, aldrig var du kör.* och *Säger du nej fungerar Halkvakt som i
+dag. Testbygge: notiserna är inte påslagna än.* Knappen *Ja, dela min kommun*, och länken *Inte nu*.
+
+**Valet om erbjudanden** kommer efter ett ja. Rubriken *Vill du ha erbjudanden för ditt län?*, två rutor där *Nej tack* (*Bara
+varningar*) är förvald och den andra är *Ja, skicka erbjudanden* (*Högst två i månaden. Aldrig när du kör.*), och en panel: *Från*
+företag som betalar Halkvakt · *De får* aldrig veta vem eller var du är · *Ändra* när du vill, under Integritet. Knappen *Fortsätt*.
+Först då skickas något.
+
+**Din data** står under Inställningar → Integritet. För den som sagt ja: kommunen, när raden skickades, växlaren *Erbjudanden*, det
+slumpade numret och knappen *Radera min data*. Går servern inte att nå står det *Det gick inte att nå servern. Inget är raderat.*
+För den som sagt nej: *Du delar inte din kommun. Inget om den här telefonens plats är sparat hos oss.* och länken *Visa frågan igen*.
+
+**Orden i testbygget:** på Redo, i introduktionen och under Integritet står *Din exakta position skickas aldrig till Halkvakt av sig
+själv.* App Store-bygget och Android bär den gamla meningen tills platsdelningen släpps.
+
 ## Första gången — introduktionen (iOS)
 
 Sex steg (ombyggd 13/11, DECISIONS #851). Överst till höger står var du är: *VÄLKOMMEN*, *STEG 1 AV 4* till *STEG 4 AV 4* och
