@@ -3446,3 +3446,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 20/11 (Claude): **Utskicket av notiser byggt till provet** (DECISIONS #924, kort #674): Axel skapade APNs-nyckeln och lade den som
   hemlighet; sql/131 `push_utskick`, funktionen `app-push`, och appen skickar notisadressen efter ja och tillåtna notiser. Bygget är
   0.4.1 (65). Inte byggt: regeln, Android och hur *Aldrig när du kör* hålls.
+- 20/11 (Claude): **iPhone 0.4.1 (65) uppladdad till TestFlight** från main 5b1d1f2 (körning 44806322553; PR #1738 och kartrepots
+  PR #38 ihopslagna), med erbjudandetexten (#923) och notisadressen (#924). sql/131 körd (dbknapp 44806315633), `app-push` deployad
+  (44806319585) och prövad med tom kö: POST ger `{"utskick":0}`, GET 405. Ingen notis skickad än, och inget prövat på en telefon.
