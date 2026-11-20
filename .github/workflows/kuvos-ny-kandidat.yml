@@ -39,15 +39,18 @@ name: kuvos-ny-kandidat
 # enheten alla (fysik/ny_kandidat/halvvinter.py). Sedan domskriptet för reglerna A, B och C (fysik/ny_kandidat/mars_regler_dom.py).
 # Vädret ur releaserna kuvos-vintrar-<vinter>, som indata ska ha hämtat färdigt. Allt till hinken (kuvos-mars-2026-11 och
 # kuvos-mars-2026-11-smavagar); jobben skriver bara klart eller fel.
+# Stadsmiljöns dom (steg stadsmiljon, halkvakt-kuvos BESLUT F27, F32 och F78): domskriptet (fysik/ny_kandidat/stadsmiljon_dom.py) på
+# kuvos-stad:s dygnsfiler i hinken, först efter domfönstret. Självtestet körs alltid; före datumet hämtas ingenting. Domfilen bara till
+# hinken, och jobbet skriver bara klart eller fel. Varianten spelar ingen roll.
 # MET Norways villkor är en förbindelse åt gången: tryck inte indata här medan kuvos-vintrar.yml hämtar.
 # Trafikverkets filer, modellerna och skattningarna hämtas ur hinken som i kuvos-vintrar.yml och lämnar aldrig jobbet.
 on:
   workflow_dispatch:
     inputs:
       steg:
-        description: "indata (en äldre vinter) → fyll (T2) → forberedning → traning → provning (bakom spärren) → samman; paritet (§4, den levande kedjan); osakerhet (#707, omdragning på 2022/23); identitet och dom bara med variant smavagar eller okanda; mars (marsprövningen, halkvakt-kuvos F8: prov (b), halvvintrarna och domen, bara till hinken); trafikmangd (halkvakt-kuvos F21, trafikmängdens betydelse, bara med variant okanda, bara till hinken); dfbakat (fuktvarianten D-F bakåt, halkvakt-kuvos F47, och radarns bakåtprov, F59); radarstn (radarn kring stationen 2024/25 ur SMHI:s arkiv till hinken, halkvakt-kuvos F59 §12); friktionen (källa 3 i fukten i storstäderna, halkvakt-kuvos F38 §8: läsfrågan framåt ur driften, tidigast 6/12, bara till hinken)"
+        description: "indata (en äldre vinter) → fyll (T2) → forberedning → traning → provning (bakom spärren) → samman; paritet (§4, den levande kedjan); osakerhet (#707, omdragning på 2022/23); identitet och dom bara med variant smavagar eller okanda; mars (marsprövningen, halkvakt-kuvos F8: prov (b), halvvintrarna och domen, bara till hinken); trafikmangd (halkvakt-kuvos F21, trafikmängdens betydelse, bara med variant okanda, bara till hinken); dfbakat (fuktvarianten D-F bakåt, halkvakt-kuvos F47, och radarns bakåtprov, F59); radarstn (radarn kring stationen 2024/25 ur SMHI:s arkiv till hinken, halkvakt-kuvos F59 §12); friktionen (källa 3 i fukten i storstäderna, halkvakt-kuvos F38 §8: läsfrågan framåt ur driften, tidigast 6/12, bara till hinken); stadsmiljon (stadsmiljöns dom, halkvakt-kuvos F32 och F78: självtestet alltid, domen först efter domfönstret, bara till hinken)"
         type: choice
-        options: ["indata", "fyll", "t4", "forberedning", "traning", "provning", "samman", "paritet", "osakerhet", "identitet", "dom", "mars", "trafikmangd", "sparren", "vetot", "fukten", "friktionen", "flackvis", "dfbakat", "radarstn"]
+        options: ["indata", "fyll", "t4", "forberedning", "traning", "provning", "samman", "paritet", "osakerhet", "identitet", "dom", "mars", "trafikmangd", "sparren", "vetot", "fukten", "friktionen", "flackvis", "dfbakat", "radarstn", "stadsmiljon"]
         default: "forberedning"
       vinter:
         description: "bara för indata och fyll: vintern som hämtas (2017-18 och 2023-24 är marsprövningens halvvintrar, halkvakt-kuvos F8)"
@@ -2638,6 +2641,95 @@ jobs:
           rm -rf ut
           if [ "$RC" -ne 0 ]; then echo "::error::friktionen i storstäderna: fel i ${PROVET:-skriptet, utan besked (kod $RC)}"; exit "$RC"; fi
           echo "friktionen i storstäderna: klart"
+
+  # ── stadsmiljon (stadsmiljöns dom, halkvakt-kuvos BESLUT F27, F32 och F78) ───────────────────────────────────────────────────────
+  # Domskriptet (fysik/ny_kandidat/stadsmiljon_dom.py) på kuvos-stad:s dygnsfiler i hinken (kuvos/kuvos-stad-2026-27/). Självtestet körs
+  # alltid, så att steget går att pröva före domen. Datumspärren läses ur skriptet (DOMEN_TIDIGAST), så att datumet står på ett ställe:
+  # före det hämtas ingenting och domen körs inte, och jobbet säger det. Efter det hämtas dygnsfilerna, sammanfattningarna och
+  # identitetsfilerna, domskriptet kör sina prov före läsningen, och domfilen läggs i samma mapp i hinken. Den skrivs aldrig över, och det
+  # som ligger i hinken ska vara byte för byte filen. Faller ett prov eller skriptet, läggs skriptets utskrift i hinken i stället.
+  # Loggen säger bara klart eller fel. Jobbet går i kön ovrigt, aldrig i MET-kön, så det kan inte ersätta en väntande kuvos-stad.
+  stadsmiljon:
+    if: ${{ inputs.steg == 'stadsmiljon' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      STAD: kuvos-stad-2026-27
+    steps:
+      - uses: actions/checkout@v4
+      # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos (DECISIONS #768): koden läggs ovanpå utcheckningen.
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13", cache: pip, cache-dependency-path: fysik/requirements.txt }
+      - name: Beroendena, de frysta filerna, självtestet och datumspärren
+        id: sparren
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
+          (cd fysik && sha256sum -c --quiet SHA256SUMS)
+          if python3 fysik/ny_kandidat/stadsmiljon_dom.py --sjalvtest > /dev/null 2>&1; then echo "domskriptets självtest: klart"; else echo "::error::domskriptets självtest: fel"; exit 1; fi
+          read -r TIDIGAST SLUT < <(python3 -c 'import sys; sys.path.insert(0, "fysik/ny_kandidat"); import stadsmiljon_dom as d; print(f"{d.DOMEN_TIDIGAST:%Y-%m-%dT%H:%M:%SZ} {d.PERIOD_SLUT}")' 2>/dev/null) || true
+          [[ "${TIDIGAST:-}" =~ ^20[0-9]{2}-[0-9]{2}-[0-9]{2}T00:00:00Z$ && "${SLUT:-}" =~ ^20[0-9]{2}-[0-9]{2}-[0-9]{2}$ ]] \
+            || { echo "::error::datumspärren gick inte att läsa ur domskriptet"; exit 1; }
+          if [ "$(date -u +%s)" -lt "$(date -u -d "$TIDIGAST" +%s)" ]; then
+            echo "::notice::stadsmiljöns dom: datumspärren — domen körs tidigast $TIDIGAST; självtestet är klart, och ingenting är hämtat ur hinken"
+            echo "las=nej" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          { echo "las=ja"; echo "slut=$SLUT"; } >> "$GITHUB_OUTPUT"
+      - name: Dygnsfilerna ur hinken, domen och domfilen till hinken
+        if: ${{ steps.sparren.outputs.las == 'ja' }}
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}", SLUT: "${{ steps.sparren.outputs.slut }}" }
+        run: |
+          set -euo pipefail
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          export FN KEY
+          H=fysik/ny_kandidat/stadsmiljon_hinken.ts
+          # Hinken har ingen lista, så namnen räknas fram: dygnen från vinterns första dygn till periodens slut, och identitetsfilerna
+          # för körningarna som täcker dem (dygnet före kl. 18 till sista dygnets 18).
+          NAMN=(); A=$(date -u -d 2026-11-01 +%s); Z=$(date -u -d "$SLUT" +%s)
+          for ((t = A; t <= Z; t += 86400)); do
+            D=$(date -u -d "@$t" +%F); NAMN+=("stadsmiljon_$D.csv.gz" "stadsmiljon_sammanfattning_$D.json")
+          done
+          for ((t = A - 21600; t <= Z + 64800; t += 21600)); do
+            NAMN+=("stadsmiljon_identitet_$(date -u -d "@$t" +%Y%m%dT%HZ).json")
+          done
+          # En fil som saknas hoppas över (stadsmiljon_hinken.ts hamta). De som saknas prövas en gång till, så att ett tillfälligt fel
+          # inte tar ett dygn ur domen; dygn som ändå saknas står i domfilen.
+          for varv in 1 2; do
+            SAKNAS=(); for f in "${NAMN[@]}"; do [ -f "dygn/$f" ] || SAKNAS+=("$f"); done
+            [ "${#SAKNAS[@]}" -gt 0 ] || break
+            node --experimental-strip-types "$H" hamta "$STAD" dygn "${SAKNAS[@]}" > /dev/null 2>&1 \
+              || { echo "::error::stadsmiljöns dom: fel i hämtningen ur hinken"; exit 1; }
+          done
+          echo "dygnsfilerna ur hinken: klart"
+          mkdir -p ut
+          RC=0; python3 fysik/ny_kandidat/stadsmiljon_dom.py --dygn dygn --ut ut > dom.txt 2>&1 || RC=$?
+          rm -rf dygn
+          if [ "$RC" -ne 0 ]; then
+            # Bara ordet i loggen. Skriptets utskrift säger vilket prov som föll, utan utfall, och läggs i hinken.
+            if grep -q '^domen: ett prov föll' dom.txt; then VAD="proven före läsningen"; else VAD="skriptet"; fi
+            FEL="ut/dom_stadsmiljon_fel_${GITHUB_RUN_ID}_${GITHUB_RUN_ATTEMPT}.txt"
+            mv dom.txt "$FEL"
+            node --experimental-strip-types "$H" ladda-upp "$STAD" "$FEL" > /dev/null 2>&1 \
+              || echo "::warning::skriptets utskrift gick inte att lägga i hinken"
+            rm -rf ut
+            echo "::error::stadsmiljöns dom: fel i $VAD"; exit 1
+          fi
+          rm -f dom.txt
+          node --experimental-strip-types "$H" ladda-upp "$STAD" ut/dom_stadsmiljon.json > /dev/null 2>&1 \
+            || { echo "::error::stadsmiljöns dom: fel när domfilen lades i hinken (en fil som redan finns med annat innehåll skrivs inte över)"; exit 1; }
+          rm -rf ut
+          echo "stadsmiljöns dom: klart, domfilen i hinken byte för byte den skrivna"
 
   # ── mars (marsprövningen, halkvakt-kuvos BESLUT F8) ─────────────────────────────────────────────────────────────────────────────
   # Ett jobb per enhet. Prov (b) först (§7 b): faller det läses ingen halvvinter, och Trafikverkets filer för 2018 och 2024 hämtas

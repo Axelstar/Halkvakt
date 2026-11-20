@@ -18486,3 +18486,28 @@ Körlistans C3 är klar när avsnittet står i veckorapporten (D1).
 - `olycksfacit` och `driver_facit` i värdevaktens `TID`: avvisat, se läsningarna.
 
 **Stomdokument:** MAT säsongsfacit — storstädernas avsnitt och dygnsaggregatet, SYS — sql/128 och pg_cron-jobbet för storstäderna
+
+## #914 (19/11 2026) Stadsmiljöns dom får sitt steg i kuvos-ny-kandidat: självtestet varje gång, domen först efter domfönstret (körlistan B10, halkvakt-kuvos F32 och F78)
+
+**Beslut.** Bengt 19/11: *"börja bygga c3 och B10"*. Steget `stadsmiljon` i `kuvos-ny-kandidat.yml` kör kuvösens domskript för
+stadsmiljön (halkvakt-kuvos F27 och F32) på kuvos-stad:s dygnsfiler i den privata hinken. Det är bygget som fristen
+`stadsmiljon-domsteget` gäller.
+- Självtestet körs först, varje gång. Sedan kommer datumspärren, som läses ur skriptet så att datumet står på ett ställe. Före datumet
+  hämtas ingenting och domen körs inte, och jobbet slutar grönt med en notis. Så går steget att pröva på main före domen.
+- Efter datumet hämtas dygnsfilerna, sammanfattningarna och identitetsfilerna ur hinken genom arkivdump, och domskriptet kör sina prov
+  före läsningen. Domfilen läggs i hinken under ett fast namn. Den skrivs aldrig över, och filen i hinken prövas byte för byte mot den
+  skrivna.
+- Loggen säger bara klart eller fel. Faller ett prov eller skriptet, läggs skriptets utskrift i hinken.
+
+**Alternativ.**
+- Steget i `kuvos-stad.yml`, bredvid kedjan. Förkastat: det flödet står i MET-kön, där en ny väntande körning ersätter den som väntar
+  (#884). En tryckning på domen kunde då ersätta en väntande kedja. I `kuvos-ny-kandidat` går steget i den andra kön.
+- Rött vid datumspärren, som friktionens läsfråga. Förkastat: fristens bevis är ett grönt självtest i flödet före 31/3, och en röd
+  körning ser ut som ett fel.
+- Ett nytt namn på domfilen för varje körning, som friktionens. Förkastat: en andra körning kunde lägga en annan dom bredvid den första.
+  Med ett fast namn står den första domen.
+
+**Varför.** Förregistreringen säger att domen körs efter 31/3 2027 och att talen bara går till hinken. Steget gör det på samma sätt som
+kuvösens andra domar i flödet.
+
+**Stomdokument:** SYS 2 — stadsmiljöns dom i kuvos-ny-kandidat
