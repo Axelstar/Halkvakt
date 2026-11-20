@@ -4,11 +4,11 @@ import { apnsKropp, b64urlText, dodAdress, pemTillDer } from "../supabase/functi
 
 // DECISIONS #924: Apple får rubriken och texten, ingenting om föraren.
 test("app-push: kroppen bär rubrik, text, tråd och slag, och bara erbjudandet bär partner och länk", () => {
-  const k = JSON.parse(apnsKropp({ slag: "prov", rubrik: "Halkvakt", text: "Provnotis.", partner: "X", lank: "https://x.se" }));
+  const k = JSON.parse(apnsKropp({ slag: "prov", rubrik: "Halkvakt", text: "Provnotis.", partner: "X", lank: "https://example.com" }));
   assert.deepEqual(k, { aps: { alert: { title: "Halkvakt", body: "Provnotis." }, "thread-id": "halkvakt.prov" }, slag: "prov" });
-  const e = JSON.parse(apnsKropp({ slag: "erbjudande", rubrik: "R", text: "T", partner: "Däckverkstaden", lank: "https://exempel.se/a" }));
+  const e = JSON.parse(apnsKropp({ slag: "erbjudande", rubrik: "R", text: "T", partner: "Däckverkstaden", lank: "https://example.com/a" }));
   assert.deepEqual(e, { aps: { alert: { title: "R", body: "T" }, "thread-id": "halkvakt.erbjudande" }, slag: "erbjudande",
-    partner: "Däckverkstaden", lank: "https://exempel.se/a" });
+    partner: "Däckverkstaden", lank: "https://example.com/a" });
 });
 
 test("app-push: bara en adress som Apple säger är död tas bort", () => {
