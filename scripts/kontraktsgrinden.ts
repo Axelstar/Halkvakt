@@ -129,6 +129,10 @@ export function rapport(utfall: Utfall[]): boolean {
 // ── DE VAKTADE KONTRAKTEN ──────────────────────────────────────────────────────────────
 // Resans rapport: källan, dess två buntar och telefonernas två tvillingar (favoriterna steg 3a).
 const RAPPORTEN = /publish\/rapport-core\.ts$|functions\/favorit(?:er|prov)\/index\.ts$|HalkvaktEngine\/Rapport\.swift$|engine\/Rapport\.kt$/;
+// Halkorden före modden (DECISIONS #915): facit som döms eller räknas på orden de skrevs med — efterhalkans uppspelning (sql/028 och dess
+// mätfil), olycksfacit (084, 085, 095, 096, 108, 110) och säsongsfacit (099) — och sql/117, vars funktion sql/129 ersätter. Varje annan
+// kopia, också en ny, ska bära motorns ord.
+const HALKORD_FORE_915 = /^(?:sql\/(?:028|084|085|095|096|099|108|110|117)_|scripts\/matningar\/uppspelning-varianter\.sql$)/;
 
 export const KONTRAKT: Kontrakt[] = [
   // ── HEALTHCHECKENS TRÖSKLAR (kort #87). PERMANENTA — läs den här raden innan du rör dem.
@@ -321,9 +325,22 @@ export const KONTRAKT: Kontrakt[] = [
     // desamma tecken för tecken; "fläckvis Våt" får aldrig matcha på delsträngen 'is'.
     former: [/SLIPPERY_INFO\s*=\s*\/\(\?<!\[a-zåäö\]\)\(([^)]+)\)/,
               /HALKORD\s*=\s*"([^"]+)"/,
-              /~\* '\(\^\|\[\^a-zåäö\]\)\(([^)]+)\)'/],
-    // Länssidorna (#458) säger "halt" med motorns ord: publish/lanssidor.ts och publicera-bunten som bär den.
-    golv: 7,
+              /~\* '\(\^\|\[\^a-zåäö\]\)\(([^)]+)\)'/,
+              // Kotlin och Swift sedan 20/11 (#915): telefonernas motorer, som strängar. Vektorerna låser beteendet, formen orden.
+              /"\(\?<!\[a-zåäö\]\)\(([^)]+)\)"/],
+    // Länssidorna (#458) säger "halt" med motorns ord: publish/lanssidor.ts och publicera-bunten som bär den. Vägens hala tid läses
+    // i sql/129, som ersätter sql/117:s definition (#915). Facit på orden före modden står i nästa kontrakt.
+    filer: new RegExp(`^(?!${HALKORD_FORE_915.source.slice(1)})`),
+    golv: 11,
+  },
+  {
+    // DECISIONS #915: modden följde inte med hit. Facit som döms eller räknas på de ord de skrevs med ändras på Bengts ord (och
+    // Axels för KB-B), i en ny migration, inte i förbifarten — och de ska fortfarande vara samma ord sinsemellan.
+    namn: "Halkorden före modden — facit på orden de skrevs med, och sql/117",
+    varfor: "Olycksfacit, säsongsfacit och efterhalkans uppspelning läser motorns ord som de var före #915. Driver en av dem räknar facit på olika ord.",
+    former: [/~\* '\(\^\|\[\^a-zåäö\]\)\(([^)]+)\)'/],
+    filer: HALKORD_FORE_915,
+    golv: 12,
   },
   {
     // Kort #97 (16/9): snö och frost räknas även INUTI sammansättningar ("Nysnö", "Rimfrost"). Egen lista,

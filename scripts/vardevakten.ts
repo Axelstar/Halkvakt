@@ -37,6 +37,10 @@
 // Helt läsande. Run: DATABASE_URL=... node --experimental-strip-types scripts/vardevakten.ts [dagar=30]
 // Självtest utan DB: scripts/vardevakten.ts --sjalvtest
 
+// The engine's own halkord (DECISIONS #915): every road-state word in VAGLAGSORD below carries the engine's answer, and an unknown
+// word is reported with it, so the reader sees both questions at once — has a person read the word, and does it make the voice speak.
+import { SLIPPERY_INFO, SLIPPERY_STAM } from "../engine/src/engine.ts";
+
 const MIN_RADER = 100;        // under detta får fältet ingen dom, bara ett tal
 // DOMINANSEN SKÄRPT efter första körningen (DECISIONS #134). Första regeln var "ett värde över
 // 5 % i ett fält med många distinkta" — den flaggade `rain_sum_mm` (0 i 58 %), `snow_wateq_mm`
@@ -219,6 +223,21 @@ export const SPANN: Record<string, [number, number, string]> = {
  *  kunna bära en tröskel, så de får en egen kategori i stället för att tigas ihjäl. */
 export const IDFALT = new Set(["id", "event_id", "area_id", "warning_id", "camera_id", "segment_id"]);
 
+/** THE ROAD STATE'S WORDS AND THE ENGINE'S ANSWER (DECISIONS #915; Bengt 20/11: "gör en koppling mellan de olika"). Two lists answer two
+ *  questions: ORD.condition_info below answers "has a person read this word?", the engine's SLIPPERY_INFO/SLIPPERY_STAM answer "does
+ *  this word make the voice speak on Normalt (code 1)?". They stay two, bound here: each word that stands in the list carries the
+ *  engine's answer, and test/halkorden.test.ts runs the engine over every word and fails when an answer differs. So a new word gets
+ *  both answers before it stands in the list, and a change of the engine's words shows up as a word whose answer moved. */
+export type Halt = "halt" | "inte halt";
+export const VAGLAGSORD: Record<string, Halt> = {
+  "torrt": "inte halt", "våt": "inte halt", "fläckvis våt": "inte halt", "fläckvis torrt": "inte halt",
+  "is": "halt", "fläckvis is": "halt", "is med bart i hjulspår": "halt", "fläckvis is med bart i hjulspår": "halt",
+  "lössnö": "halt", "fläckvis lössnö": "halt", "packad snö": "halt", "fläckvis packad snö": "halt",
+  "moddig vägbana": "halt", "fläckvis moddig vägbana": "halt", "moddsträngar": "halt", "fläckvis moddsträngar": "halt",
+};
+/** What the engine does with a road-state word on its own (code 1): the same test as engine.ts evaluateSegment. */
+export const motornsSvar = (ord: string): Halt => (SLIPPERY_INFO.test(ord) || SLIPPERY_STAM.test(ord) ? "halt" : "inte halt");
+
 /** ORDLISTOR (körlistan B3, 17/11 2026). Ett textfält som är en KODLISTA och bär en mätning deklareras här med varje ord det får
  *  innehålla, i gemener. Ett ord utanför listan är OKÄNT ORD och ett hinder, av samma skäl som ett tal utanför spannet: koden som
  *  läser fältet vet inte vad ordet betyder. `precipitation` är skälet att listan finns: "no" betyder torrt, och Boolean("no") är
@@ -232,13 +251,18 @@ export const ORD: Record<string, { ord: string[]; not: string }> = {
   // Trafikverkets egna fält på väglaget (sql/116, DECISIONS #897): textlistor, ett ord per element. Orden är de som fanns 17/11
   // (#890, 818 sträckor). Rutan visar dem ordagrant, så ett ord utanför listan ska läsas av en människa innan det står kvar där.
   // Åtgärden (trv_atgard) är fri text med tidsfönster och ingen kodlista.
-  trv_varning: { ord: ["risk för halka", "hal vägbana", "snörök"], not: "Trafikverkets varning på sträckan (Warning). Visas ordagrant, avgör inget" },
+  // Snödrev kom 20/11 (värdevakten 44692577425, läst ur driften 44695667709; Bengt 20/11: "De okända orden bör läggas till i ordlistan").
+  trv_varning: { ord: ["risk för halka", "hal vägbana", "snörök", "snödrev"], not: "Trafikverkets varning på sträckan (Warning). Visas ordagrant, avgör inget" },
   // Snöfall och smältvatten kom redan den första timmen i drift (17/11 kl. 15 UTC): listan från morgonen var inte hela ordförrådet.
-  trv_orsak: { ord: ["regn", "fallande temperatur", "frost", "snöfall", "smältvatten"], not: "Trafikverkets orsak till väglaget (Cause). Visas ordagrant, avgör inget" },
+  // Underkylt regn kom 20/11, samma läsning som Snödrev.
+  trv_orsak: { ord: ["regn", "fallande temperatur", "frost", "snöfall", "smältvatten", "underkylt regn"], not: "Trafikverkets orsak till väglaget (Cause). Visas ordagrant, avgör inget" },
   // The road state's word list, where the rule and K2a in the moisture shadow read Våt (sql/091, sql/127; halkvakt-kuvos F74 §5). Only the
-  // words the repo has seen in the archive are here (docs/TILL-AXEL-HALKORDEN.md, 21/2–25/8 2026). The winter's words have not been read
-  // from here: each one is an OKÄNT ORD until a person has read it in the value guard's output and added it.
-  condition_info: { ord: ["torrt", "våt", "fläckvis våt", "fläckvis torrt"],
+  // words the repo has seen in the archive are here (docs/TILL-AXEL-HALKORDEN.md, 21/2–25/8 2026), and since 20/11 the winter's words: the
+  // value guard 44692577425 named them as OKÄNT ORD, and every distinct word in road_conditions and 60 days of road_condition_history was
+  // read from drift (DB-knappen 44695667709; Bengt 20/11: "De okända orden bör läggas till i ordlistan"). The winter's words are ice,
+  // snow and slush. They are declared here only so that the field passes the guard: the rule and K2a still read Våt alone. The words and
+  // the engine's answer for each live in VAGLAGSORD above (#915).
+  condition_info: { ord: Object.keys(VAGLAGSORD),
     not: "Trafikverkets väglagsord på sträckan (ConditionInfo), en textlista. Våt är fukten i regeln och i fuktskuggans K2a; fläckvis Våt räknas inte" },
   // The moisture shadow's own codes (sql/127). The areas and layers are the four switches in sql/089.
   status: { ord: ["räknad", "tyst", "av"], not: "fuktskuggans körning: räknad, tyst (kandidatens timme saknas) eller av (alla brytare av)" },
@@ -323,13 +347,15 @@ export type Falt = {
 export type Dom = { utfall: "OK" | "OBESIKTIGAT" | "UTANFÖR SPANN" | "SENTINEL?" | "OKÄNT ORD" | "ID" | "–"; varfor: string };
 
 export type OrdFalt = { tabell: string; kolumn: string; rader: number; varden: { ord: string; n: number }[] };
-/** Domen för en kodlista i text: varje ord ska stå i den deklarerade ordlistan, oavsett versaler. */
+/** Domen för en kodlista i text: varje ord ska stå i den deklarerade ordlistan, oavsett versaler. Ett okänt väglagsord (condition_info)
+ *  bär motorns svar, så att den som läser ser båda frågorna på en gång (#915). */
 export function domaOrd(f: OrdFalt): Dom {
   const d = ordFor(f.tabell, f.kolumn);
   if (!d) return { utfall: "OBESIKTIGAT", varfor: "ingen deklarerad ordlista — får inte bära en mätning" };
   if (f.rader < MIN_RADER) return { utfall: "–", varfor: `${f.rader} rader, kräver ${MIN_RADER}` };
   const okanda = f.varden.filter((v) => !d.ord.includes(v.ord.toLowerCase()));
-  if (okanda.length) return { utfall: "OKÄNT ORD", varfor: `${okanda.slice(0, 5).map((v) => `"${v.ord}" (${v.n})`).join(", ")} står inte i ordlistan` };
+  const svar = (ord: string) => (f.kolumn === "condition_info" ? `; motorn: ${motornsSvar(ord)}` : "");
+  if (okanda.length) return { utfall: "OKÄNT ORD", varfor: `${okanda.slice(0, 5).map((v) => `"${v.ord}" (${v.n}${svar(v.ord)})`).join(", ")} står inte i ordlistan` };
   return { utfall: "OK", varfor: d.not };
 }
 
@@ -418,7 +444,14 @@ if (korsSjalv && process.argv.includes("--sjalvtest")) {
   k("ett ord utanför listan fälls", domaOrd(o("precipitation", [["no", 9000], ["hail", 3]])).utfall, "OKÄNT ORD");
   k("väglagsklassens ord passerar", domaOrd(o("condition_text", [["Normalt", 600], ["Besvärligt (risk för)", 180]])).utfall, "OK");
   k("Trafikverkets varningar från 17/11 passerar", domaOrd(o("trv_varning", [["Risk för halka", 154], ["Hal vägbana", 2], ["Snörök", 1]])).utfall, "OK");
-  k("en varning som inte har setts förut fälls", domaOrd(o("trv_varning", [["Risk för halka", 154], ["Snödrev", 4]])).utfall, "OKÄNT ORD");
+  k("en varning som inte har setts förut fälls", domaOrd(o("trv_varning", [["Risk för halka", 154], ["Översvämning", 4]])).utfall, "OKÄNT ORD");
+  k("vinterns varning och orsak 20/11 passerar", domaOrd(o("trv_varning", [["Risk för halka", 154], ["Snödrev", 9]])).utfall === "OK"
+    && domaOrd(o("trv_orsak", [["Snöfall", 142], ["Underkylt regn", 16]])).utfall === "OK", true);
+  k("vinterns väglagsord 20/11 passerar", domaOrd(o("condition_info", [["Våt", 431], ["fläckvis Is med bart i hjulspår", 55], ["Lössnö", 145],
+    ["fläckvis Moddsträngar", 64], ["Packad snö", 20]])).utfall, "OK");
+  k("ett väglagsord utanför listan fälls", domaOrd(o("condition_info", [["Våt", 431], ["Spårslitage", 12]])).utfall, "OKÄNT ORD");
+  k("ett okänt väglagsord bär motorns svar (#915)", domaOrd(o("condition_info", [["Våt", 431], ["Spårslitage", 12], ["Snömodd", 3]])).varfor,
+    `"Spårslitage" (12; motorn: inte halt), "Snömodd" (3; motorn: halt) står inte i ordlistan`);
   k("Trafikverkets orsaker från 17/11 passerar", domaOrd(o("trv_orsak", [["Fallande temperatur", 71], ["Regn", 34], ["Frost", 18], ["Snöfall", 14], ["Smältvatten", 1]])).utfall, "OK");
   k("odeklarerad kodlista är obesiktigad", domaOrd(o("ny_kodlista_2027", [["a", 9000]])).utfall, "OBESIKTIGAT");
   k("för få rader ger ingen dom för en ordlista", domaOrd(o("precipitation", [["hail", 3]])).utfall, "–");

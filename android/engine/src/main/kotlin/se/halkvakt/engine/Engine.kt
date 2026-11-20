@@ -170,7 +170,8 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
     private var lastKandidatT: Double? = null
     private val fired = HashMap<String, Pair<Double, Double>>() // id -> (t, odometerM)
 
-    private val slipperyInfo = Regex("(?<![a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt)", RegexOption.IGNORE_CASE)
+    // Mirrors engine.ts SLIPPERY_INFO, word start; modd (slush) since 20/11, DECISIONS #915, vectors v61–v63.
+    private val slipperyInfo = Regex("(?<![a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt|modd)", RegexOption.IGNORE_CASE)
     // Snow/frost also count inside compounds — "Nysnö", "Rimfrost" (kort #97). Mirrors engine.ts SLIPPERY_STAM.
     private val slipperyStam = Regex("(snö|frost)", RegexOption.IGNORE_CASE)
 

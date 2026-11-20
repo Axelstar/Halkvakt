@@ -728,6 +728,46 @@ const scenarios: Scenario[] = [
     hazards: [smavag("smv:v1", 0, -1800, 10800, [4500])],
     trace: southTrace(240, 80, 9000),
   },
+  {
+    file: "v61_modd_moddstrangar_kod1", name: "Moddsträngar på kod 1 talar: modden är halka (#915)",
+    description:
+      "Bengt 20/11: 'lägg till ordet modd'. Ett kod 1-segment (Trafikverket: Normalt) vars enda ConditionInfo-ord är " +
+      "'Moddsträngar', som Trafikverket skrev i drift 20/11 och som inget halkord fångade. Ordbörjan modd ⇒ halka på vägen " +
+      "framför vid t=61 (655 m). Samma geometri som v24:s w1, 2 011 m fram: förvarningen är 665,9 m, närmaste provpunkt " +
+      "framför låg 677,0 m bort vid t=60 och 654,8 m vid t=61, alltså 11,1 m på var sida (5-metersregeln, uppmätt med motorns " +
+      "haversine och provpunkter 20/11).",
+    hazards: [{
+      id: "m1_moddstrangar", kind: "slippery_segment", line: [[LON0 - 0.01, northOf(2011)], [LON0 + 0.01, northOf(2011)]],
+      meta: { code: 1, info: ["Moddsträngar"] },
+    }],
+    trace: northTrace(100, 80),
+  },
+  {
+    file: "v62_modd_flackvis_moddig_vagbana_kod1", name: "fläckvis Moddig vägbana på kod 1 talar (#915)",
+    description:
+      "Som v61 med 'fläckvis Moddig vägbana', också det läst ur driften 20/11. Modd står efter ett mellanslag, så ordbörjan " +
+      "håller efter fläckvis, och 'is' inuti 'fläckvis' är fortfarande inget halkord (v24). Halka vid t=61 (655 m), samma " +
+      "marginaler som v61.",
+    hazards: [{
+      id: "m2_flackvis_moddig", kind: "slippery_segment", line: [[LON0 - 0.01, northOf(2011)], [LON0 + 0.01, northOf(2011)]],
+      meta: { code: 1, info: ["fläckvis Moddig vägbana"] },
+    }],
+    trace: northTrace(100, 80),
+  },
+  {
+    file: "v63_modd_inte_halt_kod1_tiger", name: "Väglagsorden som inte är halt tiger på kod 1 (#915)",
+    description:
+      "Fyra kod 1-segment med de fyra väglagsord som värdevakten (scripts/vardevakten.ts) klassar som inte halt: Torrt, Våt, " +
+      "fläckvis Torrt och fläckvis Våt, 1 km isär. Inget bär modd eller ett annat halkord, och 'is' inuti 'fläckvis' fångas " +
+      "inte ⇒ tystnad. Den skarpa fällan för modd vore 'modd' inuti ett ord, men Trafikverket har inget sådant ord: ordbörjan " +
+      "är densamma för alla halkord och prövas här av fläckvis-orden.",
+    hazards: ([
+      ["n1_torrt", "Torrt", 2011], ["n2_vat", "Våt", 3011], ["n3_flackvis_torrt", "fläckvis Torrt", 4011], ["n4_flackvis_vat", "fläckvis Våt", 5011],
+    ] as [string, string, number][]).map(([id, info, m]): Hazard => ({
+      id, kind: "slippery_segment", line: [[LON0 - 0.01, northOf(m)], [LON0 + 0.01, northOf(m)]], meta: { code: 1, info: [info] },
+    })),
+    trace: northTrace(260, 80),
+  },
 ];
 
 /** Canonical replay-with-updates — the reference all three test runners mirror. */

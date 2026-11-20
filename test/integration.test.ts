@@ -1007,12 +1007,14 @@ test("#156 serverns halkfilter: kod 1 med mycket besvärligt och halkigt når mo
       `('${id}', 1, 'Normalt', ARRAY['${info}'], ST_SetSRID(ST_MakeLine(ST_MakePoint(${x}, 61.0), ST_MakePoint(${x + 0.01}, 61.01)), 4326))`;
     await pool.query(`INSERT INTO road_conditions (segment_id, condition_code, condition_text, condition_info, geom) VALUES
       ${seg("H156_MB", "Mycket besvärligt", 16.1)}, ${seg("H156_HK", "Halkigt", 16.2)},
-      ${seg("H156_FV", "fläckvis Våt", 16.3)}, ${seg("H156_HB", "Halkbekämpning", 16.4)}
+      ${seg("H156_FV", "fläckvis Våt", 16.3)}, ${seg("H156_HB", "Halkbekämpning", 16.4)},
+      ${seg("H156_MS", "Moddsträngar", 16.5)}, ${seg("H156_FM", "fläckvis Moddig vägbana", 16.6)}
       ON CONFLICT (segment_id) DO UPDATE SET condition_code = 1, condition_info = EXCLUDED.condition_info,
         deleted = false, end_time = NULL, geom = EXCLUDED.geom`);
     const { liveDoc } = await buildSnapshot(async (t, p) => (await pool.query(t, p as any[])).rows, []);
     const inne = liveDoc.segments.map((s) => s.id).filter((id) => id.startsWith("H156_")).sort();
-    assert.deepEqual(inne, ["H156_HK", "H156_MB"], "mycket besvärligt och halkigt in; fläckvis Våt och Halkbekämpning ute");
+    // Modden (DECISIONS #915) samma dag som i motorn, så att Moddsträngar på kod 1 når telefonen.
+    assert.deepEqual(inne, ["H156_FM", "H156_HK", "H156_MB", "H156_MS"], "mycket besvärligt, halkigt och modden in; fläckvis Våt och Halkbekämpning ute");
   } finally { await pool.end(); }
 });
 
@@ -4637,7 +4639,9 @@ test("#896 publiceringens byggtid: sparad ur svaren, och avbrottsvillkoret mot v
 //   HS9   normal nu, hal förut                                         HS10  raderad nu
 //   HS11  raderad emellan: raderingen bryter det hala läget            HS12  exakt 24 timmar → inte ny     HS13  strax under → ny
 //   HS16  två normala rader med halt emellan: den senaste gäller
+//   HS17  hal på ordet Moddsträngar fast klassen är Normalt          HS18  fläckvis Moddig vägbana är halt (DECISIONS #915)
 // Samma fixturer läses också som de stod 48 timmar före T (uppspelningen): då gäller historiken, inte nuläget.
+// Funktionen prövas i sin nuvarande definition: sql/129 (modden, #915) ersätter sql/117:s, och körs här efter den.
 test("#897 vägens hala tid: när läget började, om början är känd, höjningen och vad som är nytt", { skip: !url }, async () => {
   const { default: pg } = await import("pg");
   const pool = new pg.Pool({ connectionString: url, max: 1 });
@@ -4651,7 +4655,8 @@ test("#897 vägens hala tid: när läget började, om början är känd, höjnin
   };
   try {
     if (!(await q("SELECT to_regclass('road_condition_history') AS t")).rows[0].t) await q(fil("001_init.sql"));
-    await q(fil("117_vaglag_hal_sedan.sql")); await q(fil("117_vaglag_hal_sedan.sql"));   // filen tål att köras två gånger
+    await q(fil("117_vaglag_hal_sedan.sql"));
+    await q(fil("129_vaglag_hal_sedan_modd.sql")); await q(fil("129_vaglag_hal_sedan_modd.sql"));   // filen tål att köras två gånger
     assert.equal((await q("SELECT proconfig FROM pg_proc WHERE proname = 'vaglag_hal_sedan'")).rows[0].proconfig, null,
       "en sql-funktion får ingen SET-klausul (CLAUDE.md)");
     await stad();
@@ -4674,6 +4679,8 @@ test("#897 vägens hala tid: när läget började, om början är känd, höjnin
       HS12: { hist: [[-100, 1, N], [-24, 2, ["Våt"]]] },
       HS13: { hist: [[-100, 1, N], [-1439 / 60, 2, ["Våt"]]] },
       HS16: { hist: [[-300, 1, N], [-250, 2, ["Våt"]], [-200, 1, N], [-100, 2, ["Våt"]]] },
+      HS17: { hist: [[-30, 1, N], [-10, 1, ["Moddsträngar"]]] },
+      HS18: { hist: [[-30, 1, N], [-12, 1, ["fläckvis Moddig vägbana"]]] },
     };
     for (const [id, s] of Object.entries(STRACKOR)) {
       for (const [h, kod, ord, raderad] of s.hist)
@@ -4695,6 +4702,7 @@ test("#897 vägens hala tid: när läget började, om början är känd, höjnin
         HS1: [-5, true, null, true], HS11: [-50, true, null, false], HS12: [-24, true, null, false], HS13: [-23.98, true, null, true],
         HS16: [-100, true, null, false], HS2: [-200, true, null, false], HS3: [-400, false, null, false], HS4: [-200, true, -6, true],
         HS5: [-200, true, -200, false], HS6: [-0.5, true, null, true], HS7: [-10, true, null, true],
+        HS17: [-10, true, null, true], HS18: [-12, true, null, true],
       },
       fore_48h: {
         HS10: [-100, false, null, false], HS11: [-50, true, null, true], HS16: [-100, true, null, false], HS2: [-200, true, null, false],
@@ -4715,13 +4723,14 @@ test("#897 vägens hala tid: när läget började, om början är känd, höjnin
     await q("DELETE FROM road_condition_history WHERE segment_id = 'HS15'"); await q("DELETE FROM road_conditions WHERE segment_id = 'HS15'");
 
     // Motproven: ett villkor i taget ur filen. Varje mutant ska ge ett annat svar än VANTAT, och raden säger vilka sträckor som fällde den.
-    const RIKTIG = fil("117_vaglag_hal_sedan.sql");
+    const RIKTIG = fil("129_vaglag_hal_sedan_modd.sql");
     const MUTANTER: [string, string, string][] = [
       ["den första raden i det hala läget, inte den senaste", "SELECT min(h.modified_time) AS t FROM road_condition_history h", "SELECT max(h.modified_time) AS t FROM road_condition_history h"],
       ["under 24 timmar, inte upp till och med", "(vid - coalesce(forsta.t, a.tid) < interval '24 hours')", "(vid - coalesce(forsta.t, a.tid) <= interval '24 hours')"],
       ["höjningen räknas som ny", " OR coalesce(vid - hojd.t < interval '24 hours', false)", ""],
       ["höjningen gäller bara Mycket besvärligt", "WHERE a.kod = 3) hojd ON true", "WHERE a.kod >= 2) hojd ON true"],
-      ["ordgränsen: fläckvis Våt är inte is", "'(^|[^a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt)'", "'(is|halka|halkrisk|halkig|halt|mycket besvärligt)'"],
+      ["ordgränsen: fläckvis Våt är inte is", "'(^|[^a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt|modd)'", "'(is|halka|halkrisk|halkig|halt|mycket besvärligt|modd)'"],
+      ["modden är halt (#915)", "|mycket besvärligt|modd)'", "|mycket besvärligt)'"],
       ["stammarna snö och frost", " OR i ~* '(snö|frost)'", ""],
       ["en raderad rad bryter det hala läget", "AND NOT (NOT h.deleted AND (h.condition_code >= 2", "AND NOT (true AND (h.condition_code >= 2"],
       ["nuläget gäller före historiken", "WHERE c.modified_time <= vid\n", "WHERE false\n"],
