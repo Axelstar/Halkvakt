@@ -3383,3 +3383,9 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   Värdevaktens väglagsord står i `VAGLAGSORD` med motorns svar, och `test/halkorden.test.ts` fäller när ett svar skiljer sig från
   motorns. Olycksfacit, säsongsfacit och efterhalkans uppspelning står kvar på de gamla orden, med frågor i bedömningens §4.2.
   Inte i drift: sql/129 med DB-knappen, deployen av publicera och skuggmotor och nästa bygge av apparna återstår.
+- 20/11 (Claude; Bengt: *"Ja, i den ordningen"*): **Modd som halkord i drift** (DECISIONS #915). Android-flödet på grenen 44707942446: Kotlin-motorn
+  klarar vektorerna, och emulatorn är grön; iPhone-motorn 44702273507. PR #1712 ihopslagen (66e9b951), sql/129 med DB-knappen (44708944428),
+  publicera (44709073003) och skuggmotor (44709200579) deployade från main, och kartrepots startsida (halkvakt-karta PR 35, 19610a08).
+  Första publiceringen efter deployen, 09.20 UTC (halkvakt-karta 6b1998ff): live.json:s sha256 står i manifestet. 152 sträckor har modd i
+  väglaget, och ingen av dem blev ny hal, eftersom alla redan var hala på koden eller ett annat halkord (läsläget 44709437239). Kvar:
+  nya appbyggen, och frågorna om olycksfacits A1, säsongsfacits F1 och KB-B i bedömningen §4.2.
