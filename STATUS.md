@@ -3437,3 +3437,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   §9.5 punkt 8): både A1 och K, bara A1, bara K, ett annat lager och inget, för veckan och säsongen. Läst i panelen 20/11 före bygget:
   vid de halkkopplade olyckorna sedan 6/11 varnade båda vid 29, bara A1 vid 42 och bara K vid 18 av 144. Kvar: deploy och
   veckoärendet 23/11.
+- 20/11 (Claude; Bengt: *"Ja, och deploya"*): **Överlappet i olycksfacit i drift** (DECISIONS #925). PR #1733 sammanslagen som
+  b2d8e8b0; funktionen olycksfacit deployad 17.52 UTC (deploy-supabase 44787291291 ur b2d8e8b0). Beviset är veckoärendet 2026-V47
+  måndag 23/11 (frist olycksfacit-overlappet-2026-11-23): en körning med ?torrt=1 kräver nyckeln och görs inte härifrån.
