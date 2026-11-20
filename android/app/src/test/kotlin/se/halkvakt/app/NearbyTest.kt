@@ -24,6 +24,14 @@ class NearbyTest {
         assertTrue(l[0].distM < 100.0)
         assertEquals(HazardKind.ICING_POINT, l[1].kind)
     }
+    @Test fun dryOrWarmStationIsNotListed() {
+        // Axels startsida 20/11 (DECISIONS #922): Oxie +2,4 och Svedala +1,2, båda torra, stod som frysrisk.
+        val torr = PointHazard("i2", HazardKind.ICING_POINT, 18.07, 59.33, meta = PointMeta(surfaceTempC = 2.4, moisture = false))
+        val kallTorr = PointHazard("i3", HazardKind.ICING_POINT, 18.07, 59.33, meta = PointMeta(surfaceTempC = -2.0, moisture = false))
+        val l = Nearby.nearest(listOf(torr, kallTorr, ice), lon = 18.06, lat = 59.33)
+        assertEquals(1, l.size)
+        assertEquals("+0,4° och vått", l[0].secondary)
+    }
     @Test fun humanSecondaries() {
         assertEquals("+0,4° och vått", Nearby.secondary(ice))
         assertEquals("80 km/h", Nearby.secondary(cam))

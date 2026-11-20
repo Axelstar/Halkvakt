@@ -21,6 +21,7 @@ struct VaktenView: View {
     // Kort #659: kartan Nära dig, Planera en resa och den planerade resan med avresetid.
     @State private var plan = Resplan.shared
     @State private var plats: (lon: Double, lat: Double)?
+    @State private var valdFara: String?   // DECISIONS #922: faran föraren tryckt på
     @State private var visaPlanera = false
     @State private var visaPlan = false
     @Environment(\.scenePhase) private var fas
@@ -210,15 +211,24 @@ struct VaktenView: View {
         return nara.isEmpty ? "Inget inom sex mil just nu. \(start)" : start
     }
 
+    /// Ett tryck väljer faran, ett tryck till på samma eller bredvid kartan släpper den.
+    private func valj(_ id: String?) { valdFara = id == valdFara ? nil : id }
+
     /// Kartan, de närmaste farorna och antalet fartkameror inom sex mil.
     private func naraDig(_ nara: [NearbyItem]) -> some View {
         let kameror = harPlats.map { p in
             guardM.hazards.filter { Self.arKamera($0) && Nearby.distanceM($0, lon: p.lon, lat: p.lat) <= Nearby.maxM }.count
         } ?? 0
         return VStack(alignment: .leading, spacing: 0) {
-            NaraDigKarta(faror: guardM.hazards, plats: harPlats)
+            NaraDigKarta(faror: guardM.hazards, plats: harPlats, valt: valdFara) { valj($0) }
             // Sagt där kartan står (DECISIONS #872): kartbilderna hämtas från Apple.
             MonoLabel(text: "Kartan kommer från Apple", color: Brand.faint).padding(.top, 8).padding(.horizontal, 4)
+            // Faran föraren tryckt på, på kartan eller i listan (DECISIONS #922). Försvinner den ur läget försvinner kortet.
+            if let fara = guardM.hazards.first(where: { $0.id == valdFara }) {
+                FaraKort(fara: fara, distM: harPlats.map { Nearby.distanceM(fara, lon: $0.lon, lat: $0.lat) },
+                         lagetFran: guardM.lagetFran)
+                    .padding(.top, 12)
+            }
             MonoLabel(text: harPlats == nil ? "Halkan i landet just nu" : "Nära dig just nu")
                 .padding(.top, 16).padding(.bottom, 10).padding(.horizontal, 4)
             if harPlats == nil {
@@ -230,7 +240,9 @@ struct VaktenView: View {
             } else {
                 RowPanel {
                     ForEach(Array(nara.enumerated()), id: \.element.id) { i, item in
-                        NearbyRow(item: item, divider: i < nara.count - 1)
+                        Button { valj(item.id) } label: { NearbyRow(item: item, divider: i < nara.count - 1) }
+                            .buttonStyle(.plain)
+                            .accessibilityHint(item.id == valdFara ? "Döljer kortet om faran" : "Visar mer om faran")
                     }
                 }
             }
