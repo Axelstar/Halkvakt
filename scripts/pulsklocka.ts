@@ -47,6 +47,11 @@ const NYA: { namn: string; schema: string; fil: string }[] = [
   { namn: "puls-live-morgon", schema: "50 4 * * *", fil: "halkvakt-live.yml" },
   { namn: "puls-live-lunch", schema: "50 10 * * *", fil: "halkvakt-live.yml" },
   { namn: "puls-live-kvall", schema: "50 15 * * *", fil: "halkvakt-live.yml" },
+  // DECISIONS #918: dagslägets inlägg ritas 30 min före passet och väntar som utkast, som admin.halkvakt.se kan
+  // ändra eller slänga; passen ovan postar det. ~1 min per körning.
+  { namn: "puls-live-utkast-morgon", schema: "20 4 * * *", fil: "halkvakt-utkast.yml" },
+  { namn: "puls-live-utkast-lunch", schema: "20 10 * * *", fil: "halkvakt-utkast.yml" },
+  { namn: "puls-live-utkast-kvall", schema: "20 15 * * *", fil: "halkvakt-utkast.yml" },
   // Kort #281 (Axel 17/10, DECISIONS #627): larmen — SMHI-varning och höstens första — när det händer, inte vid nästa pass.
   // :07 och :37, sju minuter efter publicera (:00/:30) som skriver lan.json; minuterna är lediga i databasens klocka.
   // Inget larm ⇒ körningen slutar efter koll-steget (~20 s), inget installeras eller committas.
@@ -118,7 +123,7 @@ const NYA: { namn: string; schema: string; fil: string }[] = [
 // avaktiveras eller raderas ska larma, inte tyst falla ur bevakningslistan. Vakthunden kör i Deno
 // hos Supabase och kan inte importera den här filen, så talet är en KOPIA — kontraktsgrinden vaktar
 // att kopiorna bär samma värde, och raden under vaktar att värdet stämmer med listan ovan.
-const ANTAL_NYA = 34;
+const ANTAL_NYA = 37;
 if (NYA.length !== ANTAL_NYA) {
   console.error(`NYA har ${NYA.length} jobb men ANTAL_NYA säger ${ANTAL_NYA} — uppdatera båda, och vakthundens PULS_GOLV.`);
   process.exit(1);
