@@ -3460,3 +3460,10 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 20/11 (Claude; Bengt: *"Ja, och deploya"*): **Överlappet i olycksfacit i drift** (DECISIONS #925). PR #1733 sammanslagen som
   b2d8e8b0; funktionen olycksfacit deployad 17.52 UTC (deploy-supabase 44787291291 ur b2d8e8b0). Beviset är veckoärendet 2026-V47
   måndag 23/11 (frist olycksfacit-overlappet-2026-11-23): en körning med ?torrt=1 kräver nyckeln och görs inte härifrån.
+- 20/11 (Claude): **Tre provnotiser med ett erbjudande gick till fel telefon** (utskick 6–8 i `push_utskick`, 20:44–20:47 UTC). Frågan
+  valde *den senast uppdaterade raden med notisadress och erbjudanden* i stället för Axels rad. När en annan telefon med testbygget
+  sparade sin adress 20:39 UTC blev den raden nyast. Notiserna sade själva att de var prov, och länken gick till halkvakt.se. Proven
+  1–4 nådde Axel bara för att hans rad då var den enda med adress. Rättat: ett prov riktas med telefonens eget nummer (det som står
+  under *Din data*), aldrig med *den senaste*. Utskick 9 gick till Axels rad. Före: sql/132 skrev länkens regel med en upprepning
+  Postgres inte tar, och det första erbjudandet föll; sql/133 (PR #1744, dbknapp 44813984790) bytte regeln. Läxan för båda: lägg en
+  provrad och läs VEM den gick till innan något sägs vara i drift.
