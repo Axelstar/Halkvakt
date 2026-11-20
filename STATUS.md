@@ -3433,3 +3433,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 20/11 (Claude): **iPhone 0.4.1 (63) uppladdad till TestFlight** från main 1ecb0ce (körning 44783383194; PR #1732 ihopslagen):
   frysrisken på startsidan enligt röstens regel och tryckbara faror på kartan (DECISIONS #922). Före: ios-engine (44779944608),
   android (44781512371), ci och TestFlight-provet (44779939989) gröna på grenen. Inte prövat på en telefon.
+- 20/11 (Claude; Bengt: *"Ja, bygg det"*): **Olycksfacits veckoärende visar lagren tillsammans** (DECISIONS #925, TROSKLAR-OLYCKSFACIT
+  §9.5 punkt 8): både A1 och K, bara A1, bara K, ett annat lager och inget, för veckan och säsongen. Läst i panelen 20/11 före bygget:
+  vid de halkkopplade olyckorna sedan 6/11 varnade båda vid 29, bara A1 vid 42 och bara K vid 18 av 144. Kvar: deploy och
+  veckoärendet 23/11.

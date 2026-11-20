@@ -18761,3 +18761,22 @@ Bygget är 0.4.1 (63). Inte prövat på en telefon när beslutet skrivs.
 en rad per station inom sex mil dränker dem. En rörlig karta med Apples egna märken: den går inte att färga om (#876).
 
 **Stomdokument:** APP 4 — listan och kartan Nära dig och kortet om en vald fara; FAV — inga ändringar i rapporten som redan följde regeln
+
+## #925 (20/11 2026) Olycksfacits veckoärende visar lagren tillsammans: både A1 och K, bara A1, bara K (TROSKLAR-OLYCKSFACIT §9.5 punkt 8)
+
+**Beslutet.** Bengt 20/11: *"Ja, bygg det"*, på frågan om veckans olycksärende ska få överlappet mellan lagren som en egen tabell. Vid de
+halkkopplade olyckorna (TYDLIG och TROLIG) visar ärendet för veckan och säsongen hur många där Trafikverkets väglag (A1) och kandidaten
+(K) varnade på samma plats, bara A1, bara K, varken A1 eller K men ett annat lager, och inget lager. Raderna utesluter varandra och
+summerar till de halkkopplade.
+
+**Varför.** Ärendet visade bara antalet per lager (*A1 varnade vid N, K vid N, A2 vid N*). Det visar inte hur mycket kandidaten tillför
+utöver Trafikverkets väglag, och det var Bengts fråga. Uppgifterna fanns redan i `olycksfacit_lager`: ingen ny fångst och ingen
+migration.
+
+**Det som är byggt.** `overlappRader()` och tabellen i `veckaKropp()` i `supabase/functions/olycksfacit/arende.ts`, med ett prov i
+`test/olycksfacit-arende.test.ts` som tre motprov fäller. Ärendet bär bara antal, som förut (§9.5, *Publikt*). Säljregeln (§9.6) gäller
+oförändrad: ett enskilt fall anförs aldrig utan säsongens andel bredvid.
+
+**Alternativ.** En egen läsning i panelen när frågan kommer, utan ärende. Det hade inte synts vecka för vecka.
+
+**Stomdokument:** MAT 3 — olycksfacits veckoärende

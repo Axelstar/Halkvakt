@@ -218,6 +218,23 @@ const NAMNARE: [string, (o: Olycka) => boolean][] = [
   ["INTE, varmt", (o) => o.klass === "INTE" && o.skal !== "vilt"],
 ];
 
+/** §9.5 punkt 8 (Bengt 20/11, DECISIONS #925): vid de halkkopplade olyckorna, om Trafikverkets väglag (A1) och kandidaten (K) varnade
+ *  på samma plats eller bara den ena. Raderna utesluter varandra och täcker alla, så de summerar till de halkkopplade. */
+const OVERLAPP: [string, (t: string[]) => boolean][] = [
+  ["Både A1 och K", (t) => t.includes("A1") && t.includes("K")],
+  ["Bara A1", (t) => t.includes("A1") && !t.includes("K")],
+  ["Bara K", (t) => t.includes("K") && !t.includes("A1")],
+  ["Varken A1 eller K, men ett annat lager", (t) => !t.includes("A1") && !t.includes("K") && t.length > 0],
+  ["Inget lager", (t) => t.length === 0],
+];
+
+export function overlappRader(veckans: Olycka[], sasong: Olycka[]): string[] {
+  const n = (x: Olycka[], f: (t: string[]) => boolean) => x.filter((o) => f(o.talade)).length;
+  return ["| Lagren vid starten | Veckan | Säsongen | Andel av säsongen |", "| :-- | --: | --: | --: |",
+    ...OVERLAPP.map(([namn, f]) => `| ${namn} | ${n(veckans, f)} | ${n(sasong, f)} | ${procent(n(sasong, f), sasong.length)} |`),
+    `| **Summa** | ${veckans.length} | ${sasong.length} | ${procent(sasong.length, sasong.length)} |`];
+}
+
 export function veckaKropp(vecka: string, fran: string, till: string, veckans: Olycka[], sasong: Olycka[],
                            lasdagar: ReadonlySet<string> = new Set()): string {
   const egna = veckans.filter((o) => !o.dubblett);
@@ -243,6 +260,11 @@ export function veckaKropp(vecka: string, fran: string, till: string, veckans: O
     "",
     `**Lagren vid de halkkopplade olyckorna** (TYDLIG och TROLIG, ${halk.length}): ` +
       LAGER.map((l) => `${l} varnade vid ${halk.filter((o) => o.talade.includes(l)).length}`).join(", ") + ".",
+    "",
+    "**Lagren tillsammans** vid de halkkopplade olyckorna (TROSKLAR-OLYCKSFACIT §9.5 punkt 8): om Trafikverkets väglag (A1) och " +
+      `kandidaten (K) varnade på samma plats eller bara den ena. *Bara K* är där kandidaten varnade och väglaget inte. Säsongen sedan ${FORSTA_DAG}.`,
+    "",
+    ...overlappRader(halk, sHalk),
     "",
     "**Nämnaren** (TROSKLAR-OLYCKSFACIT §11): hur ofta Halkvakt varnade, per klass. Det är inte en träffsäkerhet, men det visar var " +
       "varningarna hamnar.",
