@@ -3443,3 +3443,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   delens saknas-rad är nederbördstypen ovanpå radarn (kort #45).
 - 20/11 (Claude): **Frågan om erbjudanden har ny, kortare text och lovar inget antal** (DECISIONS #923, kort #674; Axels ord). Bygget
   är 0.4.1 (64), inte uppladdat: det följer med nästa uppladdning.
+- 20/11 (Claude): **Utskicket av notiser byggt till provet** (DECISIONS #924, kort #674): Axel skapade APNs-nyckeln och lade den som
+  hemlighet; sql/131 `push_utskick`, funktionen `app-push`, och appen skickar notisadressen efter ja och tillåtna notiser. Bygget är
+  0.4.1 (65). Inte byggt: regeln, Android och hur *Aldrig när du kör* hålls.

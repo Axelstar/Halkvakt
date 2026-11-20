@@ -441,6 +441,7 @@ struct RootView: View {
 
 @main
 struct HalkvaktApp: App {
+    @UIApplicationDelegateAdaptor(Appdelegat.self) private var delegat
     @State private var prefs = Prefs.shared
     @Environment(\.scenePhase) private var scenePhase
 

@@ -18800,3 +18800,27 @@ Bygget är 0.4.1 (64), inte uppladdat när beslutet skrivs. integritet.html näm
 för hela appen, men binder oss vid ett tal som bara kan höjas genom att fråga igen. Axel valde friheten.
 
 **Stomdokument:** APP — valet om erbjudanden i platsdelningen
+
+## #924 (20/11 2026) Utskicket av notiser: nyckeln hos Apple, adressen från telefonen och en kö som bara SQL kan fylla (kort #674)
+
+**Beslut** (Axel 20/11: *"lets do 3 so we can keep building"*; han skapade nyckeln hos Apple och lade den som hemlighet samma kväll).
+- **Nyckeln.** En APNs-nyckel för laget, för både provmiljön och driften, ligger som hemligheten `APNS_KEY_P8` hos Supabase. Nyckelns
+  id och lagets id är inga hemligheter och står i koden. Nyckelfilen finns bara hos Axel och hos Supabase, aldrig i repot.
+- **Adressen.** Har föraren sagt ja till platsdelningen och tillåtit notiser ber appen Apple om en notisadress och skickar den med
+  raden till `app-enhet` (fältet `token`, som servern tar emot sedan #917). *Din data* visar om en adress är sparad, och *Radera min
+  data* tar bort den och avregistrerar appen hos Apple. Som resten av platsdelningen: bara i TestFlight (#918).
+- **Kön.** Tabellen `push_utskick` (sql/131) bär ett utskick per rad: till en telefon (provet), en kommun eller ett län, med slaget
+  prov, varning eller erbjudande. Funktionen `app-push` tar inte emot något: den läser de öppna raderna, skickar genom Apple och
+  skriver antalet skickade och fallna på raden. Ett utskick kan bara läggas med SQL och tjänsterollen, så anropet är öppet utan att
+  någon utomstående kan skicka något. Ett erbjudande går bara till den som valt erbjudanden. En adress som Apple säger är död tas
+  bort. Ingen rad per telefon sparas: det finns ingen logg över vem som fått vad.
+- **Apple får** notisadressen, rubriken och texten. Aldrig id, kommun eller val.
+- **Inte byggt:** regeln för när en varning ska gå (Bengts), Android (FCM), och hur *Aldrig när du kör* (#923) hålls. Servern vet
+  inte om föraren kör, och en vanlig notis visas ändå. Det måste lösas innan ett erbjudande eller en varning skickas till förare.
+
+Bygget är 0.4.1 (65).
+
+**Alternativ.** En hemlighet i anropet i stället för en kö: någon måste då bära hemligheten, och ett läckt värde räcker för att
+skicka till alla. Firebase också för iPhone: ett led till som får adresserna, utan nytta förrän Android byggs.
+
+**Stomdokument:** APP — notisadressen i platsdelningen; SYS — tabellen push_utskick och funktionen app-push
