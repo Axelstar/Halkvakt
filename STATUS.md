@@ -3454,3 +3454,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   var öppen, visades inte: appen kastar notiser i förgrunden. Fyra val står i bedömningens §4.2 innan något skickas till förare.
 - 20/11 (Claude): **Notisens tryck och bladet för erbjudanden** (DECISIONS #926, kort #674): varningen öppnar startsidan och visas
   också med appen öppen, erbjudandet öppnar ett blad med partnerns namn och länk; sql/132. Bygget är 0.4.1 (66).
+- 20/11 kväll (Claude; Bengt: *"Jag tycker att kartan ska rita punkterna"*): **Livekartan ritar storstädernas punkter** (DECISIONS #927). `publish/map-core.ts`
+  lägger varje varnande stadspunkt som en punkt i `kandidat.geojson`, och halkvakt-karta ritar dem i Prognos-färgen. Provat i
+  webbläsarpanelen mot en kopia av kvällens data med stadspunkterna inlagda (107 ritade i vyn, knappen slår av och på). Kvar:
+  sammanslagningen, deployen av publicera och kartrepots PR.

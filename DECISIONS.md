@@ -18845,3 +18845,26 @@ väljs på kartan.
 **Alternativ.** Länken direkt ur notisen: föraren hamnar hos partnern utan att ha sett att det var ett erbjudande eller från vem.
 
 **Stomdokument:** APP — notisens tryck och bladet för erbjudanden; SYS — slaget och partnerns länk i push_utskick
+
+## #927 (20/11 2026) Livekartan och startsidan ritar storstädernas punkter, som punkter i Prognos-färgen
+
+**Beslutet.** Bengt 20/11: *"Jag tycker att kartan ska rita punkterna"*, efter frågan varför så lite var markerat som halka på Stockholms kommunala gator. Varje varnande
+stadspunkt (storstäderna B och C, DECISIONS #804) ritas i `data/kandidat.geojson` som en punkt där den står, med `stad: true`, och
+karta.html och startsidan ritar den i Prognos-färgen. Punkterna följer Prognos-knappen, och ett tryck visar *Halka framöver, modellerat,
+inte uppmätt*.
+
+**Varför.** Kartan ritade kandidaten som bitar längs Trafikverkets sträckor, och en stadsgrupp har ingen sträcka. Punkterna räknades
+som *ritas inte*: 20/11 18.00 UTC varnade appen på 31 stadspunkter i sydvästra Stockholm, och kartan ritade 3 742 av 3 773
+prognospunkter, alltså inga av dem. Kartan visade därmed färre varningar än appen gav.
+
+**Det som är byggt.**
+- `publish/map-core.ts`: `STADSGRUPP` (sql/089:s `^[BC]-`). Stadspunkterna går inte till frågan om bitar och ritas också när frågan
+  faller. `meta.kandidat` får `stad`, och `ritade` räknar dem.
+- Provet i `test/map-core.test.ts`, som fyra motprov fäller. `supabase/functions/publicera/index.ts` är buntad om.
+- I halkvakt-karta: lagret `kandidat-stad` i karta.html, med ruta, knapp och klickordning, och punkterna på startsidan.
+
+**Inte ändrat.** Vad appen säger, regeln och brytarna. Kartan visar bara det appen redan har i lägesfilen.
+
+**Alternativ.** Att rita en bit längs stadens gata. Det kräver gatornas linjer, som inte finns i databasen.
+
+**Stomdokument:** SYS — livekartan ritar storstädernas punkter

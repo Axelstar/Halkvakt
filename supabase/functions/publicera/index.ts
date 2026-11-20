@@ -2302,7 +2302,7 @@ export const STATION_LAN_SQL = `
                       WHERE NOT rc.deleted AND rc.geom IS NOT NULL ORDER BY rc.geom <-> w.geom LIMIT 1) n
   WHERE n.lan IS NOT NULL AND ST_DWithin(n.geom::geography, w.geom::geography, 20000)`;
 
-/** Storstädernas grupper i kandidatens segment_id (sql/089: grupp ~ '^[BC]-'). De ritas som punkter (DECISIONS #926). */
+/** Storstädernas grupper i kandidatens segment_id (sql/089: grupp ~ '^[BC]-'). De ritas som punkter (DECISIONS #927). */
 export const STADSGRUPP = /^[BC]-/;
 
 /** Kandidatens bitar av vägen (DECISIONS #579): $1 sträckor, $2 lon, $3 lat — en rad per punkt. Exporterad för integrationsprovet. */
@@ -2439,7 +2439,7 @@ export async function buildMapData(q: Q, opts: {
   // (de ligger cirka 2 km isär), aldrig hela sträckan: i morse 16/10 hade 807 km sträcka 232 km varnande väg. Metrarna räknas i
   // SWEREF 99 TM (3006), inte i grader, så att en bit blir 2 km oavsett vägens riktning. En punkt mer än 300 m från sin sträckas linje
   // ritas inte (räknas som utanför). Brytaren av ⇒ appKandidat saknas ⇒ tom fil och meta.kandidat.pa = false. Fail-soft med not.
-  // STORSTÄDERNAS PUNKTER (DECISIONS #804, #926; Bengt 20/11: "Jag tycker att kartan ska rita punkterna"): en grupp (sql/089, B- eller
+  // STORSTÄDERNAS PUNKTER (DECISIONS #804, #927; Bengt 20/11: "Jag tycker att kartan ska rita punkterna"): en grupp (sql/089, B- eller
   // C-) har ingen sträcka i Trafikverkets väglag att lägga en bit längs, så varje varnande stadspunkt ritas som en punkt, där den står,
   // utan väg och utan längd. De går inte till frågan, och de ritas också när frågan faller.
   const kandidatMeta = { pa: opts.appKandidat !== undefined, strackor: 0, punkter: 0, ritade: 0, km: 0, stad: 0, tid: null as string | null };
