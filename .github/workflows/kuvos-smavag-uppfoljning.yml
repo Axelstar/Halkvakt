@@ -9,6 +9,8 @@ name: kuvos-smavag-uppfoljning
 #   radarkollen       prognosens nederbörd mot radarn, ur skuggans underlag (fysik/ny_kandidat/smavag_radarkoll.py i det privata repot);
 #   driftkontrollen   röstens regel mot stationernas mätning, ur P-II:s dygnsfiler (fysik/ny_kandidat/rosten_drift.py). Den är SPÄRRAD
 #                     tills posten 16/11 i marsförregistreringens §14 är signerad av Bengt och Axel: före det hämtas ingen dygnsfil.
+#                     Radarn kring stationerna (sql/131, DECISIONS #924) läggs varje dygn i hinken (radar_station_<dygn>.json.gz), och
+#                     driftkontrollen räknar röstens hela fukt, N3 eller radarn, först när posten 20/11 är signerad; före det är radarn spärrad.
 # Rapporten går bara till den privata hinken (uppfoljning_<dygn>.json och .md, och rosten_drift_<dygn>.json): loggen säger bara vilka
 # delar som är klara och driftkontrollens ord per region (#768, #498). Ligger driftkontrollen över larmgränsen i en region får Bengt
 # ett ärende, utan tal. Avstängningen är Bengts och Axels beslut, med sql/107. Samma dygn skrivs aldrig två gånger.
@@ -93,6 +95,18 @@ jobs:
             elif [ "$K" != 3 ]; then echo "::error::radarkollen föll: $(tail -1 radar.log | cut -c1-200)"; exit 1; fi
           fi
 
+          # 2b. Radarn vid stationerna (sql/131, DECISIONS #924): dygnets fil ur databasen till hinken, och de två dygnen före om de
+          #     saknas där. Databasen gallrar efter fyra dygn, och en skriven fil skrivs aldrig om. Filen är indata och läggs oavsett
+          #     spärren; driftkontrollen läser den först när posten 20/11 i förregistreringen är signerad. Ett fel här stoppar inget.
+          for B in 2 1 0; do
+            DAG=$(date -u -d "$D -$B days" +%Y-%m-%d)
+            set +e; h finns "$HINK/radar_station_$DAG.json.gz"; F=$?; set -e
+            if [ "$F" = 0 ]; then continue; elif [ "$F" != 3 ]; then echo "::error::hinken svarade inte"; exit 1; fi
+            set +e; node --experimental-strip-types scripts/smavag-uppfoljning.ts radarn "$DAG" "radar_station_$DAG.json.gz" > radarn.log 2>&1; F=$?; set -e
+            if [ "$F" = 0 ]; then h ladda "radar_station_$DAG.json.gz" "$HINK/radar_station_$DAG.json.gz" --finns-ok || { echo "::error::radarn vid stationerna gick inte till hinken"; exit 1; }
+            elif [ "$F" != 3 ]; then echo "::warning::radarn vid stationerna: dygnet $DAG gick inte att läsa ur databasen"; fi
+          done
+
           # 3. Driftkontrollen. Spärren prövas INNAN någon dygnsfil hämtas: utan båda signaturerna läses ingenting.
           STN=-; LAGE=fel
           set +e; python3 fysik/ny_kandidat/rosten_drift.py --sparren > sparr.log 2>&1; K=$?; set -e
@@ -105,11 +119,17 @@ jobs:
               hamta_om "$P2/p2_$DAG.csv.gz" "p2/p2_$DAG.csv.gz" || continue
               hamta_om "$P2/p2_sammanfattning_$DAG.json" "p2/p2_sammanfattning_$DAG.json" || true
             done
+            # Radarns dygnsfiler för fönstret och timmen före det (posten 20/11). rosten_drift.py läser dem bara när posten är signerad.
+            mkdir -p rs
+            for B in $(seq 9 -1 0); do
+              DAG=$(date -u -d "$D -$B days" +%Y-%m-%d)
+              hamta_om "$HINK/radar_station_$DAG.json.gz" "rs/radar_station_$DAG.json.gz" || true
+            done
             # De två dygnen före som saknar sin fil räknas ikapp (dygnsfilen kom efter den morgonens körning); sedan dygnet självt.
             for B in 2 1 0; do
               DAG=$(date -u -d "$D -$B days" +%Y-%m-%d)
               if [ "$B" != 0 ]; then set +e; h finns "$HINK/rosten_drift_$DAG.json"; F=$?; set -e; [ "$F" = 3 ] || continue; fi
-              set +e; python3 fysik/ny_kandidat/rosten_drift.py provning --dygn "$DAG" --dygnsfiler p2 --ut "rosten_drift_$DAG.json" --over "over_$DAG.txt" \
+              set +e; python3 fysik/ny_kandidat/rosten_drift.py provning --dygn "$DAG" --dygnsfiler p2 --radar rs --ut "rosten_drift_$DAG.json" --over "over_$DAG.txt" \
                 > "drift_$DAG.log" 2>&1; K=$?; set -e
               grep -h '^driftkontrollen ' "drift_$DAG.log" | tail -1 | tee -a "$GITHUB_STEP_SUMMARY" || true
               if [ "$K" = 0 ]; then h ladda "rosten_drift_$DAG.json" "$HINK/rosten_drift_$DAG.json" --finns-ok || { echo "::error::driftkontrollen gick inte till hinken"; exit 1; }; fi
@@ -136,7 +156,7 @@ jobs:
           h ladda "uppfoljning_$D.json" "$HINK/uppfoljning_$D.json" || { echo "::error::rapporten gick inte till hinken"; exit 1; }
           if [ -s "over_$D.txt" ]; then echo "OVER=$(sed 's/soder/söder/' "over_$D.txt" | paste -sd ' ')" >> "$GITHUB_ENV"; fi
           echo "PA=$(psql "$DATABASE_URL" -At -c 'select coalesce(bool_or(pa), false) from smavagsbrytare')" >> "$GITHUB_ENV"
-          rm -rf u p2 tid db.json radar.json rosten_drift_*.json over_*.txt uppfoljning_*.json uppfoljning_*.md
+          rm -rf u p2 rs tid db.json radar.json radar_station_*.json.gz rosten_drift_*.json over_*.txt uppfoljning_*.json uppfoljning_*.md
       - name: Ärendet om driftkontrollen
         if: ${{ env.OVER != '' }}
         shell: bash
