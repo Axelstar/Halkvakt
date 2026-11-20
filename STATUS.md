@@ -3369,6 +3369,10 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   självtestet grönt, stannade vid datumspärren. Fristerna `stadsmiljon-marsfonstret` och `stadsmiljon-domsteget` klara och borttagna.
   Värdevakten fann också, utanför byggena: radarns `rate_max_mmh` 205,05 över 200 mm/h i radar_precip och radar_smavag, en byvind
   83,5 över 60 m/s, och okända ord i väglaget (bland annat *fläckvis Is med bart i hjulspår*, *Lössnö*, *Underkylt regn*).
+- 19/11 (Claude; i chatten: *"ja tack försök laga flikarna för appen och annonserna"*): **Statistikens flikar Appen och Annonser** (DECISIONS #905, kort #670).
+  `sql/118` tog bort nycklarna `apple_ads`, `appen` och `annonstratten` ur `besok_stat` 18/11; `sql/125` lägger tillbaka dem, provad i
+  en lokal Postgres 16 (067–102, 118, 119, 125 två gånger: nycklarna borta efter 118, tillbaka efter 125, oförändrat vid omkörning).
+  Provet `test/besok-stat-nycklar.test.ts`. Kvar: sammanslagningen och migrationen 125 med DB-knappen, sedan flikarna lästa live.
 - 20/11 (Claude; Bengt: *"De okända orden bör läggas till i ordlistan"*): **Vinterns ord i värdevaktens ordlistor.** Väglaget (condition_info) får
   tolv ord om is, snö och modd, varningen *snödrev* och orsaken *underkylt regn*, lästa ur driften (DB-knappen 44695667709). Regeln och
   K2a läser fortfarande bara *Våt*. Radarns rate_max_mmh (spärrad sedan #134, #161) och byvinden (de nio trasiga givarna, #166,
