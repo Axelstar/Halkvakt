@@ -1,6 +1,18 @@
-# STADENS GATOR — TILLFÄLLIG REKOGNOSERING PÅ GRENEN (tas bort innan PR:en är klar).
+# STADENS GATOR (DECISIONS #935; Bengt 21/11: "Bygg linjer"): linjerna som kartan ritar storstädernas varningar längs. scripts/stadsgator-hamta.ts
+# läser elementen ur kuvösens driftlista (bara den filen läggs ovanpå, med läsnyckeln) och hämtar deras linjer ur Trafikverkets öppna API
+# (NVDB, licens CC0). Läget prov hämtar och räknar och lägger linjerna som artefakt; databasen nås inte (ingen DATABASE_URL i jobbet).
+# Läget skriv gör samma hämtning och upsertar i stadsgata (sql/135). Knapp, inte cron: elementen ändras bara när punktfilen gör det.
+# Nyckeln delas med driftens ingest; skriptet håller ~2 förfrågningar/s. Loggen bär bara antal och avstånd, aldrig id, lägen eller särdrag.
 name: stadsgator
 on:
+  workflow_dispatch:
+    inputs:
+      lage:
+        description: "prov (hämtar och räknar, linjerna som artefakt, rör inte databasen) eller skriv (upsert i stadsgata)"
+        type: choice
+        options: [prov, skriv]
+        default: prov
+  # TILLFÄLLIG: provet på grenen innan flödet ligger på main. Tas bort i nästa commit.
   push:
     branches: [claude/stadens-linjer]
     paths: [.github/workflows/stadsgator.yml]
@@ -10,9 +22,11 @@ concurrency: { group: stadsgator, cancel-in-progress: false }
 jobs:
   hamta:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
+    # Telias rot (11/11, #1518): Trafikverkets API kedjar till en rot som Nodes lista saknar. Samma fil och samma prov som ingest.yml.
     env:
       NODE_EXTRA_CA_CERTS: ${{ github.workspace }}/ingest/ca/telia-rsa-tls-root-ca-v3.pem
+      LAGE: ${{ inputs.lage || 'prov' }}
     steps:
       - uses: actions/checkout@v4
       - name: Telias rot, fingeravtrycket
@@ -20,15 +34,25 @@ jobs:
           openssl x509 -in ingest/ca/telia-rsa-tls-root-ca-v3.pem -noout -fingerprint -sha256 \
             | grep -qx 'sha256 Fingerprint=D1:3D:B1:29:4C:45:EB:C6:FC:86:C6:BB:F6:9F:A2:9B:DF:E6:92:DF:F7:C7:13:C2:43:C7:A9:56:C6:A2:28:4C' \
             || { echo "::error::Telias rot i ingest/ca har ett annat fingeravtryck"; exit 1; }
+      # Driftens lista ligger i det privata repot (DECISIONS #768, #804): bara den filen läggs ovanpå, inte koden eller punktfilen.
       - uses: actions/checkout@v4
         with: { repository: Axelstar/halkvakt-kuvos, ref: claude/stadens-linjer, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
-      - name: Driftens lista ur det privata repot (bara den filen)
+      - name: Driftens lista ur det privata repot
         run: mkdir -p kuvos && cp .kuvos-privat/kuvos/stadspunkter-drift-2026-27.json kuvos/ && rm -rf .kuvos-privat
       - uses: actions/setup-node@v4
-        with: { node-version: 22 }
-      - name: Rekognoseringen
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - name: Självtestet
         shell: bash
-        env: { TRAFIKVERKET_API_KEY: "${{ secrets.TRAFIKVERKET_API_KEY }}" }
+        run: node --experimental-strip-types scripts/stadsgator-hamta.ts --sjalvtest 2>&1 | grep -v ExperimentalWarning
+      - name: Hämtningen (${{ env.LAGE }})
+        shell: bash
+        env:
+          TRAFIKVERKET_API_KEY: "${{ secrets.TRAFIKVERKET_API_KEY }}"
+          DATABASE_URL: "${{ inputs.lage == 'skriv' && secrets.DATABASE_URL || '' }}"
         run: |
           set -o pipefail
-          node --experimental-strip-types scripts/stadsgator-hamta.ts rekognosering 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+          { echo '```'; node --experimental-strip-types scripts/stadsgator-hamta.ts "$LAGE"; echo '```'; } 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: env.LAGE == 'prov'
+        with: { name: stadsgator-prov, path: stadsgator-ut/, retention-days: 3, if-no-files-found: error }
