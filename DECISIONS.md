@@ -18761,3 +18761,29 @@ Bygget är 0.4.1 (63). Inte prövat på en telefon när beslutet skrivs.
 en rad per station inom sex mil dränker dem. En rörlig karta med Apples egna märken: den går inte att färga om (#876).
 
 **Stomdokument:** APP 4 — listan och kartan Nära dig och kortet om en vald fara; FAV — inga ändringar i rapporten som redan följde regeln
+
+## #923 (20/11 2026) Småvägsröstens påslag när 0.4.1 är ute, senast 27/11, och Claude slår av på testarnas svar (körlistan C5, B6, B8; kort #647)
+
+**Beslutet.** Bengt 20/11: *"ja till a och b"*, och samma dag *"Axel säger ja"*, på två frågor om påslaget:
+1. **Påslaget (A).** Claude kör `sql/113` med DB-knappen när 0.4.1 finns i App Store och i Google Play (iPhone bygge 58 eller senare, Android 58),
+   men senast 27/11 även om de inte gjort det (frist `smavag-paslaget-2026-11-27`). Efter 27/11 godtas alltså 0.4.0 hos de förare som
+   inte uppdaterat, och det är körlistans B8-ord. Referensen för byggtiden väntas inte in för sig; den når sju dygn 24/11.
+2. **Avstängaren (B).** Claude slår av rösten med `sql/107` när villkoret i #833 är uppfyllt: minst 10 facitsvar om småvägsrösten under
+   en vecka, och mer än hälften *inte halt*. Bengt får beskedet efteråt. Claude räknar bara antalet svar, i Supabase-panelen, och skriver
+   aldrig enskilda svar eller talen i repot, en logg eller ett ärende (#498). Villkoret prövas när en session körs.
+
+**Varför vänta på 0.4.1.** 0.4.1 tiger 30 minuter och 20 km efter ett småvägsbesked (#863). 0.4.0 tiger 10 minuter och 5 km, och i
+backtesten upprepade den då samma väder i mer än hälften av beskeden. Skuggan räknar med 30 minuter och 20 km, så avbrottet för takten
+(#833) ser inte de extra beskeden hos 0.4.0. Servern kan inte skicka beskedet bara till 0.4.1: det finns ingen versionsspärr.
+
+**Läget vid beslutet.**
+- Vakterna i `sql/113` är lästa 20/11 med DB-knappens läsläge (44723373125): alla fyra uppfyllda, båda brytarna av.
+- 0.4.1 (58) bär taket (c28ecfc3 ingår i bygget 176bc07). Axel har samma dag laddat upp iPhone (59)–(62) till TestFlight
+  (DECISIONS #918–#921), och taket finns i alla.
+- iPhone är uppladdad till TestFlight (testflight 44713779362), och Androids AAB för produktionen är byggd (android 44713805826,
+  `betatest=false`). Inget flöde skickar in till Apples granskning eller laddar upp till Google Play: det gör Axel.
+
+**Alternativen som inte valdes:** att slå på genast med 0.4.0 hos alla förare; att vänta på 0.4.1 utan sista dag; att Bengt eller Axel
+slår av på testarnas svar.
+
+**Stomdokument:** MAT 5 — småvägsröstens påslag och avbrottet på testarnas svar, BED §4.2
