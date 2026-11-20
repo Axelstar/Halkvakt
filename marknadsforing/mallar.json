@@ -1,0 +1,48 @@
+{
+  "lank.facebook": { "grupp": "Gemensamt", "namn": "Länkraden, Facebook", "text": "Läget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan", "falt": {} },
+  "lank.instagram": { "grupp": "Gemensamt", "namn": "Länkraden, Instagram (X-texten slutar före den här raden)", "text": "Läget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.", "falt": {} },
+  "app.facebook": { "grupp": "Gemensamt", "namn": "Appraden, Facebook", "text": "Halkvakt säger till med rösten innan du är där. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784", "falt": {} },
+  "app.instagram": { "grupp": "Gemensamt", "namn": "Appraden, Instagram", "text": "Halkvakt säger till med rösten innan du är där. Gratis för iPhone, länken finns i vår profil.", "falt": {} },
+  "oberoende": { "grupp": "Gemensamt", "namn": "Oberoende-raden (DECISIONS #610)", "text": "Halkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från {kalla}.", "falt": { "kalla": "källan, t.ex. Trafikverkets öppna data" } },
+  "taggar.forst": { "grupp": "Gemensamt", "namn": "Taggarna först (länens taggar kommer efter)", "text": "#halka #väglag", "falt": {} },
+  "taggar.sist": { "grupp": "Gemensamt", "namn": "Taggen sist (DECISIONS #622)", "text": "#halkvakt", "falt": {} },
+  "fler": { "grupp": "Gemensamt", "namn": "Fler län än som får plats", "text": "Halka eller minusgrader även i {antal} län till.", "falt": { "antal": "antalet län som inte visas" } },
+  "x.svans": { "grupp": "Gemensamt", "namn": "Slutet på X-inlägget", "text": "Oberoende, inte en del av Trafikverket. Siffrorna från {kalla}. Appen och ditt län: länk i profilen.\n\n#halka #halkvakt", "falt": { "kalla": "källan" } },
+
+  "smhi.forsta": { "grupp": "Larm · SMHI-varning", "namn": "Första raden", "text": "SMHI har utfärdat en {niva} varning för {handelse} i {omrade}.", "falt": { "niva": "gul, orange eller röd", "handelse": "t.ex. snöfall", "omrade": "SMHI:s område" } },
+  "smhi.fler": { "grupp": "Larm · SMHI-varning", "namn": "Fler varningar (läggs efter första raden)", "text": "Det finns {varningar} till för snö eller halka.", "falt": { "varningar": "t.ex. 2 varningar" } },
+  "smhi.lage": { "grupp": "Larm · SMHI-varning", "namn": "Rubrik före länen", "text": "Halkläget kl. {tid}:", "falt": { "tid": "klockslaget" } },
+  "smhi.etikett": { "grupp": "Larm · SMHI-varning", "namn": "Bilden: etiketten", "text": "SMHI-varning", "falt": {} },
+  "smhi.rubrik": { "grupp": "Larm · SMHI-varning", "namn": "Bilden: rubriken", "text": "Varning för väglaget", "falt": {} },
+  "smhi.underrad": { "grupp": "Larm · SMHI-varning", "namn": "Bilden: raden under rubriken", "text": "Halkläget kl. {tid}", "falt": { "tid": "klockslaget" } },
+
+  "forsta.forsta": { "grupp": "Larm · Höstens första", "namn": "Första raden", "text": "{nar} kom höstens första {vad} i {lan}.", "falt": { "nar": "I natt, I dag eller I kväll", "vad": "halka, minusgrader på vägbanan eller båda", "lan": "länen" } },
+  "forsta.uppmaning": { "grupp": "Larm · Höstens första", "namn": "Uppmaningen", "text": "Kör efter väglaget, inte efter vanan.", "falt": {} },
+  "forsta.etikett": { "grupp": "Larm · Höstens första", "namn": "Bilden: etiketten", "text": "Höstens första", "falt": {} },
+  "forsta.rubrik.ett": { "grupp": "Larm · Höstens första", "namn": "Bilden: rubriken, ett län", "text": "Första {vad} i {lan}", "falt": { "vad": "halkan eller minusgraderna", "lan": "länet" } },
+  "forsta.rubrik.flera": { "grupp": "Larm · Höstens första", "namn": "Bilden: rubriken, flera län", "text": "Höstens första {vad}", "falt": { "vad": "halka, minusgrader på vägbanan eller båda" } },
+  "forsta.underrad": { "grupp": "Larm · Höstens första", "namn": "Bilden: raden under rubriken", "text": "{nar} · {datum}", "falt": { "nar": "i natt, i dag eller i kväll", "datum": "t.ex. fredag 6 november" } },
+
+  "forandring.forsta": { "grupp": "Dagsläge · Sedan i går", "namn": "Första raden", "text": "Trafikverket rapporterar halka på {nu} vägavsnitt, mot {igar} vid samma tid i går.", "falt": { "nu": "vägavsnitt med halka nu", "igar": "samma tid i går" } },
+  "forandring.nya": { "grupp": "Dagsläge · Sedan i går", "namn": "Nya län", "text": "Ny halka sedan i går: {lan}.", "falt": { "lan": "länen" } },
+  "forandring.etikett": { "grupp": "Dagsläge · Sedan i går", "namn": "Bilden: etiketten", "text": "Sedan i går", "falt": {} },
+  "forandring.rubrik": { "grupp": "Dagsläge · Sedan i går", "namn": "Bilden: rubriken", "text": "Halkan sprider sig", "falt": {} },
+  "forandring.underrad": { "grupp": "Dagsläge · Sedan i går", "namn": "Bilden: raden under rubriken", "text": "vägavsnitt med halka, mot samma tid i går", "falt": {} },
+
+  "kallaste.forsta": { "grupp": "Dagsläge · Höstens kallaste", "namn": "Första raden", "text": "{grader} °C på vägbanan vid {station} i {lan} kl. {tid}.", "falt": { "grader": "t.ex. −12,4", "station": "stationen", "lan": "länet", "tid": "klockslaget" } },
+  "kallaste.andra": { "grupp": "Dagsläge · Höstens kallaste", "namn": "Andra raden", "text": "Det är höstens kallaste vägbana hittills i Halkvakts mätningar. Förra lägsta var {forraGrader} °C vid {forraStation}.", "falt": { "forraGrader": "förra lägsta", "forraStation": "förra stationen" } },
+  "kallaste.etikett": { "grupp": "Dagsläge · Höstens kallaste", "namn": "Bilden: etiketten", "text": "Höstens kallaste", "falt": {} },
+  "kallaste.rubrik": { "grupp": "Dagsläge · Höstens kallaste", "namn": "Bilden: rubriken", "text": "Kallaste vägbanan i höst", "falt": {} },
+
+  "vecka.forsta": { "grupp": "Dagsläge · Veckan på vägarna", "namn": "Första raden", "text": "Veckan på vägarna: halka rapporterades {medHalka} av {dagar} dagar.", "falt": { "medHalka": "dagar med halka", "dagar": "dagar med mätningar" } },
+  "vecka.topp": { "grupp": "Dagsläge · Veckan på vägarna", "namn": "Dagen med mest halka", "text": "Mest halka {nar}: {vagavsnitt} vägavsnitt.", "falt": { "nar": "t.ex. i fredags", "vagavsnitt": "antalet" } },
+  "vecka.kallast": { "grupp": "Dagsläge · Veckan på vägarna", "namn": "Kallaste vägbanan", "text": "Kallast: {grader} °C på vägbanan vid {station} ({lan}) {nar}.", "falt": { "grader": "graderna", "station": "stationen", "lan": "länet", "nar": "t.ex. i fredags" } },
+  "vecka.etikett": { "grupp": "Dagsläge · Veckan på vägarna", "namn": "Bilden: etiketten", "text": "Veckan i halka", "falt": {} },
+  "vecka.rubrik": { "grupp": "Dagsläge · Veckan på vägarna", "namn": "Bilden: rubriken", "text": "Veckan på vägarna", "falt": {} },
+  "vecka.underrad": { "grupp": "Dagsläge · Veckan på vägarna", "namn": "Bilden: raden under rubriken", "text": "{medHalka} av {dagar} dagar med halka", "falt": { "medHalka": "dagar med halka", "dagar": "dagar med mätningar" } },
+
+  "svep.forsta": { "grupp": "Svepinlägget", "namn": "Första raden", "text": "Halkläget kl. {tid}, {datum}: {lage}. Svep för att se ditt län.", "falt": { "tid": "klockslaget", "datum": "t.ex. fredag 20 november", "lage": "t.ex. halka på 429 vägavsnitt i 16 län" } },
+  "svep.rubrik.morgon": { "grupp": "Svepinlägget", "namn": "Omslaget: rubriken före kl. 11", "text": "Halt i morse", "falt": {} },
+  "svep.rubrik.dag": { "grupp": "Svepinlägget", "namn": "Omslaget: rubriken kl. 11–17", "text": "Halt i dag", "falt": {} },
+  "svep.rubrik.kvall": { "grupp": "Svepinlägget", "namn": "Omslaget: rubriken efter kl. 17", "text": "Halt i kväll", "falt": {} }
+}

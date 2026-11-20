@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 // @ts-ignore — .mjs utan typer
-import { valjLan, rad, bildtext, rubrik, html } from "../marknadsforing/posta.mjs";
+import { valjLan, rad, bildtext, rubrik, html, attPosta, postasKl, m, sattMallar, textX as textXMall } from "../marknadsforing/posta.mjs";
 
 const l = (kort: string, halt: number, kalla: number, extra = {}) =>
   ({ kort, slug: kort.toLowerCase(), halt, vagavsnitt: 40, kalla, kallast: null, olyckor: 0, ...extra });
@@ -258,4 +258,37 @@ test("veckorad: sums the week's metrics and picks the most-viewed post (DECISION
   const rad = veckorad("2026-10-26T04:50:00Z", [p("1", 40, 2, 1, 0, 1), p("2", 120, 5, 2, 1, 0)]);
   assert.deepEqual(rad, { tid: "2026-10-26T04:50:00Z", inlagg: 2, visningar: 160, gillningar: 7, delningar: 4, svar: 1, basta: { id: "2", visningar: 120, text: "Rad 2" } });
   assert.equal(veckorad("2026-10-26T04:50:00Z", []).basta, null);
+});
+
+// Utkasten (DECISIONS #918): admin kan ändra texten eller slänga dagslägets inlägg innan passet går.
+test("utkastet: slängt postas inte, ändrad text vinner, utan rad gäller filen", () => {
+  const fil = { text: "fb", textIg: "ig" };
+  assert.equal(attPosta(fil, { status: "slangd", text: "x", text_ig: "y" }), null);
+  assert.deepEqual(attPosta(fil, { status: "vantar", text: "fb2", text_ig: "ig2" }), { text: "fb2", textIg: "ig2" });
+  assert.deepEqual(attPosta(fil, null), { text: "fb", textIg: "ig" });
+  assert.deepEqual(attPosta({ text: "fb" }, null), { text: "fb", textIg: "fb" });
+});
+
+test("utkastet postas på minut 50 i samma timme som det ritades", () => {
+  assert.equal(postasKl("2026-11-20T04:20:31.000Z"), "2026-11-20T04:50:00.000Z");
+});
+
+// Textmallarna (DECISIONS #919): admin kan skriva över standardtexterna i mallar.json.
+test("textmallarna: egen text vinner, fälten fylls i, okänt fält står kvar, och X hittar källan i en ändrad rad", () => {
+  assert.equal(m("fler", { antal: 3 }), "Halka eller minusgrader även i 3 län till.");
+  sattMallar({ fler: "Och {antal} län till {okand}." , oberoende: "Fristående. Källa: {kalla}!" });
+  try {
+    assert.equal(m("fler", { antal: 3 }), "Och 3 län till {okand}.");
+    const x = textXMall("Rad ett.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\n\nFristående. Källa: SMHI!");
+    assert.match(x, /Siffrorna från SMHI\./);
+  } finally { sattMallar({}); }
+  assert.equal(m("fler", { antal: 1 }), "Halka eller minusgrader även i 1 län till.");
+});
+
+test("textmallarna: varje fält i en standardtext är deklarerat, och varje mall har grupp och namn", () => {
+  const mallar = JSON.parse(readFileSync(new URL("../marknadsforing/mallar.json", import.meta.url), "utf8"));
+  for (const [k, v] of Object.entries(mallar)) {
+    assert.ok(v.grupp && v.namn && typeof v.text === "string", k);
+    for (const [, f] of v.text.matchAll(/\{(\w+)\}/g)) assert.ok(f in v.falt, `${k}: {${f}}`);
+  }
 });
