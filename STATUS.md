@@ -3477,3 +3477,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   sammanslagningen, deployen av publicera och kartrepots PR.
 - 20/11 (Claude): **TestFlight-bygget återkallar sitt eget certifikat** (DECISIONS #929; Axels ja): `scripts/asc-certifikat.mjs` och två
   steg i testflight.yml. Inte prövat: det visar sig vid nästa uppladdning. Fristen för Xcode 27, 1 mars 2027, står i fristerna.
+- 20/11 kväll (Claude; Bengt: *"Slå ihop o deploya"*): **Livekartan ritar storstädernas punkter, i drift** (DECISIONS #928).
+  Halkvakt PR #1742 som 79f96a73 och halkvakt-karta PR 39 som f4fa3ffe; publicera deployad 21.14 UTC (deploy-supabase
+  44818397022). Kartans data 22.30 (halkvakt-karta f4b645c6): meta.kandidat.stad 7 och ritade 4 560 av 4 560, sju punkter med
+  stad: true, samma sju som lägesfilens sex stadsgrupper. Projektkartans saknas-rad för storstäderna är struken med beviset.
