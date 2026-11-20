@@ -3486,3 +3486,5 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 20/11 (Claude): **Planerad resa sedd på Axels telefon i 0.4.1 (68)**, resan Malmö till Östermalm (hans inspelning): skärmen fungerar
   med riktiga data. Efter hans ord (DECISIONS #931): sträckorna börjar stängda, Övrigt på vägen öppnas rad för rad, och ortnamn
   på konturen skrivs inte över varandra. Bygget är 0.4.1 (69).
+- 20/11 (Claude): **iPhone 0.4.1 (69) uppladdad till TestFlight** från main ddb788d (körning 44824914600; PR #1752 ihopslagen): Planerad resa
+  börjar stängd och Övrigt på vägen öppnas rad för rad (DECISIONS #931). Inte prövat på en telefon.
