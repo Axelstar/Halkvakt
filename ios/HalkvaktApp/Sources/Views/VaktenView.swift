@@ -78,7 +78,7 @@ struct VaktenView: View {
             if spara { attSpara.padding(.top, 14) }
             if erbjud { erbjudKort.padding(.top, 14) }
             // DECISIONS #829: en gång, efter femte passet, och aldrig samtidigt som ett kort om resorna.
-            let tipsa = !spara && !erbjud && Tipsa.visaKortet(pass: prefs.vaktPass, dold: prefs.tipsaDold, vaktenKor: guardM.running)
+            let tipsa = Tipsa.kortetVisas && !spara && !erbjud && Tipsa.visaKortet(pass: prefs.vaktPass, dold: prefs.tipsaDold, vaktenKor: guardM.running)
             if tipsa { tipsaKort.padding(.top, 14) }
 
             // Kort #659: en planerad resa med avresetid står här tills sex timmar efter avresan.
@@ -136,7 +136,7 @@ struct VaktenView: View {
                 .multilineTextAlignment(.center).padding(.top, 8)
             // Löftet står i underrubriken när platsen saknas, annars här.
             if harPlats != nil {
-                Text("Din position skickas aldrig till Halkvakt av sig själv.")
+                Text(Platsord.lofte)
                     .font(Typo.sans(13)).foregroundStyle(Brand.faint).multilineTextAlignment(.center).padding(.top, 8)
             }
 
@@ -393,7 +393,7 @@ struct VaktenView: View {
     private var subtitle: String {
         // "skickas aldrig till Halkvakt av sig själv" — samma ord som Android, introduktionen och produktboken (DECISIONS #900, fråga 9):
         // "lämnar inte telefonen" (#320) blev osant med kartan från Apple (0.4.1), och "av sig själv" står kvar för betatestets facitsvar.
-        (wakes ? "Vakten vaknar själv när du kör. " : "") + "Din position skickas aldrig till Halkvakt av sig själv."
+        (wakes ? "Vakten vaknar själv när du kör. " : "") + Platsord.lofte
     }
 
     /// "HALKA · VILT · OLYCKOR · FRYSRISK · KAMEROR" — bara de källor som är på.

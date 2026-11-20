@@ -3395,6 +3395,38 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   läsläge (44723373125): alla fyra uppfyllda, båda brytarna av. 0.4.1 (58) bär taket 30 minuter och 20 km. Bengts ja: rösten slås på
   när 0.4.1 finns i App Store och i Google Play, men senast 27/11 (frist `smavag-paslaget-2026-11-27`), och Claude slår av på
   testarnas svar (#833) och meddelar Bengt. Axels svar väntar; beslutet skrivs i DECISIONS när det kommit.
-- 20/11 (Claude; Bengt: *"Axel säger ja"*): **Småvägsröstens påslag beslutat** (DECISIONS #919). Claude kör `sql/113` när 0.4.1 (58)
+- 20/11 (Claude; Axel: *"Ja börja bygga"*): **Platsdelningen, serverns del** (DECISIONS #917, kort #674). Appen ska skicka kommunen den
+  senast var i, med förarens ja, för notis före resan, statistik per län och erbjudanden som eget val. Byggt: `sql/130_app_enhet.sql`,
+  funktionen `app-enhet` och `test/app-enhet.test.ts`; migrationen körd två gånger mot en lokal Postgres 16. Inte i drift: migrationen
+  och deployen väntar på ett ord. Kvar: utskicket, apparna och orden. Tre frågor i bedömningen §4.2.
+- 20/11 (Claude; Axel: *"kör ihop och så vi kan testa det på testflight"*): **Platsdelningens server i drift** (DECISIONS #917, kort #674).
+  PR #1716 ihopslagen (283c14a), migrationen 130 med DB-knappen (44731913178) och `app-enhet` deployad (44732030982). Läst live: en giltig
+  rad gav 204 och stod i tabellen, en rad med position gav 400, DELETE gav 204 och tabellen var tom efteråt. Ingenting finns i TestFlight
+  än: apparna är inte byggda. Axel: alla sidor på sajten och i appen ska gås igenom så att orden stämmer; räkningen står på kortet.
+- 20/11 (Claude; Axel: *"Okej ja kör"*): **Platsdelningen i iPhone-appen, bara i TestFlight** (DECISIONS #918, kort #674). Frågan i två
+  steg, Din data under Integritet med *Radera min data*, och kommunen räknad i telefonen ur `data/kommuner/kommuner.json`. Bygget är
+  0.4.1 (59). Ett App Store-bygge frågar inte och skickar inget. Notiserna och Android är inte byggda. Kommungränsernas licens är inte
+  bekräftad. Inte prövat på en telefon.
+- 20/11 (Claude): **iPhone 0.4.1 (59) uppladdad till TestFlight** från main fa9031d (körning 44765599102; PR #1724 ihopslagen): platsdelningen
+  bara i TestFlight (DECISIONS #918, kort #674). Före uppladdningen: TestFlight-provet (44763704057, `ARCHIVE SUCCEEDED`) och ios-engine
+  (44765331686, 53 prov) gröna på grenen, och integritetssidan uppdaterad (halkvakt-karta PR 37, läst på halkvakt.se). Inte prövat på en telefon.
+- 20/11 (Claude; Axels inspelning av 0.4.1 (59) och *"detta måste vi få mycket mer inzoomat"*): **Kartan Nära dig zoomar in på det närmaste**
+  (DECISIONS #919, kort #659): en och en halv gång avståndet till den närmaste faran, minst en mil och högst sex, och en avbruten
+  hämtning skriver inte längre över bilden. Texten under Integritet nämner platsdelningen. Platsdelningen prövad av Axel på telefon
+  i (59): frågan, valet och raden i `app_enhet` (Malmö, 16:48) stämde. Bygget är 0.4.1 (60).
+- 20/11 (Claude; Axel efter provet av (59)): **Kortet Tipsa en vän visas inte på startsidan just nu, och inget val om erbjudanden är
+  förvalt** (DECISIONS #920). iPhone-bygget är 0.4.1 (61); Android får ändringen i nästa bygge. Uppladdningen av (60) föll 16:5x på
+  Apples certifikattak (körning 44769009717, `ARCHIVE FAILED`, inget uppladdat); Axel har rensat certifikaten (två kvar 17:04).
+- 20/11 (Claude): **iPhone 0.4.1 (61) uppladdad till TestFlight** från main 9518657 (körning 44772198053, `EXPORT SUCCEEDED`; PR #1726 och
+  #1727 ihopslagna): kartan Nära dig inzoomad på det närmaste och hämtningen som inte skriver över (DECISIONS #919), kortet Tipsa en vän
+  borta från startsidan och inget förvalt val om erbjudanden (DECISIONS #920). Före: TestFlight-provet (44770191774) och android
+  (44770196875) gröna på grenen. Bygge (60) laddades aldrig upp. Kartan och det nya valet är inte prövade på en telefon.
+- 20/11 (Claude; Axel: *"bör inte detta vara ett steg i onboardingen?"* och ja till CarPlay i samma bygge): **Frågan om kommunen är ett
+  steg i introduktionen, och CarPlay är påslaget igen** (DECISIONS #921). Bygget är 0.4.1 (62). Main bär nu CarPlay, så brytaren ska
+  ses över före nästa inlämning till App Store. Inte prövat på en telefon eller i en bil.
+- 20/11 (Claude): **iPhone 0.4.1 (62) uppladdad till TestFlight** från main 49cd8d2 (körning 44776658022, `EXPORT SUCCEEDED`; PR #1729
+  ihopslagen): frågan om kommunen som steg i introduktionen och CarPlay påslaget igen (DECISIONS #921). Före: TestFlight-provet
+  (44775137656) grönt på grenen. Inte prövat på en telefon eller i en bil.
+- 20/11 (Claude; Bengt: *"Axel säger ja"*): **Småvägsröstens påslag beslutat** (DECISIONS #923). Claude kör `sql/113` när 0.4.1 (58)
   finns i App Store och i Google Play, senast 27/11, och slår av på testarnas svar (#833) och meddelar Bengt. B6 klar i körlistan.
   Kvar: Axel skickar in 0.4.1 i båda butikerna, sedan påslaget.

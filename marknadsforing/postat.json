@@ -1396,6 +1396,28 @@
       "facebook": "1312515671952967_122114410497516187",
       "instagram": "17898044178682234",
       "x": "2123731217451249861"
+    },
+    {
+      "pass": "live",
+      "namn": "2026-11-20-live-1307",
+      "typ": "smhi",
+      "nyckel": "smhi:Snöfall:Delar av Östra Svealand:YELLOW",
+      "tid": "2026-11-20T12:07:36.081Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-11-20-live-1307.jpg",
+      "facebook": "1312515671952967_122114429835516187",
+      "instagram": "18061842788803539",
+      "x": "2123750155367120929"
+    },
+    {
+      "pass": "kvall",
+      "namn": "2026-11-20-kvall",
+      "typ": "forandring",
+      "nyckel": "forandring",
+      "tid": "2026-11-20T15:50:51.870Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-11-20-kvall.jpg",
+      "facebook": "1312515671952967_122114474571516187",
+      "instagram": "18068584700547048",
+      "x": "2123806346176835977"
     }
   ]
 }

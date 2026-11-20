@@ -1,0 +1,38 @@
+{
+  "typ": "forandring",
+  "nyckel": "forandring",
+  "etikett": "Sedan i går",
+  "rubrik": "Halkan sprider sig",
+  "underrad": "vägavsnitt med halka, mot samma tid i går",
+  "lyft": {
+    "stort": "337 → 406",
+    "liten": "ny halka i Stockholms län, Södermanland, Skåne och Halland"
+  },
+  "text": "Trafikverket rapporterar halka på 406 vägavsnitt, mot 337 vid samma tid i går.\nNy halka sedan i går: Stockholms län, Södermanland, Skåne och Halland.\n\nNorrbotten: halka på 58 av 58 vägavsnitt, 57 stationer under noll, kallast −10,3 °C vid Merkenäs V, 2 olyckor.\nVästerbotten: halka på 44 av 44 vägavsnitt, 39 stationer under noll, kallast −9,0 °C vid Umasjö.\nDalarna: halka på 38 av 38 vägavsnitt, 26 stationer under noll, kallast −4,4 °C vid Högfjällshotellet.\nStockholms län: halka på 37 av 44 vägavsnitt, 12 stationer under noll, kallast −1,5 °C vid Ekerö.\nVärmland: halka på 34 av 52 vägavsnitt, 46 stationer under noll, kallast −4,4 °C vid Brattmon.\nHalka eller minusgrader även i 15 län till.\n\nLäget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan\nHalkvakt säger till med rösten innan du är där. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Dalarna #Stockholm #Värmland #halkvakt",
+  "textIg": "Trafikverket rapporterar halka på 406 vägavsnitt, mot 337 vid samma tid i går.\nNy halka sedan i går: Stockholms län, Södermanland, Skåne och Halland.\n\nNorrbotten: halka på 58 av 58 vägavsnitt, 57 stationer under noll, kallast −10,3 °C vid Merkenäs V, 2 olyckor.\nVästerbotten: halka på 44 av 44 vägavsnitt, 39 stationer under noll, kallast −9,0 °C vid Umasjö.\nDalarna: halka på 38 av 38 vägavsnitt, 26 stationer under noll, kallast −4,4 °C vid Högfjällshotellet.\nStockholms län: halka på 37 av 44 vägavsnitt, 12 stationer under noll, kallast −1,5 °C vid Ekerö.\nVärmland: halka på 34 av 52 vägavsnitt, 46 stationer under noll, kallast −4,4 °C vid Brattmon.\nHalka eller minusgrader även i 15 län till.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\nHalkvakt säger till med rösten innan du är där. Gratis för iPhone, länken finns i vår profil.\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Dalarna #Stockholm #Värmland #halkvakt",
+  "pass": "kvall",
+  "datum": "2026-11-20",
+  "generated_at": "2026-11-20T15:30:08.085Z",
+  "lan": [
+    "norrbotten",
+    "vasterbotten",
+    "dalarna",
+    "stockholm",
+    "varmland",
+    "vastra-gotaland",
+    "vastmanland",
+    "vasternorrland",
+    "gavleborg",
+    "jamtland",
+    "orebro",
+    "jonkoping",
+    "halland",
+    "sodermanland",
+    "ostergotland",
+    "kronoberg",
+    "skane",
+    "uppsala",
+    "kalmar",
+    "blekinge"
+  ]
+}
