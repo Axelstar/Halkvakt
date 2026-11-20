@@ -3427,6 +3427,9 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 20/11 (Claude): **iPhone 0.4.1 (62) uppladdad till TestFlight** från main 49cd8d2 (körning 44776658022, `EXPORT SUCCEEDED`; PR #1729
   ihopslagen): frågan om kommunen som steg i introduktionen och CarPlay påslaget igen (DECISIONS #921). Före: TestFlight-provet
   (44775137656) grönt på grenen. Inte prövat på en telefon eller i en bil.
+- 20/11 (Claude): **Startsidan visar bara frysrisk som uppfyller röstens regel, och farorna på kartan går att trycka på** (DECISIONS
+  #922, kort #659; Axels fråga om Oxie och Svedala). Regeln `frysriskGaller` i motorpaketet på iPhone och Android, med prov. Bygget är
+  0.4.1 (63). Inte prövat på en telefon. Android får rättningen i sitt nästa bygge.
 - 20/11 (Claude; Bengts fråga om steget i kartan): **Radarns tal R bokfört i projektkartan.** Steget *Radarns tal R i
   förregistreringen (§10 a)* under `k-radar` stod som saknas sedan 26/10, fast talet lästes den dagen: R = 0,1 mm/h, och sql/069
   migrerades (STATUS 26/10, DECISIONS #725, #726). Steget är klart med det beviset; motorns steg säger 0,1 i stället för 0,5, och

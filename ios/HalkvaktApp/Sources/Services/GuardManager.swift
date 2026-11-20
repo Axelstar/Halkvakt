@@ -16,6 +16,8 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
     var running = false
     var authStatus: CLAuthorizationStatus = .notDetermined
     var snapshotInfo: String?
+    /// När lägesfilen skrevs, för kortet om en vald fara på startsidan (DECISIONS #922).
+    var lagetFran: Date?
     var nearby: [NearbyItem] = []
     var lastLoc: (lon: Double, lat: Double)?
     var currentWarning: Alert?
@@ -157,6 +159,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
             let df = DateFormatter(); df.dateFormat = "HH:mm"
             let tid = snap.generatedAt > .distantPast ? df.string(from: snap.generatedAt) : "okänd tid"
             snapshotInfo = "\(gate.hazards.count) faror · väglag \(tid)"
+            lagetFran = gen
             recomputeNearby()
         } catch {
             // Behåll förra snapshoten; UI visar gammal info-rad tills nästa lyckade.
