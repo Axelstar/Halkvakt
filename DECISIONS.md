@@ -18717,3 +18717,22 @@ iPhone-bygget är 0.4.1 (61). Android får ändringen i sitt nästa bygge.
 **Alternativ.** Ja förvalt: se ovan. Ta bort kortets kod helt: beslutet säger just nu, och då kostar det ett varv att bygga om det.
 
 **Stomdokument:** APP 4 — startsidan utan kortet; APP 7 — valet om erbjudanden
+
+## #921 (20/11 2026) Frågan om kommunen är ett steg i introduktionen, och CarPlay är påslaget igen i bygget (kort #674, #380)
+
+**Beslut** (Axel 20/11, efter provet av 0.4.1 (59) och (61)).
+- **Platsdelningens fråga står i introduktionen**, som ett eget steg efter platsen och före notiserna. Axel: *"bör inte detta vara ett
+  steg i onboardingen? Nu känns det som den kommer efter onboardingen är över"*. Förut täckte en egen skärm appen när introduktionen
+  var klar (#918). Stegen räknas *av 5* när steget finns. Den som inte har platsen på får inte steget, och den som redan svarat får
+  det inte när introduktionen visas igen. Befintliga förare får frågan som förut, som en egen skärm, men nu bara med platsen på:
+  utan plats finns ingen kommun att dela. Fortfarande bara i TestFlight (#918).
+- **CarPlay är påslaget igen** (#858 slog av det 13/11 inför granskningen av 0.4.0). Axel: *"snart måste vi få ut det"*, och ja till
+  att slå på det i samma bygge. Det är inte prövat i en bil sedan dess. **Main bär nu CarPlay**: nästa bygge till App Store får det
+  med sig om brytaren inte slås av före inlämningen, och det avgör Axel och Bengt då.
+
+Bygget är 0.4.1 (62).
+
+**Alternativ.** Frågan sist i introduktionen, efter notiserna: då kan notissteget inte säga vad notisen före resan är till för.
+Ett eget bygge för CarPlay: varje uppladdning skapar ett certifikat hos Apple, och taket slog till i dag (STATUS 20/11).
+
+**Stomdokument:** APP 4 — introduktionen; APP 5 — CarPlay

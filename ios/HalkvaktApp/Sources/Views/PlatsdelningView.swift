@@ -2,8 +2,9 @@
 // Skärmarna: Design-duken "Halkvakt: platsdelning och erbjudanden, skärmar" (20/11).
 import SwiftUI
 
-/// Frågan i två steg: ja eller inte nu, och för den som sagt ja valet om erbjudanden. Inget skickas förrän steg två är klart.
-/// Inget av de två valen om erbjudanden är förvalt (DECISIONS #920): föraren väljer själv, och Fortsätt väntar på valet.
+/// Frågan för den som redan gått igenom introduktionen (befintliga förare vid uppdateringen): täcker appen tills föraren
+/// svarat. Nya förare får samma två steg inne i introduktionen (OnboardingView, DECISIONS #921).
+/// Inget skickas förrän steg två är klart, och inget av de två valen om erbjudanden är förvalt (DECISIONS #920).
 struct PlatsdelningFraga: View {
     @State private var plats = Platsdelning.shared
     @State private var villDela = false
@@ -13,7 +14,25 @@ struct PlatsdelningFraga: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
                 Lockup().padding(.bottom, 28)
-                if villDela { erbjudandena } else { fragan }
+                if villDela {
+                    PlatsErbjudandenInnehall(erbjudanden: $erbjudanden)
+                    HStack {
+                        Spacer()
+                        YellowPill(title: "Fortsätt") { if let erbjudanden { plats.svara(ja: true, erbjudanden: erbjudanden) } }
+                            .disabled(erbjudanden == nil).opacity(erbjudanden == nil ? 0.4 : 1)
+                        Spacer()
+                    }
+                    .padding(.top, 32)
+                    if erbjudanden == nil {
+                        HStack { Spacer(); MonoLabel(text: "Välj ett av de två"); Spacer() }.padding(.top, 12)
+                    }
+                } else {
+                    PlatsFraganInnehall(etikett: "Nytt i Halkvakt")
+                    HStack { Spacer(); YellowPill(title: "Ja, dela min kommun") { villDela = true }; Spacer() }
+                        .padding(.top, 32)
+                    HStack { Spacer(); MonoLink(title: "Inte nu") { plats.svara(ja: false) }; Spacer() }
+                        .padding(.top, 12)
+                }
             }
             .padding(.horizontal, 28).padding(.top, 32).padding(.bottom, 40)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -22,11 +41,17 @@ struct PlatsdelningFraga: View {
         .background(Brand.bg.ignoresSafeArea())
         .accessibilityAddTraits(.isModal)
     }
+}
 
-    @ViewBuilder private var fragan: some View {
-        MonoLabel(text: "Nytt i Halkvakt", size: 11)
+/// Steg ett: vad som delas och vad som aldrig delas. Knapparna står hos den som visar innehållet.
+struct PlatsFraganInnehall: View {
+    /// Raden över rubriken; introduktionen har sin egen stegrad och visar ingen.
+    let etikett: String?
+
+    var body: some View {
+        if let etikett { MonoLabel(text: etikett, size: 11).padding(.bottom, 12) }
         Text("Vill du ha en varning innan du kör?")
-            .font(Typo.sans(32, .semibold)).tracking(-0.8).foregroundStyle(Brand.text).padding(.top, 12)
+            .font(Typo.sans(32, .semibold)).tracking(-0.8).foregroundStyle(Brand.text)
         Text("Då behöver vi veta vilken kommun du är i, så att vi kan säga till när det är halt där.")
             .font(Typo.sans(15)).lineSpacing(3).foregroundStyle(Brand.text2).padding(.top, 12)
         RowPanel {
@@ -39,13 +64,14 @@ struct PlatsdelningFraga: View {
         Text(Platsord.nyttLofte).font(Typo.sans(15, .medium)).foregroundStyle(Brand.text).padding(.top, 20)
         Text("Säger du nej fungerar Halkvakt som i dag. Testbygge: notiserna är inte påslagna än.")
             .font(Typo.sans(13)).lineSpacing(3).foregroundStyle(Brand.dim).padding(.top, 10)
-        HStack { Spacer(); YellowPill(title: "Ja, dela min kommun") { villDela = true }; Spacer() }
-            .padding(.top, 32)
-        HStack { Spacer(); MonoLink(title: "Inte nu") { plats.svara(ja: false) }; Spacer() }
-            .padding(.top, 12)
     }
+}
 
-    @ViewBuilder private var erbjudandena: some View {
+/// Steg två: valet om erbjudanden. Ja står först, och inget är valt från början.
+struct PlatsErbjudandenInnehall: View {
+    @Binding var erbjudanden: Bool?
+
+    var body: some View {
         MonoLabel(text: "Valfritt", size: 11)
         Text("Vill du ha erbjudanden för ditt län?")
             .font(Typo.sans(32, .semibold)).tracking(-0.8).foregroundStyle(Brand.text).padding(.top, 12)
@@ -62,16 +88,6 @@ struct PlatsdelningFraga: View {
             ReceiptRow(label: "Ändra", value: "När du vill, under Integritet", divider: false)
         }
         .padding(.top, 14)
-        HStack {
-            Spacer()
-            YellowPill(title: "Fortsätt") { if let erbjudanden { plats.svara(ja: true, erbjudanden: erbjudanden) } }
-                .disabled(erbjudanden == nil).opacity(erbjudanden == nil ? 0.4 : 1)
-            Spacer()
-        }
-        .padding(.top, 32)
-        if erbjudanden == nil {
-            HStack { Spacer(); MonoLabel(text: "Välj ett av de två"); Spacer() }.padding(.top, 12)
-        }
     }
 }
 

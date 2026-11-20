@@ -278,7 +278,8 @@ Från 0.4.1 (59) frågar iPhone-appen i TestFlight om den får dela vilken kommu
 Skärmbilder saknas: fotostudion tar inte iPhones skärmar, och de här är inte prövade på en telefon än. Skisserna ligger på
 Design-duken *Halkvakt: platsdelning och erbjudanden, skärmar*.
 
-**Frågan** täcker appen efter introduktionen, tills föraren svarat. Etiketten *Nytt i Halkvakt*, rubriken *Vill du ha en varning innan
+**Frågan** står i introduktionen från (62), som ett eget steg efter platsen (DECISIONS #921). Den som redan gått igenom
+introduktionen får den som en egen skärm som täcker appen tills föraren svarat, bara med platsen på. Etiketten *Nytt i Halkvakt*, rubriken *Vill du ha en varning innan
 du kör?* och texten *Då behöver vi veta vilken kommun du är i, så att vi kan säga till när det är halt där.* En panel säger vad som
 gäller: *Vi sparar* din kommun, senaste läget · *Aldrig* var du kör, dina resor · *Kopplas till* ett slumpat nummer · *Tas bort* när
 du vill, under Integritet. Under den: *Vi vet vilken kommun du är i, aldrig var du kör.* och *Säger du nej fungerar Halkvakt som i
@@ -303,6 +304,11 @@ Sex steg (ombyggd 13/11, DECISIONS #851). Överst till höger står var du är: 
 *KLART*, med gult ljus tills platsen är *Alltid*, sedan grönt. Varje steg har en knapp nederst, och ibland en länk under den.
 Före varje ruta från iOS står vilken knapp du ska välja, och varje svar har sitt eget läge. Allt går att ändra senare i
 Inställningar, och introduktionen kan visas igen därifrån.
+
+**I TestFlight, från 0.4.1 (62), ett steg till efter platsen (DECISIONS #921):** frågan om att dela kommunen och valet om
+erbjudanden, samma två skärmar som under *Platsdelningen* ovan. Stegen räknas då *AV 5*, och på slutskärmen står raden *DIN KOMMUN*
+med *Delas* eller *Delas inte*. Den som inte har platsen på får inte steget. I notissteget står efter ett ja också *En varning före
+resan, när det är halt i din kommun* med *Kommer i ett senare bygge.*
 
 1. **Välkommen** — *"Rösten som varnar innan du är där"*, *"Halkvakt säger till med rösten om faror på vägen framför dig."*
    Under *SÅ FUNGERAR DET*: *Du kör som vanligt* (*Med vilken kartapp du vill, eller ingen alls.*), *Halkvakt håller koll på
@@ -724,7 +730,8 @@ halv minut och startar vakten vid 15 km/h. Första resan efter installation, nä
 väcks den i stället av iOS större platsbyten (Apple anger ungefär 500 meter). Kostar nästan inget batteri.
 Inget mer att ställa in. Kan stängas av under Inställningar → *Vaknar själv när du kör*.
 
-*(CarPlay är avslaget i bygget från 0.4.0 (49), DECISIONS #858, och stycket nedan gäller igen när det slås på.)*
+*(CarPlay var avslaget i byggena 0.4.0 (49) till 0.4.1 (61), DECISIONS #858. Det är påslaget igen från 0.4.1 (62), DECISIONS #921,
+för prov i bil i TestFlight. Appen i App Store har det inte än.)*
 
 **iPhone — vakten startar när Halkvakt öppnas i CarPlay (11/11, DECISIONS #840, kort #380):** öppnas Halkvakt på bilens skärm startar
 vakten, om platsen redan är tillåten, *Alltid* eller *Vid användning*, eftersom CarPlay räknas som att appen är öppen. Ingen fråga om

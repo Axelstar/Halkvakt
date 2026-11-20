@@ -422,8 +422,9 @@ struct RootView: View {
             // i stället för att flyta upp över innehållet (Axels skärmbild 24/10).
             FloatingTabBar(tab: $tab, vidVakten: { hem += 1 }).padding(.bottom, 8)
                 .ignoresSafeArea(.keyboard, edges: .bottom)
-            // Platsdelningens fråga (DECISIONS #917): täcker flikarna tills föraren svarat, efter introduktionen och aldrig under körning.
-            if plats.skaFraga && prefs.onboardingDone && !guardM.running {
+            // Platsdelningens fråga (DECISIONS #917, #921) för den som inte fick den i introduktionen: täcker flikarna tills föraren
+            // svarat, bara med platsen på och aldrig under körning.
+            if plats.skaFraga && prefs.onboardingDone && guardM.platsTillaten && !guardM.running {
                 PlatsdelningFraga().frame(maxWidth: .infinity, maxHeight: .infinity).transition(.opacity)
             }
         }
