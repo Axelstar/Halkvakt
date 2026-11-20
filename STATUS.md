@@ -3399,3 +3399,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   senast var i, med förarens ja, för notis före resan, statistik per län och erbjudanden som eget val. Byggt: `sql/130_app_enhet.sql`,
   funktionen `app-enhet` och `test/app-enhet.test.ts`; migrationen körd två gånger mot en lokal Postgres 16. Inte i drift: migrationen
   och deployen väntar på ett ord. Kvar: utskicket, apparna och orden. Tre frågor i bedömningen §4.2.
+- 20/11 (Claude; Axel: *"kör ihop och så vi kan testa det på testflight"*): **Platsdelningens server i drift** (DECISIONS #917, kort #674).
+  PR #1716 ihopslagen (283c14a), migrationen 130 med DB-knappen (44731913178) och `app-enhet` deployad (44732030982). Läst live: en giltig
+  rad gav 204 och stod i tabellen, en rad med position gav 400, DELETE gav 204 och tabellen var tom efteråt. Ingenting finns i TestFlight
+  än: apparna är inte byggda. Axel: alla sidor på sajten och i appen ska gås igenom så att orden stämmer; räkningen står på kortet.
