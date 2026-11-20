@@ -3391,3 +3391,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   nya appbyggen, och frågorna om olycksfacits A1, säsongsfacits F1 och KB-B i bedömningen §4.2.
 - 20/11 (Claude; Bengt: *"gör 1 och 2 enligt rekommendation"*): **Modden i facit** (DECISIONS #916). Olycksfacits A1 och `halka_efter` följer med första
   appbygget med modden (kort #673). Säsongsfacits F1 och KB-B:s facit står kvar i vinter. Startsidan klar (halkvakt-karta PR 35).
+- 20/11 (Claude; Bengt: *"ja till a och b"*): **Småvägsrösten, påslaget** (körlistan C5, B6, B8). Vakterna i `sql/113` lästa med DB-knappens
+  läsläge (44723373125): alla fyra uppfyllda, båda brytarna av. 0.4.1 (58) bär taket 30 minuter och 20 km. Bengts ja: rösten slås på
+  när 0.4.1 finns i App Store och i Google Play, men senast 27/11 (frist `smavag-paslaget-2026-11-27`), och Claude slår av på
+  testarnas svar (#833) och meddelar Bengt. Axels svar väntar; beslutet skrivs i DECISIONS när det kommit.
