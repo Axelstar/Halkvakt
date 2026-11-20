@@ -18736,3 +18736,28 @@ Bygget är 0.4.1 (62).
 Ett eget bygge för CarPlay: varje uppladdning skapar ett certifikat hos Apple, och taket slog till i dag (STATUS 20/11).
 
 **Stomdokument:** APP 4 — introduktionen; APP 5 — CarPlay
+
+## #922 (20/11 2026) Startsidan visar bara frysrisk som uppfyller röstens regel, och farorna på kartan går att trycka på (kort #659)
+
+**Beslut** (Axel 20/11, efter startsidan i 0.4.1 (62): *"vart kommer dessa varningar ifrån, ser att de är halkrisk i oxie och svedala
+men då jag planerar min resa står där inget"*, och *"en möjlighet att jobba lite på kartan så att man kan klicka på faran"*; hans ja
+till båda samma kväll).
+- **Felet.** Lägesfilen bär varje vägväderstation med vägyta på +3 °C eller kallare, för att motorn ska kunna pröva sin regel. Listan
+  *Nära dig* och kartan visade var och en av dem som *Frysrisk*, också de torra. Rösten och resans rapport varnar först vid +1 °C
+  eller kallare med fukt på vägbanan (broar +3 °C med fukt; efterhalkan bara för betatestare). Läst ur lägesfilen 20/11 16:56 UTC:
+  stationen vid Oxie +2,4 °C och torr, den vid Svedala +1,2 °C och torr, och 254 av filens 834 stationer uppfyllde regeln. Startsidan
+  sade alltså mer än mätningen bar. Rösten var aldrig påverkad.
+- **Rättningen.** Listan och kartan visar en frysrisk bara när den uppfyller röstens regel, utan avståndet (`frysriskGaller` i
+  motorpaketet, på iPhone och Android, bredvid regeln den speglar). Det gäller också listan *I närheten* i körläget och startsidans
+  rubrik. På Android följer rättningen med nästa bygge.
+- **Farorna går att trycka på.** Ett tryck på ett märke eller ett gult streck på kartan *Nära dig*, eller på en rad i listan under,
+  visar ett kort under kartan: vad det är, mätningen eller rapportens ord, avståndet som fågelvägen, källan och när lägesfilen
+  skrevs. Den valda faran får en vit kant. Ett tryck till, eller ett tryck bredvid, tar bort kortet. Fartkamerorna går inte att
+  trycka på: de är för många och för små. Kortet säger ingenting som inte står i lägesfilen.
+
+Bygget är 0.4.1 (63). Inte prövat på en telefon när beslutet skrivs.
+
+**Alternativ.** Visa de torra stationerna som en egen rad, *Vägytan +2,4°, torrt*: det är sant, men startsidan ska visa faror, och
+en rad per station inom sex mil dränker dem. En rörlig karta med Apples egna märken: den går inte att färga om (#876).
+
+**Stomdokument:** APP 4 — listan och kartan Nära dig och kortet om en vald fara; FAV — inga ändringar i rapporten som redan följde regeln
