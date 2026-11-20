@@ -647,12 +647,15 @@ interface Candidate {
 // Swedish word-start boundary: "Isfläckar"/"Svår halka" match; "fläckvis Våt" must NOT
 // (the substring 'is' inside "fläckvis" produced 8 false halka-segments on real August
 // data — see test "fläckvis is not halka").
-const SLIPPERY_INFO = /(?<![a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt)/i;
+// Slush since 20/11 (Bengt: "lägg till ordet modd", DECISIONS #915): Trafikverket writes "Moddig vägbana" and "Moddsträngar",
+// with or without "fläckvis", and none of them matched. Word start, like the others; vectors v61–v63 lock it in three ports.
+// Exported only so that the value guard's word list is checked against the engine's own answer (test/halkorden.test.ts).
+export const SLIPPERY_INFO = /(?<![a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt|modd)/i;
 // Snow and frost count INSIDE compounds too (kort #97, Bengt 16/9): the word-start rule above made
 // "Nysnö", "Rimfrost", "Blötsnö" and "Nattfrost" silent on code 1 — the operator wrote the word, so
 // it speaks. "halk" is NOT a stem: "Halkbekämpning" and "Halkskydd" are countermeasures, not hazards,
 // so only halka/halkrisk/halkig are listed above. Vector v24 locks all of it in three ports.
-const SLIPPERY_STAM = /(snö|frost)/i;
+export const SLIPPERY_STAM = /(snö|frost)/i;
 
 // THE GRID (DECISIONS #795). Until 5/11 every fix evaluated every hazard; 16 000 more kandidat points made step() seven times
 // slower. Every candidate needs its distance within a reach the configuration bounds (reachOf below), so a hazard is listed in

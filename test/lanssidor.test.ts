@@ -13,6 +13,7 @@ test("länssidorna: halt är motorns halt — kod ≥ 2 eller halkord, och 'flä
   assert.equal(arHalt(1, ["Is"]), true);
   assert.equal(arHalt(1, ["Nysnö"]), true, "stammen räknas inuti ord, som i motorn");
   assert.equal(arHalt(1, ["fläckvis Våt"]), false, "'is' inuti ett ord är ingen is");
+  assert.equal(arHalt(1, ["Moddsträngar"]), true, "modden är halt, som i motorn (DECISIONS #915)");
   assert.equal(arHalt(1, ["Torrt"]), false);
   assert.equal(arHalt(null, []), false);
   // Samma tecken som motorn — kontraktsgrinden vaktar också, men provet säger det där felet syns.

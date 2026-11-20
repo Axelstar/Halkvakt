@@ -374,8 +374,9 @@ public final class AlertEngine {
     /// Halkzonen (kort #360): whether two stretches are neighbours, per sorted id pair (the geometry does not change).
     private var zonGrannar: [String: Bool] = [:]
 
+    // Mirrors engine.ts SLIPPERY_INFO, word start; modd (slush) since 20/11, DECISIONS #915, vectors v61–v63.
     private let slipperyInfo = try! NSRegularExpression(
-        pattern: "(?<![a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt)",
+        pattern: "(?<![a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt|modd)",
         options: [.caseInsensitive])
     // Snow/frost also count inside compounds — "Nysnö", "Rimfrost" (kort #97). Mirrors engine.ts SLIPPERY_STAM.
     private let slipperyStam = try! NSRegularExpression(pattern: "(snö|frost)", options: [.caseInsensitive])

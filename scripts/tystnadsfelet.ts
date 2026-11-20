@@ -55,7 +55,7 @@ const FUKT_SQL =
   " AND lower(precipitation) NOT IN ('no','dry')))";
 
 /** MOTORNS egen halklista, ordagrant ur engine.ts (SLIPPERY_INFO); kontraktsgrinden jämför strängen tecken för tecken. */
-const HALKORD = "is|halka|halkrisk|halkig|halt|mycket besvärligt";
+const HALKORD = "is|halka|halkrisk|halkig|halt|mycket besvärligt|modd";   // modd sedan 20/11 (DECISIONS #915)
 /** Stammarna som räknas även INUTI sammansättningar ("Nysnö", "Rimfrost") — speglar motorns SLIPPERY_STAM (kort #97). */
 const HALKSTAM = "snö|frost";
 

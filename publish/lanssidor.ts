@@ -12,7 +12,7 @@ export const SIDBAS = "https://halkvakt.se";
 
 // Det som får MOTORN att tala om en sträcka (engine.ts, evaluateSegment): kod ≥ 2 eller ett halkord. En kopia, vaktad av
 // kontraktsgrinden ("Halkorden i MOTORN", "Halkstammarna i MOTORN") — sidan och rösten ska mena samma sak med halt.
-const SLIPPERY_INFO = /(?<![a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt)/i;
+const SLIPPERY_INFO = /(?<![a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt|modd)/i;
 const SLIPPERY_STAM = /(snö|frost)/i;
 
 export function arHalt(code: number | null, info: string[]): boolean {
@@ -620,7 +620,7 @@ function lsHelaDw(lan: (typeof LAN)[number], l: LanLage, d: { vaglag: LanSegment
 function lsFragor(namn: string, var_ = `i ${namn}`): { fraga: string; svar: string }[] {
   return [
     { fraga: `Hur ofta uppdateras väglaget ${var_}?`, svar: "Sidan skrivs om var 30:e minut med Trafikverkets senaste väglagsrapport, vägbanans temperatur vid vägväderstationerna och pågående olyckor." },
-    { fraga: "Vad räknas som halka på sidan?", svar: "En sträcka räknas som hal när Trafikverkets väglagsrapport anger besvärligt väglag eller nämner is, snö, frost eller halka. Det är samma regel som får appen att varna. Ny halkrisk är en sträcka som har blivit hal det senaste dygnet, och vinterväglag en som har varit hal längre än så." },
+    { fraga: "Vad räknas som halka på sidan?", svar: "En sträcka räknas som hal när Trafikverkets väglagsrapport anger besvärligt väglag eller nämner is, snö, modd, frost eller halka. Det är samma regel som får appen att varna. Ny halkrisk är en sträcka som har blivit hal det senaste dygnet, och vinterväglag en som har varit hal längre än så." },
     { fraga: "Var mäts vägbanans temperatur?", svar: "Vid Trafikverkets vägväderstationer längs de större vägarna. Mellan stationerna mäts ingenting, så vägen kan vara kallare eller varmare där." },
     { fraga: "Kan jag få en varning medan jag kör?", svar: "Ja. Halkvakt för iPhone säger till med rösten när halka är rapporterad på vägen framför dig. Appen är gratis, och din position skickas aldrig till Halkvakt av sig själv." },
   ];

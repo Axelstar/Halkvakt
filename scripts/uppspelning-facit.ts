@@ -5,6 +5,8 @@
 //   BEKRÄFTAT HALKTILLFÄLLE  en omklassning till halka i road_condition_history på ett vägavsnitt inom FACIT_KM från stationen,
 //                            med MOTORNS egna halkord (engine.ts SLIPPERY_INFO/STAM — kontraktsgrinden vaktar kopiorna). En rad per
 //                            station och halvtimmeshink; natten räknas i svensk tid, middag till middag, som T-A och R-A.
+//                            Modden följde motorn hit 20/11 (DECISIONS #915), före varje utfall av K-B och R-B; sql/028 bär
+//                            fortfarande orden utan modd (beslutet säger varför).
 //   OLYCKA                   situation_archive Accident inom samma radie — räknas SEPARAT och går aldrig in i grundtalet.
 //   PUNKTMOTORN I DAG        engine.ts icing_point: yta ≤ 1 °C och fukt (FUKT_SQL, samma ord som snapshoten) — spelas upp ur
 //                            stationens egen rad per hink. Det är den "punktmotorn var tyst eller > 30 min senare" mäts mot.
@@ -42,7 +44,7 @@ export const FACIT_SQL = `
   JOIN weather_latest wl ON wl.geom IS NOT NULL AND ST_DWithin(c.geom::geography, wl.geom::geography, ${FACIT_KM} * 1000)
   WHERE NOT h.deleted AND c.geom IS NOT NULL AND h.modified_time >= $1 AND h.modified_time < $2
     AND EXISTS (SELECT 1 FROM unnest(h.condition_info) i
-                WHERE i ~* '(^|[^a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt)'
+                WHERE i ~* '(^|[^a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt|modd)'
                    OR i ~* '(snö|frost)')`;
 /** Olyckorna ($1 från, $2 till): antal Accident inom FACIT_KM från någon station — separat, aldrig i grundtalet. */
 export const OLYCKOR_SQL = `
@@ -132,7 +134,7 @@ if (korsSjalv && process.argv.includes("--sjalvtest")) {
   const rader = sparrRader(tillf, 7, new Map([["A", 66], ["B", 59], ["C", 58], ["D", 56]]), frost);
   k(rader[0].includes("4 bekräftade") && rader[0].includes("4 stationer") && rader[0].includes("3 regioner") && rader[0].includes("2 län") && rader[0].includes("olyckor inom 5 km: 7"), `spärrens rad: ${rader[0]}`);
   k(!rader.join("\n").match(/träff|andel|%/), "spärren skriver ingen andel");
-  k(FACIT_SQL.includes("i ~* '(^|[^a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt)'") && FACIT_SQL.includes("OR i ~* '(snö|frost)'"), "facitfrågan bär motorns halkord i kontraktets form");
+  k(FACIT_SQL.includes("i ~* '(^|[^a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt|modd)'") && FACIT_SQL.includes("OR i ~* '(snö|frost)'"), "facitfrågan bär motorns halkord i kontraktets form");
   k(FACIT_SQL.includes(`${FACIT_KM} * 1000`) && FACIT_SQL.includes("NOT h.deleted"), "facitfrågan: radien och raderingarna");
   console.log("✓ självtest: B3 per tillfälle (netto, tidsvinst, fönstret), falsklarm, natten, giltigheten, spärrens rad och facitfrågans form");
   process.exit(0);

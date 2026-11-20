@@ -18511,3 +18511,63 @@ stadsmiljön (halkvakt-kuvos F27 och F32) på kuvos-stad:s dygnsfiler i den priv
 kuvösens andra domar i flödet.
 
 **Stomdokument:** SYS 2 — stadsmiljöns dom i kuvos-ny-kandidat
+
+## #915 (20/11 2026) Modden är halka: Trafikverkets moddord i motorns halkord, och värdevaktens väglagsord bundna till motorns svar
+
+**Beslut.** Bengt 20/11: *"lägg till ordet modd och gör en koppling mellan de olika"*.
+1. **Modd är ett halkord.** Trafikverket skrev 20/11 *Moddig vägbana*, *fläckvis Moddig vägbana*, *Moddsträngar* och *fläckvis
+   Moddsträngar* (DB-knappen 44695667709). Inget av dem träffade motorns halkord, så en sträcka med bara modd på klassen Normalt
+   (kod 1) gav ingen varning. `modd` står nu sist i motorns `SLIPPERY_INFO`, med ordbörjan som de andra orden:
+   `(?<![a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt|modd)`. Stammarna (snö, frost) är orörda.
+2. **Ändrat i varje kopia som svarar på vad som får motorn att tala och vad som är halt på sidorna:** motorn (`engine/src/engine.ts`,
+   `Engine.kt`, `Engine.swift`) och skuggmotorns bunt; snapshotens filter (`publish/snapshot-core.ts` och publiceras bunt), som ska
+   vara ett superset av motorn (#307); länssidornas `arHalt` och deras svar på *Vad räknas som halka på sidan?* (`publish/lanssidor.ts`
+   och publiceras bunt), nu *is, snö, modd, frost eller halka*; vägens hala tid (`vaglag_hal_sedan`) i den nya `sql/129`, som ersätter
+   `sql/117`:s definition, eftersom sql/117 är körd i drift och inte ändras; tystnadsfelets `HALKORD`, som är motorns egen lista; och
+   facitfrågan för K-B och R-B (`scripts/uppspelning-facit.ts`), som enligt sin egen definition läser motorns halkord och vars grindar
+   inte har läst något utfall.
+3. **Vektorerna** v61 (*Moddsträngar* på kod 1 talar), v62 (*fläckvis Moddig vägbana* på kod 1 talar) och v63 (*Torrt*, *Våt*,
+   *fläckvis Torrt* och *fläckvis Våt* på kod 1 tiger), skrivna av `engine/gen-vectors.ts`. Förvarningen ligger 11,1 m från fixen på
+   var sida (5-metersregeln). Röstens text är densamma som för andra sträckor: *Varning: halka rapporterad på vägen framför dig.*
+4. **Kopplingen.** Värdevaktens ordlista för väglaget och motorns halkord svarar på två frågor: har en människa läst ordet, och får
+   ordet rösten att tala på kod 1. De förblir två listor men är bundna. Varje väglagsord står i `VAGLAGSORD` i `scripts/vardevakten.ts`
+   med motorns svar, *halt* eller *inte halt*, och `test/halkorden.test.ts` (ci) kör motorns egna `SLIPPERY_INFO` och `SLIPPERY_STAM`
+   över varje ord och fäller när ett svar skiljer sig. Ett nytt ord får alltså båda svaren innan det står i listan. Ett OKÄNT ORD i
+   väglaget skrivs ut med motorns svar, till exempel *"Snömodd" (3; motorn: halt)*. Halt: is-orden, lössnö, packad snö och modden,
+   med och utan fläckvis. Inte halt: torrt, våt, fläckvis torrt och fläckvis våt. Motorn exporterar de två uttrycken för provets skull,
+   utan att något annat ändras.
+5. **Kontraktsgrinden.** *Halkorden i MOTORN* vaktar nu också Kotlins och Swifts strängar, och golvet är 11 (förut 7, med 19
+   förekomster). Kopiorna som står kvar på orden före modden har ett eget kontrakt, *Halkorden före modden*, med golvet 12, så att de
+   inte heller sinsemellan kan glida isär.
+
+**Vad som inte ändras, och varför.**
+- **Olycksfacit** (`sql/084`, `085`, `095`, `096`, `108`, `110`): lagret A1:s *talar* och `halka_efter` bär motorns ord som de var.
+  Klassningen är signerad (TROSKLAR-OLYCKSFACIT), och A1 ska säga vad appen sa när olyckan började. Modden når föraren först med nya
+  byggen, så att räkna den nu vore att kalla appen varnande där den teg. När A1 ska följa med är en fråga i bedömningens §4.2.
+- **Säsongsfacit** (`sql/099`, F1): signerat och räknat varje dygn sedan 1/11. TROSKLAR-SASONGSFACIT §3 beskriver F1 som *halka, is,
+  snö och slask*, så modden hör dit enligt texten. Men koden har sedan säsongen började räknat F1 med motorns ord, där modd på kod 1
+  inte är halt, och en ändring mitt i säsongen är Bengts och Axels beslut. Frågan står i §4.2.
+- **Efterhalkans uppspelning** (`sql/028` och `scripts/matningar/uppspelning-varianter.sql`): körs för hand, och ingen grind eller ett
+  flöde anropar den. Dess facit är KB-B:s, som Axel dömer i januari, och utfallet är blindat. Modden där kräver att hela funktionen
+  skrivs om i en ny migration, och det är ett beslut om domen. Frågan står i §4.2.
+- Vakthundens vintertecken, kodgrindens farlighetsord och marknadsföringens ord (`annonsstyrning.mjs`, reels) svarar på andra frågor
+  (DECISIONS #172, #307) och är orörda. `engine/src/forsprang.ts` och `publish/map-core.ts` bär ingen ordlista.
+
+**Upptäckt utanför repot.** Kartsajtens startsida (Axelstar/halkvakt-karta, `index.html`) räknar *halt* i webbläsaren med en egen kopia
+av halkorden. Den ändras inte här. Utan modd räknar startsidan efter deployen färre hala sträckor än länssidorna och texten som
+publicera skriver in i samma element.
+
+**Alternativ.**
+- `modd` som stam, inuti ord som snö och frost. Förkastat: Trafikverket skriver modden först i ordet, och ordbörjan räcker för de fyra
+  orden. En stam fångar fler ord än någon har läst.
+- En lista i stället för två: värdevakten läser motorns lista. Förkastat: listorna svarar på olika frågor, och torrt och våt ska stå i
+  värdevaktens lista utan att vara halt.
+- `sql/117` rättad på plats. Förkastat: migrationen är körd i drift, och en körd migration ändras inte.
+
+**Varför.** Modd är ett halt vinterväglag som Trafikverket rapporterar, och ordet gav ingen varning. Kopplingen gör att nästa ord som
+Trafikverket börjar skriva inte kan stå i värdevaktens lista utan att någon har sagt vad motorn gör med det.
+
+**Når föraren** först med nästa bygge av apparna, eftersom motorn ligger i appen, och efter deployen av publicera (snapshoten och
+sidorna) och skuggmotor. `sql/129` körs med DB-knappen före deployen av publicera. Inget av det är gjort med beslutet.
+
+**Stomdokument:** APP — vilka ord som ger halka; SYS — motorn och snapshoten och vägens hala tid; MAT — värdevakten och facit på de gamla orden; BED §4.2

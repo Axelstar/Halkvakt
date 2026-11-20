@@ -203,8 +203,9 @@ export async function buildSnapshot(qIn: Q, bridgesIn: Bridge[], now: Date = new
       AND (end_time IS NULL OR end_time > now())
       -- Kort #156 (Bengt 22/9): samma ord som motorns SLIPPERY_INFO, så att snapshoten är ett superset av motorn. Förut
       -- saknades "mycket besvärligt": ett segment med kod 1 och den texten nådde aldrig telefonen fast motorn räknar det som halt.
+      -- Modd sedan 20/11 (DECISIONS #915), samma dag som i motorn: annars når "Moddsträngar" på kod 1 aldrig telefonen.
       AND (condition_code >= 2 OR EXISTS (
-        SELECT 1 FROM unnest(condition_info) i WHERE i ~* '(^|[^a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt)|snö|frost'))`);
+        SELECT 1 FROM unnest(condition_info) i WHERE i ~* '(^|[^a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt|modd)|snö|frost'))`);
 
   // ---- live: radarns regn per segment (kort #81 steg C) ----
   avsnitt = "radar";

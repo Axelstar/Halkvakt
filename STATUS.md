@@ -3373,3 +3373,9 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   tolv ord om is, snö och modd, varningen *snödrev* och orsaken *underkylt regn*, lästa ur driften (DB-knappen 44695667709). Regeln och
   K2a läser fortfarande bara *Våt*. Radarns rate_max_mmh (spärrad sedan #134, #161) och byvinden (de nio trasiga givarna, #166,
   anmälda) är kända: inget i driften läser dem som tröskel.
+- 20/11 (Claude; Bengt: *"lägg till ordet modd och gör en koppling mellan de olika"*, DECISIONS #915): **Modden är halka.** `modd` med
+  ordbörjan i motorns halkord i alla tre motorerna, skuggmotorns och publiceras buntar, snapshotens filter, länssidorna (också svaret
+  på *Vad räknas som halka*), tystnadsfelet, K-B:s och R-B:s facit och vägens hala tid i den nya `sql/129`. Vektorerna v61–v63.
+  Värdevaktens väglagsord står i `VAGLAGSORD` med motorns svar, och `test/halkorden.test.ts` fäller när ett svar skiljer sig från
+  motorns. Olycksfacit, säsongsfacit och efterhalkans uppspelning står kvar på de gamla orden, med frågor i bedömningens §4.2.
+  Inte i drift: sql/129 med DB-knappen, deployen av publicera och skuggmotor och nästa bygge av apparna återstår.
