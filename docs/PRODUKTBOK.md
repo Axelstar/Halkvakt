@@ -265,7 +265,9 @@ Sist i **Inställningar**, under etiketten *HALKVAKT*, tre rader:
 
 På **Redo.**, efter det femte avslutade vaktpasset och bara när vakten inte kör, står kortet *FEM PASS MED VAKTEN* — *"Kör någon du
 känner samma vägar?"* — *"Tipsa om Halkvakt. Du skickar bara en länk, inget om dig."* med knappen **Tipsa en vän** och länken
-*INTE NU*. Båda döljer kortet för gott. Det visas aldrig samtidigt som ett kort om resorna.
+*INTE NU*. Båda döljer kortet för gott. Det visas aldrig samtidigt som ett kort om resorna. **Kortet visas inte just nu** (Axel
+20/11, DECISIONS #920: felplacerat på startsidan), i iPhone från 0.4.1 (61) och i Android från nästa bygge. Raderna under
+Inställningar står kvar.
 
 Appen skickar ingenting själv: delningen går genom telefonens delningsark, mejlet genom förarens mejlapp och betyget genom
 butiken. Integritetstexterna är oförändrade.
@@ -282,8 +284,8 @@ gäller: *Vi sparar* din kommun, senaste läget · *Aldrig* var du kör, dina re
 du vill, under Integritet. Under den: *Vi vet vilken kommun du är i, aldrig var du kör.* och *Säger du nej fungerar Halkvakt som i
 dag. Testbygge: notiserna är inte påslagna än.* Knappen *Ja, dela min kommun*, och länken *Inte nu*.
 
-**Valet om erbjudanden** kommer efter ett ja. Rubriken *Vill du ha erbjudanden för ditt län?*, två rutor där *Nej tack* (*Bara
-varningar*) är förvald och den andra är *Ja, skicka erbjudanden* (*Högst två i månaden. Aldrig när du kör.*), och en panel: *Från*
+**Valet om erbjudanden** kommer efter ett ja. Rubriken *Vill du ha erbjudanden för ditt län?*, två rutor, *Ja, skicka erbjudanden* (*Högst två i månaden. Aldrig när du kör.*) och *Nej tack* (*Bara varningar*), där ingen är
+förvald från (61) (DECISIONS #920; i (59) var *Nej tack* förvald) och *Fortsätt* väntar på valet, och en panel: *Från*
 företag som betalar Halkvakt · *De får* aldrig veta vem eller var du är · *Ändra* när du vill, under Integritet. Knappen *Fortsätt*.
 Först då skickas något.
 

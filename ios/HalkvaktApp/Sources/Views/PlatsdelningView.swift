@@ -3,10 +3,11 @@
 import SwiftUI
 
 /// Frågan i två steg: ja eller inte nu, och för den som sagt ja valet om erbjudanden. Inget skickas förrän steg två är klart.
+/// Inget av de två valen om erbjudanden är förvalt (DECISIONS #920): föraren väljer själv, och Fortsätt väntar på valet.
 struct PlatsdelningFraga: View {
     @State private var plats = Platsdelning.shared
     @State private var villDela = false
-    @State private var erbjudanden = false
+    @State private var erbjudanden: Bool?
 
     var body: some View {
         ScrollView {
@@ -51,8 +52,8 @@ struct PlatsdelningFraga: View {
         Text("Till exempel däckbyte eller försäkring från företag nära dig. Halkvakt fungerar lika bra utan.")
             .font(Typo.sans(15)).lineSpacing(3).foregroundStyle(Brand.text2).padding(.top, 12)
         VStack(spacing: 10) {
-            PlatsVal(titel: "Nej tack", text: "Bara varningar", vald: !erbjudanden) { erbjudanden = false }
-            PlatsVal(titel: "Ja, skicka erbjudanden", text: "Högst två i månaden. Aldrig när du kör.", vald: erbjudanden) { erbjudanden = true }
+            PlatsVal(titel: "Ja, skicka erbjudanden", text: "Högst två i månaden. Aldrig när du kör.", vald: erbjudanden == true) { erbjudanden = true }
+            PlatsVal(titel: "Nej tack", text: "Bara varningar", vald: erbjudanden == false) { erbjudanden = false }
         }
         .padding(.top, 24)
         RowPanel {
@@ -61,8 +62,16 @@ struct PlatsdelningFraga: View {
             ReceiptRow(label: "Ändra", value: "När du vill, under Integritet", divider: false)
         }
         .padding(.top, 14)
-        HStack { Spacer(); YellowPill(title: "Fortsätt") { plats.svara(ja: true, erbjudanden: erbjudanden) }; Spacer() }
-            .padding(.top, 32)
+        HStack {
+            Spacer()
+            YellowPill(title: "Fortsätt") { if let erbjudanden { plats.svara(ja: true, erbjudanden: erbjudanden) } }
+                .disabled(erbjudanden == nil).opacity(erbjudanden == nil ? 0.4 : 1)
+            Spacer()
+        }
+        .padding(.top, 32)
+        if erbjudanden == nil {
+            HStack { Spacer(); MonoLabel(text: "Välj ett av de två"); Spacer() }.padding(.top, 12)
+        }
     }
 }
 

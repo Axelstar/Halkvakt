@@ -18700,3 +18700,20 @@ Bygget är 0.4.1 (60).
 långt utzoomat.
 
 **Stomdokument:** APP 4 — kartan Nära dig
+
+## #920 (20/11 2026) Kortet Tipsa en vän visas inte på startsidan just nu, och inget val om erbjudanden är förvalt (kort #674)
+
+**Beslut** (Axel 20/11, efter att ha prövat 0.4.1 (59) på telefonen).
+- **Kortet *Fem pass med vakten* på Redo. visas inte just nu**, i någon av apparna. Axel: *"Jag tycker vi tar bort det om tipsa en
+  vän just nu"* och, om kortet på startsidan: *"Det är här jag menar. Det känns bara felplaserat"*. Raden *Tipsa en vän* under
+  Inställningar står kvar, och Tyck till och Betygsätt likaså. Koden och proven för kortet står kvar bakom en konstant
+  (`Tipsa.kortetVisas`, `Tipsa.KORTET_VISAS`), eftersom beslutet gäller just nu. Ändrar #829, som Axel och Bengt tog 10/11.
+- **Inget av de två valen om erbjudanden är förvalt** i platsdelningens fråga (#918 hade *Nej tack* förvalt). Axel frågade om ja
+  kunde vara förvalt. Ett förkryssat ja är inget giltigt samtycke till reklam, så det avråddes, och Axel valde mellanläget: *"Och då
+  kör vi med inget förvalt alls"*. *Fortsätt* väntar tills föraren valt, och ja står först.
+
+iPhone-bygget är 0.4.1 (61). Android får ändringen i sitt nästa bygge.
+
+**Alternativ.** Ja förvalt: se ovan. Ta bort kortets kod helt: beslutet säger just nu, och då kostar det ett varv att bygga om det.
+
+**Stomdokument:** APP 4 — startsidan utan kortet; APP 7 — valet om erbjudanden
