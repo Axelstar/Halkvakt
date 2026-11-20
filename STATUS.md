@@ -3467,3 +3467,5 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   under *Din data*), aldrig med *den senaste*. Utskick 9 gick till Axels rad. Före: sql/132 skrev länkens regel med en upprepning
   Postgres inte tar, och det första erbjudandet föll; sql/133 (PR #1744, dbknapp 44813984790) bytte regeln. Läxan för båda: lägg en
   provrad och läs VEM den gick till innan något sägs vara i drift.
+- 20/11 (Claude): **Notisens tryck prövat på Axels telefon i 0.4.1 (66)** (DECISIONS #926; Axels ord): provvarningen visades med appen
+  öppen, ett tryck från Inställningar öppnade startsidan, och ett tryck på proverbjudandet (utskick 9) öppnade bladet och länken.
