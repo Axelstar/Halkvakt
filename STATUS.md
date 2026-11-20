@@ -3395,3 +3395,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   läsläge (44723373125): alla fyra uppfyllda, båda brytarna av. 0.4.1 (58) bär taket 30 minuter och 20 km. Bengts ja: rösten slås på
   när 0.4.1 finns i App Store och i Google Play, men senast 27/11 (frist `smavag-paslaget-2026-11-27`), och Claude slår av på
   testarnas svar (#833) och meddelar Bengt. Axels svar väntar; beslutet skrivs i DECISIONS när det kommit.
+- 20/11 (Claude; Bengt: *"Axel säger ja"*): **Småvägsröstens påslag beslutat** (DECISIONS #919). Claude kör `sql/113` när 0.4.1 (58)
+  finns i App Store och i Google Play, senast 27/11, och slår av på testarnas svar (#833) och meddelar Bengt. B6 klar i körlistan.
+  Kvar: Axel skickar in 0.4.1 i båda butikerna, sedan påslaget.
