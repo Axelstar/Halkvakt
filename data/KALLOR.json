@@ -9,6 +9,6 @@
   "data/vagdata/stationer.json": { "kalla": "Trafikverkets öppna API och NVDB via Datautbytesportalen (#473)", "licens": "CC0" },
   "data/vagdata/vaglagspunkter-europavag.json": { "kalla": "Trafikverkets öppna API, NVDB Vägnummer (Vägdata.NVDB_DK_O 1.2): Europaväg vid de 12 960 väglagspunkterna (#553)", "licens": "CC0" },
   "data/vagdata/vaglagspunkter.json": { "kalla": "Trafikverkets öppna API och NVDB via Datautbytesportalen (#473)", "licens": "CC0" },
-  "data/vagdata/vagpunkter.json": { "kalla": "Trafikverkets öppna API och NVDB via Datautbytesportalen (#473)", "licens": "CC0" }
+  "data/vagdata/vagpunkter.json": { "kalla": "Trafikverkets öppna API och NVDB via Datautbytesportalen (#473)", "licens": "CC0" }, "data/sverige/sverige.json": {"kalla": "Natural Earth 1:10m (naturalearthdata.com, nvkelso/natural-earth-vector ca96624): Sveriges kontur ur admin_0_countries, förenklad, och 34 större orter ur populated_places (scripts/sverige-kontur.py, DECISIONS #930). Vannersborg rättat till Vänersborg", "licens": "Public domain — Natural Earth"}
  }
 }

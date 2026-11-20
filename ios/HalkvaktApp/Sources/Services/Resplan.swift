@@ -21,6 +21,8 @@ final class Resplan: NSObject, MKLocalSearchCompleterDelegate {
         let mal: String
         let punkter: [[Double]]   // [lon, lat], WGS84
         let km: Double
+        /// Apples restid i sekunder. nil i en resa som sparades före DECISIONS #930.
+        var restidS: Double?
         var avresa: Date?
     }
 
@@ -113,7 +115,8 @@ final class Resplan: NSObject, MKLocalSearchCompleterDelegate {
             let n = vag.polyline.pointCount
             var koord = [CLLocationCoordinate2D](repeating: kCLLocationCoordinate2DInvalid, count: n)
             vag.polyline.getCoordinates(&koord, range: NSRange(location: 0, length: n))
-            plan = Plan(mal: val.titel, punkter: koord.map { [$0.longitude, $0.latitude] }, km: vag.distance / 1000, avresa: nil)
+            plan = Plan(mal: val.titel, punkter: koord.map { [$0.longitude, $0.latitude] }, km: vag.distance / 1000,
+                        restidS: vag.expectedTravelTime, avresa: nil)
             Self.radera()
             AvreseNotis.taBort()
             lage = .vilar
