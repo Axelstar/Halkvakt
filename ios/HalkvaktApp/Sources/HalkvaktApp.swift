@@ -47,7 +47,7 @@ struct InstallningarView: View {
 
                     VStack(alignment: .leading, spacing: 6) {
                         MonoLabel(text: "Löftet")
-                        Text("Din position skickas aldrig till Halkvakt av sig själv.").font(Typo.sans(15)).foregroundStyle(Brand.text2)
+                        Text(Platsord.lofte).font(Typo.sans(15)).foregroundStyle(Brand.text2)
                     }
                     .padding(.top, 24).padding(.horizontal, 4)
                 }
@@ -199,7 +199,7 @@ struct InstallningarView: View {
             Rubrik(titel: "Integritet", text: nil)
             VStack(alignment: .leading, spacing: 12) {
                 MonoLabel(text: "Löftet", size: 11)
-                Text("Din position skickas aldrig till Halkvakt av sig själv.").font(Typo.sans(20, .medium)).foregroundStyle(Brand.text)
+                Text(Platsord.lofte).font(Typo.sans(20, .medium)).foregroundStyle(Brand.text)
                 // Kort #357 (DECISIONS #616, #625): "ingen spårning" blev osant när resor kan sparas — en sparad resa är ett spår,
                 // även om det bara finns hos föraren. Texten säger var de ligger och hur de tas bort.
                 Text(Prefs.betatestTillaten
@@ -216,6 +216,8 @@ struct InstallningarView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(Brand.panel, in: RoundedRectangle(cornerRadius: 18))
             .padding(.top, 24)
+            // Platsdelningen (DECISIONS #917, #918): bara i TestFlight tills orden är bytta överallt.
+            if Platsdelning.tillaten { DinDataView().padding(.top, 28).padding(.bottom, 18) }
             RowPanel {
                 if Prefs.betatestTillaten {
                     NavigationLink(value: Sida.betatest) { NavRowLabel(title: "Betatest", value: prefs.facitOn ? "På" : "Av") }
@@ -404,6 +406,8 @@ struct RootView: View {
     @State private var hem = 0
     @State private var guardM = GuardManager.shared
     @State private var fav = Favoriter.shared
+    @State private var prefs = Prefs.shared
+    @State private var plats = Platsdelning.shared
     var body: some View {
         ZStack(alignment: .bottom) {
             // Flikarna lever hela tiden, som i TabView: ingen omladdning och ingen tappad undersida vid flikbyte.
@@ -418,6 +422,10 @@ struct RootView: View {
             // i stället för att flyta upp över innehållet (Axels skärmbild 24/10).
             FloatingTabBar(tab: $tab, vidVakten: { hem += 1 }).padding(.bottom, 8)
                 .ignoresSafeArea(.keyboard, edges: .bottom)
+            // Platsdelningens fråga (DECISIONS #917): täcker flikarna tills föraren svarat, efter introduktionen och aldrig under körning.
+            if plats.skaFraga && prefs.onboardingDone && !guardM.running {
+                PlatsdelningFraga().frame(maxWidth: .infinity, maxHeight: .infinity).transition(.opacity)
+            }
         }
         .background(Brand.bg)
         // Skärmens bakgrund bakom klockan: flikarna döljer navigeringsfältet, så texten rullade annars upp under statusfältet
@@ -451,6 +459,7 @@ struct HalkvaktApp: App {
             Task { @MainActor in
                 let p = Prefs.shared
                 p.onboardingDone = true   // annars täcker introduktionen skärmen på en färsk simulator
+                Platsdelning.shared.svara(ja: false)   // platsdelningens fråga likaså (#917)
                 p.facitOn = true
                 // Kort #203: en påhittad RESA, inte bara en varning — så att efter-resan-kortet syns
                 // överst på Redo. utan en körning. Samma tidsstämplar i historiken och i "Senast sagt",
@@ -484,6 +493,7 @@ struct HalkvaktApp: App {
                 if phase == .active { Task {
                     Raknare.notiser(await HeadsUpService.shared.status())   // #787: en gång per enhet och värde
                     _ = await FacitSender.flush(); await Raknare.flush()
+                    Platsdelning.shared.uppdatera()   // #917: kommunen, bara efter ett ja och bara i TestFlight (#918)
                 } }
             }
             // DECISIONS #36: introduktionen är det första man ser, en gång.

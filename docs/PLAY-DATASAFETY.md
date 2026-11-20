@@ -11,6 +11,10 @@ Syfte: den dag kontot är godkänt ska formuläret kunna fyllas i på fem minute
 > Matchningen sker på telefonen mot nedladdade snapshots. Det enda som någonsin skickas är ett facitsvar
 > som föraren själv trycker på — och det bär varnings-id och klockslag, alltså ungefär var och när.*
 
+> **20/11 2026 (DECISIONS #917, #918): platsdelningen gäller inte Android än.** iPhone-appen skickar i TestFlight-byggen kommunen
+> telefonen senast var i, med förarens ja. Android-appen skickar inget sådant, så svaren nedan står kvar. Den dag Android får
+> platsdelningen skrivs formuläret om i samma commit: ungefärlig plats samlas in, kopplad till ett enhets-id, för appens funktion.
+
 ## Vad appen faktiskt skickar (läst ur koden 20/9, inte ur minnet)
 
 | Utgående anrop | När | Innehåll | Sker för |

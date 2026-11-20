@@ -357,6 +357,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         dismissTask?.cancel()
         currentWarning = nil
         efterResan()     // kort #203: frågan kommer till föraren, inte tvärtom
+        if korde { Platsdelning.shared.uppdatera() }   // #917: kommunen där resan slutade, bara efter ett ja
         fenceParking()   // nästa resa börjar här
     }
 
