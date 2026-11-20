@@ -110,7 +110,7 @@ export function stationsytor(stationer: { id: string; lon: number; lat: number }
     const idx: number[] = [];
     for (let r = r0; r <= r1; r++)
       for (let c = c0; c <= c1; c++)
-        if (Math.hypot(g.x0 + (c + 0.5) * g.xscale - x, g.y0 - (r + 0.5) * g.yscale - y) <= radie) idx.push(r * g.cols + c);
+        if (Math.hypot(g.x0 + (c + 0.5) * g.xscale - x, g.y0 - (r + 0.5) * g.yscale - y) <= radie - 2) idx.push(r * g.cols + c);
     if (idx.length) ut.set(s.id, idx);
   }
   return ut;
