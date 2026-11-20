@@ -4760,3 +4760,644 @@ function sortera896(v: unknown): unknown {
   if (v && typeof v === "object") return Object.fromEntries(Object.entries(v as Record<string, unknown>).sort(([a], [b]) => a.localeCompare(b)).map(([k, x]) => [k, sortera896(x)]));
   return v;
 }
+
+// THE MOISTURE SHADOW IN THE CITIES (sql/127, DECISIONS #907; halkvakt-kuvos F74 §8), against a real PostGIS. One site per case, 0.5° of
+// latitude apart (55 km, more than K1's 15 km), all north of 62° so that the March window never touches the test. Every false-positive
+// trap lies where its case would otherwise give zero (CLAUDE.md).
+//   FS1  the file runs twice, and no rule function changes: the md5 of each, and kandidat_skugga_meta still matches ny_kandidat_regel()
+//   FS2  fixed search path and time zone, RLS on both tables; all switches off gives 'av', a missing candidate hour 'tyst'
+//   FS3  the rows carry content, site by site (PLATSER): K1's radius, remote surfaces, the guards, hoar frost, the words, the windows,
+//        K2a's radius and words, R0 in every variant, F1 for the dry points, the veto and the switch
+//   FS4  the shadow never speaks: talande_regel() and ny_kandidat_regel() give the same rows before and after it
+//   FS5  the check (§8): R0 in P0 is the city log's varnar, R0 under F1 its spridning, and each side carries its own time
+//   FS6  the run log, a second run that duplicates nothing, and the thinning after 14 days
+//   FS7  counter-tests: mutations of the function, each caught by at least one site
+//   FS8  the export: the white list, the time columns, the day's file and the bookkeeping
+//   FS9  svartis and rimfrost in the same rows (sql/126, sql/127, DECISIONS #908; halkvakt-kuvos F75 §9), sites S18–S27 and S14–S16:
+//        G-rim gives hoar frost at 89 % humidity; M-dagg needs both hours, one is not enough, 0.89 is not enough and a missing value
+//        is no value; S-1h … S-4h at their edges and 0.09 mm/h never; every variant has moisture where R0 has it; veto and F1 never
+//        in P0 with M-dagg and S-3h either; 126 leaves every rule function as it was (FS1). The fixtures keep the ids of the PR's
+//        first number (905).
+test("#907 #908 the moisture shadow in the cities: P0, K1, K2a, svartis and rimfrost, the check against the city log, the export and the counter-tests", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const las = (f: string) => q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+  const RIKTIG = readFileSync(new URL("../sql/127_fuktskuggan_stad.sql", import.meta.url), "utf8");
+  const { SATS: NKDB } = await import("../ingest/ny-kandidat-db.ts");
+  const TAB = ["ny_kandidat_fuktskugga_stad", "ny_kandidat_fuktskugga_stad_korning"];
+  const REGLER = ["kandidat_regel()", "ny_kandidat_regel()", "talande_regel()", "talande_timme()", "ny_kandidat_regel_snabb()",
+    "kandidat_timme()", "ny_kandidat_timme()", "ny_kandidat_logga()", "ny_kandidat_logga_stad()"];
+  const md5 = async () => Object.fromEntries((await q(`SELECT f, md5(pg_get_functiondef(to_regprocedure(f))) AS m
+    FROM unnest($1::text[]) f WHERE to_regprocedure(f) IS NOT NULL`, [REGLER])).rows.map((r: any) => [r.f, r.m]));
+  const stad = async () => {
+    for (const s of ["DELETE FROM ny_kandidat_live WHERE punkt LIKE 'B905%' OR punkt LIKE 'C905%'",
+      "DELETE FROM stadspunkt WHERE punkt LIKE 'B905%' OR punkt LIKE 'C905%'",
+      "DELETE FROM weather_observations WHERE station_id LIKE '9050%'", "DELETE FROM givarfel_dygn WHERE station_id LIKE '9050%'",
+      "DELETE FROM road_conditions WHERE segment_id LIKE '9050%'", "DELETE FROM radar_stad WHERE grupp LIKE 'B-905-%'",
+      "DELETE FROM ny_kandidat_skugga_stad WHERE grupp LIKE 'B-905-%' OR grupp LIKE 'C-905-%'",
+      "DELETE FROM ny_kandidat_skugga_stad_korning WHERE korning > now() - interval '3 hours'",
+      "DELETE FROM ny_kandidat_fuktskugga_stad", "DELETE FROM ny_kandidat_fuktskugga_stad_korning",
+      "DELETE FROM ny_kandidat_met_stad WHERE punkt LIKE 'B905%' OR punkt LIKE 'C905%'",
+      "DELETE FROM arkiv_export_tabell WHERE tabell LIKE 'ny_kandidat_fuktskugga%'", "UPDATE stadsbrytare SET pa = false"])
+      await q(s).catch(() => {});
+  };
+  // [minutes before T, surface, air, dew point, precipitation, humidity %]
+  type Rad = [number, number, number | null, number | null, string | null, number?];
+  // met: [point, hours before the candidate's hour (0 or 1), MET's dew point, MET's humidity as a fraction]; fore: [point, the
+  // candidate's value the hour before]; regn: [minutes before T, rate_mean_mmh] in radar_stad for the group (#908).
+  type Plats = { namn: string; grupp: string; punkter: [string, number, number | null][]; radar?: boolean;
+    stationer?: [string, number, Rad[], ("karantan" | "givarfel")?][]; strackor?: [string, number, string[], boolean?][];
+    met?: [string, 0 | 1, number | null, number | null][]; fore?: [string, number][]; regn?: [number, number][];
+    vantat: number[] | null };
+  // vantat: p0, r0, r0_f1, k1, k1_nb, k1_rim, k1_utan_varde, k2a, k2a_utan_varde, then (#908) g_rim_utan_varde, m_dagg, m_dagg_utan_varde,
+  // s1h, s2h, s3h, s4h, c7_alla — or null for no row. Points: [id, n_ank, frys_min]. The candidate's value is -1 in the hour.
+  const PLATSER: Plats[] = [
+    { namn: "S1 K1 at 15.0 km counts", grupp: "B-905-001", punkter: [["B90501", 1, 0]],
+      stationer: [["9050011", 14999.5, [[10, -1, -0.5, -3, "freezing_rain"]]]], vantat: [1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0] },
+    { namn: "S2 K1 at 15.1 km does not", grupp: "B-905-002", punkter: [["B90502", 1, 0]],
+      stationer: [["9050021", 15100, [[10, -1, -0.5, null, "rain"]]]], vantat: [1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0] },
+    { namn: "S3 never a remote surface, and a dry neighbour ends the search", grupp: "B-905-003", punkter: [["B90503", 1, 0]],
+      stationer: [["9050100", 1000, [[10, -1, -0.5, null, "rain"]]], ["9050031", 5000, [[10, 0.5, 1, 1, "no"]]],
+        ["9050032", 8000, [[10, -1, -0.5, null, "snow"]]]], vantat: [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0] },
+    { namn: "S4 a neighbour the guards fail is passed over", grupp: "B-905-004", punkter: [["B90504", 1, 0]],
+      stationer: [["9050041", 500, [[10, -70, -65, null, "rain"]]],            // outside the value guard's span
+        ["9050042", 1000, [[10, -1, null, null, "rain"]]],                        // no air
+        ["9050043", 1500, [[40, -1, -0.5, null, "rain"]]],                        // no row in the last 30 minutes
+        ["9050044", 2000, [[10, -15, 0, null, "rain"]]],                          // #75
+        ["9050045", 2500, [[10, 1, 12, null, "rain"]]],                           // the row guard
+        ["9050046", 3000, [[10, -1, -0.5, null, "rain"]], "karantan"],            // the quarantine
+        ["9050047", 3500, [[10, -1, -0.5, null, "rain"]], "givarfel"],            // the slow guard
+        ["9050048", 6000, [[10, -1, -0.5, -5, "no"]]]], vantat: [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0] },
+    { namn: "S5 hoar frost", grupp: "B-905-005", punkter: [["B90505", 1, 0]],
+      stationer: [["9050051", 3000, [[10, -2, -1, -1.5, null]]]], vantat: [1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1] },
+    { namn: "S6 no hoar frost with the dew point below -50", grupp: "B-905-006", punkter: [["B90506", 1, 0]],
+      stationer: [["9050061", 3000, [[10, -55, -50, -52, null]]]], vantat: [1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0] },
+    { namn: "S7 the dew point guard, in the latest valid row", grupp: "B-905-007", punkter: [["B90507", 1, 0]],
+      stationer: [["9050071", 3000, [[20, -2, -1, -1.5, null], [5, -1, 0, 5, null]]]], vantat: [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0] },
+    { namn: "S8 yes, no and Dry are never precipitation", grupp: "B-905-008", punkter: [["B90508", 1, 0]],
+      stationer: [["9050081", 2000, [[50, -1, -0.5, null, "yes"], [20, -1, -0.5, null, "Dry"], [5, -1, -0.5, null, "no"]]]],
+      vantat: [1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0] },
+    { namn: "S9 precipitation 70 minutes old does not count", grupp: "B-905-009", punkter: [["B90509", 1, 0]],
+      stationer: [["9050091", 2000, [[70, -1, -0.5, null, "rain"], [5, -1, -0.5, null, "no"]]]], vantat: [1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0] },
+    { namn: "S10 precipitation 50 minutes old counts, in any row", grupp: "B-905-010", punkter: [["B90510", 1, 0]],
+      stationer: [["9050101", 2000, [[50, -15, 0, null, "rain"], [5, -1, -0.5, null, "no"]]]], vantat: [1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0] },
+    { namn: "S11 Våt at 1.9 km", grupp: "B-905-011", punkter: [["B90511", 1, 0]], strackor: [["9050111", 1900, ["Våt"]]],
+      vantat: [1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0] },
+    { namn: "S12 Våt at 2.1 km does not count", grupp: "B-905-012", punkter: [["B90512", 1, 0]], strackor: [["9050121", 2100, ["Våt"]]],
+      vantat: [1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0] },
+    { namn: "S13 fläckvis Våt, an ice word and a deleted Våt never count", grupp: "B-905-013", punkter: [["B90513", 1, 0]],
+      strackor: [["9050131", 500, ["fläckvis Våt"]], ["9050132", 800, ["Isfläckar"]], ["9050133", 300, ["Våt"], true]],
+      vantat: [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0] },
+    { namn: "S14 every variant has moisture where R0 has it, and R0 under F1 is counted", grupp: "B-905-014", radar: true,
+      punkter: [["B90514", 1, 0], ["B90515", 2, 0.5]], vantat: [1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1] },
+    { namn: "S15 a vetoed point is never in P0, also when dry", grupp: "B-905-015", punkter: [["B90516", 1, 0]],
+      stationer: [["9050151", 3000, [[10, 3, 4, null, null]]]],
+      met: [["B90516", 0, 0, 0.95], ["B90516", 1, 0, 0.95]], fore: [["B90516", -1]], regn: [[150, 0.5]], vantat: null },
+    { namn: "S16 F1 blocks the dry points too", grupp: "B-905-016",
+      punkter: [["B90517", 2, 0.5], ["B90518", 1, 0], ["B90519", 2, 0.44], ["B90520", 1, 0.5], ["B90521", 2, null]],
+      met: [["B90517", 0, 0, 0.95], ["B90517", 1, 0, 0.95]], fore: [["B90517", -1]], regn: [[150, 0.5]],
+      vantat: [4, 0, 0, 0, 0, 0, 4, 0, 4, 0, 0, 4, 0, 0, 4, 4, 4] },
+    { namn: "S17 a point whose switch is off is not in the shadow", grupp: "C-905-017", punkter: [["C90522", 1, 0]], vantat: null },
+    // Svartis and rimfrost (#908, F75 §9). The candidate's value is -1 in the hour; MET's dew point is placed against it.
+    { namn: "S18 G-rim: the humidity 89 % still gives hoar frost (no cross-sensor check)", grupp: "B-905-018", punkter: [["B90523", 1, 0]],
+      stationer: [["9050181", 3000, [[10, -2, -1, -1.5, null, 89]]]], vantat: [1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1] },
+    { namn: "S19 M-dagg: both hours at or below the dew point, the humidity exactly 0.9 in the hour; the hour before's humidity does not decide",
+      grupp: "B-905-019", punkter: [["B90524", 1, 0]], met: [["B90524", 0, -1, 0.9], ["B90524", 1, -1.5, 0.5]], fore: [["B90524", -2]],
+      vantat: [1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1] },
+    { namn: "S20 M-dagg: one hour is not enough, the hour before is above the dew point", grupp: "B-905-020", punkter: [["B90525", 1, 0]],
+      met: [["B90525", 0, -0.5, 0.95], ["B90525", 1, -1.2, 0.95]], fore: [["B90525", -1]], vantat: [1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0] },
+    { namn: "S21 M-dagg: the humidity 0.89 is not enough", grupp: "B-905-021", punkter: [["B90526", 1, 0]],
+      met: [["B90526", 0, -0.5, 0.89], ["B90526", 1, -0.5, 0.95]], fore: [["B90526", -1]], vantat: [1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0] },
+    { namn: "S22 M-dagg: no value without MET's hour before, without the candidate's hour before, or without MET's dew point", grupp: "B-905-022",
+      punkter: [["B90527", 1, 0], ["B90528", 1, 0], ["B90529", 1, 0]],
+      met: [["B90527", 0, -0.5, 0.95], ["B90528", 0, -0.5, 0.95], ["B90528", 1, -0.5, 0.95], ["B90529", 0, null, null], ["B90529", 1, -0.5, 0.95]],
+      fore: [["B90527", -1], ["B90529", -1]], vantat: [3, 0, 0, 0, 0, 0, 3, 0, 3, 0, 0, 3, 0, 0, 0, 0, 0] },
+    { namn: "S23 S-3h: radar 170 minutes old counts for S-3h and S-4h, not for S-2h", grupp: "B-905-023", punkter: [["B90530", 1, 0]],
+      regn: [[170, 0.5]], vantat: [1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 1, 1] },
+    { namn: "S24 S-3h: radar 190 minutes old counts only for S-4h", grupp: "B-905-024", punkter: [["B90531", 1, 0]],
+      regn: [[190, 0.5]], vantat: [1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0] },
+    { namn: "S25 S: 0.09 mm/h never counts, and is not R0 either", grupp: "B-905-025", punkter: [["B90532", 1, 0]],
+      regn: [[30, 0.09], [100, 0.09]], vantat: [1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0] },
+    { namn: "S26 S-2h: radar 110 minutes old", grupp: "B-905-026", punkter: [["B90533", 1, 0]],
+      regn: [[110, 0.5]], vantat: [1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 1] },
+  ];
+  const KOL = ["p0_punkter", "r0_punkter", "r0_f1_punkter", "k1_punkter", "k1_nb_punkter", "k1_rim_punkter", "k1_utan_varde",
+    "k2a_punkter", "k2a_utan_varde", "g_rim_utan_varde", "m_dagg_punkter", "m_dagg_utan_varde", "s1h_punkter", "s2h_punkter",
+    "s3h_punkter", "s4h_punkter", "c7_alla_punkter"];
+  const flytta = async (lon: number, lat: number, m: number, grader: number) => (await q(`SELECT ST_X(g::geometry) AS lon, ST_Y(g::geometry) AS lat
+    FROM ST_Project(ST_SetSRID(ST_MakePoint($1::float8, $2::float8), 4326)::geography, $3::float8, radians($4::float8)) g`, [lon, lat, m, grader])).rows[0] as { lon: number; lat: number };
+  const km = async (a: string, b: string) => Number((await q(`SELECT ST_Distance(w.geom::geography, s.geom::geography) AS m
+    FROM weather_observations w, stadspunkt s WHERE w.station_id = $1 AND s.punkt = $2 LIMIT 1`, [a, b])).rows[0].m);
+  const sm = async (seg: string, b: string) => Number((await q(`SELECT ST_Distance(r.geom::geography, s.geom::geography) AS m
+    FROM road_conditions r, stadspunkt s WHERE r.segment_id = $1 AND s.punkt = $2`, [seg, b])).rows[0].m);
+  try {
+    await q("CREATE TABLE IF NOT EXISTS shadow_log (id bigserial PRIMARY KEY, run_at timestamptz NOT NULL DEFAULT now(), alerts jsonb NOT NULL DEFAULT '[]'::jsonb)");
+    await q("DROP FUNCTION IF EXISTS kandidat_regel()");   // sql/056 has the older return type (as the test #800)
+    for (const f of ["001_init.sql", "008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql", "018_trend_berakna.sql",
+                     "029_brott_index.sql", "030_langsam_vakt.sql", "050_kandidat_live.sql", "053_arkiv_tabeller.sql", "055_vagpunkter.sql",
+                     "056_kandidat_regel.sql", "057_kandidat_skugga.sql", "058_kandidat_spridning.sql", "059_kandidat_brytare.sql",
+                     "065_kandidat_domlogg_punkter.sql", "068_ny_kandidat_skugga.sql", "069_radarns_tal.sql",
+                     "086_spridningsparren_frys_min.sql", "087_spridningsparren_f1.sql", "089_stadspunkter.sql", "090_radar_stad.sql",
+                     "091_stadsregeln.sql", "094_stadsgrenens_timme.sql", "096_olycksfacit_stad.sql", "070_bytet.sql",
+                     "078_kandidat_snabb.sql", "080_kandidat_snabb_skugga.sql"]) await las(f);
+    // The export as #888 loads it: 063 puts back its check with nine names, so the new candidate's rows go first.
+    await q("DELETE FROM arkiv_export_tabell WHERE tabell LIKE 'ny_kandidat%'");
+    for (const f of ["062_kortare_forvaring.sql", "063_arkiv_fyra_tabeller.sql", "072_gallringen_tillbaka.sql", "114_stadsloggen_arkiv.sql"]) await las(f);
+    await stad();
+    await q("DELETE FROM ny_kandidat_live WHERE tid > date_trunc('hour', now())");
+
+    // FS1: no rule function changes, and the fast candidate's checksum still matches the rule (sql/080, sql/121).
+    const fore = await md5();
+    assert.equal(Object.keys(fore).length, REGLER.length, `FS1: every rule function is there to compare (${Object.keys(fore)})`);
+    await las("126_stadens_met_fukt.sql");
+    await las("126_stadens_met_fukt.sql");                                              // the file can run twice (#908)
+    await q(RIKTIG);
+    await q(RIKTIG);                                                                    // the file can run twice
+    assert.deepEqual(await md5(), fore, "FS1: no rule function changes with sql/126 and sql/127");
+    assert.equal((await q("SELECT relrowsecurity FROM pg_class WHERE relname = 'ny_kandidat_met_stad'")).rows[0].relrowsecurity, true, "FS1: RLS on sql/126's table");
+    assert.equal((await q(`SELECT (SELECT m.regel_md5 FROM kandidat_skugga_meta m WHERE m.id = 1)
+      = md5(pg_get_functiondef('ny_kandidat_regel()'::regprocedure)) AS lika`)).rows[0].lika, true, "FS1: kandidat_skugga_meta still matches");
+
+    // FS2: the definition and the locks; all switches off, and a missing hour.
+    const conf = (await q("SELECT proconfig FROM pg_proc WHERE proname = 'ny_kandidat_logga_fuktskugga'")).rows[0].proconfig as string[];
+    assert.ok(conf.includes("search_path=public, extensions") && conf.some((c) => /^timezone=UTC$/i.test(c)),
+      `FS2: fixed search path (DECISIONS #784) and UTC in the definition: ${conf}`);
+    assert.deepEqual((await q("SELECT relname, relrowsecurity FROM pg_class WHERE relname = ANY($1) ORDER BY relname", [TAB])).rows,
+      TAB.map((relname) => ({ relname, relrowsecurity: true })), "FS2: RLS on both tables");
+    const sistaKorning = async () => (await q("SELECT observed_at, status, brytare, p0_grupper FROM ny_kandidat_fuktskugga_stad_korning ORDER BY korning DESC LIMIT 1")).rows[0];
+    assert.equal((await q("SELECT ny_kandidat_logga_fuktskugga() AS m")).rows[0].m, "brytarna av");
+    assert.deepEqual([(await sistaKorning()).status, (await sistaKorning()).brytare], ["av", []], "FS2: all switches off is a run that is off");
+
+    // The fixtures. T is the clock the rows hang on; the shadow's e is a few seconds later.
+    const T: Date = (await q("SELECT now() AS t")).rows[0].t;
+    const fore_T = (min: number) => new Date(T.getTime() - min * 60_000);
+    const tid: Date = (await q("SELECT date_trunc('hour', now()) AS t")).rows[0].t;
+    await q("INSERT INTO ny_kandidat_live (tid, punkt, pb) SELECT $1, v.punkt, 5 FROM vagpunkt v ON CONFLICT DO NOTHING", [tid]);
+    for (const [i, p] of PLATSER.entries()) {
+      const lon = 45, lat = 64.5 + 0.5 * i, lager = p.grupp[0];
+      for (const [punkt, nAnk, frysMin] of p.punkter) {
+        await q("INSERT INTO stadspunkt (punkt, grupp, lager, omrade, lon, lat) VALUES ($1, $2, $3, 'Stor-Stockholm', $4, $5)", [punkt, p.grupp, lager, lon, lat]);
+        await q("INSERT INTO ny_kandidat_live (tid, punkt, pb, n_ank, spr, frys_min, ank_km) VALUES ($1, $2, -1, $3, 1, $4, 4)", [tid, punkt, nAnk, frysMin]);
+      }
+      if (p.radar) await q("INSERT INTO radar_stad (grupp, observed_at, rate_max_mmh, rate_mean_mmh) VALUES ($1, $2, 0.8, 0.5)", [p.grupp, fore_T(10)]);
+      for (const [id, m, rader, extra] of p.stationer ?? []) {
+        const x = await flytta(lon, lat, m, 0);
+        for (const [min, yta, luft, dagg, ned, fukt] of rader)
+          await q(`INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, dewpoint_c, precipitation, humidity_pct)
+            VALUES ($1, 'prov', ST_SetSRID(ST_MakePoint($2, $3), 4326), $4, $5, $6, $7, $8, $9)`, [id, x.lon, x.lat, fore_T(min), yta, luft, dagg, ned, fukt ?? null]);
+        if (extra === "karantan") for (const dygn of [1, 2, 3])     // three breaches of #75 within seven days
+          await q(`INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c)
+            VALUES ($1, 'prov', ST_SetSRID(ST_MakePoint($2, $3), 4326), $4, -20, 0)`, [id, x.lon, x.lat, fore_T(dygn * 1440)]);
+        if (extra === "givarfel")
+          await q("INSERT INTO givarfel_dygn (station_id, dag, forst, senast) VALUES ($1, ($2::timestamptz AT TIME ZONE 'UTC')::date, $2, $2)", [id, fore_T(rader[0][0])]);
+      }
+      // #908: the group's older radar, the candidate's value the hour before, and MET's rows through the writer's own statement.
+      for (const [min, mmh] of p.regn ?? [])
+        await q("INSERT INTO radar_stad (grupp, observed_at, rate_max_mmh, rate_mean_mmh) VALUES ($1, $2, $3, $3)", [p.grupp, fore_T(min), mmh]);
+      for (const [punkt, pb] of p.fore ?? [])
+        await q("INSERT INTO ny_kandidat_live (tid, punkt, pb, n_ank, spr, frys_min, ank_km) VALUES ($1, $2, $3, 1, 1, 0, 4)",
+          [new Date(tid.getTime() - 3600_000), punkt, pb]);
+      for (const [punkt, timmar, td, rh] of p.met ?? [])
+        await q(NKDB.skrivMetStad, [[new Date(tid.getTime() - timmar * 3600_000)], [punkt], [new Date(tid.getTime() - 6 * 3600_000)], [td], [rh]]);
+      for (const [seg, m, info, raderad] of p.strackor ?? [])
+        await q(`INSERT INTO road_conditions (segment_id, condition_code, condition_text, condition_info, geom, deleted)
+          SELECT $1, 1, 'Normalt', $2::text[], ST_MakeLine(ST_Project(n, 100::float8, radians(270))::geometry, ST_Project(n, 100::float8, radians(90))::geometry), $3
+          FROM (SELECT ST_Project(ST_SetSRID(ST_MakePoint($4::float8, $5::float8), 4326)::geography, $6::float8, 0::float8) AS n) x`, [seg, info, raderad ?? false, lon, lat, m]);
+    }
+    // The margins are measured, not assumed (CLAUDE.md, the five-metre rule).
+    const d1 = await km("9050011", "B90501"), d2 = await km("9050021", "B90502"), s11 = await sm("9050111", "B90511"), s12 = await sm("9050121", "B90512");
+    assert.ok(d1 > 14999 && d1 <= 15000, `S1: the neighbour lies just inside 15 km (${d1} m)`);
+    assert.ok(d2 > 15050 && d2 < 15150, `S2: the neighbour lies 15.1 km away (${d2} m)`);
+    assert.ok(s11 > 1850 && s11 < 1950 && s12 > 2050 && s12 < 2150, `S11, S12: the segments lie 1.9 and 2.1 km away (${s11}, ${s12} m)`);
+    await q("UPDATE stadsbrytare SET pa = (omrade = 'Stor-Stockholm' AND lager = 'B')");
+
+    // FS2: a missing candidate hour is tyst (the latest hour is not complete).
+    await q("INSERT INTO ny_kandidat_live (tid, punkt, pb) VALUES (now() - interval '1 second', 'B90599', -1)");
+    assert.equal((await q("SELECT ny_kandidat_logga_fuktskugga() AS m")).rows[0].m, "tyst");
+    assert.equal((await sistaKorning()).status, "tyst", "FS2: a missing hour is a run that is tyst");
+    await q("DELETE FROM ny_kandidat_live WHERE punkt = 'B90599'");
+
+    // FS6 prepared: one row 15 days old and one 13 days old, with their runs.
+    await q(`INSERT INTO ny_kandidat_fuktskugga_stad (grupp, observed_at, raknad_at, omrade, lager, ${KOL.join(", ")}) VALUES
+      ('B-905-099', now() - interval '15 days', now() - interval '15 days', 'Stor-Stockholm', 'B', 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+      ('B-905-098', now() - interval '13 days', now() - interval '13 days', 'Stor-Stockholm', 'B', 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)`);
+    await q(`INSERT INTO ny_kandidat_fuktskugga_stad_korning (korning, observed_at, status, brytare, p0_grupper) VALUES
+      (now() - interval '15 days', now() - interval '15 days', 'räknad', '{Stor-Stockholm/B}', 1),
+      (now() - interval '13 days', now() - interval '13 days', 'räknad', '{Stor-Stockholm/B}', 1)`);
+
+    // FS4 before, then the city log and the shadow, as the hourly flow runs them.
+    const regeln = async () => JSON.stringify((await q("SELECT * FROM ny_kandidat_regel() ORDER BY punkt")).rows);
+    const talande = async () => JSON.stringify((await q("SELECT * FROM talande_regel() ORDER BY punkt")).rows);
+    const [regelFore, talandeFore] = [await regeln(), await talande()];
+    assert.equal((await q("SELECT ny_kandidat_logga_stad() AS m")).rows[0].m, "klart");
+    assert.equal((await q("SELECT ny_kandidat_logga_fuktskugga() AS m")).rows[0].m, "klart");
+    assert.equal(await regeln(), regelFore, "FS4: ny_kandidat_regel() is the same after the shadow");
+    assert.equal(await talande(), talandeFore, "FS4: talande_regel() is the same after the shadow");
+
+    // FS3: the rows, site by site.
+    const rader = async () => Object.fromEntries((await q(`SELECT grupp, ${KOL.join(", ")} FROM ny_kandidat_fuktskugga_stad
+      WHERE observed_at = $1 AND grupp LIKE '_-905-0%'`, [tid])).rows.map((r: any) => [r.grupp, KOL.map((k) => r[k])]));
+    const forsta = await rader();
+    for (const p of PLATSER) assert.deepEqual(forsta[p.grupp] ?? null, p.vantat, `FS3 ${p.namn}`);
+
+    // FS5: the check against the city log, group hour by group hour.
+    const stadslogg = Object.fromEntries((await q(`SELECT grupp, varnar, spridning, veto, torr, skriven_at FROM ny_kandidat_skugga_stad
+      WHERE observed_at = $1 AND grupp LIKE 'B-905-%'`, [tid])).rows.map((r: any) => [r.grupp, r]));
+    const skugga = Object.fromEntries((await q(`SELECT grupp, r0_punkter, r0_f1_punkter, raknad_at FROM ny_kandidat_fuktskugga_stad
+      WHERE observed_at = $1 AND grupp LIKE 'B-905-%'`, [tid])).rows.map((r: any) => [r.grupp, r]));
+    assert.deepEqual([stadslogg["B-905-014"].varnar, stadslogg["B-905-014"].spridning, stadslogg["B-905-015"].veto, stadslogg["B-905-016"].torr],
+      [1, 1, 1, 5], "FS5: the city log saw the same points");
+    for (const [g, s] of Object.entries(skugga) as [string, any][]) {
+      assert.ok(stadslogg[g], `FS5 ${g}: the city log has the group hour`);
+      assert.equal(s.r0_punkter, stadslogg[g].varnar, `FS5 ${g}: R0 in P0 is the city log's varnar`);
+      assert.equal(s.r0_f1_punkter, stadslogg[g].spridning, `FS5 ${g}: R0 under F1 is the city log's spridning`);
+      assert.ok(s.raknad_at.getTime() >= stadslogg[g].skriven_at.getTime(), `FS5 ${g}: the shadow's e is not before the city log's, and both are on the rows`);
+    }
+    for (const [g, l] of Object.entries(stadslogg) as [string, any][])
+      if (l.varnar > 0) assert.ok(skugga[g], `FS5 ${g}: a group the city log warns for has a row in the shadow`);
+
+    // FS6: the run log, a second run, and the thinning.
+    const k1 = await sistaKorning();
+    const iTimmen = Number((await q("SELECT count(*) AS n FROM ny_kandidat_fuktskugga_stad WHERE observed_at = $1", [tid])).rows[0].n);
+    assert.deepEqual([k1.status, k1.brytare, k1.observed_at.getTime(), k1.p0_grupper], ["räknad", ["Stor-Stockholm/B"], tid.getTime(), iTimmen],
+      "FS6: the run is räknad, carries the switch that was on, the hour and the groups written");
+    assert.ok(iTimmen >= PLATSER.filter((p) => p.vantat).length, `FS6: the sites with points in P0 are written (${iTimmen})`);
+    assert.equal((await q("SELECT ny_kandidat_logga_fuktskugga() AS m")).rows[0].m, "klart");
+    assert.equal(Number((await q("SELECT count(*) AS n FROM ny_kandidat_fuktskugga_stad WHERE observed_at = $1", [tid])).rows[0].n), iTimmen,
+      "FS6: a second run duplicates nothing");
+    assert.equal((await sistaKorning()).p0_grupper, 0, "FS6: the second run wrote no group");
+    assert.deepEqual((await q("SELECT grupp FROM ny_kandidat_fuktskugga_stad WHERE grupp IN ('B-905-098', 'B-905-099') ORDER BY grupp")).rows,
+      [{ grupp: "B-905-098" }], "FS6: a row 15 days old is thinned, one 13 days old stays");
+    assert.equal(Number((await q("SELECT count(*) AS n FROM ny_kandidat_fuktskugga_stad_korning WHERE korning < now() - interval '12 days'")).rows[0].n), 1,
+      "FS6: the run log is thinned the same way");
+
+    // FS7: counter-tests. Each mutation of the function must be caught by at least one site, and the output says which.
+    const kor = async (text: string) => {
+      await q(text);
+      await q("DELETE FROM ny_kandidat_fuktskugga_stad WHERE observed_at = $1", [tid]);
+      assert.equal((await q("SELECT ny_kandidat_logga_fuktskugga() AS m")).rows[0].m, "klart");
+      const r = await rader();
+      return PLATSER.filter((p) => JSON.stringify(r[p.grupp] ?? null) !== JSON.stringify(p.vantat)).map((p) => p.namn.split(" ")[0]);
+    };
+    const MUTANTER: [string, string, string][] = [
+      ["a deleted Våt counts", "WHERE NOT rc.deleted AND 'Våt' = ANY", "WHERE 'Våt' = ANY"],
+      ["a remote surface is a neighbour", "AND w.station_id !~ '^\\d{3,4}100$'", "AND true"],
+      ["no value guard span", "AND w.surface_temp_c BETWEEN -60 AND 60", "AND true"],
+      ["no #75", "AND w.surface_temp_c >= w.air_temp_c - 12\n", "\n"],
+      ["no row guard", "AND (w.air_temp_c < 10 OR w.air_temp_c - w.surface_temp_c < 8)", "AND true"],
+      ["no quarantine", "k.air_temp_c - 12) < 3", "k.air_temp_c - 12) < 1000"],
+      ["no slow guard", "FROM givarfel_dygn g WHERE g.station_id", "FROM givarfel_dygn g WHERE false AND g.station_id"],
+      ["a valid row for 45 minutes", "interval '30 minutes'", "interval '45 minutes'"],
+      ["precipitation for 80 minutes", "interval '60 minutes'", "interval '80 minutes'"],
+      ["yes is precipitation", "'snow', 'sleet')) AS k1_nb", "'snow', 'sleet', 'yes')) AS k1_nb"],
+      ["the dew point from the earliest valid row", "ORDER BY w.station_id, w.sample_time DESC", "ORDER BY w.station_id, w.sample_time"],
+      ["no dew point span", "w.dewpoint_c BETWEEN -50 AND 30", "true"],
+      ["no dew point guard", "AND g.yta - g.dagg >= -5, false)", ", false)"],
+      ["K1 at 15.2 km", "15 * 1000)", "15.2 * 1000)"],
+      ["K2a at 2.2 km", "p.geom::geography, 2000)", "p.geom::geography, 2200)"],
+      ["F1 only from the rule's outcome", "(coalesce(x.n_ank, 0) >= 2 AND l.frys_min >= 0.45) IS TRUE AS f1", "x.utfall = 'spridning' AS f1"],
+      ["the veto in P0", " AND x.utfall <> 'veto'", ""],
+      // #908: svartis and rimfrost.
+      ["G-rim without a value only when the dew point is missing", "g.dagg_i_spann IS NOT TRUE AS g_rim_utan", "g.dagg IS NULL AS g_rim_utan"],
+      ["M-dagg from one hour", "coalesce(d.timmar, 0) = 2 AS dagg_finns", "coalesce(d.timmar, 0) >= 1 AS dagg_finns"],
+      ["M-dagg strictly below the dew point", "l.pb <= m.met_td_c + 0", "l.pb < m.met_td_c + 0"],
+      ["M-dagg with the hour before's humidity", "FILTER (WHERE m.tid = h.tid) AS rh", "FILTER (WHERE m.tid < h.tid) AS rh"],
+      ["M-dagg at 0.89", "d.rh >= 0.9", "d.rh >= 0.89"],
+      ["an F1 point in P0, with its M-dagg", "WHERE NOT p.f1", "WHERE NOT p.f1 OR p.punkt = 'B90517'"],
+      ["S-3h for four hours", "interval '3 hours') AS s3h", "interval '4 hours') AS s3h"],
+      ["S-2h for three hours", "interval '2 hours') AS s2h", "interval '3 hours') AS s2h"],
+      ["S at 0.09 mm/h", "rs.rate_mean_mmh >= 0.1", "rs.rate_mean_mmh >= 0.09"],
+      ["the union without M-dagg", "OR (k.dagg_finns AND k.dagg_under) OR k.s3h)", "OR k.s3h)"],
+      ["the union with S-4h", "OR (k.dagg_finns AND k.dagg_under) OR k.s3h)", "OR (k.dagg_finns AND k.dagg_under) OR k.s4h)"],
+    ];
+    for (const [namn, fran, till] of MUTANTER) {
+      assert.ok(RIKTIG.includes(fran), `FS7 ${namn}: the text is in the file`);
+      const fallde = await kor(RIKTIG.split(fran).join(till));
+      console.log(`counter-test moisture shadow, ${namn}: caught by ${fallde.join(", ") || "NONE"}`);
+      assert.ok(fallde.length > 0, `FS7 ${namn}: no site catches the mutation`);
+    }
+    assert.deepEqual(await kor(RIKTIG), [], "FS7: the real file back, every site as expected");
+
+    // FS8: the export, on a day 30 days back that only the test's rows carry.
+    for (const t of TAB) {
+      assert.equal((await q("SELECT arkiv2_tabell($1) AS t", [t])).rows[0].t, t, `FS8 ${t} in the white list`);
+      assert.equal((await q("SELECT arkiv2_alder($1) AS n", [t])).rows[0].n, 1, `FS8 ${t} is exported the day after`);
+      assert.equal((await q("SELECT arkiv2_golv($1, 14) AS n", [t])).rows[0].n, 14, `FS8 ${t} is deleted after 14 days, as it is thinned`);
+    }
+    assert.deepEqual([(await q("SELECT arkiv2_tidkolumn($1) AS k", [TAB[0]])).rows[0].k, (await q("SELECT arkiv2_tidkolumn($1) AS k", [TAB[1]])).rows[0].k],
+      ["observed_at", "korning"], "FS8: the shadow counts its day on observed_at, the run log on korning");
+    assert.equal((await q("SELECT arkiv2_tabell('ny_kandidat_skugga_stad_korning') AS t")).rows[0].t, "ny_kandidat_skugga_stad_korning", "FS8: sql/114's names stay");
+    const efterslap: string = (await q("SELECT pg_get_functiondef('arkiv2_efterslap()'::regprocedure) AS f")).rows[0].f;
+    for (const t of TAB) assert.ok(efterslap.includes(`arkiv2_att_exportera('${t}', 100000)`), `FS8: the backlog counts ${t}`);
+    const d = (await q("SELECT ((now() - interval '30 days') AT TIME ZONE 'UTC')::date::text AS d")).rows[0].d as string;
+    const kl = (h: number, m = 0) => `${d}T${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:00Z`;
+    await q(`INSERT INTO ny_kandidat_fuktskugga_stad (grupp, observed_at, raknad_at, omrade, lager, ${KOL.join(", ")}) VALUES
+      ('B-905-201', $1, $2, 'Stor-Stockholm', 'B', 3, 1, 0, 2, 2, 0, 1, 1, 2, 1, 2, 1, 1, 1, 2, 3, 3),
+      ('B-905-202', $1, $2, 'Stor-Stockholm', 'B', 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0)`, [kl(3), kl(3, 50)]);
+    await q(`INSERT INTO ny_kandidat_fuktskugga_stad_korning (korning, observed_at, status, brytare, p0_grupper) VALUES
+      ($1, $2, 'räknad', '{Stor-Stockholm/B,Stor-Stockholm/C}', 2)`, [kl(3, 50), kl(3)]);
+    for (const t of TAB) assert.ok((await q("SELECT arkiv2_att_exportera($1, 100000)::text AS d", [t])).rows.some((r: any) => r.d === d), `FS8 ${t}: the day is queued`);
+    const text: string = (await q("SELECT arkiv2_dygn($1, $2::date) AS t", [TAB[0], d])).rows[0].t;
+    const [rubrik, ...filrader] = text.split("\n");
+    const kol = JSON.parse(rubrik) as string[];
+    assert.deepEqual(kol, ["grupp", "observed_at", "raknad_at", "omrade", "lager", ...KOL], "FS8: the header carries the columns in the table's order");
+    assert.equal(filrader.length, 2, "FS8: two rows on the day");
+    assert.deepEqual(KOL.map((k) => JSON.parse(filrader[0])[kol.indexOf(k)]), [3, 1, 0, 2, 2, 0, 1, 1, 2, 1, 2, 1, 1, 1, 2, 3, 3], "FS8: the first row carries its counts");
+    const ktext: string = (await q("SELECT arkiv2_dygn($1, $2::date) AS t", [TAB[1], d])).rows[0].t;
+    const kkol = JSON.parse(ktext.split("\n")[0]) as string[];
+    assert.deepEqual(JSON.parse(ktext.split("\n")[1])[kkol.indexOf("brytare")], ["Stor-Stockholm/B", "Stor-Stockholm/C"], "FS8: the switches follow as a list");
+    await assert.rejects(q("SELECT arkiv2_export_klar($1, $2::date, 1, 100, 'x', 'v')", [TAB[0], d]), /har 2 rader i databasen men filen bär 1/,
+      "FS8: the bookkeeping counts the day again and refuses another number");
+    assert.equal((await q("SELECT arkiv2_export_klar($1, $2::date, 2, 100, 'x', 'v') AS n", [TAB[0], d])).rows[0].n, 2);
+    assert.equal((await q("SELECT arkiv2_export_klar($1, $2::date, 1, 50, 'y', 'v') AS n", [TAB[1], d])).rows[0].n, 1);
+    for (const t of TAB) assert.ok(!(await q("SELECT arkiv2_att_exportera($1, 100000)::text AS d", [t])).rows.some((r: any) => r.d === d),
+      `FS8 ${t}: a booked day is not queued`);
+  } finally {
+    await stad();
+    await pool.end();
+  }
+});
+
+// SÄSONGSFACIT FOR THE CITIES (sql/128, docs/TROSKLAR-SASONGSFACIT.md §11, DECISIONS #913; körlistan C3): the daily aggregate against
+// PostGIS on invented days in March 2026 (Swedish time = UTC+1), in a transaction that is rolled back (kandidat_talar is the decision
+// log and must not be changed by the test). Two test cells of their own: Prov-913 B, three points in two groups south of 62° N, and
+// Prov-913 C, one point at 63° N, which rule B does not silence. The runs, in Swedish time:
+//   1/3  av all day                                       the run log reaches back before the period
+//   2/3  av 00–09, räknad with B on 10–23                 the period starts with the first counted run, 10.00 (§11.2)
+//   3/3  räknad B 00–05, tyst 06, av 07, no run 08, räknad C 09 and a tyst run in the same hour, räknad B and C 10, räknad B 11–23;
+//        kandidat_talar says fryst 16.40–17.20, so the hour 16, logged 16.50, is inte ny; an exception 19.42–20.14 covers 19 and 20
+//   4/3  räknad B all day                                 the day after, for the bucket's files
+//   SS1  2/3: the hours from 10.00 only, the March window for B, brytaren av for C, and a row before the period not counted
+//   SS2  3/3: the classes in their order, the switch per cell, the March window per cell, the levels and the reasons
+//   SS3  a second count gives the same rows; before the period, a day not ended, after 31/3 2027 and a thinned day give no rows
+//   SS4  §11.4's check: a row where punkter is not the sum stops the day, with an error that carries no count
+//   SS5  the bucket: 3/3 from the export's own day files (arkiv2_dygn, sql/114) gives the same rows as from the tables
+//   SS6  counter-tests: each mutation of sql/128 is caught by at least one site, and the output says which
+//   SS7  the section's questions (scripts/sasongsfacit-stad.ts) on the same days, with accidents and answers; the section stops at the
+//        test cell's area, which is not in the value guard's word list, and at the days missing in the aggregate
+//   SS8  the value guard against the database: the keys in jsonb are read, and no number from a city table reaches its output
+test("#913 säsongsfacit for the cities: the hours, the levels, the reasons, the bucket, the section and the value guard", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { execFileSync } = await import("node:child_process");
+  const { fileURLToPath } = await import("node:url");
+  const { lasDb, avsnitt } = await import("../scripts/sasongsfacit-stad.ts");
+  const { JSONB } = await import("../scripts/vardevakten.ts");
+  const pool = new pg.Pool({ connectionString: url, max: 2 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const fil = (f: string) => readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8");
+  const RIKTIG = fil("128_sasongsfacit_stad.sql");
+  const lika = (a: unknown, b: unknown) => { try { assert.deepEqual(a, b); return true; } catch { return false; } };
+  try {
+    // Prerequisites, as the tests above leave them; a table that is missing is created from its own file.
+    if (!(await q("SELECT to_regclass('stadsbrytare') AS t")).rows[0].t) await q(fil("089_stadspunkter.sql"));
+    for (const [tab, f] of [["ny_kandidat_skugga_stad", "096_olycksfacit_stad.sql"], ["ny_kandidat_skugga_stad_korning", "096_olycksfacit_stad.sql"],
+      ["kandidat_talar", "070_bytet.sql"]]) {
+      if ((await q("SELECT to_regclass($1) AS t", [tab])).rows[0].t) continue;
+      await q(fil(f).match(new RegExp(`CREATE TABLE IF NOT EXISTS ${tab} \\([\\s\\S]*?\\n\\);`))![0]);
+    }
+    assert.ok((await q("SELECT to_regprocedure('arkiv2_dygn(text,date)') AS t")).rows[0].t, "the export's day file (sql/063, sql/114) is there");
+    await q(RIKTIG);
+    await q(RIKTIG);                                                                    // the file can run twice
+    for (const f of ["sasongsfacit_stad_karna", "sasongsfacit_stad_rakna", "sasongsfacit_stad_rakna_ur_hinken"]) {
+      const conf = (await q("SELECT proconfig FROM pg_proc WHERE proname = $1", [f])).rows[0].proconfig as string[];
+      assert.ok(conf.includes("search_path=public, extensions") && conf.some((k) => /^timezone=UTC$/i.test(k)), `${f}: fixed search path and UTC: ${conf}`);
+    }
+    assert.deepEqual((await q("SELECT relname, relrowsecurity FROM pg_class WHERE relname IN ('sasongsfacit_stad_dag', 'sasongsfacit_stad_undantag') ORDER BY 1")).rows,
+      [{ relname: "sasongsfacit_stad_dag", relrowsecurity: true }, { relname: "sasongsfacit_stad_undantag", relrowsecurity: true }], "RLS on both tables");
+    assert.equal((await q("SELECT count(*)::int AS n FROM sasongsfacit_stad_undantag WHERE fran = '2026-11-19T07:42Z' AND till = '2026-11-19T08:14Z'")).rows[0].n, 1,
+      "the exception 19/11 (DECISIONS #903) is seeded once");
+
+    const c = await pool.connect();
+    const x = (s: string, p: unknown[] = []) => c.query(s, p);
+    try {
+      await x("BEGIN");
+      const utc = (dag: number, tim: number, min = 0) => new Date(Date.UTC(2026, 2, dag, tim - 1, min));
+      await x("DELETE FROM kandidat_talar");
+      await x("DELETE FROM sasongsfacit_stad_dag");
+      await x("DELETE FROM ny_kandidat_skugga_stad_korning WHERE korning < '2026-03-06'");
+      await x("DELETE FROM ny_kandidat_skugga_stad WHERE observed_at < '2026-03-06'");
+      await x("INSERT INTO stadsbrytare (omrade, lager, pa, skal) VALUES ('Prov-913', 'B', false, 'provet #913'), ('Prov-913', 'C', false, 'provet #913')");
+      await x(`INSERT INTO stadspunkt (punkt, grupp, lager, omrade, lon, lat) VALUES ('B91301', 'B-913-1', 'B', 'Prov-913', 18.0, 59.3),
+        ('B91302', 'B-913-1', 'B', 'Prov-913', 18.01, 59.3), ('B91303', 'B-913-2', 'B', 'Prov-913', 18.02, 59.3), ('C91301', 'C-913-1', 'C', 'Prov-913', 18.0, 63.0)`);
+      await x(`INSERT INTO kandidat_talar (tid, talar, beslut) VALUES ('2026-03-01T00:00Z', 'ny', 'provet #913'), ('2026-03-03T15:40Z', 'fryst', 'provet #913'),
+        ('2026-03-03T16:20Z', 'ny', 'provet #913')`);
+      await x("INSERT INTO sasongsfacit_stad_undantag (fran, till, skal) VALUES ('2026-03-03T18:42Z', '2026-03-03T19:14Z', 'provet #913')");
+      const B = '["Prov-913/B"]', C = '["Prov-913/C"]', BC = '["Prov-913/B", "Prov-913/C"]';
+      // A run at minute min of the Swedish hour; a counted run bears the hour, the others carry an older candidate hour (fore hours back).
+      const kor = (dag: number, tim: number, status: string, brytare = "[]", min = 50, fore = 3) => x(
+        "INSERT INTO ny_kandidat_skugga_stad_korning (korning, observed_at, status, brytare) VALUES ($1, $2, $3, $4::jsonb)",
+        [utc(dag, tim, min), status === "räknad" ? utc(dag, tim) : utc(dag, tim - fore), status, status === "av" ? "[]" : brytare]);
+      for (let h = 0; h <= 23; h++) await kor(1, h, "av", "[]", -10);
+      for (let h = 0; h <= 9; h++) await kor(2, h, "av");
+      for (let h = 10; h <= 23; h++) await kor(2, h, "räknad", B);
+      for (let h = 0; h <= 5; h++) await kor(3, h, "räknad", B);
+      await kor(3, 6, "tyst", B);
+      await kor(3, 7, "av");
+      await kor(3, 9, "räknad", C);
+      await kor(3, 9, "tyst", C, 55, 2);
+      await kor(3, 10, "räknad", BC);
+      for (let h = 11; h <= 23; h++) await kor(3, h, "räknad", B);
+      for (let h = 0; h <= 23; h++) await kor(4, h, "räknad", B);
+      // [day, hour, group, punkter, varnar, veto, torr, spridning]
+      const LOGG: [number, number, string, number, number, number, number, number][] = [
+        [2, 8, "B-913-1", 1, 1, 0, 0, 0],                   // before the period: not counted
+        [2, 17, "B-913-1", 2, 1, 0, 1, 0], [2, 17, "B-913-2", 1, 0, 1, 0, 0],
+        [3, 1, "B-913-1", 2, 0, 0, 2, 0], [3, 1, "B-913-2", 1, 0, 0, 0, 1],
+        [3, 9, "C-913-1", 1, 1, 0, 0, 0],
+        [3, 16, "B-913-1", 1, 0, 0, 1, 0],                  // inte ny, and unlike the hour 17, so a level moved one hour shows
+        [3, 17, "B-913-1", 3, 2, 1, 0, 0],                  // a warning group hour with a vetoed point: its reasons are not counted
+        [3, 19, "B-913-2", 1, 1, 0, 0, 0],                  // undantag
+        [4, 2, "B-913-1", 1, 0, 0, 1, 0]];
+      for (const [dag, tim, grupp, ...n] of LOGG)
+        await x(`INSERT INTO ny_kandidat_skugga_stad (grupp, observed_at, skriven_at, omrade, lager, punkter, varnar, veto, torr, spridning, pb_min)
+          VALUES ($1, $2, $3, 'Prov-913', $4, $5, $6, $7, $8, $9, -1)`, [grupp, utc(dag, tim), utc(dag, tim, 50), grupp[0], ...n]);
+
+      const KOL = ["timmar_raknad", "timmar_mars", "timmar_brytaren_av", "timmar_ingen_timme", "timmar_av", "timmar_ingen_korning", "kalla", "varnande",
+        "timmar_varning", "tysta_punkter", "veto", "torr", "spridning", "ytan_over_0", "grupper"];
+      const rader = async (d: string) => Object.fromEntries((await x(`SELECT lager, dygnsdel, niva, ${KOL.join(", ")} FROM sasongsfacit_stad_dag
+        WHERE dag = $1 AND omrade = 'Prov-913'`, [d])).rows.map((r: any) => [`${r.lager} ${r.dygnsdel} ${r.niva}`, KOL.map((k) => r[k])]));
+      const alla = async (d: string) => (await x(`SELECT omrade, lager, dygnsdel, niva, ${KOL.join(", ")} FROM sasongsfacit_stad_dag WHERE dag = $1
+        ORDER BY 1, 2, 3, 4`, [d])).rows;
+      const rakna = async (d: string) => (await x("SELECT sasongsfacit_stad_rakna($1::date) AS m", [d])).rows[0].m as string;
+      // The indexes in KOL: 0 räknad, 1 mars, 2 brytaren av, 3 ingen timme, 4 av, 5 ingen körning, 6 kalla, 7 varnande, 8 timmar med
+      // varning, 9 tysta punkter, 10 veto, 11 torr, 12 spridning, 13 ytan över 0, 14 grupper.
+      const v = (o: Record<number, number>) => KOL.map((_, i) => o[i] ?? 0);
+      const D1 = {
+        "B dag drift": v({ 0: 6, 1: 6, 14: 2 }), "B kvällsrusning drift": v({ 0: 3, 6: 2, 7: 1, 8: 1, 9: 1, 10: 1, 13: 4, 14: 2 }),
+        "B kväll drift": v({ 0: 3, 13: 6, 14: 2 }), "B natt drift": v({ 0: 2, 13: 4, 14: 2 }),
+        "C dag drift": v({ 2: 6, 14: 1 }), "C kvällsrusning drift": v({ 2: 3, 14: 1 }), "C kväll drift": v({ 2: 3, 14: 1 }), "C natt drift": v({ 2: 2, 14: 1 }),
+      };
+      const D2 = {
+        "B natt drift": v({ 0: 8, 6: 2, 9: 3, 11: 2, 12: 1, 13: 14, 14: 2 }),
+        "B morgonrusning drift": v({ 2: 1, 3: 1, 4: 1, 5: 1, 14: 2 }),
+        "B dag drift": v({ 0: 6, 1: 6, 14: 2 }),
+        "B kvällsrusning drift": v({ 0: 2, 6: 1, 7: 1, 8: 1, 13: 3, 14: 2 }), "B kvällsrusning inte ny": v({ 0: 1, 6: 1, 9: 1, 11: 1, 13: 1, 14: 2 }),
+        "B kväll undantag": v({ 0: 2, 6: 1, 7: 1, 8: 1, 13: 3, 14: 2 }), "B kväll drift": v({ 0: 1, 13: 2, 14: 2 }),
+        "C natt drift": v({ 2: 8, 14: 1 }), "C morgonrusning drift": v({ 0: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 14: 1 }),
+        "C dag drift": v({ 0: 1, 2: 5, 13: 1, 14: 1 }),
+        "C kvällsrusning drift": v({ 2: 2, 14: 1 }), "C kvällsrusning inte ny": v({ 2: 1, 14: 1 }),
+        "C kväll undantag": v({ 2: 2, 14: 1 }), "C kväll drift": v({ 2: 1, 14: 1 }),
+      };
+
+      // SS3 and SS1: before the period, then the first day of the period.
+      assert.equal(await rakna("2026-03-01"), "före perioden", "SS3: the day before the first counted run");
+      assert.equal((await x("SELECT count(*)::int AS n FROM sasongsfacit_stad_dag")).rows[0].n, 0, "SS3: before the period, no rows");
+      assert.equal(await rakna("2026-03-02"), "klart");
+      assert.deepEqual(await rader("2026-03-02"), D1, "SS1: 2/3 from 10.00, the March window for B, brytaren av for C");
+      // SS2: 3/3 hour by hour, and every clock hour in exactly one class per cell.
+      assert.equal(await rakna("2026-03-03"), "klart");
+      assert.deepEqual(await rader("2026-03-03"), D2, "SS2: 3/3 hour by hour");
+      const celler = (await x(`SELECT omrade || '/' || lager AS c, sum(timmar_raknad + timmar_brytaren_av + timmar_ingen_timme + timmar_av
+        + timmar_ingen_korning)::int AS n FROM sasongsfacit_stad_dag WHERE dag = '2026-03-03' GROUP BY 1`)).rows;
+      assert.equal(celler.length, (await x("SELECT count(*)::int AS n FROM stadsbrytare")).rows[0].n, "SS2: every switch is a cell");
+      assert.ok(celler.every((r: any) => r.n === 24), `SS2: 24 hours in exactly one class per cell: ${JSON.stringify(celler)}`);
+      // SS3: a second count, and the days that are not counted.
+      assert.equal(await rakna("2026-03-03"), "klart");
+      assert.deepEqual(await rader("2026-03-03"), D2, "SS3: a second count gives the same rows");
+      assert.equal(await rakna("2026-02-20"), "gallrat: räknas ur hinken (sql/114)", "SS3: a day the run log no longer reaches back to");
+      assert.equal((await x("SELECT sasongsfacit_stad_rakna((now() AT TIME ZONE 'Europe/Stockholm')::date) AS m")).rows[0].m, "dygnet är inte slut");
+      assert.equal((await x("SELECT sasongsfacit_stad_karna('2027-04-01', '{}', '{}') AS m")).rows[0].m, "utanför perioden", "SS3: the season ends 31/3 2027");
+
+      // SS4: §11.4's check.
+      const fel = `INSERT INTO ny_kandidat_skugga_stad (grupp, observed_at, omrade, lager, punkter, varnar, veto, torr, spridning)
+        VALUES ('B-913-2', '2026-03-03T11:00Z', 'Prov-913', 'B', 3, 1, 0, 0, 0)`;
+      await x("SAVEPOINT summan");
+      await x(fel);
+      await assert.rejects(rakna("2026-03-03"), (e: Error) => /en rad i stadsloggen där punkterna inte är summan av skälen \(§11\.4\)/.test(e.message)
+        && !/\d/.test(e.message.replace("2026-03-03", "").replace("§11.4", "")), "SS4: the day stops with an error that carries no count");
+      await x("ROLLBACK TO SAVEPOINT summan");
+      await x("RELEASE SAVEPOINT summan");
+      assert.deepEqual(await rader("2026-03-03"), D2, "SS4: the stopped count changed nothing");
+
+      // SS5: the bucket, from the export's own day files for the UTC days.
+      const dygnsfil = async (tab: string, d: string) => (await x("SELECT arkiv2_dygn($1, $2::date) AS t", [tab, d])).rows[0].t as string;
+      const logg = [await dygnsfil("ny_kandidat_skugga_stad", "2026-03-02"), await dygnsfil("ny_kandidat_skugga_stad", "2026-03-03")];
+      const korn: string[] = [];
+      for (const d of ["2026-03-02", "2026-03-03", "2026-03-04"]) korn.push(await dygnsfil("ny_kandidat_skugga_stad_korning", d));
+      assert.ok(logg[1].split("\n").length > 3 && korn[1].split("\n").length > 20, "SS5: the files carry the day's rows");
+      const ursprung = await alla("2026-03-03");
+      await x("DELETE FROM sasongsfacit_stad_dag WHERE dag = '2026-03-03'");
+      assert.equal((await x("SELECT sasongsfacit_stad_rakna_ur_hinken('2026-03-03', $1, $2) AS m", [logg, korn])).rows[0].m, "klart");
+      assert.deepEqual(await alla("2026-03-03"), ursprung, "SS5: a day in both places gives the same rows, in every cell");
+
+      // SS6: counter-tests. Each mutation of the file must be caught by at least one site.
+      const platser = async (): Promise<string[]> => {
+        const ut: string[] = [];
+        await x("DELETE FROM sasongsfacit_stad_dag");
+        if (await rakna("2026-03-02") !== "klart" || !lika(await rader("2026-03-02"), D1)) ut.push("SS1");
+        if (await rakna("2026-03-03") !== "klart" || !lika(await rader("2026-03-03"), D2)) ut.push("SS2");
+        await x("SAVEPOINT summan");
+        await x(fel);
+        const stoppad = await rakna("2026-03-03").then(() => false, () => true);
+        await x("ROLLBACK TO SAVEPOINT summan");
+        await x("RELEASE SAVEPOINT summan");
+        if (!stoppad) ut.push("SS4");
+        const fore = await alla("2026-03-03");
+        await x("DELETE FROM sasongsfacit_stad_dag WHERE dag = '2026-03-03'");
+        if ((await x("SELECT sasongsfacit_stad_rakna_ur_hinken('2026-03-03', $1, $2) AS m", [logg, korn])).rows[0].m !== "klart"
+          || !lika(await alla("2026-03-03"), fore)) ut.push("SS5");
+        return ut;
+      };
+      const MUTANTER: [string, string, string][] = [
+        ["the cell's switch ignored", "k.status = 'räknad' AND k.brytare ? (c.omrade || '/' || c.lager)) THEN 'räknad'", "k.status = 'räknad') THEN 'räknad'"],
+        ["tyst before brytaren av", "WHEN bool_or(k.status = 'räknad') THEN 'brytaren av'", "WHEN bool_or(k.status = 'räknad') AND NOT bool_or(k.status = 'tyst') THEN 'brytaren av'"],
+        ["the period from midnight", "WHERE h >= borjan", "WHERE true"],
+        ["a tyst run bears its candidate hour", "ELSE date_trunc('hour', k.korning) END AS h", "ELSE k.observed_at END AS h"],
+        ["rule B without the latitude", "bool_and(s.lat < 62)", "bool_and(s.lat < 64)"],
+        ["the March window to 17.00", "x.h AT TIME ZONE 'Europe/Stockholm') < 16", "x.h AT TIME ZONE 'Europe/Stockholm') < 17"],
+        ["the decision at the hour, not when it was logged", "b.tid <= x.loggad", "b.tid <= x.h"],
+        ["the decision ignored", "'fryst') <> 'ny'", "'fryst') <> 'ny' AND false"],
+        ["the exception only inside the hour", "u.till >= x.h)", "u.till >= x.h + interval '1 hour')"],
+        ["ytan över 0 counts the March window", "* count(*) FILTER (WHERE t.klass = 'räknad' AND NOT t.mars)", "* count(*) FILTER (WHERE t.klass = 'räknad')"],
+        ["the reasons of the warning group hours too", "coalesce(sum(l.veto) FILTER (WHERE l.varnar = 0), 0) AS veto", "coalesce(sum(l.veto), 0) AS veto"],
+        ["the warning group hours' points as silent", "coalesce(sum(l.punkter) FILTER (WHERE l.varnar = 0), 0) AS tysta_punkter", "coalesce(sum(l.punkter), 0) AS tysta_punkter"],
+        ["a warning hour where a group was only cold", "count(*) FILTER (WHERE t.klass = 'räknad' AND g.varnande > 0)", "count(*) FILTER (WHERE t.klass = 'räknad' AND g.kalla > 0)"],
+        ["no sum check", "IS DISTINCT FROM l.varnar + l.veto + l.torr + l.spridning", "IS DISTINCT FROM l.punkter"],
+        ["the bucket loses each file's first row", "WHERE d.n > 1", "WHERE d.n > 2"],
+      ];
+      for (const [namn, fran, till] of MUTANTER) {
+        assert.equal(RIKTIG.split(fran).length, 2, `SS6 ${namn}: the text is in the file once`);
+        await x("SAVEPOINT mutant");
+        let fallde: string[];
+        try { await x(RIKTIG.split(fran).join(till)); fallde = await platser(); } catch (e) { fallde = [`fel: ${String((e as Error).message).slice(0, 60)}`]; }
+        await x("ROLLBACK TO SAVEPOINT mutant");
+        await x("RELEASE SAVEPOINT mutant");
+        console.log(`counter-test säsongsfacit for the cities, ${namn}: caught by ${fallde.join(", ") || "NONE"}`);
+        assert.ok(fallde.length > 0, `SS6 ${namn}: no site catches the mutation`);
+      }
+      assert.deepEqual(await platser(), [], "SS6: the real file, every site as expected");
+
+      // SS7: the section's questions on the same days, with accidents and answers.
+      const olycka = async (id: string, t: Date, klass: string | null, utfall: string, k: object, a1 = false, dubblett: string | null = null) => {
+        await x(`INSERT INTO olycksfacit (deviation_id, start_time, geom, utfall, klass, dubblett_av) VALUES ($1, $2, ST_SetSRID(ST_MakePoint(18, 59.3), 4326), $3, $4, $5)`,
+          [id, t, utfall, klass, dubblett]);
+        await x(`INSERT INTO olycksfacit_lager (deviation_id, lager, talar, orsak, detalj) VALUES ($1, 'K', $2, 'prov', $3::jsonb), ($1, 'A1', $4, 'prov', '{}'),
+          ($1, 'A2', false, 'prov', '{}')`, [id, utfall === "VARNADE", JSON.stringify(k), a1]);
+      };
+      const stad = (o: object) => ({ stad: { omrade: "Stor-Stockholm", lager: "B", aktiv: true, talar: false, orsak: "fukt saknades", ...o } });
+      await olycka("SS913-1", utc(3, 9, 20), "TROLIG", "VARNADE", { varnande_km: 3.5, ...stad({ talar: true, orsak: "varnar", varnande_km: 0.4 }) });
+      await olycka("SS913-2", utc(3, 10), "TYDLIG", "TYST_TACKT", stad({}));
+      await olycka("SS913-3", utc(3, 9, 25), "TROLIG", "VARNADE", stad({ talar: true, orsak: "varnar" }), false, "SS913-1");   // a duplicate
+      await olycka("SS913-4", utc(3, 11), "TROLIG", "TYST_TACKT", { punkt: "v1" });                                              // no city point within 2 km
+      await olycka("SS913-5", utc(10, 12), "TROLIG", "TYST_TACKT", stad({}));                                                    // after the Monday
+      await olycka("SS913-6", utc(2, 12), null, "TYST_OTACKT", stad({ omrade: "Stor-Göteborg", aktiv: false, orsak: "brytaren av" }), true);
+      const svar = (id: string, t: Date, s: string) => x("INSERT INTO driver_facit (alert_id, alert_t, svar, app, version) VALUES ($1, $2, $3, 'ios', '0.4.1')", [id, t, s]);
+      await svar("kand:B-913-1", utc(3, 8), "ja");
+      await svar("kand:B-913-1", utc(3, 9), "nej");
+      await svar("kand:C-913-1", utc(3, 10), "ja");
+      await svar("kand:B-913-9", utc(3, 11), "ja");                                                // the group has left the list: okänt
+      await svar("kand:B-913-prov", utc(3, 12), "ja");                                             // a test row
+      await svar("seg:16010", utc(3, 13), "nej");                                                  // another warning
+      await svar("kand:16010", utc(3, 14), "ja");                                                  // K on a road segment
+      await svar("kand:B-913-1", utc(10, 8), "ja");                                                // after the Monday
+      await x("SET TimeZone = 'Europe/Stockholm'");                                              // the session's zone does not steer the days
+      const db = await lasDb(x, "2026-03-09");
+      assert.equal((await x("SHOW TimeZone")).rows[0].TimeZone, "UTC", "SS7: the reading sets the zone itself");
+      assert.deepEqual([db.mandag, db.vecka_fran, db.till, db.sasong_fran, db.dagar], ["2026-03-09", "2026-03-02", "2026-03-09", "2026-03-02", ["2026-03-02", "2026-03-03"]]);
+      const prov = db.aggregat.filter((a) => a.omrade === "Prov-913" && a.lager === "B" && a.niva === "drift");
+      assert.deepEqual([prov.reduce((s, a) => s + a.kalla, 0), prov.reduce((s, a) => s + a.varnande, 0), prov.every((a) => a.vecka)], [5, 2, true],
+        "SS7: the week's cold and warning group hours in drift, summed over 2/3 and 3/3, without the exceptions");
+      assert.equal(db.spann.length, KOL.length, "SS7: every count has its smallest and largest value");
+      const nyckel = (r: any) => [r.omrade, r.lager, r.klass ?? "", r.svar ?? ""].join("/");
+      const sortera = (r: any[]) => [...r].sort((a, b) => (nyckel(a) < nyckel(b) ? -1 : 1));
+      assert.deepEqual(sortera(db.olyckor), sortera([
+        { vecka: true, omrade: "Stor-Stockholm", lager: "B", klass: "TROLIG", utfall: "VARNADE", aktiv: true, orsak: "varnar", a1: false, k_vag: false, k_stad: true, a2: false, antal: 1 },
+        { vecka: true, omrade: "Stor-Stockholm", lager: "B", klass: "TYDLIG", utfall: "TYST_TACKT", aktiv: true, orsak: "fukt saknades", a1: false, k_vag: false, k_stad: false, a2: false, antal: 1 },
+        { vecka: true, omrade: "Stor-Göteborg", lager: "B", klass: "ej klassad", utfall: "TYST_OTACKT", aktiv: false, orsak: "brytaren av", a1: true, k_vag: false, k_stad: false, a2: false, antal: 1 }]),
+        "SS7: three accidents, without the duplicate, the one without a city point and the one after the Monday");
+      assert.deepEqual(sortera(db.svar), sortera([{ vecka: true, lager: "B", omrade: "Prov-913", svar: "ja", antal: 1 }, { vecka: true, lager: "B", omrade: "Prov-913", svar: "nej", antal: 1 },
+        { vecka: true, lager: "C", omrade: "Prov-913", svar: "ja", antal: 1 }, { vecka: true, lager: "B", omrade: "okänt", svar: "ja", antal: 1 }]),
+        "SS7: four answers, without the test row, the other warnings and the one after the Monday");
+      assert.throws(() => avsnitt(db), /sasongsfacit_stad_dag\.omrade: ett ord som inte står i värdevaktens ordlista/, "SS7: the test cell's area stops the section");
+      const ren = { ...db, aggregat: db.aggregat.filter((a) => a.omrade !== "Prov-913"), svar: db.svar.filter((s) => s.omrade !== "Prov-913") };
+      assert.throws(() => avsnitt(ren), /dygnet 2026-03-04 saknas i aggregatet/, "SS7: a missing day stops the section");
+      const md = avsnitt({ ...ren, till: "2026-03-04" });
+      assert.match(md, /\| Stor-Stockholm B \| veckan \| 2 \| 1 \| 1 \| 0 \| 0 \| 0 \| 2 \|/, "SS7: the accidents per class");
+      assert.match(md, /\| Stor-Göteborg B \| veckan \| 1 \| 0 \| 0 \| 0 \| 0 \| 1 \| 0 \|/);
+      assert.match(md, /\| Stor-Stockholm B \| veckan \| 1 av 2 \| 1 av 1 \| fukt saknades 1 \|/, "SS7: only the city point warned, and its reason when silent");
+      assert.match(md, /\| B, okänt område \| veckan \| 1 \| 0 \| 1 av 1 \|/);
+      assert.doesNotMatch(md, /\b[BC]-\d|\b[BC]\d{5}\b/, "SS7: no group or point id in the section");
+    } finally {
+      await x("ROLLBACK").catch(() => {});
+      c.release();
+    }
+
+    // SS8: the value guard against the database, with one committed row whose count must never reach the output.
+    await q(`INSERT INTO sasongsfacit_stad_dag (dag, omrade, lager, dygnsdel, niva, timmar_raknad, timmar_mars, timmar_brytaren_av, timmar_ingen_timme,
+      timmar_av, timmar_ingen_korning, kalla, varnande, timmar_varning, tysta_punkter, veto, torr, spridning, ytan_over_0, grupper)
+      VALUES ((now() AT TIME ZONE 'Europe/Stockholm')::date - 1, 'Prov-913', 'B', 'natt', 'drift', 1, 0, 0, 0, 0, 0, 987654, 0, 0, 0, 0, 0, 0, 0, 0)`);
+    const ut = execFileSync(process.execPath, ["--experimental-strip-types", "scripts/vardevakten.ts", "36500"],
+      { cwd: fileURLToPath(new URL("..", import.meta.url)), env: { ...process.env, DATABASE_URL: url }, encoding: "utf8", timeout: 240_000 });
+    assert.match(ut, /\nsasongsfacit_stad_dag \(talen skrivs inte ut, #768\)\n/, "SS8: the aggregate is scanned");
+    assert.match(ut, /\nny_kandidat_skugga_stad \(talen skrivs inte ut, #768\)\n/, "SS8: the city log is scanned");
+    assert.match(ut, /\nny_kandidat_skugga_stad_korning \(talen skrivs inte ut, #768\)\n/, "SS8: the run log is scanned");
+    assert.ok(!ut.includes("987654"), "SS8: no number from a city table reaches the output");
+    assert.match(ut, new RegExp(`JSONB \\(${JSONB.length} deklarerade nycklar\\)`));
+    for (const j of JSONB) assert.ok(ut.includes(`${j.tabell}.${j.falt}`) && !ut.includes(`${j.tabell}.${j.falt}`.padEnd(40) + " tabellen finns inte"),
+      `SS8: ${j.tabell}.${j.falt} is read`);
+  } finally {
+    await q("DELETE FROM sasongsfacit_stad_dag WHERE omrade = 'Prov-913'").catch(() => {});
+    await pool.end();
+  }
+});

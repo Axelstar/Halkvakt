@@ -106,6 +106,9 @@ Allt i repot är publikt och går inte att ta tillbaka: filerna, historiken, är
   med `KUVOS_LASNYCKEL` och skriver bara klart eller fel: inga parametrar, särdrag, tal eller modellutskrifter i logg, sammanfattning eller ärende.
   *Undantag* (Bengt och Axel 6/11, DECISIONS #804): driftens rörarbete för storstädernas punkter (B och C som K) får ligga här — tabellen,
   laddaren, radarn, regeln, kedjans steg — och deras varningar står i `live.json` som K:s. Punkterna, särdragen, historiken och fysiken bor kvar i kuvösen. Stomdokumenten beskriver samma rörarbete, utan punkter, särdrag, kuvösens tal och fysik (DECISIONS #810).
+  *Samma undantag för småvägsrösten* (Bengt 19/11, DECISIONS #910): röstens rörarbete i driften (#828) — tabellerna, flödena, regeln,
+  brytarna och betavarningen i appen — beskrivs i stomdokumenten som storstädernas. Punkterna, särdragen, fysiken och kuvösens
+  småvägsprov (P-II, kartans ord) bor kvar i kuvösen.
 - Varje fil under `data/` står i `data/KALLOR.json` med källa och licens; publikvakten (`scripts/publikvakt.ts`, i ci) fäller en fil som
   saknas där, en fil över 20 MB och kända mönster (Trafikverkets leveransfiler, `.npy`, `oof`, exporter av testarnas svar).
 - Osäker? Lägg det i hinken, inte i repot, och fråga.
@@ -319,8 +322,9 @@ en körning skrev nådde aldrig synken, som läser beslut och commits, inte utsk
    handtext* i `--lage`, och där står det kvar. Läs den listan också, och skriv texten när skälet inte längre håller. Ett tal förs bara in om det står i källan (DECISIONS, STATUS, koden, en körning) — aldrig ur minnet.
    **Kuvösen, fysiken och småvägarna** (DECISIONS #768, #769): synken skriver ingen sådan text i Halkvakt, varken i docs/,
    projektkartan, MATNINGAR eller STATUS. De stäms av i halkvakt-kuvos. Driftens rörarbete är inte kuvös: tabellerna, flödena,
-   regeln och brytarna för kandidaten och storstäderna skrivs i Halkvakts stomdokument, utan punkter, särdrag, kuvösens tal och
-   fysik (DECISIONS #804, #810).
+   regeln och brytarna för kandidaten, storstäderna och småvägsrösten, och småvägsröstens betavarning i appen, skrivs i Halkvakts
+   stomdokument, utan punkter, särdrag, kuvösens tal och fysik (DECISIONS #804, #810, #910). Ett beslut om det rörarbetet bokförs
+   alltså inte som *hör till halkvakt-kuvos*.
 5. `projektkartan.ts` och `kortkartan.ts`, sedan `--check` på båda, `kartsynk.ts --check`, `fristvakten.ts --check` och
    `stomvakten.ts --tillatna`.
 6. En rad i STATUS.md: *Dokumentsynk <datum>:* vad som rättades per dokument, eller *inget att stämma av* — en tyst morgon ska inte

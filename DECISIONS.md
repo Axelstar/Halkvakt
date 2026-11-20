@@ -18106,3 +18106,426 @@ tillbaka dem (fälls utan 125, grönt med). Migrationen körs med DB-knappen eft
 
 **Stomdokument:** inga — rättar en regression i statistikens dataväg, ingen ändring av vad som mäts eller visas
 
+## #906 (19/11 2026) Svartis och rimfrost i kuvösens skugga: förregistreringen signerad, och givarvakten i TROSKLAR-RIMFROST §3 gäller rösten (körlistan C7, kort #656)
+
+**Beslut.** Bengt 19/11: *"allt ok utom 2 som ska vara b) och del B 1 som ska vara samma"*, och för Axel: *"Ja, fortsätt så, Axel signerar också"*. Förregistreringen för svartis och rimfrost är
+signerad i halkvakt-kuvos (F75, PR #98). Den prövar väckare utan nederbörd för kandidaten i storstäderna och för småvägsrösten, i
+skugga, och läses mot friktionen tidigast 1/4 2027. Varianterna, talen och villkoren står i kuvösen.
+
+**Givarvakten (TROSKLAR-RIMFROST §3).** Skuggan räknar grannstationens rimfrost utan korsgivarkontrollen (fuktigheten ≥ 90 %), som
+fuktskuggans K1 (PR #1697), men med #75:s vakt och daggpunktens vakt. §3 säger att vakten *"får skärpas men aldrig mjukas upp,
+oavsett signaturer"*. Bengt och Axel valde det med §3 framför sig, och avsteget avgränsas så här:
+- **Bara mätningen.** Skuggan talar aldrig.
+- **Rösten har hela vakten.** Föreslås en variant med grannstationens rimfrost för rösten, gäller §3:s hela vakt i rösten, och
+  beslutet redovisar vad vakten tar bort.
+
+**Fuktskuggans fönster** börjar tidigast dygnet efter läsfrågan för friktionen (halkvakt-kuvos F74 §15). Annars hade läsfrågan
+redovisat dygn ur skuggans fönster innan skuggan läses (regel L, #564, L2).
+
+**Alternativ.** Korsgivarkontrollen i båda skuggorna, som var Claudes rekommendation. Vakten hade då varit hel, men grannstationens
+rimfrost hade inte varit samma regel i de två skuggorna.
+
+**Varför.** Skuggan talar aldrig, och med samma regel i båda skuggorna går de att jämföra rad för rad.
+
+**Stomdokument:** BED §4.2
+
+## #907 (19/11 2026) Fuktskuggan i storstäderna: byggd som tyst skugga efter stadsloggen (körlistan C4)
+
+**Bakgrund.** Förregistreringen av fuktskuggan signerades 19/11 (halkvakt-kuvos F74). Skuggan räknar varje timme vad fler fuktkällor
+hade gett vid storstädernas punkter: grannstationen (K1), väglagets *Våt* (K2a) och varianten utan fuktvillkor. Radarn (R0) står bredvid,
+eftersom den är storstädernas enda fukt i regeln (`sql/091`, `sql/094`). Skuggan skriver bara en logg och talar aldrig. Förregistreringens
+§13 listar vad som byggs här. Det här beslutet är punkterna 1–5. Punkt 6, DB-knappen och deployen, görs bara på Bengts ord.
+
+**Numret.** Beslutet skrevs som #905 med migrationen `sql/125`. PR #1699 tog samma nummer och samma migrationsnummer, så beslutet
+heter #907 och migrationen `sql/127_fuktskuggan_stad.sql`. Innehållet är detsamma.
+
+**Bygget.**
+- **`sql/127_fuktskuggan_stad.sql`:**
+  - **Tabellerna.** `ny_kandidat_fuktskugga_stad` har en rad per grupp och timme, bara för grupper med punkter i P0. Raden bär
+    antalet punkter i P0 med fukt per variant och antalet utan värde. `ny_kandidat_fuktskugga_stad_korning` har en rad per körning:
+    *räknad*, *tyst* eller *av*, och brytarna som var på.
+  - **Funktionen** `ny_kandidat_logga_fuktskugga()` är plpgsql med fast sökväg (#784) och UTC.
+  - **Gallringen** sker efter 14 dygn, som stadsloggen.
+  - **Rättigheterna:** `service_role` i samma fil (#653), RLS utan policy och REVOKE, vaktat på `pg_roles`.
+  - **Exporten** till hinken går samma väg som `sql/114`. Listan `TABELLER` i `supabase/functions/arkivexport` ändras i samma commit.
+- **Punkterna** är regelns egna rader vid stadspunkterna, lästa i skuggans anrop. Brytarna och marsfönstret är alltså regelns. P0 är
+  raderna utan veto och utan spärren F1. F1 räknas om för varje rad, också de torra, ur regelns ankare och `ny_kandidat_live.frys_min`
+  (förregistreringen §2.3 punkt 2).
+- **Anropet** sker i `ny-kandidat-timme.yml`, sist i stadsomgången:
+  - Det är ett eget steg med `continue-on-error`, och det körs bara när stadsloggen är skriven (`STADSLOGG=1`).
+  - Kommandot är `ingest/ny-kandidat-db.ts fuktskugga`. Utskriften visas inte, bara klart eller fel (#768).
+- **Värdevakten:**
+  - Båda tabellerna står i `TID`, och varje antal har ett eget spann i `SPANN`.
+  - `ORD` har ordlistor för `status`, `brytare`, `omrade` och `lager`, och för `condition_info`.
+  - Inga flaggor finns i tabellerna.
+- **Kontraktsgrinden** vaktar kopiorna: R0:s radargräns och F1:s två tal mot regeln, och K1:s och K2a:s definitioner mot kuvösens
+  läsning av friktionen och mot värdevaktens spann för ytan.
+
+**Tiden e.** Skuggan läser regeln i ett eget anrop direkt efter stadsloggen. Det är förregistreringens reserv (§2.3 punkt 1). Skälet är att
+samma anrop hade krävt en deltransaktion i stadsloggens transaktion. En deltransaktion skyddar bara mot ett vanligt fel. En tidsgräns gäller
+hela satsen, och en krasch eller ett minnesfel i skuggan hade tagit stadsloggen med sig. Varje rad i skuggan bär sin tid (`raknad_at`), och
+stadsloggens rader bär sin (`skriven_at`). Kontrollen i §8 kan därför visa båda tiderna för varje grupptimme där de skiljer sig.
+
+**Spannen.** Gränserna kommer ur schemat. En punkts id är en bokstav och fem siffror, och en grupp har ett lager (`sql/089`). En grupp rymmer
+därför högst 100 000 punkter, och en körning högst 200 000 grupper. Spannen säger alltså ingenting om hur stora grupperna är.
+- **#904 svar 5 (a)** kräver gränser ur schemat för stadstabellerna, aldrig ur punktlistan.
+- **F74 fråga 4 (ja)** tillåter den största gruppens antal som övre gräns, men kräver det inte.
+- Gränser ur schemat följer båda besluten. Någon motsägelse i vad som ska göras finns inte. Skälen skiljer sig: F74 räknar inte gruppens
+  storlek som kuvösens tal, medan #904 inte vill att spannet röjer den. Tillståndet i F74 används inte.
+
+**Tillägg och val i bygget, utöver förregistreringens text:**
+- **`r0_f1_punkter`:** punkterna med R0 som F1 tystar. Utan fältet kan kontrollen i §8 (*dess spridning*) inte göras.
+  - Raderna gäller bara grupper med punkter i P0 (§4).
+  - Spridningen prövas därför bara där skuggan har en rad. *Varnar* prövas överallt, eftersom en varnande punkt alltid ligger i P0.
+- **`brytare` är en textlista,** inte jsonb som i stadsloggen, så att värdevakten kan läsa den. Innehållet är detsamma.
+- **`condition_info`** har bara de fyra ord som repot har sett i arkivet (`docs/TILL-AXEL-HALKORDEN.md`). Vinterns ord är inte lästa
+  härifrån. De står som OKÄNT ORD i värdevakten tills en människa har läst dem, och det gäller också `road_conditions`.
+- **Avstånden** mäts på jordellipsoiden (geography), som regelns veto. Kuvösens skript räknar med haversine.
+- **Daggpunkten** tas ur den senaste giltiga raden, som förregistreringen säger. Läsfrågan för friktionen tar den ur halvtimmens senaste
+  rad.
+- **Ytan** ska ligga inom värdevaktens spann (läsfrågans precisering 2).
+- **Nederbörden** räknas i varje rad hos grannen i timmen, också en rad som vakterna fäller. Grannen själv måste ha en giltig rad.
+
+**Provat.**
+- Integrationsprovet #907 körs i ci mot PostGIS med 17 platser:
+  - Det visar att raderna bär innehåll plats för plats.
+  - Det visar att ingen regelfunktion ändras (md5, och `kandidat_skugga_meta` stämmer).
+  - `talande_regel()` och `ny_kandidat_regel()` ger samma rader före och efter skuggan.
+  - Det visar kontrollen mot stadsloggen, *av* och *tyst*, en andra körning, gallringen och exporten.
+  - Provet har 17 motprov på funktionen, och vart och ett ska fällas av minst en plats.
+- `test/fuktskugga-stad.test.ts` utan databas visar att filen bara skriver sina två tabeller och skapar inga regelfunktioner. Det visar
+  också att exportlistan är densamma på båda ställena, att värdevakten känner varje fält med schemats gränser, och flödets ordning.
+- Inte provat i drift och inte i Supabases avbild.
+
+**Ordningen i driften (Bengts ord):**
+1. Förregistreringens §8 kräver *full skala utanför driften* före DB-knappen: en hel timme med alla brytare på i Supabases egen avbild,
+   med `EXPLAIN (VERBOSE)`, tiden per körning och storleken.
+2. DB-knappen med *migrera* och `sql/127_fuktskuggan_stad.sql`.
+3. Deployen av `arkivexport`. I omvänd ordning vägrar `arkiv2_tabell` de nya namnen.
+
+Mellan sammanslagningen och migreringen faller flödets nya steg varje timme med en varning, och jobbet förblir grönt.
+
+**Kvar.** Beviset efter driftsättningen: körningsloggen har en rad för varje timme under ett helt dygn, minst en rad i skuggan bär
+innehåll, och skuggans första dygn är bokfört i `arkiv_export_tabell`.
+
+**Alternativ.**
+- **Samma anrop som stadsloggen, med en deltransaktion:** avvisat, se *Tiden e*.
+- **Den största gruppens antal som gräns:** avvisat. Det är förenligt med F74 men inte med #904.
+- **`brytare` som jsonb, som i stadsloggen:** avvisat, eftersom värdevakten inte läser jsonb (§11.7).
+
+**Stomdokument:** SYS 2 — fuktskuggan i kandidatens timkedja efter stadsloggen, MAT 5 — storstädernas fukt i skugga
+
+## #908 (19/11 2026) Svartis och rimfrost i storstäderna: MET:s fukt vid stadspunkterna och skuggans nya kolumner (körlistan C7, kort #656)
+
+**Beslut.** Bengt 19/11: *"gör alla delar du har i rutan ovan"*. Förregistreringen för svartis och rimfrost är signerad i halkvakt-kuvos
+(F75; här #906). Det här beslutet bygger storstädernas del av dess §12 punkterna 1–5 i Halkvakt: rörarbetet i driften, utan punkter,
+särdrag, kuvösens tal eller fysik (#804, #810). Punkt 6, DB-knappen och deployen, görs bara på Bengts och Axels ord. Skuggan talar aldrig
+(F75 §3): regeln, rösten, lägesfilen och appen ändras inte.
+
+**Småvägarnas del av C7 drogs tillbaka 19/11 på Bengts order** och står kvar på kort #656. Skälet enligt Bengt: det var redan
+överenskommet att småvägarna inte kan mätas på samma sätt som storstäderna, och att mäta småvägarnas varianter mot friktionen var ett
+avsteg. Inget byggs här för småvägsrösten: `smavag_live`, `ingest/smavag-live-db.ts`, småvägskedjan och underlaget till hinken är som på
+main.
+
+**Bygget.**
+- **`sql/126_stadens_met_fukt.sql`:**
+  - Tabellen `ny_kandidat_met_stad` har en rad per stadspunkt och timme, med MET Nordics daggpunkt, fuktigheten som andel och körningen.
+  - Nyckeln och ersättningen är `ny_kandidat_ph`:s. Raden för en timme kommer alltså ur den körning vars PH del B läste för timmen.
+  - Skrivaren gallrar rader äldre än 48 timmar.
+  - Rättigheterna ges till `service_role` i samma fil (#653), med RLS utan policy och REVOKE, vaktat på `pg_roles`.
+- **`sql/127_fuktskuggan_stad.sql`** (#907) får nya kolumner i samma rader och med samma P0:
+  - `g_rim_utan_varde`. G-rim är K1:s rimfrostdel, alltså `k1_rim_punkter` (F75 fråga 2 b). Kolumnen räknar punkterna vars giltiga
+    granne saknar en daggpunkt inom spannet.
+  - `m_dagg_punkter` och `m_dagg_utan_varde`. M-dagg betyder att kandidatens värde är vid eller under MET:s daggpunkt i timmen och i
+    timmen före, och att MET:s fuktighet är minst 0,9 i timmen. Det är F15:s daggfukt med kuvösens `AVGOR`. Ett saknat värde räknas
+    som *utan värde*, aldrig som fukt.
+  - `s1h_punkter` till `s4h_punkter`. Radarn i gruppen ska vara minst 0,1 mm/h inom 1, 2, 3 eller 4 timmar. S-3h avgör (fråga 3 a).
+  - `c7_alla_punkter`: R0, G-rim, M-dagg eller S-3h.
+  - Varje variant har fukt där R0 har det. Funktionen är plpgsql med fast sökväg och UTC, och ingen regelfunktion ändras.
+- **Kedjan.** `ny-kandidat-fysik.yml` får ett eget steg efter stadspunkternas PH, med `continue-on-error`. Kuvösens kedja
+  (`kuvos/stadens-fukt.ts`) läser samma körningsfil och samma punkter och timmar som PH. Sedan skriver `ingest/ny-kandidat-db.ts
+  skriv-met-stad` raderna. Loggen säger bara klart eller fel.
+- **Värdevakten** (F75 §8):
+  - `TID` får `ny_kandidat_met_stad`.
+  - `TID` får också `smavag_live`, `radar_stad` och `radar_smavag`, och `FLAGGOR` får `ned`. Regeln läser de tabellerna redan, men deras
+    fält skannades aldrig (F75 §13 punkt 1). Det är en lucka oberoende av C7, och därför står det kvar sedan småvägarnas del drogs tillbaka.
+  - `SPANN` får `met_td_c` med F38:s spann, som är strängare än `dewpoint_c`, och schemats gränser för de nya antalen.
+- **Kontraktsgrinden** vaktar fem saker:
+  - M, U och H mot kuvösens `AVGOR`;
+  - att fuktigheten är en andel, i värdevakten och i Magnus formel;
+  - `met_td_c`:s spann mot F38:s;
+  - S-fönstren mot kolumnernas namn;
+  - radargränsen i S-fönstren mot regelns.
+
+**Avsteg från F75 §12 punkt 2.** Där står att MET:s daggpunkt ska ligga i `ny_kandidat_live`. Den ligger i en egen tabell, av två skäl:
+- Kandidatens timme är den senaste timmen i `ny_kandidat_live` (`ny_kandidat_timme()`), och körningen skriver timmar framåt. Rader där
+  hade flyttat regelns timme.
+- `ny_kandidat_live` skrivs med samma sats som den frystas, och självtesten i `ingest/ny-kandidat-db.ts` och `sjalvtest_levande.py`
+  kräver det.
+
+Innehållet är det F75 beskriver: MET:s luft och fuktighet för samma punkt, körning och timme som PB.
+
+**Provat.**
+- Integrationsprovet #907 #908 körs i ci mot PostGIS, med 26 platser och F75 §9:s motprov:
+  - G-rim ger rimfrost vid fuktigheten 89 %.
+  - M-dagg kräver båda timmarna och fuktigheten 0,9 i timmen, och ett saknat värde räknas som *utan värde*.
+  - S-fönstren prövas vid sina kanter, och 0,09 mm/h räknas aldrig.
+  - Varje variant har fukt där R0 har det. Veto och F1 kommer aldrig in i P0.
+  - Varje motprov på funktionen fälls av minst en plats.
+  - `sql/126` och `sql/127` ändrar ingen regelfunktion (md5).
+- `test/fuktskugga-stad.test.ts` prövar filerna, flödet och värdevakten utan databas.
+- **Motprovet i ci:** commit 20a9d231 lät M-dagg pröva fuktigheten i timmen före i stället för i kandidatens timme. Felet ligger utanför
+  kontraktsgrinden, som höll. ci-körningen 44599693472 föll bara på integrationsprovet #907 #908, i FS3 vid platsen S19
+  (`test/integration.test.ts:5002`). Nästa commit återställde felet.
+- Inte provat i drift och inte i Supabases avbild.
+
+**Ordningen i driften (Bengts och Axels ord):**
+1. Full skala utanför driften (F75 §9), som för #907.
+2. DB-knappen med *migrera*: `sql/126`, sedan `sql/127`.
+3. Deployen av `arkivexport` (#907).
+4. Kuvösens PR #99 (`claude/c7-kedjan`). Därefter skriver kedjan MET:s fukt.
+
+Före punkt 4 står `ny_kandidat_met_stad` tom, och M-dagg har inget värde. Före punkt 2 och 4 faller det nya steget med en varning, och
+jobbet förblir grönt.
+
+**Kvar.** Beviset efter driftsättningen:
+- en rad i `ny_kandidat_met_stad` för stadspunkterna varje timme;
+- skuggans nya kolumner med innehåll i en rad.
+
+**Alternativ.**
+- **MET:s fukt i `ny_kandidat_live`:** avvisat, se avsteget.
+- **En egen skugga för C7:** avvisat i F75 fråga 4 (a).
+
+**Stomdokument:** SYS 2 — svartisens och rimfrostens kolumner i fuktskuggan, MAT 5 — svartis och rimfrost i skugga
+
+## #909 (19/11 2026) Stadsmiljöns reserv startade aldrig: den körs nu också sist i småvägskedjan (körlistan B1, DECISIONS #894)
+
+**Beslut.** Bengt 19/11: *"Börja med det"*, på frågan om rättelsen av reserven. Reserven för stadsmiljön (#894) står i en gemensam del,
+`.github/actions/stadens-reserv`, som två flöden kör sist: `kuvos-stad`, som förut, och `kuvos-smavag`, som får `actions: write`
+för det.
+
+**Vad som var fel.** Reserven startar bara när ingen annan körning väntar i MET-kön, eftersom en ny väntande körning ersätter den som
+väntar (#884). Småvägskedjan startas av pulsklockan vid R + 51 minuter. Kuvos-stad går från R + 6.36 till omkring R + 7.00 och håller
+kön, så när reserven prövas sist i kuvos-stad väntar småvägskedjan nästan alltid. 19/11 sköt reserven upp körningen 20261119T00Z två
+gånger med samma skäl, kl. 13.01 och 19.00 UTC. Ingen mätning hade visat det, eftersom reserven aldrig hade behövts i drift förut
+(körlistan B1: *inte visad i drift*).
+
+**Rättelsen.** Sist i småvägskedjan väntar ingen annan körning, och där prövas reserven också:
+- Kandidaterna räknas från småvägskedjans körning R. Stadsmiljöns fil för R kommer först med kuvos-stad vid R + 6.36.
+- Kontrollen att hinken svarar är att någon av kandidaternas filer går att läsa. I kuvos-stad är den som förut körningens egen fil.
+- En kuvos-stad som redan går räknas som väntande, eftersom den kan vara en efterräkning av samma körning.
+- Steget får aldrig fälla småvägskedjan (`continue-on-error`).
+Gränsen för efterräkningen är oförändrad (60 timmar, `efterrakning.py` i det privata repot), så 20261119T00Z går att räkna till omkring
+21/11 kl. 12 UTC.
+
+**Alternativ.**
+- Reserven startar en efterräkning trots att en körning väntar. Det avbryter den väntande småvägskedjan.
+- Ett eget flöde som startar när småvägskedjan är klar (`workflow_run`). Det är fler rörliga delar för samma sak.
+- Låta reserven vänta i kuvos-stad. Det går inte, eftersom kuvos-stad håller kön så länge den går.
+
+**Varför.** Reserven ska räkna en saknad körning medan MET har den kvar, och sist i småvägskedjan står kön tom. En gemensam del gör att
+stegen står på ett ställe.
+
+**Stomdokument:** SYS 2 — stadsmiljöns kedja och reserven
+
+## #910 (19/11 2026) Småvägsröstens rörarbete får storstädernas undantag i stomdokumenten, och båda spåren rättas ikapp (kort #304)
+
+**Beslut.** Bengt 19/11: *"Ja, båda spåren"*, på frågan om småvägsröstens rörarbete ska få samma undantag som storstäderna, så att båda spåren
+rättas. Frågan stod i bedömningen §4.2 sedan 11/11 (dokumentsynken).
+
+**Undantaget.** Röstens rörarbete i driften (#828) beskrivs i Halkvakts stomdokument som storstädernas (#804, #810):
+- tabellerna, flödena, regeln och brytarna;
+- betavarningen i appen.
+Punkterna, särdragen, fysiken och kuvösens småvägsprov (P-II, kartans ord) bor kvar i halkvakt-kuvos (#768). Instruktionen står i
+CLAUDE.md, i avsnittet PUBLIKT REPO och i dokumentsynkens steg 4. Morgonrutinens egen text (punkt 3) säger samma sak, och den
+ändras när CLAUDE.md är ihopslagen.
+
+**Vad som var fel** (läst 19/11 kväll på main 8b1047ed). Synken har gått varje morgon 10–19/11, men:
+- **Småvägsrösten** nämns inte i handtexten i mätningarna, systembilden, appen eller integrationskartan. Synkens instruktion uteslöt
+  *småvägarna*, och undantaget gällde bara kandidaten och storstäderna. Därför står tolv beslut som *bokförda utan handtext* med skälet
+  *hör till halkvakt-kuvos*: #828, #844, #846–#849, #857, #859, #881, #883, #884 och #885.
+- **Storstäderna** står i mätningarna och systembilden som om brytarna vore av (*"Ingenting av storstäderna når föraren förrän brytarna
+  slås på"*). Brytarna slogs på 8/11 17.35 UTC (tillägget till #816). Tillägget nådde aldrig handtexten: #816 nämndes redan där, och
+  stomvakten flaggar bara besluten efter numret. Appens handtext nämner inte storstäderna.
+- **Projektkartan** har ingen del för storstäderna. Deras steg ligger i *L4 räckvidden: segmentprognosen*, och det sista är bokfört
+  10/11.
+
+**Ikapprättningen** (i samma PR): handtexten i MAT, SYS, APP och KAR för båda spåren, utan kuvösens tal, och en egen del för
+storstäderna i projektkartan. Stomvakten ändras inte: att den ska flagga ett tillägg till ett gammalt beslut är ett förslag som väntar
+på Bengts ord.
+
+**Alternativ.**
+- Rätta #828:s rad **Stomdokument:** till *inga*. Då hade rösten, som förarna hör, saknats i appens och systembildens beskrivning.
+- Låta rösten stå bara i kuvösen. Men rörarbetet och betavarningen finns i Halkvakt och i appen, inte i kuvösen.
+
+**Varför.** Stomdokumenten är Bengts facit för var bygget står. Det föraren hör och det som går i driften ska stå där, vem som än äger
+fysiken bakom.
+
+**Stomdokument:** MAT, SYS, APP, KAR — båda spårens rörarbete i handtexten
+
+## #911 (19/11 2026) Svartis och rimfrost: småvägsdelen struken ur kuvösens prov, som bara gäller storstäderna (körlistan C7, kort #656)
+
+**Beslut.** Bengt 19/11: *"Nej det här är något som är fel. När vi tidigare jobbat fram småvägar har vi varit eniga om att vi inte kan göra samma mätningar på småvägar som storstäder. Det är fortfarande det som gäller. Om du/jag nu gjort avsteg från det får du backa"*.
+
+**Vad som backas.** Förregistreringen för svartis och rimfrost (#906, halkvakt-kuvos F75) prövade också småvägsröstens varianter, mot
+friktionen vid stationerna och med storstädernas villkor. Småvägarna mäts inte som storstäderna, så det var ett avsteg. Kuvösen stryker
+allt som gäller småvägsrösten (F76, förregistreringens §16 post 1), och provet gäller bara kandidaten i storstäderna.
+- Ur byggena tas småvägarnas flaggor och läsfråga bort.
+- Storstädernas delar står kvar.
+- Inget var byggt i drift eller läst för småvägsdelen.
+
+**Kvar.** Svartis och rimfrost på småvägarna står på kort #656. Prövas de, förregistreras de på småvägarnas sätt i ett eget dokument.
+#906 står som beslut om signeringen. Det här beslutet gäller före dess text om småvägsrösten.
+
+**Stomdokument:** BED §4.2
+
+## #912 (19/11 2026) Körlistans B7 struken: batteriet under driftens villkor mäts inte (kort #378, #647)
+
+**Beslut.** Bengt 19/11: *"B7 kan du stryka den kommer inte att genomföras"*.
+
+**Vad som stryks.** B7 skulle visa batteriet under driftens villkor: en resa per plattform med skärmen släckt och storstädernas punkter i
+lägesfilen, och vad som händer över 8 %/h efter småvägsröstens påslag (#778, #838, #878). Resan görs inte, och projektkartans steg för
+batteriet med stadspunkterna tas bort.
+
+**Vad som står kvar** tills ett eget beslut ändrar det:
+- villkoret i #878 att batteriet mäts efter småvägsröstens påslag;
+- batteribudgeten i CLAUDE.md, under 8 %/h med skärmen släckt.
+Med B7 struken mäts ingen av dem i driften. Det står här så att det inte ser ut som om de vore visade.
+
+**Stomdokument:** BED §4.2
+
+## #913 (20/11 2026) Storstäderna i säsongsfacit: dygnsaggregatet, värdevaktens spann och avsnittet i veckorapporten (körlistan C3, kort #381)
+
+**Beslut.** Bengt 19/11: *"börja bygga c3 och B10"*. Tillägget `docs/TROSKLAR-SASONGSFACIT.md` §11 är signerat med Claudes
+rekommendationer (#904). Det här är bygget av dess tre delar:
+- dygnsaggregatet med pg_cron före gallringen (svar 2 a);
+- stadstabellernas egna spann i värdevakten, med gränser ur schemat (svar 5 a, planen V1–V5 i §11.7);
+- avsnittet i veckorapporten (§11.8), internt och utan publicering tills stadsmiljöns dom i kuvösen är fälld (svar 6 a).
+
+Migrationen, värdevaktens knapp och flöden görs bara på Bengts ord. Inget mått är räknat i drift.
+
+**Bygget.**
+- **`sql/128_sasongsfacit_stad.sql`:**
+  - `sasongsfacit_stad_dag` har en rad per svenskt dygn, cell (brytarens område och lager, `sql/089`), tid på dygnet (§5) och nivå
+    (§11.2). Raden bär timmarna per klass (§11.3), de kalla och de varnande grupp-timmarna och timmarna med varning i cellen. Den bär
+    också punkterna per skäl i de kalla grupp-timmar som inte varnade, marsfönstrets timmar, *ytan över 0* och cellens grupper det
+    dygnet (§11.4). Inga grupper och inga punkter.
+  - `sasongsfacit_stad_undantag` bär undantagen i §11.2 punkt 2, med raden 19/11 07.42–08.14 UTC (#903). Ett senare larm från
+    vakthundens kontroll 3c blir en egen rad, och dygnet räknas om medan loggen finns i databasen.
+  - En kärna och två vägar in: databasens egna rader (`sasongsfacit_stad_rakna`, som pg_cron kör 03.37 UTC för gårdagen) och hinkens
+    dygnsfiler (`sasongsfacit_stad_rakna_ur_hinken`, en gång för ett gallrat dygn). Kärnan är densamma, alltså är definitionerna det.
+  - Provet i §11.4: en rad i stadsloggen där punkterna inte är summan av skälen stoppar dygnet med ett fel som bara nämner dygnet.
+  - En sats per dygn och ingen funktion per rad (#783). Fast sökväg och UTC i definitionerna (#784, #439). RLS utan policy och bara
+    `service_role` (#653). Funktionerna svarar med ord, aldrig med ett tal (#768). Ingen regelfunktion skapas eller ändras.
+  - Migrationen räknar dygnen sedan den första räknade körningen, där pg_cron finns.
+- **Värdevakten (`scripts/vardevakten.ts`, §11.7):**
+  - V1: stadsloggen och dess körningar, `olycksfacit_lager` (hela tabellen, den har ingen tidskolumn) och aggregatet står i `TID`.
+  - V2: en deklaration under `tabell.kolumn` går före kolumnens namn, för spann, ordlistor och flaggor. Stadsloggens och aggregatets
+    antal har egna spann. Gränserna kommer ur schemat och aldrig ur punktlistan: 100 000 punkter per grupp eller cell, 200 000 grupper
+    per körning och 25 timmar per dygn. `varnande_km` har ett spann i km. Domloggens 0–64 är orört.
+  - V3: ordlistor för körningens `status`, olycksfacits `lager` och stadsdetaljens `orsak`, `omrade` och `lager`, och flaggor för
+    lagrens `talar` och stadsdetaljens `aktiv` och `talar`. Orden i `orsak` är de nio i §11.5.
+  - V4: listan `JSONB` deklarerar nycklarna i jsonb, och värdevakten läser dem som tal, ord, flaggor eller en lista ord. `brytare`
+    besiktas som en lista, så att en okänd kombination inte tyst räknas som *brytaren av*.
+  - Värdevaktens utskrift går till flödets publika sammanfattning. För storstädernas tabeller (`UTAN_TAL`) skrivs bara domen, utan
+    antal rader, min, max och andelar (§11.8, #768).
+- **Avsnittet (`scripts/sasongsfacit-stad.ts`)** har frågorna mot aggregatet, olycksfacit och `driver_facit`, och skriver avsnittet i
+  Markdown för veckan och säsongen hittills, per cell:
+  - Varningstimmarna står också per månad och tid på dygnet.
+  - Antalet står bredvid varje andel. En andel visas från 20 händelser (val 3), och svarens från 30 (§11.6). Det står att
+    intervallet i §5 saknas tills rapportskriptet i C2 finns. Undantagen står för sig.
+  - Avsnittet stoppar med ett fel i stället för ett tal vid ett fält utan deklaration i värdevakten, ett värde utanför spannet, ett
+    okänt ord och ett dygn som saknas i aggregatet.
+  - Skriptet skriver bara *klart* eller ett fel utan tal, och det vägrar lägga sina filer i repot.
+  - Veckorapporten (körlistan D1) är inte byggd. Avsnittet är den del den tar in.
+- **Kontraktsgrinden:** marsfönstret får sin femte kopia i `sql/128`. Säsongsfacits tid på dygnet vaktas i `sql/099` och `sql/128`, och
+  säsongens sista dygn i `sql/128` och skriptet.
+
+**Läsningarna där §11 inte säger allt**, valda så nära texten som möjligt:
+- **När timmen loggades (undantag 1).** Beslutet i `kandidat_talar` läses när den körning skrevs vars rader timmen bär, annars den
+  första körningen som bär timmen, och utan körning vid timmen. Beslutet läses som `sql/112` läser det.
+- **Undantagens timmar (undantag 2).** En timme är ett undantag när [h, h + 1 h) överlappar intervallet. 19/11 gäller alltså timmarna
+  07 och 08 UTC.
+- **Marsfönstret räknas per cell.** Timmarna tiger när varje punkt i cellen ligger söder om 62° N, som regel B (`sql/091`). Alla tre
+  områdena gör det.
+- **Skälen** räknas i de kalla grupp-timmar som inte varnade, och andelen är av de kalla punkterna i samma grupp-timmar.
+- **Indelningen** på månad och tid på dygnet gäller varningstimmarna, som §11.3 säger. Timmarna per klass, skälen, olyckorna och
+  svaren står per cell för veckan och säsongen.
+- **Perioden** börjar med den första räknade körningen enligt datan: ett tidigare dygn i aggregatet, eller den första räknade körningen
+  bland raderna som dygnet räknas ur. Den slutar 31/3 2027.
+- **Ett gallrat dygn.** `sql/096` gallrar efter 14 dygn. Ett dygn räknas ur databasen så länge det är yngre än 14 dygn eller
+  körningsloggen når tillbaka till det, annars ur hinken. Migreras `sql/128` före 22/11 kl. 00.00 svensk tid finns periodens första
+  dygn, 8/11, kvar i databasen, och hinken behövs inte. Efter det måste 8/11 och de följande gallrade dygnen räknas ur hinken. Den
+  körningen är inte byggd: den kräver hinkens nyckel och ett flöde.
+- **Gruppernas antal** för ett dygn som räknas ur hinken är antalet när det räknas, inte när loggen skrevs.
+- **Olycksfacits och svarens tabeller i värdevakten.** Planen V1 lägger stadsloggens två tabeller och `olycksfacit_lager` i `TID`, inte
+  `olycksfacit` och `driver_facit`. Deras fält i avsnittet (`klass`, `utfall`, `svar`) har databasens CHECK, och `prov` är genererad.
+  `driver_facit` i värdevakten hade dessutom gett testarnas svar i en publik logg (#498). De står utanför, som planen säger.
+- **Utskriften utan tal** gäller också fuktskuggans två tabeller, MET:s fukt vid stadspunkterna och `radar_stad`. De står i `TID` sedan
+  #907 och #908, och utan ändringen hade värdevakten skrivit deras min och max i den publika sammanfattningen varje måndag.
+  Småvägsröstens tabeller (`smavag_live`, `radar_smavag`) är inte ändrade.
+- **Publiceringen.** Inget här publicerar. Avsnittet är märkt internt, och dess filer får inte ligga i repot.
+
+**Provat.**
+- `test/sasongsfacit-stad.test.ts` utan databas:
+  - migrationen skriver bara sina två tabeller, skapar ingen regelfunktion och har fast sökväg och UTC;
+  - värdevakten känner varje fält under sin tabell med schemats gränser, orden ur migrationerna och §11.5, och nycklarna i jsonb;
+  - utskriften för storstädernas tabeller bär inget tal;
+  - avsnittets regler, med ett motprov per regel: 19 händelser och 29 svar ger ingen andel, och ett värde utanför spannet, ett okänt
+    ord och ett saknat dygn stoppar avsnittet.
+- Integrationsprovet #913 körs i ci mot PostGIS, på påhittade dygn i mars 2026 i en transaktion som rullas tillbaka, med två egna celler:
+  - klasserna i sin ordning, brytaren per cell, marsfönstret per cell, nivåerna och skälen, timme för timme;
+  - perioden, omräkningen och dygnen som inte räknas;
+  - provet i §11.4;
+  - hinkens väg ur exportens egna dygnsfiler (`arkiv2_dygn`), som ger samma rader som tabellerna i varje cell;
+  - 15 motprov på migrationen, och vart och ett fälls av minst en plats;
+  - avsnittets frågor mot olycksfacit och `driver_facit`;
+  - värdevakten mot databasen, där en rad med ett känt tal aldrig når utskriften.
+- Den första ci-körningen (44635844463) fällde inte motprovet *beslutet vid timmen, inte när den loggades*. Timmarna 16 och 17 bar
+  likadana rader, så att en nivå som flyttades en timme inte syntes. Raden kl. 16 ändrades (ed470c32), och ci-körningen 44637355771 var
+  grön med alla 15 motprov fällda.
+- **Motprovet i ci:** commit b0611cb1 lät en räknad körning göra timmen räknad i varje cell, utan cellens brytare. Felet ligger utanför
+  kontraktsgrinden, som höll. ci-körningen 44638462703 föll bara på integrationsprovet #913, i SS1 (`test/integration.test.ts:5247`).
+  Nästa commit återställde felet.
+- Inte provat i drift och inte i Supabases avbild.
+
+**Ordningen i driften (Bengts ord):**
+1. DB-knappen med *migrera* och `sql/128_sasongsfacit_stad.sql`, före 22/11 kl. 00.00 svensk tid om hinken inte ska behövas.
+2. Värdevaktens knapp (V5), på grenen eller på main, efter migrationen: inga obesiktigade fält bland stadsloggens, olycksfacits och aggregatets.
+3. Veckorapporten (D1) tar in avsnittet.
+
+**Kvar.** Beviset i drift: `halkvakt-sasongsfacit-stad` har skrivit gårdagens rader, och värdevaktens knapp visar fälten besiktade.
+Körlistans C3 är klar när avsnittet står i veckorapporten (D1).
+
+**Alternativ.**
+- Domloggens namnspann 0–64 för stadsloggen (svar 5 b): avvisat i #904.
+- En läsning varje måndag direkt ur tabellerna och hinken (svar 2 b): avvisat i #904.
+- En kärna per väg in: avvisat, eftersom definitionerna då hade stått två gånger.
+- `olycksfacit` och `driver_facit` i värdevaktens `TID`: avvisat, se läsningarna.
+
+**Stomdokument:** MAT säsongsfacit — storstädernas avsnitt och dygnsaggregatet, SYS — sql/128 och pg_cron-jobbet för storstäderna
+
+## #914 (19/11 2026) Stadsmiljöns dom får sitt steg i kuvos-ny-kandidat: självtestet varje gång, domen först efter domfönstret (körlistan B10, halkvakt-kuvos F32 och F78)
+
+**Beslut.** Bengt 19/11: *"börja bygga c3 och B10"*. Steget `stadsmiljon` i `kuvos-ny-kandidat.yml` kör kuvösens domskript för
+stadsmiljön (halkvakt-kuvos F27 och F32) på kuvos-stad:s dygnsfiler i den privata hinken. Det är bygget som fristen
+`stadsmiljon-domsteget` gäller.
+- Självtestet körs först, varje gång. Sedan kommer datumspärren, som läses ur skriptet så att datumet står på ett ställe. Före datumet
+  hämtas ingenting och domen körs inte, och jobbet slutar grönt med en notis. Så går steget att pröva på main före domen.
+- Efter datumet hämtas dygnsfilerna, sammanfattningarna och identitetsfilerna ur hinken genom arkivdump, och domskriptet kör sina prov
+  före läsningen. Domfilen läggs i hinken under ett fast namn. Den skrivs aldrig över, och filen i hinken prövas byte för byte mot den
+  skrivna.
+- Loggen säger bara klart eller fel. Faller ett prov eller skriptet, läggs skriptets utskrift i hinken.
+
+**Alternativ.**
+- Steget i `kuvos-stad.yml`, bredvid kedjan. Förkastat: det flödet står i MET-kön, där en ny väntande körning ersätter den som väntar
+  (#884). En tryckning på domen kunde då ersätta en väntande kedja. I `kuvos-ny-kandidat` går steget i den andra kön.
+- Rött vid datumspärren, som friktionens läsfråga. Förkastat: fristens bevis är ett grönt självtest i flödet före 31/3, och en röd
+  körning ser ut som ett fel.
+- Ett nytt namn på domfilen för varje körning, som friktionens. Förkastat: en andra körning kunde lägga en annan dom bredvid den första.
+  Med ett fast namn står den första domen.
+
+**Varför.** Förregistreringen säger att domen körs efter 31/3 2027 och att talen bara går till hinken. Steget gör det på samma sätt som
+kuvösens andra domar i flödet.
+
+**Stomdokument:** SYS 2 — stadsmiljöns dom i kuvos-ny-kandidat

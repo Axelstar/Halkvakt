@@ -93,6 +93,7 @@ ligger på +1…+3 °C, har fallit minst 0,8 °C på 30 minuter och mätaren set
 - [Djur på vägen (A4)](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-vilt): klar
 - [Viltsträckan (statistik per sträcka)](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-viltstracka): väntar, 33 % · Bengt hämtar Trafikverkets viltolyckskartor 2020–2024 ur Lastkajen (produktpaket 10094; Lastkajen kräver inloggning), sedan körs och läses steg 0 (DECISIONS #860).
 - [Fartkameror (A5)](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-kameror): klar
+- [Storstäderna: B och C som K](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-storstaderna): delvis, 82 % · kvar: Säsongsfacit för storstäderna: avsnittet i veckorapporten, när D1 finns (körlistan C3, DECISIONS #904, #913)
 
 <!-- /LÄGESRADER -->
 
@@ -172,6 +173,29 @@ Läget 7/11 (#810):
   - Finland läses ur Digitraffics v2 (#791).
   - Olycksfacit fryser varningslagren vid varje olycka i arkivet och når inte appen (#796–#803).
   - Räknaren skickar ett ord per händelse till `app-raknare` (#772, #787).
+
+Läget 19/11 (#910). Två rader ovan gäller inte längre som de står:
+- **Storstädernas brytare** är på sedan 8/11 17.35.53 UTC (`sql/097`, #816), och stadspunkternas varningar står i `live.json` som
+  kandidatens när regeln varnar, de första 18/11. `sql/098` slår av alla fyra. Stadsloggen går dygn för dygn till hinken `arkiv` innan den gallras
+  (`sql/114` och `arkivexport`, #888). Kuvösens stadsflöde `kuvos-stad`, som också fyller kedjans historik (#809), startas efter
+  fysikens reserv (#884), kan räkna en äldre körning med valet `stamp` (#885) och räknar en saknad körning i efterhand av sig självt
+  (#894). Reserven ligger sedan 19/11 i `.github/actions/stadens-reserv` och körs sist i både `kuvos-stad` och `kuvos-smavag`
+  (#909).
+- **Kandidaten på en kvart** talar sedan 19/11 för vägpunkterna. Den bär inga stadspunkter, så `talande_regel()` ger timvärdets rader
+  för storstäderna, och `storstader_tyst()` med vakthundens kontroll 3c larmar när storstäderna tystnar (`sql/123`, `sql/124`, #903).
+
+**Småvägsrösten** (#828, #910) har en egen ledning, med båda brytarna av:
+- punkterna i `smavagspunkt` och brytarna P1 och N i `smavagsbrytare` (sql/103), laddade i `ny-kandidat-fysik`; radarn per punkt till
+  `radar_smavag` (sql/104);
+- kedjan `kuvos-smavag`, var sjätte timme från pulsklockan, med timfilen i hinken (#849) och en reserv när den saknas (#859); timflödet
+  `kuvos-smavag-timme` skriver `smavag_live` och `smavag_korning` (sql/105), och timmen 06 UTC väntar på MET:s svar till 26/11 (#902);
+- `smavag_regel()` och `smavag_talar()` (sql/105) → publiceringen: punktfilen `smavag.json` i hinken och kartrepot, som posten
+  `smavag` i manifestet (sql/106, #846, #847), och i `live.json` nyckeln `smavag` med en bit per punkt, som saknas med brytarna av;
+- apparna: läsaren `smavagfil` i tre språk och motorns farotyp S, sist efter K (#844); punktfilen hämtas bara när `live.json` bär ett
+  besked (#846), och räknaren tar emot `smavag` i `app-raknare` (#828);
+- vakterna och mätningarna, med talen bara i hinken: `smavag-vakt` (#849), `kuvos-smavag-avbrott` (#868, #869),
+  `kuvos-smavag-olyckor` (#867), `kuvos-smavag-uppfoljning` (#883) och backtesten `kuvos-smavag-bakat` (#848);
+- påslaget `sql/113` med fyra vakter, på Bengts och Axels ord (#881), och avbrottet `sql/107`.
 
 ### 4.4 Kandidaten: en egen väg in, sist i stegen
 
@@ -901,6 +925,7 @@ ingen läser en överspelad version någon annanstans.
 | 14/10 | **Läge-raderna efter nivå 2, prognosläget och väg B:** L4-raden (§2), §6.1 och §13.6 (provet av helheten) — ingen innehållsändring | DECISIONS #509, #516–#519, #544, #547–#553 |
 | 15/10 | **Läge-raden §13.6 efter beslutet att gå live:** kandidaten i appen före domen, körplatsen och pariteten — ingen innehållsändring | DECISIONS #556–#561 |
 | 7/11 | **Lägena i §4.3 och §4.4 efter den talande kandidaten, F1 och storstädernas punkter.** Tabellen i §4.4 rörs inte; att dess rader om spridningsgrinden och regeln är överspelade står i läget. | DECISIONS #729, #782, #783, #791, #796–#805, #808–#810 |
+| 19/11 | **Läget i §4.3 efter storstädernas påslag och småvägsröstens ledning.** Brytarna på 8/11, stadsloggen i hinken, stadsflödets reserv och kandidaten på en kvart med timvärdet i storstäderna; småvägsröstens ledning med brytarna av. Läget 7/11 står kvar som det skrevs. | DECISIONS #816, #828, #888, #903, #909, #910 |
 
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
 ## Öppna kort
