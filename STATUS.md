@@ -3395,3 +3395,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   läsläge (44723373125): alla fyra uppfyllda, båda brytarna av. 0.4.1 (58) bär taket 30 minuter och 20 km. Bengts ja: rösten slås på
   när 0.4.1 finns i App Store och i Google Play, men senast 27/11 (frist `smavag-paslaget-2026-11-27`), och Claude slår av på
   testarnas svar (#833) och meddelar Bengt. Axels svar väntar; beslutet skrivs i DECISIONS när det kommit.
+- 20/11 (Claude; Axel: *"Ja börja bygga"*): **Platsdelningen, serverns del** (DECISIONS #917, kort #674). Appen ska skicka kommunen den
+  senast var i, med förarens ja, för notis före resan, statistik per län och erbjudanden som eget val. Byggt: `sql/130_app_enhet.sql`,
+  funktionen `app-enhet` och `test/app-enhet.test.ts`; migrationen körd två gånger mot en lokal Postgres 16. Inte i drift: migrationen
+  och deployen väntar på ett ord. Kvar: utskicket, apparna och orden. Tre frågor i bedömningen §4.2.

@@ -18607,3 +18607,41 @@ sidorna) och skuggmotor. `sql/129` körs med DB-knappen före deployen av public
 och ändrat två signerade mått mitt i vintern.
 
 **Stomdokument:** MAT 3 — olycksfacit och säsongsfacit, BED §4.2
+
+## #917 (20/11 2026) Platsdelningen: appen skickar kommunen den senast var i, med förarens ja; löftet byts; serverns del byggd (kort #674)
+
+**Beslut** (Axel 20/11: *"Vi har bestämt oss nu att vi kommer att behöva kräva platsdelning av våra användare"*; om Bengt: *"pappa har sagt ja"*; och *"Ja börja bygga"*).
+- **Vad appen skickar:** ett slumpat id som appen själv skapar, plattformen, pushtoken, kommunen telefonen senast var i och valet om
+  erbjudanden. Bara senaste läget, ingen historik. Exakt position, körspår, resor och favoriter stannar i telefonen som förut.
+  Nivån kan bli finare än kommun senare (Axel), och då görs riskbedömningen om först.
+- **Vad det används till:** en notis när risken för halka är hög där föraren är, kvällen före eller på morgonen; statistik per län som
+  sammanräknade tal, också till partner, aldrig under tio telefoner; och erbjudanden från företag som betalar, som push och i appen.
+- **Erbjudanden är ett eget val, avstängt från början.** Högst två pushar i månaden, aldrig samma dag som en varning, aldrig i samma
+  notis och aldrig när vakten kör.
+- **Förarens ja.** Inget skickas förrän föraren har godkänt det på en egen skärm, och befintliga förare får skärmen vid uppdateringen.
+  Den som säger nej behåller appen som i dag, utan notiser före resan, och syns inte i statistiken.
+- **Radering:** *Radera min data* i appen, när pushtoken slutat gälla, och av sig själv efter 30 dygn utan kontakt.
+- **Löftet** *"Din position lämnar inte telefonen av sig själv"* (redan på väg ut, #900 fråga 9) blir *"Vi vet vilken kommun du är i,
+  aldrig var du kör."*
+- **Produktinvarianten i CLAUDE.md står kvar tills appen skickar något.** Raden, Play-filen, integritet.html och produktboken ändras
+  i samma commit som appens första anrop, som invarianten själv kräver. Den här posten är beslutet de ändringarna vilar på.
+
+**Byggt 20/11, inte i drift:** `sql/130_app_enhet.sql` (tabellen `app_enhet`, dubbellåst; gallringen `gallra_app_enhet()` varje natt
+03.35 UTC; `app_enhet_lan_stat()`, per län och aldrig under tio) och funktionen `app-enhet` (POST skriver över installationens enda
+rad, DELETE raderar den; reglerna i `regler.ts` avvisar varje okänt fält, så en position kan inte följa med). Prövat:
+`test/app-enhet.test.ts`, och migrationen körd två gånger mot en lokal Postgres 16 med gallringen och tiogränsen lästa. Migrationen
+körs med DB-knappen och funktionen deployas på Bengts eller Axels ord.
+
+**Inte byggt:** utskicket (kräver en nyckel hos Apple och ett Firebase-projekt hos Google, och Googles FCM-bibliotek i Android-appen),
+vilken risk som ger en notis, appens skärmar och appens läsning av kommunen ur positionen i telefonen.
+
+**Alternativ.** Län som föraren väljer själv, utan position: höll det gamla löftet, men når inte den som aldrig gör ett val och följer
+inte med på resan. En tyst push som telefonen själv filtrerar: inget lämnar telefonen, men iPhone stryper tysta pushar. Exakt position:
+ger rörelsemönster som kan peka ut en person, och behövs inte för en notis per kommun.
+
+**Underlaget** (riskbedömningen, texten till integritetssidan, skärmarna) ligger utanför repot, hos Axel.
+
+**Öppet** (bedömningen §4.2): juristen (#901 strök steget, Axel sade 20/11 att en jurist ska läsa underlaget); lovet enligt LEK 9 kap.
+28 § (läsningen i #900 talar för att skärmen måste vara ett samtycke); flytten av appen till Lagerlöf Labs HB i butikerna.
+
+**Stomdokument:** APP 7 — vad som lämnar telefonen; SYS — tabellen och funktionen med gallringen; BED §4.2
