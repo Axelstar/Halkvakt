@@ -120,7 +120,7 @@ test("#579 brytaren på: en rad per punkt till frågan, en bit per sträcka till
   assert.ok(notes.some((n) => n.startsWith("kandidat: 1 av 3 punkter ritas inte")), "det som inte ritas ska synas");
 });
 
-test("#927 storstädernas punkter ritas som punkter, går inte till frågan och ritas också när frågan faller", async () => {
+test("#928 storstädernas punkter ritas som punkter, går inte till frågan och ritas också när frågan faller", async () => {
   const fragor: { text: string; params?: unknown[] }[] = [];
   const bitar = [{ seg: "S1", punkter: 1, km: "2.0", g: { type: "LineString", coordinates: [[17, 60.009], [17, 60.027]] } }];
   const tid = "2026-11-20T18:00:00.000Z";

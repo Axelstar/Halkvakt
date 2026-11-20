@@ -18846,7 +18846,7 @@ väljs på kartan.
 
 **Stomdokument:** APP — notisens tryck och bladet för erbjudanden; SYS — slaget och partnerns länk i push_utskick
 
-## #927 (20/11 2026) Livekartan och startsidan ritar storstädernas punkter, som punkter i Prognos-färgen
+## #928 (20/11 2026) Livekartan och startsidan ritar storstädernas punkter, som punkter i Prognos-färgen
 
 **Beslutet.** Bengt 20/11: *"Jag tycker att kartan ska rita punkterna"*, efter frågan varför så lite var markerat som halka på Stockholms kommunala gator. Varje varnande
 stadspunkt (storstäderna B och C, DECISIONS #804) ritas i `data/kandidat.geojson` som en punkt där den står, med `stad: true`, och
