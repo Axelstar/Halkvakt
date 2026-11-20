@@ -3483,3 +3483,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 20/11 (Claude): **iPhone 0.4.1 (68) uppladdad till TestFlight** från main 4c0362f (körning 44822287242, `EXPORT SUCCEEDED`; PR #1750
   ihopslagen): den nya skärmen för en planerad resa (DECISIONS #930) och erbjudandet i notiscentret (#927). **Certifikatstädningen
   (#929) fungerade i sin första körning:** *3 före, 4 efter bygget, 1 återkallade*. Den nya skärmen är inte prövad på en telefon.
+- 20/11 (Claude): **Planerad resa sedd på Axels telefon i 0.4.1 (68)**, resan Malmö till Östermalm (hans inspelning): skärmen fungerar
+  med riktiga data. Efter hans ord (DECISIONS #931): sträckorna börjar stängda, Övrigt på vägen öppnas rad för rad, och ortnamn
+  på konturen skrivs inte över varandra. Bygget är 0.4.1 (69).
