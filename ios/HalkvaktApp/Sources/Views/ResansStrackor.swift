@@ -1,5 +1,5 @@
 // RESANS STRÄCKOR PÅ SKÄRMEN (DECISIONS #930): sträckorna i den ordning föraren kör, var och en med sitt läge. Ett tryck
-// öppnar sträckan och visar det rapporten har där. Indelningen och texterna räknas i motorn (Resstrackor).
+// öppnar sträckan och visar det rapporten har där. Alla börjar stängda (Axel 20/11, DECISIONS #931). Indelningen och texterna räknas i motorn (Resstrackor).
 import SwiftUI
 import HalkvaktEngine
 
@@ -28,7 +28,6 @@ struct ResansStrackor: View {
             }
             plats(mal, m: totalM, fylld: true)
         }
-        .onAppear { if oppen == nil { oppen = strackor.firstIndex { $0.lage != .lugnt } } }
     }
 
     /// Raden för en plats: ringen, namnet och hur långt in på resan den ligger, med klocktiden när restiden är känd.

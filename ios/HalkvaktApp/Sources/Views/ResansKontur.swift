@@ -30,16 +30,17 @@ struct ResansKontur: View {
                 ctx.stroke(vag, with: .color(s.lage == .lugnt ? Brand.dim : Brand.yellow),
                            style: StrokeStyle(lineWidth: 3.5, lineCap: .round, lineJoin: .round, dash: s.lage == .frysrisk ? [1, 6] : []))
             }
-            // Brytpunkterna och målet, med namn. Starten har en ring, målet är fyllt.
-            for (i, s) in strackor.enumerated() {
-                guard let p = Self.vid(punkter, kum, Double(s.franM)).map(pkt) else { continue }
-                Self.ring(&ctx, p, fylld: false)
-                if let namn = s.fran { Self.namn(&ctx, namn, p, storlek, ljus: false, under: i % 2 == 1) }
-            }
+            // Brytpunkterna och målet, med namn. Brytpunkterna har en ring, målet är fyllt. Namnen skrivs i turordning: målet,
+            // starten och sedan resten, och ett namn som skulle hamna över ett annat skrivs inte (Axels inspelning 20/11:
+            // Malmö och Helsingborg stod över varandra, DECISIONS #931).
+            var skrivna: [CGRect] = []
+            let brott = strackor.compactMap { s in Self.vid(punkter, kum, Double(s.franM)).map { (namn: s.fran, p: pkt($0)) } }
+            for b in brott { Self.ring(&ctx, b.p, fylld: false) }
             if let p = punkter.last.map(pkt) {
                 Self.ring(&ctx, p, fylld: true)
-                Self.namn(&ctx, mal, p, storlek, ljus: true, under: false)
+                Self.namn(&ctx, mal, p, storlek, ljus: true, skrivna: &skrivna)
             }
+            for b in brott { if let namn = b.namn { Self.namn(&ctx, namn, b.p, storlek, ljus: false, skrivna: &skrivna) } }
         }
         .frame(height: 236)
         .background(Brand.bg)
@@ -58,13 +59,17 @@ struct ResansKontur: View {
         ctx.stroke(Path(ellipseIn: r), with: .color(Brand.text), lineWidth: 2)
     }
 
-    /// Namnet till höger om punkten, eller till vänster när det inte får plats. Vartannat namn läggs under linjen, så att
-    /// två brytpunkter nära varandra inte skriver över varandra.
-    private static func namn(_ ctx: inout GraphicsContext, _ text: String, _ p: CGPoint, _ storlek: CGSize, ljus: Bool, under: Bool) {
+    /// Namnet till höger om punkten, eller till vänster när det inte får plats. Skrivs inte om det hamnar över ett namn som
+    /// redan står där.
+    private static func namn(_ ctx: inout GraphicsContext, _ text: String, _ p: CGPoint, _ storlek: CGSize, ljus: Bool,
+                             skrivna: inout [CGRect]) {
         let t = ctx.resolve(Text(text.uppercased()).font(Typo.mono(10, .medium)).tracking(1).foregroundStyle(ljus ? Brand.text : Brand.text2))
-        let b = t.measure(in: storlek).width
-        let hoger = p.x + 9 + b <= storlek.width - 4
-        let y = min(max(p.y + (under ? 12 : -1), 10), storlek.height - 10)
+        let matt = t.measure(in: storlek)
+        let hoger = p.x + 9 + matt.width <= storlek.width - 4
+        let y = min(max(p.y, 10), storlek.height - 10)
+        let ruta = CGRect(x: hoger ? p.x + 9 : p.x - 9 - matt.width, y: y - matt.height / 2, width: matt.width, height: matt.height)
+        guard !skrivna.contains(where: { $0.insetBy(dx: -4, dy: -2).intersects(ruta) }) else { return }
+        skrivna.append(ruta)
         ctx.draw(t, at: CGPoint(x: hoger ? p.x + 9 : p.x - 9, y: y), anchor: hoger ? .leading : .trailing)
     }
 

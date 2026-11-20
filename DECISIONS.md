@@ -18931,3 +18931,22 @@ Bygget är 0.4.1 (68).
 byter, utan orter: sträckor som heter *efter 137 km*.
 
 **Stomdokument:** APP — skärmen Planerad resa; FAV — sträckindelningen ur resans rapport
+
+## #931 (20/11 2026) Planerad resa: allt börjar stängt, och Övrigt på vägen öppnas rad för rad (kort #659)
+
+**Beslut** (Axel 20/11, efter en inspelning av 0.4.1 (68) på resan Malmö till Östermalm: *"It looks good! I think the open up /
+close should be for övrigt på vägen också. Ska det inte starta som stängt?"*).
+- **Sträckorna börjar stängda.** I (68) öppnades den första sträckan som inte var lugn av sig själv.
+- **Övrigt på vägen** visar bara radens rubrik, och ett tryck öppnar texten, som för sträckorna. Listan blev annars flera skärmar
+  lång på en lång resa.
+- **Ortnamnen på konturen.** Malmö och Helsingborg stod över varandra i inspelningen. Namnen skrivs nu i turordning (målet, starten,
+  resten), och ett namn som skulle hamna över ett annat skrivs inte.
+
+Sett i samma inspelning och inte ändrat: hela vägen från Helsingborg till Östermalm blev en enda hal sträcka, eftersom varje
+delsträcka mellan två orter hade minst en halksträcka; och det som står under en sträcka står också under *Övrigt på vägen*.
+
+Bygget är 0.4.1 (69).
+
+**Alternativ.** Hela rutan Övrigt på vägen bakom en enda rad: föraren ser då inte vad som finns förrän den öppnas.
+
+**Stomdokument:** APP — skärmen Planerad resa

@@ -14,6 +14,8 @@ struct PlaneradResaView: View {
     @State private var paminn = false
     @State private var avresa = Date.now.addingTimeInterval(3600)
     @State private var notisFel = false
+    /// Raderna under Övrigt på vägen som föraren har öppnat (DECISIONS #931). Alla börjar stängda.
+    @State private var oppnaRader: Set<String> = []
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -195,6 +197,38 @@ struct PlaneradResaView: View {
 
     // MARK: - Resten av rapporten
 
+    /// En rad under Övrigt på vägen: rubriken, och texten först när föraren öppnar raden (DECISIONS #931), som sträckorna.
+    /// En rad utan text går inte att öppna.
+    @ViewBuilder
+    private func ovrigRad(id: String, titel: String, text: String, divider: Bool) -> some View {
+        let oppen = oppnaRader.contains(id)
+        VStack(alignment: .leading, spacing: 0) {
+            Button {
+                if oppen { oppnaRader.remove(id) } else { oppnaRader.insert(id) }
+            } label: {
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack(alignment: .firstTextBaseline, spacing: 12) {
+                        Text(titel).font(Typo.sans(16, .medium)).foregroundStyle(Brand.text).multilineTextAlignment(.leading)
+                        Spacer(minLength: 8)
+                        if !text.isEmpty {
+                            Text(oppen ? "−" : "+").font(Typo.mono(11, .semibold)).foregroundStyle(Brand.dim)
+                        }
+                    }
+                    if oppen, !text.isEmpty {
+                        Text(text).font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2).multilineTextAlignment(.leading)
+                    }
+                }
+                .padding(.vertical, 12)
+                .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .disabled(text.isEmpty)
+            .accessibilityHint(text.isEmpty ? "" : oppen ? "Döljer texten" : "Visar texten")
+            if divider { DashedDivider() }
+        }
+    }
+
     /// Det som inte är väglag: vägarbeten, kameror, olyckor och det andra, sammanslaget som i rapporten för en sparad resa, raden om
     /// det tomma, SMHI:s varningar och rutan Halkvakt tror (DECISIONS #739). Halkan och frysrisken står i sträckorna ovanför; ur
     /// en lugn resa finns de inte, och då heter rutan Längs vägen.
@@ -211,8 +245,8 @@ struct PlaneradResaView: View {
                 RowPanel {
                     ForEach(Array(grupper.enumerated()), id: \.element.id) { i, g in
                         let ensam = g.antal == 1 && !g.id.hasPrefix("grupp:")
-                        RapportRadVy(titel: ensam ? ResansRapport.titel(g.rubrik, vag: perId[g.id]?.vag) : g.rubrik, text: g.text,
-                                     divider: i < grupper.count - 1)
+                        ovrigRad(id: g.id, titel: ensam ? ResansRapport.titel(g.rubrik, vag: perId[g.id]?.vag) : g.rubrik, text: g.text,
+                                 divider: i < grupper.count - 1)
                     }
                 }
             }
