@@ -27,7 +27,7 @@ test("gruppRader: exakt på gränsen räknas, tomma grupper ger inget", () => {
   assert.deepEqual(r.ids, ["B-1-1"]);
 });
 
-// Radarn kring stationerna (ingest/radar-karna.ts stationsytor och stationRader; sql/130, DECISIONS #917; halkvakt-kuvos F61 §12).
+// Radarn kring stationerna (ingest/radar-karna.ts stationsytor och stationRader; sql/131, DECISIONS #918; halkvakt-kuvos F61 §12).
 // Projektionen är identiteten här: läget är meter i rutnätet, så att avstånden går att lägga exakt.
 test("stationsytor: pixlarna vars mitt ligger högst 2 250 m från stationen, och kanten", () => {
   const g = { cols: 10, rows: 10, x0: 0, y0: 20000, xscale: 2000, yscale: 2000 };
@@ -58,14 +58,14 @@ test("stationRader: medlet över ytans täckta pixlar, händelsegränsen och avr
   assert.deepEqual(r.means, [0.25, 0.07, 0.09]);
 });
 
-test("sql/130: värdevakten känner båda tabellerna, och varje numeriskt fält har ett deklarerat spann (DECISIONS #917)", async () => {
+test("sql/131: värdevakten känner båda tabellerna, och varje numeriskt fält har ett deklarerat spann (DECISIONS #918)", async () => {
   const { SPANN } = await import("../scripts/vardevakten.ts");
   const las = (p: string) => readFileSync(new URL(`../${p}`, import.meta.url), "utf8");
-  const vakt = las("scripts/vardevakten.ts"), mig = las("sql/130_radar_station.sql").replace(/--[^\n]*/g, "");
+  const vakt = las("scripts/vardevakten.ts"), mig = las("sql/131_radar_station.sql").replace(/--[^\n]*/g, "");
   for (const t of ["radar_station", "radar_station_komposit"]) {
     assert.match(vakt, new RegExp(`\\b${t}: "observed_at"`), `${t} står i TID`);
     const m = new RegExp(`CREATE TABLE IF NOT EXISTS ${t} \\(([\\s\\S]*?)\\n\\);`).exec(mig);
-    assert.ok(m, `sql/130 skapar ${t}`);
+    assert.ok(m, `sql/131 skapar ${t}`);
     for (const rad of m![1].split("\n").map((r) => r.trim()).filter((r) => r && !r.startsWith("PRIMARY KEY"))) {
       const [namn, typ] = rad.split(/\s+/);
       if (/^(numeric|double|integer|int|real|bigint|smallint)/.test(typ)) assert.ok(SPANN[namn], `${t}.${namn}: ett deklarerat spann`);

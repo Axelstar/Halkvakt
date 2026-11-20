@@ -1,4 +1,4 @@
--- 130: RADARN KRING STATIONERNA, FÖR DRIFTKONTROLLEN AV SMÅVÄGSRÖSTEN (DECISIONS #917, kort #662; halkvakt-kuvos F61 §12, F63, F68).
+-- 131: RADARN KRING STATIONERNA, FÖR DRIFTKONTROLLEN AV SMÅVÄGSRÖSTEN (DECISIONS #918, kort #662; halkvakt-kuvos F61 §12, F63, F68).
 -- Bengt 20/11: "ja lägg till radarn". Rösten väcks av den strängare N3 eller radarn (sql/105), men driftkontrollen räknar bara N3-delen,
 -- eftersom P-II:s dygnsfiler inte bär någon radar vid stationerna. Här läses radarn kring varje station i data/vagdata/stationer.json, i
 -- samma komposit och samma körning som radar_smavag (sql/104), så att kontrollen kan pröva röstens hela fukt.

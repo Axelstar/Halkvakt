@@ -18608,7 +18608,7 @@ och ändrat två signerade mått mitt i vintern.
 
 **Stomdokument:** MAT 3 — olycksfacit och säsongsfacit, BED §4.2
 
-## #917 (20/11 2026) Driftkontrollen av småvägsrösten får radarn kring stationerna: rörarbetet byggt, radarn spärrad tills posten är signerad (kort #662)
+## #918 (20/11 2026) Driftkontrollen av småvägsrösten får radarn kring stationerna: rörarbetet byggt, radarn spärrad tills posten är signerad (kort #662)
 
 **Beställningen.** Bengt 20/11: *"ja lägg till radarn"*. Driftkontrollen (#883) prövar bara N3-delen av röstens fukt. Rösten väcks av
 den strängare N3 eller radarn (#866, `sql/105`), men P-II:s dygnsfiler bär ingen radar vid stationerna. Det privata repot skrev
@@ -18616,7 +18616,7 @@ den strängare N3 eller radarn (#866, `sql/105`), men P-II:s dygnsfiler bär ing
 signaturer. Före dem räknas ingenting med radarn.
 
 **Rörarbetet**, i det här repot utan stationslistor och tal (#804, #810, #910):
-- **`sql/130`:** `radar_station`, med max och medel per station och komposit, händelsefiltrerat som `radar_smavag`, och
+- **`sql/131`:** `radar_station`, med max och medel per station och komposit, händelsefiltrerat som `radar_smavag`, och
   `radar_station_komposit`, med en rad per läst komposit, så att en torr komposit skiljs från en som saknas. Båda gallras efter fyra
   dygn. RLS, och service_role i samma fil (#653).
 - **`ingest/radar.ts`** läser varje station i `data/vagdata/stationer.json` (Trafikverkets öppna) i samma komposit och samma körning
@@ -18640,6 +18640,6 @@ signaturer. Före dem räknas ingenting med radarn.
 - att räkna radarn i driftkontrollen före signaturen: posten skrivs före all läsning.
 
 **Driftsättningen**, på Bengts ord: först det privata repots PR (driftkontrollen som förstår `--radar`), sedan den här; DB-knappen
-`migrera` med `sql/130_radar_station.sql`. Ingen funktion deployas: `radar.ts` körs ur repot i `radar-stad.yml` och `ingest.yml`.
+`migrera` med `sql/131_radar_station.sql`. Ingen funktion deployas: `radar.ts` körs ur repot i `radar-stad.yml` och `ingest.yml`.
 
 **Stomdokument:** MAT 5 — driftkontrollen av småvägsrösten med radarn vid stationerna, SYS 2 — radarn kring stationerna och dygnsfilen i dygnsrapporten

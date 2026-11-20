@@ -9,7 +9,7 @@ name: kuvos-smavag-uppfoljning
 #   radarkollen       prognosens nederbörd mot radarn, ur skuggans underlag (fysik/ny_kandidat/smavag_radarkoll.py i det privata repot);
 #   driftkontrollen   röstens regel mot stationernas mätning, ur P-II:s dygnsfiler (fysik/ny_kandidat/rosten_drift.py). Den är SPÄRRAD
 #                     tills posten 16/11 i marsförregistreringens §14 är signerad av Bengt och Axel: före det hämtas ingen dygnsfil.
-#                     Radarn kring stationerna (sql/130, DECISIONS #917) läggs varje dygn i hinken (radar_station_<dygn>.json.gz), och
+#                     Radarn kring stationerna (sql/131, DECISIONS #918) läggs varje dygn i hinken (radar_station_<dygn>.json.gz), och
 #                     driftkontrollen räknar röstens hela fukt, N3 eller radarn, först när posten 20/11 är signerad; före det är radarn spärrad.
 # Rapporten går bara till den privata hinken (uppfoljning_<dygn>.json och .md, och rosten_drift_<dygn>.json): loggen säger bara vilka
 # delar som är klara och driftkontrollens ord per region (#768, #498). Ligger driftkontrollen över larmgränsen i en region får Bengt
@@ -95,7 +95,7 @@ jobs:
             elif [ "$K" != 3 ]; then echo "::error::radarkollen föll: $(tail -1 radar.log | cut -c1-200)"; exit 1; fi
           fi
 
-          # 2b. Radarn vid stationerna (sql/130, DECISIONS #917): dygnets fil ur databasen till hinken, och de två dygnen före om de
+          # 2b. Radarn vid stationerna (sql/131, DECISIONS #918): dygnets fil ur databasen till hinken, och de två dygnen före om de
           #     saknas där. Databasen gallrar efter fyra dygn, och en skriven fil skrivs aldrig om. Filen är indata och läggs oavsett
           #     spärren; driftkontrollen läser den först när posten 20/11 i förregistreringen är signerad. Ett fel här stoppar inget.
           for B in 2 1 0; do

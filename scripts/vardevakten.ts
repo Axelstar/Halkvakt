@@ -529,7 +529,7 @@ const TID: Record<string, string> = {
   // here, so their fields were never scanned, not even as OBESIKTIGADE (the trap of trend_kandidater 15/9); the accident layers (sql/084),
   // without a time column and so scanned whole; and the daily aggregate (sql/128), born inspected.
   ny_kandidat_skugga_stad: "observed_at", ny_kandidat_skugga_stad_korning: "korning", olycksfacit_lager: "", sasongsfacit_stad_dag: "dag",
-  // The radar around the stations for the small-road voice's drift check (sql/130, DECISIONS #917): born inspected; its numeric fields
+  // The radar around the stations for the small-road voice's drift check (sql/131, DECISIONS #918): born inspected; its numeric fields
   // are rate_max_mmh and rate_mean_mmh, declared above, and the composite table carries only times.
   radar_station: "observed_at", radar_station_komposit: "observed_at",
 };

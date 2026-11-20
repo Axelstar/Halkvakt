@@ -15,7 +15,7 @@
 // Run:  DATABASE_URL=... node --experimental-strip-types ingest/radar.ts        (skarp)
 //       node --experimental-strip-types ingest/radar.ts --prov                  (diagnos, ingen DB)
 //       DATABASE_URL=... node --experimental-strip-types ingest/radar.ts --bara-stad   (bara radar_stad, radar_smavag och radar_station, var 15:e
-//                                        minut: radar-stad.yml, DECISIONS #805, #828, #917; Trafikverkets sträckor och radar_precip rörs inte)
+//                                        minut: radar-stad.yml, DECISIONS #805, #828, #918; Trafikverkets sträckor och radar_precip rörs inte)
 // Källa: SMHI öppna data (CC BY 4.0). User-Agent: repo-URL, inga personuppgifter.
 
 import { readFileSync } from "node:fs";
@@ -177,13 +177,13 @@ if (url) {
       process.exit(1);
     }
   }
-  // RADARN KRING STATIONERNA (sql/130, DECISIONS #917; halkvakt-kuvos F61 §12): driftkontrollen av småvägsrösten prövar röstens hela
+  // RADARN KRING STATIONERNA (sql/131, DECISIONS #918; halkvakt-kuvos F61 §12): driftkontrollen av småvägsrösten prövar röstens hela
   // fukt vid stationerna. Varje station i data/vagdata/stationer.json läses i samma komposit, som en yta (radar-karna.ts stationsytor),
   // till radar_station, och kompositen bokförs i radar_station_komposit. Efter småvägarna, så att de alltid är skrivna. Före migrationen
-  // sql/130 skrivs ingenting, och loggen säger det. Loggen säger bara klart eller fel; faller delen blir steget rött.
+  // sql/131 skrivs ingenting, och loggen säger det. Loggen säger bara klart eller fel; faller delen blir steget rött.
   if (!PROV) {
     try {
-      if (!(await pool.query(STATION.finns)).rows[0]?.ja) console.log("stationsradarn: tabellen saknas (sql/130), inget skrivet");
+      if (!(await pool.query(STATION.finns)).rows[0]?.ja) console.log("stationsradarn: tabellen saknas (sql/131), inget skrivet");
       else {
         const lista = JSON.parse(readFileSync(new URL("../data/vagdata/stationer.json", import.meta.url), "utf8"));
         const stationer = lista.rader.map((x: any) => ({ id: String(x.id), lon: Number(x.lon), lat: Number(x.lat) }))
