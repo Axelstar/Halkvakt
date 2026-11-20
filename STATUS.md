@@ -3389,3 +3389,5 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   Första publiceringen efter deployen, 09.20 UTC (halkvakt-karta 6b1998ff): live.json:s sha256 står i manifestet. 152 sträckor har modd i
   väglaget, och ingen av dem blev ny hal, eftersom alla redan var hala på koden eller ett annat halkord (läsläget 44709437239). Kvar:
   nya appbyggen, och frågorna om olycksfacits A1, säsongsfacits F1 och KB-B i bedömningen §4.2.
+- 20/11 (Claude; Bengt: *"gör 1 och 2 enligt rekommendation"*): **Modden i facit** (DECISIONS #916). Olycksfacits A1 och `halka_efter` följer med första
+  appbygget med modden (kort #673). Säsongsfacits F1 och KB-B:s facit står kvar i vinter. Startsidan klar (halkvakt-karta PR 35).
