@@ -3477,3 +3477,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   sammanslagningen, deployen av publicera och kartrepots PR.
 - 20/11 (Claude): **TestFlight-bygget återkallar sitt eget certifikat** (DECISIONS #929; Axels ja): `scripts/asc-certifikat.mjs` och två
   steg i testflight.yml. Inte prövat: det visar sig vid nästa uppladdning. Fristen för Xcode 27, 1 mars 2027, står i fristerna.
+- 20/11 (Claude): **Planerad resa har ny skärm** (DECISIONS #930, kort #659; Axels ritning): domen överst, vägen på Sveriges kontur,
+  resans sträckor i körordning (`Resstrackor` i motorpaketet, med prov), Natural Earth för kontur och orter. Fliken *När du kör*
+  byggs inte förrän det finns en prognos per sträcka. Bygget är 0.4.1 (68).
