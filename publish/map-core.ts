@@ -34,6 +34,9 @@ export const STATION_LAN_SQL = `
                       WHERE NOT rc.deleted AND rc.geom IS NOT NULL ORDER BY rc.geom <-> w.geom LIMIT 1) n
   WHERE n.lan IS NOT NULL AND ST_DWithin(n.geom::geography, w.geom::geography, 20000)`;
 
+/** Storstädernas grupper i kandidatens segment_id (sql/089: grupp ~ '^[BC]-'). De ritas som punkter (DECISIONS #928). */
+export const STADSGRUPP = /^[BC]-/;
+
 /** Kandidatens bitar av vägen (DECISIONS #579): $1 sträckor, $2 lon, $3 lat — en rad per punkt. Exporterad för integrationsprovet. */
 export const KANDIDAT_BITAR_SQL = `
         WITH p AS (SELECT * FROM unnest($1::text[], $2::float8[], $3::float8[]) AS p(seg, lon, lat)),
@@ -168,11 +171,20 @@ export async function buildMapData(q: Q, opts: {
   // (de ligger cirka 2 km isär), aldrig hela sträckan: i morse 16/10 hade 807 km sträcka 232 km varnande väg. Metrarna räknas i
   // SWEREF 99 TM (3006), inte i grader, så att en bit blir 2 km oavsett vägens riktning. En punkt mer än 300 m från sin sträckas linje
   // ritas inte (räknas som utanför). Brytaren av ⇒ appKandidat saknas ⇒ tom fil och meta.kandidat.pa = false. Fail-soft med not.
-  const kandidatMeta = { pa: opts.appKandidat !== undefined, strackor: 0, punkter: 0, ritade: 0, km: 0, tid: null as string | null };
+  // STORSTÄDERNAS PUNKTER (DECISIONS #804, #928; Bengt 20/11: "Jag tycker att kartan ska rita punkterna"): en grupp (sql/089, B- eller
+  // C-) har ingen sträcka i Trafikverkets väglag att lägga en bit längs, så varje varnande stadspunkt ritas som en punkt, där den står,
+  // utan väg och utan längd. De går inte till frågan, och de ritas också när frågan faller.
+  const kandidatMeta = { pa: opts.appKandidat !== undefined, strackor: 0, punkter: 0, ritade: 0, km: 0, stad: 0, tid: null as string | null };
+  const alla = (opts.appKandidat ?? []).flatMap((k) => k.punkter.map(([lon, lat]) => ({ seg: k.id, lon, lat })));
+  const stad = alla.filter((x) => STADSGRUPP.test(x.seg));
+  const kp = alla.filter((x) => !STADSGRUPP.test(x.seg));
+  const stadFeatures = stad.map((x) => ({ type: "Feature", geometry: { type: "Point", coordinates: [x.lon, x.lat] },
+    properties: { segment_id: x.seg, stad: true, tid: opts.appKandidat?.[0]?.tid ?? null } }));
   let kandidatFeatures: unknown[] = [];
-  const kp = (opts.appKandidat ?? []).flatMap((k) => k.punkter.map(([lon, lat]) => ({ seg: k.id, lon, lat })));
   kandidatMeta.strackor = opts.appKandidat?.length ?? 0;
-  kandidatMeta.punkter = kp.length;
+  kandidatMeta.punkter = alla.length;
+  kandidatMeta.stad = stad.length;
+  kandidatMeta.ritade = stad.length;
   kandidatMeta.tid = opts.appKandidat?.[0]?.tid ?? null;
   if (kp.length) {
     try {
@@ -180,7 +192,7 @@ export async function buildMapData(q: Q, opts: {
         [kp.map((x) => x.seg), kp.map((x) => x.lon), kp.map((x) => x.lat)]);
       kandidatFeatures = bitar.map((r) => ({ type: "Feature", geometry: r.g,
         properties: { segment_id: r.seg, punkter: Number(r.punkter), km: Number(r.km), tid: kandidatMeta.tid } }));
-      kandidatMeta.ritade = bitar.reduce((n, r) => n + Number(r.punkter), 0);
+      kandidatMeta.ritade += bitar.reduce((n, r) => n + Number(r.punkter), 0);
       kandidatMeta.km = Math.round(bitar.reduce((n, r) => n + Number(r.km), 0) * 10) / 10;
       if (kandidatMeta.ritade < kandidatMeta.punkter) {
         notes.push(`kandidat: ${kandidatMeta.punkter - kandidatMeta.ritade} av ${kandidatMeta.punkter} punkter ritas inte (mer än 300 m från sin sträckas linje)`);
@@ -189,7 +201,7 @@ export async function buildMapData(q: Q, opts: {
       notes.push(`kandidat: bitarna ej läsbara (${String((e as Error).message).slice(0, 80)}) — kartlagret blir tomt`);
     }
   }
-  put("kandidat.geojson", featureCollection(kandidatFeatures));
+  put("kandidat.geojson", featureCollection([...kandidatFeatures, ...stadFeatures]));
 
   // Vilt: BARA länsstatistik (polisens GPS = länscentrum, DECISIONS #13 — inga låtsaspunkter).
   const vilt = await q(`

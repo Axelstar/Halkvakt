@@ -3471,3 +3471,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   öppen, ett tryck från Inställningar öppnade startsidan, och ett tryck på proverbjudandet (utskick 9) öppnade bladet och länken.
 - 20/11 (Claude): **Ett erbjudande med appen öppen läggs i notiscentret** (DECISIONS #927, kort #674). Bygget är 0.4.1 (67), inte
   uppladdat: det följer med nästa uppladdning. Axel säger att den andra telefonen som fick de tre proven också var hans.
+- 20/11 kväll (Claude; Bengt: *"Jag tycker att kartan ska rita punkterna"*): **Livekartan ritar storstädernas punkter** (DECISIONS #928). `publish/map-core.ts`
+  lägger varje varnande stadspunkt som en punkt i `kandidat.geojson`, och halkvakt-karta ritar dem i Prognos-färgen. Provat i
+  webbläsarpanelen mot en kopia av kvällens data med stadspunkterna inlagda (107 ritade i vyn, knappen slår av och på). Kvar:
+  sammanslagningen, deployen av publicera och kartrepots PR.

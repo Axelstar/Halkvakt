@@ -64,7 +64,7 @@ test("#77 alla sju kartfiler ur kärnan, i kartsajtens format (kandidaten sedan 
     generated_at: "2026-11-20T06:30:00.000Z", vaglag_total: 2, vaglag_ej_normalt: 1, stationer: 1, kalla_stationer: 1,   // #865: F1 är finsk
     olyckor: 1, kameror: 1, kameror_vaglag: 600, vilt_dygn: 1, vilt_vecka: 3, vilt_vanligast: "älg",
     smhi_vinter: [{ event: "Snöfall", niva: "Gul", niva_kod: "YELLOW", omrade: "Norrbotten" }], waitlist_count: 31,
-    kandidat: { pa: false, strackor: 0, punkter: 0, ritade: 0, km: 0, tid: null },   // #579: ingen nyckel ⇒ av
+    kandidat: { pa: false, strackor: 0, punkter: 0, ritade: 0, km: 0, stad: 0, tid: null },   // #579: ingen nyckel ⇒ av
   });
 });
 
@@ -101,7 +101,7 @@ test("#579 brytaren av (ingen nyckel): tom kandidatfil, frågan ställs inte, oc
   const { files, notes } = await buildMapData(fakeDb({ fragor }), { now: NOW });
   assert.deepEqual(JSON.parse(files["kandidat.geojson"]).features, []);
   assert.equal(fragor.length, 0);
-  assert.deepEqual(JSON.parse(files["meta.json"]).kandidat, { pa: false, strackor: 0, punkter: 0, ritade: 0, km: 0, tid: null });
+  assert.deepEqual(JSON.parse(files["meta.json"]).kandidat, { pa: false, strackor: 0, punkter: 0, ritade: 0, km: 0, stad: 0, tid: null });
   assert.ok(!notes.some((n) => n.startsWith("kandidat:")));
 });
 
@@ -116,8 +116,33 @@ test("#579 brytaren på: en rad per punkt till frågan, en bit per sträcka till
   assert.deepEqual(fragor[0].params, [["S1", "S1", "S2"], [17, 17, 18], [60.018, 60.027, 59.5]]);
   assert.deepEqual(JSON.parse(files["kandidat.geojson"]).features, [{ type: "Feature", geometry: bitar[0].g,
     properties: { segment_id: "S1", punkter: 2, km: 3, tid: "2026-11-20T05:00:00.000Z" } }]);
-  assert.deepEqual(JSON.parse(files["meta.json"]).kandidat, { pa: true, strackor: 2, punkter: 3, ritade: 2, km: 3, tid: "2026-11-20T05:00:00.000Z" });
+  assert.deepEqual(JSON.parse(files["meta.json"]).kandidat, { pa: true, strackor: 2, punkter: 3, ritade: 2, km: 3, stad: 0, tid: "2026-11-20T05:00:00.000Z" });
   assert.ok(notes.some((n) => n.startsWith("kandidat: 1 av 3 punkter ritas inte")), "det som inte ritas ska synas");
+});
+
+test("#928 storstädernas punkter ritas som punkter, går inte till frågan och ritas också när frågan faller", async () => {
+  const fragor: { text: string; params?: unknown[] }[] = [];
+  const bitar = [{ seg: "S1", punkter: 1, km: "2.0", g: { type: "LineString", coordinates: [[17, 60.009], [17, 60.027]] } }];
+  const tid = "2026-11-20T18:00:00.000Z";
+  const appKandidat = [
+    { id: "S1", tid, punkter: [[17, 60.018]] as [number, number][] },
+    { id: "B-503-3290", tid, punkter: [[17.664, 59.182], [17.665, 59.181]] as [number, number][] },
+    { id: "C-12-34", tid, punkter: [[18.07, 59.33]] as [number, number][] },
+  ];
+  const { files, notes } = await buildMapData(fakeDb({ fragor, bitar }), { now: NOW, appKandidat });
+  assert.deepEqual(fragor[0].params, [["S1"], [17], [60.018]], "bara vägens punkter går till frågan");
+  const f = JSON.parse(files["kandidat.geojson"]).features;
+  assert.equal(f.length, 4, "en bit och tre punkter");
+  assert.deepEqual(f.slice(1).map((x: any) => [x.geometry.type, x.geometry.coordinates, x.properties.segment_id, x.properties.stad]),
+    [["Point", [17.664, 59.182], "B-503-3290", true], ["Point", [17.665, 59.181], "B-503-3290", true], ["Point", [18.07, 59.33], "C-12-34", true]]);
+  assert.deepEqual(JSON.parse(files["meta.json"]).kandidat, { pa: true, strackor: 3, punkter: 4, ritade: 4, km: 2, stad: 3, tid });
+  assert.ok(!notes.some((n) => n.startsWith("kandidat:")), "allt ritades, inget att notera");
+  const fallen = await buildMapData(fakeDb({ bitarKastar: true }), { now: NOW, appKandidat });
+  assert.deepEqual(JSON.parse(fallen.files["kandidat.geojson"]).features.map((x: any) => x.geometry.type), ["Point", "Point", "Point"],
+    "stadspunkterna ritas fast frågan föll");
+  const baraStad = { fragor: [] as { text: string; params?: unknown[] }[] };
+  await buildMapData(fakeDb({ fragor: baraStad.fragor, bitar: [] }), { now: NOW, appKandidat: appKandidat.slice(1) });
+  assert.equal(baraStad.fragor.length, 0, "med bara stadspunkter ställs ingen fråga om bitar");
 });
 
 test("#579 en fallen fråga fäller inte kartan — kandidatlagret tomt och noterat", async () => {
