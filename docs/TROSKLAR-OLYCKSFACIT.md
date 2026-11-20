@@ -213,7 +213,10 @@ Två tillägg i ärendet från §5:
   5. säsongen sedan 6/11: halkkopplade olyckor, RÄTT VARNING i antal och andel, och missarna per område;
   6. nämnaren: per klass hur ofta Halkvakt varnade, med INTE delad på viltet och ytan över +3 °C och TROLIG på ett fordon och kollision
      (tillagt 13/11, §11, E);
-  7. veckans missar utan förifylld åtgärd, en rad var att åtgärda (tillagt 13/11, §11, B).
+  7. veckans missar utan förifylld åtgärd, en rad var att åtgärda (tillagt 13/11, §11, B);
+  8. lagren tillsammans vid de halkkopplade olyckorna, för veckan och säsongen: både A1 och K, bara A1, bara K, varken A1 eller K men
+     ett annat lager, och inget lager. Raderna utesluter varandra och summerar till de halkkopplade. *Bara K* är där kandidaten varnade
+     och väglaget inte. Det är redovisning och ändrar ingen klassning, bedömning eller regel (tillagt 20/11, DECISIONS #925).
 - **Förslagen.** Ett område med minst **två** missar under veckan är återkommande. Det står som en rad att åtgärda, med ett kort på tavlan, en fråga i bedömningens §4.2 eller *ingen åtgärd* med skälet.
 - **Stängning.** Ärendet stängs när varje rad har sin åtgärd. Utan ett återkommande område och utan en miss att läsa stängs det direkt. Ett öppet ärende påminns var sjunde dygn, som dagens. (Ändrat 13/11, §11. Förut: *Utan ett återkommande område stängs det direkt*.)
 - **Publikt.** Som i §5 bär ärendet bara väg, tid, läge, koder och antal.
