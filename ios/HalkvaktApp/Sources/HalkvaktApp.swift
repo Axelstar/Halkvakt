@@ -203,7 +203,7 @@ struct InstallningarView: View {
                 // Kort #357 (DECISIONS #616, #625): "ingen spårning" blev osant när resor kan sparas — en sparad resa är ett spår,
                 // även om det bara finns hos föraren. Texten säger var de ligger och hur de tas bort.
                 Text(Prefs.betatestTillaten
-                     ? "All matchning mot vägdata sker lokalt i appen. Inget konto. Undantaget är betatestet — bara om du själv slår på det."
+                     ? "All matchning mot vägdata sker lokalt i appen. Inget konto. Två undantag, bara om du själv säger ja: betatestet, och platsdelningen, som sparar vilken kommun du är i."
                      : "All matchning mot vägdata sker lokalt i appen. Inget konto.")
                     .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2)
                 // #772: räknaren är alltid på och står här — texten "inget skickas" var sann till 0.3.15. #787: de sex områdena.

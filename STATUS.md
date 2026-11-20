@@ -3410,3 +3410,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 20/11 (Claude): **iPhone 0.4.1 (59) uppladdad till TestFlight** från main fa9031d (körning 44765599102; PR #1724 ihopslagen): platsdelningen
   bara i TestFlight (DECISIONS #918, kort #674). Före uppladdningen: TestFlight-provet (44763704057, `ARCHIVE SUCCEEDED`) och ios-engine
   (44765331686, 53 prov) gröna på grenen, och integritetssidan uppdaterad (halkvakt-karta PR 37, läst på halkvakt.se). Inte prövat på en telefon.
+- 20/11 (Claude; Axels inspelning av 0.4.1 (59) och *"detta måste vi få mycket mer inzoomat"*): **Kartan Nära dig zoomar in på det närmaste**
+  (DECISIONS #919, kort #659): en och en halv gång avståndet till den närmaste faran, minst en mil och högst sex, och en avbruten
+  hämtning skriver inte längre över bilden. Texten under Integritet nämner platsdelningen. Platsdelningen prövad av Axel på telefon
+  i (59): frågan, valet och raden i `app_enhet` (Malmö, 16:48) stämde. Bygget är 0.4.1 (60).

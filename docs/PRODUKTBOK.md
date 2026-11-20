@@ -78,7 +78,8 @@ Från 0.4.1 (56) startar vakten i samma tryck (DECISIONS #875), när platsen red
 *"Vakten startar när du öppnar kartappen."* Är platsen inte tillåten öppnas bara kartappen, och raden står inte.
 
 **Nära dig och Planera en resa (14/11, kort #659, DECISIONS #870 och #872; bara iPhone, från 0.4.1, för alla).** På 01 Redo står
-Apples karta där sockeln stod: farorna inom sex mil, halkan som gula streck längs vägen och de andra farorna som gula
+Apples karta där sockeln stod: det närmaste omkring föraren (från 0.4.1 (60), DECISIONS #919: en och en halv gång så långt som
+den närmaste faran, minst en mil och högst sex; förut alltid sex mil), halkan som gula streck längs vägen och de andra farorna som gula
 punkter, raden *KARTAN KOMMER FRÅN APPLE*, och under den *NÄRA DIG JUST NU* med de tre närmaste (avstånd, fara, detalj) eller *"Inget rapporterat inom sex
 mil."* Utan plats visar kartan hela landet med bara halkan, under *HALKAN I LANDET JUST NU*, och raden *"Slå på platsen
 för att se vad som finns nära dig."* och länken *SLÅ PÅ PLATSEN* (iOS ruta första gången, annars appens sida i
@@ -291,7 +292,8 @@ slumpade numret och knappen *Radera min data*. Går servern inte att nå står d
 För den som sagt nej: *Du delar inte din kommun. Inget om den här telefonens plats är sparat hos oss.* och länken *Visa frågan igen*.
 
 **Orden i testbygget:** på Redo, i introduktionen och under Integritet står *Din exakta position skickas aldrig till Halkvakt av sig
-själv.* App Store-bygget och Android bär den gamla meningen tills platsdelningen släpps.
+själv.* Under Integritet står från (60) också *Två undantag, bara om du själv säger ja: betatestet, och platsdelningen, som sparar
+vilken kommun du är i.* App Store-bygget och Android bär den gamla meningen tills platsdelningen släpps.
 
 ## Första gången — introduktionen (iOS)
 

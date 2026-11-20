@@ -78,6 +78,9 @@ struct Kartbild: View {
         stil.pointOfInterestFilter = .excludingAll
         val.preferredConfiguration = stil
         // Går bilden inte att hämta står den förra kvar, eller panelens färg.
-        if let ny = try? await MKMapSnapshotter(options: val).start() { bild = ny }
+        // En hämtning som avbrutits för att området ändrats får inte skriva över den nya bilden när den blir klar efter den
+        // (Axels inspelning 20/11: bilden över hela landet stod kvar fast platsen fanns, DECISIONS #919).
+        guard let ny = try? await MKMapSnapshotter(options: val).start(), !Task.isCancelled else { return }
+        bild = ny
     }
 }
