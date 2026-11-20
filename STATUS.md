@@ -3421,3 +3421,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   #1727 ihopslagna): kartan Nära dig inzoomad på det närmaste och hämtningen som inte skriver över (DECISIONS #919), kortet Tipsa en vän
   borta från startsidan och inget förvalt val om erbjudanden (DECISIONS #920). Före: TestFlight-provet (44770191774) och android
   (44770196875) gröna på grenen. Bygge (60) laddades aldrig upp. Kartan och det nya valet är inte prövade på en telefon.
+- 20/11 (Claude; Axel: *"bör inte detta vara ett steg i onboardingen?"* och ja till CarPlay i samma bygge): **Frågan om kommunen är ett
+  steg i introduktionen, och CarPlay är påslaget igen** (DECISIONS #921). Bygget är 0.4.1 (62). Main bär nu CarPlay, så brytaren ska
+  ses över före nästa inlämning till App Store. Inte prövat på en telefon eller i en bil.

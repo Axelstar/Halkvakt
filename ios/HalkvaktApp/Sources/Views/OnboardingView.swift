@@ -1,5 +1,5 @@
 // Introduktionen (DECISIONS #36), ombyggd 13/11 (kort #651, DECISIONS #851): sex steg — Välkommen, varningarna, hur en
-// varning märks, platsen, notiserna och en slutskärm. Före varje ruta från iOS står vilken knapp som ska väljas, och
+// varning märks, platsen, notiserna och en slutskärm. I TestFlight ett sjunde, efter platsen: frågan om kommunen (#921). Före varje ruta från iOS står vilken knapp som ska väljas, och
 // varje svar har ett eget läge. Introduktionen kan visas igen från Inställningar, och allt går att ändra där.
 import SwiftUI
 import UIKit
@@ -20,9 +20,14 @@ struct OnboardingView: View {
     /// Rutan om Alltid är begärd men inte besvarad. Sidan före rutan står kvar bakom den tills svaret finns: på Axels
     /// inspelning 13/11 syntes "Du startar vakten själv" bakom rutan, innan han hunnit svara.
     @State private var vantarPaAlltid = false
+    // Platsdelningen (DECISIONS #917, #921): ett eget steg efter platsen, för den som inte redan svarat. Bara i TestFlight (#918).
+    @State private var plats = Platsdelning.shared
+    @State private var medKommun = Platsdelning.tillaten && Platsdelning.shared.svar == nil
+    @State private var villDela = false
+    @State private var erbjudanden: Bool?
 
     private enum Steg: Int {
-        case valkommen, varningarna, markningen, platsen, notiserna, klar
+        case valkommen, varningarna, markningen, platsen, kommunen, notiserna, klar
     }
 
     var body: some View {
@@ -36,6 +41,7 @@ struct OnboardingView: View {
                     case .varningarna: varningarna
                     case .markningen: markningen
                     case .platsen: platsen
+                    case .kommunen: kommunen
                     case .notiserna: notiserna
                     case .klar: klar
                     }
@@ -60,12 +66,14 @@ struct OnboardingView: View {
     private var notiserPa: Bool { [.authorized, .provisional, .ephemeral].contains(notifStatus) }
 
     private var stegText: String {
+        let antal = medKommun ? 5 : 4
         switch steg {
         case .valkommen: return "Välkommen"
-        case .varningarna: return "Steg 1 av 4"
-        case .markningen: return "Steg 2 av 4"
-        case .platsen: return "Steg 3 av 4"
-        case .notiserna: return "Steg 4 av 4"
+        case .varningarna: return "Steg 1 av \(antal)"
+        case .markningen: return "Steg 2 av \(antal)"
+        case .platsen: return "Steg 3 av \(antal)"
+        case .kommunen: return "Steg 4 av \(antal)"
+        case .notiserna: return "Steg \(antal) av \(antal)"
         case .klar: return always || narAppenAnvands ? "Klart" : "En sak kvar"
         }
     }
@@ -82,6 +90,9 @@ struct OnboardingView: View {
     }
 
     private func ga(till nytt: Steg) { withAnimation(.easeOut(duration: 0.3)) { steg = nytt } }
+
+    /// Efter platsen kommer frågan om kommunen, för den som har platsen på och inte redan svarat; annars notiserna.
+    private func efterPlatsen() { ga(till: medKommun && plats.svar == nil ? .kommunen : .notiserna) }
 
     private func oppnaInstallningar() {
         if let u = URL(string: UIApplication.openSettingsURLString) { openURL(u) }
@@ -176,7 +187,7 @@ struct OnboardingView: View {
                 Fot(text: Platsord.testbygge ? "Din exakta position skickas aldrig till Halkvakt, även med Alltid." : "Din position skickas aldrig till Halkvakt, även med Alltid.")
             }
         case .authorizedWhenInUse:
-            Sida(knapp: "Fortsätt", action: { ga(till: .notiserna) }, lank: "Ändra till Alltid", lankAction: oppnaInstallningar) {
+            Sida(knapp: "Fortsätt", action: efterPlatsen, lank: "Ändra till Alltid", lankAction: oppnaInstallningar) {
                 Rubrik(titel: "Du startar vakten själv",
                        text: "Halkvakt varnar precis som vanligt. Du öppnar bara appen och trycker Starta vakten före varje resa.")
                 Etikett(text: "Så blir det")
@@ -186,7 +197,7 @@ struct OnboardingView: View {
                 }
             }
         case .authorizedAlways:
-            Sida(knapp: "Fortsätt", action: { ga(till: .notiserna) }) {
+            Sida(knapp: "Fortsätt", action: efterPlatsen) {
                 Rubrik(titel: "Platsen är klar", text: "Du valde Alltid. Vakten startar själv när du kör.")
                 Etikett(text: "Så blir det")
                 RowPanel {
@@ -212,6 +223,24 @@ struct OnboardingView: View {
         }
     }
 
+    /// Platsdelningens två steg (DECISIONS #921): samma innehåll som befintliga förare får som egen skärm (PlatsdelningView).
+    @ViewBuilder private var kommunen: some View {
+        if villDela {
+            Sida(knapp: "Fortsätt", action: {
+                guard let erbjudanden else { return }
+                plats.svara(ja: true, erbjudanden: erbjudanden)
+                ga(till: .notiserna)
+            }, fot: erbjudanden == nil ? "Välj ett av de två" : nil, aktiv: erbjudanden != nil) {
+                PlatsErbjudandenInnehall(erbjudanden: $erbjudanden)
+            }
+        } else {
+            Sida(knapp: "Ja, dela min kommun", action: { withAnimation(.easeOut(duration: 0.3)) { villDela = true } },
+                 lank: "Inte nu", lankAction: { plats.svara(ja: false); ga(till: .notiserna) }) {
+                PlatsFraganInnehall(etikett: nil)
+            }
+        }
+    }
+
     @ViewBuilder private var notiserna: some View {
         let innehall = Group {
             Rubrik(titel: "Se varningen på skärmen",
@@ -225,6 +254,9 @@ struct OnboardingView: View {
             } else {
                 Etikett(text: "Halkvakt skickar")
                 RowPanel {
+                    if plats.svar == .ja {
+                        StegRad(bock: true, titel: "En varning före resan, när det är halt i din kommun", text: "Kommer i ett senare bygge.")
+                    }
                     StegRad(bock: true, titel: "Varningar medan du kör")
                     StegRad(bock: true, titel: "En fråga efter resan, om du vill spara den", divider: false)
                 }
@@ -268,6 +300,7 @@ struct OnboardingView: View {
                 RowPanel {
                     ValRad(titel: "Varningar", varde: "\(antalPa) av 5")
                     ValRad(titel: "Start", varde: sjalv ? "Själv när du kör" : "Du trycker själv")
+                    if medKommun { ValRad(titel: "Din kommun", varde: plats.svar == .ja ? "Delas" : "Delas inte") }
                     bannerRad
                 }
                 Etikett(text: "Så fungerar det")
@@ -310,6 +343,8 @@ private struct Sida<Content: View>: View {
     var lank: String? = nil
     var lankAction: () -> Void = {}
     var fot: String? = nil
+    /// Falskt medan steget väntar på ett val: knappen är nedtonad och går inte att trycka.
+    var aktiv = true
     @ViewBuilder var content: Content
 
     var body: some View {
@@ -321,7 +356,7 @@ private struct Sida<Content: View>: View {
             }
             .scrollIndicators(.hidden)
             .scrollBounceBehavior(.basedOnSize)
-            YellowPill(title: knapp, action: action)
+            YellowPill(title: knapp, action: action).disabled(!aktiv).opacity(aktiv ? 1 : 0.4)
             Group {
                 if let lank {
                     MonoLink(title: lank, action: lankAction)
