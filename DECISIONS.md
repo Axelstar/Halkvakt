@@ -18376,6 +18376,117 @@ Med B7 struken mäts ingen av dem i driften. Det står här så att det inte ser
 
 **Stomdokument:** BED §4.2
 
+## #913 (20/11 2026) Storstäderna i säsongsfacit: dygnsaggregatet, värdevaktens spann och avsnittet i veckorapporten (körlistan C3, kort #381)
+
+**Beslut.** Bengt 19/11: *"börja bygga c3 och B10"*. Tillägget `docs/TROSKLAR-SASONGSFACIT.md` §11 är signerat med Claudes
+rekommendationer (#904). Det här är bygget av dess tre delar:
+- dygnsaggregatet med pg_cron före gallringen (svar 2 a);
+- stadstabellernas egna spann i värdevakten, med gränser ur schemat (svar 5 a, planen V1–V5 i §11.7);
+- avsnittet i veckorapporten (§11.8), internt och utan publicering tills stadsmiljöns dom i kuvösen är fälld (svar 6 a).
+
+Migrationen, värdevaktens knapp och flöden görs bara på Bengts ord. Inget mått är räknat i drift.
+
+**Bygget.**
+- **`sql/128_sasongsfacit_stad.sql`:**
+  - `sasongsfacit_stad_dag` har en rad per svenskt dygn, cell (brytarens område och lager, `sql/089`), tid på dygnet (§5) och nivå
+    (§11.2). Raden bär timmarna per klass (§11.3), de kalla och de varnande grupp-timmarna och timmarna med varning i cellen. Den bär
+    också punkterna per skäl i de kalla grupp-timmar som inte varnade, marsfönstrets timmar, *ytan över 0* och cellens grupper det
+    dygnet (§11.4). Inga grupper och inga punkter.
+  - `sasongsfacit_stad_undantag` bär undantagen i §11.2 punkt 2, med raden 19/11 07.42–08.14 UTC (#903). Ett senare larm från
+    vakthundens kontroll 3c blir en egen rad, och dygnet räknas om medan loggen finns i databasen.
+  - En kärna och två vägar in: databasens egna rader (`sasongsfacit_stad_rakna`, som pg_cron kör 03.37 UTC för gårdagen) och hinkens
+    dygnsfiler (`sasongsfacit_stad_rakna_ur_hinken`, en gång för ett gallrat dygn). Kärnan är densamma, alltså är definitionerna det.
+  - Provet i §11.4: en rad i stadsloggen där punkterna inte är summan av skälen stoppar dygnet med ett fel som bara nämner dygnet.
+  - En sats per dygn och ingen funktion per rad (#783). Fast sökväg och UTC i definitionerna (#784, #439). RLS utan policy och bara
+    `service_role` (#653). Funktionerna svarar med ord, aldrig med ett tal (#768). Ingen regelfunktion skapas eller ändras.
+  - Migrationen räknar dygnen sedan den första räknade körningen, där pg_cron finns.
+- **Värdevakten (`scripts/vardevakten.ts`, §11.7):**
+  - V1: stadsloggen och dess körningar, `olycksfacit_lager` (hela tabellen, den har ingen tidskolumn) och aggregatet står i `TID`.
+  - V2: en deklaration under `tabell.kolumn` går före kolumnens namn, för spann, ordlistor och flaggor. Stadsloggens och aggregatets
+    antal har egna spann. Gränserna kommer ur schemat och aldrig ur punktlistan: 100 000 punkter per grupp eller cell, 200 000 grupper
+    per körning och 25 timmar per dygn. `varnande_km` har ett spann i km. Domloggens 0–64 är orört.
+  - V3: ordlistor för körningens `status`, olycksfacits `lager` och stadsdetaljens `orsak`, `omrade` och `lager`, och flaggor för
+    lagrens `talar` och stadsdetaljens `aktiv` och `talar`. Orden i `orsak` är de nio i §11.5.
+  - V4: listan `JSONB` deklarerar nycklarna i jsonb, och värdevakten läser dem som tal, ord, flaggor eller en lista ord. `brytare`
+    besiktas som en lista, så att en okänd kombination inte tyst räknas som *brytaren av*.
+  - Värdevaktens utskrift går till flödets publika sammanfattning. För storstädernas tabeller (`UTAN_TAL`) skrivs bara domen, utan
+    antal rader, min, max och andelar (§11.8, #768).
+- **Avsnittet (`scripts/sasongsfacit-stad.ts`)** har frågorna mot aggregatet, olycksfacit och `driver_facit`, och skriver avsnittet i
+  Markdown för veckan och säsongen hittills, per cell:
+  - Varningstimmarna står också per månad och tid på dygnet.
+  - Antalet står bredvid varje andel. En andel visas från 20 händelser (val 3), och svarens från 30 (§11.6). Det står att
+    intervallet i §5 saknas tills rapportskriptet i C2 finns. Undantagen står för sig.
+  - Avsnittet stoppar med ett fel i stället för ett tal vid ett fält utan deklaration i värdevakten, ett värde utanför spannet, ett
+    okänt ord och ett dygn som saknas i aggregatet.
+  - Skriptet skriver bara *klart* eller ett fel utan tal, och det vägrar lägga sina filer i repot.
+  - Veckorapporten (körlistan D1) är inte byggd. Avsnittet är den del den tar in.
+- **Kontraktsgrinden:** marsfönstret får sin femte kopia i `sql/128`. Säsongsfacits tid på dygnet vaktas i `sql/099` och `sql/128`, och
+  säsongens sista dygn i `sql/128` och skriptet.
+
+**Läsningarna där §11 inte säger allt**, valda så nära texten som möjligt:
+- **När timmen loggades (undantag 1).** Beslutet i `kandidat_talar` läses när den körning skrevs vars rader timmen bär, annars den
+  första körningen som bär timmen, och utan körning vid timmen. Beslutet läses som `sql/112` läser det.
+- **Undantagens timmar (undantag 2).** En timme är ett undantag när [h, h + 1 h) överlappar intervallet. 19/11 gäller alltså timmarna
+  07 och 08 UTC.
+- **Marsfönstret räknas per cell.** Timmarna tiger när varje punkt i cellen ligger söder om 62° N, som regel B (`sql/091`). Alla tre
+  områdena gör det.
+- **Skälen** räknas i de kalla grupp-timmar som inte varnade, och andelen är av de kalla punkterna i samma grupp-timmar.
+- **Indelningen** på månad och tid på dygnet gäller varningstimmarna, som §11.3 säger. Timmarna per klass, skälen, olyckorna och
+  svaren står per cell för veckan och säsongen.
+- **Perioden** börjar med den första räknade körningen enligt datan: ett tidigare dygn i aggregatet, eller den första räknade körningen
+  bland raderna som dygnet räknas ur. Den slutar 31/3 2027.
+- **Ett gallrat dygn.** `sql/096` gallrar efter 14 dygn. Ett dygn räknas ur databasen så länge det är yngre än 14 dygn eller
+  körningsloggen når tillbaka till det, annars ur hinken. Migreras `sql/128` före 22/11 kl. 00.00 svensk tid finns periodens första
+  dygn, 8/11, kvar i databasen, och hinken behövs inte. Efter det måste 8/11 och de följande gallrade dygnen räknas ur hinken. Den
+  körningen är inte byggd: den kräver hinkens nyckel och ett flöde.
+- **Gruppernas antal** för ett dygn som räknas ur hinken är antalet när det räknas, inte när loggen skrevs.
+- **Olycksfacits och svarens tabeller i värdevakten.** Planen V1 lägger stadsloggens två tabeller och `olycksfacit_lager` i `TID`, inte
+  `olycksfacit` och `driver_facit`. Deras fält i avsnittet (`klass`, `utfall`, `svar`) har databasens CHECK, och `prov` är genererad.
+  `driver_facit` i värdevakten hade dessutom gett testarnas svar i en publik logg (#498). De står utanför, som planen säger.
+- **Utskriften utan tal** gäller också fuktskuggans två tabeller, MET:s fukt vid stadspunkterna och `radar_stad`. De står i `TID` sedan
+  #907 och #908, och utan ändringen hade värdevakten skrivit deras min och max i den publika sammanfattningen varje måndag.
+  Småvägsröstens tabeller (`smavag_live`, `radar_smavag`) är inte ändrade.
+- **Publiceringen.** Inget här publicerar. Avsnittet är märkt internt, och dess filer får inte ligga i repot.
+
+**Provat.**
+- `test/sasongsfacit-stad.test.ts` utan databas:
+  - migrationen skriver bara sina två tabeller, skapar ingen regelfunktion och har fast sökväg och UTC;
+  - värdevakten känner varje fält under sin tabell med schemats gränser, orden ur migrationerna och §11.5, och nycklarna i jsonb;
+  - utskriften för storstädernas tabeller bär inget tal;
+  - avsnittets regler, med ett motprov per regel: 19 händelser och 29 svar ger ingen andel, och ett värde utanför spannet, ett okänt
+    ord och ett saknat dygn stoppar avsnittet.
+- Integrationsprovet #913 körs i ci mot PostGIS, på påhittade dygn i mars 2026 i en transaktion som rullas tillbaka, med två egna celler:
+  - klasserna i sin ordning, brytaren per cell, marsfönstret per cell, nivåerna och skälen, timme för timme;
+  - perioden, omräkningen och dygnen som inte räknas;
+  - provet i §11.4;
+  - hinkens väg ur exportens egna dygnsfiler (`arkiv2_dygn`), som ger samma rader som tabellerna i varje cell;
+  - 15 motprov på migrationen, och vart och ett fälls av minst en plats;
+  - avsnittets frågor mot olycksfacit och `driver_facit`;
+  - värdevakten mot databasen, där en rad med ett känt tal aldrig når utskriften.
+- Den första ci-körningen (44635844463) fällde inte motprovet *beslutet vid timmen, inte när den loggades*. Timmarna 16 och 17 bar
+  likadana rader, så att en nivå som flyttades en timme inte syntes. Raden kl. 16 ändrades (ed470c32), och ci-körningen 44637355771 var
+  grön med alla 15 motprov fällda.
+- **Motprovet i ci:** commit b0611cb1 lät en räknad körning göra timmen räknad i varje cell, utan cellens brytare. Felet ligger utanför
+  kontraktsgrinden, som höll. ci-körningen 44638462703 föll bara på integrationsprovet #913, i SS1 (`test/integration.test.ts:5247`).
+  Nästa commit återställde felet.
+- Inte provat i drift och inte i Supabases avbild.
+
+**Ordningen i driften (Bengts ord):**
+1. DB-knappen med *migrera* och `sql/128_sasongsfacit_stad.sql`, före 22/11 kl. 00.00 svensk tid om hinken inte ska behövas.
+2. Värdevaktens knapp (V5), på grenen eller på main, efter migrationen: inga obesiktigade fält bland stadsloggens, olycksfacits och aggregatets.
+3. Veckorapporten (D1) tar in avsnittet.
+
+**Kvar.** Beviset i drift: `halkvakt-sasongsfacit-stad` har skrivit gårdagens rader, och värdevaktens knapp visar fälten besiktade.
+Körlistans C3 är klar när avsnittet står i veckorapporten (D1).
+
+**Alternativ.**
+- Domloggens namnspann 0–64 för stadsloggen (svar 5 b): avvisat i #904.
+- En läsning varje måndag direkt ur tabellerna och hinken (svar 2 b): avvisat i #904.
+- En kärna per väg in: avvisat, eftersom definitionerna då hade stått två gånger.
+- `olycksfacit` och `driver_facit` i värdevaktens `TID`: avvisat, se läsningarna.
+
+**Stomdokument:** MAT säsongsfacit — storstädernas avsnitt och dygnsaggregatet, SYS — sql/128 och pg_cron-jobbet för storstäderna
+
 ## #914 (19/11 2026) Stadsmiljöns dom får sitt steg i kuvos-ny-kandidat: självtestet varje gång, domen först efter domfönstret (körlistan B10, halkvakt-kuvos F32 och F78)
 
 **Beslut.** Bengt 19/11: *"börja bygga c3 och B10"*. Steget `stadsmiljon` i `kuvos-ny-kandidat.yml` kör kuvösens domskript för

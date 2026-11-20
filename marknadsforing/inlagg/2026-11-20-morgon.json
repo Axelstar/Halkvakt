@@ -1,0 +1,24 @@
+{
+  "typ": "svep",
+  "nyckel": "svep:morgon",
+  "etikett": "Halkläget kl. 05:30",
+  "rubrik": "Halt i morse",
+  "underrad": "Halka på 429 vägavsnitt i 16 län.",
+  "fler": 12,
+  "text": "Halkläget kl. 05:30, fredag 20 november: halka på 429 vägavsnitt i 16 län. Svep för att se ditt län.\n\nNorrbotten: halka på 57 av 58 vägavsnitt, 56 stationer under noll, kallast −10,7 °C vid Merkenäs V.\nVästerbotten: halka på 44 av 44 vägavsnitt, 45 stationer under noll, kallast −9,9 °C vid Umasjö.\nDalarna: halka på 38 av 38 vägavsnitt, 26 stationer under noll, kallast −3,8 °C vid Högfjällshotellet.\nVästra Götaland: halka på 37 av 133 vägavsnitt, 103 stationer under noll, kallast −4,5 °C vid Nysäter.\nÖstergötland: halka på 36 av 36 vägavsnitt, 25 stationer under noll, kallast −1,7 °C vid 527 Linköping Fjärryta.\nJönköpings län: halka på 29 av 52 vägavsnitt, 37 stationer under noll, kallast −3,1 °C vid Röksberg.\nUppsala län: halka på 25 av 25 vägavsnitt, 24 stationer under noll, kallast −1,6 °C vid 317 Ekolsundsbron Fjärryta.\nVästmanland: halka på 24 av 24 vägavsnitt, 18 stationer under noll, kallast −2,9 °C vid Riddarhyttan.\nHalka eller minusgrader även i 12 län till.\n\nLäget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan\nHalkvakt säger till med rösten innan du är där. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Dalarna #VästraGötaland #Östergötland #halkvakt",
+  "textIg": "Halkläget kl. 05:30, fredag 20 november: halka på 429 vägavsnitt i 16 län. Svep för att se ditt län.\n\nNorrbotten: halka på 57 av 58 vägavsnitt, 56 stationer under noll, kallast −10,7 °C vid Merkenäs V.\nVästerbotten: halka på 44 av 44 vägavsnitt, 45 stationer under noll, kallast −9,9 °C vid Umasjö.\nDalarna: halka på 38 av 38 vägavsnitt, 26 stationer under noll, kallast −3,8 °C vid Högfjällshotellet.\nVästra Götaland: halka på 37 av 133 vägavsnitt, 103 stationer under noll, kallast −4,5 °C vid Nysäter.\nÖstergötland: halka på 36 av 36 vägavsnitt, 25 stationer under noll, kallast −1,7 °C vid 527 Linköping Fjärryta.\nJönköpings län: halka på 29 av 52 vägavsnitt, 37 stationer under noll, kallast −3,1 °C vid Röksberg.\nUppsala län: halka på 25 av 25 vägavsnitt, 24 stationer under noll, kallast −1,6 °C vid 317 Ekolsundsbron Fjärryta.\nVästmanland: halka på 24 av 24 vägavsnitt, 18 stationer under noll, kallast −2,9 °C vid Riddarhyttan.\nHalka eller minusgrader även i 12 län till.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\nHalkvakt säger till med rösten innan du är där. Gratis för iPhone, länken finns i vår profil.\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Dalarna #VästraGötaland #Östergötland #halkvakt",
+  "pass": "morgon",
+  "antal": 10,
+  "datum": "2026-11-20",
+  "generated_at": "2026-11-20T04:30:24.577Z",
+  "lan": [
+    "norrbotten",
+    "vasterbotten",
+    "dalarna",
+    "vastra-gotaland",
+    "ostergotland",
+    "jonkoping",
+    "uppsala",
+    "vastmanland"
+  ]
+}
