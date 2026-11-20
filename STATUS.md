@@ -3427,6 +3427,9 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 20/11 (Claude): **iPhone 0.4.1 (62) uppladdad till TestFlight** från main 49cd8d2 (körning 44776658022, `EXPORT SUCCEEDED`; PR #1729
   ihopslagen): frågan om kommunen som steg i introduktionen och CarPlay påslaget igen (DECISIONS #921). Före: TestFlight-provet
   (44775137656) grönt på grenen. Inte prövat på en telefon eller i en bil.
+- 20/11 (Claude): **Startsidan visar bara frysrisk som uppfyller röstens regel, och farorna på kartan går att trycka på** (DECISIONS
+  #922, kort #659; Axels fråga om Oxie och Svedala). Regeln `frysriskGaller` i motorpaketet på iPhone och Android, med prov. Bygget är
+  0.4.1 (63). Inte prövat på en telefon. Android får rättningen i sitt nästa bygge.
 - 20/11 (Claude; Bengt: *"Axel säger ja"*): **Småvägsröstens påslag beslutat** (DECISIONS #923). Claude kör `sql/113` när 0.4.1 (58)
   finns i App Store och i Google Play, senast 27/11, och slår av på testarnas svar (#833) och meddelar Bengt. B6 klar i körlistan.
   Kvar: Axel skickar in 0.4.1 i båda butikerna, sedan påslaget.

@@ -40,6 +40,19 @@ data class PointMeta(
     val road: String? = null,
 )
 
+/**
+ * Whether an icing_point meets the rule the voice warns by, without the distance (DECISIONS #922): a station at +1 °C or colder
+ * with moisture, a bridge at +3 °C or colder with moisture, or S3 (the beta, only when rainH is present). The list shows only
+ * these. Mirror of the ICING_POINT branch in AlertEngine and of frysriskGaller in Engine.swift.
+ */
+fun PointMeta.frysriskGaller(cfg: EngineConfig = EngineConfig()): Boolean {
+    val t = surfaceTempC ?: return false
+    if (t <= (if (bridge) 3.0 else 1.0) && moisture) return true
+    val r = rainH ?: return false
+    val f = fall30C ?: return false
+    return !bridge && t >= cfg.efterhalkaYtaMinC && t <= cfg.efterhalkaYtaMaxC && f >= cfg.efterhalkaFall30C && r <= cfg.efterhalkaRegnH
+}
+
 /** Which utterance of a serious accident this is (DECISIONS #28). Mirrors AccidentStep in texts.ts. */
 enum class AccidentStep(val wire: String) { EARLY("early"), REMINDER("reminder"), LATE("late") }
 
