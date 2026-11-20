@@ -69,6 +69,16 @@ jobs:
           grep -q 'BEGIN PRIVATE KEY' "$P8" || { echo "::error::ASC_KEY_P8 är inte en .p8-fil"; exit 1; }
           # Signeringens flaggor till båda xcodebuild-stegen; nyckelns id och utfärdare maskeras i loggen av GitHub.
           echo "SIGNERA=-allowProvisioningUpdates -authenticationKeyPath $P8 -authenticationKeyID $ASC_KEY_ID -authenticationKeyIssuerID $ASC_ISSUER_ID" >> "$GITHUB_ENV"
+      # Certifikatstädningen (DECISIONS #929): listan före bygget, så att bara byggets eget certifikat återkallas efteråt.
+      # Faller steget fortsätter bygget, och då återkallas ingenting.
+      - name: Certifikaten före bygget
+        if: env.LAGE == 'ladda-upp'
+        continue-on-error: true
+        shell: bash
+        env:
+          ASC_KEY_ID: "${{ secrets.ASC_KEY_ID }}"
+          ASC_ISSUER_ID: "${{ secrets.ASC_ISSUER_ID }}"
+        run: ASC_KEY_P8_FIL="$RUNNER_TEMP/AuthKey.p8" node scripts/asc-certifikat.mjs --lista "$RUNNER_TEMP/cert-fore.txt"
       - name: Arkivera
         shell: bash
         run: |
@@ -116,6 +126,19 @@ jobs:
           fi
           tail -n 5 "$LOGG"
           echo "uppladdad: Halkvakt $VER ($NR), körning $GITHUB_RUN_ID" | tee -a "$GITHUB_STEP_SUMMARY"
+      # Efter uppladdningen, också när bygget föll: annars lämnar ett fallet bygge sitt certifikat kvar. Ett fel här fäller inte
+      # körningen; då står certifikatet kvar och Axel rensar som förut.
+      - name: Återkalla byggets certifikat
+        if: always() && env.LAGE == 'ladda-upp'
+        continue-on-error: true
+        shell: bash
+        env:
+          ASC_KEY_ID: "${{ secrets.ASC_KEY_ID }}"
+          ASC_ISSUER_ID: "${{ secrets.ASC_ISSUER_ID }}"
+        run: |
+          set -euo pipefail
+          test -s "$RUNNER_TEMP/cert-fore.txt" || { echo "ingen lista före bygget: ingenting återkallas"; exit 0; }
+          ASC_KEY_P8_FIL="$RUNNER_TEMP/AuthKey.p8" node scripts/asc-certifikat.mjs --aterkalla-nya "$RUNNER_TEMP/cert-fore.txt" | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Städa nyckeln
         if: always()
         shell: bash
