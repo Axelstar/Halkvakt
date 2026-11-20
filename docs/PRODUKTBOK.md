@@ -102,6 +102,14 @@ inte hur vägen är då: allt på skärmen är läget nu. Ur en lägesfil äldre
 Från (69) (DECISIONS #931) börjar alla sträckor stängda, raderna under *ÖVRIGT PÅ VÄGEN* visar bara rubriken tills föraren
 öppnar dem, och ett ortnamn på konturen som skulle hamna över ett annat skrivs inte. Från (70) (DECISIONS #932) visar *ÖVRIGT PÅ VÄGEN* bara antalet av varje slag (*VÄGARBETEN 9*, *FARTKAMEROR 4*) och SMHI:s
 varningar när sträckorna visas, med raden *Vad det är står under varje sträcka.*; en lugn resa visar raderna som förut.
+**Från (71) (Förslag A, DECISIONS #933):** kortet överst säger omdömet i en mening (*Halt på 11 ställen, först efter
+Helsingborg.*) och *KOLLAT 22:44*, utan de tre talen. Kartan är Apples i gråskala med vägen grå, en gul prick per halksträcka
+och en gul ring per plats med frysrisk; under den *HALKA · FRYSRISK · VÄGEN* och *KARTAN KOMMER FRÅN APPLE*. Sträckorna bryts
+vid varje större ort och slås inte ihop: *Halt på 4 ställen* med etiketten *4 STÄLLEN* i gult och underraden *Fläckvis is och
+moddsträngar. Frysrisk vid en mätstation.*; en lugn sträcka säger *Inget halt rapporterat.* Stapeln är grå. *ÖVRIGT PÅ VÄGEN*
+har en rad per sort (*OLYCKOR*, *VÄGARBETEN*, *FARTKAMEROR*, *HINDER*, *TRAFIK*) med raden *Öppna en sträcka för att se vad
+det är.* Innehållet slutar ovanför flikraden. Startsidans karta har samma märken (gul prick för halka, gul ring för frysrisk,
+vit prick för föraren), teckenförklaringen *HALKA · FRYSRISK · DU* och inga fartkameror.
 Ingen skärmbild än. **Till och med (67):**
 vägen som en gul linje på kartan, längden och *RESAN SPARAS INTE*, samma rapport som en sparad resa (*Läget från*,
 *Rapporten från*, *LÄNGS VÄGEN JUST NU*, *HALKVAKT TROR · BETA*), sedan *NÄR ÅKER DU?* med vippan *Påminn mig före
