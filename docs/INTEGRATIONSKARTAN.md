@@ -245,7 +245,7 @@ bredvid som kontroll och reserv (§6). Förväntan är skriven före vintern: 5,
 *Läget i projektkartan:*
 
 - [SMHI:s varningar](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-k-smhi-varningar): delvis, 92 % · kvar: Ingen läsare i motorn: efter F-A (de första vintervarningarna) och F-B (en vintermånad)
-- [SMHI:s nederbördsradar](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-k-radar): delvis, 88 % · kvar: Radarns tal R i förregistreringen §10 (a), läses 26/10 (#568)
+- [SMHI:s nederbördsradar](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-k-radar): delvis, 100 % · kvar: Nederbördstypen ovanpå radarn (kort #45): NT-domen tidigast 1/3 2027 (frist nt-dom, DECISIONS #361, #362)
 - [Vägdatalagret (NVDB)](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-k-vagdata): delvis, 93 % · kvar: Kuvösens inläsning till kuvos_ra.vagdata (kort #303)
 - [Lägesfilens fält för skuggdelarna](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-l-falten): klar
 - [L3 trenden](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-trenden): delvis, 44 % · kvar: T-B vilar till 2027/28 (#675); trendens värden prövas inom efterhalkan

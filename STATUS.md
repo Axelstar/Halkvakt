@@ -3437,3 +3437,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   §9.5 punkt 8): både A1 och K, bara A1, bara K, ett annat lager och inget, för veckan och säsongen. Läst i panelen 20/11 före bygget:
   vid de halkkopplade olyckorna sedan 6/11 varnade båda vid 29, bara A1 vid 42 och bara K vid 18 av 144. Kvar: deploy och
   veckoärendet 23/11.
+- 20/11 (Claude; Bengts fråga om steget i kartan): **Radarns tal R bokfört i projektkartan.** Steget *Radarns tal R i
+  förregistreringen (§10 a)* under `k-radar` stod som saknas sedan 26/10, fast talet lästes den dagen: R = 0,1 mm/h, och sql/069
+  migrerades (STATUS 26/10, DECISIONS #725, #726). Steget är klart med det beviset; motorns steg säger 0,1 i stället för 0,5, och
+  delens saknas-rad är nederbördstypen ovanpå radarn (kort #45).
