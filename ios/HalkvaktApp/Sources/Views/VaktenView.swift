@@ -78,7 +78,7 @@ struct VaktenView: View {
             if spara { attSpara.padding(.top, 14) }
             if erbjud { erbjudKort.padding(.top, 14) }
             // DECISIONS #829: en gång, efter femte passet, och aldrig samtidigt som ett kort om resorna.
-            let tipsa = !spara && !erbjud && Tipsa.visaKortet(pass: prefs.vaktPass, dold: prefs.tipsaDold, vaktenKor: guardM.running)
+            let tipsa = Tipsa.kortetVisas && !spara && !erbjud && Tipsa.visaKortet(pass: prefs.vaktPass, dold: prefs.tipsaDold, vaktenKor: guardM.running)
             if tipsa { tipsaKort.padding(.top, 14) }
 
             // Kort #659: en planerad resa med avresetid står här tills sex timmar efter avresan.

@@ -3414,3 +3414,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   (DECISIONS #919, kort #659): en och en halv gång avståndet till den närmaste faran, minst en mil och högst sex, och en avbruten
   hämtning skriver inte längre över bilden. Texten under Integritet nämner platsdelningen. Platsdelningen prövad av Axel på telefon
   i (59): frågan, valet och raden i `app_enhet` (Malmö, 16:48) stämde. Bygget är 0.4.1 (60).
+- 20/11 (Claude; Axel efter provet av (59)): **Kortet Tipsa en vän visas inte på startsidan just nu, och inget val om erbjudanden är
+  förvalt** (DECISIONS #920). iPhone-bygget är 0.4.1 (61); Android får ändringen i nästa bygge. Uppladdningen av (60) föll 16:5x på
+  Apples certifikattak (körning 44769009717, `ARCHIVE FAILED`, inget uppladdat); Axel har rensat certifikaten (två kvar 17:04).
