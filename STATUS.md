@@ -3488,3 +3488,5 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   på konturen skrivs inte över varandra. Bygget är 0.4.1 (69).
 - 20/11 (Claude): **iPhone 0.4.1 (69) uppladdad till TestFlight** från main ddb788d (körning 44824914600; PR #1752 ihopslagen): Planerad resa
   börjar stängd och Övrigt på vägen öppnas rad för rad (DECISIONS #931). Inte prövat på en telefon.
+- 20/11 (Claude): **Övrigt på vägen räknar bara, när sträckorna visas** (DECISIONS #932, kort #659). Bygget är 0.4.1 (70), inte uppladdat.
+  Hur en lång sträcka med halka på några ställen ska visas står som en fråga i bedömningens §4.2.

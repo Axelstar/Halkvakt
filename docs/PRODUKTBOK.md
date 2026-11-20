@@ -100,7 +100,9 @@ på resan och klocktiden där, läget och det som räknats på sträckan, och et
 DU?* som förut; och sist *RESAN SPARAS INTE* och *VÄGEN KOMMER FRÅN APPLE*. Klocktiderna säger när föraren är vid sträckan,
 inte hur vägen är då: allt på skärmen är läget nu. Ur en lägesfil äldre än 45 minuter säger kortet *Väglaget är för gammalt.*
 Från (69) (DECISIONS #931) börjar alla sträckor stängda, raderna under *ÖVRIGT PÅ VÄGEN* visar bara rubriken tills föraren
-öppnar dem, och ett ortnamn på konturen som skulle hamna över ett annat skrivs inte. Ingen skärmbild än. **Till och med (67):**
+öppnar dem, och ett ortnamn på konturen som skulle hamna över ett annat skrivs inte. Från (70) (DECISIONS #932) visar *ÖVRIGT PÅ VÄGEN* bara antalet av varje slag (*VÄGARBETEN 9*, *FARTKAMEROR 4*) och SMHI:s
+varningar när sträckorna visas, med raden *Vad det är står under varje sträcka.*; en lugn resa visar raderna som förut.
+Ingen skärmbild än. **Till och med (67):**
 vägen som en gul linje på kartan, längden och *RESAN SPARAS INTE*, samma rapport som en sparad resa (*Läget från*,
 *Rapporten från*, *LÄNGS VÄGEN JUST NU*, *HALKVAKT TROR · BETA*), sedan *NÄR ÅKER DU?* med vippan *Påminn mig före
 avresan* (*En notis en kvart innan*) och en tid, och ▶ *Starta vakten*. Under vippan: *"Notisen säger inte vad som finns
