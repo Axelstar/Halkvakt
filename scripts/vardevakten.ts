@@ -183,6 +183,36 @@ export const SPANN: Record<string, [number, number, string]> = {
   // MET Nordic's dew point per city point (sql/126, DECISIONS #908; F75 §8): F38's span, stricter than dewpoint_c, under a key of its
   // own since a key holds in every table. The humidity beside it is rh2m above, as a fraction.
   met_td_c: [-50, 30, "°C MET Nordics daggpunkt vid stadspunkten (ur kuvösens kedja) — F38:s spann, strängare än dewpoint_c"],
+  // THE CITIES IN SÄSONGSFACIT (TROSKLAR-SASONGSFACIT §11.7 V2, DECISIONS #904 answer 5 (a), #913; körlistan C3). A key "table.column"
+  // holds in that table and goes before the column's name (spannFor below), so the city log's counts have spans of their own and do not
+  // borrow the road points' 0–64 above. The bounds come from the schema, never from the point list (sql/089: a point id is a layer
+  // letter and five digits, and a group has one layer), so they say nothing about how large the groups are: a group or a cell holds at
+  // most 100 000 points of its layer, a run at most 200 000 groups, and a Swedish day has at most 25 hours.
+  "ny_kandidat_skugga_stad.punkter": [0, 100000, "stadspunkter i gruppen med yta ≤ 0 i regeln (sql/096) — gränsen är schemats, inte gruppens storlek"],
+  "ny_kandidat_skugga_stad.varnar": [0, 100000, "varnande stadspunkter i gruppen"],
+  "ny_kandidat_skugga_stad.veto": [0, 100000, "vetade stadspunkter i gruppen"],
+  "ny_kandidat_skugga_stad.torr": [0, 100000, "stadspunkter i gruppen utan fukt (radarn, deras enda fukt)"],
+  "ny_kandidat_skugga_stad.spridning": [0, 100000, "stadspunkter i gruppen som spärren F1 tystade"],
+  "ny_kandidat_skugga_stad_korning.grupper": [0, 200000, "grupper skrivna i stadsloggens körning — gränsen är schemats (två lager)"],
+  // The daily aggregate (sql/128): per day, cell, part of the day and level.
+  "sasongsfacit_stad_dag.timmar_raknad": [0, 25, "timmar — ett svenskt dygn har högst 25"],
+  "sasongsfacit_stad_dag.timmar_mars": [0, 25, "timmar i marsfönstret"],
+  "sasongsfacit_stad_dag.timmar_brytaren_av": [0, 25, "timmar"],
+  "sasongsfacit_stad_dag.timmar_ingen_timme": [0, 25, "timmar"],
+  "sasongsfacit_stad_dag.timmar_av": [0, 25, "timmar"],
+  "sasongsfacit_stad_dag.timmar_ingen_korning": [0, 25, "timmar"],
+  "sasongsfacit_stad_dag.timmar_varning": [0, 25, "räknade timmar med en varnande grupp i cellen"],
+  "sasongsfacit_stad_dag.kalla": [0, 2500000, "grupp-timmar — 100 000 grupper gånger 25 timmar"],
+  "sasongsfacit_stad_dag.varnande": [0, 2500000, "grupp-timmar"],
+  "sasongsfacit_stad_dag.ytan_over_0": [0, 2500000, "grupp-timmar; under 0 är en grupp i loggen som inte står i stadspunkt"],
+  "sasongsfacit_stad_dag.tysta_punkter": [0, 2500000, "punkt-timmar — 100 000 punkter i lagret gånger 25 timmar"],
+  "sasongsfacit_stad_dag.veto": [0, 2500000, "punkt-timmar"],
+  "sasongsfacit_stad_dag.torr": [0, 2500000, "punkt-timmar"],
+  "sasongsfacit_stad_dag.spridning": [0, 2500000, "punkt-timmar"],
+  "sasongsfacit_stad_dag.grupper": [0, 100000, "cellens grupper i stadspunkt när dygnet räknades — schemats gräns"],
+  // The accident layers' city detail (V4: keys in jsonb, JSONB below). Distances inside Sweden.
+  "olycksfacit_lager.detalj.stad.varnande_km": [0, 2000, "km till närmaste varnande stadspunkt i gruppen (sql/100) — inom Sverige"],
+  "olycksfacit_lager.detalj.varnande_km": [0, 2000, "km till närmaste varnande vägpunkt, vägpunktens del av K (sql/112) — inom Sverige"],
 };
 
 /** Identifierare är inte mätvärden. De ska inte stå som obesiktigade — men de ska inte heller
@@ -215,6 +245,16 @@ export const ORD: Record<string, { ord: string[]; not: string }> = {
   brytare: { ord: ["stor-stockholm/b", "stor-göteborg/b", "stor-malmö/b", "stor-stockholm/c"], not: "brytarna som var på vid körningen, område/lager" },
   omrade: { ord: ["stor-stockholm", "stor-göteborg", "stor-malmö"], not: "storstadens område (sql/089)" },
   lager: { ord: ["b", "c"], not: "stadspunktens lager: B statliga vägar, C kommunala gator (sql/089)" },
+  // The cities in säsongsfacit (TROSKLAR-SASONGSFACIT §11.7 V2 and V3, DECISIONS #913). The plain omrade, lager and brytare above hold
+  // for the city log and the aggregate as well; a column whose name means something else in its table is declared under its table.
+  "ny_kandidat_skugga_stad_korning.status": { ord: ["räknad", "tyst", "av"], not: "stadsloggens körning (sql/096): räknad, tyst (den nyas timme saknas) eller av (alla brytare av)" },
+  "olycksfacit_lager.lager": { ord: ["a1", "k", "a2", "radar", "tackning", "smavag"], not: "olycksfacits lager (sql/084, sql/110), inte stadspunktens" },
+  "olycksfacit_lager.detalj.stad.orsak": { ord: ["varnar", "fukt saknades", "spridningsspärren", "veto", "yta över 0", "ingen timme", "gallrad",
+    "inget värde", "brytaren av"], not: "stadspunktens besked vid olyckan (olycksfacit_k_stad, sql/100)" },
+  "olycksfacit_lager.detalj.stad.omrade": { ord: ["stor-stockholm", "stor-göteborg", "stor-malmö"], not: "stadspunktens område (sql/089)" },
+  "olycksfacit_lager.detalj.stad.lager": { ord: ["b", "c"], not: "stadspunktens lager (sql/089)" },
+  "sasongsfacit_stad_dag.dygnsdel": { ord: ["natt", "morgonrusning", "dag", "kvällsrusning", "kväll"], not: "tid på dygnet i svensk tid (TROSKLAR-SASONGSFACIT §5)" },
+  "sasongsfacit_stad_dag.niva": { ord: ["drift", "inte ny", "undantag"], not: "nivån: i drift, eller ett av de två undantagen i §11.2" },
 };
 
 /** FLAGGOR (körlistan B3, 17/11 2026). Ett sanningsvärde som bär en mätning deklareras här med vad sant betyder. NULL betyder alltid
@@ -229,9 +269,50 @@ export const FLAGGOR: Record<string, string> = {
   // The small-road voice's rows (sql/105; DECISIONS #828, #908, halkvakt-kuvos F75 §13 point 1): ned is the rule's moisture, and the rule
   // already reads it, so it is declared now that smavag_live is in TID below.
   ned: "småvägsröstens fukt i regeln: kuvösens strängare N3, nederbörd i timmen eller de tre före (sql/105)",
+  // The accident layers (TROSKLAR-SASONGSFACIT §11.5, §11.7 V3, DECISIONS #913): which layers warned, and the city point's detail.
+  "olycksfacit_lager.talar": "lagret varnade när olyckan började (sql/084); NULL för radarn och täckningen",
+  "olycksfacit_lager.detalj.stad.aktiv": "stadspunktens brytare var på vid olyckans timme (sql/096)",
+  "olycksfacit_lager.detalj.stad.talar": "stadspunkten varnade inom 2 km vid olyckan (sql/100)",
 };
 /** Statusflaggor är bokföring, inte mätvärden: samma kategori som identifierarna. */
 export const STATUSFLAGGOR = new Set(["deleted"]);
+
+/** V2 (TROSKLAR-SASONGSFACIT §11.7, DECISIONS #913): a declaration under "table.column" holds in that table and goes before the
+ *  column's name, so the same name can mean different things in different tables (punkter is a road segment's points in the domlogg and
+ *  a city group's in the city log; lager is a city layer in the city log and an accident layer in olycksfacit_lager). A key in jsonb is
+ *  declared as "table.column.key.key" (V4, JSONB below). */
+export const spannFor = (tabell: string, kolumn: string) => SPANN[`${tabell}.${kolumn}`] ?? SPANN[kolumn];
+export const ordFor = (tabell: string, kolumn: string) => ORD[`${tabell}.${kolumn}`] ?? ORD[kolumn];
+export const flaggaFor = (tabell: string, kolumn: string) => FLAGGOR[`${tabell}.${kolumn}`] ?? FLAGGOR[kolumn];
+
+/** V4 (TROSKLAR-SASONGSFACIT §11.7, DECISIONS #913): the guard cannot list the keys of a jsonb column, so every key that carries a
+ *  number is declared here with its path and its kind, and judged by its declaration under "table.column.key.key" in SPANN, ORD or
+ *  FLAGGOR. A list is a jsonb array of words, judged word by word. A key that is not here is not scanned, as an undeclared text column. */
+export const JSONB: { tabell: string; falt: string; slag: "tal" | "ord" | "flagga" | "lista" }[] = [
+  // brytare decides whether an hour is in drift (§11.3); an unknown combination would otherwise count silently as brytaren av.
+  { tabell: "ny_kandidat_skugga_stad_korning", falt: "brytare", slag: "lista" },
+  { tabell: "olycksfacit_lager", falt: "detalj.stad.aktiv", slag: "flagga" },
+  { tabell: "olycksfacit_lager", falt: "detalj.stad.talar", slag: "flagga" },
+  { tabell: "olycksfacit_lager", falt: "detalj.stad.orsak", slag: "ord" },
+  { tabell: "olycksfacit_lager", falt: "detalj.stad.omrade", slag: "ord" },
+  { tabell: "olycksfacit_lager", falt: "detalj.stad.lager", slag: "ord" },
+  { tabell: "olycksfacit_lager", falt: "detalj.stad.varnande_km", slag: "tal" },
+  { tabell: "olycksfacit_lager", falt: "detalj.varnande_km", slag: "tal" },
+];
+
+/** THE TABLES WHOSE NUMBERS NEVER GO INTO A LOG (TROSKLAR-SASONGSFACIT §11.8, sql/096, #768): the city points' and groups' tables and the
+ *  section's own. The guard judges them like every other table, but its output, which goes to the public step summary, says only the
+ *  verdict: no row count, no minimum or maximum, no share and no count of a word. */
+export const UTAN_TAL = new Set(["ny_kandidat_skugga_stad", "ny_kandidat_skugga_stad_korning", "olycksfacit_lager", "sasongsfacit_stad_dag",
+  "ny_kandidat_fuktskugga_stad", "ny_kandidat_fuktskugga_stad_korning", "ny_kandidat_met_stad", "radar_stad"]);
+/** The verdict of a field in UTAN_TAL, in words: the reasons above carry the field's own numbers. */
+export function utanTal(d: Dom): string {
+  if (d.utfall === "OK") return "inom sitt deklarerade spann, sin ordlista eller sin flagga";
+  if (d.utfall === "UTANFÖR SPANN") return "utanför det deklarerade spannet, eller värden av fel slag";
+  if (d.utfall === "SENTINEL?") return "ett takvärde tar en stor andel av fältet";
+  if (d.utfall === "–") return "för få rader för en dom";
+  return d.varfor.replace(/\d/g, "#");
+}
 
 export type Falt = {
   tabell: string; kolumn: string; rader: number; nollor: number;
@@ -244,7 +325,7 @@ export type Dom = { utfall: "OK" | "OBESIKTIGAT" | "UTANFÖR SPANN" | "SENTINEL?
 export type OrdFalt = { tabell: string; kolumn: string; rader: number; varden: { ord: string; n: number }[] };
 /** Domen för en kodlista i text: varje ord ska stå i den deklarerade ordlistan, oavsett versaler. */
 export function domaOrd(f: OrdFalt): Dom {
-  const d = ORD[f.kolumn];
+  const d = ordFor(f.tabell, f.kolumn);
   if (!d) return { utfall: "OBESIKTIGAT", varfor: "ingen deklarerad ordlista — får inte bära en mätning" };
   if (f.rader < MIN_RADER) return { utfall: "–", varfor: `${f.rader} rader, kräver ${MIN_RADER}` };
   const okanda = f.varden.filter((v) => !d.ord.includes(v.ord.toLowerCase()));
@@ -256,7 +337,7 @@ export type FlaggFalt = { tabell: string; kolumn: string; rader: number };
 /** Domen för en flagga: deklarationen. Obesiktigat slår allt annat, som för talen. */
 export function domaFlagga(f: FlaggFalt): Dom {
   if (STATUSFLAGGOR.has(f.kolumn)) return { utfall: "ID", varfor: "statusflagga — bokföring, inte ett mätvärde" };
-  const d = FLAGGOR[f.kolumn];
+  const d = flaggaFor(f.tabell, f.kolumn);
   if (!d) return { utfall: "OBESIKTIGAT", varfor: "ingen deklarerad flagga — får inte bära en mätning" };
   if (f.rader < MIN_RADER) return { utfall: "–", varfor: `${f.rader} rader, kräver ${MIN_RADER}` };
   return { utfall: "OK", varfor: d };
@@ -266,7 +347,7 @@ export function domaFlagga(f: FlaggFalt): Dom {
  *  vet något om kan inte friskförklaras av att dess tal råkar se rimliga ut. */
 export function doma(f: Falt): Dom {
   if (IDFALT.has(f.kolumn)) return { utfall: "ID", varfor: "identifierare — inte ett mätvärde, får inte bära en tröskel" };
-  const s = SPANN[f.kolumn];
+  const s = spannFor(f.tabell, f.kolumn);
   if (!s) return { utfall: "OBESIKTIGAT", varfor: "inget deklarerat spann — får inte bära en mätning" };
   if (f.rader < MIN_RADER) return { utfall: "–", varfor: `${f.rader} rader, kräver ${MIN_RADER}` };
   const [lo, hi, enhet] = s;
@@ -352,6 +433,23 @@ if (korsSjalv && process.argv.includes("--sjalvtest")) {
   k("samma −52 °C passerar som stationens daggpunkt", doma(f("dewpoint_c", { min: -52, max: 2 })).utfall, "OK");
   k("MET:s fukt som procent fälls", doma(f("rh2m", { min: 0.3, max: 95 })).utfall, "UTANFÖR SPANN");
   k("småvägsröstens ned är deklarerad", domaFlagga({ tabell: "smavag_live", kolumn: "ned", rader: 5000 }).utfall, "OK");
+  // 8. Storstäderna i säsongsfacit (TROSKLAR-SASONGSFACIT §11.7, DECISIONS #913): tabellens nyckel före kolumnens (V2), och jsonb (V4).
+  k("stadsloggens 70 punkter i en grupp passerar", doma({ ...f("punkter", { max: 70 }), tabell: "ny_kandidat_skugga_stad" }).utfall, "OK");
+  k("samma 70 punkter på en vägsträcka fälls", doma({ ...f("punkter", { max: 70 }), tabell: "ny_kandidat_skugga" }).utfall, "UTANFÖR SPANN");
+  k("en negativ ytan över 0 fälls", doma({ ...f("ytan_over_0", { min: -1, max: 40 }), tabell: "sasongsfacit_stad_dag" }).utfall, "UTANFÖR SPANN");
+  k("26 timmar på ett dygn fälls", doma({ ...f("timmar_raknad", { max: 26 }), tabell: "sasongsfacit_stad_dag" }).utfall, "UTANFÖR SPANN");
+  k("aggregatets kolumn utan tabellen är obesiktigad", doma(f("timmar_raknad", { max: 3 })).utfall, "OBESIKTIGAT");
+  k("olycksfacits lager passerar under sin tabell", domaOrd({ ...o("lager", [["A1", 300], ["K", 300], ["tackning", 300]]), tabell: "olycksfacit_lager" }).utfall, "OK");
+  k("samma lager i stadsloggen är okända ord", domaOrd({ ...o("lager", [["A1", 300], ["K", 300]]), tabell: "ny_kandidat_skugga_stad" }).utfall, "OKÄNT ORD");
+  k("stadspunktens besked passerar", domaOrd({ ...o("detalj.stad.orsak", [["varnar", 80], ["brytaren av", 40]]), tabell: "olycksfacit_lager" }).utfall, "OK");
+  k("ett besked som inte finns fälls", domaOrd({ ...o("detalj.stad.orsak", [["varnar", 80], ["ingen stadspunkt", 40]]), tabell: "olycksfacit_lager" }).utfall, "OKÄNT ORD");
+  k("stadspunktens flagga är deklarerad", domaFlagga({ tabell: "olycksfacit_lager", kolumn: "detalj.stad.aktiv", rader: 500 }).utfall, "OK");
+  k("en jsonb-nyckel utan deklaration är obesiktigad", domaFlagga({ tabell: "olycksfacit_lager", kolumn: "detalj.stad.ny", rader: 500 }).utfall, "OBESIKTIGAT");
+  k("varnande_km 2 500 km fälls", doma({ ...f("detalj.stad.varnande_km", { max: 2500 }), tabell: "olycksfacit_lager" }).utfall, "UTANFÖR SPANN");
+  k("varje jsonb-nyckel har sin deklaration", JSONB.every((j) => j.slag === "tal" ? !!spannFor(j.tabell, j.falt) : j.slag === "flagga" ? !!flaggaFor(j.tabell, j.falt)
+    : !!ordFor(j.tabell, j.falt)), true);
+  k("ett fält utan tal skriver inget tal", /\d/.test(utanTal(doma({ ...f("punkter", { min: 0, max: 100001 }), tabell: "ny_kandidat_skugga_stad" }))), false);
+  k("ett okänt ord utan tal skriver inget antal", /\d/.test(utanTal(domaOrd({ ...o("status", [["räknad", 300], ["ny", 12]]), tabell: "ny_kandidat_skugga_stad_korning" }))), false);
   if (!ok) { console.error("\nSJÄLVTEST FÄLLDE."); process.exit(1); }
   console.log("\nSJÄLVTEST OK: alla fyra fall som lurade oss 12/9 fastnar, kodlistor fälls inte");
   console.log("för dominans, och ett odeklarerat fält är obesiktigat även när talen ser rimliga ut.");
@@ -394,6 +492,10 @@ const TID: Record<string, string> = {
   // inspected; and the three tables the rules already read, which were missing here, so their fields were never scanned, not even as
   // OBESIKTIGADE: the small roads' rows (sql/105) and the radar per city group and per small-road piece (sql/090, sql/104).
   ny_kandidat_met_stad: "tid", smavag_live: "tid", radar_stad: "observed_at", radar_smavag: "observed_at",
+  // The cities in säsongsfacit (TROSKLAR-SASONGSFACIT §11.7 V1, DECISIONS #913): the city log and its runs (sql/096), which were missing
+  // here, so their fields were never scanned, not even as OBESIKTIGADE (the trap of trend_kandidater 15/9); the accident layers (sql/084),
+  // without a time column and so scanned whole; and the daily aggregate (sql/128), born inspected.
+  ny_kandidat_skugga_stad: "observed_at", ny_kandidat_skugga_stad_korning: "korning", olycksfacit_lager: "", sasongsfacit_stad_dag: "dag",
 };
 
 console.log(`Värdevakten — besiktning av arkivets numeriska fält (${DAGAR} dygns fönster)\n`);
@@ -432,11 +534,12 @@ for (const { table_name: t, column_name: c } of kolumner) {
 
 let tabell = "";
 for (const { f, d } of falt) {
-  if (f.tabell !== tabell) { tabell = f.tabell; console.log(`\n${tabell}`); }
-  console.log(`  ${ikon(d.utfall)} ${f.kolumn.padEnd(22)} ${String(f.rader).padStart(9)} rader · ` +
+  if (f.tabell !== tabell) { tabell = f.tabell; console.log(`\n${tabell}${UTAN_TAL.has(tabell) ? " (talen skrivs inte ut, #768)" : ""}`); }
+  if (UTAN_TAL.has(f.tabell)) console.log(`  ${ikon(d.utfall)} ${f.kolumn.padEnd(22)} ${utanTal(d)}`);
+  else console.log(`  ${ikon(d.utfall)} ${f.kolumn.padEnd(22)} ${String(f.rader).padStart(9)} rader · ` +
     `${f.min ?? "–"}…${f.max ?? "–"} · ${f.distinkta} distinkta` +
     (f.toppVarde !== null && f.toppAndel >= 0.05 ? ` · vanligast ${f.toppVarde} (${(100 * f.toppAndel).toFixed(0)} %)` : ""));
-  if (d.utfall !== "OK") console.log(`     ${d.utfall}: ${d.varfor}`);
+  if (d.utfall !== "OK" && !UTAN_TAL.has(f.tabell)) console.log(`     ${d.utfall}: ${d.varfor}`);
 }
 
 // ── Flaggor och ordlistor (körlistan B3, 17/11): det numeriska varvet ovan ser dem inte, och F-halka i kuvösens prov vilar på två.
@@ -455,6 +558,11 @@ for (const { table_name: t, column_name: c } of flaggor) {
   const g = (await q(`SELECT count(*)::bigint AS alla, count("${c}")::bigint AS rader, count(*) FILTER (WHERE "${c}")::bigint AS sant
     FROM "${t}" ${fonster}`))[0];
   const rader = Number(g.rader), d = domaFlagga({ tabell: t, kolumn: c, rader });
+  if (UTAN_TAL.has(t)) {
+    console.log(`  ${ikon(d.utfall)} ${`${t}.${c}`.padEnd(40)} ${utanTal(d)}`);
+    ovriga.push({ namn: `${t}.${c}`, d });
+    continue;
+  }
   let stationer = "";
   if (d.utfall === "OK" && medStation.has(t)) {
     const s = (await q(`SELECT count(*)::int AS n, count(*) FILTER (WHERE sant = 0)::int AS aldrig, count(*) FILTER (WHERE sant = rader)::int AS alltid
@@ -467,11 +575,12 @@ for (const { table_name: t, column_name: c } of flaggor) {
   if (d.utfall !== "OK") console.log(`     ${d.utfall}: ${d.varfor}`);
   ovriga.push({ namn: `${t}.${c}`, d });
 }
-const ordfalt = await q(`
+// A word list is declared under the column's name or under "table.column" (V2), so the columns are filtered here and not in the query.
+const ordfalt = (await q(`
   SELECT table_name, column_name, data_type FROM information_schema.columns
   WHERE table_schema = 'public' AND (data_type IN ('text', 'character varying') OR (data_type = 'ARRAY' AND udt_name = '_text'))
-    AND table_name = ANY($1::text[]) AND column_name = ANY($2::text[])
-  ORDER BY table_name, ordinal_position`, [Object.keys(TID), Object.keys(ORD)]);
+    AND table_name = ANY($1::text[])
+  ORDER BY table_name, ordinal_position`, [Object.keys(TID)])).filter((r) => ordFor(r.table_name, r.column_name));
 console.log(`\nORDLISTOR (${ordfalt.length} deklarerade kodlistor i text)`);
 for (const { table_name: t, column_name: c, data_type } of ordfalt) {
   const fonster = fonsterFor(t);
@@ -482,10 +591,54 @@ for (const { table_name: t, column_name: c, data_type } of ordfalt) {
     GROUP BY 1 ORDER BY 2 DESC LIMIT 200`);
   const varden = v.map((r) => ({ ord: String(r.ord), n: Number(r.n) })), rader = varden.reduce((s, x) => s + x.n, 0);
   const d = domaOrd({ tabell: t, kolumn: c, rader, varden });
-  console.log(`  ${ikon(d.utfall)} ${`${t}.${c}`.padEnd(40)} ${String(rader).padStart(9)} rader · ` +
-    varden.slice(0, 8).map((x) => `${x.ord} ${(100 * x.n / Math.max(1, rader)).toFixed(1)} %`).join(", "));
-  if (d.utfall !== "OK") console.log(`     ${d.utfall}: ${d.varfor}`);
+  if (UTAN_TAL.has(t)) console.log(`  ${ikon(d.utfall)} ${`${t}.${c}`.padEnd(40)} ${utanTal(d)}`);
+  else {
+    console.log(`  ${ikon(d.utfall)} ${`${t}.${c}`.padEnd(40)} ${String(rader).padStart(9)} rader · ` +
+      varden.slice(0, 8).map((x) => `${x.ord} ${(100 * x.n / Math.max(1, rader)).toFixed(1)} %`).join(", "));
+    if (d.utfall !== "OK") console.log(`     ${d.utfall}: ${d.varfor}`);
+  }
   ovriga.push({ namn: `${t}.${c}`, d });
+}
+
+// ── Keys in jsonb (V4, TROSKLAR-SASONGSFACIT §11.7, DECISIONS #913): each declared key is read as a number, a word, a flag or a list of
+// words, and judged by its declaration under "table.column.key.key". A value of the wrong kind is a hinder of its own.
+console.log(`\nJSONB (${JSONB.length} deklarerade nycklar)`);
+for (const { tabell: t, falt: namn, slag } of JSONB) {
+  if (!(await q("SELECT to_regclass($1) AS t", [`public.${t}`]))[0].t) { console.log(`  · ${`${t}.${namn}`.padEnd(40)} tabellen finns inte`); continue; }
+  const [kol, ...vag] = namn.split(".");
+  const fonster = fonsterFor(t);
+  const v = vag.length ? `"${kol}" #> '{${vag.join(",")}}'` : `"${kol}"`;
+  const fran = `(SELECT ${v} AS v FROM "${t}" ${fonster}) x`;
+  let d: Dom;
+  if (slag === "tal") {
+    const g = (await q(`SELECT count(*) FILTER (WHERE jsonb_typeof(v) = 'number')::bigint AS rader,
+        count(*) FILTER (WHERE jsonb_typeof(v) NOT IN ('number', 'null'))::bigint AS fel,
+        min((v #>> '{}')::numeric) FILTER (WHERE jsonb_typeof(v) = 'number') AS mn, max((v #>> '{}')::numeric) FILTER (WHERE jsonb_typeof(v) = 'number') AS mx,
+        count(DISTINCT v #>> '{}') FILTER (WHERE jsonb_typeof(v) = 'number')::bigint AS distinkta FROM ${fran}`))[0];
+    const topp = (await q(`SELECT (v #>> '{}')::numeric AS v, count(*)::bigint AS n FROM ${fran} WHERE jsonb_typeof(v) = 'number'
+      GROUP BY 1 ORDER BY 2 DESC LIMIT 1`))[0];
+    const rader = Number(g.rader);
+    d = Number(g.fel) > 0 ? { utfall: "UTANFÖR SPANN", varfor: `${g.fel} värden som inte är tal` }
+      : doma({ tabell: t, kolumn: namn, rader, nollor: 0, min: g.mn === null ? null : Number(g.mn), max: g.mx === null ? null : Number(g.mx),
+          distinkta: Number(g.distinkta), toppVarde: topp ? Number(topp.v) : null, toppAndel: topp && rader ? Number(topp.n) / rader : 0 });
+  } else if (slag === "flagga") {
+    const g = (await q(`SELECT count(*) FILTER (WHERE jsonb_typeof(v) = 'boolean')::bigint AS rader,
+        count(*) FILTER (WHERE jsonb_typeof(v) NOT IN ('boolean', 'null'))::bigint AS fel FROM ${fran}`))[0];
+    d = Number(g.fel) > 0 ? { utfall: "OKÄNT ORD", varfor: `${g.fel} värden som inte är sanningsvärden` }
+      : domaFlagga({ tabell: t, kolumn: namn, rader: Number(g.rader) });
+  } else {
+    // A word, or the words of a list (a value that is not a list is read as a list of one, so it can never pass unseen).
+    const ord = slag === "lista"
+      ? `SELECT CASE WHEN jsonb_typeof(e) = 'string' THEN e #>> '{}' ELSE e::text END AS ord, count(*)::bigint AS n FROM ${fran}
+           CROSS JOIN LATERAL jsonb_array_elements(CASE WHEN jsonb_typeof(v) = 'array' THEN v ELSE jsonb_build_array(v) END) e
+           WHERE v IS NOT NULL GROUP BY 1 ORDER BY 2 DESC LIMIT 200`
+      : `SELECT CASE WHEN jsonb_typeof(v) = 'string' THEN v #>> '{}' ELSE v::text END AS ord, count(*)::bigint AS n FROM ${fran}
+           WHERE v IS NOT NULL AND jsonb_typeof(v) <> 'null' GROUP BY 1 ORDER BY 2 DESC LIMIT 200`;
+    const varden = (await q(ord)).map((r) => ({ ord: String(r.ord), n: Number(r.n) }));
+    d = domaOrd({ tabell: t, kolumn: namn, rader: varden.reduce((s, x) => s + x.n, 0), varden });
+  }
+  console.log(`  ${ikon(d.utfall)} ${`${t}.${namn}`.padEnd(40)} ${UTAN_TAL.has(t) ? utanTal(d) : d.varfor}`);
+  ovriga.push({ namn: `${t}.${namn}`, d });
 }
 
 const rakna = (u: Dom["utfall"]) => falt.filter((x) => x.d.utfall === u).length + ovriga.filter((x) => x.d.utfall === u).length;
@@ -496,10 +649,11 @@ console.log(`  ⊘ ${rakna("OBESIKTIGAT")} OBESIKTIGADE — inget deklarerat spa
 console.log(`  · ${rakna("–")} för tunt underlag för en dom`);
 
 const arHinder = (u: Dom["utfall"]) => u === "OBESIKTIGAT" || u === "UTANFÖR SPANN" || u === "SENTINEL?" || u === "OKÄNT ORD";
-const hinder = [...falt.filter((x) => arHinder(x.d.utfall)), ...ovriga.filter((x) => arHinder(x.d.utfall)).map((x) => ({ f: { tabell: x.namn.split(".")[0], kolumn: x.namn.split(".")[1] }, d: x.d }))];
+const hinder = [...falt.filter((x) => arHinder(x.d.utfall)), ...ovriga.filter((x) => arHinder(x.d.utfall)).map((x) => ({
+  f: { tabell: x.namn.slice(0, x.namn.indexOf(".")), kolumn: x.namn.slice(x.namn.indexOf(".") + 1) }, d: x.d }))];
 if (hinder.length) {
   console.log(`\nFÄLT SOM INTE FÅR BÄRA EN MÄTNING, TRÖSKEL ELLER VARNING (husregeln i CLAUDE.md):`);
-  for (const { f, d } of hinder) console.log(`  ${ikon(d.utfall)} ${f.tabell}.${f.kolumn} — ${d.varfor}`);
+  for (const { f, d } of hinder) console.log(`  ${ikon(d.utfall)} ${f.tabell}.${f.kolumn} — ${UTAN_TAL.has(f.tabell) ? utanTal(d) : d.varfor}`);
   console.log(`\n  Ett obesiktigat fält friskförklaras inte av att talen ser rimliga ut. Deklarera`);
   console.log(`  spannet i SPANN här ovan, eller låt bli att bygga på fältet.`);
 } else {
