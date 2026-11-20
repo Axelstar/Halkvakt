@@ -18899,3 +18899,35 @@ please do that"*).
 bygget står stilla när den går ut efter ett år.
 
 **Stomdokument:** inga — byggflödets inre, ingen del av appen eller driften ändras
+
+## #930 (20/11 2026) Planerad resa: domen överst och resans sträckor på Sveriges kontur, utan fliken När du kör (kort #659)
+
+**Beslut** (Axel 20/11, med en ritning av skärmen och fyra öppna punkter; till förslaget: *"Okay i agree with you on all"*).
+- **Skärmen.** Domen står överst: läget just nu i en rubrik och en mening, och tre tal när något är halt eller har frysrisk. Sedan
+  ▶ *Starta vakten*, vägen ritad på Sveriges kontur, resans sträckor i den ordning föraren kör, resten av rapporten och
+  påminnelsen. Inget av den gamla skärmen är borta: rutan *Halkvakt tror*, raden om det tomma, *När åker du?* och länkarna står kvar.
+- **Sträckorna.** Resan bryts vid de större orter som ligger inom 5 km från vägen, och grannsträckor med samma läge slås ihop,
+  så att en brytpunkt hamnar vid en ort och bara där läget byter. Läget är rapportens eget: halt med minst en halksträcka,
+  frysrisk med minst en station eller bro som uppfyller röstens regel, annars lugnt. En ort närmare starten eller målet än 15 km
+  är ingen brytpunkt, och två brytpunkter ligger minst 20 km isär. Regeln bor i motorpaketet (`Resstrackor`), med prov.
+- **Klocktiden** vid en sträcka är avresan plus sträckans andel av Apples restid. Den säger när föraren är där, inte hur vägen
+  är då.
+- **Fliken *När du kör* byggs inte.** Ritningen visar läget vid den tid föraren passerar. Det kräver en prognos per sträcka, och
+  den finns inte: kandidaten beskriver nu, och prognosens dom faller i mars. Skärmen visar läget nu, och säger det. Frågan står i
+  bedömningens §4.2 för Bengt.
+- **Talen.** Ritningen räknade *stationer nära noll*. Skärmen räknar *platser med frysrisk*, alltså bara dem som uppfyller regeln:
+  samma fälla som frysrisken på startsidan samma dag (#922).
+- **Konturen och orterna** är Natural Earth 1:10m, som är fri att använda (`data/sverige/sverige.json`, 34 orter). Kommunkartan
+  används inte: dess licens är inte bekräftad (#918). Orterna är få norr om Gävle och i inlandet, och där blir sträckorna långa.
+- **Gult på vägen.** Halkan ritas redan gul på kartan *Nära dig* (#873), så detta vidgar ett undantag som finns.
+- **Apple.** Skärmen visar inte längre Apples karta, så telefonen hämtar inga kartbilder för en planerad resa. Vägen är
+  fortfarande Apples, och raden *Vägen kommer från Apple* står under rapporten. Om Apples villkor kräver mer än så är inte
+  prövat. integritet.html säger fortfarande att kartorna i Planera en resa är Apples: det gäller appen i App Store och ändras när
+  bygget släpps.
+
+Bygget är 0.4.1 (68).
+
+**Alternativ.** En fast lista av orter som alltid bryter resan: sträckor som blandar lugnt och halt. Brytpunkter exakt där läget
+byter, utan orter: sträckor som heter *efter 137 km*.
+
+**Stomdokument:** APP — skärmen Planerad resa; FAV — sträckindelningen ur resans rapport

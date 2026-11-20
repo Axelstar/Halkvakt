@@ -89,7 +89,17 @@ för att se vad som finns nära dig."* och länken *SLÅ PÅ PLATSEN* (iOS ruta 
 Inställningar). Under ▶ *Starta vakten* står knappen *Planera en resa*. Den öppnar **Vart ska du?**:
 *"Se läget längs vägen innan du åker."*, sökrutan *Sök adress eller ort* och under den *DINA RESOR* med de sparade
 resorna (ett tryck öppnar resans rapport, som i Favoriter). Medan föraren skriver visas upp till sex förslag från Apple.
-Ett tryck på ett förslag räknar ut bilvägen dit från där föraren är (*"Räknar ut vägen …"*) och öppnar **Till {målet}**:
+Ett tryck på ett förslag räknar ut bilvägen dit från där föraren är (*"Räknar ut vägen …"*) och öppnar **Till {målet}**.
+**Från 0.4.1 (68) (DECISIONS #930, Axels ritning 20/11)** är skärmen ny: under rubriken *{längd} · CA {restid}*; kortet
+*JUST NU* med *KOLLAT {tid}*, en rubrik (*Lugnt hela vägen.*, *Halt från {ort}.*, *Frysrisk redan från start.*), en mening om var
+det börjar, och när något är halt eller har frysrisk tre tal: *HALA STRÄCKOR*, *PLATSER MED FRYSRISK* och *SMHI-VARNINGAR*; ▶
+*Starta vakten* och länkarna till kartapparna; *LÄNGS VÄGEN, I DEN ORDNING DU KÖR* med vägen ritad på Sveriges kontur (gult
+streck *HALT*, gult prickat *FRYSRISK*, grått *LUGNT*) och sträckorna under, var och en med orten den börjar vid, hur långt in
+på resan och klocktiden där, läget och det som räknats på sträckan, och ett tryck öppnar sträckans rader; *ÖVRIGT PÅ VÄGEN*
+(*LÄNGS VÄGEN* när resan är lugn, och då visas varken konturen eller sträckorna); *HALKVAKT TROR · BETA* som förut; *NÄR ÅKER
+DU?* som förut; och sist *RESAN SPARAS INTE* och *VÄGEN KOMMER FRÅN APPLE*. Klocktiderna säger när föraren är vid sträckan,
+inte hur vägen är då: allt på skärmen är läget nu. Ur en lägesfil äldre än 45 minuter säger kortet *Väglaget är för gammalt.*
+Ingen skärmbild än. **Till och med (67):**
 vägen som en gul linje på kartan, längden och *RESAN SPARAS INTE*, samma rapport som en sparad resa (*Läget från*,
 *Rapporten från*, *LÄNGS VÄGEN JUST NU*, *HALKVAKT TROR · BETA*), sedan *NÄR ÅKER DU?* med vippan *Påminn mig före
 avresan* (*En notis en kvart innan*) och en tid, och ▶ *Starta vakten*. Under vippan: *"Notisen säger inte vad som finns

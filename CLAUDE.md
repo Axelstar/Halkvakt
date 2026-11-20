@@ -38,7 +38,8 @@ Define success criteria. Loop until verified.
   counted as one row per day, app, app version, cohort (new or existing install), event and value — no id, no time finer
   than the day, no position and no distance: a guard session is only its start method, its length in four buckets and how
   it ended. Always on and stated in integritet.html (variant A). One exception since 14/11 (Axel, DECISIONS
-  #870, #872), on iPhone: the start page and a planned trip show Apple's map, so MapKit fetches map tiles from Apple for the
+  #870, #872), on iPhone: the start page and a planned trip show Apple's map (the planned trip only up to 0.4.1 (67): from (68) it draws the
+  route on its own outline of Sweden, DECISIONS #930), so MapKit fetches map tiles from Apple for the
   area shown without the driver pressing anything, and when the driver searches an address the search text, the driver's
   position and the destination go to Apple — never to Halkvakt. Stated in integritet.html and next to the map and the search.
   One more exception since 20/11 (Axel and Bengt, DECISIONS #917, #918), on iPhone and ONLY in TestFlight builds until the words are
