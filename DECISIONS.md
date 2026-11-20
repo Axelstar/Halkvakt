@@ -18967,3 +18967,41 @@ Bygget är 0.4.1 (70), inte uppladdat när beslutet skrivs.
 **Alternativ.** Ta bort raderna ur sträckorna i stället: då säger sträckan inte vad som finns på den.
 
 **Stomdokument:** APP — skärmen Planerad resa
+
+## #933 (20/11 2026) Planerad resa: Förslag A, och vägen står på Apples karta igen (kort #659)
+
+**Beslut** (Axel 20/11, sexton punkter: *"Bygg Förslag A för resultatskärmen i Planera resa och skicka till TestFlight"*; om
+kartan: *"Okej vi får väl köra med a då"*, läst som den första av tre vägar).
+
+*Sträckorna.* Resan bryts vid varje större ort längs vägen, och sträckorna slås inte längre ihop: i (68) till (70) blev Malmö
+till Östermalm en enda hal sträcka på 55 mil. En sträcka heter *Halt på 4 ställen*, etiketten är antalet i gult (*4 STÄLLEN*),
+och underraden säger vilken sorts halka det är. Ett ställe är en halksträcka i Trafikverkets väglag. Trafikverkets ord skrivs
+som vanlig svenska (*fläckvis Is, Våt* blir *fläckvis is, vått*; *moddig Vägbana* blir *snömodd*); vått och torrt är ingen halka
+i sig och står bara när sträckan öppnas. En lugn sträcka säger *Inget halt rapporterat.* Stapeln är grå som vägen. Omdömet
+överst är en mening (*Halt på 11 ställen, först efter Helsingborg.*); de tre talen och raden om filernas tider är borta.
+
+*Kartan.* Axel bad om en egen ritad karta i stället för Apples, och om att Apples villkor skulle läsas innan bygget gick ut.
+Apples utvecklaravtal, bilaga 6 punkt 2.4, säger att deras kartdata, när den visas på en karta, bara får visas på en
+Apple-karta, och definitionen av kartdata räknar upp koordinater. Vägen Apple räknar ut är koordinater. Den får alltså inte
+ritas på vår egen kontur, och en rad om att vägen kommer från Apple ändrar inte det. Bygge (68) och (69) gjorde just det i
+TestFlight; ingen av dem har gått till App Store. Axel fick tre vägar: Apples karta under märkena, egen kontur utan väg, eller
+en väg från en annan källa. Han valde den första. Kartan är Apples i gråskala, som på startsidan, med vägen grå, en gul prick
+per halksträcka och en gul ring per plats med frysrisk, där de ligger längs vägen. Konturen ur Natural Earth ligger kvar i
+filen men ritas inte. Läsningen är Claudes och ingen jurists.
+
+*Övrigt på vägen* har en rad per sort när sträckorna visas: olyckor, vägarbeten, fartkameror, hinder och trafik. Axel räknade
+upp fyra; olyckorna fick en egen rad, för en olycka ska inte stå som ett hinder.
+
+*Startsidan* behåller Apples karta och får samma märken: en gul prick per halksträcka, mitt på sträckan, en gul ring för
+frysrisk och en vit prick för föraren, med samma teckenförklaring. Fartkamerorna står inte längre på kartan. Olyckor och vilt
+har kvar sina ikoner: de är inga kameror eller vägarbeten, och en olycka nära föraren ska synas.
+
+*Flikraden.* Skärmens innehåll slutar ovanför flikraden; i inspelningen 20/11 syntes texten under och bakom den.
+
+Bygget är 0.4.1 (71). Bara iPhone; Android har varken Planera resa eller kartan på startsidan.
+
+**Alternativ.** Egen kontur med bara märkena: följer avtalet, men utan väg säger kartan inte var resan går. En annan vägtjänst:
+då går resans mål till den tjänsten, vilket är ett nytt löfte och ett större bygge. Rapportens rader med halkans längd, så
+att en sträcka heter hal efter andel (väg b i #932): kräver en gräns och en ändring i rapporten på tre språk.
+
+**Stomdokument:** APP — skärmen Planerad resa och kartan på startsidan

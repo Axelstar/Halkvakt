@@ -222,6 +222,7 @@ struct VaktenView: View {
         return VStack(alignment: .leading, spacing: 0) {
             NaraDigKarta(faror: guardM.hazards, plats: harPlats, valt: valdFara) { valj($0) }
             // Sagt där kartan står (DECISIONS #872): kartbilderna hämtas från Apple.
+            Kartforklaring(sista: .du).padding(.top, 10).padding(.horizontal, 4)
             MonoLabel(text: "Kartan kommer från Apple", color: Brand.faint).padding(.top, 8).padding(.horizontal, 4)
             // Faran föraren tryckt på, på kartan eller i listan (DECISIONS #922). Försvinner den ur läget försvinner kortet.
             if let fara = guardM.hazards.first(where: { $0.id == valdFara }) {

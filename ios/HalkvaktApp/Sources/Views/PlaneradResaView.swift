@@ -1,8 +1,9 @@
-// EN PLANERAD RESA FÖRE START (kort #659, DECISIONS #870, ny skärm #930): domen överst, Starta vakten, vägen på Sveriges kontur
-// med resans sträckor i den ordning föraren kör, resten av rapporten och en påminnelse före avresan. Allt är läget nu:
-// klocktiderna vid sträckorna säger när föraren är där, inte hur vägen är då. Fliken "När du kör" i ritningen byggs inte förrän
-// det finns en prognos per sträcka att visa.
+// EN PLANERAD RESA FÖRE START (kort #659, DECISIONS #870, ny skärm #930, Förslag A #933): omdömet i en mening överst, Starta
+// vakten, vägen på kartan med ett gult märke per halksträcka, resans sträckor i den ordning föraren kör, resten av rapporten och
+// en påminnelse före avresan. Allt är läget nu: klocktiderna vid sträckorna säger när föraren är där, inte hur vägen är då.
+// Kartan är Apples, i gråskala: Apples villkor säger att vägen de räknar ut bara får visas på deras karta (bilaga 6, punkt 2.4).
 import SwiftUI
+import MapKit
 import HalkvaktEngine
 
 struct PlaneradResaView: View {
@@ -68,9 +69,9 @@ struct PlaneradResaView: View {
                         if strackor.contains(where: { $0.lage != .lugnt }) {
                             MonoLabel(text: "Längs vägen, i den ordning du kör", size: 11).padding(.top, 28).padding(.bottom, 10).padding(.horizontal, 4)
                             VStack(alignment: .leading, spacing: 0) {
-                                ResansKontur(punkter: p.punkter, kum: kum, strackor: strackor, mal: p.mal,
-                                             etikett: "Sverige med vägen till \(p.mal). \(Resstrackor.dom(strackor).rubrik)")
-                                forklaring.padding(.top, 12).padding(.bottom, 14)
+                                karta(p, rapport)
+                                Kartforklaring(sista: .vagen).padding(.top, 12).padding(.bottom, 6)
+                                MonoLabel(text: "Kartan kommer från Apple", color: Brand.faint).padding(.bottom, 14)
                                 ResansStrackor(strackor: strackor, mal: p.mal, totalM: Int((kum.last ?? 0).rounded()),
                                                restidS: p.restidS, avresa: max(p.avresa ?? Date.now, Date.now))
                                     .id(rapport.kollat)
@@ -101,7 +102,7 @@ struct PlaneradResaView: View {
 
                     VStack(spacing: 4) {
                         MonoLabel(text: p.avresa == nil ? "Resan sparas inte" : "Avresa \(p.avresa?.dagOchKlockslag ?? "")")
-                        // Vägen är Apples (Resplan), fast kartan här inte är det (DECISIONS #930).
+                        // En lugn resa visar ingen karta, men vägen är ändå Apples (Resplan).
                         MonoLabel(text: "Vägen kommer från Apple", color: Brand.faint)
                         if p.avresa != nil {
                             MonoLink(title: "Ta bort resan") { plan.rensa(); dismiss() }
@@ -113,10 +114,12 @@ struct PlaneradResaView: View {
                 }
             }
             .buttonStyle(.plain)
-            .padding(.horizontal, 24).padding(.top, 8).padding(.bottom, 150)
+            .padding(.horizontal, 24).padding(.top, 8).padding(.bottom, 24)
         }
         .scrollIndicators(.hidden)
         .background(Brand.bg)
+        // Innehållet slutar ovanför flikraden (Axels inspelning 20/11: texten syntes under och bakom den, DECISIONS #933).
+        .safeAreaInset(edge: .bottom, spacing: 0) { Color.clear.frame(height: 76).frame(maxWidth: .infinity).background(Brand.bg) }
         .toolbar(.hidden, for: .navigationBar)
         .refreshable { await hamta() }
         .task {
@@ -132,14 +135,10 @@ struct PlaneradResaView: View {
 
     // MARK: - Domen
 
-    /// Kortet överst: läget just nu i en mening, och tre tal när något är halt eller har frysrisk. Ur en gammal lägesfil visas
-    /// varken halka eller frysrisk (åldersgränsen), och då får kortet inte säga att det är lugnt.
+    /// Kortet överst: omdömet i en mening och när läget kollades. Ur en gammal lägesfil visas varken halka eller frysrisk
+    /// (åldersgränsen), och då får kortet inte säga att det är lugnt.
     private func dom(_ r: Rapporten.Planerad, _ p: Resplan.Plan) -> some View {
-        let d = r.gammaltVaglag
-            ? (rubrik: "Väglaget är för gammalt.", text: "Väglaget är äldre än 45 minuter och visas inte som läget just nu. Dra nedåt för att hämta igen.")
-            : Resstrackor.dom(strackor)
         let oroligt = !r.gammaltVaglag && strackor.contains { $0.lage != .lugnt }
-        let antal = { (slag: RapportSlag) in r.rader.filter { $0.slag == slag }.count }
         return VStack(alignment: .leading, spacing: 14) {
             HStack(spacing: 10) {
                 Circle().fill(oroligt || r.gammaltVaglag ? Brand.yellow : Brand.trackOff).frame(width: 7, height: 7).accessibilityHidden(true)
@@ -147,58 +146,48 @@ struct PlaneradResaView: View {
                 Spacer()
                 MonoLabel(text: "Kollat \(r.kollat.klockslag)", size: 11)
             }
-            Text(d.rubrik).font(Typo.sans(26, .semibold)).tracking(-0.5).foregroundStyle(Brand.text)
+            Text(r.gammaltVaglag ? "Väglaget är för gammalt." : Resstrackor.dom(strackor))
+                .font(Typo.sans(26, .semibold)).tracking(-0.5).foregroundStyle(Brand.text)
                 .accessibilityAddTraits(.isHeader)
-            Text(d.text).font(Typo.sans(15)).lineSpacing(4).foregroundStyle(Brand.text2)
+            if r.gammaltVaglag {
+                Text("Väglaget är äldre än 45 minuter och visas inte som läget just nu. Dra nedåt för att hämta igen.")
+                    .font(Typo.sans(15)).lineSpacing(4).foregroundStyle(Brand.text2)
+            }
             if r.gamlaOlyckor {
                 Text("Olyckorna är äldre än två timmar och visas inte som läget just nu.").font(Typo.sans(14)).foregroundStyle(Brand.yellow)
             }
-            if oroligt {
-                DashedDivider()
-                HStack(alignment: .top, spacing: 12) {
-                    tal(antal(.halka), "Hala sträckor")
-                    tal(antal(.frysrisk), "Platser med frysrisk")
-                    tal(antal(.smhi), "SMHI-varningar")
-                }
-            }
-            MonoLabel(text: "Läget från \(r.lagesfil?.klockslag ?? "okänd tid") · rapporten från \(r.rapportfil?.klockslag ?? "okänd tid")",
-                      color: Brand.faint)
         }
         .padding(20).frame(maxWidth: .infinity, alignment: .leading)
         .background(Brand.panel, in: RoundedRectangle(cornerRadius: 18))
     }
 
-    private func tal(_ n: Int, _ under: String) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("\(n)").font(Typo.mono(24, .medium)).foregroundStyle(Brand.text)
-            MonoLabel(text: under)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .accessibilityElement(children: .combine)
-    }
-
-    /// Vad strecken betyder, på vägen och till vänster om sträckorna.
-    private var forklaring: some View {
-        HStack(spacing: 16) {
-            ForEach([StrackLage.halt, .frysrisk, .lugnt], id: \.rawValue) { l in
-                HStack(spacing: 6) {
-                    Rectangle().fill(.clear).frame(width: 16, height: 3)
-                        .overlay {
-                            Path { p in p.move(to: CGPoint(x: 0, y: 1.5)); p.addLine(to: CGPoint(x: 16, y: 1.5)) }
-                                .stroke(l == .lugnt ? Brand.dim : Brand.yellow,
-                                        style: StrokeStyle(lineWidth: 3, lineCap: l == .frysrisk ? .round : .butt, dash: l == .frysrisk ? [0.1, 5] : []))
-                        }
-                        .accessibilityHidden(true)
-                    MonoLabel(text: l == .halt ? "Halt" : l == .frysrisk ? "Frysrisk" : "Lugnt")
-                }
+    /// Vägen på Apples karta: grå, med en gul prick per halksträcka och en gul ring per plats med frysrisk, där de ligger längs
+    /// vägen. Utsnittet är vägens ram med luft omkring.
+    private func karta(_ p: Resplan.Plan, _ r: Rapporten.Planerad) -> some View {
+        let koord = { (q: [Double]) in CLLocationCoordinate2D(latitude: q[1], longitude: q[0]) }
+        let marken = { (slag: RapportSlag) in
+            r.rader.filter { $0.slag == slag }.compactMap { rad in
+                Resstrackor.punkt(p.punkter, kum: kum, m: Double(rad.langsM)).map { Kartbild.Plats(id: rad.id, koord: koord($0)) }
             }
         }
+        let lon = p.punkter.map { $0[0] }, lat = p.punkter.map { $0[1] }
+        let omrade = MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: ((lat.min() ?? 0) + (lat.max() ?? 0)) / 2, longitude: ((lon.min() ?? 0) + (lon.max() ?? 0)) / 2),
+            span: MKCoordinateSpan(latitudeDelta: max(((lat.max() ?? 0) - (lat.min() ?? 0)) * 1.3, 0.1),
+                                   longitudeDelta: max(((lon.max() ?? 0) - (lon.min() ?? 0)) * 1.3, 0.1)))
+        return Kartbild(omrade: omrade, hojd: 236, vag: p.punkter.map(koord), halka: marken(.halka), frysrisk: marken(.frysrisk),
+                        nyckel: "resa|\(p.punkter.count)|\(lat.first ?? 0)|\(lat.last ?? 0)",
+                        etikett: "Karta med vägen till \(p.mal). \(Resstrackor.dom(strackor))")
     }
 
     // MARK: - Resten av rapporten
 
-    /// Slagen som räknas under Övrigt på vägen när sträckorna visas. Restidssträckorna är mätpunkter och inga händelser.
-    private static let raknade: [RapportSlag] = [.olycka, .hinder, .vilt, .ko, .vagarbete, .hastighet, .omledning, .farja, .kamera]
+    /// Raderna under Övrigt på vägen när sträckorna visas: en rad per sort, inte en per händelse (Axel 20/11, DECISIONS #933).
+    /// Olyckorna har en egen rad, överst, när det finns någon. Restidssträckorna är mätpunkter och inga händelser.
+    private static let sorter: [(namn: String, slag: Set<RapportSlag>)] = [
+        ("Olyckor", [.olycka]), ("Vägarbeten", [.vagarbete, .hastighet, .omledning]), ("Fartkameror", [.kamera]),
+        ("Hinder", [.hinder, .vilt]), ("Trafik", [.ko, .farja]),
+    ]
 
     /// En rad under Övrigt på vägen: rubriken, och texten först när föraren öppnar raden (DECISIONS #931), som sträckorna.
     /// En rad utan text går inte att öppna.
@@ -247,19 +236,18 @@ struct PlaneradResaView: View {
             } else if !lugn {
                 // Med sträckorna ovanför står varje rad redan under sin sträcka (DECISIONS #932). Här står bara hur många det är
                 // av varje slag, och SMHI:s varningar, som gäller hela resan.
-                let slag = Self.raknade.filter { s in rader.contains { $0.slag == s } }
+                let sorter = Self.sorter.map { s in (namn: s.namn, antal: rader.filter { s.slag.contains($0.slag) }.count) }.filter { $0.antal > 0 }
                 let smhi = grupper.filter { $0.slag == .smhi }
                 RowPanel {
-                    ForEach(Array(slag.enumerated()), id: \.element) { i, s in
-                        ReceiptRow(label: ResansRapport.namn[s] ?? s.rawValue, value: "\(rader.filter { $0.slag == s }.count)",
-                                   divider: i < slag.count - 1 || !smhi.isEmpty)
+                    ForEach(Array(sorter.enumerated()), id: \.element.namn) { i, s in
+                        ReceiptRow(label: s.namn, value: "\(s.antal)", divider: i < sorter.count - 1 || !smhi.isEmpty)
                     }
                     ForEach(Array(smhi.enumerated()), id: \.element.id) { i, g in
                         ovrigRad(id: g.id, titel: g.rubrik, text: g.text, divider: i < smhi.count - 1)
                     }
                 }
-                if !slag.isEmpty {
-                    Text("Vad det är står under varje sträcka.").font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.dim)
+                if !sorter.isEmpty {
+                    Text("Öppna en sträcka för att se vad det är.").font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.dim)
                         .padding(.top, 14).padding(.horizontal, 4)
                 }
             } else {

@@ -1,5 +1,7 @@
-// RESANS STRÄCKOR PÅ SKÄRMEN (DECISIONS #930): sträckorna i den ordning föraren kör, var och en med sitt läge. Ett tryck
-// öppnar sträckan och visar det rapporten har där. Alla börjar stängda (Axel 20/11, DECISIONS #931). Indelningen och texterna räknas i motorn (Resstrackor).
+// RESANS STRÄCKOR PÅ SKÄRMEN (DECISIONS #930, Förslag A #933): sträckorna i den ordning föraren kör, en per större ort. Etiketten
+// är antalet ställen med halka, i gult; stapeln är grå som vägen på kartan. Ett tryck öppnar sträckan och visar det rapporten
+// har där, också vägarbeten, hinder och fartkameror. Alla börjar stängda (Axel 20/11, DECISIONS #931). Indelningen och texterna
+// räknas i motorn (Resstrackor).
 import SwiftUI
 import HalkvaktEngine
 
@@ -16,7 +18,7 @@ struct ResansStrackor: View {
             ForEach(Array(strackor.enumerated()), id: \.offset) { i, s in
                 plats(s.fran ?? "Start", m: s.franM, fylld: false)
                 HStack(alignment: .top, spacing: 12) {
-                    Stapel(lage: s.lage).frame(width: 20)
+                    Stapel().frame(width: 20)
                     VStack(alignment: .leading, spacing: 0) {
                         Button { oppen = oppen == i ? nil : i } label: { rubrik(s, oppen: oppen == i) }
                             .buttonStyle(.plain)
@@ -54,7 +56,7 @@ struct ResansStrackor: View {
             HStack(alignment: .firstTextBaseline, spacing: 12) {
                 Text(Resstrackor.rubrik(s)).font(Typo.sans(16, .medium)).foregroundStyle(Brand.text)
                 Spacer(minLength: 8)
-                Text("\(Self.tagg(s.lage)) \(oppen ? "−" : "+")").font(Typo.mono(11, .semibold)).tracking(1.5)
+                Text("\(Resstrackor.tagg(s)) \(oppen ? "−" : "+")").font(Typo.mono(11, .semibold)).tracking(1.5)
                     .foregroundStyle(s.lage == .halt ? Brand.yellow : s.lage == .frysrisk ? Brand.text : Brand.dim)
             }
             Text(Resstrackor.under(s)).font(Typo.sans(13)).lineSpacing(2).foregroundStyle(Brand.text2)
@@ -82,38 +84,29 @@ struct ResansStrackor: View {
         .padding(.bottom, 6)
     }
 
-    private static func tagg(_ l: StrackLage) -> String {
-        switch l {
-        case .halt: return "HALT"
-        case .frysrisk: return "FRYSRISK"
-        case .lugnt: return "LUGNT"
-        }
-    }
-
     private static let etikett: [RapportSlag: String] = [.halka: "Halka", .frysrisk: "Frysrisk", .olycka: "Olycka", .hinder: "Hinder",
         .vilt: "Vilt", .ko: "Kö", .restid: "Restid", .vagarbete: "Vägarbete", .hastighet: "Hastighet", .omledning: "Omledning",
         .farja: "Färja", .kamera: "Kameror", .smhi: "SMHI"]
 
-    /// Rapportens rubrik och text på en rad: "Halt väglag på E4: fläckvis is".
+    /// Rapportens rubrik och text på en rad: "Halt väglag på E4: fläckvis is". Halkans ord skrivs som vanlig svenska.
     private static func varde(_ g: RapportGrupp, vag: String?) -> String {
         let ensam = g.antal == 1 && !g.id.hasPrefix("grupp:")
         let rubrik = ensam ? ResansRapport.titel(g.rubrik, vag: vag) : g.rubrik
-        guard let forsta = g.text.first else { return rubrik }
-        return forsta.isLowercase || forsta.isNumber ? "\(rubrik): \(g.text)" : "\(rubrik). \(g.text)"
+        let text = g.slag == .halka && ensam ? Resstrackor.rentVaglag(g.text) : g.text
+        guard let forsta = text.first else { return rubrik }
+        return forsta.isLowercase || forsta.isNumber ? "\(rubrik): \(text)" : "\(rubrik). \(text)"
     }
 }
 
-/// Strecket till vänster om en sträcka: gult för halt, gult prickat för frysrisk, grått för lugnt.
+/// Strecket till vänster om en sträcka: grått, som vägen på kartan.
 private struct Stapel: View {
-    let lage: StrackLage
     var body: some View {
         GeometryReader { geo in
             Path { p in
                 p.move(to: CGPoint(x: geo.size.width / 2, y: 2))
                 p.addLine(to: CGPoint(x: geo.size.width / 2, y: geo.size.height - 2))
             }
-            .stroke(lage == .lugnt ? Brand.dim : Brand.yellow,
-                    style: StrokeStyle(lineWidth: 4, lineCap: lage == .frysrisk ? .round : .butt, dash: lage == .frysrisk ? [0.1, 8] : []))
+            .stroke(Brand.dim, lineWidth: 4)
         }
         .accessibilityHidden(true)
     }
