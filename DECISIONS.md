@@ -18666,3 +18666,29 @@ ur Axelstar/halkvakt-admin (källan som deployades 20/11 plus delen `social`) oc
 och pulsklockan körd skarpt så att de tre nya jobben ligger i pg_cron, och först därefter vakthunden deployad (PULS_GOLV 37).
 
 **Stomdokument:** SYS — Halkvakt live och pulsklockan, BED §4.2
+
+## #919 (20/11 2026) FÖRSLAG: Halkvakt lives textmallar redigeras i admin.halkvakt.se, bildmallarna på en designyta
+
+**Förslag.** Malin 20/11: en undersida under Sociala medier ska visa mallarna för inläggen och låta dem ändras, både texterna och
+bildmallarna; bildernas layout ska gå att ändra i Claude Design.
+1. **Texterna.** De fasta texterna i `posta.mjs` (länkraden, appraden, oberoende-raden #610, taggarna #622, varje typs första rad,
+   uppmaningen och bildens etikett, rubrik och underrad) flyttar till `marknadsforing/mallar.json`, med fälten som fylls i (`{tid}`,
+   `{lan}` …). Tabellen `social_mallar` (sql/132) skriver över en mall; admin-sidan Sociala medier → Mallar skriver och tar bort
+   raderna (edge-funktionen admin, delen `textmallar`, menyvalet social), och släpper bara igenom fält som mallen deklarerar.
+   `posta.mjs` läser raderna när ett inlägg ritas och skickas; går databasen inte att nå gäller standardtexterna. Siffrorna, länens
+   rader, urvalet, spärrarna och ordningen ändras inte. Med standardtexterna är varje inlägg tecken för tecken som förut (bevis:
+   samma utskrift för alla sju typerna före och efter i sessionen, och test/posta.test.ts).
+2. **Bildmallarna.** Layout och färger stannar i koden (`html()` i `posta.mjs`, `svep-mall/halkvakt-svep.html`) och följer
+   Varumärkesguide 1.0 (#626). Alla åtta bildmallarna ligger, ritade av samma kod med riktiga inlägg, på designytan *Halkvakt live –
+   bildmallar* (https://claude.ai/artifact/EfHvJHHM9Ff7m3exye89wD). Där ändras och kommenteras de, och en session för in ändringen i
+   koden i en egen PR som går i drift efter godkännande. Admin-sidan länkar varje bild dit.
+
+**Varför inte fri layout i admin.** Bilden ritas automatiskt inför varje inlägg; ett fel i HTML:en ger en trasig bild i varje inlägg,
+och färgerna är Axels beslut (#626).
+
+**Ansvar.** Texten som går ut är den som står i mallen. Den som ändrar en mall ansvarar för att den inte säger mer än datan bär
+(samma princip som för appens röst: punktkällor utan avstånd).
+
+**Kvar före drift.** Bengts ord. Sedan: #918 i drift; sql/132 med DB-knappen (migrera); deploy-knappen `admin`.
+
+**Stomdokument:** SYS — Halkvakt live, BED §4.2

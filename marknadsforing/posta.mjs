@@ -31,6 +31,14 @@ const DATA = process.env.HV_LAN_URL ?? "https://halkvakt.se/data/lan.json";
 const META = process.env.HV_META_URL ?? "https://halkvakt.se/data/meta.json";
 const STRACKOR = process.env.HV_STRACKOR_URL ?? "https://halkvakt.se/data/strackor.json";
 const SVEPMALL = join(HERE, "svep-mall", "halkvakt-svep.html");
+// Textmallarna (DECISIONS #919): standardtexterna står i mallar.json, och admin.halkvakt.se kan skriva över dem i social_mallar.
+const MALLAR = JSON.parse(readFileSync(join(HERE, "mallar.json"), "utf8"));
+let EGNA = {};
+export const sattMallar = egna => { EGNA = egna ?? {}; };
+/** Mallens text med fälten ifyllda. Ett fält som inte finns står kvar som {namn}; admin släpper inte igenom okända fält. */
+export function m(nyckel, v = {}) {
+  return (EGNA[nyckel] ?? MALLAR[nyckel].text).replace(/\{(\w+)\}/g, (hel, k) => (k in v ? String(v[k]) : hel));
+}
 const RAW = "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg";
 const GRAPH = "https://graph.facebook.com/v23.0";
 
@@ -79,7 +87,7 @@ export function valjLan(lan) {
 
 export function rubrik(iso) {
   const h = timme(iso);
-  return h < 11 ? "Halt i morse" : h < 17 ? "Halt i dag" : "Halt i kväll";
+  return m(h < 11 ? "svep.rubrik.morgon" : h < 17 ? "svep.rubrik.dag" : "svep.rubrik.kvall");
 }
 
 export function rad(l) {
@@ -92,23 +100,17 @@ export function rad(l) {
 }
 
 // Facebook gör en hel adress klickbar i texten; Instagram gör inga länkar klickbara i texten, där pekar raden på profilens länk.
-const LANK = {
-  facebook: "Läget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan",
-  instagram: "Läget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.",
-};
+const LANK = kanal => m(`lank.${kanal}`);
 // Facebook får App Store-länken klickbar i varje inlägg; på Instagram ligger den först i profilen (DECISIONS #601).
-const APP = {
-  facebook: "Halkvakt säger till med rösten innan du är där. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784",
-  instagram: "Halkvakt säger till med rösten innan du är där. Gratis för iPhone, länken finns i vår profil.",
-};
+const APP = kanal => m(`app.${kanal}`);
 const lanTagg = l => "#" + l.kort.replace(/s? län$/, "").replace(/\s+/g, "");
 
 // Gemensam svans för alla inlägg: länk, app, källa och taggar.
 function svans(kanal, kalla, lanen) {
   // #halkvakt sist i varje inlägg, så att inläggen samlas under vårt namn (Axel 17/10, DECISIONS #622).
-  const taggar = ["#halka", "#väglag", ...lanen.map(lanTagg), "#halkvakt"];
+  const taggar = [...m("taggar.forst").split(/\s+/).filter(Boolean), ...lanen.map(lanTagg), ...m("taggar.sist").split(/\s+/).filter(Boolean)];
   // Bengts förslag 17/10 (DECISIONS #610): säg att vi är oberoende, så att ingen tror att inlägget kommer från Trafikverket.
-  return ["", LANK[kanal], APP[kanal], "", `Halkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från ${kalla}.`, "", [...new Set(taggar)].join(" ")];
+  return ["", LANK(kanal), APP(kanal), "", m("oberoende", { kalla }), "", [...new Set(taggar)].join(" ")];
 }
 
 export function bildtext(alla, generatedAt, kanal = "facebook", forsta = `Halkläget kl. ${tid(generatedAt)}, ${datumText(generatedAt)}.`) {
@@ -117,7 +119,7 @@ export function bildtext(alla, generatedAt, kanal = "facebook", forsta = `Halkl�
     forsta,
     "",
     ...valda.map(rad),
-    ...(fler ? [`Halka eller minusgrader även i ${fler} län till.`] : []),
+    ...(fler ? [m("fler", { antal: fler })] : []),
     ...svans(kanal, "Trafikverkets öppna data", valda),
   ].join("\n");
 }
@@ -189,16 +191,16 @@ function smhi(nu, lan, meta, historik, postat) {
   if (!ny) return null;
   const valda = valjLan(lan);
   const fler = varningar.length - 1;
-  const forsta = `SMHI har utfärdat en ${ny.niva.toLowerCase()} varning för ${ny.event.toLowerCase()} i ${ny.omrade}.` +
-    (fler ? ` Det finns ${fler} varning${fler === 1 ? "" : "ar"} till för snö eller halka.` : "");
+  const forsta = m("smhi.forsta", { niva: ny.niva.toLowerCase(), handelse: ny.event.toLowerCase(), omrade: ny.omrade }) +
+    (fler ? " " + m("smhi.fler", { varningar: `${fler} varning${fler === 1 ? "" : "ar"}` }) : "");
   const text = kanal => [
     forsta,
-    ...(valda.length ? ["", `Halkläget kl. ${tid(lan.generatedAt)}:`, ...valda.slice(0, MAX_LAN).map(rad)] : []),
+    ...(valda.length ? ["", m("smhi.lage", { tid: tid(lan.generatedAt) }), ...valda.slice(0, MAX_LAN).map(rad)] : []),
     ...svans(kanal, "SMHI och Trafikverkets öppna data", valda.slice(0, MAX_LAN)),
   ].join("\n");
   return {
     typ: "smhi", nyckel: nyckel(ny),
-    etikett: "SMHI-varning", rubrik: "Varning för väglaget", underrad: `Halkläget kl. ${tid(lan.generatedAt)}`,
+    etikett: m("smhi.etikett"), rubrik: m("smhi.rubrik"), underrad: m("smhi.underrad", { tid: tid(lan.generatedAt) }),
     varning: { niva: `${ny.niva} varning`, event: ny.event, omrade: ny.omrade, fler },
     lan: valda, text: text("facebook"), textIg: text("instagram"),
   };
@@ -210,20 +212,20 @@ function forstaGangen(nu, lan, meta, historik, postat) {
   const nar = { morgon: "I natt", lunch: "I dag", kvall: "I kväll" }[pass(nu)];
   const vad = nya.every(l => l.halt) ? "halka" : nya.every(l => !l.halt) ? "minusgrader på vägbanan" : "halka och minusgrader";
   const text = kanal => [
-    `${nar} kom höstens första ${vad} i ${lista(nya.map(l => l.kort))}.`,
+    m("forsta.forsta", { nar, vad, lan: lista(nya.map(l => l.kort)) }),
     "",
     ...nya.slice(0, MAX_LAN).map(rad),
     "",
-    "Kör efter väglaget, inte efter vanan.",
+    m("forsta.uppmaning"),
     ...svans(kanal, "Trafikverkets öppna data", nya.slice(0, MAX_LAN)),
   ].join("\n");
   const ett = nya.length === 1;
   return {
     typ: "forsta", nyckel: `forsta:${nya[0].kod}`, alla: nya.map(l => `forsta:${l.kod}`),
     ikon: vad === "minusgrader på vägbanan" ? "frys" : "halka",   // en ikon per fara (guiden, avsnitt 05)
-    etikett: "Höstens första",
-    rubrik: ett ? `Första ${vad === "halka" ? "halkan" : "minusgraderna"} i ${nya[0].kort}` : `Höstens första ${vad}`,
-    underrad: `${nar.toLowerCase()} · ${datumText(nu)}`,
+    etikett: m("forsta.etikett"),
+    rubrik: ett ? m("forsta.rubrik.ett", { vad: vad === "halka" ? "halkan" : "minusgraderna", lan: nya[0].kort }) : m("forsta.rubrik.flera", { vad }),
+    underrad: m("forsta.underrad", { nar: nar.toLowerCase(), datum: datumText(nu) }),
     lyft: ett ? { stort: nya[0].halt ? String(nya[0].halt) : String(nya[0].kalla), liten: nya[0].halt
       ? `av ${nya[0].vagavsnitt} vägavsnitt med halka`
       : "stationer med vägbanan under noll", fot: [
@@ -244,16 +246,16 @@ function forandring(nu, lan, meta, historik, postat) {
   if (!vaxt && nyaLan.length < NYA_LAN_MIN) return null;
   const valda = valjLan(lan);
   const text = kanal => [
-    `Trafikverket rapporterar halka på ${summa} vägavsnitt, mot ${summaForr} vid samma tid i går.`,
-    ...(nyaLan.length ? [`Ny halka sedan i går: ${lista(nyaLan.map(l => l.kort))}.`] : []),
+    m("forandring.forsta", { nu: summa, igar: summaForr }),
+    ...(nyaLan.length ? [m("forandring.nya", { lan: lista(nyaLan.map(l => l.kort)) })] : []),
     "",
     ...valda.slice(0, MAX_LAN).map(rad),
-    ...(valda.length > MAX_LAN ? [`Halka eller minusgrader även i ${valda.length - MAX_LAN} län till.`] : []),
+    ...(valda.length > MAX_LAN ? [m("fler", { antal: valda.length - MAX_LAN })] : []),
     ...svans(kanal, "Trafikverkets öppna data", valda.slice(0, MAX_LAN)),
   ].join("\n");
   return {
     typ: "forandring", nyckel: "forandring",
-    etikett: "Sedan i går", rubrik: "Halkan sprider sig", underrad: "vägavsnitt med halka, mot samma tid i går",
+    etikett: m("forandring.etikett"), rubrik: m("forandring.rubrik"), underrad: m("forandring.underrad"),
     lyft: { stort: `${summaForr} → ${summa}`, liten: nyaLan.length ? `ny halka i ${lista(nyaLan.map(l => l.kort))}` : "" },
     lan: valda, text: text("facebook"), textIg: text("instagram"),
   };
@@ -265,15 +267,15 @@ function kallaste(nu, lan, meta, historik, postat) {
   const l = lan.find(x => x.kort === k.kort);
   // En punktkälla: stationen och länet, aldrig ett avstånd (CLAUDE.md).
   const text = kanal => [
-    `${minus(k.yta)} °C på vägbanan vid ${k.namn} i ${k.kort} kl. ${tid(lan.generatedAt)}.`,
-    `Det är höstens kallaste vägbana hittills i Halkvakts mätningar. Förra lägsta var ${minus(forr.yta)} °C vid ${forr.namn}.`,
+    m("kallaste.forsta", { grader: minus(k.yta), station: k.namn, lan: k.kort, tid: tid(lan.generatedAt) }),
+    m("kallaste.andra", { forraGrader: minus(forr.yta), forraStation: forr.namn }),
     "",
     rad(l),
     ...svans(kanal, "Trafikverkets öppna data", [l]),
   ].join("\n");
   return {
     typ: "kallaste", nyckel: "kallaste",
-    etikett: "Höstens kallaste", rubrik: "Kallaste vägbanan i höst", underrad: `${k.namn}, ${k.kort} · kl. ${tid(lan.generatedAt)}`,
+    etikett: m("kallaste.etikett"), rubrik: m("kallaste.rubrik"), underrad: `${k.namn}, ${k.kort} · kl. ${tid(lan.generatedAt)}`,
     lyft: { stort: `${minus(k.yta)}°`, liten: "på vägbanan", fot: `Förra lägsta: ${minus(forr.yta)} °C vid ${forr.namn}` },
     lan: [l], text: text("facebook"), textIg: text("instagram"),
   };
@@ -303,14 +305,14 @@ function vecka(nu, lan, meta, historik, postat) {
   const nar = d => d === dag(nu) ? "i dag" : `i ${veckodag(d)}s`;
   const namnPa = kod => lan.find(l => String(l.kod) === String(kod))?.kort ?? "";
   const text = kanal => [
-    `Veckan på vägarna: halka rapporterades ${halka.length} av ${dagar.length} dagar.`,
-    ...(topp.halt ? [`Mest halka ${nar(topp.dag)}: ${topp.halt} vägavsnitt.`] : []),
-    ...(kall ? [`Kallast: ${minus(kall.kallast.yta)} °C på vägbanan vid ${kall.kallast.namn} (${namnPa(kall.kallast.kod)}) ${nar(kall.dag)}.`] : []),
+    m("vecka.forsta", { medHalka: halka.length, dagar: dagar.length }),
+    ...(topp.halt ? [m("vecka.topp", { nar: nar(topp.dag), vagavsnitt: topp.halt })] : []),
+    ...(kall ? [m("vecka.kallast", { grader: minus(kall.kallast.yta), station: kall.kallast.namn, lan: namnPa(kall.kallast.kod), nar: nar(kall.dag) })] : []),
     ...svans(kanal, "Trafikverkets öppna data", []),
   ].join("\n");
   return {
     typ: "vecka", nyckel: "vecka",
-    etikett: "Veckan i halka", rubrik: "Veckan på vägarna", underrad: `${halka.length} av ${dagar.length} dagar med halka`,
+    etikett: m("vecka.etikett"), rubrik: m("vecka.rubrik"), underrad: m("vecka.underrad", { medHalka: halka.length, dagar: dagar.length }),
     staplar: dagar, lan: [], text: text("facebook"), textIg: text("instagram"),
   };
 }
@@ -328,10 +330,10 @@ function svep(nu, lan, meta, historik, postat) {
   const hala = valda.filter(l => l.halt), halt = hala.reduce((s, l) => s + l.halt, 0);
   const lage = halt ? `halka på ${halt} vägavsnitt i ${hala.length} län` : `vägbanan under noll i ${valda.length} län`;
   const text = kanal => [
-    `Halkläget kl. ${tid(lan.generatedAt)}, ${datumText(nu)}: ${lage}. Svep för att se ditt län.`,
+    m("svep.forsta", { tid: tid(lan.generatedAt), datum: datumText(nu), lage }),
     "",
     ...visas.map(rad),
-    ...(fler ? [`Halka eller minusgrader även i ${fler} län till.`] : []),
+    ...(fler ? [m("fler", { antal: fler })] : []),
     ...svans(kanal, "Trafikverkets öppna data", visas.slice(0, MAX_LAN)),
   ].join("\n");
   return {
@@ -465,6 +467,13 @@ async function databas(fn) {
   try { return await fn(db); } finally { await db.end(); }
 }
 
+async function laddaMallar() {
+  const rader = await databas(async db => (await db.query("SELECT nyckel, text FROM social_mallar")).rows)
+    .catch(e => { console.log(`Textmallarna gick inte att läsa (${e.message}); standardtexterna gäller.`); return []; });
+  sattMallar(Object.fromEntries((rader ?? []).filter(r => r.nyckel in MALLAR).map(r => [r.nyckel, r.text])));
+  if (rader?.length) console.log(`Egna textmallar: ${rader.map(r => r.nyckel).join(", ")}.`);
+}
+
 // ---------- Stegen ----------
 
 const dir = join(HERE, "inlagg");
@@ -494,6 +503,7 @@ export function svepBilder(h, lan, str, nu) {
 
 async function bild(larm, bara_koll) {
   const nu = process.env.HV_NU || new Date().toISOString();
+  await laddaMallar();
   const postat = lasJson(postatPath, {});
   const d = await (await fetch(DATA, { cache: "no-store" })).json();
   const alder = timmarMellan(d.generated_at, nu);
@@ -574,9 +584,13 @@ async function vantaPaIg(id, token) {
 // the Instagram text up to its link line, cut by whole lines to fit 280 characters, and a short tail.
 const X_MAX = 280;
 export function textX(textIg) {
-  const rader = textIg.split("\n"), slut = rader.indexOf(LANK.instagram);
-  const kalla = textIg.match(/Siffrorna kommer från (.+)\./)?.[1] ?? "Trafikverkets öppna data";
-  const svansX = `\n\nOberoende, inte en del av Trafikverket. Siffrorna från ${kalla}. Appen och ditt län: länk i profilen.\n\n#halka #halkvakt`;
+  const rader = textIg.split("\n"), slut = rader.indexOf(LANK("instagram"));
+  // The source sits where {kalla} sits in the independence line, whatever that line says now.
+  // Its last sentence before {kalla} is enough ("Siffrorna kommer från {kalla}." with the standard text).
+  const [fore, efter = ""] = (EGNA.oberoende ?? MALLAR.oberoende.text).split("{kalla}");
+  const esc = x => x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const kalla = textIg.match(new RegExp(esc(fore.split(/(?<=[.!?])\s+/).pop()) + "(.+)" + esc(efter)))?.[1] ?? "Trafikverkets öppna data";
+  const svansX = "\n\n" + m("x.svans", { kalla });
   const kropp = [];
   for (const r of rader.slice(0, slut < 0 ? rader.length : slut)) {
     if ([...[...kropp, r].join("\n").trim() + svansX].length > X_MAX) break;
@@ -727,6 +741,7 @@ async function manuellX() {
 
 async function skicka() {
   const nu = process.env.HV_NU || new Date().toISOString();
+  await laddaMallar();   // the X text is cut and tailed here (textX)
   const postat = lasJson(postatPath, {});
   const namn = process.env.HV_NAMN || filnamn(nu, false);
   const fil = join(dir, `${namn}.json`);

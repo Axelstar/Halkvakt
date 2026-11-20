@@ -73,8 +73,10 @@ jobs:
       - name: Rita larmet
         if: steps.koll.outputs.har == 'ja'
         id: bild
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}   # textmallarna (DECISIONS #919)
         run: |
-          npm i --no-save --no-audit --no-fund playwright@1.47.2
+          npm i --no-save --no-audit --no-fund playwright@1.47.2 pg@8.13.0
           npx playwright install --with-deps chromium
           node marknadsforing/posta.mjs bild --live
 
@@ -99,7 +101,9 @@ jobs:
           X_API_SECRET: ${{ secrets.X_API_SECRET }}
           X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
           X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}   # textmallarna till X-texten (DECISIONS #919)
         run: |
+          npm i --no-save --no-audit --no-fund pg@8.13.0
           # Kvittot committas även när Instagram faller, annars postar nästa körning Facebook igen (17/10).
           fel=0; node marknadsforing/posta.mjs skicka || fel=$?
           git add marknadsforing/postat.json 2>/dev/null || true

@@ -18,6 +18,9 @@
 //                                       utkasten som väntar eller är slängda och inte har postats (Halkvakt sql/131, DECISIONS #918)
 // POST {del:"social", gor:"spara", namn, text, textIg} → ändrar texten i ett utkast som väntar
 // POST {del:"social", gor:"slang" | "angra", namn}     → slänger utkastet, eller tar tillbaka det, fram till passet
+// GET  ?del=textmallar                 (menyval social) → [{nyckel, text, andrad, andrad_av}] (Halkvakt sql/132, DECISIONS #919)
+// POST {del:"textmallar", gor:"spara", nyckel, text} → skriver över standardtexten i marknadsforing/mallar.json
+// POST {del:"textmallar", gor:"aterstall", nyckel}   → standardtexten gäller igen
 // POST {del:"start", kod, epost, losen} → det första kontot, en gång, mot engångskoden i admin_start. Kräver ingen inloggning.
 const SB = Deno.env.get("SUPABASE_URL")!;
 const SRK = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -253,6 +256,39 @@ async function andraUtkast(jag: Jag, d: Record<string, unknown>) {
   return rad ? svar({ klart: true }) : fel("utkastet går inte att ändra längre", 409);
 }
 
+// Halkvakt live's text templates (Halkvakt sql/132, DECISIONS #919). The standard texts and each template's declared fields live in
+// marknadsforing/mallar.json on main; a saved text may only use those fields, so posta.mjs never prints a stray {field}.
+const MALLAR_URL = "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/mallar.json";
+const MAX_MALL = 600;
+
+async function lasTextmallar() {
+  const r = await fetch(`${SB}/rest/v1/social_mallar?select=nyckel,text,andrad,andrad_av&order=nyckel.asc`, { headers: H });
+  return r.ok ? svar(await r.json()) : fel("kunde inte läsa mallarna", 500);
+}
+
+async function andraTextmall(jag: Jag, d: Record<string, unknown>) {
+  const mallar = await fetch(MALLAR_URL).then((r) => r.ok ? r.json() : null).catch(() => null) as
+    Record<string, { falt: Record<string, string> }> | null;
+  if (!mallar) return fel("standardtexterna gick inte att läsa", 500);
+  const nyckel = typeof d.nyckel === "string" && Object.hasOwn(mallar, d.nyckel) ? d.nyckel : "";
+  if (!nyckel) return fel("okänd mall", 400);
+  if (d.gor === "aterstall") {
+    const r = await fetch(`${SB}/rest/v1/social_mallar?nyckel=eq.${encodeURIComponent(nyckel)}`, { method: "DELETE", headers: H });
+    return r.ok ? svar({ klart: true }) : fel("kunde inte återställa", 500);
+  }
+  if (d.gor !== "spara") return fel("okänd åtgärd", 400);
+  const text = typeof d.text === "string" ? d.text.trim() : "";
+  if (!text) return fel("texten är tom", 400);
+  if (text.length > MAX_MALL) return fel(`högst ${MAX_MALL} tecken`, 400);
+  const okanda = [...text.matchAll(/\{(\w*)\}/g)].map((m) => m[1]).filter((f) => !Object.hasOwn(mallar[nyckel].falt, f));
+  if (okanda.length) return fel(`okänt fält: {${okanda[0]}}`, 400);
+  const r = await fetch(`${SB}/rest/v1/social_mallar?on_conflict=nyckel`, {
+    method: "POST", headers: { ...H, Prefer: "resolution=merge-duplicates" },
+    body: JSON.stringify({ nyckel, text, andrad: new Date().toISOString(), andrad_av: jag.epost }),
+  });
+  return r.ok ? svar({ klart: true }) : fel("kunde inte spara", 500);
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: CORS });
   try {
@@ -268,10 +304,12 @@ Deno.serve(async (req) => {
     if (!jag) return fel("inte inloggad", 401);
     const del = req.method === "POST" ? String(d.del ?? "") : (u.searchParams.get("del") ?? "");
     if (del === "jag" && req.method === "GET") return svar({ epost: jag.epost, menyval: jag.menyval });
-    if (!MENYVAL.includes(del)) return fel("okänd del", 400);
-    if (!jag.menyval.includes(del)) return fel("saknar behörighet", 403);
+    const meny = del === "textmallar" ? "social" : del;   // the text templates sit under Sociala medier
+    if (!MENYVAL.includes(meny)) return fel("okänd del", 400);
+    if (!jag.menyval.includes(meny)) return fel("saknar behörighet", 403);
     if (del === "statistik" && req.method === "GET") return await statistik(u);
     if (del === "anvandare") return req.method === "GET" ? await listaAnvandare() : await andraAnvandare(jag, d);
+    if (del === "textmallar") return req.method === "GET" ? await lasTextmallar() : await andraTextmall(jag, d);
     if (del === "social") return req.method === "GET" ? await lasUtkast() : await andraUtkast(jag, d);
     if (del === "mallar") return req.method === "GET" ? await lasMallar(u) : await andraMallar(jag, d);
     return fel("delen är inte byggd än", 404);
