@@ -18589,3 +18589,21 @@ Trafikverket börjar skriva inte kan stå i värdevaktens lista utan att någon 
 sidorna) och skuggmotor. `sql/129` körs med DB-knappen före deployen av publicera. Inget av det är gjort med beslutet.
 
 **Stomdokument:** APP — vilka ord som ger halka; SYS — motorn och snapshoten och vägens hala tid; MAT — värdevakten och facit på de gamla orden; BED §4.2
+
+## #916 (20/11 2026) Modden i facit: olycksfacits A1 följer med första appbygget, säsongsfacits F1 och KB-B står kvar i vinter (kort #673)
+
+**Beslut.** Bengt 20/11: *"gör 1 och 2 enligt rekommendation"*, på de fyra frågorna i bedömningen §4.2 om de kopior av halkorden som inte fick modd i #915.
+1. **Olycksfacits lager A1 och `halka_efter`** (sql/084, 085, 095, 096, 108, 110) får modd när det första appbygget med modden finns hos
+   förarna, alltså 0.4.1 (58) i App Store och i Google Play. Det görs med en ny migration och med datumet i olycksfacit, eftersom A1 ska
+   säga vad appen sa vid olyckan. Kort #673.
+2. **Säsongsfacits F1** (sql/099) behåller orden från 1/11 den här vintern, så att det som redan är räknat går att jämföra. Tröskeldokumentet
+   (TROSKLAR-SASONGSFACIT §3) säger *halka, is, snö och slask*. Skälet att koden ändå inte tar med modden står här, och F1 prövas igen
+   före nästa vinter.
+3. **KB-B:s facit** i efterhalkans uppspelning (sql/028) står kvar. Det är blindat, och Axel dömer i januari på de ord som gällde när
+   domen förbereddes.
+4. **Kartsajtens startsida** fick modden samma dag som publicera deployades (halkvakt-karta PR 35, 19610a08).
+
+**Alternativ.** Att låta alla facit följa motorn genast. Det hade räknat appen som varnande för modd innan något bygge med modden fanns,
+och ändrat två signerade mått mitt i vintern.
+
+**Stomdokument:** MAT 3 — olycksfacit och säsongsfacit, BED §4.2
