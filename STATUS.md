@@ -3407,3 +3407,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   steg, Din data under Integritet med *Radera min data*, och kommunen räknad i telefonen ur `data/kommuner/kommuner.json`. Bygget är
   0.4.1 (59). Ett App Store-bygge frågar inte och skickar inget. Notiserna och Android är inte byggda. Kommungränsernas licens är inte
   bekräftad. Inte prövat på en telefon.
+- 20/11 (Claude): **iPhone 0.4.1 (59) uppladdad till TestFlight** från main fa9031d (körning 44765599102; PR #1724 ihopslagen): platsdelningen
+  bara i TestFlight (DECISIONS #918, kort #674). Före uppladdningen: TestFlight-provet (44763704057, `ARCHIVE SUCCEEDED`) och ios-engine
+  (44765331686, 53 prov) gröna på grenen, och integritetssidan uppdaterad (halkvakt-karta PR 37, läst på halkvakt.se). Inte prövat på en telefon.
