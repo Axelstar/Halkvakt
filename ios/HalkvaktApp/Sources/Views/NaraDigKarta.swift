@@ -1,6 +1,9 @@
-// KARTAN NÄRA DIG (kort #659, DECISIONS #870, #873): Apples karta med farorna inom sex mil, på startsidan. Halkan är gula
-// streck längs vägen, de andra farorna gula punkter och fartkamerorna små grå prickar, så att de inte täcker resten. Utan
+// KARTAN NÄRA DIG (kort #659, DECISIONS #870, #873): Apples karta med det närmaste omkring föraren, på startsidan. Halkan är
+// gula streck längs vägen, de andra farorna gula punkter och fartkamerorna små grå prickar, så att de inte täcker resten. Utan
 // plats visas hela landet med bara halkan.
+// Utsnittet (DECISIONS #919, Axel 20/11): kartan når en och en halv gång så långt som den närmaste faran, minst en mil och
+// högst sex, i steg om fem kilometer. Finns ingen fara inom sex mil visas en och en halv mil omkring föraren. Listan under
+// kartan bär resten.
 //
 // Kartbilderna hämtas från Apple för det område som visas, så Apple får veta ungefär var föraren är när startsidan öppnas.
 // Halkvakt får ingenting. Kandidaten och småvägsrösten står inte på kartan, som i listan I närheten (Nearby).
@@ -25,20 +28,40 @@ struct NaraDigKarta: View {
     }
 
     var body: some View {
+        let radie = radieM
         // En stillbild i gråskala med egna märken (DECISIONS #876): halkan gul, kamerorna små grå prickar, platsen vit.
-        Kartbild(omrade: omrade,
+        Kartbild(omrade: omrade(radie),
                  streck: strackor.map(\.koord),
                  prickar: kameror.map(\.koord),
                  punkter: punkter,
                  plats: plats.map { CLLocationCoordinate2D(latitude: $0.lat, longitude: $0.lon) },
-                 nyckel: plats.map { String(format: "%.2f,%.2f", $0.lon, $0.lat) } ?? "landet",
-                 etikett: plats == nil ? "Karta över halkan i Sverige" : "Karta över farorna inom sex mil")
+                 nyckel: plats.map { String(format: "%.2f,%.2f,%d", $0.lon, $0.lat, Int(radie / 1000)) } ?? "landet",
+                 etikett: plats == nil ? "Karta över halkan i Sverige" : "Karta över det närmaste omkring dig")
     }
 
-    private var omrade: MKCoordinateRegion {
+    private static let minstRadieM = 10_000.0
+    private static let utanFaraRadieM = 15_000.0
+    private static let radieStegM = 5_000.0
+
+    /// Hur långt kartan når från föraren (DECISIONS #919). Fartkamerorna styr inte utsnittet: de finns överallt.
+    private var radieM: Double {
+        guard let plats else { return 0 }
+        let narmast = faror.compactMap { h -> Double? in
+            switch h {
+            case .kandidat, .smavag: return nil
+            case .point(_, let kind, _, _, _, _) where kind == .camera: return nil
+            default: return Nearby.distanceM(h, lon: plats.lon, lat: plats.lat)
+            }
+        }.min() ?? .infinity
+        guard narmast <= Nearby.maxM else { return Self.utanFaraRadieM }
+        let steg = (1.5 * narmast / Self.radieStegM).rounded(.up) * Self.radieStegM
+        return min(Nearby.maxM, max(Self.minstRadieM, steg))
+    }
+
+    private func omrade(_ radie: Double) -> MKCoordinateRegion {
         if let plats {
             return MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: plats.lat, longitude: plats.lon),
-                                      latitudinalMeters: 2.3 * Nearby.maxM, longitudinalMeters: 2.3 * Nearby.maxM)
+                                      latitudinalMeters: 2.3 * radie, longitudinalMeters: 2.3 * radie)
         }
         return MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 62.5, longitude: 16.5),
                                   span: MKCoordinateSpan(latitudeDelta: 16, longitudeDelta: 16))

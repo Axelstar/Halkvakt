@@ -18681,3 +18681,22 @@ brytare i Inställningar: Axel avvisade en brytare för Planera resa 14/11, och 
 omvända geokodning i stället för en egen tabell: skickar positionen till Apple vid varje uppslag.
 
 **Stomdokument:** APP 7 — platsdelningen i testbygget; BED §4.2
+
+## #919 (20/11 2026) Kartan Nära dig zoomar in på det närmaste, och en avbruten hämtning får inte skriva över bilden (kort #659)
+
+**Beslut** (Axel 20/11, om startsidan i 0.4.1 (59): *"Detta ser väldigt dumt ut så detta måste vi få mycket mer inzoomat"*).
+- **Utsnittet följer den närmaste faran.** Kartan når en och en halv gång så långt från föraren som den närmaste faran, minst en mil
+  och högst sex, i steg om fem kilometer. Finns ingen fara inom sex mil visas en och en halv mil omkring föraren. Fartkamerorna styr
+  inte utsnittet. Förut visades alltid sex mil åt varje håll (#873, #876), och en fara sju kilometer bort låg då mitt i en bild över
+  halva länet. Listan under kartan bär de faror som hamnar utanför bilden, som förut.
+- **Felet i Axels inspelning** var större än så: kartan visade hela Nordeuropa fast platsen fanns. Bilden över hela landet hämtas
+  innan platsen kommit, och den nya hämtningen för platsen startar när den kommer. Blev den första klar sist skrev den över den nya.
+  En avbruten hämtning kastas nu. Orsaken är läst ur koden och inspelningen, inte återskapad på en telefon.
+- **Texten under Integritet i testbygget** nämner nu platsdelningen bredvid betatestet (#918), utan långt tankstreck.
+
+Bygget är 0.4.1 (60).
+
+**Alternativ.** Alltid en mil: en fara två mil bort syns då inte alls. De tre närmaste i bild: i Axels fall två och en halv mil, fortfarande
+långt utzoomat.
+
+**Stomdokument:** APP 4 — kartan Nära dig
