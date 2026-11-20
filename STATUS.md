@@ -3469,3 +3469,5 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   provrad och läs VEM den gick till innan något sägs vara i drift.
 - 20/11 (Claude): **Notisens tryck prövat på Axels telefon i 0.4.1 (66)** (DECISIONS #926; Axels ord): provvarningen visades med appen
   öppen, ett tryck från Inställningar öppnade startsidan, och ett tryck på proverbjudandet (utskick 9) öppnade bladet och länken.
+- 20/11 (Claude): **Ett erbjudande med appen öppen läggs i notiscentret** (DECISIONS #927, kort #674). Bygget är 0.4.1 (67), inte
+  uppladdat: det följer med nästa uppladdning. Axel säger att den andra telefonen som fick de tre proven också var hans.
