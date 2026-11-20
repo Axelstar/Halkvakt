@@ -232,7 +232,7 @@ export type Halt = "halt" | "inte halt";
 export const VAGLAGSORD: Record<string, Halt> = {
   "torrt": "inte halt", "våt": "inte halt", "fläckvis våt": "inte halt", "fläckvis torrt": "inte halt",
   "is": "halt", "fläckvis is": "halt", "is med bart i hjulspår": "halt", "fläckvis is med bart i hjulspår": "halt",
-  "lössnö": "halt", "fläckvis lössnö": "halt", "packad snö": "halt", "fläckvis packad snö": "halt",
+  "lössnö": "inte halt", "fläckvis lössnö": "halt", "packad snö": "halt", "fläckvis packad snö": "halt",
   "moddig vägbana": "halt", "fläckvis moddig vägbana": "halt", "moddsträngar": "halt", "fläckvis moddsträngar": "halt",
 };
 /** What the engine does with a road-state word on its own (code 1): the same test as engine.ts evaluateSegment. */
