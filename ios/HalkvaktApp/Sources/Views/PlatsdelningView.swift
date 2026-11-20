@@ -73,21 +73,17 @@ struct PlatsErbjudandenInnehall: View {
 
     var body: some View {
         MonoLabel(text: "Valfritt", size: 11)
-        Text("Vill du ha erbjudanden för ditt län?")
+        Text("Vill du ha erbjudanden nära dig?")
             .font(Typo.sans(32, .semibold)).tracking(-0.8).foregroundStyle(Brand.text).padding(.top, 12)
-        Text("Till exempel däckbyte eller försäkring från företag nära dig. Halkvakt fungerar lika bra utan.")
+        Text("Rabatter och tips från våra partner, utvalda för där du bor.")
             .font(Typo.sans(15)).lineSpacing(3).foregroundStyle(Brand.text2).padding(.top, 12)
         VStack(spacing: 10) {
-            PlatsVal(titel: "Ja, skicka erbjudanden", text: "Högst två i månaden. Aldrig när du kör.", vald: erbjudanden == true) { erbjudanden = true }
+            PlatsVal(titel: "Ja tack", text: "Aldrig när du kör.", vald: erbjudanden == true) { erbjudanden = true }
             PlatsVal(titel: "Nej tack", text: "Bara varningar", vald: erbjudanden == false) { erbjudanden = false }
         }
         .padding(.top, 24)
-        RowPanel {
-            ReceiptRow(label: "Från", value: "Företag som betalar Halkvakt")
-            ReceiptRow(label: "De får", value: "Aldrig veta vem eller var du är")
-            ReceiptRow(label: "Ändra", value: "När du vill, under Integritet", divider: false)
-        }
-        .padding(.top, 14)
+        Text("Våra partner får aldrig veta vem eller var du är. Du kan ändra dig under Integritet.")
+            .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2).padding(.top, 18)
     }
 }
 
@@ -131,7 +127,7 @@ struct DinDataView: View {
                 RowPanel {
                     ReceiptRow(label: "Kommun", value: plats.kommunNamn ?? "Inte läst än")
                     ReceiptRow(label: "Skickad", value: plats.skickad?.dagOchKlockslag ?? (plats.sandningFel ? "Gick inte, försöker igen" : "Inte än"))
-                    GreenToggleRow(title: "Erbjudanden", sub: "Högst två i månaden. Aldrig när du kör.", isOn: $plats.erbjudanden)
+                    GreenToggleRow(title: "Erbjudanden", sub: "Från våra partner. Aldrig när du kör.", isOn: $plats.erbjudanden)
                 }
                 Text("Det här är allt vi har sparat om den här telefonen. \(Platsord.nyttLofte)")
                     .font(Typo.sans(13)).lineSpacing(3).foregroundStyle(Brand.dim).padding(.top, 12).padding(.horizontal, 4)

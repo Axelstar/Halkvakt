@@ -18780,3 +18780,23 @@ oförändrad: ett enskilt fall anförs aldrig utan säsongens andel bredvid.
 **Alternativ.** En egen läsning i panelen när frågan kommer, utan ärende. Det hade inte synts vecka för vecka.
 
 **Stomdokument:** MAT 3 — olycksfacits veckoärende
+
+## #923 (20/11 2026) Frågan om erbjudanden lovar inget antal, och texten är kortare (kort #674)
+
+**Beslut** (Axel 20/11, om steget i 0.4.1 (63): *"I really dont undestand the text here, why are we so open about what it might be?"*,
+och om antalet: *"No number, just Aldrig när du kör. I would just do this one"*).
+- **Texten.** Rubriken *Vill du ha erbjudanden nära dig?*, raden *Rabatter och tips från våra partner, utvalda för där du bor.*,
+  valen *Ja tack* (*Aldrig när du kör.*) och *Nej tack* (*Bara varningar*), och under dem *Våra partner får aldrig veta vem eller var
+  du är. Du kan ändra dig under Integritet.* Exemplen (däckbyte, försäkring), orden *företag som betalar Halkvakt* och panelen med
+  tre rader är borta. Det som reglerna kräver står kvar: att det är erbjudanden, att inget är förvalt, att nejet inte kostar något
+  och att valet går att ändra.
+- **Inget antal lovas.** Skärmen sade *Högst två i månaden* (#917). Löftet är struket ur appen. Hur ofta erbjudanden skickas bestäms
+  när utskicket byggs. *Aldrig när du kör* står kvar som löfte. Inga erbjudanden skickas än.
+- **Nära dig i stället för ditt län:** det som sparas är kommunen, och orden lovar varken län eller kommun.
+
+Bygget är 0.4.1 (64), inte uppladdat när beslutet skrivs. integritet.html nämner inget antal och ändras inte.
+
+**Alternativ.** Behålla taket på två i månaden, eller en i veckan: ett tak skyddar varningarna mot att föraren stänger av notiserna
+för hela appen, men binder oss vid ett tal som bara kan höjas genom att fråga igen. Axel valde friheten.
+
+**Stomdokument:** APP — valet om erbjudanden i platsdelningen

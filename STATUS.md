@@ -3441,3 +3441,5 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   förregistreringen (§10 a)* under `k-radar` stod som saknas sedan 26/10, fast talet lästes den dagen: R = 0,1 mm/h, och sql/069
   migrerades (STATUS 26/10, DECISIONS #725, #726). Steget är klart med det beviset; motorns steg säger 0,1 i stället för 0,5, och
   delens saknas-rad är nederbördstypen ovanpå radarn (kort #45).
+- 20/11 (Claude): **Frågan om erbjudanden har ny, kortare text och lovar inget antal** (DECISIONS #923, kort #674; Axels ord). Bygget
+  är 0.4.1 (64), inte uppladdat: det följer med nästa uppladdning.
