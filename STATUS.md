@@ -3424,3 +3424,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 20/11 (Claude; Axel: *"bör inte detta vara ett steg i onboardingen?"* och ja till CarPlay i samma bygge): **Frågan om kommunen är ett
   steg i introduktionen, och CarPlay är påslaget igen** (DECISIONS #921). Bygget är 0.4.1 (62). Main bär nu CarPlay, så brytaren ska
   ses över före nästa inlämning till App Store. Inte prövat på en telefon eller i en bil.
+- 20/11 (Claude): **iPhone 0.4.1 (62) uppladdad till TestFlight** från main 49cd8d2 (körning 44776658022, `EXPORT SUCCEEDED`; PR #1729
+  ihopslagen): frågan om kommunen som steg i introduktionen och CarPlay påslaget igen (DECISIONS #921). Före: TestFlight-provet
+  (44775137656) grönt på grenen. Inte prövat på en telefon eller i en bil.
