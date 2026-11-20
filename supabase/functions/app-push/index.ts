@@ -30,7 +30,7 @@ async function jwt(): Promise<string> {
 Deno.serve(async (req) => {
   if (req.method !== "POST") return svar(405, { fel: "bara POST" });
   try {
-    const oppna = await sql`SELECT id, slag, enhet, kommun, lan, rubrik, text FROM push_utskick WHERE klar IS NULL ORDER BY id LIMIT 5`;
+    const oppna = await sql`SELECT id, slag, enhet, kommun, lan, rubrik, text, partner, lank FROM push_utskick WHERE klar IS NULL ORDER BY id LIMIT 5`;
     if (oppna.length === 0) return svar(200, { utskick: 0 });
     const token = await jwt();
     const ut: unknown[] = [];

@@ -1,9 +1,11 @@
 // APP-PUSH, reglerna (DECISIONS #924). Ren kod utan import, så att den prövas i test/app-push.test.ts.
-export type Utskick = { slag: "prov" | "varning" | "erbjudande"; rubrik: string; text: string };
+export type Utskick = { slag: "prov" | "varning" | "erbjudande"; rubrik: string; text: string; partner?: string | null; lank?: string | null };
 
-// Det Apple tar emot. Ingenting om föraren: bara rubriken och texten, som är desamma för alla i utskicket.
+// Det Apple tar emot. Ingenting om föraren: rubriken, texten och slaget, som är desamma för alla i utskicket. Slaget säger
+// appen vad ett tryck öppnar (DECISIONS #926), och ett erbjudande bär också partnerns namn och länk till bladet i appen.
 export function apnsKropp(u: Utskick): string {
-  return JSON.stringify({ aps: { alert: { title: u.rubrik, body: u.text }, "thread-id": `halkvakt.${u.slag}` } });
+  const erbj = u.slag === "erbjudande" ? { partner: u.partner, lank: u.lank } : {};
+  return JSON.stringify({ aps: { alert: { title: u.rubrik, body: u.text }, "thread-id": `halkvakt.${u.slag}` }, slag: u.slag, ...erbj });
 }
 
 // En notisadress som Apple säger är död tas bort ur app_enhet. Allt annat är ett fel hos oss eller hos Apple, och adressen står kvar.
