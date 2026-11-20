@@ -3457,6 +3457,9 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 20/11 (Claude): **iPhone 0.4.1 (66) uppladdad till TestFlight** från main af39408 (körning 44811855745; den första, 44811437474,
   föll i exporten på *The network connection was lost*; PR #1741 ihopslagen). sql/132 körd (dbknapp 44811311754) och `app-push`
   deployad (44811433609). Notisens tryck och bladet för erbjudanden (DECISIONS #926) är inte prövade på en telefon.
+- 20/11 (Claude; Bengt: *"Ja, och deploya"*): **Överlappet i olycksfacit i drift** (DECISIONS #925). PR #1733 sammanslagen som
+  b2d8e8b0; funktionen olycksfacit deployad 17.52 UTC (deploy-supabase 44787291291 ur b2d8e8b0). Beviset är veckoärendet 2026-V47
+  måndag 23/11 (frist olycksfacit-overlappet-2026-11-23): en körning med ?torrt=1 kräver nyckeln och görs inte härifrån.
 - 20/11 kväll (Claude; Bengt: *"Jag tycker att kartan ska rita punkterna"*): **Livekartan ritar storstädernas punkter** (DECISIONS #927). `publish/map-core.ts`
   lägger varje varnande stadspunkt som en punkt i `kandidat.geojson`, och halkvakt-karta ritar dem i Prognos-färgen. Provat i
   webbläsarpanelen mot en kopia av kvällens data med stadspunkterna inlagda (107 ritade i vyn, knappen slår av och på). Kvar:
