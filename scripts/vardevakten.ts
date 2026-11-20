@@ -232,13 +232,19 @@ export const ORD: Record<string, { ord: string[]; not: string }> = {
   // Trafikverkets egna fält på väglaget (sql/116, DECISIONS #897): textlistor, ett ord per element. Orden är de som fanns 17/11
   // (#890, 818 sträckor). Rutan visar dem ordagrant, så ett ord utanför listan ska läsas av en människa innan det står kvar där.
   // Åtgärden (trv_atgard) är fri text med tidsfönster och ingen kodlista.
-  trv_varning: { ord: ["risk för halka", "hal vägbana", "snörök"], not: "Trafikverkets varning på sträckan (Warning). Visas ordagrant, avgör inget" },
+  // Snödrev kom 20/11 (värdevakten 44692577425, läst ur driften 44695667709; Bengt 20/11: "De okända orden bör läggas till i ordlistan").
+  trv_varning: { ord: ["risk för halka", "hal vägbana", "snörök", "snödrev"], not: "Trafikverkets varning på sträckan (Warning). Visas ordagrant, avgör inget" },
   // Snöfall och smältvatten kom redan den första timmen i drift (17/11 kl. 15 UTC): listan från morgonen var inte hela ordförrådet.
-  trv_orsak: { ord: ["regn", "fallande temperatur", "frost", "snöfall", "smältvatten"], not: "Trafikverkets orsak till väglaget (Cause). Visas ordagrant, avgör inget" },
+  // Underkylt regn kom 20/11, samma läsning som Snödrev.
+  trv_orsak: { ord: ["regn", "fallande temperatur", "frost", "snöfall", "smältvatten", "underkylt regn"], not: "Trafikverkets orsak till väglaget (Cause). Visas ordagrant, avgör inget" },
   // The road state's word list, where the rule and K2a in the moisture shadow read Våt (sql/091, sql/127; halkvakt-kuvos F74 §5). Only the
-  // words the repo has seen in the archive are here (docs/TILL-AXEL-HALKORDEN.md, 21/2–25/8 2026). The winter's words have not been read
-  // from here: each one is an OKÄNT ORD until a person has read it in the value guard's output and added it.
-  condition_info: { ord: ["torrt", "våt", "fläckvis våt", "fläckvis torrt"],
+  // words the repo has seen in the archive are here (docs/TILL-AXEL-HALKORDEN.md, 21/2–25/8 2026), and since 20/11 the winter's words: the
+  // value guard 44692577425 named them as OKÄNT ORD, and every distinct word in road_conditions and 60 days of road_condition_history was
+  // read from drift (DB-knappen 44695667709; Bengt 20/11: "De okända orden bör läggas till i ordlistan"). The winter's words are ice,
+  // snow and slush. They are declared here only so that the field passes the guard: the rule and K2a still read Våt alone.
+  condition_info: { ord: ["torrt", "våt", "fläckvis våt", "fläckvis torrt",
+    "is", "fläckvis is", "is med bart i hjulspår", "fläckvis is med bart i hjulspår", "lössnö", "fläckvis lössnö",
+    "packad snö", "fläckvis packad snö", "moddig vägbana", "fläckvis moddig vägbana", "moddsträngar", "fläckvis moddsträngar"],
     not: "Trafikverkets väglagsord på sträckan (ConditionInfo), en textlista. Våt är fukten i regeln och i fuktskuggans K2a; fläckvis Våt räknas inte" },
   // The moisture shadow's own codes (sql/127). The areas and layers are the four switches in sql/089.
   status: { ord: ["räknad", "tyst", "av"], not: "fuktskuggans körning: räknad, tyst (kandidatens timme saknas) eller av (alla brytare av)" },
@@ -418,7 +424,12 @@ if (korsSjalv && process.argv.includes("--sjalvtest")) {
   k("ett ord utanför listan fälls", domaOrd(o("precipitation", [["no", 9000], ["hail", 3]])).utfall, "OKÄNT ORD");
   k("väglagsklassens ord passerar", domaOrd(o("condition_text", [["Normalt", 600], ["Besvärligt (risk för)", 180]])).utfall, "OK");
   k("Trafikverkets varningar från 17/11 passerar", domaOrd(o("trv_varning", [["Risk för halka", 154], ["Hal vägbana", 2], ["Snörök", 1]])).utfall, "OK");
-  k("en varning som inte har setts förut fälls", domaOrd(o("trv_varning", [["Risk för halka", 154], ["Snödrev", 4]])).utfall, "OKÄNT ORD");
+  k("en varning som inte har setts förut fälls", domaOrd(o("trv_varning", [["Risk för halka", 154], ["Översvämning", 4]])).utfall, "OKÄNT ORD");
+  k("vinterns varning och orsak 20/11 passerar", domaOrd(o("trv_varning", [["Risk för halka", 154], ["Snödrev", 9]])).utfall === "OK"
+    && domaOrd(o("trv_orsak", [["Snöfall", 142], ["Underkylt regn", 16]])).utfall === "OK", true);
+  k("vinterns väglagsord 20/11 passerar", domaOrd(o("condition_info", [["Våt", 431], ["fläckvis Is med bart i hjulspår", 55], ["Lössnö", 145],
+    ["fläckvis Moddsträngar", 64], ["Packad snö", 20]])).utfall, "OK");
+  k("ett väglagsord utanför listan fälls", domaOrd(o("condition_info", [["Våt", 431], ["Spårslitage", 12]])).utfall, "OKÄNT ORD");
   k("Trafikverkets orsaker från 17/11 passerar", domaOrd(o("trv_orsak", [["Fallande temperatur", 71], ["Regn", 34], ["Frost", 18], ["Snöfall", 14], ["Smältvatten", 1]])).utfall, "OK");
   k("odeklarerad kodlista är obesiktigad", domaOrd(o("ny_kodlista_2027", [["a", 9000]])).utfall, "OBESIKTIGAT");
   k("för få rader ger ingen dom för en ordlista", domaOrd(o("precipitation", [["hail", 3]])).utfall, "–");

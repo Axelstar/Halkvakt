@@ -3369,3 +3369,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   självtestet grönt, stannade vid datumspärren. Fristerna `stadsmiljon-marsfonstret` och `stadsmiljon-domsteget` klara och borttagna.
   Värdevakten fann också, utanför byggena: radarns `rate_max_mmh` 205,05 över 200 mm/h i radar_precip och radar_smavag, en byvind
   83,5 över 60 m/s, och okända ord i väglaget (bland annat *fläckvis Is med bart i hjulspår*, *Lössnö*, *Underkylt regn*).
+- 20/11 (Claude; Bengt: *"De okända orden bör läggas till i ordlistan"*): **Vinterns ord i värdevaktens ordlistor.** Väglaget (condition_info) får
+  tolv ord om is, snö och modd, varningen *snödrev* och orsaken *underkylt regn*, lästa ur driften (DB-knappen 44695667709). Regeln och
+  K2a läser fortfarande bara *Våt*. Radarns rate_max_mmh (spärrad sedan #134, #161) och byvinden (de nio trasiga givarna, #166,
+  anmälda) är kända: inget i driften läser dem som tröskel.
