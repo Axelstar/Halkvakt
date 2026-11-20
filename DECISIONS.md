@@ -18824,3 +18824,24 @@ Bygget är 0.4.1 (65).
 skicka till alla. Firebase också för iPhone: ett led till som får adresserna, utan nytta förrän Android byggs.
 
 **Stomdokument:** APP — notisadressen i platsdelningen; SYS — tabellen push_utskick och funktionen app-push
+
+## #926 (20/11 2026) Vad ett tryck på en notis öppnar, och varningar visas också med appen öppen (kort #674)
+
+**Beslut** (Axel 20/11, efter provnotisen: *"When i click on it, where should i be taken then?"*, och till förslaget: *"i think all
+make sense"*).
+- **Varningen och provet** öppnar startsidan med kartan *Nära dig*. Där står det varningen gällde, och *Starta vakten* är ett tryck bort.
+- **Erbjudandet** öppnar ett blad i appen: *Erbjudande från* och partnerns namn, notisens rubrik och text, och knappen *Visa
+  erbjudandet*, som öppnar partnerns länk i webbläsaren. Föraren ser vad det är innan appen lämnas, och bladet säger att det är ett
+  erbjudande och från vem. Under körning öppnas inget blad.
+- **En varning från servern visas också när appen är öppen.** Provet 20/11 visade att den första notisen kastades: appen har alltid
+  tigit i förgrunden, eftersom dess egna bannrar är till för när den ligger bakom kartan. Ett erbjudande visas fortfarande inte då.
+- **Utskicket bär slaget** till appen, och ett erbjudande bär partnerns namn och en https-länk (sql/132). Inget annat slag får bära dem.
+- **Halkvakt skickar ingenting om föraren till partnern.** Länken öppnas som vilken länk som helst, så partnern ser ett besök men
+  inte från vem.
+
+Bygget är 0.4.1 (66). Inte byggt: räkningen av hur många som såg och öppnade ett erbjudande, och att den fara varningen gäller
+väljs på kartan.
+
+**Alternativ.** Länken direkt ur notisen: föraren hamnar hos partnern utan att ha sett att det var ett erbjudande eller från vem.
+
+**Stomdokument:** APP — notisens tryck och bladet för erbjudanden; SYS — slaget och partnerns länk i push_utskick

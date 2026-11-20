@@ -3452,3 +3452,5 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 20/11 (Claude): **Provnotisen nådde Axels telefon** (DECISIONS #924, kort #674): bygge 0.4.1 (65) sparade notisadressen, raden i
   `push_utskick` gav `skickade 1, fallna 0` hos Apple, och Axel bekräftade notisen på låsskärmen. Den första, skickad medan appen
   var öppen, visades inte: appen kastar notiser i förgrunden. Fyra val står i bedömningens §4.2 innan något skickas till förare.
+- 20/11 (Claude): **Notisens tryck och bladet för erbjudanden** (DECISIONS #926, kort #674): varningen öppnar startsidan och visas
+  också med appen öppen, erbjudandet öppnar ett blad med partnerns namn och länk; sql/132. Bygget är 0.4.1 (66).
