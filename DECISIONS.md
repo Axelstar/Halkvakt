@@ -19005,3 +19005,20 @@ då går resans mål till den tjänsten, vilket är ett nytt löfte och ett stö
 att en sträcka heter hal efter andel (väg b i #932): kräver en gräns och en ändring i rapporten på tre språk.
 
 **Stomdokument:** APP — skärmen Planerad resa och kartan på startsidan
+
+## #934 (21/11 2026) Planerad resa: en sträcka som bara är våt säger det (kort #659)
+
+**Beslut** (Axel 21/11, efter inspelningen av 0.4.1 (71): *"Ja gör det"*). Fyra av sju sträckor Malmö till Östermalm hade
+underraden *Halt väglag rapporterat.* i stället för sorten av halka. Skälet står i datat: i live.json 21/11 00.45 var 111 av
+367 sträckor i Trafikverkets väglag besvärliga (kod 2, sex med kod 3) med bara orden *Våt*, *fläckvis Våt* eller *Torrt*.
+Motorn räknar dem som halt, för regeln är kod 2 eller högre eller ett halkord. Underraden säger nu *Vått. Besvärligt väglag
+enligt Trafikverket.* när sträckans rader inte bär något annat ord; finns ett vinterord står det ordet som förut.
+
+Rubriken *Halt på 2 ställen* och den gula pricken står kvar för en sådan sträcka. Om en våt väg med kod 2 ska heta halt, på
+skärmen och i rösten, är en fråga om motorns regel och står i bedömningens §4.2 för Bengt.
+
+Bygget är 0.4.1 (72).
+
+**Alternativ.** Räkna inte de våta sträckorna som halka på den här skärmen: då säger skärmen och rösten olika saker om samma väg.
+
+**Stomdokument:** APP — skärmen Planerad resa

@@ -156,6 +156,8 @@ public enum Resstrackor {
     }
 
     /// Sorterna av halka på sträckan i en mening: "Fläckvis is och moddsträngar." Ett ord är fläckvis bara när varje rad säger det.
+    /// Säger raderna bara vått står det: omkring var tredje sträcka i Trafikverkets väglag är besvärlig (kod 2) med bara det
+    /// ordet (mätt i live.json 21/11, 111 av 367, DECISIONS #934).
     static func sorter(_ rader: [RapportRad]) -> String {
         var funna: [String: (ordning: Int, text: String, flackvis: Bool)] = [:]
         for o in rader.filter({ $0.slag == .halka }).flatMap({ ord($0.text) }) where bredvidord[o.ord] == nil && o.ord != utanOrd {
@@ -165,7 +167,11 @@ public enum Resstrackor {
         // Is med bart i hjulspåren är också is: står båda räcker ordet is.
         if funna["is"] != nil { funna["is med bart i hjulspåren"] = nil }
         let delar = funna.values.sorted { ($0.ordning, $0.text) < ($1.ordning, $1.text) }.map { "\($0.flackvis ? "fläckvis " : "")\($0.text)" }
-        guard let sista = delar.last else { return "Halt väglag rapporterat." }
+        guard let sista = delar.last else {
+            let vatt = rader.filter { $0.slag == .halka }.flatMap { ord($0.text) }.filter { $0.ord == "våt" }
+            guard !vatt.isEmpty else { return "Halt väglag rapporterat." }
+            return "\(vatt.allSatisfy(\.flackvis) ? "Fläckvis vått" : "Vått"). Besvärligt väglag enligt Trafikverket."
+        }
         let mening = delar.count == 1 ? sista : delar.dropLast().joined(separator: ", ") + " och " + sista
         return mening.prefix(1).uppercased() + mening.dropFirst() + "."
     }
