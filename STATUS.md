@@ -3480,3 +3480,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 20/11 (Claude): **Planerad resa har ny skärm** (DECISIONS #930, kort #659; Axels ritning): domen överst, vägen på Sveriges kontur,
   resans sträckor i körordning (`Resstrackor` i motorpaketet, med prov), Natural Earth för kontur och orter. Fliken *När du kör*
   byggs inte förrän det finns en prognos per sträcka. Bygget är 0.4.1 (68).
+- 20/11 (Claude): **iPhone 0.4.1 (68) uppladdad till TestFlight** från main 4c0362f (körning 44822287242, `EXPORT SUCCEEDED`; PR #1750
+  ihopslagen): den nya skärmen för en planerad resa (DECISIONS #930) och erbjudandet i notiscentret (#927). **Certifikatstädningen
+  (#929) fungerade i sin första körning:** *3 före, 4 efter bygget, 1 återkallade*. Den nya skärmen är inte prövad på en telefon.
