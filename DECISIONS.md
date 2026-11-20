@@ -18088,6 +18088,24 @@ kolumnnamnet och inte tabellen, och värdevakten läser inte jsonb.
 
 **Stomdokument:** MAT säsongsfacit, BED §4.2
 
+## #905 (19/11 2026) Statistikens flikar Appen och Annonser tillbaka: besok_stat får sina nycklar igen (sql/125, kort #670)
+
+**Fyndet.** `sql/118` (DECISIONS #900, körd 18/11 med DB-knappen, 44399484171) skrev om `besok_stat` utifrån 075 för att ta bort
+listan `tyngsta`. 075 är äldre än 076, 077 och 102, som lade in nycklarna `apple_ads`, `appen` och `annonstratten` genom att läsa
+funktionens definition ur databasen, så omskrivningen tog bort dem. Sedan 18/11 kväll får statistik.html inga data till flikarna
+Appen och Annonser (`ritaAds(d.apple_ads)`, `ritaAppen(d.appen)`). Återskapat i en lokal Postgres 16 med 067–102, 118 och 119:
+alla fyra nycklarna före 118, ingen efter.
+
+**Beslut.** `sql/125` lägger in de tre nycklarna efter `'genererad'` på samma sätt som 076, 077 och 102, bara om definitionen
+saknar dem och funktionen finns; en andra körning gör ingenting. `tyngsta` kommer inte tillbaka. Provet
+`test/besok-stat-nycklar.test.ts` fäller en migration som skriver om `besok_stat` utan nycklarna, om ingen senare migration lägger
+tillbaka dem (fälls utan 125, grönt med). Migrationen körs med DB-knappen efter sammanslagningen.
+
+**Alternativ.** Skriva in nycklarna i 118: den är redan körd, och en ändrad körd migration syns inte i databasen. Skriva om
+`besok_stat` hel i 125: dubblerar 118:s kropp och gör nästa omskrivning lika lätt att missa.
+
+**Stomdokument:** inga — rättar en regression i statistikens dataväg, ingen ändring av vad som mäts eller visas
+
 ## #906 (19/11 2026) Svartis och rimfrost i kuvösens skugga: förregistreringen signerad, och givarvakten i TROSKLAR-RIMFROST §3 gäller rösten (körlistan C7, kort #656)
 
 **Beslut.** Bengt 19/11: *"allt ok utom 2 som ska vara b) och del B 1 som ska vara samma"*, och för Axel: *"Ja, fortsätt så, Axel signerar också"*. Förregistreringen för svartis och rimfrost är
