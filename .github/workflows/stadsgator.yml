@@ -1,0 +1,34 @@
+# STADENS GATOR — TILLFÄLLIG REKOGNOSERING PÅ GRENEN (tas bort innan PR:en är klar).
+name: stadsgator
+on:
+  push:
+    branches: [claude/stadens-linjer]
+    paths: [.github/workflows/stadsgator.yml]
+permissions:
+  contents: read
+concurrency: { group: stadsgator, cancel-in-progress: false }
+jobs:
+  hamta:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      NODE_EXTRA_CA_CERTS: ${{ github.workspace }}/ingest/ca/telia-rsa-tls-root-ca-v3.pem
+    steps:
+      - uses: actions/checkout@v4
+      - name: Telias rot, fingeravtrycket
+        run: |
+          openssl x509 -in ingest/ca/telia-rsa-tls-root-ca-v3.pem -noout -fingerprint -sha256 \
+            | grep -qx 'sha256 Fingerprint=D1:3D:B1:29:4C:45:EB:C6:FC:86:C6:BB:F6:9F:A2:9B:DF:E6:92:DF:F7:C7:13:C2:43:C7:A9:56:C6:A2:28:4C' \
+            || { echo "::error::Telias rot i ingest/ca har ett annat fingeravtryck"; exit 1; }
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, ref: claude/stadens-linjer, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Driftens lista ur det privata repot (bara den filen)
+        run: mkdir -p kuvos && cp .kuvos-privat/kuvos/stadspunkter-drift-2026-27.json kuvos/ && rm -rf .kuvos-privat
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Rekognoseringen
+        shell: bash
+        env: { TRAFIKVERKET_API_KEY: "${{ secrets.TRAFIKVERKET_API_KEY }}" }
+        run: |
+          set -o pipefail
+          node --experimental-strip-types scripts/stadsgator-hamta.ts rekognosering 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
