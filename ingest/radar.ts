@@ -14,14 +14,14 @@
 //
 // Run:  DATABASE_URL=... node --experimental-strip-types ingest/radar.ts        (skarp)
 //       node --experimental-strip-types ingest/radar.ts --prov                  (diagnos, ingen DB)
-//       DATABASE_URL=... node --experimental-strip-types ingest/radar.ts --bara-stad   (bara radar_stad och radar_smavag, var 15:e minut:
-//                                        radar-stad.yml, DECISIONS #805, #828; Trafikverkets sträckor och radar_precip rörs inte)
+//       DATABASE_URL=... node --experimental-strip-types ingest/radar.ts --bara-stad   (bara radar_stad, radar_smavag och radar_station, var 15:e
+//                                        minut: radar-stad.yml, DECISIONS #805, #828, #917; Trafikverkets sträckor och radar_precip rörs inte)
 // Källa: SMHI öppna data (CC BY 4.0). User-Agent: repo-URL, inga personuppgifter.
 
 import { readFileSync } from "node:fs";
 import h5wasm from "h5wasm";
 import proj4 from "proj4";
-import { MIN_RATE_MMH, SMAVAG, gruppRader, rateFromRaw, segmentRader } from "./radar-karna.ts";
+import { MIN_RATE_MMH, SMAVAG, STATION, gruppRader, rateFromRaw, segmentRader, stationRader, stationsytor } from "./radar-karna.ts";
 
 const UA = "Halkvakt-radarpilot/0.1 (+https://github.com/Axelstar/Halkvakt)";
 const API = "https://opendata-download-radar.smhi.se/api/version/latest/area/sweden/product/comp";
@@ -173,6 +173,30 @@ if (url) {
       console.log(`småvägsradarn: klart på ${Date.now() - t0} ms`);
     } catch (e) {
       console.log(`småvägsradarn: FEL — ${String((e as Error)?.message ?? e).slice(0, 160)}`);
+      await pool.end();
+      process.exit(1);
+    }
+  }
+  // RADARN KRING STATIONERNA (sql/130, DECISIONS #917; halkvakt-kuvos F61 §12): driftkontrollen av småvägsrösten prövar röstens hela
+  // fukt vid stationerna. Varje station i data/vagdata/stationer.json läses i samma komposit, som en yta (radar-karna.ts stationsytor),
+  // till radar_station, och kompositen bokförs i radar_station_komposit. Efter småvägarna, så att de alltid är skrivna. Före migrationen
+  // sql/130 skrivs ingenting, och loggen säger det. Loggen säger bara klart eller fel; faller delen blir steget rött.
+  if (!PROV) {
+    try {
+      if (!(await pool.query(STATION.finns)).rows[0]?.ja) console.log("stationsradarn: tabellen saknas (sql/130), inget skrivet");
+      else {
+        const lista = JSON.parse(readFileSync(new URL("../data/vagdata/stationer.json", import.meta.url), "utf8"));
+        const stationer = lista.rader.map((x: any) => ({ id: String(x.id), lon: Number(x.lon), lat: Number(x.lat) }))
+          .filter((s: { lon: number; lat: number }) => Number.isFinite(s.lon) && Number.isFinite(s.lat));
+        const ytor = stationsytor(stationer, { cols, rows, x0: xll, y0: yur, xscale, yscale }, (p) => toGrid.forward(p));
+        const sr = stationRader(ytor, (i) => rateFromRaw(data[i], { gain, offset, nodata, undetect }));
+        await pool.query(STATION.skriv, [sr.ids, validIso, sr.maxes, sr.means]);
+        await pool.query(STATION.gallra);
+        await pool.query(STATION.gallraKompositer);
+        console.log("stationsradarn: klart");
+      }
+    } catch (e) {
+      console.log(`stationsradarn: FEL — ${String((e as Error)?.message ?? e).slice(0, 160)}`);
       await pool.end();
       process.exit(1);
     }

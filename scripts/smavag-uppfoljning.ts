@@ -15,8 +15,13 @@
 //   node --experimental-strip-types scripts/smavag-uppfoljning.ts db <dygn> <db.json>            DATABASE_URL
 //   node --experimental-strip-types scripts/smavag-uppfoljning.ts rapport <dygn> <db.json> <radar.json|-> <stationer.json|-> <läge> <ut.json> <ut.md> [tidigare.json …]
 //       läge: driftkontrollens läge när filen saknas: sparrad, vantar eller fel. tidigare: de sex föregående dygnens rapporter som finns.
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+//   node --experimental-strip-types scripts/smavag-uppfoljning.ts radarn <dygn> <ut.json.gz>    DATABASE_URL
+//       radarn kring stationerna för ett färdigt UTC-dygn (sql/130, DECISIONS #917), till dygnsfilen som driftkontrollen läser.
+//       Utgångskod 3 = dygnet är inte färdigt (väntar).
+import { readFileSync, writeFileSync, existsSync, renameSync } from "node:fs";
 import { pathToFileURL } from "node:url";
+import { gzipSync } from "node:zlib";
+import { MIN_RATE_MMH, STATION_RADIE_M } from "../ingest/radar-karna.ts";
 
 export const FONSTER_DYGN = 7;
 export const LANGDER = ["under3", "3-15", "15-45", "over45", "okand"] as const;
@@ -48,6 +53,30 @@ export const SATS = {
     GROUP BY 1, 2, 3, 4, 5`,
   brytarna: `SELECT grupp, pa FROM smavagsbrytare ORDER BY grupp`,
 };
+
+/** RADARN VID STATIONERNA (sql/130, DECISIONS #917; halkvakt-kuvos F61 §12): ett UTC-dygns lästa kompositer och stationernas rader, till
+ *  dygnsfilen radar_station_<dygn>.json.gz i den privata hinken. Driftkontrollen (det privata repot) läser filerna för fönstret och
+ *  prövar att ytan och händelsegränsen är de signerade. $1 är dygnet; anslutningen står i UTC (lasRadarn sätter zonen). */
+export const RADARN = {
+  kompositer: `SELECT to_char(observed_at, 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AS t FROM radar_station_komposit
+    WHERE observed_at >= $1::date AND observed_at < $1::date + 1 ORDER BY observed_at`,
+  rader: `SELECT station_id AS sid, to_char(observed_at, 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AS t, rate_mean_mmh::float8 AS mn,
+      rate_max_mmh::float8 AS mx
+    FROM radar_station WHERE observed_at >= $1::date AND observed_at < $1::date + 1 ORDER BY observed_at, station_id`,
+};
+export type RadarnFil = { dygn: string; kalla: "radar_station"; radie_m: number; handelsgrans_mmh: number; kompositer: string[];
+  rader: [string, string, number, number][] };
+
+/** Dygnets fil ur databasen. Samma anslutning för båda frågorna, i UTC. */
+export async function lasRadarn(q: (s: string, p?: unknown[]) => Promise<{ rows: any[] }>, dygn: string): Promise<RadarnFil> {
+  await q("SET TimeZone = 'UTC'");
+  const kompositer = (await q(RADARN.kompositer, [dygn])).rows.map((r) => String(r.t));
+  const rader = (await q(RADARN.rader, [dygn])).rows.map((r) => [String(r.sid), String(r.t), Number(r.mn), Number(r.mx)] as [string, string, number, number]);
+  return { dygn, kalla: "radar_station", radie_m: STATION_RADIE_M, handelsgrans_mmh: MIN_RATE_MMH, kompositer, rader };
+}
+
+/** Ett dygn är färdigt när det ligger före dagens UTC-dygn: en fil skrivs bara en gång, så ett pågående dygn får aldrig bli fil. */
+export const dygnetFardigt = (dygn: string, nu = new Date()) => dygn < nu.toISOString().slice(0, 10);
 
 export type RaknarRad = { dag: string; app: string; version: string; handelse: string; varde: string; antal: number };
 export type FacitRad = { dag: string; app: string; version: string; svar: string; antal: number };
@@ -173,10 +202,18 @@ export function rapport(db: Db, radar: Radar | null, stationer: Stationer | null
 }
 
 const ORD: Record<Lage, string> = { sparrad: "spärrad", vantar: "väntar", fel: "fel" };
+const REGIONER = ["alla", "norr", "soder"] as const;
+const regionOrd = (u: Record<string, string>) => REGIONER.map((k) => `${k === "soder" ? "söder" : k} ${u[k]}`).join(", ");
+/** Radarn vid stationerna i driftkontrollens fil (posten 20/11 i det privata repots förregistrering, DECISIONS #917): "spärrad" före
+ *  signaturen, "med" när larmet räknas på N3 eller radarn, och null i en fil från före radarn. */
+export const radarnLage = (s: any): "spärrad" | "med" | null =>
+  !s?.utslag_n3r ? null : REGIONER.every((k) => s.utslag_n3r[k] === "spärrad") ? "spärrad" : "med";
 /** Loggens rad: vilka delar som är klara och driftkontrollens ord per region. Inga tal (#768). */
 export function loggrad(r: Rapport): string {
   const s = r.driftkontrollen as Stationer & { lage?: Lage };
-  const drift = s.utslag ? ["alla", "norr", "soder"].map((k) => `${k === "soder" ? "söder" : k} ${s.utslag[k]}`).join(", ") : ORD[s.lage!];
+  const rl = radarnLage(s);
+  const drift = !s.utslag ? ORD[s.lage!] : rl === "med" ? `${regionOrd(s.utslag)} (med radarn); utan radarn ${regionOrd(s.utslag_n3 as Record<string, string>)}`
+    : `${regionOrd(s.utslag)}${rl ? " (radarn spärrad)" : ""}`;
   return `uppföljningen ${r.dygn}: räknaren klart; facitsvaren klart; olyckorna klart; radarkollen ${r.radarkollen ? "klart" : "saknas"}; driftkontrollen ${drift}`;
 }
 
@@ -220,13 +257,26 @@ export function markdown(r: Rapport): string {
   if (!s.utslag) ut.push(s.lage === "sparrad" ? "Spärrad: posten 16/11 i förregistreringen är inte signerad av Bengt och Axel. Ingenting är läst."
     : s.lage === "vantar" ? "Väntar: dygnets fil från P-II finns inte än." : "Fel: driftkontrollen gick inte att räkna. Se flödets logg.", "");
   else {
-    ut.push("| Region | Utslag | Sju dygn: regeln sa halka | Stationen hade halka | Träffandel | Falsklarmsandel | Lyft mot fryser | Dygnet: falsklarmsandel |", "|:--|:--|--:|--:|--:|--:|--:|--:|");
-    for (const k of ["alla", "norr", "soder"]) {
-      const m = s.sju_dygn?.[k]?.smavagsenheten, d = s.dygnet?.[k]?.smavagsenheten;
-      const iv = (q: any) => (q && typeof q.punkt === "number" ? `${pct(q.punkt)} (${pct(q.nedre)}–${pct(q.ovre)})` : "–");
-      ut.push(`| ${k === "soder" ? "söder" : k} | ${s.utslag[k]} | ${m?.sa_giltiga ?? 0} | ${m?.halka_giltiga ?? 0} | ${iv(m?.traffandel)} | ${iv(m?.falsklarmsandel)} | ${tal(m?.lyft?.punkt)} (${tal(m?.lyft?.nedre)}–${tal(m?.lyft?.ovre)}) | ${pct(d?.falsklarmsandel?.punkt)} |`);
+    const tabell = (kand: string, utslag: Record<string, string>) => {
+      ut.push("| Region | Utslag | Sju dygn: regeln sa halka | Stationen hade halka | Träffandel | Falsklarmsandel | Lyft mot fryser | Dygnet: falsklarmsandel |", "|:--|:--|--:|--:|--:|--:|--:|--:|");
+      for (const k of REGIONER) {
+        const m = s.sju_dygn?.[k]?.[kand], d = s.dygnet?.[k]?.[kand];
+        const iv = (q: any) => (q && typeof q.punkt === "number" ? `${pct(q.punkt)} (${pct(q.nedre)}–${pct(q.ovre)})` : "–");
+        ut.push(`| ${k === "soder" ? "söder" : k} | ${utslag[k]} | ${m?.sa_giltiga ?? 0} | ${m?.halka_giltiga ?? 0} | ${iv(m?.traffandel)} | ${iv(m?.falsklarmsandel)} | ${tal(m?.lyft?.punkt)} (${tal(m?.lyft?.nedre)}–${tal(m?.lyft?.ovre)}) | ${pct(d?.falsklarmsandel?.punkt)} |`);
+      }
+    };
+    const rl = radarnLage(s);
+    if (rl === "med") {
+      tabell("smavagsenheten_n3r", s.utslag);
+      ut.push("", "Småvägsenheten med röstens hela fukt: strängare N3 ur driftens prognos, eller radarn kring stationen (posten 20/11). Larmet räknas på den.", "", "Utan radarn, bredvid:", "");
     }
+    tabell("smavagsenheten", rl === "med" ? s.utslag_n3 : s.utslag);
     ut.push("", "Småvägsenheten, strängare N3 ur driftens prognos, utan radarn. Facit är stationens yta på noll eller kallare och fukt, med ytvattnet. Stationerna står på mätta vägar, inte på småvägarna.", "");
+    if (rl === "spärrad") ut.push("Radarn vid stationerna: spärrad tills posten 20/11 i förregistreringen är signerad av Bengt och Axel. Ingen radarfil är läst.", "");
+    if (rl === "med") {
+      const dygn = Object.entries((s.radarn?.dygn ?? {}) as Record<string, { andel_kvartar?: number }>).sort(([a], [b]) => a.localeCompare(b));
+      ut.push(`Radarn vid stationerna, andelen kvartar med en läst komposit: ${dygn.length ? dygn.map(([d, x]) => `${d} ${pct(x.andel_kvartar)}`).join(", ") : "inga dygn"}. En kvart utan komposit är torr i radarn, som för rösten i drift.`, "");
+    }
   }
   return ut.join("\n");
 }
@@ -298,6 +348,32 @@ function sjalvtest(): number {
   k(md1.includes("Spärrad: posten 16/11") && md1.includes("| ios 0.4.0 | 6 | 3 | 2,00 | 8 | 4 | 2,00 | 0 |") && md1.includes("Överrepresentation: "), "texten med spärren och räknarens rad");
   k(md2.includes("| söder | över | 321 | 100 | 40,0 % (30,0 %–50,0 %) | 61,0 % (50,0 %–70,0 %) | 0,90 (0,80–1,10) |") && md2.includes("Inget underlag för dygnet."), "texten med driftkontrollens rad");
   k(markdown(rapport(db, null, null, "vantar", [])).includes("Väntar: dygnets fil från P-II finns inte än."), "texten när dygnets fil väntar");
+  // Radarn vid stationerna (DECISIONS #917): före posten 20/11 är radarn spärrad och larmet N3:s; efter den räknas larmet på N3 eller
+  // radarn, med N3 bredvid. En fil från före radarn (st ovan) läses som förut.
+  const n3 = { alla: "under", norr: "för få", soder: "över" }, alla = (x: string) => ({ alla: x, norr: x, soder: x });
+  const mtal = (sa: number) => ({ sa_giltiga: sa, halka_giltiga: 100, traffandel: { punkt: 0.5, nedre: 0.4, ovre: 0.6 },
+    falsklarmsandel: { punkt: 0.3, nedre: 0.2, ovre: 0.4 }, lyft: { punkt: 1.5, nedre: 1.2, ovre: 1.8 } });
+  const sp = { ...st, utslag: n3, utslag_n3: n3, utslag_n3r: alla("spärrad"), radarn: { lage: "spärrad" } };
+  const r3 = rapport(db, null, sp, "fel", []);
+  k(radarnLage(st) === null && radarnLage(sp) === "spärrad", "radarns läge: ingen i en äldre fil, spärrad före posten");
+  k(loggrad(r3).endsWith("driftkontrollen alla under, norr för få, söder över (radarn spärrad)"), `loggraden med radarn spärrad: ${loggrad(r3)}`);
+  const md3 = markdown(r3);
+  k(md3.includes("Radarn vid stationerna: spärrad tills posten 20/11") && !md3.includes("hela fukt") && md3.includes("| söder | över | 321 | 100 |"),
+    "texten med radarn spärrad: bara N3:s tabell");
+  const med = { dygn: D, utslag: { alla: "under", norr: "över", soder: "under" }, utslag_n3: n3, utslag_n3r: { alla: "under", norr: "över", soder: "under" },
+    sju_dygn: { norr: { smavagsenheten: mtal(250), smavagsenheten_n3r: mtal(987) } }, dygnet: {},
+    radarn: { lage: "klart", dygn: { "2026-11-20": { andel_kvartar: 0.9375 }, "2026-11-19": { andel_kvartar: 0 } } } };
+  const r4 = rapport(db, null, med, "fel", []);
+  const l4 = loggrad(r4);
+  k(radarnLage(med) === "med" && l4.endsWith("driftkontrollen alla under, norr över, söder under (med radarn); utan radarn alla under, norr för få, söder över"),
+    `loggraden med radarn: ${l4}`);
+  k(!/\d/u.test(l4.replace(D, "")), "loggraden med radarn bär inga tal");
+  const md4 = markdown(r4);
+  const i987 = md4.indexOf("| norr | över | 987 |"), i250 = md4.indexOf("| norr | för få | 250 |");
+  k(i987 > 0 && i250 > i987 && md4.includes("Utan radarn, bredvid:"), "texten med radarn: larmets tabell först och N3:s bredvid");
+  k(md4.includes("andelen kvartar med en läst komposit: 2026-11-19 0,0 %, 2026-11-20 93,8 %"), "texten med radarns täckning per dygn");
+  k(dygnetFardigt("2026-11-19", new Date("2026-11-20T00:00:00Z")) && !dygnetFardigt("2026-11-20", new Date("2026-11-20T23:59:59Z")),
+    "radarns dygnsfil: bara ett dygn före i dag är färdigt");
   if (fel.length) { console.error(`självtestet föll:\n  ${fel.join("\n  ")}`); return 1; }
   console.log("självtestet: klart");
   return 0;
@@ -322,12 +398,28 @@ async function hamta(dygn: string, ut: string): Promise<void> {
   } finally { await pool.end(); }
 }
 
+/** Radarns dygnsfil (gzip:ad json), skriven atomiskt: tempfil och sedan namnbyte. */
+async function radarn(dygn: string, ut: string): Promise<number> {
+  if (!dygnetFardigt(dygn)) { console.log(`radarn vid stationerna ${dygn}: väntar, dygnet är inte färdigt`); return 3; }
+  const url = process.env.DATABASE_URL;
+  if (!url) throw new Error("DATABASE_URL saknas");
+  const pg = (await import("pg")).default;
+  const pool = new pg.Pool({ connectionString: url, max: 1, ssl: url.includes("localhost") ? undefined : { rejectUnauthorized: false } });
+  try {
+    const f = await lasRadarn((s, p) => pool.query(s, p), dygn);
+    writeFileSync(`${ut}.tmp`, gzipSync(JSON.stringify(f))); renameSync(`${ut}.tmp`, ut);
+    console.log(`radarn vid stationerna ${dygn}: klart`);
+    return 0;
+  } finally { await pool.end(); }
+}
+
 const lasJson = (f: string) => (f === "-" || !existsSync(f) ? null : JSON.parse(readFileSync(f, "utf8")));
 
 if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {
   const a = process.argv.slice(2), dygnOk = /^\d{4}-\d\d-\d\d$/u.test(a[1] ?? "");
   if (a[0] === "--sjalvtest") process.exit(sjalvtest());
   else if (a[0] === "db" && dygnOk && a[2]) hamta(a[1], a[2]).catch((e) => { console.error(`smavag-uppfoljning: ${String(e?.message ?? e).slice(0, 200)}`); process.exit(1); });
+  else if (a[0] === "radarn" && dygnOk && a[2]) radarn(a[1], a[2]).then((kod) => process.exit(kod), (e) => { console.error(`smavag-uppfoljning: ${String(e?.message ?? e).slice(0, 200)}`); process.exit(1); });
   else if (a[0] === "rapport" && dygnOk && a.length >= 8 && ["sparrad", "vantar", "fel"].includes(a[5])) {
     const db = lasJson(a[2]) as Db | null;
     if (!db || db.dygn !== a[1]) { console.error("smavag-uppfoljning: databasens del saknas eller gäller ett annat dygn"); process.exit(1); }
@@ -335,5 +427,5 @@ if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {
     const r = rapport(db!, lasJson(a[3]), lasJson(a[4]), a[5] as Lage, tidigare);
     writeFileSync(a[6], JSON.stringify(r)); writeFileSync(a[7], markdown(r));
     console.log(loggrad(r));
-  } else { console.error("--sjalvtest | db <dygn> <db.json> | rapport <dygn> <db.json> <radar.json|-> <stationer.json|-> <sparrad|vantar|fel> <ut.json> <ut.md> [tidigare.json …]"); process.exit(2); }
+  } else { console.error("--sjalvtest | db <dygn> <db.json> | radarn <dygn> <ut.json.gz> | rapport <dygn> <db.json> <radar.json|-> <stationer.json|-> <sparrad|vantar|fel> <ut.json> <ut.md> [tidigare.json …]"); process.exit(2); }
 }

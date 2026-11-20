@@ -18607,3 +18607,39 @@ sidorna) och skuggmotor. `sql/129` körs med DB-knappen före deployen av public
 och ändrat två signerade mått mitt i vintern.
 
 **Stomdokument:** MAT 3 — olycksfacit och säsongsfacit, BED §4.2
+
+## #917 (20/11 2026) Driftkontrollen av småvägsrösten får radarn kring stationerna: rörarbetet byggt, radarn spärrad tills posten är signerad (kort #662)
+
+**Beställningen.** Bengt 20/11: *"ja lägg till radarn"*. Driftkontrollen (#883) prövar bara N3-delen av röstens fukt. Rösten väcks av
+den strängare N3 eller radarn (#866, `sql/105`), men P-II:s dygnsfiler bär ingen radar vid stationerna. Det privata repot skrev
+16/11 att radarn läggs till genom en egen post innan den räknas. Posten är skriven där som utkast 20/11 och väntar på Bengts och Axels
+signaturer. Före dem räknas ingenting med radarn.
+
+**Rörarbetet**, i det här repot utan stationslistor och tal (#804, #810, #910):
+- **`sql/130`:** `radar_station`, med max och medel per station och komposit, händelsefiltrerat som `radar_smavag`, och
+  `radar_station_komposit`, med en rad per läst komposit, så att en torr komposit skiljs från en som saknas. Båda gallras efter fyra
+  dygn. RLS, och service_role i samma fil (#653).
+- **`ingest/radar.ts`** läser varje station i `data/vagdata/stationer.json` (Trafikverkets öppna) i samma komposit och samma körning
+  som småvägsradarn, var 15:e minut och i timmens körning. Ytan är kompositens pixlar vars mitt ligger högst 2 250 m från stationen, i
+  kompositens projektion, och värdet är medlet över ytans täckta pixlar med driftens kärna (`radar-karna.ts`: `stationsytor`,
+  `stationRader`, `STATION`). Det är ytan i det privata repots bakåtprov kring stationen, i driftens komposit. Kompositens rad och
+  stationernas skrivs i en sats. Vilka stationer kontrollen läser står bara i det privata repot. Före migrationen skriver delen
+  ingenting och säger det i loggen.
+- **Dygnsrapporten** (`kuvos-smavag-uppfoljning.yml`, `scripts/smavag-uppfoljning.ts radarn`) lägger varje färdigt UTC-dygn i den
+  privata hinken som `radar_station_<dygn>.json.gz`, och de två dygnen före om de saknas där. Ett dygn som inte är slut blir aldrig en
+  fil. Driftkontrollen hämtar fönstrets filer men läser dem först efter signaturen. Före den säger loggen och rapporten *radarn
+  spärrad*, och larmet räknas på N3 som i dag. Efter den räknas larmet på N3 eller radarn, och N3 står bredvid. Talen går bara till
+  hinken (#768).
+- **Värdevakten** känner båda tabellerna från början (`TID`). Deras tal är `rate_max_mmh` och `rate_mean_mmh`, som redan har spann.
+
+**Alternativen som inte valdes:**
+- bara P1:s stationer, laddade ur det privata repot som småvägspunkterna: en lista och ett laddningssteg till, och bakåtprovet läste
+  också alla stationer och tog P1 ur dem;
+- att läsa hela fönstret ur databasen varje morgon: tio dygns radar i databasen i stället för fyra;
+- arkivexportens väg (`sql/114`): en funktion till att deploya, och ett dygn hade kommit först efter exportens kö;
+- att räkna radarn i driftkontrollen före signaturen: posten skrivs före all läsning.
+
+**Driftsättningen**, på Bengts ord: först det privata repots PR (driftkontrollen som förstår `--radar`), sedan den här; DB-knappen
+`migrera` med `sql/130_radar_station.sql`. Ingen funktion deployas: `radar.ts` körs ur repot i `radar-stad.yml` och `ingest.yml`.
+
+**Stomdokument:** MAT 5 — driftkontrollen av småvägsrösten med radarn vid stationerna, SYS 2 — radarn kring stationerna och dygnsfilen i dygnsrapporten

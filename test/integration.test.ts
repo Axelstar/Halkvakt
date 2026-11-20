@@ -3147,6 +3147,63 @@ test("#828 radar_smavag: tabellen och satserna för småvägsröstens radar", { 
   }
 });
 
+// RADARN KRING STATIONERNA (sql/130, DECISIONS #917; halkvakt-kuvos F61 §12): tabellerna, skrivsatsen och gallringen i radar-karna.ts
+// STATION, och dygnsfilen som driftkontrollen läser (scripts/smavag-uppfoljning.ts lasRadarn), mot riktig PostGIS. Påhittade tal.
+//   RS1  filen går att köra två gånger; RLS på båda tabellerna
+//   RS2  skriv lägger kompositen och raderna i en sats; samma komposit en gång till ändrar inget; en torr komposit bokförs utan rader
+//   RS3  ett id som inte är en station vägras (en småvägsbit, en stadsgrupp), och kompositen står då inte kvar utan sina rader
+//   RS4  dygnsfilen: bara dygnets kompositer och rader, i UTC också när sessionen står i svensk tid, med ytan och gränsen
+//   RS5  gallra tar rader och kompositer äldre än fyra dygn och låter yngre stå
+test("#917 radar_station: radarn kring stationerna och dygnsfilen", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { STATION, STATION_RADIE_M, MIN_RATE_MMH } = await import("../ingest/radar-karna.ts");
+  const { lasRadarn } = await import("../scripts/smavag-uppfoljning.ts");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const las = (f: string) => q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+  const antal = async (t: string) => (await q(`SELECT count(*)::int AS n FROM ${t}`)).rows[0].n;
+  const rensa = async () => { await q("DELETE FROM radar_station"); await q("DELETE FROM radar_station_komposit"); };
+  const skriv = (t: string, ids: string[], mn: number[]) => q(STATION.skriv, [ids, t, ids.map(() => 0.5), mn]);
+  const D = "2031-02-10";
+  try {
+    await las("130_radar_station.sql"); await las("130_radar_station.sql");
+    await rensa();
+    for (const t of ["radar_station", "radar_station_komposit"])
+      assert.equal((await q("SELECT relrowsecurity FROM pg_class WHERE relname = $1", [t])).rows[0].relrowsecurity, true, `RS1: RLS på ${t}`);
+    assert.equal((await q(STATION.finns)).rows[0].ja, true, "RS1: radar.ts ser tabellen");
+    // RS2
+    assert.equal((await skriv(`${D}T00:00:00Z`, ["1001", "1002"], [0.1, 0.09])).rowCount, 2, "RS2: en rad per station");
+    assert.equal((await skriv(`${D}T00:00:00Z`, ["1001"], [0.3])).rowCount, 0, "RS2: samma komposit en gång till ändrar inget");
+    assert.equal((await skriv(`${D}T00:15:00Z`, [], [])).rowCount, 0, "RS2: en torr komposit ger inga rader");
+    await skriv(`${D}T23:59:00Z`, ["1202100"], [0.2]);
+    await skriv("2031-02-09T23:45:00Z", ["1001"], [1.0]);   // dygnet före
+    await skriv("2031-02-11T00:00:00Z", ["1001"], [1.0]);   // dygnet efter
+    assert.equal(await antal("radar_station_komposit"), 5, "RS2: fem kompositer, också den torra");
+    // RS3
+    await assert.rejects(skriv(`${D}T01:00:00Z`, ["v99001-0"], [0.5]), undefined, "RS3: en småvägsbit vägras");
+    await assert.rejects(skriv(`${D}T01:00:00Z`, ["B-990-990"], [0.5]), undefined, "RS3: en stadsgrupp vägras");
+    assert.equal(await antal("radar_station_komposit"), 5, "RS3: kompositen står inte kvar utan sina rader");
+    // RS4
+    await q("SET TimeZone = 'Europe/Stockholm'");   // sessionens zon ska inte styra dygnets gränser
+    const f = await lasRadarn(q, D);
+    assert.equal((await q("SHOW TimeZone")).rows[0].TimeZone, "UTC", "RS4: läsningen sätter zonen själv");
+    assert.deepEqual(f.kompositer, [`${D}T00:00:00Z`, `${D}T00:15:00Z`, `${D}T23:59:00Z`], "RS4: dygnets kompositer, i UTC");
+    assert.deepEqual(f.rader, [["1001", `${D}T00:00:00Z`, 0.1, 0.5], ["1002", `${D}T00:00:00Z`, 0.09, 0.5], ["1202100", `${D}T23:59:00Z`, 0.2, 0.5]],
+      "RS4: dygnets rader, med talen som de skrevs");
+    assert.deepEqual([f.dygn, f.kalla, f.radie_m, f.handelsgrans_mmh], [D, "radar_station", STATION_RADIE_M, MIN_RATE_MMH], "RS4: ytan och gränsen följer med");
+    // RS5
+    await rensa();
+    await q(STATION.skriv, [["1001"], new Date(Date.now() - 5 * 86400e3).toISOString(), [0.5], [0.5]]);
+    await q(STATION.skriv, [["1001"], new Date(Date.now() - 3 * 86400e3).toISOString(), [0.5], [0.5]]);
+    await q(STATION.gallra); await q(STATION.gallraKompositer);
+    assert.equal(await antal("radar_station"), 1, "RS5: bara raden yngre än fyra dygn står");
+    assert.equal(await antal("radar_station_komposit"), 1, "RS5: bara kompositen yngre än fyra dygn står");
+  } finally {
+    await rensa().catch(() => {});
+    await pool.end();
+  }
+});
+
 // SMÅVÄGSRÖSTENS REGEL (sql/105, DECISIONS #828, kort #647; halkvakt-kuvos F51): timmen, fukten, radarn och brytarna, mot riktig PostGIS.
 //   SG1  filen går att köra två gånger; RLS på båda tabellerna
 //   SG2  timmen: utan körning ingen; en tre timmar gammal körning och en med för få punkter räknas inte; den senaste färska och
