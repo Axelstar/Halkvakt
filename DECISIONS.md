@@ -18845,3 +18845,16 @@ väljs på kartan.
 **Alternativ.** Länken direkt ur notisen: föraren hamnar hos partnern utan att ha sett att det var ett erbjudande eller från vem.
 
 **Stomdokument:** APP — notisens tryck och bladet för erbjudanden; SYS — slaget och partnerns länk i push_utskick
+
+## #927 (20/11 2026) Ett erbjudande som kommer medan appen är öppen läggs i notiscentret (kort #674)
+
+**Beslut** (Axel 20/11: *"Yes i think that make sense"*). Ett erbjudande som kommer medan Halkvakt står framme får ingen banner, men
+läggs i notiscentret. I 0.4.1 (66) kastades det (#926), och föraren såg det aldrig: partnern hade då betalat för ett utskick som
+inte nådde någon. Varningen visas som förut med banner. Bygget är 0.4.1 (67), inte uppladdat när beslutet skrivs.
+
+Samma kväll prövades #926 på Axels telefon: varningen med appen öppen, trycket till startsidan och bladet för erbjudandet.
+
+**Alternativ.** En banner också för erbjudandet: det bryter in medan föraren gör något annat i appen, och under körning står
+körläget framme.
+
+**Stomdokument:** APP — notiserna från servern
