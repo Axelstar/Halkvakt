@@ -17,10 +17,7 @@ enum Nearby {
 
     static func nearest(_ hazards: [Hazard], lon: Double, lat: Double, n: Int = 6) -> [NearbyItem] {
         hazards.compactMap { h -> NearbyItem? in
-            // Kandidaten (#577) står inte i listan: den är en modells punkter, och rösten och kortet bär den.
-            if case .kandidat = h { return nil }
-            // Småvägsrösten (#828) inte heller: en modell på vägar utan mätning, som K.
-            if case .smavag = h { return nil }
+            guard visas(h) else { return nil }
             let d = distanceM(h, lon: lon, lat: lat)
             guard d <= maxM else { return nil }
             return NearbyItem(id: h.id, kind: kind(of: h), distM: d, secondary: secondary(h))
@@ -28,6 +25,17 @@ enum Nearby {
         .sorted { $0.distM < $1.distM }
         .prefix(n)
         .map { $0 }
+    }
+
+    /// Det som står i listan och på kartan. Kandidaten (#577) gör det inte: den är en modells punkter, och rösten och kortet
+    /// bär den. Småvägsrösten (#828) inte heller: en modell på vägar utan mätning, som K. Frysrisken står bara när den
+    /// uppfyller röstens regel (DECISIONS #922): filen bär varje station på +3 eller kallare, också de torra.
+    static func visas(_ h: Hazard) -> Bool {
+        switch h {
+        case .kandidat, .smavag: return false
+        case .point(_, let kind, _, _, _, let meta) where kind == .icing_point: return meta.frysriskGaller()
+        default: return true
+        }
     }
 
     static func kind(of h: Hazard) -> HazardKind {

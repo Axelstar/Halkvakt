@@ -37,6 +37,18 @@ public struct PointMeta {
     }
 }
 
+public extension PointMeta {
+    /// Whether an icing_point meets the rule the voice warns by, without the distance (DECISIONS #922): a station at +1 °C or
+    /// colder with moisture, a bridge at +3 °C or colder with moisture, or S3 (the beta, only when `rainH` is present). The
+    /// start page and the list show only these. Mirror of the `.icing_point` branch in `AlertEngine` and of frysriskGaller in Types.kt.
+    func frysriskGaller(_ cfg: EngineConfig = EngineConfig()) -> Bool {
+        guard let t = surfaceTempC else { return false }
+        if t <= (bridge ? 3 : 1), moisture { return true }
+        guard !bridge, let rainH, let fall30C else { return false }
+        return t >= cfg.efterhalkaYtaMinC && t <= cfg.efterhalkaYtaMaxC && fall30C >= cfg.efterhalkaFall30C && rainH <= cfg.efterhalkaRegnH
+    }
+}
+
 /// Which utterance of a serious accident this is (DECISIONS #28). Mirrors AccidentStep in texts.ts.
 public enum AccidentStep: String { case early, reminder, late }
 

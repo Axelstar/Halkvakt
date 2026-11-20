@@ -4,9 +4,11 @@
 // Utsnittet (DECISIONS #919, Axel 20/11): kartan når en och en halv gång så långt som den närmaste faran, minst en mil och
 // högst sex, i steg om fem kilometer. Finns ingen fara inom sex mil visas en och en halv mil omkring föraren. Listan under
 // kartan bär resten.
+// Ett tryck på ett märke eller ett streck väljer faran (DECISIONS #922), och startsidan visar den i ett kort under kartan.
+// Fartkamerorna går inte att trycka på. Frysrisken ritas bara när den uppfyller röstens regel (Nearby.visas).
 //
 // Kartbilderna hämtas från Apple för det område som visas, så Apple får veta ungefär var föraren är när startsidan öppnas.
-// Halkvakt får ingenting. Kandidaten och småvägsrösten står inte på kartan, som i listan I närheten (Nearby).
+// Halkvakt får ingenting. Kandidaten och småvägsrösten står inte på kartan, som i listan I närheten (Nearby.visas).
 import SwiftUI
 import MapKit
 import CoreLocation
@@ -15,6 +17,9 @@ import HalkvaktEngine
 struct NaraDigKarta: View {
     let faror: [Hazard]
     let plats: (lon: Double, lat: Double)?
+    /// Den valda farans id, och vad ett tryck gör: farans id, eller nil för ett tryck bredvid.
+    var valt: String?
+    var vidTryck: ((String?) -> Void)?
 
     /// Flest punkter av varje slag som ritas. Strecken är få och ritas alla.
     private static let flestPunkter = 60
@@ -32,9 +37,12 @@ struct NaraDigKarta: View {
         // En stillbild i gråskala med egna märken (DECISIONS #876): halkan gul, kamerorna små grå prickar, platsen vit.
         Kartbild(omrade: omrade(radie),
                  streck: strackor.map(\.koord),
+                 streckId: strackor.map(\.id),
                  prickar: kameror.map(\.koord),
                  punkter: punkter,
                  plats: plats.map { CLLocationCoordinate2D(latitude: $0.lat, longitude: $0.lon) },
+                 valt: valt,
+                 vidTryck: vidTryck,
                  nyckel: plats.map { String(format: "%.2f,%.2f,%d", $0.lon, $0.lat, Int(radie / 1000)) } ?? "landet",
                  etikett: plats == nil ? "Karta över halkan i Sverige" : "Karta över det närmaste omkring dig")
     }
@@ -47,11 +55,9 @@ struct NaraDigKarta: View {
     private var radieM: Double {
         guard let plats else { return 0 }
         let narmast = faror.compactMap { h -> Double? in
-            switch h {
-            case .kandidat, .smavag: return nil
-            case .point(_, let kind, _, _, _, _) where kind == .camera: return nil
-            default: return Nearby.distanceM(h, lon: plats.lon, lat: plats.lat)
-            }
+            guard Nearby.visas(h) else { return nil }
+            if case .point(_, let kind, _, _, _, _) = h, kind == .camera { return nil }
+            return Nearby.distanceM(h, lon: plats.lon, lat: plats.lat)
         }.min() ?? .infinity
         guard narmast <= Nearby.maxM else { return Self.utanFaraRadieM }
         let steg = (1.5 * narmast / Self.radieStegM).rounded(.up) * Self.radieStegM
@@ -87,7 +93,7 @@ struct NaraDigKarta: View {
         // Utan plats ritas bara halkan: tusentals punkter över hela landet säger ingenting.
         guard plats != nil else { return [] }
         return faror.compactMap { h -> Punkt? in
-            guard case .point(let id, let kind, let lon, let lat, _, _) = h, nara(h) else { return nil }
+            guard case .point(let id, let kind, let lon, let lat, _, _) = h, Nearby.visas(h), nara(h) else { return nil }
             return Punkt(id: id, kind: kind, koord: CLLocationCoordinate2D(latitude: lat, longitude: lon))
         }
     }
