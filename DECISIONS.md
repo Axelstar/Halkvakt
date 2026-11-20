@@ -18608,6 +18608,135 @@ och ändrat två signerade mått mitt i vintern.
 
 **Stomdokument:** MAT 3 — olycksfacit och säsongsfacit, BED §4.2
 
+## #917 (20/11 2026) Platsdelningen: appen skickar kommunen den senast var i, med förarens ja; löftet byts; serverns del byggd (kort #674)
+
+**Beslut** (Axel 20/11: *"Vi har bestämt oss nu att vi kommer att behöva kräva platsdelning av våra användare"*; om Bengt: *"pappa har sagt ja"*; och *"Ja börja bygga"*).
+- **Vad appen skickar:** ett slumpat id som appen själv skapar, plattformen, pushtoken, kommunen telefonen senast var i och valet om
+  erbjudanden. Bara senaste läget, ingen historik. Exakt position, körspår, resor och favoriter stannar i telefonen som förut.
+  Nivån kan bli finare än kommun senare (Axel), och då görs riskbedömningen om först.
+- **Vad det används till:** en notis när risken för halka är hög där föraren är, kvällen före eller på morgonen; statistik per län som
+  sammanräknade tal, också till partner, aldrig under tio telefoner; och erbjudanden från företag som betalar, som push och i appen.
+- **Erbjudanden är ett eget val, avstängt från början.** Högst två pushar i månaden, aldrig samma dag som en varning, aldrig i samma
+  notis och aldrig när vakten kör.
+- **Förarens ja.** Inget skickas förrän föraren har godkänt det på en egen skärm, och befintliga förare får skärmen vid uppdateringen.
+  Den som säger nej behåller appen som i dag, utan notiser före resan, och syns inte i statistiken.
+- **Radering:** *Radera min data* i appen, när pushtoken slutat gälla, och av sig själv efter 30 dygn utan kontakt.
+- **Löftet** *"Din position lämnar inte telefonen av sig själv"* (redan på väg ut, #900 fråga 9) blir *"Vi vet vilken kommun du är i,
+  aldrig var du kör."*
+- **Produktinvarianten i CLAUDE.md står kvar tills appen skickar något.** Raden, Play-filen, integritet.html och produktboken ändras
+  i samma commit som appens första anrop, som invarianten själv kräver. Den här posten är beslutet de ändringarna vilar på.
+
+**Byggt 20/11, inte i drift:** `sql/130_app_enhet.sql` (tabellen `app_enhet`, dubbellåst; gallringen `gallra_app_enhet()` varje natt
+03.35 UTC; `app_enhet_lan_stat()`, per län och aldrig under tio) och funktionen `app-enhet` (POST skriver över installationens enda
+rad, DELETE raderar den; reglerna i `regler.ts` avvisar varje okänt fält, så en position kan inte följa med). Prövat:
+`test/app-enhet.test.ts`, och migrationen körd två gånger mot en lokal Postgres 16 med gallringen och tiogränsen lästa. Migrationen
+körs med DB-knappen och funktionen deployas på Bengts eller Axels ord.
+
+**Inte byggt:** utskicket (kräver en nyckel hos Apple och ett Firebase-projekt hos Google, och Googles FCM-bibliotek i Android-appen),
+vilken risk som ger en notis, appens skärmar och appens läsning av kommunen ur positionen i telefonen.
+
+**Alternativ.** Län som föraren väljer själv, utan position: höll det gamla löftet, men når inte den som aldrig gör ett val och följer
+inte med på resan. En tyst push som telefonen själv filtrerar: inget lämnar telefonen, men iPhone stryper tysta pushar. Exakt position:
+ger rörelsemönster som kan peka ut en person, och behövs inte för en notis per kommun.
+
+**Underlaget** (riskbedömningen, texten till integritetssidan, skärmarna) ligger utanför repot, hos Axel.
+
+**Öppet** (bedömningen §4.2): juristen (#901 strök steget, Axel sade 20/11 att en jurist ska läsa underlaget); lovet enligt LEK 9 kap.
+28 § (läsningen i #900 talar för att skärmen måste vara ett samtycke); flytten av appen till Lagerlöf Labs HB i butikerna.
+
+**Stomdokument:** APP 7 — vad som lämnar telefonen; SYS — tabellen och funktionen med gallringen; BED §4.2
+
+## #918 (20/11 2026) Platsdelningen i iPhone: byggd, men bara i TestFlight tills orden är bytta överallt (kort #674)
+
+**Beslut** (Claude 20/11, på Axels ord *"Ja börja bygga"*, *"kör ihop och så vi kan testa det på testflight"* och *"extremt viktigt att
+vi går igenom alla sidor på hemsidan, i appen och allt så det är uppdaterat och korrekt"*; Axel och Bengt kan ändra det).
+- **Platsdelningen (DECISIONS #917) finns i iPhone-appen från 0.4.1 (59), men bara i TestFlight och i utvecklarbyggen.** Ett bygge
+  från App Store frågar inte, skickar inget och bär de gamla orden. Skälet: main är grenen som släpps. Utan spärren hade nästa bygge
+  till App Store burit platsdelningen medan 371 sidor på sajten, butikernas texter och Android-appen fortfarande säger att positionen
+  aldrig skickas. Spärren är samma som betatestets (#681): kvittots namn. Den tas bort i samma commit som orden byts överallt.
+- **Frågan** täcker appen efter introduktionen tills föraren svarat, i två steg: *Ja, dela min kommun* eller *Inte nu*, och för den som
+  sagt ja valet om erbjudanden, med *Nej tack* förvalt. Inget skickas förrän steg två är klart. Skärmen är byggd som ett samtycke
+  (bedömningen §4.2, LEK): ett uttryckligt ja, ett nej som lämnar appen som den var, och *Radera min data* som tar tillbaka det.
+- **Kommunen räknas i telefonen** ur en tabell med kommunernas förenklade gränser (`data/kommuner/kommuner.json`, 290 kommuner,
+  367 kB, samma fil i appen). En position i en glipa längs en kust får närmaste kommuncentrum inom 15 km; längre bort än så, utomlands
+  eller till havs, ger ingen kommun och då skickas inget nytt.
+- **När det skickas:** när appen öppnas, när vakten stannar och när föraren svarar eller ändrar valet om erbjudanden. Aldrig under
+  körning. Raden skickas om kommunen är ny, valet ändrat eller förra sändningen är äldre än ett dygn (servern gallrar efter 30).
+- **Din data** under Integritet visar kommunen, när raden skickades, valet om erbjudanden och det slumpade numret, och knappen
+  *Radera min data*. Når appen inte servern raderas inget, och det står på skärmen.
+- **Orden i testbygget:** *"Din exakta position skickas aldrig till Halkvakt av sig själv."* Meningen från #917, *"Vi vet vilken kommun
+  du är i, aldrig var du kör"*, står på frågan och under Din data, men inte som appens allmänna löfte: för den som sagt nej är den
+  osann, eftersom vi då inte vet någon kommun. iPhones två platsfrågor fick ordet *exakta*; de gäller alla byggen och är sanna i båda.
+- **Apples integritetsmanifest** säger nu att ungefärlig plats är kopplad och att ett enhets-id samlas in. Det gäller alla byggen och
+  är för mycket sagt för App Store-bygget, vilket är åt det säkra hållet.
+
+**Inte byggt:** notiserna (utskicket, nyckeln hos Apple), Android, och erbjudandena själva. Testbygget säger på frågan att notiserna
+inte är påslagna än.
+
+**Kommungränsernas licens är inte bekräftad** (`data/KALLOR.json` säger det): filen kommer från okfse/sweden-geojson, som skriver
+*Feel free to reuse* utan licensfil. Den bekräftas eller byts mot Lantmäteriets eller SCB:s öppna gränser före ett bygge till App Store.
+
+**Alternativ.** Släppa till alla direkt: kräver att app, sajt och butiker byter ord samma dag, och det arbetet är inte gjort. En
+brytare i Inställningar: Axel avvisade en brytare för Planera resa 14/11, och en brytare säger inget om vem som får frågan. Apples
+omvända geokodning i stället för en egen tabell: skickar positionen till Apple vid varje uppslag.
+
+**Stomdokument:** APP 7 — platsdelningen i testbygget; BED §4.2
+
+## #919 (20/11 2026) Kartan Nära dig zoomar in på det närmaste, och en avbruten hämtning får inte skriva över bilden (kort #659)
+
+**Beslut** (Axel 20/11, om startsidan i 0.4.1 (59): *"Detta ser väldigt dumt ut så detta måste vi få mycket mer inzoomat"*).
+- **Utsnittet följer den närmaste faran.** Kartan når en och en halv gång så långt från föraren som den närmaste faran, minst en mil
+  och högst sex, i steg om fem kilometer. Finns ingen fara inom sex mil visas en och en halv mil omkring föraren. Fartkamerorna styr
+  inte utsnittet. Förut visades alltid sex mil åt varje håll (#873, #876), och en fara sju kilometer bort låg då mitt i en bild över
+  halva länet. Listan under kartan bär de faror som hamnar utanför bilden, som förut.
+- **Felet i Axels inspelning** var större än så: kartan visade hela Nordeuropa fast platsen fanns. Bilden över hela landet hämtas
+  innan platsen kommit, och den nya hämtningen för platsen startar när den kommer. Blev den första klar sist skrev den över den nya.
+  En avbruten hämtning kastas nu. Orsaken är läst ur koden och inspelningen, inte återskapad på en telefon.
+- **Texten under Integritet i testbygget** nämner nu platsdelningen bredvid betatestet (#918), utan långt tankstreck.
+
+Bygget är 0.4.1 (60).
+
+**Alternativ.** Alltid en mil: en fara två mil bort syns då inte alls. De tre närmaste i bild: i Axels fall två och en halv mil, fortfarande
+långt utzoomat.
+
+**Stomdokument:** APP 4 — kartan Nära dig
+
+## #920 (20/11 2026) Kortet Tipsa en vän visas inte på startsidan just nu, och inget val om erbjudanden är förvalt (kort #674)
+
+**Beslut** (Axel 20/11, efter att ha prövat 0.4.1 (59) på telefonen).
+- **Kortet *Fem pass med vakten* på Redo. visas inte just nu**, i någon av apparna. Axel: *"Jag tycker vi tar bort det om tipsa en
+  vän just nu"* och, om kortet på startsidan: *"Det är här jag menar. Det känns bara felplaserat"*. Raden *Tipsa en vän* under
+  Inställningar står kvar, och Tyck till och Betygsätt likaså. Koden och proven för kortet står kvar bakom en konstant
+  (`Tipsa.kortetVisas`, `Tipsa.KORTET_VISAS`), eftersom beslutet gäller just nu. Ändrar #829, som Axel och Bengt tog 10/11.
+- **Inget av de två valen om erbjudanden är förvalt** i platsdelningens fråga (#918 hade *Nej tack* förvalt). Axel frågade om ja
+  kunde vara förvalt. Ett förkryssat ja är inget giltigt samtycke till reklam, så det avråddes, och Axel valde mellanläget: *"Och då
+  kör vi med inget förvalt alls"*. *Fortsätt* väntar tills föraren valt, och ja står först.
+
+iPhone-bygget är 0.4.1 (61). Android får ändringen i sitt nästa bygge.
+
+**Alternativ.** Ja förvalt: se ovan. Ta bort kortets kod helt: beslutet säger just nu, och då kostar det ett varv att bygga om det.
+
+**Stomdokument:** APP 4 — startsidan utan kortet; APP 7 — valet om erbjudanden
+
+## #921 (20/11 2026) Frågan om kommunen är ett steg i introduktionen, och CarPlay är påslaget igen i bygget (kort #674, #380)
+
+**Beslut** (Axel 20/11, efter provet av 0.4.1 (59) och (61)).
+- **Platsdelningens fråga står i introduktionen**, som ett eget steg efter platsen och före notiserna. Axel: *"bör inte detta vara ett
+  steg i onboardingen? Nu känns det som den kommer efter onboardingen är över"*. Förut täckte en egen skärm appen när introduktionen
+  var klar (#918). Stegen räknas *av 5* när steget finns. Den som inte har platsen på får inte steget, och den som redan svarat får
+  det inte när introduktionen visas igen. Befintliga förare får frågan som förut, som en egen skärm, men nu bara med platsen på:
+  utan plats finns ingen kommun att dela. Fortfarande bara i TestFlight (#918).
+- **CarPlay är påslaget igen** (#858 slog av det 13/11 inför granskningen av 0.4.0). Axel: *"snart måste vi få ut det"*, och ja till
+  att slå på det i samma bygge. Det är inte prövat i en bil sedan dess. **Main bär nu CarPlay**: nästa bygge till App Store får det
+  med sig om brytaren inte slås av före inlämningen, och det avgör Axel och Bengt då.
+
+Bygget är 0.4.1 (62).
+
+**Alternativ.** Frågan sist i introduktionen, efter notiserna: då kan notissteget inte säga vad notisen före resan är till för.
+Ett eget bygge för CarPlay: varje uppladdning skapar ett certifikat hos Apple, och taket slog till i dag (STATUS 20/11).
+
+**Stomdokument:** APP 4 — introduktionen; APP 5 — CarPlay
+
 ## #924 (20/11 2026) Driftkontrollen av småvägsrösten får radarn kring stationerna: rörarbetet byggt, radarn spärrad tills posten är signerad (kort #662)
 
 **Beställningen.** Bengt 20/11: *"ja lägg till radarn"*. Driftkontrollen (#883) prövar bara N3-delen av röstens fukt. Rösten väcks av

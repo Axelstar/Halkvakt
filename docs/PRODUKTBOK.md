@@ -78,7 +78,8 @@ Från 0.4.1 (56) startar vakten i samma tryck (DECISIONS #875), när platsen red
 *"Vakten startar när du öppnar kartappen."* Är platsen inte tillåten öppnas bara kartappen, och raden står inte.
 
 **Nära dig och Planera en resa (14/11, kort #659, DECISIONS #870 och #872; bara iPhone, från 0.4.1, för alla).** På 01 Redo står
-Apples karta där sockeln stod: farorna inom sex mil, halkan som gula streck längs vägen och de andra farorna som gula
+Apples karta där sockeln stod: det närmaste omkring föraren (från 0.4.1 (60), DECISIONS #919: en och en halv gång så långt som
+den närmaste faran, minst en mil och högst sex; förut alltid sex mil), halkan som gula streck längs vägen och de andra farorna som gula
 punkter, raden *KARTAN KOMMER FRÅN APPLE*, och under den *NÄRA DIG JUST NU* med de tre närmaste (avstånd, fara, detalj) eller *"Inget rapporterat inom sex
 mil."* Utan plats visar kartan hela landet med bara halkan, under *HALKAN I LANDET JUST NU*, och raden *"Slå på platsen
 för att se vad som finns nära dig."* och länken *SLÅ PÅ PLATSEN* (iOS ruta första gången, annars appens sida i
@@ -264,10 +265,38 @@ Sist i **Inställningar**, under etiketten *HALKVAKT*, tre rader:
 
 På **Redo.**, efter det femte avslutade vaktpasset och bara när vakten inte kör, står kortet *FEM PASS MED VAKTEN* — *"Kör någon du
 känner samma vägar?"* — *"Tipsa om Halkvakt. Du skickar bara en länk, inget om dig."* med knappen **Tipsa en vän** och länken
-*INTE NU*. Båda döljer kortet för gott. Det visas aldrig samtidigt som ett kort om resorna.
+*INTE NU*. Båda döljer kortet för gott. Det visas aldrig samtidigt som ett kort om resorna. **Kortet visas inte just nu** (Axel
+20/11, DECISIONS #920: felplacerat på startsidan), i iPhone från 0.4.1 (61) och i Android från nästa bygge. Raderna under
+Inställningar står kvar.
 
 Appen skickar ingenting själv: delningen går genom telefonens delningsark, mejlet genom förarens mejlapp och betyget genom
 butiken. Integritetstexterna är oförändrade.
+
+## Platsdelningen (iPhone, bara i TestFlight — 20/11, DECISIONS #917, #918)
+
+Från 0.4.1 (59) frågar iPhone-appen i TestFlight om den får dela vilken kommun telefonen är i. Ett bygge från App Store frågar inte.
+Skärmbilder saknas: fotostudion tar inte iPhones skärmar, och de här är inte prövade på en telefon än. Skisserna ligger på
+Design-duken *Halkvakt: platsdelning och erbjudanden, skärmar*.
+
+**Frågan** står i introduktionen från (62), som ett eget steg efter platsen (DECISIONS #921). Den som redan gått igenom
+introduktionen får den som en egen skärm som täcker appen tills föraren svarat, bara med platsen på. Etiketten *Nytt i Halkvakt*, rubriken *Vill du ha en varning innan
+du kör?* och texten *Då behöver vi veta vilken kommun du är i, så att vi kan säga till när det är halt där.* En panel säger vad som
+gäller: *Vi sparar* din kommun, senaste läget · *Aldrig* var du kör, dina resor · *Kopplas till* ett slumpat nummer · *Tas bort* när
+du vill, under Integritet. Under den: *Vi vet vilken kommun du är i, aldrig var du kör.* och *Säger du nej fungerar Halkvakt som i
+dag. Testbygge: notiserna är inte påslagna än.* Knappen *Ja, dela min kommun*, och länken *Inte nu*.
+
+**Valet om erbjudanden** kommer efter ett ja. Rubriken *Vill du ha erbjudanden för ditt län?*, två rutor, *Ja, skicka erbjudanden* (*Högst två i månaden. Aldrig när du kör.*) och *Nej tack* (*Bara varningar*), där ingen är
+förvald från (61) (DECISIONS #920; i (59) var *Nej tack* förvald) och *Fortsätt* väntar på valet, och en panel: *Från*
+företag som betalar Halkvakt · *De får* aldrig veta vem eller var du är · *Ändra* när du vill, under Integritet. Knappen *Fortsätt*.
+Först då skickas något.
+
+**Din data** står under Inställningar → Integritet. För den som sagt ja: kommunen, när raden skickades, växlaren *Erbjudanden*, det
+slumpade numret och knappen *Radera min data*. Går servern inte att nå står det *Det gick inte att nå servern. Inget är raderat.*
+För den som sagt nej: *Du delar inte din kommun. Inget om den här telefonens plats är sparat hos oss.* och länken *Visa frågan igen*.
+
+**Orden i testbygget:** på Redo, i introduktionen och under Integritet står *Din exakta position skickas aldrig till Halkvakt av sig
+själv.* Under Integritet står från (60) också *Två undantag, bara om du själv säger ja: betatestet, och platsdelningen, som sparar
+vilken kommun du är i.* App Store-bygget och Android bär den gamla meningen tills platsdelningen släpps.
 
 ## Första gången — introduktionen (iOS)
 
@@ -275,6 +304,11 @@ Sex steg (ombyggd 13/11, DECISIONS #851). Överst till höger står var du är: 
 *KLART*, med gult ljus tills platsen är *Alltid*, sedan grönt. Varje steg har en knapp nederst, och ibland en länk under den.
 Före varje ruta från iOS står vilken knapp du ska välja, och varje svar har sitt eget läge. Allt går att ändra senare i
 Inställningar, och introduktionen kan visas igen därifrån.
+
+**I TestFlight, från 0.4.1 (62), ett steg till efter platsen (DECISIONS #921):** frågan om att dela kommunen och valet om
+erbjudanden, samma två skärmar som under *Platsdelningen* ovan. Stegen räknas då *AV 5*, och på slutskärmen står raden *DIN KOMMUN*
+med *Delas* eller *Delas inte*. Den som inte har platsen på får inte steget. I notissteget står efter ett ja också *En varning före
+resan, när det är halt i din kommun* med *Kommer i ett senare bygge.*
 
 1. **Välkommen** — *"Rösten som varnar innan du är där"*, *"Halkvakt säger till med rösten om faror på vägen framför dig."*
    Under *SÅ FUNGERAR DET*: *Du kör som vanligt* (*Med vilken kartapp du vill, eller ingen alls.*), *Halkvakt håller koll på
@@ -696,7 +730,8 @@ halv minut och startar vakten vid 15 km/h. Första resan efter installation, nä
 väcks den i stället av iOS större platsbyten (Apple anger ungefär 500 meter). Kostar nästan inget batteri.
 Inget mer att ställa in. Kan stängas av under Inställningar → *Vaknar själv när du kör*.
 
-*(CarPlay är avslaget i bygget från 0.4.0 (49), DECISIONS #858, och stycket nedan gäller igen när det slås på.)*
+*(CarPlay var avslaget i byggena 0.4.0 (49) till 0.4.1 (61), DECISIONS #858. Det är påslaget igen från 0.4.1 (62), DECISIONS #921,
+för prov i bil i TestFlight. Appen i App Store har det inte än.)*
 
 **iPhone — vakten startar när Halkvakt öppnas i CarPlay (11/11, DECISIONS #840, kort #380):** öppnas Halkvakt på bilens skärm startar
 vakten, om platsen redan är tillåten, *Alltid* eller *Vid användning*, eftersom CarPlay räknas som att appen är öppen. Ingen fråga om

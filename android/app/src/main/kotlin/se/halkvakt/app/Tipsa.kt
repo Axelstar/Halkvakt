@@ -18,6 +18,8 @@ object Tipsa {
 
     /** Kortet på Redo.: efter femte avslutade vaktpasset, tills föraren tipsat eller tryckt Inte nu. Aldrig medan vakten kör. */
     const val PASS_FORE_KORTET = 5
+    /** Kortet visas inte just nu (DECISIONS #920, Axel 20/11: felplacerat på startsidan). Raden under Inställningar står kvar. */
+    const val KORTET_VISAS = false
     fun visaKortet(pass: Int, dold: Boolean, vaktenKor: Boolean) = !dold && !vaktenKor && pass >= PASS_FORE_KORTET
 
     /** Mejlets text: tre tekniska rader som föraren ser och kan ta bort före Skicka. Ingen plats, inga resor. */

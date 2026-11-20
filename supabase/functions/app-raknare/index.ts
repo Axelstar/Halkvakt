@@ -12,7 +12,9 @@
 import postgres from "https://deno.land/x/postgresjs@v3.4.4/mod.js";
 
 const sql = postgres(Deno.env.get("SUPABASE_DB_URL")!, { max: 1, prepare: false });
-const TAK_PER_DYGN = 20000;   // tusen förare × ett par starter är ett par tusen — taket är mot flod, inte mot förare
+// Taket är mot flod, inte mot förare. 20 000 nåddes av vanlig trafik 19/11 (18:51) och 20/11 (16:01) och räknaren stod
+// still resten av dygnet; höjt till 100 000 den 20/11.
+const TAK_PER_DYGN = 100000;
 const MAX_BYTES = 192;   // ver och k gör anropet längre (#787); gränsen gäller fortfarande ett enda ord
 const kors = (...delar: string[][]): string[] =>
   delar.reduce<string[]>((acc, d) => acc.flatMap((a) => d.map((b) => (a ? `${a}:${b}` : b))), [""]);
