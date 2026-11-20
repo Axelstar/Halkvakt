@@ -3417,3 +3417,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 20/11 (Claude; Axel efter provet av (59)): **Kortet Tipsa en vän visas inte på startsidan just nu, och inget val om erbjudanden är
   förvalt** (DECISIONS #920). iPhone-bygget är 0.4.1 (61); Android får ändringen i nästa bygge. Uppladdningen av (60) föll 16:5x på
   Apples certifikattak (körning 44769009717, `ARCHIVE FAILED`, inget uppladdat); Axel har rensat certifikaten (två kvar 17:04).
+- 20/11 (Claude): **iPhone 0.4.1 (61) uppladdad till TestFlight** från main 9518657 (körning 44772198053, `EXPORT SUCCEEDED`; PR #1726 och
+  #1727 ihopslagna): kartan Nära dig inzoomad på det närmaste och hämtningen som inte skriver över (DECISIONS #919), kortet Tipsa en vän
+  borta från startsidan och inget förvalt val om erbjudanden (DECISIONS #920). Före: TestFlight-provet (44770191774) och android
+  (44770196875) gröna på grenen. Bygge (60) laddades aldrig upp. Kartan och det nya valet är inte prövade på en telefon.
