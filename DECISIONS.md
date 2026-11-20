@@ -18608,7 +18608,7 @@ och ändrat två signerade mått mitt i vintern.
 
 **Stomdokument:** MAT 3 — olycksfacit och säsongsfacit, BED §4.2
 
-## #918 (20/11 2026) Driftkontrollen av småvägsrösten får radarn kring stationerna: rörarbetet byggt, radarn spärrad tills posten är signerad (kort #662)
+## #924 (20/11 2026) Driftkontrollen av småvägsrösten får radarn kring stationerna: rörarbetet byggt, radarn spärrad tills posten är signerad (kort #662)
 
 **Beställningen.** Bengt 20/11: *"ja lägg till radarn"*. Driftkontrollen (#883) prövar bara N3-delen av röstens fukt. Rösten väcks av
 den strängare N3 eller radarn (#866, `sql/105`), men P-II:s dygnsfiler bär ingen radar vid stationerna. Det privata repot skrev

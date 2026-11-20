@@ -3147,14 +3147,14 @@ test("#828 radar_smavag: tabellen och satserna för småvägsröstens radar", { 
   }
 });
 
-// RADARN KRING STATIONERNA (sql/131, DECISIONS #918; halkvakt-kuvos F61 §12): tabellerna, skrivsatsen och gallringen i radar-karna.ts
+// RADARN KRING STATIONERNA (sql/131, DECISIONS #924; halkvakt-kuvos F61 §12): tabellerna, skrivsatsen och gallringen i radar-karna.ts
 // STATION, och dygnsfilen som driftkontrollen läser (scripts/smavag-uppfoljning.ts lasRadarn), mot riktig PostGIS. Påhittade tal.
 //   RS1  filen går att köra två gånger; RLS på båda tabellerna
 //   RS2  skriv lägger kompositen och raderna i en sats; samma komposit en gång till ändrar inget; en torr komposit bokförs utan rader
 //   RS3  ett id som inte är en station vägras (en småvägsbit, en stadsgrupp), och kompositen står då inte kvar utan sina rader
 //   RS4  dygnsfilen: bara dygnets kompositer och rader, i UTC också när sessionen står i svensk tid, med ytan och gränsen
 //   RS5  gallra tar rader och kompositer äldre än fyra dygn och låter yngre stå
-test("#918 radar_station: radarn kring stationerna och dygnsfilen", { skip: !url }, async () => {
+test("#924 radar_station: radarn kring stationerna och dygnsfilen", { skip: !url }, async () => {
   const { default: pg } = await import("pg");
   const { STATION, STATION_RADIE_M, MIN_RATE_MMH } = await import("../ingest/radar-karna.ts");
   const { lasRadarn } = await import("../scripts/smavag-uppfoljning.ts");

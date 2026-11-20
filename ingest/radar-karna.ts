@@ -90,7 +90,7 @@ export const SMAVAG = {
   gallra: `DELETE FROM radar_smavag WHERE observed_at < now() - interval '2 hours'`,
 };
 
-/** Radarn kring stationerna (sql/131, DECISIONS #918; halkvakt-kuvos F61 §12): driftkontrollen av småvägsrösten prövar röstens hela fukt,
+/** Radarn kring stationerna (sql/131, DECISIONS #924; halkvakt-kuvos F61 §12): driftkontrollen av småvägsrösten prövar röstens hela fukt,
  *  den strängare N3 eller radarn, vid stationerna. Ytan är kompositens pixlar vars mitt ligger högst STATION_RADIE_M från stationen, mätt
  *  i kompositens projektion: halva längden av en bit om SMAVAG_BIT punkter, omkring 4,5 km. Värdet är max och medel över ytans täckta
  *  pixlar, med samma händelsegräns och avrundning som gruppRader. Gallringen håller fyra dygn: dygnsrapporten lägger varje dygn i den

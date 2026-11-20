@@ -27,7 +27,7 @@ test("gruppRader: exakt på gränsen räknas, tomma grupper ger inget", () => {
   assert.deepEqual(r.ids, ["B-1-1"]);
 });
 
-// Radarn kring stationerna (ingest/radar-karna.ts stationsytor och stationRader; sql/131, DECISIONS #918; halkvakt-kuvos F61 §12).
+// Radarn kring stationerna (ingest/radar-karna.ts stationsytor och stationRader; sql/131, DECISIONS #924; halkvakt-kuvos F61 §12).
 // Projektionen är identiteten här: läget är meter i rutnätet, så att avstånden går att lägga exakt.
 test("stationsytor: pixlarna vars mitt ligger högst 2 250 m från stationen, och kanten", () => {
   const g = { cols: 10, rows: 10, x0: 0, y0: 20000, xscale: 2000, yscale: 2000 };
@@ -58,7 +58,7 @@ test("stationRader: medlet över ytans täckta pixlar, händelsegränsen och avr
   assert.deepEqual(r.means, [0.25, 0.07, 0.09]);
 });
 
-test("sql/131: värdevakten känner båda tabellerna, och varje numeriskt fält har ett deklarerat spann (DECISIONS #918)", async () => {
+test("sql/131: värdevakten känner båda tabellerna, och varje numeriskt fält har ett deklarerat spann (DECISIONS #924)", async () => {
   const { SPANN } = await import("../scripts/vardevakten.ts");
   const las = (p: string) => readFileSync(new URL(`../${p}`, import.meta.url), "utf8");
   const vakt = las("scripts/vardevakten.ts"), mig = las("sql/131_radar_station.sql").replace(/--[^\n]*/g, "");

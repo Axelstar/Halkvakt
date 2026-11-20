@@ -16,7 +16,7 @@
 //   node --experimental-strip-types scripts/smavag-uppfoljning.ts rapport <dygn> <db.json> <radar.json|-> <stationer.json|-> <läge> <ut.json> <ut.md> [tidigare.json …]
 //       läge: driftkontrollens läge när filen saknas: sparrad, vantar eller fel. tidigare: de sex föregående dygnens rapporter som finns.
 //   node --experimental-strip-types scripts/smavag-uppfoljning.ts radarn <dygn> <ut.json.gz>    DATABASE_URL
-//       radarn kring stationerna för ett färdigt UTC-dygn (sql/131, DECISIONS #918), till dygnsfilen som driftkontrollen läser.
+//       radarn kring stationerna för ett färdigt UTC-dygn (sql/131, DECISIONS #924), till dygnsfilen som driftkontrollen läser.
 //       Utgångskod 3 = dygnet är inte färdigt (väntar).
 import { readFileSync, writeFileSync, existsSync, renameSync } from "node:fs";
 import { pathToFileURL } from "node:url";
@@ -54,7 +54,7 @@ export const SATS = {
   brytarna: `SELECT grupp, pa FROM smavagsbrytare ORDER BY grupp`,
 };
 
-/** RADARN VID STATIONERNA (sql/131, DECISIONS #918; halkvakt-kuvos F61 §12): ett UTC-dygns lästa kompositer och stationernas rader, till
+/** RADARN VID STATIONERNA (sql/131, DECISIONS #924; halkvakt-kuvos F61 §12): ett UTC-dygns lästa kompositer och stationernas rader, till
  *  dygnsfilen radar_station_<dygn>.json.gz i den privata hinken. Driftkontrollen (det privata repot) läser filerna för fönstret och
  *  prövar att ytan och händelsegränsen är de signerade. $1 är dygnet; anslutningen står i UTC (lasRadarn sätter zonen). */
 export const RADARN = {
@@ -204,7 +204,7 @@ export function rapport(db: Db, radar: Radar | null, stationer: Stationer | null
 const ORD: Record<Lage, string> = { sparrad: "spärrad", vantar: "väntar", fel: "fel" };
 const REGIONER = ["alla", "norr", "soder"] as const;
 const regionOrd = (u: Record<string, string>) => REGIONER.map((k) => `${k === "soder" ? "söder" : k} ${u[k]}`).join(", ");
-/** Radarn vid stationerna i driftkontrollens fil (posten 20/11 i det privata repots förregistrering, DECISIONS #918): "spärrad" före
+/** Radarn vid stationerna i driftkontrollens fil (posten 20/11 i det privata repots förregistrering, DECISIONS #924): "spärrad" före
  *  signaturen, "med" när larmet räknas på N3 eller radarn, och null i en fil från före radarn. */
 export const radarnLage = (s: any): "spärrad" | "med" | null =>
   !s?.utslag_n3r ? null : REGIONER.every((k) => s.utslag_n3r[k] === "spärrad") ? "spärrad" : "med";
@@ -348,7 +348,7 @@ function sjalvtest(): number {
   k(md1.includes("Spärrad: posten 16/11") && md1.includes("| ios 0.4.0 | 6 | 3 | 2,00 | 8 | 4 | 2,00 | 0 |") && md1.includes("Överrepresentation: "), "texten med spärren och räknarens rad");
   k(md2.includes("| söder | över | 321 | 100 | 40,0 % (30,0 %–50,0 %) | 61,0 % (50,0 %–70,0 %) | 0,90 (0,80–1,10) |") && md2.includes("Inget underlag för dygnet."), "texten med driftkontrollens rad");
   k(markdown(rapport(db, null, null, "vantar", [])).includes("Väntar: dygnets fil från P-II finns inte än."), "texten när dygnets fil väntar");
-  // Radarn vid stationerna (DECISIONS #918): före posten 20/11 är radarn spärrad och larmet N3:s; efter den räknas larmet på N3 eller
+  // Radarn vid stationerna (DECISIONS #924): före posten 20/11 är radarn spärrad och larmet N3:s; efter den räknas larmet på N3 eller
   // radarn, med N3 bredvid. En fil från före radarn (st ovan) läses som förut.
   const n3 = { alla: "under", norr: "för få", soder: "över" }, alla = (x: string) => ({ alla: x, norr: x, soder: x });
   const mtal = (sa: number) => ({ sa_giltiga: sa, halka_giltiga: 100, traffandel: { punkt: 0.5, nedre: 0.4, ovre: 0.6 },
