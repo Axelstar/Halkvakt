@@ -18950,3 +18950,20 @@ Bygget är 0.4.1 (69).
 **Alternativ.** Hela rutan Övrigt på vägen bakom en enda rad: föraren ser då inte vad som finns förrän den öppnas.
 
 **Stomdokument:** APP — skärmen Planerad resa
+
+## #932 (20/11 2026) Planerad resa: Övrigt på vägen räknar bara, när sträckorna visas (kort #659)
+
+**Beslut** (Axel 20/11, till förslaget efter inspelningen: *"Jag gillar dina förslag också"*). När resans sträckor visas står
+varje vägarbete, kamera och hinder redan under sin sträcka, och i 0.4.1 (68) och (69) stod de en gång till under *Övrigt på
+vägen*. Rutan visar nu antalet av varje slag och SMHI:s varningar, som gäller hela resan. En lugn resa har inga sträckor, och där
+står raderna kvar som förut. Restidssträckorna räknas inte: de är mätpunkter och inga händelser.
+
+Det andra förslaget, att en lång sträcka inte ska heta hal för att den har halka på några ställen, är inte byggt. Rapportens
+rader bär var halkan börjar men inte hur lång den är, så en andel går inte att räkna utan att ändra rapporten. Valet står i
+bedömningens §4.2.
+
+Bygget är 0.4.1 (70), inte uppladdat när beslutet skrivs.
+
+**Alternativ.** Ta bort raderna ur sträckorna i stället: då säger sträckan inte vad som finns på den.
+
+**Stomdokument:** APP — skärmen Planerad resa

@@ -197,6 +197,9 @@ struct PlaneradResaView: View {
 
     // MARK: - Resten av rapporten
 
+    /// Slagen som räknas under Övrigt på vägen när sträckorna visas. Restidssträckorna är mätpunkter och inga händelser.
+    private static let raknade: [RapportSlag] = [.olycka, .hinder, .vilt, .ko, .vagarbete, .hastighet, .omledning, .farja, .kamera]
+
     /// En rad under Övrigt på vägen: rubriken, och texten först när föraren öppnar raden (DECISIONS #931), som sträckorna.
     /// En rad utan text går inte att öppna.
     @ViewBuilder
@@ -241,6 +244,24 @@ struct PlaneradResaView: View {
             MonoLabel(text: lugn ? "Längs vägen" : "Övrigt på vägen", size: 11).padding(.top, 28).padding(.bottom, 10).padding(.horizontal, 4)
             if grupper.isEmpty {
                 Text("Inget mer rapporterat längs vägen just nu.").font(Typo.sans(15)).foregroundStyle(Brand.text2).padding(.horizontal, 4)
+            } else if !lugn {
+                // Med sträckorna ovanför står varje rad redan under sin sträcka (DECISIONS #932). Här står bara hur många det är
+                // av varje slag, och SMHI:s varningar, som gäller hela resan.
+                let slag = Self.raknade.filter { s in rader.contains { $0.slag == s } }
+                let smhi = grupper.filter { $0.slag == .smhi }
+                RowPanel {
+                    ForEach(Array(slag.enumerated()), id: \.element) { i, s in
+                        ReceiptRow(label: ResansRapport.namn[s] ?? s.rawValue, value: "\(rader.filter { $0.slag == s }.count)",
+                                   divider: i < slag.count - 1 || !smhi.isEmpty)
+                    }
+                    ForEach(Array(smhi.enumerated()), id: \.element.id) { i, g in
+                        ovrigRad(id: g.id, titel: g.rubrik, text: g.text, divider: i < smhi.count - 1)
+                    }
+                }
+                if !slag.isEmpty {
+                    Text("Vad det är står under varje sträcka.").font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.dim)
+                        .padding(.top, 14).padding(.horizontal, 4)
+                }
             } else {
                 RowPanel {
                     ForEach(Array(grupper.enumerated()), id: \.element.id) { i, g in
