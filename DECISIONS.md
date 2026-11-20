@@ -18780,3 +18780,68 @@ oförändrad: ett enskilt fall anförs aldrig utan säsongens andel bredvid.
 **Alternativ.** En egen läsning i panelen när frågan kommer, utan ärende. Det hade inte synts vecka för vecka.
 
 **Stomdokument:** MAT 3 — olycksfacits veckoärende
+
+## #923 (20/11 2026) Frågan om erbjudanden lovar inget antal, och texten är kortare (kort #674)
+
+**Beslut** (Axel 20/11, om steget i 0.4.1 (63): *"I really dont undestand the text here, why are we so open about what it might be?"*,
+och om antalet: *"No number, just Aldrig när du kör. I would just do this one"*).
+- **Texten.** Rubriken *Vill du ha erbjudanden nära dig?*, raden *Rabatter och tips från våra partner, utvalda för där du bor.*,
+  valen *Ja tack* (*Aldrig när du kör.*) och *Nej tack* (*Bara varningar*), och under dem *Våra partner får aldrig veta vem eller var
+  du är. Du kan ändra dig under Integritet.* Exemplen (däckbyte, försäkring), orden *företag som betalar Halkvakt* och panelen med
+  tre rader är borta. Det som reglerna kräver står kvar: att det är erbjudanden, att inget är förvalt, att nejet inte kostar något
+  och att valet går att ändra.
+- **Inget antal lovas.** Skärmen sade *Högst två i månaden* (#917). Löftet är struket ur appen. Hur ofta erbjudanden skickas bestäms
+  när utskicket byggs. *Aldrig när du kör* står kvar som löfte. Inga erbjudanden skickas än.
+- **Nära dig i stället för ditt län:** det som sparas är kommunen, och orden lovar varken län eller kommun.
+
+Bygget är 0.4.1 (64), inte uppladdat när beslutet skrivs. integritet.html nämner inget antal och ändras inte.
+
+**Alternativ.** Behålla taket på två i månaden, eller en i veckan: ett tak skyddar varningarna mot att föraren stänger av notiserna
+för hela appen, men binder oss vid ett tal som bara kan höjas genom att fråga igen. Axel valde friheten.
+
+**Stomdokument:** APP — valet om erbjudanden i platsdelningen
+
+## #924 (20/11 2026) Utskicket av notiser: nyckeln hos Apple, adressen från telefonen och en kö som bara SQL kan fylla (kort #674)
+
+**Beslut** (Axel 20/11: *"lets do 3 so we can keep building"*; han skapade nyckeln hos Apple och lade den som hemlighet samma kväll).
+- **Nyckeln.** En APNs-nyckel för laget, för både provmiljön och driften, ligger som hemligheten `APNS_KEY_P8` hos Supabase. Nyckelns
+  id och lagets id är inga hemligheter och står i koden. Nyckelfilen finns bara hos Axel och hos Supabase, aldrig i repot.
+- **Adressen.** Har föraren sagt ja till platsdelningen och tillåtit notiser ber appen Apple om en notisadress och skickar den med
+  raden till `app-enhet` (fältet `token`, som servern tar emot sedan #917). *Din data* visar om en adress är sparad, och *Radera min
+  data* tar bort den och avregistrerar appen hos Apple. Som resten av platsdelningen: bara i TestFlight (#918).
+- **Kön.** Tabellen `push_utskick` (sql/131) bär ett utskick per rad: till en telefon (provet), en kommun eller ett län, med slaget
+  prov, varning eller erbjudande. Funktionen `app-push` tar inte emot något: den läser de öppna raderna, skickar genom Apple och
+  skriver antalet skickade och fallna på raden. Ett utskick kan bara läggas med SQL och tjänsterollen, så anropet är öppet utan att
+  någon utomstående kan skicka något. Ett erbjudande går bara till den som valt erbjudanden. En adress som Apple säger är död tas
+  bort. Ingen rad per telefon sparas: det finns ingen logg över vem som fått vad.
+- **Apple får** notisadressen, rubriken och texten. Aldrig id, kommun eller val.
+- **Inte byggt:** regeln för när en varning ska gå (Bengts), Android (FCM), och hur *Aldrig när du kör* (#923) hålls. Servern vet
+  inte om föraren kör, och en vanlig notis visas ändå. Det måste lösas innan ett erbjudande eller en varning skickas till förare.
+
+Bygget är 0.4.1 (65).
+
+**Alternativ.** En hemlighet i anropet i stället för en kö: någon måste då bära hemligheten, och ett läckt värde räcker för att
+skicka till alla. Firebase också för iPhone: ett led till som får adresserna, utan nytta förrän Android byggs.
+
+**Stomdokument:** APP — notisadressen i platsdelningen; SYS — tabellen push_utskick och funktionen app-push
+
+## #926 (20/11 2026) Vad ett tryck på en notis öppnar, och varningar visas också med appen öppen (kort #674)
+
+**Beslut** (Axel 20/11, efter provnotisen: *"When i click on it, where should i be taken then?"*, och till förslaget: *"i think all
+make sense"*).
+- **Varningen och provet** öppnar startsidan med kartan *Nära dig*. Där står det varningen gällde, och *Starta vakten* är ett tryck bort.
+- **Erbjudandet** öppnar ett blad i appen: *Erbjudande från* och partnerns namn, notisens rubrik och text, och knappen *Visa
+  erbjudandet*, som öppnar partnerns länk i webbläsaren. Föraren ser vad det är innan appen lämnas, och bladet säger att det är ett
+  erbjudande och från vem. Under körning öppnas inget blad.
+- **En varning från servern visas också när appen är öppen.** Provet 20/11 visade att den första notisen kastades: appen har alltid
+  tigit i förgrunden, eftersom dess egna bannrar är till för när den ligger bakom kartan. Ett erbjudande visas fortfarande inte då.
+- **Utskicket bär slaget** till appen, och ett erbjudande bär partnerns namn och en https-länk (sql/132). Inget annat slag får bära dem.
+- **Halkvakt skickar ingenting om föraren till partnern.** Länken öppnas som vilken länk som helst, så partnern ser ett besök men
+  inte från vem.
+
+Bygget är 0.4.1 (66). Inte byggt: räkningen av hur många som såg och öppnade ett erbjudande, och att den fara varningen gäller
+väljs på kartan.
+
+**Alternativ.** Länken direkt ur notisen: föraren hamnar hos partnern utan att ha sett att det var ett erbjudande eller från vem.
+
+**Stomdokument:** APP — notisens tryck och bladet för erbjudanden; SYS — slaget och partnerns länk i push_utskick

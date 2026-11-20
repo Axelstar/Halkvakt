@@ -3437,6 +3437,26 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   §9.5 punkt 8): både A1 och K, bara A1, bara K, ett annat lager och inget, för veckan och säsongen. Läst i panelen 20/11 före bygget:
   vid de halkkopplade olyckorna sedan 6/11 varnade båda vid 29, bara A1 vid 42 och bara K vid 18 av 144. Kvar: deploy och
   veckoärendet 23/11.
+- 20/11 (Claude; Bengts fråga om steget i kartan): **Radarns tal R bokfört i projektkartan.** Steget *Radarns tal R i
+  förregistreringen (§10 a)* under `k-radar` stod som saknas sedan 26/10, fast talet lästes den dagen: R = 0,1 mm/h, och sql/069
+  migrerades (STATUS 26/10, DECISIONS #725, #726). Steget är klart med det beviset; motorns steg säger 0,1 i stället för 0,5, och
+  delens saknas-rad är nederbördstypen ovanpå radarn (kort #45).
+- 20/11 (Claude): **Frågan om erbjudanden har ny, kortare text och lovar inget antal** (DECISIONS #923, kort #674; Axels ord). Bygget
+  är 0.4.1 (64), inte uppladdat: det följer med nästa uppladdning.
+- 20/11 (Claude): **Utskicket av notiser byggt till provet** (DECISIONS #924, kort #674): Axel skapade APNs-nyckeln och lade den som
+  hemlighet; sql/131 `push_utskick`, funktionen `app-push`, och appen skickar notisadressen efter ja och tillåtna notiser. Bygget är
+  0.4.1 (65). Inte byggt: regeln, Android och hur *Aldrig när du kör* hålls.
+- 20/11 (Claude): **iPhone 0.4.1 (65) uppladdad till TestFlight** från main 5b1d1f2 (körning 44806322553; PR #1738 och kartrepots
+  PR #38 ihopslagna), med erbjudandetexten (#923) och notisadressen (#924). sql/131 körd (dbknapp 44806315633), `app-push` deployad
+  (44806319585) och prövad med tom kö: POST ger `{"utskick":0}`, GET 405. Ingen notis skickad än, och inget prövat på en telefon.
+- 20/11 (Claude): **Provnotisen nådde Axels telefon** (DECISIONS #924, kort #674): bygge 0.4.1 (65) sparade notisadressen, raden i
+  `push_utskick` gav `skickade 1, fallna 0` hos Apple, och Axel bekräftade notisen på låsskärmen. Den första, skickad medan appen
+  var öppen, visades inte: appen kastar notiser i förgrunden. Fyra val står i bedömningens §4.2 innan något skickas till förare.
+- 20/11 (Claude): **Notisens tryck och bladet för erbjudanden** (DECISIONS #926, kort #674): varningen öppnar startsidan och visas
+  också med appen öppen, erbjudandet öppnar ett blad med partnerns namn och länk; sql/132. Bygget är 0.4.1 (66).
+- 20/11 (Claude): **iPhone 0.4.1 (66) uppladdad till TestFlight** från main af39408 (körning 44811855745; den första, 44811437474,
+  föll i exporten på *The network connection was lost*; PR #1741 ihopslagen). sql/132 körd (dbknapp 44811311754) och `app-push`
+  deployad (44811433609). Notisens tryck och bladet för erbjudanden (DECISIONS #926) är inte prövade på en telefon.
 - 20/11 (Claude; Bengt: *"Ja, och deploya"*): **Överlappet i olycksfacit i drift** (DECISIONS #925). PR #1733 sammanslagen som
   b2d8e8b0; funktionen olycksfacit deployad 17.52 UTC (deploy-supabase 44787291291 ur b2d8e8b0). Beviset är veckoärendet 2026-V47
   måndag 23/11 (frist olycksfacit-overlappet-2026-11-23): en körning med ?torrt=1 kräver nyckeln och görs inte härifrån.

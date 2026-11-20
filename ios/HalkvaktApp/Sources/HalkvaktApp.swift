@@ -408,6 +408,7 @@ struct RootView: View {
     @State private var fav = Favoriter.shared
     @State private var prefs = Prefs.shared
     @State private var plats = Platsdelning.shared
+    @State private var notis = Servernotis.shared
     var body: some View {
         ZStack(alignment: .bottom) {
             // Flikarna lever hela tiden, som i TabView: ingen omladdning och ingen tappad undersida vid flikbyte.
@@ -436,11 +437,15 @@ struct RootView: View {
         .fullScreenCover(isPresented: $guardM.running) { KorlageView() }
         // Favoriter 2a (#817): notisen och raden på Redo öppnar fliken med dagens resor överst.
         .onChange(of: fav.visaFliken) { _, visa in if visa { tab = 1; fav.visaFliken = false } }
+        // Ett tryck på en varning från servern (DECISIONS #926): startsidan med kartan Nära dig. Ett erbjudande: bladet.
+        .onChange(of: notis.visaStart) { _, visa in if visa { tab = 0; hem += 1; notis.visaStart = false } }
+        .sheet(item: $notis.erbjudande) { ErbjudandeBlad(erbjudande: $0) }
     }
 }
 
 @main
 struct HalkvaktApp: App {
+    @UIApplicationDelegateAdaptor(Appdelegat.self) private var delegat
     @State private var prefs = Prefs.shared
     @Environment(\.scenePhase) private var scenePhase
 

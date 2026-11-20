@@ -1,12 +1,16 @@
 // Platsdelningen (DECISIONS #917, #918). Spegel av servern: supabase/functions/app-enhet och sql/130_app_enhet.sql.
 //
-// VAD SOM LÄMNAR TELEFONEN, och bara efter förarens ja: {id, app, kommun, erbj} till app-enhet. id är slumpat här i appen,
+// VAD SOM LÄMNAR TELEFONEN, och bara efter förarens ja: {id, app, kommun, erbj, token} till app-enhet. id är slumpat här i appen,
 // kommun är koden för kommunen telefonen senast var i, räknad i telefonen ur Kommunkarta. Aldrig koordinater, aldrig en resa.
+// token är notisadressen Apple ger appen på den här telefonen (DECISIONS #924), och den följer bara med när föraren också har
+// tillåtit notiser. Utan den går det inte att skicka en notis hit.
 // Servern sparar en rad per id och skriver över den; Radera min data tar bort den.
 // Bara i TestFlight och i utvecklarbyggen tills orden är bytta överallt (#918): ett App Store-bygge frågar inte och skickar inget.
 // Skickas när bilen står: appen öppnas, vakten stannar eller föraren svarar. Aldrig under körning, inga timers (som Raknare).
 import Foundation
 import CoreLocation
+import UIKit
+import UserNotifications
 import Observation
 import HalkvaktEngine
 
@@ -49,6 +53,8 @@ final class Platsdelning {
     private(set) var kommun: String? { didSet { d.set(kommun, forKey: "k.plats.kommun") } }
     private(set) var kommunNamn: String? { didSet { d.set(kommunNamn, forKey: "k.plats.kommunNamn") } }
     private(set) var skickad: Date? { didSet { d.set(skickad, forKey: "k.plats.skickad") } }
+    /// Notisadressen från Apple, som hex. nil tills föraren tillåtit notiser och Apple svarat.
+    private(set) var notisadress: String? { didSet { d.set(notisadress, forKey: "k.plats.notisadress") } }
     /// Senaste försöket föll. Raden under Din data säger det, och nästa tillfälle försöker igen.
     private(set) var sandningFel = false
 
@@ -67,6 +73,7 @@ final class Platsdelning {
         kommun = d.string(forKey: "k.plats.kommun")
         kommunNamn = d.string(forKey: "k.plats.kommunNamn")
         skickad = d.object(forKey: "k.plats.skickad") as? Date
+        notisadress = d.string(forKey: "k.plats.notisadress")
     }
 
     func svara(ja: Bool, erbjudanden: Bool = false) {
@@ -84,6 +91,7 @@ final class Platsdelning {
     /// Ett dygn: servern gallrar en rad som inte hört av sig på 30 dygn.
     func uppdatera() {
         guard Self.tillaten, svar == .ja, !GuardManager.shared.running else { return }
+        begarAdress()
         let plats = GuardManager.shared.lastLoc
             ?? CLLocationManager().location.map { (lon: $0.coordinate.longitude, lat: $0.coordinate.latitude) }
         if let plats, let k = karta?.kommun(lon: plats.lon, lat: plats.lat), k.k != kommun {
@@ -96,11 +104,28 @@ final class Platsdelning {
         if andrad || gammal { Task { await skicka() } }
     }
 
+    /// Ber Apple om notisadressen när föraren har tillåtit notiser. Svaret kommer till Appdelegat, som anropar nyAdress.
+    private func begarAdress() {
+        Task {
+            guard await HeadsUpService.shared.status() == .authorized else { return }
+            UIApplication.shared.registerForRemoteNotifications()
+        }
+    }
+
+    /// Apple har gett appen en notisadress. Skickas med raden om den är ny.
+    func nyAdress(_ hex: String) {
+        guard Self.tillaten, svar == .ja, hex != notisadress else { return }
+        notisadress = hex
+        andrad = true
+        uppdatera()
+    }
+
     private func skicka() async {
         guard Raknare.aktiv, !pagar, let id, let kommun else { return }
         pagar = true
         defer { pagar = false }
-        let kropp: [String: Any] = ["id": id, "app": "ios", "kommun": kommun, "erbj": erbjudanden]
+        var kropp: [String: Any] = ["id": id, "app": "ios", "kommun": kommun, "erbj": erbjudanden]
+        if let notisadress { kropp["token"] = notisadress }
         if await anropa("POST", kropp) == 204 {
             skickad = .now
             andrad = false
@@ -118,6 +143,8 @@ final class Platsdelning {
         kommun = nil
         kommunNamn = nil
         skickad = nil
+        notisadress = nil
+        UIApplication.shared.unregisterForRemoteNotifications()
         sandningFel = false
         svar = .nej
         erbjudanden = false
