@@ -1,10 +1,12 @@
-// RESANS STRÄCKOR (DECISIONS #930): en planerad resa delad i sträckor i den ordning föraren kör, för skärmen Planerad resa.
+// RESANS STRÄCKOR (DECISIONS #930, Förslag A #933): en planerad resa delad i sträckor i den ordning föraren kör, för skärmen
+// Planerad resa.
 //
-// Regeln: resan bryts vid de större orter som ligger längs vägen, och grannsträckor med samma läge slås ihop. En brytpunkt
-// hamnar alltså vid en ort, och bara där läget byter. Läget är det rapporten redan har räknat fram, ingenting nytt:
+// Regeln: resan bryts vid varje större ort som ligger längs vägen. Sträckorna slås inte ihop (Axel 20/11: en enda hal sträcka
+// från Helsingborg till Östermalm sade för lite). Läget är det rapporten redan har räknat fram, ingenting nytt:
 //   halt      minst en halksträcka (Trafikverkets väglag) på sträckan
 //   frysrisk  ingen halka, men minst en station eller bro med frysrisk enligt röstens regel
 //   lugnt     ingetdera
+// Sträckan säger hur många ställen halkan gäller och vilken sorts halka det är, med Trafikverkets ord skrivna som vanlig svenska.
 // Tiden vid en sträcka är avresan plus sträckans andel av Apples restid. Det är en klocktid, ingen prognos: väglaget på raden
 // är läget nu, inte läget då.
 //
@@ -84,11 +86,7 @@ public enum Resstrackor {
                 .enumerated().sorted { $0.element.langsM != $1.element.langsM ? $0.element.langsM < $1.element.langsM : $0.offset < $1.offset }
                 .map(\.element)
             let lage: StrackLage = mina.contains { $0.slag == .halka } ? .halt : mina.contains { $0.slag == .frysrisk } ? .frysrisk : .lugnt
-            if let f = ut.last, f.lage == lage {
-                ut[ut.count - 1] = Resstracka(fran: f.fran, franM: f.franM, tillM: Int(till.rounded()), lage: lage, rader: f.rader + mina)
-            } else {
-                ut.append(Resstracka(fran: b.namn, franM: Int(b.m.rounded()), tillM: Int(till.rounded()), lage: lage, rader: mina))
-            }
+            ut.append(Resstracka(fran: b.namn, franM: Int(b.m.rounded()), tillM: Int(till.rounded()), lage: lage, rader: mina))
         }
         return ut
     }
@@ -99,48 +97,105 @@ public enum Resstrackor {
         return avresa.addingTimeInterval(restidS * Double(min(max(m, 0), totalM)) / Double(totalM))
     }
 
+    /// Punkten `m` meter in på vägen.
+    public static func punkt(_ rutt: [[Double]], kum: [Double], m: Double) -> [Double]? {
+        guard rutt.count == kum.count, !rutt.isEmpty else { return nil }
+        guard let i = kum.firstIndex(where: { $0 >= m }) else { return rutt.last }
+        guard i > 0, kum[i] > kum[i - 1] else { return rutt[i] }
+        let t = (m - kum[i - 1]) / (kum[i] - kum[i - 1])
+        return [rutt[i - 1][0] + t * (rutt[i][0] - rutt[i - 1][0]), rutt[i - 1][1] + t * (rutt[i][1] - rutt[i - 1][1])]
+    }
+
     // MARK: - Texterna
 
-    private static func antal(_ n: Int, _ en: String, _ flera: String) -> String { n == 1 ? "1 \(en)" : "\(n) \(flera)" }
+    private static func stallen(_ n: Int) -> String { n == 1 ? "1 ställe" : "\(n) ställen" }
 
-    /// Sträckans rubrik: "Halt väglag", "Frysrisk" eller "Lugnt".
+    /// Antalet halksträckor på sträckan, eller platserna med frysrisk när ingen halka finns.
+    public static func antal(_ s: Resstracka) -> Int {
+        let halka = s.rader.filter { $0.slag == .halka }.count
+        return halka > 0 ? halka : s.rader.filter { $0.slag == .frysrisk }.count
+    }
+
+    /// Sträckans rubrik: "Halt på 4 ställen", "Frysrisk på 1 ställe" eller "Lugnt".
     public static func rubrik(_ s: Resstracka) -> String {
         switch s.lage {
-        case .halt: return "Halt väglag"
-        case .frysrisk: return "Frysrisk"
+        case .halt: return "Halt på \(stallen(antal(s)))"
+        case .frysrisk: return "Frysrisk på \(stallen(antal(s)))"
         case .lugnt: return "Lugnt"
         }
     }
 
-    /// Raden under rubriken: det som räknats på sträckan. "3 hala sträckor. 2 stationer med frysrisk. 1 vägarbete."
-    public static func under(_ s: Resstracka) -> String {
-        let n = { (slag: RapportSlag) in s.rader.filter { $0.slag == slag }.count }
-        var delar: [String] = []
-        if n(.halka) > 0 { delar.append(antal(n(.halka), "hal sträcka", "hala sträckor")) }
-        if n(.frysrisk) > 0 { delar.append(antal(n(.frysrisk), "plats med frysrisk", "platser med frysrisk")) }
-        if n(.olycka) > 0 { delar.append(antal(n(.olycka), "olycka", "olyckor")) }
-        if n(.hinder) > 0 { delar.append(antal(n(.hinder), "hinder", "hinder")) }
-        if n(.vilt) > 0 { delar.append(antal(n(.vilt), "viltrapport", "viltrapporter")) }
-        if n(.ko) > 0 { delar.append(antal(n(.ko), "kö", "köer")) }
-        if n(.vagarbete) > 0 { delar.append(antal(n(.vagarbete), "vägarbete", "vägarbeten")) }
-        if n(.kamera) > 0 { delar.append(antal(n(.kamera), "fartkamera", "fartkameror")) }
-        return delar.isEmpty ? "Inget rapporterat på sträckan." : delar.joined(separator: ". ") + "."
+    /// Etiketten till höger: antalet ställen för halkan, annars läget.
+    public static func tagg(_ s: Resstracka) -> String {
+        switch s.lage {
+        case .halt: return stallen(antal(s)).uppercased()
+        case .frysrisk: return "FRYSRISK"
+        case .lugnt: return "LUGNT"
+        }
     }
 
-    /// Domen överst: rubriken och en mening om var det börjar.
-    public static func dom(_ strackor: [Resstracka]) -> (rubrik: String, text: String) {
-        let km = { (m: Int) in "\(Int((Double(m) / 1000).rounded()))" }
-        guard let varst = strackor.map(\.lage).max(), varst != .lugnt, let forsta = strackor.first(where: { $0.lage != .lugnt }) else {
-            return ("Lugnt hela vägen.", "Inget halt och ingen frysrisk rapporterad längs vägen. Ändras läget under resan säger rösten till.")
+    /// Trafikverkets ord för väglaget som vanlig svenska. Nyckeln är ordet med små bokstäver och utan "fläckvis".
+    private static let vaglagsord: [String: (ordning: Int, text: String)] = [
+        "is": (0, "is"), "is med bart i hjulspår": (1, "is med bart i hjulspåren"), "packad snö": (2, "packad snö"),
+        "moddig vägbana": (3, "snömodd"), "moddsträngar": (4, "moddsträngar"), "lössnö": (5, "lössnö"),
+    ]
+    /// Ord som inte är halka i sig: de står med när en sträcka öppnas, men inte i sammanfattningen.
+    private static let bredvidord: [String: String] = ["våt": "vått", "torrt": "torrt"]
+    private static let utanOrd = "halka rapporterad på sträckan"
+
+    private static func ord(_ text: String) -> [(flackvis: Bool, ord: String)] {
+        text.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces).lowercased() }.filter { !$0.isEmpty }.map {
+            $0.hasPrefix("fläckvis ") ? (true, String($0.dropFirst("fläckvis ".count))) : (false, $0)
         }
-        let vad = varst == .halt ? "Halt" : "Frysrisk"
-        let hal = strackor.first { $0.lage == varst }!
-        let var_ = hal.franM == 0 ? "redan från start" : hal.fran.map { "från \($0)" } ?? "efter \(km(hal.franM)) kilometer"
-        var text = forsta.franM == 0 ? "" : "Lugnt de första \(km(forsta.franM)) kilometrarna."
-        if varst == .halt, forsta.lage == .frysrisk {
-            text += (text.isEmpty ? "" : " ") + "Frysrisk \(forsta.franM == 0 ? "från start" : forsta.fran.map { "från \($0)" } ?? "efter \(km(forsta.franM)) kilometer")."
+    }
+
+    /// En halkrads text för den öppnade sträckan: "fläckvis Is, Våt" blir "fläckvis is, vått".
+    public static func rentVaglag(_ text: String) -> String {
+        let delar = ord(text).map { o in "\(o.flackvis ? "fläckvis " : "")\(vaglagsord[o.ord]?.text ?? bredvidord[o.ord] ?? o.ord)" }
+        return delar.isEmpty ? utanOrd : delar.joined(separator: ", ")
+    }
+
+    /// Sorterna av halka på sträckan i en mening: "Fläckvis is och moddsträngar." Ett ord är fläckvis bara när varje rad säger det.
+    static func sorter(_ rader: [RapportRad]) -> String {
+        var funna: [String: (ordning: Int, text: String, flackvis: Bool)] = [:]
+        for o in rader.filter({ $0.slag == .halka }).flatMap({ ord($0.text) }) where bredvidord[o.ord] == nil && o.ord != utanOrd {
+            let k = vaglagsord[o.ord] ?? (9, o.ord)
+            funna[k.text] = (k.ordning, k.text, o.flackvis && (funna[k.text]?.flackvis ?? true))
         }
-        if text.isEmpty { text = "Läget kan ändras under resan, och då säger rösten till." }
-        return ("\(vad) \(var_).", text)
+        // Is med bart i hjulspåren är också is: står båda räcker ordet is.
+        if funna["is"] != nil { funna["is med bart i hjulspåren"] = nil }
+        let delar = funna.values.sorted { ($0.ordning, $0.text) < ($1.ordning, $1.text) }.map { "\($0.flackvis ? "fläckvis " : "")\($0.text)" }
+        guard let sista = delar.last else { return "Halt väglag rapporterat." }
+        let mening = delar.count == 1 ? sista : delar.dropLast().joined(separator: ", ") + " och " + sista
+        return mening.prefix(1).uppercased() + mening.dropFirst() + "."
+    }
+
+    /// "Frysrisk vid en mätstation.", "Frysrisk vid 2 mätstationer och på en bro."
+    static func frysrisk(_ rader: [RapportRad]) -> String? {
+        let alla = rader.filter { $0.slag == .frysrisk }
+        let broar = alla.filter { $0.id.hasPrefix("bro:") }.count, stationer = alla.count - broar
+        var delar: [String] = []
+        if stationer > 0 { delar.append(stationer == 1 ? "vid en mätstation" : "vid \(stationer) mätstationer") }
+        if broar > 0 { delar.append(broar == 1 ? "på en bro" : "på \(broar) broar") }
+        return delar.isEmpty ? nil : "Frysrisk " + delar.joined(separator: " och ") + "."
+    }
+
+    /// Raden under rubriken: vilken sorts halka det är, och frysrisken. Vägarbeten, hinder och kameror står först när sträckan öppnas.
+    public static func under(_ s: Resstracka) -> String {
+        switch s.lage {
+        case .halt: return [sorter(s.rader), frysrisk(s.rader)].compactMap { $0 }.joined(separator: " ")
+        case .frysrisk: return frysrisk(s.rader) ?? "Frysrisk."
+        case .lugnt: return "Inget halt rapporterat."
+        }
+    }
+
+    /// Omdömet överst, i en mening: hur många ställen det gäller och var det börjar.
+    public static func dom(_ strackor: [Resstracka]) -> String {
+        guard let varst = strackor.map(\.lage).max(), varst != .lugnt, let forsta = strackor.first(where: { $0.lage == varst }) else {
+            return "Lugnt hela vägen."
+        }
+        let n = strackor.filter { $0.lage == varst }.map(antal).reduce(0, +)
+        let var_ = forsta.franM == 0 ? "redan på första sträckan" : "\(n == 1 ? "efter" : "först efter") \(forsta.fran ?? "start")"
+        return "\(varst == .halt ? "Halt" : "Frysrisk") på \(stallen(n)), \(var_)."
     }
 }
