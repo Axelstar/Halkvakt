@@ -3475,3 +3475,5 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   lägger varje varnande stadspunkt som en punkt i `kandidat.geojson`, och halkvakt-karta ritar dem i Prognos-färgen. Provat i
   webbläsarpanelen mot en kopia av kvällens data med stadspunkterna inlagda (107 ritade i vyn, knappen slår av och på). Kvar:
   sammanslagningen, deployen av publicera och kartrepots PR.
+- 20/11 (Claude): **TestFlight-bygget återkallar sitt eget certifikat** (DECISIONS #929; Axels ja): `scripts/asc-certifikat.mjs` och två
+  steg i testflight.yml. Inte prövat: det visar sig vid nästa uppladdning. Fristen för Xcode 27, 1 mars 2027, står i fristerna.

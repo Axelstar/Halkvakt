@@ -18881,3 +18881,21 @@ prognospunkter, alltså inga av dem. Kartan visade därmed färre varningar än 
 **Alternativ.** Att rita en bit längs stadens gata. Det kräver gatornas linjer, som inte finns i databasen.
 
 **Stomdokument:** SYS — livekartan ritar storstädernas punkter
+## #929 (20/11 2026) TestFlight-bygget återkallar sitt eget certifikat, och Xcode 27 får en frist (gamla kort #366)
+
+**Beslut** (Axel 20/11: *"Hur fixar vi det med certifikaten så jag inte behöver ta bort det hela tiden?"*, och till förslaget: *"Ys
+please do that"*).
+- **Städningen.** Varje uppladdning körs på en ny Mac hos GitHub, som skapar ett eget Apple Development-certifikat och lämnar det
+  kvar. Kontot slog i Apples tak 29/10 (#582, kort #366) och igen 20/11 efter fem uppladdningar, och Axel rensade för hand båda
+  gångerna. Flödet läser nu utvecklingscertifikatens id före bygget och återkallar efter uppladdningen dem som kommit till under
+  körningen (`scripts/asc-certifikat.mjs`). Distributionscertifikaten och allt som fanns före rörs inte. Flödet kör ett bygge i
+  taget, så ett annat bygges certifikat kan inte tas. Faller ett av stegen fortsätter bygget, och då återkallas ingenting.
+- **Inte prövat.** Att nyckeln får återkalla certifikat visar sig vid nästa uppladdning. Säger Apple nej står det i körningens logg,
+  och då behöver nyckelns roll höjas i App Store Connect.
+- **Xcode 27.** Apple varnar efter varje uppladdning (ITMS-90725) att bygget från april 2027 måste gå på Xcode 27 med iOS 27 SDK.
+  Fristen 1 mars 2027 står i `docs/fristerna.json`.
+
+**Alternativ.** Ett sparat certifikat som hemlighet (kort #366 steg 2 som det skrevs): en hemlighet till att hålla reda på, och
+bygget står stilla när den går ut efter ett år.
+
+**Stomdokument:** inga — byggflödets inre, ingen del av appen eller driften ändras
