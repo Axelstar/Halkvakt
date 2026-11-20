@@ -3454,6 +3454,9 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   var öppen, visades inte: appen kastar notiser i förgrunden. Fyra val står i bedömningens §4.2 innan något skickas till förare.
 - 20/11 (Claude): **Notisens tryck och bladet för erbjudanden** (DECISIONS #926, kort #674): varningen öppnar startsidan och visas
   också med appen öppen, erbjudandet öppnar ett blad med partnerns namn och länk; sql/132. Bygget är 0.4.1 (66).
+- 20/11 (Claude): **iPhone 0.4.1 (66) uppladdad till TestFlight** från main af39408 (körning 44811855745; den första, 44811437474,
+  föll i exporten på *The network connection was lost*; PR #1741 ihopslagen). sql/132 körd (dbknapp 44811311754) och `app-push`
+  deployad (44811433609). Notisens tryck och bladet för erbjudanden (DECISIONS #926) är inte prövade på en telefon.
 - 20/11 kväll (Claude; Bengt: *"Jag tycker att kartan ska rita punkterna"*): **Livekartan ritar storstädernas punkter** (DECISIONS #927). `publish/map-core.ts`
   lägger varje varnande stadspunkt som en punkt i `kandidat.geojson`, och halkvakt-karta ritar dem i Prognos-färgen. Provat i
   webbläsarpanelen mot en kopia av kvällens data med stadspunkterna inlagda (107 ritade i vyn, knappen slår av och på). Kvar:
