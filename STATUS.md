@@ -3430,3 +3430,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 20/11 (Claude): **Startsidan visar bara frysrisk som uppfyller röstens regel, och farorna på kartan går att trycka på** (DECISIONS
   #922, kort #659; Axels fråga om Oxie och Svedala). Regeln `frysriskGaller` i motorpaketet på iPhone och Android, med prov. Bygget är
   0.4.1 (63). Inte prövat på en telefon. Android får rättningen i sitt nästa bygge.
+- 20/11 (Claude): **iPhone 0.4.1 (63) uppladdad till TestFlight** från main 1ecb0ce (körning 44783383194; PR #1732 ihopslagen):
+  frysrisken på startsidan enligt röstens regel och tryckbara faror på kartan (DECISIONS #922). Före: ios-engine (44779944608),
+  android (44781512371), ci och TestFlight-provet (44779939989) gröna på grenen. Inte prövat på en telefon.
