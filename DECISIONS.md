@@ -19272,3 +19272,28 @@ karta ritad i appen: Googles väg får bara ritas på Googles karta eller utan k
 valdes bort på iPhone (DECISIONS #933).
 
 **Stomdokument:** APP — Android: Planera resa med Googles sökning och väg och karta
+
+## #944 (21/11 2026) Inläggen och reelsen: appen för båda telefonerna, och filmen börjar inte svart (kort #281)
+
+**Beslut** (Axel 21/11: *"we need to somehow get users to understand that they can download and get real time updates in the app
+(android and iOS)"* och *"the reels needs to start later so they dont just start with a black image"*; annonserna rörs inte).
+1. **Texten** i Halkvakt live och reels: raden om appen lyder *I appen säger Halkvakt till direkt, med rösten, innan du är där. Gratis
+   för iPhone och Android.* Facebook får en länk till App Store och en till Google Play; Instagram pekar som förut på profilen.
+   Förut stod *Gratis för iPhone* med bara App Store-länken, fast Android är ute sedan 13/11.
+2. **Bilderna:** svepinläggets omslag och varje enbildsinlägg (också larmen) får raden *Varningen direkt i appen · iPhone och
+   Android* ovanför foten, i textfärgen och aldrig i gult. Svepets sista bild säger *Gratis för iPhone och Android* och bär båda
+   butikernas märken.
+3. **Reelsens slutbild** bär *App Store* och *Google Play* och raden *Varningen direkt i appen*.
+4. **Filmen spelas in från 0,6 s** (`START` i reels.mjs), och ljudet klipps lika. Varje film tonar in från svart, så den första
+   bilden, som Instagram och Facebook visar som omslag, var tom. Vid 0,6 s står rubriken fullt synlig i alla elva filmerna
+   (sett i en bild per film). Filmen blir 0,6 s kortare.
+5. Orden säger *direkt*, inte *realtid*: appen läser samma snapshot som sajten och varnar när bilen närmar sig.
+
+Löftesraden i svepets sista bild och i reelsens slutbild (*Din position skickas aldrig till Halkvakt*) är inte ändrad här. Den
+byts med de andra orden när platsdelningen släpps (DECISIONS #917).
+
+**Alternativ.** Att sätta reelens omslag med Instagrams `thumb_offset` och låta filmen börja svart: då börjar den ändå svart
+för den som ser den spelas, och Facebook har ingen motsvarande inställning i samma anrop. Att skriva *i realtid*: det säger mer
+än datan bär.
+
+**Stomdokument:** inga — inläggens och reelsens ordalydelse står inte i stomdokumenten

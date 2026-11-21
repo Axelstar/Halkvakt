@@ -189,6 +189,13 @@ test("App Store-länken står i Facebook-texten, inte i Instagram-texten", () =>
   assert.ok(!bildtext(alla, "2026-11-12T05:30:00Z", "instagram").includes("apps.apple.com"));
 });
 
+test("båda butikerna står i varje inlägg: länkarna på Facebook, orden på Instagram (DECISIONS #944)", () => {
+  const alla = [l("A", 1, 0)], fb = bildtext(alla, "2026-11-12T05:30:00Z"), ig = bildtext(alla, "2026-11-12T05:30:00Z", "instagram");
+  assert.match(fb, /https:\/\/play\.google\.com\/store\/apps\/details\?id=se\.halkvakt\.app/);
+  assert.ok(!ig.includes("play.google.com"));
+  for (const t of [fb, ig]) assert.match(t, /I appen säger Halkvakt till direkt, med rösten, innan du är där\. Gratis för iPhone och Android/);
+});
+
 test("varje inlägg säger att Halkvakt är oberoende och var siffrorna kommer från", () => {
   const t = bildtext([l("A", 1, 0)], "2026-11-12T05:30:00Z");
   assert.match(t, /Halkvakt är en oberoende app och sajt, inte en del av Trafikverket\. Siffrorna kommer från Trafikverkets öppna data\./);

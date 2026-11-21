@@ -60,9 +60,12 @@
   .ruta q { quotes:"\201D" "\201D"; font-size:40px; font-weight:500; line-height:1.25; }
   .ruta .lb { flex:none; font-size:22px; font-weight:500; letter-spacing:.14em; color:var(--dampad); }
   .ruta .lv { margin-left:auto; font-size:34px; font-weight:500; text-align:right; }
-  .ladda { margin-top:auto; display:flex; justify-content:space-between; align-items:center; gap:32px; }
+  .lank { margin-top:auto; font-size:24px; font-weight:500; letter-spacing:.14em; color:var(--dampad); text-transform:uppercase; }
+  .ladda { margin-top:20px; display:flex; align-items:center; gap:20px; }
+  /* Google's official badge (google-play-badge-sv.png, unchanged) has air around it in the file: 146 px gives the same visible height. */
+  .badge.play { height:146px; aspect-ratio:646/250; margin:-17px -15px; }
+  .appr { margin-top:28px; font-size:24px; font-weight:500; letter-spacing:.1em; text-transform:uppercase; color:var(--text); }
   .badge { height:112px; width:auto; aspect-ratio:119.66407/40; }
-  .ladda .mono { font-size:24px; font-weight:500; letter-spacing:.14em; color:var(--dampad); text-align:right; }
   .appen .fot { margin-top:44px; padding-top:28px; border-top:2px dashed var(--delare); }
 
   /* Länskortet: Meta-annonsens kort (meta-mall/halkvakt-meta-feed.html) utan App Store-bandet */
@@ -127,6 +130,7 @@ function omslag(d) {
     <div class="index"><div class="hd mono"><span>Bild · Län</span><span>Vägavsnitt med halka</span></div>${rader}</div>
     ${d.fler ? `<p class="fler mono">+ ${d.fler} län till på halkvakt.se/lan</p>` : ''}
     <div class="svep"><span>Svep till ditt län</span><i aria-hidden="true"><svg width="56" height="56" viewBox="0 0 48 48" fill="none" stroke="#080B0D" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 24 H38 M27 13 L38 24 L27 35"/></svg></i></div>
+    <p class="appr mono">Varningen direkt i appen · iPhone och Android</p>
     <div class="fot mono"><span class="logo">${marke('#FFC94A')}HALKVAKT</span><span>KÄLLA TRAFIKVERKET${raknare(d)}</span></div>
   </div>`;
 }
@@ -149,12 +153,13 @@ function lanskort(d) {
 function appen(d) {
   const staplar = [24, 46, 64, 34, 54, 26].map(h => `<b style="height:${h}px"></b>`).join('');
   return `<div id="bild" class="mork appen">
-    <div class="meta mono"><span class="l"><span class="prick"></span>Appen</span><span>Gratis för iPhone</span></div>
+    <div class="meta mono"><span class="l"><span class="prick"></span>Appen</span><span>Gratis för iPhone och Android</span></div>
     <h1>Halkvakt varnar med rösten innan du är där.</h1>
     <p class="under">Halka, olyckor, frysrisk, vilt och fartkameror från Trafikverket, i bilens högtalare.</p>
     <div class="ruta rost"><span class="vag" aria-hidden="true">${staplar}</span><q>Varning: halka rapporterad på vägen framför dig.</q></div>
     <div class="ruta"><span class="lb mono">Löftet</span><span class="lv">Din position skickas aldrig till Halkvakt av sig själv.</span></div>
-    <div class="ladda">${BADGE}<span class="mono">Länken finns<br>i profilen</span></div>
+    <p class="lank mono">Länken finns i profilen</p>
+    <div class="ladda">${BADGE}<img id="playbadge" class="badge play" src="../meta-mall/google-play-badge-sv.png" alt="Ladda ned på Google Play"></div>
     <div class="fot mono"><span class="logo">${marke('#FFC94A')}HALKVAKT</span><span>HALKVAKT.SE${raknare(d)}</span></div>
   </div>`;
 }
@@ -173,7 +178,7 @@ function fit() {
 
 const d = getData();
 document.getElementById('bild').outerHTML = (d.bild === 'lan' ? lanskort : d.bild === 'appen' ? appen : omslag)(d);
-document.fonts.ready.then(() => { fit(); requestAnimationFrame(() => { document.documentElement.dataset.ready = '1'; }); });
+Promise.all([document.fonts.ready, document.getElementById('playbadge')?.decode().catch(() => {})]).then(() => { fit(); requestAnimationFrame(() => { document.documentElement.dataset.ready = '1'; }); });
 </script>
 </body>
 </html>
