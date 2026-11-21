@@ -19,6 +19,9 @@ on:
         default: "120"
   schedule:
     - cron: "40 6 * * 1"
+  push:  # TILLFÄLLIG: zonskuggan på grenen (tas bort när körningen är läst)
+    branches: [claude/project-thread-cxpfny]
+    paths: [scripts/fuktskuggan-takt.ts, .github/workflows/fuktskuggan-takt.yml]
 permissions:
   contents: read
 jobs:
@@ -35,7 +38,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          FRAN="${{ inputs.fran }}"; TILL="${{ inputs.till }}"
+          FRAN="${{ inputs.fran || (github.event_name == 'push' && '2026-11-06' || '') }}"; TILL="${{ inputs.till }}"
           [ -n "$FRAN" ] || FRAN=$(date -u -d '7 days ago' +%F)
           [ -n "$TILL" ] || TILL=$(date -u -d 'yesterday' +%F)
           # Arkivets fönster räknas bakåt från i dag, med nio dygn till: karantänen läser de sju dygnen före varje rad.
