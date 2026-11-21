@@ -1464,6 +1464,17 @@
       "facebook": "1312515671952967_122114764521516187",
       "instagram": "17912454702665646",
       "x": "2124168902754336881"
+    },
+    {
+      "pass": "live",
+      "namn": "2026-11-21-live-1907",
+      "typ": "smhi",
+      "nyckel": "smhi:Snöfall:Delar av östra Svealand:YELLOW",
+      "tid": "2026-11-21T18:07:54.717Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-11-21-live-1907.jpg",
+      "facebook": "1312515671952967_122114791929516187",
+      "instagram": "18360266158168396",
+      "x": "2124203225566130406"
     }
   ]
 }
