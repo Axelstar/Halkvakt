@@ -19297,3 +19297,45 @@ för den som ser den spelas, och Facebook har ingen motsvarande inställning i s
 än datan bär.
 
 **Stomdokument:** inga — inläggens och reelsens ordalydelse står inte i stomdokumenten
+
+## #945 (21/11 2026) Fuktskuggan i motorn: förslag 2 spelas upp längs skuggans rutter, mot dagens A2
+
+**Beslut** (Bengt 21/11: *"jag vill att du sätter upp skuggkörningen och jag utgår från att den kan göra backtester på det material
+vi redan har samlat"*). Förslag 2 ur analysen 21/11 (A2 läser stationer inom 15 km, och fukt är nederbörd eller ytan under
+daggpunkten, ytgränsen +1 °C som i dag) skuggas på två sätt, som delar arbetet: `sql/138` räknar stationstimmarna och olyckorna
+(DECISIONS #940), och `scripts/fuktskuggan-takt.ts` räknar det föraren skulle höra.
+1. **Uppspelningen.** Varje halvtimme, eller som stickprov var N:e minut (`--steg`), i fönstret körs skuggans tjugo huvudrutter (ROUTES, längs vägnätet, 80 km/h, som skuggmotorn)
+   genom motorn fyra gånger: dagens A2 (BAS), samma plats med daggpunkten (DAGG), räckvidden ensam (RACKVIDD) och förslag 2 (FORSLAG2);
+   i de två sista flyttas varje station inom 15 km från rutten till närmaste punkt på rutten. A1:s sträckor är med i alla fyra, så att takten är bilens. Vakterna är
+   driftens, importerade. Broarna och efterhalkan (S3) är inte med: förslaget rör dem inte.
+2. **Utskriften.** Aggregat per variant, dygn och rutt: körningar, A2-yttranden, andelen körningar med A2, nya A2 (en station
+   basen inte talade om i samma körning), följder inom 60 s och tätaste följd (DECISIONS #200). Ingen station och ingen tid
+   finare än dygnet; repot är publikt.
+3. **Flödet** `fuktskuggan-takt.yml` läser fönstret ur hinken och driften (kort #323) med knappen, upp till 70 dygn, och varje måndag
+   den gångna veckan. Backtestet från 6/11 kördes på grenen med ett stickprov varannan timme (44920836258).
+   `fuktskuggan-larmtid.yml` (`scripts/fuktskuggan-larmtid.sql`) läser larmtiden per stationstimme och sex varianter som kortar den
+   mot olycksfacit (44905288117). Underlaget till beslutet står i `docs/FORSLAG-FUKTREGELN-2026-11-21.md`.
+4. **Motorn, snapshoten och appen ändras inte.** Ändras A2 sker det med ett eget beslut av Bengt och Axel.
+
+**Alternativ.** En variant i skuggmotorn i driften (som väg C, sql/046): kräver daggpunkten i snapshoten eller en ny läsning i
+funktionen, en ny tabell och en deploy, och kan inte se bakåt. Uppspelningen ur arkivet ger samma svar på redan insamlat material
+och rör ingenting som kör. *15 km som räckvidd i motorn* kan också läsas som att motorn talar när föraren är inom 15 km från en
+station; flytten till närmaste punkt på rutten ger samma sak en gång per station och körning, och motorns disciplin står kvar.
+
+**Stomdokument:** MAT §2 fuktskuggan i motorn bredvid A2 och rimfrosten
+
+## #946 (21/11 2026) Olycksfacit: veckans ärende räknar missarna mot facit som inte bygger på stationen (§14)
+
+**Beslut** (Bengt 21/11: *"förregistrera rättelse och 676 veckosammanställning ska räkna..."*, på rekommendationen i
+`docs/FORSLAG-FUKTREGELN-2026-11-21.md` §7 punkt 5). TROSKLAR-OLYCKSFACIT får §14, förregistrerat före det första veckoärendet som bär
+raden (2026-V47) och före varje beslut om A2:s fuktregel:
+1. Veckans ärende (§9.5 punkt 9) delar veckans och säsongens missar på *facit som inte bygger på stationen* (halkordet, TYDLIG, eller
+   Trafikverkets väglag efteråt, `halka_efter`, också TROLIG, väglaget) och *bara på stationen* (övriga TROLIG).
+2. En ändring av ett lager som läser stationen (A2, K, småvägsrösten) prövas på den första raden. För A1 är bara halkordet oberoende.
+3. Ingen klass och ingen åtgärdsrad ändras. Byggt i `supabase/functions/olycksfacit/arende.ts` (`oberoendeFacit`) och `hamta.ts`
+   (läser `halka_efter`), med prov och motprov i `test/olycksfacit-arende.test.ts`.
+
+**Alternativ.** Att ta bort rimfrosten ur TROLIG: färre olyckor blir halka, en lättnad efter sett utfall (regel L), och den behövs inte
+för att skilja facit från regeln. Att göra TROLIG likt A2:s förslag: då bevisar en fångad miss bara att regeln och klassningen är lika.
+
+**Stomdokument:** MAT §3 olycksfacits veckoärende räknar missarna mot oberoende facit

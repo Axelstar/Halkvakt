@@ -12,12 +12,13 @@ export async function hamta(sql: any, fran: string, till: string): Promise<Olyck
            (SELECT l.orsak FROM olycksfacit_lager l WHERE l.deviation_id = f.deviation_id AND l.lager = 'smavag') AS smavag,
            coalesce((SELECT (l.detalj->>'flackvis_vat')::boolean FROM olycksfacit_lager l
                      WHERE l.deviation_id = f.deviation_id AND l.lager = 'K'), false) AS flackvis_vat,
-           f.yta_min, f.fukt_efter, f.rimfrost_efter, s.hink AS fukthink, s.dygn AS dygnsdel, s.deviation_id IS NOT NULL AS i_skuggan
+           f.yta_min, f.fukt_efter, f.rimfrost_efter, f.halka_efter, s.hink AS fukthink, s.dygn AS dygnsdel, s.deviation_id IS NOT NULL AS i_skuggan
     FROM olycksfacit f LEFT JOIN fuktskugga_olycka s USING (deviation_id) WHERE (f.start_time AT TIME ZONE 'Europe/Stockholm')::date BETWEEN ${fran}::date AND ${till}::date
     ORDER BY f.start_time, f.deviation_id`).map((r: any) => ({
       tid: new Date(r.start_time).toISOString(), vag: r.road_number, lon: Number(r.lon), lat: Number(r.lat), utfall: r.utfall,
       orsaker: r.orsaker ?? [], klass: r.klass, skal: r.klass_skal, dubblett: r.dubblett_av !== null, talade: r.talade ?? [],
       art: r.art, smavag: r.smavag, flackvisVat: r.flackvis_vat === true,
       ytaMin: r.yta_min === null ? null : Number(r.yta_min), fuktEfter: r.fukt_efter === true, rimfrostEfter: r.rimfrost_efter === true,
+      halkaEfter: r.halka_efter ?? null,
       ...(r.i_skuggan ? { fukthink: r.fukthink, dygnsdel: r.dygnsdel } : {}) }));
 }
