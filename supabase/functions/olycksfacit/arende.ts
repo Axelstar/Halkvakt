@@ -41,6 +41,10 @@ const UTFALL = ["VARNADE", "TYST_TACKT", "TYST_OTACKT"] as const;
 /** D2 (TROSKLAR-OLYCKSFACIT §11): en kollision på frusen väg är TROLIG och räknas i statistiken, men får ingen åtgärdsrad. */
 export const kollision = (o: Olycka): boolean => o.klass === "TROLIG" && o.art === "flera fordon";
 
+/** Regel 3b (TROSKLAR-OLYCKSFACIT §4 och §13, DECISIONS #942): TROLIG på Trafikverkets väglag efteråt. Rätt varning i klassen
+ *  redovisas för sig och får inte anföras utåt (§9.6), eftersom facit och A1 läser samma källa. */
+export const vaglaget = (o: Olycka): boolean => o.klass === "TROLIG" && (o.skal ?? "").startsWith("väglaget efteråt");
+
 /** En tyst olycka med tydlig eller trolig koppling till halka ska ha en åtgärd, utom en kollision (D2). */
 export function behoverAtgard(o: Olycka): boolean {
   return !o.dubblett && (o.klass === "TYDLIG" || o.klass === "TROLIG") && o.utfall !== "VARNADE" && !kollision(o);
@@ -115,7 +119,7 @@ export function svenskDag(iso: string): string {
 
 const plats = (o: Olycka) => `${vagText(o.vag) ?? "okänd väg"} (${o.lon.toFixed(3)}, ${o.lat.toFixed(3)})`;
 const rattVarning = (o: Olycka, medDag: boolean) =>
-  `- ${medDag ? `${svenskDag(o.tid)} ` : ""}${svenskTid(o.tid)} ${plats(o)} — ${o.klass} (${o.skal ?? "?"}) — varnade: ${o.talade.join(", ") || "?"}`;
+  `- ${medDag ? `${svenskDag(o.tid)} ` : ""}${svenskTid(o.tid)} ${plats(o)} — ${o.klass} (${o.skal ?? "?"}) — varnade: ${o.talade.join(", ") || "?"}${vaglaget(o) ? " — anförs inte utåt (väglaget, §13)" : ""}`;
 /** En miss att åtgärda, utan kryssrutan och åtgärden. */
 const missRad = (o: Olycka, medDag: boolean) => {
   const sv = smavagText(o);
@@ -216,8 +220,9 @@ export function veckansLasrader(veckans: Olycka[], lasdagar: ReadonlySet<string>
 /** E (§11): nämnaren, per klass hur ofta Halkvakt varnade. INTE delas på viltet och ytan över +3 °C. */
 export const NAMNARE: [string, (o: Olycka) => boolean][] = [
   ["TYDLIG", (o) => o.klass === "TYDLIG"],
-  ["TROLIG, ett fordon", (o) => o.klass === "TROLIG" && !kollision(o)],
-  ["TROLIG, kollision", kollision],
+  ["TROLIG, ett fordon", (o) => o.klass === "TROLIG" && !kollision(o) && !vaglaget(o)],
+  ["TROLIG, kollision", (o) => kollision(o) && !vaglaget(o)],
+  ["TROLIG, väglaget", vaglaget],
   ["OKLAR", (o) => o.klass === "OKLAR"],
   ["INTE, vilt", (o) => o.klass === "INTE" && o.skal === "vilt"],
   ["INTE, varmt", (o) => o.klass === "INTE" && o.skal !== "vilt"],
@@ -251,6 +256,7 @@ export function veckaKropp(vecka: string, fran: string, till: string, veckans: O
   const namnare = NAMNARE.map(([namn, f]) => { const x = egna.filter(f); return [namn, x.length, x.filter((o) => o.utfall === "VARNADE").length] as const; });
   const s = sasong.filter((o) => !o.dubblett);
   const sHalk = s.filter(halkkopplad), sRatta = bed("RÄTT VARNING", s);
+  const sVag = s.filter((o) => vaglaget(o) && bedomning(o) === "RÄTT VARNING").length;
   const veckansOmraden = omradesRader(egna), sasongensOmraden = omradesRader(s);
   return [
     MARKV(vecka),
@@ -284,11 +290,13 @@ export function veckaKropp(vecka: string, fran: string, till: string, veckans: O
       : ["Inga missar den här veckan.", ""]),
     ...(ratta.length ? ["**Rätt varning, fall för fall:**", "", ...ratta.map((o) => rattVarning(o, true)), ""] : []),
     `**Säsongen sedan ${FORSTA_DAG}:** ${sHalk.length} halkkopplade olyckor; ` +
-      `Halkvakt hade rätt varning vid ${sRatta} av dem (${procent(sRatta, sHalk.length)}) och missade ${bed("MISS", s)}.`,
+      `Halkvakt hade rätt varning vid ${sRatta} av dem (${procent(sRatta, sHalk.length)}) och missade ${bed("MISS", s)}.` +
+      (sVag ? ` Av de rätta varningarna är ${sVag} i klassen TROLIG, väglaget, och de får inte anföras utåt (§13).` : ""),
     "",
     ...(sasongensOmraden.length ? ["| Område (säsongen) | Missar |", "| :-- | --: |", ...sasongensOmraden, ""] : []),
     "**Säljregeln** (§9.6): bara RÄTT VARNING får anföras utåt, med orden *Halkvakt hade en aktiv varning på platsen när olyckan " +
-      "började*, lagret utskrivet och säsongens andel bredvid — aldrig att en förare varnades eller att en olycka hade undvikits.",
+      "började*, lagret utskrivet och säsongens andel bredvid — aldrig att en förare varnades eller att en olycka hade undvikits." +
+      " Rätt varning i klassen TROLIG, väglaget, anförs inte (§13).",
     "",
     ...(lasrader.length
       ? ["**Att åtgärda: veckans missar** — tysta olyckor med tydlig eller trolig koppling till halka utan förifylld åtgärd " +

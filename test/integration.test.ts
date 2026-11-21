@@ -5581,3 +5581,101 @@ test("#940 fuktskuggan: hinkarna, grannarna, A2 i dag och förslag 2 per olycka,
     await pool.end();
   }
 });
+
+// TROLIG, VÄGLAGET (sql/139, TROSKLAR-OLYCKSFACIT §4 regel 3b och §13, DECISIONS #942). Efterkontrollen är sql/110:s utom de märkta
+// raderna, och fixturerna kring 77° N, en grad isär, åtta timmar gamla. Alla utom VG6 har halka på A1:s sträcka en timme efter starten:
+//   VG1 "Personbil i diket", ingen station                       → TROLIG (väglaget efteråt, ingen vaktad station inom 15 km)
+//   VG2 "Trafikolycka med personbil", +0,5 °C och torrt          → TROLIG (väglaget efteråt, yta ≤ +1 °C)
+//   VG3 samma på +2 °C                                           → OKLAR: ytgränsen (motprovet +1,1 °C i förslaget)
+//   VG4 "Personbil i diket", −1 °C och snö                       → TROLIG (singelolycka …): regel 3 går före
+//   VG5 "Viltolycka, älg", ingen station                         → INTE (vilt): regel 1 går före
+//   VG6 som VG2 men halkan sju timmar efter                       → OKLAR: inget väglag inom sex timmar
+//   VG7 +1,1 °C, halka                                            → OKLAR: motprovet
+// Omräkningen tar en kontrollerad OKLAR med halka_efter och +0,8 °C (VG8) och lämnar en med +1,5 °C (VG9).
+test("#942 TROLIG, väglaget: sql/139 är sql/110 utom de märkta raderna, regel 3b, motproven och omräkningen", { skip: !url }, async () => {
+  const fore = definition842(sql842("110_olycksfacit_upplagg.sql"), "olycksfacit_efterkontroll");
+  const nu139 = definition842(sql842("139_olycksfacit_vaglaget.sql"), "olycksfacit_efterkontroll");
+  const tillbaka: [string, string][] = [
+    ["Klassar i regel 3b.   -- #942\n", "Bokförs, klassar inte.\n"],
+    ["      WHEN he AND (y IS NULL OR y <= 1) THEN 'TROLIG, väglaget'   -- #942 regel 3b\n", ""],
+    ["      WHEN 'TROLIG, väglaget' THEN 'väglaget efteråt, ' || CASE WHEN y IS NULL THEN 'ingen vaktad station inom 15 km' ELSE 'yta ≤ +1 °C' END   -- #942\n", ""],
+    ["klass = split_part(kl, ',', 1), klass_skal = sk, art = ar   -- #852 #942", "klass = kl, klass_skal = sk, art = ar   -- #852"],
+  ];
+  let x = nu139;
+  for (const [a, b] of tillbaka) { assert.equal(x.split(a).length - 1, 1, `finns exakt en gång: ${a.slice(0, 60)}`); x = x.replace(a, b); }
+  assert.equal(x, fore, "resten av kroppen är sql/110:s");
+
+  const { default: pg } = await import("pg");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const ost = (lon: number, km: number) => lon + km / (111.2 * Math.cos((77 * Math.PI) / 180));
+  const stad = async () => {
+    await q("DELETE FROM olycksfacit WHERE deviation_id LIKE 'VG%'").catch(() => {});
+    await q("DELETE FROM weather_observations WHERE station_id LIKE 'VGS%'");
+    await q("DELETE FROM road_condition_history WHERE segment_id LIKE '99942%'").catch(() => {});
+  };
+  try {
+    for (const f of ["001_init.sql", "003_situation_archive.sql", "030_langsam_vakt.sql", "084_olycksfacit.sql", "085_olycksfacit_klassning.sql", "108_olycksfacit_driftlarm.sql",
+                     "110_olycksfacit_upplagg.sql", "139_olycksfacit_vaglaget.sql", "139_olycksfacit_vaglaget.sql"]) await q(sql842(f));
+    assert.deepEqual((await q("SELECT proconfig FROM pg_proc WHERE proname = 'olycksfacit_efterkontroll'")).rows[0].proconfig,
+      ["search_path=public, extensions"], "fast sökväg (DECISIONS #784)");
+    await stad();
+    const t = "now() - interval '8 hours'";
+    const olycka = async (id: string, lon: number, text: string, yta: number | null, nb = "no", halkaEfterH = 1) => {
+      await q(`INSERT INTO olycksfacit (deviation_id, start_time, message, road_number, severity_code, geom, utfall) VALUES
+        ($1, ${t}, $2, 'Väg 1', 4, ST_SetSRID(ST_MakePoint($3, 77), 4326), 'TYST_TACKT')`, [id, text, lon]);
+      if (yta !== null) await q(`INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, dewpoint_c, precipitation)
+        VALUES ($1, 'Provstation', ST_SetSRID(ST_MakePoint($2, 77), 4326), ${t} - interval '30 minutes', $3, $4, $5, $6)`,
+        ["VGS" + id, ost(lon, 1), yta, yta + 1, yta - 5, nb]);
+      const seg = "99942" + id.slice(2);
+      await q("INSERT INTO olycksfacit_lager (deviation_id, lager, talar, orsak, detalj) VALUES ($1, 'A1', false, 'väglaget Normalt', $2)",
+        [id, { segment: seg, km: 0.02 }]);
+      await q(`INSERT INTO road_condition_history (segment_id, condition_code, condition_text, condition_info, modified_time) VALUES
+        ($1, 2, 'Besvärligt (risk för)', '{Is}', ${t} + make_interval(hours => $2))`, [seg, halkaEfterH]);
+    };
+    await olycka("VG1", 60, "Personbil i diket", null);
+    await olycka("VG2", 61, "Trafikolycka med personbil", 0.5);
+    await olycka("VG3", 62, "Trafikolycka med personbil", 2);
+    await olycka("VG4", 63, "Personbil i diket", -1, "Snow");
+    await olycka("VG5", 64, "Viltolycka, älg", null);
+    await olycka("VG6", 65, "Trafikolycka med personbil", 0.5, "no", 7);
+    await olycka("VG7", 66, "Trafikolycka med personbil", 1.1);
+    const VANTAT = {
+      VG1: "TROLIG (väglaget efteråt, ingen vaktad station inom 15 km)", VG2: "TROLIG (väglaget efteråt, yta ≤ +1 °C)",
+      VG3: "OKLAR (övrigt i kallt väder)", VG4: "TROLIG (singelolycka, yta ≤ 0 °C och fukt)", VG5: "INTE (vilt)",
+      VG6: "OKLAR (övrigt i kallt väder)", VG7: "OKLAR (övrigt i kallt väder)",
+    };
+    const kor = async (def: string) => {
+      await q(def);
+      await q("UPDATE olycksfacit SET kontrollerad_at = NULL WHERE deviation_id LIKE 'VG%'");
+      await q("SELECT olycksfacit_efterkontroll()");
+      return Object.fromEntries((await q("SELECT deviation_id, klass, klass_skal FROM olycksfacit WHERE deviation_id LIKE 'VG%' ORDER BY 1"))
+        .rows.map((r: any) => [r.deviation_id, `${r.klass} (${r.klass_skal})`]));
+    };
+    const RIKTIG = nu139;
+    assert.deepEqual(await kor(RIKTIG), VANTAT);
+    for (const [namn, fran, till] of [
+      ["ingen ytgräns", "WHEN he AND (y IS NULL OR y <= 1)", "WHEN he"],
+      ["okänd yta räknas inte", "WHEN he AND (y IS NULL OR y <= 1)", "WHEN he AND y <= 1"],
+      ["före TROLIG", "      WHEN ar IN ('ett fordon', 'flera fordon')", "      WHEN he AND (y IS NULL OR y <= 1) THEN 'TROLIG, väglaget'\n      WHEN ar IN ('ett fordon', 'flera fordon')"],
+    ] as [string, string, string][]) {
+      const r = await kor(mutant842(RIKTIG, fran, till));
+      const fallde = Object.keys(VANTAT).filter((id) => r[id] !== (VANTAT as Record<string, string>)[id]);
+      console.log(`motprov sql/139, ${namn}: fälls av ${fallde.join(", ") || "INGEN"}`);
+      assert.ok(fallde.length > 0, `motprovet ${namn} fälls inte`);
+    }
+    assert.deepEqual(await kor(RIKTIG), VANTAT, "den riktiga funktionen tillbaka");
+
+    // Omräkningen: kontrollerade OKLAR med sparade mått.
+    for (const [id, yta] of [["VG8", 0.8], ["VG9", 1.5]] as [string, number][])
+      await q(`INSERT INTO olycksfacit (deviation_id, start_time, message, geom, utfall, kontrollerad_at, halka_efter, yta_min, klass, klass_skal)
+        VALUES ($1, ${t}, 'Trafikolycka', ST_SetSRID(ST_MakePoint(70, 77), 4326), 'VARNADE', now(), true, $2, 'OKLAR', 'övrigt i kallt väder')`, [id, yta]);
+    await q(sql842("139_olycksfacit_vaglaget.sql"));
+    const om = (await q("SELECT deviation_id, klass, klass_skal FROM olycksfacit WHERE deviation_id IN ('VG8', 'VG9') ORDER BY 1")).rows;
+    assert.deepEqual(om, [{ deviation_id: "VG8", klass: "TROLIG", klass_skal: "väglaget efteråt, yta ≤ +1 °C" },
+                          { deviation_id: "VG9", klass: "OKLAR", klass_skal: "övrigt i kallt väder" }]);
+  } finally {
+    await stad().catch(() => {});
+    await pool.end();
+  }
+});
