@@ -51,6 +51,18 @@ test("adminVy: säsongen, nämnaren, missarna, veckorna och lagren", () => {
   assert.ok(!JSON.stringify(v).includes("57.98"), "inget läge som koordinater");
 });
 
+test("adminVy: en läsrad visar veckans ärende, och åtgärdad när det är stängt", () => {
+  const alla = [o({ tid: "2026-11-07T06:00:00.000Z" }), o({ tid: "2026-11-13T06:00:00.000Z" }), o({ tid: "2026-11-19T06:00:00.000Z" }),
+    o({ klass: "TROLIG", skal: "singelolycka, yta ≤ 0 °C och rimfrost", tid: "2026-11-08T06:00:00.000Z" })];
+  const veckorna = new Map([["2026-V45", { nr: 1489, stangd: true }], ["2026-V46", { nr: 1634, stangd: false }]]);
+  const v = adminVy(alla, new Map(), "2026-11-21", veckorna);
+  assert.deepEqual(v.missar.map((m) => [m.dag, m.atgard, m.vecka]), [
+    ["2026-11-19", "läses i veckans ärende", null],                // veckans ärende är inte skrivet än
+    ["2026-11-13", "läses i veckans ärende", 1634],
+    ["2026-11-08", "kort #46", null],                              // förifylld: veckans ärende ändrar den inte
+    ["2026-11-07", "åtgärdad i veckans ärende", 1489]]);
+});
+
 test("oklarSkal: skälet i klassningens ordning, och oklara summerar till OKLAR", () => {
   const ok = (x: Partial<Olycka>) => o({ klass: "OKLAR", ...x });
   assert.equal(oklarSkal(ok({ ytaMin: null })), "Ingen station inom 15 km");
