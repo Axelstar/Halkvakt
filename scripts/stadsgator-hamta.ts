@@ -136,13 +136,52 @@ export function narmast(p: Pkt, ls: Pkt[][]): { d: number; linje: number; langs:
   });
   return best;
 }
-/** Avstånden längs linjen mellan grannpunkter på samma element och samma linje (punkter mer än 25 m från linjen räknas inte). */
-export function luckor(punkter: Pkt[], ls: Pkt[][]): number[] {
-  const per = new Map<number, number[]>();
-  for (const p of punkter) { const n = narmast(p, ls); if (n.d <= 25) (per.get(n.linje) ?? per.set(n.linje, []).get(n.linje)!).push(n.langs); }
-  return [...per.values()].flatMap((v) => v.sort((a, b) => a - b).slice(1).map((x, i) => x - v[i])).filter((x) => x > 1);
+/** Grannavståndet längs nätet: för varje punkt avståndet längs elementets linjer, genom förgreningarna, till närmaste andra punkt på
+ *  samma element. Första provet (körning 44839886451) mätte bara längs samma ihopfogade linje, och då gav C:s gator 9 avstånd på 115
+ *  element: gatorna förgrenar sig (körbanor, gafflar), så grannarna hamnade på olika linjer. En punkt mer än 25 m från linjen, eller en
+ *  som inte når någon annan, räknas inte. */
+export function grannavstand(punkter: Pkt[], ls: Pkt[][]): number[] {
+  const kant = new Map<string, [string, number][]>();
+  const lank = (a: string, b: string, d: number) => {
+    (kant.get(a) ?? kant.set(a, []).get(a)!).push([b, d]); (kant.get(b) ?? kant.set(b, []).get(b)!).push([a, d]);
+  };
+  // Varje punkt läggs in på sin närmaste delsträcka; flera punkter på samma delsträcka läggs i ordning längs den.
+  const pa = new Map<string, { a: Pkt; b: Pkt; len: number; p: { v: string; s: number }[] }>();
+  punkter.forEach((p, pi) => {
+    let best: { d: number; k: string; a: Pkt; b: Pkt; s: number } | null = null;
+    ls.forEach((l, li) => { for (let i = 1; i < l.length; i++) {
+      const n = narmast(p, [[l[i - 1], l[i]]]);
+      if (!best || n.d < best.d) best = { d: n.d, k: `${li}/${i}`, a: l[i - 1], b: l[i], s: n.langs };
+    } });
+    if (!best || best.d > 25) return;
+    const x = pa.get(best.k) ?? pa.set(best.k, { a: best.a, b: best.b, len: avstandM(best.a, best.b), p: [] }).get(best.k)!;
+    x.p.push({ v: `punkt ${pi}`, s: best.s });
+  });
+  ls.forEach((l, li) => { for (let i = 1; i < l.length; i++) {
+    const x = pa.get(`${li}/${i}`);
+    if (!x) { lank(nyckel(l[i - 1]), nyckel(l[i]), avstandM(l[i - 1], l[i])); continue; }
+    const kedja = [{ v: nyckel(x.a), s: 0 }, ...x.p.sort((u, w) => u.s - w.s), { v: nyckel(x.b), s: x.len }];
+    for (let j = 1; j < kedja.length; j++) lank(kedja[j - 1].v, kedja[j].v, Math.max(0, kedja[j].s - kedja[j - 1].s));
+  } });
+  const mal = new Set([...pa.values()].flatMap((x) => x.p.map((q) => q.v)));
+  const ut: number[] = [];
+  for (const v of mal) {
+    const dist = new Map<string, number>([[v, 0]]), klar = new Set<string>();
+    let hit: number | null = null;
+    for (;;) {
+      let u: string | null = null, du = Infinity;
+      for (const [k, d] of dist) if (!klar.has(k) && d < du) { u = k; du = d; }
+      if (u === null) break;
+      if (u !== v && mal.has(u)) { hit = du; break; }
+      klar.add(u);
+      for (const [w, l] of kant.get(u) ?? []) if (du + l < (dist.get(w) ?? Infinity)) dist.set(w, du + l);
+    }
+    if (hit !== null && hit > 1) ut.push(hit);
+  }
+  return ut;
 }
 export const median = (v: number[]) => { const s = [...v].sort((a, b) => a - b); return s.length ? (s.length % 2 ? s[(s.length - 1) / 2] : (s[s.length / 2 - 1] + s[s.length / 2]) / 2) : NaN; };
+const kvartil = (v: number[], q: number) => { const s = [...v].sort((a, b) => a - b); return s.length ? Math.round(s[Math.min(s.length - 1, Math.floor(q * s.length))]) : NaN; };
 /** Gatans cirkel: punkternas mitt och största avståndet dit + marginalen, uppåt till hela 100 m. */
 export function cirkel(punkter: Pkt[]): { mitt: Pkt; radie: number } {
   const mitt: Pkt = [punkter.reduce((s, p) => s + p[0], 0) / punkter.length, punkter.reduce((s, p) => s + p[1], 0) / punkter.length];
@@ -248,9 +287,10 @@ export function sammanfatta(els: Element[], ls: Map<string, Pkt[][]>) {
   const bit: Record<string, { n: number; median: number; element: number }> = {};
   for (const l of ["B", "C"] as const) {
     const xs = els.filter((e) => e.lager === l && e.punkter.length >= 2 && ls.has(e.element_id));
-    const v = xs.flatMap((e) => luckor(e.punkter, ls.get(e.element_id)!));
+    const v = xs.flatMap((e) => grannavstand(e.punkter, ls.get(e.element_id)!));
     bit[l] = { n: v.length, median: Math.round(median(v)), element: xs.length };
-    rad.push(`lager ${l}: avståndet längs linjen mellan grannpunkter på samma element median ${bit[l].median} m (${v.length} avstånd på ${xs.length} element med minst två punkter)`);
+    rad.push(`lager ${l}: grannavståndet längs nätet (till närmaste punkt på samma element) median ${bit[l].median} m, ` +
+      `kvartilerna ${kvartil(v, 0.25)}–${kvartil(v, 0.75)} m (${v.length} punkter på ${xs.length} element med minst två punkter)`);
   }
   return { rad, bit };
 }
@@ -318,8 +358,12 @@ function sjalvtest(): number {
   ok(forenkla([[18, 59], [18.0005, 59.0001], [18.001, 59]]).length === 3, "en krök på 11 m förenklas inte bort");
   const n = narmast([18.0015, 59.0001], l1);
   ok(Math.abs(n.d - 11.1) < 0.2 && Math.abs(n.langs - 0.0015 * M_LAT * kos(59)) < 1, `närmast: ${JSON.stringify(n)}`);
-  const v = luckor([[18, 59], [18.002, 59], [18.001, 59.00001], [18.003, 59.01]], l1);
-  ok(v.length === 2 && v.every((x) => Math.abs(x - 0.001 * M_LAT * kos(59)) < 1), `luckorna längs linjen (punkten 1 km bort räknas inte): ${JSON.stringify(v)}`);
+  const v = grannavstand([[18, 59], [18.002, 59], [18.001, 59.00001], [18.003, 59.01]], l1);
+  ok(v.length === 3 && v.every((x) => Math.abs(x - 0.001 * M_LAT * kos(59)) < 1), `grannavståndet längs linjen (punkten 1 km bort räknas inte): ${JSON.stringify(v)}`);
+  // Två punkter på var sin gren av en förgrening: avståndet går genom förgreningen (57 m österut + 111 m norrut), inte fågelvägen.
+  const vg = grannavstand([[18.003, 59], [18.002, 59.001]], gren);
+  ok(vg.length === 2 && vg.every((x) => Math.abs(x - (0.001 * M_LAT * kos(59) + 0.001 * M_LAT)) < 1), `grannavståndet genom en förgrening: ${JSON.stringify(vg)}`);
+  ok(grannavstand([[18, 59]], l1).length === 0, "en ensam punkt har ingen granne");
   ok(median([3, 1, 2]) === 2 && median([1, 2, 3, 10]) === 2.5 && Number.isNaN(median([])), "median");
   const c = cirkel([[18, 59.3], [18.02, 59.3]]);
   ok(Math.abs(c.mitt[0] - 18.01) < 1e-9 && c.radie === 2100, `cirkeln: ${JSON.stringify(c)}`);
@@ -331,7 +375,7 @@ function sjalvtest(): number {
   ok(tolka(JSON.stringify({ RESPONSE: { RESULT: [{ Gatunamn: Array(TAK).fill({}) }] } }), ["Gatunamn"]).fel.startsWith("taket"), "taket nått fäller svaret");
   ok(levande({ Deleted: false }, 0) && !levande({ Deleted: true }, 0) && !levande({ Valid_To: "2020-01-01" }, Date.parse("2026-11-21")), "levande");
   const s = sammanfatta(els, new Map([["1000:1", [[[18, 59.3], [18.02, 59.3]]] as Pkt[][]]]));
-  ok(s.bit.B.n === 1 && Math.abs(s.bit.B.median - 568) <= 1 && s.bit.C.n === 0 && s.rad[0].includes("1 hämtade, 0 saknade") && s.rad[1].includes("1 element, 0 hämtade, 1 saknade"), `sammanfattningen: ${JSON.stringify(s)}`);
+  ok(s.bit.B.n === 2 && Math.abs(s.bit.B.median - 568) <= 1 && s.bit.C.n === 0 && s.rad[0].includes("1 hämtade, 0 saknade") && s.rad[1].includes("1 element, 0 hämtade, 1 saknade"), `sammanfattningen: ${JSON.stringify(s)}`);
   ok(!/särdrag|adt|klass|vinterklass|population|kommun/i.test(s.rad.join(" ")), "utskriften bär inga särdrag");
   ok(SATS.startsWith("INSERT INTO stadsgata") && SATS.includes("ON CONFLICT (element_id)") && !/stadspunkt\b|vagpunkt/.test(SATS), "satsen rör bara stadsgata");
   console.log(`självtest stadsgator-hamta: ${fel.length ? "FEL" : "klart"}`);

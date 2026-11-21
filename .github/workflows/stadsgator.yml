@@ -12,7 +12,7 @@ on:
         type: choice
         options: [prov, skriv]
         default: prov
-  # TILLFÄLLIG: provet på grenen innan flödet ligger på main. Tas bort i nästa commit.
+  # TILLFÄLLIG: provet på grenen innan flödet ligger på main (andra provet: grannavståndet längs nätet). Tas bort efter provet.
   push:
     branches: [claude/stadens-linjer]
     paths: [.github/workflows/stadsgator.yml]
