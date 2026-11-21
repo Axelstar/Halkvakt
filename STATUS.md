@@ -3477,6 +3477,21 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   sammanslagningen, deployen av publicera och kartrepots PR.
 - 20/11 (Claude): **TestFlight-bygget återkallar sitt eget certifikat** (DECISIONS #929; Axels ja): `scripts/asc-certifikat.mjs` och två
   steg i testflight.yml. Inte prövat: det visar sig vid nästa uppladdning. Fristen för Xcode 27, 1 mars 2027, står i fristerna.
+- 20/11 (Claude): **Planerad resa har ny skärm** (DECISIONS #930, kort #659; Axels ritning): domen överst, vägen på Sveriges kontur,
+  resans sträckor i körordning (`Resstrackor` i motorpaketet, med prov), Natural Earth för kontur och orter. Fliken *När du kör*
+  byggs inte förrän det finns en prognos per sträcka. Bygget är 0.4.1 (68).
+- 20/11 (Claude): **iPhone 0.4.1 (68) uppladdad till TestFlight** från main 4c0362f (körning 44822287242, `EXPORT SUCCEEDED`; PR #1750
+  ihopslagen): den nya skärmen för en planerad resa (DECISIONS #930) och erbjudandet i notiscentret (#927). **Certifikatstädningen
+  (#929) fungerade i sin första körning:** *3 före, 4 efter bygget, 1 återkallade*. Den nya skärmen är inte prövad på en telefon.
+- 20/11 (Claude): **Planerad resa sedd på Axels telefon i 0.4.1 (68)**, resan Malmö till Östermalm (hans inspelning): skärmen fungerar
+  med riktiga data. Efter hans ord (DECISIONS #931): sträckorna börjar stängda, Övrigt på vägen öppnas rad för rad, och ortnamn
+  på konturen skrivs inte över varandra. Bygget är 0.4.1 (69).
+- 20/11 (Claude): **iPhone 0.4.1 (69) uppladdad till TestFlight** från main ddb788d (körning 44824914600; PR #1752 ihopslagen): Planerad resa
+  börjar stängd och Övrigt på vägen öppnas rad för rad (DECISIONS #931). Inte prövat på en telefon.
+- 20/11 (Claude): **Övrigt på vägen räknar bara, när sträckorna visas** (DECISIONS #932, kort #659). Bygget är 0.4.1 (70), inte uppladdat.
+- 20/11 natt (Claude; Axel: *"Bygg Förslag A"*): **Planerad resa enligt Förslag A, och vägen på Apples karta igen** (DECISIONS #933, kort #659). Apples utvecklaravtal (bilaga 6, punkt 2.4) lästes före bygget: kartdata får bara visas på en Apple-karta, och (68) och (69) ritade Apples väg på vår egen kontur i TestFlight. Axel valde Apples karta under märkena. Sträckorna bryts vid varje ort och säger antalet ställen; startsidans karta har samma märken och inga kameror. Bygget är 0.4.1 (71). **Uppladdat till TestFlight 21/11 00.40** (körning 44834187882, main 8521eb2; ci grön efter en omkörning: småvägsregelns tidsprov i full skala föll på 77 s i första körningen, utan ändring i SQL).
+- 21/11 (Claude; Axel: *"Ja gör det"*): **En sträcka som bara är våt säger det** (DECISIONS #934, kort #659). Underraden *Halt väglag rapporterat.* kom av att 111 av 367 halksträckor i live.json bara bär ordet vått, med kod 2. Frågan om de ska heta halt står i §4.2. Bygget är 0.4.1 (72). **Uppladdat till TestFlight 21/11** (körning 44839985046, main 6821930).
+  Hur en lång sträcka med halka på några ställen ska visas står som en fråga i bedömningens §4.2.
 - 20/11 kväll (Claude; Bengt: *"Slå ihop o deploya"*): **Livekartan ritar storstädernas punkter, i drift** (DECISIONS #928).
   Halkvakt PR #1742 som 79f96a73 och halkvakt-karta PR 39 som f4fa3ffe; publicera deployad 21.14 UTC (deploy-supabase
   44818397022). Kartans data 22.30 (halkvakt-karta f4b645c6): meta.kandidat.stad 7 och ritade 4 560 av 4 560, sju punkter med

@@ -1,11 +1,12 @@
-// KARTAN NÄRA DIG (kort #659, DECISIONS #870, #873): Apples karta med det närmaste omkring föraren, på startsidan. Halkan är
-// gula streck längs vägen, de andra farorna gula punkter och fartkamerorna små grå prickar, så att de inte täcker resten. Utan
-// plats visas hela landet med bara halkan.
+// KARTAN NÄRA DIG (kort #659, DECISIONS #870, #873): Apples karta med det närmaste omkring föraren, på startsidan. Märkena är
+// desamma som för en planerad resa (Axel 20/11, DECISIONS #933): en gul prick per halksträcka, mitt på sträckan, en gul ring för
+// frysrisk och en vit prick för föraren. Olyckor och vilt har kvar sina ikoner. Fartkamerorna står inte på kartan: antalet står
+// under listan. Utan plats visas hela landet med bara halkan.
 // Utsnittet (DECISIONS #919, Axel 20/11): kartan når en och en halv gång så långt som den närmaste faran, minst en mil och
 // högst sex, i steg om fem kilometer. Finns ingen fara inom sex mil visas en och en halv mil omkring föraren. Listan under
 // kartan bär resten.
-// Ett tryck på ett märke eller ett streck väljer faran (DECISIONS #922), och startsidan visar den i ett kort under kartan.
-// Fartkamerorna går inte att trycka på. Frysrisken ritas bara när den uppfyller röstens regel (Nearby.visas).
+// Ett tryck på ett märke väljer faran (DECISIONS #922), och startsidan visar den i ett kort under kartan.
+// Frysrisken ritas bara när den uppfyller röstens regel (Nearby.visas).
 //
 // Kartbilderna hämtas från Apple för det område som visas, så Apple får veta ungefär var föraren är när startsidan öppnas.
 // Halkvakt får ingenting. Kandidaten och småvägsrösten står inte på kartan, som i listan I närheten (Nearby.visas).
@@ -21,25 +22,19 @@ struct NaraDigKarta: View {
     var valt: String?
     var vidTryck: ((String?) -> Void)?
 
-    /// Flest punkter av varje slag som ritas. Strecken är få och ritas alla.
+    /// Flest märken av varje slag som ritas.
     private static let flestPunkter = 60
-    private static let flestKameror = 80
 
     private typealias Punkt = Kartbild.Punkt
-
-    private struct Stracka: Identifiable {
-        let id: String
-        let koord: [CLLocationCoordinate2D]
-    }
+    private typealias Plats = Kartbild.Plats
 
     var body: some View {
         let radie = radieM
-        // En stillbild i gråskala med egna märken (DECISIONS #876): halkan gul, kamerorna små grå prickar, platsen vit.
+        // En stillbild i gråskala med egna märken (DECISIONS #876, #933).
         Kartbild(omrade: omrade(radie),
-                 streck: strackor.map(\.koord),
-                 streckId: strackor.map(\.id),
-                 prickar: kameror.map(\.koord),
-                 punkter: punkter,
+                 halka: halka,
+                 frysrisk: Array(allaPunkter.filter { $0.kind == .icing_point }.prefix(Self.flestPunkter)).map { Plats(id: $0.id, koord: $0.koord) },
+                 punkter: Array(allaPunkter.filter { $0.kind != .icing_point && $0.kind != .camera }.prefix(Self.flestPunkter)),
                  plats: plats.map { CLLocationCoordinate2D(latitude: $0.lat, longitude: $0.lon) },
                  valt: valt,
                  vidTryck: vidTryck,
@@ -78,16 +73,14 @@ struct NaraDigKarta: View {
         return Nearby.distanceM(h, lon: plats.lon, lat: plats.lat) <= Nearby.maxM
     }
 
-    private var strackor: [Stracka] {
-        faror.compactMap { h -> Stracka? in
-            guard case .segment(let id, let line, _) = h, nara(h) else { return nil }
-            return Stracka(id: id, koord: line.map { CLLocationCoordinate2D(latitude: $0[1], longitude: $0[0]) })
+    /// Halksträckorna som prickar, mitt på sträckan.
+    private var halka: [Plats] {
+        faror.compactMap { h -> Plats? in
+            guard case .segment(let id, let line, _) = h, nara(h), !line.isEmpty else { return nil }
+            let mitt = line[line.count / 2]
+            return Plats(id: id, koord: CLLocationCoordinate2D(latitude: mitt[1], longitude: mitt[0]))
         }
     }
-
-    private var punkter: [Punkt] { Array(allaPunkter.filter { $0.kind != .camera }.prefix(Self.flestPunkter)) }
-
-    private var kameror: [Punkt] { Array(allaPunkter.filter { $0.kind == .camera }.prefix(Self.flestKameror)) }
 
     private var allaPunkter: [Punkt] {
         // Utan plats ritas bara halkan: tusentals punkter över hela landet säger ingenting.

@@ -172,7 +172,8 @@ struct RapportInnehall: View {
     }
 }
 
-private struct RapportRadVy: View {
+/// Också i PlaneradResaView (DECISIONS #930).
+struct RapportRadVy: View {
     let titel: String
     let text: String
     var gul = false

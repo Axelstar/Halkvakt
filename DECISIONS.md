@@ -18899,3 +18899,126 @@ please do that"*).
 bygget står stilla när den går ut efter ett år.
 
 **Stomdokument:** inga — byggflödets inre, ingen del av appen eller driften ändras
+
+## #930 (20/11 2026) Planerad resa: domen överst och resans sträckor på Sveriges kontur, utan fliken När du kör (kort #659)
+
+**Beslut** (Axel 20/11, med en ritning av skärmen och fyra öppna punkter; till förslaget: *"Okay i agree with you on all"*).
+- **Skärmen.** Domen står överst: läget just nu i en rubrik och en mening, och tre tal när något är halt eller har frysrisk. Sedan
+  ▶ *Starta vakten*, vägen ritad på Sveriges kontur, resans sträckor i den ordning föraren kör, resten av rapporten och
+  påminnelsen. Inget av den gamla skärmen är borta: rutan *Halkvakt tror*, raden om det tomma, *När åker du?* och länkarna står kvar.
+- **Sträckorna.** Resan bryts vid de större orter som ligger inom 5 km från vägen, och grannsträckor med samma läge slås ihop,
+  så att en brytpunkt hamnar vid en ort och bara där läget byter. Läget är rapportens eget: halt med minst en halksträcka,
+  frysrisk med minst en station eller bro som uppfyller röstens regel, annars lugnt. En ort närmare starten eller målet än 15 km
+  är ingen brytpunkt, och två brytpunkter ligger minst 20 km isär. Regeln bor i motorpaketet (`Resstrackor`), med prov.
+- **Klocktiden** vid en sträcka är avresan plus sträckans andel av Apples restid. Den säger när föraren är där, inte hur vägen
+  är då.
+- **Fliken *När du kör* byggs inte.** Ritningen visar läget vid den tid föraren passerar. Det kräver en prognos per sträcka, och
+  den finns inte: kandidaten beskriver nu, och prognosens dom faller i mars. Skärmen visar läget nu, och säger det. Frågan står i
+  bedömningens §4.2 för Bengt.
+- **Talen.** Ritningen räknade *stationer nära noll*. Skärmen räknar *platser med frysrisk*, alltså bara dem som uppfyller regeln:
+  samma fälla som frysrisken på startsidan samma dag (#922).
+- **Konturen och orterna** är Natural Earth 1:10m, som är fri att använda (`data/sverige/sverige.json`, 34 orter). Kommunkartan
+  används inte: dess licens är inte bekräftad (#918). Orterna är få norr om Gävle och i inlandet, och där blir sträckorna långa.
+- **Gult på vägen.** Halkan ritas redan gul på kartan *Nära dig* (#873), så detta vidgar ett undantag som finns.
+- **Apple.** Skärmen visar inte längre Apples karta, så telefonen hämtar inga kartbilder för en planerad resa. Vägen är
+  fortfarande Apples, och raden *Vägen kommer från Apple* står under rapporten. Om Apples villkor kräver mer än så är inte
+  prövat. integritet.html säger fortfarande att kartorna i Planera en resa är Apples: det gäller appen i App Store och ändras när
+  bygget släpps.
+
+Bygget är 0.4.1 (68).
+
+**Alternativ.** En fast lista av orter som alltid bryter resan: sträckor som blandar lugnt och halt. Brytpunkter exakt där läget
+byter, utan orter: sträckor som heter *efter 137 km*.
+
+**Stomdokument:** APP — skärmen Planerad resa; FAV — sträckindelningen ur resans rapport
+
+## #931 (20/11 2026) Planerad resa: allt börjar stängt, och Övrigt på vägen öppnas rad för rad (kort #659)
+
+**Beslut** (Axel 20/11, efter en inspelning av 0.4.1 (68) på resan Malmö till Östermalm: *"It looks good! I think the open up /
+close should be for övrigt på vägen också. Ska det inte starta som stängt?"*).
+- **Sträckorna börjar stängda.** I (68) öppnades den första sträckan som inte var lugn av sig själv.
+- **Övrigt på vägen** visar bara radens rubrik, och ett tryck öppnar texten, som för sträckorna. Listan blev annars flera skärmar
+  lång på en lång resa.
+- **Ortnamnen på konturen.** Malmö och Helsingborg stod över varandra i inspelningen. Namnen skrivs nu i turordning (målet, starten,
+  resten), och ett namn som skulle hamna över ett annat skrivs inte.
+
+Sett i samma inspelning och inte ändrat: hela vägen från Helsingborg till Östermalm blev en enda hal sträcka, eftersom varje
+delsträcka mellan två orter hade minst en halksträcka; och det som står under en sträcka står också under *Övrigt på vägen*.
+
+Bygget är 0.4.1 (69).
+
+**Alternativ.** Hela rutan Övrigt på vägen bakom en enda rad: föraren ser då inte vad som finns förrän den öppnas.
+
+**Stomdokument:** APP — skärmen Planerad resa
+
+## #932 (20/11 2026) Planerad resa: Övrigt på vägen räknar bara, när sträckorna visas (kort #659)
+
+**Beslut** (Axel 20/11, till förslaget efter inspelningen: *"Jag gillar dina förslag också"*). När resans sträckor visas står
+varje vägarbete, kamera och hinder redan under sin sträcka, och i 0.4.1 (68) och (69) stod de en gång till under *Övrigt på
+vägen*. Rutan visar nu antalet av varje slag och SMHI:s varningar, som gäller hela resan. En lugn resa har inga sträckor, och där
+står raderna kvar som förut. Restidssträckorna räknas inte: de är mätpunkter och inga händelser.
+
+Det andra förslaget, att en lång sträcka inte ska heta hal för att den har halka på några ställen, är inte byggt. Rapportens
+rader bär var halkan börjar men inte hur lång den är, så en andel går inte att räkna utan att ändra rapporten. Valet står i
+bedömningens §4.2.
+
+Bygget är 0.4.1 (70), inte uppladdat när beslutet skrivs.
+
+**Alternativ.** Ta bort raderna ur sträckorna i stället: då säger sträckan inte vad som finns på den.
+
+**Stomdokument:** APP — skärmen Planerad resa
+
+## #933 (20/11 2026) Planerad resa: Förslag A, och vägen står på Apples karta igen (kort #659)
+
+**Beslut** (Axel 20/11, sexton punkter: *"Bygg Förslag A för resultatskärmen i Planera resa och skicka till TestFlight"*; om
+kartan: *"Okej vi får väl köra med a då"*, läst som den första av tre vägar).
+
+*Sträckorna.* Resan bryts vid varje större ort längs vägen, och sträckorna slås inte längre ihop: i (68) till (70) blev Malmö
+till Östermalm en enda hal sträcka på 55 mil. En sträcka heter *Halt på 4 ställen*, etiketten är antalet i gult (*4 STÄLLEN*),
+och underraden säger vilken sorts halka det är. Ett ställe är en halksträcka i Trafikverkets väglag. Trafikverkets ord skrivs
+som vanlig svenska (*fläckvis Is, Våt* blir *fläckvis is, vått*; *moddig Vägbana* blir *snömodd*); vått och torrt är ingen halka
+i sig och står bara när sträckan öppnas. En lugn sträcka säger *Inget halt rapporterat.* Stapeln är grå som vägen. Omdömet
+överst är en mening (*Halt på 11 ställen, först efter Helsingborg.*); de tre talen och raden om filernas tider är borta.
+
+*Kartan.* Axel bad om en egen ritad karta i stället för Apples, och om att Apples villkor skulle läsas innan bygget gick ut.
+Apples utvecklaravtal, bilaga 6 punkt 2.4, säger att deras kartdata, när den visas på en karta, bara får visas på en
+Apple-karta, och definitionen av kartdata räknar upp koordinater. Vägen Apple räknar ut är koordinater. Den får alltså inte
+ritas på vår egen kontur, och en rad om att vägen kommer från Apple ändrar inte det. Bygge (68) och (69) gjorde just det i
+TestFlight; ingen av dem har gått till App Store. Axel fick tre vägar: Apples karta under märkena, egen kontur utan väg, eller
+en väg från en annan källa. Han valde den första. Kartan är Apples i gråskala, som på startsidan, med vägen grå, en gul prick
+per halksträcka och en gul ring per plats med frysrisk, där de ligger längs vägen. Konturen ur Natural Earth ligger kvar i
+filen men ritas inte. Läsningen är Claudes och ingen jurists.
+
+*Övrigt på vägen* har en rad per sort när sträckorna visas: olyckor, vägarbeten, fartkameror, hinder och trafik. Axel räknade
+upp fyra; olyckorna fick en egen rad, för en olycka ska inte stå som ett hinder.
+
+*Startsidan* behåller Apples karta och får samma märken: en gul prick per halksträcka, mitt på sträckan, en gul ring för
+frysrisk och en vit prick för föraren, med samma teckenförklaring. Fartkamerorna står inte längre på kartan. Olyckor och vilt
+har kvar sina ikoner: de är inga kameror eller vägarbeten, och en olycka nära föraren ska synas.
+
+*Flikraden.* Skärmens innehåll slutar ovanför flikraden; i inspelningen 20/11 syntes texten under och bakom den.
+
+Bygget är 0.4.1 (71). Bara iPhone; Android har varken Planera resa eller kartan på startsidan.
+
+**Alternativ.** Egen kontur med bara märkena: följer avtalet, men utan väg säger kartan inte var resan går. En annan vägtjänst:
+då går resans mål till den tjänsten, vilket är ett nytt löfte och ett större bygge. Rapportens rader med halkans längd, så
+att en sträcka heter hal efter andel (väg b i #932): kräver en gräns och en ändring i rapporten på tre språk.
+
+**Stomdokument:** APP — skärmen Planerad resa och kartan på startsidan
+
+## #934 (21/11 2026) Planerad resa: en sträcka som bara är våt säger det (kort #659)
+
+**Beslut** (Axel 21/11, efter inspelningen av 0.4.1 (71): *"Ja gör det"*). Fyra av sju sträckor Malmö till Östermalm hade
+underraden *Halt väglag rapporterat.* i stället för sorten av halka. Skälet står i datat: i live.json 21/11 00.45 var 111 av
+367 sträckor i Trafikverkets väglag besvärliga (kod 2, sex med kod 3) med bara orden *Våt*, *fläckvis Våt* eller *Torrt*.
+Motorn räknar dem som halt, för regeln är kod 2 eller högre eller ett halkord. Underraden säger nu *Vått. Besvärligt väglag
+enligt Trafikverket.* när sträckans rader inte bär något annat ord; finns ett vinterord står det ordet som förut.
+
+Rubriken *Halt på 2 ställen* och den gula pricken står kvar för en sådan sträcka. Om en våt väg med kod 2 ska heta halt, på
+skärmen och i rösten, är en fråga om motorns regel och står i bedömningens §4.2 för Bengt.
+
+Bygget är 0.4.1 (72).
+
+**Alternativ.** Räkna inte de våta sträckorna som halka på den här skärmen: då säger skärmen och rösten olika saker om samma väg.
+
+**Stomdokument:** APP — skärmen Planerad resa
