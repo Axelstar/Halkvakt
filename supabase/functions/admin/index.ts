@@ -6,6 +6,7 @@
 //
 // GET  ?del=jag                         → {epost, menyval}
 // GET  ?del=statistik&fran=&till= | &dagar=   (menyval statistik) → samma svar som besok ger statistiksidan
+// GET  ?del=olyckor                     (menyval olyckor) → sidan Olyckor, olycksfacit/vyn.ts (DECISIONS #936)
 // GET  ?del=anvandare                   (menyval anvandare) → [{id, epost, menyval, skapad}]
 // POST {del:"anvandare", gor:"skapa", epost, losen, menyval}
 // POST {del:"anvandare", gor:"andra", id, menyval?, losen?}
@@ -19,6 +20,8 @@
 // POST {del:"social", gor:"spara", namn, text, textIg} → ändrar texten i ett utkast som väntar
 // POST {del:"social", gor:"slang" | "angra", namn}     → slänger utkastet, eller tar tillbaka det, fram till passet
 // POST {del:"start", kod, epost, losen} → det första kontot, en gång, mot engångskoden i admin_start. Kräver ingen inloggning.
+import { olycksfacitSvar } from "./olycksfacit.ts";
+
 const SB = Deno.env.get("SUPABASE_URL")!;
 const SRK = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const H = { Authorization: `Bearer ${SRK}`, apikey: SRK, "Content-Type": "application/json" };
@@ -29,7 +32,7 @@ const CORS = {
   "Access-Control-Allow-Headers": "authorization, content-type",
   "Vary": "Origin",
 };
-const MENYVAL = ["statistik", "social", "mallar", "prioriteringar", "anvandare"];
+const MENYVAL = ["statistik", "olyckor", "social", "mallar", "prioriteringar", "anvandare"];
 const SLUG = /^[a-z0-9-]{1,60}$/;
 const MINST_LOSEN = 12;
 
@@ -271,6 +274,7 @@ Deno.serve(async (req) => {
     if (!MENYVAL.includes(del)) return fel("okänd del", 400);
     if (!jag.menyval.includes(del)) return fel("saknar behörighet", 403);
     if (del === "statistik" && req.method === "GET") return await statistik(u);
+    if (del === "olyckor" && req.method === "GET") return svar(await olycksfacitSvar());   // menyvalet Olyckor (DECISIONS #936)
     if (del === "anvandare") return req.method === "GET" ? await listaAnvandare() : await andraAnvandare(jag, d);
     if (del === "social") return req.method === "GET" ? await lasUtkast() : await andraUtkast(jag, d);
     if (del === "mallar") return req.method === "GET" ? await lasMallar(u) : await andraMallar(jag, d);
