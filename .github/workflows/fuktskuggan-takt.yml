@@ -1,0 +1,56 @@
+# Fuktskuggan i motorn (DECISIONS #941, Bengt 21/11): vad A2 skulle ha sagt längs skuggans rutter med fuktregeln (förslag 2), mot dagens
+# A2. En skugga, aldrig en röst: flödet läser arkivet och skriver bara aggregat (scripts/fuktskuggan-takt.ts). Knappen tar vilket fönster
+# som helst inom arkivets 70 dygn; varje måndag räknas den gångna veckan av sig själv.
+name: fuktskuggan-takt
+on:
+  workflow_dispatch:
+    inputs:
+      fran:
+        description: "Första dygnet, svensk tid (ÅÅÅÅ-MM-DD). Tomt = sju dygn bakåt"
+        required: false
+        default: "2026-11-06"
+      till:
+        description: "Sista dygnet (ÅÅÅÅ-MM-DD). Tomt = i går"
+        required: false
+        default: ""
+  schedule:
+    - cron: "40 6 * * 1"
+  # TILLFÄLLIGT, tas bort före sammanslagningen: backtestet från 6/11 körs på grenen (knappen finns först på main).
+  push:
+    branches: [claude/project-thread-cxpfny]
+    paths: [scripts/fuktskuggan-takt.ts, .github/workflows/fuktskuggan-takt.yml]
+permissions:
+  contents: read
+jobs:
+  fuktskuggan-takt:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: node --experimental-strip-types scripts/fuktskuggan-takt.ts --sjalvtest
+      - id: fonster
+        shell: bash
+        run: |
+          set -euo pipefail
+          FRAN="${{ inputs.fran }}"; TILL="${{ inputs.till }}"
+          [ "${{ github.event_name }}" != push ] || FRAN=2026-11-06
+          [ -n "$FRAN" ] || FRAN=$(date -u -d '7 days ago' +%F)
+          [ -n "$TILL" ] || TILL=$(date -u -d 'yesterday' +%F)
+          # Arkivets fönster räknas bakåt från i dag, med nio dygn till: karantänen läser de sju dygnen före varje rad.
+          DAGAR=$(( ( $(date -u +%s) - $(date -u -d "$FRAN" +%s) ) / 86400 + 9 ))
+          [ "$DAGAR" -le 70 ] || DAGAR=70
+          echo "fran=$FRAN" >> "$GITHUB_OUTPUT"; echo "till=$TILL" >> "$GITHUB_OUTPUT"; echo "dagar=$DAGAR" >> "$GITHUB_OUTPUT"
+          echo "fönstret $FRAN–$TILL, arkivet $DAGAR dygn"
+      - uses: ./.github/actions/tillfalliga-arkivet
+        with: { dagar: "${{ steps.fonster.outputs.dagar }}", drift-url: "${{ secrets.DATABASE_URL }}", tabeller: "road_condition_history,road_conditions" }
+      - shell: bash
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/fuktskuggan-takt.ts "${{ steps.fonster.outputs.fran }}" "${{ steps.fonster.outputs.till }}" --json "$RUNNER_TEMP/fuktskuggan-takt.json" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+        env: { DATABASE_URL: "${{ env.TILLFALLIG_URL }}" }
+      - uses: actions/upload-artifact@v4
+        with: { name: fuktskuggan-takt, path: "${{ runner.temp }}/fuktskuggan-takt.json", retention-days: 90 }
