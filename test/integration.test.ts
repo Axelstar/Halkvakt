@@ -2003,6 +2003,7 @@ test("#935 stadens bitar: längs elementets linje i meter, sammanslagna, och bar
       [17.5, 17.5, 17.5185, 17.6, 17.0926, 17.05, 17.5, 17.35], [60.01797, 60.02246, 60.04, 60.05, 61.0, 61.0, 60.03, 61.0]])).rows;
     const per = Object.fromEntries(r.map((x) => [x.seg, x]));
     assert.deepEqual(Object.keys(per).sort(), ["B-9-95", "C-9-95", "C-9-96"], "SB3: grupperna utan någon bit saknas");
+    for (const x of r) assert.ok(["LineString", "MultiLineString"].includes(x.g.type), `${x.seg}: linjer, aldrig ${x.g.type} (CI 44843465306)`);
     assert.deepEqual(per["B-9-95"].ritade.map(Number), [1, 2], "SB1 och SB3: punkt 3 (1 km bort) och 7 (ingen stadspunkt inom 5 m) ritas inte");
     assert.deepEqual(per["C-9-95"].ritade.map(Number), [5], "SB3: punkt 6 saknar element_id");
     const hB = STAD_HALV_M.B, hC = STAD_HALV_M.C;

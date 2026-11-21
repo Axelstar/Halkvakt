@@ -72,9 +72,11 @@ export const STAD_BITAR_SQL = `
                  ST_CollectionExtract(ST_Intersection((array_agg(linje))[1],
                    ST_Union(ST_Buffer(pt, CASE left(seg, 1) WHEN 'B' THEN ${STAD_HALV_M.B} ELSE ${STAD_HALV_M.C} END, 16))), 2) AS g
           FROM narm GROUP BY seg, element_id)
+        -- ST_Collect av MultiLineStrings blir en GeometryCollection, som ST_LineMerge lämnar orörd (CI 44843465306): linjerna plockas ut
+        -- ur samlingen först.
         SELECT seg, sum(punkter)::int AS punkter, round((sum(ST_Length(g)) / 1000)::numeric, 2) AS km,
                (SELECT array_agg(n.i ORDER BY n.i) FROM narm n WHERE n.seg = bit.seg) AS ritade,
-               ST_AsGeoJSON(ST_Transform(ST_SimplifyPreserveTopology(ST_LineMerge(ST_Collect(g)), 2), 4326), 5)::json AS g
+               ST_AsGeoJSON(ST_Transform(ST_SimplifyPreserveTopology(ST_LineMerge(ST_CollectionExtract(ST_Collect(g), 2)), 2), 4326), 5)::json AS g
         FROM bit GROUP BY seg ORDER BY seg`;
 
 /** Kandidatens bitar av vägen (DECISIONS #579): $1 sträckor, $2 lon, $3 lat — en rad per punkt. Exporterad för integrationsprovet. */
