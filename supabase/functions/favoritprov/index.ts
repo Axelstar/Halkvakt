@@ -650,6 +650,38 @@ export function farorVidLinjen(hazards: Hazard[], line: [number, number][]): Haz
   return hazards.filter((h) => valda.has(h));
 }
 
+/** Punkten `langsM` meter längs linjen (den sista punkten om linjen är kortare). */
+export function punktLangs(line: [number, number][], langsM: number): [number, number] {
+  let kvar = langsM;
+  for (let i = 0; i < line.length - 1; i++) {
+    const a = line[i], b = line[i + 1];
+    const d = haversineM({ lon: a[0], lat: a[1] }, { lon: b[0], lat: b[1] });
+    if (kvar <= d || i === line.length - 2) {
+      const f = d === 0 ? 0 : Math.min(1, kvar / d);
+      return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f];
+    }
+    kvar -= d;
+  }
+  return line[line.length - 1];
+}
+
+/** RÄCKVIDDEN SOM EN FARA — en SKUGGA, aldrig appens regel (Bengt 21/11: *"på 2 gör vi ny skugga"*, *"bygg in"*; DECISIONS #949,
+ *  #950). Väderstationerna som kan tala som A2 (yta <= +1 °C och fukt, inte broar) inom `rackviddM` från rutten läggs på rutten, och
+ *  en kedja där nästa ligger högst `zonM` längre fram är EN fara, på den första stationens punkt och med dess id: motorns regel om
+ *  samma fara (10 min / 5 km) gäller då hela kedjan, som halkzonen (DECISIONS #624) för sträckorna. Stationer som inte kan tala, broar
+ *  och alla andra faror står kvar som de är. Bara i TypeScript: skuggmotorn och `scripts/fuktskuggan-takt.ts`. */
+export function stationerSomEnFara(hazards: Hazard[], line: [number, number][], rackviddM = 15_000, zonM = 15_000): Hazard[] {
+  const talar = (h: Hazard) => h.kind === "icing_point" && !h.meta?.bridge && h.meta?.surfaceTempC != null &&
+    h.meta.surfaceTempC <= 1 && h.meta?.moisture === true;
+  const zoner: Hazard[] = [];
+  let forra = -Infinity;
+  for (const x of farorLangsRutten(hazards.filter(talar), line, rackviddM)) {
+    if (x.langsM - forra > zonM) { const [lon, lat] = punktLangs(line, x.langsM); zoner.push({ ...x.hazard, lon, lat } as Hazard); }
+    forra = x.langsM;
+  }
+  return [...hazards.filter((h) => !talar(h)), ...zoner];
+}
+
 
 // ═══ engine/src/snapshot.ts ═══
 // Snapshot → Hazard adapter. THE reference mapping from the published app files

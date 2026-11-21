@@ -3527,3 +3527,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   ärende räknar missarna med och utan oberoende facit från 2026-V47 (§14, DECISIONS #946). Räckvidden skuggad som en fara per sträcka
   (DECISIONS #949, körning 44932577187): A2 på 26,8 % av körningarna med 3 256 yttranden mot dagens 20,6 % och 3 546; förslag 2 som en
   fara 52,0 %. Underlaget §6b.
+- 21/11 kväll (Claude; Bengt: *"bygg in"*): Räckvidden som en fara som tyst skugga i skuggmotorn (DECISIONS #950, kort #676):
+  `stationerSomEnFara` i ruttfiltret (bara TypeScript), `shadow_log.rackvidd` (sql/140), prov i `test/rackvidd-skugga.test.ts`.
+  Utvärdering 29/11 (fristerna).

@@ -536,6 +536,14 @@ Deno.serve(async (req) => {
       motor.onSuppressed = (c) => suppressed.push({ kind: c.kind, id: c.hazardId, distM: Math.round(c.distM), by: c.by, sinceS: c.sinceS,
         ...(c.zon ? { zon: c.zon } : {}) });
       const alerts = motor.run(trace);
+      // RÄCKVIDDEN SOM EN FARA (Bengt 21/11: "bygg in"; DECISIONS #950, sql/140): samma spår en gång till, med stationerna inom 15 km
+      // lagda på rutten och en kedja som en fara (stationerSomEnFara). En skugga: bara A2 loggas, i egen kolumn, och inget når appen.
+      // Bara huvudvarvet i Sverige, längs vägnätet. Utvärderas efter en vecka mot takten och missarna med oberoende facit (§14).
+      const rackvidd = land === "se" && !c ? (() => {
+        const ar = new AlertEngine(farorVidLinjen(farorNaraRutten(stationerSomEnFara(hazards, line), line), line)).run(trace)
+          .filter((a) => a.kind === "icing_point" && !a.beta);
+        return { n: ar.length, a: ar.map((a) => ({ t: a.t, id: a.hazardId, distanceM: a.distanceM })) };
+      })() : null;
       ms.motor += performance.now() - t1;
       const vb = land === "se" ? vbAlerts(lv, line, trace) : [];
       const olja = oljaAlerts(oljaLista.lista, line, trace);
@@ -586,7 +594,7 @@ Deno.serve(async (req) => {
       if (land === "se" && alerts.length && !punkter.length) f.skal.push("bara segment- eller fartkameralarm — inget som behöver väglagsfacit");
       facitBudget -= f.saved; facitTotal += f.saved; facitSkal.push(...f.skal);
       results[name] = { fixes: trace.length, alerts: alerts.length, vb: vb.length, olja: olja.length, suppressed: suppressed.length, efterhalka: efterhalka.length,
-        prognos: (prognos as Prognos).p?.length ?? 0, kandidat: (kandidat as { h?: unknown[] }).h?.length ?? 0 };
+        prognos: (prognos as Prognos).p?.length ?? 0, kandidat: (kandidat as { h?: unknown[] }).h?.length ?? 0, rackvidd: rackvidd?.n ?? null };
       // LARMETS POSITION (kort #158, DECISIONS #177/#179, Axels ja via Bengt 14/9).
       //
       // FÖRUT SKREVS `lon: a.lon` — OCH DET FÄLTET FINNS INTE. Motorns Alert bär `t`, `hazardId`,
@@ -610,6 +618,7 @@ Deno.serve(async (req) => {
       const body = JSON.stringify({
         route: name, land: land.toUpperCase(), snapshot_generated_at: lv.generated_at,
         n_hazards: hazards.length, n_alerts: alerts.length, vb, olja, suppressed, efterhalka, prognos,
+        ...(rackvidd ? { rackvidd } : {}),   // sql/140; grupp C och grannländerna utan
         ...(c ? {} : { kandidat }),   // shadow_log_c har ingen kandidatkolumn (sql/057 lägger den bara i shadow_log)
         alerts: alerts.map((a) => {
           const h = farorById.get(a.hazardId) as any;

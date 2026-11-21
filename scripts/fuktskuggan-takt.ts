@@ -28,7 +28,7 @@
 // Självtest utan databas: --sjalvtest
 import { readFileSync, writeFileSync } from "node:fs";
 import { AlertEngine } from "../engine/src/engine.ts";
-import { farorLangsRutten, farorVidLinjen, farorNaraRutten } from "../engine/src/rutfilter.ts";
+import { farorLangsRutten, farorVidLinjen, farorNaraRutten, punktLangs } from "../engine/src/rutfilter.ts";
 import { haversineM } from "../engine/src/geo.ts";
 import type { Alert, Fix, Hazard } from "../engine/src/types.ts";
 import { RADVAKT_SQL, karantanSql } from "../publish/snapshot-core.ts";
@@ -57,21 +57,6 @@ export function traceAlong(line: [number, number][], kmh = 80, stepS = 5): Fix[]
     }
   }
   return fixes;
-}
-
-/** Punkten `langsM` meter längs linjen. */
-export function punktLangs(line: [number, number][], langsM: number): [number, number] {
-  let kvar = langsM;
-  for (let i = 0; i < line.length - 1; i++) {
-    const a = line[i], b = line[i + 1];
-    const d = haversineM({ lon: a[0], lat: a[1] }, { lon: b[0], lat: b[1] });
-    if (kvar <= d || i === line.length - 2) {
-      const f = d === 0 ? 0 : Math.min(1, kvar / d);
-      return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f];
-    }
-    kvar -= d;
-  }
-  return line[line.length - 1];
 }
 
 /** A2:s faror för en variant och en rutt: bara stationerna som kan tala (yta <= +1 °C och variantens fukt; utan broar och S3 talar

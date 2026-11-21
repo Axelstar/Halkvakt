@@ -19379,3 +19379,19 @@ stationer längs rutten inom 15 km från varandra som en fara, vid den första s
 **Inte ändrat.** Motorn, snapshoten och appen. Ett beslut om räckvidden i motorn väntar på Bengt och Axel.
 
 **Stomdokument:** MAT §2 fuktskuggan i motorn med en fara per sträcka
+
+## #950 (21/11 2026) Räckvidden som en fara byggs som en tyst skugga i skuggmotorn, och utvärderas efter en vecka (kort #676)
+
+**Beslut** (Bengt 21/11: *"bygg in och kom ihåg att påminna mej om en vecka att utvärdering ska ske"*, efter frågan var den ska byggas
+in). Skuggmotorn spelar varje rutt i huvudvarvet i Sverige en gång till, med väderstationerna som kan tala som A2 inom 15 km från
+rutten lagda på rutten och en kedja där nästa ligger högst 15 km längre fram som en fara (`stationerSomEnFara` i
+`engine/src/rutfilter.ts`, bara TypeScript). Det den körningen säger som A2 loggas i `shadow_log.rackvidd` (sql/140). Utvärderingen
+29/11 (`docs/fristerna.json`) jämför takten mot dagens A2 och missarna med oberoende facit i veckans ärende (§14). Därefter, på Bengts
+och Axels ord: regeln i ruttfiltret i alla tre språk med en egen vektor, och en appversion. Den gäller bara när appen känner rutten
+(Planera resa, favoriterna); vakten utan rutt behöver en egen lösning.
+
+**Alternativ.** Direkt i motorn och appen (ingen mätning i drift först), eller bara den historiska skuggan (`fuktskuggan-takt.yml`).
+
+**Inte ändrat.** Motorn i appen, vektorerna, snapshoten, `live.json`, gallringen och dagens A2 i skuggmotorn.
+
+**Stomdokument:** MAT §2 skuggmotorn spelar räckvidden som en fara bredvid A2
