@@ -1,6 +1,7 @@
 // Halkvakt live — inlägg till Facebook-sidan och Instagram (kort #281; DECISIONS #598, #599, #600).
 // Körs i halkvakt-live.yml tre gånger om dygnet (morgon, lunch, kväll) och i halkvakt-larm.yml var 30:e minut (DECISIONS #627):
-//   node marknadsforing/posta.mjs bild    → väljer händelsen, skriver inlagg/DATUM-PASS.jpg + .json och live-historik.json
+//   node marknadsforing/posta.mjs bild    → väljer händelsen, skriver inlagg/DATUM-PASS.jpg + .json och live-historik.json,
+//                                           och lägger utkastet i social_utkast (DECISIONS #937): bild körs 30 min före passet
 //   node marknadsforing/posta.mjs koll    → finns ett larm att posta? (har=ja|nej i GITHUB_OUTPUT; ritar och skriver inget)
 //   node marknadsforing/posta.mjs bild --live → ritar larmet till inlagg/DATUM-live-HHMM.jpg + .json (ingen historik)
 //   node marknadsforing/posta.mjs skicka  → postar bilden och texten (bilden måste vara pushad: Meta hämtar den via raw-URL);
@@ -10,6 +11,7 @@
 //   node marknadsforing/posta.mjs matning-x → veckans siffror för våra egna X-inlägg till x-matning.json (måndag morgon)
 //                                           HV_NAMN väljer filerna, annars dagens pass
 // Utan META_PAGE_ID/META_PAGE_TOKEN är "skicka" en torrkörning: texten skrivs ut, inget postas.
+// Med DATABASE_URL läser "skicka" dagslägets utkast i social_utkast: slängt i admin ⇒ inget postas, ändrad text ⇒ den postas.
 // HV_NU=<ISO-tid> låter en torrkörning låtsas att klockan är en annan.
 //
 // Urvalet är larmdisciplinen i appen överförd till flödet: EN vinnare per körning, i prioritetsordning.
@@ -441,6 +443,28 @@ export function html(h) {
 </body></html>`;
 }
 
+// ---------- Utkasten (DECISIONS #937) ----------
+// Dagslägets inlägg ritas 30 minuter före passet och väntar i social_utkast, där admin.halkvakt.se kan ändra texten eller
+// slänga det. Bilden ändras inte. Larmen väntar inte: ett larm är bara värt något när det är färskt.
+// Går databasen inte att nå postas inlägget som det ritades, som före #937: ett utkast som ingen rört ska inte tappas.
+
+/** Texterna att posta ur utkastets rad, eller null när utkastet är slängt. Utan rad gäller filens texter. */
+export function attPosta(inlagg, rad) {
+  if (rad?.status === "slangd") return null;
+  return rad ? { text: rad.text, textIg: rad.text_ig } : { text: inlagg.text, textIg: inlagg.textIg ?? inlagg.text };
+}
+
+// Passet går på minut 50 i samma timme som bild (pulsklockan: utkast :20, live :50).
+export const postasKl = nu => { const d = new Date(nu); d.setUTCMinutes(50, 0, 0); return d.toISOString(); };
+
+async function databas(fn) {
+  if (!process.env.DATABASE_URL) return undefined;
+  const { default: pg } = await import("pg");
+  const db = new pg.Client({ connectionString: process.env.DATABASE_URL });
+  await db.connect();
+  try { return await fn(db); } finally { await db.end(); }
+}
+
 // ---------- Stegen ----------
 
 const dir = join(HERE, "inlagg");
@@ -514,6 +538,15 @@ async function bild(larm, bara_koll) {
   const { lan: valda, staplar, bilder, ...resten } = h;
   writeFileSync(join(dir, `${namn}.json`), JSON.stringify({ ...resten, ...(bilder ? { antal: bilder.length } : {}),
     datum: dag(nu), generated_at: d.generated_at, lan: valda.map(l => l.slug) }, null, 2) + "\n");
+  if (!larm) {
+    // Ett nytt utkast ersätter ett som ingen rört; ett som någon redan ändrat eller slängt för samma pass står kvar.
+    await databas(db => db.query(
+      `INSERT INTO social_utkast (namn, typ, pass, postas, antal, text, text_ig) VALUES ($1, $2, $3, $4, $5, $6, $7)
+       ON CONFLICT (namn) DO UPDATE SET typ = EXCLUDED.typ, postas = EXCLUDED.postas, antal = EXCLUDED.antal, text = EXCLUDED.text,
+         text_ig = EXCLUDED.text_ig, skapad = now() WHERE social_utkast.andrad IS NULL AND social_utkast.status = 'vantar'`,
+      [namn, h.typ, h.pass, postasKl(nu), bilder?.length ?? null, h.text, h.textIg]));
+    console.log(`Utkast ${namn} väntar till ${tid(postasKl(nu))}${process.env.DATABASE_URL ? "" : " (ingen DATABASE_URL: inget utkast i databasen)"}.`);
+  }
   console.log(`Inlägg ${namn} (${h.typ}):\n\n${h.text}`);
 }
 
@@ -703,6 +736,13 @@ async function skicka() {
   if (inlaggIdag(postat, nu).some(p => p.namn ? p.namn === namn : !larm && p.pass === inlagg.pass)) return console.log(`Redan postat ${namn}.`);
   const stopp = sparr(postat, nu, larm);
   if (stopp) return console.log(`Postar inte ${namn}: ${stopp}.`);
+  let rad = null;
+  if (!larm) rad = await databas(async db => (await db.query("SELECT status, text, text_ig, andrad, andrad_av FROM social_utkast WHERE namn = $1", [namn])).rows[0] ?? null)
+    .catch(e => { console.log(`Utkastet gick inte att läsa (${e.message}); postar som det ritades.`); return null; });
+  const ut = attPosta(inlagg, rad);
+  if (!ut) return console.log(`Postar inte ${namn}: slängt i admin av ${rad.andrad_av ?? "okänd"} ${rad.andrad ? tid(rad.andrad) : ""}.`);
+  if (rad?.andrad) console.log(`Texten ändrad i admin av ${rad.andrad_av} kl. ${tid(rad.andrad)}.`);
+  inlagg.text = ut.text; inlagg.textIg = ut.textIg;
   const namnen = bildNamn(namn, inlagg), urls = namnen.map(n => `${RAW}/${n}.jpg`), url = urls[0];
   const { META_PAGE_ID: page, META_PAGE_TOKEN: token, META_IG_ID: ig } = process.env;
   if (!page || !token) return console.log(`TORRKÖRNING (META_PAGE_ID/META_PAGE_TOKEN saknas). Skulle posta ${urls.join(", ")}:\n\n${inlagg.text}`);
@@ -725,6 +765,7 @@ async function skicka() {
     if (x) kvitto.x = await postaX(namnen.map(n => join(dir, `${n}.jpg`)), textX(inlagg.textIg ?? inlagg.text), process.env);
   } finally {
     spara();
+    if (rad) await databas(db => db.query("UPDATE social_utkast SET status = 'postad' WHERE namn = $1", [namn])).catch(e => console.log(`Utkastet ${namn} blev inte markerat som postat: ${e.message}`));
   }
 }
 

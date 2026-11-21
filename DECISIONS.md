@@ -19037,10 +19037,36 @@ som flyttas ut till `supabase/functions/olycksfacit/hamta.ts`, och räknar dem i
 migration. Svaret bär bara det ärendena får bära, utan läget som koordinater och utan kandidatens tal. Säljregeln (§9.6) följs på
 sidan: andelen står alltid bredvid antalet. Sidan i Axelstar/halkvakt-admin visar exempeldata, tydligt märkta, tills delen är i drift.
 
-**Kvar:** en rad i `supabase/functions/admin/index.ts` när PR #1719 är ihop (`del=olycksfacit` → `olycksfacitSvar()`), deploy av
-`admin` och `olycksfacit` på Bengts ord, och fliken läst live.
+**Kvar:** deploy av `admin` (nu i deploy-knappens lista) och `olycksfacit` på Bengts ord 21/11 (*"slå ihop 1719 och driftsätt"*), och
+fliken läst live.
 
 **Alternativ.** En ny SQL-funktion i `besok_stat`, som flikarna Appen och Annonser: bedömningen och områdena finns bara i TypeScript,
 så de hade fått skrivas en gång till i SQL och glida isär. En egen sida i admin: fliken håller ihop det som mäter appen på ett ställe.
 
 **Stomdokument:** SYS edge-funktionerna — admin och delen olycksfacit, MAT §9 olycksfacit — visas på adminsidan
+
+## #937 (20/11 2026) Halkvakt lives dagsläge väntar 30 minuter som utkast som kan ändras eller slängas i admin.halkvakt.se
+
+**Beslut.** Bengts ja 20/11, framfört av Malin i sessionen. Malin 20/11, på sidan Sociala medier i admin.halkvakt.se (DECISIONS #913): de kommande inläggen ska gå att förhandsvisa
+och redigera innan de går ut, och SMHI-varningarna ska gå ut direkt som idag.
+1. **Dagsläget ritas 30 minuter före passet.** Nya flödet `halkvakt-utkast.yml` kör `posta.mjs bild` på pulsjobben
+   puls-live-utkast-morgon, -lunch och -kvall (04:20, 10:20 och 15:20 UTC) och lägger inlägget i tabellen `social_utkast` (sql/134).
+   `halkvakt-live.yml` postar det som förut på minut 50, men bara postningen. Urvalet, spärrarna och texterna ändras inte.
+2. **Admin kan ändra texten eller slänga utkastet** fram till passet (Sociala medier → Inlägg, menyvalet social, edge-funktionen
+   admin). Facebook- och Instagram-texten ändras var för sig; X-texten räknas ur Instagram-texten som förut. Bilden ändras inte.
+   `posta.mjs skicka` läser raden: slängt ⇒ inget postas och inget kvitto skrivs; ändrad text ⇒ den postas.
+3. **Larmen väntar inte.** SMHI-varning och höstens första postas när det händer (#627) och syns bland de publicerade inläggen.
+4. **Går databasen inte att nå** postas inlägget som det ritades, som före förslaget: ett utkast som ingen rört ska inte tappas.
+
+**Alternativ.** Inget postas utan godkännande (larmen och passen kunde utebli när ingen är vid datorn). Att redigera efter postningen
+(Instagram och X låter inte API:et ändra ett publicerat inlägg). Larmen också i kön (ett larm är bara värt något när det är färskt).
+
+**Kvar före drift.** sql/134 med DB-knappen (migrera); edge-funktionen admin, som flyttar hit till `supabase/functions/admin/`
+ur Axelstar/halkvakt-admin (källan som deployades 20/11 plus delen `social`) och deployas med deploy-knappen (`admin` i listan);
+och pulsklockan körd skarpt så att de tre nya jobben ligger i pg_cron, och först därefter vakthunden deployad (PULS_GOLV 37).
+
+**Stomdokument:** SYS — Halkvakt live och pulsklockan, BED §4.2
+
+*Numret* (21/11): beslutet skrevs som #918 och tabellen som sql/131 på grenen, men båda numren togs på main medan PR #1719 väntade
+(#918 platsdelningen, sql/131 `push_utskick`). Vid sammanslagningen på Bengts ord 21/11 (*"slå ihop 1719 och driftsätt"*) blev det
+#937 och sql/134. Innehållet är oförändrat.
