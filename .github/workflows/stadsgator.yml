@@ -3,6 +3,7 @@
 # (NVDB, licens CC0). Läget prov hämtar och räknar och lägger linjerna som artefakt; databasen nås inte (ingen DATABASE_URL i jobbet).
 # Läget skriv gör samma hämtning och upsertar i stadsgata (sql/135). Knapp, inte cron: elementen ändras bara när punktfilen gör det.
 # Nyckeln delas med driftens ingest; skriptet håller ~2 förfrågningar/s. Loggen bär bara antal och avstånd, aldrig id, lägen eller särdrag.
+# Provat på grenen före main med en tillfällig push-utlösare: körningarna 44839886451 och 44841688891 (12 345 av 12 352 element, 5,7 min).
 name: stadsgator
 on:
   workflow_dispatch:
@@ -12,10 +13,6 @@ on:
         type: choice
         options: [prov, skriv]
         default: prov
-  # TILLFÄLLIG: provet på grenen innan flödet ligger på main (andra provet: grannavståndet längs nätet). Tas bort efter provet.
-  push:
-    branches: [claude/stadens-linjer]
-    paths: [.github/workflows/stadsgator.yml]
 permissions:
   contents: read
 concurrency: { group: stadsgator, cancel-in-progress: false }
@@ -36,7 +33,7 @@ jobs:
             || { echo "::error::Telias rot i ingest/ca har ett annat fingeravtryck"; exit 1; }
       # Driftens lista ligger i det privata repot (DECISIONS #768, #804): bara den filen läggs ovanpå, inte koden eller punktfilen.
       - uses: actions/checkout@v4
-        with: { repository: Axelstar/halkvakt-kuvos, ref: claude/stadens-linjer, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
       - name: Driftens lista ur det privata repot
         run: mkdir -p kuvos && cp .kuvos-privat/kuvos/stadspunkter-drift-2026-27.json kuvos/ && rm -rf .kuvos-privat
       - uses: actions/setup-node@v4

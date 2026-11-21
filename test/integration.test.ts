@@ -1960,6 +1960,69 @@ test("#579 bitar av vägen: en kilometer åt vardera hållet i meter, sammanslag
   }
 });
 
+// STADENS BITAR (DECISIONS #935, sql/135): STAD_BITAR_SQL mot riktig PostGIS.
+//   SB1  två B-punkter på samma element får en sammanslagen bit, STAD_HALV_M.B åt vardera hållet, i meter (lägesfilens fem decimaler matchar)
+//   SB2  en C-gata i två delar: biten löper över fogen, STAD_HALV_M.C åt vardera hållet, och blir en linje
+//   SB5  en C-gata som förgrenar sig i en T: biten tar alla tre grenarna (3 · STAD_HALV_M.C), inte bara den närmaste linjen
+//   SB3  ingen bit för: en punkt mer än 300 m från linjen, en stadspunkt utan element_id, ett element utan linje, och en punkt som inte
+//        står inom 5 m från någon stadspunkt i sin grupp — de ritas som prickar av kartkärnan
+//   SB4  sql/135 går att köra två gånger, och stadsgata har RLS
+test("#935 stadens bitar: längs elementets linje i meter, sammanslagna, och bara för punkter som hittar sin linje", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { STAD_BITAR_SQL, STAD_HALV_M } = await import("../publish/map-core.ts");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const las = (f: string) => q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+  const stada = async () => {
+    await q("DELETE FROM stadspunkt WHERE punkt IN ('B99951', 'B99952', 'B99953', 'B99954', 'C99951', 'C99952', 'C99953')");
+    await q("DELETE FROM stadsgata WHERE element_id IN ('99951:1', '99951:9', 'gata:Provgatan 99951', 'gata:Gaffeln 99951')");
+  };
+  try {
+    await las("089_stadspunkter.sql"); await las("135_stadsgata.sql"); await las("135_stadsgata.sql");
+    assert.deepEqual((await q("SELECT relrowsecurity FROM pg_class WHERE relname = 'stadsgata'")).rows, [{ relrowsecurity: true }], "SB4: RLS");
+    await stada();
+    // B: en rak linje norrut på 10 km vid 60° N. C: en öst–västlig gata vid 61° N i två delar på 5 km som möts vid 17,0926.
+    await q(`INSERT INTO stadsgata (element_id, geom) VALUES
+      ('99951:1', ST_Multi(ST_SetSRID(ST_MakeLine(ST_MakePoint(17.5, 60.0), ST_MakePoint(17.5, 60.0898)), 4326))),
+      ('gata:Provgatan 99951', ST_SetSRID(ST_Collect(ST_MakeLine(ST_MakePoint(17.0, 61.0), ST_MakePoint(17.0926, 61.0)),
+                                                       ST_MakeLine(ST_MakePoint(17.0926, 61.0), ST_MakePoint(17.1852, 61.0))), 4326)),
+      ('gata:Gaffeln 99951', ST_SetSRID(ST_Collect(ARRAY[ST_MakeLine(ST_MakePoint(17.3, 61.0), ST_MakePoint(17.35, 61.0)),
+                                                          ST_MakeLine(ST_MakePoint(17.35, 61.0), ST_MakePoint(17.4, 61.0)),
+                                                          ST_MakeLine(ST_MakePoint(17.35, 61.0), ST_MakePoint(17.35, 61.02))]), 4326))`);
+    await q(`INSERT INTO stadspunkt (punkt, grupp, lager, omrade, lon, lat, element_id) VALUES
+      ('B99951', 'B-9-95', 'B', 'Stor-Stockholm', 17.5, 60.017966, '99951:1'),
+      ('B99952', 'B-9-95', 'B', 'Stor-Stockholm', 17.5, 60.022457, '99951:1'),
+      ('B99953', 'B-9-95', 'B', 'Stor-Stockholm', 17.5185, 60.04, '99951:1'),
+      ('B99954', 'B-9-96', 'B', 'Stor-Stockholm', 17.6, 60.05, '99951:9'),
+      ('C99951', 'C-9-95', 'C', 'Stor-Stockholm', 17.0926, 61.0, 'gata:Provgatan 99951'),
+      ('C99952', 'C-9-95', 'C', 'Stor-Stockholm', 17.05, 61.0, NULL),
+      ('C99953', 'C-9-96', 'C', 'Stor-Stockholm', 17.35, 61.0, 'gata:Gaffeln 99951')`);
+    // Lägesfilens punkter (fem decimaler): 1–2 på B:s linje 2 och 2,5 km in, 3 en km öster om den, 4 utan linje, 5 på C-gatans fog,
+    // 6 utan element_id, 7 i B-9-95:s grupp men 840 m från närmaste stadspunkt, 8 i T:ets förgrening.
+    const r = (await q(STAD_BITAR_SQL, [["B-9-95", "B-9-95", "B-9-95", "B-9-96", "C-9-95", "C-9-95", "B-9-95", "C-9-96"],
+      [17.5, 17.5, 17.5185, 17.6, 17.0926, 17.05, 17.5, 17.35], [60.01797, 60.02246, 60.04, 60.05, 61.0, 61.0, 60.03, 61.0]])).rows;
+    const per = Object.fromEntries(r.map((x) => [x.seg, x]));
+    assert.deepEqual(Object.keys(per).sort(), ["B-9-95", "C-9-95", "C-9-96"], "SB3: grupperna utan någon bit saknas");
+    assert.deepEqual(per["B-9-95"].ritade.map(Number), [1, 2], "SB1 och SB3: punkt 3 (1 km bort) och 7 (ingen stadspunkt inom 5 m) ritas inte");
+    assert.deepEqual(per["C-9-95"].ritade.map(Number), [5], "SB3: punkt 6 saknar element_id");
+    const hB = STAD_HALV_M.B, hC = STAD_HALV_M.C;
+    const vantadB = (2 * hB >= 500 ? 500 + 2 * hB : 4 * hB) / 1000;   // [2 km ± h] ∪ [2,5 km ± h]
+    assert.ok(Math.abs(Number(per["B-9-95"].km) - vantadB) <= 0.02, `SB1: två punkter 500 m isär ger ${vantadB} km: ${per["B-9-95"].km}`);
+    assert.equal(per["B-9-95"].punkter, 2);
+    assert.equal(per["B-9-95"].g.type, vantadB === (500 + 2 * hB) / 1000 ? "LineString" : "MultiLineString", "SB1: överlappande bitar blir en linje");
+    assert.ok(Math.abs(Number(per["C-9-95"].km) - 2 * hC / 1000) <= 0.02, `SB2: en punkt på fogen ger ${2 * hC / 1000} km över fogen: ${per["C-9-95"].km}`);
+    assert.equal(per["C-9-95"].g.type, "LineString", "SB2: gatans två delar slogs ihop");
+    const xs = per["C-9-95"].g.coordinates.map((c: number[]) => c[0]);
+    assert.ok(Math.min(...xs) < 17.0926 && Math.max(...xs) > 17.0926, "SB2: biten löper över fogen");
+    assert.deepEqual(per["C-9-96"].ritade.map(Number), [8]);
+    assert.ok(Math.abs(Number(per["C-9-96"].km) - 3 * hC / 1000) <= 0.03, `SB5: T:et ger tre grenar, ${3 * hC / 1000} km: ${per["C-9-96"].km}`);
+    assert.ok(per["C-9-96"].g.coordinates.flat().some((c: number[]) => c[1] > 61.001), "SB5: grenen norrut är med");
+  } finally {
+    await stada().catch(() => {});
+    await pool.end();
+  }
+});
+
 test("#580 autovacuum: tabellerna som byts ut städas vid 2 % + 1 000 döda rader, och saknade tabeller hoppas över", { skip: !url }, async () => {
   const { default: pg } = await import("pg");
   const { readFileSync } = await import("node:fs");
@@ -2984,18 +3047,19 @@ test("#800 spridningsspärren F1: frys_min ≥ 0,45 tystar, spridningen gör det
 //   SP2  laddarens skriv tar två punkter; en andra skrivning med samma värden ändrar inget; ett ändrat läge skrivs
 //   SP3  ett v-id, ett id som inte börjar med lagret och en grupp utan lagret vägras av tabellen
 //   SP4  ta_bort tar punkten som inte längre står i listan och rör inte vagpunkt
+//   SP5  element_id (sql/135, DECISIONS #935): skrivs, ett ändrat element skrivs, och null går (en lista utan fältet)
 test("#804 stadspunkterna: tabellen, brytarna av och laddarens satser", { skip: !url }, async () => {
   const { default: pg } = await import("pg");
   const { SATS } = await import("../ingest/stadspunkter-db.ts");
   const pool = new pg.Pool({ connectionString: url, max: 1 });
   const q = (s: string, p: unknown[] = []) => pool.query(s, p);
   const las = (f: string) => q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
-  const skriv = (r: [string, string, string, string, number, number][]) =>
-    q(SATS.skriv, [r.map((x) => x[0]), r.map((x) => x[1]), r.map((x) => x[2]), r.map((x) => x[3]), r.map((x) => x[4]), r.map((x) => x[5])]);
+  const skriv = (r: [string, string, string, string, number, number, (string | null)?][]) =>
+    q(SATS.skriv, [r.map((x) => x[0]), r.map((x) => x[1]), r.map((x) => x[2]), r.map((x) => x[3]), r.map((x) => x[4]), r.map((x) => x[5]), r.map((x) => x[6] ?? null)]);
   try {
     await las("055_vagpunkter.sql");
     const vp = Number((await q("SELECT count(*) AS n FROM vagpunkt")).rows[0].n);
-    await las("089_stadspunkter.sql"); await las("089_stadspunkter.sql");
+    await las("089_stadspunkter.sql"); await las("089_stadspunkter.sql"); await las("135_stadsgata.sql");
     await q("DELETE FROM stadspunkt WHERE punkt IN ('B99901', 'B99902', 'C99901')");
     assert.deepEqual((await q("SELECT relname, relrowsecurity FROM pg_class WHERE relname IN ('stadspunkt', 'stadsbrytare') ORDER BY 1")).rows,
       [{ relname: "stadsbrytare", relrowsecurity: true }, { relname: "stadspunkt", relrowsecurity: true }], "SP1: RLS");
@@ -3007,6 +3071,12 @@ test("#804 stadspunkterna: tabellen, brytarna av och laddarens satser", { skip: 
     assert.equal((await skriv([["B99901", "B-1-1", "B", "Stor-Stockholm", 18.001, 59.3]])).rowCount, 1, "SP2: ett ändrat läge skrivs");
     const g = await q("SELECT ST_X(geom) AS x FROM stadspunkt WHERE punkt = 'B99901'");
     assert.ok(Math.abs(g.rows[0].x - 18.001) < 1e-9, "SP2: geom följer läget");
+    const el = async () => (await q("SELECT element_id FROM stadspunkt WHERE punkt = 'B99901'")).rows[0].element_id;
+    assert.equal(await el(), null, "SP5: en rad utan element_id ger null");
+    assert.equal((await skriv([["B99901", "B-1-1", "B", "Stor-Stockholm", 18.001, 59.3, "1000:1289"]])).rowCount, 1, "SP5: elementet skrivs");
+    assert.equal(await el(), "1000:1289");
+    assert.equal((await skriv([["B99901", "B-1-1", "B", "Stor-Stockholm", 18.001, 59.3, "1000:1289"]])).rowCount, 0, "SP5: samma element ändrar inget");
+    assert.equal((await skriv([["B99901", "B-1-1", "B", "Stor-Stockholm", 18.001, 59.3, "1000:1290"]])).rowCount, 1, "SP5: ett ändrat element skrivs");
     for (const [namn, rad] of [["v-id", ["v99901", "B-1-1", "B", "Stor-Stockholm", 18, 59]], ["fel lager i id:t", ["C99902", "B-1-1", "B", "Stor-Stockholm", 18, 59]],
                                ["grupp utan lagret", ["B99902", "12345", "B", "Stor-Stockholm", 18, 59]]] as const)
       await assert.rejects(skriv([rad as unknown as [string, string, string, string, number, number]]), undefined, `SP3: ${namn}`);

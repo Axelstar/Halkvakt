@@ -2,18 +2,24 @@
 // Trafikverket. Fail-soft-grenen för väglagskamerorna bevisas i båda riktningarna.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { buildMapData, KANDIDAT_BITAR_SQL } from "../publish/map-core.ts";
+import { buildMapData, KANDIDAT_BITAR_SQL, STAD_BITAR_SQL, STAD_HALV_M } from "../publish/map-core.ts";
 import type { Q } from "../publish/snapshot-core.ts";
 
 const NOW = new Date("2026-11-20T06:30:00Z");
 const pt = (lon: number, lat: number) => ({ type: "Point", coordinates: [lon, lat] });
 
-function fakeDb(o: { bitar?: Record<string, unknown>[]; bitarKastar?: boolean; fragor?: { text: string; params?: unknown[] }[]; grannar?: boolean } = {}) {
+function fakeDb(o: { bitar?: Record<string, unknown>[]; bitarKastar?: boolean; fragor?: { text: string; params?: unknown[] }[]; grannar?: boolean;
+                     stadBitar?: Record<string, unknown>[]; stadKastar?: boolean; stadFragor?: { text: string; params?: unknown[] }[] } = {}) {
   const q: Q = async (text, params) => {
     if (text === KANDIDAT_BITAR_SQL) {   // #579
       o.fragor?.push({ text, params });
       if (o.bitarKastar) throw new Error("function st_transform does not exist");
       return o.bitar ?? [];
+    }
+    if (text === STAD_BITAR_SQL) {   // #935
+      o.stadFragor?.push({ text, params });
+      if (o.stadKastar) throw new Error('relation "stadsgata" does not exist');
+      return o.stadBitar ?? [];
     }
     if (text.includes("FROM road_conditions")) return [
       { segment_id: "S1", condition_code: "2", condition_text: "Besvärligt", condition_info: ["Is"], road_number: "E10",
@@ -64,7 +70,7 @@ test("#77 alla sju kartfiler ur kärnan, i kartsajtens format (kandidaten sedan 
     generated_at: "2026-11-20T06:30:00.000Z", vaglag_total: 2, vaglag_ej_normalt: 1, stationer: 1, kalla_stationer: 1,   // #865: F1 är finsk
     olyckor: 1, kameror: 1, kameror_vaglag: 600, vilt_dygn: 1, vilt_vecka: 3, vilt_vanligast: "älg",
     smhi_vinter: [{ event: "Snöfall", niva: "Gul", niva_kod: "YELLOW", omrade: "Norrbotten" }], waitlist_count: 31,
-    kandidat: { pa: false, strackor: 0, punkter: 0, ritade: 0, km: 0, stad: 0, tid: null },   // #579: ingen nyckel ⇒ av
+    kandidat: { pa: false, strackor: 0, punkter: 0, ritade: 0, km: 0, stad: 0, stad_bitar: 0, stad_prickar: 0, tid: null },   // #579: ingen nyckel ⇒ av
   });
 });
 
@@ -101,7 +107,7 @@ test("#579 brytaren av (ingen nyckel): tom kandidatfil, frågan ställs inte, oc
   const { files, notes } = await buildMapData(fakeDb({ fragor }), { now: NOW });
   assert.deepEqual(JSON.parse(files["kandidat.geojson"]).features, []);
   assert.equal(fragor.length, 0);
-  assert.deepEqual(JSON.parse(files["meta.json"]).kandidat, { pa: false, strackor: 0, punkter: 0, ritade: 0, km: 0, stad: 0, tid: null });
+  assert.deepEqual(JSON.parse(files["meta.json"]).kandidat, { pa: false, strackor: 0, punkter: 0, ritade: 0, km: 0, stad: 0, stad_bitar: 0, stad_prickar: 0, tid: null });
   assert.ok(!notes.some((n) => n.startsWith("kandidat:")));
 });
 
@@ -116,33 +122,63 @@ test("#579 brytaren på: en rad per punkt till frågan, en bit per sträcka till
   assert.deepEqual(fragor[0].params, [["S1", "S1", "S2"], [17, 17, 18], [60.018, 60.027, 59.5]]);
   assert.deepEqual(JSON.parse(files["kandidat.geojson"]).features, [{ type: "Feature", geometry: bitar[0].g,
     properties: { segment_id: "S1", punkter: 2, km: 3, tid: "2026-11-20T05:00:00.000Z" } }]);
-  assert.deepEqual(JSON.parse(files["meta.json"]).kandidat, { pa: true, strackor: 2, punkter: 3, ritade: 2, km: 3, stad: 0, tid: "2026-11-20T05:00:00.000Z" });
+  assert.deepEqual(JSON.parse(files["meta.json"]).kandidat, { pa: true, strackor: 2, punkter: 3, ritade: 2, km: 3, stad: 0, stad_bitar: 0, stad_prickar: 0, tid: "2026-11-20T05:00:00.000Z" });
   assert.ok(notes.some((n) => n.startsWith("kandidat: 1 av 3 punkter ritas inte")), "det som inte ritas ska synas");
 });
 
-test("#928 storstädernas punkter ritas som punkter, går inte till frågan och ritas också när frågan faller", async () => {
-  const fragor: { text: string; params?: unknown[] }[] = [];
+test("#935 storstädernas punkter får bitar längs sin gata i en egen fråga, och en punkt utan bit ritas som prick", async () => {
+  const fragor: { text: string; params?: unknown[] }[] = [], stadFragor: { text: string; params?: unknown[] }[] = [];
   const bitar = [{ seg: "S1", punkter: 1, km: "2.0", g: { type: "LineString", coordinates: [[17, 60.009], [17, 60.027]] } }];
+  // B-gruppens två punkter fick en bit (ordningsnummer 1 och 2 i frågan); C-punkten (3) fick ingen och blir en prick.
+  const stadBitar = [{ seg: "B-503-3290", punkter: 2, km: "1.25", ritade: ["1", "2"], g: { type: "LineString", coordinates: [[17.66, 59.185], [17.67, 59.178]] } }];
   const tid = "2026-11-20T18:00:00.000Z";
   const appKandidat = [
     { id: "S1", tid, punkter: [[17, 60.018]] as [number, number][] },
     { id: "B-503-3290", tid, punkter: [[17.664, 59.182], [17.665, 59.181]] as [number, number][] },
     { id: "C-12-34", tid, punkter: [[18.07, 59.33]] as [number, number][] },
   ];
-  const { files, notes } = await buildMapData(fakeDb({ fragor, bitar }), { now: NOW, appKandidat });
-  assert.deepEqual(fragor[0].params, [["S1"], [17], [60.018]], "bara vägens punkter går till frågan");
+  const { files, notes } = await buildMapData(fakeDb({ fragor, bitar, stadFragor, stadBitar }), { now: NOW, appKandidat });
+  assert.deepEqual(fragor[0].params, [["S1"], [17], [60.018]], "bara vägens punkter går till vägens fråga");
+  assert.deepEqual(stadFragor[0].params, [["B-503-3290", "B-503-3290", "C-12-34"], [17.664, 17.665, 18.07], [59.182, 59.181, 59.33]],
+    "stadspunkterna går till stadens fråga, i lägesfilens ordning");
   const f = JSON.parse(files["kandidat.geojson"]).features;
-  assert.equal(f.length, 4, "en bit och tre punkter");
-  assert.deepEqual(f.slice(1).map((x: any) => [x.geometry.type, x.geometry.coordinates, x.properties.segment_id, x.properties.stad]),
-    [["Point", [17.664, 59.182], "B-503-3290", true], ["Point", [17.665, 59.181], "B-503-3290", true], ["Point", [18.07, 59.33], "C-12-34", true]]);
-  assert.deepEqual(JSON.parse(files["meta.json"]).kandidat, { pa: true, strackor: 3, punkter: 4, ritade: 4, km: 2, stad: 3, tid });
-  assert.ok(!notes.some((n) => n.startsWith("kandidat:")), "allt ritades, inget att notera");
-  const fallen = await buildMapData(fakeDb({ bitarKastar: true }), { now: NOW, appKandidat });
-  assert.deepEqual(JSON.parse(fallen.files["kandidat.geojson"]).features.map((x: any) => x.geometry.type), ["Point", "Point", "Point"],
-    "stadspunkterna ritas fast frågan föll");
-  const baraStad = { fragor: [] as { text: string; params?: unknown[] }[] };
-  await buildMapData(fakeDb({ fragor: baraStad.fragor, bitar: [] }), { now: NOW, appKandidat: appKandidat.slice(1) });
-  assert.equal(baraStad.fragor.length, 0, "med bara stadspunkter ställs ingen fråga om bitar");
+  assert.deepEqual(f.map((x: any) => [x.geometry.type, x.properties.segment_id, x.properties.stad ?? false]),
+    [["LineString", "S1", false], ["LineString", "B-503-3290", true], ["Point", "C-12-34", true]], "vägens bit, stadens bit och en prick");
+  assert.deepEqual(f[1], { type: "Feature", geometry: stadBitar[0].g, properties: { segment_id: "B-503-3290", stad: true, punkter: 2, km: 1.25, tid } });
+  assert.deepEqual(f[2].geometry.coordinates, [18.07, 59.33], "pricken står där punkten står");
+  assert.deepEqual(JSON.parse(files["meta.json"]).kandidat,
+    { pa: true, strackor: 3, punkter: 4, ritade: 4, km: 3.3, stad: 3, stad_bitar: 2, stad_prickar: 1, tid }, "meta räknar bitar och prickar");
+  assert.ok(notes.includes("kandidat: 1 av 3 stadspunkter ritas som prickar (utan linje, eller mer än 300 m från den)"), "pricken syns i noterna");
+  assert.ok(!notes.some((n) => n.includes("ritas inte")), "vägens punkt ritades");
+});
+
+test("#935 utan stadens linjer (tom tabell, eller frågan faller) ritas varje stadspunkt som prick, som före linjerna (#928)", async () => {
+  const tid = "2026-11-20T18:00:00.000Z";
+  const appKandidat = [
+    { id: "B-503-3290", tid, punkter: [[17.664, 59.182], [17.665, 59.181]] as [number, number][] },
+    { id: "C-12-34", tid, punkter: [[18.07, 59.33]] as [number, number][] },
+  ];
+  for (const [namn, o] of [["tom", { stadBitar: [] }], ["fallen", { stadKastar: true }]] as const) {
+    const fragor: { text: string; params?: unknown[] }[] = [];
+    const { files, notes } = await buildMapData(fakeDb({ ...o, fragor }), { now: NOW, appKandidat });
+    const f = JSON.parse(files["kandidat.geojson"]).features;
+    assert.deepEqual(f.map((x: any) => [x.geometry.type, x.geometry.coordinates, x.properties.segment_id, x.properties.stad]),
+      [["Point", [17.664, 59.182], "B-503-3290", true], ["Point", [17.665, 59.181], "B-503-3290", true], ["Point", [18.07, 59.33], "C-12-34", true]], namn);
+    assert.deepEqual(JSON.parse(files["meta.json"]).kandidat,
+      { pa: true, strackor: 2, punkter: 3, ritade: 3, km: 0, stad: 3, stad_bitar: 0, stad_prickar: 3, tid }, namn);
+    assert.equal(fragor.length, 0, `${namn}: med bara stadspunkter ställs ingen fråga om vägens bitar`);
+    assert.ok(notes.some((n) => (namn === "tom" ? n.startsWith("kandidat: 3 av 3 stadspunkter ritas som prickar") : n.startsWith("kandidat: stadens bitar ej läsbara"))), namn);
+  }
+  // Vägens fråga faller: stadens bitar ritas ändå.
+  const stadBitar = [{ seg: "C-12-34", punkter: 1, km: "0.08", ritade: ["3"], g: { type: "LineString", coordinates: [[18.069, 59.33], [18.071, 59.33]] } }];
+  const r = await buildMapData(fakeDb({ bitarKastar: true, stadBitar }), { now: NOW, appKandidat: [{ id: "S1", tid, punkter: [[17, 60.018]] }, ...appKandidat] });
+  assert.deepEqual(JSON.parse(r.files["kandidat.geojson"]).features.map((x: any) => x.geometry.type), ["LineString", "Point", "Point"]);
+});
+
+test("#935 stadsbitens längd åt vardera hållet står i frågan, per lager", () => {
+  assert.ok(STAD_BITAR_SQL.includes(`CASE left(seg, 1) WHEN 'B' THEN ${STAD_HALV_M.B} ELSE ${STAD_HALV_M.C} END`));
+  assert.ok(STAD_HALV_M.B > 0 && STAD_HALV_M.C > 0 && STAD_HALV_M.B <= 1000 && STAD_HALV_M.C <= 1000, "aldrig längre än vägens bit");
+  assert.ok(STAD_BITAR_SQL.includes("ST_DWithin(ST_Transform(g.geom, 3006), sp.pt, 300)"), "300 m som vägens bitar");
 });
 
 test("#579 en fallen fråga fäller inte kartan — kandidatlagret tomt och noterat", async () => {
