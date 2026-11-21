@@ -3521,3 +3521,5 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 21/11 UTC (Claude): Kort #675 stängt med *ingen ändring i modellen* (DECISIONS #947). Rättelsen av kandidatens yta prövad på de sex
   vintrarna i `kuvos-ny-kandidat` (steget `rattelsen`, PR #1790; körning 55 och omkörningen av sista steget 44943442798 efter PR #1791,
   som flyttade kuvösens klon ur `kuvos/`). Ingen variant klarade villkoren; läsningen i halkvakt-kuvos F83. Inget i motorn eller appen ändrat.
+- 21/11 UTC (Claude): DECISIONS #948 (Bengt: *"flytta inte"*): missarna i kort #675 står kvar under *Ytan i modellen* i olycksfacit;
+  orden om *Täckningen* i #947 ersatta. Ingen kod ändrad.

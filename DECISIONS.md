@@ -19353,3 +19353,15 @@ villkoren (halkvakt-kuvos F83). Missarna förs till området *Täckningen* i oly
 **Inte ändrat.** Motorn, regeln, K:s värden och appen (regel L).
 
 **Stomdokument:** MAT §3 kortet om ytan i modellen stängt utan ändring i modellen
+
+## #948 (21/11 2026) Ytan i modellen: missarna står kvar under sitt område i olycksfacit (kort #675)
+
+**Beslut** (Bengt 21/11: *"flytta inte"*). Missarna där kandidaten sa *yta över 0* står kvar under området *Ytan i modellen*
+(TROSKLAR-OLYCKSFACIT §9.3). Det ersätter orden *missarna förs till området Täckningen* i DECISIONS #947, som kom ur förregistreringens
+§5 (halkvakt-kuvos F82) och inte stämmer med §9.3: *Täckningen* är missar där kandidaten saknade värde, och här hade den ett.
+
+**Alternativ.** Att flytta dem till *Täckningen*: då ser missarna ut att bero på otäckta vägar fast kandidaten räknade där.
+
+**Inte ändrat.** Olycksfacits kod och §9.3. Den signerade förregistreringen.
+
+**Stomdokument:** inga — ingen kod, regel eller text i stomdokumenten ändras; olycksfacit klassar som förut.
