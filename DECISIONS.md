@@ -19224,7 +19224,23 @@ datablankett när bygget är klart; telefonprovet.
 
 **Stomdokument:** APP — Android: kartan och Planera resa och platsdelningen
 
-## #942 — 21/11: Planera resa i Android-appen: Googles sökning, väg och karta, och målet får kommunens namn (Axel: *"Ja vi kör"*)
+## #942 (21/11 2026) Olycksfacit: klassen TROLIG, väglaget (förslaget för de oklara signerat)
+
+**Beslut** (Bengt 21/11: *"Vi signerar 1770 också"*; signaturen kom från Bengt för både Bengt och Axel). Förslaget
+`docs/FORSLAG-OLYCKSFACIT-OKLARA-2026-11-21.md` (DECISIONS #939 punkt 4) gäller, och TROSKLAR-OLYCKSFACIT får regel 3b i §4 och §13:
+1. En olycka som annars blir OKLAR blir *TROLIG, väglaget* när Trafikverket satte halka på A1:s sträcka inom sex timmar efter starten
+   (`halka_efter`) och ytan är högst +1 °C eller okänd. Den står som `klass` TROLIG med ett skäl som börjar med *väglaget efteråt*, så att
+   den räknas som halkkopplad överallt där TROLIG räknas; en tyst olycka i klassen är en miss, och en kollision får ingen åtgärd (D2).
+2. Rätt varning i klassen redovisas för sig med lagret som varnade, och får inte anföras utåt (§9.6), eftersom facit och A1 läser samma källa.
+3. Radarn klassar inte. Ytan +1 till +3 °C och torrt prövas först efter en hel vinter.
+4. Säsongens OKLAR sedan 6/11 räknas om på sparade mått, som `sql/137`.
+
+**Alternativ.** En egen `klass`: varje ställe som räknar TYDLIG och TROLIG hade behövt ändras, också säsongsfacit och storstädernas
+avsnitt. Att låta väglaget efteråt klassa utan ytgräns: då blir varma olyckor med en senare halkvarning halkkopplade.
+
+**Stomdokument:** MAT §3 (olycksfacits klassning får regel 3b)
+
+## #943 (21/11 2026) Planera resa i Android-appen: Googles sökning, väg och karta, och målet får kommunens namn (Axel: *"Ja vi kör"*)
 
 **Beslut.** Android-appen får Planera resa som iPhone (kort #659, Förslag A, DECISIONS #933), från 0.4.1 (72). Knappen *Planera
 resa* står under *Starta vakten* på Redo. Sökningen och vägen kommer från Google (Places API (New) och Routes API, `Vagtjanst.kt`),

@@ -124,7 +124,7 @@ export const KARTAN: Beroende[] = [
     matar: "bilvägen till en sökt adress i Planera resa i Android-appen (Routes API, DECISIONS #941)",
     brister: "vägen kan inte räknas ut; varningarna och de sparade resorna påverkas inte", bevakad: "", signal: "OKÄND" },
   { vard: "maps.googleapis.com", roll: "verktyg",
-    matar: "kartbilderna på skärmen Planerad resa i Android-appen (Maps SDK for Android, DECISIONS #942); adressen är Googles och anropas av deras bibliotek",
+    matar: "kartbilderna på skärmen Planerad resa i Android-appen (Maps SDK for Android, DECISIONS #943); adressen är Googles och anropas av deras bibliotek",
     brister: "kartan visas tom; sträckorna under den och varningarna påverkas inte", bevakad: "", signal: "OKÄND" },
   { vard: "thredds.met.no", roll: "verktyg",
     matar: "MET Nordics arkiverade prognoser för kuvösens prognosläge (kuvos/metnordic-prognos.ts, DECISIONS #519) — hämtas en gång, inte i drift",

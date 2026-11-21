@@ -244,7 +244,7 @@ och *fartkamera* (en låda på stolpe med blixtlinjer). Svarta på kortet, ljusa
 
 Under panelerna: *LÖFTET — Din position skickas aldrig till Halkvakt av sig själv.*
 
-**Planera resa på Android (21/11, kort #659, DECISIONS #942; från 0.4.1 (72)).** Under ▶ *Starta vakten* på Redo står knappen
+**Planera resa på Android (21/11, kort #659, DECISIONS #943; från 0.4.1 (72)).** Under ▶ *Starta vakten* på Redo står knappen
 *Planera resa*. Den öppnar **Vart ska du?**: *"Se läget längs vägen innan du åker."* och sökrutan *Sök adress eller ort*.
 Medan föraren skriver visas upp till sex förslag från Google, med raden *Google Maps* under. Ett tryck på ett förslag räknar
 ut bilvägen dit från där föraren är (*"Räknar ut vägen …"*) och öppnar **Till {kommunen}**. Målet heter som kommunen det
