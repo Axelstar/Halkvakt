@@ -1,0 +1,99 @@
+name: kuvos-ytan-i-modellen
+# YTAN I MODELLEN (kort #675; halkvakt-kuvos BESLUT F80, förregistreringen i det privata repot, signerad 21/11 2026). Diagnos, ingen
+# dom: ingenting här ändrar motorn, en regel eller en tröskel. Bygger grindarnas tillfälliga databas med säsongen från 6/11 (kort
+# #323), med olycksfacit och kandidatens stationslogg vid sidan av, hämtar stationsloggens äldre dygn ur hinken (arkivdump dygn_hamta)
+# och kör mätskriptet ur det privata repot ovanpå. Spärren och självtestet går först. Talen går bara till hinken,
+# kuvos/kuvos-ytan-i-modellen-2026-11-<körningens nummer>/, också skälet när ett steg faller; loggen är publik (#498) och säger
+# bara klart eller vilket steg som föll. Körs för hand, på Bengts ord.
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency: { group: kuvos-ytan-i-modellen, cancel-in-progress: false }
+jobs:
+  matningen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      UT_HINK: "kuvos-ytan-i-modellen-2026-11-${{ github.run_number }}"
+      FORREG: docs/FORREGISTRERING-YTAN-I-MODELLEN-2026-11.md
+      MATNING: scripts/matningar/kuvos-ytan-i-modellen-2026-11.ts
+    steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos (DECISIONS #768): koden läggs ovanpå utcheckningen.
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      # SPÄRREN först: utan båda signaturerna läses ingenting (fysik/ny_kandidat/sparren.py). Fönstret från dygnet före 6/11, så
+      # att olyckorna strax efter midnatt har sina timmar; den tillfälliga databasen lägger karantänens dygn före av sig själv.
+      - name: Spärren, självtestet och fönstret
+        id: fonstret
+        shell: bash
+        run: |
+          set -euo pipefail
+          prov() { if "${@:2}" > /dev/null 2>&1; then echo "$1: klart"; else echo "::error::$1: fel"; return 1; fi; }
+          prov "spärren (F80, förregistreringen signerad)" python3 fysik/ny_kandidat/sparren.py "$FORREG"
+          prov "mätskriptets självtest (påhittade data)" node --experimental-strip-types "$MATNING" --sjalvtest
+          echo "dagar=$(( ( $(date -u +%s) - $(date -u -d 2026-11-05 +%s) ) / 86400 + 1 ))" >> "$GITHUB_OUTPUT"
+      - uses: ./.github/actions/tillfalliga-arkivet
+        with: { dagar: "${{ steps.fonstret.outputs.dagar }}", drift-url: "${{ secrets.DATABASE_URL }}", tabeller: "arkiv_export_tabell,ny_kandidat_station,olycksfacit,olycksfacit_lager" }
+      - name: Stationsloggen ur hinken, mätningen och filen till hinken
+        shell: bash
+        env: { DRIFT_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          read -r FN KEY < <(psql "$DRIFT_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          export FN KEY
+          lagg() {   # lagg <fil>: till $UT_HINK/<filnamn>; skrivs aldrig över, och det som ligger i hinken ska vara byte för byte filen
+            node -e '
+              const { execFileSync } = require("child_process"), fs = require("fs"), c = require("crypto"), filer = process.argv.slice(1);
+              const sha = (b) => c.createHash("sha256").update(b).digest("hex"), namn = filer.map((f) => process.env.UT_HINK + "/" + f.split("/").pop());
+              // execFileSync:s fel bär kommandoraden och därmed nyckeln eller den signerade adressen: fångas, bara statusen skrivs ut.
+              const curl = (a, vad) => { try { return execFileSync("curl", ["-sS", "--fail", ...a], { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); }
+                catch (e) { if (vad) { console.error(`${vad} föll (curl ${e.status})`); process.exit(1); } return null; } };
+              const anrop = (lage, vad) => { const b = curl(["-X", "POST", `${process.env.FN}?lage=${lage}`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
+                "-H", "Content-Type: application/json", "-d", JSON.stringify({ filer: namn })], vad); return b && JSON.parse(b); };
+              let h = anrop("kuvos_hamta");
+              if (h) { console.error("filen finns redan i hinken — ingenting skrivs över"); process.exit(1); }
+              const u = anrop("kuvos_ladda_upp", "adresserna för uppladdningen").urls;
+              filer.forEach((f, i) => curl(["-X", "PUT", "-H", "Content-Type: application/octet-stream", "--data-binary", "@" + f, u[i]], `uppladdningen av ${namn[i]}`));
+              h = anrop("kuvos_hamta", "hämtningen tillbaka");
+              let fel = 0;
+              h.filer.forEach((d, i) => { const ok = sha(curl([d.url], `hämtningen av ${d.fil}`)) === sha(fs.readFileSync(filer[i])); fel += !ok;
+                console.log(`${d.fil}: ${ok ? "klart, i hinken byte för byte den skrivna" : "FEL: i hinken med annat innehåll"}`); });
+              process.exit(fel ? 1 : 0);' "$@"
+          }
+          # Stationsloggens dygnsfiler ur hinken: de dygn från 5/11 som den tillfälliga databasens arkiv_export_tabell bokför.
+          # Mätskriptet prövar varje fil mot bokföringen (sha256 och antalet rader).
+          psql "$TILLFALLIG_URL" -At -c "SELECT dag::text FROM arkiv_export_tabell WHERE tabell = 'ny_kandidat_station' AND dag >= '2026-11-05' ORDER BY 1" > dygnen.txt
+          node -e '
+            const { execFileSync } = require("child_process"), fs = require("fs");
+            const curl = (a, vad) => { try { return execFileSync("curl", ["-sS", "--fail", ...a], { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); }
+              catch (e) { console.error(`${vad} föll (curl ${e.status})`); process.exit(1); } };
+            const dagar = fs.readFileSync("dygnen.txt", "utf8").split("\n").filter(Boolean), t = "ny_kandidat_station";
+            fs.mkdirSync(`arkiv/${t}`, { recursive: true });
+            let n = 0;
+            for (let i = 0; i < dagar.length; i += 70) {   // arkivdumps MAX_DYGN
+              const s = JSON.parse(curl(["-X", "POST", `${process.env.FN}?lage=dygn_hamta`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
+                "-H", "Content-Type: application/json", "-d", JSON.stringify({ dagar: dagar.slice(i, i + 70), tabell: t })], "adresserna för stationsloggen"));
+              for (const f of s.filer) { curl(["-o", `arkiv/${t}/${f.dag}.ndjson.gz`, f.url], `hämtningen av stationsloggen ${f.dag}`); n++; }
+            }
+            console.log(`stationsloggens dygnsfiler ur hinken: klart (${n} filer)`);'
+          rm dygnen.txt
+          mkdir -p ut
+          RC=0; DATABASE_URL="$TILLFALLIG_URL" NODE_OPTIONS=--max-old-space-size=12288 node --experimental-strip-types "$MATNING" \
+            --arkiv arkiv --ut ut/ytan-i-modellen.json > mat.txt 2>&1 || RC=$?
+          # Vilket steg som föll: bara ordet ur skriptets sista rad, aldrig talen; skälet står i filen i hinken.
+          PROVET=$(sed -n 's/^YTAN FÖLL: \(argumenten\|spärren\|databasen\|väderarkivet\|arkivet\|olyckorna\|identiteten\|räkningen\)$/\1/p' mat.txt | tail -1)
+          rm -rf mat.txt arkiv
+          if [ -f ut/ytan-i-modellen.json ]; then lagg ut/ytan-i-modellen.json; fi
+          rm -rf ut
+          if [ "$RC" -ne 0 ]; then echo "::error::ytan i modellen: fel i ${PROVET:-skriptet, utan besked (kod $RC)}"; exit "$RC"; fi
+          echo "ytan i modellen: klart"
