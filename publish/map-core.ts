@@ -34,8 +34,49 @@ export const STATION_LAN_SQL = `
                       WHERE NOT rc.deleted AND rc.geom IS NOT NULL ORDER BY rc.geom <-> w.geom LIMIT 1) n
   WHERE n.lan IS NOT NULL AND ST_DWithin(n.geom::geography, w.geom::geography, 20000)`;
 
-/** Storstädernas grupper i kandidatens segment_id (sql/089: grupp ~ '^[BC]-'). De ritas som punkter (DECISIONS #928). */
+/** Storstädernas grupper i kandidatens segment_id (sql/089: grupp ~ '^[BC]-'). De ritas längs stadens gator (DECISIONS #935), och som
+ *  prickar där en punkt saknar linje (DECISIONS #928). */
 export const STADSGRUPP = /^[BC]-/;
+
+/** Stadsbitens räckvidd om punkten, i meter, per lager (DECISIONS #935): halva grannavståndet, så att grannpunkternas bitar möts — som
+ *  vägens bitar (punkterna ~2 km isär, 1 km åt vardera hållet). Halva medianen av grannavståndet längs nätet, till närmaste 50 m, ur
+ *  provet med stadsgator.yml (körning 44841688891, 21/11). Läsningen och talen står i halkvakt-kuvos F79: de är räknade ur punkterna,
+ *  som bor i kuvösen (CLAUDE.md, Bengt 21/11). */
+export const STAD_HALV_M = { B: 600, C: 650 } as const;
+
+/** Storstädernas bitar längs stadens gator (DECISIONS #935): $1 grupper, $2 lon, $3 lat — en rad per varnande stadspunkt. Varje punkt
+ *  kopplas till sin stadspunkt (samma grupp, den närmaste, inom 5 m: lägesfilen har fem decimaler) och därmed till sitt elements linje i
+ *  stadsgata (sql/135). Biten är elementets linje inom STAD_HALV_M från punkten, i SWEREF 99 TM (3006), och punkterna på samma element i
+ *  samma grupp skärs ut en gång, ur föreningen av sina cirklar, så att överlappande bitar blir en. Inte ett intervall längs den närmaste
+ *  linjen som vägens bitar (KANDIDAT_BITAR_SQL): C:s gator förgrenar sig (körbanor, gafflar, rondeller), och i läsningen av provets
+ *  linjer (halkvakt-kuvos F79) tog intervallet bara median 68 % av gatan inom 550 m, under hälften för 1 402 av 3 219 gator. För B:s
+ *  element och C:s rutter tog det lika mycket som cirkeln (median 1,00). En punkt utan element, utan linje eller mer än 300 m från den
+ *  får ingen bit. Ut: en rad per grupp, med de ritade punkternas ordningsnummer i `ritade` (1 = första punkten i $1), så att resten
+ *  kan ritas som prickar. Exporterad för integrationsprovet. */
+export const STAD_BITAR_SQL = `
+        WITH p AS (SELECT * FROM unnest($1::text[], $2::float8[], $3::float8[]) WITH ORDINALITY AS p(seg, lon, lat, i)),
+        sp AS (
+          SELECT p.seg, p.i, s.element_id, ST_Transform(ST_SetSRID(ST_MakePoint(p.lon, p.lat), 4326), 3006) AS pt
+          FROM p CROSS JOIN LATERAL (
+            SELECT s.element_id, s.geom FROM stadspunkt s WHERE s.grupp = p.seg
+            ORDER BY s.geom <-> ST_SetSRID(ST_MakePoint(p.lon, p.lat), 4326) LIMIT 1) s
+          WHERE s.element_id IS NOT NULL
+            AND ST_DWithin(ST_Transform(s.geom, 3006), ST_Transform(ST_SetSRID(ST_MakePoint(p.lon, p.lat), 4326), 3006), 5)),
+        narm AS (
+          SELECT sp.seg, sp.i, sp.element_id, sp.pt, ST_Transform(ST_Force2D(g.geom), 3006) AS linje
+          FROM sp JOIN stadsgata g ON g.element_id = sp.element_id
+          WHERE ST_DWithin(ST_Transform(g.geom, 3006), sp.pt, 300)),
+        bit AS (
+          SELECT seg, count(*)::int AS punkter,
+                 ST_CollectionExtract(ST_Intersection((array_agg(linje))[1],
+                   ST_Union(ST_Buffer(pt, CASE left(seg, 1) WHEN 'B' THEN ${STAD_HALV_M.B} ELSE ${STAD_HALV_M.C} END, 16))), 2) AS g
+          FROM narm GROUP BY seg, element_id)
+        -- ST_Collect av MultiLineStrings blir en GeometryCollection, som ST_LineMerge lämnar orörd (CI 44843465306): linjerna plockas ut
+        -- ur samlingen först.
+        SELECT seg, sum(punkter)::int AS punkter, round((sum(ST_Length(g)) / 1000)::numeric, 2) AS km,
+               (SELECT array_agg(n.i ORDER BY n.i) FROM narm n WHERE n.seg = bit.seg) AS ritade,
+               ST_AsGeoJSON(ST_Transform(ST_SimplifyPreserveTopology(ST_LineMerge(ST_CollectionExtract(ST_Collect(g), 2)), 2), 4326), 5)::json AS g
+        FROM bit GROUP BY seg ORDER BY seg`;
 
 /** Kandidatens bitar av vägen (DECISIONS #579): $1 sträckor, $2 lon, $3 lat — en rad per punkt. Exporterad för integrationsprovet. */
 export const KANDIDAT_BITAR_SQL = `
@@ -171,21 +212,40 @@ export async function buildMapData(q: Q, opts: {
   // (de ligger cirka 2 km isär), aldrig hela sträckan: i morse 16/10 hade 807 km sträcka 232 km varnande väg. Metrarna räknas i
   // SWEREF 99 TM (3006), inte i grader, så att en bit blir 2 km oavsett vägens riktning. En punkt mer än 300 m från sin sträckas linje
   // ritas inte (räknas som utanför). Brytaren av ⇒ appKandidat saknas ⇒ tom fil och meta.kandidat.pa = false. Fail-soft med not.
-  // STORSTÄDERNAS PUNKTER (DECISIONS #804, #928; Bengt 20/11: "Jag tycker att kartan ska rita punkterna"): en grupp (sql/089, B- eller
-  // C-) har ingen sträcka i Trafikverkets väglag att lägga en bit längs, så varje varnande stadspunkt ritas som en punkt, där den står,
-  // utan väg och utan längd. De går inte till frågan, och de ritas också när frågan faller.
-  const kandidatMeta = { pa: opts.appKandidat !== undefined, strackor: 0, punkter: 0, ritade: 0, km: 0, stad: 0, tid: null as string | null };
+  // STORSTÄDERNAS PUNKTER (DECISIONS #804, #928, #935; Bengt 21/11: "Bygg linjer"): en grupp (sql/089, B- eller C-) har ingen sträcka i
+  // Trafikverkets väglag, så stadspunkterna går till en egen fråga (STAD_BITAR_SQL) och får en bit längs vägen eller gatan de ligger på
+  // (stadsgata, sql/135). En stadspunkt utan linje, eller mer än 300 m från den, ritas som prick där den står (#928), och alla ritas som
+  // prickar när frågan faller. meta: stad = stadspunkterna, stad_bitar = de som fick en bit, stad_prickar = de som ritas som prick.
+  const kandidatMeta = { pa: opts.appKandidat !== undefined, strackor: 0, punkter: 0, ritade: 0, km: 0, stad: 0, stad_bitar: 0, stad_prickar: 0,
+    tid: null as string | null };
   const alla = (opts.appKandidat ?? []).flatMap((k) => k.punkter.map(([lon, lat]) => ({ seg: k.id, lon, lat })));
   const stad = alla.filter((x) => STADSGRUPP.test(x.seg));
   const kp = alla.filter((x) => !STADSGRUPP.test(x.seg));
-  const stadFeatures = stad.map((x) => ({ type: "Feature", geometry: { type: "Point", coordinates: [x.lon, x.lat] },
-    properties: { segment_id: x.seg, stad: true, tid: opts.appKandidat?.[0]?.tid ?? null } }));
   let kandidatFeatures: unknown[] = [];
   kandidatMeta.strackor = opts.appKandidat?.length ?? 0;
   kandidatMeta.punkter = alla.length;
   kandidatMeta.stad = stad.length;
-  kandidatMeta.ritade = stad.length;
   kandidatMeta.tid = opts.appKandidat?.[0]?.tid ?? null;
+  let stadBitar: unknown[] = [], prickar = stad, stadKm = 0;
+  if (stad.length) {
+    try {
+      const bitar = await q(STAD_BITAR_SQL, [stad.map((x) => x.seg), stad.map((x) => x.lon), stad.map((x) => x.lat)]);
+      const ritad = new Set(bitar.flatMap((r) => ((r.ritade ?? []) as unknown[]).map(Number)));
+      stadBitar = bitar.map((r) => ({ type: "Feature", geometry: r.g,
+        properties: { segment_id: r.seg, stad: true, punkter: Number(r.punkter), km: Number(r.km), tid: kandidatMeta.tid } }));
+      prickar = stad.filter((_, i) => !ritad.has(i + 1));
+      stadKm = bitar.reduce((n, r) => n + Number(r.km), 0);
+      if (prickar.length) notes.push(`kandidat: ${prickar.length} av ${stad.length} stadspunkter ritas som prickar (utan linje, eller mer än 300 m från den)`);
+    } catch (e) {
+      notes.push(`kandidat: stadens bitar ej läsbara (${String((e as Error).message).slice(0, 80)}) — stadspunkterna ritas som prickar`);
+    }
+  }
+  const stadFeatures = [...stadBitar, ...prickar.map((x) => ({ type: "Feature", geometry: { type: "Point", coordinates: [x.lon, x.lat] },
+    properties: { segment_id: x.seg, stad: true, tid: kandidatMeta.tid } }))];
+  kandidatMeta.stad_bitar = stad.length - prickar.length;
+  kandidatMeta.stad_prickar = prickar.length;
+  kandidatMeta.ritade = stad.length;
+  kandidatMeta.km = Math.round(stadKm * 10) / 10;
   if (kp.length) {
     try {
       const bitar = await q(KANDIDAT_BITAR_SQL,
@@ -193,7 +253,7 @@ export async function buildMapData(q: Q, opts: {
       kandidatFeatures = bitar.map((r) => ({ type: "Feature", geometry: r.g,
         properties: { segment_id: r.seg, punkter: Number(r.punkter), km: Number(r.km), tid: kandidatMeta.tid } }));
       kandidatMeta.ritade += bitar.reduce((n, r) => n + Number(r.punkter), 0);
-      kandidatMeta.km = Math.round(bitar.reduce((n, r) => n + Number(r.km), 0) * 10) / 10;
+      kandidatMeta.km = Math.round((stadKm + bitar.reduce((n, r) => n + Number(r.km), 0)) * 10) / 10;
       if (kandidatMeta.ritade < kandidatMeta.punkter) {
         notes.push(`kandidat: ${kandidatMeta.punkter - kandidatMeta.ritade} av ${kandidatMeta.punkter} punkter ritas inte (mer än 300 m från sin sträckas linje)`);
       }
@@ -236,7 +296,8 @@ export async function buildMapData(q: Q, opts: {
     vilt_vanligast: vilt[0]?.vanligast ?? null,
     smhi_vinter: smhiW.map((r) => ({ event: r.event_sv, niva: r.level_sv, niva_kod: r.level_code, omrade: r.area_name })),
     waitlist_count: Number(wl[0]?.n ?? 0),
-    // Kandidaten (#579): pa = brytaren, punkter i lägesfilen, ritade = de som fick en bit, km = bitarnas längd.
+    // Kandidaten (#579): pa = brytaren, punkter i lägesfilen, ritade = de som syns (en bit, eller för en stadspunkt en prick), km = bitarnas
+    // längd (vägens och stadens), stad = stadspunkterna, stad_bitar och stad_prickar = hur de ritades (#935).
     kandidat: kandidatMeta,
   };
   put("meta.json", stats);

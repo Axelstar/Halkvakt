@@ -1,7 +1,8 @@
 // STORSTÄDERNAS PUNKTER I DRIFTEN — laddaren (DECISIONS #804, kort #378; sql/089). Läser kuvösens punktlista genom överlägget och
 // håller tabellen stadspunkt lika med den: nya och ändrade punkter skrivs, punkter som inte längre står i listan tas bort, allt i en
 // transaktion. Laddaren rör aldrig vagpunkt och aldrig brytarna (stadsbrytare). Loggen säger bara klart eller fel (DECISIONS #768:
-// punkterna är kuvösens; inga antal eller lägen här).
+// punkterna är kuvösens; inga antal eller lägen här). Sedan 21/11 (DECISIONS #935, sql/135, halkvakt-kuvos F79) skrivs också
+// element_id, vägen eller gatan punkten ligger på, som kartan ritar punktens bit längs (stadsgata). En lista utan fältet ger null.
 //   node --experimental-strip-types ingest/stadspunkter-db.ts ladda [kuvos/stadspunkter-drift-2026-27.json]
 //   node --experimental-strip-types ingest/stadspunkter-db.ts --sjalvtest
 import { readFileSync } from "node:fs";
@@ -12,7 +13,9 @@ export const LISTA = fileURLToPath(new URL("../kuvos/stadspunkter-drift-2026-27.
 /** Områdena och lagren som har en brytare i sql/089. En punkt utanför dem vägras: den hade aldrig kunnat slås på. */
 export const BRYTARE = new Set(["Stor-Stockholm/B", "Stor-Göteborg/B", "Stor-Malmö/B", "Stor-Stockholm/C"]);
 
-export type Stadspunkt = { punkt: string; grupp: string; lager: "B" | "C"; omrade: string; lon: number; lat: number };
+export type Stadspunkt = { punkt: string; grupp: string; lager: "B" | "C"; omrade: string; lon: number; lat: number; element_id: string | null };
+/** Elementet för lagret (kuvösen F79): B bär NVDB:s element ("1000:1289"), C "rutt:" och elementet eller "gata:" och gatunamnet. */
+const ELEMENT = { B: /^\d+:\d+$/, C: /^(rutt:\d+:\d+|gata:.+)$/ };
 
 /** Listans rader, prövade: id och grupp börjar med lagret (aldrig ett v-id, som driftens vägpunkter bär), området har en brytare,
  *  läget ligger i Sverige, och inget id står två gånger. Kastar vid första felet. */
@@ -20,13 +23,15 @@ export function rader(lista: { rader?: unknown }): Stadspunkt[] {
   if (!Array.isArray(lista.rader) || !lista.rader.length) throw new Error("listan saknar rader");
   const sedda = new Set<string>();
   return lista.rader.map((x: any, i) => {
-    const p = { punkt: String(x?.punkt), grupp: String(x?.grupp), lager: x?.lager, omrade: String(x?.omrade), lon: Number(x?.lon), lat: Number(x?.lat) };
+    const p = { punkt: String(x?.punkt), grupp: String(x?.grupp), lager: x?.lager, omrade: String(x?.omrade), lon: Number(x?.lon), lat: Number(x?.lat),
+      element_id: x?.element_id == null ? null : String(x.element_id) };
     const fel = (v: string) => { throw new Error(`rad ${i + 1}: ${v}`); };
     if (p.lager !== "B" && p.lager !== "C") fel("okänt lager");
     if (!new RegExp(`^${p.lager}\\d{5}$`).test(p.punkt)) fel("id:t börjar inte med lagret");
     if (!p.grupp.startsWith(`${p.lager}-`)) fel("gruppen börjar inte med lagret");
     if (!BRYTARE.has(`${p.omrade}/${p.lager}`)) fel("området och lagret har ingen brytare");
     if (!(p.lon > 10 && p.lon < 25 && p.lat > 55 && p.lat < 70)) fel("läget ligger inte i Sverige");
+    if (p.element_id !== null && !ELEMENT[p.lager as "B" | "C"].test(p.element_id)) fel("element_id är inte ett element för lagret");
     if (sedda.has(p.punkt)) fel("id:t står två gånger");
     sedda.add(p.punkt);
     return p as Stadspunkt;
@@ -34,11 +39,12 @@ export function rader(lista: { rader?: unknown }): Stadspunkt[] {
 }
 
 export const SATS = {
-  skriv: `INSERT INTO stadspunkt (punkt, grupp, lager, omrade, lon, lat)
-    SELECT * FROM unnest($1::text[], $2::text[], $3::text[], $4::text[], $5::float8[], $6::float8[])
-    ON CONFLICT (punkt) DO UPDATE SET grupp = EXCLUDED.grupp, lager = EXCLUDED.lager, omrade = EXCLUDED.omrade, lon = EXCLUDED.lon, lat = EXCLUDED.lat
-    WHERE (stadspunkt.grupp, stadspunkt.lager, stadspunkt.omrade, stadspunkt.lon, stadspunkt.lat)
-      IS DISTINCT FROM (EXCLUDED.grupp, EXCLUDED.lager, EXCLUDED.omrade, EXCLUDED.lon, EXCLUDED.lat)`,
+  skriv: `INSERT INTO stadspunkt (punkt, grupp, lager, omrade, lon, lat, element_id)
+    SELECT * FROM unnest($1::text[], $2::text[], $3::text[], $4::text[], $5::float8[], $6::float8[], $7::text[])
+    ON CONFLICT (punkt) DO UPDATE SET grupp = EXCLUDED.grupp, lager = EXCLUDED.lager, omrade = EXCLUDED.omrade, lon = EXCLUDED.lon, lat = EXCLUDED.lat,
+      element_id = EXCLUDED.element_id
+    WHERE (stadspunkt.grupp, stadspunkt.lager, stadspunkt.omrade, stadspunkt.lon, stadspunkt.lat, stadspunkt.element_id)
+      IS DISTINCT FROM (EXCLUDED.grupp, EXCLUDED.lager, EXCLUDED.omrade, EXCLUDED.lon, EXCLUDED.lat, EXCLUDED.element_id)`,
   ta_bort: `DELETE FROM stadspunkt WHERE NOT (punkt = ANY($1::text[]))`,
 };
 
@@ -53,7 +59,7 @@ async function ladda(fil: string) {
     await c.query("BEGIN");
     for (const d of delar(r, 5000))
       await c.query(SATS.skriv, [d.map((x) => x.punkt), d.map((x) => x.grupp), d.map((x) => x.lager), d.map((x) => x.omrade),
-        d.map((x) => x.lon), d.map((x) => x.lat)]);
+        d.map((x) => x.lon), d.map((x) => x.lat), d.map((x) => x.element_id)]);
     await c.query(SATS.ta_bort, [r.map((x) => x.punkt)]);
     await c.query("COMMIT");
   } catch (e) {
@@ -68,19 +74,23 @@ async function ladda(fil: string) {
 
 function sjalvtest(): number {
   const fel: string[] = [];
-  const bra = { punkt: "B00001", grupp: "B-1-2", lager: "B", omrade: "Stor-Stockholm", lon: 18.0, lat: 59.3 };
+  const bra = { punkt: "B00001", grupp: "B-1-2", lager: "B", omrade: "Stor-Stockholm", lon: 18.0, lat: 59.3, element_id: "1000:1289" };
   try {
-    const r = rader({ rader: [bra, { ...bra, punkt: "C00001", grupp: "C-1-2", lager: "C" }] });
-    if (r.length !== 2 || r[1].lager !== "C") fel.push("två riktiga punkter");
-  } catch (e) { fel.push(`två riktiga punkter föll: ${(e as Error).message}`); }
+    const r = rader({ rader: [bra, { ...bra, punkt: "C00001", grupp: "C-1-2", lager: "C", element_id: "gata:Provgatan" },
+      { ...bra, punkt: "C00002", grupp: "C-1-2", lager: "C", element_id: "rutt:10133:1" }, { ...bra, punkt: "B00002", element_id: undefined }] });
+    if (r.length !== 4 || r[1].lager !== "C") fel.push("fyra riktiga punkter");
+    if (r[0].element_id !== "1000:1289" || r[1].element_id !== "gata:Provgatan" || r[2].element_id !== "rutt:10133:1" || r[3].element_id !== null)
+      fel.push("element_id följer med, och en lista utan fältet ger null");
+  } catch (e) { fel.push(`fyra riktiga punkter föll: ${(e as Error).message}`); }
   for (const [namn, x] of [["v-id", { ...bra, punkt: "v00001" }], ["fel lager i id:t", { ...bra, punkt: "C00001" }],
     ["gruppen utan lagret", { ...bra, grupp: "12345" }], ["C i Göteborg (ingen brytare)", { ...bra, punkt: "C00002", grupp: "C-1", lager: "C", omrade: "Stor-Göteborg" }],
-    ["läget i havet", { ...bra, lat: 0 }], ["okänt lager", { ...bra, lager: "A" }]] as const) {
+    ["läget i havet", { ...bra, lat: 0 }], ["okänt lager", { ...bra, lager: "A" }], ["B med en gata", { ...bra, element_id: "gata:Provgatan" }],
+    ["C med ett nakent element", { ...bra, punkt: "C00002", grupp: "C-1", lager: "C", element_id: "1000:1" }], ["okänt element", { ...bra, element_id: "väg 73" }]] as const) {
     try { rader({ rader: [x] }); fel.push(`släppte igenom: ${namn}`); } catch { /* väntat */ }
   }
   try { rader({ rader: [bra, bra] }); fel.push("släppte igenom: dubblett"); } catch { /* väntat */ }
   try { rader({ rader: [] }); fel.push("släppte igenom: tom lista"); } catch { /* väntat */ }
-  if (!SATS.skriv.includes("ON CONFLICT (punkt)") || !SATS.ta_bort.startsWith("DELETE FROM stadspunkt") || /vagpunkt|stadsbrytare/.test(SATS.skriv + SATS.ta_bort))
+  if (!SATS.skriv.includes("ON CONFLICT (punkt)") || !SATS.skriv.includes("element_id = EXCLUDED.element_id") || !SATS.ta_bort.startsWith("DELETE FROM stadspunkt") || /vagpunkt|stadsbrytare/.test(SATS.skriv + SATS.ta_bort))
     fel.push("satserna rör annat än stadspunkt");
   console.log(`självtest stadspunkter-db: ${fel.length ? "FEL" : "klart"}`);
   for (const f of fel) console.log(`  ${f}`);
