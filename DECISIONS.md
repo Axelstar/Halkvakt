@@ -19339,3 +19339,17 @@ raden (2026-V47) och före varje beslut om A2:s fuktregel:
 för att skilja facit från regeln. Att göra TROLIG likt A2:s förslag: då bevisar en fångad miss bara att regeln och klassningen är lika.
 
 **Stomdokument:** MAT §3 olycksfacits veckoärende räknar missarna mot oberoende facit
+
+## #947 (21/11 2026) Ytan i modellen: ingen ändring i modellen (kort #675)
+
+**Beslut.** Kort #675 stängs med *ingen ändring i modellen*, som förregistreringen för rättelsen av kandidatens yta bestämde före
+läsningen (halkvakt-kuvos F82 §5, signerad av Bengt för sig och Axel: *"vi signerar"*). Läsningen av *Ytan i modellen* (halkvakt-kuvos
+F80 och F81) gav utfallet *annat*, och Bengt valde att förregistrera en rättelse (*"förregistrera rättelse"*). Rättelsen prövades på de
+sex vintrarna i `kuvos-ny-kandidat` (steget `rattelsen`, PR #1790, PR #1791; Bengt: *"Slå ihop dessa"*, *"ja"*). Ingen variant klarade
+villkoren (halkvakt-kuvos F83). Missarna förs till området *Täckningen* i olycksfacit.
+
+**Alternativ.** En variant som inte klarade villkoren prövas vidare: förregistreringen ger ingen sådan väg.
+
+**Inte ändrat.** Motorn, regeln, K:s värden och appen (regel L).
+
+**Stomdokument:** MAT §3 kortet om ytan i modellen stängt utan ändring i modellen
