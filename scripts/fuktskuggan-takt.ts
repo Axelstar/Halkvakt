@@ -29,7 +29,7 @@ import { farorLangsRutten, farorVidLinjen, farorNaraRutten } from "../engine/src
 import { haversineM } from "../engine/src/geo.ts";
 import type { Alert, Fix, Hazard } from "../engine/src/types.ts";
 import { RADVAKT_SQL, karantanSql } from "../publish/snapshot-core.ts";
-import { FUKT_SQL, hazardsAt } from "../publish/rekonstruktion.ts";
+import { FUKT_SQL, segmentAt } from "../publish/rekonstruktion.ts";
 import { skuggmotornsRutter } from "../publish/skuggfacit.ts";
 
 export const RACKVIDD_M = 15_000;       // förslag 2: stationer inom 15 km
@@ -70,11 +70,13 @@ export function punktLangs(line: [number, number][], langsM: number): [number, n
   return line[line.length - 1];
 }
 
-/** A2:s faror för en variant och en rutt. FORSLAG2 flyttar varje station inom räckvidden till närmaste punkt på rutten. */
-export function a2Faror(st: Station[], variant: Variant, line: [number, number][]): Hazard[] {
+/** A2:s faror för en variant och en rutt: bara stationerna som kan tala (yta <= +1 °C och variantens fukt; utan broar och S3 talar
+ *  ingen annan). FORSLAG2 flyttar varje sådan station inom räckvidden till närmaste punkt på rutten. */
+export function a2Faror(stationer: Station[], variant: Variant, line: [number, number][]): Hazard[] {
   const fukt = (s: Station) => s.fukt || (variant !== "BAS" && s.dagg);
+  const st = stationer.filter((s) => s.yta <= 1 && fukt(s));
   const punkt = (s: Station, lon: number, lat: number): Hazard =>
-    ({ id: `wx:${s.id}`, kind: "icing_point", lon, lat, meta: { surfaceTempC: s.yta, moisture: fukt(s) } });
+    ({ id: `wx:${s.id}`, kind: "icing_point", lon, lat, meta: { surfaceTempC: s.yta, moisture: true } });
   if (variant !== "FORSLAG2") return st.map((s) => punkt(s, s.lon, s.lat));
   const som = st.map((s) => punkt(s, s.lon, s.lat));
   const langs = new Map(farorLangsRutten(som, line, RACKVIDD_M).map((x) => [x.hazard.id, x.langsM]));
@@ -120,9 +122,13 @@ export function korSlot(st: Station[], segment: Hazard[], rutter: [string, [numb
     const trace = traceAlong(line);
     const segNara = farorNaraRutten(segment, line);
     let basA2 = new Set<string>();
+    // En variant vars A2-faror är desamma som förra variantens ger samma körning (motorn är deterministisk): den återanvänds.
+    let forra: { nyckel: string; alerts: Alert[] } | null = null;
     for (const v of VARIANTER) {
-      const faror = farorVidLinjen([...segNara, ...farorNaraRutten(a2Faror(st, v, line), line)], line);
-      const alerts = new AlertEngine(faror).run(trace);
+      const a2 = farorNaraRutten(a2Faror(st, v, line), line);
+      const nyckel = JSON.stringify(a2.map((h) => h.kind === "icing_point" ? [h.id, h.lon, h.lat] : 0));
+      const alerts = forra?.nyckel === nyckel ? forra.alerts : new AlertEngine(farorVidLinjen([...segNara, ...a2], line)).run(trace);
+      forra = { nyckel, alerts };
       if (v === "BAS") basA2 = new Set(alerts.filter((a) => a.kind === "icing_point").map((a) => a.hazardId));
       rakna(ut(v, namn), alerts, basA2);
     }
@@ -211,13 +217,17 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   };
   let tomma = 0, slots = 0;
   const efter: (() => void)[] = [];
+  const ms = { sql: 0, motor: 0, start: Date.now() };
   for (let t = t0; t < t1; t += SLOT_S) {
     const tid = new Date(t * 1000);
+    if (slots % 48 === 0) console.error(`${tid.toISOString()} · ${slots} halvtimmar · sql ${Math.round(ms.sql / 1000)} s · motor ${Math.round(ms.motor / 1000)} s`);
+    let m0 = Date.now();
     const st: Station[] = (await fraga(STATIONER_SQL, [tid])).map((r: any) => ({ id: String(r.station_id), lon: +r.lon, lat: +r.lat,
       yta: +r.surface_temp_c, fukt: !!r.fukt, dagg: !!r.dagg }));
     slots++;
     if (!st.length) { tomma++; continue; }
-    const segment = (await hazardsAt(fraga, tid)).filter((h) => h.kind === "slippery_segment");
+    const segment = await segmentAt(fraga, tid);
+    ms.sql += Date.now() - m0; m0 = Date.now();
     const dag = SVDAG.format(tid);
     // Varje körning räknas en gång och läggs sedan till dygnet, rutten och summan.
     korSlot(st, segment, rutter, (v, rutt) => {
@@ -226,6 +236,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       return r;
     });
     for (const f of efter.splice(0)) f();
+    ms.motor += Date.now() - m0;
   }
   await pool.end();
 
