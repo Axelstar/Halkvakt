@@ -20,6 +20,9 @@ const VALD = join(HAR, "reels-vald.json");
 const GRAPH = "https://graph.facebook.com/v23.0";
 const TZ = "Europe/Stockholm";
 const FPS = 30;
+// The film is recorded from START seconds in (Axel 21/11, DECISIONS #944): every film fades in from black, so the first frame,
+// which Instagram and Facebook show as the cover and before the reel plays, was an empty dark picture. The sound is cut the same.
+export const START = 0.6;
 const MAX_ALDER_H = 2;
 
 // Length in seconds, as in ljud.py. frost, kallast and e4 are left out of the rotation (Axel 6/11) but can still be picked by hand.
@@ -72,8 +75,10 @@ const LANK = {
   instagram: "Läget i ditt län uppdateras var 30:e minut: halkvakt.se/lan (länken finns i vår profil).",
 };
 const APP = {
-  facebook: "Halkvakt säger till med rösten innan du är där. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784?ct=reels",
-  instagram: "Halkvakt säger till med rösten innan du är där. Gratis för iPhone, länken finns i vår profil.",
+  facebook: "I appen säger Halkvakt till direkt, med rösten, innan du är där. Gratis för iPhone och Android.\n" +
+    "iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784?ct=reels\n" +
+    "Android: https://play.google.com/store/apps/details?id=se.halkvakt.app&referrer=utm_source%3Dreels",
+  instagram: "I appen säger Halkvakt till direkt, med rösten, innan du är där. Gratis för iPhone och Android, länken finns i vår profil.",
 };
 
 // Trafikverket's words, never stronger: "halka" only where they say it, otherwise "risk för halka".
@@ -132,7 +137,7 @@ async function filma(typ, ut) {
   const tyst = join(UT, "tyst.mp4");
   const ff = spawn("ffmpeg", ["-y", "-loglevel", "error", "-f", "image2pipe", "-c:v", "mjpeg", "-framerate", String(FPS), "-i", "-",
     "-c:v", "libx264", "-preset", "veryfast", "-crf", "17", "-pix_fmt", "yuv420p", tyst], { stdio: ["pipe", "inherit", "inherit"] });
-  for (let i = 0, n = TYPER[typ] * FPS; i < n; i++) {
+  for (let i = Math.round(START * FPS), n = TYPER[typ] * FPS; i < n; i++) {
     await page.evaluate(t => window.seek(t), i / FPS);
     if (!ff.stdin.write(await page.screenshot({ type: "jpeg", quality: 92 }))) await new Promise(r => ff.stdin.once("drain", r));
   }
@@ -142,7 +147,8 @@ async function filma(typ, ut) {
   if (kod !== 0) throw new Error(`ffmpeg föll med ${kod}`);
   const wav = join(UT, "ljud.wav");
   kor("python3", [join(HAR, "reels", "ljud.py"), typ, wav]);
-  kor("ffmpeg", ["-y", "-loglevel", "error", "-i", tyst, "-i", wav, "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-shortest",
+  kor("ffmpeg", ["-y", "-loglevel", "error", "-i", tyst, "-ss", String(START), "-i", wav, "-c:v", "copy", "-af", "afade=t=in:d=0.05",
+    "-c:a", "aac", "-b:a", "192k", "-shortest",
     "-movflags", "+faststart", ut + ".part.mp4"]);
   renameSync(ut + ".part.mp4", ut);
 }
