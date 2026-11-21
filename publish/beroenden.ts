@@ -115,6 +115,14 @@ export const KARTAN: Beroende[] = [
     matar: "utskicket av notiser till iPhone ur push_utskick (app-push, DECISIONS #924)",
     brister: "notiserna når inte telefonerna; raden i push_utskick får antalet fallna och Apples svar. Varningarna i appen påverkas inte",
     bevakad: "", signal: "OKÄND" },
+  // Googles adressökning och ruttberäkning för Planera resa i Android-appen (Vagtjanst.kt, DECISIONS #870, #941). Anropas
+  // bara när föraren själv söker; Halkvakts servrar är inte med.
+  { vard: "places.googleapis.com", roll: "verktyg",
+    matar: "adressökningen i Planera resa i Android-appen (Places API (New), DECISIONS #941)",
+    brister: "inga förslag i söklistan; varningarna och de sparade resorna påverkas inte", bevakad: "", signal: "OKÄND" },
+  { vard: "routes.googleapis.com", roll: "verktyg",
+    matar: "bilvägen till en sökt adress i Planera resa i Android-appen (Routes API, DECISIONS #941)",
+    brister: "vägen kan inte räknas ut; varningarna och de sparade resorna påverkas inte", bevakad: "", signal: "OKÄND" },
   { vard: "thredds.met.no", roll: "verktyg",
     matar: "MET Nordics arkiverade prognoser för kuvösens prognosläge (kuvos/metnordic-prognos.ts, DECISIONS #519) — hämtas en gång, inte i drift",
     brister: "hämtningen av kuvos-metnordic-prognos-2024-25 står still", bevakad: "", signal: "OKÄND" },

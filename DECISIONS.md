@@ -19166,3 +19166,60 @@ som en stor del av mörkertalet.
 station*. Att låta de gamla raderna stå: då jämförs två regler i samma säsong.
 
 **Stomdokument:** MAT §3 (olycksfacits klassning räknas om för 5–12/11)
+
+## #940 (21/11 2026) Fuktskuggan för A2 och basfrekvensen per olycka: väntat antal halkolyckor på sidan Olyckor
+
+**Beslut** (Bengt 21/11: *"jag vill att du sätter upp skuggkörningen och jag utgår från att den kan göra backtester på det material
+vi redan har samlat. Dessutom vill jag att du fortsätter med prototypen"*). En skugga, aldrig en röst: inget i motorn, appen,
+live.json eller någon regel ändras.
+1. **Räkningen per dygn** (`sql/138`, `fuktskugga_rakna(dag)`). Varje svenskt dygn ger stationstimmarna per del av dygnet (dag 07–18
+   svensk tid, natt) och väderhink, och varje klassad olycka (utan dubbletter och vilt) får hinken vid närmaste station inom 15 km i
+   timmen den började. Hinken är ytan i fyra band (över +3, +1 till +3, 0 till +1, kall) och fukt eller torrt. Fukt är nederbörd
+   eller yta under daggpunkten vid stationen, eller nederbörd vid en granne inom 15 km i samma timme. Samma rader bär skuggan av
+   förslag 2: timmarna och olyckorna där A2 i dag (yta högst +1 °C och nederbörd, inom 5 km) och förslag 2 (yta högst +1 °C och
+   nederbörd eller yta under daggpunkten, inom 15 km) hade en station. pg_cron räknar i dag och i går varje timme.
+2. **Hela säsongen ur arkivet** (`fuktskuggan.yml`). Väderdatan finns för hela säsongen: databasen har allt från 7/11 och hinken
+   dygnen 24/8–12/11 (dbknapp 44893297753). #939 punkt 1 sa att väderraderna från 5–7/11 var raderade; de är raderade ur databasen
+   men finns i hinken. Flödet bygger grindarnas tillfälliga databas (kort #323), räknar varje dygn från 6/11 där, skriver bara aggregat
+   i sammanfattningen och kopierar dygnen till driften varje natt. Räkningen prövas där i full skala innan driften räknar något
+   (läxan 3/11, DECISIONS #783).
+3. **Väntat antal halkolyckor** på sidan Olyckor (olycksfacit/vyn.ts `basfrekvens`). Olyckorna per stationstimme i varje hink mot
+   samma del av dygnet när ytan är över +3 °C ger andelen som vädret orsakade (1 − referensen/takten, aldrig under 0). Summan över
+   olyckorna är det väntade antalet, per vecka bredvid de klassade TYDLIG och TROLIG. Klassningen ändras inte.
+
+**Alternativ.** Sannolikheten bara för de oklara: då går måttet inte att jämföra över underlaget (Bengt fick valet 21/11). En skugga i
+motorn: den kräver vektorer och ett beslut av Bengt och Axel; utvärderingen av förslag 2 och ett beslutsutkast görs i en egen tråd.
+Trafikmängden i nämnaren: den finns inte per station och timme.
+
+**Stomdokument:** MAT §3 (olycksfacit: basfrekvensen och fuktskuggan)
+
+## #941 (21/11 2026) Android: Google Cloud och Firebase uppsatta, och kartnyckeln ligger i appen (kort #659, #674)
+
+**Beslut** (Axel 21/11: *"Jag ser gärna att vi håller apparna i sync"*; han satte upp kontona samma förmiddag, steg för steg).
+Android får allt iPhone har: resultatskärmen enligt Förslag A, kartan på startsidan, Planera resa och platsdelningen med notiser.
+
+*Google Cloud.* Projektet heter `halkvakt` och ägs av samma Google-konto som Play Console. Det går på Googles gratisperiod
+till 20/2 2027: under den kan inget dras från kortet. Tre tjänster är påslagna och inga andra: Maps SDK for Android, Places
+API (New) och Routes API (Axels val 14/11, DECISIONS #870).
+
+*Kartnyckeln ligger i appen, och det är ett avsteg från regeln om hemligheter.* En nyckel till Maps SDK måste följa med
+appen: det finns ingen väg runt det på Android. Den är därför låst i Google Cloud till paketet `se.halkvakt.app` och fyra
+signeringsnycklar (Plays nuvarande och förra signeringsnyckel, den postkvantkryptografiska och uppladdningsnyckeln) och till
+de tre tjänsterna. I repot finns den bara som hemligheten `GOOGLE_MAPS_KEY`, som bygget läser. Regeln i CLAUDE.md (inga
+hemligheter i appen) ändras i samma commit som nyckeln byggs in.
+
+*Firebase* är påslaget i samma projekt, utan Google Analytics: Halkvakt mäter inte förarna genom Google. Appens
+inställningsfil ligger som hemligheten `GOOGLE_SERVICES_JSON` och inte i repot. Serverns nyckel för att skicka notiser
+ligger som `FCM_SERVICE_ACCOUNT` hos Supabase och hos Axel, som Apples (DECISIONS #924). Nya Google-konton förbjuder att
+sådana nycklar skapas; spärren (`iam.disableServiceAccountKeyCreation`) är hävd för projektet `halkvakt` och bara där.
+
+*Googles villkor för Europa* (lästa 21/11 i Googles egna sammanfattningar, avtalstexten läses före bygget): av det Places
+ger får bara koordinater och plats-id användas tillsammans med en karta, och av det Routes ger får vägbeskrivningen och
+stegen inte användas med en karta. Sökskärmen har ingen karta, och appen ritar bara vägens linje.
+
+**Kvar:** bygget (Claude); kostnadstaket innan kontot uppgraderas, senast när gratisperioden går ut (frist); Plays
+datablankett när bygget är klart; telefonprovet.
+
+**Alternativ.** Vänta med Firebase till efter släppet: då går apparna isär, och Axel ville ha dem i takt.
+
+**Stomdokument:** APP — Android: kartan och Planera resa och platsdelningen

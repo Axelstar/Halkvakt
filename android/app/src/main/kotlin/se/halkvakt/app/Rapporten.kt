@@ -102,7 +102,7 @@ object Rapporten {
     private fun tid(s: String?): Long? = s?.let { runCatching { Instant.parse(it).toEpochMilli() }.getOrNull() }
 
     /** Androids org.json som Map och List, som motorns läsare tar (JSON-null blir null). */
-    private fun karta(o: JSONObject): Map<String, Any?> = o.keys().asSequence().associateWith { varde(o.opt(it)) }
+    internal fun karta(o: JSONObject): Map<String, Any?> = o.keys().asSequence().associateWith { varde(o.opt(it)) }
     private fun varde(v: Any?): Any? = when {
         v == null || v == JSONObject.NULL -> null
         v is JSONObject -> karta(v)

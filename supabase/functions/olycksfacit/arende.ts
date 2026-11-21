@@ -31,6 +31,8 @@ export type Olycka = {
   ytaMin?: number | null; // stationens lägsta yta (sql/110), för sidan Olyckor (DECISIONS #938); null utan station
   fuktEfter?: boolean;    // fukt vid stationen (sql/110)
   rimfrostEfter?: boolean;// rimfrost vid stationen (sql/110)
+  fukthink?: string | null;   // väderhinken i fuktskuggan (sql/138, DECISIONS #940); null utan station, undefined utan rad där
+  dygnsdel?: "dag" | "natt";  // fuktskuggans del av dygnet: dag = 07–18 svensk tid
 };
 
 const KLASSER = ["TYDLIG", "TROLIG", "OKLAR", "INTE"] as const;
