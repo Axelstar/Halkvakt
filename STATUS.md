@@ -3518,3 +3518,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   18.28 UTC (44935686276) var klar för 20261121T12Z. (2) Livepostningen föll 10.50 UTC (44896193634) på "empty ident name" efter
   att inlägget gått ut, eftersom git-identiteten följde med bildsteget till halkvakt-utkast.yml (#1719); PR #1778 (8128c220), och
   kvällspasset 15.50 UTC (44921268176) postade och committade kvittot (728758df). Kvar: linjerna sedda på kartan.
+- 21/11 UTC (Claude): Kort #675 stängt med *ingen ändring i modellen* (DECISIONS #947). Rättelsen av kandidatens yta prövad på de sex
+  vintrarna i `kuvos-ny-kandidat` (steget `rattelsen`, PR #1790; körning 55 och omkörningen av sista steget 44943442798 efter PR #1791,
+  som flyttade kuvösens klon ur `kuvos/`). Ingen variant klarade villkoren; läsningen i halkvakt-kuvos F83. Inget i motorn eller appen ändrat.
