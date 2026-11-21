@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import type { Olycka } from "../supabase/functions/olycksfacit/arende.ts";
-import { adminVy, atgard, isoVecka, oklarSkal } from "../supabase/functions/olycksfacit/vyn.ts";
+import { adminVy, atgard, basfrekvens, isoVecka, oklarSkal } from "../supabase/functions/olycksfacit/vyn.ts";
 
 const o = (x: Partial<Olycka>): Olycka => ({ tid: "2026-11-18T05:23:00.000Z", vag: "134", lon: 15.5434, lat: 57.9831,
   utfall: "TYST_TACKT", orsaker: ["A1: väglaget Normalt", "K: fukt saknades", "A2: ingen station inom 5 km"], klass: "TROLIG",
@@ -73,12 +73,40 @@ test("adminVy: en läsrad är åtgärdad när ärendet som bär den är stängt"
 test("oklarSkal: skälet i klassningens ordning, och oklara summerar till OKLAR", () => {
   const ok = (x: Partial<Olycka>) => o({ klass: "OKLAR", ...x });
   assert.equal(oklarSkal(ok({ ytaMin: null })), "Ingen station inom 15 km");
-  assert.equal(oklarSkal(ok({ ytaMin: 1.5 })), "Ytan mellan 0 och +3 °C");
+  assert.equal(oklarSkal(ok({ ytaMin: 1.5 })), "Ytan +1 till +3 °C, torrt");
+  assert.equal(oklarSkal(ok({ ytaMin: 1.5, fuktEfter: true })), "Ytan +1 till +3 °C, med fukt");
+  assert.equal(oklarSkal(ok({ ytaMin: 0.5, rimfrostEfter: true })), "Ytan 0 till +1 °C, med fukt");
+  assert.equal(oklarSkal(ok({ ytaMin: 1 })), "Ytan 0 till +1 °C, torrt");
   assert.equal(oklarSkal(ok({ ytaMin: -1, art: "okänd" })), "Kall yta, men texten säger inte hur olyckan gick till");
   assert.equal(oklarSkal(ok({ ytaMin: -1, art: "ett fordon, svag" })), "Kall yta, men texten säger inte hur olyckan gick till");
   assert.equal(oklarSkal(ok({ ytaMin: -1, art: "ett fordon" })), "Kall yta, men ingen fukt eller rimfrost vid stationen");
   assert.equal(oklarSkal(o({ klass: "TROLIG", ytaMin: -1 })), null);
   const v = adminVy([ok({ ytaMin: 2, utfall: "VARNADE" }), ok({ ytaMin: null }), ok({ ytaMin: 0.5 }), o({})], new Map(), "2026-11-21");
-  assert.deepEqual(v.oklara.map((r) => [r.olyckor, r.varnade]), [[1, 0], [2, 1], [0, 0], [0, 0]]);
+  assert.deepEqual(v.oklara.map((r) => [r.olyckor, r.varnade]), [[1, 0], [0, 0], [1, 0], [0, 0], [1, 1], [0, 0], [0, 0]]);
   assert.equal(v.oklara.reduce((a, r) => a + r.olyckor, 0), v.bedomningar["OKLAR TYSTNAD"] + 1);
+});
+
+test("basfrekvens och väntat antal (DECISIONS #940): olyckor per stationstimme mot samma del av dygnet över +3 °C", () => {
+  const timmar = [
+    { dygn: "dag" as const, hink: "över +3", timmar: 10_000 }, { dygn: "dag" as const, hink: "0 till +1, fukt", timmar: 1_000 },
+    { dygn: "dag" as const, hink: "kall, torrt", timmar: 4_000 }, { dygn: "natt" as const, hink: "kall, fukt", timmar: 500 },
+  ];
+  const f = (hink: string | null, dygnsdel: "dag" | "natt", x: Partial<Olycka> = {}) => o({ fukthink: hink, dygnsdel, ...x });
+  const alla = [
+    ...Array.from({ length: 10 }, () => f("över +3", "dag", { klass: "INTE" })),                       // 10 per 10 000: referensen
+    ...Array.from({ length: 4 }, () => f("0 till +1, fukt", "dag", { klass: "OKLAR", tid: "2026-11-10T09:00:00.000Z" })), // 40: 75 %
+    f("kall, torrt", "dag"),                                                                            // 2,5: under referensen, 0 %
+    f("kall, fukt", "natt"),                                                                            // ingen referens på natten
+    f(null, "dag"), o({}), f("kall, torrt", "dag", { dubblett: true }),                                 // utan station, utanför skuggan, dubblett
+  ];
+  const h = basfrekvens(timmar, alla.filter((x) => !x.dubblett));
+  assert.deepEqual(h.map((r) => [r.dygn, r.hink, r.olyckor, r.per10000, r.andel]), [
+    ["dag", "kall, torrt", 1, 2.5, 0], ["dag", "0 till +1, fukt", 4, 40, 0.75], ["dag", "över +3", 10, 10, 0], ["natt", "kall, fukt", 1, 20, null],
+  ]);
+  const s = adminVy(alla, new Map(), "2026-11-21", new Map(), timmar).sannolikhet!;
+  assert.equal(s.olyckor, 17, "olyckorna i skuggan, utan dubbletten och olyckan utanför");
+  assert.equal(s.utanStation, 1);
+  assert.equal(s.vantat, 3, "fyra olyckor à 75 %");
+  assert.deepEqual(s.veckor.map((v) => [v.vecka, v.olyckor, v.klassade, v.vantat]), [["2026-V46", 4, 0, 3], ["2026-V47", 13, 3, 0]]);
+  assert.equal(adminVy(alla, new Map(), "2026-11-21").sannolikhet, null, "utan stationstimmar ingen sannolikhet");
 });

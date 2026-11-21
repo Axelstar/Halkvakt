@@ -18,5 +18,8 @@ export async function olycksfacitSvar(): Promise<Vy> {
     .map((r: any) => [r.dag as string, { nr: r.nr as number, stangd: r.stangd as boolean, veckolasning: r.veckolasning as boolean }]));
   // deno-lint-ignore no-explicit-any
   const veckorna = new Map((await sql`SELECT vecka, nr, stangd FROM olycksfacit_veckor`).map((r: any) => [r.vecka as string, { nr: r.nr as number, stangd: r.stangd as boolean }]));
-  return adminVy(olyckor, arenden, idag, veckorna);
+  // deno-lint-ignore no-explicit-any
+  const timmar = (await sql`SELECT dygn, hink, sum(timmar)::int AS timmar FROM fuktskugga_timmar GROUP BY 1, 2`).map((r: any) =>
+    ({ dygn: r.dygn, hink: r.hink, timmar: r.timmar }));
+  return adminVy(olyckor, arenden, idag, veckorna, timmar);
 }
