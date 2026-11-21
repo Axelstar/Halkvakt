@@ -2307,10 +2307,9 @@ export const STATION_LAN_SQL = `
 export const STADSGRUPP = /^[BC]-/;
 
 /** Stadsbitens räckvidd om punkten, i meter, per lager (DECISIONS #935): halva grannavståndet, så att grannpunkternas bitar möts — som
- *  vägens bitar (punkterna ~2 km isär, 1 km åt vardera hållet). Ur provet med stadsgator.yml (körning 44841688891, 21/11): grannavståndet
- *  längs nätet, från varje punkt till närmaste punkt på samma element, var i median 1 205 m för B (4 792 punkter på 1 638 element) och
- *  1 300 m för C (186 punkter på 115 gator; de flesta av C:s gator och alla dess rutter har bara en punkt). Halva, till närmaste 50 m.
- *  B är alltså inte glesare än C: båda har en punkt per kilometer på samma väg eller gata (kuvösens punktfil). */
+ *  vägens bitar (punkterna ~2 km isär, 1 km åt vardera hållet). Halva medianen av grannavståndet längs nätet, till närmaste 50 m, ur
+ *  provet med stadsgator.yml (körning 44841688891, 21/11). Läsningen och talen står i halkvakt-kuvos F79: de är räknade ur punkterna,
+ *  som bor i kuvösen (CLAUDE.md, Bengt 21/11). */
 export const STAD_HALV_M = { B: 600, C: 650 } as const;
 
 /** Storstädernas bitar längs stadens gator (DECISIONS #935): $1 grupper, $2 lon, $3 lat — en rad per varnande stadspunkt. Varje punkt

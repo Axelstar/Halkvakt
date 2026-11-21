@@ -19034,17 +19034,17 @@ som bitar längs den väg eller gata de ligger på, i stället för prickar (#92
   (`ingest/stadspunkter-db.ts`) skriver den; en lista utan fältet ger null.
 - **Linjerna.** Tabellen `stadsgata` (sql/135): en MultiLineString per element, med RLS, rättigheter bara för service_role.
   `scripts/stadsgator-hamta.ts` hämtar linjerna ur Trafikverkets öppna API (NVDB, CC0) med driftens nyckel, med knappen
-  `stadsgator.yml`: prov (räknar, linjerna som artefakt, utan databas) eller skriv.
+  `stadsgator.yml`: prov (räknar, utan databas) eller skriv.
   - Rekognoseringen (körning 44839886451): filter på `Element_Id` fungerar, ett åt gången och flera i samma förfrågan.
   - Element och rutter hämtas därför med IN på FunktionellVägklass, 50 per förfrågan.
   - Gatorna hämtas med Gatunamn: namnet och en cirkel kring gatans punkter.
-  - En punkt och en radie hade träffat 1–37 element inom 30 m i staden.
-- **Provet** (körning 44841688891): 12 345 av 12 352 element hämtade på 5,7 minuter, utan fallen förfrågan. Saknade är 1 element, 4
-  rutter och 2 gator. Punkterna ligger i median 0,2–0,3 m från sin linje, och ingen ligger mer än 300 m bort.
+  - En punkt och en radie hade träffat flera element i staden.
+- **Provet** (körning 44841688891): nästan alla element hämtade, utan fallen förfrågan, och punkterna ligger på sina linjer. Talen ur
+  punkterna (täckning, avstånd och grannavstånd) står i halkvakt-kuvos F79, inte här (CLAUDE.md: punkterna bor i kuvösen; Bengt 21/11).
 - **Kartkärnan.** `STAD_BITAR_SQL` i `publish/map-core.ts` kopplar varje varnande punkt till sin stadspunkt (samma grupp, närmaste
   inom 5 m) och därmed till sin linje. Biten är elementets linje inom `STAD_HALV_M` från punkten: B 600 m och C 650 m, i SWEREF 99 TM.
   Punkterna på samma element skärs ut ur föreningen av sina cirklar, så att överlappande bitar blir en.
-  - Talen är halva grannavståndet längs nätet i provet: i median 1 205 m för B (4 792 punkter) och 1 300 m för C (186 punkter).
+  - Talen är halva grannavståndet längs nätet i provet, till närmaste 50 m. Läsningen står i halkvakt-kuvos F79.
   - Features får `stad: true`, och `meta.kandidat` räknar `stad_bitar` och `stad_prickar`. `km` räknar stadens bitar också.
   - Faller frågan, eller saknas linjerna, ritas varje stadspunkt som prick, som före bygget.
   - `supabase/functions/publicera/index.ts` är buntad om.
@@ -19054,10 +19054,11 @@ som bitar längs den väg eller gata de ligger på, i stället för prickar (#92
 **Avvikelser från beställningen.**
 - **Bitarna är cirklar, inte intervall.** Beställningen var intervall längs linjen, som vägens bitar (`KANDIDAT_BITAR_SQL`). C:s gator
   förgrenar sig i körbanor, gafflar och rondeller. I läsningen av provets linjer tog intervallet längs den närmaste linjen därför bara
-  median 68 % av gatan inom 550 m, och under hälften för 1 402 av 3 219 gator. För B:s element och C:s rutter tog intervallet lika
-  mycket som cirkeln (median 1,00). Läsningen ligger i kuvösen (`fysik/ny_kandidat/stadsgator_analys.py`).
-- **C är inte tätare än B.** Båda har en punkt per kilometer på samma väg eller gata. De flesta av C:s gator har bara en punkt.
-- **C:s `element_id` är inte alltid ett NVDB-element.** 3 371 av C:s 6 674 punkter bär gatunamnet. Gatans linje är alla element som
+  en del av gatan kring punkten, och för många gator under hälften. För B:s element och C:s rutter tog intervallet lika mycket som
+  cirkeln. Talen och läsningen ligger i kuvösen (F79, `fysik/ny_kandidat/stadsgator_analys.py`).
+- **C är inte tätare än B.** Avståndet mellan punkterna på samma väg eller gata är ungefär detsamma. De flesta av C:s gator har bara en
+  punkt.
+- **C:s `element_id` är inte alltid ett NVDB-element.** Ungefär hälften av C:s punkter bär gatunamnet. Gatans linje är alla element som
   bär namnet kring punkterna.
 
 **Inte ändrat.** Vad appen säger, regeln och brytarna. Kartan visar bara det appen redan har i lägesfilen.

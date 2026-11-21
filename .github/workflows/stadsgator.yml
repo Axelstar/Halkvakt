@@ -1,15 +1,16 @@
 # STADENS GATOR (DECISIONS #935; Bengt 21/11: "Bygg linjer"): linjerna som kartan ritar storstädernas varningar längs. scripts/stadsgator-hamta.ts
 # läser elementen ur kuvösens driftlista (bara den filen läggs ovanpå, med läsnyckeln) och hämtar deras linjer ur Trafikverkets öppna API
-# (NVDB, licens CC0). Läget prov hämtar och räknar och lägger linjerna som artefakt; databasen nås inte (ingen DATABASE_URL i jobbet).
+# (NVDB, licens CC0). Läget prov hämtar och räknar; databasen nås inte (ingen DATABASE_URL i jobbet), och ingen artefakt läggs, eftersom
+# linjerna visar var punkterna ligger, och punkterna bor i kuvösen (Bengt 21/11).
 # Läget skriv gör samma hämtning och upsertar i stadsgata (sql/135). Knapp, inte cron: elementen ändras bara när punktfilen gör det.
 # Nyckeln delas med driftens ingest; skriptet håller ~2 förfrågningar/s. Loggen bär bara antal och avstånd, aldrig id, lägen eller särdrag.
-# Provat på grenen före main med en tillfällig push-utlösare: körningarna 44839886451 och 44841688891 (12 345 av 12 352 element, 5,7 min).
+# Provat på grenen före main med en tillfällig push-utlösare: körningarna 44839886451 och 44841688891 (talen i halkvakt-kuvos F79).
 name: stadsgator
 on:
   workflow_dispatch:
     inputs:
       lage:
-        description: "prov (hämtar och räknar, linjerna som artefakt, rör inte databasen) eller skriv (upsert i stadsgata)"
+        description: "prov (hämtar och räknar, rör inte databasen) eller skriv (upsert i stadsgata)"
         type: choice
         options: [prov, skriv]
         default: prov
@@ -50,6 +51,3 @@ jobs:
         run: |
           set -o pipefail
           { echo '```'; node --experimental-strip-types scripts/stadsgator-hamta.ts "$LAGE"; echo '```'; } 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
-      - uses: actions/upload-artifact@v4
-        if: env.LAGE == 'prov'
-        with: { name: stadsgator-prov, path: stadsgator-ut/, retention-days: 3, if-no-files-found: error }

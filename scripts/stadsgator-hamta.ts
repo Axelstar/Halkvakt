@@ -7,19 +7,18 @@
 //   "rutt:10133:74621"  C utan gatunamn: elementet efter "rutt:"
 //   "gata:<namn>"       C med gatunamn: gatan, alltså alla element som bär namnet (Gatunamn.Namn) kring gatans punkter
 // REKOGNOSERINGEN (körning 44839273321, 21/11, tio element av varje slag): filter på Element_Id fungerar, ett åt gången (EQ) och flera i
-// samma förfrågan (IN), med samma element som svar; B:s element är i median 945 m och C:s rutt-element 84 m, och punkterna ligger högst
-// 0,5 m från linjen. Gatunamn med namnet och en cirkel kring gatan gav alla tio gatorna (i median 861 m, högst 0,5 m från punkterna).
-// En punkt och en radie hade träffat 1–37 element inom 30 m i staden och prövas därför inte. Därför:
+// samma förfrågan (IN), med samma element som svar, och punkterna låg på linjen. Gatunamn med namnet och en cirkel kring gatan gav alla
+// gatorna i rekognoseringen. En punkt och en radie hade träffat flera element i staden och prövas därför inte. Därför:
 //   - element och rutt: FunktionellVägklass med IN, 50 element per förfrågan; de som saknas en gång till med Vägtrafiknät.
 //   - gator: Gatunamn med EQ på Namn och INTERSECTS en cirkel kring gatans punkter (deras mitt, största avståndet + 1 500 m), tio
 //     gator (tio QUERY) per förfrågan.
 // Delarna per element slås ihop: Z tas bort, lika delsträckor tas bort, delar som möts i en ände utan förgrening fogas ihop, varje linje
 // förenklas lätt (1 m) och avrundas till 5 decimaler (~1 m). Rotelementet räknas på varje svar, aldrig statuskoden; felkroppen skrivs ut.
 // ~2 förfrågningar/s: nyckeln delas med driftens ingest. Loggen bär bara antal och avstånd: inga id, inga lägen, inga särdrag.
-//   prov  [lista]   hämtar och räknar; skriver inget i databasen; linjerna till stadsgator-ut/stadsgator.geojson (flödets artefakt)
+//   prov  [lista]   hämtar och räknar; skriver inget i databasen och ingen fil (linjerna visar var punkterna ligger, som bor i kuvösen)
 //   skriv [lista]   samma hämtning, sedan upsert i stadsgata (DATABASE_URL); fler än 2 % fallna förfrågningar ⇒ inget skrivs
 //   --sjalvtest     utan nät
-import { readFileSync, writeFileSync, mkdirSync, renameSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 export const LISTA = fileURLToPath(new URL("../kuvos/stadspunkter-drift-2026-27.json", import.meta.url));
@@ -181,7 +180,6 @@ export function grannavstand(punkter: Pkt[], ls: Pkt[][]): number[] {
   return ut;
 }
 export const median = (v: number[]) => { const s = [...v].sort((a, b) => a - b); return s.length ? (s.length % 2 ? s[(s.length - 1) / 2] : (s[s.length / 2 - 1] + s[s.length / 2]) / 2) : NaN; };
-const kvartil = (v: number[], q: number) => { const s = [...v].sort((a, b) => a - b); return s.length ? Math.round(s[Math.min(s.length - 1, Math.floor(q * s.length))]) : NaN; };
 /** Gatans cirkel: punkternas mitt och största avståndet dit + marginalen, uppåt till hela 100 m. */
 export function cirkel(punkter: Pkt[]): { mitt: Pkt; radie: number } {
   const mitt: Pkt = [punkter.reduce((s, p) => s + p[0], 0) / punkter.length, punkter.reduce((s, p) => s + p[1], 0) / punkter.length];
@@ -280,17 +278,14 @@ export function sammanfatta(els: Element[], ls: Map<string, Pkt[][]>) {
   const av = (xs: Element[]) => xs.flatMap((e) => (ls.has(e.element_id) ? e.punkter.map((p) => narmast(p, ls.get(e.element_id)!).d) : []));
   for (const s of ["element", "rutt", "gata"] as const) {
     const xs = els.filter((e) => slag(e.element_id) === s), med = xs.filter((e) => ls.has(e.element_id)), d = av(xs);
-    const pp = xs.map((e) => e.punkter.length);
-    rad.push(`${s}: ${xs.length} element, ${med.length} hämtade, ${xs.length - med.length} saknade; punkter per element median ${median(pp)}, högst ${Math.max(0, ...pp)}, ` +
-      `${pp.filter((n) => n === 1).length} med en punkt; punkternas avstånd till linjen median ${median(d).toFixed(1)} m, över 25 m ${d.filter((x) => x > 25).length}, över 300 m ${d.filter((x) => x > 300).length} av ${d.length}`);
+    // Den publika loggen bär bara hämtningens hälsa: antal och punkter långt från sin linje. Punkternas tal står i kuvösen (F79).
+    rad.push(`${s}: ${xs.length} element, ${med.length} hämtade, ${xs.length - med.length} saknade; över 300 m från linjen ${d.filter((x) => x > 300).length}`);
   }
   const bit: Record<string, { n: number; median: number; element: number }> = {};
   for (const l of ["B", "C"] as const) {
     const xs = els.filter((e) => e.lager === l && e.punkter.length >= 2 && ls.has(e.element_id));
     const v = xs.flatMap((e) => grannavstand(e.punkter, ls.get(e.element_id)!));
     bit[l] = { n: v.length, median: Math.round(median(v)), element: xs.length };
-    rad.push(`lager ${l}: grannavståndet längs nätet (till närmaste punkt på samma element) median ${bit[l].median} m, ` +
-      `kvartilerna ${kvartil(v, 0.25)}–${kvartil(v, 0.75)} m (${v.length} punkter på ${xs.length} element med minst två punkter)`);
   }
   return { rad, bit };
 }
@@ -312,10 +307,7 @@ async function kor(lage: "prov" | "skriv", fil: string) {
   for (const r of s.rad) console.log(`  ${r}`);
   if (h.fel > h.anrop * 0.02) throw new Error(`UNDERLAGSVAKT: ${h.fel} av ${h.anrop} förfrågningar föll — mer än 2 %, inget skrivs`);
   if (lage === "prov") {
-    mkdirSync("stadsgator-ut", { recursive: true });
-    const fc = { type: "FeatureCollection", features: [...h.linjer].map(([e, l]) => ({ type: "Feature", properties: { element_id: e }, geometry: { type: "MultiLineString", coordinates: l } })) };
-    writeFileSync("stadsgator-ut/stadsgator.geojson.tmp", JSON.stringify(fc)); renameSync("stadsgator-ut/stadsgator.geojson.tmp", "stadsgator-ut/stadsgator.geojson");
-    console.log(`prov: ${h.linjer.size} linjer i stadsgator-ut/stadsgator.geojson (artefakten); databasen är orörd`);
+    console.log(`prov: ${h.linjer.size} linjer hämtade; ingen fil och ingen databas`);
     return;
   }
   const url = process.env.DATABASE_URL!;
