@@ -2,7 +2,7 @@
 
 **Läge:** FÖRSLAG. Inget är ändrat i motorn, snapshoten eller appen. Underlaget kommer ur skuggkörningen (DECISIONS #940, #942):
 `sql/138` och `fuktskuggan.yml` (stationstimmarna och olyckorna), `fuktskuggan-larmtid.yml` (larmtiden och varianterna, körning
-44897544008) och `fuktskuggan-takt.yml` (vad föraren skulle höra längs skuggans rutter). Säsongen 6–21/11, 295 387 stationstimmar,
+44905288117) och `fuktskuggan-takt.yml` (vad föraren skulle höra längs skuggans rutter). Säsongen 6–21/11, 295 387 stationstimmar,
 811 klassade olyckor utan dubbletter och vilt.
 
 ## 1. Frågan
@@ -64,6 +64,21 @@ klarar i alla tolv kombinationer), men omkring 19 av 20 av dess episoder följs 
 faller i alla tolv, 94–96 % mot taket 25 %). Följden då var *ingen röst och ingen motorkod för stationernas gren*, och domslutet väntar
 på Bengt (frist 10/12, `r-b-dom`). Larmtiden här säger samma sak med ett annat mått: daggen dubblar nästan tiden larmet står på, och
 nästan bara vid kall yta. Ett beslut om daggpunkten i A2 är därför ett domslut om R-B, och regel L gäller för det.
+
+## 5c. Missarna mätta med facit som inte bygger på stationen
+
+Det oberoende facit som finns i dag är TYDLIG (halkordet i texten) och `halka_efter`: satte Trafikverket halka på olycksplatsens
+sträcka inom sex timmar (TROSKLAR-OLYCKSFACIT §3, bokförs men klassar inte). För 36 av de 55 TROLIG-missarna finns ingen sträcka inom
+100 m, och då är det okänt.
+
+| | olyckor | A2 i dag | bara 15 km | förslag 2 | rimfrost (≤ 0 °C) |
+| :-- | --: | --: | --: | --: | --: |
+| miss, TYDLIG | 1 | 0 | 0 | 1 | 1 |
+| miss, TROLIG med halka efteråt | 6 | 0 | 2 | 5 | 4 |
+| oklar och tyst, med halka efteråt | 21 | 0 | 3 | 6 | 4 |
+
+Med det oberoende facit är missarna sju på säsongen, inte 56. Förslag 2 tar sex av dem och räckvidden ensam två. Talen är små, och
+`halka_efter` kan vara en följd av olyckan själv (§6 val 5).
 
 ## 6. Vad föraren skulle höra
 

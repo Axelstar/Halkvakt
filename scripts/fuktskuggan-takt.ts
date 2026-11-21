@@ -21,7 +21,7 @@
 // talade om i samma körning), alla yttranden och takten. Ingen station, ingen tid finare än dygnet. --json <fil> skriver samma
 // aggregat som fil (flödets artefakt). Repot är publikt.
 //
-// Run: DATABASE_URL=... node --experimental-strip-types scripts/fuktskuggan-takt.ts <från ÅÅÅÅ-MM-DD> [till ÅÅÅÅ-MM-DD] [--json fil]
+// Run: DATABASE_URL=... node --experimental-strip-types scripts/fuktskuggan-takt.ts <från ÅÅÅÅ-MM-DD> [till ÅÅÅÅ-MM-DD] [--steg minuter] [--json fil]
 // Självtest utan databas: --sjalvtest
 import { readFileSync, writeFileSync } from "node:fs";
 import { AlertEngine } from "../engine/src/engine.ts";
@@ -193,7 +193,10 @@ if (process.argv.includes("--sjalvtest")) {
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const arg = process.argv.slice(2).filter((a, i, all) => !a.startsWith("--") && all[i - 1] !== "--json");
+  const arg = process.argv.slice(2).filter((a, i, all) => !a.startsWith("--") && all[i - 1] !== "--json" && all[i - 1] !== "--steg");
+  const stegI = process.argv.indexOf("--steg");
+  const STEG_S = stegI > 0 ? Number(process.argv[stegI + 1]) * 60 : SLOT_S;   // ett stickprov var N:e minut (standard: varje halvtimme)
+  if (!(STEG_S >= SLOT_S && STEG_S % SLOT_S === 0)) throw new Error("--steg ska vara en multipel av 30 minuter");
   const jsonI = process.argv.indexOf("--json");
   const fran = arg[0] ?? "2026-11-06";
   const till = arg[1] ?? new Date().toISOString().slice(0, 10);
@@ -218,7 +221,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   let tomma = 0, slots = 0;
   const efter: (() => void)[] = [];
   const ms = { sql: 0, motor: 0, start: Date.now() };
-  for (let t = t0; t < t1; t += SLOT_S) {
+  for (let t = t0; t < t1; t += STEG_S) {
     const tid = new Date(t * 1000);
     if (slots % 48 === 0) console.error(`${tid.toISOString()} · ${slots} halvtimmar · sql ${Math.round(ms.sql / 1000)} s · motor ${Math.round(ms.motor / 1000)} s`);
     let m0 = Date.now();
@@ -247,7 +250,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       `${b.tatastFoljdS ?? "–"} / ${d.tatastFoljdS ?? "–"} / ${f.tatastFoljdS ?? "–"} |`;
   };
   const huvud = "| | körningar | BAS: A2 · körningar med A2 | DAGG: A2 · med A2 · nya | FÖRSLAG 2: A2 · med A2 · nya | följder ≤ 60 s B/D/F | tätaste följd s B/D/F |\n| :-- | --: | --: | --: | --: | --: | --: |";
-  console.log(`FUKTSKUGGAN I MOTORN — ${fran} till ${till} (svensk tid), ${slots} halvtimmar, ${tomma} utan väderrader, ${rutter.length} rutter\n`);
+  console.log(`FUKTSKUGGAN I MOTORN — ${fran} till ${till} (svensk tid), ${slots} tidpunkter var ${STEG_S / 60}:e minut, ${tomma} utan väderrader, ${rutter.length} rutter\n`);
   console.log(`## Summa\n${huvud}\n${rad("alla", summa)}\n`);
   console.log(`## Per dygn\n${huvud}\n${[...perDag].sort().map(([d, m]) => rad(d, m)).join("\n")}\n`);
   console.log(`## Per rutt\n${huvud}\n${[...perRutt].sort().map(([n, m]) => rad(n, m)).join("\n")}`);
