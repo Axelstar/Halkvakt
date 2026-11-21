@@ -5,13 +5,22 @@ name: kuvos-ytan-i-modellen
 # och kör mätskriptet ur det privata repot ovanpå. Spärren och självtestet går först. Talen går bara till hinken,
 # kuvos/kuvos-ytan-i-modellen-2026-11-<körningens nummer>/, också skälet när ett steg faller; loggen är publik (#498) och säger
 # bara klart eller vilket steg som föll. Körs för hand, på Bengts ord.
+#
+# TILL KUVÖSEN (Bengt 21/11: "gör 2"; förregistreringen §10 val 5, talen till hinken och kuvösen): jobbet till-kuvosen hämtar
+# filen ur hinken och lägger den på grenen resultat/ytan-i-modellen i det privata repot, aldrig på main, med KUVOS_SKRIVNYCKEL.
+# Med korning=<nummer> körs bara det jobbet, för en körning vars fil redan ligger i hinken.
 on:
   workflow_dispatch:
+    inputs:
+      korning:
+        description: "Tomt = mät och lägg filen i kuvösen. Ett körningsnummer = lägg bara den körningens fil ur hinken i kuvösen"
+        default: ""
 permissions:
   contents: read
 concurrency: { group: kuvos-ytan-i-modellen, cancel-in-progress: false }
 jobs:
   matningen:
+    if: ${{ inputs.korning == '' }}
     runs-on: ubuntu-latest
     timeout-minutes: 120
     env:
@@ -97,3 +106,51 @@ jobs:
           rm -rf ut
           if [ "$RC" -ne 0 ]; then echo "::error::ytan i modellen: fel i ${PROVET:-skriptet, utan besked (kod $RC)}"; exit "$RC"; fi
           echo "ytan i modellen: klart"
+
+  till-kuvosen:
+    needs: matningen
+    if: ${{ always() && (needs.matningen.result == 'success' || (needs.matningen.result == 'skipped' && inputs.korning != '')) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      NR: "${{ inputs.korning || github.run_number }}"
+    steps:
+      - name: Filen ur hinken till grenen resultat/ytan-i-modellen i kuvösen
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}", SKRIV: "${{ secrets.KUVOS_SKRIVNYCKEL }}" }
+        run: |
+          set -euo pipefail
+          [[ "$NR" =~ ^[0-9]+$ ]] || { echo "::error::korning ska vara ett körningsnummer"; exit 1; }
+          [ -n "$SKRIV" ] || { echo "::error::hemligheten KUVOS_SKRIVNYCKEL saknas"; exit 1; }
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client >/dev/null
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          export FN KEY
+          UT="ytan-i-modellen-2026-11-$NR.json"
+          node -e '
+            const { execFileSync } = require("child_process"), fs = require("fs");
+            // execFileSync:s fel bär kommandoraden och därmed nyckeln eller den signerade adressen: fångas, bara statusen skrivs ut.
+            const curl = (a, vad) => { try { return execFileSync("curl", ["-sS", "--fail", ...a], { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); }
+              catch (e) { console.error(`${vad} föll (curl ${e.status})`); process.exit(1); } };
+            const namn = `kuvos-ytan-i-modellen-2026-11-${process.env.NR}/ytan-i-modellen.json`;
+            const s = JSON.parse(curl(["-X", "POST", `${process.env.FN}?lage=kuvos_hamta`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
+              "-H", "Content-Type: application/json", "-d", JSON.stringify({ filer: [namn] })], "adressen (finns filen i hinken?)"));
+            fs.writeFileSync(process.argv[1], curl([s.filer[0].url], "hämtningen ur hinken"));
+            console.log("filen ur hinken: klart");' "$UT"
+          SHA=$(sha256sum "$UT" | cut -c1-64)
+          git clone -q "https://x-access-token:${SKRIV}@github.com/Axelstar/halkvakt-kuvos.git" kuvos 2>/dev/null || { echo "::error::kuvösen gick inte att klona med KUVOS_SKRIVNYCKEL"; exit 1; }
+          cd kuvos
+          git config user.name "halkvakt-actions"; git config user.email "actions@users.noreply.github.com"
+          G=resultat/ytan-i-modellen
+          if git ls-remote -q --exit-code --heads origin "$G" >/dev/null 2>&1; then git fetch -q origin "$G" && git checkout -q -B "$G" FETCH_HEAD; else git checkout -q -b "$G"; fi
+          mkdir -p resultat
+          if [ -f "resultat/$UT" ]; then
+            [ "$(sha256sum "resultat/$UT" | cut -c1-64)" = "$SHA" ] || { echo "::error::filen finns redan i kuvösen med annat innehåll — ingenting skrivs över"; exit 1; }
+            echo "filen finns redan i kuvösen, byte för byte lika: klart"; exit 0
+          fi
+          mv "../$UT" "resultat/$UT"
+          git add "resultat/$UT"
+          git commit -q -m "Ytan i modellen: utskriften ur hinken (kort #675, BESLUT F80)"
+          git push -q origin "$G" 2>/dev/null || { echo "::error::pushen till kuvösen föll"; exit 1; }
+          echo "filen till kuvösen, grenen $G: klart"
