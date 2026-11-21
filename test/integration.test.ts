@@ -5505,3 +5505,79 @@ test("#913 säsongsfacit for the cities: the hours, the levels, the reasons, the
     await pool.end();
   }
 });
+
+// FUKTSKUGGAN OCH BASFREKVENSEN (sql/138, DECISIONS #940) mot riktig PostGIS. Svenskt dygn 2026-11-10 = 09/11 23.00 till 10/11 23.00 UTC.
+//   FA1  fyra stationer à 24 timmar: hinkarna, grannens nederbörd inom 15 km gör en torr station fuktig, och larmtimmarna
+//   FA2  olyckorna: närmaste stationens hink, A2 i dag inom 5 km med nederbörd, förslag 2 inom 15 km med daggpunkt; utan station NULL
+//   FA3  dubbletter, vilt och oklassade räknas inte; en andra körning skriver samma rader; ett dygn utan väder svarar saknas
+test("#940 fuktskuggan: hinkarna, grannarna, A2 i dag och förslag 2 per olycka, och ett dygn utan väder", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const las = (f: string) => q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+  const stad = async () => {
+    await q("DELETE FROM olycksfacit WHERE deviation_id LIKE 'FA%'").catch(() => {});
+    await q("DELETE FROM weather_observations WHERE station_id LIKE 'FA%'");
+  };
+  try {
+    for (const f of ["001_init.sql", "003_situation_archive.sql", "084_olycksfacit.sql", "085_olycksfacit_klassning.sql"]) await las(f);
+    await q("ALTER TABLE olycksfacit ADD COLUMN IF NOT EXISTS art text");   // sql/110, som kräver kedjan ovan
+    await las("138_fuktskuggan_a2.sql"); await las("138_fuktskuggan_a2.sql");
+    await stad();
+    await q("DELETE FROM fuktskugga_timmar WHERE dag IN ('2026-11-10', '2026-11-12')");
+    // W1 kall, regn 08–09 UTC; W2 varm och torr 5,6 km bort; W3 +0,5 under daggpunkten 33 km bort; W4 kall och torr 6 km från W1.
+    const station = (id: string, lon: number, lat: number, yta: string, dagg: number, regn: string) => q(`
+      INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, dewpoint_c, rain, snow)
+      SELECT $1, $1, ST_SetSRID(ST_MakePoint($2, $3), 4326), t, ${yta}, 2, $4, ${regn}, false
+      FROM generate_series('2026-11-09 21:00+00'::timestamptz, '2026-11-10 22:30+00', interval '30 minutes') t`, [id, lon, lat, dagg]);
+    await station("FA1", 15.0, 60.0, "-1", -5, "extract(hour FROM t AT TIME ZONE 'UTC') IN (8, 9)");
+    await station("FA2", 15.1, 60.0, "5", -5, "false");
+    await station("FA3", 15.0, 60.3, "0.5", 2, "false");
+    await station("FA4", 15.05, 60.05, "-2", -5, "false");
+    const olycka = (id: string, lon: number, lat: number, t: string, klass: string | null, art = "ett fordon", dubblett: string | null = null) => q(`
+      INSERT INTO olycksfacit (deviation_id, start_time, geom, utfall, klass, art, dubblett_av)
+      VALUES ($1, $2, ST_SetSRID(ST_MakePoint($3, $4), 4326), 'TYST_TACKT', $5, $6, $7)`, [id, t, lon, lat, klass, art, dubblett]);
+    await olycka("FA-A", 15.0, 60.01, "2026-11-10 09:30+00", "TROLIG");
+    await olycka("FA-B", 15.0, 60.29, "2026-11-10 02:00+00", "OKLAR");
+    await olycka("FA-C", 15.1, 60.001, "2026-11-10 15:00+00", "INTE");
+    await olycka("FA-G", 20.0, 65.0, "2026-11-10 12:00+00", "OKLAR");
+    await olycka("FA-D", 15.0, 60.01, "2026-11-10 09:40+00", "TROLIG", "ett fordon", "FA-A");
+    await olycka("FA-E", 15.0, 60.01, "2026-11-10 10:00+00", "INTE", "vilt");
+    await olycka("FA-F", 15.0, 60.01, "2026-11-10 11:00+00", null);
+
+    assert.equal((await q("SELECT fuktskugga_rakna('2026-11-10') AS s")).rows[0].s, "klart");
+    const timmar = async () => (await q(`SELECT dygn, hink, timmar, larm_a2, larm_forslag FROM fuktskugga_timmar WHERE dag = '2026-11-10'
+      ORDER BY dygn, hink`)).rows;
+    const fore = await timmar();
+    // Dag = 07–18 svensk tid = 06–17 UTC, tolv timmar per station; FA1 regnar 08 och 09 UTC, och FA4 är fuktig då genom grannen.
+    assert.deepEqual(fore, [
+      { dygn: "dag", hink: "0 till +1, fukt", timmar: 12, larm_a2: 0, larm_forslag: 12 },
+      { dygn: "dag", hink: "kall, fukt", timmar: 4, larm_a2: 2, larm_forslag: 2 },
+      { dygn: "dag", hink: "kall, torrt", timmar: 20, larm_a2: 0, larm_forslag: 0 },
+      { dygn: "dag", hink: "över +3", timmar: 12, larm_a2: 0, larm_forslag: 0 },
+      { dygn: "natt", hink: "0 till +1, fukt", timmar: 12, larm_a2: 0, larm_forslag: 12 },
+      { dygn: "natt", hink: "kall, torrt", timmar: 24, larm_a2: 0, larm_forslag: 0 },
+      { dygn: "natt", hink: "över +3", timmar: 12, larm_a2: 0, larm_forslag: 0 },
+    ], "FA1");
+    const olyckor = async () => (await q(`SELECT deviation_id, dygn, hink, a2_nu, forslag FROM fuktskugga_olycka WHERE deviation_id LIKE 'FA%'
+      ORDER BY 1`)).rows;
+    assert.deepEqual(await olyckor(), [
+      { deviation_id: "FA-A", dygn: "dag", hink: "kall, fukt", a2_nu: true, forslag: true },
+      { deviation_id: "FA-B", dygn: "natt", hink: "0 till +1, fukt", a2_nu: false, forslag: true },
+      { deviation_id: "FA-C", dygn: "dag", hink: "över +3", a2_nu: false, forslag: false },
+      { deviation_id: "FA-G", dygn: "dag", hink: null, a2_nu: false, forslag: false },
+    ], "FA2, FA3");
+    assert.equal((await q("SELECT fuktskugga_rakna('2026-11-10') AS s")).rows[0].s, "klart");
+    assert.deepEqual(await timmar(), fore, "FA3: en andra körning skriver samma rader");
+    assert.equal((await olyckor()).length, 4);
+    assert.equal((await q("SELECT fuktskugga_rakna('2026-11-12') AS s")).rows[0].s, "saknas", "FA3: inget väder, inga rader");
+    assert.equal((await q("SELECT count(*)::int AS n FROM fuktskugga_timmar WHERE dag = '2026-11-12'")).rows[0].n, 0);
+    assert.deepEqual((await q("SELECT relrowsecurity FROM pg_class WHERE relname IN ('fuktskugga_timmar', 'fuktskugga_olycka')")).rows,
+      [{ relrowsecurity: true }, { relrowsecurity: true }]);
+  } finally {
+    await stad().catch(() => {});
+    await q("DELETE FROM fuktskugga_timmar WHERE dag = '2026-11-10'").catch(() => {});
+    await q("DELETE FROM fuktskugga_olycka WHERE deviation_id LIKE 'FA%'").catch(() => {});
+    await pool.end();
+  }
+});

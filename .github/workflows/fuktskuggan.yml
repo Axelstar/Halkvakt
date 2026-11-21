@@ -1,0 +1,72 @@
+# FUKTSKUGGAN OCH BASFREKVENSEN, HELA SÄSONGEN (Bengt 21/11, DECISIONS #940; sql/138). Bygger grindarnas tillfälliga databas med
+# säsongens väder ur hinken och driften och olycksfacit vid sidan av (kort #323), kör sql/138 och fuktskugga_rakna() för varje svenskt
+# dygn från 6/11 där, och skriver bara aggregat i sammanfattningen: per olycksgrupp, per vecka och per väderhink. Loggen är publik
+# (#498): ingen olycka, ingen station och ingen plats.
+#
+# Räkningen prövas här i full skala innan driften räknar något (läxan 3/11, DECISIONS #783): migrationen i driften räknar ingenting
+# själv. Med skriv=ja, och först när sql/138 finns i driften, kopieras dygnen som räknades klart hit in i driftens två tabeller i en
+# transaktion. Varje natt görs det av sig självt, så att olyckor som klassades sent och dygn som lämnat databasen följer med.
+name: fuktskuggan
+on:
+  workflow_dispatch:
+    inputs:
+      skriv:
+        description: "ja = kopiera de räknade dygnen till driften (bara när sql/138 finns där)"
+        default: "nej"
+  schedule:
+    - cron: "23 4 * * *"
+permissions:
+  contents: read
+jobs:
+  rakna:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - name: Fönstret från dygnet före 6/11, så att olyckorna strax efter midnatt har sina två timmar
+        run: echo "DAGAR=$(( ( $(date -u +%s) - $(date -u -d 2026-11-05 +%s) ) / 86400 + 1 ))" >> "$GITHUB_ENV"
+      - uses: ./.github/actions/tillfalliga-arkivet
+        with: { dagar: "${{ env.DAGAR }}", drift-url: "${{ secrets.DATABASE_URL }}", tabeller: "olycksfacit" }
+      - name: sql/138 och varje dygn i den tillfälliga databasen
+        shell: bash
+        run: |
+          set -euo pipefail
+          psql "$TILLFALLIG_URL" -q -v ON_ERROR_STOP=1 -f sql/138_fuktskuggan_a2.sql
+          IDAG=$(TZ=Europe/Stockholm date +%F); D=2026-11-06; KLARA=()
+          { echo '```'; echo "dygn       svar     sekunder"; } >> "$GITHUB_STEP_SUMMARY"
+          while [[ "$D" < "$IDAG" || "$D" == "$IDAG" ]]; do
+            T=$(date +%s); S=$(psql "$TILLFALLIG_URL" -Atq -v ON_ERROR_STOP=1 -c "SELECT fuktskugga_rakna('$D')")
+            echo "$D $S $(( $(date +%s) - T ))" | tee -a "$GITHUB_STEP_SUMMARY"
+            [ "$S" = klart ] && KLARA+=("$D")
+            D=$(date -u -d "$D + 1 day" +%F)
+          done
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo "KLARA=$(IFS=,; echo "${KLARA[*]}")" >> "$GITHUB_ENV"
+      - name: Backtestet, bara aggregat
+        shell: bash
+        run: |
+          set -euo pipefail
+          { echo '```'; psql "$TILLFALLIG_URL" -q -v ON_ERROR_STOP=1 -P footer=off -f scripts/fuktskuggan-backtest.sql; echo '```'; } | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Dygnen till driften
+        if: inputs.skriv == 'ja' || github.event_name == 'schedule'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$(psql "$DUMP_URL" -Atc "SELECT to_regclass('public.fuktskugga_olycka') IS NOT NULL")" != t ]; then
+            echo "sql/138 finns inte i driften än — inget kopierat" | tee -a "$GITHUB_STEP_SUMMARY"; exit 0
+          fi
+          [ -n "$KLARA" ] || { echo "inga räknade dygn"; exit 1; }
+          L="'{$KLARA}'::date[]"
+          psql "$TILLFALLIG_URL" -q -v ON_ERROR_STOP=1 \
+            -c "\copy (SELECT dag, dygn, hink, timmar, larm_a2, larm_forslag, raknad_at FROM fuktskugga_timmar WHERE dag = ANY($L)) TO 'timmar.csv' CSV" \
+            -c "\copy (SELECT deviation_id, dag, dygn, hink, a2_nu, forslag, raknad_at FROM fuktskugga_olycka WHERE dag = ANY($L)) TO 'olycka.csv' CSV"
+          psql "$DUMP_URL" -q -v ON_ERROR_STOP=1 -1 \
+            -c "DELETE FROM fuktskugga_timmar WHERE dag = ANY($L)" -c "DELETE FROM fuktskugga_olycka WHERE dag = ANY($L)" \
+            -c "\copy fuktskugga_timmar (dag, dygn, hink, timmar, larm_a2, larm_forslag, raknad_at) FROM 'timmar.csv' CSV" \
+            -c "\copy fuktskugga_olycka (deviation_id, dag, dygn, hink, a2_nu, forslag, raknad_at) FROM 'olycka.csv' CSV"
+          echo "kopierat till driften: $(tr ',' '\n' <<< "$KLARA" | wc -l) dygn, $(wc -l < timmar.csv) timrader, $(wc -l < olycka.csv) olyckor" | tee -a "$GITHUB_STEP_SUMMARY"
+          rm timmar.csv olycka.csv

@@ -19166,3 +19166,29 @@ som en stor del av mörkertalet.
 station*. Att låta de gamla raderna stå: då jämförs två regler i samma säsong.
 
 **Stomdokument:** MAT §3 (olycksfacits klassning räknas om för 5–12/11)
+
+## #940 (21/11 2026) Fuktskuggan för A2 och basfrekvensen per olycka: väntat antal halkolyckor på sidan Olyckor
+
+**Beslut** (Bengt 21/11: *"jag vill att du sätter upp skuggkörningen och jag utgår från att den kan göra backtester på det material
+vi redan har samlat. Dessutom vill jag att du fortsätter med prototypen"*). En skugga, aldrig en röst: inget i motorn, appen,
+live.json eller någon regel ändras.
+1. **Räkningen per dygn** (`sql/138`, `fuktskugga_rakna(dag)`). Varje svenskt dygn ger stationstimmarna per del av dygnet (dag 07–18
+   svensk tid, natt) och väderhink, och varje klassad olycka (utan dubbletter och vilt) får hinken vid närmaste station inom 15 km i
+   timmen den började. Hinken är ytan i fyra band (över +3, +1 till +3, 0 till +1, kall) och fukt eller torrt. Fukt är nederbörd
+   eller yta under daggpunkten vid stationen, eller nederbörd vid en granne inom 15 km i samma timme. Samma rader bär skuggan av
+   förslag 2: timmarna och olyckorna där A2 i dag (yta högst +1 °C och nederbörd, inom 5 km) och förslag 2 (yta högst +1 °C och
+   nederbörd eller yta under daggpunkten, inom 15 km) hade en station. pg_cron räknar i dag och i går varje timme.
+2. **Hela säsongen ur arkivet** (`fuktskuggan.yml`). Väderdatan finns för hela säsongen: databasen har allt från 7/11 och hinken
+   dygnen 24/8–12/11 (dbknapp 44893297753). #939 punkt 1 sa att väderraderna från 5–7/11 var raderade; de är raderade ur databasen
+   men finns i hinken. Flödet bygger grindarnas tillfälliga databas (kort #323), räknar varje dygn från 6/11 där, skriver bara aggregat
+   i sammanfattningen och kopierar dygnen till driften varje natt. Räkningen prövas där i full skala innan driften räknar något
+   (läxan 3/11, DECISIONS #783).
+3. **Väntat antal halkolyckor** på sidan Olyckor (olycksfacit/vyn.ts `basfrekvens`). Olyckorna per stationstimme i varje hink mot
+   samma del av dygnet när ytan är över +3 °C ger andelen som vädret orsakade (1 − referensen/takten, aldrig under 0). Summan över
+   olyckorna är det väntade antalet, per vecka bredvid de klassade TYDLIG och TROLIG. Klassningen ändras inte.
+
+**Alternativ.** Sannolikheten bara för de oklara: då går måttet inte att jämföra över underlaget (Bengt fick valet 21/11). En skugga i
+motorn: den kräver vektorer och ett beslut av Bengt och Axel; utvärderingen av förslag 2 och ett beslutsutkast görs i en egen tråd.
+Trafikmängden i nämnaren: den finns inte per station och timme.
+
+**Stomdokument:** MAT §3 (olycksfacit: basfrekvensen och fuktskuggan)

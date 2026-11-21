@@ -38,6 +38,32 @@ export function oklarSkal(o: Olycka): (typeof OKLARA)[number] | null {
   return OKLARA[6];
 }
 
+/** Basfrekvensen (Bengt 21/11, DECISIONS #940; sql/138): hur stor del av olyckorna i ett väderläge som vädret orsakade. Olyckorna per
+ *  stationstimme i hinken, mot samma del av dygnet när ytan är över +3 °C; andelen är 1 − referensen/takten, aldrig under 0. Fukt är
+ *  nederbörd eller yta under daggpunkten vid stationen, eller nederbörd vid en granne inom 15 km. Säsongen räknas som en helhet. */
+export const HINKAR = ["kall, fukt", "kall, torrt", "0 till +1, fukt", "0 till +1, torrt", "+1 till +3, fukt", "+1 till +3, torrt", "över +3"] as const;
+export type Stationstimmar = { dygn: "dag" | "natt"; hink: string; timmar: number };
+export type Hinkrad = { dygn: "dag" | "natt"; hink: string; timmar: number; olyckor: number; per10000: number; andel: number | null };
+
+export function basfrekvens(timmar: Stationstimmar[], olyckor: Olycka[]): Hinkrad[] {
+  const ut: Hinkrad[] = [];
+  for (const dygn of ["dag", "natt"] as const) {
+    const rad = (hink: string) => {
+      const t = timmar.filter((x) => x.dygn === dygn && x.hink === hink).reduce((a, x) => a + x.timmar, 0);
+      const n = olyckor.filter((o) => o.dygnsdel === dygn && o.fukthink === hink).length;
+      return { t, n, takt: t > 0 ? n / t : null };
+    };
+    const ref = rad("över +3").takt;
+    for (const hink of HINKAR) {
+      const { t, n, takt } = rad(hink);
+      if (t === 0) continue;
+      ut.push({ dygn, hink, timmar: t, olyckor: n, per10000: Math.round(100_000 * n / t) / 10,
+                andel: n === 0 ? 0 : ref === null ? null : Math.max(0, 1 - ref / takt!) });
+    }
+  }
+  return ut;
+}
+
 /** Åtgärden i ord: kortet ur den förifyllda åtgärden, annars att raden läses i veckans ärende. Kollisionerna får ingen (D2). */
 export function atgard(o: Olycka): string {
   if (kollision(o)) return "ingen åtgärd, kollision";
@@ -58,6 +84,8 @@ export type Vy = {
   dygn: { dag: string; ratt: number; missar: number }[];
   lagren: { rad: string; senaste: number; sasong: number }[];
   oklara: { skal: string; olyckor: number; varnade: number }[];
+  sannolikhet: { hinkar: Hinkrad[]; olyckor: number; utanStation: number; vantat: number;
+                 veckor: { vecka: string; olyckor: number; klassade: number; vantat: number; utanStation: number }[] } | null;
 };
 
 export type Veckoarende = { nr: number; stangd: boolean };
@@ -76,7 +104,7 @@ function lasradensAtgard(o: Olycka, dygnet: Dygnsarende | undefined, veckorna: R
 
 /** Fliken ur säsongens olyckor (ej klassade och dubbletter räknas inte), dygnens och veckornas ärenden och dagens svenska datum. */
 export function adminVy(alla: Olycka[], arenden: ReadonlyMap<string, Dygnsarende>, idag: string,
-                        veckorna: ReadonlyMap<string, Veckoarende> = new Map()): Vy {
+                        veckorna: ReadonlyMap<string, Veckoarende> = new Map(), stationstimmar: Stationstimmar[] = []): Vy {
   const s = alla.filter((o) => !o.dubblett && bedomning(o) !== null);
   const bed = (b: Bedomning, x: Olycka[]) => x.filter((o) => bedomning(o) === b).length;
   const halk = s.filter(halkkopplad);
@@ -108,5 +136,24 @@ export function adminVy(alla: Olycka[], arenden: ReadonlyMap<string, Dygnsarende
                                           sasong: halk.filter((o) => f(o.talade)).length })),
     oklara: OKLARA.map((skal) => { const x = s.filter((o) => oklarSkal(o) === skal);
       return { skal, olyckor: x.length, varnade: x.filter((o) => o.utfall === "VARNADE").length }; }),
+    sannolikhet: sannolikhet(s, stationstimmar),
+  };
+}
+
+/** Väntat antal halkolyckor: summan av andelarna över olyckorna i fuktskuggan, per vecka och för säsongen, bredvid de klassade. */
+function sannolikhet(s: Olycka[], timmar: Stationstimmar[]): Vy["sannolikhet"] {
+  if (!timmar.length) return null;
+  const x = s.filter((o) => o.fukthink !== undefined);
+  const hinkar = basfrekvens(timmar, x);
+  const andel = new Map(hinkar.map((h) => [`${h.dygn}|${h.hink}`, h.andel ?? 0]));
+  const p = (o: Olycka) => (o.fukthink ? andel.get(`${o.dygnsdel}|${o.fukthink}`) ?? 0 : 0);
+  const tiondel = (n: number) => Math.round(10 * n) / 10;
+  const veckor = new Map<string, Olycka[]>();
+  for (const o of x) { const v = isoVecka(svenskDag(o.tid)); veckor.set(v, [...(veckor.get(v) ?? []), o]); }
+  return {
+    hinkar, olyckor: x.length, utanStation: x.filter((o) => o.fukthink === null).length, vantat: tiondel(x.reduce((a, o) => a + p(o), 0)),
+    veckor: [...veckor.keys()].sort().map((vecka) => { const y = veckor.get(vecka)!;
+      return { vecka, olyckor: y.length, klassade: y.filter(halkkopplad).length, vantat: tiondel(y.reduce((a, o) => a + p(o), 0)),
+               utanStation: y.filter((o) => o.fukthink === null).length }; }),
   };
 }

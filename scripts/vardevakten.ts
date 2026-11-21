@@ -40,6 +40,7 @@
 // The engine's own halkord (DECISIONS #915): every road-state word in VAGLAGSORD below carries the engine's answer, and an unknown
 // word is reported with it, so the reader sees both questions at once — has a person read the word, and does it make the voice speak.
 import { SLIPPERY_INFO, SLIPPERY_STAM } from "../engine/src/engine.ts";
+import { HINKAR } from "../supabase/functions/olycksfacit/vyn.ts";
 
 const MIN_RADER = 100;        // under detta får fältet ingen dom, bara ett tal
 // DOMINANSEN SKÄRPT efter första körningen (DECISIONS #134). Första regeln var "ett värde över
@@ -214,6 +215,10 @@ export const SPANN: Record<string, [number, number, string]> = {
   "sasongsfacit_stad_dag.torr": [0, 2500000, "punkt-timmar"],
   "sasongsfacit_stad_dag.spridning": [0, 2500000, "punkt-timmar"],
   "sasongsfacit_stad_dag.grupper": [0, 100000, "cellens grupper i stadspunkt när dygnet räknades — schemats gräns"],
+  // Fuktskuggan och basfrekvensen (sql/138, DECISIONS #940): stationstimmar per dygn, del av dygnet och hink, fött besiktigad.
+  "fuktskugga_timmar.timmar": [0, 50000, "stationstimmar — 2 000 stationer gånger 25 timmar"],
+  "fuktskugga_timmar.larm_a2": [0, 50000, "stationstimmar"],
+  "fuktskugga_timmar.larm_forslag": [0, 50000, "stationstimmar"],
   // The accident layers' city detail (V4: keys in jsonb, JSONB below). Distances inside Sweden.
   "olycksfacit_lager.detalj.stad.varnande_km": [0, 2000, "km till närmaste varnande stadspunkt i gruppen (sql/100) — inom Sverige"],
   "olycksfacit_lager.detalj.varnande_km": [0, 2000, "km till närmaste varnande vägpunkt, vägpunktens del av K (sql/112) — inom Sverige"],
@@ -279,6 +284,10 @@ export const ORD: Record<string, { ord: string[]; not: string }> = {
   "olycksfacit_lager.detalj.stad.lager": { ord: ["b", "c"], not: "stadspunktens lager (sql/089)" },
   "sasongsfacit_stad_dag.dygnsdel": { ord: ["natt", "morgonrusning", "dag", "kvällsrusning", "kväll"], not: "tid på dygnet i svensk tid (TROSKLAR-SASONGSFACIT §5)" },
   "sasongsfacit_stad_dag.niva": { ord: ["drift", "inte ny", "undantag"], not: "nivån: i drift, eller ett av de två undantagen i §11.2" },
+  "fuktskugga_timmar.dygn": { ord: ["dag", "natt"], not: "dag = 07–18 svensk tid (sql/138)" },
+  "fuktskugga_olycka.dygn": { ord: ["dag", "natt"], not: "dag = 07–18 svensk tid (sql/138)" },
+  "fuktskugga_timmar.hink": { ord: [...HINKAR], not: "väderhinken (sql/138, HINKAR i olycksfacit/vyn.ts)" },
+  "fuktskugga_olycka.hink": { ord: [...HINKAR], not: "väderhinken vid olyckan; NULL utan station inom 15 km (sql/138)" },
 };
 
 /** FLAGGOR (körlistan B3, 17/11 2026). Ett sanningsvärde som bär en mätning deklareras här med vad sant betyder. NULL betyder alltid
@@ -297,6 +306,8 @@ export const FLAGGOR: Record<string, string> = {
   "olycksfacit_lager.talar": "lagret varnade när olyckan började (sql/084); NULL för radarn och täckningen",
   "olycksfacit_lager.detalj.stad.aktiv": "stadspunktens brytare var på vid olyckans timme (sql/096)",
   "olycksfacit_lager.detalj.stad.talar": "stadspunkten varnade inom 2 km vid olyckan (sql/100)",
+  "fuktskugga_olycka.a2_nu": "en station inom 5 km med yta högst +1 °C och nederbörd de två timmarna före olyckan (sql/138)",
+  "fuktskugga_olycka.forslag": "förslag 2: en station inom 15 km med yta högst +1 °C och nederbörd eller yta under daggpunkten (sql/138)",
 };
 /** Statusflaggor är bokföring, inte mätvärden: samma kategori som identifierarna. */
 export const STATUSFLAGGOR = new Set(["deleted"]);
@@ -529,6 +540,8 @@ const TID: Record<string, string> = {
   // here, so their fields were never scanned, not even as OBESIKTIGADE (the trap of trend_kandidater 15/9); the accident layers (sql/084),
   // without a time column and so scanned whole; and the daily aggregate (sql/128), born inspected.
   ny_kandidat_skugga_stad: "observed_at", ny_kandidat_skugga_stad_korning: "korning", olycksfacit_lager: "", sasongsfacit_stad_dag: "dag",
+  // Fuktskuggan och basfrekvensen (sql/138, DECISIONS #940), födda besiktigade.
+  fuktskugga_timmar: "dag", fuktskugga_olycka: "dag",
 };
 
 console.log(`Värdevakten — besiktning av arkivets numeriska fält (${DAGAR} dygns fönster)\n`);
