@@ -8,6 +8,7 @@ import { BEDOMNINGAR, type Bedomning, FORSTA_DAG, NAMNARE, OMRADEN, OVERLAPP, ty
 
 export const MISSAR_DYGN = 30;   // misslistan: de senaste 30 dygnen
 export const LAGER_DYGN = 7;     // lagerradernas kolumn "senaste 7 dygnen"
+export const LASES = "läses i veckans ärende", ATGARDAD = "åtgärdad i veckans ärende";
 
 /** ISO-veckan för ett svenskt datum, ÅÅÅÅ-Vnn, som to_char(…, 'IYYY-"V"IW') i index.ts. */
 export function isoVecka(dag: string): string {
@@ -38,7 +39,7 @@ export function atgard(o: Olycka): string {
   if (kollision(o)) return "ingen åtgärd, kollision";
   const f = forifylld(o);
   if (f) return f.slice(0, f.indexOf(" — "));
-  return behoverAtgard(o) ? "läses i veckans ärende" : "–";
+  return behoverAtgard(o) ? LASES : "–";
 }
 
 export type Vy = {
@@ -47,14 +48,25 @@ export type Vy = {
   bedomningar: Record<Bedomning, number>;
   namnare: { klass: string; olyckor: number; varnade: number }[];
   omraden: { omrade: string; missar: number }[];
-  missar: { dag: string; tid: string; vag: string; klass: string; omrade: string | null; atgard: string; arende: number | null }[];
+  missar: { dag: string; tid: string; vag: string; klass: string; omrade: string | null; atgard: string; arende: number | null;
+            vecka: number | null }[];
   veckor: ({ vecka: string } & Record<Bedomning, number>)[];
   lagren: { rad: string; senaste: number; sasong: number }[];
   oklara: { skal: string; olyckor: number; varnade: number }[];
 };
 
-/** Fliken ur säsongens olyckor (ej klassade och dubbletter räknas inte), dygnens ärenden och dagens svenska datum. */
-export function adminVy(alla: Olycka[], arenden: ReadonlyMap<string, number>, idag: string): Vy {
+export type Veckoarende = { nr: number; stangd: boolean };
+
+/** En miss utan förifylld åtgärd har fått sin åtgärd när veckans ärende är stängt (stängningsregeln, DECISIONS #802). */
+function veckansAtgard(o: Olycka, veckorna: ReadonlyMap<string, Veckoarende>): { atgard: string; vecka: number | null } {
+  const a = atgard(o), v = veckorna.get(isoVecka(svenskDag(o.tid)));
+  if (a !== LASES || !v) return { atgard: a, vecka: null };
+  return { atgard: v.stangd ? ATGARDAD : LASES, vecka: v.nr };
+}
+
+/** Fliken ur säsongens olyckor (ej klassade och dubbletter räknas inte), dygnens och veckornas ärenden och dagens svenska datum. */
+export function adminVy(alla: Olycka[], arenden: ReadonlyMap<string, number>, idag: string,
+                        veckorna: ReadonlyMap<string, Veckoarende> = new Map()): Vy {
   const s = alla.filter((o) => !o.dubblett && bedomning(o) !== null);
   const bed = (b: Bedomning, x: Olycka[]) => x.filter((o) => bedomning(o) === b).length;
   const halk = s.filter(halkkopplad);
@@ -76,7 +88,7 @@ export function adminVy(alla: Olycka[], arenden: ReadonlyMap<string, number>, id
     missar: s.filter((o) => bedomning(o) === "MISS" && svenskDag(o.tid) >= missarFran)
       .sort((a, b) => b.tid.localeCompare(a.tid))
       .map((o) => ({ dag: svenskDag(o.tid), tid: svenskTid(o.tid), vag: vagText(o.vag) ?? "okänd väg", klass: o.klass!, omrade: omrade(o),
-                     atgard: atgard(o), arende: arenden.get(svenskDag(o.tid)) ?? null })),
+                     ...veckansAtgard(o, veckorna), arende: arenden.get(svenskDag(o.tid)) ?? null })),
     veckor: [...veckor.keys()].sort().map((v) => ({ vecka: v, ...Object.fromEntries(BEDOMNINGAR.map((b) => [b, bed(b, veckor.get(v)!)])) }) as { vecka: string } & Record<Bedomning, number>),
     lagren: OVERLAPP.map(([rad, f]) => ({ rad, senaste: halk.filter((o) => svenskDag(o.tid) >= lagerFran && f(o.talade)).length,
                                           sasong: halk.filter((o) => f(o.talade)).length })),

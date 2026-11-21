@@ -96,17 +96,18 @@ Deno.serve(async (req) => {
       veckorna.push({ vecka: v.vecka, nr, forslag });
     }
 
-    // Påminnelsen: öppna ärenden som stått sju dygn sedan de skrevs eller påmindes senast, dygnens och veckornas.
+    // Påminnelsen: öppna ärenden som stått sju dygn sedan de skrevs eller påmindes senast, dygnens och veckornas. Ett öppet
+    // veckoärende läses varje morgon, så att sidan Olyckor (admin, vyn.ts) ser att det stängts samma dygn och inte först vid påminnelsen.
     const paminda: unknown[] = [];
     const oppna = await sql`
-      SELECT 'dag' AS slag, dag::text AS nyckel, nr, skapad_at FROM olycksfacit_arenden
+      SELECT 'dag' AS slag, dag::text AS nyckel, nr, skapad_at, true AS dags FROM olycksfacit_arenden
       WHERE NOT stangd AND coalesce(paminnd_at, skapad_at) < now() - ${PAMINN_DYGN}::int * interval '1 day'
       UNION ALL
-      SELECT 'vecka', vecka, nr, skapad_at FROM olycksfacit_veckor
-      WHERE NOT stangd AND coalesce(paminnd_at, skapad_at) < now() - ${PAMINN_DYGN}::int * interval '1 day'
+      SELECT 'vecka', vecka, nr, skapad_at, coalesce(paminnd_at, skapad_at) < now() - ${PAMINN_DYGN}::int * interval '1 day' FROM olycksfacit_veckor
+      WHERE NOT stangd
       ORDER BY 1, 2`;
     for (const a of oppna as any[]) {
-      if (torrt) { paminda.push({ slag: a.slag, nyckel: a.nyckel, nr: a.nr }); continue; }
+      if (torrt) { if (a.dags) paminda.push({ slag: a.slag, nyckel: a.nyckel, nr: a.nr }); continue; }
       const issue = await gh(`/issues/${a.nr}`);
       const dagar = Math.floor((Date.now() - new Date(a.skapad_at).getTime()) / 86_400_000);
       if (a.slag === "dag") {
@@ -115,6 +116,7 @@ Deno.serve(async (req) => {
         await sql`UPDATE olycksfacit_arenden SET paminnd_at = now() WHERE dag = ${a.nyckel}::date`;
       } else {
         if (issue.state === "closed") { await sql`UPDATE olycksfacit_veckor SET stangd = true WHERE vecka = ${a.nyckel}`; continue; }
+        if (!a.dags) continue;
         await gh(`/issues/${a.nr}/comments`, "POST", { body: veckaPaminnelse(a.nyckel, dagar) });
         await sql`UPDATE olycksfacit_veckor SET paminnd_at = now() WHERE vecka = ${a.nyckel}`;
       }
