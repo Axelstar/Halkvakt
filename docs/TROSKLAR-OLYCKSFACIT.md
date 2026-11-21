@@ -457,7 +457,7 @@ frysta talar räknas därför stadspunkterna inte, och fångsten bokför dem som
 - DECISIONS #247, #245, #564, #649, #784, #796, #797, #841 och #842;
 - `publish/snapshot-core.ts`: vakterna och fukten.
 
-## 13. Tillägg 21/11 2026: TROLIG, väglaget (DECISIONS #941)
+## 13. Tillägg 21/11 2026: TROLIG, väglaget (DECISIONS #942)
 
 Förslaget `docs/FORSLAG-OLYCKSFACIT-OKLARA-2026-11-21.md`, signerat 21/11 av Bengt för båda (*"Vi signerar 1770 också"*).
 

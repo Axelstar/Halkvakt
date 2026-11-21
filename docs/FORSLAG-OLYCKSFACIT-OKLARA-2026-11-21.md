@@ -1,6 +1,6 @@
 # FÖRSLAG: färre oklara olyckor i olycksfacit (2026-11-21)
 
-**Status: SIGNERAD 21/11 2026** (Bengt: *"Vi signerar 1770 också"*, för både Bengt och Axel; DECISIONS #941). Förslag A är infört i
+**Status: SIGNERAD 21/11 2026** (Bengt: *"Vi signerar 1770 också"*, för både Bengt och Axel; DECISIONS #942). Förslag A är infört i
 TROSKLAR-OLYCKSFACIT §4 och §13; B och C gäller som de står här. Bengt 21/11: *"gör c"*
 (DECISIONS #939, förslag 2 och 3).
 

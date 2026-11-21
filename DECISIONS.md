@@ -19224,7 +19224,7 @@ datablankett när bygget är klart; telefonprovet.
 
 **Stomdokument:** APP — Android: kartan och Planera resa och platsdelningen
 
-## #941 (21/11 2026) Olycksfacit: klassen TROLIG, väglaget (förslaget för de oklara signerat)
+## #942 (21/11 2026) Olycksfacit: klassen TROLIG, väglaget (förslaget för de oklara signerat)
 
 **Beslut** (Bengt 21/11: *"Vi signerar 1770 också"*; signaturen kom från Bengt för både Bengt och Axel). Förslaget
 `docs/FORSLAG-OLYCKSFACIT-OKLARA-2026-11-21.md` (DECISIONS #939 punkt 4) gäller, och TROSKLAR-OLYCKSFACIT får regel 3b i §4 och §13:
