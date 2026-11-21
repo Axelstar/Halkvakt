@@ -51,6 +51,7 @@ export type Vy = {
   missar: { dag: string; tid: string; vag: string; klass: string; omrade: string | null; atgard: string; arende: number | null;
             vecka: number | null }[];
   veckor: ({ vecka: string } & Record<Bedomning, number>)[];
+  dygn: { dag: string; ratt: number; missar: number }[];
   lagren: { rad: string; senaste: number; sasong: number }[];
   oklara: { skal: string; olyckor: number; varnade: number }[];
 };
@@ -94,6 +95,10 @@ export function adminVy(alla: Olycka[], arenden: ReadonlyMap<string, Dygnsarende
       .sort((a, b) => b.tid.localeCompare(a.tid))
       .map((o) => ({ dag: svenskDag(o.tid), tid: svenskTid(o.tid), vag: vagText(o.vag) ?? "okänd väg", klass: o.klass!, omrade: omrade(o),
                      ...lasradensAtgard(o, arenden.get(svenskDag(o.tid)), veckorna), arende: arenden.get(svenskDag(o.tid))?.nr ?? null })),
+    dygn: Array.from({ length: Math.round((Date.parse(idag) - Date.parse(FORSTA_DAG)) / 86_400_000) + 1 }, (_, i) => {
+      const dag = dagarFore(FORSTA_DAG, -i), x = s.filter((o) => svenskDag(o.tid) === dag);
+      return { dag, ratt: bed("RÄTT VARNING", x), missar: bed("MISS", x) };
+    }),
     veckor: [...veckor.keys()].sort().map((v) => ({ vecka: v, ...Object.fromEntries(BEDOMNINGAR.map((b) => [b, bed(b, veckor.get(v)!)])) }) as { vecka: string } & Record<Bedomning, number>),
     lagren: OVERLAPP.map(([rad, f]) => ({ rad, senaste: halk.filter((o) => svenskDag(o.tid) >= lagerFran && f(o.talade)).length,
                                           sasong: halk.filter((o) => f(o.talade)).length })),

@@ -43,6 +43,9 @@ test("adminVy: säsongen, nämnaren, missarna, veckorna och lagren", () => {
     [["2026-11-19", "läses i veckans ärende", 1801], ["2026-11-10", "ingen åtgärd, kollision", null]]);
   assert.equal(v.missar[0].tid, "22:00", "svensk tid");
   assert.deepEqual(v.veckor.map((w) => w.vecka), ["2026-V40", "2026-V45", "2026-V46", "2026-V47"]);
+  assert.equal(v.dygn.length, 16, "6/11 till 21/11, också dygn utan olyckor");
+  assert.deepEqual(v.dygn.find((d) => d.dag === "2026-11-20"), { dag: "2026-11-20", ratt: 1, missar: 0 });
+  assert.deepEqual(v.dygn.find((d) => d.dag === "2026-11-19"), { dag: "2026-11-19", ratt: 0, missar: 1 });
   const l = Object.fromEntries(v.lagren.map((r) => [r.rad, [r.senaste, r.sasong]]));
   assert.deepEqual(l["Både A1 och K"], [1, 1]);
   assert.deepEqual(l["Bara K"], [0, 1]);
