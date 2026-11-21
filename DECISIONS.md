@@ -19223,3 +19223,36 @@ datablankett när bygget är klart; telefonprovet.
 **Alternativ.** Vänta med Firebase till efter släppet: då går apparna isär, och Axel ville ha dem i takt.
 
 **Stomdokument:** APP — Android: kartan och Planera resa och platsdelningen
+
+## #942 — 21/11: Planera resa i Android-appen: Googles sökning, väg och karta, och målet får kommunens namn (Axel: *"Ja vi kör"*)
+
+**Beslut.** Android-appen får Planera resa som iPhone (kort #659, Förslag A, DECISIONS #933), från 0.4.1 (72). Knappen *Planera
+resa* står under *Starta vakten* på Redo. Sökningen och vägen kommer från Google (Places API (New) och Routes API, `Vagtjanst.kt`),
+och kartan på skärmen *Till {målet}* är Googles (Maps SDK, mörkt läge, stilla): vägen i grått, en gul prick per halksträcka och
+en gul ring per plats med frysrisk. Rapporten längs vägen räknas i telefonen, som för en sparad resa.
+
+*Målets namn* är kommunen målet ligger i, ur Halkvakts egen tabell (`Kommunkarta.kt`, `data/kommuner/kommuner.json`), inte Googles
+namn på platsen (väg a, Axels val 21/11). Googles villkor för Europa säger att av det adressökningen ger får bara koordinater
+och plats-id stå på eller bredvid en karta. Utanför varje kommun i tabellen heter målet *målet*. Under förslagen på
+sökskärmen, som inte har någon karta, står *Google Maps*.
+
+*Det appen skickar.* Söktexten går till Google medan föraren skriver, utan position. När föraren väljer ett förslag går
+förarens position och platsens id till Google, som räknar ut vägen. Kartan hämtar kartbilder från Google för området längs
+vägen. Inget av det går till Halkvakt, och inget sker innan föraren söker. Det står bredvid sökningen och kartan, i
+integritet.html, i `docs/PLAY-DATASAFETY.md` och i produktboken, och raden om produktens löfte i CLAUDE.md är ändrad i samma
+commit. Nyckeln byggs in ur hemligheten `GOOGLE_MAPS_KEY` (DECISIONS #941); ett bygge utan hemligheten får varken förslag,
+väg eller karta.
+
+*Inte med än:* påminnelsen före avresan, den planerade resan med avresetid på startsidan, kartan Nära dig på startsidan och
+platsdelningen. De byggs i egna steg. Skärmen har heller ingen dra-för-att-uppdatera; *KOLLA IGEN* gör samma sak, som i
+rapporten för en sparad resa.
+
+**Bevis hittills:** android.yml grön på grenen (motorns och appens prov, felsökningsbygget och det signerade butiksbygget).
+Ingen har sett skärmarna på en telefon, och Googles tjänster har inte anropats med den riktiga nyckeln: felsökningsbygget
+signeras med en annan nyckel, som Google nekar. Det första riktiga provet är ett bygge ur Play på Axels telefon.
+
+**Alternativ.** Googles namn på platsen i rubriken och ingen karta (väg b): då tappar Android kartan som iPhone har. En egen
+karta ritad i appen: Googles väg får bara ritas på Googles karta eller utan karta, och konturen av Sverige prövades och
+valdes bort på iPhone (DECISIONS #933).
+
+**Stomdokument:** APP — Android: Planera resa med Googles sökning och väg och karta

@@ -42,6 +42,10 @@ Define success criteria. Loop until verified.
   0.4.1 (68)–(70), DECISIONS #930, and is back on Apple's map from (71): Apple's terms allow their route only on their map, DECISIONS #933), so MapKit fetches map tiles from Apple for the
   area shown without the driver pressing anything, and when the driver searches an address the search text, the driver's
   position and the destination go to Apple — never to Halkvakt. Stated in integritet.html and next to the map and the search.
+  The same on Android since 21/11 (Axel, DECISIONS #941, #942), from 0.4.1 (72), with Google in Apple's place: when the driver searches
+  an address in Planera resa the search text goes to Google, when the driver picks a suggestion the driver's position and the
+  chosen place go to Google, and the map on the planned trip fetches map tiles from Google for the area along the route —
+  never to Halkvakt, and nothing before the driver searches. Stated in integritet.html and next to the search and the map.
   One more exception since 20/11 (Axel and Bengt, DECISIONS #917, #918), on iPhone and ONLY in TestFlight builds until the words are
   changed everywhere: after the driver's yes on its own screen, `{id, app, kommun, erbj, token}` goes to `app-enhet` — a random id made in the
   app, the code of the municipality the phone was last in (worked out on the phone, `Kommunkarta`), the choice about offers, and, once the driver has allowed notifications,

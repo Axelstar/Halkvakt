@@ -244,6 +244,21 @@ och *fartkamera* (en låda på stolpe med blixtlinjer). Svarta på kortet, ljusa
 
 Under panelerna: *LÖFTET — Din position skickas aldrig till Halkvakt av sig själv.*
 
+**Planera resa på Android (21/11, kort #659, DECISIONS #942; från 0.4.1 (72)).** Under ▶ *Starta vakten* på Redo står knappen
+*Planera resa*. Den öppnar **Vart ska du?**: *"Se läget längs vägen innan du åker."* och sökrutan *Sök adress eller ort*.
+Medan föraren skriver visas upp till sex förslag från Google, med raden *Google Maps* under. Ett tryck på ett förslag räknar
+ut bilvägen dit från där föraren är (*"Räknar ut vägen …"*) och öppnar **Till {kommunen}**. Målet heter som kommunen det
+ligger i, ur Halkvakts egen tabell, eftersom Googles namn på platsen inte får stå bredvid en karta. Skärmen är iPhones
+(Förslag A): *{längd} · CA {restid}* och *KOLLA IGEN*; kortet *JUST NU* med *KOLLAT {tid}* och omdömet i en mening
+(*Lugnt hela vägen.*, *Halt på 3 ställen, först efter {ort}.*); ▶ *Starta vakten* och *ÖPPNA I GOOGLE MAPS*; när något är
+halt eller har frysrisk *LÄNGS VÄGEN, I DEN ORDNING DU KÖR* med Googles karta i mörkt läge (vägen grå, en gul prick per
+halksträcka, en gul ring per frysrisk), förklaringen, *KARTAN KOMMER FRÅN GOOGLE* och sträckorna, som öppnas med ett tryck;
+*ÖVRIGT PÅ VÄGEN* med en rad per sort; *HALKVAKT TROR · BETA*; och sist *RESAN SPARAS INTE* och *VÄGEN KOMMER FRÅN GOOGLE*.
+Under sökrutan står *NÄR DU SÖKER*: *"Det du skriver går till Google, som föreslår platser. När du väljer en plats får
+Google veta var du är och vart du ska, för att räkna ut vägen. Halkvakt får inget av det: läget längs vägen räknas ut i
+telefonen."* Android har inte påminnelsen före avresan, kartan Nära dig eller dra-för-att-uppdatera än. Inga skärmbilder
+än: fotostudions byggen saknar kartnyckeln, och skärmarna är inte sedda på en telefon.
+
 ## Favoriter (18/10, kort #357 — steg 2 och 3)
 
 ![Spara resan? på Redo.](produktbok/shot-10-spara-resan.png) ![Fliken Favoriter med resans läge](produktbok/shot-11-favoriter.png) ![Rapporten för en sparad resa](produktbok/shot-12-rapporten.png)
