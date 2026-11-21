@@ -62,6 +62,9 @@ on:
         type: choice
         options: ["vanlig", "t4", "smavagar", "okanda"]
         default: "vanlig"
+      korning:
+        description: "bara för rattelsen: tomt = hela prövningen; ett körningsnummer = bara följden och filerna till kuvösen för den körningens vintrar i hinken"
+        default: ""
 # Två köer (Bengt 4/11, halkvakt-kuvos F9): stegen som hämtar ur MET (indata, fyll, t4) delar en kö, eftersom MET tar en förbindelse
 # åt gången; fyllningen hämtar ur arkivet och v4 när timmar saknas. De andra stegen läser bara färdiga releaser och hinken och väntar
 # inte bakom en hämtning på åtta timmar. Ett steg som läser en vinter vars hämtning pågår läser det som hunnit laddas upp.
@@ -2543,7 +2546,7 @@ jobs:
   # Punkterna och Trafikverkets filer stannar i jobbet. Bara aggregaten går till hinken (kuvos/kuvos-rattelsen-ytan-2026-11-<körningens
   # nummer>/) och till grenen resultat/rattelsen-ytan i kuvösen. Inget utfall ändrar kod eller drift. Loggen säger bara klart eller fel.
   rattelsen-veck:
-    if: ${{ inputs.steg == 'rattelsen' && inputs.variant == 't4' }}
+    if: ${{ inputs.steg == 'rattelsen' && inputs.variant == 't4' && inputs.korning == '' }}
     runs-on: ubuntu-latest
     timeout-minutes: 180
     permissions: { contents: read, actions: read }
@@ -2684,11 +2687,12 @@ jobs:
 
   rattelsen-dom:
     needs: rattelsen-veck
-    if: ${{ inputs.steg == 'rattelsen' && inputs.variant == 't4' }}
+    if: ${{ always() && inputs.steg == 'rattelsen' && inputs.variant == 't4' && (needs.rattelsen-veck.result == 'success' || (needs.rattelsen-veck.result == 'skipped' && inputs.korning != '')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      UT_HINK: "kuvos-rattelsen-ytan-2026-11-${{ github.run_number }}"
+      NR: "${{ inputs.korning || github.run_number }}"
+      UT_HINK: "kuvos-rattelsen-ytan-2026-11-${{ inputs.korning || github.run_number }}"
     steps:
       - uses: actions/checkout@v4
       # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos (DECISIONS #768): koden läggs ovanpå utcheckningen.
@@ -2748,6 +2752,7 @@ jobs:
                 console.log(`${d.fil}: ${ok ? "klart, i hinken byte för byte den skrivna" : "FEL: i hinken med annat innehåll"}`); });
               process.exit(fel ? 1 : 0);' "$@"
           }
+          [[ "$NR" =~ ^[0-9]+$ ]] || { echo "::error::korning ska vara ett körningsnummer"; exit 1; }
           hamta vk $(for V in 2018-19 2019-20 2020-21 2021-22 2022-23 2024-25; do echo "$UT_HINK/rattelsen_$V.json"; done)
           echo "vintrarnas filer ur hinken: klart"
           mkdir -p ut
@@ -2759,10 +2764,11 @@ jobs:
           # Till kuvösen (förregistreringen §9 val 5): de sju filerna på grenen resultat/rattelsen-ytan, aldrig på main, aldrig överskrivna.
           [ -n "$SKRIV" ] || { echo "::error::hemligheten KUVOS_SKRIVNYCKEL saknas"; exit 1; }
           mv vk/rattelsen_*.json ut/ && rm -rf vk
-          git clone -q "https://x-access-token:${SKRIV}@github.com/Axelstar/halkvakt-kuvos.git" kuvos 2>/dev/null || { echo "::error::kuvösen gick inte att klona med KUVOS_SKRIVNYCKEL"; exit 1; }
-          cd kuvos
+          # Inte i kuvos/: den mappen finns i utcheckningen (manifesten), och git klonar inte in i en mapp som inte är tom.
+          git clone -q "https://x-access-token:${SKRIV}@github.com/Axelstar/halkvakt-kuvos.git" .kuvos-skriv 2>/dev/null || { echo "::error::kuvösen gick inte att klona med KUVOS_SKRIVNYCKEL"; exit 1; }
+          cd .kuvos-skriv
           git config user.name "halkvakt-actions"; git config user.email "actions@users.noreply.github.com"
-          G=resultat/rattelsen-ytan; M="resultat/rattelsen-ytan-2026-11-${{ github.run_number }}"
+          G=resultat/rattelsen-ytan; M="resultat/rattelsen-ytan-2026-11-$NR"
           if git ls-remote -q --exit-code --heads origin "$G" >/dev/null 2>&1; then git fetch -q origin "$G" && git checkout -q -B "$G" FETCH_HEAD; else git checkout -q --orphan "$G" && git rm -rq --cached . && git clean -fdxq; fi
           [ ! -e "$M" ] || { echo "::error::körningens mapp finns redan i kuvösen — ingenting skrivs över"; exit 1; }
           mkdir -p "$M" && cp ../ut/*.json "$M/"
@@ -2770,7 +2776,7 @@ jobs:
           git commit -q -m "Rättelsen av ytan: utskrifterna ur hinken (kort #675, BESLUT F82)"
           git push -q origin "$G" 2>/dev/null || { echo "::error::pushen till kuvösen föll"; exit 1; }
           echo "filerna till kuvösen, grenen $G: klart"
-          cd .. && rm -rf kuvos ut
+          cd .. && rm -rf .kuvos-skriv ut
 
   # ── friktionen (fukten i storstäderna, källa 3: friktionen läst framåt ur driften, halkvakt-kuvos BESLUT F38 §8) ───────────────
   # Läsfrågan scripts/matningar/kuvos-friktionen-staderna-2026-12.ts räknar halvtimmarna sedan friktionen kom i drift vid
