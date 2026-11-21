@@ -19323,3 +19323,19 @@ och rör ingenting som kör. *15 km som räckvidd i motorn* kan också läsas so
 station; flytten till närmaste punkt på rutten ger samma sak en gång per station och körning, och motorns disciplin står kvar.
 
 **Stomdokument:** MAT §2 fuktskuggan i motorn bredvid A2 och rimfrosten
+
+## #946 (21/11 2026) Olycksfacit: veckans ärende räknar missarna mot facit som inte bygger på stationen (§14)
+
+**Beslut** (Bengt 21/11: *"förregistrera rättelse och 676 veckosammanställning ska räkna..."*, på rekommendationen i
+`docs/FORSLAG-FUKTREGELN-2026-11-21.md` §7 punkt 5). TROSKLAR-OLYCKSFACIT får §14, förregistrerat före det första veckoärendet som bär
+raden (2026-V47) och före varje beslut om A2:s fuktregel:
+1. Veckans ärende (§9.5 punkt 9) delar veckans och säsongens missar på *facit som inte bygger på stationen* (halkordet, TYDLIG, eller
+   Trafikverkets väglag efteråt, `halka_efter`, också TROLIG, väglaget) och *bara på stationen* (övriga TROLIG).
+2. En ändring av ett lager som läser stationen (A2, K, småvägsrösten) prövas på den första raden. För A1 är bara halkordet oberoende.
+3. Ingen klass och ingen åtgärdsrad ändras. Byggt i `supabase/functions/olycksfacit/arende.ts` (`oberoendeFacit`) och `hamta.ts`
+   (läser `halka_efter`), med prov och motprov i `test/olycksfacit-arende.test.ts`.
+
+**Alternativ.** Att ta bort rimfrosten ur TROLIG: färre olyckor blir halka, en lättnad efter sett utfall (regel L), och den behövs inte
+för att skilja facit från regeln. Att göra TROLIG likt A2:s förslag: då bevisar en fångad miss bara att regeln och klassningen är lika.
+
+**Stomdokument:** MAT §3 olycksfacits veckoärende räknar missarna mot oberoende facit

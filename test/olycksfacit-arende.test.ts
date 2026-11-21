@@ -256,3 +256,20 @@ test("veckans ärende: rätt varning i TROLIG, väglaget, märks och räknas fö
   assert.match(k, /Av de rätta varningarna är 1 i klassen TROLIG, väglaget, och de får inte anföras utåt/);
   assert.doesNotMatch(veckaKropp("2026-V47", "2026-11-16", "2026-11-22", [], [o({ utfall: "VARNADE" })]), /Av de rätta varningarna/);
 });
+
+test("veckaKropp (§14, DECISIONS #946): missarna mot facit som inte bygger på stationen, för veckan och säsongen", () => {
+  const veckans = [
+    o({ klass: "TYDLIG" }),                                                        // halkordet: oberoende
+    o({ tid: "2026-11-07T06:10:00.000Z", halkaEfter: true }),                      // väglaget efteråt: oberoende
+    o({ tid: "2026-11-07T07:10:00.000Z", skal: "väglaget efteråt, yta okänd" }),   // TROLIG, väglaget: oberoende
+    o({ tid: "2026-11-07T08:10:00.000Z" }),                                        // bara på stationen
+    o({ tid: "2026-11-07T09:10:00.000Z", halkaEfter: false }),                     // bara på stationen
+    o({ tid: "2026-11-07T09:11:00.000Z", dubblett: true, halkaEfter: true }),      // dubbletten räknas inte
+    o({ tid: "2026-11-08T05:00:00.000Z", utfall: "VARNADE", klass: "TYDLIG", talade: ["A1"] }),   // ingen miss
+  ];
+  const sasong = [...veckans, o({ tid: "2026-11-01T05:00:00.000Z", halkaEfter: true })];
+  const k = veckaKropp("2026-V45", "2026-11-06", "2026-11-08", veckans, sasong);
+  assert.ok(k.includes("| Med facit som inte bygger på stationen: halkordet eller väglaget efteråt | 3 | 4 |"), k);
+  assert.ok(k.includes("| Bara på stationen | 2 | 2 |"));
+  assert.ok(k.includes("| **Summa** | 5 | 6 |"));
+});

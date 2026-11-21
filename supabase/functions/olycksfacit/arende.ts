@@ -33,6 +33,7 @@ export type Olycka = {
   rimfrostEfter?: boolean;// rimfrost vid stationen (sql/110)
   fukthink?: string | null;   // väderhinken i fuktskuggan (sql/138, DECISIONS #940); null utan station, undefined utan rad där
   dygnsdel?: "dag" | "natt";  // fuktskuggans del av dygnet: dag = 07–18 svensk tid
+  halkaEfter?: boolean | null; // Trafikverket satte halka på A1:s sträcka inom sex timmar (§3); null utan sträcka inom 100 m
 };
 
 const KLASSER = ["TYDLIG", "TROLIG", "OKLAR", "INTE"] as const;
@@ -44,6 +45,10 @@ export const kollision = (o: Olycka): boolean => o.klass === "TROLIG" && o.art =
 /** Regel 3b (TROSKLAR-OLYCKSFACIT §4 och §13, DECISIONS #942): TROLIG på Trafikverkets väglag efteråt. Rätt varning i klassen
  *  redovisas för sig och får inte anföras utåt (§9.6), eftersom facit och A1 läser samma källa. */
 export const vaglaget = (o: Olycka): boolean => o.klass === "TROLIG" && (o.skal ?? "").startsWith("väglaget efteråt");
+
+/** §14 (Bengt 21/11, DECISIONS #946): facit som inte bygger på stationen — halkordet i texten (TYDLIG) eller Trafikverkets väglag
+ *  efteråt (`halka_efter`, också TROLIG, väglaget). En miss utan det är en miss bara på stationen: samma station avgör facit och A2. */
+export const oberoendeFacit = (o: Olycka): boolean => o.klass === "TYDLIG" || o.halkaEfter === true || vaglaget(o);
 
 /** En tyst olycka med tydlig eller trolig koppling till halka ska ha en åtgärd, utom en kollision (D2). */
 export function behoverAtgard(o: Olycka): boolean {
@@ -245,6 +250,17 @@ export function overlappRader(veckans: Olycka[], sasong: Olycka[]): string[] {
     `| **Summa** | ${veckans.length} | ${sasong.length} | ${procent(sasong.length, sasong.length)} |`];
 }
 
+/** §14: veckans och säsongens missar delade på facit som inte bygger på stationen och facit bara på stationen. */
+function oberoendeRader(veckans: Olycka[], sasong: Olycka[]): string[] {
+  const m = (x: Olycka[]) => x.filter((o) => bedomning(o) === "MISS");
+  const v = m(veckans), s = m(sasong), n = (x: Olycka[], ob: boolean) => x.filter((o) => oberoendeFacit(o) === ob).length;
+  return ["**Missarna mot facit som inte bygger på stationen** (TROSKLAR-OLYCKSFACIT §14): en ändring av ett lager som läser " +
+      "stationen (A2, K) prövas på den första raden, eftersom samma station annars både varnar och avgör facit.",
+    "", "| Missarna | Veckan | Säsongen |", "| :-- | --: | --: |",
+    `| Med facit som inte bygger på stationen: halkordet eller väglaget efteråt | ${n(v, true)} | ${n(s, true)} |`,
+    `| Bara på stationen | ${n(v, false)} | ${n(s, false)} |`, `| **Summa** | ${v.length} | ${s.length} |`, ""];
+}
+
 export function veckaKropp(vecka: string, fran: string, till: string, veckans: Olycka[], sasong: Olycka[],
                            lasdagar: ReadonlySet<string> = new Set()): string {
   const egna = veckans.filter((o) => !o.dubblett);
@@ -288,6 +304,7 @@ export function veckaKropp(vecka: string, fran: string, till: string, veckans: O
     ...(veckansOmraden.length
       ? ["**Missarna per förbättringsområde:**", "", "| Område | Missar |", "| :-- | --: |", ...veckansOmraden, ""]
       : ["Inga missar den här veckan.", ""]),
+    ...oberoendeRader(egna, s),
     ...(ratta.length ? ["**Rätt varning, fall för fall:**", "", ...ratta.map((o) => rattVarning(o, true)), ""] : []),
     `**Säsongen sedan ${FORSTA_DAG}:** ${sHalk.length} halkkopplade olyckor; ` +
       `Halkvakt hade rätt varning vid ${sRatta} av dem (${procent(sRatta, sHalk.length)}) och missade ${bed("MISS", s)}.` +
