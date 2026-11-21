@@ -73,12 +73,15 @@ test("adminVy: en läsrad är åtgärdad när ärendet som bär den är stängt"
 test("oklarSkal: skälet i klassningens ordning, och oklara summerar till OKLAR", () => {
   const ok = (x: Partial<Olycka>) => o({ klass: "OKLAR", ...x });
   assert.equal(oklarSkal(ok({ ytaMin: null })), "Ingen station inom 15 km");
-  assert.equal(oklarSkal(ok({ ytaMin: 1.5 })), "Ytan mellan 0 och +3 °C");
+  assert.equal(oklarSkal(ok({ ytaMin: 1.5 })), "Ytan +1 till +3 °C, torrt");
+  assert.equal(oklarSkal(ok({ ytaMin: 1.5, fuktEfter: true })), "Ytan +1 till +3 °C, med fukt");
+  assert.equal(oklarSkal(ok({ ytaMin: 0.5, rimfrostEfter: true })), "Ytan 0 till +1 °C, med fukt");
+  assert.equal(oklarSkal(ok({ ytaMin: 1 })), "Ytan 0 till +1 °C, torrt");
   assert.equal(oklarSkal(ok({ ytaMin: -1, art: "okänd" })), "Kall yta, men texten säger inte hur olyckan gick till");
   assert.equal(oklarSkal(ok({ ytaMin: -1, art: "ett fordon, svag" })), "Kall yta, men texten säger inte hur olyckan gick till");
   assert.equal(oklarSkal(ok({ ytaMin: -1, art: "ett fordon" })), "Kall yta, men ingen fukt eller rimfrost vid stationen");
   assert.equal(oklarSkal(o({ klass: "TROLIG", ytaMin: -1 })), null);
   const v = adminVy([ok({ ytaMin: 2, utfall: "VARNADE" }), ok({ ytaMin: null }), ok({ ytaMin: 0.5 }), o({})], new Map(), "2026-11-21");
-  assert.deepEqual(v.oklara.map((r) => [r.olyckor, r.varnade]), [[1, 0], [2, 1], [0, 0], [0, 0]]);
+  assert.deepEqual(v.oklara.map((r) => [r.olyckor, r.varnade]), [[1, 0], [0, 0], [1, 0], [0, 0], [1, 1], [0, 0], [0, 0]]);
   assert.equal(v.oklara.reduce((a, r) => a + r.olyckor, 0), v.bedomningar["OKLAR TYSTNAD"] + 1);
 });
