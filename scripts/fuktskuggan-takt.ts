@@ -11,6 +11,7 @@
 // data/favoritprov/rutter-osrm.json, 80 km/h och en fix var 5:e s, som skuggmotorn) genom motorn tre gånger:
 //   BAS      dagens A2: varje stations senaste vaktade rad de 45 minuterna före tiden, på stationens plats, fukt = FUKT_SQL.
 //   DAGG     samma plats, fukt = FUKT_SQL eller ytan under daggpunkten (daggpunkten -50…+30 °C, som sql/138).
+//   RACKVIDD dagens fukt, och stationerna inom 15 km flyttas till rutten som i FORSLAG2: räckvidden ensam.
 //   FORSLAG2 DAGG:s fukt, och varje station inom 15 km från rutten flyttas till närmaste punkt på rutten: vägen inom 15 km får
 //            stationens varning, och motorns disciplin (prioritet, 10 s, 10 min/5 km) gäller som förut.
 // A1:s sträckor (road_condition_history, som rekonstruktionen) är med i alla tre, så att A2 tävlar som i bilen. Broarna (+3 °C) och
@@ -34,8 +35,8 @@ import { skuggmotornsRutter } from "../publish/skuggfacit.ts";
 
 export const RACKVIDD_M = 15_000;       // förslag 2: stationer inom 15 km
 export const SLOT_S = 1800;
-export type Variant = "BAS" | "DAGG" | "FORSLAG2";
-export const VARIANTER: Variant[] = ["BAS", "DAGG", "FORSLAG2"];
+export type Variant = "BAS" | "DAGG" | "RACKVIDD" | "FORSLAG2";
+export const VARIANTER: Variant[] = ["BAS", "DAGG", "RACKVIDD", "FORSLAG2"];
 export type Station = { id: string; lon: number; lat: number; yta: number; fukt: boolean; dagg: boolean };
 
 /** Skuggmotorns spår: rak interpolation mellan brytpunkterna, 80 km/h, en fix var 5:e s (supabase/functions/skuggmotor/main.ts). */
@@ -73,11 +74,11 @@ export function punktLangs(line: [number, number][], langsM: number): [number, n
 /** A2:s faror för en variant och en rutt: bara stationerna som kan tala (yta <= +1 °C och variantens fukt; utan broar och S3 talar
  *  ingen annan). FORSLAG2 flyttar varje sådan station inom räckvidden till närmaste punkt på rutten. */
 export function a2Faror(stationer: Station[], variant: Variant, line: [number, number][]): Hazard[] {
-  const fukt = (s: Station) => s.fukt || (variant !== "BAS" && s.dagg);
+  const fukt = (s: Station) => s.fukt || ((variant === "DAGG" || variant === "FORSLAG2") && s.dagg);
   const st = stationer.filter((s) => s.yta <= 1 && fukt(s));
   const punkt = (s: Station, lon: number, lat: number): Hazard =>
     ({ id: `wx:${s.id}`, kind: "icing_point", lon, lat, meta: { surfaceTempC: s.yta, moisture: true } });
-  if (variant !== "FORSLAG2") return st.map((s) => punkt(s, s.lon, s.lat));
+  if (variant === "BAS" || variant === "DAGG") return st.map((s) => punkt(s, s.lon, s.lat));
   const som = st.map((s) => punkt(s, s.lon, s.lat));
   const langs = new Map(farorLangsRutten(som, line, RACKVIDD_M).map((x) => [x.hazard.id, x.langsM]));
   return st.map((s) => {
@@ -174,14 +175,15 @@ if (process.argv.includes("--sjalvtest")) {
     korSlot(st, [], [["prov", line]], (v) => { if (!r.has(v)) r.set(v, tom()); return r.get(v)!; });
     return Object.fromEntries([...r].map(([v, x]) => [v, [x.a2, x.nyaA2]]));
   };
-  k("våt kall station på vägen talar i alla tre", kor([s("a", 15.5, 60.0, 0, true, false)]), { BAS: [1, 0], DAGG: [1, 0], FORSLAG2: [1, 0] });
-  k("rimfrost på vägen: bara daggvarianterna talar, som nya", kor([s("b", 15.5, 60.0, -1, false, true)]), { BAS: [0, 0], DAGG: [1, 1], FORSLAG2: [1, 1] });
+  k("våt kall station på vägen talar i alla tre", kor([s("a", 15.5, 60.0, 0, true, false)]), { BAS: [1, 0], DAGG: [1, 0], RACKVIDD: [1, 0], FORSLAG2: [1, 0] });
+  k("rimfrost 10 km bort: bara förslag 2", kor([s("g", 15.5, 60.09, -1, false, true)]), { BAS: [0, 0], DAGG: [0, 0], RACKVIDD: [0, 0], FORSLAG2: [1, 1] });
+  k("rimfrost på vägen: bara daggvarianterna talar, som nya", kor([s("b", 15.5, 60.0, -1, false, true)]), { BAS: [0, 0], DAGG: [1, 1], RACKVIDD: [0, 0], FORSLAG2: [1, 1] });
   // 0,09° nord ≈ 10 km från vägen: utanför motorns räckvidd (högst 3 km) men inom 15 km.
-  k("våt station 10 km bort: bara förslag 2", kor([s("c", 15.5, 60.09, 0, true, false)]), { BAS: [0, 0], DAGG: [0, 0], FORSLAG2: [1, 1] });
+  k("våt station 10 km bort: bara räckvidden och förslag 2", kor([s("c", 15.5, 60.09, 0, true, false)]), { BAS: [0, 0], DAGG: [0, 0], RACKVIDD: [1, 1], FORSLAG2: [1, 1] });
   // 0,18° nord ≈ 20 km: utanför 15 km.
-  k("våt station 20 km bort: ingen", kor([s("d", 15.5, 60.18, 0, true, false)]), { BAS: [0, 0], DAGG: [0, 0], FORSLAG2: [0, 0] });
-  k("varm yta (+1,5 °C) med dagg: ingen", kor([s("e", 15.5, 60.0, 1.5, false, true)]), { BAS: [0, 0], DAGG: [0, 0], FORSLAG2: [0, 0] });
-  k("torr kall station: ingen", kor([s("f", 15.5, 60.0, -3, false, false)]), { BAS: [0, 0], DAGG: [0, 0], FORSLAG2: [0, 0] });
+  k("våt station 20 km bort: ingen", kor([s("d", 15.5, 60.18, 0, true, false)]), { BAS: [0, 0], DAGG: [0, 0], RACKVIDD: [0, 0], FORSLAG2: [0, 0] });
+  k("varm yta (+1,5 °C) med dagg: ingen", kor([s("e", 15.5, 60.0, 1.5, false, true)]), { BAS: [0, 0], DAGG: [0, 0], RACKVIDD: [0, 0], FORSLAG2: [0, 0] });
+  k("torr kall station: ingen", kor([s("f", 15.5, 60.0, -3, false, false)]), { BAS: [0, 0], DAGG: [0, 0], RACKVIDD: [0, 0], FORSLAG2: [0, 0] });
   const p = punktLangs(line, 50_000);
   k("punkten 50 km längs rutten", Math.round(haversineM({ lon: line[0][0], lat: line[0][1] }, { lon: p[0], lat: p[1] }) / 100), 500);
   const r = tom();
@@ -243,13 +245,13 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   }
   await pool.end();
 
+  const cell = (r: Rakning, nya: boolean) => `${r.a2} · ${procent(r.korningarMedA2, r.korningar)}${nya ? ` · nya ${r.nyaA2}` : ""}`;
   const rad = (namn: string, m: Map<Variant, Rakning>) => {
-    const b = m.get("BAS")!, d = m.get("DAGG")!, f = m.get("FORSLAG2")!;
-    return `| ${namn} | ${b.korningar} | ${b.a2} · ${procent(b.korningarMedA2, b.korningar)} | ${d.a2} · ${procent(d.korningarMedA2, d.korningar)} · nya ${d.nyaA2} | ` +
-      `${f.a2} · ${procent(f.korningarMedA2, f.korningar)} · nya ${f.nyaA2} | ${b.foljderInom60s} / ${d.foljderInom60s} / ${f.foljderInom60s} | ` +
-      `${b.tatastFoljdS ?? "–"} / ${d.tatastFoljdS ?? "–"} / ${f.tatastFoljdS ?? "–"} |`;
+    const x = VARIANTER.map((v) => m.get(v)!);
+    return `| ${namn} | ${x[0].korningar} | ${x.map((r, i) => cell(r, i > 0)).join(" | ")} | ${x.map((r) => r.foljderInom60s).join(" / ")} | ` +
+      `${x.map((r) => r.tatastFoljdS ?? "–").join(" / ")} |`;
   };
-  const huvud = "| | körningar | BAS: A2 · körningar med A2 | DAGG: A2 · med A2 · nya | FÖRSLAG 2: A2 · med A2 · nya | följder ≤ 60 s B/D/F | tätaste följd s B/D/F |\n| :-- | --: | --: | --: | --: | --: | --: |";
+  const huvud = "| | körningar | BAS: A2 · körningar med A2 | DAGG: A2 · med A2 · nya | RÄCKVIDD: A2 · med A2 · nya | FÖRSLAG 2: A2 · med A2 · nya | följder ≤ 60 s B/D/R/F | tätaste följd s B/D/R/F |\n| :-- | --: | --: | --: | --: | --: | --: | --: |";
   console.log(`FUKTSKUGGAN I MOTORN — ${fran} till ${till} (svensk tid), ${slots} tidpunkter var ${STEG_S / 60}:e minut, ${tomma} utan väderrader, ${rutter.length} rutter\n`);
   console.log(`## Summa\n${huvud}\n${rad("alla", summa)}\n`);
   console.log(`## Per dygn\n${huvud}\n${[...perDag].sort().map(([d, m]) => rad(d, m)).join("\n")}\n`);
