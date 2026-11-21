@@ -19022,3 +19022,25 @@ Bygget är 0.4.1 (72).
 **Alternativ.** Räkna inte de våta sträckorna som halka på den här skärmen: då säger skärmen och rösten olika saker om samma väg.
 
 **Stomdokument:** APP — skärmen Planerad resa
+
+## #936 (21/11 2026) Olycksfacit på admin.halkvakt.se: en flik på statistiksidan, en prototyp
+
+**Beställning** (Bengt 21/11: *"Ok bygg en prototyp av detta för placering i admin"*, på fem skisser samma morgon). Olycksfacit syns
+i dag bara i de dagliga och veckovisa ärendena med etiketten `olycka`. Prototypen ger statistiksidan på admin.halkvakt.se en flik
+*Olycksfacit* med skissernas förslag 1, 2, 4 och 5: säsongen sedan 6/11 (halkkopplade olyckor, rätt varning i antal och andel,
+missar), nämnaren per klass, missarna de senaste 30 dygnen med förbättringsområde, åtgärd och länk till dagens ärende, missarna per
+område, bedömningarna vecka för vecka och lagren tillsammans (§9.5 punkt 8). Kartan (förslag 3) väntar.
+
+**Hur.** Funktionen `admin` får delen `olycksfacit` (menyvalet statistik). Den läser säsongens olyckor med samma fråga som ärendena,
+som flyttas ut till `supabase/functions/olycksfacit/hamta.ts`, och räknar dem i `olycksfacit/vyn.ts` med ärendenas egna regler
+(`bedomning`, `omrade`, `forifylld`, nämnaren och lagerraderna exporteras ur `arende.ts`). Inget nytt mått, ingen ny tabell och ingen
+migration. Svaret bär bara det ärendena får bära, utan läget som koordinater och utan kandidatens tal. Säljregeln (§9.6) följs på
+sidan: andelen står alltid bredvid antalet. Sidan i Axelstar/halkvakt-admin visar exempeldata, tydligt märkta, tills delen är i drift.
+
+**Kvar:** en rad i `supabase/functions/admin/index.ts` när PR #1719 är ihop (`del=olycksfacit` → `olycksfacitSvar()`), deploy av
+`admin` och `olycksfacit` på Bengts ord, och fliken läst live.
+
+**Alternativ.** En ny SQL-funktion i `besok_stat`, som flikarna Appen och Annonser: bedömningen och områdena finns bara i TypeScript,
+så de hade fått skrivas en gång till i SQL och glida isär. En egen sida i admin: fliken håller ihop det som mäter appen på ett ställe.
+
+**Stomdokument:** SYS edge-funktionerna — admin och delen olycksfacit, MAT §9 olycksfacit — visas på adminsidan

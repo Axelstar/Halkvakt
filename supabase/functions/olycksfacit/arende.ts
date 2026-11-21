@@ -209,7 +209,7 @@ export function veckansLasrader(veckans: Olycka[], lasdagar: ReadonlySet<string>
 }
 
 /** E (§11): nämnaren, per klass hur ofta Halkvakt varnade. INTE delas på viltet och ytan över +3 °C. */
-const NAMNARE: [string, (o: Olycka) => boolean][] = [
+export const NAMNARE: [string, (o: Olycka) => boolean][] = [
   ["TYDLIG", (o) => o.klass === "TYDLIG"],
   ["TROLIG, ett fordon", (o) => o.klass === "TROLIG" && !kollision(o)],
   ["TROLIG, kollision", kollision],
@@ -220,7 +220,7 @@ const NAMNARE: [string, (o: Olycka) => boolean][] = [
 
 /** §9.5 punkt 8 (Bengt 20/11, DECISIONS #925): vid de halkkopplade olyckorna, om Trafikverkets väglag (A1) och kandidaten (K) varnade
  *  på samma plats eller bara den ena. Raderna utesluter varandra och täcker alla, så de summerar till de halkkopplade. */
-const OVERLAPP: [string, (t: string[]) => boolean][] = [
+export const OVERLAPP: [string, (t: string[]) => boolean][] = [
   ["Både A1 och K", (t) => t.includes("A1") && t.includes("K")],
   ["Bara A1", (t) => t.includes("A1") && !t.includes("K")],
   ["Bara K", (t) => t.includes("K") && !t.includes("A1")],

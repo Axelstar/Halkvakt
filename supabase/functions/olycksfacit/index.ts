@@ -9,8 +9,9 @@
 // skriva något.
 import postgres from "https://deno.land/x/postgresjs@v3.4.4/mod.js";
 import { nyckelGiltig } from "../_shared/nyckel.ts";
-import { DYGN_EFTER, ETIKETT, FORSTA_DAG, MARK, MARKV, type Olycka, PAMINN_DYGN, TILLDELAD, arendeKropp, arendeTitel, behoverAtgard, forifylld,
+import { DYGN_EFTER, ETIKETT, FORSTA_DAG, MARK, MARKV, PAMINN_DYGN, TILLDELAD, arendeKropp, arendeTitel, behoverAtgard, forifylld,
   paminnelse, veckaKropp, veckaPaminnelse, veckaTitel, veckansForslag, veckansLasrader } from "./arende.ts";
+import { hamta as hamtaOlyckor } from "./hamta.ts";
 
 const REPO = "Axelstar/Halkvakt";
 const sql = postgres(Deno.env.get("SUPABASE_DB_URL")!, { max: 1, prepare: false });
@@ -25,22 +26,7 @@ async function gh(path: string, method = "GET", body?: unknown): Promise<any> {
 
 const json = (x: unknown, status = 200) => new Response(JSON.stringify(x), { status, headers: { "Content-Type": "application/json" } });
 
-/** Olyckorna som började mellan två svenska dygn (båda med), med lagren som varnade vid starten. */
-async function hamta(fran: string, till: string): Promise<Olycka[]> {
-  return (await sql`
-    SELECT f.start_time, f.road_number, ST_X(f.geom) AS lon, ST_Y(f.geom) AS lat, f.utfall, f.orsaker, f.klass, f.klass_skal, f.dubblett_av,
-           coalesce((SELECT array_agg(l.lager ORDER BY array_position(ARRAY['A1', 'K', 'A2', 'smavag'], l.lager)) FROM olycksfacit_lager l
-                     WHERE l.deviation_id = f.deviation_id AND l.talar), '{}') AS talade,
-           f.art,
-           (SELECT l.orsak FROM olycksfacit_lager l WHERE l.deviation_id = f.deviation_id AND l.lager = 'smavag') AS smavag,
-           coalesce((SELECT (l.detalj->>'flackvis_vat')::boolean FROM olycksfacit_lager l
-                     WHERE l.deviation_id = f.deviation_id AND l.lager = 'K'), false) AS flackvis_vat
-    FROM olycksfacit f WHERE (f.start_time AT TIME ZONE 'Europe/Stockholm')::date BETWEEN ${fran}::date AND ${till}::date
-    ORDER BY f.start_time, f.deviation_id`).map((r: any) => ({
-      tid: new Date(r.start_time).toISOString(), vag: r.road_number, lon: Number(r.lon), lat: Number(r.lat), utfall: r.utfall,
-      orsaker: r.orsaker ?? [], klass: r.klass, skal: r.klass_skal, dubblett: r.dubblett_av !== null, talade: r.talade ?? [],
-      art: r.art, smavag: r.smavag, flackvisVat: r.flackvis_vat === true }));
-}
+const hamta = (fran: string, till: string) => hamtaOlyckor(sql, fran, till);   // hamta.ts, delad med admin (DECISIONS #936)
 
 /** Ett ärende med etiketten: finns det redan (skrivet men inte bokfört, om förra körningen föll mellan stegen) tas dess nummer,
  *  annars skrivs det. Utan något att åtgärda stängs ett nytt ärende direkt. */
