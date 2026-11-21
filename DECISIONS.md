@@ -19192,3 +19192,34 @@ motorn: den kräver vektorer och ett beslut av Bengt och Axel; utvärderingen av
 Trafikmängden i nämnaren: den finns inte per station och timme.
 
 **Stomdokument:** MAT §3 (olycksfacit: basfrekvensen och fuktskuggan)
+
+## #941 (21/11 2026) Android: Google Cloud och Firebase uppsatta, och kartnyckeln ligger i appen (kort #659, #674)
+
+**Beslut** (Axel 21/11: *"Jag ser gärna att vi håller apparna i sync"*; han satte upp kontona samma förmiddag, steg för steg).
+Android får allt iPhone har: resultatskärmen enligt Förslag A, kartan på startsidan, Planera resa och platsdelningen med notiser.
+
+*Google Cloud.* Projektet heter `halkvakt` och ägs av samma Google-konto som Play Console. Det går på Googles gratisperiod
+till 20/2 2027: under den kan inget dras från kortet. Tre tjänster är påslagna och inga andra: Maps SDK for Android, Places
+API (New) och Routes API (Axels val 14/11, DECISIONS #870).
+
+*Kartnyckeln ligger i appen, och det är ett avsteg från regeln om hemligheter.* En nyckel till Maps SDK måste följa med
+appen: det finns ingen väg runt det på Android. Den är därför låst i Google Cloud till paketet `se.halkvakt.app` och fyra
+signeringsnycklar (Plays nuvarande och förra signeringsnyckel, den postkvantkryptografiska och uppladdningsnyckeln) och till
+de tre tjänsterna. I repot finns den bara som hemligheten `GOOGLE_MAPS_KEY`, som bygget läser. Regeln i CLAUDE.md (inga
+hemligheter i appen) ändras i samma commit som nyckeln byggs in.
+
+*Firebase* är påslaget i samma projekt, utan Google Analytics: Halkvakt mäter inte förarna genom Google. Appens
+inställningsfil ligger som hemligheten `GOOGLE_SERVICES_JSON` och inte i repot. Serverns nyckel för att skicka notiser
+ligger som `FCM_SERVICE_ACCOUNT` hos Supabase och hos Axel, som Apples (DECISIONS #924). Nya Google-konton förbjuder att
+sådana nycklar skapas; spärren (`iam.disableServiceAccountKeyCreation`) är hävd för projektet `halkvakt` och bara där.
+
+*Googles villkor för Europa* (lästa 21/11 i Googles egna sammanfattningar, avtalstexten läses före bygget): av det Places
+ger får bara koordinater och plats-id användas tillsammans med en karta, och av det Routes ger får vägbeskrivningen och
+stegen inte användas med en karta. Sökskärmen har ingen karta, och appen ritar bara vägens linje.
+
+**Kvar:** bygget (Claude); kostnadstaket innan kontot uppgraderas, senast när gratisperioden går ut (frist); Plays
+datablankett när bygget är klart; telefonprovet.
+
+**Alternativ.** Vänta med Firebase till efter släppet: då går apparna isär, och Axel ville ha dem i takt.
+
+**Stomdokument:** APP — Android: kartan och Planera resa och platsdelningen
