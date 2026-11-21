@@ -3523,3 +3523,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   som flyttade kuvösens klon ur `kuvos/`). Ingen variant klarade villkoren; läsningen i halkvakt-kuvos F83. Inget i motorn eller appen ändrat.
 - 21/11 UTC (Claude): DECISIONS #948 (Bengt: *"flytta inte"*): missarna i kort #675 står kvar under *Ytan i modellen* i olycksfacit;
   orden om *Täckningen* i #947 ersatta. Ingen kod ändrad.
+- 21/11 UTC (Claude): Kort #676. PR #1789 ihopslagen (Bengt: *"slå ihop 1789"*) och `olycksfacit` driftsatt (44934272071): veckans
+  ärende räknar missarna med och utan oberoende facit från 2026-V47 (§14, DECISIONS #946). Räckvidden skuggad som en fara per sträcka
+  (DECISIONS #949, körning 44932577187): A2 på 26,8 % av körningarna med 3 256 yttranden mot dagens 20,6 % och 3 546; förslag 2 som en
+  fara 52,0 %. Underlaget §6b.

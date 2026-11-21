@@ -19365,3 +19365,17 @@ villkoren (halkvakt-kuvos F83). Missarna förs till området *Täckningen* i oly
 **Inte ändrat.** Olycksfacits kod och §9.3. Den signerade förregistreringen.
 
 **Stomdokument:** inga — ingen kod, regel eller text i stomdokumenten ändras; olycksfacit klassar som förut.
+
+## #949 (21/11 2026) Fuktskuggan: räckvidden skuggad som en fara per sträcka (kort #676)
+
+**Beslut** (Bengt 21/11: *"på 2 gör vi ny skugga"*). `scripts/fuktskuggan-takt.ts` spelar också upp räckvidden ensam och förslag 2 med
+stationer längs rutten inom 15 km från varandra som en fara, vid den första stationen, som halkzonen (DECISIONS #624). Körningen
+44932577187 (6–21/11, 3 620 körningar): räckvidden som en fara ger A2 på 26,8 % av körningarna med 3 256 yttranden och 720 följder inom
+60 s, mot dagens 20,6 %, 3 546 och 804; förslag 2 som en fara 52,0 %, 6 610 och 1 160. Underlaget §6b och rekommendationen §7.3 i
+`docs/FORSLAG-FUKTREGELN-2026-11-21.md`.
+
+**Alternativ.** Att döma räckvidden på skuggan utan zon (1,8 gånger så många yttranden), eller att slå ihop stationerna i snapshoten.
+
+**Inte ändrat.** Motorn, snapshoten och appen. Ett beslut om räckvidden i motorn väntar på Bengt och Axel.
+
+**Stomdokument:** MAT §2 fuktskuggan i motorn med en fara per sträcka

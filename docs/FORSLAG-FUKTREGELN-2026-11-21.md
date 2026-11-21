@@ -101,6 +101,27 @@ körningar (`fuktskuggan-takt.yml`, körningarna 44915775051 och 44920836258 med
   Gävle–Sundsvall 94 %. En varning som hörs på varje resa säger inte längre något (*tystnad är en funktion*).
 - **I söder** stiger den från 1–2 % till 7–16 % av körningarna på Skånes rutter och från 14–18 % till 37–58 % på E4 och E18.
 
+## 6b. Räckvidden som en fara per sträcka (Bengt 21/11: *"på 2 gör vi ny skugga"*)
+
+Samma tjugo rutter och 3 620 körningar (körning 44932577187). Stationer längs rutten inom 15 km, där nästa ligger högst 15 km längre
+fram, är en fara som talar vid den första stationen, som halkzonen (DECISIONS #624). Vilka stationer som står på är oförändrat: den
+fångar samma olyckor som utan zonen (35 av 55 TROLIG-missar för räckvidden, två av de sju med oberoende facit).
+
+| | A2-yttranden | körningar med A2 | yttranden per körning | följder inom 60 s |
+| :-- | --: | --: | --: | --: |
+| A2 i dag | 3 546 | 20,6 % | 1,0 | 804 |
+| bara räckvidden | 6 334 | 27,0 % | 1,7 | 1 739 |
+| **bara räckvidden, en fara** | 3 256 | 26,8 % | 0,9 | 720 |
+| förslag 2 | 11 577 | 52,2 % | 3,2 | 2 658 |
+| **förslag 2, en fara** | 6 610 | 52,0 % | 1,8 | 1 160 |
+
+- **Räckvidden som en fara kostar inget i takt.** Den talar på 27 % av körningarna mot 21 % i dag, men med färre yttranden och färre
+  följder inom en minut än dagens A2. Zonen slår också ihop dagens stationer som ligger tätt.
+- **Förslag 2 som en fara** halverar nästan yttrandena men står kvar på 52 % av körningarna, och i norr på 94–97 % (E14, E4
+  Sundsvall–Umeå, Rv70, E4 Gävle–Sundsvall). Daggen är problemet, inte räckvidden.
+- **Svagheten:** en kedja kan vara lång, och föraren hör den en gång, vid början. Skuggan mäter inte hur långt efter första stationen
+  halkan ligger.
+
 ## 7. Claudes rekommendation
 
 ### Varningsregeln (A2)
@@ -109,10 +130,10 @@ körningar (`fuktskuggan-takt.yml`, körningarna 44915775051 och 44920836258 med
 2. **Daggpunkten avgörs i R-B:s domslut (frist 10/12), inte här.** R-B1 klarar och R-B2 faller (DECISIONS #794), och larmtiden och
    förarsidan säger samma sak: daggen ger många nya varningar och få av dem följs av halka. Väljer Bengt och Axel att ändå ta in den
    är *rimfrost* (dagg bara vid ytan ≤ 0 °C) formen, som märkt beta som efterhalkan (S3), aldrig som A2:s vanliga röst.
-3. **Räckvidden är värd att pröva vidare, men inte som den står.** Den ensam tar 35 av 55 TROLIG-missar (två av de sju med oberoende
-   facit) och ökar inte larmtiden vid stationen, men föraren hör 1,8 gånger så många A2-yttranden, eftersom flera stationer längs samma
-   sträcka talar var för sig. Nästa steg är en skugga där stationer inom 15 km från varandra med samma läge är en fara (som halkzonen,
-   DECISIONS #624), uppspelad med samma flöde, innan Bengt och Axel tar ställning.
+3. **Räckvidden som en fara per sträcka (§6b).** Den tar samma 35 av 55 TROLIG-missar (två av de sju med oberoende facit), höjer
+   andelen körningar med A2 från 21 till 27 %, och föraren hör färre A2-yttranden än i dag. Claudes rekommendation är att ta in den
+   i motorn med dagens fukt, i en egen vektor för zonen och efter Bengts och Axels ord, och att följa missarna med oberoende facit i
+   veckans sammanställning (§14) efteråt.
 
 ### Regeln i olycksfacit
 
@@ -126,5 +147,5 @@ körningar (`fuktskuggan-takt.yml`, körningarna 44915775051 och 44920836258 med
 
 ## 8. Vad som behöver ett ord
 
-- Bengt och Axel: punkt 1–2 (varningsregeln), om skuggan i punkt 3 ska byggas, och punkt 5 (två rader i veckans sammanställning).
+- Bengt och Axel: punkt 1–2 (varningsregeln) och punkt 3 (räckvidden som en fara per sträcka i motorn). Punkt 5 är förregistrerad (§14, DECISIONS #946), och Axels signatur saknas.
 - Bengt: R-B:s domslut, som redan har en frist 10/12.
