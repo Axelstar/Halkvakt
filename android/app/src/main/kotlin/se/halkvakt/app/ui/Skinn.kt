@@ -248,7 +248,7 @@ fun FloatingTabBar(tab: Int, onTab: (Int) -> Unit) {
 /* ---------- 01 REDO och 01b REDO EFTER TUR ---------- */
 
 @Composable
-fun RedoScreen(activity: MainActivity, overst: @Composable () -> Unit) {
+fun RedoScreen(activity: MainActivity, planera: () -> Unit = {}, overst: @Composable () -> Unit) {
     val ctx = LocalContext.current
     val historik by Prefs.history(ctx).collectAsStateWithLifecycle(initialValue = emptyList())
     val start by Prefs.tripStart(ctx).collectAsStateWithLifecycle(initialValue = 0L)
@@ -334,6 +334,8 @@ fun RedoScreen(activity: MainActivity, overst: @Composable () -> Unit) {
         }
         Spacer(Modifier.height(32.dp))
         YellowPill("Starta vakten", play = true) { activity.onToggle() }
+        Spacer(Modifier.height(12.dp))
+        NeutralPill("Planera resa", planera)   // kort #659
         Problemrader(activity)
         MonoLabel(if (tur.isEmpty()) "Ingen tur än" else "${tur.size} ${if (tur.size == 1) "varning" else "varningar"} · visas tills nästa tur",
             Muted2, modifier = Modifier.padding(top = 16.dp))

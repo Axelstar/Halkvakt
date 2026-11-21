@@ -6,7 +6,7 @@ android {
         applicationId = "se.halkvakt.app"
         minSdk = 26; targetSdk = 36
         // Femma åtta (4), DECISIONS #377: i takt med iOS FÖRE första Play-uppladdningen, som låser versionCode-spåret.
-        versionCode = 58; versionName = "0.4.1"   // 20/11: modd som halkord (DECISIONS #915), i takt med iOS 0.4.1 (58)
+        versionCode = 72; versionName = "0.4.1"   // 21/11: Planera resa (kort #659, DECISIONS #943), i takt med iOS 0.4.1 (72)
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // Betatestet bara i testbyggen (Bengt 22/10, DECISIONS #681): Android kan inte se ett testspår i Google Play, så
         // produktionens AAB byggs med -Phalkvakt.betatest=false och saknar då brytaren. Allt annat är ett testbygge.
@@ -15,6 +15,7 @@ android {
         // låst i Google Cloud till appens paket, signeringsnycklarna och tre tjänster. Utan hemligheten byggs appen med en tom
         // nyckel, och Planera resa får då inga svar.
         buildConfigField("String", "GOOGLE_MAPS_KEY", "\"${System.getenv("GOOGLE_MAPS_KEY") ?: ""}\"")
+        manifestPlaceholders["GOOGLE_MAPS_KEY"] = System.getenv("GOOGLE_MAPS_KEY") ?: ""   // kartan läser den ur manifestet
     }
     // Orterna och kommunerna (Sverigedata.kt) läggs i appen ur data/, så att det finns en kopia.
     sourceSets.getByName("main") {
@@ -53,6 +54,7 @@ android {
 dependencies {
     implementation(project(":engine"))
     implementation("com.google.android.gms:play-services-location:21.3.0")
+    implementation("com.google.android.gms:play-services-maps:19.0.0")   // kartan på Planerad resa (kort #659, DECISIONS #941)
     implementation(platform("androidx.compose:compose-bom:2024.06.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.material3:material3")
