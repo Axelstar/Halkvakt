@@ -56,6 +56,15 @@ regeln läser samma station. De oberoende måtten är TYDLIG (halkordet i texten
 2 91 av 291 tysta oklara mot 6 i dag, men vi vet inte hur många av dem som var halka. Basfrekvensen i sql/138 visar störst överskott av
 olyckor vid ytan 0 till +3 °C med fukt, inte vid kall yta (DECISIONS #939).
 
+## 5b. Daggpunkten är rimfrostens gren, och R-B har redan läst den
+
+Daggdelen av förslag 2 är samma sak som rimfrostens gren i A2 (kort #46, TROSKLAR-RIMFROST, fastställt 12/9). Dess uppspelning R-B
+lästes i domläget 5/11 (DECISIONS #794): grenen fångar omkring 200 bekräftade halktillfällen på en månad där punktmotorn tiger (R-B1
+klarar i alla tolv kombinationer), men omkring 19 av 20 av dess episoder följs inte av en omklassning till halka inom 90 minuter (R-B2
+faller i alla tolv, 94–96 % mot taket 25 %). Följden då var *ingen röst och ingen motorkod för stationernas gren*, och domslutet väntar
+på Bengt (frist 10/12, `r-b-dom`). Larmtiden här säger samma sak med ett annat mått: daggen dubblar nästan tiden larmet står på, och
+nästan bara vid kall yta. Ett beslut om daggpunkten i A2 är därför ett domslut om R-B, och regel L gäller för det.
+
 ## 6. Vad föraren skulle höra
 
 *Körs: `fuktskuggan-takt.yml` spelar upp skuggans tjugo rutter varje halvtimme sedan 6/11. Avsnittet fylls när körningen är klar.*

@@ -104,3 +104,11 @@ SELECT grupp, count(*) AS olyckor, count(*) FILTER (WHERE a2_5km) a2_5km, count(
        count(*) FILTER (WHERE rim0) rim0, count(*) FILTER (WHERE y05) y05, count(*) FILTER (WHERE m05) m05, count(*) FILTER (WHERE m1) m1,
        count(*) FILTER (WHERE natt_v) natt
 FROM om GROUP BY ROLLUP (grupp) ORDER BY grupp NULLS LAST;
+
+\echo 'Missarna mot facit som inte bygger på stationen: TROLIG-missarna efter Trafikverkets väglag efteråt (halka_efter, §3)'
+SELECT a.grupp, coalesce(o.halka_efter::text, 'okänt') AS halka_efter, count(*) AS olyckor,
+       count(*) FILTER (WHERE m.a2_5km) a2_5km, count(*) FILTER (WHERE m.a2) a2_15km, count(*) FILTER (WHERE m.f2) f2,
+       count(*) FILTER (WHERE m.rim0) rim0
+FROM om m JOIN oa a USING (deviation_id) JOIN olycksfacit o USING (deviation_id)
+WHERE a.grupp IN ('1 halka, varnade', '2a halka, tyst, TYDLIG', '2b halka, tyst, TROLIG', '4 oklar, tyst')
+GROUP BY 1, 2 ORDER BY 1, 2;
