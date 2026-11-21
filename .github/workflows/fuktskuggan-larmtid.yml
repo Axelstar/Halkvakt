@@ -1,4 +1,4 @@
-# Larmtiden för fuktregeln (DECISIONS #941, Bengt 21/11): var och när förslag 2 står på, och varianter som kortar den, mot olycksfacit.
+# Larmtiden för fuktregeln (DECISIONS #942, Bengt 21/11): var och när förslag 2 står på, och varianter som kortar den, mot olycksfacit.
 # Läser säsongen från 6/11 ur hinken och driften i den tillfälliga databasen (kort #323) och skriver bara aggregat
 # (scripts/fuktskuggan-larmtid.sql); loggen är publik (#498).
 name: fuktskuggan-larmtid

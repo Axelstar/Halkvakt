@@ -1,6 +1,6 @@
 # Fuktregeln för A2 — underlag för Bengts och Axels beslut (21/11 2026)
 
-**Läge:** FÖRSLAG. Inget är ändrat i motorn, snapshoten eller appen. Underlaget kommer ur skuggkörningen (DECISIONS #940, #941):
+**Läge:** FÖRSLAG. Inget är ändrat i motorn, snapshoten eller appen. Underlaget kommer ur skuggkörningen (DECISIONS #940, #942):
 `sql/138` och `fuktskuggan.yml` (stationstimmarna och olyckorna), `fuktskuggan-larmtid.yml` (larmtiden och varianterna, körning
 44897544008) och `fuktskuggan-takt.yml` (vad föraren skulle höra längs skuggans rutter). Säsongen 6–21/11, 295 387 stationstimmar,
 811 klassade olyckor utan dubbletter och vilt.

@@ -1,4 +1,4 @@
--- LARMTIDEN FÖR FUKTREGELN (Bengt 21/11: krutet på fuktregeln; DECISIONS #941). Var och när förslag 2 står på, och om det går att korta
+-- LARMTIDEN FÖR FUKTREGELN (Bengt 21/11: krutet på fuktregeln; DECISIONS #942). Var och när förslag 2 står på, och om det går att korta
 -- utan att tappa missarna. Läser den tillfälliga databasen (kort #323) med säsongens väder och olycksfacit; skriver bara aggregat,
 -- eftersom sammanfattningen är publik (#498): ingen olycka, ingen station och ingen plats finare än breddgradsbandet.
 --

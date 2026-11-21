@@ -19223,3 +19223,27 @@ datablankett när bygget är klart; telefonprovet.
 **Alternativ.** Vänta med Firebase till efter släppet: då går apparna isär, och Axel ville ha dem i takt.
 
 **Stomdokument:** APP — Android: kartan och Planera resa och platsdelningen
+
+## #942 (21/11 2026) Fuktskuggan i motorn: förslag 2 spelas upp längs skuggans rutter, mot dagens A2
+
+**Beslut** (Bengt 21/11: *"jag vill att du sätter upp skuggkörningen och jag utgår från att den kan göra backtester på det material
+vi redan har samlat"*). Förslag 2 ur analysen 21/11 (A2 läser stationer inom 15 km, och fukt är nederbörd eller ytan under
+daggpunkten, ytgränsen +1 °C som i dag) skuggas på två sätt, som delar arbetet: `sql/138` räknar stationstimmarna och olyckorna
+(DECISIONS #940), och `scripts/fuktskuggan-takt.ts` räknar det föraren skulle höra.
+1. **Uppspelningen.** Varje halvtimme i fönstret körs skuggans tjugo huvudrutter (ROUTES, längs vägnätet, 80 km/h, som skuggmotorn)
+   genom motorn tre gånger: dagens A2 (BAS), samma plats med daggpunkten (DAGG) och förslag 2, där varje station inom 15 km från
+   rutten flyttas till närmaste punkt på rutten (FORSLAG2). A1:s sträckor är med i alla tre, så att takten är bilens. Vakterna är
+   driftens, importerade. Broarna och efterhalkan (S3) är inte med: förslaget rör dem inte.
+2. **Utskriften.** Aggregat per variant, dygn och rutt: körningar, A2-yttranden, andelen körningar med A2, nya A2 (en station
+   basen inte talade om i samma körning), följder inom 60 s och tätaste följd (DECISIONS #200). Ingen station och ingen tid
+   finare än dygnet; repot är publikt.
+3. **Flödet** `fuktskuggan-takt.yml` läser fönstret ur hinken och driften (kort #323) med knappen, upp till 70 dygn, och varje måndag
+   den gångna veckan. Backtestet från 6/11 kördes på grenen.
+4. **Motorn, snapshoten och appen ändras inte.** Ändras A2 sker det med ett eget beslut av Bengt och Axel.
+
+**Alternativ.** En variant i skuggmotorn i driften (som väg C, sql/046): kräver daggpunkten i snapshoten eller en ny läsning i
+funktionen, en ny tabell och en deploy, och kan inte se bakåt. Uppspelningen ur arkivet ger samma svar på redan insamlat material
+och rör ingenting som kör. *15 km som räckvidd i motorn* kan också läsas som att motorn talar när föraren är inom 15 km från en
+station; flytten till närmaste punkt på rutten ger samma sak en gång per station och körning, och motorns disciplin står kvar.
+
+**Stomdokument:** MAT (fuktskuggan i motorn, en mätning bredvid A2)

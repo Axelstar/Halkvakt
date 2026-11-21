@@ -1,5 +1,5 @@
 // FUKTSKUGGAN I MOTORN — vad A2 skulle ha sagt längs skuggans rutter med fuktregeln (Bengt 21/11: "jag vill att du sätter upp
-// skuggkörningen och jag utgår från att den kan göra backtester på det material vi redan har samlat"; DECISIONS #941).
+// skuggkörningen och jag utgår från att den kan göra backtester på det material vi redan har samlat"; DECISIONS #942).
 // EN SKUGGA, ALDRIG EN RÖST: skriptet läser arkivet och skriver bara ut räkningar. Ingen motor, ingen snapshot och ingen app ändras.
 //
 // FRÅGAN. Förslag 2 ur analysen 21/11: A2 läser stationer inom 15 km i stället för stationens egen punkt, och fukt är nederbörd
