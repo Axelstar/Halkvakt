@@ -86,7 +86,11 @@ struct ResstrackorTests {
         // Is på en rad och fläckvis is på en annan: då är det inte bara fläckvis. Vått och torrt är ingen halka i sig.
         #expect(Resstrackor.sorter([rad(.halka, 1, text: "Is"), rad(.halka, 2, text: "fläckvis Is, fläckvis Torrt"),
                                     rad(.halka, 3, text: "Is med bart i hjulspår")]) == "Is.")
-        #expect(Resstrackor.sorter([rad(.halka, 1, text: "Våt")]) == "Halt väglag rapporterat.")
+        #expect(Resstrackor.sorter([rad(.halka, 1, text: "Våt"), rad(.halka, 2, text: "fläckvis Våt, fläckvis Torrt")])
+                == "Vått. Besvärligt väglag enligt Trafikverket.")
+        #expect(Resstrackor.sorter([rad(.halka, 1, text: "fläckvis Våt, fläckvis Torrt")]) == "Fläckvis vått. Besvärligt väglag enligt Trafikverket.")
+        #expect(Resstrackor.sorter([rad(.halka, 1, text: "Våt"), rad(.halka, 2, text: "Lössnö")]) == "Lössnö.")
+        #expect(Resstrackor.sorter([rad(.halka, 1, text: "halka rapporterad på sträckan")]) == "Halt väglag rapporterat.")
         #expect(Resstrackor.sorter([rad(.halka, 1, text: "Packad snö, Lössnö, Is")]) == "Is, packad snö och lössnö.")
     }
 

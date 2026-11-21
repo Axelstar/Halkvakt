@@ -109,7 +109,8 @@ vid varje större ort och slås inte ihop: *Halt på 4 ställen* med etiketten *
 moddsträngar. Frysrisk vid en mätstation.*; en lugn sträcka säger *Inget halt rapporterat.* Stapeln är grå. *ÖVRIGT PÅ VÄGEN*
 har en rad per sort (*OLYCKOR*, *VÄGARBETEN*, *FARTKAMEROR*, *HINDER*, *TRAFIK*) med raden *Öppna en sträcka för att se vad
 det är.* Innehållet slutar ovanför flikraden. Startsidans karta har samma märken (gul prick för halka, gul ring för frysrisk,
-vit prick för föraren), teckenförklaringen *HALKA · FRYSRISK · DU* och inga fartkameror.
+vit prick för föraren), teckenförklaringen *HALKA · FRYSRISK · DU* och inga fartkameror. Från (72) (DECISIONS #934) säger en sträcka
+vars rader bara bär ordet vått *Vått. Besvärligt väglag enligt Trafikverket.*
 Ingen skärmbild än. **Till och med (67):**
 vägen som en gul linje på kartan, längden och *RESAN SPARAS INTE*, samma rapport som en sparad resa (*Läget från*,
 *Rapporten från*, *LÄNGS VÄGEN JUST NU*, *HALKVAKT TROR · BETA*), sedan *NÄR ÅKER DU?* med vippan *Påminn mig före
