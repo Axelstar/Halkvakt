@@ -28,6 +28,9 @@ export type Olycka = {
   art: string | null;     // olycksarten (sql/110, D3); null före sql/110
   smavag: string | null;  // småvägsröstens lager vid starten (sql/110, C): varnar, torr, fryser inte, …; null utan lagret
   flackvisVat: boolean;   // K:s sträcka hade fläckvis Våt i A1:s text (K-lagrets flackvis_vat)
+  ytaMin?: number | null; // stationens lägsta yta (sql/110), för sidan Olyckor (DECISIONS #938); null utan station
+  fuktEfter?: boolean;    // fukt vid stationen (sql/110)
+  rimfrostEfter?: boolean;// rimfrost vid stationen (sql/110)
 };
 
 const KLASSER = ["TYDLIG", "TROLIG", "OKLAR", "INTE"] as const;
