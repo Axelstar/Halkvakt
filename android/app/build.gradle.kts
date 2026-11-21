@@ -11,6 +11,15 @@ android {
         // Betatestet bara i testbyggen (Bengt 22/10, DECISIONS #681): Android kan inte se ett testspår i Google Play, så
         // produktionens AAB byggs med -Phalkvakt.betatest=false och saknar då brytaren. Allt annat är ett testbygge.
         buildConfigField("boolean", "BETATEST_TILLATEN", (project.findProperty("halkvakt.betatest") ?: "true").toString())
+        // Google Maps-nyckeln (DECISIONS #941): läses ur hemligheten GOOGLE_MAPS_KEY vid bygget och står aldrig i repot. Den är
+        // låst i Google Cloud till appens paket, signeringsnycklarna och tre tjänster. Utan hemligheten byggs appen med en tom
+        // nyckel, och Planera resa får då inga svar.
+        buildConfigField("String", "GOOGLE_MAPS_KEY", "\"${System.getenv("GOOGLE_MAPS_KEY") ?: ""}\"")
+    }
+    // Orterna och kommunerna (Sverigedata.kt) läggs i appen ur data/, så att det finns en kopia.
+    sourceSets.getByName("main") {
+        assets.srcDir(rootProject.file("../data/sverige"))
+        assets.srcDir(rootProject.file("../data/kommuner"))
     }
     sourceSets.getByName("androidTest") {
         // Replays the SAME frozen fixture as the TS and Kotlin JVM suites — one truth.

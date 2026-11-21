@@ -82,7 +82,9 @@ Define success criteria. Loop until verified.
 - Battery budget on device: < 8 %/h screen-off while active. Treat regressions as
   release blockers.
 - Secrets (Trafikverket key etc.) live in GitHub Actions secrets / local `.env`; never
-  in code, snapshots, or the client app.
+  in code, snapshots, or the client app. One exception (Axel 21/11, DECISIONS #941): the Google Maps key in the Android app,
+  which the map requires. It is locked in Google Cloud to the app's package, the signing keys and three services. It is read
+  from the secret `GOOGLE_MAPS_KEY` when the app is built and is never written in the code.
 - Log significant choices in DECISIONS.md (date, decision, alternatives, why). Varje nytt beslut slutar med raden
   `**Stomdokument:** MAT, SYS` eller `**Stomdokument:** inga — skälet` (DOKUMENTSYNKEN nedan; stomvakten i md-vakt fäller annars). Ett beslut = ett
   unikt nummer, nästa är högsta + 1 (`scripts/beslutsnumren.ts` i CI fäller dubbletter). Hänvisa
