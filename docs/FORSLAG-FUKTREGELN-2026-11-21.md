@@ -82,8 +82,49 @@ Med det oberoende facit är missarna sju på säsongen, inte 56. Förslag 2 tar 
 
 ## 6. Vad föraren skulle höra
 
-*Körs: `fuktskuggan-takt.yml` spelar upp skuggans tjugo rutter varje halvtimme sedan 6/11. Avsnittet fylls när körningen är klar.*
+Skuggans tjugo huvudrutter (längs vägnätet, 80 km/h) spelades upp genom motorn varannan timme 6–21/11, 181 tidpunkter och 3 620
+körningar (`fuktskuggan-takt.yml`, körningarna 44915775051 och 44920836258 med räckvidden ensam). A1:s sträckor talar i samma körningar, så takten är bilens.
+
+| | A2-yttranden | körningar med A2 | yttranden per körning | följder inom 60 s |
+| :-- | --: | --: | --: | --: |
+| A2 i dag | 3 546 | 20,6 % | 1,0 | 804 |
+| med daggpunkten (samma räckvidd) | 6 325 | 40,3 % | 1,7 | 1 176 |
+| bara räckvidden (15 km, dagens fukt) | 6 334 | 27,0 % | 1,7 | 1 739 |
+| förslag 2 (15 km och daggpunkten) | 11 577 | 52,2 % | 3,2 | 2 658 |
+
+- **För föraren är räckvidden inte gratis.** En station står på lika länge, men inom 15 km når den mycket mer väg, och varje station
+  talar för sig. Räckvidden ensam ger A2 på 27 % av körningarna mot 21 % i dag, men 1,8 gånger så många yttranden. Förslag 2 ger
+  drygt tre gånger så många A2-yttranden som i dag och tre gånger så många följder inom en minut.
+- **Daggen talar de kalla, torra nätterna.** 6–10/11 teg A2 nästan helt (0–3 % av körningarna), men med daggpunkten talade den på
+  20–58 % och förslag 2 på 25–73 %. De dygnen kom regnet och snön inte, och det är R-B:s nätter.
+- **I norr talar förslag 2 på nästan varje körning:** E14 Sundsvall–Åre 97 %, E4 Sundsvall–Umeå 96 %, Rv70 Enköping–Mora 96 %, E4
+  Gävle–Sundsvall 94 %. En varning som hörs på varje resa säger inte längre något (*tystnad är en funktion*).
+- **I söder** stiger den från 1–2 % till 7–16 % av körningarna på Skånes rutter och från 14–18 % till 37–58 % på E4 och E18.
 
 ## 7. Claudes rekommendation
 
-*Skrivs när förarsidan är läst.*
+### Varningsregeln (A2)
+
+1. **Inte förslag 2 som det står.** Det mer än tredubblar hur ofta föraren hör A2, och i norr talar den på nästan varje resa.
+2. **Daggpunkten avgörs i R-B:s domslut (frist 10/12), inte här.** R-B1 klarar och R-B2 faller (DECISIONS #794), och larmtiden och
+   förarsidan säger samma sak: daggen ger många nya varningar och få av dem följs av halka. Väljer Bengt och Axel att ändå ta in den
+   är *rimfrost* (dagg bara vid ytan ≤ 0 °C) formen, som märkt beta som efterhalkan (S3), aldrig som A2:s vanliga röst.
+3. **Räckvidden är värd att pröva vidare, men inte som den står.** Den ensam tar 35 av 55 TROLIG-missar (två av de sju med oberoende
+   facit) och ökar inte larmtiden vid stationen, men föraren hör 1,8 gånger så många A2-yttranden, eftersom flera stationer längs samma
+   sträcka talar var för sig. Nästa steg är en skugga där stationer inom 15 km från varandra med samma läge är en fara (som halkzonen,
+   DECISIONS #624), uppspelad med samma flöde, innan Bengt och Axel tar ställning.
+
+### Regeln i olycksfacit
+
+4. **Gör inte facit likt regeln.** TROLIG läser redan 15 km och rimfrost vid närmaste station (§4). Samma station både varnar och
+   avgör facit, och då bevisar en fångad miss bara att regeln och klassningen är lika.
+5. **Döm A2-ändringar på det oberoende facit**: TYDLIG, Trafikverkets väglag efteråt (`halka_efter`) och, när de finns, kamerabilderna
+   (kamerafacit). Förslag: veckans sammanställning (§9) visar missarna i två rader, *med oberoende facit* och *bara på stationen*, och
+   en ändring av A2 prövas på den första. Det är en ändring av §9 och kräver båda signaturerna; klasserna i §4 rörs inte.
+6. **Vänta med att ändra TROLIG.** Att ta bort rimfrosten ur TROLIG gör färre olyckor till halka, alltså en lättnad efter sett utfall
+   (regel L). Det behövs inte för punkt 5.
+
+## 8. Vad som behöver ett ord
+
+- Bengt och Axel: punkt 1–2 (varningsregeln), om skuggan i punkt 3 ska byggas, och punkt 5 (två rader i veckans sammanställning).
+- Bengt: R-B:s domslut, som redan har en frist 10/12.

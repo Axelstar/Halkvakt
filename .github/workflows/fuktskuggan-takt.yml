@@ -13,12 +13,12 @@ on:
         description: "Sista dygnet (ÅÅÅÅ-MM-DD). Tomt = i går"
         required: false
         default: ""
+      steg:
+        description: "Ett stickprov var N:e minut (30, 60, 120 …). Varje halvtimme i 15 dygn hinner inte på fem timmar"
+        required: false
+        default: "120"
   schedule:
     - cron: "40 6 * * 1"
-  # TILLFÄLLIGT, tas bort före sammanslagningen: backtestet från 6/11 körs på grenen (knappen finns först på main).
-  push:
-    branches: [claude/project-thread-cxpfny]
-    paths: [scripts/fuktskuggan-takt.ts, .github/workflows/fuktskuggan-takt.yml]
 permissions:
   contents: read
 jobs:
@@ -36,7 +36,6 @@ jobs:
         run: |
           set -euo pipefail
           FRAN="${{ inputs.fran }}"; TILL="${{ inputs.till }}"
-          [ "${{ github.event_name }}" != push ] || FRAN=2026-11-06
           [ -n "$FRAN" ] || FRAN=$(date -u -d '7 days ago' +%F)
           [ -n "$TILL" ] || TILL=$(date -u -d 'yesterday' +%F)
           # Arkivets fönster räknas bakåt från i dag, med nio dygn till: karantänen läser de sju dygnen före varje rad.
@@ -49,7 +48,7 @@ jobs:
       - shell: bash
         run: |
           echo '```' >> "$GITHUB_STEP_SUMMARY"
-          node --experimental-strip-types scripts/fuktskuggan-takt.ts "${{ steps.fonster.outputs.fran }}" "${{ steps.fonster.outputs.till }}" --steg "${{ github.event_name == 'push' && '120' || '30' }}" --json "$RUNNER_TEMP/fuktskuggan-takt.json" | tee -a "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/fuktskuggan-takt.ts "${{ steps.fonster.outputs.fran }}" "${{ steps.fonster.outputs.till }}" --steg "${{ inputs.steg || '120' }}" --json "$RUNNER_TEMP/fuktskuggan-takt.json" | tee -a "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
         env: { DATABASE_URL: "${{ env.TILLFALLIG_URL }}" }
       - uses: actions/upload-artifact@v4

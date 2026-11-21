@@ -4,10 +4,6 @@
 name: fuktskuggan-larmtid
 on:
   workflow_dispatch:
-  # TILLFÄLLIGT, tas bort före sammanslagningen: körs på grenen (knappen finns först på main).
-  push:
-    branches: [claude/project-thread-cxpfny]
-    paths: [scripts/fuktskuggan-larmtid.sql, .github/workflows/fuktskuggan-larmtid.yml]
 permissions:
   contents: read
 jobs:
