@@ -270,7 +270,7 @@ fun RedoScreen(activity: MainActivity, overst: @Composable () -> Unit) {
     val pass by remember { Prefs.vaktPass(ctx) }.collectAsStateWithLifecycle(initialValue = 0)
     val tipsaDold by remember { Prefs.tipsaDold(ctx) }.collectAsStateWithLifecycle(initialValue = true)
     val kor by GuardService.runningFlow.collectAsStateWithLifecycle()
-    val tipsa = !spara && !erbjudRad && Tipsa.visaKortet(pass, tipsaDold, kor)
+    val tipsa = Tipsa.KORTET_VISAS && !spara && !erbjudRad && Tipsa.visaKortet(pass, tipsaDold, kor)
     val tur = remember(historik, start, slutMs) {
         if (start <= 0L || slutMs < start) emptyList() else historik.filter { it.t in start..slutMs }.sortedBy { it.t }
     }

@@ -10,6 +10,7 @@ import se.halkvakt.engine.KandidatHazard
 import se.halkvakt.engine.PointHazard
 import se.halkvakt.engine.SegmentHazard
 import se.halkvakt.engine.SmavagHazard
+import se.halkvakt.engine.frysriskGaller
 import kotlin.math.roundToInt
 
 data class NearbyItem(val kind: HazardKind, val distM: Double, val secondary: String?)
@@ -25,6 +26,8 @@ object Nearby {
                 if (h is KandidatHazard) return@mapNotNull null
                 // Småvägsrösten (#828) inte heller: en modell på vägar utan mätning, som K.
                 if (h is SmavagHazard) return@mapNotNull null
+                // Frysrisken står bara när den uppfyller röstens regel (DECISIONS #922): filen bär varje station på +3 eller kallare.
+                if (h is PointHazard && h.kind == HazardKind.ICING_POINT && !h.meta.frysriskGaller()) return@mapNotNull null
                 val d = distanceM(h, lon, lat)
                 if (d > MAX_M) null else NearbyItem(h.kind, d, secondary(h))
             }

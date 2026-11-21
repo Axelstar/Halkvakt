@@ -12,6 +12,8 @@ enum Tipsa {
 
     /// Kortet på Redo.: efter femte avslutade vaktpasset, tills föraren tipsat eller tryckt Inte nu. Aldrig medan vakten kör.
     static let passForeKortet = 5
+    /// Kortet visas inte just nu (DECISIONS #920, Axel 20/11: felplacerat på startsidan). Raden under Inställningar står kvar.
+    static let kortetVisas = false
     static func visaKortet(pass: Int, dold: Bool, vaktenKor: Bool) -> Bool {
         !dold && !vaktenKor && pass >= passForeKortet
     }

@@ -15,7 +15,7 @@
 // POST {del:"mallar", gor:"spara", slug, grupp, rubrik, text}
 // POST {del:"mallar", gor:"tabort", slug}
 // GET  ?del=social                     (menyval social) → [{namn, typ, pass, postas, antal, text, text_ig, status, andrad, andrad_av}]
-//                                       utkasten som väntar eller är slängda och inte har postats (Halkvakt sql/131, DECISIONS #918)
+//                                       utkasten som väntar eller är slängda och inte har postats (Halkvakt sql/134, DECISIONS #937)
 // POST {del:"social", gor:"spara", namn, text, textIg} → ändrar texten i ett utkast som väntar
 // POST {del:"social", gor:"slang" | "angra", namn}     → slänger utkastet, eller tar tillbaka det, fram till passet
 // POST {del:"start", kod, epost, losen} → det första kontot, en gång, mot engångskoden i admin_start. Kräver ingen inloggning.
@@ -219,7 +219,7 @@ async function andraMallar(jag: Jag, d: Record<string, unknown>) {
   return fel("okänd åtgärd", 400);
 }
 
-// Halkvakt live's day posts wait 30 minutes as drafts (Halkvakt sql/131, DECISIONS #918). Only a draft whose time has not
+// Halkvakt live's day posts wait 30 minutes as drafts (Halkvakt sql/134, DECISIONS #937). Only a draft whose time has not
 // come can change; once posta.mjs has posted it, the row says postad and is left alone.
 const UTKASTNAMN = /^\d{4}-\d{2}-\d{2}-(morgon|lunch|kvall)$/;
 const MAX_TEXT = 2200;   // Instagram's caption limit; Facebook takes more, but one limit for both keeps them comparable.

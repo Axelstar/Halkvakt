@@ -21,6 +21,7 @@ struct VaktenView: View {
     // Kort #659: kartan Nära dig, Planera en resa och den planerade resan med avresetid.
     @State private var plan = Resplan.shared
     @State private var plats: (lon: Double, lat: Double)?
+    @State private var valdFara: String?   // DECISIONS #922: faran föraren tryckt på
     @State private var visaPlanera = false
     @State private var visaPlan = false
     @Environment(\.scenePhase) private var fas
@@ -78,7 +79,7 @@ struct VaktenView: View {
             if spara { attSpara.padding(.top, 14) }
             if erbjud { erbjudKort.padding(.top, 14) }
             // DECISIONS #829: en gång, efter femte passet, och aldrig samtidigt som ett kort om resorna.
-            let tipsa = !spara && !erbjud && Tipsa.visaKortet(pass: prefs.vaktPass, dold: prefs.tipsaDold, vaktenKor: guardM.running)
+            let tipsa = Tipsa.kortetVisas && !spara && !erbjud && Tipsa.visaKortet(pass: prefs.vaktPass, dold: prefs.tipsaDold, vaktenKor: guardM.running)
             if tipsa { tipsaKort.padding(.top, 14) }
 
             // Kort #659: en planerad resa med avresetid står här tills sex timmar efter avresan.
@@ -136,7 +137,7 @@ struct VaktenView: View {
                 .multilineTextAlignment(.center).padding(.top, 8)
             // Löftet står i underrubriken när platsen saknas, annars här.
             if harPlats != nil {
-                Text("Din position skickas aldrig till Halkvakt av sig själv.")
+                Text(Platsord.lofte)
                     .font(Typo.sans(13)).foregroundStyle(Brand.faint).multilineTextAlignment(.center).padding(.top, 8)
             }
 
@@ -210,15 +211,25 @@ struct VaktenView: View {
         return nara.isEmpty ? "Inget inom sex mil just nu. \(start)" : start
     }
 
+    /// Ett tryck väljer faran, ett tryck till på samma eller bredvid kartan släpper den.
+    private func valj(_ id: String?) { valdFara = id == valdFara ? nil : id }
+
     /// Kartan, de närmaste farorna och antalet fartkameror inom sex mil.
     private func naraDig(_ nara: [NearbyItem]) -> some View {
         let kameror = harPlats.map { p in
             guardM.hazards.filter { Self.arKamera($0) && Nearby.distanceM($0, lon: p.lon, lat: p.lat) <= Nearby.maxM }.count
         } ?? 0
         return VStack(alignment: .leading, spacing: 0) {
-            NaraDigKarta(faror: guardM.hazards, plats: harPlats)
+            NaraDigKarta(faror: guardM.hazards, plats: harPlats, valt: valdFara) { valj($0) }
             // Sagt där kartan står (DECISIONS #872): kartbilderna hämtas från Apple.
+            Kartforklaring(sista: .du).padding(.top, 10).padding(.horizontal, 4)
             MonoLabel(text: "Kartan kommer från Apple", color: Brand.faint).padding(.top, 8).padding(.horizontal, 4)
+            // Faran föraren tryckt på, på kartan eller i listan (DECISIONS #922). Försvinner den ur läget försvinner kortet.
+            if let fara = guardM.hazards.first(where: { $0.id == valdFara }) {
+                FaraKort(fara: fara, distM: harPlats.map { Nearby.distanceM(fara, lon: $0.lon, lat: $0.lat) },
+                         lagetFran: guardM.lagetFran)
+                    .padding(.top, 12)
+            }
             MonoLabel(text: harPlats == nil ? "Halkan i landet just nu" : "Nära dig just nu")
                 .padding(.top, 16).padding(.bottom, 10).padding(.horizontal, 4)
             if harPlats == nil {
@@ -230,7 +241,9 @@ struct VaktenView: View {
             } else {
                 RowPanel {
                     ForEach(Array(nara.enumerated()), id: \.element.id) { i, item in
-                        NearbyRow(item: item, divider: i < nara.count - 1)
+                        Button { valj(item.id) } label: { NearbyRow(item: item, divider: i < nara.count - 1) }
+                            .buttonStyle(.plain)
+                            .accessibilityHint(item.id == valdFara ? "Döljer kortet om faran" : "Visar mer om faran")
                     }
                 }
             }
@@ -393,7 +406,7 @@ struct VaktenView: View {
     private var subtitle: String {
         // "skickas aldrig till Halkvakt av sig själv" — samma ord som Android, introduktionen och produktboken (DECISIONS #900, fråga 9):
         // "lämnar inte telefonen" (#320) blev osant med kartan från Apple (0.4.1), och "av sig själv" står kvar för betatestets facitsvar.
-        (wakes ? "Vakten vaknar själv när du kör. " : "") + "Din position skickas aldrig till Halkvakt av sig själv."
+        (wakes ? "Vakten vaknar själv när du kör. " : "") + Platsord.lofte
     }
 
     /// "HALKA · VILT · OLYCKOR · FRYSRISK · KAMEROR" — bara de källor som är på.

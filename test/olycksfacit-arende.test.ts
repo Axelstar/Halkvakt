@@ -226,3 +226,24 @@ test("E: nämnaren per klass, med INTE delad på viltet och värmen", () => {
                    "| OKLAR | 0 | 0 | – |", "| INTE, vilt | 1 | 0 | 0 % |", "| INTE, varmt | 2 | 1 | 50 % |"]) assert.ok(k.includes(r), r);
   assert.ok(k.includes("**Nämnaren**"));
 });
+
+test("§9.5 punkt 8 (DECISIONS #925): lagren tillsammans, raderna utesluter varandra och summerar till de halkkopplade", () => {
+  const sasong = [
+    o({ utfall: "VARNADE", talade: ["A1", "K"] }),
+    o({ tid: "2026-11-06T06:00:00.000Z", utfall: "VARNADE", talade: ["A1", "K", "A2"] }),   // A2 med: fortfarande "Både A1 och K"
+    o({ tid: "2026-11-06T07:00:00.000Z", utfall: "VARNADE", talade: ["A1", "A2"] }),        // bara A1, fast A2 också talade
+    o({ tid: "2026-11-06T08:00:00.000Z", utfall: "VARNADE", talade: ["K"] }),
+    o({ tid: "2026-11-06T09:00:00.000Z", utfall: "VARNADE", talade: ["A2"] }),
+    o({ tid: "2026-11-06T10:00:00.000Z" }),                                                  // tyst
+    o({ tid: "2026-11-06T11:00:00.000Z", klass: "OKLAR", utfall: "VARNADE", talade: ["K"] }), // inte halkkopplad: räknas inte
+    o({ tid: "2026-11-06T12:00:00.000Z", dubblett: true, utfall: "VARNADE", talade: ["K"] }), // dubbletten räknas inte
+  ];
+  const veckans = sasong.slice(3);
+  const k = veckaKropp("2026-V45", "2026-11-06", "2026-11-08", veckans, sasong);
+  for (const r of ["| Både A1 och K | 0 | 2 | 33 % |", "| Bara A1 | 0 | 1 | 17 % |", "| Bara K | 1 | 1 | 17 % |",
+                   "| Varken A1 eller K, men ett annat lager | 1 | 1 | 17 % |", "| Inget lager | 1 | 1 | 17 % |",
+                   "| **Summa** | 3 | 6 | 100 % |"]) assert.ok(k.includes(r), r);
+  assert.ok(k.indexOf("**Lagren tillsammans**") > k.indexOf("**Lagren vid de halkkopplade olyckorna**") &&
+            k.indexOf("**Lagren tillsammans**") < k.indexOf("**Nämnaren**"), "tabellen står mellan lagren och nämnaren");
+  assert.ok(!/pb|narmaste_pb|pb_min|frys_min/.test(k), "inga tal ur kandidaten");
+});

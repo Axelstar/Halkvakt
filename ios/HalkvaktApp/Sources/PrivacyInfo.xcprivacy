@@ -2,7 +2,9 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <!-- Apples integritetsmanifest (krav för App Store-granskning). Speglar invarianten (DECISIONS #264):
      ingen spårning; det enda som samlas in är betatestets facitsvar, som bär varnings-id och tid ⇒
-     ungefärlig plats, frivilligt, inte kopplat till person. UserDefaults = inställningar och facit i appen. -->
+     ungefärlig plats, frivilligt, inte kopplat till person. UserDefaults = inställningar och facit i appen.
+     Platsdelningen (DECISIONS #917, #918; bara i TestFlight tills den släpps): kommunen telefonen senast var i, knuten till ett
+     slumpat id som appen skapar, efter förarens ja. Därför står ungefärlig plats som kopplad, och enhets-id är med. -->
 <plist version="1.0">
 <dict>
 	<key>NSPrivacyTracking</key>
@@ -15,13 +17,25 @@
 			<key>NSPrivacyCollectedDataType</key>
 			<string>NSPrivacyCollectedDataTypeCoarseLocation</string>
 			<key>NSPrivacyCollectedDataTypeLinked</key>
-			<false/>
+			<true/>
 			<key>NSPrivacyCollectedDataTypeTracking</key>
 			<false/>
 			<key>NSPrivacyCollectedDataTypePurposes</key>
 			<array>
 				<string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
 				<string>NSPrivacyCollectedDataTypePurposeAnalytics</string>
+			</array>
+		</dict>
+		<dict>
+			<key>NSPrivacyCollectedDataType</key>
+			<string>NSPrivacyCollectedDataTypeDeviceID</string>
+			<key>NSPrivacyCollectedDataTypeLinked</key>
+			<true/>
+			<key>NSPrivacyCollectedDataTypeTracking</key>
+			<false/>
+			<key>NSPrivacyCollectedDataTypePurposes</key>
+			<array>
+				<string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
 			</array>
 		</dict>
 		<dict>

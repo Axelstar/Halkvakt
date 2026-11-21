@@ -108,6 +108,11 @@ export const KARTAN: Beroende[] = [
   { vard: "api.appstoreconnect.apple.com", roll: "verktyg",
     matar: "byggsignalerna: byggen, granskning, installationer per bygge och testarna (kort #288, DECISIONS #447)",
     brister: "kartsynken bockar inte iPhone-stegen; kartan säger att App Store Connect inte läses", bevakad: "", signal: "OKÄND" },
+  // Apples tjänst för notiser (supabase/functions/app-push, DECISIONS #924). Bara prov till en telefon än.
+  { vard: "api.push.apple.com", roll: "verktyg",
+    matar: "utskicket av notiser till iPhone ur push_utskick (app-push, DECISIONS #924)",
+    brister: "notiserna når inte telefonerna; raden i push_utskick får antalet fallna och Apples svar. Varningarna i appen påverkas inte",
+    bevakad: "", signal: "OKÄND" },
   { vard: "thredds.met.no", roll: "verktyg",
     matar: "MET Nordics arkiverade prognoser för kuvösens prognosläge (kuvos/metnordic-prognos.ts, DECISIONS #519) — hämtas en gång, inte i drift",
     brister: "hämtningen av kuvos-metnordic-prognos-2024-25 står still", bevakad: "", signal: "OKÄND" },

@@ -18645,12 +18645,390 @@ ger rörelsemönster som kan peka ut en person, och behövs inte för en notis p
 28 § (läsningen i #900 talar för att skärmen måste vara ett samtycke); flytten av appen till Lagerlöf Labs HB i butikerna.
 
 **Stomdokument:** APP 7 — vad som lämnar telefonen; SYS — tabellen och funktionen med gallringen; BED §4.2
-## #918 (20/11 2026) Halkvakt lives dagsläge väntar 30 minuter som utkast som kan ändras eller slängas i admin.halkvakt.se
+
+## #918 (20/11 2026) Platsdelningen i iPhone: byggd, men bara i TestFlight tills orden är bytta överallt (kort #674)
+
+**Beslut** (Claude 20/11, på Axels ord *"Ja börja bygga"*, *"kör ihop och så vi kan testa det på testflight"* och *"extremt viktigt att
+vi går igenom alla sidor på hemsidan, i appen och allt så det är uppdaterat och korrekt"*; Axel och Bengt kan ändra det).
+- **Platsdelningen (DECISIONS #917) finns i iPhone-appen från 0.4.1 (59), men bara i TestFlight och i utvecklarbyggen.** Ett bygge
+  från App Store frågar inte, skickar inget och bär de gamla orden. Skälet: main är grenen som släpps. Utan spärren hade nästa bygge
+  till App Store burit platsdelningen medan 371 sidor på sajten, butikernas texter och Android-appen fortfarande säger att positionen
+  aldrig skickas. Spärren är samma som betatestets (#681): kvittots namn. Den tas bort i samma commit som orden byts överallt.
+- **Frågan** täcker appen efter introduktionen tills föraren svarat, i två steg: *Ja, dela min kommun* eller *Inte nu*, och för den som
+  sagt ja valet om erbjudanden, med *Nej tack* förvalt. Inget skickas förrän steg två är klart. Skärmen är byggd som ett samtycke
+  (bedömningen §4.2, LEK): ett uttryckligt ja, ett nej som lämnar appen som den var, och *Radera min data* som tar tillbaka det.
+- **Kommunen räknas i telefonen** ur en tabell med kommunernas förenklade gränser (`data/kommuner/kommuner.json`, 290 kommuner,
+  367 kB, samma fil i appen). En position i en glipa längs en kust får närmaste kommuncentrum inom 15 km; längre bort än så, utomlands
+  eller till havs, ger ingen kommun och då skickas inget nytt.
+- **När det skickas:** när appen öppnas, när vakten stannar och när föraren svarar eller ändrar valet om erbjudanden. Aldrig under
+  körning. Raden skickas om kommunen är ny, valet ändrat eller förra sändningen är äldre än ett dygn (servern gallrar efter 30).
+- **Din data** under Integritet visar kommunen, när raden skickades, valet om erbjudanden och det slumpade numret, och knappen
+  *Radera min data*. Når appen inte servern raderas inget, och det står på skärmen.
+- **Orden i testbygget:** *"Din exakta position skickas aldrig till Halkvakt av sig själv."* Meningen från #917, *"Vi vet vilken kommun
+  du är i, aldrig var du kör"*, står på frågan och under Din data, men inte som appens allmänna löfte: för den som sagt nej är den
+  osann, eftersom vi då inte vet någon kommun. iPhones två platsfrågor fick ordet *exakta*; de gäller alla byggen och är sanna i båda.
+- **Apples integritetsmanifest** säger nu att ungefärlig plats är kopplad och att ett enhets-id samlas in. Det gäller alla byggen och
+  är för mycket sagt för App Store-bygget, vilket är åt det säkra hållet.
+
+**Inte byggt:** notiserna (utskicket, nyckeln hos Apple), Android, och erbjudandena själva. Testbygget säger på frågan att notiserna
+inte är påslagna än.
+
+**Kommungränsernas licens är inte bekräftad** (`data/KALLOR.json` säger det): filen kommer från okfse/sweden-geojson, som skriver
+*Feel free to reuse* utan licensfil. Den bekräftas eller byts mot Lantmäteriets eller SCB:s öppna gränser före ett bygge till App Store.
+
+**Alternativ.** Släppa till alla direkt: kräver att app, sajt och butiker byter ord samma dag, och det arbetet är inte gjort. En
+brytare i Inställningar: Axel avvisade en brytare för Planera resa 14/11, och en brytare säger inget om vem som får frågan. Apples
+omvända geokodning i stället för en egen tabell: skickar positionen till Apple vid varje uppslag.
+
+**Stomdokument:** APP 7 — platsdelningen i testbygget; BED §4.2
+
+## #919 (20/11 2026) Kartan Nära dig zoomar in på det närmaste, och en avbruten hämtning får inte skriva över bilden (kort #659)
+
+**Beslut** (Axel 20/11, om startsidan i 0.4.1 (59): *"Detta ser väldigt dumt ut så detta måste vi få mycket mer inzoomat"*).
+- **Utsnittet följer den närmaste faran.** Kartan når en och en halv gång så långt från föraren som den närmaste faran, minst en mil
+  och högst sex, i steg om fem kilometer. Finns ingen fara inom sex mil visas en och en halv mil omkring föraren. Fartkamerorna styr
+  inte utsnittet. Förut visades alltid sex mil åt varje håll (#873, #876), och en fara sju kilometer bort låg då mitt i en bild över
+  halva länet. Listan under kartan bär de faror som hamnar utanför bilden, som förut.
+- **Felet i Axels inspelning** var större än så: kartan visade hela Nordeuropa fast platsen fanns. Bilden över hela landet hämtas
+  innan platsen kommit, och den nya hämtningen för platsen startar när den kommer. Blev den första klar sist skrev den över den nya.
+  En avbruten hämtning kastas nu. Orsaken är läst ur koden och inspelningen, inte återskapad på en telefon.
+- **Texten under Integritet i testbygget** nämner nu platsdelningen bredvid betatestet (#918), utan långt tankstreck.
+
+Bygget är 0.4.1 (60).
+
+**Alternativ.** Alltid en mil: en fara två mil bort syns då inte alls. De tre närmaste i bild: i Axels fall två och en halv mil, fortfarande
+långt utzoomat.
+
+**Stomdokument:** APP 4 — kartan Nära dig
+
+## #920 (20/11 2026) Kortet Tipsa en vän visas inte på startsidan just nu, och inget val om erbjudanden är förvalt (kort #674)
+
+**Beslut** (Axel 20/11, efter att ha prövat 0.4.1 (59) på telefonen).
+- **Kortet *Fem pass med vakten* på Redo. visas inte just nu**, i någon av apparna. Axel: *"Jag tycker vi tar bort det om tipsa en
+  vän just nu"* och, om kortet på startsidan: *"Det är här jag menar. Det känns bara felplaserat"*. Raden *Tipsa en vän* under
+  Inställningar står kvar, och Tyck till och Betygsätt likaså. Koden och proven för kortet står kvar bakom en konstant
+  (`Tipsa.kortetVisas`, `Tipsa.KORTET_VISAS`), eftersom beslutet gäller just nu. Ändrar #829, som Axel och Bengt tog 10/11.
+- **Inget av de två valen om erbjudanden är förvalt** i platsdelningens fråga (#918 hade *Nej tack* förvalt). Axel frågade om ja
+  kunde vara förvalt. Ett förkryssat ja är inget giltigt samtycke till reklam, så det avråddes, och Axel valde mellanläget: *"Och då
+  kör vi med inget förvalt alls"*. *Fortsätt* väntar tills föraren valt, och ja står först.
+
+iPhone-bygget är 0.4.1 (61). Android får ändringen i sitt nästa bygge.
+
+**Alternativ.** Ja förvalt: se ovan. Ta bort kortets kod helt: beslutet säger just nu, och då kostar det ett varv att bygga om det.
+
+**Stomdokument:** APP 4 — startsidan utan kortet; APP 7 — valet om erbjudanden
+
+## #921 (20/11 2026) Frågan om kommunen är ett steg i introduktionen, och CarPlay är påslaget igen i bygget (kort #674, #380)
+
+**Beslut** (Axel 20/11, efter provet av 0.4.1 (59) och (61)).
+- **Platsdelningens fråga står i introduktionen**, som ett eget steg efter platsen och före notiserna. Axel: *"bör inte detta vara ett
+  steg i onboardingen? Nu känns det som den kommer efter onboardingen är över"*. Förut täckte en egen skärm appen när introduktionen
+  var klar (#918). Stegen räknas *av 5* när steget finns. Den som inte har platsen på får inte steget, och den som redan svarat får
+  det inte när introduktionen visas igen. Befintliga förare får frågan som förut, som en egen skärm, men nu bara med platsen på:
+  utan plats finns ingen kommun att dela. Fortfarande bara i TestFlight (#918).
+- **CarPlay är påslaget igen** (#858 slog av det 13/11 inför granskningen av 0.4.0). Axel: *"snart måste vi få ut det"*, och ja till
+  att slå på det i samma bygge. Det är inte prövat i en bil sedan dess. **Main bär nu CarPlay**: nästa bygge till App Store får det
+  med sig om brytaren inte slås av före inlämningen, och det avgör Axel och Bengt då.
+
+Bygget är 0.4.1 (62).
+
+**Alternativ.** Frågan sist i introduktionen, efter notiserna: då kan notissteget inte säga vad notisen före resan är till för.
+Ett eget bygge för CarPlay: varje uppladdning skapar ett certifikat hos Apple, och taket slog till i dag (STATUS 20/11).
+
+**Stomdokument:** APP 4 — introduktionen; APP 5 — CarPlay
+
+## #922 (20/11 2026) Startsidan visar bara frysrisk som uppfyller röstens regel, och farorna på kartan går att trycka på (kort #659)
+
+**Beslut** (Axel 20/11, efter startsidan i 0.4.1 (62): *"vart kommer dessa varningar ifrån, ser att de är halkrisk i oxie och svedala
+men då jag planerar min resa står där inget"*, och *"en möjlighet att jobba lite på kartan så att man kan klicka på faran"*; hans ja
+till båda samma kväll).
+- **Felet.** Lägesfilen bär varje vägväderstation med vägyta på +3 °C eller kallare, för att motorn ska kunna pröva sin regel. Listan
+  *Nära dig* och kartan visade var och en av dem som *Frysrisk*, också de torra. Rösten och resans rapport varnar först vid +1 °C
+  eller kallare med fukt på vägbanan (broar +3 °C med fukt; efterhalkan bara för betatestare). Läst ur lägesfilen 20/11 16:56 UTC:
+  stationen vid Oxie +2,4 °C och torr, den vid Svedala +1,2 °C och torr, och 254 av filens 834 stationer uppfyllde regeln. Startsidan
+  sade alltså mer än mätningen bar. Rösten var aldrig påverkad.
+- **Rättningen.** Listan och kartan visar en frysrisk bara när den uppfyller röstens regel, utan avståndet (`frysriskGaller` i
+  motorpaketet, på iPhone och Android, bredvid regeln den speglar). Det gäller också listan *I närheten* i körläget och startsidans
+  rubrik. På Android följer rättningen med nästa bygge.
+- **Farorna går att trycka på.** Ett tryck på ett märke eller ett gult streck på kartan *Nära dig*, eller på en rad i listan under,
+  visar ett kort under kartan: vad det är, mätningen eller rapportens ord, avståndet som fågelvägen, källan och när lägesfilen
+  skrevs. Den valda faran får en vit kant. Ett tryck till, eller ett tryck bredvid, tar bort kortet. Fartkamerorna går inte att
+  trycka på: de är för många och för små. Kortet säger ingenting som inte står i lägesfilen.
+
+Bygget är 0.4.1 (63). Inte prövat på en telefon när beslutet skrivs.
+
+**Alternativ.** Visa de torra stationerna som en egen rad, *Vägytan +2,4°, torrt*: det är sant, men startsidan ska visa faror, och
+en rad per station inom sex mil dränker dem. En rörlig karta med Apples egna märken: den går inte att färga om (#876).
+
+**Stomdokument:** APP 4 — listan och kartan Nära dig och kortet om en vald fara; FAV — inga ändringar i rapporten som redan följde regeln
+
+## #925 (20/11 2026) Olycksfacits veckoärende visar lagren tillsammans: både A1 och K, bara A1, bara K (TROSKLAR-OLYCKSFACIT §9.5 punkt 8)
+
+**Beslutet.** Bengt 20/11: *"Ja, bygg det"*, på frågan om veckans olycksärende ska få överlappet mellan lagren som en egen tabell. Vid de
+halkkopplade olyckorna (TYDLIG och TROLIG) visar ärendet för veckan och säsongen hur många där Trafikverkets väglag (A1) och kandidaten
+(K) varnade på samma plats, bara A1, bara K, varken A1 eller K men ett annat lager, och inget lager. Raderna utesluter varandra och
+summerar till de halkkopplade.
+
+**Varför.** Ärendet visade bara antalet per lager (*A1 varnade vid N, K vid N, A2 vid N*). Det visar inte hur mycket kandidaten tillför
+utöver Trafikverkets väglag, och det var Bengts fråga. Uppgifterna fanns redan i `olycksfacit_lager`: ingen ny fångst och ingen
+migration.
+
+**Det som är byggt.** `overlappRader()` och tabellen i `veckaKropp()` i `supabase/functions/olycksfacit/arende.ts`, med ett prov i
+`test/olycksfacit-arende.test.ts` som tre motprov fäller. Ärendet bär bara antal, som förut (§9.5, *Publikt*). Säljregeln (§9.6) gäller
+oförändrad: ett enskilt fall anförs aldrig utan säsongens andel bredvid.
+
+**Alternativ.** En egen läsning i panelen när frågan kommer, utan ärende. Det hade inte synts vecka för vecka.
+
+**Stomdokument:** MAT 3 — olycksfacits veckoärende
+
+## #923 (20/11 2026) Frågan om erbjudanden lovar inget antal, och texten är kortare (kort #674)
+
+**Beslut** (Axel 20/11, om steget i 0.4.1 (63): *"I really dont undestand the text here, why are we so open about what it might be?"*,
+och om antalet: *"No number, just Aldrig när du kör. I would just do this one"*).
+- **Texten.** Rubriken *Vill du ha erbjudanden nära dig?*, raden *Rabatter och tips från våra partner, utvalda för där du bor.*,
+  valen *Ja tack* (*Aldrig när du kör.*) och *Nej tack* (*Bara varningar*), och under dem *Våra partner får aldrig veta vem eller var
+  du är. Du kan ändra dig under Integritet.* Exemplen (däckbyte, försäkring), orden *företag som betalar Halkvakt* och panelen med
+  tre rader är borta. Det som reglerna kräver står kvar: att det är erbjudanden, att inget är förvalt, att nejet inte kostar något
+  och att valet går att ändra.
+- **Inget antal lovas.** Skärmen sade *Högst två i månaden* (#917). Löftet är struket ur appen. Hur ofta erbjudanden skickas bestäms
+  när utskicket byggs. *Aldrig när du kör* står kvar som löfte. Inga erbjudanden skickas än.
+- **Nära dig i stället för ditt län:** det som sparas är kommunen, och orden lovar varken län eller kommun.
+
+Bygget är 0.4.1 (64), inte uppladdat när beslutet skrivs. integritet.html nämner inget antal och ändras inte.
+
+**Alternativ.** Behålla taket på två i månaden, eller en i veckan: ett tak skyddar varningarna mot att föraren stänger av notiserna
+för hela appen, men binder oss vid ett tal som bara kan höjas genom att fråga igen. Axel valde friheten.
+
+**Stomdokument:** APP — valet om erbjudanden i platsdelningen
+
+## #924 (20/11 2026) Utskicket av notiser: nyckeln hos Apple, adressen från telefonen och en kö som bara SQL kan fylla (kort #674)
+
+**Beslut** (Axel 20/11: *"lets do 3 so we can keep building"*; han skapade nyckeln hos Apple och lade den som hemlighet samma kväll).
+- **Nyckeln.** En APNs-nyckel för laget, för både provmiljön och driften, ligger som hemligheten `APNS_KEY_P8` hos Supabase. Nyckelns
+  id och lagets id är inga hemligheter och står i koden. Nyckelfilen finns bara hos Axel och hos Supabase, aldrig i repot.
+- **Adressen.** Har föraren sagt ja till platsdelningen och tillåtit notiser ber appen Apple om en notisadress och skickar den med
+  raden till `app-enhet` (fältet `token`, som servern tar emot sedan #917). *Din data* visar om en adress är sparad, och *Radera min
+  data* tar bort den och avregistrerar appen hos Apple. Som resten av platsdelningen: bara i TestFlight (#918).
+- **Kön.** Tabellen `push_utskick` (sql/131) bär ett utskick per rad: till en telefon (provet), en kommun eller ett län, med slaget
+  prov, varning eller erbjudande. Funktionen `app-push` tar inte emot något: den läser de öppna raderna, skickar genom Apple och
+  skriver antalet skickade och fallna på raden. Ett utskick kan bara läggas med SQL och tjänsterollen, så anropet är öppet utan att
+  någon utomstående kan skicka något. Ett erbjudande går bara till den som valt erbjudanden. En adress som Apple säger är död tas
+  bort. Ingen rad per telefon sparas: det finns ingen logg över vem som fått vad.
+- **Apple får** notisadressen, rubriken och texten. Aldrig id, kommun eller val.
+- **Inte byggt:** regeln för när en varning ska gå (Bengts), Android (FCM), och hur *Aldrig när du kör* (#923) hålls. Servern vet
+  inte om föraren kör, och en vanlig notis visas ändå. Det måste lösas innan ett erbjudande eller en varning skickas till förare.
+
+Bygget är 0.4.1 (65).
+
+**Alternativ.** En hemlighet i anropet i stället för en kö: någon måste då bära hemligheten, och ett läckt värde räcker för att
+skicka till alla. Firebase också för iPhone: ett led till som får adresserna, utan nytta förrän Android byggs.
+
+**Stomdokument:** APP — notisadressen i platsdelningen; SYS — tabellen push_utskick och funktionen app-push
+
+## #926 (20/11 2026) Vad ett tryck på en notis öppnar, och varningar visas också med appen öppen (kort #674)
+
+**Beslut** (Axel 20/11, efter provnotisen: *"When i click on it, where should i be taken then?"*, och till förslaget: *"i think all
+make sense"*).
+- **Varningen och provet** öppnar startsidan med kartan *Nära dig*. Där står det varningen gällde, och *Starta vakten* är ett tryck bort.
+- **Erbjudandet** öppnar ett blad i appen: *Erbjudande från* och partnerns namn, notisens rubrik och text, och knappen *Visa
+  erbjudandet*, som öppnar partnerns länk i webbläsaren. Föraren ser vad det är innan appen lämnas, och bladet säger att det är ett
+  erbjudande och från vem. Under körning öppnas inget blad.
+- **En varning från servern visas också när appen är öppen.** Provet 20/11 visade att den första notisen kastades: appen har alltid
+  tigit i förgrunden, eftersom dess egna bannrar är till för när den ligger bakom kartan. Ett erbjudande visas fortfarande inte då.
+- **Utskicket bär slaget** till appen, och ett erbjudande bär partnerns namn och en https-länk (sql/132). Inget annat slag får bära dem.
+- **Halkvakt skickar ingenting om föraren till partnern.** Länken öppnas som vilken länk som helst, så partnern ser ett besök men
+  inte från vem.
+
+Bygget är 0.4.1 (66). Inte byggt: räkningen av hur många som såg och öppnade ett erbjudande, och att den fara varningen gäller
+väljs på kartan.
+
+**Alternativ.** Länken direkt ur notisen: föraren hamnar hos partnern utan att ha sett att det var ett erbjudande eller från vem.
+
+**Stomdokument:** APP — notisens tryck och bladet för erbjudanden; SYS — slaget och partnerns länk i push_utskick
+
+## #927 (20/11 2026) Ett erbjudande som kommer medan appen är öppen läggs i notiscentret (kort #674)
+
+**Beslut** (Axel 20/11: *"Yes i think that make sense"*). Ett erbjudande som kommer medan Halkvakt står framme får ingen banner, men
+läggs i notiscentret. I 0.4.1 (66) kastades det (#926), och föraren såg det aldrig: partnern hade då betalat för ett utskick som
+inte nådde någon. Varningen visas som förut med banner. Bygget är 0.4.1 (67), inte uppladdat när beslutet skrivs.
+
+Samma kväll prövades #926 på Axels telefon: varningen med appen öppen, trycket till startsidan och bladet för erbjudandet.
+
+**Alternativ.** En banner också för erbjudandet: det bryter in medan föraren gör något annat i appen, och under körning står
+körläget framme.
+
+**Stomdokument:** APP — notiserna från servern
+
+## #928 (20/11 2026) Livekartan och startsidan ritar storstädernas punkter, som punkter i Prognos-färgen
+
+**Beslutet.** Bengt 20/11: *"Jag tycker att kartan ska rita punkterna"*, efter frågan varför så lite var markerat som halka på Stockholms kommunala gator. Varje varnande
+stadspunkt (storstäderna B och C, DECISIONS #804) ritas i `data/kandidat.geojson` som en punkt där den står, med `stad: true`, och
+karta.html och startsidan ritar den i Prognos-färgen. Punkterna följer Prognos-knappen, och ett tryck visar *Halka framöver, modellerat,
+inte uppmätt*.
+
+**Varför.** Kartan ritade kandidaten som bitar längs Trafikverkets sträckor, och en stadsgrupp har ingen sträcka. Punkterna räknades
+som *ritas inte*: 20/11 18.00 UTC varnade appen på 31 stadspunkter i sydvästra Stockholm, och kartan ritade 3 742 av 3 773
+prognospunkter, alltså inga av dem. Kartan visade därmed färre varningar än appen gav.
+
+**Det som är byggt.**
+- `publish/map-core.ts`: `STADSGRUPP` (sql/089:s `^[BC]-`). Stadspunkterna går inte till frågan om bitar och ritas också när frågan
+  faller. `meta.kandidat` får `stad`, och `ritade` räknar dem.
+- Provet i `test/map-core.test.ts`, som fyra motprov fäller. `supabase/functions/publicera/index.ts` är buntad om.
+- I halkvakt-karta: lagret `kandidat-stad` i karta.html, med ruta, knapp och klickordning, och punkterna på startsidan.
+
+**Inte ändrat.** Vad appen säger, regeln och brytarna. Kartan visar bara det appen redan har i lägesfilen.
+
+**Alternativ.** Att rita en bit längs stadens gata. Det kräver gatornas linjer, som inte finns i databasen.
+
+**Stomdokument:** SYS — livekartan ritar storstädernas punkter
+## #929 (20/11 2026) TestFlight-bygget återkallar sitt eget certifikat, och Xcode 27 får en frist (gamla kort #366)
+
+**Beslut** (Axel 20/11: *"Hur fixar vi det med certifikaten så jag inte behöver ta bort det hela tiden?"*, och till förslaget: *"Ys
+please do that"*).
+- **Städningen.** Varje uppladdning körs på en ny Mac hos GitHub, som skapar ett eget Apple Development-certifikat och lämnar det
+  kvar. Kontot slog i Apples tak 29/10 (#582, kort #366) och igen 20/11 efter fem uppladdningar, och Axel rensade för hand båda
+  gångerna. Flödet läser nu utvecklingscertifikatens id före bygget och återkallar efter uppladdningen dem som kommit till under
+  körningen (`scripts/asc-certifikat.mjs`). Distributionscertifikaten och allt som fanns före rörs inte. Flödet kör ett bygge i
+  taget, så ett annat bygges certifikat kan inte tas. Faller ett av stegen fortsätter bygget, och då återkallas ingenting.
+- **Inte prövat.** Att nyckeln får återkalla certifikat visar sig vid nästa uppladdning. Säger Apple nej står det i körningens logg,
+  och då behöver nyckelns roll höjas i App Store Connect.
+- **Xcode 27.** Apple varnar efter varje uppladdning (ITMS-90725) att bygget från april 2027 måste gå på Xcode 27 med iOS 27 SDK.
+  Fristen 1 mars 2027 står i `docs/fristerna.json`.
+
+**Alternativ.** Ett sparat certifikat som hemlighet (kort #366 steg 2 som det skrevs): en hemlighet till att hålla reda på, och
+bygget står stilla när den går ut efter ett år.
+
+**Stomdokument:** inga — byggflödets inre, ingen del av appen eller driften ändras
+
+## #930 (20/11 2026) Planerad resa: domen överst och resans sträckor på Sveriges kontur, utan fliken När du kör (kort #659)
+
+**Beslut** (Axel 20/11, med en ritning av skärmen och fyra öppna punkter; till förslaget: *"Okay i agree with you on all"*).
+- **Skärmen.** Domen står överst: läget just nu i en rubrik och en mening, och tre tal när något är halt eller har frysrisk. Sedan
+  ▶ *Starta vakten*, vägen ritad på Sveriges kontur, resans sträckor i den ordning föraren kör, resten av rapporten och
+  påminnelsen. Inget av den gamla skärmen är borta: rutan *Halkvakt tror*, raden om det tomma, *När åker du?* och länkarna står kvar.
+- **Sträckorna.** Resan bryts vid de större orter som ligger inom 5 km från vägen, och grannsträckor med samma läge slås ihop,
+  så att en brytpunkt hamnar vid en ort och bara där läget byter. Läget är rapportens eget: halt med minst en halksträcka,
+  frysrisk med minst en station eller bro som uppfyller röstens regel, annars lugnt. En ort närmare starten eller målet än 15 km
+  är ingen brytpunkt, och två brytpunkter ligger minst 20 km isär. Regeln bor i motorpaketet (`Resstrackor`), med prov.
+- **Klocktiden** vid en sträcka är avresan plus sträckans andel av Apples restid. Den säger när föraren är där, inte hur vägen
+  är då.
+- **Fliken *När du kör* byggs inte.** Ritningen visar läget vid den tid föraren passerar. Det kräver en prognos per sträcka, och
+  den finns inte: kandidaten beskriver nu, och prognosens dom faller i mars. Skärmen visar läget nu, och säger det. Frågan står i
+  bedömningens §4.2 för Bengt.
+- **Talen.** Ritningen räknade *stationer nära noll*. Skärmen räknar *platser med frysrisk*, alltså bara dem som uppfyller regeln:
+  samma fälla som frysrisken på startsidan samma dag (#922).
+- **Konturen och orterna** är Natural Earth 1:10m, som är fri att använda (`data/sverige/sverige.json`, 34 orter). Kommunkartan
+  används inte: dess licens är inte bekräftad (#918). Orterna är få norr om Gävle och i inlandet, och där blir sträckorna långa.
+- **Gult på vägen.** Halkan ritas redan gul på kartan *Nära dig* (#873), så detta vidgar ett undantag som finns.
+- **Apple.** Skärmen visar inte längre Apples karta, så telefonen hämtar inga kartbilder för en planerad resa. Vägen är
+  fortfarande Apples, och raden *Vägen kommer från Apple* står under rapporten. Om Apples villkor kräver mer än så är inte
+  prövat. integritet.html säger fortfarande att kartorna i Planera en resa är Apples: det gäller appen i App Store och ändras när
+  bygget släpps.
+
+Bygget är 0.4.1 (68).
+
+**Alternativ.** En fast lista av orter som alltid bryter resan: sträckor som blandar lugnt och halt. Brytpunkter exakt där läget
+byter, utan orter: sträckor som heter *efter 137 km*.
+
+**Stomdokument:** APP — skärmen Planerad resa; FAV — sträckindelningen ur resans rapport
+
+## #931 (20/11 2026) Planerad resa: allt börjar stängt, och Övrigt på vägen öppnas rad för rad (kort #659)
+
+**Beslut** (Axel 20/11, efter en inspelning av 0.4.1 (68) på resan Malmö till Östermalm: *"It looks good! I think the open up /
+close should be for övrigt på vägen också. Ska det inte starta som stängt?"*).
+- **Sträckorna börjar stängda.** I (68) öppnades den första sträckan som inte var lugn av sig själv.
+- **Övrigt på vägen** visar bara radens rubrik, och ett tryck öppnar texten, som för sträckorna. Listan blev annars flera skärmar
+  lång på en lång resa.
+- **Ortnamnen på konturen.** Malmö och Helsingborg stod över varandra i inspelningen. Namnen skrivs nu i turordning (målet, starten,
+  resten), och ett namn som skulle hamna över ett annat skrivs inte.
+
+Sett i samma inspelning och inte ändrat: hela vägen från Helsingborg till Östermalm blev en enda hal sträcka, eftersom varje
+delsträcka mellan två orter hade minst en halksträcka; och det som står under en sträcka står också under *Övrigt på vägen*.
+
+Bygget är 0.4.1 (69).
+
+**Alternativ.** Hela rutan Övrigt på vägen bakom en enda rad: föraren ser då inte vad som finns förrän den öppnas.
+
+**Stomdokument:** APP — skärmen Planerad resa
+
+## #932 (20/11 2026) Planerad resa: Övrigt på vägen räknar bara, när sträckorna visas (kort #659)
+
+**Beslut** (Axel 20/11, till förslaget efter inspelningen: *"Jag gillar dina förslag också"*). När resans sträckor visas står
+varje vägarbete, kamera och hinder redan under sin sträcka, och i 0.4.1 (68) och (69) stod de en gång till under *Övrigt på
+vägen*. Rutan visar nu antalet av varje slag och SMHI:s varningar, som gäller hela resan. En lugn resa har inga sträckor, och där
+står raderna kvar som förut. Restidssträckorna räknas inte: de är mätpunkter och inga händelser.
+
+Det andra förslaget, att en lång sträcka inte ska heta hal för att den har halka på några ställen, är inte byggt. Rapportens
+rader bär var halkan börjar men inte hur lång den är, så en andel går inte att räkna utan att ändra rapporten. Valet står i
+bedömningens §4.2.
+
+Bygget är 0.4.1 (70), inte uppladdat när beslutet skrivs.
+
+**Alternativ.** Ta bort raderna ur sträckorna i stället: då säger sträckan inte vad som finns på den.
+
+**Stomdokument:** APP — skärmen Planerad resa
+
+## #933 (20/11 2026) Planerad resa: Förslag A, och vägen står på Apples karta igen (kort #659)
+
+**Beslut** (Axel 20/11, sexton punkter: *"Bygg Förslag A för resultatskärmen i Planera resa och skicka till TestFlight"*; om
+kartan: *"Okej vi får väl köra med a då"*, läst som den första av tre vägar).
+
+*Sträckorna.* Resan bryts vid varje större ort längs vägen, och sträckorna slås inte längre ihop: i (68) till (70) blev Malmö
+till Östermalm en enda hal sträcka på 55 mil. En sträcka heter *Halt på 4 ställen*, etiketten är antalet i gult (*4 STÄLLEN*),
+och underraden säger vilken sorts halka det är. Ett ställe är en halksträcka i Trafikverkets väglag. Trafikverkets ord skrivs
+som vanlig svenska (*fläckvis Is, Våt* blir *fläckvis is, vått*; *moddig Vägbana* blir *snömodd*); vått och torrt är ingen halka
+i sig och står bara när sträckan öppnas. En lugn sträcka säger *Inget halt rapporterat.* Stapeln är grå som vägen. Omdömet
+överst är en mening (*Halt på 11 ställen, först efter Helsingborg.*); de tre talen och raden om filernas tider är borta.
+
+*Kartan.* Axel bad om en egen ritad karta i stället för Apples, och om att Apples villkor skulle läsas innan bygget gick ut.
+Apples utvecklaravtal, bilaga 6 punkt 2.4, säger att deras kartdata, när den visas på en karta, bara får visas på en
+Apple-karta, och definitionen av kartdata räknar upp koordinater. Vägen Apple räknar ut är koordinater. Den får alltså inte
+ritas på vår egen kontur, och en rad om att vägen kommer från Apple ändrar inte det. Bygge (68) och (69) gjorde just det i
+TestFlight; ingen av dem har gått till App Store. Axel fick tre vägar: Apples karta under märkena, egen kontur utan väg, eller
+en väg från en annan källa. Han valde den första. Kartan är Apples i gråskala, som på startsidan, med vägen grå, en gul prick
+per halksträcka och en gul ring per plats med frysrisk, där de ligger längs vägen. Konturen ur Natural Earth ligger kvar i
+filen men ritas inte. Läsningen är Claudes och ingen jurists.
+
+*Övrigt på vägen* har en rad per sort när sträckorna visas: olyckor, vägarbeten, fartkameror, hinder och trafik. Axel räknade
+upp fyra; olyckorna fick en egen rad, för en olycka ska inte stå som ett hinder.
+
+*Startsidan* behåller Apples karta och får samma märken: en gul prick per halksträcka, mitt på sträckan, en gul ring för
+frysrisk och en vit prick för föraren, med samma teckenförklaring. Fartkamerorna står inte längre på kartan. Olyckor och vilt
+har kvar sina ikoner: de är inga kameror eller vägarbeten, och en olycka nära föraren ska synas.
+
+*Flikraden.* Skärmens innehåll slutar ovanför flikraden; i inspelningen 20/11 syntes texten under och bakom den.
+
+Bygget är 0.4.1 (71). Bara iPhone; Android har varken Planera resa eller kartan på startsidan.
+
+**Alternativ.** Egen kontur med bara märkena: följer avtalet, men utan väg säger kartan inte var resan går. En annan vägtjänst:
+då går resans mål till den tjänsten, vilket är ett nytt löfte och ett större bygge. Rapportens rader med halkans längd, så
+att en sträcka heter hal efter andel (väg b i #932): kräver en gräns och en ändring i rapporten på tre språk.
+
+**Stomdokument:** APP — skärmen Planerad resa och kartan på startsidan
+
+## #934 (21/11 2026) Planerad resa: en sträcka som bara är våt säger det (kort #659)
+
+**Beslut** (Axel 21/11, efter inspelningen av 0.4.1 (71): *"Ja gör det"*). Fyra av sju sträckor Malmö till Östermalm hade
+underraden *Halt väglag rapporterat.* i stället för sorten av halka. Skälet står i datat: i live.json 21/11 00.45 var 111 av
+367 sträckor i Trafikverkets väglag besvärliga (kod 2, sex med kod 3) med bara orden *Våt*, *fläckvis Våt* eller *Torrt*.
+Motorn räknar dem som halt, för regeln är kod 2 eller högre eller ett halkord. Underraden säger nu *Vått. Besvärligt väglag
+enligt Trafikverket.* när sträckans rader inte bär något annat ord; finns ett vinterord står det ordet som förut.
+
+Rubriken *Halt på 2 ställen* och den gula pricken står kvar för en sådan sträcka. Om en våt väg med kod 2 ska heta halt, på
+skärmen och i rösten, är en fråga om motorns regel och står i bedömningens §4.2 för Bengt.
+
+Bygget är 0.4.1 (72).
+
+**Alternativ.** Räkna inte de våta sträckorna som halka på den här skärmen: då säger skärmen och rösten olika saker om samma väg.
+
+**Stomdokument:** APP — skärmen Planerad resa
+
+## #937 (20/11 2026) Halkvakt lives dagsläge väntar 30 minuter som utkast som kan ändras eller slängas i admin.halkvakt.se
 
 **Beslut.** Bengts ja 20/11, framfört av Malin i sessionen. Malin 20/11, på sidan Sociala medier i admin.halkvakt.se (DECISIONS #913): de kommande inläggen ska gå att förhandsvisa
 och redigera innan de går ut, och SMHI-varningarna ska gå ut direkt som idag.
 1. **Dagsläget ritas 30 minuter före passet.** Nya flödet `halkvakt-utkast.yml` kör `posta.mjs bild` på pulsjobben
-   puls-live-utkast-morgon, -lunch och -kvall (04:20, 10:20 och 15:20 UTC) och lägger inlägget i tabellen `social_utkast` (sql/131).
+   puls-live-utkast-morgon, -lunch och -kvall (04:20, 10:20 och 15:20 UTC) och lägger inlägget i tabellen `social_utkast` (sql/134).
    `halkvakt-live.yml` postar det som förut på minut 50, men bara postningen. Urvalet, spärrarna och texterna ändras inte.
 2. **Admin kan ändra texten eller slänga utkastet** fram till passet (Sociala medier → Inlägg, menyvalet social, edge-funktionen
    admin). Facebook- och Instagram-texten ändras var för sig; X-texten räknas ur Instagram-texten som förut. Bilden ändras inte.
@@ -18661,8 +19039,12 @@ och redigera innan de går ut, och SMHI-varningarna ska gå ut direkt som idag.
 **Alternativ.** Inget postas utan godkännande (larmen och passen kunde utebli när ingen är vid datorn). Att redigera efter postningen
 (Instagram och X låter inte API:et ändra ett publicerat inlägg). Larmen också i kön (ett larm är bara värt något när det är färskt).
 
-**Kvar före drift.** sql/131 med DB-knappen (migrera); edge-funktionen admin, som flyttar hit till `supabase/functions/admin/`
+**Kvar före drift.** sql/134 med DB-knappen (migrera); edge-funktionen admin, som flyttar hit till `supabase/functions/admin/`
 ur Axelstar/halkvakt-admin (källan som deployades 20/11 plus delen `social`) och deployas med deploy-knappen (`admin` i listan);
 och pulsklockan körd skarpt så att de tre nya jobben ligger i pg_cron, och först därefter vakthunden deployad (PULS_GOLV 37).
 
 **Stomdokument:** SYS — Halkvakt live och pulsklockan, BED §4.2
+
+*Numret* (21/11): beslutet skrevs som #918 och tabellen som sql/131 på grenen, men båda numren togs på main medan PR #1719 väntade
+(#918 platsdelningen, sql/131 `push_utskick`). Vid sammanslagningen på Bengts ord 21/11 (*"slå ihop 1719 och driftsätt"*) blev det
+#937 och sql/134. Innehållet är oförändrat.

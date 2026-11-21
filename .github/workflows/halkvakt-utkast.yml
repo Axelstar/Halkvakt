@@ -1,4 +1,4 @@
-# Halkvakt live, utkasten (DECISIONS #918): dagslägets inlägg ritas 30 minuter före passet och väntar i social_utkast,
+# Halkvakt live, utkasten (DECISIONS #937): dagslägets inlägg ritas 30 minuter före passet och väntar i social_utkast,
 # där admin.halkvakt.se (Sociala medier → Inlägg) kan ändra texten eller slänga det. halkvakt-live.yml postar det på minut 50.
 # Startas av pulsklockan: puls-live-utkast-morgon 04:20, -lunch 10:20 och -kvall 15:20 UTC. Larmen går inte hit (halkvakt-larm.yml).
 name: halkvakt-utkast

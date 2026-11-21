@@ -47,7 +47,7 @@ const NYA: { namn: string; schema: string; fil: string }[] = [
   { namn: "puls-live-morgon", schema: "50 4 * * *", fil: "halkvakt-live.yml" },
   { namn: "puls-live-lunch", schema: "50 10 * * *", fil: "halkvakt-live.yml" },
   { namn: "puls-live-kvall", schema: "50 15 * * *", fil: "halkvakt-live.yml" },
-  // DECISIONS #918: dagslägets inlägg ritas 30 min före passet och väntar som utkast, som admin.halkvakt.se kan
+  // DECISIONS #937: dagslägets inlägg ritas 30 min före passet och väntar som utkast, som admin.halkvakt.se kan
   // ändra eller slänga; passen ovan postar det. ~1 min per körning.
   { namn: "puls-live-utkast-morgon", schema: "20 4 * * *", fil: "halkvakt-utkast.yml" },
   { namn: "puls-live-utkast-lunch", schema: "20 10 * * *", fil: "halkvakt-utkast.yml" },

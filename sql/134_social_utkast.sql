@@ -1,4 +1,4 @@
--- 131: utkasten till Halkvakt live (DECISIONS #918). Idempotent.
+-- 134: utkasten till Halkvakt live (DECISIONS #937). Idempotent.
 -- Dagslägets inlägg ritas 30 minuter före passet (halkvakt-utkast.yml) och läggs här. Admin-sidan Sociala medier → Inlägg
 -- (edge-funktionen admin, menyvalet social) kan ändra texten eller slänga utkastet, och posta.mjs skicka läser raden när
 -- passet går: slängt ⇒ inget postas, ändrad text ⇒ den postas. Bilden ändras inte här. Larmen går inte via tabellen.

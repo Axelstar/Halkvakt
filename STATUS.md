@@ -3403,3 +3403,97 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   PR #1716 ihopslagen (283c14a), migrationen 130 med DB-knappen (44731913178) och `app-enhet` deployad (44732030982). Läst live: en giltig
   rad gav 204 och stod i tabellen, en rad med position gav 400, DELETE gav 204 och tabellen var tom efteråt. Ingenting finns i TestFlight
   än: apparna är inte byggda. Axel: alla sidor på sajten och i appen ska gås igenom så att orden stämmer; räkningen står på kortet.
+- 20/11 (Claude; Axel: *"Okej ja kör"*): **Platsdelningen i iPhone-appen, bara i TestFlight** (DECISIONS #918, kort #674). Frågan i två
+  steg, Din data under Integritet med *Radera min data*, och kommunen räknad i telefonen ur `data/kommuner/kommuner.json`. Bygget är
+  0.4.1 (59). Ett App Store-bygge frågar inte och skickar inget. Notiserna och Android är inte byggda. Kommungränsernas licens är inte
+  bekräftad. Inte prövat på en telefon.
+- 20/11 (Claude): **iPhone 0.4.1 (59) uppladdad till TestFlight** från main fa9031d (körning 44765599102; PR #1724 ihopslagen): platsdelningen
+  bara i TestFlight (DECISIONS #918, kort #674). Före uppladdningen: TestFlight-provet (44763704057, `ARCHIVE SUCCEEDED`) och ios-engine
+  (44765331686, 53 prov) gröna på grenen, och integritetssidan uppdaterad (halkvakt-karta PR 37, läst på halkvakt.se). Inte prövat på en telefon.
+- 20/11 (Claude; Axels inspelning av 0.4.1 (59) och *"detta måste vi få mycket mer inzoomat"*): **Kartan Nära dig zoomar in på det närmaste**
+  (DECISIONS #919, kort #659): en och en halv gång avståndet till den närmaste faran, minst en mil och högst sex, och en avbruten
+  hämtning skriver inte längre över bilden. Texten under Integritet nämner platsdelningen. Platsdelningen prövad av Axel på telefon
+  i (59): frågan, valet och raden i `app_enhet` (Malmö, 16:48) stämde. Bygget är 0.4.1 (60).
+- 20/11 (Claude; Axel efter provet av (59)): **Kortet Tipsa en vän visas inte på startsidan just nu, och inget val om erbjudanden är
+  förvalt** (DECISIONS #920). iPhone-bygget är 0.4.1 (61); Android får ändringen i nästa bygge. Uppladdningen av (60) föll 16:5x på
+  Apples certifikattak (körning 44769009717, `ARCHIVE FAILED`, inget uppladdat); Axel har rensat certifikaten (två kvar 17:04).
+- 20/11 (Claude): **iPhone 0.4.1 (61) uppladdad till TestFlight** från main 9518657 (körning 44772198053, `EXPORT SUCCEEDED`; PR #1726 och
+  #1727 ihopslagna): kartan Nära dig inzoomad på det närmaste och hämtningen som inte skriver över (DECISIONS #919), kortet Tipsa en vän
+  borta från startsidan och inget förvalt val om erbjudanden (DECISIONS #920). Före: TestFlight-provet (44770191774) och android
+  (44770196875) gröna på grenen. Bygge (60) laddades aldrig upp. Kartan och det nya valet är inte prövade på en telefon.
+- 20/11 (Claude; Axel: *"bör inte detta vara ett steg i onboardingen?"* och ja till CarPlay i samma bygge): **Frågan om kommunen är ett
+  steg i introduktionen, och CarPlay är påslaget igen** (DECISIONS #921). Bygget är 0.4.1 (62). Main bär nu CarPlay, så brytaren ska
+  ses över före nästa inlämning till App Store. Inte prövat på en telefon eller i en bil.
+- 20/11 (Claude): **iPhone 0.4.1 (62) uppladdad till TestFlight** från main 49cd8d2 (körning 44776658022, `EXPORT SUCCEEDED`; PR #1729
+  ihopslagen): frågan om kommunen som steg i introduktionen och CarPlay påslaget igen (DECISIONS #921). Före: TestFlight-provet
+  (44775137656) grönt på grenen. Inte prövat på en telefon eller i en bil.
+- 20/11 (Claude): **Startsidan visar bara frysrisk som uppfyller röstens regel, och farorna på kartan går att trycka på** (DECISIONS
+  #922, kort #659; Axels fråga om Oxie och Svedala). Regeln `frysriskGaller` i motorpaketet på iPhone och Android, med prov. Bygget är
+  0.4.1 (63). Inte prövat på en telefon. Android får rättningen i sitt nästa bygge.
+- 20/11 (Claude): **iPhone 0.4.1 (63) uppladdad till TestFlight** från main 1ecb0ce (körning 44783383194; PR #1732 ihopslagen):
+  frysrisken på startsidan enligt röstens regel och tryckbara faror på kartan (DECISIONS #922). Före: ios-engine (44779944608),
+  android (44781512371), ci och TestFlight-provet (44779939989) gröna på grenen. Inte prövat på en telefon.
+- 20/11 (Claude; Bengt: *"Ja, bygg det"*): **Olycksfacits veckoärende visar lagren tillsammans** (DECISIONS #925, TROSKLAR-OLYCKSFACIT
+  §9.5 punkt 8): både A1 och K, bara A1, bara K, ett annat lager och inget, för veckan och säsongen. Läst i panelen 20/11 före bygget:
+  vid de halkkopplade olyckorna sedan 6/11 varnade båda vid 29, bara A1 vid 42 och bara K vid 18 av 144. Kvar: deploy och
+  veckoärendet 23/11.
+- 20/11 (Claude; Bengts fråga om steget i kartan): **Radarns tal R bokfört i projektkartan.** Steget *Radarns tal R i
+  förregistreringen (§10 a)* under `k-radar` stod som saknas sedan 26/10, fast talet lästes den dagen: R = 0,1 mm/h, och sql/069
+  migrerades (STATUS 26/10, DECISIONS #725, #726). Steget är klart med det beviset; motorns steg säger 0,1 i stället för 0,5, och
+  delens saknas-rad är nederbördstypen ovanpå radarn (kort #45).
+- 20/11 (Claude): **Frågan om erbjudanden har ny, kortare text och lovar inget antal** (DECISIONS #923, kort #674; Axels ord). Bygget
+  är 0.4.1 (64), inte uppladdat: det följer med nästa uppladdning.
+- 20/11 (Claude): **Utskicket av notiser byggt till provet** (DECISIONS #924, kort #674): Axel skapade APNs-nyckeln och lade den som
+  hemlighet; sql/131 `push_utskick`, funktionen `app-push`, och appen skickar notisadressen efter ja och tillåtna notiser. Bygget är
+  0.4.1 (65). Inte byggt: regeln, Android och hur *Aldrig när du kör* hålls.
+- 20/11 (Claude): **iPhone 0.4.1 (65) uppladdad till TestFlight** från main 5b1d1f2 (körning 44806322553; PR #1738 och kartrepots
+  PR #38 ihopslagna), med erbjudandetexten (#923) och notisadressen (#924). sql/131 körd (dbknapp 44806315633), `app-push` deployad
+  (44806319585) och prövad med tom kö: POST ger `{"utskick":0}`, GET 405. Ingen notis skickad än, och inget prövat på en telefon.
+- 20/11 (Claude): **Provnotisen nådde Axels telefon** (DECISIONS #924, kort #674): bygge 0.4.1 (65) sparade notisadressen, raden i
+  `push_utskick` gav `skickade 1, fallna 0` hos Apple, och Axel bekräftade notisen på låsskärmen. Den första, skickad medan appen
+  var öppen, visades inte: appen kastar notiser i förgrunden. Fyra val står i bedömningens §4.2 innan något skickas till förare.
+- 20/11 (Claude): **Notisens tryck och bladet för erbjudanden** (DECISIONS #926, kort #674): varningen öppnar startsidan och visas
+  också med appen öppen, erbjudandet öppnar ett blad med partnerns namn och länk; sql/132. Bygget är 0.4.1 (66).
+- 20/11 (Claude): **iPhone 0.4.1 (66) uppladdad till TestFlight** från main af39408 (körning 44811855745; den första, 44811437474,
+  föll i exporten på *The network connection was lost*; PR #1741 ihopslagen). sql/132 körd (dbknapp 44811311754) och `app-push`
+  deployad (44811433609). Notisens tryck och bladet för erbjudanden (DECISIONS #926) är inte prövade på en telefon.
+- 20/11 (Claude; Bengt: *"Ja, och deploya"*): **Överlappet i olycksfacit i drift** (DECISIONS #925). PR #1733 sammanslagen som
+  b2d8e8b0; funktionen olycksfacit deployad 17.52 UTC (deploy-supabase 44787291291 ur b2d8e8b0). Beviset är veckoärendet 2026-V47
+  måndag 23/11 (frist olycksfacit-overlappet-2026-11-23): en körning med ?torrt=1 kräver nyckeln och görs inte härifrån.
+- 20/11 (Claude): **Tre provnotiser med ett erbjudande gick till fel telefon** (utskick 6–8 i `push_utskick`, 20:44–20:47 UTC). Frågan
+  valde *den senast uppdaterade raden med notisadress och erbjudanden* i stället för Axels rad. När en annan telefon med testbygget
+  sparade sin adress 20:39 UTC blev den raden nyast. Notiserna sade själva att de var prov, och länken gick till halkvakt.se. Proven
+  1–4 nådde Axel bara för att hans rad då var den enda med adress. Rättat: ett prov riktas med telefonens eget nummer (det som står
+  under *Din data*), aldrig med *den senaste*. Utskick 9 gick till Axels rad. Före: sql/132 skrev länkens regel med en upprepning
+  Postgres inte tar, och det första erbjudandet föll; sql/133 (PR #1744, dbknapp 44813984790) bytte regeln. Läxan för båda: lägg en
+  provrad och läs VEM den gick till innan något sägs vara i drift.
+- 20/11 (Claude): **Notisens tryck prövat på Axels telefon i 0.4.1 (66)** (DECISIONS #926; Axels ord): provvarningen visades med appen
+  öppen, ett tryck från Inställningar öppnade startsidan, och ett tryck på proverbjudandet (utskick 9) öppnade bladet och länken.
+- 20/11 (Claude): **Ett erbjudande med appen öppen läggs i notiscentret** (DECISIONS #927, kort #674). Bygget är 0.4.1 (67), inte
+  uppladdat: det följer med nästa uppladdning. Axel säger att den andra telefonen som fick de tre proven också var hans.
+- 20/11 kväll (Claude; Bengt: *"Jag tycker att kartan ska rita punkterna"*): **Livekartan ritar storstädernas punkter** (DECISIONS #928). `publish/map-core.ts`
+  lägger varje varnande stadspunkt som en punkt i `kandidat.geojson`, och halkvakt-karta ritar dem i Prognos-färgen. Provat i
+  webbläsarpanelen mot en kopia av kvällens data med stadspunkterna inlagda (107 ritade i vyn, knappen slår av och på). Kvar:
+  sammanslagningen, deployen av publicera och kartrepots PR.
+- 20/11 (Claude): **TestFlight-bygget återkallar sitt eget certifikat** (DECISIONS #929; Axels ja): `scripts/asc-certifikat.mjs` och två
+  steg i testflight.yml. Inte prövat: det visar sig vid nästa uppladdning. Fristen för Xcode 27, 1 mars 2027, står i fristerna.
+- 20/11 (Claude): **Planerad resa har ny skärm** (DECISIONS #930, kort #659; Axels ritning): domen överst, vägen på Sveriges kontur,
+  resans sträckor i körordning (`Resstrackor` i motorpaketet, med prov), Natural Earth för kontur och orter. Fliken *När du kör*
+  byggs inte förrän det finns en prognos per sträcka. Bygget är 0.4.1 (68).
+- 20/11 (Claude): **iPhone 0.4.1 (68) uppladdad till TestFlight** från main 4c0362f (körning 44822287242, `EXPORT SUCCEEDED`; PR #1750
+  ihopslagen): den nya skärmen för en planerad resa (DECISIONS #930) och erbjudandet i notiscentret (#927). **Certifikatstädningen
+  (#929) fungerade i sin första körning:** *3 före, 4 efter bygget, 1 återkallade*. Den nya skärmen är inte prövad på en telefon.
+- 20/11 (Claude): **Planerad resa sedd på Axels telefon i 0.4.1 (68)**, resan Malmö till Östermalm (hans inspelning): skärmen fungerar
+  med riktiga data. Efter hans ord (DECISIONS #931): sträckorna börjar stängda, Övrigt på vägen öppnas rad för rad, och ortnamn
+  på konturen skrivs inte över varandra. Bygget är 0.4.1 (69).
+- 20/11 (Claude): **iPhone 0.4.1 (69) uppladdad till TestFlight** från main ddb788d (körning 44824914600; PR #1752 ihopslagen): Planerad resa
+  börjar stängd och Övrigt på vägen öppnas rad för rad (DECISIONS #931). Inte prövat på en telefon.
+- 20/11 (Claude): **Övrigt på vägen räknar bara, när sträckorna visas** (DECISIONS #932, kort #659). Bygget är 0.4.1 (70), inte uppladdat.
+- 20/11 natt (Claude; Axel: *"Bygg Förslag A"*): **Planerad resa enligt Förslag A, och vägen på Apples karta igen** (DECISIONS #933, kort #659). Apples utvecklaravtal (bilaga 6, punkt 2.4) lästes före bygget: kartdata får bara visas på en Apple-karta, och (68) och (69) ritade Apples väg på vår egen kontur i TestFlight. Axel valde Apples karta under märkena. Sträckorna bryts vid varje ort och säger antalet ställen; startsidans karta har samma märken och inga kameror. Bygget är 0.4.1 (71). **Uppladdat till TestFlight 21/11 00.40** (körning 44834187882, main 8521eb2; ci grön efter en omkörning: småvägsregelns tidsprov i full skala föll på 77 s i första körningen, utan ändring i SQL).
+- 21/11 (Claude; Axel: *"Ja gör det"*): **En sträcka som bara är våt säger det** (DECISIONS #934, kort #659). Underraden *Halt väglag rapporterat.* kom av att 111 av 367 halksträckor i live.json bara bär ordet vått, med kod 2. Frågan om de ska heta halt står i §4.2. Bygget är 0.4.1 (72). **Uppladdat till TestFlight 21/11** (körning 44839985046, main 6821930).
+  Hur en lång sträcka med halka på några ställen ska visas står som en fråga i bedömningens §4.2.
+- 20/11 kväll (Claude; Bengt: *"Slå ihop o deploya"*): **Livekartan ritar storstädernas punkter, i drift** (DECISIONS #928).
+  Halkvakt PR #1742 som 79f96a73 och halkvakt-karta PR 39 som f4fa3ffe; publicera deployad 21.14 UTC (deploy-supabase
+  44818397022). Kartans data 22.30 (halkvakt-karta f4b645c6): meta.kandidat.stad 7 och ritade 4 560 av 4 560, sju punkter med
+  stad: true, samma sju som lägesfilens sex stadsgrupper. Projektkartans saknas-rad för storstäderna är struken med beviset.
+- 21/11 UTC (Claude, morgonrutinen): Dokumentsynk 2026-11-21. Rättat: Halkvaktens app (APP) faktaraden (iPhone 0.4.1 (72) och Android 0.4.1 (58) i koden, Android 0.4.0 (49) i Google Play); §3: modd bland halkorden (#915); §4, Vakten: kartan *Nära dig* zoomar in på det närmaste (#919), frysrisk bara enligt röstens regel och farorna går att trycka på (#922), märkena som i Planerad resa och inga fartkameror på kartan (#933), kortet *Tipsa en vän* visas inte just nu (#920), trycket på en notis (#926); Planera resa: domen överst, sträckorna vid orterna, *Halt på N ställen*, allt stängt, Övrigt på vägen som antal, ingen flik *När du kör*, Apples karta igen från (71) och den våta sträckan i (72) (#930–#934); Inställningar: kortet borta (#920); introduktionen: platsdelningens steg i TestFlight (#921); §5: CarPlay påslaget igen i (62), inte prövat i bil (#921); §7: platsdelningen som rad i tabellen och ett stycke om frågan, erbjudandevalet utan förval och utan antal, Din data och notiserna från servern (#917, #918, #920, #923, #924, #926, #927), och (68)–(70) utan Apples karta; §9: versionerna 0.4.1 (58)–(72). Halkvaktens systembild (SYS) *Hur den är byggd*: platsdelningens tabell och funktion med gallringen (#917) och notiskön `push_utskick` med `app-push` och sql/132–133 (#924, #926); motorn med 63 testfall i stället för 50 och modden i alla kopior, i drift 20/11 (#915); §2, storstäderna: säsongsfacit i drift med `sql/128` och pg_cron 03.37 UTC (#913), stadsmiljöns domsteg i `kuvos-ny-kandidat.yml` som bara skriver klart eller fel (#914), livekartan ritar stadspunkterna (#928), och planerna med läget 21/11. Halkvaktens mätningar (MAT) §4.1 värdevakten: väglagsorden bundna till motorns svar och KB-B kvar på de gamla orden (#915, #916); §9 olycksfacit: lagren tillsammans i veckoärendet (#925) och A1 med modden först med appbygget (#916); säsongsfacit: storstädernas aggregat och spann i drift, avsnittet internt, F1 kvar på orden från 1/11 (#913, #916). Halkvaktens favoriter (FAV) §2: sträckindelningen ur resans rapport (#930), och rapporten följde redan röstens regel (#922). Bedömningen: *Väntar på ord* med de sju öppna PR:erna och de 46 ihopslagna 20–21/11, och en ny rad 21/11 i §4.2 om PR #1717 och #1720, som bär `sql/131` och DECISIONS #923 och #924, nummer som main redan använt. TAVLA: kort #380 (CarPlay påslaget och uppladdat i (62), kvar provet i bil) och #997 (kortet visas inte just nu). Poster i ⚠: inga kvar. #823 saknar raden **Stomdokument:** (gammalt beslut, prövas inte). #929 har *inga* med skälet. KAR, KALENDERN och `docs/fristerna.json`: inget att rätta (fristerna `xcode-27-2027-03-01`, `olycksfacit-overlappet-2026-11-23` och `smavag-paslaget-2026-11-27` fanns redan). Kartsynken: 104 obokförda commits sedan c9eb266; bokförda i sina PR:er: C3 och B10 (#1711), modden i facit (#1715), platsdelningens server och iPhone (#1716, #1721, #1724), olycksfacits överlapp (#1733), radarns tal (#1734), kartans stadspunkter (#1742, #1749); bokfört nu: `a-ios` (0.4.1 (72) i koden, (59)–(72) uppladdade, CarPlay påslaget i (62), kortet borta, saknas-raderna för Planera resa och CarPlay), `a-android` (versionCode 58 med modden), `a-integritet` (notiskön och provnotisen, räknarens dygnstak 100 000 99bec4e, `sql/125` sammanslagen utan bokförd migration), `u-testflight` (certifikatstädningen 504b351, första körningen 77c3593), `m-halka` (modden i motorn, v61–v63 och i apparna från (58)) och `m-smavagsrosten` (Bengts ja till påslagets villkor 42af97f, Axels svar väntar); main-in-grenen-, takten-, reels- och Halkvakt live-commits rör ingen del; signalerna lästa, inget nytt; synken flyttad till 49c1bdf. Kortgenomgången: 81 öppna kort, inget med uppfylld Verify (#659 väntar på Bengts ja till orden och Android, #674 på Android och valen i §4.2, #380 på provet i bil). Öppna ärenden: `frist` #1463 (norr om 62°, rubriken 15/11, fristen 3/12); `dom` #1384 (R-B, bokförs på Bengts ord); `olycka` #1634 (vecka 46, öppet sedan 16/11); genomsökningen av sidorna: inget öppet ärende. Öppna PR:er: sju, #1759 (21/11), #1722, #1720, #1719 och #1717 (20/11), #1698 (19/11) och #1474 (utkast, 11 dygn). `projektkartan`, `kortkartan`, `kartsynk` och `fristvakten` `--check` gröna. Att republicera: inget (sidorna byggs 05.30 UTC i 895845/halkvakt-sidor).

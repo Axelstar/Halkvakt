@@ -78,14 +78,40 @@ Från 0.4.1 (56) startar vakten i samma tryck (DECISIONS #875), när platsen red
 *"Vakten startar när du öppnar kartappen."* Är platsen inte tillåten öppnas bara kartappen, och raden står inte.
 
 **Nära dig och Planera en resa (14/11, kort #659, DECISIONS #870 och #872; bara iPhone, från 0.4.1, för alla).** På 01 Redo står
-Apples karta där sockeln stod: farorna inom sex mil, halkan som gula streck längs vägen och de andra farorna som gula
-punkter, raden *KARTAN KOMMER FRÅN APPLE*, och under den *NÄRA DIG JUST NU* med de tre närmaste (avstånd, fara, detalj) eller *"Inget rapporterat inom sex
+Apples karta där sockeln stod: det närmaste omkring föraren (från 0.4.1 (60), DECISIONS #919: en och en halv gång så långt som
+den närmaste faran, minst en mil och högst sex; förut alltid sex mil), halkan som gula streck längs vägen och de andra farorna som gula
+punkter, raden *KARTAN KOMMER FRÅN APPLE*, och under den (från 0.4.1 (63), DECISIONS #922: ett tryck på ett märke, ett streck eller en
+rad i listan visar ett kort under kartan med vad det är, mätningen eller rapportens ord, avståndet som fågelvägen, källan och när
+läget skrevs, och den valda faran får en vit kant; fartkamerorna går inte att trycka på; en frysrisk står bara när den uppfyller
+röstens regel, +1 °C eller kallare med fukt, och förut stod varje station på +3 °C eller kallare; ingen ny skärmbild än) *NÄRA DIG JUST NU* med de tre närmaste (avstånd, fara, detalj) eller *"Inget rapporterat inom sex
 mil."* Utan plats visar kartan hela landet med bara halkan, under *HALKAN I LANDET JUST NU*, och raden *"Slå på platsen
 för att se vad som finns nära dig."* och länken *SLÅ PÅ PLATSEN* (iOS ruta första gången, annars appens sida i
 Inställningar). Under ▶ *Starta vakten* står knappen *Planera en resa*. Den öppnar **Vart ska du?**:
 *"Se läget längs vägen innan du åker."*, sökrutan *Sök adress eller ort* och under den *DINA RESOR* med de sparade
 resorna (ett tryck öppnar resans rapport, som i Favoriter). Medan föraren skriver visas upp till sex förslag från Apple.
-Ett tryck på ett förslag räknar ut bilvägen dit från där föraren är (*"Räknar ut vägen …"*) och öppnar **Till {målet}**:
+Ett tryck på ett förslag räknar ut bilvägen dit från där föraren är (*"Räknar ut vägen …"*) och öppnar **Till {målet}**.
+**Från 0.4.1 (68) (DECISIONS #930, Axels ritning 20/11)** är skärmen ny: under rubriken *{längd} · CA {restid}*; kortet
+*JUST NU* med *KOLLAT {tid}*, en rubrik (*Lugnt hela vägen.*, *Halt från {ort}.*, *Frysrisk redan från start.*), en mening om var
+det börjar, och när något är halt eller har frysrisk tre tal: *HALA STRÄCKOR*, *PLATSER MED FRYSRISK* och *SMHI-VARNINGAR*; ▶
+*Starta vakten* och länkarna till kartapparna; *LÄNGS VÄGEN, I DEN ORDNING DU KÖR* med vägen ritad på Sveriges kontur (gult
+streck *HALT*, gult prickat *FRYSRISK*, grått *LUGNT*) och sträckorna under, var och en med orten den börjar vid, hur långt in
+på resan och klocktiden där, läget och det som räknats på sträckan, och ett tryck öppnar sträckans rader; *ÖVRIGT PÅ VÄGEN*
+(*LÄNGS VÄGEN* när resan är lugn, och då visas varken konturen eller sträckorna); *HALKVAKT TROR · BETA* som förut; *NÄR ÅKER
+DU?* som förut; och sist *RESAN SPARAS INTE* och *VÄGEN KOMMER FRÅN APPLE*. Klocktiderna säger när föraren är vid sträckan,
+inte hur vägen är då: allt på skärmen är läget nu. Ur en lägesfil äldre än 45 minuter säger kortet *Väglaget är för gammalt.*
+Från (69) (DECISIONS #931) börjar alla sträckor stängda, raderna under *ÖVRIGT PÅ VÄGEN* visar bara rubriken tills föraren
+öppnar dem, och ett ortnamn på konturen som skulle hamna över ett annat skrivs inte. Från (70) (DECISIONS #932) visar *ÖVRIGT PÅ VÄGEN* bara antalet av varje slag (*VÄGARBETEN 9*, *FARTKAMEROR 4*) och SMHI:s
+varningar när sträckorna visas, med raden *Vad det är står under varje sträcka.*; en lugn resa visar raderna som förut.
+**Från (71) (Förslag A, DECISIONS #933):** kortet överst säger omdömet i en mening (*Halt på 11 ställen, först efter
+Helsingborg.*) och *KOLLAT 22:44*, utan de tre talen. Kartan är Apples i gråskala med vägen grå, en gul prick per halksträcka
+och en gul ring per plats med frysrisk; under den *HALKA · FRYSRISK · VÄGEN* och *KARTAN KOMMER FRÅN APPLE*. Sträckorna bryts
+vid varje större ort och slås inte ihop: *Halt på 4 ställen* med etiketten *4 STÄLLEN* i gult och underraden *Fläckvis is och
+moddsträngar. Frysrisk vid en mätstation.*; en lugn sträcka säger *Inget halt rapporterat.* Stapeln är grå. *ÖVRIGT PÅ VÄGEN*
+har en rad per sort (*OLYCKOR*, *VÄGARBETEN*, *FARTKAMEROR*, *HINDER*, *TRAFIK*) med raden *Öppna en sträcka för att se vad
+det är.* Innehållet slutar ovanför flikraden. Startsidans karta har samma märken (gul prick för halka, gul ring för frysrisk,
+vit prick för föraren), teckenförklaringen *HALKA · FRYSRISK · DU* och inga fartkameror. Från (72) (DECISIONS #934) säger en sträcka
+vars rader bara bär ordet vått *Vått. Besvärligt väglag enligt Trafikverket.*
+Ingen skärmbild än. **Till och med (67):**
 vägen som en gul linje på kartan, längden och *RESAN SPARAS INTE*, samma rapport som en sparad resa (*Läget från*,
 *Rapporten från*, *LÄNGS VÄGEN JUST NU*, *HALKVAKT TROR · BETA*), sedan *NÄR ÅKER DU?* med vippan *Påminn mig före
 avresan* (*En notis en kvart innan*) och en tid, och ▶ *Starta vakten*. Under vippan: *"Notisen säger inte vad som finns
@@ -264,10 +290,38 @@ Sist i **Inställningar**, under etiketten *HALKVAKT*, tre rader:
 
 På **Redo.**, efter det femte avslutade vaktpasset och bara när vakten inte kör, står kortet *FEM PASS MED VAKTEN* — *"Kör någon du
 känner samma vägar?"* — *"Tipsa om Halkvakt. Du skickar bara en länk, inget om dig."* med knappen **Tipsa en vän** och länken
-*INTE NU*. Båda döljer kortet för gott. Det visas aldrig samtidigt som ett kort om resorna.
+*INTE NU*. Båda döljer kortet för gott. Det visas aldrig samtidigt som ett kort om resorna. **Kortet visas inte just nu** (Axel
+20/11, DECISIONS #920: felplacerat på startsidan), i iPhone från 0.4.1 (61) och i Android från nästa bygge. Raderna under
+Inställningar står kvar.
 
 Appen skickar ingenting själv: delningen går genom telefonens delningsark, mejlet genom förarens mejlapp och betyget genom
 butiken. Integritetstexterna är oförändrade.
+
+## Platsdelningen (iPhone, bara i TestFlight — 20/11, DECISIONS #917, #918)
+
+Från 0.4.1 (59) frågar iPhone-appen i TestFlight om den får dela vilken kommun telefonen är i. Ett bygge från App Store frågar inte.
+Skärmbilder saknas: fotostudion tar inte iPhones skärmar, och de här är inte prövade på en telefon än. Skisserna ligger på
+Design-duken *Halkvakt: platsdelning och erbjudanden, skärmar*.
+
+**Frågan** står i introduktionen från (62), som ett eget steg efter platsen (DECISIONS #921). Den som redan gått igenom
+introduktionen får den som en egen skärm som täcker appen tills föraren svarat, bara med platsen på. Etiketten *Nytt i Halkvakt*, rubriken *Vill du ha en varning innan
+du kör?* och texten *Då behöver vi veta vilken kommun du är i, så att vi kan säga till när det är halt där.* En panel säger vad som
+gäller: *Vi sparar* din kommun, senaste läget · *Aldrig* var du kör, dina resor · *Kopplas till* ett slumpat nummer · *Tas bort* när
+du vill, under Integritet. Under den: *Vi vet vilken kommun du är i, aldrig var du kör.* och *Säger du nej fungerar Halkvakt som i
+dag. Testbygge: notiserna är inte påslagna än.* Knappen *Ja, dela min kommun*, och länken *Inte nu*.
+
+**Valet om erbjudanden** kommer efter ett ja. Från (66) (DECISIONS #926): ett tryck på en varning från servern öppnar startsidan med kartan *Nära dig*, och varningen visas också med appen öppen. Ett tryck på ett erbjudande öppnar ett blad med *ERBJUDANDE FRÅN* och partnerns namn, notisens rubrik och text, raden *Halkvakt berättar inte för partnern vem du är eller var du är. Länken öppnas i din webbläsare. Du stänger av erbjudanden under Integritet.*, knappen *Visa erbjudandet* och länken *STÄNG*. Under körning öppnas inget erbjudande. Från (67) (DECISIONS #927) läggs ett erbjudande som kommer medan appen är öppen i notiscentret, utan banner; till och med (66) försvann det. Ingen skärmbild än. Från (65) (DECISIONS #924) skickar appen också notisadressen som Apple ger den, när föraren har tillåtit notiser, och *Din data* har raden *Notiser* med *Adress sparad* eller *Ingen adress sparad*. Inga notiser skickas till förare än, bara prov till en enda telefon. Från (64) (DECISIONS #923): rubriken *Vill du ha erbjudanden nära dig?*, raden *Rabatter och tips från våra partner, utvalda för där du bor.*, två rutor, *Ja tack* (*Aldrig när du kör.*) och *Nej tack* (*Bara varningar*), och under dem *Våra partner får aldrig veta vem eller var du är. Du kan ändra dig under Integritet.* Till och med (63) stod *för ditt län*, *Högst två i månaden* och en panel med tre rader. Ingen ruta är
+förvald från (61) (DECISIONS #920; i (59) var *Nej tack* förvald) och *Fortsätt* väntar på valet, och en panel: *Från*
+företag som betalar Halkvakt · *De får* aldrig veta vem eller var du är · *Ändra* när du vill, under Integritet. Knappen *Fortsätt*.
+Först då skickas något.
+
+**Din data** står under Inställningar → Integritet. För den som sagt ja: kommunen, när raden skickades, växlaren *Erbjudanden*, det
+slumpade numret och knappen *Radera min data*. Går servern inte att nå står det *Det gick inte att nå servern. Inget är raderat.*
+För den som sagt nej: *Du delar inte din kommun. Inget om den här telefonens plats är sparat hos oss.* och länken *Visa frågan igen*.
+
+**Orden i testbygget:** på Redo, i introduktionen och under Integritet står *Din exakta position skickas aldrig till Halkvakt av sig
+själv.* Under Integritet står från (60) också *Två undantag, bara om du själv säger ja: betatestet, och platsdelningen, som sparar
+vilken kommun du är i.* App Store-bygget och Android bär den gamla meningen tills platsdelningen släpps.
 
 ## Första gången — introduktionen (iOS)
 
@@ -275,6 +329,11 @@ Sex steg (ombyggd 13/11, DECISIONS #851). Överst till höger står var du är: 
 *KLART*, med gult ljus tills platsen är *Alltid*, sedan grönt. Varje steg har en knapp nederst, och ibland en länk under den.
 Före varje ruta från iOS står vilken knapp du ska välja, och varje svar har sitt eget läge. Allt går att ändra senare i
 Inställningar, och introduktionen kan visas igen därifrån.
+
+**I TestFlight, från 0.4.1 (62), ett steg till efter platsen (DECISIONS #921):** frågan om att dela kommunen och valet om
+erbjudanden, samma två skärmar som under *Platsdelningen* ovan. Stegen räknas då *AV 5*, och på slutskärmen står raden *DIN KOMMUN*
+med *Delas* eller *Delas inte*. Den som inte har platsen på får inte steget. I notissteget står efter ett ja också *En varning före
+resan, när det är halt i din kommun* med *Kommer i ett senare bygge.*
 
 1. **Välkommen** — *"Rösten som varnar innan du är där"*, *"Halkvakt säger till med rösten om faror på vägen framför dig."*
    Under *SÅ FUNGERAR DET*: *Du kör som vanligt* (*Med vilken kartapp du vill, eller ingen alls.*), *Halkvakt håller koll på
@@ -696,7 +755,8 @@ halv minut och startar vakten vid 15 km/h. Första resan efter installation, nä
 väcks den i stället av iOS större platsbyten (Apple anger ungefär 500 meter). Kostar nästan inget batteri.
 Inget mer att ställa in. Kan stängas av under Inställningar → *Vaknar själv när du kör*.
 
-*(CarPlay är avslaget i bygget från 0.4.0 (49), DECISIONS #858, och stycket nedan gäller igen när det slås på.)*
+*(CarPlay var avslaget i byggena 0.4.0 (49) till 0.4.1 (61), DECISIONS #858. Det är påslaget igen från 0.4.1 (62), DECISIONS #921,
+för prov i bil i TestFlight. Appen i App Store har det inte än.)*
 
 **iPhone — vakten startar när Halkvakt öppnas i CarPlay (11/11, DECISIONS #840, kort #380):** öppnas Halkvakt på bilens skärm startar
 vakten, om platsen redan är tillåten, *Alltid* eller *Vid användning*, eftersom CarPlay räknas som att appen är öppen. Ingen fråga om

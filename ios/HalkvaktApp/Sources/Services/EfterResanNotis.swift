@@ -72,7 +72,12 @@ final class EfterResanNotis: NSObject, UNUserNotificationCenterDelegate {
     /// varianterna med completionHandler, som alltid anropas på huvudtråden.
     nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification,
                                             withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        DispatchQueue.main.async { completionHandler([]) }
+        // En varning från servern (DECISIONS #926) visas också med appen öppen: föraren ska inte missa den för att appen råkade
+        // stå framme. Ett erbjudande får ingen banner då, men läggs i notiscentret så att föraren hittar det senare (DECISIONS #927):
+        // provet 20/11 visade att det annars försvann utan spår.
+        let slag = notification.request.content.userInfo["slag"] as? String
+        let visa: UNNotificationPresentationOptions = slag == "varning" || slag == "prov" ? [.banner, .list] : slag == "erbjudande" ? [.list] : []
+        DispatchQueue.main.async { completionHandler(visa) }
     }
 
     nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse,
@@ -83,8 +88,14 @@ final class EfterResanNotis: NSObject, UNUserNotificationCenterDelegate {
         let id = n.userInfo[FavoritNotis.resaNyckel] as? String
         let text = (response as? UNTextInputNotificationResponse)?.userText
         let action = response.actionIdentifier
+        // Notiser från servern (DECISIONS #926): slaget säger vad trycket öppnar.
+        let slag = n.userInfo["slag"] as? String
+        let rubrik = n.title, kropp = n.body
+        let partner = n.userInfo["partner"] as? String, lank = n.userInfo["lank"] as? String
         Task { @MainActor in
-            if favorit {
+            if let slag {
+                Servernotis.shared.tryckt(slag: slag, rubrik: rubrik, text: kropp, partner: partner, lank: lank)
+            } else if favorit {
                 if let id { FavoritNotis.svar(action: action, id: id, text: text) } else { Favoriter.shared.visaFliken = true }
             } else if action == Self.actionJa {   // avvikelse ⇒ appen öppnas, kortet tar vid
                 await Self.svaraAlla()

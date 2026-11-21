@@ -1,7 +1,7 @@
 // Halkvakt live — inlägg till Facebook-sidan och Instagram (kort #281; DECISIONS #598, #599, #600).
 // Körs i halkvakt-live.yml tre gånger om dygnet (morgon, lunch, kväll) och i halkvakt-larm.yml var 30:e minut (DECISIONS #627):
 //   node marknadsforing/posta.mjs bild    → väljer händelsen, skriver inlagg/DATUM-PASS.jpg + .json och live-historik.json,
-//                                           och lägger utkastet i social_utkast (DECISIONS #918): bild körs 30 min före passet
+//                                           och lägger utkastet i social_utkast (DECISIONS #937): bild körs 30 min före passet
 //   node marknadsforing/posta.mjs koll    → finns ett larm att posta? (har=ja|nej i GITHUB_OUTPUT; ritar och skriver inget)
 //   node marknadsforing/posta.mjs bild --live → ritar larmet till inlagg/DATUM-live-HHMM.jpg + .json (ingen historik)
 //   node marknadsforing/posta.mjs skicka  → postar bilden och texten (bilden måste vara pushad: Meta hämtar den via raw-URL);
@@ -443,10 +443,10 @@ export function html(h) {
 </body></html>`;
 }
 
-// ---------- Utkasten (DECISIONS #918) ----------
+// ---------- Utkasten (DECISIONS #937) ----------
 // Dagslägets inlägg ritas 30 minuter före passet och väntar i social_utkast, där admin.halkvakt.se kan ändra texten eller
 // slänga det. Bilden ändras inte. Larmen väntar inte: ett larm är bara värt något när det är färskt.
-// Går databasen inte att nå postas inlägget som det ritades, som före #918: ett utkast som ingen rört ska inte tappas.
+// Går databasen inte att nå postas inlägget som det ritades, som före #937: ett utkast som ingen rört ska inte tappas.
 
 /** Texterna att posta ur utkastets rad, eller null när utkastet är slängt. Utan rad gäller filens texter. */
 export function attPosta(inlagg, rad) {
