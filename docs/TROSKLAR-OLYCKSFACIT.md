@@ -18,6 +18,9 @@ det och bär den gamla lydelsen. ✅ **FASTSTÄLLT 2026-11-13 av Bengt och Axel*
 
 **§12 (K-lagret följer den kandidat som talade) tillades och FASTSTÄLLDES 13/11 av Bengt och Axel** (DECISIONS #856). Det ändrar §9.1.
 
+**§14 (missarna mot facit som inte bygger på stationen) förregistrerades 21/11 på Bengts ord** (DECISIONS #946, kort #676). Det ändrar §9.5
+med en punkt 9, och ingen klass.
+
 **Varifrån det kommer.** Bengt 6/11: *"Analys av olyckor är ett av de mest effektiva metoderna för att se om varningssystemen fungerar.
 Olyckan fungerar som facit."*
 - Steg 1 (DECISIONS #796) fryser vad varje varningslager sa när olyckan började.
@@ -218,6 +221,7 @@ Två tillägg i ärendet från §5:
   8. lagren tillsammans vid de halkkopplade olyckorna, för veckan och säsongen: både A1 och K, bara A1, bara K, varken A1 eller K men
      ett annat lager, och inget lager. Raderna utesluter varandra och summerar till de halkkopplade. *Bara K* är där kandidaten varnade
      och väglaget inte. Det är redovisning och ändrar ingen klassning, bedömning eller regel (tillagt 20/11, DECISIONS #925).
+  9. veckans och säsongens missar delade på facit som inte bygger på stationen och facit bara på stationen (tillagt 21/11, §14).
 - **Förslagen.** Ett område med minst **två** missar under veckan är återkommande. Det står som en rad att åtgärda, med ett kort på tavlan, en fråga i bedömningens §4.2 eller *ingen åtgärd* med skälet.
 - **Stängning.** Ärendet stängs när varje rad har sin åtgärd. Utan ett återkommande område och utan en miss att läsa stängs det direkt. Ett öppet ärende påminns var sjunde dygn, som dagens. (Ändrat 13/11, §11. Förut: *Utan ett återkommande område stängs det direkt*.)
 - **Publikt.** Som i §5 bär ärendet bara väg, tid, läge, koder och antal.
@@ -481,3 +485,45 @@ Olyckorna sedan 6/11 räknas om på de mått som sparades vid kontrollen, som `s
 | :-- | :-- | :-- |
 | Bengt | 21/11 2026 | *"Vi signerar 1770 också"* |
 | Axel | 21/11 2026 | Signerad av Bengt för båda, inte av Axel själv |
+
+## 14. Tillägg 21/11 2026: missarna mot facit som inte bygger på stationen (DECISIONS #946)
+
+**Status:** FÖRREGISTRERAT 21/11 på Bengts ord (*"förregistrera rättelse och 676 veckosammanställning ska räkna..."*), före det första
+veckoärendet som bär raden (2026-V47, som skrivs måndagen 23/11) och före varje beslut om A2:s fuktregel (kort #676).
+
+### 14.1 Varför
+
+TROLIG (regel 3) läser ytan, fukten och rimfrosten vid den närmaste vaktade stationen inom 15 km (§3, §4). A2 och kandidaten läser
+stationerna också. En miss som bara TROLIG på stationen bär kan därför fångas av en regeländring som läser samma station, utan att
+något mer om vägen är känt: samma station både varnar och avgör facit. Underlaget för fuktregeln 21/11
+(`docs/FORSLAG-FUKTREGELN-2026-11-21.md` §5 och §5c) visade det: förslag 2 fångade 52 av 56 missar, men bara sju av de 56 var missar också
+med halkordet eller väglaget efteråt, och förslaget fångade sex av dem.
+
+### 14.2 Vad som räknas
+
+- **Facit som inte bygger på stationen** är halkordet i texten (TYDLIG, regel 2) eller Trafikverkets väglag efteråt: `halka_efter` är
+  sant (§3), vilket också gäller TROLIG, väglaget (regel 3b, §13).
+- **Facit bara på stationen** är varje annan miss: TROLIG på ett fordon eller kollision utan väglaget efteråt.
+- Missarna är bedömningen MISS i §9.2, utan dubbletter. Veckans ärende (§9.5 punkt 9) visar båda raderna för veckan och för
+  säsongen sedan 6/11.
+
+### 14.3 Vad det används till
+
+- **En ändring av ett lager som läser stationen** (A2, kandidaten K, småvägsrösten) prövas på missarna med facit som inte bygger på
+  stationen. Missarna bara på stationen redovisas bredvid men bär inte ett beslut.
+- **Ingen klass ändras.** Raden är redovisning, som punkt 8: TYDLIG, TROLIG och OKLAR klassas som förut, och åtgärdsraderna i dagens
+  och veckans ärende är desamma.
+- *Väglaget efteråt* är inte oberoende av A1, som läser samma väglag (§13). För en ändring av A1 är bara halkordet oberoende.
+
+### 14.4 Det sedda talet
+
+Säsongen 6–21/11, läst i underlaget före förregistreringen (`fuktskuggan-larmtid`, körning 44905288117): 56 missar, varav 7 med facit
+som inte bygger på stationen (1 TYDLIG och 6 TROLIG med väglaget efteråt). Talet räknades före regel 3b (§13), så veckoärendets säsong
+kan visa fler: OKLAR med väglaget efteråt är nu TROLIG, väglaget.
+
+### 14.5 Signaturer
+
+| Vem | Datum | Hur |
+| :-- | :-- | :-- |
+| Bengt | 21/11 2026 | *"förregistrera rättelse och 676 veckosammanställning ska räkna..."* |
+| Axel | — | inte signerat |

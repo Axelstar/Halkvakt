@@ -1,0 +1,26 @@
+# Larmtiden för fuktregeln (DECISIONS #945, Bengt 21/11): var och när förslag 2 står på, och varianter som kortar den, mot olycksfacit.
+# Läser säsongen från 6/11 ur hinken och driften i den tillfälliga databasen (kort #323) och skriver bara aggregat
+# (scripts/fuktskuggan-larmtid.sql); loggen är publik (#498).
+name: fuktskuggan-larmtid
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  larmtid:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - name: Fönstret från dygnet före 6/11, så att olyckorna strax efter midnatt har sina två timmar
+        run: echo "DAGAR=$(( ( $(date -u +%s) - $(date -u -d 2026-11-05 +%s) ) / 86400 + 1 ))" >> "$GITHUB_ENV"
+      - uses: ./.github/actions/tillfalliga-arkivet
+        with: { dagar: "${{ env.DAGAR }}", drift-url: "${{ secrets.DATABASE_URL }}", tabeller: "olycksfacit" }
+      - shell: bash
+        run: |
+          set -euo pipefail
+          { echo '```'; psql "$TILLFALLIG_URL" -q -v ON_ERROR_STOP=1 -P footer=off -f scripts/fuktskuggan-larmtid.sql; echo '```'; } | tee -a "$GITHUB_STEP_SUMMARY"

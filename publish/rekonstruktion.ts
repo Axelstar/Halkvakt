@@ -33,6 +33,12 @@ export async function hazardsAt(fraga: Fraga, t: Date): Promise<Hazard[]> {
   for (const r of wx)
     out.push({ id: `wx:${r.station_id}`, kind: "icing_point", lon: +r.lon, lat: +r.lat,
       meta: { surfaceTempC: r.surface_temp_c === null ? null : +r.surface_temp_c, moisture: !!r.moisture } });
+  return [...out, ...await segmentAt(fraga, t)];
+}
+
+/** Halksträckorna: varje segments senaste ändring de 12 timmarna före t. */
+export async function segmentAt(fraga: Fraga, t: Date): Promise<Hazard[]> {
+  const out: Hazard[] = [];
   const seg = await fraga(`
     SELECT DISTINCT ON (h.segment_id) h.segment_id, h.condition_code, h.condition_info,
       ST_AsGeoJSON(c.geom::geometry) gj
