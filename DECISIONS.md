@@ -19023,6 +19023,63 @@ Bygget är 0.4.1 (72).
 
 **Stomdokument:** APP — skärmen Planerad resa
 
+## #935 (21/11 2026) Livekartan ritar storstädernas varningar som bitar längs vägen eller gatan, och pricken blir reserven
+
+**Beslutet.** Bengt 21/11: *"Bygg linjer"*. Storstädernas varnande punkter (B och C, DECISIONS #804) ritas i `data/kandidat.geojson`
+som bitar längs den väg eller gata de ligger på, i stället för prickar (#928). En punkt utan linje ritas som prick som förut.
+
+**Det som är byggt.**
+- **Elementet per punkt.** Kuvösens driftlista bär `element_id` (halkvakt-kuvos F79): NVDB:s element för B, och för C `rutt:` med
+  elementet eller `gata:` med gatunamnet. Bara id:t, inga särdrag. `stadspunkt` får kolumnen (sql/135), och laddaren
+  (`ingest/stadspunkter-db.ts`) skriver den; en lista utan fältet ger null.
+- **Linjerna.** Tabellen `stadsgata` (sql/135): en MultiLineString per element, med RLS, rättigheter bara för service_role.
+  `scripts/stadsgator-hamta.ts` hämtar linjerna ur Trafikverkets öppna API (NVDB, CC0) med driftens nyckel, med knappen
+  `stadsgator.yml`: prov (räknar, utan databas) eller skriv.
+  - Rekognoseringen (körning 44839886451): filter på `Element_Id` fungerar, ett åt gången och flera i samma förfrågan.
+  - Element och rutter hämtas därför med IN på FunktionellVägklass, 50 per förfrågan.
+  - Gatorna hämtas med Gatunamn: namnet och en cirkel kring gatans punkter.
+  - En punkt och en radie hade träffat flera element i staden.
+- **Provet** (körning 44841688891): nästan alla element hämtade, utan fallen förfrågan, och punkterna ligger på sina linjer. Talen ur
+  punkterna (täckning, avstånd och grannavstånd) står i halkvakt-kuvos F79, inte här (CLAUDE.md: punkterna bor i kuvösen; Bengt 21/11).
+- **Kartkärnan.** `STAD_BITAR_SQL` i `publish/map-core.ts` kopplar varje varnande punkt till sin stadspunkt (samma grupp, närmaste
+  inom 5 m) och därmed till sin linje. Biten är elementets linje inom `STAD_HALV_M` från punkten: B 600 m och C 650 m, i SWEREF 99 TM.
+  Punkterna på samma element skärs ut ur föreningen av sina cirklar, så att överlappande bitar blir en.
+  - Talen är halva grannavståndet längs nätet i provet, till närmaste 50 m. Läsningen står i halkvakt-kuvos F79.
+  - Features får `stad: true`, och `meta.kandidat` räknar `stad_bitar` och `stad_prickar`. `km` räknar stadens bitar också.
+  - Faller frågan, eller saknas linjerna, ritas varje stadspunkt som prick, som före bygget.
+  - `supabase/functions/publicera/index.ts` är buntad om.
+- **Proven.** `test/map-core.test.ts` och integrationsprovet #935 mot PostGIS. Motproven redovisas i PR:en.
+- **I halkvakt-karta:** ett tryck på en stadens linje ger rutan *Prognos · stadens gata*, som pricken. Startsidan ritar linjerna redan.
+
+**Avvikelser från beställningen.**
+- **Bitarna är cirklar, inte intervall.** Beställningen var intervall längs linjen, som vägens bitar (`KANDIDAT_BITAR_SQL`). C:s gator
+  förgrenar sig i körbanor, gafflar och rondeller. I läsningen av provets linjer tog intervallet längs den närmaste linjen därför bara
+  en del av gatan kring punkten, och för många gator under hälften. För B:s element och C:s rutter tog intervallet lika mycket som
+  cirkeln. Talen och läsningen ligger i kuvösen (F79, `fysik/ny_kandidat/stadsgator_analys.py`).
+- **C är inte tätare än B.** Avståndet mellan punkterna på samma väg eller gata är ungefär detsamma. De flesta av C:s gator har bara en
+  punkt.
+- **C:s `element_id` är inte alltid ett NVDB-element.** Ungefär hälften av C:s punkter bär gatunamnet. Gatans linje är alla element som
+  bär namnet kring punkterna.
+
+**Inte ändrat.** Vad appen säger, regeln och brytarna. Kartan visar bara det appen redan har i lägesfilen.
+
+**Kvar, i ordning:**
+1. Kuvösens PR slås ihop.
+2. sql/135 migreras med DB-knappen.
+3. Halkvakts PR slås ihop.
+4. `stadsgator.yml` körs i läget skriv.
+5. Laddaren skriver `element_id`, nästa gång ny-kandidat-fysik kör.
+6. publicera deployas.
+7. Kartrepots PR slås ihop.
+8. Linjerna ses på kartan.
+
+**Alternativ.**
+- Intervallet längs linjen, som beställt: tappar en stor del av gatorna, se ovan.
+- Ett intervall längs nätet genom förgreningarna: kräver en vägsökning per punkt, som databasen inte har.
+- Prickarna kvar.
+
+**Stomdokument:** SYS — livekartan ritar storstädernas bitar längs stadens gator; KAR — stadsgata och hämtaren
+
 ## #936 (21/11 2026) Olycksfacit på admin.halkvakt.se: en flik på statistiksidan, en prototyp
 
 **Beställning** (Bengt 21/11: *"Ok bygg en prototyp av detta för placering i admin"*, på fem skisser samma morgon). Olycksfacit syns
