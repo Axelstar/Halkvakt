@@ -19146,3 +19146,23 @@ fukt eller rimfrost vid stationen. Raderna summerar till de oklara. Skälet räk
 kolumner som redan finns.
 
 **Stomdokument:** inga — en ruta på adminsidan, räknad ur klassningens egna kolumner; klassningen, måtten och ärendena är oförändrade
+
+## #939 (21/11 2026) De oklara olyckorna: 5–12/11 räknas om, sju grupper på sidan, väglaget och radarn läses
+
+**Beslut** (Bengt 21/11: *"gör c"*, alla fyra förslagen för de oklara). Bengt ser de oklara (425 av drygt 850 klassade sedan 6/11)
+som en stor del av mörkertalet.
+1. **Omräkningen.** Olyckorna som kontrollerades före sql/110 (5–12/11) saknar olycksart och klassades med den gamla regeln för TROLIG.
+   `sql/137` ger dem arten och klassen enligt tröskeldokumentet §4 och §11.2, på de mått som sparades vid kontrollen. Väderraderna från
+   5–7/11 är redan raderade, så måtten räknas inte om och står kvar med det gamla fönstret (två timmar före till två timmar efter).
+   Läst före körningen med DB-knappen: 17 egna olyckor går från OKLAR till TROLIG, varav 6 tysta, och inga andra klasser ändras.
+2. **Sju grupper på sidan Olyckor.** Rutan *Därför är de oklara* (DECISIONS #938) delar ytan 0 till +3 °C vid +1 °C och efter fukt
+   eller rimfrost vid stationen: ingen station; 0 till +1 °C med fukt; 0 till +1 °C torrt; +1 till +3 °C med fukt; +1 till +3 °C
+   torrt; kall yta men olycksarten säger inte hur; kall yta men torrt. Klassningen ändras inte av grupperna.
+3. **Läsningen.** Väglaget efteråt (`halka_efter`, §3, bokförs men klassar inte) och regn på radarn (lagret radar) läses över
+   säsongen: hur många oklara de skulle flytta, och hur många av dem Halkvakt varnade vid.
+4. **Förslaget.** En ändring av tröskeldokumentet §4 skrivs som förslag och gäller först med Bengts och Axels signatur.
+
+**Alternativ.** En ny efterkontroll av 5–12/11 med dagens fönster: väderraderna finns inte längre, och olyckorna skulle bli *ingen
+station*. Att låta de gamla raderna stå: då jämförs två regler i samma säsong.
+
+**Stomdokument:** MAT §3 (olycksfacits klassning räknas om för 5–12/11)

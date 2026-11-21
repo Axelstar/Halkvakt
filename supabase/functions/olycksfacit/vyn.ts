@@ -24,14 +24,18 @@ const halkkopplad = (o: Olycka) => o.klass === "TYDLIG" || o.klass === "TROLIG";
 
 /** Varför en OKLAR olycka blev oklar (DECISIONS #938): den regel i klassningen (sql/110, TROSKLAR-OLYCKSFACIT §4) som inte räckte,
  *  i klassningens ordning. Utan station är ytan okänd; mellan 0 och +3 °C är det varken trolig halka eller för varmt. */
-export const OKLARA = ["Ingen station inom 15 km", "Ytan mellan 0 och +3 °C", "Kall yta, men texten säger inte hur olyckan gick till",
+export const OKLARA = ["Ingen station inom 15 km", "Ytan 0 till +1 °C, med fukt", "Ytan 0 till +1 °C, torrt",
+  "Ytan +1 till +3 °C, med fukt", "Ytan +1 till +3 °C, torrt", "Kall yta, men texten säger inte hur olyckan gick till",
   "Kall yta, men ingen fukt eller rimfrost vid stationen"] as const;
+/** De sju grupperna (Bengt 21/11, DECISIONS #939): ytan delas vid +1 °C, och fukt betyder fukt eller rimfrost vid stationen. */
 export function oklarSkal(o: Olycka): (typeof OKLARA)[number] | null {
   if (o.klass !== "OKLAR") return null;
   if (o.ytaMin === null || o.ytaMin === undefined) return OKLARA[0];
-  if (o.ytaMin > 0) return OKLARA[1];
-  if (o.art !== "ett fordon" && o.art !== "flera fordon") return OKLARA[2];
-  return OKLARA[3];
+  const vat = Boolean(o.fuktEfter || o.rimfrostEfter);
+  if (o.ytaMin > 1) return vat ? OKLARA[3] : OKLARA[4];
+  if (o.ytaMin > 0) return vat ? OKLARA[1] : OKLARA[2];
+  if (o.art !== "ett fordon" && o.art !== "flera fordon") return OKLARA[5];
+  return OKLARA[6];
 }
 
 /** Åtgärden i ord: kortet ur den förifyllda åtgärden, annars att raden läses i veckans ärende. Kollisionerna får ingen (D2). */
