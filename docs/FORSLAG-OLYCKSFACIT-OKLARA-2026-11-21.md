@@ -1,6 +1,7 @@
 # FÖRSLAG: färre oklara olyckor i olycksfacit (2026-11-21)
 
-**Status:** förslag till ändring av TROSKLAR-OLYCKSFACIT §4. Gäller först med Bengts och Axels signatur (§7). Bengt 21/11: *"gör c"*
+**Status: SIGNERAD 21/11 2026** (Bengt: *"Vi signerar 1770 också"*, för både Bengt och Axel; DECISIONS #941). Förslag A är infört i
+TROSKLAR-OLYCKSFACIT §4 och §13; B och C gäller som de står här. Bengt 21/11: *"gör c"*
 (DECISIONS #939, förslag 2 och 3).
 
 ## 1. Varför
@@ -51,5 +52,5 @@ läst, eftersom en yta strax över +1 °C med kalla fläckar är det fall där h
 
 | Vem | Datum | Hur |
 | :-- | :-- | :-- |
-| Bengt | | |
-| Axel | | |
+| Bengt | 21/11 2026 | Bengt i projektets tråd: *"Vi signerar 1770 också"* |
+| Axel | 21/11 2026 | Signerad av Bengt för båda (*"Vi signerar"*), inte av Axel själv |

@@ -74,10 +74,11 @@ och små bokstäver. Ett ord räknas bara som eget ord, inte inuti ett annat.
 | 1 | **INTE** (vilt) | Texten nämner vilt, älg, rådjur, hjort, vildsvin, ren eller djur |
 | 2 | **TYDLIG** | Texten har ett halkord (*hal, halt, halk…, is, isen, isig…, ishalk…, sladd…, glashal…, blixthalk…*) **och** `yta_min` ≤ +1 °C |
 | 3 | **TROLIG** | Olycksarten är *ett fordon* eller *flera fordon* (§11.2) **och** `yta_min` ≤ 0 °C **och** fukt eller rimfrost. Skälet för *flera fordon* är *kollision*. (Ändrat 13/11, §11, D3 och D2. Förut: *Texten säger singel…*.) |
+| 3b | **TROLIG, väglaget** | `halka_efter` (Trafikverket satte halka på A1:s sträcka inom sex timmar efter starten, §3) **och** `yta_min` ≤ +1 °C eller okänd. Skälet börjar med *väglaget efteråt*. (Tillagt 21/11, §13.) |
 | 4 | **INTE** (varmt) | `yta_min` > +3 °C |
 | 5 | **OKLAR** | Allt annat, också när ingen vaktad station finns inom 15 km |
 
-Utan station är ytan okänd. Då kan bara regel 1 och regel 5 ge en klass. Reglerna står ordagrant i `sql/085_olycksfacit_klassning.sql`
+Utan station är ytan okänd. Då kan bara regel 1, regel 3b och regel 5 ge en klass. Reglerna står ordagrant i `sql/085_olycksfacit_klassning.sql`
 (`olycksfacit_efterkontroll`), och integrationsprovet #797 prövar varje regel och varje vakt med en fälla. Sedan 13/11 står de i
 `sql/110_olycksfacit_upplagg.sql`, med olycksarten i `olycksart()`; integrationsproven #852 prövar ändringarna med ett motprov var.
 
@@ -455,3 +456,28 @@ frysta talar räknas därför stadspunkterna inte, och fångsten bokför dem som
 - förslaget `docs/FORSLAG-OLYCKSFACIT-DRIFTLARM-2026-11-08.md` (§10);
 - DECISIONS #247, #245, #564, #649, #784, #796, #797, #841 och #842;
 - `publish/snapshot-core.ts`: vakterna och fukten.
+
+## 13. Tillägg 21/11 2026: TROLIG, väglaget (DECISIONS #941)
+
+Förslaget `docs/FORSLAG-OLYCKSFACIT-OKLARA-2026-11-21.md`, signerat 21/11 av Bengt för båda (*"Vi signerar 1770 också"*).
+
+### 13.1 Vad som ändras
+
+- **Regel 3b i §4.** En olycka som annars blir OKLAR blir *TROLIG, väglaget* när `halka_efter` är sant och ytan är högst +1 °C eller
+  okänd. I tabellen står den som `klass` TROLIG med ett skäl som börjar med *väglaget efteråt*, så att den är halkkopplad överallt där
+  TROLIG räknas: i nämnaren, i missarna och i bedömningen (§9.2). En tyst olycka i klassen är en miss och får en åtgärdsrad. En
+  kollision får ingen, som för all TROLIG (D2, §11).
+- **Rätt varning i klassen redovisas för sig**, med lagret som varnade. Den får inte anföras utåt (§9.6): facit och A1 läser samma
+  källa, Trafikverkets väglag.
+- **Radarn klassar inte**, och **ytan +1 till +3 °C och torrt** prövas först när en hel vinter är läst (förslaget §4 B och C).
+
+### 13.2 Säsongen
+
+Olyckorna sedan 6/11 räknas om på de mått som sparades vid kontrollen, som `sql/137`: bara OKLAR rörs, och bara till den nya klassen.
+
+### 13.3 Signaturer
+
+| Vem | Datum | Hur |
+| :-- | :-- | :-- |
+| Bengt | 21/11 2026 | *"Vi signerar 1770 också"* |
+| Axel | 21/11 2026 | Signerad av Bengt för båda, inte av Axel själv |
