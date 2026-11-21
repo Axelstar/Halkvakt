@@ -97,11 +97,11 @@ Deno.serve(async (req) => {
     }
 
     // Påminnelsen: öppna ärenden som stått sju dygn sedan de skrevs eller påmindes senast, dygnens och veckornas. Ett öppet
-    // veckoärende läses varje morgon, så att sidan Olyckor (admin, vyn.ts) ser att det stängts samma dygn och inte först vid påminnelsen.
+    // ärende läses varje morgon, så att sidan Olyckor (admin, vyn.ts) ser att det stängts samma dygn och inte först vid påminnelsen.
     const paminda: unknown[] = [];
     const oppna = await sql`
-      SELECT 'dag' AS slag, dag::text AS nyckel, nr, skapad_at, true AS dags FROM olycksfacit_arenden
-      WHERE NOT stangd AND coalesce(paminnd_at, skapad_at) < now() - ${PAMINN_DYGN}::int * interval '1 day'
+      SELECT 'dag' AS slag, dag::text AS nyckel, nr, skapad_at, coalesce(paminnd_at, skapad_at) < now() - ${PAMINN_DYGN}::int * interval '1 day' AS dags FROM olycksfacit_arenden
+      WHERE NOT stangd
       UNION ALL
       SELECT 'vecka', vecka, nr, skapad_at, coalesce(paminnd_at, skapad_at) < now() - ${PAMINN_DYGN}::int * interval '1 day' FROM olycksfacit_veckor
       WHERE NOT stangd
@@ -112,6 +112,7 @@ Deno.serve(async (req) => {
       const dagar = Math.floor((Date.now() - new Date(a.skapad_at).getTime()) / 86_400_000);
       if (a.slag === "dag") {
         if (issue.state === "closed") { await sql`UPDATE olycksfacit_arenden SET stangd = true WHERE dag = ${a.nyckel}::date`; continue; }
+        if (!a.dags) continue;
         await gh(`/issues/${a.nr}/comments`, "POST", { body: paminnelse(a.nyckel, dagar) });
         await sql`UPDATE olycksfacit_arenden SET paminnd_at = now() WHERE dag = ${a.nyckel}::date`;
       } else {

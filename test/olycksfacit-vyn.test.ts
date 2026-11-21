@@ -33,7 +33,7 @@ test("adminVy: säsongen, nämnaren, missarna, veckorna och lagren", () => {
     o({ dubblett: true }), o({ klass: null }),                                  // räknas inte
     o({ tid: "2026-10-01T06:00:00.000Z" }),                                     // miss utanför 30 dygn: i säsongen, inte i listan
   ];
-  const v = adminVy(alla, new Map([["2026-11-19", 1801]]), "2026-11-21");
+  const v = adminVy(alla, new Map([["2026-11-19", { nr: 1801, stangd: false, veckolasning: true }]]), "2026-11-21");
   assert.deepEqual(v.sasong, { olyckor: 7, halkkopplade: 5, ratt: 2, missar: 3, kollisioner: 1 });
   assert.equal(v.bedomningar["OKLAR TYSTNAD"], 1);
   assert.equal(v.bedomningar["RÄTT TYSTNAD"], 1);
@@ -51,14 +51,18 @@ test("adminVy: säsongen, nämnaren, missarna, veckorna och lagren", () => {
   assert.ok(!JSON.stringify(v).includes("57.98"), "inget läge som koordinater");
 });
 
-test("adminVy: en läsrad visar veckans ärende, och åtgärdad när det är stängt", () => {
+test("adminVy: en läsrad är åtgärdad när ärendet som bär den är stängt", () => {
   const alla = [o({ tid: "2026-11-07T06:00:00.000Z" }), o({ tid: "2026-11-13T06:00:00.000Z" }), o({ tid: "2026-11-19T06:00:00.000Z" }),
     o({ klass: "TROLIG", skal: "singelolycka, yta ≤ 0 °C och rimfrost", tid: "2026-11-08T06:00:00.000Z" })];
   const veckorna = new Map([["2026-V45", { nr: 1489, stangd: true }], ["2026-V46", { nr: 1634, stangd: false }]]);
-  const v = adminVy(alla, new Map(), "2026-11-21", veckorna);
+  const dygnen = new Map([["2026-11-07", { nr: 1472, stangd: true, veckolasning: true }],
+    ["2026-11-10", { nr: 1536, stangd: true, veckolasning: false }], ["2026-11-11", { nr: 1537, stangd: false, veckolasning: false }]]);
+  const v = adminVy([...alla, o({ tid: "2026-11-10T06:00:00.000Z" }), o({ tid: "2026-11-11T06:00:00.000Z" })], dygnen, "2026-11-21", veckorna);
   assert.deepEqual(v.missar.map((m) => [m.dag, m.atgard, m.vecka]), [
     ["2026-11-19", "läses i veckans ärende", null],                // veckans ärende är inte skrivet än
     ["2026-11-13", "läses i veckans ärende", 1634],
+    ["2026-11-11", "läses i veckans ärende", 1634],                // dygnets ärende är öppet: veckans gäller
+    ["2026-11-10", "åtgärdad i dygnets ärende", null],             // åtgärdad i dygnets ärende, före sql/110
     ["2026-11-08", "kort #46", null],                              // förifylld: veckans ärende ändrar den inte
     ["2026-11-07", "åtgärdad i veckans ärende", 1489]]);
 });
