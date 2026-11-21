@@ -1,6 +1,6 @@
 # Fuktregeln för A2 — underlag för Bengts och Axels beslut (21/11 2026)
 
-**Läge:** FÖRSLAG. Inget är ändrat i motorn, snapshoten eller appen. Underlaget kommer ur skuggkörningen (DECISIONS #940, #942):
+**Läge:** FÖRSLAG. Inget är ändrat i motorn, snapshoten eller appen. Underlaget kommer ur skuggkörningen (DECISIONS #940, #945):
 `sql/138` och `fuktskuggan.yml` (stationstimmarna och olyckorna), `fuktskuggan-larmtid.yml` (larmtiden och varianterna, körning
 44905288117) och `fuktskuggan-takt.yml` (vad föraren skulle höra längs skuggans rutter). Säsongen 6–21/11, 295 387 stationstimmar,
 811 klassade olyckor utan dubbletter och vilt.
@@ -77,7 +77,7 @@ sträcka inom sex timmar (TROSKLAR-OLYCKSFACIT §3, bokförs men klassar inte). 
 | miss, TROLIG med halka efteråt | 6 | 0 | 2 | 5 | 4 |
 | oklar och tyst, med halka efteråt | 21 | 0 | 3 | 6 | 4 |
 
-Med det oberoende facit är missarna sju på säsongen, inte 56. Förslag 2 tar sex av dem och räckvidden ensam två. Talen är små, och
+Sedan DECISIONS #942 (samma dag) klassar väglaget efteråt en annars oklar olycka som *TROLIG, väglaget*; för A1 är det inte oberoende (facit och A1 läser samma källa), men för A2 är det det. Med det oberoende facit är missarna sju på säsongen, inte 56. Förslag 2 tar sex av dem och räckvidden ensam två. Talen är små, och
 `halka_efter` kan vara en följd av olyckan själv (§6 val 5).
 
 ## 6. Vad föraren skulle höra

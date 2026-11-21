@@ -1,4 +1,4 @@
-# Fuktskuggan i motorn (DECISIONS #942, Bengt 21/11): vad A2 skulle ha sagt längs skuggans rutter med fuktregeln (förslag 2), mot dagens
+# Fuktskuggan i motorn (DECISIONS #945, Bengt 21/11): vad A2 skulle ha sagt längs skuggans rutter med fuktregeln (förslag 2), mot dagens
 # A2. En skugga, aldrig en röst: flödet läser arkivet och skriver bara aggregat (scripts/fuktskuggan-takt.ts). Knappen tar vilket fönster
 # som helst inom arkivets 70 dygn; varje måndag räknas den gångna veckan av sig själv.
 name: fuktskuggan-takt

@@ -19224,7 +19224,81 @@ datablankett när bygget är klart; telefonprovet.
 
 **Stomdokument:** APP — Android: kartan och Planera resa och platsdelningen
 
-## #942 (21/11 2026) Fuktskuggan i motorn: förslag 2 spelas upp längs skuggans rutter, mot dagens A2
+## #942 (21/11 2026) Olycksfacit: klassen TROLIG, väglaget (förslaget för de oklara signerat)
+
+**Beslut** (Bengt 21/11: *"Vi signerar 1770 också"*; signaturen kom från Bengt för både Bengt och Axel). Förslaget
+`docs/FORSLAG-OLYCKSFACIT-OKLARA-2026-11-21.md` (DECISIONS #939 punkt 4) gäller, och TROSKLAR-OLYCKSFACIT får regel 3b i §4 och §13:
+1. En olycka som annars blir OKLAR blir *TROLIG, väglaget* när Trafikverket satte halka på A1:s sträcka inom sex timmar efter starten
+   (`halka_efter`) och ytan är högst +1 °C eller okänd. Den står som `klass` TROLIG med ett skäl som börjar med *väglaget efteråt*, så att
+   den räknas som halkkopplad överallt där TROLIG räknas; en tyst olycka i klassen är en miss, och en kollision får ingen åtgärd (D2).
+2. Rätt varning i klassen redovisas för sig med lagret som varnade, och får inte anföras utåt (§9.6), eftersom facit och A1 läser samma källa.
+3. Radarn klassar inte. Ytan +1 till +3 °C och torrt prövas först efter en hel vinter.
+4. Säsongens OKLAR sedan 6/11 räknas om på sparade mått, som `sql/137`.
+
+**Alternativ.** En egen `klass`: varje ställe som räknar TYDLIG och TROLIG hade behövt ändras, också säsongsfacit och storstädernas
+avsnitt. Att låta väglaget efteråt klassa utan ytgräns: då blir varma olyckor med en senare halkvarning halkkopplade.
+
+**Stomdokument:** MAT §3 (olycksfacits klassning får regel 3b)
+
+## #943 (21/11 2026) Planera resa i Android-appen: Googles sökning, väg och karta, och målet får kommunens namn (Axel: *"Ja vi kör"*)
+
+**Beslut.** Android-appen får Planera resa som iPhone (kort #659, Förslag A, DECISIONS #933), från 0.4.1 (72). Knappen *Planera
+resa* står under *Starta vakten* på Redo. Sökningen och vägen kommer från Google (Places API (New) och Routes API, `Vagtjanst.kt`),
+och kartan på skärmen *Till {målet}* är Googles (Maps SDK, mörkt läge, stilla): vägen i grått, en gul prick per halksträcka och
+en gul ring per plats med frysrisk. Rapporten längs vägen räknas i telefonen, som för en sparad resa.
+
+*Målets namn* är kommunen målet ligger i, ur Halkvakts egen tabell (`Kommunkarta.kt`, `data/kommuner/kommuner.json`), inte Googles
+namn på platsen (väg a, Axels val 21/11). Googles villkor för Europa säger att av det adressökningen ger får bara koordinater
+och plats-id stå på eller bredvid en karta. Utanför varje kommun i tabellen heter målet *målet*. Under förslagen på
+sökskärmen, som inte har någon karta, står *Google Maps*.
+
+*Det appen skickar.* Söktexten går till Google medan föraren skriver, utan position. När föraren väljer ett förslag går
+förarens position och platsens id till Google, som räknar ut vägen. Kartan hämtar kartbilder från Google för området längs
+vägen. Inget av det går till Halkvakt, och inget sker innan föraren söker. Det står bredvid sökningen och kartan, i
+integritet.html, i `docs/PLAY-DATASAFETY.md` och i produktboken, och raden om produktens löfte i CLAUDE.md är ändrad i samma
+commit. Nyckeln byggs in ur hemligheten `GOOGLE_MAPS_KEY` (DECISIONS #941); ett bygge utan hemligheten får varken förslag,
+väg eller karta.
+
+*Inte med än:* påminnelsen före avresan, den planerade resan med avresetid på startsidan, kartan Nära dig på startsidan och
+platsdelningen. De byggs i egna steg. Skärmen har heller ingen dra-för-att-uppdatera; *KOLLA IGEN* gör samma sak, som i
+rapporten för en sparad resa.
+
+**Bevis hittills:** android.yml grön på grenen (motorns och appens prov, felsökningsbygget och det signerade butiksbygget).
+Ingen har sett skärmarna på en telefon, och Googles tjänster har inte anropats med den riktiga nyckeln: felsökningsbygget
+signeras med en annan nyckel, som Google nekar. Det första riktiga provet är ett bygge ur Play på Axels telefon.
+
+**Alternativ.** Googles namn på platsen i rubriken och ingen karta (väg b): då tappar Android kartan som iPhone har. En egen
+karta ritad i appen: Googles väg får bara ritas på Googles karta eller utan karta, och konturen av Sverige prövades och
+valdes bort på iPhone (DECISIONS #933).
+
+**Stomdokument:** APP — Android: Planera resa med Googles sökning och väg och karta
+
+## #944 (21/11 2026) Inläggen och reelsen: appen för båda telefonerna, och filmen börjar inte svart (kort #281)
+
+**Beslut** (Axel 21/11: *"we need to somehow get users to understand that they can download and get real time updates in the app
+(android and iOS)"* och *"the reels needs to start later so they dont just start with a black image"*; annonserna rörs inte).
+1. **Texten** i Halkvakt live och reels: raden om appen lyder *I appen säger Halkvakt till direkt, med rösten, innan du är där. Gratis
+   för iPhone och Android.* Facebook får en länk till App Store och en till Google Play; Instagram pekar som förut på profilen.
+   Förut stod *Gratis för iPhone* med bara App Store-länken, fast Android är ute sedan 13/11.
+2. **Bilderna:** svepinläggets omslag och varje enbildsinlägg (också larmen) får raden *Varningen direkt i appen · iPhone och
+   Android* ovanför foten, i textfärgen och aldrig i gult. Svepets sista bild säger *Gratis för iPhone och Android* och bär båda
+   butikernas märken.
+3. **Reelsens slutbild** bär *App Store* och *Google Play* och raden *Varningen direkt i appen*.
+4. **Filmen spelas in från 0,6 s** (`START` i reels.mjs), och ljudet klipps lika. Varje film tonar in från svart, så den första
+   bilden, som Instagram och Facebook visar som omslag, var tom. Vid 0,6 s står rubriken fullt synlig i alla elva filmerna
+   (sett i en bild per film). Filmen blir 0,6 s kortare.
+5. Orden säger *direkt*, inte *realtid*: appen läser samma snapshot som sajten och varnar när bilen närmar sig.
+
+Löftesraden i svepets sista bild och i reelsens slutbild (*Din position skickas aldrig till Halkvakt*) är inte ändrad här. Den
+byts med de andra orden när platsdelningen släpps (DECISIONS #917).
+
+**Alternativ.** Att sätta reelens omslag med Instagrams `thumb_offset` och låta filmen börja svart: då börjar den ändå svart
+för den som ser den spelas, och Facebook har ingen motsvarande inställning i samma anrop. Att skriva *i realtid*: det säger mer
+än datan bär.
+
+**Stomdokument:** inga — inläggens och reelsens ordalydelse står inte i stomdokumenten
+
+## #945 (21/11 2026) Fuktskuggan i motorn: förslag 2 spelas upp längs skuggans rutter, mot dagens A2
 
 **Beslut** (Bengt 21/11: *"jag vill att du sätter upp skuggkörningen och jag utgår från att den kan göra backtester på det material
 vi redan har samlat"*). Förslag 2 ur analysen 21/11 (A2 läser stationer inom 15 km, och fukt är nederbörd eller ytan under

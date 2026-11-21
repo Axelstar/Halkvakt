@@ -34,7 +34,7 @@ test("adminVy: säsongen, nämnaren, missarna, veckorna och lagren", () => {
     o({ tid: "2026-10-01T06:00:00.000Z" }),                                     // miss utanför 30 dygn: i säsongen, inte i listan
   ];
   const v = adminVy(alla, new Map([["2026-11-19", { nr: 1801, stangd: false, veckolasning: true }]]), "2026-11-21");
-  assert.deepEqual(v.sasong, { olyckor: 7, halkkopplade: 5, ratt: 2, missar: 3, kollisioner: 1 });
+  assert.deepEqual(v.sasong, { olyckor: 7, halkkopplade: 5, ratt: 2, rattVaglaget: 0, missar: 3, kollisioner: 1 });
   assert.equal(v.bedomningar["OKLAR TYSTNAD"], 1);
   assert.equal(v.bedomningar["RÄTT TYSTNAD"], 1);
   assert.deepEqual(v.namnare.find((n) => n.klass === "TYDLIG"), { klass: "TYDLIG", olyckor: 1, varnade: 1 });
@@ -109,4 +109,16 @@ test("basfrekvens och väntat antal (DECISIONS #940): olyckor per stationstimme 
   assert.equal(s.vantat, 3, "fyra olyckor à 75 %");
   assert.deepEqual(s.veckor.map((v) => [v.vecka, v.olyckor, v.klassade, v.vantat]), [["2026-V46", 4, 0, 3], ["2026-V47", 13, 3, 0]]);
   assert.equal(adminVy(alla, new Map(), "2026-11-21").sannolikhet, null, "utan stationstimmar ingen sannolikhet");
+});
+
+test("TROLIG, väglaget (DECISIONS #942): halkkopplad, egen rad i nämnaren, och rätt varning räknad för sig", () => {
+  const vg = (x: Partial<Olycka>) => o({ klass: "TROLIG", skal: "väglaget efteråt, yta ≤ +1 °C", art: "okänd", ...x });
+  const alla = [vg({ utfall: "VARNADE", talade: ["A1"] }), vg({}), vg({ art: "flera fordon", skal: "väglaget efteråt, ingen vaktad station inom 15 km" }),
+    o({ utfall: "VARNADE", klass: "TYDLIG", talade: ["K"] })];
+  const v = adminVy(alla, new Map(), "2026-11-21");
+  assert.deepEqual(v.sasong, { olyckor: 4, halkkopplade: 4, ratt: 2, rattVaglaget: 1, missar: 2, kollisioner: 1 });
+  assert.deepEqual(v.namnare.find((n) => n.klass === "TROLIG, väglaget"), { klass: "TROLIG, väglaget", olyckor: 3, varnade: 1 });
+  assert.equal(v.namnare.find((n) => n.klass === "TROLIG, kollision")!.olyckor, 0, "kollisionen i väglaget står på väglagets rad");
+  assert.equal(v.namnare.reduce((a, n) => a + n.olyckor, 0), 4, "raderna utesluter varandra");
+  assert.deepEqual(v.missar.map((m) => m.atgard), ["läses i veckans ärende", "ingen åtgärd, kollision"], "en tyst är en miss, kollisionen får ingen åtgärd (D2)");
 });

@@ -247,3 +247,12 @@ test("§9.5 punkt 8 (DECISIONS #925): lagren tillsammans, raderna utesluter vara
             k.indexOf("**Lagren tillsammans**") < k.indexOf("**Nämnaren**"), "tabellen står mellan lagren och nämnaren");
   assert.ok(!/pb|narmaste_pb|pb_min|frys_min/.test(k), "inga tal ur kandidaten");
 });
+
+test("veckans ärende: rätt varning i TROLIG, väglaget, märks och räknas för sig (DECISIONS #942)", () => {
+  const vg = o({ utfall: "VARNADE", talade: ["A1"], skal: "väglaget efteråt, yta ≤ +1 °C", tid: "2026-11-17T06:00:00.000Z" });
+  const k = veckaKropp("2026-V47", "2026-11-16", "2026-11-22", [vg], [vg]);
+  assert.match(k, /\| TROLIG, väglaget \| 1 \| 1 \| 100 % \|/);
+  assert.match(k, /varnade: A1 — anförs inte utåt \(väglaget, §13\)/);
+  assert.match(k, /Av de rätta varningarna är 1 i klassen TROLIG, väglaget, och de får inte anföras utåt/);
+  assert.doesNotMatch(veckaKropp("2026-V47", "2026-11-16", "2026-11-22", [], [o({ utfall: "VARNADE" })]), /Av de rätta varningarna/);
+});

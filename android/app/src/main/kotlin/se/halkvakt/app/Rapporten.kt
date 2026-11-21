@@ -77,6 +77,31 @@ object Rapporten {
         }
     }
 
+    /** Rapporten längs en planerad resa (kort #659), åt ett håll, efter åldersgränserna. */
+    class Planerad(val rader: List<RapportRad>, val kandidat: List<KandidatRad>?, val kollat: Long, val lagesfil: Long?,
+                   val rapportfil: Long?, val gammaltVaglag: Boolean, val gamlaOlyckor: Boolean)
+
+    /** Samma hämtning och samma räkning som för en sparad resa. Vägen kommer som data och sparas inte här. null när hämtningen
+     *  eller läsningen inte gick. */
+    suspend fun planerad(ctx: Context, punkter: List<DoubleArray>): Planerad? {
+        val app = ctx.applicationContext
+        return try {
+            withContext(Dispatchers.IO) {
+                val (stat, live) = SnapshotRepo.dokument(app)
+                val f = RapportRepo.hamta(app)
+                val nu = System.currentTimeMillis()
+                val u = rakna(listOf(SparadRutt("planerad", "", "", punkter)), karta(stat), karta(live), karta(f.snabb), karta(f.lang), nu,
+                    Prefs.facitEnabled(app).first()) ?: return@withContext null
+                val r = u.resor["planerad"] ?: return@withContext null
+                Planerad(r.dit, r.kandidatDit, nu, u.lagesfil, u.rapportfil, u.gammaltVaglag, u.gamlaOlyckor)
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     private class Utfall(val resor: Map<String, Resa>, val lagesfil: Long?, val rapportfil: Long?, val gammaltVaglag: Boolean,
                          val gamlaOlyckor: Boolean)
 

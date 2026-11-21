@@ -30,6 +30,7 @@ jobs:
           retention-days: 30
       - name: Bygg signerad release-AAB
         env:
+          GOOGLE_MAPS_KEY: ${{ secrets.GOOGLE_MAPS_KEY }}   # DECISIONS #941: bara butiksbygget bär nyckeln
           HV_KEYSTORE_B64: ${{ secrets.HV_KEYSTORE_B64 }}
           HV_KEYSTORE_PASS: ${{ secrets.HV_KEYSTORE_PASS }}
         run: |

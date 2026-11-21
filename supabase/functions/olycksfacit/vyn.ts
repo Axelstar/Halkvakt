@@ -3,7 +3,7 @@
 // säsongen. Sidan är inloggad men svaret bär ändå bara det som ärendena får bära: väg, tid, klass, koder och antal, aldrig läget
 // som koordinater och aldrig kandidatens tal.
 import { vagText } from "../_shared/vagnamn.ts";
-import { BEDOMNINGAR, type Bedomning, FORSTA_DAG, NAMNARE, OMRADEN, OVERLAPP, type Olycka, behoverAtgard, bedomning, forifylld, kollision,
+import { BEDOMNINGAR, type Bedomning, FORSTA_DAG, NAMNARE, OMRADEN, OVERLAPP, type Olycka, behoverAtgard, bedomning, forifylld, kollision, vaglaget,
   omrade, svenskDag, svenskTid } from "./arende.ts";
 
 export const MISSAR_DYGN = 30;   // misslistan: de senaste 30 dygnen
@@ -74,7 +74,7 @@ export function atgard(o: Olycka): string {
 
 export type Vy = {
   fran: string; till: string;
-  sasong: { olyckor: number; halkkopplade: number; ratt: number; missar: number; kollisioner: number };
+  sasong: { olyckor: number; halkkopplade: number; ratt: number; rattVaglaget: number; missar: number; kollisioner: number };
   bedomningar: Record<Bedomning, number>;
   namnare: { klass: string; olyckor: number; varnade: number }[];
   omraden: { omrade: string; missar: number }[];
@@ -118,7 +118,8 @@ export function adminVy(alla: Olycka[], arenden: ReadonlyMap<string, Dygnsarende
 
   return {
     fran: FORSTA_DAG, till: idag,
-    sasong: { olyckor: s.length, halkkopplade: halk.length, ratt: bed("RÄTT VARNING", s), missar: bed("MISS", s),
+    sasong: { olyckor: s.length, halkkopplade: halk.length, ratt: bed("RÄTT VARNING", s),
+              rattVaglaget: s.filter((o) => vaglaget(o) && bedomning(o) === "RÄTT VARNING").length, missar: bed("MISS", s),
               kollisioner: s.filter((o) => bedomning(o) === "MISS" && kollision(o)).length },
     bedomningar: Object.fromEntries(BEDOMNINGAR.map((b) => [b, bed(b, s)])) as Record<Bedomning, number>,
     namnare: NAMNARE.map(([klass, f]) => { const x = s.filter(f); return { klass, olyckor: x.length, varnade: x.filter((o) => o.utfall === "VARNADE").length }; }),

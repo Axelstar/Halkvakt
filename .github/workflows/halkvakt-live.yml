@@ -36,6 +36,10 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           npm i --no-save --no-audit --no-fund pg@8.13.0
+          # Identiteten för kvittots commit stod i bildsteget, som flyttade till halkvakt-utkast.yml (#1719); utan den föll körningen
+          # 21/11 10.50 UTC på "empty ident name" efter att inlägget gått ut, och kvittot committades inte. Gäller också X-mätningen nedan.
+          git config user.name "Halkvakt live"
+          git config user.email "motor@halkvakt.dev"
           # Kvittot committas även när Instagram faller, annars postar nästa körning Facebook igen (17/10).
           fel=0; node marknadsforing/posta.mjs skicka || fel=$?
           git add marknadsforing/postat.json 2>/dev/null || true

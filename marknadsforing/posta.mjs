@@ -96,10 +96,12 @@ const LANK = {
   facebook: "Läget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan",
   instagram: "Läget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.",
 };
-// Facebook får App Store-länken klickbar i varje inlägg; på Instagram ligger den först i profilen (DECISIONS #601).
+// Facebook får länkarna till båda butikerna klickbara i varje inlägg; på Instagram ligger länken först i profilen (DECISIONS #601).
+// Raden säger vad appen gör som inlägget inte gör, och att den finns för båda telefonerna (Axel 21/11, DECISIONS #944).
 const APP = {
-  facebook: "Halkvakt säger till med rösten innan du är där. Gratis för iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784",
-  instagram: "Halkvakt säger till med rösten innan du är där. Gratis för iPhone, länken finns i vår profil.",
+  facebook: "I appen säger Halkvakt till direkt, med rösten, innan du är där. Gratis för iPhone och Android.\n" +
+    "iPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\nAndroid: https://play.google.com/store/apps/details?id=se.halkvakt.app",
+  instagram: "I appen säger Halkvakt till direkt, med rösten, innan du är där. Gratis för iPhone och Android, länken finns i vår profil.",
 };
 const lanTagg = l => "#" + l.kort.replace(/s? län$/, "").replace(/\s+/g, "");
 
@@ -412,7 +414,8 @@ export function html(h) {
   .stapel{flex:1;display:flex;flex-direction:column;align-items:center;gap:12px;font:600 34px var(--mono)}
   .stapel i{display:block;width:100%;border-radius:10px;background:#26323A}.stapel i.halt{background:#A9B5BB}
   .stapel span{font:500 24px var(--mono);color:#8FA0A9;text-transform:uppercase}
-  .fot{margin-top:auto;padding-top:28px;display:flex;justify-content:space-between;align-items:center;font:500 20px var(--mono);letter-spacing:.12em;color:#6F7C83}
+  .app{margin-top:auto;padding-top:28px;font:500 22px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:#E9EFF2}.live .app{color:#080B0D}
+  .fot{margin-top:20px;padding-top:28px;display:flex;justify-content:space-between;align-items:center;font:500 20px var(--mono);letter-spacing:.12em;color:#6F7C83}
   .fot .lock{display:flex;align-items:center;gap:13px;font:600 22px var(--mono);letter-spacing:.12em;color:#E9EFF2}
   .fot .h{display:flex;gap:1.2em}.fot .u{color:#8FA0A9;letter-spacing:.04em;text-transform:none}
   /* Live: hela ytan gul, bläck #080B0D, sekundär text #3A2E0B. */
@@ -438,6 +441,7 @@ export function html(h) {
   ${rader ? (live ? `<div class="rader">${rader}</div>` : `<div class="panel">${rader}</div>`) : ""}
   ${fler ? `<p class="fler">+ ${fler} län till</p>` : ""}
   ${staplar}
+  <p class="app">Varningen direkt i appen · iPhone och Android</p>
   <div class="fot"><span class="lock"><svg width="40.5" height="35.8" viewBox="3 3 94 83"><path fill-rule="evenodd" fill="${ink}" d="${MARKE}"/></svg>HALKVAKT</span>
     <span class="h"><span>KÄLLA ${esc(kalla.toUpperCase())}</span><span class="u">halkvakt.se/lan</span></span></div>
 </body></html>`;

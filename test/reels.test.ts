@@ -90,3 +90,13 @@ test("Instagram pekar på profilen, Facebook har länken", () => {
   assert.doesNotMatch(bildtext("natt", sam(), "instagram"), /https:/);
   assert.match(bildtext("natt", sam(), "facebook"), /https:\/\/halkvakt\.se\/lan/);
 });
+
+test("filmen spelas in från START, så att första bilden inte är svart, och texten nämner båda butikerna (DECISIONS #944)", async () => {
+  // @ts-ignore — .mjs utan typer
+  const { START } = await import("../marknadsforing/reels.mjs");
+  assert.ok(START >= 0.6 && START < 1.5, "rubriken är fullt synlig vid 0,6 s och filmen får inte tappa mer än början");
+  const html = (await import("node:fs")).readFileSync(new URL("../marknadsforing/reels/reel.html", import.meta.url), "utf8");
+  assert.match(html, /'App Store', 'Google Play'/);
+  for (const k of ["facebook", "instagram"]) assert.match(bildtext("du", sam(), k), /Gratis för iPhone och Android/);
+  assert.match(bildtext("du", sam(), "facebook"), /play\.google\.com\/store\/apps\/details\?id=se\.halkvakt\.app/);
+});

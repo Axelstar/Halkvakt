@@ -24,6 +24,8 @@ Syfte: den dag kontot är godkänt ska formuläret kunna fyllas i på fem minute
 | `POST` app-raknare (Supabase edge function) — **räknaren, 1/11 (DECISIONS #772), sex områden 3/11 (DECISIONS #787)** | (1) vägen in: introduktionen (iOS), platsbehörigheten, notisbehörigheten, första starten, första varningen, en gång per enhet och värde; (2) en gång per dygn som vakten gick; (3) varje vaktpass när det startar och slutar; (4) varje varning, ett kort som byts ut och om bannern kom fram; (5) en inställning som ändras; (6) positionen borta, gammal väglagsdata eller en misslyckad hämtning, en gång per pass — skickas när appen är öppen eller bilen står stilla, aldrig under körning | `{h, v, app, ver, k}` — händelsens namn, dess värde, plattform, appversion och kohort (*ny* eller *befintlig* installation). Inget id, ingen tid, ingen position, ingen sträcka: ett vaktpass är bara startsätt, längd i fyra hinkar (under 3, 3–15, 15–45, över 45 min) och hur det slutade; en varning bara faran och avståndet till den i hinkar. Servern räknar upp **en rad per dygn, app, version, kohort, händelse och värde** (`sql/077`, `sql/082`) | **alla** — alltid på, står i integritetspolicyn och i appens Integritet (variant A, Axel och Bengt 1/11; utvidgad av Axel och Bengt 3/11) |
 | `POST` facit-svar — **miss** (kort #203 lager 2) | **bara** när föraren markerat *Appen missade* (knapp eller Siri) OCH efter resan valt vad det var, och bara när bilen står stilla eller appen öppnas | `{miss, t, vad, station, segment, app, ver}` — klockslaget, förarens val (halka/vatten/vilt/olycka/annat), närmaste mätstation (`wx:2135`), närmaste halkavsnitt inom 2 km (`seg:16010` eller null), plattform, appversion | **bara betatestare som själva slagit på BETATEST** |
 
+| `POST` places.googleapis.com och routes.googleapis.com, och Googles kartbilder — **Planera resa, från 0.4.1 (72) (DECISIONS #941, #943)** | **bara** när föraren själv söker en adress i Planera resa: söktexten medan föraren skriver, vägen när föraren väljer ett förslag, kartbilderna när skärmen *Till {målet}* visar kartan | till **Google**, aldrig till Halkvakt: söktexten (utan position); förarens position och den valda platsens id; kartans utsnitt längs vägen. Därtill appens paketnamn, signeringsnyckelns fingeravtryck och kartnyckeln, som Google kräver | alla som använder Planera resa |
+
 `FacitSender.swift` / `FacitSender.kt`, `Facit.body()`, `supabase/functions/facit-svar/index.ts`, `sql/022`;
 räknaren: `Raknare.swift` / `Raknare.kt`, `supabase/functions/app-raknare/index.ts`, `sql/077`, `sql/082`.
 **Ingen identitet, ingen kontonyckel, ingen resa, ingen koordinat.** Men ärligt: ett varnings-id pekar på en
@@ -60,6 +62,23 @@ raden i Integritet, och en påslagen brytare gäller inte (`Prefs.betatestPa`). 
 
 **App version** (`ver`) skickas också. Den är inte en av Googles obligatoriska datatyper i sig och deklareras
 inte separat — den bär ingenting om användaren. Nämns här så att granskaren ser att den är känd, inte glömd.
+
+## Planera resa, rad för rad i formuläret (DECISIONS #943, 21/11) — ⚠ fylls i av Axel innan 0.4.1 (72) släpps
+
+Google räknar det som lämnar enheten genom appen, också genom ett bibliotek som Googles karta. Förslag till svar:
+
+| Fråga | Svar | Varför |
+| :-- | :-- | :-- |
+| Data type | **Location → Precise location** | Förarens position går till Google när vägen räknas ut. |
+| Collected | **Ja** | Den lämnar enheten. Halkvakt tar inte emot den, men blanketten frågar om appen, inte om Halkvakts servrar. |
+| Shared | **Nej** | Plays undantag: en överföring som användaren själv startar och väntar sig (föraren söker en väg, och det står bredvid sökrutan vart uppgifterna går). |
+| Processed ephemerally | **Nej** | Vi vet inte hur länge Google sparar frågan, och svarar därför inte ja. |
+| Required or optional | **Optional** | Appen fungerar utan Planera resa. |
+| Purpose | **App functionality** | Att räkna ut vägen och visa den. |
+| Data type | **App activity → In-app search history** | Söktexten går till Google. Samma svar som ovan: Collected ja, Shared nej, Optional, App functionality. |
+
+Svaren är Claudes förslag efter Plays hjälptext som den mindes den 21/11; läs frågorna i formuläret när de fylls i, och ändra
+här om formuläret säger något annat.
 
 ## Räknaren, rad för rad i formuläret (DECISIONS #772, 1/11; #787, 3/11)
 
