@@ -2023,6 +2023,30 @@ test("#935 stadens bitar: längs elementets linje i meter, sammanslagna, och bar
   }
 });
 
+// STADENS GATOR, HÄMTARENS SKRIVNING (DECISIONS #935, sql/135): scripts/stadsgator-hamta.ts:s SATS mot riktig PostGIS.
+//   SG1  två delar som möts blir en MultiLineString med en linje, i 4326
+//   SG2  en ny hämtning av samma element skriver över linjen
+test("#935 hämtarens skrivning i stadsgata: delarna fogas ihop, och en ny hämtning skriver över", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { SATS } = await import("../scripts/stadsgator-hamta.ts");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const las = (f: string) => q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+  const linje = (c: number[][][]) => JSON.stringify({ type: "MultiLineString", coordinates: c });
+  try {
+    await las("089_stadspunkter.sql"); await las("135_stadsgata.sql");
+    await q("DELETE FROM stadsgata WHERE element_id = '99952:1'");
+    assert.equal((await q(SATS, [["99952:1"], [linje([[[18, 59], [18.001, 59]], [[18.001, 59], [18.002, 59]]])]])).rowCount, 1);
+    assert.deepEqual((await q("SELECT ST_GeometryType(geom) AS t, ST_NumGeometries(geom) AS n, ST_SRID(geom) AS s FROM stadsgata WHERE element_id = '99952:1'")).rows,
+      [{ t: "ST_MultiLineString", n: 1, s: 4326 }], "SG1: en linje, i 4326");
+    await q(SATS, [["99952:1"], [linje([[[18, 59], [18.003, 59]]])]]);
+    assert.equal(Number((await q("SELECT ST_XMax(geom) AS x FROM stadsgata WHERE element_id = '99952:1'")).rows[0].x), 18.003, "SG2: skrivs över");
+  } finally {
+    await q("DELETE FROM stadsgata WHERE element_id = '99952:1'").catch(() => {});
+    await pool.end();
+  }
+});
+
 test("#580 autovacuum: tabellerna som byts ut städas vid 2 % + 1 000 döda rader, och saknade tabeller hoppas över", { skip: !url }, async () => {
   const { default: pg } = await import("pg");
   const { readFileSync } = await import("node:fs");
