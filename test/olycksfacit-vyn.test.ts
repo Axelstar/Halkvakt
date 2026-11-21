@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import type { Olycka } from "../supabase/functions/olycksfacit/arende.ts";
-import { adminVy, atgard, isoVecka } from "../supabase/functions/olycksfacit/vyn.ts";
+import { adminVy, atgard, isoVecka, oklarSkal } from "../supabase/functions/olycksfacit/vyn.ts";
 
 const o = (x: Partial<Olycka>): Olycka => ({ tid: "2026-11-18T05:23:00.000Z", vag: "134", lon: 15.5434, lat: 57.9831,
   utfall: "TYST_TACKT", orsaker: ["A1: väglaget Normalt", "K: fukt saknades", "A2: ingen station inom 5 km"], klass: "TROLIG",
@@ -49,4 +49,17 @@ test("adminVy: säsongen, nämnaren, missarna, veckorna och lagren", () => {
   assert.deepEqual(l["Inget lager"], [1, 3]);
   assert.equal(v.lagren.reduce((s, r) => s + r.sasong, 0), v.sasong.halkkopplade, "raderna summerar till de halkkopplade");
   assert.ok(!JSON.stringify(v).includes("57.98"), "inget läge som koordinater");
+});
+
+test("oklarSkal: skälet i klassningens ordning, och oklara summerar till OKLAR", () => {
+  const ok = (x: Partial<Olycka>) => o({ klass: "OKLAR", ...x });
+  assert.equal(oklarSkal(ok({ ytaMin: null })), "Ingen station inom 15 km");
+  assert.equal(oklarSkal(ok({ ytaMin: 1.5 })), "Ytan mellan 0 och +3 °C");
+  assert.equal(oklarSkal(ok({ ytaMin: -1, art: "okänd" })), "Kall yta, men texten säger inte hur olyckan gick till");
+  assert.equal(oklarSkal(ok({ ytaMin: -1, art: "ett fordon, svag" })), "Kall yta, men texten säger inte hur olyckan gick till");
+  assert.equal(oklarSkal(ok({ ytaMin: -1, art: "ett fordon" })), "Kall yta, men ingen fukt eller rimfrost vid stationen");
+  assert.equal(oklarSkal(o({ klass: "TROLIG", ytaMin: -1 })), null);
+  const v = adminVy([ok({ ytaMin: 2, utfall: "VARNADE" }), ok({ ytaMin: null }), ok({ ytaMin: 0.5 }), o({})], new Map(), "2026-11-21");
+  assert.deepEqual(v.oklara.map((r) => [r.olyckor, r.varnade]), [[1, 0], [2, 1], [0, 0], [0, 0]]);
+  assert.equal(v.oklara.reduce((a, r) => a + r.olyckor, 0), v.bedomningar["OKLAR TYSTNAD"] + 1);
 });

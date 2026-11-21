@@ -21,6 +21,18 @@ export function isoVecka(dag: string): string {
 const dagarFore = (dag: string, n: number) => new Date(Date.parse(dag + "T00:00:00Z") - n * 86_400_000).toISOString().slice(0, 10);
 const halkkopplad = (o: Olycka) => o.klass === "TYDLIG" || o.klass === "TROLIG";
 
+/** Varför en OKLAR olycka blev oklar (DECISIONS #938): den regel i klassningen (sql/110, TROSKLAR-OLYCKSFACIT §4) som inte räckte,
+ *  i klassningens ordning. Utan station är ytan okänd; mellan 0 och +3 °C är det varken trolig halka eller för varmt. */
+export const OKLARA = ["Ingen station inom 15 km", "Ytan mellan 0 och +3 °C", "Kall yta, men texten säger inte hur olyckan gick till",
+  "Kall yta, men ingen fukt eller rimfrost vid stationen"] as const;
+export function oklarSkal(o: Olycka): (typeof OKLARA)[number] | null {
+  if (o.klass !== "OKLAR") return null;
+  if (o.ytaMin === null || o.ytaMin === undefined) return OKLARA[0];
+  if (o.ytaMin > 0) return OKLARA[1];
+  if (o.art !== "ett fordon" && o.art !== "flera fordon") return OKLARA[2];
+  return OKLARA[3];
+}
+
 /** Åtgärden i ord: kortet ur den förifyllda åtgärden, annars att raden läses i veckans ärende. Kollisionerna får ingen (D2). */
 export function atgard(o: Olycka): string {
   if (kollision(o)) return "ingen åtgärd, kollision";
@@ -38,6 +50,7 @@ export type Vy = {
   missar: { dag: string; tid: string; vag: string; klass: string; omrade: string | null; atgard: string; arende: number | null }[];
   veckor: ({ vecka: string } & Record<Bedomning, number>)[];
   lagren: { rad: string; senaste: number; sasong: number }[];
+  oklara: { skal: string; olyckor: number; varnade: number }[];
 };
 
 /** Fliken ur säsongens olyckor (ej klassade och dubbletter räknas inte), dygnens ärenden och dagens svenska datum. */
@@ -67,5 +80,7 @@ export function adminVy(alla: Olycka[], arenden: ReadonlyMap<string, number>, id
     veckor: [...veckor.keys()].sort().map((v) => ({ vecka: v, ...Object.fromEntries(BEDOMNINGAR.map((b) => [b, bed(b, veckor.get(v)!)])) }) as { vecka: string } & Record<Bedomning, number>),
     lagren: OVERLAPP.map(([rad, f]) => ({ rad, senaste: halk.filter((o) => svenskDag(o.tid) >= lagerFran && f(o.talade)).length,
                                           sasong: halk.filter((o) => f(o.talade)).length })),
+    oklara: OKLARA.map((skal) => { const x = s.filter((o) => oklarSkal(o) === skal);
+      return { skal, olyckor: x.length, varnade: x.filter((o) => o.utfall === "VARNADE").length }; }),
   };
 }

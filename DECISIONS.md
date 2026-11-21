@@ -19132,3 +19132,17 @@ och pulsklockan körd skarpt så att de tre nya jobben ligger i pg_cron, och fö
 *Numret* (21/11): beslutet skrevs som #918 och tabellen som sql/131 på grenen, men båda numren togs på main medan PR #1719 väntade
 (#918 platsdelningen, sql/131 `push_utskick`). Vid sammanslagningen på Bengts ord 21/11 (*"slå ihop 1719 och driftsätt"*) blev det
 #937 och sql/134. Innehållet är oförändrat.
+
+## #938 (21/11 2026) Olyckor i admin: rutan Därför är de oklara
+
+**Beslut** (Bengt 21/11: *"ja"*, på frågan om rutan). Bengt var osäker på den stora andelen OKLAR: 420 av 854 klassade olyckor sedan
+6/11, läst med DB-knappen samma morgon. Sidan Olyckor (DECISIONS #936) får en ruta som delar de oklara på den regel i klassningen
+(sql/110, TROSKLAR-OLYCKSFACIT §4) som inte räckte, i klassningens ordning, med hur ofta Halkvakt varnade:
+ingen station inom 15 km; ytan mellan 0 och +3 °C; kall yta men en olycksart som inte är ett eller flera fordon; kall yta men ingen
+fukt eller rimfrost vid stationen. Raderna summerar till de oklara. Skälet räknas i `olycksfacit/vyn.ts` ur kolumnerna `yta_min`,
+`fukt_efter`, `rimfrost_efter` och `art`, som `hamta.ts` nu läser. Klassningen och ärendena ändras inte.
+
+**Alternativ.** En ny kolumn med skälet i `olycksfacit`: en migration och en ändring i klassningen för något som går att räkna ur de
+kolumner som redan finns.
+
+**Stomdokument:** inga — en ruta på adminsidan, räknad ur klassningens egna kolumner; klassningen, måtten och ärendena är oförändrade
