@@ -3,7 +3,7 @@
 -- eftersom sammanfattningen är publik (#498): ingen olycka, ingen station och ingen plats finare än breddgradsbandet.
 --
 -- RADERNA är sql/138:s: yta -40…+60 °C och högst 12 °C under luften (#75), nederbörd som regn, snö eller ett ord utom no och Dry,
--- daggpunkten bara inom -50…+30 °C. Till skillnad från sql/138 prövas villkoret PER RAD och en stationstimme står på om någon av dess
+-- daggpunkten bara inom -50…+30 °C; en rad utan giltig daggpunkt har ingen dagg (coalesce, så att den räknas i nämnaren). Till skillnad från sql/138 prövas villkoret PER RAD och en stationstimme står på om någon av dess
 -- rader uppfyller det (sql/138 tar lägsta ytan och fukten ur olika rader), så förslag 2 kan ge en något lägre andel här.
 --
 -- VARIANTERNA, alla med ytan <= +1 °C:
@@ -32,13 +32,13 @@ CREATE TEMP TABLE lr AS
     AND surface_temp_c BETWEEN -40 AND 60 AND (air_temp_c IS NULL OR surface_temp_c >= air_temp_c - 12);
 CREATE TEMP TABLE lv AS
   SELECT station_id, geom, sample_time, natt, y,
-         y <= 1 AND ned                                          AS a2,
-         y <= 1 AND (ned OR y < dg)                              AS f2,
-         y <= 1 AND (ned OR (y < dg AND y <= 0))                 AS rim0,
-         y <= 1 AND (ned OR (y < dg AND y <= 0.5))               AS y05,
-         y <= 1 AND (ned OR y < dg - 0.5)                        AS m05,
-         y <= 1 AND (ned OR y < dg - 1)                          AS m1,
-         y <= 1 AND (ned OR (y < dg AND natt))                   AS natt_v
+         coalesce(y <= 1 AND ned, false) AS a2,
+         coalesce(y <= 1 AND (ned OR y < dg), false) AS f2,
+         coalesce(y <= 1 AND (ned OR (y < dg AND y <= 0)), false) AS rim0,
+         coalesce(y <= 1 AND (ned OR (y < dg AND y <= 0.5)), false) AS y05,
+         coalesce(y <= 1 AND (ned OR y < dg - 0.5), false) AS m05,
+         coalesce(y <= 1 AND (ned OR y < dg - 1), false) AS m1,
+         coalesce(y <= 1 AND (ned OR (y < dg AND natt)), false) AS natt_v
   FROM lr;
 CREATE INDEX ON lv USING gist (geom);
 CREATE INDEX ON lv (sample_time);
