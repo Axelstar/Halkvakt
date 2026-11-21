@@ -62,7 +62,7 @@ export const STAD_BITAR_SQL = `
             SELECT s.element_id, s.geom FROM stadspunkt s WHERE s.grupp = p.seg
             ORDER BY s.geom <-> ST_SetSRID(ST_MakePoint(p.lon, p.lat), 4326) LIMIT 1) s
           WHERE s.element_id IS NOT NULL
-            AND ST_DWithin(ST_Transform(s.geom, 3006), ST_Transform(ST_SetSRID(ST_MakePoint(p.lon, p.lat), 4326), 3006), 5)),
+            AND ST_DWithin(ST_Transform(s.geom, 3006), ST_Transform(ST_SetSRID(ST_MakePoint(p.lon, p.lat), 4326), 3006), 1000)),
         narm AS (
           SELECT sp.seg, sp.i, sp.element_id, sp.pt, ST_Transform(ST_Force2D(g.geom), 3006) AS linje
           FROM sp JOIN stadsgata g ON g.element_id = sp.element_id

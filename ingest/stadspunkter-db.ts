@@ -43,8 +43,8 @@ export const SATS = {
     SELECT * FROM unnest($1::text[], $2::text[], $3::text[], $4::text[], $5::float8[], $6::float8[], $7::text[])
     ON CONFLICT (punkt) DO UPDATE SET grupp = EXCLUDED.grupp, lager = EXCLUDED.lager, omrade = EXCLUDED.omrade, lon = EXCLUDED.lon, lat = EXCLUDED.lat,
       element_id = EXCLUDED.element_id
-    WHERE (stadspunkt.grupp, stadspunkt.lager, stadspunkt.omrade, stadspunkt.lon, stadspunkt.lat, stadspunkt.element_id)
-      IS DISTINCT FROM (EXCLUDED.grupp, EXCLUDED.lager, EXCLUDED.omrade, EXCLUDED.lon, EXCLUDED.lat, EXCLUDED.element_id)`,
+    WHERE (stadspunkt.grupp, stadspunkt.lager, stadspunkt.omrade, stadspunkt.lon, stadspunkt.lat)
+      IS DISTINCT FROM (EXCLUDED.grupp, EXCLUDED.lager, EXCLUDED.omrade, EXCLUDED.lon, EXCLUDED.lat)`,
   ta_bort: `DELETE FROM stadspunkt WHERE NOT (punkt = ANY($1::text[]))`,
 };
 
