@@ -19080,7 +19080,7 @@ som bitar längs den väg eller gata de ligger på, i stället för prickar (#92
 
 **Stomdokument:** SYS — livekartan ritar storstädernas bitar längs stadens gator; KAR — stadsgata och hämtaren
 
-## #936 (21/11 2026) Olycksfacit på admin.halkvakt.se: en flik på statistiksidan, en prototyp
+## #936 (21/11 2026) Olycksfacit på admin.halkvakt.se: ett eget menyval, Olyckor
 
 **Beställning** (Bengt 21/11: *"Ok bygg en prototyp av detta för placering i admin"*, på fem skisser samma morgon). Olycksfacit syns
 i dag bara i de dagliga och veckovisa ärendena med etiketten `olycka`. Prototypen ger statistiksidan på admin.halkvakt.se en flik
@@ -19088,19 +19088,24 @@ i dag bara i de dagliga och veckovisa ärendena med etiketten `olycka`. Prototyp
 missar), nämnaren per klass, missarna de senaste 30 dygnen med förbättringsområde, åtgärd och länk till dagens ärende, missarna per
 område, bedömningarna vecka för vecka och lagren tillsammans (§9.5 punkt 8). Kartan (förslag 3) väntar.
 
-**Hur.** Funktionen `admin` får delen `olycksfacit` (menyvalet statistik). Den läser säsongens olyckor med samma fråga som ärendena,
-som flyttas ut till `supabase/functions/olycksfacit/hamta.ts`, och räknar dem i `olycksfacit/vyn.ts` med ärendenas egna regler
-(`bedomning`, `omrade`, `forifylld`, nämnaren och lagerraderna exporteras ur `arende.ts`). Inget nytt mått, ingen ny tabell och ingen
-migration. Svaret bär bara det ärendena får bära, utan läget som koordinater och utan kandidatens tal. Säljregeln (§9.6) följs på
-sidan: andelen står alltid bredvid antalet. Sidan i Axelstar/halkvakt-admin visar exempeldata, tydligt märkta, tills delen är i drift.
+**Platsen** (Bengt 21/11, av tre upplägg: *"välj alternativ a men kalla den olyckor"*). Prototypen låg först som en sjätte flik i
+Statistik. Den blir ett eget menyval, *Olyckor*, med underflikar (Olyckorna nu; säsongen kan bli en till), så att Statistik förblir
+sajten och appen och behörigheten ges för sig. `sql/136` ger menyvalet en gång till de konton som redan ser statistiken.
 
-**Kvar:** deploy av `admin` (nu i deploy-knappens lista) och `olycksfacit` på Bengts ord 21/11 (*"slå ihop 1719 och driftsätt"*), och
-fliken läst live.
+**Hur.** Funktionen `admin` får delen `olyckor` (menyvalet olyckor). Den läser säsongens olyckor med samma fråga som ärendena,
+som flyttas ut till `supabase/functions/olycksfacit/hamta.ts`, och räknar dem i `olycksfacit/vyn.ts` med ärendenas egna regler
+(`bedomning`, `omrade`, `forifylld`, nämnaren och lagerraderna exporteras ur `arende.ts`). Inget nytt mått och ingen ny tabell; den enda
+migrationen är menyvalet i sql/136. Svaret bär bara det ärendena får bära, utan läget som koordinater och utan kandidatens tal. Säljregeln (§9.6) följs på
+sidan: andelen står alltid bredvid antalet. Sidan `olyckor.html` i Axelstar/halkvakt-admin visar exempeldata, tydligt märkta, när delen inte svarar.
+
+**Kvar:** deploy av `admin` (nu i deploy-knappens lista) och `olycksfacit` på Bengts ord 21/11 (*"slå ihop 1719 och driftsätt"*), migrationen sql/136 och sidan
+läst live.
 
 **Alternativ.** En ny SQL-funktion i `besok_stat`, som flikarna Appen och Annonser: bedömningen och områdena finns bara i TypeScript,
-så de hade fått skrivas en gång till i SQL och glida isär. En egen sida i admin: fliken håller ihop det som mäter appen på ett ställe.
+så de hade fått skrivas en gång till i SQL och glida isär. En sjätte flik i Statistik (prototypen): hamnar utanför skärmen i en telefon, och periodknapparna gäller inte den. Statistik med
+två nivåer, Användning och Facit: tre rader flikar i en telefon.
 
-**Stomdokument:** SYS edge-funktionerna — admin och delen olycksfacit, MAT §9 olycksfacit — visas på adminsidan
+**Stomdokument:** SYS edge-funktionerna — admin och delen olyckor, MAT §9 olycksfacit — visas på adminsidan
 
 ## #937 (20/11 2026) Halkvakt lives dagsläge väntar 30 minuter som utkast som kan ändras eller slängas i admin.halkvakt.se
 

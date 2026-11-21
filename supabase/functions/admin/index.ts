@@ -6,7 +6,7 @@
 //
 // GET  ?del=jag                         → {epost, menyval}
 // GET  ?del=statistik&fran=&till= | &dagar=   (menyval statistik) → samma svar som besok ger statistiksidan
-// GET  ?del=olycksfacit                 (menyval statistik) → fliken Olycksfacit, olycksfacit/vyn.ts (DECISIONS #936)
+// GET  ?del=olyckor                     (menyval olyckor) → sidan Olyckor, olycksfacit/vyn.ts (DECISIONS #936)
 // GET  ?del=anvandare                   (menyval anvandare) → [{id, epost, menyval, skapad}]
 // POST {del:"anvandare", gor:"skapa", epost, losen, menyval}
 // POST {del:"anvandare", gor:"andra", id, menyval?, losen?}
@@ -32,7 +32,7 @@ const CORS = {
   "Access-Control-Allow-Headers": "authorization, content-type",
   "Vary": "Origin",
 };
-const MENYVAL = ["statistik", "social", "mallar", "prioriteringar", "anvandare"];
+const MENYVAL = ["statistik", "olyckor", "social", "mallar", "prioriteringar", "anvandare"];
 const SLUG = /^[a-z0-9-]{1,60}$/;
 const MINST_LOSEN = 12;
 
@@ -271,14 +271,10 @@ Deno.serve(async (req) => {
     if (!jag) return fel("inte inloggad", 401);
     const del = req.method === "POST" ? String(d.del ?? "") : (u.searchParams.get("del") ?? "");
     if (del === "jag" && req.method === "GET") return svar({ epost: jag.epost, menyval: jag.menyval });
-    // Fliken Olycksfacit på statistiksidan (DECISIONS #936): samma menyval som resten av sidan.
-    if (del === "olycksfacit" && req.method === "GET") {
-      if (!jag.menyval.includes("statistik")) return fel("saknar behörighet", 403);
-      return svar(await olycksfacitSvar());
-    }
     if (!MENYVAL.includes(del)) return fel("okänd del", 400);
     if (!jag.menyval.includes(del)) return fel("saknar behörighet", 403);
     if (del === "statistik" && req.method === "GET") return await statistik(u);
+    if (del === "olyckor" && req.method === "GET") return svar(await olycksfacitSvar());   // menyvalet Olyckor (DECISIONS #936)
     if (del === "anvandare") return req.method === "GET" ? await listaAnvandare() : await andraAnvandare(jag, d);
     if (del === "social") return req.method === "GET" ? await lasUtkast() : await andraUtkast(jag, d);
     if (del === "mallar") return req.method === "GET" ? await lasMallar(u) : await andraMallar(jag, d);

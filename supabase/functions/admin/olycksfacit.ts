@@ -1,6 +1,6 @@
-// admin, delen olycksfacit (DECISIONS #936): fliken Olycksfacit på statistiksidan på admin.halkvakt.se. Kräver menyvalet statistik,
-// som resten av sidan. Läser säsongens olyckor med samma fråga som ärendena (olycksfacit/hamta.ts) och räknar dem med samma regler
-// (olycksfacit/vyn.ts). index.ts kopplar in den: GET ?del=olycksfacit → svar(await olycksfacitSvar()).
+// admin, delen olyckor (DECISIONS #936): sidan Olyckor på admin.halkvakt.se, ett eget menyval (Bengt 21/11: alternativ A,
+// "kalla den olyckor"). Läser säsongens olyckor med samma fråga som ärendena (olycksfacit/hamta.ts) och räknar dem med samma regler
+// (olycksfacit/vyn.ts). index.ts kopplar in den: GET ?del=olyckor → svar(await olycksfacitSvar()).
 import postgres from "https://deno.land/x/postgresjs@v3.4.4/mod.js";
 import { FORSTA_DAG, svenskDag } from "../olycksfacit/arende.ts";
 import { hamta } from "../olycksfacit/hamta.ts";
