@@ -14,7 +14,8 @@ export async function olycksfacitSvar(): Promise<Vy> {
   const idag = svenskDag(new Date().toISOString());
   const olyckor = await hamta(sql, FORSTA_DAG, idag);
   // deno-lint-ignore no-explicit-any
-  const arenden = new Map((await sql`SELECT dag::text AS dag, nr FROM olycksfacit_arenden`).map((r: any) => [r.dag as string, r.nr as number]));
+  const arenden = new Map((await sql`SELECT dag::text AS dag, nr, stangd, veckolasning FROM olycksfacit_arenden`)
+    .map((r: any) => [r.dag as string, { nr: r.nr as number, stangd: r.stangd as boolean, veckolasning: r.veckolasning as boolean }]));
   // deno-lint-ignore no-explicit-any
   const veckorna = new Map((await sql`SELECT vecka, nr, stangd FROM olycksfacit_veckor`).map((r: any) => [r.vecka as string, { nr: r.nr as number, stangd: r.stangd as boolean }]));
   return adminVy(olyckor, arenden, idag, veckorna);
