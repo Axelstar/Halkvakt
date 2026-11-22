@@ -1,0 +1,41 @@
+{
+  "typ": "smhi",
+  "nyckel": "smhi:Snöfall:Sydligaste delen av Gävleborgs kustland samt delar av Uppsala län:YELLOW",
+  "etikett": "SMHI-varning",
+  "rubrik": "Varning för väglaget",
+  "underrad": "Halkläget kl. 15:30",
+  "varning": {
+    "niva": "Gul varning",
+    "event": "Snöfall",
+    "omrade": "Sydligaste delen av Gävleborgs kustland samt delar av Uppsala län",
+    "fler": 2
+  },
+  "text": "SMHI har utfärdat en gul varning för snöfall i Sydligaste delen av Gävleborgs kustland samt delar av Uppsala län. Det finns 2 varningar till för snö eller halka.\n\nHalkläget kl. 15:30:\nNorrbotten: halka på 57 av 58 vägavsnitt, 57 stationer under noll, kallast −14,2 °C vid Vittangi.\nVästerbotten: halka på 44 av 44 vägavsnitt, 45 stationer under noll, kallast −9,3 °C vid Holmfors 2, 1 olycka.\nDalarna: halka på 38 av 38 vägavsnitt, 26 stationer under noll, kallast −6,8 °C vid Storbo/Idre.\nJönköpings län: halka på 36 av 52 vägavsnitt, 33 stationer under noll, kallast −2,7 °C vid Marås, 1 olycka.\nStockholms län: halka på 21 av 44 vägavsnitt, 20 stationer under noll, kallast −1,5 °C vid Ekerö.\n\nLäget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan\nI appen säger Halkvakt till direkt, med rösten, innan du är där. Gratis för iPhone och Android.\niPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\nAndroid: https://play.google.com/store/apps/details?id=se.halkvakt.app\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från SMHI och Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Dalarna #Jönköping #Stockholm #halkvakt",
+  "textIg": "SMHI har utfärdat en gul varning för snöfall i Sydligaste delen av Gävleborgs kustland samt delar av Uppsala län. Det finns 2 varningar till för snö eller halka.\n\nHalkläget kl. 15:30:\nNorrbotten: halka på 57 av 58 vägavsnitt, 57 stationer under noll, kallast −14,2 °C vid Vittangi.\nVästerbotten: halka på 44 av 44 vägavsnitt, 45 stationer under noll, kallast −9,3 °C vid Holmfors 2, 1 olycka.\nDalarna: halka på 38 av 38 vägavsnitt, 26 stationer under noll, kallast −6,8 °C vid Storbo/Idre.\nJönköpings län: halka på 36 av 52 vägavsnitt, 33 stationer under noll, kallast −2,7 °C vid Marås, 1 olycka.\nStockholms län: halka på 21 av 44 vägavsnitt, 20 stationer under noll, kallast −1,5 °C vid Ekerö.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\nI appen säger Halkvakt till direkt, med rösten, innan du är där. Gratis för iPhone och Android, länken finns i vår profil.\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från SMHI och Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Dalarna #Jönköping #Stockholm #halkvakt",
+  "pass": "live",
+  "datum": "2026-11-22",
+  "generated_at": "2026-11-22T14:30:10.673Z",
+  "lan": [
+    "norrbotten",
+    "vasterbotten",
+    "dalarna",
+    "jonkoping",
+    "stockholm",
+    "vasternorrland",
+    "gavleborg",
+    "uppsala",
+    "jamtland",
+    "kronoberg",
+    "vastra-gotaland",
+    "kalmar",
+    "gotland",
+    "varmland",
+    "orebro",
+    "sodermanland",
+    "ostergotland",
+    "halland",
+    "vastmanland",
+    "skane",
+    "blekinge"
+  ]
+}
