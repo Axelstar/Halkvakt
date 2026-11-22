@@ -10,7 +10,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { spannFor } from "../scripts/vardevakten.ts";
+import { flaggaFor, spannFor } from "../scripts/vardevakten.ts";
 import { FALT, SATS, granska, korlistan, rapport, type Db } from "../scripts/veckorapporten.ts";
 import { iRepot } from "../scripts/sasongsfacit-stad.ts";
 import type { Olycka } from "../supabase/functions/olycksfacit/arende.ts";
@@ -56,6 +56,7 @@ test("#951 the value guard: every field the report reads is declared and its tab
     assert.match(vakt, new RegExp(`\\b${t}: "(dag|t)"`), `${t} is in TID`);
   }
   for (const t of ["sasongsfacit_dag", "sasongsfacit_ledtid", "sasongsfacit_olyckor"]) assert.ok(spannFor(t, "lan"), `${t}.lan has a span`);
+  assert.ok(flaggaFor("sasongsfacit_dag", "jamforelser"), "the flag that decides J1 and J2 is declared");
   assert.throws(() => granska(db({ spann: [{ tabell: "app_raknare", kolumn: "antal", min: 0, max: 100001 }] })), /utanför sitt spann/u);
   assert.throws(() => rapport(db({ spann: [{ tabell: "sasongsfacit_dag", kolumn: "f1", min: -1, max: 3 }] }), null), /utanför sitt spann/u);
   assert.doesNotThrow(() => granska(db({ spann: [{ tabell: "publicera_bygge", kolumn: "bygget_ms", min: null, max: null }] })));
