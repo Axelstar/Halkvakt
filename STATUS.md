@@ -3534,3 +3534,8 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 22/11 UTC (Claude; Bengt: *"Ja"*): Räckvidden som en fara i drift (DECISIONS #950, kort #676). PR #1796 ihopslagen, sql/140 migrerad
   med DB-knappen (44994126520, kolumnen `rackvidd` jsonb), skuggmotor driftsatt ur 9b92c531 (44994166147). Mätt 07:02 UTC: 3 av 3
   svenska rader bär `rackvidd`, med 1 A2 i skuggan och 1 i dagens A2. Utvärdering 29/11.
+- 22/11 UTC (Claude; Bengt: *"ja till alla"*): **Körlistans D1, D2, D3, D5 och B14 byggda** (DECISIONS #951, kort #664). Veckorapporten
+  (`scripts/veckorapporten.ts`, flödet `veckorapporten.yml`, måndag 13.07 UTC) till halkvakt-kuvos, grenen `veckorapporter`, och
+  därifrån till Bengt; värdevakten deklarerar räknaren och säsongsfacits tre tabeller. Nio nya frister: storstäderna och småvägsrösten
+  i månadsläsningarna 1/12–1/3 (D3) och småvägskartan 15/2 2027 (C8). `docs/KORLISTAN.md` i `OCKSA` (D5). Telias rot i
+  `vagarbeten-matning.yml` (B14). B5, C6 och B16 oförändrade enligt rekommendationen.
