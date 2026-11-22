@@ -318,6 +318,8 @@ export const FLAGGOR: Record<string, string> = {
   ned: "småvägsröstens fukt i regeln: kuvösens strängare N3, nederbörd i timmen eller de tre före (sql/105)",
   // The accident layers (TROSKLAR-SASONGSFACIT §11.5, §11.7 V3, DECISIONS #913): which layers warned, and the city point's detail.
   "olycksfacit_lager.talar": "lagret varnade när olyckan började (sql/084); NULL för radarn och täckningen",
+  // The weekly report (körlistan D1, DECISIONS #951) counts J1 and J2 only on days where this is true.
+  "sasongsfacit_dag.jamforelser": "säsongsfacit: stationsraderna fanns för dygnet, så J1 och J2 gick att räkna (sql/099)",
   "olycksfacit_lager.detalj.stad.aktiv": "stadspunktens brytare var på vid olyckans timme (sql/096)",
   "olycksfacit_lager.detalj.stad.talar": "stadspunkten varnade inom 2 km vid olyckan (sql/100)",
   "fuktskugga_olycka.a2_nu": "en station inom 5 km med yta högst +1 °C och nederbörd de två timmarna före olyckan (sql/138)",

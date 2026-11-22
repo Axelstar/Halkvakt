@@ -20,7 +20,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { spannFor } from "./vardevakten.ts";
+import { flaggaFor, spannFor } from "./vardevakten.ts";
 import { andel, iRepot, MINSTA_SVAR } from "./sasongsfacit-stad.ts";
 import { hamta as hamtaOlyckor } from "../supabase/functions/olycksfacit/hamta.ts";
 import { BEDOMNINGAR, type Bedomning, bedomning, FORSTA_DAG, NAMNARE, type Olycka, OMRADEN, omrade, OVERLAPP, svenskDag }
@@ -91,6 +91,7 @@ const dag = (d: string, n: number) => new Date(Date.parse(`${d}T12:00:00Z`) + n 
 /** The value guard: a field without its declaration, or a value outside it, stops the report. The message names the field, never a value. */
 export function granska(db: Db): void {
   for (const [t, k] of FALT) if (!spannFor(t, k)) throw new Error(`${t}.${k} saknar spann i värdevakten (OBESIKTIGAT)`);
+  if (!flaggaFor("sasongsfacit_dag", "jamforelser")) throw new Error("sasongsfacit_dag.jamforelser saknar flagga i värdevakten (OBESIKTIGAT)");
   for (const s of db.spann) {
     const sp = spannFor(s.tabell, s.kolumn)!;
     if (s.min !== null && s.min < sp[0] || s.max !== null && s.max > sp[1]) throw new Error(`${s.tabell}.${s.kolumn} ligger utanför sitt spann i värdevakten`);
