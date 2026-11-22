@@ -219,6 +219,20 @@ export const SPANN: Record<string, [number, number, string]> = {
   "fuktskugga_timmar.timmar": [0, 50000, "stationstimmar — 2 000 stationer gånger 25 timmar"],
   "fuktskugga_timmar.larm_a2": [0, 50000, "stationstimmar"],
   "fuktskugga_timmar.larm_forslag": [0, 50000, "stationstimmar"],
+  // The weekly report (körlistan D1, DECISIONS #951), born inspected. The counter's ceiling is the function's TAK_PER_DYGN, the
+  // aggregates' bounds come from the population: 818 road stretches times 25 hours in a Swedish day, in one county and part of the day.
+  "app_raknare.antal": [0, 100000, "händelser på ett dygn — app-raknares tak per dygn (TAK_PER_DYGN)"],
+  "sasongsfacit_dag.timmar": [0, 25000, "sträcktimmar — 818 sträckor gånger 25 timmar"],
+  "sasongsfacit_dag.varnar": [0, 25000, "sträcktimmar"],
+  "sasongsfacit_dag.traff": [0, 25000, "sträcktimmar"],
+  "sasongsfacit_dag.f1": [0, 25000, "sträcktimmar"],
+  "sasongsfacit_dag.tackt": [0, 25000, "sträcktimmar"],
+  "sasongsfacit_ledtid.n": [0, 25000, "början på F1 — högst en per sträcka och timme"],
+  "sasongsfacit_olyckor.olyckor": [0, 2000, "olyckor på ett dygn i ett län"],
+  "sasongsfacit_olyckor.k_varnade": [0, 2000, "olyckor"],
+  "sasongsfacit_dag.lan": [0, 25, "Trafikverkets länsnummer, 0 = okänt (sql/099)"],
+  "sasongsfacit_ledtid.lan": [0, 25, "Trafikverkets länsnummer, 0 = okänt (sql/099)"],
+  "sasongsfacit_olyckor.lan": [0, 25, "Trafikverkets länsnummer, 0 = okänt (sql/099)"],
   // The accident layers' city detail (V4: keys in jsonb, JSONB below). Distances inside Sweden.
   "olycksfacit_lager.detalj.stad.varnande_km": [0, 2000, "km till närmaste varnande stadspunkt i gruppen (sql/100) — inom Sverige"],
   "olycksfacit_lager.detalj.varnande_km": [0, 2000, "km till närmaste varnande vägpunkt, vägpunktens del av K (sql/112) — inom Sverige"],
@@ -542,6 +556,9 @@ const TID: Record<string, string> = {
   ny_kandidat_skugga_stad: "observed_at", ny_kandidat_skugga_stad_korning: "korning", olycksfacit_lager: "", sasongsfacit_stad_dag: "dag",
   // Fuktskuggan och basfrekvensen (sql/138, DECISIONS #940), födda besiktigade.
   fuktskugga_timmar: "dag", fuktskugga_olycka: "dag",
+  // The weekly report (körlistan D1, DECISIONS #951): the counter and säsongsfacit's three tables, which were missing here, so their
+  // fields were never scanned, not even as OBESIKTIGADE.
+  app_raknare: "dag", sasongsfacit_dag: "dag", sasongsfacit_ledtid: "dag", sasongsfacit_olyckor: "dag",
 };
 
 console.log(`Värdevakten — besiktning av arkivets numeriska fält (${DAGAR} dygns fönster)\n`);

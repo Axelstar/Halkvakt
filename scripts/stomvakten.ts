@@ -23,9 +23,10 @@ type Rad = { inga: true; skal: string } | { inga: false; koder: string[] };
 
 /** Filer som dokumentsynkens gren får röra utöver stomdokumenten (#484 (d)). DECISIONS.md hör inte hit: ett beslut väntar på Bengts ord.
  *  docs/takten.json skrivs av projektkartan.ts ur git-historiken (#515) och ändras när main flyttat (Bengt 11/10, #518).
- *  docs/fristerna.json rättas i synkens steg 4 (#649); 25/10 föll --tillatna på den (DECISIONS #731). */
+ *  docs/fristerna.json rättas i synkens steg 4 (#649); 25/10 föll --tillatna på den (DECISIONS #731).
+ *  docs/KORLISTAN.md bär bara ord och lägen (KÖRLISTEREGELN 7), och en bokföring av ett läge slås ihop utan ett "slå ihop" (körlistan D5, DECISIONS #951). */
 const OCKSA = ["docs/KALENDERN.md", "TAVLA.md", "STATUS.md", "docs/projektkartan.json", "docs/PROJEKTKARTAN.html", "docs/kortkartan.json", "docs/takten.json",
-  "docs/fristerna.json"];
+  "docs/fristerna.json", "docs/KORLISTAN.md"];
 const RUBRIK = /^## #(\d+[a-z]?(?:-[a-zåäö]+)?)(?![\w-])/gmu;   // samma som scripts/beslutsnumren.ts
 const RADEN = /^\*\*Stomdokument:\*\*[ \t]*(.*)$/gmu;
 
@@ -159,7 +160,7 @@ function sjalvtest(): void {
   const ok3 = fel.length === 3 && fel[0].startsWith("#11 saknar") && fel[1].startsWith("#14:") && fel[2].includes('okänt stomdokument "KAL"');
   const L = (x: string) => `a<!-- LÄGESRADER §1: s -->\n${x}\n<!-- /LÄGESRADER -->b`;
   const ok4 = prova([nya[1]], sidor).length === 0 && handtext(L("gammal")) === handtext(L("ny"));
-  const ok5 = tillatna(["m.html", "STATUS.md", "docs/takten.json", "docs/fristerna.json", "DECISIONS.md", "scripts/x.ts"], sidor).join(",") === "DECISIONS.md,scripts/x.ts";
+  const ok5 = tillatna(["m.html", "STATUS.md", "docs/takten.json", "docs/fristerna.json", "docs/KORLISTAN.md", "DECISIONS.md", "scripts/x.ts"], sidor).join(",") === "DECISIONS.md,scripts/x.ts";
   const ok6 = handtext("a\r\nb") === "a\nb";
   // Kuvösregeln (#489) är borta: kuvösen och dess sida stäms av i det privata halkvakt-kuvos (DECISIONS #768).
   // --lage (#811): ett beslut som namnger dokumentet men inte nämns i dess handtext är öppet. Ett beslut som nämns, också i ett

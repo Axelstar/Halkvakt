@@ -19395,3 +19395,32 @@ och Axels ord: regeln i ruttfiltret i alla tre språk med en egen vektor, och en
 **Inte ändrat.** Motorn i appen, vektorerna, snapshoten, `live.json`, gallringen och dagens A2 i skuggmotorn.
 
 **Stomdokument:** MAT §2 skuggmotorn spelar räckvidden som en fara bredvid A2
+
+## #951 (22/11 2026) Körlistans D1, D2, D3, D5 och B14: veckorapporten varje måndag till Bengt, kalenderns frister, körlistan i synk-ihop och mätknappens rot
+
+**Beslut** (Bengt 22/11: *"ja till alla"*, på rekommendationerna för punkterna som väntade på honom i körlistan):
+- **D1, veckorapporten.** `scripts/veckorapporten.ts` skriver varje måndag en intern rapport för veckan före och säsongen hittills med
+  de fyra nivåerna (TROSKLAR-NYTTAN §2, §7): driften (timmarna per kedja, förlorade timmar och kompletta dygn, publiceringens bygge,
+  ärendena och vaktpassen som slutar *avbruten*), räckvidden ur räknaren (varningar per fara, aktiva förare per dygn och aldrig
+  summerade), riktigheten (säsongsfacits K, J1 och J2 med ledtiden, förarnas svar per varningsslag och *Appen missade*), olyckorna med
+  olycksfacits egna regler (`supabase/functions/olycksfacit/`), storstäderna (`scripts/sasongsfacit-stad.ts`, körlistan C3), småvägarna
+  för sig och fristerna med körlistans öppna punkter. Flödet `veckorapporten.yml` kör måndag 13.07 UTC, efter säsongsfacits räkning
+  12.23 UTC, och 16.07 UTC som reserv. Värdevakten deklarerar de nya fälten (`app_raknare`, `sasongsfacit_dag`, `_ledtid`, `_olyckor`)
+  i samma commit. Det som saknas står i rapporten: säsongsfacits andra del (C2) och provkörningarnas protokoll (C6).
+- **D2, var talen läses.** Rapporten bär tal och läggs därför bara i det privata halkvakt-kuvos, på grenen `veckorapporter`. Claude
+  skickar den till Bengt varje måndag. Loggen säger bara klart eller vilket steg som föll.
+- **D3, kalendern.** Storstäderna och småvägsrösten får egna frister för månadsläsningarna 1/12, 1/1, 1/2 och 1/3 i
+  `docs/fristerna.json`, och C8 får fristen 15/2 2027 för beslutet om småvägskartan, före kuvösens läsning 1/3.
+- **D5, körlistan i synk-ihop.** `docs/KORLISTAN.md` står bland filerna som en bokföring får röra (`OCKSA` i `scripts/stomvakten.ts`).
+  Listan i DECISIONS #731 får alltså en fil till. Körlistan bär bara ord (KÖRLISTEREGELN 7), så en bokföring av ett läge slås ihop utan
+  ett *"slå ihop"*. Axels ord på D5 är inte inhämtat.
+- **B14, mätknappens rot.** `vagarbeten-matning.yml` får Telias rot som `ingest.yml` har sedan 11/11, med samma prov av
+  fingeravtrycket.
+
+**Alternativ.** För D2: en privat sida eller det privata repot som enda läsväg (rekommendationen var filen, eftersom den inte kräver
+något nytt bygge). För D1: körningen måndag morgon, då säsongsfacit ännu inte har räknat söndagen.
+
+**Väntar.** B5 (MET:s svar till 26/11), C6 (testförarna rekryteras av Bengt) och B16 (rösten vilar) följer rekommendationen och är inte
+ändrade.
+
+**Stomdokument:** MAT §9 veckorapporten varje måndag, SYS §2 flödet veckorapporten och körlistan i synk-ihop, BED §4.2

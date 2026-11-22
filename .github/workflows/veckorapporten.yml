@@ -1,0 +1,92 @@
+# VECKORAPPORTEN (körlistan D1 och D2; Bengt 22/11: "ja till alla", DECISIONS #951). Varje måndag skrivs den interna rapporten för
+# veckan före och säsongen hittills (docs/TROSKLAR-NYTTAN.md §7): driften, räckvidden, riktigheten, olyckorna, storstäderna
+# (scripts/sasongsfacit-stad.ts) och småvägarna var för sig, och fristerna med öppna beslut (scripts/veckorapporten.ts).
+# Rapporten bär tal och läggs därför bara i det privata halkvakt-kuvos, på grenen veckorapporter, aldrig på main, med KUVOS_SKRIVNYCKEL.
+# Därifrån skickar Claude den till Bengt (D2). Loggen säger bara klart eller vilket steg som föll: inga tal i loggen, i
+# sammanfattningen eller i ett ärende (#768). Filerna ligger under RUNNER_TEMP, utanför utcheckningen.
+# Tiden: säsongsfacit räknar gårdagen 12.23 UTC (sql/099), så rapporten skrivs efter det. GitHub-cronen kan gå sent, därför två
+# tider; den andra gör ingenting när dagens rapport redan finns. Med knappen skrivs rapporten om. På en PR prövas bara läsningen.
+name: veckorapporten
+on:
+  schedule:
+    - cron: '7 13 * * 1'
+    - cron: '7 16 * * 1'
+  workflow_dispatch:
+    inputs:
+      mandag:
+        description: "Rapportens måndag, ÅÅÅÅ-MM-DD (tomt = den senaste måndagen)"
+        required: false
+        default: ""
+  # På en PR läses databasen och rapporten skrivs, men inget läggs i kuvösen: provet att frågorna går mot den riktiga databasen.
+  pull_request:
+    paths: ["scripts/veckorapporten.ts", "scripts/sasongsfacit-stad.ts", ".github/workflows/veckorapporten.yml"]
+permissions:
+  contents: read
+  issues: read
+concurrency: { group: veckorapporten, cancel-in-progress: false }
+jobs:
+  rapporten:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci --silent
+      - name: Måndagen
+        shell: bash
+        env: { IN: "${{ inputs.mandag }}" }
+        run: |
+          set -euo pipefail
+          if [ -n "$IN" ]; then M="$IN"; else
+            I=$(TZ=Europe/Stockholm date +%F); M=$(date -d "$I -$(( ($(date -d "$I" +%u) + 6) % 7 )) days" +%F); fi
+          [[ "$M" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ && $(date -d "$M" +%u) == 1 ]] || { echo "::error::$M är ingen måndag"; exit 1; }
+          echo "M=$M" >> "$GITHUB_ENV"
+          echo "rapportens måndag: $M"
+      - name: Finns dagens rapport redan?
+        if: ${{ github.event_name == 'schedule' }}
+        shell: bash
+        env: { SKRIV: "${{ secrets.KUVOS_SKRIVNYCKEL }}" }
+        run: |
+          set -euo pipefail
+          git clone -q --depth 1 --branch veckorapporter "https://x-access-token:${SKRIV}@github.com/Axelstar/halkvakt-kuvos.git" "$RUNNER_TEMP/finns" 2>/dev/null || exit 0
+          if [ -e "$RUNNER_TEMP/finns/veckorapporter/$M.md" ]; then echo "KLAR=1" >> "$GITHUB_ENV"; echo "rapporten för $M finns redan"; fi
+          rm -rf "$RUNNER_TEMP/finns"
+      - name: Storstädernas avsnitt
+        if: ${{ env.KLAR != '1' }}
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        shell: bash
+        run: |
+          node --experimental-strip-types scripts/sasongsfacit-stad.ts db "$M" "$RUNNER_TEMP/stad.json" \
+            && node --experimental-strip-types scripts/sasongsfacit-stad.ts avsnitt "$RUNNER_TEMP/stad.json" "$RUNNER_TEMP/stad.md" \
+            || { echo "::warning::storstädernas avsnitt föll; rapporten skrivs utan det"; rm -f "$RUNNER_TEMP/stad.md"; }
+      - name: Rapporten
+        if: ${{ env.KLAR != '1' }}
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}", GITHUB_TOKEN: "${{ github.token }}" }
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --experimental-strip-types scripts/veckorapporten.ts db "$M" "$RUNNER_TEMP/db.json"
+          STAD="$RUNNER_TEMP/stad.md"; [ -s "$STAD" ] || STAD=-
+          node --experimental-strip-types scripts/veckorapporten.ts rapport "$RUNNER_TEMP/db.json" "$STAD" "$RUNNER_TEMP/rapport.md"
+      - name: Till kuvösen, grenen veckorapporter
+        if: ${{ env.KLAR != '1' && github.event_name != 'pull_request' }}
+        env: { SKRIV: "${{ secrets.KUVOS_SKRIVNYCKEL }}" }
+        shell: bash
+        run: |
+          set -euo pipefail
+          [ -n "$SKRIV" ] || { echo "::error::hemligheten KUVOS_SKRIVNYCKEL saknas"; exit 1; }
+          K="$RUNNER_TEMP/kuvos"
+          git clone -q "https://x-access-token:${SKRIV}@github.com/Axelstar/halkvakt-kuvos.git" "$K" 2>/dev/null || { echo "::error::kuvösen gick inte att klona med KUVOS_SKRIVNYCKEL"; exit 1; }
+          cd "$K"
+          git config user.name "halkvakt-actions"; git config user.email "actions@users.noreply.github.com"
+          G=veckorapporter
+          if git ls-remote -q --exit-code --heads origin "$G" >/dev/null 2>&1; then git fetch -q origin "$G" && git checkout -q -B "$G" FETCH_HEAD
+          else git checkout -q --orphan "$G" && git rm -rq --cached . && git clean -fdxq; fi
+          mkdir -p veckorapporter && cp "$RUNNER_TEMP/rapport.md" "veckorapporter/$M.md"
+          git add "veckorapporter/$M.md"
+          if git diff --cached --quiet; then echo "rapporten för $M är oförändrad"; exit 0; fi
+          git commit -q -m "Veckorapporten $M (körlistan D1, DECISIONS #951)"
+          git push -q origin "$G" 2>/dev/null || { echo "::error::pushen till kuvösen föll"; exit 1; }
+          echo "veckorapporten $M till kuvösen, grenen $G: klart"
