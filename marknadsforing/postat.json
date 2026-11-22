@@ -1488,6 +1488,17 @@
       "facebook": "1312515671952967_122114923353516187",
       "instagram": "17989301532094959",
       "x": "2124364920108077491"
+    },
+    {
+      "pass": "live",
+      "namn": "2026-11-22-live-0837",
+      "typ": "smhi",
+      "nyckel": "smhi:Snöfall:Delar av norra Uppsala län:ORANGE",
+      "tid": "2026-11-22T07:37:33.041Z",
+      "bild": "https://raw.githubusercontent.com/Axelstar/halkvakt/main/marknadsforing/inlagg/2026-11-22-live-0837.jpg",
+      "facebook": "1312515671952967_122114948433516187",
+      "instagram": "18157381240551768",
+      "x": "2124406966378262575"
     }
   ]
 }
