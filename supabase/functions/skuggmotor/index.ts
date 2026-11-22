@@ -1354,6 +1354,38 @@ export function farorVidLinjen(hazards: Hazard[], line: [number, number][]): Haz
   return hazards.filter((h) => valda.has(h));
 }
 
+/** Punkten `langsM` meter längs linjen (den sista punkten om linjen är kortare). */
+export function punktLangs(line: [number, number][], langsM: number): [number, number] {
+  let kvar = langsM;
+  for (let i = 0; i < line.length - 1; i++) {
+    const a = line[i], b = line[i + 1];
+    const d = haversineM({ lon: a[0], lat: a[1] }, { lon: b[0], lat: b[1] });
+    if (kvar <= d || i === line.length - 2) {
+      const f = d === 0 ? 0 : Math.min(1, kvar / d);
+      return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f];
+    }
+    kvar -= d;
+  }
+  return line[line.length - 1];
+}
+
+/** RÄCKVIDDEN SOM EN FARA — en SKUGGA, aldrig appens regel (Bengt 21/11: *"på 2 gör vi ny skugga"*, *"bygg in"*; DECISIONS #949,
+ *  #950). Väderstationerna som kan tala som A2 (yta <= +1 °C och fukt, inte broar) inom `rackviddM` från rutten läggs på rutten, och
+ *  en kedja där nästa ligger högst `zonM` längre fram är EN fara, på den första stationens punkt och med dess id: motorns regel om
+ *  samma fara (10 min / 5 km) gäller då hela kedjan, som halkzonen (DECISIONS #624) för sträckorna. Stationer som inte kan tala, broar
+ *  och alla andra faror står kvar som de är. Bara i TypeScript: skuggmotorn och `scripts/fuktskuggan-takt.ts`. */
+export function stationerSomEnFara(hazards: Hazard[], line: [number, number][], rackviddM = 15_000, zonM = 15_000): Hazard[] {
+  const talar = (h: Hazard) => h.kind === "icing_point" && !h.meta?.bridge && h.meta?.surfaceTempC != null &&
+    h.meta.surfaceTempC <= 1 && h.meta?.moisture === true;
+  const zoner: Hazard[] = [];
+  let forra = -Infinity;
+  for (const x of farorLangsRutten(hazards.filter(talar), line, rackviddM)) {
+    if (x.langsM - forra > zonM) { const [lon, lat] = punktLangs(line, x.langsM); zoner.push({ ...x.hazard, lon, lat } as Hazard); }
+    forra = x.langsM;
+  }
+  return [...hazards.filter((h) => !talar(h)), ...zoner];
+}
+
 
 // ═══ engine/src/snapshot.ts ═══
 // Snapshot → Hazard adapter. THE reference mapping from the published app files
@@ -1967,6 +1999,14 @@ Deno.serve(async (req) => {
       motor.onSuppressed = (c) => suppressed.push({ kind: c.kind, id: c.hazardId, distM: Math.round(c.distM), by: c.by, sinceS: c.sinceS,
         ...(c.zon ? { zon: c.zon } : {}) });
       const alerts = motor.run(trace);
+      // RÄCKVIDDEN SOM EN FARA (Bengt 21/11: "bygg in"; DECISIONS #950, sql/140): samma spår en gång till, med stationerna inom 15 km
+      // lagda på rutten och en kedja som en fara (stationerSomEnFara). En skugga: bara A2 loggas, i egen kolumn, och inget når appen.
+      // Bara huvudvarvet i Sverige, längs vägnätet. Utvärderas efter en vecka mot takten och missarna med oberoende facit (§14).
+      const rackvidd = land === "se" && !c ? (() => {
+        const ar = new AlertEngine(farorVidLinjen(farorNaraRutten(stationerSomEnFara(hazards, line), line), line)).run(trace)
+          .filter((a) => a.kind === "icing_point" && !a.beta);
+        return { n: ar.length, a: ar.map((a) => ({ t: a.t, id: a.hazardId, distanceM: a.distanceM })) };
+      })() : null;
       ms.motor += performance.now() - t1;
       const vb = land === "se" ? vbAlerts(lv, line, trace) : [];
       const olja = oljaAlerts(oljaLista.lista, line, trace);
@@ -2017,7 +2057,7 @@ Deno.serve(async (req) => {
       if (land === "se" && alerts.length && !punkter.length) f.skal.push("bara segment- eller fartkameralarm — inget som behöver väglagsfacit");
       facitBudget -= f.saved; facitTotal += f.saved; facitSkal.push(...f.skal);
       results[name] = { fixes: trace.length, alerts: alerts.length, vb: vb.length, olja: olja.length, suppressed: suppressed.length, efterhalka: efterhalka.length,
-        prognos: (prognos as Prognos).p?.length ?? 0, kandidat: (kandidat as { h?: unknown[] }).h?.length ?? 0 };
+        prognos: (prognos as Prognos).p?.length ?? 0, kandidat: (kandidat as { h?: unknown[] }).h?.length ?? 0, rackvidd: rackvidd?.n ?? null };
       // LARMETS POSITION (kort #158, DECISIONS #177/#179, Axels ja via Bengt 14/9).
       //
       // FÖRUT SKREVS `lon: a.lon` — OCH DET FÄLTET FINNS INTE. Motorns Alert bär `t`, `hazardId`,
@@ -2041,6 +2081,7 @@ Deno.serve(async (req) => {
       const body = JSON.stringify({
         route: name, land: land.toUpperCase(), snapshot_generated_at: lv.generated_at,
         n_hazards: hazards.length, n_alerts: alerts.length, vb, olja, suppressed, efterhalka, prognos,
+        ...(rackvidd ? { rackvidd } : {}),   // sql/140; grupp C och grannländerna utan
         ...(c ? {} : { kandidat }),   // shadow_log_c har ingen kandidatkolumn (sql/057 lägger den bara i shadow_log)
         alerts: alerts.map((a) => {
           const h = farorById.get(a.hazardId) as any;
