@@ -1,0 +1,41 @@
+{
+  "typ": "smhi",
+  "nyckel": "smhi:Snöfall:Delar av norra Uppsala län:ORANGE",
+  "etikett": "SMHI-varning",
+  "rubrik": "Varning för väglaget",
+  "underrad": "Halkläget kl. 08:30",
+  "varning": {
+    "niva": "Orange varning",
+    "event": "Snöfall",
+    "omrade": "Delar av norra Uppsala län",
+    "fler": 1
+  },
+  "text": "SMHI har utfärdat en orange varning för snöfall i Delar av norra Uppsala län. Det finns 1 varning till för snö eller halka.\n\nHalkläget kl. 08:30:\nNorrbotten: halka på 57 av 58 vägavsnitt, 57 stationer under noll, kallast −11,9 °C vid Vittangi.\nVästerbotten: halka på 44 av 44 vägavsnitt, 45 stationer under noll, kallast −10,0 °C vid Ammarnäs.\nDalarna: halka på 38 av 38 vägavsnitt, 26 stationer under noll, kallast −7,1 °C vid Mångsbodarna.\nJönköpings län: halka på 36 av 52 vägavsnitt, 36 stationer under noll, kallast −2,6 °C vid Baskarp.\nVästernorrland: halka på 22 av 22 vägavsnitt, 39 stationer under noll, kallast −7,5 °C vid Ärtrik.\n\nLäget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan\nI appen säger Halkvakt till direkt, med rösten, innan du är där. Gratis för iPhone och Android.\niPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\nAndroid: https://play.google.com/store/apps/details?id=se.halkvakt.app\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från SMHI och Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Dalarna #Jönköping #Västernorrland #halkvakt",
+  "textIg": "SMHI har utfärdat en orange varning för snöfall i Delar av norra Uppsala län. Det finns 1 varning till för snö eller halka.\n\nHalkläget kl. 08:30:\nNorrbotten: halka på 57 av 58 vägavsnitt, 57 stationer under noll, kallast −11,9 °C vid Vittangi.\nVästerbotten: halka på 44 av 44 vägavsnitt, 45 stationer under noll, kallast −10,0 °C vid Ammarnäs.\nDalarna: halka på 38 av 38 vägavsnitt, 26 stationer under noll, kallast −7,1 °C vid Mångsbodarna.\nJönköpings län: halka på 36 av 52 vägavsnitt, 36 stationer under noll, kallast −2,6 °C vid Baskarp.\nVästernorrland: halka på 22 av 22 vägavsnitt, 39 stationer under noll, kallast −7,5 °C vid Ärtrik.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\nI appen säger Halkvakt till direkt, med rösten, innan du är där. Gratis för iPhone och Android, länken finns i vår profil.\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från SMHI och Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Dalarna #Jönköping #Västernorrland #halkvakt",
+  "pass": "live",
+  "datum": "2026-11-22",
+  "generated_at": "2026-11-22T07:30:07.284Z",
+  "lan": [
+    "norrbotten",
+    "vasterbotten",
+    "dalarna",
+    "jonkoping",
+    "vasternorrland",
+    "gavleborg",
+    "uppsala",
+    "stockholm",
+    "jamtland",
+    "vastra-gotaland",
+    "kronoberg",
+    "orebro",
+    "vastmanland",
+    "gotland",
+    "ostergotland",
+    "varmland",
+    "kalmar",
+    "sodermanland",
+    "skane",
+    "halland",
+    "blekinge"
+  ]
+}
