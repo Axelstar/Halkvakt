@@ -184,6 +184,14 @@ Läget 19/11 (#910). Två rader ovan gäller inte längre som de står:
 - **Kandidaten på en kvart** talar sedan 19/11 för vägpunkterna. Den bär inga stadspunkter, så `talande_regel()` ger timvärdets rader
   för storstäderna, och `storstader_tyst()` med vakthundens kontroll 3c larmar när storstäderna tystnar (`sql/123`, `sql/124`, #903).
 
+Läget 21/11 (#935): **stadens linjer.** Kuvösens driftlista bär elementets id per stadspunkt, och laddaren
+(`ingest/stadspunkter-db.ts`) skriver det i `stadspunkt.element_id` (sql/135). Tabellen `stadsgata` (sql/135, en MultiLineString per
+element, RLS och bara service_role) fylls av `scripts/stadsgator-hamta.ts` med knappen `stadsgator.yml` (prov eller skriv) ur
+Trafikverkets öppna API (NVDB, CC0, med driftens nyckel): element och rutter med IN på FunktionellVägklass, 50 per förfrågan, och
+gatorna med Gatunamn. Publiceringen (`STAD_BITAR_SQL` i `publish/map-core.ts`) ritar en varnande stadspunkt som elementets linje
+inom 600 m (B) eller 650 m (C) i `kandidat.geojson`, och som prick när linjen saknas eller frågan faller. I drift 21/11: sql/135
+(44879019435), `stadsgator.yml` skriv (44879699666), publicera (44880211711) och kartrepots PR #40.
+
 **Småvägsrösten** (#828, #910) har en egen ledning, med båda brytarna av:
 - punkterna i `smavagspunkt` och brytarna P1 och N i `smavagsbrytare` (sql/103), laddade i `ny-kandidat-fysik`; radarn per punkt till
   `radar_smavag` (sql/104);
