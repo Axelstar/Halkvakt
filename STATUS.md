@@ -3539,3 +3539,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   därifrån till Bengt; värdevakten deklarerar räknaren och säsongsfacits tre tabeller. Nio nya frister: storstäderna och småvägsrösten
   i månadsläsningarna 1/12–1/3 (D3) och småvägskartan 15/2 2027 (C8). `docs/KORLISTAN.md` i `OCKSA` (D5). Telias rot i
   `vagarbeten-matning.yml` (B14). B5, C6 och B16 oförändrade enligt rekommendationen.
+- 22/11 UTC (Claude; Bengt: *"ja till alla"*): PR #1800 (596fdbb4) och #1801 sammanslagna (DECISIONS #951). Veckorapporten
+  provkörd mot databasen på PR:en (körning 45006589409: avsnittet och rapporten klara, inget i kuvösen). B14 klar: `vagarbeten-matning`
+  grön med standardskriptet (45007424281). Värdevakten grön på main för räknaren, säsongsfacits tre tabeller och flaggan
+  `jamforelser` (45008246906). Den första rapporten skrivs måndag 23/11 13.07 UTC.
