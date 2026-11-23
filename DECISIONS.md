@@ -19510,3 +19510,25 @@ som finns. Räcker de inte blir den delen av domen SPÄRRAD, inte fälld.
 **Alternativ.** Att behålla fristen som en påminnelse om antalet förare (förkastat: rekryteringen var fristens beslut, och det är nu fattat).
 
 **Stomdokument:** BED §4.2
+
+## #957 (23/11 2026) Vägbitarna med flest olyckor i veckans olycksfacit (körlistan C10)
+
+**Beslut** (Bengt 23/11: *"jamen sätt igång"*, på förslaget att löpande ta fram vilka vägar som drabbas mest av olyckor). Veckans
+ärende i olycksfacit får en punkt till (TROSKLAR-OLYCKSFACIT §9.5 punkt 10 och §15): två topplistor per vägbit för säsongen sedan 6/11,
+halkolyckorna (TYDLIG och TROLIG) och alla olyckor. En vägbit är en väg inom en fast ruta om ungefär 10 × 10 km. Listan visar de 10
+med flest och minst två olyckor, med veckans antal och hur många där Halkvakt varnade. Bara summor, och listan används inte i varningarna.
+Byggt i `supabase/functions/olycksfacit/arende.ts` med prov. Funktionen deployas på Bengts ord, och det första ärendet med listorna är
+2026-V48 (30/11).
+
+**Nästa steg, inte beslutade här.** Trafikverkets olyckor 2024/25 (leveransen TRV 2026/111808) som en jämförelsevinter kräver en egen
+förregistrering i halkvakt-kuvos, eftersom förregistreringen för filen bara tillåter facit och vinden (DECISIONS #697), och bara summor
+per vägbit får visas utåt. Den förregistreringen (olycksvägarna, halkvakt-kuvos F84) signerades samma dag av Bengt för Bengt och Axel
+(*"jag och Axel signerar detta"*), och dess tal bor i kuvösen. Risken per fordon och per halktimme kräver trafikflödet ur NVDB och halktimmarna per vägbit.
+
+**Alternativ.** Vägbitar längs vägen ur NVDB (förkastat nu: kräver att varje olycka läggs på vägnätet; den fasta rutan räcker för en
+topplista och kan bytas när trafikflödet hämtas). Grupper av närliggande olyckor (förkastat: gruppen ändras med varje ny olycka, så samma
+fläck får inte samma namn varje vecka). En egen sida i stället för veckans ärende (förkastat: ärendet har redan väg och läge, och det
+läses varje vecka).
+
+**Stomdokument:** MAT (olycksfacits veckoärende)
+

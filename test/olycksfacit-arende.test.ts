@@ -4,7 +4,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { ATERKOMMANDE, DYGN_EFTER, MARK, MARKV, type Olycka, arendeKropp, arendeTitel, bedomning, behoverAtgard, forifylld, kollision, omrade,
-  paminnelse, smavagText, svenskDag, svenskTid, veckaKropp, veckaPaminnelse, veckaTitel, veckansForslag, veckansLasrader }
+  paminnelse, smavagText, svenskDag, svenskTid, vagbit, vagbitsRader, veckaKropp, veckaPaminnelse, veckaTitel, veckansForslag, veckansLasrader }
   from "../supabase/functions/olycksfacit/arende.ts";
 
 const o = (x: Partial<Olycka>): Olycka => ({ tid: "2026-11-06T05:23:00.000Z", vag: "Väg 134", lon: 15.5434, lat: 57.9831,
@@ -272,4 +272,39 @@ test("veckaKropp (§14, DECISIONS #946): missarna mot facit som inte bygger på 
   assert.ok(k.includes("| Med facit som inte bygger på stationen: halkordet eller väglaget efteråt | 3 | 4 |"), k);
   assert.ok(k.includes("| Bara på stationen | 2 | 2 |"));
   assert.ok(k.includes("| **Summa** | 5 | 6 |"));
+});
+
+test("vagbitsRader (§15): vägbiten är vägen i en fast ruta om omkring 10 km, och listan bär bara summor", () => {
+  const a = vagbit({ vag: "Väg 40", lon: 13.10, lat: 57.71 }), b = vagbit({ vag: "40", lon: 13.14, lat: 57.73 });
+  assert.equal(a.nyckel, b.nyckel, "samma väg, samma ruta, oavsett hur Trafikverket skriver vägen");
+  assert.notEqual(vagbit({ vag: "E4", lon: 13.10, lat: 57.71 }).nyckel, a.nyckel, "en annan väg i samma ruta är en annan vägbit");
+  assert.notEqual(vagbit({ vag: "40", lon: 13.10, lat: 57.85 }).nyckel, a.nyckel, "nästa band norrut");
+  // Rutan är omkring 10 km bred både i syd och i norr.
+  for (const lat of [55.6, 67.8]) {
+    const r = vagbit({ vag: "E4", lon: 15, lat }), m = /\(([\d.]+), ([\d.]+)\)/.exec(r.namn)!;
+    const bredd = (0.09 / Math.cos((Number(m[2]) * Math.PI) / 180)) * 111.32 * Math.cos((Number(m[2]) * Math.PI) / 180);
+    assert.ok(Math.abs(bredd - 10) < 0.1, `${lat}: ${bredd}`);
+  }
+  assert.equal(vagbit({ vag: null, lon: 13.1, lat: 57.71 }).namn.startsWith("Okänd väg kring"), true);
+
+  const vid = (x: Partial<Olycka>) => o({ lon: 13.10, lat: 57.71, vag: "Väg 40", ...x });
+  const sasong = [vid({}), vid({ utfall: "VARNADE", talade: ["A1"] }), vid({ tid: "2026-11-17T05:00:00.000Z" }),
+    o({}), o({ tid: "2026-11-17T06:00:00.000Z" }), o({ lon: 20, lat: 65 })];
+  const veckans = sasong.filter((x) => x.tid.startsWith("2026-11-17"));
+  const r = vagbitsRader(veckans, sasong);
+  assert.equal(r.length, 4, "två vägbitar med minst två, den ensamma står inte med");
+  assert.match(r[2], /^\| Väg 40 kring \(13\.\d\d, 57\.73\) \| 3 \| 1 \| 1 \|$/);
+  assert.match(r[3], /^\| Väg 134 kring \(15\.\d\d, 58\.00\) \| 2 \| 1 \| 0 \|$/);
+  assert.deepEqual(vagbitsRader([], [o({})]), ["Ingen vägbit har 2 olyckor eller fler under säsongen."]);
+});
+
+test("veckaKropp: topplistorna per vägbit står i ärendet, halkolyckorna för sig och utan dubbletter", () => {
+  const sasong = [o({}), o({ tid: "2026-11-17T06:00:00.000Z" }), o({ tid: "2026-11-17T06:01:00.000Z", dubblett: true }),
+    o({ tid: "2026-11-17T07:00:00.000Z", klass: "INTE", skal: "vilt" })];
+  const k = veckaKropp("2026-V47", "2026-11-16", "2026-11-22", sasong.slice(1), sasong);
+  assert.ok(k.includes("**Vägbitarna med flest olyckor** (TROSKLAR-OLYCKSFACIT §15)"));
+  const halk = k.indexOf("*Halkolyckorna*"), alla = k.indexOf("*Alla olyckor:*");
+  assert.ok(halk > 0 && alla > halk);
+  assert.match(k.slice(halk, alla), /\| Väg 134 kring \([\d., ]+\) \| 2 \| 1 \| 0 \|/, "viltet räknas inte bland halkolyckorna");
+  assert.match(k.slice(alla), /\| Väg 134 kring \([\d., ]+\) \| 3 \| 2 \| 0 \|/, "dubbletten räknas inte");
 });

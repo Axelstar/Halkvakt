@@ -2,7 +2,7 @@
 // publika repot och bär därför bara Trafikverkets öppna data (väg, tid och läge) och koderna och antalen — aldrig kandidatens tal
 // (förslaget §4). Bedömningen per olycka, förbättringsområdet och veckans regler står i docs/TROSKLAR-OLYCKSFACIT.md §9; det nya
 // upplägget (förifyllda åtgärder, läsningen i veckans ärende, nämnaren och kollisionerna, DECISIONS #852) i §11.
-import { vagText } from "../_shared/vagnamn.ts";   // vägen som appen och sajten skriver den (DECISIONS #882)
+import { vagForst, vagKod, vagText } from "../_shared/vagnamn.ts";   // vägen som appen och sajten skriver den (DECISIONS #882)
 
 export const FORSTA_DAG = "2026-11-06";   // första svenska dygnet som fångsten täcker helt (fångsten i drift 6/11 07:45 UTC)
 export const ETIKETT = "olycka";
@@ -261,6 +261,48 @@ function oberoendeRader(veckans: Olycka[], sasong: Olycka[]): string[] {
     `| Bara på stationen | ${n(v, false)} | ${n(s, false)} |`, `| **Summa** | ${v.length} | ${s.length} |`, ""];
 }
 
+// ── Vägbitarna (TROSKLAR-OLYCKSFACIT §15, DECISIONS #957) ──
+// En vägbit är en väg inom en ruta om ungefär 10 × 10 km: banden är 0,09 grader latitud, och längdgraden delas så att rutan blir
+// 10 km bred i bandets mitt. Rutan är fast, så samma vägbit får samma namn varje vecka och varje vinter. Bara summor per vägbit, aldrig
+// en olycka för sig. Redovisning: ingen klass, bedömning, regel eller varning ändras.
+export const VAGBIT_GRAD = 0.09;        // bandets höjd i grader latitud, omkring 10 km
+export const VAGBIT_MINST = 2;          // en vägbit står i listan först med två olyckor under säsongen
+export const VAGBIT_TOPP = 10;          // raderna per lista
+
+/** Vägbitens nyckel och namn: vägen och rutans mitt. Utan väg är vägen *okänd väg*. */
+export function vagbit(o: Pick<Olycka, "vag" | "lon" | "lat">): { nyckel: string; namn: string } {
+  const band = Math.floor(o.lat / VAGBIT_GRAD), mittLat = (band + 0.5) * VAGBIT_GRAD;
+  const bredd = VAGBIT_GRAD / Math.cos((mittLat * Math.PI) / 180), kol = Math.floor(o.lon / bredd);
+  const vag = vagKod(o.vag);
+  return { nyckel: `${vag ?? "-"}|${band}|${kol}`,
+           namn: `${vagForst(o.vag) ?? "Okänd väg"} kring (${((kol + 0.5) * bredd).toFixed(2)}, ${mittLat.toFixed(2)})` };
+}
+
+/** Topplistan: vägbitarna med flest olyckor under säsongen, minst VAGBIT_MINST, med veckans antal och hur många där Halkvakt varnade. */
+export function vagbitsRader(veckans: Olycka[], sasong: Olycka[]): string[] {
+  const n = new Map<string, { namn: string; s: number; v: number; varnade: number }>();
+  for (const o of sasong) {
+    const b = vagbit(o), r = n.get(b.nyckel) ?? { namn: b.namn, s: 0, v: 0, varnade: 0 };
+    r.s++; if (o.utfall === "VARNADE") r.varnade++; n.set(b.nyckel, r);
+  }
+  for (const o of veckans) { const r = n.get(vagbit(o).nyckel); if (r) r.v++; }
+  const topp = [...n.values()].filter((r) => r.s >= VAGBIT_MINST)
+    .sort((a, b) => b.s - a.s || b.v - a.v || a.namn.localeCompare(b.namn, "sv")).slice(0, VAGBIT_TOPP);
+  return topp.length
+    ? ["| Vägbit | Säsongen | Veckan | Varnade (säsongen) |", "| :-- | --: | --: | --: |",
+       ...topp.map((r) => `| ${r.namn} | ${r.s} | ${r.v} | ${r.varnade} |`)]
+    : [`Ingen vägbit har ${VAGBIT_MINST} olyckor eller fler under säsongen.`];
+}
+
+/** §9.5 punkt 10: de två topplistorna, halkolyckorna (TYDLIG och TROLIG) och alla olyckor, utan dubbletter. */
+function vagbitsAvsnitt(egna: Olycka[], s: Olycka[]): string[] {
+  return [`**Vägbitarna med flest olyckor** (TROSKLAR-OLYCKSFACIT §15): en vägbit är en väg inom en fast ruta om ungefär 10 × 10 km, ` +
+      `namngiven efter rutans mitt. Säsongen sedan ${FORSTA_DAG}, de ${VAGBIT_TOPP} med flest och minst ${VAGBIT_MINST}. Listan är ` +
+      "redovisning och används inte i varningarna.",
+    "", "*Halkolyckorna* (TYDLIG och TROLIG):", "", ...vagbitsRader(egna.filter(halkkopplad), s.filter(halkkopplad)),
+    "", "*Alla olyckor:*", "", ...vagbitsRader(egna, s), ""];
+}
+
 export function veckaKropp(vecka: string, fran: string, till: string, veckans: Olycka[], sasong: Olycka[],
                            lasdagar: ReadonlySet<string> = new Set()): string {
   const egna = veckans.filter((o) => !o.dubblett);
@@ -305,6 +347,7 @@ export function veckaKropp(vecka: string, fran: string, till: string, veckans: O
       ? ["**Missarna per förbättringsområde:**", "", "| Område | Missar |", "| :-- | --: |", ...veckansOmraden, ""]
       : ["Inga missar den här veckan.", ""]),
     ...oberoendeRader(egna, s),
+    ...vagbitsAvsnitt(egna, s),
     ...(ratta.length ? ["**Rätt varning, fall för fall:**", "", ...ratta.map((o) => rattVarning(o, true)), ""] : []),
     `**Säsongen sedan ${FORSTA_DAG}:** ${sHalk.length} halkkopplade olyckor; ` +
       `Halkvakt hade rätt varning vid ${sRatta} av dem (${procent(sRatta, sHalk.length)}) och missade ${bed("MISS", s)}.` +
