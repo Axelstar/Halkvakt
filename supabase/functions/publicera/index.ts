@@ -2753,6 +2753,12 @@ Deno.serve(async (req) => {
       BRIDGES);
     const sStatic = JSON.stringify(staticDoc), sLive = JSON.stringify(liveDoc);
     tider.bygget = Date.now() - tDel;
+    // Lägesfilens historia (sql/141, DECISIONS #955): timmens hala sträckor och stationerna med yta högst +1 °C och fukt, bara id:n,
+    // för A1:s täckning och A2:s leverans i säsongsfacit. Fail-soft: ett fel stoppar inte filen och står i noterna.
+    try {
+      await sql`SELECT lagesfil_spara(${new Date(t0).toISOString()}::timestamptz, ${liveDoc.segments.map((s) => s.id)}::text[],
+        ${liveDoc.weather.filter((w) => w.yta !== null && w.yta <= 1 && w.fukt).map((w) => w.id)}::text[])`;
+    } catch (e) { notes.push(`lägesfilens historia: ${String((e as Error).message ?? e).slice(0, 160)}`); }
     // Punktfilen först i hinken när den är ny, så att manifestet bara pekar på en fil som finns. Ett fel här stoppar inget annat: då
     // står punktfilen inte i manifestet den här körningen, och svaret säger varför.
     const minutNu = new Date(t0).getUTCMinutes();

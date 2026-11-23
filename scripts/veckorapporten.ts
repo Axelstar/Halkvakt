@@ -38,7 +38,9 @@ const F1 = (x: string) => `coalesce(NOT ${x}.deleted AND (${x}.condition_code >=
 /** The numeric fields the report reads, with the table they are declared under in the value guard. */
 export const FALT: [string, string][] = [["app_raknare", "antal"], ["sasongsfacit_dag", "timmar"], ["sasongsfacit_dag", "varnar"],
   ["sasongsfacit_dag", "traff"], ["sasongsfacit_dag", "f1"], ["sasongsfacit_dag", "tackt"], ["sasongsfacit_ledtid", "n"],
-  ["sasongsfacit_olyckor", "olyckor"], ["sasongsfacit_olyckor", "k_varnade"], ["publicera_bygge", "bygget_ms"]];
+  ["sasongsfacit_olyckor", "olyckor"], ["sasongsfacit_olyckor", "k_varnade"], ["publicera_bygge", "bygget_ms"],
+  ["lagesfil_dag", "timmar_bygge"], ["lagesfil_dag", "timmar_utan"], ["lagesfil_dag", "a1_f1"], ["lagesfil_dag", "a1_i_filen"],
+  ["lagesfil_dag", "a2_isrisk"], ["lagesfil_dag", "a2_i_filen"]];
 
 /** The questions. $1 is the Monday; the week is [$1 - 7, $1), the season [SASONG, $1). Read on a connection in UTC. */
 export const SATS = {
@@ -68,6 +70,9 @@ export const SATS = {
     SELECT p.period, count(*)::int AS n, count(*) FILTER (WHERE d.s < 0)::int AS fore,
       percentile_cont(0.5) WITHIN GROUP (ORDER BY d.s)::float8 AS median_s, percentile_cont(0.95) WITHIN GROUP (ORDER BY d.s)::float8 AS p95_s
     FROM (VALUES ('veckan'), ('säsongen')) p(period) JOIN d ON d.vecka OR p.period = 'säsongen' GROUP BY 1`,
+  // A1's coverage and A2's delivery: the file's history from sql/141 (DECISIONS #955), one row per Swedish day.
+  lagesfil: `SELECT dag >= $1::date - 7 AS vecka, dag::text AS dag, timmar_bygge, timmar_utan, a1_f1, a1_i_filen, a2_isrisk, a2_i_filen
+    FROM lagesfil_dag WHERE dag >= DATE '${SASONG}' AND dag < $1::date`,
   // A2's silences from the slow guard (sql/030): the station days in the fault. Whether they were justified is a human reading.
   givarfel: `SELECT dag >= $1::date - 7 AS vecka, count(*)::int AS stationsdygn, count(DISTINCT station_id)::int AS stationer FROM givarfel_dygn
     WHERE dag >= DATE '${SASONG}' AND dag < $1::date GROUP BY 1`,
@@ -121,6 +126,7 @@ export type Db = {
   raknare: Raknare[]; facit: Facit[]; facitdagar: string[];
   ledtid: (Bool & { dag: string; band: string; n: number })[];
   fordrojning: { period: string; n: number; fore: number; median_s: number | null; p95_s: number | null }[];
+  lagesfil: (Bool & { dag: string; timmar_bygge: number; timmar_utan: number; a1_f1: number; a1_i_filen: number; a2_isrisk: number; a2_i_filen: number })[];
   givarfel: (Bool & { stationsdygn: number; stationer: number })[];
   kamerafacit: number;
   takt: (Bool & { slag: string; tatast_s: number; inom60: number; foljder: number })[];
@@ -282,8 +288,13 @@ export function rapport(db: Db, stad: string | null): string {
       const r = fd(p);
       return [p, String(r?.n ?? 0), min(r?.median_s ?? null), min(r?.p95_s ?? null), String(r?.fore ?? 0)];
     })), "",
+    "**A1:s täckning och A2:s leverans** ur lägesfilens historia (sql/141), i timmarna då filen byggdes: sträcktimmarna med F1 (säsongsfacits ord) som filen bar, och stationstimmarna med uppmätt yta högst +1 °C och nederbörd (fuktskuggans regel) som filen bar med frysrisk. Skillnaden är vakternas tystnader, filtret och det publiceringen inte hann med.", "",
+    tabell(["Period", "dygn", "timmar utan bygge", "A1: F1-sträcktimmar i filen", "A2: isrisktimmar i filen med frysrisk"], PERIODER.map(([p, med]) => {
+      const r = db.lagesfil.filter(med);
+      return [p, String(r.length), String(summa(r, (x) => x.timmar_utan)), andelI(perDag(r, (x) => x.a1_i_filen, (x) => x.a1_f1)),
+        andelI(perDag(r, (x) => x.a2_i_filen, (x) => x.a2_isrisk))];
+    })), "",
     `**A2:s tystnader:** den långsamma vakten (sql/030) tystade ${summa(gf(PERIODER[0][1]), (x) => x.stationsdygn)} stationsdygn i veckan och ${summa(gf(PERIODER[1][1]), (x) => x.stationsdygn)} under säsongen. Om tystnaderna var befogade är en läsning för en människa.`, "",
-    "**Saknas:** A1:s täckning och A2:s andel stationstimmar med frysrisk i lägesfilen kräver lägesfilens historia, som inte sparas (körlistan C2 väntar på ett beslut). " +
     `**F3**, kamerabilderna, öppnas i mars (blindningen, DECISIONS #335): ${db.kamerafacit} bilder från säsongen är klassade.`);
   const slag = [...new Set(db.svar.map((x) => x.slag))].sort();
   ut.push("", "### På vägen: förarnas svar", "", "*Stämde det?* utan provraderna, per varningsslag ur varningens id. Antalet förare går inte att läsa ur svaren (§5).", "",
@@ -391,7 +402,7 @@ export async function lasDb(q: (s: string, p?: unknown[]) => Promise<{ rows: any
   const fr = JSON.parse(readFileSync(resolve(ROT, "docs/fristerna.json"), "utf8")).frister as Frist[];
   return { ...g, spann: await las(SATS.spann, []), timmar: await las(SATS.timmar), bygget: (await las(SATS.bygget))[0],
     raknare: await las(SATS.raknare), facit: await las(SATS.facit), facitdagar: (await las(SATS.facitdagar)).map((r) => r.dag),
-    ledtid: await las(SATS.ledtid), fordrojning: await las(SATS.fordrojning), givarfel: await las(SATS.givarfel),
+    ledtid: await las(SATS.ledtid), fordrojning: await las(SATS.fordrojning), lagesfil: await las(SATS.lagesfil), givarfel: await las(SATS.givarfel),
     kamerafacit: (await las(SATS.kamerafacit))[0].n, takt: await las(SATS.takt), falsklarm: await las(SATS.falsklarm),
     km: Object.fromEntries(Object.entries(JSON.parse(readFileSync(resolve(ROT, "data/favoritprov/rutter-osrm.json"), "utf8")).rutter as Record<string, { km: number }>)
       .map(([n, r]) => [n, r.km])), svar: await las(SATS.svar), missar: await las(SATS.missar), brytare: await las(SATS.brytare, []),

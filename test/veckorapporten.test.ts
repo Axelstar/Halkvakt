@@ -39,6 +39,7 @@ const db = (o: Partial<Db> = {}): Db => ({
   facitdagar: ["2026-11-16", "2026-11-17", "2026-11-18", "2026-11-19", "2026-11-20", "2026-11-21"],
   ledtid: [{ vecka: true, dag: "2026-11-17", band: "1–3 h", n: 5 }, { vecka: true, dag: "2026-11-18", band: "ingen", n: 3 }],
   fordrojning: [{ period: "veckan", n: 500, fore: 2, median_s: 90, p95_s: 600 }, { period: "säsongen", n: 2000, fore: 3, median_s: 120, p95_s: 900 }],
+  lagesfil: [{ vecka: true, dag: "2026-11-22", timmar_bygge: 24, timmar_utan: 0, a1_f1: 100, a1_i_filen: 90, a2_isrisk: 40, a2_i_filen: 30 }],
   givarfel: [{ vecka: true, stationsdygn: 4, stationer: 2 }, { vecka: false, stationsdygn: 6, stationer: 3 }],
   kamerafacit: 0,
   takt: [{ vecka: true, slag: "rösten", tatast_s: 12, inom60: 5, foljder: 80 }, { vecka: false, slag: "rösten", tatast_s: 8, inom60: 2, foljder: 40 },
@@ -99,6 +100,7 @@ test("#951 the report: internal, the parts in order, the count beside the share"
   assert.match(r, /tystade 4 stationsdygn i veckan och 10 under säsongen/u);
   assert.match(r, /0 bilder från säsongen är klassade/u);
   assert.doesNotMatch(r, /Saknas ännu/u);
+  assert.match(r, /\| veckan \| 1 \| 0 \| 90 av 100 \(90,0 %; 95 %: 90–90 %\) \| 30 av 40 \(75,0 %; 95 %: 75–75 %\) \|/u, "A1 and A2 from the file's history");
   assert.match(r, /\| J1 \| säsongen \| 0 \| 0 \| 0 av 0 \| 0 \| 0 av 0 \|/u, "J1 without the station rows is not counted");
   assert.match(r, /inte har räknat: 2026-11-22\./u, "the day säsongsfacit has not counted is named");
   assert.match(r, /\| hal sträcka \(A1\) \| veckan \| 3 \| 1 \| 3 av 4 \|/u, "the answers' share from 30 only");
