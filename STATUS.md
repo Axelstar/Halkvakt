@@ -3551,3 +3551,4 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 23/11 UTC (Claude; Bengt: *"Du kan stänga det kortet"*): Kort #643 stängt utan att orsaken lästs (DECISIONS #952).
 - 23/11 UTC (Claude; Bengt: *"Ok"*): Kort #375 stängt: ingest-lives tidsgränser förklarade (DECISIONS #953, DB-knappen 45109098883).
 - 23/11 UTC (Claude; Bengt: *"Axel godkänner"*): Axels ord på körlistans D5 inhämtat, så att körlistan slås ihop av `synk-ihop` (DECISIONS #951).
+- 23/11 UTC (Claude; Bengt: *"Ja till båda"* och *"Ja"*): Körlistans C2 i drift. PR #1807 och #1809 sammanslagna: veckorapporten räknar intervallen, A1:s fördröjning, K:s falsklarm per 100 km, takten och A2:s tystnader (DECISIONS #954), och lägesfilens historia sparas framåt för A1:s täckning och A2:s leverans (sql/141 migrerad med DB-knappen 45115086684, publicera deployad 45115292896, första raden i `lagesfil_timme` för timmen 05 UTC; DECISIONS #955). C2 är klar när månadsläsningen 1/12 är bokförd.
