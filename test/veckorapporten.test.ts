@@ -11,7 +11,7 @@ import { readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { flaggaFor, spannFor } from "../scripts/vardevakten.ts";
-import { FALT, SATS, granska, korlistan, rapport, type Db } from "../scripts/veckorapporten.ts";
+import { FALT, SATS, granska, intervall, korlistan, rapport, type Db } from "../scripts/veckorapporten.ts";
 import { iRepot } from "../scripts/sasongsfacit-stad.ts";
 import type { Olycka } from "../supabase/functions/olycksfacit/arende.ts";
 
@@ -34,10 +34,17 @@ const db = (o: Partial<Db> = {}): Db => ({
     { vecka: true, dag: "2026-11-17", app: "android", version: "0.4.0", handelse: "varning", varde: "slippery_segment:400-800", antal: 9 },
     { vecka: false, dag: "2026-11-05", app: "android", version: "0.4.0", handelse: "varning", varde: "smavag:under400", antal: 0 },
   ],
-  facit: [{ vecka: true, metod: "K", jamforelser: true, timmar: 1000, varnar: 40, traff: 22, f1: 30, tackt: 21 },
-    { vecka: false, metod: "J1", jamforelser: false, timmar: 900, varnar: 400, traff: 20, f1: 30, tackt: 25 }],
+  facit: [{ vecka: true, dag: "2026-11-17", metod: "K", jamforelser: true, timmar: 1000, varnar: 40, traff: 22, f1: 30, tackt: 21 },
+    { vecka: false, dag: "2026-11-05", metod: "J1", jamforelser: false, timmar: 900, varnar: 400, traff: 20, f1: 30, tackt: 25 }],
   facitdagar: ["2026-11-16", "2026-11-17", "2026-11-18", "2026-11-19", "2026-11-20", "2026-11-21"],
-  ledtid: [{ vecka: true, band: "1–3 h", n: 5 }, { vecka: true, band: "ingen", n: 3 }],
+  ledtid: [{ vecka: true, dag: "2026-11-17", band: "1–3 h", n: 5 }, { vecka: true, dag: "2026-11-18", band: "ingen", n: 3 }],
+  fordrojning: [{ period: "veckan", n: 500, fore: 2, median_s: 90, p95_s: 600 }, { period: "säsongen", n: 2000, fore: 3, median_s: 120, p95_s: 900 }],
+  givarfel: [{ vecka: true, stationsdygn: 4, stationer: 2 }, { vecka: false, stationsdygn: 6, stationer: 3 }],
+  kamerafacit: 0,
+  takt: [{ vecka: true, slag: "rösten", tatast_s: 12, inom60: 5, foljder: 80 }, { vecka: false, slag: "rösten", tatast_s: 8, inom60: 2, foljder: 40 },
+    { vecka: true, slag: "K", tatast_s: 0, inom60: 9, foljder: 30 }],
+  falsklarm: [{ vecka: true, rutt: "R1", korningar: 10, varningar: 30, utan_facit: 20 }, { vecka: false, rutt: "R1", korningar: 10, varningar: 10, utan_facit: 0 }],
+  km: { R1: 100 },
   svar: [{ vecka: true, slag: "seg", svar: "ja", antal: 3 }, { vecka: true, slag: "seg", svar: "nej", antal: 1 }],
   missar: [{ vecka: true, vad: "halka", antal: 2 }],
   brytare: [{ grupp: "N", pa: false, andrad: "2026-11-14 10:00" }, { grupp: "P1", pa: false, andrad: "2026-11-14 10:00" }],
@@ -82,7 +89,16 @@ test("#951 the report: internal, the parts in order, the count beside the share"
   assert.match(r, /\| K \| 47 \| 121 \| 1 \|/u, "K: 47 hours of 168, one complete day");
   assert.match(r, /\| ios 0\.4\.0 \| veckan \| 34 \| 4 av 34 \(11,8 %\) \|/u, "the aborted sessions as a share with the count");
   assert.match(r, /\| 2026-11-17 \| 11 \| 0 \|/u); assert.match(r, /\| 2026-11-18 \| 13 \| 0 \|/u);
-  assert.match(r, /\| K \| veckan \| 1000 \| 40 \| 22 av 40 \(55,0 %\) \| 30 \| 21 av 30 \(70,0 %\) \|/u);
+  assert.match(r, /\| K \| veckan \| 1000 \| 40 \| 22 av 40 \(55,0 %; 95 %: 55–55 %\) \| 30 \| 21 av 30 \(70,0 %; 95 %: 70–70 %\) \|/u,
+    "one day: the interval is the share itself");
+  assert.match(r, /\| veckan \| 10 \| 1000 \| 30 \| 20 av 30 \(66,7 %\) \| 2,00 \|/u, "20 false of 1 000 km");
+  assert.match(r, /\| säsongen \| 20 \| 2000 \| 40 \| 20 av 40 \(50,0 %\) \| 1,00 \|/u);
+  assert.match(r, /\| rösten, alla lager \| säsongen \| 8 \| 120 \| 7 \|/u, "the season's closest gap is the smallest of the two");
+  assert.match(r, /\| K \| veckan \| 0 \| 30 \| 9 \|/u);
+  assert.match(r, /\| veckan \| 500 \| 1,5 \| 10,0 \| 2 \|/u, "A1's delay in minutes");
+  assert.match(r, /tystade 4 stationsdygn i veckan och 10 under säsongen/u);
+  assert.match(r, /0 bilder från säsongen är klassade/u);
+  assert.doesNotMatch(r, /Saknas ännu/u);
   assert.match(r, /\| J1 \| säsongen \| 0 \| 0 \| 0 av 0 \| 0 \| 0 av 0 \|/u, "J1 without the station rows is not counted");
   assert.match(r, /inte har räknat: 2026-11-22\./u, "the day säsongsfacit has not counted is named");
   assert.match(r, /\| hal sträcka \(A1\) \| veckan \| 3 \| 1 \| 3 av 4 \|/u, "the answers' share from 30 only");
@@ -95,6 +111,18 @@ test("#951 the report: internal, the parts in order, the count beside the share"
   assert.match(r, /N av \(ändrad 2026-11-14 10:00\)/u);
   assert.match(rapport(db({ arenden: null }), null), /gick inte att läsa ur GitHub/u);
   assert.match(rapport(db(), null), /Avsnittet saknas den här veckan/u);
+});
+
+test("#954 the interval: bootstrapped per day, the same every time, around the share and absent under 20", () => {
+  const dagar: [number, number][] = [[2, 10], [8, 10], [5, 10], [6, 10], [3, 10]];
+  const iv = intervall(dagar)!;
+  assert.deepEqual(intervall(dagar), iv, "a fixed seed");
+  assert.ok(iv[0] < 0.48 && iv[1] > 0.48 && iv[0] >= 0.2 && iv[1] <= 0.8, "the share 24/50 lies inside, within the days' range");
+  assert.equal(intervall([[3, 19]]), null);
+  assert.throws(() => granska(db({ km: {} })), /saknar sin längd/u);
+  assert.throws(() => granska(db({ takt: [{ vecka: true, slag: "K", tatast_s: -1, inom60: 0, foljder: 1 }] })), /negativ/u);
+  assert.match(SATS.falsklarm, /generate_series\(-1, 2\)/u, "the facit window −1..+2 h");
+  assert.match(SATS.takt, /2026-11-18T18:32:00Z/u, "the voice from the road's line");
 });
 
 test("#951 körlistan: only what waits for Bengt or Axel, in words", () => {

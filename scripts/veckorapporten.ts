@@ -29,6 +29,11 @@ import { BEDOMNINGAR, type Bedomning, bedomning, FORSTA_DAG, NAMNARE, type Olyck
 const LOKAL = (d: string) => `(${d})::timestamp AT TIME ZONE 'Europe/Stockholm'`;
 const V0 = LOKAL("$1::date - 7"), V1 = LOKAL("$1::date");
 const SASONG = "2026-11-01";   // the counter and säsongsfacit's complete days start here (DECISIONS #772, TROSKLAR-SASONGSFACIT §6)
+const VAGLINJE = "2026-11-18T18:32:00Z";   // the shadow's main routes drive the road's line from this run (körlistan B13, DECISIONS #897)
+// F1 for one row of road_condition_history, word for word as sql/099 (säsongsfacit counts on the words before #915; kontraktsgrinden).
+const F1 = (x: string) => `coalesce(NOT ${x}.deleted AND (${x}.condition_code >= 2 OR EXISTS (
+             SELECT 1 FROM unnest(${x}.condition_info) i
+             WHERE i ~* '(^|[^a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt)' OR i ~* '(snö|frost)')), false)`;
 
 /** The numeric fields the report reads, with the table they are declared under in the value guard. */
 export const FALT: [string, string][] = [["app_raknare", "antal"], ["sasongsfacit_dag", "timmar"], ["sasongsfacit_dag", "varnar"],
@@ -52,10 +57,48 @@ export const SATS = {
   raknare: `SELECT dag >= $1::date - 7 AS vecka, dag::text AS dag, app, version, handelse, varde, sum(antal)::int AS antal FROM app_raknare
     WHERE dag >= DATE '${SASONG}' AND dag < $1::date AND handelse IN ('aktiv_dag', 'vakt_startad', 'resa_slut', 'varning')
     GROUP BY 1, 2, 3, 4, 5, 6`,
-  facit: `SELECT dag >= $1::date - 7 AS vecka, metod, jamforelser, sum(timmar)::int AS timmar, sum(varnar)::int AS varnar, sum(traff)::int AS traff,
-      sum(f1)::int AS f1, sum(tackt)::int AS tackt FROM sasongsfacit_dag WHERE dag < $1::date GROUP BY 1, 2, 3`,
+  // Per day, so that every share gets its interval bootstrapped per day (TROSKLAR-SASONGSFACIT §5).
+  facit: `SELECT dag >= $1::date - 7 AS vecka, dag::text AS dag, metod, jamforelser, sum(timmar)::int AS timmar, sum(varnar)::int AS varnar,
+      sum(traff)::int AS traff, sum(f1)::int AS f1, sum(tackt)::int AS tackt FROM sasongsfacit_dag WHERE dag < $1::date GROUP BY 1, 2, 3, 4`,
   facitdagar: `SELECT DISTINCT dag::text AS dag FROM sasongsfacit_dag WHERE dag >= $1::date - 7 AND dag < $1::date ORDER BY 1`,
-  ledtid: `SELECT dag >= $1::date - 7 AS vecka, band, sum(n)::int AS n FROM sasongsfacit_ledtid WHERE dag < $1::date GROUP BY 1, 2`,
+  ledtid: `SELECT dag >= $1::date - 7 AS vecka, dag::text AS dag, band, sum(n)::int AS n FROM sasongsfacit_ledtid WHERE dag < $1::date GROUP BY 1, 2, 3`,
+  // A1's delay: from Trafikverket's time on the change to the row in our archive (ingested_at, from sql/099 on 7/11).
+  fordrojning: `WITH d AS (SELECT modified_time >= ${V0} AS vecka, extract(epoch FROM ingested_at - modified_time)::float8 AS s
+      FROM road_condition_history WHERE ingested_at IS NOT NULL AND modified_time >= ${LOKAL(`DATE '${SASONG}'`)} AND modified_time < ${V1})
+    SELECT p.period, count(*)::int AS n, count(*) FILTER (WHERE d.s < 0)::int AS fore,
+      percentile_cont(0.5) WITHIN GROUP (ORDER BY d.s)::float8 AS median_s, percentile_cont(0.95) WITHIN GROUP (ORDER BY d.s)::float8 AS p95_s
+    FROM (VALUES ('veckan'), ('säsongen')) p(period) JOIN d ON d.vecka OR p.period = 'säsongen' GROUP BY 1`,
+  // A2's silences from the slow guard (sql/030): the station days in the fault. Whether they were justified is a human reading.
+  givarfel: `SELECT dag >= $1::date - 7 AS vecka, count(*)::int AS stationsdygn, count(DISTINCT station_id)::int AS stationer FROM givarfel_dygn
+    WHERE dag >= DATE '${SASONG}' AND dag < $1::date GROUP BY 1`,
+  // F3 is classified first in March (the blinding, DECISIONS #335); until then only the count of classified images.
+  kamerafacit: `SELECT count(*)::int AS n FROM kamerafacit WHERE bild_tid >= ${LOKAL(`DATE '${SASONG}'`)} AND bild_tid < ${V1}`,
+  // The pace (#200, as skuggrapport): the closest gap between two utterances in one run and the gaps within 60 s, for the voice
+  // (shadow_log.alerts, from the road's line) and for K (its warning segments along the road, shadow_log.kandidat.h).
+  takt: `WITH r AS (SELECT route, run_at, run_at >= ${V0} AS vecka, alerts, kandidat FROM shadow_log
+      WHERE land = 'SE' AND run_at >= ${LOKAL(`DATE '${SASONG}'`)} AND run_at < ${V1}),
+    t AS (SELECT r.vecka, 'rösten' AS slag, r.route, r.run_at, (e->>'t')::float8 AS t FROM r, jsonb_array_elements(r.alerts) e
+        WHERE r.run_at >= TIMESTAMPTZ '${VAGLINJE}' AND jsonb_typeof(e->'t') = 'number'
+      UNION ALL SELECT r.vecka, 'K', r.route, r.run_at, (e->>0)::float8 FROM r, jsonb_array_elements(coalesce(r.kandidat->'h', '[]'::jsonb)) e
+        WHERE r.kandidat->>'geo' = 'osrm'),
+    d AS (SELECT vecka, slag, t - lag(t) OVER (PARTITION BY slag, route, run_at ORDER BY t) AS d FROM t)
+    SELECT vecka, slag, min(d)::float8 AS tatast_s, count(*) FILTER (WHERE d <= 60)::int AS inom60, count(*)::int AS foljder
+    FROM d WHERE d IS NOT NULL GROUP BY 1, 2`,
+  // K's false alarms along the shadow's routes: each warning segment in a run with K's hour, and whether F1 stood on it at the end
+  // of any hour from one before the run's hour to two after (the facit window, val 1). Only runs along the road (geo osrm) with K's
+  // hour; the kilometres come from the routes' file.
+  falsklarm: `WITH r AS (SELECT route, run_at, run_at >= ${V0} AS vecka, kandidat FROM shadow_log
+      WHERE land = 'SE' AND kandidat->>'geo' = 'osrm' AND kandidat->>'tid' IS NOT NULL AND run_at >= ${LOKAL(`DATE '${SASONG}'`)} AND run_at < ${V1}),
+    p AS (SELECT r.route, r.vecka, e->>1 AS seg, date_trunc('hour', r.run_at) AS h FROM r, jsonb_array_elements(coalesce(r.kandidat->'h', '[]'::jsonb)) e),
+    par AS (SELECT DISTINCT seg, h FROM p),
+    f AS (SELECT par.seg, par.h, bool_or(${F1("x")}) AS f1
+      FROM par CROSS JOIN generate_series(-1, 2) g(n)
+      LEFT JOIN LATERAL (SELECT c.condition_code, c.condition_info, c.deleted FROM road_condition_history c
+        WHERE c.segment_id = par.seg AND c.modified_time < par.h + (g.n + 1) * interval '1 hour' ORDER BY c.modified_time DESC LIMIT 1) x ON true
+      GROUP BY 1, 2),
+    k AS (SELECT route, vecka, count(*)::int AS korningar FROM r GROUP BY 1, 2)
+    SELECT k.route AS rutt, k.vecka, k.korningar, count(p.seg)::int AS varningar, count(p.seg) FILTER (WHERE NOT f.f1)::int AS utan_facit
+    FROM k LEFT JOIN p ON p.route = k.route AND p.vecka = k.vecka LEFT JOIN f ON f.seg = p.seg AND f.h = p.h GROUP BY 1, 2, 3`,
   svar: `SELECT alert_t >= ${V0} AS vecka, split_part(alert_id, ':', 1) AS slag, svar, count(*)::int AS antal FROM driver_facit
     WHERE NOT prov AND alert_t >= ${LOKAL(`DATE '${SASONG}'`)} AND alert_t < ${V1} GROUP BY 1, 2, 3`,
   missar: `SELECT t >= ${V0} AS vecka, vad, count(*)::int AS antal FROM driver_miss
@@ -67,7 +110,7 @@ export const SATS = {
 
 type Bool = { vecka: boolean };
 export type Raknare = Bool & { dag: string; app: string; version: string; handelse: string; varde: string; antal: number };
-export type Facit = Bool & { metod: string; jamforelser: boolean; timmar: number; varnar: number; traff: number; f1: number; tackt: number };
+export type Facit = Bool & { dag: string; metod: string; jamforelser: boolean; timmar: number; varnar: number; traff: number; f1: number; tackt: number };
 export type Arende = { nummer: number; titel: string; etiketter: string[]; skapad: string; oppet: boolean };
 export type Frist = { id: string; datum: string; vad: string; agare: string[] };
 export type Db = {
@@ -76,7 +119,13 @@ export type Db = {
   timmar: { kedja: string; dag: string; timmar: number }[];
   bygget: { median: number | null; n: number };
   raknare: Raknare[]; facit: Facit[]; facitdagar: string[];
-  ledtid: (Bool & { band: string; n: number })[];
+  ledtid: (Bool & { dag: string; band: string; n: number })[];
+  fordrojning: { period: string; n: number; fore: number; median_s: number | null; p95_s: number | null }[];
+  givarfel: (Bool & { stationsdygn: number; stationer: number })[];
+  kamerafacit: number;
+  takt: (Bool & { slag: string; tatast_s: number; inom60: number; foljder: number })[];
+  falsklarm: (Bool & { rutt: string; korningar: number; varningar: number; utan_facit: number })[];
+  km: Record<string, number>;   // the shadow's routes along the road (data/favoritprov/rutter-osrm.json)
   svar: (Bool & { slag: string; svar: string; antal: number })[];
   missar: (Bool & { vad: string; antal: number })[];
   brytare: { grupp: string; pa: boolean; andrad: string }[];
@@ -88,6 +137,8 @@ export type Db = {
 
 const dag = (d: string, n: number) => new Date(Date.parse(`${d}T12:00:00Z`) + n * 86400_000).toISOString().slice(0, 10);
 
+const summa = <T>(r: T[], f: (x: T) => number) => r.reduce((s, x) => s + f(x), 0);
+
 /** The value guard: a field without its declaration, or a value outside it, stops the report. The message names the field, never a value. */
 export function granska(db: Db): void {
   for (const [t, k] of FALT) if (!spannFor(t, k)) throw new Error(`${t}.${k} saknar spann i värdevakten (OBESIKTIGAT)`);
@@ -96,9 +147,41 @@ export function granska(db: Db): void {
     const sp = spannFor(s.tabell, s.kolumn)!;
     if (s.min !== null && s.min < sp[0] || s.max !== null && s.max > sp[1]) throw new Error(`${s.tabell}.${s.kolumn} ligger utanför sitt spann i värdevakten`);
   }
+  // The seconds from shadow_log's JSON have no column to declare: a run's time is never negative, and a route without its length
+  // cannot carry a rate.
+  if (db.takt.some((t) => !(t.tatast_s >= 0))) throw new Error("shadow_log: en tid i körningen är negativ eller saknas");
+  for (const f of db.falsklarm) if (!(db.km[f.rutt] > 0)) throw new Error(`rutten ${f.rutt} saknar sin längd i rutter-osrm.json`);
 }
 
-const summa = <T>(r: T[], f: (x: T) => number) => r.reduce((s, x) => s + f(x), 0);
+/** A 95 % interval for the share sum(t)/sum(n), bootstrapped per day (TROSKLAR-SASONGSFACIT §5): the days are drawn with replacement,
+ * 2 000 times with a fixed seed, so the same data always gives the same interval. null under the limit for a share. */
+export function intervall(dagar: [number, number][], minst = 20): [number, number] | null {
+  const n = summa(dagar, (d) => d[1]);
+  if (n < minst || !dagar.length) return null;
+  let fro = 951;
+  const slump = () => { fro = (fro + 0x6d2b79f5) | 0; let x = Math.imul(fro ^ (fro >>> 15), 1 | fro); x ^= x + Math.imul(x ^ (x >>> 7), 61 | x); return ((x ^ (x >>> 14)) >>> 0) / 4294967296; };
+  const ut: number[] = [];
+  for (let b = 0; b < 2000; b++) {
+    let t = 0, m = 0;
+    for (let i = 0; i < dagar.length; i++) { const d = dagar[Math.floor(slump() * dagar.length)]; t += d[0]; m += d[1]; }
+    if (m > 0) ut.push(t / m);
+  }
+  ut.sort((a, b) => a - b);
+  return [ut[Math.floor(0.025 * (ut.length - 1))], ut[Math.ceil(0.975 * (ut.length - 1))]];
+}
+const pct = (x: number) => (100 * x).toFixed(0);
+/** A share with its count and its interval: "22 av 40 (55,0 %; 95 %: 41–68 %)". */
+function andelI(dagar: [number, number][]): string {
+  const t = summa(dagar, (d) => d[0]), n = summa(dagar, (d) => d[1]), a = andel(t, n), iv = intervall(dagar);
+  return iv ? a.replace(/\)$/u, `; 95 %: ${pct(iv[0])}–${pct(iv[1])} %)`) : a;
+}
+/** The rows summed per day, as [numerator, denominator] for intervall(). */
+function perDag<T extends { dag: string }>(r: T[], t: (x: T) => number, n: (x: T) => number): [number, number][] {
+  const m = new Map<string, [number, number]>();
+  for (const x of r) { const d = m.get(x.dag) ?? [0, 0]; d[0] += t(x); d[1] += n(x); m.set(x.dag, d); }
+  return [...m.values()];
+}
+
 const tabell = (rubrik: string[], rader: string[][]) =>
   [`| ${rubrik.join(" | ")} |`, `|${rubrik.map(() => " --- ").join("|")}|`, ...rader.map((r) => `| ${r.join(" | ")} |`)].join("\n");
 const PERIODER = [["veckan", (r: Bool) => r.vecka], ["säsongen", () => true]] as const;
@@ -169,13 +252,39 @@ export function rapport(db: Db, stad: string | null): string {
     tabell(["Metod", "Period", "sträcktimmar", "varnande", "träffsäkerhet", "F1-timmar", "täckning"], ["K", "J1", "J2"].flatMap((m) => PERIODER.map(([p, med]) => {
       const r = db.facit.filter((x) => x.metod === m && med(x) && (m === "K" || x.jamforelser));
       const s = (f: (x: Facit) => number) => summa(r, f);
-      return [m, p, String(s((x) => x.timmar)), String(s((x) => x.varnar)), andel(s((x) => x.traff), s((x) => x.varnar)), String(s((x) => x.f1)), andel(s((x) => x.tackt), s((x) => x.f1))];
+      return [m, p, String(s((x) => x.timmar)), String(s((x) => x.varnar)), andelI(perDag(r, (x) => x.traff, (x) => x.varnar)), String(s((x) => x.f1)),
+        andelI(perDag(r, (x) => x.tackt, (x) => x.f1))];
     }))), "", "Ledtiden: hur långt före varje början på F1 som K varnade.", "",
     tabell(["Period", "samma timme", "1–3 h", "4–6 h", "ingen"], PERIODER.map(([p, med]) => {
-      const r = db.ledtid.filter(med), n = summa(r, (x) => x.n);
-      return [p, ...["samma timme", "1–3 h", "4–6 h", "ingen"].map((b) => andel(summa(r.filter((x) => x.band === b), (x) => x.n), n))];
+      const r = db.ledtid.filter(med);
+      return [p, ...["samma timme", "1–3 h", "4–6 h", "ingen"].map((b) => andelI(perDag(r, (x) => (x.band === b ? x.n : 0), (x) => x.n)))];
     })), "",
-    "**Saknas ännu** (körlistan C2): A1:s fördröjning, A2:s leverans, kamerabilderna, falsklarmen per 100 km, takten och intervallen. Månadsläsningen 1/12 är första fristen.");
+    "Intervallen är 95 % och bootstrappade per dygn (§5): dygnen dras om med återläggning 2 000 gånger, eftersom timmarna inom ett dygn hänger ihop. Med få dygn är intervallet grovt.");
+  const fl = PERIODER.map(([p, med]) => {
+    const r = db.falsklarm.filter(med), km = summa(r, (x) => x.korningar * db.km[x.rutt]), u = summa(r, (x) => x.utan_facit);
+    return [p, String(summa(r, (x) => x.korningar)), String(Math.round(km)), String(summa(r, (x) => x.varningar)), andel(u, summa(r, (x) => x.varningar)),
+      km ? (100 * u / km).toFixed(2).replace(".", ",") : "–"];
+  });
+  ut.push("", "**Falsklarmen per 100 km** (§5): K:s varnande sträckor längs skuggans rutter på vägens linje (`shadow_log.kandidat`), i körningar där K hade en färsk timme. En varning är falsk när F1 inte stod på sträckan vid slutet av någon timme från en före körningens timme till två efter (facitfönstret, med säsongsfacits ord). Kilometrarna är rutternas längd längs vägen gånger körningarna.", "",
+    tabell(["Period", "körningar", "km", "varningar", "utan facit", "falsklarm per 100 km"], fl));
+  const tk = (slag: string) => PERIODER.map(([p, med]) => {
+    const r = db.takt.filter((x) => x.slag === slag && med(x));
+    return [slag === "K" ? "K" : "rösten, alla lager", p, r.length ? String(Math.min(...r.map((x) => x.tatast_s))) : "–", String(summa(r, (x) => x.foljder)), String(summa(r, (x) => x.inom60))];
+  });
+  ut.push("", "**Takten** (§5, som skuggrapporten, DECISIONS #200): tätaste följden mellan två varningar i samma körning, och följderna inom 60 s. Rösten räknas från körningen 18/11 18.32 UTC, då rutterna lades på vägens linje (körlistan B13); K:s sträckor räknas utan halkzonen, som slår ihop sträckor inom 500 m till ett yttrande.", "",
+    tabell(["Vem", "Period", "tätaste följd, s", "följder", "inom 60 s"], [...tk("rösten"), ...tk("K")]));
+  const fd = (p: string) => db.fordrojning.find((x) => x.period === p);
+  const min = (s: number | null) => (s === null ? "–" : (s / 60).toFixed(1).replace(".", ","));
+  const gf = (med: (r: Bool) => boolean) => db.givarfel.filter(med);
+  ut.push("", "### Leveransen: A1 och A2 (§2)", "",
+    "**A1:s fördröjning:** från Trafikverkets tidsstämpel på väglagsändringen till raden i vårt arkiv (`ingested_at`, sparad sedan 7/11). Till det kommer publiceringens takt, upp till två minuter till lägesfilen.", "",
+    tabell(["Period", "ändringar", "median, min", "95:e percentilen, min", "vår tid före Trafikverkets"], ["veckan", "säsongen"].map((p) => {
+      const r = fd(p);
+      return [p, String(r?.n ?? 0), min(r?.median_s ?? null), min(r?.p95_s ?? null), String(r?.fore ?? 0)];
+    })), "",
+    `**A2:s tystnader:** den långsamma vakten (sql/030) tystade ${summa(gf(PERIODER[0][1]), (x) => x.stationsdygn)} stationsdygn i veckan och ${summa(gf(PERIODER[1][1]), (x) => x.stationsdygn)} under säsongen. Om tystnaderna var befogade är en läsning för en människa.`, "",
+    "**Saknas:** A1:s täckning och A2:s andel stationstimmar med frysrisk i lägesfilen kräver lägesfilens historia, som inte sparas (körlistan C2 väntar på ett beslut). " +
+    `**F3**, kamerabilderna, öppnas i mars (blindningen, DECISIONS #335): ${db.kamerafacit} bilder från säsongen är klassade.`);
   const slag = [...new Set(db.svar.map((x) => x.slag))].sort();
   ut.push("", "### På vägen: förarnas svar", "", "*Stämde det?* utan provraderna, per varningsslag ur varningens id. Antalet förare går inte att läsa ur svaren (§5).", "",
     slag.length ? tabell(["Slag", "Period", "stämde", "stämde inte", "andel stämde"], slag.flatMap((s) => PERIODER.map(([p, med]) => {
@@ -282,7 +391,10 @@ export async function lasDb(q: (s: string, p?: unknown[]) => Promise<{ rows: any
   const fr = JSON.parse(readFileSync(resolve(ROT, "docs/fristerna.json"), "utf8")).frister as Frist[];
   return { ...g, spann: await las(SATS.spann, []), timmar: await las(SATS.timmar), bygget: (await las(SATS.bygget))[0],
     raknare: await las(SATS.raknare), facit: await las(SATS.facit), facitdagar: (await las(SATS.facitdagar)).map((r) => r.dag),
-    ledtid: await las(SATS.ledtid), svar: await las(SATS.svar), missar: await las(SATS.missar), brytare: await las(SATS.brytare, []),
+    ledtid: await las(SATS.ledtid), fordrojning: await las(SATS.fordrojning), givarfel: await las(SATS.givarfel),
+    kamerafacit: (await las(SATS.kamerafacit))[0].n, takt: await las(SATS.takt), falsklarm: await las(SATS.falsklarm),
+    km: Object.fromEntries(Object.entries(JSON.parse(readFileSync(resolve(ROT, "data/favoritprov/rutter-osrm.json"), "utf8")).rutter as Record<string, { km: number }>)
+      .map(([n, r]) => [n, r.km])), svar: await las(SATS.svar), missar: await las(SATS.missar), brytare: await las(SATS.brytare, []),
     olyckor: await hamtaOlyckor(tagg, FORSTA_DAG, dag(mandag, -1)), arenden: a,
     frister: fr.map((f) => ({ id: f.id, datum: f.datum, vad: f.vad, agare: f.agare })),
     korlistan: korlistan(readFileSync(resolve(ROT, "docs/KORLISTAN.md"), "utf8")) };
