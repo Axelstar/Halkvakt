@@ -19435,3 +19435,20 @@ utresan 8/11 (bortsvept, uppdaterad, krasch eller minnesstopp) bokförs som okä
 **Inte ändrat.** Appen och räknaren. En ny resa som slutar som *avbruten* i räknaren (#787) syns som förut och får ett nytt kort.
 
 **Stomdokument:** inga — ett kort stängs på Bengts ord; ingen kod, regel eller text i stomdokumenten ändras.
+
+## #953 (23/11 2026) ingest-lives tidsgränser förklarade: schemaläggaren slutar vänta, funktionen blir klar (kort #375 stängt)
+
+**Beslut** (Bengt 23/11: *"Ok"* till läsningen och att kortet stängs om den håller). `halkvakt-ingest-live` körs varje minut, och pg_net
+slutar vänta efter 20 s och bokför *tidsgräns* i `public.anrop`, omkring 12 gånger i timmen (10–16 per timme 21–23/11, 205–322 per dygn
+15–22/11). Funktionen skriver väglaget, olyckorna och vädret och sparar sina kursorer först, och kör sedan trenden
+(`berakna_trendkandidater`) och den långsamma vakten (`langsam_vakt`) efter varandra; det är de stegen som drar över 20 s. Inget tappas:
+ingesten är deltabaserad, och ett avbrutet varv tas igen nästa minut. Läst med DB-knappen 23/11 (45109098883): vädrets rader per timme
+9 059–9 308 i 47 hela timmar utan en enda lucka, ingen samvariation med tidsgränserna (korrelation 0,21, inte negativ), och kursorerna
+för väglaget, olyckorna och vädret 11 s gamla. Försprångets halva av kortet är klar sedan `sql/109` (DECISIONS #845).
+
+**Alternativ.** Att höja pg_nets tidsgräns för jobbet, så att räkningen i `public.anrop` blir ren; det ändrar inget i datat och görs bara på
+ett eget beslut.
+
+**Inte ändrat.** Jobben, funktionen och pg_net.
+
+**Stomdokument:** inga — förklaringen av ett driftfel; ingen kod, regel eller text i stomdokumenten ändras.
