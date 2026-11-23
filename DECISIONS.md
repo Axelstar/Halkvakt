@@ -19555,4 +19555,4 @@ men vi kör ut det!"* och *"Och det är endast småvägarna som kommer ut visst"
 Android är inte sedd på en telefon); att slå på med 0.4.0 i App Store (taket 10 minuter och 5 km, mot #863 och Bengts villkor 20/11);
 att ta med modden (då behövs också ett Android-bygge, och Axel bad om bara småvägarna).
 
-**Stomdokument:** APP (versionerna: 0.4.1 (73) ur releasegrenen, och Android 0.4.0 (49) med taket)
+**Stomdokument:** APP (versionerna: 0.4.1 (73) ur releasegrenen samt Android 0.4.0 (49) med taket)
