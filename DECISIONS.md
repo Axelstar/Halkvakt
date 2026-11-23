@@ -19532,3 +19532,27 @@ läses varje vecka).
 
 **Stomdokument:** MAT (olycksfacits veckoärende)
 
+## #958 (24/11 2026) Småvägsrösten ut för sig: iPhone 0.4.1 (73) byggs på en releasegren ur butiksbygget, och Google Play behöver inget bygge (kort #647, körlistan B8)
+
+**Beslut.** Axel 23/11: *"Pappa vill göra en release för app och playstore med småvägarna. Hur kan vi göra endast det?"*, *"Okej ja
+men vi kör ut det!"* och *"Och det är endast småvägarna som kommer ut visst"*.
+1. **iPhone 0.4.1 (73) byggs på grenen `release/0.4.1-smavag`**, som utgår från db50832, bygget 0.4.0 (49) i App Store. Enda
+   ändringen i appen är taket ur c28ecfc3: tyst i 30 minuter och 20 km efter ett småvägsbesked (#863). Nya startsidan, Planera resa,
+   CarPlay, platsdelningen, notiserna och modden (#915), som ligger på main i 0.4.1 (50)–(72), följer inte med.
+2. **Google Play får inget bygge.** Android 0.4.0 (49) i produktion byggdes ur f1db2de (14/11), där c28ecfc3 ingår, och bär redan
+   taket (`smavagTystS = 1800.0`, `smavagTystM = 20000.0` i `Types.kt` på f1db2de). Raden i körlistans B8 om en AAB för 0.4.1 behövs
+   inte för småvägsrösten.
+3. **Grenen slås aldrig ihop med main.** `testflight.yml` på grenen släpper igenom `ladda-upp` därifrån; flödet på main är orört.
+4. **Versionsspåret.** Apple stänger spåret 0.4.1 när (73) godkänns. Main bär 0.4.1 (72) och höjs till 0.4.2 före nästa uppladdning.
+5. **Påslaget är oförändrat:** `sql/113` med DB-knappen på Bengts och Axels ord, när 0.4.1 finns i App Store, senast 27/11 (#881,
+   fristen `smavag-paslaget-2026-11-27`). Bengts ja finns sedan 20/11. Axels ord på själva påslaget är inte sagt uttryckligen.
+
+**Beviset.** Grenens huvud 89f0c17: `ios-engine` grön (45267340881), `testflight` prov grön (45267345898, *bygget bär 0.4.1 (73)*) och
+`testflight` `ladda-upp` grön (45282486530, *Uploaded Halkvakt* 23/11 22.58 UTC). Axel skickade in 0.4.1 till App Review 24/11 kl.
+00.05 (skärmbild: *1 Item Submitted*), med automatiskt släpp.
+
+**Alternativen som inte valdes:** att släppa main som 0.4.1 (startsidan, Planera resa och CarPlay följer med, och Planera resa på
+Android är inte sedd på en telefon); att slå på med 0.4.0 i App Store (taket 10 minuter och 5 km, mot #863 och Bengts villkor 20/11);
+att ta med modden (då behövs också ett Android-bygge, och Axel bad om bara småvägarna).
+
+**Stomdokument:** APP (versionerna: 0.4.1 (73) ur releasegrenen samt Android 0.4.0 (49) med taket)
