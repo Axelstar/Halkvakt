@@ -1,0 +1,39 @@
+{
+  "typ": "smhi",
+  "nyckel": "smhi:Snöfall:Delar av östra Svealand:YELLOW",
+  "etikett": "SMHI-varning",
+  "rubrik": "Varning för väglaget",
+  "underrad": "Halkläget kl. 13:00",
+  "varning": {
+    "niva": "Gul varning",
+    "event": "Snöfall",
+    "omrade": "Delar av östra Svealand",
+    "fler": 1
+  },
+  "text": "SMHI har utfärdat en gul varning för snöfall i Delar av östra Svealand. Det finns 1 varning till för snö eller halka.\n\nHalkläget kl. 13:00:\nSkåne: halka på 71 av 88 vägavsnitt, 17 stationer under noll, kallast −1,3 °C vid Röstånga.\nNorrbotten: halka på 57 av 58 vägavsnitt, 57 stationer under noll, kallast −11,7 °C vid Merkenäs V.\nVästra Götaland: halka på 47 av 133 vägavsnitt, 68 stationer under noll, kallast −3,2 °C vid Skattebacka.\nVästerbotten: halka på 44 av 44 vägavsnitt, 44 stationer under noll, kallast −13,0 °C vid Ammarnäs.\nJönköpings län: halka på 36 av 52 vägavsnitt, 30 stationer under noll, kallast −1,4 °C vid Knutshult, 2 olyckor.\n\nLäget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan\nI appen säger Halkvakt till direkt, med rösten, innan du är där. Gratis för iPhone och Android.\niPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\nAndroid: https://play.google.com/store/apps/details?id=se.halkvakt.app\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från SMHI och Trafikverkets öppna data.\n\n#halka #väglag #Skåne #Norrbotten #VästraGötaland #Västerbotten #Jönköping #halkvakt",
+  "textIg": "SMHI har utfärdat en gul varning för snöfall i Delar av östra Svealand. Det finns 1 varning till för snö eller halka.\n\nHalkläget kl. 13:00:\nSkåne: halka på 71 av 88 vägavsnitt, 17 stationer under noll, kallast −1,3 °C vid Röstånga.\nNorrbotten: halka på 57 av 58 vägavsnitt, 57 stationer under noll, kallast −11,7 °C vid Merkenäs V.\nVästra Götaland: halka på 47 av 133 vägavsnitt, 68 stationer under noll, kallast −3,2 °C vid Skattebacka.\nVästerbotten: halka på 44 av 44 vägavsnitt, 44 stationer under noll, kallast −13,0 °C vid Ammarnäs.\nJönköpings län: halka på 36 av 52 vägavsnitt, 30 stationer under noll, kallast −1,4 °C vid Knutshult, 2 olyckor.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\nI appen säger Halkvakt till direkt, med rösten, innan du är där. Gratis för iPhone och Android, länken finns i vår profil.\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från SMHI och Trafikverkets öppna data.\n\n#halka #väglag #Skåne #Norrbotten #VästraGötaland #Västerbotten #Jönköping #halkvakt",
+  "pass": "live",
+  "datum": "2026-11-23",
+  "generated_at": "2026-11-23T12:00:08.700Z",
+  "lan": [
+    "skane",
+    "norrbotten",
+    "vastra-gotaland",
+    "vasterbotten",
+    "jonkoping",
+    "orebro",
+    "ostergotland",
+    "uppsala",
+    "dalarna",
+    "sodermanland",
+    "jamtland",
+    "vasternorrland",
+    "gavleborg",
+    "kronoberg",
+    "varmland",
+    "halland",
+    "stockholm",
+    "vastmanland",
+    "kalmar"
+  ]
+}
