@@ -19424,3 +19424,14 @@ något nytt bygge). För D1: körningen måndag morgon, då säsongsfacit ännu 
 ändrade.
 
 **Stomdokument:** MAT §9 veckorapporten varje måndag, SYS §2 flödet veckorapporten och körlistan i synk-ihop, BED §4.2
+
+## #952 (23/11 2026) Kort #643 (vakten dog under utresan 8/11) stängt utan att orsaken lästs
+
+**Beslut** (Bengt 23/11: *"Du kan stänga det kortet"*). Kortet stängs utan att Analysdata lästs. Orsaken till att vakten dog under
+utresan 8/11 (bortsvept, uppdaterad, krasch eller minnesstopp) bokförs som okänd.
+
+**Alternativ.** Att låta kortet stå tills Analysdata lästs på telefonen.
+
+**Inte ändrat.** Appen och räknaren. En ny resa som slutar som *avbruten* i räknaren (#787) syns som förut och får ett nytt kort.
+
+**Stomdokument:** inga — ett kort stängs på Bengts ord; ingen kod, regel eller text i stomdokumenten ändras.
