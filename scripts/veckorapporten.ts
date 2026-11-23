@@ -29,6 +29,7 @@ import { BEDOMNINGAR, type Bedomning, bedomning, FORSTA_DAG, NAMNARE, type Olyck
 const LOKAL = (d: string) => `(${d})::timestamp AT TIME ZONE 'Europe/Stockholm'`;
 const V0 = LOKAL("$1::date - 7"), V1 = LOKAL("$1::date");
 const SASONG = "2026-11-01";   // the counter and säsongsfacit's complete days start here (DECISIONS #772, TROSKLAR-SASONGSFACIT §6)
+const LAGESFIL = "2026-11-23";   // the file's history from the deploy of publicera (sql/141, DECISIONS #955); the day before has no hours
 const VAGLINJE = "2026-11-18T18:32:00Z";   // the shadow's main routes drive the road's line from this run (körlistan B13, DECISIONS #897)
 // F1 for one row of road_condition_history, word for word as sql/099 (säsongsfacit counts on the words before #915; kontraktsgrinden).
 const F1 = (x: string) => `coalesce(NOT ${x}.deleted AND (${x}.condition_code >= 2 OR EXISTS (
@@ -72,7 +73,7 @@ export const SATS = {
     FROM (VALUES ('veckan'), ('säsongen')) p(period) JOIN d ON d.vecka OR p.period = 'säsongen' GROUP BY 1`,
   // A1's coverage and A2's delivery: the file's history from sql/141 (DECISIONS #955), one row per Swedish day.
   lagesfil: `SELECT dag >= $1::date - 7 AS vecka, dag::text AS dag, timmar_bygge, timmar_utan, a1_f1, a1_i_filen, a2_isrisk, a2_i_filen
-    FROM lagesfil_dag WHERE dag >= DATE '${SASONG}' AND dag < $1::date`,
+    FROM lagesfil_dag WHERE dag >= DATE '${LAGESFIL}' AND dag < $1::date`,
   // A2's silences from the slow guard (sql/030): the station days in the fault. Whether they were justified is a human reading.
   givarfel: `SELECT dag >= $1::date - 7 AS vecka, count(*)::int AS stationsdygn, count(DISTINCT station_id)::int AS stationer FROM givarfel_dygn
     WHERE dag >= DATE '${SASONG}' AND dag < $1::date GROUP BY 1`,
@@ -288,7 +289,7 @@ export function rapport(db: Db, stad: string | null): string {
       const r = fd(p);
       return [p, String(r?.n ?? 0), min(r?.median_s ?? null), min(r?.p95_s ?? null), String(r?.fore ?? 0)];
     })), "",
-    "**A1:s täckning och A2:s leverans** ur lägesfilens historia (sql/141), i timmarna då filen byggdes: sträcktimmarna med F1 (säsongsfacits ord) som filen bar, och stationstimmarna med uppmätt yta högst +1 °C och nederbörd (fuktskuggans regel) som filen bar med frysrisk. Skillnaden är vakternas tystnader, filtret och det publiceringen inte hann med.", "",
+    "**A1:s täckning och A2:s leverans** ur lägesfilens historia (sql/141), som sparas från 23/11, i timmarna då filen byggdes: sträcktimmarna med F1 (säsongsfacits ord) som filen bar, och stationstimmarna med uppmätt yta högst +1 °C och nederbörd (fuktskuggans regel) som filen bar med frysrisk. Skillnaden är vakternas tystnader, filtret och det publiceringen inte hann med.", "",
     tabell(["Period", "dygn", "timmar utan bygge", "A1: F1-sträcktimmar i filen", "A2: isrisktimmar i filen med frysrisk"], PERIODER.map(([p, med]) => {
       const r = db.lagesfil.filter(med);
       return [p, String(r.length), String(summa(r, (x) => x.timmar_utan)), andelI(perDag(r, (x) => x.a1_i_filen, (x) => x.a1_f1)),

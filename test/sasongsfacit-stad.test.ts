@@ -181,7 +181,7 @@ const db = (o: Partial<Db> = {}): Db => ({
 test("#913 the section: internal, the count beside the share, 20 events and 30 answers, and no interval until C2", () => {
   const md = avsnitt(db());
   assert.match(md, /\*\*Internt\*\* \(§11\.8\)\. Publiceras efter slutrapporten, per område och månad, tidigast när stadsmiljöns dom i kuvösen är fälld/);
-  assert.match(md, /\*\*Intervallet i §5 saknas:\*\* rapportskriptet i körlistans C2 finns inte ännu/);
+  assert.match(md, /\*\*Intervallet i §5\*\* står vid säsongsfacits andelar i veckorapportens del 3/);
   assert.equal(andel(9, 40), "9 av 40 (22,5 %)");
   assert.equal(andel(4, 19), "4 av 19", "counter-test: 19 events give the count only (val 3)");
   assert.equal(andel(0, 0), "0 av 0");
