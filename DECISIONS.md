@@ -19478,3 +19478,22 @@ arkiven som läses här gallras inte). Motorns ord efter #915 i F1 (förkastad: 
 spara den framåt är en ändring i driften som väntar på Bengts ord (BED §4.2).
 
 **Stomdokument:** BED §4.2
+
+## #955 (23/11 2026) Lägesfilens historia sparas framåt, för A1:s täckning och A2:s leverans (körlistan C2)
+
+**Beslut** (Bengt 23/11: *"Ja till båda"*, på frågan om lägesfilens historia ska sparas framåt). `publicera` lägger varje körning in
+timmens hala sträckor och stationerna med yta högst +1 °C och fukt, bara id:n, i `lagesfil_timme` (sql/141, en rad per UTC-timme,
+körningarna i timmen ihoplagda, gallras efter tio dygn). `lagesfil_rakna(dag)` räknar varje dygn 12.33 UTC i `lagesfil_dag`:
+- **A1:s täckning:** sträcktimmarna med F1 vid timmens slut (säsongsfacits ord ur sql/099, kontraktsgrinden vaktar kopian) och hur många
+  av dem filen bar, bara i timmarna då filen byggdes.
+- **A2:s leverans:** stationstimmarna med uppmätt yta högst +1 °C och nederbörd, med fuktskuggans regel och radvakt (sql/138), och hur
+  många av dem filen bar med frysrisk. TROSKLAR-SASONGSFACIT §2 skriver ≤ 0 °C; här räknas A2:s egen regel, +1 °C, som fuktskuggan.
+
+Veckorapporten läser `lagesfil_dag` med intervall per dygn. Historien börjar med deployen; ingen räkning i efterhand. Ett fel i
+sparandet stoppar inte filen och står i publiceras noter. Prövad i en lokal Postgres med ett känt dygn (23 F1-timmar, 10 i filen;
+4 isrisktimmar, 2 i filen), utan PostGIS: funktionen läser ingen geometri.
+
+**Alternativ.** Att spara hela lägesfilen per timme i hinken (förkastat: tusentals gånger större, och räkningen hade behövt läsa filerna).
+Att räkna A2 med ≤ 0 °C som tröskeldokumentet (förkastat: då mäts leveransen mot en annan regel än den som talar).
+
+**Stomdokument:** SYS (publiceras nya steg och tabellen), BED §4.2

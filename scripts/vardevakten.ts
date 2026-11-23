@@ -231,6 +231,12 @@ export const SPANN: Record<string, [number, number, string]> = {
   "sasongsfacit_olyckor.olyckor": [0, 2000, "olyckor på ett dygn i ett län"],
   "sasongsfacit_olyckor.k_varnade": [0, 2000, "olyckor"],
   "sasongsfacit_dag.lan": [0, 25, "Trafikverkets länsnummer, 0 = okänt (sql/099)"],
+  "lagesfil_dag.timmar_bygge": [0, 25, "timmar i ett svenskt dygn med bygge av lägesfilen (sql/141); 25 när sommartiden slutar"],
+  "lagesfil_dag.timmar_utan": [0, 25, "timmar i dygnet utan bygge (sql/141)"],
+  "lagesfil_dag.a1_f1": [0, 500000, "sträcktimmar med F1 — hela landets väglagssträckor gånger 25 timmar (sql/141)"],
+  "lagesfil_dag.a1_i_filen": [0, 500000, "sträcktimmar (sql/141)"],
+  "lagesfil_dag.a2_isrisk": [0, 25000, "stationstimmar — omkring 800 stationer gånger 25 timmar (sql/141)"],
+  "lagesfil_dag.a2_i_filen": [0, 25000, "stationstimmar (sql/141)"],
   "sasongsfacit_ledtid.lan": [0, 25, "Trafikverkets länsnummer, 0 = okänt (sql/099)"],
   "sasongsfacit_olyckor.lan": [0, 25, "Trafikverkets länsnummer, 0 = okänt (sql/099)"],
   // The accident layers' city detail (V4: keys in jsonb, JSONB below). Distances inside Sweden.
@@ -560,7 +566,7 @@ const TID: Record<string, string> = {
   fuktskugga_timmar: "dag", fuktskugga_olycka: "dag",
   // The weekly report (körlistan D1, DECISIONS #951): the counter and säsongsfacit's three tables, which were missing here, so their
   // fields were never scanned, not even as OBESIKTIGADE.
-  app_raknare: "dag", sasongsfacit_dag: "dag", sasongsfacit_ledtid: "dag", sasongsfacit_olyckor: "dag",
+  app_raknare: "dag", lagesfil_dag: "dag", sasongsfacit_dag: "dag", sasongsfacit_ledtid: "dag", sasongsfacit_olyckor: "dag",
 };
 
 console.log(`Värdevakten — besiktning av arkivets numeriska fält (${DAGAR} dygns fönster)\n`);
