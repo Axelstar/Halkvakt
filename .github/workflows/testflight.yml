@@ -34,8 +34,9 @@ jobs:
           VER=$(sed -n 's/^ *MARKETING_VERSION: *//p' "$Y"); NR=$(sed -n 's/^ *CURRENT_PROJECT_VERSION: *//p' "$Y")
           { echo "VER=$VER"; echo "NR=$NR"; echo "ARKIV=$RUNNER_TEMP/Halkvakt.xcarchive"; } >> "$GITHUB_ENV"
           echo "läge $LAGE · $GITHUB_REF · ${GITHUB_SHA:0:7} · version $VER ($NR)"
-          if [ "$LAGE" = ladda-upp ] && [ "$GITHUB_REF" != refs/heads/main ]; then
-            echo "::error::ladda-upp körs bara från main"; exit 1
+          # Releasegrenen release/0.4.1-smavag (Axel 23/11): butiksbygget 0.4.0 (49) med småvägsröstens tak (DECISIONS #863) och inget annat.
+          if [ "$LAGE" = ladda-upp ] && [ "$GITHUB_REF" != refs/heads/main ] && [ "$GITHUB_REF" != refs/heads/release/0.4.1-smavag ]; then
+            echo "::error::ladda-upp körs bara från main och releasegrenen"; exit 1
           fi
           # Byggnumret ska höjas i samma commit som den sista ändringen av appen, eller efter den (16/9: (10) sattes före
           # facitknapparna och bygget i TestFlight saknade dem). En appändring efter höjningen fäller uppladdningen.
