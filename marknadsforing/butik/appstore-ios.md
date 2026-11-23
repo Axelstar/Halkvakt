@@ -265,3 +265,16 @@ Läget 23/10: **(33) är uppladdat** (TestFlight-flödet 39905409183 på d240c1b
 - Rapporten hämtar `favoriter/`-filerna utan fråga om rutt eller position. Bakgrundslägena är `location` och `audio`. Integritetsmanifestet
   har CoarseLocation och ProductInteraction samt UserDefaults (CA92.1), och inga andra API:er med krav på skäl används.
 - Datakällorna i beskrivningen är desamma som i appens text.
+
+## Inskicket 0.4.1 (73) — 24/11 (DECISIONS #958, kort #647)
+
+**Inskickat av Axel 24/11 00:05** (App Store Connect: *1 Item Submitted*). I butiken låg 0.4.0 (*Ready for Distribution*). Bygget
+0.4.1 (73) laddades upp av TestFlight-flödet 45282486530 från grenen `release/0.4.1-smavag` (89f0c17, 23/11 22.58 UTC): butiksbygget
+0.4.0 (49) med småvägsröstens tak (#863) och inget annat. Automatiskt släpp, alla användare direkt, betyget behålls.
+
+**What's New:** *Mindre förbättringar av halkvarningarna inför vintern.*
+
+**Granskarens anteckningar:** texten från 0.4.0 med ett nytt första stycke, *NEW IN 0.4.1*: inga ändringar i skärmar, flöden,
+behörigheter eller data; ett tidsvärde i motorn, så att betavarningen på statliga vägar utan väglagsmätning upprepas högst en gång per
+30 minuter och 20 km (förut 10 minuter och 5 km); ingen CarPlay i bygget. Stycket *NEW IN 0.4.0* står kvar förkortat som
+*UNCHANGED SINCE 0.4.0*. Övriga fält och App Privacy är oförändrade.
