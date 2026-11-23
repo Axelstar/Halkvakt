@@ -1,0 +1,166 @@
+name: kuvos-olycksvagarna
+# OLYCKSVÄGARNA (halkvakt-kuvos BESLUT F84 och F85, förregistreringen i det privata repot, signerad 23/11 2026). Diagnos, ingen dom:
+# ingenting här ändrar motorn, en regel eller en tröskel. Mätskriptet ur det privata repot läggs ovanpå utcheckningen. Det läser
+# olycksfacit i driften (bara läsning), Trafikverkets olyckor 2024/25 ur hinken, väglinjerna ur det privata repots release och
+# vägnumren ur Trafikverkets öppna API. Spärren och självtesten går först. Talen går bara till hinken,
+# kuvos/kuvos-olycksvagarna-2026-11-<körningens nummer>/, också skälet när ett steg faller, och därifrån till grenen
+# resultat/olycksvagarna i det privata repot. Loggen är publik (#498) och säger bara klart eller vilket steg som föll.
+# Körs för hand, på Bengts ord (förregistreringen §10 val 8: en gång i månaden och efter 31/3 2027).
+on:
+  workflow_dispatch:
+    inputs:
+      korning:
+        description: "Tomt = mät och lägg filen i kuvösen. Ett körningsnummer = lägg bara den körningens fil ur hinken i kuvösen"
+        default: ""
+permissions:
+  contents: read
+concurrency: { group: kuvos-olycksvagarna, cancel-in-progress: false }
+jobs:
+  matningen:
+    if: ${{ inputs.korning == '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      UT_HINK: "kuvos-olycksvagarna-2026-11-${{ github.run_number }}"
+      FORREG: docs/FORREGISTRERING-OLYCKSVAGARNA-2026-11.md
+      MATNING: scripts/matningar/kuvos-olycksvagarna-2026-11.ts
+      VAGNUMMER: scripts/matningar/kuvos-olycksvagarna-vagnummer-2026-11.ts
+    steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos (DECISIONS #768): koden läggs ovanpå utcheckningen.
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - name: Spärren och självtesten
+        shell: bash
+        run: |
+          set -euo pipefail
+          prov() { if "${@:2}" > /dev/null 2>&1; then echo "$1: klart"; else echo "::error::$1: fel"; return 1; fi; }
+          prov "spärren (F85, förregistreringen signerad)" python3 fysik/ny_kandidat/sparren.py "$FORREG"
+          prov "mätskriptets självtest (påhittade data)" node --experimental-strip-types "$MATNING" --sjalvtest
+          prov "vägnumrens självtest" node --experimental-strip-types "$VAGNUMMER" --sjalvtest
+          prov "väglinjernas självtest" python3 fysik/olycksvagarna/vaglinjer.py --sjalvtest
+      # Väglinjerna ur det privata repots release, summan mot manifestet kuvos/olycksvagarna-vaglinjer.json.
+      - name: Väglinjerna
+        shell: bash
+        env: { GH_TOKEN: "${{ secrets.KUVOS_LASNYCKEL }}" }
+        run: |
+          set -euo pipefail
+          mkdir -p in
+          REL=$(node -p 'require("./kuvos/olycksvagarna-vaglinjer.json").release')
+          FIL=$(node -p 'require("./kuvos/olycksvagarna-vaglinjer.json").fil')
+          SHA=$(node -p 'require("./kuvos/olycksvagarna-vaglinjer.json").sha256')
+          gh release download "$REL" -R Axelstar/halkvakt-kuvos --pattern "$FIL" --dir in > /dev/null 2>&1 || { echo "::error::väglinjerna: fel (releasen)"; exit 1; }
+          [ "$(sha256sum "in/$FIL" | cut -c1-64)" = "$SHA" ] || { echo "::error::väglinjerna: fel (summan mot manifestet)"; exit 1; }
+          echo "väglinjerna: klart"
+      - name: Vägnumren ur det öppna API:et
+        shell: bash
+        env: { TRAFIKVERKET_API_KEY: "${{ secrets.TRAFIKVERKET_API_KEY }}" }
+        run: |
+          set -euo pipefail
+          node --experimental-strip-types "$VAGNUMMER" --ut in/vagnummer.ndjson.gz > /dev/null 2>&1 || { echo "::error::vägnumren: fel"; exit 1; }
+          echo "vägnumren: klart"
+      - name: Olyckorna 2024/25 ur hinken, mätningen och filen till hinken
+        shell: bash
+        env: { DRIFT_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client >/dev/null
+          read -r FN KEY < <(psql "$DRIFT_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          export FN KEY
+          # Den rensade kopian, summan mot kompletteringens post i kuvos/trv-111808-leverans.json.
+          node -e '
+            const { execFileSync } = require("child_process"), fs = require("fs"), c = require("crypto");
+            const f = require("./kuvos/trv-111808-leverans.json").komplettering.find((x) => x.fil === "Olyckor24-25.xlsx");
+            if (!f) { console.error("olyckorna saknas i manifestet"); process.exit(1); }
+            // execFileSync:s fel bär kommandoraden och därmed nyckeln eller den signerade adressen: fångas, bara statusen skrivs ut.
+            const curl = (a, vad) => { try { return execFileSync("curl", ["-sS", "--fail", ...a], { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); }
+              catch (e) { console.error(`${vad} föll (curl ${e.status})`); process.exit(1); } };
+            const s = JSON.parse(curl(["-X", "POST", `${process.env.FN}?lage=kuvos_hamta`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
+              "-H", "Content-Type: application/json", "-d", JSON.stringify({ filer: ["trv-2026-111808/" + f.fil] })], "adressen (finns filen i hinken?)"));
+            curl(["-o", "in/olyckor.xlsx", s.filer[0].url], "hämtningen av olyckorna");
+            if (c.createHash("sha256").update(fs.readFileSync("in/olyckor.xlsx")).digest("hex") !== f.sha256) { console.error("olyckorna: FEL mot manifestet"); process.exit(1); }
+            console.log("olyckorna 2024/25: klart, sha256 lika manifestet");'
+          lagg() {   # lagg <fil>: till $UT_HINK/<filnamn>; skrivs aldrig över, och det som ligger i hinken ska vara byte för byte filen
+            node -e '
+              const { execFileSync } = require("child_process"), fs = require("fs"), c = require("crypto"), filer = process.argv.slice(1);
+              const sha = (b) => c.createHash("sha256").update(b).digest("hex"), namn = filer.map((f) => process.env.UT_HINK + "/" + f.split("/").pop());
+              const curl = (a, vad) => { try { return execFileSync("curl", ["-sS", "--fail", ...a], { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); }
+                catch (e) { if (vad) { console.error(`${vad} föll (curl ${e.status})`); process.exit(1); } return null; } };
+              const anrop = (lage, vad) => { const b = curl(["-X", "POST", `${process.env.FN}?lage=${lage}`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
+                "-H", "Content-Type: application/json", "-d", JSON.stringify({ filer: namn })], vad); return b && JSON.parse(b); };
+              let h = anrop("kuvos_hamta");
+              if (h) { console.error("filen finns redan i hinken — ingenting skrivs över"); process.exit(1); }
+              const u = anrop("kuvos_ladda_upp", "adresserna för uppladdningen").urls;
+              filer.forEach((f, i) => curl(["-X", "PUT", "-H", "Content-Type: application/octet-stream", "--data-binary", "@" + f, u[i]], `uppladdningen av ${namn[i]}`));
+              h = anrop("kuvos_hamta", "hämtningen tillbaka");
+              let fel = 0;
+              h.filer.forEach((d, i) => { const ok = sha(curl([d.url], `hämtningen av ${d.fil}`)) === sha(fs.readFileSync(filer[i])); fel += !ok;
+                console.log(`${d.fil}: ${ok ? "klart, i hinken byte för byte den skrivna" : "FEL: i hinken med annat innehåll"}`); });
+              process.exit(fel ? 1 : 0);' "$@"
+          }
+          mkdir -p ut
+          RC=0; DATABASE_URL="$DRIFT_URL" NODE_OPTIONS=--max-old-space-size=12288 node --experimental-strip-types "$MATNING" \
+            --xlsx in/olyckor.xlsx --vaglinjer "in/$(node -p 'require("./kuvos/olycksvagarna-vaglinjer.json").fil')" \
+            --vagnummer in/vagnummer.ndjson.gz --ut ut/olycksvagarna.json > mat.txt 2>&1 || RC=$?
+          # Vilket steg som föll: bara ordet ur skriptets sista rad, aldrig talen; skälet står i filen i hinken.
+          PROVET=$(sed -n 's/^OLYCKSVÄGARNA FÖLL: \(argumenten\|spärren\|väglinjerna\|filen\|databasen\|olyckorna\|vägnumret\|räkningen\)$/\1/p' mat.txt | tail -1)
+          rm -rf mat.txt in
+          if [ -f ut/olycksvagarna.json ]; then lagg ut/olycksvagarna.json; fi
+          rm -rf ut
+          if [ "$RC" -ne 0 ]; then echo "::error::olycksvägarna: fel i ${PROVET:-skriptet, utan besked (kod $RC)}"; exit "$RC"; fi
+          echo "olycksvägarna: klart"
+
+  till-kuvosen:
+    needs: matningen
+    if: ${{ always() && (needs.matningen.result == 'success' || needs.matningen.result == 'failure' || (needs.matningen.result == 'skipped' && inputs.korning != '')) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      NR: "${{ inputs.korning || github.run_number }}"
+    steps:
+      - name: Filen ur hinken till grenen resultat/olycksvagarna i kuvösen
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}", SKRIV: "${{ secrets.KUVOS_SKRIVNYCKEL }}" }
+        run: |
+          set -euo pipefail
+          [[ "$NR" =~ ^[0-9]+$ ]] || { echo "::error::korning ska vara ett körningsnummer"; exit 1; }
+          [ -n "$SKRIV" ] || { echo "::error::hemligheten KUVOS_SKRIVNYCKEL saknas"; exit 1; }
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client >/dev/null
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          export FN KEY
+          UT="olycksvagarna-2026-11-$NR.json"
+          node -e '
+            const { execFileSync } = require("child_process"), fs = require("fs");
+            const curl = (a, vad) => { try { return execFileSync("curl", ["-sS", "--fail", ...a], { maxBuffer: 1 << 30, stdio: ["ignore", "pipe", "ignore"] }); }
+              catch (e) { console.error(`${vad} föll (curl ${e.status})`); process.exit(1); } };
+            const namn = `kuvos-olycksvagarna-2026-11-${process.env.NR}/olycksvagarna.json`;
+            const s = JSON.parse(curl(["-X", "POST", `${process.env.FN}?lage=kuvos_hamta`, "-H", `x-halkvakt-key: ${process.env.KEY}`,
+              "-H", "Content-Type: application/json", "-d", JSON.stringify({ filer: [namn] })], "adressen (finns filen i hinken?)"));
+            fs.writeFileSync(process.argv[1], curl([s.filer[0].url], "hämtningen ur hinken"));
+            console.log("filen ur hinken: klart");' "$UT"
+          SHA=$(sha256sum "$UT" | cut -c1-64)
+          git clone -q "https://x-access-token:${SKRIV}@github.com/Axelstar/halkvakt-kuvos.git" kuvos 2>/dev/null || { echo "::error::kuvösen gick inte att klona med KUVOS_SKRIVNYCKEL"; exit 1; }
+          cd kuvos
+          git config user.name "halkvakt-actions"; git config user.email "actions@users.noreply.github.com"
+          G=resultat/olycksvagarna
+          if git ls-remote -q --exit-code --heads origin "$G" >/dev/null 2>&1; then git fetch -q origin "$G" && git checkout -q -B "$G" FETCH_HEAD; else git checkout -q -b "$G"; fi
+          mkdir -p resultat
+          if [ -f "resultat/$UT" ]; then
+            [ "$(sha256sum "resultat/$UT" | cut -c1-64)" = "$SHA" ] || { echo "::error::filen finns redan i kuvösen med annat innehåll — ingenting skrivs över"; exit 1; }
+            echo "filen finns redan i kuvösen, byte för byte lika: klart"; exit 0
+          fi
+          mv "../$UT" "resultat/$UT"
+          git add "resultat/$UT"
+          git commit -q -m "Olycksvägarna: utskriften ur hinken (BESLUT F84, F85)"
+          git push -q origin "$G" 2>/dev/null || { echo "::error::pushen till kuvösen föll"; exit 1; }
+          echo "filen till kuvösen, grenen $G: klart"
