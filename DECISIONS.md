@@ -19452,3 +19452,29 @@ ett eget beslut.
 **Inte ändrat.** Jobben, funktionen och pg_net.
 
 **Stomdokument:** inga — förklaringen av ett driftfel; ingen kod, regel eller text i stomdokumenten ändras.
+
+## #954 (23/11 2026) Säsongsfacits andra del i veckorapporten: intervallen, A1:s fördröjning, falsklarmen per 100 km och takten (körlistan C2)
+
+**Beslut** (Bengt 23/11: *"Ok du kan börja bygga"*, efter rekommendationen att C2 hamnar i veckorapporten och inte i en ny tabell).
+`scripts/veckorapporten.ts` räknar delarna ur arkiven som inte gallras, utan migration, och skriver dem i den interna rapporten
+(TROSKLAR-SASONGSFACIT §2, §5):
+- **Intervallen.** Varje andel i säsongsfacits tabell och ledtiden får ett 95-procentigt intervall, bootstrappat per dygn: dygnen dras om
+  med återläggning 2 000 gånger med ett fast frö, så samma data ger samma intervall. Under 20 händelser står bara antalet (val 3).
+- **A1:s fördröjning.** Median och 95:e percentil av `ingested_at − modified_time` i `road_condition_history`, för raderna med
+  `ingested_at` (sedan sql/099, 7/11). Rader där vår tid ligger före Trafikverkets räknas för sig. Publiceringens två minuter läggs till i texten.
+- **Falsklarmen per 100 km.** K:s varnande sträckor längs skuggans rutter (`shadow_log.kandidat.h`, bara körningar längs vägen med K:s
+  timme), falska när F1 inte stod på sträckan vid slutet av någon timme från en före körningens timme till två efter. F1 skrivs med
+  säsongsfacits ord ur sql/099 (före #915), så att falsklarmen och träffsäkerheten räknas på samma facit; kontraktsgrinden vaktar kopian
+  bland *orden före modden*. Kilometrarna är rutternas längd i `data/favoritprov/rutter-osrm.json` gånger körningarna.
+- **Takten.** Tätaste följd och följder inom 60 s per körning, som skuggrapporten (#200): rösten ur `shadow_log.alerts` från körningen
+  18/11 18.32 UTC (rutterna på vägens linje, körlistan B13), och K:s sträckor utan halkzonen.
+- **A2:s tystnader** som antal stationsdygn ur den långsamma vakten (`givarfel_dygn`); om de var befogade läses av en människa.
+- **F3** räknas när kamerabilderna öppnas i mars (DECISIONS #335); till dess står antalet klassade bilder.
+
+**Alternativ.** En ny tabell per dygn i sql/099:s räkning (förkastad: den gör om J1 och J2 på dygn vars stationsrader är gallrade, och
+arkiven som läses här gallras inte). Motorns ord efter #915 i F1 (förkastad: falsklarmen hade räknats på ett annat facit än träffsäkerheten).
+
+**Inte byggt.** A1:s täckning och A2:s andel stationstimmar med frysrisk *i lägesfilen*: lägesfilens historia sparas inte, och att
+spara den framåt är en ändring i driften som väntar på Bengts ord (BED §4.2).
+
+**Stomdokument:** BED §4.2

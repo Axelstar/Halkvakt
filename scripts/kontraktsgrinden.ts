@@ -130,9 +130,9 @@ export function rapport(utfall: Utfall[]): boolean {
 // Resans rapport: källan, dess två buntar och telefonernas två tvillingar (favoriterna steg 3a).
 const RAPPORTEN = /publish\/rapport-core\.ts$|functions\/favorit(?:er|prov)\/index\.ts$|HalkvaktEngine\/Rapport\.swift$|engine\/Rapport\.kt$/;
 // Halkorden före modden (DECISIONS #915): facit som döms eller räknas på orden de skrevs med — efterhalkans uppspelning (sql/028 och dess
-// mätfil), olycksfacit (084, 085, 095, 096, 108, 110) och säsongsfacit (099) — och sql/117, vars funktion sql/129 ersätter. Varje annan
-// kopia, också en ny, ska bära motorns ord.
-const HALKORD_FORE_915 = /^(?:sql\/(?:028|084|085|095|096|099|108|110|117|139)_|scripts\/matningar\/uppspelning-varianter\.sql$)/;
+// mätfil), olycksfacit (084, 085, 095, 096, 108, 110) och säsongsfacit (099, och veckorapportens falsklarm, som räknar på samma F1) — och
+// sql/117, vars funktion sql/129 ersätter. Varje annan kopia, också en ny, ska bära motorns ord.
+const HALKORD_FORE_915 = /^(?:sql\/(?:028|084|085|095|096|099|108|110|117|139)_|scripts\/matningar\/uppspelning-varianter\.sql$|scripts\/veckorapporten\.ts$)/;
 
 export const KONTRAKT: Kontrakt[] = [
   // ── HEALTHCHECKENS TRÖSKLAR (kort #87). PERMANENTA — läs den här raden innan du rör dem.
@@ -340,7 +340,7 @@ export const KONTRAKT: Kontrakt[] = [
     varfor: "Olycksfacit, säsongsfacit och efterhalkans uppspelning läser motorns ord som de var före #915. Driver en av dem räknar facit på olika ord.",
     former: [/~\* '\(\^\|\[\^a-zåäö\]\)\(([^)]+)\)'/],
     filer: HALKORD_FORE_915,
-    golv: 13,   // sql/139 (DECISIONS #942) bär efterkontrollen ur sql/110 ord för ord
+    golv: 14,   // sql/139 (DECISIONS #942) bär efterkontrollen ur sql/110 ord för ord; veckorapporten.ts säsongsfacits F1 (#954)
   },
   {
     // Kort #97 (16/9): snö och frost räknas även INUTI sammansättningar ("Nysnö", "Rimfrost"). Egen lista,
