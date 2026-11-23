@@ -3543,3 +3543,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   provkörd mot databasen på PR:en (körning 45006589409: avsnittet och rapporten klara, inget i kuvösen). B14 klar: `vagarbeten-matning`
   grön med standardskriptet (45007424281). Värdevakten grön på main för räknaren, säsongsfacits tre tabeller och flaggan
   `jamforelser` (45008246906). Den första rapporten skrivs måndag 23/11 13.07 UTC.
+- 23/11 UTC (Claude; Bengt: *"Ja läs o åtgärda"*): Kortgenomgång med DB-knappen (45108317803, 45108411902). **#650 stängt**: inga
+  misslyckade favoritprovsanrop 15–21/11 och inga 546 på åtta dygn (ett varv 22/11 05.38 föll på hinkens 520). **#655 stängt**: 508 av 631
+  K-rader sedan 13/11 bär talaren. **#375**: försprångets halva klar (sql/109 i drift, 60 rader i timmen i 24 timmar, inga 546); ingest-lives
+  tidsgränser, 205–322 per dygn, står kvar.
