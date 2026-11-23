@@ -222,6 +222,8 @@ Två tillägg i ärendet från §5:
      ett annat lager, och inget lager. Raderna utesluter varandra och summerar till de halkkopplade. *Bara K* är där kandidaten varnade
      och väglaget inte. Det är redovisning och ändrar ingen klassning, bedömning eller regel (tillagt 20/11, DECISIONS #925).
   9. veckans och säsongens missar delade på facit som inte bygger på stationen och facit bara på stationen (tillagt 21/11, §14).
+  10. topplistorna per vägbit för säsongen, halkolyckorna (TYDLIG och TROLIG) för sig och alla olyckor, med veckans antal och hur
+      många där Halkvakt varnade (tillagt 23/11, §15).
 - **Förslagen.** Ett område med minst **två** missar under veckan är återkommande. Det står som en rad att åtgärda, med ett kort på tavlan, en fråga i bedömningens §4.2 eller *ingen åtgärd* med skälet.
 - **Stängning.** Ärendet stängs när varje rad har sin åtgärd. Utan ett återkommande område och utan en miss att läsa stängs det direkt. Ett öppet ärende påminns var sjunde dygn, som dagens. (Ändrat 13/11, §11. Förut: *Utan ett återkommande område stängs det direkt*.)
 - **Publikt.** Som i §5 bär ärendet bara väg, tid, läge, koder och antal.
@@ -526,4 +528,40 @@ kan visa fler: OKLAR med väglaget efteråt är nu TROLIG, väglaget.
 | Vem | Datum | Hur |
 | :-- | :-- | :-- |
 | Bengt | 21/11 2026 | *"förregistrera rättelse och 676 veckosammanställning ska räkna..."* |
+| Axel | — | inte signerat |
+
+## 15. Tillägg 23/11 2026: vägbitarna med flest olyckor (DECISIONS #957)
+
+**Status:** INFÖRT 23/11 på Bengts ord (*"jamen sätt igång"*), på förslaget om en topplista per vägbit i veckans ärende. Det är
+redovisning, som §9.5 punkt 8 och 9.
+
+### 15.1 Varför
+
+Bengt 23/11: statistik över vilka vägar som drabbas mest av olyckor, löpande, så att samband kan tas fram senare. Veckans ärende bär
+redan väg och läge per olycka. Listan samlar dem per vägbit, så att en vägbit som återkommer syns utan att någon räknar för hand.
+
+### 15.2 Vad som räknas
+
+- **En vägbit** är en väg inom en fast ruta om ungefär 10 × 10 km. Banden är 0,09 grader latitud, och varje band delas i längdgrad så
+  att rutan blir 10 km bred i bandets mitt. Vägen läses med vägbeteckningarna (DECISIONS #882), så *Väg 40* och *40* är samma väg, och
+  en olycka utan väg hamnar på *okänd väg*. Vägbiten heter efter vägen och rutans mitt. Rutan är fast, så samma vägbit har samma namn
+  varje vecka och kan jämföras med en annan vinter.
+- **Två listor:** halkolyckorna (TYDLIG och TROLIG) och alla olyckor, utan dubbletter. Varje lista visar de 10 vägbitarna med flest
+  olyckor under säsongen sedan 6/11, och bara vägbitar med minst två. Kolumnerna är säsongen, veckan och hur många av säsongens olyckor
+  där Halkvakt varnade (§9.1).
+- **Bara summor.** Listan bär inga enskilda olyckor och ingen text ur Trafikverkets meddelanden (§5).
+
+### 15.3 Vad det inte är
+
+- **Ingen risk.** Antalet följer trafiken och väglängden i rutan, och en vägbit med mycket trafik har fler olyckor utan att vara farligare.
+  Risk per fordon och per halktimme kräver trafikflödet och halktimmarna och är ett senare steg.
+- **Inte i varningarna.** Listan ändrar ingen klass, bedömning, regel eller varning. Ett samband som ska användas i en varning prövas
+  först med en förregistrering.
+- Rutan delar ibland en verklig fläck i två. Det godtas, eftersom en fast ruta behövs för att jämföra veckor och vintrar.
+
+### 15.4 Signaturer
+
+| Vem | Datum | Hur |
+| :-- | :-- | :-- |
+| Bengt | 23/11 2026 | *"jamen sätt igång"*, på förslaget om topplistan per vägbit i veckans ärende |
 | Axel | — | inte signerat |
