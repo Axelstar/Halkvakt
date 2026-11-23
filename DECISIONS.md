@@ -19497,3 +19497,16 @@ sparandet stoppar inte filen och står i publiceras noter. Prövad i en lokal Po
 Att räkna A2 med ≤ 0 °C som tröskeldokumentet (förkastat: då mäts leveransen mot en annan regel än den som talar).
 
 **Stomdokument:** SYS (publiceras nya steg och tabellen), BED §4.2
+
+## #956 (23/11 2026) Rekryteringen av fler testförare stängs (körlistan C6)
+
+**Beslut** (Bengt 23/11: *"rekrytera testförare kan du stänga"*). Körlistans C6 tappar delen *fler testförare*, och fristen
+`testforarna` (15/12, *antalet förare bokfört och rekryteringen beslutad*) tas bort ur `docs/fristerna.json`. Provkörningarna efter
+provlistan med ett protokoll står kvar i C6, och förarnas svar och *appen missade* står redan i veckorapporten (DECISIONS #951).
+
+**Följden.** Januaridomens villkor KB-D4 (minst 5 förare och 30 svar, räknat på testarna enligt DECISIONS #678) prövas med de testare
+som finns. Räcker de inte blir den delen av domen SPÄRRAD, inte fälld.
+
+**Alternativ.** Att behålla fristen som en påminnelse om antalet förare (förkastat: rekryteringen var fristens beslut, och det är nu fattat).
+
+**Stomdokument:** BED §4.2
