@@ -60,7 +60,7 @@ class GuardService : Service() {
     private var flushedThisStop = false
     @Volatile private var disabledKinds: Set<HazardKind> = emptySet()
     private var prevLon = Double.NaN; private var prevLat = Double.NaN
-    private var guard: Guard? = null
+    @Volatile private var guard: Guard? = null   // made on the loader thread, read on the main thread
     private lateinit var fused: FusedLocationProviderClient
     private var tts: TextToSpeech? = null
     @Volatile private var ttsReady = false
