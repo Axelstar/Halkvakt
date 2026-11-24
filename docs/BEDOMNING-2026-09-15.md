@@ -1225,16 +1225,12 @@ mätningar — R1–R16 nedan är strukna och står kvar bara som historik.**
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
 ## Öppna kort
 
-Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 12 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
+Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 11 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
 
 **§1 NU — före första frosten**
 
 - #209 BILDFACITBESLUTET FLYTTAT TILL EFTER FÖRSTA FROSTEN — Claude, låst
 - #95 Plan B för Trafikverket-beroendet — mät SMHI som reserv — Claude, låst
-
-**§2.1 Vägen till förare: efterhalkan som märkt beta**
-
-- #219 ANDROIDS VÄG TILL PLAY — enhetsverifiering, första uppladdning, slutet test — Axel
 
 **§4.2 Öppna**
 

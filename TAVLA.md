@@ -289,7 +289,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **Stängt 11/11 på beviset, med Verify omskriven efter fas 2** (Bengt: *"Ja, stäng"*): fas 2 (DECISIONS #741 punkt 4) ersatte laddningen var 30:e minut med en koll omkring varannan minut under resan, och Bengts resa 8/11 (94 minuter med vakten, 0.4.0) gav 48 kollar, alla med ny vägdata och ingen ur reserven (DECISIONS #778, tillägg 8/11, ur skärmbilderna av *Inställningar → Mätningen*); resorna 2/11 gav 14 av 16 och 16 av 16 nya. Felet kortet beskriver, att ingenting laddas om medan körläget ligger över vyn, finns inte längre. Att klockslaget vid *PÅ DIN VÄG* flyttade sig lästes aldrig av; beviset är att varje koll gav ny data.
 
 
-- [ ] 📱 **#279 iOS: EFTER-RESAN-KORTET GICK UTANFÖR SKÄRMEN** (Axels skärmbild 1/10 21:35 från en resa 12:39–13:44 med fyra kameravarningar;
+- [x] 📱 **#279 iOS: EFTER-RESAN-KORTET GICK UTANFÖR SKÄRMEN** (Axels skärmbild 1/10 21:35 från en resa 12:39–13:44 med fyra kameravarningar;
   samma fel som Bengts provresa 28/9 på 4,7 tum, `docs/TILL-AXEL-BYGGE-19.md` iPhone 1–3). `VaktenView` och `KorlageView` hade ingen
   `ScrollView`: med fyra rader var kortet högre än skärmen, iOS tryckte ihop texterna till "…" (*"stämde alla 4 varning…"*, *"tystnad
   räknas aldrig som…"*), kortets topp låg under statusraden och facitraden under flikraden. Dessutom: facitknapparna TVÅ gånger (kortet
@@ -316,6 +316,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   iOS-skärmbilder till produktboken ur samma bygge.
   Verify: på en iPhone finns inget "…" i kortet med fyra varningar, sista raden ligger ovanför flikraden, *Stämde*-knapparna finns på ett
   ställe, ingen *Skickat*-rad under en obesvarad rad, och *Senaste tur* skrivs *1 okt. 12:39*.
+  ✅ **Stängt 24/11** (Bengt 24/11: *"stäng alla tre"*): på Bengts beslut, utan kontrollen på en iPhone som Verify kräver. Lagningen finns sedan bygge (22); ingen har bekräftat den på en telefon.
 
 - [x] ↩︎ Välkomsttext + testinstruktion till kompisarna (extern TestFlight-grupp = Beta App Review).
   ↩︎ **Rubriken återställd 1/10 sent:** den skrevs över när kort #279 lades in (4f88513), och kortets text hängde under #279.
@@ -329,7 +330,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   **Verify** *(kortgenomgången 3/10, DECISIONS #451)*: länken utskickad till de tolv, och minst tolv testare i Kompisarna i TestFlight (kartsynkens regel testare:Kompisarna:12 bockar steget).
   ✅ **Stängt 24/11** (Bengt 24/11: *"2. stäng"*, projektkartans genomgång): rekryteringen av testförare är struken (DECISIONS #956). Den publika TestFlight-länken står kvar (#683).
 
-- [ ] 🔁 **#248 ANDROID-AUTOSTARTEN STOPPAR ALDRIG VAKTEN** (fynd 24/9 under kort #217, DECISIONS #347). `AutostartManager` skapar en ny
+- [x] 🔁 **#248 ANDROID-AUTOSTARTEN STOPPAR ALDRIG VAKTEN** (fynd 24/9 under kort #217, DECISIONS #347). `AutostartManager` skapar en ny
   `AutostartController` för varje systemhändelse, och den nya styrningen har `autoStarted = false`. Därför blir *Bluetooth kopplas
   från* och *bilen lämnas* alltid *gör ingenting* (`onAclDisconnected`, `onVehicleExit`). Android har dessutom ingen tomgångsstopp
   efter en kvart stilla, som iOS har. En autostartad vakt går alltså tills föraren stoppar den — batteribudgeten (< 8 %/h) är ett
@@ -338,8 +339,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   på en riktig telefon stannar en autostartad vakt när bilens Bluetooth kopplas från.
   ✅ **BYGGT 24/9 (DECISIONS #348):** flaggan sparas mellan styrningarna, självstopp efter en kvart stilla (`IdleStop`), tre JVM-prov. Kvar: verify i bil på Android.
   ↪ **Flyttat 26/9 från *Claude — olåst*** (femma åtta, DECISIONS #377): nästa steg är provet i bil på Axels Android.
+  ✅ **Stängt 24/11** (Bengt 24/11: *"stäng alla tre"*): i stället för provet i bil visar appens anonyma räknare att automatiskt startade vaktpass på Android slutar av sig själva, både vid parkering och efter en stund stilla (`app_raknare`, `resa_slut` med start `sjalv`; DB-knappen `las` 45403938355, utskriften bara ja eller nej).
 
-- [ ] 🤖 **#219 ANDROIDS VÄG TILL PLAY — enhetsverifiering, första uppladdning, slutet test** (rubriken löd 20/9 *Android är sju versioner efter och har ingen väg till en telefon* — överspelad 29/9, DECISIONS #402; rubriken rättad 1/10, #423; genomlysningen 20/9). Android står på
+- [x] 🤖 **#219 ANDROIDS VÄG TILL PLAY — enhetsverifiering, första uppladdning, slutet test** (rubriken löd 20/9 *Android är sju versioner efter och har ingen väg till en telefon* — överspelad 29/9, DECISIONS #402; rubriken rättad 1/10, #423; genomlysningen 20/9). Android står på
   📍 **Läget 4/10 13:00 (Axel i Play Console):** identiteten inskickad till Google ("kan ta några dagar", mejl när klar). Appen går inte att skapa förrän alla tre kontouppgifter är gröna. Telefonnumret låst tills identiteten godkänts. Enhetsverifieringen: Axel har ingen egen Android, lånar en väns och loggar in i Play Console-appen. Deklarationen om bakgrundsplats rättad samma dag (PR #747). Medan Google granskar: tolv testares Gmail-adresser och fem råbilder plus demovideon ur den lånade telefonen.
   **0.3.1 (versionCode 4)**, iOS på 0.3.8 (11). **Google Play-kontot finns inte**, det finns inget uppladdningsflöde alls — CI
   bygger en AAB som artefakt och där slutar det. Android saknar dessutom introduktionen helt och har autostart av som standard.
@@ -364,6 +366,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   | 5 | **Slutet test**: ladda upp AAB:n ur senaste gröna android.yml på main (artefakten `halkvakt-release-aab`, versionCode 19 efter #262 — kontrollera att numret stämmer med iOS (20) först, annars ett bygge till), skapa testarlistan (tolv mejladresser) och publicera testet — då startar Googles 14 dygn | Axel |
   | 6 | Utskick till de tolv med Play-länken + Android-guiden | Axel |
   ↪ **29/9: rubriken överspelad (DECISIONS #402).** Android bär 0.3.9 (18) som iOS sedan 26/9 (#377, #379) och Play-kontot finns sedan 20/9. Kvar är bara Play-vägen: enhetsverifieringen i Play Console, första uppladdningen med Data safety-formuläret ifyllt likadant som filen (#214), slutet test 14 dygn med tolv testare, produktion tidigast november. Verify-raden gäller oförändrad.
+  ✅ **Stängt 24/11** (Bengt 24/11: *"stäng alla tre"*): avklarat. Android-appen ligger i produktion i Google Play sedan 14/11 (DECISIONS #861). Frågan om Play Console visar något ogjort följer med Axels kort #214.
 ### Bengt
 
 - [ ] 💧 **#676 FUKTREGELN FÖR A2 — BESLUT OM RÄCKVIDDEN OCH DAGGPUNKTEN, OCH OBEROENDE FACIT I OLYCKSFACIT (BESTÄLLT 21/11 — Bengt: *"jag vill att du sätter upp skuggkörningen"* och *"så gör vi"*; DECISIONS #940, #945, #946)**: förslag 2 (15 km och daggpunkten) är skuggat på stationstimmarna (`sql/138`), längs skuggans rutter (`fuktskuggan-takt.yml`) och i larmtiden mot olycksfacit (`fuktskuggan-larmtid.yml`). Underlaget med Claudes rekommendation står i `docs/FORSLAG-FUKTREGELN-2026-11-21.md`: inte förslag 2 som det står, daggpunkten avgörs i R-B:s domslut (DECISIONS #794, frist 10/12), räckvidden prövas vidare som en fara per sträcka, och veckans sammanställning visar missarna med oberoende facit. Motorn rörs inte förrän Bengt och Axel beslutat. ↪ **21/11 veckans sammanställning:** Bengt: *"förregistrera rättelse och 676 veckosammanställning ska räkna..."*; TROSKLAR-OLYCKSFACIT §14 förregistrerat och byggt (DECISIONS #946), i drift sedan 21/11 (PR #1789, deployen 44934272071; Bengt: *"slå ihop 1789"*). ↪ **21/11 en fara per sträcka:** Bengt: *"på 2 gör vi ny skugga"*; räckvidden som en fara ger A2 på 27 % av körningarna med färre yttranden än i dag, förslag 2 som en fara står kvar på 52 % (DECISIONS #949, underlaget §6b). ↪ **21/11 skugga i drift:** Bengt: *"bygg in och kom ihåg att påminna mej om en vecka"*; skuggmotorn loggar räckvidden som en fara i `shadow_log.rackvidd` (sql/140, DECISIONS #950), utvärdering 29/11. ↪ **22/11 i drift:** PR #1796 ihopslagen, sql/140 migrerad med DB-knappen (44994126520) och skuggmotorn driftsatt (44994166147); 3 av 3 svenska rader bar `rackvidd` 07.02 UTC. *Verify:* Bengts och Axels beslut om varningsregeln bokfört i DECISIONS, och veckoärendet 2026-V47 med raden. *Kvar:* Bengts och Axels beslut om förslag 2 och om räckvidden som en fara per sträcka i motorn, och Axels signatur på §14. ↪ **24/11 veckoärendet med raden:** 2026-V47 (issue #1812) bär tabellen *Missarna mot facit som inte bygger på stationen* (6 + 27 = 33 i veckan, 17 + 58 = 75 i säsongen); `olycksfacit` gick i drift med PR #1789 redan 21/11 (44934272071), så den delen av Verify är uppfylld (frist issue #1820).
