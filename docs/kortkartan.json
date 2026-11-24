@@ -40,10 +40,7 @@
     "#361": ["BED 4.2"],
     "#281": ["APP 9"],
     "#214": ["APP 7", "BED 4.2", "FAV 6"],
-    "Skydda namnet": ["APP 9"],
-    "Tolv testare till Play-perioden": ["APP 9"],
     "#279": ["APP 6", "FAV 6"],
-    "Välkomsttext + testinstruktion till kompisarna": ["APP 9"],
     "#248": ["APP 5"],
     "#219": ["APP 9", "BED 2.1"],
     "#355": ["FAV 10"],
@@ -72,7 +69,6 @@
     "#45": ["MAT 2"],
     "#284": ["APP 4", "FAV 2"],
     "#368": ["APP 5", "APP 8"],
-    "#371": ["APP 9"],
     "#373": ["SYS 2"],
     "#326": ["APP 9"], "#673": ["MAT 3"], "#674": ["APP 7"], "#676": ["MAT 2", "MAT 3"]
   }
