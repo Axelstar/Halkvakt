@@ -6,12 +6,13 @@
 // förifylld åtgärd, och de övriga läses i veckans ärende. Sedan samma sak för varje ISO-vecka vars söndag är i går eller tidigare, så
 // att veckans ärende skrivs måndagen efter veckan (olycksfacit_veckor, sql/088; TROSKLAR-OLYCKSFACIT §9.5): en vecka utan återkommande
 // förbättringsområde och utan miss att läsa stängs direkt. Öppna ärenden påminns var sjunde dygn. ?torrt=1 visar ärendena utan att
-// skriva något.
+// skriva något. Med ?drift=1 skriver den i stället driftlarmets ärenden (drift.ts, sql/142, DECISIONS #959).
 import postgres from "https://deno.land/x/postgresjs@v3.4.4/mod.js";
 import { nyckelGiltig } from "../_shared/nyckel.ts";
 import { DYGN_EFTER, ETIKETT, FORSTA_DAG, MARK, MARKV, PAMINN_DYGN, TILLDELAD, arendeKropp, arendeTitel, behoverAtgard, forifylld,
   paminnelse, veckaKropp, veckaPaminnelse, veckaTitel, veckansForslag, veckansLasrader } from "./arende.ts";
 import { hamta as hamtaOlyckor } from "./hamta.ts";
+import { DRIFT_ETIKETT, DRIFT_FELTYPER, type Driftrad, driftKommentar, driftKropp, driftMark, driftTitel } from "./drift.ts";
 
 const REPO = "Axelstar/Halkvakt";
 const sql = postgres(Deno.env.get("SUPABASE_DB_URL")!, { max: 1, prepare: false });
@@ -39,9 +40,49 @@ async function skrivArende(titel: string, mark: string, kropp: string, atgarda: 
   return nr;
 }
 
+/** Driftlarmets ärenden (drift.ts, DECISIONS #959): varje ny rad av de valda feltyperna blir ett ärende per feltyp och svenskt dygn,
+ *  eller en kommentar på dygnets ärende. Anropas av pg_cron tio minuter efter fångsten (?drift=1, sql/142). En rad markeras skickad
+ *  först när GitHub tagit emot den, så ett fel mitt i tas om nästa varv. */
+async function driftArenden(torrt: boolean) {
+  const rader = await sql`
+    SELECT d.deviation_id, d.feltyp, d.halka, d.sedan, f.start_time, f.road_number, ST_X(f.geom) AS lon, ST_Y(f.geom) AS lat,
+           ((d.upptackt_at AT TIME ZONE 'Europe/Stockholm')::date)::text AS dag
+    FROM olycksfacit_driftlarm d JOIN olycksfacit f USING (deviation_id)
+    WHERE d.skickad_at IS NULL AND d.feltyp = ANY(${DRIFT_FELTYPER as unknown as string[]})
+    ORDER BY d.upptackt_at, d.deviation_id, d.feltyp`;
+  const ut: unknown[] = [];
+  for (const x of rader as any[]) {
+    const r: Driftrad = { feltyp: x.feltyp, halka: x.halka, sedan: x.sedan === null ? null : new Date(x.sedan).toISOString(),
+      tid: new Date(x.start_time).toISOString(), vag: x.road_number, lon: Number(x.lon), lat: Number(x.lat) };
+    if (torrt) { ut.push({ dag: x.dag, feltyp: r.feltyp, titel: driftTitel(x.dag, r.feltyp), kropp: driftKropp(x.dag, r) }); continue; }
+    const [finns] = await sql`SELECT nr FROM olycksfacit_drift_arenden WHERE dag = ${x.dag}::date AND feltyp = ${r.feltyp}`;
+    let nr: number;
+    if (finns) {
+      nr = finns.nr;
+      await gh(`/issues/${nr}/comments`, "POST", { body: driftKommentar(r) });
+    } else {
+      // Skrivet men inte bokfört (förra varvet föll mellan stegen): ta dess nummer i stället för att skriva ett till.
+      const mark = driftMark(x.dag, r.feltyp);
+      const gammal = ((await gh(`/issues?state=all&labels=${DRIFT_ETIKETT}&per_page=100`)) as any[])
+        .find((i) => (i.body ?? "").includes(mark));
+      nr = gammal ? gammal.number : (await gh("/issues", "POST", { title: driftTitel(x.dag, r.feltyp), body: driftKropp(x.dag, r),
+        labels: [DRIFT_ETIKETT], assignees: [TILLDELAD] })).number;
+      await sql`INSERT INTO olycksfacit_drift_arenden (dag, feltyp, nr) VALUES (${x.dag}::date, ${r.feltyp}, ${nr}) ON CONFLICT DO NOTHING`;
+    }
+    await sql`UPDATE olycksfacit_driftlarm SET skickad_at = now(), arende_nr = ${nr}
+      WHERE deviation_id = ${x.deviation_id} AND feltyp = ${r.feltyp}`;
+    ut.push({ dag: x.dag, feltyp: r.feltyp, nr });
+  }
+  return json({ ok: true, torrt, drift: ut });
+}
+
 Deno.serve(async (req) => {
   if (!(await nyckelGiltig(req))) return new Response("forbidden", { status: 403 });  // nyckeln i databasen, DECISIONS #571
-  const torrt = new URL(req.url).searchParams.get("torrt") === "1";
+  const url = new URL(req.url);
+  const torrt = url.searchParams.get("torrt") === "1";
+  if (url.searchParams.get("drift") === "1") {
+    try { return await driftArenden(torrt); } catch (e) { return json({ ok: false, fel: String(e).slice(0, 300) }, 500); }
+  }
   try {
     // Dygnen utan ärende, från FORSTA_DAG till i går (svensk tid), med antalet olyckor som inte är kontrollerade än.
     const dygn = await sql`

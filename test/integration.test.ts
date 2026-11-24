@@ -2622,6 +2622,11 @@ test("#842 driftlarmet i skugga: en rad per feltyp när ett lager inte fungerade
     assert.ok((await q("SELECT driftlarm_at FROM olycksfacit WHERE deviation_id = 'DL6'")).rows[0].driftlarm_at, "dubbletten är prövad");
     assert.equal((await q("SELECT olycksfacit_driftlarm() AS n")).rows[0].n, 0, "en olycka prövas en gång");
     assert.deepEqual(await rader(), VANTAT, "omkörningen ändrar inget");
+    // 142 (DECISIONS #959): skuggans rader märks skickade utan ärende, så att inga gamla olyckor blir ärenden; körs två gånger.
+    for (const f of ["142_olycksfacit_driftarenden.sql", "142_olycksfacit_driftarenden.sql"]) await las(f);
+    assert.deepEqual((await q("SELECT count(*)::int AS n FROM olycksfacit_driftlarm WHERE deviation_id LIKE 'DL%' AND (skickad_at IS NULL OR arende_nr IS NOT NULL)")).rows,
+      [{ n: 0 }], "skuggans rader blir aldrig ärenden");
+    assert.deepEqual((await q("SELECT relrowsecurity FROM pg_class WHERE relname = 'olycksfacit_drift_arenden'")).rows, [{ relrowsecurity: true }]);
 
     // Motproven: ett villkor i taget. Varje mutant ska ge ett annat svar än VANTAT, och raden säger vilka fixturer som fällde den.
     const MUTANTER: [string, string | RegExp, string][] = [
