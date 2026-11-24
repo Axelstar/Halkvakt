@@ -104,7 +104,9 @@ class GuardService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        startForeground(NOTIF_ID, buildNotification(IDLE_TEXT))
+        // Android 12+ refuses a foreground service from the background (a sticky restart), and 14+ refuses the location
+        // type without the location permission the start needs (an autostart without "Allow all the time").
+        try { startForeground(NOTIF_ID, buildNotification(IDLE_TEXT)) } catch (e: Exception) { startRefused(); return START_NOT_STICKY }
         running = true
         val sjalv = AutostartManager.controller(this).isAutoStarted()
         scope.launch { Raknare.vaktStartad(this@GuardService, sjalv) }   // #772: ett ord i kön, skickas vid nästa stopp
@@ -121,6 +123,13 @@ class GuardService : Service() {
         startLocationUpdates()
         AlertBus.post("Tjänsten startad. Laddar vägdata …")
         return START_STICKY
+    }
+
+    /** No foreground service or no location means no guard: stop instead of crashing, and ask the driver as the autostart does. */
+    private fun startRefused() {
+        AutostartManager.clearAutoStarted(this)   // nothing runs: a later start by hand is not the autostart's to stop
+        AutostartManager.tapToStartNotification(this)
+        stopSelf()
     }
 
     private fun loadSnapshotAsync(force: Boolean = false) {
@@ -242,13 +251,15 @@ class GuardService : Service() {
 
     private var currentIntervalMs = 0L
 
-    @Suppress("MissingPermission") // MainActivity gates start on granted permission
+    @Suppress("MissingPermission") // MainActivity gates a start by hand; an autostart, or a permission taken back, ends in startRefused
     private fun startLocationUpdates(intervalMs: Long = CadencePolicy.NEAR_MS) {
         currentIntervalMs = intervalMs
         val req = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, intervalMs)
             .setMinUpdateIntervalMillis(intervalMs)
             .build()
-        fused.requestLocationUpdates(req, callback, Looper.getMainLooper())
+        try {
+            fused.requestLocationUpdates(req, callback, Looper.getMainLooper()).addOnFailureListener { if (running) startRefused() }
+        } catch (e: SecurityException) { startRefused() }
     }
 
     /** Battery: far from every hazard → sparse GPS; near → full 1 Hz. Tiers proven in CadencePolicyTest. */

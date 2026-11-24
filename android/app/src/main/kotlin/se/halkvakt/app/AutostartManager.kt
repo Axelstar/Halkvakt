@@ -101,7 +101,7 @@ object AutostartManager {
         }
     }
 
-    private fun tapToStartNotification(ctx: Context) {
+    fun tapToStartNotification(ctx: Context) {
         val nm = ctx.getSystemService(NotificationManager::class.java)
         nm.createNotificationChannel(
             NotificationChannel("autostart", "Autostart", NotificationManager.IMPORTANCE_HIGH))
