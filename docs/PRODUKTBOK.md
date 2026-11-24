@@ -62,7 +62,9 @@ aldrig till Halkvakt av sig själv."* (första meningen bara när vakten kan vak
 under den *INGEN TUR ÄN*.
 
 **Startsidan från 0.4.1 (55) (DECISIONS #873, #874; bara iPhone).** Rubriken är svaret om området: *"Halka 12,4 km bort"* (den närmaste
-faran som inte är en fartkamera) eller *"Inget rapporterat nära dig"*, och under den *"Vakten vaknar själv när du kör."* eller
+faran som inte är en fartkamera; förslag 25/11, från nästa bygge: *"Halkrisk 12,4 km bort"* när sträckans rapport är *Besvärligt (risk för)*
+utan is, snö, frost, modd eller halka, och samma ord, *Halkrisk*, i listan, i kortet om en vald fara, i körlägets lista *På din väg* på
+Android och i raden för en sagd varning efter resan; inga nya skärmbilder är tagna för förslaget) eller *"Inget rapporterat nära dig"*, och under den *"Vakten vaknar själv när du kör."* eller
 *"Tryck Starta vakten innan du kör."* *"Redo."* står bara när platsen eller vägdatan saknas. Direkt under står ▶ *Starta
 vakten* och *Planera resa* bredvid varandra (DECISIONS #874), sedan kartan och listan. Ett tryck på fliken *Vakten* går
 alltid hem till startsidan, också från Planera resa. På kartan är fartkamerorna små grå prickar och förarens plats vit.
@@ -170,6 +172,7 @@ krymper och tonar bort; stapeln börjar om.
 | Allvarlig olycka, påminnelse | *Sakta ner* — *Olycksplats strax framför dig* | *STRAX FRAMFÖR* | *PÅMINNELSE* |
 | Allvarlig olycka, sent | *Allvarlig olycka* | *2 KM* | *ALLVARLIG · SENT*, vägskylt, *Sakta ner* |
 | Halka | *Halka* | *FRAMFÖR DIG* | — |
+| Halkrisk (förslag 25/11, från nästa bygge): rösten sa *"Risk för halka på vägen framför dig."* | *Halkrisk* | *FRAMFÖR DIG* | Samma kort och ikon som halkan; bara rubriken och repliken skiljer |
 | Frysrisk vid station | *Frysrisk* — *Vägbanan nära noll grader* | *FRAMÖVER* | — |
 | Frysrisk efter regnet (beta, S3) | *Frysrisk* — *Halkvakt tror — efter regnet* | *FRAMÖVER* | *BETA* |
 | Halka enligt kandidaten (beta, nivå 2) | *Halka* — *Halkvakt tror — modellerat* | *FRAMÖVER* | *BETA*, halkans ikon |
@@ -474,7 +477,7 @@ tillverkare kan ha andra ord. Inte provat på en telefon. Skärmbilder ur fotost
 | **Allvarlig olycka — tidigt ropet, ca 10 km** | "Allvarlig olycka **på E18** 10 kilometer framför dig — stor påverkan på trafiken. Överväg annan väg. Beräknas röjd vid 14:20." |
 | **Allvarlig olycka — påminnelsen, ca 2 km** | "Sakta ner — olycksplats strax framför dig." |
 | **Allvarlig olycka du kom nära utan att höra det tidiga ropet** | "Allvarlig olycka 2 kilometer framför dig — stor påverkan. Sakta ner." |
-| Rapporterad halka på din väg — kod 2 eller högre, eller kod 1 med is, snö, frost, halka, halt, halkrisk, halkig, *mycket besvärligt* eller modd (*mycket besvärligt* sedan 22/9, kort #156; modden, *Moddig vägbana* och *Moddsträngar*, sedan 20/11, DECISIONS #915, från nästa bygge; sedan 16/9 även i sammansättningar: *Rimfrost*, *Nysnö*, *Blötsnö*; motåtgärder som *Halkbekämpning* tiger) | "Varning: halka rapporterad på vägen framför dig." |
+| Rapporterad halka på din väg — kod 2 eller högre, eller kod 1 med is, snö, frost, halka, halt, halkrisk, halkig, *mycket besvärligt* eller modd (*mycket besvärligt* sedan 22/9, kort #156; modden, *Moddig vägbana* och *Moddsträngar*, sedan 20/11, DECISIONS #915, från nästa bygge; sedan 16/9 även i sammansättningar: *Rimfrost*, *Nysnö*, *Blötsnö*; motåtgärder som *Halkbekämpning* tiger) | "Varning: halka rapporterad på vägen framför dig." när rapporten själv nämner is, snö, frost, modd eller halka (ett av orden ovan), eller klassen är *Mycket besvärligt* (kod 3) eller *Is- och snövägbana* (kod 4). **Förslag 25/11, från nästa bygge, väntar på Bengts ord:** "Risk för halka på vägen framför dig." när klassen är *Besvärligt (risk för)* (kod 2) och inget av orden står i rapporten, till exempel bara *Våt*. Till och med bygget före sa rösten *halka rapporterad* också då (Axel 24/11). Om en sträcka talar är oförändrat; bara orden ändras. Vektorerna v64–v67 låser raden i tre språk. |
 | Mätstation visar frysrisk | "Isrisk framöver — vägbanan nära noll grader." |
 | **Efter regnet, märkt beta (S3):** ytan +1…+3 °C, fallit minst 0,8 °C på 30 minuter och regn inom 2 timmar — vägbanan är fortfarande över fryspunkten men på väg ned (DECISIONS #222, #524) | "Halkvakt tror: frysrisk framöver." |
 | **Halka enligt kandidaten, märkt beta (nivå 2):** modellens vägyta 0 °C eller kallare och ett mätt fuktbesked — Trafikverkets *Våt* på sträckan eller nederbörd på radarn — ingen varm station inom 15 km och stationerna runt omkring överens; en gång per sträcka och högst en gång per 10 minuter (DECISIONS #562–#577, #606) | "Halkvakt tror: halka framöver." |
