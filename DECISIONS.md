@@ -19624,6 +19624,19 @@ stationerna tysta direkt (förkastat: DECISIONS #103, en sann varning tystas ald
 
 **Stomdokument:** MAT (en ny skugga: var på sträckan), BED §4.2
 
+## #961 (24/11 2026) Var på sträckan: i drift, olyckorna räknade bakåt, första läsningen flyttad till 1/12 (kort #677)
+**Beslut.** Bengt 24/11: *"ja slå ihop och starta mätningen"* och *"det får du flytta närmare första avläsning den 1 december"*. PR #1836
+slogs ihop (45b649d4) och `sql/143` kördes med DB-knappen (45464615782): jobbet `halkvakt-strackdelen` är aktivt, och första timmen
+gav 271 sträckor. Olyckorna 11–24/11 räknades bakåt med `strackdel_olyckor` så långt vädret sparas (45464959915): 228 olyckor på
+hala sträckor, 47 av dem på *Besvärligt utan vinterord*, alla med ankare. Bara en av de 228 bär halkordet i dag, och ingen i gruppen
+*Besvärligt utan vinterord*. Första läsningen flyttas från 22/12 till 1/12 (frist `strackdelen-lasning-2026-12-01`). Har M3 färre än
+10 olyckor med halkord i gruppen den dagen är det en mellanläsning: M1 och M2 redovisas, M3 är OAVGJORT, och nästa läsning sätts då.
+Förregistreringen i #960 ändras inte.
+
+**Alternativ.** Att behålla 22/12 (Bengt valde 1/12). Att inte räkna bakåt (förkastat: vädret gallras efter 14 dygn, och olyckorna
+före påslaget hade annars gått förlorade).
+
+**Stomdokument:** MAT (var på sträckan i drift och läsningen 1/12), BED §4.2
 ## #962 (24/11 2026) Vägnumren vid småvägsröstens vägar och storstädernas punkter, ur Trafikverkets öppna register (kort #678)
 **Beslut.** Bengt 24/11: *"då vill jag att du hämtar vägnummer på alla huvudvägar och småvägar"*, efter genomgången samma kväll som visade
 att inget vägnummer finns för småvägsröstens punkter. Väglagssträckorna bär redan Trafikverkets vägnummer (`road_conditions.road_number`),
