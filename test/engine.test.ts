@@ -158,7 +158,9 @@ test("fläckvis is not halka — Swedish word boundaries in slippery matching", 
   }));
   const seg = (info: string[]): Hazard => ({
     id: "s", kind: "slippery_segment",
-    line: [[14.99, 58.018], [15.01, 58.018]], meta: { code: 1, info },
+    // Along the car's road since the road test (Skeppsbron 24/11): a line across it is a crossing road and stays silent whatever
+    // the words, so the words would no longer decide.
+    line: [[15.0, 58.018], [15.0, 58.021]], meta: { code: 1, info },
   });
   // Real August data that fooled the substring regex:
   assert.equal(new AlertEngine([seg(["fläckvis Våt", "fläckvis Torrt"])]).run(trace).length, 0);

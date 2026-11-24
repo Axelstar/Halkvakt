@@ -176,6 +176,12 @@ export interface EngineConfig {
    *  zone for the repeat rule. A new halka warning stays silent while a neighbour's warning is not yet re-armed (10 min AND 5 km),
    *  so three stretches meeting at a junction speak once, and a long zone still repeats like a long stretch (#103). */
   halkZonM: number;
+  /** A1, the road test (Skeppsbron 24/11): a slippery stretch may speak only when the fix lies within halkaPaM of one of the straight
+   *  lines of the stretch, or of its first or last line drawn straight on beyond the end, and the heading is at most
+   *  halkaPaGrader from that line's direction either way. A stretch on a parallel or crossing road, or one that merely lies
+   *  ahead in the corridor, stays silent. */
+  halkaPaM: number;
+  halkaPaGrader: number;
   /** S, the road test (DECISIONS #844, measured 12/11): the car is on a small road when its fix lies within smavagPaM of the straight
    *  line between two neighbouring points of the road, at most smavagPaGrader from the line's direction either way, for
    *  smavagPaFixar fixes in a row. Neighbours farther apart than smavagKordaMaxM have no line between them. */
@@ -229,6 +235,11 @@ export const DEFAULT_CONFIG: EngineConfig = {
   // Halkzonen (DECISIONS #624): 500 m — all 17 close pairs in the shadow log lay within 451 m, and no pair at all between 500 m and
   // 2 km (#621). Samma tal i Types.kt och Engine.swift (kontraktsgrinden).
   halkZonM: 500,
+  // A1, the road test: the small roads' numbers (DECISIONS #844), 80 m and 30°. The published lines are simplified by at most
+  // 0.0005° (56 m north–south, 28 m east–west at 60° N; publicera), so 80 m leaves room for the car's own error. Samma tal i
+  // Types.kt och Engine.swift (kontraktsgrinden).
+  halkaPaM: 80,
+  halkaPaGrader: 30,
   // S (DECISIONS #844): 80 m, chosen 12/11 from the measurement in halkvakt-kuvos on the real roads (Lastkajen) and on main-road
   // drives, between 50 and 120 m. Under the 100 m that separates group N's roads from the road-condition stretches (#828). Samma tal
   // i Types.kt och Engine.swift (kontraktsgrinden).

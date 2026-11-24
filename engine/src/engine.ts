@@ -128,7 +128,7 @@ function cellKey(r: number, c: number): number { return r * 65536 + c; }
 export class AlertEngine {
   private readonly cfg: EngineConfig;
   private points: PointHazard[] = [];
-  private segments: { h: SegmentHazard; samples: LonLat[]; box: Box }[] = [];
+  private segments: { h: SegmentHazard; samples: LonLat[]; box: Box; pa: LonLat[] }[] = [];
   private kandidater: { h: KandidatHazard; samples: LonLat[] }[] = [];
   private pointGrid = new HazardGrid();
   private segmentGrid = new HazardGrid();
@@ -188,7 +188,7 @@ export class AlertEngine {
       if (h.kind === "slippery_segment") {
         const samples = samplePolyline(h.line, this.cfg.segmentSampleM);
         this.segmentGrid.add(this.segments.length, samples, this.reachOf(h.kind));
-        this.segments.push({ h, samples, box: boxOf(samples) });
+        this.segments.push({ h, samples, box: boxOf(samples), pa: this.paLinje(h.line) });
       } else if (h.kind === "kandidat") {
         const samples = h.points.map(([lon, lat]) => ({ lon, lat }));
         this.kandidatGrid.add(this.kandidater.length, samples, this.reachOf(h.kind));
@@ -204,6 +204,26 @@ export class AlertEngine {
         this.points.push(h);
       }
     }
+  }
+
+  /**
+   * A1, the road test: the stretch's break points without repeats, with one point added before the first and one after the last,
+   * straight on along the first and the last line as far as the longest lead. A car coming along the same road is then on the
+   * line before it reaches the stretch, and the warning still comes ahead of the ice. Fewer than two different points give no
+   * line, and such a stretch never speaks.
+   */
+  private paLinje(line: [number, number][]): LonLat[] {
+    const pts: LonLat[] = [];
+    for (const [lon, lat] of line) {
+      const f = pts[pts.length - 1];
+      if (f === undefined || f.lon !== lon || f.lat !== lat) pts.push({ lon, lat });
+    }
+    if (pts.length < 2) return [];
+    const ut = (a: LonLat, b: LonLat): LonLat => {
+      const k = this.reachOf("slippery_segment") / haversineM(a, b);
+      return { lon: a.lon + (a.lon - b.lon) * k, lat: a.lat + (a.lat - b.lat) * k };
+    };
+    return [ut(pts[0], pts[1]), ...pts, ut(pts[pts.length - 1], pts[pts.length - 2])];
   }
 
   /**
@@ -472,7 +492,7 @@ export class AlertEngine {
   }
 
   private evaluateSegment(
-    fix: Fix, heading: number, s: { h: SegmentHazard; samples: LonLat[]; box: Box }, leadM: number,
+    fix: Fix, heading: number, s: { h: SegmentHazard; samples: LonLat[]; box: Box; pa: LonLat[] }, leadM: number,
   ): Candidate | null {
     const meta = s.h.meta ?? {};
     const slippery =
@@ -490,7 +510,23 @@ export class AlertEngine {
       if (ahead && (best === null || distM < best)) best = distM;
     }
     if (best === null || best > leadM) return null;
+    if (!this.paHalkan(fix, heading, s.pa)) return null;
     return { hazard: s.h, kind: "slippery_segment", distM: best, alertKey: s.h.id };
+  }
+
+  /**
+   * A1, the road test: the text says "på vägen framför dig", so the car must be on the stretch's road — within halkaPaM of one of
+   * its lines (paLinje: the stretch and its two ends drawn straight on) and at most halkaPaGrader from that line's direction,
+   * either way along the road. The corridor alone let a stretch on another road speak when it began ahead of the car (Skeppsbron
+   * 24/11: väg 222 begins at Slussen). The small roads' test (smavagPa, DECISIONS #844) on the stretch's own line, one fix at a time.
+   */
+  private paHalkan(fix: Fix, heading: number, pa: LonLat[]): boolean {
+    for (let k = 1; k < pa.length; k++) {
+      if (!(distToSegmentM(fix, pa[k - 1], pa[k]) <= this.cfg.halkaPaM)) continue;
+      const r = bearingDeg(pa[k - 1], pa[k]);
+      if (Math.min(angDiffDeg(r, heading), angDiffDeg((r + 180) % 360, heading)) <= this.cfg.halkaPaGrader) return true;
+    }
+    return false;
   }
 
   /**

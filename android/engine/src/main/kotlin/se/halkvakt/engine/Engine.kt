@@ -77,7 +77,8 @@ private fun cellKey(r: Int, c: Int): Long = r.toLong() * 65536L + c
 class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineConfig()) {
 
     private var points: List<PointHazard> = emptyList()
-    private var segments: List<Pair<SegmentHazard, List<DoubleArray>>> = emptyList()
+    /** Each stretch with its samples and the road test's line (paLinje). */
+    private var segments: List<Triple<SegmentHazard, List<DoubleArray>, List<DoubleArray>>> = emptyList()
     private var kandidater: List<KandidatHazard> = emptyList()
     /** S (DECISIONS #844), mirror of engine.ts: each small road, and whether the line to the previous point exists. */
     private var smavagar: List<Pair<SmavagHazard, BooleanArray>> = emptyList()
@@ -104,7 +105,7 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
     private fun ingest(hazards: List<Hazard>) {
         points = hazards.filterIsInstance<PointHazard>()
         segments = hazards.filterIsInstance<SegmentHazard>()
-            .map { it to Geo.samplePolyline(it.line, cfg.segmentSampleM) }
+            .map { Triple(it, Geo.samplePolyline(it.line, cfg.segmentSampleM), paLinje(it.line)) }
         kandidater = hazards.filterIsInstance<KandidatHazard>()
         smavagar = hazards.filterIsInstance<SmavagHazard>().map { h ->
             h to BooleanArray(h.points.size) { k ->
@@ -118,7 +119,7 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
             freeze()
         }
         segmentGrid = HazardGrid().apply {
-            segments.forEachIndexed { i, (_, samples) -> add(i, samples, reachOf(HazardKind.SLIPPERY_SEGMENT)) }
+            segments.forEachIndexed { i, s -> add(i, s.second, reachOf(HazardKind.SLIPPERY_SEGMENT)) }
             freeze()
         }
         kandidatGrid = HazardGrid().apply {
@@ -214,8 +215,8 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
             evaluatePoint(fix, heading, points[i], leadM)?.let { candidates.add(it) }
         }
         for (i in if (allStretches) segmentGrid.all else segmentGrid.near(fix.lon, fix.lat)) {
-            val (s, samples) = segments[i]
-            evaluateSegment(fix, heading, s, samples, leadM)?.let { candidates.add(it) }
+            val (s, samples, pa) = segments[i]
+            evaluateSegment(fix, heading, s, samples, pa, leadM)?.let { candidates.add(it) }
         }
         for (i in if (allStretches) kandidatGrid.all else kandidatGrid.near(fix.lon, fix.lat)) {
             evaluateKandidat(fix, heading, kandidater[i], leadM)?.let { candidates.add(it) }
@@ -230,7 +231,7 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
             // Halkzonen (kort #360, DECISIONS #621, #624): a neighbour stretch within halkZonM spoke and is not re-armed.
             val a = c.hazard as? SegmentHazard
             if (c.kind == HazardKind.SLIPPERY_SEGMENT && a != null &&
-                segments.any { (s, _) -> s.id != a.id && fired[s.id]?.let { !rearmed(it) } == true && grannar(a, s) }) return@filter false
+                segments.any { (s) -> s.id != a.id && fired[s.id]?.let { !rearmed(it) } == true && grannar(a, s) }) return@filter false
             true
         }
         if (eligible.isEmpty()) return null
@@ -348,7 +349,7 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
     }
 
     private fun evaluateSegment(
-        fix: Fix, heading: Double, s: SegmentHazard, samples: List<DoubleArray>, leadM: Double,
+        fix: Fix, heading: Double, s: SegmentHazard, samples: List<DoubleArray>, pa: List<DoubleArray>, leadM: Double,
     ): Candidate? {
         val slippery = (s.meta.code ?: 0) >= 2 || s.meta.info.any { slipperyInfo.containsMatchIn(it) || slipperyStam.containsMatchIn(it) }
         if (!slippery) return null
@@ -359,7 +360,42 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
         }
         val b = best ?: return null
         if (b > leadM) return null
+        if (!paHalkan(fix, heading, pa)) return null
         return Candidate(s, HazardKind.SLIPPERY_SEGMENT, b, s.id)
+    }
+
+    /**
+     * A1, the road test, mirror of paLinje in engine.ts: the stretch's break points without repeats, with one point added before
+     * the first and one after the last, straight on along the first and the last line as far as the longest lead. Fewer than two
+     * different points give no line, and such a stretch never speaks.
+     */
+    private fun paLinje(line: List<DoubleArray>): List<DoubleArray> {
+        val pts = ArrayList<DoubleArray>()
+        for (p in line) {
+            val f = pts.lastOrNull()
+            if (f == null || f[0] != p[0] || f[1] != p[1]) pts.add(p)
+        }
+        if (pts.size < 2) return emptyList()
+        fun ut(a: DoubleArray, b: DoubleArray): DoubleArray {
+            val k = reachOf(HazardKind.SLIPPERY_SEGMENT) / Geo.haversineM(a[0], a[1], b[0], b[1])
+            return doubleArrayOf(a[0] + (a[0] - b[0]) * k, a[1] + (a[1] - b[1]) * k)
+        }
+        return listOf(ut(pts[0], pts[1])) + pts + listOf(ut(pts[pts.size - 1], pts[pts.size - 2]))
+    }
+
+    /**
+     * A1, the road test, mirror of paHalkan in engine.ts: the car is on the stretch's road when the fix lies within halkaPaM of
+     * one of its lines (the stretch and its two ends drawn straight on) and the heading is at most halkaPaGrader from that line's
+     * direction, either way. The corridor alone let a stretch on another road speak (Skeppsbron 24/11).
+     */
+    private fun paHalkan(fix: Fix, heading: Double, pa: List<DoubleArray>): Boolean {
+        for (k in 1 until pa.size) {
+            val a = pa[k - 1]; val b = pa[k]
+            if (!(Geo.distToSegmentM(fix.lon, fix.lat, a[0], a[1], b[0], b[1]) <= cfg.halkaPaM)) continue
+            val r = Geo.bearingDeg(a[0], a[1], b[0], b[1])
+            if (minOf(Geo.angDiffDeg(r, heading), Geo.angDiffDeg((r + 180.0) % 360.0, heading)) <= cfg.halkaPaGrader) return true
+        }
+        return false
     }
 
     /**
