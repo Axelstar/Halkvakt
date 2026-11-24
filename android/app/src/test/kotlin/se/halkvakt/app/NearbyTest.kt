@@ -24,6 +24,17 @@ class NearbyTest {
         assertTrue(l[0].distM < 100.0)
         assertEquals(HazardKind.ICING_POINT, l[1].kind)
     }
+    @Test fun riskOnlyStretchIsListedAsHalkrisk() {
+        // Axel 24/11: Besvärligt (risk för), kod 2, with only "Våt" stood as Halka. An ice word, or class 3, is reported halka.
+        fun strack(code: Int, vararg info: String) = SegmentHazard("s", listOf(doubleArrayOf(18.06, 59.33), doubleArrayOf(18.07, 59.33)),
+            meta = SegmentMeta(code = code, info = info.toList()))
+        fun risk(h: SegmentHazard) = Nearby.nearest(listOf(h), lon = 18.06, lat = 59.33).single().halkrisk
+        assertTrue(risk(strack(2, "Våt")))
+        assertTrue(risk(strack(2, "fläckvis Våt")))
+        assertTrue(!risk(strack(2, "Våt", "fläckvis Is")))
+        assertTrue(!risk(strack(3)))
+        assertTrue(!Nearby.nearest(listOf(ice), lon = 18.06, lat = 59.33).single().halkrisk)
+    }
     @Test fun humanSecondaries() {
         assertEquals("+0,4° och vått", Nearby.secondary(ice))
         assertEquals("80 km/h", Nearby.secondary(cam))

@@ -12,7 +12,9 @@ import se.halkvakt.engine.SegmentHazard
 import se.halkvakt.engine.SmavagHazard
 import kotlin.math.roundToInt
 
-data class NearbyItem(val kind: HazardKind, val distM: Double, val secondary: String?)
+/** `halkrisk`: a stretch whose report names no ice, snow, frost, slush or slipperiness (SegmentMeta.halkaRapporterad) — the list
+ *  says Halkrisk, like the warning card. */
+data class NearbyItem(val kind: HazardKind, val distM: Double, val secondary: String?, val halkrisk: Boolean = false)
 
 object Nearby {
     /** Radie för "omkring dig" — sex mil. */
@@ -26,7 +28,7 @@ object Nearby {
                 // Småvägsrösten (#828) inte heller: en modell på vägar utan mätning, som K.
                 if (h is SmavagHazard) return@mapNotNull null
                 val d = distanceM(h, lon, lat)
-                if (d > MAX_M) null else NearbyItem(h.kind, d, secondary(h))
+                if (d > MAX_M) null else NearbyItem(h.kind, d, secondary(h), h is SegmentHazard && !h.meta.halkaRapporterad)
             }
             .sortedBy { it.distM }
             .take(n)
