@@ -156,7 +156,7 @@
 <!-- LÄGESRADER §1: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 <div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
   <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html">projektkartan</a></div>
-  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-k-vader">Trafikverkets väderstationer</a> <span style="color: var(--dampad, #4A5763)">delvis, 89 % · kvar: Mätpunkter utan lufttemperatur vaktas inte (kort #344, #345): avgjort 14/10, ingen ändring nu, frågan tas upp inför 2027/28 (bedömningen §4.2). Mätt mot kandidatens veto 20/10: tre fjärrytor vetade 16 punkter på 9 sträcktimmar 17–20/10 och tystade ingen fuktig sträcka (DB-knappen 39415616056)</span></summary>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gron, #1F7A45); margin-right: 6px"></span><a href="https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-k-vader">Trafikverkets väderstationer</a> <span style="color: var(--dampad, #4A5763)">klar</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">✓</span> <b>Hämtning byggd</b> <span style="color: var(--dampad, #4A5763)">klart · supabase/functions/ingest-live/index.ts:124 weather(), WeatherMeasurepoint 2.1 med kursorn 'weather'</span></li>
       <li><span aria-hidden="true">✓</span> <b>Hämtning i drift</b> <span style="color: var(--dampad, #4A5763)">klart · pg_cron jobid 1 '* * * * *' → ingest-live (docs/RUNBOOK.md:14); weather() inlagd 8/9 (#72)</span></li>
@@ -166,7 +166,6 @@
       <li><span aria-hidden="true">✓</span> <b>Används av motorn och appen</b> <span style="color: var(--dampad, #4A5763)">klart · engine/src/snapshot.ts:39-41 icing_point, :54-57 broar; android SnapshotRepo.kt:89-110</span></li>
       <li><span aria-hidden="true">✓</span> <b>Ytstatus som facit (#294)</b> <span style="color: var(--dampad, #4A5763)">klart · Byggt 6/10 (DECISIONS #465): sql/043_ytstatus.sql, weather.ts, db.ts och ingest-live/skriv.ts med prov; i drift 08:22Z: migrationen med DB-knappen 37435521114 (kolumnerna lästa), deploy 37435573958 från eedfd06 (loggen: Deployed Functions: ingest-live), och läsningen 37436952330: av 702 rader skrivna efter deployen (08:25–08:38Z) bar 53 surface_grip från 52 stationer, 1 rad is = sann och 5 vatten = sann; värdevakten 37437120416: surface_grip – (för tunt underlag: 60 rader av minst 100; 0,75–0,82, 4 distinkta, inom spannet); värdevakten 38046557111 10/10: surface_grip OK, 26 379 rader från 59 stationer, 0,18–0,82, 41 distinkta; 0,82 är givarens tak för torr väg (alla 11 841 torra rader, DB-knappen 38046558230)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Ytstatusens regel i tröskeldokumentet (#324)</b> <span style="color: var(--dampad, #4A5763)">klart · Regeln fastställd 12/10 i TROSKLAR-KOMBINATIONEN §1.1 med båda signaturerna (DECISIONS #540): halt = grip under 0,30 med vägytan ≤ +1 °C, mycket halt under 0,25 (Trafikverkets SBV 81.121); is- och snöflaggan räknas inte (#537); friktionen läst per yttemperatur (DB-knappen 38284633103, #539)</span></li>
-      <li><span aria-hidden="true">○</span> <b>Mätpunkter utan lufttemperatur vaktade (kort #344)</b> <span style="color: var(--dampad, #4A5763)">saknas · Fynd 14/10 (DB-knappen 38604500874): 93 VViS-stationer har en andra mätpunkt &lt;nr&gt;100 utan luft, som släpps igenom av #75, radvakten och den långsamma vakten. Avgjort 14/10: ingen ändring nu, kommentaren i sql/032:27-32, frågan inför 2027/28. 20/10: kandidatens veto (sql/058) släpper dem också; mätt 17–20/10 utan att någon fuktig sträcka tystades (39415616056)</span></li>
     </ul>
   </details>
   <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gron, #1F7A45); margin-right: 6px"></span><a href="https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-k-vaglag">Trafikverkets väglag (RoadCondition)</a> <span style="color: var(--dampad, #4A5763)">klar</span></summary>
@@ -758,7 +757,7 @@
 
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
   <h2 id="oppna-kort">Öppna kort</h2>
-  <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 12 kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>
+  <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 11 kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>
   <h3><a href="#avsnitt-1">1. Motorn i dag</a></h3>
   <ul>
     <li>#670 🔨 🔐 #670 DATASKYDDET (GDPR) — FEM STEG FRÅN BESLUTEN TILL NÄSTA ORDINARIE VERSION (BESTÄLLT 18/11 — Bengt: … <span class="litet">· Claude</span></li>
@@ -771,7 +770,6 @@
     <li>#671 🔒 🗺️ #671 KARTAN UR HINKEN — KANDIDATENS PROGNOSLINJER PÅ HALKVAKT.SE VID VARJE PUBLICERING (NYTT 19/11 — … <span class="litet">· Claude, låst</span></li>
     <li>#661 🔒 🛣️ #661 SMÅVÄGSRÖSTEN SÄGER VÄGNUMRET — PÅMINNELSEN EFTER PÅSLAGET (BESTÄLLT 15/11 — Bengt: "Det här … <span class="litet">· Claude, låst</span></li>
     <li>#662 🔒 📋 #662 SMÅVÄGSRÖSTEN MOT VERKLIGA DATA — DYGNSRAPPORTEN, KONTROLLERNA PÅ PULSKLOCKAN OCH DRIFTKONTROLLEN … <span class="litet">· Claude, låst</span></li>
-    <li>#344 🌡️ #344 FJÄRRYTORNA — EN PLATS GER TVÅ ANKARE I SKUGGANS RÅ (FYND 14/10, AVGJORT SAMMA KVÄLL: INGEN ÄNDRING … <span class="litet">· Claude, låst</span></li>
     <li>#38b Stråket / skuggmotorn — ÅTERSTÄLLT 10/9 <span class="litet">· Claude, låst</span></li>
     <li>#88 TRENDEN — vi mäter var minut men använder bara sista värdet <span class="litet">· Claude, låst</span></li>
   </ul>

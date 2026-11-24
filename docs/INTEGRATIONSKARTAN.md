@@ -82,7 +82,7 @@ ligger på +1…+3 °C, har fallit minst 0,8 °C på 30 minuter och mätaren set
 <!-- LÄGESRADER §4: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 *Läget i projektkartan:*
 
-- [Trafikverkets väderstationer](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-k-vader): delvis, 89 % · kvar: Mätpunkter utan lufttemperatur vaktas inte (kort #344, #345): avgjort 14/10, ingen ändring nu, frågan tas upp inför 2027/28 (bedömningen §4.2). Mätt mot kandidatens veto 20/10: tre fjärrytor vetade 16 punkter på 9 sträcktimmar 17–20/10 och tystade ingen fuktig sträcka (DB-knappen 39415616056)
+- [Trafikverkets väderstationer](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-k-vader): klar
 - [Trafikverkets väglag (RoadCondition)](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-k-vaglag): klar
 - [Trafikverkets olyckor, djur och hinder](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-k-situation): klar
 - [Publiceringen var tionde minut](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-l-publicera): klar
