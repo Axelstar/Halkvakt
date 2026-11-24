@@ -147,6 +147,37 @@ class AutostartControllerTest {
         assertEquals(false, s.drive(0, 40 * 60, 13.0).first)
     }
 
+    // GPS-kvalitet: indoors after the drive the positions come from wifi, one every ten seconds, and move 300 m every forty seconds
+    // (18 km/h over the window). They move the clock and nothing else: the guard stops on one of them when the quarter is up.
+    @Test fun poorFixesJumpingIndoorsDoNotKeepTheGuardAlive() {
+        val s = IdleStop()
+        val (_, lat) = s.drive(0, 300, 50.0)
+        var stoppedAt = -1
+        for (sec in 310..300 + 30 * 60 step 10) {
+            if (s.onFix(sec * 1000L, 13.0, lat + if (sec / 40 % 2 == 0) 0.0027 else 0.0, exact = false)) { stoppedAt = sec; break }
+        }
+        assertTrue(stoppedAt in 300 + 15 * 60..300 + 16 * 60 + 10, "stopped at $stoppedAt")
+    }
+
+    @Test fun theSameJumpsAsExactFixesDidKeepItAlive() {   // the counter-proof: what the rule was before
+        val s = IdleStop()
+        val (_, lat) = s.drive(0, 300, 50.0)
+        var stopped = false
+        for (sec in 310..300 + 30 * 60 step 10) {
+            stopped = s.onFix(sec * 1000L, 13.0, lat + if (sec / 40 % 2 == 0) 0.0027 else 0.0)
+            if (stopped) break
+        }
+        assertEquals(false, stopped)
+    }
+
+    @Test fun poorFixesInATunnelThenAnExactOneCountsAsDriving() {
+        val s = IdleStop()
+        s.drive(0, 60, 80.0)
+        for (sec in 61..61 + 10 * 60 step 5) assertEquals(false, s.onFix(sec * 1000L, 13.0, 55.6, exact = false))
+        assertEquals(false, s.onFix(61_000L + 14 * 60_000L, 13.0, 55.7))
+        assertEquals(false, s.onFix(61_000L + 20 * 60_000L, 13.0, 55.7))
+    }
+
     @Test fun aTunnelGapCountsAsDriving() {
         val s = IdleStop()
         s.drive(0, 60, 80.0)

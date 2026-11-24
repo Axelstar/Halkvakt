@@ -506,6 +506,43 @@ const scenarios: Scenario[] = [
     trace: northTrace(180, 80).map((f) => ({ ...f, altitudeM: 1400 })),
   },
   {
+    file: "v78_gps_noggrannhet_65_tiger", name: "GPS-kvalitet: 65 m noggrannhet utvärderas inte",
+    description:
+      "v01:s körning (80 km/h, kamera 3 km fram) där varje fix bär noggrannheten 65 m — det värde en iPhone anger för ett " +
+      "läge ur wifi. Sämre än 50 m ⇒ tyst hela vägen: läget är inte en bils GPS-läge.",
+    hazards: [{ id: "cam1", kind: "camera", lon: LON0, lat: northOf(3000), bearing: 180 }],
+    trace: northTrace(180, 80).map((f) => ({ ...f, accuracyM: 65 })),
+  },
+  {
+    file: "v79_gps_noggrannhet_40_talar", name: "GPS-kvalitet: 40 m noggrannhet utvärderas",
+    description:
+      "Samma som v78 med 40 m. Bättre än 50 ⇒ kameran talar som i v01: t=113 vid 488 m (t=112 låg 511 m — marginal " +
+      "10,5 m före / 11,7 m efter gränsen 500 m, uppmätt). Låser gränsen mellan 40 och 65. En fix utan noggrannhet " +
+      "utvärderas alltid: det är alla andra vektorer.",
+    hazards: [{ id: "cam1", kind: "camera", lon: LON0, lat: northOf(3000), bearing: 180 }],
+    trace: northTrace(180, 80).map((f) => ({ ...f, accuracyM: 40 })),
+  },
+  {
+    file: "v80_gps_daligt_lage_lamnar_inget_spar", name: "GPS-kvalitet: ett dåligt läge lämnar inget spår i motorn",
+    description:
+      "v01:s körning med 10 m noggrannhet, utom fixen t=112: den ligger 600 m österut med 300 m noggrannhet (ett läge ur " +
+      "mobilmasten mitt i körningen). Fixen kastas innan motorn rör sitt minne, så t=113 räknar fart och kurs ur t=111 " +
+      "(44,4 m på 2 s ⇒ 80 km/h, kurs 0) och kameran talar t=113 vid 488 m, som i v01. Hade det dåliga läget fått bli " +
+      "förra fixen hade t=113 räknat 600 m på en sekund, rakt västerut.",
+    hazards: [{ id: "cam1", kind: "camera", lon: LON0, lat: northOf(3000), bearing: 180 }],
+    trace: northTrace(180, 80).map((f) => (f.t === 112 ? { ...f, lon: eastOf(600), accuracyM: 300 } : { ...f, accuracyM: 10 })),
+  },
+  {
+    file: "v81_gps_hopp_inomhus_halka_tiger", name: "GPS-kvalitet: hopp inomhus väcker ingen halkvarning",
+    description:
+      "Telefonen ligger stilla inomhus. Lägena kommer ur wifi var femte sekund, utan fart och kurs, med 65 m noggrannhet, " +
+      "och hoppar 150 m norrut och tillbaka. Motorn hade räknat hoppet som 108 km/h rakt norrut, och isstationen ligger " +
+      "400 m norr om telefonen: utan noggrannheten i fixen talar halkvarningen t=5 vid 250 m (uppmätt med fältet " +
+      "borttaget). Med den ⇒ tyst.",
+    hazards: [{ id: "wx1", kind: "icing_point", lon: LON0, lat: northOf(400), meta: { surfaceTempC: -1, moisture: true } }],
+    trace: Array.from({ length: 13 }, (_, i) => ({ t: i * 5, lon: LON0, lat: northOf(i % 2 === 1 ? 150 : 0), accuracyM: 65 })),
+  },
+  {
     file: "v36_lead_min_400m", name: "Kortaste förvarningen: 400 m även i låg fart (#212)",
     description:
       "40 km/h (11,1 m/s ⇒ 30 s = 333 m) mot isstation 1 017 m fram. Förvarningen klampas till golvet 400 m: " +

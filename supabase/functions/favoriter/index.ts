@@ -118,6 +118,10 @@ export interface Fix {
   /** Optional: metres above sea level, sent only when the platform says the value is valid (iOS verticalAccuracy > 0, Android
    *  hasAltitude()). Used for one thing: a phone above maxAltitudeM is not in a car. */
   altitudeM?: number;
+  /** Optional: the radius of uncertainty of the position in metres, as the phone reports it (iOS horizontalAccuracy, Android
+   *  accuracy). A fix worse than maxAccuracyM is not a car's GPS position and is dropped. The apps always send it; the shadow
+   *  engine and the vectors without it are evaluated as before. */
+  accuracyM?: number;
 }
 
 export interface Alert {
@@ -146,6 +150,11 @@ export interface EngineConfig {
    *  altitude being measured from the ellipsoid (20–40 m above sea level in Sweden) and the error of a GPS altitude. */
   maxSpeedKmh: number;
   maxAltitudeM: number;
+  /** GPS-kvalitet: a fix whose reported accuracy is worse than this is dropped before the engine touches its memory. Proposed
+   *  start value, not yet a decision: 50 m lies below what a phone reports for a position from wifi (an iPhone says 65 m) or
+   *  from the cell mast (hundreds of metres), and above a car's GPS in a city street (10–30 m). It is an eighth of the
+   *  shortest lead (400 m). */
+  maxAccuracyM: number;
   globalCooldownS: number;      // max 1 spoken alert per this window — hard, no exceptions
   repeatMinS: number;           // same hazard silent for at least this long ...
   repeatMinM: number;           // ... AND until this much further driven (both must have elapsed)
@@ -201,6 +210,7 @@ export const DEFAULT_CONFIG: EngineConfig = {
   minSpeedKmh: 15,
   maxSpeedKmh: 160,
   maxAltitudeM: 1500,
+  maxAccuracyM: 50,
   // 10 s (var 45 t.o.m. 13/9, #127): härlett ur kamerornas minimidistans i samma
   // riktning — 520 m ⇒ 15,6 s vid 120 km/h. Spärren är dessutom prioritetsmedveten nu.
   globalCooldownS: 10,

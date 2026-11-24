@@ -87,6 +87,10 @@ fun isCarClass(deviceClass: Int?): Boolean = deviceClass == 0x0420 || deviceClas
  * A gap longer than the window (tunnel, lost GPS) is measured over the whole gap, so a car that came out of a
  * tunnel 3 km on has driven. Trade-off said out loud: a queue that averages under 12 km/h for fifteen whole
  * minutes stops the guard; autostart wakes it again when the drive resumes.
+ *
+ * GPS-kvalitet: a fix whose position is not a car's GPS position (`exact` false: wifi or cell mast, indoors) only moves the
+ * clock. Its jump is never a displacement, so poor fixes cannot keep the guard alive, and the guard still stops on them when
+ * the fifteen minutes are up. The next exact fix is measured against the last exact one, like a tunnel gap.
  */
 class IdleStop(
     private val afterMs: Long = AFTER_MS,
@@ -97,9 +101,10 @@ class IdleStop(
     private val recent = ArrayDeque<P>()
     private var lastDroveMs = -1L
 
-    /** true = stop now. The clock starts at the first fix. */
-    fun onFix(timeMs: Long, lon: Double, lat: Double): Boolean {
+    /** true = stop now. The clock starts at the first fix. [exact] false = time passes, the position is not used. */
+    fun onFix(timeMs: Long, lon: Double, lat: Double, exact: Boolean = true): Boolean {
         if (lastDroveMs < 0) lastDroveMs = timeMs
+        if (!exact) return timeMs - lastDroveMs >= afterMs
         recent.addLast(P(timeMs, lon, lat))
         // Keep recent.first() as the newest fix that is at least windowMs old (or the oldest we have).
         while (recent.size >= 2 && timeMs - recent[1].t >= windowMs) recent.removeFirst()

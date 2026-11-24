@@ -95,6 +95,9 @@ data class Fix(
     /** Metres above sea level, only when the platform says the value is valid (Location.hasAltitude()). A phone above
      *  maxAltitudeM is not in a car. */
     val altitudeM: Double? = null,
+    /** The radius of uncertainty of the position in metres (Location.accuracy when hasAccuracy()). A fix worse than
+     *  maxAccuracyM is not a car's GPS position and is dropped. */
+    val accuracyM: Double? = null,
 )
 
 data class Alert(
@@ -114,6 +117,9 @@ data class EngineConfig(
     // and the step is silent. Proposed start values — the same numbers as engine/src/types.ts (kontraktsgrinden).
     val maxSpeedKmh: Double = 160.0,
     val maxAltitudeM: Double = 1500.0,
+    // GPS-kvalitet: a fix whose reported accuracy is worse than this is dropped. Proposed start value — the same number as
+    // engine/src/types.ts (kontraktsgrinden).
+    val maxAccuracyM: Double = 50.0,
     val globalCooldownS: Double = 10.0,   // #127: var 45; prioritetsmedveten nu
     val repeatMinS: Double = 600.0,
     val repeatMinM: Double = 5000.0,

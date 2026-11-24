@@ -190,6 +190,8 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
     )
 
     fun step(fix: Fix): Alert? {
+        // GPS-kvalitet: a position this uncertain is not a car's GPS position. Dropped before anything is remembered.
+        if ((fix.accuracyM ?: 0.0) > cfg.maxAccuracyM) return null
         val (speedKmh, headingDeg) = kinematics(fix)
         prevFix?.let { odometerM += Geo.haversineM(it.lon, it.lat, fix.lon, fix.lat) }
         prevFix = fix

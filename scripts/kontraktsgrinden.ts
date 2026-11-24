@@ -582,6 +582,13 @@ export const KONTRAKT: Kontrakt[] = [
     golv: 3,
   },
   {
+    namn: "GPS-kvalitet — sämre noggrannhet än så här många meter utvärderas inte",
+    varfor: "Motorns tre portar ska kasta samma lägen; en port med högre gräns varnar på ett läge ur wifi eller mobilmasten där de andra tiger.",
+    former: [/\bmaxAccuracyM(?::\s*\w+)?\s*[:=]\s*(\d+)(?:\.0)?(?![\d.])/],
+    filer: /engine\/src\/types\.ts|engine\/Types\.kt|HalkvaktEngine\/Engine\.swift/,
+    golv: 3,
+  },
+  {
     namn: "Småvägsröstens vägtest — så här många meter från linjen mellan två grannpunkter",
     varfor: "Motorns tre portar ska känna igen samma småväg (DECISIONS #844); en port med vidare marginal varnar för vägar bredvid den bilen kör på.",
     former: [/\bsmavagPaM(?::\s*\w+)?\s*[:=]\s*(\d+)(?:\.0)?(?![\d.])/],
@@ -958,6 +965,12 @@ export const KONTRAKT: Kontrakt[] = [
     namn: "Självstoppet — bilfarten (km/h i snitt över fönstret) som startar om klockan",
     varfor: "Driver talen isär stoppar iPhone och Android vakten efter olika regler, och fältrapporterna går inte att jämföra.",
     former: [/const val DRIVING_KMH = ([\d.]+)/, /static let drivingKmh = ([\d.]+)/],
+    golv: 2,
+  },
+  {
+    namn: "GPS-kvalitet — ett läge äldre än så här många sekunder utvärderas inte",
+    varfor: "Driver talen isär varnar den ena appen på ett gammalt läge som den andra kastar.",
+    former: [/const val MAX_FIX_AGE_MS = (\d+)_000L/, /static let maxFixAgeS: TimeInterval = (\d+)/],
     golv: 2,
   },
   {

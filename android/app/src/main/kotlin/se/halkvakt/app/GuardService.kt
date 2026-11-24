@@ -16,6 +16,7 @@ import android.os.BatteryManager
 import android.os.Build
 import android.os.IBinder
 import android.os.Looper
+import android.os.SystemClock
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import com.google.android.gms.location.*
@@ -208,30 +209,40 @@ class GuardService : Service() {
 
         override fun onLocationResult(result: LocationResult) {
             val loc = result.lastLocation ?: return
-            if (!prevLon.isNaN()) {
+            // GPS-kvalitet: only a fresh position with a known accuracy inside the engine's limit is a car's GPS position. A
+            // position from wifi or the cell mast (indoors, in a pocket) jumps hundreds of metres, and a jump is neither a
+            // driven distance nor a displacement for the idle stop.
+            val fresh = SystemClock.elapsedRealtimeNanos() - loc.elapsedRealtimeNanos <= MAX_FIX_AGE_MS * 1_000_000L
+            val exact = fresh && loc.hasAccuracy() && loc.accuracy <= EngineConfig().maxAccuracyM
+            if (exact && !prevLon.isNaN()) {
                 val d = Geo.haversineM(prevLon, prevLat, loc.longitude, loc.latitude)
                 if (d < 500) session.value = session.value.let { it.copy(
                     km = it.km + d / 1000.0, lon = loc.longitude, lat = loc.latitude) }
                 else session.value = session.value.copy(lon = loc.longitude, lat = loc.latitude)
             } else session.value = session.value.copy(lon = loc.longitude, lat = loc.latitude)
-            prevLon = loc.longitude; prevLat = loc.latitude
+            if (exact) { prevLon = loc.longitude; prevLat = loc.latitude }
             if (loc.hasAccuracy()) Favoriter.lager(this@GuardService).fix(loc.longitude, loc.latitude)   // kort #357
             loadSnapshotAsync()   // the schedule decides; most fixes start nothing
+            if (!fresh) return   // GPS-kvalitet: an old position says where the car was, not where it is
             val fix = Fix(
                 t = loc.time / 1000.0,
                 lon = loc.longitude, lat = loc.latitude,
                 speedKmh = if (loc.hasSpeed()) loc.speed * 3.6 else null,
                 headingDeg = if (loc.hasBearing()) bearingToDouble(loc.bearing) else null,
                 altitudeM = if (loc.hasAltitude()) loc.altitude else null,   // ej bil: the engine is silent above its maxAltitudeM
+                accuracyM = if (loc.hasAccuracy()) loc.accuracy.toDouble() else null,
             )
-            if (idleStop.onFix(loc.time, fix.lon, fix.lat)) {
+            if (idleStop.onFix(loc.time, fix.lon, fix.lat, exact)) {
                 AlertBus.post("Stillastående en kvart — vakten stoppar själv.")
                 AutostartManager.clearAutoStarted(this@GuardService)
                 stoppOrsak = "parkerad"   // #787
                 stopSelf()
                 return
             }
-            guard?.onLocation(fix)
+            // GPS-kvalitet: no warning decision on a poor position, and none without the phone's own speed. Without it the
+            // engine works the speed and the heading out of the jump between two positions (kept for the vectors and the
+            // shadow engine).
+            if (exact && loc.hasSpeed()) guard?.onLocation(fix)
             retuneCadence(fix.lon, fix.lat, fix.speedKmh)
             // S4: facit skickas när bilen står stilla (≥ 30 s under 3 km/h), en gång per stopp — aldrig under körning.
             val still = (fix.speedKmh ?: 99.0) < 3.0
@@ -462,6 +473,8 @@ class GuardService : Service() {
         private const val HEADS_UP_ID = 2
         private const val HEADS_UP_MS = 8_000L  // samma 8 s som helskärmskortet
         private const val FAVORIT_STILLA_MS = 10 * 60 * 1000L   // Favoriter 2a (#817), samma tio minuter som iOS
+        // GPS-kvalitet: a position older than this is not evaluated. Proposed start value, the same as iOS maxFixAgeS (kontraktsgrinden).
+        private const val MAX_FIX_AGE_MS = 10_000L
         private const val IDLE_TEXT = "Halkvakt vaktar — inga varningar just nu"
         /** Null = rösten fungerar. Annars raden som visas på Redo och under Rösten. */
         val voiceProblem = MutableStateFlow<String?>(null)
