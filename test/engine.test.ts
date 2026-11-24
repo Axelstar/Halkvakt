@@ -122,6 +122,18 @@ test("vectors cover every discipline rule", () => {
   assert.equal(silent.expected.length, 0);
 });
 
+// Ej bil: a phone that cannot be in a car is silent. Checked on the frozen log itself, so a vector regenerated with the gate
+// removed cannot bless a spoken warning at 165 km/h or 1 600 m — and the two neighbours prove the gate is not just silence.
+test("ej bil: too fast or too high is silent, just inside the limits speaks", () => {
+  const ejBil = vectorFiles.filter((f) => f.includes("_ej_bil_"));
+  assert.equal(ejBil.length, 5);
+  for (const f of ejBil) {
+    const v = loadVector(f);
+    if (f.endsWith("_tiger.json")) assert.equal(v.expected.length, 0, `${f}: must be silent`);
+    else assert.equal(v.expected.length, 1, `${f}: must speak once`);
+  }
+});
+
 test("real Skåne snapshot: only camera alerts in August, throttle respected", () => {
   const got = new AlertEngine(fixture.hazards).run(fixture.trace);
   assert.deepStrictEqual(got, fixture.expected);

@@ -450,6 +450,51 @@ const scenarios: Scenario[] = [
     trace: Array.from({ length: 61 }, (_, t) => ({ t, lon: LON0, lat: northOf(t * (16 * 1000) / 3600), speedKmh: 16, headingDeg: 0 })),
   },
   {
+    file: "v70_ej_bil_fart_165_tiger", name: "Ej bil: 165 km/h utvärderas inte",
+    description:
+      "Telefonen rapporterar 165 km/h och kurs 0. Kamera 1 500 m rakt fram, och bilen passerar den. Över 160 ⇒ tyst: " +
+      "så fort kör ingen bil på en svensk väg (högsta gränsen är 120), men ett snabbtåg och ett flygplan gör det.",
+    hazards: [{ id: "cam1", kind: "camera", lon: LON0, lat: northOf(1500), bearing: 180 }],
+    trace: Array.from({ length: 61 }, (_, t) => ({ t, lon: LON0, lat: northOf(t * (165 * 1000) / 3600), speedKmh: 165, headingDeg: 0 })),
+  },
+  {
+    file: "v71_ej_bil_fart_155_talar", name: "Ej bil: 155 km/h utvärderas",
+    description:
+      "Samma som v70 i 155 km/h. Under 160 ⇒ kameran talar t=24 vid 466 m (t=23 låg 509 m — marginal 9,2 m före / " +
+      "33,9 m efter gränsen 500 m, uppmätt). Låser högsta farten mellan 155 och 165.",
+    hazards: [{ id: "cam1", kind: "camera", lon: LON0, lat: northOf(1500), bearing: 180 }],
+    trace: Array.from({ length: 61 }, (_, t) => ({ t, lon: LON0, lat: northOf(t * (155 * 1000) / 3600), speedKmh: 155, headingDeg: 0 })),
+  },
+  {
+    file: "v72_ej_bil_flygfart_utan_fartvarde_tiger", name: "Ej bil: flygfart utan fartvärde tiger",
+    description:
+      "250 km/h norrut (ett trafikflygplans fart vid start och landning) UTAN fartvärde, kurs och höjd från telefonen: " +
+      "motorn räknar farten ur två fixar (69,4 m/s ⇒ 250 km/h, 90 över gränsen). Kamera 1 500 m och isstation 4 000 m " +
+      "rakt fram, båda passeras. Tyst hela vägen: gränsen gäller också den uträknade farten.",
+    hazards: [
+      { id: "cam1", kind: "camera", lon: LON0, lat: northOf(1500), bearing: 180 },
+      { id: "wx1", kind: "icing_point", lon: LON0, lat: northOf(4000), meta: { surfaceTempC: -1, moisture: true } },
+    ],
+    trace: northTrace(90, 250),
+  },
+  {
+    file: "v73_ej_bil_hojd_1600_tiger", name: "Ej bil: 1 600 m över havet utvärderas inte",
+    description:
+      "v01:s körning (80 km/h, kamera 3 km fram) med höjden 1 600 m i varje fix. Över 1 500 m ⇒ tyst: Sveriges högsta " +
+      "allmänna väg ligger under 1 000 m. Farten är en bils, så det är höjden ensam som tystar.",
+    hazards: [{ id: "cam1", kind: "camera", lon: LON0, lat: northOf(3000), bearing: 180 }],
+    trace: northTrace(180, 80).map((f) => ({ ...f, altitudeM: 1600 })),
+  },
+  {
+    file: "v74_ej_bil_hojd_1400_talar", name: "Ej bil: 1 400 m över havet utvärderas",
+    description:
+      "Samma som v73 på 1 400 m. Under 1 500 ⇒ kameran talar som i v01: t=113 vid 488 m (t=112 låg 511 m — marginal " +
+      "10,5 m före / 11,7 m efter gränsen 500 m, uppmätt). Låser högsta höjden mellan " +
+      "1 400 och 1 600. En fix utan höjd utvärderas alltid: det är alla andra vektorer.",
+    hazards: [{ id: "cam1", kind: "camera", lon: LON0, lat: northOf(3000), bearing: 180 }],
+    trace: northTrace(180, 80).map((f) => ({ ...f, altitudeM: 1400 })),
+  },
+  {
     file: "v36_lead_min_400m", name: "Kortaste förvarningen: 400 m även i låg fart (#212)",
     description:
       "40 km/h (11,1 m/s ⇒ 30 s = 333 m) mot isstation 1 017 m fram. Förvarningen klampas till golvet 400 m: " +

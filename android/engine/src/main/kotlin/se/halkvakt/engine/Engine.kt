@@ -197,6 +197,8 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
         if (headingDeg != null) lastHeadingDeg = headingDeg
 
         if (speedKmh == null || speedKmh < cfg.minSpeedKmh) return null
+        // Ej bil: faster than any car on a Swedish road, or higher than any Swedish road ⇒ a plane or a fast train. Silent.
+        if (speedKmh > cfg.maxSpeedKmh || (fix.altitudeM ?: 0.0) > cfg.maxAltitudeM) return null
         val heading = lastHeadingDeg ?: return null
 
         val speedMps = speedKmh * 1000.0 / 3600.0
