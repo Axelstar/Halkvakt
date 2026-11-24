@@ -47,6 +47,39 @@ final class IdleStopTests: XCTestCase {
         XCTAssertFalse(drive(&s, 0, 40 * 60, kmh: 13).0)
     }
 
+    // GPS-kvalitet: indoors after the drive the positions come from wifi, one every ten seconds, and move 300 m every forty seconds
+    // (18 km/h over the window). They move the clock and nothing else: the guard stops on one of them when the quarter is up.
+    func testPoorFixesJumpingIndoorsDoNotKeepTheGuardAlive() {
+        var s = IdleStop()
+        let (_, lat) = drive(&s, 0, 300, kmh: 50)
+        var stoppedAt = -1
+        for sec in stride(from: 310, through: 300 + 30 * 60, by: 10) {
+            if s.onFix(t: TimeInterval(sec), lon: 13.0, lat: lat + (sec / 40 % 2 == 0 ? 0.0027 : 0), exact: false) { stoppedAt = sec; break }
+        }
+        XCTAssert((300 + 15 * 60)...(300 + 16 * 60 + 10) ~= stoppedAt, "stopped at \(stoppedAt)")
+    }
+
+    func testTheSameJumpsAsExactFixesDidKeepItAlive() {   // the counter-proof: what the rule was before
+        var s = IdleStop()
+        let (_, lat) = drive(&s, 0, 300, kmh: 50)
+        var stopped = false
+        for sec in stride(from: 310, through: 300 + 30 * 60, by: 10) {
+            stopped = s.onFix(t: TimeInterval(sec), lon: 13.0, lat: lat + (sec / 40 % 2 == 0 ? 0.0027 : 0))
+            if stopped { break }
+        }
+        XCTAssertFalse(stopped)
+    }
+
+    func testPoorFixesInATunnelThenAnExactOneCountsAsDriving() {
+        var s = IdleStop()
+        _ = drive(&s, 0, 60, kmh: 80)
+        for sec in stride(from: 61, through: 61 + 10 * 60, by: 5) {
+            XCTAssertFalse(s.onFix(t: TimeInterval(sec), lon: 13.0, lat: 55.6, exact: false))
+        }
+        XCTAssertFalse(s.onFix(t: 61 + 14 * 60, lon: 13.0, lat: 55.7))
+        XCTAssertFalse(s.onFix(t: 61 + 20 * 60, lon: 13.0, lat: 55.7))
+    }
+
     func testATunnelGapCountsAsDriving() {
         var s = IdleStop()
         _ = drive(&s, 0, 60, kmh: 80)
