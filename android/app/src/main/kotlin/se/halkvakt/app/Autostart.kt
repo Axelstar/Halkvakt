@@ -27,8 +27,10 @@ class AutostartController(learnedCars: Set<String> = emptySet(), autoStarted: Bo
     fun learnedCars(): Set<String> = cars.toSet()
     fun isAutoStarted(): Boolean = autoStarted
 
-    fun onVehicleEnter(): AutoCmd {
-        autoStarted = true
+    // A guard that already runs was started by hand, or by an earlier event whose flag is already set: START is then a
+    // no-op in the glue, and setting the flag here let the next exit or disconnect stop a hand-started guard.
+    fun onVehicleEnter(guardRunning: Boolean): AutoCmd {
+        if (!guardRunning) autoStarted = true
         return AutoCmd.START
     }
 
@@ -40,7 +42,7 @@ class AutostartController(learnedCars: Set<String> = emptySet(), autoStarted: Bo
 
     fun onAclConnected(address: String, guardRunning: Boolean): AutoCmd {
         if (address in cars) {
-            autoStarted = true
+            if (!guardRunning) autoStarted = true
             return AutoCmd.START
         }
         if (guardRunning) {

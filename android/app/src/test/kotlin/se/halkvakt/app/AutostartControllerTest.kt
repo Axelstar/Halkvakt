@@ -10,7 +10,7 @@ class AutostartControllerTest {
 
     @Test fun vehicleEnterStarts_exitStops() {
         val c = AutostartController()
-        assertEquals(AutoCmd.START, c.onVehicleEnter())
+        assertEquals(AutoCmd.START, c.onVehicleEnter(guardRunning = false))
         assertEquals(AutoCmd.STOP, c.onVehicleExit())
     }
 
@@ -18,6 +18,16 @@ class AutostartControllerTest {
         val c = AutostartController()
         // Guard was started by hand in the UI; AR later claims we exited a vehicle.
         assertEquals(AutoCmd.NONE, c.onVehicleExit())
+    }
+
+    /** The rule at the top of Autostart.kt: an event that meets a guard already running by hand must not claim it. */
+    @Test fun aHandStartedGuardIsNotClaimedByALaterEvent() {
+        val c = AutostartController(learnedCars = setOf("AA:BB"))
+        assertEquals(AutoCmd.START, c.onVehicleEnter(guardRunning = true))
+        assertEquals(AutoCmd.START, c.onAclConnected("AA:BB", guardRunning = true))
+        assertEquals(false, c.isAutoStarted())
+        assertEquals(AutoCmd.NONE, c.onVehicleExit())
+        assertEquals(AutoCmd.NONE, c.onAclDisconnected("AA:BB"))
     }
 
     @Test fun knownCarConnectingStartsInstantly() {
@@ -42,7 +52,7 @@ class AutostartControllerTest {
 
     @Test fun unknownDeviceDisconnectNeverStops() {
         val c = AutostartController(learnedCars = setOf("AA:BB"))
-        c.onVehicleEnter()
+        c.onVehicleEnter(guardRunning = false)
         assertEquals(AutoCmd.NONE, c.onAclDisconnected("DE:AD"))
     }
 
@@ -57,7 +67,7 @@ class AutostartControllerTest {
     @Test fun fullCommute_btFirstThenArBackup() {
         val c = AutostartController(learnedCars = setOf("CA:FE"))
         assertEquals(AutoCmd.START, c.onAclConnected("CA:FE", guardRunning = false))
-        assertEquals(AutoCmd.START, c.onVehicleEnter())      // AR arrives late: idempotent start
+        assertEquals(AutoCmd.START, c.onVehicleEnter(guardRunning = true))   // AR arrives late: idempotent start
         assertEquals(AutoCmd.STOP, c.onAclDisconnected("CA:FE"))
         assertEquals(AutoCmd.NONE, c.onVehicleExit())        // already stopped: no double stop
     }
@@ -68,7 +78,7 @@ class AutostartControllerTest {
         assertEquals(AutoCmd.START, first.onAclConnected("AA:BB", guardRunning = false))
         val second = AutostartController(first.learnedCars(), first.isAutoStarted())
         assertEquals(AutoCmd.STOP, second.onAclDisconnected("AA:BB"))
-        val third = AutostartController(autoStarted = AutostartController().also { it.onVehicleEnter() }.isAutoStarted())
+        val third = AutostartController(autoStarted = AutostartController().also { it.onVehicleEnter(guardRunning = false) }.isAutoStarted())
         assertEquals(AutoCmd.STOP, third.onVehicleExit())
     }
 
