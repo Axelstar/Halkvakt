@@ -64,7 +64,8 @@ final class VectorTests: XCTestCase {
                 lon: (f["lon"] as! NSNumber).doubleValue,
                 lat: (f["lat"] as! NSNumber).doubleValue,
                 speedKmh: (f["speedKmh"] as? NSNumber)?.doubleValue,
-                headingDeg: (f["headingDeg"] as? NSNumber)?.doubleValue)
+                headingDeg: (f["headingDeg"] as? NSNumber)?.doubleValue,
+                altitudeM: (f["altitudeM"] as? NSNumber)?.doubleValue)
         }
         let updates: [(Double, [Hazard])] = (doc["updates"] as? [[String: Any]] ?? []).map { o in
             ((o["atT"] as! NSNumber).doubleValue, (o["hazards"] as! [[String: Any]]).map(parseHazard))

@@ -1,0 +1,443 @@
+{
+ "name": "Ej bil: 165 km/h utvärderas inte",
+ "description": "Telefonen rapporterar 165 km/h och kurs 0. Kamera 1 500 m rakt fram, och bilen passerar den. Över 160 ⇒ tyst: så fort kör ingen bil på en svensk väg (högsta gränsen är 120), men ett snabbtåg och ett flygplan gör det.",
+ "hazards": [
+  {
+   "id": "cam1",
+   "kind": "camera",
+   "lon": 15,
+   "lat": 58.01347466762486,
+   "bearing": 180
+  }
+ ],
+ "trace": [
+  {
+   "t": 0,
+   "lon": 15,
+   "lat": 58,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 1,
+   "lon": 15,
+   "lat": 58.0004117259552,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 2,
+   "lon": 15,
+   "lat": 58.00082345191041,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 3,
+   "lon": 15,
+   "lat": 58.00123517786561,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 4,
+   "lon": 15,
+   "lat": 58.00164690382082,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 5,
+   "lon": 15,
+   "lat": 58.00205862977602,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 6,
+   "lon": 15,
+   "lat": 58.00247035573123,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 7,
+   "lon": 15,
+   "lat": 58.00288208168643,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 8,
+   "lon": 15,
+   "lat": 58.00329380764163,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 9,
+   "lon": 15,
+   "lat": 58.003705533596836,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 10,
+   "lon": 15,
+   "lat": 58.00411725955204,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 11,
+   "lon": 15,
+   "lat": 58.00452898550725,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 12,
+   "lon": 15,
+   "lat": 58.00494071146245,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 13,
+   "lon": 15,
+   "lat": 58.005352437417656,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 14,
+   "lon": 15,
+   "lat": 58.00576416337286,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 15,
+   "lon": 15,
+   "lat": 58.00617588932806,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 16,
+   "lon": 15,
+   "lat": 58.006587615283266,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 17,
+   "lon": 15,
+   "lat": 58.00699934123847,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 18,
+   "lon": 15,
+   "lat": 58.00741106719368,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 19,
+   "lon": 15,
+   "lat": 58.00782279314888,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 20,
+   "lon": 15,
+   "lat": 58.008234519104086,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 21,
+   "lon": 15,
+   "lat": 58.00864624505929,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 22,
+   "lon": 15,
+   "lat": 58.00905797101449,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 23,
+   "lon": 15,
+   "lat": 58.009469696969695,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 24,
+   "lon": 15,
+   "lat": 58.0098814229249,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 25,
+   "lon": 15,
+   "lat": 58.0102931488801,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 26,
+   "lon": 15,
+   "lat": 58.01070487483531,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 27,
+   "lon": 15,
+   "lat": 58.011116600790515,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 28,
+   "lon": 15,
+   "lat": 58.01152832674572,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 29,
+   "lon": 15,
+   "lat": 58.01194005270092,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 30,
+   "lon": 15,
+   "lat": 58.012351778656125,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 31,
+   "lon": 15,
+   "lat": 58.01276350461133,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 32,
+   "lon": 15,
+   "lat": 58.01317523056653,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 33,
+   "lon": 15,
+   "lat": 58.01358695652174,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 34,
+   "lon": 15,
+   "lat": 58.013998682476945,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 35,
+   "lon": 15,
+   "lat": 58.01441040843215,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 36,
+   "lon": 15,
+   "lat": 58.01482213438735,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 37,
+   "lon": 15,
+   "lat": 58.015233860342555,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 38,
+   "lon": 15,
+   "lat": 58.01564558629776,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 39,
+   "lon": 15,
+   "lat": 58.01605731225296,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 40,
+   "lon": 15,
+   "lat": 58.01646903820817,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 41,
+   "lon": 15,
+   "lat": 58.016880764163375,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 42,
+   "lon": 15,
+   "lat": 58.01729249011858,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 43,
+   "lon": 15,
+   "lat": 58.01770421607378,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 44,
+   "lon": 15,
+   "lat": 58.018115942028984,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 45,
+   "lon": 15,
+   "lat": 58.01852766798419,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 46,
+   "lon": 15,
+   "lat": 58.01893939393939,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 47,
+   "lon": 15,
+   "lat": 58.0193511198946,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 48,
+   "lon": 15,
+   "lat": 58.019762845849804,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 49,
+   "lon": 15,
+   "lat": 58.02017457180501,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 50,
+   "lon": 15,
+   "lat": 58.02058629776021,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 51,
+   "lon": 15,
+   "lat": 58.020998023715414,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 52,
+   "lon": 15,
+   "lat": 58.02140974967062,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 53,
+   "lon": 15,
+   "lat": 58.02182147562582,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 54,
+   "lon": 15,
+   "lat": 58.02223320158103,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 55,
+   "lon": 15,
+   "lat": 58.022644927536234,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 56,
+   "lon": 15,
+   "lat": 58.02305665349144,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 57,
+   "lon": 15,
+   "lat": 58.02346837944664,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 58,
+   "lon": 15,
+   "lat": 58.023880105401844,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 59,
+   "lon": 15,
+   "lat": 58.02429183135705,
+   "speedKmh": 165,
+   "headingDeg": 0
+  },
+  {
+   "t": 60,
+   "lon": 15,
+   "lat": 58.02470355731225,
+   "speedKmh": 165,
+   "headingDeg": 0
+  }
+ ],
+ "expected": []
+}

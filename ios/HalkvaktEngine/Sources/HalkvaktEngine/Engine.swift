@@ -70,8 +70,12 @@ public enum Hazard {
 public struct Fix {
     public let t: Double, lon: Double, lat: Double
     public let speedKmh: Double?, headingDeg: Double?
-    public init(t: Double, lon: Double, lat: Double, speedKmh: Double? = nil, headingDeg: Double? = nil) {
+    /// Metres above sea level, only when the platform says the value is valid (CLLocation.verticalAccuracy > 0). A phone above
+    /// maxAltitudeM is not in a car.
+    public let altitudeM: Double?
+    public init(t: Double, lon: Double, lat: Double, speedKmh: Double? = nil, headingDeg: Double? = nil, altitudeM: Double? = nil) {
         self.t = t; self.lon = lon; self.lat = lat; self.speedKmh = speedKmh; self.headingDeg = headingDeg
+        self.altitudeM = altitudeM
     }
 }
 
@@ -95,6 +99,10 @@ public struct Alert: Equatable {
 public struct EngineConfig {
     public var corridorHalfAngleDeg = 35.0
     public var minSpeedKmh = 15.0
+    // Ej bil: above this speed, or above this altitude when the fix carries one, the phone cannot be in a car on a Swedish road
+    // and the step is silent. Proposed start values — the same numbers as engine/src/types.ts (kontraktsgrinden).
+    public var maxSpeedKmh = 160.0
+    public var maxAltitudeM = 1500.0
     public var globalCooldownS = 10.0   // #127: var 45; prioritetsmedveten nu
     public var repeatMinS = 600.0
     public var repeatMinM = 5000.0
@@ -453,6 +461,8 @@ public final class AlertEngine {
         if let h = headingOpt { lastHeadingDeg = h }
 
         guard let speedKmh = speedKmhOpt, speedKmh >= cfg.minSpeedKmh else { return nil }
+        // Ej bil: faster than any car on a Swedish road, or higher than any Swedish road ⇒ a plane or a fast train. Silent.
+        if speedKmh > cfg.maxSpeedKmh || (fix.altitudeM ?? 0) > cfg.maxAltitudeM { return nil }
         guard let heading = lastHeadingDeg else { return nil }
 
         let speedMps = speedKmh * 1000 / 3600

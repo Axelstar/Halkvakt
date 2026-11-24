@@ -216,7 +216,11 @@ struct GridTests {
 
     /// Both paths side by side; every step's answer must be equal.
     static func runBoth(_ s: Scenario) throws -> [Alert] {
-        let g = AlertEngine(s.hazards, s.cfg), f = AlertEngine(s.hazards, s.cfg)
+        // No ej-bil speed limit here: the traces drive at up to 400 km/h to put the lead on its 3 000 m ceiling, and this file
+        // proves the grid, not that gate (the vectors v70–v74 do).
+        var cfg = s.cfg
+        cfg.maxSpeedKmh = .infinity
+        let g = AlertEngine(s.hazards, cfg), f = AlertEngine(s.hazards, cfg)
         f.bruteForce = true
         var alerts: [Alert] = []
         var u = 0

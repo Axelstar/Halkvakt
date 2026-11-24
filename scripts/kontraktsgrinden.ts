@@ -547,6 +547,20 @@ export const KONTRAKT: Kontrakt[] = [
     golv: 3,
   },
   {
+    namn: "Ej bil — över så här många km/h tiger motorn",
+    varfor: "Motorns tre portar ska tiga i samma fart; en port med högre gräns talar på ett snabbtåg eller i ett flygplan där de andra tiger.",
+    former: [/\bmaxSpeedKmh(?::\s*\w+)?\s*[:=]\s*(\d+)(?:\.0)?(?![\d.])/],
+    filer: /engine\/src\/types\.ts|engine\/Types\.kt|HalkvaktEngine\/Engine\.swift/,
+    golv: 3,
+  },
+  {
+    namn: "Ej bil — över så här många meter över havet tiger motorn",
+    varfor: "Motorns tre portar ska tiga på samma höjd; en port med högre gräns talar i ett flygplan där de andra tiger.",
+    former: [/\bmaxAltitudeM(?::\s*\w+)?\s*[:=]\s*(\d+)(?:\.0)?(?![\d.])/],
+    filer: /engine\/src\/types\.ts|engine\/Types\.kt|HalkvaktEngine\/Engine\.swift/,
+    golv: 3,
+  },
+  {
     namn: "Småvägsröstens vägtest — så här många meter från linjen mellan två grannpunkter",
     varfor: "Motorns tre portar ska känna igen samma småväg (DECISIONS #844); en port med vidare marginal varnar för vägar bredvid den bilen kör på.",
     former: [/\bsmavagPaM(?::\s*\w+)?\s*[:=]\s*(\d+)(?:\.0)?(?![\d.])/],

@@ -76,6 +76,9 @@ data class SmavagHazard(
 data class Fix(
     val t: Double, val lon: Double, val lat: Double,
     val speedKmh: Double? = null, val headingDeg: Double? = null,
+    /** Metres above sea level, only when the platform says the value is valid (Location.hasAltitude()). A phone above
+     *  maxAltitudeM is not in a car. */
+    val altitudeM: Double? = null,
 )
 
 data class Alert(
@@ -91,6 +94,10 @@ data class Alert(
 data class EngineConfig(
     val corridorHalfAngleDeg: Double = 35.0,
     val minSpeedKmh: Double = 15.0,
+    // Ej bil: above this speed, or above this altitude when the fix carries one, the phone cannot be in a car on a Swedish road
+    // and the step is silent. Proposed start values — the same numbers as engine/src/types.ts (kontraktsgrinden).
+    val maxSpeedKmh: Double = 160.0,
+    val maxAltitudeM: Double = 1500.0,
     val globalCooldownS: Double = 10.0,   // #127: var 45; prioritetsmedveten nu
     val repeatMinS: Double = 600.0,
     val repeatMinM: Double = 5000.0,
