@@ -19637,3 +19637,21 @@ Förregistreringen i #960 ändras inte.
 före påslaget hade annars gått förlorade).
 
 **Stomdokument:** MAT (var på sträckan i drift och läsningen 1/12), BED §4.2
+## #962 (24/11 2026) Vägnumren vid småvägsröstens vägar och storstädernas punkter, ur Trafikverkets öppna register (kort #678)
+**Beslut.** Bengt 24/11: *"då vill jag att du hämtar vägnummer på alla huvudvägar och småvägar"*, efter genomgången samma kväll som visade
+att inget vägnummer finns för småvägsröstens punkter. Väglagssträckorna bär redan Trafikverkets vägnummer (`road_conditions.road_number`),
+och kandidatens punkter får sitt ur sträckan (#739); de 12 960 väglagspunkterna fick sitt 13–14/10 (#553). Det som saknas är
+småvägsröstens vägar (`smavagspunkt.vag` är kuvösens löpnummer) och storstädernas punkter (`stadspunkt` bär gruppens id).
+- `sql/144`: tabellen `vagnummer_punkt`, ett svar per småvägsväg och per storstadspunkt: utfallet (*nummer*, *onumrerad*, *oenig*,
+  *fel*), huvudnumret, Europaväg och hur många punkter som frågades, svarade och var eniga. Inga lägen.
+- `ingest/vagnummer-punkter.ts` och flödet `vagnummer-punkter` (knapp, inte cron): NVDB Vägnummer i Trafikverkets öppna API (CC0) inom
+  25 m från punkten, som #553. En småvägsväg frågas vid upp till tre punkter spridda längs vägen och får det värde som mer än hälften
+  av svaren bär; två olika nummer vid en punkt räknas som oenigt, aldrig som en gissning. Föll fler än en tiondel av anropen lämnas
+  tabellen som den var. Punkterna är kuvösens (#768): loggen säger bara klart eller fel.
+- Rösten och appen rörs inte. Att säga numret är kort #661 och kräver ett eget beslut och Axels ord.
+
+**Alternativ.** Att koppla på NVDB-elementets id i kuvösens punktfil mot hela vägnummerregistret, som olycksvägarna gjorde (förkastat
+nu: punkterna i driften bär inte elementets id, och ett läge per punkt räcker). Att lägga numren i kuvösens punktfil (förkastat: numren
+är öppna data och hör till driftens rörarbete, #910).
+
+**Stomdokument:** SYS (vägnumren vid småvägarna och storstäderna), BED §4.2

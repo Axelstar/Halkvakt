@@ -231,6 +231,9 @@ export const SPANN: Record<string, [number, number, string]> = {
   "strackdel_olycka.yta": [-60, 60, "°C, skattad ur ankarna vid olyckan"],
   "strackdel_olycka.narm_km": [0, 50, "km till närmaste ankare (MAX_KM)"],
   "strackdel_olycka.ankare": [0, 5, "ankare i skattningen (K_NEIGHBOURS)"],
+  "vagnummer_punkt.huvudnummer": [1, 9999, "Trafikverkets huvudnummer (E4 = 4, länsvägar upp till fyra siffror; sql/144)"],
+  "vagnummer_punkt.fragade": [1, 3, "punkter frågade per nyckel (PER_VAG)"], "vagnummer_punkt.svar": [0, 3, "punkter som svarade"],
+  "vagnummer_punkt.lika": [0, 3, "svar som bar utfallets värde"],
   // The weekly report (körlistan D1, DECISIONS #951), born inspected. The counter's ceiling is the function's TAK_PER_DYGN, the
   // aggregates' bounds come from the population: 818 road stretches times 25 hours in a Swedish day, in one county and part of the day.
   "app_raknare.antal": [0, 100000, "händelser på ett dygn — app-raknares tak per dygn (TAK_PER_DYGN)"],
@@ -345,6 +348,7 @@ export const FLAGGOR: Record<string, string> = {
   "strackdel_timme.vinterord": "sträckans ord bär motorns halkord (is, snö, frost, modd …), inte bara klassen (sql/143)",
   "strackdel_olycka.vinterord": "A1:s sträcka bar motorns halkord vid starten (sql/143)",
   "strackdel_olycka.halkord": "olycksfacits halkord i texten vid fångsten eller efteråt — facit oberoende av stationen och A1 (sql/143)",
+  "vagnummer_punkt.europavag": "NVDB Vägnummer säger Europaväg (−1 i API:et; sql/144)",
 };
 /** Statusflaggor är bokföring, inte mätvärden: samma kategori som identifierarna. */
 export const STATUSFLAGGOR = new Set(["deleted"]);
@@ -578,7 +582,7 @@ const TID: Record<string, string> = {
   // without a time column and so scanned whole; and the daily aggregate (sql/128), born inspected.
   ny_kandidat_skugga_stad: "observed_at", ny_kandidat_skugga_stad_korning: "korning", olycksfacit_lager: "", sasongsfacit_stad_dag: "dag",
   // Fuktskuggan och basfrekvensen (sql/138, DECISIONS #940), födda besiktigade.
-  fuktskugga_timmar: "dag", fuktskugga_olycka: "dag", strackdel_timme: "timme", strackdel_olycka: "dag",
+  fuktskugga_timmar: "dag", fuktskugga_olycka: "dag", strackdel_timme: "timme", strackdel_olycka: "dag", vagnummer_punkt: "hamtad",
   // The weekly report (körlistan D1, DECISIONS #951): the counter and säsongsfacit's three tables, which were missing here, so their
   // fields were never scanned, not even as OBESIKTIGADE.
   app_raknare: "dag", lagesfil_dag: "dag", sasongsfacit_dag: "dag", sasongsfacit_ledtid: "dag", sasongsfacit_olyckor: "dag",
