@@ -48,7 +48,7 @@ data class WarningCard(
                     }
                 }
                 HazardKind.SLIPPERY_SEGMENT ->
-                    WarningCard(Icon.HALKA, null, "Halka", null, Distance.Words("FRAMFÖR DIG"), null, null, null, null, q)
+                    WarningCard(Icon.HALKA, null, halkrubrik(q), null, Distance.Words("FRAMFÖR DIG"), null, null, null, null, q)
                 HazardKind.ICING_POINT ->
                     if (meta?.bridge == true) {
                         // The voice says the bridge distance in metres ("bro om 1200 meter"), so the card does too.
@@ -77,6 +77,12 @@ data class WarningCard(
                         null, null, null, null, q)
             }
         }
+
+        /** A stretch's title on the card and in the lists (Axel 24/11): "Halkrisk" when the report names no ice, snow, frost, slush
+         *  or slipperiness (SegmentMeta.halkaRapporterad), otherwise "Halka". */
+        fun halkrubrik(rapporterad: Boolean): String = if (rapporterad) "Halka" else "Halkrisk"
+        /** The same title from what the voice said: the card and the history only have the line. */
+        fun halkrubrik(text: String): String = halkrubrik(text != Texts.HALKRISK_TEXT)
 
         /** "E18" stays "E18"; a bare number becomes "VÄG 25" — the same rule as the voice's roadPhrase. */
         fun roadSign(road: String?): String? {

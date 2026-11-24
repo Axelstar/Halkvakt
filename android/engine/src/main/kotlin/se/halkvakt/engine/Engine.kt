@@ -171,9 +171,8 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
     private var lastKandidatT: Double? = null
     private val fired = HashMap<String, Pair<Double, Double>>() // id -> (t, odometerM)
 
-    private val slipperyInfo = Regex("(?<![a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt)", RegexOption.IGNORE_CASE)
-    // Snow/frost also count inside compounds — "Nysnö", "Rimfrost" (kort #97). Mirrors engine.ts SLIPPERY_STAM.
-    private val slipperyStam = Regex("(snö|frost)", RegexOption.IGNORE_CASE)
+    private val slipperyInfo = Halkord.INFO
+    private val slipperyStam = Halkord.STAM
 
     /**
      * `alertKey` is what the repeat rules remember — normally the hazard id, but a SERIOUS
@@ -259,6 +258,7 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
             t = fix.t, hazardId = win.hazard.id, kind = win.kind,
             distanceM = Math.round(win.distM),
             text = if (win.beta && win.kind == HazardKind.ICING_POINT) Texts.EFTERHALKA_TEXT
+                   else if ((win.hazard as? SegmentHazard)?.meta?.halkaRapporterad == false) Texts.HALKRISK_TEXT
                    else Texts.alertText(win.kind, win.distM, ph, win.step),
             step = win.step,
             beta = win.beta,
