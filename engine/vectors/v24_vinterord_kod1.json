@@ -1,18 +1,18 @@
 {
  "name": "Vinterord på kod 1 — sammansättningarna talar, motåtgärderna tiger",
- "description": "Sju kod 1-segment (Trafikverket: Normalt), var och ett med ett ConditionInfo-ord, 1 km isär så varken spärren eller reprisregeln griper in. S8 (#52 före #45): 'Packad snö' på kod 1 MÅSTE larma. Kort #97 (Bengt 16/9): 'Rimfrost', 'Nysnö', 'Halkrisk' och 'Halt' tystnade av ordbörjansregeln och ska tala. 'Halkbekämpning' är en motåtgärd och 'fläckvis Våt' augustis falsklarm — båda tiger. Avstånden är förskjutna 11 m: på jämna kilometer låg gränsen 0,65 m från en fix (5-metersregeln), nu 10,3 m.",
+ "description": "Sju kod 1-segment (Trafikverket: Normalt), var och ett med ett ConditionInfo-ord, 1 km isär så varken spärren eller reprisregeln griper in. S8 (#52 före #45): 'Packad snö' på kod 1 MÅSTE larma. Kort #97 (Bengt 16/9): 'Rimfrost', 'Nysnö', 'Halkrisk' och 'Halt' tystnade av ordbörjansregeln och ska tala. 'Halkbekämpning' är en motåtgärd och 'fläckvis Våt' augustis falsklarm — båda tiger. Avstånden är förskjutna 11 m: på jämna kilometer låg gränsen 0,65 m från en fix (5-metersregeln), nu 10,3 m. VÄGTESTET (Skeppsbron 24/11): varje sträcka låg som en linje tvärs över vägen; nu ligger den 300 m längs bilens väg från samma avstånd (700 m till nästa, över halkzonens 500 m), så att orden och inte geometrin avgör. Samma varningar vid samma fixar.",
  "hazards": [
   {
    "id": "w1_packad_sno",
    "kind": "slippery_segment",
    "line": [
     [
-     14.99,
+     15,
      58.018065037729066
     ],
     [
-     15.01,
-     58.018065037729066
+     15,
+     58.020759971254044
     ]
    ],
    "meta": {
@@ -27,12 +27,12 @@
    "kind": "slippery_segment",
    "line": [
     [
-     14.99,
+     15,
      58.02704814947898
     ],
     [
-     15.01,
-     58.02704814947898
+     15,
+     58.02974308300395
     ]
    ],
    "meta": {
@@ -47,12 +47,12 @@
    "kind": "slippery_segment",
    "line": [
     [
-     14.99,
+     15,
      58.03603126122889
     ],
     [
-     15.01,
-     58.03603126122889
+     15,
+     58.03872619475386
     ]
    ],
    "meta": {
@@ -67,12 +67,12 @@
    "kind": "slippery_segment",
    "line": [
     [
-     14.99,
+     15,
      58.0450143729788
     ],
     [
-     15.01,
-     58.0450143729788
+     15,
+     58.047709306503776
     ]
    ],
    "meta": {
@@ -87,12 +87,12 @@
    "kind": "slippery_segment",
    "line": [
     [
-     14.99,
+     15,
      58.05399748472871
     ],
     [
-     15.01,
-     58.05399748472871
+     15,
+     58.05669241825368
     ]
    ],
    "meta": {
@@ -107,12 +107,12 @@
    "kind": "slippery_segment",
    "line": [
     [
-     14.99,
+     15,
      58.06298059647862
     ],
     [
-     15.01,
-     58.06298059647862
+     15,
+     58.065675530003595
     ]
    ],
    "meta": {
@@ -127,12 +127,12 @@
    "kind": "slippery_segment",
    "line": [
     [
-     14.99,
+     15,
      58.07196370822853
     ],
     [
-     15.01,
-     58.07196370822853
+     15,
+     58.0746586417535
     ]
    ],
    "meta": {

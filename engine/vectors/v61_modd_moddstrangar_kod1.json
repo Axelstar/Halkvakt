@@ -1,18 +1,18 @@
 {
  "name": "Moddsträngar på kod 1 talar: modden är halka (#915)",
- "description": "Bengt 20/11: 'lägg till ordet modd'. Ett kod 1-segment (Trafikverket: Normalt) vars enda ConditionInfo-ord är 'Moddsträngar', som Trafikverket skrev i drift 20/11 och som inget halkord fångade. Ordbörjan modd ⇒ halka på vägen framför vid t=61 (655 m). Samma geometri som v24:s w1, 2 011 m fram: förvarningen är 665,9 m, närmaste provpunkt framför låg 677,0 m bort vid t=60 och 654,8 m vid t=61, alltså 11,1 m på var sida (5-metersregeln, uppmätt med motorns haversine och provpunkter 20/11).",
+ "description": "Bengt 20/11: 'lägg till ordet modd'. Ett kod 1-segment (Trafikverket: Normalt) vars enda ConditionInfo-ord är 'Moddsträngar', som Trafikverket skrev i drift 20/11 och som inget halkord fångade. Ordbörjan modd ⇒ halka på vägen framför vid t=61 (655 m). Samma geometri som v24:s w1, 2 011 m fram: förvarningen är 665,9 m, närmaste provpunkt framför låg 677,0 m bort vid t=60 och 654,8 m vid t=61, alltså 11,1 m på var sida (5-metersregeln, uppmätt med motorns haversine och provpunkter 20/11). VÄGTESTET (Skeppsbron 24/11): sträckan ligger längs bilens väg från 2 011 m, inte tvärs över den; samma varning vid samma fix.",
  "hazards": [
   {
    "id": "m1_moddstrangar",
    "kind": "slippery_segment",
    "line": [
     [
-     14.99,
+     15,
      58.018065037729066
     ],
     [
-     15.01,
-     58.018065037729066
+     15,
+     58.020759971254044
     ]
    ],
    "meta": {

@@ -1,18 +1,18 @@
 {
  "name": "fläckvis Moddig vägbana på kod 1 talar (#915)",
- "description": "Som v61 med 'fläckvis Moddig vägbana', också det läst ur driften 20/11. Modd står efter ett mellanslag, så ordbörjan håller efter fläckvis, och 'is' inuti 'fläckvis' är fortfarande inget halkord (v24). Halka vid t=61 (655 m), samma marginaler som v61.",
+ "description": "Som v61 med 'fläckvis Moddig vägbana', också det läst ur driften 20/11. Modd står efter ett mellanslag, så ordbörjan håller efter fläckvis, och 'is' inuti 'fläckvis' är fortfarande inget halkord (v24). Halka vid t=61 (655 m), samma marginaler som v61. Längs bilens väg sedan vägtestet, som v61.",
  "hazards": [
   {
    "id": "m2_flackvis_moddig",
    "kind": "slippery_segment",
    "line": [
     [
-     14.99,
+     15,
      58.018065037729066
     ],
     [
-     15.01,
-     58.018065037729066
+     15,
+     58.020759971254044
     ]
    ],
    "meta": {

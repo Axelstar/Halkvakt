@@ -128,6 +128,10 @@ data class EngineConfig(
     // Halkzonen (DECISIONS #624): sträckor inom så här många meter är en zon för reprisregeln — samma tal som engine/src/types.ts
     // (kontraktsgrinden).
     val halkZonM: Double = 500.0,
+    // A1, vägtestet (Skeppsbron 24/11): en hal sträcka talar bara när bilen är inom så här många meter och grader från sträckans
+    // linje eller dess raka förlängning — samma tal som engine/src/types.ts (kontraktsgrinden).
+    val halkaPaM: Double = 80.0,
+    val halkaPaGrader: Double = 30.0,
     // S, vägtestet (DECISIONS #844): inom så här många meter och grader från linjen mellan två grannpunkter, så många fixar i rad;
     // grannar längre isär än smavagKordaMaxM har ingen linje — samma tal som engine/src/types.ts (kontraktsgrinden).
     val smavagPaM: Double = 80.0,

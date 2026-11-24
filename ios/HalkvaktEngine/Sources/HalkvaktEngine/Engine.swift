@@ -131,6 +131,10 @@ public struct EngineConfig {
     // Halkzonen (DECISIONS #624): sträckor inom så här många meter är en zon för reprisregeln — samma tal som engine/src/types.ts
     // (kontraktsgrinden).
     public var halkZonM = 500.0
+    // A1, vägtestet (Skeppsbron 24/11): en hal sträcka talar bara när bilen är inom så här många meter och grader från sträckans
+    // linje eller dess raka förlängning — samma tal som engine/src/types.ts (kontraktsgrinden).
+    public var halkaPaM = 80.0
+    public var halkaPaGrader = 30.0
     // S, vägtestet (DECISIONS #844): inom så här många meter och grader från linjen mellan två grannpunkter, så många fixar i rad;
     // grannar längre isär än smavagKordaMaxM har ingen linje — samma tal som engine/src/types.ts (kontraktsgrinden).
     public var smavagPaM = 80.0
@@ -351,7 +355,7 @@ struct HazardGrid {
 public final class AlertEngine {
     private let cfg: EngineConfig
     private struct Point { let id: String; let kind: HazardKind; let lon, lat: Double; let bearing: Double?; let meta: PointMeta }
-    private struct Segment { let id: String; let meta: SegmentMeta; let samples: [[Double]]; let line: [[Double]] }
+    private struct Segment { let id: String; let meta: SegmentMeta; let samples: [[Double]]; let line: [[Double]]; let pa: [[Double]] }
     private struct Kandidat { let id: String; let points: [[Double]]; let segmentHazardId: String? }
     /// S (DECISIONS #844): one small road, and whether the line to the previous point exists (neighbours within smavagKordaMaxM).
     private struct Smavag { let id: String; let points: [[Double]]; let warn: [Int]; let linje: [Bool] }
@@ -416,7 +420,7 @@ public final class AlertEngine {
             case .segment(let id, let line, let meta):
                 let samples = Geo.samplePolyline(line, cfg.segmentSampleM)
                 segmentGrid.add(segments.count, samples, reachOf(.slippery_segment))
-                segments.append(Segment(id: id, meta: meta, samples: samples, line: line))
+                segments.append(Segment(id: id, meta: meta, samples: samples, line: line, pa: paLinje(line)))
             case .kandidat(let id, let pts, let seg):
                 kandidatGrid.add(kandidater.count, pts, reachOf(.kandidat))
                 kandidater.append(Kandidat(id: id, points: pts, segmentHazardId: seg))
@@ -562,7 +566,7 @@ public final class AlertEngine {
                 let (ahead, distM) = isAhead(fix, heading, pt[0], pt[1])
                 if ahead && (best == nil || distM < best!) { best = distM }
             }
-            if let b = best, b <= leadM {
+            if let b = best, b <= leadM, paHalkan(fix, heading, s.pa) {
                 candidates.append(Candidate(id: s.id, kind: .slippery_segment, distM: b, limit: nil, alertKey: s.id))
             }
         }
@@ -642,6 +646,38 @@ public final class AlertEngine {
     }
 
     public func run(_ trace: [Fix]) -> [Alert] { trace.compactMap { step($0) } }
+
+    /// A1, the road test, mirror of paLinje in engine.ts: the stretch's break points without repeats, with one point added before the
+    /// first and one after the last, straight on along the first and the last line as far as the longest lead. Fewer than two
+    /// different points give no line, and such a stretch never speaks.
+    private func paLinje(_ line: [[Double]]) -> [[Double]] {
+        var pts: [[Double]] = []
+        for p in line {
+            if let f = pts.last, f[0] == p[0], f[1] == p[1] { continue }
+            pts.append(p)
+        }
+        if pts.count < 2 { return [] }
+        func ut(_ a: [Double], _ b: [Double]) -> [Double] {
+            let k = reachOf(.slippery_segment) / Geo.haversineM(a[0], a[1], b[0], b[1])
+            return [a[0] + (a[0] - b[0]) * k, a[1] + (a[1] - b[1]) * k]
+        }
+        return [ut(pts[0], pts[1])] + pts + [ut(pts[pts.count - 1], pts[pts.count - 2])]
+    }
+
+    /// A1, the road test, mirror of paHalkan in engine.ts: the car is on the stretch's road when the fix lies within halkaPaM of one
+    /// of its lines (the stretch and its two ends drawn straight on) and the heading is at most halkaPaGrader from that line's
+    /// direction, either way. The corridor alone let a stretch on another road speak (Skeppsbron 24/11).
+    private func paHalkan(_ fix: Fix, _ heading: Double, _ pa: [[Double]]) -> Bool {
+        for k in stride(from: 1, to: pa.count, by: 1) {
+            let a = pa[k - 1], b = pa[k]
+            if !(Geo.distToSegmentM(fix.lon, fix.lat, a[0], a[1], b[0], b[1]) <= cfg.halkaPaM) { continue }
+            let r = Geo.bearingDeg(a[0], a[1], b[0], b[1])
+            if min(Geo.angDiffDeg(r, heading), Geo.angDiffDeg((r + 180).truncatingRemainder(dividingBy: 360), heading)) <= cfg.halkaPaGrader {
+                return true
+            }
+        }
+        return false
+    }
 
     /// S, the road test (DECISIONS #844), mirror of smavagPa in engine.ts: the nearest straight line between two neighbouring points
     /// of any small road within smavagPaM of the fix and within smavagPaGrader of its direction, either way. The same road on
