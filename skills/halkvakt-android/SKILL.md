@@ -79,6 +79,11 @@ Allt nedan är destillat av projektets beslut (DECISIONS.md) och Play-dossiern.
   rubrik, åldersgrind, I närheten, vakten, läsarprovet) och filer som importerar motorns typer en och en. Motorns egen modul
   kompilerade grönt medan appen föll på en saknad import i `Guard.kt` (12/11, DECISIONS #844). Bara android.yml kompilerar appen:
   kör den med knappen på grenen innan en PR med en ny farotyp kallas klar.
+- Vakten har TVÅ trådar: `GuardService` laddar ny vägdata på en egen tråd (`loadSnapshot`), och positionerna stegar motorn på
+  huvudtråden. Motorn byter sina listor före sina rutnät, så ett steg mitt i bytet läste den ena mängden med den andras nummer
+  (25/11: `GuardTest.snapshotSwapDuringAFixNeverBreaksTheStep` kastade IndexOutOfBounds inom några byten). iOS är main-actor
+  och har inte felet, så det syns aldrig i den delade motorns vektorer. Regel: allt som laddtråden byter och huvudtråden läser
+  går genom `Guard`s lås (`@Synchronized`), och ett fält som sätts på laddtråden är `@Volatile`.
 
 ## 6 · Innan du kodar
 1. Läs bedömningen (`docs/BEDOMNING-*.md`) + relevant kort på tavlan (BACKLOG avvecklad 26/9).

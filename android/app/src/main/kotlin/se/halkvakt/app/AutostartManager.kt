@@ -145,7 +145,8 @@ class BluetoothCarReceiver : BroadcastReceiver() {
         val address = try { device.address } catch (_: SecurityException) { return } ?: return
         val c = AutostartManager.controller(ctx)
         val cmd = when (intent.action) {
-            BluetoothDevice.ACTION_ACL_CONNECTED -> c.onAclConnected(address, GuardService.running)
+            BluetoothDevice.ACTION_ACL_CONNECTED -> c.onAclConnected(address, GuardService.running,
+                try { device.bluetoothClass?.deviceClass } catch (_: SecurityException) { null })
             BluetoothDevice.ACTION_ACL_DISCONNECTED -> c.onAclDisconnected(address)
             else -> AutoCmd.NONE
         }

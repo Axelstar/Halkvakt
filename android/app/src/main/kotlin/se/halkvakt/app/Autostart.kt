@@ -8,7 +8,8 @@
 //   * Bluetooth ACL connect/disconnect              → turbo path for the LEARNED car:
 //     instant start the moment the phone pairs with the car, often before AR reacts.
 //     Learning: an unknown device that connects WHILE the guard is running during a
-//     drive is remembered as "the car". No configuration screens.
+//     drive is remembered as "the car" — if it says it is a car (isCarClass below). No
+//     configuration screens.
 //   * STOP only ends drives WE started (autoStarted flag): a manually started guard is
 //     never killed by AR flakiness or a dropped headset.
 package se.halkvakt.app
@@ -40,12 +41,13 @@ class AutostartController(learnedCars: Set<String> = emptySet(), autoStarted: Bo
         return AutoCmd.STOP
     }
 
-    fun onAclConnected(address: String, guardRunning: Boolean): AutoCmd {
+    /** [deviceClass] is BluetoothClass.getDeviceClass(), null when it cannot be read; only learning looks at it. */
+    fun onAclConnected(address: String, guardRunning: Boolean, deviceClass: Int? = null): AutoCmd {
         if (address in cars) {
             if (!guardRunning) autoStarted = true
             return AutoCmd.START
         }
-        if (guardRunning) {
+        if (guardRunning && isCarClass(deviceClass)) {
             cars.add(address)
             return AutoCmd.LEARN
         }
@@ -61,6 +63,17 @@ class AutostartController(learnedCars: Set<String> = emptySet(), autoStarted: Bo
     /** Manual stop from the UI must also disarm auto-stop bookkeeping. */
     fun onManualStop() { autoStarted = false }
 }
+
+/**
+ * Which Bluetooth devices may be learned as the car: the two device classes a car's own unit reports, Audio/Video
+ * Car audio (0x0420) and Audio/Video Hands-free (0x0408) — BluetoothClass.Device.AUDIO_VIDEO_CAR_AUDIO and
+ * AUDIO_VIDEO_HANDSFREE, written as numbers because this file has no Android imports. Everything else is left out:
+ * a watch (major class Wearable, 0x07xx), earbuds and headphones (0x0404, 0x0418), a loudspeaker (0x0414), a phone
+ * or a computer. Before this, any device that connected during a drive was learned, and then started the guard at
+ * home. Not exact: a hands-free kit or speakerphone also says 0x0408, and a car unit that reports another class is
+ * not learned (Activity Recognition still starts the guard there).
+ */
+fun isCarClass(deviceClass: Int?): Boolean = deviceClass == 0x0420 || deviceClass == 0x0408
 
 /**
  * Idle stop, the same rule as iOS (HalkvaktEngine IdleStop.swift): a guard whose car has not driven for fifteen

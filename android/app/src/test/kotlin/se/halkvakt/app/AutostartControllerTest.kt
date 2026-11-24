@@ -38,10 +38,27 @@ class AutostartControllerTest {
 
     @Test fun unknownDeviceDuringDriveIsLearned() {
         val c = AutostartController()
-        assertEquals(AutoCmd.LEARN, c.onAclConnected("CA:FE", guardRunning = true))
+        assertEquals(AutoCmd.LEARN, c.onAclConnected("CA:FE", guardRunning = true, deviceClass = 0x0420))
         assertEquals(setOf("CA:FE"), c.learnedCars())
         // Next time: turbo path.
         assertEquals(AutoCmd.START, c.onAclConnected("CA:FE", guardRunning = false))
+    }
+
+    /** Only a car's own unit is learned: a watch or earbuds that connect during a drive used to start the guard at home. */
+    @Test fun onlyCarAudioAndHandsFreeAreLearned() {
+        val c = AutostartController()
+        // Wrist watch, wearable headset, headphones, loudspeaker, phone, and a class that could not be read.
+        for (cls in listOf(0x0704, 0x0404, 0x0418, 0x0414, 0x020C, null))
+            assertEquals(AutoCmd.NONE, c.onAclConnected("DE:AD", guardRunning = true, deviceClass = cls), "class $cls")
+        assertEquals(emptySet<String>(), c.learnedCars())
+        assertEquals(AutoCmd.LEARN, c.onAclConnected("CA:FE", guardRunning = true, deviceClass = 0x0408))   // hands-free
+        assertEquals(setOf("CA:FE"), c.learnedCars())
+    }
+
+    /** A car learned before the class rule keeps starting the guard whatever it reports: the saved list is not touched. */
+    @Test fun anAlreadyLearnedDeviceStillStarts() {
+        val c = AutostartController(learnedCars = setOf("AA:BB"))
+        assertEquals(AutoCmd.START, c.onAclConnected("AA:BB", guardRunning = false, deviceClass = 0x0704))
     }
 
     @Test fun unknownDeviceWhileIdleDoesNothing_headphonesAtHome() {
