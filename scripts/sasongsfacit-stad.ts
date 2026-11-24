@@ -149,7 +149,7 @@ export function avsnitt(db: Db): string {
   ut.push("## Storstäderna (TROSKLAR-SASONGSFACIT §11)", "",
     "**Internt** (§11.8). Publiceras efter slutrapporten, per område och månad, tidigast när stadsmiljöns dom i kuvösen är fälld (§7, §11.10 fråga 6 (a)). Inga tal härifrån i repot, i ärenden eller i Actions-loggar.",
     "", db.sasong_fran ? `Veckan ${db.vecka_fran} – ${dag(db.mandag, -1)}. Säsongen hittills ${db.sasong_fran} – ${sista}.` : "Perioden har inte börjat: aggregatet har inga dygn.",
-    "", `Antalet står bredvid varje andel. En andel visas från ${MINSTA_HANDELSER} händelser (val 3) och förarnas från ${MINSTA_SVAR} svar (§11.6); under det står bara antalet. **Intervallet i §5 saknas:** rapportskriptet i körlistans C2 finns inte ännu.`,
+    "", `Antalet står bredvid varje andel. En andel visas från ${MINSTA_HANDELSER} händelser (val 3) och förarnas från ${MINSTA_SVAR} svar (§11.6); under det står bara antalet. **Intervallet i §5** står vid säsongsfacits andelar i veckorapportens del 3, inte per cell här.`,
     "", "Nivån är *i drift*. De två undantagen i §11.2 står för sig sist och läggs aldrig ihop med resten.");
 
   // §11.3 the hours per class, and the warning hours.
