@@ -412,7 +412,8 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         recomputeNearby()
 
         if fartkoll.active {
-            switch fartkoll.onFix(t: Date.now.timeIntervalSince1970, kmh: loc.speed >= 0 ? loc.speed * 3.6 : 0) {
+            switch fartkoll.onFix(t: Date.now.timeIntervalSince1970, kmh: loc.speed >= 0 ? loc.speed * 3.6 : 0,
+                                  altitudeM: loc.verticalAccuracy > 0 ? loc.altitude : nil) {
             case .startGuard: endProbe(startGuard: true)
             case .sleep: endProbe(startGuard: false)
             case .waiting: break
@@ -455,7 +456,8 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
                       lon: loc.coordinate.longitude,
                       lat: loc.coordinate.latitude,
                       speedKmh: loc.speed >= 0 ? loc.speed * 3.6 : nil,
-                      headingDeg: loc.course >= 0 ? loc.course : nil)
+                      headingDeg: loc.course >= 0 ? loc.course : nil,
+                      altitudeM: loc.verticalAccuracy > 0 ? loc.altitude : nil)   // ej bil: the engine is silent above its maxAltitudeM
         guard let alert = engine.step(fix) else { return }
         guard Prefs.shared.enabled(alert.kind) else { return }  // munnen tiger, minnet består
 
