@@ -51,6 +51,10 @@ class WarningCardTest {
     @Test fun wordsInsteadOfNumbers() {   // B, C, D
         val b = WarningCard.make(alert(HazardKind.SLIPPERY_SEGMENT, 900, "Varning: halka rapporterad på vägen framför dig."), null)
         assertEquals("Halka", b.title); assertEquals(words("FRAMFÖR DIG"), b.distance); assertEquals(WarningCard.Icon.HALKA, b.icon)
+        // The risk line (Axel 24/11): the card says risk when the voice did, and nothing else changes.
+        val r = WarningCard.make(alert(HazardKind.SLIPPERY_SEGMENT, 900, "Risk för halka på vägen framför dig."), null)
+        assertEquals("Halkrisk", r.title); assertEquals(words("FRAMFÖR DIG"), r.distance); assertEquals(WarningCard.Icon.HALKA, r.icon)
+        assertNull(r.sub); assertEquals("Risk för halka på vägen framför dig.", r.quote)
         val c = WarningCard.make(alert(HazardKind.ICING_POINT, 700, "x"), PointMeta())
         assertEquals(WarningCard.Icon.FRYS, c.icon); assertEquals("Vägbanan nära noll grader", c.sub); assertEquals(words("FRAMÖVER"), c.distance)
         val d = WarningCard.make(alert(HazardKind.WILDLIFE, 650, "Viltrisk framöver."), null)

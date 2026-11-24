@@ -768,6 +768,55 @@ const scenarios: Scenario[] = [
     })),
     trace: northTrace(260, 80),
   },
+  {
+    file: "v64_halkrisk_kod2_vat", name: "Besvärligt (risk för) med bara Våt säger risk, inte rapporterad halka",
+    description:
+      "Axel 24/11: rösten sa 'halka rapporterad' för en sträcka som Trafikverket klassade Besvärligt (risk för), kod 2, med bara " +
+      "ordet Våt. Rapporten nämner varken is, snö, frost, modd eller halka, så raden är 'Risk för halka på vägen framför dig.' " +
+      "Sträckan talar som förut (kod 2): bara orden ändras. Samma geometri som v61, 2 011 m fram: t=61, 655 m, 11,1 m marginal " +
+      "på var sida.",
+    hazards: [{
+      id: "r1_kod2_vat", kind: "slippery_segment", line: [[LON0 - 0.01, northOf(2011)], [LON0 + 0.01, northOf(2011)]],
+      meta: { code: 2, info: ["Våt"] },
+    }],
+    trace: northTrace(100, 80),
+  },
+  {
+    file: "v65_halka_rapporterad_kod2_flackvis_is", name: "Besvärligt med ett isord säger halka rapporterad",
+    description:
+      "Som v64, men rapporten bär också 'fläckvis Is'. Ett halkord i ConditionInfo, vilket som helst av dem, räcker: rapporten " +
+      "nämner is, och raden är 'Varning: halka rapporterad på vägen framför dig.' Ordet står sist i listan, så varje ord prövas.",
+    hazards: [{
+      id: "r2_kod2_flackvis_is", kind: "slippery_segment", line: [[LON0 - 0.01, northOf(2011)], [LON0 + 0.01, northOf(2011)]],
+      meta: { code: 2, info: ["Våt", "fläckvis Is"] },
+    }],
+    trace: northTrace(100, 80),
+  },
+  {
+    file: "v66_halkrisk_kod2_flackvis_vat", name: "fläckvis Våt på kod 2 är risk: 'is' inuti fläckvis är inget isord",
+    description:
+      "Fällan från v11 och v24, nu för ordvalet: 'fläckvis Våt' på kod 2. Sträckan talar på klassen, men 'is' inuti 'fläckvis' " +
+      "är inget halkord (ordbörjan), så raden är risk. En port som söker delsträngen säger 'halka rapporterad' här.",
+    hazards: [{
+      id: "r3_kod2_flackvis_vat", kind: "slippery_segment", line: [[LON0 - 0.01, northOf(2011)], [LON0 + 0.01, northOf(2011)]],
+      meta: { code: 2, info: ["fläckvis Våt"] },
+    }],
+    trace: northTrace(100, 80),
+  },
+  {
+    file: "v67_halka_rapporterad_kod3_kod4_utan_ord", name: "Mycket besvärligt och Is- och snövägbana säger halka rapporterad utan ord",
+    description:
+      "Kod 3 (Mycket besvärligt) och kod 4 (Is- och snövägbana) utan något ConditionInfo-ord: klassen själv är rapporten, så " +
+      "raden är 'Varning: halka rapporterad på vägen framför dig.' Bara kod 2 utan halkord är risk. Kod 3 ligger 2 011 m fram " +
+      "(t=61, 655 m, som v61) och kod 4 6 000 m längre fram, utanför halkzonen (500 m) och bortom reprisens 5 km. 6 000 m är " +
+      "270 s vid 80 km/h, alltså samma fas mot fixarna som den första: t=331, 655 m (uppmätt 25/11 med motorns haversine: " +
+      "676,9 m vid t=330, 654,7 m vid t=331, förvarningen omkring 666 m, alltså drygt 10 m på var sida).",
+    hazards: [
+      { id: "r4_kod3", kind: "slippery_segment", line: [[LON0 - 0.01, northOf(2011)], [LON0 + 0.01, northOf(2011)]], meta: { code: 3, info: [] } },
+      { id: "r5_kod4", kind: "slippery_segment", line: [[LON0 - 0.01, northOf(8011)], [LON0 + 0.01, northOf(8011)]], meta: { code: 4, info: [] } },
+    ],
+    trace: northTrace(400, 80),
+  },
 ];
 
 /** Canonical replay-with-updates — the reference all three test runners mirror. */

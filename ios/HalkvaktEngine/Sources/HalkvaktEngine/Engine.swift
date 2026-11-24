@@ -56,6 +56,26 @@ public struct SegmentMeta {
     public var code: Int? = nil
     public var info: [String] = []
     public init(code: Int? = nil, info: [String] = []) { self.code = code; self.info = info }
+    /// Which A1 line a stretch that speaks gets — mirror of halkaRapporterad in engine.ts (Axel 24/11; vectors v64–v67). True when a
+    /// ConditionInfo word is a halkord, or the class is 3 (Mycket besvärligt) or 4 (Is- och snövägbana): "halka rapporterad". False,
+    /// which for a stretch that speaks is class 2 (Besvärligt (risk för)) with no such word: the line, the card and the lists say risk.
+    public var halkaRapporterad: Bool { (code ?? 0) >= Halkord.halkaRapporteradKod || info.contains(where: Halkord.traff) }
+}
+
+/// The engine's halkord, one copy for the engine and for halkaRapporterad above.
+enum Halkord {
+    // Mirrors engine.ts SLIPPERY_INFO, word start; modd (slush) since 20/11, DECISIONS #915, vectors v61–v63.
+    static let info = try! NSRegularExpression(
+        pattern: "(?<![a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt|modd)",
+        options: [.caseInsensitive])
+    // Snow/frost also count inside compounds — "Nysnö", "Rimfrost" (kort #97). Mirrors engine.ts SLIPPERY_STAM.
+    static let stam = try! NSRegularExpression(pattern: "(snö|frost)", options: [.caseInsensitive])
+    /// Mirror of HALKA_RAPPORTERAD_KOD in engine.ts (kontraktsgrinden).
+    static let halkaRapporteradKod = 3
+    static func traff(_ ord: String) -> Bool {
+        let r = NSRange(ord.startIndex..., in: ord)
+        return info.firstMatch(in: ord, range: r) != nil || stam.firstMatch(in: ord, range: r) != nil
+    }
 }
 
 public enum Hazard {
@@ -235,6 +255,9 @@ enum Texts {
     static let kandidatText = "Halkvakt tror: halka framöver."
     /// Småvägsröstens betavarning (DECISIONS #828) — spegel av SMAVAG_TEXT i texts.ts.
     static let smavagText = "Betavarning: risk för halka på småvägarna framöver."
+    /// A1 when the report names no ice, snow, frost, slush or slipperiness (SegmentMeta.halkaRapporterad is false) — spegel av
+    /// HALKRISK_TEXT i texts.ts.
+    static let halkriskText = "Risk för halka på vägen framför dig."
 
     /// " på E18" / " på väg 25" / "" när numret saknas.
     static func roadPhrase(_ road: String?) -> String {
@@ -386,12 +409,8 @@ public final class AlertEngine {
     /// Halkzonen (kort #360): whether two stretches are neighbours, per sorted id pair (the geometry does not change).
     private var zonGrannar: [String: Bool] = [:]
 
-    // Mirrors engine.ts SLIPPERY_INFO, word start; modd (slush) since 20/11, DECISIONS #915, vectors v61–v63.
-    private let slipperyInfo = try! NSRegularExpression(
-        pattern: "(?<![a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt|modd)",
-        options: [.caseInsensitive])
-    // Snow/frost also count inside compounds — "Nysnö", "Rimfrost" (kort #97). Mirrors engine.ts SLIPPERY_STAM.
-    private let slipperyStam = try! NSRegularExpression(pattern: "(snö|frost)", options: [.caseInsensitive])
+    private let slipperyInfo = Halkord.info
+    private let slipperyStam = Halkord.stam
 
     public init(_ hazards: [Hazard], _ cfg: EngineConfig = EngineConfig()) {
         self.cfg = cfg
@@ -633,10 +652,12 @@ public final class AlertEngine {
         if win.kind == .kandidat { lastKandidatT = fix.t }
         if win.kind == .smavag { lastSmavagT = fix.t; lastSmavagOdoM = odometerM }
         fired[win.alertKey] = (fix.t, odometerM)
+        let halkrisk = win.kind == .slippery_segment && segments.first(where: { $0.id == win.id })?.meta.halkaRapporterad == false
         return Alert(
             t: fix.t, hazardId: win.id, kind: win.kind,
             distanceM: Int(win.distM.rounded()),
             text: win.beta && win.kind == .icing_point ? Texts.efterhalkaText
+                           : halkrisk ? Texts.halkriskText
                            : Texts.alertText(win.kind, win.distM, win.limit, win.step, win.endTimeLocal, win.bridge, win.road),
             step: win.step, beta: win.beta)
     }
