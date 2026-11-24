@@ -32,6 +32,31 @@ final class FartkollenTests: XCTestCase {
         XCTAssertEqual(p.onFix(t: 1200, kmh: 4), .waiting, "no .sleep after the guard started")
     }
 
+    // Ej bil: a plane or a fast train must not start the guard, and not a moment later either when it slows to car speed.
+    func testFasterThanACarGoesBackToSleep() {
+        var p = Fartkollen()
+        p.begin(t: 1000)
+        XCTAssertEqual(p.onFix(t: 1010, kmh: 165), .sleep)
+        XCTAssertFalse(p.active)
+        XCTAssertEqual(p.onFix(t: 1020, kmh: 50), .waiting, "the probe is over: car speed afterwards starts nothing")
+    }
+
+    func testHigherThanAnyRoadGoesBackToSleep() {
+        var p = Fartkollen()
+        p.begin(t: 1000)
+        XCTAssertEqual(p.onFix(t: 1010, kmh: 80, altitudeM: 1600), .sleep)
+        XCTAssertFalse(p.active)
+    }
+
+    func testJustInsideTheLimitsStartsTheGuard() {
+        var p = Fartkollen()
+        p.begin(t: 1000)
+        XCTAssertEqual(p.onFix(t: 1010, kmh: 155, altitudeM: 1400), .startGuard)
+        var q = Fartkollen()
+        q.begin(t: 1000)
+        XCTAssertEqual(q.onFix(t: 1010, kmh: 80), .startGuard, "no altitude from the phone is not a reason to stay asleep")
+    }
+
     func testNothingWithoutAProbe() {
         var p = Fartkollen()
         XCTAssertEqual(p.onFix(t: 0, kmh: 100), .waiting)

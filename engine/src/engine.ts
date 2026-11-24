@@ -249,6 +249,9 @@ export class AlertEngine {
     if (headingDeg !== null) this.lastHeadingDeg = headingDeg;
 
     if (speedKmh === null || speedKmh < this.cfg.minSpeedKmh) return null;
+    // Ej bil: faster than any car on a Swedish road, or higher than any Swedish road ⇒ a plane or a fast train. Silent, like the
+    // floor above: the odometer and the heading are kept, nothing is evaluated and nothing is remembered as said.
+    if (speedKmh > this.cfg.maxSpeedKmh || (fix.altitudeM ?? 0) > this.cfg.maxAltitudeM) return null;
     const heading = this.lastHeadingDeg;
     if (heading === null) return null;
 

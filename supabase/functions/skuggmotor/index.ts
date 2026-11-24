@@ -115,6 +115,9 @@ export interface Fix {
   /** Optional; derived from consecutive fixes when absent. */
   speedKmh?: number;
   headingDeg?: number;
+  /** Optional: metres above sea level, sent only when the platform says the value is valid (iOS verticalAccuracy > 0, Android
+   *  hasAltitude()). Used for one thing: a phone above maxAltitudeM is not in a car. */
+  altitudeM?: number;
 }
 
 export interface Alert {
@@ -137,6 +140,12 @@ export interface Alert {
 export interface EngineConfig {
   corridorHalfAngleDeg: number; // how far off-heading a hazard may sit and still count as "ahead"
   minSpeedKmh: number;          // below this we do not evaluate (parking-lot jitter guard)
+  /** Ej bil: above this speed, or above this altitude when the fix carries one, the phone cannot be in a car on a Swedish road
+   *  (a plane, a fast train) and the step is silent. Proposed start values, not yet a decision: 160 km/h is the highest speed
+   *  limit (120) plus a third; 1 500 m is the highest public road (just under 1 000 m) plus half, which also covers Android's
+   *  altitude being measured from the ellipsoid (20–40 m above sea level in Sweden) and the error of a GPS altitude. */
+  maxSpeedKmh: number;
+  maxAltitudeM: number;
   globalCooldownS: number;      // max 1 spoken alert per this window — hard, no exceptions
   repeatMinS: number;           // same hazard silent for at least this long ...
   repeatMinM: number;           // ... AND until this much further driven (both must have elapsed)
@@ -184,6 +193,8 @@ export interface EngineConfig {
 export const DEFAULT_CONFIG: EngineConfig = {
   corridorHalfAngleDeg: 35,
   minSpeedKmh: 15,
+  maxSpeedKmh: 160,
+  maxAltitudeM: 1500,
   // 10 s (var 45 t.o.m. 13/9, #127): härlett ur kamerornas minimidistans i samma
   // riktning — 520 m ⇒ 15,6 s vid 120 km/h. Spärren är dessutom prioritetsmedveten nu.
   globalCooldownS: 10,
@@ -847,6 +858,9 @@ export class AlertEngine {
     if (headingDeg !== null) this.lastHeadingDeg = headingDeg;
 
     if (speedKmh === null || speedKmh < this.cfg.minSpeedKmh) return null;
+    // Ej bil: faster than any car on a Swedish road, or higher than any Swedish road ⇒ a plane or a fast train. Silent, like the
+    // floor above: the odometer and the heading are kept, nothing is evaluated and nothing is remembered as said.
+    if (speedKmh > this.cfg.maxSpeedKmh || (fix.altitudeM ?? 0) > this.cfg.maxAltitudeM) return null;
     const heading = this.lastHeadingDeg;
     if (heading === null) return null;
 

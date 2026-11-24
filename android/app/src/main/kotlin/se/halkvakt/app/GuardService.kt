@@ -213,6 +213,7 @@ class GuardService : Service() {
                 lon = loc.longitude, lat = loc.latitude,
                 speedKmh = if (loc.hasSpeed()) loc.speed * 3.6 else null,
                 headingDeg = if (loc.hasBearing()) bearingToDouble(loc.bearing) else null,
+                altitudeM = if (loc.hasAltitude()) loc.altitude else null,   // ej bil: the engine is silent above its maxAltitudeM
             )
             if (idleStop.onFix(loc.time, fix.lon, fix.lat)) {
                 AlertBus.post("Stillastående en kvart — vakten stoppar själv.")
