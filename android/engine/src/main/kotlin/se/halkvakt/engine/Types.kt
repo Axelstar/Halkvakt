@@ -56,7 +56,23 @@ fun PointMeta.frysriskGaller(cfg: EngineConfig = EngineConfig()): Boolean {
 /** Which utterance of a serious accident this is (DECISIONS #28). Mirrors AccidentStep in texts.ts. */
 enum class AccidentStep(val wire: String) { EARLY("early"), REMINDER("reminder"), LATE("late") }
 
-data class SegmentMeta(val code: Int? = null, val info: List<String> = emptyList())
+data class SegmentMeta(val code: Int? = null, val info: List<String> = emptyList()) {
+    /** Which A1 line a stretch that speaks gets — mirror of halkaRapporterad in engine.ts (Axel 24/11; vectors v64–v67). True when a
+     *  ConditionInfo word is a halkord, or the class is 3 (Mycket besvärligt) or 4 (Is- och snövägbana): "halka rapporterad". False,
+     *  which for a stretch that speaks is class 2 (Besvärligt (risk för)) with no such word: the line, the card and the lists say risk. */
+    val halkaRapporterad: Boolean get() = (code ?: 0) >= Halkord.HALKA_RAPPORTERAD_KOD || info.any { Halkord.traff(it) }
+}
+
+/** The engine's halkord, one copy for the engine and for halkaRapporterad above. */
+object Halkord {
+    // Mirrors engine.ts SLIPPERY_INFO, word start; modd (slush) since 20/11, DECISIONS #915, vectors v61–v63.
+    val INFO = Regex("(?<![a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt|modd)", RegexOption.IGNORE_CASE)
+    // Snow/frost also count inside compounds — "Nysnö", "Rimfrost" (kort #97). Mirrors engine.ts SLIPPERY_STAM.
+    val STAM = Regex("(snö|frost)", RegexOption.IGNORE_CASE)
+    /** Mirror of HALKA_RAPPORTERAD_KOD in engine.ts (kontraktsgrinden). */
+    const val HALKA_RAPPORTERAD_KOD = 3
+    fun traff(ord: String): Boolean = INFO.containsMatchIn(ord) || STAM.containsMatchIn(ord)
+}
 
 sealed interface Hazard { val id: String; val kind: HazardKind }
 data class PointHazard(
@@ -244,6 +260,10 @@ object Texts {
 
     /** S, småvägsröstens betavarning (DECISIONS #828) — spegel av SMAVAG_TEXT i texts.ts. */
     const val SMAVAG_TEXT = "Betavarning: risk för halka på småvägarna framöver."
+
+    /** A1 when the report names no ice, snow, frost, slush or slipperiness (SegmentMeta.halkaRapporterad is false) — spegel av
+     *  HALKRISK_TEXT i texts.ts. */
+    const val HALKRISK_TEXT = "Risk för halka på vägen framför dig."
 
     /** " på E18" / " på väg 25" / "" när numret saknas. */
     fun roadPhrase(road: String?): String {

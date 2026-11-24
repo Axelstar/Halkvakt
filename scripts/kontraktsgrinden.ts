@@ -592,6 +592,13 @@ export const KONTRAKT: Kontrakt[] = [
     golv: 3,
   },
   {
+    namn: "Halka rapporterad — från den här väglagsklassen säger rösten rapporterad halka också utan halkord",
+    varfor: "Motorns tre portar ska välja samma rad, risk eller rapporterad halka (Axel 24/11, v64–v67); en port med annan klass säger mer eller mindre än rapporten bär.",
+    former: [/halka_?rapporterad_?kod\s*=\s*(\d+)(?![\d.])/i],
+    filer: /engine\/src\/engine\.ts|engine\/Types\.kt|HalkvaktEngine\/Engine\.swift/,
+    golv: 3,
+  },
+  {
     namn: "Småvägsröstens vägtest — så här många meter från linjen mellan två grannpunkter",
     varfor: "Motorns tre portar ska känna igen samma småväg (DECISIONS #844); en port med vidare marginal varnar för vägar bredvid den bilen kör på.",
     former: [/\bsmavagPaM(?::\s*\w+)?\s*[:=]\s*(\d+)(?:\.0)?(?![\d.])/],

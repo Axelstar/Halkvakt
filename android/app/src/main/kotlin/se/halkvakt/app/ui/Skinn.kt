@@ -78,6 +78,7 @@ import se.halkvakt.app.Prefs
 import se.halkvakt.app.R
 import se.halkvakt.app.Tipsa
 import se.halkvakt.engine.HazardKind
+import se.halkvakt.engine.WarningCard
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -103,6 +104,9 @@ fun rubrik(k: HazardKind) = when (k) {
     HazardKind.KANDIDAT -> "Halka"   // #577: kortets rubrik, märkt BETA på kortet
     HazardKind.SMAVAG -> "Halka"     // #828: småvägsrösten, märkt BETA på kortet som K
 }
+
+/** The same for a spoken warning: a stretch is Halkrisk when the voice said risk (WarningCard.halkrubrik). */
+fun rubrik(k: HazardKind, text: String) = if (k == HazardKind.SLIPPERY_SEGMENT) WarningCard.halkrubrik(text) else rubrik(k)
 
 /* ---------- Delar som återkommer ---------- */
 
@@ -357,7 +361,7 @@ private fun Kvitto(tur: List<AlertEntry>, start: Long, slut: Long, km: Float) {
                 Text(klockslag(v.t), color = Brand.dim, fontFamily = Typo.mono, fontWeight = FontWeight.Medium, fontSize = 12.sp)
                 if (k != null) HazardIcon(k, 22.dp, Brand.text)
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
-                    Text(k?.let(::rubrik) ?: v.kind, color = Brand.text, fontFamily = Typo.sans, fontWeight = FontWeight.Medium, fontSize = 15.sp)
+                    Text(k?.let { rubrik(it, v.text) } ?: v.kind, color = Brand.text, fontFamily = Typo.sans, fontWeight = FontWeight.Medium, fontSize = 15.sp)
                     Text("”${v.text}”", color = Text2, fontFamily = Typo.sans, fontSize = 13.sp)
                 }
             }
@@ -506,7 +510,7 @@ private fun NearRow(n: NearbyItem, divider: Boolean) {
         Row(Modifier.fillMaxWidth().height(52.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
             HazardIcon(n.kind, 20.dp, Brand.dim)
             Text(Nearby.distText(n.distM).uppercase(), color = Brand.text, fontFamily = Typo.mono, fontSize = 14.sp, modifier = Modifier.width(70.dp))
-            Text(rubrik(n.kind), color = Brand.text, fontFamily = Typo.sans, fontWeight = FontWeight.Medium, fontSize = 15.sp, modifier = Modifier.weight(1f))
+            Text(if (n.halkrisk) WarningCard.halkrubrik(rapporterad = false) else rubrik(n.kind), color = Brand.text, fontFamily = Typo.sans, fontWeight = FontWeight.Medium, fontSize = 15.sp, modifier = Modifier.weight(1f))
             n.secondary?.let { MonoLabel(it, Muted2) }
         }
         if (divider) DashedDivider()

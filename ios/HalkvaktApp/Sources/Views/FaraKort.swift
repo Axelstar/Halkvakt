@@ -30,7 +30,7 @@ struct FaraKort: View {
 
     private var rubrik: String {
         switch fara {
-        case .segment: return "Halka"
+        case .segment(_, _, let meta): return WarningCard.halkrubrik(rapporterad: meta.halkaRapporterad)
         case .point(_, let kind, _, _, _, let meta):
             switch kind {
             case .icing_point: return meta.bridge ? "Frysrisk på bro" : Self.uppmatt(meta) ? "Frysrisk" : "Frysrisk (beta)"
@@ -45,7 +45,8 @@ struct FaraKort: View {
         var ut: [String] = []
         switch fara {
         case .segment(_, _, let meta):
-            ut.append(meta.info.isEmpty ? "Halka rapporterad på sträckan." : meta.info.joined(separator: ", ") + ".")
+            ut.append(!meta.info.isEmpty ? meta.info.joined(separator: ", ") + "."
+                      : meta.halkaRapporterad ? "Halka rapporterad på sträckan." : "Risk för halka rapporterad på sträckan.")
         case .point(let id, let kind, _, _, _, let meta):
             switch kind {
             case .icing_point:

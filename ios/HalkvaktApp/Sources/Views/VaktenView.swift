@@ -202,7 +202,7 @@ struct VaktenView: View {
     private func rubrikNu(_ nara: [NearbyItem]) -> String {
         guard harPlats != nil, guardM.snapshotInfo != nil else { return "Redo." }
         guard let forst = nara.first else { return "Inget rapporterat nära dig" }
-        return "\(Self.rubrik(forst.kind.rawValue)) \(Nearby.distText(forst.distM)) bort"
+        return "\(forst.rubrik) \(Nearby.distText(forst.distM)) bort"
     }
 
     private func underrubrik(_ nara: [NearbyItem]) -> String {
@@ -353,7 +353,8 @@ struct VaktenView: View {
                         HazardIcon(kind: k, size: 22).foregroundStyle(Brand.text)
                     }
                     VStack(alignment: .leading, spacing: 3) {
-                        Text(Self.rubrik(v.kind)).font(Typo.sans(15, .medium)).foregroundStyle(Brand.text)
+                        Text(v.kind == HazardKind.slippery_segment.rawValue ? WarningCard.halkrubrik(v.text) : Self.rubrik(v.kind))
+                            .font(Typo.sans(15, .medium)).foregroundStyle(Brand.text)
                         Text("”\(v.text)”").font(Typo.sans(13)).foregroundStyle(Brand.text2)
                     }
                     Spacer(minLength: 0)
@@ -429,7 +430,7 @@ struct NearbyRow: View {
                 Text(Nearby.distText(item.distM).uppercased())
                     .font(Typo.mono(14)).foregroundStyle(Brand.text)
                     .frame(width: 70, alignment: .leading)
-                Text(VaktenView.rubrik(item.kind.rawValue)).font(Typo.sans(15, .medium)).foregroundStyle(Brand.text)
+                Text(item.rubrik).font(Typo.sans(15, .medium)).foregroundStyle(Brand.text)
                 Spacer(minLength: 8)
                 if let s = item.secondary {
                     Text(s.uppercased()).font(Typo.mono(10)).tracking(1.2).foregroundStyle(Brand.faint).lineLimit(1)

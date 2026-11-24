@@ -25,7 +25,7 @@ import {
   angDiffDeg, bearingDeg, boxOf, distToSegmentM, haversineM, isAhead, minDistToBoxM, reachWindow, samplePolyline, type Box,
   type LonLat,
 } from "./geo.ts";
-import { alertText, EFTERHALKA_TEXT, type AccidentStep } from "./texts.ts";
+import { alertText, EFTERHALKA_TEXT, HALKRISK_TEXT, type AccidentStep } from "./texts.ts";
 import { farorLangsRutten } from "./rutfilter.ts";
 
 interface FiredState { t: number; odometerM: number; }
@@ -58,6 +58,15 @@ export const SLIPPERY_INFO = /(?<![a-zåäö])(is|halka|halkrisk|halkig|halt|myc
 // it speaks. "halk" is NOT a stem: "Halkbekämpning" and "Halkskydd" are countermeasures, not hazards,
 // so only halka/halkrisk/halkig are listed above. Vector v24 locks all of it in three ports.
 export const SLIPPERY_STAM = /(snö|frost)/i;
+// Which A1 line a stretch that speaks gets (Axel 24/11; vectors v64–v67). Reported — "halka rapporterad" — when a ConditionInfo word
+// is one of the words above, or the class is 3 (Mycket besvärligt) or 4 (Is- och snövägbana). Otherwise, which for a stretch that
+// speaks is class 2 (Besvärligt (risk för)) with no such word, the line says risk (HALKRISK_TEXT). Whether the stretch speaks is
+// not decided here. Samma tal i Engine.kt och Engine.swift (kontraktsgrinden).
+export const HALKA_RAPPORTERAD_KOD = 3;
+export function halkaRapporterad(meta: SegmentHazard["meta"]): boolean {
+  return (meta?.code != null && meta.code >= HALKA_RAPPORTERAD_KOD) ||
+    (meta?.info ?? []).some((i) => SLIPPERY_INFO.test(i) || SLIPPERY_STAM.test(i));
+}
 
 // THE GRID (DECISIONS #795). Until 5/11 every fix evaluated every hazard; 16 000 more kandidat points made step() seven times
 // slower. Every candidate needs its distance within a reach the configuration bounds (reachOf below), so a hazard is listed in
@@ -377,7 +386,9 @@ export class AlertEngine {
       hazardId: win.hazard.id,
       kind: win.kind,
       distanceM: Math.round(win.distM),
-      text: win.beta && win.kind === "icing_point" ? EFTERHALKA_TEXT : alertText(win.kind, win.distM, pointHazard, win.step),
+      text: win.beta && win.kind === "icing_point" ? EFTERHALKA_TEXT
+        : win.hazard.kind === "slippery_segment" && !halkaRapporterad(win.hazard.meta) ? HALKRISK_TEXT
+        : alertText(win.kind, win.distM, pointHazard, win.step),
       ...(win.step ? { step: win.step } : {}),
       ...(win.beta ? { beta: true as const } : {}),
     };

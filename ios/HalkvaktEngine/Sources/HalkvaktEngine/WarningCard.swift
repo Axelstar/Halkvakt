@@ -51,7 +51,7 @@ public struct WarningCard: Equatable {
                                    distance: km, road: road, limit: nil, advice: nil, adviceSub: nil, quote: alert.text)
             }
         case .slippery_segment:
-            return WarningCard(icon: .halka, stage: nil, title: "Halka", sub: nil, distance: .words("FRAMFÖR DIG"),
+            return WarningCard(icon: .halka, stage: nil, title: halkrubrik(alert.text), sub: nil, distance: .words("FRAMFÖR DIG"),
                                road: nil, limit: nil, advice: nil, adviceSub: nil, quote: alert.text)
         case .icing_point:
             if meta?.bridge == true {
@@ -84,6 +84,12 @@ public struct WarningCard: Equatable {
                                distance: .words("FRAMÖVER"), road: nil, limit: nil, advice: nil, adviceSub: nil, quote: alert.text)
         }
     }
+
+    /// A stretch's title on the card and in the lists (Axel 24/11): "Halkrisk" when the report names no ice, snow, frost, slush or
+    /// slipperiness (SegmentMeta.halkaRapporterad), otherwise "Halka".
+    public static func halkrubrik(rapporterad: Bool) -> String { rapporterad ? "Halka" : "Halkrisk" }
+    /// The same title from what the voice said: the card and the history only have the line.
+    public static func halkrubrik(_ text: String) -> String { halkrubrik(rapporterad: text != Texts.halkriskText) }
 
     /// "E18" stays "E18"; a bare number becomes "VÄG 25" — the same rule as the voice's roadPhrase.
     static func roadSign(_ road: String?) -> String? {

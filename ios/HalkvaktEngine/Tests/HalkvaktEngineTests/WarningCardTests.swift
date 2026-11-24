@@ -47,6 +47,10 @@ final class WarningCardTests: XCTestCase {
     func testWordsInsteadOfNumbers() {   // B, C, D
         let b = WarningCard.make(alert(.slippery_segment, 900, "Varning: halka rapporterad på vägen framför dig."), meta: nil)
         XCTAssertEqual(b.title, "Halka"); XCTAssertEqual(b.distance, .words("FRAMFÖR DIG")); XCTAssertEqual(b.icon, .halka)
+        // The risk line (Axel 24/11): the card says risk when the voice did, and nothing else changes.
+        let r = WarningCard.make(alert(.slippery_segment, 900, "Risk för halka på vägen framför dig."), meta: nil)
+        XCTAssertEqual(r.title, "Halkrisk"); XCTAssertEqual(r.distance, .words("FRAMFÖR DIG")); XCTAssertEqual(r.icon, .halka)
+        XCTAssertNil(r.sub); XCTAssertEqual(r.quote, "Risk för halka på vägen framför dig.")
         let c = WarningCard.make(alert(.icing_point, 700, "x"), meta: PointMeta())
         XCTAssertEqual(c.icon, .frys); XCTAssertEqual(c.sub, "Vägbanan nära noll grader"); XCTAssertEqual(c.distance, .words("FRAMÖVER"))
         let d = WarningCard.make(alert(.wildlife, 650, "Viltrisk framöver."), meta: nil)
