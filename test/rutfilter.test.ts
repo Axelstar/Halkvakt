@@ -25,6 +25,9 @@ const faror: Hazard[] = [
   { id: "olycka", kind: "accident", lon: 15.25, lat: 59.0, meta: { severity: 5 } } as unknown as Hazard,                 // talar ~10 km före
   // Ett långt segment som korsar rutten men vars båda brytpunkter ligger över 100 km bort: rutan måste skära, inte bara punkterna.
   { id: "seg:lang", kind: "slippery_segment", line: [[15.3, 58.0], [15.3, 60.0]], meta: { code: 2, info: [] } } as Hazard,
+  // The same along the route: since the road test (Skeppsbron 24/11) the crossing stretch above stays silent in the engine, so this
+  // one carries the halka warning through the comparison. Its break points lie over 100 km away too.
+  { id: "seg:langs", kind: "slippery_segment", line: [[13.0, 59.0], [17.5, 59.0]], meta: { code: 2, info: [] } } as Hazard,
 ];
 
 test("motorn ger samma varningar och samma undanträngda med och utan filtret", () => {
@@ -38,6 +41,7 @@ test("motorn ger samma varningar och samma undanträngda med och utan filtret", 
   assert.ok(nara.some((h) => h.id === "seg:lang"), "segmentet som korsar rutten är kvar");
   const med = kor(nara);
   assert.ok(med.alerts.length >= 3, `jämförelsen bär varningar: ${med.alerts.map((a) => a.hazardId).join(", ")}`);
+  assert.ok(med.alerts.some((a) => a.hazardId === "seg:langs"), "halkvarningen längs rutten är med i jämförelsen");
   assert.deepEqual(med, kor(faror));
 });
 

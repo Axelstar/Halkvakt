@@ -578,6 +578,20 @@ export const KONTRAKT: Kontrakt[] = [
     golv: 3,
   },
   {
+    namn: "Halkans vägtest — så här många meter från den hala sträckans linje eller dess raka förlängning",
+    varfor: "Motorns tre portar ska känna igen samma väg (Skeppsbron 24/11); en port med vidare marginal säger 'på vägen framför dig' om en väg bredvid den bilen kör på.",
+    former: [/\bhalkaPaM(?::\s*\w+)?\s*[:=]\s*(\d+)(?:\.0)?(?![\d.])/],
+    filer: /engine\/src\/types\.ts|engine\/Types\.kt|HalkvaktEngine\/Engine\.swift/,
+    golv: 3,
+  },
+  {
+    namn: "Halkans vägtest — så här många grader från linjens riktning",
+    varfor: "Motorns tre portar ska skilja en korsande hal väg från den bilen följer lika (Skeppsbron 24/11).",
+    former: [/\bhalkaPaGrader(?::\s*\w+)?\s*[:=]\s*(\d+)(?:\.0)?(?![\d.])/],
+    filer: /engine\/src\/types\.ts|engine\/Types\.kt|HalkvaktEngine\/Engine\.swift/,
+    golv: 3,
+  },
+  {
     namn: "Småvägsröstens vägtest — så här många meter från linjen mellan två grannpunkter",
     varfor: "Motorns tre portar ska känna igen samma småväg (DECISIONS #844); en port med vidare marginal varnar för vägar bredvid den bilen kör på.",
     former: [/\bsmavagPaM(?::\s*\w+)?\s*[:=]\s*(\d+)(?:\.0)?(?![\d.])/],

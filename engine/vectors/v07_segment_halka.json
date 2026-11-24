@@ -1,18 +1,18 @@
 {
  "name": "Halksegment (A1)",
- "description": "Klassat halksegment (code 2, Is) korsar vägen 2 km fram. Varnar ~30 s före inträde med segment-frasen.",
+ "description": "Klassat halksegment (code 2, Is) börjar 2 011 m fram på bilens väg och fortsätter längs den. Varnar ~30 s före inträde med segment-frasen, vid t=61 (655 m; t=60 låg 677 m, förvarningen är 666 m). VÄGTESTET (Skeppsbron 24/11): till dess låg sträckan som en linje tvärs över vägen 2 000 m fram — en korsande väg, som vägtestet tystar — och gränsen låg 0,07 m från fixen t=60 (5-metersregeln). Nu ligger den längs vägen, 11 m längre fram: samma fix, 655 m i stället för 644.",
  "hazards": [
   {
    "id": "seg1",
    "kind": "slippery_segment",
    "line": [
     [
-     14.99,
-     58.01796622349982
+     15,
+     58.018065037729066
     ],
     [
-     15.01,
-     58.01796622349982
+     15,
+     58.03593244699964
     ]
    ],
    "meta": {
@@ -635,7 +635,7 @@
    "t": 61,
    "hazardId": "seg1",
    "kind": "slippery_segment",
-   "distanceM": 644,
+   "distanceM": 655,
    "text": "Varning: halka rapporterad på vägen framför dig."
   }
  ]
