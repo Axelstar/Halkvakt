@@ -59,6 +59,8 @@ env:
   HINK: kuvos-smavag-2026-27
   MAPP: kuvos-smavag-bakat-2024                                      # kedjans filer i hinken
   RADAR: kuvos-smavag-radar-2023-11-01-2024-03-31-klar               # radarns cache (steget radar 12/11)
+  ANKARE_FRAN: "2024-01-01"                                          # ankarfilens period i hinken (steget ankare 12/11, körning
+  ANKARE_TILL: "2024-03-31"                                          # 43196119248); kedjan-b läser den för varje fönster inom perioden
 jobs:
   radar:
     if: ${{ inputs.steg == 'radar' }}
@@ -401,10 +403,13 @@ jobs:
       - name: Självtesten och jobben
         id: b
         shell: bash
-        env: { FRAN: "${{ inputs.fran }}", TILL: "${{ inputs.till }}" }
+        env: { FRAN: "${{ inputs.fran }}", TILL: "${{ inputs.till }}", STEG: "${{ inputs.steg }}" }
         run: |
           tyst() { "$@" > tyst.log 2>&1 || { echo "::error::föll: ${*:1:3}: $(tail -1 tyst.log | cut -c1-200)"; exit 1; }; }
           [[ "$FRAN" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ && "$TILL" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] || { echo "::error::dygnen ska vara ÅÅÅÅ-MM-DD"; exit 1; }
+          # Utanför ankarfilens period får timmarna tomma ankarfiler utan ett ord (smavagskedjan.ts ankare): stoppa före blocken.
+          [[ "$STEG" != kedjan-b || ( ! "$FRAN" < "$ANKARE_FRAN" && ! "$TILL" > "$ANKARE_TILL" ) ]] \
+            || { echo "::error::kedjan-b ligger utanför ankarfilens period $ANKARE_FRAN – $ANKARE_TILL"; exit 1; }
           tyst node --experimental-strip-types ingest/smavagskedjan.ts --sjalvtest
           tyst node --experimental-strip-types ingest/smavag-regel.ts --sjalvtest
           tyst node --experimental-strip-types ingest/smavag-live-db.ts --sjalvtest
@@ -656,8 +661,6 @@ jobs:
       NYKAND_VARIANT: t4
       BFRAN: "${{ matrix.block.fran }}"
       BTILL: "${{ matrix.block.till }}"
-      FRAN: "${{ inputs.fran }}"
-      TILL: "${{ inputs.till }}"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
@@ -703,7 +706,7 @@ jobs:
           tyst node --experimental-strip-types ingest/smavagskedjan.ts lagen "$PUNKTER" punkter-sv.csv
           tail -n +2 mn/metnordic_punkter.csv | grep -v '^v' | cut -d, -f1-3 >> punkter-sv.csv
           # Ankarna är Trafikverkets data rad för rad: de stannar i jobbet och tas bort i sista steget. En hämtning för hela blocket.
-          hink hamta "$HINK/ankare_${FRAN}_${TILL}.csv.gz" ankare-alla.csv.gz || { echo "::error::ankarna gick inte att hämta ur hinken"; exit 1; }
+          hink hamta "$HINK/ankare_${ANKARE_FRAN}_${ANKARE_TILL}.csv.gz" ankare-alla.csv.gz || { echo "::error::ankarna gick inte att hämta ur hinken"; exit 1; }
           tyst node --experimental-strip-types ingest/smavagskedjan.ts ankare ankare-alla.csv.gz "${BFRAN}T00:00:00Z" "${BTILL}T23:00:00Z" ankare
           rm -f ankare-alla.csv.gz
           mkdir -p kor

@@ -49,6 +49,12 @@ class MainActivity : ComponentActivity() {
     val notice = MutableStateFlow<String?>(null)
     val disclosure = MutableStateFlow<Disclosure?>(null)
     private var askedNotifications = false
+    /** Introduktionen (kort #652): höjs efter varje behörighetsruta och i onResume, så att skärmarna läser om läget. */
+    val behorighetLage = MutableStateFlow(0)
+    /** Den senast besvarade rutan från introduktionen: (kod, löpnummer). Koderna 10–13 är introduktionens egna. */
+    val introSvar = MutableStateFlow(0 to 0)
+    /** Fotostudion: vilket steg introduktionen ska visa (bara debug-byggen), annars null. */
+    val fotostudioIntro = MutableStateFlow<Int?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,6 +80,8 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch(Dispatchers.IO) { runCatching { FacitSender.flush(this@MainActivity) } }
         // Fotostudion (android.yml): visar facitknapparna på en påhittad varning. Bara debug-byggen.
         val debug = (applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
+        // Fotostudion: introduktionens steg (kort #652), för produktboken och butikens bilder. Bara debug-byggen.
+        if (debug) intent?.getIntExtra("fotostudio_intro", -1)?.takeIf { it >= 0 }?.let { fotostudioIntro.value = it }
         if (debug && intent?.getBooleanExtra("fotostudio_facit", false) == true) lifecycleScope.launch {
             Prefs.setFacitEnabled(this@MainActivity, true)
             Prefs.appendAlert(this@MainActivity, AlertEntry(System.currentTimeMillis(), "camera", "Fartkamera om 500 meter.", "cam:fotostudio"))
@@ -164,7 +172,7 @@ class MainActivity : ComponentActivity() {
             disclosure.value = Disclosure("Platsen även i bakgrunden",
                 "Halkvakt läser din plats även när appen är stängd eller skärmen släckt, så att vakten kan starta själv när du börjar köra och " +
                     "varna medan du kör. Platsen läses bara medan vakten är på och notisen \"Halkvakt vaktar\" syns. Matchningen sker i telefonen — " +
-                    "positionen skickas aldrig av sig själv.\n\nVälj \"Tillåt hela tiden\" på nästa sida.") {
+                    "positionen skickas aldrig av sig själv.\n\nVälj \"Tillåt alltid\" på nästa sida.") {
                 requestPermissions(arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION), 3)
             }
             return
@@ -181,7 +189,7 @@ class MainActivity : ComponentActivity() {
             if (!hasPermissions()) {
                 disclosure.value = Disclosure("Platsen — bara i telefonen",
                     "Halkvakt läser din plats medan vakten är på, för att veta vad som finns på vägen framför dig. " +
-                        "Matchningen sker i telefonen — positionen skickas aldrig av sig själv.\n\nVälj \"Exakt\" och \"När appen används\" på nästa sida.",
+                        "Matchningen sker i telefonen — positionen skickas aldrig av sig själv.\n\nVälj \"Exakt\" och \"När du använder appen\" på nästa sida.",
                     ::requestStartPermissions)
                 return
             }
@@ -224,6 +232,60 @@ class MainActivity : ComponentActivity() {
 
     fun openVoiceSettings() = runCatching { startActivity(android.content.Intent("com.android.settings.TTS_SETTINGS")) }
 
+    /* ---------- Introduktionen (kort #652) ----------
+     * Introduktionens skärmar är redogörelsen före varje ruta (Plays krav), så rutorna begärs direkt härifrån, utan
+     * dialogen `disclosure`. Ordningen är trappans: platsen i förgrunden först, sedan rörelse och Bluetooth, och
+     * bakgrundsplatsen i ett eget steg sist. Trappan för vippan i Inställningar (kod 1–4) är orörd. */
+    enum class Plats { INGEN, UNGEFARLIG, EXAKT }
+
+    fun platsLage(): Plats = when {
+        hasPermissions() -> Plats.EXAKT
+        checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED -> Plats.UNGEFARLIG
+        else -> Plats.INGEN
+    }
+
+    fun bakgrundOk(): Boolean = Build.VERSION.SDK_INT < 29 ||
+        checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED
+
+    /** Rörelseigenkänningen och bilens Bluetooth: det självstarten behöver utöver platsen. */
+    fun sjalvstartBehorigheter(): Boolean =
+        (Build.VERSION.SDK_INT < 29 || checkSelfPermission(Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED) &&
+        (Build.VERSION.SDK_INT < 31 || checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED)
+
+    fun notiserOk(): Boolean = notificationsOk()
+    fun notiserFragas(): Boolean = Build.VERSION.SDK_INT >= 33
+
+    private fun introSvarade(kod: Int) { introSvar.value = kod to introSvar.value.second + 1; behorighetLage.value++ }
+
+    fun introBegarPlats() = requestPermissions(LOCATION.toTypedArray(), 10)
+
+    fun introBegarSjalvstart() {
+        val saknas = mutableListOf<String>()
+        if (Build.VERSION.SDK_INT >= 29 && checkSelfPermission(Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED)
+            saknas.add(Manifest.permission.ACTIVITY_RECOGNITION)
+        if (Build.VERSION.SDK_INT >= 31 && checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED)
+            saknas.add(Manifest.permission.BLUETOOTH_CONNECT)
+        if (saknas.isEmpty()) introSvarade(11) else requestPermissions(saknas.toTypedArray(), 11)
+    }
+
+    /** Android 11+ öppnar systemets sida där föraren väljer "Tillåt alltid" (så heter valet på svensk Android 14, introprov 14/11); svaret kommer när hen backar. */
+    fun introBegarBakgrund() {
+        if (bakgrundOk()) introSvarade(12) else requestPermissions(arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION), 12)
+    }
+
+    fun introSlaPaSjalvstart() {
+        if (AutostartManager.isEnabled(this)) return
+        AutostartManager.setEnabled(this, true)
+        autostartOn.value = true
+        lifecycleScope.launch(Dispatchers.IO) { runCatching { Raknare.installning(this@MainActivity, "autostart:pa") } }   // #787
+    }
+
+    fun introBegarNotiser() {
+        askedNotifications = true
+        if (Build.VERSION.SDK_INT >= 33 && !notificationsOk()) requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 13)
+        else introSvarade(13)
+    }
+
     private fun notificationsOk(): Boolean =
         (getSystemService(android.app.NotificationManager::class.java)).areNotificationsEnabled()
 
@@ -263,13 +325,15 @@ class MainActivity : ComponentActivity() {
             2 -> if (granted || hasAllAutostart()) onAutostartToggle()
                  else notice.value = "Autostart är av: den behöver plats, rörelseigenkänning, Bluetooth och notiser. Slå på dem i appens inställningar."
             3 -> if (granted) onAutostartToggle()
-                 else notice.value = "Autostart är av: välj \"Tillåt hela tiden\" under Plats i appens inställningar och slå på igen."
+                 else notice.value = "Autostart är av: välj \"Tillåt alltid\" under Plats i appens inställningar och slå på igen."
+            10, 11, 12, 13 -> introSvarade(code)   // introduktionens rutor: skärmen läser läget och går vidare
         }
     }
 
     override fun onResume() {
         super.onResume()
         autostartOn.value = AutostartManager.isEnabled(this)
+        behorighetLage.value++   // föraren kan ha ändrat en behörighet i systemets inställningar
         // #772: behörigheten som den ser ut nu (en gång per enhet och värde), och räknarens kö går iväg — appen är öppen, bilen står.
         // #787: kohorten låses först (en ny telefon har inga spår än), sedan notiserna som de ser ut nu.
         val notisPa = notificationsOk(); val notisFragat = askedNotifications

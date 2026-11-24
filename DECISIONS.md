@@ -16185,3 +16185,179 @@ på CarPlays hemskärm, och vakten startar inte av att appen öppnas där (DECIS
 
 **Stomdokument:** APP 4 — iPhone-bygget utan CarPlay tills vidare
 
+## #859 (13/11 2026) Småvägsrösten: kedjan startas igen när timfilen saknas (kort #647)
+
+**Beslutet.** Bengt 13/11: *"Ja, bygg reserven"*, på förslaget att småvägsröstens kedja får en reserv som kandidatens (#854, #857).
+
+**Varför.**
+- Kedjan (`kuvos-smavag.yml`) startas av pulsklockan vid R + 51 minuter, och dess timfil för körningen R bär blocket R+6 … R+11. Kedjan
+  frågar MET:s katalog i en halvtimme och ger sedan upp, och ett fel hos MET fäller den. Ingenting startade den igen.
+- 13/11 00–05 UTC saknade småvägsrösten timfil, eftersom körningen 18Z 12/11 aldrig räknades vid bytet till pulsklockan (#849).
+  Timjobbet föll varje timme med *"timfilen för timmen saknas i hinken"*.
+- MET:s THREDDS föll varje morgon 11–13/11 mellan omkring 06:10 och 06:50 UTC. Kedjan startar 06:51, och 13/11 gick den igenom.
+- Kedjans prov före påslaget (halkvakt-kuvos F57 val 12) kräver fullständiga timmar i minst 90 % av 48 timmar. En förlorad körning
+  kostar sex timmar.
+
+**Det som är byggt.**
+- `scripts/smavag-reserv.ts` beslutar för den senaste slotten. Finns timfilen är kedjan klar. Annars startas kedjan igen 45–269 minuter
+  efter slotten, högst tre gånger: slottens kedja och två reserver. En kedja som lyckades utan timfil räknas som ett försök.
+- Inget startas när kedjan pågår eller väntar, eller när en annan körning i MET-kön (`kuvos-ny-kandidat-met`: kuvos-stad och
+  kuvos-pilot) kör eller väntar. En ny väntande körning hade då avbrutit den som väntar.
+- Efter 269 minuter hinner en kedja inte starta före R + 6, och då räknar den nästa körning i stället.
+- Jobbet `reserv` i `kuvos-smavag-timme.yml` frågar varje timme, oberoende av timjobbet. Det läser bara om timfilen finns
+  (`ingest/hinken.ts finns`) och skriver bara beslutet och körningens stämpel (#768). Ett gh eller en hink som inte svarar startar
+  ingenting.
+- Självtestet har 14 fall och fyra stämplar och körs i ci. Sex motprov fälldes av det. Jobbets skal provades lokalt med påhittade svar
+  från gh och hinken i sex fall.
+- Kontraktsgrinden vaktar slottens minut i pulsklockan och i reserven.
+- En dubbel kedja är ofarlig: timfilen laddas upp med `--finns-ok` och skrivs aldrig över.
+
+**Inte byggt:** morgonens timmar utan PH (13/11 06–07), när den nya kandidatens del A föll på MET. De tas av kandidatens reserv och
+timmen direkt (#854, #857), som prövas första gången 14/11 på morgonen.
+
+**Alternativen som inte valdes:**
+- En andra puls i pulsklockan, till exempel R + 2 h 21 min. Den kräver en migration och startar kedjan också när timfilen finns.
+- Att kedjan väntar längre på MET. Den håller då MET-kön och kan krocka med kuvos-stad.
+
+**Stomdokument:** SYS — småvägsröstens kedja får en reserv när timfilen saknas
+
+## #860 (13/11 2026) Viltsträckan: steg 0, läsningen av Trafikverkets viltolyckskartor, förregistreras (kort #657)
+
+**Beslutet.** Bengt 13/11: *"Ja, förbered steg 0"* och *"Ja, öppna PR"*. Frågan var vad som kan hålla appen och sajten i bruk
+maj–oktober, när halkan saknas. Underlaget ligger på Bengts Skrivbord (`Halkvakt_Aret_runt_Djupdykning_2026-11-13.md` och
+`Halkvakt_Viltvakten_Skiss_2026-11-13.md`). Bara steg 0 är beslutat, och det är en läsning. Ingen regel, ingen rösttext och ingen
+kod i motorn eller apparna.
+
+**Varför.**
+- PLAN.md rad A4 beskrev från början en viltzon ur olycksstatistik per sträcka, månad och timme. Den lades i vila 25/8 (#13),
+  eftersom ingen öppen data med positioner fanns. Sedan 22/9 varnar rösten för djur som Trafikverket just har rapporterat (#318),
+  omkring 35 om dygnet i september (#316).
+- Trafikverkets *Viltolyckskartor* 2020–2024 finns i Lastkajen (produktpaket 10094, GeoPackage, licens CC0 enligt
+  metadatakatalogen, post 1575 och 1576, läst 13/11): olyckor per kilometer och år för varje väglänk i huvudvägnätet, per art.
+  Metoden står i Trafikverkets publikation 2019:179.
+- Nationella viltolycksrådet redovisar 70 458 viltolyckor på väg 2025, varav 40 237 april–oktober (statistik.viltolycka.se, läst
+  13/11).
+- Trafikverkets väglag (RoadCondition) uppdateras bara 1 november–30 april (datamodellen, läst 13/11), så rapporterad halka kan
+  inte ge något maj–oktober.
+- De vädervarningar som låg närmast till hands för sommaren är redan fällda: vattenplaning i båda spåren (#648) och sikten (#491).
+
+**Det som är byggt.** `scripts/matningar/vilt-steg0-2026-11-13.ts`, som bara läser och bara skriver ut:
+- `falt` skriver varje lager och kolumn som den finns, med spann. Fältnamnen i 2019:179 gäller äldre serier och binds först efter
+  den utskriften.
+- `rakna` har fyra delar, skrivna i filens huvud före körningen:
+  1. nätet: länkar, kilometer och olyckor, och en kontroll av att frekvensfältet och längdfältet betyder det 2019:179 säger;
+  2. koncentrationen: andelen olyckor på de 1, 2, 5, 10 och 20 % av väglängden som har högst frekvens;
+  3. trappan: länkar längre än 250 m med mer än 0,5, 1, 2 och 3 olyckor per kilometer och år, med längd, art och län;
+  4. takten längs de 20 svenska skuggrutterna: länkar med ruttens vägnummer inom 5 km från linjen, heta länkar hopslagna när luckan
+     är högst 500 m (halkzonens regel), och rop på ett varv med kandidatens tak på ett rop per 10 minuter (#606).
+- Ingen dom och inga egna trösklar. Gränsen 1 olycka per kilometer och år med längre än 250 m är Trafikverkets egen definition av en
+  hotspot, så långt länkarnas fält bär den. Taket är lånat som en läsning, inte valt som regel.
+- Självtestet bygger en fil i minnet med en fälla per vakt. Åtta motprov (längden, den strikta gränsen, korridoren, vägnumret, zonen,
+  taket, geometrins envelope och Z-koordinaten) fälldes vart och ett på rätt rad. Skriptet körs med Nodes inbyggda SQLite och står
+  inte i ci.
+- Filen hämtas av Bengt, eftersom Lastkajen kräver inloggning (#65), och ligger utanför repot. Skriptet är inte kört mot den.
+
+**Det skriptet inte bär.**
+- Skuggrutterna är grova linjer, så läget längs rutten är ungefärligt. De tio C-rutterna saknar vägnummer och är inte med.
+- Filen bär ingen tid. Tidsvillkoret (artens veckor och timmar) sänker takten ytterligare och hör till ett senare steg.
+
+**Inte beslutat:** allt efter steg 0, det vill säga stabiliteten mellan två serier, tidsvillkoret, tröskeldokument, skugga och
+röst. Viltolycksrådets rådata med koordinater har ingen namngiven licens. Frågan till rådet väcks först om steg 0 visar att en
+smal regel finns (KONTAKTREGELN).
+
+**Alternativen som inte valdes:**
+- Att hålla skriptet utanför repot tills filen är läst. Förregistreringen är starkare när den är pushad före körningen.
+- Att börja med Viltolycksrådets rådata. Villkoren är oklara, och Trafikverkets fil är CC0 och räcker för steg 0.
+
+**Stomdokument:** BED §4.2 — viltsträckan är ett nytt spår som väntar på filen ur Lastkajen
+
+
+## #861 (13/11 2026) Meta-annonserna når Android: en Android-uppsättning per län, först i tre län
+
+Google Play är ute (produktion sedan 10/11), och Axel vill att Meta-annonserna når Android-telefoner också (13/11: *"shall we start
+with a few counties so we know it works fine?"*).
+
+**Beslut.**
+- En appkampanjs annonsuppsättning främjar en butik, så Android får egna uppsättningar i samma kampanj, *Län · <län> · Android*:
+  Android-telefoner, länk och främjat objekt till Google Play, samma region, placeringar och visningsfönster som länets
+  iPhone-uppsättning. iPhone-uppsättningarna rörs inte (en ändring av dem startar om leveransen, DECISIONS #754).
+- Pilot i tre län: Dalarna, Västernorrland och Jämtland (`ANDROID_LAN` i annonsstyrning.mjs). Breddas när piloten gått.
+- Samma regel och samma bild som iPhone: länet räknas lika, dagens annons ritas ur samma mall med Googles officiella svenska märke
+  *Ladda ned på Google Play* (oförändrad fil, `meta-mall/google-play-badge-sv.png`) i stället för App Store-märket, och texten slutar
+  *Gratis för Android.* Reservannonsen likaså.
+- Play-länken bär `utm_campaign=meta-<län>` i referrer, så Play Console räknar installationer per län som App Store Connect gör med `ct`.
+- Meta-appen Halkvakt Ads har plattformen Android (paket se.halkvakt.app, Google Play) sedan 13/11 kväll. Klassnamnet där
+  (`se.halkvakt.app.MainActivity`) krävs av formuläret och påverkar inte annonserna.
+- Budgeten är densamma, 6 000 kr för kampanjen. Android-uppsättningarna konkurrerar om den på samma ordning (#762).
+
+**Alternativ som inte valdes:**
+- Att lägga Android i iPhone-uppsättningarna. Meta tillåter en butik per uppsättning i en appkampanj.
+- Att bygga uppsättningarna för hand i Ads Manager. Skriptet lägger upp två nya annonser per län och dygn och pausar län utan halka;
+  handbyggda uppsättningar skulle stå med samma annons hela dygnet i varje län.
+- Alla 21 län på en gång. En pilot visar att Meta godkänner annonserna och att länken landar rätt innan budgeten delas på fler.
+
+**Stomdokument:** inga — marknadsföringen beskrivs inte i stomdokumenten
+
+## #862 (13/11 2026) Introduktionen i Android-appen: iPhones upplägg, ritad för Androids rutor (kort #652)
+
+**Beslut (Axel 13/11 kväll: *"I would like that we get play store to the same onboarding as iPhone"*, och om skärmarna
+*"Jag tycker det ser väldigt bra ut"*):** Android-appen får introduktionen från kort #651, med samma texter där de går att
+återanvända. Skärmarna är ritade som raderna J till N i flödesartefakten och byggda i `android/` (0.4.0, versionCode 49).
+
+**Det som skiljer från iPhone, och varför:**
+- **Självstarten är ett eget steg** (fem steg i stället för fyra). På iPhone är *Alltid* ett val i en ruta. På Android kräver
+  självstarten tre saker utöver platsen: rörelseigenkänning, bilens Bluetooth och bakgrundsplatsen, som väljs på en sida i
+  systemets inställningar. Frågan *Ska vakten starta själv?* har länken *Inte nu, jag startar själv*, och ett nej säger
+  först att Halkvakt varnar som vanligt.
+- **Trappans ordning är oförändrad:** platsen i förgrunden, sedan rörelse och Bluetooth, och bakgrundsplatsen i ett eget steg
+  sist (Plays krav, `skills/halkvakt-android` §2). Introduktionens skärmar är redogörelsen före varje ruta; redogörelsen för
+  bakgrundsplatsen står på skärmen före systemets sida. Trappan för vippan i Inställningar och för *Starta vakten* är orörd.
+- **Ungefärlig plats har ett eget läge** (*Exakt plats behövs*): Androids ruta låter föraren välja det, och vakten kan inte
+  varna med det.
+- **En installation som redan gett platsen får inte introduktionen påtvingad.** Den har använt appen förut. Fotostudion i
+  android.yml beviljar platsen före första starten och berörs därför inte.
+
+**Vad appen skickar:** räknaren säger `onboarding_klar` en gång per installation, samma ord som iPhone sedan #772, inom det
+första av räknarens sex områden (*the way in*). Värdelistan i `app-raknare` hade redan ordet. Inget annat ändras.
+
+**Prövat:** `IntroTest` (sex prov av vilken skärm som följer på vilket svar), appens 126 enhetsprov och kompileringen.
+Demovideons skript (`scripts/demovideo.sh`) går genom introduktionen i stället för vippan.
+
+**Inte prövat:** på en telefon. Texterna i Androids egna rutor är skrivna ur minnet. Play-deklarationens demovideo visar det
+gamla flödet tills en ny är inspelad.
+
+**Alternativ:** (a) vänta med Android tills iPhone-versionen är godkänd av Apple; avfärdat av Axel, Play-versionen ligger ute
+utan introduktion. (b) Be om alla behörigheter i en följd utan eget steg för självstarten; avfärdat, det bryter trappan och
+ger avslag i Plays granskning.
+
+**Stomdokument:** APP 4 — introduktionen i Android-appen
+
+## #863 (14/11 2026) Småvägsrösten: taket valt, tyst i 30 minuter och 20 km efter ett besked (kort #647)
+
+**Beslutet.** Bengt 14/11: *"Ja bygg o ta det tak du rekommenderar"*, på beslutsunderlaget för fukten och taket (Bengts Skrivbord,
+`Smavagsrosten_Beslutsunderlag_fukten_och_taket_2026-11-14.md`). Efter ett besked tiger småvägsrösten tills både 30 minuter och 20 km
+har gått, på alla vägar: `smavagTystS` 1800 och `smavagTystM` 20000 i motorn, Kotlin och Swift. Platshållarna var 10 minuter och 5 km
+(#844). Bengt bekräftade samma dag (*"Ja, 30/20"*) efter frågan varför taket inte stod kvar på platshållarna, och **Axel sa ja via Bengt** (*"axel säge ja"*). Taket väljs av Bengt och Axel (halkvakt-kuvos F57).
+
+**Varför.**
+- Taket väljs ur backtesten januari–mars 2024 (halkvakt-kuvos F57 och F58). Talen och läsningen står i halkvakt-kuvos F60.
+- Med 30 minuter blir det högst ett besked på en vanlig småvägsresa. Med kortare tystnad upprepade rösten oftast samma väder direkt
+  efter tystnaden.
+- D, 20 km, avgör bara när farten är under 40 km/h.
+- Taket kompileras in i apparna och måste vara valt innan appversionen med småvägsrösten byggs.
+
+**Avsteg från ordningen.** Tillägget 11/11 till #828 sa att fukten väljs före taket. Bengt valde taket först, på underlaget att det
+rekommenderade taket är detsamma för båda fukterna. Fukten väljs efter radarns bakåtprov (kort #658, halkvakt-kuvos F59), och
+avbrottsgränsen i skuggan (halkvakt-kuvos F57 val 14) följer den fukt som väljs.
+
+**Det som är byggt.**
+- Motorns värden i TypeScript, Kotlin och Swift. Kontraktsgrinden bär båda talen i de tre portarna.
+- Vektorn v56 är ritad om för 30 minuter och 20 km, och den gamla v56 för 10 minuter och 5 km är borttagen. P2 tiger efter 28,7 km
+  och 1 293 s, och P3 talar efter 1 813 s. Varje gräns har minst 10 m marginal, mätt med motorns haversine.
+- Skuggmotorn, favoriter och favoritprov är buntade ur motorn.
+- Inget är deployat, och brytarna är av.
+
+**Alternativen som inte valdes:** 60 minuter och 50 km; 20 minuter och 10 km; platshållaren 10 minuter och 5 km; att vänta med taket
+tills fukten är vald.
+
+**Stomdokument:** APP §3, MAT §5 — småvägsröstens tystnad efter ett besked

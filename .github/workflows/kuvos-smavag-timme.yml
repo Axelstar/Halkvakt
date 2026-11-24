@@ -7,7 +7,7 @@ name: kuvos-smavag-timme
 # och timmens resor ur det (smavag_takt.py, F50 del B med F55 och F56).
 # Saknas timmens PH hoppas timmen grönt. Saknas timfilen är det ett fel (DECISIONS #849): kedjan startas sedan 12/11 vid R + 51 minuter
 # och är klar långt före blocket, så en saknad timfil betyder att kedjan inte räknade, och det ska synas. Loggen säger bara klart eller fel
-# (#768). Ankarna lämnar aldrig jobbet.
+# (#768). Ankarna lämnar aldrig jobbet. Jobbet reserv startar kedjan igen när timfilen för den senaste slottens körning saknas (#859).
 on:
   workflow_run:
     workflows: [ny-kandidat-timme]
@@ -166,3 +166,58 @@ jobs:
       - name: Ankarna lämnar aldrig jobbet
         if: always()
         run: rm -f ankare.csv
+  # RESERVEN FÖR KEDJAN (DECISIONS #859, Bengt 13/11: "Ja, bygg reserven"). Varje timme, oberoende av timjobbet: saknas timfilen för den
+  # senaste slottens körning R (pulsklockan, R + 51) startar scripts/smavag-reserv.ts kedjan igen, 45–269 minuter efter slotten och högst
+  # tre gånger, så att blocket R+6 … R+11 ändå får sin timfil. 13/11 00–05 UTC saknades den, eftersom körningen 18Z aldrig räknades. Inget
+  # startas när en annan körning i MET-kön (kuvos-ny-kandidat-met) kör eller väntar, och ett gh eller en hink som inte svarar startar
+  # ingenting. Bara beslutet och körningens stämpel skrivs ut (#768).
+  reserv:
+    if: ${{ github.event_name == 'workflow_run' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: write   # kedjans körningar och reserven som startar kedjan igen (#859)
+    env: { GH_TOKEN: "${{ github.token }}" }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Kedjans timfil, annars kedjan igen
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          node --experimental-strip-types scripts/smavag-reserv.ts --sjalvtest 2>&1 | grep -v ExperimentalWarning | tail -1
+          NU=$(date -u +%FT%TZ)
+          STAMP=$(node --experimental-strip-types scripts/smavag-reserv.ts --stampel "$NU" 2>/dev/null)
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          set +e
+          FN="$FN" KEY="$KEY" node --experimental-strip-types ingest/hinken.ts finns "$HINK/timmar_$STAMP.csv.gz" 2>/dev/null
+          KOD=$?
+          set -e
+          case "$KOD" in
+            0) TIMFIL=ja ;;
+            3) TIMFIL=nej ;;
+            *) echo "Reserven: hinken svarade inte, ingenting startat." | tee -a "$GITHUB_STEP_SUMMARY"; exit 0 ;;
+          esac
+          upptagna() { gh run list --workflow "$1" --limit 10 --json status -q '[.[] | select(.status != "completed")] | length'; }
+          set +e
+          G1=$(upptagna kuvos-stad.yml) && G2=$(upptagna kuvos-pilot.yml) && G3=$(upptagna kuvos-smavag.yml) \
+            && RES=$(gh run list --workflow kuvos-smavag.yml --limit 10 --json status,conclusion,createdAt \
+              | node --experimental-strip-types scripts/smavag-reserv.ts --nu "$NU" --timfil "$TIMFIL" --grannar "$((G1 + G2 + G3))" 2>/dev/null)
+          KOD=$?
+          set -e
+          [ "$KOD" = 0 ] && [ -n "$RES" ] || { echo "Reserven: gh eller skriptet svarade inte, ingenting startat." | tee -a "$GITHUB_STEP_SUMMARY"; exit 0; }
+          BESLUT="${RES%%$'\t'*}"; SKAL="${RES#*$'\t'}"
+          case "$BESLUT" in
+            starta)
+              gh workflow run kuvos-smavag.yml -f steg=kedjan || { echo "::warning title=RESERV::småvägskedjan gick inte att starta"; exit 0; }
+              echo "::warning title=RESERV::småvägskedjan: $SKAL — kedjan startad igen (scripts/smavag-reserv.ts)"
+              echo "**RESERV:** $SKAL. Kedjan är startad igen." >> "$GITHUB_STEP_SUMMARY" ;;
+            *)
+              echo "Reserven: $SKAL." | tee -a "$GITHUB_STEP_SUMMARY" ;;
+          esac

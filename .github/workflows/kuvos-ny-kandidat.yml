@@ -2911,6 +2911,31 @@ jobs:
             [ -s met/delar.txt ] || { echo "::error::MET Nordic-delarna för $V saknas"; exit 1; }
           fi
           echo "MET Nordic för $V: klart ($(wc -l < met/delar.txt) delar)"
+      # Radarns bakåtprov (halkvakt-kuvos F59, rättad i F60), bara 2024/25: kuvösens radar per station och halvtimme ur samma fil och
+      # sträckor som steget fukten, till cellerna. Radarfilen är SMHI:s och sträckorna och stationerna öppna data; inga tal i loggen.
+      - name: Radarn per station (2024/25, halkvakt-kuvos F59)
+        if: ${{ matrix.vinter == '2024-25' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          prov() { if "${@:2}" > /dev/null 2>&1; then echo "$1: klart"; else echo "::error::$1: fel"; return 1; fi; }
+          prov "spärren (F59, signerad)" python3 fysik/ny_kandidat/sparren.py docs/FORREGISTRERING-RADARN-SMAVAGAR-2026-11.md
+          prov "självtestet för radarn per station (påhittade data)" node --experimental-strip-types kuvos/radarn-stationer.ts --sjalvtest
+          mkdir -p smhi radar && gh release download kuvos-smhi-2024-25 --dir smhi --pattern 'radar_precip_2024-25.csv.gz'
+          node -e '
+            const c = require("crypto"), fs = require("fs");
+            const f = require("./kuvos/smhi-leverans.json").filer.find((x) => x.fil === "radar_precip_2024-25.csv.gz");
+            const h = c.createHash("sha256").update(fs.readFileSync("smhi/" + f.fil)).digest("hex");
+            console.log(`${f.fil}: ${h === f.sha256 ? "sha256 lika manifestet" : "FEL " + h}`); process.exit(h === f.sha256 ? 0 : 1);'
+          # -L: adressen omdirigeras (301) till halkvakt.se; filen prövas också, eftersom en geojson börjar med {.
+          curl -sSfL -o vaglag.geojson https://axelstar.github.io/halkvakt-karta/data/vaglag.geojson
+          [ "$(head -c 1 vaglag.geojson)" = "{" ] || { echo "::error::vaglag.geojson är inte JSON"; exit 1; }
+          RC=0; node --experimental-strip-types kuvos/radarn-stationer.ts --radar smhi/radar_precip_2024-25.csv.gz --vaglag vaglag.geojson \
+            --stationer data/vagdata/stationer.json --ut radar/radar_stationer_2024-25.csv.gz --info radar/radar_stationer_2024-25.json > rs.txt 2>&1 || RC=$?
+          PROVET=$(sed -n 's/^RADARN FÖLL: \(radarn\|filerna\|argumenten\)$/\1/p' rs.txt | tail -1)
+          rm -rf smhi vaglag.geojson rs.txt
+          [ "$RC" -eq 0 ] || { echo "::error::radarn per station: fel i ${PROVET:-skriptet, utan besked (kod $RC)}"; exit "$RC"; }
+          echo "radarn per station: klart"
       - name: Cellerna för vintern, till hinken
         shell: bash
         env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
@@ -2944,13 +2969,15 @@ jobs:
               process.exit(fel ? 1 : 0);' "$@"
           }
           case "$V" in 2017-18|2023-24) ARGS=(--levande lev --smavagar sma) ;; *) ARGS=(--veck vk) ;; esac
+          # Radarns bakåtprov (halkvakt-kuvos F59): 2024/25 får radarn per station, och cellerna bär då också radarns varianter.
+          if [ "$V" = 2024-25 ]; then ARGS+=(--radar radar/radar_stationer_2024-25.csv.gz --radar-info radar/radar_stationer_2024-25.json); fi
           mapfile -t VV < vv.txt
           RC=0; python3 fysik/ny_kandidat/df_bakat.py celler --vinter "$V" "${ARGS[@]}" --vvis "${VV[@]}" --metnordic $(cat met/delar.txt) --ut ut > df.txt 2>&1 || RC=$?
           # Vilket prov som föll: bara ordet ur skriptets rad, aldrig talen.
-          PROVET=$(sed -n 's/^DF FÖLL: \(vintern\|vecket\|koderna\)$/\1/p' df.txt | tail -1)
+          PROVET=$(sed -n 's/^DF FÖLL: \(vintern\|vecket\|koderna\|radarn\)$/\1/p' df.txt | tail -1)
           # P-I med norrregeln (halkvakt-kuvos F48): en gång, i jobbet för 2017-18, som har båda halvvintrarnas skattningar.
           RC2=0; if [ "$V" = 2017-18 ]; then python3 fysik/ny_kandidat/norrregeln_diag.py halvvintrar --levande lev --smavagar sma --ut ut/norrregeln_p1.json > nr.txt 2>&1 || RC2=$?; rm -f nr.txt; fi
-          rm -rf vv vv.txt vk lev sma met rel df.txt
+          rm -rf vv vv.txt vk lev sma met rel df.txt radar
           [ "$RC" -eq 0 ] || { echo "::error::D-F bakåt, vintern $V: fel i ${PROVET:-skriptet, utan besked (kod $RC)}"; exit "$RC"; }
           echo "D-F bakåt, vintern $V: klart"
           lagg "ut/df_celler_$V.csv.gz" "ut/df_info_$V.json"
@@ -2988,6 +3015,7 @@ jobs:
           (cd fysik && sha256sum -c --quiet SHA256SUMS)
           prov() { if "${@:2}" > /dev/null 2>&1; then echo "$1: klart"; else echo "::error::$1: fel"; return 1; fi; }
           prov "spärren (F47, signerad)" python3 fysik/ny_kandidat/sparren.py docs/FORREGISTRERING-DF-BAKAT-2026-11.md
+          prov "spärren för radarns bakåtprov (F59, signerad)" python3 fysik/ny_kandidat/sparren.py docs/FORREGISTRERING-RADARN-SMAVAGAR-2026-11.md
           prov "självtestet (påhittade data)" python3 fysik/ny_kandidat/df_bakat.py --sjalvtest
       - name: Cellerna ur hinken, läsningen till hinken
         shell: bash
@@ -3038,6 +3066,11 @@ jobs:
           }
           F=(); for V in 2018-19 2019-20 2020-21 2021-22 2022-23 2024-25 2017-18 2023-24; do F+=("$UT_HINK/df_celler_$V.csv.gz" "$UT_HINK/df_info_$V.json"); done
           hamta celler "${F[@]}"
+          # Radarns bakåtprov (halkvakt-kuvos F59, §7 a): 2024-25 med radarn mot del A:s celler ur körning 42797406921 (nummer 49, F51).
+          hamta gamla "kuvos-df-bakat-2026-11-49/df_celler_2024-25.csv.gz"
+          RCR=0; python3 fysik/ny_kandidat/df_bakat.py las-radar --celler celler --gamla gamla/df_celler_2024-25.csv.gz --ut ut > lr.txt 2>&1 || RCR=$?
+          PROVETR=$(sed -n 's/^DF FÖLL: \(vintrarna\|radarn\|kontrollen\|tackningen\)$/\1/p' lr.txt | tail -1)
+          rm -rf gamla lr.txt
           RC=0; python3 fysik/ny_kandidat/df_bakat.py las --celler celler --ut ut > las.txt 2>&1 || RC=$?
           PROVET=$(sed -n 's/^DF FÖLL: \(vintrarna\|koderna\|kontrollen\)$/\1/p' las.txt | tail -1)
           rm -rf celler las.txt
@@ -3048,6 +3081,10 @@ jobs:
           fi
           echo "D-F bakåt, läsningen: klart"
           lagg ut/df_bakat.json
+          # Föll kontrollen eller täckningen ligger bara proven i radarns fil: den går till hinken, så att skälet går att läsa där.
+          if [ -f ut/radarn_bakat.json ]; then lagg ut/radarn_bakat.json; fi
+          [ "$RCR" -eq 0 ] || { echo "::error::radarns bakåtprov, läsningen: fel i ${PROVETR:-skriptet, utan besked (kod $RCR)}"; exit "$RCR"; }
+          echo "radarns bakåtprov, läsningen: klart"
           rm -rf ut
 
   # Variant smavagar har bara lägena identitet, traning, provning och dom (indata, fyll och t4 är desamma för alla varianter), och

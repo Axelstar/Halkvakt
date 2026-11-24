@@ -22,6 +22,7 @@
     roads        [{ road: "VÄG 90", stretch: "Hälla–Junsele–Bollstabruk" }]   (0–3 rader, fler ignoreras)
     coldest      { station: "Vassijaure", surfaceTemp: -0.9 } eller null   (tal formateras till −0,9 °C)
     dataTime     "05:40"
+    store        "play" visar Googles märke "Ladda ned på Google Play" i stället för App Store-märket (standard App Store)
   Mallen skriver aldrig ut ett tal som inte finns i datan. Saknas ett fält visas raden inte.
 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -64,6 +65,8 @@
   .strip .top { display:flex; justify-content:space-between; align-items:flex-end; gap:40px; }
   .promise { font-size:54px; line-height:1.06; font-weight:600; letter-spacing:-0.028em; max-width:620px; text-wrap:balance; }
   .badge { flex:none; display:block; height:92px; width:auto; aspect-ratio:119.66407/40; }
+  /* Googles officiella märke (google-play-badge-sv.png, oförändrat) har luft runt sig i filen: 119 px ger samma synliga höjd som App Store-märket. */
+  .badge.play { height:119px; aspect-ratio:646/250; margin:-13px -7px -14px 0; }
   .foot { display:flex; justify-content:space-between; align-items:center; gap:24px; font-size:22px; letter-spacing:.14em; color:var(--dim); }
   .logo { display:flex; align-items:center; gap:14px; color:var(--text); font-weight:600; font-size:26px; }
   .logo .tri { color:var(--yellow); width:34px; height:30px; }
@@ -135,6 +138,7 @@
     </g>
   </g>
 </svg>
+      <img id="playbadge" class="badge play" src="google-play-badge-sv.png" alt="Ladda ned på Google Play" hidden>
     </div>
     <div class="foot mono"><span class="logo"><i class="tri"><svg class="mk" viewBox="3 3 94 83"><path d="M55.196 6.000 L96.196 77.000 A6 6 0 0 1 91.000 86.000 L9.000 86.000 A6 6 0 0 1 3.804 77.000 L44.804 6.000 A6 6 0 0 1 55.196 6.000 Z" fill="currentColor"/></svg></i>Halkvakt</span><span data-field="source">Trafikverkets data · 05:40</span></div>
   </div>
@@ -177,6 +181,9 @@ function render(d) {
   const variant = d.variant || 'daily';
   const daily = variant === 'daily';
   ['subtitle', 'roads', 'coldest', 'voice', 'lines'].forEach(f => $(f).hidden = true);
+  const play = d.store === 'play';
+  document.getElementById('livetype').style.display = play ? 'none' : '';
+  document.getElementById('playbadge').hidden = !play;
 
   if (daily) {
     const hazard = clean(d.hazard) || 'Halka';
@@ -221,7 +228,7 @@ function fit() {
 }
 
 render(getData());
-document.fonts.ready.then(() => { fit(); requestAnimationFrame(() => { document.documentElement.dataset.ready = '1'; }); });
+Promise.all([document.fonts.ready, document.getElementById('playbadge').decode().catch(() => {})]).then(() => { fit(); requestAnimationFrame(() => { document.documentElement.dataset.ready = '1'; }); });
 </script>
 </body>
 </html>

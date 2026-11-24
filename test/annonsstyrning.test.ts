@@ -2,7 +2,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 // @ts-ignore — .mjs utan typer
-import { fara, annons, stracka, vagBild, vagText, dagdel, VISNING, GRANSKODER, sammaSchema, ordning, rang, kampanjLank } from "../marknadsforing/annonsstyrning.mjs";
+import { fara, annons, stracka, vagBild, vagText, dagdel, VISNING, GRANSKODER, sammaSchema, ordning, rang, kampanjLank,
+  ANDROID_LAN, playLank, lanAv, arAndroid, RESERV, RESERV_ANDROID } from "../marknadsforing/annonsstyrning.mjs";
 
 const l = (kort: string, halt: number, kalla: number, extra = {}) =>
   ({ kod: 1, kort, slug: kort.toLowerCase(), halt, vagavsnitt: 40, kalla, kallast: null, olyckor: 0, ...extra });
@@ -109,4 +110,37 @@ test("kampanjlänken bär länet i ct och Halkvakts pt, högst 40 tecken", () =>
   assert.equal(u.searchParams.get("mt"), "8");
   assert.ok(u.pathname.endsWith("/id6806939784"));
   assert.ok(new URL(kampanjLank("x".repeat(60))).searchParams.get("ct")!.length <= 40);
+});
+
+test("Android: samma annons med Googles märke och texten Gratis för Android", () => {
+  const sl = { vagar: [{ vag: "E 4", strackor: [s("Docksta - Gallsäter", "Mycket besvärligt", ["Is"])] }] };
+  const ios = annons(l("Västernorrland", 3, 0), sl, TID, "2026-11-10");
+  const and = annons(l("Västernorrland", 3, 0), sl, TID, "2026-11-10", true);
+  assert.equal(and.data.store, "play");
+  assert.equal(ios.data.store, undefined);
+  assert.deepEqual({ ...and.data, store: undefined }, { ...ios.data, store: undefined });
+  assert.equal(and.text, ios.text.replace("Gratis för iPhone.", "Gratis för Android."));
+  assert.match(annons(l("Jämtland", 0, 4), { vagar: [] }, TID, "2026-11-10", true).text, /Gratis för Android\.$/);
+  assert.equal(annons(l("Skåne", 0, 2), null, TID, "2026-11-10", true), null);
+  assert.equal(RESERV_ANDROID.data.store, "play");
+  assert.equal(RESERV_ANDROID.text, RESERV.text.replace("iPhone", "Android"));
+});
+
+test("Android: namnen ger länet tillbaka, piloten är tre län", () => {
+  assert.equal(lanAv("Län · Jämtland · Android"), "Jämtland");
+  assert.equal(lanAv("Län · Jämtland"), "Jämtland");
+  assert.equal(arAndroid("Län · Jämtland · Android"), true);
+  assert.equal(arAndroid("Län · Jämtland"), false);
+  assert.deepEqual([...ANDROID_LAN].sort((a, b) => a - b), [20, 22, 23]);
+  const u = new URL(playLank("jamtland"));
+  assert.equal(u.searchParams.get("id"), "se.halkvakt.app");
+  assert.equal(u.searchParams.get("referrer"), "utm_source=meta&utm_campaign=meta-jamtland");
+});
+
+test("Android: ordningen läser länet ur Android-namnet", () => {
+  const satser = [{ name: "Län · Jämtland · Android" }, { name: "Län · Dalarna · Android" }];
+  const a = { "Län · Jämtland · Android": { data: { hazard: "Risk för halka" } }, "Län · Dalarna · Android": { data: { hazard: "Halka" } } };
+  const lan = { Jämtland: { halt: 1 }, Dalarna: { halt: 5 } };
+  const ut = ordning(satser, (n: string) => (a as any)[n], (n: string) => (lan as any)[lanAv(n)]);
+  assert.deepEqual(ut.map((x: any) => x.name), ["Län · Dalarna · Android", "Län · Jämtland · Android"]);
 });
