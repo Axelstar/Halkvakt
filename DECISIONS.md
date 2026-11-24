@@ -19556,3 +19556,25 @@ Android är inte sedd på en telefon); att slå på med 0.4.0 i App Store (taket
 att ta med modden (då behövs också ett Android-bygge, och Axel bad om bara småvägarna).
 
 **Stomdokument:** APP (versionerna: 0.4.1 (73) ur releasegrenen samt Android 0.4.0 (49) med taket)
+
+## #959 (24/11 2026) Driftlarmet i olycksfacit gör ärenden för våra egna fel (kort #641)
+
+**Beslut** (Bengt 24/11 på beslutskortet: *"Bara våra egna fel"*, efter skuggans läsning samma dag, DB-knappen `las` 45405287161).
+Skuggan (sql/108, DECISIONS #841, #842) prövade varje olycka 11–24/11, fjorton dygn. Raderna kom från *K ingen timme*, *A2 tyst* och
+*appen stilla*, alla på ytan och ingen på ett halkord; *K gallrad* och *appen okänd* gav inga.
+1. **Tre feltyper gör ärenden:** *appen stilla* (lägesfilen till appen publicerades inte de 15 minuterna före olyckan), *K ingen timme*
+   och *K gallrad* (kandidatens kedja). Det är fel i vår egen kedja, som går att åtgärda.
+2. **Två gör inga ärenden:** *A2 tyst* (en station hos Trafikverket som tiger, som vi inte kan laga) och *appen okänd* (går inte att
+   avgöra). Deras rader skrivs som förut, och olyckan själv läses i dagens och veckans ärende.
+3. **Utskicket som förslaget §3:** ett ärende med etiketten `drift`, tilldelat Bengt, högst ett per feltyp och svenskt dygn; följande
+   olyckor med samma fel blir kommentarer. Ärendet bär väg, tid, läge, feltypen och sedan när lagret fungerade, aldrig kandidatens tal.
+   Det stängs när felet är förklarat, med ett kort eller *ingen åtgärd* med skälet.
+4. **Bygget:** `supabase/functions/olycksfacit/drift.ts` och grenen `?drift=1` i funktionen; `sql/142` (raden skickad och ärendets
+   nummer, tabellen `olycksfacit_drift_arenden`, jobbet `halkvakt-olycksfacit-driftarende` tio minuter efter fångsten). Skuggans rader
+   märks skickade utan nummer, så att inga gamla olyckor blir ärenden. Ordningen: funktionen deployas först, sedan `sql/142` med
+   DB-knappen, båda på Bengts ord.
+
+**Alternativ.** Alla fem feltyperna (förkastat: en tyst station hos Trafikverket ger ärenden vi inte kan åtgärda, ungefär två till i
+veckan). Bara *appen stilla* (förkastat: kandidatens kedja tiger då tills veckans ärende).
+
+**Stomdokument:** MAT (olycksfacits driftlarm)
