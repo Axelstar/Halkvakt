@@ -1,0 +1,29 @@
+# Vägnumren vid småvägsröstens vägar och storstädernas punkter (DECISIONS #962, kort #678; sql/144, ingest/vagnummer-punkter.ts).
+# Läser punkterna i driften, frågar NVDB Vägnummer i Trafikverkets öppna API och skriver vagnummer_punkt. Punkterna är kuvösens
+# (DECISIONS #768): loggen säger bara klart eller fel. Knapp, inte cron. Nyckeln delas med driftens ingest; ~2 förfrågningar/s.
+name: vagnummer-punkter
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency: vagnummer-punkter
+jobs:
+  vagnummer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - name: Självtestet
+        run: node --experimental-strip-types ingest/vagnummer-punkter.ts --sjalvtest
+      - name: Vägnumren
+        shell: bash
+        env:
+          DATABASE_URL: "${{ secrets.DATABASE_URL }}"
+          TRAFIKVERKET_API_KEY: "${{ secrets.TRAFIKVERKET_API_KEY }}"
+        run: |
+          set -o pipefail
+          node --experimental-strip-types ingest/vagnummer-punkter.ts 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
