@@ -4,12 +4,12 @@ name: olyckor-trv-kontroll
 on:
   push:
     branches: [claude/project-thread-pnu45o]
-    paths: [".github/workflows/olyckor-trv-kontroll.yml", "scripts/matningar/olyckor-trv-kontroll-2026-11-24.ts"]
+    paths: [".github/workflows/olyckor-trv-kontroll.yml", "scripts/matningar/olyckor-trv-kontroll-2026-11-24.ts", "scripts/matningar/polisens-trafikolyckor-2026-11-24.ts"]
   workflow_dispatch: {}
 jobs:
   kontroll:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -20,6 +20,8 @@ jobs:
         run: |
           echo '```' >> "$GITHUB_STEP_SUMMARY"
           node --experimental-strip-types scripts/matningar/olyckor-trv-kontroll-2026-11-24.ts | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "== Polisens händelser ==" | tee -a "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/matningar/polisens-trafikolyckor-2026-11-24.ts | tee -a "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
         env:
           TRAFIKVERKET_API_KEY: "${{ secrets.TRAFIKVERKET_API_KEY }}"
