@@ -57,7 +57,7 @@ fun PointMeta.frysriskGaller(cfg: EngineConfig = EngineConfig()): Boolean {
 enum class AccidentStep(val wire: String) { EARLY("early"), REMINDER("reminder"), LATE("late") }
 
 data class SegmentMeta(val code: Int? = null, val info: List<String> = emptyList()) {
-    /** Which A1 line a stretch that speaks gets — mirror of halkaRapporterad in engine.ts (Axel 24/11; vectors v64–v67). True when a
+    /** Which A1 line a stretch that speaks gets — mirror of halkaRapporterad in engine.ts (Axel 24/11; vectors v72–v75). True when a
      *  ConditionInfo word is a halkord, or the class is 3 (Mycket besvärligt) or 4 (Is- och snövägbana): "halka rapporterad". False,
      *  which for a stretch that speaks is class 2 (Besvärligt (risk för)) with no such word: the line, the card and the lists say risk. */
     val halkaRapporterad: Boolean get() = (code ?: 0) >= Halkord.HALKA_RAPPORTERAD_KOD || info.any { Halkord.traff(it) }

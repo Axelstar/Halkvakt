@@ -683,7 +683,7 @@ export const SLIPPERY_INFO = /(?<![a-zåäö])(is|halka|halkrisk|halkig|halt|myc
 // it speaks. "halk" is NOT a stem: "Halkbekämpning" and "Halkskydd" are countermeasures, not hazards,
 // so only halka/halkrisk/halkig are listed above. Vector v24 locks all of it in three ports.
 export const SLIPPERY_STAM = /(snö|frost)/i;
-// Which A1 line a stretch that speaks gets (Axel 24/11; vectors v64–v67). Reported — "halka rapporterad" — when a ConditionInfo word
+// Which A1 line a stretch that speaks gets (Axel 24/11; vectors v72–v75). Reported — "halka rapporterad" — when a ConditionInfo word
 // is one of the words above, or the class is 3 (Mycket besvärligt) or 4 (Is- och snövägbana). Otherwise, which for a stretch that
 // speaks is class 2 (Besvärligt (risk för)) with no such word, the line says risk (HALKRISK_TEXT). Whether the stretch speaks is
 // not decided here. Samma tal i Engine.kt och Engine.swift (kontraktsgrinden).

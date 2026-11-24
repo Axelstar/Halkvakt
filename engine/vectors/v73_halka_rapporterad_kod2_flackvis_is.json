@@ -1,6 +1,6 @@
 {
  "name": "Besvärligt med ett isord säger halka rapporterad",
- "description": "Som v64, men rapporten bär också 'fläckvis Is'. Ett halkord i ConditionInfo, vilket som helst av dem, räcker: rapporten nämner is, och raden är 'Varning: halka rapporterad på vägen framför dig.' Ordet står sist i listan, så varje ord prövas.",
+ "description": "Som v72, men rapporten bär också 'fläckvis Is'. Ett halkord i ConditionInfo, vilket som helst av dem, räcker: rapporten nämner is, och raden är 'Varning: halka rapporterad på vägen framför dig.' Ordet står sist i listan, så varje ord prövas.",
  "hazards": [
   {
    "id": "r2_kod2_flackvis_is",

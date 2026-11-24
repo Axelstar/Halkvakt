@@ -1,6 +1,6 @@
 {
  "name": "Ej bil: 155 km/h utvärderas",
- "description": "Samma som v70 i 155 km/h. Under 160 ⇒ kameran talar t=24 vid 466 m (t=23 låg 509 m — marginal 9,2 m före / 33,9 m efter gränsen 500 m, uppmätt). Låser högsta farten mellan 155 och 165.",
+ "description": "Samma som v76 i 155 km/h. Under 160 ⇒ kameran talar t=24 vid 466 m (t=23 låg 509 m — marginal 9,2 m före / 33,9 m efter gränsen 500 m, uppmätt). Låser högsta farten mellan 155 och 165.",
  "hazards": [
   {
    "id": "cam1",

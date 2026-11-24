@@ -461,7 +461,7 @@ const scenarios: Scenario[] = [
     trace: Array.from({ length: 61 }, (_, t) => ({ t, lon: LON0, lat: northOf(t * (16 * 1000) / 3600), speedKmh: 16, headingDeg: 0 })),
   },
   {
-    file: "v70_ej_bil_fart_165_tiger", name: "Ej bil: 165 km/h utvärderas inte",
+    file: "v76_ej_bil_fart_165_tiger", name: "Ej bil: 165 km/h utvärderas inte",
     description:
       "Telefonen rapporterar 165 km/h och kurs 0. Kamera 1 500 m rakt fram, och bilen passerar den. Över 160 ⇒ tyst: " +
       "så fort kör ingen bil på en svensk väg (högsta gränsen är 120), men ett snabbtåg och ett flygplan gör det.",
@@ -469,15 +469,15 @@ const scenarios: Scenario[] = [
     trace: Array.from({ length: 61 }, (_, t) => ({ t, lon: LON0, lat: northOf(t * (165 * 1000) / 3600), speedKmh: 165, headingDeg: 0 })),
   },
   {
-    file: "v71_ej_bil_fart_155_talar", name: "Ej bil: 155 km/h utvärderas",
+    file: "v77_ej_bil_fart_155_talar", name: "Ej bil: 155 km/h utvärderas",
     description:
-      "Samma som v70 i 155 km/h. Under 160 ⇒ kameran talar t=24 vid 466 m (t=23 låg 509 m — marginal 9,2 m före / " +
+      "Samma som v76 i 155 km/h. Under 160 ⇒ kameran talar t=24 vid 466 m (t=23 låg 509 m — marginal 9,2 m före / " +
       "33,9 m efter gränsen 500 m, uppmätt). Låser högsta farten mellan 155 och 165.",
     hazards: [{ id: "cam1", kind: "camera", lon: LON0, lat: northOf(1500), bearing: 180 }],
     trace: Array.from({ length: 61 }, (_, t) => ({ t, lon: LON0, lat: northOf(t * (155 * 1000) / 3600), speedKmh: 155, headingDeg: 0 })),
   },
   {
-    file: "v72_ej_bil_flygfart_utan_fartvarde_tiger", name: "Ej bil: flygfart utan fartvärde tiger",
+    file: "v78_ej_bil_flygfart_utan_fartvarde_tiger", name: "Ej bil: flygfart utan fartvärde tiger",
     description:
       "250 km/h norrut (ett trafikflygplans fart vid start och landning) UTAN fartvärde, kurs och höjd från telefonen: " +
       "motorn räknar farten ur två fixar (69,4 m/s ⇒ 250 km/h, 90 över gränsen). Kamera 1 500 m och isstation 4 000 m " +
@@ -489,7 +489,7 @@ const scenarios: Scenario[] = [
     trace: northTrace(90, 250),
   },
   {
-    file: "v73_ej_bil_hojd_1600_tiger", name: "Ej bil: 1 600 m över havet utvärderas inte",
+    file: "v79_ej_bil_hojd_1600_tiger", name: "Ej bil: 1 600 m över havet utvärderas inte",
     description:
       "v01:s körning (80 km/h, kamera 3 km fram) med höjden 1 600 m i varje fix. Över 1 500 m ⇒ tyst: Sveriges högsta " +
       "allmänna väg ligger under 1 000 m. Farten är en bils, så det är höjden ensam som tystar.",
@@ -497,9 +497,9 @@ const scenarios: Scenario[] = [
     trace: northTrace(180, 80).map((f) => ({ ...f, altitudeM: 1600 })),
   },
   {
-    file: "v74_ej_bil_hojd_1400_talar", name: "Ej bil: 1 400 m över havet utvärderas",
+    file: "v80_ej_bil_hojd_1400_talar", name: "Ej bil: 1 400 m över havet utvärderas",
     description:
-      "Samma som v73 på 1 400 m. Under 1 500 ⇒ kameran talar som i v01: t=113 vid 488 m (t=112 låg 511 m — marginal " +
+      "Samma som v79 på 1 400 m. Under 1 500 ⇒ kameran talar som i v01: t=113 vid 488 m (t=112 låg 511 m — marginal " +
       "10,5 m före / 11,7 m efter gränsen 500 m, uppmätt). Låser högsta höjden mellan " +
       "1 400 och 1 600. En fix utan höjd utvärderas alltid: det är alla andra vektorer.",
     hazards: [{ id: "cam1", kind: "camera", lon: LON0, lat: northOf(3000), bearing: 180 }],
@@ -898,7 +898,7 @@ const scenarios: Scenario[] = [
     trace: northTrace(120, 120),
   },
   {
-    file: "v64_halkrisk_kod2_vat", name: "Besvärligt (risk för) med bara Våt säger risk, inte rapporterad halka",
+    file: "v72_halkrisk_kod2_vat", name: "Besvärligt (risk för) med bara Våt säger risk, inte rapporterad halka",
     description:
       "Axel 24/11: rösten sa 'halka rapporterad' för en sträcka som Trafikverket klassade Besvärligt (risk för), kod 2, med bara " +
       "ordet Våt. Rapporten nämner varken is, snö, frost, modd eller halka, så raden är 'Risk för halka på vägen framför dig.' " +
@@ -912,9 +912,9 @@ const scenarios: Scenario[] = [
     trace: northTrace(100, 80),
   },
   {
-    file: "v65_halka_rapporterad_kod2_flackvis_is", name: "Besvärligt med ett isord säger halka rapporterad",
+    file: "v73_halka_rapporterad_kod2_flackvis_is", name: "Besvärligt med ett isord säger halka rapporterad",
     description:
-      "Som v64, men rapporten bär också 'fläckvis Is'. Ett halkord i ConditionInfo, vilket som helst av dem, räcker: rapporten " +
+      "Som v72, men rapporten bär också 'fläckvis Is'. Ett halkord i ConditionInfo, vilket som helst av dem, räcker: rapporten " +
       "nämner is, och raden är 'Varning: halka rapporterad på vägen framför dig.' Ordet står sist i listan, så varje ord prövas.",
     hazards: [{
       id: "r2_kod2_flackvis_is", kind: "slippery_segment", line: langsVagen(2011, 2311),
@@ -923,7 +923,7 @@ const scenarios: Scenario[] = [
     trace: northTrace(100, 80),
   },
   {
-    file: "v66_halkrisk_kod2_flackvis_vat", name: "fläckvis Våt på kod 2 är risk: 'is' inuti fläckvis är inget isord",
+    file: "v74_halkrisk_kod2_flackvis_vat", name: "fläckvis Våt på kod 2 är risk: 'is' inuti fläckvis är inget isord",
     description:
       "Fällan från v11 och v24, nu för ordvalet: 'fläckvis Våt' på kod 2. Sträckan talar på klassen, men 'is' inuti 'fläckvis' " +
       "är inget halkord (ordbörjan), så raden är risk. En port som söker delsträngen säger 'halka rapporterad' här.",
@@ -934,7 +934,7 @@ const scenarios: Scenario[] = [
     trace: northTrace(100, 80),
   },
   {
-    file: "v67_halka_rapporterad_kod3_kod4_utan_ord", name: "Mycket besvärligt och Is- och snövägbana säger halka rapporterad utan ord",
+    file: "v75_halka_rapporterad_kod3_kod4_utan_ord", name: "Mycket besvärligt och Is- och snövägbana säger halka rapporterad utan ord",
     description:
       "Kod 3 (Mycket besvärligt) och kod 4 (Is- och snövägbana) utan något ConditionInfo-ord: klassen själv är rapporten, så " +
       "raden är 'Varning: halka rapporterad på vägen framför dig.' Bara kod 2 utan halkord är risk. Kod 3 ligger 2 011 m fram " +

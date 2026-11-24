@@ -207,7 +207,7 @@ function scenario(seed: number): Scenario {
 function runBoth(s: Scenario): { alerts: Alert[]; gridCalls: number; fullCalls: number } {
   const make = (bruteForce: boolean) => {
     // No ej-bil speed limit here: the traces drive at up to 400 km/h to put the lead on its 3 000 m ceiling, and this file proves
-    // the grid, not that gate (the vectors v70–v74 do).
+    // the grid, not that gate (the vectors v76–v80 do).
     const e = new AlertEngine(s.hazards, { maxSpeedKmh: Infinity, ...s.cfg });
     e.bruteForce = bruteForce;
     const sup: unknown[] = [];
