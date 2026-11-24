@@ -10,7 +10,7 @@ const FRAN = "2026-11-06";   // first Swedish day of olycksfacit
 const dag = (iso: string) => new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Stockholm", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(iso));
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
 
-type Dev = { id: string; start: string | null; deleted: boolean };
+type Dev = { id: string; start: string | null; deleted: boolean; modified: string | null };
 
 async function tv(deleted: boolean): Promise<{ objekt: number; raderade: number; utanAvvikelse: number; devs: Dev[]; fel?: string }> {
   const inc = ["Id", "Deleted", "ModifiedTime", "Deviation.Id", "Deviation.MessageTypeValue", "Deviation.StartTime"]
@@ -27,7 +27,7 @@ async function tv(deleted: boolean): Promise<{ objekt: number; raderade: number;
   for (const s of rows) {
     const acc = (s.Deviation ?? []).filter((d: any) => d.MessageTypeValue === "Accident");
     if (!acc.length) utan++;
-    for (const d of acc) devs.push({ id: String(d.Id ?? s.Id), start: d.StartTime ?? null, deleted: Boolean(s.Deleted) });
+    for (const d of acc) devs.push({ id: String(d.Id ?? s.Id), start: d.StartTime ?? null, deleted: Boolean(s.Deleted), modified: s.ModifiedTime ?? null });
   }
   return { objekt: rows.length, raderade: rows.filter((s) => s.Deleted).length, utanAvvikelse: utan, devs };
 }
@@ -72,6 +72,7 @@ async function main(): Promise<number> {
       console.log(`\n== Jämförelse, Trafikverket ${namn}, start från ${FRAN} ==`);
       console.log(`  hos Trafikverket: ${ids.size}; också hos oss: ${[...ids].filter((id) => vara.has(id)).length}; bara hos Trafikverket: ${baraTv.length}; bara hos oss: ${baraVi.length}`);
       console.log(`  bara hos Trafikverket, per startdag: ${JSON.stringify(Object.fromEntries(perDag(baraTv.map((d) => d.start))))}`);
+      for (const d of baraTv) console.log(`    bara hos Trafikverket: ${d.id} start ${d.start} ändrad ${d.modified} borttagen ${d.deleted} (körningen ${new Date().toISOString()})`);
       const startVi = new Map(arkiv.map((r: any) => [r.deviation_id as string, new Date(r.t).toISOString()]));
       console.log(`  bara hos oss, per startdag: ${JSON.stringify(Object.fromEntries(perDag(baraVi.map((id) => startVi.get(id) ?? null))))}`);
     }
