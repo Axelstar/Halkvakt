@@ -19578,3 +19578,48 @@ Skuggan (sql/108, DECISIONS #841, #842) prövade varje olycka 11–24/11, fjorto
 veckan). Bara *appen stilla* (förkastat: kandidatens kedja tiger då tills veckans ärende).
 
 **Stomdokument:** MAT (olycksfacits driftlarm)
+
+## #960 (24/11 2026) Var på sträckan halkan ligger: en tyst mätning per sträcka och per olycka (kort #677)
+
+**Beslut** (Bengt 24/11: *"bygg en mätning på p 2"*). En halkvarning i Stockholm 24/11 kom från A1: väg 222
+Orminge–Stockholm stod som *Besvärligt (risk för)* med bara ordet *Våt*, och motorn talar på klassen ensam (`evaluateSegment`, kod 2 eller
+högre). Trafikverket klassar hela sträckan på en gång, från Slussen till Värmdö, och inget i datan säger var på den vägbanan är kall.
+Mätningen prövar om stationerna längs sträckan kan säga det. Den är en skugga: ingen regel, ingen motor, ingen lägesfil och ingen app läser
+tabellerna, och rösten är oförändrad. Förslaget om orden i rösten (Axels första punkt) står som fråga i bedömningen §4.2.
+
+**Bygget, `sql/143_strackdelen.sql`:**
+- `strackdel_timme`: varje klocktimme, en rad per sträcka som är hal efter motorns regel (samma urval som lägesfilen). Sträckan delas i
+  delar om ungefär 1 km, och varje dels mitt får segmentprognosens skattning av vägbanan (`engine/src/segment.ts` `skatta`, samma i SQL:
+  de fem närmaste ankarna inom 50 km, viktade 1/max(km, 1), ur `vagpunkt_ankare()`). Raden räknar delarna på högst +1 °C, över +1 till
+  +3, över +3 och utan ankare, och delarna med en station inom 2 km.
+- `strackdel_olycka`: varje olycka (utan dubbletter och vilt) där olycksfacits A1-lager säger att sträckan inom 100 m var hal vid starten:
+  samma skattning vid olyckan, ur stationerna som de var då, och om texten bär olycksfacits halkord.
+- pg_cron `halkvakt-strackdelen` minut 47 varje timme: timmens sträckor, och olyckorna i dag och i går.
+- Integrationsprovet #960 och fem motprov (#75, A1 som talade, raden efter starten, vinterordet, sträckans slut), alla fällda.
+
+**Förregistrering, skriven före första raden.**
+1. *Frågan.* Kan stationerna längs en hal sträcka visa var på den halkan ligger, så att en regel kunde tiga på de varma delarna utan att
+   tystna före en halkolycka?
+2. *M1, hur ofta en sträcka är delad:* andelen sträcktimmar som har både en del på högst +1 °C och en del över +3 °C, för *Besvärligt
+   utan vinterord* (kod 2 utan motorns halkord) och för resten var för sig.
+3. *M2, vad en regel skulle tysta:* andelen delar över +3 °C av alla delar med ankare, i samma två grupper. Bara delar med en station inom
+   2 km är mätta; resten är modellerade, och båda redovisas.
+4. *M3, facit:* olyckorna på hala sträckor med halkordet i texten, som är det enda facit som varken bygger på stationerna eller på A1
+   (TROSKLAR-OLYCKSFACIT §14.3). Hur många av dem låg där skattningen var över +3 °C, per grupp?
+5. *Vad som räknas.* En regel *tyst på delar över +3 °C för Besvärligt utan vinterord* får föreslås bara om M3 har minst 10 olyckor med
+   halkord i den gruppen och ingen av dem låg över +3 °C. Med färre är svaret OAVGJORT, och en olycka över +3 °C fäller regeln för gruppen.
+   +3 °C är olycksfacits gräns för *INTE (varmt)* (regel 4). Inget annat beslut följer av läsningen: en regel kräver vektorer i tre språk
+   och en ny appversion, och Bengts och Axels ord.
+6. *När.* Första läsningen 22/12 2026, efter fyra veckor (frist `strackdelen-lasning-2026-12-22`). Den slutliga efter vintern, med
+   olyckorna från hela säsongen.
+
+**Avvikelser och gränser.** Olyckans ankare är varje stations senaste rad inom tre timmar före starten med samma vakter som
+`vagpunkt_ankare()`, men lästa vid starten. De närmaste ankarna hittas med ett plant index bland de 20 närmaste och sorteras sedan på
+riktigt avstånd. Sträckans form läses som den står i dag. Vädret sparas 14 dygn i driften (sql/072), så olyckorna kan räknas bakåt till
+10/11, men sträckorna först från första timmen.
+
+**Alternativ.** Att fråga Trafikverket var på sträckan halkan ligger (KONTAKTREGELN: egna vägar först, och den här är egen). Att låta
+stationerna tysta direkt (förkastat: DECISIONS #103, en sann varning tystas aldrig på en gissning). Att lägga mätningen i skuggmotorn
+(förkastat: den kör längs några rutter, och frågan gäller alla hala sträckor).
+
+**Stomdokument:** MAT (en ny skugga: var på sträckan), BED §4.2

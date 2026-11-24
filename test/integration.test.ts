@@ -5684,3 +5684,110 @@ test("#942 TROLIG, väglaget: sql/139 är sql/110 utom de märkta raderna, regel
     await pool.end();
   }
 });
+
+// VAR PÅ STRÄCKAN (sql/143, DECISIONS #960, kort #677) mot riktig PostGIS, kring 75° N där inga andra prov ligger.
+//   SD1  en våt Besvärligt-sträcka på 11,6 km mellan en kall station (−1 °C) i väst och en varm (+6 °C) i öst: tolv delar, kalla i väst
+//        och varma i öst, fyra delar inom 2 km från en station; en Normalt-sträcka med Torrt, en raderad och en med ett slut som passerat
+//        räknas inte; en Normalt-sträcka med Rimfrost räknas med vinterord och utan ankare; en gammal station är inget ankare
+//   SD2  en andra körning samma timme skriver samma rader
+//   SD3  olyckorna: bara A1 som talade, inga dubbletter och inget vilt; skattningen vid olyckan ur raderna före starten och med #75,
+//        halkordet i texten vid fångsten eller efteråt, och en olycka utan station inom 50 km
+test("#960 var på sträckan: delarna per hal sträcka, olyckorna på hala sträckor och vakterna", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const las = (f: string) => q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+  const stad = async () => {
+    await q("DELETE FROM olycksfacit WHERE deviation_id LIKE 'SD-%'").catch(() => {});
+    await q("DELETE FROM road_conditions WHERE segment_id LIKE 'SD%'");
+    for (const t of ["weather_observations", "weather_latest"]) await q(`DELETE FROM ${t} WHERE station_id LIKE 'SDW%'`);
+    await q("DELETE FROM strackdel_timme WHERE segment_id LIKE 'SD%'").catch(() => {});
+    await q("DELETE FROM strackdel_olycka WHERE deviation_id LIKE 'SD-%'").catch(() => {});
+  };
+  try {
+    await q("CREATE TABLE IF NOT EXISTS shadow_log (id bigserial PRIMARY KEY, run_at timestamptz NOT NULL DEFAULT now(), alerts jsonb NOT NULL DEFAULT '[]'::jsonb)");   // 032 bär en kolumn på den
+    for (const f of ["001_init.sql", "003_situation_archive.sql", "030_langsam_vakt.sql", "032_prognos.sql", "084_olycksfacit.sql",
+      "085_olycksfacit_klassning.sql"]) await las(f);
+    await q("ALTER TABLE olycksfacit ADD COLUMN IF NOT EXISTS art text");   // sql/110, som kräver kedjan ovan
+    await las("143_strackdelen.sql"); await las("143_strackdelen.sql");
+    await stad();
+
+    const linje = (id: string, kod: number, info: string[], x0: number, x1: number, extra = "deleted = false, end_time = NULL") => q(`
+      INSERT INTO road_conditions (segment_id, condition_code, condition_text, condition_info, geom, modified_time, deleted)
+      VALUES ($1, $2, 'x', $3, ST_SetSRID(ST_MakeLine(ST_MakePoint($4, 75.0), ST_MakePoint($5, 75.0)), 4326), now(), false)`,
+      [id, kod, info, x0, x1]).then(() => q(`UPDATE road_conditions SET ${extra} WHERE segment_id = $1`, [id]));
+    await linje("SD1", 2, ["Våt"], 30.0, 30.4);
+    await linje("SD2", 1, ["Torrt"], 30.0, 30.4);
+    await linje("SD3", 1, ["Rimfrost"], 40.0, 40.1);
+    await linje("SD4", 2, ["Våt"], 30.0, 30.4, "deleted = true");
+    await linje("SD5", 3, ["Is"], 30.0, 30.4, "end_time = now() - interval '1 minute'");
+    const senast = (id: string, x: number, yta: number, alder = "10 minutes") => q(`
+      INSERT INTO weather_latest (station_id, name, geom, sample_time, surface_temp_c, air_temp_c)
+      VALUES ($1, $1, ST_SetSRID(ST_MakePoint($2, 75.0), 4326), now() - $4::interval, $3, 2)`, [id, x, yta, alder]);
+    await senast("SDW_KALL", 30.0, -1);
+    await senast("SDW_VARM", 30.4, 6);
+    await senast("SDW_GAMMAL", 30.2, -20, "4 hours");
+
+    const svar = (await q("SELECT strackdel_rakna() AS s")).rows[0].s as string;
+    assert.match(svar, /^\d+ sträckor$/);
+    const rader = async () => (await q(`SELECT segment_id, kod, vinterord, langd_km, delar, kalla, mellan, varma, okanda, uppmatta, yta_min, yta_max
+      FROM strackdel_timme WHERE segment_id LIKE 'SD%' AND timme = date_trunc('hour', now()) ORDER BY 1`)).rows;
+    const fore = await rader();
+    assert.deepEqual(fore.map((r) => r.segment_id), ["SD1", "SD3"], "SD1: Torrt på Normalt, raderad och passerat slut räknas inte");
+    const [s1, s3] = fore;
+    assert.equal(s1.kod, 2); assert.equal(s1.vinterord, false); assert.equal(s1.langd_km, 11.6);
+    assert.equal(s1.delar, 12, "SD1: en del per kilometer");
+    assert.equal(s1.kalla + s1.mellan + s1.varma + s1.okanda, s1.delar);
+    assert.ok(s1.kalla >= 1 && s1.varma >= 1, `SD1: kalla i väst och varma i öst (${s1.kalla}, ${s1.mellan}, ${s1.varma})`);
+    assert.equal(s1.okanda, 0);
+    assert.equal(s1.uppmatta, 4, "SD1: två delar inom 2 km från varje station");
+    assert.ok(s1.yta_min > -1 && s1.yta_min < 0 && s1.yta_max > 5 && s1.yta_max < 6, `SD1: ${s1.yta_min}…${s1.yta_max}; den gamla stationen (−20) bär inget`);
+    assert.deepEqual([s3.kod, s3.vinterord, s3.okanda, s3.delar, s3.kalla, s3.yta_min], [1, true, s3.delar, s3.delar, 0, null], "SD1: vinterord utan ankare");
+    assert.equal((await q("SELECT strackdel_rakna() AS s")).rows[0].s, svar);
+    assert.deepEqual(await rader(), fore, "SD2: en andra körning skriver samma rader");
+
+    // SD3: väder på dygnet 2026-11-10, olyckan SD-A kl. 09.30 UTC strax öster om den kalla stationen.
+    const obs = (id: string, x: number, t: string, yta: number, luft = 2) => q(`
+      INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c)
+      VALUES ($1, $1, ST_SetSRID(ST_MakePoint($2, 75.0), 4326), $3, $4, $5)`, [id, x, t, yta, luft]);
+    await obs("SDW_KALL", 30.0, "2026-11-10 09:00+00", -1);
+    await obs("SDW_KALL", 30.0, "2026-11-10 10:00+00", -10);        // efter starten: räknas inte
+    await obs("SDW_VARM", 30.4, "2026-11-10 09:00+00", 6);
+    await obs("SDW_B75", 30.03, "2026-11-10 09:00+00", -15);         // 17 °C under luften: #75
+    await obs("SDW_GAMMAL", 30.02, "2026-11-10 05:00+00", -20);      // äldre än tre timmar
+    const olycka = (id: string, x: number, t: string, msg: string, talar: boolean, info: string[], art = "ett fordon",
+      dubblett: string | null = null, efter: string | null = null) => q(`
+      INSERT INTO olycksfacit (deviation_id, start_time, message, geom, utfall, art, dubblett_av, text_efter)
+      VALUES ($1, $2, $3, ST_SetSRID(ST_MakePoint($4, 75.0), 4326), 'TYST_TACKT', $5, $6, $7)`, [id, t, msg, x, art, dubblett, efter])
+      .then(() => q(`INSERT INTO olycksfacit_lager (deviation_id, lager, talar, orsak, detalj) VALUES ($1, 'A1', $2, 'x',
+        jsonb_build_object('segment', 'SD1', 'kod', 2, 'info', $3::jsonb, 'km', 0.02))`, [id, talar, JSON.stringify(info)]));
+    await olycka("SD-A", 30.02, "2026-11-10 09:30+00", "Singelolycka", true, ["Våt"], "ett fordon", null, "Personbil i diket, halt väglag");
+    await olycka("SD-B", 30.02, "2026-11-10 09:40+00", "Singelolycka, halka", false, ["Våt"]);
+    await olycka("SD-C", 30.02, "2026-11-10 09:35+00", "Singelolycka", true, ["Våt"], "ett fordon", "SD-A");
+    await olycka("SD-D", 30.02, "2026-11-10 09:50+00", "Viltolycka", true, ["Våt"], "vilt");
+    await olycka("SD-E", 40.05, "2026-11-10 12:00+00", "Trafikolycka", true, ["Packad snö"]);
+    await olycka("SD-F", 30.02, "2026-11-09 22:30+00", "Fläckvis is", true, ["Våt"]);   // 23.30 svensk tid: dygnet 9/11
+
+    assert.equal((await q("SELECT strackdel_olyckor('2026-11-10') AS s")).rows[0].s, "2 olyckor");
+    const olyckor = async () => (await q(`SELECT deviation_id, segment_id, kod, vinterord, round(yta::numeric, 2)::float AS yta,
+      round(narm_km::numeric, 2)::float AS narm_km, ankare, halkord FROM strackdel_olycka WHERE dag = '2026-11-10' AND deviation_id LIKE 'SD-%' ORDER BY 1`)).rows;
+    const o = await olyckor();
+    // SD-A: −1 °C 0,58 km bort (vikt 1) och +6 °C 10,9 km bort (vikt 1/10,9): −0,41 °C. Med #75:s station, den gamla eller raden efter
+    // starten hade den blivit kallare.
+    assert.equal(o.length, 2, "SD3: bara A1 som talade, inga dubbletter och inget vilt");
+    assert.equal(o[0].deviation_id, "SD-A");
+    assert.deepEqual([o[0].segment_id, o[0].kod, o[0].vinterord, o[0].ankare, o[0].halkord], ["SD1", 2, false, 2, true]);
+    assert.ok(Math.abs(o[0].yta - -0.41) <= 0.02, `SD3: skattningen vid SD-A ${o[0].yta}`);
+    assert.ok(Math.abs(o[0].narm_km - 0.58) <= 0.02, `SD3: närmaste ankaret ${o[0].narm_km}`);
+    assert.deepEqual(o[1], { deviation_id: "SD-E", segment_id: "SD1", kod: 2, vinterord: true, yta: null, narm_km: null, ankare: 0, halkord: false },
+      "SD3: utan station inom 50 km, vinterord ur A1:s ord och inget halkord i texten");
+    assert.equal((await q("SELECT strackdel_olyckor('2026-11-10') AS s")).rows[0].s, "2 olyckor");
+    assert.deepEqual(await olyckor(), o, "SD3: en andra körning skriver samma rader");
+    assert.equal((await q("SELECT strackdel_olyckor('2026-11-09') AS s")).rows[0].s, "1 olyckor", "SD3: dygnet är svenskt");
+    assert.deepEqual((await q("SELECT relrowsecurity FROM pg_class WHERE relname IN ('strackdel_timme', 'strackdel_olycka')")).rows,
+      [{ relrowsecurity: true }, { relrowsecurity: true }]);
+  } finally {
+    await stad().catch(() => {});
+    await pool.end();
+  }
+});
