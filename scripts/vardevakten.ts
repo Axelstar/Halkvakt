@@ -219,6 +219,18 @@ export const SPANN: Record<string, [number, number, string]> = {
   "fuktskugga_timmar.timmar": [0, 50000, "stationstimmar — 2 000 stationer gånger 25 timmar"],
   "fuktskugga_timmar.larm_a2": [0, 50000, "stationstimmar"],
   "fuktskugga_timmar.larm_forslag": [0, 50000, "stationstimmar"],
+  // Var på sträckan (sql/143, DECISIONS #960): de hala sträckorna i delar om ungefär en kilometer, fött besiktigad.
+  "strackdel_timme.kod": [1, 4, "Trafikverkets väglagsklass"],
+  "strackdel_timme.langd_km": [0, 1000, "km — den längsta väglagssträckan är långt kortare"],
+  "strackdel_timme.delar": [1, 1000, "delar om ungefär 1 km"],
+  "strackdel_timme.kalla": [0, 1000, "delar"], "strackdel_timme.mellan": [0, 1000, "delar"],
+  "strackdel_timme.varma": [0, 1000, "delar"], "strackdel_timme.okanda": [0, 1000, "delar"],
+  "strackdel_timme.uppmatta": [0, 1000, "delar"],
+  "strackdel_timme.yta_min": [-60, 60, "°C, skattad ur ankarna"], "strackdel_timme.yta_max": [-60, 60, "°C, skattad ur ankarna"],
+  "strackdel_olycka.kod": [1, 4, "Trafikverkets väglagsklass vid starten"],
+  "strackdel_olycka.yta": [-60, 60, "°C, skattad ur ankarna vid olyckan"],
+  "strackdel_olycka.narm_km": [0, 50, "km till närmaste ankare (MAX_KM)"],
+  "strackdel_olycka.ankare": [0, 5, "ankare i skattningen (K_NEIGHBOURS)"],
   // The weekly report (körlistan D1, DECISIONS #951), born inspected. The counter's ceiling is the function's TAK_PER_DYGN, the
   // aggregates' bounds come from the population: 818 road stretches times 25 hours in a Swedish day, in one county and part of the day.
   "app_raknare.antal": [0, 100000, "händelser på ett dygn — app-raknares tak per dygn (TAK_PER_DYGN)"],
@@ -330,6 +342,9 @@ export const FLAGGOR: Record<string, string> = {
   "olycksfacit_lager.detalj.stad.talar": "stadspunkten varnade inom 2 km vid olyckan (sql/100)",
   "fuktskugga_olycka.a2_nu": "en station inom 5 km med yta högst +1 °C och nederbörd de två timmarna före olyckan (sql/138)",
   "fuktskugga_olycka.forslag": "förslag 2: en station inom 15 km med yta högst +1 °C och nederbörd eller yta under daggpunkten (sql/138)",
+  "strackdel_timme.vinterord": "sträckans ord bär motorns halkord (is, snö, frost, modd …), inte bara klassen (sql/143)",
+  "strackdel_olycka.vinterord": "A1:s sträcka bar motorns halkord vid starten (sql/143)",
+  "strackdel_olycka.halkord": "olycksfacits halkord i texten vid fångsten eller efteråt — facit oberoende av stationen och A1 (sql/143)",
 };
 /** Statusflaggor är bokföring, inte mätvärden: samma kategori som identifierarna. */
 export const STATUSFLAGGOR = new Set(["deleted"]);
@@ -563,7 +578,7 @@ const TID: Record<string, string> = {
   // without a time column and so scanned whole; and the daily aggregate (sql/128), born inspected.
   ny_kandidat_skugga_stad: "observed_at", ny_kandidat_skugga_stad_korning: "korning", olycksfacit_lager: "", sasongsfacit_stad_dag: "dag",
   // Fuktskuggan och basfrekvensen (sql/138, DECISIONS #940), födda besiktigade.
-  fuktskugga_timmar: "dag", fuktskugga_olycka: "dag",
+  fuktskugga_timmar: "dag", fuktskugga_olycka: "dag", strackdel_timme: "timme", strackdel_olycka: "dag",
   // The weekly report (körlistan D1, DECISIONS #951): the counter and säsongsfacit's three tables, which were missing here, so their
   // fields were never scanned, not even as OBESIKTIGADE.
   app_raknare: "dag", lagesfil_dag: "dag", sasongsfacit_dag: "dag", sasongsfacit_ledtid: "dag", sasongsfacit_olyckor: "dag",
