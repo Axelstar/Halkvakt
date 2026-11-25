@@ -116,10 +116,22 @@ public enum Resstrackor {
         return halka > 0 ? halka : s.rader.filter { $0.slag == .frysrisk }.count
     }
 
-    /// Sträckans rubrik: "Halt på 4 ställen", "Frysrisk på 1 ställe" eller "Lugnt".
+    /// En halkrad som bara är risk för halka: kod 2 utan halkord, som rösten (DECISIONS #963, #964).
+    private static func risk(_ r: RapportRad) -> Bool { r.slag == .halka && r.rubrik.hasPrefix("Halkrisk") }
+
+    /// "Halt på 1 ställe", "Halkrisk på 3 ställen" eller "Halt på 1 ställe, halkrisk på 3 ställen".
+    private static func halkdelar(_ rader: [RapportRad]) -> String {
+        let halka = rader.filter { $0.slag == .halka }
+        let risker = halka.filter(risk).count, halt = halka.count - risker
+        if risker == 0 { return "Halt på \(stallen(halt))" }
+        if halt == 0 { return "Halkrisk på \(stallen(risker))" }
+        return "Halt på \(stallen(halt)), halkrisk på \(stallen(risker))"
+    }
+
+    /// Sträckans rubrik: "Halt på 4 ställen", "Halkrisk på 2 ställen", "Frysrisk på 1 ställe" eller "Lugnt".
     public static func rubrik(_ s: Resstracka) -> String {
         switch s.lage {
-        case .halt: return "Halt på \(stallen(antal(s)))"
+        case .halt: return halkdelar(s.rader)
         case .frysrisk: return "Frysrisk på \(stallen(antal(s)))"
         case .lugnt: return "Lugnt"
         }
@@ -142,6 +154,7 @@ public enum Resstrackor {
     /// Ord som inte är halka i sig: de står med när en sträcka öppnas, men inte i sammanfattningen.
     private static let bredvidord: [String: String] = ["våt": "vått", "torrt": "torrt"]
     private static let utanOrd = "halka rapporterad på sträckan"
+    private static let utanOrdRisk = "risk för halka rapporterad på sträckan"
 
     private static func ord(_ text: String) -> [(flackvis: Bool, ord: String)] {
         text.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces).lowercased() }.filter { !$0.isEmpty }.map {
@@ -160,7 +173,7 @@ public enum Resstrackor {
     /// ordet (mätt i live.json 21/11, 111 av 367, DECISIONS #934).
     static func sorter(_ rader: [RapportRad]) -> String {
         var funna: [String: (ordning: Int, text: String, flackvis: Bool)] = [:]
-        for o in rader.filter({ $0.slag == .halka }).flatMap({ ord($0.text) }) where bredvidord[o.ord] == nil && o.ord != utanOrd {
+        for o in rader.filter({ $0.slag == .halka }).flatMap({ ord($0.text) }) where bredvidord[o.ord] == nil && o.ord != utanOrd && o.ord != utanOrdRisk {
             let k = vaglagsord[o.ord] ?? (9, o.ord)
             funna[k.text] = (k.ordning, k.text, o.flackvis && (funna[k.text]?.flackvis ?? true))
         }
@@ -169,7 +182,9 @@ public enum Resstrackor {
         let delar = funna.values.sorted { ($0.ordning, $0.text) < ($1.ordning, $1.text) }.map { "\($0.flackvis ? "fläckvis " : "")\($0.text)" }
         guard let sista = delar.last else {
             let vatt = rader.filter { $0.slag == .halka }.flatMap { ord($0.text) }.filter { $0.ord == "våt" }
-            guard !vatt.isEmpty else { return "Halt väglag rapporterat." }
+            guard !vatt.isEmpty else {
+                return rader.filter { $0.slag == .halka }.allSatisfy(risk) ? "Risk för halka rapporterad." : "Halt väglag rapporterat."
+            }
             return "\(vatt.allSatisfy(\.flackvis) ? "Fläckvis vått" : "Vått"). Besvärligt väglag enligt Trafikverket."
         }
         let mening = delar.count == 1 ? sista : delar.dropLast().joined(separator: ", ") + " och " + sista
@@ -200,8 +215,9 @@ public enum Resstrackor {
         guard let varst = strackor.map(\.lage).max(), varst != .lugnt, let forsta = strackor.first(where: { $0.lage == varst }) else {
             return "Lugnt hela vägen."
         }
-        let n = strackor.filter { $0.lage == varst }.map(antal).reduce(0, +)
+        let mina = strackor.filter { $0.lage == varst }
+        let n = mina.map(antal).reduce(0, +)
         let var_ = forsta.franM == 0 ? "redan på första sträckan" : "\(n == 1 ? "efter" : "först efter") \(forsta.fran ?? "start")"
-        return "\(varst == .halt ? "Halt" : "Frysrisk") på \(stallen(n)), \(var_)."
+        return "\(varst == .halt ? halkdelar(mina.flatMap(\.rader)) : "Frysrisk på \(stallen(n))"), \(var_)."
     }
 }

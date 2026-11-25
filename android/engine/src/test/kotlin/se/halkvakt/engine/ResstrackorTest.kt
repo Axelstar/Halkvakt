@@ -21,8 +21,8 @@ class ResstrackorTest {
         Ort("Malby", 15.0, 59.95),        // 5,6 km före målet: resans mål
     )
 
-    private fun rad(slag: RapportSlag, km: Int, id: String? = null, text: String = "") =
-        RapportRad(id ?: "${slag.wire}:$km", slag, "", text, 0, km * 1000, null, null)
+    private fun rad(slag: RapportSlag, km: Int, id: String? = null, text: String = "", rubrik: String = "") =
+        RapportRad(id ?: "${slag.wire}:$km", slag, rubrik, text, 0, km * 1000, null, null)
 
     @Test fun hittarOrternaLangsVagenIKorordning() {
         val langs = Resstrackor.orterLangs(rutt, Resstrackor.kumulativ(rutt), orter)
@@ -88,6 +88,20 @@ class ResstrackorTest {
         val lugnt = Resstrackor.strackor(rutt, listOf(rad(RapportSlag.VAGARBETE, 50)), orter)[0]
         assertEquals("Lugnt", Resstrackor.rubrik(lugnt)); assertEquals("LUGNT", Resstrackor.tagg(lugnt))
         assertEquals("Inget halt rapporterat.", Resstrackor.under(lugnt))
+    }
+
+    @Test fun riskForHalkaSagerHalkrisk() {
+        // Kod 2 utan halkord är halkrisk, som rösten (DECISIONS #964).
+        fun risk(km: Int, text: String = "risk för halka rapporterad på sträckan") = rad(RapportSlag.HALKA, km, text = text, rubrik = "Halkrisk")
+        val bara = Resstrackor.strackor(rutt, listOf(risk(300), risk(310, "Våt")), orter)
+        assertEquals("Halkrisk på 2 ställen", Resstrackor.rubrik(bara[2])); assertEquals("2 STÄLLEN", Resstrackor.tagg(bara[2]))
+        assertEquals("Halkrisk på 2 ställen, först efter Norrstad.", Resstrackor.dom(bara))
+        assertEquals("Risk för halka rapporterad.", Resstrackor.sorter(listOf(risk(1))))
+        val blandat = Resstrackor.strackor(rutt, listOf(risk(300), rad(RapportSlag.HALKA, 310, text = "Is", rubrik = "Halt väglag")), orter)
+        assertEquals("Halt på 1 ställe, halkrisk på 1 ställe", Resstrackor.rubrik(blandat[2]))
+        assertEquals("Is.", Resstrackor.under(blandat[2]))
+        assertEquals("Halt väglag rapporterat.",
+            Resstrackor.sorter(listOf(risk(1), rad(RapportSlag.HALKA, 2, text = "halka rapporterad på sträckan", rubrik = "Halt väglag"))))
     }
 
     @Test fun trafikverketsOrdBlirVanligSvenska() {

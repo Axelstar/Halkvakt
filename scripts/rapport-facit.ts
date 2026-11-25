@@ -36,6 +36,8 @@ const live = {
     { id: "1", line: linje([20, 1000], [20, 3000]), code: 3, info: ["Is", "Snö"], road: "E4" },          // längs vägen, 20 m
     { id: "2", line: linje([-1000, 5000], [1000, 5000]), code: 3, info: ["Is"], road: "263" },          // tvärs över: tas inte med
     { id: "3", line: linje([2000, 0], [2000, 1000]), code: 3, info: [], road: null },                  // 2 km bort
+    { id: "4", line: linje([1000, 8020], [2000, 8020]), code: 2, info: ["Våt"], road: "73" },          // risk: kod 2 utan halkord (#964)
+    { id: "5", line: linje([3000, 8020], [4000, 8020]), code: 2, info: [], road: null },                // risk utan ord (#964)
   ],
   weather: [
     { id: "10", ...lonlat(300, 2000), yta: -0.8, fukt: true, regn_h: null, lutning30: null },           // frysrisk, 300 m

@@ -98,9 +98,23 @@ object Resstrackor {
         return if (halka > 0) halka else s.rader.count { it.slag == RapportSlag.FRYSRISK }
     }
 
-    /** Sträckans rubrik: "Halt på 4 ställen", "Frysrisk på 1 ställe" eller "Lugnt". */
+    /** En halkrad som bara är risk för halka: kod 2 utan halkord, som rösten (DECISIONS #963, #964). */
+    private fun risk(r: RapportRad) = r.slag == RapportSlag.HALKA && r.rubrik.startsWith("Halkrisk")
+
+    /** "Halt på 1 ställe", "Halkrisk på 3 ställen" eller "Halt på 1 ställe, halkrisk på 3 ställen". */
+    private fun halkdelar(rader: List<RapportRad>): String {
+        val halka = rader.filter { it.slag == RapportSlag.HALKA }
+        val risker = halka.count(::risk); val halt = halka.size - risker
+        return when {
+            risker == 0 -> "Halt på ${stallen(halt)}"
+            halt == 0 -> "Halkrisk på ${stallen(risker)}"
+            else -> "Halt på ${stallen(halt)}, halkrisk på ${stallen(risker)}"
+        }
+    }
+
+    /** Sträckans rubrik: "Halt på 4 ställen", "Halkrisk på 2 ställen", "Frysrisk på 1 ställe" eller "Lugnt". */
     fun rubrik(s: Resstracka): String = when (s.lage) {
-        StrackLage.HALT -> "Halt på ${stallen(antal(s))}"
+        StrackLage.HALT -> halkdelar(s.rader)
         StrackLage.FRYSRISK -> "Frysrisk på ${stallen(antal(s))}"
         StrackLage.LUGNT -> "Lugnt"
     }
@@ -120,6 +134,7 @@ object Resstrackor {
     /** Ord som inte är halka i sig: de står med när en sträcka öppnas, men inte i sammanfattningen. */
     private val bredvidord = mapOf("våt" to "vått", "torrt" to "torrt")
     private const val UTAN_ORD = "halka rapporterad på sträckan"
+    private const val UTAN_ORD_RISK = "risk för halka rapporterad på sträckan"
     private const val FLACKVIS = "fläckvis "
 
     /** Radens ord: (fläckvis, ordet). */
@@ -142,7 +157,7 @@ object Resstrackor {
         val alla = rader.filter { it.slag == RapportSlag.HALKA }.flatMap { ord(it.text) }
         val funna = LinkedHashMap<String, Triple<Int, String, Boolean>>()
         for ((f, o) in alla) {
-            if (o in bredvidord || o == UTAN_ORD) continue
+            if (o in bredvidord || o == UTAN_ORD || o == UTAN_ORD_RISK) continue
             val k = vaglagsord[o] ?: (9 to o)
             funna[k.second] = Triple(k.first, k.second, f && (funna[k.second]?.third ?: true))
         }
@@ -151,7 +166,7 @@ object Resstrackor {
         val delar = funna.values.sortedWith(compareBy({ it.first }, { it.second })).map { (if (it.third) FLACKVIS else "") + it.second }
         if (delar.isEmpty()) {
             val vatt = alla.filter { it.second == "våt" }
-            if (vatt.isEmpty()) return "Halt väglag rapporterat."
+            if (vatt.isEmpty()) return if (rader.filter { it.slag == RapportSlag.HALKA }.all(::risk)) "Risk för halka rapporterad." else "Halt väglag rapporterat."
             return "${if (vatt.all { it.first }) "Fläckvis vått" else "Vått"}. Besvärligt väglag enligt Trafikverket."
         }
         val mening = if (delar.size == 1) delar[0] else delar.dropLast(1).joinToString(", ") + " och " + delar.last()
@@ -180,8 +195,9 @@ object Resstrackor {
         val varst = strackor.maxOfOrNull { it.lage } ?: StrackLage.LUGNT
         if (varst == StrackLage.LUGNT) return "Lugnt hela vägen."
         val forsta = strackor.first { it.lage == varst }
-        val n = strackor.filter { it.lage == varst }.sumOf { antal(it) }
+        val mina = strackor.filter { it.lage == varst }
+        val n = mina.sumOf { antal(it) }
         val vart = if (forsta.franM == 0) "redan på första sträckan" else "${if (n == 1) "efter" else "först efter"} ${forsta.fran ?: "start"}"
-        return "${if (varst == StrackLage.HALT) "Halt" else "Frysrisk"} på ${stallen(n)}, $vart."
+        return "${if (varst == StrackLage.HALT) halkdelar(mina.flatMap { it.rader }) else "Frysrisk på ${stallen(n)}"}, $vart."
     }
 }
