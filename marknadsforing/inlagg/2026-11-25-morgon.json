@@ -1,0 +1,39 @@
+{
+  "typ": "forandring",
+  "nyckel": "forandring",
+  "etikett": "Sedan i går",
+  "rubrik": "Halkan sprider sig",
+  "underrad": "vägavsnitt med halka, mot samma tid i går",
+  "lyft": {
+    "stort": "360 → 330",
+    "liten": "ny halka i Södermanland och Gotland"
+  },
+  "text": "Trafikverket rapporterar halka på 330 vägavsnitt, mot 360 vid samma tid i går.\nNy halka sedan i går: Södermanland och Gotland.\n\nNorrbotten: halka på 54 av 58 vägavsnitt, 57 stationer under noll, kallast −17,3 °C vid Vajmat.\nJönköpings län: halka på 45 av 52 vägavsnitt, 38 stationer under noll, kallast −2,5 °C vid Håknarp2.\nVästerbotten: halka på 44 av 44 vägavsnitt, 44 stationer under noll, kallast −16,5 °C vid Ammarnäs.\nStockholms län: halka på 28 av 44 vägavsnitt, 29 stationer under noll, kallast −2,7 °C vid Ekerö.\nVästra Götaland: halka på 27 av 133 vägavsnitt, 105 stationer under noll, kallast −6,4 °C vid 1552 Gustavsfors Fjärryta.\nHalka eller minusgrader även i 16 län till.\n\nLäget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan\nI appen säger Halkvakt till direkt, med rösten, innan du är där. Gratis för iPhone och Android.\niPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\nAndroid: https://play.google.com/store/apps/details?id=se.halkvakt.app\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Jönköping #Västerbotten #Stockholm #VästraGötaland #halkvakt",
+  "textIg": "Trafikverket rapporterar halka på 330 vägavsnitt, mot 360 vid samma tid i går.\nNy halka sedan i går: Södermanland och Gotland.\n\nNorrbotten: halka på 54 av 58 vägavsnitt, 57 stationer under noll, kallast −17,3 °C vid Vajmat.\nJönköpings län: halka på 45 av 52 vägavsnitt, 38 stationer under noll, kallast −2,5 °C vid Håknarp2.\nVästerbotten: halka på 44 av 44 vägavsnitt, 44 stationer under noll, kallast −16,5 °C vid Ammarnäs.\nStockholms län: halka på 28 av 44 vägavsnitt, 29 stationer under noll, kallast −2,7 °C vid Ekerö.\nVästra Götaland: halka på 27 av 133 vägavsnitt, 105 stationer under noll, kallast −6,4 °C vid 1552 Gustavsfors Fjärryta.\nHalka eller minusgrader även i 16 län till.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\nI appen säger Halkvakt till direkt, med rösten, innan du är där. Gratis för iPhone och Android, länken finns i vår profil.\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Jönköping #Västerbotten #Stockholm #VästraGötaland #halkvakt",
+  "pass": "morgon",
+  "datum": "2026-11-25",
+  "generated_at": "2026-11-25T04:00:23.939Z",
+  "lan": [
+    "norrbotten",
+    "jonkoping",
+    "vasterbotten",
+    "stockholm",
+    "vastra-gotaland",
+    "gavleborg",
+    "vasternorrland",
+    "dalarna",
+    "uppsala",
+    "jamtland",
+    "varmland",
+    "kalmar",
+    "sodermanland",
+    "gotland",
+    "ostergotland",
+    "skane",
+    "halland",
+    "orebro",
+    "kronoberg",
+    "blekinge",
+    "vastmanland"
+  ]
+}
