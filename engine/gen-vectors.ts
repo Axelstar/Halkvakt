@@ -689,7 +689,7 @@ const scenarios: Scenario[] = [
     file: "v51_smavag_talar_pa_vagen", name: "Småvägsrösten talar när bilen följer småvägen (S)",
     description:
       "Småvägen v1 går norrut längs bilens väg med punkter var 900:e m; punkten 4 500 m fram varnar. Bilen känns igen på vägen vid " +
-      "t=3 (tredje fixen inom 80 m och 30° från linjen) och punkten talar vid t=173 med 'Betavarning: risk för halka på småvägarna " +
+      "t=3 (tredje fixen inom 80 m och 30° från linjen) och punkten talar vid t=173 med 'Risk för halka på småvägarna " +
       "framöver.' och beta=true. De andra punkterna varnar inte och tiger.",
     hazards: [smavag("smv:v1", 0, -1800, 9000, [4500])],
     trace: northTrace(240, 80),
@@ -978,7 +978,7 @@ const scenarios: Scenario[] = [
     file: "v83_smavag_med_vagnummer", name: "Småvägsrösten säger vägnumret när punktfilen har det",
     description:
       "Bengt 25/11 (DECISIONS #965, kort #661): samma väg och geometri som v51, nu med road '1052' ur punktfilens nummer: " +
-      "'Betavarning: risk för halka på väg 1052 framöver.' Utan nummer är raden som i v51. Samma fix som v51.",
+      "'Risk för halka på väg 1052 framöver.' Utan nummer är raden som i v51. Samma fix som v51.",
     hazards: [{ ...smavag("smv:v1", 0, -1800, 9000, [4500]), road: "1052" }],
     trace: northTrace(240, 80),
   },
