@@ -25,7 +25,7 @@ public enum SnapshotReader {
             }
             let info = s["info"] as? [String] ?? []
             out.append(.segment(id: "seg:\(str(s, "id"))", line: line,
-                                meta: SegmentMeta(code: optInt(s, "code"), info: info)))
+                                meta: SegmentMeta(code: optInt(s, "code"), info: info, road: s["road"] as? String)))
         }
         for w in arr(liveDoc, "weather") {
             out.append(.point(id: "wx:\(str(w, "id"))", kind: .icing_point,

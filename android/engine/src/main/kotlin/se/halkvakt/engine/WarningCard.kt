@@ -82,7 +82,8 @@ data class WarningCard(
          *  or slipperiness (SegmentMeta.halkaRapporterad), otherwise "Halka". */
         fun halkrubrik(rapporterad: Boolean): String = if (rapporterad) "Halka" else "Halkrisk"
         /** The same title from what the voice said: the card and the history only have the line. */
-        fun halkrubrik(text: String): String = halkrubrik(text != Texts.HALKRISK_TEXT)
+        /** The risk line begins "Risk för halka", with or without the road's number (DECISIONS #965). */
+        fun halkrubrik(text: String): String = halkrubrik(!text.startsWith("Risk för halka"))
 
         /** "E18" stays "E18"; a bare number becomes "VÄG 25" — the same rule as the voice's roadPhrase. */
         fun roadSign(road: String?): String? {

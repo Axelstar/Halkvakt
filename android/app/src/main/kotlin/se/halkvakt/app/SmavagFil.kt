@@ -3,7 +3,8 @@
 // the bits in live.json's `smavag`; each point carries its road (`vag`) and place along it (`ordning`). Silence is a feature: an
 // unknown schema, a besked for another file, a wrong point or byte count, a value that is not a whole number or a broken end gives
 // no hazards. Only roads with a warning point become hazards. `andar` (DECISIONS #847): each road's two ends, first and last on the
-// road and never warning; a road left with fewer than two points is left out (the road test needs two neighbours).
+// road and never warning; a road left with fewer than two points is left out (the road test needs two neighbours). `nummer`
+// (DECISIONS #965): a road's number, "E4" or "1052", for the roads that have one; the voice says it.
 package se.halkvakt.app
 
 import org.json.JSONArray
@@ -12,7 +13,7 @@ import se.halkvakt.engine.SmavagHazard
 import java.util.Base64
 
 class SmavagFil private constructor(val lon: DoubleArray, val lat: DoubleArray, val vag: IntArray, val ordning: IntArray,
-                                     val andar: Map<Int, DoubleArray>) {
+                                     val andar: Map<Int, DoubleArray>, val nummer: Map<Int, String>) {
     val n: Int get() = lon.size
 
     /** The hazards for live.json's `smavag` besked, read against this file, whose verified sha256 is [filSha]. */
@@ -38,7 +39,8 @@ class SmavagFil private constructor(val lon: DoubleArray, val lat: DoubleArray, 
             }
             if (points.size < 2) continue
             val forst = if (a != null) 1 else 0
-            out.add(SmavagHazard(id = "smv:$v", points = points, warn = idx.indices.filter { varnar(idx[it]) }.map { it + forst }))
+            out.add(SmavagHazard(id = "smv:$v", points = points, warn = idx.indices.filter { varnar(idx[it]) }.map { it + forst },
+                road = nummer[v]))
         }
         return out
     }
@@ -73,8 +75,21 @@ class SmavagFil private constructor(val lon: DoubleArray, val lat: DoubleArray, 
                     andar[v] = a
                 }
             }
-            return SmavagFil(lon, lat, vag, ordning, andar)
+            val nummer = HashMap<Int, String>()
+            if (doc.has("nummer")) {
+                val no = doc.optJSONObject("nummer") ?: return null
+                for (k in no.keys()) {
+                    val v = k.toIntOrNull()?.takeIf { it >= 0 && k.isNotEmpty() && k.all(Char::isDigit) } ?: return null
+                    val s = no.opt(k) as? String ?: return null
+                    if (!VAGNUMMER.matches(s)) return null
+                    nummer[v] = s
+                }
+            }
+            return SmavagFil(lon, lat, vag, ordning, andar, nummer)
         }
+
+        /** A road number as the point file writes it, "E4" or "1052" — mirror of VAGNUMMER in smavagfil.ts. */
+        private val VAGNUMMER = Regex("^(E[1-9][0-9]{0,2}|[1-9][0-9]{0,3})$")
 
         // JVM tests run json-java, Android its own org.json: a number can be Integer, Long, Double or BigDecimal in either (#289).
         private fun tal(a: JSONArray, i: Int): Double? = (a.opt(i) as? Number)?.toDouble()?.takeIf { it.isFinite() }

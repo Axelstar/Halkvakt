@@ -25,7 +25,7 @@ import {
   angDiffDeg, bearingDeg, boxOf, distToSegmentM, haversineM, isAhead, minDistToBoxM, reachWindow, samplePolyline, type Box,
   type LonLat,
 } from "./geo.ts";
-import { alertText, EFTERHALKA_TEXT, HALKRISK_TEXT, type AccidentStep } from "./texts.ts";
+import { alertText, EFTERHALKA_TEXT, halkaText, smavagText, type AccidentStep } from "./texts.ts";
 import { farorLangsRutten } from "./rutfilter.ts";
 
 interface FiredState { t: number; odometerM: number; }
@@ -387,7 +387,8 @@ export class AlertEngine {
       kind: win.kind,
       distanceM: Math.round(win.distM),
       text: win.beta && win.kind === "icing_point" ? EFTERHALKA_TEXT
-        : win.hazard.kind === "slippery_segment" && !halkaRapporterad(win.hazard.meta) ? HALKRISK_TEXT
+        : win.hazard.kind === "slippery_segment" ? halkaText(halkaRapporterad(win.hazard.meta), win.hazard.meta?.road)
+        : win.hazard.kind === "smavag" ? smavagText(win.hazard.road)
         : alertText(win.kind, win.distM, pointHazard, win.step),
       ...(win.step ? { step: win.step } : {}),
       ...(win.beta ? { beta: true as const } : {}),

@@ -59,7 +59,8 @@ function assertInvariants(alerts: Alert[], trace: Fix[], label: string): void {
         `${label}: accident text is neither a distance line nor the reminder: "${a.text}"`,
       );
     }
-    if (a.kind === "slippery_segment") assert.match(a.text, /på vägen framför dig/);
+    // A segment source says "framför dig", on the road or on its number (DECISIONS #965), never a distance.
+    if (a.kind === "slippery_segment") assert.match(a.text, /^(Varning: halka rapporterad|Risk för halka) på (vägen|E\d+|väg \d+) framför dig\.$/);
     if (a.kind === "icing_point") assert.match(a.text, /framöver/);
     // Kandidaten (DECISIONS #562, #577): alltid märkt beta, alltid den godkända texten — punktkälla, aldrig ett avstånd.
     if (a.kind === "kandidat") {

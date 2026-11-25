@@ -58,7 +58,7 @@ enum Nearby {
             return line.map { haversineM(lon, lat, $0[0], $0[1]) }.min() ?? .infinity
         case .kandidat(_, let points, _):
             return points.map { haversineM(lon, lat, $0[0], $0[1]) }.min() ?? .infinity
-        case .smavag(_, let points, let warn):
+        case .smavag(_, let points, let warn, _):
             return warn.compactMap { $0 >= 0 && $0 < points.count ? points[$0] : nil }
                 .map { haversineM(lon, lat, $0[0], $0[1]) }.min() ?? .infinity
         }

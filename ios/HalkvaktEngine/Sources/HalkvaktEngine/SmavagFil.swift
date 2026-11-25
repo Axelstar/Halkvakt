@@ -3,13 +3,16 @@
 // the bits in live.json's `smavag`; each point carries its road (`vag`) and place along it (`ordning`). Silence is a feature: an
 // unknown schema, a besked for another file, a wrong point or byte count, a value that is not a whole number or a broken end gives
 // no hazards. Only roads with a warning point become hazards. `andar` (DECISIONS #847): each road's two ends, first and last on the
-// road and never warning; a road left with fewer than two points is left out (the road test needs two neighbours).
+// road and never warning; a road left with fewer than two points is left out (the road test needs two neighbours). `nummer`
+// (DECISIONS #965): a road's number, "E4" or "1052", for the roads that have one; the voice says it.
 import Foundation
 
 public struct SmavagFil: Sendable {
     public let lon: [Double], lat: [Double], vag: [Int], ordning: [Int]
     /// Each road's two ends as [lonA, latA, lonB, latB] (DECISIONS #847).
     public let andar: [Int: [Double]]
+    /// Each road's number, "E4" or "1052" (DECISIONS #965).
+    public let nummer: [Int: String]
     public var n: Int { lon.count }
 
     /// smavag.json as downloaded. nil = not JSON, an unknown schema or an invalid file.
@@ -41,7 +44,20 @@ public struct SmavagFil: Sendable {
                 andar[v] = a
             }
         }
-        return SmavagFil(lon: lon, lat: lat, vag: vag, ordning: ordning, andar: andar)
+        var nummer: [Int: String] = [:]
+        if let no = o["nummer"] {
+            guard let d = no as? [String: Any] else { return nil }
+            for (k, x) in d {
+                guard !k.isEmpty, k.allSatisfy({ $0.isASCII && $0.isNumber }), let v = Int(k), let s = x as? String, vagnummer(s) else { return nil }
+                nummer[v] = s
+            }
+        }
+        return SmavagFil(lon: lon, lat: lat, vag: vag, ordning: ordning, andar: andar, nummer: nummer)
+    }
+
+    /// A road number as the point file writes it, "E4" or "1052" — mirror of VAGNUMMER in smavagfil.ts.
+    static func vagnummer(_ s: String) -> Bool {
+        s.range(of: "^(E[1-9][0-9]{0,2}|[1-9][0-9]{0,3})$", options: .regularExpression) != nil
     }
 
     /// A whole number, or nil (a fraction, a word or null). A JSON boolean is not tested: on Apple an NSNumber 1 also casts to Bool.
@@ -72,7 +88,8 @@ public struct SmavagFil: Sendable {
             if let a { points.append([a[2], a[3]]) }
             if points.count < 2 { continue }
             let forst = a == nil ? 0 : 1
-            out.append(.smavag(id: "smv:\(v)", points: points, warn: idx.indices.filter { varnar(idx[$0]) }.map { $0 + forst }))
+            out.append(.smavag(id: "smv:\(v)", points: points, warn: idx.indices.filter { varnar(idx[$0]) }.map { $0 + forst },
+                               road: nummer[v]))
         }
         return out
     }

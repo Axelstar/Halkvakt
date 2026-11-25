@@ -26,7 +26,7 @@ final class VectorTests: XCTestCase {
         if kind == .smavag {   // DECISIONS #844: one small road with its points in order and the indices that warn
             let points = (o["points"] as! [[Any]]).map { $0.map { ($0 as! NSNumber).doubleValue } }
             let warn = (o["warn"] as! [Any]).map { ($0 as! NSNumber).intValue }
-            return .smavag(id: o["id"] as! String, points: points, warn: warn)
+            return .smavag(id: o["id"] as! String, points: points, warn: warn, road: o["road"] as? String)
         }
         if kind == .slippery_segment {
             let line = (o["line"] as! [[Any]]).map { $0.map { ($0 as! NSNumber).doubleValue } }
@@ -35,7 +35,8 @@ final class VectorTests: XCTestCase {
                 id: o["id"] as! String, line: line,
                 meta: SegmentMeta(
                     code: (m?["code"] as? NSNumber)?.intValue,
-                    info: m?["info"] as? [String] ?? []))
+                    info: m?["info"] as? [String] ?? [],
+                    road: m?["road"] as? String))
         }
         let m = o["meta"] as? [String: Any]
         return .point(

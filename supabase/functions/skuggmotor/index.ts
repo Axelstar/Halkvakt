@@ -75,6 +75,8 @@ export interface SegmentHazard {
     code?: number | null;
     /** ConditionInfo strings, e.g. ["Is", "Snöfläckar"]. */
     info?: string[];
+    /** The stretch's road, "E4" or "40" (live.json `road`, DECISIONS #882); the voice says it (DECISIONS #965). */
+    road?: string | null;
   };
 }
 
@@ -103,6 +105,8 @@ export interface SmavagHazard {
   points: [number, number][];
   /** Indices into points that warn, ascending. */
   warn: number[];
+  /** The road's number, "E4" or "1052" (the point file's `nummer`, DECISIONS #965); the voice says it. */
+  road?: string | null;
 }
 
 export type Hazard = PointHazard | SegmentHazard | KandidatHazard | SmavagHazard;
@@ -589,6 +593,19 @@ export const SMAVAG_TEXT = "Betavarning: risk för halka på småvägarna framö
  *  source ⇒ "på vägen framför dig". */
 export const HALKRISK_TEXT = "Risk för halka på vägen framför dig.";
 
+/** A1 and S with the road's number when the data has one (Bengt 25/11, DECISIONS #965; kort #660, #661): "Varning: halka rapporterad
+ *  på väg 40 framför dig.", "Risk för halka på E4 framför dig.", "Betavarning: risk för halka på väg 1052 framöver." Without a number
+ *  the lines are the ones above. */
+export function halkaText(rapporterad: boolean, road?: string | null): string {
+  const on = roadPhrase(road);
+  if (!on) return rapporterad ? "Varning: halka rapporterad på vägen framför dig." : HALKRISK_TEXT;
+  return rapporterad ? `Varning: halka rapporterad${on} framför dig.` : `Risk för halka${on} framför dig.`;
+}
+export function smavagText(road?: string | null): string {
+  const on = roadPhrase(road);
+  return on ? `Betavarning: risk för halka${on} framöver.` : SMAVAG_TEXT;
+}
+
 export function alertText(
   kind: HazardKind,
   distanceM: number,
@@ -1022,7 +1039,8 @@ export class AlertEngine {
       kind: win.kind,
       distanceM: Math.round(win.distM),
       text: win.beta && win.kind === "icing_point" ? EFTERHALKA_TEXT
-        : win.hazard.kind === "slippery_segment" && !halkaRapporterad(win.hazard.meta) ? HALKRISK_TEXT
+        : win.hazard.kind === "slippery_segment" ? halkaText(halkaRapporterad(win.hazard.meta), win.hazard.meta?.road)
+        : win.hazard.kind === "smavag" ? smavagText(win.hazard.road)
         : alertText(win.kind, win.distM, pointHazard, win.step),
       ...(win.step ? { step: win.step } : {}),
       ...(win.beta ? { beta: true as const } : {}),
@@ -1483,7 +1501,7 @@ export function snapshotToHazards(staticDoc: StaticDoc, liveDoc: LiveDoc): Hazar
     out.push({ id: `cam:${c.id}`, kind: "camera", lon: c.lon, lat: c.lat, bearing: c.bearing });
   }
   for (const s of liveDoc.segments) {
-    out.push({ id: `seg:${s.id}`, kind: "slippery_segment", line: s.line, meta: { code: s.code, info: s.info } });
+    out.push({ id: `seg:${s.id}`, kind: "slippery_segment", line: s.line, meta: { code: s.code, info: s.info, road: s.road ?? null } });
   }
   for (const w of liveDoc.weather) {
     out.push({ id: `wx:${w.id}`, kind: "icing_point", lon: w.lon, lat: w.lat,
