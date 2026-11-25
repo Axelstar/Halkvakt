@@ -3,14 +3,14 @@ import XCTest
 
 // The auto-wake speed probe (kort #359): car speed starts the guard, five minutes without it goes back to sleep, and a guard
 // started by hand during the probe ends it — the probe must never turn location off under a running guard. Car speed is five
-// good fixes in a row at 40 km/h or more. Whole trips: SjalvstartSimTests.
+// good fixes in a row at 30 km/h or more. Whole trips: SjalvstartSimTests.
 final class FartkollenTests: XCTestCase {
     func testCarSpeedStartsTheGuard() {
         var p = Fartkollen()
         p.begin(t: 1000)
         XCTAssertEqual(p.onFix(t: 1010, kmh: 8), .waiting)
-        for i in 0..<4 { XCTAssertEqual(p.onFix(t: 1020 + Double(i), kmh: 40), .waiting, "fix \(i + 1) of five") }
-        XCTAssertEqual(p.onFix(t: 1024, kmh: 40), .startGuard)
+        for i in 0..<4 { XCTAssertEqual(p.onFix(t: 1020 + Double(i), kmh: 30), .waiting, "fix \(i + 1) of five") }
+        XCTAssertEqual(p.onFix(t: 1024, kmh: 30), .startGuard)
         XCTAssertFalse(p.active)
         XCTAssertEqual(p.onFix(t: 1030, kmh: 50), .waiting, "over once the guard is started")
     }
@@ -27,14 +27,14 @@ final class FartkollenTests: XCTestCase {
     func testBicycleSpeedNeverStartsTheGuard() {
         var p = Fartkollen()
         p.begin(t: 1000)
-        for i in 1...300 { XCTAssertEqual(p.onFix(t: 1000 + Double(i), kmh: i % 2 == 0 ? 25 : 39), .waiting) }
+        for i in 1...300 { XCTAssertEqual(p.onFix(t: 1000 + Double(i), kmh: i % 2 == 0 ? 25 : 29), .waiting) }
     }
 
     func testFourFastFixesAndASlowOneStartOver() {
         var p = Fartkollen()
         p.begin(t: 1000)
         for i in 0..<4 { XCTAssertEqual(p.onFix(t: 1001 + Double(i), kmh: 60), .waiting) }
-        XCTAssertEqual(p.onFix(t: 1005, kmh: 39), .waiting)
+        XCTAssertEqual(p.onFix(t: 1005, kmh: 29), .waiting)
         for i in 0..<4 { XCTAssertEqual(p.onFix(t: 1006 + Double(i), kmh: 60), .waiting) }
         XCTAssertEqual(p.onFix(t: 1010, kmh: 60), .startGuard)
     }

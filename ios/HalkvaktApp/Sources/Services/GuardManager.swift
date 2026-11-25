@@ -69,10 +69,10 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
 
     // Vakna själv (DECISIONS #40): med "Alltid" ber vi iOS väcka appen vid betydande
     // förflyttning (~500 m, även när appen är stängd — iOS startar om oss i bakgrunden).
-    // När vi väcks PROVAR vi: full positionsström i högst fem minuter. Ser vi bilfart (40 km/h
+    // När vi väcks PROVAR vi: full positionsström i högst fem minuter. Ser vi bilfart (30 km/h
     // fem lägen i rad) startar vakten på riktigt; annars släcks strömmen igen. Det är iOS-motsvarigheten till
     // Androids rörelseigenkänning. Apples lås gäller Bluetooth, inte plats.
-    // Fartkollen (5 min, 40 km/h fem lägen i rad) bor i motorpaketet, där ci provar den (Fartkollen.swift, kort #359).
+    // Fartkollen (5 min, 30 km/h fem lägen i rad) bor i motorpaketet, där ci provar den (Fartkollen.swift, kort #359).
     private var fartkoll = Fartkollen()
     /// Den här körningen startades av självväckningen (för kvittots körtid).
     private var autoWoke = false
