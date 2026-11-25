@@ -89,7 +89,8 @@ public struct WarningCard: Equatable {
     /// slipperiness (SegmentMeta.halkaRapporterad), otherwise "Halka".
     public static func halkrubrik(rapporterad: Bool) -> String { rapporterad ? "Halka" : "Halkrisk" }
     /// The same title from what the voice said: the card and the history only have the line.
-    public static func halkrubrik(_ text: String) -> String { halkrubrik(rapporterad: text != Texts.halkriskText) }
+    /// The risk line begins "Risk för halka", with or without the road's number (DECISIONS #965).
+    public static func halkrubrik(_ text: String) -> String { halkrubrik(rapporterad: !text.hasPrefix("Risk för halka")) }
 
     /// "E18" stays "E18"; a bare number becomes "VÄG 25" — the same rule as the voice's roadPhrase.
     static func roadSign(_ road: String?) -> String? {

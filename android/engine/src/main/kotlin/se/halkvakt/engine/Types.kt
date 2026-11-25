@@ -56,7 +56,8 @@ fun PointMeta.frysriskGaller(cfg: EngineConfig = EngineConfig()): Boolean {
 /** Which utterance of a serious accident this is (DECISIONS #28). Mirrors AccidentStep in texts.ts. */
 enum class AccidentStep(val wire: String) { EARLY("early"), REMINDER("reminder"), LATE("late") }
 
-data class SegmentMeta(val code: Int? = null, val info: List<String> = emptyList()) {
+/** `road`: the stretch's road, "E4" or "40" (live.json `road`, DECISIONS #882); the voice says it (DECISIONS #965). */
+data class SegmentMeta(val code: Int? = null, val info: List<String> = emptyList(), val road: String? = null) {
     /** Which A1 line a stretch that speaks gets — mirror of halkaRapporterad in engine.ts (Axel 24/11; vectors v72–v75). True when a
      *  ConditionInfo word is a halkord, or the class is 3 (Mycket besvärligt) or 4 (Is- och snövägbana): "halka rapporterad". False,
      *  which for a stretch that speaks is class 2 (Besvärligt (risk för)) with no such word: the line, the card and the lists say risk. */
@@ -100,6 +101,8 @@ data class SmavagHazard(
     override val id: String,
     val points: List<DoubleArray>, // [lon, lat], in order along the road
     val warn: List<Int>,
+    /** The road's number, "E4" or "1052" (the point file's `nummer`, DECISIONS #965); the voice says it. */
+    val road: String? = null,
 ) : Hazard { override val kind = HazardKind.SMAVAG }
 
 data class Fix(
@@ -264,6 +267,19 @@ object Texts {
     /** A1 when the report names no ice, snow, frost, slush or slipperiness (SegmentMeta.halkaRapporterad is false) — spegel av
      *  HALKRISK_TEXT i texts.ts. */
     const val HALKRISK_TEXT = "Risk för halka på vägen framför dig."
+
+    /** A1 with the road's number when the data has one — spegel av halkaText i texts.ts (Bengt 25/11, DECISIONS #965). */
+    fun halkaText(rapporterad: Boolean, road: String?): String {
+        val on = roadPhrase(road)
+        if (on.isEmpty()) return if (rapporterad) "Varning: halka rapporterad på vägen framför dig." else HALKRISK_TEXT
+        return if (rapporterad) "Varning: halka rapporterad$on framför dig." else "Risk för halka$on framför dig."
+    }
+
+    /** S with the road's number when the point file has one — spegel av smavagText i texts.ts (DECISIONS #965). */
+    fun smavagText(road: String?): String {
+        val on = roadPhrase(road)
+        return if (on.isEmpty()) SMAVAG_TEXT else "Betavarning: risk för halka$on framöver."
+    }
 
     /** " på E18" / " på väg 25" / "" när numret saknas. */
     fun roadPhrase(road: String?): String {

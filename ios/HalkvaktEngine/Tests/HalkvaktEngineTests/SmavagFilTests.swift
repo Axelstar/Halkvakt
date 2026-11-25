@@ -28,12 +28,13 @@ struct SmavagFilTests {
             let vantat = f["vantat"] as? [[String: Any]] ?? []
             #expect(got.count == vantat.count, "\(namn): count \(got.count)")
             for (v, h) in zip(vantat, got) {
-                guard case let .smavag(id, points, warn) = h else { Issue.record("\(namn): not a smavag hazard"); continue }
+                guard case let .smavag(id, points, warn, road) = h else { Issue.record("\(namn): not a smavag hazard"); continue }
                 #expect(id == v["id"] as? String, "\(namn): id \(id)")
                 let pts = (v["points"] as? [[Any]] ?? []).map { $0.compactMap { ($0 as? NSNumber)?.doubleValue } }
                 #expect(points == pts, "\(namn) \(id): points")
                 let w = (v["warn"] as? [Any] ?? []).compactMap { ($0 as? NSNumber)?.intValue }
                 #expect(warn == w, "\(namn) \(id): warn \(warn)")
+                #expect(road == v["road"] as? String, "\(namn) \(id): road \(road ?? "-")")
             }
         }
     }

@@ -35,6 +35,7 @@ struct LasarkontraktetTests {
         switch h {
         case .segment(_, _, let meta):
             if nyckel == "code" { return meta.code }
+            if nyckel == "road" { return meta.road }
         case .point(_, _, _, _, let bearing, let meta):
             switch nyckel {
             case "bearing": return bearing

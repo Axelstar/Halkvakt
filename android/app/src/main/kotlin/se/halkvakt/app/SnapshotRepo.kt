@@ -183,7 +183,8 @@ object SnapshotRepo {
             val info = s.optJSONArray("info")?.let { a -> (0 until a.length()).map { a.getString(it) } } ?: emptyList()
             out.add(SegmentHazard(
                 id = "seg:${s.idText()}", line = line,
-                meta = SegmentMeta(code = if (s.isNull("code")) null else s.getInt("code"), info = info),
+                meta = SegmentMeta(code = if (s.isNull("code")) null else s.getInt("code"), info = info,
+                    road = if (s.has("road") && !s.isNull("road")) s.getString("road") else null),
             ))
         }
         val wx = liveDoc.getJSONArray("weather")

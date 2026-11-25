@@ -3441,6 +3441,45 @@ test("#881 småvägsröstens påfil: sql/113 slår på båda brytarna bara med v
   }
 });
 
+// SMÅVÄGARNAS VÄGNUMMER I PUNKTFILEN (DECISIONS #965, sql/144), mot riktig PostGIS.
+//   VN1  skrivPunktfil tar numren ur vagnummer_punkt (bara utfall nummer, E-vägen som E4) och behåller ändarna ur den skrivna filen
+//   VN2  den nya filen nollar i_hinken och i_github; en andra skrivning ändrar inget
+test("#965 småvägarnas vägnummer i punktfilen", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { SATS, punktfil, skrivPunktfil } = await import("../ingest/smavagspunkter-db.ts");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const las = (f: string) => q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+  const rensa = async () => { for (const t of ["smavag_live", "smavag_korning", "radar_smavag", "smavagspunkt", "smavag_punktfil", "vagnummer_punkt"]) await q(`DELETE FROM ${t}`).catch(() => {}); };
+  try {
+    await las("103_smavagspunkter.sql"); await las("104_radar_smavag.sql"); await las("105_smavagsregeln.sql");
+    await las("106_smavag_punktfil.sql"); await las("144_vagnummer_punkter.sql");
+    await rensa();
+    await q(`INSERT INTO smavagspunkt (punkt, grupp, vag, ordning, lon, lat) VALUES
+      ('r00001', 'P1', 'v00001', 0, 15.0, 60.0), ('r00002', 'P1', 'v00002', 0, 16.0, 61.0), ('r00003', 'P1', 'v00003', 0, 17.0, 62.0)`);
+    const forut = punktfil((await q(SATS.punktfilRader)).rows, new Map([["v00001", [[14.99, 59.99], [15.01, 60.01]]]]));
+    await q(SATS.punktfil, [forut.sha256, forut.punkter, forut.bytes, forut.gz_bytes, forut.json]);
+    await q("UPDATE smavag_punktfil SET i_hinken = sha256, i_github = sha256");
+    await q(`INSERT INTO vagnummer_punkt (kalla, nyckel, utfall, huvudnummer, europavag, fragade, svar, lika) VALUES
+      ('smavag', 'v00001', 'nummer', 1052, false, 3, 3, 3), ('smavag', 'v00002', 'nummer', 4, true, 3, 3, 2),
+      ('smavag', 'v00003', 'oenig', NULL, NULL, 3, 3, 1), ('stad', 'B00001', 'nummer', 40, false, 1, 1, 1)`);
+    await skrivPunktfil(pool);
+    const efter = (await q("SELECT sha256, json, i_hinken, i_github FROM smavag_punktfil WHERE id = 1")).rows[0];
+    const fil = JSON.parse(efter.json);
+    assert.deepEqual(fil.nummer, { "1": "1052", "2": "E4" }, "VN1: numren, E-vägen som E4, den oeniga och staden utan");
+    assert.deepEqual(fil.andar, JSON.parse(forut.json).andar, "VN1: ändarna står kvar");
+    assert.notEqual(efter.sha256, forut.sha256, "VN2: ny sha");
+    assert.equal(efter.i_hinken, null, "VN2: i_hinken nollad"); assert.equal(efter.i_github, null, "VN2: i_github nollad");
+    await q("UPDATE smavag_punktfil SET i_hinken = sha256, i_github = sha256");
+    await skrivPunktfil(pool);
+    const igen = (await q("SELECT sha256, i_hinken FROM smavag_punktfil WHERE id = 1")).rows[0];
+    assert.equal(igen.sha256, efter.sha256, "VN2: samma fil en gång till"); assert.equal(igen.i_hinken, efter.sha256, "VN2: ingen nollning");
+  } finally {
+    await rensa();
+    await pool.end();
+  }
+});
+
 // SMÅVÄGSRÖSTENS PUNKTFIL OCH BESKED (sql/106, byggsteg 5b, DECISIONS #828), mot riktig PostGIS.
 //   SF1  punktfilen skrivs i ordningen punkt COLLATE "C" med sha och storlekar; samma punkter en gång till ändrar inget
 //   SF2  en ny punkt ger en ny sha och nollar i_hinken och i_github

@@ -149,6 +149,330 @@
    ]
   },
   {
+   "namn": "med vägnummer",
+   "_varfor": "som det vanliga fallet, med vägnumren (DECISIONS #965): väg 1 heter 1052 och väg 4 E4, väg 3 har inget nummer och väg 2 varnar inte. Faran bär numret, och rösten säger det.",
+   "fil": {
+    "schema": 2,
+    "punkter": [
+     [
+      12.02,
+      56.01
+     ],
+     [
+      13.0,
+      57.0
+     ],
+     [
+      12.0,
+      56.0
+     ],
+     [
+      14.0,
+      58.0
+     ],
+     [
+      12.01,
+      56.005
+     ],
+     [
+      13.01,
+      57.005
+     ],
+     [
+      15.0,
+      59.0
+     ],
+     [
+      15.01,
+      59.005
+     ]
+    ],
+    "vag": [
+     1,
+     2,
+     1,
+     3,
+     1,
+     2,
+     4,
+     4
+    ],
+    "ordning": [
+     2,
+     0,
+     0,
+     0,
+     1,
+     1,
+     0,
+     1
+    ],
+    "andar": {
+     "1": [
+      11.99,
+      55.996,
+      12.03,
+      56.014
+     ],
+     "3": [
+      13.996,
+      57.998,
+      14.004,
+      58.002
+     ]
+    },
+    "nummer": {
+     "1": "1052",
+     "2": "77",
+     "4": "E4"
+    }
+   },
+   "filSha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "besked": {
+    "fil": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "n": 8,
+    "bitar": "mA=="
+   },
+   "vantat": [
+    {
+     "id": "smv:1",
+     "points": [
+      [
+       11.99,
+       55.996
+      ],
+      [
+       12.0,
+       56.0
+      ],
+      [
+       12.01,
+       56.005
+      ],
+      [
+       12.02,
+       56.01
+      ],
+      [
+       12.03,
+       56.014
+      ]
+     ],
+     "warn": [
+      2
+     ],
+     "road": "1052"
+    },
+    {
+     "id": "smv:3",
+     "points": [
+      [
+       13.996,
+       57.998
+      ],
+      [
+       14.0,
+       58.0
+      ],
+      [
+       14.004,
+       58.002
+      ]
+     ],
+     "warn": [
+      1
+     ]
+    },
+    {
+     "id": "smv:4",
+     "points": [
+      [
+       15.0,
+       59.0
+      ],
+      [
+       15.01,
+       59.005
+      ]
+     ],
+     "warn": [
+      1
+     ],
+     "road": "E4"
+    }
+   ]
+  },
+  {
+   "namn": "trasigt vägnummer",
+   "_varfor": "ett nummer med mellanslag (E 4) är inte den form punktfilen skriver: tystnad, inte en gissning.",
+   "fil": {
+    "schema": 2,
+    "punkter": [
+     [
+      12.02,
+      56.01
+     ],
+     [
+      13.0,
+      57.0
+     ],
+     [
+      12.0,
+      56.0
+     ],
+     [
+      14.0,
+      58.0
+     ],
+     [
+      12.01,
+      56.005
+     ],
+     [
+      13.01,
+      57.005
+     ],
+     [
+      15.0,
+      59.0
+     ],
+     [
+      15.01,
+      59.005
+     ]
+    ],
+    "vag": [
+     1,
+     2,
+     1,
+     3,
+     1,
+     2,
+     4,
+     4
+    ],
+    "ordning": [
+     2,
+     0,
+     0,
+     0,
+     1,
+     1,
+     0,
+     1
+    ],
+    "andar": {
+     "1": [
+      11.99,
+      55.996,
+      12.03,
+      56.014
+     ],
+     "3": [
+      13.996,
+      57.998,
+      14.004,
+      58.002
+     ]
+    },
+    "nummer": {
+     "1": "E 4"
+    }
+   },
+   "filSha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "besked": {
+    "fil": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "n": 8,
+    "bitar": "mA=="
+   },
+   "vantat": []
+  },
+  {
+   "namn": "vägnummer med fel nyckel",
+   "_varfor": "nyckeln ska vara vägens nummer i siffror, som i andar: v1 är fel, och filen ger tystnad.",
+   "fil": {
+    "schema": 2,
+    "punkter": [
+     [
+      12.02,
+      56.01
+     ],
+     [
+      13.0,
+      57.0
+     ],
+     [
+      12.0,
+      56.0
+     ],
+     [
+      14.0,
+      58.0
+     ],
+     [
+      12.01,
+      56.005
+     ],
+     [
+      13.01,
+      57.005
+     ],
+     [
+      15.0,
+      59.0
+     ],
+     [
+      15.01,
+      59.005
+     ]
+    ],
+    "vag": [
+     1,
+     2,
+     1,
+     3,
+     1,
+     2,
+     4,
+     4
+    ],
+    "ordning": [
+     2,
+     0,
+     0,
+     0,
+     1,
+     1,
+     0,
+     1
+    ],
+    "andar": {
+     "1": [
+      11.99,
+      55.996,
+      12.03,
+      56.014
+     ],
+     "3": [
+      13.996,
+      57.998,
+      14.004,
+      58.002
+     ]
+    },
+    "nummer": {
+     "v1": "1052"
+    }
+   },
+   "filSha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "besked": {
+    "fil": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "n": 8,
+    "bitar": "mA=="
+   },
+   "vantat": []
+  },
+  {
    "namn": "vanligt utan ändar",
    "_varfor": "samma fil utan andar (en äldre punktfil): väg 1 och väg 4 som förut, väg 3 med sin ensamma punkt kan aldrig tala",
    "fil": {

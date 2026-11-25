@@ -55,7 +55,9 @@ public enum AccidentStep: String { case early, reminder, late }
 public struct SegmentMeta {
     public var code: Int? = nil
     public var info: [String] = []
-    public init(code: Int? = nil, info: [String] = []) { self.code = code; self.info = info }
+    /// The stretch's road, "E4" or "40" (live.json `road`, DECISIONS #882); the voice says it (DECISIONS #965).
+    public var road: String? = nil
+    public init(code: Int? = nil, info: [String] = [], road: String? = nil) { self.code = code; self.info = info; self.road = road }
     /// Which A1 line a stretch that speaks gets — mirror of halkaRapporterad in engine.ts (Axel 24/11; vectors v72–v75). True when a
     /// ConditionInfo word is a halkord, or the class is 3 (Mycket besvärligt) or 4 (Is- och snövägbana): "halka rapporterad". False,
     /// which for a stretch that speaks is class 2 (Besvärligt (risk för)) with no such word: the line, the card and the lists say risk.
@@ -87,14 +89,15 @@ public enum Hazard {
     /// S — one state road without road-condition measurement (DECISIONS #828, #844), mirror of SmavagHazard in types.ts: its points
     /// [lon, lat] in order along the road and the indices of those that warn. Roads without a warning point belong here too: the
     /// road test first decides which road the car is on, among all of them.
-    case smavag(id: String, points: [[Double]], warn: [Int])
+    /// `road`: the road's number, "E4" or "1052" (the point file's `nummer`, DECISIONS #965); the voice says it.
+    case smavag(id: String, points: [[Double]], warn: [Int], road: String? = nil)
 
     public var id: String {
         switch self {
         case .point(let id, _, _, _, _, _): return id
         case .segment(let id, _, _): return id
         case .kandidat(let id, _, _): return id
-        case .smavag(let id, _, _): return id
+        case .smavag(let id, _, _, _): return id
         }
     }
 }
@@ -271,6 +274,18 @@ enum Texts {
     /// HALKRISK_TEXT i texts.ts.
     static let halkriskText = "Risk för halka på vägen framför dig."
 
+    /// A1 with the road's number when the data has one — spegel av halkaText i texts.ts (Bengt 25/11, DECISIONS #965).
+    static func halkaText(rapporterad: Bool, road: String?) -> String {
+        let on = roadPhrase(road)
+        if on.isEmpty { return rapporterad ? "Varning: halka rapporterad på vägen framför dig." : halkriskText }
+        return rapporterad ? "Varning: halka rapporterad\(on) framför dig." : "Risk för halka\(on) framför dig."
+    }
+    /// S with the road's number when the point file has one — spegel av smavagText i texts.ts (DECISIONS #965).
+    static func smavagMedVag(_ road: String?) -> String {
+        let on = roadPhrase(road)
+        return on.isEmpty ? smavagText : "Betavarning: risk för halka\(on) framöver."
+    }
+
     /// " på E18" / " på väg 25" / "" när numret saknas.
     static func roadPhrase(_ road: String?) -> String {
         guard let r = road?.trimmingCharacters(in: .whitespaces), !r.isEmpty else { return "" }
@@ -389,7 +404,7 @@ public final class AlertEngine {
     private struct Segment { let id: String; let meta: SegmentMeta; let samples: [[Double]]; let line: [[Double]]; let pa: [[Double]] }
     private struct Kandidat { let id: String; let points: [[Double]]; let segmentHazardId: String? }
     /// S (DECISIONS #844): one small road, and whether the line to the previous point exists (neighbours within smavagKordaMaxM).
-    private struct Smavag { let id: String; let points: [[Double]]; let warn: [Int]; let linje: [Bool] }
+    private struct Smavag { let id: String; let points: [[Double]]; let warn: [Int]; let linje: [Bool]; let road: String? }
     private var points: [Point] = []
     private var segments: [Segment] = []
     private var kandidater: [Kandidat] = []
@@ -451,13 +466,13 @@ public final class AlertEngine {
             case .kandidat(let id, let pts, let seg):
                 kandidatGrid.add(kandidater.count, pts, reachOf(.kandidat))
                 kandidater.append(Kandidat(id: id, points: pts, segmentHazardId: seg))
-            case .smavag(let id, let pts, let warn):
+            case .smavag(let id, let pts, let warn, let road):
                 let linje = pts.indices.map { k in
                     k > 0 && Geo.haversineM(pts[k - 1][0], pts[k - 1][1], pts[k][0], pts[k][1]) <= cfg.smavagKordaMaxM
                 }
                 smavagGrid.add(smavagar.count, Geo.samplePolyline(pts, cfg.segmentSampleM), reachOf(.smavag))
                 smavagById[id] = smavagar.count
-                smavagar.append(Smavag(id: id, points: pts, warn: warn, linje: linje))
+                smavagar.append(Smavag(id: id, points: pts, warn: warn, linje: linje, road: road))
             }
         }
     }
@@ -666,13 +681,15 @@ public final class AlertEngine {
         if win.kind == .kandidat { lastKandidatT = fix.t }
         if win.kind == .smavag { lastSmavagT = fix.t; lastSmavagOdoM = odometerM }
         fired[win.alertKey] = (fix.t, odometerM)
-        let halkrisk = win.kind == .slippery_segment && segments.first(where: { $0.id == win.id })?.meta.halkaRapporterad == false
+        let segMeta = win.kind == .slippery_segment ? segments.first(where: { $0.id == win.id })?.meta : nil
+        let smavagRoad = win.kind == .smavag ? smavagById[win.id].map { smavagar[$0].road } ?? nil : nil
         return Alert(
             t: fix.t, hazardId: win.id, kind: win.kind,
             distanceM: Int(win.distM.rounded()),
             text: win.beta && win.kind == .icing_point ? Texts.efterhalkaText
-                           : halkrisk ? Texts.halkriskText
-                           : Texts.alertText(win.kind, win.distM, win.limit, win.step, win.endTimeLocal, win.bridge, win.road),
+                           : segMeta.map { Texts.halkaText(rapporterad: $0.halkaRapporterad, road: $0.road) }
+                           ?? (win.kind == .smavag ? Texts.smavagMedVag(smavagRoad)
+                           : Texts.alertText(win.kind, win.distM, win.limit, win.step, win.endTimeLocal, win.bridge, win.road)),
             step: win.step, beta: win.beta)
     }
 

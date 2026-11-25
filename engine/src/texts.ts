@@ -40,6 +40,19 @@ export const SMAVAG_TEXT = "Betavarning: risk för halka på småvägarna framö
  *  source ⇒ "på vägen framför dig". */
 export const HALKRISK_TEXT = "Risk för halka på vägen framför dig.";
 
+/** A1 and S with the road's number when the data has one (Bengt 25/11, DECISIONS #965; kort #660, #661): "Varning: halka rapporterad
+ *  på väg 40 framför dig.", "Risk för halka på E4 framför dig.", "Betavarning: risk för halka på väg 1052 framöver." Without a number
+ *  the lines are the ones above. */
+export function halkaText(rapporterad: boolean, road?: string | null): string {
+  const on = roadPhrase(road);
+  if (!on) return rapporterad ? "Varning: halka rapporterad på vägen framför dig." : HALKRISK_TEXT;
+  return rapporterad ? `Varning: halka rapporterad${on} framför dig.` : `Risk för halka${on} framför dig.`;
+}
+export function smavagText(road?: string | null): string {
+  const on = roadPhrase(road);
+  return on ? `Betavarning: risk för halka${on} framöver.` : SMAVAG_TEXT;
+}
+
 export function alertText(
   kind: HazardKind,
   distanceM: number,

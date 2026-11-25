@@ -43,6 +43,7 @@ class SmavagFilTest {
                 }
                 val warn = v.getJSONArray("warn")
                 assertEquals("$namn ${h.id}: warn", (0 until warn.length()).map { warn.getInt(it) }, h.warn)
+                assertEquals("$namn ${h.id}: road", if (v.has("road")) v.getString("road") else null, h.road)
             }
         }
     }

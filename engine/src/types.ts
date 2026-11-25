@@ -72,6 +72,8 @@ export interface SegmentHazard {
     code?: number | null;
     /** ConditionInfo strings, e.g. ["Is", "Snöfläckar"]. */
     info?: string[];
+    /** The stretch's road, "E4" or "40" (live.json `road`, DECISIONS #882); the voice says it (DECISIONS #965). */
+    road?: string | null;
   };
 }
 
@@ -100,6 +102,8 @@ export interface SmavagHazard {
   points: [number, number][];
   /** Indices into points that warn, ascending. */
   warn: number[];
+  /** The road's number, "E4" or "1052" (the point file's `nummer`, DECISIONS #965); the voice says it. */
+  road?: string | null;
 }
 
 export type Hazard = PointHazard | SegmentHazard | KandidatHazard | SmavagHazard;
