@@ -35,6 +35,11 @@ export const KANDIDAT_TEXT = "Halkvakt tror: halka framöver.";
  *  mätning, en punktkälla — därför "framöver" och aldrig ett avstånd. */
 export const SMAVAG_TEXT = "Betavarning: risk för halka på småvägarna framöver.";
 
+/** A1 when the report names no ice, snow, frost, slush or slipperiness: Trafikverket's class 2 is "Besvärligt (risk för)", and
+ *  "halka rapporterad" overstated a wet road (Axel 24/11). Which line a stretch gets is halkaRapporterad in engine.ts. Segment
+ *  source ⇒ "på vägen framför dig". */
+export const HALKRISK_TEXT = "Risk för halka på vägen framför dig.";
+
 export function alertText(
   kind: HazardKind,
   distanceM: number,

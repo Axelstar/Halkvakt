@@ -1,18 +1,18 @@
 {
  "name": "Väglagsorden som inte är halt tiger på kod 1 (#915)",
- "description": "Fyra kod 1-segment med de fyra väglagsord som värdevakten (scripts/vardevakten.ts) klassar som inte halt: Torrt, Våt, fläckvis Torrt och fläckvis Våt, 1 km isär. Inget bär modd eller ett annat halkord, och 'is' inuti 'fläckvis' fångas inte ⇒ tystnad. Den skarpa fällan för modd vore 'modd' inuti ett ord, men Trafikverket har inget sådant ord: ordbörjan är densamma för alla halkord och prövas här av fläckvis-orden.",
+ "description": "Fyra kod 1-segment med de fyra väglagsord som värdevakten (scripts/vardevakten.ts) klassar som inte halt: Torrt, Våt, fläckvis Torrt och fläckvis Våt, 1 km isär. Inget bär modd eller ett annat halkord, och 'is' inuti 'fläckvis' fångas inte ⇒ tystnad. Den skarpa fällan för modd vore 'modd' inuti ett ord, men Trafikverket har inget sådant ord: ordbörjan är densamma för alla halkord och prövas här av fläckvis-orden. Sträckorna ligger 300 m längs bilens väg sedan vägtestet (Skeppsbron 24/11), så att orden och inte geometrin håller dem tysta.",
  "hazards": [
   {
    "id": "n1_torrt",
    "kind": "slippery_segment",
    "line": [
     [
-     14.99,
+     15,
      58.018065037729066
     ],
     [
-     15.01,
-     58.018065037729066
+     15,
+     58.020759971254044
     ]
    ],
    "meta": {
@@ -27,12 +27,12 @@
    "kind": "slippery_segment",
    "line": [
     [
-     14.99,
+     15,
      58.02704814947898
     ],
     [
-     15.01,
-     58.02704814947898
+     15,
+     58.02974308300395
     ]
    ],
    "meta": {
@@ -47,12 +47,12 @@
    "kind": "slippery_segment",
    "line": [
     [
-     14.99,
+     15,
      58.03603126122889
     ],
     [
-     15.01,
-     58.03603126122889
+     15,
+     58.03872619475386
     ]
    ],
    "meta": {
@@ -67,12 +67,12 @@
    "kind": "slippery_segment",
    "line": [
     [
-     14.99,
+     15,
      58.0450143729788
     ],
     [
-     15.01,
-     58.0450143729788
+     15,
+     58.047709306503776
     ]
    ],
    "meta": {

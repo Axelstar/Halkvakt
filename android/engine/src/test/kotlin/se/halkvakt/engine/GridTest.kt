@@ -229,8 +229,11 @@ class GridTest {
 
     /** Both paths side by side; every step's answer must be equal. */
     private fun runBoth(s: Scenario): List<Alert> {
-        val g = AlertEngine(s.hazards, s.cfg)
-        val f = AlertEngine(s.hazards, s.cfg).also { it.bruteForce = true }
+        // No ej-bil speed limit here: the traces drive at up to 400 km/h to put the lead on its 3 000 m ceiling, and this file
+        // proves the grid, not that gate (the vectors v76–v80 do).
+        val cfg = s.cfg.copy(maxSpeedKmh = Double.POSITIVE_INFINITY)
+        val g = AlertEngine(s.hazards, cfg)
+        val f = AlertEngine(s.hazards, cfg).also { it.bruteForce = true }
         val alerts = ArrayList<Alert>()
         var u = 0
         for ((i, fix) in s.trace.withIndex()) {

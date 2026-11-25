@@ -122,6 +122,18 @@ test("vectors cover every discipline rule", () => {
   assert.equal(silent.expected.length, 0);
 });
 
+// Ej bil: a phone that cannot be in a car is silent. Checked on the frozen log itself, so a vector regenerated with the gate
+// removed cannot bless a spoken warning at 165 km/h or 1 600 m — and the two neighbours prove the gate is not just silence.
+test("ej bil: too fast or too high is silent, just inside the limits speaks", () => {
+  const ejBil = vectorFiles.filter((f) => f.includes("_ej_bil_"));
+  assert.equal(ejBil.length, 5);
+  for (const f of ejBil) {
+    const v = loadVector(f);
+    if (f.endsWith("_tiger.json")) assert.equal(v.expected.length, 0, `${f}: must be silent`);
+    else assert.equal(v.expected.length, 1, `${f}: must speak once`);
+  }
+});
+
 test("real Skåne snapshot: only camera alerts in August, throttle respected", () => {
   const got = new AlertEngine(fixture.hazards).run(fixture.trace);
   assert.deepStrictEqual(got, fixture.expected);
@@ -146,7 +158,9 @@ test("fläckvis is not halka — Swedish word boundaries in slippery matching", 
   }));
   const seg = (info: string[]): Hazard => ({
     id: "s", kind: "slippery_segment",
-    line: [[14.99, 58.018], [15.01, 58.018]], meta: { code: 1, info },
+    // Along the car's road since the road test (Skeppsbron 24/11): a line across it is a crossing road and stays silent whatever
+    // the words, so the words would no longer decide.
+    line: [[15.0, 58.018], [15.0, 58.021]], meta: { code: 1, info },
   });
   // Real August data that fooled the substring regex:
   assert.equal(new AlertEngine([seg(["fläckvis Våt", "fläckvis Torrt"])]).run(trace).length, 0);

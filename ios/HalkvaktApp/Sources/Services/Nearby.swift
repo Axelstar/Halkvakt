@@ -9,6 +9,12 @@ struct NearbyItem: Identifiable {
     let kind: HazardKind
     let distM: Double
     let secondary: String?
+    /// A stretch whose report names no ice, snow, frost, slush or slipperiness (SegmentMeta.halkaRapporterad): the list says Halkrisk.
+    var halkrisk = false
+    /// The row's title: the kind's, and for a stretch Halka or Halkrisk like the warning card.
+    var rubrik: String {
+        kind == .slippery_segment ? WarningCard.halkrubrik(rapporterad: !halkrisk) : VaktenView.rubrik(kind.rawValue)
+    }
 }
 
 enum Nearby {
@@ -20,7 +26,7 @@ enum Nearby {
             guard visas(h) else { return nil }
             let d = distanceM(h, lon: lon, lat: lat)
             guard d <= maxM else { return nil }
-            return NearbyItem(id: h.id, kind: kind(of: h), distM: d, secondary: secondary(h))
+            return NearbyItem(id: h.id, kind: kind(of: h), distM: d, secondary: secondary(h), halkrisk: halkrisk(h))
         }
         .sorted { $0.distM < $1.distM }
         .prefix(n)
@@ -36,6 +42,11 @@ enum Nearby {
         case .point(_, let kind, _, _, _, let meta) where kind == .icing_point: return meta.frysriskGaller()
         default: return true
         }
+    }
+
+    static func halkrisk(_ h: Hazard) -> Bool {
+        if case .segment(_, _, let meta) = h { return !meta.halkaRapporterad }
+        return false
     }
 
     static func kind(of h: Hazard) -> HazardKind {

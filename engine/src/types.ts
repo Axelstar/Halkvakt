@@ -112,6 +112,9 @@ export interface Fix {
   /** Optional; derived from consecutive fixes when absent. */
   speedKmh?: number;
   headingDeg?: number;
+  /** Optional: metres above sea level, sent only when the platform says the value is valid (iOS verticalAccuracy > 0, Android
+   *  hasAltitude()). Used for one thing: a phone above maxAltitudeM is not in a car. */
+  altitudeM?: number;
 }
 
 export interface Alert {
@@ -134,6 +137,12 @@ export interface Alert {
 export interface EngineConfig {
   corridorHalfAngleDeg: number; // how far off-heading a hazard may sit and still count as "ahead"
   minSpeedKmh: number;          // below this we do not evaluate (parking-lot jitter guard)
+  /** Ej bil: above this speed, or above this altitude when the fix carries one, the phone cannot be in a car on a Swedish road
+   *  (a plane, a fast train) and the step is silent. Proposed start values, not yet a decision: 160 km/h is the highest speed
+   *  limit (120) plus a third; 1 500 m is the highest public road (just under 1 000 m) plus half, which also covers Android's
+   *  altitude being measured from the ellipsoid (20–40 m above sea level in Sweden) and the error of a GPS altitude. */
+  maxSpeedKmh: number;
+  maxAltitudeM: number;
   globalCooldownS: number;      // max 1 spoken alert per this window — hard, no exceptions
   repeatMinS: number;           // same hazard silent for at least this long ...
   repeatMinM: number;           // ... AND until this much further driven (both must have elapsed)
@@ -164,6 +173,12 @@ export interface EngineConfig {
    *  zone for the repeat rule. A new halka warning stays silent while a neighbour's warning is not yet re-armed (10 min AND 5 km),
    *  so three stretches meeting at a junction speak once, and a long zone still repeats like a long stretch (#103). */
   halkZonM: number;
+  /** A1, the road test (Skeppsbron 24/11): a slippery stretch may speak only when the fix lies within halkaPaM of one of the straight
+   *  lines of the stretch, or of its first or last line drawn straight on beyond the end, and the heading is at most
+   *  halkaPaGrader from that line's direction either way. A stretch on a parallel or crossing road, or one that merely lies
+   *  ahead in the corridor, stays silent. */
+  halkaPaM: number;
+  halkaPaGrader: number;
   /** S, the road test (DECISIONS #844, measured 12/11): the car is on a small road when its fix lies within smavagPaM of the straight
    *  line between two neighbouring points of the road, at most smavagPaGrader from the line's direction either way, for
    *  smavagPaFixar fixes in a row. Neighbours farther apart than smavagKordaMaxM have no line between them. */
@@ -181,6 +196,8 @@ export interface EngineConfig {
 export const DEFAULT_CONFIG: EngineConfig = {
   corridorHalfAngleDeg: 35,
   minSpeedKmh: 15,
+  maxSpeedKmh: 160,
+  maxAltitudeM: 1500,
   // 10 s (var 45 t.o.m. 13/9, #127): härlett ur kamerornas minimidistans i samma
   // riktning — 520 m ⇒ 15,6 s vid 120 km/h. Spärren är dessutom prioritetsmedveten nu.
   globalCooldownS: 10,
@@ -215,6 +232,11 @@ export const DEFAULT_CONFIG: EngineConfig = {
   // Halkzonen (DECISIONS #624): 500 m — all 17 close pairs in the shadow log lay within 451 m, and no pair at all between 500 m and
   // 2 km (#621). Samma tal i Types.kt och Engine.swift (kontraktsgrinden).
   halkZonM: 500,
+  // A1, the road test: the small roads' numbers (DECISIONS #844), 80 m and 30°. The published lines are simplified by at most
+  // 0.0005° (56 m north–south, 28 m east–west at 60° N; publicera), so 80 m leaves room for the car's own error. Samma tal i
+  // Types.kt och Engine.swift (kontraktsgrinden).
+  halkaPaM: 80,
+  halkaPaGrader: 30,
   // S (DECISIONS #844): 80 m, chosen 12/11 from the measurement in halkvakt-kuvos on the real roads (Lastkajen) and on main-road
   // drives, between 50 and 120 m. Under the 100 m that separates group N's roads from the road-condition stretches (#828). Samma tal
   // i Types.kt och Engine.swift (kontraktsgrinden).

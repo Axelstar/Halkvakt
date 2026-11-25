@@ -6352,21 +6352,21 @@
    "hazardId": "seg:A",
    "kind": "slippery_segment",
    "distanceM": 654,
-   "text": "Varning: halka rapporterad på vägen framför dig."
+   "text": "Risk för halka på vägen framför dig."
   },
   {
    "t": 616,
    "hazardId": "seg:A",
    "kind": "slippery_segment",
    "distanceM": 35,
-   "text": "Varning: halka rapporterad på vägen framför dig."
+   "text": "Risk för halka på vägen framför dig."
   },
   {
    "t": 1216,
    "hazardId": "seg:B",
    "kind": "slippery_segment",
    "distanceM": 1,
-   "text": "Varning: halka rapporterad på vägen framför dig."
+   "text": "Risk för halka på vägen framför dig."
   }
  ]
 }

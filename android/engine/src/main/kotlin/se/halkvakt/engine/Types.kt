@@ -56,7 +56,23 @@ fun PointMeta.frysriskGaller(cfg: EngineConfig = EngineConfig()): Boolean {
 /** Which utterance of a serious accident this is (DECISIONS #28). Mirrors AccidentStep in texts.ts. */
 enum class AccidentStep(val wire: String) { EARLY("early"), REMINDER("reminder"), LATE("late") }
 
-data class SegmentMeta(val code: Int? = null, val info: List<String> = emptyList())
+data class SegmentMeta(val code: Int? = null, val info: List<String> = emptyList()) {
+    /** Which A1 line a stretch that speaks gets — mirror of halkaRapporterad in engine.ts (Axel 24/11; vectors v72–v75). True when a
+     *  ConditionInfo word is a halkord, or the class is 3 (Mycket besvärligt) or 4 (Is- och snövägbana): "halka rapporterad". False,
+     *  which for a stretch that speaks is class 2 (Besvärligt (risk för)) with no such word: the line, the card and the lists say risk. */
+    val halkaRapporterad: Boolean get() = (code ?: 0) >= Halkord.HALKA_RAPPORTERAD_KOD || info.any { Halkord.traff(it) }
+}
+
+/** The engine's halkord, one copy for the engine and for halkaRapporterad above. */
+object Halkord {
+    // Mirrors engine.ts SLIPPERY_INFO, word start; modd (slush) since 20/11, DECISIONS #915, vectors v61–v63.
+    val INFO = Regex("(?<![a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt|modd)", RegexOption.IGNORE_CASE)
+    // Snow/frost also count inside compounds — "Nysnö", "Rimfrost" (kort #97). Mirrors engine.ts SLIPPERY_STAM.
+    val STAM = Regex("(snö|frost)", RegexOption.IGNORE_CASE)
+    /** Mirror of HALKA_RAPPORTERAD_KOD in engine.ts (kontraktsgrinden). */
+    const val HALKA_RAPPORTERAD_KOD = 3
+    fun traff(ord: String): Boolean = INFO.containsMatchIn(ord) || STAM.containsMatchIn(ord)
+}
 
 sealed interface Hazard { val id: String; val kind: HazardKind }
 data class PointHazard(
@@ -89,6 +105,9 @@ data class SmavagHazard(
 data class Fix(
     val t: Double, val lon: Double, val lat: Double,
     val speedKmh: Double? = null, val headingDeg: Double? = null,
+    /** Metres above sea level, only when the platform says the value is valid (Location.hasAltitude()). A phone above
+     *  maxAltitudeM is not in a car. */
+    val altitudeM: Double? = null,
 )
 
 data class Alert(
@@ -104,6 +123,10 @@ data class Alert(
 data class EngineConfig(
     val corridorHalfAngleDeg: Double = 35.0,
     val minSpeedKmh: Double = 15.0,
+    // Ej bil: above this speed, or above this altitude when the fix carries one, the phone cannot be in a car on a Swedish road
+    // and the step is silent. Proposed start values — the same numbers as engine/src/types.ts (kontraktsgrinden).
+    val maxSpeedKmh: Double = 160.0,
+    val maxAltitudeM: Double = 1500.0,
     val globalCooldownS: Double = 10.0,   // #127: var 45; prioritetsmedveten nu
     val repeatMinS: Double = 600.0,
     val repeatMinM: Double = 5000.0,
@@ -128,6 +151,10 @@ data class EngineConfig(
     // Halkzonen (DECISIONS #624): sträckor inom så här många meter är en zon för reprisregeln — samma tal som engine/src/types.ts
     // (kontraktsgrinden).
     val halkZonM: Double = 500.0,
+    // A1, vägtestet (Skeppsbron 24/11): en hal sträcka talar bara när bilen är inom så här många meter och grader från sträckans
+    // linje eller dess raka förlängning — samma tal som engine/src/types.ts (kontraktsgrinden).
+    val halkaPaM: Double = 80.0,
+    val halkaPaGrader: Double = 30.0,
     // S, vägtestet (DECISIONS #844): inom så här många meter och grader från linjen mellan två grannpunkter, så många fixar i rad;
     // grannar längre isär än smavagKordaMaxM har ingen linje — samma tal som engine/src/types.ts (kontraktsgrinden).
     val smavagPaM: Double = 80.0,
@@ -233,6 +260,10 @@ object Texts {
 
     /** S, småvägsröstens betavarning (DECISIONS #828) — spegel av SMAVAG_TEXT i texts.ts. */
     const val SMAVAG_TEXT = "Betavarning: risk för halka på småvägarna framöver."
+
+    /** A1 when the report names no ice, snow, frost, slush or slipperiness (SegmentMeta.halkaRapporterad is false) — spegel av
+     *  HALKRISK_TEXT i texts.ts. */
+    const val HALKRISK_TEXT = "Risk för halka på vägen framför dig."
 
     /** " på E18" / " på väg 25" / "" när numret saknas. */
     fun roadPhrase(road: String?): String {

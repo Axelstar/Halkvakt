@@ -115,6 +115,9 @@ export interface Fix {
   /** Optional; derived from consecutive fixes when absent. */
   speedKmh?: number;
   headingDeg?: number;
+  /** Optional: metres above sea level, sent only when the platform says the value is valid (iOS verticalAccuracy > 0, Android
+   *  hasAltitude()). Used for one thing: a phone above maxAltitudeM is not in a car. */
+  altitudeM?: number;
 }
 
 export interface Alert {
@@ -137,6 +140,12 @@ export interface Alert {
 export interface EngineConfig {
   corridorHalfAngleDeg: number; // how far off-heading a hazard may sit and still count as "ahead"
   minSpeedKmh: number;          // below this we do not evaluate (parking-lot jitter guard)
+  /** Ej bil: above this speed, or above this altitude when the fix carries one, the phone cannot be in a car on a Swedish road
+   *  (a plane, a fast train) and the step is silent. Proposed start values, not yet a decision: 160 km/h is the highest speed
+   *  limit (120) plus a third; 1 500 m is the highest public road (just under 1 000 m) plus half, which also covers Android's
+   *  altitude being measured from the ellipsoid (20–40 m above sea level in Sweden) and the error of a GPS altitude. */
+  maxSpeedKmh: number;
+  maxAltitudeM: number;
   globalCooldownS: number;      // max 1 spoken alert per this window — hard, no exceptions
   repeatMinS: number;           // same hazard silent for at least this long ...
   repeatMinM: number;           // ... AND until this much further driven (both must have elapsed)
@@ -167,6 +176,12 @@ export interface EngineConfig {
    *  zone for the repeat rule. A new halka warning stays silent while a neighbour's warning is not yet re-armed (10 min AND 5 km),
    *  so three stretches meeting at a junction speak once, and a long zone still repeats like a long stretch (#103). */
   halkZonM: number;
+  /** A1, the road test (Skeppsbron 24/11): a slippery stretch may speak only when the fix lies within halkaPaM of one of the straight
+   *  lines of the stretch, or of its first or last line drawn straight on beyond the end, and the heading is at most
+   *  halkaPaGrader from that line's direction either way. A stretch on a parallel or crossing road, or one that merely lies
+   *  ahead in the corridor, stays silent. */
+  halkaPaM: number;
+  halkaPaGrader: number;
   /** S, the road test (DECISIONS #844, measured 12/11): the car is on a small road when its fix lies within smavagPaM of the straight
    *  line between two neighbouring points of the road, at most smavagPaGrader from the line's direction either way, for
    *  smavagPaFixar fixes in a row. Neighbours farther apart than smavagKordaMaxM have no line between them. */
@@ -184,6 +199,8 @@ export interface EngineConfig {
 export const DEFAULT_CONFIG: EngineConfig = {
   corridorHalfAngleDeg: 35,
   minSpeedKmh: 15,
+  maxSpeedKmh: 160,
+  maxAltitudeM: 1500,
   // 10 s (var 45 t.o.m. 13/9, #127): härlett ur kamerornas minimidistans i samma
   // riktning — 520 m ⇒ 15,6 s vid 120 km/h. Spärren är dessutom prioritetsmedveten nu.
   globalCooldownS: 10,
@@ -218,6 +235,11 @@ export const DEFAULT_CONFIG: EngineConfig = {
   // Halkzonen (DECISIONS #624): 500 m — all 17 close pairs in the shadow log lay within 451 m, and no pair at all between 500 m and
   // 2 km (#621). Samma tal i Types.kt och Engine.swift (kontraktsgrinden).
   halkZonM: 500,
+  // A1, the road test: the small roads' numbers (DECISIONS #844), 80 m and 30°. The published lines are simplified by at most
+  // 0.0005° (56 m north–south, 28 m east–west at 60° N; publicera), so 80 m leaves room for the car's own error. Samma tal i
+  // Types.kt och Engine.swift (kontraktsgrinden).
+  halkaPaM: 80,
+  halkaPaGrader: 30,
   // S (DECISIONS #844): 80 m, chosen 12/11 from the measurement in halkvakt-kuvos on the real roads (Lastkajen) and on main-road
   // drives, between 50 and 120 m. Under the 100 m that separates group N's roads from the road-condition stretches (#828). Samma tal
   // i Types.kt och Engine.swift (kontraktsgrinden).
@@ -552,6 +574,11 @@ export const KANDIDAT_TEXT = "Halkvakt tror: halka framöver.";
  *  mätning, en punktkälla — därför "framöver" och aldrig ett avstånd. */
 export const SMAVAG_TEXT = "Betavarning: risk för halka på småvägarna framöver.";
 
+/** A1 when the report names no ice, snow, frost, slush or slipperiness: Trafikverket's class 2 is "Besvärligt (risk för)", and
+ *  "halka rapporterad" overstated a wet road (Axel 24/11). Which line a stretch gets is halkaRapporterad in engine.ts. Segment
+ *  source ⇒ "på vägen framför dig". */
+export const HALKRISK_TEXT = "Risk för halka på vägen framför dig.";
+
 export function alertText(
   kind: HazardKind,
   distanceM: number,
@@ -656,6 +683,15 @@ export const SLIPPERY_INFO = /(?<![a-zåäö])(is|halka|halkrisk|halkig|halt|myc
 // it speaks. "halk" is NOT a stem: "Halkbekämpning" and "Halkskydd" are countermeasures, not hazards,
 // so only halka/halkrisk/halkig are listed above. Vector v24 locks all of it in three ports.
 export const SLIPPERY_STAM = /(snö|frost)/i;
+// Which A1 line a stretch that speaks gets (Axel 24/11; vectors v72–v75). Reported — "halka rapporterad" — when a ConditionInfo word
+// is one of the words above, or the class is 3 (Mycket besvärligt) or 4 (Is- och snövägbana). Otherwise, which for a stretch that
+// speaks is class 2 (Besvärligt (risk för)) with no such word, the line says risk (HALKRISK_TEXT). Whether the stretch speaks is
+// not decided here. Samma tal i Engine.kt och Engine.swift (kontraktsgrinden).
+export const HALKA_RAPPORTERAD_KOD = 3;
+export function halkaRapporterad(meta: SegmentHazard["meta"]): boolean {
+  return (meta?.code != null && meta.code >= HALKA_RAPPORTERAD_KOD) ||
+    (meta?.info ?? []).some((i) => SLIPPERY_INFO.test(i) || SLIPPERY_STAM.test(i));
+}
 
 // THE GRID (DECISIONS #795). Until 5/11 every fix evaluated every hazard; 16 000 more kandidat points made step() seven times
 // slower. Every candidate needs its distance within a reach the configuration bounds (reachOf below), so a hazard is listed in
@@ -729,7 +765,7 @@ function cellKey(r: number, c: number): number { return r * 65536 + c; }
 export class AlertEngine {
   private readonly cfg: EngineConfig;
   private points: PointHazard[] = [];
-  private segments: { h: SegmentHazard; samples: LonLat[]; box: Box }[] = [];
+  private segments: { h: SegmentHazard; samples: LonLat[]; box: Box; pa: LonLat[] }[] = [];
   private kandidater: { h: KandidatHazard; samples: LonLat[] }[] = [];
   private pointGrid = new HazardGrid();
   private segmentGrid = new HazardGrid();
@@ -789,7 +825,7 @@ export class AlertEngine {
       if (h.kind === "slippery_segment") {
         const samples = samplePolyline(h.line, this.cfg.segmentSampleM);
         this.segmentGrid.add(this.segments.length, samples, this.reachOf(h.kind));
-        this.segments.push({ h, samples, box: boxOf(samples) });
+        this.segments.push({ h, samples, box: boxOf(samples), pa: this.paLinje(h.line) });
       } else if (h.kind === "kandidat") {
         const samples = h.points.map(([lon, lat]) => ({ lon, lat }));
         this.kandidatGrid.add(this.kandidater.length, samples, this.reachOf(h.kind));
@@ -805,6 +841,26 @@ export class AlertEngine {
         this.points.push(h);
       }
     }
+  }
+
+  /**
+   * A1, the road test: the stretch's break points without repeats, with one point added before the first and one after the last,
+   * straight on along the first and the last line as far as the longest lead. A car coming along the same road is then on the
+   * line before it reaches the stretch, and the warning still comes ahead of the ice. Fewer than two different points give no
+   * line, and such a stretch never speaks.
+   */
+  private paLinje(line: [number, number][]): LonLat[] {
+    const pts: LonLat[] = [];
+    for (const [lon, lat] of line) {
+      const f = pts[pts.length - 1];
+      if (f === undefined || f.lon !== lon || f.lat !== lat) pts.push({ lon, lat });
+    }
+    if (pts.length < 2) return [];
+    const ut = (a: LonLat, b: LonLat): LonLat => {
+      const k = this.reachOf("slippery_segment") / haversineM(a, b);
+      return { lon: a.lon + (a.lon - b.lon) * k, lat: a.lat + (a.lat - b.lat) * k };
+    };
+    return [ut(pts[0], pts[1]), ...pts, ut(pts[pts.length - 1], pts[pts.length - 2])];
   }
 
   /**
@@ -847,6 +903,9 @@ export class AlertEngine {
     if (headingDeg !== null) this.lastHeadingDeg = headingDeg;
 
     if (speedKmh === null || speedKmh < this.cfg.minSpeedKmh) return null;
+    // Ej bil: faster than any car on a Swedish road, or higher than any Swedish road ⇒ a plane or a fast train. Silent, like the
+    // floor above: the odometer and the heading are kept, nothing is evaluated and nothing is remembered as said.
+    if (speedKmh > this.cfg.maxSpeedKmh || (fix.altitudeM ?? 0) > this.cfg.maxAltitudeM) return null;
     const heading = this.lastHeadingDeg;
     if (heading === null) return null;
 
@@ -952,7 +1011,9 @@ export class AlertEngine {
       hazardId: win.hazard.id,
       kind: win.kind,
       distanceM: Math.round(win.distM),
-      text: win.beta && win.kind === "icing_point" ? EFTERHALKA_TEXT : alertText(win.kind, win.distM, pointHazard, win.step),
+      text: win.beta && win.kind === "icing_point" ? EFTERHALKA_TEXT
+        : win.hazard.kind === "slippery_segment" && !halkaRapporterad(win.hazard.meta) ? HALKRISK_TEXT
+        : alertText(win.kind, win.distM, pointHazard, win.step),
       ...(win.step ? { step: win.step } : {}),
       ...(win.beta ? { beta: true as const } : {}),
     };
@@ -1070,7 +1131,7 @@ export class AlertEngine {
   }
 
   private evaluateSegment(
-    fix: Fix, heading: number, s: { h: SegmentHazard; samples: LonLat[]; box: Box }, leadM: number,
+    fix: Fix, heading: number, s: { h: SegmentHazard; samples: LonLat[]; box: Box; pa: LonLat[] }, leadM: number,
   ): Candidate | null {
     const meta = s.h.meta ?? {};
     const slippery =
@@ -1088,7 +1149,23 @@ export class AlertEngine {
       if (ahead && (best === null || distM < best)) best = distM;
     }
     if (best === null || best > leadM) return null;
+    if (!this.paHalkan(fix, heading, s.pa)) return null;
     return { hazard: s.h, kind: "slippery_segment", distM: best, alertKey: s.h.id };
+  }
+
+  /**
+   * A1, the road test: the text says "på vägen framför dig", so the car must be on the stretch's road — within halkaPaM of one of
+   * its lines (paLinje: the stretch and its two ends drawn straight on) and at most halkaPaGrader from that line's direction,
+   * either way along the road. The corridor alone let a stretch on another road speak when it began ahead of the car (Skeppsbron
+   * 24/11: väg 222 begins at Slussen). The small roads' test (smavagPa, DECISIONS #844) on the stretch's own line, one fix at a time.
+   */
+  private paHalkan(fix: Fix, heading: number, pa: LonLat[]): boolean {
+    for (let k = 1; k < pa.length; k++) {
+      if (!(distToSegmentM(fix, pa[k - 1], pa[k]) <= this.cfg.halkaPaM)) continue;
+      const r = bearingDeg(pa[k - 1], pa[k]);
+      if (Math.min(angDiffDeg(r, heading), angDiffDeg((r + 180) % 360, heading)) <= this.cfg.halkaPaGrader) return true;
+    }
+    return false;
   }
 
   /**
