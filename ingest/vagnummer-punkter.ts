@@ -3,7 +3,8 @@
 // för småvägsröstens vägar (smavagspunkt.vag) och storstädernas punkter (stadspunkt.punkt), som inte har något.
 // Varje plats frågas i Trafikverkets öppna API, NVDB Vägnummer (Vägdata.NVDB_DK_O 1.2, CC0), inom RADIE_M från punkten, som
 // scripts/vagdata-vagnummer.ts (DECISIONS #553). En småvägsväg frågas vid upp till tre av sina punkter, spridda längs vägen, och får det
-// nummer som mer än hälften av svaren bär; en storstadspunkt frågas vid sig själv. Svaret skrivs till vagnummer_punkt i en transaktion.
+// nummer som mer än hälften av svaren bär; en storstadspunkt frågas vid sig själv. Svaren skrivs till vagnummer_punkt i omgångar, och
+// en körning som stannar fortsätter nästa gång där den slutade (FARSK_DYGN).
 // Punkterna är kuvösens (DECISIONS #768): loggen säger bara klart eller fel, inga antal och inga lägen. Rotelementet räknas, aldrig
 // statuskoden. Nyckeln delas med driftens ingest: ~2 förfrågningar/s.
 //   DATABASE_URL=... TRAFIKVERKET_API_KEY=... node --experimental-strip-types ingest/vagnummer-punkter.ts
@@ -16,6 +17,8 @@ const GEO = "Geometry.WKT-WGS84-3D";
 export const RADIE_M = 25;      // punkterna ligger på vägen; 25 m tar vägen men sällan korsande vägar
 export const PER_VAG = 3;       // punkter per småvägsväg
 const PAUS_MS = 350;
+export const OMGANG = 200;     // nycklar per skrivning
+export const FARSK_DYGN = 30;  // ett svar yngre än så frågas inte igen
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
 
 /** Ett svar vid en punkt: v = huvudnummer, 0 = inget Vägnummer (onumrerad), null = flera olika nummer; e = Europaväg. */
@@ -127,34 +130,35 @@ async function hamta() {
     for (const p of stad) nycklar.push({ kalla: "stad", nyckel: p.nyckel, punkter: [p] });
     if (!nycklar.length) throw new Error("inga punkter i smavagspunkt eller stadspunkt");
 
-    const rader: any[] = [];
-    for (const k of nycklar) {
-      const svar: Punktsvar[] = [];
-      for (const p of k.punkter) {
-        const s = await fraga(key, `<INTERSECTS name="${GEO}" shape="center" value="${Number(p.lon).toFixed(6)} ${Number(p.lat).toFixed(6)}" radius="${RADIE_M}m"/>`, 20);
-        svar.push(s.ok ? vidPunkt(s.objekt, falt) : "fel");
-        await new Promise((ok) => setTimeout(ok, PAUS_MS));
+    // Nycklar som inte längre finns bland punkterna tas bort först.
+    await pool.query(`DELETE FROM vagnummer_punkt v WHERE NOT EXISTS (SELECT 1 FROM unnest($1::text[], $2::text[]) n(kalla, nyckel)
+                      WHERE n.kalla = v.kalla AND n.nyckel = v.nyckel)`, [nycklar.map((k) => k.kalla), nycklar.map((k) => k.nyckel)]);
+    // Skrivs i omgångar om OMGANG nycklar, så att en körning som når flödets tidsgräns behåller det den hämtat. En nyckel med ett svar
+    // som inte är fel och är yngre än FARSK_DYGN frågas inte igen: nästa körning fortsätter där den förra slutade.
+    const farska = new Set((await pool.query(
+      `SELECT kalla || '/' || nyckel AS k FROM vagnummer_punkt WHERE utfall <> 'fel' AND hamtad > now() - make_interval(days => $1)`, [FARSK_DYGN])).rows.map((r: any) => r.k));
+    const kvar = nycklar.filter((k) => !farska.has(`${k.kalla}/${k.nyckel}`));
+    for (let i = 0; i < kvar.length; i += OMGANG) {
+      const rader: any[] = [];
+      for (const k of kvar.slice(i, i + OMGANG)) {
+        const svar: Punktsvar[] = [];
+        for (const p of k.punkter) {
+          const s = await fraga(key, `<INTERSECTS name="${GEO}" shape="center" value="${Number(p.lon).toFixed(6)} ${Number(p.lat).toFixed(6)}" radius="${RADIE_M}m"/>`, 20);
+          svar.push(s.ok ? vidPunkt(s.objekt, falt) : "fel");
+          await new Promise((ok) => setTimeout(ok, PAUS_MS));
+        }
+        rader.push({ kalla: k.kalla, nyckel: k.nyckel, ...samman(svar) });
       }
-      rader.push({ kalla: k.kalla, nyckel: k.nyckel, ...samman(svar) });
-    }
-    // Fler fel än en tiondel: något är trasigt (nyckeln, API:et), och tabellen lämnas som den var.
-    if (rader.filter((r) => r.utfall === "fel").length * 10 > rader.length) throw new Error("för många anrop föll");
-
-    const c = await pool.connect();
-    try {
-      await c.query("BEGIN");
-      await c.query(
+      // Fler fel än en tiondel i en omgång: något är trasigt (nyckeln, API:et), och omgången skrivs inte.
+      if (rader.filter((r) => r.utfall === "fel").length * 10 > rader.length) throw new Error("för många anrop föll");
+      await pool.query(
         `INSERT INTO vagnummer_punkt (kalla, nyckel, utfall, huvudnummer, europavag, fragade, svar, lika, hamtad)
          SELECT * , now() FROM unnest($1::text[], $2::text[], $3::text[], $4::int[], $5::bool[], $6::int[], $7::int[], $8::int[])
          ON CONFLICT (kalla, nyckel) DO UPDATE SET utfall = EXCLUDED.utfall, huvudnummer = EXCLUDED.huvudnummer, europavag = EXCLUDED.europavag,
            fragade = EXCLUDED.fragade, svar = EXCLUDED.svar, lika = EXCLUDED.lika, hamtad = EXCLUDED.hamtad`,
         [rader.map((r) => r.kalla), rader.map((r) => r.nyckel), rader.map((r) => r.utfall), rader.map((r) => r.huvudnummer),
          rader.map((r) => r.europavag), rader.map((r) => r.fragade), rader.map((r) => r.svar), rader.map((r) => r.lika)]);
-      // Nycklar som inte längre finns bland punkterna tas bort.
-      await c.query(`DELETE FROM vagnummer_punkt v WHERE NOT EXISTS (SELECT 1 FROM unnest($1::text[], $2::text[]) n(kalla, nyckel)
-                     WHERE n.kalla = v.kalla AND n.nyckel = v.nyckel)`, [rader.map((r) => r.kalla), rader.map((r) => r.nyckel)]);
-      await c.query("COMMIT");
-    } catch (e) { await c.query("ROLLBACK").catch(() => {}); throw e; } finally { c.release(); }
+    }
   } finally { await pool.end(); }
   console.log("vägnumren: klart");
 }
