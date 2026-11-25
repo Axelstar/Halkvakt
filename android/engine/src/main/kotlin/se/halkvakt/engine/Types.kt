@@ -255,7 +255,7 @@ object Texts {
     const val KANDIDAT_TEXT = "Halkvakt tror: halka framöver."
 
     /** S, småvägsröstens betavarning (DECISIONS #828) — spegel av SMAVAG_TEXT i texts.ts. */
-    const val SMAVAG_TEXT = "Betavarning: risk för halka på småvägarna framöver."
+    const val SMAVAG_TEXT = "Risk för halka på småvägarna framöver."
 
     /** A1 when the report names no ice, snow, frost, slush or slipperiness (SegmentMeta.halkaRapporterad is false) — spegel av
      *  HALKRISK_TEXT i texts.ts. */
@@ -271,7 +271,7 @@ object Texts {
     /** S with the road's number when the point file has one — spegel av smavagText i texts.ts (DECISIONS #965). */
     fun smavagText(road: String?): String {
         val on = roadPhrase(road)
-        return if (on.isEmpty()) SMAVAG_TEXT else "Betavarning: risk för halka$on framöver."
+        return if (on.isEmpty()) SMAVAG_TEXT else "Risk för halka$on framöver."
     }
 
     /** " på E18" / " på väg 25" / "" när numret saknas. */

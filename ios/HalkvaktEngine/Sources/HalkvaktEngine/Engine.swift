@@ -264,7 +264,7 @@ enum Texts {
     /// Kandidatens betavarning (DECISIONS #562, #573) — spegel av KANDIDAT_TEXT i texts.ts.
     static let kandidatText = "Halkvakt tror: halka framöver."
     /// Småvägsröstens betavarning (DECISIONS #828) — spegel av SMAVAG_TEXT i texts.ts.
-    static let smavagText = "Betavarning: risk för halka på småvägarna framöver."
+    static let smavagText = "Risk för halka på småvägarna framöver."
     /// A1 when the report names no ice, snow, frost, slush or slipperiness (SegmentMeta.halkaRapporterad is false) — spegel av
     /// HALKRISK_TEXT i texts.ts.
     static let halkriskText = "Risk för halka på vägen framför dig."
@@ -278,7 +278,7 @@ enum Texts {
     /// S with the road's number when the point file has one — spegel av smavagText i texts.ts (DECISIONS #965).
     static func smavagMedVag(_ road: String?) -> String {
         let on = roadPhrase(road)
-        return on.isEmpty ? smavagText : "Betavarning: risk för halka\(on) framöver."
+        return on.isEmpty ? smavagText : "Risk för halka\(on) framöver."
     }
 
     /// " på E18" / " på väg 25" / "" när numret saknas.

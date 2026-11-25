@@ -9651,7 +9651,7 @@
    "hazardId": "smv:v1",
    "kind": "smavag",
    "distanceM": 655,
-   "text": "Betavarning: risk för halka på småvägarna framöver.",
+   "text": "Risk för halka på småvägarna framöver.",
    "beta": true
   },
   {
@@ -9659,7 +9659,7 @@
    "hazardId": "smv:v2",
    "kind": "smavag",
    "distanceM": 655,
-   "text": "Betavarning: risk för halka på småvägarna framöver.",
+   "text": "Risk för halka på småvägarna framöver.",
    "beta": true
   }
  ]
