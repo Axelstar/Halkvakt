@@ -1,7 +1,7 @@
 import XCTest
 @testable import HalkvaktEngine
 
-// The auto-wake speed probe (kort #359): car speed starts the guard, five minutes without it goes back to sleep, and a guard
+// The auto-wake speed probe (kort #359): car speed starts the guard, 90 s without it goes back to sleep, and a guard
 // started by hand during the probe ends it — the probe must never turn location off under a running guard. Car speed is five
 // good fixes in a row at 30 km/h or more. Whole trips: SjalvstartSimTests.
 final class FartkollenTests: XCTestCase {
@@ -15,11 +15,11 @@ final class FartkollenTests: XCTestCase {
         XCTAssertEqual(p.onFix(t: 1030, kmh: 50), .waiting, "over once the guard is started")
     }
 
-    func testFiveMinutesWithoutCarSpeedGoesBackToSleep() {
+    func testNinetySecondsWithoutCarSpeedGoesBackToSleep() {
         var p = Fartkollen()
         p.begin(t: 1000)
-        XCTAssertEqual(p.onFix(t: 1300, kmh: 5), .waiting, "five minutes is still inside the probe")
-        XCTAssertEqual(p.onFix(t: 1301, kmh: 5), .sleep)
+        XCTAssertEqual(p.onFix(t: 1090, kmh: 5), .waiting, "90 s is still inside the probe")
+        XCTAssertEqual(p.onFix(t: 1091, kmh: 5), .sleep)
         XCTAssertFalse(p.active)
     }
 
@@ -27,7 +27,7 @@ final class FartkollenTests: XCTestCase {
     func testBicycleSpeedNeverStartsTheGuard() {
         var p = Fartkollen()
         p.begin(t: 1000)
-        for i in 1...300 { XCTAssertEqual(p.onFix(t: 1000 + Double(i), kmh: i % 2 == 0 ? 25 : 29), .waiting) }
+        for i in 1...90 { XCTAssertEqual(p.onFix(t: 1000 + Double(i), kmh: i % 2 == 0 ? 25 : 29), .waiting) }
     }
 
     func testFourFastFixesAndASlowOneStartOver() {
@@ -52,8 +52,8 @@ final class FartkollenTests: XCTestCase {
     func testOnlyPoorFixesGoBackToSleepWhenTheTimeIsUp() {
         var p = Fartkollen()
         p.begin(t: 1000)
-        XCTAssertEqual(p.onFix(t: 1300, kmh: nil), .waiting)
-        XCTAssertEqual(p.onFix(t: 1301, kmh: nil), .sleep)
+        XCTAssertEqual(p.onFix(t: 1090, kmh: nil), .waiting)
+        XCTAssertEqual(p.onFix(t: 1091, kmh: nil), .sleep)
     }
 
     // Kort #359: the driver presses "Starta vakten" while the probe runs. The guard's start() calls end(); a later fix
