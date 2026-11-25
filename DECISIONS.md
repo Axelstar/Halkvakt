@@ -19678,3 +19678,21 @@ för en risk-sträcka; det tas för sig.
 vägen fram till sträckan i lägesfilen (bättre, men kräver publiceringen); *risk* också för kod 3 utan ord.
 
 **Stomdokument:** APP (rösten och kortet Halkrisk), SYS (motorns vägtest och fartgräns), BED §4.2
+
+## #964 (25/11 2026) Favoriternas rapport och Planera resa säger risk eller halka, som rösten (kort #679)
+**Beslut.** Bengt 25/11: *"jag tycker att den uppgiften ska ändras så att den överensstämmer med det som rösten kommer att säga nu"*, om
+rapporten längs vägen. Rapporten räknas i telefonen ur lägesfilen, i tre språk som hålls lika av `engine/fixtures/rapport.json`.
+1. **Rapportens rader.** En väglagssträcka med kod 2 och inget av motorns halkord heter *Halkrisk på {väg}*, och utan ord står *risk för
+   halka rapporterad på sträckan*. Ett halkord eller kod 3 och 4 heter som förut *Halt väglag på {väg}*. Samma regel som rösten (#963):
+   `halkaRapporterad` i motorn, i Swift och i Kotlin.
+2. **Planera resa.** En sträcka med bara risk heter *Halkrisk på 2 ställen*, en blandad *Halt på 1 ställe, halkrisk på 3 ställen*, och
+   omdömet överst säger detsamma (*Halkrisk på 2 ställen, först efter {ort}.*). Utan ord säger underraden *Risk för halka rapporterad.*
+   Etiketten (*2 STÄLLEN*), kartans gula prickar och vilka sträckor som räknas ändras inte.
+
+Inget når föraren förrän nästa appversion, samma som #963; servern ändras inte.
+
+**Alternativ.** *Halt på 4 ställen* för en blandad sträcka (säger mer än datan för risk-raderna); risk bara i rösten (rapporten och rösten
+säger olika om samma sträcka).
+
+**Stomdokument:** APP (Planera resa), FAV (rapportens rader)
+

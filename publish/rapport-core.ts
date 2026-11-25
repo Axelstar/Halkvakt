@@ -15,6 +15,11 @@ import type { Hazard } from "../engine/src/types.ts";
 import type { LiveDoc, StaticDoc } from "../engine/src/snapshot.ts";
 import { DEFAULT_CONFIG } from "../engine/src/types.ts";
 import { haversineM, samplePolyline } from "../engine/src/geo.ts";
+import { halkaRapporterad } from "../engine/src/engine.ts";
+
+/** En halksträckas text när rapporten saknar ord (DECISIONS #964): halka för kod 3 och 4, risk för kod 2. */
+export const UTAN_ORD_HALKA = "halka rapporterad på sträckan";
+export const UTAN_ORD_RISK = "risk för halka rapporterad på sträckan";
 
 export type Linje = [number, number][];
 export type Slag = "frysrisk" | "halka" | "olycka" | "hinder" | "vilt" | "ko" | "restid" | "vagarbete" | "hastighet" | "omledning"
@@ -340,8 +345,12 @@ export function favoritRapport(rutt: Linje, live: LiveDoc, stat: StaticDoc, snab
   const lin = (id: string, delar: Linje[]) => delar.filter((l) => l.length >= 2).map((line, i) => ({ id: `${id}#${i}`, kind: "slippery_segment", line } as Hazard));
   const st = snabb.stationer;
   const cfg = DEFAULT_CONFIG;
-  for (const s of live.segments) kand.push({ id: `seg:${s.id}`, slag: "halka", rubrik: `Halt väglag${vagNamn(s.road) ? ` på ${vagNamn(s.road)}` : ""}`,
-    text: s.info.join(", ") || "halka rapporterad på sträckan", geo: lin(`seg:${s.id}`, [s.line]), vag: vagNamn(s.road) });
+  // Risk eller halka, som rösten (DECISIONS #963, #964): kod 2 utan halkord säger risk, ett halkord eller kod 3 och 4 säger halka.
+  for (const s of live.segments) {
+    const risk = !halkaRapporterad({ code: s.code, info: s.info });
+    kand.push({ id: `seg:${s.id}`, slag: "halka", rubrik: `${risk ? "Halkrisk" : "Halt väglag"}${vagNamn(s.road) ? ` på ${vagNamn(s.road)}` : ""}`,
+      text: s.info.join(", ") || (risk ? UTAN_ORD_RISK : UTAN_ORD_HALKA), geo: lin(`seg:${s.id}`, [s.line]), vag: vagNamn(s.road) });
+  }
   for (const w of live.weather) {
     const t = w.yta, frys = t != null && t <= 1 && w.fukt;
     // S3 (#524): samma villkor som motorn, med motorns startvärden.

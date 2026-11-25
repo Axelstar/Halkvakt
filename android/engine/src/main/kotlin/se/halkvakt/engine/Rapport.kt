@@ -38,7 +38,9 @@ data class Rapportfil(val generatedAt: String, val poster: List<RapportPost>, va
 /** [kandidat] är null när lägesfilen saknar nyckeln, alltså när kandidaten är avstängd (#578). */
 data class RapportLage(val segments: List<Strecka>, val weather: List<Station>, val bridges: List<Bro>, val smhi: List<Smhi>,
                        val kandidat: List<Kandidat>? = null) {
-    data class Strecka(val id: String, val line: List<DoubleArray>, val info: List<String>, val road: String?)
+    data class Strecka(val id: String, val line: List<DoubleArray>, val info: List<String>, val road: String?,
+                       /** Trafikverkets klass (DECISIONS #964): kod 2 utan halkord säger risk, som rösten. null i en fil utan fältet. */
+                       val code: Int? = null)
     data class Station(val id: String, val lon: Double, val lat: Double, val yta: Double?, val fukt: Boolean, val regnH: Double?,
                        val lutning30: Double?)
     data class Bro(val id: String, val lon: Double, val lat: Double, val road: String?, val yta: Double?, val fukt: Boolean)
@@ -129,7 +131,8 @@ object ResansRapport {
         }
         return RapportLage(
             segments = objekt(o["segments"]).map { s ->
-                RapportLage.Strecka(idText(s["id"]), punkter(s["line"]), (s["info"] as? List<*>)?.filterIsInstance<String>() ?: emptyList(), str(s, "road"))
+                RapportLage.Strecka(idText(s["id"]), punkter(s["line"]), (s["info"] as? List<*>)?.filterIsInstance<String>() ?: emptyList(), str(s, "road"),
+                    (s["code"] as? Number)?.toInt())
             },
             weather = objekt(o["weather"]).mapNotNull { w ->
                 val lon = dbl(w, "lon") ?: return@mapNotNull null; val lat = dbl(w, "lat") ?: return@mapNotNull null
@@ -280,8 +283,11 @@ object ResansRapport {
         val kand = mutableListOf<Kandidat>()
         for (s in lage.segments) {
             val v = vagNamn(s.road)
-            kand += Kandidat("seg:${s.id}", RapportSlag.HALKA, "Halt väglag${v?.let { " på $it" } ?: ""}",
-                if (s.info.isEmpty()) "halka rapporterad på sträckan" else s.info.joinToString(", "), lin("seg:${s.id}", listOf(s.line)), v, null, null)
+            // Risk eller halka, som rösten (DECISIONS #963, #964): kod 2 utan halkord säger risk.
+            val risk = !SegmentMeta(s.code, s.info).halkaRapporterad
+            kand += Kandidat("seg:${s.id}", RapportSlag.HALKA, "${if (risk) "Halkrisk" else "Halt väglag"}${v?.let { " på $it" } ?: ""}",
+                if (s.info.isNotEmpty()) s.info.joinToString(", ") else if (risk) "risk för halka rapporterad på sträckan" else "halka rapporterad på sträckan",
+                lin("seg:${s.id}", listOf(s.line)), v, null, null)
         }
         for (w in lage.weather) {
             val t = w.yta

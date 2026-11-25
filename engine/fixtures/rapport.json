@@ -1035,6 +1035,112 @@
      "code": 3,
      "info": [],
      "road": null
+    },
+    {
+     "id": "4",
+     "line": [
+      [
+       18.0175952,
+       59.3720446
+      ],
+      [
+       18.0193547,
+       59.3720446
+      ],
+      [
+       18.0211143,
+       59.3720446
+      ],
+      [
+       18.0228738,
+       59.3720446
+      ],
+      [
+       18.0246333,
+       59.3720446
+      ],
+      [
+       18.0263928,
+       59.3720446
+      ],
+      [
+       18.0281523,
+       59.3720446
+      ],
+      [
+       18.0299119,
+       59.3720446
+      ],
+      [
+       18.0316714,
+       59.3720446
+      ],
+      [
+       18.0334309,
+       59.3720446
+      ],
+      [
+       18.0351904,
+       59.3720446
+      ]
+     ],
+     "code": 2,
+     "info": [
+      "Våt"
+     ],
+     "road": "73"
+    },
+    {
+     "id": "5",
+     "line": [
+      [
+       18.0527856,
+       59.3720446
+      ],
+      [
+       18.0545452,
+       59.3720446
+      ],
+      [
+       18.0563047,
+       59.3720446
+      ],
+      [
+       18.0580642,
+       59.3720446
+      ],
+      [
+       18.0598237,
+       59.3720446
+      ],
+      [
+       18.0615832,
+       59.3720446
+      ],
+      [
+       18.0633428,
+       59.3720446
+      ],
+      [
+       18.0651023,
+       59.3720446
+      ],
+      [
+       18.0668618,
+       59.3720446
+      ],
+      [
+       18.0686213,
+       59.3720446
+      ],
+      [
+       18.0703809,
+       59.3720446
+      ]
+     ],
+     "code": 2,
+     "info": [],
+     "road": null
     }
    ],
    "weather": [
@@ -1984,6 +2090,26 @@
     "start": null
    },
    {
+    "id": "seg:4",
+    "slag": "halka",
+    "rubrik": "Halkrisk på väg 73",
+    "text": "Våt",
+    "avstandM": 20,
+    "langsM": 8988,
+    "vag": "väg 73",
+    "start": null
+   },
+   {
+    "id": "seg:5",
+    "slag": "halka",
+    "rubrik": "Halkrisk",
+    "text": "risk för halka rapporterad på sträckan",
+    "avstandM": 20,
+    "langsM": 10981,
+    "vag": null,
+    "start": null
+   },
+   {
     "id": "wx:10",
     "slag": "frysrisk",
     "rubrik": "Frysrisk vid stationen i Arninge",
@@ -2197,6 +2323,28 @@
     "langsM": 2997
    },
    {
+    "id": "seg:4",
+    "slag": "halka",
+    "rubrik": "Halkrisk på väg 73",
+    "text": "Våt",
+    "antal": 1,
+    "ids": [
+     "seg:4"
+    ],
+    "langsM": 8988
+   },
+   {
+    "id": "seg:5",
+    "slag": "halka",
+    "rubrik": "Halkrisk",
+    "text": "risk för halka rapporterad på sträckan",
+    "antal": 1,
+    "ids": [
+     "seg:5"
+    ],
+    "langsM": 10981
+   },
+   {
     "id": "wx:10",
     "slag": "frysrisk",
     "rubrik": "Frysrisk vid stationen i Arninge",
@@ -2367,6 +2515,26 @@
  },
  "hem": {
   "rader": [
+   {
+    "id": "seg:5",
+    "slag": "halka",
+    "rubrik": "Halkrisk",
+    "text": "risk för halka rapporterad på sträckan",
+    "avstandM": 20,
+    "langsM": 2990,
+    "vag": null,
+    "start": null
+   },
+   {
+    "id": "seg:4",
+    "slag": "halka",
+    "rubrik": "Halkrisk på väg 73",
+    "text": "Våt",
+    "avstandM": 20,
+    "langsM": 4984,
+    "vag": "väg 73",
+    "start": null
+   },
    {
     "id": "seg:1",
     "slag": "halka",
@@ -2570,6 +2738,28 @@
   ],
   "grupper": [
    {
+    "id": "seg:5",
+    "slag": "halka",
+    "rubrik": "Halkrisk",
+    "text": "risk för halka rapporterad på sträckan",
+    "antal": 1,
+    "ids": [
+     "seg:5"
+    ],
+    "langsM": 2990
+   },
+   {
+    "id": "seg:4",
+    "slag": "halka",
+    "rubrik": "Halkrisk på väg 73",
+    "text": "Våt",
+    "antal": 1,
+    "ids": [
+     "seg:4"
+    ],
+    "langsM": 4984
+   },
+   {
     "id": "seg:1",
     "slag": "halka",
     "rubrik": "Halt väglag på E4",
@@ -2750,6 +2940,8 @@
  "nytt": {
   "fore": [
    "seg:1",
+   "seg:4",
+   "seg:5",
    "wx:10",
    "bro:20",
    "wx:11",
@@ -3078,6 +3270,8 @@
     "namn": "första kollen: inget nytt, det största pågår",
     "dit": [
      "seg:1",
+     "seg:4",
+     "seg:5",
      "wx:10",
      "bro:20",
      "wx:11",
@@ -3100,6 +3294,8 @@
      "smhi:smhi-1:Halka"
     ],
     "hem": [
+     "seg:5",
+     "seg:4",
      "seg:1",
      "wx:11",
      "bro:20",
@@ -3131,6 +3327,8 @@
     "namn": "en olycka och en kö har tillkommit",
     "dit": [
      "seg:1",
+     "seg:4",
+     "seg:5",
      "wx:10",
      "bro:20",
      "wx:11",
@@ -3153,6 +3351,8 @@
      "smhi:smhi-1:Halka"
     ],
     "hem": [
+     "seg:5",
+     "seg:4",
      "seg:1",
      "wx:11",
      "bro:20",
@@ -3190,6 +3390,8 @@
      "dev:120",
      "farja:200",
      "seg:1",
+     "seg:4",
+     "seg:5",
      "smhi:smhi-1:Halka",
      "tt:1",
      "tt:3",
@@ -3206,6 +3408,8 @@
     "namn": "en ny kamera räknas inte",
     "dit": [
      "seg:1",
+     "seg:4",
+     "seg:5",
      "wx:10",
      "bro:20",
      "wx:11",
@@ -3228,6 +3432,8 @@
      "smhi:smhi-1:Halka"
     ],
     "hem": [
+     "seg:5",
+     "seg:4",
      "seg:1",
      "wx:11",
      "bro:20",
@@ -3265,6 +3471,8 @@
      "dev:120",
      "farja:200",
      "seg:1",
+     "seg:4",
+     "seg:5",
      "smhi:smhi-1:Halka",
      "tt:1",
      "tt:2",
@@ -3339,6 +3547,8 @@
      "dev:120",
      "farja:200",
      "seg:1",
+     "seg:4",
+     "seg:5",
      "smhi:smhi-1:Halka",
      "tt:1",
      "tt:2",
@@ -3393,6 +3603,8 @@
      "dev:120",
      "farja:200",
      "seg:1",
+     "seg:4",
+     "seg:5",
      "smhi:smhi-1:Halka",
      "tt:2",
      "tt:3",
@@ -3426,6 +3638,8 @@
    "dev:120",
    "farja:200",
    "seg:1",
+   "seg:4",
+   "seg:5",
    "smhi:smhi-1:Halka",
    "tt:1",
    "tt:2",
@@ -3489,6 +3703,8 @@
     "olyckor": true,
     "svar": [
      "seg:1",
+     "seg:4",
+     "seg:5",
      "wx:10",
      "bro:20",
      "wx:11",
@@ -3536,6 +3752,8 @@
     "namn": "Dit",
     "rader": [
      "seg:1",
+     "seg:4",
+     "seg:5",
      "wx:10",
      "bro:20",
      "wx:11",
@@ -3565,6 +3783,8 @@
    {
     "namn": "Hem",
     "rader": [
+     "seg:5",
+     "seg:4",
      "seg:1",
      "wx:11",
      "bro:20",

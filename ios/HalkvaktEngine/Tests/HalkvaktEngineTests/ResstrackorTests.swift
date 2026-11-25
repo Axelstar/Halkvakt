@@ -14,8 +14,8 @@ struct ResstrackorTests {
         Ort(namn: "Målby", lon: 15.0, lat: 59.95),       // 5,6 km från målet: ingen brytpunkt
     ]
 
-    private func rad(_ slag: RapportSlag, _ km: Int, id: String? = nil, text: String = "") -> RapportRad {
-        RapportRad(id: id ?? "\(slag.rawValue):\(km)", slag: slag, rubrik: "", text: text, avstandM: 0, langsM: km * 1000, vag: nil, start: nil)
+    private func rad(_ slag: RapportSlag, _ km: Int, id: String? = nil, text: String = "", rubrik: String = "") -> RapportRad {
+        RapportRad(id: id ?? "\(slag.rawValue):\(km)", slag: slag, rubrik: rubrik, text: text, avstandM: 0, langsM: km * 1000, vag: nil, start: nil)
     }
 
     @Test func bryterVidVarjeOrt() {
@@ -77,6 +77,19 @@ struct ResstrackorTests {
         let lugnt = Resstrackor.strackor(rutt, rader: [rad(.vagarbete, 50)], orter: orter)[0]
         #expect(Resstrackor.rubrik(lugnt) == "Lugnt" && Resstrackor.tagg(lugnt) == "LUGNT")
         #expect(Resstrackor.under(lugnt) == "Inget halt rapporterat.")
+    }
+
+    @Test func riskForHalkaSagerHalkrisk() {
+        // Kod 2 utan halkord är halkrisk, som rösten (DECISIONS #964).
+        func risk(_ km: Int, _ text: String = "risk för halka rapporterad på sträckan") -> RapportRad { rad(.halka, km, text: text, rubrik: "Halkrisk") }
+        let bara = Resstrackor.strackor(rutt, rader: [risk(300), risk(310, "Våt")], orter: orter)
+        #expect(Resstrackor.rubrik(bara[2]) == "Halkrisk på 2 ställen" && Resstrackor.tagg(bara[2]) == "2 STÄLLEN")
+        #expect(Resstrackor.dom(bara) == "Halkrisk på 2 ställen, först efter Norrstad.")
+        #expect(Resstrackor.sorter([risk(1)]) == "Risk för halka rapporterad.")
+        let blandat = Resstrackor.strackor(rutt, rader: [risk(300), rad(.halka, 310, text: "Is", rubrik: "Halt väglag")], orter: orter)
+        #expect(Resstrackor.rubrik(blandat[2]) == "Halt på 1 ställe, halkrisk på 1 ställe")
+        #expect(Resstrackor.under(blandat[2]) == "Is.")
+        #expect(Resstrackor.sorter([risk(1), rad(.halka, 2, text: "halka rapporterad på sträckan", rubrik: "Halt väglag")]) == "Halt väglag rapporterat.")
     }
 
     @Test func trafikverketsOrdBlirVanligSvenska() {

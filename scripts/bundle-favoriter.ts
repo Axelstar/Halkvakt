@@ -5,7 +5,7 @@
 // CI (ci.yml) och deploy-supabase.yml kör --check och fallerar om index.ts inte matchar källorna.
 import { readFileSync, writeFileSync } from "node:fs";
 
-const ORDER = ["types", "geo", "segment", "rutfilter", "snapshot"];
+const ORDER = ["types", "geo", "segment", "texts", "engine", "rutfilter", "snapshot"];   // engine för halkaRapporterad (DECISIONS #964)
 const strip = (s: string) => s.replace(/^import\b[\s\S]*?from\s+"[^"]+";[ \t]*\n/gm, "");
 let out = `// ═══ GENERERAD av scripts/bundle-favoriter.ts — ÄNDRA INTE HÄR ═══\n` +
           `// Källor: engine/src/{${ORDER.join(",")}}.ts + publish/rapport-core.ts + supabase/functions/favoriter/main.ts\n\n`;

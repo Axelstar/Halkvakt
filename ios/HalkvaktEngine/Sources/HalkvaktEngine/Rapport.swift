@@ -25,7 +25,9 @@ public struct Rapportfil {
 
 /// Lägesfilens fält som rapporten läser — fler än motorns läsare tar ut (vägen på sträckorna, broarna, SMHI:s områden).
 public struct RapportLage {
-    public struct Strecka { public let id: String; public let line: [[Double]]; public let info: [String]; public let road: String? }
+    public struct Strecka { public let id: String; public let line: [[Double]]; public let info: [String]; public let road: String?
+        /// Trafikverkets klass (DECISIONS #964): kod 2 utan halkord säger risk, som rösten. nil i en fil utan fältet.
+        public var code: Int? = nil }
     public struct Station { public let id: String; public let lon: Double, lat: Double; public let yta: Double?; public let fukt: Bool
         public let regnH: Double?, lutning30: Double? }
     public struct Bro { public let id: String; public let lon: Double, lat: Double; public let road: String?; public let yta: Double?
@@ -128,7 +130,7 @@ public enum ResansRapport {
         }
         return RapportLage(
             segments: arr("segments").map { RapportLage.Strecka(id: "\($0["id"] ?? "")", line: punkter($0["line"]), info: ($0["info"] as? [String]) ?? [],
-                                                  road: str($0, "road")) },
+                                                  road: str($0, "road"), code: ($0["code"] as? NSNumber)?.intValue) },
             weather: arr("weather").compactMap { w in
                 guard let lon = dbl(w, "lon"), let lat = dbl(w, "lat") else { return nil }
                 return RapportLage.Station(id: "\(w["id"] ?? "")", lon: lon, lat: lat, yta: dbl(w, "yta"), fukt: (w["fukt"] as? Bool) ?? false,
@@ -315,8 +317,11 @@ public enum ResansRapport {
         var kand: [Kandidat] = []
         for s in lage.segments {
             let v = vagNamn(s.road)
-            kand.append(Kandidat(id: "seg:\(s.id)", slag: .halka, rubrik: "Halt väglag\(v.map { " på \($0)" } ?? "")",
-                                 text: s.info.isEmpty ? "halka rapporterad på sträckan" : s.info.joined(separator: ", "),
+            // Risk eller halka, som rösten (DECISIONS #963, #964): kod 2 utan halkord säger risk.
+            let risk = !SegmentMeta(code: s.code, info: s.info).halkaRapporterad
+            kand.append(Kandidat(id: "seg:\(s.id)", slag: .halka, rubrik: "\(risk ? "Halkrisk" : "Halt väglag")\(v.map { " på \($0)" } ?? "")",
+                                 text: s.info.isEmpty ? (risk ? "risk för halka rapporterad på sträckan" : "halka rapporterad på sträckan")
+                                     : s.info.joined(separator: ", "),
                                  geo: lin("seg:\(s.id)", [s.line]), vag: v, start: nil, post: nil))
         }
         for w in lage.weather {
