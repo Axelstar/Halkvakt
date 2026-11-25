@@ -8,7 +8,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { lasRutter } from "../publish/skuggfacit.ts";
 
-const ORDER = ["types", "geo", "segment", "rutfilter", "snapshot"];
+const ORDER = ["types", "geo", "segment", "texts", "engine", "rutfilter", "snapshot"];   // engine för halkaRapporterad (DECISIONS #964)
 const strip = (s: string) => s.replace(/^import\b[\s\S]*?from\s+"[^"]+";[ \t]*\n/gm, "");
 let out = `// ═══ GENERERAD av scripts/bundle-favoritprov.ts — ÄNDRA INTE HÄR ═══\n` +
           `// Källor: engine/src/{${ORDER.join(",")}}.ts + publish/rapport-core.ts + data/favoritprov/rutter-osrm.json + supabase/functions/favoritprov/main.ts\n\n`;
