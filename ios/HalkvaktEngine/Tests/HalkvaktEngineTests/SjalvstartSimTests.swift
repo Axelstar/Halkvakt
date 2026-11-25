@@ -107,24 +107,20 @@ final class SjalvstartSimTests: XCTestCase {
         }
     }
 
-    // ── The rule as shipped (Fartkollen.startKmh 30, maxS 300), frozen ──
+    // ── The rule as shipped (Fartkollen.startKmh 30, maxS 90), frozen ──
     func testCarTripsStartWhenTheCarFirstHoldsThirtyForFiveSeconds() {
         XCTAssertEqual(Self.run(Self.cityCar).startS, 122)                 // the first burst that holds 30 for five seconds
         XCTAssertEqual(Self.run(Self.thirtyZoneThenSeventy).startS, 44)    // already in the 30 zone
-        XCTAssertEqual(Self.run(Self.queueThenDriving).startS, 311)        // eleven seconds after the queue lets go
+        XCTAssertEqual(Self.run(Self.onlyThirtyZone).startS, 45)           // a trip that stays in a 30 zone
+        XCTAssertEqual(Self.run(Self.fortyRoadAtTheLimit).startS, 41)      // a 40 road at the limit
     }
 
-    /// With the 90 s window the queue is still missed by minutes; the other two no longer need the longer window.
-    func testTheOldWindowStillMissesTheQueueByMinutes() {
-        XCTAssertEqual(Self.run(Self.cityCar, maxS: 90).startS, 122)
-        XCTAssertEqual(Self.run(Self.thirtyZoneThenSeventy, maxS: 90).startS, 44)
-        XCTAssertEqual(Self.run(Self.queueThenDriving, maxS: 90).startS, 507)
-    }
-
-    /// At 40 km/h these two never started. At 30 they do: a trip that stays in a 30 zone, and a 40 road at the limit.
-    func testACarInAThirtyZoneOrOnAFortyRoadStarts() {
-        XCTAssertEqual(Self.run(Self.onlyThirtyZone).startS, 45)
-        XCTAssertEqual(Self.run(Self.fortyRoadAtTheLimit).startS, 41)
+    /// Said plainly: the price of keeping the 90 s window. A car that queues for five minutes is caught at the wake after
+    /// the cooldown, not when the queue lets go. A 300 s window would start it at 311 s, and keep the positions on for up to
+    /// half of a walk (906 s of 1 800) where 90 s keeps them on for a quarter (460 s).
+    func testTheLongQueueStartsLateWithTheShortWindow() {
+        XCTAssertEqual(Self.run(Self.queueThenDriving).startS, 507)
+        XCTAssertEqual(Self.run(Self.queueThenDriving, maxS: 300).startS, 311)
     }
 
     func testOrdinaryBicyclesAndAWalkDoNotStart() {
