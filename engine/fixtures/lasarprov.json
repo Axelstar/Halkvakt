@@ -36,8 +36,8 @@
  "vantat": [
   { "id": "cam:k1", "kind": "camera", "bearing": 180, "speedLimitKmh": null, "_varfor": "kamerans limit läses inte (DECISIONS #448 b): TS är referensen, och static.json publicerar ingen fartgräns — en röst med fartgräns är en egen funktion" },
   { "id": "cam:k2", "kind": "camera", "bearing": null, "_varfor": "bearing null får aldrig bli 0 — 0 är norrut, och en kamera som tros titta norrut filtreras på fel kurs" },
-  { "id": "seg:s1", "kind": "slippery_segment", "code": 3 },
-  { "id": "seg:s2", "kind": "slippery_segment", "code": null, "_varfor": "code null betyder OKÄNT väglag, inte klass 0" },
+  { "id": "seg:s1", "kind": "slippery_segment", "code": 3, "road": "E4" },
+  { "id": "seg:s2", "kind": "slippery_segment", "code": null, "road": null, "_varfor": "code null betyder OKÄNT väglag, inte klass 0; road null är ingen väg och aldrig ordet null, som rösten annars säger (DECISIONS #965)" },
   { "id": "wx:w1", "kind": "icing_point", "surfaceTempC": 0.4, "rainH": 0.5, "fall30C": 1.2 },
   { "id": "wx:w2", "kind": "icing_point", "surfaceTempC": null, "rainH": null, "fall30C": null, "_varfor": "yta null får aldrig bli 0 °C — 0 ligger under fryströskeln och hade fyrat. S3 (#524): regn_h null får aldrig bli 0 h — 0 timmar betyder regn nu och hade fyrat betan; lutning30 saknas helt och blir också null" },
   { "id": "dev:d1", "kind": "accident", "road": "E4", "severityCode": 5, "endTimeLocal": "14:20" },

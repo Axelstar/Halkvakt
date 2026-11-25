@@ -33,6 +33,7 @@ class LasarkontraktetTest {
     private fun falt(h: Hazard, nyckel: String): Any? = when (h) {
         is SegmentHazard -> when (nyckel) {
             "code" -> h.meta.code
+            "road" -> h.meta.road
             else -> error("${h.id}: unknown segment field $nyckel")
         }
         is PointHazard -> when (nyckel) {

@@ -19696,3 +19696,23 @@ säger olika om samma sträcka).
 
 **Stomdokument:** APP (Planera resa), FAV (rapportens rader)
 
+## #965 (25/11 2026) Rösten säger vägnumret för halkan och småvägarna i nästa appversion (kort #660, #661)
+**Beslut.** Bengt 25/11: *"när nästa uppladdning till app store och android sker måste vägnumreringen av huvudvägar och småvägar med och ändring av rösten i småvägar. Kan du se till att det sker"*.
+1. **Halkan på huvudvägarna (A1).** Har sträckan ett nummer i lägesfilen (`road`, i formen *E4* eller siffror sedan #882) säger rösten
+   *"Varning: halka rapporterad på E4 framför dig."* och *"Risk för halka på väg 40 framför dig."* Utan nummer som förut, *"på vägen
+   framför dig"*. Det är en segmentkälla, så *framför dig* står kvar och inget avstånd sägs.
+2. **Småvägsrösten (S).** Småvägarnas punktfil bär `nummer`, vägens nummer ur `vagnummer_punkt` (#962) för de vägar som fått ett, och
+   rösten säger *"Betavarning: risk för halka på väg 1052 framöver."* En väg utan nummer, eller med svar som inte är eniga, säger som förut
+   *"på småvägarna"*. `ingest/vagnummer-punkter.ts` skriver om punktfilen med numren när de hämtats, och laddaren tar med dem.
+   Punktfilen behåller schema 2: en äldre app läser inte fältet och säger som förut. Ett nummer i fel form ger tystnad, som allt annat tvivel i filen.
+3. **Tre språk.** TS, Swift och Kotlin, med vektorerna v81–v83, läsarprovet (`road` på sträckan, null aldrig ett ord) och småvägsprovet.
+   Kortet visar repliken; en vägskylt på halkans kort är inte med.
+
+Inget når föraren förrän nästa appversion, samma som #963 och #964. Kandidatens K (*"Halkvakt tror: halka framöver."*) ändras inte.
+Småvägsrösten talar först när den är påslagen (sql/113, Axels ord, DECISIONS #881).
+
+**Alternativ.** Numret i lägesfilen i stället för punktfilen (varje minut i stället för när numren ändras); en egen rad för E-vägar
+(*Europaväg 4*); vänta med småvägarna till efter påslaget, som kort #661 sa.
+
+**Stomdokument:** APP (rösten), SYS (punktfilen), BED §4.2
+

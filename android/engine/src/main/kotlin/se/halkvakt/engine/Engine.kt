@@ -254,11 +254,14 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
         if (win.kind == HazardKind.SMAVAG) { lastSmavagT = fix.t; lastSmavagOdoM = odometerM }
         fired[win.alertKey] = fix.t to odometerM
         val ph = win.hazard as? PointHazard
+        val seg = win.hazard as? SegmentHazard
+        val smv = win.hazard as? SmavagHazard
         return Alert(
             t = fix.t, hazardId = win.hazard.id, kind = win.kind,
             distanceM = Math.round(win.distM),
             text = if (win.beta && win.kind == HazardKind.ICING_POINT) Texts.EFTERHALKA_TEXT
-                   else if ((win.hazard as? SegmentHazard)?.meta?.halkaRapporterad == false) Texts.HALKRISK_TEXT
+                   else if (seg != null) Texts.halkaText(seg.meta.halkaRapporterad, seg.meta.road)
+                   else if (smv != null) Texts.smavagText(smv.road)
                    else Texts.alertText(win.kind, win.distM, ph, win.step),
             step = win.step,
             beta = win.beta,

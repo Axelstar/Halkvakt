@@ -7,16 +7,20 @@
 // Silence is a feature: an unknown schema, a besked made for another file, a wrong point count, a wrong byte count, a value that is
 // not a whole number or a broken end gives no hazards at all — never a guess. Only roads with at least one warning point become
 // hazards. `andar` (DECISIONS #847) holds each road's two ends, 200 m in from the junctions: they go first and last on the road and
-// never warn, and they give the engine's road test a line also on a road with a single point. A road left with fewer than two
+// never warn, and they give the engine's road test a line also on a road with a single point. `nummer` (DECISIONS #965) holds a
+// road's number, "E4" or "1052", for the roads that have one in Trafikverket's register; the voice says it. An older app ignores it. A road left with fewer than two
 // points (no ends, one point) is left out, since the road test could never let it speak.
 // Kept out of snapshot.ts on purpose: the functions bundle snapshot.ts, and the point file is read by the apps only.
 import type { SmavagHazard } from "./types.ts";
 
 /** smavag.json, schema 2: the points' positions in the bits' order, and for each point its road and place along the road. */
 export interface SmavagFil { schema: number; punkter: [number, number][]; vag?: number[]; ordning?: number[];
-                             andar?: Record<string, [number, number, number, number]> }
+                             andar?: Record<string, [number, number, number, number]>; nummer?: Record<string, string> }
 /** live.json's `smavag`: the point file's sha256, the number of points and the warning points as bits in base64. */
 export interface SmavagBesked { fil: string; n: number; bitar: string }
+
+/** A road number as the point file writes it: "E4" or "1052" (DECISIONS #882). */
+export const VAGNUMMER = /^(E[1-9]\d{0,2}|[1-9]\d{0,3})$/;
 
 export function smavagHazards(fil: SmavagFil | null | undefined, besked: SmavagBesked | null | undefined,
                               filSha: string | null | undefined): SmavagHazard[] {
@@ -29,6 +33,11 @@ export function smavagHazards(fil: SmavagFil | null | undefined, besked: SmavagB
     if (!andar || typeof andar !== "object" || Array.isArray(andar)) return [];
     for (const [k, a] of Object.entries(andar))
       if (!/^\d+$/.test(k) || !Array.isArray(a) || a.length !== 4 || !a.every((x) => typeof x === "number" && Number.isFinite(x))) return [];
+  }
+  const nummer = fil.nummer;
+  if (nummer !== undefined) {
+    if (!nummer || typeof nummer !== "object" || Array.isArray(nummer)) return [];
+    for (const [k, v] of Object.entries(nummer)) if (!/^\d+$/.test(k) || typeof v !== "string" || !VAGNUMMER.test(v)) return [];
   }
   let bytes: string;
   try { bytes = atob(besked.bitar); } catch { return []; }
@@ -52,7 +61,8 @@ export function smavagHazards(fil: SmavagFil | null | undefined, besked: SmavagB
     if (points.length < 2) continue;
     const forst = a ? 1 : 0, warn: number[] = [];
     idx.forEach((i, j) => { if (varnar(i)) warn.push(j + forst); });
-    out.push({ id: `smv:${v}`, kind: "smavag", points, warn });
+    const road = nummer?.[String(v)];
+    out.push({ id: `smv:${v}`, kind: "smavag", points, warn, ...(road ? { road } : {}) });
   }
   return out;
 }

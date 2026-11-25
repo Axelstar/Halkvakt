@@ -43,7 +43,8 @@ class VectorTest {
                 }
             }
             val warn = o.getJSONArray("warn").let { arr -> (0 until arr.length()).map { arr.getInt(it) } }
-            return SmavagHazard(id = o.getString("id"), points = points, warn = warn)
+            return SmavagHazard(id = o.getString("id"), points = points, warn = warn,
+                road = if (o.has("road") && !o.isNull("road")) o.getString("road") else null)
         }
         if (kind == HazardKind.SLIPPERY_SEGMENT) {
             val line = o.getJSONArray("line").let { arr ->
@@ -58,6 +59,7 @@ class VectorTest {
                 meta = SegmentMeta(
                     code = m?.let { if (it.has("code") && !it.isNull("code")) it.getInt("code") else null },
                     info = m?.optJSONArray("info")?.let { a -> (0 until a.length()).map { a.getString(it) } } ?: emptyList(),
+                    road = m?.let { if (it.has("road") && !it.isNull("road")) it.getString("road") else null },
                 ),
             )
         }

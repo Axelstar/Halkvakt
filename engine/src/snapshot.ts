@@ -39,7 +39,7 @@ export function snapshotToHazards(staticDoc: StaticDoc, liveDoc: LiveDoc): Hazar
     out.push({ id: `cam:${c.id}`, kind: "camera", lon: c.lon, lat: c.lat, bearing: c.bearing });
   }
   for (const s of liveDoc.segments) {
-    out.push({ id: `seg:${s.id}`, kind: "slippery_segment", line: s.line, meta: { code: s.code, info: s.info } });
+    out.push({ id: `seg:${s.id}`, kind: "slippery_segment", line: s.line, meta: { code: s.code, info: s.info, road: s.road ?? null } });
   }
   for (const w of liveDoc.weather) {
     out.push({ id: `wx:${w.id}`, kind: "icing_point", lon: w.lon, lat: w.lat,

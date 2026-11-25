@@ -4,6 +4,8 @@
 // punkterna är kuvösens; inga antal eller lägen här).
 // PUNKTFILEN (byggsteg 5b, sql/106): i samma transaktion skrivs appens punktfil, punkternas lägen i ordningen punkt COLLATE "C", till
 // smavag_punktfil när den ändrats. Publiceringen laddar upp den, och bitarna i live.json följer samma ordning.
+// VÄGNUMREN (DECISIONS #965): punktfilen bär `nummer`, vägens nummer ur vagnummer_punkt (sql/144) för de vägar som har ett, och rösten
+// säger det. ingest/vagnummer-punkter.ts skriver om filen med samma funktion när numren hämtats.
 //   node --experimental-strip-types ingest/smavagspunkter-db.ts ladda [data/vagdata/smavagsrosten-punkter.json]
 //   node --experimental-strip-types ingest/smavagspunkter-db.ts --sjalvtest
 import { readFileSync } from "node:fs";
@@ -11,6 +13,7 @@ import { createHash } from "node:crypto";
 import { gzipSync } from "node:zlib";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { delar } from "./kandidat-db.ts";
+import { VAGNUMMER } from "../engine/src/smavagfil.ts";
 
 export const LISTA = fileURLToPath(new URL("../data/vagdata/smavagsrosten-punkter.json", import.meta.url));
 
@@ -66,6 +69,11 @@ export const SATS = {
   // Punktfilen (sql/106): ordningen är bitarnas i live.json (publish/snapshot-core.ts). En ny fil nollar vad hinken och kartrepot bär.
   finnsPunktfil: `SELECT to_regclass('public.smavag_punktfil') IS NOT NULL AS ja`,
   punktfilRader: `SELECT punkt, vag, ordning, lon, lat FROM smavagspunkt ORDER BY punkt COLLATE "C"`,
+  // Vägnumren (sql/144, DECISIONS #965): bara de vägar som fått ett huvudnummer; en Europaväg skrivs E4, andra bara siffrorna (#882).
+  finnsNummer: `SELECT to_regclass('public.vagnummer_punkt') IS NOT NULL AS ja`,
+  nummerRader: `SELECT nyckel AS vag, CASE WHEN europavag THEN 'E' || huvudnummer ELSE huvudnummer::text END AS nummer
+    FROM vagnummer_punkt WHERE kalla = 'smavag' AND utfall = 'nummer'`,
+  nuvarandePunktfil: `SELECT json FROM smavag_punktfil WHERE id = 1`,
   punktfil: `INSERT INTO smavag_punktfil (id, sha256, punkter, bytes, gz_bytes, json, skriven_at) VALUES (1, $1, $2, $3, $4, $5, now())
     ON CONFLICT (id) DO UPDATE SET sha256 = EXCLUDED.sha256, punkter = EXCLUDED.punkter, bytes = EXCLUDED.bytes, gz_bytes = EXCLUDED.gz_bytes,
       json = EXCLUDED.json, skriven_at = now(), i_hinken = NULL, i_github = NULL
@@ -77,7 +85,7 @@ export const SATS = {
  *  appen kan lägga vägens punkter i ordning (engine/src/smavagfil.ts). Bitarnas ordning är densamma som i schema 1. Med ändarna (#847):
  *  "andar" per vägnummer, [lon, lat, lon, lat] för vägens början och slut, bara för vägar som har punkter i filen. */
 export function punktfil(rader: { lon: number; lat: number; vag: string; ordning: number }[],
-                         andarna: Map<string, [[number, number], [number, number]]> = new Map()) {
+                         andarna: Map<string, [[number, number], [number, number]]> = new Map(), nummer: Map<string, string> = new Map()) {
   const r5 = (x: number) => Math.round(Number(x) * 1e5) / 1e5;
   const vag = rader.map((p) => {
     const m = /^v(\d+)$/.exec(p.vag);
@@ -86,10 +94,38 @@ export function punktfil(rader: { lon: number; lat: number; vag: string; ordning
   });
   const mina = [...new Set(rader.map((p) => p.vag))].filter((v) => andarna.has(v)).sort((a, b) => Number(a.slice(1)) - Number(b.slice(1)));
   const ande = Object.fromEntries(mina.map((v) => { const [a, b] = andarna.get(v)!; return [String(Number(v.slice(1))), [r5(a[0]), r5(a[1]), r5(b[0]), r5(b[1])]]; }));
+  // Vägnumren (#965): bara för vägar med punkter i filen och ett nummer i den form appen läser, i vägnummerordning.
+  const numrerade = [...new Set(rader.map((p) => p.vag))].filter((v) => VAGNUMMER.test(nummer.get(v) ?? ""))
+    .sort((a, b) => Number(a.slice(1)) - Number(b.slice(1)));
+  const nr = Object.fromEntries(numrerade.map((v) => [String(Number(v.slice(1))), nummer.get(v)!]));
   const json = JSON.stringify({ schema: 2, punkter: rader.map((p) => [r5(p.lon), r5(p.lat)]), vag, ordning: rader.map((p) => Number(p.ordning)),
-    ...(mina.length ? { andar: ande } : {}) });
+    ...(mina.length ? { andar: ande } : {}), ...(numrerade.length ? { nummer: nr } : {}) });
   const b = Buffer.from(json, "utf8");
   return { json, sha256: createHash("sha256").update(b).digest("hex"), punkter: rader.length, bytes: b.byteLength, gz_bytes: gzipSync(b).byteLength };
+}
+
+/** Ändarna ur en punktfil som redan är skriven (`andar` per vägens nummer), tillbaka till laddarens form per v-id för vägarna i `rader`:
+ *  vägnummerflödet skriver om filen utan kuvösens lista. */
+export function andarUrFil(json: string | null | undefined, rader: { vag: string }[]): Map<string, [[number, number], [number, number]]> {
+  const ut = new Map<string, [[number, number], [number, number]]>();
+  const a = json ? JSON.parse(json)?.andar : undefined;
+  if (!a) return ut;
+  for (const v of new Set(rader.map((p) => p.vag))) {
+    const q = a[String(Number(v.slice(1)))];
+    if (Array.isArray(q) && q.length === 4) ut.set(v, [[q[0], q[1]], [q[2], q[3]]]);
+  }
+  return ut;
+}
+
+/** Skriver punktfilen ur tabellen, med ändarna och vägnumren, i den transaktion klienten står i. Oförändrad fil skrivs inte (sha). */
+export async function skrivPunktfil(c: { query: (q: string, v?: unknown[]) => Promise<{ rows: any[] }> },
+                                    andarna?: Map<string, [[number, number], [number, number]]>) {
+  const rader = (await c.query(SATS.punktfilRader)).rows;
+  const nummer = new Map<string, string>();
+  if ((await c.query(SATS.finnsNummer)).rows[0]?.ja) for (const r of (await c.query(SATS.nummerRader)).rows) nummer.set(r.vag, r.nummer);
+  const a = andarna ?? andarUrFil((await c.query(SATS.nuvarandePunktfil)).rows[0]?.json, rader);
+  const f = punktfil(rader, a, nummer);
+  await c.query(SATS.punktfil, [f.sha256, f.punkter, f.bytes, f.gz_bytes, f.json]);
 }
 
 export const kolumner = (d: Smavagspunkt[]) =>
@@ -108,10 +144,7 @@ async function ladda(fil: string) {
     for (const d of delar(r)) await c.query(SATS.skriv, kolumner(d));
     await c.query(SATS.ta_bort, [r.map((x) => x.punkt)]);
     // Före sql/106 finns ingen punktfil att skriva; punkterna laddas ändå.
-    if ((await c.query(SATS.finnsPunktfil)).rows[0]?.ja) {
-      const f = punktfil((await c.query(SATS.punktfilRader)).rows, a);
-      await c.query(SATS.punktfil, [f.sha256, f.punkter, f.bytes, f.gz_bytes, f.json]);
-    }
+    if ((await c.query(SATS.finnsPunktfil)).rows[0]?.ja) await skrivPunktfil(c, a);
     await c.query("COMMIT");
   } catch (e) {
     await c.query("ROLLBACK").catch(() => {});
@@ -155,6 +188,17 @@ function sjalvtest(): number {
   if (fa.json !== '{"schema":2,"punkter":[[15.12346,60],[16,61.5]],"vag":[12,1],"ordning":[3,0],"andar":{"1":[16,61.4,16.1,61.6],"12":[15.1,60,15.2,60.1]}}')
     fel.push(`punktfilen med ändarna: ${fa.json}`);
   if (andar({}).size !== 0) fel.push("utan nyckeln ska det inte bli några ändar");
+  // Vägnumren (#965): bara vägar i filen och nummer i appens form; E-vägen som E4; ett trasigt nummer lämnas ute, aldrig gissat.
+  const fn = punktfil([{ lon: 15.123456, lat: 60.000004, vag: "v00012", ordning: 3 }, { lon: 16, lat: 61.5, vag: "v00001", ordning: 0 }], a,
+    new Map([["v00012", "1052"], ["v00001", "E4"], ["v00099", "77"]]));
+  if (fn.json !== '{"schema":2,"punkter":[[15.12346,60],[16,61.5]],"vag":[12,1],"ordning":[3,0],"andar":{"1":[16,61.4,16.1,61.6],"12":[15.1,60,15.2,60.1]},"nummer":{"1":"E4","12":"1052"}}')
+    fel.push(`punktfilen med vägnumren: ${fn.json}`);
+  if (punktfil([{ lon: 16, lat: 61.5, vag: "v00001", ordning: 0 }], new Map(), new Map([["v00001", "E 4"]])).json.includes("nummer"))
+    fel.push("punktfilen tog ett nummer i fel form");
+  const tillbaka = andarUrFil(fa.json, [{ vag: "v00012" }, { vag: "v00001" }]);
+  if (punktfil([{ lon: 15.123456, lat: 60.000004, vag: "v00012", ordning: 3 }, { lon: 16, lat: 61.5, vag: "v00001", ordning: 0 }], tillbaka).json !== fa.json)
+    fel.push("ändarna ur den skrivna filen ger inte samma fil");
+  if (!SATS.nummerRader.includes("kalla = 'smavag'") || !SATS.nummerRader.includes("utfall = 'nummer'")) fel.push("vägnumrens urval");
   for (const [namn, x] of [["en ände", { v00001: [[16, 61]] }], ["läget i havet", { v00001: [[16, 61], [0, 0]] }], ["fel id", { r00001: [[16, 61], [16, 61.1]] }],
     ["en lista", [[16, 61]]]] as const) {
     try { andar({ andar: x }); fel.push(`ändarna släppte igenom: ${namn}`); } catch { /* väntat */ }

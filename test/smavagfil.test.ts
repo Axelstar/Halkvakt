@@ -13,7 +13,7 @@ const prov = JSON.parse(readFileSync(new URL("../engine/fixtures/smavagprov.json
 test("småvägsprovet: TS-läsaren ger varje falls väntade faror", () => {
   assert.ok(prov.fall.length >= 10, "provfilen har sina fall");
   for (const f of prov.fall) {
-    const faror = smavagHazards(f.fil, f.besked, f.filSha).map((h) => ({ id: h.id, points: h.points, warn: h.warn }));
+    const faror = smavagHazards(f.fil, f.besked, f.filSha).map((h) => ({ id: h.id, points: h.points, warn: h.warn, ...(h.road ? { road: h.road } : {}) }));
     assert.deepEqual(faror, f.vantat, `${f.namn}: ${f._varfor}`);
   }
 });

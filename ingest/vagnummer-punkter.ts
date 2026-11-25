@@ -7,9 +7,11 @@
 // en körning som stannar fortsätter nästa gång där den slutade (FARSK_DYGN).
 // Punkterna är kuvösens (DECISIONS #768): loggen säger bara klart eller fel, inga antal och inga lägen. Rotelementet räknas, aldrig
 // statuskoden. Nyckeln delas med driftens ingest: ~2 förfrågningar/s.
+// Sist skrivs småvägarnas punktfil om med numren (DECISIONS #965), och publiceringen laddar upp den när den ändrats: rösten säger numret.
 //   DATABASE_URL=... TRAFIKVERKET_API_KEY=... node --experimental-strip-types ingest/vagnummer-punkter.ts
 //   node --experimental-strip-types ingest/vagnummer-punkter.ts --sjalvtest
 import { pathToFileURL } from "node:url";
+import { skrivPunktfil } from "./smavagspunkter-db.ts";
 
 const API = "https://api.trafikinfo.trafikverket.se/v2/data.json";
 const UA = "Halkvakt-vagnummer-punkter/0.1 (+https://github.com/Axelstar/Halkvakt)";
@@ -158,6 +160,15 @@ async function hamta() {
            fragade = EXCLUDED.fragade, svar = EXCLUDED.svar, lika = EXCLUDED.lika, hamtad = EXCLUDED.hamtad`,
         [rader.map((r) => r.kalla), rader.map((r) => r.nyckel), rader.map((r) => r.utfall), rader.map((r) => r.huvudnummer),
          rader.map((r) => r.europavag), rader.map((r) => r.fragade), rader.map((r) => r.svar), rader.map((r) => r.lika)]);
+    }
+    // Punktfilen med numren (#965), i en transaktion; före sql/106 finns ingen punktfil.
+    if ((await pool.query(`SELECT to_regclass('public.smavag_punktfil') IS NOT NULL AS ja`)).rows[0]?.ja) {
+      const c = await pool.connect();
+      try {
+        await c.query("BEGIN");
+        await skrivPunktfil(c);
+        await c.query("COMMIT");
+      } catch (e) { await c.query("ROLLBACK").catch(() => {}); throw e; } finally { c.release(); }
     }
   } finally { await pool.end(); }
   console.log("vägnumren: klart");
