@@ -1,6 +1,6 @@
 {
  "name": "Småvägsrösten talar när bilen följer småvägen (S)",
- "description": "Småvägen v1 går norrut längs bilens väg med punkter var 900:e m; punkten 4 500 m fram varnar. Bilen känns igen på vägen vid t=3 (tredje fixen inom 80 m och 30° från linjen) och punkten talar vid t=173 med 'Betavarning: risk för halka på småvägarna framöver.' och beta=true. De andra punkterna varnar inte och tiger.",
+ "description": "Småvägen v1 går norrut längs bilens väg med punkter var 900:e m; punkten 4 500 m fram varnar. Bilen känns igen på vägen vid t=3 (tredje fixen inom 80 m och 30° från linjen) och punkten talar vid t=173 med 'Risk för halka på småvägarna framöver.' och beta=true. De andra punkterna varnar inte och tiger.",
  "hazards": [
   {
    "id": "smv:v1",
@@ -1277,7 +1277,7 @@
    "hazardId": "smv:v1",
    "kind": "smavag",
    "distanceM": 655,
-   "text": "Betavarning: risk för halka på småvägarna framöver.",
+   "text": "Risk för halka på småvägarna framöver.",
    "beta": true
   }
  ]

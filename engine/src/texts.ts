@@ -31,9 +31,10 @@ export const EFTERHALKA_TEXT = "Halkvakt tror: frysrisk framöver.";
  *  "Halkvakt tror" och "framöver", aldrig ett avstånd. */
 export const KANDIDAT_TEXT = "Halkvakt tror: halka framöver.";
 
-/** S, småvägsröstens betavarning (DECISIONS #828: texten beställd av Bengt och signerad med Axel 10/11). Modellerad på vägar utan
+/** S, småvägsröstens betavarning (DECISIONS #828: texten beställd av Bengt och signerad med Axel 10/11; utan "Betavarning:" sedan
+ *  Bengt 25/11, DECISIONS #966). Modellerad på vägar utan
  *  mätning, en punktkälla — därför "framöver" och aldrig ett avstånd. */
-export const SMAVAG_TEXT = "Betavarning: risk för halka på småvägarna framöver.";
+export const SMAVAG_TEXT = "Risk för halka på småvägarna framöver.";
 
 /** A1 when the report names no ice, snow, frost, slush or slipperiness: Trafikverket's class 2 is "Besvärligt (risk för)", and
  *  "halka rapporterad" overstated a wet road (Axel 24/11). Which line a stretch gets is halkaRapporterad in engine.ts. Segment
@@ -41,7 +42,7 @@ export const SMAVAG_TEXT = "Betavarning: risk för halka på småvägarna framö
 export const HALKRISK_TEXT = "Risk för halka på vägen framför dig.";
 
 /** A1 and S with the road's number when the data has one (Bengt 25/11, DECISIONS #965; kort #660, #661): "Varning: halka rapporterad
- *  på väg 40 framför dig.", "Risk för halka på E4 framför dig.", "Betavarning: risk för halka på väg 1052 framöver." Without a number
+ *  på väg 40 framför dig.", "Risk för halka på E4 framför dig.", "Risk för halka på väg 1052 framöver." Without a number
  *  the lines are the ones above. */
 export function halkaText(rapporterad: boolean, road?: string | null): string {
   const on = roadPhrase(road);
@@ -50,7 +51,7 @@ export function halkaText(rapporterad: boolean, road?: string | null): string {
 }
 export function smavagText(road?: string | null): string {
   const on = roadPhrase(road);
-  return on ? `Betavarning: risk för halka${on} framöver.` : SMAVAG_TEXT;
+  return on ? `Risk för halka${on} framöver.` : SMAVAG_TEXT;
 }
 
 export function alertText(

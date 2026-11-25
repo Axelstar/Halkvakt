@@ -19716,3 +19716,14 @@ Småvägsrösten talar först när den är påslagen (sql/113, Axels ord, DECISI
 
 **Stomdokument:** APP (rösten), SYS (punktfilen), BED §4.2
 
+## #966 (25/11 2026) Småvägsrösten säger inte "Betavarning" (kort #661)
+**Beslut.** Bengt 25/11: *"Nej. Det ska inte säga betavarning. Säg risk för halka på väg 1052 framöver"*. Småvägsrösten säger *"Risk för halka på väg 1052 framöver."* när vägen har ett nummer och
+*"Risk för halka på småvägarna framöver."* utan nummer, i nästa appversion. Ordet *Betavarning* stryks ur båda raderna (#828, #965);
+varningskortet är fortfarande märkt BETA, och *framöver* står kvar eftersom det är en punktkälla. TS, Swift och Kotlin, vektorerna
+v51–v60 och v83 omskrivna ur generatorn.
+
+**Alternativ.** Stryka ordet bara när numret sägs (raden utan nummer är också Bengts och Axels signerade text, #828; Bengts ord gäller
+småvägsraden som helhet).
+
+**Stomdokument:** APP (rösten)
+
