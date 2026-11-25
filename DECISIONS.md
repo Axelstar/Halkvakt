@@ -19655,3 +19655,26 @@ nu: punkterna i driften bär inte elementets id, och ett läge per punkt räcker
 är öppna data och hör till driftens rörarbete, #910).
 
 **Stomdokument:** SYS (vägnumren vid småvägarna och storstäderna), BED §4.2
+
+## #963 (25/11 2026) Falsklarmen steg 1: ej bil, halkans vägtest och risk eller halka (kort #679)
+**Beslut.** Bengt 25/11: *"jag säger ja till 1840, 1841, 1842 och 1844"*, på Axels tre förslag från natten och PR:en som samlar dem.
+PR #1844 slogs ihop 25/11 (74c1170d), och #1840, #1841 och #1842 följde med. Förslagen och mätningarna står i PR:ernas beskrivningar.
+1. **Ej bil (#1840).** Motorn tiger när farten är över 160 km/h eller när telefonen ger en giltig höjd över 1 500 m, i alla tre
+   språken. iPhones självväckning startar inte vakten över samma gränser. 160 är den högsta hastighetsgränsen 120 plus en tredjedel, 1 500
+   de högsta vägarna kring 1 000 m plus hälften. Skälet: appen varnade i ett flygplan i luften (24–25/11) och varnar på tåg.
+2. **Halkans vägtest (#1841).** En hal sträcka (A1) talar bara när bilen är inom 80 m från sträckans linje eller dess raka förlängning
+   bortom ändarna och kursen är högst 30° från linjens riktning. Ett läge räcker. Det är småvägsröstens vägtest (#844), som sköt upp de stora
+   vägarna till ett eget beslut. Mätt på 291 hala sträckor: varningar för ett annat vägnummer 540 → 103; vid 80 km/h behåller 64 % av
+   infarterna minst 90 % av förvarningen och 88 % minst hälften.
+3. **Risk eller halka (#1842).** Kod 2 utan något av motorns halkord ger *"Risk för halka på vägen framför dig."* och rubriken
+   *Halkrisk*; ett halkord eller kod 3 och 4 ger *"Varning: halka rapporterad på vägen framför dig."* och *Halka*. Vilka sträckor som talar
+   ändras inte. Skälet: en varning i Stockholm 24/11 kom från *Besvärligt (risk för), Våt* (#960).
+
+Inget når föraren förrän nästa appversion. Kvar: iPhone-appen byggd i Xcode, Android på en telefon, skuggmotorn, favoriter och
+favoritprov driftsatta, skärmbilderna av *Halkrisk* och versionen i båda butikerna. Kartan och Planera resa säger fortfarande *Halka*
+för en risk-sträcka; det tas för sig.
+
+**Alternativ.** 180 eller 200 km/h (tystar bara flyg); tre lägen i rad i vägtestet, som småvägarna (flyttar varje halkvarning två lägen);
+vägen fram till sträckan i lägesfilen (bättre, men kräver publiceringen); *risk* också för kod 3 utan ord.
+
+**Stomdokument:** APP (rösten och kortet Halkrisk), SYS (motorns vägtest och fartgräns), BED §4.2
