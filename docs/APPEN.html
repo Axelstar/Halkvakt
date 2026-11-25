@@ -264,6 +264,15 @@
       <li><span aria-hidden="true">◐</span> <b>Livekartan: storstädernas bitar längs vägen eller gatan (DECISIONS #935)</b> <span style="color: var(--dampad, #4A5763)">pågår · I drift 21/11 (Bengt: &quot;Ja, rätta och kör&quot;): halkvakt-kuvos F79 ihopslagen (PR #105, c0de3342), sql/135 migrerad (DB-knappen 44879019435), PR #1759 som 0531b88b, stadsgator.yml skriv (44879699666; talen i F79), publicera deployad (44880211711) och halkvakt-karta PR #40 som 0dff9dfe. element_id laddat av ny-kandidat-fysik 12.34 UTC (44904043367): alla stadspunkter har element, och alla utom sju har en linje (läst i panelen). Kontrollsumman i driftlistan rättad i kuvos #106 (05ab9ee4); kedjan 18.28 UTC (44935686276) klar för 20261121T12Z. Kvar: linjerna sedda på kartan när en stadspunkt varnar</span></li>
     </ul>
   </details>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-falsklarm">Falsklarmen steg 1: ej bil, vägtest och risk eller halka</a> <span style="color: var(--dampad, #4A5763)">delvis, 40 % · kvar: iPhone-appen byggd i Xcode och Android-appen på en telefon</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Beslutat</b> <span style="color: var(--dampad, #4A5763)">klart · Bengt 25/11: &quot;jag säger ja till 1840, 1841, 1842 och 1844&quot; (DECISIONS #963)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Motorn i tre språk med provfall</b> <span style="color: var(--dampad, #4A5763)">klart · PR #1844 ihopslagen (74c1170d); ci, android 45561682947 och ios-engine 45561686771 gröna på grenen</span></li>
+      <li><span aria-hidden="true">○</span> <b>Apparna byggda och prövade</b> <span style="color: var(--dampad, #4A5763)">saknas · iPhone-appen i Xcode och Android på en telefon</span></li>
+      <li><span aria-hidden="true">○</span> <b>Skuggmotorn i drift</b> <span style="color: var(--dampad, #4A5763)">saknas · skuggmotor, favoriter och favoritprov inte driftsatta</span></li>
+      <li><span aria-hidden="true">○</span> <b>Ute hos förarna</b> <span style="color: var(--dampad, #4A5763)">saknas · ny appversion i båda butikerna</span></li>
+    </ul>
+  </details>
   <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-a-rosten">Rösten och varningskorten</a> <span style="color: var(--dampad, #4A5763)">delvis, 83 % · kvar: Korten F, G och H syns först vid en riktig allvarlig olycka</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">✓</span> <b>Byggd i koden</b> <span style="color: var(--dampad, #4A5763)">klart · engine/src/texts.ts:34–82 (alertText), med S3 på :28 och K på :32; SpeechService.swift:20; GuardService.kt:222; S3, efterhalkan (*Halkvakt tror: frysrisk framöver.*), talar från (33) bara för den som slagit på Betatest, som bara finns i TestFlight (DECISIONS #677, #679, #681), och (32) har S3 utan spärr; kandidaten K (*Halkvakt tror: halka framöver.*) är alltid beta (DECISIONS #577); WarningCard.swift och WarningCard.kt med tester; 26bda75 (Axels PR #1074, DECISIONS #642): iOS släpper ljudsessionen efter repliken och raden om gammal väglagsdata väntar ut en nätmiss (AgeGate.StaleGrace, AgeGateTest), men raden och StaleGrace togs bort 20/10 (DECISIONS #647) och finns bara kvar i bygge 32; musiken som tonar upp i CarPlay är inte sedd i ett bygge, bygge 32 bär ändringen</span></li>
@@ -786,12 +795,13 @@
 
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
   <h2 id="oppna-kort">Öppna kort</h2>
-  <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 30 kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>
+  <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 31 kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>
   <h3><a href="#avsnitt-3">3. Exakt vad rösten säger</a></h3>
   <ul>
     <li>#657 🦌 #657 VILTSTRÄCKAN — VARNING DÄR OCH NÄR VILTOLYCKORNA SKER: STEG 0, LÄSNINGEN AV TRAFIKVERKETS … <span class="litet">· Bengt</span></li>
     <li>#647 📣 #647 SMÅVÄGSRÖSTEN — KANDIDATENS BETAVARNING PÅ STATLIGA VÄGAR UTAN MÄTNING (BESTÄLLT 10/11 — Bengt: "Jag … <span class="litet">· Claude</span></li>
     <li>#356 📷 #356 KAMERALARM FÖR KAMEROR PÅ EN ANNAN VÄG — PRÖVA RÖSTEN (BESTÄLLT 17/10 — Claude, DECISIONS #615, … <span class="litet">· Claude</span></li>
+    <li>#679 🔒 🚫 #679 FALSKLARMEN STEG 1: EJ BIL, VÄGTEST OCH RISK ELLER HALKA (BESLUTAT 25/11 — Bengt: "jag säger ja … <span class="litet">· Claude, låst</span></li>
     <li>#669 🔒 🗣️ #669 RÖSTEN: NY HALKRISK OCH VINTERVÄGLAG — TVÅ MENINGAR OCH TVÅ TAKTER (BESTÄLLT 17/11 — Bengt: "axel … <span class="litet">· Claude, låst</span></li>
     <li>#660 🔨 🛣️ #660 VÄGBETECKNINGARNA — E4 OCH VÄG 40 ÖVERALLT, I APPEN, PÅ HEMSIDAN OCH I DOKUMENTEN (PÅGÅR 15/11 — … <span class="litet">· Claude, låst</span></li>
     <li>#661 🔒 🛣️ #661 SMÅVÄGSRÖSTEN SÄGER VÄGNUMRET — PÅMINNELSEN EFTER PÅSLAGET (BESTÄLLT 15/11 — Bengt: "Det här … <span class="litet">· Claude, låst</span></li>
