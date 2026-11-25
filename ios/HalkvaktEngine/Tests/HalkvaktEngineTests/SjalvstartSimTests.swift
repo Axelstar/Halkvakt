@@ -107,34 +107,38 @@ final class SjalvstartSimTests: XCTestCase {
         }
     }
 
-    // ── The rule as shipped (Fartkollen.maxS), frozen ──
-    func testCarTripsStartWhenTheCarFirstHoldsFortyForFiveSeconds() {
-        XCTAssertEqual(Self.run(Self.cityCar).startS, 226)                 // the fourth green: the first time 40 is held five seconds
-        XCTAssertEqual(Self.run(Self.thirtyZoneThenSeventy).startS, 206)   // six seconds after the ramp passes 40
-        XCTAssertEqual(Self.run(Self.queueThenDriving).startS, 313)        // thirteen seconds after the queue lets go
+    // ── The rule as shipped (Fartkollen.startKmh 30, maxS 300), frozen ──
+    func testCarTripsStartWhenTheCarFirstHoldsThirtyForFiveSeconds() {
+        XCTAssertEqual(Self.run(Self.cityCar).startS, 122)                 // the first burst that holds 30 for five seconds
+        XCTAssertEqual(Self.run(Self.thirtyZoneThenSeventy).startS, 44)    // already in the 30 zone
+        XCTAssertEqual(Self.run(Self.queueThenDriving).startS, 311)        // eleven seconds after the queue lets go
     }
 
-    func testTheOldWindowMissedTheSameTripsByMinutes() {
-        XCTAssertEqual(Self.run(Self.cityCar, maxS: 90).startS, 470)
-        XCTAssertEqual(Self.run(Self.thirtyZoneThenSeventy, maxS: 90).startS, 435)
+    /// With the 90 s window the queue is still missed by minutes; the other two no longer need the longer window.
+    func testTheOldWindowStillMissesTheQueueByMinutes() {
+        XCTAssertEqual(Self.run(Self.cityCar, maxS: 90).startS, 122)
+        XCTAssertEqual(Self.run(Self.thirtyZoneThenSeventy, maxS: 90).startS, 44)
         XCTAssertEqual(Self.run(Self.queueThenDriving, maxS: 90).startS, 507)
     }
 
-    /// Said plainly: a car that never holds 40 km/h for five seconds never starts the guard by itself.
-    func testACarThatNeverHoldsFortyNeverStarts() {
-        XCTAssertNil(Self.run(Self.onlyThirtyZone).startS)
-        XCTAssertNil(Self.run(Self.fortyRoadAtTheLimit).startS)
+    /// At 40 km/h these two never started. At 30 they do: a trip that stays in a 30 zone, and a 40 road at the limit.
+    func testACarInAThirtyZoneOrOnAFortyRoadStarts() {
+        XCTAssertEqual(Self.run(Self.onlyThirtyZone).startS, 45)
+        XCTAssertEqual(Self.run(Self.fortyRoadAtTheLimit).startS, 41)
     }
 
-    func testBicyclesAndAWalkDoNotStart() {
-        for trip in [Self.commuterCyclist, Self.eBike, Self.roadCyclistFlat, Self.walkWithJumps] {
+    func testOrdinaryBicyclesAndAWalkDoNotStart() {
+        for trip in [Self.commuterCyclist, Self.eBike, Self.walkWithJumps] {
             XCTAssertNil(Self.run(trip).startS)
         }
     }
 
-    /// Said plainly: these are not cars, and they start the guard.
-    func testABusAndAFastDownhillDoStart() {
+    /// Said plainly: these are not cars, and they start the guard. The price of 30 instead of 40 is the road cyclist,
+    /// who holds 30 to 38 km/h on the flat.
+    func testABusAndARoadCyclistDoStart() {
         XCTAssertEqual(Self.run(Self.cityBus).startS, 25)
-        XCTAssertEqual(Self.run(Self.roadCyclistEarlyDownhill).startS, 186)
+        XCTAssertEqual(Self.run(Self.roadCyclistFlat).startS, 32)
+        XCTAssertEqual(Self.run(Self.roadCyclist).startS, 32)
+        XCTAssertEqual(Self.run(Self.roadCyclistEarlyDownhill).startS, 32)
     }
 }

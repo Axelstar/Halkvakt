@@ -3,8 +3,9 @@
 //
 // iOS wakes the app when the phone leaves the parking fence or on a significant location change; the app then watches the
 // speed for at most `maxS`. Car speed starts the guard, otherwise the app goes back to sleep. Car speed is `startFixes` good
-// fixes in a row at `startKmh` or more: 40 km/h for five seconds is not a commuter on a bicycle (15–25 km/h) and not an
-// e-bike (25), and one fix is not a speed. Kort #359 (the couch test 17/10): when the driver
+// fixes in a row at `startKmh` or more: 30 km/h for five seconds is not a commuter on a bicycle (15–25 km/h) and not an
+// e-bike (25), and one fix is not a speed. A road cyclist holding 30 or more does start it (Axel 25/11: 30, not 40, so that
+// a car in a 30 or 40 zone starts the guard). Kort #359 (the couch test 17/10): when the driver
 // started the guard BY HAND while the probe was running, the probe was not reset, and when it gave up it turned location off —
 // the guard stood "running" without positions and could not warn. Starting or stopping the guard therefore calls `end()`, and
 // after that `onFix` never answers `.sleep`.
@@ -15,7 +16,7 @@ import Foundation
 
 public struct Fartkollen {
     public static let maxS: TimeInterval = 300
-    public static let startKmh = 40.0
+    public static let startKmh = 30.0
     public static let startFixes = 5
 
     // Never a case named `none` (CLAUDE.md: on an Optional it silently becomes nil).
