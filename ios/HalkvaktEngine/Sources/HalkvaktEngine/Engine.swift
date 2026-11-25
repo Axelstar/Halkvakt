@@ -44,7 +44,7 @@ public struct SegmentMeta {
     public var code: Int? = nil
     public var info: [String] = []
     public init(code: Int? = nil, info: [String] = []) { self.code = code; self.info = info }
-    /// Which A1 line a stretch that speaks gets — mirror of halkaRapporterad in engine.ts (Axel 24/11; vectors v64–v67). True when a
+    /// Which A1 line a stretch that speaks gets — mirror of halkaRapporterad in engine.ts (Axel 24/11; vectors v69–v72). True when a
     /// ConditionInfo word is a halkord, or the class is 3 (Mycket besvärligt) or 4 (Is- och snövägbana): "halka rapporterad". False,
     /// which for a stretch that speaks is class 2 (Besvärligt (risk för)) with no such word: the line, the card and the lists say risk.
     public var halkaRapporterad: Bool { (code ?? 0) >= Halkord.halkaRapporteradKod || info.contains(where: Halkord.traff) }

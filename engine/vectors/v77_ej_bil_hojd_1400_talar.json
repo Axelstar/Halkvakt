@@ -1,6 +1,6 @@
 {
  "name": "Ej bil: 1 400 m över havet utvärderas",
- "description": "Samma som v73 på 1 400 m. Under 1 500 ⇒ kameran talar som i v01: t=113 vid 488 m (t=112 låg 511 m — marginal 10,5 m före / 11,7 m efter gränsen 500 m, uppmätt). Låser högsta höjden mellan 1 400 och 1 600. En fix utan höjd utvärderas alltid: det är alla andra vektorer.",
+ "description": "Samma som v76 på 1 400 m. Under 1 500 ⇒ kameran talar som i v01: t=113 vid 488 m (t=112 låg 511 m — marginal 10,5 m före / 11,7 m efter gränsen 500 m, uppmätt). Låser högsta höjden mellan 1 400 och 1 600. En fix utan höjd utvärderas alltid: det är alla andra vektorer.",
  "hazards": [
   {
    "id": "cam1",

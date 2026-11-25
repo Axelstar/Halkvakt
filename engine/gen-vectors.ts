@@ -461,7 +461,7 @@ const scenarios: Scenario[] = [
     trace: Array.from({ length: 61 }, (_, t) => ({ t, lon: LON0, lat: northOf(t * (16 * 1000) / 3600), speedKmh: 16, headingDeg: 0 })),
   },
   {
-    file: "v70_ej_bil_fart_165_tiger", name: "Ej bil: 165 km/h utvärderas inte",
+    file: "v73_ej_bil_fart_165_tiger", name: "Ej bil: 165 km/h utvärderas inte",
     description:
       "Telefonen rapporterar 165 km/h och kurs 0. Kamera 1 500 m rakt fram, och bilen passerar den. Över 160 ⇒ tyst: " +
       "så fort kör ingen bil på en svensk väg (högsta gränsen är 120), men ett snabbtåg och ett flygplan gör det.",
@@ -469,15 +469,15 @@ const scenarios: Scenario[] = [
     trace: Array.from({ length: 61 }, (_, t) => ({ t, lon: LON0, lat: northOf(t * (165 * 1000) / 3600), speedKmh: 165, headingDeg: 0 })),
   },
   {
-    file: "v71_ej_bil_fart_155_talar", name: "Ej bil: 155 km/h utvärderas",
+    file: "v74_ej_bil_fart_155_talar", name: "Ej bil: 155 km/h utvärderas",
     description:
-      "Samma som v70 i 155 km/h. Under 160 ⇒ kameran talar t=24 vid 466 m (t=23 låg 509 m — marginal 9,2 m före / " +
+      "Samma som v73 i 155 km/h. Under 160 ⇒ kameran talar t=24 vid 466 m (t=23 låg 509 m — marginal 9,2 m före / " +
       "33,9 m efter gränsen 500 m, uppmätt). Låser högsta farten mellan 155 och 165.",
     hazards: [{ id: "cam1", kind: "camera", lon: LON0, lat: northOf(1500), bearing: 180 }],
     trace: Array.from({ length: 61 }, (_, t) => ({ t, lon: LON0, lat: northOf(t * (155 * 1000) / 3600), speedKmh: 155, headingDeg: 0 })),
   },
   {
-    file: "v72_ej_bil_flygfart_utan_fartvarde_tiger", name: "Ej bil: flygfart utan fartvärde tiger",
+    file: "v75_ej_bil_flygfart_utan_fartvarde_tiger", name: "Ej bil: flygfart utan fartvärde tiger",
     description:
       "250 km/h norrut (ett trafikflygplans fart vid start och landning) UTAN fartvärde, kurs och höjd från telefonen: " +
       "motorn räknar farten ur två fixar (69,4 m/s ⇒ 250 km/h, 90 över gränsen). Kamera 1 500 m och isstation 4 000 m " +
@@ -489,7 +489,7 @@ const scenarios: Scenario[] = [
     trace: northTrace(90, 250),
   },
   {
-    file: "v73_ej_bil_hojd_1600_tiger", name: "Ej bil: 1 600 m över havet utvärderas inte",
+    file: "v76_ej_bil_hojd_1600_tiger", name: "Ej bil: 1 600 m över havet utvärderas inte",
     description:
       "v01:s körning (80 km/h, kamera 3 km fram) med höjden 1 600 m i varje fix. Över 1 500 m ⇒ tyst: Sveriges högsta " +
       "allmänna väg ligger under 1 000 m. Farten är en bils, så det är höjden ensam som tystar.",
@@ -497,9 +497,9 @@ const scenarios: Scenario[] = [
     trace: northTrace(180, 80).map((f) => ({ ...f, altitudeM: 1600 })),
   },
   {
-    file: "v74_ej_bil_hojd_1400_talar", name: "Ej bil: 1 400 m över havet utvärderas",
+    file: "v77_ej_bil_hojd_1400_talar", name: "Ej bil: 1 400 m över havet utvärderas",
     description:
-      "Samma som v73 på 1 400 m. Under 1 500 ⇒ kameran talar som i v01: t=113 vid 488 m (t=112 låg 511 m — marginal " +
+      "Samma som v76 på 1 400 m. Under 1 500 ⇒ kameran talar som i v01: t=113 vid 488 m (t=112 låg 511 m — marginal " +
       "10,5 m före / 11,7 m efter gränsen 500 m, uppmätt). Låser högsta höjden mellan " +
       "1 400 och 1 600. En fix utan höjd utvärderas alltid: det är alla andra vektorer.",
     hazards: [{ id: "cam1", kind: "camera", lon: LON0, lat: northOf(3000), bearing: 180 }],
@@ -785,7 +785,7 @@ const scenarios: Scenario[] = [
     trace: southTrace(240, 80, 9000),
   },
   {
-    file: "v64_vagtest_annan_vag_borjar_framfor_tiger", name: "En hal sträcka på en annan väg som börjar framför bilen tiger (A1, vägtestet)",
+    file: "v61_vagtest_annan_vag_borjar_framfor_tiger", name: "En hal sträcka på en annan väg som börjar framför bilen tiger (A1, vägtestet)",
     description:
       "Skeppsbron 24/11: bilen körde på en gata som pekar mot början av väg 222, 650 m fram, och fick 'halka på vägen framför " +
       "dig' för en väg den inte körde på. Här börjar sträckan 1 500 m rakt fram och går därifrån åt ostnordost (80° från bilens " +
@@ -795,7 +795,7 @@ const scenarios: Scenario[] = [
     trace: northTrace(120, 80),
   },
   {
-    file: "v65_vagtest_samma_vag_talar_fore_strackan", name: "Samma väg: sträckan börjar 1 500 m fram och varnar 30 s före, som förut (A1, vägtestet)",
+    file: "v62_vagtest_samma_vag_talar_fore_strackan", name: "Samma väg: sträckan börjar 1 500 m fram och varnar 30 s före, som förut (A1, vägtestet)",
     description:
       "Sträckan börjar 1 500 m fram på bilens väg och fortsätter rakt längs den. Bilen är inte inne på sträckan, men på dess " +
       "första linje dragen rakt bakåt (0 m från den, samma riktning) ⇒ halka vid t=38, 655 m före (t=37 låg 677 m, förvarningen " +
@@ -804,7 +804,7 @@ const scenarios: Scenario[] = [
     trace: northTrace(120, 80),
   },
   {
-    file: "v66_vagtest_parallell_vag_tiger", name: "En hal sträcka på en parallell väg 150 m bredvid tiger (A1, vägtestet)",
+    file: "v63_vagtest_parallell_vag_tiger", name: "En hal sträcka på en parallell väg 150 m bredvid tiger (A1, vägtestet)",
     description:
       "Sträckan går rakt norrut 150 m öster om bilens väg, från 1 500 m fram till 8 000 m. Korridoren ensam talade vid t=39 " +
       "(650 m till sträckans början; t=38 låg 672 m, förvarningen är 666 m). Vägtestet: 150 m " +
@@ -813,22 +813,22 @@ const scenarios: Scenario[] = [
     trace: northTrace(240, 80),
   },
   {
-    file: "v67_vagtest_marginalen_inifran", name: "Vägtestet håller 80 m: en sträcka 70 m bredvid räknas som bilens väg (A1)",
+    file: "v64_vagtest_marginalen_inifran", name: "Vägtestet håller 80 m: en sträcka 70 m bredvid räknas som bilens väg (A1)",
     description:
-      "Som v66 men 70 m österut (10 m innanför 80). Linjerna i live.json är förenklade med upp till 0,0005° och bilens läge har " +
+      "Som v63 men 70 m österut (10 m innanför 80). Linjerna i live.json är förenklade med upp till 0,0005° och bilens läge har " +
       "sitt eget fel, så en sträcka så nära är bilens väg ⇒ halka. Låser marginalen inifrån — och visar gränsen: en parallell " +
       "gata närmare än 80 m går inte att skilja från vägen.",
     hazards: [{ id: "seg:par", kind: "slippery_segment", line: [[eastOf(70), northOf(1500)], [eastOf(70), northOf(8000)]], meta: { code: 2, info: ["Is"] } }],
     trace: northTrace(240, 80),
   },
   {
-    file: "v68_vagtest_marginalen_utifran", name: "Vägtestet håller 80 m: en sträcka 90 m bredvid tiger (A1)",
-    description: "Som v67 men 90 m österut (10 m utanför 80) ⇒ tystnad. Låser marginalen utifrån.",
+    file: "v65_vagtest_marginalen_utifran", name: "Vägtestet håller 80 m: en sträcka 90 m bredvid tiger (A1)",
+    description: "Som v64 men 90 m österut (10 m utanför 80) ⇒ tystnad. Låser marginalen utifrån.",
     hazards: [{ id: "seg:par", kind: "slippery_segment", line: [[eastOf(90), northOf(1500)], [eastOf(90), northOf(8000)]], meta: { code: 2, info: ["Is"] } }],
     trace: northTrace(240, 80),
   },
   {
-    file: "v69_vagtest_pafart_25_grader_talar", name: "En påfart som löper in i den hala vägen i 25° talar när bilen når vägen (A1, vägtestet)",
+    file: "v66_vagtest_pafart_25_grader_talar", name: "En påfart som löper in i den hala vägen i 25° talar när bilen når vägen (A1, vägtestet)",
     description:
       "Den hala vägen korsar bilens kurs 2 010 m fram i 25° vinkel (5° innanför 30), som en påfart som löper in i en motorväg. " +
       "100 km/h. Korridoren ensam talade redan vid förvarningen (t=12, 824 m). Vägtestet väntar tills bilen är inom 80 m från " +
@@ -838,15 +838,15 @@ const scenarios: Scenario[] = [
     trace: northTrace(120, 100),
   },
   {
-    file: "v70_vagtest_korsning_35_grader_tiger", name: "En hal väg som korsas i 35° tiger (A1, vägtestet)",
+    file: "v67_vagtest_korsning_35_grader_tiger", name: "En hal väg som korsas i 35° tiger (A1, vägtestet)",
     description:
-      "Som v69 men vägen korsar i 35° (5° utanför 30): bilen korsar den hala vägen och kör inte in på den ⇒ tystnad. Låser " +
+      "Som v66 men vägen korsar i 35° (5° utanför 30): bilen korsar den hala vägen och kör inte in på den ⇒ tystnad. Låser " +
       "vinkeln utifrån.",
     hazards: [{ id: "seg:mv", kind: "slippery_segment", line: [[eastOf(-1721), northOf(-447)], [eastOf(1721), northOf(4467)]], meta: { code: 2, info: ["Is"] } }],
     trace: northTrace(120, 100),
   },
   {
-    file: "v71_vagtest_krok_fore_strackan_varnar_senare", name: "Vägen kröker 20° där sträckan börjar: varningen kommer senare, inte aldrig (A1, vägtestet)",
+    file: "v68_vagtest_krok_fore_strackan_varnar_senare", name: "Vägen kröker 20° där sträckan börjar: varningen kommer senare, inte aldrig (A1, vägtestet)",
     description:
       "120 km/h. Sträckan börjar 1 516 m fram och går därifrån 20° åt höger. Dess första linje dragen rakt bakåt ligger då snett " +
       "mot bilens väg, och bilen är inom 80 m från den först nära sträckans början. Korridoren ensam talade vid t=16 (982 m, " +
@@ -856,51 +856,54 @@ const scenarios: Scenario[] = [
     trace: northTrace(120, 120),
   },
   {
-    file: "v64_halkrisk_kod2_vat", name: "Besvärligt (risk för) med bara Våt säger risk, inte rapporterad halka",
+    file: "v69_halkrisk_kod2_vat", name: "Besvärligt (risk för) med bara Våt säger risk, inte rapporterad halka",
     description:
       "Axel 24/11: rösten sa 'halka rapporterad' för en sträcka som Trafikverket klassade Besvärligt (risk för), kod 2, med bara " +
-      "ordet Våt. Rapporten nämner varken is, snö, frost, modd eller halka, så raden är 'Risk för halka på vägen framför dig.' " +
-      "Sträckan talar som förut (kod 2): bara orden ändras. Samma geometri som v61, 2 011 m fram: t=61, 655 m, 11,1 m marginal " +
-      "på var sida.",
+      "ordet Våt. Rapporten nämner varken is, snö, frost eller halka, så raden är 'Risk för halka på vägen framför dig.' " +
+      "Sträckan talar som förut (kod 2): bara orden ändras. Samma geometri som v24:s w1, 2 011 m fram: t=61, 655 m, 11,1 m marginal " +
+      "på var sida. VÄGTESTET (Skeppsbron 24/11): sträckan ligger längs bilens väg från 2 011 m, som v24:s w1, inte tvärs över den; " +
+      "samma varning vid samma fix (uppmätt 25/11: t=61 håller när sträckan flyttas 11 m åt vardera hållet).",
     hazards: [{
-      id: "r1_kod2_vat", kind: "slippery_segment", line: [[LON0 - 0.01, northOf(2011)], [LON0 + 0.01, northOf(2011)]],
+      id: "r1_kod2_vat", kind: "slippery_segment", line: langsVagen(2011, 2311),
       meta: { code: 2, info: ["Våt"] },
     }],
     trace: northTrace(100, 80),
   },
   {
-    file: "v65_halka_rapporterad_kod2_flackvis_is", name: "Besvärligt med ett isord säger halka rapporterad",
+    file: "v70_halka_rapporterad_kod2_flackvis_is", name: "Besvärligt med ett isord säger halka rapporterad",
     description:
-      "Som v64, men rapporten bär också 'fläckvis Is'. Ett halkord i ConditionInfo, vilket som helst av dem, räcker: rapporten " +
+      "Som v69, men rapporten bär också 'fläckvis Is'. Ett halkord i ConditionInfo, vilket som helst av dem, räcker: rapporten " +
       "nämner is, och raden är 'Varning: halka rapporterad på vägen framför dig.' Ordet står sist i listan, så varje ord prövas.",
     hazards: [{
-      id: "r2_kod2_flackvis_is", kind: "slippery_segment", line: [[LON0 - 0.01, northOf(2011)], [LON0 + 0.01, northOf(2011)]],
+      id: "r2_kod2_flackvis_is", kind: "slippery_segment", line: langsVagen(2011, 2311),
       meta: { code: 2, info: ["Våt", "fläckvis Is"] },
     }],
     trace: northTrace(100, 80),
   },
   {
-    file: "v66_halkrisk_kod2_flackvis_vat", name: "fläckvis Våt på kod 2 är risk: 'is' inuti fläckvis är inget isord",
+    file: "v71_halkrisk_kod2_flackvis_vat", name: "fläckvis Våt på kod 2 är risk: 'is' inuti fläckvis är inget isord",
     description:
       "Fällan från v11 och v24, nu för ordvalet: 'fläckvis Våt' på kod 2. Sträckan talar på klassen, men 'is' inuti 'fläckvis' " +
       "är inget halkord (ordbörjan), så raden är risk. En port som söker delsträngen säger 'halka rapporterad' här.",
     hazards: [{
-      id: "r3_kod2_flackvis_vat", kind: "slippery_segment", line: [[LON0 - 0.01, northOf(2011)], [LON0 + 0.01, northOf(2011)]],
+      id: "r3_kod2_flackvis_vat", kind: "slippery_segment", line: langsVagen(2011, 2311),
       meta: { code: 2, info: ["fläckvis Våt"] },
     }],
     trace: northTrace(100, 80),
   },
   {
-    file: "v67_halka_rapporterad_kod3_kod4_utan_ord", name: "Mycket besvärligt och Is- och snövägbana säger halka rapporterad utan ord",
+    file: "v72_halka_rapporterad_kod3_kod4_utan_ord", name: "Mycket besvärligt och Is- och snövägbana säger halka rapporterad utan ord",
     description:
       "Kod 3 (Mycket besvärligt) och kod 4 (Is- och snövägbana) utan något ConditionInfo-ord: klassen själv är rapporten, så " +
       "raden är 'Varning: halka rapporterad på vägen framför dig.' Bara kod 2 utan halkord är risk. Kod 3 ligger 2 011 m fram " +
-      "(t=61, 655 m, som v61) och kod 4 6 000 m längre fram, utanför halkzonen (500 m) och bortom reprisens 5 km. 6 000 m är " +
+      "(t=61, 655 m, som v24:s w1) och kod 4 6 000 m längre fram, utanför halkzonen (500 m) och bortom reprisens 5 km. 6 000 m är " +
       "270 s vid 80 km/h, alltså samma fas mot fixarna som den första: t=331, 655 m (uppmätt 25/11 med motorns haversine: " +
-      "676,9 m vid t=330, 654,7 m vid t=331, förvarningen omkring 666 m, alltså drygt 10 m på var sida).",
+      "676,9 m vid t=330, 654,7 m vid t=331, förvarningen omkring 666 m, alltså drygt 10 m på var sida). VÄGTESTET (Skeppsbron " +
+      "24/11): båda sträckorna ligger längs bilens väg, 300 m vardera, inte tvärs över den; samma varningar vid samma fixar " +
+      "(uppmätt 25/11: t=331 håller när den andra sträckan flyttas 11 m åt vardera hållet).",
     hazards: [
-      { id: "r4_kod3", kind: "slippery_segment", line: [[LON0 - 0.01, northOf(2011)], [LON0 + 0.01, northOf(2011)]], meta: { code: 3, info: [] } },
-      { id: "r5_kod4", kind: "slippery_segment", line: [[LON0 - 0.01, northOf(8011)], [LON0 + 0.01, northOf(8011)]], meta: { code: 4, info: [] } },
+      { id: "r4_kod3", kind: "slippery_segment", line: langsVagen(2011, 2311), meta: { code: 3, info: [] } },
+      { id: "r5_kod4", kind: "slippery_segment", line: langsVagen(8011, 8311), meta: { code: 4, info: [] } },
     ],
     trace: northTrace(400, 80),
   },

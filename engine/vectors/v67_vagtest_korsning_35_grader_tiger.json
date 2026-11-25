@@ -1,6 +1,6 @@
 {
  "name": "En hal väg som korsas i 35° tiger (A1, vägtestet)",
- "description": "Som v69 men vägen korsar i 35° (5° utanför 30): bilen korsar den hala vägen och kör inte in på den ⇒ tystnad. Låser vinkeln utifrån.",
+ "description": "Som v66 men vägen korsar i 35° (5° utanför 30): bilen korsar den hala vägen och kör inte in på den ⇒ tystnad. Låser vinkeln utifrån.",
  "hazards": [
   {
    "id": "seg:mv",

@@ -576,7 +576,7 @@ export const KONTRAKT: Kontrakt[] = [
   },
   {
     namn: "Halka rapporterad — från den här väglagsklassen säger rösten rapporterad halka också utan halkord",
-    varfor: "Motorns tre portar ska välja samma rad, risk eller rapporterad halka (Axel 24/11, v64–v67); en port med annan klass säger mer eller mindre än rapporten bär.",
+    varfor: "Motorns tre portar ska välja samma rad, risk eller rapporterad halka (Axel 24/11, v69–v72); en port med annan klass säger mer eller mindre än rapporten bär.",
     former: [/halka_?rapporterad_?kod\s*=\s*(\d+)(?![\d.])/i],
     filer: /engine\/src\/engine\.ts|engine\/Types\.kt|HalkvaktEngine\/Engine\.swift/,
     golv: 3,

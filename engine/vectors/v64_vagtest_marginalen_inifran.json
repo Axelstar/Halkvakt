@@ -1,17 +1,17 @@
 {
- "name": "Vägtestet håller 80 m: en sträcka 90 m bredvid tiger (A1)",
- "description": "Som v67 men 90 m österut (10 m utanför 80) ⇒ tystnad. Låser marginalen utifrån.",
+ "name": "Vägtestet håller 80 m: en sträcka 70 m bredvid räknas som bilens väg (A1)",
+ "description": "Som v63 men 70 m österut (10 m innanför 80). Linjerna i live.json är förenklade med upp till 0,0005° och bilens läge har sitt eget fel, så en sträcka så nära är bilens väg ⇒ halka. Låser marginalen inifrån — och visar gränsen: en parallell gata närmare än 80 m går inte att skilja från vägen.",
  "hazards": [
   {
    "id": "seg:par",
    "kind": "slippery_segment",
    "line": [
     [
-     15.00152566647801,
+     15.001186629482897,
      58.01347466762486
     ],
     [
-     15.00152566647801,
+     15.001186629482897,
      58.07186489399928
     ]
    ],
@@ -1230,5 +1230,13 @@
    "lat": 58.04790992933285
   }
  ],
- "expected": []
+ "expected": [
+  {
+   "t": 38,
+   "hazardId": "seg:par",
+   "kind": "slippery_segment",
+   "distanceM": 659,
+   "text": "Varning: halka rapporterad på vägen framför dig."
+  }
+ ]
 }
