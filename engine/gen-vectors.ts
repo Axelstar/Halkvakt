@@ -949,6 +949,39 @@ const scenarios: Scenario[] = [
     ],
     trace: northTrace(400, 80),
   },
+  // VÄGNUMRET I RÖSTEN (Bengt 25/11, DECISIONS #965): samma sträckor och väg som v73, v72 och v51, nu med vägens nummer. Bara orden
+  // ändras, inte när eller om rösten talar.
+  {
+    file: "v81_halka_rapporterad_med_vagnummer", name: "Halka rapporterad på en sträcka med vägnummer säger numret",
+    description:
+      "Bengt 25/11 (DECISIONS #965): rösten säger vägnumret när lägesfilen har det. Samma sträcka och geometri som v73 (kod 2 med " +
+      "fläckvis Is, halka rapporterad), nu med road 'E4': 'Varning: halka rapporterad på E4 framför dig.' En E-väg sägs som den " +
+      "skrivs (E4), ett blankt nummer som 'väg 40' (v82). Samma fix som v73, t=61, 655 m.",
+    hazards: [{
+      id: "r2_kod2_flackvis_is", kind: "slippery_segment", line: langsVagen(2011, 2311),
+      meta: { code: 2, info: ["Våt", "fläckvis Is"], road: "E4" },
+    }],
+    trace: northTrace(100, 80),
+  },
+  {
+    file: "v82_halkrisk_med_vagnummer", name: "Risk för halka på en sträcka med vägnummer säger numret",
+    description:
+      "Bengt 25/11 (DECISIONS #965): samma sträcka och geometri som v72 (kod 2 med bara Våt, risk för halka), nu med road '40': " +
+      "'Risk för halka på väg 40 framför dig.' Ett blankt nummer får 'väg' före sig, som olyckans rad. Samma fix som v72, t=61, 655 m.",
+    hazards: [{
+      id: "r1_kod2_vat", kind: "slippery_segment", line: langsVagen(2011, 2311),
+      meta: { code: 2, info: ["Våt"], road: "40" },
+    }],
+    trace: northTrace(100, 80),
+  },
+  {
+    file: "v83_smavag_med_vagnummer", name: "Småvägsrösten säger vägnumret när punktfilen har det",
+    description:
+      "Bengt 25/11 (DECISIONS #965, kort #661): samma väg och geometri som v51, nu med road '1052' ur punktfilens nummer: " +
+      "'Betavarning: risk för halka på väg 1052 framöver.' Utan nummer är raden som i v51. Samma fix som v51.",
+    hazards: [{ ...smavag("smv:v1", 0, -1800, 9000, [4500]), road: "1052" }],
+    trace: northTrace(240, 80),
+  },
 ];
 
 /** Canonical replay-with-updates — the reference all three test runners mirror. */

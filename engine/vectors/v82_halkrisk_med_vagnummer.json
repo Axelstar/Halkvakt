@@ -1,6 +1,6 @@
 {
  "name": "Risk för halka på en sträcka med vägnummer säger numret",
- "description": "Bengt 25/11 (DECISIONS #965): samma sträcka och geometri som v72 (kod 2 med bara Våt, risk för halka), nu med road \"40\": \"Risk för halka på väg 40 framför dig.\" Ett blankt nummer får \"väg\" före sig, som olyckans rad. Samma fix som v72, t=61, 655 m.",
+ "description": "Bengt 25/11 (DECISIONS #965): samma sträcka och geometri som v72 (kod 2 med bara Våt, risk för halka), nu med road '40': 'Risk för halka på väg 40 framför dig.' Ett blankt nummer får 'väg' före sig, som olyckans rad. Samma fix som v72, t=61, 655 m.",
  "hazards": [
   {
    "id": "r1_kod2_vat",

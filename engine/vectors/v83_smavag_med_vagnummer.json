@@ -1,6 +1,6 @@
 {
  "name": "Småvägsrösten säger vägnumret när punktfilen har det",
- "description": "Bengt 25/11 (DECISIONS #965, kort #661): samma väg och geometri som v51, nu med road \"1052\" ur punktfilens nummer: \"Betavarning: risk för halka på väg 1052 framöver.\" Utan nummer är raden som i v51. Samma fix som v51.",
+ "description": "Bengt 25/11 (DECISIONS #965, kort #661): samma väg och geometri som v51, nu med road '1052' ur punktfilens nummer: 'Betavarning: risk för halka på väg 1052 framöver.' Utan nummer är raden som i v51. Samma fix som v51.",
  "hazards": [
   {
    "id": "smv:v1",

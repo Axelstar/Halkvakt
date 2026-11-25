@@ -1,6 +1,6 @@
 {
  "name": "Halka rapporterad på en sträcka med vägnummer säger numret",
- "description": "Bengt 25/11 (DECISIONS #965): rösten säger vägnumret när lägesfilen har det. Samma sträcka och geometri som v73 (kod 2 med fläckvis Is, halka rapporterad), nu med road \"E4\": \"Varning: halka rapporterad på E4 framför dig.\" En E-väg sägs som den skrivs (E4), ett blankt nummer som \"väg 40\" (v82). Samma fix som v73, t=61, 655 m.",
+ "description": "Bengt 25/11 (DECISIONS #965): rösten säger vägnumret när lägesfilen har det. Samma sträcka och geometri som v73 (kod 2 med fläckvis Is, halka rapporterad), nu med road 'E4': 'Varning: halka rapporterad på E4 framför dig.' En E-väg sägs som den skrivs (E4), ett blankt nummer som 'väg 40' (v82). Samma fix som v73, t=61, 655 m.",
  "hazards": [
   {
    "id": "r2_kod2_flackvis_is",
