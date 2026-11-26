@@ -167,3 +167,49 @@ export function stationerSomEnFara(hazards: Hazard[], line: [number, number][], 
   }
   return [...hazards.filter((h) => !talar(h)), ...zoner];
 }
+
+/** En hal sträcka som halkans vägtest stoppade i en skuggkörning (DECISIONS #967). */
+export interface VagtestRad {
+  id: string;
+  /** Sträckans vägnummer ur lägesfilen, eller null. */
+  vag: string | null;
+  /** Hur många GPS-lägen vägtestet stoppade sträckan på, före dess första varning i körningen. */
+  n: number;
+  /** Första stoppet: körningens sekund och hur långt fram sträckan låg då, i meter. */
+  forstaT: number;
+  forstaM: number;
+  /** Närmast bilen kom sträckans linjer bland stoppen, i meter, och kursens vinkel mot linjen där, i grader (0–90). */
+  linjeM: number;
+  vinkel: number;
+  /** När och hur långt fram sträckan talade senare i samma körning, eller null: vägtestet tystade den hela vägen. */
+  talade: { t: number; distanceM: number } | null;
+}
+
+/** HALKANS VÄGTEST I SKUGGAN (Bengt 26/11: *"Sätt igång en mätning av den"*; DECISIONS #963, #967). Motorns krok `onVagtestStopp`
+ *  ger ett stopp per GPS-läge; här blir de en rad per sträcka. Bara stoppen FÖRE sträckans första varning räknas: efter den har sträckan
+ *  redan talat, och ett stopp när bilen lämnat vägen säger inget om vad testet kostar. En rad med `talade: null` är en varning som den
+ *  gamla motorn sannolikt hade sagt (spärren och halkzonen kunde ha tystat den ändå); en rad med `talade` är en varning som kom senare,
+ *  och `forstaM - talade.distanceM` är ungefär den förvarning som gick förlorad. Bara i TypeScript: skuggmotorn. */
+export function vagtestRader(
+  stopp: { hazardId: string; t: number; distM: number; linjeM: number; vinkel: number }[],
+  alerts: { t: number; hazardId: string; distanceM: number }[],
+  vag: (id: string) => string | null,
+): VagtestRad[] {
+  const forstaVarning = new Map<string, { t: number; distanceM: number }>();
+  for (const a of alerts) if (!forstaVarning.has(a.hazardId)) forstaVarning.set(a.hazardId, { t: a.t, distanceM: a.distanceM });
+  const rader = new Map<string, VagtestRad>();
+  for (const s of stopp) {
+    const talade = forstaVarning.get(s.hazardId) ?? null;
+    if (talade && s.t >= talade.t) continue;
+    const r = rader.get(s.hazardId);
+    const linjeM = Math.round(s.linjeM), vinkel = Math.round(s.vinkel);
+    if (!r) {
+      rader.set(s.hazardId, { id: s.hazardId, vag: vag(s.hazardId), n: 1, forstaT: s.t, forstaM: Math.round(s.distM), linjeM, vinkel,
+        talade: talade ? { t: talade.t, distanceM: talade.distanceM } : null });
+    } else {
+      r.n++;
+      if (linjeM < r.linjeM) { r.linjeM = linjeM; r.vinkel = vinkel; }
+    }
+  }
+  return [...rader.values()];
+}
