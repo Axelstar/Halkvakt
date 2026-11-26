@@ -19789,3 +19789,27 @@ för 6–10/11 finns bara i arkivhinken, så P börjar 11/11.
 **Alternativ.** Att spela upp lägesfilerna med motorn (bara id:n, från 23/11); att vänta till efter vintern (Bengt ville se läget 1/12).
 
 **Stomdokument:** MAT (mätningen och förregistreringen)
+
+## #969 (26/11 2026) Falsklarmen steg 2 in i main: GPS-kvaliteten, självstarten vid 30 km/h och Androids fyra stabilitetsfel (kort #679)
+**Beslut.** Axel 26/11, om utkasten #1843, #1846, #1847 och #1849: *"Kan du göra dessa?"*, efter Axels val 25/11 av 30 km/h för
+självstarten (*"Detta vill jag att vi tar till 30 km / h istället"*). Bengts körordning 26/11 lägger samma tre rättningar i omgång 1,
+som en samlad PR mot main med testfallen omnumrerade från v84. De finns redan i testbygget 0.4.2 (75), som Bengt provkörde 25/11.
+1. **GPS-kvaliteten (#1847).** Motorn utvärderar inte ett läge med sämre noggrannhet än 50 m (`maxAccuracyM`), i alla tre språken, och
+   ett sådant läge lämnar inget spår i motorns minne. Apparna lämnar bara lägen som är högst 10 s gamla och bär telefonens egen fart.
+   Skälet: utan telefonens fart räknar motorn fart och kurs ur hoppet mellan två lägen, och ett hopp inomhus blev en halkvarning.
+   Vektorerna v84–v87.
+2. **Självstarten på iPhone (#1849).** Fartkollen startar vakten när farten har varit minst 30 km/h i fem lägen i rad, inom 90 s.
+   Förut räckte 15 km/h på ett enda läge, som en cykel når.
+3. **Android (#1843).** Ett lås för bytet av lägesfilen och motorns steg; självstartens händelser tar inte över en vakt som startats för
+   hand; en nekad start stannar mjukt i stället för att krascha; bara en enhet som säger sig vara en bil (bilstereo eller handsfree)
+   lärs in som bilens Bluetooth.
+4. **Simuleringen (#1846).** Flyg, tåg, cykel och annat som inte är en bil körs genom motorn, och tolv prov låser när den ska tiga.
+
+Inget når föraren förrän versionen är ute. Kvar: versionen i båda butikerna, Android provat i bil med nät (25/11 hade telefonen
+inget), och delarna av provkörningen som inte gjordes 25/11 (väg bredvid, inomhus efter parkering, gå och cykla, buss eller tåg).
+Gränsvärdena 50 m, 10 s, 30 km/h och 90 s är valda ur simuleringen och inte mätta på förare; de prövas mot skuggan och provkörningarna.
+
+**Alternativ.** 40 km/h för självstarten (Axels första förslag; missar 30-zoner); 100 m noggrannhet (släpper in lägen ur mobilmasten);
+att låta utkasten ligga till nästa version ur main (då försvinner rättningarna ur den versionen).
+
+**Stomdokument:** APP (självstarten och vakten), SYS (motorns GPS-gräns), BED §4.2

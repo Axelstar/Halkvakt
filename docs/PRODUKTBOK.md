@@ -769,7 +769,8 @@ timmar. Knappen gör samma sak som *Avsluta vakten* i appen, också för autosta
 
 **iPhone — vakten vaknar själv (0.3.2):** ge Halkvakt platsen **Alltid**. Då ber appen iOS
 väcka den när telefonen lämnar platsen där bilen senast stod (150 meter), följer farten i upp till en och en
-halv minut och startar vakten vid 15 km/h. Första resan efter installation, när ingen parkering är känd,
+halv minut och startar vakten när farten har varit minst 30 km/h i fem sekunder (från 0.4.2, DECISIONS #969; förut 15 km/h på ett enda
+läge, som en cykel nådde). Första resan efter installation, när ingen parkering är känd,
 väcks den i stället av iOS större platsbyten (Apple anger ungefär 500 meter). Kostar nästan inget batteri.
 Inget mer att ställa in. Kan stängas av under Inställningar → *Vaknar själv när du kör*.
 
