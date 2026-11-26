@@ -62,15 +62,19 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
     // Favoriter 2a (DECISIONS #817): resan räknas som slut för frågan Spara resan? när bilens CarPlay eller Bluetooth kopplas
     // bort, eller när bilen stått still i tio minuter — före vaktens eget stopp efter en kvart, och aldrig medan bilen rullar.
     private static let favoritStillaS: TimeInterval = 10 * 60
+    // GPS-kvalitet: a position older than this is not evaluated. Proposed start value, the same as Android's MAX_FIX_AGE_MS
+    // (kontraktsgrinden): far above a normal delivery (a second or two), and at 120 km/h the car has moved 330 m, less than
+    // the shortest lead (400 m).
+    private static let maxFixAgeS: TimeInterval = 10
     private var favoritFragadThisStop = false
     private var lastKmh = 0.0
 
     // Vakna själv (DECISIONS #40): med "Alltid" ber vi iOS väcka appen vid betydande
     // förflyttning (~500 m, även när appen är stängd — iOS startar om oss i bakgrunden).
-    // När vi väcks PROVAR vi: full positionsström i högst 90 s. Ser vi bilfart startar
-    // vakten på riktigt; annars släcks strömmen igen. Det är iOS-motsvarigheten till
+    // När vi väcks PROVAR vi: full positionsström i högst 90 sekunder. Ser vi bilfart (30 km/h
+    // fem lägen i rad) startar vakten på riktigt; annars släcks strömmen igen. Det är iOS-motsvarigheten till
     // Androids rörelseigenkänning. Apples lås gäller Bluetooth, inte plats.
-    // Fartkollen (90 s, 15 km/h) bor i motorpaketet, där ci provar den (Fartkollen.swift, kort #359).
+    // Fartkollen (90 s, 30 km/h fem lägen i rad) bor i motorpaketet, där ci provar den (Fartkollen.swift, kort #359).
     private var fartkoll = Fartkollen()
     /// Den här körningen startades av självväckningen (för kvittots körtid).
     private var autoWoke = false
@@ -423,12 +427,19 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
 
     private func handle(_ loc: CLLocation) {
         lastLoc = (loc.coordinate.longitude, loc.coordinate.latitude)
-        if let p = prevLoc { distanceKm += loc.distance(from: p) / 1000 }
-        prevLoc = loc
+        // GPS-kvalitet: only a fresh position with a known accuracy inside the engine's limit is a car's GPS position. A position
+        // from wifi or the cell mast (indoors, in a pocket) jumps hundreds of metres, and a jump is neither a driven distance,
+        // a speed for the self-start nor a displacement for the idle stop.
+        let fresh = Date.now.timeIntervalSince(loc.timestamp) <= Self.maxFixAgeS
+        let exact = fresh && loc.horizontalAccuracy >= 0 && loc.horizontalAccuracy <= EngineConfig().maxAccuracyM
+        if exact {
+            if let p = prevLoc { distanceKm += loc.distance(from: p) / 1000 }
+            prevLoc = loc
+        }
         recomputeNearby()
 
         if fartkoll.active {
-            switch fartkoll.onFix(t: Date.now.timeIntervalSince1970, kmh: loc.speed >= 0 ? loc.speed * 3.6 : 0,
+            switch fartkoll.onFix(t: Date.now.timeIntervalSince1970, kmh: exact && loc.speed >= 0 ? loc.speed * 3.6 : nil,
                                   altitudeM: loc.verticalAccuracy > 0 ? loc.altitude : nil) {
             case .startGuard: endProbe(startGuard: true)
             case .sleep: endProbe(startGuard: false)
@@ -446,6 +457,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         if loc.horizontalAccuracy >= 0 { Favoriter.shared.fix(lon: loc.coordinate.longitude, lat: loc.coordinate.latitude) }   // #357
         if takten.borja(nu: Date.now.timeIntervalSince1970) { Task { await koll(fresh: false) } }   // #258: också när första laddningen föll
         guard let engine else { return }
+        guard fresh else { return }   // GPS-kvalitet: an old position says where the car was, not where it is
 
         let kmh = loc.speed >= 0 ? loc.speed * 3.6 : 0
         lastKmh = kmh
@@ -461,19 +473,24 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
             favoritResanSlut()
         }
         // Självstopp: en kvart utan att bilen kört (förflyttning, inte ett mätvärde) är slutet på resan.
-        if idleStop.onFix(t: loc.timestamp.timeIntervalSince1970, lon: loc.coordinate.longitude, lat: loc.coordinate.latitude) {
+        if idleStop.onFix(t: loc.timestamp.timeIntervalSince1970, lon: loc.coordinate.longitude, lat: loc.coordinate.latitude,
+                          exact: exact) {
             stop(parkerad: true)
             manualStoppedAt = nil   // självstopp ⇒ nästa resa får väcka oss direkt
             print("[Vakten] stillastående en kvart — stoppar själv")
             return
         }
 
+        // GPS-kvalitet: no warning decision on a poor position, and none without the phone's own speed. Without it the engine
+        // works the speed and the heading out of the jump between two positions (kept for the vectors and the shadow engine).
+        guard exact, loc.speed >= 0 else { return }
         let fix = Fix(t: loc.timestamp.timeIntervalSince1970,
                       lon: loc.coordinate.longitude,
                       lat: loc.coordinate.latitude,
-                      speedKmh: loc.speed >= 0 ? loc.speed * 3.6 : nil,
+                      speedKmh: loc.speed * 3.6,
                       headingDeg: loc.course >= 0 ? loc.course : nil,
-                      altitudeM: loc.verticalAccuracy > 0 ? loc.altitude : nil)   // ej bil: the engine is silent above its maxAltitudeM
+                      altitudeM: loc.verticalAccuracy > 0 ? loc.altitude : nil,   // ej bil: the engine is silent above its maxAltitudeM
+                      accuracyM: loc.horizontalAccuracy)
         guard let alert = engine.step(fix) else { return }
         guard Prefs.shared.enabled(alert.kind) else { return }  // munnen tiger, minnet består
 

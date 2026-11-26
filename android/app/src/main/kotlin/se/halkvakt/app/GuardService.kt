@@ -16,6 +16,7 @@ import android.os.BatteryManager
 import android.os.Build
 import android.os.IBinder
 import android.os.Looper
+import android.os.SystemClock
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import com.google.android.gms.location.*
@@ -60,7 +61,7 @@ class GuardService : Service() {
     private var flushedThisStop = false
     @Volatile private var disabledKinds: Set<HazardKind> = emptySet()
     private var prevLon = Double.NaN; private var prevLat = Double.NaN
-    private var guard: Guard? = null
+    @Volatile private var guard: Guard? = null   // made on the loader thread, read on the main thread
     private lateinit var fused: FusedLocationProviderClient
     private var tts: TextToSpeech? = null
     @Volatile private var ttsReady = false
@@ -104,7 +105,9 @@ class GuardService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        startForeground(NOTIF_ID, buildNotification(IDLE_TEXT))
+        // Android 12+ refuses a foreground service from the background (a sticky restart), and 14+ refuses the location
+        // type without the location permission the start needs (an autostart without "Allow all the time").
+        try { startForeground(NOTIF_ID, buildNotification(IDLE_TEXT)) } catch (e: Exception) { startRefused(); return START_NOT_STICKY }
         running = true
         val sjalv = AutostartManager.controller(this).isAutoStarted()
         scope.launch { Raknare.vaktStartad(this@GuardService, sjalv) }   // #772: ett ord i kön, skickas vid nästa stopp
@@ -121,6 +124,13 @@ class GuardService : Service() {
         startLocationUpdates()
         AlertBus.post("Tjänsten startad. Laddar vägdata …")
         return START_STICKY
+    }
+
+    /** No foreground service or no location means no guard: stop instead of crashing, and ask the driver as the autostart does. */
+    private fun startRefused() {
+        AutostartManager.clearAutoStarted(this)   // nothing runs: a later start by hand is not the autostart's to stop
+        AutostartManager.tapToStartNotification(this)
+        stopSelf()
     }
 
     private fun loadSnapshotAsync(force: Boolean = false) {
@@ -199,30 +209,40 @@ class GuardService : Service() {
 
         override fun onLocationResult(result: LocationResult) {
             val loc = result.lastLocation ?: return
-            if (!prevLon.isNaN()) {
+            // GPS-kvalitet: only a fresh position with a known accuracy inside the engine's limit is a car's GPS position. A
+            // position from wifi or the cell mast (indoors, in a pocket) jumps hundreds of metres, and a jump is neither a
+            // driven distance nor a displacement for the idle stop.
+            val fresh = SystemClock.elapsedRealtimeNanos() - loc.elapsedRealtimeNanos <= MAX_FIX_AGE_MS * 1_000_000L
+            val exact = fresh && loc.hasAccuracy() && loc.accuracy <= EngineConfig().maxAccuracyM
+            if (exact && !prevLon.isNaN()) {
                 val d = Geo.haversineM(prevLon, prevLat, loc.longitude, loc.latitude)
                 if (d < 500) session.value = session.value.let { it.copy(
                     km = it.km + d / 1000.0, lon = loc.longitude, lat = loc.latitude) }
                 else session.value = session.value.copy(lon = loc.longitude, lat = loc.latitude)
             } else session.value = session.value.copy(lon = loc.longitude, lat = loc.latitude)
-            prevLon = loc.longitude; prevLat = loc.latitude
+            if (exact) { prevLon = loc.longitude; prevLat = loc.latitude }
             if (loc.hasAccuracy()) Favoriter.lager(this@GuardService).fix(loc.longitude, loc.latitude)   // kort #357
             loadSnapshotAsync()   // the schedule decides; most fixes start nothing
+            if (!fresh) return   // GPS-kvalitet: an old position says where the car was, not where it is
             val fix = Fix(
                 t = loc.time / 1000.0,
                 lon = loc.longitude, lat = loc.latitude,
                 speedKmh = if (loc.hasSpeed()) loc.speed * 3.6 else null,
                 headingDeg = if (loc.hasBearing()) bearingToDouble(loc.bearing) else null,
                 altitudeM = if (loc.hasAltitude()) loc.altitude else null,   // ej bil: the engine is silent above its maxAltitudeM
+                accuracyM = if (loc.hasAccuracy()) loc.accuracy.toDouble() else null,
             )
-            if (idleStop.onFix(loc.time, fix.lon, fix.lat)) {
+            if (idleStop.onFix(loc.time, fix.lon, fix.lat, exact)) {
                 AlertBus.post("Stillastående en kvart — vakten stoppar själv.")
                 AutostartManager.clearAutoStarted(this@GuardService)
                 stoppOrsak = "parkerad"   // #787
                 stopSelf()
                 return
             }
-            guard?.onLocation(fix)
+            // GPS-kvalitet: no warning decision on a poor position, and none without the phone's own speed. Without it the
+            // engine works the speed and the heading out of the jump between two positions (kept for the vectors and the
+            // shadow engine).
+            if (exact && loc.hasSpeed()) guard?.onLocation(fix)
             retuneCadence(fix.lon, fix.lat, fix.speedKmh)
             // S4: facit skickas när bilen står stilla (≥ 30 s under 3 km/h), en gång per stopp — aldrig under körning.
             val still = (fix.speedKmh ?: 99.0) < 3.0
@@ -243,13 +263,15 @@ class GuardService : Service() {
 
     private var currentIntervalMs = 0L
 
-    @Suppress("MissingPermission") // MainActivity gates start on granted permission
+    @Suppress("MissingPermission") // MainActivity gates a start by hand; an autostart, or a permission taken back, ends in startRefused
     private fun startLocationUpdates(intervalMs: Long = CadencePolicy.NEAR_MS) {
         currentIntervalMs = intervalMs
         val req = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, intervalMs)
             .setMinUpdateIntervalMillis(intervalMs)
             .build()
-        fused.requestLocationUpdates(req, callback, Looper.getMainLooper())
+        try {
+            fused.requestLocationUpdates(req, callback, Looper.getMainLooper()).addOnFailureListener { if (running) startRefused() }
+        } catch (e: SecurityException) { startRefused() }
     }
 
     /** Battery: far from every hazard → sparse GPS; near → full 1 Hz. Tiers proven in CadencePolicyTest. */
@@ -451,6 +473,8 @@ class GuardService : Service() {
         private const val HEADS_UP_ID = 2
         private const val HEADS_UP_MS = 8_000L  // samma 8 s som helskärmskortet
         private const val FAVORIT_STILLA_MS = 10 * 60 * 1000L   // Favoriter 2a (#817), samma tio minuter som iOS
+        // GPS-kvalitet: a position older than this is not evaluated. Proposed start value, the same as iOS maxFixAgeS (kontraktsgrinden).
+        private const val MAX_FIX_AGE_MS = 10_000L
         // DECISIONS #899: tyst är inte fri väg — notisen får inte lugna föraren.
         private const val IDLE_TEXT = "Halkvakt vaktar. Tyst betyder inte att vägen är fri från halka."
         /** Null = rösten fungerar. Annars raden som visas på Redo och under Rösten. */

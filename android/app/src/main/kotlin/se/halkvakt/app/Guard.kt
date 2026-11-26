@@ -29,8 +29,14 @@ class Guard(
     private val engine = AlertEngine(hazards, cfg)
     private var coords: List<DoubleArray> = flatten(hazards)
 
-    /** Fresh snapshot mid-drive: swap hazards, KEEP the engine's memory (BACKLOG #9, v14). */
-    fun updateHazards(hazards: List<Hazard>) {
+    /**
+     * Fresh snapshot mid-drive: swap hazards, KEEP the engine's memory (BACKLOG #9, v14).
+     *
+     * One lock for the swap and the step: GuardService swaps on its loader thread while the main thread steps on every
+     * fix, and the engine replaces its lists before its grids, so a step in between indexed one set with the other's
+     * numbers (IndexOutOfBounds on the main thread, or a warning for the wrong hazard). The fix waits out a swap.
+     */
+    @Synchronized fun updateHazards(hazards: List<Hazard>) {
         engine.updateHazards(hazards)
         coords = flatten(hazards)
         svep = null   // the bound below is only valid for the set it was measured against
@@ -53,7 +59,7 @@ class Guard(
      * sweep runs every tens of kilometres, and within the 5 km NEAR tier every ~2.5 km.
      * Proven in GuardTest.
      */
-    fun nearestHazardM(lon: Double, lat: Double): Double? {
+    @Synchronized fun nearestHazardM(lon: Double, lat: Double): Double? {
         svep?.let { (sLon, sLat, d) ->
             val flyttat = Geo.haversineM(lon, lat, sLon, sLat)
             if (flyttat < d / 2) return d - flyttat
@@ -72,7 +78,7 @@ class Guard(
         }
     }
 
-    fun onLocation(fix: Fix): Alert? {
+    @Synchronized fun onLocation(fix: Fix): Alert? {
         val alert = engine.step(fix) ?: return null
         if (!isEnabled(alert.kind)) {
             onEvent("🔇 tystad (${alert.kind.wire}): ${alert.text}")

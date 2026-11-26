@@ -7,6 +7,10 @@
 // `windowS` older, and the car drove if the average over that span is >= `drivingKmh` (12 km/h = 200 m a minute — above
 // walking and above GPS drift). A gap longer than the window (tunnel) is measured over the whole gap.
 // Trade-off said out loud: a queue averaging under 12 km/h for fifteen whole minutes stops the guard.
+//
+// GPS-kvalitet: a fix whose position is not a car's GPS position (`exact` false: wifi or cell mast, indoors) only moves the
+// clock. Its jump is never a displacement, so poor fixes cannot keep the guard alive, and the guard still stops on them when
+// the fifteen minutes are up. The next exact fix is measured against the last exact one, like a tunnel gap.
 import Foundation
 
 public struct IdleStop {
@@ -19,9 +23,11 @@ public struct IdleStop {
 
     public init() {}
 
-    /// true = stop now. `t` in seconds (any epoch). The clock starts at the first fix.
-    public mutating func onFix(t: TimeInterval, lon: Double, lat: Double) -> Bool {
+    /// true = stop now. `t` in seconds (any epoch). The clock starts at the first fix. `exact` false = time passes, the position
+    /// is not used.
+    public mutating func onFix(t: TimeInterval, lon: Double, lat: Double, exact: Bool = true) -> Bool {
         if lastDroveT == nil { lastDroveT = t }
+        guard exact else { return t - (lastDroveT ?? t) >= Self.afterS }
         recent.append((t, lon, lat))
         // Keep recent[0] as the newest fix that is at least windowS old (or the oldest we have).
         var drop = 0

@@ -3,10 +3,12 @@
 // is recomputed here independently, the same way Guard does it, so the claim is about behaviour.
 package se.halkvakt.app
 
+import se.halkvakt.engine.Fix
 import se.halkvakt.engine.Geo
 import se.halkvakt.engine.HazardKind
 import se.halkvakt.engine.PointHazard
 import se.halkvakt.engine.SegmentHazard
+import kotlin.concurrent.thread
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -59,5 +61,28 @@ class GuardTest {
 
     @Test fun emptySnapshotStaysNull() {
         assertNull(guard(emptyList()).nearestHazardM(13.0, 56.0))
+    }
+
+    /**
+     * GuardService loads a fresh snapshot on a worker thread while the main thread steps the engine on every fix.
+     * The engine replaces its hazard lists before its grids, so a step in between read a list with indices from
+     * the other set. Guard takes one lock for both; without it this test throws IndexOutOfBounds within a few swaps.
+     */
+    @Test fun snapshotSwapDuringAFixNeverBreaksTheStep() {
+        val many = (0 until 2000).map { PointHazard("p$it", HazardKind.CAMERA, 13.0 + it * 1e-6, 56.0) }
+        val g = guard(many)
+        var loaderFailed: Throwable? = null
+        val loader = thread {
+            try { repeat(400) { g.updateHazards(if (it % 2 == 0) many.take(1) else many) } }
+            catch (t: Throwable) { loaderFailed = t }
+        }
+        var t = 0.0
+        while (loader.isAlive) {
+            g.onLocation(Fix(t, 13.0, 55.999, speedKmh = 80.0, headingDeg = 0.0))   // 110 m south of the hazards, driving north
+            g.nearestHazardM(13.0, 55.999)
+            t += 1.0
+        }
+        loader.join()
+        assertNull(loaderFailed)
     }
 }

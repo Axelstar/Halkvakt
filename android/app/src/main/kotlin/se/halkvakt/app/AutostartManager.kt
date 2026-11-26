@@ -56,7 +56,7 @@ object AutostartManager {
     fun execute(ctx: Context, cmd: AutoCmd, c: AutostartController) {
         ctx.getSharedPreferences(PREFS, 0).edit().putBoolean(KEY_AUTO, c.isAutoStarted()).apply()
         when (cmd) {
-            AutoCmd.START -> safeStartGuard(ctx)
+            AutoCmd.START -> if (!safeStartGuard(ctx)) clearAutoStarted(ctx)   // nothing started: a later hand start is not ours to stop
             AutoCmd.STOP -> { GuardService.stoppOrsak = "sjalv"; ctx.stopService(Intent(ctx, GuardService::class.java)) }   // #787
             AutoCmd.LEARN -> { persistCars(ctx, c); AlertBus.post("Bilens Bluetooth inlärd — vakten startar själv nästa gång.") }
             AutoCmd.NONE -> {}
@@ -89,16 +89,19 @@ object AutostartManager {
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE, // AR fills extras
     )
 
-    private fun safeStartGuard(ctx: Context) {
-        if (GuardService.running) return
-        try {
+    /** false = the start was refused and the driver got the notification instead. */
+    private fun safeStartGuard(ctx: Context): Boolean {
+        if (GuardService.running) return true
+        return try {
             ctx.startForegroundService(Intent(ctx, GuardService::class.java))
+            true
         } catch (e: Exception) {
             tapToStartNotification(ctx)
+            false
         }
     }
 
-    private fun tapToStartNotification(ctx: Context) {
+    fun tapToStartNotification(ctx: Context) {
         val nm = ctx.getSystemService(NotificationManager::class.java)
         nm.createNotificationChannel(
             NotificationChannel("autostart", "Autostart", NotificationManager.IMPORTANCE_HIGH))
@@ -125,7 +128,7 @@ class DrivingTransitionReceiver : BroadcastReceiver() {
         for (ev in result.transitionEvents) {
             if (ev.activityType != DetectedActivity.IN_VEHICLE) continue
             val cmd = when (ev.transitionType) {
-                ActivityTransition.ACTIVITY_TRANSITION_ENTER -> c.onVehicleEnter()
+                ActivityTransition.ACTIVITY_TRANSITION_ENTER -> c.onVehicleEnter(GuardService.running)
                 ActivityTransition.ACTIVITY_TRANSITION_EXIT -> c.onVehicleExit()
                 else -> AutoCmd.NONE
             }
@@ -142,7 +145,8 @@ class BluetoothCarReceiver : BroadcastReceiver() {
         val address = try { device.address } catch (_: SecurityException) { return } ?: return
         val c = AutostartManager.controller(ctx)
         val cmd = when (intent.action) {
-            BluetoothDevice.ACTION_ACL_CONNECTED -> c.onAclConnected(address, GuardService.running)
+            BluetoothDevice.ACTION_ACL_CONNECTED -> c.onAclConnected(address, GuardService.running,
+                try { device.bluetoothClass?.deviceClass } catch (_: SecurityException) { null })
             BluetoothDevice.ACTION_ACL_DISCONNECTED -> c.onAclDisconnected(address)
             else -> AutoCmd.NONE
         }

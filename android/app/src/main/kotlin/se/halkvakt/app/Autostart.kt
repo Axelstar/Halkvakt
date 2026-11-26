@@ -8,7 +8,8 @@
 //   * Bluetooth ACL connect/disconnect              → turbo path for the LEARNED car:
 //     instant start the moment the phone pairs with the car, often before AR reacts.
 //     Learning: an unknown device that connects WHILE the guard is running during a
-//     drive is remembered as "the car". No configuration screens.
+//     drive is remembered as "the car" — if it says it is a car (isCarClass below). No
+//     configuration screens.
 //   * STOP only ends drives WE started (autoStarted flag): a manually started guard is
 //     never killed by AR flakiness or a dropped headset.
 package se.halkvakt.app
@@ -27,8 +28,10 @@ class AutostartController(learnedCars: Set<String> = emptySet(), autoStarted: Bo
     fun learnedCars(): Set<String> = cars.toSet()
     fun isAutoStarted(): Boolean = autoStarted
 
-    fun onVehicleEnter(): AutoCmd {
-        autoStarted = true
+    // A guard that already runs was started by hand, or by an earlier event whose flag is already set: START is then a
+    // no-op in the glue, and setting the flag here let the next exit or disconnect stop a hand-started guard.
+    fun onVehicleEnter(guardRunning: Boolean): AutoCmd {
+        if (!guardRunning) autoStarted = true
         return AutoCmd.START
     }
 
@@ -38,12 +41,13 @@ class AutostartController(learnedCars: Set<String> = emptySet(), autoStarted: Bo
         return AutoCmd.STOP
     }
 
-    fun onAclConnected(address: String, guardRunning: Boolean): AutoCmd {
+    /** [deviceClass] is BluetoothClass.getDeviceClass(), null when it cannot be read; only learning looks at it. */
+    fun onAclConnected(address: String, guardRunning: Boolean, deviceClass: Int? = null): AutoCmd {
         if (address in cars) {
-            autoStarted = true
+            if (!guardRunning) autoStarted = true
             return AutoCmd.START
         }
-        if (guardRunning) {
+        if (guardRunning && isCarClass(deviceClass)) {
             cars.add(address)
             return AutoCmd.LEARN
         }
@@ -61,6 +65,17 @@ class AutostartController(learnedCars: Set<String> = emptySet(), autoStarted: Bo
 }
 
 /**
+ * Which Bluetooth devices may be learned as the car: the two device classes a car's own unit reports, Audio/Video
+ * Car audio (0x0420) and Audio/Video Hands-free (0x0408) — BluetoothClass.Device.AUDIO_VIDEO_CAR_AUDIO and
+ * AUDIO_VIDEO_HANDSFREE, written as numbers because this file has no Android imports. Everything else is left out:
+ * a watch (major class Wearable, 0x07xx), earbuds and headphones (0x0404, 0x0418), a loudspeaker (0x0414), a phone
+ * or a computer. Before this, any device that connected during a drive was learned, and then started the guard at
+ * home. Not exact: a hands-free kit or speakerphone also says 0x0408, and a car unit that reports another class is
+ * not learned (Activity Recognition still starts the guard there).
+ */
+fun isCarClass(deviceClass: Int?): Boolean = deviceClass == 0x0420 || deviceClass == 0x0408
+
+/**
  * Idle stop, the same rule as iOS (HalkvaktEngine IdleStop.swift): a guard whose car has not driven for fifteen
  * minutes has finished its trip. Pure, so the JVM proves it (#248).
  *
@@ -72,6 +87,10 @@ class AutostartController(learnedCars: Set<String> = emptySet(), autoStarted: Bo
  * A gap longer than the window (tunnel, lost GPS) is measured over the whole gap, so a car that came out of a
  * tunnel 3 km on has driven. Trade-off said out loud: a queue that averages under 12 km/h for fifteen whole
  * minutes stops the guard; autostart wakes it again when the drive resumes.
+ *
+ * GPS-kvalitet: a fix whose position is not a car's GPS position (`exact` false: wifi or cell mast, indoors) only moves the
+ * clock. Its jump is never a displacement, so poor fixes cannot keep the guard alive, and the guard still stops on them when
+ * the fifteen minutes are up. The next exact fix is measured against the last exact one, like a tunnel gap.
  */
 class IdleStop(
     private val afterMs: Long = AFTER_MS,
@@ -82,9 +101,10 @@ class IdleStop(
     private val recent = ArrayDeque<P>()
     private var lastDroveMs = -1L
 
-    /** true = stop now. The clock starts at the first fix. */
-    fun onFix(timeMs: Long, lon: Double, lat: Double): Boolean {
+    /** true = stop now. The clock starts at the first fix. [exact] false = time passes, the position is not used. */
+    fun onFix(timeMs: Long, lon: Double, lat: Double, exact: Boolean = true): Boolean {
         if (lastDroveMs < 0) lastDroveMs = timeMs
+        if (!exact) return timeMs - lastDroveMs >= afterMs
         recent.addLast(P(timeMs, lon, lat))
         // Keep recent.first() as the newest fix that is at least windowMs old (or the oldest we have).
         while (recent.size >= 2 && timeMs - recent[1].t >= windowMs) recent.removeFirst()
