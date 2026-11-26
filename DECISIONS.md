@@ -19789,3 +19789,17 @@ för 6–10/11 finns bara i arkivhinken, så P börjar 11/11.
 **Alternativ.** Att spela upp lägesfilerna med motorn (bara id:n, från 23/11); att vänta till efter vintern (Bengt ville se läget 1/12).
 
 **Stomdokument:** MAT (mätningen och förregistreringen)
+
+## #969 (26/11 2026) Småvägsrösten på sidan Olyckor i admin: varningarna och olyckorna per dygn
+
+**Beslut** (Bengt 26/11: *"lägg in dessa båda i admin"*, efter frågan om småvägsrösten syns i olycksfacit). Sidan Olyckor på admin.halkvakt.se
+får rutan *Småvägsrösten*: per svenskt dygn sedan påslaget 25/11 (sql/113) hur många gånger telefonerna sa småvägsvarningen (`app_raknare`,
+händelsen `varning` med värdet `smavag:<avstånd>`), olyckorna inom 0,5 km från en småvägspunkt efter påslaget 25/11 20.24 UTC (olycksfacits
+lager `smavag`, sql/110), hur många av dem som är halkkopplade (TYDLIG eller TROLIG) och hur många småvägsrösten varnade för vid starten.
+Funktionen `admin` räknar (`smavagsdel` i `supabase/functions/olycksfacit/vyn.ts`), och sidan ritar (halkvakt-admin). Talen visas bara
+bakom inloggningen och skrivs inte i repot, ärendena eller loggarna.
+
+**Alternativ.** En dygnsrapport i det privata repot, som veckorapporten (Claudes första förslag); Bengt valde admin, där olycksfacit redan finns.
+Att räkna in småvägsrösten i lagertabellen *Vem varnade*: den delar olyckorna i rader som utesluter varandra, och en egen rad hade brutit summan.
+
+**Stomdokument:** inga — en ny vy i admin över data som redan finns; varken appen, mätningarna eller systemets delar ändras

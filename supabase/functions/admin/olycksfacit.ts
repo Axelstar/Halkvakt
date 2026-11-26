@@ -4,7 +4,7 @@
 import postgres from "https://deno.land/x/postgresjs@v3.4.4/mod.js";
 import { FORSTA_DAG, svenskDag } from "../olycksfacit/arende.ts";
 import { hamta } from "../olycksfacit/hamta.ts";
-import { type Vy, adminVy } from "../olycksfacit/vyn.ts";
+import { SMAVAG_FRAN, type Vy, adminVy } from "../olycksfacit/vyn.ts";
 
 // deno-lint-ignore no-explicit-any
 let sql: any = null;
@@ -21,5 +21,10 @@ export async function olycksfacitSvar(): Promise<Vy> {
   // deno-lint-ignore no-explicit-any
   const timmar = (await sql`SELECT dygn, hink, sum(timmar)::int AS timmar FROM fuktskugga_timmar GROUP BY 1, 2`).map((r: any) =>
     ({ dygn: r.dygn, hink: r.hink, timmar: r.timmar }));
-  return adminVy(olyckor, arenden, idag, veckorna, timmar);
+  // Småvägsrösten: telefonernas småvägsvarningar per dygn sedan påslaget (app_raknare räknar per svenskt dygn).
+  // deno-lint-ignore no-explicit-any
+  const smavag = (await sql`SELECT dag::text AS dag, sum(antal)::int AS antal FROM app_raknare
+    WHERE handelse = 'varning' AND varde LIKE 'smavag:%' AND dag >= ${SMAVAG_FRAN}::date GROUP BY 1`).map((r: any) =>
+    ({ dag: r.dag as string, antal: r.antal as number }));
+  return adminVy(olyckor, arenden, idag, veckorna, timmar, smavag);
 }
