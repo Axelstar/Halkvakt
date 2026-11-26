@@ -117,13 +117,18 @@ const NYA: { namn: string; schema: string; fil: string }[] = [
   { namn: "puls-smavag-vakt", schema: "19 6 * * *", fil: "smavag-vakt.yml" },
   { namn: "puls-smavag-avbrott", schema: "39 6 * * *", fil: "kuvos-smavag-avbrott.yml" },
   { namn: "puls-smavag-uppfoljning", schema: "36 8 * * *", fil: "kuvos-smavag-uppfoljning.yml" },
+  // Reserven för timkörningen (DECISIONS #971, Bengt 26/11: "ja bygg"): 25/11 15:47 gick startsignalen ut men ingen körning
+  // startade, och småvägsrösten saknade timmen. :54 startar timkörningen om den saknas, :58 försöker igen och larmar. Två jobb och
+  // inte en lista (kadensTimmar, #558). :54 och :58 är lediga i databasens klocka och bland pulsjobben. ~15 s per körning.
+  { namn: "puls-timme-reserv-1", schema: "54 * * * *", fil: "timme-reserv.yml" },
+  { namn: "puls-timme-reserv-2", schema: "58 * * * *", fil: "timme-reserv.yml" },
 ];
 
 // Vakthundens check 6a bär samma tal som golv (kort #222, DECISIONS #255): ett puls-jobb som
 // avaktiveras eller raderas ska larma, inte tyst falla ur bevakningslistan. Vakthunden kör i Deno
 // hos Supabase och kan inte importera den här filen, så talet är en KOPIA — kontraktsgrinden vaktar
 // att kopiorna bär samma värde, och raden under vaktar att värdet stämmer med listan ovan.
-const ANTAL_NYA = 37;
+const ANTAL_NYA = 39;
 if (NYA.length !== ANTAL_NYA) {
   console.error(`NYA har ${NYA.length} jobb men ANTAL_NYA säger ${ANTAL_NYA} — uppdatera båda, och vakthundens PULS_GOLV.`);
   process.exit(1);

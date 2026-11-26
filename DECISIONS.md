@@ -19827,3 +19827,23 @@ bakom inloggningen och skrivs inte i repot, ärendena eller loggarna.
 Att räkna in småvägsrösten i lagertabellen *Vem varnade*: den delar olyckorna i rader som utesluter varandra, och en egen rad hade brutit summan.
 
 **Stomdokument:** inga — en ny vy i admin över data som redan finns; varken appen, mätningarna eller systemets delar ändras
+
+## #971 (26/11 2026) Reserven för timkörningen: pulsklockan :54 och :58 startar ny-kandidat-timme om timmens körning saknas, och larmar
+
+**Beslut** (Bengt 26/11: *"ja bygg"*, på förslaget att bygga en reserv i två lager). 25/11 15:47 UTC gick pulsklockans startsignal
+för `ny-kandidat-timme.yml` ut ur databasen (`cron.job_run_details`: *succeeded*, *INSERT 0 1*), men ingen körning startade hos GitHub.
+Det är den enda timme som saknas 23–26/11. Småvägsröstens timme (`kuvos-smavag-timme.yml`, workflow_run) räknades därför inte, och
+olycksfacit skrev *ingen timme* för två olyckor 16:15 och 16:19 UTC: rösten får bara använda en timme som är högst två timmar gammal
+(sql/110), och timmen blir klar omkring :49. Rösten var avstängd då; påslagen hade den tigit omkring en timme.
+- **Lager 1, reserven.** Två pulsjobb, `puls-timme-reserv-1` (:54) och `puls-timme-reserv-2` (:58), startar `timme-reserv.yml`. Det
+  frågar GitHub om en körning av ny-kandidat-timme har skapats sedan :40 i timmen (`scripts/timme-reserv.ts`). Saknas den startas den.
+- **Lager 2, larmet.** Saknas körningen också :58, alltså efter att reserven :54 fått sin chans, startar flödet den och larmar med ett
+  ärende med etiketten `smavag-vakt`, tilldelat Bengt (en ny utebliven timme blir en kommentar). Uteblir reservflödet självt tar
+  småvägsröstens vakt timmen nästa morgon, som förut.
+- Pulsklockan får två jobb till: `ANTAL_NYA` och vakthundens `PULS_GOLV` blir 39 i samma commit (kontraktsgrinden).
+
+**Alternativ.** Att låta förra timmen gälla längre än två timmar: avvisat, rösten skulle då kunna tala ur nästan tre timmar gammalt
+underlag. Att utöka `kandidat-reserv.ts`: den avgör del A:s körningar ur del B, som är just det som inte startade här. GitHubs egen cron
+för reserven: den levererar sent och ojämnt (kort #50, #160), och pulsklockan är det som står för timmen.
+
+**Stomdokument:** SYS (pulsklockan och småvägsröstens timme)
