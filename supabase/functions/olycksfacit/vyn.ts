@@ -86,7 +86,32 @@ export type Vy = {
   oklara: { skal: string; olyckor: number; varnade: number }[];
   sannolikhet: { hinkar: Hinkrad[]; olyckor: number; utanStation: number; vantat: number;
                  veckor: { vecka: string; olyckor: number; klassade: number; vantat: number; utanStation: number }[] } | null;
+  smavag?: Smavagsdel | { fel: string };   // sätts av admin efter adminVy, så att ett fel här aldrig fäller sidan
 };
+
+/** Småvägsrösten (Bengt 26/11: "lägg in dessa båda i admin"): per svenskt dygn sedan påslaget, hur många gånger telefonerna sa
+ *  småvägsvarningen (appens räknare) och olyckorna nära en småvägspunkt (inom 0,5 km, olycksfacits lager smavag, sql/110), och
+ *  hur många av dem småvägsrösten varnade för vid starten. */
+export const SMAVAG_FRAN = "2026-11-25", SMAVAG_PA = "2026-11-25T20:24:00Z";   // påslaget med sql/113, 25/11 21.24 svensk tid
+export type Smavagsdygn = { dag: string; varningar: number; olyckor: number; halkkopplade: number; varnade: number };
+export type Smavagsdel = { fran: string; dygn: Smavagsdygn[]; summa: Omit<Smavagsdygn, "dag"> };
+/** Telefonernas småvägsvarningar per svenskt dygn (app_raknare, händelsen varning med värdet smavag:<avstånd>). */
+export type Smavagsvarningar = { dag: string; antal: number };
+
+const vidSmavag = (o: Olycka) => o.tid >= SMAVAG_PA && o.smavag !== null && o.smavag !== "ingen småvägspunkt";
+
+export function smavagsdel(alla: Olycka[], varningar: Smavagsvarningar[], idag: string): Smavagsdel {
+  const s = alla.filter((o) => !o.dubblett && bedomning(o) !== null);   // som adminVy: ej klassade och dubbletter räknas inte
+  const n = Math.max(0, Math.round((Date.parse(idag) - Date.parse(SMAVAG_FRAN)) / 86_400_000) + 1);
+  const dygn = Array.from({ length: n }, (_, i) => {
+    const dag = dagarFore(SMAVAG_FRAN, -i), x = s.filter((o) => svenskDag(o.tid) === dag && vidSmavag(o));
+    return { dag, varningar: varningar.filter((v) => v.dag === dag).reduce((a, v) => a + v.antal, 0), olyckor: x.length,
+             halkkopplade: x.filter(halkkopplad).length, varnade: x.filter((o) => o.talade.includes("smavag")).length };
+  });
+  const summa = (k: keyof Omit<Smavagsdygn, "dag">) => dygn.reduce((a, d) => a + d[k], 0);
+  return { fran: SMAVAG_FRAN, dygn, summa: { varningar: summa("varningar"), olyckor: summa("olyckor"),
+                                              halkkopplade: summa("halkkopplade"), varnade: summa("varnade") } };
+}
 
 export type Veckoarende = { nr: number; stangd: boolean };
 export type Dygnsarende = Veckoarende & { veckolasning: boolean };
