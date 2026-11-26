@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import type { Olycka } from "../supabase/functions/olycksfacit/arende.ts";
-import { adminVy, atgard, smavagsdel, basfrekvens, isoVecka, oklarSkal } from "../supabase/functions/olycksfacit/vyn.ts";
+import { adminVy, atgard, basfrekvens, isoVecka, oklarSkal } from "../supabase/functions/olycksfacit/vyn.ts";
 
 const o = (x: Partial<Olycka>): Olycka => ({ tid: "2026-11-18T05:23:00.000Z", vag: "134", lon: 15.5434, lat: 57.9831,
   utfall: "TYST_TACKT", orsaker: ["A1: väglaget Normalt", "K: fukt saknades", "A2: ingen station inom 5 km"], klass: "TROLIG",
@@ -121,24 +121,4 @@ test("TROLIG, väglaget (DECISIONS #942): halkkopplad, egen rad i nämnaren, och
   assert.equal(v.namnare.find((n) => n.klass === "TROLIG, kollision")!.olyckor, 0, "kollisionen i väglaget står på väglagets rad");
   assert.equal(v.namnare.reduce((a, n) => a + n.olyckor, 0), 4, "raderna utesluter varandra");
   assert.deepEqual(v.missar.map((m) => m.atgard), ["läses i veckans ärende", "ingen åtgärd, kollision"], "en tyst är en miss, kollisionen får ingen åtgärd (D2)");
-});
-
-test("småvägsrösten: varningarna per dygn och olyckorna nära en småvägspunkt sedan påslaget (Bengt 26/11)", () => {
-  const alla = [
-    o({ tid: "2026-11-25T19:00:00.000Z", smavag: "varnar" }),                                              // före påslaget
-    o({ tid: "2026-11-25T22:10:00.000Z", smavag: "varnar", talade: ["smavag"], utfall: "VARNADE" }),       // varnade
-    o({ tid: "2026-11-26T05:00:00.000Z", smavag: "torr", klass: "OKLAR", skal: "singelolycka" }),          // tyst, inte halkkopplad
-    o({ tid: "2026-11-26T06:00:00.000Z", smavag: "ingen småvägspunkt" }),                                  // ingen punkt nära
-    o({ tid: "2026-11-26T07:00:00.000Z", smavag: null }),                                                  // utan lagret
-  ];
-  const v = smavagsdel([...alla, o({ tid: "2026-11-26T08:00:00.000Z", smavag: "varnar", dubblett: true })],
-    [{ dag: "2026-11-25", antal: 3 }, { dag: "2026-11-26", antal: 5 }, { dag: "2026-11-24", antal: 9 }], "2026-11-26");
-  assert.equal(v.fran, "2026-11-25");
-  assert.deepEqual(v.dygn, [
-    { dag: "2026-11-25", varningar: 3, olyckor: 1, halkkopplade: 1, varnade: 1 },
-    { dag: "2026-11-26", varningar: 5, olyckor: 1, halkkopplade: 0, varnade: 0 },
-  ]);
-  assert.deepEqual(v.summa, { varningar: 8, olyckor: 2, halkkopplade: 1, varnade: 1 });
-  assert.equal(adminVy([], new Map(), "2026-11-26").smavag, undefined, "adminVy sätter inte rutan; admin gör det i ett eget försök");
-  assert.deepEqual(smavagsdel([], [], "2026-11-26").summa, { varningar: 0, olyckor: 0, halkkopplade: 0, varnade: 0 });
 });

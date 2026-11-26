@@ -112,14 +112,19 @@ export function arendeTitel(dag: string): string {
   return `Olycksfacit ${dag}`;
 }
 
+// Formaterarna skapas en gång: ett nytt Intl.DateTimeFormat per anrop tog omkring 1,7 ms, och admins sida Olyckor anropar svenskDag
+// tiotusentals gånger. Sidan gick 26/11 över edge-funktionens CPU-gräns och visade exempeldata (DECISIONS #970).
+const TID_SV = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Stockholm", hour: "2-digit", minute: "2-digit" });
+const DAG_SV = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Stockholm", year: "numeric", month: "2-digit", day: "2-digit" });
+
 /** Klockslaget i svensk tid, HH:MM. */
 export function svenskTid(iso: string): string {
-  return new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Stockholm", hour: "2-digit", minute: "2-digit" }).format(new Date(iso));
+  return TID_SV.format(new Date(iso));
 }
 
 /** Dagen i svensk tid, ÅÅÅÅ-MM-DD. */
 export function svenskDag(iso: string): string {
-  return new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Stockholm", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(iso));
+  return DAG_SV.format(new Date(iso));
 }
 
 const plats = (o: Olycka) => `${vagText(o.vag) ?? "okänd väg"} (${o.lon.toFixed(3)}, ${o.lat.toFixed(3)})`;
