@@ -535,7 +535,18 @@ Deno.serve(async (req) => {
       const suppressed: { kind: string; id: string; distM: number; by: string; sinceS: number; zon?: string }[] = [];
       motor.onSuppressed = (c) => suppressed.push({ kind: c.kind, id: c.hazardId, distM: Math.round(c.distM), by: c.by, sinceS: c.sinceS,
         ...(c.zon ? { zon: c.zon } : {}) });
+      // HALKANS VÄGTEST (Bengt 26/11: "Sätt igång en mätning av den"; DECISIONS #963, #967, sql/145): varje hal sträcka som vägtestet
+      // stoppade före sin första varning i körningen, med hur långt fram den låg vid första stoppet, hur nära spåret kom sträckans linje
+      // och kursens vinkel där, och om den talade senare i samma körning (vagtestRader). En skugga: kroken ändrar inget utfall, och inget
+      // når appen. Bara huvudvarvet i Sverige, längs vägnätet, som räckvidden.
+      const vagStopp: { hazardId: string; t: number; distM: number; linjeM: number; vinkel: number }[] = [];
+      if (land === "se" && !c) motor.onVagtestStopp = (s) => vagStopp.push(s);
       const alerts = motor.run(trace);
+      const vagtest = land === "se" && !c ? (() => {
+        const vagnr = new Map(hazards.flatMap((h) => (h.kind === "slippery_segment" ? [[h.id, (h as any).meta?.road ?? null]] : [])));
+        const rader = vagtestRader(vagStopp, alerts, (id) => vagnr.get(id) ?? null);
+        return { n: rader.length, tyst: rader.filter((r) => !r.talade).length, s: rader };
+      })() : null;
       // RÄCKVIDDEN SOM EN FARA (Bengt 21/11: "bygg in"; DECISIONS #950, sql/140): samma spår en gång till, med stationerna inom 15 km
       // lagda på rutten och en kedja som en fara (stationerSomEnFara). En skugga: bara A2 loggas, i egen kolumn, och inget når appen.
       // Bara huvudvarvet i Sverige, längs vägnätet. Utvärderas efter en vecka mot takten och missarna med oberoende facit (§14).
@@ -594,7 +605,8 @@ Deno.serve(async (req) => {
       if (land === "se" && alerts.length && !punkter.length) f.skal.push("bara segment- eller fartkameralarm — inget som behöver väglagsfacit");
       facitBudget -= f.saved; facitTotal += f.saved; facitSkal.push(...f.skal);
       results[name] = { fixes: trace.length, alerts: alerts.length, vb: vb.length, olja: olja.length, suppressed: suppressed.length, efterhalka: efterhalka.length,
-        prognos: (prognos as Prognos).p?.length ?? 0, kandidat: (kandidat as { h?: unknown[] }).h?.length ?? 0, rackvidd: rackvidd?.n ?? null };
+        prognos: (prognos as Prognos).p?.length ?? 0, kandidat: (kandidat as { h?: unknown[] }).h?.length ?? 0, rackvidd: rackvidd?.n ?? null,
+        vagtest: vagtest ? { n: vagtest.n, tyst: vagtest.tyst } : null };
       // LARMETS POSITION (kort #158, DECISIONS #177/#179, Axels ja via Bengt 14/9).
       //
       // FÖRUT SKREVS `lon: a.lon` — OCH DET FÄLTET FINNS INTE. Motorns Alert bär `t`, `hazardId`,
@@ -619,6 +631,7 @@ Deno.serve(async (req) => {
         route: name, land: land.toUpperCase(), snapshot_generated_at: lv.generated_at,
         n_hazards: hazards.length, n_alerts: alerts.length, vb, olja, suppressed, efterhalka, prognos,
         ...(rackvidd ? { rackvidd } : {}),   // sql/140; grupp C och grannländerna utan
+        ...(vagtest ? { vagtest } : {}),     // sql/145; samma
         ...(c ? {} : { kandidat }),   // shadow_log_c har ingen kandidatkolumn (sql/057 lägger den bara i shadow_log)
         alerts: alerts.map((a) => {
           const h = farorById.get(a.hazardId) as any;

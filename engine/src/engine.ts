@@ -171,6 +171,11 @@ export class AlertEngine {
   private lastSmavagOdoM = 0;
   /** Skuggmotorn lyssnar här (#127 a): vad spärren kastar syns annars ingenstans. */
   onSuppressed?: (c: { kind: HazardKind; hazardId: string; distM: number; by: HazardKind; sinceS: number; zon?: string }) => void;
+  /** Halkans vägtest (DECISIONS #963, #967): skuggmotorn lyssnar här, för vad vägtestet stoppar syns annars ingenstans. Called for a
+   *  stretch that would have been a candidate (slippery, ahead, within the lead) but failed the road test: distM ahead, and the
+   *  nearest of its lines from the fix (linjeM) with the course's difference from that line's direction (vinkel). Utan krok är
+   *  motorn byte för byte densamma, och kroken ändrar inget utfall — vektorerna rörs inte. */
+  onVagtestStopp?: (c: { hazardId: string; t: number; distM: number; linjeM: number; vinkel: number }) => void;
   /** FÖRSPRÅNGET (kort #153 beslut 1, docs/TROSKLAR-FORSPRANG.md §4): valfri krok som ger förvarningsavståndet per fara. Utan
    *  krok är motorn byte för byte densamma — vektorerna rörs inte. Svaret klämms till leadMinM och MOTORNS leadMaxM (3 000 m),
    *  inte till appens reglage (kort #275 väg (a)). Bara skuggan sätter den i vinter; portarna får den först vid steg 7, efter domen. */
@@ -525,8 +530,25 @@ export class AlertEngine {
       if (ahead && (best === null || distM < best)) best = distM;
     }
     if (best === null || best > leadM) return null;
-    if (!this.paHalkan(fix, heading, s.pa)) return null;
+    if (!this.paHalkan(fix, heading, s.pa)) {
+      if (this.onVagtestStopp) this.onVagtestStopp({ hazardId: s.h.id, t: fix.t, distM: best, ...this.narmastPa(fix, heading, s.pa) });
+      return null;
+    }
     return { hazard: s.h, kind: "slippery_segment", distM: best, alertKey: s.h.id };
+  }
+
+  /** For the shadow only (onVagtestStopp): the nearest of the road test's lines and the course's difference from its direction. */
+  private narmastPa(fix: Fix, heading: number, pa: LonLat[]): { linjeM: number; vinkel: number } {
+    let linjeM = Infinity;
+    let vinkel = 180;
+    for (let k = 1; k < pa.length; k++) {
+      const m = distToSegmentM(fix, pa[k - 1], pa[k]);
+      if (!(m < linjeM)) continue;
+      const r = bearingDeg(pa[k - 1], pa[k]);
+      linjeM = m;
+      vinkel = Math.min(angDiffDeg(r, heading), angDiffDeg((r + 180) % 360, heading));
+    }
+    return { linjeM, vinkel };
   }
 
   /**

@@ -19727,3 +19727,26 @@ småvägsraden som helhet).
 
 **Stomdokument:** APP (rösten)
 
+## #967 (26/11 2026) Halkans vägtest mäts i skuggan (kort #679)
+**Beslut.** Bengt 26/11: *"Sätt igång en mätning av den"*, om vägtestet i #963 (PR #1841). Testet låter en hal sträcka tala bara inom 80 m
+från sin linje och högst 30° från dess riktning, men det som stoppas skrevs ingenstans: spärren och halkzonen loggas i `shadow_log.suppressed`,
+vägtestet inte. Nu:
+1. **Motorn** får kroken `onVagtestStopp` i TypeScript. Den anropas för en sträcka som annars hade varit en kandidat (hal, framför bilen och
+   inom förvarningen) men föll på vägtestet, med avståndet fram, avståndet till närmaste av vägtestets linjer och kursens vinkel mot den.
+   Utan krok är motorn byte för byte densamma, och kroken ändrar inget utfall (provet kör alla vektorer med och utan den). Portarna rörs inte.
+2. **Skuggmotorn** skriver per körning i huvudvarvet, längs vägnätet, kolumnen `shadow_log.vagtest` (sql/145):
+   `{n, tyst, s: [{id, vag, n, forstaT, forstaM, linjeM, vinkel, talade}]}`, en rad per sträcka som stoppades före sin första varning i
+   körningen (`vagtestRader` i `engine/src/rutfilter.ts`). `talade = null` är en varning som testet tystade hela vägen; annars när och hur långt
+   fram den kom senare, så att den förlorade förvarningen går att räkna. Grupp C och grannländerna skriver inget.
+3. **Före och efter 25/11** (DB-knappen 45770404628, läsning): den nya motorn talar i skuggan från 25/11 07.02 UTC. Halkvarningar per körning
+   18/11–25/11 06.50: 6,9–9,5 per dygn; efter: 5,9 (25/11) och 5,1 (26/11 fram till 06.32). Räknat mot de hala sträckorna i lägesfilen
+   (`lagesfil_timme`, från 23/11): 21,3 mot 18,9 per 1 000, alltså omkring 11 % färre. Andelen halkvarningar som spärren eller halkzonen
+   tystade föll från 63 % (24/11) till 34 % (25/11 efter). Rutterna i söder föll mest och de i norr knappt alls, men vädret skiftade samma
+   dygn, så jämförelsen skiljer inte vägtestet från vädret. Därför loggen i punkt 2.
+
+Värdevakten: `linjeM` och `vinkel` räknas av motorn ur geometrin och bär ingen grind eller tröskel, som `suppressed` och `rackvidd`.
+
+**Alternativ.** Bara jämföra före och efter (vädret blandas in); spela upp lägesfilerna med två motorer (`lagesfil_timme` bär bara id:n, inte
+geometrin); en kolumn per stopp i stället för per sträcka (ett stopp per GPS-läge, tiotals per sträcka).
+
+**Stomdokument:** MAT (skuggans loggar), SYS (motorns krok och skuggmotorn)
