@@ -814,6 +814,11 @@ export class AlertEngine {
   private lastSmavagOdoM = 0;
   /** Skuggmotorn lyssnar här (#127 a): vad spärren kastar syns annars ingenstans. */
   onSuppressed?: (c: { kind: HazardKind; hazardId: string; distM: number; by: HazardKind; sinceS: number; zon?: string }) => void;
+  /** Halkans vägtest (DECISIONS #963, #967): skuggmotorn lyssnar här, för vad vägtestet stoppar syns annars ingenstans. Called for a
+   *  stretch that would have been a candidate (slippery, ahead, within the lead) but failed the road test: distM ahead, and the
+   *  nearest of its lines from the fix (linjeM) with the course's difference from that line's direction (vinkel). Utan krok är
+   *  motorn byte för byte densamma, och kroken ändrar inget utfall — vektorerna rörs inte. */
+  onVagtestStopp?: (c: { hazardId: string; t: number; distM: number; linjeM: number; vinkel: number }) => void;
   /** FÖRSPRÅNGET (kort #153 beslut 1, docs/TROSKLAR-FORSPRANG.md §4): valfri krok som ger förvarningsavståndet per fara. Utan
    *  krok är motorn byte för byte densamma — vektorerna rörs inte. Svaret klämms till leadMinM och MOTORNS leadMaxM (3 000 m),
    *  inte till appens reglage (kort #275 väg (a)). Bara skuggan sätter den i vinter; portarna får den först vid steg 7, efter domen. */
@@ -1168,8 +1173,25 @@ export class AlertEngine {
       if (ahead && (best === null || distM < best)) best = distM;
     }
     if (best === null || best > leadM) return null;
-    if (!this.paHalkan(fix, heading, s.pa)) return null;
+    if (!this.paHalkan(fix, heading, s.pa)) {
+      if (this.onVagtestStopp) this.onVagtestStopp({ hazardId: s.h.id, t: fix.t, distM: best, ...this.narmastPa(fix, heading, s.pa) });
+      return null;
+    }
     return { hazard: s.h, kind: "slippery_segment", distM: best, alertKey: s.h.id };
+  }
+
+  /** For the shadow only (onVagtestStopp): the nearest of the road test's lines and the course's difference from its direction. */
+  private narmastPa(fix: Fix, heading: number, pa: LonLat[]): { linjeM: number; vinkel: number } {
+    let linjeM = Infinity;
+    let vinkel = 180;
+    for (let k = 1; k < pa.length; k++) {
+      const m = distToSegmentM(fix, pa[k - 1], pa[k]);
+      if (!(m < linjeM)) continue;
+      const r = bearingDeg(pa[k - 1], pa[k]);
+      linjeM = m;
+      vinkel = Math.min(angDiffDeg(r, heading), angDiffDeg((r + 180) % 360, heading));
+    }
+    return { linjeM, vinkel };
   }
 
   /**
@@ -1423,6 +1445,52 @@ export function stationerSomEnFara(hazards: Hazard[], line: [number, number][], 
     forra = x.langsM;
   }
   return [...hazards.filter((h) => !talar(h)), ...zoner];
+}
+
+/** En hal sträcka som halkans vägtest stoppade i en skuggkörning (DECISIONS #967). */
+export interface VagtestRad {
+  id: string;
+  /** Sträckans vägnummer ur lägesfilen, eller null. */
+  vag: string | null;
+  /** Hur många GPS-lägen vägtestet stoppade sträckan på, före dess första varning i körningen. */
+  n: number;
+  /** Första stoppet: körningens sekund och hur långt fram sträckan låg då, i meter. */
+  forstaT: number;
+  forstaM: number;
+  /** Närmast bilen kom sträckans linjer bland stoppen, i meter, och kursens vinkel mot linjen där, i grader (0–90). */
+  linjeM: number;
+  vinkel: number;
+  /** När och hur långt fram sträckan talade senare i samma körning, eller null: vägtestet tystade den hela vägen. */
+  talade: { t: number; distanceM: number } | null;
+}
+
+/** HALKANS VÄGTEST I SKUGGAN (Bengt 26/11: *"Sätt igång en mätning av den"*; DECISIONS #963, #967). Motorns krok `onVagtestStopp`
+ *  ger ett stopp per GPS-läge; här blir de en rad per sträcka. Bara stoppen FÖRE sträckans första varning räknas: efter den har sträckan
+ *  redan talat, och ett stopp när bilen lämnat vägen säger inget om vad testet kostar. En rad med `talade: null` är en varning som den
+ *  gamla motorn sannolikt hade sagt (spärren och halkzonen kunde ha tystat den ändå); en rad med `talade` är en varning som kom senare,
+ *  och `forstaM - talade.distanceM` är ungefär den förvarning som gick förlorad. Bara i TypeScript: skuggmotorn. */
+export function vagtestRader(
+  stopp: { hazardId: string; t: number; distM: number; linjeM: number; vinkel: number }[],
+  alerts: { t: number; hazardId: string; distanceM: number }[],
+  vag: (id: string) => string | null,
+): VagtestRad[] {
+  const forstaVarning = new Map<string, { t: number; distanceM: number }>();
+  for (const a of alerts) if (!forstaVarning.has(a.hazardId)) forstaVarning.set(a.hazardId, { t: a.t, distanceM: a.distanceM });
+  const rader = new Map<string, VagtestRad>();
+  for (const s of stopp) {
+    const talade = forstaVarning.get(s.hazardId) ?? null;
+    if (talade && s.t >= talade.t) continue;
+    const r = rader.get(s.hazardId);
+    const linjeM = Math.round(s.linjeM), vinkel = Math.round(s.vinkel);
+    if (!r) {
+      rader.set(s.hazardId, { id: s.hazardId, vag: vag(s.hazardId), n: 1, forstaT: s.t, forstaM: Math.round(s.distM), linjeM, vinkel,
+        talade: talade ? { t: talade.t, distanceM: talade.distanceM } : null });
+    } else {
+      r.n++;
+      if (linjeM < r.linjeM) { r.linjeM = linjeM; r.vinkel = vinkel; }
+    }
+  }
+  return [...rader.values()];
 }
 
 
