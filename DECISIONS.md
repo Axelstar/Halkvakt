@@ -19813,6 +19813,7 @@ Gränsvärdena 50 m, 10 s, 30 km/h och 90 s är valda ur simuleringen och inte m
 att låta utkasten ligga till nästa version ur main (då försvinner rättningarna ur den versionen).
 
 **Stomdokument:** APP (självstarten och vakten), SYS (motorns GPS-gräns), BED §4.2
+
 ## #970 (26/11 2026) Småvägsrösten på sidan Olyckor i admin: varningarna och olyckorna per dygn
 
 **Beslut** (Bengt 26/11: *"lägg in dessa båda i admin"*, efter frågan om småvägsrösten syns i olycksfacit). Sidan Olyckor på admin.halkvakt.se
