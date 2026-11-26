@@ -19813,3 +19813,17 @@ Gränsvärdena 50 m, 10 s, 30 km/h och 90 s är valda ur simuleringen och inte m
 att låta utkasten ligga till nästa version ur main (då försvinner rättningarna ur den versionen).
 
 **Stomdokument:** APP (självstarten och vakten), SYS (motorns GPS-gräns), BED §4.2
+
+## #970 (26/11 2026) Småvägsrösten på sidan Olyckor i admin: varningarna och olyckorna per dygn
+
+**Beslut** (Bengt 26/11: *"lägg in dessa båda i admin"*, efter frågan om småvägsrösten syns i olycksfacit). Sidan Olyckor på admin.halkvakt.se
+får rutan *Småvägsrösten*: per svenskt dygn sedan påslaget 25/11 (sql/113) hur många gånger telefonerna sa småvägsvarningen (`app_raknare`,
+händelsen `varning` med värdet `smavag:<avstånd>`), olyckorna inom 0,5 km från en småvägspunkt efter påslaget 25/11 20.24 UTC (olycksfacits
+lager `smavag`, sql/110), hur många av dem som är halkkopplade (TYDLIG eller TROLIG) och hur många småvägsrösten varnade för vid starten.
+Funktionen `admin` räknar (`smavagsdel` i `supabase/functions/olycksfacit/vyn.ts`), och sidan ritar (halkvakt-admin). Talen visas bara
+bakom inloggningen och skrivs inte i repot, ärendena eller loggarna.
+
+**Alternativ.** En dygnsrapport i det privata repot, som veckorapporten (Claudes första förslag); Bengt valde admin, där olycksfacit redan finns.
+Att räkna in småvägsrösten i lagertabellen *Vem varnade*: den delar olyckorna i rader som utesluter varandra, och en egen rad hade brutit summan.
+
+**Stomdokument:** inga — en ny vy i admin över data som redan finns; varken appen, mätningarna eller systemets delar ändras
