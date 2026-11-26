@@ -3072,6 +3072,92 @@ test("#800 spridningsspärren F1: frys_min ≥ 0,45 tystar, spridningen gör det
   }
 });
 
+// VÅT MED REGN (sql/146, DECISIONS #972, kort #681): Trafikverkets Våt räknas som fukt bara när radarn har visat minst 0,1 mm/h på
+// sträckan de senaste sex timmarna. Punkterna som ändringen tystar får utfallet 'uppehåll', efter spridningsspärren, så att den gamla
+// regelns varnande punkter är varnar och uppehåll tillsammans. Domloggen räknar uppehållet i punkter och fukt_utfall men i ingen av de
+// fyra kolumnerna. sql/080 härleds på den nya texten. Sedan TILLBAKA med sql/094.
+test("#972 Våt med regn: Våt utan radar på 6 h tiger som uppehåll, radarvägen står kvar, och sql/094 tar tillbaka", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const q = (s: string, p: unknown[] = []) => pool.query(s, p);
+  const las = (f: string) => q(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+  const stad = async () => {
+    for (const t of ["kandidat_live", "ny_kandidat_live"]) await q(`DELETE FROM ${t} WHERE punkt LIKE 'vW%'`).catch(() => {});
+    await q("DELETE FROM ny_kandidat_skugga WHERE segment_id LIKE '9996%'").catch(() => {});
+    await q("DELETE FROM radar_precip WHERE segment_id LIKE '9996%'").catch(() => {});
+    await q("DELETE FROM vagpunkt WHERE punkt LIKE 'vW%'");
+    await q("DELETE FROM road_conditions WHERE segment_id LIKE '9996%'");
+  };
+  try {
+    await q("CREATE TABLE IF NOT EXISTS shadow_log (id bigserial PRIMARY KEY, run_at timestamptz NOT NULL DEFAULT now(), alerts jsonb NOT NULL DEFAULT '[]'::jsonb)");
+    await q("DROP FUNCTION IF EXISTS kandidat_regel()");   // sql/056 har den äldre returtypen (som provet #800)
+    for (const f of ["001_init.sql", "008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql", "018_trend_berakna.sql",
+                     "029_brott_index.sql", "030_langsam_vakt.sql", "050_kandidat_live.sql", "053_arkiv_tabeller.sql", "055_vagpunkter.sql",
+                     "056_kandidat_regel.sql", "057_kandidat_skugga.sql", "058_kandidat_spridning.sql", "059_kandidat_brytare.sql",
+                     "065_kandidat_domlogg_punkter.sql", "068_ny_kandidat_skugga.sql", "069_radarns_tal.sql",
+                     "086_spridningsparren_frys_min.sql", "087_spridningsparren_f1.sql", "089_stadspunkter.sql", "090_radar_stad.sql",
+                     "091_stadsregeln.sql", "094_stadsgrenens_timme.sql", "146_vat_med_regn.sql", "146_vat_med_regn.sql",
+                     "078_kandidat_snabb.sql", "080_kandidat_snabb_skugga.sql"]) await las(f);   // 080 på 146:s text
+    await stad();
+    await q("DELETE FROM ny_kandidat_skugga_korning");   // som provet #692: domloggen räknar en timme en gång
+    // [punkt, sträcka, Våt, radarns ålder i minuter (null = ingen rad), mm/h, n_ank, frys_min, väntat med 146, väntat med 094]
+    // Alla kalla, långt från provens stationer (70° N, 36° Ö).
+    const P: [string, string, boolean, number | null, number, number, number, string, string][] = [
+      ["vW1", "99961", true, 120, 0.5, 1, 0, "varnar", "varnar"],       // Våt och regn för två timmar sedan
+      ["vW2", "99962", true, 420, 0.5, 1, 0, "uppehåll", "varnar"],     // Våt, regnet sju timmar gammalt
+      ["vW3", "99963", true, null, 0, 1, 0, "uppehåll", "varnar"],      // Våt, ingen radar alls (Eslöv 26/11)
+      ["vW4", "99964", false, 10, 0.5, 1, 0, "varnar", "varnar"],       // radarvägen på 60 minuter står kvar
+      ["vW5", "99965", true, 120, 0.05, 1, 0, "uppehåll", "varnar"],    // radar under 0,1 mm/h räknas inte som regn
+      ["vW6", "99966", true, null, 0, 2, 0.5, "spridning", "spridning"], // F1 före uppehållet: samma som förut
+      ["vW7", "99967", false, null, 0, 1, 0, "torr", "torr"],           // varken Våt eller radar
+    ];
+    for (const [p, s, vat, min, mmh] of P) {
+      await q("INSERT INTO vagpunkt (punkt, segment_id, lon, lat) VALUES ($1, $2, 36, 70)", [p, s]);
+      await q("INSERT INTO road_conditions (segment_id, condition_code, condition_text, condition_info) VALUES ($1, 1, 'Normalt', $2)",
+        [s, vat ? ["Våt"] : []]);
+      if (min !== null) await q(`INSERT INTO radar_precip (segment_id, observed_at, rate_max_mmh, rate_mean_mmh)
+        VALUES ($1, now() - make_interval(mins => $2), $3, $3)`, [s, min, mmh]);
+    }
+    const tid: Date = (await q("SELECT date_trunc('hour', now()) AS t")).rows[0].t;
+    for (const tab of ["kandidat_live", "ny_kandidat_live"]) {
+      await q(`INSERT INTO ${tab} (tid, punkt, pb) SELECT $1, v.punkt, 5 FROM vagpunkt v WHERE v.punkt NOT LIKE 'vW%' ON CONFLICT DO NOTHING`, [tid]);
+      for (const [p, , , , , n, fm] of P)
+        await q(`INSERT INTO ${tab} (tid, punkt, pb, n_ank, spr, frys_min, ank_km) VALUES ($1, $2, -1, $3, 1, $4, 4)`, [tid, p, n, fm]);
+    }
+    const utfall = async (fn: string) => Object.fromEntries((await q(`SELECT punkt, utfall FROM ${fn}() WHERE punkt LIKE 'vW%'`)).rows
+      .map((r: any) => [r.punkt, r.utfall]));
+    const ny = Object.fromEntries(P.map(([p, , , , , , , v]) => [p, v]));
+    const gammal = Object.fromEntries(P.map(([p, , , , , , , , g]) => [p, g]));
+    assert.deepEqual(await utfall("ny_kandidat_regel"), ny, "VR1: den nyas regel med 146");
+    assert.deepEqual(await utfall("kandidat_regel"), ny, "VR1: den frystas regel ger samma");
+    // Den gamla regelns varnande punkter är varnar och uppehåll tillsammans.
+    assert.deepEqual(Object.fromEntries(Object.entries(ny).map(([p, u]) => [p, u === "uppehåll" ? "varnar" : u])), gammal,
+      "VR2: varnar och uppehåll är den gamla regelns varnar");
+
+    // VR3: domloggen. Uppehållet står i punkter och fukt_utfall, inte i varnar, veto, torr eller spridning.
+    assert.match((await q("SELECT ny_kandidat_logga() AS m")).rows[0].m, /^kandidatens timme /);
+    const logg = Object.fromEntries((await q(`SELECT segment_id, punkter, varnar, veto, torr, spridning, fukt_utfall FROM ny_kandidat_skugga
+      WHERE observed_at = $1 AND segment_id LIKE '9996%'`, [tid])).rows.map((r: any) => [r.segment_id, r]));
+    assert.deepEqual([logg["99962"].punkter, logg["99962"].varnar, logg["99962"].veto, logg["99962"].torr, logg["99962"].spridning],
+      [1, 0, 0, 0, 0], "VR3: uppehållet räknas bara i punkter");
+    assert.deepEqual(logg["99962"].fukt_utfall, ["uppehåll"], "VR3: och står i fukt_utfall");
+    assert.deepEqual([logg["99961"].varnar, logg["99964"].varnar, logg["99966"].spridning, logg["99967"].torr], [1, 1, 1, 1]);
+
+    // VR4: sql/080 härleds på 146:s text, och den snabba bär samma ändring.
+    const def = (await q("SELECT pg_get_functiondef('ny_kandidat_regel_snabb()'::regprocedure) AS d")).rows[0].d as string;
+    assert.ok(def.includes("THEN 'uppehåll'") && def.includes("LEFT JOIN regn rg ON rg.segment_id = k.segment_id"),
+      "VR4: den snabba regeln bär uppehållet");
+
+    // VR5: TILLBAKA med sql/094.
+    await las("094_stadsgrenens_timme.sql");
+    assert.deepEqual(await utfall("ny_kandidat_regel"), gammal, "VR5: sql/094 tar tillbaka den gamla regeln");
+    assert.deepEqual(await utfall("kandidat_regel"), gammal, "VR5: också för den frysta");
+  } finally {
+    await stad().catch(() => {});
+    await pool.end();
+  }
+});
+
 // STORSTÄDERNAS PUNKTER (sql/089, DECISIONS #804, kort #378): tabellen och brytarna, och laddarens satser, mot riktig PostGIS.
 //   SP1  filen går att köra två gånger; RLS på båda tabellerna; fyra brytare, alla av
 //   SP2  laddarens skriv tar två punkter; en andra skrivning med samma värden ändrar inget; ett ändrat läge skrivs

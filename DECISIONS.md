@@ -19847,3 +19847,98 @@ underlag. Att utöka `kandidat-reserv.ts`: den avgör del A:s körningar ur del 
 för reserven: den levererar sent och ojämnt (kort #50, #160), och pulsklockan är det som står för timmen.
 
 **Stomdokument:** SYS (pulsklockan och småvägsröstens timme)
+
+## #972 (26/11 2026) Prognos på *Normalt, Våt* mot singelolyckorna, och regnet de senaste timmarna (kort #681)
+
+**Beslut** (Bengt 26/11, efter frågan om Prognos runt Eslöv: *"ja kan du mäta över hela landet och jämföra med singelolyckorna"*, och
+*"kan vi se om det regnat eller snöat de senaste timmarna och lägga in det rimligt i prognoserna"*). En tyst läsning med DB-knappen i
+läsläge: kandidatens varningar (domloggen `ny_kandidat_skugga`, timvärdet) mot Trafikverkets väglag i samma timme
+(`road_condition_history`) och singelolyckorna i olycksfacit, från 6/11 som DECISIONS #968. Läsningen ändrade ingen regel, motor, lägesfil, karta
+eller röst och skrev ingen tabell. Regeln ändrades sedan på Bengts och Axels ja (*Förslaget och beslutet* nedan).
+
+**Bakgrund.** Kartan runt Eslöv 26/11 kl. 11.40 svensk tid visade Prognos på alla 19 sträckor i området (väg 13, 17, 23, 104, 106, 108,
+109, 110, 113, E22 och E6). Alla stod som *Normalt, Våt* hos Trafikverket, satta 06.30–08.45. Vägbanan var −3,1 till 0 °C vid stationerna
+där, och ingen av dem hade sett nederbörd på 20–23 timmar. I hela landet låg 191 av 227 kandidatsträckor på *Normalt* med *Våt*
+(halkvakt.se 10.30 UTC). Regeln (sql/094) räknar Trafikverkets *Våt* som fukt. En väg som är blöt under noll många timmar efter
+nederbörden är troligen saltad, och det ser regeln inte (jämför DECISIONS #290).
+
+**Förregistrering**, skriven 26/11 10.50 UTC före läsningen (bara ögonblicksbilden 10.30 UTC var läst):
+1. *Perioden.* 6/11 00.00 svensk tid till läsningen.
+2. *Sträcktimmarna.* Varje timme den nya kandidaten räknade (`ny_kandidat_skugga_korning`, inte tyst) × varje väglagssträcka (818). K
+   varnar när domloggen har `varnar > 0` för sträckan och timmen. Väglaget i timmen: *halka* som olycksfacits A1 (kod 2 eller högre, eller
+   ett halkord), annars *Normalt, Våt* (*Våt* bland följeorden), annars *Normalt, övrigt*.
+3. *Trafiken.* Fordonskilometer ur ÅDT i `data/vagdata/segment.json`.
+4. *Facit.* Singelolyckorna (olycksfacits art *ett fordon*, utan dubbletter) inom 100 m från en väglagssträcka, i gruppen för sträckan i
+   K-lagrets timme och väglaget vid starten.
+5. *Utfallet.* Singelolyckor per miljon fordonskilometer per grupp, med antal och 95 %-intervall.
+6. *Förväntan* (Claudes): K på *Normalt, Våt* ligger nära basen och klart under Trafikverkets halka.
+7. *Vad som räknas.* Ingen regel följer av läsningen. Bengt och Axel avgör.
+
+**Två tillägg efter förregistreringen**, märkta som tillägg: (a) trafiken delas på natt (22–06) och dag, eftersom 28–49 % av sträcktimmarna
+i grupperna är natt och natten bär omkring 6 % av trafiken. Natten tas ur NVDB:s lätta fordon 22–06, uppräknade med lastbilsandelen, och
+5,1 % av ÅDT (medianen) där värdet saknas. (b) På Bengts andra fråga delas K på *Normalt, Våt* efter tiden sedan radarn senast visade
+nederbörd på sträckan (`radar_precip`, `rate_mean_mmh` 0,1 mm/h eller mer, inom 48 h). Banden 0–1, 1–3, 3–6, 6–12, 12–24, 24–48 h och längre
+valdes före körningen. **Gränsen 6 h valdes efter att talen lästs.**
+
+**Utfallet** (DB-knappen 45805730615, 45806032260 och 45806267905; 483 timmar, 818 sträckor, natt och dag för sig):
+- K varnade 67 009 sträcktimmar: 36 095 (54 %) på *Normalt, Våt*, 29 455 på halka och 1 459 på *Normalt, övrigt*.
+- Singelolyckor per miljon fordonskilometer: *Normalt* utan K 0,130 (151 olyckor; 0,110–0,153). Trafikverkets halka 0,302 (134;
+  0,253–0,357). K på *Normalt, Våt* 0,198 (29; 0,133–0,284).
+- K på *Normalt, Våt* efter tiden sedan nederbörd: inom 6 h 0,50 (14; 0,27–0,84) på 17 % av sträcktimmarna; äldre än 6 h eller ingen
+  0,127 (15; 0,071–0,209) på 83 %, alltså 44 % av all tid K varnar. Banden: 0–1 h 0,63 (8), 1–3 h 0,44 (3), 3–6 h 0,36 (3), 6–12 h 0,11
+  (2), 12–24 h 0,12 (4), 24–48 h 0,20 (6), över 48 h 0,09 (3).
+- Förväntan höll delvis: K på *Normalt, Våt* som helhet ligger mellan basen och halkan. Uppdelad efter regnet ligger delen utan nederbörd på
+  6 h på basen, och delen med nederbörd nyligen på eller över Trafikverkets halka.
+- Bredvid, inte facit: olyckorna med flera fordon under K på *Normalt, Våt* var 23, 6 inom 6 h och 17 äldre. De skiljer inte grupperna
+  från basen.
+
+**Förslaget och beslutet.** Claudes förslag: Trafikverkets *Våt* räknas som fukt i kandidatens regel bara när radarn har visat
+nederbörd på sträckan de senaste 6 timmarna. Radarvägen (60 minuter) står kvar. Rimfrostens daggpunktsväg (DECISIONS #793, domen 10/12)
+gäller fukt utan nederbörd och rörs inte. Gränsen valdes på lästa data, och förslaget var att pröva den på nya dagar först (regel L,
+DECISIONS #564). Bengt valde 26/11 på beslutskortet *Ändra regeln nu* i stället för att pröva först, och skrev sedan *"axel säger ja
+till ändringen"* (Axels ja via Bengt). Prövningen på nya dagar blir läsningen av varianterna nedan, 1/12.
+- *Ändringen* (sql/146): kandidat_regel() och ny_kandidat_regel() skapas om ur sql/094 med samma ändring. En punkt vars enda fukt är
+  *Våt* varnar bara när `radar_precip` har minst 0,1 mm/h på sträckan de senaste 6 timmarna. Storstädernas punkter har bara radarn och
+  rörs inte. Inget nytt appbygge: regeln bor i databasen, och kartan och rösten följer lägesfilen.
+- *Utfallet `uppehåll`.* Punkterna som ändringen tystar får ett eget utfall efter spridningsspärren, i stället för `torr`. Den gamla
+  regelns varnande punkter är därmed `varnar` och `uppehåll` tillsammans, och domloggen visar dem (i `punkter` och `fukt_utfall`, inte i
+  kolumnerna varnar, veto, torr och spridning). Allt som talar läser bara `varnar`. Olycksfacit skriver orsaken *uppehåll*.
+- *Ordningen:* sql/146, sql/080 och sql/081 med DB-knappen. Den snabba kandidaten tiger mellan 146 och 080, och timvärdet talar under
+  tiden (sql/121). TILLBAKA: sql/094, sedan sql/080 och sql/081.
+- *Kuvösen:* kuvösens facitläsning (`kuvos/facit-trv.ts`, DECISIONS #593) räknar fortfarande *Våt* utan villkor. Skillnaden mot driften är
+  det här beslutet, med Bengts och Axels ja.
+
+**Varianterna** (Bengt 26/11 11.05 UTC: *"kan du samtidigt göra en mätning med de olika varianterna och redovisa den 1 december"*).
+Förregistrering, skriven 26/11 före varje dag från 27/11:
+1. *Perioderna.* A: 27/11 00.00 svensk tid till läsningen 1/12, nya dagar. B: 6/11 00.00 till 26/11 24.00, redan lästa dagar där 6 h
+   valdes. B redovisas för sig och märkt som läst.
+2. *Den gamla regelns sträcktimmar* (G): varje sträcka och timme i den nyas domlogg där `punkter − veto − torr − spridning > 0`, alltså
+   varnar eller uppehåll. Timmar som räknats (`ny_kandidat_skugga_korning`), som i förregistreringen ovan.
+3. *Varianterna*, var och en en delmängd av G. En G-timme behålls när radarn hade minst 0,1 mm/h på 60 minuter (loggens `radar_mmh`)
+   eller när:
+   - V1 den gamla regeln: alltid (hela G);
+   - V2 radarn 1 h, V3 radarn 3 h, V4 radarn 6 h (regeln i drift), V5 radarn 12 h, V6 radarn 24 h: `radar_precip` har minst 0,1 mm/h på
+     sträckan inom så många timmar före loggens skrivtid;
+   - V7 stationerna 6 h: en väderstation inom 15 km från sträckan har `rain_sum_mm` eller `snow_wateq_mm` över 0 inom 6 timmar;
+   - V8 radarn eller stationerna 6 h: V4 eller V7.
+4. *Kontrollen.* V4 räknad i efterhand mot domloggens `varnar > 0` på timmarna efter migrationen: andelen timmar där de är oeniga redovisas.
+5. *Väglaget, trafiken och facit* som i förregistreringen ovan (punkt 2–4, med tillägget om natt och dag): singelolyckorna, utan
+   dubbletter, inom 100 m från en väglagssträcka.
+6. *Utfallet per variant och period:* andelen av G:s sträcktimmar som behålls, i alla väglag och på *Normalt, Våt*; singelolyckor per
+   miljon fordonskilometer i den behållna delen och i den tystade delen (G minus varianten) på *Normalt, Våt*, med antal och 95 %-intervall;
+   och antalet singelolyckor under G som varianten tystar, i alla väglag. Bredvid: *Normalt* utan K och Trafikverkets halka i samma period.
+7. *Förväntan* (Claudes): i V4 ligger den tystade delen nära basen. V2 och V3 tystar också timmar med förhöjd risk (banden 1–6 h låg på
+   0,36–0,44 i B), V5 och V6 behåller fler timmar nära basen, och V7 skiljer sämre än radarn eftersom stationen är en punkt. Period A har
+   få olyckor, så intervallen blir breda: A kan visa att V4:s tystade del inte ligger klart över basen, men inte ensam välja variant.
+8. *Vad som räknas.* Ingen regel ändras av läsningen. Bengt och Axel avgör. Den redovisas 1/12 med den andra mellanläsningen
+   (DECISIONS #968), frist `vat-varianterna-2026-12-01`.
+MET Nordics nederbörd bor i halkvakt-kuvos (DECISIONS #768) och ingår inte i den här läsningen.
+
+**Gränser.** ÅDT är ett årsmedel, och natt och dag är bara två nivåer. Olyckan prövas på sin punkt. Läsningen gäller timvärdet, inte
+kvarten som kartan och rösten använder (DECISIONS #782 punkt 4). Timmarna då den frysta talade (morgnarna 12–13/11) räknas med den nyas
+logg. 16 sträckor saknar ÅDT: deras olyckor räknas, men inte deras trafik.
+
+**Alternativ.** Stationernas nederbörd (`regn_h`) i stället för radarn: den gäller en punkt och inte sträckan, och prövas om radarn inte
+räcker. MET Nordics nederbörd bor i halkvakt-kuvos.
+
+**Stomdokument:** MAT (mätningen och varianterna), SYS (kandidatens fukt i sql/146), BED §4.2 (frågan avgjord)
