@@ -5,6 +5,11 @@ name: timme-reserv
 # Loggen säger bara vad som beslutades; inga tal ur kuvösen.
 on:
   workflow_dispatch:
+    inputs:
+      nu:
+        description: "Prövningen: låtsas att klockan är detta, t.ex. 2026-11-25T15:54:30Z (tomt = nu). Startar och larmar på riktigt, märkt prov."
+        required: false
+        default: ""
   pull_request:
     paths: ["scripts/timme-reserv.ts", ".github/workflows/timme-reserv.yml"]
 permissions:
@@ -30,10 +35,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          NU="${{ inputs.nu }}"; PROV=""; ARG=()
+          if [ -n "$NU" ]; then PROV=" (prov med klockan $NU)"; ARG=(--nu "$NU"); fi
           SVAR=$(gh api "repos/${{ github.repository }}/actions/workflows/ny-kandidat-timme.yml/runs?per_page=10" --jq '[.workflow_runs[].created_at]' \
-            | node --experimental-strip-types scripts/timme-reserv.ts 2>/dev/null)
+            | node --experimental-strip-types scripts/timme-reserv.ts "${ARG[@]}" 2>/dev/null)
           BESLUT="${SVAR%%$'\t'*}"; SKAL="${SVAR#*$'\t'}"
-          echo "$BESLUT: $SKAL" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "$BESLUT: $SKAL$PROV" | tee -a "$GITHUB_STEP_SUMMARY"
           if [ "$BESLUT" = "starta" ] || [ "$BESLUT" = "larma" ]; then
             gh workflow run ny-kandidat-timme.yml --ref main -R "${{ github.repository }}"
             echo "ny-kandidat-timme startad" | tee -a "$GITHUB_STEP_SUMMARY"
@@ -41,12 +48,12 @@ jobs:
           if [ "$BESLUT" = "larma" ]; then
             MARK="<!-- timme-reserv -->"
             NR=$(gh api "repos/${{ github.repository }}/issues?labels=smavag-vakt&state=open&per_page=20" --jq "[.[] | select(.body | contains(\"$MARK\")) | .number][0] // empty")
-            TEXT="Timkörningen ny-kandidat-timme startade inte för timmen $(date -u +%Y-%m-%dT%H:00Z): varken pulsklockan :47 eller reserven :54 gav en körning. Reserven startade den :58. Uteblir den ändå saknar småvägsrösten timmen, och rösten tiger tills nästa timme är räknad (sql/110, två timmar). Körningen: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            TEXT="${PROV:+PROV$PROV. }Timkörningen ny-kandidat-timme startade inte för timmen $(date -u +%Y-%m-%dT%H:00Z): varken pulsklockan :47 eller reserven :54 gav en körning. Reserven startade den :58. Uteblir den ändå saknar småvägsrösten timmen, och rösten tiger tills nästa timme är räknad (sql/110, två timmar). Körningen: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             if [ -n "$NR" ]; then
               gh api "repos/${{ github.repository }}/issues/$NR/comments" -f body="$TEXT" > /dev/null
               echo "larmet: kommentar på #$NR" | tee -a "$GITHUB_STEP_SUMMARY"
             else
-              gh api "repos/${{ github.repository }}/issues" -f title="Timkörningen uteblev: reserven fick starta den sent" \
+              gh api "repos/${{ github.repository }}/issues" -f title="Timkörningen uteblev: reserven fick starta den sent$PROV" \
                 -f body="$MARK
           $TEXT
 
