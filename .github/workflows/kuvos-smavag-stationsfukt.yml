@@ -1,0 +1,97 @@
+name: kuvos-smavag-stationsfukt
+# STATIONSFUKTEN (Bengt 26/11: "ja vi kan ju pröva med den mätningen"; halkvakt-kuvos BESLUT F93, förregistreringen i det privata repot).
+# Diagnos, ingen dom: ingenting här ändrar småvägsrösten, regeln, brytarna eller appen. Mätningen prövar i skuggan om Trafikverkets
+# stationer, när de visar nederbörd nära en småvägspunkt, också skulle räknas som fukt för rösten:
+#   olyckor    (för hand, en gång) olyckorna vid en småvägspunkt i olycksfacit, i grindarnas tillfälliga databas, så att stationerna
+#              finns också för dygnen som raderats ur driften. Punkterna läses ur driften i en läsande transaktion.
+#   stickprov  (varje timme) regelns besked i driften just nu, i en läsande transaktion.
+# Mätskriptet ur det privata repot läggs ovanpå utcheckningen, och spärren och självtestet går först. Talen går bara till grenen
+# resultat/smavag-stationsfukt i det privata repot, med KUVOS_SKRIVNYCKEL. Loggen är publik (#498) och säger bara klart eller vilket
+# steg som föll. Före signeringen och när förregistreringens vecka är slut gör timjobbet ingenting; schemat tas bort när resultatet
+# är bokfört.
+on:
+  schedule:
+    - cron: "25 * * * *"
+  workflow_dispatch:
+    inputs:
+      del:
+        description: "olyckor = olyckorna i olycksfacit (en gång); stickprov = ett stickprov ur driften nu"
+        type: choice
+        options: [olyckor, stickprov]
+        default: olyckor
+permissions:
+  contents: read
+concurrency: { group: kuvos-smavag-stationsfukt, cancel-in-progress: false }
+jobs:
+  matningen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      DEL: "${{ inputs.del || 'stickprov' }}"
+      HANDELSE: "${{ github.event_name }}"
+      FORREG: docs/FORREGISTRERING-SMAVAG-STATIONSFUKT-2026-11.md
+      MATNING: scripts/matningar/kuvos-smavag-stationsfukt-2026-11.ts
+      G: resultat/smavag-stationsfukt
+    steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      # Fysiken och kuvösen ligger i det privata repot Axelstar/halkvakt-kuvos (DECISIONS #768): koden läggs ovanpå utcheckningen.
+      - uses: actions/checkout@v4
+        with: { repository: Axelstar/halkvakt-kuvos, token: "${{ secrets.KUVOS_LASNYCKEL }}", path: .kuvos-privat, persist-credentials: false }
+      - name: Koden ur det privata repot ovanpå
+        run: rsync -a --exclude .git --exclude '/*.md' .kuvos-privat/ ./ && rm -rf .kuvos-privat
+      - name: Spärren
+        id: sparren
+        shell: bash
+        run: |
+          if python3 fysik/ny_kandidat/sparren.py "$FORREG" > /dev/null 2>&1; then
+            echo "spärren (F93, förregistreringen signerad): klart"; echo "ok=ja" >> "$GITHUB_OUTPUT"
+          elif [ "$HANDELSE" = schedule ]; then
+            echo "spärren: förregistreringen är inte signerad, timjobbet gör ingenting"; echo "ok=nej" >> "$GITHUB_OUTPUT"
+          else
+            echo "::error::spärren: förregistreringen är inte signerad (F93)"; exit 1
+          fi
+      - uses: actions/setup-node@v4
+        if: ${{ steps.sparren.outputs.ok == 'ja' }}
+        with: { node-version: 22, cache: npm }
+      - if: ${{ steps.sparren.outputs.ok == 'ja' }}
+        run: npm ci
+      - name: Självtestet
+        if: ${{ steps.sparren.outputs.ok == 'ja' }}
+        shell: bash
+        run: |
+          if node --experimental-strip-types "$MATNING" --sjalvtest > /dev/null 2>&1; then echo "mätskriptets självtest (påhittade data): klart"
+          else echo "::error::mätskriptets självtest: fel"; exit 1; fi
+          echo "DAGAR=$(( ( $(date -u +%s) - $(date -u -d 2026-11-12 +%s) ) / 86400 + 1 ))" >> "$GITHUB_ENV"
+      - uses: ./.github/actions/tillfalliga-arkivet
+        if: ${{ steps.sparren.outputs.ok == 'ja' && env.DEL == 'olyckor' }}
+        with: { dagar: "${{ env.DAGAR }}", drift-url: "${{ secrets.DATABASE_URL }}", tabeller: "olycksfacit,olycksfacit_lager" }
+      - name: Mätningen, och filerna till grenen resultat/smavag-stationsfukt i kuvösen
+        if: ${{ steps.sparren.outputs.ok == 'ja' }}
+        shell: bash
+        env: { DRIFT_URL: "${{ secrets.DATABASE_URL }}", SKRIV: "${{ secrets.KUVOS_SKRIVNYCKEL }}" }
+        run: |
+          set -euo pipefail
+          [ -n "$SKRIV" ] || { echo "::error::hemligheten KUVOS_SKRIVNYCKEL saknas"; exit 1; }
+          K="$RUNNER_TEMP/kuvos"
+          git clone -q "https://x-access-token:${SKRIV}@github.com/Axelstar/halkvakt-kuvos.git" "$K" 2>/dev/null || { echo "::error::kuvösen gick inte att klona med KUVOS_SKRIVNYCKEL"; exit 1; }
+          git -C "$K" config user.name "halkvakt-actions"; git -C "$K" config user.email "actions@users.noreply.github.com"
+          if git -C "$K" ls-remote -q --exit-code --heads origin "$G" >/dev/null 2>&1; then git -C "$K" fetch -q origin "$G" && git -C "$K" checkout -q -B "$G" FETCH_HEAD
+          else git -C "$K" checkout -q -b "$G"; fi
+          if [ "$DEL" = olyckor ]; then
+            ARG=(olyckor --dir "$K/$G" --nr "$GITHUB_RUN_NUMBER"); export DATABASE_URL="$TILLFALLIG_URL"
+          else
+            ARG=(stickprov --dir "$K/$G"); export DATABASE_URL="$DRIFT_URL"; unset DRIFT_URL
+          fi
+          RC=0; node --experimental-strip-types "$MATNING" "${ARG[@]}" > mat.txt 2>&1 || RC=$?
+          # Bara skriptets egna ord, aldrig talen: raderna klart och veckan är slut, och vilket steg som föll.
+          grep -E '^(stickprovet|olyckorna|sammanställningen): (klart|veckan är slut)$' mat.txt || true
+          PROVET=$(sed -n 's/^STATIONSFUKT FÖLL: \(argumenten\|spärren\|databasen\|punkterna\|olyckorna\|väderarkivet\|regeln\|stationerna\|räkningen\|sammanställningen\)$/\1/p' mat.txt | tail -1)
+          rm -f mat.txt
+          if [ "$RC" -eq 3 ]; then echo "stickprovet: förregistreringens vecka är slut, ingenting skrivs: klart"; exit 0; fi
+          if [ "$RC" -ne 0 ]; then echo "::error::stationsfukten: fel i ${PROVET:-skriptet, utan besked (kod $RC)}"; exit "$RC"; fi
+          git -C "$K" add "$G"
+          if git -C "$K" diff --cached --quiet; then echo "ingenting nytt att skriva: klart"; exit 0; fi
+          git -C "$K" commit -q -m "Stationsfukten: $DEL, körning $GITHUB_RUN_NUMBER (BESLUT F93)"
+          for i in 1 2 3; do git -C "$K" push -q origin "$G" 2>/dev/null && { echo "filerna till kuvösen, grenen $G: klart"; exit 0; }; sleep $((i * 5)); done
+          echo "::error::pushen till kuvösen föll"; exit 1
