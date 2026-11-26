@@ -1,0 +1,97 @@
+{
+ "name": "GPS-kvalitet: hopp inomhus väcker ingen halkvarning",
+ "description": "Telefonen ligger stilla inomhus. Lägena kommer ur wifi var femte sekund, utan fart och kurs, med 65 m noggrannhet, och hoppar 150 m norrut och tillbaka. Motorn hade räknat hoppet som 108 km/h rakt norrut, och isstationen ligger 400 m norr om telefonen: utan noggrannheten i fixen talar halkvarningen t=5 vid 250 m (uppmätt med fältet borttaget). Med den ⇒ tyst.",
+ "hazards": [
+  {
+   "id": "wx1",
+   "kind": "icing_point",
+   "lon": 15,
+   "lat": 58.003593244699964,
+   "meta": {
+    "surfaceTempC": -1,
+    "moisture": true
+   }
+  }
+ ],
+ "trace": [
+  {
+   "t": 0,
+   "lon": 15,
+   "lat": 58,
+   "accuracyM": 65
+  },
+  {
+   "t": 5,
+   "lon": 15,
+   "lat": 58.00134746676249,
+   "accuracyM": 65
+  },
+  {
+   "t": 10,
+   "lon": 15,
+   "lat": 58,
+   "accuracyM": 65
+  },
+  {
+   "t": 15,
+   "lon": 15,
+   "lat": 58.00134746676249,
+   "accuracyM": 65
+  },
+  {
+   "t": 20,
+   "lon": 15,
+   "lat": 58,
+   "accuracyM": 65
+  },
+  {
+   "t": 25,
+   "lon": 15,
+   "lat": 58.00134746676249,
+   "accuracyM": 65
+  },
+  {
+   "t": 30,
+   "lon": 15,
+   "lat": 58,
+   "accuracyM": 65
+  },
+  {
+   "t": 35,
+   "lon": 15,
+   "lat": 58.00134746676249,
+   "accuracyM": 65
+  },
+  {
+   "t": 40,
+   "lon": 15,
+   "lat": 58,
+   "accuracyM": 65
+  },
+  {
+   "t": 45,
+   "lon": 15,
+   "lat": 58.00134746676249,
+   "accuracyM": 65
+  },
+  {
+   "t": 50,
+   "lon": 15,
+   "lat": 58,
+   "accuracyM": 65
+  },
+  {
+   "t": 55,
+   "lon": 15,
+   "lat": 58.00134746676249,
+   "accuracyM": 65
+  },
+  {
+   "t": 60,
+   "lon": 15,
+   "lat": 58,
+   "accuracyM": 65
+  }
+ ],
+ "expected": []
+}

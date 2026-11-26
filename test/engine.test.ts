@@ -135,6 +135,21 @@ test("ej bil: too fast or too high is silent, just inside the limits speaks", ()
   }
 });
 
+// GPS-kvalitet: a position that is not good enough to be a car's GPS position never reaches a warning decision. Checked on the
+// frozen log itself, like ej bil above, and against the engine with the accuracy taken out of the trace: the silent vectors must
+// speak without it, so the silence is the gate's and not the scenario's.
+test("gps-kvalitet: a poor position is silent, a good one speaks, and no accuracy is as before", () => {
+  const gps = vectorFiles.filter((f) => f.includes("_gps_"));
+  assert.equal(gps.length, 4);
+  for (const f of gps) {
+    const v = loadVector(f);
+    if (!f.endsWith("_tiger.json")) { assert.equal(v.expected.length, 1, `${f}: must speak once`); continue; }
+    assert.equal(v.expected.length, 0, `${f}: must be silent`);
+    const utan = v.trace.map(({ accuracyM: _, ...fix }: Fix & { accuracyM?: number }) => fix);
+    assert.equal(new AlertEngine(v.hazards).run(utan).length, 1, `${f}: the same trace without accuracy must speak`);
+  }
+});
+
 test("real Skåne snapshot: only camera alerts in August, throttle respected", () => {
   const got = new AlertEngine(fixture.hazards).run(fixture.trace);
   assert.deepStrictEqual(got, fixture.expected);

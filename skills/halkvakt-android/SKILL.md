@@ -80,6 +80,11 @@ Allt nedan är destillat av projektets beslut (DECISIONS.md) och Play-dossiern.
   kompilerade grönt medan appen föll på en saknad import i `Guard.kt` (12/11, DECISIONS #844). Bara android.yml kompilerar appen:
   kör den med knappen på grenen innan en PR med en ny farotyp kallas klar.
 
+- `Location.hasSpeed()` falskt eller en noggrannhet sämre än motorns `maxAccuracyM` är inget bil-läge (wifi, mobilmast, inomhus).
+  Utan telefonens fart räknar motorn fart och kurs ur hoppet mellan två lägen, och ett hopp på 150 m inomhus blev 108 km/h och
+  en halkvarning (v87, 25/11). Appen lämnar bara färska lägen med noggrannhet och egen fart till motorn; självstoppet får de
+  dåliga som tid, aldrig som förflyttning.
+
 ## 6 · Innan du kodar
 1. Läs bedömningen (`docs/BEDOMNING-*.md`) + relevant kort på tavlan (BACKLOG avvecklad 26/9).
 2. UI-arbete → läs `skills/compose-state-and-effects/SKILL.md`.

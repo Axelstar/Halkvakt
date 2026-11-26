@@ -88,6 +88,7 @@ class VectorTest {
         speedKmh = if (o.has("speedKmh") && !o.isNull("speedKmh")) o.getDouble("speedKmh") else null,
         headingDeg = if (o.has("headingDeg") && !o.isNull("headingDeg")) o.getDouble("headingDeg") else null,
         altitudeM = if (o.has("altitudeM") && !o.isNull("altitudeM")) o.getDouble("altitudeM") else null,
+        accuracyM = if (o.has("accuracyM") && !o.isNull("accuracyM")) o.getDouble("accuracyM") else null,
     )
 
     private fun runFile(f: File): Pair<List<Alert>, JSONArray> {
