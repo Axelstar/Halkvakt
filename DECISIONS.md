@@ -19750,3 +19750,42 @@ Värdevakten: `linjeM` och `vinkel` räknas av motorn ur geometrin och bär inge
 geometrin); en kolumn per stopp i stället för per sträcka (ett stopp per GPS-läge, tiotals per sträcka).
 
 **Stomdokument:** MAT (skuggans loggar), SYS (motorns krok och skuggmotorn)
+
+## #968 (26/11 2026) De tre reglerna mot singelolyckorna: vägtestet, var på sträckan och åldern, var för sig och tillsammans (kort #680)
+
+**Beslut** (Bengt 26/11: *"skulle du kunna bygga ihop en mätning av alla dessa tre var för sig och i kombination med varandra och jämföra
+dem med singelolyckor. Uppspelningen bör vara från 6 november och framåt med mellanläsning den 1/12"*). En tyst läsning, med DB-knappen i
+läsläge, av tre regler mot olycksfacit från 6/11: halkans vägtest (V, DECISIONS #963, i drift sedan 25/11), en tänkt regel som tiger på de
+varma delarna av en sträcka som bara är *Besvärligt (risk för)* (P, mätningen i DECISIONS #960) och halkans ålder (Å, `vaglag_hal_sedan`,
+DECISIONS #897). Ingen regel, motor, lägesfil eller röst ändras, och ingen tabell skrivs. Allt läses ur olycksfacit, `strackdel_olycka`,
+`strackdel_timme`, `road_condition_history` och, från 26/11, `shadow_log.vagtest` (DECISIONS #967). Uppspelningen räknar om facit för varje
+regel; motorn körs inte bakåt, för `lagesfil_timme` bär bara sträckornas id:n och börjar 23/11.
+
+**Förregistrering, skriven efter infoläsningen 26/11 och före mellanläsningen.**
+1. *Facit.* Singelolyckorna (olycksfacits `art` *ett fordon*) från 6/11 00.00 svensk tid, utan dubbletter, där olycksfacits A1-lager säger
+   att sträckan inom 100 m var hal vid starten. Olyckorna med flera fordon och de övriga redovisas bredvid, inte som facit. Vilt räknas inte.
+2. *Reglerna, per olycka.* V: olyckan inom 80 m från sträckan och på samma vägnummer. Vinkeln går inte att pröva på en punkt, och vägnumret
+   får stå för den. P: tyst om sträckan är kod 2 utan motorns halkord och vägbanan vid olyckan är skattad över +3 °C (från 11/11, så långt
+   vädret i driften räcker bakåt). Å: halkan yngre än ett dygn (`ny`) eller äldre, och i fyra band: under 6 h, 6–24 h, 1–3 dygn, över 3 dygn.
+3. *U1, kostnaden:* hur många singelolyckor V, P och V+P hade tystat. Å tystar inget i sig. Den redovisas som kostnaden för en tänkt regel
+   som tiger på halka äldre än 3 dygn, och tillsammans med V och P.
+4. *U2, åldern mot tiden:* andelen singelolyckor i varje åldersband mot andelen sträcktid i samma band (hala sträckor var sjätte timme från
+   6/11), räknad per sträcka och från mellanläsningen också per km.
+5. *U3, nyttan:* sträckorna som vägtestet stoppat på skuggans 20 rutter (`shadow_log.vagtest`), och hur många av dem som aldrig talade.
+6. *Vad som räknas.* Ingen regel följer av läsningen. Den säger för varje regel och kombination vad den kostar i singelolyckor och vad den
+   sparar i falsklarm, och Bengt och Axel avgör. P döms som i DECISIONS #960 punkt 5.
+7. *När.* Mellanläsningen 1/12 (frist `tre-reglerna-mellanlasning-2026-12-01`), samma dag som första läsningen av var på sträckan
+   (DECISIONS #961). Slutläsningen efter vintern.
+
+**Infoläsningen 26/11** (DB-knappen 45772180006 och 45772698375). Från 6/11: 482 singelolyckor, 132 av dem på hal sträcka (flera fordon
+426 och 87, övriga 164 och 46). V på avståndet ensamt tystar 2 av 132, båda 80–100 m från sträckan, och 2 till låg på ett annat vägnummer.
+P tystar ingen singelolycka: 1 av 239 olyckor sedan 11/11 låg över +3 °C, en med flera fordon, och 56 av drygt 400 000 delar sedan 24/11.
+V och P tillsammans behåller 115 av de 117 singelolyckor där vägbanan är skattad. Å: 49 % av singelolyckorna kom på halka yngre än ett dygn,
+som hade 41 % av sträcktiden; under 6 h 23 % mot 15 %, över 3 dygn 35 % mot 42 %. Olyckorna med flera fordon kom till 70 % på ny halka.
+
+**Gränser.** Olyckan prövas på sin punkt, inte på bilens väg in mot sträckan. Sträcktiden räknas per sträcka, inte efter trafiken. Vädret
+för 6–10/11 finns bara i arkivhinken, så P börjar 11/11.
+
+**Alternativ.** Att spela upp lägesfilerna med motorn (bara id:n, från 23/11); att vänta till efter vintern (Bengt ville se läget 1/12).
+
+**Stomdokument:** MAT (mätningen och förregistreringen)
