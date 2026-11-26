@@ -108,9 +108,13 @@ public struct Fix {
     /// Metres above sea level, only when the platform says the value is valid (CLLocation.verticalAccuracy > 0). A phone above
     /// maxAltitudeM is not in a car.
     public let altitudeM: Double?
-    public init(t: Double, lon: Double, lat: Double, speedKmh: Double? = nil, headingDeg: Double? = nil, altitudeM: Double? = nil) {
+    /// The radius of uncertainty of the position in metres (CLLocation.horizontalAccuracy when it is not negative). A fix worse
+    /// than maxAccuracyM is not a car's GPS position and is dropped.
+    public let accuracyM: Double?
+    public init(t: Double, lon: Double, lat: Double, speedKmh: Double? = nil, headingDeg: Double? = nil, altitudeM: Double? = nil,
+                accuracyM: Double? = nil) {
         self.t = t; self.lon = lon; self.lat = lat; self.speedKmh = speedKmh; self.headingDeg = headingDeg
-        self.altitudeM = altitudeM
+        self.altitudeM = altitudeM; self.accuracyM = accuracyM
     }
 }
 
@@ -138,6 +142,9 @@ public struct EngineConfig {
     // and the step is silent. Proposed start values — the same numbers as engine/src/types.ts (kontraktsgrinden).
     public var maxSpeedKmh = 160.0
     public var maxAltitudeM = 1500.0
+    // GPS-kvalitet: a fix whose reported accuracy is worse than this is dropped. Proposed start value — the same number as
+    // engine/src/types.ts (kontraktsgrinden).
+    public var maxAccuracyM = 50.0
     public var globalCooldownS = 10.0   // #127: var 45; prioritetsmedveten nu
     public var repeatMinS = 600.0
     public var repeatMinM = 5000.0
@@ -506,6 +513,8 @@ public final class AlertEngine {
     public func updateHazards(_ hazards: [Hazard]) { ingest(hazards) }
 
     public func step(_ fix: Fix) -> Alert? {
+        // GPS-kvalitet: a position this uncertain is not a car's GPS position. Dropped before anything is remembered.
+        if (fix.accuracyM ?? 0) > cfg.maxAccuracyM { return nil }
         let (speedKmhOpt, headingOpt) = kinematics(fix)
         if let p = prevFix { odometerM += Geo.haversineM(p.lon, p.lat, fix.lon, fix.lat) }
         prevFix = fix

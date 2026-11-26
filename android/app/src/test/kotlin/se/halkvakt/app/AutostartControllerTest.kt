@@ -10,7 +10,7 @@ class AutostartControllerTest {
 
     @Test fun vehicleEnterStarts_exitStops() {
         val c = AutostartController()
-        assertEquals(AutoCmd.START, c.onVehicleEnter())
+        assertEquals(AutoCmd.START, c.onVehicleEnter(guardRunning = false))
         assertEquals(AutoCmd.STOP, c.onVehicleExit())
     }
 
@@ -18,6 +18,16 @@ class AutostartControllerTest {
         val c = AutostartController()
         // Guard was started by hand in the UI; AR later claims we exited a vehicle.
         assertEquals(AutoCmd.NONE, c.onVehicleExit())
+    }
+
+    /** The rule at the top of Autostart.kt: an event that meets a guard already running by hand must not claim it. */
+    @Test fun aHandStartedGuardIsNotClaimedByALaterEvent() {
+        val c = AutostartController(learnedCars = setOf("AA:BB"))
+        assertEquals(AutoCmd.START, c.onVehicleEnter(guardRunning = true))
+        assertEquals(AutoCmd.START, c.onAclConnected("AA:BB", guardRunning = true))
+        assertEquals(false, c.isAutoStarted())
+        assertEquals(AutoCmd.NONE, c.onVehicleExit())
+        assertEquals(AutoCmd.NONE, c.onAclDisconnected("AA:BB"))
     }
 
     @Test fun knownCarConnectingStartsInstantly() {
@@ -28,10 +38,27 @@ class AutostartControllerTest {
 
     @Test fun unknownDeviceDuringDriveIsLearned() {
         val c = AutostartController()
-        assertEquals(AutoCmd.LEARN, c.onAclConnected("CA:FE", guardRunning = true))
+        assertEquals(AutoCmd.LEARN, c.onAclConnected("CA:FE", guardRunning = true, deviceClass = 0x0420))
         assertEquals(setOf("CA:FE"), c.learnedCars())
         // Next time: turbo path.
         assertEquals(AutoCmd.START, c.onAclConnected("CA:FE", guardRunning = false))
+    }
+
+    /** Only a car's own unit is learned: a watch or earbuds that connect during a drive used to start the guard at home. */
+    @Test fun onlyCarAudioAndHandsFreeAreLearned() {
+        val c = AutostartController()
+        // Wrist watch, wearable headset, headphones, loudspeaker, phone, and a class that could not be read.
+        for (cls in listOf(0x0704, 0x0404, 0x0418, 0x0414, 0x020C, null))
+            assertEquals(AutoCmd.NONE, c.onAclConnected("DE:AD", guardRunning = true, deviceClass = cls), "class $cls")
+        assertEquals(emptySet<String>(), c.learnedCars())
+        assertEquals(AutoCmd.LEARN, c.onAclConnected("CA:FE", guardRunning = true, deviceClass = 0x0408))   // hands-free
+        assertEquals(setOf("CA:FE"), c.learnedCars())
+    }
+
+    /** A car learned before the class rule keeps starting the guard whatever it reports: the saved list is not touched. */
+    @Test fun anAlreadyLearnedDeviceStillStarts() {
+        val c = AutostartController(learnedCars = setOf("AA:BB"))
+        assertEquals(AutoCmd.START, c.onAclConnected("AA:BB", guardRunning = false, deviceClass = 0x0704))
     }
 
     @Test fun unknownDeviceWhileIdleDoesNothing_headphonesAtHome() {
@@ -42,7 +69,7 @@ class AutostartControllerTest {
 
     @Test fun unknownDeviceDisconnectNeverStops() {
         val c = AutostartController(learnedCars = setOf("AA:BB"))
-        c.onVehicleEnter()
+        c.onVehicleEnter(guardRunning = false)
         assertEquals(AutoCmd.NONE, c.onAclDisconnected("DE:AD"))
     }
 
@@ -57,7 +84,7 @@ class AutostartControllerTest {
     @Test fun fullCommute_btFirstThenArBackup() {
         val c = AutostartController(learnedCars = setOf("CA:FE"))
         assertEquals(AutoCmd.START, c.onAclConnected("CA:FE", guardRunning = false))
-        assertEquals(AutoCmd.START, c.onVehicleEnter())      // AR arrives late: idempotent start
+        assertEquals(AutoCmd.START, c.onVehicleEnter(guardRunning = true))   // AR arrives late: idempotent start
         assertEquals(AutoCmd.STOP, c.onAclDisconnected("CA:FE"))
         assertEquals(AutoCmd.NONE, c.onVehicleExit())        // already stopped: no double stop
     }
@@ -68,7 +95,7 @@ class AutostartControllerTest {
         assertEquals(AutoCmd.START, first.onAclConnected("AA:BB", guardRunning = false))
         val second = AutostartController(first.learnedCars(), first.isAutoStarted())
         assertEquals(AutoCmd.STOP, second.onAclDisconnected("AA:BB"))
-        val third = AutostartController(autoStarted = AutostartController().also { it.onVehicleEnter() }.isAutoStarted())
+        val third = AutostartController(autoStarted = AutostartController().also { it.onVehicleEnter(guardRunning = false) }.isAutoStarted())
         assertEquals(AutoCmd.STOP, third.onVehicleExit())
     }
 
@@ -118,6 +145,37 @@ class AutostartControllerTest {
     @Test fun aSlowQueueAboveTwelveKmhKeepsTheGuard() {
         val s = IdleStop()
         assertEquals(false, s.drive(0, 40 * 60, 13.0).first)
+    }
+
+    // GPS-kvalitet: indoors after the drive the positions come from wifi, one every ten seconds, and move 300 m every forty seconds
+    // (18 km/h over the window). They move the clock and nothing else: the guard stops on one of them when the quarter is up.
+    @Test fun poorFixesJumpingIndoorsDoNotKeepTheGuardAlive() {
+        val s = IdleStop()
+        val (_, lat) = s.drive(0, 300, 50.0)
+        var stoppedAt = -1
+        for (sec in 310..300 + 30 * 60 step 10) {
+            if (s.onFix(sec * 1000L, 13.0, lat + if (sec / 40 % 2 == 0) 0.0027 else 0.0, exact = false)) { stoppedAt = sec; break }
+        }
+        assertTrue(stoppedAt in 300 + 15 * 60..300 + 16 * 60 + 10, "stopped at $stoppedAt")
+    }
+
+    @Test fun theSameJumpsAsExactFixesDidKeepItAlive() {   // the counter-proof: what the rule was before
+        val s = IdleStop()
+        val (_, lat) = s.drive(0, 300, 50.0)
+        var stopped = false
+        for (sec in 310..300 + 30 * 60 step 10) {
+            stopped = s.onFix(sec * 1000L, 13.0, lat + if (sec / 40 % 2 == 0) 0.0027 else 0.0)
+            if (stopped) break
+        }
+        assertEquals(false, stopped)
+    }
+
+    @Test fun poorFixesInATunnelThenAnExactOneCountsAsDriving() {
+        val s = IdleStop()
+        s.drive(0, 60, 80.0)
+        for (sec in 61..61 + 10 * 60 step 5) assertEquals(false, s.onFix(sec * 1000L, 13.0, 55.6, exact = false))
+        assertEquals(false, s.onFix(61_000L + 14 * 60_000L, 13.0, 55.7))
+        assertEquals(false, s.onFix(61_000L + 20 * 60_000L, 13.0, 55.7))
     }
 
     @Test fun aTunnelGapCountsAsDriving() {

@@ -277,6 +277,9 @@ export class AlertEngine {
 
   /** Feed one GPS fix. Returns the spoken alert, or null (the normal case: silence). */
   step(fix: Fix): Alert | null {
+    // GPS-kvalitet: a position this uncertain is not a car's GPS position (wifi or cell mast, indoors or in a pocket). Dropped
+    // before anything is remembered, so its jump is neither a speed, a heading nor a driven distance for the next fix.
+    if ((fix.accuracyM ?? 0) > this.cfg.maxAccuracyM) return null;
     const { speedKmh, headingDeg } = this.kinematics(fix);
     if (this.prevFix) this.odometerM += haversineM(this.prevFix, fix);
     this.prevFix = fix;
