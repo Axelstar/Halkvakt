@@ -11,6 +11,8 @@
 //   den saknas och klockan är :57 eller senare → starta den och larma: också :54 föll, eller :54 startade aldrig
 // En dubbel körning är ofarlig: ny-kandidat-timme har en concurrency-grupp och skriver timmen med ON CONFLICT, och småvägsrösten
 // skriver om samma timme. Larmet är ett ärende med etiketten smavag-vakt, tilldelat Bengt; en ny utebliven timme blir en kommentar.
+// En körning som flödet startar väcker inte småvägsröstens workflow_run (GitHub startar inget flöde ur flödesnyckelns händelser), så
+// flödet väntar tills körningen lyckats och startar rösten själv för samma timme (prövningen 26/11).
 // Uteblir också det här flödet tar småvägsröstens vakt (smavag-vakt.yml) timmen nästa morgon.
 //
 //   gh api "repos/<repo>/actions/workflows/ny-kandidat-timme.yml/runs?per_page=10" --jq '[.workflow_runs[].created_at]' \

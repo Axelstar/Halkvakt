@@ -1,6 +1,6 @@
 name: timme-reserv
 # RESERVEN FÖR TIMKÖRNINGEN (Bengt 26/11: "ja bygg", DECISIONS #971). Pulsklockan startar flödet :54 och :58 varje timme. Saknas
-# timmens körning av ny-kandidat-timme (pulsklockan :47) startas den här, och småvägsrösten räknar sin timme efter den som vanligt.
+# timmens körning av ny-kandidat-timme (pulsklockan :47) startas den här, och när den lyckats startar flödet småvägsrösten (workflow_run väcks inte av en körning flödet startat).
 # Saknas den också :58 larmar flödet med ett ärende (etiketten smavag-vakt, tilldelat Bengt). Beslutet: scripts/timme-reserv.ts.
 # Loggen säger bara vad som beslutades; inga tal ur kuvösen.
 on:
@@ -20,7 +20,7 @@ concurrency: { group: timme-reserv, cancel-in-progress: false }
 jobs:
   reserv:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
     env:
       GH_TOKEN: "${{ github.token }}"
     steps:
@@ -42,8 +42,26 @@ jobs:
           BESLUT="${SVAR%%$'\t'*}"; SKAL="${SVAR#*$'\t'}"
           echo "$BESLUT: $SKAL$PROV" | tee -a "$GITHUB_STEP_SUMMARY"
           if [ "$BESLUT" = "starta" ] || [ "$BESLUT" = "larma" ]; then
+            START=$(date -u +%Y-%m-%dT%H:%M:%SZ); TIMME=$(date -u +%Y-%m-%dT%H:00:00Z)
             gh workflow run ny-kandidat-timme.yml --ref main -R "${{ github.repository }}"
             echo "ny-kandidat-timme startad" | tee -a "$GITHUB_STEP_SUMMARY"
+            # En körning som flödets egen nyckel startar väcker inte workflow_run (GitHubs regel), så småvägsrösten startas härifrån
+            # när timkörningen lyckats, med timmen då reserven startade (en körning som blir klar efter hel timme räknar annars nästa timme).
+            # Upptäckt i prövningen 26/11.
+            KLAR=""
+            for i in $(seq 1 60); do
+              sleep 10
+              KLAR=$(gh api "repos/${{ github.repository }}/actions/workflows/ny-kandidat-timme.yml/runs?per_page=5" \
+                --jq "[.workflow_runs[] | select(.created_at >= \"$START\" and .status == \"completed\") | .conclusion][0] // empty")
+              [ -n "$KLAR" ] && break
+            done
+            if [ "$KLAR" = "success" ]; then
+              gh workflow run kuvos-smavag-timme.yml --ref main -R "${{ github.repository }}" -f tid="$TIMME"
+              echo "småvägsrösten startad för $TIMME" | tee -a "$GITHUB_STEP_SUMMARY"
+            else
+              echo "::error::timkörningen blev inte klar (${KLAR:-väntade 10 min}); småvägsrösten startades inte"
+              FEL=1
+            fi
           fi
           if [ "$BESLUT" = "larma" ]; then
             MARK="<!-- timme-reserv -->"
@@ -61,3 +79,4 @@ jobs:
               echo "larmet: nytt ärende" | tee -a "$GITHUB_STEP_SUMMARY"
             fi
           fi
+          [ -z "${FEL:-}" ]
