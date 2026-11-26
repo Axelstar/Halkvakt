@@ -1,0 +1,39 @@
+{
+  "typ": "forandring",
+  "nyckel": "forandring",
+  "etikett": "Sedan i går",
+  "rubrik": "Halkan sprider sig",
+  "underrad": "vägavsnitt med halka, mot samma tid i går",
+  "lyft": {
+    "stort": "330 → 282",
+    "liten": "ny halka i Kronoberg och Skåne"
+  },
+  "text": "Trafikverket rapporterar halka på 282 vägavsnitt, mot 330 vid samma tid i går.\nNy halka sedan i går: Kronoberg och Skåne.\n\nNorrbotten: halka på 57 av 58 vägavsnitt, 57 stationer under noll, kallast −14,2 °C vid Persön.\nVästerbotten: halka på 44 av 44 vägavsnitt, 44 stationer under noll, kallast −14,3 °C vid Umasjö.\nVästra Götaland: halka på 34 av 133 vägavsnitt, 106 stationer under noll, kallast −10,8 °C vid 1552 Gustavsfors Fjärryta.\nStockholms län: halka på 28 av 44 vägavsnitt, 49 stationer under noll, kallast −5,9 °C vid Arlanda.\nVästernorrland: halka på 20 av 22 vägavsnitt, 39 stationer under noll, kallast −13,1 °C vid Norrhög.\nHalka eller minusgrader även i 16 län till.\n\nLäget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan\nI appen säger Halkvakt till direkt, med rösten, innan du är där. Gratis för iPhone och Android.\niPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\nAndroid: https://play.google.com/store/apps/details?id=se.halkvakt.app\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #VästraGötaland #Stockholm #Västernorrland #halkvakt",
+  "textIg": "Trafikverket rapporterar halka på 282 vägavsnitt, mot 330 vid samma tid i går.\nNy halka sedan i går: Kronoberg och Skåne.\n\nNorrbotten: halka på 57 av 58 vägavsnitt, 57 stationer under noll, kallast −14,2 °C vid Persön.\nVästerbotten: halka på 44 av 44 vägavsnitt, 44 stationer under noll, kallast −14,3 °C vid Umasjö.\nVästra Götaland: halka på 34 av 133 vägavsnitt, 106 stationer under noll, kallast −10,8 °C vid 1552 Gustavsfors Fjärryta.\nStockholms län: halka på 28 av 44 vägavsnitt, 49 stationer under noll, kallast −5,9 °C vid Arlanda.\nVästernorrland: halka på 20 av 22 vägavsnitt, 39 stationer under noll, kallast −13,1 °C vid Norrhög.\nHalka eller minusgrader även i 16 län till.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\nI appen säger Halkvakt till direkt, med rösten, innan du är där. Gratis för iPhone och Android, länken finns i vår profil.\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #VästraGötaland #Stockholm #Västernorrland #halkvakt",
+  "pass": "morgon",
+  "datum": "2026-11-26",
+  "generated_at": "2026-11-26T04:00:24.706Z",
+  "lan": [
+    "norrbotten",
+    "vasterbotten",
+    "vastra-gotaland",
+    "stockholm",
+    "vasternorrland",
+    "uppsala",
+    "jamtland",
+    "skane",
+    "jonkoping",
+    "kronoberg",
+    "gotland",
+    "sodermanland",
+    "dalarna",
+    "kalmar",
+    "gavleborg",
+    "varmland",
+    "halland",
+    "ostergotland",
+    "orebro",
+    "blekinge",
+    "vastmanland"
+  ]
+}
