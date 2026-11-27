@@ -13,9 +13,13 @@
 // Arkivexportens dygnsfiler (sql/034) för grindarnas tillfälliga databas (kort #323), bara hämtning:
 //   POST ?lage=dygn_hamta       {dagar: ["2026-09-01", …], tabell?}                      → { filer: [{dag, url}] }
 //   tabell är weather_observations (standard), radar_precip eller ny_kandidat_station (delar.ts DYGNTABELLER), aldrig annat.
+// Kamerabilderna i facit-hinken, bara den öppna halvan (TROSKLAR-KVALITETSTAVLAN §10, DECISIONS #973), för kontaktarken:
+//   POST ?lage=kamera_hamta     {bilder: ["v2/2026-11-27/<kamera>-h<timme>.jpg", …]}         → { filer: [{bild, url}] }
+//   Ett namn utanför mönstret eller en bild i den blinda halvan avvisar hela anropet innan något signeras.
 // Skyddet är x-halkvakt-key, som pg_cron:s jobb redan bär, prövad mot funktionsnyckel (sql/054, DECISIONS #571); funktionen deployas med --no-verify-jwt.
 import { BEHALL, MAPP, MAX_DYGN, NAMN, attGallra, delnamn, dumpAv, dygnnamn, kuvosnamn } from "./delar.ts";
 import { nyckelGiltig } from "../_shared/nyckel.ts";
+import { BILDNAMN, kameraId, oppenHalva } from "../_shared/kamerahalvor.ts";
 
 const SB = Deno.env.get("SUPABASE_URL")!;
 const SRK = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -97,6 +101,16 @@ Deno.serve(async (req) => {
       const ut = [];
       for (let i = 0; i < sokvagar.length; i++)
         ut.push({ dag: dagar[i], url: `${SB}/storage/v1${(await storage(`/object/sign/${HINK}/${sokvagar[i]}`, "POST", { expiresIn: 7200 })).signedURL}` });
+      return svar({ filer: ut });
+    }
+    if (lage === "kamera_hamta") {
+      const bilder = (kropp as { bilder?: unknown }).bilder;
+      if (!Array.isArray(bilder) || !bilder.length || bilder.length > 50) return svar({ fel: "bilder: 1–50 namn" }, 400);
+      const namn = bilder.map(String);
+      if (namn.some((b) => !BILDNAMN.test(b))) return svar({ fel: "ett namn utanför mönstret" }, 400);
+      if (namn.some((b) => !oppenHalva(kameraId(b)))) return svar({ fel: "en bild i den blinda halvan: läses inte före marsdomen" }, 403);
+      const ut = [];
+      for (const b of namn) ut.push({ bild: b, url: `${SB}/storage/v1${(await storage(`/object/sign/facit/${b}`, "POST", { expiresIn: 7200 })).signedURL}` });
       return svar({ filer: ut });
     }
     return svar({ fel: `okänt läge: ${lage}` }, 400);

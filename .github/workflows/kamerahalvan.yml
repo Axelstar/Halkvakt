@@ -1,0 +1,64 @@
+name: kamerahalvan
+# KAMERORNAS ÖPPNA HALVA (kort #682, DECISIONS #973; reglerna i docs/TROSKLAR-KVALITETSTAVLAN.md §10). På knapp: nästa oklassade
+# bilder i den öppna halvan, i hashordningen (scripts/kamerahalvan.ts), hämtas ur facit-hinken genom arkivdump ?lage=kamera_hamta,
+# som själv vägrar den blinda halvan. Bilderna läggs på kontaktark (scripts/kontaktark.py halvan) och skrivs till kuvösen på grenen
+# kamerahalvan/<datum>-<körning>, där de klassas blint och Axel ok:ar stickprovet innan något går in i kamerafacit.
+# Repot är publikt: loggen säger bara klart eller fel. Inga bilder, arken eller listor som artefakt.
+on:
+  workflow_dispatch:
+    inputs:
+      antal:
+        description: "Antal bilder (1–1000)"
+        default: "400"
+permissions:
+  contents: read
+concurrency: { group: kamerahalvan, cancel-in-progress: false }
+jobs:
+  ark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Självtestet (påhittade namn)
+        run: |
+          node --experimental-strip-types scripts/kamerahalvan.ts --sjalvtest > /dev/null && echo "självtestet: klart"
+      - name: Bilderna, arken och kuvösen
+        shell: bash
+        env:
+          DATABASE_URL: "${{ secrets.DATABASE_URL }}"
+          SKRIV: "${{ secrets.KUVOS_SKRIVNYCKEL }}"
+          ANTAL: "${{ inputs.antal }}"
+          NR: "${{ github.run_id }}"
+        run: |
+          set -euo pipefail
+          [[ "$ANTAL" =~ ^[0-9]+$ ]] && [ "$ANTAL" -ge 1 ] && [ "$ANTAL" -le 1000 ] || { echo "::error::antal ska vara 1–1000"; exit 1; }
+          [ -n "$SKRIV" ] || { echo "::error::hemligheten KUVOS_SKRIVNYCKEL saknas"; exit 1; }
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client >/dev/null
+          python3 -m pip install -q pillow
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          export FN KEY
+          psql "$DATABASE_URL" -At -c "select name from storage.objects where bucket_id = 'facit' and name ~ '^v[23]/'" > alla.txt
+          psql "$DATABASE_URL" -At -c "select bild from kamerafacit" > klassade.txt
+          node --experimental-strip-types scripts/kamerahalvan.ts --alla alla.txt --klassade klassade.txt --antal "$ANTAL" --ut ut > ut-logg.txt 2>&1 \
+            || { echo "::error::hämtningen föll"; exit 1; }
+          python3 scripts/kontaktark.py halvan ut/lista.json --ut ut >> ut-logg.txt 2>&1 || { echo "::error::arken föll"; exit 1; }
+          mv ut-logg.txt ut/logg.txt && rm -f alla.txt klassade.txt
+          echo "bilderna och arken: klart"
+          # Till kuvösen: en ny gren per körning, aldrig main, aldrig överskriven.
+          git clone -q "https://x-access-token:${SKRIV}@github.com/Axelstar/halkvakt-kuvos.git" .kuvos-skriv 2>/dev/null || { echo "::error::kuvösen gick inte att klona med KUVOS_SKRIVNYCKEL"; exit 1; }
+          cd .kuvos-skriv
+          git config user.name "halkvakt-actions"; git config user.email "actions@users.noreply.github.com"
+          G="kamerahalvan/$(date -u +%F)-$NR"
+          ! git ls-remote -q --exit-code --heads origin "$G" >/dev/null 2>&1 || { echo "::error::grenen finns redan i kuvösen"; exit 1; }
+          git checkout -q --orphan "$G" && git rm -rq --cached . && git clean -fdxq
+          mkdir -p kamerahalvan && cp -r ../ut/. kamerahalvan/
+          git add kamerahalvan
+          git commit -q -m "Kamerornas öppna halva: bilderna och kontaktarken (kort #682, DECISIONS #973)"
+          git push -q origin "$G" 2>/dev/null || { echo "::error::pushen till kuvösen föll"; exit 1; }
+          echo "kuvösen: klart"
+          cd .. && rm -rf .kuvos-skriv ut
