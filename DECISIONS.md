@@ -19995,3 +19995,17 @@ ett fartprov som på iPhone (kräver plats i bakgrunden utan att vakten går, oc
 
 **Stomdokument:** APP (självstarten på Android), BED §4.2
 
+## #975 (27/11 2026) Androids paus efter ett stopp för hand är fem minuter (ändrar DECISIONS #974 punkt 1)
+**Beslut.** Axel 27/11, på frågan om 30 minuter, 5 minuter eller ingen paus: *"Japp vi kör på det"* (5 minuter). I provet samma
+kväll stod Androiden kvar på *Redo* i en bil som rullade, eftersom vakten nyss stoppats för hand, medan iPhonen startade om direkt.
+Axels mål är att vakten ska vara igång när folk kör, och en halvtimme lämnar nästa etapp utan vakt. Helt utan paus startar vakten
+om en halv minut efter att föraren stängt av den i bilen. Försöken ur avlästa lägen får samma fem minuter (förut tio), så att det
+är en regel. Android 0.4.2 (79).
+
+**Kvar.** iPhone har ingen paus alls. Om de två ska vara lika är ett val för Axel och Bengt (Bengts körordning, omgång 2). (79) är
+inte provad på en telefon när det här skrivs.
+
+**Alternativ.** 30 minuter som i (78); ingen paus, som iPhone.
+
+**Stomdokument:** APP (självstarten på Android)
+
