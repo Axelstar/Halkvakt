@@ -4,14 +4,14 @@ name: kuvos-smavag-stationsfukt
 # stationer, när de visar nederbörd nära en småvägspunkt, också skulle räknas som fukt för rösten:
 #   olyckor    (för hand, en gång) olyckorna vid en småvägspunkt i olycksfacit, i grindarnas tillfälliga databas, så att stationerna
 #              finns också för dygnen som raderats ur driften. Punkterna läses ur driften i en läsande transaktion.
-#   stickprov  (varje timme) regelns besked i driften just nu, i en läsande transaktion.
+#   stickprov  (varannan timme, Bengts val 27/11) regelns besked i driften just nu, i en läsande transaktion.
 # Mätskriptet ur det privata repot läggs ovanpå utcheckningen, och spärren och självtestet går först. Talen går bara till grenen
 # resultat/smavag-stationsfukt i det privata repot, med KUVOS_SKRIVNYCKEL. Loggen är publik (#498) och säger bara klart eller vilket
-# steg som föll. Före signeringen och när förregistreringens vecka är slut gör timjobbet ingenting; schemat tas bort när resultatet
+# steg som föll. Före signeringen och när förregistreringens vecka är slut gör stickprovsjobbet ingenting; schemat tas bort när resultatet
 # är bokfört.
 on:
   schedule:
-    - cron: "25 * * * *"
+    - cron: "25 */2 * * *"
   workflow_dispatch:
     inputs:
       del:
@@ -47,7 +47,7 @@ jobs:
           if python3 fysik/ny_kandidat/sparren.py "$FORREG" > /dev/null 2>&1; then
             echo "spärren (F93, förregistreringen signerad): klart"; echo "ok=ja" >> "$GITHUB_OUTPUT"
           elif [ "$HANDELSE" = schedule ]; then
-            echo "spärren: förregistreringen är inte signerad, timjobbet gör ingenting"; echo "ok=nej" >> "$GITHUB_OUTPUT"
+            echo "spärren: förregistreringen är inte signerad, stickprovsjobbet gör ingenting"; echo "ok=nej" >> "$GITHUB_OUTPUT"
           else
             echo "::error::spärren: förregistreringen är inte signerad (F93)"; exit 1
           fi
