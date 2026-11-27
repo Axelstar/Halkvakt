@@ -20033,3 +20033,26 @@ väglag är en fråga för kuvösen (F18), inte för det här beslutet.
 **Alternativ.** *Prognos · statlig väg*: stämmer, men är ett myndighetsord. Att behålla *mindre väg*: fel för bitarna på huvudvägarna.
 
 **Stomdokument:** SYS — livekartans ruta för storstädernas bitar
+
+## #977 (27/11 2026) Platsdelningens statistik räknas per kommun, avrundad och aldrig under tjugo telefoner (ändrar DECISIONS #917)
+**Beslut.** Axel 27/11, på frågan om statistiken ska vara per län eller per kommun: *"Ja ändra till kommun"*, och om gränsen:
+*"20 är bra, och detta göra vi!"*. DECISIONS #917 sade statistik per län, aldrig under tio telefoner. Uppgiften sparas redan per
+kommun och notiserna skickas per kommun; det som ändras är sammanräkningen. Per kommun är det tidningar, kommuner och andra partner
+frågar efter, och län är för grovt för det. Gränsen höjs från tio till tjugo, eftersom tio är lågt i en kommun med några tusen
+invånare, och talen avrundas till närmaste tiotal, så att en enskild telefon inte syns komma eller gå när talen visas över tid.
+
+**Byggt, inte i drift:** `sql/148_app_enhet_kommun_stat.sql`. `app_enhet_kommun_stat()` ger kommunkod och antal, avrundat till
+närmaste tiotal, bara för kommuner med minst tjugo telefoner. `app_enhet_lan_stat()` (sql/130) tas bort i samma fil, så att det finns
+en enda väg ut ur tabellen. Prövat mot en lokal Postgres 16: sql/130 och sql/148 körda, 148 två gånger; 19 telefoner ger ingen rad,
+20 ger 20, 24 ger 20, 25 ger 30 och 137 ger 140, och länsfunktionen är borta. Migrationen körs med DB-knappen på Axels ord. Ingenting
+läser funktionen än.
+
+**Följer med, inte gjort här.** Integritetspolicyn, frågeskärmen i appen och Plays och Apples uppgifter ska säga *per kommun,
+avrundat till närmaste tiotal och aldrig för färre än 20 telefoner*. Texterna är skrivna som utkast för Harald 27/11 och ändras i
+samma commit som appen börjar fråga i butiksbygget (invarianten i CLAUDE.md). Gränsen är Axels val efter Claudes förslag och är inte
+prövad av en jurist; Harald har frågan. Bengt var med om #917 och får veta av Axel.
+
+**Alternativ.** Län med gränsen tio, som #917: säkrast, men ger ingenting en partner kan använda. Kommun med gränsen tio: pekar
+lättare ut enskilda i små kommuner. Kommun utan avrundning: en telefon som kommer eller går syns mellan två läsningar.
+
+**Stomdokument:** SYS — platsdelningens tabell och sammanräkning; APP 7 — vad som lämnar telefonen och vad det används till
