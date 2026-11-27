@@ -6,7 +6,8 @@ name: kuvos-smavag-stationsfukt
 #              finns också för dygnen som raderats ur driften. Punkterna läses ur driften i en läsande transaktion.
 #   stickprov  (varannan timme, Bengts val 27/11) regelns besked i driften just nu, i en läsande transaktion. Startar efter
 #              ny-kandidat-timme, som kuvos-smavag-timme, och på schemat, men bara jämna timmar (UTC): GitHubs schema startade inte
-#              en enda körning i repot 27/11 mellan 04 och 09 UTC. Stickprovets fil heter efter timmen, så två starter samma timme ger en fil.
+#              en enda körning i repot 27/11 mellan 04 och 09 UTC. Finns timmens stickprov redan på grenen görs inget nytt, så två starter
+#              samma timme ger ett stickprov.
 #   bakat      (för hand; Bengt 27/11: "kan man inte göra ett bakåttest") stickproven bakåt, ungefärligt: driftens del B och regel D
 #              körda timme för timme ur kedjans timfiler och underlag i den privata hinken, med ankarna ur grindarnas tillfälliga
 #              databas vid kuvösens klocka (kuvos/ankare-bakat.ts). Ankarna, timfilerna och underlagen lämnar aldrig jobbet.
@@ -142,6 +143,8 @@ jobs:
           elif [ "$DEL" = bakat ]; then
             ARG=(bakat-rakna --dir "$K/$G" --arbete "$RUNNER_TEMP/bakat/arbete" --nr "$GITHUB_RUN_NUMBER")
           else
+            # Ett stickprov per timme: har schemat eller timkörningen redan tagit timmens, görs inget nytt.
+            if compgen -G "$K/$G/kostnad/$(date -u +%Y%m%dT%H)*.json" > /dev/null; then echo "stickprovet: timmens finns redan: klart"; exit 0; fi
             ARG=(stickprov --dir "$K/$G"); export DATABASE_URL="$DRIFT_URL"; unset DRIFT_URL
           fi
           RC=0; node --experimental-strip-types "$MATNING" "${ARG[@]}" > mat.txt 2>&1 || RC=$?
