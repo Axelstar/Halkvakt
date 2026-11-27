@@ -20009,3 +20009,27 @@ inte provad på en telefon när det här skrivs.
 
 **Stomdokument:** APP (självstarten på Android)
 
+
+## #976 (27/11 2026) Livekartan: bara Stockholms gator heter *stadens gata*, och storstädernas statliga vägar heter *Prognos*
+**Beslut.** Bengt 27/11, om rutan *Prognos · stadens gata* på orange streck mellan Eslöv, Höör och Hässleholm: *"den här bilden är
+mitt ute på skånska slättlandet. Stadens gata skulle möjligen gälla i storstockholm, storgöteborg eller stormalmö men inte någon annan
+stans"*. Rutan visades för båda storstadslagren (#804, `sql/089`). C är kommunala gator i Stockholms stad, och där stämmer orden. B är
+statliga vägar i Stockholms, Göteborgs och Malmös områden, och Malmös område når ut på landet till Eslöv och Höör (halkvakt-kuvos F18).
+B ligger både på mindre vägar och på delar av huvudvägar som har Trafikverkets väglag, 27/11 bland annat väg 13, 113 och 23 vid Eslöv
+och Höör. Därför säger B-rutan bara *Prognos* och inget om vägen eller väglaget (Bengts val 27/11).
+
+**Det som är byggt** (`karta.html` i halkvakt-karta; rutan läser lagret ur `segment_id`, som börjar med `B-` eller `C-`):
+- Kartrepots PR #43 (f055bde, Pages 46021804335, 27/11 15.05 UTC): C behöll *Prognos · stadens gata*, och B fick *Prognos · mindre väg*
+  med *Trafikverket rapporterar inte väglaget på den här vägen*. Den slogs ihop 17 sekunder efter Bengts *"stopp"*, som inte hunnit fram;
+  Bengt svarade sedan *"nej fortsätt"*.
+- Den meningen stämde inte för B-bitarna på huvudvägarna. Kartrepots PR #44 (9e91e5f, Pages 46065746966, 27/11 20.45 UTC, Bengts *"ja"*):
+  B-rutan säger *Prognos*, *Halka framöver*, *Modellerat, inte uppmätt* och *Frysrisken beräknad ur väderdata, och fukten ur
+  nederbördsradarn.* C och den vanliga Prognos-rutan är oförändrade.
+- Provat i Chromium med Playwright före och efter, på en B-linje, en B-prick, en C-linje och en vanlig Prognos-bit, utan sidfel.
+
+**Inte ändrat.** Vad appen säger, lägesfilen, `publicera`, regeln och brytarna. Om B ska ligga på vägar som redan har Trafikverkets
+väglag är en fråga för kuvösen (F18), inte för det här beslutet.
+
+**Alternativ.** *Prognos · statlig väg*: stämmer, men är ett myndighetsord. Att behålla *mindre väg*: fel för bitarna på huvudvägarna.
+
+**Stomdokument:** SYS — livekartans ruta för storstädernas bitar

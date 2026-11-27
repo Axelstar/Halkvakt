@@ -93,7 +93,7 @@ ligger på +1…+3 °C, har fallit minst 0,8 °C på 30 minuter och mätaren set
 - [Djur på vägen (A4)](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-vilt): klar
 - [Viltsträckan (statistik per sträcka)](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-viltstracka): väntar, 33 % · Bengt hämtar Trafikverkets viltolyckskartor 2020–2024 ur Lastkajen (produktpaket 10094; Lastkajen kräver inloggning), sedan körs och läses steg 0 (DECISIONS #860).
 - [Fartkameror (A5)](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-kameror): klar
-- [Storstäderna: B och C som K](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-storstaderna): delvis, 81 % · kvar: Säsongsfacit för storstäderna: avsnittet i veckorapporten, när D1 finns (körlistan C3, DECISIONS #904, #913)
+- [Storstäderna: B och C som K](https://895845.github.io/halkvakt-sidor/PROJEKTKARTAN.html#del-m-storstaderna): delvis, 86 % · kvar: Säsongsfacit för storstäderna: avsnittet i veckorapporten, när D1 finns (körlistan C3, DECISIONS #904, #913)
 
 <!-- /LÄGESRADER -->
 
