@@ -112,6 +112,8 @@ jobs:
           node --experimental-strip-types scripts/fristvakten.ts --sjalvtest
           node --experimental-strip-types scripts/fristvakten.ts --check
           node --experimental-strip-types scripts/domlarm.ts --sjalvtest
+      - name: Kvalitetstavlans självtest — måtten på påhittade data (kort #682, DECISIONS #973)
+        run: node --experimental-strip-types scripts/kvalitetstavlan.ts --sjalvtest
       - name: Grind V-B:s självtest — facit enligt §2 och bara räkningar under spärren (#349, #350)
         run: node --experimental-strip-types publish/grind-v-b.ts --sjalvtest
       # Knapparna som granskningen 25/9 ändrade (kort #252, DECISIONS #352) prövas i varje PR, inte bara när de körs.

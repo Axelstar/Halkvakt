@@ -1,0 +1,60 @@
+name: kvalitetstavlan
+# KVALITETSTAVLAN (kort #682, DECISIONS #973; reglerna i docs/TROSKLAR-KVALITETSTAVLAN.md). Varje dygn 13.13 UTC, efter säsongsfacit
+# (12.23) och lägesfilen (12.33), räknas gårdagen i svensk tid; på knapp räknas ett fönster bakåt (§11). Skriptet läser lägesfilens
+# historik ur kartrepot, väderraderna ur hinken (arkivdump dygn_hamta) och driften, och skriver bara aggregat till kvalitet_dag (sql/147).
+# Repot är publikt: loggen säger bara klart eller fel, aldrig ett tal.
+on:
+  schedule:
+    - cron: "13 13 * * *"
+  workflow_dispatch:
+    inputs:
+      fran:
+        description: "Första svenska dygnet (ÅÅÅÅ-MM-DD). Tomt = gårdagen"
+        default: ""
+      till:
+        description: "Sista svenska dygnet (ÅÅÅÅ-MM-DD). Tomt = samma som fran"
+        default: ""
+permissions:
+  contents: read
+concurrency: { group: kvalitetstavlan, cancel-in-progress: false }
+jobs:
+  rakna:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - name: Självtestet (påhittade data)
+        run: node --experimental-strip-types scripts/kvalitetstavlan.ts --sjalvtest > /dev/null && echo "självtestet: klart"
+      - name: Fönstret
+        id: fonstret
+        shell: bash
+        run: |
+          set -euo pipefail
+          FRAN="${{ inputs.fran }}"; TILL="${{ inputs.till }}"
+          [ -n "$FRAN" ] || FRAN=$(TZ=Europe/Stockholm date -d yesterday +%F)
+          [ -n "$TILL" ] || TILL="$FRAN"
+          [[ "$FRAN" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ && "$TILL" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] || { echo "::error::ogiltigt datum"; exit 1; }
+          echo "fran=$FRAN" >> "$GITHUB_OUTPUT"; echo "till=$TILL" >> "$GITHUB_OUTPUT"
+          echo "fönstret: $FRAN – $TILL"
+      - name: Lägesfilens historik ur kartrepot (publikt)
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --quiet --shallow-since="$(date -u -d "${{ steps.fonstret.outputs.fran }} -2 days" +%F)" https://github.com/Axelstar/halkvakt-karta.git karta
+          echo "kartrepot: klart"
+      - name: Räkningen
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client >/dev/null
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          export FN KEY
+          node --experimental-strip-types scripts/kvalitetstavlan.ts --karta karta \
+            --fran "${{ steps.fonstret.outputs.fran }}" --till "${{ steps.fonstret.outputs.till }}" 2>&1 | grep -v ExperimentalWarning
