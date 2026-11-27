@@ -7,6 +7,10 @@ Fyra steg, ett kommando var:
       skuggrutterna, jämnt spridda längs rutterna. Provet av spåret; hinken rörs inte (DECISIONS #248).
   python scripts/kontaktark.py mapp <hinkexport> --ut <mapp>
       Samma sak för Axels export av facit-hinken (filnamn KAMERA-TREHTIMMARSHINK.jpg). Används i mars.
+  python scripts/kontaktark.py halvan <mapp>/lista.json --ut <mapp>
+      Kamerornas öppna halva (TROSKLAR-KVALITETSTAVLAN §10, DECISIONS #973): bilderna som scripts/kamerahalvan.ts hämtat ur
+      facit-hinken till <mapp>/<v2|v3>/<dygn>/<kamera>-h<timme>.jpg, i listans ordning (hashordningen). Arket visar inte om
+      bilden är v2 eller v3: det vore att visa vad en regel sa. Körs av flödet kamerahalvan.yml, som skriver allt till kuvösen.
   python scripts/kontaktark.py stickprov <mapp>/klassning.json
       Efter klassningen: markerar stickprovet (VARJE is/snö/slask plus minst 10 % av resten, deterministiskt valt) och
       skriver ok-sidan för Axel (ok.md).
@@ -148,6 +152,22 @@ def mapp(a):
     avsluta(a.ut, manifest)
 
 
+def halvan(a):
+    kam = kameror()
+    manifest, utan = [], 0
+    for bild in json.load(open(a.lista, encoding="utf-8")):
+        m = re.match(r"v[23]/\d{4}-\d{2}-\d{2}/(.+)-h(\d+)\.jpg$", bild)
+        fil = os.path.join(a.ut, bild)
+        if not m or m.group(1) not in kam or not os.path.exists(fil): utan += 1; continue
+        k = kam[m.group(1)]
+        tid = dt.datetime.fromtimestamp(int(m.group(2)) * 3600, dt.timezone.utc)
+        manifest.append({"nr": len(manifest) + 1, "kamera_id": k["id"], "namn": k["namn"], "lon": k["lon"], "lat": k["lat"],
+                         "bild_tid": tid.strftime("%Y-%m-%dT%H:%M:%SZ"), "fil": bild,
+                         "sha256": hashlib.sha256(open(fil, "rb").read()).hexdigest()[:16], "kalla": "facit-hinken, den öppna halvan"})
+    avsluta(a.ut, manifest)
+    print(f"{utan} bilder utan känd kamera eller fil")
+
+
 def avsluta(ut, manifest):
     json.dump(manifest, open(os.path.join(ut, "manifest.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     filer = ark(manifest, ut)
@@ -191,7 +211,7 @@ def sql(a):
     for r in k["rader"]:
         klass = rattat.get(r["nr"], r["klass"])
         bild = r["fil"].replace("\\", "/")
-        if not bild.startswith("docs/"): bild = os.path.relpath(os.path.join(os.path.dirname(a.fil), r["fil"]), ROT).replace("\\", "/")
+        if not bild.startswith(("docs/", "v2/", "v3/")): bild = os.path.relpath(os.path.join(os.path.dirname(a.fil), r["fil"]), ROT).replace("\\", "/")
         print(f"INSERT INTO kamerafacit (bild, kamera_id, lon, lat, bild_tid, klass, av) VALUES ('{bild}', '{r['kamera_id']}', "
               f"{r['lon']}, {r['lat']}, '{r['bild_tid']}', '{klass}', '{av}') ON CONFLICT (bild) DO UPDATE SET klass = EXCLUDED.klass, "
               f"av = EXCLUDED.av, klassad = now()")
@@ -202,7 +222,8 @@ if __name__ == "__main__":
     u = p.add_subparsers(dest="steg", required=True)
     d = u.add_parser("direkt"); d.add_argument("--antal", type=int, default=20); d.add_argument("--ut", required=True)
     m = u.add_parser("mapp"); m.add_argument("mapp"); m.add_argument("--ut", required=True)
+    h = u.add_parser("halvan"); h.add_argument("lista"); h.add_argument("--ut", required=True)
     s = u.add_parser("stickprov"); s.add_argument("fil")
     q = u.add_parser("sql"); q.add_argument("fil")
     a = p.parse_args()
-    {"direkt": direkt, "mapp": mapp, "stickprov": stickprov, "sql": sql}[a.steg](a)
+    {"direkt": direkt, "mapp": mapp, "halvan": halvan, "stickprov": stickprov, "sql": sql}[a.steg](a)

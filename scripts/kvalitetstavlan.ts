@@ -25,8 +25,6 @@ export const J1_LUFT = 3;                    // §2: säsongsfacits J1
 export const OLYCKA_SEG_KM = 0.1, OLYCKA_SMV_KM = 0.5, DUBBLETT_KM = 1, DUBBLETT_MS = 2 * 3_600_000; // §3, §6
 export const NATT_SAKNAS = 0.051;            // §6: nattens andel av ÅDT där NVDB saknar värdet (DECISIONS #972)
 export const R_START = Date.parse("2026-11-25T20:24:00Z"); // §2: småvägsrösten, brytaren på
-export const HALVOR_TEXT = "halkvakt-kamerahalvor-2026-11-27/";   // §10
-export const ORDNING_TEXT = "halkvakt-kameraordning-2026-11-27/"; // §10
 export type Lager = "A1" | "A2" | "K" | "R" | "J1";
 export const LAGER: Lager[] = ["A1", "A2", "K", "R", "J1"];
 /** §5: vilka källor varje lager får bedömas med. */
@@ -34,14 +32,8 @@ export const KALLOR: Record<Lager, ("FR" | "VL" | "KA")[]> = { A1: ["FR", "KA"],
 const HV: Lager[] = ["A1", "A2", "K", "R"];  // Halkvakt: det föraren kan höra
 
 // ── Kamerorna (§10) ──────────────────────────────────────────────────────────────────────────────────────────────────────────
-/** Kamerans id ur bildens sökväg: filnamnet före det sista bindestrecket. */
-export function kameraId(bild: string): string {
-  const fil = bild.split("/").pop() ?? "";
-  const i = fil.lastIndexOf("-");
-  return i > 0 ? fil.slice(0, i) : fil.replace(/\.jpg$/i, "");
-}
-export const oppenHalva = (kamera: string) => createHash("sha256").update(HALVOR_TEXT + kamera).digest()[0] % 2 === 0;
-export const ordning = (bild: string) => createHash("sha256").update(ORDNING_TEXT + bild).digest("hex");
+export { HALVOR_TEXT, ORDNING_TEXT, kameraId, oppenHalva, ordning } from "../supabase/functions/_shared/kamerahalvor.ts";   // §10, en kopia
+import { kameraId, oppenHalva } from "../supabase/functions/_shared/kamerahalvor.ts";
 
 // ── Geometri ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 export type Pt = [number, number];
