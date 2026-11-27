@@ -1,64 +1,694 @@
 {
   "_om": "Fristvakten (DECISIONS #649, Bengts order 20/10): varje frist blir ett ärende med etiketten frist, tilldelat ägarna, 'forvarning' dygn före datumet (3 om fältet saknas); på dagen och varje dygn efteråt en kommentar tills ärendet stängs. Stängt ärende = gjort. Datum i svensk tid, ÅÅÅÅ-MM-DD. En frist per rad. En återkommande plikt får ett id per tillfälle (spridning-1-12, databas-2026-10-24): ett stängt ärende tiger för sitt id för alltid. Dokumentsynken för in nya frister ur beslut, bedömningens §4.2 och korten. Repot är publikt: inget privat här. Prövas av scripts/fristvakten.ts --check i ci.",
-  "konton": { "Bengt": "895845", "Axel": "Axelstar", "Claude": "895845" },
+  "konton": {
+    "Bengt": "895845",
+    "Axel": "Axelstar",
+    "Claude": "895845"
+  },
   "frister": [
-    {"id": "dataskydd-steg3-2026-12-18", "datum": "2026-12-18", "forvarning": 7, "vad": "Dataskyddet steg 3 (kort #670, DECISIONS #900): leverantörsavtalen med Supabase, GitHub och Zoho accepterade och sparade privat (Axel har kontona), registret skrivet och sparat privat, och lagringstiderna i databasen (besöksraderna 13 månader, testarnas svar och kamerabilderna efter vinterns mätningar).", "agare": ["Bengt", "Axel"], "kalla": "DECISIONS #900", "klart_nar": "avtalen och registret sparade privat, och gallringen i drift och mätt"},
-    {"id": "dataskydd-steg5-2027-01-31", "datum": "2027-01-31", "forvarning": 30, "vad": "Dataskyddet steg 5 (kort #670, DECISIONS #900 och #901): Claude bygger i nästa ordinarie version att telefonens säkerhetskopia inte tar med historiken, facitsvaren, missarna och Bluetooth-adresserna (fråga 13), och att räknaren i appen frågar om lov innan den räknar (fråga 11 och 12, utan jurist). Läs skills/halkvakt-android och swiftui-pro före app-koden; android.yml och TestFlight-provet är byggproven. Axel släpper versionen.", "agare": ["Claude", "Axel"], "kalla": "DECISIONS #900 och #901; kort #670", "klart_nar": "båda apparna ute i butikerna med säkerhetskopian undantagen och räknarens fråga om lov, och raden i CLAUDE.md, docs/PLAY-DATASAFETY.md, integritetssidan och produktboken ändrade i samma commit"},
-    {"id": "smavag-paslaget-2026-11-27", "datum": "2026-11-27", "forvarning": 1, "vad": "Småvägsröstens påslag senast i dag (körlistan C5 och B8; Bengts ja 20/11, Axels svar väntar): Claude kör sql/113 med DB-knappen när 0.4.1 (58) finns i App Store och i Google Play, och senast i dag även om den inte gjort det. Kräver Bengts och Axels ord; vakterna i filen prövas av den själv.", "agare": ["Claude", "Bengt", "Axel"], "kalla": "bedömningen §4.2 (raden 17/11 om avbrottsvillkoren); körlistan B8 och C5", "klart_nar": "brytarna på med sql/113 och det första beskedet i räknaren, eller ett beslut som flyttar datumet"},
-    {"id": "olycksfacit-overlappet-2026-11-23", "datum": "2026-11-23", "forvarning": 0, "vad": "Olycksfacits veckoärende 2026-V47 (DECISIONS #925, TROSKLAR-OLYCKSFACIT §9.5 punkt 8): läs att ärendet bär tabellen Lagren tillsammans, att raderna summerar till de halkkopplade, och bokför steget i projektkartan som klart med ärendets nummer. Läs också att ärendet delar missarna på facit som inte bygger på stationen och facit bara på stationen (DECISIONS #946, §14, kort #676; gäller när olycksfacit är deployad efter PR #1789).", "agare": ["Claude"], "kalla": "DECISIONS #925 och #946; PR #1733 och #1789", "klart_nar": "veckoärendet med tabellen läst och projektkartans steg klart med ärendets nummer, eller felet bokfört"},
-    {"id": "met-svar-2026-11-26", "datum": "2026-11-26", "forvarning": 1, "vad": "MET:s morgonfel och småvägsröstens timme 06 UTC (DECISIONS #902, körlistan B5): har MET svarat, och står felet kvar? Läs vaktens ärende #1664 för dygnen sedan 19/11. Står felet kvar läggs förslaget fram att timflödet kuvos-smavag-timme tar igen de tre föregående timmarna.", "agare": ["Claude", "Bengt"], "kalla": "DECISIONS #902; körlistan B5", "klart_nar": "MET:s svar eller uteblivna svar bokfört, och beslutet om återtagningen fattat"},
-    {"id": "kamerabilder-2027-04-30", "datum": "2027-04-30", "forvarning": 14, "vad": "Dataskyddet (kort #670, DECISIONS #900 fråga 7): Trafikverkets väglagsbilder i den privata hinken facit raderas när vinterns mätning är gjord. Filerna tas bort i lagringens gränssnitt eller panelen (Storage → facit), inte med SQL; klassningarna i kamerafacit står kvar.", "agare": ["Bengt"], "kalla": "DECISIONS #900", "klart_nar": "hinken facit har 0 objekt, läst i panelen eller med count på storage.objects"},
-    {"id": "testarnas-svar-2027-05-31", "datum": "2027-05-31", "forvarning": 7, "vad": "Dataskyddet (kort #670, DECISIONS #900 fråga 5): jobbet halkvakt-testarnas-svar (sql/120) gör testarnas svar till summor och raderar dem 04.10 UTC. Läs efteråt att det gick.", "agare": ["Bengt"], "kalla": "DECISIONS #900", "klart_nar": "testarnas_svar_summa har säsongen 2026/27, och driver_facit och driver_miss har inga rader från före 1 maj 2027"},
-    {"id": "ansvarstexten-2026-12-31", "datum": "2026-12-31", "forvarning": 14, "vad": "Ansvarstexten (kort #648, DECISIONS #899): den nya produktansvarslagen föreslås gälla från 1/1 2027 för produkter som släpps från dess (prop. 2026/27:12, riksdagen beslutar 25/11). Före den: Axels ord på texten, sammanslagningen och en appversion med texterna i båda butikerna (juristens läsning struken 19/11, DECISIONS #901)", "agare": ["Bengt", "Axel"], "kalla": "DECISIONS #899 och #901; kort #648", "klart_nar": "texterna ute i båda butikerna"},
-    {"id": "flackvis-vinterprovet-2027-01-15", "datum": "2027-01-15", "forvarning": 14, "vad": "Vinterprovet för fläckvis Våt som fukt (kort #645, halkvakt-kuvos F43), första läsdagen. Före den: förregistreringen signerad av Bengt och Axel, och mätskriptet byggt och fryst med sha256 i halkvakt-kuvos. Vid OAVGJORT flyttas läsningen till 15/2, 15/3 och sist 1/4 2027", "agare": ["Bengt", "Axel", "Claude"], "kalla": "DECISIONS #825; kort #645", "klart_nar": "läsningen bokförd i halkvakt-kuvos med ett slutligt utfall, eller OAVGJORT och datumet flyttat här"},
-    {"id": "databas-2026-11-26", "datum": "2026-11-26", "forvarning": 0, "vad": "Databasens storlek: läs vakthundens rad 'databas: N MB av 8 GB' eller pg_database_size (var sjunde dygn; 1 145,6 MB 19/11, ~25 MB per dygn sedan 11/11 mot ~32 veckorna före; 58,5 MB utan tabell, lika som 4/11 och 11/11; Pro-kvoten #652)", "agare": ["Claude"], "kalla": "KALENDERN", "klart_nar": "storleken skriven i kalendern och nästa läsning införd här med eget id"},
-    { "id": "r-b-dom", "datum": "2026-12-10", "forvarning": 7, "vad": "R-B:s domslut: tabellen är läst och bokförd 5/11 (DECISIONS #794; R-B1 klarar, R-B2 faller i alla tolv kombinationer). Bengt fäller domslutet när kandidatens daggpunktsväg är läst (#793), med dess fönster 6/11–5/12", "agare": ["Bengt"], "kalla": "DECISIONS #510, #793, #794, kort #46, ärende #1384", "klart_nar": "domslutet fällt och bokfört i DECISIONS, och ärende #1384 stängt" },
-    {"id": "sasongsfacit-2026-12-01", "datum": "2026-12-01", "forvarning": 1, "vad": "Säsongsfacit, första månadsläsningen (TROSKLAR-SASONGSFACIT §6): november ur sasongsfacit_dag, _ledtid och _olyckor; vad som förändrats bokförs på kort #381 utan tal, och rapporten går internt till Bengt och Axel", "agare": ["Claude"], "kalla": "DECISIONS #818; kort #381", "klart_nar": "läsningen bokförd på kort #381 och rapporten skickad, eller felet bokfört"},
-    {"id": "sasongsfacit-2027-01-01", "datum": "2027-01-01", "forvarning": 1, "vad": "Säsongsfacit, månadsläsningen för december (TROSKLAR-SASONGSFACIT §6): vad som förändrats bokförs på kort #381 utan tal, och rapporten går internt till Bengt och Axel", "agare": ["Claude"], "kalla": "DECISIONS #818; kort #381", "klart_nar": "läsningen bokförd på kort #381 och rapporten skickad, eller felet bokfört"},
-    {"id": "sasongsfacit-2027-02-01", "datum": "2027-02-01", "forvarning": 1, "vad": "Säsongsfacit, månadsläsningen för januari (TROSKLAR-SASONGSFACIT §6)", "agare": ["Claude"], "kalla": "DECISIONS #818; kort #381", "klart_nar": "läsningen bokförd på kort #381 och rapporten skickad, eller felet bokfört"},
-    {"id": "sasongsfacit-2027-03-01", "datum": "2027-03-01", "forvarning": 1, "vad": "Säsongsfacit, månadsläsningen för februari (TROSKLAR-SASONGSFACIT §6)", "agare": ["Claude"], "kalla": "DECISIONS #818; kort #381", "klart_nar": "läsningen bokförd på kort #381 och rapporten skickad, eller felet bokfört"},
-    {"id": "sasongsfacit-slutrapport-2027-04-15", "datum": "2027-04-15", "forvarning": 1, "vad": "Säsongsfacit, slutrapporten senast 15/4 (TROSKLAR-SASONGSFACIT §6); publiceringen av resultatet beslutas efter den, vad det än blir", "agare": ["Claude"], "kalla": "DECISIONS #818; kort #381", "klart_nar": "slutrapporten skriven och skickad internt till Bengt och Axel"},
-    {"id": "google-cloud-tak-2027-02-13", "datum": "2027-02-13", "forvarning": 14, "vad": "Google Cloud (DECISIONS #941): gratisperioden för projektet halkvakt går ut 20/2 2027. Före den: kontot uppgraderat, och ett tak för kostnaden satt (kvoter per tjänst för Maps SDK for Android, Places API (New) och Routes API, och ett budgetlarm). Utan uppgradering slutar kartan och Planera resa att fungera i Android-appen.", "agare": ["Axel", "Claude"], "kalla": "DECISIONS #870 och #941", "klart_nar": "kontot uppgraderat, kvoterna och budgetlarmet satta och lästa i Google Cloud"},
-    {"id": "pat-rotation-2027-01-30", "datum": "2027-01-30", "forvarning": 7, "vad": "Rotera PAT:en och pulsklockans nyckel — båda går ut 6/2 2027 (byttes 8/11 2026; nyckelkalendern 9/11, ärende #1440). Tryck pulsklocka.yml i läget nyckel efter bytet.", "agare": ["Axel"], "kalla": "KALENDERN; nyckelkalendern 9/11 2026", "klart_nar": "nyckelkalendern visar nytt datum för både PAT och pulsnyckel och en publicering har gått igenom med den nya nyckeln"},
-    { "id": "vagpunkt-premisser", "datum": "2026-11-24", "forvarning": 3, "vad": "Vägpunktsgrindens premissläsning: tryck hojd-prov med dagar: premisser, en gång — datumet flyttas inte", "agare": ["Claude", "Bengt"], "kalla": "DECISIONS #435", "klart_nar": "läsningen körd 24/11 och bokförd" },
-    { "id": "bytesbeslut", "datum": "2026-11-30", "forvarning": 7, "vad": "Bytet till den nya kandidaten: det daterade beslutet av Bengt och Axel, på den rättade modellens tal efter T4:s omkörning och ett nytt paritetsprov (FORREGISTRERING-2026-27 §12; den rättade modellen ersätter den som loggar före beslutet)", "agare": ["Bengt", "Axel"], "kalla": "DECISIONS #720, docs/FORREGISTRERING-NY-KANDIDAT-TILLAGG-T4-2026-10-25.md §4 (a)", "klart_nar": "beslutet fattat och daterat av båda i en DECISIONS-post" },
-    {"id": "domskriptet-kandidaten", "datum": "2026-11-30", "forvarning": 7, "vad": "Domskriptet för kandidaten enligt förregistreringen §4b (grind A–C nationellt och per band, frysflaggan K-A och K-B): byggt, provat på låtsasdata och på kuvösens kända tal, och fryst med sha256 före första läsningen av domfönstrets data", "agare": ["Claude"], "kalla": "DECISIONS #655, docs/FORREGISTRERING-2026-27.md §4b, åtgärdslistan B4-01", "klart_nar": "skriptet på main med självtest i ci och sha256 i en daterad DECISIONS-post med båda signaturerna; domraderna under egna grindnamn (inte Grind A eller K-A, som domlarm.ts bokför för RÅ; åtgärdslistan B4-68)"},
-    { "id": "supabase-token", "datum": "2026-12-01", "forvarning": 7, "vad": "Rotera Supabase-tokenen för deploy-knappen — går ut 8/12", "agare": ["Axel"], "kalla": "KALENDERN", "klart_nar": "en deploy har gått igenom med den nya tokenen" },
-    { "id": "spridning-1-12", "datum": "2026-12-01", "forvarning": 0, "vad": "Spridningsgrindens vinterläsning: grind-s-b i underlagsläge, raden Spridningen", "agare": ["Claude"], "kalla": "KALENDERN, DECISIONS #478, kort #299", "klart_nar": "täckningen per månad skriven i bedömningen" },
-    { "id": "skyltfonden-besked", "datum": "2026-12-15", "forvarning": 7, "vad": "Skyltfondens besked på ansökan (skickad 30/9 av Bengt som privatperson): vid ja pressnotisen, granskningen och projektstarten; vid nej vad som står kvar utan pengarna", "agare": ["Bengt", "Axel"], "kalla": "DECISIONS #409, #683", "klart_nar": "beskedet bokfört och planen för ja eller nej beslutad" },
-    { "id": "norr-62", "datum": "2026-12-03", "forvarning": 7, "vad": "Norr om 62° mitt i vintern (kort #317 b): Bengts beslut med skuggans hela november i norr som underlag, och mätningen som #317 b kräver gjord i halkvakt-kuvos före (flyttad från 15/11, DECISIONS #824)", "agare": ["Bengt"], "kalla": "DECISIONS #502, #507, #689, #824", "klart_nar": "beslutet bokfört i DECISIONS och på kort #317" },
-    { "id": "w-a-byvind-1", "datum": "2026-12-01", "forvarning": 3, "vad": "Byvindens W-A: tryck vindsikt-steg0 med 60 dygn ur hinken (B4-93 byggt före)", "agare": ["Claude"], "kalla": "DECISIONS #491, #662; TROSKLAR-VIND-SIKT §3", "klart_nar": "domen eller SPÄRRAD bokförd med antalet stationstimmar i högsta bandet" },
-    { "id": "fs-domknappen", "datum": "2026-12-15", "forvarning": 7, "vad": "Försprångets domknapp (TROSKLAR-FORSPRANG §5): underlagsläge med bara antal och spärrat domläge, domrad och domlarmets steg, provad på låtsasdata med motprov mot andelar under spärren, räkneregeln (B4-90) fryst med sha256; första underlagskörningen", "agare": ["Claude"], "kalla": "DECISIONS #359, #661; kort #153; åtgärdslistan B4-51, B4-55", "klart_nar": "knappen på main med självtest i ci, sha256 i DECISIONS och underlagskörningen bokförd i STATUS" },
-    { "id": "fs-underlag-1-1", "datum": "2027-01-01", "forvarning": 0, "vad": "Försprångets domknapp i underlagsläge (bara antal: FS-A2, FS-C1–C2 per svepvärde)", "agare": ["Claude"], "kalla": "DECISIONS #661", "klart_nar": "underlagskörningen bokförd i STATUS" },
-    { "id": "w-a-byvind-2", "datum": "2027-01-31", "forvarning": 3, "vad": "Byvindens W-A: tryck vindsikt-steg0 med 60 dygn ur hinken, om domen inte redan är fälld", "agare": ["Claude"], "kalla": "DECISIONS #662; TROSKLAR-VIND-SIKT §3", "klart_nar": "domen eller SPÄRRAD bokförd med antalet stationstimmar i högsta bandet" },
-    { "id": "januari-domar", "datum": "2027-01-01", "forvarning": 14, "vad": "Januari: dom 1 — efterhalkan S6 och varningsreglerna i testkretsen", "agare": ["Bengt", "Axel"], "kalla": "bedömningen (kalendern), MATNINGAR §6.2", "klart_nar": "domarna fällda och bokförda" },
-    { "id": "spridning-1-1", "datum": "2027-01-01", "forvarning": 0, "vad": "Spridningsgrindens vinterläsning: grind-s-b i underlagsläge, raden Spridningen", "agare": ["Claude"], "kalla": "KALENDERN, DECISIONS #478, kort #299", "klart_nar": "täckningen per månad skriven i bedömningen" },
-    { "id": "fs-underlag-1-2", "datum": "2027-02-01", "forvarning": 0, "vad": "Försprångets domknapp i underlagsläge (bara antal: FS-A2, FS-C1–C2 per svepvärde)", "agare": ["Claude"], "kalla": "DECISIONS #661", "klart_nar": "underlagskörningen bokförd i STATUS" },
-    { "id": "bildfacit-beslut", "datum": "2027-02-01", "forvarning": 14, "vad": "Bildfacitbeslutet (kort #209): att bygga läsningen av kamerabilderna före mars — efter mätningen av V2-taket (åtgärdslistan B4-80) och med koden för tabellen i kort #231 (B4-69)", "agare": ["Bengt", "Axel"], "kalla": "bedömningen §4.2, DECISIONS #248, #660", "klart_nar": "DECISIONS-post om kort #209" },
-    { "id": "spridning-1-2", "datum": "2027-02-01", "forvarning": 0, "vad": "Spridningsgrindens vinterläsning: grind-s-b i underlagsläge, raden Spridningen", "agare": ["Claude"], "kalla": "KALENDERN, DECISIONS #478, kort #299", "klart_nar": "täckningen per månad skriven i bedömningen" },
-    { "id": "nt-dom", "datum": "2027-03-01", "forvarning": 7, "vad": "NT-domen tidigast nu: grind-nt med --dom om NT-D är uppfyllt (minst 100 snö- och 40 slaskepisoder)", "agare": ["Bengt", "Axel"], "kalla": "DECISIONS #361, #362; domslutet fälls av Axel (TROSKLAR-NEDERBORDSTYPEN §6)", "klart_nar": "domen eller OAVGJORT bokförd" },
-    { "id": "mars-domar", "datum": "2027-03-01", "forvarning": 14, "vad": "Mars: kandidatens dom (segmentprognosen, RÅ som kontroll och reserv), försprånget, kombinationen och nederbördstypen; bildfacitets bilder öppnas", "agare": ["Bengt", "Axel"], "kalla": "DECISIONS #547, #335, #657; MATNINGAR §11", "klart_nar": "domarna fällda och bokförda" },
-    { "id": "p2-frysning", "datum": "2027-02-26", "forvarning": 14, "vad": "Kuvösens P-II: domskriptet fryst med sha256 före den första läsningen (halkvakt-kuvos F44, tolkning 6)", "agare": ["Claude"], "kalla": "halkvakt-kuvos F44, F45", "klart_nar": "domskriptets sha256 i en post i halkvakt-kuvos BESLUT" },
-    { "id": "p2-las-a", "datum": "2027-03-01", "forvarning": 3, "vad": "Kuvösens P-II: regel A läses (november–februari). Talen stannar i halkvakt-kuvos", "agare": ["Bengt", "Axel", "Claude"], "kalla": "halkvakt-kuvos F44, F45", "klart_nar": "A:s dom läst och bokförd i halkvakt-kuvos" },
-    { "id": "p2-las-bcd", "datum": "2027-04-01", "forvarning": 3, "vad": "Kuvösens P-II: reglerna B, C och D och fuktvarianten D-F läses (hela vintern). Talen stannar i halkvakt-kuvos", "agare": ["Bengt", "Axel", "Claude"], "kalla": "halkvakt-kuvos F44, F45", "klart_nar": "domarna lästa och bokförda i halkvakt-kuvos" },
-    { "id": "stadsmiljon-dom", "datum": "2027-04-01", "forvarning": 7, "vad": "Kuvösens stadsmiljö: domen körs och läses, Stor-Stockholm och Stor-Göteborg var för sig. Den avgör om storstädernas B stannar. Talen stannar i halkvakt-kuvos", "agare": ["Bengt", "Axel", "Claude"], "kalla": "halkvakt-kuvos F32, F33; körlistan B10", "klart_nar": "domen läst och bokförd i halkvakt-kuvos, och beslutet om B bokfört i Halkvakts DECISIONS" },
-    { "id": "friktionen-las-2026-12-06", "datum": "2026-12-06", "forvarning": 3, "vad": "Kuvösens fukt i storstäderna: friktionens läsfråga körs i flödet (kuvos-ny-kandidat.yml, steget friktionen) 6/12. Bengts ord finns sedan 19/11: \"ja, kör den 6/12\", så den körs den dagen utan ny fråga, av engångsrutinen trig_01FXRhEbVBSJBVDzmjdJKjEP i molnet. Talen stannar i halkvakt-kuvos", "agare": ["Bengt", "Claude"], "kalla": "halkvakt-kuvos F38 §8, F74; körlistan C4", "klart_nar": "steget kört och filen i hinken; läsningen bokförd i halkvakt-kuvos" },
-    { "id": "fuktskuggan-las-2027-04-01", "datum": "2027-04-01", "forvarning": 7, "vad": "Kuvösens fuktskugga i storstäderna läses mot friktionen, med data till och med 31/3. Talen stannar i halkvakt-kuvos", "agare": ["Bengt", "Axel", "Claude"], "kalla": "halkvakt-kuvos F74; körlistan C4", "klart_nar": "läsningen gjord och följden bokförd i halkvakt-kuvos" },
-    { "id": "svartis-rimfrost-las-2027-04-01", "datum": "2027-04-01", "forvarning": 7, "vad": "Kuvösens prov av svartis och rimfrost i storstäderna läses mot friktionen med data till och med 31/3. Talen stannar i halkvakt-kuvos", "agare": ["Bengt", "Axel", "Claude"], "kalla": "halkvakt-kuvos F75, F76; körlistan C7; DECISIONS #906, #911", "klart_nar": "läsningen gjord och följden bokförd i halkvakt-kuvos" },
-    { "id": "xcode-27-2027-03-01", "datum": "2027-03-01", "forvarning": 14, "vad": "iPhone-bygget måste gå på Xcode 27 med iOS 27 SDK: från april 2027 tar App Store Connect inte emot något annat (Apples varning ITMS-90725 efter varje uppladdning sedan bygge 58). testflight.yml kör macos-26", "agare": ["Axel", "Claude"], "kalla": "Apples mejl 20/11 2026 om 0.4.1 (58) och (66); DECISIONS #929", "klart_nar": "en uppladdning till TestFlight utan varningen ITMS-90725" },
-    { "id": "fjarrytorna-2027-28", "datum": "2027-09-01", "forvarning": 14, "vad": "Fjärrytorna inför säsongen 2027/28 (kort #344, stängt 24/11 och flyttat hit): VViS-stationernas andra mätpunkt utan lufttemperatur släpps igenom av vakterna, och en plats kan ge två ankare. Avgör före säsongen om de ska vaktas eller tas bort ur ankarna (sql/032, kommentaren om fjärrytorna)", "agare": ["Bengt", "Axel", "Claude"], "kalla": "Bengt 24/11: \"lägg över till 2027/28 och stäng kortet nu\"; kort #344, #345", "klart_nar": "beslutet om fjärrytorna bokfört i DECISIONS före säsongen 2027/28" },
-    { "id": "rackvidd-skugga-2026-11-29", "datum": "2026-11-29", "forvarning": 1, "vad": "Utvärdera skuggan räckvidden som en fara (shadow_log.rackvidd): takten mot dagens A2 och missarna med oberoende facit i veckans ärende 2026-V48, och ta ställning till motorn och appversionen", "agare": ["Bengt", "Claude"], "kalla": "Bengt 21/11: \"bygg in och kom ihåg att påminna mej om en vecka att utvärdering ska ske\"; DECISIONS #950", "klart_nar": "utvärderingen bokförd i DECISIONS och Bengts och Axels ord om motorn" },
-    { "id": "storstaderna-2026-12-01", "datum": "2026-12-01", "forvarning": 1, "vad": "Storstäderna i månadsläsningen för november (körlistan C3 och D3, TROSKLAR-SASONGSFACIT §11): veckorapportens avsnitt om storstäderna läst för månaden, och vad som förändrats bokfört på kort #378 och #381 utan tal", "agare": ["Claude"], "kalla": "DECISIONS #904, #951; körlistan D3", "klart_nar": "läsningen bokförd på kort #378 och #381, eller felet bokfört" },
-    { "id": "smavagsrosten-2026-12-01", "datum": "2026-12-01", "forvarning": 1, "vad": "Småvägsrösten i månadsläsningen för november (körlistan D3, DECISIONS #883): uppföljningens dygnsrapporter och veckorapportens del om småvägarna lästa för månaden, och vad som förändrats bokfört på kort #662 utan tal", "agare": ["Claude"], "kalla": "DECISIONS #883, #951; körlistan D3", "klart_nar": "läsningen bokförd på kort #662, eller felet bokfört" },
-    { "id": "storstaderna-2027-01-01", "datum": "2027-01-01", "forvarning": 1, "vad": "Storstäderna i månadsläsningen för december (körlistan C3 och D3, TROSKLAR-SASONGSFACIT §11): veckorapportens avsnitt om storstäderna läst för månaden, och vad som förändrats bokfört på kort #378 och #381 utan tal", "agare": ["Claude"], "kalla": "DECISIONS #904, #951; körlistan D3", "klart_nar": "läsningen bokförd på kort #378 och #381, eller felet bokfört" },
-    { "id": "smavagsrosten-2027-01-01", "datum": "2027-01-01", "forvarning": 1, "vad": "Småvägsrösten i månadsläsningen för december (körlistan D3, DECISIONS #883): uppföljningens dygnsrapporter och veckorapportens del om småvägarna lästa för månaden, och vad som förändrats bokfört på kort #662 utan tal", "agare": ["Claude"], "kalla": "DECISIONS #883, #951; körlistan D3", "klart_nar": "läsningen bokförd på kort #662, eller felet bokfört" },
-    { "id": "storstaderna-2027-02-01", "datum": "2027-02-01", "forvarning": 1, "vad": "Storstäderna i månadsläsningen för januari (körlistan C3 och D3, TROSKLAR-SASONGSFACIT §11): veckorapportens avsnitt om storstäderna läst för månaden, och vad som förändrats bokfört på kort #378 och #381 utan tal", "agare": ["Claude"], "kalla": "DECISIONS #904, #951; körlistan D3", "klart_nar": "läsningen bokförd på kort #378 och #381, eller felet bokfört" },
-    { "id": "smavagsrosten-2027-02-01", "datum": "2027-02-01", "forvarning": 1, "vad": "Småvägsrösten i månadsläsningen för januari (körlistan D3, DECISIONS #883): uppföljningens dygnsrapporter och veckorapportens del om småvägarna lästa för månaden, och vad som förändrats bokfört på kort #662 utan tal", "agare": ["Claude"], "kalla": "DECISIONS #883, #951; körlistan D3", "klart_nar": "läsningen bokförd på kort #662, eller felet bokfört" },
-    { "id": "storstaderna-2027-03-01", "datum": "2027-03-01", "forvarning": 1, "vad": "Storstäderna i månadsläsningen för februari (körlistan C3 och D3, TROSKLAR-SASONGSFACIT §11): veckorapportens avsnitt om storstäderna läst för månaden, och vad som förändrats bokfört på kort #378 och #381 utan tal", "agare": ["Claude"], "kalla": "DECISIONS #904, #951; körlistan D3", "klart_nar": "läsningen bokförd på kort #378 och #381, eller felet bokfört" },
-    { "id": "smavagsrosten-2027-03-01", "datum": "2027-03-01", "forvarning": 1, "vad": "Småvägsrösten i månadsläsningen för februari (körlistan D3, DECISIONS #883): uppföljningens dygnsrapporter och veckorapportens del om småvägarna lästa för månaden, och vad som förändrats bokfört på kort #662 utan tal", "agare": ["Claude"], "kalla": "DECISIONS #883, #951; körlistan D3", "klart_nar": "läsningen bokförd på kort #662, eller felet bokfört" },
-    { "id": "smavagskartan-beslut-2027-02-15", "datum": "2027-02-15", "forvarning": 14, "vad": "Småvägskartan (körlistan C8): Bengts och Axels beslut om ett kartlager för småvägarna ska finnas och hur omarkerade vägar visas, före kuvösens läsning 1/3", "agare": ["Bengt", "Axel"], "kalla": "DECISIONS #757, #951; körlistan C8", "klart_nar": "beslutet bokfört i DECISIONS" },
-    { "id": "strackdelen-lasning-2026-12-01", "datum": "2026-12-01", "forvarning": 3, "vad": "Var på sträckan (kort #677, körlistan C11): första läsningen av strackdel_timme och strackdel_olycka mot förregistreringen M1–M3, en mellanläsning om M3 har färre än 10 olyckor med halkord", "agare": ["Bengt", "Claude"], "kalla": "Bengt 24/11: \"det får du flytta närmare första avläsning den 1 december\"; DECISIONS #960, #961", "klart_nar": "läsningen bokförd i DECISIONS mot förregistreringen" },
-    { "id": "tre-reglerna-mellanlasning-2026-12-01", "datum": "2026-12-01", "forvarning": 3, "vad": "De tre reglerna mot singelolyckorna (kort #680, körlistan C15): mellanläsningen U1–U3 av vägtestet, var på sträckan och åldern, var för sig och tillsammans, mot förregistreringen", "agare": ["Bengt", "Claude"], "kalla": "Bengt 26/11: \"jämföra dem med singelolyckor. Uppspelningen bör vara från 6 november och framåt med mellanläsning den 1/12\"; DECISIONS #968", "klart_nar": "läsningen bokförd i DECISIONS mot förregistreringen" },
-    { "id": "vat-varianterna-2026-12-01", "datum": "2026-12-01", "forvarning": 3, "vad": "Prognos på Normalt, Våt (kort #681, körlistan C16): läsningen av varianterna V1–V6 (den gamla regeln, radarn på 1–24 h, stationerna) mot singelolyckorna, med den andra mellanläsningen samma dag", "agare": ["Bengt", "Claude"], "kalla": "Bengt 26/11: \"kan du samtidigt göra en mätning med de olika varianterna och redovisa den 1 december\"; DECISIONS #972", "klart_nar": "läsningen bokförd i DECISIONS mot förregistreringen" }
+    {
+      "id": "dataskydd-steg3-2026-12-18",
+      "datum": "2026-12-18",
+      "forvarning": 7,
+      "vad": "Dataskyddet steg 3 (kort #670, DECISIONS #900): leverantörsavtalen med Supabase, GitHub och Zoho accepterade och sparade privat (Axel har kontona), registret skrivet och sparat privat, och lagringstiderna i databasen (besöksraderna 13 månader, testarnas svar och kamerabilderna efter vinterns mätningar).",
+      "agare": [
+        "Bengt",
+        "Axel"
+      ],
+      "kalla": "DECISIONS #900",
+      "klart_nar": "avtalen och registret sparade privat, och gallringen i drift och mätt"
+    },
+    {
+      "id": "dataskydd-steg5-2027-01-31",
+      "datum": "2027-01-31",
+      "forvarning": 30,
+      "vad": "Dataskyddet steg 5 (kort #670, DECISIONS #900 och #901): Claude bygger i nästa ordinarie version att telefonens säkerhetskopia inte tar med historiken, facitsvaren, missarna och Bluetooth-adresserna (fråga 13), och att räknaren i appen frågar om lov innan den räknar (fråga 11 och 12, utan jurist). Läs skills/halkvakt-android och swiftui-pro före app-koden; android.yml och TestFlight-provet är byggproven. Axel släpper versionen.",
+      "agare": [
+        "Claude",
+        "Axel"
+      ],
+      "kalla": "DECISIONS #900 och #901; kort #670",
+      "klart_nar": "båda apparna ute i butikerna med säkerhetskopian undantagen och räknarens fråga om lov, och raden i CLAUDE.md, docs/PLAY-DATASAFETY.md, integritetssidan och produktboken ändrade i samma commit"
+    },
+    {
+      "id": "smavag-paslaget-2026-11-27",
+      "datum": "2026-11-27",
+      "forvarning": 1,
+      "vad": "Småvägsröstens påslag senast i dag (körlistan C5 och B8; Bengts ja 20/11, Axels svar väntar): Claude kör sql/113 med DB-knappen när 0.4.1 (58) finns i App Store och i Google Play, och senast i dag även om den inte gjort det. Kräver Bengts och Axels ord; vakterna i filen prövas av den själv.",
+      "agare": [
+        "Claude",
+        "Bengt",
+        "Axel"
+      ],
+      "kalla": "bedömningen §4.2 (raden 17/11 om avbrottsvillkoren); körlistan B8 och C5",
+      "klart_nar": "brytarna på med sql/113 och det första beskedet i räknaren, eller ett beslut som flyttar datumet"
+    },
+    {
+      "id": "olycksfacit-overlappet-2026-11-23",
+      "datum": "2026-11-23",
+      "forvarning": 0,
+      "vad": "Olycksfacits veckoärende 2026-V47 (DECISIONS #925, TROSKLAR-OLYCKSFACIT §9.5 punkt 8): läs att ärendet bär tabellen Lagren tillsammans, att raderna summerar till de halkkopplade, och bokför steget i projektkartan som klart med ärendets nummer. Läs också att ärendet delar missarna på facit som inte bygger på stationen och facit bara på stationen (DECISIONS #946, §14, kort #676; gäller när olycksfacit är deployad efter PR #1789).",
+      "agare": [
+        "Claude"
+      ],
+      "kalla": "DECISIONS #925 och #946; PR #1733 och #1789",
+      "klart_nar": "veckoärendet med tabellen läst och projektkartans steg klart med ärendets nummer, eller felet bokfört"
+    },
+    {
+      "id": "met-svar-2026-11-26",
+      "datum": "2026-11-26",
+      "forvarning": 1,
+      "vad": "MET:s morgonfel och småvägsröstens timme 06 UTC (DECISIONS #902, körlistan B5): har MET svarat, och står felet kvar? Läs vaktens ärende #1664 för dygnen sedan 19/11. Står felet kvar läggs förslaget fram att timflödet kuvos-smavag-timme tar igen de tre föregående timmarna.",
+      "agare": [
+        "Claude",
+        "Bengt"
+      ],
+      "kalla": "DECISIONS #902; körlistan B5",
+      "klart_nar": "MET:s svar eller uteblivna svar bokfört, och beslutet om återtagningen fattat"
+    },
+    {
+      "id": "kamerabilder-2027-04-30",
+      "datum": "2027-04-30",
+      "forvarning": 14,
+      "vad": "Dataskyddet (kort #670, DECISIONS #900 fråga 7): Trafikverkets väglagsbilder i den privata hinken facit raderas när vinterns mätning är gjord. Filerna tas bort i lagringens gränssnitt eller panelen (Storage → facit), inte med SQL; klassningarna i kamerafacit står kvar.",
+      "agare": [
+        "Bengt"
+      ],
+      "kalla": "DECISIONS #900",
+      "klart_nar": "hinken facit har 0 objekt, läst i panelen eller med count på storage.objects"
+    },
+    {
+      "id": "testarnas-svar-2027-05-31",
+      "datum": "2027-05-31",
+      "forvarning": 7,
+      "vad": "Dataskyddet (kort #670, DECISIONS #900 fråga 5): jobbet halkvakt-testarnas-svar (sql/120) gör testarnas svar till summor och raderar dem 04.10 UTC. Läs efteråt att det gick.",
+      "agare": [
+        "Bengt"
+      ],
+      "kalla": "DECISIONS #900",
+      "klart_nar": "testarnas_svar_summa har säsongen 2026/27, och driver_facit och driver_miss har inga rader från före 1 maj 2027"
+    },
+    {
+      "id": "ansvarstexten-2026-12-31",
+      "datum": "2026-12-31",
+      "forvarning": 14,
+      "vad": "Ansvarstexten (kort #648, DECISIONS #899): den nya produktansvarslagen föreslås gälla från 1/1 2027 för produkter som släpps från dess (prop. 2026/27:12, riksdagen beslutar 25/11). Före den: Axels ord på texten, sammanslagningen och en appversion med texterna i båda butikerna (juristens läsning struken 19/11, DECISIONS #901)",
+      "agare": [
+        "Bengt",
+        "Axel"
+      ],
+      "kalla": "DECISIONS #899 och #901; kort #648",
+      "klart_nar": "texterna ute i båda butikerna"
+    },
+    {
+      "id": "flackvis-vinterprovet-2027-01-15",
+      "datum": "2027-01-15",
+      "forvarning": 14,
+      "vad": "Vinterprovet för fläckvis Våt som fukt (kort #645, halkvakt-kuvos F43), första läsdagen. Före den: förregistreringen signerad av Bengt och Axel, och mätskriptet byggt och fryst med sha256 i halkvakt-kuvos. Vid OAVGJORT flyttas läsningen till 15/2, 15/3 och sist 1/4 2027",
+      "agare": [
+        "Bengt",
+        "Axel",
+        "Claude"
+      ],
+      "kalla": "DECISIONS #825; kort #645",
+      "klart_nar": "läsningen bokförd i halkvakt-kuvos med ett slutligt utfall, eller OAVGJORT och datumet flyttat här"
+    },
+    {
+      "id": "databas-2026-11-26",
+      "datum": "2026-11-26",
+      "forvarning": 0,
+      "vad": "Databasens storlek: läs vakthundens rad 'databas: N MB av 8 GB' eller pg_database_size (var sjunde dygn; 1 145,6 MB 19/11, ~25 MB per dygn sedan 11/11 mot ~32 veckorna före; 58,5 MB utan tabell, lika som 4/11 och 11/11; Pro-kvoten #652)",
+      "agare": [
+        "Claude"
+      ],
+      "kalla": "KALENDERN",
+      "klart_nar": "storleken skriven i kalendern och nästa läsning införd här med eget id"
+    },
+    {
+      "id": "r-b-dom",
+      "datum": "2026-12-10",
+      "forvarning": 7,
+      "vad": "R-B:s domslut: tabellen är läst och bokförd 5/11 (DECISIONS #794; R-B1 klarar, R-B2 faller i alla tolv kombinationer). Bengt fäller domslutet när kandidatens daggpunktsväg är läst (#793), med dess fönster 6/11–5/12",
+      "agare": [
+        "Bengt"
+      ],
+      "kalla": "DECISIONS #510, #793, #794, kort #46, ärende #1384",
+      "klart_nar": "domslutet fällt och bokfört i DECISIONS, och ärende #1384 stängt"
+    },
+    {
+      "id": "sasongsfacit-2026-12-01",
+      "datum": "2026-12-01",
+      "forvarning": 1,
+      "vad": "Säsongsfacit, första månadsläsningen (TROSKLAR-SASONGSFACIT §6): november ur sasongsfacit_dag, _ledtid och _olyckor; vad som förändrats bokförs på kort #381 utan tal, och rapporten går internt till Bengt och Axel",
+      "agare": [
+        "Claude"
+      ],
+      "kalla": "DECISIONS #818; kort #381",
+      "klart_nar": "läsningen bokförd på kort #381 och rapporten skickad, eller felet bokfört"
+    },
+    {
+      "id": "sasongsfacit-2027-01-01",
+      "datum": "2027-01-01",
+      "forvarning": 1,
+      "vad": "Säsongsfacit, månadsläsningen för december (TROSKLAR-SASONGSFACIT §6): vad som förändrats bokförs på kort #381 utan tal, och rapporten går internt till Bengt och Axel",
+      "agare": [
+        "Claude"
+      ],
+      "kalla": "DECISIONS #818; kort #381",
+      "klart_nar": "läsningen bokförd på kort #381 och rapporten skickad, eller felet bokfört"
+    },
+    {
+      "id": "sasongsfacit-2027-02-01",
+      "datum": "2027-02-01",
+      "forvarning": 1,
+      "vad": "Säsongsfacit, månadsläsningen för januari (TROSKLAR-SASONGSFACIT §6)",
+      "agare": [
+        "Claude"
+      ],
+      "kalla": "DECISIONS #818; kort #381",
+      "klart_nar": "läsningen bokförd på kort #381 och rapporten skickad, eller felet bokfört"
+    },
+    {
+      "id": "sasongsfacit-2027-03-01",
+      "datum": "2027-03-01",
+      "forvarning": 1,
+      "vad": "Säsongsfacit, månadsläsningen för februari (TROSKLAR-SASONGSFACIT §6)",
+      "agare": [
+        "Claude"
+      ],
+      "kalla": "DECISIONS #818; kort #381",
+      "klart_nar": "läsningen bokförd på kort #381 och rapporten skickad, eller felet bokfört"
+    },
+    {
+      "id": "sasongsfacit-slutrapport-2027-04-15",
+      "datum": "2027-04-15",
+      "forvarning": 1,
+      "vad": "Säsongsfacit, slutrapporten senast 15/4 (TROSKLAR-SASONGSFACIT §6); publiceringen av resultatet beslutas efter den, vad det än blir",
+      "agare": [
+        "Claude"
+      ],
+      "kalla": "DECISIONS #818; kort #381",
+      "klart_nar": "slutrapporten skriven och skickad internt till Bengt och Axel"
+    },
+    {
+      "id": "google-cloud-tak-2027-02-13",
+      "datum": "2027-02-13",
+      "forvarning": 14,
+      "vad": "Google Cloud (DECISIONS #941): gratisperioden för projektet halkvakt går ut 20/2 2027. Före den: kontot uppgraderat, och ett tak för kostnaden satt (kvoter per tjänst för Maps SDK for Android, Places API (New) och Routes API, och ett budgetlarm). Utan uppgradering slutar kartan och Planera resa att fungera i Android-appen.",
+      "agare": [
+        "Axel",
+        "Claude"
+      ],
+      "kalla": "DECISIONS #870 och #941",
+      "klart_nar": "kontot uppgraderat, kvoterna och budgetlarmet satta och lästa i Google Cloud"
+    },
+    {
+      "id": "pat-rotation-2027-01-30",
+      "datum": "2027-01-30",
+      "forvarning": 7,
+      "vad": "Rotera PAT:en och pulsklockans nyckel — båda går ut 6/2 2027 (byttes 8/11 2026; nyckelkalendern 9/11, ärende #1440). Tryck pulsklocka.yml i läget nyckel efter bytet.",
+      "agare": [
+        "Axel"
+      ],
+      "kalla": "KALENDERN; nyckelkalendern 9/11 2026",
+      "klart_nar": "nyckelkalendern visar nytt datum för både PAT och pulsnyckel och en publicering har gått igenom med den nya nyckeln"
+    },
+    {
+      "id": "vagpunkt-premisser",
+      "datum": "2026-11-24",
+      "forvarning": 3,
+      "vad": "Vägpunktsgrindens premissläsning: tryck hojd-prov med dagar: premisser, en gång — datumet flyttas inte",
+      "agare": [
+        "Claude",
+        "Bengt"
+      ],
+      "kalla": "DECISIONS #435",
+      "klart_nar": "läsningen körd 24/11 och bokförd"
+    },
+    {
+      "id": "bytesbeslut",
+      "datum": "2026-11-30",
+      "forvarning": 7,
+      "vad": "Bytet till den nya kandidaten: det daterade beslutet av Bengt och Axel, på den rättade modellens tal efter T4:s omkörning och ett nytt paritetsprov (FORREGISTRERING-2026-27 §12; den rättade modellen ersätter den som loggar före beslutet)",
+      "agare": [
+        "Bengt",
+        "Axel"
+      ],
+      "kalla": "DECISIONS #720, docs/FORREGISTRERING-NY-KANDIDAT-TILLAGG-T4-2026-10-25.md §4 (a)",
+      "klart_nar": "beslutet fattat och daterat av båda i en DECISIONS-post"
+    },
+    {
+      "id": "domskriptet-kandidaten",
+      "datum": "2026-11-30",
+      "forvarning": 7,
+      "vad": "Domskriptet för kandidaten enligt förregistreringen §4b (grind A–C nationellt och per band, frysflaggan K-A och K-B): byggt, provat på låtsasdata och på kuvösens kända tal, och fryst med sha256 före första läsningen av domfönstrets data",
+      "agare": [
+        "Claude"
+      ],
+      "kalla": "DECISIONS #655, docs/FORREGISTRERING-2026-27.md §4b, åtgärdslistan B4-01",
+      "klart_nar": "skriptet på main med självtest i ci och sha256 i en daterad DECISIONS-post med båda signaturerna; domraderna under egna grindnamn (inte Grind A eller K-A, som domlarm.ts bokför för RÅ; åtgärdslistan B4-68)"
+    },
+    {
+      "id": "supabase-token",
+      "datum": "2026-12-01",
+      "forvarning": 7,
+      "vad": "Rotera Supabase-tokenen för deploy-knappen — går ut 8/12",
+      "agare": [
+        "Axel"
+      ],
+      "kalla": "KALENDERN",
+      "klart_nar": "en deploy har gått igenom med den nya tokenen"
+    },
+    {
+      "id": "spridning-1-12",
+      "datum": "2026-12-01",
+      "forvarning": 0,
+      "vad": "Spridningsgrindens vinterläsning: grind-s-b i underlagsläge, raden Spridningen",
+      "agare": [
+        "Claude"
+      ],
+      "kalla": "KALENDERN, DECISIONS #478, kort #299",
+      "klart_nar": "täckningen per månad skriven i bedömningen"
+    },
+    {
+      "id": "skyltfonden-besked",
+      "datum": "2026-12-15",
+      "forvarning": 7,
+      "vad": "Skyltfondens besked på ansökan (skickad 30/9 av Bengt som privatperson): vid ja pressnotisen, granskningen och projektstarten; vid nej vad som står kvar utan pengarna",
+      "agare": [
+        "Bengt",
+        "Axel"
+      ],
+      "kalla": "DECISIONS #409, #683",
+      "klart_nar": "beskedet bokfört och planen för ja eller nej beslutad"
+    },
+    {
+      "id": "norr-62",
+      "datum": "2026-12-03",
+      "forvarning": 7,
+      "vad": "Norr om 62° mitt i vintern (kort #317 b): Bengts beslut med skuggans hela november i norr som underlag, och mätningen som #317 b kräver gjord i halkvakt-kuvos före (flyttad från 15/11, DECISIONS #824)",
+      "agare": [
+        "Bengt"
+      ],
+      "kalla": "DECISIONS #502, #507, #689, #824",
+      "klart_nar": "beslutet bokfört i DECISIONS och på kort #317"
+    },
+    {
+      "id": "w-a-byvind-1",
+      "datum": "2026-12-01",
+      "forvarning": 3,
+      "vad": "Byvindens W-A: tryck vindsikt-steg0 med 60 dygn ur hinken (B4-93 byggt före)",
+      "agare": [
+        "Claude"
+      ],
+      "kalla": "DECISIONS #491, #662; TROSKLAR-VIND-SIKT §3",
+      "klart_nar": "domen eller SPÄRRAD bokförd med antalet stationstimmar i högsta bandet"
+    },
+    {
+      "id": "fs-domknappen",
+      "datum": "2026-12-15",
+      "forvarning": 7,
+      "vad": "Försprångets domknapp (TROSKLAR-FORSPRANG §5): underlagsläge med bara antal och spärrat domläge, domrad och domlarmets steg, provad på låtsasdata med motprov mot andelar under spärren, räkneregeln (B4-90) fryst med sha256; första underlagskörningen",
+      "agare": [
+        "Claude"
+      ],
+      "kalla": "DECISIONS #359, #661; kort #153; åtgärdslistan B4-51, B4-55",
+      "klart_nar": "knappen på main med självtest i ci, sha256 i DECISIONS och underlagskörningen bokförd i STATUS"
+    },
+    {
+      "id": "fs-underlag-1-1",
+      "datum": "2027-01-01",
+      "forvarning": 0,
+      "vad": "Försprångets domknapp i underlagsläge (bara antal: FS-A2, FS-C1–C2 per svepvärde)",
+      "agare": [
+        "Claude"
+      ],
+      "kalla": "DECISIONS #661",
+      "klart_nar": "underlagskörningen bokförd i STATUS"
+    },
+    {
+      "id": "w-a-byvind-2",
+      "datum": "2027-01-31",
+      "forvarning": 3,
+      "vad": "Byvindens W-A: tryck vindsikt-steg0 med 60 dygn ur hinken, om domen inte redan är fälld",
+      "agare": [
+        "Claude"
+      ],
+      "kalla": "DECISIONS #662; TROSKLAR-VIND-SIKT §3",
+      "klart_nar": "domen eller SPÄRRAD bokförd med antalet stationstimmar i högsta bandet"
+    },
+    {
+      "id": "januari-domar",
+      "datum": "2027-01-01",
+      "forvarning": 14,
+      "vad": "Januari: dom 1 — efterhalkan S6 och varningsreglerna i testkretsen",
+      "agare": [
+        "Bengt",
+        "Axel"
+      ],
+      "kalla": "bedömningen (kalendern), MATNINGAR §6.2",
+      "klart_nar": "domarna fällda och bokförda"
+    },
+    {
+      "id": "spridning-1-1",
+      "datum": "2027-01-01",
+      "forvarning": 0,
+      "vad": "Spridningsgrindens vinterläsning: grind-s-b i underlagsläge, raden Spridningen",
+      "agare": [
+        "Claude"
+      ],
+      "kalla": "KALENDERN, DECISIONS #478, kort #299",
+      "klart_nar": "täckningen per månad skriven i bedömningen"
+    },
+    {
+      "id": "fs-underlag-1-2",
+      "datum": "2027-02-01",
+      "forvarning": 0,
+      "vad": "Försprångets domknapp i underlagsläge (bara antal: FS-A2, FS-C1–C2 per svepvärde)",
+      "agare": [
+        "Claude"
+      ],
+      "kalla": "DECISIONS #661",
+      "klart_nar": "underlagskörningen bokförd i STATUS"
+    },
+    {
+      "id": "bildfacit-beslut",
+      "datum": "2027-02-01",
+      "forvarning": 14,
+      "vad": "Bildfacitbeslutet (kort #209): att bygga läsningen av kamerabilderna före mars — efter mätningen av V2-taket (åtgärdslistan B4-80) och med koden för tabellen i kort #231 (B4-69)",
+      "agare": [
+        "Bengt",
+        "Axel"
+      ],
+      "kalla": "bedömningen §4.2, DECISIONS #248, #660",
+      "klart_nar": "DECISIONS-post om kort #209"
+    },
+    {
+      "id": "spridning-1-2",
+      "datum": "2027-02-01",
+      "forvarning": 0,
+      "vad": "Spridningsgrindens vinterläsning: grind-s-b i underlagsläge, raden Spridningen",
+      "agare": [
+        "Claude"
+      ],
+      "kalla": "KALENDERN, DECISIONS #478, kort #299",
+      "klart_nar": "täckningen per månad skriven i bedömningen"
+    },
+    {
+      "id": "nt-dom",
+      "datum": "2027-03-01",
+      "forvarning": 7,
+      "vad": "NT-domen tidigast nu: grind-nt med --dom om NT-D är uppfyllt (minst 100 snö- och 40 slaskepisoder)",
+      "agare": [
+        "Bengt",
+        "Axel"
+      ],
+      "kalla": "DECISIONS #361, #362; domslutet fälls av Axel (TROSKLAR-NEDERBORDSTYPEN §6)",
+      "klart_nar": "domen eller OAVGJORT bokförd"
+    },
+    {
+      "id": "mars-domar",
+      "datum": "2027-03-01",
+      "forvarning": 14,
+      "vad": "Mars: kandidatens dom (segmentprognosen, RÅ som kontroll och reserv), försprånget, kombinationen och nederbördstypen; bildfacitets bilder öppnas",
+      "agare": [
+        "Bengt",
+        "Axel"
+      ],
+      "kalla": "DECISIONS #547, #335, #657; MATNINGAR §11",
+      "klart_nar": "domarna fällda och bokförda"
+    },
+    {
+      "id": "p2-frysning",
+      "datum": "2027-02-26",
+      "forvarning": 14,
+      "vad": "Kuvösens P-II: domskriptet fryst med sha256 före den första läsningen (halkvakt-kuvos F44, tolkning 6)",
+      "agare": [
+        "Claude"
+      ],
+      "kalla": "halkvakt-kuvos F44, F45",
+      "klart_nar": "domskriptets sha256 i en post i halkvakt-kuvos BESLUT"
+    },
+    {
+      "id": "p2-las-a",
+      "datum": "2027-03-01",
+      "forvarning": 3,
+      "vad": "Kuvösens P-II: regel A läses (november–februari). Talen stannar i halkvakt-kuvos",
+      "agare": [
+        "Bengt",
+        "Axel",
+        "Claude"
+      ],
+      "kalla": "halkvakt-kuvos F44, F45",
+      "klart_nar": "A:s dom läst och bokförd i halkvakt-kuvos"
+    },
+    {
+      "id": "p2-las-bcd",
+      "datum": "2027-04-01",
+      "forvarning": 3,
+      "vad": "Kuvösens P-II: reglerna B, C och D och fuktvarianten D-F läses (hela vintern). Talen stannar i halkvakt-kuvos",
+      "agare": [
+        "Bengt",
+        "Axel",
+        "Claude"
+      ],
+      "kalla": "halkvakt-kuvos F44, F45",
+      "klart_nar": "domarna lästa och bokförda i halkvakt-kuvos"
+    },
+    {
+      "id": "stadsmiljon-dom",
+      "datum": "2027-04-01",
+      "forvarning": 7,
+      "vad": "Kuvösens stadsmiljö: domen körs och läses, Stor-Stockholm och Stor-Göteborg var för sig. Den avgör om storstädernas B stannar. Talen stannar i halkvakt-kuvos",
+      "agare": [
+        "Bengt",
+        "Axel",
+        "Claude"
+      ],
+      "kalla": "halkvakt-kuvos F32, F33; körlistan B10",
+      "klart_nar": "domen läst och bokförd i halkvakt-kuvos, och beslutet om B bokfört i Halkvakts DECISIONS"
+    },
+    {
+      "id": "friktionen-las-2026-12-06",
+      "datum": "2026-12-06",
+      "forvarning": 3,
+      "vad": "Kuvösens fukt i storstäderna: friktionens läsfråga körs i flödet (kuvos-ny-kandidat.yml, steget friktionen) 6/12. Bengts ord finns sedan 19/11: \"ja, kör den 6/12\", så den körs den dagen utan ny fråga, av engångsrutinen trig_01FXRhEbVBSJBVDzmjdJKjEP i molnet. Talen stannar i halkvakt-kuvos",
+      "agare": [
+        "Bengt",
+        "Claude"
+      ],
+      "kalla": "halkvakt-kuvos F38 §8, F74; körlistan C4",
+      "klart_nar": "steget kört och filen i hinken; läsningen bokförd i halkvakt-kuvos"
+    },
+    {
+      "id": "fuktskuggan-las-2027-04-01",
+      "datum": "2027-04-01",
+      "forvarning": 7,
+      "vad": "Kuvösens fuktskugga i storstäderna läses mot friktionen, med data till och med 31/3. Talen stannar i halkvakt-kuvos",
+      "agare": [
+        "Bengt",
+        "Axel",
+        "Claude"
+      ],
+      "kalla": "halkvakt-kuvos F74; körlistan C4",
+      "klart_nar": "läsningen gjord och följden bokförd i halkvakt-kuvos"
+    },
+    {
+      "id": "svartis-rimfrost-las-2027-04-01",
+      "datum": "2027-04-01",
+      "forvarning": 7,
+      "vad": "Kuvösens prov av svartis och rimfrost i storstäderna läses mot friktionen med data till och med 31/3. Talen stannar i halkvakt-kuvos",
+      "agare": [
+        "Bengt",
+        "Axel",
+        "Claude"
+      ],
+      "kalla": "halkvakt-kuvos F75, F76; körlistan C7; DECISIONS #906, #911",
+      "klart_nar": "läsningen gjord och följden bokförd i halkvakt-kuvos"
+    },
+    {
+      "id": "xcode-27-2027-03-01",
+      "datum": "2027-03-01",
+      "forvarning": 14,
+      "vad": "iPhone-bygget måste gå på Xcode 27 med iOS 27 SDK: från april 2027 tar App Store Connect inte emot något annat (Apples varning ITMS-90725 efter varje uppladdning sedan bygge 58). testflight.yml kör macos-26",
+      "agare": [
+        "Axel",
+        "Claude"
+      ],
+      "kalla": "Apples mejl 20/11 2026 om 0.4.1 (58) och (66); DECISIONS #929",
+      "klart_nar": "en uppladdning till TestFlight utan varningen ITMS-90725"
+    },
+    {
+      "id": "fjarrytorna-2027-28",
+      "datum": "2027-09-01",
+      "forvarning": 14,
+      "vad": "Fjärrytorna inför säsongen 2027/28 (kort #344, stängt 24/11 och flyttat hit): VViS-stationernas andra mätpunkt utan lufttemperatur släpps igenom av vakterna, och en plats kan ge två ankare. Avgör före säsongen om de ska vaktas eller tas bort ur ankarna (sql/032, kommentaren om fjärrytorna)",
+      "agare": [
+        "Bengt",
+        "Axel",
+        "Claude"
+      ],
+      "kalla": "Bengt 24/11: \"lägg över till 2027/28 och stäng kortet nu\"; kort #344, #345",
+      "klart_nar": "beslutet om fjärrytorna bokfört i DECISIONS före säsongen 2027/28"
+    },
+    {
+      "id": "rackvidd-skugga-2026-11-29",
+      "datum": "2026-11-29",
+      "forvarning": 1,
+      "vad": "Utvärdera skuggan räckvidden som en fara (shadow_log.rackvidd): takten mot dagens A2 och missarna med oberoende facit i veckans ärende 2026-V48, och ta ställning till motorn och appversionen",
+      "agare": [
+        "Bengt",
+        "Claude"
+      ],
+      "kalla": "Bengt 21/11: \"bygg in och kom ihåg att påminna mej om en vecka att utvärdering ska ske\"; DECISIONS #950",
+      "klart_nar": "utvärderingen bokförd i DECISIONS och Bengts och Axels ord om motorn"
+    },
+    {
+      "id": "storstaderna-2026-12-01",
+      "datum": "2026-12-01",
+      "forvarning": 1,
+      "vad": "Storstäderna i månadsläsningen för november (körlistan C3 och D3, TROSKLAR-SASONGSFACIT §11): veckorapportens avsnitt om storstäderna läst för månaden, och vad som förändrats bokfört på kort #378 och #381 utan tal",
+      "agare": [
+        "Claude"
+      ],
+      "kalla": "DECISIONS #904, #951; körlistan D3",
+      "klart_nar": "läsningen bokförd på kort #378 och #381, eller felet bokfört"
+    },
+    {
+      "id": "smavagsrosten-2026-12-01",
+      "datum": "2026-12-01",
+      "forvarning": 1,
+      "vad": "Småvägsrösten i månadsläsningen för november (körlistan D3, DECISIONS #883): uppföljningens dygnsrapporter och veckorapportens del om småvägarna lästa för månaden, och vad som förändrats bokfört på kort #662 utan tal",
+      "agare": [
+        "Claude"
+      ],
+      "kalla": "DECISIONS #883, #951; körlistan D3",
+      "klart_nar": "läsningen bokförd på kort #662, eller felet bokfört"
+    },
+    {
+      "id": "storstaderna-2027-01-01",
+      "datum": "2027-01-01",
+      "forvarning": 1,
+      "vad": "Storstäderna i månadsläsningen för december (körlistan C3 och D3, TROSKLAR-SASONGSFACIT §11): veckorapportens avsnitt om storstäderna läst för månaden, och vad som förändrats bokfört på kort #378 och #381 utan tal",
+      "agare": [
+        "Claude"
+      ],
+      "kalla": "DECISIONS #904, #951; körlistan D3",
+      "klart_nar": "läsningen bokförd på kort #378 och #381, eller felet bokfört"
+    },
+    {
+      "id": "smavagsrosten-2027-01-01",
+      "datum": "2027-01-01",
+      "forvarning": 1,
+      "vad": "Småvägsrösten i månadsläsningen för december (körlistan D3, DECISIONS #883): uppföljningens dygnsrapporter och veckorapportens del om småvägarna lästa för månaden, och vad som förändrats bokfört på kort #662 utan tal",
+      "agare": [
+        "Claude"
+      ],
+      "kalla": "DECISIONS #883, #951; körlistan D3",
+      "klart_nar": "läsningen bokförd på kort #662, eller felet bokfört"
+    },
+    {
+      "id": "storstaderna-2027-02-01",
+      "datum": "2027-02-01",
+      "forvarning": 1,
+      "vad": "Storstäderna i månadsläsningen för januari (körlistan C3 och D3, TROSKLAR-SASONGSFACIT §11): veckorapportens avsnitt om storstäderna läst för månaden, och vad som förändrats bokfört på kort #378 och #381 utan tal",
+      "agare": [
+        "Claude"
+      ],
+      "kalla": "DECISIONS #904, #951; körlistan D3",
+      "klart_nar": "läsningen bokförd på kort #378 och #381, eller felet bokfört"
+    },
+    {
+      "id": "smavagsrosten-2027-02-01",
+      "datum": "2027-02-01",
+      "forvarning": 1,
+      "vad": "Småvägsrösten i månadsläsningen för januari (körlistan D3, DECISIONS #883): uppföljningens dygnsrapporter och veckorapportens del om småvägarna lästa för månaden, och vad som förändrats bokfört på kort #662 utan tal",
+      "agare": [
+        "Claude"
+      ],
+      "kalla": "DECISIONS #883, #951; körlistan D3",
+      "klart_nar": "läsningen bokförd på kort #662, eller felet bokfört"
+    },
+    {
+      "id": "storstaderna-2027-03-01",
+      "datum": "2027-03-01",
+      "forvarning": 1,
+      "vad": "Storstäderna i månadsläsningen för februari (körlistan C3 och D3, TROSKLAR-SASONGSFACIT §11): veckorapportens avsnitt om storstäderna läst för månaden, och vad som förändrats bokfört på kort #378 och #381 utan tal",
+      "agare": [
+        "Claude"
+      ],
+      "kalla": "DECISIONS #904, #951; körlistan D3",
+      "klart_nar": "läsningen bokförd på kort #378 och #381, eller felet bokfört"
+    },
+    {
+      "id": "smavagsrosten-2027-03-01",
+      "datum": "2027-03-01",
+      "forvarning": 1,
+      "vad": "Småvägsrösten i månadsläsningen för februari (körlistan D3, DECISIONS #883): uppföljningens dygnsrapporter och veckorapportens del om småvägarna lästa för månaden, och vad som förändrats bokfört på kort #662 utan tal",
+      "agare": [
+        "Claude"
+      ],
+      "kalla": "DECISIONS #883, #951; körlistan D3",
+      "klart_nar": "läsningen bokförd på kort #662, eller felet bokfört"
+    },
+    {
+      "id": "smavagskartan-beslut-2027-02-15",
+      "datum": "2027-02-15",
+      "forvarning": 14,
+      "vad": "Småvägskartan (körlistan C8): Bengts och Axels beslut om ett kartlager för småvägarna ska finnas och hur omarkerade vägar visas, före kuvösens läsning 1/3",
+      "agare": [
+        "Bengt",
+        "Axel"
+      ],
+      "kalla": "DECISIONS #757, #951; körlistan C8",
+      "klart_nar": "beslutet bokfört i DECISIONS"
+    },
+    {
+      "id": "strackdelen-lasning-2026-12-01",
+      "datum": "2026-12-01",
+      "forvarning": 3,
+      "vad": "Var på sträckan (kort #677, körlistan C11): första läsningen av strackdel_timme och strackdel_olycka mot förregistreringen M1–M3, en mellanläsning om M3 har färre än 10 olyckor med halkord",
+      "agare": [
+        "Bengt",
+        "Claude"
+      ],
+      "kalla": "Bengt 24/11: \"det får du flytta närmare första avläsning den 1 december\"; DECISIONS #960, #961",
+      "klart_nar": "läsningen bokförd i DECISIONS mot förregistreringen"
+    },
+    {
+      "id": "tre-reglerna-mellanlasning-2026-12-01",
+      "datum": "2026-12-01",
+      "forvarning": 3,
+      "vad": "De tre reglerna mot singelolyckorna (kort #680, körlistan C15): mellanläsningen U1–U3 av vägtestet, var på sträckan och åldern, var för sig och tillsammans, mot förregistreringen",
+      "agare": [
+        "Bengt",
+        "Claude"
+      ],
+      "kalla": "Bengt 26/11: \"jämföra dem med singelolyckor. Uppspelningen bör vara från 6 november och framåt med mellanläsning den 1/12\"; DECISIONS #968",
+      "klart_nar": "läsningen bokförd i DECISIONS mot förregistreringen"
+    },
+    {
+      "id": "vat-varianterna-2026-12-01",
+      "datum": "2026-12-01",
+      "forvarning": 3,
+      "vad": "Prognos på Normalt, Våt (kort #681, körlistan C16): läsningen av varianterna V1–V6 (den gamla regeln, radarn på 1–24 h, stationerna) mot singelolyckorna, med den andra mellanläsningen samma dag",
+      "agare": [
+        "Bengt",
+        "Claude"
+      ],
+      "kalla": "Bengt 26/11: \"kan du samtidigt göra en mätning med de olika varianterna och redovisa den 1 december\"; DECISIONS #972",
+      "klart_nar": "läsningen bokförd i DECISIONS mot förregistreringen"
+    },
+    {
+      "id": "play-handlarstatus-2027-02-01",
+      "datum": "2027-02-01",
+      "forvarning": 21,
+      "vad": "Google Play: deklarera status som handlare för utvecklarkontot Lagerlöf Labs. Görs lämpligen när kontot är omgjort till organisationskonto, så att bolagets uppgifter är de som visas",
+      "agare": [
+        "Axel"
+      ],
+      "kalla": "Play Consoles avisering 5/11, sedd av Axel och Claude 28/11: \"Deklarera din status som handlare senast den 1 februari 2027\"",
+      "klart_nar": "statusen är deklarerad i Play Console"
+    }
   ]
 }
