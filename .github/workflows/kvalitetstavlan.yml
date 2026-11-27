@@ -28,7 +28,8 @@ jobs:
         with: { node-version: 22, cache: npm }
       - run: npm ci
       - name: Självtestet (påhittade data)
-        run: node --experimental-strip-types scripts/kvalitetstavlan.ts --sjalvtest > /dev/null && echo "självtestet: klart"
+        run: |
+          node --experimental-strip-types scripts/kvalitetstavlan.ts --sjalvtest > /dev/null && echo "självtestet: klart"
       - name: Fönstret
         id: fonstret
         shell: bash
