@@ -33,6 +33,14 @@ Allt nedan är destillat av projektets beslut (DECISIONS.md) och Play-dossiern.
   nätverksvillkor.
 - Activity Recognition (`IN_VEHICLE`) är väckningen — appen startar sig själv när körning
   upptäcks. Ingen "kom ihåg att öppna appen".
+- **Övergångarna räcker inte (27/11, DECISIONS #974).** På Bengts Galaxy J6 (Android 10) kom
+  `ActivityTransition` ENTER aldrig fram: ny installation, alla behörigheter, vippan på, ingen
+  notis, ingen start. De avlästa lägena (`requestActivityUpdates`, var 30:e sekund) kom fram samma
+  kväll. Självstarten lyssnar därför på båda (`sampleStarts` i Autostart.kt). Tre saker till:
+  svaret på en registrering är en `Task` och ett nej syns bara med `addOnFailureListener`;
+  registreringen överlever varken omstart eller en uppdatering av appen, så den görs om på
+  `BOOT_COMPLETED`, `MY_PACKAGE_REPLACED` och när appen öppnas; och ett fel i självstarten går
+  inte att se utan en rad på skärmen (`AutostartManager.status`), för föraren ser bara en tyst app.
 - Anta att processen dödas när som helst (Samsung/Xiaomi är aggressivast — vår testmobil
   är Samsung A just därför). ALLT tillstånd (aktiva varningszoner, senaste positionshink,
   TTS-kö) måste återskapas ur persistens vid kallstart, tyst och snabbt.

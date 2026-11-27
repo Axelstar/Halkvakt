@@ -19969,3 +19969,29 @@ sitt blinda facit. Att räkna tavlan i SQL med pg_cron som säsongsfacit: läges
 12/11 bara i hinken.
 
 **Stomdokument:** MAT (tavlan och kamerorna), SYS (flödet och tabellen), BED §4.2 (frågan avgjord)
+
+## #974 (27/11 2026) Androids självstart får en andra väg och visar sitt läge (kort #679)
+**Beslut.** Axel 27/11, i bilen med Bengt: *"Kan vi inte göra en ny release för internt test då vi gärna vill vara 100 % att den går
+igång då folk kör"*. Bengts Galaxy J6 (Android 10) startade aldrig vakten själv i 0.4.2 (76): ny installation, alla behörigheter,
+vippan på, ingen notis *Kör du?*. Vakten varnade rätt när den startades för hand.
+1. **En andra väg.** Appen ber aktivitetsigenkänningen om avlästa lägen var 30:e sekund, bredvid övergångarna. Ett läge *i ett
+   fordon* med minst 75 i säkerhet startar vakten: inte medan vakten går, högst ett försök per tio minuter, och inte inom 30 minuter
+   efter att föraren stoppat vakten för hand (`sampleStarts` i `Autostart.kt`, sex prov).
+2. **Armas om.** Registreringen görs om efter en uppdatering av appen (`MY_PACKAGE_REPLACED`) och varje gång appen öppnas, inte
+   bara vid omstart.
+3. **Läget syns.** Svaret på registreringen läses, och under vippan *Vaknar själv när du kör* står om telefonen lyssnar och när
+   den senast sa fordon.
+
+**Beviset.** Android 0.4.2 (78) i Plays interna test 27/11. På samma telefon visade raden *senaste fordonssignal 27/11 17.41*
+under körning, och efter att appens data rensats startade vakten själv (Axel 17.45: *"Nu fungerar det"*). Övergångarna kom aldrig
+fram på den telefonen; varför är inte utrett.
+
+**Kvar.** En telefon är provad. Pausen på 30 minuter efter ett stopp för hand skiljer sig från iPhone, som startar om direkt: det
+är ett val för Axel och Bengt (Bengts körordning, omgång 2). Batteriet med avläsning var 30:e sekund är inte mätt. På Android 12
+och senare kan en start ur ett avläst läge nekas i bakgrunden, och då visas notisen *Kör du?* i stället: inte provat.
+
+**Alternativ.** Att släppa (76) och rätta självstarten i nästa version (då tror föraren att appen vaktar när den inte gör det);
+ett fartprov som på iPhone (kräver plats i bakgrunden utan att vakten går, och en ny deklaration till Play).
+
+**Stomdokument:** APP (självstarten på Android), BED §4.2
+
