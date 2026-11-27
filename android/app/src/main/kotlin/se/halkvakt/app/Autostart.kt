@@ -84,8 +84,8 @@ fun isCarClass(deviceClass: Int?): Boolean = deviceClass == 0x0420 || deviceClas
  */
 const val SAMPLE_INTERVAL_MS = 30_000L
 const val SAMPLE_CONFIDENCE = 75
-const val SAMPLE_RETRY_MS = 10 * 60_000L
-const val SAMPLE_PAUSE_MS = 30 * 60_000L
+const val SAMPLE_RETRY_MS = 5 * 60_000L
+const val SAMPLE_PAUSE_MS = 5 * 60_000L   // Axel 27/11: thirty minutes left the next leg unguarded
 
 fun sampleStarts(
     inVehicle: Boolean, confidence: Int, guardRunning: Boolean,
