@@ -5,6 +5,9 @@ name: kuvos-smavag-stationsfukt
 #   olyckor    (för hand, en gång) olyckorna vid en småvägspunkt i olycksfacit, i grindarnas tillfälliga databas, så att stationerna
 #              finns också för dygnen som raderats ur driften. Punkterna läses ur driften i en läsande transaktion.
 #   stickprov  (varannan timme, Bengts val 27/11) regelns besked i driften just nu, i en läsande transaktion.
+#   bakat      (för hand; Bengt 27/11: "kan man inte göra ett bakåttest") stickproven bakåt, ungefärligt: driftens del B och regel D
+#              körda timme för timme ur kedjans timfiler och underlag i den privata hinken, med ankarna ur grindarnas tillfälliga
+#              databas vid kuvösens klocka (kuvos/ankare-bakat.ts). Ankarna, timfilerna och underlagen lämnar aldrig jobbet.
 # Mätskriptet ur det privata repot läggs ovanpå utcheckningen, och spärren och självtestet går först. Talen går bara till grenen
 # resultat/smavag-stationsfukt i det privata repot, med KUVOS_SKRIVNYCKEL. Loggen är publik (#498) och säger bara klart eller vilket
 # steg som föll. Före signeringen och när förregistreringens vecka är slut gör stickprovsjobbet ingenting; schemat tas bort när resultatet
@@ -15,9 +18,9 @@ on:
   workflow_dispatch:
     inputs:
       del:
-        description: "olyckor = olyckorna i olycksfacit (en gång); stickprov = ett stickprov ur driften nu"
+        description: "olyckor = olyckorna i olycksfacit (en gång); stickprov = ett stickprov ur driften nu; bakat = stickproven bakåt (ungefärligt)"
         type: choice
-        options: [olyckor, stickprov]
+        options: [olyckor, stickprov, bakat]
         default: olyckor
 permissions:
   contents: read
@@ -25,9 +28,11 @@ concurrency: { group: kuvos-smavag-stationsfukt, cancel-in-progress: false }
 jobs:
   matningen:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 180
     env:
       DEL: "${{ inputs.del || 'stickprov' }}"
+      HINK: kuvos-smavag-2026-27
+      NYKAND_VARIANT: t4                     # som kuvos-smavag-timme: den rättade kandidatens par och kandidatfil (DECISIONS #720)
       HANDELSE: "${{ github.event_name }}"
       FORREG: docs/FORREGISTRERING-SMAVAG-STATIONSFUKT-2026-11.md
       MATNING: scripts/matningar/kuvos-smavag-stationsfukt-2026-11.ts
@@ -56,16 +61,63 @@ jobs:
         with: { node-version: 22, cache: npm }
       - if: ${{ steps.sparren.outputs.ok == 'ja' }}
         run: npm ci
+      - uses: actions/setup-python@v5
+        if: ${{ steps.sparren.outputs.ok == 'ja' && env.DEL == 'bakat' }}
+        with: { python-version: "3.13", cache: pip, cache-dependency-path: fysik/requirements.txt }
       - name: Självtestet
         if: ${{ steps.sparren.outputs.ok == 'ja' }}
         shell: bash
         run: |
           if node --experimental-strip-types "$MATNING" --sjalvtest > /dev/null 2>&1; then echo "mätskriptets självtest (påhittade data): klart"
           else echo "::error::mätskriptets självtest: fel"; exit 1; fi
-          echo "DAGAR=$(( ( $(date -u +%s) - $(date -u -d 2026-11-12 +%s) ) / 86400 + 1 ))" >> "$GITHUB_ENV"
+          # Bakåt: karantänen och vakterna läser sju dygn före den första timmen.
+          FRAN_ARKIV=2026-11-12; [ "$DEL" = bakat ] && FRAN_ARKIV=2026-11-05
+          echo "DAGAR=$(( ( $(date -u +%s) - $(date -u -d "$FRAN_ARKIV" +%s) ) / 86400 + 1 ))" >> "$GITHUB_ENV"
+          if [ "$DEL" = bakat ]; then
+            python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt) > /dev/null 2>&1
+            for x in "python3 fysik/ny_kandidat/smavag_drift.py" "node --experimental-strip-types kuvos/ankare-bakat.ts" "node --experimental-strip-types ingest/smavagskedjan.ts" "node --experimental-strip-types ingest/hinken.ts"; do
+              if $x --sjalvtest > /dev/null 2>&1; then echo "självtestet för ${x##* }: klart"; else echo "::error::självtestet för ${x##* }: fel"; exit 1; fi
+            done
+          fi
       - uses: ./.github/actions/tillfalliga-arkivet
-        if: ${{ steps.sparren.outputs.ok == 'ja' && env.DEL == 'olyckor' }}
-        with: { dagar: "${{ env.DAGAR }}", drift-url: "${{ secrets.DATABASE_URL }}", tabeller: "olycksfacit,olycksfacit_lager" }
+        if: ${{ steps.sparren.outputs.ok == 'ja' && (env.DEL == 'olyckor' || env.DEL == 'bakat') }}
+        with: { dagar: "${{ env.DAGAR }}", drift-url: "${{ secrets.DATABASE_URL }}", tabeller: "${{ env.DEL == 'olyckor' && 'olycksfacit,olycksfacit_lager' || '' }}" }
+      # Bakåt, steg för steg. Ingenting här skriver något i driften: ankarna räknas i den tillfälliga databasen, och driften läses bara
+      # för punkterna och hinkens nyckel. Loggen säger bara klart eller vilket steg som föll.
+      - name: Bakåt, ankarna, hinkens filer, urvalet, del B och regel D
+        if: ${{ steps.sparren.outputs.ok == 'ja' && env.DEL == 'bakat' }}
+        shell: bash
+        env: { DRIFT_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          IGAR=$(date -u -d yesterday +%F); TILL="${IGAR}T23:00:00Z"
+          A="$RUNNER_TEMP/bakat"; mkdir -p "$A/in"
+          steg() { local namn="$1"; shift; if "$@" > steg.log 2>&1; then rm -f steg.log; echo "$namn: klart"; else rm -f steg.log; echo "::error::bakåt: fel i $namn"; exit 1; fi; }
+          steg "klockan" psql "$TILLFALLIG_URL" -q -v ON_ERROR_STOP=1 -f kuvos/klocka.sql
+          steg "ankarna" env DATABASE_URL="$TILLFALLIG_URL" node --experimental-strip-types kuvos/ankare-bakat.ts 2026-11-12 "$IGAR" "$A/ankare.csv.gz"
+          steg "ankarnas timmar" node --experimental-strip-types ingest/smavagskedjan.ts ankare "$A/ankare.csv.gz" 2026-11-12T00:00:00Z "$TILL" "$A/ank"
+          rm -f "$A/ankare.csv.gz"
+          read -r FN KEY < <(psql "$DRIFT_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          export FN KEY
+          steg "hinkens lista" node --experimental-strip-types "$MATNING" bakat-filer --dir "$A" --till "$TILL"
+          # En fil som saknas i hinken är en timme utan regelns timme eller en körning utan timfil: urvalet räknar dem.
+          while read -r f; do
+            K=0; node --experimental-strip-types ingest/hinken.ts hamta "$HINK/$f" "$A/in/$f" > /dev/null 2>&1 || K=$?
+            [ "$K" = 0 ] || [ "$K" = 3 ] || { echo "::error::bakåt: fel i hinken"; exit 1; }
+          done < "$A/filer.txt"
+          echo "hinkens filer: klart"
+          steg "urvalet" env DATABASE_URL="$TILLFALLIG_URL" node --experimental-strip-types "$MATNING" bakat-urval --dir "$A/arbete" --in "$A/in" --till "$TILL"
+          rm -rf "$A/in"
+          while read -r H TID; do
+            python3 fysik/ny_kandidat/levande.py --del-b --ph "$A/arbete/$H/ph.csv" --punkter "$A/arbete/lagen.csv" --ankare "$A/ank/ankare_$H.csv" \
+              --tid "$TID" --ut "$A/arbete/$H/live.csv" > /dev/null 2>&1 || { echo "::error::bakåt: fel i del B"; exit 1; }
+            python3 fysik/ny_kandidat/smavag_drift.py rader --live "$A/arbete/$H/live.csv" --timmar "$A/arbete/$H/timmar.csv" --lagen "$A/arbete/lagen.csv" \
+              --tid "$TID" --ut "$A/arbete/$H/rader.csv" > /dev/null 2>&1 || { echo "::error::bakåt: fel i regel D"; exit 1; }
+          done < "$A/arbete/python.txt"
+          rm -rf "$A/ank"
+          echo "del B och regel D bakåt: klart"
       - name: Mätningen, och filerna till grenen resultat/smavag-stationsfukt i kuvösen
         if: ${{ steps.sparren.outputs.ok == 'ja' }}
         shell: bash
@@ -80,14 +132,16 @@ jobs:
           else git -C "$K" checkout -q -b "$G"; fi
           if [ "$DEL" = olyckor ]; then
             ARG=(olyckor --dir "$K/$G" --nr "$GITHUB_RUN_NUMBER"); export DATABASE_URL="$TILLFALLIG_URL"
+          elif [ "$DEL" = bakat ]; then
+            ARG=(bakat-rakna --dir "$K/$G" --arbete "$RUNNER_TEMP/bakat/arbete" --nr "$GITHUB_RUN_NUMBER")
           else
             ARG=(stickprov --dir "$K/$G"); export DATABASE_URL="$DRIFT_URL"; unset DRIFT_URL
           fi
           RC=0; node --experimental-strip-types "$MATNING" "${ARG[@]}" > mat.txt 2>&1 || RC=$?
           # Bara skriptets egna ord, aldrig talen: raderna klart och veckan är slut, och vilket steg som föll.
-          grep -E '^(stickprovet|olyckorna|sammanställningen): (klart|veckan är slut)$' mat.txt || true
-          PROVET=$(sed -n 's/^STATIONSFUKT FÖLL: \(argumenten\|spärren\|databasen\|punkterna\|olyckorna\|väderarkivet\|regeln\|stationerna\|räkningen\|sammanställningen\)$/\1/p' mat.txt | tail -1)
-          rm -f mat.txt
+          grep -E '^(stickprovet|olyckorna|bakåt|sammanställningen): (klart|veckan är slut)$' mat.txt || true
+          PROVET=$(sed -n 's/^STATIONSFUKT FÖLL: \(argumenten\|spärren\|databasen\|punkterna\|olyckorna\|väderarkivet\|regeln\|stationerna\|underlaget\|timfilen\|räkningen\|sammanställningen\)$/\1/p' mat.txt | tail -1)
+          rm -rf mat.txt "$RUNNER_TEMP/bakat"
           if [ "$RC" -eq 3 ]; then echo "stickprovet: förregistreringens vecka är slut, ingenting skrivs: klart"; exit 0; fi
           if [ "$RC" -ne 0 ]; then echo "::error::stationsfukten: fel i ${PROVET:-skriptet, utan besked (kod $RC)}"; exit "$RC"; fi
           git -C "$K" add "$G"
