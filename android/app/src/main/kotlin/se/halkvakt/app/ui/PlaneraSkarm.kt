@@ -49,6 +49,8 @@ import kotlin.math.roundToInt
 
 /** Så länge väntar sökningen efter den senaste tangenten: en fråga per paus, inte per bokstav. */
 private const val SOKPAUS_MS = 350L
+/** Så många tecken innan Google får den första frågan. Varje fråga om förslag räknas och kostar efter gratisdelen (28/11). */
+private const val SOK_MINST = 3
 
 @Composable
 fun PlaneraSkarm(activity: MainActivity, back: () -> Unit, klar: () -> Unit) {
@@ -59,7 +61,7 @@ fun PlaneraSkarm(activity: MainActivity, back: () -> Unit, klar: () -> Unit) {
     val lage by Resplan.lage.collectAsStateWithLifecycle()
     LaunchedEffect(text) {
         delay(SOKPAUS_MS)
-        Resplan.sok(ctx, text)
+        Resplan.sok(ctx, if (text.trim().length < SOK_MINST) "" else text)
     }
     Column(Modifier.fillMaxSize().background(Brand.bg).verticalScroll(rememberScrollState()).imePadding().padding(horizontal = 24.dp)
         .padding(top = 8.dp, bottom = 150.dp)) {

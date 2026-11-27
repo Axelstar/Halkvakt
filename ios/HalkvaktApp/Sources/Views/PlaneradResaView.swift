@@ -15,6 +15,8 @@ struct PlaneradResaView: View {
     @State private var paminn = false
     @State private var avresa = Date.now.addingTimeInterval(3600)
     @State private var notisFel = false
+    /// Sant när reglaget just slogs av för att påminnelsen inte gick att sätta: då ska felraden stå kvar.
+    @State private var avslagetAvFel = false
     /// Raderna under Övrigt på vägen som föraren har öppnat (DECISIONS #931). Alla börjar stängda.
     @State private var oppnaRader: Set<String> = []
     @Environment(\.dismiss) private var dismiss
@@ -301,9 +303,20 @@ struct PlaneradResaView: View {
         gickInte = ny == nil
     }
 
+    /// Går påminnelsen inte att sätta slås reglaget av igen, så att det inte säger på när ingen notis kommer. Felraden står kvar
+    /// tills föraren själv slår av reglaget eller en påminnelse har satts.
     private func sattAvresa() async {
-        let ok = await plan.sattAvresa(paminn ? avresa : nil)
-        notisFel = paminn && !ok
+        guard paminn else {
+            _ = await plan.sattAvresa(nil)
+            if avslagetAvFel { avslagetAvFel = false } else { notisFel = false }
+            return
+        }
+        let ok = await plan.sattAvresa(avresa)
+        notisFel = !ok
+        if !ok {
+            avslagetAvFel = true
+            paminn = false
+        }
     }
 
     private static func kmText(_ km: Double) -> String {

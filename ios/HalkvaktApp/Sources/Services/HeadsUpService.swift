@@ -25,10 +25,12 @@ final class HeadsUpService {
     /// Be om tillstånd en gång, tyst om det redan är avgjort. Anropas när vakten startar.
     /// .carPlay ber om att få visa bannern i bilens skärm (DECISIONS #817). En förare som redan svarat får ingen ny fråga: iOS
     /// lägger då till CarPlay-valet under Inställningar → Notiser → Halkvakt utan att visa något.
+    /// .sound är för påminnelsen före avresan (AvreseNotis), som annars kommer utan ljud. Bannern under körning sätter inget ljud
+    /// och är tyst som förut: rösten talar redan.
     func requestAuthorizationIfNeeded() async {
         let settings = await center.notificationSettings()
         guard settings.authorizationStatus != .denied else { return }
-        _ = try? await center.requestAuthorization(options: [.alert, .carPlay])
+        _ = try? await center.requestAuthorization(options: [.alert, .sound, .carPlay])
     }
 
     /// Nuläget — introduktionens sida tre visar en bock när det är klart.

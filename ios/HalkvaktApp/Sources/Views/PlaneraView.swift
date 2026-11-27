@@ -25,6 +25,7 @@ struct PlaneraView: View {
                     .font(Typo.sans(16)).foregroundStyle(Brand.text)
                     .focused($fokus)
                     .submitLabel(.search)
+                    .onSubmit { if let forst = plan.forslag.first { valj(forst) } }
                     .autocorrectionDisabled()
                     .padding(.horizontal, 20).frame(height: 56)
                     .background(Brand.panel, in: Capsule())
@@ -38,6 +39,18 @@ struct PlaneraView: View {
                     Text("Räknar ut vägen …").font(Typo.sans(15)).foregroundStyle(Brand.text2).padding(.top, 14).padding(.horizontal, 4)
                 case .fel(let text):
                     Text(text).font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.yellow).padding(.top, 14).padding(.horizontal, 4)
+                }
+
+                // En ny sökning ersätter resan som redan är planerad, och dess påminnelse: sagt innan föraren söker.
+                if let kommande = plan.kommande {
+                    Text("Du har en planerad resa till \(kommande.mal). En ny sökning ersätter den och tar bort påminnelsen.")
+                        .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2).padding(.top, 14).padding(.horizontal, 4)
+                }
+
+                if plan.forslag.isEmpty, plan.soksvar != .inget {
+                    Text(plan.soksvar == .fel ? "Sökningen gick inte. Kontrollera nätet och försök igen."
+                                              : "Inga träffar. Prova en annan stavning eller en ort i närheten.")
+                        .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.yellow).padding(.top, 14).padding(.horizontal, 4)
                 }
 
                 if !plan.forslag.isEmpty {
@@ -75,11 +88,16 @@ struct PlaneraView: View {
         .navigationDestination(for: String.self) { id in RapportView(ruttId: id, tillbaka: "Planera") }
     }
 
+    private func valj(_ f: Resplan.Forslag) {
+        guard plan.lage != .soker else { return }
+        fokus = false
+        Task { if await plan.planera(f) { sok = ""; visaResan = true } }
+    }
+
     private func forslagsRad(_ f: Resplan.Forslag, divider: Bool) -> some View {
         VStack(spacing: 0) {
             Button {
-                fokus = false
-                Task { if await plan.planera(f) { sok = ""; visaResan = true } }
+                valj(f)
             } label: {
                 VStack(alignment: .leading, spacing: 3) {
                     Text(f.titel).font(Typo.sans(16, .medium)).foregroundStyle(Brand.text)
