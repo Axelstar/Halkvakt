@@ -20056,3 +20056,70 @@ prövad av en jurist; Harald har frågan. Bengt var med om #917 och får veta av
 lättare ut enskilda i små kommuner. Kommun utan avrundning: en telefon som kommer eller går syns mellan två läsningar.
 
 **Stomdokument:** SYS — platsdelningens tabell och sammanräkning; APP 7 — vad som lämnar telefonen och vad det används till
+
+## #978 (28/11 2026) 0.4.3 går ut som ett bygge: CarPlay, Planera resa, nya introduktionen, frågan till befintliga och varningen före resan i båda apparna
+**Beslut.** Axel 27/11, först *"Okej vi bygger två då"* och sedan: *"Jag ser helre att vi gör det i en deploy"*. Skälet är hans:
+med två byggen görs introduktionen om två gånger, och den nya kommer inte in i det första. 0.4.3 bär därför allt detta, på iPhone
+och Android:
+1. CarPlay (kort #380) och Planera resa (kort #659), som redan ligger i main.
+2. Den nya introduktionen och frågan till dem som redan har appen (DECISIONS #979).
+3. Varningen före resan: kommunen till servern och en notis när det är halt i kommunen, med förarens ja (kort #674, DECISIONS
+   #917). På iPhone släpps spärren `Platsord.testbygge`. På Android byggs platsdelningen och notiserna över Firebase Cloud Messaging.
+   Axels *"ja till båda"* 27/11 gäller Firebase i Android-appen och notistexterna i utkastet. Projektet finns sedan DECISIONS #941,
+   utan Analytics.
+4. Servern skickar till Android: `app-push` skickar bara över Apple i dag.
+
+**Krav på Android-bygget.** Firebase hämtar ingen adress för notiser förrän föraren har sagt ja (automatisk start avstängd), inget
+Analytics-bibliotek följer med, och adressen tas bort hos Google och hos oss vid *Radera min data*.
+
+**Följer med i samma commit som appen börjar fråga i ett butiksbygge** (invarianten i CLAUDE.md): raden i CLAUDE.md, Plays
+datablankett, Apples uppgifter, integritet.html i kartrepot och produktboken. Texterna är utkast hos Harald sedan 27/11; hans svar
+på frågan om räknaren kommer först. Claude är inte jurist, och inget av detta är prövat av en.
+
+**Inte bestämt.** När en notis skickas och hur ofta, om statistiken får lämnas till partner, och ordalydelsen för en notis på
+kvällen. De är Axels.
+
+**Alternativ.** Två byggen, introduktionen först och varningen före resan sedan: mindre i varje granskning och lättare att backa,
+men introduktionen byggs om två gånger. Det var Claudes förslag, och Axel valde ett bygge.
+
+**Stomdokument:** APP 7 — vad som lämnar telefonen och varningen före resan; BED — utgåvans omfång och ordning
+
+## #979 (28/11 2026) Introduktionen blir en berättelse i tre bilder och en fråga, och den som redan har appen får bara frågan (ändrar DECISIONS #920, #921 och #923; kort #651, #674)
+**Beslut.** Axel 27/11 om flödet för nya användare: *"Okej, detta flödet är super bra nu och detta ska vi bygga"*, och om de tre
+fallen för befintliga: *"Yes dem är perfekta"*. Underlaget är designytan *Halkvakt: introduktionen som vi bygger*, som bara bär det
+som är bestämt.
+1. **Nya användare.** Tre bilder som går vidare av sig själva efter 5,5 sekunder: Kartan, Rösten och Ikonerna, med appens fem
+   varningar och dess egna ikoner (halka, fartkameror, olyckor och hinder, vilt, frysrisk). Sedan platsen, frågan, bannern, klart
+   och startsidan. De ersätter stegen Välkommen, varningarna och märkningen i kort #651.
+2. **Frågan** är en skärm med rubriken *Vill du ha en varning innan du kör?*, ett exempel på notisen, tre rader om vad som sparas
+   och knapparna *Ja, varna mig* och *Inte nu*. Den ersätter stegen om kommunen och om notiserna (DECISIONS #921).
+3. **Steget om erbjudanden tas bort**, och reglaget under Din data med det. DECISIONS #920 och #923 gäller inte längre i appen.
+   Fältet `erbj` på servern rörs inte här.
+4. **Befintliga användare** får frågan en gång. Fall 1: ett blad över startsidan första gången appen öppnas efter uppdateringen.
+   Fall 2, den som har Alltid och inte öppnar appen: en notis som telefonen skickar till sig själv när en resa är slut och bilen
+   står still, en gång och aldrig under körning; ett tryck öppnar bladet. Fall 3, den som har nekat notiser: appen förklarar och
+   öppnar telefonens inställningar. *Inte nu* ger inga fler frågor.
+5. **Raden *Varning före resan*** på startsidan visar läget: *Nytt*, *På*, *Av* eller *Av · notiser avstängda*, och går att trycka på.
+6. **Uppgifterna tas bort efter 30 dagar utan att appen har använts**, som servern redan gör (sql/130). Axel frågade varför, och
+   behöll det.
+
+**Byggs.** iPhone först, i en egen PR. De texter Harald kan ändra samlas på ett ställe i koden.
+
+**Alternativ.** Hela introduktionen en gång till för befintliga: stör dem som redan kör med appen. Bara raden på startsidan, utan
+blad och notis: den som aldrig öppnar appen får aldrig frågan.
+
+**Stomdokument:** APP — introduktionen och frågan till befintliga användare med raden på startsidan
+
+## #980 (28/11 2026) Löftet på frågan säger inte längre *aldrig* (ändrar DECISIONS #917 och #918)
+**Beslut.** Meningen *"Vi vet vilken kommun du är i, aldrig var du kör."* (DECISIONS #917, #918) byts i utkasten till *"Din exakta
+position skickas inte till Halkvakt."* och *"Vi vet inte vem du är."*. Skälet: ett *aldrig* är ett löfte utan slut, och det förra
+(*Full stop*) blev osant när appen ändrades och stod kvar i fyra dokument i fyra dagar (DECISIONS #264). Den nya meningen säger vad
+appen gör, och säger *till Halkvakt*, eftersom sökningen i Planera resa skickar positionen till Apple eller Google (DECISIONS #870,
+#941). Axel 28/11: logga det.
+
+**Inte i drift.** Meningen står i utkastet till Harald och på designytan. Koden (`Platsord.nyttLofte`) ändras i bygget av 0.4.3,
+och orden kan ändras av Haralds svar.
+
+**Alternativ.** Behålla *aldrig*: starkare, men binder varje framtida ändring.
+
+**Stomdokument:** APP 7 — löftet på frågan och under Din data
