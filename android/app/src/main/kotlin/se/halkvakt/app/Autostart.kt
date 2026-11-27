@@ -76,6 +76,25 @@ class AutostartController(learnedCars: Set<String> = emptySet(), autoStarted: Bo
 fun isCarClass(deviceClass: Int?): Boolean = deviceClass == 0x0420 || deviceClass == 0x0408
 
 /**
+ * The second road to a start (27/11): Activity Recognition's sampled readings, beside its transitions. The transition
+ * event never reached Bengt's Galaxy J6 (Android 10) on a fresh install with every permission granted, so a reading
+ * that says "in a vehicle" with enough confidence starts the guard too. Not while the guard runs, not within
+ * [SAMPLE_RETRY_MS] of the last try (a refused start shows a notification, and one is enough), and not within
+ * [SAMPLE_PAUSE_MS] of a stop by hand: the driver who stopped the guard in the car must not get it back half a minute later.
+ */
+const val SAMPLE_INTERVAL_MS = 30_000L
+const val SAMPLE_CONFIDENCE = 75
+const val SAMPLE_RETRY_MS = 10 * 60_000L
+const val SAMPLE_PAUSE_MS = 30 * 60_000L
+
+fun sampleStarts(
+    inVehicle: Boolean, confidence: Int, guardRunning: Boolean,
+    nowMs: Long, lastTryMs: Long, handStopMs: Long,
+): Boolean =
+    inVehicle && confidence >= SAMPLE_CONFIDENCE && !guardRunning &&
+        nowMs - lastTryMs >= SAMPLE_RETRY_MS && nowMs - handStopMs >= SAMPLE_PAUSE_MS
+
+/**
  * Idle stop, the same rule as iOS (HalkvaktEngine IdleStop.swift): a guard whose car has not driven for fifteen
  * minutes has finished its trip. Pure, so the JVM proves it (#248).
  *

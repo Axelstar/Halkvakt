@@ -29,6 +29,7 @@
         <service android:name=".GuardService" android:exported="false"
                  android:foregroundServiceType="location"/>
         <receiver android:name=".DrivingTransitionReceiver" android:exported="false"/>
+        <receiver android:name=".DrivingSampleReceiver" android:exported="false"/>
         <!-- Notisens "Ja, alla stämde" (kort #203). Inte exporterad: bara appens egen notis får trycka. -->
         <receiver android:name=".FacitSvarReceiver" android:exported="false"/>
         <receiver android:name=".FavoritSvarReceiver" android:exported="false"/>

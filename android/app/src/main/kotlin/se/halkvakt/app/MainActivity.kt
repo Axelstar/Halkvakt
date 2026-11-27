@@ -206,6 +206,7 @@ class MainActivity : ComponentActivity() {
         } else {
             GuardService.stop(this)
             AutostartManager.clearAutoStarted(this)   // #248: persisted, not a throwaway controller
+            AutostartManager.noteHandStop(this)
         }
     }
 
