@@ -343,33 +343,40 @@ vilken kommun du är i.* App Store-bygget och Android bär den gamla meningen ti
 
 ## Första gången — introduktionen (iOS)
 
-Sex steg (ombyggd 13/11, DECISIONS #851). Överst till höger står var du är: *VÄLKOMMEN*, *STEG 1 AV 4* till *STEG 4 AV 4* och
-*KLART*, med gult ljus tills platsen är *Alltid*, sedan grönt. Varje steg har en knapp nederst, och ibland en länk under den.
-Före varje ruta från iOS står vilken knapp du ska välja, och varje svar har sitt eget läge. Allt går att ändra senare i
+Ombyggd 13/11 (DECISIONS #851) och 28/11 (DECISIONS #979, byggd i grenen för 0.4.3, inte släppt): en välkomst i tre bilder,
+platsen, notiserna och en slutskärm. Överst till höger står var du är: *VÄLKOMMEN*, *STEG 1 AV 2*, *STEG 2 AV 2* och *KLART*, med
+gult ljus tills platsen är *Alltid*, sedan grönt. Varje steg har en knapp nederst, och ibland en länk under den. Före varje ruta
+från iOS om platsen står vilken knapp du ska välja, och varje svar har sitt eget läge. Allt går att ändra senare i
 Inställningar, och introduktionen kan visas igen därifrån.
 
-**I TestFlight, från 0.4.1 (62), ett steg till efter platsen (DECISIONS #921):** frågan om att dela kommunen och valet om
-erbjudanden, samma två skärmar som under *Platsdelningen* ovan. Stegen räknas då *AV 5*, och på slutskärmen står raden *DIN KOMMUN*
-med *Delas* eller *Delas inte*. Den som inte har platsen på får inte steget. I notissteget står efter ett ja också *En varning före
-resan, när det är halt i din kommun* med *Kommer i ett senare bygge.*
+**I TestFlight ett steg efter platsen (DECISIONS #921, #979):** frågan om varningen före resan, en skärm. *"Vill du ha en varning
+innan du kör?"*, *"När det är halt i din kommun säger Halkvakt till före resan."*, under *EXEMPEL PÅ NOTIS* en notis som den ser
+ut på låsskärmen (*"Risk för halka i din kommun i morse. Kör försiktigt."*) och tre rader med bock: *Vi sparar din kommun och en
+kod som gör att notisen hittar den här telefonen*, *Kopplat till ett slumpat nummer som appen hittar på. Vi vet inte vem du är* och
+*Tas bort när du vill under Integritet, eller när du inte har använt appen på 30 dagar*. Under dem *Testbygge: notiserna är inte
+påslagna än.* och *"Lagerlöf Labs HB ansvarar för uppgifterna. De används till varningen före resan och till statistik per kommun.
+Säger du nej fungerar Halkvakt som i dag. Vill vi spara något mer frågar vi först."* med länken *Läs integritetspolicyn*. Knappen
+*Ja, varna mig* sparar svaret och öppnar iOS ruta om notiser; länken *INTE NU* går till steget Notiserna. Steget om erbjudanden
+finns inte längre i introduktionen. Orden är utkast tills Harald har läst dem. På slutskärmen står raden *Varning
+före resan* med *PÅ* eller *AV*. Den som inte har platsen på får inte steget. Skärmen för den som redan har appen (under
+*Platsdelningen* ovan) är inte ändrad än.
 
-1. **Välkommen** — *"Rösten som varnar innan du är där"*, *"Halkvakt säger till med rösten om faror på vägen framför dig."*
-   Under *SÅ FUNGERAR DET*: *Du kör som vanligt* (*Med vilken kartapp du vill, eller ingen alls.*), *Halkvakt håller koll på
-   vägen framför dig* (*Halka, fartkameror, olyckor, vilt och frysrisk.*) och *Rösten säger till innan du är framme* (*I bilens
-   högtalare om telefonen är kopplad till bilen, annars i telefonens.*). Under *BRA ATT VETA*: *"Halkvakt är ett stöd, inte en
-   garanti. Den varnar för halka främst på de större vägarna där Trafikverket rapporterar väglaget, och är ofta tyst på mindre
-   vägar och gator. Att den är tyst betyder inte att vägen är fri från halka. Kör alltid efter väglaget."* (18/11, DECISIONS #899) Knappen *Visa mig*, länken *HOPPA ÖVER* (som
-   går till sista steget). Först hur det fungerar, sedan vad man gör: platsen står i steget där den slås på (13/11).
-2. **Varningarna** (steg 1 av 4) — *"Halka, fartkameror och mer"*, *"Fem slags varningar, alla påslagna från början."* Fem rader
-   med ikon: *Halka* (*Rapporterade hala vägsträckor*), *Fartkameror* (*Fasta kameror på din väg, 500 meter innan och med
-   hastighetsgränsen*), *Olyckor och hinder* (*Trafikverkets pågående lägen*), *Vilt* (*Djur på vägen*) och *Frysrisk*
-   (*Vägbanan nära noll och vått, även på broar*). Under listan: *DU VÄLJER SJÄLV VILKA I INSTÄLLNINGAR*. Knappen *Nästa*.
-3. **Så märks en varning** (steg 2 av 4) — *"Du hör den först"*, *"Rösten säger vad som ligger framför dig, ungefär 30 sekunder
-   innan du är framme."* Ett litet varningskort i gult (*HALKVAKT VARNAR*, *Halka*, *FRAMFÖR DIG* och repliken *"Varning: halka
-   rapporterad på vägen framför dig."*) och tre rader: *Rösten säger till* (*I bilens högtalare om telefonen är kopplad till bilen, annars i telefonens.*),
-   *Gult kort i åtta sekunder* (*Syns på skärmen, vilken app du än har framme.*) och *Tyst annars* (*Vakten talar
-   bara när det finns något att varna för.*). Knappen *Nästa*.
-4. **Platsen** (steg 3 av 4) — fem lägen, efter vad iOS svarar:
+1. **Välkommen** — tre bilder som byts av sig själva efter 5,5 sekunder och stannar på den sista; ett tryck byter bild, och tre
+   streck överst visar vilken som syns. Med VoiceOver byts bilden bara av ett tryck, och med Minska rörelse står bilderna stilla.
+   - *Kartan:* *"Varnad innan du är framme"*, *"Kör som vanligt. Halkvakt säger till i bilens högtalare."* En väg med en gul
+     sträcka märkt *HALKA*, en prick märkt *DU KÖR* som rör sig mot den, och ett gult kort (*HALKVAKT VARNAR*, *"Risk för halka på
+     väg 40 framför dig."*) som kommer innan pricken är framme.
+   - *Rösten:* *"En röst i bilen, inget att titta på"*, *"Halkvakt säger till när något ligger framför dig. Sedan är den tyst."*
+     Staplar som rör sig som ljud, och repliken *"Olycka rapporterad på E6 2 kilometer framför dig."* ord för ord.
+   - *Ikonerna:* *"Vi varnar för"*, *"Fem slags varningar, alla påslagna från början."* Fem rader med appens ikoner: *Halka*
+     (*Rapporterade hala vägsträckor*), *Fartkameror* (*500 meter innan, med hastighetsgränsen*), *Olyckor och hinder*
+     (*Trafikverkets pågående lägen*), *Vilt* (*Djur på vägen*) och *Frysrisk* (*Vägbanan nära noll och vått*).
+
+   Under bilderna står ansvaret, som förut: *"Halkvakt är ett stöd, inte en garanti. Den varnar för halka främst på de större
+   vägarna där Trafikverket rapporterar väglaget, och är ofta tyst på mindre vägar och gator. Att den är tyst betyder inte att
+   vägen är fri från halka. Kör alltid efter väglaget."* (DECISIONS #899) Knappen *Kom igång*. Stegen *Varningarna* och *Så märks
+   en varning* och länken *HOPPA ÖVER* finns inte längre.
+2. **Platsen** (steg 1 av 2) — fem lägen, efter vad iOS svarar:
    - *Inte frågad:* *"Nu slår vi på vakten"*, *"Telefonen ställer två frågor. Den första gäller platsen: vakten behöver veta
      var du är för att kunna varna."* Under *DIN PLATS*: *"Din position skickas aldrig till Halkvakt av sig själv. Appen hämtar samma vägdata till alla
      och jämför med var du är, i din telefon. Kartan på startsidan kommer från Apple, som får veta ungefär vilket område den visar. Inget konto behövs."* och *"Sparar du resor som favoriter stannar de också i
@@ -395,12 +402,12 @@ resan, när det är halt i din kommun* med *Kommer i ett senare bygge.*
    Halkvakt av sig själv. Kartan på startsidan och sökningen i Planera resa kommer från Apple, som får veta ungefär
    vilket område det gäller."* Och vid *Alltid*: *"Med "Alltid" startar vakten av sig själv när du börjar köra.
    Jämförelsen sker i telefonen, och din position skickas aldrig till Halkvakt av sig själv."*
-5. **Notiserna** (steg 4 av 4) — *"Se varningen på skärmen"*, *"Rösten varnar alltid. Med notiser syns varningen också som en
+3. **Notiserna** (steg 2 av 2) — *"Se varningen på skärmen"*, *"Rösten varnar alltid. Med notiser syns varningen också som en
    banner överst på skärmen, vilken app du än har framme."*, en svävande exempelbanner (*FARTKAMERA · 500 M — "Fartkamera om
    500 meter. Gränsen är 80."*) och under *HALKVAKT SKICKAR*: *Varningar medan du kör* och *En fråga efter resan, om du vill
    spara den*. Knappen *Fortsätt* öppnar iOS egen ruta, länken *INTE NU* hoppar över den. Påslagna: raden *Notiser PÅ*.
    Avslagna: bannern bleknar, *"Notiserna är avslagna. Rösten varnar ändå, bara utan banner."* och *SLÅ PÅ I INSTÄLLNINGAR*.
-6. **Slutskärmen** — tre lägen:
+4. **Slutskärmen** — tre lägen:
    - *Alltid:* *"Vakten är redo"*, *"Nästa gång du kör säger rösten till om något ligger framför dig."* Under *DET HÄR HAR DU
      NU*: *Varningar 5 AV 5*, *Start SJÄLV NÄR DU KÖR* och *Banner på skärmen PÅ* (eller *AV* med *"Rösten varnar ändå."*).
      Under *SÅ FUNGERAR DET*: *Du kör iväg* (*Vakten startar själv.*), *Rösten säger till* (*Innan du är framme vid faran.*)
@@ -424,7 +431,24 @@ rutor: fem steg i stället för fyra, eftersom självstarten är ett eget steg. 
 till *STEG 5 AV 5* och *KLART*. Introduktionen visas för en ny installation; den som redan gett appen platsen får den inte
 påtvingad, men kan visa den från Inställningar (*Visa introduktionen igen*, sist i den andra panelen).
 
-1. **Välkommen**, 2. **Varningarna** och 3. **Så märks en varning** har samma texter som på iPhone.
+De tre första stegen är de iPhone hade före 28/11 (DECISIONS #979 är inte byggt på Android än):
+
+1. **Välkommen** — *"Rösten som varnar innan du är där"*, *"Halkvakt säger till med rösten om faror på vägen framför dig."*
+   Under *SÅ FUNGERAR DET*: *Du kör som vanligt* (*Med vilken kartapp du vill, eller ingen alls.*), *Halkvakt håller koll på
+   vägen framför dig* (*Halka, fartkameror, olyckor, vilt och frysrisk.*) och *Rösten säger till innan du är framme* (*I bilens
+   högtalare om telefonen är kopplad till bilen, annars i telefonens.*). Under *BRA ATT VETA*: *"Halkvakt är ett stöd, inte en
+   garanti. Den varnar för halka främst på de större vägarna där Trafikverket rapporterar väglaget, och är ofta tyst på mindre
+   vägar och gator. Att den är tyst betyder inte att vägen är fri från halka. Kör alltid efter väglaget."* (18/11, DECISIONS #899) Knappen *Visa mig*, länken *HOPPA ÖVER* (som
+   går till sista steget). Först hur det fungerar, sedan vad man gör: platsen står i steget där den slås på (13/11).
+2. **Varningarna** (steg 1 av 5) — *"Halka, fartkameror och mer"*, *"Fem slags varningar, alla påslagna från början."* Fem rader
+   med ikon: *Halka* (*Rapporterade hala vägsträckor*), *Fartkameror* (*Fasta kameror på din väg, 500 meter innan och med
+   hastighetsgränsen*), *Olyckor och hinder* (*Trafikverkets pågående lägen*), *Vilt* (*Djur på vägen*) och *Frysrisk*
+   (*Vägbanan nära noll och vått, även på broar*). Under listan: *DU VÄLJER SJÄLV VILKA I INSTÄLLNINGAR*. Knappen *Nästa*.
+3. **Så märks en varning** (steg 2 av 5) — *"Du hör den först"*, *"Rösten säger vad som ligger framför dig, ungefär 30 sekunder
+   innan du är framme."* Ett litet varningskort i gult (*HALKVAKT VARNAR*, *Halka*, *FRAMFÖR DIG* och repliken *"Varning: halka
+   rapporterad på vägen framför dig."*) och tre rader: *Rösten säger till* (*I bilens högtalare om telefonen är kopplad till bilen, annars i telefonens.*),
+   *Gult kort i åtta sekunder* (*Syns på skärmen, vilken app du än har framme.*) och *Tyst annars* (*Vakten talar
+   bara när det finns något att varna för.*). Knappen *Nästa*.
 4. **Platsen** (steg 3 av 5) — fyra lägen:
    - *Inte frågad:* *"Nu slår vi på vakten"*, *"Först platsen: vakten behöver veta var du är för att kunna varna."* Under *DIN
      PLATS* samma text som på iPhone. Under *I NÄSTA RUTA FRÅN ANDROID* står rutans val, *Exakt*, *När du använder appen*, *Bara

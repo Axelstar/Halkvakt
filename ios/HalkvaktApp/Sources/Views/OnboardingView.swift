@@ -1,10 +1,10 @@
-// Introduktionen (DECISIONS #36), ombyggd 13/11 (kort #651, DECISIONS #851): sex steg — Välkommen, varningarna, hur en
-// varning märks, platsen, notiserna och en slutskärm. I TestFlight ett sjunde, efter platsen: frågan om kommunen (#921). Före varje ruta från iOS står vilken knapp som ska väljas, och
+// Introduktionen (DECISIONS #36), ombyggd 13/11 (kort #651, DECISIONS #851) och 28/11 (DECISIONS #979): välkomstens tre bilder
+// (Valkomstbilder), platsen, notiserna och en slutskärm. I TestFlight efter platsen: frågan om varningen före resan, en skärm
+// (ForeResanFraga). Före varje ruta från iOS om platsen står vilken knapp som ska väljas, och
 // varje svar har ett eget läge. Introduktionen kan visas igen från Inställningar, och allt går att ändra där.
 import SwiftUI
 import UIKit
 import UserNotifications
-import HalkvaktEngine
 
 struct OnboardingView: View {
     @Environment(\.dismiss) private var dismiss
@@ -20,14 +20,12 @@ struct OnboardingView: View {
     /// Rutan om Alltid är begärd men inte besvarad. Sidan före rutan står kvar bakom den tills svaret finns: på Axels
     /// inspelning 13/11 syntes "Du startar vakten själv" bakom rutan, innan han hunnit svara.
     @State private var vantarPaAlltid = false
-    // Platsdelningen (DECISIONS #917, #921): ett eget steg efter platsen, för den som inte redan svarat. Bara i TestFlight (#918).
+    // Platsdelningen (DECISIONS #917, #979): ett eget steg efter platsen, för den som inte redan svarat. Bara i TestFlight (#918).
     @State private var plats = Platsdelning.shared
     @State private var medKommun = Platsdelning.tillaten && Platsdelning.shared.svar == nil
-    @State private var villDela = false
-    @State private var erbjudanden: Bool?
 
     private enum Steg: Int {
-        case valkommen, varningarna, markningen, platsen, kommunen, notiserna, klar
+        case valkommen, platsen, fragan, notiserna, klar
     }
 
     var body: some View {
@@ -38,10 +36,8 @@ struct OnboardingView: View {
                 Group {
                     switch steg {
                     case .valkommen: valkommen
-                    case .varningarna: varningarna
-                    case .markningen: markningen
                     case .platsen: platsen
-                    case .kommunen: kommunen
+                    case .fragan: fragan
                     case .notiserna: notiserna
                     case .klar: klar
                     }
@@ -66,14 +62,10 @@ struct OnboardingView: View {
     private var notiserPa: Bool { [.authorized, .provisional, .ephemeral].contains(notifStatus) }
 
     private var stegText: String {
-        let antal = medKommun ? 5 : 4
         switch steg {
         case .valkommen: return "Välkommen"
-        case .varningarna: return "Steg 1 av \(antal)"
-        case .markningen: return "Steg 2 av \(antal)"
-        case .platsen: return "Steg 3 av \(antal)"
-        case .kommunen: return "Steg 4 av \(antal)"
-        case .notiserna: return "Steg \(antal) av \(antal)"
+        case .platsen: return "Steg 1 av 2"
+        case .fragan, .notiserna: return "Steg 2 av 2"
         case .klar: return always || narAppenAnvands ? "Klart" : "En sak kvar"
         }
     }
@@ -91,8 +83,25 @@ struct OnboardingView: View {
 
     private func ga(till nytt: Steg) { withAnimation(.easeOut(duration: 0.3)) { steg = nytt } }
 
-    /// Efter platsen kommer frågan om kommunen, för den som har platsen på och inte redan svarat; annars notiserna.
-    private func efterPlatsen() { ga(till: medKommun && plats.svar == nil ? .kommunen : .notiserna) }
+    /// Efter platsen kommer frågan om varningen före resan, för den som har platsen på och inte redan svarat; annars notiserna.
+    private func efterPlatsen() { ga(till: medKommun && plats.svar == nil ? .fragan : .notiserna) }
+
+    /// Ja på frågan: svaret sparas och iOS frågar om notiser direkt, eftersom varningen före resan är en notis. Den som redan
+    /// har nekat notiser får steget som pekar till Inställningar.
+    private func svaraJa() {
+        plats.svara(ja: true)
+        Task {
+            await HeadsUpService.shared.requestAuthorizationIfNeeded()
+            notifStatus = await HeadsUpService.shared.status()
+            plats.uppdatera()
+            ga(till: notifStatus == .denied ? .notiserna : .klar)
+        }
+    }
+
+    private func svaraNej() {
+        plats.svara(ja: false)
+        ga(till: .notiserna)
+    }
 
     private func oppnaInstallningar() {
         if let u = URL(string: UIApplication.openSettingsURLString) { openURL(u) }
@@ -101,56 +110,16 @@ struct OnboardingView: View {
     // MARK: - Stegen
 
     private var valkommen: some View {
-        Sida(knapp: "Visa mig", action: { ga(till: .varningarna) }, lank: "Hoppa över", lankAction: { ga(till: .klar) }) {
-            // Malins läsning 13/11: först hur det fungerar, sedan vad man ska göra. Platsen står där den slås på.
-            Rubrik(titel: "Rösten som varnar innan du är där",
-                   text: "Halkvakt säger till med rösten om faror på vägen framför dig.")
-            Etikett(text: "Så fungerar det")
-            RowPanel {
-                StegRad(nummer: 1, titel: "Du kör som vanligt", text: "Med vilken kartapp du vill, eller ingen alls.")
-                StegRad(nummer: 2, titel: "Halkvakt håller koll på vägen framför dig", text: "Halka, fartkameror, olyckor, vilt och frysrisk.")
-                StegRad(nummer: 3, titel: "Rösten säger till innan du är framme",
-                        text: "I bilens högtalare om telefonen är kopplad till bilen, annars i telefonens.", divider: false)
-            }
-            Etikett(text: "Bra att veta")
+        Sida(knapp: "Kom igång", action: { ga(till: .platsen) }) {
+            Valkomstbilder()
             // Ansvaret (kort #648, DECISIONS #899), en gång, innan vakten används: var Halkvakt varnar och att tyst inte är fri väg.
             Text("Halkvakt är ett stöd, inte en garanti. Den varnar för halka främst på de större vägarna där Trafikverket rapporterar väglaget, och är ofta tyst på mindre vägar och gator. Att den är tyst betyder inte att vägen är fri från halka. Kör alltid efter väglaget.")
-                .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2).padding(.horizontal, 4)
+                .font(Typo.sans(13)).lineSpacing(3).foregroundStyle(Brand.dim).padding(.top, 18)
         }
     }
 
     /// Platsen i klartext (Axels val 13/11, DECISIONS #851). Inställningar bär fortfarande löftets gamla mening.
     private static let platsText = Platsord.lofte + " Appen hämtar samma vägdata till alla och jämför med var du är, i din telefon. Kartan på startsidan kommer från Apple, som får veta ungefär vilket område den visar. Inget konto behövs."
-
-    private var varningarna: some View {
-        Sida(knapp: "Nästa", action: { ga(till: .markningen) }) {
-            Rubrik(titel: "Halka, fartkameror och mer", text: "Fem slags varningar, alla påslagna från början.")
-            RowPanel {
-                VarningsRad(kind: .slippery_segment, titel: "Halka", text: "Rapporterade hala vägsträckor")
-                VarningsRad(kind: .camera, titel: "Fartkameror", text: "Fasta kameror på din väg, 500 meter innan och med hastighetsgränsen")
-                VarningsRad(kind: .accident, titel: "Olyckor och hinder", text: "Trafikverkets pågående lägen")
-                VarningsRad(kind: .wildlife, titel: "Vilt", text: "Djur på vägen")
-                VarningsRad(kind: .icing_point, titel: "Frysrisk", text: "Vägbanan nära noll och vått, även på broar", divider: false)
-            }
-            .padding(.top, 24)
-            MonoLabel(text: "Du väljer själv vilka i Inställningar", color: Brand.faint)
-                .frame(maxWidth: .infinity, alignment: .leading).padding(.top, 16).padding(.horizontal, 4)
-        }
-    }
-
-    private var markningen: some View {
-        Sida(knapp: "Nästa", action: { ga(till: .platsen) }) {
-            Rubrik(titel: "Du hör den först",
-                   text: "Rösten säger vad som ligger framför dig, ungefär 30 sekunder innan du är framme.")
-            ExempelKort().padding(.top, 24)
-            RowPanel {
-                StegRad(nummer: 1, titel: "Rösten säger till", text: "I bilens högtalare om telefonen är kopplad till bilen, annars i telefonens.")
-                StegRad(nummer: 2, titel: "Gult kort i åtta sekunder", text: "Syns på skärmen, vilken app du än har framme.")
-                StegRad(nummer: 3, titel: "Tyst annars", text: "Vakten talar bara när det finns något att varna för.", divider: false)
-            }
-            .padding(.top, 14)
-        }
-    }
 
     @ViewBuilder private var platsen: some View {
         switch guardM.authStatus {
@@ -223,21 +192,10 @@ struct OnboardingView: View {
         }
     }
 
-    /// Platsdelningens två steg (DECISIONS #921): samma innehåll som befintliga förare får som egen skärm (PlatsdelningView).
-    @ViewBuilder private var kommunen: some View {
-        if villDela {
-            Sida(knapp: "Fortsätt", action: {
-                guard let erbjudanden else { return }
-                plats.svara(ja: true, erbjudanden: erbjudanden)
-                ga(till: .notiserna)
-            }, fot: erbjudanden == nil ? "Välj ett av de två" : nil, aktiv: erbjudanden != nil) {
-                PlatsErbjudandenInnehall(erbjudanden: $erbjudanden)
-            }
-        } else {
-            Sida(knapp: "Ja, dela min kommun", action: { withAnimation(.easeOut(duration: 0.3)) { villDela = true } },
-                 lank: "Inte nu", lankAction: { plats.svara(ja: false); ga(till: .notiserna) }) {
-                PlatsFraganInnehall(etikett: nil)
-            }
+    /// Frågan om varningen före resan (DECISIONS #979): en skärm, samma innehåll som befintliga förare får.
+    private var fragan: some View {
+        Sida(knapp: Foreresanord.ja, action: svaraJa, lank: Foreresanord.nej, lankAction: svaraNej) {
+            ForeResanFraga()
         }
     }
 
@@ -300,7 +258,13 @@ struct OnboardingView: View {
                 RowPanel {
                     ValRad(titel: "Varningar", varde: "\(antalPa) av 5")
                     ValRad(titel: "Start", varde: sjalv ? "Själv när du kör" : "Du trycker själv")
-                    if medKommun { ValRad(titel: "Din kommun", varde: plats.svar == .ja ? "Delas" : "Delas inte") }
+                    if medKommun {
+                        if plats.svar == .ja && notiserPa {
+                            ValRad(titel: "Varning före resan", varde: "På")
+                        } else {
+                            StegRad(bock: false, titel: "Varning före resan", marke: "Av")
+                        }
+                    }
                     bannerRad
                 }
                 Etikett(text: "Så fungerar det")
@@ -470,30 +434,6 @@ private struct ValRad: View {
     }
 }
 
-/// En fara i listan över varningarna: ikonen, namnet och en rad om källan.
-private struct VarningsRad: View {
-    let kind: HazardKind
-    let titel: String
-    let text: String
-    var divider = true
-
-    var body: some View {
-        VStack(spacing: 0) {
-            HStack(spacing: 16) {
-                HazardIcon(kind: kind, size: 28).foregroundStyle(Brand.text).accessibilityHidden(true)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(titel).font(Typo.sans(16, .medium)).foregroundStyle(Brand.text)
-                    Text(text).font(Typo.sans(13)).lineSpacing(2).foregroundStyle(Brand.text2)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .padding(.vertical, 12)
-            .accessibilityElement(children: .combine)
-            if divider { DashedDivider() }
-        }
-    }
-}
-
 /// Knapparna i iOS nästa ruta, uppställda som i rutan, med den som ska väljas förbockad och märkt.
 private struct IosVal: View {
     let rader: [String]
@@ -517,36 +457,6 @@ private struct IosVal: View {
         .padding(.horizontal, 20)
         .background(Brand.panel, in: RoundedRectangle(cornerRadius: 18))
         .overlay(RoundedRectangle(cornerRadius: 18).strokeBorder(Brand.line, lineWidth: 1))
-    }
-}
-
-/// Varningskortet i litet format: märket, faran och motorns riktiga replik (DECISIONS #444) — aldrig en påhittad.
-private struct ExempelKort: View {
-    var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            HStack(spacing: 8) {
-                Image("ikon-mark").renderingMode(.template).resizable().scaledToFit().frame(width: 16, height: 14)
-                Text("HALKVAKT VARNAR").font(Typo.mono(11, .semibold)).tracking(1.5)
-                Spacer()
-                Text("8 S").font(Typo.mono(11, .medium))
-            }
-            HStack(spacing: 16) {
-                HazardIcon(kind: .slippery_segment, size: 56)
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Halka").font(Typo.sans(32, .semibold)).tracking(-1)
-                    Text("FRAMFÖR DIG").font(Typo.mono(13, .semibold)).tracking(1.6)
-                }
-            }
-            .padding(.top, 16)
-            Text("”Varning: halka rapporterad på vägen framför dig.”").font(Typo.sans(14)).lineSpacing(2)
-                .foregroundStyle(Color(hex: 0x3A2E0B)).padding(.top, 14)
-        }
-        .foregroundStyle(Brand.bg)
-        .padding(.horizontal, 20).padding(.vertical, 18)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Brand.amber, in: RoundedRectangle(cornerRadius: 18))
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Exempel på varningskortet: Halka framför dig. Varning: halka rapporterad på vägen framför dig.")
     }
 }
 

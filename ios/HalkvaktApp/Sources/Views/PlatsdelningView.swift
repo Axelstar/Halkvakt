@@ -3,7 +3,7 @@
 import SwiftUI
 
 /// Frågan för den som redan gått igenom introduktionen (befintliga förare vid uppdateringen): täcker appen tills föraren
-/// svarat. Nya förare får samma två steg inne i introduktionen (OnboardingView, DECISIONS #921).
+/// svarat. Nya förare får sedan 28/11 en annan skärm i introduktionen (ForeResanFraga, DECISIONS #979); den här byts i nästa steg.
 /// Inget skickas förrän steg två är klart, och inget av de två valen om erbjudanden är förvalt (DECISIONS #920).
 struct PlatsdelningFraga: View {
     @State private var plats = Platsdelning.shared
