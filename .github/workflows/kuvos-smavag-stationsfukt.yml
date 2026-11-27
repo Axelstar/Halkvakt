@@ -4,7 +4,9 @@ name: kuvos-smavag-stationsfukt
 # stationer, när de visar nederbörd nära en småvägspunkt, också skulle räknas som fukt för rösten:
 #   olyckor    (för hand, en gång) olyckorna vid en småvägspunkt i olycksfacit, i grindarnas tillfälliga databas, så att stationerna
 #              finns också för dygnen som raderats ur driften. Punkterna läses ur driften i en läsande transaktion.
-#   stickprov  (varannan timme, Bengts val 27/11) regelns besked i driften just nu, i en läsande transaktion.
+#   stickprov  (varannan timme, Bengts val 27/11) regelns besked i driften just nu, i en läsande transaktion. Startar efter
+#              ny-kandidat-timme, som kuvos-smavag-timme, och på schemat, men bara jämna timmar (UTC): GitHubs schema startade inte
+#              en enda körning i repot 27/11 mellan 04 och 09 UTC. Stickprovets fil heter efter timmen, så två starter samma timme ger en fil.
 #   bakat      (för hand; Bengt 27/11: "kan man inte göra ett bakåttest") stickproven bakåt, ungefärligt: driftens del B och regel D
 #              körda timme för timme ur kedjans timfiler och underlag i den privata hinken, med ankarna ur grindarnas tillfälliga
 #              databas vid kuvösens klocka (kuvos/ankare-bakat.ts). Ankarna, timfilerna och underlagen lämnar aldrig jobbet.
@@ -15,6 +17,9 @@ name: kuvos-smavag-stationsfukt
 on:
   schedule:
     - cron: "25 */2 * * *"
+  workflow_run:
+    workflows: [ny-kandidat-timme]
+    types: [completed]
   workflow_dispatch:
     inputs:
       del:
@@ -49,9 +54,11 @@ jobs:
         id: sparren
         shell: bash
         run: |
-          if python3 fysik/ny_kandidat/sparren.py "$FORREG" > /dev/null 2>&1; then
+          if [ "$HANDELSE" != workflow_dispatch ] && [ $(( 10#$(date -u +%H) % 2 )) = 1 ]; then
+            echo "udda timme: stickprovet tas nästa jämna timme"; echo "ok=nej" >> "$GITHUB_OUTPUT"
+          elif python3 fysik/ny_kandidat/sparren.py "$FORREG" > /dev/null 2>&1; then
             echo "spärren (F93, förregistreringen signerad): klart"; echo "ok=ja" >> "$GITHUB_OUTPUT"
-          elif [ "$HANDELSE" = schedule ]; then
+          elif [ "$HANDELSE" != workflow_dispatch ]; then
             echo "spärren: förregistreringen är inte signerad, stickprovsjobbet gör ingenting"; echo "ok=nej" >> "$GITHUB_OUTPUT"
           else
             echo "::error::spärren: förregistreringen är inte signerad (F93)"; exit 1
