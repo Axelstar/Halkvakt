@@ -154,11 +154,15 @@ class BluetoothCarReceiver : BroadcastReceiver() {
     }
 }
 
-/** AR registrations do not survive reboot — re-arm on boot (protected system broadcast). */
+/**
+ * AR registrations do not survive a reboot or an update of the app — re-arm on both (protected system broadcasts).
+ * Before 27/11 only the reboot re-armed: after every update from Play the switch said on and nothing listened, until
+ * the phone was restarted (Bengt's test phone never started the guard by itself). MainActivity re-arms too, so opening
+ * the app is enough.
+ */
 class BootReceiver : BroadcastReceiver() {
     override fun onReceive(ctx: Context, intent: Intent) {
-        if (intent.action == Intent.ACTION_BOOT_COMPLETED && AutostartManager.isEnabled(ctx)) {
-            AutostartManager.registerTransitions(ctx)
-        }
+        val armar = intent.action == Intent.ACTION_BOOT_COMPLETED || intent.action == Intent.ACTION_MY_PACKAGE_REPLACED
+        if (armar && AutostartManager.isEnabled(ctx)) AutostartManager.registerTransitions(ctx)
     }
 }
