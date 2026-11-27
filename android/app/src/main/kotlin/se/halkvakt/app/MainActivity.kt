@@ -61,6 +61,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         AlertBus.onEvent = AppEvents::post
         autostartOn.value = AutostartManager.isEnabled(this)
+        if (autostartOn.value) AutostartManager.registerTransitions(this)   // re-arm: an update of the app drops the registration (27/11)
         setContent { HalkvaktApp(this) }
         if (intent?.getBooleanExtra(FavoritNotis.EXTRA_FAVORITER, false) == true) Favoriter.visaFliken.value = true   // #817
         lifecycleScope.launch(Dispatchers.IO) {
@@ -210,6 +211,7 @@ class MainActivity : ComponentActivity() {
         } else {
             GuardService.stop(this)
             AutostartManager.clearAutoStarted(this)   // #248: persisted, not a throwaway controller
+            AutostartManager.noteHandStop(this)
         }
     }
 

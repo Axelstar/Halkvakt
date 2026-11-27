@@ -758,6 +758,10 @@ inställningarna, kort #226). Sedan lär sig appen varje Bluetooth-enhet som kop
 hörlurar — och startar vakten när en av dem kopplar upp igen. Rörelseigenkänningen startar vakten i bilar
 utan Bluetooth. En vakt som startat av sig själv stannar när bilen kopplas från eller rörelseigenkänningen ser att du
 lämnat bilen, och varje vakt stannar efter en kvart stilla, som på iPhone (kort #248, 24/9).
+*Från 0.4.2 (78), 27/11 (DECISIONS #974):* bara en enhet som säger sig vara en bil lärs in som bilens Bluetooth, inte hörlurar och
+klockor. Appen frågar också telefonen var trettionde sekund vad föraren gör, och svaret *i ett fordon* startar vakten, utom den
+första halvtimmen efter att föraren själv har stoppat den. Under vippan står om telefonen lyssnar och när den senast märkte ett
+fordon, till exempel *Lyssnar sedan 27/11 17.41 · senaste fordonssignal 27/11 17.41*.
 
 *Rättat 1/10 (kort #262 Å4):* brytarens undertext sa *"Startar när bilens Bluetooth kopplas"* — men rörelseigenkänningen är
 huvudspåret och startar vakten i vilket fordon som helst, också som passagerare i en buss. Nu: *"Startar när telefonen märker att
