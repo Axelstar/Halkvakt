@@ -1,0 +1,24 @@
+{
+  "typ": "svep",
+  "nyckel": "svep:lunch",
+  "etikett": "Halkläget kl. 11:00",
+  "rubrik": "Halt i dag",
+  "underrad": "Halka på 243 vägavsnitt i 15 län.",
+  "fler": 13,
+  "text": "Halkläget kl. 11:00, fredag 27 november: halka på 243 vägavsnitt i 15 län. Svep för att se ditt län.\n\nNorrbotten: halka på 57 av 58 vägavsnitt, 57 stationer under noll, kallast −17,6 °C vid Töre.\nVästerbotten: halka på 44 av 44 vägavsnitt, 44 stationer under noll, kallast −13,3 °C vid Kåtaviken.\nJämtland: halka på 17 av 17 vägavsnitt, 31 stationer under noll, kallast −19,4 °C vid Gevsjön, 1 olycka.\nDalarna: halka på 17 av 38 vägavsnitt, 28 stationer under noll, kallast −9,3 °C vid Ryggen.\nVästernorrland: halka på 14 av 22 vägavsnitt, 40 stationer under noll, kallast −6,0 °C vid Graninge.\nSkåne: halka på 14 av 88 vägavsnitt, 27 stationer under noll, kallast −2,3 °C vid Bjärnum.\nGävleborg: halka på 13 av 27 vägavsnitt, 29 stationer under noll, kallast −6,7 °C vid Södra Flät.\nStockholms län: halka på 12 av 44 vägavsnitt, 49 stationer under noll, kallast −5,3 °C vid Ekerö.\nHalka eller minusgrader även i 13 län till.\n\nLäget i ditt län uppdateras var 30:e minut: https://halkvakt.se/lan\nI appen säger Halkvakt till direkt, med rösten, innan du är där. Gratis för iPhone och Android.\niPhone: https://apps.apple.com/se/app/halkvakt/id6806939784\nAndroid: https://play.google.com/store/apps/details?id=se.halkvakt.app\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Jämtland #Dalarna #Västernorrland #halkvakt",
+  "textIg": "Halkläget kl. 11:00, fredag 27 november: halka på 243 vägavsnitt i 15 län. Svep för att se ditt län.\n\nNorrbotten: halka på 57 av 58 vägavsnitt, 57 stationer under noll, kallast −17,6 °C vid Töre.\nVästerbotten: halka på 44 av 44 vägavsnitt, 44 stationer under noll, kallast −13,3 °C vid Kåtaviken.\nJämtland: halka på 17 av 17 vägavsnitt, 31 stationer under noll, kallast −19,4 °C vid Gevsjön, 1 olycka.\nDalarna: halka på 17 av 38 vägavsnitt, 28 stationer under noll, kallast −9,3 °C vid Ryggen.\nVästernorrland: halka på 14 av 22 vägavsnitt, 40 stationer under noll, kallast −6,0 °C vid Graninge.\nSkåne: halka på 14 av 88 vägavsnitt, 27 stationer under noll, kallast −2,3 °C vid Bjärnum.\nGävleborg: halka på 13 av 27 vägavsnitt, 29 stationer under noll, kallast −6,7 °C vid Södra Flät.\nStockholms län: halka på 12 av 44 vägavsnitt, 49 stationer under noll, kallast −5,3 °C vid Ekerö.\nHalka eller minusgrader även i 13 län till.\n\nLäget i ditt län uppdateras var 30:e minut. Länken finns i vår profil.\nI appen säger Halkvakt till direkt, med rösten, innan du är där. Gratis för iPhone och Android, länken finns i vår profil.\n\nHalkvakt är en oberoende app och sajt, inte en del av Trafikverket. Siffrorna kommer från Trafikverkets öppna data.\n\n#halka #väglag #Norrbotten #Västerbotten #Jämtland #Dalarna #Västernorrland #halkvakt",
+  "pass": "lunch",
+  "antal": 10,
+  "datum": "2026-11-27",
+  "generated_at": "2026-11-27T10:00:24.611Z",
+  "lan": [
+    "norrbotten",
+    "vasterbotten",
+    "jamtland",
+    "dalarna",
+    "vasternorrland",
+    "skane",
+    "gavleborg",
+    "stockholm"
+  ]
+}
