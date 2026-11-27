@@ -196,12 +196,12 @@ class AutostartControllerTest {
         assertEquals(false, sampleStarts(false, 100, false, 100 * min, 0, 0))
     }
     @Test fun aRunningGuardIsLeftAlone() = assertEquals(false, sampleStarts(true, 100, true, 100 * min, 0, 0))
-    @Test fun oneTryInTenMinutes() {
-        assertEquals(false, sampleStarts(true, 100, false, 100 * min, 91 * min, 0))
-        assertTrue(sampleStarts(true, 100, false, 100 * min, 90 * min, 0))
+    @Test fun oneTryInFiveMinutes() {
+        assertEquals(false, sampleStarts(true, 100, false, 100 * min, 96 * min, 0))
+        assertTrue(sampleStarts(true, 100, false, 100 * min, 95 * min, 0))
     }
-    @Test fun aStopByHandKeepsItAwayForHalfAnHour() {
-        assertEquals(false, sampleStarts(true, 100, false, 100 * min, 0, 71 * min))
-        assertTrue(sampleStarts(true, 100, false, 100 * min, 0, 70 * min))
+    @Test fun aStopByHandKeepsItAwayForFiveMinutes() {
+        assertEquals(false, sampleStarts(true, 100, false, 100 * min, 0, 96 * min))
+        assertTrue(sampleStarts(true, 100, false, 100 * min, 0, 95 * min))
     }
 }
