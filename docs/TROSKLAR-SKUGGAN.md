@@ -255,7 +255,7 @@ det är hela poängen med att dokumentet är daterat före första körningen.
 Claude räknar (dom-knappen `publish/grind-s-b.ts` på den delade händelselistan `publish/skuggfacit.ts`,
 DECISIONS #327/#330). Bengt läser skuggloggen i söndagsrutinen. **Facit-hinkens bilder** (ändrat 24/9, DECISIONS #335):
 öppnas vid domens tidpunkt (DECISIONS #248) — Claude klassar dem blint ur kontaktark (kort #246; sökvägen visar kamera
-och tid, aldrig skuggans larm), Axel ok:ar (stickprov ≥ 10 % och varje is/snö/slask), Bengt stickprovar. Axel fäller domen.
+och tid, aldrig skuggans larm), Axel ok:ar (stickprov ≥ 10 % och varje is/snö/slask), Bengt stickprovar. Axel fäller domen. *(Ändrat 27/11, DECISIONS #973: kamerorna är delade i två slumpade halvor efter `docs/TROSKLAR-KVALITETSTAVLAN.md` §10. Den öppna halvan klassas nu för kvalitetstavlan, på samma sätt; den blinda halvan väntar till domen, och domen läses på den.)*
 Från 26/9 (DECISIONS #380) fylls hinken på tre vägar: skuggmotorn (`facit/`, larmpunkter längs rutterna, **inte längre
 fartkameror** — V1), kamerafacitet V2 (`v2/`, kameran närmast varje aktuell frysrisk i hela landet, tak 150 om dygnet, varav högst 30 i mörker sedan 22/10, #676) och V3
 (`v3/`, två stickprov i timmen i dagsljus vid kalla stationer, yta ≤ +3 °C, där ingen fara gick ut — där motorn eller vakterna
