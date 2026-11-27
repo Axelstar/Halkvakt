@@ -185,4 +185,23 @@ class AutostartControllerTest {
         assertEquals(false, s.onFix(61_000L + 14 * 60_000L, 13.0, 55.7))  // 11 km later after a long gap: drove
         assertEquals(false, s.onFix(61_000L + 20 * 60_000L, 13.0, 55.7))
     }
+
+    // The second road (27/11): a sampled reading starts the guard only when it is sure, the guard is off, the last try is
+    // old enough and the driver has not just stopped the guard by hand.
+    private val min = 60_000L
+    @Test fun aSureVehicleReadingStartsTheGuard() =
+        assertTrue(sampleStarts(inVehicle = true, confidence = 80, guardRunning = false, nowMs = 100 * min, lastTryMs = 0, handStopMs = 0))
+    @Test fun anUnsureReadingOrAnotherActivityDoesNot() {
+        assertEquals(false, sampleStarts(true, 74, false, 100 * min, 0, 0))
+        assertEquals(false, sampleStarts(false, 100, false, 100 * min, 0, 0))
+    }
+    @Test fun aRunningGuardIsLeftAlone() = assertEquals(false, sampleStarts(true, 100, true, 100 * min, 0, 0))
+    @Test fun oneTryInTenMinutes() {
+        assertEquals(false, sampleStarts(true, 100, false, 100 * min, 91 * min, 0))
+        assertTrue(sampleStarts(true, 100, false, 100 * min, 90 * min, 0))
+    }
+    @Test fun aStopByHandKeepsItAwayForHalfAnHour() {
+        assertEquals(false, sampleStarts(true, 100, false, 100 * min, 0, 71 * min))
+        assertTrue(sampleStarts(true, 100, false, 100 * min, 0, 70 * min))
+    }
 }

@@ -648,6 +648,9 @@ private fun Undersida(sida: Sida, activity: MainActivity, open: (Sida) -> Unit, 
                 RowPanel { GreenToggleRow("Vaknar själv när du kör", "Startar när telefonen märker att du åker bil, direkt om bilens Bluetooth kopplas",
                     autostart) { activity.onAutostartToggle() } }
                 MonoLabel("Stoppar själv efter 15 min parkerad", Muted2, modifier = Modifier.padding(top = 16.dp, start = 4.dp))
+                // 27/11: what the phone has said, so a self-start that never comes can be read here (AutostartManager.status).
+                val sjalvstartLage = remember(autostart) { se.halkvakt.app.AutostartManager.status(ctx) }
+                if (sjalvstartLage != null) MonoLabel(sjalvstartLage, Muted2, modifier = Modifier.padding(top = 8.dp, start = 4.dp))
                 Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) { Column(horizontalAlignment = Alignment.CenterHorizontally) { Problemrader(activity) } }
             }
             Sida.ROSTEN -> {

@@ -15,6 +15,7 @@ class StoppaVaktenReceiver : BroadcastReceiver() {
         if (intent.action != ACTION_STOPPA) return
         GuardService.stop(ctx)
         AutostartManager.clearAutoStarted(ctx)
+        AutostartManager.noteHandStop(ctx)
     }
 
     companion object {
