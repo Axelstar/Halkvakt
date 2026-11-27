@@ -19942,3 +19942,30 @@ logg. 16 sträckor saknar ÅDT: deras olyckor räknas, men inte deras trafik.
 räcker. MET Nordics nederbörd bor i halkvakt-kuvos.
 
 **Stomdokument:** MAT (mätningen och varianterna), SYS (kandidatens fukt i sql/146), BED §4.2 (frågan avgjord)
+
+## #973 (27/11 2026) Kvalitetstavlan förregistrerad, och kamerorna delade i två slumpade halvor (ändrar DECISIONS #335)
+
+**Beslut** (Bengt 27/11: *"ok bygg alltihop, täckning, träffsäkerhet, relativ risk och kamerorna genom att öppna en slumpad halva nu.
+Axel säger ja och jag vill ha redovisning i adminfliken. Går så mycket som går genom backtestning så att vi inte startar från 0 när vi
+börjar mätningarna"* och *"ge mej också indikationer på vad som är bra resultat, godkänt resultat och mindre bra och vad man eventuellt
+ska göra för att förbättra resultatet"*; Axels ja via Bengt). Svaret på Bengts fråga samma dag om olycksfacit är en kvalitetsstämpel:
+olycksfacit är ett felsökningsverktyg, eftersom de flesta halkolyckorna döms bara via stationen som också varnar (bedömningen §4.2).
+
+1. **Kvalitetstavlan** (`docs/TROSKLAR-KVALITETSTAVLAN.md`, kort #682, körlistan C17) mäter A1, A2, kandidaten, småvägsrösten och
+   Halkvakt som helhet mot källor som lagret inte bygger på: friktionen vid stationerna (DECISIONS #465, #540), Trafikverkets väglag
+   (säsongsfacits F1), kamerorna i den öppna halvan och singelolyckorna. Tre mått per lager: täckning, träffsäkerhet med lyftet över
+   basen, och relativ risk per fordonskm (DECISIONS #972:s metod). Snöflingan (J1) står bredvid. Det föraren fick höra läses ur
+   lägesfilens historik i kartrepot.
+2. **Gränserna för bra, godkänt och mindre bra** och vad man gör när ett tal är svagt står i dokumentets §8 och §9. De är Claudes, på
+   Bengts begäran, och skrivna innan något tal lästs. Efter den första räkningen ändras de bara med ett nytt beslut (säsongsfacits regel L).
+3. **Kamerorna delas i två halvor** efter sha256 av kamerans id med en fast text, skriven innan någon bild öppnats (§10). Den öppna halvan
+   klassas nu i en slumpad ordning, blint som förut, och räknas efter Axels ok. Den blinda halvan väntar till marsdomen, som DECISIONS #248
+   och #335 säger, och domen läses på den.
+4. **Bakåt först** (Bengts husregel 27/11): tavlan räknas bakåt från 11/9 för lägesfilen, 6/10 för friktionen och 25/11 för rösten, och
+   sedan varje dygn med samma kod. Bara aggregat per dygn i en intern tabell. Redovisningen står i en egen flik i adminsidan.
+
+**Alternativ.** Att behålla blindningen till mars: tavlan hade fått kamerorna först i april. Att öppna alla kameror: marsdomen hade förlorat
+sitt blinda facit. Att räkna tavlan i SQL med pg_cron som säsongsfacit: lägesfilens historik finns bara i kartrepot, och friktionen före
+12/11 bara i hinken.
+
+**Stomdokument:** MAT (tavlan och kamerorna), SYS (flödet och tabellen), BED §4.2 (frågan avgjord)
