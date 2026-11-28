@@ -21,6 +21,8 @@ struct NaraDigKarta: View {
     /// Den valda farans id, och vad ett tryck gör: farans id, eller nil för ett tryck bredvid.
     var valt: String?
     var vidTryck: ((String?) -> Void)?
+    /// Kartans höjd: högre när inget är rapporterat nära, lägre när listan står under den (DECISIONS #981 punkt 2).
+    var hojd: CGFloat = 236
 
     /// Flest märken av varje slag som ritas.
     private static let flestPunkter = 60
@@ -32,16 +34,18 @@ struct NaraDigKarta: View {
         let radie = radieM
         // En stillbild i gråskala med egna märken (DECISIONS #876, #933).
         Kartbild(omrade: omrade(radie),
+                 hojd: hojd,
                  halka: halka,
                  frysrisk: Array(allaPunkter.filter { $0.kind == .icing_point }.prefix(Self.flestPunkter)).map { Plats(id: $0.id, koord: $0.koord) },
                  punkter: Array(allaPunkter.filter { $0.kind != .icing_point && $0.kind != .camera }.prefix(Self.flestPunkter)),
                  plats: plats.map { CLLocationCoordinate2D(latitude: $0.lat, longitude: $0.lon) },
                  valt: valt,
                  vidTryck: vidTryck,
-                 nyckel: plats.map { String(format: "%.2f,%.2f,%d", $0.lon, $0.lat, Int(radie / 1000)) } ?? "landet",
+                 nyckel: (plats.map { String(format: "%.2f,%.2f,%d", $0.lon, $0.lat, Int(radie / 1000)) } ?? "landet") + "|\(Int(hojd))",
                  etikett: plats == nil ? "Karta över halkan i Sverige" : "Karta över det närmaste omkring dig")
     }
 
+    private static let landetsMitt = CLLocationCoordinate2D(latitude: 62.5, longitude: 16.5)
     private static let minstRadieM = 10_000.0
     private static let utanFaraRadieM = 15_000.0
     private static let radieStegM = 5_000.0
@@ -61,8 +65,15 @@ struct NaraDigKarta: View {
 
     private func omrade(_ radie: Double) -> MKCoordinateRegion {
         if let plats {
-            return MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: plats.lat, longitude: plats.lon),
-                                      latitudinalMeters: 2.3 * radie, longitudinalMeters: 2.3 * radie)
+            // Mitten flyttas en bit mot landets mitt, så att Sverige fyller bilden (DECISIONS #981 punkt 2): från Malmö visade
+            // kartan till hälften Öresund och Danmark. 0,4 radier håller föraren och den närmaste faran kvar i bild.
+            let dLat = (Self.landetsMitt.latitude - plats.lat) * 111_320
+            let dLon = (Self.landetsMitt.longitude - plats.lon) * 111_320 * cos(plats.lat * .pi / 180)
+            let langd = max(1, (dLat * dLat + dLon * dLon).squareRoot())
+            let flytt = min(0.4 * radie, langd)
+            let mitt = CLLocationCoordinate2D(latitude: plats.lat + flytt * dLat / langd / 111_320,
+                                              longitude: plats.lon + flytt * dLon / langd / (111_320 * cos(plats.lat * .pi / 180)))
+            return MKCoordinateRegion(center: mitt, latitudinalMeters: 2.3 * radie, longitudinalMeters: 2.3 * radie)
         }
         return MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 62.5, longitude: 16.5),
                                   span: MKCoordinateSpan(latitudeDelta: 16, longitudeDelta: 16))
