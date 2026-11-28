@@ -189,18 +189,16 @@ struct GreenToggleRow: View {
     }
 }
 
-/// Den flytande flikraden: Vakten / Favoriter / Inställningar, 104 × 52 per flik — tre i bredd ryms på en 375 pt-skärm.
+/// Den flytande flikraden: Vakten / Resor / Inställningar, 104 × 52 per flik — tre i bredd ryms på en 375 pt-skärm.
 struct FloatingTabBar: View {
     @Binding var tab: Int
-    /// Ett tryck på Vakten, också när fliken redan visas: startsidan går då hem från en undersida (DECISIONS #874).
-    var vidVakten: () -> Void = {}
     var body: some View {
         HStack(spacing: 4) {
             item(0, "VAKTEN") {
                 Image("ikon-mark").renderingMode(.template).resizable().scaledToFit().frame(width: 16, height: 14)
                     .foregroundStyle(tab == 0 ? Brand.yellow : Brand.dim)
             }
-            item(1, "FAVORITER") {
+            item(1, "RESOR") {
                 Image(systemName: tab == 1 ? "star.fill" : "star").font(.system(size: 13))
                     .foregroundStyle(tab == 1 ? Brand.text : Brand.dim).frame(height: 14)
             }
@@ -216,7 +214,6 @@ struct FloatingTabBar: View {
 
     private func item<I: View>(_ i: Int, _ title: String, @ViewBuilder icon: () -> I) -> some View {
         Button {
-            if i == 0 { vidVakten() }
             tab = i
         } label: {
             VStack(spacing: 6) {
@@ -226,7 +223,7 @@ struct FloatingTabBar: View {
             .frame(width: 104, height: 52)
             .background(tab == i ? Brand.raisedSolid : .clear, in: Capsule())
         }
-        .accessibilityLabel(["Vakten", "Favoriter", "Inställningar"][i])
+        .accessibilityLabel(["Vakten", "Resor", "Inställningar"][i])
         .accessibilityAddTraits(tab == i ? .isSelected : [])
     }
 }

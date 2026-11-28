@@ -25,7 +25,7 @@ struct PlaneradResaView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
                 Button { dismiss() } label: {
-                    Text("← TILLBAKA").font(Typo.mono(11)).tracking(1.5).foregroundStyle(Brand.text).frame(height: 44)
+                    Text("← RESOR").font(Typo.mono(11)).tracking(1.5).foregroundStyle(Brand.text).frame(height: 44)
                 }
                 if let p = plan.plan {
                     Text("Till \(p.mal)").font(Typo.sans(32, .semibold)).tracking(-0.8).foregroundStyle(Brand.text).padding(.top, 8)

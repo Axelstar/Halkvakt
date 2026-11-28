@@ -269,6 +269,16 @@ telefonen."* Android har inte påminnelsen före avresan, kartan Nära dig eller
 
 ## Favoriter (18/10, kort #357 — steg 2 och 3)
 
+**På iPhone från 0.4.3 (28/11, DECISIONS #982, byggt i grenen och inte släppt) heter fliken *Resor*,** och sökrutan från Planera
+resa står överst i den. Överst *"Vart ska du?"* och *"Se läget längs vägen innan du åker."*, sökrutan *Sök adress eller ort* med
+förslagen under, sedan *PLANERAD* (resan med avresetid, när det finns en), *DAGENS RESOR*, *DINA RESOR* och sist reglaget, som
+heter *Fråga om jag vill spara resan* (*Efter en resa. Högst fem resor.*), texten *NÄR DU SÖKER* om vad Apple får veta, och
+*BARA I TELEFONEN*. Utan sparade resor står *"Inga sparade resor än. …"*. Knappen *Planera resa* på startsidan byter till fliken
+och ställer markören i sökrutan; raden *PLANERAD RESA* på startsidan öppnar resan i fliken; *← RESOR* leder tillbaka från en resa
+och från en rapport. Skärmen *Vart ska du?* som egen sida finns inte längre. Texter som nämner fliken säger *Resor*: *"Ge den ett
+namn under Resor."*, *"Du ser läget längs den under Resor."* Att spara en sökt resa och resans två lägen (DECISIONS #983) är inte
+byggda än. Android heter fortfarande *Favoriter*. Resten av avsnittet beskriver fliken som den var till och med 0.4.2.
+
 ![Spara resan? på Redo.](produktbok/shot-10-spara-resan.png) ![Fliken Favoriter med resans läge](produktbok/shot-11-favoriter.png) ![Rapporten för en sparad resa](produktbok/shot-12-rapporten.png)
 
 *Fotostudion (Android-emulatorn) med påhittade vägar ur kroken `fotostudio_favoriter`; läget och rapporten ur den riktiga rapportfilen och lägesfilen när bilden togs (android 39113957298). Klockslagen är emulatorns, i UTC.*

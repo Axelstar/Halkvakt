@@ -8,7 +8,7 @@ import HalkvaktEngine
 struct RapportView: View {
     let ruttId: String
     /// Skärmen föraren kom ifrån: Favoriter, eller Planera (kort #659).
-    var tillbaka = "Favoriter"
+    var tillbaka = "Resor"
     @State private var fav = Favoriter.shared
     @State private var rapporten = Rapporten.shared
     @State private var hem = false

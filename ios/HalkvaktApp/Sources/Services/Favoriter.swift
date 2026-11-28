@@ -1,5 +1,5 @@
 // FAVORITERNA (kort #357; DECISIONS #616, #625, #817): körda vägar sparas bara på förarens begäran, bara i telefonen och
-// aldrig i en säkerhetskopia. Brytaren "Erbjud att spara resor" i fliken Favoriter är av från början; av ⇒ ingen väg samlas
+// aldrig i en säkerhetskopia. Brytaren "Fråga om jag vill spara resan" i fliken Resor är av från början; av ⇒ ingen väg samlas
 // in och ingen fil skrivs. Glesningen (en punkt per 75 m), listans regler (högst fem, den sjätte nekas) och dagens resor (högst
 // tre i väntan på namn, ett dygn, dit och hem som en) bor i motorpaketet, HalkvaktEngine/Rutter.swift, prövade mot
 // engine/fixtures/rutter.json i tre språk.
@@ -273,9 +273,9 @@ enum FavoritNotis {
             case .sparad:
                 kvitto(rubrik: "Sparad som \(namn.isEmpty ? (v.map(Favoriter.datumnamn) ?? "Resa") : namn)", kvar: fav.dagens.count)
             case .fullt:
-                kvitto(rubrik: "Resan sparades inte", text: "Du har redan fem resor. Ta bort en under Favoriter, så står dagens resor kvar där.")
+                kvitto(rubrik: "Resan sparades inte", text: "Du har redan fem resor. Ta bort en under Resor, så står dagens resor kvar där.")
             case .fel:
-                kvitto(rubrik: "Resan sparades inte", text: "Försök igen under Favoriter.")
+                kvitto(rubrik: "Resan sparades inte", text: "Försök igen under Resor.")
             }
         case slang:
             fav.slang(id: id)
@@ -288,7 +288,7 @@ enum FavoritNotis {
     private static func kvitto(rubrik: String, kvar: Int = 0, text: String? = nil) {
         let c = UNMutableNotificationContent()
         c.title = rubrik
-        c.body = text ?? "Du ser läget längs den under Favoriter." +
+        c.body = text ?? "Du ser läget längs den under Resor." +
             (kvar > 0 ? " \(kvar) \(kvar == 1 ? "resa" : "resor") till i dag att spara." : "")
         c.threadIdentifier = notisId
         UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: [notisId])
