@@ -190,10 +190,11 @@ fun PlaneradResaSkarm(activity: MainActivity, back: () -> Unit) {
         val oroligt = strackor.any { it.lage != StrackLage.LUGNT }
         if (senare) {
             Column(Modifier.fillMaxWidth().padding(top = 16.dp).background(Brand.panel, RoundedCornerShape(18.dp)).padding(horizontal = 20.dp)) {
-                Row(Modifier.fillMaxWidth().heightIn(min = 64.dp), verticalAlignment = Alignment.CenterVertically,
+                // Rubriken står över väljarna: på en smal telefon ryms de inte på samma rad (emulatorbilden 28/11 bröt ordet per bokstav).
+                Text("Jag åker", color = Brand.text, fontFamily = Typo.sans, fontWeight = FontWeight.Medium, fontSize = 16.sp,
+                    modifier = Modifier.padding(top = 16.dp))
+                Row(Modifier.fillMaxWidth().padding(top = 10.dp, bottom = 14.dp), verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("Jag åker", color = Brand.text, fontFamily = Typo.sans, fontWeight = FontWeight.Medium, fontSize = 16.sp,
-                        modifier = Modifier.weight(1f))
                     val tid = java.time.Instant.ofEpochMilli(avresa).atZone(java.time.ZoneId.systemDefault())
                     Tidval(DATUM.format(tid), "Väljer dag") {
                         android.app.DatePickerDialog(ctx, { _, ar, manad, dag ->
