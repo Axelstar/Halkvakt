@@ -1,4 +1,5 @@
-// FLIKEN FAVORITER (kort #357; DECISIONS #616, #625, #633, #637, #817) — spegel av iOS FavoriterView.swift, samma ord. Överst
+// FLIKEN RESOR (förut Favoriter; kort #357, #659; DECISIONS #616, #625, #633, #637, #817, #982) — spegel av iOS FavoriterView.swift,
+// samma ord. Överst sökrutan (Resesok i PlaneraSkarm.kt) och den planerade resan som en undersida. Sedan
 // dagens resor i väntan på namn (Favoriter 2a: fältet är sparknappen, förslagen väljer namn, Släng för sig, taket synligt), sedan
 // de sparade resorna, var och en med sitt läge (Nytt, Inget nytt, Lugnt; FAVORITER §2), sin rapport (RapportSkarm.kt, steg 3c),
 // Byt namn och Ta bort; läget räknas om när fliken visas.
@@ -57,21 +58,30 @@ import java.time.ZoneId
 import java.util.Calendar
 
 /** Fliken: listan, och rapporten för den resa föraren öppnat — en nivå till, som inställningarnas undersidor. */
+/** Den planerade resan som en undersida i fliken, bredvid de sparade resornas rapporter. */
+private const val PLANERAD = "§planerad"
+
 @Composable
-fun FavoriterScreen(activity: MainActivity) {
+fun FavoriterScreen(activity: MainActivity, fokusera: Boolean = false, fokuserad: () -> Unit = {}) {
     var oppen by rememberSaveable { mutableStateOf<String?>(null) }
     androidx.activity.compose.BackHandler(enabled = oppen != null) { oppen = null }
+    // Planera resa på startsidan (DECISIONS #982): fliken visar listan, med markören i sökrutan.
+    LaunchedEffect(fokusera) { if (fokusera) oppen = null }
     AnimatedContent(oppen, transitionSpec = {
         val e = CubicBezierEasing(.2f, .8f, .2f, 1f)
         if (targetState != null) slideInHorizontally(tween(420, easing = e)) { it } togetherWith fadeOut(tween(420))
         else fadeIn(tween(420)) togetherWith slideOutHorizontally(tween(420, easing = e)) { it }
     }, label = "favoriter") { id ->
-        if (id == null) FavoriterLista { oppen = it } else RapportSkarm(id, activity) { oppen = null }
+        when (id) {
+            null -> FavoriterLista(activity, fokusera, fokuserad, planerad = { oppen = PLANERAD }) { oppen = it }
+            PLANERAD -> PlaneradResaSkarm(activity) { oppen = null }
+            else -> RapportSkarm(id, activity) { oppen = null }
+        }
     }
 }
 
 @Composable
-private fun FavoriterLista(oppna: (String) -> Unit) {
+private fun FavoriterLista(activity: MainActivity, fokusera: Boolean, fokuserad: () -> Unit, planerad: () -> Unit, oppna: (String) -> Unit) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
     val lager = remember { Favoriter.lager(ctx) }
@@ -85,16 +95,12 @@ private fun FavoriterLista(oppna: (String) -> Unit) {
     // När fliken visas, och när en resa sparas eller tas bort medan den visas.
     LaunchedEffect(rutter.map { it.id }) { lager.rensaGamla(); Rapporten.uppdatera(ctx) }
 
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp).padding(top = 24.dp, bottom = 150.dp)) {
-        Text("Favoriter", color = Brand.text, fontFamily = Typo.sans, fontWeight = FontWeight.SemiBold, fontSize = 32.sp, letterSpacing = (-0.025).em)
-        Text("Vägar du kör ofta. Båda hållen räknas som en.", color = Brand.text2, fontFamily = Typo.sans, fontSize = 15.sp, modifier = Modifier.padding(top = 10.dp))
-        Spacer(Modifier.height(28.dp))
-        RowPanel {
-            GreenToggleRow("Erbjud att spara resor", "Appen frågar efter resan", erbjud) { on ->
-                scope.launch { Prefs.setFavErbjud(ctx, on) }
-                if (!on) { lager.slangAlla(); FavoritNotis.taBort(ctx) }   // av ⇒ dagens resor raderas; de sparade står kvar (#633)
-            }
-        }
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).imePadding().padding(horizontal = 24.dp).padding(top = 24.dp, bottom = 150.dp)) {
+        // Fliken Resor (DECISIONS #982): sökrutan överst, sedan dagens och de sparade resorna, som på iPhone.
+        Text("Vart ska du?", color = Brand.text, fontFamily = Typo.sans, fontWeight = FontWeight.SemiBold, fontSize = 32.sp, letterSpacing = (-0.025).em)
+        Text("Se läget längs vägen innan du åker.", color = Brand.text2, fontFamily = Typo.sans, fontSize = 15.sp, modifier = Modifier.padding(top = 10.dp))
+        Spacer(Modifier.height(24.dp))
+        Resesok(activity, fokusera, fokuserad, klar = planerad)
         if (erbjud && dagens.isNotEmpty()) {
             MonoLabel("Dagens resor · ${dagens.size} att spara", modifier = Modifier.padding(top = 28.dp, bottom = 10.dp, start = 4.dp))
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -102,9 +108,10 @@ private fun FavoriterLista(oppna: (String) -> Unit) {
             }
         }
         if (rutter.isEmpty()) {
-            Text(if (erbjud) "Kör en resa, så frågar appen efteråt om du vill spara den."
-                 else "Slå på, så frågar appen efter en resa om du vill spara vägen du körde. Högst fem resor.",
-                color = Brand.text2, fontFamily = Typo.sans, fontSize = 14.sp, lineHeight = 21.sp, modifier = Modifier.padding(top = 14.dp, start = 4.dp))
+            MonoLabel("Dina resor", modifier = Modifier.padding(top = 28.dp, bottom = 10.dp, start = 4.dp))
+            Text(if (erbjud) "Inga sparade resor än. Kör en resa, så frågar appen efteråt om du vill spara den."
+                 else "Inga sparade resor än. Slå på reglaget, så frågar appen efter en resa om du vill spara vägen du körde.",
+                color = Brand.text2, fontFamily = Typo.sans, fontSize = 14.sp, lineHeight = 21.sp, modifier = Modifier.padding(start = 4.dp))
         } else {
             MonoLabel(if (rutter.size >= Rutter.MAX_RUTTER) "${Rutter.MAX_RUTTER} av ${Rutter.MAX_RUTTER} · listan är full"
                       else "Dina resor · ${rutter.size} av ${Rutter.MAX_RUTTER}", modifier = Modifier.padding(top = 28.dp, bottom = 10.dp, start = 4.dp))
@@ -119,6 +126,14 @@ private fun FavoriterLista(oppna: (String) -> Unit) {
                 MonoLink("Ta bort alla") { fragaTaBortAlla = true }
             }
         }
+        Spacer(Modifier.height(28.dp))
+        RowPanel {
+            GreenToggleRow("Fråga om jag vill spara resan", "Efter en resa. Högst fem resor.", erbjud) { on ->
+                scope.launch { Prefs.setFavErbjud(ctx, on) }
+                if (!on) { lager.slangAlla(); FavoritNotis.taBort(ctx) }   // av ⇒ dagens resor raderas; de sparade står kvar (#633)
+            }
+        }
+        NarDuSoker()
         Column(Modifier.padding(top = 24.dp, start = 4.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             MonoLabel("Bara i telefonen")
             Text("Resorna sparas bara i telefonen och följer inte med i säkerhetskopian. De försvinner när du tar bort dem eller appen.",

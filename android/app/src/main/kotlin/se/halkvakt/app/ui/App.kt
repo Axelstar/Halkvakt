@@ -102,8 +102,10 @@ fun HazardIcon(k: HazardKind, size: Dp = 24.dp, tint: Color = Brand.yellow) {
 fun HalkvaktApp(activity: MainActivity) {
     MaterialTheme(colorScheme = Scheme) {
         var tab by rememberSaveable { mutableStateOf(0) }
-        var planera by rememberSaveable { mutableStateOf(0) }   // 0 Redo, 1 sökningen, 2 den planerade resan
-        androidx.activity.compose.BackHandler(enabled = tab == 0 && planera != 0) { planera = 0 }
+        // Planera resa på startsidan (DECISIONS #982): fliken Resor med markören i sökrutan. Ett tryck på fliken medan den
+        // visas går hem till listan (resorHem byter nyckel, så fliken börjar om).
+        var sokFokus by remember { mutableStateOf(false) }
+        var resorHem by remember { mutableStateOf(0) }
         // Introduktionen (kort #652): visas för en ny installation tills den är genomgången eller överhoppad, och igen från
         // Inställningar. En installation som redan gett platsen har använt appen förut och får den inte påtvingad.
         val ctxIntro = LocalContext.current
@@ -135,20 +137,16 @@ fun HalkvaktApp(activity: MainActivity) {
                 // Ingen flikrad medan vakten kör: körläget täcker allt (designen v2, DECISIONS #444).
                 if (running) PaVaktScreen(activity)
                 else when (tab) {
-                    // Kort #659: Planera resa och den planerade resan ligger ovanpå Redo, som sidorna under Favoriter.
-                    0 -> when (planera) {
-                        1 -> PlaneraSkarm(activity, back = { planera = 0 }, klar = { planera = 2 })
-                        2 -> PlaneradResaSkarm(activity) { planera = 0 }
-                        else -> RedoScreen(activity, planera = { planera = 1 }) { BetaOverst(activity) }
-                    }
-                    1 -> FavoriterScreen(activity)   // kort #357, DECISIONS #616: den mittersta fliken
+                    0 -> RedoScreen(activity, planera = { sokFokus = true; tab = 1 }) { BetaOverst(activity) }
+                    // Kort #357, #659, DECISIONS #616, #982: den mittersta fliken, Resor, med sökningen och den planerade resan.
+                    1 -> key(resorHem) { FavoriterScreen(activity, fokusera = sokFokus) { sokFokus = false } }
                     else -> SettingsScreen(activity) { visaIntro = true }
                 }
             }
             if (!running) {
                 Box(Modifier.align(Alignment.BottomCenter).fillMaxWidth().height(130.dp).background(TabFade))
                 Box(Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = 8.dp)) {
-                    FloatingTabBar(tab) { tab = it; planera = 0 }
+                    FloatingTabBar(tab) { if (it == 1 && tab == 1) resorHem++; tab = it }
                 }
             }
             // Kort ersätter kort (designen 04): det nya glider upp och täcker, det gamla krymper och tonar bort.
