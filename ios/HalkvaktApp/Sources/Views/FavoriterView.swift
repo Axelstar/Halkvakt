@@ -1,4 +1,4 @@
-// FLIKEN FAVORITER (kort #357; DECISIONS #616, #625, #637, #817): brytaren, dagens resor i väntan på namn (Favoriter 2a: fältet är
+// FLIKEN RESOR (kort #357, #659; DECISIONS #616, #625, #637, #817, #982): sökrutan för en ny resa (Resesok), dagens resor i väntan på namn (Favoriter 2a: fältet är
 // sparknappen, Släng för sig, taket synligt) och de sparade resorna, var och en med sitt läge (Nytt,
 // Inget nytt, Lugnt; FAVORITER §2) och sin rapport (RapportView, steg 3b). Läget räknas om när fliken visas och när föraren drar
 // nedåt. Ingen karta bakom linjen: ingen kartserver får veta var en resa går (#616, 6.2).
@@ -13,20 +13,26 @@ struct FavoriterView: View {
     @State private var fragaTaBortAlla = false
     @State private var byterNamn: SparadRutt?
     @State private var nyttNamn = ""
+    // Kort #659 (DECISIONS #982): sökrutan och den planerade resan bor i fliken. Startsidan ber om dem genom Resplan.
+    @State private var plan = Resplan.shared
+    @State private var vag = NavigationPath()
+    @State private var visaResan = false
+    @State private var fokusera = 0
 
     enum Sida: Hashable { case rapport(String) }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $vag) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
-                    Text("Favoriter").font(Typo.sans(32, .semibold)).tracking(-0.8).foregroundStyle(Brand.text)
-                    Text("Vägar du kör ofta. Båda hållen räknas som en.").font(Typo.sans(15)).foregroundStyle(Brand.text2).padding(.top, 10)
-
-                    RowPanel {
-                        GreenToggleRow(title: "Erbjud att spara resor", sub: "Appen frågar efter resan", isOn: $fav.erbjud)
+                    Text("Vart ska du?").font(Typo.sans(32, .semibold)).tracking(-0.8).foregroundStyle(Brand.text)
+                        .accessibilityAddTraits(.isHeader)
+                    Text("Se läget längs vägen innan du åker.").font(Typo.sans(15)).foregroundStyle(Brand.text2).padding(.top, 10)
+                    Resesok(visaResan: $visaResan, fokusera: fokusera).padding(.top, 24)
+                    if let kommande = plan.kommande {
+                        MonoLabel(text: "Planerad").padding(.top, 28).padding(.bottom, 10).padding(.horizontal, 4)
+                        PlaneradRad(plan: kommande) { visaResan = true }
                     }
-                    .padding(.top, 28)
 
                     if fav.erbjud && !fav.dagens.isEmpty {
                         MonoLabel(text: "Dagens resor · \(fav.dagens.count) att spara").padding(.top, 28).padding(.bottom, 10).padding(.horizontal, 4)
@@ -36,11 +42,12 @@ struct FavoriterView: View {
                     }
 
                     if fav.rutter.isEmpty {
+                        MonoLabel(text: "Dina resor").padding(.top, 28).padding(.bottom, 10).padding(.horizontal, 4)
                         Text(fav.erbjud
-                             ? "Kör en resa, så frågar appen efteråt om du vill spara den."
-                             : "Slå på, så frågar appen efter en resa om du vill spara vägen du körde. Högst fem resor.")
+                             ? "Inga sparade resor än. Kör en resa, så frågar appen efteråt om du vill spara den."
+                             : "Inga sparade resor än. Slå på reglaget, så frågar appen efter en resa om du vill spara vägen du körde.")
                             .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2)
-                            .padding(.top, 14).padding(.horizontal, 4)
+                            .padding(.horizontal, 4)
                     } else {
                         MonoLabel(text: fav.rutter.count >= Rutter.max ? "\(Rutter.max) av \(Rutter.max) · listan är full"
                                                                        : "Dina resor · \(fav.rutter.count) av \(Rutter.max)")
@@ -58,6 +65,18 @@ struct FavoriterView: View {
                         .padding(.top, 12)
                     }
 
+                    RowPanel {
+                        GreenToggleRow(title: "Fråga om jag vill spara resan", sub: "Efter en resa. Högst fem resor.", isOn: $fav.erbjud)
+                    }
+                    .padding(.top, 28)
+
+                    VStack(alignment: .leading, spacing: 6) {
+                        MonoLabel(text: "När du söker")
+                        Text("Apple slår upp adressen och räknar ut vägen, och får då veta var du är och vart du ska. Halkvakt får aldrig veta det.")
+                            .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2)
+                    }
+                    .padding(.top, 24).padding(.horizontal, 4)
+
                     VStack(alignment: .leading, spacing: 6) {
                         MonoLabel(text: "Bara i telefonen")
                         Text("Resorna sparas bara i telefonen och följer inte med i säkerhetskopian. De försvinner när du tar bort dem eller appen.")
@@ -69,6 +88,7 @@ struct FavoriterView: View {
                 .padding(.horizontal, 24).padding(.top, 24).padding(.bottom, 150)
             }
             .scrollIndicators(.hidden)
+            .scrollDismissesKeyboard(.interactively)
             .background(Brand.bg)
             .refreshable { await rapporten.uppdatera() }
             .toolbar(.hidden, for: .navigationBar)
@@ -77,6 +97,7 @@ struct FavoriterView: View {
                 case .rapport(let id): RapportView(ruttId: id)
                 }
             }
+            .navigationDestination(isPresented: $visaResan) { PlaneradResaView() }
             .confirmationDialog("Ta bort alla sparade resor?", isPresented: $fragaTaBortAlla, titleVisibility: .visible) {
                 Button("Ta bort alla", role: .destructive) { fav.taBortAlla() }
                 Button("Avbryt", role: .cancel) {}
@@ -86,6 +107,16 @@ struct FavoriterView: View {
                 Button("Spara") { if let r = byterNamn { fav.bytNamn(id: r.id, till: nyttNamn) }; byterNamn = nil }
                 Button("Avbryt", role: .cancel) { byterNamn = nil }
             }
+        }
+        // Startsidans knapp Planera resa: fliken går hem och markören ställs i sökrutan. Raden Planerad resa: resans skärm.
+        .onChange(of: plan.sokBegard) { _, _ in
+            vag = NavigationPath()
+            visaResan = false
+            fokusera += 1
+        }
+        .onChange(of: plan.resanBegard) { _, _ in
+            vag = NavigationPath()
+            visaResan = true
         }
         // När fliken visas, och när en resa sparas eller tas bort medan den visas.
         .task(id: synlig ? fav.rutter.map(\.id) : []) {
@@ -134,6 +165,29 @@ struct FavoriterView: View {
         let km = m >= 10_000 ? String(format: "%.0f", m / 1000) : String(format: "%.1f", m / 1000).replacingOccurrences(of: ".", with: ",")
         let datum = (try? Date(r.sparad, strategy: .iso8601)).map { $0.formatted(.dateTime.day().month(.defaultDigits).locale(Locale(identifier: "sv_SE"))) } ?? ""
         return "\(km) KM · SPARAD \(datum)"
+    }
+}
+
+/// Den planerade resan i fliken: målet och avresan. Ett tryck öppnar resan med rapporten.
+private struct PlaneradRad: View {
+    let plan: Resplan.Plan
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Till \(plan.mal)").font(Typo.sans(16, .medium)).foregroundStyle(Brand.text)
+                    Text("Avresa \(plan.avresa?.dagOchKlockslag ?? "")").font(Typo.sans(14)).foregroundStyle(Brand.text2)
+                }
+                Spacer(minLength: 0)
+                Image(systemName: "chevron.right").font(.system(size: 13, weight: .semibold)).foregroundStyle(Brand.dim)
+            }
+            .padding(.horizontal, 20).padding(.vertical, 16)
+            .background(Brand.panel, in: RoundedRectangle(cornerRadius: 18))
+        }
+        .buttonStyle(.plain)
+        .accessibilityHint("Öppnar den planerade resan")
     }
 }
 

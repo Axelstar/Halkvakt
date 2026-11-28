@@ -209,7 +209,7 @@ struct InstallningarView: View {
                 // #772: räknaren är alltid på och står här — texten "inget skickas" var sann till 0.3.15. #787: de sex områdena.
                 Text("Appen räknar anonymt hur många som går igenom introduktionen, vilka behörigheter som väljs, hur ofta och ungefär hur länge vakten är på, vilka varningar som sägs, vilka inställningar som ändras och vad som går fel. Ett ord per händelse, med appens version. Aldrig var du är, hur långt du kör eller vem du är.")
                     .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2)
-                Text("Slår du på Erbjud att spara resor under Favoriter sparas vägarna du väljer, bara i telefonen och aldrig i en säkerhetskopia. Du tar bort dem där.")
+                Text("Slår du på Fråga om jag vill spara resan under Resor sparas vägarna du väljer, bara i telefonen och aldrig i en säkerhetskopia. Du tar bort dem där.")
                     .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2)
             }
             .padding(20)
@@ -398,12 +398,11 @@ private struct GenvagarGuide: View {
     }
 }
 
-/// Tre flikar under en flytande kapsel (designen v2, DECISIONS #444; Favoriter i mitten sedan kort #357, #616) — Vakten,
-/// Favoriter och Inställningar. Ingen flikrad medan vakten kör: körläget täcker allt.
+/// Tre flikar under en flytande kapsel (designen v2, DECISIONS #444; Resor i mitten, förut Favoriter, kort #357, #616, #982) — Vakten,
+/// Resor och Inställningar. Ingen flikrad medan vakten kör: körläget täcker allt.
 struct RootView: View {
     @State private var tab = 0
-    /// Räknas upp vid varje tryck på fliken Vakten; VaktenView går då hem från Planera en resa (DECISIONS #874).
-    @State private var hem = 0
+    @State private var resplan = Resplan.shared
     @State private var guardM = GuardManager.shared
     @State private var fav = Favoriter.shared
     @State private var prefs = Prefs.shared
@@ -412,7 +411,7 @@ struct RootView: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             // Flikarna lever hela tiden, som i TabView: ingen omladdning och ingen tappad undersida vid flikbyte.
-            VaktenView(hem: hem).opacity(tab == 0 ? 1 : 0).allowsHitTesting(tab == 0).accessibilityHidden(tab != 0)
+            VaktenView().opacity(tab == 0 ? 1 : 0).allowsHitTesting(tab == 0).accessibilityHidden(tab != 0)
             FavoriterView(synlig: tab == 1).opacity(tab == 1 ? 1 : 0).allowsHitTesting(tab == 1).accessibilityHidden(tab != 1)
             InstallningarView().opacity(tab == 2 ? 1 : 0).allowsHitTesting(tab == 2).accessibilityHidden(tab != 2)
             LinearGradient(colors: [Brand.bg.opacity(0), Brand.bg], startPoint: .top, endPoint: .init(x: 0.5, y: 0.6))
@@ -421,7 +420,7 @@ struct RootView: View {
                 .ignoresSafeArea(.keyboard, edges: .bottom)
             // Flikraden står kvar längst ner när tangentbordet kommer upp (Eget namn i Spara resan?) och göms bakom det,
             // i stället för att flyta upp över innehållet (Axels skärmbild 24/10).
-            FloatingTabBar(tab: $tab, vidVakten: { hem += 1 }).padding(.bottom, 8)
+            FloatingTabBar(tab: $tab).padding(.bottom, 8)
                 .ignoresSafeArea(.keyboard, edges: .bottom)
             // Platsdelningens fråga (DECISIONS #917, #921) för den som inte fick den i introduktionen: täcker flikarna tills föraren
             // svarat, bara med platsen på och aldrig under körning.
@@ -437,8 +436,11 @@ struct RootView: View {
         .fullScreenCover(isPresented: $guardM.running) { KorlageView() }
         // Favoriter 2a (#817): notisen och raden på Redo öppnar fliken med dagens resor överst.
         .onChange(of: fav.visaFliken) { _, visa in if visa { tab = 1; fav.visaFliken = false } }
+        // Startsidans Planera resa och raden Planerad resa (DECISIONS #982): fliken Resor, som själv ställer markören eller öppnar resan.
+        .onChange(of: resplan.sokBegard) { _, _ in tab = 1 }
+        .onChange(of: resplan.resanBegard) { _, _ in tab = 1 }
         // Ett tryck på en varning från servern (DECISIONS #926): startsidan med kartan Nära dig. Ett erbjudande: bladet.
-        .onChange(of: notis.visaStart) { _, visa in if visa { tab = 0; hem += 1; notis.visaStart = false } }
+        .onChange(of: notis.visaStart) { _, visa in if visa { tab = 0; notis.visaStart = false } }
         .sheet(item: $notis.erbjudande) { ErbjudandeBlad(erbjudande: $0) }
     }
 }

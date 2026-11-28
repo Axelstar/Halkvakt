@@ -11,8 +11,6 @@ import CoreLocation
 import HalkvaktEngine
 
 struct VaktenView: View {
-    /// Ändras vid varje tryck på fliken Vakten (RootView): undersidorna stängs och startsidan visas (DECISIONS #874).
-    var hem = 0
     @State private var guardM = GuardManager.shared
     @State private var prefs = Prefs.shared
     @State private var fav = Favoriter.shared
@@ -22,12 +20,9 @@ struct VaktenView: View {
     @State private var plan = Resplan.shared
     @State private var plats: (lon: Double, lat: Double)?
     @State private var valdFara: String?   // DECISIONS #922: faran föraren tryckt på
-    @State private var visaPlanera = false
-    @State private var visaPlan = false
     @Environment(\.scenePhase) private var fas
 
     var body: some View {
-        // Kort #659: Planera en resa och den planerade resan glider in från höger, som sidorna under Favoriter.
         NavigationStack {
             ZStack {
                 Brand.bg.ignoresSafeArea()
@@ -43,12 +38,6 @@ struct VaktenView: View {
                 }
             }
             .toolbar(.hidden, for: .navigationBar)
-            .navigationDestination(isPresented: $visaPlanera) { PlaneraView() }
-            .navigationDestination(isPresented: $visaPlan) { PlaneradResaView() }
-        }
-        .onChange(of: hem) { _, _ in
-            visaPlanera = false
-            visaPlan = false
         }
         .task { await guardM.refreshSnapshot() }
         // Om igen när platstillståndet ändras: den som just svarat i iOS ruta ska få kartan över sitt område direkt.
@@ -114,7 +103,7 @@ struct VaktenView: View {
                     .background(Brand.yellow, in: Capsule())
                 }
                 .buttonStyle(PressScale())
-                Button { visaPlanera = true } label: {
+                Button { plan.begarSok() } label: {
                     Text("Planera resa").font(Typo.sans(16, .semibold)).lineLimit(1).minimumScaleFactor(0.85)
                         .foregroundStyle(Brand.text)
                         .frame(maxWidth: .infinity).frame(height: 56)
@@ -256,7 +245,7 @@ struct VaktenView: View {
 
     /// "PLANERAD RESA · Till Kristianstad · Avresa 15 nov. 07:15" — ett tryck öppnar resan med rapporten.
     private func planeradRad(_ p: Resplan.Plan) -> some View {
-        Button { visaPlan = true } label: {
+        Button { plan.begarResan() } label: {
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 6) {
                     MonoLabel(text: "Planerad resa")
@@ -274,13 +263,13 @@ struct VaktenView: View {
         .accessibilityHint("Öppnar den planerade resan")
     }
 
-    /// "1 RESA ATT SPARA · 34 km. Ge den ett namn i Favoriter." — ett tryck byter flik.
+    /// "1 RESA ATT SPARA · 34 km. Ge den ett namn under Resor." — ett tryck byter flik.
     private var attSpara: some View {
         Button { fav.visaFliken = true } label: {
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 6) {
                     MonoLabel(text: fav.dagens.count == 1 ? "1 resa att spara" : "\(fav.dagens.count) resor att spara")
-                    Text("\(FavoritNotis.kmText(fav.dagens.last?.km ?? 0)). Ge den ett namn i Favoriter.")
+                    Text("\(FavoritNotis.kmText(fav.dagens.last?.km ?? 0)). Ge den ett namn under Resor.")
                         .font(Typo.sans(14)).foregroundStyle(Brand.text2)
                 }
                 Spacer(minLength: 0)
@@ -290,7 +279,7 @@ struct VaktenView: View {
             .background(Brand.panel, in: RoundedRectangle(cornerRadius: 18))
         }
         .buttonStyle(.plain)
-        .accessibilityHint("Öppnar Favoriter")
+        .accessibilityHint("Öppnar Resor")
     }
 
     /// Brytaren av efter en lång resa: ett tryck slår på Spara resor. Resan som slutade samlades inte in och kan inte sparas.

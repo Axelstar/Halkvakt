@@ -42,6 +42,12 @@ final class Resplan: NSObject, MKLocalSearchCompleterDelegate {
 
     private(set) var forslag: [Forslag] = []
     private(set) var soksvar = Soksvar.inget
+    /// Startsidan ber fliken Resor om sökrutan eller om den planerade resan (DECISIONS #982). Räknare, så att flera lyssnare
+    /// kan följa samma begäran utan att någon nollställer den.
+    private(set) var sokBegard = 0
+    private(set) var resanBegard = 0
+    func begarSok() { sokBegard += 1 }
+    func begarResan() { resanBegard += 1 }
     private(set) var plan: Plan?
     private(set) var lage: Lage = .vilar
     private var traffar: [MKLocalSearchCompletion] = []
