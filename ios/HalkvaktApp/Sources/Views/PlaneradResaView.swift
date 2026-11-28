@@ -89,7 +89,9 @@ struct PlaneradResaView: View {
                         GreenToggleRow(title: "Påminn mig före avresan", sub: "En notis en kvart innan", isOn: $paminn)
                         if paminn {
                             DashedDivider()
-                            DatePicker("Avresa", selection: $avresa, in: Date.now..., displayedComponents: [.date, .hourAndMinute])
+                            // Tidigast en kvart och en minut fram: påminnelsen kommer en kvart före, och en tidigare tid går inte att sätta.
+                            // Utan gränsen stannar hjulet på ogiltiga tider på väg till den rätta (Axels inspelning 28/11).
+                            DatePicker("Avresa", selection: $avresa, in: Date.now.addingTimeInterval(AvreseNotis.foreS + 60)..., displayedComponents: [.date, .hourAndMinute])
                                 .font(Typo.sans(16, .medium)).foregroundStyle(Brand.text)
                                 .tint(Brand.green)
                                 .environment(\.locale, Locale(identifier: "sv_SE"))
