@@ -246,7 +246,7 @@ struct VaktenView: View {
     /// Kartan och de närmaste farorna. Utan något nära står bara kartan: rubriken har redan sagt det (DECISIONS #981).
     private func naraDig(_ nara: [NearbyItem]) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            NaraDigKarta(faror: guardM.hazards, plats: harPlats, valt: valdFara) { valj($0) }
+            NaraDigKarta(faror: guardM.hazards, plats: harPlats, valt: valdFara, vidTryck: { valj($0) }, hojd: nara.isEmpty ? 236 : 170)
             // Sagt där kartan står (DECISIONS #872): kartbilderna hämtas från Apple.
             Kartforklaring(sista: .du).padding(.top, 10).padding(.horizontal, 4)
             MonoLabel(text: "Kartan kommer från Apple", color: Brand.faint).padding(.top, 8).padding(.horizontal, 4)
