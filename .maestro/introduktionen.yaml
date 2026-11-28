@@ -1,18 +1,18 @@
 # Introduktionen för en ny användare (DECISIONS #979, #984): välkomstens bilder och steget om platsen.
-# Stannar före iOS ruta om platsen: den hör till telefonen, inte till appen.
+# Bilderna byts av sig själva, så flödet väntar på knappen och inte på en viss bild. Det stannar före iOS ruta om
+# platsen: den hör till telefonen, inte till appen.
 appId: se.halkvakt.app
 ---
 - launchApp:
     clearState: true
-- assertVisible: "Varnad innan du är framme"
-- takeScreenshot: bilder/intro-1-kartan
-- tapOn: "Varnad innan du är framme"
-- assertVisible: "En röst i bilen, inget att titta på"
-- takeScreenshot: bilder/intro-2-rosten
-- tapOn: "En röst i bilen, inget att titta på"
-- assertVisible: "Vi varnar för"
-- takeScreenshot: bilder/intro-3-ikonerna
-- assertVisible: "Kom igång"
+- extendedWaitUntil:
+    visible: "Kom igång"
+    timeout: 20000
+- takeScreenshot: bilder/intro-1-valkommen
+- extendedWaitUntil:
+    visible: "Vi varnar för"
+    timeout: 20000
+- takeScreenshot: bilder/intro-2-ikonerna
 - tapOn: "Kom igång"
 - assertVisible: "Nu slår vi på vakten"
-- takeScreenshot: bilder/intro-4-platsen
+- takeScreenshot: bilder/intro-3-platsen
