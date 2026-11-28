@@ -24,6 +24,19 @@ struct AlertEntry: Codable, Equatable, Hashable, Sendable {
     let id: String
 }
 
+/// Felsökningen (DECISIONS #987): vad GPS:en sa när en varning bestämdes, och hur länge rösten dröjde. Bara i telefonen, och
+/// ingen position. Visas under Betatest.
+struct Varningsspar: Codable, Equatable, Hashable, Sendable {
+    static let max = 20
+    let t: Date
+    let kind: String
+    let kmh: Double
+    let hojdM: Double?
+    let noggrM: Double
+    let alderS: Double
+    var sagdEfterS: Double?
+}
+
 enum AlertLog {
     static let max = 50
 

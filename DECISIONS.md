@@ -20249,3 +20249,30 @@ inget reglage.
 **Alternativ.** Två sparade resor, en åt varje håll: inget nytt att bygga, men två rader för samma pendling.
 
 **Stomdokument:** APP — sparade sökta resor åt båda hållen; FAV — hur en sökt resa sparas
+
+## #987 (28/11 2026) Ej bil, ihågkommet: vakten tiger tills telefonen har rört sig som en bil igen (iPhone; kort #679)
+**Beslut.** Axel 28/11: *"Yes i think this make good sense"*. Bakgrunden: Axel fick en talad varning 27/11 omkring en kvart in i
+en flygning, i luften, med flygläget på och utan wifi, och är nästan säker på att telefonen hade det nyaste bygget. Regeln från
+DECISIONS #963 (tyst över 160 km/h eller 1 500 m) fanns alltså i bygget, och iPhone-appen ger redan motorn bara lägen med god
+noggrannhet och telefonens egen fart. **Vilket hål varningen kom genom är inte känt.** Proven flyger Arlanda till Malmö i sju
+varianter av dålig GPS och tiger i alla; de säger inget om vad en riktig telefon i en kabin lämnar.
+1. **Regeln minns** (`Ejbil`, framför motorn i `GuardManager`). Två goda lägen i rad som inte kan vara en bil låser den: fart
+   över 160 km/h, giltig höjd över 1 500 m, eller en förflyttning sedan ett läge 30 till 120 sekunder tidigare som är längre än
+   en bil i 160 km/h hinner, vad fartvärdet än säger. Låst tiger vakten tills telefonen har gett två minuter av goda lägen med
+   egen fart och utan sådant bevis, utan glapp över tio sekunder, eller tills två timmar har gått. Tidpunkten sparas, så att
+   regeln håller över en omstart av appen.
+2. **En replik som fått vänta sägs inte.** Börjar rösten mer än tio sekunder efter att varningen bestämdes avbryts den.
+3. **Felsökningen.** Med varje varning sparas vad GPS:en sa: fart, höjd, noggrannhet, lägets ålder och hur länge rösten dröjde.
+   De tjugo senaste, bara i telefonen, ingen position, visade under Betatest. Nästa gång går det att se i stället för att gissa.
+
+**Vad det kostar.** Den som kliver av ett flyg eller ett snabbtåg och kör iväg får ingen varning de första två minuterna. En
+bil låser inte regeln: ett kastat läge eller ett udda fartvärde är ett läge, och det krävs två i rad.
+
+**Inte gjort.** Android har inte regeln, repliken eller felsökningen. Motorn och dess vektorer är orörda. Ett flygplan som
+rullar på marken i bilfart intill en väg kan fortfarande få en varning; det kräver flygplatsernas ytor och är inte byggt.
+Talen (två i rad, 30 till 120 s, två minuter, tio sekunder, två timmar) är startvärden och inte mätta.
+
+**Alternativ.** Bara felsökningen, och vänta på nästa flygning: inget ändras för föraren, men felet får hända en gång till.
+Ändra motorn i alla tre språken: rätt plats på sikt, men vektorerna och skuggmotorn följer med.
+
+**Stomdokument:** APP — när vakten tiger och felsökningen under Betatest; SYS — ej bil framför motorn på iPhone
