@@ -20276,3 +20276,20 @@ Talen (två i rad, 30 till 120 s, två minuter, tio sekunder, två timmar) är s
 Ändra motorn i alla tre språken: rätt plats på sikt, men vektorerna och skuggmotorn följer med.
 
 **Stomdokument:** APP — när vakten tiger och felsökningen under Betatest; SYS — ej bil framför motorn på iPhone
+
+## #988 (28/11 2026) På en flygbana talar vakten inte (iPhone; kort #679)
+**Beslut.** Axel 28/11: *"Yes lets do all off this"*, om det som stod kvar på iPhone efter DECISIONS #987, där en av punkterna
+var att ett flygplan som rullar på marken i bilfart intill en väg fortfarande kan få en varning. Ett gott läge inom 300 m från
+mittlinjen på en flygbana räknas inte som ett läge på en väg: motorn får det inte, och självstarten räknar det inte som bilfart.
+
+**Underlaget.** Banornas ändpunkter ur OurAirports (public domain) för flygplatser i Sverige med reguljär trafik: 49 öppna banor
+på 38 flygplatser, i `data/flygplatser/flygbanor.json` och i appen. Inget lämnar telefonen.
+
+**Vad det inte täcker.** Plattorna vid terminalen och taxibanorna längre ut än 300 m från en bana. 300 m är ett startvärde och
+inte mätt: det ska rymma banan och en parallell taxibana, och det är inte prövat mot vägnätet om någon allmän väg går så nära en
+bana. Flygplatser utan reguljär trafik och flygplatser utomlands står inte med; farorna finns bara i Sverige. Android har det inte.
+
+**Alternativ.** Flygplatsernas hela ytor ur OpenStreetMap: täcker plattorna också, men större fil och en licens med
+källhänvisning i appen. En cirkel kring varje flygplats: tystar vägarna intill, som E4 vid Arlanda.
+
+**Stomdokument:** APP — när vakten tiger; SYS — ej bil framför motorn på iPhone

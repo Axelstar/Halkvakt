@@ -368,6 +368,8 @@ Först då skickas något.
 **Från 0.4.3, efter (82) (DECISIONS #981 punkt 2): startsidans karta.** Kartans mitt flyttas en bit från föraren mot landets
 mitt, så att Sverige fyller bilden, och föraren och den närmaste faran är kvar i bild. Kartan är högre när inget är rapporterat
 nära och lägre när listan *Nära dig just nu* står under den. Ingen skärmbild än.
+**Från 0.4.3, efter (82) (DECISIONS #988), på iPhone: på en flygbana talar vakten inte.** Inom 300 m från en flygbana på en
+svensk flygplats med reguljär trafik säger rösten ingenting och vakten startar inte av sig själv. Inget syns på skärmen.
 
 **Från 0.4.3, efter (82) (DECISIONS #987), på iPhone: vakten minns att telefonen inte är i en bil.** Efter två lägen i rad som
 inte kan vara en bil (över 160 km/h, över 1 500 m, eller en förflyttning ingen bil hinner) tiger rösten tills telefonen har gett
