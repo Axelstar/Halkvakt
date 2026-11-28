@@ -14,5 +14,6 @@ appId: se.halkvakt.app
     timeout: 20000
 - takeScreenshot: bilder/intro-2-ikonerna
 - tapOn: "Kom igång"
-- assertVisible: "Nu slår vi på vakten"
+# Maestro ger appen platsen när den startar, så steget kan visa att platsen redan är klar.
+- assertVisible: "Nu slår vi på vakten|Platsen är klar"
 - takeScreenshot: bilder/intro-3-platsen

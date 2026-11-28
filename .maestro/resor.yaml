@@ -6,6 +6,9 @@ appId: se.halkvakt.app
     clearState: true
     arguments:
       fotostudio_facit: "1"
+- extendedWaitUntil:
+    visible: "VAKTEN"
+    timeout: 20000
 - takeScreenshot: bilder/start-1-overst
 - scrollUntilVisible:
     element: "Planera resa"
@@ -15,8 +18,4 @@ appId: se.halkvakt.app
 - assertVisible: "Vart ska du?"
 - assertVisible: "Sök adress eller ort"
 - takeScreenshot: bilder/resor-1-fran-startsidan
-- hideKeyboard
-- scrollUntilVisible:
-    element: "Fråga om jag vill spara resan"
-    direction: DOWN
-- takeScreenshot: bilder/resor-2-reglaget
+- assertVisible: "Fråga om jag vill spara resan"
