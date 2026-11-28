@@ -45,11 +45,13 @@ struct FavoriterView: View {
                         }
                     }
 
-                    if fav.rutter.isEmpty {
+                    if fav.rutter.isEmpty && !sokresor.resor.isEmpty {
+                        // Sökta resor finns: den tomma texten om körda resor behövs inte.
+                    } else if fav.rutter.isEmpty {
                         MonoLabel(text: "Dina resor").padding(.top, 28).padding(.bottom, 10).padding(.horizontal, 4)
                         Text(fav.erbjud
-                             ? "Inga sparade resor än. Kör en resa, så frågar appen efteråt om du vill spara den."
-                             : "Inga sparade resor än. Slå på reglaget, så frågar appen efter en resa om du vill spara vägen du körde.")
+                             ? "Inga sparade resor än. Sök en adress och spara resan, eller kör en resa så frågar appen efteråt om du vill spara den."
+                             : "Inga sparade resor än. Sök en adress och spara resan, eller slå på reglaget så frågar appen efter en resa om du vill spara vägen du körde.")
                             .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2)
                             .padding(.horizontal, 4)
                     } else {
@@ -80,7 +82,7 @@ struct FavoriterView: View {
                                         Button { oppna(r) } label: {
                                             VStack(alignment: .leading, spacing: 3) {
                                                 Text(r.namn).font(Typo.sans(16, .medium)).foregroundStyle(Brand.text)
-                                                Text("ÖPPNA FÖR ATT SE LÄGET").font(Typo.mono(11)).tracking(1.1).foregroundStyle(Brand.dim)
+                                                Text(r.fran == nil ? "ÖPPNA FÖR ATT SE LÄGET" : "BÅDA HÅLLEN · ÖPPNA FÖR ATT SE LÄGET").font(Typo.mono(11)).tracking(1.1).foregroundStyle(Brand.dim)
                                             }
                                             .frame(maxWidth: .infinity, minHeight: 64, alignment: .leading)
                                             .contentShape(Rectangle())
@@ -110,7 +112,7 @@ struct FavoriterView: View {
 
                     VStack(alignment: .leading, spacing: 6) {
                         MonoLabel(text: "När du söker")
-                        Text("Apple slår upp adressen och räknar ut vägen, och får då veta var du är och vart du ska. Det gäller också när du öppnar en sparad sökt resa. Halkvakt får aldrig veta det.")
+                        Text("Apple slår upp adressen och räknar ut vägen, och får då veta var du är och vart du ska. Det gäller också när du sparar en sökt resa och när du öppnar den. Halkvakt får aldrig veta det.")
                             .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2)
                     }
                     .padding(.top, 24).padding(.horizontal, 4)
@@ -171,7 +173,7 @@ struct FavoriterView: View {
     /// En sparad sökt resa: adressen söks igen och resans skärm öppnas. Sökrutan visar Räknar ut vägen och felet om det inte går.
     private func oppna(_ r: Sokresa) {
         guard plan.lage != .soker else { return }
-        Task { if await plan.planera(sokt: r.fraga, namn: r.namn) { visaResan = true } }
+        Task { if await plan.planera(sokt: r.fraga, fran: r.fran) { visaResan = true } }
     }
 
     private func rad(_ r: SparadRutt, divider: Bool) -> some View {

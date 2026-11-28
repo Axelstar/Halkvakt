@@ -64,5 +64,6 @@ object Nearby {
 
     fun distText(m: Double): String =
         if (m < 950) "${((m / 50).roundToInt() * 50).coerceAtLeast(50)} m"
+        else if (m >= 9950) "%.0f km".format(m / 1000)   // from 10 km without a decimal, as on iPhone
         else "%.1f km".format(m / 1000).replace('.', ',')
 }
