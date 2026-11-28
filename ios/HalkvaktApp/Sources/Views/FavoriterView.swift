@@ -8,6 +8,8 @@ import HalkvaktEngine
 
 struct FavoriterView: View {
     let synlig: Bool
+    /// Räknas upp när föraren trycker på fliken medan den visas: tillbaka till listan.
+    var hem = 0
     @State private var fav = Favoriter.shared
     @State private var rapporten = Rapporten.shared
     @State private var fragaTaBortAlla = false
@@ -153,6 +155,10 @@ struct FavoriterView: View {
         .onChange(of: plan.resanBegard) { _, _ in
             vag = NavigationPath()
             visaResan = true
+        }
+        .onChange(of: hem) { _, _ in
+            vag = NavigationPath()
+            visaResan = false
         }
         // När fliken visas, och när en resa sparas eller tas bort medan den visas.
         .task(id: synlig ? fav.rutter.map(\.id) : []) {

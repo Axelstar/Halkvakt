@@ -409,12 +409,13 @@ struct RootView: View {
     @State private var plats = Platsdelning.shared
     @State private var notis = Servernotis.shared
     @State private var tangentbord = false
+    @State private var resorHem = 0
     @Environment(\.scenePhase) private var fas
     var body: some View {
         ZStack(alignment: .bottom) {
             // Flikarna lever hela tiden, som i TabView: ingen omladdning och ingen tappad undersida vid flikbyte.
             VaktenView().opacity(tab == 0 ? 1 : 0).allowsHitTesting(tab == 0).accessibilityHidden(tab != 0)
-            FavoriterView(synlig: tab == 1).opacity(tab == 1 ? 1 : 0).allowsHitTesting(tab == 1).accessibilityHidden(tab != 1)
+            FavoriterView(synlig: tab == 1, hem: resorHem).opacity(tab == 1 ? 1 : 0).allowsHitTesting(tab == 1).accessibilityHidden(tab != 1)
             InstallningarView().opacity(tab == 2 ? 1 : 0).allowsHitTesting(tab == 2).accessibilityHidden(tab != 2)
             LinearGradient(colors: [Brand.bg.opacity(0), Brand.bg], startPoint: .top, endPoint: .init(x: 0.5, y: 0.6))
                 .frame(height: 130).allowsHitTesting(false)
@@ -424,7 +425,9 @@ struct RootView: View {
             // Flikraden står kvar längst ner när tangentbordet kommer upp (Eget namn i Spara resan?) och göms bakom det,
             // i stället för att flyta upp över innehållet (Axels skärmbild 24/10). Under Resor flöt den ändå upp över
             // sökningens text (Maestros skärmbild 28/11), så den göms också medan tangentbordet är uppe.
-            FloatingTabBar(tab: $tab).padding(.bottom, 8)
+            // Ett tryck på Resor när fliken redan visas går hem till listan, som i en vanlig flikrad (Axels inspelning 28/11:
+            // trycket gjorde ingenting från en planerad resa).
+            FloatingTabBar(tab: Binding(get: { tab }, set: { if $0 == 1 && tab == 1 { resorHem += 1 }; tab = $0 })).padding(.bottom, 8)
                 .ignoresSafeArea(.keyboard, edges: .bottom)
                 .opacity(tangentbord ? 0 : 1).allowsHitTesting(!tangentbord)
         }
