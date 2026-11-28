@@ -6,13 +6,17 @@ appId: se.halkvakt.app
     clearState: true
     arguments:
       fotostudio_facit: "1"
-- assertVisible: "Planera resa"
-- takeScreenshot: bilder/start
+- takeScreenshot: bilder/start-1-overst
+- scrollUntilVisible:
+    element: "Planera resa"
+    direction: DOWN
+- takeScreenshot: bilder/start-2-knapparna
 - tapOn: "Planera resa"
 - assertVisible: "Vart ska du?"
 - assertVisible: "Sök adress eller ort"
-- takeScreenshot: bilder/resor-fran-startsidan
-- tapOn: "Inställningar"
-- tapOn: "Resor"
-- assertVisible: "Fråga om jag vill spara resan"
-- takeScreenshot: bilder/resor
+- takeScreenshot: bilder/resor-1-fran-startsidan
+- hideKeyboard
+- scrollUntilVisible:
+    element: "Fråga om jag vill spara resan"
+    direction: DOWN
+- takeScreenshot: bilder/resor-2-reglaget
