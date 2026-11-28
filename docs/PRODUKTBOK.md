@@ -364,6 +364,12 @@ förvald från (61) (DECISIONS #920; i (59) var *Nej tack* förvald) och *Forts�
 företag som betalar Halkvakt · *De får* aldrig veta vem eller var du är · *Ändra* när du vill, under Integritet. Knappen *Fortsätt*.
 Först då skickas något.
 
+**Från 0.4.3, efter (81) (DECISIONS #985): en sökt resa går att spara.** Under en planerad resa står knappen *Spara resan*. Ett
+tryck öppnar en ruta med namnet (adressen är förvald) och raden *Adressen sparas i telefonen. Vägen hämtas från Apple varje gång
+du öppnar resan.* Sparad resa visar *Sparad under Resor*. I fliken *Resor* står listan *Sökta resor*, högst fem, med namnet och
+raden *Öppna för att se läget*; ett tryck söker adressen igen och öppnar resan, och krysset tar bort den efter en fråga. Texten
+*När du söker* säger att Apple får veta var du är och vart du ska också när en sparad sökt resa öppnas. Ingen skärmbild än.
+
 **Från 0.4.3, efter (81) (DECISIONS #979, #980): frågan till den som redan har appen är ett blad, och valet om erbjudanden är
 borta.** Skärmen som täckte appen finns inte längre. Första gången appen öppnas efter uppdateringen, med platsen på, kommer ett
 blad över startsidan med etiketten *Nytt i Halkvakt* och samma innehåll som introduktionens fråga: rubriken *Vill du ha en varning

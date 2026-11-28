@@ -15,6 +15,8 @@ struct FavoriterView: View {
     @State private var nyttNamn = ""
     // Kort #659 (DECISIONS #982): sökrutan och den planerade resan bor i fliken. Startsidan ber om dem genom Resplan.
     @State private var plan = Resplan.shared
+    @State private var sokresor = Sokresor.shared
+    @State private var taBortSokt: Sokresa?
     @State private var vag = NavigationPath()
     @State private var visaResan = false
     @State private var fokusera = 0
@@ -65,6 +67,40 @@ struct FavoriterView: View {
                         .padding(.top, 12)
                     }
 
+                    // Sparade sökta resor (DECISIONS #985): namnet och adressen. Vägen hämtas från Apple när resan öppnas.
+                    if !sokresor.resor.isEmpty {
+                        MonoLabel(text: "Sökta resor · \(sokresor.resor.count) av \(Sokresor.max)")
+                            .padding(.top, 28).padding(.bottom, 10).padding(.horizontal, 4)
+                        RowPanel {
+                            ForEach(Array(sokresor.resor.enumerated()), id: \.element.id) { i, r in
+                                VStack(spacing: 0) {
+                                    HStack(spacing: 12) {
+                                        Button { oppna(r) } label: {
+                                            VStack(alignment: .leading, spacing: 3) {
+                                                Text(r.namn).font(Typo.sans(16, .medium)).foregroundStyle(Brand.text)
+                                                Text("ÖPPNA FÖR ATT SE LÄGET").font(Typo.mono(11)).tracking(1.1).foregroundStyle(Brand.dim)
+                                            }
+                                            .frame(maxWidth: .infinity, minHeight: 64, alignment: .leading)
+                                            .contentShape(Rectangle())
+                                        }
+                                        .disabled(plan.lage == .soker)
+                                        Button { taBortSokt = r } label: {
+                                            Image(systemName: "xmark").font(.system(size: 12, weight: .semibold)).foregroundStyle(Brand.dim)
+                                                .frame(width: 44, height: 44).contentShape(Rectangle())
+                                        }
+                                        .accessibilityLabel("Ta bort \(r.namn)")
+                                    }
+                                    if i < sokresor.resor.count - 1 { DashedDivider() }
+                                }
+                            }
+                        }
+                        .confirmationDialog("Ta bort resan?", isPresented: Binding(get: { taBortSokt != nil }, set: { if !$0 { taBortSokt = nil } }),
+                                            titleVisibility: .visible) {
+                            Button("Ta bort", role: .destructive) { if let r = taBortSokt { sokresor.taBort(id: r.id) }; taBortSokt = nil }
+                            Button("Avbryt", role: .cancel) { taBortSokt = nil }
+                        }
+                    }
+
                     RowPanel {
                         GreenToggleRow(title: "Fråga om jag vill spara resan", sub: "Efter en resa. Högst fem resor.", isOn: $fav.erbjud)
                     }
@@ -72,7 +108,7 @@ struct FavoriterView: View {
 
                     VStack(alignment: .leading, spacing: 6) {
                         MonoLabel(text: "När du söker")
-                        Text("Apple slår upp adressen och räknar ut vägen, och får då veta var du är och vart du ska. Halkvakt får aldrig veta det.")
+                        Text("Apple slår upp adressen och räknar ut vägen, och får då veta var du är och vart du ska. Det gäller också när du öppnar en sparad sökt resa. Halkvakt får aldrig veta det.")
                             .font(Typo.sans(14)).lineSpacing(3).foregroundStyle(Brand.text2)
                     }
                     .padding(.top, 24).padding(.horizontal, 4)
@@ -124,6 +160,12 @@ struct FavoriterView: View {
             fav.rensaGamla()
             await rapporten.uppdatera()
         }
+    }
+
+    /// En sparad sökt resa: adressen söks igen och resans skärm öppnas. Sökrutan visar Räknar ut vägen och felet om det inte går.
+    private func oppna(_ r: Sokresa) {
+        guard plan.lage != .soker else { return }
+        Task { if await plan.planera(sokt: r.fraga, namn: r.namn) { visaResan = true } }
     }
 
     private func rad(_ r: SparadRutt, divider: Bool) -> some View {

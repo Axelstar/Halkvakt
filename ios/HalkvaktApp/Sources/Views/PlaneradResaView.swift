@@ -9,6 +9,10 @@ import HalkvaktEngine
 
 struct PlaneradResaView: View {
     @State private var plan = Resplan.shared
+    @State private var sokresor = Sokresor.shared
+    @State private var sparar = false
+    @State private var sparnamn = ""
+    @State private var sparfel: String?
     @State private var rapport: Rapporten.Planerad?
     @State private var strackor: [Resstracka] = []
     @State private var kum: [Double] = []
@@ -117,8 +121,37 @@ struct PlaneradResaView: View {
                         ovrigt(rapport)
                     }
 
+                    // Spara resan (DECISIONS #982, #985): namnet och adressen sparas, inte vägen. Inte för en resa utan adress.
+                    if let fraga = p.fraga {
+                        VStack(spacing: 8) {
+                            if sokresor.finns(fraga) {
+                                MonoLabel(text: "Sparad under Resor", color: Brand.greenText)
+                            } else {
+                                NeutralPill(title: "Spara resan") { sparnamn = p.mal; sparar = true }
+                                if let sparfel {
+                                    Text(sparfel).font(Typo.sans(13)).foregroundStyle(Brand.yellow).multilineTextAlignment(.center)
+                                }
+                            }
+                        }
+                        .frame(maxWidth: .infinity).padding(.top, 24)
+                        .alert("Spara resan", isPresented: $sparar) {
+                            TextField("Namn", text: $sparnamn)
+                            Button("Spara") {
+                                switch sokresor.spara(namn: sparnamn, fraga: fraga) {
+                                case .sparad: sparfel = nil
+                                case .fullt: sparfel = "Du har \(Sokresor.max) sparade sökta resor. Ta bort en under Resor för att spara fler."
+                                case .fel: sparfel = "Resan gick inte att spara."
+                                }
+                            }
+                            Button("Avbryt", role: .cancel) {}
+                        } message: {
+                            Text("Adressen sparas i telefonen. Vägen hämtas från Apple varje gång du öppnar resan.")
+                        }
+                    }
+
                     VStack(spacing: 4) {
-                        MonoLabel(text: p.avresa == nil ? "Resan sparas inte" : "Avresa \(p.avresa?.dagOchKlockslag ?? "")")
+                        MonoLabel(text: p.avresa == nil ? (p.fraga != nil && sokresor.finns(p.fraga ?? "") ? "Vägen sparas inte" : "Resan sparas inte")
+                                                        : "Avresa \(p.avresa?.dagOchKlockslag ?? "")")
                         // En lugn resa visar ingen karta, men vägen är ändå Apples (Resplan).
                         MonoLabel(text: "Vägen kommer från Apple", color: Brand.faint)
                         if p.avresa != nil {
