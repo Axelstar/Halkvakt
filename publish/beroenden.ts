@@ -115,6 +115,10 @@ export const KARTAN: Beroende[] = [
     matar: "utskicket av notiser till iPhone ur push_utskick (app-push, DECISIONS #924)",
     brister: "notiserna når inte telefonerna; raden i push_utskick får antalet fallna och Apples svar. Varningarna i appen påverkas inte",
     bevakad: "", signal: "OKÄND" },
+  // Maestros installationsskript (.github/workflows/maestro.yml, DECISIONS #984). Hämtas bara när flödet körs med knappen.
+  { vard: "get.maestro.mobile.dev", roll: "verktyg",
+    matar: "verktyget som kör appens flöden i en iPhone-simulator (maestro.yml, DECISIONS #984)",
+    brister: "flödena körs inte och ger inga skärmbilder; appen och byggena påverkas inte", bevakad: "", signal: "OKÄND" },
   // Googles adressökning och ruttberäkning för Planera resa i Android-appen (Vagtjanst.kt, DECISIONS #870, #941). Anropas
   // bara när föraren själv söker; Halkvakts servrar är inte med.
   { vard: "places.googleapis.com", roll: "verktyg",
