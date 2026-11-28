@@ -226,12 +226,12 @@ fun GreenToggleRow(title: String, sub: String?, checked: Boolean, onChange: (Boo
 fun Plinth(res: Int, height: Dp = 220.dp) =
     Image(painterResource(res), null, modifier = Modifier.fillMaxWidth().height(height))
 
-/** Den flytande flikraden: Vakten / Favoriter / Inställningar, 104 × 52 dp per flik — tre i bredd ryms på 360 dp (kort #357). */
+/** Den flytande flikraden: Vakten / Resor / Inställningar, 104 × 52 dp per flik — tre i bredd ryms på 360 dp (kort #357). */
 @Composable
 fun FloatingTabBar(tab: Int, onTab: (Int) -> Unit) {
     Row(Modifier.background(Brand.panel, RoundedCornerShape(32.dp)).border(1.dp, Line, RoundedCornerShape(32.dp)).padding(4.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-        listOf("VAKTEN", "FAVORITER", "INSTÄLLNINGAR").forEachIndexed { i, title ->
+        listOf("VAKTEN", "RESOR", "INSTÄLLNINGAR").forEachIndexed { i, title ->
             Column(Modifier.size(104.dp, 52.dp).background(if (tab == i) Raised else Color.Transparent, RoundedCornerShape(26.dp))
                 .clickable(role = Role.Tab) { onTab(i) }.semantics { selected = tab == i },
                 horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
@@ -285,11 +285,11 @@ fun RedoScreen(activity: MainActivity, planera: () -> Unit = {}, overst: @Compos
         overst()
         if (spara) Box(Modifier.padding(top = 14.dp)) {
             Row(Modifier.fillMaxWidth().background(Brand.panel, RoundedCornerShape(18.dp))
-                .clickable(role = Role.Button, onClickLabel = "Öppnar Favoriter") { Favoriter.visaFliken.value = true }
+                .clickable(role = Role.Button, onClickLabel = "Öppnar Resor") { Favoriter.visaFliken.value = true }
                 .padding(horizontal = 20.dp, vertical = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     MonoLabel(if (dagens.size == 1) "1 resa att spara" else "${dagens.size} resor att spara")
-                    Text("${FavoritNotis.km(dagens.last().km)}. Ge den ett namn i Favoriter.", color = Text2, fontFamily = Typo.sans, fontSize = 14.sp)
+                    Text("${FavoritNotis.km(dagens.last().km)}. Ge den ett namn under Resor.", color = Text2, fontFamily = Typo.sans, fontSize = 14.sp)
                 }
                 Text("›", color = Brand.dim, fontFamily = Typo.sans, fontSize = 20.sp)
             }
@@ -715,7 +715,7 @@ private fun Undersida(sida: Sida, activity: MainActivity, open: (Sida) -> Unit, 
                     // #772: räknaren är alltid på och står här — texten "inget skickas" var sann till 0.3.15. #787: de sex områdena.
                     Text("Appen räknar anonymt vilka behörigheter som väljs, hur ofta och ungefär hur länge vakten är på, vilka varningar som sägs, vilka inställningar som ändras och vad som går fel. Ett ord per händelse, med appens version. Aldrig var du är, hur långt du kör eller vem du är.",
                         color = Text2, fontFamily = Typo.sans, fontSize = 14.sp, lineHeight = 21.sp)
-                    Text("Slår du på Erbjud att spara resor under Favoriter sparas vägarna du väljer, bara i telefonen och aldrig i en säkerhetskopia. Du tar bort dem där.",
+                    Text("Slår du på Fråga om jag vill spara resan under Resor sparas vägarna du väljer, bara i telefonen och aldrig i en säkerhetskopia. Du tar bort dem där.",
                         color = Text2, fontFamily = Typo.sans, fontSize = 14.sp, lineHeight = 21.sp)
                 }
                 Spacer(Modifier.height(10.dp))

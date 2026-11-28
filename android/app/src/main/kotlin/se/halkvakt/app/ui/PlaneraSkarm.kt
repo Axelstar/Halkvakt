@@ -5,6 +5,8 @@ package se.halkvakt.app.ui
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -52,28 +54,28 @@ private const val SOKPAUS_MS = 350L
 /** Så många tecken innan Google får den första frågan. Varje fråga om förslag räknas och kostar efter gratisdelen (28/11). */
 private const val SOK_MINST = 3
 
+/**
+ * Sökrutan överst i fliken Resor (DECISIONS #982): fältet, förslagen och felen. `fokusera` ställer markören i fältet, när
+ * föraren kommer från Planera resa på startsidan; `klar` öppnar den planerade resan.
+ */
 @Composable
-fun PlaneraSkarm(activity: MainActivity, back: () -> Unit, klar: () -> Unit) {
+fun Resesok(activity: MainActivity, fokusera: Boolean, fokuserad: () -> Unit, klar: () -> Unit) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
     var text by rememberSaveable { mutableStateOf("") }
     val forslag by Resplan.forslag.collectAsStateWithLifecycle()
     val lage by Resplan.lage.collectAsStateWithLifecycle()
+    val fokus = remember { FocusRequester() }
+    LaunchedEffect(fokusera) { if (fokusera) { fokus.requestFocus(); fokuserad() } }
     LaunchedEffect(text) {
         delay(SOKPAUS_MS)
         Resplan.sok(ctx, if (text.trim().length < SOK_MINST) "" else text)
     }
-    Column(Modifier.fillMaxSize().background(Brand.bg).verticalScroll(rememberScrollState()).imePadding().padding(horizontal = 24.dp)
-        .padding(top = 8.dp, bottom = 150.dp)) {
-        Tillbaka("← VAKTEN", back)
-        Text("Vart ska du?", color = Brand.text, fontFamily = Typo.sans, fontWeight = FontWeight.SemiBold, fontSize = 32.sp,
-            letterSpacing = (-0.025).em, modifier = Modifier.padding(top = 8.dp))
-        Text("Se läget längs vägen innan du åker.", color = Brand.text2, fontFamily = Typo.sans, fontSize = 15.sp,
-            modifier = Modifier.padding(top = 10.dp))
+    Column {
         BasicTextField(text, { text = it }, singleLine = true, cursorBrush = SolidColor(Brand.yellow),
             textStyle = TextStyle(color = Brand.text, fontFamily = Typo.sans, fontSize = 17.sp),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-            modifier = Modifier.fillMaxWidth().padding(top = 24.dp).background(Brand.panel, RoundedCornerShape(14.dp))
+            modifier = Modifier.fillMaxWidth().focusRequester(fokus).background(Brand.panel, RoundedCornerShape(14.dp))
                 .padding(horizontal = 16.dp, vertical = 16.dp),
             decorationBox = { falt ->
                 Box { if (text.isEmpty()) Text("Sök adress eller ort", color = Brand.dim, fontFamily = Typo.sans, fontSize = 17.sp); falt() }
@@ -90,7 +92,7 @@ fun PlaneraSkarm(activity: MainActivity, back: () -> Unit, klar: () -> Unit) {
             RowPanel {
                 forslag.forEachIndexed { i, f ->
                     Column(Modifier.fillMaxWidth().heightIn(min = 56.dp)
-                        .clickable(role = Role.Button) { scope.launch { if (Resplan.planera(ctx, f, activity.lastLoc.value)) klar() } }
+                        .clickable(role = Role.Button) { scope.launch { if (Resplan.planera(ctx, f, activity.lastLoc.value)) { text = ""; klar() } } }
                         .padding(vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(3.dp)) {
                         Text(f.titel, color = Brand.text, fontFamily = Typo.sans, fontWeight = FontWeight.Medium, fontSize = 16.sp,
                             maxLines = 1, overflow = TextOverflow.Ellipsis)
@@ -103,10 +105,17 @@ fun PlaneraSkarm(activity: MainActivity, back: () -> Unit, klar: () -> Unit) {
             // Googles krav: förslagen bär deras namn när de inte står på en karta.
             Text("Google Maps", color = Brand.text2, fontSize = 12.sp, modifier = Modifier.padding(top = 10.dp, start = 4.dp))
         }
-        MonoLabel("När du söker", modifier = Modifier.padding(top = 28.dp, bottom = 10.dp, start = 4.dp))
+    }
+}
+
+/** Vad som går till Google när föraren söker: sagt i fliken, där sökrutan står (DECISIONS #941). */
+@Composable
+fun NarDuSoker() {
+    Column(Modifier.padding(top = 24.dp, start = 4.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        MonoLabel("När du söker")
         Text("Det du skriver går till Google, som föreslår platser. När du väljer en plats får Google veta var du är och vart du " +
             "ska, för att räkna ut vägen. Halkvakt får inget av det: läget längs vägen räknas ut i telefonen.",
-            color = Brand.dim, fontFamily = Typo.sans, fontSize = 14.sp, lineHeight = 21.sp, modifier = Modifier.padding(horizontal = 4.dp))
+            color = Brand.text2, fontFamily = Typo.sans, fontSize = 14.sp, lineHeight = 21.sp)
     }
 }
 
@@ -141,7 +150,7 @@ fun PlaneradResaSkarm(activity: MainActivity, back: () -> Unit) {
 
     Column(Modifier.fillMaxSize().background(Brand.bg).verticalScroll(rememberScrollState()).padding(horizontal = 24.dp)
         .padding(top = 8.dp, bottom = 150.dp)) {
-        Tillbaka("← TILLBAKA", back)
+        Tillbaka("← RESOR", back)
         val p = plan
         if (p == null) {
             Text("Ingen resa är planerad.", color = Brand.text2, fontFamily = Typo.sans, fontSize = 15.sp, modifier = Modifier.padding(top = 28.dp))

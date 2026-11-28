@@ -86,12 +86,12 @@ class FavoritSvarReceiver : BroadcastReceiver() {
                     RuttLager.Svar.SPARAD -> {
                         val kvar = lager.dagens.value.size
                         FavoritNotis.kvitto(ctx, "Sparad som ${namn.ifEmpty { v?.let(Favoriter::datumnamn) ?: "Resa" }}",
-                            "Du ser läget längs den under Favoriter." +
+                            "Du ser läget längs den under Resor." +
                                 if (kvar > 0) " $kvar ${if (kvar == 1) "resa" else "resor"} till i dag att spara." else "")
                     }
                     RuttLager.Svar.FULLT -> FavoritNotis.kvitto(ctx, "Resan sparades inte",
-                        "Du har redan fem resor. Ta bort en under Favoriter, så står dagens resor kvar där.")
-                    RuttLager.Svar.FEL -> FavoritNotis.kvitto(ctx, "Resan sparades inte", "Försök igen under Favoriter.")
+                        "Du har redan fem resor. Ta bort en under Resor, så står dagens resor kvar där.")
+                    RuttLager.Svar.FEL -> FavoritNotis.kvitto(ctx, "Resan sparades inte", "Försök igen under Resor.")
                 }
             }
             FavoritNotis.ACTION_SLANG -> { lager.slang(id); FavoritNotis.taBort(ctx) }
