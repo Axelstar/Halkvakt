@@ -50,7 +50,10 @@ jobs:
           export PATH="$HOME/.maestro/bin:$PATH"
           maestro --version
           mkdir -p ut && cd ut
-          maestro --device "$UDID" test ../.maestro --format junit --output rapport.xml
+          # Maestros drivare i simulatorn hann inte starta på två minuter i körning 46096130854. Ge den fem, och ett försök till.
+          export MAESTRO_DRIVER_STARTUP_TIMEOUT=300000
+          maestro --device "$UDID" test ../.maestro --format junit --output rapport.xml \
+            || { echo "andra försöket"; maestro --device "$UDID" test ../.maestro --format junit --output rapport.xml; }
       - name: Skärmbilderna och rapporten
         if: always()
         uses: actions/upload-artifact@v4
