@@ -365,6 +365,9 @@ förvald från (61) (DECISIONS #920; i (59) var *Nej tack* förvald) och *Forts�
 företag som betalar Halkvakt · *De får* aldrig veta vem eller var du är · *Ändra* när du vill, under Integritet. Knappen *Fortsätt*.
 Först då skickas något.
 
+**Från 0.4.3, efter (82) (DECISIONS #988), på iPhone: på en flygbana talar vakten inte.** Inom 300 m från en flygbana på en
+svensk flygplats med reguljär trafik säger rösten ingenting och vakten startar inte av sig själv. Inget syns på skärmen.
+
 **Från 0.4.3, efter (82) (DECISIONS #987), på iPhone: vakten minns att telefonen inte är i en bil.** Efter två lägen i rad som
 inte kan vara en bil (över 160 km/h, över 1 500 m, eller en förflyttning ingen bil hinner) tiger rösten tills telefonen har gett
 två minuter av lägen som kan vara en bil. En replik som fått vänta mer än tio sekunder på ljudet sägs inte. Under Betatest står

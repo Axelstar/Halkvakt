@@ -77,6 +77,9 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
     // Fartkollen (90 s, 30 km/h fem lägen i rad) bor i motorpaketet, där ci provar den (Fartkollen.swift, kort #359).
     private var fartkoll = Fartkollen()
     /// Ej bil, ihågkommet (DECISIONS #987). Tidpunkten överlever en omstart av appen; den säger inget om var telefonen är.
+    /// På en flygbana (DECISIONS #988): flygplatsernas banor ur appens egen tabell.
+    private let flygbanor = Bundle.main.url(forResource: "flygbanor", withExtension: "json")
+        .flatMap { try? Data(contentsOf: $0) }.flatMap { try? Flygbanor(data: $0) }
     private var ejbil = Ejbil(sedan: UserDefaults.standard.object(forKey: "k.ejbil.sedan") as? Double)
     /// Den här körningen startades av självväckningen (för kvittots körtid).
     private var autoWoke = false
@@ -446,11 +449,14 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
             if (ejbil.sedan == nil) != (fore == nil) || (ejbil.sedan ?? 0) - (fore ?? 0) >= 60 {
                 UserDefaults.standard.set(ejbil.sedan, forKey: "k.ejbil.sedan")
             }
+            // På en flygbana (DECISIONS #988): ett flygplan som rullar har bilfart på marken. Där talar vakten inte.
+            if flygbanor?.pa(lon: loc.coordinate.longitude, lat: loc.coordinate.latitude) == true { ejBil = true }
         }
         recomputeNearby()
 
         if fartkoll.active {
-            switch fartkoll.onFix(t: Date.now.timeIntervalSince1970, kmh: exact && loc.speed >= 0 ? loc.speed * 3.6 : nil,
+            // Ett läge på en flygbana räknas inte som bilfart (DECISIONS #988), så att självstarten inte tänder vakten där.
+            switch fartkoll.onFix(t: Date.now.timeIntervalSince1970, kmh: exact && !ejBil && loc.speed >= 0 ? loc.speed * 3.6 : nil,
                                   altitudeM: loc.verticalAccuracy > 0 ? loc.altitude : nil) {
             case .startGuard: endProbe(startGuard: true)
             case .sleep: endProbe(startGuard: false)
