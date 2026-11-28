@@ -28,7 +28,7 @@ enum Platsord {
     static let lofte = testbygge
         ? "Din exakta position skickas aldrig till Halkvakt av sig själv."
         : "Din position skickas aldrig till Halkvakt av sig själv."
-    static let nyttLofte = "Vi vet vilken kommun du är i, aldrig var du kör."
+    static let nyttLofte = "Din exakta position skickas inte till Halkvakt."
 }
 
 @MainActor
@@ -65,10 +65,25 @@ final class Platsdelning {
         .flatMap { try? Kommunkarta(data: $0) }
 
     var skaFraga: Bool { Self.tillaten && svar == nil }
+    /// Bladet med frågan (DECISIONS #979). RootView visar det; raden på startsidan, notisen och Din data öppnar det.
+    var visaBladet = false
+    /// Bladet har öppnats av sig självt en gång. Sedan öppnas det bara när föraren trycker.
+    @ObservationIgnored private var bladVisat: Bool {
+        get { d.bool(forKey: "k.plats.bladVisat") }
+        set { d.set(newValue, forKey: "k.plats.bladVisat") }
+    }
+    @ObservationIgnored private var notisSkickad: Bool {
+        get { d.bool(forKey: "k.plats.fragenotis") }
+        set { d.set(newValue, forKey: "k.plats.fragenotis") }
+    }
+    static let fragenotis = "halkvakt.foreresan.fragan"
 
     private init() {
         svar = d.string(forKey: "k.plats.svar").flatMap(Svar.init(rawValue:))
-        erbjudanden = d.bool(forKey: "k.plats.erbjudanden")
+        // Valet om erbjudanden är borta ur appen (DECISIONS #979 punkt 3). Den som sa ja i ett tidigare testbygge har ingen
+        // växlare att stänga av med längre, så värdet nollas och raden skickas om.
+        erbjudanden = false
+        if d.bool(forKey: "k.plats.erbjudanden") { d.set(false, forKey: "k.plats.erbjudanden"); andrad = true }
         id = d.string(forKey: "k.plats.id")
         kommun = d.string(forKey: "k.plats.kommun")
         kommunNamn = d.string(forKey: "k.plats.kommunNamn")
@@ -84,8 +99,27 @@ final class Platsdelning {
         uppdatera()
     }
 
-    /// Frågan visas igen (länken under Din data för den som sagt nej).
-    func fragaIgen() { svar = nil }
+    /// Appen öppnas av den som redan gått igenom introduktionen och inte fått frågan: bladet visas en gång (#979 fall 1).
+    func appenOppnad() {
+        guard skaFraga, !bladVisat else { return }
+        bladVisat = true
+        visaBladet = true
+        UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: [Self.fragenotis])
+    }
+
+    /// En resa är slut och bilen står (#979 fall 2): den som inte har sett bladet får en notis, en gång. Ett tryck öppnar bladet.
+    func resanSlut() {
+        guard skaFraga, !bladVisat, !notisSkickad else { return }
+        notisSkickad = true
+        Task {
+            guard await HeadsUpService.shared.status() == .authorized else { return }
+            let c = UNMutableNotificationContent()
+            c.title = Foreresanord.notisRubrik
+            c.body = Foreresanord.notisText
+            c.userInfo = ["slag": "fragan"]
+            try? await UNUserNotificationCenter.current().add(UNNotificationRequest(identifier: Self.fragenotis, content: c, trigger: nil))
+        }
+    }
 
     /// Räknar kommunen ur senast kända position och skickar raden om den är ny, ändrad eller äldre än ett dygn.
     /// Ett dygn: servern gallrar en rad som inte hört av sig på 30 dygn.

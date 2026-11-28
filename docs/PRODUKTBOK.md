@@ -364,6 +364,19 @@ förvald från (61) (DECISIONS #920; i (59) var *Nej tack* förvald) och *Forts�
 företag som betalar Halkvakt · *De får* aldrig veta vem eller var du är · *Ändra* när du vill, under Integritet. Knappen *Fortsätt*.
 Först då skickas något.
 
+**Från 0.4.3, efter (81) (DECISIONS #979, #980): frågan till den som redan har appen är ett blad, och valet om erbjudanden är
+borta.** Skärmen som täckte appen finns inte längre. Första gången appen öppnas efter uppdateringen, med platsen på, kommer ett
+blad över startsidan med etiketten *Nytt i Halkvakt* och samma innehåll som introduktionens fråga: rubriken *Vill du ha en varning
+innan du kör?*, ett exempel på notisen, tre rader om vad som sparas, knappen *Ja, varna mig* och länken *Inte nu*. Bladet kommer
+av sig självt en gång. Den som har appen i bakgrunden och inte öppnar den får i stället en notis när en resa är slut, en gång:
+*Nytt i Halkvakt. Vill du ha en varning innan du kör, när det är halt i din kommun? Tryck för att välja.* Ett tryck öppnar bladet.
+Efter ett ja frågar iOS om notiser. Den som har nekat notiser får läget *Notiserna är avstängda* med knappen *Öppna
+Inställningar*. Är varningen på säger bladet *Varningen före resan är på* och att den stängs av med *Radera min data*.
+På startsidan står raden *Varning före resan* under knapparna, med läget *Nytt*, *På*, *Av* eller *Av · notiser avstängda*; ett
+tryck öppnar bladet. Raden visas inte utan plats. Steget *Vill du ha erbjudanden nära dig?* och växlaren *Erbjudanden* under Din
+data är borta, och ett ja till erbjudanden från ett tidigare testbygge nollas. Meningen under Din data är *Din exakta position
+skickas inte till Halkvakt.* Allt detta gäller bara TestFlight; ett bygge från App Store frågar inte. Ingen skärmbild än.
+
 **Din data** står under Inställningar → Integritet. För den som sagt ja: kommunen, när raden skickades, växlaren *Erbjudanden*, det
 slumpade numret och knappen *Radera min data*. Går servern inte att nå står det *Det gick inte att nå servern. Inget är raderat.*
 För den som sagt nej: *Du delar inte din kommun. Inget om den här telefonens plats är sparat hos oss.* och länken *Visa frågan igen*.

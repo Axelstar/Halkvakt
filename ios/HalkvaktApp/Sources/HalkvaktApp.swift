@@ -409,6 +409,7 @@ struct RootView: View {
     @State private var plats = Platsdelning.shared
     @State private var notis = Servernotis.shared
     @State private var tangentbord = false
+    @Environment(\.scenePhase) private var fas
     var body: some View {
         ZStack(alignment: .bottom) {
             // Flikarna lever hela tiden, som i TabView: ingen omladdning och ingen tappad undersida vid flikbyte.
@@ -426,11 +427,6 @@ struct RootView: View {
             FloatingTabBar(tab: $tab).padding(.bottom, 8)
                 .ignoresSafeArea(.keyboard, edges: .bottom)
                 .opacity(tangentbord ? 0 : 1).allowsHitTesting(!tangentbord)
-            // Platsdelningens fråga (DECISIONS #917, #921) för den som inte fick den i introduktionen: täcker flikarna tills föraren
-            // svarat, bara med platsen på och aldrig under körning.
-            if plats.skaFraga && prefs.onboardingDone && guardM.platsTillaten && !guardM.running {
-                PlatsdelningFraga().frame(maxWidth: .infinity, maxHeight: .infinity).transition(.opacity)
-            }
         }
         .background(Brand.bg)
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in tangentbord = true }
@@ -448,6 +444,15 @@ struct RootView: View {
         // Ett tryck på en varning från servern (DECISIONS #926): startsidan med kartan Nära dig. Ett erbjudande: bladet.
         .onChange(of: notis.visaStart) { _, visa in if visa { tab = 0; notis.visaStart = false } }
         .sheet(item: $notis.erbjudande) { ErbjudandeBlad(erbjudande: $0) }
+        // Frågan om varningen före resan för den som redan har appen (DECISIONS #979): ett blad över startsidan, en gång av sig
+        // självt, bara med platsen på och aldrig under körning. Sedan öppnas det från raden på startsidan.
+        .sheet(isPresented: $plats.visaBladet) { ForeResanBlad() }
+        .onChange(of: fas, initial: true) { _, f in
+            if f == .active && prefs.onboardingDone && guardM.platsTillaten && !guardM.running { plats.appenOppnad() }
+        }
+        .onChange(of: prefs.onboardingDone) { _, klar in
+            if klar && guardM.platsTillaten && !guardM.running { plats.appenOppnad() }
+        }
     }
 }
 

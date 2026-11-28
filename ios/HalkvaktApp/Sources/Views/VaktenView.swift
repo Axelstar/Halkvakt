@@ -8,6 +8,7 @@
 // `frame(minHeight:)` ger Spacer-arna skärmhöjden när innehållet är kort, så "Redo." står där det stod.
 import SwiftUI
 import CoreLocation
+import UserNotifications
 import HalkvaktEngine
 
 struct VaktenView: View {
@@ -18,6 +19,8 @@ struct VaktenView: View {
     @State private var facitNu: String?   // kort #999: varningen som besvarades medan skärmen visades
     // Kort #659: kartan Nära dig, Planera en resa och den planerade resan med avresetid.
     @State private var plan = Resplan.shared
+    @State private var delning = Platsdelning.shared
+    @State private var notiser: UNAuthorizationStatus = .notDetermined
     @State private var plats: (lon: Double, lat: Double)?
     @State private var valdFara: String?   // DECISIONS #922: faran föraren tryckt på
     @Environment(\.scenePhase) private var fas
@@ -42,6 +45,8 @@ struct VaktenView: View {
         .task { await guardM.refreshSnapshot() }
         // Om igen när platstillståndet ändras: den som just svarat i iOS ruta ska få kartan över sitt område direkt.
         .task(id: guardM.authStatus) { await hamtaPlats() }
+        // Notisernas läge för raden Varning före resan: om igen när appen kommer fram och när bladet stängs.
+        .task(id: "\(fas)\(delning.visaBladet)") { notiser = await HeadsUpService.shared.status() }
         .onDisappear { if tipsatt { prefs.tipsaDold = true }; facitNu = nil }
         .onChange(of: fas) { _, ny in if ny != .active, tipsatt { prefs.tipsaDold = true } }
     }
@@ -123,6 +128,23 @@ struct VaktenView: View {
                 }
                 .padding(.top, 24)
                 MonoLink(title: "Låt vakten starta själv", action: latStartaSjalv).padding(.top, 4)
+            }
+            // Raden Varning före resan (DECISIONS #979 punkt 5, #981 punkt 5): läget, och ett tryck öppnar bladet. Inte utan plats.
+            if Platsdelning.tillaten && !guardM.locationDenied {
+                Button { delning.visaBladet = true } label: {
+                    // Egen rad och inte NavRowLabel: det längsta läget (Av · notiser avstängda) får krympa i stället för att klippas.
+                    HStack(spacing: 12) {
+                        Text(Foreresanord.rad).font(Typo.sans(16, .medium)).foregroundStyle(Brand.text).lineLimit(1).layoutPriority(1)
+                        Spacer(minLength: 8)
+                        Text(foreResanLage.uppercased()).font(Typo.mono(11, .medium)).tracking(1.3)
+                            .foregroundStyle(delning.svar == nil ? Brand.yellow : Brand.dim).lineLimit(1).minimumScaleFactor(0.6)
+                        Text("→").font(Typo.mono(13)).foregroundStyle(Brand.dim)
+                    }
+                    .frame(height: 56).padding(.horizontal, 20)
+                    .background(Brand.panel, in: RoundedRectangle(cornerRadius: 18))
+                }
+                .buttonStyle(PressScale())
+                .padding(.top, 20)
             }
 
             if let tur { kvitto(tur).padding(.top, 24) }
@@ -401,6 +423,13 @@ struct VaktenView: View {
     }
 
     private var wakes: Bool { prefs.autoWake && guardM.authStatus == .authorizedAlways }
+    private var foreResanLage: String {
+        switch delning.svar {
+        case nil: Foreresanord.radNytt
+        case .nej: Foreresanord.radAv
+        case .ja: notiser == .denied ? Foreresanord.radAvNotiser : Foreresanord.radPa
+        }
+    }
 
     private var subtitle: String {
         // "skickas aldrig till Halkvakt av sig själv" — samma ord som Android, introduktionen och produktboken (DECISIONS #900, fråga 9):

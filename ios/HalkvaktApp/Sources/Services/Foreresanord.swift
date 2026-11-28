@@ -20,4 +20,25 @@ enum Foreresanord {
     static let nej = "Inte nu"
     /// Står på frågan tills servern skickar notiser av sig själv. nil när de gör det.
     static let intePaAn: String? = "Testbygge: notiserna är inte påslagna än."
+
+    // Raden på startsidan (DECISIONS #979 punkt 5, #981 punkt 5).
+    static let rad = "Varning före resan"
+    static let radNytt = "Nytt"
+    static let radPa = "På"
+    static let radAv = "Av"
+    static let radAvNotiser = "Av · notiser avstängda"
+
+    // Bladet för den som redan har appen (#979 punkt 4).
+    static let bladEtikett = "Nytt i Halkvakt"
+    /// Fall 3: föraren har sagt ja men nekat notiser i telefonen.
+    static let notiserAvRubrik = "Notiserna är avstängda"
+    static let notiserAvText = "Varningen före resan är en notis. Slå på notiser för Halkvakt i telefonens inställningar, så kommer den fram."
+    static let notiserAvKnapp = "Öppna Inställningar"
+    /// Varningen är på: bladet visar läget och var den stängs av.
+    static let paRubrik = "Varningen före resan är på"
+    static let paText = "Du stänger av den under Inställningar, Din data, med Radera min data."
+    static let klar = "Klar"
+    /// Fall 2: notisen telefonen skickar till sig själv när en resa är slut, en gång.
+    static let notisRubrik = "Nytt i Halkvakt"
+    static let notisText = "Vill du ha en varning innan du kör, när det är halt i din kommun? Tryck för att välja."
 }
