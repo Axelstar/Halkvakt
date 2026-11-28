@@ -113,6 +113,7 @@ class MainActivity : ComponentActivity() {
         }
         // Fotostudion: favoriterna (kort #357) — brytaren på, en sparad resa och en som väntar på svar, så att frågan på Redo. och
         // fliken syns i produktboken. Påhittade vägar, aldrig en riktig resa. Betatestets kort stängs av så att frågan syns överst.
+        if (debug) intent?.getIntExtra("fotostudio_resor", -1)?.takeIf { it >= 0 }?.let { fotostudioResor(it) }
         if (debug && intent?.getBooleanExtra("fotostudio_favoriter", false) == true) lifecycleScope.launch {
             Prefs.setFacitEnabled(this@MainActivity, false)
             Prefs.setFavErbjud(this@MainActivity, true)
@@ -120,6 +121,18 @@ class MainActivity : ComponentActivity() {
             val resa = { lat0: Double -> l.resanBorjar(true); repeat(400) { i -> l.fix(18.063, lat0 + i * 85 / 111_320.0) }; l.resanSlutar(34.0, 30.0) }
             if (l.rutter.value.isEmpty()) { resa(59.20)?.let { l.spara(it.id, "Jobbet") } }
             if (l.dagens.value.isEmpty()) resa(59.33)
+        }
+    }
+
+    /** Fotostudion (bara debug): fliken Resor i sitt vanliga läge, utan resa som väntar på namn, med `antal` sparade resor. */
+    private fun fotostudioResor(antal: Int) = lifecycleScope.launch {
+        Prefs.setFacitEnabled(this@MainActivity, false)
+        Prefs.setFavErbjud(this@MainActivity, antal > 0)
+        val l = Favoriter.lager(this@MainActivity)
+        l.taBortAlla(); l.slangAlla()
+        listOf(59.20 to "Jobbet", 59.60 to "Stugan").take(antal).forEach { (lat0, namn) ->
+            l.resanBorjar(true); repeat(400) { i -> l.fix(18.063, lat0 + i * 85 / 111_320.0) }
+            l.resanSlutar(34.0, 30.0)?.let { l.spara(it.id, namn) }
         }
     }
 
