@@ -1,0 +1,18 @@
+# Startsidan och fliken Resor (DECISIONS #981, #982, #984). Startar med fotostudions argument, som hoppar över
+# introduktionen och frågan om varningen före resan. Sökningen provas inte här: den går mot Apple och levande data.
+appId: se.halkvakt.app
+---
+- launchApp:
+    clearState: true
+    arguments:
+      fotostudio_facit: "1"
+- assertVisible: "Planera resa"
+- takeScreenshot: bilder/start
+- tapOn: "Planera resa"
+- assertVisible: "Vart ska du?"
+- assertVisible: "Sök adress eller ort"
+- takeScreenshot: bilder/resor-fran-startsidan
+- tapOn: "Inställningar"
+- tapOn: "Resor"
+- assertVisible: "Fråga om jag vill spara resan"
+- takeScreenshot: bilder/resor

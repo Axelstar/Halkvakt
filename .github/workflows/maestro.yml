@@ -1,0 +1,62 @@
+name: maestro
+# Maestro (DECISIONS #984): kör appens flöden i en iPhone-simulator ur .maestro/ och sparar skärmbilderna. Körs med knappen
+# före ett bygge, inte vid varje ändring. Inga hemligheter: appen byggs för simulatorn utan signering, som ett utvecklarbygge
+# (DEBUG), så räknaren och platsdelningens sändning är avstängda eller går mot ingenting som räknas (CLAUDE.md, #772).
+on:
+  workflow_dispatch:
+concurrency: { group: maestro, cancel-in-progress: true }
+jobs:
+  ios:
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      - name: Xcode och XcodeGen
+        shell: bash
+        run: |
+          set -euo pipefail
+          xcodebuild -version
+          command -v xcodegen >/dev/null || brew install xcodegen
+          cd ios/HalkvaktApp && xcodegen generate
+      - name: Bygg för simulatorn
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd ios/HalkvaktApp
+          LOGG="$RUNNER_TEMP/bygg.log"
+          if ! xcodebuild build -project Halkvakt.xcodeproj -scheme Halkvakt -configuration Debug \
+            -destination 'generic/platform=iOS Simulator' -derivedDataPath "$RUNNER_TEMP/dd" \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO > "$LOGG" 2>&1; then
+            grep -E 'error:|\*\* BUILD' "$LOGG" | head -n 60; tail -n 40 "$LOGG"; exit 1
+          fi
+          tail -n 3 "$LOGG"
+          APP=$(find "$RUNNER_TEMP/dd/Build/Products" -maxdepth 2 -name 'Halkvakt.app' | head -n 1)
+          test -d "$APP"; echo "APP=$APP" >> "$GITHUB_ENV"
+      - name: Simulatorn
+        shell: bash
+        run: |
+          set -euo pipefail
+          UDID=$(xcrun simctl list devices available | grep -E 'iPhone' | head -n 1 | grep -oE '[0-9A-F-]{36}')
+          echo "simulator $UDID"; xcrun simctl list devices available | grep -E 'iPhone' | head -n 3
+          xcrun simctl boot "$UDID"; xcrun simctl bootstatus "$UDID" -b
+          xcrun simctl install "$UDID" "$APP"
+          echo "UDID=$UDID" >> "$GITHUB_ENV"
+      - name: Maestro
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL "https://get.maestro.mobile.dev" | bash
+          export PATH="$HOME/.maestro/bin:$PATH"
+          maestro --version
+          mkdir -p ut && cd ut
+          maestro --device "$UDID" test ../.maestro --format junit --output rapport.xml
+      - name: Skärmbilderna och rapporten
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: maestro
+          path: |
+            ut
+            ~/.maestro/tests
+          if-no-files-found: warn
