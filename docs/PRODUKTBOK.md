@@ -92,6 +92,11 @@ Inställningar). Under ▶ *Starta vakten* står knappen *Planera en resa*. Den 
 *"Se läget längs vägen innan du åker."*, sökrutan *Sök adress eller ort* och under den *DINA RESOR* med de sparade
 resorna (ett tryck öppnar resans rapport, som i Favoriter). Medan föraren skriver visas upp till sex förslag från Apple.
 Ett tryck på ett förslag räknar ut bilvägen dit från där föraren är (*"Räknar ut vägen …"*) och öppnar **Till {målet}**.
+**Från 0.4.3 (28/11, kort #659, byggt i grenen och inte släppt):** Sök-tangenten väljer det första förslaget. Ger sökningen inga
+förslag står *"Inga träffar. Prova en annan stavning eller en ort i närheten."*, och går den inte att göra *"Sökningen gick inte.
+Kontrollera nätet och försök igen."* Den som redan har en planerad resa ser under sökrutan *"Du har en planerad resa till {målet}.
+En ny sökning ersätter den och tar bort påminnelsen."* Går påminnelsen inte att sätta slås reglaget *Påminn mig före avresan* av
+igen, och felraden står kvar. Påminnelsen kommer med ljud; bannern under körning är tyst som förut.
 **Från 0.4.1 (68) (DECISIONS #930, Axels ritning 20/11)** är skärmen ny: under rubriken *{längd} · CA {restid}*; kortet
 *JUST NU* med *KOLLAT {tid}*, en rubrik (*Lugnt hela vägen.*, *Halt från {ort}.*, *Frysrisk redan från start.*), en mening om var
 det börjar, och när något är halt eller har frysrisk tre tal: *HALA STRÄCKOR*, *PLATSER MED FRYSRISK* och *SMHI-VARNINGAR*; ▶
@@ -248,7 +253,7 @@ och *fartkamera* (en låda på stolpe med blixtlinjer). Svarta på kortet, ljusa
 Under panelerna: *LÖFTET — Din position skickas aldrig till Halkvakt av sig själv.*
 
 **Planera resa på Android (21/11, kort #659, DECISIONS #943; från 0.4.1 (72)).** Under ▶ *Starta vakten* på Redo står knappen
-*Planera resa*. Den öppnar **Vart ska du?**: *"Se läget längs vägen innan du åker."* och sökrutan *Sök adress eller ort*.
+*Planera resa*. Den öppnar **Vart ska du?**: *"Se läget längs vägen innan du åker."* och sökrutan *Sök adress eller ort*. Från 0.4.3 (28/11, inte släppt) frågas Google först när föraren har skrivit tre tecken.
 Medan föraren skriver visas upp till sex förslag från Google, med raden *Google Maps* under. Ett tryck på ett förslag räknar
 ut bilvägen dit från där föraren är (*"Räknar ut vägen …"*) och öppnar **Till {kommunen}**. Målet heter som kommunen det
 ligger i, ur Halkvakts egen tabell, eftersom Googles namn på platsen inte får stå bredvid en karta. Skärmen är iPhones

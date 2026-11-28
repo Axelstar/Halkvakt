@@ -34,11 +34,14 @@ final class Resplan: NSObject, MKLocalSearchCompleterDelegate {
     }
 
     enum Lage: Equatable { case vilar, soker, fel(String) }
+    /// Vad söklistan säger när den är tom fast föraren har skrivit något.
+    enum Soksvar { case inget, ingaTraffar, fel }
 
     /// Så länge ligger en resa med avresetid kvar efter avresan.
     static let kvarEfterAvresaS: TimeInterval = 6 * 3600
 
     private(set) var forslag: [Forslag] = []
+    private(set) var soksvar = Soksvar.inget
     private(set) var plan: Plan?
     private(set) var lage: Lage = .vilar
     private var traffar: [MKLocalSearchCompletion] = []
@@ -66,6 +69,7 @@ final class Resplan: NSObject, MKLocalSearchCompleterDelegate {
             completer.cancel()
             traffar = []
             forslag = []
+            soksvar = .inget
         } else {
             completer.queryFragment = t
         }
@@ -73,9 +77,11 @@ final class Resplan: NSObject, MKLocalSearchCompleterDelegate {
 
     nonisolated func completerDidUpdateResults(_ completer: MKLocalSearchCompleter) {
         let nya = Array(completer.results.prefix(6))
+        let fragade = !completer.queryFragment.isEmpty
         Task { @MainActor in
             self.traffar = nya
             self.forslag = nya.enumerated().map { Forslag(id: $0.offset, titel: $0.element.title, under: $0.element.subtitle) }
+            self.soksvar = nya.isEmpty && fragade ? .ingaTraffar : .inget
         }
     }
 
@@ -83,6 +89,7 @@ final class Resplan: NSObject, MKLocalSearchCompleterDelegate {
         Task { @MainActor in
             self.traffar = []
             self.forslag = []
+            self.soksvar = .fel
         }
     }
 
@@ -90,7 +97,11 @@ final class Resplan: NSObject, MKLocalSearchCompleterDelegate {
 
     /// Slår upp förslaget och räknar ut bilvägen dit från där föraren är. Sant när resan finns i `plan`.
     func planera(_ val: Forslag) async -> Bool {
-        guard val.id < traffar.count else { return false }
+        // Förslagen kan ha bytts mellan att raden ritades och trycket: slå upp raden på det föraren såg, inte på dess plats i listan.
+        guard let traff = traffar.first(where: { $0.title == val.titel && $0.subtitle == val.under }) else {
+            lage = .fel("Förslagen ändrades. Välj adressen igen.")
+            return false
+        }
         let status = CLLocationManager().authorizationStatus
         guard status == .authorizedWhenInUse || status == .authorizedAlways else {
             GuardManager.shared.requestLocationPermission()
@@ -99,7 +110,7 @@ final class Resplan: NSObject, MKLocalSearchCompleterDelegate {
         }
         lage = .soker
         do {
-            let svar = try await MKLocalSearch(request: MKLocalSearch.Request(completion: traffar[val.id])).start()
+            let svar = try await MKLocalSearch(request: MKLocalSearch.Request(completion: traff)).start()
             guard let mal = svar.mapItems.first else {
                 lage = .fel("Adressen hittades inte. Prova en annan.")
                 return false
