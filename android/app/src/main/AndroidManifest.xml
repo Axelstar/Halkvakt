@@ -36,6 +36,7 @@
         <receiver android:name=".FacitSvarReceiver" android:exported="false"/>
         <receiver android:name=".FavoritSvarReceiver" android:exported="false"/>
         <receiver android:name=".StoppaVaktenReceiver" android:exported="false"/>
+        <receiver android:name=".AvreseReceiver" android:exported="false"/>
         <receiver android:name=".BluetoothCarReceiver" android:exported="true">
             <intent-filter>
                 <action android:name="android.bluetooth.device.action.ACL_CONNECTED"/>

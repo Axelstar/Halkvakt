@@ -120,6 +120,9 @@ fun HalkvaktApp(activity: MainActivity) {
         // Favoriter 2a (#817): notisen och raden på Redo öppnar fliken med dagens resor överst.
         val visaFavoriter by se.halkvakt.app.Favoriter.visaFliken.collectAsStateWithLifecycle()
         LaunchedEffect(visaFavoriter) { if (visaFavoriter) { tab = 1; se.halkvakt.app.Favoriter.visaFliken.value = false } }
+        // Den planerade resan (DECISIONS #983): fliken Resor öppnar den och nollar flaggan.
+        val visaResan by se.halkvakt.app.AvreseNotis.visaResan.collectAsStateWithLifecycle()
+        LaunchedEffect(visaResan) { if (visaResan) tab = 1 }
         val warning by GuardService.currentWarning.collectAsStateWithLifecycle()
         val running by GuardService.runningFlow.collectAsStateWithLifecycle()
         DisposableEffect(running) {

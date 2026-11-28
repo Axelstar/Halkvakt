@@ -336,6 +336,12 @@ fun RedoScreen(activity: MainActivity, planera: () -> Unit = {}, overst: @Compos
             Spacer(Modifier.height(24.dp))
             Kvitto(tur, start, slutMs, km)
         }
+        // Den planerade resan (DECISIONS #983): ett tryck öppnar den under Resor.
+        val plan by se.halkvakt.app.Resplan.plan.collectAsStateWithLifecycle()
+        plan?.takeIf { se.halkvakt.app.Resplan.kommande() != null }?.let { p ->
+            MonoLabel("Planerad resa", modifier = Modifier.fillMaxWidth().padding(top = 28.dp, bottom = 10.dp, start = 4.dp))
+            PlaneradRad(p) { se.halkvakt.app.AvreseNotis.visaResan.value = true }
+        }
         Spacer(Modifier.height(32.dp))
         YellowPill("Starta vakten", play = true) { activity.onToggle() }
         Spacer(Modifier.height(12.dp))

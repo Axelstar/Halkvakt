@@ -22,7 +22,9 @@ import java.io.File
 
 object Resplan {
     /** [punkter] är vägen som [lon, lat]. [restidS] är null när tjänsten inte gav någon restid. */
-    class Plan(val mal: String, val punkter: List<DoubleArray>, val km: Double, val restidS: Double?, val avresaMs: Long?)
+    /** [paminn]: föraren har bett om påminnelsen före avresan (DECISIONS #983). */
+    class Plan(val mal: String, val punkter: List<DoubleArray>, val km: Double, val restidS: Double?, val avresaMs: Long?,
+               val paminn: Boolean = false)
 
     sealed interface Lage {
         data object Vilar : Lage
@@ -82,13 +84,19 @@ object Resplan {
     }
 
     /** Sätter eller tar bort avresetiden. Med en tid läggs resan i filen. Falskt när tiden redan har passerat. */
-    fun sattAvresa(ctx: Context, ms: Long?, nu: Long = System.currentTimeMillis()): Boolean {
+    fun sattAvresa(ctx: Context, ms: Long?, paminn: Boolean = false, nu: Long = System.currentTimeMillis()): Boolean {
         val p = _plan.value ?: return false
         if (ms != null && ms <= nu) return false
-        val ny = Plan(p.mal, p.punkter, p.km, p.restidS, ms)
+        val ny = Plan(p.mal, p.punkter, p.km, p.restidS, ms, paminn && ms != null)
         _plan.value = ny
         if (ms == null) fil(ctx).delete() else skriv(ctx, ny)
         return true
+    }
+
+    /** Fotostudion (bara debug-bygget): en påhittad resa, så att skärmen går att fotografera utan att fråga Google. */
+    internal fun fotostudio(ctx: Context, p: Plan) {
+        _plan.value = p
+        skriv(ctx, p)
     }
 
     /** Tar bort resan och filen. */
@@ -120,7 +128,7 @@ object Resplan {
     }
 
     internal fun tillJson(p: Plan): String = JSONObject().put("mal", p.mal).put("km", p.km)
-        .put("restidS", p.restidS ?: JSONObject.NULL).put("avresaMs", p.avresaMs ?: JSONObject.NULL)
+        .put("restidS", p.restidS ?: JSONObject.NULL).put("avresaMs", p.avresaMs ?: JSONObject.NULL).put("paminn", p.paminn)
         .put("punkter", JSONArray().apply { p.punkter.forEach { put(JSONArray().put(it[0]).put(it[1])) } }).toString()
 
     internal fun franJson(s: String): Plan? = runCatching {
@@ -129,6 +137,6 @@ object Resplan {
         val punkter = (0 until a.length()).map { i -> a.getJSONArray(i).let { doubleArrayOf(it.getDouble(0), it.getDouble(1)) } }
         require(punkter.size >= 2)
         Plan(o.get("mal").toString(), punkter, o.getDouble("km"), if (o.isNull("restidS")) null else o.getDouble("restidS"),
-            if (o.isNull("avresaMs")) null else o.getLong("avresaMs"))
+            if (o.isNull("avresaMs")) null else o.getLong("avresaMs"), o.optBoolean("paminn", false))
     }.getOrNull()
 }

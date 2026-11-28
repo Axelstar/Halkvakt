@@ -20,6 +20,10 @@ class ResplanTest {
         assertEquals(3, p.punkter.size); assertEquals(13.2, p.punkter[2][0]); assertEquals(55.8, p.punkter[2][1])
         val utan = Resplan.franJson(Resplan.tillJson(Resplan.Plan("Lund", vag, 21.5, null, null)))!!
         assertNull(utan.restidS); assertNull(utan.avresaMs)
+        // Påminnelsen (DECISIONS #983) följer med i filen, och en fil från före den läses som utan påminnelse.
+        assertFalse(p.paminn)
+        assertTrue(Resplan.franJson(Resplan.tillJson(Resplan.Plan("Lund", vag, 21.5, 1260.0, 1_800_000_000_000L, paminn = true)))!!.paminn)
+        assertFalse(Resplan.franJson("""{"mal":"Lund","km":1,"restidS":null,"avresaMs":5,"punkter":[[13.0,55.7],[13.1,55.8]]}""")!!.paminn)
     }
 
     @Test fun enTrasigFilGerIngenResa() {

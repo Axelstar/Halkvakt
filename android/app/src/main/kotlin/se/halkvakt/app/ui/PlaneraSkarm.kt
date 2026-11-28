@@ -37,6 +37,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import se.halkvakt.app.GuardService
+import se.halkvakt.app.AvreseNotis
 import se.halkvakt.app.MainActivity
 import se.halkvakt.app.Rapporten
 import se.halkvakt.app.Resplan
@@ -149,7 +150,22 @@ fun PlaneradResaSkarm(activity: MainActivity, back: () -> Unit) {
             gickInte = ny == null
         }
     }
-    LaunchedEffect(plan) { hamta() }
+    // Vägen är nyckeln, inte resan: en ändrad avresetid ger en ny Plan med samma väg, och läget ska inte hämtas om för den.
+    LaunchedEffect(plan?.punkter) { hamta() }
+    // Resans två lägen (DECISIONS #983): Åker nu och Åker senare. Senare har avresetiden och påminnelsen.
+    var senare by rememberSaveable { mutableStateOf(plan?.avresaMs != null) }
+    var avresa by rememberSaveable { mutableStateOf(plan?.avresaMs ?: standardAvresa()) }
+    var avresefel by remember { mutableStateOf<String?>(null) }
+    val sparaAvresa: (Boolean) -> Unit = { vill ->
+        avresefel = null
+        AvreseNotis.taBort(ctx)
+        if (!Resplan.sattAvresa(ctx, avresa)) avresefel = "Tiden har redan passerat. Välj en senare tid."
+        else if (vill) {
+            if (!activity.notificationsOk()) { activity.begarNotiser(); avresefel = "Slå på notiser för Halkvakt, så kommer påminnelsen." }
+            else if (!AvreseNotis.schemalagg(ctx, avresa)) avresefel = "Påminnelsen kommer en kvart innan. Välj en tid minst en kvart bort."
+            else Resplan.sattAvresa(ctx, avresa, paminn = true)
+        }
+    }
 
     Column(Modifier.fillMaxSize().background(Brand.bg).verticalScroll(rememberScrollState()).padding(horizontal = 24.dp)
         .padding(top = 8.dp, bottom = 150.dp)) {
@@ -166,12 +182,81 @@ fun PlaneradResaSkarm(activity: MainActivity, back: () -> Unit) {
             Spacer(Modifier.weight(1f))
             MonoLink("Kolla igen") { scope.launch { hamta() } }
         }
+        Lagesval(senare, Modifier.padding(top = 16.dp)) { ny ->
+            senare = ny
+            if (ny) sparaAvresa(false) else { avresefel = null; AvreseNotis.taBort(ctx); Resplan.sattAvresa(ctx, null) }
+        }
         val r = rapport
         val oroligt = strackor.any { it.lage != StrackLage.LUGNT }
+        if (senare) {
+            Column(Modifier.fillMaxWidth().padding(top = 16.dp).background(Brand.panel, RoundedCornerShape(18.dp)).padding(horizontal = 20.dp)) {
+                Row(Modifier.fillMaxWidth().heightIn(min = 64.dp), verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("Jag åker", color = Brand.text, fontFamily = Typo.sans, fontWeight = FontWeight.Medium, fontSize = 16.sp,
+                        modifier = Modifier.weight(1f))
+                    val tid = java.time.Instant.ofEpochMilli(avresa).atZone(java.time.ZoneId.systemDefault())
+                    Tidval(DATUM.format(tid), "Väljer dag") {
+                        android.app.DatePickerDialog(ctx, { _, ar, manad, dag ->
+                            avresa = tid.withYear(ar).withMonth(manad + 1).withDayOfMonth(dag).toInstant().toEpochMilli()
+                            sparaAvresa(plan?.paminn == true)
+                        }, tid.year, tid.monthValue - 1, tid.dayOfMonth).apply { datePicker.minDate = System.currentTimeMillis() }.show()
+                    }
+                    Tidval(KLOCKA.format(tid), "Väljer klockslag") {
+                        android.app.TimePickerDialog(ctx, { _, timme, minut ->
+                            avresa = tid.withHour(timme).withMinute(minut).withSecond(0).toInstant().toEpochMilli()
+                            sparaAvresa(plan?.paminn == true)
+                        }, tid.hour, tid.minute, true).show()
+                    }
+                }
+                DashedDivider()
+                GreenToggleRow("Påminn mig en kvart innan", "En notis som öppnar resan", plan?.paminn == true) { on -> sparaAvresa(on) }
+            }
+            avresefel?.let {
+                Text(it, color = Brand.yellow, fontFamily = Typo.sans, fontSize = 14.sp, lineHeight = 21.sp,
+                    modifier = Modifier.padding(top = 12.dp, start = 4.dp))
+            }
+        }
         if (r != null) Dom(r, strackor, oroligt)
         else Text(if (gickInte) "Läget kunde inte hämtas. Tryck på Kolla igen." else "Kollar läget …", color = Brand.text2,
             fontFamily = Typo.sans, fontSize = 15.sp, modifier = Modifier.padding(top = 28.dp))
+        if (senare) {
+            Text("Det här är läget nu. Halkvakt hämtar det färskt när du öppnar påminnelsen eller appen.", color = Brand.text2,
+                fontFamily = Typo.sans, fontSize = 14.sp, lineHeight = 21.sp, modifier = Modifier.padding(top = 14.dp, start = 4.dp))
+        } else Nuknappar(activity, p, r)
 
+        if (r != null) {
+            // Vägen och sträckorna visas när något längs vägen är halt eller har frysrisk. En lugn resa behöver dem inte.
+            if (oroligt) {
+                MonoLabel("Längs vägen, i den ordning du kör", size = 11.sp, modifier = Modifier.padding(top = 28.dp, bottom = 10.dp, start = 4.dp))
+                Column(Modifier.fillMaxWidth().background(Brand.panel, RoundedCornerShape(18.dp)).padding(20.dp)) {
+                    val marken = { slag: RapportSlag ->
+                        r.rader.filter { it.slag == slag }.mapNotNull { Resstrackor.punkt(p.punkter, kum, it.langsM.toDouble()) }
+                    }
+                    Resekarta(p.punkter, marken(RapportSlag.HALKA), marken(RapportSlag.FRYSRISK),
+                        "Karta med vägen till ${p.mal}. ${Resstrackor.dom(strackor)}")
+                    Kartforklaring(Modifier.padding(top = 12.dp, bottom = 6.dp))
+                    MonoLabel("Kartan kommer från Google", Brand.faint, modifier = Modifier.padding(bottom = 14.dp))
+                    // Klocktiderna räknas från avresan i Åker senare, annars från nu.
+                    ResansStrackor(strackor, p.mal, (kum.lastOrNull() ?: 0.0).roundToInt(), p.restidS,
+                        if (senare) maxOf(avresa, System.currentTimeMillis()) else r.kollat)
+                }
+            }
+            Ovrigt(r, !oroligt)
+        }
+        Column(Modifier.fillMaxWidth().padding(top = 24.dp), horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            MonoLabel(p.avresaMs?.let { "Avresa ${dagOchKlockslag(it)}" } ?: "Resan sparas inte")
+            MonoLabel("Vägen kommer från Google", Brand.faint)
+            MonoLink("Ta bort resan") { AvreseNotis.taBort(ctx); Resplan.rensa(ctx); back() }
+        }
+    }
+}
+
+/** Åker nu (DECISIONS #983): Starta vakten, tipset om en annan väg och länken till kartappen. */
+@Composable
+private fun Nuknappar(activity: MainActivity, p: Resplan.Plan, r: Rapporten.Planerad?) {
+    val ctx = LocalContext.current
+    Column {
         Box(Modifier.fillMaxWidth().padding(top = 24.dp), contentAlignment = Alignment.Center) {
             YellowPill("Starta vakten", play = true) { activity.onToggle() }
         }
@@ -195,31 +280,44 @@ fun PlaneradResaSkarm(activity: MainActivity, back: () -> Unit) {
             Text("Vakten startar när du öppnar kartappen.", color = Brand.dim, fontFamily = Typo.sans, fontSize = 13.sp,
                 textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
         }
+    }
+}
 
-        if (r != null) {
-            // Vägen och sträckorna visas när något längs vägen är halt eller har frysrisk. En lugn resa behöver dem inte.
-            if (oroligt) {
-                MonoLabel("Längs vägen, i den ordning du kör", size = 11.sp, modifier = Modifier.padding(top = 28.dp, bottom = 10.dp, start = 4.dp))
-                Column(Modifier.fillMaxWidth().background(Brand.panel, RoundedCornerShape(18.dp)).padding(20.dp)) {
-                    val marken = { slag: RapportSlag ->
-                        r.rader.filter { it.slag == slag }.mapNotNull { Resstrackor.punkt(p.punkter, kum, it.langsM.toDouble()) }
-                    }
-                    Resekarta(p.punkter, marken(RapportSlag.HALKA), marken(RapportSlag.FRYSRISK),
-                        "Karta med vägen till ${p.mal}. ${Resstrackor.dom(strackor)}")
-                    Kartforklaring(Modifier.padding(top = 12.dp, bottom = 6.dp))
-                    MonoLabel("Kartan kommer från Google", Brand.faint, modifier = Modifier.padding(bottom = 14.dp))
-                    ResansStrackor(strackor, p.mal, (kum.lastOrNull() ?: 0.0).roundToInt(), p.restidS, r.kollat)
-                }
+/** Åker nu eller Åker senare: två halvor i en kapsel, den valda ljus. */
+@Composable
+private fun Lagesval(senare: Boolean, modifier: Modifier = Modifier, valj: (Boolean) -> Unit) {
+    Row(modifier.fillMaxWidth().background(Brand.panel, RoundedCornerShape(28.dp)).border(1.dp, Color(0xFF26323A), RoundedCornerShape(28.dp))
+        .padding(4.dp)) {
+        listOf("Åker nu" to false, "Åker senare" to true).forEach { (titel, varde) ->
+            val vald = senare == varde
+            Box(Modifier.weight(1f).heightIn(min = 48.dp).background(if (vald) Brand.text else Color.Transparent, RoundedCornerShape(24.dp))
+                .clickable(role = Role.Tab) { if (!vald) valj(varde) }, contentAlignment = Alignment.Center) {
+                Text(titel, color = if (vald) Brand.bg else Brand.text2, fontFamily = Typo.sans, fontWeight = FontWeight.Medium, fontSize = 15.sp)
             }
-            Ovrigt(r, !oroligt)
-        }
-        Column(Modifier.fillMaxWidth().padding(top = 24.dp), horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            MonoLabel("Resan sparas inte")
-            MonoLabel("Vägen kommer från Google", Brand.faint)
         }
     }
 }
+
+/** Dagen eller klockslaget i Jag åker: en liten kapsel som öppnar Androids väljare. */
+@Composable
+private fun Tidval(text: String, vad: String, valj: () -> Unit) {
+    Box(Modifier.heightIn(min = 44.dp).background(Color(0xFF1A2327), RoundedCornerShape(22.dp))
+        .clickable(role = Role.Button, onClickLabel = vad, onClick = valj).padding(horizontal = 14.dp), contentAlignment = Alignment.Center) {
+        Text(text, color = Brand.text, fontFamily = Typo.sans, fontSize = 15.sp)
+    }
+}
+
+private val SVENSKA = java.util.Locale("sv", "SE")
+private val DATUM = java.time.format.DateTimeFormatter.ofPattern("d MMM yyyy", SVENSKA)
+private val KLOCKA = java.time.format.DateTimeFormatter.ofPattern("HH:mm", SVENSKA)
+private val DAG_OCH_KLOCKA = java.time.format.DateTimeFormatter.ofPattern("d MMM HH:mm", SVENSKA)
+
+/** "28 nov. 10:42" */
+internal fun dagOchKlockslag(ms: Long): String =
+    DAG_OCH_KLOCKA.format(java.time.Instant.ofEpochMilli(ms).atZone(java.time.ZoneId.systemDefault()))
+
+/** Förvald avresa: en timme bort, på hela fem minuter. */
+private fun standardAvresa(nu: Long = System.currentTimeMillis()): Long = (nu + 3_600_000L) / 300_000L * 300_000L
 
 /** Kortet överst: omdömet i en mening och när läget kollades. Ur en gammal lägesfil får kortet inte säga att det är lugnt. */
 @Composable

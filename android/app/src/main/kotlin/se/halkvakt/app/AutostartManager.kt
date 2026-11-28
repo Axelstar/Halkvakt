@@ -234,5 +234,10 @@ class BootReceiver : BroadcastReceiver() {
     override fun onReceive(ctx: Context, intent: Intent) {
         val armar = intent.action == Intent.ACTION_BOOT_COMPLETED || intent.action == Intent.ACTION_MY_PACKAGE_REPLACED
         if (armar && AutostartManager.isEnabled(ctx)) AutostartManager.registerTransitions(ctx)
+        // Påminnelsen före en planerad resa (DECISIONS #983): ett larm försvinner när telefonen startas om.
+        if (armar) {
+            Resplan.ladda(ctx)
+            Resplan.kommande()?.takeIf { it.paminn }?.avresaMs?.let { AvreseNotis.schemalagg(ctx, it) }
+        }
     }
 }
