@@ -64,6 +64,8 @@ class MainActivity : ComponentActivity() {
         if (autostartOn.value) AutostartManager.registerTransitions(this)   // re-arm: an update of the app drops the registration (27/11)
         setContent { HalkvaktApp(this) }
         if (intent?.getBooleanExtra(FavoritNotis.EXTRA_FAVORITER, false) == true) Favoriter.visaFliken.value = true   // #817
+        if (intent?.getBooleanExtra(AvreseNotis.EXTRA_RESAN, false) == true) AvreseNotis.visaResan.value = true   // #983: påminnelsens tryck
+        lifecycleScope.launch(Dispatchers.IO) { Resplan.ladda(this@MainActivity) }
         lifecycleScope.launch(Dispatchers.IO) {
             runCatching { SnapshotRepo.loadSnapshot(this@MainActivity) }
                 .onSuccess { snap ->
@@ -114,6 +116,12 @@ class MainActivity : ComponentActivity() {
         // Fotostudion: favoriterna (kort #357) — brytaren på, en sparad resa och en som väntar på svar, så att frågan på Redo. och
         // fliken syns i produktboken. Påhittade vägar, aldrig en riktig resa. Betatestets kort stängs av så att frågan syns överst.
         if (debug) intent?.getIntExtra("fotostudio_resor", -1)?.takeIf { it >= 0 }?.let { fotostudioResor(it) }
+        // Fotostudion: en påhittad planerad resa längs E4 norr om Stockholm, med avresa om två timmar, öppnad under Resor.
+        if (debug && intent?.getBooleanExtra("fotostudio_resa", false) == true) {
+            Resplan.fotostudio(this, Resplan.Plan("Uppsala", (0..400).map { doubleArrayOf(17.93 - it * 0.0007, 59.45 + it * 0.0010) },
+                49.0, 2400.0, System.currentTimeMillis() + 2 * 3_600_000L))
+            AvreseNotis.visaResan.value = true
+        }
         if (debug && intent?.getBooleanExtra("fotostudio_favoriter", false) == true) lifecycleScope.launch {
             Prefs.setFacitEnabled(this@MainActivity, false)
             Prefs.setFavErbjud(this@MainActivity, true)
@@ -139,6 +147,7 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: android.content.Intent) {
         super.onNewIntent(intent)
         if (intent.getBooleanExtra(FavoritNotis.EXTRA_FAVORITER, false)) Favoriter.visaFliken.value = true   // #817: notisens tryck
+        if (intent.getBooleanExtra(AvreseNotis.EXTRA_RESAN, false)) AvreseNotis.visaResan.value = true   // #983: påminnelsens tryck
         handleAutoStart(intent)   // the "Kör du?" notification while the app is already open
     }
 
@@ -306,7 +315,12 @@ class MainActivity : ComponentActivity() {
         else introSvarade(13)
     }
 
-    private fun notificationsOk(): Boolean =
+    /** Frågar om notiser när de saknas (Android 13 och senare), för påminnelsen före en planerad resa. */
+    fun begarNotiser() {
+        if (Build.VERSION.SDK_INT >= 33 && !notificationsOk()) requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 14)
+    }
+
+    fun notificationsOk(): Boolean =
         (getSystemService(android.app.NotificationManager::class.java)).areNotificationsEnabled()
 
     private fun hasPermissions(): Boolean =

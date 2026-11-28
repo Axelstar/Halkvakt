@@ -67,6 +67,9 @@ fun FavoriterScreen(activity: MainActivity, fokusera: Boolean = false, fokuserad
     androidx.activity.compose.BackHandler(enabled = oppen != null) { oppen = null }
     // Planera resa på startsidan (DECISIONS #982): fliken visar listan, med markören i sökrutan.
     LaunchedEffect(fokusera) { if (fokusera) oppen = null }
+    // Påminnelsens tryck och raden Planerad resa på startsidan (DECISIONS #983): resan öppnas här.
+    val visaResan by se.halkvakt.app.AvreseNotis.visaResan.collectAsStateWithLifecycle()
+    LaunchedEffect(visaResan) { if (visaResan) { oppen = PLANERAD; se.halkvakt.app.AvreseNotis.visaResan.value = false } }
     AnimatedContent(oppen, transitionSpec = {
         val e = CubicBezierEasing(.2f, .8f, .2f, 1f)
         if (targetState != null) slideInHorizontally(tween(420, easing = e)) { it } togetherWith fadeOut(tween(420))
@@ -101,6 +104,12 @@ private fun FavoriterLista(activity: MainActivity, fokusera: Boolean, fokuserad:
         Text("Se läget längs vägen innan du åker.", color = Brand.text2, fontFamily = Typo.sans, fontSize = 15.sp, modifier = Modifier.padding(top = 10.dp))
         Spacer(Modifier.height(24.dp))
         Resesok(activity, fokusera, fokuserad, klar = planerad)
+        // Den planerade resan med avresetid (DECISIONS #983), tills sex timmar efter avresan.
+        val plan by se.halkvakt.app.Resplan.plan.collectAsStateWithLifecycle()
+        plan?.takeIf { se.halkvakt.app.Resplan.kommande() != null }?.let { p ->
+            MonoLabel("Planerad", modifier = Modifier.padding(top = 28.dp, bottom = 10.dp, start = 4.dp))
+            PlaneradRad(p, planerad)
+        }
         if (erbjud && dagens.isNotEmpty()) {
             MonoLabel("Dagens resor · ${dagens.size} att spara", modifier = Modifier.padding(top = 28.dp, bottom = 10.dp, start = 4.dp))
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -159,6 +168,16 @@ private fun FavoriterLista(activity: MainActivity, fokusera: Boolean, fokuserad:
             dismissButton = { TextButton({ byterNamn = null }) { Text("Avbryt", color = Brand.text) } },
             containerColor = Brand.panel, titleContentColor = Brand.text,
         )
+    }
+}
+
+/** Raden för den planerade resan: målet och avresan. Samma rad på startsidan. */
+@Composable
+internal fun PlaneradRad(p: se.halkvakt.app.Resplan.Plan, oppna: () -> Unit) {
+    Column(Modifier.fillMaxWidth().background(Brand.panel, RoundedCornerShape(18.dp)).clickable(role = Role.Button, onClick = oppna)
+        .padding(horizontal = 20.dp, vertical = 16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Text("Till ${p.mal}", color = Brand.text, fontFamily = Typo.sans, fontWeight = FontWeight.Medium, fontSize = 17.sp)
+        Text("Avresa ${p.avresaMs?.let(::dagOchKlockslag) ?: ""}", color = Brand.text2, fontFamily = Typo.sans, fontSize = 14.sp)
     }
 }
 
