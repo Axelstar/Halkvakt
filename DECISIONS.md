@@ -20123,3 +20123,90 @@ och orden kan ändras av Haralds svar.
 **Alternativ.** Behålla *aldrig*: starkare, men binder varje framtida ändring.
 
 **Stomdokument:** APP 7 — löftet på frågan och under Din data
+
+## #981 (28/11 2026) Startsidan stramas åt, och knapparna följer vad föraren har valt för platsen (kort #659)
+**Beslut.** Axel 28/11, efter en genomgång av startsidan på sin telefon och tre ritade förslag: *"Ja jag gillar A"*, om lägena
+*"Okej jag gillar detta"*. Lägena är Malins förslag. Underlaget är designytan *Halkvakt: startsidan, förslag*.
+1. **Det som tas bort:** blocket *Nära dig just nu* när inget är rapporterat (det upprepar rubriken och raden under den), raden
+   om antalet fartkameror inom sex mil, raden om senaste turen och raden med farornas namn.
+2. **Kartan** flyttas så att Sverige fyller bilden, och krymper när något är rapporterat och listan visas.
+3. **Lampan** vid *LIVE* är grön när inget är rapporterat och gul när något är rapporterat eller platsen saknas. Axel har inte
+   svarat uttryckligen på den frågan; den ritades så och ytan godkändes.
+4. **Tre lägen efter förarens val:**
+   - *Alltid med självstart:* bara *Planera resa*.
+   - *Du startar själv* (När appen används, eller Alltid med självstarten av): *Starta vakten* och *Planera resa* som i dag, och
+     länken *Låt vakten starta själv*.
+   - *Ingen plats:* *Platsen är av*, *Vakten kan inte varna*, knappen *Öppna Inställningar* med tre steg, och kartan över halkan i
+     landet. *Planera resa* visas inte, eftersom vägen räknas härifrån.
+5. **Raden *Varning före resan*** (DECISIONS #979) står under knapparna i de två första lägena.
+
+**Öppet.** Om läget Alltid ska ha en liten länk för att starta vakten för hand.
+
+**Alternativ.** Kartan först med liten rubrik; ingen karta alls när inget är rapporterat. Axel valde den stramade.
+
+**Stomdokument:** APP — startsidan och dess lägen
+
+## #982 (28/11 2026) Favoriter och Planera resa blir en flik, Resor, och en sökt resa får sparas (ändrar Axels val 12/11; kort #659, #357)
+**Beslut.** Axel 28/11: *"Okej! jag gillar detta!"* om flödet, och *"Vi kör på denna också"*. Underlaget är designytan *Halkvakt:
+Favoriter och Planera resa, två vägar*, väg 2 och de tre banorna.
+1. Fliken *Favoriter* heter *Resor*. Överst står sökrutan (*Vart ska du?*), under den *Dina resor* med läget just nu på varje
+   resa i listan, och den planerade resan med avresa och påminnelse.
+2. Knappen *Planera resa* på startsidan byter till fliken med markören i sökrutan. Ett tryck på fliken öppnar samma skärm utan
+   tangentbord.
+3. **En sökt resa får sparas**, med knappen *Spara resan* på resans skärm. Det ändrar Axels val 12/11 (kort #659: *en sökt resa
+   sparas inte bland favoriterna*). Axel fick frågan tre gånger 28/11 och svarade med att godkänna flödet, som bygger på det.
+   En sparad sökt resa ligger bara i telefonen och utanför säkerhetskopian, som de körda (DECISIONS #616, #625).
+4. *Tillbaka* från en resa leder till *Resor*. Frågan efter en körd resa och påminnelsen före avresan är som i dag, och ett
+   tryck på dem öppnar fliken respektive resan.
+5. Reglaget heter *Fråga om jag vill spara resan*, och den tomma skärmen visar ett exempel på en sparad resa.
+
+**Senare, inte i 0.4.3.** En varning för en sparad resa (*Varna mig före resan*, dagar och tid), räknad i telefonen. Axel 28/11:
+*"här bör vi komma kunna att använda notiser i framtiden också"*. Hur pålitligt en telefon låter appen vakna av sig själv är inte prövat.
+
+**Att bevaka i bygget.** Ruttspärren (`scripts/rutterspar.ts`): ingen kod som når nätet får röra sparade vägar. Vägen till en
+sökt resa kommer från Apple eller Google; det som sparas är vägen, inte sökningen. På Android heter en sökt resa efter kommunen
+(DECISIONS #943), så föraren får döpa den när den sparas.
+
+**Alternativ.** Två flikar som i dag, ihopkopplade med länkar: mindre ändring, men två ingångar till samma sak.
+
+**Stomdokument:** APP — fliken Resor; FAV — sparade resor och hur en sökt resa sparas
+
+## #983 (28/11 2026) En planerad resa får två lägen, Åker nu och Åker senare, och en kortare lista (kort #659)
+**Beslut.** Axel 28/11, efter sin inspelning av resan Malmö till Boden och tre utkast: *"Jag är nog med dig om utkast 3"*, och om
+det utbyggda utkastet: *"Okej jag gillar det! Vi kör på denna också."*
+1. Överst väljer föraren *Åker nu* eller *Åker senare*. *Nu:* omdömet, *Starta vakten*, *Spara resan* och länkarna till
+   kartapparna. *Senare:* tiden och påminnelsen, omdömet med raden att läget hämtas färskt, och *Spara resan*. *Starta vakten*
+   visas inte i läget *Senare*.
+2. Skärmen öppnas på *Åker nu*; med en avresetid som inte har passerat på *Åker senare*; från påminnelsen på *Åker nu*.
+3. Klocktiderna vid sträckorna räknas från nu eller från avresan.
+4. Lugna sträckor i följd slås ihop till en rad.
+5. Inuti en sträcka står halka, vägarbete, vilt och kameror, en rad var. Restidssträckorna visas inte.
+6. *Övrigt på vägen* blir en mening i stället för rader med antal.
+7. *Halkvakt tror · beta* visas bara när den varnar.
+8. *Ta bort påminnelsen* står längst ner, bara när en är satt. Kartan ligger kvar ovanför sträckorna.
+
+**Fel som inspelningen visade, och som rättas i bygget.** Raden *Hinder 1* stod över texten *Inget rapporterat: … hinder …*:
+raden räknar in vilt, texten gör det inte. En rad märkt halka slutade med *torrt*, och samma rad stod två gånger. Tidshjulet
+stannade på ogiltiga tider; det är rättat i PR #1911.
+
+**Öppet.** Orden: *halt* för det Trafikverket rapporterar som halt och *risk för halka* för resten, mot kartans *halka* och
+*frysrisk*. Ritat så, inte uttryckligen besvarat. Varje varningsord följer regeln att texten aldrig får säga mer än datan.
+
+**Alternativ.** Samma ordning som i dag, stramad; knapparna fasta nederst.
+
+**Stomdokument:** APP — skärmen för en planerad resa
+
+## #984 (28/11 2026) Maestro för fyra flöden på iPhone, körda med knapp före ett bygge
+**Beslut.** Axel 28/11: *"Ja ta med det!"*. Maestro (maestro.dev) kör appens flöden i en simulator ur YAML-filer. Verktyget på
+kommandoraden har öppen källkod och är gratis enligt deras startsida (läst 28/11; dokumentationen och prislistan är inte lästa),
+och det körs i GitHub Actions, som är gratis i ett publikt repo. Molntjänsten används inte. Fyra flöden: introduktionen för en ny
+användare, startsidan i sina lägen, Planera resa (sök, öppna, byt läge, spara) och frågan till den som redan har appen. Flödena
+skrivs i samma PR som skärmen de prövar och körs med knapp före ett bygge, inte vid varje ändring. De ger också skärmbilder från
+iPhone till produktboken.
+
+**Vad det inte prövar.** Rösten under körning, självstarten, CarPlay och platsen i bakgrunden: de kräver en telefon i en bil.
+Sökningen går mot Apple och levande vägdata och kan ge ostadiga prov.
+
+**Alternativ.** Fortsätta utan: varje fel i ett flöde hittas då på Axels telefon, som tidshjulet 28/11.
+
+**Stomdokument:** inga — ett provverktyg i CI, ingen del av appen eller systemet
